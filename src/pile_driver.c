@@ -119,8 +119,9 @@ void (*const PTR_ARRAY_085ad07c[15])(PileDriver*) = {
     FUN_080b1a84,
 };  // 0x085AD07C
 
-void FUN_080ad1ec(PileDriver* p, u32 stateID) {
-  p->unk_4fc = stateID;
+// unk_4fc の状態番号を差し替えて unk_4fe を 0 に戻す
+void PileDriver_SetSubState(PileDriver* p, u32 subState) {
+  p->unk_4fc = subState;
   p->unk_4fe = 0;
 }
 
@@ -385,7 +386,7 @@ NAKED void FUN_080ade88(PileDriver* p) { INCFUNC("asm/func/FUN_080ade88.inc"); }
 
 void FUN_080adf50(PileDriver* p) { p->unk_1324 = 48; }
 
-void FUN_080adf60(void) {
+void Cmd_054A(void) {
   if (gPileDriver != NULL) {
     gPileDriver->unk_1324 = 64;
     gPileDriver->unk_1326 = 0;
@@ -597,8 +598,8 @@ void FUN_080b0e3c(PileDriver* p) {
 }
 
 void FUN_080b0e58(PileDriverSub* p) {
-  VEC3_SET(p->unk_69c, 0xA0, 0xA0, 0xA0);
-  VEC3_SET(p->unk_6a4, 0x40, 0x20, 0x40);
+  VEC3_SET(p->unk_69c, Q8(0.625), Q8(0.625), Q8(0.625));
+  VEC3_SET(p->unk_6a4, Q8(0.25), Q8(0.125), Q8(0.25));
 }
 
 NAKED void FUN_080b0e98(PileDriver* p) { INCFUNC("asm/func/FUN_080b0e98.inc"); }
@@ -618,7 +619,7 @@ bool32 FUN_080b1038(Vec3* a, Vec3* b, s32 radius) {
 }
 
 s32 FUN_080b1078(PileDriver* p) {
-  if (gCoffin != NULL && gPlayerPtr[0]->unk_1c == 1 && gPlayerPtr[0]->action == 6 && FUN_080b1038(&gCoffin->mover.pos, &p->pos_510, 70)) {
+  if (gCoffin != NULL && gPlayerPtr[0]->mode == PMODE_ACTIVE && gPlayerPtr[0]->action == PACT_UNK_6 && FUN_080b1038(&gCoffin->mover.pos, &p->pos_510, 70)) {
     return 1;
   }
   return 0;
@@ -638,13 +639,13 @@ s32 FUN_080b10c4(PileDriver* p) {
 s32 FUN_080b10f8(PileDriver* p) {
   Player* player = gPlayerPtr[0];
 
-  if (player->unk_1c != 1) {
+  if (player->mode != PMODE_ACTIVE) {
     return 0;
   }
   if (player->kind >= PLAYER_BAT && player->kind <= PLAYER_SLEEPING) {
     return 0;
   }
-  if (player->action != 7) {
+  if (player->action != PACT_UNK_7) {
     return 0;
   }
   if (!FUN_080b1038(&player->mover.pos, &p->unk_508, 100)) {
@@ -665,7 +666,7 @@ void FUN_080b1174(PileDriver* p) {
   if (FUN_080b1078(p)) {
     FUN_0807bb3c(gPlayerPtr[0], NULL, -1, 0, 0);
     p->unk_c16 = 0;
-    FUN_080ad1ec(p, 1);
+    PileDriver_SetSubState(p, 1);
   }
 }
 
@@ -674,7 +675,7 @@ NAKED void FUN_080b11b4(PileDriver* p) { INCFUNC("asm/func/FUN_080b11b4.inc"); }
 void FUN_080b1404(PileDriver* p) {
   if (FUN_080b10c4(p)) {
     Player_Unlock(gPlayerPtr[0]);
-    FUN_080ad1ec(p, 3);
+    PileDriver_SetSubState(p, 3);
     FUN_080ad204(p, 0);
   }
 }
@@ -701,9 +702,9 @@ void FUN_080b165c(PileDriver* p) {
     FUN_0823bca8(16);
     FUN_0807bc64(gPlayerPtr[0], 0);
   } else if (p->unk_4fe > 105) {
-    if (gPlayerPtr[0]->action == 0) {
+    if (gPlayerPtr[0]->action == PACT_IDLE) {
       Player_Unlock(gPlayerPtr[0]);
-      FUN_080ad1ec(p, 3);
+      PileDriver_SetSubState(p, 3);
       p->unk_1332 = 0;
       FUN_080ad204(p, 2);
     }
@@ -721,7 +722,7 @@ void FUN_080b1718(PileDriver* p) {
     if (p->unk_1334 <= 59) {
       p->unk_1334++;
     }
-    FUN_0823b9cc(p->unk_1334 >> 1);
+    Camera_Shake(p->unk_1334 >> 1);
   }
 }
 
@@ -731,14 +732,14 @@ void FUN_080b176c(PileDriver* p) {
   } else if (!p->unk_c12) {
     PlaySound_082406e0(SONG_490);
     gCoffin->state = 13;
-    FUN_080ad1ec(p, 9);
+    PileDriver_SetSubState(p, 9);
   }
 }
 
 void FUN_080b17bc(PileDriver* p) {
   if (gCoffin->state == 12) {
     FUN_080af374(p->unk_c6c, 1);
-    FUN_080ad1ec(p, 10);
+    PileDriver_SetSubState(p, 10);
   }
 }
 
@@ -748,7 +749,7 @@ void FUN_080b1888(PileDriver* p) {
   if (p->unk_12e4 == 0) {
     PlaySound_082406e0(SONG_491);
     FUN_08086b18(&p->pos_510);
-    FUN_080ad1ec(p, 12);
+    PileDriver_SetSubState(p, 12);
     FUN_080ad204(p, 5);
   }
 }
@@ -799,29 +800,29 @@ void FUN_080b21d8(PileDriver* p) {
   p->unk_1a = val;
 }
 
-void FUN_080b21f4(void) {
+void Cmd_6414(void) {
   if (gPileDriver != NULL) {
     gPileDriver->unk_c0f = 1;
     gPileDriver->unk_c11 = gPileDriver->unk_c10;
   }
 }
 
-NAKED void FUN_080b2224(void) { INCFUNC("asm/func/FUN_080b2224.inc"); }
+NAKED void Cmd_8400(void) { INCFUNC("asm/func/Cmd_8400.inc"); }
 
-void FUN_080b22e8(void) {
+void Cmd_29F1(void) {
   if (gPileDriver != NULL) {
     gPileDriver->unk_1333 = TRUE;
     gPileDriver->unk_1334 = 0;
   }
 }
 
-void FUN_080b2314(void) {
+void Cmd_F993(void) {
   if (gPileDriver != NULL) {
     gPileDriver->unk_c12 = TRUE;
   }
 }
 
-void FUN_080b2334(void) {
+void Cmd_44BF(void) {
   if (gPileDriver != NULL) {
     gPileDriver->unk_c12 = FALSE;
   }
@@ -829,9 +830,9 @@ void FUN_080b2334(void) {
 
 NAKED void FUN_080b2354(PileDriver* p) { INCFUNC("asm/func/FUN_080b2354.inc"); }
 
-void FUN_080b23fc(PileDriver* p) { MsgQueue_Unregister(&p->mq); }
+void PileDriver_UnregisterMsgQueue(PileDriver* p) { MsgQueue_Unregister(&p->mq); }
 
-void FUN_080b2410(PileDriver* p) { MsgQueue_Register(&p->mq, p->subroutineID, 9); }
+void PileDriver_RegisterMsgQueue(PileDriver* p) { MsgQueue_Register(&p->mq, p->subroutineID, CLS_CBB0); }
 
 s32 FUN_080b2428(void) {
   gPileDriver = NULL;
@@ -880,7 +881,7 @@ s32 PileDriver_Destroy(PileDriver* p) {
   }
 
   FUN_080ad368(p);
-  FUN_080b23fc(p);
+  PileDriver_UnregisterMsgQueue(p);
   gPileDriver = NULL;
   return 0;
 }

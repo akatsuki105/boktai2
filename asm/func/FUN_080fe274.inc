@@ -37,17 +37,17 @@ _080FE2A6:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -58,7 +58,7 @@ _080FE2A6:
 	ldr r2, [sp, #0x48]
 	str r0, [r2]
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r1, #8
 	movs r2, #0xc0
 	lsls r2, r2, #1

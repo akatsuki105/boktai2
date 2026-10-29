@@ -18,7 +18,7 @@ typedef struct {
 } Entity778BElem;
 static_assert(sizeof(Entity778BElem) == 32);
 
-// 生成要求を12件まで抱えるシングルトン, ゲームオーバー中と u32_03002bc0 の FLAG03002BC0_UNK_2 が立っている間は止まる
+// 生成要求を12件まで抱えるシングルトン, ゲームオーバー中と gPlayerStates の FLAG03002BC0_UNK_2 が立っている間は止まる
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_10
   Entity778BElem elems[12];  // 0x018
@@ -27,6 +27,11 @@ typedef struct {
 static_assert(sizeof(Entity778B) == 412);
 
 IWRAM_DATA Entity778B* gEntity778B = NULL;  // 0x03000180
+
+static inline bool8 Entity778B_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
 
 void Entity081eaf6c_Create(void);
 
@@ -79,28 +84,22 @@ void FUN_080e1238(s32 x, s32 y, s32 width, s32 height, s32 value, s32 bgIdx) {
   }
 }
 
-NAKED void FUN_080e1280(void) { INCFUNC("asm/func/FUN_080e1280.inc"); }
+NAKED void Cmd_8954(void) { INCFUNC("asm/func/Cmd_8954.inc"); }
 
 NAKED Entity778BElem* FUN_080e1334(void) { INCFUNC("asm/func/FUN_080e1334.inc"); }
 
 // 空いている枠を確保して返す, 無ければ NULL
-// 残差7命令 (28 対 35), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
-// attack_box.c の AttackBoxManager_IsSlotUsed と同じ static inline bool32 でも 30 対 35 までで, 作り置きは出ない
-NON_MATCH Entity778BElem* Entity778B_AllocElem(Entity778B* p) {
-#ifdef NONMATCHING_C
+Entity778BElem* Entity778B_AllocElem(Entity778B* p) {
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (!(p->usedMask & (1 << i))) {
+    if (!Entity778B_IsActive(&p->usedMask, i)) {
       p->usedMask |= 1 << i;
       p->elems[i].slotIdx = i;
       return &p->elems[i];
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/Entity778B_AllocElem.inc");
-#endif
 }
 
 NAKED s32 Entity778B_Update(Entity778B* p) { INCFUNC("asm/func/Entity778B_Update.inc"); }
@@ -138,7 +137,7 @@ NAKED void Entity778B_AddElemScripted(void) { INCFUNC("asm/func/Entity778B_AddEl
 void Entity778B_ClearGlobal(void) { gEntity778B = NULL; }
 
 // '.n' で指された生成要求を使用中マスクから外して消す
-void FUN_080e16f4(void) {
+void Cmd_9700(void) {
   Entity778B* p = gEntity778B;
   Entity778BElem* e;
   s32 slot;

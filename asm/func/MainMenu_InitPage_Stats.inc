@@ -3,7 +3,7 @@
 	adds r4, r0, #0
 	bl MessageWindow_Close
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	ldr r1, _080999F4 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]

@@ -77,7 +77,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
         elem->ptclIdx = 1;
       }
       Particle_SetOffset(&elem->ptcls[elem->ptclIdx], (Random() & 1) - 4, (Random() & 1) - 4);
-      Particle_SetFrame(&elem->ptcls[elem->ptclIdx], p->group2, 2);
+      Particle_SetPose(&elem->ptcls[elem->ptclIdx], p->group2, PTCL2_SOL_L);
       elem->ptcls[elem->ptclIdx].plttSlot = p->group2->plttID + 1;
       elem->ptcls[elem->ptclIdx].flags &= ~SPRFLAG_HIDDEN;
       elem->ptcls[elem->ptclIdx].flags |= SPRFLAG_BLINK_ODD;
@@ -85,7 +85,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
     } else {
       elem->unk_02--;
       if (elem->unk_02 == 0x16) {
-        Particle_SetFrame(&elem->ptcls[elem->ptclIdx], p->group2, 2);
+        Particle_SetPose(&elem->ptcls[elem->ptclIdx], p->group2, PTCL2_SOL_L);
         elem->ptcls[elem->ptclIdx].plttSlot = p->group2->plttID + 1;
       }
       if (elem->unk_02 == 0x14) {
@@ -103,7 +103,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
     for (j = 0; j < 3; j++, ptcl++) {
       ptcl->flags |= SPRFLAG_BLINK_ODD;
       ptcl->flags &= ~SPRFLAG_HIDDEN;
-      Particle_SetFrame(ptcl, p->group2, 2);
+      Particle_SetPose(ptcl, p->group2, PTCL2_SOL_L);
       ptcl->plttSlot = p->group2->plttID + 1;
       Particle_SetOffset(ptcl, -4, -4);
       ptcl->pos = elem->pos;
@@ -130,7 +130,7 @@ NON_MATCH void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) {
   s32 i;
 
   for (i = 0; i < 3; i++, ptcl++) {
-    ptcl->pos.x += (gSineTable[(angle + 0x40) & 0xFF] * elem->speed) >> 12;
+    ptcl->pos.x += (COS(angle) * elem->speed) >> 12;
     if (elem->timer <= 0x18) {
       ptcl->pos.y = p->playerPos.y + POLAR_Z(0x40, elem->timer * 4) + elem->unk_05;
     } else {
@@ -145,7 +145,7 @@ NON_MATCH void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) {
       if (elem->animIdx[i] > 1) {
         elem->animIdx[i] = 0;
       }
-      Particle_SetFrame(ptcl, p->group2, elem->animIdx[i] + 2);
+      Particle_SetPose(ptcl, p->group2, PTCL2_SOL_L + elem->animIdx[i]);
       ptcl->plttSlot = p->group2->plttID + 1;
     }
 
@@ -265,13 +265,13 @@ NON_MATCH s32 Entity4F5C_Init(Entity4F5C* p) {
     elem->pos.z += basePos.z;
 
     for (j = 0; j < 3; j++, ptcl++) {
-      Particle_Add(ptcl, p->group1, 1);
+      Particle_Add(ptcl, p->group1, SPRFLAG_HIDDEN);
       Particle_SetOffset(ptcl, -4, -4);
       if (j == 0) {
-        Particle_SetFrame(ptcl, p->group1, 0x1C);
+        Particle_SetPose(ptcl, p->group1, PTCL1_28);
         ptcl->plttSlot = p->group1->plttID;
       } else {
-        Particle_SetFrame(ptcl, p->group2, 2);
+        Particle_SetPose(ptcl, p->group2, PTCL2_SOL_L);
         ptcl->plttSlot = p->group2->plttID + 1;
       }
       ptcl->pos.x += elem->pos.x;

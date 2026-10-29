@@ -55,7 +55,7 @@ _080C7572:
 	cmp r2, #9
 	ble _080C7592
 	adds r0, r5, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 _080C7592:
 	mov r0, r8
 	cmp r0, #0xf

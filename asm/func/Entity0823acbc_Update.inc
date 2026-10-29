@@ -62,7 +62,7 @@ _0823AB12:
 	str r5, [r7]
 	mov r1, r8
 	str r1, [r6, #0x18]
-	ldr r0, _0823AB30 @ =0x030047AC
+	ldr r0, _0823AB30 @ =gMapChanging
 	str r5, [r0]
 	b _0823AC4C
 	.align 2, 0
@@ -70,7 +70,7 @@ _0823AB20: .4byte 0x03004860
 _0823AB24: .4byte 0x03002CA8
 _0823AB28: .4byte 0x03004798
 _0823AB2C: .4byte 0x03002B28
-_0823AB30: .4byte 0x030047AC
+_0823AB30: .4byte gMapChanging
 _0823AB34:
 	ldr r0, [r6, #0x1c]
 	cmp r0, #0
@@ -95,7 +95,7 @@ _0823AB50:
 	str r1, [r0]
 	ldr r0, _0823AB98 @ =0x030047C4
 	str r1, [r0]
-	ldr r0, _0823AB9C @ =0x030047AC
+	ldr r0, _0823AB9C @ =gMapChanging
 	str r5, [r0]
 	movs r1, #0xf
 	rsbs r1, r1, #0
@@ -120,7 +120,7 @@ _0823AB8C: .4byte 0x03004798
 _0823AB90: .4byte 0x030044BC
 _0823AB94: .4byte 0x0300478C
 _0823AB98: .4byte 0x030047C4
-_0823AB9C: .4byte 0x030047AC
+_0823AB9C: .4byte gMapChanging
 _0823ABA0: .4byte 0x03003E78
 _0823ABA4: .4byte 0xFFFFF1FF
 _0823ABA8: .4byte 0x03004460

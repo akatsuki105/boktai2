@@ -49,7 +49,7 @@ _0806FF28:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x15
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
@@ -73,7 +73,7 @@ _0806FF58:
 	adds r0, r5, r2
 	ldrb r0, [r0]
 	movs r1, #0x16
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -127,7 +127,7 @@ _0806FFD2:
 	adds r4, r5, r1
 	ldrb r0, [r4]
 	movs r1, #0x17
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0

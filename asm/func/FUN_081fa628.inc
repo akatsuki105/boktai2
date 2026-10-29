@@ -215,7 +215,7 @@ _081FA756:
 	add r1, sp, #0x3c
 	ldr r2, _081FA7F8 @ =0x00002E78
 	ldr r3, _081FA7FC @ =0x000038E2
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	movs r1, #1
 	rsbs r1, r1, #0
 	add r8, r1
@@ -462,7 +462,7 @@ _081FA980:
 	add r1, sp, #0x3c
 	ldr r2, _081FA9F8 @ =0x0000F422
 	ldr r3, _081FA9FC @ =0x0000121B
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	movs r5, #1
 	add r8, r5
 	mov r6, r8
@@ -697,7 +697,7 @@ _081FAB56:
 	add r1, sp, #0x3c
 	ldr r2, _081FABB8 @ =0x0000F422
 	ldr r3, _081FABBC @ =0x0000121B
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	movs r1, #1
 	add r8, r1
 	mov r2, r8

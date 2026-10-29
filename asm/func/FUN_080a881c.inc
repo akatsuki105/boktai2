@@ -142,7 +142,7 @@ _080A8914:
 	ldr r1, [r0]
 	adds r0, r4, #0
 	movs r2, #6
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080A8938:
 	adds r4, #0x2c
 	subs r7, #1

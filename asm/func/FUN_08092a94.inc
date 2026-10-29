@@ -3,7 +3,7 @@
 	adds r4, r0, #0
 	bl MessageWindow_Close
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	ldr r0, _08092B24 @ =0x00003AEE
 	adds r5, r4, r0
 	ldrb r0, [r5]
@@ -20,13 +20,13 @@
 	str r0, [r2]
 	ldrb r1, [r5]
 	add r0, sp, #0x10
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	add r6, sp, #0x18
 	ldr r1, _08092B2C @ =0x00003AEB
 	adds r0, r4, r1
 	ldrb r1, [r0]
 	adds r0, r6, #0
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	ldr r1, _08092B30 @ =0x00003F9C
 	adds r0, r4, r1
 	ldrb r0, [r0]

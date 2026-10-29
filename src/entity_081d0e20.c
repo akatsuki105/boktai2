@@ -11,7 +11,7 @@ typedef struct {
   AuxSprite sprite;   // 0x00
   Mover mover;        // 0x2C
   AuxAnimState anim;  // 0x70
-  Vec3 pos;           // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
+  Vec3 pos;           // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: Cmd_2FA5
   s16 id;             // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
   u16 scriptID_8a;    // 0x8A, '.R=0', flags bit7 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
   u16 scriptID_8c;    // 0x8C, '.C=0', flags bit8 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
@@ -40,6 +40,11 @@ typedef struct {
 static_assert(sizeof(Entity081d0e20) == 108);
 
 IWRAM_DATA Entity081d0e20* gEntity081d0e20 = NULL;  // 0x03000188
+
+static inline bool8 Entity081d0e20_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
 
 unknown* FUN_081ee9bc(Vec3* pos);
 s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
@@ -84,15 +89,12 @@ void FUN_081cf944(Entity081d0e20Elem* p) {
 NAKED void FUN_081cfa24(Entity081d0e20Elem* p) { INCFUNC("asm/func/FUN_081cfa24.inc"); }
 
 // 空きスロットを1つ確保して要素を作る
-NON_MATCH Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p) {
-#ifdef NONMATCHING_C
+Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p) {
   Entity081d0e20Elem* elem;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    bool32 used = (p->activeMask & (1 << i)) ? TRUE : FALSE;
-
-    if (!used) {
+    if (!Entity081d0e20_IsActive(&p->activeMask, i)) {
       elem = Malloc(sizeof(Entity081d0e20Elem));
       ClearMemory(elem, sizeof(Entity081d0e20Elem));
       p->activeMask |= 1 << i;
@@ -102,9 +104,6 @@ NON_MATCH Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/Entity081d0e20_AllocElem.inc");
-#endif
 }
 
 NAKED s32 FUN_081cfcb8(Entity081d0e20Elem* p) { INCFUNC("asm/func/FUN_081cfcb8.inc"); }
@@ -117,7 +116,7 @@ void FUN_081cfd40(Entity081d0e20Elem* p) {
   s32 i;
 
   p->sprite.flags |= SPRFLAG_HIDDEN;
-  size.z = (BLOCK / 2), size.x = (BLOCK / 2), size.y = (BLOCK / 16);
+  size.z = Q8(0.5), size.x = Q8(0.5), size.y = Q8(0.063);  // なぜか z, x, y の順番
   for (i = 0; i < 4; i++) {
     if (FUN_080e11a8(&p->pos, &size, i) != 0) {
       goto blocked;
@@ -147,7 +146,7 @@ void FUN_081d006c(Entity081d0e20Elem* p) {
     switch (p->unk_b0) {
       case 0:
       case 1: {
-        if (gFlag030047a4 & FLAG030047A4_LINK) {
+        if (gGameFlags & FLAG030047A4_LINK) {
           PlaySound_082406e0(SE_WOOD_DOOR_621);
         } else {
           PlaySound_082406e0(SE_WOOD_DOOR_427);
@@ -225,7 +224,7 @@ void FUN_081d0838(Entity081d0e20* p, Entity081d0e20Elem* elem) {
 }
 
 // 0x2FA5, スクリプトの引数から要素を1つ生成する
-NON_MATCH void FUN_081d0864(void) {
+NON_MATCH void Cmd_2FA5(void) {
 #ifdef NONMATCHING_C
   Entity081d0e20* p = gEntity081d0e20;
   Entity081d0e20Elem* elem;
@@ -241,9 +240,7 @@ NON_MATCH void FUN_081d0864(void) {
   if ((p != NULL || (p = Entity081d0e20_Create()) != NULL) && (elem = Entity081d0e20_AllocElem(p)) != NULL) {
     elem->state = 1;
     if (VM_SeekToNamedArg('p')) {
-      elem->pos.x = VM_GetValue();
-      elem->pos.y = VM_GetValue();
-      elem->pos.z = VM_GetValue();
+      VEC3_SET(elem->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
     }
     elem->id = VM_GetNamedArgValue('i', 0);
     elem->scriptID_8a = VM_GetNamedArgValue('R', 0);
@@ -335,13 +332,13 @@ NON_MATCH void FUN_081d0864(void) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_081d0864.inc");
+  INCFUNC("asm/func/Cmd_2FA5.inc");
 #endif
 }
 
 NAKED Entity081d0e20Elem* Entity081d0e20_FindElem(s32 id) { INCFUNC("asm/func/Entity081d0e20_FindElem.inc"); }
 
-void FUN_081d0bd4(void) {
+void Cmd_0EE4(void) {
   s32 id = VM_GetNamedArgValue('i', -1);
   if (id >= 0) {
     s32 val = VM_GetNamedArgValue('s', 0);
@@ -358,7 +355,7 @@ void FUN_081d0bd4(void) {
   }
 }
 
-s32 FUN_081d0c38(void) {
+s32 Cmd_3215(void) {
   s32 key = VM_GetNamedArgValue('i', -1);
   Entity081d0e20Elem* elem;
 
@@ -410,15 +407,12 @@ void (*const PTR_ARRAY_085ae098[8])(Entity081d0e20Elem*) = {
 
 NAKED s32 Entity081d0e20_Update(Entity081d0e20* p) { INCFUNC("asm/func/Entity081d0e20_Update.inc"); }
 
-NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
-#ifdef NONMATCHING_C
+s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
   Entity081d0e20Elem* elem;
-  bool32 used;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    used = (p->activeMask & (1 << i)) != 0;
-    if (used) {
+    if (Entity081d0e20_IsActive(&p->activeMask, i)) {
       elem = p->items[i];
       AuxSprite_Remove(&elem->sprite);
       if (elem->flags & (1 << 3)) {
@@ -431,9 +425,6 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
   }
   gEntity081d0e20 = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity081d0e20_Destroy.inc");
-#endif
 }
 
 s32 Entity081d0e20_Init(Entity081d0e20* p) {

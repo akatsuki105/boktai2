@@ -50,7 +50,7 @@ _080A8E18:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #7
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	adds r0, r5, #0
 	movs r1, #1
 	bl Particle_SetPltt

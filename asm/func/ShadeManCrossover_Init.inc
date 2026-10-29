@@ -843,7 +843,7 @@ _08040C6E:
 	cmp r5, #0
 	bge _08040C6E
 	adds r0, r7, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	ldr r1, _08040CC8 @ =0x03003584
 	lsls r0, r0, #5
 	ldr r1, [r1]
@@ -863,7 +863,7 @@ _08040C96:
 	cmp r5, #0
 	bge _08040C96
 	adds r0, r7, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08040CD0

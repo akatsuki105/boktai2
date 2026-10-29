@@ -51,7 +51,7 @@ _080F5718:
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r1, #2
 	rsbs r1, r1, #0
 	ldr r0, [r4]
@@ -67,7 +67,7 @@ _080F5768:
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _080F5778:
 	movs r0, #2
 	ldr r1, [r4]

@@ -21,7 +21,7 @@
 	adds r6, r7, r2
 	str r0, [r6]
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	movs r0, #0xc4
 	lsls r0, r0, #2
 	adds r2, r7, r0

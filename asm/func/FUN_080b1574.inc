@@ -77,7 +77,7 @@
 	bl PileDriver_SetState
 	adds r0, r4, #0
 	movs r1, #7
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B1650
 	.align 2, 0
 _080B1620: .4byte 0x03002BE0
@@ -95,7 +95,7 @@ _080B1638:
 	bl PlaySound_082406e0
 	adds r0, r4, #0
 	movs r1, #6
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 _080B1650:
 	add sp, #8
 	pop {r4, r5, r6, r7}

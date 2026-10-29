@@ -9,17 +9,17 @@
 typedef struct {
   u16* buffer;  // 0x00, gHBlankEffectBuffer
   vu16* reg;    // 0x04, gHBlankEffectReg
-  u16 unk_8;    // 0x08, u16_03003510
-  u16 unk_a;    // 0x0A, u16_03003514
+  u16 unk_8;    // 0x08, gHBlankDmaCount
+  u16 unk_a;    // 0x0A, gHBlankDmaMode
   u8 unk_c[4];  // 0x0C
 } SavedHBlankState;
 static_assert(sizeof(SavedHBlankState) == 16);
 
-static u32 u32_0300170c;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
+static u32 u32_0300170c;  // 0x0300170C, EEPROM_BeginAccess が gRtcReadInhibit を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA SavedHBlankState gSavedHBlankState = {};  // 0x03004880
 
-extern u32 u32_0300481c;
+extern u32 gRtcReadInhibit;
 
 s32 FUN_08243648(s32 n) {
   u32 val = n & (~7);
@@ -31,20 +31,20 @@ s32 FUN_08243648(s32 n) {
 s32 EEPROM_BeginAccess(void) {
   gSavedHBlankState.buffer = gHBlankEffectBuffer;
   gSavedHBlankState.reg = gHBlankEffectReg;
-  gSavedHBlankState.unk_8 = u16_03003510;
-  gSavedHBlankState.unk_a = u16_03003514;
+  gSavedHBlankState.unk_8 = gHBlankDmaCount;
+  gSavedHBlankState.unk_a = gHBlankDmaMode;
   gHBlankEffectBuffer = NULL;
   gHBlankEffectReg = NULL;
-  u16_03003510 = 0;
-  u16_03003514 = 0;
+  gHBlankDmaCount = 0;
+  gHBlankDmaMode = 0;
   FUN_082407e0();
   WaitForVBlank();
   gEepromIdle = FALSE;
   m4aSoundVSyncOff();
   WaitForVBlank();
   REG_IME = 0;
-  u32_0300170c = u32_0300481c;
-  u32_0300481c = 1;
+  u32_0300170c = gRtcReadInhibit;
+  gRtcReadInhibit = 1;
   REG_IME = 1;
   Taiyo_Disable();
   return 0;
@@ -61,9 +61,9 @@ u32 EEPROM_EndAccess(void) {
   REG_IME = 0;
   gHBlankEffectBuffer = s->buffer;
   gHBlankEffectReg = s->reg;
-  u16_03003510 = s->unk_8;
-  u16_03003514 = s->unk_a;
-  u32_0300481c = u32_0300170c;
+  gHBlankDmaCount = s->unk_8;
+  gHBlankDmaMode = s->unk_a;
+  gRtcReadInhibit = u32_0300170c;
   REG_IME = 1;
   Taiyo_Enable();
 }

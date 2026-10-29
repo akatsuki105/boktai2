@@ -72,7 +72,7 @@ _080C61F8:
 	orrs r0, r2
 	str r0, [r1]
 	mov r0, r8
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	mov r0, sl
 	cmp r0, #0x3b
 	ble _080C622E

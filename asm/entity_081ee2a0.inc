@@ -88,7 +88,7 @@ _081EDD88:
 	ldrb r0, [r3]
 	adds r2, r2, r0
 	mov r0, ip
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _081EDDAC:
 	pop {r0}
 	bx r0
@@ -611,7 +611,7 @@ _081EE15A:
 	ldr r1, [r6, #0x18]
 	ldrb r2, [r4]
 	adds r0, r5, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	adds r0, r5, #0
 	movs r1, #1
 	bl Particle_SetPltt

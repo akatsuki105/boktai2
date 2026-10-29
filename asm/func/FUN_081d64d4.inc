@@ -83,7 +83,7 @@ _081D653A:
 	mov r0, sb
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	ldr r2, _081D65E0 @ =0x00000153
 	adds r1, r5, r2
 	movs r0, #3

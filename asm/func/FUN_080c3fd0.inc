@@ -110,7 +110,7 @@ _080C4080:
 	ldr r1, [r7, #4]
 	adds r0, r4, #0
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r1, #0xba
 	lsls r1, r1, #2
 	add r1, r8

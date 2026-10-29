@@ -408,7 +408,7 @@ _080FA240:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #0
 	bl Enemy_PlayAnim

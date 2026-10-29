@@ -43,7 +43,7 @@ _08072074:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x23
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -78,7 +78,7 @@ _080720B8:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x24
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -161,7 +161,7 @@ _08072168:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x24
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -242,7 +242,7 @@ _08072214:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x24
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -306,7 +306,7 @@ _080722A0:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x24
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -366,7 +366,7 @@ _0807232C:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x25
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -410,7 +410,7 @@ _08072388:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x24
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -471,7 +471,7 @@ _08072404:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x23
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -665,7 +665,7 @@ _0807254E:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x25
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40

@@ -26,26 +26,27 @@ void ClockAlarm_Fire(ClockAlarm* p, u32 kind) {
   }
 }
 
-// 真夜中をまたいだぶんを畳んだ秒差, 符号はどちら向きに離れているかを表す
-static inline s32 ClockAlarm_Diff(s32 t, s32 target) {
-  s32 d = t - target;
+// target 時刻から window 秒以内に入った回に1度だけ kind でスクリプトを起動し, 窓を出たら次に備える
+static inline void ClockAlarm_Check(ClockAlarm* p, s32 target, s32 window, u32 kind) {
+  s32 d = abs(p->secondOfDay - target);
 
-  if (t < target) {
-    d = target - t;
-  }
-  if (d > 43199) {
+  if (d >= 43200) {
     d -= 86400;
   }
-  return d;
+  if (abs(d) <= window) {
+    if (p->armed[kind] != 0) {
+      p->armed[kind] = 0;
+      ClockAlarm_Fire(p, kind);
+    }
+  } else {
+    p->armed[kind] = 1;
+  }
 }
 
 // 正午・夜明け・日没に差しかかったら、それぞれ1度だけスクリプトを起動する
+// 1つ目の abs が原典では t < target の比較で書かれ, 0 を r5 に置いて使い回す (19 hunk), 比較形にすると 12 hunk
 NON_MATCH s32 ClockAlarm_Update(ClockAlarm* p) {
 #ifdef NONMATCHING_C
-  s32 target;
-  s32 window;
-  s32 d;
-
   p->frameCounter++;
   if (p->frameCounter > 59) {
     p->frameCounter = 0;
@@ -55,50 +56,9 @@ NON_MATCH s32 ClockAlarm_Update(ClockAlarm* p) {
   p->minute = Time_GetMinute();
   p->second = Time_GetSecond();
   p->secondOfDay = p->hour * 3600 + p->minute * 60 + p->second;
-
-  d = ClockAlarm_Diff(p->secondOfDay, 43230);
-  if (d < 0) {
-    d = -d;
-  }
-  if (d <= 30) {
-    if (p->armed[0] != 0) {
-      p->armed[0] = 0;
-      ClockAlarm_Fire(p, 0);
-    }
-  } else {
-    p->armed[0] = 1;
-  }
-
-  target = gClock.morning.hour * 3600 + gClock.morning.minute * 60;
-  window = p->window;
-  d = ClockAlarm_Diff(p->secondOfDay, target);
-  if (d < 0) {
-    d = -d;
-  }
-  if (d <= window) {
-    if (p->armed[1] != 0) {
-      p->armed[1] = 0;
-      ClockAlarm_Fire(p, 1);
-    }
-  } else {
-    p->armed[1] = 1;
-  }
-
-  target = gClock.sunset.hour * 3600 + gClock.sunset.minute * 60;
-  window = p->window;
-  d = ClockAlarm_Diff(p->secondOfDay, target);
-  if (d < 0) {
-    d = -d;
-  }
-  if (d <= window) {
-    if (p->armed[2] != 0) {
-      p->armed[2] = 0;
-      ClockAlarm_Fire(p, 2);
-    }
-  } else {
-    p->armed[2] = 1;
-  }
-
+  ClockAlarm_Check(p, 43230, 30, 0);
+  ClockAlarm_Check(p, gClock.morning.hour * 3600 + gClock.morning.minute * 60, p->window, 1);
+  ClockAlarm_Check(p, gClock.sunset.hour * 3600 + gClock.sunset.minute * 60, p->window, 2);
   return 0;
 #else
   INCFUNC("asm/func/ClockAlarm_Update.inc");

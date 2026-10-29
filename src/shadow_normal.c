@@ -124,11 +124,11 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
       goto show;
     }
   }
-  ptcl->flags |= 1;
+  ptcl->flags |= SPRFLAG_HIDDEN;
   return;
 
 show:
-  ptcl->flags &= ~1;
+  ptcl->flags &= ~SPRFLAG_HIDDEN;
   dst->x = pos->x;
   dst->z = pos->z;
 #else

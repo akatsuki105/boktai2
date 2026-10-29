@@ -38,7 +38,7 @@ _080AB50C:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r3, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080AB53A:
 	pop {r4}
 	pop {r0}

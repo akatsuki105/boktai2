@@ -32,9 +32,9 @@ FUN_0800e54c: @ 0x0800E54C
 FUN_0800e594: @ 0x0800E594
   .include "asm/func/FUN_0800e594.inc"
 
-	thumb_func_start FUN_0800e908
-FUN_0800e908: @ 0x0800E908
-  .include "asm/func/FUN_0800e908.inc"
+	thumb_func_start Cmd_2B8C
+Cmd_2B8C: @ 0x0800E908
+  .include "asm/func/Cmd_2B8C.inc"
 
 	thumb_func_start FUN_0800e9e8
 FUN_0800e9e8: @ 0x0800E9E8

@@ -93,7 +93,7 @@ s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx) {
   p->unk_0 = m->unk_0;
   p->offsetX = m->offsetX, p->offsetY = m->offsetY;
   p->boxRight = m->boxRight, p->boxBottom = m->boxBottom, p->boxLeft = m->boxLeft, p->boxTop = m->boxTop;
-  p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
+  p->scaleX = Q6(1), p->scaleY = Q6(1);
   p->rotation = 0;
   if (p->pltt == NULL) {
     p->plttID = gfx->palStart;
@@ -113,7 +113,7 @@ NON_MATCH s32 MainSprite_Load(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, Sp
   *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (MainSprite_SetPose と同じ)
   p->flags |= flags;
   p->animCmdTimer = 0;  // 元は movs r1, #0 が unk_2 の strh より前に来て、flags の OR は r2 を使う
-  p->animSpeed = FRACUNIT_6;
+  p->animSpeed = Q6(1);
   p->animCmdDuration = animCmdDuration;
   p->priority = prio;
   p->playMode = playMode;

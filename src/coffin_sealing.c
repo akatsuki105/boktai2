@@ -140,7 +140,7 @@ void FUN_08089e98(CoffinSealEffect* p) {
   p->shakeX = (_Random(table) & 0x1F) - 16;
   p->shakeZ = (_Random(table) & 0x1F) - 16;
   if (p->stateTimer < 4) {
-    FUN_0823b9cc(40);
+    Camera_Shake(40);
     FUN_08089b48(p, p->coffinID, 8, p->stateTimer * 16);
   } else {
     FUN_08089b48(p, 8, p->coffinID, (p->stateTimer - 4) * 16);

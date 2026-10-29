@@ -269,7 +269,7 @@ s32 TextPanel_SetText(s32 id, char* text) {
   p->scriptPc = NULL;
   p->pendingMsgIdx = 0;
   r->text = text;
-  r->unk_08 = 0;
+  r->frameCounter = 0;
   r->mode = 0;
   return 0;
 }
@@ -347,7 +347,7 @@ void TextPanel_StateTyping(TextPanelManager* mgr, TextPanel* p) {
 
   for (i = 0; i < 1; i++) {
     if (r->text != NULL) {
-      r->unk_08 = 0;
+      r->frameCounter = 0;
       if (TextRenderer_Advance(r) != 0) {
         if (r->finished) {
           p->updateCallback = TextPanel_StateIdle;

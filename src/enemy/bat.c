@@ -49,6 +49,7 @@ INCASM("asm/bat.inc");
 
 NAKED s32 EnemyBat_Destroy(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 EnemyBat_Init(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Init.inc"); }
 
 void EnemyBat_Create(void) {

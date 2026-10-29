@@ -125,12 +125,12 @@ _080324A4:
 	movs r0, #0xff
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	ldr r4, _0803250C @ =0x0000087A
 	adds r1, r5, r4
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08032510
@@ -185,12 +185,12 @@ _08032530:
 	movs r0, #0xff
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	ldr r4, _08032580 @ =0x0000087A
 	adds r1, r5, r4
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08032584
@@ -505,12 +505,12 @@ _0803277C:
 	movs r0, #0xff
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	ldr r2, _080327EC @ =0x0000087A
 	adds r1, r5, r2
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080327F0

@@ -48,7 +48,7 @@ typedef struct EntityDA0B {
   u8 unk_c0[0xD8 - 0xC0];                      // 0x00C0, まだ未解析
   MainSpriteGfx gfx0;                          // 0x00D8, SPRITE_UI_MISC
   MainSpriteGfx gfx1;                          // 0x00F8, SPRITE_UI_START_MENU
-  MainSpriteGfx gfx2;                          // 0x0118, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx iconGfx;                       // 0x0118, SPRITE_INVENTORY_ICONS
   EntityDA0BElem weapons[19];                  // 0x0138, FUN_0801c5d0 が stride 0x84 で19個まわす, 前の16個が武器スロット
   MainSprite sprites0[3];                      // 0x0B04, [0] がカーソル
   MainSprite sprites1[4];                      // 0x0C24, FUN_0801c3a8 が gStat->registeredWeapon の位置に置く
@@ -81,7 +81,7 @@ void EntityDA0B_ClearPtr(void) { gEntityDA0B = NULL; }
 // パレット番号を 0x2DF 番からの並びとして OBJ パレットの先頭を返す
 rgb555* FUN_0801b670(s32 plttID) { return &gObjPlttData[(plttID + 735) * 16]; }
 
-void FUN_0801b688(EntityDA0B* p, EntityDA0BElem* elem) { MainSprite_SetPose(&elem->sprite, &p->gfx2, elem->data.id, 0); }
+void FUN_0801b688(EntityDA0B* p, EntityDA0BElem* elem) { MainSprite_SetPose(&elem->sprite, &p->iconGfx, elem->data.id, PLAYMODE_PAUSE); }
 
 // 武器スキルレベルを 6..15 の表示用の値に直す
 s32 FUN_0801b6a4(s32 idx) {
@@ -189,8 +189,8 @@ NAKED s32 FUN_0801c260(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801c260.inc"); }
 
 s32 FUN_0801c2bc(EntityDA0B* p) {
   Vec3 pos;
-  VEC3_SET(pos, 0, 0x80, 0);
-  MainSprite_Add(&p->iconSprite, &p->gfx2, 208, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, &pos);
+  VEC3_SET(pos, 0, 128, 0);
+  MainSprite_Add(&p->iconSprite, &p->iconGfx, ICON_TIMER_100, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
 }
 
 NAKED s32 FUN_0801c300(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801c300.inc"); }
@@ -385,7 +385,7 @@ void FUN_0801d6c0(EntityDA0B* p) {
 
   if (p->fnTimer > 31) {
     FUN_0801d01c(p);
-    FUN_08049f84();
+    Marquee_RequestClose();
     EntityDA0B_SetFn(p, FUN_0801d71c);
   } else {
     FUN_0801c7dc(p);
@@ -400,7 +400,7 @@ void FUN_0801d788(EntityDA0B* p) {
     FUN_0801d4dc(p, 3, 0, 0);
   }
 
-  if (p->fnTimer > 239) {
+  if (p->fnTimer >= 240) {
     EntityDA0B_SetFn(p, FUN_0801db1c);
   } else {
     if (Mod(p->fnTimer, 61) == 60) {
@@ -493,7 +493,7 @@ s32 EntityDA0B_Destroy(EntityDA0B* p) {
   FUN_0801c454(p);
   FUN_0801c474(p);
   FUN_0801d6a0(p);
-  FUN_08049f84();
+  Marquee_RequestClose();
   gEntityDA0B = NULL;
   return 0;
 }

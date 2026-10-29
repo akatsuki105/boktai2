@@ -17,13 +17,13 @@
 	str r0, [r2]
 	ldrb r1, [r4]
 	add r0, sp, #0x10
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	add r5, sp, #0x18
 	ldr r1, _0809388C @ =0x00003AEB
 	adds r0, r6, r1
 	ldrb r1, [r0]
 	adds r0, r5, #0
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	ldr r1, _08093890 @ =0x00003F9C
 	adds r0, r6, r1
 	ldrb r0, [r0]

@@ -90,7 +90,7 @@ s32 Entity56DC_Init(Entity56DC* p, unknown* param_2, unknown* param_3) {
   p->unk_2c = 0;
   p->unk_30 = 0;
   VEC3_SET(pos, 120, 80, 0);
-  MainSprite_Add(&p->sprite, &p->gfx, 1, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD, 2, 0, 60, &pos);
+  MainSprite_Add(&p->sprite, &p->gfx, 1, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD, 2, PLAYMODE_PAUSE, 60, &pos);
   p->sprite.scaleX = p->scaleX;
   p->sprite.scaleY = p->scaleY;
   return 0;

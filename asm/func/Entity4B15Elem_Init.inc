@@ -31,7 +31,7 @@
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0x33
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	mov r0, sb
 	strb r0, [r4, #0x17]
 	strh r6, [r4, #0x30]

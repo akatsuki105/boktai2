@@ -121,7 +121,7 @@ NON_MATCH s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8*
 }
 
 // '.c' と '.n' の文字テーブルと '.d' のパスワード文字列で FUN_08011584 を呼ぶ
-void FUN_08011608(void) {
+void Cmd_C673(void) {
   if (VM_SeekToNamedArg('c')) {
     u8* charTablePc = VM_GetPC();
 

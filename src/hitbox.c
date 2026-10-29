@@ -133,12 +133,12 @@ void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower) {
   p->knockbackPower = knockbackPower;
 }
 
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 unk_44) {
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 invincibleTime) {
   p->power = power;
   p->knockbackPower = knockbackPower;
   p->weakness = weakness;
   p->attributes = attrs;
-  p->unk_44 = unk_44;
+  p->invincibleTime = invincibleTime;
 }
 
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness) {
@@ -218,7 +218,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
 #endif
 }
 
-// Hitbox_ApplyDamage とほぼ同じダメージ計算, gFlag030047a4 の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
+// Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
 NAKED void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Hitbox_ApplyDamageAlt.inc"); }
 
 // a->angle の象限から、a を b の外へ押し出す方向を out に入れる

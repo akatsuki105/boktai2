@@ -69,7 +69,7 @@ _08095000:
 	str r1, [sp]
 	movs r1, #0x64
 	adds r3, r6, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	adds r7, r4, #1
 _0809501C:
 	adds r4, r7, #0
@@ -110,7 +110,7 @@ _0809504A:
 	movs r1, #0
 	str r1, [sp]
 	movs r1, #0x64
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	adds r7, r4, #1
 	b _0809509E
 	.align 2, 0
@@ -174,7 +174,7 @@ _080950CC:
 	movs r1, #0
 	str r1, [sp]
 	movs r1, #0x64
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	adds r7, r4, #1
 	b _0809511A
 _080950F0:
@@ -286,7 +286,7 @@ _08095196:
 	movs r1, #0x64
 	mov r2, sb
 	adds r3, r5, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	cmp r4, #3
 	bne _080951FC
 	movs r0, #0

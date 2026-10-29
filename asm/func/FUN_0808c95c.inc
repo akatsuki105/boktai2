@@ -66,7 +66,7 @@ _0808C9DE:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0x15
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	adds r0, r5, #0
 	movs r1, #0
 	bl Particle_SetPltt

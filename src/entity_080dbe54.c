@@ -27,6 +27,13 @@ static_assert(sizeof(Entity080dbe54) == 2600);
 
 IWRAM_DATA Entity080dbe54* gEntity080dbe54 = NULL;  // 0x03000164
 
+static inline void Entity080dbe54_SetGlobal(Entity080dbe54* p) { gEntity080dbe54 = p; }
+
+static inline bool8 Entity080dbe54_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void FUN_080db7e4(Entity080dbe54* p, Entity080dbe54Slot* param_2) {}
 
 NAKED void FUN_080db7e8(Entity080dbe54* p, Entity080dbe54Slot* param_2) { INCFUNC("asm/func/FUN_080db7e8.inc"); }
@@ -41,13 +48,11 @@ void FUN_080db970(Entity080dbe54* p, Entity080dbe54Slot* slot) {
 }
 
 // 空いている枠を確保して返す, 空きが無ければ NULL
-// 残差10命令 (28 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-NON_MATCH Entity080dbe54Slot* FUN_080db9b4(Entity080dbe54* p) {
-#ifdef NONMATCHING_C
+Entity080dbe54Slot* FUN_080db9b4(Entity080dbe54* p) {
   s32 i;
 
   for (i = 0; i < 32; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!Entity080dbe54_IsActive(&p->activeMask, i)) {
       Entity080dbe54Slot* slot = &p->slots[i];
 
       slot->idx = i;
@@ -56,9 +61,6 @@ NON_MATCH Entity080dbe54Slot* FUN_080db9b4(Entity080dbe54* p) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_080db9b4.inc");
-#endif
 }
 
 NAKED s32 FUN_080dba00(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080dba00.inc"); }
@@ -76,22 +78,18 @@ void (*const PTR_ARRAY_085ad320[3])(Entity080dbe54*, Entity080dbe54Slot*) = {
 NAKED s32 Entity080dbe54_Update(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Update.inc"); }
 
 // 使用中の枠の粒子をまとめて外す
-// 残差6命令 (32 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-NON_MATCH s32 Entity080dbe54_Destroy(Entity080dbe54* p) {
-#ifdef NONMATCHING_C
-  Entity080dbe54Slot* slot = &p->slots[0];
+s32 Entity080dbe54_Destroy(Entity080dbe54* p) {
   s32 i;
 
-  for (i = 0; i < 32; i++, slot++) {
-    if (p->activeMask & (1 << i)) {
+  for (i = 0; i < 32; i++) {
+    if (Entity080dbe54_IsActive(&p->activeMask, i)) {
+      Entity080dbe54Slot* slot = &p->slots[i];
+
       Particle_Remove(&p->ptcls[slot->idx]);
     }
   }
-  gEntity080dbe54 = NULL;
+  Entity080dbe54_SetGlobal(NULL);
   return 0;
-#else
-  INCFUNC("asm/func/Entity080dbe54_Destroy.inc");
-#endif
 }
 
 void FUN_080dbe14(Entity080dbe54* p) {
@@ -108,7 +106,7 @@ s32 Entity080dbe54_Init(Entity080dbe54* p, u32 param_2) {
 Entity080dbe54* Entity080dbe54_Create(void) {
   if (gEntity080dbe54 == NULL) {
     Entity080dbe54* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity080dbe54));
-    gEntity080dbe54 = p;
+    Entity080dbe54_SetGlobal(p);
     if (p != NULL) {
       SetEntityRoutine(p, Entity080dbe54_Update, Entity080dbe54_Destroy);
       if (Entity080dbe54_Init(p, 0) < 0) {

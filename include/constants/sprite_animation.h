@@ -10,9 +10,9 @@
 #define ANIM_1752 0x1752
 #define ANIM_1C9B 0x1C9B
 #define ANIM_1DC3 0x1DC3
-#define ANIM_1DF8 0x1DF8
-#define ANIM_1E38 0x1E38
-#define ANIM_1FB8 BOKHASH("ect_anm")  // エクトプラズムのアニメーション
+#define ANIM_BOKU 0x1DF8              // 0x1DF8
+#define ANIM_GOLEM 0x1E38             // 0x1E38
+#define ANIM_1FB8 BOKHASH("ect_anm")  // 0x1FB8, エクトプラズムのアニメーション
 #define ANIM_27A4 0x27A4
 #define ANIM_GHOST BOKHASH("ghost_anm")  // 0x29FB
 #define ANIM_31F4 0x31F4
@@ -39,7 +39,7 @@
 #define ANIM_MIMIC BOKHASH("mimic_anm")        // 0x9AF2, 宝箱も兼ねる
 #define ANIM_MUMMY BOKHASH("mummy_anm")        // 0xA4B2
 #define ANM_SLIME BOKHASH("slime_anm")         // 0xA929
-#define ANIM_AF44 0xAF44                       // 0xAF44
+#define ANIM_MOUSE BOKHASH("mouse_anm")        // 0xAF44
 #define ANIM_SPIDER BOKHASH("spider_anm")      // 0xB6EE
 #define ANIM_B952 0xB952
 #define ANIM_WORM BOKHASH("worm_anm")  // 0xC102

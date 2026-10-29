@@ -203,13 +203,13 @@ void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg
 void Player_Lock(Player* p, s32 val);
 
 // プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
-void FUN_080c008c(void) {
+void Cmd_A864(void) {
   EntityB3D1* p = gEntityB3D1;
 
   if (p != NULL) {
     EntityCF58_CreateWithCallback(0, 0, FUN_080bffe8, p);
     Player_Lock(gPlayerPtr[0], 7);
-    VEC3_SET(gPlayerPtr[0]->mover.pos, 0x380, 0x100, 0x580);
+    VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
   }
 }
 
@@ -225,10 +225,10 @@ void FUN_080c04d8(EntityB3D1* p) {
   Player* q = gPlayerPtr[0];
 
   if (q->unk_42e <= 3) {
-    REG_BLDCNT = 0xEE;
+    REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN;
     REG_BLDY = (4 - q->unk_42e) * 2;
   } else {
-    REG_BLDCNT = 0xAE;
+    REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_BD | BLDCNT_EFFECT_LIGHTEN;
     REG_BLDY = q->unk_42e - 4;
   }
   REG_BLDALPHA = 0;

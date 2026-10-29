@@ -99,7 +99,7 @@ _080C8D84:
 	strb r0, [r1]
 _080C8D92:
 	mov r0, sb
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 _080C8D98:
 	add sp, #0xc
 	pop {r3, r4}

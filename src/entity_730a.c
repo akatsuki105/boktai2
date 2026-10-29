@@ -9,7 +9,7 @@ typedef struct {
   MsgQueue mq;             // 0x18
   u8 unk_4c[0x50 - 0x4C];  // 0x4C
   s32 unk_50;              // 0x50, FUN_0802284c が MsgPacket.args[0] を入れ、Entity730A_Update が毎フレーム減らす
-  s32 unk_54;              // 0x54, FUN_0802284c が MsgPacket.args[1] を入れ、Entity730A_Update が FUN_0823b9cc に渡す
+  s32 unk_54;              // 0x54, FUN_0802284c が MsgPacket.args[1] を入れ、Entity730A_Update が Camera_Shake に渡す
 } Entity730A;
 static_assert(sizeof(Entity730A) == 88);
 
@@ -195,7 +195,7 @@ s32 Entity730A_Update(Entity730A* p) {
     if (p->unk_50 > 0) {
       p->unk_50--;
     }
-    FUN_0823b9cc(p->unk_54);
+    Camera_Shake(p->unk_54);
   }
   return 0;
 }
@@ -206,7 +206,7 @@ s32 Entity730A_Destroy(Entity730A* p) {
 }
 
 s32 Entity730A_Init(Entity730A* p, u32 param) {
-  MsgQueue_Register(&p->mq, param, 7);
+  MsgQueue_Register(&p->mq, param, CLS_FADE);
   return 0;
 }
 

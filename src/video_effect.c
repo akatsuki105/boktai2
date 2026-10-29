@@ -1,6 +1,14 @@
 #include "global.h"
 #include "video.h"
 
+// gHBlankEffectKind
+typedef enum {
+  HBLANK_BGHOFS = 0,  // BGnHOFS
+  HBLANK_BGVOFS = 1,  // BGnVOFS
+  HBLANK_MOSAIC = 2,  // MOSAIC
+  HBLANK_BLDY = 3,    // BLDY
+} HBlankEffectKind;
+
 extern u16 gMosaicDirty;
 extern u16 gMosaicSize;
 extern u8 gObjMosaicEnabled;
@@ -10,7 +18,7 @@ extern u32 gHBlankEffectBG;
 extern s32 gHBlankEffectKind;
 extern void* gHBlankEffectTable;
 
-extern u8 u8_ARRAY_02036c00[512];
+extern u16 u16_ARRAY_02036c00[256];
 
 // モザイクの設定を初期化する (I/O には反映しない)
 void Video_ResetMosaic(void) {
@@ -80,7 +88,7 @@ void Video_SetHBlankEffect(s32 bg, s32 kind, void* table) {
   gHBlankEffectTable = table;
 }
 
-void* FUN_0822ee74(void) { return u8_ARRAY_02036c00; }
+void* FUN_0822ee74(void) { return u16_ARRAY_02036c00; }
 
 vu16* Video_GetBGnHOFS(s32 bg) {
   switch (bg) {
@@ -143,7 +151,7 @@ void FUN_0822eef4(void) {
       }
       case 3: {
         REG_BLDALPHA = BLDALPHA_BLEND(16, 8);
-        REG_BLDCNT = 0x0EDE;
+        REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_EFFECT_DARKEN | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3;
         reg = &REG_BLDY;
         for (i = 0; i < DISPLAY_HEIGHT; i++) {
           buf[i] = ((u16*)gHBlankEffectTable)[i] & 0x1F;
@@ -152,8 +160,8 @@ void FUN_0822eef4(void) {
       }
     }
     gHBlankEffectBuffer = buf, gHBlankEffectReg = reg;
-    u16_03003510 = 1;
-    u16_03003514 = 1;
+    gHBlankDmaCount = 1;
+    gHBlankDmaMode = 1;
     gHBlankEffectTable = NULL;
   }
 }
@@ -166,27 +174,27 @@ void FUN_0822f0d8(void) {
   ClearMemory(buf, DISPLAY_HEIGHT * sizeof(u16));
   reg = &REG_BG3HOFS;
   switch (gHBlankEffectKind) {
-    case 0: {
+    case HBLANK_BGHOFS: {
       reg = Video_GetBGnHOFS(gHBlankEffectBG);
       break;
     }
-    case 1: {
+    case HBLANK_BGVOFS: {
       reg = Video_GetBGnVOFS(gHBlankEffectBG);
       break;
     }
-    case 2: {
+    case HBLANK_MOSAIC: {
       Video_ClearMosaic();
       reg = &REG_MOSAIC;
       break;
     }
-    case 3: {
+    case HBLANK_BLDY: {
       reg = &REG_BLDY;
       break;
     }
   }
   gHBlankEffectBuffer = buf, gHBlankEffectReg = reg;
-  u16_03003510 = 1;
-  u16_03003514 = 0;
+  gHBlankDmaCount = 1;
+  gHBlankDmaMode = 0;
   gHBlankEffectTable = NULL;
 }
 

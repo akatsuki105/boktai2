@@ -119,7 +119,7 @@ _0808ECCA:
 	bl MessageWindow_ShowLine
 	ldr r1, _0808ED70 @ =FUN_0808ef58
 	adds r0, r7, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	add sp, #4
 	pop {r4, r5, r6, r7}
 	pop {r0}

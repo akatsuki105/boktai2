@@ -103,7 +103,7 @@ bool32 IsSlotArmorEpuipped(slot32_t n) {
   return FALSE;
 }
 
-bool32 FUN_08243380(void) {
+bool32 Cmd_7B7D(void) {
   slot32_t slot;
   armor32_t a;
   if (!VM_SeekToNamedArg('a')) {

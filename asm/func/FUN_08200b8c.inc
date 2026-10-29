@@ -109,7 +109,7 @@ _08200BD4:
 	str r2, [sp, #4]
 	movs r2, #0
 	add r3, sp, #8
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	mov r0, sb
 	mov r1, r8
 	str r0, [r1]

@@ -6,7 +6,7 @@
 
 typedef struct {
   AuxSprite sprite;        // 0x000, priority 1, flags に bit0 を立てて作る
-  AuxSpriteGfx gfx;        // 0x02C, SPRITE_D45E, パレット 250
+  AuxSpriteGfx gfx;        // 0x02C, SPRITE_SKELETON_MISC
   AuxAnimState animState;  // 0x048, 親の anim のアニメ 0x14
   HitboxData hitbox0;      // 0x058
   HitboxData hitbox1;      // 0x0A8
@@ -18,6 +18,7 @@ typedef struct {
 } Entity081f53a8Elem;
 static_assert(sizeof(Entity081f53a8Elem) == 388);
 
+// スケルトン関連なのは確定, スケルトンの補助Entity?
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_8
   AuxAnimFile* anim;            // 0x018, ANIM_1DC3
@@ -27,6 +28,11 @@ typedef struct {
 static_assert(sizeof(Entity081f53a8) == 3136);
 
 static Entity081f53a8* gEntity081f53a8;  // 0x030001F8
+
+static inline bool8 Entity081f53a8_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
 
 NAKED void FUN_081f4650(unknown* param_1, unknown* param_2, Entity081f53a8Elem* elem) { INCFUNC("asm/func/FUN_081f4650.inc"); }
 
@@ -47,8 +53,8 @@ void FUN_081f4858(Entity081f53a8Elem* elem) {
   Hitbox_Register(hitbox0);
   Hitbox_Register(hitbox1);
 
-  if (hitbox1->unk_44 != 0) {
-    hitbox1->unk_44--;
+  if (hitbox1->invincibleTime != 0) {
+    hitbox1->invincibleTime--;
     hitbox1->flags |= HBFLAG_HIDDEN;
   } else {
     Hitbox_ClearFlags(hitbox1, HBFLAG_HIDDEN);
@@ -87,24 +93,19 @@ void (*const PTR_ARRAY_085ae578[4])(Entity081f53a8*, Entity081f53a8Elem*) = {
 
 NAKED s32 Entity081f53a8_Update(Entity081f53a8* p) { INCFUNC("asm/func/Entity081f53a8_Update.inc"); }
 
-// 残差8命令 (28 対 36), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-// 加えて原典は sprite と hitbox1 を別々のポインタで進めるが, gcc は elem 1本に +0xA8 を足す形を選ぶ
-NON_MATCH s32 Entity081f53a8_Destroy(Entity081f53a8* p) {
-#ifdef NONMATCHING_C
+s32 Entity081f53a8_Destroy(Entity081f53a8* p) {
   s32 i;
-  Entity081f53a8Elem* elem = &p->elems[0];
 
-  for (i = 0; i < 8; i++, elem++) {
-    if (p->activeMask & (1 << i)) {
+  for (i = 0; i < 8; i++) {
+    if (Entity081f53a8_IsActive(&p->activeMask, i)) {
+      Entity081f53a8Elem* elem = &p->elems[i];
+
       AuxSprite_Remove(&elem->sprite);
       Hitbox_Unregister(&elem->hitbox1);
     }
   }
   gEntity081f53a8 = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity081f53a8_Destroy.inc");
-#endif
 }
 
 s32 Entity081f53a8_Init(Entity081f53a8* p) {

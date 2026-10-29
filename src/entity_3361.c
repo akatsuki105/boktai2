@@ -10,8 +10,8 @@ typedef struct Entity3361 {
   Entity e;                                    // 0x00, ENTITY_UNK_10
   MsgQueue msgQueue;                           // 0x18, targetID は id, 待ち番号 10
   AuxSprite sprite;                            // 0x4C
-  AuxSpriteGfx gfx;                            // 0x78, SPRITE_3641
-  u16 id;                                      // 0x94, _Create の第1引数, msgQueue.targetID になる
+  AuxSpriteGfx gfx;                            // 0x78, SPRITE_BLACKHOLE, 黒い球体エフェクトとして利用?
+  u16 id;                                      // 0x94, msgQueue.targetID, このゲームでは 0xF378 のみ
   u16 scale;                                   // 0x96, sprite.scaleX / scaleY に毎フレーム入る 6.6 固定小数
   u16 scaleStep;                               // 0x98, '.s[1]' (既定 2), _UpdateShrink が scale から毎フレーム引く
   u16 scaleStart;                              // 0x9A, '.s[0]' (既定 0x40), scale の初期値
@@ -92,7 +92,7 @@ s32 Entity3361_Init(Entity3361* p, u32 id, u32 _) {
   u32 priority;
 
   p->id = id;
-  MsgQueue_Register(&p->msgQueue, p->id, 10);
+  MsgQueue_Register(&p->msgQueue, p->id, CLS_ETC);
   if (VM_SeekToNamedArg('p')) {
     VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
@@ -104,14 +104,14 @@ s32 Entity3361_Init(Entity3361* p, u32 id, u32 _) {
     p->scaleStart = VM_GetValue();
     p->scaleStep = VM_GetValue();
   } else {
-    p->scaleStart = 0x40;
+    p->scaleStart = Q6(1);
     p->scaleStep = 2;
   }
   p->scale = p->scaleStart;
   spr = &p->sprite;
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_3641);
-  AuxSprite_Add(spr, gfx, 2);
+  Video_GetAuxSprite(gfx, SPRITE_BLACKHOLE);
+  AuxSprite_Add(spr, gfx, SPRFLAG_AFFINE);
   Video_SetAuxSpritePltt(gfx, 50);
   spr->poseIdx = 0;
   spr->scaleY = spr->scaleX = p->scale;
@@ -124,6 +124,7 @@ s32 Entity3361_Init(Entity3361* p, u32 id, u32 _) {
   return 0;
 }
 
+// 0x3361, id は 0xF378 のみ
 Entity3361* Entity3361_Create(u32 id, u32 param_2) {
   Entity3361* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity3361));
 

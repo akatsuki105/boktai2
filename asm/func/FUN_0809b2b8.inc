@@ -2,7 +2,7 @@
 	adds r5, r0, #0
 	ldr r1, _0809B318 @ =0x00001084
 	movs r0, #0x40
-	bl FUN_0808a458
+	bl SetScreenBrightness
 	adds r0, r5, #0
 	bl FUN_0808b4c0
 	ldr r0, _0809B31C @ =0x00004003
@@ -42,7 +42,7 @@ _0809B302:
 	cmp r3, #0
 	bge _0809B302
 	adds r0, r5, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	b _0809B33E
 	.align 2, 0
 _0809B318: .4byte 0x00001084

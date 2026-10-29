@@ -27,7 +27,7 @@
 	bl VM_ExecByID
 _080A1FFE:
 	movs r0, #1
-	bl FUN_0808670c
+	bl Coffin_SetInsideSolarCircle
 	movs r0, #0xcc
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -70,7 +70,7 @@ _080A2040:
 	bl VM_ExecByID
 _080A205E:
 	movs r0, #0
-	bl FUN_0808670c
+	bl Coffin_SetInsideSolarCircle
 	strh r6, [r5]
 	ldr r0, _080A2098 @ =0x00000199
 	bl PlaySound_082406e0

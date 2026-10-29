@@ -13,7 +13,7 @@
 	bne _08023E04
 	b _08023FDA
 _08023E04:
-	bl FUN_080591f4
+	bl Entity08058ffc_GetActiveCount
 	cmp r0, #0xb
 	ble _08023E0E
 	b _08023FDA

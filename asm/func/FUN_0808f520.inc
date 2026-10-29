@@ -7,14 +7,14 @@
 	bhi _0808F53C
 	lsls r0, r0, #2
 	movs r1, #0
-	bl FUN_0808a458
+	bl SetScreenBrightness
 	b _0808F544
 	.align 2, 0
 _0808F538: .4byte 0x000009EC
 _0808F53C:
 	movs r0, #0x40
 	movs r1, #0
-	bl FUN_0808a458
+	bl SetScreenBrightness
 _0808F544:
 	ldr r1, _0808F5E0 @ =0x000009EC
 	adds r5, r4, r1
@@ -88,7 +88,7 @@ _0808F5C4:
 	bl FUN_0808f1bc
 	ldr r1, _0808F600 @ =FUN_0808f670
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 _0808F5DA:
 	pop {r4, r5}
 	pop {r0}

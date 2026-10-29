@@ -150,12 +150,12 @@ _0803F9CA:
 	movs r0, #0xff
 	strb r0, [r1]
 	adds r0, r6, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	ldr r7, _0803FA30 @ =0x0000081A
 	adds r1, r6, r7
 	strh r0, [r1]
 	adds r0, r6, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _0803FA34
@@ -209,12 +209,12 @@ _0803FA4C:
 	movs r0, #0xff
 	strb r0, [r1]
 	adds r0, r6, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	ldr r2, _0803FAB0 @ =0x0000081A
 	adds r1, r6, r2
 	strh r0, [r1]
 	adds r0, r6, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _0803FAB4

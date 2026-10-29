@@ -69,7 +69,7 @@ _080C5CBE:
 	strh r0, [r1]
 _080C5CE0:
 	adds r0, r4, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	b _080C5D62
 	.align 2, 0
 _080C5CE8: .4byte 0x000002F2
@@ -132,7 +132,7 @@ _080C5D58:
 	cmp r5, #0x21
 	ble _080C5D62
 	adds r0, r4, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 _080C5D62:
 	cmp r5, #0x1a
 	bne _080C5D76

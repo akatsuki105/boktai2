@@ -81,7 +81,7 @@ NON_MATCH bool32 IsPlayerSmall(void) {
 NAKED void Entity71BA_UpdateTileOverride(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_UpdateTileOverride.inc"); }
 
 s32 Entity71BA_Update(Entity71BA* p) {
-  if (!(gPlayerPtr[0]->unk_1c & 4)) {
+  if (!(gPlayerPtr[0]->mode & PMODE_DEAD)) {
     p->updateCallback(p);
   }
   return 0;

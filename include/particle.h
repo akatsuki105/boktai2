@@ -8,7 +8,7 @@
 // Particle Group ID
 #define PTCL_GROUP_0 BOKHASH("eff_eff_00")  // 0x1C1A, ROMにこの文字列があるのでこれは確定
 #define PTCL_GROUP_1 0x1C1C                 // BOKHASH("eff_eff_02") が 一致するが eff_eff_01 がないのは不自然
-#define PTCL_GROUP_2 0x1C1E                 // BOKHASH("eff_eff_04") 〃
+#define PTCL_GROUP_2 0x1C1E                 // 0x1C1E, エレメントのパーティクル
 
 typedef u8 ParticleGroupFlags;  // ParticleGroup.flags
 #define PGFLAG_BPP8 (1 << 4)    // 0x10, 8bpp
@@ -36,18 +36,18 @@ typedef struct {
 
 typedef struct Particle {
   SpriteFlags flags;      // 0x00
-  u8 active;              // 0x04
-  s2_6 scaleX;            // 0x05
-  s2_6 scaleY;            // 0x06
+  bool8 active;           // 0x04
+  u2_6 scaleX;            // 0x05
+  u2_6 scaleY;            // 0x06
   u8 rotation;            // 0x07
-  u16 tileNum;            // 0x08
+  u16 tileNum;            // 0x08, GBAタイル番号 (Particle_SetPose で poseIdx と パーティクルのサイズを元に計算される)
   u8 spriteWidth;         // 0x0A
   u8 spriteHeight;        // 0x0B
   s8 offsetX;             // 0x0C
   s8 offsetY;             // 0x0D
   u8 plttSlot;            // 0x0E
   u8 priority;            // 0x0F
-  u8 offsetZ;             // 0x10
+  s8 offsetZ;             // 0x10
   u8 listIdx;             // 0x11
   u8 _[2];                // 0x12, padding
   u32 oamAttr01;          // 0x14
@@ -69,7 +69,9 @@ void Particle_Setup(Particle* p, ParticleGroup* g, u32 flags);
 void Particle_Remove(Particle* p);
 void Particle_SetPltt(Particle* p, s32 plttID);
 void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
-void Particle_SetFrame(Particle* p, ParticleGroup* g, u32 frame);
+
+// poseIdx は "include/constants/particle.h" の定数
+void Particle_SetPose(Particle* p, ParticleGroup* g, u32 poseIdx);
 
 static inline void Particle_Hide(Particle* p) { p->flags |= SPRFLAG_HIDDEN; }
 

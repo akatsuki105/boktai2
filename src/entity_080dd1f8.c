@@ -120,4 +120,4 @@ s32 FUN_080dd324(void* p) {
   return 1;
 }
 
-NAKED void FUN_080dd364(void) { INCFUNC("asm/func/FUN_080dd364.inc"); }
+NAKED void Cmd_AE71(void) { INCFUNC("asm/func/Cmd_AE71.inc"); }

@@ -263,7 +263,7 @@ _08034CD8:
 	str r2, [sp, #0x10]
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 _08034D28:
 	movs r0, #0x84
 	lsls r0, r0, #7

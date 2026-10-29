@@ -36,7 +36,7 @@
 	adds r0, r4, r3
 	strb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_08066a04
+	bl Player_ClampLookAround
 _08066B0C:
 	movs r5, #0xa4
 	lsls r5, r5, #2
@@ -111,7 +111,7 @@ _08066B82:
 	adds r0, r4, r5
 	strb r2, [r0]
 	adds r0, r4, #0
-	bl FUN_08066a04
+	bl Player_ClampLookAround
 _08066B9E:
 	movs r0, #0xf2
 	lsls r0, r0, #2

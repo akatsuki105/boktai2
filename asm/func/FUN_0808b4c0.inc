@@ -74,7 +74,7 @@ _0808B524:
 	movs r1, #0xa
 	movs r2, #0x16
 	movs r3, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	bl Time_GetMinute
 	b _0808B5A8
 	.align 2, 0
@@ -104,14 +104,14 @@ _0808B57C:
 	movs r1, #0xa
 	movs r2, #0x16
 	movs r3, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	ldrb r0, [r5, #0xb]
 _0808B5A8:
 	str r4, [sp]
 	movs r1, #0xa
 	movs r2, #0x19
 	movs r3, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	b _0808B5F4
 	.align 2, 0
 _0808B5B8: .4byte 0x0000F027
@@ -134,13 +134,13 @@ _0808B5C0:
 	movs r1, #0xa
 	movs r2, #0x16
 	movs r3, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	ldrb r0, [r5, #0xd]
 	str r4, [sp]
 	movs r1, #0xa
 	movs r2, #0x19
 	movs r3, #0
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 _0808B5F4:
 	add sp, #4
 	pop {r4, r5}

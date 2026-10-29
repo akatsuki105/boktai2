@@ -176,7 +176,7 @@ _080800AE:
 	ldr r1, [r3]
 	adds r0, r5, #0
 	movs r2, #4
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	b _080800F8
 	.align 2, 0
 _080800E8: .4byte 0x0203B400
@@ -185,7 +185,7 @@ _080800EC:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #5
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080800F8:
 	movs r0, #0
 	strb r0, [r4, #0x1c]

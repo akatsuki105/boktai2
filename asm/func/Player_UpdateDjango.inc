@@ -99,7 +99,7 @@ _08078E28:
 	bl FUN_08066408
 _08078E2E:
 	adds r0, r5, #0
-	bl FUN_08078bc0
+	bl Player_PostUpdateHuman
 	ldr r2, _08078F14 @ =0x000003CE
 	adds r0, r5, r2
 	movs r3, #0
@@ -118,7 +118,7 @@ _08078E46:
 	cmp r0, #1
 	bne _08078E5E
 	adds r0, r5, #0
-	bl FUN_08065dac
+	bl Player_CheckTileHit
 _08078E5E:
 	adds r0, r5, #0
 	bl FUN_0806623c
@@ -144,7 +144,7 @@ _08078E82:
 	lsls r3, r3, #1
 	adds r0, r5, r3
 	ldrh r0, [r0]
-	bl FUN_08065b44
+	bl Player_IsOnIce
 	cmp r0, #0
 	bne _08078EC0
 	movs r1, #0xdf
@@ -458,7 +458,7 @@ _080790E4:
 	adds r0, r5, #0
 	bl _call_via_r1
 	adds r0, r5, #0
-	bl FUN_08078bc0
+	bl Player_PostUpdateHuman
 	b _0807912E
 	.align 2, 0
 _080790FC: .4byte 0x000003D2
@@ -478,7 +478,7 @@ _08079104:
 	adds r0, r5, #0
 	bl _call_via_r1
 	adds r0, r5, #0
-	bl FUN_08078bc0
+	bl Player_PostUpdateHuman
 	adds r0, r5, #0
 	bl FUN_080726ec
 _0807912E:

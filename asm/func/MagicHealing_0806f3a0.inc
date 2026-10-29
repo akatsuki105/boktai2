@@ -84,7 +84,7 @@ _0806F434:
 	str r2, [sp, #4]
 	movs r2, #1
 	adds r3, r7, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	strh r5, [r6]
 _0806F452:
 	movs r0, #0xda
@@ -154,7 +154,7 @@ _0806F4D0:
 	adds r0, r4, r1
 	ldrb r0, [r0]
 	movs r1, #8
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
@@ -194,7 +194,7 @@ _0806F514:
 	adds r0, r4, r1
 	ldrb r0, [r0]
 	movs r1, #9
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
@@ -227,7 +227,7 @@ _0806F56E:
 	adds r0, r4, r1
 	ldrb r0, [r0]
 	movs r1, #0xa
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
@@ -253,7 +253,7 @@ _0806F5A4:
 	adds r0, r4, r2
 	ldrb r0, [r0]
 	movs r1, #0xb
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40

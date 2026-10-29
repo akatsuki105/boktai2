@@ -80,7 +80,7 @@ void FUN_080b3b74(SolarBank* p) {
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   SolarBank_HideAllSprites(p);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetAnim(p->sprites, p->gfx, 0, 2, 0);
+  MainSprite_SetAnim(p->sprites, p->gfx, 0, PLAYMODE_ONCE_AND_STOP, 0);
   p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
   p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
   MessageWindow_ShowLine(0);
@@ -97,7 +97,7 @@ void FUN_080b3c08(SolarBank* p) {
   p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
   p->unk_5ea = 1;
   p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, 1, 0);
+  MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, PLAYMODE_LOOP, 0);
   MessageWindow_ShowLine(1);
   SolarBank_SetState(p, FUN_080b3e80);
 }
@@ -110,7 +110,7 @@ void FUN_080b3dd0(SolarBank* p) {
   SolarBank_HideAllSprites(p);
   PlaySound_082406e0(SONG_703);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetAnim(p->sprites, p->gfx, 2, 2, 0);
+  MainSprite_SetAnim(p->sprites, p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 0);
   MessageWindow_ShowLine(3);
   SolarBank_SetState(p, FUN_080b4334);
 }
@@ -142,9 +142,9 @@ void FUN_080b3e80(SolarBank* p) {
     PlaySound_082406e0(SE_CURSOR_MOVE);
     p->unk_5ea = 1 - p->unk_5ea;
     if (p->unk_5ea != 0) {
-      MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, 1, 0);
+      MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, PLAYMODE_LOOP, 0);
     } else {
-      MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 5, 1, 0);
+      MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 5, PLAYMODE_LOOP, 0);
     }
   } else {
     MainSprite_AdvanceAnim(&p->sprites[1], &p->gfx[1]);

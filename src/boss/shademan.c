@@ -2,6 +2,7 @@
 
 #include "boss.h"
 #include "camera.h"
+#include "camera_inline.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"
@@ -18,6 +19,19 @@
 #include "vm.h"
 
 // シェードマンの残像, timer が切れると隠す
+// ShadeMan.flag38c
+typedef u32 ShadeManFlags;
+#define SMFLAG_MOTION_ENTERED (1 << 0)  // 0x1, ShadeMan_UpdateMotion が motion を切り替えたときに立て, motion 関数が最初のフレームで落とす
+#define SMFLAG_PHASE_ENTERED (1 << 1)   // 0x2, phase を変えたときに立て, 立っている間 phaseTimer は進まない, phase の最初のフレームで落とす
+#define SMFLAG_UNK_2 (1 << 2)           // 0x4
+#define SMFLAG_MOTION_DONE (1 << 4)     // 0x10, motion 関数が終わるときに立て, 立っている間は motion 関数を呼ばない, ShadeMan_SetMotion が落とす
+#define SMFLAG_UNK_5 (1 << 5)           // 0x20
+#define SMFLAG_UNK_8 (1 << 8)           // 0x100, FUN_0821bd14 が点滅をやめて立てる
+#define SMFLAG_UNK_16 (1 << 16)         // 0x10000
+#define SMFLAG_UNK_17 (1 << 17)         // 0x20000
+#define SMFLAG_UNK_18 (1 << 18)         // 0x40000
+#define SMFLAG_UNK_24 (1 << 24)         // 0x1000000, 当たり判定のハンドラ FUN_0821c744 が立てる
+
 typedef struct {
   MainSprite sprite;  // 0x00
   bool8 active;       // 0x60
@@ -39,13 +53,13 @@ typedef struct ShadeMan {
   AuxShadow shadow;                          // 0x31C
   u8 unk_388;                                // 0x388
   u8 unk_389[0x38C - 0x389];                 // 0x389
-  u32 unk_38c;                               // 0x38C, FUN_0821bd14 が bit8 を立てる
+  ShadeManFlags flag38c;                     // 0x38C, see ShadeManFlags
   u32 unk_390;                               // 0x390, 毎フレーム 1 ずつ増える
   u32 motion;                                // 0x394, PTR_ARRAY_085b0028 の添字
   u32 nextMotion;                            // 0x398, -1 でなければ次のフレームで motion に移る
   u32 motionTimer;                           // 0x39C, motion を切り替えてからのフレーム数
-  u32 unk_3a0;                               // 0x3A0
-  s32 unk_3a4;                               // 0x3A4
+  u32 phase;                                 // 0x3A0, motion の中の段階, motion 関数が switch で 0→1→2→3/99 と進める
+  s32 phaseTimer;                            // 0x3A4, ShadeMan_UpdateMotion が毎フレーム +1 し, phase を変えるたびに 0 に戻す
   u32 unk_3a8;                               // 0x3A8
   void (*motionCallback)(struct ShadeMan*);  // 0x3AC, PTR_ARRAY_085b0028[motion]
   u32 unk_3b0;                               // 0x3B0
@@ -125,13 +139,17 @@ typedef struct ShadeMan {
 } ShadeMan;
 static_assert(sizeof(ShadeMan) == 3076);
 
-// 点滅をやめて unk_38c の bit8 を立てる
-// 残差は命令の並び順だけ (17 対 17), 原典は定数 0x100 を unk_38c のアドレス計算より前に作る
+const __attribute__((section(".rodata.faraddr"))) u16 u16_ARRAY_08252864[16] = {136, 495, 137, 496, 138, 497, 138, 497, 138, 497, 138, 497, 138, 497, 138, 497};  // 0x08252864
+
+const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252884[16] = {0x04, 0xF6, 0x08, 0xF9, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB};  // 0x08252884
+
+// 点滅をやめて flag38c の bit8 を立てる
+// 残差は命令の並び順だけ (17 対 17), 原典は定数 0x100 を flag38c のアドレス計算より前に作る
 // 0x100 を左に書く形 / AuxSprite_SetFlags 経由 / MainSprite* ローカル / SET_FLAGS は試済
 NON_MATCH void FUN_0821bd14(ShadeMan* p) {
 #ifdef NONMATCHING_C
   MainSprite_ClearFlags(&p->sprite, SPRFLAG_BLINK_ODD);
-  p->unk_38c |= 0x100;
+  p->flag38c |= SMFLAG_UNK_8;
 #else
   INCFUNC("asm/func/FUN_0821bd14.inc");
 #endif
@@ -279,10 +297,9 @@ void (*const PTR_ARRAY_085b0028[22])(ShadeMan*) = {
 
 void FUN_0821c918(ShadeMan*);
 void ShadeMan_SetMotion(ShadeMan* p, u32 next, bool8 force);
-s32 FUN_0807ab64(Player* player, Vec3* pos, Vec3* param_3, s32 param_4, u8 param_5, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
+s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
 s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 void FUN_0823b880(s32 n);
-DirS32 Player_GetDpadFacing(Player* p);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
 void FUN_0805e6bc(struct Entity0805e67c* p, Vec3* pos, s32 angle, s32 speed, s32 power, s32 param_6, s32 param_7);
@@ -290,14 +307,11 @@ void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s
 void FUN_0805e940(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 count);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 void FUN_0823b980(s32 n, Vec3* pos);
-extern const u16 u16_ARRAY_08252864[16];
-extern const u8 u8_ARRAY_08252884[16];
 void FUN_08221938(ShadeMan* p);
 void ShadeMan_HandleDamage(ShadeMan* p);
 void ShadeMan_PollMessages(ShadeMan* p);
 s32 Map_FindFarthestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
-u32 FUN_0807ac74(Player* p, unknown* param_2, u16 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, u32 param_8);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs);
 void ShadeMan_SetSubState0(ShadeMan* p, u32 subState0, u32 subState1, u32 subState2, u32 duration);
 void FUN_0822129c(ShadeMan*);
 void FUN_0821d800(ShadeMan*);
@@ -446,7 +460,7 @@ s32 FUN_0821c0c4(ShadeMan* p, Vec3* pos, Vec3* dst) {
   return ret;
 }
 
-// 原典は unk_38c の番地を r3 に残して最後の判定で使い回す (119/117)
+// 原典は flag38c の番地を r3 に残して最後の判定で使い回す (119/117)
 NON_MATCH void FUN_0821c140(ShadeMan* p) {
 #ifdef NONMATCHING_C
   MainSprite* sprite = &p->sprite;
@@ -462,14 +476,14 @@ NON_MATCH void FUN_0821c140(ShadeMan* p) {
     AuxShadow_Show(&p->shadow);
   }
   sprite->pos = p->base.mover.pos;
-  if (TEST_FLAGS(p->unk_38c, 0x20000)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_UNK_17)) {
     p->unk_3bc += 2;
     if (p->unk_3bc > 255) {
       p->unk_3bc -= 256;
     }
   }
   sprite->pos.y += POLAR_Z(50, p->unk_3bc + 0xC0) + 50;
-  if (!TEST_FLAGS(p->unk_38c, 0x40000)) {
+  if (!TEST_FLAGS(p->flag38c, SMFLAG_UNK_18)) {
     Boss_AdvanceAnim(&p->base, sprite, &p->gfx);
     p->unk_3ba++;
   }
@@ -555,13 +569,13 @@ NON_MATCH void FUN_0821c2a0(ShadeMan* p, s32 mode, s32 t, s32 total) {
 }
 
 // angle から向きを決めて animIdx を再生する, mode で向きの付け方を選ぶ
-void ShadeMan_PlayAnim(ShadeMan* p, s32 animIdx, s32 mode, bool8 restart, bool8 once, bool8 flag) {
+void ShadeMan_PlayAnim(ShadeMan* p, s32 animIdx, s32 mode, bool8 restart, bool8 loop, bool8 reverse) {
   Boss* boss = &p->base;
-  u32 flags = (restart || p->animIdx != animIdx) ? 4 : 1;
+  u32 flags = (restart || p->animIdx != animIdx) ? MAIN_ANIM_FORCE_POSE : MAIN_ANIM_KEEP_FRAME;
   u32 playMode;
 
-  flags |= flag << 1;
-  playMode = once ? 1 : 2;
+  flags |= reverse << 1;  // MAIN_ANIM_REVERSE
+  playMode = loop ? PLAYMODE_LOOP : PLAYMODE_ONCE_AND_STOP;
   p->animIdx = animIdx;
   p->unk_3ba = 0;
   boss->facing = Angle_ToDir4(p->angle);
@@ -592,11 +606,11 @@ NON_MATCH void FUN_0821c520(ShadeMan* p) {
   Boss* boss = &p->base;
   HitboxData* hitbox;
 
-  if (TEST_FLAGS(p->unk_38c, 0x20)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_UNK_5)) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_UNK_19);
   }
   hitbox = &p->hurtbox;
-  if (boss->unk_ab || TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
+  if (boss->isDemo || TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
     Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
   } else {
     Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
@@ -604,7 +618,7 @@ NON_MATCH void FUN_0821c520(ShadeMan* p) {
     p->hurtbox.angle = p->angle;
   }
   hitbox = &p->hurtbox2;
-  if (boss->unk_ab || TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
+  if (boss->isDemo || TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
     Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
   } else {
     Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
@@ -618,7 +632,7 @@ NON_MATCH void FUN_0821c520(ShadeMan* p) {
 // 残差は pos を指す sp の写しを作る位置だけ (110/110), FUN_0821cd9c と同じ
 NON_MATCH void FUN_0821c5d4(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  if (!p->base.unk_ab) {
+  if (!p->base.isDemo) {
     u32 angle = p->angle;
     HitboxData* hitbox = &p->hitbox;
 
@@ -627,7 +641,7 @@ NON_MATCH void FUN_0821c5d4(ShadeMan* p) {
       p->hitbox.angle = angle;
       Hitbox_Register(hitbox);
     }
-    if (TEST_FLAGS(p->unk_38c, 0x10000)) {
+    if (TEST_FLAGS(p->flag38c, SMFLAG_UNK_16)) {
       Vec3 pos;
 
       hitbox = &p->hitbox2;
@@ -664,45 +678,34 @@ void ShadeMan_OnHurt(HitboxData* a, HitboxData* b, ShadeMan* p) {
 
 void FUN_0821c740(void) {}
 
-void FUN_0821c744(HitboxData* a, HitboxData* b, ShadeMan* p) { SET_FLAGS(p->unk_38c, 0x1000000); }
+void FUN_0821c744(HitboxData* a, HitboxData* b, ShadeMan* p) { SET_FLAGS(p->flag38c, SMFLAG_UNK_24); }
 
-// 画面座標の投影と残像の初期化の並びがずれる (206/198)
-NON_MATCH void ShadeMan_Init_Helper_0821c758(ShadeMan* p, Vec3* pos, u32 angle) {
-#ifdef NONMATCHING_C
+// 本体, SPRITE_DJANGO_SABATA の画面座標スプライト, 8枚の残像を用意する
+void ShadeMan_Init_Helper_0821c758(ShadeMan* p, Vec3* pos, u32 angle) {
   MainSpriteGfxFile* f;
   Vec3 screen;
-  s32 x, z, a, b;
   s32 i;
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_SHADEMAN);
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, 0, 60, pos);
+  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, pos);
   p->angle = angle;
   ShadeMan_PlayAnim(p, 0, 2, 1, 1, 0);
   p->unk_3bc = 0;
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
   p->gfx_b34 = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx_b34, f);
-  x = pos->x >> 1;
-  z = pos->z >> 1;
-  a = FixToInt(8, (x + z) * 48);
-  b = FixToInt(8, pos->y * 24);
-  screen.x = FixToInt(8, (x - z) * 48) - gCameraVpCoords.x + 120;
-  screen.y = (a - b) - gCameraVpCoords.y + 90;
-  screen.z = (a + b) - gCameraVpCoords.z;
-  MainSprite_Add(&p->sprite_b54, &p->gfx_b34, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 2, 0, 60, &screen);
+  WorldToScreen(&screen, pos);
+  MainSprite_Add(&p->sprite_b54, &p->gfx_b34, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, &screen);
   for (i = 0; i < 8; i++) {
     ShadeManAfterimage* a2 = &p->afterimages[i];
 
     a2->active = FALSE;
     a2->timer = 0;
-    MainSprite_Add(&a2->sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, 0, 60, pos);
-    a2->sprite.flags |= (i & 1) == 0 ? SPRFLAG_BLINK_EVEN : SPRFLAG_BLINK_ODD;
+    MainSprite_Add(&a2->sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, pos);
+    a2->sprite.flags |= (i & 1) ? SPRFLAG_BLINK_ODD : SPRFLAG_BLINK_EVEN;
   }
-#else
-  INCFUNC("asm/func/ShadeMan_Init_Helper_0821c758.inc");
-#endif
 }
 
 // 本体と残像のスプライトを外す
@@ -720,16 +723,16 @@ void ShadeMan_InitHurtboxes(ShadeMan* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x60, 0x80, 0x60);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hurtbox, ShadeMan_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);
   Hitbox_Register(hurtbox);
   hurtbox = &p->hurtbox2;
-  VEC3_SET(halfSize, 0x100, 0x80, 0x100);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(1), Q8(0.5), Q8(1));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_0821c740, p);
@@ -741,15 +744,15 @@ void ShadeMan_InitHitboxes(ShadeMan* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0821c744, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
   hitbox = &p->hitbox2;
-  VEC3_SET(halfSize, 0xA0, 0x80, 0xA0);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.625), Q8(0.5), Q8(0.625));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0821c744, p);
@@ -791,10 +794,10 @@ NON_MATCH void FUN_0821cb90(ShadeMan* p) {
         ShadeMan_SetSubState0(p, 0, 0, 8, 60);
         p->unk_806 = 45;
         p->unk_80c = 0;
-        if (!(p->unk_38c & 0x20)) {
+        if (!(p->flag38c & SMFLAG_UNK_5)) {
           p->unk_809++;
         } else {
-          p->unk_38c &= ~0x20;
+          p->flag38c &= ~SMFLAG_UNK_5;
         }
         p->unk_3db = 0;
         break;
@@ -849,7 +852,7 @@ void FUN_0821ce18(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 0, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     u32 duration = !p->unk_388 ? 60 : 45;
 
     ShadeMan_SetSubState0(p, 0, 0, 1, duration);
@@ -944,7 +947,7 @@ NON_MATCH void FUN_0821ce7c(ShadeMan* p) {
     }
     ShadeMan_SetMotion(p, 2, TRUE);
   }
-  if (p->unk_38c & 0x10) {
+  if (p->flag38c & SMFLAG_MOTION_DONE) {
     FUN_0821cb90(p);
   }
 #else
@@ -956,7 +959,7 @@ void FUN_0821d074(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 3, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 61);
   }
 }
@@ -966,7 +969,7 @@ void FUN_0821d0c8(ShadeMan* p) {
     FUN_0821cd9c(p);
     ShadeMan_SetMotion(p, 4, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 61);
   }
 }
@@ -975,7 +978,7 @@ void FUN_0821d124(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 5, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     p->unk_80c = 0;
     p->unk_810 = 0;
     ShadeMan_SetSubState0(p, 0, 0, 0, 31);
@@ -986,7 +989,7 @@ void FUN_0821d18c(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 6, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 61);
   }
 }
@@ -995,7 +998,7 @@ void FUN_0821d1e0(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 7, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, p->unk_806);
   }
 }
@@ -1004,7 +1007,7 @@ void FUN_0821d240(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 8, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 61);
   }
 }
@@ -1013,7 +1016,7 @@ void FUN_0821d294(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 9, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, p->unk_806);
   }
 }
@@ -1022,7 +1025,7 @@ void FUN_0821d2f4(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 10, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 61);
   }
 }
@@ -1031,7 +1034,7 @@ void FUN_0821d348(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 11, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 61);
   }
 }
@@ -1040,7 +1043,7 @@ void FUN_0821d39c(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 12, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 0, p->unk_806);
   }
 }
@@ -1063,7 +1066,7 @@ NON_MATCH void FUN_0821d3fc(ShadeMan* p) {
     ShadeMan_SetMotion(p, 4, TRUE);
     p->stateDuration = 0;
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 11, 0);
     p->unk_806 = 121;
   }
@@ -1078,23 +1081,23 @@ NON_MATCH void FUN_0821d4b4(ShadeMan* p) {
   Boss_EnterSubState(&p->base);
   switch (p->unk_3a8) {
     case 0: {
-      bool32 entered = TEST_FLAGS(p->unk_38c, 4);
+      bool32 entered = TEST_FLAGS(p->flag38c, SMFLAG_UNK_2);
 
-      p->unk_38c &= ~4;
+      p->flag38c &= ~SMFLAG_UNK_2;
       if (entered) {
         ShadeMan_SetMotion(p, 13, TRUE);
       }
-      if (TEST_FLAGS(p->unk_38c, 0x10)) {
+      if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
         ShadeMan_SetMotion(p, 5, TRUE);
         p->stateDuration = 60;
         p->unk_3a8 = 1;
-        p->unk_38c |= 4;
+        p->flag38c |= SMFLAG_UNK_2;
       }
       break;
     }
     case 1: {
-      p->unk_38c &= ~4;
-      if (p->unk_38c & 0x10) {
+      p->flag38c &= ~SMFLAG_UNK_2;
+      if (p->flag38c & SMFLAG_MOTION_DONE) {
         p->unk_80c = 0;
         p->unk_810 = 0;
         ShadeMan_SetSubState0(p, 0, 0, 0, 31);
@@ -1157,7 +1160,7 @@ void FUN_0821d6f0(ShadeMan* p) {
   if (Boss_EnterSubState(&p->base)) {
     ShadeMan_SetMotion(p, 21, TRUE);
   }
-  if (TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     ShadeMan_SetSubState0(p, 0, 0, 4, 30);
   }
 }
@@ -1169,7 +1172,7 @@ void FUN_0821d760(ShadeMan* p) { PTR_ARRAY_085affec[p->base.subState2](p); }
 void FUN_0821d77c(ShadeMan* p) { PTR_ARRAY_085afff4[p->base.subState2](p); }
 
 void FUN_0821d798(ShadeMan* p) {
-  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     PTR_ARRAY_085b0010[p->base.subState1](p);
   }
 }
@@ -1188,7 +1191,7 @@ void ShadeMan_SetSubState2(ShadeMan* p, u32 subState2, u32 duration) {
   Boss_SetSubState2(&p->base, subState2);
   p->stateDuration = duration;
   p->unk_3a8 = 0;
-  SET_FLAGS(p->unk_38c, 4);
+  SET_FLAGS(p->flag38c, SMFLAG_UNK_2);
 }
 
 // 下位状態の2段目から下を差し替える
@@ -1215,8 +1218,8 @@ NON_MATCH void ShadeMan_Heal(ShadeMan* p, s32 amount) {
   if (oldHP != p->base.hp) {
     Vec3 ofs;
 
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(&p->hurtbox, amount, 1, &p->base.mover.pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(&p->hurtbox, amount, 1, &p->base.mover.pos, &ofs, 1);
   }
 #else
   INCFUNC("asm/func/ShadeMan_Heal.inc");
@@ -1231,9 +1234,9 @@ NON_MATCH void FUN_0821d900(ShadeMan* p) {
   s32 i;
 
   if (p->base.facing <= 1) {
-    VEC3_SET(base, 0x40, 200, -0x80);
+    VEC3_SET(base, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
-    VEC3_SET(base, -0x80, 200, 0x40);
+    VEC3_SET(base, Q8(-0.5), Q8(0.782), Q8(0.25));
   }
   pos = &p->base.mover.pos;
   for (i = 0; i < 2; i++) {
@@ -1257,25 +1260,15 @@ NON_MATCH void FUN_0821d9fc(ShadeMan* p) {
   MainSprite* held = &p->sprite_b54;
   Vec3* vp;
   Vec3* pos;
-  s32 x, z, a, b, sy, sz;
   u32 idx;
 
   memcpy(poses, u16_ARRAY_08252864, sizeof(poses));
   memcpy(offsets, u8_ARRAY_08252884, sizeof(offsets));
   vp = &held->pos;
   pos = &p->sprite.pos;
-  x = pos->x >> 1;
-  z = pos->z >> 1;
-  vp->x = FixToInt(8, (x - z) * 48);
-  a = FixToInt(8, (x + z) * 48);
-  b = FixToInt(8, pos->y * 24);
-  sy = a - b;
-  sz = a + b;
-  vp->x = vp->x - gCameraVpCoords.x + 120;
-  vp->y = sy - gCameraVpCoords.y + 90;
-  vp->z = sz - gCameraVpCoords.z;
+  WorldToScreen(vp, pos);
   idx = p->sprite.animCmdIdx;
-  MainSprite_SetPose(held, &p->gfx_b34, poses[idx * 2 + (gStat->playerKind != 0)], 1);
+  MainSprite_SetPose(held, &p->gfx_b34, poses[idx * 2 + (gStat->playerKind != 0)], PLAYMODE_LOOP);
   if (!p->base.xflip) {
     held->flags |= SPRFLAG_XFLIP;
     held->pos.x += offsets[idx * 2];
@@ -1285,7 +1278,7 @@ NON_MATCH void FUN_0821d9fc(ShadeMan* p) {
     held->pos.x -= offsets[idx * 2];
     held->pos.y += (s8)offsets[idx * 2 + 1];
   }
-  held->pltt = gPlayerPtr[0]->unk_359 == 0 ? gPlayerPtr[0]->human.pltt : gPlayerPtr[0]->gfx_114->pltt;
+  held->pltt = gPlayerPtr[0]->useAuxSprite == 0 ? gPlayerPtr[0]->human.pltt : gPlayerPtr[0]->beastGfx->pltt;
 #else
   INCFUNC("asm/func/FUN_0821d9fc.inc");
 #endif
@@ -1297,9 +1290,9 @@ NON_MATCH void FUN_0821db8c(ShadeMan* p) {
   Vec3 ofs;
   s32 x = p->base.xflip ? -32 : 32;
 
-  VEC3_SET(ofs, x, 160, x);
+  VEC3_SET(ofs, x, Q8(0.625), x);
   p->unk_bb4 = *p->base.playerPos[0];
-  FUN_0807ab64(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, 0, 0);
+  Player_HoldGrabbed(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, 0, 0);
 #else
   INCFUNC("asm/func/FUN_0821db8c.inc");
 #endif
@@ -1314,8 +1307,8 @@ NON_MATCH void FUN_0821dc14(ShadeMan* p) {
   MainSprite_Show(&p->sprite_b54);
   FUN_0821d9fc(p);
   x = p->base.xflip ? -32 : 32;
-  VEC3_SET(ofs, x, 160, x);
-  FUN_0807ab64(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, 0, 0);
+  VEC3_SET(ofs, x, Q8(0.625), x);
+  Player_HoldGrabbed(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, 0, 0);
 #else
   INCFUNC("asm/func/FUN_0821dc14.inc");
 #endif
@@ -1328,7 +1321,7 @@ void FUN_0821dca0(ShadeMan* p) {
   MainSprite_Hide(&p->sprite_b54);
   pos = &p->base.mover.pos;
   target = &p->unk_bb4;
-  FUN_0807ac74(gPlayerPtr[0], target, 50, ArcTan2_8(target->x - pos->x, target->z - pos->z), 50, 0, 0, 0);
+  Player_ReleaseGrabbed(gPlayerPtr[0], target, 50, ArcTan2_8(target->x - pos->x, target->z - pos->z), 50, 0, 0, 0);
 }
 
 // ofs の x と z を分岐ごとに作る形が FUN_0821db8c と同じく出ない
@@ -1344,8 +1337,8 @@ NON_MATCH void FUN_0821dd00(ShadeMan* p) {
     s32 x = boss->xflip ? -32 : 32;
     s32 amount;
 
-    VEC3_SET(ofs, x, 160, x);
-    amount = FUN_0807ab64(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, p->unk_3d0, 2);
+    VEC3_SET(ofs, x, Q8(0.625), x);
+    amount = Player_HoldGrabbed(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, p->unk_3d0, 2);
     FUN_0821d900(p);
     ShadeMan_Heal(p, amount);
     PlaySound_082406e0(SONG_844);
@@ -1370,7 +1363,7 @@ void ShadeMan_SpawnAfterimage(ShadeMan* p, s32 kind, u32 lifetime) {
       a->timer = lifetime;
       sprite = &a->sprite;
       sprite->pos = p->sprite.pos;
-      MainSprite_SetPose(sprite, &p->gfx, p->sprite.animCmds->poseIdx, 1);
+      MainSprite_SetPose(sprite, &p->gfx, p->sprite.animCmds->poseIdx, PLAYMODE_LOOP);
       if (boss->xflip == TRUE) {
         sprite->flags |= SPRFLAG_XFLIP;
       } else {
@@ -1413,64 +1406,64 @@ void ShadeMan_UpdateAfterimages(ShadeMan* p) {
 }
 
 void FUN_0821deec(ShadeMan* p) {
-  p->unk_38c &= ~1;
-  p->unk_38c |= 0x20000;
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
+  p->flag38c |= SMFLAG_UNK_17;
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
     p->angle = p->base.mover.angle;
     ShadeMan_PlayAnim(p, 0, 2, 0, 1, 0);
-    if (p->unk_3a4 >= p->stateDuration) {
-      SET_FLAGS(p->unk_38c, 0x10);
+    if (p->phaseTimer >= p->stateDuration) {
+      SET_FLAGS(p->flag38c, SMFLAG_MOTION_DONE);
     }
   }
 }
 
 void FUN_0821df64(ShadeMan* p) {
-  p->unk_38c &= ~1;
-  p->unk_38c |= 0x20000;
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
+  p->flag38c |= SMFLAG_UNK_17;
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
     p->angle = p->base.mover.angle;
     ShadeMan_PlayAnim(p, 0, 2, 0, 1, 0);
-    if (p->unk_3a4 >= p->stateDuration) {
-      SET_FLAGS(p->unk_38c, 0x10);
+    if (p->phaseTimer >= p->stateDuration) {
+      SET_FLAGS(p->flag38c, SMFLAG_MOTION_DONE);
     }
   }
 }
 
 void FUN_0821dfdc(ShadeMan* p) {
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     FUN_0821bef0(p);
     FUN_0821be24(p, &p->unk_bcc, 60);
     PlaySound_082406e0(SONG_840);
   }
-  SET_FLAGS(p->unk_38c, 0x20000);
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  SET_FLAGS(p->flag38c, SMFLAG_UNK_17);
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
     p->angle = p->base.mover.angle;
     ShadeMan_PlayAnim(p, 0, 2, 0, 1, 0);
     if (p->unk_bec < p->unk_bee) {
       FUN_0821bf34(p);
       FUN_0821bfc8(p);
     } else {
-      SET_FLAGS(p->unk_38c, 0x10);
+      SET_FLAGS(p->flag38c, SMFLAG_MOTION_DONE);
     }
-    if (Mod(p->unk_3a4, 6) == 0) {
+    if (Mod(p->phaseTimer, 6) == 0) {
       ShadeMan_SpawnAfterimage(p, 0, 20);
     }
   }
 }
 
-// 残差は unk_38c の番地を r8 から写した r5 で最後に使うかどうか (181/179)
+// 残差は flag38c の番地を r8 から写した r5 で最後に使うかどうか (181/179)
 NON_MATCH void FUN_0821e0a8(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     Vec3* target;
 
@@ -1479,14 +1472,14 @@ NON_MATCH void FUN_0821e0a8(ShadeMan* p) {
     target = boss->playerPos[0];
     Boss_SetTarget(boss, target->x, target->y, target->z);
   }
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
     Vec3_SetPolar(&boss->mover.delta, p->angle, 40);
-    if (p->unk_3a4 >= p->stateDuration) {
-      SET_FLAGS(p->unk_38c, 0x10);
+    if (p->phaseTimer >= p->stateDuration) {
+      SET_FLAGS(p->flag38c, SMFLAG_MOTION_DONE);
     }
   }
-  if (Mod(p->unk_3a4, 3) == 0) {
+  if (Mod(p->phaseTimer, 3) == 0) {
     ShadeMan_SpawnAfterimage(p, 0, 20);
   }
 #else
@@ -1497,13 +1490,13 @@ NON_MATCH void FUN_0821e0a8(ShadeMan* p) {
 // case ごとの合流の形がずれる (200/215)
 NON_MATCH void FUN_0821e220(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   p->base.flags |= BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX;
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 first = p->unk_38c & 2;
+      bool32 first = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (first) {
         p->unk_3f4 = 15;
         PlaySound_082406e0(SONG_863);
@@ -1514,26 +1507,26 @@ NON_MATCH void FUN_0821e220(ShadeMan* p) {
         FUN_0821c2a0(p, 0, p->unk_3f4, 15);
         return;
       }
-      p->unk_3a0 = 1;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 1;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       p->sprite.animCmdTimer = 0;
       p->base.flags |= BOSSFLAG_HIDDEN | BOSSFLAG_NO_SHADOW;
-      if (p->unk_3a4 >= p->stateDuration) {
-        p->unk_3a0 = 2;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      if (p->phaseTimer >= p->stateDuration) {
+        p->phase = 2;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 2: {
-      bool32 first = p->unk_38c & 2;
+      bool32 first = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (first) {
         Vec3* target;
 
@@ -1549,14 +1542,14 @@ NON_MATCH void FUN_0821e220(ShadeMan* p) {
         FUN_0821c2a0(p, 0, p->unk_3f4, 15);
         return;
       }
-      p->unk_3a0 = 99;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 99;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
-      p->unk_38c |= 0x10;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      p->flag38c |= SMFLAG_MOTION_DONE;
       break;
     }
   }
@@ -1570,13 +1563,13 @@ NON_MATCH void FUN_0821e3f0(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Vec3* pos = &p->base.mover.pos;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   p->base.flags |= BOSSFLAG_NO_HURTBOX;
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 first = p->unk_38c & 2;
+      bool32 first = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (first) {
         ShadeMan_PlayAnim(p, 16, 0, 1, 0, 0);
       }
@@ -1586,26 +1579,26 @@ NON_MATCH void FUN_0821e3f0(ShadeMan* p) {
         PlaySound_082406e0(SONG_863);
       }
       if (p->sprite.animEvents & 2) {
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       p->base.flags |= BOSSFLAG_HIDDEN | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW;
-      if (p->unk_3a4 >= p->stateDuration) {
-        p->unk_3a0 = 2;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      if (p->phaseTimer >= p->stateDuration) {
+        p->phase = 2;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 2: {
-      bool32 first = p->unk_38c & 2;
+      bool32 first = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (first) {
         FUN_0821c010(p, 4);
         p->unk_bf6 = FUN_0821c0c4(p, p->base.playerPos[0], &p->unk_bcc);
@@ -1620,12 +1613,12 @@ NON_MATCH void FUN_0821e3f0(ShadeMan* p) {
           p->sprite.flags |= SPRFLAG_XFLIP;
         }
       } else if (p->sprite.animEvents & 2) {
-        p->unk_38c |= 0x10;
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       break;
     }
   }
@@ -1683,15 +1676,15 @@ NON_MATCH void FUN_0821e738(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
 
-  p->unk_38c &= ~1;
-  if (p->unk_3a0 < 3) {
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
+  if (p->phase < 3) {
     boss->flags |= BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX;
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->unk_3f4 = 15;
         PlaySound_082406e0(SONG_863);
@@ -1702,26 +1695,26 @@ NON_MATCH void FUN_0821e738(ShadeMan* p) {
         FUN_0821c2a0(p, 0, p->unk_3f4, 15);
         return;
       }
-      p->unk_3a0 = 1;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 1;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       p->sprite.animCmdTimer = 0;
       boss->flags |= BOSSFLAG_HIDDEN | BOSSFLAG_NO_SHADOW;
-      if (p->unk_3a4 >= p->stateDuration) {
-        p->unk_3a0 = 2;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      if (p->phaseTimer >= p->stateDuration) {
+        p->phase = 2;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 2: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         u32 angle = p->unk_806 + boss->players[0]->mover.angle;
         Vec3* pos = &boss->mover.pos;
@@ -1741,15 +1734,15 @@ NON_MATCH void FUN_0821e738(ShadeMan* p) {
         FUN_0821c2a0(p, 0, p->unk_3f4, 15);
         return;
       }
-      p->unk_3a0 = 3;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 3;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 3: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 11, 1, 1, 0, 0);
         MainSprite_SetAnimSpeed(&p->sprite, 32);
@@ -1760,18 +1753,18 @@ NON_MATCH void FUN_0821e738(ShadeMan* p) {
       }
       boss->flags |= BOSSFLAG_NO_HITBOX;
       if (p->sprite.animCmdIdx >= 3 && p->sprite.animCmdIdx <= 6) {
-        p->unk_38c |= 0x10000;
+        p->flag38c |= SMFLAG_UNK_16;
       }
-      if (p->unk_3a4 < 10) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle, (10 - p->unk_3a4) * 4);
+      if (p->phaseTimer < 10) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle, (10 - p->phaseTimer) * 4);
       }
       if (p->sprite.animEvents & 2) {
-        p->unk_38c |= 0x10;
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       break;
     }
   }
@@ -1785,12 +1778,12 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
 
-  p->unk_38c &= ~1;
-  switch (p->unk_3a0) {
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
+  switch (p->phase) {
     case 0: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->angle = boss->mover.angle;
         ShadeMan_PlayAnim(p, 17, 1, 1, 0, 0);
@@ -1802,28 +1795,28 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
           p->unk_3bc = FixToInt(6, p->unk_3bc * 56 + 0x7F8);
         }
       }
-      if (p->unk_3a4 == 25) {
+      if (p->phaseTimer == 25) {
         ShadeMan_PlayAnim(p, 19, 1, 1, 0, 0);
       }
-      if (p->unk_3a4 < 45) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle + 0x80, (45 - p->unk_3a4) >> 2);
+      if (p->phaseTimer < 45) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle + 0x80, (45 - p->phaseTimer) >> 2);
         return;
       }
       p->unk_3bc = 0;
       if (FUN_0821e5f0(p)) {
-        p->unk_3a0 = 2;
+        p->phase = 2;
       } else {
-        p->unk_3a0 = 1;
+        p->phase = 1;
       }
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 1: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
       Vec3 ahead;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         Vec3* target;
 
@@ -1835,31 +1828,31 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
       }
       Vec3_SetPolar(&boss->mover.delta, p->angle, 40);
       if (FUN_0821e5f0(p)) {
-        p->unk_3a0 = 2;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 2;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       } else {
         s32 h;
 
         ahead.x = boss->mover.pos.x + POLAR_X(400, p->angle);
         ahead.z = boss->mover.pos.z + POLAR_Z(400, p->angle);
         h = TileHeightAt(&ahead) - p->unk_3b0;
-        if (!(h >= -0x1FF && h <= 0xFF && p->unk_3a4 < p->stateDuration)) {
-          p->unk_3a0 = 3;
-          p->unk_3a4 = 0;
-          p->unk_38c |= 2;
+        if (!(h >= -0x1FF && h <= 0xFF && p->phaseTimer < p->stateDuration)) {
+          p->phase = 3;
+          p->phaseTimer = 0;
+          p->flag38c |= SMFLAG_PHASE_ENTERED;
           return;
         }
       }
-      if (Mod(p->unk_3a4, 6) == 0) {
+      if (Mod(p->phaseTimer, 6) == 0) {
         ShadeMan_SpawnAfterimage(p, 0, 20);
       }
       break;
     }
     case 2: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 11, 1, 1, 0, 0);
         MainSprite_SetAnimSpeed(&p->sprite, 32);
@@ -1869,44 +1862,44 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
         MainSprite_SetAnimSpeed(&p->sprite, 64);
       }
       if (p->sprite.animCmdTimer == 1 && p->sprite.animCmdIdx == 7) {
-        if (!(p->unk_38c & 0x20)) {
+        if (!(p->flag38c & SMFLAG_UNK_5)) {
           p->unk_809++;
         } else {
-          p->unk_38c &= ~0x20;
+          p->flag38c &= ~SMFLAG_UNK_5;
         }
         p->unk_3db = 0;
       }
       boss->flags |= BOSSFLAG_NO_HITBOX;
       if (p->sprite.animCmdIdx >= 3 && p->sprite.animCmdIdx <= 6) {
-        p->unk_38c |= 0x10000;
+        p->flag38c |= SMFLAG_UNK_16;
       }
-      if (p->unk_3a4 < 10) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle, (10 - p->unk_3a4) * 4);
+      if (p->phaseTimer < 10) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle, (10 - p->phaseTimer) * 4);
       }
       if (p->sprite.animEvents & 2) {
-        p->unk_38c |= 0x10;
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
     case 3: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 21, 1, 1, 0, 0);
-        if (!(p->unk_38c & 0x20)) {
+        if (!(p->flag38c & SMFLAG_UNK_5)) {
           p->unk_809++;
         } else {
-          p->unk_38c &= ~0x20;
+          p->flag38c &= ~SMFLAG_UNK_5;
         }
         p->unk_3db = 0;
       }
-      if (p->unk_3a4 < 50) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle, (50 - p->unk_3a4) >> 2);
-      } else if (p->unk_3a4 > 79) {
-        p->unk_38c |= 0x10;
+      if (p->phaseTimer < 50) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle, (50 - p->phaseTimer) >> 2);
+      } else if (p->phaseTimer > 79) {
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
-      if (p->unk_3a4 < 40 && Mod(p->unk_3a4, 20) == 0) {
+      if (p->phaseTimer < 40 && Mod(p->phaseTimer, 20) == 0) {
         ShadeMan_SpawnAfterimage(p, 0, 20);
       }
       break;
@@ -1921,9 +1914,9 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
 NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     FUN_0821c010(p, 4);
     p->unk_bf6 = 0xFF;
@@ -1931,7 +1924,7 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
     p->unk_3f8 = 0;
     p->unk_3da = 0;
   }
-  if (p->unk_3a0 == 3) {
+  if (p->phase == 3) {
     p->unk_3f8 = 1;
   }
   if (p->unk_3f8 == 0) {
@@ -1954,11 +1947,11 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
     }
   }
   boss->flags |= BOSSFLAG_NO_HURTBOX | BOSSFLAG_UNK_19;
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->angle = boss->mover.angle;
         ShadeMan_PlayAnim(p, 17, 1, 1, 0, 0);
@@ -1970,25 +1963,25 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
           p->unk_3bc = FixToInt(6, p->unk_3bc * 56 + 0x7F8);
         }
       }
-      if (p->unk_3a4 == 25) {
+      if (p->phaseTimer == 25) {
         ShadeMan_PlayAnim(p, 19, 1, 1, 0, 0);
       }
-      if (p->unk_3a4 < 45) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle + 0x80, (45 - p->unk_3a4) >> 2);
+      if (p->phaseTimer < 45) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle + 0x80, (45 - p->phaseTimer) >> 2);
         return;
       }
       p->unk_3bc = 0;
-      p->unk_3a0 = 1;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 1;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 1: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
       Vec3 ahead;
       s32 h;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         Vec3* target;
 
@@ -2003,26 +1996,26 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
       ahead.x = boss->mover.pos.x + POLAR_X(400, p->angle);
       ahead.z = boss->mover.pos.z + POLAR_Z(400, p->angle);
       h = TileHeightAt(&ahead) - p->unk_3b0;
-      if (!(h >= -0x1FF && h <= 0xFF) || p->unk_3a4 >= p->stateDuration) {
+      if (!(h >= -0x1FF && h <= 0xFF) || p->phaseTimer >= p->stateDuration) {
         if (++p->unk_3da < 4) {
-          p->unk_3a0 = 2;
-          p->unk_3a4 = 0;
+          p->phase = 2;
+          p->phaseTimer = 0;
         } else {
-          p->unk_3a0 = 3;
-          p->unk_3a4 = 0;
+          p->phase = 3;
+          p->phaseTimer = 0;
         }
-        p->unk_38c |= 2;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
         return;
       }
-      if (Mod(p->unk_3a4, 6) == 0) {
+      if (Mod(p->phaseTimer, 6) == 0) {
         ShadeMan_SpawnAfterimage(p, 1, 20);
       }
       break;
     }
     case 2: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         Vec3 node;
         s32 idx = FUN_0821c044(p, &boss->mover.pos, &node);
@@ -2050,35 +2043,35 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
         FUN_0821bf34(p);
         FUN_0821bfc8(p);
       } else {
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
-      if (Mod(p->unk_3a4, 6) == 0) {
+      if (Mod(p->phaseTimer, 6) == 0) {
         ShadeMan_SpawnAfterimage(p, 1, 20);
       }
       break;
     }
     case 3: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 21, 1, 1, 0, 0);
         Hitbox_SetAttack(&p->hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
       }
-      if (p->unk_3a4 < 50) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle, (50 - p->unk_3a4) >> 2);
-      } else if (p->unk_3a4 > 79) {
-        p->unk_38c |= 0x10;
+      if (p->phaseTimer < 50) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle, (50 - p->phaseTimer) >> 2);
+      } else if (p->phaseTimer > 79) {
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
-      if (p->unk_3a4 < 40 && Mod(p->unk_3a4, 20) == 0) {
+      if (p->phaseTimer < 40 && Mod(p->phaseTimer, 20) == 0) {
         ShadeMan_SpawnAfterimage(p, 0, 20);
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       break;
     }
   }
@@ -2092,18 +2085,18 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Player* player;
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     p->unk_3f4 = 30;
   }
   player = gPlayerPtr[0];
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->angle = boss->mover.angle;
         ShadeMan_PlayAnim(p, 17, 1, 1, 0, 0);
@@ -2115,25 +2108,25 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
           p->unk_3bc = FixToInt(6, p->unk_3bc * 56 + 0x7F8);
         }
       }
-      if (p->unk_3a4 == 25) {
+      if (p->phaseTimer == 25) {
         ShadeMan_PlayAnim(p, 19, 1, 1, 0, 0);
       }
-      if (p->unk_3a4 < 45) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle + 0x80, (45 - p->unk_3a4) >> 2);
+      if (p->phaseTimer < 45) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle + 0x80, (45 - p->phaseTimer) >> 2);
         return;
       }
       p->unk_3bc = 0;
-      p->unk_3a0 = 1;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 1;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 1: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
       Vec3 ahead;
       s32 h;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         Vec3* target;
 
@@ -2147,9 +2140,9 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
       if (gStat->playerKind < 2) {
         if (!(player->flag20 & PFLAG20_UNK_18) && FUN_0821e5f0(p)) {
           FUN_0821db8c(p);
-          p->unk_3a0 = 2;
-          p->unk_3a4 = 0;
-          p->unk_38c |= 2;
+          p->phase = 2;
+          p->phaseTimer = 0;
+          p->flag38c |= SMFLAG_PHASE_ENTERED;
           Hitbox_SetFlags(&p->hurtbox, HBFLAG_HIDDEN);
           return;
         }
@@ -2159,35 +2152,35 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
       ahead.x = boss->mover.pos.x + POLAR_X(400, p->angle);
       ahead.z = boss->mover.pos.z + POLAR_Z(400, p->angle);
       h = TileHeightAt(&ahead) - p->unk_3b0;
-      if (!(h >= -0x1FF && h <= 0xFF) || p->unk_3a4 >= p->stateDuration) {
-        p->unk_3a0 = 3;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      if (!(h >= -0x1FF && h <= 0xFF) || p->phaseTimer >= p->stateDuration) {
+        p->phase = 3;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
         return;
       }
-      if (Mod(p->unk_3a4, 6) == 0) {
+      if (Mod(p->phaseTimer, 6) == 0) {
         ShadeMan_SpawnAfterimage(p, 1, 20);
       }
       break;
     }
     case 2: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 13, 0, 1, 0, 0);
         FUN_0821dc14(p);
         p->unk_bbc = 0;
         p->unk_bbd = 0;
-        p->unk_bbe = player->angle_400;
-        p->unk_bbf = player->angle_400;
+        p->unk_bbe = player->mashCount;
+        p->unk_bbf = player->mashCount;
         p->shakeAmp = 0;
         p->unk_bc1 = 0;
       } else {
         FUN_0821dd00(p);
       }
-      if (p->unk_bbf != player->angle_400) {
-        p->unk_bbf = player->angle_400;
+      if (p->unk_bbf != player->mashCount) {
+        p->unk_bbf = player->mashCount;
         p->unk_bc1++;
       }
       if (p->unk_bc1 > 3) {
@@ -2196,7 +2189,7 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
         p->unk_bc1 = 0;
       }
       boss->flags |= BOSSFLAG_NO_HURTBOX;
-      if ((u8)(player->angle_400 - p->unk_bbe) < 16) {
+      if ((u8)(player->mashCount - p->unk_bbe) < 16) {
         if (!(p->sprite.animEvents & 1)) {
           return;
         }
@@ -2207,39 +2200,39 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
           return;
         }
       }
-      p->unk_3a0 = 99;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 99;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 3: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 21, 1, 1, 0, 0);
       }
-      if (p->unk_3a4 < 50) {
-        Vec3_SetPolar(&boss->mover.delta, p->angle, (50 - p->unk_3a4) >> 2);
+      if (p->phaseTimer < 50) {
+        Vec3_SetPolar(&boss->mover.delta, p->angle, (50 - p->phaseTimer) >> 2);
       } else {
-        p->unk_38c |= 0x10;
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
-      if (p->unk_3a4 < 40 && Mod(p->unk_3a4, 20) == 0) {
+      if (p->phaseTimer < 40 && Mod(p->phaseTimer, 20) == 0) {
         ShadeMan_SpawnAfterimage(p, 1, 20);
       }
       break;
     }
     case 99: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         FUN_0821dca0(p);
         p->angle = Angle_FromDir4(boss->facing);
         ShadeMan_PlayAnim(p, 0, 2, 0, 1, 0);
       }
-      if (p->unk_3a4 > 30) {
-        p->unk_38c |= 0x10;
+      if (p->phaseTimer > 30) {
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
@@ -2253,34 +2246,34 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
 NON_MATCH void FUN_0821ff34(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     p->angle = boss->mover.angle;
     ShadeMan_PlayAnim(p, 14, 1, 1, 0, 0);
     p->unk_3d8 = 0;
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
       s32 t;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animCmdIdx == 7 && p->sprite.animCmdTimer == 1) {
         PlaySound_082406e0(SONG_862);
       }
-      t = p->unk_3a4;
+      t = p->phaseTimer;
       if ((t >= 31 && t <= 49) || (t >= 61 && t <= 79)) {
         if (t == 31) {
-          if (!(p->unk_38c & 0x20)) {
+          if (!(p->flag38c & SMFLAG_UNK_5)) {
             p->unk_809++;
           } else {
-            p->unk_38c &= ~0x20;
+            p->flag38c &= ~SMFLAG_UNK_5;
           }
           p->unk_3db = 0;
           PlaySound_082406e0(NOISE_UNK_128 | NOISE_QUAKE);
         }
-        if (Mod(p->unk_3a4, 6) == 0) {
+        if (Mod(p->phaseTimer, 6) == 0) {
           Vec3 v = boss->mover.pos;
           s32 angle;
           s32 speed;
@@ -2310,31 +2303,31 @@ NON_MATCH void FUN_0821ff34(ShadeMan* p) {
           p->unk_3d8++;
         }
       }
-      if (p->unk_3a4 > 120 && (p->sprite.animEvents & 2)) {
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      if (p->phaseTimer > 120 && (p->sprite.animEvents & 2)) {
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
-      if (p->unk_3a4 > 31) {
-        p->unk_3a0 = 99;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      if (p->phaseTimer > 31) {
+        p->phase = 99;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 99: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 23, 1, 1, 0, 0);
       }
       if (p->sprite.animEvents & 2) {
-        p->unk_38c |= 0x10;
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
@@ -2348,9 +2341,9 @@ NON_MATCH void FUN_0821ff34(ShadeMan* p) {
 NON_MATCH void FUN_082201ec(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     p->angle = boss->mover.angle;
     ShadeMan_PlayAnim(p, 14, 1, 1, 0, 0);
@@ -2359,11 +2352,11 @@ NON_MATCH void FUN_082201ec(ShadeMan* p) {
   if (p->motionTimer > 29) {
     boss->flags |= BOSSFLAG_UNK_18 | BOSSFLAG_UNK_22;
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->unk_3f4 = 30;
       }
@@ -2381,7 +2374,7 @@ NON_MATCH void FUN_082201ec(ShadeMan* p) {
         }
         FUN_0821c2a0(p, 1, t, 30);
       }
-      if (p->unk_3a4 == 30) {
+      if (p->phaseTimer == 30) {
         s32 n = 15 - p->unk_3d9;
 
         if (n > 0) {
@@ -2391,38 +2384,38 @@ NON_MATCH void FUN_082201ec(ShadeMan* p) {
           FUN_0805e940(p->entity0805e67c, &v, boss->mover.angle, 50, p->unk_3d4, 30, 8, n);
           PlaySound_082406e0(NOISE_UNK_128 | NOISE_QUAKE);
         }
-        if (!(p->unk_38c & 0x20)) {
+        if (!(p->flag38c & SMFLAG_UNK_5)) {
           p->unk_809++;
         } else {
-          p->unk_38c &= ~0x20;
+          p->flag38c &= ~SMFLAG_UNK_5;
         }
         p->unk_3db = 0;
       }
-      if (p->unk_3a4 > 150 && (p->sprite.animEvents & 2)) {
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      if (p->phaseTimer > 150 && (p->sprite.animEvents & 2)) {
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
-      if (p->unk_3a4 > 210) {
-        p->unk_3a0 = 99;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      if (p->phaseTimer > 210) {
+        p->phase = 99;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 99: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 23, 1, 1, 0, 0);
       }
       if (p->sprite.animEvents & 2) {
-        p->unk_38c |= 0x10;
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
@@ -2435,17 +2428,17 @@ NON_MATCH void FUN_082201ec(ShadeMan* p) {
 // 一通り書けたが分岐の並びと番地の作り方がずれる (274/288)
 NON_MATCH void FUN_08220430(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     p->unk_3d8 = 0;
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->angle = ArcTan2_8(2800 - p->unk_bcc.x, 1900 - p->unk_bcc.z);
         ShadeMan_PlayAnim(p, 16, 0, 1, 0, 0);
@@ -2463,7 +2456,7 @@ NON_MATCH void FUN_08220430(ShadeMan* p) {
           p->sprite.pos.z -= 10;
         }
       }
-      if (p->unk_3a4 == 30) {
+      if (p->phaseTimer == 30) {
         s32 count;
         s32 a, b;
         s32 i;
@@ -2484,37 +2477,37 @@ NON_MATCH void FUN_08220430(ShadeMan* p) {
           pos.y = 0x500;
           FUN_0805eee4(p->entity0805ee80, 10, 16, p->unk_3d6, 60, 60, 30, a, b, &pos);
         }
-        if (!(p->unk_38c & 0x20)) {
+        if (!(p->flag38c & SMFLAG_UNK_5)) {
           p->unk_809++;
         } else {
-          p->unk_38c &= ~0x20;
+          p->flag38c &= ~SMFLAG_UNK_5;
         }
         p->unk_3db = 0;
-      } else if (p->unk_3a4 > 80) {
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      } else if (p->phaseTimer > 80) {
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 1: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 16, 0, 0, 0, 1);
       }
       if (p->sprite.animEvents & 2) {
-        p->unk_3a0 = 99;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 99;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
-      if (p->unk_3a4 > 30) {
-        p->unk_38c |= 0x10;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      if (p->phaseTimer > 30) {
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
@@ -2524,31 +2517,31 @@ NON_MATCH void FUN_08220430(ShadeMan* p) {
 #endif
 }
 
-// 残差は p と &unk_38c のレジスタが逆, 定数 2 を case 0 の頭で作る (82/84)
+// 残差は p と &flag38c のレジスタが逆, 定数 2 を case 0 の頭で作る (82/84)
 NON_MATCH void FUN_082206a8(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     ShadeMan_PlayAnim(p, 5, 1, 1, 0, 0);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_UNK_18);
   p->base.flags |= BOSSFLAG_NO_HURTBOX;
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animEvents & 2) {
-        p->unk_3a0 = 99;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 99;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
-      if (p->unk_3a4 > 14) {
-        p->unk_38c |= 0x10;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      if (p->phaseTimer > 14) {
+        p->flag38c |= SMFLAG_MOTION_DONE;
       }
       break;
     }
@@ -2563,9 +2556,9 @@ NON_MATCH void FUN_08220758(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Vec3* pos = &boss->mover.pos;
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     ShadeMan_PlayAnim(p, 5, 1, 1, 0, 0);
     Boss_GiveWeaponExp(boss, p->weaponExp);
@@ -2581,17 +2574,17 @@ NON_MATCH void FUN_08220758(ShadeMan* p) {
     Vec3_SetPolar(&v, ArcTan2_8(2800 - pos->x, 1900 - pos->z), 10);
     boss->mover.delta = v;
   }
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
     boss->flags |= BOSSFLAG_UNK_17;
     if (p->motionTimer == 256) {
       FUN_08023024(boss, &p->sprite.pos);
-      p->unk_3a0 = 99;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 99;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
     }
-  } else if (p->unk_3a0 == 99) {
-    p->unk_38c &= ~2;
+  } else if (p->phase == 99) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
     boss->flags |= BOSSFLAG_NO_SHADOW;
   }
 #else
@@ -2600,10 +2593,10 @@ NON_MATCH void FUN_08220758(ShadeMan* p) {
 }
 
 void FUN_0822098c(ShadeMan* p) {
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   SET_FLAGS(p->base.flags, BOSSFLAG_HIDDEN | BOSSFLAG_NO_SHADOW);
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
   }
 }
 
@@ -2611,11 +2604,11 @@ void FUN_0822098c(ShadeMan* p) {
 NON_MATCH void FUN_082209cc(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
-    if (!(p->unk_38c & 0x100)) {
+    if (!(p->flag38c & SMFLAG_UNK_8)) {
       p->sprite.flags |= SPRFLAG_BLINK_ODD;
     }
     ShadeMan_PlayAnim(p, 0, 2, 0, 1, 0);
@@ -2623,9 +2616,9 @@ NON_MATCH void FUN_082209cc(ShadeMan* p) {
   if (p->sprite.flags & SPRFLAG_BLINK_ODD) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW);
   }
-  SET_FLAGS(p->unk_38c, 0x20000);
-  if (p->unk_3a0 == 0) {
-    p->unk_38c &= ~2;
+  SET_FLAGS(p->flag38c, SMFLAG_UNK_17);
+  if (p->phase == 0) {
+    p->flag38c &= ~SMFLAG_PHASE_ENTERED;
   }
 #else
   INCFUNC("asm/func/FUN_082209cc.inc");
@@ -2636,9 +2629,9 @@ NON_MATCH void FUN_082209cc(ShadeMan* p) {
 NON_MATCH void FUN_08220a68(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     MainSprite_SetFlags(&p->sprite, SPRFLAG_BLINK_ODD);
     p->angle = 0x40;
@@ -2647,22 +2640,22 @@ NON_MATCH void FUN_08220a68(ShadeMan* p) {
   if (p->sprite.flags & SPRFLAG_BLINK_ODD) {
     SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW);
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animCmdIdx == 7 && p->sprite.animCmdTimer == 1) {
         PlaySound_082406e0(SONG_862);
       }
       if (p->sprite.animEvents & 2) {
         MsgQueue_EndWait(&boss->msgQueue, 1);
-        p->unk_3a0 = 99;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 99;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       break;
     }
   }
@@ -2674,15 +2667,15 @@ NON_MATCH void FUN_08220a68(ShadeMan* p) {
 // 残差は animEvents を試す定数 2 を case 0 の頭で作るかどうか (63/63)
 NON_MATCH void FUN_08220b64(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     ShadeMan_PlayAnim(p, 23, 1, 1, 0, 0);
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animEvents & 2) {
         MsgQueue_EndWait(&p->base.msgQueue, 1);
         ShadeMan_SetMotion(p, 16, TRUE);
@@ -2690,7 +2683,7 @@ NON_MATCH void FUN_08220b64(ShadeMan* p) {
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       break;
     }
   }
@@ -2702,9 +2695,9 @@ NON_MATCH void FUN_08220b64(ShadeMan* p) {
 // 残差は FUN_08220b64 と同じく animEvents を試す定数 2 の位置 (93/93)
 NON_MATCH void FUN_08220bf0(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     MainSprite_SetFlags(&p->sprite, SPRFLAG_BLINK_ODD);
     p->angle = 0x40;
@@ -2715,9 +2708,9 @@ NON_MATCH void FUN_08220bf0(ShadeMan* p) {
   if (p->motionTimer == 30) {
     PlaySound_082406e0(SONG_862);
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animEvents & 2) {
         MsgQueue_EndWait(&p->base.msgQueue, 1);
         ShadeMan_SetMotion(p, 16, TRUE);
@@ -2725,7 +2718,7 @@ NON_MATCH void FUN_08220bf0(ShadeMan* p) {
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       break;
     }
   }
@@ -2738,18 +2731,18 @@ NON_MATCH void FUN_08220bf0(ShadeMan* p) {
 NON_MATCH void FUN_08220cc4(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  bool32 first = TEST_FLAGS(p->unk_38c, 1);
+  bool32 first = TEST_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     MainSprite_SetFlags(&p->sprite, SPRFLAG_BLINK_ODD);
     p->angle = 0x40;
     ShadeMan_PlayAnim(p, 16, 0, 1, 0, 0);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW);
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animCmdIdx == 4 && p->sprite.animCmdTimer == 1) {
         PlaySound_082406e0(SONG_862);
       } else if (p->sprite.animCmdIdx == 6 && p->sprite.animCmdTimer == 1) {
@@ -2757,14 +2750,14 @@ NON_MATCH void FUN_08220cc4(ShadeMan* p) {
       }
       if (p->sprite.animEvents & 2) {
         MsgQueue_EndWait(&boss->msgQueue, 1);
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       p->base.flags |= BOSSFLAG_HIDDEN;
       break;
     }
@@ -2777,16 +2770,16 @@ NON_MATCH void FUN_08220cc4(ShadeMan* p) {
 // 一通り書けたが乱数の取り方と分岐の合流がずれる (380/367)
 NON_MATCH void FUN_08220de0(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  bool32 first = p->unk_38c & 1;
+  bool32 first = p->flag38c & SMFLAG_MOTION_ENTERED;
 
-  p->unk_38c &= ~1;
+  p->flag38c &= ~SMFLAG_MOTION_ENTERED;
   if (first) {
     p->unk_3f0 = FixToInt(8, Div(p->unk_3f0 * 0xF00, 10));
     ShadeMan_PlayAnim(p, 5, 1, 1, 0, 0);
     VM_ExecByID(p->scriptID, NULL);
   }
   p->base.flags |= BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX;
-  if (p->unk_3a0 < 2) {
+  if (p->phase < 2) {
     if (p->motionTimer == Div(p->motionTimer, 6) * 6) {
       u16* table = gRandomTable;
       WorldPos pos;
@@ -2803,29 +2796,29 @@ NON_MATCH void FUN_08220de0(ShadeMan* p) {
     p->sprite.pos.x += (Random() & 0x30) - 24;
     p->sprite.pos.z += (Random() & 0x30) - 24;
   }
-  switch (p->unk_3a0) {
+  switch (p->phase) {
     case 0: {
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animEvents & 2) {
-        p->unk_3a0 = 1;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+        p->phase = 1;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 1: {
-      p->unk_38c &= ~2;
-      if (p->unk_3a4 > 90) {
-        p->unk_3a0 = 2;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      if (p->phaseTimer > 90) {
+        p->phase = 2;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 2: {
-      bool32 entered = p->unk_38c & 2;
+      bool32 entered = p->flag38c & SMFLAG_PHASE_ENTERED;
 
-      p->unk_38c &= ~2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         p->unk_3f4 = 60;
       }
@@ -2837,23 +2830,23 @@ NON_MATCH void FUN_08220de0(ShadeMan* p) {
       p->unk_388 = 1;
       p->unk_809 = 0;
       VM_ExecByID(p->scriptID2, NULL);
-      p->unk_3a0 = 3;
-      p->unk_3a4 = 0;
-      p->unk_38c |= 2;
+      p->phase = 3;
+      p->phaseTimer = 0;
+      p->flag38c |= SMFLAG_PHASE_ENTERED;
       break;
     }
     case 3: {
-      p->unk_38c &= ~2;
-      if (p->unk_3a4 > 60) {
-        p->unk_3a0 = 99;
-        p->unk_3a4 = 0;
-        p->unk_38c |= 2;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      if (p->phaseTimer > 60) {
+        p->phase = 99;
+        p->phaseTimer = 0;
+        p->flag38c |= SMFLAG_PHASE_ENTERED;
       }
       break;
     }
     case 99: {
-      p->unk_38c &= ~2;
-      p->unk_38c |= 0x10;
+      p->flag38c &= ~SMFLAG_PHASE_ENTERED;
+      p->flag38c |= SMFLAG_MOTION_DONE;
       break;
     }
   }
@@ -2890,7 +2883,7 @@ void ShadeMan_ExitMotion(ShadeMan* p) {
   }
 }
 
-// 残差は unk_38c などの番地を呼び出しのあとで作り直すかどうか (96/99)
+// 残差は flag38c などの番地を呼び出しのあとで作り直すかどうか (96/99)
 NON_MATCH void ShadeMan_UpdateMotion(ShadeMan* p) {
 #ifdef NONMATCHING_C
   if (p->nextMotion != -1) {
@@ -2898,10 +2891,10 @@ NON_MATCH void ShadeMan_UpdateMotion(ShadeMan* p) {
     p->motion = p->nextMotion;
     p->motionTimer = 0;
     p->motionCallback = PTR_ARRAY_085b0028[p->motion];
-    SET_FLAGS(p->unk_38c, 1);
-    p->unk_3a0 = 0;
-    p->unk_3a4 = 0;
-    SET_FLAGS(p->unk_38c, 2);
+    SET_FLAGS(p->flag38c, SMFLAG_MOTION_ENTERED);
+    p->phase = 0;
+    p->phaseTimer = 0;
+    SET_FLAGS(p->flag38c, SMFLAG_PHASE_ENTERED);
     p->nextMotion = -1;
     if (p->motion >= 6 && p->motion <= 12) {
       p->unk_808 = p->motion;
@@ -2909,11 +2902,11 @@ NON_MATCH void ShadeMan_UpdateMotion(ShadeMan* p) {
   }
   p->base.flags = 0;
   p->base.subStateDone = FALSE;
-  if (!TEST_FLAGS(p->unk_38c, 0x10)) {
+  if (!TEST_FLAGS(p->flag38c, SMFLAG_MOTION_DONE)) {
     p->motionCallback(p);
     p->motionTimer++;
-    if (!(p->unk_38c & 2)) {
-      p->unk_3a4++;
+    if (!(p->flag38c & SMFLAG_PHASE_ENTERED)) {
+      p->phaseTimer++;
     }
   }
 #else
@@ -2925,7 +2918,7 @@ NON_MATCH void ShadeMan_UpdateMotion(ShadeMan* p) {
 void ShadeMan_SetMotion(ShadeMan* p, u32 next, bool8 force) {
   if (force || p->motion != next) {
     p->nextMotion = next;
-    CLEAR_FLAGS(p->unk_38c, 0x10);
+    CLEAR_FLAGS(p->flag38c, SMFLAG_MOTION_DONE);
   }
 }
 
@@ -2938,7 +2931,7 @@ NON_MATCH void FUN_0822129c(ShadeMan* p) {
   ShadeMan_PollMessages(p);
   Mover_ApplyMove(&boss->mover);
   FUN_0821c140(p);
-  p->unk_38c &= 0xFF00FFFF;
+  p->flag38c &= ~0x00FF0000;
   ShadeMan_HandleDamage(p);
   if (p->unk_3fc > 0) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
@@ -2989,9 +2982,9 @@ NON_MATCH void FUN_08221450(ShadeMan* p) {
     }
   }
   ShadeMan_UpdateAfterimages(p);
-  p->unk_38c &= 0xFFFFFF;
-  if (!boss->unk_ab) {
-    if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  p->flag38c &= ~0xFF000000;
+  if (!boss->isDemo) {
+    if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
       if (boss->subState0 == 2 || TEST_FLAGS(boss->flags, BOSSFLAG_HIDDEN)) {
         if (p->unk_bc3 == 1) {
           p->unk_bc3 = 0;
@@ -3038,7 +3031,7 @@ NON_MATCH void ShadeMan_HandleDamage(ShadeMan* p) {
           ShadeMan_SetSubState0(p, 0, 0, 5, 60);
           p->unk_806 = 0;
         } else {
-          p->unk_38c |= 0x20;
+          p->flag38c |= SMFLAG_UNK_5;
           ShadeMan_SetSubState0(p, 0, 0, 12, 0);
         }
         p->unk_3fc = 15;
@@ -3046,8 +3039,8 @@ NON_MATCH void ShadeMan_HandleDamage(ShadeMan* p) {
     } else {
       Vec3 ofs;
 
-      VEC3_SET(ofs, 0x10, 0, 0x10);
-      FUN_0805fe7c(&p->hurtbox, damage, 0, &boss->mover.pos, &ofs, 1);
+      VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+      CreateDamageNumber(&p->hurtbox, damage, 0, &boss->mover.pos, &ofs, 1);
       p->unk_3f0 = 10;
       FUN_0821c238(p, 0);
       boss->hp -= damage;
@@ -3268,16 +3261,16 @@ NON_MATCH s32 ShadeMan_Init(ShadeMan* p, u32 id) {
   }
   Boss_Init(boss, id, bossID, &pos, angle);
   Boss_InitHP(boss, hp, hp, power);
-  boss->unk_114 = angle;
-  boss->unk_ab = VM_GetNamedArgValue('i', 0);
+  boss->destAngle = angle;
+  boss->isDemo = VM_GetNamedArgValue('i', 0);
   p->unk_388 = 0;
-  p->unk_38c = 0;
+  p->flag38c = 0;
   p->unk_390 = 0;
   p->motion = 0;
   p->nextMotion = -1;
   p->motionTimer = 0;
-  p->unk_3a0 = 0;
-  p->unk_3a4 = 0;
+  p->phase = 0;
+  p->phaseTimer = 0;
   p->motionCallback = NULL;
   ShadeMan_Init_Helper_0821c758(p, &pos, angle);
   AuxShadow_Init(&p->shadow, &p->sprite.pos, 0x40, 0x30, 0x40, 0x38, 0x1900, 1, 6, 1, 0);
@@ -3336,7 +3329,7 @@ NON_MATCH s32 ShadeMan_Init(ShadeMan* p, u32 id) {
     boss->players[0] = NULL;
     boss->playerPos[0] = NULL;
   }
-  if (!boss->unk_ab) {
+  if (!boss->isDemo) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 120);
     ShadeMan_SetMotion(p, 0, TRUE);
   } else {

@@ -55,7 +55,7 @@ _0806756E:
 	adds r0, r7, r2
 	ldrb r0, [r0]
 	movs r1, #2
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	mov r8, r0
 	movs r3, #0xb9
 	lsls r3, r3, #2
@@ -146,7 +146,7 @@ _08067610:
 	adds r0, r7, r2
 	ldrb r0, [r0]
 	movs r1, #3
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	mov r8, r0
 	cmp r6, r4
 	beq _080676B8
@@ -422,7 +422,7 @@ _0806784E:
 	adds r0, r1, r0
 _0806785A:
 	ldrh r0, [r0, #2]
-	bl FUN_08065b44
+	bl Player_IsOnIce
 	cmp r0, #0
 	beq _08067866
 	b _08067A50
@@ -625,7 +625,7 @@ _080679D0:
 	lsls r3, r3, #2
 	adds r0, r7, r3
 	ldrb r0, [r0]
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	mov r8, r0
 	adds r0, r7, #0
 	adds r0, #0x9c
@@ -696,7 +696,7 @@ _08067A50:
 	adds r0, r7, r3
 	ldrb r0, [r0]
 	movs r1, #4
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	cmp r4, r0
 	beq _08067A76
 	b _08067DD4
@@ -728,7 +728,7 @@ _08067A96:
 	adds r0, r7, r1
 	ldrb r0, [r0]
 	movs r1, #5
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r7, #0
 	movs r2, #0x40

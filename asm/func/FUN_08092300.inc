@@ -37,14 +37,14 @@
 	adds r0, r4, #0
 	adds r0, #0x20
 	mov r1, r8
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	lsls r5, r5, #3
 	ldr r0, _08092398 @ =0x00003B68
 	adds r5, r5, r0
 	adds r5, r6, r5
 	adds r0, r5, #0
 	mov r1, sl
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	movs r1, #0x11
 	add r8, r1
 	mov r1, r8

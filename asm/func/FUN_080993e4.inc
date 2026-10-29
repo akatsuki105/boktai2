@@ -27,7 +27,7 @@ _08099404:
 	movs r1, #0xa
 	movs r2, #0x15
 	movs r3, #3
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	ldr r0, [r4]
 	ldr r0, [r0, #0x50]
 	ldr r7, _08099468 @ =0x000F423F
@@ -38,7 +38,7 @@ _08099404:
 	str r5, [sp]
 	movs r2, #0x17
 	movs r3, #4
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	ldr r0, [r4]
 	adds r0, #0x40
 	movs r2, #0
@@ -73,7 +73,7 @@ _08099474:
 	mov r1, r8
 	movs r2, #0x17
 	movs r3, #5
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 _0809948C:
 	movs r4, #0
 _0809948E:
@@ -130,7 +130,7 @@ _080994DA:
 	movs r1, #0
 	str r1, [sp]
 	movs r1, #0xa
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	adds r1, r4, #1
 	b _08099528
 _08099502:
@@ -174,7 +174,7 @@ _08099534:
 	movs r1, #0xa
 	movs r2, #0x15
 	movs r3, #3
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	movs r0, #6
 	movs r1, #0x17
 	movs r2, #4
@@ -204,7 +204,7 @@ _08099534:
 	movs r1, #0xa
 	movs r2, #0x14
 	movs r3, #0xa
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 _0809959E:
 	add sp, #4
 	pop {r3}

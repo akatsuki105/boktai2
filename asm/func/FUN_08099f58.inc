@@ -5,7 +5,7 @@
 	push {r4, r5, r6}
 	sub sp, #4
 	adds r4, r0, #0
-	bl FUN_08099c1c
+	bl MainMenu_LoadGameConfig
 	ldr r0, _0809A054 @ =0x00001CEC
 	adds r1, r4, r0
 	ldr r0, [r1]

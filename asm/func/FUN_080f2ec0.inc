@@ -194,7 +194,7 @@ _080F303C:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r1, #0x80
 	lsls r1, r1, #5
 	mov r4, r8

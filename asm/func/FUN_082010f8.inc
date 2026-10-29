@@ -97,7 +97,7 @@ _08201146:
 	str r4, [sp, #0x34]
 	adds r0, r5, #0
 	adds r1, r6, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	movs r0, #0xdb
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

@@ -70,7 +70,7 @@ _080C7ED2:
 	cmp r4, #0
 	bne _080C7F1C
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	mov r0, sl
 	cmp r0, #0x3c
 	ble _080C7EFC

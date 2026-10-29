@@ -148,7 +148,7 @@ _08032246:
 	str r2, [sp, #0x10]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	mov sb, r0
 	adds r4, r6, #0
 	adds r4, #0x90
@@ -179,7 +179,7 @@ _08032246:
 	str r7, [sp, #4]
 	mov r1, sb
 	movs r2, #1
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080322E8:
 	movs r0, #0xe6
 	bl PlaySound_0824078c
@@ -256,7 +256,7 @@ _0803230E:
 	str r4, [sp, #4]
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 _08032382:
 	movs r0, #0xff
 	strb r0, [r5]

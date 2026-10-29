@@ -49,7 +49,7 @@ _080D74B6:
 	str r1, [sp, #4]
 	adds r1, r2, #0
 	movs r2, #1
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080D74DC:
 	add sp, #8
 	pop {r4, r5, r6}

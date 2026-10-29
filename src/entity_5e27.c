@@ -16,7 +16,7 @@ static_assert(sizeof(Entity5E27) == 60);
 
 bool32 FUN_0800271c(void);
 
-const u8 sBgPlttSlots[9] = {0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x67};  // 0x085AA964, 退避/塗りつぶしの対象になる gBgPlttBuffer の色番号
+const u8 sBgPlttSlots[9] = {87, 88, 89, 90, 91, 92, 93, 94, 103};  // 0x085AA964, 退避/塗りつぶしの対象になる gBgPlttBuffer の色番号
 
 bool32 Entity5E27_TestSlot(Entity5E27* p, s32 slot) { return p->mask & (1 << slot); }
 
@@ -48,13 +48,11 @@ void Entity5E27_ApplyPltt(Entity5E27* p) {
 s32 Entity5E27_Update(Entity5E27* p) {
   if (FUN_0800271c()) {
     u32 span = Time_GetSpanOfTime();
-
-    if (span == 4 || span == 5 || span == 0) {
+    if (span == TIME_UNK4 || span == TIME_UNK5 || span == TIME_NIGHT) {
       Entity5E27_SavePltt(p);
       Entity5E27_ApplyPltt(p);
     }
   }
-
   return 0;
 }
 

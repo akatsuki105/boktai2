@@ -61,7 +61,7 @@ _080BD402:
 	adds r0, r6, r1
 	ldrb r1, [r0]
 	add r0, sp, #4
-	bl FUN_080b9938
+	bl Shop_GetSlotPos
 	adds r0, r6, #0
 	adds r0, #0x58
 	ldr r2, _080BD430 @ =0x000013F8

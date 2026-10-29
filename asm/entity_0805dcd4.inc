@@ -214,7 +214,7 @@ _0805DA94:
 	adds r2, #0x3c
 	movs r0, #0
 	mov r1, sp
-	bl FUN_080155e4
+	bl Entity08015584_Spawn
 _0805DAC0:
 	add sp, #8
 	pop {r4, r5, r6, r7}

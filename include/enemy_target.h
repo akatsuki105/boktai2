@@ -26,5 +26,6 @@ static_assert(sizeof(EnemyTarget) == 16);
 void EnemyTargetManager_Remove(EnemyTarget* t);
 void EnemyTargetManager_Release(EnemyTarget* node);
 EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask);
+bool8 FUN_080f8d20(EnemyTarget* node);
 
 #endif  // __INCLUDE_ENEMY_TARGET_H__

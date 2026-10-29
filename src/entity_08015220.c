@@ -37,11 +37,11 @@ const SpriteID16 u16_ARRAY_085aa902[9] = {
     SPRITE_CUBE_WOOD_DEBRIS_L,
     SPRITE_CUBE_ROCK_DEBRIS_L,
     SPRITE_DEBRIS_C42D,
-    0xDF0E,
+    SPRITE_DF0E,
     SPRITE_CUBE_WOOD_DEBRIS_S,
     SPRITE_CUBE_ROCK_DEBRIS_S,
     SPRITE_DEBRIS_0334,
-    0x1E15,
+    SPRITE_1E15,
 };  // 0x085AA902
 
 Entity08015220* Entity08015220_Create(u32 val, u32 _);
@@ -89,15 +89,15 @@ NON_MATCH s32 FUN_08014da0(s32 count, s32 kind, Vec3* pos, s32 speed, s32 lifeti
         g->lifetime[j] = lifetimeRand != 0 ? lifetimeBase + Mod(Random(), lifetimeRand) : lifetimeBase;
         g->speed[j] = speedRand != 0 ? speedBase + Mod(Random(), speedRand) : speedBase;
         angle = angleRand != 0 ? angleBase + Mod(Random(), angleRand) : angleBase;
-        g->vel[j].x = gSineTable[(angle + 0x40) & 0xFF];
-        g->vel[j].z = gSineTable[angle & 0xFF];
+        g->vel[j].x = COS(angle);
+        g->vel[j].z = SIN(angle);
         g->vel[j].y = velYRand != 0 ? velYBase + Mod(Random(), velYRand) : velYBase;
 
         spr->flags &= ~SPRFLAG_HIDDEN;
         spr->pos = *pos;
         spr->pos.x += FixToInt(12, g->vel[j].x * speed);
         spr->pos.z += FixToInt(12, g->vel[j].z * speed);
-        AuxSprite_Add(spr, &g->gfx, 0x200);
+        AuxSprite_Add(spr, &g->gfx, SPRFLAG_BLINK_ODD);
         spr->poseIdx = u16_ARRAY_085aa8f0[g->kind];
         if ((Random() & 0xFF) <= 0x80) {
           spr->flags |= SPRFLAG_XFLIP;

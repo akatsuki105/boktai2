@@ -314,7 +314,7 @@ _080F0D98:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r2, #3
 	movs r1, #1
 	movs r3, #0x8d

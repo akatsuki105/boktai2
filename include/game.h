@@ -16,29 +16,38 @@
 #define STYLE_FIST 4    // 拳 (WeaponKind だと 3)
 #define STYLE_NONE 5    // なし
 
-// gStat->unk_934, FUN_0823acbc がマップ読み込み時に 0 で初期化する
-// 立てているのは weather.c の SF934_RAIN だけで, 溶岩の状態 (SF934_UNK_3 / SF934_LAVA_FROZEN / SF934_UNK_13) をセットするコードはROM中に存在しない
-#define SF934_UNK_0 (1 << 0)        // 0x1
-#define SF934_OUTDOOR (1 << 1)      // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
-#define SF934_UNK_2 (1 << 2)        // 0x4
-#define SF934_UNK_3 (1 << 3)        // 0x8, 溶岩タイルの第3の状態, Player_IsLiveLava の対象から外れ FUN_08065b44 の読み手3件が別のアニメ/別のフラグ経路に進むが, 正体は不明
-#define SF934_LAVA_FROZEN (1 << 4)  // 0x10, 溶岩タイルが氷結している, 根拠: Player_IsIcyTileAt と FUN_08068d18 がどちらも「TATTR_LAVA かつこのビット」を TATTR_ICE と同一に扱う
-#define SF934_UNK_5 (1 << 5)        // 0x20
-#define SF934_UNK_6 (1 << 6)        // 0x40
-#define SF934_UNK_7 (1 << 7)        // 0x80
-#define SF934_UNK_8 (1 << 8)        // 0x100
-#define SF934_UNK_9 (1 << 9)        // 0x200
-#define SF934_UNK_10 (1 << 10)      // 0x400
-#define SF934_RAIN (1 << 11)        // 0x800, 本降りのときにセットされる, 根拠: weather.c の FUN_08018284
-#define SF934_DESERT (1 << 12)      // 0x1000, 砂漠エリア(おいしい水を持っていない場合に、HPが徐々に減っていく)
-#define SF934_UNK_13 (1 << 13)      // 0x2000, 溶岩タイルの状態の1つらしいが, 見ているのは FUN_08065b08 / FUN_080cfc3c だけで, その2つを呼ぶ側がいない
-#define SF934_UNK_14 (1 << 14)      // 0x4000
-#define SF934_UNK_15 (1 << 15)      // 0x8000
+// gStat->mapFlags, FUN_0823acbc がマップ読み込み時に 0 で初期化する
+// 立てているのは weather.c の MPF_RAIN だけで, 溶岩の状態 (MPF_COLD / MPF_HOT / MPF_UNK_13) をセットするコードはROM中に存在しない
+// 例:
+//  8番街(夜): 0x0027
+//  変異域氷:  0x002C (MPF_UNK_2, MPF_COLD, MPF_BRIGHT)
+//  変異域炎:  0x0034 (MPF_UNK_2, MPF_HOT, MPF_BRIGHT)
+//  地下水路(ワープ先):  0x2024 (MPF_UNK_2, MPF_BRIGHT, MPF_UNK_13)
+#define MPF_UNK_0 (1 << 0)    // 0x1, 未検証
+#define MPF_OUTDOOR (1 << 1)  // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
+#define MPF_UNK_2 (1 << 2)    // 0x4, いろんなマップでセット
+#define MPF_COLD (1 << 3)     // 0x8,　 変異域の氷エリアでセットされていた
+#define MPF_HOT (1 << 4)      // 0x10, 　変異域の炎エリアでセットされていた
+#define MPF_BRIGHT (1 << 5)   // 0x20, 部屋が明るいかどうか (大抵のマップではセットされている, 暗黒街の暗い部屋では最初セットされておらず、明かりをつけるとセットされる)
+#define MPF_UNK_6 (1 << 6)    // 0x40
+#define MPF_UNK_7 (1 << 7)    // 0x80
+#define MPF_UNK_8 (1 << 8)    // 0x100
+#define MPF_UNK_9 (1 << 9)    // 0x200
+#define MPF_UNK_10 (1 << 10)  // 0x400
+#define MPF_RAIN (1 << 11)    // 0x800, 今いるマップが雨のときにセット
+#define MPF_DESERT (1 << 12)  // 0x1000, 砂漠エリア(おいしい水を持っていない場合に、HPが徐々に減っていく)
+#define MPF_UNK_13 (1 << 13)  // 0x2000
+#define MPF_UNK_14 (1 << 14)  // 0x4000, サバタ操作中?
+#define MPF_UNK_15 (1 << 15)  // 0x8000
 
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
 typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
-  u8 unk_004[12];             // 0x004
+  u8 unk_004[4];              // 0x004
+  u16 unk_008;                // 0x008
+  u16 unk_00a;                // 0x00A
+  u8 unk_00c[2];              // 0x00C
+  s16 unk_00e;                // 0x00E, EntityA288 が '.T' の参照先に足す文字列IDのオフセット
   u16 controlUp;              // 0x010, 十字キー上を押した時の移動方向の設定, 0: 左上, 1: 上, 2: 右上
   s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
   s16 markerEnabled;          // 0x014, マーカーの表示設定 (0: 非表示, 1: 表示)
@@ -54,7 +63,7 @@ typedef struct {
   s8_8 playerX;                  // 0x030, セーブされたプレイヤーの座標
   s8_8 playerY;                  // 0x032
   s8_8 playerZ;                  // 0x034
-  s16 playerFacing;              // 0x036, Vec3 の val に当たる位置, FUN_0807b0c0 が符号付きで読んで向きとして返す
+  s16 playerFacing;              // 0x036, Vec3 の val に当たる位置, Cmd_7017 が符号付きで読んで向きとして返す
   u16 sabataHP;                  // 0x038
   u16 sabataEne;                 // 0x03A
   u8 unk_03c[4];                 // 0x03C
@@ -81,7 +90,7 @@ typedef struct {
   bool32 isBeforeSunset;         // 0x1A4, ReflectClock が現在時刻 < gClock.sunset のとき立てる, ApplyDayRollover が日付をまたいだ判定に使う
   Datetime overheatTime;         // 0x1A8
   s16 unk_1b8;                   // 0x1B8
-  s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 5000を超えると気絶
+  s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 2500を超えると足元から煙エフェクト, 5000を超えると熱中症で気絶(専用イベント)
   s32 thermal;                   // 0x1BC, 30000に到達したらオーバーヒート
   s32 unk_1c0;                   // 0x1C0, ApplyDayRollover が日付をまたいだとき 0 に戻す
   u32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
@@ -97,7 +106,7 @@ typedef struct {
   s16 tortureCount;              // 0x1EC, おしおき回数
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
   s16 totalEnemyKillCount;       // 0x1F0
-  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/misc.h の ENEKD_XXX
+  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の ENEF_XXX (e.g. ENEF_BOKU)
   u16 unk_222;                   // 0x222
   u8 unk_224[0x228 - 0x224];     // 0x224
   s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数
@@ -112,15 +121,15 @@ typedef struct {
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin16_t coffin;             // 0x252
   s16 stageID;                   // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
-  s16 unk_256;                   // 0x256, 根拠: FUN_0808fc8c が '.f' の値を入れる
-  u16 unk_258;                   // 0x258, 根拠: FUN_0808fcb4 が '.s' の値を入れる
-  u16 unk_25a;                   // 0x25A, 根拠: FUN_0808fcd8 が '.f' の値を入れる
+  s16 unk_256;                   // 0x256, 根拠: Cmd_515D が '.f' の値を入れる
+  u16 unk_258;                   // 0x258, 根拠: Cmd_9817 が '.s' の値を入れる
+  u16 unk_25a;                   // 0x25A, 根拠: Cmd_AA62 が '.f' の値を入れる
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
   u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
-  u32 unk_268[16];               // 0x268, stageID で引く, FUN_0808fd8c が 0 でクリアする
-  u32 darkDjangoAtkCounter;      // 0x2A8
-  u32 unk_2ac;                   // 0x2AC
+  u32 unk_268[16];               // 0x268, stageID で引く, Cmd_A995 が 0 でクリアする
+  s32 darkDjangoAtkCounter;      // 0x2A8
+  s32 unk_2ac;                   // 0x2AC, darkDjangoAtkCounter がここに届くとバーサークの準備ができる, 発動のたびに 200 + 0..99 で引き直す
   s16 unk_2b0[2];                // 0x2B0
   s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
   s32 gaugeValue;                // 0x2B8, 画面のゲージの値, ボス戦ではボスの hp が写され、 Entity162E では残り回数として減っていく
@@ -137,8 +146,8 @@ typedef struct {
   u16 forge;                     // 0x2FC, 0..127, 用途まだ不明
   s16 unk_2fe[5];                // 0x2FE, 好感度?
   u16 unk_308[64];               // 0x308, u16 3つで1件の表が20件 ([0] と [1] で引く, [1] が 0 なら空き), 末尾8バイトは未解析
-  u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ, 全部そろうと [0] = 0xFFFFFFFF, [1] = 0x01FFFFFF
-  u32 enemyDexFlags[4];          // 0x390, 魔物1体につき2bit, 添字は id * 2 + 種別
+  u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ(bitがクリアされている場合、魔物図鑑でエントリが ???? になる), 全部そろうと [0] = 0xFFFFFFFF, [1] = 0x01FFFFFF
+  u32 enemyDexDrop[4];           // 0x390, 魔物図鑑のドロップアイテム発見フラグ, 1体につき2bit (bit0: 通常ドロップ, bit1: レアドロップ)
   u32 armorDex[2];               // 0x3A0
   u32 photo;                     // 0x3A8, ブロマイドの取得フラグ, アルバム画面のカーソル位置とbitが対応してそう
   u8 unk_3ac[12];                // 0x3AC
@@ -146,7 +155,7 @@ typedef struct {
   // セーブ時には ここからweaponDexまで をセーブデータとして扱っている (根拠: Save_WriteExtra)
   u8 unk_3b8[2];                 // 0x3B8
   u8 unk_3ba[2];                 // 0x3BA
-  u32 solarStand;                // 0x3BC
+  s32 solarStand;                // 0x3BC
   u8 name[16];                   // 0x3C0, JP: 5文字, EN: 9文字
   Weapon weapons[16 + 16 + 16];  // 0x3D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   s16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
@@ -157,16 +166,18 @@ typedef struct {
   u32 weaponDex[2];              // 0x920
 
   // これ以降はセーブデータには含まれない(太陽ゲージなどのtmpデータ?)
-  u8 unk_928[0x932 - 0x928];  // 0x928
+  u8 unk_928[0x930 - 0x928];  // 0x928
+  u16 playerAction;           // 0x930, Player.action の控え, Player_Update から毎フレーム写される
   u16 sunAngle;               // 0x932, gSineTable の添字 (下位8bit), 太陽の方角, MagicRisingSun と Sabata_BlackSun が書き換える
-  u16 unk_934;                // 0x934
+  u16 mapFlags;               // 0x934, see MPF_*, マップ読み込み時に 0 で初期化
   u8 unk_936[2];              // 0x936
   s16 unk_938;                // 0x938, FUN_080488fc がそのまま返す
   s16 unk_93a;                // 0x93A
-  u8 unk_93c[4];              // 0x93C
+  u8 unk_93c[2];              // 0x93C
+  s16 unk_93e;                // 0x93E, EntityA288 の subdbc.unk_c0 の初期値
   s16 lx;                     // 0x940, 太陽光の強さ(ルクス), ライジングサンの効果も反映される,
   s16 sunGauge;               // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
-  u16 unk_944;                // 0x944, FUN_082158fc が EntityA288.unk_e84 を写す
+  s16 unk_944;                // 0x944, EntityA288 の subdbc.unk_c8 の控え
   s16 unk_946;                // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
   s16 unk_948[4];             // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
   s16 unk_950[4];             // 0x950, FUN_0823d310 が 9998 を上限に +1 する

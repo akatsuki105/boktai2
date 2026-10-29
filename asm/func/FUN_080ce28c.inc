@@ -2,7 +2,7 @@
 	adds r4, r0, #0
 	bl FUN_080ce00c
 	adds r0, r4, #0
-	bl FUN_080ce264
+	bl PlayerLink_CountMash
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_080cdeb0

@@ -62,7 +62,7 @@
 	ldrb r0, [r0]
 	strb r0, [r1]
 	bl MessageWindow_Close
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	ldr r0, _0809A934 @ =0x00004014
 	adds r6, r5, r0
 	movs r4, #1

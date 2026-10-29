@@ -283,7 +283,7 @@ _08018070:
 	adds r0, r5, #0
 	movs r2, #0x1e
 	str r3, [sp, #0x18]
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r4, #1
 	strb r4, [r5, #0xf]
 	ldr r0, [r6, #0x14]

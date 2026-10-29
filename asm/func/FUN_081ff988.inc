@@ -71,7 +71,7 @@ _081FF9A8:
 	str r1, [sp, #4]
 	adds r1, r2, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	ldr r2, _081FFB00 @ =0x000007DE
 	adds r0, r7, r2
 	ldrb r0, [r0]

@@ -15,7 +15,7 @@ typedef struct {
   u8 animFlip;      // 0x37, 0/1 を交互に取り baseFrame に足される
   u16 lifetime;     // 0x38, 0 になると state 2 へ移る
   u8 unk_3a[2];     // 0x3A
-  u8 baseFrame;     // 0x3C, Particle_SetFrame に渡すコマ番号の基準, kind * 2
+  u8 baseFrame;     // 0x3C, Particle_SetPose に渡すコマ番号の基準, kind * 2
   u8 unk_3d;        // 0x3D
   u16 animDelay;    // 0x3E, animTimer の再読込値 (初期値 3)
 } Entity081fa164Elem;

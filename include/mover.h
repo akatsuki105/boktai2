@@ -8,6 +8,9 @@
 struct AuxSprite;
 struct MainSprite;
 
+// Mover.flags
+#define MOVER_FLAG_2 (1 << 2)
+
 // Mover が踏んでいるタイルの控え, どの配列も [0] が前、[1] が今
 // タイルが変わったときだけ Map_UpdateMoverTile が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
 typedef struct {
@@ -24,7 +27,7 @@ static_assert(sizeof(MoverTile) == 16);
 // 生成時に Mover_Link でひとつのリストに繋がれ、id で引ける (sMoverList が head/tail を持つ)
 typedef struct Mover {
   u16 id;                         // 0x00, Mover_FindByID の検索キー
-  u16 unk_2;                      // 0x02, フラグっぽい
+  u16 flags;                      // 0x02
   u8 unk_4;                       // 0x04, 衝突解決 FUN_0823349c の第6引数, また gPlayerPtr では idx として使われる
   u8 angle;                       // 0x05, 8bit の向き, gSineTable の添字
   u8 unk_6[2];                    // 0x06, 読み手も書き手も未発見, padding?

@@ -52,8 +52,8 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  VEC3_SET(size, 50, 100, 50);
-  VEC3_SET(offset, 0, 100, 0);
+  VEC3_SET(size, Q8(0.196), Q8(0.391), Q8(0.196));
+  VEC3_SET(offset, 0, Q8(0.391), 0);
   Hitbox_Init(hitbox, p->id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_18 | HBATTR_DARK, 0x1E);
   Hitbox_SetHandler(hitbox, nop_080cb254, p);
@@ -66,8 +66,8 @@ void EntityE06A_SetupHurtbox(EntityE06A* p) {
   HitboxData* hitbox = &p->hurtbox;
   Vec3 size, offset;
 
-  VEC3_SET(size, 50, 100, 50);
-  VEC3_SET(offset, 0, 100, 0);
+  VEC3_SET(size, Q8(0.196), Q8(0.391), Q8(0.196));
+  VEC3_SET(offset, 0, Q8(0.391), 0);
   Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, 10, HBATTR_DARK, HBATTR_SOL);
   Hitbox_SetHandler(hitbox, nop_080cb258, p);

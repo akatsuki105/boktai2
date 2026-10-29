@@ -21,7 +21,10 @@ typedef struct Entity08202cd8 {
   u8 unk_188[8];                            // 0x188
   HitboxData hitboxA[8];                    // 0x190, Hitbox_SetHandler(0x082029B8) と Hitbox_SetAttack を受ける組
   HitboxData hitboxB[8];                    // 0x410, Hitbox_SetHandler(0x082029BC) と Hitbox_SetPowerAndAttributes を受ける組
-  u32 unk_690;                              // 0x690, 読み書きとも無し
+  u8 unk_690;                               // 0x690, 叩きつけ攻撃の段階, 0: 狙う 1: 振り下ろす 2: 当たった 3: 終わり
+  u8 unk_691;                               // 0x691
+  u8 unk_692;                               // 0x692, unk_690 の段階に入ってからのフレーム数
+  u8 unk_693;                               // 0x693
   Vec3 pos;                                 // 0x694, Create の引数が指すマスの衝突タイルから作り、全スプライトの pos へ複写する
   AuxSpriteGfx gfx0;                        // 0x69C, SPRITE_DVALIN_2E78
   AuxSpriteGfx gfx1;                        // 0x6B8, SPRITE_DVALIN_2E7B
@@ -35,7 +38,7 @@ typedef struct Entity08202cd8 {
   u8 unk_6de[2];                            // 0x6DE
   u16 unk_6e0;                              // 0x6E0, Create の第3引数, Hitbox_SetAttack に渡す
   u16 unk_6e2;                              // 0x6E2, Create の第2引数, Hitbox_SetPowerAndAttributes に渡す
-  u8 unk_6e4[8];                            // 0x6E4
+  Vec3 target;                              // 0x6E4, 狙ったときのプレイヤーの位置
   s32 unk_6ec;                              // 0x6EC, _Init が 0 の4バイトを書く
 } Entity08202cd8;
 static_assert(sizeof(Entity08202cd8) == 1776);

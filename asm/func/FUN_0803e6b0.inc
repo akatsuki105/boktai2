@@ -145,7 +145,7 @@ _0803E742:
 	str r1, [sp, #4]
 	mov r1, r8
 	movs r2, #1
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0803E7E4:
 	mov r2, sb
 	strb r2, [r7]

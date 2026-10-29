@@ -3,7 +3,7 @@
 	adds r5, r0, #0
 	bl MessageWindow_Close
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	movs r0, #1
 	movs r1, #1
 	movs r2, #0x1c
@@ -92,7 +92,7 @@ _0808F38C:
 	bl MessageWindow_ShowLine
 	ldr r1, _0808F3F4 @ =FUN_0808f604
 	adds r0, r5, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	add sp, #4
 	pop {r4, r5, r6, r7}
 	pop {r0}

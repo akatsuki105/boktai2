@@ -154,7 +154,7 @@ s32 EntityB88C_Destroy(EntityB88C* p) {
     MainSprite_Remove(spr);
   }
 
-  FUN_08049f84();
+  Marquee_RequestClose();
   TextPanel_Destroy(p->panelID);
   return 0;
 }

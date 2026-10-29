@@ -172,7 +172,7 @@ _080A930A:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0xc
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	b _080A935C
 	.align 2, 0
 _080A9348: .4byte 0x0203B400
@@ -183,7 +183,7 @@ _080A934C:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0xd
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080A935C:
 	ldr r0, [r6]
 	adds r0, #1

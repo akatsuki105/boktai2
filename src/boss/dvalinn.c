@@ -2,6 +2,7 @@
 
 #include "boss.h"
 #include "camera.h"
+#include "camera_inline.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -81,7 +82,6 @@ static_assert(sizeof(Dvalinn) == 2120);
 COMMON_DATA Dvalinn* gDvalinn = NULL;                      // 0x03002C80
 COMMON_DATA u8 u8_03002c84[0x03002C90 - 0x03002C84] = {};  // unused?
 
-void BlendPltt(rgb555* dst, rgb555* src1, rgb555* src2, s32 t, s32 shift);
 void BlendPlttToColor(rgb555* dst, rgb555* src, rgb555 color, s32 t, s32 shift);
 void FUN_08203c64(struct Entity082047f0* p, rgb555* pltt);
 s32 FUN_081e9f78(Vec3* pos, s32 count, u32 param_3, u32 animIdx, u32 plttIdx);
@@ -96,8 +96,8 @@ void FUN_0820361c(Vec3* pos, Vec3* target, u32 param_3, s32 param_4, s32 param_5
 void FUN_08203d38(struct Entity082047f0* p);
 void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9);
 void FUN_08204d04(Vec3* pos, u32 param_2);
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
-void FUN_081f22c0(Vec3* pos, Vec3* vel, u32 param_3, u32 param_4, u32 kind, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10, u32 param_11, u32 param_12, u32 param_13, u32 param_14, u32 param_15, u32 param_16, u32 param_17, u32 param_18);
+struct Entity081f26bcElem* Entity081f26bc_Spawn(
+    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
 
 extern const u32 u32_082526a4[7];
 
@@ -144,25 +144,6 @@ void FUN_081fc790(Dvalinn*);
 void FUN_081fc808(Dvalinn*);
 void FUN_081fc834(Dvalinn*);
 void FUN_081fc850(Dvalinn*);
-void FUN_081fca00(Dvalinn*, s32);
-void FUN_081fcb1c(Dvalinn*, s32);
-void FUN_081fcf54(Dvalinn*, s32);
-void FUN_081fcfb4(Dvalinn*, s32);
-void FUN_081fd000(Dvalinn*, s32);
-void FUN_081fd20c(Dvalinn*, s32);
-void FUN_081fd7fc(Dvalinn*, s32);
-void FUN_081fdd18(Dvalinn*, s32);
-void FUN_081fe2e0(Dvalinn*, s32);
-void FUN_081fea80(Dvalinn*, s32);
-void FUN_081febb8(Dvalinn*, s32);
-void FUN_081febe4(Dvalinn*, s32);
-void FUN_081fec60(Dvalinn*, s32);
-void FUN_081fed08(Dvalinn*, s32);
-void FUN_081fef30(Dvalinn*, s32);
-void FUN_081ff148(Dvalinn*, s32);
-void FUN_081ff34c(Dvalinn*, s32);
-void FUN_081ff5cc(Dvalinn*, s32);
-void FUN_081ff658(Dvalinn*, s32);
 
 // Dvalinn + 0xA5 で引く (FUN_081fc5b8)
 void (*const PTR_ARRAY_085ae62c[1])(Dvalinn*) = {
@@ -200,73 +181,9 @@ typedef struct {
   s16 y;         // 0x06
 } DvalinnSpriteOfs;
 
-// clang-format off
-const DvalinnSpriteOfs DvalinnSpriteOfs_ARRAY_085ae660[33] = {
-    {2, -3, 19},
-    {3, -6, 16},
-    {4, -14, 4},
-    {6, -14, -20},
-    {6, -6, -52},
-    {4, -4, -70},
-    {4, 1, -70},
-    {4, 7, -70},
-    {4, 12, -66},
-    {4, 20, -75},
-    {4, 29, -53},
-    {4, 33, -48},
-    {4, 33, -40},
-    {4, 31, -35},
-    {4, 19, -33},
-    {4, 8, -36},
-    {4, 0, -38},
-    {4, -10, -42},
-    {4, -13, -47},
-    {4, -18, -53},
-    {4, -13, -64},
-    {2, 42, 21},
-    {1, 34, 41},
-    {1, 18, 49},
-    {1, 6, 45},
-    {1, -6, 41},
-    {1, -14, 28},
-    {2, -20, 12},
-    {2, -27, -7},
-    {2, -30, -27},
-    {2, -30, -43},
-    {2, -18, -58},
-    {2, -8, -63},
-};  // 0x085AE660
-// clang-format on
-
-// FUN_081ff740 が Dvalinn + 0xA2 で引いて 0xF8 のフィールドに入れる
-// clang-format off
-void (*const PTR_ARRAY_085ae768[20])(Dvalinn*, s32) = {
-    NULL,
-    FUN_081fcb1c,
-    FUN_081fca00,
-    FUN_081fcf54,
-    FUN_081fcfb4,
-    FUN_081fd000,
-    FUN_081fd20c,
-    FUN_081fd7fc,
-    FUN_081fdd18,
-    FUN_081fe2e0,
-    FUN_081fea80,
-    FUN_081febb8,
-    FUN_081febe4,
-    FUN_081fec60,
-    FUN_081fed08,
-    FUN_081fef30,
-    FUN_081ff148,
-    FUN_081ff34c,
-    FUN_081ff5cc,
-    FUN_081ff658,
-};  // 0x085AE768
-// clang-format on
-
 void FUN_081fa608(s32 amount) { gDvalinn->unk_7dc += amount; }
 
-u32 FUN_081fa620(Dvalinn* p) { return 0x231; }
+u32 FUN_081fa620(Dvalinn* p) { return 561; }
 
 // 原典は spawn を Vec3* を受ける inline で書き, mode 1 の sin 側の添字に & 0xFF が付かない
 NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
@@ -291,7 +208,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
         spawn.x = base.x + SIN(angle);
         spawn.y = base.y;
         spawn.z = base.z + COS(angle);
-        FUN_081f22c0(&spawn, &vel, 0x2E78, 0x38E2, 3, 0, 9, 0xDA, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&spawn, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0, 9, 0xDA, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       break;
     }
@@ -308,7 +225,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
         spawn.x = base.x + POLAR_Z(256, angle);
         spawn.y = base.y;
         spawn.z = base.z + POLAR_X(256, angle);
-        FUN_081f22c0(&spawn, &vel, 0xF422, 0x121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&spawn, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       Vec3_SetPolar(&base, p->base.mover.angle, -300);
       Vec3_Add(&base, pos);
@@ -319,7 +236,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
         spawn.x = base.x + POLAR_Z(256, angle);
         spawn.y = base.y;
         spawn.z = base.z + POLAR_X(256, angle);
-        FUN_081f22c0(&spawn, &vel, 0xF422, 0x121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&spawn, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       break;
     }
@@ -343,9 +260,9 @@ NON_MATCH void FUN_081fabc0(Dvalinn* p, s32 radius) {
   pos.x += POLAR_Z(radius, angle);
   pos.z += POLAR_X(radius, angle);
   if (!(gFrameCounter & 1)) {
-    FUN_081f22c0(&pos, &vel, 0x2E78, 0x38E2, 3, 0x200, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0x200, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   } else {
-    FUN_081f22c0(&pos, &vel, 0x2E78, 0x38E2, 3, 0x400, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0x400, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   }
 #else
   INCFUNC("asm/func/FUN_081fabc0.inc");
@@ -386,7 +303,7 @@ NON_MATCH void FUN_081fae7c(Vec3* pos) {
   p.z = pos->z;
   p.x += Trig_Fix12ToInt(SIN(angle) * radius);
   p.z += Trig_Fix12ToInt(COS(angle) * radius);
-  FUN_081f22c0(&p, &vel, 0x2E78, 0x38E2, kinds[Random() & 3], blink == 0 ? 0x200 : 0x400, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  Entity081f26bc_Spawn(&p, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, kinds[Random() & 3], blink == 0 ? 0x200 : 0x400, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 #else
   INCFUNC("asm/func/FUN_081fae7c.inc");
 #endif
@@ -418,7 +335,7 @@ NON_MATCH void FUN_081fafd4(void) {
     if ((u8)Random() < 128) {
       FUN_08204d04(&pos, 1);
     } else {
-      FUN_081f22c0(&pos, &vel, 0x2E78, 0x38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     pos.x = src[0];
@@ -434,7 +351,7 @@ NON_MATCH void FUN_081fafd4(void) {
     if ((u8)Random() < 128) {
       FUN_08204d04(&pos, 1);
     } else {
-      FUN_081f22c0(&pos, &vel, 0x2E78, 0x38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     src += 2;
   }
@@ -1279,7 +1196,7 @@ NON_MATCH void FUN_081fc890(Dvalinn* p, u32 pathIdx, u32 nodeIdx) {
   p->unk_807 = nodeIdx;
   Map_GetPathNodePos(pos, p->unk_806, p->unk_807);
   pos->y = (GetTileAt(pos)->heightStairs & 0xF) << 8;
-  VEC3_SET(center, 0x780, 0, 0x780);
+  VEC3_SET(center, Q8(7.5), 0, Q8(7.5));
   center.y = (GetTileAt(&center)->heightStairs & 0xF) << 8;
   Boss_SetAngle(&p->base, ArcTan2_8(center.x - mover->pos.x, center.z - mover->pos.z));
 #else
@@ -1294,7 +1211,7 @@ NON_MATCH void FUN_081fca00(Dvalinn* p, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   boss->damageCallback(boss);
   if (Mod(timer, 10) == 0) {
@@ -1327,10 +1244,10 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
 
     boss->stateEntered = FALSE;
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_HIDDEN);
-    VEC3_SET(center, 0x780, 0, 0x780);
+    VEC3_SET(center, Q8(7.5), 0, Q8(7.5));
     center.y = (GetTileAt(&center)->heightStairs & 0xF) << 8;
     Boss_SetAngle(boss, ArcTan2_8(center.x - boss->mover.pos.x, center.z - boss->mover.pos.z));
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     NestedState_Reset0(ns);
     NestedState_Set0(ns, 1);
   }
@@ -1373,7 +1290,7 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
           pos = p->unk_808;
           pos.x += Trig_Fix12ToInt(SIN(angle) * radius);
           pos.z += Trig_Fix12ToInt(SIN(angle) * radius);
-          FUN_081f22c0(&pos, &vel, 0x2E78, 0x38E2, 3, 0, 9, 0x232, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+          Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0, 9, 0x232, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
       }
       ns->timer0++;
@@ -1400,7 +1317,7 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
       if (ns->timer0 == 0) {
         FUN_081fa628(p, 1);
         boss->flags &= ~BOSSFLAG_HIDDEN;
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, 1, 1, 4);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
         PlaySound_082406e0(SONG_439);
       }
       SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
@@ -1409,7 +1326,7 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
     }
     case 3: {
       boss->subStateDone = TRUE;
-      Boss_SetState(boss, (BossUpdateFunc)FUN_081fca00, 2);
+      Boss_SetState(boss, FUN_081fca00, 2);
       break;
     }
   }
@@ -1463,12 +1380,12 @@ NON_MATCH void FUN_081fd000(Dvalinn* p, s32 timer) {
   switch (ns->state0) {
     case 0: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 10, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 10, PLAYMODE_ONCE_AND_STOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
       if (boss->animDone) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, 0);
         NestedState_Set0(ns, 1);
       }
       if ((Random() & 3) >> 1) {
@@ -1478,12 +1395,12 @@ NON_MATCH void FUN_081fd000(Dvalinn* p, s32 timer) {
     }
     case 1: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 12, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 12, PLAYMODE_ONCE_AND_STOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
       if (boss->animDone) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, 2, 1, 4);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 0, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
         NestedState_Set0(ns, 2);
       }
       break;
@@ -1491,7 +1408,7 @@ NON_MATCH void FUN_081fd000(Dvalinn* p, s32 timer) {
     case 2: {
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
       boss->subStateDone = TRUE;
-      Boss_SetState(boss, (BossUpdateFunc)FUN_081fcf54, 3);
+      Boss_SetState(boss, FUN_081fcf54, 3);
       break;
     }
   }
@@ -1516,7 +1433,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
   switch (ns->state0) {
     case 0: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 1, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_LOOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1527,7 +1444,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
     }
     case 1: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 1, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_LOOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1538,7 +1455,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
     }
     case 2: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 6, 1, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 6, PLAYMODE_LOOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1560,7 +1477,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
 
           Vec3_SetPolar(&ofs, angle1, 256);
           Vec3_SetPolar(&shift, angle2, 256);
-          VEC3_SET(center, 0x780, 0, 0x780);
+          VEC3_SET(center, Q8(7.5), 0, Q8(7.5));
           center.y = (GetTileAt(&center)->heightStairs & 0xF) << 8;
           Vec3_Sum(&p->unk_820[0], &center, &ofs);
           p->unk_820[1] = center;
@@ -1629,7 +1546,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
     }
     case 5: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
         FUN_08203d38(p->entity082047f0);
       }
@@ -1641,7 +1558,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
     }
     case 6: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1676,7 +1593,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
     Vec3 center;
 
     boss->stateEntered = FALSE;
-    VEC3_SET(center, 0x780, 0, 0x780);
+    VEC3_SET(center, Q8(7.5), 0, Q8(7.5));
     center.y = (GetTileAt(&center)->heightStairs & 0xF) << 8;
     Boss_SetAngle(boss, ArcTan2_8(center.x - boss->mover.pos.x, center.z - boss->mover.pos.z));
     NestedState_Reset0(&p->nestedState);
@@ -1685,7 +1602,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
   switch (ns->state0) {
     case 0: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 1, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_LOOP, 1, 0);
         ns->timer0 = 1;
         FUN_08203d0c(p->entity082047f0, 1);
       }
@@ -1697,7 +1614,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
     }
     case 1: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 1, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_LOOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1708,7 +1625,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
     }
     case 2: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 8, 1, 0);
+        Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 8, PLAYMODE_LOOP, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1723,7 +1640,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
       u32 angle;
 
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 9, 1, 0);
+        Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 9, PLAYMODE_LOOP, 0);
         ns->timer0 = 1;
         PlaySound_082406e0(SONG_441);
       }
@@ -1755,7 +1672,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
     }
     case 4: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 8, 1, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 8, PLAYMODE_LOOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1766,7 +1683,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
     }
     case 5: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
         FUN_08203d38(p->entity082047f0);
       }
@@ -1778,7 +1695,7 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
     }
     case 6: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1840,7 +1757,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
     Vec3 center;
 
     boss->stateEntered = FALSE;
-    VEC3_SET(center, 0x780, 0, 0x780);
+    VEC3_SET(center, Q8(7.5), 0, Q8(7.5));
     center.y = (GetTileAt(&center)->heightStairs & 0xF) << 8;
     Boss_SetAngle(boss, ArcTan2_8(center.x - boss->mover.pos.x, center.z - boss->mover.pos.z));
     NestedState_Reset0(&p->nestedState);
@@ -1849,7 +1766,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
   switch (ns->state0) {
     case 0: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, 0);
         ns->timer0 = 1;
         Dvalinn_SetUnk7c8(p, 1, 0);
         PlaySound_082406e0(SONG_442);
@@ -1863,7 +1780,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
     }
     case 1: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1874,7 +1791,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
     }
     case 2: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 8, 1, 0);
+        Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 8, PLAYMODE_LOOP, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1920,7 +1837,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
     }
     case 8: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 8, 1, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 8, PLAYMODE_LOOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1931,7 +1848,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
     }
     case 9: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
         FUN_08203d38(p->entity082047f0);
         Dvalinn_SetUnk7c8(p, 2, 0x233);
@@ -1944,7 +1861,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
     }
     case 10: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -1988,13 +1905,13 @@ NON_MATCH void FUN_081fe2e0(Dvalinn* p, s32 timer) {
     return;
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_0) && ns->state0 < 3) {
-    Boss_SetState(boss, (BossUpdateFunc)FUN_081fd000, 5);
+    Boss_SetState(boss, FUN_081fd000, 5);
     return;
   }
   switch (ns->state0) {
     case 0: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -2005,7 +1922,7 @@ NON_MATCH void FUN_081fe2e0(Dvalinn* p, s32 timer) {
     }
     case 1: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 1, 0);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -2018,7 +1935,7 @@ NON_MATCH void FUN_081fe2e0(Dvalinn* p, s32 timer) {
       u32 phase;
 
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 6, 2, 1, 0);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 6, PLAYMODE_ONCE_AND_STOP, 1, 0);
         FUN_08203d0c(p->entity082047f0, 3);
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -2135,7 +2052,7 @@ NON_MATCH void FUN_081fe2e0(Dvalinn* p, s32 timer) {
     }
     case 6: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
         FUN_08203d38(p->entity082047f0);
       }
@@ -2147,7 +2064,7 @@ NON_MATCH void FUN_081fe2e0(Dvalinn* p, s32 timer) {
     }
     case 7: {
       if (ns->timer0 == 0) {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, 2, 1, 2);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_REVERSE);
         ns->timer0 = 1;
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
@@ -2179,10 +2096,10 @@ NON_MATCH void FUN_081fea80(Dvalinn* p, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 10, 2, 1, 0);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 10, PLAYMODE_ONCE_AND_STOP, 1, 0);
     Boss_GiveWeaponExp(boss, p->weaponExp);
     FUN_08022fb8(boss, &p->sprites[0].pos);
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 15, 0, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 15, PLAYMODE_PAUSE, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = p->sprites[0].pos;
     MainSprite_Hide(&p->sprites[1]);
     FUN_08203d38(p->entity082047f0);
@@ -2225,7 +2142,7 @@ void FUN_081febe4(Dvalinn* p, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 14, 0, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 14, PLAYMODE_PAUSE, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = p->sprites[0].pos;
     NestedState_Reset0(&p->nestedState);
   }
@@ -2242,7 +2159,7 @@ void FUN_081fec60(Dvalinn* p, s32 timer) {
 
     boss->stateEntered = FALSE;
     sprite = &p->sprites[1];
-    MainSprite_SetAnim(sprite, &p->gfx, 14, 0, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 14, PLAYMODE_PAUSE, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = p->sprites[0].pos;
     NestedState_Reset0(&p->nestedState);
     sprite->flags |= SPRFLAG_AFFINE;
@@ -2263,7 +2180,7 @@ NON_MATCH void FUN_081fed08(Dvalinn* p, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 16, 2, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = p->base.mover.pos;
     NestedState_Reset0(&p->nestedState);
   }
@@ -2276,7 +2193,7 @@ NON_MATCH void FUN_081fed08(Dvalinn* p, s32 timer) {
   }
   MainSprite_Show(&p->sprites[1]);
   if (MainSprite_AdvanceAnim(&p->sprites[1], &p->gfx)) {
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 17, 1, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 17, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     boss->subStateDone = TRUE;
   }
   SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
@@ -2292,19 +2209,19 @@ void FUN_081fedec(Dvalinn* p, s32 timer) {
     if ((timer & 15) == 0) {
       switch ((timer >> 4) & 3) {
         case 0: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x30, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x30, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
         case 1: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x31, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x31, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
         case 2: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x32, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x32, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
         case 3: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x33, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0x33, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
       }
@@ -2315,19 +2232,19 @@ void FUN_081fedec(Dvalinn* p, s32 timer) {
     if ((timer & 15) == 0) {
       switch ((timer >> 4) & 3) {
         case 0: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xF7, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xF7, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
         case 1: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xF8, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xF8, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
         case 2: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xF9, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xF9, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
         case 3: {
-          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xFA, 1, 4);
+          MainSprite_SetAnim(&p->sprite_31c, &p->gfx_2fc, 0xFA, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
           break;
         }
       }
@@ -2336,6 +2253,46 @@ void FUN_081fedec(Dvalinn* p, s32 timer) {
   }
 }
 
+// clang-format off
+const DvalinnSpriteOfs DvalinnSpriteOfs_ARRAY_085ae660[33] = {
+    {2, -3, 19},
+    {3, -6, 16},
+    {4, -14, 4},
+    {6, -14, -20},
+    {6, -6, -52},
+    {4, -4, -70},
+    {4, 1, -70},
+    {4, 7, -70},
+    {4, 12, -66},
+    {4, 20, -75},
+    {4, 29, -53},
+    {4, 33, -48},
+    {4, 33, -40},
+    {4, 31, -35},
+    {4, 19, -33},
+    {4, 8, -36},
+    {4, 0, -38},
+    {4, -10, -42},
+    {4, -13, -47},
+    {4, -18, -53},
+    {4, -13, -64},
+    {2, 42, 21},
+    {1, 34, 41},
+    {1, 18, 49},
+    {1, 6, 45},
+    {1, -6, 41},
+    {1, -14, 28},
+    {2, -20, 12},
+    {2, -27, -7},
+    {2, -30, -27},
+    {2, -30, -43},
+    {2, -18, -58},
+    {2, -8, -63},
+};  // 0x085AE660
+// clang-format on
+
+void FUN_081ff148(Dvalinn*, s32);
+
 // 1 回目で打ち切り (244/241)
 NON_MATCH void FUN_081fef30(Dvalinn* p, s32 timer) {
 #ifdef NONMATCHING_C
@@ -2343,7 +2300,7 @@ NON_MATCH void FUN_081fef30(Dvalinn* p, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 18, 2, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 18, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = boss->mover.pos;
     NestedState_Reset0(&p->nestedState);
     p->unk_3c4 = 0;
@@ -2359,7 +2316,7 @@ NON_MATCH void FUN_081fef30(Dvalinn* p, s32 timer) {
   MainSprite_Show(&p->sprites[1]);
   if (MainSprite_AdvanceAnim(&p->sprites[1], &p->gfx)) {
     boss->subStateDone = TRUE;
-    Boss_SetState(boss, (BossUpdateFunc)FUN_081ff148, 16);
+    Boss_SetState(boss, FUN_081ff148, 16);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
   if (timer > 13) {
@@ -2404,11 +2361,10 @@ NON_MATCH void FUN_081ff148(Dvalinn* p, s32 timer) {
   bool32 done;
   Vec3* pos;
   Vec3* vp;
-  s32 x, z, a, b;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 17, 1, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 17, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = boss->mover.pos;
     NestedState_Reset0(&p->nestedState);
     p->unk_3c4 = 1;
@@ -2438,14 +2394,7 @@ NON_MATCH void FUN_081ff148(Dvalinn* p, s32 timer) {
   }
   vp = &p->sprite_31c.pos;
   pos = &boss->mover.pos;
-  x = pos->x >> 1;
-  z = pos->z >> 1;
-  vp->x = FixToInt(8, (x - z) * 48);
-  a = FixToInt(8, (x + z) * 48);
-  b = FixToInt(8, pos->y * 24);
-  vp->x = vp->x - gCameraVpCoords.x + 120;
-  vp->y = (a - b) - gCameraVpCoords.y + 90;
-  vp->z = (a + b) - gCameraVpCoords.z;
+  WorldToScreen(vp, pos);
   p->sprite_31c.pos.x += ofs->x;
   p->sprite_31c.pos.y += ofs->y;
   MainSprite_Show(&p->sprite_31c);
@@ -2465,11 +2414,10 @@ NON_MATCH void FUN_081ff34c(Dvalinn* p, s32 timer) {
   bool32 done;
   Vec3* pos;
   Vec3* vp;
-  s32 x, z, a, b, sy, sz;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 16, 2, 6);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = boss->mover.pos;
     NestedState_Reset0(&p->nestedState);
     p->unk_3c4 = 0;
@@ -2488,16 +2436,7 @@ NON_MATCH void FUN_081ff34c(Dvalinn* p, s32 timer) {
   }
   vp = &p->sprite_31c.pos;
   pos = &boss->mover.pos;
-  x = pos->x >> 1;
-  z = pos->z >> 1;
-  vp->x = FixToInt(8, (x - z) * 48);
-  a = FixToInt(8, (x + z) * 48);
-  b = FixToInt(8, pos->y * 24);
-  sy = a - b;
-  sz = a + b;
-  vp->x = vp->x - gCameraVpCoords.x + 120;
-  vp->y = sy - gCameraVpCoords.y + 90;
-  vp->z = sz - gCameraVpCoords.z;
+  WorldToScreen(vp, pos);
   p->sprite_31c.pos.x += ofs->x;
   p->sprite_31c.pos.y += ofs->y;
   p->auxSprite.pos = p->sprite_31c.pos;
@@ -2511,9 +2450,9 @@ NON_MATCH void FUN_081ff34c(Dvalinn* p, s32 timer) {
     MainSprite_Hide(&p->sprites[1]);
     MainSprite_Hide(&p->sprite_31c);
     AuxSprite_Hide(&p->auxSprite);
-    Boss_SetState(boss, (BossUpdateFunc)FUN_081febb8, 11);
+    Boss_SetState(boss, FUN_081febb8, 11);
     CpuFill32(0, &vel, sizeof(vel));
-    FUN_081f22c0(&p->sprites[1].pos, &vel, 0xF422, 0x121B, 6, 0, 9, 0x237, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Entity081f26bc_Spawn(&p->sprites[1].pos, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   } else if ((timer & 15) == 0) {
     if ((u8)Random() > 128) {
       FUN_081fad7c(p, 0x40);
@@ -2551,7 +2490,7 @@ void FUN_081ff658(Dvalinn* p, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 14, 0, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 14, PLAYMODE_PAUSE, MAIN_ANIM_FORCE_POSE);
     p->sprites[1].pos = p->sprites[0].pos;
     Dvalinn_SetUnk7c8(p, 3, 0x239);
   }
@@ -2563,10 +2502,35 @@ void FUN_081ff658(Dvalinn* p, s32 timer) {
 void FUN_081ff734(Dvalinn* p) { Boss_UpdateState(&p->base); }
 
 s32 FUN_081ff740(Dvalinn* p) {
+  // clang-format off
+  static void (*const PTR_ARRAY_085ae768[20])(Dvalinn*, s32) = {
+      NULL,
+      FUN_081fcb1c,
+      FUN_081fca00,
+      FUN_081fcf54,
+      FUN_081fcfb4,
+      FUN_081fd000,
+      FUN_081fd20c,
+      FUN_081fd7fc,
+      FUN_081fdd18,
+      FUN_081fe2e0,
+      FUN_081fea80,
+      FUN_081febb8,
+      FUN_081febe4,
+      FUN_081fec60,
+      FUN_081fed08,
+      FUN_081fef30,
+      FUN_081ff148,
+      FUN_081ff34c,
+      FUN_081ff5cc,
+      FUN_081ff658,
+  };  // 0x085AE768
+  // clang-format on
+
   if (p->base.state == 0 || p->base.state > 20) {
     return FALSE;
   } else {
-    Boss_SetState(&p->base, (BossUpdateFunc)PTR_ARRAY_085ae768[p->base.state], p->base.state);
+    Boss_SetState(&p->base, PTR_ARRAY_085ae768[p->base.state], p->base.state);
     return TRUE;
   }
 }
@@ -2601,7 +2565,7 @@ void Dvalinn_InitHitbox(Dvalinn* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x100, 0x100, 0x100);
+  VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
@@ -2613,7 +2577,7 @@ void Dvalinn_InitHurtbox(Dvalinn* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x100, 0x100, 0x100);
+  VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
@@ -2649,12 +2613,12 @@ NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
     p->unk_802 = 15;
     p->unk_800 = 10;
     p->sprites[0].pltt = p->pltt[0];
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(&p->hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(&p->hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
     if (p->unk_7de == TRUE) {
       Vec3 size;
 
-      VEC3_SET(size, 0xA4, 0x10, 0xA4);
+      VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
       EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
     }
     if (p->base.hp <= 0) {
@@ -2662,7 +2626,7 @@ NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
       p->base.hp = 0;
       SET_FLAGS(p->base.flags, BOSSFLAG_UNK_1);
       Boss_SetSubStates(&p->base, 0, 0, 6);
-      Boss_SetState(&p->base, (BossUpdateFunc)FUN_081fea80, 10);
+      Boss_SetState(&p->base, FUN_081fea80, 10);
       return TRUE;
     }
     p->unk_804 = 15;
@@ -2670,7 +2634,7 @@ NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
     if (p->unk_7fc <= 0) {
       SET_FLAGS(p->base.flags, BOSSFLAG_UNK_0);
       if (p->base.curState == 9) {
-        Boss_SetState(&p->base, (BossUpdateFunc)FUN_081fd000, 5);
+        Boss_SetState(&p->base, FUN_081fd000, 5);
       }
       return TRUE;
     }
@@ -2857,7 +2821,7 @@ NON_MATCH void FUN_081ffdb0(Dvalinn* p) {
 }
 
 s32 Dvalinn_Update(Dvalinn* p) {
-  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     FUN_08022e20(&p->base);
     FUN_081ffd9c(p);
     FUN_081fc86c(p);
@@ -2957,8 +2921,8 @@ NON_MATCH s32 Dvalinn_Init(Dvalinn* p, u32 id) {
     p->unk_7f8 = 300;
   }
   Boss_Init(boss, id, bossID, &pos, angle);
-  boss->unk_114 = angle;
-  boss->unk_ab = VM_GetNamedArgValue('i', 0);
+  boss->destAngle = angle;
+  boss->isDemo = VM_GetNamedArgValue('i', 0);
   boss->damageCallback = (BossCheckFunc)FUN_081ff988;
   boss->stateRequestCallback = (BossCheckFunc)FUN_081ff740;
   Boss_InitHP(boss, hp, hp, power);
@@ -2988,11 +2952,11 @@ NON_MATCH s32 Dvalinn_Init(Dvalinn* p, u32 id) {
     p->unk_7fe = 5;
   }
   p->unk_7fc = p->unk_7fa;
-  MainSprite_Add(&p->sprites[0], &p->gfx, 0, 0, 2, 0, 60, &pos);
-  Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 1, 1, 4);
+  MainSprite_Add(&p->sprites[0], &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
+  Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 1, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   MainSprite_Hide(&p->sprites[0]);
   SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
-  Video_GetAuxSprite(&p->auxGfx, 0x2E7B);
+  Video_GetAuxSprite(&p->auxGfx, SPRITE_DVALIN_2E7B);
   AuxSprite_Add(&p->auxSprite, &p->auxGfx, 0);
   p->auxSprite.poseIdx = 2;
   p->auxSprite.flags |= SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN;
@@ -3003,24 +2967,24 @@ NON_MATCH s32 Dvalinn_Init(Dvalinn* p, u32 id) {
   }
   p->gfx_2fc = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx_2fc, f);
-  MainSprite_Add(&p->sprite_31c, &p->gfx_2fc, 0, 0, 2, 0, 60, &pos);
+  MainSprite_Add(&p->sprite_31c, &p->gfx_2fc, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
   p->sprite_31c.flags |= SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN;
-  MainSprite_Add(&p->sprites[1], &p->gfx, 0, 0, 2, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[1], &p->gfx, 15, 0, 2);
+  MainSprite_Add(&p->sprites[1], &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[1], &p->gfx, 15, PLAYMODE_PAUSE, MAIN_ANIM_REVERSE);
   MainSprite_Hide(&p->sprites[1]);
-  if (!boss->unk_ab) {
+  if (!boss->isDemo) {
     Boss_SetSubStates(boss, 1, 0, 0);
-    Boss_SetState(boss, (BossUpdateFunc)FUN_081febb8, 11);
+    Boss_SetState(boss, FUN_081febb8, 11);
   } else {
     switch (VM_GetNamedArgValue('D', 0)) {
       case 0: {
         Boss_SetSubStates(boss, 1, 0, 0);
-        Boss_SetState(boss, (BossUpdateFunc)FUN_081febb8, 11);
+        Boss_SetState(boss, FUN_081febb8, 11);
         break;
       }
       case 1: {
         Boss_SetSubStates(boss, 1, 0, 0);
-        Boss_SetState(boss, (BossUpdateFunc)FUN_081febb8, 11);
+        Boss_SetState(boss, FUN_081febb8, 11);
         break;
       }
     }
@@ -3107,23 +3071,9 @@ Dvalinn* Dvalinn_Create(u32 id) {
 }
 
 // state 3 の処理へ切り替える
-// 残差1命令 (30 対 31), 原典は定数 3 を r4 に置いて state と curState で使い回すが, こちらは2回作り直す
-// u8/s32 のローカルに退避する形は試済
-NON_MATCH void FUN_08200a6c(void) {
-#ifdef NONMATCHING_C
+void Cmd_15A9(void) {
   Dvalinn* p = gDvalinn;
-
-  p->base.state = 3;
-  p->base.subState0 = 0;
-  p->base.subState1 = 0;
-  p->base.subState2 = 0;
-  p->base.subStateTimer = 0;
-  p->base.subStateEntered = 1;
-  p->base.curState = 3;
-  p->base.updateCallback = (BossUpdateFunc)FUN_081fcf54;
-  p->base.timer = 0;
-  p->base.stateEntered = 1;
-#else
-  INCFUNC("asm/func/FUN_08200a6c.inc");
-#endif
+  Boss_RequestState(&p->base, 3);
+  Boss_SetSubStates(&p->base, 0, 0, 0);
+  Boss_SetState(&p->base, FUN_081fcf54, 3);
 }

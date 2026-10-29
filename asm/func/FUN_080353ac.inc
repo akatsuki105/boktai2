@@ -207,7 +207,7 @@ _08035530:
 	movs r0, #2
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08035564

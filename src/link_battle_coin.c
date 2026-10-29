@@ -49,7 +49,7 @@ s32 FUN_081e1220(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 param_3) {
   slot->unk_03 = 0;
   slot->unk_06 = 0;
   slot->updateCallback = NULL;
-  AuxSprite_Add(&slot->sprite, &p->coinGfx, 1);
+  AuxSprite_Add(&slot->sprite, &p->coinGfx, SPRFLAG_HIDDEN);
   ParticleShadow_Init(&slot->shadow, &slot->sprite.pos, 0);
   ParticleShadow_Hide(&slot->shadow);
   return 0;

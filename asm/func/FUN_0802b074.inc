@@ -52,7 +52,7 @@
 	str r1, [sp, #4]
 	mov r1, r8
 	movs r2, #1
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0802B0E6:
 	movs r0, #0
 	strh r0, [r7]
@@ -360,7 +360,7 @@ _0802B326:
 	b _0802B6DC
 _0802B342:
 	adds r0, r6, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _0802B35C
@@ -397,7 +397,7 @@ _0802B37C:
 	adds r4, r0, #0
 	adds r4, #0xc3
 	adds r0, r6, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	subs r0, #0xc1
 	mov sb, r0
 	ldr r0, _0802B400 @ =0x0000087C
@@ -507,11 +507,11 @@ _0802B468:
 	ldr r4, [sp, #0x48]
 	strb r0, [r4]
 	adds r0, r6, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	mov r1, sl
 	strh r0, [r1]
 	adds r0, r6, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	cmp r0, #0
 	bne _0802B4A4
 	movs r2, #0xcf
@@ -1130,7 +1130,7 @@ _0802B8F8:
 	str r2, [sp, #0x10]
 	adds r2, r3, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	mov r8, r0
 	adds r4, r6, #0
 	adds r4, #0x90
@@ -1167,7 +1167,7 @@ _0802B8F8:
 	str r1, [sp, #4]
 	mov r1, r8
 	movs r2, #1
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0802B9A2:
 	adds r0, r6, #0
 	bl FUN_08028a04
@@ -1412,7 +1412,7 @@ _0802BB40:
 	str r3, [sp, #0x10]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 _0802BB88:
 	movs r0, #0xef
 	lsls r0, r0, #1

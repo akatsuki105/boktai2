@@ -16,9 +16,9 @@ void* VM_Ctrl_Unused_0BB3(void) { return NULL; }
 
 void* VM_Ctrl_LoadMap(void) {
   u16 scriptID = (u16)VM_GetValue();
-  u32_03004798 = 0x01;
+  gMapChangeFlags = 0x01;
   if ((!VM_SeekToNamedArg('n')) || ((VM_GetPC() != NULL) && (VM_GetValue() == 0))) {
-    u32_03004798 |= 0x10;
+    gMapChangeFlags |= 0x10;
   }
   SetMapInitScriptID((s16)scriptID);
   gStat->mapInitScriptID = scriptID;
@@ -152,11 +152,11 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
 void* VM_Ctrl_Restart(void) {
   bool32 bVar1 = FUN_0823a8b0();
   if (!bVar1) {
-    u32_03004798 = 0x40;
+    gMapChangeFlags = 0x40;
     if (VM_SeekToNamedArg('s')) {
-      u32_03004798 |= 0x10;
+      gMapChangeFlags |= 0x10;
     } else if (VM_SeekToNamedArg('r')) {
-      u32_03004798 |= 0x100;
+      gMapChangeFlags |= 0x100;
     }
   }
   return NULL;

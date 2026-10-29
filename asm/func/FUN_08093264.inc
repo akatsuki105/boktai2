@@ -44,7 +44,7 @@ _080932B6:
 	ldrh r0, [r0]
 	adds r0, #0x10
 	movs r1, #0
-	bl FUN_0808a458
+	bl SetScreenBrightness
 	b _080932EA
 	.align 2, 0
 _080932D0: .4byte 0x0000027E
@@ -56,7 +56,7 @@ _080932DC:
 	ldrh r0, [r0]
 	adds r0, #0x10
 	ldr r1, _08093310 @ =0x00007FFF
-	bl FUN_0808a458
+	bl SetScreenBrightness
 _080932EA:
 	ldr r0, _0809330C @ =0x000009EE
 	adds r1, r4, r0

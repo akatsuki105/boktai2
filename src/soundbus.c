@@ -70,7 +70,7 @@ s32 EntityD3A9_Update(EntityD3A9* p) {
 s32 EntityD3A9_Destroy(EntityD3A9* _) { return 0; }
 
 s32 EntityD3A9_Init(EntityD3A9* p, u32 n) {
-  MsgQueue_Register(&p->mq, n, 8);
+  MsgQueue_Register(&p->mq, n, CLS_SOUND);
   return 0;
 }
 

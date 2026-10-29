@@ -1,6 +1,7 @@
 #include "video.h"
 
 #include "camera.h"
+#include "camera_inline.h"
 #include "entity.h"
 #include "file.h"
 #include "font.h"
@@ -29,7 +30,7 @@ extern s32 gStagedOAMCount;
 extern bool32 gDispcntLocked;
 extern bool32 gVBlankDone;
 extern u16 gStagedDISPCNT;
-extern s32 s32_0300446c;
+extern s32 gGrayscaleTimer;
 extern u16 gObjPlttLen;
 
 extern u8 gOAMHeightTable[16];
@@ -52,7 +53,7 @@ typedef struct {
   void* tiles;    // 0x04, 転送元
 } ObjTileRequest;
 
-EWRAM_DATA u8 u8_ARRAY_02036c00[512] = {};                            // 0x02036C00
+EWRAM_DATA u16 u16_ARRAY_02036c00[256] = {};                          // 0x02036C00
 EWRAM_DATA rgb555 gBgPlttBlendBuffer[256] = {};                       // 0x02036e00, gBgPlttBuffer に明るさとブレンド色を掛けた結果の置き場, 根拠: ApplyBgPlttBlend
 EWRAM_DATA u8 gTilemapBuffer[BG_SCREEN_SIZE * 4] = {};                // 0x02037000, BG0, BG1, BG2, BG3 のタイルマップのバッファ
 EWRAM_DATA MainSpriteTileRequest gMainSpriteTileRequests[1024] = {};  // 0x02039000
@@ -61,10 +62,9 @@ IWRAM_DATA Entity gVideoCommit = {};                   // 0x03000258
 IWRAM_DATA Entity gVideoRender = {};                   // 0x03000270
 IWRAM_DATA ObjTileRequest gObjTileRequests[128] = {};  // 0x03000288, 根拠: Video_AllocObjTiles が 8 バイト刻みで積み、上限を 127 で弾く
 
-COMMON_DATA vu16* gHBlankEffectReg = NULL;                 // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
-COMMON_DATA u32 gOamDirty = 0;                             // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
-COMMON_DATA bool32 gDispcntLocked = FALSE;                 // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
-COMMON_DATA u8 u8_03002cac[0x03002CB0 - 0x03002CAC] = {};  // todo
+COMMON_DATA vu16* gHBlankEffectReg = NULL;  // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
+COMMON_DATA u32 gOamDirty = 0;              // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
+COMMON_DATA bool32 gDispcntLocked = FALSE;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
 
 void ResetPltt(rgb555* pltt, s32 val);
 void Video_ResetObjTileAlloc(void);
@@ -117,13 +117,13 @@ s32 VideoRender_Update(VideoRender* p) {
   gDrawMainSprites();
   gDrawParticles();
   Video_BuildOAM();
-  if (s32_0300446c != 0) {
+  if (gGrayscaleTimer != 0) {
     FUN_0822d8e8();
     FUN_0822d828();
-    if (s32_0300446c > 0) {
-      s32_0300446c--;
+    if (gGrayscaleTimer > 0) {
+      gGrayscaleTimer--;
     }
-    if (s32_0300446c == 0) {
+    if (gGrayscaleTimer == 0) {
       FUN_0822d98c();
     }
   } else {
@@ -264,7 +264,7 @@ static inline void _AuxSprite_Setup(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags
   p->flags = flags;
   p->unk_05 = 1;
   p->oamAttr = 0;
-  p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
+  p->scaleX = Q6(1), p->scaleY = Q6(1);
   p->rotation = 0;
   p->priority = 2;
   AuxSprite_SetGfx(p, gfx);
@@ -298,7 +298,8 @@ void AuxSprite_Remove(AuxSprite* p) {
   }
 }
 
-void nop_0822a4f8(void* _, s32 unused1, s32 unused2) {}
+// 引数の型は呼び出し元をみてつけたもの
+void nop_0822a4f8(AuxSprite* _, s32 x, s32 y) {}
 
 // ノードに AuxSpriteGfx を割り当て、OAM属性のシェイプ/サイズを作り直す
 void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx) {
@@ -350,7 +351,7 @@ NON_MATCH void AuxSprite_DrawListScreen(void) {
     y = (p->pos.y - gCameraCoords.worldPos.y) / 8 + 90;
     z = p->pos.z - gCameraCoords.worldPos.z;
 
-    if (!(flags & SPRFLAG_NO_CLIP)) {
+    if (!(flags & SPRFLAG_NO_CLIP)) {  // クリッピング
       s32 left, top, w, h;
 
       if (flags & SPRFLAG_XFLIP) {
@@ -367,7 +368,7 @@ NON_MATCH void AuxSprite_DrawListScreen(void) {
         top = y - gfx->py;
         h = gfx->ph;
       }
-      if (left > 240 || top > 180 || left + w < 0 || top + h < 0) {
+      if (left > DISPLAY_WIDTH || top > DISPLAY_HEIGHT || left + w < 0 || top + h < 0) {
         continue;
       }
     }
@@ -381,9 +382,7 @@ NON_MATCH void AuxSprite_DrawListScreen(void) {
 
 // ゲームオーバー時の AuxSprite 描画パス (SPRFLAG_GAMEOVER がセットされた AuxSprite のみ描画)
 // SPRFLAG_GAMEOVER の立った AuxSprite だけを描くパス, ゲームオーバー中は Video_SetDrawPasses がこちらに差し替える
-// 残差は 196 命令 vs 183 命令 で、AuxSprite_DrawListUnk13 と同じく点滅マスクがレジスタに残らず高位レジスタを1本余計に使う
-NON_MATCH void AuxSprite_DrawListGameover(void) {
-#ifdef NONMATCHING_C
+void AuxSprite_DrawListGameover(void) {
   SpriteFlags skipMask = (gFrameCounter & 1) ? (SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD) : (SPRFLAG_HIDDEN | SPRFLAG_BLINK_EVEN);
   AuxSprite* p;
   Vec3 screen;
@@ -401,36 +400,28 @@ NON_MATCH void AuxSprite_DrawListGameover(void) {
     }
 
     gfx = p->gfx;
-    if (flags & SPRFLAG_SCREEN_COORD) {
-      x = p->pos.x;
-      y = p->pos.y;
-      z = p->pos.z;
-    } else {
-      s32 a, b;
-
-      screen.x = (((p->pos.x >> 1) - (p->pos.z >> 1)) * 48) / 256;
-      a = (((p->pos.x >> 1) + (p->pos.z >> 1)) * 48) / 256;
-      b = (p->pos.y * 24) / 256;
-      screen.x = screen.x - gCameraVpCoords.x + 120;
-      screen.y = (a - b) - gCameraVpCoords.y + 90;
-      screen.z = (a + b) - gCameraVpCoords.z;
+    if (!(flags & SPRFLAG_SCREEN_COORD)) {
+      WorldToScreen(&screen, &p->pos);
       x = screen.x;
       y = screen.y;
       z = screen.z;
+    } else {
+      x = p->pos.x;
+      y = p->pos.y;
+      z = p->pos.z;
     }
 
-    flags = p->flags;
-    if (!(flags & SPRFLAG_NO_CLIP)) {
+    if (!(p->flags & SPRFLAG_NO_CLIP)) {
       s32 left, top, w, h;
 
-      if (flags & SPRFLAG_XFLIP) {
+      if (p->flags & SPRFLAG_XFLIP) {
         left = x + gfx->px - gfx->pw;
         w = gfx->pw;
       } else {
         left = x - gfx->px;
         w = gfx->pw;
       }
-      if (flags & SPRFLAG_YFLIP) {
+      if (p->flags & SPRFLAG_YFLIP) {
         top = y + gfx->py - gfx->ph;
         h = gfx->ph;
       } else {
@@ -444,16 +435,10 @@ NON_MATCH void AuxSprite_DrawListGameover(void) {
 
     AuxSprite_DrawInternal(p, x, y, z);
   }
-#else
-  INCFUNC("asm/func/AuxSprite_DrawListGameover.inc");
-#endif
 }
 
 // SPRFLAG_UNK_13 の立った AuxSprite だけを描くパス, SPRFLAG_GAMEOVER に対する AuxSprite_DrawListGameover と同じ関係
-// 残差は 169 命令 vs 163 命令 で、点滅マスクがレジスタに残らずスタックに退避される
-// 投影を static inline void f(Vec3* pos, Vec3* screen) に切り出すと screen がスタック常駐になり 155 命令まで寄るので、原典はそうした関数を通していたとみられる (ただし &screen がループ外に巻き上げられて一致はしない)
-NON_MATCH void AuxSprite_DrawListUnk13(void) {
-#ifdef NONMATCHING_C
+void AuxSprite_DrawListUnk13(void) {
   SpriteFlags skipMask = (gFrameCounter & 1) ? (SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD) : (SPRFLAG_HIDDEN | SPRFLAG_BLINK_EVEN);
   AuxSprite* p;
   Vec3 screen;
@@ -471,38 +456,30 @@ NON_MATCH void AuxSprite_DrawListUnk13(void) {
     }
 
     gfx = p->gfx;
-    if (flags & SPRFLAG_SCREEN_COORD) {
-      x = p->pos.x;
-      y = p->pos.y;
-      z = p->pos.z;
-    } else {
-      s32 a, b;
-
-      screen.x = (((p->pos.x >> 1) - (p->pos.z >> 1)) * 48) / 256;
-      a = (((p->pos.x >> 1) + (p->pos.z >> 1)) * 48) / 256;
-      b = (p->pos.y * 24) / 256;
-      screen.x = screen.x - gCameraVpCoords.x + 120;
-      screen.y = (a - b) - gCameraVpCoords.y + 90;
-      screen.z = (a + b) - gCameraVpCoords.z;
+    if (!(flags & SPRFLAG_SCREEN_COORD)) {
+      WorldToScreen(&screen, &p->pos);
       x = screen.x;
       y = screen.y;
       z = screen.z;
+    } else {
+      x = p->pos.x;
+      y = p->pos.y;
+      z = p->pos.z;
     }
 
     if (!(p->flags & SPRFLAG_NO_CLIP)) {
       s32 left = x - gfx->px;
       s32 top = y - gfx->py;
+      s32 w = gfx->pw;
+      s32 h = gfx->ph;
 
-      if (left > 240 || top > 180 || left + gfx->pw < 0 || top + gfx->ph < 0) {
+      if (left > 240 || top > 180 || left + w < 0 || top + h < 0) {
         continue;
       }
     }
 
     AuxSprite_DrawInternal(p, x, y, z);
   }
-#else
-  INCFUNC("asm/func/AuxSprite_DrawListUnk13.inc");
-#endif
 }
 
 void nop_0822b09c(void) {}

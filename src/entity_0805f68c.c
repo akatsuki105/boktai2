@@ -23,8 +23,8 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 0: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 49, 2, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnim(&p->sprite2, &p->gfx, 50, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 49, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite2, &p->gfx, 50, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
@@ -33,8 +33,8 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 1: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 51, 2, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnim(&p->sprite2, &p->gfx, 52, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 51, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite2, &p->gfx, 52, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
@@ -43,8 +43,8 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 2: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 53, 2, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnim(&p->sprite2, &p->gfx, 54, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 53, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite2, &p->gfx, 54, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
@@ -53,7 +53,7 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 3: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 55, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 55, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_Hide(&p->sprite2);
         p->state++;
         p->timer = 0;
@@ -63,7 +63,7 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 4: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 56, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
@@ -104,12 +104,12 @@ s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, MsgQueue* mq) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, 0, 60, q);
-  MainSprite_Add(&p->sprite2, &p->gfx, 0, 0, 3, 0, 60, q);
+  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, q);
+  MainSprite_Add(&p->sprite2, &p->gfx, 0, 0, 3, PLAYMODE_PAUSE, 60, q);
   p->state = 0;
   p->timer = 0;
-  MainSprite_SetAnim(&p->sprite, &p->gfx, 47, 2, MAIN_ANIM_FORCE_POSE);
-  MainSprite_SetAnim(&p->sprite2, &p->gfx, 48, 2, MAIN_ANIM_FORCE_POSE);
+  MainSprite_SetAnim(&p->sprite, &p->gfx, 47, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+  MainSprite_SetAnim(&p->sprite2, &p->gfx, 48, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   return 0;
 }
 

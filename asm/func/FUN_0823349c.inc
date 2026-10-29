@@ -194,7 +194,7 @@ _0823362A:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _08233680
 	mov r2, sp
@@ -226,7 +226,7 @@ _08233680:
 	mov r1, r8
 	add r2, sp, #8
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _082336BA
 	mov r1, sp
@@ -263,7 +263,7 @@ _082336C8:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _08233702
 	mov r4, sp
@@ -292,7 +292,7 @@ _08233702:
 	mov r1, r8
 	add r2, sp, #8
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _0823373E
 	mov r2, sp
@@ -328,7 +328,7 @@ _0823374C:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _08233788
 	mov r2, sp
@@ -359,7 +359,7 @@ _08233788:
 	mov r1, r8
 	add r2, sp, #8
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _082337C4
 	mov r2, sp
@@ -395,7 +395,7 @@ _082337D2:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _0823380E
 	mov r2, sp
@@ -426,7 +426,7 @@ _0823380E:
 	mov r1, r8
 	add r2, sp, #8
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _0823384A
 	mov r2, sp
@@ -462,7 +462,7 @@ _08233858:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _08233894
 	mov r2, sp
@@ -497,7 +497,7 @@ _08233894:
 	adds r1, r5, #0
 	mov r0, r8
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	mov sb, r0
 	mov r2, r8
 	ldr r0, [r2]
@@ -520,7 +520,7 @@ _08233894:
 	mov r0, r8
 	adds r1, r6, #0
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	mov r1, sb
 	cmp r1, #0
 	beq _08233910
@@ -569,7 +569,7 @@ _08233950:
 	mov r1, r8
 	adds r2, r5, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	ldrh r0, [r5]
 	mov r2, sl
 	subs r0, r0, r2
@@ -589,7 +589,7 @@ _0823397A:
 	mov r1, r8
 	adds r2, r6, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	ldr r2, [sp, #0x50]
 	ldrh r0, [r2]
 	ldrh r4, [r6]
@@ -617,7 +617,7 @@ _08233998:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _082339D4
 	mov r2, sp
@@ -653,7 +653,7 @@ _082339D4:
 	mov r1, sb
 	mov r0, r8
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	str r0, [sp, #0x5c]
 	mov r2, r8
 	ldr r0, [r2]
@@ -676,7 +676,7 @@ _082339D4:
 	mov r0, r8
 	adds r1, r6, #0
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	ldr r1, [sp, #0x5c]
 	cmp r1, #0
 	beq _08233A54
@@ -723,7 +723,7 @@ _08233A8C:
 	mov r1, r8
 	adds r2, r6, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	ldr r2, [sp, #0x50]
 	ldrh r0, [r2]
 	ldrh r4, [r6]
@@ -750,7 +750,7 @@ _08233AAA:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _08233AE4
 	mov r4, sp
@@ -785,7 +785,7 @@ _08233AE4:
 	mov r1, sb
 	mov r0, r8
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	str r0, [sp, #0x60]
 	mov r2, r8
 	ldr r0, [r2]
@@ -808,7 +808,7 @@ _08233AE4:
 	mov r0, r8
 	adds r1, r6, #0
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	ldr r1, [sp, #0x60]
 	cmp r1, #0
 	beq _08233B60
@@ -856,7 +856,7 @@ _08233B9C:
 	mov r1, r8
 	mov r2, sb
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	mov r2, sb
 	ldrh r0, [r2]
 	mov r4, sl
@@ -878,7 +878,7 @@ _08233BCA:
 	mov r1, r8
 	adds r2, r6, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	ldr r1, [sp, #0x50]
 	ldrh r0, [r1]
 	ldrh r2, [r6]
@@ -907,7 +907,7 @@ _08233BE8:
 	mov r1, r8
 	adds r2, r4, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	cmp r0, #0
 	beq _08233C2E
 	ldrh r0, [r4]
@@ -946,7 +946,7 @@ _08233C2E:
 	mov r1, sb
 	mov r0, r8
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	str r0, [sp, #0x64]
 	mov r2, r8
 	ldr r0, [r2]
@@ -969,7 +969,7 @@ _08233C2E:
 	mov r0, r8
 	adds r1, r6, #0
 	ldr r2, [sp, #0x58]
-	bl FUN_08232b00
+	bl Map_CanStepTo
 	ldr r1, [sp, #0x64]
 	cmp r1, #0
 	beq _08233CAC
@@ -1020,7 +1020,7 @@ _08233CEC:
 	mov r1, r8
 	mov r2, sb
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	mov r2, sb
 	ldrh r0, [r2]
 	add r0, sl
@@ -1039,7 +1039,7 @@ _08233D14:
 	mov r1, r8
 	adds r2, r6, #0
 	ldr r3, [sp, #0x58]
-	bl FUN_08232df8
+	bl Map_SlideAlongWall
 	ldr r2, [sp, #0x50]
 	ldrh r0, [r2]
 	ldrh r4, [r6]

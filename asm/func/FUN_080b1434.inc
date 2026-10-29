@@ -26,7 +26,7 @@
 	strh r0, [r1]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 _080B1474:
 	movs r2, #0
 	ldrb r3, [r4, #0x1e]
@@ -52,7 +52,7 @@ _080B148E:
 	bne _080B148C
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 _080B14AC:
 	add sp, #4
 	pop {r4, r5}

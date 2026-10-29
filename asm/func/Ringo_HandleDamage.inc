@@ -286,7 +286,7 @@ _08035C9C:
 	ldr r0, [sp, #0x2c]
 	ldr r1, [sp, #0x20]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	movs r1, #0
 	ldrsh r0, [r4, r1]
 	cmp r0, #0

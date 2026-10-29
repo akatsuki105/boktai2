@@ -112,7 +112,7 @@ _08015B80:
 	movs r0, #1
 	adds r1, r4, #0
 	mov r2, sp
-	bl FUN_080155e4
+	bl Entity08015584_Spawn
 	subs r5, #1
 	cmp r5, #0
 	bne _08015B80

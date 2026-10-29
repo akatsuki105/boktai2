@@ -238,7 +238,7 @@ FUN_08203cbc: @ 0x08203CBC
 	str r1, [sp, #0x30]
 	str r1, [sp, #0x34]
 	add r1, sp, #0x38
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	add sp, #0x40
 	pop {r4}
 	pop {r0}

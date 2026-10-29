@@ -76,6 +76,7 @@ void Cactus_EmitBreakEffect(Cactus* p) {
 }
 
 // hp が尽きた Cactus を片付け、生きているものは点滅を進めつつ、プレイヤーが範囲に入った最初の1個に攻撃判定を置く
+// 範囲判定を bool8 を返す static inline に出すと 0/1 の作り置きは出て命令数も揃う (174/174) が, 原典はループ外に HBFLAG_HIDDEN の 4 を持ち ~4 をその場で作るのに対しこちらは逆になる
 NON_MATCH s32 CactusManager_Update(CactusManager* p) {
 #ifdef NONMATCHING_C
   Cactus* hazard;
@@ -161,22 +162,22 @@ s32 CactusManager_Init(CactusManager* p) {
   HitboxData* hitbox;
   Cactus* list;
   s32 power;
-  s32 unk_40;
-  s32 unk_44;
+  s32 knockback;
+  s32 invincibleTime;
   Vec3 halfSize, offset;
 
   gCactusManager = p;
   p->count = VM_GetNamedArgValue('m', 8);
   p->activeMask = 0;
   power = VM_GetNamedArgValue('p', 5);
-  unk_40 = VM_GetNamedArgValue('f', 10);
-  unk_44 = VM_GetNamedArgValue('i', 10);
+  knockback = VM_GetNamedArgValue('f', 10);
+  invincibleTime = VM_GetNamedArgValue('i', 10);
   hitbox = &p->hitbox;
-  VEC3_SET(halfSize, 0xA4, 0x80, 0xA4);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.641), Q8(0.5), Q8(0.641));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, NULL, p);
-  Hitbox_SetAttack(hitbox, power, unk_40, 0, 0, unk_44);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, 0, invincibleTime);
   list = Malloc(p->count * sizeof(Cactus));
   p->list = list;
   if (list == NULL) {
@@ -264,21 +265,21 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 re
     hazard->scriptArgs[i] = args[i];
   }
   hazard->pos = *pos;
-  size.x = 0x82, size.y = (BLOCK / 2), size.z = 0x82;
-  offset.x = 0, offset.y = (BLOCK / 2), offset.z = 0;
+  size.x = 0x82, size.y = Q8(0.5), size.z = 0x82;
+  offset.x = 0, offset.y = Q8(0.5), offset.z = 0;
   Hitbox_Init(hitbox, hazard->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPos(hitbox, hazardPos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
   Hitbox_SetHandler(hitbox, Cactus_OnHit, hazard);
   Hitbox_Register(hitbox);
   hazard->min.x = -0xA4;
-  hazard->min.y = -(BLOCK / 2);
+  hazard->min.y = -Q8(0.5);
   hazard->min.z = -0xA4;
   hazard->min.x += hazard->pos.x;
   min->y += hazardPos->y;
   min->z += hazardPos->z;
   hazard->max.x = 0xA4;
-  hazard->max.y = (BLOCK / 2);
+  hazard->max.y = Q8(0.5);
   hazard->max.z = 0xA4;
   hazard->max.x += hazard->pos.x;
   max->y += hazardPos->y;
@@ -296,7 +297,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 re
   if (h < 0xF) {
     h++;
   }
-  Map_AddTileOverride(tileOverride, idx, 0, h, 0xFF, 2);
+  Map_AddTileOverride(tileOverride, idx, STAIRS_NONE, h, 0xFF, TATTR_WALL);
   if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
     return -1;
   }

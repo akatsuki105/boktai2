@@ -962,8 +962,8 @@ _08003716:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0800371c
-FUN_0800371c: @ 0x0800371C
+	thumb_func_start Cmd_5C0B
+Cmd_5C0B: @ 0x0800371C
 	push {r4, r5, r6, r7, lr}
 	ldr r0, _0800372C @ =0x03000020
 	ldr r5, [r0]
@@ -1018,8 +1018,8 @@ _08003772:
 	.align 2, 0
 _08003778: .4byte FUN_080041c4
 
-	thumb_func_start FUN_0800377c
-FUN_0800377c: @ 0x0800377C
+	thumb_func_start Cmd_0E76
+Cmd_0E76: @ 0x0800377C
 	push {r4, r5, r6, r7, lr}
 	ldr r0, _0800378C @ =0x03000020
 	ldr r6, [r0]

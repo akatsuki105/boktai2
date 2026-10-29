@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_STRUCT_H__
 #define __INCLUDE_STRUCT_H__
 
+#include "entity.h"
 #include "gba/gba.h"
 #include "types.h"
 
@@ -20,12 +21,24 @@ typedef struct Entity5941Node {
 } Entity5941Node;
 static_assert(sizeof(Entity5941Node) == 16);
 
+// 敵の索敵範囲を管理する? 敵は _Init で Entity5941_Register、_Destroy で Entity5941_Unregister を呼んで出入りする (28種)
+// unk_18 が単方向リストの先頭, ノードは敵の構造体に埋め込まれている (EnemyBat なら +0x7C)
+// 扇形の中で最も近いノードを探す処理は Entity5941_FindNearestInCone と, プレイヤーの向きで探す player.c の Player_FindCWolfTarget にある
+typedef struct {
+  Entity e;               // 0x0, ENTITY_UNK_2
+  Entity5941Node* nodes;  // 0x18, 登録済みノードのリスト先頭, 根拠: Entity5941_Register / Entity5941_Unregister
+  void* unk_1c;           // 0x1C
+} Entity5941;
+static_assert(sizeof(Entity5941) == 32);
+
+extern Entity5941* gEntity5941;  // 0x03002BF8
+
 bool32 Entity5941_Register(Entity5941Node* node, void* owner, void* fn);
 void Entity5941_Unregister(Entity5941Node* node);
 
 // --------------------------------------------
 
-// FUN_080155e4 に渡す粒子1種類ぶんの発生パラメータ
+// Entity08015584_Spawn に渡す粒子1種類ぶんの発生パラメータ
 typedef struct {
   u16 kind;              // 0x00
   u16 flags;             // 0x02

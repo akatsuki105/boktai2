@@ -152,7 +152,7 @@ _080C7AA2:
 	add r1, sp, #0x14
 	movs r2, #0
 	movs r3, #2
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	ldr r2, _080C7B3C @ =0x0000192C
 	adds r0, r5, r2
 	ldrb r1, [r0]

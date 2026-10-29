@@ -30,14 +30,15 @@ IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
 extern struct LinkConnect* gLinkConnect;  // 0x03002C64
 
+extern bool32 gPlayTimeEnabled;
 extern bool32 gDispcntLocked;                     // 0x03002CA8
 extern u32 u32_0300478c;                          // 0x0300478C
 extern struct LinkShopManager* gLinkShopManager;  // 0x03002C6C
-extern u16 u16_03003510;                          // 0x03003510
-extern u16 u16_03003514;                          // 0x03003514
+extern u16 gHBlankDmaCount;                       // 0x03003510
+extern s16 gHBlankDmaMode;                        // 0x03003514
 extern u32 u32_03004790;                          // 0x03004790
 extern u32 u32_03004794;                          // 0x03004794
-extern u32 u32_030047ac;                          // 0x030047AC
+extern u32 gMapChanging;                          // 0x030047AC
 extern u32 u32_030047b0;                          // 0x030047B0
 extern u32 u32_030047bc;                          // 0x030047BC
 extern u32 u32_030047c4;                          // 0x030047C4
@@ -65,7 +66,7 @@ static s32 UNUSED FUN_0823a898(u32 scriptID, ScriptArgs* args) { return VM_ExecB
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 
 bool32 FUN_0823a8b0(void) {
-  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) {
     return TRUE;
   }
   if (u32_030047b0 != 0) {
@@ -79,21 +80,21 @@ bool32 FUN_0823a8b0(void) {
 
 void FUN_0823a8f4(u32 val) {
   if (val == 0) {
-    u32_03004798 = 320;
+    gMapChangeFlags = 320;
   } else {
     SoftReset_0823a928();
   }
 }
 
-void FUN_0823a910(void) { bool32_03004788 = TRUE; }
+void Cmd_EC5B(void) { gPlayTimeEnabled = TRUE; }
 
-void FUN_0823a91c(void) { bool32_03004788 = FALSE; }
+void Cmd_EAAC(void) { gPlayTimeEnabled = FALSE; }
 
 s32 SoftReset_0823a928(void) {
   gHBlankEffectBuffer = NULL;
   gHBlankEffectReg = NULL;
-  u16_03003510 = 0;
-  u16_03003514 = 0;
+  gHBlankDmaCount = 0;
+  gHBlankDmaMode = 0;
   gEepromIdle = FALSE;
   m4aMPlayAllStop();
   m4aSoundVSyncOff();
@@ -133,7 +134,7 @@ void FUN_0823a9f4(void) {
 }
 
 void FUN_0823aa10(void) {
-  if (!TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_UNK_0)) {
+  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_UNK_0)) {
     FUN_082407e0();
     SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_1);
   }
@@ -181,7 +182,7 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
 
       u32_03004860 = 0;
       gDispcntLocked = TRUE;
-      u32_03004798 = 0;
+      gMapChangeFlags = 0;
       p->unk_1c = 0;
       FUN_0823a9c4();
       VM_ClearScratchpad_Proxy();
@@ -196,19 +197,19 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
 
       gDispcntLocked = FALSE;
       p->unk_18 = 1;
-      u32_030047ac = 0;
+      gMapChanging = 0;
       break;
     }
     case 1: {
       if (p->unk_1c < 1) {
-        if (u32_03004798 != 0) {
+        if (gMapChangeFlags != 0) {
           if (gEntityDisableFlags & ENTITY_DISABLE_1) {
             break;
           }
           if (FUN_0823a8b0() == 0) {
             u32_0300478c = 0;
             u32_030047c4 = 0;
-            u32_030047ac = 1;
+            gMapChanging = 1;
             CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_1 | ENTITY_DISABLE_2 | ENTITY_DISABLE_3);
             entity_08230ca4(1);
             p->unk_1c = 3;
@@ -225,15 +226,15 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
         if (p->unk_1c < 1) {
           nop_0823aa70();
           FUN_0823aa74();
-          if (gFlag030047a4 & FLAG030047A4_UNK_9) {
-            gFlag030047a4 &= ~FLAG030047A4_UNK_9;
+          if (gGameFlags & FLAG030047A4_UNK_9) {
+            gGameFlags &= ~FLAG030047A4_UNK_9;
             if (gEntityDisableFlags & ENTITY_DISABLE_3) {
               CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_3);
             }
           }
-          if (u32_03004798 & 0x10) {
+          if (gMapChangeFlags & 0x10) {
             Save_BackupStatAndWorld();
-          } else if (u32_03004798 & 0x100) {
+          } else if (gMapChangeFlags & 0x100) {
             RestoreGameState();
             SetMapInitScriptID((s16)gStat->mapInitScriptID);
           }
@@ -252,7 +253,7 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
     gSystemSaveData->frameCounter++;
   }
   u32_03004794++;
-  if (bool32_03004788) {
+  if (gPlayTimeEnabled) {
     if (gStat->playTime < 0x7FFFFFFF) {
       gStat->playTime++;
     }
@@ -267,7 +268,7 @@ s32 Entity0823acbc_Destroy(Entity0823acbc* _) {}
 
 NAKED void FUN_0823acbc(void) { INCFUNC("asm/func/FUN_0823acbc.inc"); }
 
-s32 FUN_0823ad98(void) {
+s32 Cmd_5C9E(void) {
   u8* pc = VM_GetPC();
 
   if (pc == NULL) {
@@ -281,7 +282,7 @@ s32 FUN_0823ad98(void) {
   return 0;
 }
 
-u32 FUN_0823adc0(void) { return FUN_082321e0(VM_GetPC()); }
+u32 Cmd_2FE4(void) { return FUN_082321e0(VM_GetPC()); }
 
 // 0xA222
 // システムデータを読み込み、読めなかったら初期値で作り直す
@@ -313,7 +314,7 @@ NON_MATCH bool32 UNUSED FUN_0823ae14(Entity0823acbc* p) {
 #ifdef NONMATCHING_C
   u16 id = gMapInitScriptID;
 
-  u32_03004798 = 0;
+  gMapChangeFlags = 0;
   p->unk_1c = 0;
   FUN_0823a9c4();
   VM_ClearScratchpad_Proxy();

@@ -130,7 +130,7 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
 // 取得数 "n/27" の数字を並べる
 void FUN_0821126c(AlbumMenu* p) {
   MainSprite_SetNumber(&p->sprites_108[0], &p->gfx1, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
-  MainSprite_SetPose(&p->sprites_108[2], &p->gfx1, 11, 0);
+  MainSprite_SetPose(&p->sprites_108[2], &p->gfx1, 11, PLAYMODE_PAUSE);
   p->sprites_108[2].pos.x = 192;
   p->sprites_108[2].pos.y = 104;
   p->sprites_108[2].flags &= ~SPRFLAG_HIDDEN;
@@ -173,7 +173,7 @@ void FUN_08211324(AlbumMenu* p) {
 void FUN_08211378(AlbumMenu* p) {
   s32 i;
 
-  MainSprite_SetPose(&p->sprites_48[0], &p->gfx1, p->page + 30, 0);
+  MainSprite_SetPose(&p->sprites_48[0], &p->gfx1, p->page + 30, PLAYMODE_PAUSE);
   if (FUN_082111b8()) {
     for (i = 0; i < 2; i++) {
       MainSprite_ClearFlags(&p->sprites_2e8[i], SPRFLAG_HIDDEN);
@@ -201,7 +201,7 @@ NON_MATCH void FUN_08211730(AlbumMenu* p) {
     s32 idx = first + i;
 
     if (CheckPhotoUnlocked(idx)) {
-      MainSprite_SetPose(photo, &p->gfx2, u16_ARRAY_085af9b4[idx * 2], 0);
+      MainSprite_SetPose(photo, &p->gfx2, u16_ARRAY_085af9b4[idx * 2], PLAYMODE_PAUSE);
       photo->flags &= ~SPRFLAG_HIDDEN;
     } else {
       photo->flags |= SPRFLAG_HIDDEN;

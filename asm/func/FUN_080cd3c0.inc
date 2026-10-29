@@ -42,7 +42,7 @@ _080CD3E4:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #4
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r3, _080CD46C @ =0x0203B400
 	mov ip, r3
 	ldr r3, _080CD470 @ =0x030046B8

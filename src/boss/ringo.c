@@ -1,5 +1,6 @@
 #include "boss.h"
 #include "camera.h"
+#include "camera_inline.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -20,12 +21,12 @@
 typedef struct {
   Boss base;                              // 0x000
   u8 unk_158[0x15C - 0x158];              // 0x158
-  u16 unk_15c;                            // 0x15C
-  u16 unk_15e;                            // 0x15E
-  s16 unk_160;                            // 0x160
-  s16 unk_162;                            // 0x162
+  u16 phaseTimer;                         // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
+  u16 phase;                              // 0x15E, 状態の中の段階, 状態関数が switch で振り分けて進める
+  s16 spriteOffsetY;                      // 0x160, sprites[0].pos.y = mover.pos.y + spriteOffsetY
+  s16 hoverHeight;                        // 0x162, Ringo_UpdateHover が 62 まで増やして sin の揺れを足し spriteOffsetY にする
   s16 unk_164;                            // 0x164
-  u8 unk_166;                             // 0x166
+  u8 hitBySol;                            // 0x166, Ringo_OnHurt が HBATTR_SOL の攻撃で立てる
   u8 unk_167;                             // 0x167
   u8 unk_168;                             // 0x168
   u8 unk_169;                             // 0x169
@@ -38,18 +39,18 @@ typedef struct {
   u8 unk_170;                             // 0x170
   u8 unk_171;                             // 0x171
   u8 unk_172;                             // 0x172
-  s8 unk_173;                             // 0x173, base.players の添字
+  s8 grabbedPlayer;                       // 0x173, base.players の添字
   s8 unk_174;                             // 0x174
   u8 unk_175;                             // 0x175
   u8 unk_176;                             // 0x176
   u8 unk_177;                             // 0x177
   u8 unk_178;                             // 0x178, hurtbox2 に当たったとき BOSSFLAG_UNK_19 が立っていれば 1
-  u8 unk_179;                             // 0x179
+  u8 hurtAngle;                           // 0x179, Ringo_OnHurt が攻撃の向きを入れる
   u8 unk_17a;                             // 0x17A
   u8 unk_17b;                             // 0x17B
   u16 unk_17c;                            // 0x17C
   u16 unk_17e;                            // 0x17E
-  s16 unk_180;                            // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
+  s16 damage;                             // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
   s16 unk_182;                            // 0x182, FUN_08029864 が足す
   u16 unk_184;                            // 0x184, FUN_080298b8 が足す
   u16 unk_186;                            // 0x186
@@ -90,9 +91,9 @@ typedef struct {
   s16 unk_874;                            // 0x874
   u8 unk_876;                             // 0x876
   u8 unk_877;                             // 0x877
-  u16 unk_878;                            // 0x878
-  u16 unk_87a;                            // 0x87A
-  s8 unk_87c;                             // 0x87C
+  s16 plttFade;                           // 0x878, BlendPltt の混ぜ具合
+  u16 plttFadeTo;                         // 0x87A, フェード先のパレット番号
+  s8 plttFadeMode;                        // 0x87C, パレットフェードの種類, -1 で止まる
   u8 unk_87d;                             // 0x87D
   bool8 unk_87e;                          // 0x87E, 0x313 / 0x33D の効果音を鳴らしたら立つ
   u8 unk_87f;                             // 0x87F
@@ -110,7 +111,7 @@ typedef struct {
   u16 unk_894;                            // 0x894
   u16 unk_896;                            // 0x896
   u8 unk_898;                             // 0x898
-  u8 unk_899;                             // 0x899
+  u8 targetPlayer;                        // 0x899, 狙うプレイヤーの添字 (0/1), playerAngle / playerPos を引く
   u8 unk_89a[0x89C - 0x89A];              // 0x89A
   u16 stateDuration;                      // 0x89C, 状態を続ける最短フレーム数
   u8 unk_89e[0x8A0 - 0x89E];              // 0x89E
@@ -192,39 +193,57 @@ typedef struct {
 static_assert(sizeof(Ringo) == 4188);
 
 void FUN_0805d5d4(struct Entity0805d364* p);
-s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5, Vec3* min, Vec3* max);
 void FUN_0805b0b0(struct Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
 void FUN_0805d3a8(struct Entity0805d364* p, Vec3* from, Vec3* to, s32 param_4, s32 param_5);
+bool32 FUN_0809df78(Vec3* pos);
+void FUN_080846f8(void);
+void FUN_08084734(Vec3* out);
+bool32 FUN_08084710(void);
+void FUN_0823b880(s32 n);
+struct Entity0805a31c* Entity0805a31c_Create(u32 attackID);
+struct Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2);
+struct Entity0805d364* Entity0805d364_Create(u32 count);
+struct Entity0805b790* Entity0805b790_Create(u32 kind);
+s32 FUN_08035a64(Ringo* p);
+void FUN_0805b1a0(unknown* p);
+void FUN_080846c8(void);
+struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
+s32 FUN_0805b7d4(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, u32 param_7, u32 param_8);
+s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
+void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
+s32 FUN_0805a360(struct Entity0805a31c* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
+s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs);
+s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
+void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
-static inline void Vec3_Clear(Vec3* v) { CpuFill32(0, v, sizeof(Vec3)); }
-
-static inline void Ringo_SetUnk87c(Ringo* p, s32 kind, u32 duration) {
-  p->unk_87c = kind;
-  p->unk_87a = duration;
-  if (p->unk_87c == 1) {
-    p->unk_878 = 31;
-  } else if (p->unk_87c == 0) {
-    p->unk_878 = 0;
+static inline void Ringo_StartPlttFade(Ringo* p, s32 mode, u32 plttID) {
+  p->plttFadeMode = mode;
+  p->plttFadeTo = plttID;
+  if (p->plttFadeMode == 1) {
+    p->plttFade = 31;
+  } else if (p->plttFadeMode == 0) {
+    p->plttFade = 0;
   } else {
-    p->unk_878 = 0;
+    p->plttFade = 0;
   }
 }
 
 static inline u32 Ringo_SelectAnim(Ringo* p, u32 anim, u32 anim2) {
-  if (p->base.unk_ab) {
+  if (p->base.isDemo) {
     return p->unk_824 == 0 ? anim : anim2;
   }
   return p->unk_820 != 0 ? anim2 : anim;
 }
 
-// unk_162 を 62 まで増やし, それに timer の sin 揺れを足したものを unk_160 にする
-static inline void Ringo_UpdateUnk160(Ringo* p, s32 timer) {
-  if (p->unk_162 < 62) {
-    p->unk_162 += 2;
+// hoverHeight を 62 まで増やし, それに timer の sin 揺れを足したものを spriteOffsetY にする
+static inline void Ringo_UpdateHover(Ringo* p, s32 timer) {
+  if (p->hoverHeight < 62) {
+    p->hoverHeight += 2;
   }
-  p->unk_160 = p->unk_162 + FixToInt(12, SIN(timer * 2) * 40);
-  if (p->unk_160 < 0) {
-    p->unk_160 = 0;
+  p->spriteOffsetY = p->hoverHeight + FixToInt(12, SIN(timer * 2) * 40);
+  if (p->spriteOffsetY < 0) {
+    p->spriteOffsetY = 0;
   }
 }
 
@@ -267,33 +286,8 @@ static inline void Ringo_ResetSubStates(Ringo* p, u32 duration) {
   Boss_SetSubStates(&p->base, 0, 0, 0);
   p->stateDuration = duration;
 }
-bool32 FUN_0809df78(Vec3* pos);
-void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
-void FUN_080846f8(void);
-void FUN_08084734(Vec3* out);
-bool32 FUN_08084710(void);
-void BlendPltt(rgb555* dst, rgb555* src1, rgb555* src2, s32 t, s32 shift);
-void FUN_0823b880(s32 n);
-struct Entity0805a31c* Entity0805a31c_Create(u32 attackID);
-struct Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2);
-struct Entity0805d364* Entity0805d364_Create(u32 count);
-struct Entity0805b790* Entity0805b790_Create(u32 kind);
-s32 FUN_08035a64(Ringo* p);
-DirS32 Player_GetDpadFacing(Player* p);
-void FUN_0805b1a0(unknown* p);
-void FUN_080846c8(void);
-struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
-s32 FUN_0805b7d4(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, u32 param_7, u32 param_8);
-s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
-void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
-s32 FUN_0805a360(struct Entity0805a31c* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
-s32 FUN_0807ab64(Player* player, Vec3* pos, unknown* param_3, s32 param_4, u8 param_5, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
-u32 FUN_0807ac74(Player* p, unknown* param_2, u16 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, u32 param_8);
-s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
-void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
-extern u16 u16_03002bf0;
+extern u16 gRisingSunCount;
 
 const s8 s8_ARRAY_085aabbc[10][2] = {
     {9, -4},
@@ -311,7 +305,7 @@ const s8 s8_ARRAY_085aabbc[10][2] = {
 // s8 かも?
 const u8 u8_ARRAY_085aabd0[8] = {0x1, 0xE4, 0x0, 0xE0, 0x0, 0xE1, 0x2, 0xE8};  // 0x085AABD0
 
-const s8 s8_ARRAY_085aabd8[32][2] = {
+static const s8 s8_ARRAY_085aabd8[32][2] = {
     {0,   0 },
     {0,   0 },
     {0,   0 },
@@ -346,312 +340,11 @@ const s8 s8_ARRAY_085aabd8[32][2] = {
     {0,   0 },
 };  // 0x085AABD8
 
-const rgb555 rgb555_ARRAY_085aac18[16] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};  // 0x085AAC18
-
-void Ringo_UnregisterHurtboxes(Ringo*);
-void FUN_08028818(Ringo*);
-void FUN_08028eb8(Ringo*);
-void FUN_08029b30(Ringo*);
-void Ringo_RemoveAuxSprites(Ringo*);
-void FUN_0802a2e0(Ringo*);
-void FUN_0802c3a0(Ringo*);
-void FUN_0802c564(Ringo*);
-void FUN_0802c6e8(Ringo*);
-void FUN_0802c73c(Ringo*);
-void FUN_0802c7e0(Ringo*);
-void FUN_0802c87c(Ringo*);
-void FUN_0802c8e0(Ringo*);
-void FUN_0802cca0(Ringo*);
-void FUN_0802cd2c(Ringo*);
-void FUN_0802cda4(Ringo*);
-void FUN_0802ce30(Ringo*);
-void FUN_0802cea8(Ringo*);
-void FUN_0802cf34(Ringo*);
-void FUN_0802cff4(Ringo*);
-void FUN_0802d074(Ringo*);
-void FUN_0802d134(Ringo*);
-void FUN_0802d294(Ringo*);
-void FUN_0802d36c(Ringo*);
-void FUN_0802d420(Ringo*);
-void FUN_0802d4bc(Ringo*);
-void FUN_0802d5dc(Ringo*);
-void FUN_0802d648(Ringo*);
-void FUN_0802d6c8(Ringo*);
-void FUN_0802d738(Ringo*);
-void FUN_0802d85c(Ringo*);
-void FUN_0802d8d0(Ringo*);
-void FUN_0802d92c(Ringo*);
-void FUN_0802d988(Ringo*);
-void FUN_0802d9f8(Ringo*);
-void FUN_0802da30(Ringo*);
-
-// clang-format off
-void (*const PTR_ARRAY_085aac38[30])(Ringo*) = {
-    FUN_0802c3a0,
-    FUN_0802c564,
-    FUN_0802c6e8,
-    FUN_0802c73c,
-    FUN_0802c7e0,
-    FUN_0802c87c,
-    FUN_0802c8e0,
-    FUN_0802cca0,
-    FUN_0802cd2c,
-    FUN_0802cda4,
-    FUN_0802ce30,
-    FUN_0802cea8,
-    FUN_0802cf34,
-    FUN_0802cff4,
-    FUN_0802d074,
-    FUN_0802d134,
-    FUN_0802d294,
-    FUN_0802d36c,
-    FUN_0802d420,
-    FUN_0802d4bc,
-    FUN_0802d5dc,
-    FUN_0802d648,
-    FUN_0802d6c8,
-    FUN_0802d738,
-    FUN_0802d85c,
-    FUN_0802d8d0,
-    FUN_0802d92c,
-    FUN_0802d988,
-    FUN_0802d9f8,
-    FUN_0802da30,
-};  // 0x085AAC38
-// clang-format on
-
-void FUN_0802daa0(Ringo*);
-void FUN_0802db18(Ringo*);
-
-void (*const PTR_ARRAY_085aacb0[2])(Ringo*) = {
-    FUN_0802daa0,
-    FUN_0802db18,
-};  // 0x085AACB0
-
-void FUN_0802db3c(Ringo*);
-void FUN_0802db74(Ringo*);
-void FUN_0802dbb8(Ringo*);
-void FUN_0802dbfc(Ringo*);
-void FUN_0802dc5c(Ringo*);
-void FUN_0802dcbc(Ringo*);
-void FUN_0802dd24(Ringo*);
-void FUN_0802dd84(Ringo*);
-void FUN_0802dde8(Ringo*);
-void FUN_0802de2c(Ringo*);
-void FUN_0802dea4(Ringo*);
-void FUN_0802df04(Ringo*);
-void FUN_0802df64(Ringo*);
-void FUN_0802dfb4(Ringo*);
-void FUN_0802e004(Ringo*);
-void FUN_0802e054(Ringo*);
-void FUN_0802e0a4(Ringo*);
-void FUN_0802e0e8(Ringo*);
-void FUN_0802e138(Ringo*);
-void FUN_0802e198(Ringo*);
-void FUN_0802e210(Ringo*);
-void FUN_0802e274(Ringo*);
-void FUN_0802e2d8(Ringo*);
-void FUN_0802e340(Ringo*);
-void FUN_0802e384(Ringo*);
-void FUN_0802e3e4(Ringo*);
-
-// clang-format off
-void (*const PTR_ARRAY_085aacb8[26])(Ringo*) = {
-    FUN_0802db3c,
-    FUN_0802db74,
-    FUN_0802dbb8,
-    FUN_0802dbfc,
-    FUN_0802dc5c,
-    FUN_0802dcbc,
-    FUN_0802dd24,
-    FUN_0802dd84,
-    FUN_0802dde8,
-    FUN_0802de2c,
-    FUN_0802dea4,
-    FUN_0802df04,
-    FUN_0802df64,
-    FUN_0802dfb4,
-    FUN_0802e004,
-    FUN_0802e054,
-    FUN_0802e0a4,
-    FUN_0802e0e8,
-    FUN_0802e138,
-    FUN_0802e198,
-    FUN_0802e210,
-    FUN_0802e274,
-    FUN_0802e2d8,
-    FUN_0802e340,
-    FUN_0802e384,
-    FUN_0802e3e4,
-};  // 0x085AACB8
-// clang-format on
-
-void FUN_0802e434(Ringo*);
-
-void (*const PTR_ARRAY_085aad20[1])(Ringo*) = {
-    FUN_0802e434,
-};  // 0x085AAD20
-
-void FUN_0802e450(Ringo*);
-
-void (*const PTR_ARRAY_085aad24[1])(Ringo*) = {
-    FUN_0802e450,
-};  // 0x085AAD24
-
-void FUN_0802e46c(Ringo*);
-
-void (*const PTR_ARRAY_085aad28[1])(Ringo*) = {
-    FUN_0802e46c,
-};  // 0x085AAD28
-
-void FUN_0802e488(Ringo*);
-void FUN_0802e4c4(Ringo*);
-void FUN_0802e4e0(Ringo*);
-
-void (*const PTR_ARRAY_085aad2c[3])(Ringo*) = {
-    FUN_0802e488,
-    FUN_0802e4c4,
-    FUN_0802e4e0,
-};  // 0x085AAD2C
-
-void FUN_0802e520(Boss*, s32);
-void FUN_0802e6ac(Boss*, s32);
-void FUN_0802e8d0(Boss*, s32);
-void FUN_0802eac0(Boss*, s32);
-void FUN_0802ece0(Boss*, s32);
-void FUN_0802ef68(Boss*, s32);
-void dainn_0802f134(Boss*, s32);
-void FUN_0802f368(Boss*, s32);
-void FUN_0802f4a8(Boss*, s32);
-void FUN_0802f5e8(Boss*, s32);
-void FUN_0802fabc(Boss*, s32);
-void dainn_0802fc08(Boss*, s32);
-void dainn_0802fea0(Boss*, s32);
-void FUN_08030148(Boss*, s32);
-void FUN_080304c0(Boss*, s32);
-void FUN_08030680(Boss*, s32);
-void dainn_08030960(Boss*, s32);
-void FUN_08030b80(Boss*, s32);
-void dainn_08030d6c(Boss*, s32);
-void dainn_0803110c(Boss*, s32);
-void dainn_0803141c(Boss*, s32);
-void FUN_080315e0(Boss*, s32);
-void FUN_0803166c(Boss*, s32);
-void FUN_08031734(Boss*, s32);
-void FUN_080317f0(Boss*, s32);
-void FUN_08031f14(Boss*, s32);
-void FUN_08032180(Boss*, s32);
-void dainn_080323c8(Boss*, s32);
-void FUN_08032934(Boss*, s32);
-void FUN_08032988(Boss*, s32);
-void FUN_08032acc(Boss*, s32);
-void FUN_08032bac(Boss*, s32);
-void FUN_08032e1c(Boss*, s32);
-void dainn_08032f18(Boss*, s32);
-void FUN_0803331c(Boss*, s32);
-void FUN_080333a4(Boss*, s32);
-void FUN_080334b4(Boss*, s32);
-void FUN_080335e8(Boss*, s32);
-void FUN_080337b8(Boss*, s32);
-void FUN_08033970(Boss*, s32);
-void FUN_08033b28(Boss*, s32);
-void FUN_08033c60(Boss*, s32);
-void FUN_08033d84(Boss*, s32);
-void FUN_08033e3c(Boss*, s32);
-void FUN_08034014(Boss*, s32);
-void FUN_0803419c(Boss*, s32);
-void FUN_0803427c(Boss*, s32);
-void FUN_0803446c(Boss*, s32);
-void FUN_08034570(Boss*, s32);
-void FUN_080346cc(Boss*, s32);
-void FUN_08034804(Boss*, s32);
-void FUN_0803495c(Boss*, s32);
-void FUN_08034a2c(Boss*, s32);
-void FUN_08034b18(Boss*, s32);
-void FUN_08034dd8(Boss*, s32);
-void FUN_08034ebc(Boss*, s32);
-void FUN_08035268(Boss*, s32);
-void FUN_080353ac(Boss*, s32);
-void FUN_0803558c(Boss*, s32);
-void FUN_08035634(Boss*, s32);
-void FUN_080356f8(Boss*, s32);
-
-// clang-format off
-void (*const PTR_ARRAY_085aad38[62])(Boss*, s32) = {
-    NULL,
-    FUN_0802e520,
-    FUN_0802e6ac,
-    FUN_0802e8d0,
-    FUN_0802eac0,
-    FUN_0802ece0,
-    FUN_0802ef68,
-    dainn_0802f134,
-    FUN_0802f368,
-    FUN_0802f4a8,
-    FUN_0802f5e8,
-    FUN_0802fabc,
-    dainn_0802fc08,
-    dainn_0802fea0,
-    FUN_08030148,
-    FUN_080304c0,
-    FUN_08030680,
-    dainn_08030960,
-    FUN_08030b80,
-    dainn_08030d6c,
-    dainn_0803110c,
-    dainn_0803141c,
-    FUN_080315e0,
-    FUN_0803166c,
-    FUN_08031734,
-    FUN_080317f0,
-    FUN_08031f14,
-    FUN_08032180,
-    dainn_080323c8,
-    FUN_08032934,
-    FUN_08032988,
-    FUN_08032acc,
-    FUN_08032bac,
-    FUN_08032e1c,
-    dainn_08032f18,
-    FUN_0803331c,
-    FUN_080333a4,
-    FUN_080334b4,
-    FUN_080335e8,
-    FUN_080337b8,
-    FUN_08033970,
-    FUN_08033b28,
-    FUN_08033c60,
-    FUN_08033d84,
-    FUN_08033e3c,
-    FUN_08034014,
-    FUN_0803419c,
-    FUN_0803427c,
-    FUN_0803446c,
-    FUN_08034570,
-    FUN_080346cc,
-    FUN_08034804,
-    FUN_0803495c,
-    FUN_08034a2c,
-    FUN_08034b18,
-    FUN_08034dd8,
-    FUN_08034ebc,
-    FUN_08035268,
-    FUN_080353ac,
-    FUN_0803558c,
-    FUN_08035634,
-    FUN_080356f8,
-};  // 0x085AAD38
-// clang-format on
-
-void FUN_0802ae4c(Ringo*);
-void FUN_0802e4fc(Ringo*);
-void FUN_08035a3c(Ringo*);
-void FUN_0802b074(Ringo*);
-
+// 本体のパレット番号を返す, パレットのフェードもこの番号へ戻す
 // 残差は末尾の 0xC8 / 0xC3 の並び (25/25): 原典は unk_fd4 が立っているときの 0xC8 を最後に置く, if の向きを逆にする形, 三項演算子, 戻り値をローカルに置く形は試済
-NON_MATCH u32 FUN_08027ed0(Ringo* p) {
+NON_MATCH u32 Ringo_GetPlttID(Ringo* p) {
 #ifdef NONMATCHING_C
-  if (p->base.unk_ab) {
+  if (p->base.isDemo) {
     switch (p->unk_824) {
       case 0: {
         break;
@@ -665,14 +358,14 @@ NON_MATCH u32 FUN_08027ed0(Ringo* p) {
   }
   return 0xC3;
 #else
-  INCFUNC("asm/func/FUN_08027ed0.inc");
+  INCFUNC("asm/func/Ringo_GetPlttID.inc");
 #endif
 }
 
 // 残差は unk_824 の 0 / 1 の比べ方と return 1 の位置 (29/31): 原典は 0 と 1 を別々に比べ, return 1 を最後に置く, case を分けた switch で比べ方は揃う
 NON_MATCH s32 FUN_08027f10(Ringo* p) {
 #ifdef NONMATCHING_C
-  if (!p->base.unk_ab) {
+  if (!p->base.isDemo) {
     if (p->unk_820 == 0) {
       return 1;
     }
@@ -695,18 +388,18 @@ void Ringo_OnHurt(HitboxData* a, HitboxData* b, Ringo* p) {
 
   if (!TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_19)) {
     Hitbox_ApplyDamage(a, b);
-    p->unk_180 = b->damage;
+    p->damage = b->damage;
     if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
-      p->unk_179 = a->angle;
+      p->hurtAngle = a->angle;
     } else {
-      p->unk_179 = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
+      p->hurtAngle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
     }
     Boss_SetWeaponExpMask(boss, a->weakness);
     Boss_SetHurtAttributes(boss, a->attributes);
     a->damage += boss->damageBonus;
   }
   if (TEST_FLAGS(a->attributes, HBATTR_SOL)) {
-    p->unk_166 = TRUE;
+    p->hitBySol = TRUE;
   }
   if (b->hitResult & HBRESULT_BONUS) {
     p->unk_167 = TRUE;
@@ -956,7 +649,7 @@ NON_MATCH void FUN_08028790(Ringo* p, Vec3* pos) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites_8f4[i], &p->gfx, 0, 0x201, 2, 0, 60, pos);
+    MainSprite_Add(&p->sprites_8f4[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
     p->sprites_8f4[i].plttID = 0x4100;
     p->sprites_8f4[i].pltt = &gObjPlttData[plttID * 16];
   }
@@ -995,7 +688,7 @@ NON_MATCH void FUN_08028838(Ringo* p, s32 kind, u32 duration) {
     }
     case 0:
     default: {
-      plttID = FUN_08027ed0(p);
+      plttID = Ringo_GetPlttID(p);
       break;
     }
   }
@@ -1036,9 +729,9 @@ NON_MATCH void FUN_08028a04(Ringo* p) {
   s32 i;
 
   if (p->base.facing <= 1) {
-    VEC3_SET(ofs, 0x40, 0xC8, -0x80);
+    VEC3_SET(ofs, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
-    VEC3_SET(ofs, -0x80, 0xC8, 0x40);
+    VEC3_SET(ofs, Q8(-0.5), Q8(0.782), Q8(0.25));
   }
   for (i = 0; i < 4; i++) {
     Vec3 pos;
@@ -1066,7 +759,7 @@ NON_MATCH void FUN_08028b00(Ringo* p) {
     s32 speed;
     s32 velYMax;
 
-    VEC3_SET(size, 0xA4, 0x10, 0xA4);
+    VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
     table = gRandomTable;
     angle = _Random(table) & 0xFF;
     speed = (_Random(table) & 3) + 2;
@@ -1093,7 +786,7 @@ void FUN_08028c04(Ringo* p) {
     s32 speed;
     s32 velYMax;
 
-    VEC3_SET(size, 0xA4, 0x10, 0xA4);
+    VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
     table = gRandomTable;
     angle = (u8)_Random(table);
     speed = (_Random(table) & 3) + 2;
@@ -1116,7 +809,7 @@ NON_MATCH void FUN_08028cb0(Ringo* p) {
     s32 speed;
     s32 velYMax;
 
-    VEC3_SET(size, 0x100, 0x10, 0x100);
+    VEC3_SET(size, Q8(1), Q8(0.063), Q8(1));
     table = gRandomTable;
     angle = _Random(table) & 0xFF;
     speed = (_Random(table) & 3) + 2;
@@ -1132,31 +825,19 @@ NON_MATCH void FUN_08028cb0(Ringo* p) {
 #endif
 }
 
-// 1 回目で打ち切り, 残差は p を r6 / r7 のどちらに置くかのみ (115/115)
-NON_MATCH void FUN_08028dbc(Ringo* p) {
-#ifdef NONMATCHING_C
+// SPRITE_DJANGO_SABATA を開き, sprite_a40 を隠した状態で本体の位置に用意する
+void FUN_08028dbc(Ringo* p) {
   MainSprite* sprite = &p->sprite_a40;
   MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
   Vec3 pos;
   Vec3* vp;
-  s32 x, z, a, b;
 
   p->gfx_a20 = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx_a20, f);
   pos = p->sprites[0].pos;
   vp = &p->sprite_a40.pos;
-  x = pos.x >> 1;
-  z = pos.z >> 1;
-  vp->x = FixToInt(8, (x - z) * 48);
-  a = FixToInt(8, (x + z) * 48);
-  b = FixToInt(8, pos.y * 24);
-  vp->x = vp->x - gCameraVpCoords.x + 120;
-  vp->y = (a - b) - gCameraVpCoords.y + 90;
-  vp->z = (a + b) - gCameraVpCoords.z;
-  MainSprite_Add(sprite, &p->gfx_a20, 0, 0x11, 2, 0, 60, &pos);
-#else
-  INCFUNC("asm/func/FUN_08028dbc.inc");
-#endif
+  WorldToScreen(vp, &pos);
+  MainSprite_Add(sprite, &p->gfx_a20, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 2, PLAYMODE_PAUSE, 60, &pos);
 }
 
 void FUN_08028eb8(Ringo* p) { MainSprite_Remove(&p->sprite_a40); }
@@ -1164,8 +845,8 @@ void FUN_08028eb8(Ringo* p) { MainSprite_Remove(&p->sprite_a40); }
 s32 FUN_08028ec8(Ringo* p) {
   s32 id;
 
-  if (p->unk_173 == 0) {
-    id = p->base.players[p->unk_173]->kind == PLAYER_SOLAR_DJANGO ? 0x30 : 0xF7;
+  if (p->grabbedPlayer == 0) {
+    id = p->base.players[p->grabbedPlayer]->kind == PLAYER_SOLAR_DJANGO ? 0x30 : 0xF7;
   } else {
     id = 0x1CE;
   }
@@ -1194,7 +875,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
     if (p->unk_864) {
       idx = 1;
     } else {
-      idx = p->unk_899;
+      idx = p->targetPlayer;
     }
     delay = 0;
     angle = Random() & 0xC0;
@@ -1208,7 +889,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
       delay += 64;
     }
   } else {
-    u32 idx = p->unk_899;
+    u32 idx = p->targetPlayer;
     u32 angle = Angle_FromDir8(p->base.dir) - 0x30;
     u32 delay = 0;
 
@@ -1291,25 +972,25 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
     }
   }
   smokePos.y = pos.y - 0x20;
-  VEC3_SET(size, 0x40, 0x40, 0x40);
+  VEC3_SET(size, Q8(0.25), Q8(0.25), Q8(0.25));
   angle = mover->angle + 0x80;
   EmitSmoke(&smokePos, (Random() & 1) + 2, &size, angle + (Random() & 0x1F) - 0x10, (Random() & 3) + 4, (Random() & 1) + 1, 2, 1);
   EmitSmoke(&smokePos, (Random() & 1) + 2, &size, angle + (Random() & 0x1F) - 0x10, (Random() & 3) + 4, (Random() & 1) + 1, 2, 1);
   switch (kind) {
     case 0: {
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->unk_899], 0, p->unk_8da, 32, p->unk_8b4, 10);
+      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 0, p->unk_8da, 32, p->unk_8b4, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
     case 1: {
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->unk_899], 1, mover->angle, 24, p->unk_8b6, 10);
+      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 1, mover->angle, 24, p->unk_8b6, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
     case 2: {
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->unk_899], 2, p->unk_8da - 0x20, 24, p->unk_8b8, 10);
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->unk_899], 2, p->unk_8da, 24, p->unk_8b8, 10);
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->unk_899], 2, p->unk_8da + 0x20, 24, p->unk_8b8, 10);
+      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da - 0x20, 24, p->unk_8b8, 10);
+      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da, 24, p->unk_8b8, 10);
+      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da + 0x20, 24, p->unk_8b8, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
@@ -1328,14 +1009,14 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
 NON_MATCH void FUN_08029628(Ringo* p) {
 #ifdef NONMATCHING_C
   Mover* mover = &p->base.mover;
-  Vec3* playerPos = p->base.playerPos[p->unk_899];
+  Vec3* playerPos = p->base.playerPos[p->targetPlayer];
   u32 angle = ArcTan2_8(p->unk_868.x - playerPos->x, p->unk_868.z - playerPos->z) & ~0x3F;
   Vec3 pos;
   s32 d;
   u8 a;
 
   Vec3_SetPolar(&pos, angle, 0x300);
-  playerPos = p->base.playerPos[p->unk_899];
+  playerPos = p->base.playerPos[p->targetPlayer];
   pos.x = playerPos->x + pos.x;
   pos.y = pos.y + playerPos->y;
   pos.z = playerPos->z + pos.z;
@@ -1345,7 +1026,7 @@ NON_MATCH void FUN_08029628(Ringo* p) {
     angle += 0x40;
   }
   Vec3_SetPolar(&p->unk_84c, angle, 0x300);
-  playerPos = p->base.playerPos[p->unk_899];
+  playerPos = p->base.playerPos[p->targetPlayer];
   p->unk_84c.x = playerPos->x + p->unk_84c.x;
   p->unk_84c.y = playerPos->y + p->unk_84c.y;
   p->unk_84c.z = playerPos->z + p->unk_84c.z;
@@ -1425,7 +1106,7 @@ NON_MATCH void FUN_0802991c(Ringo* p) {
 }
 
 s32 FUN_080299e0(Ringo* p) {
-  if (u16_03002bf0 != 0) {
+  if (gRisingSunCount != 0) {
     return 4;
   }
   if (FUN_0809df78(&p->base.mover.pos)) {
@@ -1438,11 +1119,11 @@ s32 FUN_080299e0(Ringo* p) {
 NON_MATCH void FUN_08029a1c(Ringo* p, s32 n) {
 #ifdef NONMATCHING_C
   if (n > 0x5F) {
-    if (p->base.unk_ab ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
+    if (p->base.isDemo ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
       PlaySound_0824078c(SONG_840);
     }
   } else if (n > 0x3F) {
-    if (p->base.unk_ab ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
+    if (p->base.isDemo ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
       PlaySound_0824078c(SONG_841);
     }
   } else {
@@ -1458,8 +1139,8 @@ void FUN_08029ab8(Ringo* p) {
   Vec3 pos;
 
   Vec3_Clear(&pos);
-  MainSprite_Add(sprite, &p->gfx, 0, 1, 2, 0, 60, &pos);
-  MainSprite_SetAnim(sprite, &p->gfx, 22, 2, 0);
+  MainSprite_Add(sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_ONCE_AND_STOP, 0);
   p->unk_fd5 = FALSE;
   p->unk_fd6 = FALSE;
 }
@@ -1492,7 +1173,7 @@ NON_MATCH void FUN_08029c2c(Ringo* p) {
 #ifdef NONMATCHING_C
   MainSprite* sprite = &p->sprite_fe0;
 
-  MainSprite_SetAnim(sprite, &p->gfx, 22, 1, 0);
+  MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_LOOP, 0);
   sprite->plttID = 0xC1;
   sprite->pltt = &gObjPlttData[0xC1 * 16];
   p->unk_fd4 = TRUE;
@@ -1504,7 +1185,7 @@ NON_MATCH void FUN_08029c2c(Ringo* p) {
 void FUN_08029c74(Ringo* p) {
   MainSprite* sprite = &p->sprite_fe0;
 
-  MainSprite_SetAnim(sprite, &p->gfx, 72, 1, 0);
+  MainSprite_SetAnim(sprite, &p->gfx, 72, PLAYMODE_LOOP, 0);
   sprite->plttID = 0xC3;
   sprite->pltt = &gObjPlttData[0xC3 * 16];
   p->unk_fd5 = TRUE;
@@ -1516,7 +1197,7 @@ NON_MATCH void FUN_08029cc8(Ringo* p) {
 #ifdef NONMATCHING_C
   MainSprite* sprite = &p->sprite_fe0;
 
-  MainSprite_SetAnim(sprite, &p->gfx, 22, 1, MAIN_ANIM_FORCE_POSE);
+  MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   sprite->plttID = 0xC1;
   sprite->pltt = &gObjPlttData[0xC1 * 16];
   p->unk_fd5 = FALSE;
@@ -1538,7 +1219,7 @@ void Ringo_InitAuxSprites(Ringo* p) {
   p->auxAnimFile = GetFile(DIR_ANIMATION, ANIM_78E1);
   sprite = p->auxSprites;
   for (i = 0; i < 16; i++, sprite++) {
-    AuxSprite_Add(sprite, &p->auxGfx[0], 0x11);
+    AuxSprite_Add(sprite, &p->auxGfx[0], SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     AuxAnim_SetAnim(&p->auxAnims[i], p->auxAnimFile, 2, 0, 0);
     AuxAnim_SetAnimSpeed(&p->auxAnims[i], 32);
     sprite->priority = 1;
@@ -1562,20 +1243,10 @@ NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
   Vec3 screen;
   Vec3* pos = &p->base.mover.pos;
   Vec3* vp = &screen;
-  s32 sx, sz, a, b, y, z;
   AuxSprite* sprite;
   s32 i;
 
-  sx = pos->x >> 1;
-  sz = pos->z >> 1;
-  vp->x = FixToInt(8, (sx - sz) * 48);
-  a = FixToInt(8, (sx + sz) * 48);
-  b = FixToInt(8, pos->y * 24);
-  y = a - b;
-  z = a + b;
-  vp->x = vp->x - gCameraVpCoords.x + 0x78;
-  vp->y = y - gCameraVpCoords.y + 0x5A;
-  vp->z = z - gCameraVpCoords.z;
+  WorldToScreen(vp, pos);
   sprite = p->auxSprites;
   for (i = 0; i < 16; i++, sprite++) {
     if (p->auxActive[i]) {
@@ -1701,8 +1372,8 @@ NON_MATCH void FUN_0802a208(Ringo* p) {
 #ifdef NONMATCHING_C
   MainSprite* sprite = &p->sprite_aa0;
 
-  MainSprite_Add(sprite, &p->gfx, 0, 1, 2, 0, 60, &p->sprites[0].pos);
-  MainSprite_SetAnim(sprite, &p->gfx, 78, 2, 0);
+  MainSprite_Add(sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, &p->sprites[0].pos);
+  MainSprite_SetAnim(sprite, &p->gfx, 78, PLAYMODE_ONCE_AND_STOP, 0);
   p->unk_b00 = 0;
   p->unk_b01 = (Random() & 0x1F) + 0x70;
   p->unk_b02 = 4;
@@ -1738,7 +1409,7 @@ void FUN_0802a2fc(Ringo* p) {
       if (p->unk_b04 > 65) {
         p->unk_b00++;
         p->unk_b04 = 0;
-        MainSprite_SetAnim(sprite, &p->gfx, 79, 1, 0);
+        MainSprite_SetAnim(sprite, &p->gfx, 79, PLAYMODE_LOOP, 0);
       }
       break;
     }
@@ -1758,7 +1429,7 @@ void FUN_0802a2fc(Ringo* p) {
         sprite->pos.y = p->unk_b06;
         p->unk_b00++;
         p->unk_b04 = 0;
-        MainSprite_SetAnim(sprite, &p->gfx, 80, 2, 0);
+        MainSprite_SetAnim(sprite, &p->gfx, 80, PLAYMODE_ONCE_AND_STOP, 0);
         ParticleShadow_Hide(&p->ptclShadow);
         PlaySound_082406e0(SONG_679);
       }
@@ -1783,7 +1454,7 @@ void FUN_0802a538(Ringo* p) {
   p->unk_b03 = 1;
   p->unk_b04 = 0;
   p->unk_b06 = p->unk_164;
-  MainSprite_SetAnim(sprite, &p->gfx, 78, 1, 0);
+  MainSprite_SetAnim(sprite, &p->gfx, 78, PLAYMODE_LOOP, 0);
   ParticleShadow_Show(&p->ptclShadow);
 }
 
@@ -1804,7 +1475,7 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
         break;
       }
       case 2: {
-        boss->unk_114 = Angle_FromDir8((u8)msg->args[0]);
+        boss->destAngle = Angle_FromDir8((u8)msg->args[0]);
         Boss_SetSubStates(boss, 2, 0, 1);
         break;
       }
@@ -1813,13 +1484,13 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
         boss->mover.pos.y = msg->args[1];
         boss->mover.pos.z = msg->args[2];
         p->sprites[0].pos.x = boss->mover.pos.x;
-        p->sprites[0].pos.y = p->unk_160 + boss->mover.pos.y;
+        p->sprites[0].pos.y = p->spriteOffsetY + boss->mover.pos.y;
         p->sprites[0].pos.z = boss->mover.pos.z;
         MsgQueue_EndWait(&boss->msgQueue, 1);
         break;
       }
       case 3: {
-        boss->unk_114 = Angle_FromDir8((u8)msg->args[0]);
+        boss->destAngle = Angle_FromDir8((u8)msg->args[0]);
         Boss_SetSubStates(boss, 2, 0, 2);
         break;
       }
@@ -1831,12 +1502,12 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
         break;
       }
       case 5: {
-        boss->unk_114 = Angle_FromDir8((u8)msg->args[0]);
+        boss->destAngle = Angle_FromDir8((u8)msg->args[0]);
         Boss_SetSubStates(boss, 2, 0, 4);
         break;
       }
       case 6: {
-        boss->unk_114 = Angle_FromDir8((u8)msg->args[0]);
+        boss->destAngle = Angle_FromDir8((u8)msg->args[0]);
         Boss_SetSubStates(boss, 2, 0, 5);
         break;
       }
@@ -1873,9 +1544,9 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
           Vec3* target = &p->unk_84c;
           Vec3* pos = &boss->mover.pos;
 
-          boss->unk_114 = ArcTan2_8(target->x - pos->x, target->z - pos->z);
+          boss->destAngle = ArcTan2_8(target->x - pos->x, target->z - pos->z);
         }
-        Boss_SetAngle(boss, boss->unk_114);
+        Boss_SetAngle(boss, boss->destAngle);
         p->unk_171 = FALSE;
         Boss_SetSubStates(boss, 2, 0, 9);
         break;
@@ -1958,10 +1629,10 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
         if (msg->args[0] == 0) {
           u32 plttID;
 
-          p->unk_878 = 0;
-          p->unk_87c = -1;
-          p->unk_87a = FUN_08027ed0(p);
-          plttID = FUN_08027ed0(p);
+          p->plttFade = 0;
+          p->plttFadeMode = -1;
+          p->plttFadeTo = Ringo_GetPlttID(p);
+          plttID = Ringo_GetPlttID(p);
           if (plttID == 0) {
             p->sprites[0].pltt = p->pltt[0];
           } else {
@@ -1969,7 +1640,7 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
           }
           p->sprites[1].pltt = p->sprites[0].pltt;
         } else {
-          Ringo_SetUnk87c(p, 5, 206);
+          Ringo_StartPlttFade(p, 5, 206);
         }
         MsgQueue_EndWait(&boss->msgQueue, 1);
         break;
@@ -1985,8 +1656,8 @@ void Ringo_InitHitbox(Ringo* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08028050, p);
@@ -1997,20 +1668,20 @@ void Ringo_InitHitbox2(Ringo* p) {
   HitboxData* hitbox = &p->hitbox2;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x90, 0x80, 0x90);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.563), Q8(0.5), Q8(0.563));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08028050, p);
-  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, 0x60000, p->hitbox2Unk44);
+  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
 }
 
 void Ringo_InitHurtbox(Ringo* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x60, 0x80, 0x60);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Ringo_OnHurt, p);
@@ -2022,8 +1693,8 @@ void Ringo_InitHurtbox2(Ringo* p) {
   HitboxData* hurtbox = &p->hurtbox2;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x100, 0x80, 0x100);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(1), Q8(0.5), Q8(1));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_0802802c, p);
@@ -2043,7 +1714,7 @@ void FUN_0802adb8(Ringo* p) {
   p->unk_893 = 0;
   p->unk_8d4 = 240;
   p->unk_896 = 240;
-  p->unk_899 = 0;
+  p->targetPlayer = 0;
   p->unk_fd4 = FALSE;
   p->unk_1048 = 0x40;
   p->unk_1044 = 0;
@@ -2066,7 +1737,7 @@ NON_MATCH void FUN_0802ae4c(Ringo* p) {
   Boss_AdvanceAnim(&p->base, &p->sprites[0], &p->gfx);
   mover->pos.y = p->unk_164;
   p->sprites[0].pos.x = mover->pos.x;
-  p->sprites[0].pos.y = p->unk_160 + mover->pos.y;
+  p->sprites[0].pos.y = p->spriteOffsetY + mover->pos.y;
   p->sprites[0].pos.z = mover->pos.z;
   if (TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_18)) {
     p->sprites[0].pos.x += FixToInt(12, COS(p->unk_16e) * (p->unk_16c * 4));
@@ -2096,7 +1767,9 @@ NON_MATCH void FUN_0802ae4c(Ringo* p) {
 #endif
 }
 
-// 1 回目で打ち切り (1346/1361), レジスタと退避枠の割り当てが大きくずれ pltt の差し替えは FUN_080353ac と同じ壁
+static const rgb555 rgb555_ARRAY_085aac18[16] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};  // 0x085AAC18
+
+// 1 回目で打ち切り (1367/1361, 投影は WorldToScreen), レジスタと退避枠の割り当てが大きくずれ pltt の差し替えは FUN_080353ac と同じ壁
 NON_MATCH void FUN_0802b074(Ringo* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
@@ -2111,8 +1784,8 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     if (hp != boss->hp) {
       Vec3 ofs;
 
-      VEC3_SET(ofs, 0x10, 0, 0x10);
-      FUN_0805fe7c(&p->hurtbox, heal, 1, &boss->mover.pos, &ofs, 1);
+      VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+      CreateDamageNumber(&p->hurtbox, heal, 1, &boss->mover.pos, &ofs, 1);
     }
     p->unk_184 = 0;
   }
@@ -2162,7 +1835,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     CLEAR_FLAGS(boss->flags, BOSSFLAG_VISIBLE);
   } else {
     MainSprite_Show(&p->sprites[0]);
-    if (boss->unk_ab) {
+    if (boss->isDemo) {
       if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW)) {
         AuxShadow_Hide(&p->shadow);
       } else {
@@ -2184,7 +1857,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
   }
   if (p->unk_186 > 0) {
     if (--p->unk_186 == 0) {
-      u32 plttID = FUN_08027ed0(p);
+      u32 plttID = Ringo_GetPlttID(p);
 
       if (plttID == 0) {
         p->sprites[0].pltt = p->pltt[0];
@@ -2196,24 +1869,24 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
   } else {
     s32 dst = FUN_08027f10(p) + 2;
     s32 src = FUN_08027f10(p) + 0xC3;
-    s32 cur = FUN_08027ed0(p) - 0xC1;
+    s32 cur = Ringo_GetPlttID(p) - 0xC1;
 
-    if (p->unk_87c == 0) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->unk_87a * 16], p->unk_878, 5);
+    if (p->plttFadeMode == 0) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
-      if (++p->unk_878 > 31) {
-        p->unk_878 = 32;
+      if (++p->plttFade > 31) {
+        p->plttFade = 32;
       }
-    } else if (p->unk_87c == 1) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->unk_87a * 16], p->unk_878, 5);
+    } else if (p->plttFadeMode == 1) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
-      if (--p->unk_878 <= 0) {
+      if (--p->plttFade <= 0) {
         u32 plttID;
 
-        p->unk_878 = 0;
-        p->unk_87c = -1;
-        p->unk_87a = FUN_08027ed0(p);
-        plttID = FUN_08027ed0(p);
+        p->plttFade = 0;
+        p->plttFadeMode = -1;
+        p->plttFadeTo = Ringo_GetPlttID(p);
+        plttID = Ringo_GetPlttID(p);
         if (plttID == 0) {
           p->sprites[0].pltt = p->pltt[0];
         } else {
@@ -2221,46 +1894,46 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
         }
         p->sprites[1].pltt = p->sprites[0].pltt;
       }
-    } else if (p->unk_87c == 2) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], (rgb555*)rgb555_ARRAY_085aac18, abs(32 - p->unk_878), 5);
+    } else if (p->plttFadeMode == 2) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], (rgb555*)rgb555_ARRAY_085aac18, abs(32 - p->plttFade), 5);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
-      if (++p->unk_878 > 63) {
-        p->unk_878 = 0;
+      if (++p->plttFade > 63) {
+        p->plttFade = 0;
       }
-    } else if (p->unk_87c == 3) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[203 * 16], &gObjPlttData[p->unk_87a * 16], p->unk_878, 6);
+    } else if (p->plttFadeMode == 3) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[203 * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 6);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
-      if (++p->unk_878 > 63) {
-        p->unk_878 = 64;
+      if (++p->plttFade > 63) {
+        p->plttFade = 64;
       }
-    } else if (p->unk_87c == 4) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->unk_87a * 16], p->unk_878, 7);
+    } else if (p->plttFadeMode == 4) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 7);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
-      if (++p->unk_878 > 127) {
-        p->unk_878 = 128;
+      if (++p->plttFade > 127) {
+        p->plttFade = 128;
       }
-    } else if (p->unk_87c == 5) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->unk_87a * 16], p->unk_878, 5);
+    } else if (p->plttFadeMode == 5) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
       if (!p->unk_87d) {
-        if (++p->unk_878 > 31) {
-          p->unk_878 = 32;
+        if (++p->plttFade > 31) {
+          p->plttFade = 32;
           p->unk_87d = 1;
         }
-      } else if (--p->unk_878 <= 0) {
-        p->unk_878 = 0;
+      } else if (--p->plttFade <= 0) {
+        p->plttFade = 0;
         p->unk_87d = 0;
       }
-    } else if (p->unk_87c == 6) {
-      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->unk_87a * 16], p->unk_878, 6);
+    } else if (p->plttFadeMode == 6) {
+      BlendPltt(p->pltt_620[dst], &gObjPlttData[src * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 6);
       p->sprites[0].pltt = p->sprites[1].pltt = p->pltt_620[cur];
-      if (++p->unk_878 > 63) {
-        p->unk_878 = 64;
+      if (++p->plttFade > 63) {
+        p->plttFade = 64;
       }
     }
   }
-  if (!boss->unk_ab) {
-    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(u32_03002bc0[0] & FLAG03002BC0_UNK_2)) {
+  if (!boss->isDemo) {
+    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
       if (!p->unk_880) {
         p->unk_880 = TRUE;
         p->unk_884 = 0;
@@ -2284,14 +1957,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
 
       pos = p->sprites[0].pos;
       vp = &sprite->pos;
-      x = pos.x >> 1;
-      z = pos.z >> 1;
-      vp->x = FixToInt(8, (x - z) * 48);
-      a = FixToInt(8, (x + z) * 48);
-      b = FixToInt(8, pos.y * 24);
-      vp->x = vp->x - gCameraVpCoords.x + 120;
-      vp->y = (a - b) - gCameraVpCoords.y + 90;
-      vp->z = (a + b) - gCameraVpCoords.z;
+      WorldToScreen(vp, &pos);
       if (!boss->xflip) {
         sprite->pos.x += s8_ARRAY_085aabbc[p->unk_a16][0];
         sprite->pos.y += s8_ARRAY_085aabbc[p->unk_a16][1];
@@ -2309,16 +1975,16 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
           ofs.x = d;
           ofs.z = d;
           ofs.y = 160;
-          if (!boss->unk_ab) {
-            s32 dmg = FUN_0807ab64(gPlayerPtr[p->unk_173], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, p->unk_8c4, 2);
+          if (!boss->isDemo) {
+            s32 dmg = Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, p->unk_8c4, 2);
             s32 hp = boss->hp;
 
             Boss_SetHP(boss, hp + dmg);
             if (hp != boss->hp) {
               Vec3 ofs2;
 
-              VEC3_SET(ofs2, 0x10, 0, 0x10);
-              FUN_0805fe7c(&p->hurtbox, dmg, 1, &boss->mover.pos, &ofs2, 1);
+              VEC3_SET(ofs2, Q8(0.063), 0, Q8(0.063));
+              CreateDamageNumber(&p->hurtbox, dmg, 1, &boss->mover.pos, &ofs2, 1);
             }
           }
           FUN_08028a04(p);
@@ -2330,7 +1996,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
         } else if (p->unk_a16 == 1) {
           anim += 1;
         }
-        MainSprite_SetAnim(sprite, &p->gfx_a20, anim, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx_a20, anim, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
       MainSprite_AdvanceAnim(sprite, &p->gfx_a20);
       p->unk_a14 = p->unk_a16;
@@ -2344,20 +2010,13 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
 
       pos = p->sprites[0].pos;
       vp = &sprite->pos;
-      x = pos.x >> 1;
-      z = pos.z >> 1;
-      vp->x = FixToInt(8, (x - z) * 48);
-      a = FixToInt(8, (x + z) * 48);
-      b = FixToInt(8, pos.y * 24);
-      vp->x = vp->x - gCameraVpCoords.x + 120;
-      vp->y = (a - b) - gCameraVpCoords.y + 90;
-      vp->z = (a + b) - gCameraVpCoords.z;
+      WorldToScreen(vp, &pos);
       sprite->pos.x += (s8)u8_ARRAY_085aabd0[p->unk_a16 * 2];
       sprite->pos.y = (s8)u8_ARRAY_085aabd0[p->unk_a16 * 2 + 1] + (sprite->pos.y + 0x24);
-      if (p->unk_15c == 1) {
+      if (p->phaseTimer == 1) {
         u32 anim = FUN_08028ec8(p);
 
-        switch (p->unk_15e) {
+        switch (p->phase) {
           case 0: {
             break;
           }
@@ -2371,12 +2030,12 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
             break;
           }
         }
-        MainSprite_SetAnim(sprite, &p->gfx_a20, anim, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx_a20, anim, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
       MainSprite_AdvanceAnim(sprite, &p->gfx_a20);
-    } else if (p->unk_15c == 1 && p->unk_15e == 4) {
-      if (!boss->unk_ab) {
-        FUN_0807ab64(gPlayerPtr[p->unk_173], &p->sprites[0].pos, NULL, 0, 0, 0, 1, p->unk_8c6, 0);
+    } else if (p->phaseTimer == 1 && p->phase == 4) {
+      if (!boss->isDemo) {
+        Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, NULL, 0, 0, 0, 1, p->unk_8c6, 0);
       }
       PlaySound_0824078c(SONG_478);
     }
@@ -2404,7 +2063,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
   }
   gBgBrightness2 = p->unk_1048;
   p->unk_178 = 0;
-  if (boss->unk_ab && p->unk_18b && (boss->frameCount & 15) == 0) {
+  if (boss->isDemo && p->unk_18b && (boss->frameCount & 15) == 0) {
     FUN_08028c04(p);
   }
   boss->weaponExpMask = 0;
@@ -2435,13 +2094,13 @@ void FUN_0802bccc(Ringo* p) {
   n = p->unk_88a & 7;
   p->unk_88a++;
   if (n == 3 || n == 7) {
-    p->unk_899 = 1;
+    p->targetPlayer = 1;
     p->unk_17e = p->unk_8dc;
   } else {
-    p->unk_899 = 0;
+    p->targetPlayer = 0;
     p->unk_17e = p->unk_8db;
   }
-  if (p->unk_899 == 0) {
+  if (p->targetPlayer == 0) {
     if (ratio < 0x40) {
       if (n <= 2) {
         Ringo_SetUnk169(p, 5);
@@ -2486,13 +2145,13 @@ void FUN_0802be88(Ringo* p) {
   n = p->unk_88a & 7;
   p->unk_88a++;
   if (n == 3 || n == 7) {
-    p->unk_899 = 1;
+    p->targetPlayer = 1;
     p->unk_17e = p->unk_8dc;
   } else {
-    p->unk_899 = 0;
+    p->targetPlayer = 0;
     p->unk_17e = p->unk_8db;
   }
-  if (p->unk_899 == 0) {
+  if (p->targetPlayer == 0) {
     if (ratio < 0x40) {
       Ringo_SetUnk169(p, 7);
       FUN_0823585c(&p->unk_84c, &mover->pos, 2, 5, 0x100, NULL, NULL);
@@ -2524,7 +2183,7 @@ void FUN_0802c024(Ringo* p) {
   Random();
   n = p->unk_88a & 7;
   p->unk_88a++;
-  p->unk_899 = 0;
+  p->targetPlayer = 0;
   p->unk_17e = p->unk_8db;
   if (n == 0 || n == 4) {
     Ringo_SetUnk169(p, 11);
@@ -2573,7 +2232,7 @@ void FUN_0802c130(Ringo* p) {
       break;
     }
     case 7: {
-      p->unk_892 = p->unk_899;
+      p->unk_892 = p->targetPlayer;
       Boss_SetSubState2(boss, 11);
       break;
     }
@@ -2611,18 +2270,21 @@ void FUN_0802c130(Ringo* p) {
   p->unk_169 = 0;
 }
 
+void dainn_08032f18(Boss* boss, s32 timer);
+void FUN_08032e1c(Boss* boss, s32 timer);
+
 bool32 FUN_0802c2d4(Ringo* p) {
   Boss* boss = &p->base;
 
-  if (boss->hp <= 0 && boss->unk_96) {
+  if (boss->hp <= 0 && boss->canDie) {
     SET_FLAGS(boss->flags, BOSSFLAG_UNK_1);
     if (p->unk_820 != 0) {
-      Boss_SetState(boss, (BossUpdateFunc)dainn_08032f18, 34);
+      Boss_SetState(boss, dainn_08032f18, 34);
     } else {
-      Boss_SetState(boss, (BossUpdateFunc)FUN_08032e1c, 33);
+      Boss_SetState(boss, FUN_08032e1c, 33);
     }
   }
-  boss->unk_96 = FALSE;
+  boss->canDie = FALSE;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_1)) {
     Boss_SetSubStates(boss, 1, 0, 1);
     return TRUE;
@@ -2637,14 +2299,14 @@ bool32 FUN_0802c2d4(Ringo* p) {
 void FUN_0802c3a0(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss) == TRUE) {
     Boss_RequestState(boss, 1);
   }
   if (FUN_0802bc7c(p)) {
     return;
   }
-  if (p->unk_178 && p->unk_899 != 1 && !p->unk_fd4) {
+  if (p->unk_178 && p->targetPlayer != 1 && !p->unk_fd4) {
     Ringo_UpdateUnk88c(p);
   } else if (boss->subStateTimer > p->stateDuration) {
     if (p->unk_820 != 0) {
@@ -2664,11 +2326,11 @@ void FUN_0802c3a0(Ringo* p) {
 void FUN_0802c564(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 2);
   }
-  if (p->unk_178 && p->unk_899 != 1 && !p->unk_fd4) {
+  if (p->unk_178 && p->targetPlayer != 1 && !p->unk_fd4) {
     Ringo_UpdateUnk88c(p);
   } else if (boss->subStateDone) {
     FUN_0802c130(p);
@@ -2711,7 +2373,7 @@ void FUN_0802c73c(Ringo* p) {
 void FUN_0802c7e0(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 6);
   }
@@ -2728,7 +2390,7 @@ void FUN_0802c7e0(Ringo* p) {
 }
 
 void FUN_0802c87c(Ringo* p) {
-  p->base.unk_96 = TRUE;
+  p->base.canDie = TRUE;
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 7);
   }
@@ -2748,7 +2410,7 @@ NON_MATCH void FUN_0802c8e0(Ringo* p) {
   Vec3 v;
   bool32 blocked;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 8);
   }
@@ -2781,7 +2443,7 @@ NON_MATCH void FUN_0802c8e0(Ringo* p) {
     Vec3_Add(&max, &front);
     n = FUN_08028720(p, p->numPlayers, &min, &max);
     if (n >= 0 && !Player_TestFlag20(gPlayerPtr[n], PFLAG20_UNK_18)) {
-      p->unk_173 = n;
+      p->grabbedPlayer = n;
       Boss_SetSubState2(boss, 8);
       return;
     }
@@ -2803,7 +2465,7 @@ NON_MATCH void FUN_0802c8e0(Ringo* p) {
 void FUN_0802cca0(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 9);
   }
@@ -2821,7 +2483,7 @@ void FUN_0802cca0(Ringo* p) {
 void FUN_0802cd2c(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 10);
   }
@@ -2835,7 +2497,7 @@ void FUN_0802cd2c(Ringo* p) {
 void FUN_0802cda4(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 11);
   }
@@ -2853,7 +2515,7 @@ void FUN_0802cda4(Ringo* p) {
 void FUN_0802ce30(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 12);
   }
@@ -2867,7 +2529,7 @@ void FUN_0802ce30(Ringo* p) {
 void FUN_0802cea8(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 13);
   }
@@ -2885,7 +2547,7 @@ void FUN_0802cea8(Ringo* p) {
 void FUN_0802cf34(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     FUN_08029628(p);
     Boss_RequestState(boss, 14);
@@ -2907,7 +2569,7 @@ void FUN_0802cf34(Ringo* p) {
 void FUN_0802cff4(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 15);
   }
@@ -2923,7 +2585,7 @@ void FUN_0802cff4(Ringo* p) {
 void FUN_0802d074(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     FUN_08029628(p);
     Boss_RequestState(boss, 16);
@@ -2947,7 +2609,7 @@ NON_MATCH void FUN_0802d134(Ringo* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 17);
     p->unk_898 = 0;
@@ -2961,10 +2623,10 @@ NON_MATCH void FUN_0802d134(Ringo* p) {
     Boss_SetSubState2(boss, 16);
   } else if (++p->unk_894 >= p->unk_8d6) {
     if (p->unk_820 != 0) {
-      p->unk_899 = 1;
+      p->targetPlayer = 1;
       p->unk_172 = 0;
     } else {
-      p->unk_899 = 1;
+      p->targetPlayer = 1;
       p->unk_172 = 1;
     }
     Boss_SetSubState2(boss, 5);
@@ -2980,7 +2642,7 @@ void FUN_0802d294(Ringo* p) {
   Boss* boss = &p->base;
   Mover* mover = &boss->mover;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 18);
   }
@@ -3004,7 +2666,7 @@ void FUN_0802d294(Ringo* p) {
 void FUN_0802d36c(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss) == TRUE) {
     if (p->unk_820 == 0) {
       Boss_RequestState(boss, 12);
@@ -3028,7 +2690,7 @@ void FUN_0802d36c(Ringo* p) {
 void FUN_0802d420(Ringo* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 19);
   }
@@ -3045,7 +2707,7 @@ void FUN_0802d4bc(Ringo* p) {
   Boss* boss = &p->base;
   Mover* mover = &boss->mover;
 
-  boss->unk_96 = TRUE;
+  boss->canDie = TRUE;
   if (Boss_EnterSubState(boss) == TRUE) {
     Boss_RequestState(boss, 20);
     if (Boss_GetHPRatio(boss) < 0x40) {
@@ -3140,7 +2802,7 @@ NON_MATCH void FUN_0802d738(Ringo* p) {
     Vec3_Add(&max, &mover->pos);
     i = FUN_08028720(p, p->numPlayers, &min, &max);
     if (i >= 0 && !Player_TestFlag20(gPlayerPtr[i], PFLAG20_UNK_18)) {
-      p->unk_173 = i;
+      p->grabbedPlayer = i;
       Boss_SetSubState2(boss, 24);
     } else {
       Boss_SetSubState2(boss, 25);
@@ -3160,7 +2822,7 @@ void FUN_0802d85c(Ringo* p) {
     Boss_RequestState(boss, 25);
   }
   if (boss->subStateDone) {
-    if (p->unk_173 < 0) {
+    if (p->grabbedPlayer < 0) {
       Boss_SetSubState2(boss, 21);
     } else {
       Boss_SetSubState2(boss, 26);
@@ -3445,7 +3107,7 @@ void FUN_0802e138(Ringo* p) {
 
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 54);
-    p->unk_173 = 0;
+    p->grabbedPlayer = 0;
   }
   if (boss->subStateDone) {
     MsgQueue_EndWait(&boss->msgQueue, 1);
@@ -3459,7 +3121,7 @@ void FUN_0802e198(Ringo* p) {
 
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 55);
-    p->unk_173 = 0;
+    p->grabbedPlayer = 0;
   }
   if (boss->subStateDone) {
     Boss_SetSubState2(boss, 2);
@@ -3536,25 +3198,114 @@ void FUN_0802e3e4(Ringo* p) {
   }
 }
 
+// clang-format off
+static void (*const PTR_ARRAY_085aac38[30])(Ringo*) = {
+    FUN_0802c3a0,
+    FUN_0802c564,
+    FUN_0802c6e8,
+    FUN_0802c73c,
+    FUN_0802c7e0,
+    FUN_0802c87c,
+    FUN_0802c8e0,
+    FUN_0802cca0,
+    FUN_0802cd2c,
+    FUN_0802cda4,
+    FUN_0802ce30,
+    FUN_0802cea8,
+    FUN_0802cf34,
+    FUN_0802cff4,
+    FUN_0802d074,
+    FUN_0802d134,
+    FUN_0802d294,
+    FUN_0802d36c,
+    FUN_0802d420,
+    FUN_0802d4bc,
+    FUN_0802d5dc,
+    FUN_0802d648,
+    FUN_0802d6c8,
+    FUN_0802d738,
+    FUN_0802d85c,
+    FUN_0802d8d0,
+    FUN_0802d92c,
+    FUN_0802d988,
+    FUN_0802d9f8,
+    FUN_0802da30,
+};  // 0x085AAC38
+// clang-format on
+
 void FUN_0802e434(Ringo* p) { PTR_ARRAY_085aac38[p->base.subState2](p); }
 
-void FUN_0802e450(Ringo* p) { PTR_ARRAY_085aacb0[p->base.subState2](p); }
+void FUN_0802e450(Ringo* p) {
+  static void (*const PTR_ARRAY_085aacb0[2])(Ringo*) = {
+      FUN_0802daa0,
+      FUN_0802db18,
+  };  // 0x085AACB0
+  PTR_ARRAY_085aacb0[p->base.subState2](p);
+}
 
-void FUN_0802e46c(Ringo* p) { PTR_ARRAY_085aacb8[p->base.subState2](p); }
+void FUN_0802e46c(Ringo* p) {
+  // clang-format off
+  static void (*const PTR_ARRAY_085aacb8[26])(Ringo*) = {
+      FUN_0802db3c,
+      FUN_0802db74,
+      FUN_0802dbb8,
+      FUN_0802dbfc,
+      FUN_0802dc5c,
+      FUN_0802dcbc,
+      FUN_0802dd24,
+      FUN_0802dd84,
+      FUN_0802dde8,
+      FUN_0802de2c,
+      FUN_0802dea4,
+      FUN_0802df04,
+      FUN_0802df64,
+      FUN_0802dfb4,
+      FUN_0802e004,
+      FUN_0802e054,
+      FUN_0802e0a4,
+      FUN_0802e0e8,
+      FUN_0802e138,
+      FUN_0802e198,
+      FUN_0802e210,
+      FUN_0802e274,
+      FUN_0802e2d8,
+      FUN_0802e340,
+      FUN_0802e384,
+      FUN_0802e3e4,
+  };  // 0x085AACB8
+  // clang-format on
+  PTR_ARRAY_085aacb8[p->base.subState2](p);
+}
 
 void FUN_0802e488(Ringo* p) {
-  u32 mask = FLAG03002BC0_UNK_2;
-
-  if (!(u32_03002bc0[0] & mask) && !FUN_0802c2d4(p)) {
+  static void (*const PTR_ARRAY_085aad20[1])(Ringo*) = {
+      FUN_0802e434,
+  };  // 0x085AAD20
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_0802c2d4(p)) {
     PTR_ARRAY_085aad20[p->base.subState1](p);
   }
 }
 
-void FUN_0802e4c4(Ringo* p) { PTR_ARRAY_085aad24[p->base.subState1](p); }
+void FUN_0802e4c4(Ringo* p) {
+  static void (*const PTR_ARRAY_085aad24[1])(Ringo*) = {
+      FUN_0802e450,
+  };  // 0x085AAD24
+  PTR_ARRAY_085aad24[p->base.subState1](p);
+}
 
-void FUN_0802e4e0(Ringo* p) { PTR_ARRAY_085aad28[p->base.subState1](p); }
+void FUN_0802e4e0(Ringo* p) {
+  static void (*const PTR_ARRAY_085aad28[1])(Ringo*) = {
+      FUN_0802e46c,
+  };  // 0x085AAD28
+  PTR_ARRAY_085aad28[p->base.subState1](p);
+}
 
 void FUN_0802e4fc(Ringo* p) {
+  static void (*const PTR_ARRAY_085aad2c[3])(Ringo*) = {
+      FUN_0802e488,
+      FUN_0802e4c4,
+      FUN_0802e4e0,
+  };  // 0x085AAD2C
   p->base.unk_9d = 0;
   PTR_ARRAY_085aad2c[p->base.subState0](p);
 }
@@ -3562,34 +3313,34 @@ void FUN_0802e4fc(Ringo* p) {
 void FUN_0802e520(Boss* boss, s32 timer) {
   Ringo* p = (Ringo*)boss;
 
-  Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+  Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     if (!p->unk_fd4) {
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_19);
     }
-    Ringo_UpdateUnk160(p, timer);
+    Ringo_UpdateHover(p, timer);
   }
 }
 
 void FUN_0802e6ac(Boss* boss, s32 timer) {
   Ringo* p = (Ringo*)boss;
 
-  Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+  Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     p->unk_844 = p->unk_868;
     FUN_08028604(p);
     FUN_0802853c(p, &p->unk_84c, p->unk_17e);
     FUN_08029a1c(p, p->unk_17e);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   if (p->unk_17e >= 64) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
@@ -3598,7 +3349,7 @@ void FUN_0802e6ac(Boss* boss, s32 timer) {
     if (!p->unk_fd4) {
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_19);
     }
-    Ringo_UpdateUnk160(p, timer);
+    Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
       FUN_08028838(p, 0, 0);
     }
@@ -3611,7 +3362,7 @@ void FUN_0802e6ac(Boss* boss, s32 timer) {
   }
 }
 
-// 残差は unk_175 の乱数の足し方 (223/220), 原典は playerAngle を先に読み (Random() & 0x7F) + 0x40 を後から足し, &unk_899 と &playerAngle をレジスタに残して Boss_SetAngle でも使う
+// 残差は unk_175 の乱数の足し方 (223/220), 原典は playerAngle を先に読み (Random() & 0x7F) + 0x40 を後から足し, &targetPlayer と &playerAngle をレジスタに残して Boss_SetAngle でも使う
 NON_MATCH void FUN_0802e8d0(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -3619,13 +3370,13 @@ NON_MATCH void FUN_0802e8d0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_175 = boss->playerAngle[p->unk_899] + (Random() & 0x7F) + 0x40;
-    Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    p->unk_175 = boss->playerAngle[p->targetPlayer] + (Random() & 0x7F) + 0x40;
+    Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     p->unk_854 = mover->pos;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
@@ -3654,26 +3405,26 @@ NON_MATCH void FUN_0802eac0(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
 
-  Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+  Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     p->unk_844 = p->unk_868;
     FUN_08028604(p);
     FUN_0802853c(p, &p->unk_84c, 32);
     FUN_08029a1c(p, p->unk_17e);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
   if (!boss->stateRequestCallback(boss)) {
     if (!p->unk_fd4) {
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_19);
     }
-    Ringo_UpdateUnk160(p, timer);
+    Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
       FUN_08028838(p, 0, 0);
     }
@@ -3702,15 +3453,15 @@ NON_MATCH void FUN_0802ece0(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     pos = &mover->pos;
     p->unk_854 = mover->pos = p->unk_85c;
-    target = boss->playerPos[p->unk_899];
+    target = boss->playerPos[p->targetPlayer];
     Boss_SetAngle(boss, ArcTan2_8(target->x - mover->pos.x, target->z - pos->z));
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 1);
+    Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (timer <= 1) {
@@ -3746,7 +3497,7 @@ void FUN_0802ef68(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 37, 41), 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 37, 41), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_843);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -3784,15 +3535,15 @@ NON_MATCH void dainn_0802f134(Boss* boss, s32 timer) {
   Ringo* p = (Ringo*)boss;
   Mover* mover = &boss->mover;
 
-  Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+  Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     if (p->unk_820 == 0 && p->unk_172 == 1) {
       PlaySound_0824078c(VO_RINGO_LAUGH);
     }
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -3823,7 +3574,7 @@ void FUN_0802f368(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 36, 40), 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 36, 40), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_842);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
@@ -3850,7 +3601,7 @@ NON_MATCH void FUN_0802f4a8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 37, 41), 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 37, 41), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_843);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
@@ -3870,7 +3621,7 @@ NON_MATCH void FUN_0802f4a8(Boss* boss, s32 timer) {
 #endif
 }
 
-// 1 回目で打ち切り (526/542), 前半は FUN_08034b18 と同じでスタック枠とレジスタの割り当てが大きくずれる
+// 1 回目で打ち切り (536/542, 投影は WorldToScreen), 前半は FUN_08034b18 と同じでスタック枠とレジスタの割り当てが大きくずれる
 NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -3881,28 +3632,21 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
     Vec3 pos;
     Vec3* vp;
     Vec3 ofs;
-    s32 x, z, a, b, d;
+    s32 d;
 
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 44, 2, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 44, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     sprite = &p->sprite_a40;
-    MainSprite_SetAnim(sprite, &p->gfx_a20, FUN_08028ec8(p), 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx_a20, FUN_08028ec8(p), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     if (!boss->xflip) {
       sprite->flags |= SPRFLAG_XFLIP;
     } else {
       sprite->flags &= ~SPRFLAG_XFLIP;
     }
-    p->unk_a18 = *boss->playerPos[p->unk_173];
+    p->unk_a18 = *boss->playerPos[p->grabbedPlayer];
     pos = p->sprites[0].pos;
     vp = &sprite->pos;
-    x = pos.x >> 1;
-    z = pos.z >> 1;
-    vp->x = FixToInt(8, (x - z) * 48);
-    a = FixToInt(8, (x + z) * 48);
-    b = FixToInt(8, pos.y * 24);
-    vp->x = vp->x - gCameraVpCoords.x + 120;
-    vp->y = (a - b) - gCameraVpCoords.y + 90;
-    vp->z = (a + b) - gCameraVpCoords.z;
+    WorldToScreen(vp, &pos);
     if (!boss->xflip) {
       sprite->pos.x += s8_ARRAY_085aabbc[0][0];
       sprite->pos.y += s8_ARRAY_085aabbc[0][1];
@@ -3917,39 +3661,39 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
     ofs.x = d;
     ofs.z = d;
     ofs.y = 160;
-    if (!boss->unk_ab) {
-      FUN_0807ab64(gPlayerPtr[p->unk_173], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, 0, 2);
+    if (!boss->isDemo) {
+      Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, 0, 2);
     }
     sprite->plttID = 0x4200;
-    player = gPlayerPtr[p->unk_173];
-    sprite->pltt = player->unk_359 == 0 ? player->human.pltt : player->gfx_114->pltt;
-    p->unk_15c = 0;
+    player = gPlayerPtr[p->grabbedPlayer];
+    sprite->pltt = player->useAuxSprite == 0 ? player->human.pltt : player->beastGfx->pltt;
+    p->phaseTimer = 0;
     p->unk_874 = 120;
-    if (p->unk_173 >= 0) {
-      p->unk_876 = p->unk_877 = boss->players[p->unk_173]->angle_400;
+    if (p->grabbedPlayer >= 0) {
+      p->unk_876 = p->unk_877 = boss->players[p->grabbedPlayer]->mashCount;
     }
     p->unk_16c = 0;
     p->unk_16d = 0;
   }
   if (boss->damageCallback(boss)) {
     MainSprite_Hide(&p->sprite_a40);
-    if (!boss->unk_ab && p->unk_173 >= 0) {
-      FUN_0807ac74(gPlayerPtr[p->unk_173], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
+    if (!boss->isDemo && p->grabbedPlayer >= 0) {
+      Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
     }
-    p->unk_173 = -1;
+    p->grabbedPlayer = -1;
     return;
   }
   if (boss->stateRequestCallback(boss)) {
     MainSprite_Hide(&p->sprite_a40);
-    if (!boss->unk_ab && p->unk_173 >= 0) {
-      FUN_0807ac74(gPlayerPtr[p->unk_173], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
+    if (!boss->isDemo && p->grabbedPlayer >= 0) {
+      Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
     }
-    p->unk_173 = -1;
+    p->grabbedPlayer = -1;
     return;
   }
-  player = boss->players[p->unk_173];
-  if (p->unk_877 != player->angle_400) {
-    p->unk_877 = player->angle_400;
+  player = boss->players[p->grabbedPlayer];
+  if (p->unk_877 != player->mashCount) {
+    p->unk_877 = player->mashCount;
     p->unk_16d++;
   }
   if (p->unk_16d > 3) {
@@ -3957,14 +3701,14 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
     p->unk_16c = 16;
     p->unk_16d = 0;
   }
-  if ((u8)(boss->players[p->unk_173]->angle_400 - (p->unk_876 - 0x100)) > 15) {
+  if ((u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
     p->unk_874 = 0;
   }
-  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) && !(u32_03002bc0[0] & FLAG03002BC0_UNK_2) && p->unk_874 > 0 && p->unk_15c <= 3) {
+  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) && !(gPlayerStates[0] & FLAG03002BC0_UNK_2) && p->unk_874 > 0 && p->phaseTimer <= 3) {
     p->sprites[0].animCmdIdx = 2;
-    p->unk_15c++;
+    p->phaseTimer++;
   }
-  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && ((u32_03002bc0[0] & FLAG03002BC0_UNK_2) || p->unk_874 == 0 || p->unk_15c > 3)) {
+  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && ((gPlayerStates[0] & FLAG03002BC0_UNK_2) || p->unk_874 == 0 || p->phaseTimer > 3)) {
     boss->subStateDone = TRUE;
   }
 #else
@@ -3981,7 +3725,7 @@ NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     boss->dir = ((((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     if (timer < 20) {
@@ -4009,7 +3753,7 @@ void dainn_0802fc08(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 68, 70), 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 68, 70), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
@@ -4033,15 +3777,15 @@ void dainn_0802fc08(Boss* boss, s32 timer) {
       }
     }
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
   if (p->sprites[0].animCmdIdx <= 11 || (p->sprites[0].animCmdIdx == 13 && timer <= 19)) {
     s32 mask = p->sprites[0].animCmdIdx <= 5 ? 7 : 1;
@@ -4075,20 +3819,20 @@ void dainn_0802fea0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 68, 70), 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 68, 70), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
   if (p->sprites[0].animCmdIdx <= 11 || (p->sprites[0].animCmdIdx == 13 && timer <= 19)) {
     s32 mask = p->sprites[0].animCmdIdx <= 5 ? 7 : 1;
@@ -4144,11 +3888,11 @@ NON_MATCH void FUN_08030148(Boss* boss, s32 timer) {
     Vec3* target;
 
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
-    target = boss->playerPos[p->unk_899];
+    Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
+    target = boss->playerPos[p->targetPlayer];
     p->unk_844 = *target;
     FUN_08028604(p);
     FUN_0802853c(p, &p->unk_84c, p->unk_17c);
@@ -4157,53 +3901,53 @@ NON_MATCH void FUN_08030148(Boss* boss, s32 timer) {
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+      Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
       if (p->unk_840 < p->unk_842) {
         FUN_08028648(p);
         FUN_080286d8(p);
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 1);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
         if (p->unk_8e4 > 3) {
           FUN_08028838(p, 0, 0);
         }
       } else {
-        p->unk_15c = 0;
-        p->unk_15e++;
+        p->phaseTimer = 0;
+        p->phase++;
       }
       break;
     }
     case 1: {
-      Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
-      if (++p->unk_15c > 9) {
+      Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
+      if (++p->phaseTimer > 9) {
         Mover* mover = &p->base.mover;
 
         p->unk_8da = ((mover->angle - 0x20) & ~0x3F) + 0x40;
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
-        p->unk_15c = 0;
-        p->unk_15e++;
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+        p->phaseTimer = 0;
+        p->phase++;
       } else {
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 1);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
       }
       break;
     }
     case 2: {
       if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
-        if (++p->unk_15c >= p->unk_17b) {
-          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, 2, 3, 4);
-          p->unk_15e++;
+        if (++p->phaseTimer >= p->unk_17b) {
+          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+          p->phase++;
         } else {
-          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
+          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
         }
       }
       break;
@@ -4211,12 +3955,12 @@ NON_MATCH void FUN_08030148(Boss* boss, s32 timer) {
     case 3: {
       if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
         boss->subStateDone = TRUE;
-        p->unk_15e++;
+        p->phase++;
       }
       break;
     }
   }
-  if (p->unk_15e == 2 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
+  if (p->phase == 2 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
     FUN_080292c8(p, 0);
   }
 #else
@@ -4230,38 +3974,38 @@ void FUN_080304c0(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, Angle_FromDir4(boss->facing));
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
-    if (p->unk_15e == 1 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
+    if (p->phase == 1 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
       FUN_080292c8(p, 1);
     }
     if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
-      switch (p->unk_15e) {
+      switch (p->phase) {
         case 0: {
-          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
-          p->unk_15e++;
+          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+          p->phase++;
           break;
         }
         case 1: {
-          if (p->unk_15c == 5) {
-            Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, 2, 3, 4);
-            p->unk_15e++;
+          if (p->phaseTimer == 5) {
+            Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+            p->phase++;
           } else {
-            Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
-            p->unk_15c++;
+            Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+            p->phaseTimer++;
           }
           break;
         }
@@ -4283,11 +4027,11 @@ NON_MATCH void FUN_08030680(Boss* boss, s32 timer) {
     Vec3* target;
 
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
-    target = boss->playerPos[p->unk_899];
+    Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
+    target = boss->playerPos[p->targetPlayer];
     p->unk_844 = *target;
     FUN_08028604(p);
     FUN_0802853c(p, &p->unk_84c, 64);
@@ -4296,23 +4040,23 @@ NON_MATCH void FUN_08030680(Boss* boss, s32 timer) {
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+      Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
       if (p->unk_840 < p->unk_842) {
         FUN_08028648(p);
         FUN_080286d8(p);
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 1);
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
         if (p->unk_8e4 > 3) {
           FUN_08028838(p, 0, 0);
         }
@@ -4320,19 +4064,19 @@ NON_MATCH void FUN_08030680(Boss* boss, s32 timer) {
         Mover* mover = &p->base.mover;
 
         p->unk_8da = ((mover->angle - 0x20) & ~0x3F) + 0x40;
-        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
-        p->unk_15e++;
+        Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
       }
       break;
     }
     case 1: {
       if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
-        if (p->unk_15c) {
-          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, 2, 3, 4);
-          p->unk_15e++;
+        if (p->phaseTimer) {
+          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+          p->phase++;
         } else {
-          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
-          p->unk_15c++;
+          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+          p->phaseTimer++;
         }
       }
       break;
@@ -4340,12 +4084,12 @@ NON_MATCH void FUN_08030680(Boss* boss, s32 timer) {
     case 2: {
       if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
         boss->subStateDone = TRUE;
-        p->unk_15e = 3;
+        p->phase = 3;
       }
       break;
     }
   }
-  if (p->unk_15e == 1 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
+  if (p->phase == 1 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
     FUN_080292c8(p, 2);
   }
 #else
@@ -4366,7 +4110,7 @@ void dainn_08030960(Boss* boss, s32 timer) {
     FUN_08084734(target);
     pos = &mover->pos;
     Boss_SetAngle(boss, ArcTan2_8(target->x - mover->pos.x, target->z - pos->z));
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     if (!p->unk_87e) {
       if (p->unk_820) {
         PlaySound_082406e0(VO_DAINN_787);
@@ -4410,7 +4154,7 @@ void FUN_08030b80(Boss* boss, s32 timer) {
     pos = &mover->pos;
     target = &p->unk_868;
     Boss_SetAngle(boss, ArcTan2_8(target->x - mover->pos.x, target->z - pos->z));
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     Vec3* target = &p->unk_868;
@@ -4441,7 +4185,7 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), 1, 4);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     p->unk_870 = 0;
     p->unk_168 = 0;
     if (p->unk_820) {
@@ -4507,15 +4251,15 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
       p->unk_168--;
     }
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
   if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && (p->unk_820 || Boss_GetHPRatio(boss) > 7) && p->unk_870 > 599) {
     boss->subStateDone = TRUE;
@@ -4533,14 +4277,14 @@ NON_MATCH void dainn_0803110c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 19, 23), 1, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 19, 23), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
   }
-  if (p->unk_15e <= 1 && p->unk_16f && --p->unk_16f == 0) {
+  if (p->phase <= 1 && p->unk_16f && --p->unk_16f == 0) {
     p->unk_16e = Random();
     p->unk_170 = (p->unk_170 + 1) & 3;
     p->unk_16c = 8;
@@ -4550,29 +4294,29 @@ NON_MATCH void dainn_0803110c(Boss* boss, s32 timer) {
       p->unk_16f = (Random() & 3) + 8;
     }
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c > 9) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 20, 24), 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 9) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 20, 24), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
         if (p->unk_820) {
           PlaySound_082406e0(VO_DAINN_779);
         } else {
           PlaySound_082406e0(VO_RINGO_860);
         }
         if (FUN_0802835c(p)) {
-          Ringo_SetUnk87c(p, 0, 202);
+          Ringo_StartPlttFade(p, 0, 202);
         }
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 29) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), 2, 4);
+      if (++p->phaseTimer > 29) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         FUN_080846f8();
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -4598,27 +4342,27 @@ void dainn_0803141c(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, 0x20);
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, 2, 4);
-    p->unk_15e = 1;
-    p->unk_15c = 0;
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+    p->phase = 1;
+    p->phaseTimer = 0;
     p->unk_872 = 0;
     PlaySound_0824078c(VO_DAINN_LAUGH);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    switch (p->unk_15e) {
+    switch (p->phase) {
       case 0: {
-        if (++p->unk_15c > 5) {
+        if (++p->phaseTimer > 5) {
           Boss_SetAngle(boss, (mover->angle + 0x20) & ~0x1F);
-          Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, 5, 1, 1, 1);
+          Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, 5, PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
           if (++p->unk_872 > 7 && boss->dir == 3) {
-            Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, 2, 4);
-            p->unk_15e++;
+            Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+            p->phase++;
           }
-          p->unk_15c = 0;
+          p->phaseTimer = 0;
         }
         break;
       }
@@ -4642,14 +4386,14 @@ void FUN_080315e0(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_24);
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_HIDDEN);
   if (!boss->stateRequestCallback(boss)) {
     if (timer == 60) {
-      mover->pos = *boss->playerPos[p->unk_899];
+      mover->pos = *boss->playerPos[p->targetPlayer];
     }
     if (timer > 79) {
       boss->subStateDone = TRUE;
@@ -4662,19 +4406,19 @@ void FUN_0803166c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     p->unk_872 = 0;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, 2, 6);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_UNK_851);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
-  if (!boss->stateRequestCallback(boss) && p->unk_15e == 0 && (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED)) {
+  if (!boss->stateRequestCallback(boss) && p->phase == 0 && (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED)) {
     boss->subStateDone = TRUE;
-    p->unk_15e++;
+    p->phase++;
   }
 }
 
@@ -4683,14 +4427,14 @@ void FUN_08031734(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     p->unk_872 = 0;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 46, 2, 6);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 46, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_UNK_850);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_24);
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -4699,7 +4443,7 @@ void FUN_08031734(Boss* boss, s32 timer) {
   }
 }
 
-// 1 回目で打ち切り (809/816), 前半は FUN_08034b18 と同じ掴みの処理でスタック枠とレジスタがずれる
+// 1 回目で打ち切り (816/816, 投影は WorldToScreen), 前半は FUN_08034b18 と同じ掴みの処理でスタック枠とレジスタがずれる
 NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -4709,33 +4453,25 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
     MainSprite* sprite;
     Vec3 pos;
     Vec3* vp;
-    s32 x, z, a, b;
 
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     p->unk_873 = 0;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 47, 2, 4);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 47, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     MainSprite_Show(&p->sprites[1]);
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 48, 2, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 48, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     sprite = &p->sprite_a40;
-    MainSprite_SetAnim(sprite, &p->gfx_a20, FUN_08028ec8(p), 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx_a20, FUN_08028ec8(p), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     if (!boss->xflip) {
       sprite->flags |= SPRFLAG_XFLIP;
     } else {
       sprite->flags &= ~SPRFLAG_XFLIP;
     }
-    p->unk_a18 = *boss->playerPos[p->unk_173];
+    p->unk_a18 = *boss->playerPos[p->grabbedPlayer];
     pos = p->sprites[0].pos;
     vp = &sprite->pos;
-    x = pos.x >> 1;
-    z = pos.z >> 1;
-    vp->x = FixToInt(8, (x - z) * 48);
-    a = FixToInt(8, (x + z) * 48);
-    b = FixToInt(8, pos.y * 24);
-    vp->x = vp->x - gCameraVpCoords.x + 120;
-    vp->y = (a - b) - gCameraVpCoords.y + 90;
-    vp->z = (a + b) - gCameraVpCoords.z;
+    WorldToScreen(vp, &pos);
     if (!boss->xflip) {
       sprite->pos.x += s8_ARRAY_085aabbc[0][0];
       sprite->pos.y += s8_ARRAY_085aabbc[0][1];
@@ -4746,19 +4482,19 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
     MainSprite_Show(sprite);
     p->unk_a14 = -1;
     p->unk_a16 = p->sprites[0].animCmdIdx;
-    if (!boss->unk_ab) {
-      FUN_0807ab64(gPlayerPtr[p->unk_173], &p->sprites[0].pos, NULL, 0, 0, 0, 1, 0, 2);
+    if (!boss->isDemo) {
+      Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, NULL, 0, 0, 0, 1, 0, 2);
     }
     sprite->plttID = 0x4200;
-    player = gPlayerPtr[p->unk_173];
-    sprite->pltt = player->unk_359 == 0 ? player->human.pltt : player->gfx_114->pltt;
+    player = gPlayerPtr[p->grabbedPlayer];
+    sprite->pltt = player->useAuxSprite == 0 ? player->human.pltt : player->beastGfx->pltt;
     p->unk_874 = 120;
   }
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_24);
-  if (p->unk_15e == 0 || p->unk_15e == 5) {
+  if (p->phase == 0 || p->phase == 5) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
-    p->unk_180 = 0;
-    p->unk_166 = 0;
+    p->damage = 0;
+    p->hitBySol = 0;
     p->unk_167 = 0;
   } else if (boss->damageCallback(boss)) {
     return;
@@ -4768,10 +4504,10 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
     MainSprite_Hide(&p->sprites[1]);
     return;
   }
-  if (p->unk_15e >= 2 && p->unk_15e <= 4) {
-    player = boss->players[p->unk_173];
-    if (p->unk_877 != player->angle_400) {
-      p->unk_877 = player->angle_400;
+  if (p->phase >= 2 && p->phase <= 4) {
+    player = boss->players[p->grabbedPlayer];
+    if (p->unk_877 != player->mashCount) {
+      p->unk_877 = player->mashCount;
       p->unk_16d++;
     }
     if (p->unk_16d > 3) {
@@ -4780,24 +4516,24 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
       p->unk_16d = 0;
     }
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 49, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 50, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 49, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 50, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 51, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 52, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
-        if (p->unk_173 >= 0) {
-          p->unk_876 = p->unk_877 = boss->players[p->unk_173]->angle_400;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 51, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 52, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
+        if (p->grabbedPlayer >= 0) {
+          p->unk_876 = p->unk_877 = boss->players[p->grabbedPlayer]->mashCount;
         }
         p->unk_16c = 0;
         p->unk_16d = 0;
@@ -4805,48 +4541,48 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
       break;
     }
     case 2: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 3: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 55, 2, 4);
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 55, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_Hide(&p->sprites[1]);
         MainSprite_Hide(&p->sprite_a40);
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 4: {
-      if (++p->unk_15c > 4) {
-        if ((u32_03002bc0[0] & FLAG03002BC0_UNK_2) || (u8)(boss->players[p->unk_173]->angle_400 - (p->unk_876 - 0x100)) > 15) {
+      if (++p->phaseTimer > 4) {
+        if ((gPlayerStates[0] & FLAG03002BC0_UNK_2) || (u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
           p->unk_874 = 0;
         }
         if (p->unk_874 <= 0) {
-          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, 2, 4);
+          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
           MainSprite_Hide(&p->sprite_a40);
-          if (!boss->unk_ab && p->unk_173 >= 0) {
-            FUN_0807ac74(gPlayerPtr[p->unk_173], &p->unk_a18, 50, boss->playerAngle[p->unk_173], 50, 0, 0, 0);
+          if (!boss->isDemo && p->grabbedPlayer >= 0) {
+            Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->playerAngle[p->grabbedPlayer], 50, 0, 0, 0);
           }
-          p->unk_173 = -1;
-          p->unk_15e++;
+          p->grabbedPlayer = -1;
+          p->phase++;
         } else if (++p->unk_873 > 7) {
-          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, 2, 4);
-          p->unk_15e++;
+          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+          p->phase++;
         } else {
-          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, 2, 4);
-          MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, 2, 4);
+          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+          MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
           MainSprite_Show(&p->sprites[1]);
           MainSprite_Show(&p->sprite_a40);
-          p->unk_15e = 2;
+          p->phase = 2;
         }
-        p->unk_15c = 0;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -4869,14 +4605,14 @@ void FUN_08031f14(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 47, 2, 4);
+    p->phase = 0;
+    p->phaseTimer = 0;
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 47, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     MainSprite_Show(&p->sprites[1]);
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 48, 2, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 48, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_24);
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -4885,41 +4621,41 @@ void FUN_08031f14(Boss* boss, s32 timer) {
     MainSprite_Hide(&p->sprites[1]);
     return;
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 49, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 50, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 49, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 50, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 51, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 52, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 51, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 52, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 2: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 3: {
       SET_FLAGS(p->base.flags, BOSSFLAG_UNK_22);
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, 2, 4);
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_Hide(&p->sprites[1]);
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -4935,18 +4671,18 @@ void FUN_08031f14(Boss* boss, s32 timer) {
   p->sprites[1].pos = p->sprites[0].pos;
 }
 
-// 残差は unk_173 まわりのレジスタ (269/268), 原典は &unk_173 を r5 に残し playerAngle を boss の複写から読む
+// 残差は grabbedPlayer まわりのレジスタ (269/268), 原典は &grabbedPlayer を r5 に残し playerAngle を boss の複写から読む
 NON_MATCH void FUN_08032180(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_24);
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -4954,45 +4690,45 @@ NON_MATCH void FUN_08032180(Boss* boss, s32 timer) {
   if (boss->stateRequestCallback(boss)) {
     return;
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_22);
       SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
-      if (++p->unk_15c > 29) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 29) {
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_22);
       SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
-      if (p->unk_15c <= 60 && (p->unk_15c & 15) == 0) {
+      if (p->phaseTimer <= 60 && (p->phaseTimer & 15) == 0) {
         s32 damage;
         s32 hp;
 
         FUN_08022c24(boss, 4, 20);
-        damage = FUN_0807ab64(gPlayerPtr[p->unk_173], &p->sprites[0].pos, 0, 0, 0, 0, 1, p->unk_8c8, 2);
+        damage = Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, 0, 0, 0, 0, 1, p->unk_8c8, 2);
         hp = boss->hp;
         Boss_SetHP(boss, hp + damage);
         if (hp != boss->hp) {
           HitboxData* hurtbox = &p->hurtbox;
           Vec3 ofs;
 
-          VEC3_SET(ofs, 0x10, 0, 0x10);
-          FUN_0805fe7c(hurtbox, damage, 1, &boss->mover.pos, &ofs, 1);
+          VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+          CreateDamageNumber(hurtbox, damage, 1, &boss->mover.pos, &ofs, 1);
         }
         PlaySound_0824078c(SE_DAMAGE);
       }
-      if (++p->unk_15c > 79 || (u32_03002bc0[0] & FLAG03002BC0_UNK_2)) {
-        p->unk_15e++;
-        p->unk_15c = 0;
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 57, 2, 4);
+      if (++p->phaseTimer > 79 || (gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+        p->phase++;
+        p->phaseTimer = 0;
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 57, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_Hide(&p->sprite_a40);
-        if (!boss->unk_ab && p->unk_173 >= 0) {
-          FUN_0807ac74(gPlayerPtr[p->unk_173], &p->unk_a18, 50, boss->playerAngle[p->unk_173], 50, 0, 0, 0);
+        if (!boss->isDemo && p->grabbedPlayer >= 0) {
+          Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->playerAngle[p->grabbedPlayer], 50, 0, 0, 0);
         }
-        p->unk_173 = -1;
+        p->grabbedPlayer = -1;
       }
       break;
     }
@@ -5013,12 +4749,12 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
 
-  Boss_SetAngle(boss, boss->playerAngle[p->unk_899]);
+  Boss_SetAngle(boss, boss->playerAngle[p->targetPlayer]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 19, 23), 2, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 19, 23), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
     gBgPlttBlendColor = RGB(4, 4, 4);
     gBgPlttFadeRowMask = 0x1FFF;
     p->unk_1044 = 900;
@@ -5028,10 +4764,10 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
   if (boss->damageCallback(boss)) {
     u32 plttID;
 
-    p->unk_878 = 0;
-    p->unk_87c = -1;
-    p->unk_87a = FUN_08027ed0(p);
-    plttID = FUN_08027ed0(p);
+    p->plttFade = 0;
+    p->plttFadeMode = -1;
+    p->plttFadeTo = Ringo_GetPlttID(p);
+    plttID = Ringo_GetPlttID(p);
     if (plttID == 0) {
       p->sprites[0].pltt = p->pltt[0];
     } else {
@@ -5043,10 +4779,10 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
   if (boss->stateRequestCallback(boss)) {
     u32 plttID;
 
-    p->unk_878 = 0;
-    p->unk_87c = -1;
-    p->unk_87a = FUN_08027ed0(p);
-    plttID = FUN_08027ed0(p);
+    p->plttFade = 0;
+    p->plttFadeMode = -1;
+    p->plttFadeTo = Ringo_GetPlttID(p);
+    plttID = Ringo_GetPlttID(p);
     if (plttID == 0) {
       p->sprites[0].pltt = p->pltt[0];
     } else {
@@ -5055,23 +4791,23 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
     p->sprites[1].pltt = p->sprites[0].pltt;
     return;
   }
-  Ringo_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  Ringo_UpdateHover(p, timer);
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c > 7) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 20, 24), 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
-        p->unk_87c = 2;
-        p->unk_878 = 32;
+      if (++p->phaseTimer > 7) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 20, 24), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
+        p->plttFadeMode = 2;
+        p->plttFade = 32;
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 23) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), 1, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 23) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -5080,13 +4816,13 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
         u32 plttID;
 
         Boss_SetAngle(boss, 0x20);
-        Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 2, 1, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
-        p->unk_878 = 0;
-        p->unk_87c = -1;
-        p->unk_87a = FUN_08027ed0(p);
-        plttID = FUN_08027ed0(p);
+        Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
+        p->plttFade = 0;
+        p->plttFadeMode = -1;
+        p->plttFadeTo = Ringo_GetPlttID(p);
+        plttID = Ringo_GetPlttID(p);
         if (plttID == 0) {
           p->sprites[0].pltt = p->pltt[0];
         } else {
@@ -5094,20 +4830,20 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
         }
         p->sprites[1].pltt = p->sprites[0].pltt;
       } else if ((timer & 3) == 0) {
-        u32 angle = boss->playerAngle[p->unk_899] + (Random() & 0x1F) - 0x10;
+        u32 angle = boss->playerAngle[p->targetPlayer] + (Random() & 0x1F) - 0x10;
         Vec3 pos;
 
         Vec3_SetPolar(&pos, angle, 256);
         Vec3_Add(&pos, &boss->mover.pos);
         pos.y += 0xA4;
-        FUN_0805b7d4(p->entity0805b790, &pos, boss->playerPos[p->unk_899], 0, angle, 20, p->unk_8ca, 50);
+        FUN_0805b7d4(p->entity0805b790, &pos, boss->playerPos[p->targetPlayer], 0, angle, 20, p->unk_8ca, 50);
       }
       break;
     }
     case 3: {
-      if (++p->unk_15c > 9) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 9) {
+        p->phase++;
+        p->phaseTimer = 0;
         boss->subStateDone = TRUE;
       }
       break;
@@ -5124,15 +4860,15 @@ void FUN_08032934(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN | BOSSFLAG_NO_SHADOW);
   boss->stateRequestCallback(boss);
 }
 
-// 残差はゼロ定数の持ち方 (140/149), 原典は stateEntered と Ringo_SetUnk87c の else 側, unk_15e と == 0 側でそれぞれ 0 のレジスタを共有して r7 / r8 に置く
+// 残差はゼロ定数の持ち方 (140/149), 原典は stateEntered と Ringo_StartPlttFade の else 側, phase と == 0 側でそれぞれ 0 のレジスタを共有して r7 / r8 に置く
 NON_MATCH void FUN_08032988(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -5140,18 +4876,18 @@ NON_MATCH void FUN_08032988(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, 0x40);
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 65, 2, 2, 6);
-    p->unk_15e = 0;
-    Ringo_SetUnk87c(p, 1, 202);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 65, PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    Ringo_StartPlttFade(p, 1, 202);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss) && (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED)) {
-    if (p->unk_15e == 0) {
-      Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 64, 2, 2, 6);
-      p->unk_15e++;
+    if (p->phase == 0) {
+      Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 64, PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
+      p->phase++;
     } else {
       boss->subStateDone = TRUE;
     }
@@ -5161,18 +4897,20 @@ NON_MATCH void FUN_08032988(Boss* boss, s32 timer) {
 #endif
 }
 
+void FUN_08032bac(Boss* boss, s32 timer);
+
 void FUN_08032acc(Boss* boss, s32 timer) {
   Ringo* p = (Ringo*)boss;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), 1, 4);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     FUN_080846f8();
     FUN_08029c2c(p);
     PlaySound_0824078c(SONG_453);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   Ringo_SetUnk18a(p, 8);
@@ -5180,7 +4918,7 @@ void FUN_08032acc(Boss* boss, s32 timer) {
     FUN_0802991c(p);
   }
   if (timer > 119) {
-    Boss_SetState(boss, (BossUpdateFunc)FUN_08032bac, 32);
+    Boss_SetState(boss, FUN_08032bac, 32);
   }
 }
 
@@ -5197,8 +4935,8 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
     FUN_080298fc(p);
     Boss_SetAngle(boss, 0x80);
     boss->dir = Angle_ToDir8(Angle_FromDir4(Angle_ToDir4(mover->angle + 0x80)));
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 4);
-    plttID = FUN_08027ed0(p);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+    plttID = Ringo_GetPlttID(p);
     if (plttID == 0) {
       p->sprites[0].pltt = p->pltt[0];
     } else {
@@ -5207,21 +4945,21 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
     p->sprites[1].pltt = p->sprites[0].pltt;
     FUN_08029c74(p);
     p->numPlayers = 1;
-    if (p->scriptID && !(u32_03002bc0[0] & FLAG03002BC0_UNK_2)) {
+    if (p->scriptID && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
       VM_ExecByID(p->scriptID, NULL);
     }
     FUN_08015a90(&mover->pos, 3, 2, 0x3000, 0x40, 8, 0x100, 0x100);
     FUN_08015a90(&mover->pos, 5, 2, 0x3000, 0x40, 10, 0x100, 0x100);
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if ((timer & 3) == 0) {
@@ -5232,7 +4970,7 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
   }
   if (timer == 30) {
     Boss_SetState(boss, FUN_0802e520, 1);
-    if (p->scriptID2 && !(u32_03002bc0[0] & FLAG03002BC0_UNK_2)) {
+    if (p->scriptID2 && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
       VM_ExecByID(p->scriptID2, NULL);
     }
   }
@@ -5248,7 +4986,7 @@ NON_MATCH void FUN_08032e1c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 72, 73), 2, 0);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 72, 73), PLAYMODE_ONCE_AND_STOP, 0);
     if (p->unk_820 == 0) {
       FUN_0802a538(p);
     }
@@ -5257,15 +4995,15 @@ NON_MATCH void FUN_08032e1c(Boss* boss, s32 timer) {
     FUN_080846f8();
     p->unk_1044 = 0;
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (timer == 256) {
@@ -5284,39 +5022,39 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 10, 14), 1, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 10, 14), PLAYMODE_LOOP, 2, MAIN_ANIM_FORCE_POSE);
     Boss_GiveWeaponExp(boss, p->weaponExp);
     FUN_08022fb8(boss, &p->sprites[0].pos);
     p->unk_1044 = 0;
     p->unk_854 = mover->pos;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     PlaySound_0824078c(VO_DAINN_DEATH);
     PlaySound_0824078c(SONG_453);
     if (p->entity0805b068 != NULL) {
       FUN_0805b1a0(p->entity0805b068);
     }
   }
-  if (p->unk_162 > 3) {
-    p->unk_162 -= 4;
+  if (p->hoverHeight > 3) {
+    p->hoverHeight -= 4;
   } else {
-    p->unk_162 = 0;
+    p->hoverHeight = 0;
   }
-  if (p->unk_160 > 3) {
-    p->unk_160 -= 4;
+  if (p->spriteOffsetY > 3) {
+    p->spriteOffsetY -= 4;
   } else {
-    p->unk_160 = 0;
+    p->spriteOffsetY = 0;
   }
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
       Ringo_SetUnk18a(p, 8);
       if ((timer & 3) == 0) {
         FUN_0802991c(p);
       }
-      if (++p->unk_15c > 119) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 119) {
+        p->phase++;
+        p->phaseTimer = 0;
         FUN_08029cc8(p);
         PlaySound_0824078c(VO_RINGO_DEFEATED);
         PlaySound_0824078c(SONG_453);
@@ -5328,28 +5066,28 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
       if ((timer & 3) == 0) {
         FUN_0802991c(p);
       }
-      if (++p->unk_15c > 59) {
-        p->unk_15e++;
-        p->unk_15c = 0;
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 22, 1, 4);
+      if (++p->phaseTimer > 59) {
+        p->phase++;
+        p->phaseTimer = 0;
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 22, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
       break;
     }
     case 2: {
-      LerpVec3(&mover->pos, &p->unk_854, &p->unk_fd8, p->unk_15c, 7);
+      LerpVec3(&mover->pos, &p->unk_854, &p->unk_fd8, p->phaseTimer, 7);
       if ((timer & 3) == 0) {
         FUN_0802991c(p);
       }
-      if (++p->unk_15c > 128) {
+      if (++p->phaseTimer > 128) {
         rgb555* pltt;
 
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
         p->unk_fd4 = 0;
-        p->unk_878 = 0;
-        p->unk_87c = -1;
-        p->unk_87a = 193;
-        pltt = &gObjPlttData[p->unk_87a * 16];
+        p->plttFade = 0;
+        p->plttFadeMode = -1;
+        p->plttFadeTo = 193;
+        pltt = &gObjPlttData[p->plttFadeTo * 16];
         p->sprites[0].pltt = pltt;
         p->sprites[1].pltt = pltt;
         PlaySound_082406e0(SONG_827);
@@ -5359,19 +5097,19 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
       break;
     }
     case 3: {
-      if (p->unk_15c < 32) {
+      if (p->phaseTimer < 32) {
         Ringo_SetUnk18a(p, 4);
       }
-      if (p->unk_15c == 32) {
-        Ringo_SetUnk87c(p, 3, 198);
+      if (p->phaseTimer == 32) {
+        Ringo_StartPlttFade(p, 3, 198);
       }
-      if (++p->unk_15c > 96) {
+      if (++p->phaseTimer > 96) {
         u32 plttID;
 
-        p->unk_15e++;
-        p->unk_15c = 0;
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 72, 73), 2, 0);
-        plttID = FUN_08027ed0(p);
+        p->phase++;
+        p->phaseTimer = 0;
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 72, 73), PLAYMODE_ONCE_AND_STOP, 0);
+        plttID = Ringo_GetPlttID(p);
         if (plttID == 0) {
           p->sprites[0].pltt = p->pltt[0];
         } else {
@@ -5382,12 +5120,12 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
       break;
     }
     case 4: {
-      if (p->unk_15c == 16) {
+      if (p->phaseTimer == 16) {
         PlaySound_082406e0(SE_826);
       }
-      if (++p->unk_15c > 128) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 128) {
+        p->phase++;
+        p->phaseTimer = 0;
         FUN_08023024(boss, &p->sprites[0].pos);
       }
       break;
@@ -5404,20 +5142,20 @@ void FUN_0803331c(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_HIDDEN);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
   }
 }
@@ -5427,23 +5165,23 @@ void FUN_080333a4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->unk_114);
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 74, 76), 1, 1, 4);
+    Boss_SetAngle(boss, boss->destAngle);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 74, 76), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
   }
 }
@@ -5453,15 +5191,15 @@ void FUN_080334b4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->unk_114);
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_SetAngle(boss, boss->destAngle);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    Ringo_UpdateUnk160(p, timer);
+    Ringo_UpdateHover(p, timer);
   }
 }
 
@@ -5471,11 +5209,11 @@ void FUN_080335e8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     FUN_08029a1c(p, p->unk_17e);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
@@ -5483,7 +5221,7 @@ void FUN_080335e8(Boss* boss, s32 timer) {
     s32 dx, dz, distSq;
     u32 angle;
 
-    Ringo_UpdateUnk160(p, timer);
+    Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
       FUN_08028838(p, 0, 0);
     }
@@ -5507,32 +5245,32 @@ void FUN_080337b8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 74, 76), 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 74, 76), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 74, 76), 1, 1, 1);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 74, 76), PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    s8 d = mover->angle - boss->unk_114;
+    s8 d = mover->angle - boss->destAngle;
 
     if (abs(d) <= 7) {
-      Boss_SetAngle(boss, boss->unk_114);
+      Boss_SetAngle(boss, boss->destAngle);
       boss->subStateDone = TRUE;
     } else {
       Boss_SetAngle(boss, d < 0 ? mover->angle + 8 : mover->angle - 8);
     }
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
   }
 }
@@ -5543,32 +5281,32 @@ void FUN_08033970(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    s8 d = mover->angle - boss->unk_114;
+    s8 d = mover->angle - boss->destAngle;
 
     if (abs(d) <= 7) {
-      Boss_SetAngle(boss, boss->unk_114);
+      Boss_SetAngle(boss, boss->destAngle);
       boss->subStateDone = TRUE;
     } else {
       Boss_SetAngle(boss, d < 0 ? mover->angle + 8 : mover->angle - 8);
     }
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
   }
 }
@@ -5581,12 +5319,12 @@ NON_MATCH void FUN_08033b28(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
     boss->targetPos = mover->pos;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW);
   if (!boss->stateRequestCallback(boss)) {
@@ -5608,11 +5346,11 @@ void FUN_08033c60(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 0, 5), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     boss->targetPos = mover->pos;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW);
   if (!boss->stateRequestCallback(boss)) {
@@ -5630,17 +5368,19 @@ void FUN_08033d84(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 10, 14), 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 10, 14), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     boss->targetPos = mover->pos;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
     Ringo_SetUnk18a(p, 4);
   }
 }
+
+void FUN_08034014(Boss* boss, s32 timer);
 
 void FUN_08033e3c(Boss* boss, s32 timer) {
   Ringo* p = (Ringo*)boss;
@@ -5653,14 +5393,14 @@ void FUN_08033e3c(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     pos = &mover->pos;
     target = &p->unk_84c;
-    boss->unk_114 = ArcTan2_8(target->x - mover->pos.x, target->z - pos->z);
-    Boss_SetAngle(boss, boss->unk_114);
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 4);
+    boss->destAngle = ArcTan2_8(target->x - mover->pos.x, target->z - pos->z);
+    Boss_SetAngle(boss, boss->destAngle);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
@@ -5679,11 +5419,11 @@ void FUN_08034014(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 36, 40), 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 36, 40), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_842);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
@@ -5717,11 +5457,11 @@ void FUN_0803419c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 37, 41), 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 37, 41), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_843);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
@@ -5745,12 +5485,12 @@ void FUN_0803427c(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     pos = &mover->pos;
     target = &p->unk_84c;
-    boss->unk_114 = ArcTan2_8(target->x - mover->pos.x, target->z - pos->z);
-    Boss_SetAngle(boss, boss->unk_114 + 0x80);
-    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), 2, 1, 4);
+    boss->destAngle = ArcTan2_8(target->x - mover->pos.x, target->z - pos->z);
+    Boss_SetAngle(boss, boss->destAngle + 0x80);
+    Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
@@ -5784,23 +5524,23 @@ void FUN_0803446c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->unk_114);
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, 2, 3, 4);
+    Boss_SetAngle(boss, boss->destAngle);
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
     if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) {
       boss->subStateDone = TRUE;
@@ -5814,42 +5554,42 @@ void FUN_08034570(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, 2, 3, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 59, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
-    switch (p->unk_15e) {
+    switch (p->phase) {
       case 0: {
         if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
-          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, 2, 3, 4);
-          p->unk_15e++;
+          Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 60, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
+          p->phase++;
         }
         break;
       }
       case 1: {
         if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
           boss->subStateDone = TRUE;
-          p->unk_15e++;
+          p->phase++;
         }
         break;
       }
     }
-    if (p->unk_15e == 0 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
+    if (p->phase == 0 && p->sprites[0].animCmdIdx == 1 && p->sprites[0].animCmdTimer == 0) {
       p->unk_8da = mover->angle;
       FUN_080292c8(p, 3);
     }
@@ -5862,28 +5602,28 @@ void FUN_080346cc(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, 0x20);
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), 1, 4);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(VO_RINGO_DEFEATED);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
     Ringo_SetUnk18a(p, 8);
     if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
       boss->subStateDone = TRUE;
-      p->unk_15e++;
+      p->phase++;
     }
   }
 }
@@ -5893,28 +5633,28 @@ void FUN_08034804(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 72, 73), 2, 4);
-    p->unk_15e = 0;
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 72, 73), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
-    if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && p->unk_15e == 0) {
-      Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 81, 82), 1, 4);
+    if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && p->phase == 0) {
+      Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 81, 82), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       boss->subStateDone = TRUE;
-      p->unk_15e++;
+      p->phase++;
     }
   }
 }
@@ -5924,22 +5664,22 @@ void FUN_0803495c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 81, 82), 1, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 81, 82), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
   }
 }
@@ -5949,22 +5689,22 @@ void FUN_08034a2c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 82, 84), 2, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 82, 84), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
     if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
       boss->subStateDone = TRUE;
@@ -5972,7 +5712,7 @@ void FUN_08034a2c(Boss* boss, s32 timer) {
   }
 }
 
-// 1 回目で打ち切り (298/313), スタック枠とレジスタの割り当てが大きくずれる
+// 1 回目で打ち切り (313/313, 投影は WorldToScreen), スタック枠とレジスタの割り当てが大きくずれる
 NON_MATCH void FUN_08034b18(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -5982,29 +5722,22 @@ NON_MATCH void FUN_08034b18(Boss* boss, s32 timer) {
     Vec3 pos;
     Vec3* vp;
     Vec3 ofs;
-    s32 x, z, a, b, d;
+    s32 d;
     Player* player;
 
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 87, 2, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 87, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     sprite = &p->sprite_a40;
-    MainSprite_SetAnim(sprite, &p->gfx_a20, FUN_08028ec8(p), 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx_a20, FUN_08028ec8(p), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     if (!boss->xflip) {
       sprite->flags |= SPRFLAG_XFLIP;
     } else {
       sprite->flags &= ~SPRFLAG_XFLIP;
     }
-    p->unk_a18 = *boss->playerPos[p->unk_173];
+    p->unk_a18 = *boss->playerPos[p->grabbedPlayer];
     pos = p->sprites[0].pos;
     vp = &sprite->pos;
-    x = pos.x >> 1;
-    z = pos.z >> 1;
-    vp->x = FixToInt(8, (x - z) * 48);
-    a = FixToInt(8, (x + z) * 48);
-    b = FixToInt(8, pos.y * 24);
-    vp->x = vp->x - gCameraVpCoords.x + 120;
-    vp->y = (a - b) - gCameraVpCoords.y + 90;
-    vp->z = (a + b) - gCameraVpCoords.z;
+    WorldToScreen(vp, &pos);
     if (!boss->xflip) {
       sprite->pos.x += s8_ARRAY_085aabbc[0][0];
       sprite->pos.y += s8_ARRAY_085aabbc[0][1];
@@ -6019,15 +5752,15 @@ NON_MATCH void FUN_08034b18(Boss* boss, s32 timer) {
     ofs.x = d;
     ofs.z = d;
     ofs.y = 160;
-    if (!boss->unk_ab) {
-      FUN_0807ab64(gPlayerPtr[p->unk_173], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, 0, 2);
+    if (!boss->isDemo) {
+      Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, 0, 2);
     }
     sprite->plttID = 0x4200;
-    player = gPlayerPtr[p->unk_173];
-    sprite->pltt = player->unk_359 == 0 ? player->human.pltt : player->gfx_114->pltt;
+    player = gPlayerPtr[p->grabbedPlayer];
+    sprite->pltt = player->useAuxSprite == 0 ? player->human.pltt : player->beastGfx->pltt;
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss) && (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED)) {
@@ -6038,26 +5771,26 @@ NON_MATCH void FUN_08034b18(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は p のレジスタの持ち方と &unk_173 を作る位置 (105/103)
+// 残差は p のレジスタの持ち方と &grabbedPlayer を作る位置 (105/103)
 NON_MATCH void FUN_08034dd8(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 88, 2, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 88, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
     if (timer == 5) {
       MainSprite_Hide(&p->sprite_a40);
-      if (!boss->unk_ab && p->unk_173 >= 0) {
-        FUN_0807ac74(gPlayerPtr[p->unk_173], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
+      if (!boss->isDemo && p->grabbedPlayer >= 0) {
+        Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
       }
-      p->unk_173 = -1;
+      p->grabbedPlayer = -1;
     }
     if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
       boss->subStateDone = TRUE;
@@ -6075,39 +5808,39 @@ NON_MATCH void FUN_08034ebc(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     p->unk_874 = 1;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 47, 2, 4);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 47, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     MainSprite_Show(&p->sprites[1]);
-    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 48, 2, 4);
+    MainSprite_SetAnim(&p->sprites[1], &p->gfx, 48, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   if (boss->stateRequestCallback(boss)) {
     MainSprite_Hide(&p->sprites[1]);
     return;
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 49, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 50, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 49, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 50, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 51, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 52, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
-        if (p->unk_173 >= 0) {
-          p->unk_876 = p->unk_877 = boss->players[p->unk_173]->angle_400;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 51, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 52, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
+        if (p->grabbedPlayer >= 0) {
+          p->unk_876 = p->unk_877 = boss->players[p->grabbedPlayer]->mashCount;
         }
         p->unk_16c = 0;
         p->unk_16d = 0;
@@ -6115,38 +5848,38 @@ NON_MATCH void FUN_08034ebc(Boss* boss, s32 timer) {
       break;
     }
     case 2: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, 2, 4);
-        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 53, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprites[1], &p->gfx, 54, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 3: {
-      if (++p->unk_15c > 4) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 55, 2, 4);
+      if (++p->phaseTimer > 4) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 55, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_Hide(&p->sprites[1]);
         MainSprite_Hide(&p->sprite_a40);
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 4: {
-      if (++p->unk_15c > 4) {
+      if (++p->phaseTimer > 4) {
         if (p->unk_874 <= 0) {
-          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, 2, 4);
+          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
           MainSprite_Hide(&p->sprite_a40);
-          if (!boss->unk_ab && p->unk_173 >= 0) {
-            FUN_0807ac74(gPlayerPtr[p->unk_173], &p->unk_a18, 50, boss->playerAngle[p->unk_173], 50, 0, 0, 0);
+          if (!boss->isDemo && p->grabbedPlayer >= 0) {
+            Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->playerAngle[p->grabbedPlayer], 50, 0, 0, 0);
           }
-          p->unk_173 = -1;
+          p->grabbedPlayer = -1;
         } else {
-          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, 2, 4);
+          Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         }
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -6169,23 +5902,23 @@ void FUN_08035268(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), 1, 4);
-    Ringo_SetUnk87c(p, 0, 202);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
+    Ringo_StartPlttFade(p, 0, 202);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
     Ringo_SetUnk18a(p, 8);
     if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && timer > 31) {
@@ -6201,17 +5934,17 @@ NON_MATCH void FUN_080353ac(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    boss->unk_114 = 0x20;
+    boss->destAngle = 0x20;
     Boss_SetAngle(boss, 0x20);
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), 1, 4);
-    Ringo_SetUnk87c(p, 4, 198);
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
+    Ringo_StartPlttFade(p, 4, 198);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    Ringo_UpdateUnk160(p, timer);
+    Ringo_UpdateHover(p, timer);
     if (timer < 64) {
       Ringo_SetUnk18a(p, 4);
     } else if (timer < 128) {
@@ -6222,7 +5955,7 @@ NON_MATCH void FUN_080353ac(Boss* boss, s32 timer) {
 
       boss->subStateDone = TRUE;
       p->unk_824 = 2;
-      plttID = FUN_08027ed0(p);
+      plttID = Ringo_GetPlttID(p);
       if (plttID == 0) {
         p->sprites[0].pltt = p->pltt[0];
       } else {
@@ -6241,22 +5974,22 @@ void FUN_0803558c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 85, 1, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 85, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
   }
 }
@@ -6266,22 +5999,22 @@ void FUN_08035634(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 86, 2, 4);
+    Boss_PlayAnimFlip(boss, &p->sprites[0], &p->gfx, 86, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    if (p->unk_162 > 3) {
-      p->unk_162 -= 4;
+    if (p->hoverHeight > 3) {
+      p->hoverHeight -= 4;
     } else {
-      p->unk_162 = 0;
+      p->hoverHeight = 0;
     }
-    if (p->unk_160 > 3) {
-      p->unk_160 -= 4;
+    if (p->spriteOffsetY > 3) {
+      p->spriteOffsetY -= 4;
     } else {
-      p->unk_160 = 0;
+      p->spriteOffsetY = 0;
     }
     if (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) {
       boss->subStateDone = TRUE;
@@ -6296,34 +6029,34 @@ NON_MATCH void FUN_080356f8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    p->unk_15e = 0;
-    p->unk_15c = 0;
-    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 20, 24), 1, 4);
-    Ringo_SetUnk87c(p, 6, 206);
+    p->phase = 0;
+    p->phaseTimer = 0;
+    Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 20, 24), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
+    Ringo_StartPlttFade(p, 6, 206);
   }
-  p->unk_180 = 0;
-  p->unk_166 = 0;
+  p->damage = 0;
+  p->hitBySol = 0;
   p->unk_167 = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (boss->stateRequestCallback(boss)) {
     return;
   }
-  Ringo_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  Ringo_UpdateHover(p, timer);
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c > 29) {
-        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), 2, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 29) {
+        Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       Ringo_SetUnk18a(p, 4);
       break;
     }
     case 1: {
-      if (++p->unk_15c > 179 && (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED)) {
+      if (++p->phaseTimer > 179 && (p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED)) {
         boss->subStateDone = TRUE;
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       Ringo_SetUnk18a(p, 4);
       break;
@@ -6333,7 +6066,7 @@ NON_MATCH void FUN_080356f8(Boss* boss, s32 timer) {
       break;
     }
   }
-  if (p->unk_15e == 0) {
+  if (p->phase == 0) {
     if ((boss->frameCount & 15) == 0) {
       FUN_08028cb0(p);
     }
@@ -6357,16 +6090,83 @@ void FUN_08035a3c(Ringo* p) {
 
   p->base.subStateDone = FALSE;
   mask = FLAG03002BC0_UNK_2;
-  if (!(u32_03002bc0[0] & mask)) {
+  if (!(gPlayerStates[0] & mask)) {
     Boss_UpdateState(&p->base);
   }
 }
+
+// clang-format off
+void (*const PTR_ARRAY_085aad38[62])(Boss*, s32) = {
+    NULL,
+    FUN_0802e520,
+    FUN_0802e6ac,
+    FUN_0802e8d0,
+    FUN_0802eac0,
+    FUN_0802ece0,
+    FUN_0802ef68,
+    dainn_0802f134,
+    FUN_0802f368,
+    FUN_0802f4a8,
+    FUN_0802f5e8,
+    FUN_0802fabc,
+    dainn_0802fc08,
+    dainn_0802fea0,
+    FUN_08030148,
+    FUN_080304c0,
+    FUN_08030680,
+    dainn_08030960,
+    FUN_08030b80,
+    dainn_08030d6c,
+    dainn_0803110c,
+    dainn_0803141c,
+    FUN_080315e0,
+    FUN_0803166c,
+    FUN_08031734,
+    FUN_080317f0,
+    FUN_08031f14,
+    FUN_08032180,
+    dainn_080323c8,
+    FUN_08032934,
+    FUN_08032988,
+    FUN_08032acc,
+    FUN_08032bac,
+    FUN_08032e1c,
+    dainn_08032f18,
+    FUN_0803331c,
+    FUN_080333a4,
+    FUN_080334b4,
+    FUN_080335e8,
+    FUN_080337b8,
+    FUN_08033970,
+    FUN_08033b28,
+    FUN_08033c60,
+    FUN_08033d84,
+    FUN_08033e3c,
+    FUN_08034014,
+    FUN_0803419c,
+    FUN_0803427c,
+    FUN_0803446c,
+    FUN_08034570,
+    FUN_080346cc,
+    FUN_08034804,
+    FUN_0803495c,
+    FUN_08034a2c,
+    FUN_08034b18,
+    FUN_08034dd8,
+    FUN_08034ebc,
+    FUN_08035268,
+    FUN_080353ac,
+    FUN_0803558c,
+    FUN_08035634,
+    FUN_080356f8,
+};  // 0x085AAD38
+// clang-format on
 
 s32 FUN_08035a64(Ringo* p) {
   if (p->base.state == 0 || p->base.state > 62) {
     return FALSE;
   } else {
-    Boss_SetState(&p->base, (BossUpdateFunc)PTR_ARRAY_085aad38[p->base.state], p->base.state);
+    Boss_SetState(&p->base, PTR_ARRAY_085aad38[p->base.state], p->base.state);
     return TRUE;
   }
 }
@@ -6377,19 +6177,19 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
   Boss* boss = &p->base;
   Mover* mover = &p->base.mover;
   HitboxData* hurtbox = &p->hurtbox;
-  s32 damage = p->unk_180;
-  u8 attr = p->unk_166;
+  s32 damage = p->damage;
+  u8 attr = p->hitBySol;
   bool32 chained;
 
-  p->unk_180 = 0;
+  p->damage = 0;
   p->unk_167 = 0;
-  p->unk_166 = 0;
+  p->hitBySol = 0;
   if (p->unk_18c == 0) {
     if (p->unk_188 == 0 && FUN_080299e0(p)) {
       Vec3 size;
 
       damage = (gStat->sunGauge * boss->maxHP) >> 5;
-      VEC3_SET(size, 0xA4, 0x100, 0xA4);
+      VEC3_SET(size, Q8(0.641), Q8(1), Q8(0.641));
       EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
       EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
       p->unk_18c = 60;
@@ -6418,8 +6218,8 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
     p->unk_186 = 10;
     p->sprites[0].pltt = p->pltt[0];
     p->sprites[1].pltt = p->pltt[0];
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(hurtbox, damage, 0, &mover->pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(hurtbox, damage, 0, &mover->pos, &ofs, 1);
     if (boss->hp <= 0) {
       boss->hp = 0;
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_1);
@@ -6598,17 +6398,17 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   p->unk_8ce = 0x200;
   p->unk_8d0 = 0x400;
   Boss_Init(boss, id, bossID, &pos, angle);
-  boss->unk_114 = angle;
-  boss->unk_ab = VM_GetNamedArgValue('i', 0);
-  if (boss->unk_ab) {
-    p->unk_160 = 0;
+  boss->destAngle = angle;
+  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  if (boss->isDemo) {
+    p->spriteOffsetY = 0;
   } else {
-    p->unk_160 = 64;
+    p->spriteOffsetY = 64;
   }
-  MainSprite_Add(&p->sprites[0], &p->gfx, 0, 0, 2, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[1], &p->gfx, 0, 1, 3, 0, 60, &pos);
-  Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 0, 1, 0);
-  plttID = FUN_08027ed0(p);
+  MainSprite_Add(&p->sprites[0], &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[1], &p->gfx, 0, SPRFLAG_HIDDEN, 3, PLAYMODE_PAUSE, 60, &pos);
+  Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 0, PLAYMODE_LOOP, 0);
+  plttID = Ringo_GetPlttID(p);
   if (plttID == 0) {
     p->sprites[0].pltt = p->pltt[0];
   } else {
@@ -6617,7 +6417,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   p->sprites[1].pltt = p->sprites[0].pltt;
   FUN_0802a208(p);
   FUN_08029ab8(p);
-  if (boss->unk_ab) {
+  if (boss->isDemo) {
     switch (VM_GetNamedArgValue('D', 1)) {
       case 0: {
         Boss_SetSubStates(boss, 2, 0, 0);
@@ -6669,7 +6469,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   p->unk_8c2 = 500;
   p->weaponExp = VM_GetNamedArgValue('K', 0);
   boss->damageBonus = VM_GetNamedArgValue('x', 2);
-  p->unk_173 = -1;
+  p->grabbedPlayer = -1;
   FUN_0802adb8(p);
   AuxShadow_Init(&p->shadow, &p->sprites[0].pos, 0x40, 0x40, 0x40, 0x40, 0x1900, 1, 6, 1, 0);
   AuxShadow_SetSprite(&p->shadow, SPRITE_EFF_1C1B, 7);
@@ -6690,12 +6490,12 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   FUN_08028790(p, &p->sprites[0].pos);
   FUN_08028dbc(p);
   Ringo_InitAuxSprites(p);
-  p->unk_87c = -1;
-  p->unk_87a = FUN_08027ed0(p);
+  p->plttFadeMode = -1;
+  p->plttFadeTo = Ringo_GetPlttID(p);
   boss->mover.unk_30.x = 0;
   boss->mover.unk_30.y = 400;
   boss->mover.unk_30.z = 0;
-  if (boss->unk_ab) {
+  if (boss->isDemo) {
     p->entity0805a31c = NULL;
     p->entity0805b068 = NULL;
     p->entity0805d364 = NULL;

@@ -109,7 +109,7 @@ _0801A204:
 	mov r2, r8
 	ldr r1, [r2, #0x28]
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldrb r0, [r7, #1]
 	lsls r1, r0, #2
 	adds r1, r1, r0
@@ -168,7 +168,7 @@ _0801A2AC:
 	mov r2, r8
 	ldr r1, [r2, #0x28]
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldrb r0, [r7, #1]
 	lsls r1, r0, #2
 	adds r1, r1, r0
@@ -235,7 +235,7 @@ _0801A332:
 	ldr r1, [r2, #0x28]
 	adds r0, r6, #0
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	mov r3, r8
 	ldr r0, [r3, #0x28]
 	ldrb r0, [r0, #6]

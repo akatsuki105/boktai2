@@ -12,6 +12,14 @@ extern void (*const PTR_ARRAY_085aeacc[19])(Entity286F*, Entity286FNode*);
 extern void (*const PTR_ARRAY_085aea70[23])(Entity286F*, Entity286FNode*);
 extern void (*const PTR_ARRAY_085ae96c[23])(Entity286F*, Entity286FNode*);
 extern void (*const PTR_ARRAY_085ae8dc[19])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aec24[17])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aeca4[16])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aed1c[16])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aed94[16])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aee0c[20])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aeea4[19])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aef34[17])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aeff0[17])(Entity286F*, Entity286FNode*);
 
 // src/entity_286f.c
 s32 FUN_080412fc(Entity286F*, Entity286FNode*);
@@ -92,19 +100,19 @@ s32 FUN_082059d8(Entity286F* p, Entity286FNode* node) {
 NAKED s32 FUN_082059e4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082059e4.inc"); }
 
 // 0xBB34, HashName("おてんこ")
-NAKED void FUN_08205a18(void) { INCFUNC("asm/func/FUN_08205a18.inc"); }
+NAKED void Cmd_BB34(void) { INCFUNC("asm/func/Cmd_BB34.inc"); }
 
 // 0x8918
-NAKED void FUN_08205cb0(void) { INCFUNC("asm/func/FUN_08205cb0.inc"); }
+NAKED void Cmd_8918(void) { INCFUNC("asm/func/Cmd_8918.inc"); }
 
 // 0x6CBE
-NAKED void FUN_08205dec(void) { INCFUNC("asm/func/FUN_08205dec.inc"); }
+NAKED void Cmd_6CBE(void) { INCFUNC("asm/func/Cmd_6CBE.inc"); }
 
 // 0x4EBF
-NAKED void FUN_08205e68(void) { INCFUNC("asm/func/FUN_08205e68.inc"); }
+NAKED void Cmd_4EBF(void) { INCFUNC("asm/func/Cmd_4EBF.inc"); }
 
 // 0x11D9
-NAKED void FUN_08205ee0(void) { INCFUNC("asm/func/FUN_08205ee0.inc"); }
+NAKED void Cmd_11D9(void) { INCFUNC("asm/func/Cmd_11D9.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085ae8dc (state) / PTR_ARRAY_085ae928 (unk_2cc) を使うノード種別
@@ -149,7 +157,7 @@ s32 FUN_0820640c(Entity286F* p, Entity286FNode* node) {
 s32 FUN_08206424(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x3004
-NAKED void FUN_08206434(void) { INCFUNC("asm/func/FUN_08206434.inc"); }
+NAKED void Cmd_3004(void) { INCFUNC("asm/func/Cmd_3004.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085ae96c (state) / PTR_ARRAY_085ae9c8 (unk_2cc) を使うノード種別
@@ -207,10 +215,10 @@ s32 FUN_08206dac(Entity286F* p, Entity286FNode* node) {
 s32 FUN_08206db8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xC347
-NAKED void FUN_08206dc8(void) { INCFUNC("asm/func/FUN_08206dc8.inc"); }
+NAKED void Cmd_C347(void) { INCFUNC("asm/func/Cmd_C347.inc"); }
 
 // 0x8894
-NAKED void FUN_082070bc(void) { INCFUNC("asm/func/FUN_082070bc.inc"); }
+NAKED void Cmd_8894(void) { INCFUNC("asm/func/Cmd_8894.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aea1c (unk_2cc) / PTR_ARRAY_085aea70 (state) を使うノード種別
@@ -268,7 +276,7 @@ s32 FUN_082077dc(Entity286F* p, Entity286FNode* node) {
 s32 FUN_082077e8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xF33F
-NAKED void FUN_082077f8(void) { INCFUNC("asm/func/FUN_082077f8.inc"); }
+NAKED void Cmd_F33F(void) { INCFUNC("asm/func/Cmd_F33F.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aeacc (state) / PTR_ARRAY_085aeb18 (unk_2cc) を使うノード種別
@@ -310,7 +318,7 @@ s32 FUN_08207eb4(Entity286F* p, Entity286FNode* node) {
 s32 FUN_08207ec0(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xB189
-NAKED void FUN_08207ed0(void) { INCFUNC("asm/func/FUN_08207ed0.inc"); }
+NAKED void Cmd_B189(void) { INCFUNC("asm/func/Cmd_B189.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aeb5c (state) / PTR_ARRAY_085aebc4 (unk_2cc) を使うノード種別
@@ -394,20 +402,20 @@ s32 FUN_08209524(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregist
 NAKED void FUN_08209534(s32 param_1) { INCFUNC("asm/func/FUN_08209534.inc"); }
 
 // 0xD774
-void FUN_082097dc(void) { FUN_08209534(0); }
+void Cmd_D774(void) { FUN_08209534(0); }
 
 // 0x82C8
-void FUN_082097e8(void) { FUN_08209534(1); }
+void Cmd_82C8(void) { FUN_08209534(1); }
 
 // 0x9DFE
-NAKED void FUN_082097f4(void) { INCFUNC("asm/func/FUN_082097f4.inc"); }
+NAKED void Cmd_9DFE(void) { INCFUNC("asm/func/Cmd_9DFE.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aec24 (state) / PTR_ARRAY_085aec68 (unk_2cc) を使うノード種別
 
 NAKED void FUN_08209838(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209838.inc"); }
 
-NAKED void FUN_08209874(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209874.inc"); }
+void FUN_08209874(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aec24[node->state](p, node); }
 
 void FUN_0820988c(Entity286F* p, Entity286FNode* node) { FUN_08209874(p, node); }
 
@@ -432,12 +440,12 @@ s32 FUN_08209af4(Entity286F* p, Entity286FNode* node) {
 s32 FUN_08209b00(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x40A6
-NAKED void FUN_08209b10(void) { INCFUNC("asm/func/FUN_08209b10.inc"); }
+NAKED void Cmd_40A6(void) { INCFUNC("asm/func/Cmd_40A6.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aeca4 (state) / PTR_ARRAY_085aece4 (unk_2cc) を使うノード種別
 
-NAKED void FUN_08209da0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209da0.inc"); }
+void FUN_08209da0(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aeca4[node->state](p, node); }
 
 void FUN_08209db8(Entity286F* p, Entity286FNode* node) { FUN_08209da0(p, node); }
 
@@ -462,12 +470,12 @@ s32 FUN_08209fac(Entity286F* p, Entity286FNode* node) {
 s32 FUN_08209fb8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x5470
-NAKED void FUN_08209fc8(void) { INCFUNC("asm/func/FUN_08209fc8.inc"); }
+NAKED void Cmd_5470(void) { INCFUNC("asm/func/Cmd_5470.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aed1c (state) / PTR_ARRAY_085aed5c (unk_2cc) を使うノード種別
 
-NAKED void FUN_0820a258(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a258.inc"); }
+void FUN_0820a258(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aed1c[node->state](p, node); }
 
 void FUN_0820a270(Entity286F* p, Entity286FNode* node) { FUN_0820a258(p, node); }
 
@@ -492,12 +500,12 @@ s32 FUN_0820a464(Entity286F* p, Entity286FNode* node) {
 s32 FUN_0820a470(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xA133
-NAKED void FUN_0820a480(void) { INCFUNC("asm/func/FUN_0820a480.inc"); }
+NAKED void Cmd_A133(void) { INCFUNC("asm/func/Cmd_A133.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aed94 (state) / PTR_ARRAY_085aedd4 (unk_2cc) を使うノード種別
 
-NAKED void FUN_0820a710(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a710.inc"); }
+void FUN_0820a710(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aed94[node->state](p, node); }
 
 void FUN_0820a728(Entity286F* p, Entity286FNode* node) { FUN_0820a710(p, node); }
 
@@ -522,7 +530,7 @@ s32 FUN_0820a91c(Entity286F* p, Entity286FNode* node) {
 s32 FUN_0820a928(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x3F96
-NAKED void FUN_0820a938(void) { INCFUNC("asm/func/FUN_0820a938.inc"); }
+NAKED void Cmd_3F96(void) { INCFUNC("asm/func/Cmd_3F96.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aee0c (state) / PTR_ARRAY_085aee5c (unk_2cc) を使うノード種別
@@ -535,7 +543,7 @@ NAKED void FUN_0820ac10(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_0820ac44(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820ac44.inc"); }
 
-NAKED void FUN_0820ac80(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820ac80.inc"); }
+void FUN_0820ac80(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aee0c[node->state](p, node); }
 
 void FUN_0820ac98(Entity286F* p, Entity286FNode* node) { FUN_0820ac80(p, node); }
 
@@ -566,7 +574,7 @@ s32 FUN_0820b2dc(Entity286F* p, Entity286FNode* node) {
 s32 FUN_0820b2e8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xCE28
-NAKED void FUN_0820b2f8(void) { INCFUNC("asm/func/FUN_0820b2f8.inc"); }
+NAKED void Cmd_CE28(void) { INCFUNC("asm/func/Cmd_CE28.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aeea4 (state) / PTR_ARRAY_085aeef0 (unk_2cc) を使うノード種別
@@ -581,7 +589,7 @@ NAKED void FUN_0820b650(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_0820b678(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b678.inc"); }
 
-NAKED void FUN_0820b6b4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b6b4.inc"); }
+void FUN_0820b6b4(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aeea4[node->state](p, node); }
 
 void FUN_0820b6cc(Entity286F* p, Entity286FNode* node) { FUN_0820b6b4(p, node); }
 
@@ -616,14 +624,14 @@ s32 FUN_0820bcb0(Entity286F* p, Entity286FNode* node) {
 s32 FUN_0820bcbc(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xD229
-NAKED void FUN_0820bccc(void) { INCFUNC("asm/func/FUN_0820bccc.inc"); }
+NAKED void Cmd_D229(void) { INCFUNC("asm/func/Cmd_D229.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aef34 (state) / PTR_ARRAY_085aef78 (unk_2cc) を使うノード種別
 
 NAKED void FUN_0820bf5c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bf5c.inc"); }
 
-NAKED void FUN_0820bf88(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bf88.inc"); }
+void FUN_0820bf88(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aef34[node->state](p, node); }
 
 void FUN_0820bfa0(Entity286F* p, Entity286FNode* node) { FUN_0820bf88(p, node); }
 
@@ -656,7 +664,7 @@ s32 FUN_0820c3c4(Entity286F* p, Entity286FNode* node) {
 s32 FUN_0820c3d0(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x56AD
-NAKED void FUN_0820c3e0(void) { INCFUNC("asm/func/FUN_0820c3e0.inc"); }
+NAKED void Cmd_56AD(void) { INCFUNC("asm/func/Cmd_56AD.inc"); }
 
 // ---------------------------------------------------------------------------
 // ここから PTR_ARRAY_085aefb4 (unk_2cc) / PTR_ARRAY_085aeff0 (state) を使うノード種別
@@ -667,7 +675,7 @@ NAKED s32 FUN_0820c694(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/
 
 NAKED void FUN_0820c6c8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c6c8.inc"); }
 
-NAKED void FUN_0820c704(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c704.inc"); }
+void FUN_0820c704(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aeff0[node->state](p, node); }
 
 void FUN_0820c71c(Entity286F* p, Entity286FNode* node) { FUN_0820c704(p, node); }
 
@@ -687,8 +695,8 @@ s32 FUN_0820c924(Entity286F* p, Entity286FNode* node) {
 
 s32 FUN_0820c930(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
-// 0x8EA3
-NAKED void FUN_0820c940(void) { INCFUNC("asm/func/FUN_0820c940.inc"); }
+// 0x8EA3, ハテナ
+NAKED void Cmd_8EA3(void) { INCFUNC("asm/func/Cmd_8EA3.inc"); }
 
 // clang-format off
 void (*const PTR_ARRAY_085ae83c[21])(Entity286F*, Entity286FNode*) = {

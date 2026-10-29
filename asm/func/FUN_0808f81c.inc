@@ -16,7 +16,7 @@
 	bl MessageWindow_ShowLine
 	ldr r1, _0808F854 @ =FUN_0808f670
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	b _0808F8A2
 	.align 2, 0
 _0808F850: .4byte 0x000034E4

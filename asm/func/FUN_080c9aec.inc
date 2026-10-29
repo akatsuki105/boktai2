@@ -67,7 +67,7 @@ _080C9B5C:
 	movs r0, #0x33
 	subs r0, r0, r7
 	lsls r0, r0, #1
-	bl FUN_0823b9cc
+	bl Camera_Shake
 _080C9B7A:
 	adds r0, r7, #0
 	subs r0, #0x47
@@ -76,7 +76,7 @@ _080C9B7A:
 	movs r0, #0x57
 	subs r0, r0, r7
 	lsls r0, r0, #1
-	bl FUN_0823b9cc
+	bl Camera_Shake
 _080C9B8C:
 	adds r0, r7, #0
 	subs r0, #0x50

@@ -44,7 +44,7 @@ _080C8DDC:
 	strb r0, [r1]
 _080C8E06:
 	adds r0, r5, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 _080C8E0C:
 	add sp, #0xc
 	pop {r4, r5, r6}

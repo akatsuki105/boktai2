@@ -48,7 +48,7 @@ _080D4888:
 	adds r0, r4, r6
 	ldrb r0, [r0]
 	movs r1, #0x29
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
@@ -197,7 +197,7 @@ _080D49B2:
 	lsls r6, r6, #1
 	adds r4, r4, r6
 	ldrh r0, [r4]
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	ldrh r1, [r4]
 	lsls r0, r1, #1
 	adds r0, r0, r1
@@ -235,7 +235,7 @@ _080D4A00:
 	adds r0, r4, r1
 	ldrb r0, [r0]
 	movs r1, #0x2a
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40

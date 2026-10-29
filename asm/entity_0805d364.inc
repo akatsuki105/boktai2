@@ -72,7 +72,7 @@ _0805B8E4:
 	str r7, [sp, #4]
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	ldrh r0, [r5, #0x3e]
 	adds r0, #2
 	strh r0, [r5, #0x3e]
@@ -136,7 +136,7 @@ FUN_0805b960: @ 0x0805B960
 	adds r0, r6, #0
 	movs r2, #1
 	adds r3, r4, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	ldrh r0, [r5, #0x3e]
 	bl FUN_080298b8
 	add sp, #0x10

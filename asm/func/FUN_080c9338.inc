@@ -287,7 +287,7 @@ _080C9578:
 	strh r0, [r1]
 _080C9584:
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	ldr r0, _080C95C0 @ =0x00000167
 	cmp r8, r0
 	ble _080C95B2

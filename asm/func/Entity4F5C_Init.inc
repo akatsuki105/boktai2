@@ -215,7 +215,7 @@ _0801A77E:
 	ldr r1, [r7, #0x24]
 	adds r0, r4, #0
 	movs r2, #0x1c
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r7, #0x24]
 	ldrh r0, [r0, #6]
 	b _0801A7C4
@@ -227,7 +227,7 @@ _0801A7B4:
 	ldr r1, [r7, #0x28]
 	adds r0, r4, #0
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r7, #0x28]
 	ldrb r0, [r0, #6]
 	adds r0, #1

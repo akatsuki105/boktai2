@@ -33,7 +33,7 @@
 	ldr r1, [r0]
 	ldrb r2, [r2]
 	adds r0, r4, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [r4, #0x18]

@@ -65,7 +65,7 @@ _0800EC80:
 	adds r0, #8
 	strh r0, [r5, #0x1a]
 	movs r0, #0x28
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	b _0800ECB6
 	.align 2, 0
 _0800EC94: .4byte 0x030047A4

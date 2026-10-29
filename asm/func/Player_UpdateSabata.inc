@@ -84,7 +84,7 @@ _080791E4:
 	bl FUN_08066408
 _080791EA:
 	adds r0, r5, #0
-	bl FUN_08078bc0
+	bl Player_PostUpdateHuman
 	ldr r1, _080792BC @ =0x000003CE
 	adds r0, r5, r1
 	movs r2, #0
@@ -120,7 +120,7 @@ _0807922C:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldrh r0, [r0]
-	bl FUN_08065b44
+	bl Player_IsOnIce
 	cmp r0, #0
 	bne _0807926A
 	movs r2, #0xdf
@@ -434,7 +434,7 @@ _0807948C:
 	adds r0, r5, #0
 	bl _call_via_r1
 	adds r0, r5, #0
-	bl FUN_08078bc0
+	bl Player_PostUpdateHuman
 	b _080794D6
 	.align 2, 0
 _080794A4: .4byte 0x000003D2
@@ -454,7 +454,7 @@ _080794AC:
 	adds r0, r5, #0
 	bl _call_via_r1
 	adds r0, r5, #0
-	bl FUN_08078bc0
+	bl Player_PostUpdateHuman
 	adds r0, r5, #0
 	bl FUN_080726ec
 _080794D6:

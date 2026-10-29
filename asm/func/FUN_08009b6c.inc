@@ -50,7 +50,7 @@
 	ldr r1, [r6, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0xc
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r2, #8
 	rsbs r2, r2, #0
 	adds r0, r4, #0

@@ -27,7 +27,7 @@
 	str r5, [r0]
 	ldr r0, _0823AD74 @ =0x03004794
 	str r5, [r0]
-	ldr r0, _0823AD78 @ =0x030047AC
+	ldr r0, _0823AD78 @ =gMapChanging
 	str r5, [r0]
 	ldr r0, _0823AD7C @ =0x03004788
 	str r5, [r0]
@@ -73,7 +73,7 @@ _0823AD68: .4byte 0x030047B0
 _0823AD6C: .4byte 0x03004790
 _0823AD70: .4byte 0x030047BC
 _0823AD74: .4byte 0x03004794
-_0823AD78: .4byte 0x030047AC
+_0823AD78: .4byte gMapChanging
 _0823AD7C: .4byte 0x03004788
 _0823AD80: .4byte 0x030046A0
 _0823AD84: .4byte 0x00000934

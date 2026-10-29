@@ -1467,7 +1467,7 @@ _081A71B8:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _081A71D4:
 	ldr r1, _081A7224 @ =0x00000466
 	adds r0, r5, r1
@@ -3382,17 +3382,17 @@ _081A804E:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -11163,7 +11163,7 @@ _081ABB2E:
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _081ABB6A:
 	add sp, #0x14
 	pop {r4, r5, r6}
@@ -13169,7 +13169,7 @@ _081ACA28:
 	str r0, [sp, #0x34]
 	mov r0, r8
 	add r1, sp, #0x38
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	add sp, #0x40
 	pop {r3}
 	mov r8, r3
@@ -13302,7 +13302,7 @@ _081ACB34:
 	str r0, [sp, #0x34]
 	mov r0, r8
 	add r1, sp, #0x38
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	add sp, #0x40
 	pop {r3}
 	mov r8, r3
@@ -13778,7 +13778,7 @@ FUN_081acf2c: @ 0x081ACF2C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_081aced4
 	movs r0, #1
@@ -14087,7 +14087,7 @@ EnemyFlameSnake_Init: @ 0x081AD168
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081AD200 @ =0x0000C102
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _081AD1F4 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -16321,7 +16321,7 @@ _081AE2EA:
 	strb r0, [r5]
 	ldr r6, _081AE448 @ =0x0000057C
 	adds r1, r7, r6
-	ldr r0, _081AE44C @ =FUN_080f09e0
+	ldr r0, _081AE44C @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r0, _081AE450 @ =0x0000061C
 	adds r1, r7, r0
@@ -16346,7 +16346,7 @@ _081AE43C: .4byte FUN_080e6794
 _081AE440: .4byte 0x00000472
 _081AE444: .4byte 0xFFFFFE00
 _081AE448: .4byte 0x0000057C
-_081AE44C: .4byte FUN_080f09e0
+_081AE44C: .4byte Enemy_DispatchMsg
 _081AE450: .4byte 0x0000061C
 _081AE454: .4byte FUN_081acf68
 _081AE458: .4byte FUN_081ad068

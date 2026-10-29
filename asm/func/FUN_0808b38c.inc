@@ -92,7 +92,7 @@ _0808B43E:
 	str r4, [sp]
 	movs r2, #0x17
 	movs r3, #1
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	b _0808B4AA
 	.align 2, 0
 _0808B450: .4byte 0x0000F025
@@ -137,7 +137,7 @@ _0808B494:
 	str r2, [sp]
 	movs r2, #0x17
 	movs r3, #1
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 _0808B4AA:
 	add sp, #4
 	pop {r4, r5}

@@ -3,16 +3,21 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "sound.h"
 #include "sprite.h"
+#include "sprite_aux.h"
 
 typedef struct Entity081eaf6cItem {
   MainSprite sprite;  // 0x000, Entity081eaf6c_Destroy が要素そのものを MainSprite_Remove に渡す
   Mover unk_60;       // 0x060, flags の bit0 が立っていれば _Destroy が FUN_08002a58 に、その後 Mover_Unlink に渡す
-  u8 unk_a4[44];      // 0x0A4
+  AuxSprite unk_a4;   // 0x0A4, unk_60 に Mover_SetAuxSprite で繋ぐ
   Vec3 hitboxPos;     // 0x0D0, Hitbox_SetPos に渡す位置
   HitboxData hitbox;  // 0x0D8, FUN_081eaa10 が unk_128 が 1 のときだけ登録する
   s16 unk_128;        // 0x128, 1 のときだけヒットボックスを登録する
-  u8 unk_12a[8];      // 0x12A
+  s16 unk_12a;        // 0x12A
+  s16 unk_12c;        // 0x12C
+  s16 unk_12e;        // 0x12E
+  s16 unk_130;        // 0x130
   s16 unk_132;        // 0x132, _Update が s16 として読む
   u16 unk_134;        // 0x134, FUN_081eaa10 が毎フレーム +1 する
   u16 unk_136;        // 0x136, _Init が全要素に 0xFFFF を入れる
@@ -32,13 +37,59 @@ typedef struct {
 } Entity081eaf6c;
 static_assert(sizeof(Entity081eaf6c) == 1328);
 
+static inline bool8 Entity081eaf6c_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 static Entity081eaf6c* gEntity081eaf6c;  // 0x030001C0
 
 const u8 u8_ARRAY_085ae478[18] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9};  // 0x085AE478
 
 void FUN_081ea878(Entity081eaf6cItem* p) {}
 
-NAKED bool8 FUN_081ea87c(Entity081eaf6cItem* item) { INCFUNC("asm/func/FUN_081ea87c.inc"); }
+// 火炎のアニメを段階ごとに進め, 消え終わったらスロットを空けて TRUE を返す
+bool8 FUN_081ea87c(Entity081eaf6cItem* item) {
+  Entity081eaf6c* mgr = gEntity081eaf6c;
+
+  if (item->sprite.animEvents & 1) {
+    s32 anim;
+
+    if (item->unk_128 == -1 && item->unk_12e > (s16)item->unk_134) {
+      MainSprite_SetAnim(&item->sprite, &mgr->gfx, u8_ARRAY_085ae478[18], PLAYMODE_ONCE_AND_STOP, 0);
+      return FALSE;
+    }
+
+    if (item->unk_128 == 0 && !(gGameFlags & FLAG030047A4_LINK)) {
+      PlaySound_082406e0(SONG_424);
+    }
+    if (item->unk_128 == 1 && item->unk_130 > 0) {
+      MainSprite_SetAnim(&item->sprite, &mgr->gfx, u8_ARRAY_085ae478[item->unk_12a + item->unk_128], PLAYMODE_ONCE_AND_STOP, 0);
+      return FALSE;
+    }
+    item->unk_128 += item->unk_12c;
+    anim = item->unk_12a + item->unk_128;
+    if (item->unk_128 == 3) {
+      CLEAR_BIT(mgr->activeMask, (s16)item->unk_136);
+      MainSprite_Remove(&item->sprite);
+      if (item->flags & 1) {
+        FUN_08002a58(&item->unk_60);
+      }
+      Mover_Unlink(&item->unk_60);
+      item->unk_136 = 0xFFFF;
+      item->unk_132 = 2;
+      return TRUE;
+    }
+    MainSprite_SetAnim(&item->sprite, &mgr->gfx, u8_ARRAY_085ae478[anim], PLAYMODE_ONCE_AND_STOP, 0);
+  } else {
+    MainSprite_AdvanceAnim(&item->sprite, &mgr->gfx);
+  }
+
+  if (item->unk_128 == 1) {
+    item->unk_130--;
+  }
+  return FALSE;
+}
 
 void FUN_081eaa10(Entity081eaf6cItem* item) {
   if (!FUN_081ea87c(item)) {
@@ -53,13 +104,11 @@ void FUN_081eaa10(Entity081eaf6cItem* item) {
 void FUN_081eaa54(Entity081eaf6cItem* p) {}
 
 // 使用中のスロットのスプライトと Mover を片付けてシングルトンを手放す
-// 残差5命令 (54/59): FUN_081eab78 と同じく, 原典は使用中判定を 0/1 に起こしてから cmp で読み直す
-NON_MATCH s32 Entity081eaf6c_Destroy(Entity081eaf6c* p) {
-#ifdef NONMATCHING_C
+s32 Entity081eaf6c_Destroy(Entity081eaf6c* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (p->activeMask & (1 << i)) {
+    if (Entity081eaf6c_IsActive(&p->activeMask, i)) {
       MainSprite_Remove(&p->items[i].sprite);
       if (p->items[i].flags & 1) {
         FUN_08002a58(&p->items[i].unk_60);
@@ -70,9 +119,6 @@ NON_MATCH s32 Entity081eaf6c_Destroy(Entity081eaf6c* p) {
 
   gEntity081eaf6c = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity081eaf6c_Destroy.inc");
-#endif
 }
 
 void (*const PTR_ARRAY_085ae48c[3])(Entity081eaf6cItem*) = {
@@ -82,52 +128,46 @@ void (*const PTR_ARRAY_085ae48c[3])(Entity081eaf6cItem*) = {
 };  // 0x085AE48C
 
 // 使用中のスロットごとに unk_132 の状態ハンドラを呼ぶ
-// 残差5命令 (61/66): FUN_081eab78 と同じく, 原典は使用中判定を 0/1 に起こしてから cmp で読み直す
-NON_MATCH s32 Entity081eaf6c_Update(Entity081eaf6c* p) {
-#ifdef NONMATCHING_C
+s32 Entity081eaf6c_Update(Entity081eaf6c* p) {
+  Entity081eaf6cItem* items = p->items;
   s32 i;
 
   if (p->activeMask == 0) {
     return 0;
   }
-  if ((gFlag030047a4 | u32_030047a0) & FLAG030047A4_GAMEOVER) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
     return 0;
   }
-  if (u32_03002bc0[0] & FLAG03002BC0_UNK_2) {
+  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     return 0;
   }
 
   for (i = 0; i < 4; i++) {
-    if (p->activeMask & (1 << i)) {
-      PTR_ARRAY_085ae48c[p->items[i].unk_132](&p->items[i]);
+    if (Entity081eaf6c_IsActive(&p->activeMask, i)) {
+      Entity081eaf6cItem* item = &items[i];
+
+      PTR_ARRAY_085ae48c[item->unk_132](item);
     }
   }
 
   return 0;
-#else
-  INCFUNC("asm/func/Entity081eaf6c_Update.inc");
-#endif
 }
 
 // 空いているスロットを1つ確保して返す, 空きがなければ NULL
-// 残差6命令 (33/39): 原典は使用中判定を 0/1 に起こしてから cmp で読み直し, 1 << i も再計算する
-// Elevator_IsSlotUsed 相当の static inline を挟むと 36 まで戻るが一致はしないので入れていない
-NON_MATCH Entity081eaf6cItem* FUN_081eab78(Entity081eaf6c* p) {
-#ifdef NONMATCHING_C
+Entity081eaf6cItem* FUN_081eab78(Entity081eaf6c* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!Entity081eaf6c_IsActive(&p->activeMask, i)) {
+      Entity081eaf6cItem* item = &p->items[i];
+
       p->activeMask |= 1 << i;
-      p->items[i].unk_136 = i;
-      return &p->items[i];
+      item->unk_136 = i;
+      return item;
     }
   }
 
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_081eab78.inc");
-#endif
 }
 
 void FUN_081eabcc(HitboxData* a, HitboxData* b, void* p) {}
@@ -138,11 +178,158 @@ const Vec3 vec3_ARRAY_085ae498[3] = {
     {48, 32, 384}
 };  // 0x085AE498
 
-NAKED void FUN_081eabd0(unknown* p) { INCFUNC("asm/func/FUN_081eabd0.inc"); }
+// 火炎の当たり判定を作る, a が 0 なら vec3_ARRAY_085ae498[b] をそのまま, それ以外は x と z を入れ替えて半サイズにする
+// 残差は a != 0 側の halfSize の x/y を原典は1語にまとめて書くのに, こちらは2回の読み書きになること (116/111命令)
+NON_MATCH void FUN_081eabd0(Entity081eaf6cItem* item, s32 a, s32 b, s32 power, s32 knockback, s32 invincibleTime) {
+#ifdef NONMATCHING_C
+  Vec3 halfSize;
+  Vec3 offset;
+  u8 angle;
+  const Vec3* v;
 
-NAKED void FUN_081eace8(unknown* p) { INCFUNC("asm/func/FUN_081eace8.inc"); }
+  if (a == 0) {
+    switch (b) {
+      case 0: {
+        v = &vec3_ARRAY_085ae498[0];
+        halfSize = *v;
+        break;
+      }
+      case 1: {
+        v = &vec3_ARRAY_085ae498[1];
+        halfSize = *v;
+        break;
+      }
+      case 2: {
+        v = &vec3_ARRAY_085ae498[2];
+        halfSize = *v;
+        break;
+      }
+    }
+    offset.x = 0, offset.y = 0, offset.z = halfSize.z;
+    angle = 0x40;
+  } else {
+    switch (b) {
+      case 0: {
+        v = &vec3_ARRAY_085ae498[0];
+        halfSize.x = v->z, halfSize.y = v->y, halfSize.z = v->x;
+        break;
+      }
+      case 1: {
+        v = &vec3_ARRAY_085ae498[1];
+        halfSize.x = v->z, halfSize.y = v->y, halfSize.z = v->x;
+        break;
+      }
+      case 2: {
+        v = &vec3_ARRAY_085ae498[2];
+        halfSize.x = v->z, halfSize.y = v->y, halfSize.z = v->x;
+        break;
+      }
+    }
+    offset.x = halfSize.x, offset.y = 0, offset.z = 0;
+    angle = 0;
+  }
 
-NAKED s32 FUN_081ead54(unknown* p) { INCFUNC("asm/func/FUN_081ead54.inc"); }
+  Hitbox_Init(&item->hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 32, &halfSize, &offset);
+  Hitbox_SetAttack(&item->hitbox, power, knockback, HBATTR_ALL, HBATTR_INKA | HBATTR_FLAME, invincibleTime);
+  Hitbox_SetPos(&item->hitbox, &item->hitboxPos, 0);
+  Hitbox_SetHandler(&item->hitbox, FUN_081eabcc, item);
+  item->hitbox.angle = angle;
+#else
+  INCFUNC("asm/func/FUN_081eabd0.inc");
+#endif
+}
+
+// 火炎のスプライトを登録してアニメを始める
+void FUN_081eace8(Entity081eaf6cItem* item, s32 a, s32 b, s32 c) {
+  Entity081eaf6c* mgr = gEntity081eaf6c;
+
+  item->unk_12a = b * 3 + a * 9;
+  item->unk_128 = c;
+  item->unk_12c = 1;
+  MainSprite_Add(&item->sprite, &mgr->gfx, 13, 0, 1, PLAYMODE_ONCE_AND_STOP, 120, &item->hitboxPos);
+  MainSprite_SetAnim(&item->sprite, &mgr->gfx, u8_ARRAY_085ae478[18], PLAYMODE_ONCE_AND_STOP, 0);
+}
+
+// 空きスロットに火炎を1つ出す, flags の bit0 が立っていれば Mover を伸びる向きへずらして登録する
+// 残差は各 case で v の定数ロードが pos の読み込みより先に出る順序だけ (176/176命令)
+NON_MATCH Entity081eaf6cItem* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 b, s32 c, s32 power, s32 knockback, s32 invincibleTime, s32 unk_130, u32 flags) {
+#ifdef NONMATCHING_C
+  Entity081eaf6cItem* item;
+  Mover* mover;
+  const Vec3* v;
+
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+    return NULL;
+  }
+  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    return NULL;
+  }
+  if (gEntity081eaf6c == NULL) {
+    return NULL;
+  }
+  item = FUN_081eab78(gEntity081eaf6c);
+  if (item == NULL) {
+    return NULL;
+  }
+
+  item->hitboxPos = *pos;
+  item->unk_12e = unk_12e;
+  item->unk_134 = 0;
+  item->unk_130 = unk_130;
+  item->unk_132 = 1;
+  mover = &item->unk_60;
+  Mover_Init(mover, id, &item->hitboxPos, 0, 7, item);
+  Mover_SetAuxSprite(mover, &item->unk_a4);
+  item->unk_a4.flags &= ~SPRFLAG_HIDDEN;
+  item->flags = flags;
+  if (flags & 1) {
+    if (a == 0) {
+      switch (b) {
+        case 0: {
+          v = &vec3_ARRAY_085ae498[0];
+          mover->pos.z += v->z + 32;
+          break;
+        }
+        case 1: {
+          v = &vec3_ARRAY_085ae498[1];
+          mover->pos.z += v->z + 100;
+          break;
+        }
+        case 2: {
+          v = &vec3_ARRAY_085ae498[2];
+          mover->pos.z += v->z + 200;
+          break;
+        }
+      }
+    } else {
+      switch (b) {
+        case 0: {
+          v = &vec3_ARRAY_085ae498[0];
+          mover->pos.x += v->z + 32;
+          break;
+        }
+        case 1: {
+          v = &vec3_ARRAY_085ae498[1];
+          mover->pos.x += v->z + 100;
+          break;
+        }
+        case 2: {
+          v = &vec3_ARRAY_085ae498[2];
+          mover->pos.x += v->z + 200;
+          break;
+        }
+      }
+    }
+    FUN_08002a48(mover);
+  }
+
+  FUN_081eabd0(item, a, b, power, knockback, invincibleTime);
+  FUN_081eace8(item, a, b, c);
+  return item;
+#else
+  INCFUNC("asm/func/FUN_081ead54.inc");
+#endif
+}
 
 void FUN_081eaeec(Entity081eaf6c* p) {
   p->spriteFile = GetFile(DIR_MAIN_SPRITE, SPRITE_FLAMETHROWER);

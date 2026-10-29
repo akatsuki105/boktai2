@@ -9,7 +9,7 @@
 #include "vm.h"
 
 // 通信対戦で対戦相手のプレイヤー?
-// player.c, player_sabata.c に同形の関数がある
+// player.c, sabata.c に同形の関数がある
 
 const u8 u8_ARRAY_085ad148[4] = {3, 4, 6, 0};  // 0x085AD148 (u8_ARRAY_085abab4 と同じもの)
 
@@ -178,6 +178,11 @@ const PlayerFunc PTR_ARRAY_085ad280[27] = {
 };  // 0x085AD280
 // clang-format on
 
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
+
 // facing から animIDOffset と xflip を決める
 void PlayerLink_SetAnimFacing(Player* p) {
   u8 v = p->facing;
@@ -264,7 +269,7 @@ NON_MATCH void FUN_080cc43c(Player* p) {
 #ifdef NONMATCHING_C
   s32 idx = gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1;
 
-  if (p->playerIdx == idx) {
+  if (p->inputIdx == idx) {
     if (p->kind == PLAYER_SABATA) {
       sound_08240740(SONG_569);
       sound_08240740(SONG_514);
@@ -299,7 +304,6 @@ s32 FUN_080cc618(void) {
 
 NAKED void FUN_080cc648(Player* p) { INCFUNC("asm/func/FUN_080cc648.inc"); }
 
-DirS32 Player_GetDpadFacing(Player* p);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
 
@@ -375,7 +379,7 @@ void FUN_080cce0c(Player* p, s32 param_2, Vec3* pos) {
   p->meleeShockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
   p->meleeShockwave.sprite.pos = *pos;
   p->meleeShockwave.sprite.pos.y += 0xE6;
-  p->meleeShockwave.sprite.rotation = p->gunSpreadAngle;
+  p->meleeShockwave.sprite.rotation = p->wpn.gunSpreadAngle;
   p->meleeShockwave.finished = 1;
 }
 
@@ -450,29 +454,23 @@ void PlayerLink_InitPtcl858(Player* p) {
 NAKED void FUN_080cd5a0(Player* p) { INCFUNC("asm/func/FUN_080cd5a0.inc"); }
 
 // 日光が当たっているとき, 屋外なら 8, 屋内なら 4 を返す
-// 残差4命令 (30 対 34), 原典は屋外判定を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-// Cで書くと gcc がその判定を畳み, さらに内側の2分岐も rsbs/asrs の分岐なし計算にまとめてしまう
-NON_MATCH s32 FUN_080cd6ec(Player* p) {
-#ifdef NONMATCHING_C
+s32 FUN_080cd6ec(Player* p) {
   s32 ret = 0;
 
-  if (gStat->unk_934 & SF934_OUTDOOR) {
-    if (p->flag20 & PFLAG20_SUNBATHING) {
-      ret = 8;
-    }
-  } else {
+  if (!TestMapFlag(MPF_OUTDOOR)) {
     if (p->flag20 & PFLAG20_SUNBATHING) {
       ret = 4;
     }
+  } else {
+    if (p->flag20 & PFLAG20_SUNBATHING) {
+      ret = 8;
+    }
   }
   return ret;
-#else
-  INCFUNC("asm/func/FUN_080cd6ec.inc");
-#endif
 }
 
 void FUN_080cd738(Player* p) {
-  rgb555* src = &gObjPlttData[0x280];
+  rgb555* src = &gObjPlttData[40 * 16];
 
   src += p->unk_950 * 3;
 
@@ -492,7 +490,7 @@ NAKED void FUN_080cdc10(Player* p) { INCFUNC("asm/func/FUN_080cdc10.inc"); }
 NAKED void FUN_080cdc6c(Player* p) { INCFUNC("asm/func/FUN_080cdc6c.inc"); }
 
 void FUN_080cdda8(Player* p) {
-  u8 n = p->unk_4c4.unk_3;
+  u8 n = p->emitter.unk_3;
 
   if (n != 0) {
     s32 i = n;
@@ -504,7 +502,7 @@ void FUN_080cdda8(Player* p) {
   }
 }
 
-s32 FUN_080cddd0(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xFF; }
+s32 PlayerLink_GetMashCount(Player* p) { return (p->mashCount - p->mashCountBase + 0x100) & 0xFF; }
 
 NAKED s32 FUN_080cddf0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cddf0.inc"); }
 
@@ -528,17 +526,17 @@ NON_MATCH s32 FUN_080cdfd4(Player* p, s32 pose) {
 
 NAKED void FUN_080ce00c(Player* p) { INCFUNC("asm/func/FUN_080ce00c.inc"); }
 
-// 方向キーが押された最初のフレームだけ angle_400 を1つ進める
-void FUN_080ce264(Player* p) {
+// 方向キーが押された最初のフレームだけ mashCount を1つ進める
+void PlayerLink_CountMash(Player* p) {
   if (p->input->pressed & DPAD_ANY) {
-    p->angle_400++;
+    p->mashCount++;
   }
 }
 
 NAKED void FUN_080ce28c(Player* p) { INCFUNC("asm/func/FUN_080ce28c.inc"); }
 
 void FUN_080ce330(Player* p) {
-  Eff082473e0Emitter_Destroy(&p->unk_4c4);
+  Eff082473e0Emitter_Destroy(&p->emitter);
   ParticleShadow_Remove(&p->shadow);
   Particle_Remove(&p->ptcl_64c.ptcl);
   Particle_Remove(&p->ptcl_67c.ptcl);
@@ -550,7 +548,7 @@ void FUN_080ce330(Player* p) {
 NAKED void FUN_080ce378(Player* p) { INCFUNC("asm/func/FUN_080ce378.inc"); }
 
 s32 FUN_080ce4d0(Player* p) {
-  u32 i = p->playerIdx;
+  u32 i = p->inputIdx;
 
   if (gEntity9A9F != NULL) {
     return gEntity9A9F->unk_60[i];
@@ -573,7 +571,7 @@ s32 FUN_080ce504(Player* p, s32 param_2, HitboxData* b) {
   return 0;
 }
 
-NAKED void FUN_080ce544(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080ce544.inc"); }
+NAKED void FUN_080ce544(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_080ce544.inc"); }
 
 NAKED void FUN_080ce5a0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080ce5a0.inc"); }
 
@@ -624,7 +622,7 @@ s32 FUN_080ced00(Player* p) {
   if (!FUN_080cebf8(p)) {
     return -1;
   }
-  if (p->weaponKind == WK_OTHERS || p->weaponKind == WK_GUN) {
+  if (p->wpn.weaponKind == WK_OTHERS || p->wpn.weaponKind == WK_GUN) {
     return -1;
   }
   return p->magic.id;
@@ -638,7 +636,7 @@ s32 FUN_080ced50(Player* p, s32 cost) {
 }
 
 s32 FUN_080ced68(Player* p, s32 param_2) {
-  u32 i = p->playerIdx;
+  u32 i = p->inputIdx;
   s32 v;
 
   if (gEntity9A9F == NULL) {
@@ -680,11 +678,11 @@ void FUN_080cef14(Player* p) {
   if (val != 0) {
     val = VM_GetValue();
   }
-  p->playerIdx = val;
+  p->inputIdx = val;
 }
 
 Entity9A9FRecord* FUN_080cef30(Player* p) {
-  s32 i = p->playerIdx;
+  s32 i = p->inputIdx;
 
   if (gEntity9A9F == NULL || i < 0) {
     return NULL;
@@ -730,7 +728,7 @@ void FUN_080cf040(Player* p) {
 void FUN_080cf064(Player* p) {
   s32 i;
 
-  p->input = &gInput[p->playerIdx];
+  p->input = &gInput[p->inputIdx];
   p->controlUp = *(u16*)((u8*)p->unk_288 + 0x14);
 
   for (i = 0; i < 10; i++) {
@@ -771,7 +769,7 @@ NON_MATCH void FUN_080cfa24(Player* p) {
     idx = gEntity9A9F->playerIdx;
   }
 
-  if (p->playerIdx == idx) {
+  if (p->inputIdx == idx) {
     FUN_0823bca8(8);
   }
   p->lookAroundOffset.val = 0;
@@ -782,7 +780,7 @@ NON_MATCH void FUN_080cfa24(Player* p) {
 
 // 種別と param_2 の組み合わせが許されているか
 s32 FUN_080cfa60(Player* p, s32 param_2) {
-  if (p->kind <= 1 || p->kind == 5) {
+  if (p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) {
     if (param_2 == 0 || param_2 == 3 || param_2 == 6) {
       return 1;
     }
@@ -802,54 +800,34 @@ NAKED void FUN_080cfaa4(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cfaa4
 
 NAKED void FUN_080cfb20(Player* p) { INCFUNC("asm/func/FUN_080cfb20.inc"); }
 
-// Player_IsLiveLava の通信プレイ版
-// 残差5命令 (19/24): 原典は unk_934 の判定を 0/1 に起こしてから改めて test する, bool32 の static inline でも && でも畳まれる
-NON_MATCH s32 PlayerLink_IsLiveLava(u32 flags) {
-#ifdef NONMATCHING_C
-  if ((flags & 0x80) && (!(gStat->unk_934 & (SF934_UNK_3 | SF934_LAVA_FROZEN)))) {
-    return 1;
+// Player_IsOnRock の通信プレイ版
+bool32 PlayerLink_IsLiveLava(u32 attr) {
+  if ((attr & TATTR_SPECIAL) && !TestMapFlag(MPF_HOT | MPF_COLD)) {
+    return TRUE;
   }
-  return 0;
-#else
-  INCFUNC("asm/func/PlayerLink_IsLiveLava.inc");
-#endif
+  return FALSE;
 }
 
-// Player_IsFrozenLava の通信プレイ版
-// 残差5命令 (19/24): 原典は unk_934 の判定を 0/1 に起こしてから改めて test する, bool32 の static inline でも && でも畳まれる
-NON_MATCH s32 PlayerLink_IsFrozenLava(u32 flags) {
-#ifdef NONMATCHING_C
-  if ((flags & 0x80) && (gStat->unk_934 & SF934_LAVA_FROZEN)) {
-    return 1;
+// Player_IsInLava の通信プレイ版
+bool32 PlayerLink_IsFrozenLava(u32 attr) {
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_HOT)) {
+    return TRUE;
   }
-  return 0;
-#else
-  INCFUNC("asm/func/PlayerLink_IsFrozenLava.inc");
-#endif
+  return FALSE;
 }
 
-// 残差5命令 (19/24): 原典は unk_934 の判定を 0/1 に起こしてから改めて test する, bool32 の static inline でも && でも畳まれる
-NON_MATCH s32 FUN_080cfc3c(u32 flags) {
-#ifdef NONMATCHING_C
-  if ((flags & 0x80) && (gStat->unk_934 & SF934_UNK_13)) {
-    return 1;
+bool32 FUN_080cfc3c(u32 attr) {
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_UNK_13)) {
+    return TRUE;
   }
-  return 0;
-#else
-  INCFUNC("asm/func/FUN_080cfc3c.inc");
-#endif
+  return FALSE;
 }
 
-// 残差5命令 (19/24): 原典は unk_934 の判定を 0/1 に起こしてから改めて test する, bool32 の static inline でも && でも畳まれる
-NON_MATCH s32 FUN_080cfc78(u32 flags) {
-#ifdef NONMATCHING_C
-  if ((flags & 0x80) && (gStat->unk_934 & SF934_UNK_3)) {
-    return 1;
+bool32 FUN_080cfc78(u32 attr) {
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_COLD)) {
+    return TRUE;
   }
-  return 0;
-#else
-  INCFUNC("asm/func/FUN_080cfc78.inc");
-#endif
+  return FALSE;
 }
 
 NAKED void FUN_080cfcb0(Player* p) { INCFUNC("asm/func/FUN_080cfcb0.inc"); }
@@ -876,12 +854,12 @@ void FUN_080d03bc(Player* p, Vec3* pos, s16 param_3, s32 param_4, Vec3* marker, 
   FUN_08240cf0(pos->x, pos->z, param_3, 0, param_4, p->mover.id);
 
   if (marker != NULL) {
-    Entity4B15_ShowTrackingMarker(p->playerIdx, marker);
+    Entity4B15_ShowTrackingMarker(p->inputIdx, marker);
     FUN_080cc6b0(p, marker, param_6);
   }
 
   if (soundID != 0) {
-    Sound_PlayForPlayer(p->playerIdx, soundID);
+    Sound_PlayForPlayer(p->inputIdx, soundID);
   }
 }
 
@@ -893,13 +871,13 @@ NAKED s32 FUN_080d06d4(Player* p) { INCFUNC("asm/func/FUN_080d06d4.inc"); }
 
 // player.c の FUN_08066f7c と同じ内容
 void FUN_080d0738(Player* p) {
-  if (p->action != 0) {
-    PlayerLink_SetAction(p, 0, 0);
+  if (p->action != PACT_IDLE) {
+    PlayerLink_SetAction(p, PACT_IDLE, 0);
     p->facing = FUN_080d06d4(p);
     PlayerLink_SetAnimFacing(p);
   }
   p->flag20 &= ~PFLAG20_UNK_0;
-  PlayerLink_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+  PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
 }
 
 NAKED s32 FUN_080d0790(Player* p) { INCFUNC("asm/func/FUN_080d0790.inc"); }
@@ -929,7 +907,7 @@ NON_MATCH s32 FUN_080d0c38(Player* p) {
   s32 pos;
   s32 frac;
 
-  if (p->actionDir == 1 || p->actionDir == 5) {
+  if (p->actionDir == FACE_UP_RIGHT || p->actionDir == FACE_DOWN_LEFT) {
     pos = (u16)p->mover.pos.x;
   } else {
     pos = (u16)p->mover.pos.z;
@@ -981,9 +959,9 @@ s32 FUN_080d19fc(Player* p) {
 }
 
 void FUN_080d1a44(Player* p) {
-  p->enchantIdx = FUN_080ced00(p);
-  if (p->enchantIdx >= 0) {
-    p->unk_951 = p->enchantIdx + 1;
+  p->wpn.enchantIdx = FUN_080ced00(p);
+  if (p->wpn.enchantIdx >= 0) {
+    p->unk_951 = p->wpn.enchantIdx + 1;
   } else {
     p->unk_951 = 0;
   }
@@ -1075,8 +1053,8 @@ NAKED void FUN_080d3b14(Player* p) { INCFUNC("asm/func/FUN_080d3b14.inc"); }
 NAKED void FUN_080d3f1c(Player* p) { INCFUNC("asm/func/FUN_080d3f1c.inc"); }
 
 void FUN_080d4494(Player* p) {
-  if (p->action != 3) {
-    PlayerLink_SetAction(p, 3, 0);
+  if (p->action != PACT_ATTACK) {
+    PlayerLink_SetAction(p, PACT_ATTACK, 0);
   }
   p->attackCB(p);
 }
@@ -1104,7 +1082,7 @@ NAKED void FUN_080d57e4(Player* p) { INCFUNC("asm/func/FUN_080d57e4.inc"); }
 s32 FUN_080d5908(Player* p) {
   s32 v = 12;
 
-  if (p->unk_4c4.kind == 2 && p->unk_4c4.unk_3 != 0) {
+  if (p->emitter.kind == 2 && p->emitter.unk_3 != 0) {
     v = 8;
   }
   if (p->speedPenalty != 0) {
@@ -1191,12 +1169,12 @@ s32 FUN_080d7bac(void) {
 
 void FUN_080d7bc4(Player* p, s32 plttID) {
   p->plttID_95e = plttID;
-  p->unk_960 = 0x20;
+  p->plttFlashTimer = 32;
 }
 
-NAKED void FUN_080d7bdc(void) { INCFUNC("asm/func/FUN_080d7bdc.inc"); }
+NAKED void Cmd_E9DA(void) { INCFUNC("asm/func/Cmd_E9DA.inc"); }
 
-NAKED void FUN_080d7f48(void) { INCFUNC("asm/func/FUN_080d7f48.inc"); }
+NAKED void Cmd_42EF(void) { INCFUNC("asm/func/Cmd_42EF.inc"); }
 
 NAKED void FUN_080d7fbc(Player* p) { INCFUNC("asm/func/FUN_080d7fbc.inc"); }
 
@@ -1205,12 +1183,12 @@ NAKED s32 PlayerLink_Update(Player* p) { INCFUNC("asm/func/PlayerLink_Update.inc
 s32 PlayerLink_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
   MainSprite_Remove(&p->human);
-  AuxSprite_Remove(&p->sprite_e8);
+  AuxSprite_Remove(&p->beast);
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   FUN_080ce330(p);
   FUN_080cc43c(p);
-  gPlayerPtr[p->playerIdx] = NULL;
+  gPlayerPtr[p->inputIdx] = NULL;
   gPlayerCount--;
   return 0;
 }

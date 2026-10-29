@@ -23,7 +23,7 @@ void Entity6978_ClearPtr(void) { gEntity6978 = NULL; }
 
 // 明るさを 1 << durationShift ステップかけて 0 まで下げる
 void Entity6978_StepDown(Entity6978* p) {
-  gObjBrightness = FRACUNIT_6 - ((p->timer << 6) >> p->durationShift);
+  gObjBrightness = Q6(1) - ((p->timer << 6) >> p->durationShift);
   p->timer++;
   if (p->timer >= 1 << p->durationShift) {
     gObjBrightness = 0;
@@ -40,7 +40,7 @@ void Entity6978_StepUp(Entity6978* p) {
   gObjBrightness = (p->timer << 6) >> p->durationShift;
   p->timer++;
   if (p->timer >= 1 << p->durationShift) {
-    gObjBrightness = FRACUNIT_6;
+    gObjBrightness = Q6(1);
     p->state = 0;
   }
 }

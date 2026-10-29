@@ -31,7 +31,7 @@ _08099EB0:
 	movs r0, #0xde
 	bl PlaySound_082406e0
 	adds r0, r4, #0
-	bl FUN_08099c1c
+	bl MainMenu_LoadGameConfig
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_08099c64

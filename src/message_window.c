@@ -76,7 +76,7 @@ s32 MessageWindow_RefreshFace(MessageWindow* p) {
     MainSprite_Hide(&p->face);
   } else {
     MainSprite_Show(&p->face);
-    MainSprite_SetPose(&p->face, &p->faceGfx, r->face, 0);
+    MainSprite_SetPose(&p->face, &p->faceGfx, r->face, PLAYMODE_PAUSE);
   }
 
   p->shownFace = r->face;
@@ -230,7 +230,7 @@ s32 MessageWindow_SetText(char* text) {
     p->scriptPc = NULL;
     p->pendingLine = 0;
     r->text = text;
-    r->unk_08 = 0;
+    r->frameCounter = 0;
     r->mode = 0;
     p->arrow.flags |= SPRFLAG_HIDDEN;
   }
@@ -394,10 +394,10 @@ NON_MATCH void MessageWindow_StateRenderAll(MessageWindow* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
-  p->renderer.unk_0a = 1;
+  p->renderer.muteCharSound = 1;
   for (i = 0; i < 4; i++) {
     if (p->renderer.text != NULL) {
-      p->renderer.unk_08 = 0;
+      p->renderer.frameCounter = 0;
       if (TextRenderer_Advance(&p->renderer)) {
         p->unk_198 = 1;
         if (p->renderer.finished) {

@@ -4783,7 +4783,7 @@ _0817DCDA:
 	movs r0, #0
 	movs r2, #3
 	movs r3, #0
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 	movs r0, #0x88
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -5576,7 +5576,7 @@ _0817E2E6:
 	str r7, [sp]
 	movs r2, #1
 	str r2, [sp, #4]
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0817E2FA:
 	adds r0, r5, #0
 	movs r1, #0
@@ -8943,7 +8943,7 @@ _0817FC42:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _0817FC6E:
 	adds r0, r4, #0
 	movs r1, #0x17
@@ -10595,22 +10595,22 @@ _08180918:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
 	bl FUN_080e64b4
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r0, #0xbc
 	lsls r0, r0, #1
 	adds r2, r6, r0
@@ -10854,7 +10854,7 @@ _08180AFA:
 	ldrb r3, [r0]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	bl FUN_080e6750
 	ldr r2, _08180B8C @ =0x000001DF
@@ -12590,7 +12590,7 @@ _08181828:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r2, #0xb4
 	lsls r2, r2, #3
 	adds r0, r7, r2
@@ -16018,7 +16018,7 @@ FUN_0818337c: @ 0x0818337C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_0817ee94
 	movs r0, #1
@@ -16220,7 +16220,7 @@ EnemyCheyenne_Init: @ 0x081834D8
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _08183568 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -18187,7 +18187,7 @@ _081844D2:
 	str r0, [r1]
 	ldr r4, _08184580 @ =0x0000057C
 	adds r1, r7, r4
-	ldr r0, _08184584 @ =FUN_080f09e0
+	ldr r0, _08184584 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r5, _08184588 @ =0x0000061C
 	adds r1, r7, r5
@@ -18209,7 +18209,7 @@ _081844D2:
 _08184578: .4byte 0x00000574
 _0818457C: .4byte 0x00000898
 _08184580: .4byte 0x0000057C
-_08184584: .4byte FUN_080f09e0
+_08184584: .4byte Enemy_DispatchMsg
 _08184588: .4byte 0x0000061C
 _0818458C: .4byte FUN_081833b8
 _08184590: .4byte FUN_081833dc

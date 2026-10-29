@@ -432,7 +432,7 @@ _0803327C:
 	adds r0, r6, #0
 	bl Boss_PlayAnim
 	adds r0, r5, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080332B0

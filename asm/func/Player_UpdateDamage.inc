@@ -319,7 +319,7 @@ _0807EBC2:
 	str r2, [sp]
 	str r6, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	movs r0, #0xd9
 	lsls r0, r0, #2
 	adds r1, r5, r0

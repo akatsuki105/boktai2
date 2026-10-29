@@ -277,7 +277,7 @@ void FUN_080501c8(EntityAF33* p) {
       idx = 1;
     }
   }
-  MainSprite_SetPose(&p->sprites[0], &p->iconGfx, ICON_MEGAMAN(idx), 0);
+  MainSprite_SetPose(&p->sprites[0], &p->iconGfx, ICON_MEGAMAN(idx), PLAYMODE_PAUSE);
 
   n = FUN_08050d7c();
   idx = 0;
@@ -287,7 +287,7 @@ void FUN_080501c8(EntityAF33* p) {
       idx = 1;
     }
   }
-  MainSprite_SetPose(&p->sprites[1], &p->iconGfx, ICON_SHADEMAN(idx), 0);
+  MainSprite_SetPose(&p->sprites[1], &p->iconGfx, ICON_SHADEMAN(idx), PLAYMODE_PAUSE);
 }
 
 NAKED void FUN_08050218(EntityAF33* p) { INCFUNC("asm/func/FUN_08050218.inc"); }

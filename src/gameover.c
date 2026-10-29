@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
@@ -43,8 +44,11 @@ static_assert(sizeof(GameOverManager) == 852);
 
 IWRAM_DATA GameOverManager* gGameOverManager = NULL;  // 0x03000150
 
+extern bool32 gPlayTimeEnabled;
+
 void FUN_0823a8f4(u32 val);
 s32 FUN_0809c08c(s32 mode);
+void FUN_0807adc0(Player* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 // animState 0, BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
@@ -52,17 +56,17 @@ void GameOverManager_AnimStart(GameOverManager* p) {
   Sound_StopAll();
   PlaySound_082406e0(BGM_GAMEOVER);
   PlaySound_082406e0(SE_UNK_300);
-  p->scaleX = 0x0A;
-  p->scaleY = FRACUNIT_6;
+  p->scaleX = Q6(0.16);
+  p->scaleY = Q6(1);
   p->animState = 1;
 }
 
 // animState 1, 縦を一気に引き伸ばす
 void GameOverManager_AnimStretchY(GameOverManager* p) {
   p->scaleX++;
-  p->scaleY += 0x1E;
-  if (p->scaleY > 0x7E) {
-    p->scaleY = 0x7F;
+  p->scaleY += Q6(0.47);
+  if (p->scaleY >= Q6(1.99)) {
+    p->scaleY = Q6(1.99);
     p->animState = 2;
   }
 }
@@ -70,28 +74,28 @@ void GameOverManager_AnimStretchY(GameOverManager* p) {
 // animState 2, 伸びきった縦を 0x60 まで戻す
 void GameOverManager_AnimShrinkY1(GameOverManager* p) {
   p->scaleX++;
-  p->scaleY -= 0x03;
-  if (p->scaleY <= 0x60) {
-    p->scaleY = 0x60;
+  p->scaleY -= Q6(0.05);
+  if (p->scaleY <= Q6(1.5)) {
+    p->scaleY = Q6(1.5);
     p->animState = 3;
   }
 }
 
 // animState 3, 縦を等倍 (0x40) まで戻しつつ横を少し速く広げる
 void GameOverManager_AnimShrinkY2(GameOverManager* p) {
-  p->scaleX += 0x02;
-  p->scaleY -= 0x03;
-  if (p->scaleY <= FRACUNIT_6) {
-    p->scaleY = FRACUNIT_6;
+  p->scaleX += Q6(0.04);
+  p->scaleY -= Q6(0.05);
+  if (p->scaleY <= Q6(1)) {
+    p->scaleY = Q6(1);
     p->animState = 4;
   }
 }
 
 // animState 4, 横も等倍 (0x40) まで広げて、そこでロゴが完成する
 void GameOverManager_AnimGrowX(GameOverManager* p) {
-  p->scaleX += 0x03;
-  if (p->scaleX >= FRACUNIT_6) {
-    p->scaleX = FRACUNIT_6;
+  p->scaleX += Q6(0.05);
+  if (p->scaleX >= Q6(1)) {
+    p->scaleX = Q6(1);
     p->animState = 5;
     p->timer = 0;
   }
@@ -119,9 +123,9 @@ void GameOverManager_AnimClose(GameOverManager* p) {
   if (p->timer == SECOND(2.5)) {
     PlaySound_082406e0(SE_UNK_301);
   }
-  p->scaleX += 0x05;
-  p->scaleY -= 0x05;
-  if (p->scaleX >= 0x80) {
+  p->scaleX += Q6(0.08);
+  p->scaleY -= Q6(0.08);
+  if (p->scaleX >= Q6(2)) {
     s32 i;
 
     p->scaleX = 0x01, p->scaleY = 0x01;
@@ -140,30 +144,36 @@ void GameOverManager_AnimEnd(GameOverManager* p) {
 }
 
 // 現在の拡大率を8文字に配り、等倍を超えた分だけ中央から左右へ文字間を開く
+// 75/75 で先頭と spread の更新順は揃った, 残差は (scaleX >> 2) の読みが原典では ldrsh + asrs のままなのにこちらは ldrh + lsls + asrs #18 にまとめられる点と, 左側ループで spread = 0 とカウンタの初期化順が逆になり spread と文字のポインタのレジスタ (r1/r2) が入れ替わる点
+// Tier A-B は試済 (s32 キャスト, / 4, (scaleX - Q6(1)) >> 2, s16 の spread, ローカルで受ける, 左半分を降順ループで書く)
 NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 #ifdef NONMATCHING_C
   s32 i;
-  s32 spread = 0;
+  s32 spread;
 
   for (i = 0; i < 8; i++) {
     p->letters[i].sprite.scaleX = p->scaleX;
     p->letters[i].sprite.scaleY = p->scaleY;
   }
-  for (i = 3; i >= 0; i--) {
-    if (p->scaleX > 0x40) {
-      p->letters[i].sprite.pos.x = p->letters[i].baseX - spread;
-      spread += (p->scaleX >> 2) - 0x10;
+
+  spread = 0;
+  for (i = 0; i < 4; i++) {
+    if (p->scaleX > Q6(1)) {
+      p->letters[3 - i].sprite.pos.x = p->letters[3 - i].baseX - spread;
+      spread -= 0x10;
+      spread += p->scaleX >> 2;
     } else {
-      p->letters[i].sprite.pos.x = p->letters[i].baseX;
+      p->letters[3 - i].sprite.pos.x = p->letters[3 - i].baseX;
     }
   }
   spread = 0;
-  for (i = 4; i < 8; i++) {
-    if (p->scaleX > 0x40) {
-      p->letters[i].sprite.pos.x = p->letters[i].baseX + spread;
-      spread += (p->scaleX >> 2) - 0x10;
+  for (i = 0; i < 4; i++) {
+    if (p->scaleX > Q6(1)) {
+      p->letters[4 + i].sprite.pos.x = p->letters[4 + i].baseX + spread;
+      spread -= 0x10;
+      spread += p->scaleX >> 2;
     } else {
-      p->letters[i].sprite.pos.x = p->letters[i].baseX;
+      p->letters[4 + i].sprite.pos.x = p->letters[4 + i].baseX;
     }
   }
 #else
@@ -173,7 +183,7 @@ NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 
 // 0xF04A, ゲームオーバー状態を解除して BGM を止める
 void GameOver_CancelScripted(void) {
-  gFlag030047a4 &= ~FLAG030047A4_GAMEOVER;
+  gGameFlags &= ~FLAG030047A4_GAMEOVER;
   sound_08240740(BGM_GAMEOVER);
   FUN_0823a8f4(0);
 }
@@ -190,18 +200,10 @@ void (*const sGameOverAnimFns[8])(GameOverManager*) = {
     GameOverManager_AnimEnd,
 };  // 0x085AD014
 
-// 自分の命令列は原典と完全一致する (hunk 0) が, C化すると同じ TU の GameOverManager_StateShowLogo の
-// レジスタ割当が r5/r6/r7 → r6/r7/r5 に回転して ROM が壊れる (式の形を変えても同じ6バイトが動く)
-// 引き金は sGameOverAnimFns 経由の間接呼び出しそのもの: この1文を消すと StateShowLogo は r5/r6/r7 に戻る
-// GameOverManager_UpdateLetters を C にしても回転は消えないので TU 内の他の NON_MATCH/NAKED
-// (SetupLetters / SetupMenu / FUN_080a7800) が原典と違うのが残りの原因, TU 全体が C になるまで一致しない見込み
-NON_MATCH void GameOverManager_UpdateAnim(GameOverManager* p) {
-#ifdef NONMATCHING_C
+// ロゴの拡大縮小を段階ごとに進めて, 8文字に反映する
+void GameOverManager_UpdateAnim(GameOverManager* p) {
   sGameOverAnimFns[p->animState](p);
   GameOverManager_UpdateLetters(p);
-#else
-  INCFUNC("asm/func/GameOverManager_UpdateAnim.inc");
-#endif
 }
 
 // ロゴの8文字と選択肢のスプライトを描画リストへ入れる
@@ -267,7 +269,23 @@ void GameOverManager_UpdateMenuPltt(GameOverManager* p) {
   p->menuPltt[15] = color;
 }
 
-NAKED void GameOverManager_SetupMenu(GameOverManager* p) { INCFUNC("asm/func/GameOverManager_SetupMenu.inc"); }
+// コンティニューの選択肢のスプライトと, 点滅させるためのパレットの写しを用意する
+void GameOverManager_SetupMenu(GameOverManager* p) {
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+
+  if (f != NULL) {
+    Vec3 pos;
+
+    p->menuGfx = *f;
+    OpenMainSpriteFile(&p->menuGfx, f);
+    pos.x = -8, pos.y = -8, pos.z = 0;
+    MainSprite_Setup(&p->menu, &p->menuGfx, 135, SPRFLAG_GAMEOVER | SPRFLAG_DRAWLIST | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+    CpuCopy32(&gObjPlttData[0x2A90], p->menuPltt, sizeof(p->menuPltt));
+    p->menu.plttID = 0x2A9;
+    p->menu.pltt = p->menuPltt;
+    p->cursor = 0;
+  }
+}
 
 // スクリプトコマンド 0xDED5, ゲームオーバー演出を今すぐ始める
 void GameOverManager_StartScripted(void) {
@@ -290,12 +308,12 @@ void GameOverManager_StartScripted(void) {
 
 // state 0, ゲームオーバーのフラグが立つまで何もせず待つ
 void GameOverManager_StateWaitFlag(GameOverManager* p) {
-  if (!TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER)) {
+  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) {
     return;
   }
   GameOverManager_AddSprites(p);
   FUN_0809c08c(7);
-  if (gPlayerPtr[0]->action >= 28 && gPlayerPtr[0]->action <= 29) {
+  if (gPlayerPtr[0]->action >= PACT_UNK_28 && gPlayerPtr[0]->action <= PACT_UNK_29) {
     p->costIdx = 1;
   } else {
     FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
@@ -337,14 +355,80 @@ void GameOverManager_StateOpenMenu(GameOverManager* p) {
   }
 }
 
-NAKED void FUN_080a7800(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7800.inc"); }
+// コンティニュー選択の入力待ち, はいなら演出を続けて再開へ, いいえなら '.p' を cost を引数に実行して閉じる, 左右でカーソル移動
+// 残差は A のとき cursor == 0 を 0/1 に起こす順で, 原典は cursor を読んでから 1 を置く (176/176命令)
+NON_MATCH void FUN_080a7800(GameOverManager* p) {
+#ifdef NONMATCHING_C
+  s32 choice = -1;
+
+  if (gInput[0].pressed & A_BUTTON) {
+    choice = !p->cursor;
+    PlaySound_082406e0(SE_SELECT);
+  } else if (gInput[0].pressed & B_BUTTON) {
+    choice = 0;
+    PlaySound_082406e0(SE_CANCEL);
+  }
+
+  if (choice == 0) {
+    p->menu.flags |= SPRFLAG_HIDDEN;
+    MessageWindow_Close();
+    FUN_0809c08c(7);
+    FUN_0807adc0(gPlayerPtr[0]);
+    Sound_FadeOutBGM(2);
+    p->timer = 0;
+    p->cursor = 1;
+    p->animState = 6;
+    p->state = 4;
+  } else if (choice == 1) {
+    s32 i;
+
+    Sound_FadeOutBGM(2);
+    p->menu.flags |= SPRFLAG_HIDDEN;
+    for (i = 0; i < 8; i++) {
+      p->letters[i].sprite.flags |= SPRFLAG_HIDDEN;
+    }
+    MessageWindow_Close();
+    FUN_0809c08c(7);
+    if (p->scriptId != 0) {
+      u32 argv[1];
+      ScriptArgs args;
+
+      args.argc = 1;
+      argv[0] = p->cost[p->costIdx];
+      args.argv = argv;
+      VM_ExecByID(p->scriptId, &args);
+    }
+    KillEntity((Entity*)p);
+  } else {
+    bool32 move = FALSE;
+
+    if (gInput[0].pressed & DPAD_LEFT) {
+      move = p->cursor != 0;
+    } else if ((gInput[0].pressed & DPAD_RIGHT) && p->cursor == 0) {
+      move = TRUE;
+    }
+    if (move) {
+      PlaySound_082406e0(SE_CURSOR_MOVE);
+      p->cursor = 1 - p->cursor;
+      if (p->cursor != 0) {
+        MainSprite_SetPose(&p->menu, &p->menuGfx, 136, PLAYMODE_LOOP);
+      } else {
+        MainSprite_SetPose(&p->menu, &p->menuGfx, 135, PLAYMODE_LOOP);
+      }
+    }
+    GameOverManager_UpdateMenuPltt(p);
+  }
+#else
+  INCFUNC("asm/func/FUN_080a7800.inc");
+#endif
+}
 
 // state 4, ロゴが消えるまで待ってから、ゲームオーバー状態を解除して自分を消す
 void GameOverManager_StateFinish(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 8) {
-    gFlag030047a4 &= ~FLAG030047A4_GAMEOVER;
-    bool32_03004788 = FALSE;
+    gGameFlags &= ~FLAG030047A4_GAMEOVER;
+    gPlayTimeEnabled = FALSE;
     FUN_0823a8f4(p->cursor);
     KillEntity((Entity*)p);
   }

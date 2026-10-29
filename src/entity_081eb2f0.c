@@ -28,6 +28,11 @@ typedef struct {
 } Entity081eb2f0;
 static_assert(sizeof(Entity081eb2f0) == 2340);
 
+static inline bool8 Entity081eb2f0_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 static Entity081eb2f0* gEntity081eb2f0;  // 0x030001C4
 
 void FUN_081eafbc(Entity081eb2f0* p, Entity081eb2f0Elem* e) {}
@@ -47,22 +52,19 @@ void FUN_081eb0ec(Entity081eb2f0* p, Entity081eb2f0Elem* e) {
 }
 
 // 空いている枠を確保して返す, 空きが無ければ NULL
-// 残差7命令 (31 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-NON_MATCH Entity081eb2f0Elem* FUN_081eb12c(Entity081eb2f0* p) {
-#ifdef NONMATCHING_C
+Entity081eb2f0Elem* FUN_081eb12c(Entity081eb2f0* p) {
   s32 i;
 
   for (i = 0; i < 32; i++) {
-    if (!(p->activeMask & (1 << i))) {
-      p->elems[i].slot = i;
+    if (!Entity081eb2f0_IsActive(&p->activeMask, i)) {
+      Entity081eb2f0Elem* e = &p->elems[i];
+
+      e->slot = i;
       p->activeMask |= 1 << i;
-      return &p->elems[i];
+      return e;
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_081eb12c.inc");
-#endif
 }
 
 NAKED s32 FUN_081eb178(Vec3* pos, u32 prio) { INCFUNC("asm/func/FUN_081eb178.inc"); }
@@ -76,23 +78,18 @@ void (*const PTR_ARRAY_085ae4b0[3])(Entity081eb2f0*, Entity081eb2f0Elem*) = {
 
 NAKED s32 Entity081eb2f0_Update(Entity081eb2f0* p) { INCFUNC("asm/func/Entity081eb2f0_Update.inc"); }
 
-// 残差3命令 (28 対 31), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-// attack_box.c の AttackBoxManager_IsSlotUsed と同じ static inline にすると 1/0 を作る形までは出るが, gcc がその判定を畳んでしまう
-NON_MATCH s32 Entity081eb2f0_Destroy(Entity081eb2f0* p) {
-#ifdef NONMATCHING_C
+s32 Entity081eb2f0_Destroy(Entity081eb2f0* p) {
   s32 i;
-  Entity081eb2f0Elem* e = &p->elems[0];
 
-  for (i = 0; i < 32; i++, e++) {
-    if (p->activeMask & (1 << i)) {
+  for (i = 0; i < 32; i++) {
+    if (Entity081eb2f0_IsActive(&p->activeMask, i)) {
+      Entity081eb2f0Elem* e = &p->elems[i];
+
       Particle_Remove(&e->ptcl);
     }
   }
   gEntity081eb2f0 = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity081eb2f0_Destroy.inc");
-#endif
 }
 
 void FUN_081eb2b0(Entity081eb2f0* p) {

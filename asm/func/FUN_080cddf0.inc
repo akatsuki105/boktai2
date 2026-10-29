@@ -10,7 +10,7 @@
 	cmp r0, #0
 	beq _080CDE5E
 	adds r0, r4, #0
-	bl FUN_080cddd0
+	bl PlayerLink_GetMashCount
 	ldr r2, _080CDE48 @ =0x085AD148
 	ldr r1, _080CDE4C @ =0x000004C5
 	adds r6, r4, r1

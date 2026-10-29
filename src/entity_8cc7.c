@@ -40,7 +40,8 @@ bool32 Entity8CC7Elem_TestFlags(Entity8CC7Elem* e, u32 bits) {
 
 NAKED Entity8CC7Elem* Entity8CC7_AllocElem(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_AllocElem.inc"); }
 
-NAKED void FUN_081d8a98(void) { INCFUNC("asm/func/FUN_081d8a98.inc"); }
+// 0x8CC7
+NAKED void Cmd_8CC7(void) { INCFUNC("asm/func/Cmd_8CC7.inc"); }
 
 // 8bit の向きを4方位に丸めて, 左右反転するかどうかと一緒に返す
 void FUN_081d8c80(u32 angle, u8* out1, u8* out2) {

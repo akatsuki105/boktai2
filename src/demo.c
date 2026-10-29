@@ -31,18 +31,6 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define NOWAIT 0
 #define WAIT 1
 
-// targetClass: 宛先の種別, MsgQueue_Register の第3引数と照合される
-#define CLS_BUS 1
-#define CLS_PLAYER 2
-#define CLS_ENEMY 3
-#define CLS_BOSS 4
-#define CLS_ACTOR 5
-#define CLS_CAMERA 6
-#define CLS_FADE 7
-#define CLS_SOUND 8
-#define CLS_CBB0 9
-#define CLS_ETC 10
-
 // cmd の意味は targetClass ごとに別物, ハンドラを読んで確定したものだけ名前を付けてある
 #define BUS_EXEC_SCRIPT 0  // Demo_CmdExecScript
 #define BUS_WAIT 1         // Demo_CmdWait
@@ -110,7 +98,7 @@ const MsgPacket* const* const* const gDemoTable[125] = {
     sDemo_105, sDemo_106, sDemo_107, sDemo_108, sDemo_109, sDemo_110, sDemo_111,
     sDemo_112, sDemo_113, sDemo_114, sDemo_115, sDemo_116, sDemo_117, sDemo_118,
     sDemo_119, sDemo_120, sDemo_121, sDemo_122, sDemo_123, sDemo_124,
-};
+}; // 0x08DBD564
 // clang-format on
 
 // デモ表から demoID/step/idx のメッセージを1件引く (どの段でも NULL に当たったら終端)

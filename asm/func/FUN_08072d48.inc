@@ -38,7 +38,7 @@ _08072D8C:
 	adds r0, r4, r1
 	ldrb r0, [r0]
 	movs r1, #0x10
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	str r0, [sp]
 	ldr r5, _08072DD4 @ =0x000004A9
 	adds r2, r4, r5
@@ -162,7 +162,7 @@ _08072E8C:
 	adds r0, r4, r1
 	ldrb r0, [r0]
 	movs r1, #0x11
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	str r0, [sp]
 	movs r7, #1
 	adds r0, r6, #0

@@ -1422,7 +1422,7 @@ _081F5E78:
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	add r1, sp, #0x10
 	movs r0, #6
 	strh r0, [r1]
@@ -3529,7 +3529,7 @@ _081F6E96:
 	str r4, [sp, #0x28]
 	add r0, sp, #0x2c
 	adds r1, r5, #0
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	b _081F7088
 	.align 2, 0
 _081F6EE4: .4byte 0x030046B8
@@ -3739,7 +3739,7 @@ _081F703E:
 	str r4, [sp, #0x28]
 	add r0, sp, #0x2c
 	adds r1, r5, #0
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 _081F7088:
 	movs r0, #0xdd
 	lsls r0, r0, #3

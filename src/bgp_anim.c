@@ -11,9 +11,31 @@ typedef struct {
 } BgPlttAnimator;
 static_assert(sizeof(BgPlttAnimator) == 544);
 
+bool32 FUN_0800271c(void);
+
 void BgPlttAnimator_SavePltt(BgPlttAnimator* p) { CpuCopy32(gBgPlttBuffer, p->savedPltt, sizeof(p->savedPltt)); }
 
-NAKED s32 BgPlttAnimator_Update(BgPlttAnimator* p) { INCFUNC("asm/func/BgPlttAnimator_Update.inc"); }
+// 4 フレームごとに控えたバンクを1つ進めてバンク 0 へ書き戻す
+s32 BgPlttAnimator_Update(BgPlttAnimator* p) {
+  s32 i;
+
+  if (FUN_0800271c()) {
+    BgPlttAnimator_SavePltt(p);
+  }
+
+  p->timer++;
+  if (p->timer > 3) {
+    p->timer = 0;
+    p->frame++;
+    if (p->frame > 6) {
+      p->frame = 0;
+    }
+    for (i = 0; i < 16; i++) {
+      gBgPlttBuffer[i] = p->savedPltt[p->frame * 16 + i];
+    }
+  }
+  return 0;
+}
 
 s32 BgPlttAnimator_Destroy(BgPlttAnimator* p) { return 0; }
 

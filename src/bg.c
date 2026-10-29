@@ -15,7 +15,7 @@ extern u16 gStagedDISPCNT;
 extern void* gBGTileDataSrcAddrs[4];
 extern u16 gBGTileDataTileCounts[4];
 extern u16 gBGTileDataVramOffsets[4];
-extern u16 u16_03003e8c;
+extern u16 gBg2AffineMode;
 extern s16 gBgAffineMatrix[4];
 extern u16 gBgAffineAngle;
 extern s16 gBgAffineScaleX;
@@ -25,7 +25,7 @@ extern s16 gBgAffineCenterY;
 extern s32 gBgAffineRefX;
 extern s32 gBgAffineRefY;
 extern s16 gStagedBgAffineMatrix[4];
-extern s32 gStagedBgAffineRef[2];
+extern u32 gStagedBgAffineRef[2];
 extern u16 gStagedBGOfs[8];
 
 void FUN_08230af8(void* dst, void* src, s32 bytesize);  // src/malloc.c
@@ -72,22 +72,22 @@ void Video_InitBGMode(s32 mode) {
   gBgAffineMatrix[3] = 0x100;
   gBgAffineRefX = 0;
   gBgAffineRefY = 0;
-  u16_03003e8c = mode;
+  gBg2AffineMode = mode;
 
   switch (mode) {
     case 0: {
-      REG_BG0CNT = 0x3F08;
-      REG_BG1CNT = 0x3E01;
-      REG_BG2CNT = 0x3D03;
-      REG_BG3CNT = 0x3C01;
-      REG_DISPCNT = 0x7160;
+      REG_BG0CNT = BGCNT_PRIORITY(0) | BGCNT_CHARBASE(2) | BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_WRAP | BGCNT_TXT256x256;
+      REG_BG1CNT = BGCNT_PRIORITY(1) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(30) | BGCNT_16COLOR | BGCNT_WRAP | BGCNT_TXT256x256;
+      REG_BG2CNT = BGCNT_PRIORITY(3) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(29) | BGCNT_16COLOR | BGCNT_WRAP | BGCNT_TXT256x256;
+      REG_BG3CNT = BGCNT_PRIORITY(1) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(28) | BGCNT_16COLOR | BGCNT_WRAP | BGCNT_TXT256x256;
+      REG_DISPCNT = DISPCNT_MODE_0 | DISPCNT_HBLANK_INTERVAL | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON;
       break;
     }
     case 1: {
-      REG_BG0CNT = 0x3F08;
-      REG_BG1CNT = 0x3E42;
-      REG_BG2CNT = 0x9D81;
-      REG_DISPCNT = 0x7161;
+      REG_BG0CNT = BGCNT_PRIORITY(0) | BGCNT_CHARBASE(2) | BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_WRAP | BGCNT_TXT256x256;
+      REG_BG1CNT = BGCNT_PRIORITY(2) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(30) | BGCNT_MOSAIC | BGCNT_16COLOR | BGCNT_WRAP | BGCNT_TXT256x256;
+      REG_BG2CNT = BGCNT_PRIORITY(1) | BGCNT_CHARBASE(0) | BGCNT_SCREENBASE(29) | BGCNT_256COLOR | BGCNT_AFF512x512;
+      REG_DISPCNT = DISPCNT_MODE_1 | DISPCNT_HBLANK_INTERVAL | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_OBJ_ON | DISPCNT_WIN0_ON | DISPCNT_WIN1_ON;
       break;
     }
   }
@@ -120,14 +120,14 @@ void Video_ResetBG(void) {
   }
 }
 
-// gBgStates のスクロール値を BGnHOFS/BGnVOFS の控えに積む, u16_03003e8c が立っている間は BG2/BG3 の代わりに別の控えを書き戻す
+// gBgStates のスクロール値を BGnHOFS/BGnVOFS の控えに積む, gBg2AffineMode が立っている間は BG2/BG3 の代わりに別の控えを書き戻す
 void StageBGRegs(void) {
   gStagedBGOfs[0] = gBgStates[0].hofs & 0xFF;
   gStagedBGOfs[1] = gBgStates[0].vofs & 0xFF;
   gStagedBGOfs[2] = gBgStates[1].hofs & 0xFF;
   gStagedBGOfs[3] = gBgStates[1].vofs & 0xFF;
 
-  if (u16_03003e8c == 0) {
+  if (gBg2AffineMode == 0) {
     gStagedBGOfs[4] = gBgStates[2].hofs & 0xFF;
     gStagedBGOfs[5] = gBgStates[2].vofs & 0xFF;
     gStagedBGOfs[6] = gBgStates[3].hofs & 0xFF;
@@ -246,10 +246,10 @@ NON_MATCH void Video_SetBGAffine(s32 centerX, s32 centerY, s32 angle, u16 scaleX
   gBgAffineScaleX = scaleX;
   gBgAffineScaleY = scaleY;
 
-  gBgAffineMatrix[0] = (s16)(0x10000 / gBgAffineScaleX) * (gSineTable[(gBgAffineAngle + 0x40) & 0xFF] >> 4) / 256;
-  gBgAffineMatrix[1] = (s16)(0x10000 / gBgAffineScaleX) * (gSineTable[gBgAffineAngle & 0xFF] >> 4) / 256;
-  gBgAffineMatrix[2] = (s16)(0x10000 / gBgAffineScaleY) * (-gSineTable[gBgAffineAngle & 0xFF] >> 4) / 256;
-  gBgAffineMatrix[3] = (s16)(0x10000 / gBgAffineScaleY) * (gSineTable[(gBgAffineAngle + 0x40) & 0xFF] >> 4) / 256;
+  gBgAffineMatrix[0] = (s16)(0x10000 / gBgAffineScaleX) * (COS(gBgAffineAngle) >> 4) / 256;
+  gBgAffineMatrix[1] = (s16)(0x10000 / gBgAffineScaleX) * (SIN(gBgAffineAngle) >> 4) / 256;
+  gBgAffineMatrix[2] = (s16)(0x10000 / gBgAffineScaleY) * (-SIN(gBgAffineAngle) >> 4) / 256;
+  gBgAffineMatrix[3] = (s16)(0x10000 / gBgAffineScaleY) * (COS(gBgAffineAngle) >> 4) / 256;
 
   gBgAffineRefX = ((120 - gBgAffineCenterX) << 8) - gBgAffineMatrix[0] * 120 - gBgAffineMatrix[1] * 80;
   gBgAffineRefY = ((120 - gBgAffineCenterY) << 8) - gBgAffineMatrix[2] * 120 - gBgAffineMatrix[3] * 80;

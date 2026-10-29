@@ -85,7 +85,7 @@ _080F9CB4:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	bl FUN_080f9bfc
 _080F9CD4:

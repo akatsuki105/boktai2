@@ -59,7 +59,7 @@ _080CCF88:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r3, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080CCFA6:
 	ldrh r0, [r4, #0x28]
 	ldrh r2, [r4, #0x18]

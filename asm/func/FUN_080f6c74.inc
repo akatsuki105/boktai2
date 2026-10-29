@@ -114,17 +114,17 @@ _080F6CD8:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r4, #0
 	movs r1, #4
 	bl FUN_080e64b4

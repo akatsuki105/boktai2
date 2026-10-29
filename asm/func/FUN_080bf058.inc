@@ -147,7 +147,7 @@ _080BF18C:
 	beq _080BF1B8
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_080b9fc4
+	bl ShopCursor_PlaceSprite
 	adds r0, r5, #0
 	bl CoffinShop_UpdateDescription
 	adds r0, r5, #0

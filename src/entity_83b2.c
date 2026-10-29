@@ -62,7 +62,7 @@ s32 FUN_080091e8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   if (!Video_GetAuxSprite(&data->gfx, SPRITE_HINT_PANEL)) {
     return -1;
   }
-  AuxSprite_Add(&data->sprite, &data->gfx, 1);
+  AuxSprite_Add(&data->sprite, &data->gfx, SPRFLAG_HIDDEN);
   AuxSprite_SetPoseIdx(&data->sprite, 1);
   data->sprite.priority = 2;
   return 0;
@@ -102,15 +102,15 @@ void* FUN_08009298(Entity83B2* p, Entity83B2Data* data, Vec3* pos) {
   VEC3_SET(data->pos, pos->x, pos->y, pos->z);
   VEC3_SET(sprite->pos, pos->x, pos->y, pos->z);
   if (data->unk_2 != 0) {
-    data->pos.x += 0x80;
-    sprite->pos.z -= 0x80;
+    data->pos.x += Q8(0.5);
+    sprite->pos.z -= Q8(0.5);
   } else {
-    data->pos.z += 0x80;
-    sprite->pos.x -= 0x80;
+    data->pos.z += Q8(0.5);
+    sprite->pos.x -= Q8(0.5);
   }
-  sprite->pos.x += 0x3C;
-  sprite->pos.z += 0x3C;
-  sprite->pos.y += 0x14;
+  sprite->pos.x += Q8(0.235);
+  sprite->pos.z += Q8(0.235);
+  sprite->pos.y += Q8(0.08);
 }
 
 // state に応じてパレットを切り替える, インタラクト可能な間は unk_7 を上下させて点滅させる
@@ -186,7 +186,7 @@ s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   FUN_080091d0(data);
   if (p->player != NULL) {
     u32 mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
-    u32 flags = u32_03002bc0[0];
+    u32 flags = gPlayerStates[0];
     if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
       s32 dx = data->pos.x - p->pos.x;
       s32 dz = data->pos.z - p->pos.z;
@@ -227,7 +227,7 @@ s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   FUN_080091d0(data);
   if (p->player != NULL) {
     mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
-    flags = u32_03002bc0[0];
+    flags = gPlayerStates[0];
     if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
       dx = data->pos.x - p->pos.x;
       dz = data->pos.z - p->pos.z;
@@ -282,7 +282,7 @@ s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   FUN_080091d0(data);
   if (p->player != NULL) {
     mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
-    flags = u32_03002bc0[0];
+    flags = gPlayerStates[0];
     if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
       dx = data->pos.x - p->pos.x;
       dz = data->pos.z - p->pos.z;
@@ -319,6 +319,7 @@ s32 (*const PTR_ARRAY_085aa6ac[3])(Entity83B2*, Entity83B2Data*, s32) = {
     FUN_0800959c,
 };  // 0x085aa6ac
 
+// ゾーン一致を bool8 を返す static inline (gStat->zoneID == zoneID) にすると 0/1 の作り置きは出るが, 後半の unk_19 / unk_1a の扱いがまだ合わない (104/108)
 NON_MATCH s32 Entity83B2_Update(Entity83B2* p) {
 #ifdef NONMATCHING_C
   Entity83B2Data* data;
@@ -470,11 +471,9 @@ NON_MATCH s32 Cmd_883A(void) {
         }
       }
       if (VM_SeekToNamedArg('p')) {
-        pos.x = VM_GetValue();
-        pos.y = VM_GetValue();
-        pos.z = VM_GetValue();
+        VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
       } else {
-        pos.x = 0, pos.y = 0, pos.z = 0;
+        VEC3_SET(pos, 0, 0, 0);
       }
       FUN_08009298(p, data, &pos);
       if (kind != 0) {

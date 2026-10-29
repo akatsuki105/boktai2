@@ -31,19 +31,19 @@ typedef struct {
   u8 rectH;              // 0x005, TextRenderer_SetRect の第5引数
   u8 style;              // 0x006, Font_DrawXXXkakuChar の第4引数, WEIGHT/ALTER タグで 1、NONSEL/UVMOJI タグで 2、閉じタグで 0
   u8 mode;               // 0x007, TextRenderer_Advance がこれで分岐する, 0 なら text、 1 なら textAlt を進める
-  u8 unk_08;             // 0x008, TextRenderer_ResetSpeed が速度を読む直前に 0 を入れる
+  u8 frameCounter;       // 0x008, MessageWindow_StateType が毎フレーム数え, speed に届いたら 0 に戻して TextRenderer_Advance を呼ぶ
   u8 speed;              // 0x009, TextRenderer_ResetSpeed が gStat->unk_12 (メッセージ速度設定) を入れる, 0x0C にも同じ値を複製する
-  u8 unk_0a;             // 0x00A, TextRenderer_Init が 0 を入れる
+  bool8 muteCharSound;   // 0x00A, 立っている間 TextRenderer_PlayCharSound は鳴らさない, MessageWindow_StateType が '.m' を入れ, 一気に描く状態と Marquee は 1
   bool8 silent;          // 0x00B, LABEL タグと TextPanel_Create が立てる, 立っている間 TextRenderer_PlayCharSound は鳴らさない
   u8 savedSpeed;         // 0x00C, LABEL タグが speed を退避して speed を 0 にし、/LABEL が戻す
   u8 scriptIdCount;      // 0x00D, scriptIds の使用数, MessageWindow_Init が '.p' の並びを積むときに +1 する
-  u8 unk_0e;             // 0x00E, TextRenderer_Advance が呼ばれるたび 0 に戻す
+  bool8 stopAtTag;       // 0x00E, この1歩がタグで止まったら TRUE, TextRenderer_DrawNextChar はそこで戻り, '>' を読み飛ばす, TextRenderer_Advance が毎回 0 に戻す
   bool8 finished;        // 0x00F, 0 以外なら TextRenderer_Advance が 1 (終了) を返す
   bool8 parenEnabled;    // 0x010, 立っていないと PAREN / /PAREN タグが括弧を描かない
   u8 charSoundIdx;       // 0x011, gCharSounds の添字, MOJISE_SYSTEM タグで 0、MOJISE_TALK タグで 1
   u8 soundToggle;        // 0x012, 0/1 を往復して1文字おきに文字送り音を鳴らす
   bool8 drewWide;        // 0x013, 直前に描いた文字が全角なら TRUE
-  u8 unk_14;             // 0x014, TextRenderer_Init が 1 を入れる
+  bool8 tagsInline;      // 0x014, 0 ならどのタグでも stopAtTag を立てる, 1 なら差し込みを始めるタグ以外は同じ1歩で続けて描く, TextRenderer_Init が 1 を入れる
   s8 face;               // 0x015, TextRenderer_Init が 0xFF を入れる, MessageWindow が顔スプライトのポーズ番号として読む
   bool8 soundEveryChar;  // 0x016, TextRenderer_PlayCharSound が speed > 1 のときだけ読む, TRUE なら1文字おきの間引きをやめて毎文字鳴らす
   u8 unk_17;             // 0x017, padding?
@@ -110,7 +110,7 @@ s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
 s32 FUN_0804a40c(s32 id, s32 idx, char* str);
 
 s32 Marquee_Clear(void);
-s32 FUN_08049f84(void);
+s32 Marquee_RequestClose(void);
 s32 FUN_08049f5c(void);
 s32 Marquee_SetText(char* str);
 s32 Marquee_CloseGlobal(void);

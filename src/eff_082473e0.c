@@ -1,9 +1,12 @@
 #include "eff_082473e0.h"
 
 #include "camera.h"
+#include "camera_inline.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+
+// エレメント系の状態異常(引火, 氷結, 石化)　とかのエフェクト?
 
 typedef struct Eff082473e0 {
   Entity e;                      // 0x00
@@ -150,21 +153,15 @@ void (*const PTR_ARRAY_08dbd818[3])(Eff082473e0*, Eff082473e0Emitter*, Eff082473
 };  // 0x08DBD818
 
 // kind 1 の更新, エミッタの座標を画面座標に落として、生きている枠の粒子をそこにぶら下げる
+// 残差2箇所 (113/113 命令): 投影は WorldToScreen で一致, 原典は q = e->ptcls をループ表のアドレスと &screen の後で作り, ループ末尾で q の加算をカウンタの減算より先に置く
+// Tier A-C は試済 (for の初期化と更新の順, q をループ前の文に出す, 本体を q-> 経由にする)
 NON_MATCH void FUN_082470a8(Eff082473e0* p, Eff082473e0Emitter* e) {
 #ifdef NONMATCHING_C
   Eff082473e0Particle* q;
   Vec3 screen;
-  s32 x, z, a, b;
   s32 i;
 
-  x = e->pos->x >> 1;
-  z = e->pos->z >> 1;
-  screen.x = ((x - z) * 48) / 256;
-  a = ((x + z) * 48) / 256;
-  b = (e->pos->y * 24) / 256;
-  screen.x = screen.x - gCameraVpCoords.x + 120;
-  screen.y = (a - b) - gCameraVpCoords.y + 90;
-  screen.z = (a + b) - gCameraVpCoords.z;
+  WorldToScreen(&screen, e->pos);
   for (i = 0, q = e->ptcls; i < 4; i++, q++) {
     PTR_ARRAY_08dbd818[e->ptcls[i].state](p, e, q);
     if (e->ptcls[i].state != 0) {

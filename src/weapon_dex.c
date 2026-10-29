@@ -140,7 +140,7 @@ void FUN_08210610(WeaponDexMenu* p) {
   MainSprite_SetNumber(&p->unk_108[0], &p->gfx, WeaponDexMenu_CountFoundInPage(p->page), 2, 0, 32, 96, 8, 0);  // 登録数
   p->unk_108[2].pos.x = 48;
   p->unk_108[2].pos.y = 96;
-  MainSprite_SetPose(&p->unk_108[2], &p->gfx, 11, 0);                                                           // "/"
+  MainSprite_SetPose(&p->unk_108[2], &p->gfx, 11, PLAYMODE_PAUSE);                                              // "/"
   MainSprite_SetNumber(&p->unk_108[3], &p->gfx, WeaponDexMenu_GetPageEntryCount(p->page), 2, 0, 56, 96, 8, 0);  // 総数
 }
 
@@ -178,7 +178,7 @@ void FUN_082106c8(WeaponDexMenu* p) {
 void FUN_08210718(WeaponDexMenu* p) {
   s32 i;
 
-  MainSprite_SetPose(&p->sprite_48, &p->gfx, p->page + 25, 0);
+  MainSprite_SetPose(&p->sprite_48, &p->gfx, p->page + 25, PLAYMODE_PAUSE);
   if (WeaponDexMenu_IsPageComplete(p->page)) {
     for (i = 0; i < 2; i++) {
       MainSprite_ClearFlags(&p->unk_2e8[i], SPRFLAG_HIDDEN);
@@ -203,7 +203,7 @@ void FUN_08210bb0(WeaponDexMenu* p) {
 
   for (i = 0; i < count; icon++, i++) {
     if (IsWeaponAlreadyFound(first + i)) {
-      MainSprite_SetPose(icon, &p->icons.gfx, FUN_0820fee8(first + i), 0);
+      MainSprite_SetPose(icon, &p->icons.gfx, FUN_0820fee8(first + i), PLAYMODE_PAUSE);
       icon->flags &= ~SPRFLAG_HIDDEN;
     } else {
       icon->flags |= SPRFLAG_HIDDEN;

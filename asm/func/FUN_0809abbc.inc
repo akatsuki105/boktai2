@@ -9,14 +9,14 @@
 	ldrh r0, [r0]
 	cmp r0, #0
 	beq _0809ABE4
-	bl FUN_082416c8
+	bl Cmd_4B39
 	b _0809ABE8
 	.align 2, 0
 _0809ABD8: .4byte 0x030044E0
 _0809ABDC: .4byte 0x00020004
 _0809ABE0: .4byte 0x03004864
 _0809ABE4:
-	bl FUN_082416bc
+	bl Cmd_4B57
 _0809ABE8:
 	movs r0, #0
 	movs r1, #0x1b

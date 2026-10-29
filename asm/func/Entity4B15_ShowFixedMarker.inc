@@ -39,7 +39,7 @@ _0801A134:
 	adds r2, r2, r1
 	ldr r1, [r2]
 	movs r2, #0x35
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r0, #2
 	movs r1, #0
 	strb r0, [r4]

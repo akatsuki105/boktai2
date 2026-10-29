@@ -210,7 +210,7 @@ NON_MATCH bool32 FUN_0801fb08(Door* door, s32 param_2) {
 #endif
 }
 
-NAKED s32 FUN_0801fb48(void) { INCFUNC("asm/func/FUN_0801fb48.inc"); }
+NAKED s32 Cmd_D4E3(void) { INCFUNC("asm/func/Cmd_D4E3.inc"); }
 
 // そのIDの閉じている扉を開き始めさせる
 NON_MATCH void FUN_0801fc88(DoorManager* p, u16 id) {
@@ -307,7 +307,7 @@ void FUN_0801fe98(DoorManager* p, u16 id) {
 }
 
 // 0x8B67, '.n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
-s32 FUN_0801fedc(void) {
+s32 Cmd_8B67(void) {
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
   s32 id;
@@ -339,7 +339,7 @@ s32 FUN_0801fedc(void) {
 }
 
 // 0xD6F7, '.n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
-s32 FUN_0801ff78(void) {
+s32 Cmd_D6F7(void) {
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
   s32 id;
@@ -372,7 +372,7 @@ s32 FUN_0801ff78(void) {
 
 // '.n' が指す扉を開いた状態に戻す, 1体でも見つかれば 1 を返す
 // 残差1命令 (100/101): FUN_08020c1c と同じく, 原典は末尾で &pos_70.y を作り直すが agbcc は直前の &openOffset から引いて作る
-NON_MATCH s32 FUN_08020010(void) {
+NON_MATCH s32 Cmd_612E(void) {
 #ifdef NONMATCHING_C
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
@@ -407,15 +407,15 @@ NON_MATCH s32 FUN_08020010(void) {
 
   return found;
 #else
-  INCFUNC("asm/func/FUN_08020010.inc");
+  INCFUNC("asm/func/Cmd_612E.inc");
 #endif
 }
 
 // '.n' が指す扉を閉じた状態に戻す, 1体でも見つかれば 1 を返す
 // 残差はプール定数の巻き上げ先1組のみ (97/97): 原典は ~TATTR_WALL (0xFFFD) を r10 に巻き上げて FUN_08020d10 を毎回 ldr するが, agbcc は逆を選ぶ
-// Door_SetPhase / Door_SetStep 経由にすると定数 1 が巻き上がる (直書きだと 98命令), 文の順序と found の形は FUN_0801ff78 と同じで原典どおり
+// Door_SetPhase / Door_SetStep 経由にすると定数 1 が巻き上がる (直書きだと 98命令), 文の順序と found の形は Cmd_D6F7 と同じで原典どおり
 // Tier A-C 試済 (早期 return は 85命令で原典と別物), 未: per-TU フラグ
-NON_MATCH s32 FUN_080200f0(void) {
+NON_MATCH s32 Cmd_5A36(void) {
 #ifdef NONMATCHING_C
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
@@ -449,12 +449,12 @@ NON_MATCH s32 FUN_080200f0(void) {
 
   return found;
 #else
-  INCFUNC("asm/func/FUN_080200f0.inc");
+  INCFUNC("asm/func/Cmd_5A36.inc");
 #endif
 }
 
 // 0xCB30, '.n' が指す扉を開き始めさせる
-void FUN_080201c8(void) {
+void Cmd_CB30(void) {
   DoorManager* p = Registry_Find(0x85E6);
 
   if (p != NULL && VM_SeekToNamedArg('n')) {
@@ -477,7 +477,7 @@ void FUN_080201c8(void) {
 }
 
 // '.n' が1体だけ該当するとき、その扉の座標を '.p' の変数へ返す
-NON_MATCH void FUN_08020260(void) {
+NON_MATCH void Cmd_EAAF(void) {
 #ifdef NONMATCHING_C
   DoorManager* p = Registry_Find(0x85E6);
 
@@ -495,16 +495,16 @@ NON_MATCH void FUN_08020260(void) {
       }
     }
     if (count == 1 && VM_SeekToNamedArg('p')) {
-      FUN_0823167c(out);
-      FUN_0823206c(out, 0, p->doors[found].sprite.pos.x);
-      FUN_0823167c(out);
-      FUN_0823206c(out, 0, p->doors[found].sprite.pos.y);
-      FUN_0823167c(out);
-      FUN_0823206c(out, 0, p->doors[found].sprite.pos.z);
+      VM_GetMemoryRef(out);
+      VM_StoreMemoryRef(out, 0, p->doors[found].sprite.pos.x);
+      VM_GetMemoryRef(out);
+      VM_StoreMemoryRef(out, 0, p->doors[found].sprite.pos.y);
+      VM_GetMemoryRef(out);
+      VM_StoreMemoryRef(out, 0, p->doors[found].sprite.pos.z);
     }
   }
 #else
-  INCFUNC("asm/func/FUN_08020260.inc");
+  INCFUNC("asm/func/Cmd_EAAF.inc");
 #endif
 }
 
@@ -620,14 +620,12 @@ NON_MATCH void FUN_08020c1c(Door* door) {
     door->step = door->unk_84[0];
     door->unk_3a = 0;
     door->fn = FUN_08020d10;
-    v.z = 0;
-    v.x = 0;
-    v.y = 0;
+    VEC3_SET(v, 0, 0, 0);
     if (door->dir & 1) {
-      v.x = 0x80;
+      v.x = Q8(0.5);
       FUN_080dbd08(&door->pos_70, 0, (u32)&v, 5, 2, 0);
     } else {
-      v.z = 0x80;
+      v.z = Q8(0.5);
       FUN_080dbd08(&door->pos_70, 0, (u32)&v, 5, 2, 0);
     }
   }
@@ -641,7 +639,7 @@ NON_MATCH void FUN_08020c1c(Door* door) {
 // 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
 void FUN_08020cd8(Door* door) {
   if (door->timer != 0) {
-    FUN_0823b9cc(door->timer);
+    Camera_Shake(door->timer);
     door->timer--;
   } else if (door->openScriptID != 0) {
     VM_ExecByID(door->openScriptID, NULL);
@@ -653,7 +651,7 @@ void FUN_08020cd8(Door* door) {
 // 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
 void FUN_08020d10(Door* door) {
   if (door->timer != 0) {
-    FUN_0823b9cc(door->timer);
+    Camera_Shake(door->timer);
     door->timer--;
   } else if (door->closeScriptID != 0) {
     VM_ExecByID(door->closeScriptID, NULL);

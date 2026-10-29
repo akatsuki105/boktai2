@@ -49,6 +49,11 @@ static_assert(sizeof(Entity081d16ec) == 2432);
 
 IWRAM_DATA Entity081d16ec* gEntity081d16ec = NULL;  // 0x0300018C
 
+static inline bool8 Entity081d16ec_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void FUN_081d0e74(Entity081d16ecItem* item, Entity081d16ecItemFlags n) { item->flags |= n; }
 
 void FUN_081d0e84(Entity081d16ecItem* item, Entity081d16ecItemFlags n) { item->flags &= ~n; }
@@ -61,12 +66,11 @@ bool8 FUN_081d0e94(Entity081d16ecItem* item, Entity081d16ecItemFlags n) {
 }
 
 // 空いているスロットを1つ確保する
-NON_MATCH Entity081d16ecItem* FUN_081d0eac(Entity081d16ec* p) {
-#ifdef NONMATCHING_C
+Entity081d16ecItem* FUN_081d0eac(Entity081d16ec* p) {
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!Entity081d16ec_IsActive(&p->activeMask, i)) {
       Entity081d16ecItem* item = &p->items[i];
 
       p->activeMask |= 1 << i;
@@ -76,14 +80,11 @@ NON_MATCH Entity081d16ecItem* FUN_081d0eac(Entity081d16ec* p) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_081d0eac.inc");
-#endif
 }
 
 NAKED Entity081d16ecItem* FUN_081d0f08(s32 id) { INCFUNC("asm/func/FUN_081d0f08.inc"); }
 
-NAKED void FUN_081d0f64(unknown* p) { INCFUNC("asm/func/FUN_081d0f64.inc"); }
+NAKED void Cmd_F04B(unknown* p) { INCFUNC("asm/func/Cmd_F04B.inc"); }
 
 // 開閉アニメーションを折り返す, まだ再生していなければ頭から始める
 void FUN_081d11b8(Entity081d16ecItem* item) {
@@ -112,9 +113,9 @@ void FUN_081d11b8(Entity081d16ecItem* item) {
 // 無敵時間を数えつつ、点滅用のパレットを選ぶ
 NON_MATCH void FUN_081d1260(Entity081d16ecItem* item) {
 #ifdef NONMATCHING_C
-  if (item->hitbox.unk_44 != 0) {
+  if (item->hitbox.invincibleTime != 0) {
     item->hitbox.flags |= HBFLAG_HIDDEN;
-    item->hitbox.unk_44--;
+    item->hitbox.invincibleTime--;
   } else {
     item->hitbox.flags &= ~HBFLAG_HIDDEN;
   }
@@ -158,7 +159,7 @@ NON_MATCH void FUN_081d1470(Entity081d16ecItem* item) {
       item->hitbox.flags |= HBFLAG_HIDDEN;
       if (!FUN_081d0e94(item, E081D16EC_FLAG_3)) {
         if (item->unk_c2 <= item->unk_c4) {
-          item->hitbox.unk_44 = 24;
+          item->hitbox.invincibleTime = 24;
           FUN_081d11b8(item);
         }
       }
@@ -183,22 +184,17 @@ void (*const PTR_ARRAY_085ae0b8[4])(Entity081d16ec*, Entity081d16ecItem*) = {
 
 NAKED s32 Entity081d16ec_Update(Entity081d16ec* p) { INCFUNC("asm/func/Entity081d16ec_Update.inc"); }
 
-// 残差5命令, 原典は activeMask の判定を 0/1 に起こしてからもう一度判定する二段形 (Player_IsLiveLava 系と同じ)
-NON_MATCH s32 Entity081d16ec_Destroy(Entity081d16ec* p) {
-#ifdef NONMATCHING_C
+s32 Entity081d16ec_Destroy(Entity081d16ec* p) {
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (p->activeMask & (1 << i)) {
+    if (Entity081d16ec_IsActive(&p->activeMask, i)) {
       AuxSprite_Remove(&p->items[i].sprite);
       Hitbox_Unregister(&p->items[i].hitbox);
     }
   }
   gEntity081d16ec = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity081d16ec_Destroy.inc");
-#endif
 }
 
 s32 Entity081d16ec_Init(Entity081d16ec* p) {
@@ -246,8 +242,8 @@ void FUN_081d1924(Entity081d16ecItem* item) {
   Vec3 offset;
   Vec3 halfSize;
 
-  VEC3_SET(offset, 0, 0x80, 0);
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
+  VEC3_SET(offset, 0, Q8(0.5), 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   hitbox->id = item->unk_be;
   Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &item->sprite.pos, 0);
@@ -256,7 +252,7 @@ void FUN_081d1924(Entity081d16ecItem* item) {
 }
 
 // '.n' が指す要素のフラグを返す
-s32 FUN_081d19a8(void) {
+s32 Cmd_DFAB(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -268,7 +264,7 @@ s32 FUN_081d19a8(void) {
   return -1;
 }
 
-void FUN_081d19cc(void) {
+void Cmd_2207(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -282,7 +278,7 @@ void FUN_081d19cc(void) {
 }
 
 // '.n' が指す要素を '.c' のビットに応じて開閉させる
-void FUN_081d19f8(void) {
+void Cmd_820B(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -293,13 +289,13 @@ void FUN_081d19f8(void) {
 
       if (mode & 1) {
         if (!FUN_081d0e94(item, E081D16EC_FLAG_0)) {
-          item->hitbox.unk_44 = 24;
+          item->hitbox.invincibleTime = 24;
           FUN_081d11b8(item);
           FUN_081d0e74(item, E081D16EC_FLAG_4);
         }
       } else if (mode & 2) {
         if (!FUN_081d0e94(item, E081D16EC_FLAG_1)) {
-          item->hitbox.unk_44 = 24;
+          item->hitbox.invincibleTime = 24;
           FUN_081d11b8(item);
           FUN_081d0e74(item, E081D16EC_FLAG_4);
         }
@@ -308,7 +304,7 @@ void FUN_081d19f8(void) {
   }
 }
 
-void FUN_081d1a7c(void) {
+void Cmd_0101(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {

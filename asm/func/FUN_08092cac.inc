@@ -23,7 +23,7 @@
 	add r4, sp, #0x10
 	ldrb r1, [r5]
 	adds r0, r4, #0
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	add r0, sp, #0x10
 	ldrh r0, [r0]
 	adds r0, #8
@@ -137,7 +137,7 @@ _08092D8A:
 	strh r7, [r0]
 	bl MessageWindow_Close
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	ldr r0, _08092E18 @ =0x0000027D
 	bl PlaySound_082406e0
 	ldr r1, _08092E1C @ =FUN_0809312c

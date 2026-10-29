@@ -106,7 +106,7 @@ _080C8730:
 	bl SpriteHolder_SetAnim
 _080C8788:
 	mov r0, r8
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	mov r0, sl
 	cmp r0, #0x29
 	ble _080C87AE

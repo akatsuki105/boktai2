@@ -85,7 +85,7 @@ _080C7450:
 	orrs r0, r2
 	str r0, [r1]
 	adds r0, r6, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	mov r0, sl
 	cmp r0, #0x25
 	ble _080C7498

@@ -24,12 +24,12 @@ COMMON_DATA Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 
 void FUN_080acc14(void) { gEntity080acd4c = NULL; }
 
-// コマを進めながら上へ昇り, 0x10 フレームで消える
+// コマを進めながら上へ昇り, 16 フレームで消える
 void Entity080acd4cElem_Update(Entity080acd4cElem* elem) {
-  Particle_SetFrame(&elem->ptcl, elem->group, (elem->timer >> 1) + 0xC);
+  Particle_SetPose(&elem->ptcl, elem->group, PTCL_FIRE(elem->timer >> 1));
   elem->ptcl.pos.y += 10;
   elem->timer++;
-  if (elem->timer == 0x10) {
+  if (elem->timer == 16) {
     elem->ptcl.flags |= SPRFLAG_HIDDEN;
     elem->active = FALSE;
   }

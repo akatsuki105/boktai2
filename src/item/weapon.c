@@ -1,6 +1,7 @@
 #include "weapon.h"
 
 #include "global.h"
+#include "menu.h"
 #include "player.h"
 #include "vm.h"
 
@@ -77,7 +78,7 @@ NON_MATCH void BuildWeaponData(Weapon* w, WeaponData* data) {
 #ifdef NONMATCHING_C
   *data = gWeaponDB[w->id];
   data->wear = w->wear;
-  data->quality = (s8)w->quality;
+  data->quality = w->quality;
 
   if (w->PS[0] == 0) {
     char* dst = data->PS;
@@ -147,9 +148,9 @@ NON_MATCH bool32 AddWeapon(WeaponData* data) {
   }
 
   SetWeaponData(slot, data);
-  if ((data->kind < 3) && (REGISTERED_WEAPON(data->kind) == -1)) {
+  if ((data->kind < WK_OTHERS) && (REGISTERED_WEAPON(data->kind) == -1)) {
     REGISTERED_WEAPON(data->kind) = slot;
-    if (data->kind == 0) {
+    if (data->kind == WK_SWORD) {
       gStat->equippedWeaponIdx = 0;
       if (gPlayerPtr[0] != NULL) {
         Weapon* w = GetWeapon(slot);

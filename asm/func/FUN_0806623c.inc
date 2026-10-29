@@ -12,7 +12,7 @@ _0806624E:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldrh r0, [r0]
-	bl FUN_08065b44
+	bl Player_IsOnIce
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08066274
@@ -143,7 +143,7 @@ _08066356:
 	lsls r4, r4, #1
 	adds r0, r5, r4
 	ldrh r0, [r0]
-	bl FUN_08065b44
+	bl Player_IsOnIce
 	cmp r0, #0
 	beq _08066402
 	movs r1, #0xdf

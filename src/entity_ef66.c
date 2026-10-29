@@ -22,9 +22,9 @@ static_assert(sizeof(EntityEF66) == 48);
 
 IWRAM_DATA EntityEF66* gEntityEF66 = NULL;  // 0x03000148
 
-extern u16 u16_03002b84;
+extern u16 gWindPushThreshold;
 extern u16 gWindAngle;
-extern u16 u16_03002bac;
+extern u16 gWindStrength;
 
 void EntityEF66_StopScripted(void) {
   if (gEntityEF66 != NULL) {
@@ -35,7 +35,7 @@ void EntityEF66_StopScripted(void) {
   }
 }
 
-void FUN_080a11d4(void) {
+void Cmd_8459(void) {
   if (gEntityEF66 != NULL) {
     gEntityEF66->mode = 1;
     if (VM_SeekToNamedArg('p')) {
@@ -56,7 +56,7 @@ void FUN_080a11d4(void) {
   }
 }
 
-void FUN_080a1244(void) {
+void Cmd_274E(void) {
   if (gEntityEF66 != NULL) {
     gEntityEF66->mode = 2;
     if (VM_SeekToNamedArg('d')) {
@@ -82,9 +82,9 @@ void FUN_080a1244(void) {
   }
 }
 
-void FUN_080a12d8(void) {
+void Cmd_B005(void) {
   if (gEntityEF66 != NULL && VM_SeekToNamedArg('H')) {
-    u16_03002b84 = VM_GetValue();
+    gWindPushThreshold = VM_GetValue();
   }
 }
 
@@ -103,7 +103,7 @@ NON_MATCH s32 EntityEF66_Update(EntityEF66* p) {
   } else {
     p->angle = (p->angle + (d >> 4)) & 0xFFF;
   }
-  u16_03002bac = p->angleMin >> 4;
+  gWindStrength = p->angleMin >> 4;
   gWindAngle = p->angle >> 4;
 
   switch (p->mode) {
@@ -155,8 +155,8 @@ NON_MATCH s32 EntityEF66_Update(EntityEF66* p) {
 }
 
 s32 EntityEF66_Destroy(EntityEF66* p) {
-  u16_03002b84 = 0;
-  u16_03002bac = 0;
+  gWindPushThreshold = 0;
+  gWindStrength = 0;
   gWindAngle = 0;
   gEntityEF66 = NULL;
   return 0;
@@ -174,9 +174,9 @@ NON_MATCH s32 EntityEF66_Init(EntityEF66* p, u32 id) {
     p->mode = 1;
   }
   if (VM_SeekToNamedArg('H')) {
-    u16_03002b84 = VM_GetValue();
+    gWindPushThreshold = VM_GetValue();
   } else {
-    u16_03002b84 = 0;
+    gWindPushThreshold = 0;
   }
 
   switch (p->mode) {

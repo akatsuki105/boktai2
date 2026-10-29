@@ -65,7 +65,7 @@ _0808488E:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #1
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r2, _08084934 @ =gSineTable
 	movs r3, #0x30
 	ldrsh r0, [r6, r3]

@@ -359,7 +359,8 @@ const u16 u16_ARRAY_085ac064[16] = {
     0xDC1B,
 };  // 0x085AC064
 
-void FUN_0808a33c(MainMenu* p, MainMenuFunc* fn) {
+// updateCallback を差し替えて updateTimer を 0 に戻す
+void MainMenu_SetUpdateCallback(MainMenu* p, MainMenuFunc* fn) {
   p->updateCallback = fn;
   p->updateTimer = 0;
 }
@@ -410,7 +411,7 @@ s32 FUN_0808a440(s32 param_1, s32 param_2) {
 }
 
 // BG と OBJ の明るさ・ブレンド色をまとめて設定する
-void FUN_0808a458(s32 brightness, s32 color) {
+void SetScreenBrightness(s32 brightness, s32 color) {
   gBgPlttBlendColor = color;
   gBgPlttFadeRowMask = 0xFFFF;
   gBgBrightness = brightness;
@@ -455,7 +456,7 @@ NAKED void FUN_0808b1bc(MainMenu* p) { INCFUNC("asm/func/FUN_0808b1bc.inc"); }
 
 // value を place の位から順に10進数のタイルとして BG0 の (x, y) から並べる
 // 残差は38/38命令でレジスタ番号のみ (value と map が r5/r6 で逆になる)
-NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
+NON_MATCH void MainMenu_DrawNumber(s32 value, s32 place, u32 x, u32 y, s32 kind) {
 #ifdef NONMATCHING_C
   s32 base = 0x31;
   BgMapEntry* map;
@@ -475,7 +476,7 @@ NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
     place = Div(place, 10);
   }
 #else
-  INCFUNC("asm/func/FUN_0808b30c.inc");
+  INCFUNC("asm/func/MainMenu_DrawNumber.inc");
 #endif
 }
 
@@ -536,7 +537,7 @@ void FUN_0808b6fc(MainMenu* p, s32 param_2) {
   p->unk_3b25 = param_2;
 
   anim = (u8)param_2 != 0 ? 4 : 5;
-  MainSprite_SetAnim(&p->sprites[15], &p->gfx.smenu, anim, 1, 0);
+  MainSprite_SetAnim(&p->sprites[15], &p->gfx.smenu, anim, PLAYMODE_LOOP, 0);
   MainSprite_AdvanceAnim(&p->sprites[15], &p->gfx.smenu);
 }
 
@@ -556,7 +557,7 @@ void FUN_0808b82c(MainMenu* p) {
 // 現在のページ名を表示する
 void MainMenu_ShowPageName(MainMenu* p, s32 page) {
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(page), 1);
+  MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(page), PLAYMODE_LOOP);
 }
 
 NAKED void FUN_0808b8a4(MainMenu* p) { INCFUNC("asm/func/FUN_0808b8a4.inc"); }
@@ -698,7 +699,7 @@ NAKED void MainMenu1P_Update_Helper_0808c7c4(MainMenu* p) { INCFUNC("asm/func/Ma
 
 NAKED void UNUSED FUN_0808c834(s32 param_1, s32 param_2, s16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_0808c834.inc"); }
 
-NAKED void FUN_0808c95c(MainMenu* p, s32 param_2, s16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_0808c95c.inc"); }
+NAKED void FUN_0808c95c(MainMenu* p, s32 param_2, s16 x, s16 y) { INCFUNC("asm/func/FUN_0808c95c.inc"); }
 
 // 2組のパーティクルを描画リストから全部外す
 void FUN_0808cacc(MainMenu* p) {
@@ -903,9 +904,9 @@ void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
 
   for (i = 0; i < p->qcWeaponIconNums; i++) {
     if (p->qcWeapon.slots[i].weapon == NULL) {
-      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, 0, 1);
+      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, 0, PLAYMODE_LOOP);
     } else {
-      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(p->qcWeapon.slots[i].weapon->id), 1);
+      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(p->qcWeapon.slots[i].weapon->id), PLAYMODE_LOOP);
     }
     p->qcWeapon.slots[i].sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qcWeapon.idx, p->qcWeaponIconNums, 0);
   }
@@ -918,7 +919,7 @@ void MainMenu_RefreshQCMagicIcons(MainMenu* p) {
   for (i = 0; i < p->qcMagic.iconNums; i++) {
     QCMagicSlot* slot = &p->qcMagic.slots[i];
 
-    MainSprite_SetPose(&slot->sprite, &p->gfx.icons, ICON_MAGIC(slot->id), 1);
+    MainSprite_SetPose(&slot->sprite, &p->gfx.icons, ICON_MAGIC(slot->id), PLAYMODE_LOOP);
     slot->sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qcMagic.idx, p->qcMagic.iconNums, 0);
   }
 }
@@ -948,7 +949,7 @@ NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
       } else {
         bool32 isGunSlot = FALSE;
 
-        if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+        if (gGameFlags & FLAG030047A4_UNK_12) {
           if (!gunAdded) {
             isGunSlot = TRUE;
           }
@@ -994,7 +995,7 @@ NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
     } while (n < 4);
   }
 
-  if (!(gFlag030047a4 & FLAG030047A4_UNK_12) && p->qcWeapon.idx < 0) {
+  if (!(gGameFlags & FLAG030047A4_UNK_12) && p->qcWeapon.idx < 0) {
     s32 idx = 0;
 
     gStat->equippedWeaponIdx = 3;
@@ -1081,7 +1082,7 @@ void FUN_0808d908(MainMenu* p) {
   FUN_0808d2ac(p);
   FUN_082408d0();
   SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
-  FUN_0808a33c(p, FUN_0808db68);
+  MainMenu_SetUpdateCallback(p, FUN_0808db68);
 }
 
 // 選んでいる魔法をプレイヤーに持たせる, 選択なしなら外す
@@ -1105,7 +1106,7 @@ void MainMenu_QC_0808d9c8(MainMenu* p) {
   FUN_0808d3d4(p);
   FUN_082408f4();
   CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
-  FUN_0808a33c(p, FUN_0808cf14);
+  MainMenu_SetUpdateCallback(p, FUN_0808cf14);
 }
 
 NAKED s32 FUN_0808da14(MainMenu* p) { INCFUNC("asm/func/FUN_0808da14.inc"); }
@@ -1130,9 +1131,9 @@ void MainMenu1P_AddQCIcons(MainMenu* p) {
   posMagic.x = 8, posMagic.y = 136, posMagic.z = 0;       // 左下
   posWeapon.x = 216, posWeapon.y = 136, posWeapon.z = 0;  // 右下
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->qcMagic.slots[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posMagic);
+    MainSprite_Add(&p->qcMagic.slots[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, PLAYMODE_PAUSE, 60, &posMagic);
     MainSprite_SetPltt(&p->qcMagic.slots[i].sprite, 1);
-    MainSprite_Add(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posWeapon);
+    MainSprite_Add(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, PLAYMODE_PAUSE, 60, &posWeapon);
   }
 }
 
@@ -1154,7 +1155,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
     MainMenu_BuildQCMagicSlots(p);
     MainMenu_RefreshQCWeaponIcons(p);
     MainMenu_RefreshQCMagicIcons(p);
-    if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    if (gGameFlags & FLAG030047A4_UNK_12) {
       MainMenu_HideQCIcons(p);
     } else {
       FUN_0808d3d4(p);
@@ -1182,7 +1183,7 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 void FUN_0808df7c(MainMenu* p) {
   MainMenu_HideQCIcons(p);
   p->qcWeapon.slots[p->qcWeapon.idx].sprite.flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->qcWeapon.slots[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, 1);
+  MainSprite_SetPose(&p->qcWeapon.slots[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, PLAYMODE_LOOP);
 }
 
 void FUN_0808dfcc(MainMenu* p) {
@@ -1248,7 +1249,7 @@ void FUN_0808e4f4(void) {
     MainMenu_ApplyWeapon(p);
     FUN_0808d93c(p);
     FUN_0808d3d4(p);
-    FUN_0808a33c(p, FUN_0808e400);
+    MainMenu_SetUpdateCallback(p, FUN_0808e400);
   }
 }
 
@@ -1288,7 +1289,7 @@ void FUN_0808ee50(MainMenu* p);
 void FUN_0808ebe8(MainMenu* p) {
   FUN_0808a3c4(p, p->tm_2c, 0, 3, p->bgp_3c);
   FUN_0808eb4c(p);
-  FUN_0808a33c(p, FUN_0808ee50);
+  MainMenu_SetUpdateCallback(p, FUN_0808ee50);
 }
 
 NAKED void FUN_0808ec18(MainMenu* p) { INCFUNC("asm/func/FUN_0808ec18.inc"); }
@@ -1302,15 +1303,15 @@ void FUN_0808eeac(MainMenu* p);
 // 16フレームかけて画面を暗くし, 終わったら次の状態へ移る
 void FUN_0808ee50(MainMenu* p) {
   if (p->updateTimer <= 0xF) {
-    FUN_0808a458(p->updateTimer * 4, 0);
+    SetScreenBrightness(p->updateTimer * 4, 0);
   } else {
-    FUN_0808a458(0x40, 0);
+    SetScreenBrightness(0x40, 0);
   }
 
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   if (p->updateTimer++ > 0xF) {
-    FUN_0808a33c(p, FUN_0808eeac);
+    MainMenu_SetUpdateCallback(p, FUN_0808eeac);
   }
 }
 
@@ -1322,7 +1323,7 @@ void FUN_0808eeac(MainMenu* p) {
   result = FUN_0808b760(p);
   if (result == 0) {
     PlaySound_082406e0(SE_CANCEL);
-    FUN_0808a33c(p, FUN_0808eef8);
+    MainMenu_SetUpdateCallback(p, FUN_0808eef8);
   } else if (result == 1) {
     PlaySound_082406e0(SE_SELECT);
     FUN_0808ec18(p);
@@ -1334,9 +1335,9 @@ void FUN_0808f2f0(MainMenu* p);
 // 16フレームかけて画面を明るく戻し, 終わったら次の状態へ移る
 void FUN_0808eef8(MainMenu* p) {
   if (p->updateTimer <= 0xF) {
-    FUN_0808a458((0x10 - p->updateTimer) * 4, 0);
+    SetScreenBrightness((0x10 - p->updateTimer) * 4, 0);
   } else {
-    FUN_0808a458(0, 0);
+    SetScreenBrightness(0, 0);
   }
 
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
@@ -1355,7 +1356,7 @@ void FUN_0808f09c(MainMenu* p) {
 
   p->updateTimer++;
   if (p->updateTimer > 149) {
-    FUN_0808a33c(p, FUN_0809ae0c);
+    MainMenu_SetUpdateCallback(p, FUN_0809ae0c);
   }
 }
 
@@ -1364,11 +1365,11 @@ void FUN_0808f0d8(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   if (p->updateTimer <= 0xF) {
-    FUN_0808a458(p->updateTimer * 4, 0);
+    SetScreenBrightness(p->updateTimer * 4, 0);
   } else if (p->updateTimer <= 133) {
-    FUN_0808a458(0x40, 0);
+    SetScreenBrightness(0x40, 0);
   } else {
-    FUN_0808a458((150 - p->updateTimer) * 4, 0);
+    SetScreenBrightness((150 - p->updateTimer) * 4, 0);
   }
 
   if (p->updateTimer++ > 149) {
@@ -1392,7 +1393,7 @@ s32 FUN_0808f140(void) {
 void FUN_0808f170(MainMenu* p) {
   MessageWindow_Close();
   Marquee_Clear();
-  FUN_08049f84();
+  Marquee_RequestClose();
   MessageWindow_SetRect(1, 15, 28, 4);
   MessageWindow_Start(p->loanTexts);
   MessageWindow_SetInstant(1);
@@ -1405,8 +1406,8 @@ void FUN_0808f170(MainMenu* p) {
 
 // unk_401c の段階に合わせて2枚のポーズと矢印の高さを決める
 void FUN_0808f1bc(MainMenu* p) {
-  MainSprite_SetPose(&p->sprites[101], &p->gfx.loans, p->unk_401c + 25, 1);
-  MainSprite_SetPose(&p->sprites[102], &p->gfx.loans, 28 - p->unk_401c, 1);
+  MainSprite_SetPose(&p->sprites[101], &p->gfx.loans, p->unk_401c + 25, PLAYMODE_LOOP);
+  MainSprite_SetPose(&p->sprites[102], &p->gfx.loans, 28 - p->unk_401c, PLAYMODE_LOOP);
   p->sprites[103].pos.x = 0;
   p->sprites[103].pos.y = p->unk_401c << 5;
 }
@@ -1426,9 +1427,9 @@ void FUN_0808f670(MainMenu* p);
 // 16フレームかけて明るくしてから次の状態へ移る
 void FUN_0808f604(MainMenu* p) {
   if (p->updateTimer < 16) {
-    FUN_0808a458(p->updateTimer * 4, 0);
+    SetScreenBrightness(p->updateTimer * 4, 0);
   } else {
-    FUN_0808a458(0x40, 0);
+    SetScreenBrightness(0x40, 0);
   }
 
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
@@ -1436,7 +1437,7 @@ void FUN_0808f604(MainMenu* p) {
 
   p->updateTimer++;
   if (p->updateTimer >= 16) {
-    FUN_0808a33c(p, FUN_0808f670);
+    MainMenu_SetUpdateCallback(p, FUN_0808f670);
   }
 }
 
@@ -1450,16 +1451,16 @@ void FUN_0808f774(MainMenu* p) {
 
   p->updateTimer++;
   if (p->updateTimer >= 150) {
-    FUN_0808a33c(p, FUN_0809ae0c);
+    MainMenu_SetUpdateCallback(p, FUN_0809ae0c);
   }
 }
 
 // 16フレームかけて画面を明るく戻し, 終わったらメッセージへ進む
 void FUN_0808f7cc(MainMenu* p) {
   if (p->updateTimer < 16) {
-    FUN_0808a458((16 - p->updateTimer) * 4, 0);
+    SetScreenBrightness((16 - p->updateTimer) * 4, 0);
   } else {
-    FUN_0808a458(0, 0);
+    SetScreenBrightness(0, 0);
   }
   p->updateTimer++;
   if (p->updateTimer >= 16) {
@@ -1482,7 +1483,7 @@ void FUN_0808f8bc(MainMenu* p) {
     } else {
       MessageWindow_SetVarValue(0, 3);
     }
-    FUN_0808a33c(p, FUN_0808f920);
+    MainMenu_SetUpdateCallback(p, FUN_0808f920);
   }
 }
 
@@ -1491,7 +1492,7 @@ void FUN_0808f920(MainMenu* p) {
 
   p->updateTimer++;
   if (p->updateTimer > 149) {
-    FUN_0808a33c(p, FUN_0809ae0c);
+    MainMenu_SetUpdateCallback(p, FUN_0809ae0c);
   }
 }
 
@@ -1694,7 +1695,7 @@ const u8 (*const PTR_ARRAY_085acf04[15])[4] = {
 
 // 現在のステージと '.f' の組からメッセージの行番号を引く
 s32 FUN_0808fc14(void) {
-  if (gStat->stageID > 14) {
+  if (gStat->stageID > ST_PD_BATTLE) {
     return gStat->stageID + 0x40;
   }
   {
@@ -1706,28 +1707,28 @@ s32 FUN_0808fc14(void) {
 }
 
 // 0x82B3
-void FUN_0808fc68(void) {
+void Cmd_82B3(void) {
   if (VM_SeekToNamedArg('s')) {
     gStat->stageID = VM_GetValue();
   }
 }
 
 // 0x515D
-void FUN_0808fc8c(void) {
+void Cmd_515D(void) {
   if (VM_SeekToNamedArg('f')) {
     gStat->unk_256 = VM_GetValue();
   }
 }
 
 // 0x9817
-void FUN_0808fcb4(void) {
+void Cmd_9817(void) {
   if (VM_SeekToNamedArg('s')) {
     gStat->unk_258 = VM_GetValue();
   }
 }
 
 // 0xAA62
-void FUN_0808fcd8(void) {
+void Cmd_AA62(void) {
   if (VM_SeekToNamedArg('f')) {
     gStat->unk_25a = VM_GetValue();
   }
@@ -1745,7 +1746,7 @@ u32 IsMapUnlocked(u32 mapIdx) { return gStat->unlockedMap & (1 << mapIdx); }
 
 // 0x7CE7, '.s' があればその番号, なければ現在のエリアの unk_268 を返す
 // 残差1命令, gStat を入れるレジスタと添字の一時値が r1/r2 で逆になり, コピーが1つ増える
-NON_MATCH s32 FUN_0808fd44(void) {
+NON_MATCH s32 Cmd_7CE7(void) {
 #ifdef NONMATCHING_C
   if (VM_SeekToNamedArg('s')) {
     s32 i = VM_GetValue();
@@ -1754,12 +1755,12 @@ NON_MATCH s32 FUN_0808fd44(void) {
   }
   return gStat->unk_268[gStat->stageID];
 #else
-  INCFUNC("asm/func/FUN_0808fd44.inc");
+  INCFUNC("asm/func/Cmd_7CE7.inc");
 #endif
 }
 
 // 0xA995, 残差は26/26命令でレジスタ番号のみ (idx が r2 ではなく r1 に入る), ローカルの初期化形は試済
-NON_MATCH void FUN_0808fd8c(void) {
+NON_MATCH void Cmd_A995(void) {
 #ifdef NONMATCHING_C
   s32 idx;
 
@@ -1771,13 +1772,13 @@ NON_MATCH void FUN_0808fd8c(void) {
 
   gStat->unk_268[idx] = 0;
 #else
-  INCFUNC("asm/func/FUN_0808fd8c.inc");
+  INCFUNC("asm/func/Cmd_A995.inc");
 #endif
 }
 
 // 0x0C1B, '.s' のエリア (なければ現在のエリア) のフラグから '.i' のビットを立てる
-// 残差は35/35命令でレジスタ番号のみ, FUN_0808fd8c と同じ
-NON_MATCH void FUN_0808fdc8(void) {
+// 残差は35/35命令でレジスタ番号のみ, Cmd_A995 と同じ
+NON_MATCH void Cmd_0C1B(void) {
 #ifdef NONMATCHING_C
   s32 idx;
 
@@ -1791,13 +1792,13 @@ NON_MATCH void FUN_0808fdc8(void) {
     gStat->unk_268[idx] |= 1 << VM_GetValue();
   }
 #else
-  INCFUNC("asm/func/FUN_0808fdc8.inc");
+  INCFUNC("asm/func/Cmd_0C1B.inc");
 #endif
 }
 
 // 0x0BFD, '.s' のエリア (なければ現在のエリア) のフラグから '.i' のビットを落とす
-// 残差は35/35命令でレジスタ番号のみ, FUN_0808fd8c と同じ
-NON_MATCH void FUN_0808fe1c(void) {
+// 残差は35/35命令でレジスタ番号のみ, Cmd_A995 と同じ
+NON_MATCH void Cmd_0BFD(void) {
 #ifdef NONMATCHING_C
   s32 idx;
 
@@ -1811,7 +1812,7 @@ NON_MATCH void FUN_0808fe1c(void) {
     gStat->unk_268[idx] &= ~(1 << VM_GetValue());
   }
 #else
-  INCFUNC("asm/func/FUN_0808fe1c.inc");
+  INCFUNC("asm/func/Cmd_0BFD.inc");
 #endif
 }
 
@@ -1889,7 +1890,7 @@ NAKED void FUN_08090ca4(MainMenu* p) { INCFUNC("asm/func/FUN_08090ca4.inc"); }
 
 NAKED void FUN_08090d54(MainMenu* p) { INCFUNC("asm/func/FUN_08090d54.inc"); }
 
-void FUN_08090ee0(void) {
+void Cmd_DA19(void) {
   if (VM_SeekToNamedArg('i')) {
     s32 bitidx = VM_GetValue();
 
@@ -1927,7 +1928,7 @@ const u8 (*const PTR_ARRAY_085acf40[15])[4] = {
 NAKED void MainMenu_InitPage_Map(MainMenu* p) { INCFUNC("asm/func/MainMenu_InitPage_Map.inc"); }
 
 // '.f' の4つの値を 0/1 のビットに畳んで u16_03002c10 に入れる
-void FUN_08091684(void) {
+void Cmd_9FB7(void) {
   u16_03002c10 = 0;
 
   if (VM_SeekToNamedArg('f')) {
@@ -2042,7 +2043,7 @@ void ItemEffect_Good(MainMenu* p, s32 goodCondID, s32 goodCondSec) {
     player->goodCondID = goodCondID;
     player->goodCondTimer = goodCondSec * 60;
     player->plttID_95e = 289;
-    player->unk_960 = 0x30;
+    player->plttFlashTimer = 48;
     p->effectAmount = 0;
     p->unk_a95 = 1;
     p->unk_3ae4 = 1;
@@ -2250,7 +2251,7 @@ bool32 FUN_080921a8(MainMenu* p) {
 }
 
 // 枠番号から画面上の表示位置を出す
-void FUN_080921e8(WorldPos* pos, s32 idx) {
+void MainMenu_GetSlotPos(WorldPos* pos, s32 idx) {
   if (idx <= 15) {
     pos->x = (idx & 3) * 24 + 144;
     pos->y = (idx >> 2) * 24 + 32;
@@ -2353,7 +2354,7 @@ void FUN_08092c7c(MainMenu* p, u8 val) {
   p->unk_3f9d = val;
   MessageWindow_Close();
   Marquee_Clear();
-  FUN_08049f84();
+  Marquee_RequestClose();
   MainMenu_SetState(p, FUN_080931cc, 1);
 }
 
@@ -2554,7 +2555,7 @@ NAKED void FUN_08094d48(unknown* w, u8* pc) { INCFUNC("asm/func/FUN_08094d48.inc
 s32 GetWeaponWearPose(WeaponData* w) {
   s32 n;
 
-  if ((s16)w->quality > 0) {
+  if (w->quality > 0) {
     n = Div(w->wear * 4, 200);
     if (n > 3) {
       n = 3;
@@ -2849,8 +2850,8 @@ void FUN_08098a98(s32 base, s32 delta, MainSpriteGfx* gfx, MainSprite* tens, Mai
     poseBase = (delta < 0) ? 20 : 0;
   }
 
-  MainSprite_SetPose(tens, gfx, poseBase + high, 1);
-  MainSprite_SetPose(ones, gfx, poseBase + low, 1);
+  MainSprite_SetPose(tens, gfx, poseBase + high, PLAYMODE_LOOP);
+  MainSprite_SetPose(ones, gfx, poseBase + low, PLAYMODE_LOOP);
 }
 
 NAKED void FUN_08098af4(MainMenu* p) { INCFUNC("asm/func/FUN_08098af4.inc"); }
@@ -2878,7 +2879,7 @@ NAKED void FUN_08098d98(MainMenu* p) { INCFUNC("asm/func/FUN_08098d98.inc"); }
 void FUN_08098e48(MainMenu* p) {
   p->sprites[13].pos.x = 0;
   p->sprites[13].pos.y = p->unk_4002[0] << 3;
-  MainSprite_SetPose(&p->sprites[46], &p->gfx.smenu, SMENU_STATBAR(p->unk_4002[0]), 1);
+  MainSprite_SetPose(&p->sprites[46], &p->gfx.smenu, SMENU_STATBAR(p->unk_4002[0]), PLAYMODE_LOOP);
 }
 
 // 振り分けたステータスポイントを確定して, 残りポイントも書き戻す
@@ -3007,7 +3008,7 @@ s32 FUN_08099b84(s32 n) {
 
 NAKED void FUN_08099b9c(MainMenu* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
-void FUN_08099c1c(MainMenu* p) {
+void MainMenu_LoadGameConfig(MainMenu* p) {
   p->unk_400d = 0;
   p->controlUp = gStat->controlUp;
   p->menuTextSpeed = MainMenu_GetTextSpeed();
@@ -3231,11 +3232,11 @@ void FUN_0809ac30(MainMenu* p);
 // 17フレームかけて明るさを上げ, 終わったら次の状態へ移る
 void FUN_0809ab70(MainMenu* p) {
   FUN_0808b4c0(p);
-  FUN_0808a458(p->updateTimer * 4, RGB(4, 4, 4));
+  SetScreenBrightness(p->updateTimer * 4, RGB(4, 4, 4));
   p->updateTimer++;
   if (p->updateTimer > 16) {
     p->hidden = 0;
-    FUN_0808a33c(p, FUN_0809ac30);
+    MainMenu_SetUpdateCallback(p, FUN_0809ac30);
   }
 }
 
@@ -3253,11 +3254,11 @@ void FUN_0809b180(MainMenu* p);
 void FUN_0809b12c(MainMenu* p) {
   s32 i;
 
-  FUN_0808a458(0x40, RGB(4, 4, 4));
+  SetScreenBrightness(0x40, RGB(4, 4, 4));
   p->sprites[3].pos.x += 15;
   if (p->sprites[3].pos.x >= 0) {
     p->sprites[3].pos.x = 0;
-    FUN_0808a33c(p, FUN_0809b180);
+    MainMenu_SetUpdateCallback(p, FUN_0809b180);
   }
 
   for (i = 0; i < 9; i++) {
@@ -3295,135 +3296,135 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
   s32 i;
 
   pos.x = 0, pos.y = 0, pos.z = 0;
-  MainSprite_Add(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[1], &p->gfx.smenu, SMENU_L_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[2], &p->gfx.smenu, SMENU_R_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[16], &p->gfx.smenu, SMENU_ITEM_BAG, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[14], &p->gfx.smenu, SMENU_SELECTED, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[40], &p->gfx.smenu, 1, 1, 0);
-  MainSprite_SetPose(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), 1);
-  MainSprite_Add(&p->sprites[13], &p->gfx.smenu, SMENU_CURSOR(1), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[13], &p->gfx.smenu, 0, 1, 0);
-  MainSprite_Add(&p->sprites[59], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[60], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[1], &p->gfx.smenu, SMENU_L_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[2], &p->gfx.smenu, SMENU_R_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[16], &p->gfx.smenu, SMENU_ITEM_BAG, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[14], &p->gfx.smenu, SMENU_SELECTED, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[40], &p->gfx.smenu, 1, PLAYMODE_LOOP, 0);
+  MainSprite_SetPose(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), PLAYMODE_LOOP);
+  MainSprite_Add(&p->sprites[13], &p->gfx.smenu, SMENU_CURSOR(1), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[13], &p->gfx.smenu, 0, PLAYMODE_LOOP, 0);
+  MainSprite_Add(&p->sprites[59], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[60], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   for (i = 0; i < 16; i++) {
-    MainSprite_Add(&p->sprites[17 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[17 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[36 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-    MainSprite_Add(&p->sprites[41 + i], &p->gfx.smenu, SMENU_EQUIP_E, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[36 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[41 + i], &p->gfx.smenu, SMENU_EQUIP_E, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 117, pos.y = 70;
-  MainSprite_Add(&p->sprites[33], &p->gfx.icons, ICON_TRASH, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[33], &p->gfx.icons, ICON_TRASH, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[34], &p->gfx.smenu, SMENU_SELECT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[34], &p->gfx.smenu, SMENU_SELECT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 120, pos.y = 104;
-  MainSprite_Add(&p->sprites[35], &p->gfx.icons, ICON_SORT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[35], &p->gfx.icons, ICON_SORT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 0, pos.y = 128;
-  MainSprite_Add(&p->sprites[45], &p->gfx.icons, ICON_TIMER_NONE, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[45], &p->gfx.icons, ICON_TIMER_NONE, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   for (i = 0; i < 2; i++) {
-    MainSprite_Add(&p->sprites[46 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[46 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 36, pos.y = 112;
-  MainSprite_Add(&p->sprites[57], &p->gfx.player, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[57], &p->gfx.player, 4, 1, 0);
+  MainSprite_Add(&p->sprites[57], &p->gfx.player, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[57], &p->gfx.player, 4, PLAYMODE_LOOP, 0);
   Video_GetAuxSprite(&p->gfx_b8c, SPRITE_BAT);
   AuxSprite_Add(&p->sprite_b60, &p->gfx_b8c, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
   p->sprite_b60.priority = 0;
   p->sprite_b60.pos.x = 36, p->sprite_b60.pos.y = 112, p->sprite_b60.pos.z = 0;
 
   pos.x = 52, pos.y = 100;
-  MainSprite_Add(&p->sprites[58], &p->gfx.rita, 0, SPRFLAG_XFLIP | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[58], &p->gfx.rita, 13, 1, 0);
+  MainSprite_Add(&p->sprites[58], &p->gfx.rita, 0, SPRFLAG_XFLIP | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[58], &p->gfx.rita, 13, PLAYMODE_LOOP, 0);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 9; i++) {
-    MainSprite_Add(&p->sprites[48 + i], &p->gfx.smenu, SMENU_NUM_BLUE(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[48 + i], &p->gfx.smenu, SMENU_NUM_BLUE(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[15], &p->gfx.smenu, SMENU_YESNO(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[15], &p->gfx.smenu, SMENU_YESNO(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 8, pos.y = 20;
-  MainSprite_Add(&p->sprites[61], &p->gfx.portraits, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[61], &p->gfx.portraits, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[62 + i], &p->gfx.smenu, SMENU_BADCOND_NAME(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[62 + i], &p->gfx.smenu, SMENU_BADCOND_NAME(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.y += 13;
   }
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 10; i++) {
-    MainSprite_Add(&p->sprites[3 + i], &p->gfx.smenu, SMENU_PAGE_LONG(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], &p->gfx.smenu, SMENU_PAGE_LONG(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[66], &p->gfx.smenu, SMENU_STAT_ASSIGN, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[67], &p->gfx.smenu, SMENU_STAT_ASSIGN_OK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[66], &p->gfx.smenu, SMENU_STAT_ASSIGN, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[67], &p->gfx.smenu, SMENU_STAT_ASSIGN_OK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[68 + i], &p->gfx.smenu, 71, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
-    MainSprite_Add(&p->sprites[72 + i], &p->gfx.smenu, 70, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[68 + i], &p->gfx.smenu, 71, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[72 + i], &p->gfx.smenu, 70, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
     pos.y += 8;
   }
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[78 + i], &p->gfx.map, i * 2 + 9, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
-    MainSprite_SetAnim(&p->sprites[78 + i], &p->gfx.map, i + 1, 1, 0);
+    MainSprite_Add(&p->sprites[78 + i], &p->gfx.map, i * 2 + 9, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_SetAnim(&p->sprites[78 + i], &p->gfx.map, i + 1, PLAYMODE_LOOP, 0);
   }
 
-  MainSprite_Add(&p->sprites[76], &p->gfx.map, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[77], &p->gfx.map, 3, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[76], &p->gfx.map, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[77], &p->gfx.map, 3, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 6; i++) {
-    MainSprite_Add(&p->sprites[86 + i], &p->gfx.map, 18 + i, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[86 + i], &p->gfx.map, 18 + i, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 8; i++) {
-    MainSprite_Add(&p->sprites[92 + i], &p->gfx.map, 17, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[92 + i], &p->gfx.map, 17, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[82], &p->gfx.smenu, SMENU_MAP_SCROLL(2), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[83], &p->gfx.smenu, SMENU_MAP_SCROLL(3), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[84], &p->gfx.smenu, SMENU_MAP_SCROLL(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[85], &p->gfx.smenu, SMENU_MAP_SCROLL(1), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[82], &p->gfx.smenu, SMENU_MAP_SCROLL(2), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[83], &p->gfx.smenu, SMENU_MAP_SCROLL(3), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[84], &p->gfx.smenu, SMENU_MAP_SCROLL(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[85], &p->gfx.smenu, SMENU_MAP_SCROLL(1), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[100], &p->gfx.loans, 4, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[101], &p->gfx.loans, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[102], &p->gfx.loans, 27, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[100], &p->gfx.loans, 4, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[101], &p->gfx.loans, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[102], &p->gfx.loans, 27, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites[104 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[104 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
   pos.x = 16, pos.y = -4;
-  MainSprite_Add(&p->sprites[103], &p->gfx.loans, 18, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[103], &p->gfx.loans, 18, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = -56, pos.y = 56;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[107 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[107 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
   pos.x = 88, pos.y = 56;
-  MainSprite_Add(&p->sprites[111], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[111], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = -48, pos.y = 72;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[112 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[112 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
@@ -3606,9 +3607,9 @@ void FUN_0809c1e8(void) {
   }
 }
 
-void FUN_0809c214(void) { FUN_0809c1c0(); }
+void Cmd_DF85(void) { FUN_0809c1c0(); }
 
-void FUN_0809c220(void) { FUN_0809c1e8(); }
+void Cmd_CCD9(void) { FUN_0809c1e8(); }
 
 // 0xC6AA
 void Textbox_CloseBox(void) {
@@ -3624,7 +3625,7 @@ void FUN_0809c244(void) {
 }
 
 // 0x2FA0
-void FUN_0809c264(void) {
+void Cmd_2FA0(void) {
   if (gMainMenu != NULL && gMainMenu->unk_9fc == 0) {
     MainMenu_InitAvailPages(gMainMenu);
   }
@@ -3651,7 +3652,7 @@ void FUN_0809c2d0(void) {
 }
 
 // VM の f 引数を unk_f3d に書き込む
-void FUN_0809c314(void) {
+void Cmd_99F8(void) {
   if (gMainMenu != NULL) {
     if (VM_SeekToNamedArg('f')) {
       gMainMenu->unk_f3d = VM_GetValue();
@@ -3659,7 +3660,7 @@ void FUN_0809c314(void) {
   }
 }
 
-NAKED void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u8 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0809c344.inc"); }
+NAKED void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0809c344.inc"); }
 
 NAKED void FUN_0809c3c0(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0809c3c0.inc"); }
 
@@ -3680,7 +3681,7 @@ void FUN_0809c464(void) {
       MainMenu_BuildQCWeaponSlots(gMainMenu);
       MainMenu_RefreshQCWeaponIcons(gMainMenu);
 
-      if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+      if (gGameFlags & FLAG030047A4_UNK_12) {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808e224(gMainMenu);
         }
@@ -3695,13 +3696,13 @@ void FUN_0809c464(void) {
   }
 }
 
-void FUN_0809c4f4(void) {
+void HUD_ShowWeaponCrashEffect(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL && p->unk_9fc == 0 && p->unk_9fe <= 2) {
-    FUN_0808c95c(p, 0, 0xE0, 0x90);
+    FUN_0808c95c(p, 0, 224, 144);
     p->qcWeapon.unk_d99 = 6;
-    PlaySound_082406e0(SE_BREAK_898);
+    PlaySound_082406e0(SE_WEAPON_BREAK);
   }
 }
 
@@ -3712,7 +3713,7 @@ void HUD_StartCountdown(u16* remainingTime) {
   if (p != NULL) {
     p->unk_a9c = remainingTime;
     p->unk_a97 = 1;
-    if (gFlag030047a4 & FLAG030047A4_LINK) {
+    if (gGameFlags & FLAG030047A4_LINK) {
       p->unk_a98 = 1;
     }
   }
@@ -3731,13 +3732,13 @@ void HUD_RemoveCountdown(void) {
   }
 }
 
-void FUN_0809c5dc(void) {
+void Cmd_610A(void) {
   if (gMainMenu != NULL) {
     FUN_0808abec(gMainMenu, 2);
   }
 }
 
-void FUN_0809c5f4(void) {
+void Cmd_94EB(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL) {
@@ -3749,7 +3750,7 @@ void FUN_0809c5f4(void) {
   }
 }
 
-void FUN_0809c63c(void) {
+void Cmd_EFD1(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL && VM_SeekToNamedArg('i')) {
@@ -3872,12 +3873,12 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   p->textPanelID_4014 = TextPanel_Create(6, 4, 10, 2);
   p->textPanelID = TextPanel_Create(4, 6, 22, 6);
   MainMenu1P_SetupBg(p);
-  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+  if (gGameFlags & FLAG030047A4_UNK_12) {
     FUN_0808e224(p);
-    FUN_0808a33c(p, FUN_0808e400);
+    MainMenu_SetUpdateCallback(p, FUN_0808e400);
   } else {
     FUN_0808ce98(p);
-    FUN_0808a33c(p, FUN_0808cf14);
+    MainMenu_SetUpdateCallback(p, FUN_0808cf14);
   }
   MainMenu1P_AddParticles(p);
   p->unk_a99 = 2;
@@ -3907,7 +3908,7 @@ MainMenu* MainMenu1P_Create(u32 id, u32 _) {
 
 // 0xCC28
 MainMenu* MainMenu_Create(u32 id, u32 _) {
-  if (gFlag030047a4 & FLAG030047A4_LINK) {
+  if (gGameFlags & FLAG030047A4_LINK) {
     return MainMenuLink_Create(id, _);
   }
   return MainMenu1P_Create(id, _);

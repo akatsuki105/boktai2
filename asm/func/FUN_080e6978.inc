@@ -296,17 +296,17 @@ _080E6B8A:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -481,7 +481,7 @@ _080E6D3E:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080E6D54:
 	ldr r0, _080E6D70 @ =0x030047A4
 	ldr r0, [r0]
@@ -869,7 +869,7 @@ _080E704A:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080E7060:
 	add sp, #0x34
 	pop {r3, r4, r5}

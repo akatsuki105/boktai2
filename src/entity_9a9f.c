@@ -12,6 +12,11 @@
 COMMON_DATA Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
 IWRAM_DATA u32 bool32_030001ac = FALSE;      // 0x030001AC
 
+static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
+  if (p->state == 0) return TRUE;
+  return FALSE;
+}
+
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
@@ -253,6 +258,7 @@ s32 FUN_081de7e8(Entity9A9F* p) {
 NAKED s32 FUN_081de844(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de844.inc"); }
 
 // 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (FUN_080f8bb8 / FUN_080fc174 と同じ), static inline (if/else で return) は試済
+// ステータス比較を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 比べる定数を原典はマスクの後で作るのに対しこちらは先に作る (52/52)
 NON_MATCH s32 FUN_081de960(Entity9A9F* p) {
 #ifdef NONMATCHING_C
   u16* status;
@@ -447,28 +453,28 @@ s32 FUN_081df720(s32 n) {
 }
 
 // '.X' の値と等しい unk_118 の個数を数え、スクリプト側へ書き戻して返す
-s32 FUN_081df75c(void) {
+s32 Cmd_BE46(void) {
   u8 desc[8];
   s32 count = FUN_081df720(VM_GetValue());
 
-  FUN_0823167c(desc);
-  FUN_0823206c(desc, 0, count);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, count);
   return count;
 }
 
 // playerIdx をスクリプト側へ書き戻して返す
 // 残差1命令, 原典は -1 と playerIdx を別の基本ブロックで代入するが agbcc は -1 を先に作って条件付きで上書きする形に畳む, 三項/if-else/条件の反転は試済
-NON_MATCH s32 FUN_081df784(void) {
+NON_MATCH s32 Cmd_064E(void) {
 #ifdef NONMATCHING_C
   u8 desc[8];
   Entity9A9F* p = gEntity9A9F;
   s32 idx = (p == NULL) ? -1 : p->playerIdx;
 
-  FUN_0823167c(desc);
-  FUN_0823206c(desc, 0, idx);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, idx);
   return idx;
 #else
-  INCFUNC("asm/func/FUN_081df784.inc");
+  INCFUNC("asm/func/Cmd_064E.inc");
 #endif
 }
 
@@ -496,22 +502,16 @@ s32 FUN_081df7e8(s32 idx) {
   return 0;
 }
 
-NAKED void FUN_081df814(void) { INCFUNC("asm/func/FUN_081df814.inc"); }
+NAKED void Cmd_33C4(void) { INCFUNC("asm/func/Cmd_33C4.inc"); }
 
 // state が 0 以外のときだけ unk_24 を書き換えて BGM をフェードアウトする
-// 残差2命令, 原典は state == 0 を 0/1 に起こすところで分岐と b を使う (こちらは 0 を先に入れて条件付きで 1 にする短い形)
-// bool32 を返す static inline を挟んでも同じ形にはならない
-NON_MATCH void FUN_081df8a0(s32 val) {
-#ifdef NONMATCHING_C
+void FUN_081df8a0(s32 val) {
   Entity9A9F* p = gEntity9A9F;
 
-  if (p != NULL && p->state != 0) {
+  if (p != NULL && !Entity9A9F_IsIdle(p)) {
     p->unk_24 = val;
     Sound_FadeOutBGM(1);
   }
-#else
-  INCFUNC("asm/func/FUN_081df8a0.inc");
-#endif
 }
 
 void FUN_081df8d4(void) {
@@ -587,7 +587,7 @@ s32 Entity9A9F_Destroy(Entity9A9F* p) {
   Sio_Disconnect();
   Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
   gUseLinkInput = FALSE;
-  gFlag030047a4 &= ~FLAG030047A4_LINK;
+  gGameFlags &= ~FLAG030047A4_LINK;
   gEntity9A9F = NULL;
   return 0;
 }

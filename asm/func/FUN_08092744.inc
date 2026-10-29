@@ -27,7 +27,7 @@
 	ldr r2, _080927BC @ =0x00003AEB
 	adds r1, r4, r2
 	ldrb r1, [r1]
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	adds r0, r4, #0
 	bl FUN_08092070
 	adds r0, r4, #0

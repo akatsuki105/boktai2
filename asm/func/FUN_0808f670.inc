@@ -66,7 +66,7 @@ _0808F710:
 	ldr r1, _0808F71C @ =FUN_0808f7cc
 _0808F712:
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	b _0808F76A
 	.align 2, 0
 _0808F71C: .4byte FUN_0808f7cc

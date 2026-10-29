@@ -1,7 +1,6 @@
 #include "coffin.h"
 
 #include "collision_map.h"
-#include "definition.h"
 #include "emote.h"
 #include "entity.h"
 #include "file.h"
@@ -16,9 +15,8 @@
 COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
 COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
-void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
-s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);
+s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 
 void Coffin_InitParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -27,7 +25,7 @@ void Coffin_InitParticles(Coffin* p) {
   for (i = 0; i < 7; i++, ptcl++) {
     Particle_Add(ptcl, GetParticleGroup(PTCL_GROUP_1), 0);
     Particle_SetOffset(ptcl, -4, -4);
-    ptcl->offsetZ = 0xFF;
+    ptcl->offsetZ = -1;
     Particle_Hide(ptcl);
   }
 }
@@ -98,7 +96,7 @@ NON_MATCH void FUN_08085a74(WorldPos* pos, ParticleSpawnParam* params) {
   v.z = v.z - 15 + (*(gRandTableIdx + gRandomTable) & 0x1F);
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
   v.y = v.y - 16 - (*(gRandTableIdx + gRandomTable) & 0x3F);
-  FUN_080155e4(1, &v, params);
+  Entity08015584_Spawn(1, &v, params);
 #else
   INCFUNC("asm/func/FUN_08085a74.inc");
 #endif
@@ -162,7 +160,7 @@ void FUN_08085cb0(Coffin* p, s32 coffinID) {
 }
 
 void FUN_08085cec(Coffin* p) {
-  if (p->unk_40a != 0 || p->unk_406 != 0) {
+  if (p->inSolarCircle || p->unk_406 != 0) {
     if (p->unk_334 <= 0x3F) {
       p->unk_334++;
     }
@@ -311,7 +309,7 @@ bool32 Coffin_IsState(s32 state) {
 }
 
 // 0x6B24
-void FUN_08086638(void) {
+void Cmd_6B24(void) {
   Coffin* p = gCoffin;
 
   if (p == NULL) {
@@ -342,16 +340,16 @@ void FUN_08086638(void) {
   Coffin_SetState(p, 3);
 }
 
-void FUN_080866e4(void) {
+void Cmd_7566(void) {
   if (gCoffin != NULL) {
     Coffin_SetState(gCoffin, 0);
     gCoffin->unk_3b4 = 1;
   }
 }
 
-void FUN_0808670c(s32 n) {
+void Coffin_SetInsideSolarCircle(bool32 n) {
   if (gCoffin != NULL) {
-    gCoffin->unk_40a = n;
+    gCoffin->inSolarCircle = n;
   }
 }
 
@@ -364,7 +362,7 @@ bool32 FUN_0808672c(void) {
   if (p->unk_394 != 0) {
     return FALSE;
   }
-  if (p->unk_40a != 0) {
+  if (p->inSolarCircle) {
     return FALSE;
   }
   if (p->unk_384 != 0) {
@@ -459,7 +457,7 @@ void FUN_080868b8(s32 param_1) {
 }
 
 // 0x9BC7, 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
-void FUN_08086910(void) {
+void Cmd_9BC7(void) {
   Coffin* p = gCoffin;
 
   if (p != NULL) {
@@ -584,25 +582,25 @@ NON_MATCH void FUN_08086b18(WorldPos* pos) {
 }
 
 // 0xA301
-void FUN_08086be0(void) {
+void Cmd_A301(void) {
   Coffin* p = gCoffin;
 
   if (p != NULL) {
     u8 desc[8];
 
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, p->mover.pos.x);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, p->mover.pos.y);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, p->mover.pos.z);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, p->facing);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, p->mover.pos.x);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, p->mover.pos.y);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, p->mover.pos.z);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, p->facing);
   }
 }
 
 // 0x4561
-NAKED void FUN_08086c50(void) { INCFUNC("asm/func/FUN_08086c50.inc"); }
+NAKED void Cmd_4561(void) { INCFUNC("asm/func/Cmd_4561.inc"); }
 
 // 0xFEE0
 void Coffin_RequestKill(void) {
@@ -612,7 +610,7 @@ void Coffin_RequestKill(void) {
 }
 
 // 0x7A0A, 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
-s32 FUN_08086d7c(void) {
+s32 Cmd_7A0A(void) {
   s32 i;
 
   if (gStat->coffin >= 0) {
@@ -718,7 +716,7 @@ void Coffin_InitSprite(Coffin* p) {
   if (VM_SeekToNamedArg('d')) {
     p->facing = VM_GetValue();
   } else {
-    p->facing = 0;
+    p->facing = FACE_UP;
   }
   p->anim = GetFile(DIR_ANIMATION, ANIM_COFFIN);
   FUN_08086024(p, 0);
@@ -735,8 +733,8 @@ void Coffin_InitHurtbox(Coffin* p) {
   Vec3 offset;
   s32 ignoreMask;
 
-  VEC3_SET(size, (BLOCK * 90 / 256), (BLOCK / 8), (BLOCK * 90 / 256));
-  VEC3_SET(offset, 100, 200, 100);
+  VEC3_SET(size, Q8(0.352), Q8(0.125), Q8(0.352));
+  VEC3_SET(offset, Q8(0.391), Q8(0.782), Q8(0.391));
   if (p->coffinID != COFFIN_SILVER) {
     s32 kind = p->unk_1c;
 
@@ -758,8 +756,8 @@ void Coffin_InitHitbox(Coffin* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  VEC3_SET(size, (BLOCK / 2), (BLOCK / 8), (BLOCK / 2));
-  VEC3_SET(offset, 0, (BLOCK / 8), 0);
+  VEC3_SET(size, Q8(0.5), Q8(0.125), Q8(0.5));
+  VEC3_SET(offset, 0, Q8(0.125), 0);
   Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
@@ -829,7 +827,7 @@ void FUN_08087494(Coffin* p) {
 }
 
 void FUN_080874cc(Coffin* p) {
-  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+  if (gGameFlags & FLAG030047A4_UNK_9) {
     return;
   }
 
@@ -908,7 +906,7 @@ NAKED s32 FUN_08087970(Coffin* p) { INCFUNC("asm/func/FUN_08087970.inc"); }
 NAKED void FUN_08087a5c(Coffin* p) { INCFUNC("asm/func/FUN_08087a5c.inc"); }
 
 void FUN_08087bac(Coffin* p) {
-  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+  if (gGameFlags & FLAG030047A4_UNK_9) {
     return;
   }
   if (p->canSelfMove == 0) {
@@ -936,7 +934,7 @@ void FUN_08087c04(Coffin* p) {
   p->unk_32a = 0;
   FUN_08086024(p, 0);
 
-  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+  if (gGameFlags & FLAG030047A4_UNK_9) {
     return;
   }
 
@@ -944,7 +942,7 @@ void FUN_08087c04(Coffin* p) {
     FUN_08087a5c(p);
   } else if (p->unk_324 != 0) {
     FUN_080856f4(p);
-  } else if (p->unk_40a != 0) {
+  } else if (p->inSolarCircle) {
     p->unk_390 = p->unk_392;
     p->selfMoveTimer = p->selfMoveTimerInit;
     p->unk_394 = 0;
@@ -1026,7 +1024,7 @@ NAKED void FUN_08088718(Coffin* p) { INCFUNC("asm/func/FUN_08088718.inc"); }
 NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
 
 void FUN_08088bbc(Coffin* p) {
-  p->facing = 0;
+  p->facing = FACE_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->stateTimer++;
   FUN_08086024(p, 0);
@@ -1063,7 +1061,7 @@ NON_MATCH void FUN_08088fbc(Coffin* p) {
     Coffin_SetState(p, 6);
   }
 
-  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+  if (gGameFlags & FLAG030047A4_UNK_9) {
     return;
   }
 
@@ -1129,7 +1127,7 @@ void FUN_080892a8(Coffin* p) {
   p->unk_32a = 0;
   p->unk_394 = 0;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = 0;
+  p->facing = FACE_UP;
   FUN_08086024(p, 0);
 }
 
@@ -1138,7 +1136,7 @@ void FUN_080892f8(Coffin* p) {
     Coffin_SetState(p, 13);
   }
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = 0;
+  p->facing = FACE_UP;
   if (FUN_08086024(p, 8) != 0) {
     Coffin_SetState(p, 12);
   }
@@ -1159,7 +1157,7 @@ void FUN_08089344(Coffin* p) {
   }
 
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = 0;
+  p->facing = FACE_UP;
   FUN_08086024(p, 24);
 }
 
@@ -1168,7 +1166,7 @@ void FUN_080893c0(Coffin* p) {
     Coffin_SetState(p, 14);
   }
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = 0;
+  p->facing = FACE_UP;
   if (FUN_08086024(p, 16) != 0) {
     Coffin_SetState(p, p->unk_408);
   }
@@ -1184,7 +1182,7 @@ void FUN_08089548(Coffin* p) {
   p->unk_32a = 1;
   FUN_08086024(p, 0);
 
-  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+  if (gGameFlags & FLAG030047A4_UNK_9) {
     return;
   }
 
@@ -1227,7 +1225,7 @@ s32 Coffin_Update(Coffin* p) {
 
   p->unk_406 = 0;
 
-  if (TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     FUN_08085408(p);
     return 0;
   }
@@ -1285,7 +1283,7 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   p->unk_332 = 0;
   p->unk_3a0 = -1;
   p->killRequested = FALSE;
-  p->unk_40a = 0;
+  p->inSolarCircle = FALSE;
   gCoffin = p;
   return 0;
 }

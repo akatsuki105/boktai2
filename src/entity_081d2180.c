@@ -11,7 +11,7 @@ typedef struct {
   ZoneID16 zoneID;         // 0x58, gStat->zoneID と一致しなければ要素を隠す
   u16 unk_5a;              // 0x5A, FUN_081d1bf8 の第2引数
   u8 unk_5c[0x7C - 0x5C];  // 0x5C
-  u16 unk_7c;              // 0x7C, 枠を確保したときに 0 に戻す
+  u16 unk_7c;              // 0x7C, 枠を確保したときに自分の添字を入れる
   s16 state;               // 0x7E, _Update が PTR_FUN_081D1AE8_085AE0C8[state](item) を呼ぶ
   u16 flags;               // 0x80
   u16 unk_82;              // 0x82
@@ -30,42 +30,43 @@ static_assert(sizeof(Entity081d2180) == 1116);
 
 IWRAM_DATA Entity081d2180* gEntity081d2180 = NULL;  // 0x03000190
 
+static inline bool8 IsCurrentZone(u32 zoneID) {
+  if (gStat->zoneID == zoneID) return TRUE;
+  return FALSE;
+}
+
+static inline bool8 Entity081d2180_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 // 空いている枠を確保して返す, 空きが無ければ NULL
-// 残差8命令 (30 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-// 同じファイルの FUN_081d1aec も同じ形で止まっている
-NON_MATCH Entity081d2180Item* FUN_081d1a9c(Entity081d2180* p) {
-#ifdef NONMATCHING_C
+Entity081d2180Item* FUN_081d1a9c(Entity081d2180* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!Entity081d2180_IsActive(&p->activeMask, i)) {
+      Entity081d2180Item* item = &p->items[i];
+
       p->activeMask |= 1 << i;
-      p->items[i].unk_7c = 0;
-      return &p->items[i];
+      item->unk_7c = i;
+      return item;
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_081d1a9c.inc");
-#endif
 }
 
 // state 0 のハンドラ, 何もしない
 void FUN_081d1ae8(Entity081d2180Item* item) {}
 
 // 現在のエリアの要素でなければ隠す
-// 残差5命令, 原典はエリア一致の判定を 0/1 に起こしてからもう一度判定する二段形 (Player_IsLiveLava 系と同じ)
-NON_MATCH bool32 FUN_081d1aec(Entity081d2180Item* item) {
-#ifdef NONMATCHING_C
-  if (gStat->zoneID == item->zoneID) {
+bool32 FUN_081d1aec(Entity081d2180Item* item) {
+  if (IsCurrentZone(item->zoneID)) {
     AuxSprite_Show(&item->sprite);
     return TRUE;
   }
   AuxSprite_Hide(&item->sprite);
   return FALSE;
-#else
-  INCFUNC("asm/func/FUN_081d1aec.inc");
-#endif
 }
 
 NAKED void FUN_081d1b34(unknown* p) { INCFUNC("asm/func/FUN_081d1b34.inc"); }
@@ -94,7 +95,7 @@ NAKED void FUN_081d1c64(unknown* p) { INCFUNC("asm/func/FUN_081d1c64.inc"); }
 
 NAKED void FUN_081d1cdc(Entity081d2180Item* item) { INCFUNC("asm/func/FUN_081d1cdc.inc"); }
 
-NAKED void FUN_081d1dec(unknown* p) { INCFUNC("asm/func/FUN_081d1dec.inc"); }
+NAKED void Cmd_AB8E(unknown* p) { INCFUNC("asm/func/Cmd_AB8E.inc"); }
 
 void (*const PTR_ARRAY_085ae0c8[2])(Entity081d2180Item*) = {
     FUN_081d1ae8,
@@ -103,21 +104,16 @@ void (*const PTR_ARRAY_085ae0c8[2])(Entity081d2180Item*) = {
 
 NAKED s32 Entity081d2180_Update(Entity081d2180* p) { INCFUNC("asm/func/Entity081d2180_Update.inc"); }
 
-// 残差5命令, 原典は activeMask の判定を 0/1 に起こしてからもう一度判定する二段形 (Player_IsLiveLava 系と同じ)
-NON_MATCH s32 Entity081d2180_Destroy(Entity081d2180* p) {
-#ifdef NONMATCHING_C
+s32 Entity081d2180_Destroy(Entity081d2180* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (p->activeMask & (1 << i)) {
+    if (Entity081d2180_IsActive(&p->activeMask, i)) {
       AuxSprite_Remove(&p->items[i].sprite);
     }
   }
   gEntity081d2180 = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity081d2180_Destroy.inc");
-#endif
 }
 
 s32 Entity081d2180_Init(Entity081d2180* p) {

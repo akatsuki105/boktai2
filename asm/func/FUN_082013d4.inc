@@ -433,7 +433,7 @@ _082016EA:
 	str r4, [sp, #0x34]
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	b _08201790
 	.align 2, 0
 _08201748: .4byte 0x05000002
@@ -466,7 +466,7 @@ _0820175C:
 	str r4, [sp, #0x34]
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _08201790:
 	ldr r2, [sp, #0x5c]
 	ldr r5, _082017C4 @ =0x000006DD

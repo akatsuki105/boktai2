@@ -73,7 +73,7 @@
 	str r0, [sp]
 	movs r0, #1
 	mov r1, sp
-	bl FUN_080155e4
+	bl Entity08015584_Spawn
 	add sp, #8
 	pop {r3, r4, r5}
 	mov r8, r3

@@ -73,8 +73,8 @@ NON_MATCH void FUN_0801ad78(Entity12C4* p, s32 bufIdx) {
 void FUN_0801ae64(void) {
   gHBlankEffectBuffer = NULL;
   gHBlankEffectReg = NULL;
-  u16_03003510 = 1;
-  u16_03003514 = 0;
+  gHBlankDmaCount = 1;
+  gHBlankDmaMode = 0;
 }
 
 NAKED s32 Entity12C4_Update(Entity12C4* p) { INCFUNC("asm/func/Entity12C4_Update.inc"); }

@@ -5,6 +5,12 @@
 #include "sprite_common.h"
 #include "types.h"
 
+// MainSprite.playMode, 根拠: MainSprite_AdvanceAnim
+#define PLAYMODE_PAUSE 0           // 停止
+#define PLAYMODE_LOOP 1            // ループ (0/2/3 以外はすべてループ扱い)
+#define PLAYMODE_ONCE_AND_STOP 2   // 1回再生して停止
+#define PLAYMODE_PLAY_ONCE_HIDE 3  // 1回再生して非表示
+
 typedef u16 MainAnimPlayFlags16;
 #define MAIN_ANIM_KEEP_FRAME (1 << 0)  // 0x0001, 頭出しせずに今のコマ番号から続ける, 根拠: MainSprite_SetAnim が animCmdIdx と animCmdTimer を初期化しない
 #define MAIN_ANIM_REVERSE (1 << 1)     // 0x0002, 逆再生, 根拠: MainSprite_SetAnim が末尾のコマから始め、MainSprite_AdvanceAnim が animCmdIdx を減らして 0 で終端とみなす
@@ -92,7 +98,7 @@ typedef struct MainSprite {
   u16 animCmdLength;              // 0x16, コマ総数, 根拠: MainSprite_AdvanceAnim の animCmdIdx の上限
   MainAnimPlayFlags16 animFlags;  // 0x18, see MainAnimPlayFlags16
   u8 priority;                    // 0x1A
-  u8 playMode;                    // 0x1B, 0=停止, 2=1回再生して停止, 3=1回再生して非表示, その他=ループ, 根拠: MainSprite_AdvanceAnim
+  u8 playMode;                    // 0x1B, see PLAYMODE_*
   u8 listIdx;                     // 0x1C, MainSprite_Remove
   MainAnimEvents8 animEvents;     // 0x1D, see MainAnimEvents8
   u8 unk_1e[2];                   // 0x1E, padding?

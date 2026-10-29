@@ -48,7 +48,7 @@ _080F1A12:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r1, #3
 	movs r2, #1
 	movs r3, #0x8d

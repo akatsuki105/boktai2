@@ -3,6 +3,7 @@
 #include "enemy.h"
 #include "entity.h"
 #include "global.h"
+#include "map_inline.h"
 #include "player.h"
 
 typedef struct {
@@ -19,8 +20,19 @@ static_assert(sizeof(EnemyTargetManager) == 44);
 IWRAM_DATA EnemyTargetManager* gEnemyTargetManager = NULL;  // 0x03000184
 
 bool32 FUN_0808672c(void);
+void FUN_080f8bb8(Mover* owner);
+bool8 FUN_080e4384(Enemy* p, Vec3* pos);
+s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst);
+s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit);
+bool32 FUN_080865dc(Vec3* out);
+bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param);
 
 static void FUN_080f8cec(void);
+
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
 
 // 敵との紐付けを解いて再登録待ちに戻す
 static inline void EnemyTarget_Unlink(EnemyTarget* t) {
@@ -123,7 +135,7 @@ EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask) {
   return NULL;
 }
 
-bool32 FUN_080f8d20(EnemyTarget* node) {
+bool8 FUN_080f8d20(EnemyTarget* node) {
   EnemyTargetManager* p = gEnemyTargetManager;
   EnemyTarget* cur;
 
@@ -262,9 +274,280 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
   return FALSE;
 }
 
-NAKED bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, unknown* param_3) { INCFUNC("asm/func/EnemyTargetManager_Bind.inc"); }
+// 敵から的 (node->owner) が見えるかを調べて Bind する, kindMask 1/4 は Mover を写して2回まで位置をずらして試す, 2 は 1P の状態も確かめる
+// 下書きの段階で 862/1274 命令, 見えるかの判定 (EnemyTarget_CanSee) は原典で2か所に展開されている, FUN_080e4444 と同じ判定
+NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* best) {
+#ifdef NONMATCHING_C
+  switch (node->kindMask) {
+    case 1:
+    case 4: {
+      Mover m = *node->owner;
+      s32 i;
 
-NAKED EnemyTarget* EnemyTargetManager_Claim(Enemy* p, u8 kindMask) { INCFUNC("asm/func/EnemyTargetManager_Claim.inc"); }
+      for (i = 0; i < 2; i++) {
+        {
+          Vec3 d;
+          s32 distSq;
+          bool32 ok = FALSE;
+          bool32 dimKnown = TRUE;
+
+          d.x = m.pos.x - enemy->mover.pos.x;
+          d.y = m.pos.y - enemy->mover.pos.y;
+          d.z = m.pos.z - enemy->mover.pos.z;
+          distSq = d.x * d.x + d.z * d.z;
+          if (FUN_080e4384(enemy, &m.pos)) {
+            *best = distSq;
+            enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+            ok = TRUE;
+          } else {
+            s32 diff = ArcTan2_8(d.x, d.z) - enemy->mover.angle;
+
+            if (diff > 0x80) {
+              diff -= 0x100;
+            } else if (diff < -0x80) {
+              diff += 0x100;
+            }
+            if (diff < 0) {
+              diff = -diff;
+            }
+            if (diff <= enemy->unk_1fd) {
+              s32 limit;
+              u32 near;
+              bool32 dim;
+
+              if (node->kindMask == 2) {
+                if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+                  dim = (u8)FUN_080f8e84(&m, 1, 0x10000);
+                } else {
+                  dim = (u8)FUN_080f8e84(&m, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
+                }
+              } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+                dim = !(gStat->mapFlags & MPF_BRIGHT);
+              } else {
+                dimKnown = FALSE;
+              }
+              if (!dimKnown) {
+              } else if (dim) {
+                limit = (s32)enemy->range0Sq / 2;
+                near = limit;
+                if (!(enemy->flags5 & ENEFLAG5_UNK_3)) {
+                  near = Div(limit * 7, 10);
+                }
+              } else {
+                limit = enemy->range0Sq;
+                near = enemy->unk_1e8;
+              }
+
+              if (dimKnown && distSq <= limit) {
+                s32 step = FUN_080e3f50(enemy, &enemy->mover.pos, &m.pos);
+
+                if (step >= 0) {
+                  s32 tile = GetCollisionTileIdx(&m.pos);
+                  s32 cur = enemy->unk_256;
+                  s32 height = (s8)(enemy->mover.pos.y >> 8);
+                  bool32 adjacent = FALSE;
+
+                  if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
+                    if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
+                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+                      adjacent = TRUE;
+                    }
+                  }
+
+                  if (adjacent) {
+                    if ((enemy->flags5 & ENEFLAG5_UNK_3) || Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &m.pos)) {
+                      *best = distSq;
+                      enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+                      ok = TRUE;
+                    }
+                  } else if ((step == 2 || FUN_082340c8(&enemy->mover.pos, &m.pos, 10, 0x100)) && distSq < *best) {
+                    *best = distSq;
+                    if ((node->kindMask & 6) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
+                      enemy->unk_1f8 = 1;
+                    } else {
+                      enemy->unk_1f8 = 0;
+                    }
+                    ok = TRUE;
+                  }
+                }
+              }
+            }
+          }
+
+          if (ok && Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &m.pos)) {
+            return TRUE;
+          }
+        }
+        FUN_080865dc(&m.pos);
+      }
+      return FALSE;
+    }
+    case 2: {
+      Mover* owner;
+
+      if (!(enemy->flags & ENEFLAG_UNK_3)) {
+        return FALSE;
+      }
+      owner = node->owner;
+      if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+        s32 idx;
+
+        if (owner == NULL) {
+          return FALSE;
+        }
+        idx = owner->unk_4 < 4 ? owner->unk_4 : -1;
+        if (idx < 0) {
+          return FALSE;
+        }
+        if (gPlayerStates[idx] & 8) {
+          return FALSE;
+        }
+      }
+      if ((u8)FUN_080f8e84(owner, 1, 0x21000)) {
+        return FALSE;
+      }
+      {
+        Vec3 d;
+        s32 distSq;
+        bool32 ok = FALSE;
+        bool32 dimKnown = TRUE;
+
+        d.x = node->owner->pos.x - enemy->mover.pos.x;
+        d.y = node->owner->pos.y - enemy->mover.pos.y;
+        d.z = node->owner->pos.z - enemy->mover.pos.z;
+        distSq = d.x * d.x + d.z * d.z;
+        if (FUN_080e4384(enemy, &node->owner->pos)) {
+          *best = distSq;
+          enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+          ok = TRUE;
+        } else {
+          s32 diff = ArcTan2_8(d.x, d.z) - enemy->mover.angle;
+
+          if (diff > 0x80) {
+            diff -= 0x100;
+          } else if (diff < -0x80) {
+            diff += 0x100;
+          }
+          if (diff < 0) {
+            diff = -diff;
+          }
+          if (diff <= enemy->unk_1fd) {
+            s32 limit;
+            u32 near;
+            bool32 dim;
+
+            if (node->kindMask == 2) {
+              if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+                dim = (u8)FUN_080f8e84(node->owner, 1, 0x10000);
+              } else {
+                dim = (u8)FUN_080f8e84(node->owner, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
+              }
+            } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+              dim = !(gStat->mapFlags & MPF_BRIGHT);
+            } else {
+              dimKnown = FALSE;
+            }
+            if (!dimKnown) {
+            } else if (dim) {
+              limit = (s32)enemy->range0Sq / 2;
+              near = limit;
+              if (!(enemy->flags5 & ENEFLAG5_UNK_3)) {
+                near = Div(limit * 7, 10);
+              }
+            } else {
+              limit = enemy->range0Sq;
+              near = enemy->unk_1e8;
+            }
+
+            if (dimKnown && distSq <= limit) {
+              s32 step = FUN_080e3f50(enemy, &enemy->mover.pos, &node->owner->pos);
+
+              if (step >= 0) {
+                s32 tile = GetCollisionTileIdx(&node->owner->pos);
+                s32 cur = enemy->unk_256;
+                s32 height = (s8)(enemy->mover.pos.y >> 8);
+                bool32 adjacent = FALSE;
+
+                if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
+                  if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
+                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+                    adjacent = TRUE;
+                  }
+                }
+
+                if (adjacent) {
+                  if ((enemy->flags5 & ENEFLAG5_UNK_3) || Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &node->owner->pos)) {
+                    *best = distSq;
+                    enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+                    ok = TRUE;
+                  }
+                } else if ((step == 2 || FUN_082340c8(&enemy->mover.pos, &node->owner->pos, 10, 0x100)) && distSq < *best) {
+                  *best = distSq;
+                  if ((node->kindMask & 6) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
+                    enemy->unk_1f8 = 1;
+                  } else {
+                    enemy->unk_1f8 = 0;
+                  }
+                  ok = TRUE;
+                }
+              }
+            }
+          }
+        }
+
+        if (ok && Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &node->owner->pos)) {
+          return TRUE;
+        }
+      }
+      return FALSE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/EnemyTargetManager_Bind.inc");
+#endif
+}
+
+// kindMask に合う登録済みの的のうち Bind できた最後のものを敵に割り当てる
+EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
+  EnemyTargetManager* m = gEnemyTargetManager;
+  EnemyTarget* found;
+  EnemyTarget* node;
+  s32 best;
+  s32 hit;
+
+  if (TestMapFlag(MPF_UNK_6) || m == NULL) {
+    return NULL;
+  }
+
+  found = NULL;
+  best = 0x7FFFFFFF;
+  hit = -1;
+  for (node = m->head; node != NULL; node = node->next) {
+    if ((node->flags & ENEMYTARGET_REGISTERED) && node->owner != NULL && (node->kindMask & kindMask) && (u8)FUN_080f8c2c(node) && (u8)EnemyTargetManager_Bind(node, p, &best)) {
+      found = node;
+      hit = (s32)found;
+    }
+  }
+
+  if (hit >= 0) {
+    switch (found->kindMask) {
+      case 1: {
+        found->flags |= ENEMYTARGET_LINKED;
+        found->enemy = p;
+        break;
+      }
+      case 2:
+      case 4: {
+        Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
+        FUN_080f8bb8(found->owner);
+        break;
+      }
+    }
+  }
+  Enemy_ClearFlag(p, ENEFLAG_UNK_3);
+  return found;
+}
 
 void EnemyTargetManager_TickTimers(void) {
   EnemyTargetManager* p = gEnemyTargetManager;

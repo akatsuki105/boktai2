@@ -1142,7 +1142,7 @@ _080E2814:
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	ldr r2, _080E28D8 @ =0x000005FC
 	adds r0, r7, r2
 	ldr r1, [r0]
@@ -2499,7 +2499,7 @@ _080E32E6:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #0
 	bl Enemy_PlayAnim

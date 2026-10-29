@@ -74,7 +74,7 @@ _08098C78:
 	movs r1, #0x64
 	movs r2, #6
 	movs r3, #9
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	b _08098D40
 	.align 2, 0
 _08098CC8: .4byte 0x00004004
@@ -133,7 +133,7 @@ _08098D30:
 	movs r1, #0x64
 	movs r2, #6
 	movs r3, #9
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 _08098D40:
 	ldr r1, _08098D88 @ =0x00004007
 	adds r0, r5, r1
@@ -166,7 +166,7 @@ _08098D54:
 	movs r1, #0x64
 	movs r2, #6
 	movs r3, #0xa
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	add sp, #0x2c
 	pop {r4, r5, r6}
 	pop {r0}

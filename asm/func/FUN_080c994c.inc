@@ -62,7 +62,7 @@
 	bl PlaySound_082406e0
 _080C99CC:
 	adds r0, r6, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	ldr r2, _080C9A78 @ =0x00600002
 	adds r1, r6, #0
 	adds r1, #0x98

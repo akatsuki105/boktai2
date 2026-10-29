@@ -9,7 +9,7 @@ typedef struct {
   s32 timer;          // 0x18, state 1 で数え上げ holdFrames と比べる, 状態が変わるたびに 0 に戻る
   s32 minBrightness;  // 0x1C, '.r=32', state 0 が brightness をここまで 2 ずつ下げる
   s32 holdFrames;     // 0x20, '.e=120', state 1 が保つ長さ
-  s32 brightness;     // 0x24, 毎フレーム gBgBrightness2 と gObjBrightness へ書く, FRACUNIT_6 (64) が等倍
+  s32 brightness;     // 0x24, 毎フレーム gBgBrightness2 と gObjBrightness へ書く, Q6(1) が等倍
   s32 state;          // 0x28, 0 で暗転、1 で保持、2 で 64 まで戻して KillEntity する
 } BgPlttDimmer;
 static_assert(sizeof(BgPlttDimmer) == 44);
@@ -17,10 +17,10 @@ static_assert(sizeof(BgPlttDimmer) == 44);
 NAKED s32 BgPlttDimmer_Update(BgPlttDimmer* p) { INCFUNC("asm/func/BgPlttDimmer_Update.inc"); }
 
 s32 BgPlttDimmer_Destroy(BgPlttDimmer* p) {
-  gBgBrightness2 = FRACUNIT_6;
+  gBgBrightness2 = Q6(1);
   gBgPlttFadeRowMask = 0x1FFF;
   gBgPlttBlendColor = RGB(4, 4, 4);
-  gObjBrightness = FRACUNIT_6;
+  gObjBrightness = Q6(1);
   gObjPlttFadeSkipMask = 0;
   gObjPlttBlendColor = RGB(4, 4, 4);
   return 0;

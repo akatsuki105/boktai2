@@ -25,13 +25,13 @@
 	str r0, [sp, #0x3c]
 	ldrb r1, [r2]
 	add r0, sp, #0xc
-	bl FUN_080b9938
+	bl Shop_GetSlotPos
 	add r5, sp, #0x1c
 	ldr r1, _080BD6C4 @ =0x00001787
 	adds r0, r4, r1
 	ldrb r1, [r0]
 	adds r0, r5, #0
-	bl FUN_080b9938
+	bl Shop_GetSlotPos
 	movs r2, #0
 	add r1, sp, #0x2c
 	str r2, [r1, #4]

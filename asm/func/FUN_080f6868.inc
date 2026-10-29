@@ -235,7 +235,7 @@ _080F6A2A:
 	str r5, [sp]
 	str r6, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080F6A3E:
 	adds r1, r4, #0
 	adds r1, #0x9c

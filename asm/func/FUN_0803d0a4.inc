@@ -301,7 +301,7 @@ _0803D2F0:
 	b _0803D566
 _0803D30E:
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0803D408
@@ -326,7 +326,7 @@ _0803D330:
 	cmp r0, #0
 	bne _0803D39C
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	ldr r0, _0803D394 @ =0x03003584
 	lsls r1, r1, #5
@@ -372,7 +372,7 @@ _0803D39C:
 	cmp r0, #1
 	bne _0803D43C
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	lsls r1, r1, #5
 	ldr r3, _0803D418 @ =0x03003584
@@ -413,11 +413,11 @@ _0803D3EA:
 	mov r2, sb
 	strb r0, [r2]
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	mov r3, r8
 	strh r0, [r3]
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	cmp r0, #0
 	bne _0803D424
 _0803D408:
@@ -449,7 +449,7 @@ _0803D43C:
 	cmp r0, #2
 	bne _0803D4E8
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	lsls r1, r1, #5
 	ldr r3, _0803D4C0 @ =0x03003584
@@ -493,11 +493,11 @@ _0803D43C:
 	mov r3, sb
 	strb r0, [r3]
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	mov r1, r8
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	cmp r0, #0
 	bne _0803D4D0
 	movs r2, #0xe5
@@ -529,7 +529,7 @@ _0803D4E8:
 	cmp r0, #3
 	bne _0803D566
 	adds r0, r5, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	ldr r0, _0803D548 @ =0x03003584
 	lsls r1, r1, #5

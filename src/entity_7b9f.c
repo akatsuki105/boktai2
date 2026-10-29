@@ -26,6 +26,11 @@ static_assert(sizeof(Entity7B9F) == 940);
 
 IWRAM_DATA Entity7B9F* gEntity7B9F = NULL;  // 0x030001A0
 
+static inline bool8 Entity7B9F_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 NAKED Entity7B9FElem* Entity7B9F_AllocElem(Entity7B9F* p) { INCFUNC("asm/func/Entity7B9F_AllocElem.inc"); }
@@ -51,20 +56,15 @@ NAKED void FUN_081d85a8(Entity7B9FElem* e) { INCFUNC("asm/func/FUN_081d85a8.inc"
 
 NAKED void FUN_081d8714(Entity7B9FElem* e, s32 param_2) { INCFUNC("asm/func/FUN_081d8714.inc"); }
 
-// 残差5命令 (29 対 34), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
-NON_MATCH s32 Entity7B9F_Update(Entity7B9F* p) {
-#ifdef NONMATCHING_C
+s32 Entity7B9F_Update(Entity7B9F* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (p->usedMask & (1 << i)) {
+    if (Entity7B9F_IsActive(&p->usedMask, i)) {
       p->elems[i].updateCallback(&p->elems[i]);
     }
   }
   return 0;
-#else
-  INCFUNC("asm/func/Entity7B9F_Update.inc");
-#endif
 }
 
 NAKED s32 Entity7B9F_Destroy(Entity7B9F* p) { INCFUNC("asm/func/Entity7B9F_Destroy.inc"); }
@@ -94,6 +94,6 @@ void nop_081d88a4(void) {}
 
 NAKED void FUN_081d88a8(Entity7B9FElem* e, u16 param_2, u16 param_3) { INCFUNC("asm/func/FUN_081d88a8.inc"); }
 
-NAKED void FUN_081d8948(void) { INCFUNC("asm/func/FUN_081d8948.inc"); }
+NAKED void Cmd_7B9F(void) { INCFUNC("asm/func/Cmd_7B9F.inc"); }
 
 void ClearEntity7B9F(void) { gEntity7B9F = NULL; }

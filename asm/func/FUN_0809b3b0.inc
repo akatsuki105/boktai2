@@ -38,7 +38,7 @@ _0809B3C0:
 	strh r1, [r0]
 	ldr r1, _0809B42C @ =FUN_0809aaf4
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	movs r0, #1
 _0809B406:
 	pop {r4}

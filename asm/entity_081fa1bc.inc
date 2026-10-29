@@ -42,7 +42,7 @@ Entity081fa1bc_Init: @ 0x081FA1BC
 	ldr r1, [r4, #0x40]
 	adds r0, r5, #0
 	movs r2, #0x20
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r0, #0
 	strb r0, [r5, #0xf]
 	ldr r0, [r4, #0x18]

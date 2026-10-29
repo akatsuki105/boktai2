@@ -4744,8 +4744,8 @@ _0805547E:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08055484
-FUN_08055484: @ 0x08055484
+	thumb_func_start Cmd_E70E
+Cmd_E70E: @ 0x08055484
 	push {r4, lr}
 	ldr r0, _080554D0 @ =0x03000120
 	ldr r4, [r0]
@@ -4788,8 +4788,8 @@ _080554C8:
 _080554D0: .4byte 0x03000120
 _080554D4: .4byte 0x000005D4
 
-	thumb_func_start FUN_080554d8
-FUN_080554d8: @ 0x080554D8
+	thumb_func_start Cmd_B294
+Cmd_B294: @ 0x080554D8
 	push {r4, r5, lr}
 	ldr r0, _0805552C @ =0x03000120
 	ldr r2, [r0]

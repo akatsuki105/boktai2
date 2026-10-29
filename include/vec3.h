@@ -19,6 +19,13 @@ static inline void Vec3_Sum(Vec3* dst, Vec3* a, Vec3* b) {
   dst->z = a->z + b->z;
 }
 
+// dst = a - b
+static inline void Vec3_Diff(Vec3* dst, Vec3* a, Vec3* b) {
+  dst->x = a->x - b->x;
+  dst->y = a->y - b->y;
+  dst->z = a->z - b->z;
+}
+
 // src を dst に写して y だけ dy ずらす
 static inline void Vec3_CopyOffsetY(Vec3* dst, Vec3* src, s32 dy) {
   *dst = *src;
@@ -31,5 +38,8 @@ static inline void Vec3_SetPolar(Vec3* v, u32 angle, s32 radius) {
   v->y = 0;
   v->z = POLAR_Z(radius, angle);
 }
+
+// v を 0 で埋める
+static inline void Vec3_Clear(Vec3* v) { CpuFill32(0, v, sizeof(Vec3)); }
 
 #endif  // __INCLUDE_VEC3_H__

@@ -7,7 +7,7 @@
 #define SPRITE_FLAMETHROWER 0x1BC7             // 火炎放射
 #define SPRITE_UI_MISC 0x414C                  // 太陽鍛治, ショップ名, "時の家"の暗証番号入力端末 など、メニューUIのうち、用途が限定的でサイズの小さいものをここにまとめている
 #define SPRITE_42E2 0x42E2                     // 太陽センサーのヘルプの手や住んでる地域のフォント
-#define SPRITE_INVENTORY_ICONS 0x5D04          // アイテムアイコン
+#define SPRITE_INVENTORY_ICONS 0x5D04          // アイテムアイコン, poseIdx は "include/constants/item_icon.h"
 #define SPRITE_SHADEMAN 0x5D36                 // シェードマン(EXE)
 #define SPRITE_UI_GALLERY 0x5EBF               // 図書館で見れる魔物図鑑,武器図鑑,アルバムのUI
 #define SPRITE_UI_SOLARBANK 0x6893             // 太陽バンクのUI
@@ -109,7 +109,7 @@
 #define SPRITE_34C0 0x34C0                     // 大聖堂の水晶をはめる穴あたりの壁?
 #define SPRITE_7031 0x7031                     // スライムの破片
 #define SPRITE_E857 0xE857                     // 黒塗り
-#define SPRITE_3641 0x3641                     // 丸い光のエフェクト
+#define SPRITE_BLACKHOLE 0x3641                // ブラックホール(その他の暗黒エフェクトでも流用?)
 #define SPRITE_WEDGE 0xF070                    // 封印の楔
 #define SPRITE_SOLAR_PLANT 0xC3C3              // 太陽の根(ヒーリングで成長させられるもじゃもじゃ)
 #define SPRITE_BED 0x1C84                      // ベッド
@@ -137,7 +137,7 @@
 #define SPRITE_9A1F BOKHASH("start")           // 0x9A1F, "PUSH START BUTTON"の文字(どこで使ってるか不明)
 #define SPRITE_C459 0xC459                     // 太陽床
 #define SPRITE_DC07 0xDC07                     // 天窓の光
-#define SPRITE_D45E 0xD45E                     // 水たまり?, スケルトン
+#define SPRITE_SKELETON_MISC 0xD45E            // スケルトン (リッチやアーチャといったスケルトンの派生タイプのスプライト?)
 #define SPRITE_D85E 0xD85E                     // エフェクト群(電気っぽい)
 #define SPRITE_2817 0x2817                     // 大聖堂の水晶?
 #define SPRITE_EFD8 0xEFD8                     // 0..9の数字とまだ何も数字が書かれていないパネルの絵
@@ -145,7 +145,6 @@
 #define SPRITE_TIME_MCIRCLE 0xA152             // タイム魔方陣
 #define SPRITE_17C7 0x17C7                     // 重量スイッチ
 #define SPRITE_210E 0x210E                     // 弾に見えるが、エフェクトかもしれない
-#define SPRITE_2110 0x2110                     // 未確認, サバタの大きい攻撃判定に付くスプライト
 #define SPRITE_1FE0 0x1FE0                     // 黒塗り
 #define SPRITE_2C1A 0x2C1A                     // 岩の角みたいな何か
 #define SPRITE_SWORD_AX 0x5291                 // ソード(敵)、アックス(敵)
@@ -245,7 +244,7 @@
 #define SPRITE_2E7A 0x2E7A                     // ドヴァリン
 #define SPRITE_DVALIN_2E7B 0x2E7B              // ドヴァリン
 #define SPRITE_2E7C 0x2E7C                     // ドヴァリン
-#define SPRITE_9D41 0x9D41                     // 岩ブロック
+#define SPRITE_CUBE_ROCK 0x9D41                // 岩ブロック
 #define SPRITE_CUBE_ROCK_DEBRIS_L 0xA894       // 岩ブロックの破片(大)
 #define SPRITE_CUBE_ROCK_DEBRIS_S 0xA895       // 岩ブロックの破片(小)
 #define SPRITE_7AC6 0x7AC6                     // 黒塗り

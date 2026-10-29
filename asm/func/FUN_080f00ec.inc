@@ -118,7 +118,7 @@ _080F0138:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	ldr r0, _080F021C @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x90

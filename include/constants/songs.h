@@ -213,10 +213,10 @@
 #define SONG_209 209
 #define SONG_210 210
 #define SONG_211 211
-#define SONG_212 212
+#define CRY_BOKU_DAMAGED 212
 #define SONG_213 213
 #define SONG_214 214
-#define SONG_215 215
+#define CRY_BOKU_DEATH 215
 #define NOISE_SOLAR_CHARGE 216  // 太陽エネルギーチャージSE(無限ループ)
 #define SONG_217 217
 #define SONG_218 218
@@ -229,18 +229,18 @@
 #define SONG_225 225
 #define SONG_226 226
 #define SONG_227 227
-#define SONG_228 228
+#define CRY_CURORO_DEATH 228
 #define SONG_229 229
 #define SE_DAMAGE 230  // プレイヤーがダメージ食らった時の音
 #define SONG_231 231
-#define SONG_232 232
+#define CRY_BAT_DEATH 232
 #define SONG_233 233
 #define SONG_234 234
 #define SONG_235 235
 #define SONG_236 236
 #define SONG_237 237
 #define SONG_238 238
-#define CRY_BOKU_NOTICE 239  // MGSでいう敵に物音を聞かれた時
+#define CRY_BOKU_DETECT 239  // MGSでいう敵に物音を聞かれた時
 #define CRY_BOKU_ALERT 240   // 見つかった時
 #define CRY_BOKU_QUESTION 241
 #define SONG_242 242
@@ -249,19 +249,19 @@
 #define SONG_245 245
 #define SONG_246 246
 #define SONG_247 247
-#define SONG_248 248
+#define CRY_CROW_DEATH 248
 #define SONG_249 249
 #define SONG_250 250
 #define SE_GENERATOR_ENABLED 251   // パイルドライバーのジェネレータが有効になった時
 #define SE_GENERATOR_DISABLED 252  // パイルドライバーのジェネレータが無効になった時
-#define SE_UNK_ENEMY_VOICE 253
+#define CRY_MUMMY_DAMAGED 253
 #define SE_UNK_254 254
 #define CRY_MUMMY_255 255  // マミーのボイス
 #define CRY_MUMMY_DEATH 256
 #define CRY_MUMMY_257 257
-#define CRY_MUMMY_258 258
-#define CRY_MUMMY_259 259
-#define CRY_MUMMY_260 260
+#define CRY_MUMMY_DETECT 258
+#define CRY_MUMMY_ALERT 259
+#define CRY_MUMMY_QUESTION 260
 #define SE_NONE_261 261  // 無音？
 #define SONG_262 262
 #define SE_CHOICE 263  // 選択肢が表示された時の音 (例: 図書館でレディに話しかけた時)
@@ -276,7 +276,7 @@
 #define SE_PICKUP 272         // 袋アイテム取得時の音
 #define SE_EQUIP 273          // メニューでの武器と防具装備時の音
 #define SE_UNK_274 274        // バット？
-#define SE_UNK_275 275        // クロロホルム？
+#define CRY_SPIDER_DEATH 275  // スパイダー以外にも、サンドウォームとサーペントの死亡音にも使われる
 #define SE_UNK_276 276
 #define SE_UNK_277 277  // レイス？
 #define SE_UNK_278 278
@@ -313,10 +313,10 @@
 #define SONG_309 309
 #define SONG_310 310
 #define SONG_311 311
-#define SE_CONFUSE 312  // 多分、"悪いキノコ"を食べて混乱したときのSE
-#define SE_ALERT_313 313
-#define SONG_314 314
-#define SONG_315 315
+#define SE_CONFUSE 312   // 多分、"悪いキノコ"を食べて混乱したときのSE
+#define SE_ALERT 313     // CRY_XXXX_ALERT の汎用SE
+#define SE_DETECT 314    // CRY_XXXX_DETECT の汎用SE
+#define SE_QUESTION 315  // CRY_XXXX_QUESTION の汎用SE
 #define SONG_316 316
 #define SONG_317 317
 #define SE_ENEMY_DAMAGED 318  // 敵がダメージ受けた時のSE
@@ -390,9 +390,9 @@
 #define SONG_386 386
 #define SONG_387 387
 #define SONG_388 388
-#define CRY_GOLEM_389 389    // 多分ゴーレムが怪しんだ時
-#define CRY_GOLEM_ALERT 390  // 多分見つかった時
-#define CRY_GOLEM_391 391    // ゴーレムっぽい
+#define CRY_GOLEM_DETECT 389  // ゴーレムが怪しんだ時
+#define CRY_GOLEM_ALERT 390   // 見つかった時
+#define CRY_GOLEM_391 391     // ゴーレムっぽい
 #define SONG_392 392
 #define SONG_393 393
 #define SONG_394 394
@@ -456,10 +456,10 @@
 #define SONG_452 452
 #define SONG_453 453
 #define SONG_454 454
-#define SONG_455 455
-#define SONG_456 456
-#define SONG_457 457
-#define SONG_458 458
+#define CRY_COCKA_455 455
+#define CRY_COCKA_456 456
+#define CRY_COCKA_457 457
+#define CRY_COCKA_DEATH 458
 #define SONG_459 459
 #define SONG_460 460
 #define SONG_461 461
@@ -472,7 +472,7 @@
 #define SONG_468 468
 #define SONG_469 469
 #define SONG_470 470
-#define SONG_471 471
+#define CRY_TENTACLE_DEATH 471  // オクトパス,暗黒の根 の死亡音
 #define SONG_472 472
 #define SONG_473 473
 #define SONG_474 474
@@ -543,7 +543,7 @@
 #define SE_539 539  // 属性ブロック？
 #define SONG_540 540
 #define SONG_541 541
-#define SONG_542 542
+#define SONG_542 542  // CRY_GHOST_DEATH の代わりに使われることがある
 #define SONG_543 543
 #define SONG_544 544
 #define SONG_545 545
@@ -626,8 +626,8 @@
 #define SONG_622 622
 #define SONG_623 623
 #define SONG_624 624
-#define SONG_625 625
-#define SONG_626 626
+#define CRY_MIMIC_ALERT 625  // CRY_MIMIC_DETECT も兼ねる
+#define CRY_MIMIC_QUESTION 626
 #define SE_627 627  // 何も聞こえない,無音?
 #define SONG_628 628
 #define SONG_629 629
@@ -670,7 +670,7 @@
 #define SONG_666 666
 #define SE_667 667  // 炎っぽいSE
 #define SONG_668 668
-#define SE_x29D 669  // 金属の枷？
+#define SE_669 669  // 金属の枷？
 #define SONG_670 670
 #define SONG_671 671
 #define SONG_672 672
@@ -899,7 +899,7 @@
 #define SONG_895 895
 #define SONG_896 896
 #define SE_WEAPON_LV_UP 897
-#define SE_BREAK_898 898  // 何かが砕けるような音 (武器が壊れた時？)
+#define SE_WEAPON_BREAK 898  // 武器が壊れた音
 #define SE_899 899
 #define SONG_900 900
 #define SONG_901 901
@@ -931,9 +931,9 @@
 #define SONG_927 927
 #define SE_CHANGE_BAT 928
 #define SE_CHANGE_MOUSE 929
-#define SONG_930 930
-#define SONG_931 931
-#define SONG_932 932
+#define CRY_DOG_DEATH 930
+#define CRY_DOG_DETECT 931
+#define CRY_DOG_ALERT 932
 #define SONG_933 933
 #define SONG_934 934
 #define SONG_935 935
@@ -941,10 +941,10 @@
 #define SONG_937 937
 #define SONG_938 938
 #define SONG_939 939
-#define SONG_940 940
+#define CRY_SKELETON_DEATH 940  // 正確には鳴き声でなく、骨が崩れ落ちるSE
 #define SONG_941 941
 #define SONG_942 942
-#define SONG_943 943
+#define CRY_LICH_DEATH 943
 #define SONG_944 944
 #define SONG_945 945
 #define SONG_946 946
@@ -961,17 +961,17 @@
 #define SONG_957 957
 #define SONG_958 958
 #define SONG_959 959
-#define SONG_960 960
+#define CRY_SLIME_DEATH 960
 #define SONG_961 961
 #define SONG_962 962
 #define SONG_963 963
 #define SONG_964 964
-#define SONG_965 965
+#define CRY_BEE_DEATH 965
 #define SONG_966 966
 #define SONG_967 967
 #define SE_BEE_968 968  // 蜂のモスキート音
 #define SONG_969 969
-#define SONG_970 970
+#define CRY_GHOST_DEATH 970
 #define SONG_971 971
 #define SONG_972 972
 #define SONG_973 973
@@ -982,7 +982,7 @@
 #define SONG_978 978
 #define SONG_979 979
 #define SONG_980 980
-#define SONG_981 981
+#define CRY_CENTIPEDE_DEATH 981
 #define SONG_982 982
 #define SONG_983 983
 #define SONG_984 984

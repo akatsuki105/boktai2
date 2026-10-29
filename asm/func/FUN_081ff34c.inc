@@ -262,7 +262,7 @@ _081FF46C:
 	str r7, [sp, #0x30]
 	str r7, [sp, #0x34]
 	adds r1, r4, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	b _081FF5BC
 	.align 2, 0
 _081FF560: .4byte 0x030047C8

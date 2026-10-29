@@ -164,9 +164,9 @@ void VM_ClearScratchpad_Proxy(void);
 bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 localVarCount);
 s32 VM_ExecByPointer(u8* pc, ScriptArgs* args);
 
-void FUN_0823167c(u8* dst);
-void FUN_0823206c(u8* pc, s32 offset, u32 val);
-u32 FUN_082320e4(u8* pc, s32 offset);
+void VM_GetMemoryRef(u8* dst);
+void VM_StoreMemoryRef(u8* pc, s32 offset, u32 val);
+u32 VM_LoadMemoryRef(u8* pc, s32 offset);
 
 u8* FUN_08232160(u8* pc);
 u8* VM_GetPC_Proxy(void);

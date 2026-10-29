@@ -200,14 +200,14 @@ NON_MATCH void FUN_080a48bc(Entity1E98* p) {
   if (p->unk_1b != 0) {
     p->unk_1b--;
     if (p->unk_1b == 0) {
-      CpuCopy32(&gObjPlttData[0x5F * 16], p->pltt, sizeof(p->pltt));
+      CpuCopy32(&gObjPlttData[95 * 16], p->pltt, sizeof(p->pltt));
     } else if (p->unk_1b > 15) {
-      CpuCopy32(&gObjPlttData[0x60 * 16], p->pltt, sizeof(p->pltt));
+      CpuCopy32(&gObjPlttData[96 * 16], p->pltt, sizeof(p->pltt));
     } else {
       s32 t = p->unk_1b;
       s32 u = 16 - t;
-      rgb555* lit = &gObjPlttData[0x60 * 16];
-      rgb555* dark = &gObjPlttData[0x5F * 16];
+      rgb555* lit = &gObjPlttData[96 * 16];
+      rgb555* dark = &gObjPlttData[95 * 16];
       rgb555* dst = p->pltt;
       s32 i;
 
@@ -274,7 +274,7 @@ void Entity1E98_InitHurtbox(Entity1E98Elem* elem) {
   Vec3 halfSize;
   Vec3 offset;
 
-  VEC3_SET(halfSize, 0x80, 0x32, 0x80);
+  VEC3_SET(halfSize, Q8(0.5), Q8(0.196), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hurtbox, elem->hurtboxArg, HBFLAG_HURTBOX | HBFLAG_UNK_1, 0, 0x20, &halfSize, &offset);
   Hitbox_SetHandler(hurtbox, FUN_080a4620, elem);
@@ -403,7 +403,7 @@ Entity1E98* Entity1E98_Create_Internal(void) {
   return p;
 }
 
-s32 FUN_080a4e1c(void) {
+s32 Cmd_C46E(void) {
   Entity1E98* p = gEntity1E98;
   s32 id;
   s32 i;

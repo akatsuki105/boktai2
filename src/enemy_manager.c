@@ -11,6 +11,11 @@ u32 EntityA628_IsActive(void);
 COMMON_DATA EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
 COMMON_DATA EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
 
+static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
+  if (TEST_FLAGS(p->flags5, bit)) return TRUE;
+  return FALSE;
+}
+
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
   EnemyListNode* node;
@@ -84,14 +89,14 @@ void FUN_080ec758(u8 kind, void* payload) {
 }
 
 // 指定した種族の敵へメッセージを配送する
-void FUN_080ec79c(u8 kind, void* payload) {
+void FUN_080ec79c(u8 enemyKind, void* payload) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p;
 
   if (node != NULL) {
     while (node->next != NULL) {
       p = node->enemy;
-      if ((p->kind == kind) && (p->handlerMsg != NULL)) {
+      if ((p->kind == enemyKind) && (p->handlerMsg != NULL)) {
         p->handlerMsg(p, payload);
       }
       node = node->next;
@@ -99,17 +104,17 @@ void FUN_080ec79c(u8 kind, void* payload) {
   }
 }
 
-NAKED void FUN_080ec7e8(u8 kind, u8 unk_480, void* payload) { INCFUNC("asm/func/FUN_080ec7e8.inc"); }
+NAKED void FUN_080ec7e8(u8 kind, u8 variant, void* payload) { INCFUNC("asm/func/FUN_080ec7e8.inc"); }
 
-// 種族と ID で敵を1体だけ特定してメッセージを配送する
-void FUN_080ec848(u8 kind, void* payload, u16 id) {
+// 種族(ENEK_xxx) と mover.id で敵を1体だけ特定してメッセージを配送する
+void FUN_080ec848(u8 enemyKind, void* payload, u16 moverID) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p;
 
   if (node != NULL) {
     while (node->next != NULL) {
       p = node->enemy;
-      if ((p->kind == kind) && (p->mover.id == id) && (p->handlerMsg != NULL)) {
+      if ((p->kind == enemyKind) && (p->mover.id == moverID) && (p->handlerMsg != NULL)) {
         p->handlerMsg(p, payload);
         return;
       }
@@ -121,8 +126,8 @@ void FUN_080ec848(u8 kind, void* payload, u16 id) {
 NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc"); }
 
 void FUN_080ec900(u8 kind) {
-  if ((kind == 1) || (kind == 25)) {
-    SET_FLAGS(gStat->unk_934, SF934_UNK_0);
+  if ((kind == ENEK_MUMMY) || (kind == ENEK_SANDWORM)) {  // どちらも視覚ではなく聴覚で索敵する
+    SET_FLAGS(gStat->mapFlags, MPF_UNK_0);
   }
 }
 
@@ -175,84 +180,74 @@ void FUN_080ecbe4(void) {}
 NAKED void FUN_080ecbe8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080ecbe8.inc"); }
 
 // 生きている敵の数を数える
-// 残差2命令, 原典は flags2 のオフセット定数をループ内で作り直して r7 を使わないが
-// agbcc は両方のオフセットを巻き上げるため1本多くレジスタを食う (&& をネストした if にしても同じ)
-NON_MATCH s32 FUN_080ecf18(void) {
-#ifdef NONMATCHING_C
+s32 FUN_080ecf18(void) {
   EnemyListNode* node;
-  Enemy* p;
+  Enemy* enemy;
   s32 count;
 
   GetEnemyManager();
   node = gEnemyListHead;
-  p = node->enemy;
+  enemy = node->enemy;
   count = 0;
-  while (p != NULL) {
-    if (p->hp > 0 && (p->flags2 & ENEFLAG2_UNK_17) == 0) {
+  while (enemy != NULL) {
+    if (enemy->hp > 0 && !Enemy_TestFlag2(enemy, ENEFLAG2_UNK_17)) {
       count++;
     }
     node = node->next;
-    p = node->enemy;
+    enemy = node->enemy;
   }
   return count;
-#else
-  INCFUNC("asm/func/FUN_080ecf18.inc");
-#endif
 }
 
 // 指定した種族の生きている敵の数を数える
 NAKED s32 Enemy_CountByKind(u32 kind) { INCFUNC("asm/func/Enemy_CountByKind.inc"); }
 
-NAKED s32 FUN_080ecfbc(u32 kind, u32 unk_480) { INCFUNC("asm/func/FUN_080ecfbc.inc"); }
+NAKED s32 FUN_080ecfbc(u32 kind, u32 variant) { INCFUNC("asm/func/FUN_080ecfbc.inc"); }
 
 // 生きている敵を先頭から1体返す
-// 残差2命令, FUN_080ecf18 と同じで flags2 のオフセット定数の巻き上げ有無でレジスタが1本増える
-NON_MATCH Enemy* FUN_080ed020(void) {
-#ifdef NONMATCHING_C
+Enemy* FUN_080ed020(void) {
   EnemyListNode* node;
-  Enemy* p;
+  Enemy* enemy;
 
   GetEnemyManager();
   node = gEnemyListHead;
-  p = node->enemy;
-  while (p != NULL) {
-    if (p->hp > 0 && (p->flags2 & ENEFLAG2_UNK_17) == 0) {
-      return p;
+  enemy = node->enemy;
+  while (enemy != NULL) {
+    if (enemy->hp > 0 && !Enemy_TestFlag2(enemy, ENEFLAG2_UNK_17)) {
+      return enemy;
     }
     node = node->next;
-    p = node->enemy;
+    enemy = node->enemy;
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_080ed020.inc");
-#endif
 }
 
 void FUN_080ed068(void) {
   EnemyListNode* node;
-  Enemy* p;
+  Enemy* enemy;
 
   GetEnemyManager();
   node = gEnemyListHead;
-  p = node->enemy;
-  if (p != NULL) {
+  enemy = node->enemy;
+  if (enemy != NULL) {
     do {
-      if (Enemy_IsDead(p) == 0) {
-        p->hp = 0;
-        Enemy_SetFlag(p, ENEFLAG_UNK_12);
+      if (!Enemy_IsDead(enemy)) {
+        enemy->hp = 0;
+        Enemy_SetFlag(enemy, ENEFLAG_UNK_12);
       }
       node = node->next;
-      p = node->enemy;
-    } while (p != NULL);
+      enemy = node->enemy;
+    } while (enemy != NULL);
   }
 }
 
 NAKED void FUN_080ed0b0(s32 param_1) { INCFUNC("asm/func/FUN_080ed0b0.inc"); }
 
-NAKED void FUN_080ed564(void) { INCFUNC("asm/func/FUN_080ed564.inc"); }
+NAKED void Cmd_C12A(void) { INCFUNC("asm/func/Cmd_C12A.inc"); }
 
-NAKED void FUN_080ed724(void) { INCFUNC("asm/func/FUN_080ed724.inc"); }
+NAKED void Cmd_7659(void) { INCFUNC("asm/func/Cmd_7659.inc"); }
 
+// 0xC1F2
 void Enemy_Sleep(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   if (id != 0) {
@@ -264,28 +259,24 @@ void Enemy_Sleep(void) {
   }
 }
 
-NAKED void FUN_080ed834(void) { INCFUNC("asm/func/FUN_080ed834.inc"); }
+NAKED void Cmd_62AA(void) { INCFUNC("asm/func/Cmd_62AA.inc"); }
 
-NAKED void FUN_080ed8f0(void) { INCFUNC("asm/func/FUN_080ed8f0.inc"); }
+NAKED void Cmd_4FD1(void) { INCFUNC("asm/func/Cmd_4FD1.inc"); }
 
-NON_MATCH void FUN_080ed9d0(void) {
-#ifdef NONMATCHING_C
+void Cmd_60FB(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   s32 val = VM_GetNamedArgValue('d', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL) {
-      if (p->flags5 & ENEFLAG5_UNK_8) {
+      if (Enemy_TestFlag5(p, ENEFLAG5_UNK_8)) {
         FUN_080ecbe8(p, val);
       }
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080ed9d0.inc");
-#endif
 }
 
-void FUN_080eda24(void) {
+void Cmd_4E22(void) {
   if (GetEnemyManager() != NULL) {
     EnemyListNode* node = gEnemyListHead;
     Enemy* p = node->enemy;
@@ -300,7 +291,7 @@ void FUN_080eda24(void) {
   }
 }
 
-NAKED void FUN_080eda7c(void) { INCFUNC("asm/func/FUN_080eda7c.inc"); }
+NAKED void Cmd_286B(void) { INCFUNC("asm/func/Cmd_286B.inc"); }
 
 NAKED bool32 FUN_080edb4c(Enemy* p, Vec3* pos) { INCFUNC("asm/func/FUN_080edb4c.inc"); }
 
@@ -346,7 +337,7 @@ Enemy* FindEnemyById(u32 id) {
 }
 
 // スクリプトが指定した敵が生存している (hp > 0) かを返す
-bool32 FUN_080eddc8(void) {
+bool32 Cmd_E019(void) {
   u32 id = VM_GetValue();
   Enemy* p;
   bool32 alive;
@@ -367,7 +358,7 @@ bool32 FUN_080eddc8(void) {
   return alive;
 }
 
-bool32 FUN_080eddf8(void) {
+bool32 Cmd_6790(void) {
   u32 id = VM_GetValue();
 
   if ((id != 0) && (FindEnemyById(id) != NULL)) {
@@ -392,7 +383,7 @@ NON_MATCH bool32 FUN_080ede14(u32 kind, u32 mask) {
 #endif
 }
 
-NAKED bool32 FUN_080ede60(u32 kind, u32 unk_480, u32 mask) { INCFUNC("asm/func/FUN_080ede60.inc"); }
+NAKED bool32 FUN_080ede60(u32 kind, u32 variant, u32 mask) { INCFUNC("asm/func/FUN_080ede60.inc"); }
 
 NAKED void FUN_080edebc(EnemyManager* p) { INCFUNC("asm/func/FUN_080edebc.inc"); }
 
@@ -423,9 +414,9 @@ NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 void FUN_080ee9d4(EnemyManager* p) {
   if (Mod(p->frameCounter, 15) == 0) {
     if (EntityA628_IsActive() == 0) {
-      SET_FLAGS(gStat->unk_934, SF934_UNK_5);
+      SET_FLAGS(gStat->mapFlags, MPF_BRIGHT);
     } else {
-      CLEAR_FLAGS(gStat->unk_934, SF934_UNK_5);
+      CLEAR_FLAGS(gStat->mapFlags, MPF_BRIGHT);
     }
   }
 }
@@ -487,7 +478,7 @@ NAKED void FUN_080eeee0(Enemy* p) { INCFUNC("asm/func/FUN_080eeee0.inc"); }
 NAKED void FUN_080eef6c(Enemy* p) { INCFUNC("asm/func/FUN_080eef6c.inc"); }
 
 // '.n' の敵に '.r' の2値を入れる
-void FUN_080eefec(void) {
+void Cmd_B3D7(void) {
   u32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -503,11 +494,11 @@ void FUN_080eefec(void) {
   }
 }
 
-NAKED void FUN_080ef048(void) { INCFUNC("asm/func/FUN_080ef048.inc"); }
+NAKED void Cmd_C7DC(void) { INCFUNC("asm/func/Cmd_C7DC.inc"); }
 
-NAKED void FUN_080ef154(void) { INCFUNC("asm/func/FUN_080ef154.inc"); }
+NAKED void Cmd_F200(void) { INCFUNC("asm/func/Cmd_F200.inc"); }
 
-void FUN_080ef4e4(void) {
+void Cmd_E1C6(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
@@ -521,7 +512,7 @@ void FUN_080ef4e4(void) {
   }
 }
 
-void FUN_080ef534(void) {
+void Cmd_9311(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
@@ -529,7 +520,7 @@ void FUN_080ef534(void) {
   }
 }
 
-void FUN_080ef55c(void) {
+void Cmd_0740(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
@@ -537,7 +528,7 @@ void FUN_080ef55c(void) {
   }
 }
 
-void FUN_080ef584(void) {
+void Cmd_2571(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
@@ -545,6 +536,6 @@ void FUN_080ef584(void) {
   }
 }
 
-NAKED void FUN_080ef5a8(void) { INCFUNC("asm/func/FUN_080ef5a8.inc"); }
+NAKED void Cmd_1E97(void) { INCFUNC("asm/func/Cmd_1E97.inc"); }
 
 EnemyManager* GetEnemyManager(void) { return gEnemyManager; }

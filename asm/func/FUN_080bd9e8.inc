@@ -270,7 +270,7 @@ _080BDC34:
 	beq _080BDC5A
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_080b9fc4
+	bl ShopCursor_PlaceSprite
 	adds r0, r5, #0
 	bl FUN_080bd058
 	adds r0, r5, #0

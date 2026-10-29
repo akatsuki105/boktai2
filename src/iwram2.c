@@ -14,31 +14,6 @@
 #include "video.h"
 #include "vm.h"
 
-COMMON_DATA IntrFunc gIntrTable[13] = {};    // 0x03002CB0
-COMMON_DATA vu32 gVblankFlag = FALSE;        // 0x03002CE4
-COMMON_DATA u32 gMarqueeOffset = 0;          // 0x03002CE8
-COMMON_DATA bool32 gMarqueeActive2 = FALSE;  // 0x03002CEC
-COMMON_DATA u32 gFrameCounter = 0;           // 0x03002CF0, bit0 が点滅の偶奇を決める, 根拠: MainSprite_DrawList が tst #1 で SPRFLAG_BLINK_ODD / SPRFLAG_BLINK_EVEN を選ぶ
-COMMON_DATA u8 u8_03002cf4[12] = {};         // todo
-
-COMMON_DATA u32 IntrMain_Buffer[0x200] = {0};  // 0x03002D00, INTR_MAIN のRAMコード
-
-COMMON_DATA bool32 gVBlankDone = FALSE;  // 0x03003500, VBlankIntr が立て、VideoCommit_Update が落とす
-
-COMMON_DATA u32 gVBlankCount = 0;     // 0x03003504, VBlankIntr が毎フレーム +1 する
-COMMON_DATA u32 gMarqueeOffset2 = 0;  // 0x03003508
-
-COMMON_DATA u8 u8_0300350C[0x03003510 - 0x0300350C] = {};  // todo
-
-COMMON_DATA u16 u16_03003510 = 0;             // 0x03003510, FUN_0822f0d8, FUN_0822eef4 が 1 を書く
-COMMON_DATA u8 u8_03003512[2] = {};           // todo
-COMMON_DATA u16 u16_03003514 = 0;             // 0x03003514, FUN_0822f0d8 は 0、FUN_0822eef4 は 1 を書く
-COMMON_DATA u8 u8_03003516[2] = {};           // todo
-COMMON_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライン毎(160 ライン)の値のバッファ (= u8_ARRAY_02036c00), 根拠: FUN_0822f0d8, FUN_0822eef4
-
-COMMON_DATA bool16 gEepromIdle = FALSE;                    // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
-COMMON_DATA u8 u8_0300351e[0x03003520 - 0x0300351E] = {};  // todo
-COMMON_DATA bool32 gMarqueeActive = FALSE;                 // 0x03003520, Marquee の表示中フラグと対で立つ
 COMMON_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
 COMMON_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)
@@ -109,7 +84,7 @@ COMMON_DATA u16 gBGTileDataTileCounts[4] = {};  // 0x03003E80, BG ごとの転�
 
 COMMON_DATA s16 gBgAffineCenterY = 0;                      // 0x03003E88, 根拠: Video_SetBGAffine が BGnY の算出に使う
 COMMON_DATA u8 u8_03003e8a[2] = {};                        // todo
-COMMON_DATA u16 u16_03003e8c = 0;                          // 0x03003E8C, 0 なら StageBGRegs が BG2/BG3 のオフセットを積み, 0 以外なら控えの書き戻しを行う
+COMMON_DATA u16 gBg2AffineMode = 0;                        // 0x03003E8C, 0 なら StageBGRegs が BG2/BG3 のオフセットを積み, 0 以外なら控えの書き戻しを行う
 COMMON_DATA u8 u8_03003e8e[0x03003E90 - 0x03003E8E] = {};  // todo
 COMMON_DATA s16 gStagedBgAffineMatrix[4] = {};             // 0x03003E90, StageBGRegs が gBgAffineMatrix から写す先
 COMMON_DATA s32 gBgAffineRefX = 0;                         // 0x03003E98, BGnX の控え, StageBGRegs が gStagedBgAffineRef[0] へ写す
@@ -124,7 +99,7 @@ COMMON_DATA s16 gBgAffineCenterX = 0;                      // 0x03003EB0, 根拠
 COMMON_DATA u8 u8_03003eb2[2] = {};                        // todo
 COMMON_DATA s16 gBgAffineScaleX = 0;                       // 0x03003EB4, 8.8 固定小数の X 倍率, Video_InitBGMode が 0x100 (等倍) を書く
 COMMON_DATA u8 u8_03003eb6[0x03003EB8 - 0x03003EB6] = {};  // todo
-COMMON_DATA s32 gStagedBgAffineRef[2] = {};                // 0x03003EB8, StageBGRegs が gBgAffineRefX / gBgAffineRefY から写す先
+COMMON_DATA u32 gStagedBgAffineRef[2] = {};                // 0x03003EB8, StageBGRegs が gBgAffineRefX / gBgAffineRefY から写す先
 COMMON_DATA u16 gStagedBGOfs[8] = {};                      // 0x03003EC0, BG0HOFS..BG3VOFS に流し込む値の控え, BG ごとに (H, V) の順, 根拠: StageBGRegs
 
 COMMON_DATA BgState gBgStates[4] = {};  // 0x03003ED0, BG0-3 の状態, 根拠: FUN_0822eef4, StageBGRegs (stride 0x30, +0x20/+0x22 を BGnHOFS/BGnVOFS に使う)
@@ -153,7 +128,7 @@ COMMON_DATA u8 gOAMTileWidthTable[16] = {};       // 0x03003FE0, タイル(8px)�
 COMMON_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, AuxSprite_DrawInternal / MainSprite_DrawInternal が OR する
 COMMON_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
-COMMON_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gBgPlttBlendColor 一色, ApplyBgPlttBlend が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
+COMMON_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, Q6(1) が等倍で 0 なら gBgPlttBlendColor 一色, ApplyBgPlttBlend が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
 COMMON_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), ResetObjPlttSlotCursor が毎フレーム gObjPlttSlotReserved + 2 に戻す, 根拠: AllocBlendPlttSlot (AllocParticlePlttSlot は gObjPlttSlotCount の方を使う)
 COMMON_DATA s32 gBgBrightnessApplied = 0;   // 0x03004048, ApplyBgPlttBlend が最後に適用した BG の明るさ, gObjBrightnessApplied の BG 版
 COMMON_DATA s32 gObjBrightnessApplied = 0;  // 0x0300404C, FUN_0822d248 が最後に適用した gObjBrightness, 等倍のまま変わっていなければ加工を省くための控え
@@ -167,7 +142,7 @@ COMMON_DATA u8 u8_03004456[2] = {};        // todo
 
 COMMON_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: AllocParticlePlttSlot
 
-COMMON_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gObjPlttBlendColor 一色, FUN_0822d248 が OBJ パレットに適用する, 掛ける相手はなく1本だけ
+COMMON_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, Q6(1) が等倍で 0 なら gObjPlttBlendColor 一色, FUN_0822d248 が OBJ パレットに適用する, 掛ける相手はなく1本だけ
 
 COMMON_DATA s32 gBgBrightness2 = 0;  // 0x03004460, BG の明るさのもう一方の係数, gBgBrightness と独立に暗くしたい演出 (BgPlttDimmer 等) が使う
 
@@ -177,7 +152,7 @@ COMMON_DATA u8 u8_03004466[2] = {};  // todo
 
 COMMON_DATA rgb555* gBGPlttBufferPointer = NULL;  // 0x03004468
 
-COMMON_DATA s32 s32_0300446c = 0;  // 0x0300446C
+COMMON_DATA s32 gGrayscaleTimer = 0;  // 0x0300446C
 
 COMMON_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: AllocParticlePlttSlot (2 個まで), AllocBlendPlttSlot (16 個まで)
 

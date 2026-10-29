@@ -121,7 +121,7 @@ _080A912E:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #0xc
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	b _080A915E
 _080A9146:
 	cmp r0, #4
@@ -134,7 +134,7 @@ _080A9146:
 	adds r1, r5, r2
 	ldr r1, [r1]
 	movs r2, #0xd
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080A915E:
 	ldrb r0, [r4, #0x13]
 	adds r0, #1

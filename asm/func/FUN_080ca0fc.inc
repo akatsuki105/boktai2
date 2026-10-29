@@ -242,7 +242,7 @@ _080CA286:
 	add r1, sp, #0x14
 	movs r2, #0
 	movs r3, #2
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	ldr r1, _080CA30C @ =FUN_080c789c
 	movs r0, #7
 	strb r0, [r7]

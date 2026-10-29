@@ -121,7 +121,7 @@ Entity081fa164_AdvanceAnim: @ 0x081F9E54
 	ldrb r0, [r3]
 	adds r2, r2, r0
 	mov r0, ip
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	b _081F9E8C
 _081F9E88:
 	subs r0, #1
@@ -368,7 +368,7 @@ _081FA01A:
 	ldr r1, [r6, #0x18]
 	ldrb r2, [r4]
 	adds r0, r5, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	adds r0, r5, #0
 	movs r1, #1
 	bl Particle_SetPltt

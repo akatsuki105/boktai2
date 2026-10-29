@@ -129,7 +129,7 @@ _0809E906:
 	movs r1, #1
 	movs r2, #0x19
 	add r3, sp, #0xc
-	bl Entity0800a89c_Spawn
+	bl SpawnSpiritBugs
 _0809E99E:
 	ldrh r0, [r5, #0x22]
 	adds r0, #1

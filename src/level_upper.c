@@ -31,7 +31,7 @@ typedef struct {
   u8 unk_72[2];              // 0x72
   u32 nextExp;               // 0x74, 次にレベルアップする総経験値量
   u32* expTable;             // 0x78, 経験値テーブル, gExpTable
-  ParticleGroup* p_7c;       // 0x7C, 根拠: LevelUpper_EmitLevelUpEffect で Particle_SetFrame に渡される
+  ParticleGroup* group2;     // 0x7C, PTCL_GROUP_2
   LevelUpParticle ptcls[8];  // 0x80
 } LevelUpper;
 static_assert(sizeof(LevelUpper) == 608);
@@ -92,9 +92,9 @@ void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
     p->base.pos.y = player->mover.pos.y + p->offset.y;
     p->base.pos.z = player->mover.pos.z + p->offset.z;
     if ((p->unk_3a >> 2) & 1) {
-      Particle_SetFrame(&p->base, g, 3);
+      Particle_SetPose(&p->base, g, PTCL2_SOL_S);
     } else {
-      Particle_SetFrame(&p->base, g, 2);
+      Particle_SetPose(&p->base, g, PTCL2_SOL_L);
     }
   }
 }
@@ -110,7 +110,7 @@ void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
   p->unk_62 = 1;
   p->unk_60 = 1;
   for (i = 0; i < 8; i++) {
-    Particle_SetFrame(&p->ptcls[i].base, p->p_7c, 0);
+    Particle_SetPose(&p->ptcls[i].base, p->group2, PTCL2_0);
   }
 }
 
@@ -131,12 +131,12 @@ s32 LevelUpper_Update(LevelUpper* p) {
   s32 i, j;
 
   if (gPlayerPtr[0] != NULL) {
-    if (gPlayerPtr[0]->unk_1c == 4) {
+    if (gPlayerPtr[0]->mode == PMODE_DEAD) {
       if (p->unk_62 == 1) {
         p->sprite.flags |= SPRFLAG_HIDDEN;
         p->unk_62 = 0;
         for (j = 0; j < 8; j++) {
-          p->ptcls[j].base.flags |= 1;
+          p->ptcls[j].base.flags |= SPRFLAG_HIDDEN;
           p->ptcls[j].unk_38 = 0;
         }
       }
@@ -183,10 +183,10 @@ void LevelUpper_InitSprite(LevelUpper* p) {
 void LevelUpper_InitParticles(LevelUpper* p) {
   s32 i;
 
-  p->p_7c = GetParticleGroup(PTCL_GROUP_2);
+  p->group2 = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 8; i++) {
-    Particle_Add(&p->ptcls[i].base, p->p_7c, SPRFLAG_HIDDEN);
-    Particle_SetFrame(&p->ptcls[i].base, p->p_7c, 0);
+    Particle_Add(&p->ptcls[i].base, p->group2, SPRFLAG_HIDDEN);
+    Particle_SetPose(&p->ptcls[i].base, p->group2, PTCL2_0);
     Particle_SetOffset(&p->ptcls[i].base, -4, -4);
     Particle_SetPltt(&p->ptcls[i].base, 1);
   }

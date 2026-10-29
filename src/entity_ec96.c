@@ -126,8 +126,8 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
     Video_SetAuxSpritePltt(gfx, 647);
   }
   hitbox = &p->hitbox;
-  VEC3_SET(size, 0x82, 0x80, 0x82);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(size, Q8(0.51), Q8(0.5), Q8(0.51));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   pos = &p->pos;
   Hitbox_SetPos(hitbox, pos, 0);
@@ -147,7 +147,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   if (h < 0xF) {
     h++;
   }
-  Map_AddTileOverride(&p->tileOverride, idx, 0, h, 0xFF, 0);
+  Map_AddTileOverride(&p->tileOverride, idx, STAIRS_NONE, h, 0xFF, 0);
   return 0;
 }
 

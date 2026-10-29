@@ -40,7 +40,7 @@ _081E658E:
 	cmp r0, #0
 	beq _081E65A8
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	ldr r0, _081E6660 @ =0x00001610
 	adds r2, r7, r0
 	movs r1, #2

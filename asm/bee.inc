@@ -1883,7 +1883,7 @@ _0816770A:
 	movs r1, #0xa
 	bl Enemy_PlayAnim
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r1, #0xbc
 	lsls r1, r1, #1
 	adds r2, r6, r1
@@ -5914,7 +5914,7 @@ FUN_0816962c: @ 0x0816962C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_08168820
 	movs r0, #1

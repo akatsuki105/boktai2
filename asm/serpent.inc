@@ -225,7 +225,7 @@ _0818890E:
 	str r0, [r1]
 	ldr r2, _08188958 @ =0x0000057C
 	adds r1, r5, r2
-	ldr r0, _0818895C @ =FUN_080f09e0
+	ldr r0, _0818895C @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r0, _08188960 @ =0x0000061C
 	adds r1, r5, r0
@@ -246,7 +246,7 @@ _0818890E:
 _08188950: .4byte 0x0000060C
 _08188954: .4byte 0x085ADCD0
 _08188958: .4byte 0x0000057C
-_0818895C: .4byte FUN_080f09e0
+_0818895C: .4byte Enemy_DispatchMsg
 _08188960: .4byte 0x0000061C
 _08188964: .4byte FUN_08188858
 _08188968: .4byte FUN_0818889c
@@ -5587,17 +5587,17 @@ _0818B1EA:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -17365,7 +17365,7 @@ _08190CCA:
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _08190D06:
 	add sp, #0x14
 	pop {r4, r5, r6}
@@ -19125,7 +19125,7 @@ FUN_08191a14: @ 0x08191A14
 	str r4, [sp, #0x34]
 	adds r0, r5, #0
 	adds r1, r6, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	add sp, #0x4c
 	pop {r4, r5, r6}
 	pop {r0}
@@ -19378,7 +19378,7 @@ _08191C50:
 	adds r1, r2, #0
 	adds r2, r3, #0
 	adds r3, r4, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _08191C7E:
 	movs r1, #1
 	add sl, r1
@@ -19667,7 +19667,7 @@ _08191EA2:
 	adds r1, r2, #0
 	adds r2, r3, #0
 	adds r3, r4, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _08191EC4:
 	movs r1, #1
 	add r8, r1
@@ -24325,7 +24325,7 @@ FUN_08194264: @ 0x08194264
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_081941ec
 	movs r0, #1
@@ -24665,7 +24665,7 @@ EnemySerpent_Init: @ 0x081944E8
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08194580 @ =0x0000C102
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _08194574 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -26854,7 +26854,7 @@ _0819566E:
 	strb r0, [r1]
 	ldr r2, _08195764 @ =0x0000057C
 	adds r1, r7, r2
-	ldr r0, _08195768 @ =FUN_080f09e0
+	ldr r0, _08195768 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r3, _0819576C @ =0x0000061C
 	adds r1, r7, r3
@@ -26876,7 +26876,7 @@ _0819566E:
 _0819575C: .4byte 0x0000D636
 _08195760: .4byte 0x0000C102
 _08195764: .4byte 0x0000057C
-_08195768: .4byte FUN_080f09e0
+_08195768: .4byte Enemy_DispatchMsg
 _0819576C: .4byte 0x0000061C
 _08195770: .4byte FUN_081942a0
 _08195774: .4byte EnemySerpent_Destroy

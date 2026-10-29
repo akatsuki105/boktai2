@@ -68,13 +68,13 @@ _080AA6E4:
 	cmp r0, #0xf
 	bhi _080AA6F4
 	movs r0, #0x20
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	b _080AA6FE
 _080AA6F4:
 	ldrh r1, [r2]
 	movs r0, #0x30
 	subs r0, r0, r1
-	bl FUN_0823b9cc
+	bl Camera_Shake
 _080AA6FE:
 	add sp, #0xc
 	pop {r4, r5}

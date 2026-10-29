@@ -22,6 +22,8 @@ s32 (*const PTR_ARRAY_085ab9dc[4])(Entity08059a1c*, Entity08059a1cElem*, s32) = 
     FUN_08059804,
 };  // 0x085AB9DC
 
+static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
+
 // xz 平面上で原点から angle の向きに radius だけ離れた位置を v に入れる
 static inline void Vec3_SetPolar(Vec3* v, u8 angle, s32 radius) {
   v->x = POLAR_X(radius, angle);
@@ -48,15 +50,15 @@ static inline void Entity08059a1cElem_SetState(Entity08059a1cElem* elem, u8 stat
 
 void FUN_080592fc(HitboxData* a, HitboxData* b, Entity08059a1cElem* elem) {}
 
-void Entity08059a1cElem_InitHitbox(Entity08059a1cElem* elem, s32 power, s32 knockbackPower, s32 unk_44) {
+void Entity08059a1cElem_InitHitbox(Entity08059a1cElem* elem, s32 power, s32 knockbackPower, s32 invincibleTime) {
   HitboxData* hitbox = &elem->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x30, 0x20, 0x30);
-  VEC3_SET(offset, 0, 0x20, 0);
+  VEC3_SET(halfSize, Q8(0.19), Q8(0.125), Q8(0.19));
+  VEC3_SET(offset, 0, Q8(0.125), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, FUN_080592fc, elem);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0, 0, unk_44);
+  Hitbox_SetAttack(hitbox, power, knockbackPower, 0, 0, invincibleTime);
 }
 
 void Entity08059a1cElem_OnHurt(HitboxData* a, HitboxData* b, Entity08059a1cElem* elem) {
@@ -72,8 +74,8 @@ void Entity08059a1cElem_InitHurtbox(Entity08059a1cElem* elem) {
   HitboxData* hurtbox = &elem->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x80, 0x80, 0x80);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, Entity08059a1cElem_OnHurt, elem);
@@ -94,7 +96,7 @@ s32 Entity08059a1c_InitElem(Entity08059a1c* p, Entity08059a1cElem* elem, s32 idx
   elem->sprite.priority = 2;
   pos = &elem->sprite.pos;
   Vec3_Clear(pos);
-  Entity08059a1cElem_InitHitbox(elem, p->power, p->knockbackPower, p->unk_28);
+  Entity08059a1cElem_InitHitbox(elem, p->power, p->knockbackPower, p->invincibleTime);
   Entity08059a1cElem_InitHurtbox(elem);
   ParticleShadow_Init(&elem->shadow, pos, 0);
   ParticleShadow_Hide(&elem->shadow);
@@ -174,7 +176,7 @@ s32 FUN_0805965c(Entity08059a1c* p, Entity08059a1cElem* elem, s32 idx) {
   }
   Vec3_SetPolar(&ofs, elem->angle, (elem->dist * elem->timer) >> 6);
   Vec3_Sum(&sprite->pos, &elem->startPos, &ofs);
-  sprite->pos.y = elem->startPos.y + Trig_Fix12ToInt(SIN(elem->timer * 2) * 0x200);
+  sprite->pos.y = elem->startPos.y + FixToInt(12, SIN(elem->timer * 2) * 0x200);
   if (elem->timer > 0x1F && sprite->pos.y <= 0x1FF) {
     Hitbox_SetPos(&elem->hitbox, &sprite->pos, 0);
     Hitbox_Register(&elem->hitbox);
@@ -274,8 +276,6 @@ s32 Entity08059a1c_Destroy(Entity08059a1c* p) {
   return 0;
 }
 
-static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
-
 s32 Entity08059a1c_Init(Entity08059a1c* p, s32 power, s32 knockbackPower, s32 param_4, s32 param_5) {
   Entity08059a1cElem* elem;
   s32 i;
@@ -283,7 +283,7 @@ s32 Entity08059a1c_Init(Entity08059a1c* p, s32 power, s32 knockbackPower, s32 pa
   p->anim = GetFile(DIR_ANIMATION, ANIM_31F4);
   p->power = power;
   p->knockbackPower = knockbackPower;
-  p->unk_28 = param_4;
+  p->invincibleTime = param_4;
   p->dustPower = param_5;
   elem = p->elems;
   for (i = 0; i < 8; i++, elem++) {

@@ -114,6 +114,7 @@ INCASM("asm/skeleton.inc");
 
 NAKED s32 EnemySkeleton_Destroy(Skeleton* p) { INCFUNC("asm/func/EnemySkeleton_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 EnemySkeleton_Init(Skeleton* p) { INCFUNC("asm/func/EnemySkeleton_Init.inc"); }
 
 void EnemySkeleton_Create(void) {

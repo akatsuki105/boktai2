@@ -204,7 +204,7 @@ _0803D020:
 	str r1, [sp, #4]
 	adds r1, r7, #0
 	movs r2, #1
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0803D08A:
 	movs r0, #0xdd
 	lsls r0, r0, #2

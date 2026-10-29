@@ -99,7 +99,7 @@ bool32 Entity2D2BElem_ConsumeStateEntered(Entity2D2BElem* p) {
 }
 
 // 消灯中に炎属性で当たると点灯へ, 点灯中に氷属性で当たると消灯へ遷移する
-// 残差1命令, 原典は owner のレジスタから写しを作って2つ目の遷移に使う (FUN_0807b1a4 系と同じ)
+// 残差1命令, 原典は owner のレジスタから写しを作って2つ目の遷移に使う (Cmd_TestEquipBuff 系と同じ)
 NON_MATCH void Entity2D2BElem_OnHit(HitboxData* a, HitboxData* b, Entity2D2BElem* owner) {
 #ifdef NONMATCHING_C
   if (owner->state == 1) {
@@ -146,7 +146,7 @@ void Entity2D2BElem_UpdateUnlit(Entity2D2B* p, Entity2D2BElem* elem) {
   if (Entity2D2BElem_ConsumeStateEntered(elem)) {
     MainSprite* spr = &elem->sprite;
 
-    MainSprite_SetAnim(spr, elem->gfx, u16_ARRAY_085aa670[elem->kindIdx][0], 1, 0);
+    MainSprite_SetAnim(spr, elem->gfx, u16_ARRAY_085aa670[elem->kindIdx][0], PLAYMODE_LOOP, 0);
     MainSprite_SetPlttID(spr, u16_ARRAY_085aa678[elem->kindIdx] + 1);
   }
 }

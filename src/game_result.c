@@ -31,6 +31,12 @@ typedef struct GameResult {
 } GameResult;
 static_assert(sizeof(GameResult) == 896);
 
+const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252894[8] = {144, 152, 168, 176, 184, 200, 208, 216};
+
+const __attribute__((section(".rodata.faraddr"))) char s_RED_0825289c[3][6] = {"  RED", "BLACK", " GRAY"};
+const __attribute__((section(".rodata.faraddr"))) char s_STYLE_082528ae[6][9] = {"   SWORD", "   SPEAR", "  HAMMER", "    FIST", "     GUN", "NO STYLE"};
+const __attribute__((section(".rodata.faraddr"))) char s_PUSH_A_BUTTON_082528e4[] = "PUSH A BUTTON";
+
 // 8枚のスプライトを横一列に並べて隠しておく
 NON_MATCH void FUN_08222270(GameResult* p) {
 #ifdef NONMATCHING_C
@@ -43,7 +49,7 @@ NON_MATCH void FUN_08222270(GameResult* p) {
   spr = p->sprites;
   for (i = 0; i < 8; spr++, i++) {
     pos.x = xs[i];
-    MainSprite_Add(spr, &p->gfx, 0, 0x30, 0, 0, 60, &pos);
+    MainSprite_Add(spr, &p->gfx, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     spr->flags |= SPRFLAG_HIDDEN;
   }
 #else
@@ -80,7 +86,7 @@ void FUN_082229ac(GameResult* p) {
 // 背景パレットを読み込んで作業用バッファへ流す
 void FUN_082229e8(GameResult* p) {
   p->pltt = GetBgPlttFile(BGP_E9C3)->body;
-  CpuCopy32(p->pltt, gBgPlttBuffer, 160);
+  CpuCopy32(p->pltt, gBgPlttBuffer, 80 * sizeof(rgb555));
 }
 
 // リザルト画面のスプライトファイルを開く
@@ -100,13 +106,10 @@ void FUN_08222a54(GameResult* p, s32 idx) {
   p->unk_48 = idx;
   p->unk_4c = 0;
   p->updateCallback = sUpdates[idx];
-  {
-    u32 unk_40 = 1;
-    p->unk_40 |= unk_40;
-  }
+  SET_FLAGS(p->unk_40, GRF_UNK_0);
   p->unk_50 = 0;
   p->unk_54 = 0;
-  p->unk_40 |= (1 << 1);
+  SET_FLAGS(p->unk_40, GRF_UNK_1);
 }
 
 s32 GameResult_Update(GameResult* p) {

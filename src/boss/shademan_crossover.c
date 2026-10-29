@@ -17,8 +17,8 @@
 typedef struct {
   Boss base;                              // 0x000
   u8 unk_158[0x15C - 0x158];              // 0x158
-  u16 unk_15c;                            // 0x15C
-  u16 unk_15e;                            // 0x15E
+  u16 phaseTimer;                         // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
+  u16 phase;                              // 0x15E, 状態の中の段階
   s16 unk_160;                            // 0x160
   s16 unk_162;                            // 0x162
   s16 unk_164;                            // 0x164
@@ -117,9 +117,9 @@ typedef struct {
   AuxShadow shadow;                       // 0x3AC
   rgb555 pltt[16][16];                    // 0x418, gObjPlttData の同じ16色を16回写す
   rgb555 pltt_618[16][16];                // 0x618, BlendPltt で色を混ぜる先
-  s8 unk_818;                             // 0x818
-  s8 unk_819;                             // 0x819
-  u16 unk_81a;                            // 0x81A
+  s8 plttFadeMode;                        // 0x818, パレットフェードの種類, -1 で止まる
+  s8 plttFade;                            // 0x819, BlendPltt の混ぜ具合 (0..31)
+  u16 plttFadeTo;                         // 0x81A, フェード先のパレット番号
   u16 stateDuration;                      // 0x81C, 状態を続ける最短フレーム数
   u8 unk_81e;                             // 0x81E
   u8 unk_81f;                             // 0x81F
@@ -248,7 +248,8 @@ static inline void ShadeManCrossover_UpdateUnk160(ShadeManCrossover* p, s32 time
 
 static inline void ShadeManCrossover_SetShake(ShadeManCrossover* p, u32 amp) { p->shakeAmp = amp; }
 
-s32 FUN_0803c1bc(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
+// 本体のパレット番号を返す, パレットのフェードもこの番号へ戻す
+s32 ShadeManCrossover_GetPlttID(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
 
 s32 FUN_08235408(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
@@ -261,14 +262,12 @@ void FUN_08050e50(u32 param_1, u32 param_2);
 void FUN_08050d28(void);
 s32 FUN_08050d40(void);
 void FUN_0823b880(s32 n);
-void BlendPltt(rgb555* dst, rgb555* src1, rgb555* src2, s32 t, s32 shift);
 void FUN_0805e79c(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 param_6, s32 param_7);
 void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
 void FUN_0805e6bc(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 param_6, s32 param_7);
 s32 FUN_08050e80(void);
 void FUN_08050cb8(Vec3* pos, u32 kind);
 void FUN_0805ef68(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, Vec3* pos);
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 
 void FUN_0803cee4(ShadeManCrossover*);
 void FUN_0803e68c(ShadeManCrossover*);
@@ -440,7 +439,7 @@ void FUN_0803c6f0(ShadeManCrossover* p, Vec3* pos) {
   for (i = 0; i < 3; i++) {
     rgb555* pltt;
 
-    MainSprite_Add(&p->sprites_834[i], &p->gfx, 0, 0x201, 2, 0, 60, pos);
+    MainSprite_Add(&p->sprites_834[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
     p->sprites_834[i].plttID = 0x4300;
     pltt = &gObjPlttData[plttIdx * 16];
     p->sprites_834[i].pltt = pltt;
@@ -476,7 +475,7 @@ void FUN_0803c78c(ShadeManCrossover* p, s32 kind, u32 param_3) {
     }
     case 0:
     default: {
-      plttIdx = FUN_0803c1bc(p);
+      plttIdx = ShadeManCrossover_GetPlttID(p);
       break;
     }
   }
@@ -559,7 +558,7 @@ NON_MATCH void FUN_0803ca40(WorldPos* pos) {
 #ifdef NONMATCHING_C
   Vec3 size;
 
-  VEC3_SET(size, 0xA4, 0x10, 0xA4);
+  VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
   EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
   EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
 #else
@@ -641,8 +640,8 @@ void ShadeManCrossover_InitHitbox(ShadeManCrossover* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0803c260, p);
@@ -653,8 +652,8 @@ void ShadeManCrossover_InitHitbox2(ShadeManCrossover* p) {
   HitboxData* hitbox = &p->hitbox2;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x90, 0x80, 0x90);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.563), Q8(0.5), Q8(0.563));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0803c260, p);
@@ -665,8 +664,8 @@ void ShadeManCrossover_InitHurtbox(ShadeManCrossover* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x60, 0x80, 0x60);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, ShadeManCrossover_OnHurt, p);
@@ -723,8 +722,8 @@ NON_MATCH void FUN_0803cee4(ShadeManCrossover* p) {
     if (hp != p->base.hp) {
       Vec3 ofs;
 
-      VEC3_SET(ofs, 0x10, 0, 0x10);
-      FUN_0805fe7c(&p->hurtbox, heal, 1, &p->base.mover.pos, &ofs, 1);
+      VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+      CreateDamageNumber(&p->hurtbox, heal, 1, &p->base.mover.pos, &ofs, 1);
     }
     PlaySound_0824078c(SONG_884);
   }
@@ -803,60 +802,60 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
   }
   if (p->unk_170 > 0) {
     if (--p->unk_170 == 0) {
-      u32 plttIdx = FUN_0803c1bc(p);
+      u32 plttIdx = ShadeManCrossover_GetPlttID(p);
 
       p->sprite.pltt = plttIdx != 0 ? &gObjPlttData[plttIdx * 16] : p->pltt[0];
     }
-  } else if (p->unk_818 == 0) {
-    BlendPltt(p->pltt_618[0], &gObjPlttData[FUN_0803c1bc(p) * 16], &gObjPlttData[p->unk_81a * 16], p->unk_819, 5);
+  } else if (p->plttFadeMode == 0) {
+    BlendPltt(p->pltt_618[0], &gObjPlttData[ShadeManCrossover_GetPlttID(p) * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
     p->sprite.pltt = p->pltt_618[0];
-    if (++p->unk_819 > 30) {
-      p->unk_819 = 31;
+    if (++p->plttFade > 30) {
+      p->plttFade = 31;
     }
-  } else if (p->unk_818 == 1) {
-    BlendPltt(p->pltt_618[0], &gObjPlttData[FUN_0803c1bc(p) * 16], &gObjPlttData[p->unk_81a * 16], p->unk_819, 5);
+  } else if (p->plttFadeMode == 1) {
+    BlendPltt(p->pltt_618[0], &gObjPlttData[ShadeManCrossover_GetPlttID(p) * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
     p->sprite.pltt = p->pltt_618[0];
-    if (--p->unk_819 <= 0) {
+    if (--p->plttFade <= 0) {
       u32 plttIdx;
 
-      p->unk_819 = 0;
-      p->unk_818 = -1;
-      p->unk_81a = FUN_0803c1bc(p);
-      plttIdx = FUN_0803c1bc(p);
+      p->plttFade = 0;
+      p->plttFadeMode = -1;
+      p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+      plttIdx = ShadeManCrossover_GetPlttID(p);
       p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
     }
-  } else if (p->unk_818 == 2) {
-    BlendPltt(p->pltt_618[0], &gObjPlttData[FUN_0803c1bc(p) * 16], &gObjPlttData[p->unk_81a * 16], p->unk_819, 5);
+  } else if (p->plttFadeMode == 2) {
+    BlendPltt(p->pltt_618[0], &gObjPlttData[ShadeManCrossover_GetPlttID(p) * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
     p->sprite.pltt = p->pltt_618[0];
     if (p->unk_81e) {
-      if (--p->unk_819 <= 0) {
+      if (--p->plttFade <= 0) {
         u32 plttIdx;
 
-        p->unk_819 = 0;
-        p->unk_818 = -1;
-        p->unk_81a = FUN_0803c1bc(p);
-        plttIdx = FUN_0803c1bc(p);
+        p->plttFade = 0;
+        p->plttFadeMode = -1;
+        p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+        plttIdx = ShadeManCrossover_GetPlttID(p);
         p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
       }
-    } else if (++p->unk_819 > 30) {
-      p->unk_819 = 31;
+    } else if (++p->plttFade > 30) {
+      p->plttFade = 31;
       p->unk_81e = TRUE;
     }
-  } else if (p->unk_818 == 3) {
-    BlendPltt(p->pltt_618[0], &gObjPlttData[FUN_0803c1bc(p) * 16], &gObjPlttData[p->unk_81a * 16], p->unk_819, 5);
+  } else if (p->plttFadeMode == 3) {
+    BlendPltt(p->pltt_618[0], &gObjPlttData[ShadeManCrossover_GetPlttID(p) * 16], &gObjPlttData[p->plttFadeTo * 16], p->plttFade, 5);
     p->sprite.pltt = p->pltt_618[0];
     if (!p->unk_81e) {
-      if (++p->unk_819 > 30) {
-        p->unk_819 = 31;
+      if (++p->plttFade > 30) {
+        p->plttFade = 31;
         p->unk_81e = TRUE;
       }
-    } else if (--p->unk_819 <= 0) {
-      p->unk_819 = 0;
+    } else if (--p->plttFade <= 0) {
+      p->plttFade = 0;
       p->unk_81e = FALSE;
     }
   }
-  if (!boss->unk_ab) {
-    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (!boss->isDemo) {
+    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
       if (!p->unk_81f) {
         p->unk_81f = TRUE;
         p->unk_820 = Sqrt(boss->playerDistSq[0]) >> 5;
@@ -969,11 +968,11 @@ NON_MATCH void FUN_0803d64c(ShadeManCrossover* p) {
 }
 
 s32 FUN_0803d844(ShadeManCrossover* p) {
-  if (p->base.hp <= 0 && p->base.unk_96) {
+  if (p->base.hp <= 0 && p->base.canDie) {
     SET_FLAGS(p->base.flags, BOSSFLAG_UNK_1);
     Boss_SetState(&p->base, FUN_080400a4, 14);
   }
-  p->base.unk_96 = 0;
+  p->base.canDie = 0;
   if (TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_1)) {
     Boss_SetSubStates(&p->base, 1, 0, 1);
     return TRUE;
@@ -988,7 +987,7 @@ s32 FUN_0803d844(ShadeManCrossover* p) {
 void FUN_0803d8e4(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss) == TRUE) {
     Boss_RequestState(boss, 1);
   }
@@ -1002,7 +1001,7 @@ void FUN_0803d8e4(ShadeManCrossover* p) {
 void FUN_0803d93c(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 2);
   }
@@ -1016,7 +1015,7 @@ void FUN_0803d93c(ShadeManCrossover* p) {
 void FUN_0803d9b4(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 3);
   }
@@ -1030,7 +1029,7 @@ void FUN_0803d9b4(ShadeManCrossover* p) {
 void FUN_0803da2c(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 4);
   }
@@ -1048,7 +1047,7 @@ void FUN_0803da90(ShadeManCrossover* p) {
   Vec3 min;
   Vec3 max;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 5);
     p->unk_2b4 = 0;
@@ -1085,7 +1084,7 @@ void FUN_0803da90(ShadeManCrossover* p) {
 void FUN_0803dd88(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 6);
   }
@@ -1099,7 +1098,7 @@ void FUN_0803dd88(ShadeManCrossover* p) {
 void FUN_0803de00(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 7);
   }
@@ -1113,7 +1112,7 @@ void FUN_0803de00(ShadeManCrossover* p) {
 void FUN_0803de78(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 8);
   }
@@ -1127,7 +1126,7 @@ void FUN_0803de78(ShadeManCrossover* p) {
 void FUN_0803def0(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 9);
   }
@@ -1141,7 +1140,7 @@ void FUN_0803def0(ShadeManCrossover* p) {
 void FUN_0803df68(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 10);
   }
@@ -1155,7 +1154,7 @@ void FUN_0803df68(ShadeManCrossover* p) {
 void FUN_0803dfe0(ShadeManCrossover* p) {
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 11);
   }
@@ -1166,28 +1165,28 @@ void FUN_0803dfe0(ShadeManCrossover* p) {
   }
 }
 
-// 1 回目で打ち切り, 原典は unk_818 の分岐を比較の連鎖で出し値を先にレジスタへ置く, FUN_0803f8cc と同じ
+// 1 回目で打ち切り, 原典は plttFadeMode の分岐を比較の連鎖で出し値を先にレジスタへ置く, FUN_0803f8cc と同じ
 NON_MATCH void FUN_0803e058(ShadeManCrossover* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
 
-  boss->unk_96 = 1;
+  boss->canDie = 1;
   if (Boss_EnterSubState(boss) == TRUE) {
     Boss_RequestState(boss, 4);
     p->unk_2b3 = (Random() >> 8) & 3;
     p->unk_2b2 = p->unk_2d8;
     p->unk_2b4 = TRUE;
-    p->unk_818 = 3;
-    p->unk_81a = 11;
-    switch (p->unk_818) {
+    p->plttFadeMode = 3;
+    p->plttFadeTo = 11;
+    switch (p->plttFadeMode) {
       case 1: {
-        p->unk_819 = 31;
+        p->plttFade = 31;
         break;
       }
       case 0:
       case 2:
       case 3: {
-        p->unk_819 = 0;
+        p->plttFade = 0;
         break;
       }
     }
@@ -1223,17 +1222,17 @@ NON_MATCH void FUN_0803e058(ShadeManCrossover* p) {
   } else if (boss->curState == 5) {
     if (p->unk_2b2 == 0) {
       if (p->unk_2b5) {
-        p->unk_818 = 1;
-        p->unk_81a = 11;
-        switch (p->unk_818) {
+        p->plttFadeMode = 1;
+        p->plttFadeTo = 11;
+        switch (p->plttFadeMode) {
           case 1: {
-            p->unk_819 = 31;
+            p->plttFade = 31;
             break;
           }
           case 0:
           case 2:
           case 3: {
-            p->unk_819 = 0;
+            p->plttFade = 0;
             break;
           }
         }
@@ -1259,10 +1258,10 @@ NON_MATCH void FUN_0803e058(ShadeManCrossover* p) {
     u32 plttIdx;
 
     p->unk_81e = 0;
-    p->unk_819 = 0;
-    p->unk_818 = -1;
-    p->unk_81a = FUN_0803c1bc(p);
-    plttIdx = FUN_0803c1bc(p);
+    p->plttFade = 0;
+    p->plttFadeMode = -1;
+    p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+    plttIdx = ShadeManCrossover_GetPlttID(p);
     p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
     ShadeManCrossover_ResetSubStates(p, 15);
     p->unk_2b4 = 0;
@@ -1311,7 +1310,7 @@ void FUN_0803e5fc(ShadeManCrossover* p) { PTR_ARRAY_085aaf6c[p->base.subState2](
 void FUN_0803e618(ShadeManCrossover* p) { PTR_ARRAY_085aafa0[p->base.subState2](p); }
 
 void FUN_0803e634(ShadeManCrossover* p) {
-  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2) && !FUN_0803d844(p)) {
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_0803d844(p)) {
     PTR_ARRAY_085aafa8[p->base.subState1](p);
   }
 }
@@ -1331,9 +1330,9 @@ NON_MATCH void FUN_0803e6b0(Boss* boss, s32 timer) {
   Boss_SetAngle(boss, boss->playerAngle[0]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, 1, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     if (p->unk_2c0) {
@@ -1347,8 +1346,8 @@ NON_MATCH void FUN_0803e6b0(Boss* boss, s32 timer) {
       if (hp != boss->hp) {
         Vec3 ofs;
 
-        VEC3_SET(ofs, 0x10, 0, 0x10);
-        FUN_0805fe7c(&p->hurtbox, heal, 1, &boss->mover.pos, &ofs, 1);
+        VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+        CreateDamageNumber(&p->hurtbox, heal, 1, &boss->mover.pos, &ofs, 1);
       }
       p->unk_2c0 = 0;
       PlaySound_0824078c(SONG_884);
@@ -1366,12 +1365,12 @@ void FUN_0803e860(Boss* boss, s32 timer) {
   Boss_SetAngle(boss, boss->playerAngle[0]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, 1, 1, 4);
+    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     FUN_0803c590(p);
     FUN_0803c4d4(p, &p->unk_294, p->unk_16c);
     PlaySound_0824078c(SONG_840);
   } else {
-    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, 1, 1, 1);
+    Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     ShadeManCrossover_UpdateUnk160(p, timer);
@@ -1396,7 +1395,7 @@ void FUN_0803e9f4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 11, 2, 2, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 11, PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_843);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -1416,9 +1415,9 @@ void FUN_0803ea98(Boss* boss, s32 timer) {
   Boss_SetAngle(boss, boss->playerAngle[0]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 19, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 19, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 19, 2, 1, 1);
+    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 19, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -1437,7 +1436,7 @@ void FUN_0803ebc4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 9, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 9, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_842);
   }
   if (boss->subState2 == 11) {
@@ -1470,7 +1469,7 @@ void FUN_0803ed40(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 11, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 11, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_843);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -1494,7 +1493,7 @@ void FUN_0803ee50(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     boss->dir = Angle_ToDir8(Angle_FromDir4(Angle_ToDir4(mover->angle)));
-    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 21, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 21, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     if (timer < 20) {
@@ -1531,9 +1530,9 @@ NON_MATCH void FUN_0803ef80(Boss* boss, s32 timer) {
       boss->facing = 1;
     }
     boss->dir = Angle_ToDir8(boss->mover.angle);
-    Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, 2, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
     p->unk_2b8 = 0;
     p->unk_2b9 = 5;
     if ((u8)Random() < 128) {
@@ -1550,15 +1549,15 @@ NON_MATCH void FUN_0803ef80(Boss* boss, s32 timer) {
     return;
   }
   ShadeManCrossover_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
       if (sprite->animCmdIdx == 4) {
         sprite->animCmdTimer = 0;
       }
-      if (p->unk_15c == 18) {
+      if (p->phaseTimer == 18) {
         PlaySound_0824078c(SONG_862);
       }
-      if (p->unk_15c == 30 || p->unk_15c == 50) {
+      if (p->phaseTimer == 30 || p->phaseTimer == 50) {
         Vec3 pos;
         Vec3* target;
         u32 angle;
@@ -1575,10 +1574,10 @@ NON_MATCH void FUN_0803ef80(Boss* boss, s32 timer) {
         FUN_0805eee4(p->entity0805ee80, angle, p->unk_2e4, power, p->unk_2e0, p->unk_2e2, p->unk_2e6, p->unk_2e8, p->unk_2ea, &pos);
         p->unk_2b8++;
       }
-      if (++p->unk_15c > 79) {
-        Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, 2, 3);
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 79) {
+        Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_REVERSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -1604,42 +1603,42 @@ NON_MATCH void FUN_0803f2f4(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, 2, 1, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
   }
   ShadeManCrossover_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
       if (sprite->animCmdIdx == 7 && sprite->animCmdTimer == 1) {
         PlaySound_0824078c(SONG_862);
       }
       ShadeManCrossover_SetShake(p, 8);
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
       ShadeManCrossover_SetShake(p, 8);
-      if (++p->unk_15c > 29) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+      if (++p->phaseTimer > 29) {
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 2: {
-      if (p->unk_15c == 0 || p->unk_15c == 16 || p->unk_15c == 32) {
+      if (p->phaseTimer == 0 || p->phaseTimer == 16 || p->phaseTimer == 32) {
         Vec3 pos;
         u32 angle;
         s32 power;
 
         Vec3_CopyOffsetY(&pos, &mover->pos, 0x100);
-        angle = boss->playerAngle[0] - 16 + p->unk_15c;
+        angle = boss->playerAngle[0] - 16 + p->phaseTimer;
         power = p->unk_2ec;
         if (p->unk_2b6) {
           power = (p->unk_2c6 * power) >> 6;
@@ -1647,10 +1646,10 @@ NON_MATCH void FUN_0803f2f4(Boss* boss, s32 timer) {
         FUN_0805ef68(p->entity0805ee80, angle, p->unk_2f2, power, p->unk_2ee, p->unk_2f0, p->unk_2f4, p->unk_2f6, &pos);
         ShadeManCrossover_SetShake(p, 4);
       }
-      if (++p->unk_15c > 127) {
-        p->unk_15e++;
-        p->unk_15c = 0;
-        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 23, 2, 1, 4);
+      if (++p->phaseTimer > 127) {
+        p->phase++;
+        p->phaseTimer = 0;
+        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
       }
       break;
     }
@@ -1676,20 +1675,20 @@ NON_MATCH void FUN_0803f5b8(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, 2, 1, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
     return;
   }
   ShadeManCrossover_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
       if (sprite->animCmdIdx == 7 && sprite->animCmdTimer == 1) {
         PlaySound_0824078c(SONG_862);
       }
-      if (++p->unk_15c == 30) {
+      if (++p->phaseTimer == 30) {
         Vec3 pos;
         s32 power;
 
@@ -1704,16 +1703,16 @@ NON_MATCH void FUN_0803f5b8(Boss* boss, s32 timer) {
         PlaySound_0824078c(SONG_234);
       }
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 31) {
-        p->unk_15e++;
-        p->unk_15c = 0;
-        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 23, 2, 1, 4);
+      if (++p->phaseTimer > 31) {
+        p->phase++;
+        p->phaseTimer = 0;
+        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
       }
       break;
     }
@@ -1729,7 +1728,7 @@ NON_MATCH void FUN_0803f5b8(Boss* boss, s32 timer) {
 #endif
 }
 
-// 1 回目で打ち切り (387/407), 原典は unk_818 の分岐を比較の連鎖で出し 2 と 11 を先にレジスタへ置く
+// 1 回目で打ち切り (387/407), 原典は plttFadeMode の分岐を比較の連鎖で出し 2 と 11 を先にレジスタへ置く
 NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   ShadeManCrossover* p = (ShadeManCrossover*)boss;
@@ -1739,21 +1738,21 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, 2, 1, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
     FUN_08050e2c(0, 0, &p->sprite.pos);
-    p->unk_818 = 2;
-    p->unk_81a = 11;
-    switch (p->unk_818) {
+    p->plttFadeMode = 2;
+    p->plttFadeTo = 11;
+    switch (p->plttFadeMode) {
       case 1: {
-        p->unk_819 = 31;
+        p->plttFade = 31;
         break;
       }
       case 0:
       case 2:
       case 3: {
-        p->unk_819 = 0;
+        p->plttFade = 0;
         break;
       }
     }
@@ -1764,10 +1763,10 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
 
     p->unk_2b4 = 0;
     p->unk_81e = 0;
-    p->unk_819 = 0;
-    p->unk_818 = -1;
-    p->unk_81a = FUN_0803c1bc(p);
-    plttIdx = FUN_0803c1bc(p);
+    p->plttFade = 0;
+    p->plttFadeMode = -1;
+    p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+    plttIdx = ShadeManCrossover_GetPlttID(p);
     p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
     return;
   }
@@ -1776,17 +1775,17 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
 
     p->unk_2b4 = 0;
     p->unk_81e = 0;
-    p->unk_819 = 0;
-    p->unk_818 = -1;
-    p->unk_81a = FUN_0803c1bc(p);
-    plttIdx = FUN_0803c1bc(p);
+    p->plttFade = 0;
+    p->plttFadeMode = -1;
+    p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+    plttIdx = ShadeManCrossover_GetPlttID(p);
     p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
     return;
   }
   ShadeManCrossover_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      if (++p->unk_15c == 20) {
+      if (++p->phaseTimer == 20) {
         Vec3 pos;
         s32 power;
 
@@ -1800,16 +1799,16 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
         p->unk_2c1 = 0;
       }
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
-      if (++p->unk_15c > 199) {
-        p->unk_15e++;
-        p->unk_15c = 0;
-        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 23, 2, 1, 4);
+      if (++p->phaseTimer > 199) {
+        p->phase++;
+        p->phaseTimer = 0;
+        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
       }
       break;
     }
@@ -1843,10 +1842,10 @@ NON_MATCH void FUN_0803fc70(Boss* boss, s32 timer) {
       boss->facing = 1;
     }
     boss->dir = Angle_ToDir8(mover->angle);
-    Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, 2, 4);
+    Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     MainSprite_SetAnimFrame(sprite, &p->gfx, boss->animID, 6);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     PlaySound_0824078c(SONG_863);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
@@ -1858,29 +1857,29 @@ NON_MATCH void FUN_0803fc70(Boss* boss, s32 timer) {
     return;
   }
   ShadeManCrossover_UpdateUnk160(p, timer);
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
-      p->unk_15c++;
+      p->phaseTimer++;
       if (sprite->animCmdIdx > 2) {
         SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
       }
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
       SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX | BOSSFLAG_HIDDEN);
-      if (++p->unk_15c == 15) {
+      if (++p->phaseTimer == 15) {
         mover->pos = p->unk_29c;
       }
-      if (p->unk_15c > 29) {
+      if (p->phaseTimer > 29) {
         Boss_SetAngle(boss, boss->playerAngle[0]);
-        Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, 2, 6);
+        Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
         MainSprite_SetAnimSpeed(sprite, 0x40);
-        p->unk_15e++;
-        p->unk_15c = 0;
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
@@ -1906,9 +1905,9 @@ void FUN_0803fef0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 5, 2, 1, 4);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    Boss_PlayAnimFacing(boss, sprite, &p->gfx, 5, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+    p->phase = 0;
+    p->phaseTimer = 0;
   }
   p->damage = 0;
   p->unk_166 = 0;
@@ -1918,26 +1917,26 @@ void FUN_0803fef0(Boss* boss, s32 timer) {
   if (timer < 10) {
     Vec3_SetPolar(&boss->mover.delta, mover->angle, (10 - timer) * 2);
   }
-  switch (p->unk_15e) {
+  switch (p->phase) {
     case 0: {
       ShadeManCrossover_SetShake(p, 8);
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
-        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 7, 2, 1, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+        Boss_PlayAnimFacing(boss, sprite, &p->gfx, 7, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 1: {
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
-        Boss_PlayAnimDir8(boss, sprite, &p->gfx, 0, 1, 1, 4);
-        p->unk_15e++;
-        p->unk_15c = 0;
+        Boss_PlayAnimDir8(boss, sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
+        p->phase++;
+        p->phaseTimer = 0;
       }
       break;
     }
     case 2: {
-      if (++p->unk_15c > 14) {
+      if (++p->phaseTimer > 14) {
         Boss_SetState(boss, FUN_0803fc70, 12);
       }
       break;
@@ -1950,10 +1949,10 @@ void FUN_080400a4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 5, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 5, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     FUN_08022fb8(boss, &p->sprite.pos);
-    p->unk_15e = 0;
-    p->unk_15c = 0;
+    p->phase = 0;
+    p->phaseTimer = 0;
     FUN_08050e50(0, 1);
     FUN_08050d28();
   }
@@ -1972,13 +1971,13 @@ void FUN_080400a4(Boss* boss, s32 timer) {
   p->hurtWeakness = 0;
   p->hurtAttributes = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
-  if (++p->unk_15c == 128) {
+  if (++p->phaseTimer == 128) {
     FUN_08023024(boss, &p->sprite.pos);
   }
 }
 
 void FUN_08040184(ShadeManCrossover* p) {
-  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     p->base.subStateDone = FALSE;
     Boss_UpdateState(&p->base);
   }
@@ -2036,8 +2035,8 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
     p->unk_172 = 20;
     p->unk_170 = 10;
     p->sprite.pltt = p->pltt[0];
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(hurtbox, damage, 0, &mover->pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(hurtbox, damage, 0, &mover->pos, &ofs, 1);
     if (boss->hp <= 0) {
       boss->hp = 0;
       SET_FLAGS(boss->flags, BOSSFLAG_UNK_1);
@@ -2048,10 +2047,10 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
 
         p->unk_2b4 = 0;
         p->unk_81e = 0;
-        p->unk_819 = 0;
-        p->unk_818 = 0xFF;
-        p->unk_81a = FUN_0803c1bc(p);
-        plttIdx = FUN_0803c1bc(p);
+        p->plttFade = 0;
+        p->plttFadeMode = 0xFF;
+        p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+        plttIdx = ShadeManCrossover_GetPlttID(p);
         p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
         p->unk_2b5 = 0;
       }
@@ -2066,10 +2065,10 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
 
         p->unk_2b4 = 0;
         p->unk_81e = 0;
-        p->unk_819 = 0;
-        p->unk_818 = 0xFF;
-        p->unk_81a = FUN_0803c1bc(p);
-        plttIdx = FUN_0803c1bc(p);
+        p->plttFade = 0;
+        p->plttFadeMode = 0xFF;
+        p->plttFadeTo = ShadeManCrossover_GetPlttID(p);
+        plttIdx = ShadeManCrossover_GetPlttID(p);
         p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
         p->unk_2b5 = 0;
       }
@@ -2248,9 +2247,9 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
   p->unk_30a = 0x200;
   p->unk_30c = 0x400;
   Boss_Init(boss, id, bossID, &pos, angle);
-  p->unk_160 = boss->unk_ab ? 0 : 0x40;
-  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, 0, 60, &pos);
-  Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, 1, 1, 4);
+  p->unk_160 = boss->isDemo ? 0 : 0x40;
+  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
+  Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   ShadeManCrossover_ResetSubStates(p, 120);
   Boss_SetState(boss, FUN_0803e6b0, 1);
   boss->damageCallback = (BossCheckFunc)ShadeManCrossover_HandleDamage;
@@ -2286,7 +2285,7 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
     }
   }
   {
-    rgb555* src = &gObjPlttData[FUN_0803c1bc(p) * 16];
+    rgb555* src = &gObjPlttData[ShadeManCrossover_GetPlttID(p) * 16];
     s32 i;
 
     for (i = 0; i < 16; i++) {
@@ -2294,11 +2293,11 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
       src += 16;
     }
   }
-  plttIdx = FUN_0803c1bc(p);
+  plttIdx = ShadeManCrossover_GetPlttID(p);
   p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
   FUN_0803c6f0(p, &p->sprite.pos);
-  p->unk_818 = -1;
-  p->unk_81a = 7;
+  p->plttFadeMode = -1;
+  p->plttFadeTo = 7;
   p->entity0805e67c = Entity0805e67c_Create();
   if (p->entity0805e67c == NULL) {
     return -1;

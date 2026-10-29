@@ -79,10 +79,10 @@ bool32 UNUSED IsTaiyoActive(void) {
 }
 
 // 0x4B57
-void FUN_082416bc(void) { u16_03004864 = 1; }
+void Cmd_4B57(void) { u16_03004864 = 1; }
 
 // 0x4B39
-void FUN_082416c8(void) { u16_03004864 = 0; }
+void Cmd_4B39(void) { u16_03004864 = 0; }
 
 // 残差1命令, 原典は raw を r0 のまま使い回してプールを r1 に取るが gcc は raw を複写してプールを r0 に取る
 NON_MATCH bool32 Taiyo_CalibrateSensor(void) {
@@ -155,7 +155,7 @@ static s32 GetSunGaugeMinLx(s32 sunGauge) {
 // 生の lx に環境要因を掛ける, ライジングサン、天候、屋内判定でここが最終的な明るさを決める
 NON_MATCH s32 ApplyLxModifiers(s32 lx) {
 #ifdef NONMATCHING_C
-  if ((gFlag030047a4 & FLAG030047A4_LINK) == 0) {
+  if ((gGameFlags & FLAG030047A4_LINK) == 0) {
     s32 slv;
 
     if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->equipBuffs & EBUFF_AET_SUNLIGHT)) {
@@ -237,10 +237,11 @@ bool32 IsGunCooled(void) {
   return FALSE;
 }
 
+// mapFlags の判定を bool8 を返す static inline にして分岐を裏返すと 0/1 の作り置きと両腕の並びは揃うが, 原典は gStat->heatstroke などへの書き込みのたびに gStat を読み直す (74/78)
 NON_MATCH void UpdateOverheat(Taiyo* _ UNUSED) {
 #ifdef NONMATCHING_C
   if (gStat->thermal > 29999) {
-    if ((gStat->sunGauge < 3) || (gStat->unk_934 & (SF934_UNK_14 | SF934_UNK_9))) {
+    if ((gStat->sunGauge < 3) || (gStat->mapFlags & (MPF_UNK_14 | MPF_UNK_9))) {
       if (gStat->heatstroke > 0) {
         gStat->heatstroke--;
       }
@@ -262,8 +263,8 @@ NON_MATCH void UpdateOverheat(Taiyo* _ UNUSED) {
 // 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める
 NON_MATCH void ApplySunlightGain(Taiyo* p) {
 #ifdef NONMATCHING_C
-  if (gPlayerPtr[0] != NULL && (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_12)) == 0) {
-    if ((gFlag030047a4 & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->unk_1c != 2) {
+  if (gPlayerPtr[0] != NULL && (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_12)) == 0) {
+    if ((gGameFlags & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->mode != PMODE_LOCKED) {
       if (gInput[0].down == 0) {
         if (p->idleTimer < 900) {
           p->idleTimer++;
@@ -282,7 +283,7 @@ NON_MATCH void ApplySunlightGain(Taiyo* p) {
             }
             gStat->treeExp = exp;
           }
-          if ((s32)gStat->solarStand < 9999) {
+          if (gStat->solarStand < 9999) {
             u16 carry;
 
             if (gPlayerPtr[0]->equipBuffs & EBUFF_AET_RES_SOL) {
@@ -293,7 +294,7 @@ NON_MATCH void ApplySunlightGain(Taiyo* p) {
             carry = p->solarStandFrac >> 4;
             p->solarStandFrac -= carry * 16;
             gStat->solarStand += carry;
-            if ((s32)gStat->solarStand > 9999) {
+            if (gStat->solarStand > 9999) {
               gStat->solarStand = 9999;
             }
           }
@@ -379,7 +380,7 @@ NON_MATCH u32 UpdateDebugLx(Taiyo* p) {
 #ifdef NONMATCHING_C
   Keys16 down;
 
-  if (gFlag030047a4 & FLAG030047A4_LINK) {
+  if (gGameFlags & FLAG030047A4_LINK) {
     s32 idx = Entity9A9F_GetPlayerIdx();
 
     down = gInput[idx].down;

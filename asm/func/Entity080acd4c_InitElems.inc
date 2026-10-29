@@ -33,7 +33,7 @@ _080ACCCE:
 	ldr r1, [r4, #0x28]
 	adds r0, r5, #0
 	movs r2, #0xc
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r4]
 	movs r1, #1
 	orrs r0, r1

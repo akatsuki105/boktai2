@@ -65,7 +65,7 @@ _080C6AD4:
 	orrs r0, r1
 	str r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	adds r0, r7, #0
 	movs r1, #0x10
 	bl FUN_080c4a54

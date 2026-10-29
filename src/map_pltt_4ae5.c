@@ -449,7 +449,7 @@ NON_MATCH void MapPltt_PushCommand(s32 val, s32 count, u32* args) {
 #endif
 }
 
-void FUN_080020bc(void) {
+void Cmd_62BC(void) {
   u32 args[8];
 
   s32 kw_r = VM_GetNamedArgValue('r', 0);

@@ -5,7 +5,7 @@
 
 typedef Entity Entity08240a54;  // ENTITY_UNK_3, サイズは Entity と同じ
 
-// FUN_08240a90 が Malloc(12) して ID 0x757B で登録する
+// Cmd_7EBA が Malloc(12) して ID 0x757B で登録する
 typedef struct {
   u16 unk_00;  // 0x00, まだ未解析
   u16 ids[4];  // 0x02, 空き枠は 0
@@ -80,7 +80,7 @@ Entity08240a54* Entity08240a54_Create(void) {
 }
 
 // 未登録なら作業領域を確保して登録し, Entity を作る
-bool32 FUN_08240a90(void) {
+bool32 Cmd_7EBA(void) {
   Entity08240a54Data* data;
 
   if (Registry_Find(0x757B) != NULL) {

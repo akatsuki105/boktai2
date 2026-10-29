@@ -8,7 +8,7 @@
 
 // slots の1要素, FUN_08002a00 が Mover の id を種別付きで登録する
 typedef struct {
-  u16 kind;  // 0x00, FUN_08002a48 なら 0、FUN_08002a58 なら 1、FUN_08002fdc なら '.m' の値
+  u16 kind;  // 0x00, FUN_08002a48 なら 0、FUN_08002a58 なら 1、Cmd_0AD8 なら '.m' の値
   u16 id;    // 0x02, Mover.id
 } EntityE28BSlot;
 static_assert(sizeof(EntityE28BSlot) == 4);
@@ -145,7 +145,7 @@ NON_MATCH s32 EntityE28B_Init(EntityE28B* p, u16 param_2, u16 param_3) {
   }
 
   for (i = 0; i < p->spriteCount; i++) {
-    AuxSprite_Setup(&p->sprites[i], &p->gfx, 1);
+    AuxSprite_Setup(&p->sprites[i], &p->gfx, SPRFLAG_HIDDEN);
     p->sprites[i].oamAttr |= OAM0_SEMI_TRANSPARENT;
   }
 
@@ -182,7 +182,7 @@ EntityE28B* EntityE28B_Create(u16 param_1, u16 param_2) {
 }
 
 // '.m' の種別で '.n' の Mover を slots に登録する
-s32 FUN_08002fdc(void) {
+s32 Cmd_0AD8(void) {
   s32 kind = VM_GetNamedArgValue('m', 0);
   s32 id = VM_GetNamedArgValue('n', 0);
 

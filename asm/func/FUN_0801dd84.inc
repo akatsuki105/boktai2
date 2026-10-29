@@ -96,7 +96,7 @@ _0801DE12:
 	movs r0, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 	ldr r0, [r7]
 	movs r1, #0
 	movs r2, #0

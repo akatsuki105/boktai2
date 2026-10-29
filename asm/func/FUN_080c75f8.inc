@@ -139,7 +139,7 @@ _080C76E4:
 	strh r5, [r4]
 _080C7718:
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	mov r2, r8
 	cmp r2, #0x1e
 	beq _080C7726

@@ -10,7 +10,7 @@
 	movs r0, #0x40
 	subs r0, r0, r1
 	ldr r1, _0809AE30 @ =0x00001084
-	bl FUN_0808a458
+	bl SetScreenBrightness
 	b _0809AE3C
 	.align 2, 0
 _0809AE2C: .4byte 0x000009EC
@@ -18,7 +18,7 @@ _0809AE30: .4byte 0x00001084
 _0809AE34:
 	ldr r1, _0809AE78 @ =0x00001084
 	movs r0, #0
-	bl FUN_0808a458
+	bl SetScreenBrightness
 _0809AE3C:
 	ldr r2, _0809AE7C @ =0x000009EC
 	adds r4, r5, r2
@@ -27,7 +27,7 @@ _0809AE3C:
 	bne _0809AE52
 	bl MessageWindow_Close
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 _0809AE52:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -60,7 +60,7 @@ _0809AE84:
 	str r0, [r1]
 	ldr r1, _0809AEAC @ =FUN_0809aeb0
 	adds r0, r5, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 _0809AE9C:
 	pop {r4, r5}
 	pop {r0}

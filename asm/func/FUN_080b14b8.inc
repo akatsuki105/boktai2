@@ -76,7 +76,7 @@ _080B1536:
 	bl FUN_0807ba94
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 _080B155A:
 	pop {r4, r5, r6, r7}
 	pop {r0}

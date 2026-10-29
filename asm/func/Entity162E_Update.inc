@@ -61,7 +61,7 @@ _08089A5E:
 	cmp r0, #0x15
 	beq _08089A98
 	adds r0, r1, #0
-	bl FUN_0807e854
+	bl Player_EnterDeadState
 	ldr r0, [r4]
 	movs r1, #0xdf
 	lsls r1, r1, #2

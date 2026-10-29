@@ -31,6 +31,13 @@ static_assert(sizeof(Entity080dc44c) == 708);
 
 IWRAM_DATA Entity080dc44c* gEntity080dc44c = NULL;  // 0x03000168
 
+static inline void Entity080dc44c_SetGlobal(Entity080dc44c* p) { gEntity080dc44c = p; }
+
+static inline bool8 Entity080dc44c_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void FUN_080dbeb0(Entity080dc44c* p, Entity080dc44cSlot* elem) {}
 
 s32 FUN_080dc0d0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
@@ -113,14 +120,11 @@ void FUN_080dc00c(Entity080dc44c* p, Entity080dc44cSlot* slot) {
 }
 
 // 空いている枠を確保して返す, 無ければ NULL
-// 残差11命令 (28/39). 使用中判定の 0/1 の作り置きと, 原典が i*0x1C のバイトオフセットを ip に別途ためて毎回 p + 0x1E4 + offset を作り直す点 (agbcc は誘導変数に落として基底をループ外へ巻き上げる)
-// FUN_080dad4c (entity_080db520.c) と全く同じ2つの壁
-NON_MATCH Entity080dc44cSlot* FUN_080dc050(Entity080dc44c* p) {
-#ifdef NONMATCHING_C
+Entity080dc44cSlot* FUN_080dc050(Entity080dc44c* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!Entity080dc44c_IsActive(&p->activeMask, i)) {
       Entity080dc44cSlot* slot = &p->slots[i];
 
       slot->idx = i;
@@ -129,9 +133,6 @@ NON_MATCH Entity080dc44cSlot* FUN_080dc050(Entity080dc44c* p) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_080dc050.inc");
-#endif
 }
 
 s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority) { return FUN_080dc0d0(basePos, offset, unkRand, offsetRand, count, priority); }
@@ -187,9 +188,7 @@ NON_MATCH s32 FUN_080dc0d0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* off
     }
 
     if (unkRand == NULL) {
-      slot->unk_c.x = 0;
-      slot->unk_c.y = 0;
-      slot->unk_c.z = 0;
+      VEC3_SET(slot->unk_c, 0, 0, 0);
     } else {
       v.x = unkRand->x != 0 ? Mod(Random(), unkRand->x) : 0;
       v.y = unkRand->y != 0 ? Mod(Random(), unkRand->y) : 0;
@@ -221,6 +220,7 @@ void (*const PTR_ARRAY_085ad32c[3])(Entity080dc44c*, Entity080dc44cSlot*) = {
 // 使用中の枠について state ごとの更新関数を呼ぶ
 // 残差7命令 (40/47). 5命令は使用中判定の 0/1 の作り置き, 残り2命令は原典が &activeMask と &slots の定数を別々に作るのに対しこちらは片方から差分で導くため
 // Entity080db520_Update と同じ壁. slot の初期化を for の初期化節に移すと i=0 の位置だけは合う
+// 使用中判定を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 原典はループの前で &activeMask をガードとは別に作り直す (BeeNest_Update と同じ)
 NON_MATCH s32 Entity080dc44c_Update(Entity080dc44c* p) {
 #ifdef NONMATCHING_C
   if (p->activeMask != 0) {
@@ -241,22 +241,18 @@ NON_MATCH s32 Entity080dc44c_Update(Entity080dc44c* p) {
 }
 
 // 使用中の枠の粒子をまとめて外す
-// 残差6命令 (32 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-NON_MATCH s32 Entity080dc44c_Destroy(Entity080dc44c* p) {
-#ifdef NONMATCHING_C
-  Entity080dc44cSlot* slot = &p->slots[0];
+s32 Entity080dc44c_Destroy(Entity080dc44c* p) {
   s32 i;
 
-  for (i = 0; i < 8; i++, slot++) {
-    if (p->activeMask & (1 << i)) {
+  for (i = 0; i < 8; i++) {
+    if (Entity080dc44c_IsActive(&p->activeMask, i)) {
+      Entity080dc44cSlot* slot = &p->slots[i];
+
       Particle_Remove(&p->ptcls[slot->idx]);
     }
   }
-  gEntity080dc44c = NULL;
+  Entity080dc44c_SetGlobal(NULL);
   return 0;
-#else
-  INCFUNC("asm/func/Entity080dc44c_Destroy.inc");
-#endif
 }
 
 void FUN_080dc418(Entity080dc44c* p) {
@@ -272,7 +268,7 @@ s32 Entity080dc44c_Init(Entity080dc44c* p) {
 Entity080dc44c* Entity080dc44c_Create(void) {
   if (gEntity080dc44c == NULL) {
     Entity080dc44c* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080dc44c));
-    gEntity080dc44c = p;
+    Entity080dc44c_SetGlobal(p);
     if (p != NULL) {
       SetEntityRoutine(p, Entity080dc44c_Update, Entity080dc44c_Destroy);
       if (Entity080dc44c_Init(p) < 0) {

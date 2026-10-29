@@ -10,7 +10,7 @@
 	adds r0, r4, #0
 	movs r1, #9
 	movs r2, #0
-	bl FUN_08080e0c
+	bl AllySabata_SetAction
 	ldr r2, _08082DE8 @ =0x00000951
 	adds r1, r4, r2
 	movs r0, #0
@@ -123,7 +123,7 @@ _08082E9A:
 	lsls r1, r1, #1
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08080cac
+	bl AllySabata_PlayAnim
 	movs r1, #0xba
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -148,7 +148,7 @@ _08082ED2:
 	adds r0, r4, #0
 	movs r1, #9
 	movs r2, #1
-	bl FUN_08080e0c
+	bl AllySabata_SetAction
 	ldr r0, _08082F20 @ =0x0000095E
 	adds r1, r4, r0
 	movs r0, #0x91
@@ -212,7 +212,7 @@ _08082F52:
 	lsls r1, r1, #1
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08080cac
+	bl AllySabata_PlayAnim
 	cmp r0, #0
 	beq _08083012
 	movs r0, #0xcb
@@ -220,7 +220,7 @@ _08082F52:
 	adds r0, r4, #0
 	movs r1, #9
 	movs r2, #2
-	bl FUN_08080e0c
+	bl AllySabata_SetAction
 	b _08083012
 	.align 2, 0
 _08082F80: .4byte 0x0000095E
@@ -229,7 +229,7 @@ _08082F84:
 	lsls r1, r1, #1
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08080cac
+	bl AllySabata_PlayAnim
 	ldr r2, _08082FDC @ =0x0000095E
 	adds r1, r4, r2
 	movs r0, #0x91
@@ -266,7 +266,7 @@ _08082FB6:
 	adds r0, r4, #0
 	movs r1, #9
 	movs r2, #3
-	bl FUN_08080e0c
+	bl AllySabata_SetAction
 	b _08083012
 	.align 2, 0
 _08082FDC: .4byte 0x0000095E
@@ -282,15 +282,15 @@ _08082FE8:
 	lsls r1, r1, #1
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08080cac
+	bl AllySabata_PlayAnim
 	cmp r0, #0
 	beq _08083012
 	adds r0, r4, #0
-	bl PlayerSabata_SetAnimFacing
+	bl AllySabata_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08080e0c
+	bl AllySabata_SetAction
 _08083012:
 	add sp, #4
 	pop {r4}

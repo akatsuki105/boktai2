@@ -36,7 +36,7 @@ static_assert(sizeof(LinkConnect) == 116);
 
 COMMON_DATA LinkConnect* gLinkConnect = NULL;  // 0x03002C64
 
-extern u32 u32_0300481c;  // src/time.c
+extern u32 gRtcReadInhibit;  // src/time.c
 
 s32 FUN_08238b04(void);   // src/link.c
 void FUN_08238cd4(void);  // src/link.c
@@ -200,7 +200,7 @@ s32 LinkConnect_Destroy(LinkConnect* p) {
 s32 LinkConnect_Init(LinkConnect* p, s32 timeout, s32 cancelable) {
   gLinkConnect = p;
   Taiyo_Disable();
-  u32_0300481c = 1;
+  gRtcReadInhibit = 1;
   Sio_Reset();
   FUN_08238b04();
   if (timeout == 0) {

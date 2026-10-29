@@ -1283,7 +1283,7 @@ _08122476:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _08122486:
 	adds r0, r4, #0
 	movs r1, #1
@@ -2242,17 +2242,17 @@ _08122BEA:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r0, #0x10
 	movs r1, #0xc0
 	lsls r1, r1, #1
@@ -3523,7 +3523,7 @@ _081235E4:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _08123600:
 	ldr r1, _0812364C @ =0x00000466
 	adds r0, r5, r1
@@ -6567,17 +6567,17 @@ _08124D66:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -6586,7 +6586,7 @@ _08124D66:
 	adds r0, r7, r3
 	strh r4, [r0]
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r1, #8
 	movs r2, #0xc0
 	lsls r2, r2, #1
@@ -6670,7 +6670,7 @@ _08124E7A:
 	adds r0, r7, #0
 	bl FUN_080e4b3c
 	adds r0, r7, #0
-	bl FUN_080e4e20
+	bl Enemy_SnapToFloor
 	ldr r3, _08124EEC @ =0x0000046E
 	adds r0, r7, r3
 	ldrb r0, [r0]
@@ -8589,7 +8589,7 @@ _08125D5A:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	bl FUN_080e6750
 	ldr r2, _08125DE8 @ =0x000001DF
@@ -8691,7 +8691,7 @@ _08125E60:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r0, #3
 	movs r1, #1
 	movs r4, #0x8d
@@ -9841,7 +9841,7 @@ _08126706:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r1, #2
 	movs r2, #0x8d
 	lsls r2, r2, #3
@@ -15305,7 +15305,7 @@ _08129122:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	ldr r0, _08129154 @ =0xFFFFBFFF
 	ldrh r1, [r4]
 	ands r0, r1
@@ -15725,17 +15725,17 @@ _0812945C:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -16040,7 +16040,7 @@ _081296F8:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0812970E:
 	movs r1, #0xc2
 	lsls r1, r1, #1
@@ -22674,7 +22674,7 @@ _0812C9EC:
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 _0812CA0C:
 	adds r0, r4, #0
 	bl FUN_08125d30
@@ -22852,7 +22852,7 @@ EnemyMummy_Init: @ 0x0812CB0C
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0812CBA8 @ =0x0000A4B2
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r6, _0812CB9C @ =0x000001DF
 	adds r0, r7, r6
 	ldrb r1, [r0]
@@ -24871,7 +24871,7 @@ _0812DB72:
 	strb r0, [r1]
 	ldr r2, _0812DC18 @ =0x0000057C
 	adds r1, r7, r2
-	ldr r0, _0812DC1C @ =FUN_080f09e0
+	ldr r0, _0812DC1C @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r3, _0812DC20 @ =0x0000061C
 	adds r1, r7, r3
@@ -24893,7 +24893,7 @@ _0812DB72:
 _0812DC10: .4byte 0x000006FA
 _0812DC14: .4byte 0x00000704
 _0812DC18: .4byte 0x0000057C
-_0812DC1C: .4byte FUN_080f09e0
+_0812DC1C: .4byte Enemy_DispatchMsg
 _0812DC20: .4byte 0x0000061C
 _0812DC24: .4byte FUN_0812ca24
 _0812DC28: .4byte EnemyMummy_Destroy

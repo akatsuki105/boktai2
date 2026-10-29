@@ -41,14 +41,14 @@ _0808F070:
 _0808F078:
 	ldr r1, _0808F084 @ =FUN_0808f09c
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	b _0808F090
 	.align 2, 0
 _0808F084: .4byte FUN_0808f09c
 _0808F088:
 	ldr r1, _0808F098 @ =FUN_0809ae0c
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 _0808F090:
 	pop {r4}
 	pop {r0}

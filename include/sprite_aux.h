@@ -118,6 +118,7 @@ extern s16 gAuxSpriteTileCount;
 void AuxSprite_Add(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags flags);
 void AuxSprite_Setup(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags flags);
 void AuxSprite_Remove(AuxSprite* p);
+void nop_0822a4f8(AuxSprite* _, s32 x, s32 y);
 bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id);
 void Video_SetAuxSpritePltt(AuxSpriteGfx* gfx, s32 plttID);
 void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx);

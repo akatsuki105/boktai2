@@ -354,7 +354,7 @@ _08024A5A:
 	ldrb r0, [r0]
 	cmp r0, #0x5f
 	bgt _08024B60
-	bl FUN_080591f4
+	bl Entity08058ffc_GetActiveCount
 	movs r1, #0
 	cmp r0, #5
 	bgt _08024AFA

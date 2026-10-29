@@ -18,7 +18,7 @@ NAKED f64 fdlibm_fmod(f64 x, f64 y) {
 	bl __ieee754_fmod\n\
 	str r0, [sp, #0x24]\n\
 	str r1, [sp, #0x28]\n\
-	ldr r0, _0824EF94 @ =u32_085a90b8\n\
+	ldr r0, _0824EF94 @ =libm_LIB_VERSION\n\
 	ldr r0, [r0]\n\
 	mov r8, r0\n\
 	movs r0, #1\n\
@@ -59,7 +59,7 @@ NAKED f64 fdlibm_fmod(f64 x, f64 y) {
 	str r7, [sp, #0x1c]\n\
 	b _0824EFAC\n\
 	.align 2, 0\n\
-_0824EF94: .4byte u32_085a90b8\n\
+_0824EF94: .4byte libm_LIB_VERSION\n\
 _0824EF98: .4byte 0x00000000\n\
 _0824EF9C: .4byte 0x00000000\n\
 _0824EFA0: .4byte name\n\
@@ -69,7 +69,7 @@ _0824EFA4:\n\
 	str r0, [sp, #0x18]\n\
 	str r1, [sp, #0x1c]\n\
 _0824EFAC:\n\
-	ldr r0, _0824EFE4 @ =u32_085a90b8\n\
+	ldr r0, _0824EFE4 @ =libm_LIB_VERSION\n\
 	ldr r0, [r0]\n\
 	cmp r0, #2\n\
 	beq _0824EFBE\n\
@@ -95,7 +95,7 @@ _0824EFD4:\n\
 	.align 2, 0\n\
 _0824EFDC: .4byte 0x7FFFFFFF\n\
 _0824EFE0: .4byte 0xFFFFFFFF\n\
-_0824EFE4: .4byte u32_085a90b8\n\
+_0824EFE4: .4byte libm_LIB_VERSION\n\
 _0824EFE8:\n\
 	ldr r0, [sp, #0x24]\n\
 	ldr r1, [sp, #0x28]\n\

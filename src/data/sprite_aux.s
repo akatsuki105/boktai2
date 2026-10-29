@@ -352,7 +352,7 @@ Tiles:
   .incbin "data/actor_sprites/slime_debris_l.4bpp"       @ 0x08A51590, SpriteID: 0x7031, PlttID: 147, スライムの破片(大)
   .incbin "data/actor_sprites/slime_debris_s.4bpp"       @ 0x08A51610, SpriteID: 0x7032, PlttID: 147, スライムの破片(小)
   .incbin "data/actor_sprites/E857.4bpp"                 @ 0x08A51670, SpriteID: 0xE857, PlttID: 83, 黒塗り
-  .incbin "data/actor_sprites/3641.4bpp"                 @ 0x08A54670, SpriteID: 0x3641, PlttID: 44, 丸い光のエフェクト
+  .incbin "data/actor_sprites/blackhole.4bpp"            @ 0x08A54670, SpriteID: 0x3641, PlttID: 50, ブラックホール
   .incbin "data/actor_sprites/wedge.4bpp"                @ 0x08A54A70, SpriteID: 0xF070, PlttID: 151, 封印の楔
   .incbin "data/actor_sprites/healing_plant.4bpp"        @ 0x08A557B0, SpriteID: 0xC3C3, PlttID: 95, 太陽の根(ヒーリングで成長させられるもじゃもじゃ)
   .incbin "data/actor_sprites/bed.4bpp"                 @ 0x08A56A30, SpriteID: 0x1C84, PlttID: 153, ベッド

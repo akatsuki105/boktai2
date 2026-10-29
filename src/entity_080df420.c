@@ -30,6 +30,13 @@ static_assert(sizeof(Entity080df420) == 6112);
 
 IWRAM_DATA Entity080df420* gEntity080df420 = NULL;  // 0x03000178
 
+static inline void Entity080df420_SetGlobal(Entity080df420* p) { gEntity080df420 = p; }
+
+static inline bool8 Entity080df420_IsUsed(Entity080df420* p, s32 i) {
+  if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void nop_080de81c(Entity080df420*, Entity080df420Elem*);
 void FUN_080de820(Entity080df420*, Entity080df420Elem*);
 
@@ -72,22 +79,17 @@ NAKED void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 
 
 NAKED s32 Entity080df420_Update(Entity080df420* p) { INCFUNC("asm/func/Entity080df420_Update.inc"); }
 
-// 残差5命令 (24/29): 原典は usedMask の判定を 0/1 に起こしてから改めて test する, bool32 を返す static inline でも畳まれてしまう
-NON_MATCH s32 Entity080df420_Destroy(Entity080df420* p) {
-#ifdef NONMATCHING_C
+s32 Entity080df420_Destroy(Entity080df420* p) {
   s32 i;
   Entity080df420Elem* e;
 
-  for (i = 0, e = p->elems; i < 24; i++, e++) {
-    if (p->usedMask & 1 << i) {
+  for (i = 0, e = p->elems; i < 24; e++, i++) {
+    if (Entity080df420_IsUsed(p, i)) {
       AuxSprite_Remove(&e->sprite);
     }
   }
-  gEntity080df420 = NULL;
+  Entity080df420_SetGlobal(NULL);
   return 0;
-#else
-  INCFUNC("asm/func/Entity080df420_Destroy.inc");
-#endif
 }
 
 s32 Entity080df420_Init(Entity080df420* p) {
@@ -95,7 +97,7 @@ s32 Entity080df420_Init(Entity080df420* p) {
   p->frame = 0;
   p->count = 0;
   Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
-  gEntity080df420 = p;
+  Entity080df420_SetGlobal(p);
   return 0;
 }
 
@@ -121,11 +123,9 @@ Entity080df420* Entity080df420_Create(void) {
 void FUN_080df46c(void) { gEntity080df420 = NULL; }
 
 // 使用中の枠を全部 state 3 へ移す
-// 残差2命令 (35 対 33), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
-// static inline bool32 の判定関数にすると 37 対 33 で遠ざかる
-NON_MATCH void FUN_080df478(void) {
-#ifdef NONMATCHING_C
+void FUN_080df478(void) {
   Entity080df420* p = gEntity080df420;
+  Entity080df420Elem* e;
   s32 i;
 
   if (p == NULL) {
@@ -136,12 +136,10 @@ NON_MATCH void FUN_080df478(void) {
   }
 
   for (i = 0; i < 24; i++) {
-    if (p->usedMask & (1 << i)) {
-      p->elems[i].state = 3;
-      p->elems[i].unk_f3 = 1;
+    e = &p->elems[i];
+    if (Entity080df420_IsUsed(p, i)) {
+      e->state = 3;
+      e->unk_f3 = 1;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080df478.inc");
-#endif
 }

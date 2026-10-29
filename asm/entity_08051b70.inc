@@ -216,8 +216,8 @@ _08050E12:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_08050e18
-FUN_08050e18: @ 0x08050E18
+	thumb_func_start Cmd_877F
+Cmd_877F: @ 0x08050E18
 	ldr r0, _08050E28 @ =0x030047A4
 	ldr r1, [r0]
 	movs r2, #0x80

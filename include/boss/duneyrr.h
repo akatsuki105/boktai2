@@ -38,7 +38,7 @@ typedef struct Entity08059a1c {
   u32 frameCount;               // 0x020
   u16 power;                    // 0x024, 各部品の hitbox の power
   u16 knockbackPower;           // 0x026
-  u16 unk_28;                   // 0x028, 各部品の hitbox の unk_44
+  u16 invincibleTime;           // 0x028, 各部品の hitbox の invincibleTime
   u16 dustPower;                // 0x02A, FUN_0805965c が DustManager_Emit に渡す鱗粉の power
   s32 circlingCount;            // 0x02C, state 1 (center の周りを回る) の部品の数
   u8 unk_30[0x34 - 0x30];       // 0x030

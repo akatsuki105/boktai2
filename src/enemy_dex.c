@@ -159,255 +159,215 @@ s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx) {
   }
 }
 
-// 敵の種別と変種から魔物図鑑のエントリ番号を返す, 該当するものが無ければ -1
+/**
+ * @brief 敵の種別と変種から魔物図鑑のエントリ番号を返す, 該当するものが無ければ -1
+ * @param kind 敵の種別 (Enemy.kind)
+ * @param variant 敵の変種 (Enemy.variant)
+ */
 s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
   switch (kind) {
-    case 1: {
+    case ENEK_MUMMY: {
       switch (variant) {
-        case 0: {
-          return 24;
-        }
-        case 1: {
-          return 25;
-        }
-        case 2: {
-          return 26;
-        }
+        case 0:
+          return ENEID_MUMMY;
+        case 1:
+          return ENEID_GAST;
+        case 2:
+          return ENEID_MUMMY_P;
       }
       break;
     }
-    case 2: {
+    case ENEK_SPIDER: {
       switch (variant) {
-        case 0: {
-          return 0;
-        }
-        case 1: {
-          return 1;
-        }
-        case 2: {
-          return 0;
-        }
+        case 0:
+          return ENEID_SPIDER;
+        case 1:
+          return ENEID_PSPIDER;
+        case 2:
+          return ENEID_SPIDER;
       }
       break;
     }
-    case 3: {
+    case ENEK_GOLEM: {
       switch (variant) {
-        case 0: {
-          return 33;
-        }
-        case 1: {
-          return 34;
-        }
-        case 3: {
-          return 35;
-        }
+        case 0:
+          return ENEID_GOLEM_C;
+        case 1:
+          return ENEID_GOLEM_S;
+        case 3:
+          return ENEID_GOLEM_P;
       }
       break;
     }
-    case 4: {
+    case ENEK_BOKU: {
       switch (variant) {
-        case 1: {
-          return 21;
-        }
-        case 2: {
-          return 22;
-        }
-        case 3: {
-          return 23;
-        }
+        case 1:
+          return ENEID_GHOUL;
+        case 2:
+          return ENEID_ZOMBIE;
+        case 3:
+          return ENEID_GHOUL_P;
       }
       break;
     }
-    case 5: {
+    case ENEK_SKELETON: {
       switch (variant) {
-        case 0: {
-          return 27;
-        }
-        case 5: {
-          return 30;
-        }
+        case 0:
+          return ENEID_SKELETON;
+        case 5:
+          return ENEID_SKELETON_P;
       }
       break;
     }
-    case 6: {
-      return 28;
+    case ENEK_SKELETON_F: {
+      return ENEID_SKELETON_F;
     }
-    case 7: {
-      return 29;
+    case ENEK_SKELETON_A: {
+      return ENEID_SKELETON_A;
     }
-    case 8: {
+    case ENEK_LICH: {
       switch (variant) {
-        case 2: {
-          return 31;
-        }
-        case 8: {
-          return 32;
-        }
+        case 2:
+          return ENEID_LICH;
+        case 8:
+          return ENEID_LICH_P;
       }
       break;
     }
-    case 9: {
-      return 9;
+    case ENEK_CENTIPEDE: {
+      return ENEID_CENTIPEDE;
     }
-    case 10: {
+    case ENEK_COCKA: {
       switch (variant) {
-        case 0: {
-          return 17;
-        }
-        case 1: {
-          return 18;
-        }
+        case 0:
+          return ENEID_COCKA;
+        case 1:
+          return ENEID_COCKA_P;
       }
       break;
     }
-    case 11: {
-      return 36;
+    case ENEK_MIMIC: {
+      return ENEID_MIMIC;
     }
-    case 12: {
+    case ENEK_SWORD: {
       switch (variant) {
-        case 0: {
-          return 37;
-        }
-        case 1: {
-          return 38;
-        }
+        case 0:
+          return ENEID_SWORD;
+        case 1:
+          return ENEID_SWORD_P;
       }
       break;
     }
-    case 13: {
+    case ENEK_AX: {
       switch (variant) {
-        case 0: {
-          return 39;
-        }
-        case 1: {
-          return 40;
-        }
+        case 0:
+          return ENEID_AX;
+        case 1:
+          return ENEID_AX_P;
       }
       break;
     }
-    case 14: {
-      return 16;
+    case ENEK_OCTOPUS: {
+      return ENEID_OCTOPUS;
     }
-    case 17: {
+    case ENEK_CURORO: {
       switch (variant) {
-        case 0: {
-          return 41;
-        }
-        case 1: {
-          return 42;
-        }
-        case 2: {
-          return 43;
-        }
+        case 0:
+          return ENEID_CURORO;
+        case 1:
+          return ENEID_CURORO_F;
+        case 2:
+          return ENEID_CURORO_I;
       }
       break;
     }
-    case 18: {
+    case ENEK_BAT: {
       switch (variant) {
-        case 0: {
-          return 5;
-        }
-        case 1: {
-          return 6;
-        }
-        case 2: {
-          return 5;
-        }
+        case 0:
+          return ENEID_BAT;
+        case 1:
+          return ENEID_VBAT;
+        case 2:
+          return ENEID_BAT;
       }
       break;
     }
-    case 19: {
+    case ENEK_CROW: {
       switch (variant) {
-        case 0: {
-          return 7;
-        }
-        case 1: {
-          return 8;
-        }
-        case 2: {
-          return 7;
-        }
+        case 0:
+          return ENEID_CROW;
+        case 1:
+          return ENEID_GARGOYLE;
+        case 2:
+          return ENEID_CROW;
       }
       break;
     }
-    case 20: {
+    case ENEK_BEE: {
       switch (variant) {
-        case 0: {
-          return 2;
-        }
-        case 1: {
-          return 4;
-        }
-        case 2: {
-          return 3;
-        }
+        case 0:
+          return ENEID_BEE;
+        case 1:
+          return ENEID_KBEE;
+        case 2:
+          return ENEID_PBEE;
       }
       break;
     }
-    case 21: {
+    case ENEK_DOG: {
       switch (variant) {
-        case 0: {
-          return 10;
-        }
-        case 1: {
-          return 12;
-        }
-        case 2: {
-          return 11;
-        }
-        case 4: {
-          return 13;
-        }
+        case 0:
+          return ENEID_BANDIT;
+        case 1:
+          return ENEID_GRAVEKEEPER;
+        case 2:
+          return ENEID_HELLHOUND;
+        case 4:
+          return ENEID_BANDIT_P;
       }
       break;
     }
-    case 22: {
+    case ENEK_SLIME: {
       switch (variant) {
-        case 0: {
-          return 44;
-        }
-        case 1: {
-          return 45;
-        }
-        case 2: {
-          return 46;
-        }
-        case 3: {
-          return 47;
-        }
+        case 0:
+          return ENEID_SLIME_Y;
+        case 1:
+          return ENEID_SLIME_G;
+        case 2:
+          return ENEID_SLIME_P;
+        case 3:
+          return ENEID_SLIME_B;
       }
       break;
     }
-    case 23: {
+    case ENEK_GHOST: {
       switch (variant) {
-        case 0: {
-          return 48;
-        }
-        case 1: {
-          return 49;
-        }
+        case 0:
+          return ENEID_GHOST;
+        case 1:
+          return ENEID_WRAITH;
       }
       break;
     }
-    case 24: {
-      return 14;
+    case ENEK_DARKROOT: {
+      return ENEID_DARKROOT;
     }
-    case 25: {
-      return 19;
+    case ENEK_SANDWORM: {
+      return ENEID_SANDWORM;
     }
-    case 26: {
-      return 20;
+    case ENEK_SERPENT: {
+      return ENEID_SERPENT;
     }
-    case 27: {
-      return 15;
+    case ENEK_SHAIAN: {
+      return ENEID_SHAIAN;
     }
-    case 0:
-    case 15:
-    case 16:
-    case 28:
-    case 29:
-    case 30:
-    case 31: {
+    case ENEK_0:
+    case ENEK_15:
+    case ENEK_16:
+    case ENEK_28:
+    case ENEK_29:
+    case ENEK_30:
+    case ENEK_31: {
       break;
     }
   }
@@ -417,31 +377,27 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
 // 魔物 id の種別 kind のフラグを立てる
 // 残差はレジスタ番号の入れ替えのみ (18対18): 原典は gStat を r2, 0x390 を r3 に置き, 語索引に死んだ kind の r1 を使い回すが, agbcc は r3/r2 を逆に取り語索引も r2 に置く
 // 兄弟の FUN_0820d04c と同じ壁. flags ローカルを無くす / 宣言順を入れ替える は試済 (どちらも gStat の読みと bit 計算の順が入れ替わって悪化)
-NON_MATCH void EnemyDex_SetFlag(u32 id, u32 kind) {
+NON_MATCH void EnemyDex_SetDropItemFlag(u32 id, u32 isRareDrop) {
 #ifdef NONMATCHING_C
-  u32* flags = gStat->enemyDexFlags;
-  u32 bit = id * 2 + kind;
+  u32* flags = gStat->enemyDexDrop;
+  u32 bit = (id * 2) + isRareDrop;
 
   flags[bit >> 5] |= 1 << (bit & 31);
 #else
-  INCFUNC("asm/func/EnemyDex_SetFlag.inc");
+  INCFUNC("asm/func/EnemyDex_SetDropItemFlag.inc");
 #endif
 }
 
-// '.k' と '.c' が指す魔物のフラグ '.i' を立てる
-void Cmd_A76D(void) {
-  s32 kind;
-  s32 variant;
-  s32 flagKind;
-
-  kind = VM_SeekToNamedArg('k') ? VM_GetValue() : 0;
-  variant = VM_SeekToNamedArg('c') ? VM_GetValue() : 0;
-  flagKind = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;
-  EnemyDex_SetFlag(EnemyDex_GetEntryIdx(kind, variant), flagKind);
+// 0xA76D, '.k' と '.c' が指す魔物のドロップアイテムフラグ '.i' を立てる
+void Cmd_SetEnemyDexDropItemFlag(void) {
+  s32 kind = VM_SeekToNamedArg('k') ? VM_GetValue() : 0;
+  s32 variant = VM_SeekToNamedArg('c') ? VM_GetValue() : 0;
+  s32 idx = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;  // 0: 通常ドロップ, 1: レアドロップ
+  EnemyDex_SetDropItemFlag(EnemyDex_GetEntryIdx(kind, variant), idx);
 }
 
-// '.k' の魔物に出会ったことにする
-void Cmd_D1C0(void) {
+// 0xD1C0, '.k' の魔物に出会ったことにする
+void Cmd_SetEnemyDexSeenFlag(void) {
   s32 bit = VM_GetNamedArgValue('k', -1);
 
   if ((u32)bit <= 56) {
@@ -472,7 +428,7 @@ NON_MATCH bool32 FUN_0820d00c(s32 bit) {
 // 残差はレジスタ番号の入れ替えのみ (r2/r3 と r1/r2, 命令列は 24 対 24)
 NON_MATCH bool32 FUN_0820d04c(u32 id, u32 kind) {
 #ifdef NONMATCHING_C
-  u32* flags = gStat->enemyDexFlags;
+  u32* flags = gStat->enemyDexDrop;
   u32 bit = id * 2 + kind;
 
   if (flags[bit >> 5] & (1 << (bit & 31))) {
@@ -524,7 +480,7 @@ NON_MATCH bool32 FUN_0820d0ec(void) {
 #endif
 }
 
-void FUN_0820d124(void) {
+void Cmd_A7CE(void) {
   if (VM_SeekToNamedArg('k')) {
     VM_GetValue();
   }

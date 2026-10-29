@@ -520,12 +520,12 @@ _0803E444:
 	movs r0, #0xff
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	ldr r2, _0803E490 @ =0x0000081A
 	adds r1, r4, r2
 	strh r0, [r1]
 	adds r0, r4, #0
-	bl FUN_0803c1bc
+	bl ShadeManCrossover_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _0803E494

@@ -113,7 +113,7 @@ _080C85DE:
 	strb r0, [r1]
 _080C8612:
 	mov r0, sb
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 _080C8618:
 	add sp, #0xc
 	pop {r3, r4, r5}

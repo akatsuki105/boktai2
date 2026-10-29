@@ -17,12 +17,12 @@ typedef struct {
 } WeatherParticle;
 static_assert(sizeof(WeatherParticle) == 60);
 
-// BG1 にタイルマップ 0xEA77 を敷いて2段階の速度でスクロールさせ、同時に雨粒のパーティクルを32個ばら撒く
+// BG1 に TILEMAP_EA77 を敷いて2段階の速度でスクロールさせ、同時に雨粒のパーティクルを32個ばら撒く
 // gStat->sunGauge と gStat->unk_2d0 を見て継続と終了を決める
 typedef struct {
   Entity e;                   // 0x00, ENTITY_UNK_9
   u8 unk_18;                  // 0x18, WeatherManager_SetState が state を変えるときに 1 にする
-  u8 state;                   // 0x19, PTR_ARRAY_085aa948[5] の添字, 2 以上で WeatherManager_ScrollClouds (BGスクロール) が回り、3 で gStat の 0x946 が 0x7FFF になる
+  u8 state;                   // 0x19, gWeatherStateFuncs[5] の添字, 2 以上で WeatherManager_ScrollClouds (BGスクロール) が回り、3 で gStat の 0x946 が 0x7FFF になる
   u8 unk_1a[2];               // 0x1A
   u32 stateTimer;             // 0x1C, WeatherManager_SetState が state を変えるときに 0 に戻す
   u16 timer;                  // 0x20, FUN_08018324 が 0 になるまで毎フレーム減らし、0 で WeatherManager_ResetTimer が詰め直す
@@ -30,8 +30,8 @@ typedef struct {
   u8 unk_23;                  // 0x23
   u16 sunAccum;               // 0x24, 状態に入るとき 0 にし、以降 gStat->sunGauge を毎フレーム足す, 60 以上で天候を切り上げる
   u16 unk_26;                 // 0x26
-  u16 unk_28;                 // 0x28, '.i[0]=7200', s32_03000080 の下限に使う
-  u16 unk_2a;                 // 0x2A, '.i[1]=3600', 0 でなければ rand % これを s32_03000080 に足す
+  u16 unk_28;                 // 0x28, '.i[0]=7200', sRainDuration の下限に使う
+  u16 unk_2a;                 // 0x2A, '.i[1]=3600', 0 でなければ rand % これを sRainDuration に足す
   u16 timerBase;              // 0x2C, '.t[0]=300', WeatherManager_ResetTimer が timer に入れる基準値
   u16 timerRand;              // 0x2E, '.t[1]', timer に足す乱数の範囲, 合計が 10 未満なら 10 にする
   s16 unk_30;                 // 0x30, '.r[0]=0x40', WeatherManager_GetChance が unk_32 * unk_30 >> 6 を作る
@@ -53,20 +53,21 @@ typedef struct {
 } WeatherManager;
 static_assert(sizeof(WeatherManager) == 2280);
 
-IWRAM_DATA s32 s32_03000074 = 0;                    // 0x03000074
-IWRAM_DATA s32 s32_03000078 = 0;                    // 0x03000078
-IWRAM_DATA u32 u32_0300007c = 0;                    // 0x0300007C
-IWRAM_DATA s32 s32_03000080 = 0;                    // 0x03000080
-IWRAM_DATA WeatherManager* gWeatherManager = NULL;  // 0x03000084
+static s32 sRainIntervalBase;            // 0x03000074
+static s32 sRainIntervalRand;            // 0x03000078
+static bool32 sRainFalling;              // 0x0300007C, 雨が降っているかどうかを返す (雨の時に屋内に入っても TRUE のまま)
+static s32 sRainDuration;                // 0x03000080
+static WeatherManager* sWeatherManager;  // 0x03000084
+
+COMMON_DATA s32 gLightningTimer = 0;  // 0x03002B48
 
 void FUN_080026fc(s32 n);
 void WeatherManager_ScrollClouds(WeatherManager* p);
 s32 WeatherManager_UpdateParticles(WeatherManager* p);
-extern s32 s32_03002b48;
 s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 a, s32 b, s32 c);
 
 bool32 WeatherManager_IsActive(void) {
-  if (gWeatherManager != NULL) {
+  if (sWeatherManager != NULL) {
     return TRUE;
   }
   return FALSE;
@@ -103,7 +104,7 @@ s32 WeatherManager_GetChance(WeatherManager* p) {
   if (gStat->unk_2b0[1] != 0) {
     chance = p->unk_32;
   } else {
-    chance = p->unk_30 * p->unk_32 >> FRACBITS_6;
+    chance = p->unk_30 * p->unk_32 >> 6;
   }
   span = Time_GetSpanOfTime();
   if ((span >= TIME_UNK4 && span <= TIME_UNK5) || span == TIME_NIGHT) {
@@ -129,9 +130,9 @@ s32 WeatherManager_InitParticles(WeatherManager* p) {
     ptcl->active = FALSE;
     ptcl->timer = 0;
     ptcl->phase = 0;
-    Particle_Setup(q, p->group, 1);
+    Particle_Setup(q, p->group, SPRFLAG_HIDDEN);
     Particle_SetOffset(q, -4, -4);
-    Particle_SetFrame(q, p->group, 30);
+    Particle_SetPose(q, p->group, 30);
   }
   return 0;
 }
@@ -166,7 +167,7 @@ NON_MATCH s32 WeatherManager_UpdateParticles(WeatherManager* p) {
         case 0: {
           if (ptcl->timer > 2) {
             ptcl->phase = 1;
-            Particle_SetFrame(q, p->group, 0x1F);
+            Particle_SetPose(q, p->group, 0x1F);
             ptcl->timer = 0;
           }
           break;
@@ -210,22 +211,22 @@ NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
 #ifdef NONMATCHING_C
   if (p->unk_18 != 0) {
     p->unk_18 = 0;
-    gStat->unk_934 |= SF934_RAIN;
+    gStat->mapFlags |= MPF_RAIN;
     if (p->unk_54 != 0) {
       VM_ExecByID(p->unk_54, NULL);
     }
   }
-  gStagedDISPCNT |= 0x200;
+  gStagedDISPCNT |= DISPCNT_BG1_ON;
   if (p->stateTimer <= 14) {
     if ((p->stateTimer & 3) <= 2) {
-      gStagedDISPCNT &= ~0x200;
+      gStagedDISPCNT &= ~DISPCNT_BG1_ON;
     }
   } else if (p->stateTimer <= 29) {
     if ((p->stateTimer & 3) <= 1) {
-      gStagedDISPCNT &= ~0x200;
+      gStagedDISPCNT &= ~DISPCNT_BG1_ON;
     }
   } else if ((p->stateTimer & 3) == 0) {
-    gStagedDISPCNT &= ~0x200;
+    gStagedDISPCNT &= ~DISPCNT_BG1_ON;
   }
   WeatherManager_SpawnParticles(p, 3, 10, 10);
   if (p->stateTimer <= 44) {
@@ -244,7 +245,7 @@ NAKED bool32 FUN_08018324(WeatherManager* p) { INCFUNC("asm/func/FUN_08018324.in
 
 NAKED bool32 FUN_080184ec(WeatherManager* p) { INCFUNC("asm/func/FUN_080184ec.inc"); }
 
-bool32 (*const PTR_ARRAY_085aa948[5])(WeatherManager*) = {
+bool32 (*const gWeatherStateFuncs[5])(WeatherManager*) = {
     FUN_08018118,
     FUN_08018250,
     FUN_08018284,
@@ -254,7 +255,7 @@ bool32 (*const PTR_ARRAY_085aa948[5])(WeatherManager*) = {
 
 NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
 #ifdef NONMATCHING_C
-  bool32 (*fn)(WeatherManager*) = PTR_ARRAY_085aa948[p->state];
+  bool32 (*fn)(WeatherManager*) = gWeatherStateFuncs[p->state];
 
   if (fn != NULL) {
     fn(p);
@@ -264,15 +265,15 @@ NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
   }
   if (p->state == 3) {
     gStat->unk_946 = 0x7FFF;
-    u32_0300007c = 1;
+    sRainFalling = TRUE;
   } else {
     if (gStat->unk_946 > 0) {
       gStat->unk_946--;
     }
-    u32_0300007c = 0;
+    sRainFalling = FALSE;
   }
-  if (s32_03002b48 > 0) {
-    s32_03002b48--;
+  if (gLightningTimer > 0) {
+    gLightningTimer--;
   }
   WeatherManager_UpdateParticles(p);
   p->frameCounter++;
@@ -284,7 +285,7 @@ NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
 
 s32 WeatherManager_Destroy(WeatherManager* p) {
   WeatherManager_RemoveParticles(p);
-  gWeatherManager = NULL;
+  sWeatherManager = NULL;
   return 0;
 }
 
@@ -293,8 +294,8 @@ NAKED s32 WeatherManager_Init(WeatherManager* p) { INCFUNC("asm/func/WeatherMana
 WeatherManager* WeatherManager_Create(void) {
   WeatherManager* p;
 
-  if (gWeatherManager != NULL) {
-    return gWeatherManager;
+  if (sWeatherManager != NULL) {
+    return sWeatherManager;
   }
   p = CreateEntity(ENTITY_UNK_9, sizeof(WeatherManager));
   if (p != NULL) {
@@ -309,7 +310,7 @@ WeatherManager* WeatherManager_Create(void) {
 
 // スクリプトから天候を降らせ始める
 s32 WeatherManager_StartScripted(void) {
-  WeatherManager* p = gWeatherManager;
+  WeatherManager* p = sWeatherManager;
 
   if (p == NULL) {
     return -1;
@@ -320,7 +321,7 @@ s32 WeatherManager_StartScripted(void) {
 
 // スクリプトから天候を止める
 s32 WeatherManager_StopScripted(void) {
-  WeatherManager* p = gWeatherManager;
+  WeatherManager* p = sWeatherManager;
 
   if (p == NULL) {
     return -1;
@@ -337,7 +338,7 @@ s32 WeatherManager_StopScripted(void) {
 }
 
 // スクリプトから天候の周期を設定する
-NON_MATCH s32 FUN_08018990(void) {
+NON_MATCH s32 Cmd_164D(void) {
 #ifdef NONMATCHING_C
   s32 a;
   s32 b;
@@ -351,17 +352,19 @@ NON_MATCH s32 FUN_08018990(void) {
   }
   if (VM_SeekToNamedArg('i')) {
     VM_GetValue();
-  } else if (s32_03000078 > 0) {
+  } else if (sRainIntervalRand > 0) {
     gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    Mod(gRandomTable[gRandTableIdx], s32_03000078);
+    Mod(gRandomTable[gRandTableIdx], sRainIntervalRand);
   }
-  s32_03000074 = a;
-  s32_03000078 = b;
+  sRainIntervalBase = a;
+  sRainIntervalRand = b;
 #else
-  INCFUNC("asm/func/FUN_08018990.inc");
+  INCFUNC("asm/func/Cmd_164D.inc");
 #endif
 }
 
-u32 FUN_08018a08(void) { return u32_0300007c; }
+// 雨が降っているかどうかを返す
+bool32 FUN_08018a08(void) { return sRainFalling; }
 
-s32 VM_Sub7A82(void) { return FUN_08018a08(); }
+// 0x7A82
+bool32 Cmd_7A82(void) { return FUN_08018a08(); }

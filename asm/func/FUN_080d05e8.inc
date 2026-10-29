@@ -81,7 +81,7 @@ _080D0606:
 	bl PlayerLink_SetAnimFacing
 	ldrb r0, [r6]
 	movs r1, #0
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r7, #0
 	movs r2, #0x40

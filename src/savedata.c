@@ -4,8 +4,6 @@
 #include "save.h"
 #include "vm.h"
 
-extern u32 u32_03004860;
-
 // EEPROM_WriteOnce が各データの末尾に付ける 8 バイトのトレーラー (EEPROM_ReadOnce が検証する)
 typedef struct {
   u16 xorChecksum;  // 0x0
@@ -47,7 +45,7 @@ typedef struct {
 } Boktai2SaveData;
 static_assert(sizeof(Boktai2SaveData) == 8192);
 
-// FUN_0823201c が書き込む変数記述子
+// VM_ReadMemoryRef が書き込む変数記述子
 typedef struct {
   u8 desc[4];  // 0x0, Pointer/Indexed Pointer 記述子
   u16 count;   // 0x4, 記述子が指す値の個数
@@ -60,6 +58,9 @@ typedef struct {
   u32 values[512];     // 0x1004
 } UnkData6148;
 static_assert(sizeof(UnkData6148) == 6148);
+
+extern u32 u32_03004860;
+extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 
 void FUN_08231ca8(void);
 void Save_BackupStatAndWorld(void);
@@ -227,9 +228,9 @@ s32 VM_BackupVars(UnkData6148* p) {
   u32* dst = p->values;
   while (p->count < 512 && VM_GetPC() != NULL) {
     s32 i;
-    FUN_0823167c(desc->desc);
+    VM_GetMemoryRef(desc->desc);
     for (i = 0; i < desc->count && p->count < 512; i++) {
-      *dst++ = FUN_082320e4(desc->desc, i);
+      *dst++ = VM_LoadMemoryRef(desc->desc, i);
       p->count++;
     }
     desc++;
@@ -245,7 +246,7 @@ s32 VM_RestoreVars(UnkData6148* p) {
   while (n < p->count) {
     s32 i;
     for (i = 0; i < desc->count && n < p->count; i++) {
-      FUN_0823206c(desc->desc, i, *src++);
+      VM_StoreMemoryRef(desc->desc, i, *src++);
       n++;
     }
     desc++;
@@ -263,7 +264,7 @@ s32 VM_ResetGameKeepingVars(void) {
   Free(buf);
 }
 
-void FUN_08241550(void) {
+void Cmd_40F8(void) {
   gStat->zoneID = VM_GetValue();
   u32_03004860 = 1;
 }

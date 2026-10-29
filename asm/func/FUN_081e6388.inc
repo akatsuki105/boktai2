@@ -24,7 +24,7 @@ _081E63B6:
 	cmp r0, #0
 	beq _081E63CC
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	movs r1, #2
 	rsbs r1, r1, #0
 	ldr r0, [r4]

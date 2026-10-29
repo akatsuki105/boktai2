@@ -73,7 +73,7 @@ _0821DD54:
 	str r2, [sp, #0x10]
 	add r2, sp, #0x14
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	adds r4, r0, #0
 	adds r0, r5, #0
 	bl FUN_0821d900

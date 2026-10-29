@@ -15,7 +15,9 @@ u32 VM_GetVariable(u32 varidx);
 u8* VM_ReadMemory(u8* pc, s32* op, void* out);
 u32 VM_RunExpression(u8* pc);
 s32 VM_Exec(u8* pc, ScriptArgs* args, s32 varIdx);
-u8* FUN_0823201c(u8* pc, u8* dst);
+u8* VM_ReadMemoryRef(u8* pc, u8* dst);
+
+extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 
 static const ScriptArgs sEmptyArgs = {0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
 
@@ -340,7 +342,8 @@ s32 VM_ParseStringRef(u8* pc) {
   return val;
 }
 
-void FUN_0823167c(u8* dst) { gVM.pc = FUN_0823201c(VM_GetPC(), dst); }
+// いまの pc からメモリ参照の記述子を dst に読み出して pc を進める
+void VM_GetMemoryRef(u8* dst) { gVM.pc = VM_ReadMemoryRef(VM_GetPC(), dst); }
 
 // type が 0 になるまで値をデコードし飛ばす
 // 残差1命令, gVM のプールロードと &val のフレームアドレス計算の前後が入れ替わるだけ (命令列は 15 対 15)
@@ -926,7 +929,8 @@ u8* VM_StorePointer(u8* pc, u32 val) {
   return newPc;
 }
 
-u8* FUN_0823201c(u8* pc, u8* dst) {
+// pc からメモリ参照の記述子を dst に写し, Indexed なら添字2つも読んで, 次の pc を返す
+u8* VM_ReadMemoryRef(u8* pc, u8* dst) {
   u8* newPc;
   s32 zero;
 
@@ -947,7 +951,7 @@ u8* FUN_0823201c(u8* pc, u8* dst) {
 }
 
 // pc上の4バイトのPointer/Indexed Pointer記述子を読み、対象領域(gStat/gScratch/gWorld)内のアドレスを解決してvalを書き込む
-void FUN_0823206c(u8* pc, s32 offset, u32 val) {
+void VM_StoreMemoryRef(u8* pc, s32 offset, u32 val) {
   u8* dst;
   u32 cmd = (pc[0] << 24) | (pc[1] << 16) | (pc[2] << 8) | pc[3];  // BE
 
@@ -968,7 +972,7 @@ void FUN_0823206c(u8* pc, s32 offset, u32 val) {
 }
 
 // pc上の4バイトのPointer/Indexed Pointer記述子を読み、対象領域(gStat/gScratch/gWorld)内のアドレスを解決してその値を読む
-u32 FUN_082320e4(u8* pc, s32 offset) {
+u32 VM_LoadMemoryRef(u8* pc, s32 offset) {
   u8* src;
   u32 out;
   u32 cmd = (pc[0] << 24) | (pc[1] << 16) | (pc[2] << 8) | pc[3];
@@ -997,8 +1001,8 @@ u8* FUN_08232160(u8* pc) {
   s32 offset = 0;
   u8* dst;
 
-  u8* newPc = FUN_0823201c(pc, buf);
-  u32 val = FUN_082320e4(buf, 0);
+  u8* newPc = VM_ReadMemoryRef(pc, buf);
+  u32 val = VM_LoadMemoryRef(buf, 0);
   u32 cmd = (buf[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
 
   if ((cmd & 0xF00000) == 0x800000) {
@@ -1025,7 +1029,7 @@ u32 FUN_082321e0(u8* pc) {
   u32 cmd;
   u32 out;
 
-  FUN_0823201c(pc, buf);
+  VM_ReadMemoryRef(pc, buf);
   cmd = (buf[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
 
   if ((cmd & 0xF00000) == 0x800000) {

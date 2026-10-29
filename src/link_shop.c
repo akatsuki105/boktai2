@@ -70,6 +70,25 @@ static_assert(sizeof(LinkShopManager) == 132);
 COMMON_DATA LinkShopManager* gLinkShopManager = NULL;  // 0x03002C6C
 COMMON_DATA u8 u8_03002c70[16] = {};                   // unused?
 
+static inline bool8 TestLinkShopFlag(LinkShopFlags flag) {
+  if (TEST_FLAGS(gLinkShopManager->flags, flag)) return TRUE;
+  return FALSE;
+}
+
+static inline bool8 LinkShopManager_TestFlag(LinkShopManager* p, LinkShopFlags flag) {
+  if (TEST_FLAGS(p->flags, flag)) return TRUE;
+  return FALSE;
+}
+
+// 次の状態に切り替える, 終了済みの判定は結果を使わない (中身が消えたデバッグ出力の跡か)
+static inline void LinkShopManager_SetState(LinkShopManager* p, LinkShopStateFn fn, u8 state) {
+  if (LinkShopManager_TestFlag(p, LSFLAG_FINISHED)) {
+  }
+  p->stateFn = fn;
+  p->stateEnter = TRUE;
+  p->state = state;
+}
+
 void nop_081e19e0(void) {}
 
 // 呼び出し元がなく, 戻り値を捨てるエピローグなのに p->flags & LSFLAG_PARENT を計算している
@@ -107,9 +126,7 @@ NAKED void LinkShopManager_OnConnected(LinkShopManager* p, s32 handle, s32 cance
 void LinkShopManager_StateClose(LinkShopManager* p);
 
 // 接続に失敗したときの後始末, canceled ならキャンセル扱いの行を出す
-// 残差4命令 (32 対 36), 原典は結果を捨てる flags の ands が入る, このファイルの他の関数と同じで再現できず
-NON_MATCH void LinkShopManager_OnConnectFailed(LinkShopManager* p, s32 handle, s32 canceled) {
-#ifdef NONMATCHING_C
+void LinkShopManager_OnConnectFailed(LinkShopManager* p, s32 handle, s32 canceled) {
   if (canceled != 0) {
     p->resultLine = 3;
     PlaySound_082406e0(SE_CANCEL);
@@ -117,13 +134,8 @@ NON_MATCH void LinkShopManager_OnConnectFailed(LinkShopManager* p, s32 handle, s
     p->resultLine = 4;
   }
 
-  p->stateFn = LinkShopManager_StateClose;
-  p->stateEnter = TRUE;
-  p->state = 6;
+  LinkShopManager_SetState(p, LinkShopManager_StateClose, 6);
   SET_FLAGS(p->flags, LSFLAG_FINISHED);
-#else
-  INCFUNC("asm/func/LinkShopManager_OnConnectFailed.inc");
-#endif
 }
 
 NAKED bool32 LinkShopManager_CheckLinkLost(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_CheckLinkLost.inc"); }
@@ -236,20 +248,14 @@ LinkShopManager* Entity92ED_Create(void) {
 void LinkShopManager_ClearGlobal(void) { gLinkShopManager = NULL; }
 
 // msg が送信待ちか受信済みのどちらかで埋まっているか
-// 残差は 0/1 の実体化が元は2回あること (フラグ判定の結果を一度値にしてから再度 cmp する), マスクも ldr より先に置かれる
-// static inline 経由・ローカル経由とも gcc が畳んでしまい再現できず, IsReady / IsFinished / IsParent も同じ形
-NON_MATCH bool32 LinkShopManager_IsBusy(void) {
-#ifdef NONMATCHING_C
+bool32 LinkShopManager_IsBusy(void) {
   if (gLinkShopManager == NULL) {
     return FALSE;
   }
-  if ((gLinkShopManager->flags & (LSFLAG_SENDING | LSFLAG_RECEIVED)) != 0) {
+  if (TestLinkShopFlag(LSFLAG_SENDING | LSFLAG_RECEIVED)) {
     return TRUE;
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/LinkShopManager_IsBusy.inc");
-#endif
 }
 
 // onRecv にも同じ値が入るが, 呼び出し元は直後に LinkShopManager_SetCallbacks で上書きする
@@ -269,19 +275,14 @@ void LinkShopManager_SetCallbacks(LinkShopRecvFn onRecv, LinkShopStateFn onFinis
 }
 
 // 1 = 親, 0 = 子, -1 = まだ繋がっていない
-// 残差は LinkShopManager_IsBusy と同じ, フラグ判定の 0/1 実体化が元は2回ある
-NON_MATCH s32 LinkShopManager_IsParent(void) {
-#ifdef NONMATCHING_C
+s32 LinkShopManager_IsParent(void) {
   if (gLinkShopManager == NULL) {
     return -1;
   }
-  if ((gLinkShopManager->flags & LSFLAG_PARENT) != 0) {
+  if (TestLinkShopFlag(LSFLAG_PARENT)) {
     return TRUE;
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/LinkShopManager_IsParent.inc");
-#endif
 }
 
 s32 FUN_081e2418(u32 v) {
@@ -299,34 +300,24 @@ u32 FUN_081e2438(void) {
   return gLinkShopManager->unk_60;
 }
 
-// 残差は LinkShopManager_IsBusy と同じ, フラグ判定の 0/1 実体化が元は2回ある
-NON_MATCH bool32 LinkShopManager_IsReady(void) {
-#ifdef NONMATCHING_C
+bool32 LinkShopManager_IsReady(void) {
   if (gLinkShopManager == NULL) {
     return FALSE;
   }
-  if ((gLinkShopManager->flags & LSFLAG_READY) != 0) {
+  if (TestLinkShopFlag(LSFLAG_READY)) {
     return TRUE;
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/LinkShopManager_IsReady.inc");
-#endif
 }
 
-// 残差は LinkShopManager_IsBusy と同じ, フラグ判定の 0/1 実体化が元は2回ある
-NON_MATCH bool8 LinkShopManager_IsFinished(void) {
-#ifdef NONMATCHING_C
+bool8 LinkShopManager_IsFinished(void) {
   if (gLinkShopManager == NULL) {
     return TRUE;
   }
-  if ((gLinkShopManager->flags & LSFLAG_FINISHED) != 0) {
+  if (TestLinkShopFlag(LSFLAG_FINISHED)) {
     return TRUE;
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/LinkShopManager_IsFinished.inc");
-#endif
 }
 
 NAKED void LinkShopManager_Abort(void) { INCFUNC("asm/func/LinkShopManager_Abort.inc"); }

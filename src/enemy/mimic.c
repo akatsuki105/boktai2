@@ -44,3 +44,10 @@ void (*const PTR_ARRAY_085ad8bc[1])(Enemy*) = {
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
 INCASM("asm/mimic.inc");
+
+NAKED s32 EnemyMimic_Destroy(Mimic* p) { INCFUNC("asm/func/EnemyMimic_Destroy.inc"); }
+
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
+NAKED s32 EnemyMimic_Init(Mimic* p) { INCFUNC("asm/func/EnemyMimic_Init.inc"); }
+
+NAKED void EnemyMimic_Create(void) { INCFUNC("asm/func/EnemyMimic_Create.inc"); }

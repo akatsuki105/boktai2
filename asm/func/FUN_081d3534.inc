@@ -171,7 +171,7 @@ _081D367C:
 	add r0, ip
 	ldr r0, [r0]
 	ldr r1, [sp, #0xc]
-	bl FUN_0807a9b8
+	bl Player_SetKnockbackOrigin
 	movs r0, #0x80
 	lsls r0, r0, #1
 	mov r4, sb

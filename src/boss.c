@@ -37,7 +37,7 @@ Boss* FUN_08022a3c(void) {
   for (i = 0; i < 8; i++) {
     Boss* p = gBossList[i];
 
-    if (p != NULL && p->unk_ab == 0) {
+    if (p != NULL && p->isDemo == 0) {
       if (found != NULL) {
         return found;
       }
@@ -52,10 +52,10 @@ s32 Boss_Init(Boss* p, u32 id, BossID bossID, Vec3* pos, u32 angle) {
 
   p->bossID = bossID;
   Mover_Init(&p->mover, id, pos, angle, 5, p);
-  VEC3_SET(v, 0, 0x100, 0);
+  VEC3_SET(v, 0, Q8(1), 0);
   FUN_0823b47c(&p->mover, &v);
   Boss_SetAngle(p, angle);
-  MsgQueue_Register(&p->msgQueue, id, 4);
+  MsgQueue_Register(&p->msgQueue, id, CLS_BOSS);
   return 0;
 }
 
@@ -208,7 +208,7 @@ void FUN_08022ec0(Boss* p) {
     gStat->gaugeValue = 0;
   }
   if (p->unk_ac != 0) {
-    FUN_0823b9cc(p->unk_ad);
+    Camera_Shake(p->unk_ad);
     p->unk_ac--;
   }
   if (p->unk_154 != 0 && (p->frameCount & 3) == 0) {
@@ -247,7 +247,7 @@ void FUN_08022fb8(Boss* p, Vec3* pos) {
   if (p->unk_e4 != 0) {
     u16 id = p->unk_e4;
 
-    if (!TEST_FLAGS(u32_03002bc0[0], 4)) {
+    if (!TEST_FLAGS(gPlayerStates[0], 4)) {
       argv[0] = pos->x;
       argv[1] = pos->y;
       argv[2] = pos->z;
@@ -268,7 +268,7 @@ void FUN_08023024(Boss* p, Vec3* pos) {
   if (p->unk_e6 != 0) {
     u16 id = p->unk_e6;
 
-    if (!TEST_FLAGS(u32_03002bc0[0], 4)) {
+    if (!TEST_FLAGS(gPlayerStates[0], 4)) {
       argv[0] = pos->x;
       argv[1] = pos->y;
       argv[2] = pos->z;

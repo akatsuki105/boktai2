@@ -190,7 +190,7 @@ _081FB134:
 	add r1, sp, #0x3c
 	ldr r2, _081FB1A8 @ =0x00002E78
 	ldr r3, _081FB1AC @ =0x000038E2
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _081FB164:
 	mov r1, sb
 	ldrh r0, [r1]
@@ -351,7 +351,7 @@ _081FB278:
 	add r1, sp, #0x3c
 	ldr r2, _081FB2CC @ =0x00002E78
 	ldr r3, _081FB2D0 @ =0x000038E2
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _081FB2A8:
 	movs r0, #4
 	add sb, r0

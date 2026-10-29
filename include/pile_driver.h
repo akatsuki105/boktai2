@@ -55,7 +55,7 @@ typedef struct PileDriver {
   u16 plttTimer;                    // 0x04EC, 奇数フレームごとに plttSrc の組を差し替える
   u8 unk_4ee[0x4FC - 0x4EE];        // 0x04EE, まだ未解析
   u16 unk_4fc;                      // 0x04FC, _Update が PTR_ARRAY_085AD07C[unk_4fc](p) として引く状態番号
-  u16 unk_4fe;                      // 0x04FE, FUN_080ad1ec が unk_4fc の差し替えのたびに 0 に戻すカウンタ
+  u16 unk_4fe;                      // 0x04FE, PileDriver_SetSubState が unk_4fc の差し替えのたびに 0 に戻すカウンタ
   u8 unk_500[0x508 - 0x500];        // 0x0500, まだ未解析
   Vec3 unk_508;                     // 0x0508, FUN_080b10f8 が FUN_080b1038 に渡す座標
   WorldPos pos_510;                 // 0x0510, FUN_080b1038 が距離判定に使うワールド座標
@@ -72,19 +72,19 @@ typedef struct PileDriver {
   u8 unk_c0f;                       // 0x0C0F
   u8 unk_c10;                       // 0x0C10, 現在の太陽ゲージ?
   u8 unk_c11;                       // 0x0C11
-  bool8 unk_c12;                    // 0x0C12, FUN_080b2314 / FUN_080b2334 が 1 / 0 を入れ, FUN_080b176c が見る
+  bool8 unk_c12;                    // 0x0C12, Cmd_F993 / Cmd_44BF が 1 / 0 を入れ, FUN_080b176c が見る
   u8 unk_c13[0xC16 - 0xC13];        // 0x0C13, まだ未解析
   u16 unk_c16;                      // 0x0C16
   u8 unk_c18[0xC6C - 0xC18];        // 0x0C18, まだ未解析
   u8 unk_c6c[0x12E4 - 0xC6C];       // 0x0C6C, 根拠: FUN_080af374 の第1引数, +0x678 までを触る
   u16 unk_12e4;                     // 0x12E4, 0 の間だけ FUN_080b1888 が先に進む
   u8 unk_12e6[0x1324 - 0x12E6];     // 0x12E6, まだ未解析
-  u16 unk_1324;                     // 0x1324, 0 から 0x3F で折り返すカウンタ, FUN_080adf50 が 0x30, FUN_080adf60 が 0x40 を入れる
+  u16 unk_1324;                     // 0x1324, 0 から 0x3F で折り返すカウンタ, FUN_080adf50 が 0x30, Cmd_054A が 0x40 を入れる
   u16 unk_1326;                     // 0x1326, FUN_080adfa0 が 0..7 の値を入れる
   u8 unk_1328[0x1332 - 0x1328];     // 0x1328, まだ未解析
   u8 unk_1332;                      // 0x1332, FUN_080b165c が 0 に戻す
-  bool8 unk_1333;                   // 0x1333, FUN_080b22e8 が立て, FUN_080b1718 が見る
-  u16 unk_1334;                     // 0x1334, FUN_080b22e8 が 0 に戻す
+  bool8 unk_1333;                   // 0x1333, Cmd_29F1 が立て, FUN_080b1718 が見る
+  u16 unk_1334;                     // 0x1334, Cmd_29F1 が 0 に戻す
   u8 tilemapIdx;                    // 0x1336, FileID_ARRAY_085ad048 の添字
   u8 unk_1337[0x133E - 0x1337];     // 0x1337, まだ未解析
   u8 unk_133e;                      // 0x133E
@@ -94,7 +94,7 @@ typedef struct PileDriver {
   PileDriverFunc* unk_135c;         // 0x135C, FUN_080af0ac が非NULLのとき unk_135c(p) を呼ぶ
   unknown* unk_1360;                // 0x1360, 根拠: FUN_080af0c8 が FUN_0805b1a0 に渡す
   u8 unk_1364[0x1374 - 0x1364];     // 0x1364, まだ未解析
-  bool16 unk_1374;                  // 0x1374, FUN_080adf60 が立て, FUN_080adfa0 が見る
+  bool16 unk_1374;                  // 0x1374, Cmd_054A が立て, FUN_080adfa0 が見る
   u8 unk_1376[0x1420 - 0x1376];     // 0x1376, まだ未解析
   u32 unk_1420;                     // 0x1420, FUN_080adb5c が 0 に戻す
   u32 unk_1424;                     // 0x1424, まだ未解析
@@ -131,7 +131,7 @@ typedef struct Generator {
   s16 unk_d8;                                 // 0x0D8, Div(unk_d4, 6)
   u16 unk_da;                                 // 0x0DA, Init が 0,_Update が 0 まで減らす
   u16 unk_dc;                                 // 0x0DC, Generator_Init の第9引数,読み手が見つかっていない
-  u8 unk_de[2];                               // 0x0DE
+  s16 unk_de;                                 // 0x0DE, state 6 (FUN_080b31b4) が 0 まで減らし, 0 になると state 2 に戻る
   u16 unk_e0;                                 // 0x0E0, _Update が 0 まで減らす
   u16 unk_e2;                                 // 0x0E2, 0 でない間 Generator_UpdateFlash が flashTimer を増やし、その後 0 に戻す
   u16 flashTimer;                             // 0x0E4, 12 でパレット 455, 1〜11 で 454, 0 で plttID に戻る

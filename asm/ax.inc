@@ -3550,7 +3550,7 @@ FUN_0819742c: @ 0x0819742C
 	mov r6, r8
 	str r6, [sp, #4]
 	mov r2, sb
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	strh r7, [r4]
 _08197498:
 	add sp, #0x14
@@ -10347,8 +10347,8 @@ _0819A9EA:
 	.align 2, 0
 _0819AA04: .4byte 0x00000CEC
 
-	thumb_func_start FUN_0819aa08
-FUN_0819aa08: @ 0x0819AA08
+	thumb_func_start Cmd_A1D7
+Cmd_A1D7: @ 0x0819AA08
 	push {r4, r5, lr}
 	lsls r0, r0, #0x10
 	lsrs r5, r0, #0x10
@@ -15622,7 +15622,7 @@ _0819D2B6:
 	movs r1, #0xa
 	bl FUN_080efe38
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r4, #0xbc
 	lsls r4, r4, #1
 	adds r2, r6, r4
@@ -20545,7 +20545,7 @@ FUN_0819f894: @ 0x0819F894
 	ldr r1, _0819F8D4 @ =0x00000EAE
 	adds r0, r3, r1
 	ldrb r0, [r0]
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]
@@ -24642,7 +24642,7 @@ FUN_081a186c: @ 0x081A186C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_081a054c
 	movs r0, #1
@@ -24832,7 +24832,7 @@ EnemyAx_Init: @ 0x081A19B8
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081A1A50 @ =0x00003F72
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _081A1A44 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -26908,7 +26908,7 @@ _081A2A5A:
 	str r0, [r1]
 	ldr r5, _081A2B24 @ =0x0000057C
 	adds r1, r7, r5
-	ldr r0, _081A2B28 @ =FUN_080f09e0
+	ldr r0, _081A2B28 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r6, _081A2B2C @ =0x0000061C
 	adds r1, r7, r6
@@ -26930,7 +26930,7 @@ _081A2A5A:
 _081A2B1C: .4byte 0x00000574
 _081A2B20: .4byte 0x00000E48
 _081A2B24: .4byte 0x0000057C
-_081A2B28: .4byte FUN_080f09e0
+_081A2B28: .4byte Enemy_DispatchMsg
 _081A2B2C: .4byte 0x0000061C
 _081A2B30: .4byte FUN_081a18a8
 _081A2B34: .4byte FUN_081a18c8

@@ -516,10 +516,10 @@ s32 MessageChoice_Init(MessageChoice* p, u8* textPC, s32 stringBase, s32* settin
   p->winW = settings[5], p->winH = settings[6];
   p->startDelay = 2;
   VEC3_SET(pos, 1, 0, 0);
-  MainSprite_Add(&p->cursorL, &p->gfx, 139, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
-  MainSprite_Add(&p->cursorR, &p->gfx, 143, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->cursorL, &p->gfx, 6, 1, 0);
-  MainSprite_SetAnim(&p->cursorR, &p->gfx, 7, 1, 0);
+  MainSprite_Add(&p->cursorL, &p->gfx, SMENU_BRACE_L(0), SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->cursorR, &p->gfx, SMENU_BRACE_R(0), SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->cursorL, &p->gfx, 6, PLAYMODE_LOOP, 0);
+  MainSprite_SetAnim(&p->cursorR, &p->gfx, 7, PLAYMODE_LOOP, 0);
   if (p->textPC != NULL) {
     MessageChoice_ScanChoices(p, p->textPC);
     MessageChoice_SetCursor(p, p->selected);

@@ -237,7 +237,7 @@ _0813E866:
 	str r6, [sp]
 	movs r2, #1
 	str r2, [sp, #4]
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0813E87A:
 	movs r3, #0x97
 	lsls r3, r3, #1
@@ -2300,7 +2300,7 @@ _0813F7F6:
 	movs r1, #0xa
 	bl Enemy_PlayAnim
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r1, #0xbc
 	lsls r1, r1, #1
 	adds r2, r6, r1
@@ -6040,7 +6040,7 @@ FUN_0814145c: @ 0x0814145C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	movs r0, #1
 	pop {r4}
 	pop {r1}

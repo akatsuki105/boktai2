@@ -78,6 +78,6 @@ EntityD9AEElem* FUN_08004694(EntityD9AE* p, u32 id) {
 
 NAKED s32 FUN_080046c8(u16 param_1, s32 param_2, s32 param_3, unknown* param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/FUN_080046c8.inc"); }
 
-NAKED s32 FUN_08004a04(void) { INCFUNC("asm/func/FUN_08004a04.inc"); }
+NAKED s32 Cmd_E02A(void) { INCFUNC("asm/func/Cmd_E02A.inc"); }
 
-NAKED s32 FUN_08004ba4(void) { INCFUNC("asm/func/FUN_08004ba4.inc"); }
+NAKED s32 Cmd_B76C(void) { INCFUNC("asm/func/Cmd_B76C.inc"); }

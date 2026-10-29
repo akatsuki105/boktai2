@@ -4,7 +4,6 @@
 #include "global.h"
 #include "vm.h"
 
-COMMON_DATA s32 s32_03002b48 = 0;    // 0x03002B48
 COMMON_DATA MsgBus* gMsgBus = NULL;  // 0x03002B4C
 
 static u16 Demo_FindScriptID(u32 id);
@@ -184,7 +183,7 @@ s32 MsgBus_Init(MsgBus* p, u32 targetID) {
   p->scriptCount = 0;
   p->unk_6c = 0;
   p->queues = NULL;
-  MsgQueue_Register(&p->mq, targetID, 1);
+  MsgQueue_Register(&p->mq, targetID, CLS_BUS);
   return 0;
 }
 

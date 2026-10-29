@@ -92,26 +92,26 @@ Mover* Mover_FindByID_Proxy(u16 id) {
 
 Mover* Mover_FindInList_Proxy(Mover* p) { return Mover_FindInList(p); }
 
-// スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
+// 0xBEC2, スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
 s32 Cmd_GetMoverPos(void) {
   u8 buf[8];
   Mover* p = Mover_FindByID(VM_GetValue());
 
   if (p == NULL) {
-    FUN_0823167c(buf);
-    FUN_0823206c(buf, 0, 0);
-    FUN_0823167c(buf);
-    FUN_0823206c(buf, 0, 0);
-    FUN_0823167c(buf);
-    FUN_0823206c(buf, 0, 0);
+    VM_GetMemoryRef(buf);
+    VM_StoreMemoryRef(buf, 0, 0);
+    VM_GetMemoryRef(buf);
+    VM_StoreMemoryRef(buf, 0, 0);
+    VM_GetMemoryRef(buf);
+    VM_StoreMemoryRef(buf, 0, 0);
     return -1;
   }
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, p->pos.x);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, p->pos.y);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, p->pos.z);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, p->pos.x);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, p->pos.y);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, p->pos.z);
   return 0;
 }
 
@@ -128,6 +128,7 @@ s32 MoverList_Init(MoverList* p, u32 id, u32 _) {
   return 0;
 }
 
+// 0xB8B9
 MoverList* MoverList_Create(u32 id, u32 _) {
   if (sMoverList == NULL) {
     MoverList* p = CreateEntity(ENTITY_UNK_2, sizeof(MoverList));
@@ -154,7 +155,7 @@ MoverList* MoverList_Get(void) {
 // リストに繋ぐところまでやる初期化
 s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 unk_4, void* owner) {
   p->id = id;
-  p->unk_2 = 0;
+  p->flags = 0;
   p->unk_4 = unk_4;
   p->pos = *pos;
   p->angle = angle;
@@ -192,9 +193,7 @@ bool32 Mover_SetMainSprite(Mover* p, MainSprite* data) {
 }
 
 bool32 FUN_0823b47c(Mover* p, Vec3* unk_30) {
-  u16 flag = 4;
-
-  p->unk_2 |= flag;
+  SET_FLAGS(p->flags, MOVER_FLAG_2);
   p->unk_30 = *unk_30;
   return TRUE;
 }

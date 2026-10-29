@@ -392,7 +392,7 @@ _0806DD0A:
 	lsls r6, r6, #1
 	adds r4, r5, r6
 	ldrh r0, [r4]
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	ldrh r1, [r4]
 	lsls r0, r1, #1
 	adds r0, r0, r1

@@ -115,8 +115,6 @@ void Map_SetTileData(CollisionMapTileData* tiledata) {
 void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
   CollisionMapTileData* td;
   CollisionMapTile* tile;
-  s32 bx;
-  s32 bz;
   s32 idx;
 
   if (gCollisionMap->tiledata == NULL) {
@@ -124,13 +122,7 @@ void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
   }
 
   td = gCollisionMap->tiledata;
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
+  idx = GetCollisionTileIdx(pos);
   p->tileIdx[0] = p->tileIdx[1] = idx;
 
   tile = &td->tiles[p->tileIdx[1]];
@@ -176,8 +168,6 @@ u16 Map_GetTileHeightAt(Vec3* pos) { return TileHeightAt(pos); }
 TileAttr Map_GetTileAttr(Vec3* pos) {
   CollisionMapTileData* td;
   CollisionMapTile* tile;
-  s32 bx;
-  s32 bz;
   s32 idx;
 
   if (gCollisionMap->tiledata == NULL) {
@@ -185,13 +175,7 @@ TileAttr Map_GetTileAttr(Vec3* pos) {
   }
 
   td = gCollisionMap->tiledata;
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
+  idx = GetCollisionTileIdx(pos);
   tile = &td->tiles[idx];
   return tile->attr;
 }
@@ -202,16 +186,15 @@ u16 Map_GetTileHeightDiff(Vec3* pos1, Vec3* pos2) {
   return abs(diff);
 }
 
-// pos1 から pos2 へ移れるか, 階段タイルどうしの繋がりと段差を見て判定する
+// from から to へ移れるか, 階段タイルどうしの繋がりと段差を見て判定する
 // 残差21命令 (305/326): 原典は TileAtIndex の展開を <= 0x7F の両側それぞれに持ち, こちらは2つが丸ごと融合する
 // Tier A-C は試済: 索引の u16 切り捨てを別変数経由に, 分岐ごとの複製 (TileAtIndex 導入で 294→305)
-NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
+NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
 #ifdef NONMATCHING_C
   CollisionMapTile* tile1;
   CollisionMapTile* tile2;
   CollisionMapTile* tile3;
   CollisionMapTile* base;
-  MapTileOverride* ov;
   TileAttr attr2;
   TileAttr mask;
   s32 limit;
@@ -220,22 +203,11 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
   s32 height;
   s32 idx1;
   s32 idx2;
-  s32 raw;
-  s32 bx;
-  s32 bz;
   s32 d;
 
-  bx = (s8)(pos2->x >> 8);
-  bz = (s8)(pos2->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    raw = 0;
-  } else {
-    raw = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  idx2 = (u16)raw;
+  idx2 = (u16)GetCollisionTileIdx(to);
 
-  ov = Map_FindTileOverride(idx2, 1);
-  tile2 = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx2];
+  tile2 = TileAtIndex(idx2);
 
   attr2 = tile2->attr;
   if (val == 4) {
@@ -249,21 +221,13 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
   if (attr2 & mask) {
     return FALSE;
   }
-  if (Map_GetTileHeightDiff(pos1, pos2) > limit) {
+  if (Map_GetTileHeightDiff(from, to) > limit) {
     return FALSE;
   }
 
-  bx = (s8)(pos1->x >> 8);
-  bz = (s8)(pos1->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    raw = 0;
-  } else {
-    raw = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  idx1 = (u16)raw;
+  idx1 = (u16)GetCollisionTileIdx(from);
 
-  ov = Map_FindTileOverride(idx1, 1);
-  tile1 = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx1];
+  tile1 = TileAtIndex(idx1);
 
   stairs1 = tile1->heightStairs >> 4;
   stairs2 = tile2->heightStairs >> 4;
@@ -272,14 +236,14 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
     if (d != 1 && d != -1) {
       return TRUE;
     }
-    if ((gStat->unk_934 & SF934_LAVA_FROZEN) && (attr2 & TATTR_LAVA)) {
+    if ((gStat->mapFlags & MPF_HOT) && (attr2 & TATTR_SPECIAL)) {  // マグマブロック
       return FALSE;
     }
     if (stairs2 != 0) {
       return TRUE;
     }
 
-    if ((u8)pos2->z <= 0x7F) {
+    if ((u8)to->z <= 0x7F) {
       tile3 = TileAtIndex(idx2 - gMapBlockW);
     } else {
       tile3 = TileAtIndex(idx2 + gMapBlockW);
@@ -294,14 +258,14 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
     if (d != gMapBlockW && d != -gMapBlockW) {
       return TRUE;
     }
-    if ((gStat->unk_934 & SF934_LAVA_FROZEN) && (attr2 & TATTR_LAVA)) {
+    if ((gStat->mapFlags & MPF_HOT) && (attr2 & TATTR_SPECIAL)) {  // マグマブロック
       return FALSE;
     }
     if (stairs2 != 0) {
       return TRUE;
     }
 
-    if ((u8)pos2->x <= 0x7F) {
+    if ((u8)to->x <= 0x7F) {
       tile3 = TileAtIndex(idx2 - 1);
     } else {
       tile3 = TileAtIndex(idx2 + 1);
@@ -317,7 +281,7 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
       if (stairs2 != STAIRS_HORIZONTAL) {
         return TRUE;
       }
-      if ((u8)pos2->x <= 0x7F) {
+      if ((u8)to->x <= 0x7F) {
         tile3 = TileAtIndex(idx1 - 1);
       } else {
         tile3 = TileAtIndex(idx1 + 1);
@@ -326,7 +290,7 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
       if (stairs2 != STAIRS_VERTICAL) {
         return TRUE;
       }
-      if ((u8)pos2->z <= 0x7F) {
+      if ((u8)to->z <= 0x7F) {
         tile3 = TileAtIndex(idx1 - gMapBlockW);
       } else {
         tile3 = TileAtIndex(idx1 + gMapBlockW);
@@ -351,39 +315,29 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
 
   return TRUE;
 #else
-  INCFUNC("asm/func/FUN_08232b00.inc");
+  INCFUNC("asm/func/Map_CanStepTo.inc");
 #endif
 }
 
 // dst のタイルへ入れないとき, 境界に沿って片方の軸だけ滑らせた位置を探して dst に書き戻す
-s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
+s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
   CollisionMapTileData* td;
   Vec3 v;
   s32 idx;
   s32 dir;
   s32 n;
-  s32 bx;
-  s32 bz;
-  s32 raw;
 
   if (gCollisionMap->tiledata == NULL) {
     return 0;
   }
   td = gCollisionMap->tiledata;
 
-  bx = (s8)(dst->x >> 8);
-  bz = (s8)(dst->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    raw = 0;
-  } else {
-    raw = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  idx = (u16)raw;
+  idx = (u16)GetCollisionTileIdx(dst);
 
   if (tile->tileIdx[1] == idx) {
     return 0;
   }
-  if (FUN_08232b00(pos, dst, param_4)) {
+  if (Map_CanStepTo(pos, dst, param_4)) {
     return 0;
   }
 
@@ -406,14 +360,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx + 1) {
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -423,14 +377,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -448,14 +402,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx - 1) {
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -465,14 +419,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -494,14 +448,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx + 1) {
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -511,14 +465,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -536,14 +490,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx - 1) {
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -553,14 +507,14 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (FUN_08232b00(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, param_4)) {
           *dst = v;
           break;
         }
@@ -579,8 +533,7 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
 void Map_UpdateMoverTile(MoverTile* mTile, Vec3* pos, Vec3* dst) {
   if (gCollisionMap->tiledata != NULL) {
     u16 idx = GetCollisionTileIdx(dst);
-    MapTileOverride* ov = Map_FindTileOverride(idx, 1);
-    CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+    CollisionMapTile* tile = TileAtIndex(idx);
 
     if (mTile->tileIdx[1] != idx) {
       mTile->tileIdx[0] = mTile->tileIdx[1];
@@ -607,7 +560,7 @@ void FUN_08233428(MoverTile* tile, Vec3* pos, Vec3* offset, s32 unused_4, s32 un
   dst.y = pos->y + offset->y;
   dst.z = pos->z + offset->z;
   dst.val = 16;
-  tile->unk_0[0] = FUN_08232df8(tile, pos, &dst, param_6);
+  tile->unk_0[0] = Map_SlideAlongWall(tile, pos, &dst, param_6);
   Map_UpdateMoverTile(tile, pos, &dst);
 }
 
@@ -620,8 +573,6 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
   Vec3 dst;
   Vec3 probe;
   s32 dir;
-  s32 bx;
-  s32 bz;
   s32 idx;
 
   dir = 0;
@@ -636,13 +587,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
     dir |= 2;
   }
 
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
+  idx = GetCollisionTileIdx(pos);
   p->tileIdx[1] = idx;
 
   dst.x = pos->x + delta->x;
@@ -660,7 +605,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x += sizeX;
       probe.z += sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x -= sizeX;
         probe.z -= sizeZ;
         break;
@@ -669,7 +614,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x += sizeX;
       probe.z -= sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x -= sizeX;
         probe.z += sizeZ;
         break;
@@ -683,7 +628,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x -= sizeX;
       probe.z += sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x += sizeX;
         probe.z -= sizeZ;
         break;
@@ -692,7 +637,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x -= sizeX;
       probe.z -= sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x += sizeX;
         probe.z += sizeZ;
         break;
@@ -706,7 +651,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x += sizeX;
       probe.z += sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x -= sizeX;
         probe.z -= sizeZ;
         break;
@@ -715,7 +660,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x -= sizeX;
       probe.z += sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x += sizeX;
         probe.z -= sizeZ;
         break;
@@ -729,7 +674,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x += sizeX;
       probe.z -= sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x -= sizeX;
         probe.z += sizeZ;
         break;
@@ -738,7 +683,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x -= sizeX;
       probe.z -= sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x += sizeX;
         probe.z += sizeZ;
         break;
@@ -757,7 +702,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x += sizeX;
       probe.z += sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x -= sizeX;
         probe.z -= sizeZ;
         break;
@@ -765,11 +710,11 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
 
       tryX = *pos;
       tryX.x += delta->x + sizeX;
-      freeX = FUN_08232b00(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, unk_4);
 
       tryZ = *pos;
       tryZ.z += delta->z + sizeZ;
-      freeZ = FUN_08232b00(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -788,7 +733,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        FUN_08232df8(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, unk_4);
         tryX.x -= sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -797,7 +742,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      FUN_08232df8(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
       tryZ.x += delta->x;
       tryZ.z -= sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -813,7 +758,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x -= sizeX;
       probe.z += sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x += sizeX;
         probe.z -= sizeZ;
         break;
@@ -821,11 +766,11 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
 
       tryX = *pos;
       tryX.x += delta->x - sizeX;
-      freeX = FUN_08232b00(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, unk_4);
 
       tryZ = *pos;
       tryZ.z += delta->z + sizeZ;
-      freeZ = FUN_08232b00(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -844,7 +789,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        FUN_08232df8(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, unk_4);
         tryX.x += sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -853,7 +798,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      FUN_08232df8(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
       tryZ.x += delta->x;
       tryZ.z -= sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -869,7 +814,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x += sizeX;
       probe.z -= sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x -= sizeX;
         probe.z += sizeZ;
         break;
@@ -877,11 +822,11 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
 
       tryX = *pos;
       tryX.x += delta->x + sizeX;
-      freeX = FUN_08232b00(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, unk_4);
 
       tryZ = *pos;
       tryZ.z += delta->z - sizeZ;
-      freeZ = FUN_08232b00(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -900,7 +845,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        FUN_08232df8(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, unk_4);
         tryX.x -= sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -909,7 +854,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      FUN_08232df8(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
       tryZ.x += delta->x;
       tryZ.z += sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -925,7 +870,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       probe = dst;
       probe.x -= sizeX;
       probe.z -= sizeZ;
-      if (FUN_08232df8(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
         probe.x += sizeX;
         probe.z += sizeZ;
         break;
@@ -933,11 +878,11 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
 
       tryX = *pos;
       tryX.x += delta->x - sizeX;
-      freeX = FUN_08232b00(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, unk_4);
 
       tryZ = *pos;
       tryZ.z += delta->z - sizeZ;
-      freeZ = FUN_08232b00(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -956,7 +901,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        FUN_08232df8(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, unk_4);
         tryX.x += sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -965,7 +910,7 @@ NON_MATCH void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      FUN_08232df8(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
       tryZ.x += delta->x;
       tryZ.z += sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -1126,12 +1071,9 @@ NON_MATCH s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit) {
 #ifdef NONMATCHING_C
   Vec3 cur;
   Vec3 next;
-  MapTileOverride* ov;
   CollisionMapTile* tile;
   s32 stairs;
   s32 height;
-  s32 bx;
-  s32 bz;
   s32 idx;
   s32 r;
   s32 i;
@@ -1142,32 +1084,15 @@ NON_MATCH s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit) {
 
   r = 0;
   cur = *pos;
-  bx = (s8)(cur.x >> 8);
-  bz = (s8)(cur.z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
+  idx = GetCollisionTileIdx(&cur);
 
   for (i = 0; i < count; i++) {
     r = FUN_08233d50(&next, &cur, dir);
     if (r > 1) {
-      bx = (s8)(next.x >> 8);
-      bz = (s8)(next.z >> 8);
-      if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-        idx = 0;
-      } else {
-        idx = gCollisionMap->rowOffsets[bz] + bx;
-      }
+      idx = GetCollisionTileIdx(&next);
     }
 
-    ov = Map_FindTileOverride(idx, 1);
-    if (ov != NULL) {
-      tile = &ov->tile;
-    } else {
-      tile = &gCollisionMap->tiledata->tiles[idx];
-    }
+    tile = TileAtIndex(idx);
 
     stairs = tile->heightStairs >> 4;
     height = (tile->heightStairs & 0xF) << 8;
@@ -1594,24 +1519,24 @@ s32 Cmd_GetZoneBounds(void) {
   {
     u8 desc[8];
 
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, zone->x1);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, zone->z1 << 4);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, zone->y1);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, zone->x2);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, zone->z2 << 4);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, zone->y2);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, FixToInt(1, zone->x2 + zone->x1));
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, FixToInt(1, zone->z2 + zone->z1) << 4);
-    FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, FixToInt(1, zone->y2 + zone->y1));
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, zone->x1);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, zone->z1 << 4);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, zone->y1);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, zone->x2);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, zone->z2 << 4);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, zone->y2);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, FixToInt(1, zone->x2 + zone->x1));
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, FixToInt(1, zone->z2 + zone->z1) << 4);
+    VM_GetMemoryRef(desc);
+    VM_StoreMemoryRef(desc, 0, FixToInt(1, zone->y2 + zone->y1));
   }
   return 0;
 }
@@ -1792,12 +1717,12 @@ NON_MATCH s32 Cmd_GetPathNodePos(void) {
     return -1;
   }
 
-  FUN_0823167c(desc);
-  FUN_0823206c(desc, 0, pos.x);
-  FUN_0823167c(desc);
-  FUN_0823206c(desc, 0, pos.y);
-  FUN_0823167c(desc);
-  FUN_0823206c(desc, 0, pos.z);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, pos.x);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, pos.y);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, pos.z);
   return 0;
 #else
   INCFUNC("asm/func/Cmd_GetPathNodePos.inc");
@@ -1806,7 +1731,7 @@ NON_MATCH s32 Cmd_GetPathNodePos(void) {
 
 // pos がカーソルの指すノードから rx, rz の範囲内にあるか調べる, 外なら 1
 // 残差は nodePos.z のレジスタコピー1命令のみ (41/42), Tier A-C は試済
-NON_MATCH s32 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz) {
+NON_MATCH bool8 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz) {
 #ifdef NONMATCHING_C
   Vec3 nodePos;
   PathNode* node = w->node;
@@ -2057,42 +1982,42 @@ NON_MATCH s32 FUN_082356c4(Vec3* dst, Vec3* min, Vec3* max, s32 pathIdx) {
 
 // kind ごとの移動判定に振り分ける, どれも失敗したら Map_PickRandomPathNode で戻す
 // kind に応じた探索で経路ノードを1つ選ぶ, 見つからなければ乱択にする
-// 残差1命令 (56/55): 原典は param_5 の2乗を一旦別レジスタで作ってから minDistSq へ写すが, agbcc は宛先レジスタの中で直接 muls する
+// 残差1命令 (56/55): 原典は minDist の2乗を一旦別レジスタで作ってから minDistSq へ写すが, agbcc は宛先レジスタの中で直接 muls する
 // Tier A-C は試済: 宣言時初期化/代入文の分離, Square 相当の static inline
-NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5, Vec3* min, Vec3* max) {
+NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, Vec3* min, Vec3* max) {
 #ifdef NONMATCHING_C
   s32 ret = -1;
-  u32 minDistSq = param_5 * param_5;
+  u32 minDistSq = minDist * minDist;
 
   switch (kind) {
     case 0: {
-      ret = Map_PickRandomPathNode(dst, param_4);
+      ret = Map_PickRandomPathNode(dst, pathIdx);
       break;
     }
     case 1: {
-      ret = Map_FindNearestPathNode(dst, pos, param_4);
+      ret = Map_FindNearestPathNode(dst, pos, pathIdx);
       break;
     }
     case 2: {
-      ret = Map_FindFarthestPathNode(dst, pos, param_4);
+      ret = Map_FindFarthestPathNode(dst, pos, pathIdx);
       break;
     }
     case 3: {
-      ret = FUN_08235408(dst, pos, param_4, minDistSq);
+      ret = FUN_08235408(dst, pos, pathIdx, minDistSq);
       break;
     }
     case 4: {
-      ret = Map_FindPathNodeBeyond(dst, pos, param_4, minDistSq);
+      ret = Map_FindPathNodeBeyond(dst, pos, pathIdx, minDistSq);
       break;
     }
     case 5: {
-      ret = FUN_082356c4(dst, min, max, param_4);
+      ret = FUN_082356c4(dst, min, max, pathIdx);
       break;
     }
   }
 
   if (ret < 0) {
-    ret = Map_PickRandomPathNode(dst, param_4);
+    ret = Map_PickRandomPathNode(dst, pathIdx);
   }
   return ret;
 #else

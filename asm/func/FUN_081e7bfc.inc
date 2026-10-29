@@ -107,7 +107,7 @@ _081E7CAE:
 	adds r0, r6, r1
 	strb r2, [r0]
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	movs r1, #2
 	rsbs r1, r1, #0
 	ldr r0, [r7]
@@ -164,7 +164,7 @@ _081E7D50:
 	adds r0, r6, r2
 	strb r1, [r0]
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	movs r1, #2
 	rsbs r1, r1, #0
 	ldr r0, [r7]

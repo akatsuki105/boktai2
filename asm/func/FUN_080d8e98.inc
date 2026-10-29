@@ -527,7 +527,7 @@ _080D9270:
 	ble _080D9254
 	movs r4, #0
 	adds r0, r7, #0
-	bl FUN_080d866c
+	bl Emote_PlayEnemySound
 	ldr r1, [sp, #0x14]
 	strb r4, [r1]
 	movs r0, #0xff

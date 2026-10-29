@@ -25,7 +25,7 @@ _080CC6D2:
 	adds r0, r4, r2
 	ldrb r2, [r0]
 	adds r0, r5, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [r5, #0x18]

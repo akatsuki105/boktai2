@@ -37,14 +37,14 @@ void sound_08240264(SoundID32 id) {
 }
 
 // 0x53BF
-void FUN_082402c8(void) {
+void Cmd_53BF(void) {
   if (VM_SeekToNamedArg('i')) {
     sound_08240264(VM_GetValue());
   }
 }
 
 // 0xE7CA
-void FUN_082402e0(void) {
+void Cmd_E7CA(void) {
   if (VM_SeekToNamedArg('i')) {
     sound_08240264(VM_GetValue());
   }
@@ -98,7 +98,7 @@ void Sound_FadeOutBGMTemporarily(u32 speed) {
 }
 
 // 0xD0C7
-void FUN_08240428(void) {
+void Cmd_D0C7(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeOutBGMTemporarily(VM_GetValue());
   }
@@ -117,7 +117,7 @@ void Sound_FadeOutBGM(u32 speed) {
 }
 
 // 0x6AFF
-void FUN_08240498(void) {
+void Cmd_6AFF(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeOutBGM(VM_GetValue());
   }
@@ -145,7 +145,7 @@ void FUN_082404fc(u32 speed) {
 }
 
 // 0x3EA2
-void FUN_08240550(void) {
+void Cmd_3EA2(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_082404fc(VM_GetValue());
   }
@@ -160,7 +160,7 @@ void FUN_08240568(u32 speed) {
 }
 
 // 0x4CBB
-void FUN_082405a8(void) {
+void Cmd_4CBB(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_08240568(VM_GetValue());
   }
@@ -180,7 +180,7 @@ void FUN_082405c0(u32 speed) {
 }
 
 // 0xE6F2
-void FUN_08240618(void) {
+void Cmd_E6F2(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_082405c0(VM_GetValue());
   }
@@ -196,14 +196,14 @@ void Sound_SetBGMTempo(u32 tempo) {
 }
 
 // 0xEE18
-void FUN_08240668(void) {
+void Cmd_EE18(void) {
   if (VM_SeekToNamedArg('t')) {
     Sound_SetBGMTempo(VM_GetValue());
   }
 }
 
 // 0x3ED0, 再生中の BGM の音量をスクリプト引数 'v'(音量) と 't'(対象トラック、省略時 0xFF) で変更する
-void FUN_08240680(void) {
+void Cmd_3ED0(void) {
   u32 volume, trackBits;
   SoundID16 id;
 
@@ -249,7 +249,7 @@ void sound_08240740(SoundID32 id) {
 
 // GAMEOVER 中でなければサウンドを鳴らす
 void PlaySound_0824078c(SoundID32 id) {
-  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER)) return;
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) return;
   PlaySound_082406e0(id);
 }
 
@@ -309,7 +309,7 @@ void UNUSED Sound_Reset(void) {
 }
 
 // 0xCA3D
-void FUN_082408b8(void) {
+void Cmd_CA3D(void) {
   if (gSoundIDs[30] != 0) sound_08240740(gSoundIDs[30]);
 }
 

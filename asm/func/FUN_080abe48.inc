@@ -88,7 +88,7 @@ _080ABE68:
 	adds r0, #0x29
 	ldrb r2, [r0]
 	adds r0, r4, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldrb r3, [r6]
 	ldr r2, _080ABF30 @ =gSineTable
 	mov r1, r8

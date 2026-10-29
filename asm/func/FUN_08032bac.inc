@@ -97,7 +97,7 @@ _08032C50:
 	mov r0, sb
 	bl Boss_PlayAnimDir8
 	adds r0, r7, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08032C88

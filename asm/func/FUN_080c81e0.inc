@@ -149,7 +149,7 @@ _080C82EA:
 	adds r0, r0, r3
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	ldr r1, _080C8350 @ =0x00000DBC
 	adds r0, r7, r1
 	movs r3, #1

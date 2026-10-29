@@ -40,7 +40,7 @@ _08069260:
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	movs r1, #0x10
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	str r0, [sp, #0x14]
 	movs r2, #0xe9
 	lsls r2, r2, #2
@@ -93,10 +93,10 @@ _080692CC:
 	adds r0, r5, r2
 	ldrb r0, [r0]
 	movs r1, #0x11
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	str r0, [sp, #0x14]
 	adds r0, r5, #0
-	bl FUN_08068c6c
+	bl Player_CalcCoffinMoveSpeed
 	adds r4, r0, #0
 	movs r6, #1
 	str r6, [sp, #0x10]
@@ -368,7 +368,7 @@ _080694D2:
 	lsls r6, r6, #1
 	adds r0, r5, r6
 	ldrh r0, [r0]
-	bl Player_IsLiveLava
+	bl Player_IsOnRock
 	cmp r0, #0
 	beq _0806952C
 	mov r1, r8

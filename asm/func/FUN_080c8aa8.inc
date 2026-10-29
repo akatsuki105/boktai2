@@ -39,7 +39,7 @@ _080C8AD8:
 	orrs r0, r2
 	str r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	cmp r7, #0x64
 	ble _080C8B1C
 	ldr r1, _080C8B24 @ =FUN_080c8b28

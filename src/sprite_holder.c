@@ -2,7 +2,7 @@
 #include "global.h"
 #include "sprite.h"
 
-void FUN_08055b58(void) {}
+void Cmd_3D0C(void) {}
 
 // kind に応じて AuxSprite / MainSprite のアニメを設定する, kind == 0 なら -1
 s32 SpriteHolder_SetAnim(SpriteHolder* p, u32 pose, u32 variant, u32 xflip, u32 playMode, u32 auxFlags, u32 mainFlags) {
@@ -194,7 +194,7 @@ s32 SpriteHolder_InitMain(SpriteHolder* p, u32 spriteID, SpriteFlags flags, Vec3
   }
   main->gfx = *f;
   OpenMainSpriteFile(&main->gfx, f);
-  MainSprite_Add(&main->sprite, &main->gfx, 0, flags, 1, 0, 60, pos);
+  MainSprite_Add(&main->sprite, &main->gfx, 0, flags, 1, PLAYMODE_PAUSE, 60, pos);
   p->pos = &main->sprite.pos;
   p->flags = &main->sprite.flags;
 }

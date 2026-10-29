@@ -6,7 +6,7 @@
 	ldrh r0, [r4]
 	lsls r0, r0, #2
 	ldr r1, _0809B0C8 @ =0x00001084
-	bl FUN_0808a458
+	bl SetScreenBrightness
 	ldrh r0, [r4]
 	cmp r0, #0
 	bne _0809AF20
@@ -70,7 +70,7 @@ _0809AF20:
 _0809AF36:
 	ldr r1, _0809B0D8 @ =FUN_0808cf14
 	adds r0, r6, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	ldr r1, _0809B0DC @ =0x03004494
 	ldr r2, _0809B0E0 @ =0x00003B1C
 	adds r0, r6, r2
@@ -222,7 +222,7 @@ _0809B04E:
 	str r0, [sp, #8]
 	movs r0, #4
 	adds r3, r7, #0
-	bl Entity0800a89c_Spawn
+	bl SpawnSpiritBugs
 	subs r5, #1
 	cmp r5, #0
 	bge _0809B04E

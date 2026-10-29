@@ -126,7 +126,7 @@ _081A4DA2:
 	str r1, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r2, #0x40
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 	movs r0, #0xe6
 	bl PlaySound_082406e0
 _081A4DCE:

@@ -24,6 +24,15 @@ static_assert(sizeof(Entity4B15) == 260);
 
 IWRAM_DATA Entity4B15* gEntity4B15 = NULL;  // 0x03000090
 
+// 状態に入った最初の呼び出しだけ TRUE, 入場フラグを下ろす
+static inline bool8 Entity4B15Elem_ConsumeEnter(Entity4B15Elem* elem) {
+  if (elem->stateEntered) {
+    elem->stateEntered = FALSE;
+    return TRUE;
+  }
+  return FALSE;
+}
+
 void FUN_08019ae8(void) { gEntity4B15 = NULL; }
 
 NAKED void Entity4B15Elem_Init(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_Init.inc"); }
@@ -31,17 +40,11 @@ NAKED void Entity4B15Elem_Init(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("a
 void Entity4B15Elem_Destroy(Entity4B15* p, Entity4B15Elem* elem) { Particle_Remove(&elem->ptcl); }
 
 // state 0 (非表示) の更新, 入場時に Particle を隠すだけ
-// 残差5命令, 原典は入場フラグを食ったかどうかを 0/1 に起こしてからもう一度判定する二段形だが agbcc はどの綴りでも分岐に畳む
-NON_MATCH void Entity4B15Elem_UpdateIdle(Entity4B15* p, Entity4B15Elem* elem) {
-#ifdef NONMATCHING_C
-  if (elem->stateEntered) {
-    elem->stateEntered = FALSE;
+void Entity4B15Elem_UpdateIdle(Entity4B15* p, Entity4B15Elem* elem) {
+  if (Entity4B15Elem_ConsumeEnter(elem)) {
     elem->ptcl.flags |= SPRFLAG_HIDDEN;
   }
   elem->timer++;
-#else
-  INCFUNC("asm/func/Entity4B15Elem_UpdateIdle.inc");
-#endif
 }
 
 NAKED void Entity4B15Elem_UpdateTracking(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_UpdateTracking.inc"); }

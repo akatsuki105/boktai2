@@ -40,9 +40,9 @@ s32 EntityBA36_GetRemaining(void) {
 // 残り時間を1フレーム減らし、0 になったらおいしい水を回収してスクリプトを実行する
 s32 EntityBA36_Update(EntityBA36* p) {
   if (p->timer == 0) {
-    SET_FLAGS(gStat->unk_934, SF934_DESERT);
+    SET_FLAGS(gStat->mapFlags, MPF_DESERT);
   } else {
-    CLEAR_FLAGS(gStat->unk_934, SF934_DESERT);
+    CLEAR_FLAGS(gStat->mapFlags, MPF_DESERT);
     p->timer--;
     if (p->timer == 0) {
       if (CheckItemOwn(ITEM_TASTY_WATER)) {

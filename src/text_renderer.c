@@ -103,7 +103,9 @@ const u16 gEscapeCharcodes[118] = {
 };  // 0x085AB45C, 終端の 0 は無く、ループは隣の gBlankText のゼロ埋めで止まる
 // clang-format on
 
-extern u16 u16_030047d8;  // src/camera.c
+extern u16 gSilentCharcode;  // src/camera.c
+
+char* GetPlayerName(void);
 
 static inline s32 GetTextSpeed(void) { return gStat->textSpeed; }  // 本体設定のメッセージ速度
 
@@ -150,7 +152,7 @@ s32 TextRenderer_AdvanceCursor(TextRenderer* p, s32 wide) {
 
 // 文字送り音を鳴らす, soundToggle が 0/1 を往復して1文字おきに鳴る
 void TextRenderer_PlayCharSound(TextRenderer* p, u32 charcode) {
-  if (p->unk_0a != 0) {
+  if (p->muteCharSound != 0) {
     return;
   }
   if (p->silent != 0) {
@@ -158,7 +160,7 @@ void TextRenderer_PlayCharSound(TextRenderer* p, u32 charcode) {
   }
 
   if ((p->speed > 1 && p->soundEveryChar == 0) || p->soundToggle == 0) {
-    if (charcode != 0 && charcode != u16_030047d8) {
+    if (charcode != 0 && charcode != gSilentCharcode) {
       PlaySound_082406e0(gCharSounds[p->charSoundIdx]);
     }
   }
@@ -402,7 +404,7 @@ u8* Text_FindChar(u8* s, u8 c) {
 
 // タグの '=' から '>' までを tagValue に写して、'>' か終端の位置を返す (例: <VAR=1>, <PROC=0>)
 // 残差は c のレジスタ1つ (原典は ldrb で直接 r2, こちらは r0 経由で1命令多い) だけ, Tier A/B と C のローカル分割は試済
-NON_MATCH char* TextRenderer_ReadTagValue(TextRenderer* p, char* s) {
+NON_MATCH u8* TextRenderer_ReadTagValue(TextRenderer* p, u8* s) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -463,8 +465,224 @@ NON_MATCH s32 Text_GetPairFace(void) {
 #endif
 }
 
+// タグの値があれば10進で読み, 無ければ def を返す
+static inline s32 TagValueOr(TextRenderer* p, s32 def) {
+  if (p->tagHasValue && p->tagValueLen) {
+    return Text_ParseDecimal(p->tagValue, p->tagValueLen);
+  }
+  return def;
+}
+
+// <LABEL=名前> の名前を顔番号に引く, 知らない名前と NONE は -1 (顔なし)
+static inline s32 Text_LookupFace(u8* name) {
+  if (Text_StrNCmp(name, s_NONE_08251b9c, 4) == 0) {
+    return -1;
+  } else if (Text_StrNCmp(name, s_R_DJUNGO_08251ba4, 8) == 0) {
+    return 0;
+  } else if (Text_StrNCmp(name, s_B_DJUNGO_08251bb0, 8) == 0) {
+    return 1;
+  } else if (Text_StrNCmp(name, s_OTENKO_08251bbc, 6) == 0) {
+    return 2;
+  } else if (Text_StrNCmp(name, s_SABATA_08251bc4, 6) == 0) {
+    return 3;
+  } else if (Text_StrNCmp(name, s_SMITH_08251bcc, 5) == 0) {
+    return 4;
+  } else if (Text_StrNCmp(name, s_RITA_08251bd4, 4) == 0) {
+    return 5;
+  } else if (Text_StrNCmp(name, s_ZAJI_08251bdc, 4) == 0) {
+    return 6;
+  } else if (Text_StrNCmp(name, s_SUMIRE_08251be4, 6) == 0) {
+    return 7;
+  } else if (Text_StrNCmp(name, s_KURO_BAN_08251bec, 8) == 0) {
+    return 29;
+  } else if (Text_StrNCmp(name, s_KURO_08251bf8, 4) == 0) {
+    return 8;
+  } else if (Text_StrNCmp(name, s_KID_08251c00, 3) == 0) {
+    return 9;
+  } else if (Text_StrNCmp(name, s_SHAIAN_08251c04, 6) == 0) {
+    return 10;
+  } else if (Text_StrNCmp(name, s_LADY_08251c0c, 4) == 0) {
+    return 11;
+  } else if (Text_StrNCmp(name, s_COFFIN_08251c14, 6) == 0) {
+    return 12;
+  } else if (Text_StrNCmp(name, s_CLOCK_08251c1c, 5) == 0) {
+    return 13;
+  } else if (Text_StrNCmp(name, s_PEOPLE1_08251c24, 7) == 0) {
+    return 14;
+  } else if (Text_StrNCmp(name, s_PEOPLE2_08251c2c, 7) == 0) {
+    return 15;
+  } else if (Text_StrNCmp(name, s_PEOPLE3_08251c34, 7) == 0) {
+    return 16;
+  } else if (Text_StrNCmp(name, s_DAAIN_08251c3c, 5) == 0) {
+    return 17;
+  } else if (Text_StrNCmp(name, s_DUNEYRR_08251c44, 7) == 0) {
+    return 18;
+  } else if (Text_StrNCmp(name, s_DVALINN_08251c4c, 7) == 0) {
+    return 19;
+  } else if (Text_StrNCmp(name, s_DURATHROR_08251c54, 9) == 0) {
+    return 20;
+  } else if (Text_StrNCmp(name, s_RINGO1_08251c60, 6) == 0) {
+    return 21;
+  } else if (Text_StrNCmp(name, s_RINGO2_08251c68, 6) == 0) {
+    return 22;
+  } else if (Text_StrNCmp(name, s_RINGO3_08251c70, 6) == 0) {
+    return 23;
+  } else if (Text_StrNCmp(name, s_ROCKMAN_08251c78, 7) == 0) {
+    return 24;
+  } else if (Text_StrNCmp(name, s_SHADEMAN_08251c80, 8) == 0) {
+    return 25;
+  } else if (Text_StrNCmp(name, s_HATENA_08251c8c, 6) == 0) {
+    return 26;
+  } else if (Text_StrNCmp(name, s_FUTARI_08251c94, 6) == 0) {
+    return Text_GetPairFace();
+  } else if (Text_StrNCmp(name, s_PLAYER_08251c9c, 6) == 0) {
+    return Text_GetPlayerFace();
+  }
+  return -1;
+}
+
 // '<' の次から始まるタグ名を表引きして適用し, '>' の次の位置を返す, 閉じタグ ('/' 始まり) も同じ関数が見る
-NAKED char* TextRenderer_HandleTag(TextRenderer* p, char* s) { INCFUNC("asm/func/TextRenderer_HandleTag.inc"); }
+// 残差はレジスタ割り当てで命令数652は一致, 原典は s が最後まで生きて CSE の正規レジスタになる形 (末尾 s = ret; return s; で割り当ては揃うが不自然なので不採用)
+// Tier A-C は試済, 未: Text_LookupFace に tagHasValue 判定を入れて -1 を1か所にする形
+NON_MATCH u8* TextRenderer_HandleTag(TextRenderer* p, u8* s) {
+#ifdef NONMATCHING_C
+  u8* ret = s;
+
+  if (*s != '/') {
+    if (Text_StrNCmp(s, s_WEIGHT_08251b64, 6) == 0) {
+      p->style = 1;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_NONSEL_08251b6c, 6) == 0) {
+      p->style = 2;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_UVMOJI_08251b74, 6) == 0) {
+      p->style = 2;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_WAIT_08251b7c, 4) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      p->speed = TagValueOr(p, GetTextSpeed());
+    } else if (Text_StrNCmp(s, s_PROC_08251b84, 4) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      p->pending[p->pendingCount] = TagValueOr(p, 0);
+      p->pendingCount++;
+    } else if (Text_StrNCmp(s, s_NAME_08251b8c, 4) == 0) {
+      p->textAlt = GetPlayerName();
+      TextRenderer_PushMode(p, 1);
+
+      ret = Text_FindChar(ret, '>');
+      p->stopAtTag = 1;
+    } else if (Text_StrNCmp(s, s_LABEL_08251b94, 5) == 0) {
+      s8 face;
+
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      if (p->tagHasValue && p->tagValueLen) {
+        face = Text_LookupFace(p->tagValue);
+      } else {
+        face = -1;
+      }
+
+      p->face = face;
+      p->silent = TRUE;
+      p->savedSpeed = p->speed;
+      p->speed = 0;
+
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_FACEOFF_08251ca4, 7) == 0) {
+      p->face = -1;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_LOCK_08251cac, 4) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      p->waitFrames = TagValueOr(p, 0);
+    } else if (Text_StrNCmp(s, s_EXTEND_08251cb4, 6) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      p->extendText = p->extends[TagValueOr(p, 0)];
+      TextRenderer_PushMode(p, 3);
+
+      ret = Text_FindChar(ret, '>');
+      p->stopAtTag = 1;
+    } else if (Text_StrNCmp(s, s_SOUND_08251cbc, 5) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      PlaySound_082406e0(TagValueOr(p, SE_SELECT));
+    } else if (Text_StrNCmp(s, s_VAR_08251cc4, 3) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      Text_FormatDecimal(p->numBuf, p->vars[TagValueOr(p, 0)]);
+      p->numText = p->numBuf;
+      TextRenderer_PushMode(p, 2);
+
+      ret = Text_FindChar(ret, '>');
+      p->stopAtTag = 1;
+    } else if (Text_StrNCmp(s, s_MOJISE_08251cc8, 6) == 0) {
+      ret = TextRenderer_ReadTagValue(p, ret);
+
+      if (Text_StrNCmp(p->tagValue, s_MOJISE_SYSTEM_08251cd0, 13) == 0) {
+        p->charSoundIdx = 0;
+      } else if (Text_StrNCmp(p->tagValue, s_MOJISE_TALK_08251ce0, 11) == 0) {
+        p->charSoundIdx = 1;
+      } else {
+        p->charSoundIdx = 0;
+      }
+    } else if (Text_StrNCmp(s, s_END_08251cec, 3) == 0) {
+      p->textAlt = GetPlayerName();
+      ret = Text_FindChar(ret, '>');
+      p->finished = TRUE;
+    } else if (Text_StrNCmp(s, s_PAREN_08251cf0, 5) == 0) {
+      if (p->parenEnabled) {
+        TextRenderer_PlayCharSound(p, '[');
+        TextRenderer_DrawHankakuChar(p, ';');
+      }
+
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_ALTER_08251cf8, 5) == 0) {
+      p->style = 1;
+      ret = Text_FindChar(ret, '>');
+    }
+  } else {
+    if (Text_StrNCmp(s, s_WEIGHT_08251d00, 7) == 0) {
+      p->style = 0;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_NONSEL_08251d08, 7) == 0) {
+      p->style = 0;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_UVMOJI_08251d10, 7) == 0) {
+      p->style = 0;
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_LABEL_08251d18, 6) == 0) {
+      p->silent = FALSE;
+      p->speed = p->savedSpeed;
+
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_PAREN_08251d20, 6) == 0) {
+      if (p->parenEnabled) {
+        TextRenderer_PlayCharSound(p, ']');
+        TextRenderer_DrawHankakuChar(p, '=');
+      }
+
+      ret = Text_FindChar(ret, '>');
+    } else if (Text_StrNCmp(s, s_ALTER_08251d28, 6) == 0) {
+      p->style = 0;
+      ret = Text_FindChar(ret, '>');
+    }
+  }
+
+  if (p->tagsInline == 0) {
+    p->stopAtTag = 1;
+  }
+
+  if (p->stopAtTag != 0) {
+    ret++;
+  }
+  return ret;
+#else
+  INCFUNC("asm/func/TextRenderer_HandleTag.inc");
+#endif
+}
 
 // 文字を1つ描いて次の位置を返す, タグと改行は描かずに読み飛ばして続ける
 // ループ形 (while ((s8)*s >= 0) + 全角をループ外) は原典と一致した (入口ジャンプと底のテストが出る)
@@ -484,8 +702,8 @@ NON_MATCH char* TextRenderer_DrawNextChar(TextRenderer* p, char* s) {
         return s;
       }
 
-      s = TextRenderer_HandleTag(p, s);
-      if (p->unk_0e != 0) {
+      s = (char*)TextRenderer_HandleTag(p, (u8*)s);
+      if (p->stopAtTag != 0) {
         return s;
       }
       if (*s == 0) {
@@ -544,7 +762,7 @@ NON_MATCH char* TextRenderer_DrawNextChar(TextRenderer* p, char* s) {
 s32 TextRenderer_Advance(TextRenderer* p) {
   char* s;
 
-  p->unk_0e = 0;
+  p->stopAtTag = 0;
   switch (p->mode) {
     case 0: {
       s = TextRenderer_DrawNextChar(p, p->text);
@@ -670,7 +888,7 @@ void TextRenderer_SetRect(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) 
 
 // 文字送り速度を設定から取り込む
 void TextRenderer_ResetSpeed(TextRenderer* p) {
-  p->unk_08 = 0;
+  p->frameCounter = 0;
   p->speed = GetTextSpeed();
 }
 
@@ -678,7 +896,7 @@ void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {
   TextRenderer_SetRect(p, x, y, width, height);
   TextRenderer_ResetModeStack(p);
   TextRenderer_ResetSpeed(p);
-  p->unk_0a = 0;
+  p->muteCharSound = 0;
   p->silent = 0;
   p->savedSpeed = p->speed;
   p->drewWide = FALSE;
@@ -688,7 +906,7 @@ void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {
   p->numText = NULL;
   p->extendText = NULL;
   p->face = -1;
-  p->unk_14 = 1;
+  p->tagsInline = 1;
   p->waitFrames = 0;
 }
 

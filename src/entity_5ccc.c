@@ -6,9 +6,16 @@
 #include "map_inline.h"
 #include "player.h"
 #include "solar.h"
+#include "spirit_bugs.h"
 #include "sprite.h"
 #include "time.h"
 #include "vm.h"
+
+typedef enum {
+  DARK_NORMAL = 0,   // チャージなし(正確には太陽光が当たっていない状態, サバタの場合はこれで自然回復する)
+  SUN_NORMAL = 1,    // 太陽光で自然回復
+  QUICK_CHARGE = 2,  // 急速チャージ
+} ChargeSpeed;
 
 // 天窓から差し込む(スポット的な)光, スプライトは SPRITE_SPOTLIGHT
 typedef struct {
@@ -50,9 +57,20 @@ static_assert(sizeof(Entity5CCC) == 2740);
 
 IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
 
-extern u16 u16_03002bf0;
+extern u16 gRisingSunCount;
 
-s32 Entity0800a89c_Spawn(s32 count, u32 kindFlags, u8 amount, Vec3* pos, Vec3* spread, s16 lifetime, s32 lifetimeRand);
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
+
+// まだセッションが無ければ 0
+static inline u8 Entity9A9F_GetUnk60(s32 idx) {
+  if (gEntity9A9F == NULL) {
+    return 0;
+  }
+  return gEntity9A9F->unk_60[idx];
+}
 
 // まだセッションが無ければ 0
 static inline u16 Entity9A9F_GetUnk66(void) {
@@ -150,39 +168,31 @@ s32 FUN_0809e05c(Vec3* pos) {
 }
 
 // 引数の座標が太陽光を受けているかを判定 (敵用?, 敵には太陽光でダメージを受けるものがいるのでその辺に関係)
-NON_MATCH s32 FUN_0809e0d4(Vec3* pos, s32 coef) {
-#ifdef NONMATCHING_C
+s32 FUN_0809e0d4(Vec3* pos, s32 coef) {
   if (gStat->sunGauge == 0) {
     return 0;
   }
-  if (!(gStat->unk_934 & SF934_OUTDOOR) && FUN_0809e05c(pos) < 0 && gEntity5CCC->unk_29 == 0) {
+  if (!TestMapFlag(MPF_OUTDOOR) && FUN_0809e05c(pos) < 0 && gEntity5CCC->unk_29 == 0) {
     return 0;
   }
   return FUN_0809e034(coef);
-#else
-  INCFUNC("asm/func/FUN_0809e0d4.inc");
-#endif
 }
 
 // プレイヤーが太陽光を受けているかを判定
-NON_MATCH bool32 FUN_0809e138(Player* p) {
-#ifdef NONMATCHING_C
+bool32 FUN_0809e138(Player* p) {
   if (gStat->sunGauge == 0) {
     return FALSE;
   }
-  if ((gStat->unk_934 & SF934_OUTDOOR) || (gEntity5CCC != NULL && FUN_0809e05c(&p->mover.pos) >= 0)) {
-    return TRUE;
+  if (!TestMapFlag(MPF_OUTDOOR) && (gEntity5CCC == NULL || FUN_0809e05c(&p->mover.pos) < 0)) {
+    return FALSE;
   }
-  return FALSE;
-#else
-  INCFUNC("asm/func/FUN_0809e138.inc");
-#endif
+  return TRUE;
 }
 
 // pos を中心に sizeIdx 番の大きさで光の矩形を作る, shape で X と Z の半径が入れ替わる
 void FUN_0809e198(SkylightBeam* beam, s32 sizeIdx, Vec3* pos, s32 shape) {
-  static const u16 u16_ARRAY_085ad004[4] = {100, 100, 112, 112};  // 0x085AD004
-  static const u16 u16_ARRAY_085ad00c[4] = {128, 100, 112, 112};  // 0x085AD00C
+  static const u16 u16_ARRAY_085ad004[4] = {Q8(0.391), Q8(0.391), Q8(0.44), Q8(0.44)};  // 0x085AD004
+  static const u16 u16_ARRAY_085ad00c[4] = {Q8(0.500), Q8(0.391), Q8(0.44), Q8(0.44)};  // 0x085AD00C
 
   u16 halfX, halfZ;
   if (shape != 0) {
@@ -235,7 +245,7 @@ NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 kind, Vec3* pos, u32 shape, 
 #endif
 }
 
-// '.n' と '.a' から矩形だけの光柱 (スプライトなし) を1本登録する
+// 0xD25F, '.n' と '.a' から矩形だけの光柱 (スプライトなし) を1本登録する
 void Entity5CCC_AddLightAreaScripted(void) {
   Entity5CCC* p = gEntity5CCC;
   Vec3 pos;
@@ -267,7 +277,7 @@ void Entity5CCC_AddLightAreaScripted(void) {
   }
 }
 
-// '.p' のタイルの高さに合わせて光柱を1本立てる
+// 0x320C, '.p' のタイルの高さに合わせて光柱を1本立てる
 void Entity5CCC_AddBeamScripted(void) {
   Entity5CCC* p = gEntity5CCC;
   Vec3 pos;
@@ -306,8 +316,8 @@ void Entity5CCC_AddBeamScripted(void) {
 }
 
 // '.n' が指す光柱を見せる
-// 残差1命令 (57/56). FUN_0809e5c4 と同じく '.n' の値が ip へ追い出されて mov が1つ増える
-NON_MATCH void FUN_0809e54c(void) {
+// 残差1命令 (57/56). Cmd_815C と同じく '.n' の値が ip へ追い出されて mov が1つ増える
+NON_MATCH void Cmd_EB42(void) {
 #ifdef NONMATCHING_C
   Entity5CCC* p = gEntity5CCC;
   s32 id;
@@ -331,13 +341,13 @@ NON_MATCH void FUN_0809e54c(void) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0809e54c.inc");
+  INCFUNC("asm/func/Cmd_EB42.inc");
 #endif
 }
 
 // '.n' が指す光柱を消す
 // 残差1命令 (51/50). 原典は '.n' の値を r7 に置くが agbcc は ip へ追い出して mov を1つ増やす
-NON_MATCH void FUN_0809e5c4(void) {
+NON_MATCH void Cmd_815C(void) {
 #ifdef NONMATCHING_C
   Entity5CCC* p = gEntity5CCC;
   s32 id;
@@ -361,7 +371,7 @@ NON_MATCH void FUN_0809e5c4(void) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0809e5c4.inc");
+  INCFUNC("asm/func/Cmd_815C.inc");
 #endif
 }
 
@@ -369,7 +379,7 @@ NON_MATCH void FUN_0809e5c4(void) {
 void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   s32 heal;
 
-  if (gFlag030047a4 & FLAG030047A4_UNK_8) {
+  if (gGameFlags & FLAG030047A4_UNK_8) {
     p->idleTimer = 0;
   } else if (gInput[0].down != 0) {
     p->idleTimer = 0;
@@ -377,23 +387,23 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
     p->idleTimer++;
   }
 
-  if ((gFlag030047a4 & (FLAG030047A4_UNK_8 | FLAG030047A4_UNK_9)) == FLAG030047A4_UNK_9) {
+  if ((gGameFlags & (FLAG030047A4_UNK_8 | FLAG030047A4_UNK_9)) == FLAG030047A4_UNK_9) {
     return;
   }
-  if (TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     return;
   }
 
   if (p->player->kind == PLAYER_SABATA) {
-    if (light == 2) {
+    if (light == QUICK_CHARGE) {
       p->charge += 40;
-    } else if (light == 0 && p->idleTimer < 900) {
+    } else if (light == DARK_NORMAL && p->idleTimer < 900) {
       p->charge += 5;
     }
   } else {
-    if (light == 2) {
+    if (light == QUICK_CHARGE) {
       p->charge += gStat->sunGauge * 8;
-    } else if (light == 1 && p->idleTimer < 900) {
+    } else if (light == SUN_NORMAL && p->idleTimer < 900) {
       s32 sun = gStat->sunGauge;
       p->charge += sun;
     }
@@ -405,22 +415,22 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
     heal++;
   }
   if (heal > 0) {
-    FUN_0807aa30(p->player, heal);
+    Player_AddENE(p->player, heal);
   }
 }
 
 void FUN_0809e734(Entity5CCC* p) {
   Player* player = p->player;
 
-  u32 light;
-  if (TEST_FLAGS(player->flag20, PFLAG20_UNK_5)) {
-    light = 2;
+  u32 chargeSpeed;
+  if (TEST_FLAGS(player->flag20, PFLAG20_QC)) {
+    chargeSpeed = QUICK_CHARGE;
   } else if (TEST_FLAGS(player->flag20, PFLAG20_SUNBATHING)) {
-    light = 1;
+    chargeSpeed = SUN_NORMAL;
   } else {
-    light = 0;
+    chargeSpeed = DARK_NORMAL;
   }
-  Entity5CCC_AddEneCharge(p, light);
+  Entity5CCC_AddEneCharge(p, chargeSpeed);
 }
 
 // 光柱のパレットを 412 に切り替える (既にそうなっていれば何もしない)
@@ -429,7 +439,7 @@ void FUN_0809e75c(Entity5CCC* p) { Entity5CCC_SetPltt(p, 412); }
 // 有効な光柱を見せ, プレイヤーの状態に応じて Entity5CCC_AddEneCharge を呼ぶ
 void FUN_0809e7c4(Entity5CCC* p) {
   Player* player;
-  u32 light;
+  u32 chargeSpeed;
 
   if (!p->unk_28) {
     s32 i;
@@ -444,14 +454,14 @@ void FUN_0809e7c4(Entity5CCC* p) {
 
   FUN_0809e75c(p);
   player = p->player;
-  if (TEST_FLAGS(player->flag20, PFLAG20_UNK_5)) {
-    light = 2;
+  if (TEST_FLAGS(player->flag20, PFLAG20_QC)) {
+    chargeSpeed = QUICK_CHARGE;
   } else if (TEST_FLAGS(player->flag20, PFLAG20_SUNBATHING)) {
-    light = 1;
+    chargeSpeed = SUN_NORMAL;
   } else {
-    light = 0;
+    chargeSpeed = DARK_NORMAL;
   }
-  Entity5CCC_AddEneCharge(p, light);
+  Entity5CCC_AddEneCharge(p, chargeSpeed);
 }
 
 // unk_28 が立っていたら有効な光柱を一旦隠し, プレイヤーの状態に応じて Entity5CCC_AddEneCharge を呼ぶ
@@ -467,7 +477,7 @@ void FUN_0809e840(Entity5CCC* p) {
     }
   }
 
-  Entity5CCC_AddEneCharge(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : 0);
+  Entity5CCC_AddEneCharge(p, Player_TestFlag20(p->player, PFLAG20_QC) ? 2 : 0);
 }
 
 // 夜の更新, 光柱を見せたままにし, プレイヤーが action 7 / state 3 の間だけホタルを8フレームごとに出す
@@ -488,7 +498,7 @@ NON_MATCH void Entity5CCC_UpdateNight(Entity5CCC* p) {
   }
 
   found = FALSE;
-  if (!(gStat->unk_934 & SF934_OUTDOOR)) {
+  if (!(gStat->mapFlags & MPF_OUTDOOR)) {
     if (FUN_0809e05c(&p->player->mover.pos) >= 0) {
       found = TRUE;
     }
@@ -499,18 +509,16 @@ NON_MATCH void Entity5CCC_UpdateNight(Entity5CCC* p) {
     }
   }
 
-  if (p->player->action == 7 && p->player->state <= 3) {
+  if (p->player->action == PACT_UNK_7 && p->player->state <= 3) {
     if (p->player->state == 3 && p->unk_22 <= 62) {
       if ((p->unk_22 & 7) == 0) {
-        Vec3 pos;
-        Vec3 spread;
-
+        Vec3 pos, spread;
         pos = p->player->mover.pos;
-        pos.x -= 100;
-        pos.z -= 100;
-        pos.y += 256;
-        spread.x = 256, spread.y = 0, spread.z = 256;
-        Entity0800a89c_Spawn(1, 1, 25, &pos, &spread, 180, 60);
+        pos.x -= Q8(0.391);
+        pos.z -= Q8(0.391);
+        pos.y += Q8(1);
+        VEC3_SET(spread, Q8(1), 0, Q8(1));
+        SpawnSpiritBugs(1, MOONBUG, 25, &pos, &spread, 180, 60);
       }
       p->unk_22++;
     }
@@ -552,18 +560,15 @@ s32 Entity0809eb24_Update(Entity5CCC* p) {
       } else {
         FUN_0809e840(p);
       }
-    } else if (gStat->unk_934 & SF934_OUTDOOR) {  // 太陽光がある場合は、屋外と屋内で処理を分ける
-      FUN_0809e734(p);                            // 屋外
+    } else if (gStat->mapFlags & MPF_OUTDOOR) {  // 太陽光がある場合は、屋外と屋内で処理を分ける
+      FUN_0809e734(p);                           // 屋外
     } else {
       FUN_0809e7c4(p);  // 屋内
     }
 
     override = gSunGaugeOverride;
-    forced = FALSE;
-    if (override == 1) {
-      forced = TRUE;
-    }
-    if (forced && u16_03002bf0 != 0) {
+    forced = (override == 1) ? TRUE : FALSE;
+    if (forced && gRisingSunCount != 0) {
       p->unk_29 = 1;
     }
   }
@@ -583,7 +588,7 @@ s32 Entity0809eb24_Destroy(Entity5CCC* p) {
 }
 
 bool32 FUN_0809eacc(void) {
-  if (gFlag030047a4 & FLAG030047A4_UNK_8) {
+  if (gGameFlags & FLAG030047A4_UNK_8) {
     return FALSE;
   }
   if (Time_GetMoonPhase() == 4) {  // 満月
@@ -592,7 +597,7 @@ bool32 FUN_0809eacc(void) {
   return FALSE;
 }
 
-s32 Entity0809eb24_Init(Entity5CCC* p, u32 param_2, u32 param_3) {
+s32 Entity0809eb24_Init(Entity5CCC* p, u32 id, u32 _) {
   p->unk_1c = FUN_0809eacc();
   p->count = 0;
   p->pltt = 410;
@@ -601,13 +606,13 @@ s32 Entity0809eb24_Init(Entity5CCC* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
-// 1人プレイのときはこっち？
-Entity5CCC* Entity0809eb24_Create(u32 param_1, u32 param_2) {
+// 1人プレイ
+Entity5CCC* Entity0809eb24_Create(u32 id, u32 _) {
   Entity5CCC* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity5CCC));
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity0809eb24_Update, Entity0809eb24_Destroy);
-    if (Entity0809eb24_Init(p, param_1, param_2) < 0) {
+    if (Entity0809eb24_Init(p, id, _) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -618,37 +623,25 @@ Entity5CCC* Entity0809eb24_Create(u32 param_1, u32 param_2) {
 s32 FUN_0809eb6c(s32 param_1) { return Div(param_1 * Entity9A9F_GetUnk66(), 140); }
 
 // 屋外か天窓の光の中にいるときだけ param_2 に応じた値を返す
-// 残差5命令 (33/38), SF934_OUTDOOR 判定の 0/1 の作り置き1ブロックだけが足りない. マスクを先に作る順は TEST_FLAGS で原典どおりになった
-// if/else で bool32 ローカルに受ける / static inline bool32 で TRUE・FALSE を返す は試済 (どちらも畳まれて 33)
-NON_MATCH s32 FUN_0809eb94(Vec3* pos, s32 param_2) {
-#ifdef NONMATCHING_C
+s32 FUN_0809eb94(Vec3* pos, s32 param_2) {
   if (Entity9A9F_GetUnk66() == 0) {
     return 0;
   }
-  if (!TEST_FLAGS(gStat->unk_934, SF934_OUTDOOR) && FUN_0809e05c(pos) < 0) {
+  if (!TestMapFlag(MPF_OUTDOOR) && FUN_0809e05c(pos) < 0) {
     return 0;
   }
   return FUN_0809eb6c(param_2);
-#else
-  INCFUNC("asm/func/FUN_0809eb94.inc");
-#endif
 }
 
 // このプレイヤーが日光を浴びられる状況か (屋外, または天窓の光の中)
-// 残差7命令 (35/42). 5命令は SF934_OUTDOOR 判定の 0/1 の作り置き (FUN_0809eb94 と同じ壁), 残り2命令は playerIdx の読みの位置
-// ファイル先頭の Entity9A9F_GetUnk66 と同形の static inline Entity9A9F_GetUnk60 を通すと 37/42 まで寄るが, 一致しないので外した
-NON_MATCH bool32 FUN_0809ebf4(Player* p) {
-#ifdef NONMATCHING_C
-  if (gEntity9A9F == NULL || gEntity9A9F->unk_60[p->playerIdx] == 0) {
+bool32 FUN_0809ebf4(Player* p) {
+  if (Entity9A9F_GetUnk60(p->inputIdx) == 0) {
     return FALSE;
   }
-  if (!(gStat->unk_934 & SF934_OUTDOOR) && (gEntity5CCC == NULL || FUN_0809e05c(&p->mover.pos) < 0)) {
+  if (!TestMapFlag(MPF_OUTDOOR) && (gEntity5CCC == NULL || FUN_0809e05c(&p->mover.pos) < 0)) {
     return FALSE;
   }
   return TRUE;
-#else
-  INCFUNC("asm/func/FUN_0809ebf4.inc");
-#endif
 }
 
 // 日光 (サバタは日陰) を浴びている量をプレイヤーごとに積み, 120 たまるごとに ENE を1回復させる
@@ -660,34 +653,34 @@ NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
 
   for (i = 0; i < 4; i++) {
     Player* player = gPlayerPtr[i];
-    u32 light;
+    u32 chargeSpeed;
     s32 heal;
 
     if (player == NULL) {
       continue;
     }
-    if (player->unk_1c != 1) {
+    if (player->mode != PMODE_ACTIVE) {
       continue;
     }
 
-    if (TEST_FLAGS(player->flag20, PFLAG20_UNK_5)) {
-      light = 2;
+    if (TEST_FLAGS(player->flag20, PFLAG20_QC)) {
+      chargeSpeed = QUICK_CHARGE;
     } else if (TEST_FLAGS(player->flag20, PFLAG20_SUNBATHING)) {
-      light = 1;
+      chargeSpeed = SUN_NORMAL;
     } else {
-      light = 0;
+      chargeSpeed = DARK_NORMAL;
     }
 
     if (player->kind == PLAYER_SABATA) {
-      if (light == 2) {
+      if (chargeSpeed == QUICK_CHARGE) {
         p->charges[i] += 40;
-      } else if (light == 0) {
+      } else if (chargeSpeed == DARK_NORMAL) {
         p->charges[i] += 5;
       }
     } else {
-      if (light == 2) {
+      if (chargeSpeed == QUICK_CHARGE) {
         p->charges[i] += (gEntity9A9F != NULL ? gEntity9A9F->unk_60[i] : 0) * 8;
-      } else if (light == 1) {
+      } else if (chargeSpeed == SUN_NORMAL) {
         p->charges[i] += gEntity9A9F != NULL ? gEntity9A9F->unk_60[i] : 0;
       }
     }
@@ -698,7 +691,7 @@ NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
       heal++;
     }
     if (heal > 0) {
-      FUN_0807aa30(player, heal);
+      Player_AddENE(player, heal);
     }
   }
 #else
@@ -746,7 +739,7 @@ NON_MATCH void FUN_0809ed58(Entity5CCC* p) {
 }
 
 s32 Entity0809eeb4_Update(Entity5CCC* p) {
-  if (gStat->unk_934 & SF934_OUTDOOR) {
+  if (gStat->mapFlags & MPF_OUTDOOR) {
     FUN_0809ed54(p);
   } else {
     FUN_0809ed58(p);
@@ -767,7 +760,7 @@ s32 Entity0809eeb4_Destroy(Entity5CCC* p) {
   return 0;
 }
 
-s32 Entity0809eeb4_Init(Entity5CCC* p, u32 param_2, u32 param_3) {
+s32 Entity0809eeb4_Init(Entity5CCC* p, u32 id, u32 _) {
   p->count = 0;
   p->pltt = 410;
   p->unk_28 = 0;
@@ -775,13 +768,13 @@ s32 Entity0809eeb4_Init(Entity5CCC* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
-// 通信時はこっち？
-Entity5CCC* Entity0809eeb4_Create(u32 param_1, u32 param_2) {
+// 通信時
+Entity5CCC* Entity0809eeb4_Create(u32 id, u32 _) {
   Entity5CCC* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity5CCC));
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity0809eeb4_Update, Entity0809eeb4_Destroy);
-    if (Entity0809eeb4_Init(p, param_1, param_2) < 0) {
+    if (Entity0809eeb4_Init(p, id, _) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -789,13 +782,14 @@ Entity5CCC* Entity0809eeb4_Create(u32 param_1, u32 param_2) {
   return p;
 }
 
-// 天窓の光の管理エンティティを1つだけ作る, 既にあればそれを返す
-Entity5CCC* VM_Sub5CCC(u32 param_1, u32 param_2) {
+// 0x5CCC, 天窓の光の管理エンティティを1つだけ作る, 既にあればそれを返す
+Entity5CCC* Cmd_5CCC(u32 id, u32 _) {
   if (gEntity5CCC != NULL) {
     return gEntity5CCC;
   }
-  if (gFlag030047a4 & FLAG030047A4_LINK) {
-    return Entity0809eeb4_Create(param_1, param_2);
+  if (gGameFlags & FLAG030047A4_LINK) {
+    return Entity0809eeb4_Create(id, _);
+  } else {
+    return Entity0809eb24_Create(id, _);
   }
-  return Entity0809eb24_Create(param_1, param_2);
 }

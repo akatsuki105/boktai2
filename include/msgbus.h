@@ -9,8 +9,20 @@
 // 送り主はほとんどがデモ(イベント/カットシーン)スクリプトだが、VM やプレイヤーからも直接送られる
 // MsgBus (src/msgbus.c 内のシングルトン) が受け口の名簿を持ち、メッセージを宛先へ配る
 
+// targetClass: 宛先の種別, MsgQueue_Register の第3引数と照合される
+#define CLS_BUS 1
+#define CLS_PLAYER 2
+#define CLS_ENEMY 3
+#define CLS_BOSS 4
+#define CLS_ACTOR 5
+#define CLS_CAMERA 6
+#define CLS_FADE 7
+#define CLS_SOUND 8
+#define CLS_CBB0 9
+#define CLS_ETC 10
+
 // MsgBus 経由で受け手に届くメッセージ, 可変長で、実体サイズは 8 + ceil(argc/2)*4 バイト
-// 組み立ての手本は FUN_08041b28 ('.n'/'.k'/'.f'/'.a'/'.p' から1件作って送る)
+// 組み立ての手本は Cmd_DDD0 ('.n'/'.k'/'.f'/'.a'/'.p' から1件作って送る)
 typedef struct {
   u16 targetID;    // 0x00, 宛先, MsgQueue.targetID と照合される (生成元のサブルーチンID)
   u8 targetClass;  // 0x02, 宛先の種別 1..10, MsgQueue.targetClass と照合される, 根拠: MsgBus_FindQueue

@@ -465,7 +465,7 @@ _0809D770:
 	bl FUN_0809d00c
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_080b9fc4
+	bl ShopCursor_PlaceSprite
 _0809D792:
 	pop {r3, r4}
 	mov r8, r3

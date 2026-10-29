@@ -35,7 +35,7 @@
 	adds r0, r7, #0
 	movs r3, #0
 	bl Boss_PlayAnim
-	bl FUN_080591f4
+	bl Entity08058ffc_GetActiveCount
 	movs r1, #6
 	cmp r0, #6
 	ble _0802656C

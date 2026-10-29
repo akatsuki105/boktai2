@@ -1685,7 +1685,7 @@ _08143502:
 	movs r1, #0xa
 	bl Enemy_PlayAnim
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r1, #0xbc
 	lsls r1, r1, #1
 	adds r2, r6, r1
@@ -5767,7 +5767,7 @@ FUN_08145438: @ 0x08145438
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_08144cc4
 	movs r0, #1
@@ -5953,7 +5953,7 @@ EnemyCrow_Init: @ 0x08145574
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0814560C @ =0x00007B03
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _08145600 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -8098,7 +8098,7 @@ _081466CA:
 	strb r0, [r1]
 	ldr r2, _08146760 @ =0x0000057C
 	adds r1, r7, r2
-	ldr r0, _08146764 @ =FUN_080f09e0
+	ldr r0, _08146764 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r3, _08146768 @ =0x0000061C
 	adds r1, r7, r3
@@ -8118,7 +8118,7 @@ _081466CA:
 	b _08146778
 	.align 2, 0
 _08146760: .4byte 0x0000057C
-_08146764: .4byte FUN_080f09e0
+_08146764: .4byte Enemy_DispatchMsg
 _08146768: .4byte 0x0000061C
 _0814676C: .4byte FUN_08145474
 _08146770: .4byte EnemyCrow_Destroy

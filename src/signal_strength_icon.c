@@ -67,7 +67,7 @@ NON_MATCH void SignalStrengthIcon_SetStrength(SignalStrengthIcon* p, s32 strengt
   p->animCounter++;
   if (idx != p->poseIdx) {
     p->poseIdx = idx;
-    MainSprite_SetPose(&p->sprite, &p->gfx, idx, 0);
+    MainSprite_SetPose(&p->sprite, &p->gfx, idx, PLAYMODE_PAUSE);
   }
 #else
   INCFUNC("asm/func/SignalStrengthIcon_SetStrength.inc");
@@ -138,7 +138,7 @@ s32 SignalStrengthIcon_Init(SignalStrengthIcon* p) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  MainSprite_Add(&p->sprite, &p->gfx, 63, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, NULL);
+  MainSprite_Add(&p->sprite, &p->gfx, 63, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, NULL);
   return 0;
 }
 

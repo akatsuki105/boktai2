@@ -119,7 +119,7 @@ NON_MATCH s32 WeaponShop_GetSellPrice(s32 slot) {
   }
 
   if (n == 0) {
-    v = price * ((s8)w->quality * 5 + 50);
+    v = price * (w->quality * 5 + 50);
   } else {
     v = (n * 20 + 100) * price;
   }
@@ -185,7 +185,7 @@ NON_MATCH void FUN_080bcf04(WeaponShop* p, WeaponData* data) {
     if (i != col) {
       SplitDecimal3(cur, digits);
       for (j = 0; j < 3; j++) {
-        MainSprite_SetPose(&p->sprites[i * 3 + 40 + j], &p->gfx0, digits[j], 1);
+        MainSprite_SetPose(&p->sprites[i * 3 + 40 + j], &p->gfx0, digits[j], PLAYMODE_LOOP);
       }
     } else {
       s32 v = FUN_0807a6cc(data);
@@ -200,7 +200,7 @@ NON_MATCH void FUN_080bcf04(WeaponShop* p, WeaponData* data) {
 
       SplitDecimal3(v, digits);
       for (j = 0; j < 3; j++) {
-        MainSprite_SetPose(&p->sprites[i * 3 + 40 + j], &p->gfx0, digits[j] + ofs * 10, 1);
+        MainSprite_SetPose(&p->sprites[i * 3 + 40 + j], &p->gfx0, digits[j] + ofs * 10, PLAYMODE_LOOP);
       }
     }
   }
@@ -238,13 +238,13 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
     w = gWeaponDB[0];
   }
 
-  if (w.id == 0) {
+  if (w.id == WEAPON_NONE) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
     Marquee_Clear();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[33], &p->icons, GetWeaponWearPose(&w), 1);
+    MainSprite_SetPose(&p->sprites[33], &p->icons, GetWeaponWearPose(&w), PLAYMODE_LOOP);
     MessageWindow_Start(p->unk_1644);
     MessageWindow_SetRect(2, 16, 28, 2);
     FUN_08094d1c((u8*)&w, (s8*)p->unk_164c);
@@ -271,7 +271,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
 
       if (id > 0) {
         p->sprites[3 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[3 + i * 4 + j], &p->icons, id, 1);
+        MainSprite_SetPose(&p->sprites[3 + i * 4 + j], &p->icons, id, PLAYMODE_LOOP);
       } else {
         p->sprites[3 + i * 4 + j].flags |= SPRFLAG_HIDDEN;
       }
@@ -292,7 +292,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
 
       if (id > 0) {
         p->sprites[19 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->icons, id, 1);
+        MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->icons, id, PLAYMODE_LOOP);
         if (gStat->solarBank < gWeaponDB[id].price) {
           FUN_080b95bc(&p->sprites[19 + i * 4 + j], 0x2E0);
         } else {
@@ -305,12 +305,12 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
   }
 
   for (i = 0; i < 4; i++) {
-    if (gStat->registeredWeapon[i] < 0) {
+    if (REGISTERED_WEAPON(i) < 0) {
       p->sprites[34 + i].flags |= SPRFLAG_HIDDEN;
     } else {
       p->sprites[34 + i].flags &= ~SPRFLAG_HIDDEN;
-      p->sprites[34 + i].pos.x = (gStat->registeredWeapon[i] & 3) * 24 + 144;
-      p->sprites[34 + i].pos.y = ((s16)gStat->registeredWeapon[i] >> 2) * 24 + 32;
+      p->sprites[34 + i].pos.x = (REGISTERED_WEAPON(i) & 3) * 24 + 144;
+      p->sprites[34 + i].pos.y = ((s16)REGISTERED_WEAPON(i) >> 2) * 24 + 32;
     }
   }
 #else
@@ -342,7 +342,7 @@ NON_MATCH void FUN_080bd390(WeaponShop* p) {
   }
 
   if (id > 0 && price > 0) {
-    FUN_080b9938(&pos.x, (u8)p->cursor.slot);
+    Shop_GetSlotPos(&pos.x, (u8)p->cursor.slot);
     FUN_080b9658(&p->gfx2, &p->sprites[52], &pos, price, flag);
   } else {
     FUN_080b9724(&p->sprites[52]);
@@ -365,19 +365,12 @@ s32 FindRegisteredWeaponSlot(s32 weapon) {
 }
 
 // カーソル位置と退避位置の2本の武器を入れ替えるアニメを仕込む
-// 残差はプロローグの配列ベース退避の順序と p が r8/r9 のどちらに乗るかだけ (112/112命令), Tier A-C は試済
-NON_MATCH void FUN_080bd47c(WeaponShop* p) {
-#ifdef NONMATCHING_C
+void FUN_080bd47c(WeaponShop* p) {
   WorldPos a[2];
   WorldPos b[2];
   s32 unk1[2];
   s32 anims[2];
   s32 strIDs[2];
-  s32* strPtr = strIDs;
-  s32* animPtr = anims;
-  s32* flagPtr = unk1;
-  WorldPos* ap;
-  WorldPos* bp;
   s32 i;
 
   for (i = 0; i < 2; i++) {
@@ -393,28 +386,22 @@ NON_MATCH void FUN_080bd47c(WeaponShop* p) {
 
     id = GetWeaponID(slot);
     if (id > 0) {
-      *flagPtr = 1;
+      unk1[i] = 1;
     } else {
-      *flagPtr = 0;
+      unk1[i] = 0;
     }
 
-    *animPtr++ = id;
-    *strPtr++ = 0x2DF;
-    FUN_080b9938(&a[i].x, slot);
-    flagPtr++;
+    anims[i] = id;
+    strIDs[i] = 0x2DF;
+    Shop_GetSlotPos(&a[i].x, slot);
   }
 
-  bp = b;
-  ap = &a[1];
-  for (i = 1; i >= 0; i--) {
-    *bp++ = *ap--;
+  for (i = 0; i < 2; i++) {
+    b[i] = a[1 - i];
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
-#else
-  INCFUNC("asm/func/FUN_080bd47c.inc");
-#endif
 }
 
 void WeaponShop_StartMoveAnim(WeaponShop* p) {
@@ -428,8 +415,8 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
   anims[0] = GetWeaponID((u8)p->cursor.savedSlot);
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&from[0].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&to[0].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&from[0].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&to[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
   anims[1] = 0;
   strIDs[1] = 0x2DF;
@@ -454,8 +441,8 @@ NON_MATCH void FUN_080bd624(WeaponShop* p) {
   base = p->unk_1654 * 16 - 16;
   anims[0] = (s8)p->swords[base + (u8)p->cursor.savedSlot];
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&from[0].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&to[0].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&from[0].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&to[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
   anims[1] = 0;
   strIDs[1] = 0x2DF;
@@ -583,7 +570,7 @@ void WeaponShop_ReturnToList(WeaponShop* p) {
   p->sprites[39].flags |= SPRFLAG_HIDDEN;
   p->sprites[38].flags &= ~SPRFLAG_HIDDEN;
   FUN_080b9fe8(&p->cursor);
-  FUN_080b9fc4(&p->cursor, &p->sprites[38]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[38]);
   FUN_080b9d94(&p->cursor, 20);
   p->emptySlot = FindEmptyWeaponSlot(p);
   FUN_080bd058(p);
@@ -601,7 +588,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
 
   if (gInput[0].down & SELECT_BUTTON) {
     FUN_080bcdec(p, 0);
-    MainSprite_SetPose(&p->sprites[38], &p->gfx0, 56, 1);
+    MainSprite_SetPose(&p->sprites[38], &p->gfx0, SMENU_CURSOR(0), PLAYMODE_LOOP);
     if (gInput[0].pressed & A_BUTTON) {
       PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
@@ -662,7 +649,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
         FUN_080bcdf8(p, WeaponShop_HandleActionInput, 0);
       }
     } else if (ShopCursor_Move(&p->cursor)) {
-      FUN_080b9fc4(&p->cursor, &p->sprites[38]);
+      ShopCursor_PlaceSprite(&p->cursor, &p->sprites[38]);
       FUN_080bd058(p);
       FUN_080bd390(p);
       FUN_080bd6d0(p, 0);
@@ -707,7 +694,7 @@ void WeaponShop_HandleActionInput(WeaponShop* p) {
     PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
   } else if (ShopCursor_Move(&p->cursor)) {
-    FUN_080b9fc4(&p->cursor, &p->sprites[38]);
+    ShopCursor_PlaceSprite(&p->cursor, &p->sprites[38]);
     FUN_080bd058(p);
     FUN_080bd6d0(p, 1);
   }
@@ -828,7 +815,7 @@ void WeaponShop_AnimateSale(WeaponShop* p) {
 
 void WeaponShop_OpenList(WeaponShop* p) {
   ShopCursor_Init(&p->cursor, 1, 4, 0, 20);
-  FUN_080b9fc4(&p->cursor, &p->sprites[38]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[38]);
   p->emptySlot = FindEmptyWeaponSlot(p);
   FUN_080bd180(p);
   FUN_080bd390(p);
@@ -879,83 +866,83 @@ NON_MATCH void FUN_080be204(WeaponShop* p) {
   OpenMainSpriteFile(&p->gfx2, f);
 
   pos.x = 0, pos.y = 0, pos.z = 0;
-  MainSprite_Add(&p->sprites[0], &p->gfx2, 39, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[1], &p->gfx2, 35, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[2], &p->gfx2, 36, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[0], &p->gfx2, 39, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[1], &p->gfx2, 35, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[2], &p->gfx2, 36, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[3 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 12; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[19 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[19 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[34 + i], &p->gfx0, 65, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[34 + i], &p->gfx0, SMENU_EQUIP_E, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 0;
   pos.y = 128;
-  MainSprite_Add(&p->sprites[33], &p->icons, ICON_TIMER_100, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[33], &p->icons, ICON_TIMER_100, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 120;
   pos.y = 104;
-  MainSprite_Add(&p->sprites[32], &p->icons, ICON_SORT, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[32], &p->icons, ICON_SORT, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 104;
   pos.y = 32;
-  MainSprite_Add(&p->sprites[31], &p->icons, ICON_SELL, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[31], &p->icons, ICON_SELL, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   FUN_080b95bc(&p->sprites[31], 736);
-  MainSprite_Add(&p->sprites[39], &p->gfx0, 60, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[39], &p->gfx0, SMENU_SELECTED, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 144;
   pos.y = 32;
-  MainSprite_Add(&p->sprites[38], &p->gfx0, 57, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[38], &p->gfx0, 0, 1, 0);
-  MainSprite_Add(&p->sprites[52], &p->gfx2, 24, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[38], &p->gfx0, SMENU_CURSOR(1), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[38], &p->gfx0, 0, PLAYMODE_LOOP, 0);
+  MainSprite_Add(&p->sprites[52], &p->gfx2, 24, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x -= 11;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[53 + i], &p->gfx2, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[53 + i], &p->gfx2, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 6;
   }
 
   pos.x = 40;
   pos.y = 104;
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites[40 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[40 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
   pos.x = 88;
   pos.y = 104;
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites[43 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[43 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
   pos.x = 40;
   pos.y = 112;
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites[46 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[46 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
   pos.x = 88;
   pos.y = 112;
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites[49 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[49 + i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 8;
   }
 
   pos.x = 0;
   pos.y = 0;
-  MainSprite_Add(&p->sprites[57], &p->gfx0, 148, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[57], &p->gfx0, SMENU_YESNO(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
 
   FUN_080b99a0(&p->pair0);
   FUN_080b9814(&p->pair1);

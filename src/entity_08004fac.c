@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
+#include "map_inline.h"
 #include "vm.h"
 
 // 衝突マップのノード (MapTileOverride) を id 付きで持つラッパ, id を指定して一括で消したり、 登録を外したり (Entity08004fac_DisableNodesById) 戻したり (同 Enable) できる
@@ -264,17 +265,16 @@ Entity08004fac* Entity08004fac_Create(u32 param_1, u32 param_2) {
 s32 Cmd_3E1F(void) { return Entity08004fac_FreeNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // 0x8153, '.n' が指すノードを衝突マップから外す
-s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetNamedArgValue('n', 0)); }
+s32 Cmd_8153(void) { return Entity08004fac_DisableNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // 0xF0CC, '.n' が指すノードを衝突マップへ戻す
-s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgValue('n', 0)); }
+s32 Cmd_F0CC(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // 0xB8C7
-// 残差3命令 (101/104). 原典は4つの VM 値を r8/r7/r6/r5 の低位レジスタに収めるが, こちらは r10/r9 を使った上に id をスタックへ退避してしまう
-// 宣言と代入を分けても変化なし (101)
-NON_MATCH s32 FUN_08005034(void) {
+// 残差1命令 (105/104), GetCollisionTileIdx の結果を r0 で受けてから tileIdx の r2 へ写す1命令だけ (原典は直接 r2 に作る)
+// height と tileIdx の代入順を入れ替えると悪化する (9 hunks)
+NON_MATCH s32 Cmd_B8C7(void) {
 #ifdef NONMATCHING_C
-  Vec3 pos;
   s32 id = VM_GetNamedArgValue('n', -1);
   s32 stairs = VM_GetNamedArgValue('t', -1);
   s32 unk_3 = VM_GetNamedArgValue('f', -1);
@@ -283,20 +283,9 @@ NON_MATCH s32 FUN_08005034(void) {
   s32 height;
 
   if (VM_SeekToNamedArg('p')) {
-    s32 bx;
-    s32 bz;
-
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
-
-    bx = (s8)(pos.x >> 8);
-    bz = (s8)(pos.z >> 8);
-    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-      tileIdx = 0;
-    } else {
-      tileIdx = gCollisionMap->rowOffsets[bz] + bx;
-    }
+    Vec3 pos;
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+    tileIdx = GetCollisionTileIdx(&pos);
     height = FixToInt(8, pos.y);
   } else {
     height = -1;
@@ -305,12 +294,12 @@ NON_MATCH s32 FUN_08005034(void) {
 
   return Entity08004fac_SetNodeParamsById(id, stairs, unk_3, attr, tileIdx, height);
 #else
-  INCFUNC("asm/func/FUN_08005034.inc");
+  INCFUNC("asm/func/Cmd_B8C7.inc");
 #endif
 }
 
 // 0xFEBB
-s32 FUN_0800512c(void) {
+s32 Cmd_FEBB(void) {
   Vec3 pos;
   s32 id = VM_GetNamedArgValue('n', 0);
   s32 stairs = VM_GetNamedArgValue('t', 0);

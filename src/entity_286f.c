@@ -359,7 +359,7 @@ NON_MATCH s32 FUN_08040f0c(Entity286FNode* node, u16 id, Vec3* pos, u8 angle) {
   node->unk_1b = angle;
   Mover_Init(mover, id, pos, angle, 7, node);
   FUN_0823b464(mover, (u32)&node->zoneEvent);
-  mover->unk_2 |= 4;
+  mover->flags |= MOVER_FLAG_2;
 #else
   INCFUNC("asm/func/FUN_08040f0c.inc");
 #endif
@@ -535,14 +535,14 @@ NAKED void FUN_080417dc(Mover* mover) { INCFUNC("asm/func/FUN_080417dc.inc"); }
 NAKED void FUN_08041918(Entity286F* p) { INCFUNC("asm/func/FUN_08041918.inc"); }
 
 // 0xDDD0
-NAKED s32 FUN_08041b28(void) { INCFUNC("asm/func/FUN_08041b28.inc"); }
+NAKED s32 Cmd_DDD0(void) { INCFUNC("asm/func/Cmd_DDD0.inc"); }
 
-NAKED s32 FUN_08041bd4(void) { INCFUNC("asm/func/FUN_08041bd4.inc"); }
+NAKED s32 Cmd_5517(void) { INCFUNC("asm/func/Cmd_5517.inc"); }
 
-NAKED s32 FUN_08041d60(void) { INCFUNC("asm/func/FUN_08041d60.inc"); }
+NAKED s32 Cmd_43D6(void) { INCFUNC("asm/func/Cmd_43D6.inc"); }
 
 // '.n' の Mover ID のノードの unk_227 が 13〜15 かどうか
-bool32 FUN_08041dcc(void) {
+bool32 Cmd_6688(void) {
   Entity286F* p = gEntity286F;
   Entity286FNode* node;
 
@@ -960,7 +960,7 @@ s32 FUN_080442f4(Entity286F* p, Entity286FNode* node) {
 s32 FUN_08044300(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x920F, Unused?
-NAKED void FUN_08044310(void) { INCFUNC("asm/func/FUN_08044310.inc"); }
+NAKED void Cmd_920F(void) { INCFUNC("asm/func/Cmd_920F.inc"); }
 
 void FUN_0804454c(Entity286F* p, Entity286FNode* node) {
   if (node->unk_08 != 0) {
@@ -1216,4 +1216,4 @@ s32 FUN_080450a8(Entity286F* p, Entity286FNode* node) {
 s32 FUN_080450b4(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x0E7C
-NAKED void FUN_080450c4(void) { INCFUNC("asm/func/FUN_080450c4.inc"); }
+NAKED void Cmd_0E7C(void) { INCFUNC("asm/func/Cmd_0E7C.inc"); }

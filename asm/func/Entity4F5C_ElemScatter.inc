@@ -116,7 +116,7 @@ _0801A4A0:
 	ldrb r2, [r3]
 	adds r2, #2
 	adds r0, r4, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r7, #0x28]
 	ldrb r0, [r0, #6]
 	adds r0, #1

@@ -371,7 +371,7 @@ _0821BC4C:
 	str r0, [r4, #0x78]
 _0821BC4E:
 	adds r0, r5, #0
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	movs r0, #0
 	pop {r4, r5}
 	pop {r1}

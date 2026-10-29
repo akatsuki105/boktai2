@@ -18,7 +18,7 @@
 	strh r0, [r1]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B19B2
 	.align 2, 0
 _080B18F8: .4byte 0x03002BE0
@@ -101,7 +101,7 @@ _080B1990:
 	bl FUN_0823bb7c
 	adds r0, r5, #0
 	movs r1, #0xd
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	adds r0, r5, #0
 	movs r1, #6
 	bl FUN_080ad204

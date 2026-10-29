@@ -264,7 +264,7 @@ _0802F7AC:
 	str r2, [sp, #0x10]
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 _0802F7FC:
 	movs r0, #0x84
 	lsls r0, r0, #7
@@ -382,7 +382,7 @@ _0802F894:
 	str r4, [sp, #4]
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 _0802F8EC:
 	movs r0, #0xff
 	mov r1, sb
@@ -438,7 +438,7 @@ _0802F90C:
 	str r4, [sp, #4]
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 _0802F968:
 	movs r0, #0xff
 	mov r3, sb

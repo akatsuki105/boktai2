@@ -4,6 +4,7 @@
 #include "hitbox.h"
 #include "particle.h"
 #include "shadow.h"
+#include "spirit_bugs.h"
 #include "sprite.h"
 #include "vm.h"
 
@@ -19,12 +20,11 @@ typedef struct {
   u16 unk_2a;              // 0x2A
   u16 unk_2c;              // 0x2C
   u16 unk_2e;              // 0x2E
-  u8 unk_30;               // 0x30
-  u8 unk_31;               // 0x31
-  u16 unk_32;              // 0x32
-  u16 unk_34;              // 0x34
-  u16 unk_36;              // 0x36, '.n=4'
-  u16 unk_38;              // 0x38, '.e=50'
+  u8 floatDir;             // 0x30, 縦の揺れ方向 (0: 上向き, 1: 下向き)
+  s16 baseY;               // 0x32, 縦にふわふわと揺れる処理をするので、初期のy座標を保持
+  s16 offsetY;             // 0x34, 縦の揺れ量
+  u16 count;               // 0x36, '.n=4'
+  u16 amount;              // 0x38, '.e=50', 回復量
   AuxSpriteGfx gfx;        // 0x3C, SPRITE_SOLAR_BAMBOO
   AuxSprite sprite;        // 0x58, ->gfx
   ParticleShadow shadow;   // 0x84
@@ -34,10 +34,8 @@ static_assert(sizeof(SolarBamboo) == 276);
 
 const u16 u16_ARRAY_085aa76c[4] = {0x6F, 0x3, 0x3, 0x3};  // 0x085aa76c
 
-void Entity0800a89c_SpawnAt(u16 param_1, s32 param_2, u16 param_3, Vec3* pos, s32 param_5, s32 param_6, s32 param_7);
-
-// 被弾時に呼ばれる, 点滅させて耐久を削り、0 以下になったら演出を出して耐久を戻す
-void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
+// 被弾時に呼ばれる, 点滅させて耐久を削り、0 以下になったら月光虫を出して耐久を戻す
+void SolarBamboo_OnHurt(HitboxData* a, HitboxData* b, SolarBamboo* p) {
   s32 damage;
   Vec3 pos;
 
@@ -52,13 +50,14 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
     if ((s16)(p->hp -= damage) <= 0) {
       p->hp = p->maxHP;
       pos = p->sprite.pos;
-      pos.y += 0x40;
-      Entity0800a89c_SpawnAt(p->unk_36, 1, p->unk_38, &pos, 0, 600, 0x64);
+      pos.y += Q8(0.25);
+      SpawnSpiritBugsAt(p->count, MOONBUG, p->amount, &pos, NULL, SECOND(10), 0x64);
     }
   }
 }
 
 // 別のマップにいる間は隠し、いる間はアニメーションと揺れを進める
+// ゾーン一致を bool8 を返す static inline (gStat->zoneID == zoneID) にすると 0/1 の作り置きは出るが, 他の場所のレジスタとフィールドの読み方が合わない (126/125)
 NON_MATCH s32 SolarBamboo_Update(SolarBamboo* p) {
 #ifdef NONMATCHING_C
   bool32 active;
@@ -87,20 +86,22 @@ NON_MATCH s32 SolarBamboo_Update(SolarBamboo* p) {
       }
       p->sprite.poseIdx = p->unk_2a;
     }
-    if (p->unk_30 != 0) {
-      p->unk_34 += 2;
-      if ((s16)p->unk_34 > 0x32) {
-        p->unk_34 = 0x32;
-        p->unk_30 = 0;
+
+    // 縦にふわふわとする動き
+    if (p->floatDir != 0) {
+      p->offsetY += 2;
+      if (p->offsetY > 50) {
+        p->offsetY = 50;
+        p->floatDir = 0;
       }
     } else {
-      p->unk_34 -= 2;
-      if ((s16)p->unk_34 < -0x32) {
-        p->unk_34 = -0x32;
-        p->unk_30 = 1;
+      p->offsetY -= 2;
+      if (p->offsetY < -50) {
+        p->offsetY = -50;
+        p->floatDir = 1;
       }
     }
-    p->sprite.pos.y = p->unk_34 + p->unk_32;
+    p->sprite.pos.y = p->offsetY + p->baseY;
   }
   return 0;
 #else
@@ -128,27 +129,25 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
   p->maxHP = VM_GetNamedArgValue('l', 200);
   p->hp = 1;
   p->unk_28 = 0;
-  p->unk_36 = VM_GetNamedArgValue('n', 4);
-  p->unk_38 = VM_GetNamedArgValue('e', 50);
+  p->count = VM_GetNamedArgValue('n', 4);
+  p->amount = VM_GetNamedArgValue('e', 50);
   p->unk_2a = 0;
   p->unk_2c = 0;
   p->unk_2e = 0;
   if (VM_SeekToNamedArg('p')) {
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue() + 0x64;
-    pos.z = VM_GetValue();
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue() + Q8(0.391), VM_GetValue());
   } else {
     VEC3_SET(pos, 0, 0, 0);
   }
   p->zoneID = GetZoneAt(&pos);
-  p->unk_30 = 0;
-  p->unk_32 = pos.y;
-  p->unk_34 = 0;
-  VEC3_SET(size, 30, 320, 30);
-  VEC3_SET(offset, 0, 160, 0);
+  p->floatDir = 0;
+  p->baseY = pos.y;
+  p->offsetY = 0;
+  VEC3_SET(size, Q8(0.12), Q8(1.25), Q8(0.12));
+  VEC3_SET(offset, 0, Q8(0.625), 0);
   hurtbox = &p->hurtbox;
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  Hitbox_SetHandler(hurtbox, FUN_0800c0b0, p);
+  Hitbox_SetHandler(hurtbox, SolarBamboo_OnHurt, p);
   Hitbox_SetPos(hurtbox, &pos, 0);
   Hitbox_Register(hurtbox);
   gfx = &p->gfx;

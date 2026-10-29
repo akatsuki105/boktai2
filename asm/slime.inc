@@ -2819,7 +2819,7 @@ _0816392E:
 	movs r1, #0xa
 	bl FUN_080efe38
 	adds r0, r5, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	adds r0, r5, #0
 	bl FUN_081647c8
 	movs r1, #0xc0
@@ -4829,7 +4829,7 @@ _0816484E:
 	str r4, [sp, #0x28]
 	adds r0, r6, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r4, _081648E4 @ =0x0203B400
 	ldr r3, _081648E8 @ =0x030046B8
 	ldr r0, [r3]
@@ -4928,7 +4928,7 @@ _0816491E:
 	str r4, [sp, #0x28]
 	adds r0, r6, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r4, _081649B0 @ =0x0203B400
 	ldr r3, _081649B4 @ =0x030046B8
 	ldr r0, [r3]
@@ -5028,7 +5028,7 @@ _081649EA:
 	str r4, [sp, #0x28]
 	adds r0, r6, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	add sp, #0x34
 	pop {r3}
 	mov r8, r3
@@ -5201,7 +5201,7 @@ _08164B2A:
 	str r0, [sp, #0x28]
 	mov r0, r8
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r5, _08164BEC @ =0x0203B400
 	ldr r4, _08164BF0 @ =0x030046B8
 	ldr r0, [r4]
@@ -5322,7 +5322,7 @@ _08164C2A:
 	str r0, [sp, #0x28]
 	mov r0, sb
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r5, _08164CE8 @ =0x0203B400
 	ldr r4, _08164CEC @ =0x030046B8
 	ldr r0, [r4]
@@ -5441,7 +5441,7 @@ _08164D26:
 	str r0, [sp, #0x28]
 	mov r0, sb
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	add sp, #0x38
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -5620,7 +5620,7 @@ _08164E8A:
 	str r0, [sp, #0x28]
 	mov r0, r8
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r4, _08164F5C @ =0x0203B400
 	ldr r5, _08164F60 @ =0x030046B8
 	ldr r0, [r5]
@@ -5749,7 +5749,7 @@ _08164F9A:
 	str r0, [sp, #0x28]
 	mov r0, sl
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r4, _08165068 @ =0x0203B400
 	ldr r5, _0816506C @ =0x030046B8
 	ldr r0, [r5]
@@ -5875,7 +5875,7 @@ _081650A6:
 	str r0, [sp, #0x28]
 	mov r0, sl
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	add sp, #0x38
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -6397,7 +6397,7 @@ FUN_08165508: @ 0x08165508
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 _0816553C:
 	adds r0, r5, #0
 	bl FUN_08165464
@@ -6580,7 +6580,7 @@ EnemySlime_Init: @ 0x08165654
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081656E0 @ =0x0000A929
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r3, _081656E4 @ =0x000001DF
 	adds r0, r7, r3
 	ldrb r1, [r0]
@@ -8774,7 +8774,7 @@ _081667F4:
 	strb r0, [r4]
 	ldr r5, _08166894 @ =0x0000057C
 	adds r1, r7, r5
-	ldr r0, _08166898 @ =FUN_080f09e0
+	ldr r0, _08166898 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r6, _0816689C @ =0x0000061C
 	adds r1, r7, r6
@@ -8799,7 +8799,7 @@ _08166888: .4byte 0x0000046B
 _0816688C: .4byte 0x00000484
 _08166890: .4byte 0x0000046C
 _08166894: .4byte 0x0000057C
-_08166898: .4byte FUN_080f09e0
+_08166898: .4byte Enemy_DispatchMsg
 _0816689C: .4byte 0x0000061C
 _081668A0: .4byte FUN_08165554
 _081668A4: .4byte FUN_08165574

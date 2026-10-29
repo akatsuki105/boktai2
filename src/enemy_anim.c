@@ -39,7 +39,7 @@ NON_MATCH void Enemy_PlayAnim(Enemy* p, s32 animIdx) {
     }
 
     p->playingAnim = a;
-    MainSprite_SetAnim(s, &p->sprite->gfx, a, 2, (f & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
+    MainSprite_SetAnim(s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, (f & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
     if (f & ANIM_PLAY_XFLIP) {
       MainSprite_SetFlags(s, SPRFLAG_XFLIP);
     } else {

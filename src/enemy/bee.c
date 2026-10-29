@@ -57,6 +57,7 @@ INCASM("asm/bee.inc");
 
 NAKED s32 EnemyBee_Destroy(Bee* p) { INCFUNC("asm/func/EnemyBee_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 EnemyBee_Init(Bee* p) { INCFUNC("asm/func/EnemyBee_Init.inc"); }
 
 void EnemyBee_Create(void) {

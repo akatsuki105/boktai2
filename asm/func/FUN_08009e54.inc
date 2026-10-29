@@ -22,7 +22,7 @@
 	ldr r1, [r7, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	adds r0, r6, #0
 	adds r0, #0x8c
 	ldr r1, [r7, #0x24]
@@ -100,7 +100,7 @@ _08009EDA:
 	str r4, [sp, #4]
 	ldrh r4, [r6, #0x12]
 	str r4, [sp, #8]
-	bl Entity0800a89c_Spawn
+	bl SpawnSpiritBugs
 	ldrb r0, [r6, #3]
 	cmp r0, #2
 	bne _08009F40

@@ -12,7 +12,7 @@
 	b _081E5FA8
 _081E5DE0:
 	bl Marquee_Clear
-	bl FUN_08049f84
+	bl Marquee_RequestClose
 	ldr r2, _081E5EF8 @ =0x00001610
 	adds r2, r2, r7
 	mov r8, r2

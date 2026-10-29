@@ -43,7 +43,7 @@
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08169800 @ =0x000062C7
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _081697F4 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -2189,7 +2189,7 @@ _0816A882:
 	strb r0, [r2]
 	ldr r3, _0816A954 @ =0x0000057C
 	adds r1, r7, r3
-	ldr r0, _0816A958 @ =FUN_080f09e0
+	ldr r0, _0816A958 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r4, _0816A95C @ =0x0000061C
 	adds r1, r7, r4
@@ -2209,7 +2209,7 @@ _0816A882:
 	b _0816A96C
 	.align 2, 0
 _0816A954: .4byte 0x0000057C
-_0816A958: .4byte FUN_080f09e0
+_0816A958: .4byte Enemy_DispatchMsg
 _0816A95C: .4byte 0x0000061C
 _0816A960: .4byte FUN_08169668
 _0816A964: .4byte EnemyBee_Destroy

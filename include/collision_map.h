@@ -25,17 +25,25 @@ static_assert(sizeof(CollisionMapFile) == 20);
 #define STAIRS_VERTICAL 1
 #define STAIRS_HORIZONTAL 2
 
-typedef u16 TileAttr;             // CollisionMapTile.attr
-#define TATTR_UNK_0 (1 << 0)      // 0x0001, FUN_08020b24 が閉じた扉のタイルに立てる
-#define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可), 根拠: FUN_08235f40 がこのビットで NavAgent を止める, CactusManager も上書きタイルに立てる
-#define TATTR_UNK_2 (1 << 2)      // 0x0004, 以下は未検証
-#define TATTR_NOISE (1 << 5)      // 0x0020, alerts enemies when stepping onto the tile
-#define TATTR_ICE (1 << 6)        // 0x0040
-#define TATTR_LAVA (1 << 7)       // 0x0080
-#define TATTR_FALLDEATH (1 << 8)  // 0x0100, 落下死する
-#define TATTR_WALLISH (1 << 10)   // 0x0400, TATTR_WALL との違いは不明
-#define TATTR_UNK_11 (1 << 11)    // 0x0800, sometimes used near loading zones pointing NW
-#define TATTR_UNK_12 (1 << 12)    // 0x1000, sometimes used near loading zones pointing NE
+// 例:
+//   変異域炎の溶岩: 0x0482 (TATTR_WALL, TATTR_SPECIAL, TATTR_WALLISH)
+//   変異域氷のすべる床: 0x0080 (TATTR_SPECIAL)
+//   地下水路で水に落ちた: 0x0041 (TATTR_UNK_0, TATTR_UNK_6)
+//   暗黒街のワープ前の壁渡り: 0x082A (TATTR_WALL, TATTR_UNK_3, TATTR_UNK_5, TATTR_UNK_11)
+//   宿屋, 暗黒街のワープ先, 暗黒街のダクト: 0x040A (TATTR_WALL, TATTR_UNK_3, TATTR_WALLISH)
+typedef u16 TileAttr;            // CollisionMapTile.attr
+#define TATTR_UNK_0 (1 << 0)     // 0x0001, 未検証
+#define TATTR_WALL (1 << 1)      // 0x0002, 壁(常に侵入不可)
+#define TATTR_UNK_2 (1 << 2)     // 0x0004, 未検証, 移動床に乗っている時 (変異域の上下昇降床, 地下水路の移動床)
+#define TATTR_UNK_3 (1 << 3)     // 0x0008, 未検証
+#define TATTR_UNK_4 (1 << 3)     // 0x0010, 未検証
+#define TATTR_UNK_5 (1 << 5)     // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
+#define TATTR_UNK_6 (1 << 6)     // 0x0040, 未検証, 地下水路で水に落ちた瞬間にセットされた
+#define TATTR_SPECIAL (1 << 7)   // 0x0080, MPF_COLD: ツルツルすべる氷の床, MPF_HOT: 溶岩, MPF_UNK_13: ??? (おそらく前作のギミックの名残？)
+#define TATTR_UNK_8 (1 << 8)     // 0x0100, ???
+#define TATTR_WALLISH (1 << 10)  // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
+#define TATTR_UNK_11 (1 << 11)   // 0x0800
+#define TATTR_UNK_12 (1 << 12)   // 0x1000
 
 // コリジョンマップの1タイル
 // 根拠: heightStairs を 上位/下位4bit に割って使うのは Map_GetTileHeightAt と EntityE06A_Create など6ファイル, attr の位置は FUN_08235f40
@@ -92,11 +100,11 @@ typedef struct {
 // --------------------------------------------
 
 typedef struct {
-  u16 x;        // 0x00, X/Y coordinates: 1 tile = 256 units
-  u16 y;        // 0x02
-  u8 delay;     // 0x04, In frames, after performing the command
-  u8 param;     // 0x05, Command-specific parameter
-  u16 command;  // 0x06, 0x00: x/y座標へ移動, 0x10: 方向転換, 0x30: 眠りにつく, 0x90/0xB0/0xE0: ?マークを表示, 0xA0/0xE0: Go to space, 0xD0: Start searching
+  u16 x;       // 0x00, X/Y coordinates: 1 tile = 256 units
+  u16 y;       // 0x02
+  u16 delay;   // 0x04, 下位12bit がコマンド後の待ちフレーム数, 根拠: FUN_080f2364 が ldrh して & 0xFFF で読む, 上位4bit は用途不明
+  u8 command;  // 0x06, 上位4bit を FUN_080f2864 が u8_ARRAY_085ad468 の添字にする (ldrb), 0x00: x/y座標へ移動, 0x10: 方向転換, 0x30: 眠りにつく, 0x90/0xB0/0xE0: ?マークを表示, 0xA0/0xE0: Go to space, 0xD0: Start searching
+  u8 unk_7;    // 0x07
 } PathNode;
 
 typedef struct {
@@ -123,6 +131,7 @@ s32 Map_GetPathNodePos(Vec3* dst, u8 pathIdx, u8 nodeIdx);
 s32 Map_PickRandomPathNode(Vec3* dst, s32 pathIdx);
 bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
 bool32 Map_AdvancePathWalker(PathWalker* p);
+bool8 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz);
 
 // ナビメッシュ上を移動する主体の状態, Map_StepNavPath と FUN_08235ffc / FUN_08236130 が読み書きする
 // Enemy は実体を持たず Enemy.navAgent (0x4A4) にポインタで持つので, 確保元が見つかるまで全体サイズは未確定
@@ -252,5 +261,6 @@ void FUN_08234660(ZoneEventSource* src);
 s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 bool32 Map_ResetCollisionMap(void);
 ZoneID32 GetZoneAt(Vec3* pos);
+s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, Vec3* min, Vec3* max);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

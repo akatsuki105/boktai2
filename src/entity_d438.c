@@ -15,9 +15,9 @@ static_assert(sizeof(EntityD438) == 120);
 
 IWRAM_DATA EntityD438* gEntityD438 = NULL;  // 0x03000124
 
-void FUN_080558b8(void) {}
+void Cmd_1B77(void) {}
 
-void FUN_080558bc(void) {}
+void Cmd_D562(void) {}
 
 void FUN_080558c0(void) { gEntityD438 = NULL; }
 

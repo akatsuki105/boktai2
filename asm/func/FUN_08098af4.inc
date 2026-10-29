@@ -13,7 +13,7 @@
 	movs r1, #0x64
 	movs r2, #0xe
 	movs r3, #0xc
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	movs r2, #0
 	mov sb, r2
 	ldr r0, _08098B64 @ =0x000021C4

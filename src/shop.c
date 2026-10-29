@@ -49,7 +49,7 @@ void FUN_080b95bc(MainSprite* p, u16 plttID) {
   p->pltt = &gObjPlttData[p->plttID * 16];
 }
 
-NAKED void FUN_080b95d0(ShopCursor* cursor, s32 param_2, MainSprite* sprite1, MainSprite* sprite2) { INCFUNC("asm/func/FUN_080b95d0.inc"); }
+NAKED void FUN_080b95d0(ShopCursor* cursor, MainSprite* sprite0, MainSprite* sprite1, MainSprite* sprite2) { INCFUNC("asm/func/FUN_080b95d0.inc"); }
 
 NAKED void FUN_080b9658(MainSpriteGfx* gfx, MainSprite* sprite, unknown* param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080b9658.inc"); }
 
@@ -69,7 +69,7 @@ void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* out, s32 val) {
   sprite->flags &= ~SPRFLAG_HIDDEN;
   *out = val;
   animIdx = ((u8)val != 0) ? 4 : 5;
-  MainSprite_SetAnim(sprite, gfx, animIdx, 1, 0);
+  MainSprite_SetAnim(sprite, gfx, animIdx, PLAYMODE_LOOP, 0);
   MainSprite_AdvanceAnim(sprite, gfx);
 }
 
@@ -96,7 +96,8 @@ s32 FUN_080b98b0(s32 param_1) {
 
 NAKED void FUN_080b98c0(MainSpriteGfx* gfx, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080b98c0.inc"); }
 
-NAKED void FUN_080b9938(s16* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080b9938.inc"); }
+// 枠番号から画面上の表示位置を出す
+NAKED void Shop_GetSlotPos(s16* pos, s32 idx) { INCFUNC("asm/func/Shop_GetSlotPos.inc"); }
 
 NAKED void FUN_080b99a0(ShopSpritePair* p) { INCFUNC("asm/func/FUN_080b99a0.inc"); }
 
@@ -121,7 +122,7 @@ void FUN_080b9d94(ShopCursor* p, u32 unk) {
   FUN_080b9b88(p);
 }
 
-u8 FUN_080b9da0(ShopCursor* p, u8 mask) { return p->unk_7 & mask; }
+s32 FUN_080b9da0(ShopCursor* p, u8 mask) { return p->unk_7 & mask; }
 
 // 十字キーの入力を返す, 押しっぱなしのときは10フレームごとに1回だけ返す
 s32 ShopCursor_ReadDpad(ShopCursor* p) {
@@ -247,7 +248,8 @@ s32 ShopCursor_Move(ShopCursor* p) {
   return 0;
 }
 
-void FUN_080b9fc4(ShopCursor* p, MainSprite* sprite) { FUN_080b9938(&sprite->pos.x, (u8)p->slot); }
+// スプライトをカーソルのある枠の位置へ置く
+void ShopCursor_PlaceSprite(ShopCursor* p, MainSprite* sprite) { Shop_GetSlotPos(&sprite->pos.x, (u8)p->slot); }
 
 // カーソルの位置を退避する
 void FUN_080b9fd8(ShopCursor* p) {

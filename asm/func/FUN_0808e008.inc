@@ -55,7 +55,7 @@ _0808E06E:
 	beq _0808E090
 	ldr r1, _0808E08C @ =FUN_0808dfcc
 	adds r0, r4, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 	b _0808E0D6
 	.align 2, 0
 _0808E084: .4byte 0x00000A16

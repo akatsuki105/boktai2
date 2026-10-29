@@ -152,7 +152,7 @@ _080B12E6:
 	movs r0, #0x46
 	subs r0, r0, r1
 	asrs r0, r0, #1
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	b _080B13E6
 	.align 2, 0
 _080B12F8: .4byte 0x00000C16
@@ -188,7 +188,7 @@ _080B132A:
 	bl PlaySound_082406e0
 	adds r0, r7, #0
 	movs r1, #2
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B13E6
 	.align 2, 0
 _080B1348: .4byte 0x00000C16
@@ -228,7 +228,7 @@ _080B138C:
 	beq _080B13A4
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B13E6
 	.align 2, 0
 _080B139C: .4byte 0x03002BE0
@@ -236,7 +236,7 @@ _080B13A0: .4byte 0x00000BE8
 _080B13A4:
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B13E6
 _080B13AE:
 	ldr r4, _080B13F4 @ =0x03002BE0
@@ -261,7 +261,7 @@ _080B13AE:
 	bl FUN_080af374
 	adds r0, r7, #0
 	movs r1, #0xa
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 _080B13E6:
 	add sp, #8
 	pop {r3, r4}

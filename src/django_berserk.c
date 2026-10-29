@@ -7,7 +7,7 @@
 
 // プレイヤーの周りを旋回する粒子1個ぶんの枠,16個を使い回す
 typedef struct {
-  Particle ptcl;  // 0x00, Particle_Remove / Particle_SetFrame に Particle* として渡る
+  Particle ptcl;  // 0x00, Particle_Remove / Particle_SetPose に Particle* として渡る
   bool8 active;   // 0x28, FUN_0807f8d0 が 0 の枠を飛ばし、lifetime が尽きると 0 に戻す
   u8 angle;       // 0x29, FUN_0807f650 が毎フレーム angleStep を足し、gSineTable の8bit索引にする
   u8 riseSpeed;   // 0x2A, FUN_0807f650 が ptcl.pos.y に足す
@@ -33,7 +33,7 @@ typedef struct DjangoBerserk {
   u16 timer;                                      // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
   u16 hpDrainStep;                                // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
   u16 hpTarget;                                   // 0x0F2, Init: player->hp >> 1 (0 なら 1),ここまで削って止める
-  ParticleGroup* group;                           // 0x0F4, Particle_SetFrame の第2引数
+  ParticleGroup* group;                           // 0x0F4, PTCL_GROUP_2
   DjangoBerserkParticle ptcls[16];                // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
   u16 frameCounter;                               // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
   u8 unk_4ba[6];                                  // 0x4BA
@@ -56,7 +56,7 @@ void FUN_0807f750(DjangoBerserk* p, DjangoBerserkParticle* ptcl) {
   ptcl->animTimer++;
 
   if (ptcl->animTimer == 5) {
-    Particle_SetFrame(&ptcl->ptcl, p->group, 5);
+    Particle_SetPose(&ptcl->ptcl, p->group, PTCL2_DARK_S);
   }
 }
 
@@ -101,7 +101,7 @@ s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) {
   FUN_0807fed0(p);
   FUN_0807ff78(p);
   DjangoBerserk_SetState(p, FUN_0807f94c);
-  gFlag030047a4 |= FLAG030047A4_UNK_0;
+  gGameFlags |= FLAG030047A4_UNK_0;
   p->hpTarget = p->player->hp >> 1;
   if (p->hpTarget == 0) {
     p->hpTarget = 1;

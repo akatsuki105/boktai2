@@ -52,12 +52,12 @@ static_assert(sizeof(HomingLaserManager) == 5764);
 
 // HomingLaser.kind ごとの {攻撃の属性, 食らい判定の弱点}, 怪光線は弱点属性の攻撃で相殺できる
 static const HitboxAttributes sHomingLaserAttrs[6][2] = {
-    [HOMING_SOL] = {HBATTR_SOL,                   HBATTR_DARK },
-    [HOMING_DARK] = {HBATTR_DARK,                  HBATTR_SOL  },
-    [HOMING_FLAME] = {HBATTR_21 | HBATTR_FLAME,     HBATTR_FROST},
-    [HOMING_FROST] = {HBATTR_22 | HBATTR_FROST,     HBATTR_FLAME},
-    [HOMING_CLOUD] = {HBATTR_14 | HBATTR_CLOUD,     HBATTR_EARTH},
-    [HOMING_EARTH] = {HBATTR_POISON | HBATTR_EARTH, HBATTR_CLOUD},
+    [HOMING_SOL] = {HBATTR_SOL,                    HBATTR_DARK },
+    [HOMING_DARK] = {HBATTR_DARK,                   HBATTR_SOL  },
+    [HOMING_FLAME] = {HBATTR_INKA | HBATTR_FLAME,    HBATTR_FROST},
+    [HOMING_FROST] = {HBATTR_HYOKETU | HBATTR_FROST, HBATTR_FLAME},
+    [HOMING_CLOUD] = {HBATTR_14 | HBATTR_CLOUD,      HBATTR_EARTH},
+    [HOMING_EARTH] = {HBATTR_POISON | HBATTR_EARTH,  HBATTR_CLOUD},
 };  // 0x08DBD7D0
 
 // 空いている枠を返す, 無ければ NULL

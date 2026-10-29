@@ -17,7 +17,7 @@ NAKED f64 fdlibm_asin(f64 x) {
 	bl __ieee754_asin\n\
 	adds r7, r1, #0\n\
 	adds r6, r0, #0\n\
-	ldr r0, _0824EEFC @ =u32_085a90b8\n\
+	ldr r0, _0824EEFC @ =libm_LIB_VERSION\n\
 	ldr r0, [r0]\n\
 	mov sb, r0\n\
 	movs r0, #1\n\
@@ -75,7 +75,7 @@ _0824EEF4:\n\
 	ldr r1, [sp, #0x1c]\n\
 	b _0824EF18\n\
 	.align 2, 0\n\
-_0824EEFC: .4byte u32_085a90b8\n\
+_0824EEFC: .4byte libm_LIB_VERSION\n\
 _0824EF00: .4byte 0x3FF00000\n\
 _0824EF04: .4byte 0x00000000\n\
 _0824EF08: .4byte name\n\

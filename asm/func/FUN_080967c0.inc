@@ -87,7 +87,7 @@ _08096858:
 	movs r1, #0x64
 	movs r2, #6
 	movs r3, #6
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	b _08096908
 	.align 2, 0
 _08096878: .4byte 0x08DAA7B0
@@ -215,7 +215,7 @@ _08096962:
 	movs r1, #0x64
 	movs r2, #6
 	movs r3, #5
-	bl FUN_0808b30c
+	bl MainMenu_DrawNumber
 	b _08096A1C
 	.align 2, 0
 _08096984: .4byte 0x00003AEB

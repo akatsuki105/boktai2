@@ -96,7 +96,7 @@ _080C80A4:
 	strh r0, [r1]
 _080C80D6:
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	ldr r0, _080C814C @ =0x03002BE0
 	ldr r2, [r0]
 	movs r3, #0x2c

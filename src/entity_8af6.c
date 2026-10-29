@@ -1,30 +1,30 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "sprite.h"
 #include "vm.h"
 
 // スクリプトから足せる飾りのスプライト1枚, 位置の補間とマーカー設定への追従を持つ
 typedef struct {
-  u8 unk_0[24];        // 0x00, どの関数も触っていない
-  MainSpriteGfx gfx;   // 0x18, '.d' で指定したスプライトファイル (e.g. SPRITE_DJANGO_LARGE, SPRITE_E89F, SPRITE_UI_SOLARBANK)
-  MainSprite sprite;   // 0x38
-  u16 id;              // 0x98, '.n', スクリプトから枠を引くときの番号
-  s16 moving;          // 0x9A, 0 以外なら pos を fromPos から toPos へ補間する
-  bool16 markerGated;  // 0x9C, 0 以外なら gStat->markerEnabled に従って表示を切り替える
-  s16 hiddenByScript;  // 0x9E, スクリプトから隠されているか
-  u16 elapsed;         // 0xA0, 補間の経過フレーム
-  u16 duration;        // 0xA2, 補間の全体フレーム数
-  Vec3 pos;            // 0xA4, 現在位置
-  Vec3 fromPos;        // 0xAC, 補間の始点
-  Vec3 toPos;          // 0xB4, 補間の終点
+  u8 unk_0[24];           // 0x00, どの関数も触っていない
+  MainSpriteGfx gfx;      // 0x18, '.d' で指定したスプライトファイル (e.g. SPRITE_DJANGO_LARGE, SPRITE_E89F, SPRITE_UI_SOLARBANK)
+  MainSprite sprite;      // 0x38
+  u16 id;                 // 0x98, '.n', スクリプトから枠を引くときの番号
+  bool16 moving;          // 0x9A, 0 以外なら pos を fromPos から toPos へ補間する
+  bool16 markerGated;     // 0x9C, 0 以外なら gStat->markerEnabled に従って表示を切り替える
+  bool16 hiddenByScript;  // 0x9E, スクリプトから隠されているか
+  u16 elapsed;            // 0xA0, 補間の経過フレーム
+  u16 duration;           // 0xA2, 補間の全体フレーム数
+  Vec3 pos;               // 0xA4, 現在位置
+  Vec3 fromPos;           // 0xAC, 補間の始点
+  Vec3 toPos;             // 0xB4, 補間の終点
 } Entity8AF6Entry;
 static_assert(sizeof(Entity8AF6Entry) == 188);
 
 typedef struct {
-  Entity e;                    // 0x00, ENTITY_UNK_9
+  Entity e;                    // 0x00, ENTITY_UNK_8
   u8 count;                    // 0x18, '.m=1', 確保した枠数
   u8 used;                     // 0x19, 使用中の枠数, Update と Destroy はここまでしか回さない
-  u8 unk_1a[2];                // 0x1A, 詰め物
   Entity8AF6Entry entries[1];  // 0x1C, 実際は count 個 (可変長)
 } Entity8AF6;                  // Entity8AF6 はサイズが可変
 static_assert(sizeof(Entity8AF6) == 216);
@@ -53,16 +53,17 @@ Entity8AF6Entry* Entity8AF6_FindEntry(void) {
   return NULL;
 }
 
+// 0x44CD
 void Entity8AF6_SetPoseScripted(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('p')) {
-    MainSprite_SetPose(&e->sprite, &e->gfx, VM_GetValue(), 0);
+    MainSprite_SetPose(&e->sprite, &e->gfx, VM_GetValue(), PLAYMODE_PAUSE);
   }
 }
 
-// '.f' で左右反転を切り替える
-void FUN_080a59e0(void) {
+// 0xED1F, '.f' で左右反転を切り替える
+void Cmd_ED1F(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('f')) {
@@ -74,6 +75,7 @@ void FUN_080a59e0(void) {
   }
 }
 
+// 0xEBFF
 void Entity8AF6_HideScripted(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
@@ -85,6 +87,7 @@ void Entity8AF6_HideScripted(void) {
   }
 }
 
+// 0x9C3F
 void Entity8AF6_ShowScripted(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
@@ -96,7 +99,8 @@ void Entity8AF6_ShowScripted(void) {
   }
 }
 
-void FUN_080a5a6c(void) {
+// 0x65E1
+void Cmd_65E1(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('p')) {
@@ -104,12 +108,99 @@ void FUN_080a5a6c(void) {
   }
 }
 
-NAKED void Entity8AF6_MoveToScripted(void) { INCFUNC("asm/func/Entity8AF6_MoveToScripted.inc"); }
+// 0x997B, 現在位置から '.p' の位置へ '.f' フレームかけて移動させる
+void Entity8AF6_MoveToScripted(void) {
+  Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
-NAKED void Entity8AF6Entry_Update(Entity8AF6Entry* p) { INCFUNC("asm/func/Entity8AF6Entry_Update.inc"); }
+  if (e != NULL) {
+    if (VM_SeekToNamedArg('p')) {
+      e->toPos.x = VM_GetValue();
+      e->toPos.y = VM_GetValue();
+      e->toPos.z = VM_GetValue();
+    }
+    if (VM_SeekToNamedArg('f')) {
+      e->duration = VM_GetValue();
+    }
+    e->fromPos = e->pos;
+    e->elapsed = 0;
+    e->moving = 1;
+  }
+}
 
-// 0xEAB4
-NAKED void Entity8AF6_AddEntryScripted(void) { INCFUNC("asm/func/Entity8AF6_AddEntryScripted.inc"); }
+// 枠の補間移動を1フレーム進め, markerGated なら gStat->markerEnabled と hiddenByScript に合わせて表示を切り替える
+void Entity8AF6Entry_Update(Entity8AF6Entry* p) {
+  if (p->moving != 0) {
+    p->elapsed++;
+    if (p->elapsed >= p->duration) {
+      p->pos = p->toPos;
+      p->moving = 0;
+    } else {
+      s32 rest = p->duration - p->elapsed;
+
+      p->pos.x = Div(p->toPos.x * p->elapsed + p->fromPos.x * rest, p->duration);
+      p->pos.y = Div(p->toPos.y * p->elapsed + p->fromPos.y * rest, p->duration);
+      p->pos.z = Div(p->toPos.z * p->elapsed + p->fromPos.z * rest, p->duration);
+    }
+    p->sprite.pos = p->pos;
+  }
+  if (p->markerGated != 0) {
+    if (p->hiddenByScript == 0 && gStat->markerEnabled != 0) {
+      p->sprite.flags &= ~SPRFLAG_HIDDEN;
+    } else {
+      p->sprite.flags |= SPRFLAG_HIDDEN;
+    }
+  }
+}
+
+// 0xEAB4, 空き枠に '.d' のスプライトを '.p' の位置へ置く, '.n' で番号, '.A' でマーカー連動を指定する
+void Entity8AF6_AddEntryScripted(void) {
+  Entity8AF6Entry* e;
+  MainSpriteGfxFile* f;
+  u32 poseIdx;
+  SpriteFlags flags;
+  u32 prio;
+  u32 mode;
+  u32 spriteID;
+
+  if (gEntity8AF6 == NULL || gEntity8AF6->used >= gEntity8AF6->count) {
+    return;
+  }
+
+  e = &gEntity8AF6->entries[gEntity8AF6->used];
+  if (VM_SeekToNamedArg('n')) {
+    e->id = VM_GetValue();
+  } else {
+    e->id = 0;
+  }
+  if (!VM_SeekToNamedArg('d')) {
+    return;
+  }
+
+  spriteID = VM_GetValue();
+  f = GetFile(DIR_MAIN_SPRITE, spriteID);
+  e->gfx = *f;
+  OpenMainSpriteFile(&e->gfx, f);
+  poseIdx = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;
+  mode = VM_SeekToNamedArg('m') ? VM_GetValue() : 0;
+  flags = 0;
+  if (mode == 1) {
+    flags = SPRFLAG_SCREEN_COORD;
+  }
+  prio = VM_SeekToNamedArg('R') ? VM_GetValue() : 2;
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(e->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(e->pos, 0, 0, 0);
+  }
+  MainSprite_Add(&e->sprite, &e->gfx, poseIdx, flags, prio, PLAYMODE_PAUSE, 60, &e->pos);
+  if (VM_SeekToNamedArg('A')) {
+    e->markerGated = VM_GetValue();
+  } else {
+    e->markerGated = 0;
+  }
+  e->hiddenByScript = 0;
+  gEntity8AF6->used++;
+}
 
 s32 Entity8AF6_Update(Entity8AF6* p) {
   s32 i;
@@ -130,11 +221,27 @@ s32 Entity8AF6_Destroy(Entity8AF6* p) {
   return 0;
 }
 
-s32 Entity8AF6_Init(Entity8AF6* p, u32 param_2, u32 param_3, u8 count) {
+s32 Entity8AF6_Init(Entity8AF6* p, u32 id, u32 _, u32 count) {
   p->count = count;
   p->used = 0;
   gEntity8AF6 = p;
   return 0;
 }
 
-NAKED Entity8AF6* Entity8AF6_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity8AF6_Create.inc"); }
+// 0x8AF6
+Entity8AF6* Entity8AF6_Create(u32 id, u32 _) {
+  if (gEntity8AF6 == NULL) {
+    u32 count = VM_SeekToNamedArg('m') ? VM_GetValue() : 1;
+    Entity8AF6* p = CreateEntity(ENTITY_UNK_8, offsetof(Entity8AF6, entries) + count * sizeof(Entity8AF6Entry));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity8AF6_Update, Entity8AF6_Destroy);
+      if (Entity8AF6_Init(p, id, _, count) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity8AF6;
+}

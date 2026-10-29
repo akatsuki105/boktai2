@@ -102,7 +102,7 @@ _081DFB24:
 	lsrs r0, r0, #0x18
 	cmp r0, #0xe
 	bls _081DFB7A
-	ldr r0, _081DFB88 @ =0x030047AC
+	ldr r0, _081DFB88 @ =gMapChanging
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _081DFB7A
@@ -115,7 +115,7 @@ _081DFB7A:
 	.align 2, 0
 _081DFB80: .4byte 0x030001AC
 _081DFB84: .4byte 0x030044BC
-_081DFB88: .4byte 0x030047AC
+_081DFB88: .4byte gMapChanging
 _081DFB8C:
 	ldr r2, _081DFBDC @ =0x030044BC
 	movs r1, #2

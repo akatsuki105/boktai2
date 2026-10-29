@@ -5,7 +5,7 @@
 #include "sprite.h"
 #include "vm.h"
 
-// パーティクル1個分, FUN_080155e4 で発生させる
+// パーティクル1個分, Entity08015584_Spawn で発生させる
 typedef struct {
   bool8 active;       // 0x00, 0 でなければ Update/Destroy が処理する, アニメが終わると 0
   u8 kind;            // 0x01, 5/6/7 は別スプライト (0x61F9) と animFiles[1], それ以外はパレット kind + 0x7D
@@ -203,7 +203,7 @@ NON_MATCH u32 FUN_080155c8(s32 flags) {
 // params に従って count 個の粒子を空き枠へ仕込む, 枠が足りなければ -1
 // 残差11命令 (531/520). 原典は &gEntity08015584 を r9 に巻き上げ params を低位レジスタに置くが, agbcc は参照のたびにプールから読み直し params を r8 へ追い出す (agbcc-levers.md のキャッシュされたグローバルポインタの項と同種)
 // i / spawned の宣言順を入れ替えるとスタック退避の位置は原典と揃う. ParticleSpawnParam の unk_1c/1e/24/26 はここでも読まれず死んでいる
-NON_MATCH s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
+NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 spawned;
@@ -247,9 +247,9 @@ NON_MATCH s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params)
       elem->sprite.flags &= ~SPRFLAG_SCREEN_COORD;
     }
 
-    elem->dirX = gSineTable[(angleXZ + 0x40) & 0xFF];
-    elem->dirY = gSineTable[angleY & 0xFF];
-    elem->dirZ = gSineTable[angleXZ & 0xFF];
+    elem->dirX = COS(angleXZ);
+    elem->dirY = SIN(angleY);
+    elem->dirZ = SIN(angleXZ);
     elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
     elem->velY = FixToInt(12, elem->dirY * elem->speedY);
     elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
@@ -322,7 +322,7 @@ NON_MATCH s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params)
 
   return -1;
 #else
-  INCFUNC("asm/func/FUN_080155e4.inc");
+  INCFUNC("asm/func/Entity08015584_Spawn.inc");
 #endif
 }
 
@@ -357,7 +357,7 @@ NON_MATCH void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 a
   param.angleXZ = 0;
 
   for (i = count; i > 0; i--) {
-    FUN_080155e4(1, pos, &param);
+    Entity08015584_Spawn(1, pos, &param);
     param.angleXZ += step;
   }
 #else
@@ -398,7 +398,7 @@ NON_MATCH void FUN_08015b18(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, 
     spawnPos.x = (_Random(table) & mask[0]) + base[0];
     spawnPos.y = (_Random(table) & mask[1]) + base[1];
     spawnPos.z = (_Random(table) & mask[2]) + base[2];
-    FUN_080155e4(1, &spawnPos, &param);
+    Entity08015584_Spawn(1, &spawnPos, &param);
   }
 #else
   INCFUNC("asm/func/FUN_08015b18.inc");
@@ -427,7 +427,7 @@ void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 ki
   param.decayStartXZRand = 0;
   param.unk_24 = decay;
   param.unk_26 = 0;
-  FUN_080155e4(count, pos, &param);
+  Entity08015584_Spawn(count, pos, &param);
 }
 
 // 発生パラメータを決め打ちで組んで count 個ぶん発生させる
@@ -453,7 +453,7 @@ void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) 
   param.decayStartXZRand = 0;
   param.unk_24 = 0xFF;
   param.unk_26 = 0;
-  FUN_080155e4(count, pos, &param);
+  Entity08015584_Spawn(count, pos, &param);
 }
 
 void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
@@ -478,7 +478,7 @@ void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u3
   param.decayStartXZRand = 0;
   param.unk_24 = 0xFF;
   param.unk_26 = 0;
-  FUN_080155e4(count, pos, &param);
+  Entity08015584_Spawn(count, pos, &param);
 }
 
 void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand) {
@@ -503,7 +503,7 @@ void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY,
   param.decayStartXZRand = 0;
   param.unk_24 = 0xFF;
   param.unk_26 = 0;
-  FUN_080155e4(1, pos, &param);
+  Entity08015584_Spawn(1, pos, &param);
 }
 
 void UNUSED FUN_08015d9c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand, u32 angleY, u32 angleYRand) {
@@ -528,7 +528,7 @@ void UNUSED FUN_08015d9c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 
   param.decayStartXZRand = 0;
   param.unk_24 = 0xFF;
   param.unk_26 = 0;
-  FUN_080155e4(1, pos, &param);
+  Entity08015584_Spawn(1, pos, &param);
 }
 
 // ランダムな向きへ speedXZ * 40 ぶんずらした位置に1個発生させる
@@ -562,14 +562,14 @@ NON_MATCH void UNUSED FUN_08015dfc(WorldPos* pos, u32 param_2, u32 kind, u32 fla
   spawnPos.x = pos->x + POLAR_X(speedXZ * 40, param.angleXZ + 0x80);
   spawnPos.y = pos->y;
   spawnPos.z = pos->z + POLAR_Z(speedXZ * 40, param.angleXZ + 0x80);
-  FUN_080155e4(1, &spawnPos, &param);
+  Entity08015584_Spawn(1, &spawnPos, &param);
 #else
   INCFUNC("asm/func/FUN_08015dfc.inc");
 #endif
 }
 
 // スクリプトの名前付き引数をそのまま発生パラメータにして発生させる
-void VM_Sub4383(void) {
+void Cmd_4383(void) {
   ParticleSpawnParam param;
   Vec3 pos;
   s32 count = VM_GetNamedArgValue('n', 1);
@@ -628,5 +628,5 @@ void VM_Sub4383(void) {
     param.unk_26 = 0;
   }
 
-  FUN_080155e4(count, &pos, &param);
+  Entity08015584_Spawn(count, &pos, &param);
 }

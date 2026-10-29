@@ -13,7 +13,7 @@ EWRAM_DATA u8 u8_02020408[4088] = {};  // 0x02020408, Unused?
 
 void InitIntrHandlers(void);
 void Time_InitFromRtc(void);
-void FUN_08229d80(void);
+void InitIntrAndVideo(void);
 void Map_InitCollisionMap(void);
 void LoadAuxSpriteFile(AuxSpriteFile* f);
 void FUN_08231bec(void);
@@ -44,7 +44,7 @@ void AgbMain(void) {
   FUN_0823a870();
   RandomizeGameStateAddr();
   InitSystemManager();
-  FUN_08229d80();
+  InitIntrAndVideo();
   Map_InitCollisionMap();
   InitPltt();
   LoadParticleFile(GetFile(DIR_PARTICLE, 0x3002));

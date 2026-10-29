@@ -116,7 +116,7 @@ void CoffinShop_DrawItemIcons(CoffinShop* p) {
 
       if (id >= 0) {
         p->sprites[n + 1].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[n + 1], &p->icons, ICON_ITEM(id), 1);
+        MainSprite_SetPose(&p->sprites[n + 1], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
         if (id >= ITEM_OAK_COFFIN && id <= ITEM_IRON_MAIDEN) {
           FUN_080b95bc(&p->sprites[n + 1], 0x2DF);
         } else {
@@ -137,7 +137,7 @@ void CoffinShop_DrawItemIcons(CoffinShop* p) {
 
       if (id >= 0) {
         p->sprites[n + 17].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[n + 17], &p->icons, ICON_ITEM(id), 1);
+        MainSprite_SetPose(&p->sprites[n + 17], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
         if (gStat->solarBank < gItemDB[id].price) {
           FUN_080b95bc(&p->sprites[n + 17], 0x2E0);
         } else {
@@ -158,7 +158,7 @@ void CoffinShop_DrawPrice(CoffinShop* p) {
     WorldPos pos;
     s32 price = gItemDB[id].price;
 
-    FUN_080b9938(&pos.x, slot);
+    Shop_GetSlotPos(&pos.x, slot);
     FUN_080b9658(&p->gfx2, &p->sprites[32], &pos, price, 0);
   } else {
     FUN_080b9724(&p->sprites[32]);
@@ -192,15 +192,15 @@ void CoffinShop_StartSwapAnim(CoffinShop* p) {
   unk1[0] = 1;
   anims[0] = heldID + 0x68;
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&from[0].x, coffinSlot);
-  FUN_080b9938(&to[0].x, heldID - 0x28);
+  Shop_GetSlotPos(&from[0].x, coffinSlot);
+  Shop_GetSlotPos(&to[0].x, heldID - 0x28);
 
   p->sprites[(u8)p->cursor.savedSlot + 1].flags |= SPRFLAG_HIDDEN;
   unk1[1] = 1;
   anims[1] = p->items[(u8)p->cursor.savedSlot - 16] + 0x68;
   strIDs[1] = 0x2DF;
-  FUN_080b9938(&from[1].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&to[1].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&from[1].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&to[1].x, (u8)p->cursor.slot);
 
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
@@ -262,7 +262,7 @@ s32 FUN_080bef88(CoffinShop* p) {
 void FUN_080beff4(CoffinShop* p) {
   p->sprites[31].flags |= SPRFLAG_HIDDEN;
   FUN_080b9fe8(&p->cursor);
-  FUN_080b9fc4(&p->cursor, &p->sprites[30]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[30]);
   FUN_080b9d94(&p->cursor, 29);
   CoffinShop_UpdateDescription(p);
   CoffinShop_DrawItemIcons(p);
@@ -276,7 +276,7 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
 #ifdef NONMATCHING_C
   if (gInput[0].down & SELECT_BUTTON) {
     FUN_080beaf4(p, 0);
-    MainSprite_SetPose(&p->sprites[30], &p->gfx0, 56, 1);
+    MainSprite_SetPose(&p->sprites[30], &p->gfx0, SMENU_CURSOR(0), PLAYMODE_LOOP);
     if (gInput[0].pressed & A_BUTTON) {
       PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
@@ -311,7 +311,7 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
         PlaySound_082406e0(SE_NG);
       }
     } else if (ShopCursor_Move(&p->cursor)) {
-      FUN_080b9fc4(&p->cursor, &p->sprites[30]);
+      ShopCursor_PlaceSprite(&p->cursor, &p->sprites[30]);
       CoffinShop_UpdateDescription(p);
       CoffinShop_DrawPrice(p);
       FUN_080bef00(p, 0);
@@ -339,7 +339,7 @@ void CoffinShop_HandleSelectInput(CoffinShop* p) {
     PlaySound_082406e0(SE_CANCEL);
     FUN_080beff4(p);
   } else if (ShopCursor_Move(&p->cursor)) {
-    FUN_080b9fc4(&p->cursor, &p->sprites[30]);
+    ShopCursor_PlaceSprite(&p->cursor, &p->sprites[30]);
     CoffinShop_UpdateDescription(p);
     FUN_080bef00(p, 1);
   }
@@ -380,7 +380,7 @@ void CoffinShop_BuyCoffin(CoffinShop* p) {
 
 void FUN_080bf3a0(CoffinShop* p) {
   ShopCursor_Init(&p->cursor, 1, 4, 0, 29);
-  FUN_080b9fc4(&p->cursor, &p->sprites[30]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[30]);
   CoffinShop_DrawItemIcons(p);
   CoffinShop_DrawPrice(p);
   CoffinShop_UpdateDescription(p);
@@ -423,40 +423,40 @@ NON_MATCH void FUN_080bf494(CoffinShop* p) {
   OpenMainSpriteFile(&p->gfx2, f);
 
   pos.x = 0, pos.y = 0, pos.z = 0;
-  MainSprite_Add(&p->sprites[0], &p->gfx2, 41, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[0], &p->gfx2, 41, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[1 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[1 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 12; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[17 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[17 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 0;
   pos.y = 128;
-  MainSprite_Add(&p->sprites[29], &p->icons, ICON_TIMER_NONE, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[31], &p->gfx0, 60, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[29], &p->icons, ICON_TIMER_NONE, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[31], &p->gfx0, SMENU_SELECTED, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x = 144;
   pos.y = 32;
-  MainSprite_Add(&p->sprites[30], &p->gfx0, 57, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
-  MainSprite_SetAnim(&p->sprites[30], &p->gfx0, 0, 1, 0);
-  MainSprite_Add(&p->sprites[32], &p->gfx2, 24, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[30], &p->gfx0, SMENU_CURSOR(1), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[30], &p->gfx0, 0, PLAYMODE_LOOP, 0);
+  MainSprite_Add(&p->sprites[32], &p->gfx2, 24, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
 
   pos.x -= 11;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[33 + i], &p->gfx2, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[33 + i], &p->gfx2, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x += 6;
   }
 
   pos.x = 0;
   pos.y = 0;
-  MainSprite_Add(&p->sprites[37], &p->gfx0, 148, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[37], &p->gfx0, SMENU_YESNO(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
 
   FUN_080b99a0(&p->pair0);
   FUN_080b9814(&p->pair1);

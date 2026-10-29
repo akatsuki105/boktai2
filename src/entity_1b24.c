@@ -37,7 +37,7 @@ static_assert(sizeof(Entity1B24) == 3984);
 bool32 FUN_081dfa04(void);
 void FUN_080b9a0c(unknown* p);
 bool32 FUN_080b9adc(unknown* p);
-void FUN_080b9fc4(unknown* p, unknown* q);
+void ShopCursor_PlaceSprite(unknown* p, unknown* q);
 void ShopCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
 
 // 状態関数を差し替える
@@ -64,7 +64,7 @@ s32 FUN_0809cfc0(Entity1B24* p, WeaponData* w) {
     case WK_SWORD:
     case WK_SPEAR:
     case WK_HAMMER: {
-      return ((p->unk_f80 + 0x63) >> 1) + w->atk + (s16)w->quality;
+      return ((p->unk_f80 + 0x63) >> 1) + w->atk + w->quality;
     }
     case WK_GUN: {
       return ((Div(0x28, 10) - 8) * 5 + w->atk) * 2;
@@ -147,7 +147,7 @@ NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
 
 void FUN_0809dd34(Entity1B24* p) {
   ShopCursor_Init(p->unk_e28, 0, 0, 0, 30);
-  FUN_080b9fc4(p->unk_e28, &p->sprites[18]);
+  ShopCursor_PlaceSprite(p->unk_e28, &p->sprites[18]);
 }
 
 void FUN_0809dd68(Entity1B24* p) {

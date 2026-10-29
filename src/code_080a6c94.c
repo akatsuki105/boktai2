@@ -12,9 +12,9 @@ s32 Cmd_InitArray(void) {
   u8 desc[8];
   s32 i;
 
-  FUN_0823167c(desc);
+  VM_GetMemoryRef(desc);
   for (i = 0; VM_GetPC() != NULL; i++) {
-    FUN_0823206c(desc, i, VM_GetValue());
+    VM_StoreMemoryRef(desc, i, VM_GetValue());
   }
   return 0;
 }
@@ -73,7 +73,7 @@ s32 Cmd_GetInputKeys(void) {
 }
 
 // 0x43A0, 文字列テーブルのエントリをデータテーブルとして引く, '.s' の要素幅の規約は VM_LoadPointer と同じ
-s32 VM_ReadTable(void) {
+s32 Cmd_ReadTable(void) {
   void* base;  // .r: テーブルの先頭ポインタ
   s32 idx;     // .i: テーブルのインデックス
   s32 size;    // .s: 要素のサイズ規約 (0: u8[idx], 1: s16[idx], それ以外: s16[idx*2])
@@ -93,7 +93,7 @@ s32 VM_ReadTable(void) {
 
 // FLAG030047A4_UNK_9 で停止させ, stopSound なら対象のEntityとBGMも止める
 void FUN_080a6e88(bool32 stopSound) {
-  gFlag030047a4 |= FLAG030047A4_UNK_9;
+  gGameFlags |= FLAG030047A4_UNK_9;
   if (stopSound && !(gEntityDisableFlags & ENTITY_DISABLE_3)) {
     FUN_08240918();
     gEntityDisableFlags |= ENTITY_DISABLE_3;
@@ -101,11 +101,11 @@ void FUN_080a6e88(bool32 stopSound) {
 }
 
 // 0x6206
-void FUN_080a6ec0(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
+void Cmd_6206(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
 
 // FLAG030047A4_UNK_9 による停止を解除し, 止めていたEntityとBGMを再開する
 void FUN_080a6edc(void) {
-  gFlag030047a4 &= ~FLAG030047A4_UNK_9;
+  gGameFlags &= ~FLAG030047A4_UNK_9;
   if (gEntityDisableFlags & ENTITY_DISABLE_3) {
     FUN_08240930();
     EnableEntityFlags(ENTITY_DISABLE_3);
@@ -116,10 +116,10 @@ void FUN_080a6edc(void) {
 void Cmd_6057(void) { FUN_080a6edc(); }
 
 // 0x1320
-bool32 FUN_080a6f20(void) {
-  if (gFlag030047a4 & FLAG030047A4_UNK_9) return TRUE;
+bool32 Cmd_1320(void) {
+  if (gGameFlags & FLAG030047A4_UNK_9) return TRUE;
   return FALSE;
 }
 
 // 0x15B3
-s32 Cmd_15B3(void) { gFlag030047a4 |= FLAG030047A4_LINK; }
+s32 Cmd_15B3(void) { gGameFlags |= FLAG030047A4_LINK; }

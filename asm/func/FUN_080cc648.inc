@@ -40,7 +40,7 @@ _080CC684:
 	lsrs r2, r2, #0x1a
 	ldrb r3, [r3]
 	adds r2, r2, r3
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080CC6A0:
 	pop {r4, r5}
 	pop {r0}

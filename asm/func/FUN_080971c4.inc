@@ -44,7 +44,7 @@ _080971FA:
 	ldr r1, _08097270 @ =0x00001464
 	adds r0, r4, r1
 	movs r1, #0x14
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	adds r0, r6, #0
 	adds r1, r7, #0
 	movs r2, #0x38

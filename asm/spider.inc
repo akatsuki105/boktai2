@@ -3320,7 +3320,7 @@ _0812F616:
 	movs r1, #3
 	bl Enemy_PlayAnim
 	adds r0, r5, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r2, #0x8e
 	lsls r2, r2, #3
 	adds r1, r5, r2
@@ -6745,7 +6745,7 @@ FUN_081310b8: @ 0x081310B8
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	movs r0, #1
 	pop {r4}
 	pop {r1}
@@ -6858,7 +6858,7 @@ EnemySpider_Init: @ 0x0813115C
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081311F8 @ =0x0000B6EE
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r2, _081311EC @ =0x000001DF
 	adds r0, r7, r2
 	ldrb r1, [r0]
@@ -8918,7 +8918,7 @@ _0813221A:
 	strb r0, [r4]
 	ldr r5, _081322B8 @ =0x0000057C
 	adds r1, r7, r5
-	ldr r0, _081322BC @ =FUN_080f09e0
+	ldr r0, _081322BC @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r6, _081322C0 @ =0x0000061C
 	adds r1, r7, r6
@@ -8944,7 +8944,7 @@ _081322AC: .4byte 0x0000044C
 _081322B0: .4byte 0x0000044D
 _081322B4: .4byte 0x00000662
 _081322B8: .4byte 0x0000057C
-_081322BC: .4byte FUN_080f09e0
+_081322BC: .4byte Enemy_DispatchMsg
 _081322C0: .4byte 0x0000061C
 _081322C4: .4byte FUN_081310ec
 _081322C8: .4byte FUN_081310f8

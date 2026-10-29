@@ -151,7 +151,7 @@ _081FAF90:
 	adds r0, r2, #0
 	ldr r2, _081FAFCC @ =0x00002E78
 	ldr r3, _081FAFD0 @ =0x000038E2
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	add sp, #0x5c
 	pop {r3}
 	mov r8, r3

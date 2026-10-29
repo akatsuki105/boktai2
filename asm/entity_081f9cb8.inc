@@ -357,7 +357,7 @@ _081F9898:
 	str r0, [sp, #0x34]
 	mov r0, r8
 	add r1, sp, #0x38
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	add sp, #0x40
 	pop {r3}
 	mov r8, r3

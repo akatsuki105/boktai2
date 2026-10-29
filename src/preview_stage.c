@@ -125,7 +125,7 @@ void FUN_0820f020(PreviewStage* p) {
       }
     }
     FUN_0820efc4(p->model->direction, &p->frameIdx, &p->hFlip);
-    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
+    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     SpriteHolder_AdvanceAnim(&p->parts[0]);
   }
 }
@@ -135,7 +135,7 @@ void FUN_0820f130(PreviewStage* p) {
   if (p->swayAngle == 0) {
     p->poseBase = 1;
     FUN_0820efc4(p->model->direction, &p->frameIdx, &p->hFlip);
-    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
+    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     SpriteHolder_AdvanceAnim(&p->parts[0]);
     if (SpriteHolder_IsAnimEnded(&p->parts[0]) != 0) {
       p->swayAngle = Mod(Random(), 32) + 60;
@@ -166,19 +166,19 @@ NON_MATCH void FUN_0820f1e0(PreviewStage* p) {
     s32 z = p->pos.z;
 
     pos->x = x, pos->y = y, pos->z = z;
-    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, pos) < 0) {
+    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, SPRFLAG_SCREEN_COORD, pos) < 0) {
       break;
     }
-    SpriteHolder_ClearFlags(holder, 1);
+    SpriteHolder_ClearFlags(holder, SPRFLAG_HIDDEN);
     if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
       SpriteHolder_SetPlttID(holder, model->plttID);
     }
     SpriteHolder_SetPriority(holder, 2);
     FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
     if (i == 0) {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[0], p->frameIdx, p->hFlip, 2, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[0], p->frameIdx, p->hFlip, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     } else {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[i], 1, 0, 2, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[i], 1, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     }
     SpriteHolder_AdvanceAnim(holder);
     holder++;
@@ -214,7 +214,7 @@ NON_MATCH void FUN_0820f310(PreviewStage* p) {
       angle = -((-p->swayAngle) >> 5);
     }
     angle += i * 32;
-    sin = (8 - i) * gSineTable[angle & 0xFF];
+    sin = (8 - i) * SIN(angle);
     if (sin >= 0) {
       sin >>= 13;
     } else {
@@ -249,10 +249,10 @@ NON_MATCH void FUN_0820f3e4(PreviewStage* p) {
     s32 z = p->pos.z;
 
     pos->x = x, pos->y = y, pos->z = z;
-    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, pos) < 0) {
+    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, SPRFLAG_SCREEN_COORD, pos) < 0) {
       break;
     }
-    SpriteHolder_ClearFlags(holder, 1);
+    SpriteHolder_ClearFlags(holder, SPRFLAG_HIDDEN);
     if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
       SpriteHolder_SetPlttID(holder, model->plttID);
     }
@@ -282,13 +282,13 @@ NON_MATCH void FUN_0820f4b4(PreviewStage* p) {
     s32 sin;
 
     if (i == 0) {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], p->frameIdx, p->hFlip, 1, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], p->frameIdx, p->hFlip, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     } else if (i < 2) {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 0, 0, 1, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     } else if (i < 3) {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 1, 0, 1, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 1, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     } else {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 2, 0, 1, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 2, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     }
     SpriteHolder_AdvanceAnim(holder);
     pos = p->parts[i].pos;
@@ -299,7 +299,7 @@ NON_MATCH void FUN_0820f4b4(PreviewStage* p) {
       angle = -((-p->swayAngle) >> 5);
     }
     angle += i * 32;
-    sin = (8 - i) * gSineTable[angle & 0xFF];
+    sin = (8 - i) * SIN(angle);
     if (sin >= 0) {
       sin >>= 13;
     } else {
@@ -334,10 +334,10 @@ NON_MATCH void FUN_0820f630(PreviewStage* p) {
     s32 z = p->pos.z;
 
     pos->x = x, pos->y = y, pos->z = z;
-    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, pos) < 0) {
+    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, SPRFLAG_SCREEN_COORD, pos) < 0) {
       break;
     }
-    SpriteHolder_ClearFlags(holder, 1);
+    SpriteHolder_ClearFlags(holder, SPRFLAG_HIDDEN);
     if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
       SpriteHolder_SetPlttID(holder, model->plttID);
     }
@@ -367,9 +367,9 @@ NON_MATCH void FUN_0820f700(PreviewStage* p) {
     s32 sin;
 
     if (i == 0) {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[0], p->frameIdx, p->hFlip, 1, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[0], p->frameIdx, p->hFlip, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     } else {
-      SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[i], 1, 0, 1, 0, 5);
+      SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[i], 1, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     }
     SpriteHolder_AdvanceAnim(holder);
     pos = p->parts[i].pos;
@@ -380,7 +380,7 @@ NON_MATCH void FUN_0820f700(PreviewStage* p) {
       angle = -((-p->swayAngle) >> 5);
     }
     angle += i * 32;
-    sin = (8 - i) * gSineTable[angle & 0xFF];
+    sin = (8 - i) * SIN(angle);
     if (sin >= 0) {
       sin >>= 13;
     } else {
@@ -409,7 +409,7 @@ void FUN_0820f84c(PreviewStage* p) {
     case 0: {
       if (first) {
         FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
-        SpriteHolder_SetAnim(&p->parts[0], 1, p->frameIdx, p->hFlip, 2, 0, 4);
+        SpriteHolder_SetAnim(&p->parts[0], 1, p->frameIdx, p->hFlip, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
       }
       done = SpriteHolder_AdvanceAnim(&p->parts[0]);
       if (done) {
@@ -421,7 +421,7 @@ void FUN_0820f84c(PreviewStage* p) {
     case 1: {
       if (first) {
         FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
-        SpriteHolder_SetAnim(&p->parts[0], 2, p->frameIdx, p->hFlip, 2, 0, 4);
+        SpriteHolder_SetAnim(&p->parts[0], 2, p->frameIdx, p->hFlip, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
       }
       done = SpriteHolder_AdvanceAnim(&p->parts[0]);
       if (p->stateTimer <= 11) {
@@ -438,7 +438,7 @@ void FUN_0820f84c(PreviewStage* p) {
     case 2: {
       if (first) {
         FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
-        SpriteHolder_SetAnim(&p->parts[0], 3, p->frameIdx, p->hFlip, 2, 0, 4);
+        SpriteHolder_SetAnim(&p->parts[0], 3, p->frameIdx, p->hFlip, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
         *p->parts[0].pos = p->pos;
       }
       done = SpriteHolder_AdvanceAnim(&p->parts[0]);
@@ -473,9 +473,9 @@ s32 FUN_0820f9dc(PreviewStage* p, s32 modelID) {
     pos->x = x, pos->y = y, pos->z = 0, pos->val = 0;
   }
   if (model->kind == 2) {
-    ret = SpriteHolder_InitMain(holder, model->id, 16, &p->pos);
+    ret = SpriteHolder_InitMain(holder, model->id, SPRFLAG_SCREEN_COORD, &p->pos);
   } else {
-    ret = SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, &p->pos);
+    ret = SpriteHolder_InitAux(holder, model->id, model->animFileID, SPRFLAG_SCREEN_COORD, &p->pos);
   }
   if (ret < 0) {
     return -1;
@@ -553,7 +553,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
   if (p->hidden) {
     for (i = 0; i < 5; i++) {
       if (p->parts[i].kind != 0) {
-        SpriteHolder_SetFlags(&p->parts[i], 1);
+        SpriteHolder_SetFlags(&p->parts[i], SPRFLAG_HIDDEN);
       }
     }
     p->subSprite.flags |= SPRFLAG_HIDDEN;
@@ -561,7 +561,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
   }
   for (i = 0; i < 5; i++) {
     if (p->parts[i].kind != 0) {
-      SpriteHolder_ClearFlags(&p->parts[i], 1);
+      SpriteHolder_ClearFlags(&p->parts[i], SPRFLAG_HIDDEN);
     }
   }
   p->subSprite.flags &= ~SPRFLAG_HIDDEN;
@@ -579,7 +579,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
   noRefresh = model->flags & DEXFLAG_NO_REFRESH;
   if (noRefresh == 0) {
     FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
-    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
+    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, PLAYMODE_LOOP, 0, MAIN_ANIM_KEEP_FRAME | MAIN_ANIM_FORCE_POSE);
     SpriteHolder_AdvanceAnim(&p->parts[0]);
   }
   if (model->flags & DEXFLAG_SWAY) {
@@ -590,7 +590,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
       angle = -((-p->swayAngle) >> 5);
     }
     angle += 128;
-    d = model->swayAmplitude * gSineTable[angle & 0xFF];
+    d = model->swayAmplitude * SIN(angle);
     if (d >= 0) {
       d >>= 13;
     } else {
@@ -701,9 +701,9 @@ static const PreviewModel sPreviewModels[70] = {
     {SPRITE_COCKATRICE,     ANIM_COCKATRICE, 1, 8,   507, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         4,  0,   10, 64, 0,  16, 64, 64, 1}, // 18
     {SPRITE_WORM,           ANIM_WORM,       1, 5,   418, 10, 0,                                    FUN_0820f3e4, FUN_0820f4b4, 0,  0,   0,  0,  0,  32, 64, 64, 0}, // 19
     {SPRITE_WORM,           ANIM_WORM,       1, 8,   419, 10, 0,                                    FUN_0820f630, FUN_0820f700, 0,  0,   0,  0,  0,  0,  0,  0,  0}, // 20
-    {SPRITE_BOKU,           ANIM_1DF8,       1, 8,   307, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
-    {SPRITE_BOKU,           ANIM_1DF8,       1, 8,   308, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
-    {SPRITE_BOKU,           ANIM_1DF8,       1, 8,   309, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
+    {SPRITE_BOKU,           ANIM_BOKU,       1, 8,   307, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
+    {SPRITE_BOKU,           ANIM_BOKU,       1, 8,   308, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
+    {SPRITE_BOKU,           ANIM_BOKU,       1, 8,   309, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
     {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   23,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 24
     {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   24,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 25
     {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   25,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 26
@@ -713,9 +713,9 @@ static const PreviewModel sPreviewModels[70] = {
     {SPRITE_SKELETONS,      0x0000,          2, 6,   252, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 30
     {SPRITE_SKELETONS,      0x0000,          2, 26,  249, 3,  0,                                    NULL,         NULL,         8,  16,  0,  0,  0,  1,  64, 64, 1}, // 31
     {SPRITE_SKELETONS,      0x0000,          2, 26,  255, 3,  0,                                    NULL,         NULL,         8,  16,  0,  0,  0,  1,  64, 64, 1}, // 32
-    {SPRITE_GOLEM,          ANIM_1E38,       1, 1,   513, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 33
-    {SPRITE_GOLEM,          ANIM_1E38,       1, 1,   514, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 34
-    {SPRITE_GOLEM,          ANIM_1E38,       1, 1,   516, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 35
+    {SPRITE_GOLEM,          ANIM_GOLEM,      1, 1,   513, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 33
+    {SPRITE_GOLEM,          ANIM_GOLEM,      1, 1,   514, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 34
+    {SPRITE_GOLEM,          ANIM_GOLEM,      1, 1,   516, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 35
     {SPRITE_MIMIC,          ANIM_MIMIC,      1, 1,   650, 4,  DEXFLAG_NO_REFRESH,                   FUN_0820f840, FUN_0820f84c, 0,  16,  0,  0,  0,  4,  64, 64, 1}, // 36
     {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 0,   301, 0,  DEXFLAG_SWAY | DEXFLAG_NO_REFRESH,    NULL,         NULL,         0,  2,   8,  40, 0,  28, 32, 32, 1}, // 37
     {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 0,   302, 0,  DEXFLAG_SWAY | DEXFLAG_NO_REFRESH,    NULL,         NULL,         0,  2,   8,  40, 0,  28, 32, 32, 1}, // 38

@@ -27,12 +27,12 @@ static_assert(sizeof(Entity8EC8) == 128);
 
 NAKED void Entity8EC8_HandleMessages(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_HandleMessages.inc"); }
 
-// 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (FUN_0807b1a4 系と同じ)
+// 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (Cmd_TestEquipBuff 系と同じ)
 NON_MATCH bool32 Entity8EC8_IsStartHeld(void) {
 #ifdef NONMATCHING_C
   Player* p = gPlayerPtr[0];
 
-  if ((gInput[0].down & START_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->flag20 & PFLAG20_UNK_0)) {
+  if ((gInput[0].down & START_BUTTON) && p != NULL && p->mode == PMODE_ACTIVE && !(p->flag20 & PFLAG20_UNK_0)) {
     return TRUE;
   }
   return FALSE;
@@ -41,12 +41,12 @@ NON_MATCH bool32 Entity8EC8_IsStartHeld(void) {
 #endif
 }
 
-// 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (FUN_0807b1a4 系と同じ)
+// 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (Cmd_TestEquipBuff 系と同じ)
 NON_MATCH bool32 Entity8EC8_IsSelectHeld(void) {
 #ifdef NONMATCHING_C
   Player* p = gPlayerPtr[0];
 
-  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->flag20 & PFLAG20_UNK_0)) {
+  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->mode == PMODE_ACTIVE && !(p->flag20 & PFLAG20_UNK_0)) {
     return TRUE;
   }
   return FALSE;

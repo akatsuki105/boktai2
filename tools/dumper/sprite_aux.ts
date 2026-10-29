@@ -17,7 +17,7 @@ const tileCmd = new Command()
   .name("sprite_aux.ts")
   .argument("<rom:string>", "Path to a GBA ROM file.")
   .argument("<output:string>", "Path to output directory.")
-  .argument("<id:number>", "Target actor ID (0 = all actors)")
+  .argument("<id:number>", "Target sprite ID (0 = all sprites)")
   .option("--pltt <id:number>", "force plttID", { default: -1 })
   .option("-w, --width <number:number>", "gbagfx width (0: auto).", { default: 0 })
   .option("--mwidth <number:number>", "gbagfx mwidth(metatile width) (0: auto).", { default: 0 })
@@ -40,8 +40,8 @@ const tileCmd = new Command()
     const entryCount = f.header.entryCount;
     const tilebase: addr = start + f.header.offsetToTiles; // .tiles
     for (let i = 0; i < f.header.entryCount; i++) {
-      const actorID = f.entries[i].id;
-      if (targetID !== 0 && actorID !== targetID) continue;
+      const spriteID = f.entries[i].id;
+      if (targetID !== 0 && spriteID !== targetID) continue;
 
       const metaspriteStart = f.entries[i].metaspriteIndex;
       const metaspriteEnd = (i === entryCount - 1) ? f.metasprites.length : f.entries[i + 1].metaspriteIndex;
@@ -63,17 +63,17 @@ const tileCmd = new Command()
       const from: addr = tilebase + (tileID * 32);
       const legnth = tileCount * 32;
       const bpp = gba.copyBytes(rom, from, legnth).slice(0, legnth);
-      const bppPath = path.join(outDir, `${gba.toHex16(actorID)}.4bpp`);
+      const bppPath = path.join(outDir, `${gba.toHex16(spriteID)}.4bpp`);
       Deno.writeFileSync(bppPath, bpp);
 
       // アクターのパレットを ${ID}.gbapal を取得
       const plttID = (options.pltt >= 0) ? options.pltt : f.metasprites[metaspriteStart].plttID;
       const gbapal = getPlttData(rom, plttID);
-      const palPath = path.join(outDir, `${gba.toHex16(actorID)}.gbapal`);
+      const palPath = path.join(outDir, `${gba.toHex16(spriteID)}.gbapal`);
       Deno.writeFileSync(palPath, gbapal);
 
       // gbagfxでpngに変換
-      const pngPath = path.join(outDir, `${gba.toHex16(actorID)}.png`);
+      const pngPath = path.join(outDir, `${gba.toHex16(spriteID)}.png`);
       const width = (options.width > 0) ? options.width : ((tileCount >= 4) ? 4 : tileCount); // タイル数が4以上なら幅4、未満なら幅 = タイル数
       const gbagfxOpts = ["-object", "-palette", palPath, "-width", `${width}`];
       if (options.mwidth > 0) gbagfxOpts.push("-mwidth", `${options.mwidth}`);
@@ -89,11 +89,11 @@ const tileCmd = new Command()
       }
 
       if (tileCount % width !== 0) {
-        const rule = `data/actor_sprites/${gba.toHex16(actorID)}.4bpp: GFX_OPTS := -num_tiles ${tileCount}`;
+        const rule = `data/actor_sprites/${gba.toHex16(spriteID)}.4bpp: GFX_OPTS := -num_tiles ${tileCount}`;
         makerules.push(rule);
       }
 
-      const incbin = `.incbin "data/actor_sprites/${gba.toHex16(actorID)}.4bpp" @ 0x${gba.toHex32(from)}, ActorID: 0x${gba.toHex16(actorID)}, PlttID: ${plttID}`;
+      const incbin = `.incbin "data/actor_sprites/${gba.toHex16(spriteID)}.4bpp" @ 0x${gba.toHex32(from)}, ActorID: 0x${gba.toHex16(spriteID)}, PlttID: ${plttID}`;
       incbins.push(incbin);
     }
 

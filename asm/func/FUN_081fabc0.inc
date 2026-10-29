@@ -172,7 +172,7 @@ _081FACD2:
 	str r4, [sp, #0x34]
 	adds r0, r6, #0
 	mov r1, sb
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 	b _081FAD60
 	.align 2, 0
 _081FAD1C: .4byte 0x03002CF0
@@ -204,7 +204,7 @@ _081FAD2C:
 	str r4, [sp, #0x34]
 	adds r0, r6, #0
 	mov r1, sb
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _081FAD60:
 	add sp, #0x4c
 	pop {r3, r4}

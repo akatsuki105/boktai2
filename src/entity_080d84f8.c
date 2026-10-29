@@ -53,20 +53,20 @@ void FUN_080d83a8(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 plttOffse
 }
 
 // 爆発の攻撃判定を 0x100 角で作る
-void Entity080d84f8_InitHitbox(Entity080d84f8* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44) {
+void Entity080d84f8_InitHitbox(Entity080d84f8* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime) {
   Vec3 halfSize;
   Vec3 offset;
 
-  VEC3_SET(halfSize, 0x80, 0x80, 0x80);
+  VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, attrs, unk_44);
+  Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, attrs, invincibleTime);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
-s32 Entity080d84f8_Init(Entity080d84f8* p, Vec3* pos, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44, s32 plttOffset, s32 delay) {
+s32 Entity080d84f8_Init(Entity080d84f8* p, Vec3* pos, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay) {
   FUN_080d83a8(&p->sprite, &p->gfx, pos, plttOffset);
-  Entity080d84f8_InitHitbox(p, &p->hitbox, ignoreMask, power, unk_40, attrs, unk_44);
+  Entity080d84f8_InitHitbox(p, &p->hitbox, ignoreMask, power, unk_40, attrs, invincibleTime);
   Hitbox_SetPos(&p->hitbox, pos, 0);
   p->delay = delay;
   p->timer = 0;
@@ -78,7 +78,7 @@ Entity080d84f8* Entity080d84f8_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity080d84f8_Update, Entity080d84f8_Destroy);
-    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, HBATTR_21 | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, 0) < 0) {
+    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, 0) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -91,7 +91,7 @@ Entity080d84f8* Entity080d84f8_CreateDelayed(Vec3* pos, s32 ignoreMask, s32 powe
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity080d84f8_Update, Entity080d84f8_Destroy);
-    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, HBATTR_21 | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, delay) < 0) {
+    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, delay) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -99,12 +99,12 @@ Entity080d84f8* Entity080d84f8_CreateDelayed(Vec3* pos, s32 ignoreMask, s32 powe
   return p;
 }
 
-Entity080d84f8* Entity080d84f8_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44, s32 plttOffset, s32 delay) {
+Entity080d84f8* Entity080d84f8_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay) {
   Entity080d84f8* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080d84f8));
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity080d84f8_Update, Entity080d84f8_Destroy);
-    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, attrs, unk_44, plttOffset, delay) < 0) {
+    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, attrs, invincibleTime, plttOffset, delay) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -387,7 +387,7 @@ _081FCDF6:
 	str r1, [sp, #0x34]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _081FCE2E:
 	mov r2, sl
 	ldr r0, [r2, #4]

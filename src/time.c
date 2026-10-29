@@ -8,7 +8,7 @@
 COMMON_DATA Clock gClock = {};  // 0x030047E0
 
 COMMON_DATA ALIGNED(16) RtcDataOrg gRTC = {};  // 0x03004810
-COMMON_DATA u32 u32_0300481c = 0;
+COMMON_DATA u32 gRtcReadInhibit = 0;
 
 bool32 SetGameDateTimeIntoRTC(s32 year, s32 month, s32 day, s32 hour, s32 minute, s32 second);
 s32 Time_CheckRtcPowerOn(void);
@@ -245,7 +245,7 @@ NON_MATCH void Time_AdvanceFrame(void) {
 void Time_UpdateSunTimers(void) {
   Clock* c;
 
-  if (u32_0300481c == 0) {
+  if (gRtcReadInhibit == 0) {
     ApplyRtcToClock();
   }
 
@@ -355,35 +355,35 @@ NON_MATCH u32 Time_GetSpanOfTime(void) {
 
 u32 Cmd_GetRtcStatus(void) { return gClock.rtcStatus; }
 
-// 0xB55A, 現在の年月日と時分秒をスクリプトへ返す
+// 0xB55A, HashName("時間取得"), 現在の年月日と時分秒をスクリプトへ返す
 void Cmd_GetDateTime(void) {
   s32 ymd[3];
   u8 buf[8];
 
   Time_ParseBCDDate(&ymd[0], &ymd[1], &ymd[2], gClock.date);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, ymd[0]);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, ymd[1]);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, ymd[2]);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.hour);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.minute);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.second);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, ymd[0]);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, ymd[1]);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, ymd[2]);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.hour);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.minute);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.second);
 }
 
-// 0x1C3E, 曜日をスクリプトへ返す
+// 0x1C3E, HashName("曜日取得"), 曜日をスクリプトへ返す
 void Cmd_GetDayOfWeek(void) {
   u8 buf[8];
 
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.dayOfWeek);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.dayOfWeek);
 }
 
-// 0xFBC1, スクリプトから2つの日付を受け取り、その間の日数をスクリプトへ返す
+// 0xFBC1, HashName("日数差取得"), スクリプトから2つの日付を受け取り、その間の日数をスクリプトへ返す
 void Cmd_GetDayDiff(void) {
   u8 buf[8];
   s32 year1 = VM_GetValue();
@@ -394,53 +394,56 @@ void Cmd_GetDayDiff(void) {
   s32 day2 = VM_GetValue();
   s32 days = Time_GetDayDiff(year1, month1, day1, year2, month2, day2);
 
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, days);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, days);
 }
 
-// 0x3C47, 日の出の時刻と日の出までの残り時間をスクリプトへ返す
+// 0x3C47, HashName("日の出時間取得"), 日の出の時刻と日の出までの残り時間をスクリプトへ返す
 void Cmd_GetSunriseTime(void) {
   u8 buf[8];
 
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.morning.hour);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.morning.minute);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.untilSunrise.hour);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.untilSunrise.minute);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.morning.hour);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.morning.minute);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.untilSunrise.hour);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.untilSunrise.minute);
 }
 
-// 0x5365, 日の入りの時刻と日の入りまでの残り時間をスクリプトへ返す
+// 0x5365, HashName("日没時間取得"), 日の入りの時刻と日の入りまでの残り時間をスクリプトへ返す
 void Cmd_GetSunsetTime(void) {
   u8 buf[8];
 
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.sunset.hour);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.sunset.minute);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.untilSunset.hour);
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.untilSunset.minute);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.sunset.hour);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.sunset.minute);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.untilSunset.hour);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.untilSunset.minute);
 }
 
-// 0x2F01
+// 0x2F01, HashName("時間帯取得")
 u32 Cmd_GetSpanOfTime(void) {
   u8 buf[8];
   u32 type = gClock.spanOfTime;
 
-  FUN_0823167c(buf);
-  FUN_0823206c(buf, 0, gClock.spanOfTime);
+  VM_GetMemoryRef(buf);
+  VM_StoreMemoryRef(buf, 0, gClock.spanOfTime);
   return type;
 }
 
-void FUN_0823e464(void) {}
+// 0x1833
+void Cmd_1833(void) {}
 
-void FUN_0823e468(void) {}
+// 0x2F51
+void Cmd_2F51(void) {}
 
-void FUN_0823e46c(void) {}
+// 0x9146
+void Cmd_9146(void) {}
 
 // 残差7命令 (34/41). 原典は段ごとに cmp + bhi で次へ進み movs で月相を作るが, if/else で phase に代入すると agbcc は bls で共通の代入へ寄せて縮める
 // 月相判定を値を返す static inline に切り出すと 41/41 まで揃い, 残りは moonAge を ldrh で読み直すか計算値を lsls/lsrs で切り詰めるかだけ (u16 ローカルで受けると 42)

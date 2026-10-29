@@ -110,7 +110,7 @@ _08015EC4:
 	str r0, [r1, #4]
 	movs r0, #1
 	mov r2, sp
-	bl FUN_080155e4
+	bl Entity08015584_Spawn
 	add sp, #0x30
 	pop {r4, r5, r6, r7}
 	pop {r0}

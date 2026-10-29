@@ -104,7 +104,7 @@ _0822168C:
 	str r1, [sp, #4]
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	movs r3, #0xfc
 	lsls r3, r3, #2
 	adds r1, r5, r3

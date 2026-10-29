@@ -22,7 +22,7 @@ _0809AB14:
 	movs r0, #0x40
 	subs r0, r0, r1
 	ldr r1, _0809AB30 @ =0x00001084
-	bl FUN_0808a458
+	bl SetScreenBrightness
 	b _0809AB3C
 	.align 2, 0
 _0809AB2C: .4byte 0x000009EC
@@ -30,7 +30,7 @@ _0809AB30: .4byte 0x00001084
 _0809AB34:
 	ldr r1, _0809AB64 @ =0x00001084
 	movs r0, #0
-	bl FUN_0808a458
+	bl SetScreenBrightness
 _0809AB3C:
 	ldr r0, _0809AB68 @ =0x000009EC
 	adds r1, r5, r0
@@ -45,7 +45,7 @@ _0809AB3C:
 	bl FUN_0809a6a8
 	ldr r1, _0809AB6C @ =FUN_0809ab70
 	adds r0, r5, #0
-	bl FUN_0808a33c
+	bl MainMenu_SetUpdateCallback
 _0809AB5C:
 	pop {r4, r5}
 	pop {r0}

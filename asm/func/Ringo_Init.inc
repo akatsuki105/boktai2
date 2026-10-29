@@ -508,7 +508,7 @@ _08036300:
 	movs r3, #0
 	bl Boss_PlayAnim
 	adds r0, r7, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08036374
@@ -892,7 +892,7 @@ _0803664E:
 	rsbs r0, r0, #0
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	ldr r4, _080366D4 @ =0x0000087A
 	adds r1, r7, r4
 	movs r2, #0

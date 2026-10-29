@@ -9923,7 +9923,7 @@ _08107AEE:
 	str r1, [sp, #0x28]
 	adds r0, r4, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107B64 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10006,7 +10006,7 @@ _08107B9E:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107C0C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10089,7 +10089,7 @@ _08107C46:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107CBC @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10173,7 +10173,7 @@ _08107CF6:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107D6C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10257,7 +10257,7 @@ _08107DA6:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107E1C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10341,7 +10341,7 @@ _08107E56:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107ECC @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10425,7 +10425,7 @@ _08107F06:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _08107F7C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10509,7 +10509,7 @@ _08107FB6:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _0810802C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -10593,7 +10593,7 @@ _08108066:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	add sp, #0x34
 	pop {r3}
 	mov r8, r3
@@ -15026,7 +15026,7 @@ _0810A20E:
 	str r4, [sp, #0x28]
 	adds r0, r5, #0
 	mov r1, r8
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _0810A2C4 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -15135,7 +15135,7 @@ _0810A306:
 	str r4, [sp, #0x28]
 	adds r0, r6, #0
 	mov r1, r8
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	movs r0, #0x21
 	rsbs r0, r0, #0
 	mov r2, sl
@@ -19067,7 +19067,7 @@ _0810C1F0:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _0810C20C:
 	ldr r1, _0810C25C @ =0x00000466
 	adds r0, r5, r1
@@ -22757,7 +22757,7 @@ _0810DE7A:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _0810DE96:
 	adds r2, r6, #0
 	adds r2, #0xde
@@ -22891,17 +22891,17 @@ _0810DF6A:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -22971,22 +22971,22 @@ _0810E038:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r0, #0xbc
 	lsls r0, r0, #1
 	adds r2, r7, r0
@@ -23118,7 +23118,7 @@ _0810E16C:
 	adds r0, r7, #0
 	bl FUN_080e499c
 	movs r0, #0x40
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	cmp r4, #0x78
 	ble _0810E26C
 	ldr r0, _0810E280 @ =0x000003B3
@@ -23295,22 +23295,22 @@ _0810E2D8:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r5, #0xbc
 	lsls r5, r5, #1
 	adds r2, r7, r5
@@ -23423,7 +23423,7 @@ _0810E3B8:
 	str r4, [sp, #0x24]
 	str r4, [sp, #0x28]
 	adds r1, r6, #0
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	b _0810E4B2
 	.align 2, 0
 _0810E404: .4byte 0x0000FFFF
@@ -23512,7 +23512,7 @@ _0810E468:
 	str r4, [sp, #0x24]
 	str r4, [sp, #0x28]
 	adds r1, r6, #0
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 _0810E4B2:
 	movs r0, #0xc0
 	lsls r0, r0, #5
@@ -24938,7 +24938,7 @@ _0810F008:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	bl FUN_080e6750
 	ldr r4, _0810F134 @ =0x000001DF
@@ -26672,7 +26672,7 @@ _0810FCF8:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r2, #0xb4
 	lsls r2, r2, #3
 	adds r0, r7, r2
@@ -34720,7 +34720,7 @@ _08113C6A:
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 _08113C8A:
 	adds r0, r5, #0
 	bl FUN_081088c8

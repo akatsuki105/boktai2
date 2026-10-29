@@ -21,7 +21,7 @@ typedef struct EntityF41A {
   MoverTile tile;                      // 0x0A8, data.tile がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
-  AuxAnimFile* animFile;               // 0x118, ANIM_1DF8
+  AuxAnimFile* animFile;               // 0x118, ANIM_BOKU
   Entity5941Node detectNode;           // 0x11C, Entity5941_Register / Entity5941_Unregister
   u16 targetAngle;                     // 0x12C, 乱数で決める向き, data.unk_5 がここへ4ずつ近づく
   u16 turnTimer;                       // 0x12E, 0 になると targetAngle を引き直す (0x78..0xB7 フレーム)
@@ -32,8 +32,6 @@ typedef struct EntityF41A {
   void (*update)(struct EntityF41A*);  // 0x138, state に対応する更新関数
 } EntityF41A;
 static_assert(sizeof(EntityF41A) == 316);
-
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 
 void EntityF41A_UpdateWander(EntityF41A* p);
 void EntityF41A_UpdateHit(EntityF41A* p);
@@ -63,7 +61,7 @@ NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
         Vec3 v;
 
         v.x = 0, v.y = 0, v.z = 0;
-        FUN_0805fe7c(&p->hitbox, value, 0, &p->data.pos, &v, 1);
+        CreateDamageNumber(&p->hitbox, value, 0, &p->data.pos, &v, 1);
       }
       EntityF41A_SetState(p, 1);
     }
@@ -167,7 +165,7 @@ void EntityF41A_InitSprite(EntityF41A* p) {
   Mover_SetAuxSprite(&p->data, &p->sprite);
   Video_SetAuxSpritePltt(&p->gfx, 307);
   p->sprite.pos = p->data.pos;
-  p->animFile = GetFile(DIR_ANIMATION, ANIM_1DF8);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_BOKU);
   p->animIdx = 7;
   EntityF41A_UpdateAnim(p);
 }
@@ -176,8 +174,8 @@ void EntityF41A_InitHitbox(EntityF41A* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  VEC3_SET(size, 64, 100, 64);
-  VEC3_SET(offset, 0, 100, 0);
+  VEC3_SET(size, Q8(0.25), Q8(0.391), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.391), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 10, 0x1E, 0, 0, 0x10);
   Hitbox_SetHandler(hitbox, NULL, p);

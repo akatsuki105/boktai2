@@ -140,7 +140,7 @@ _080C41FE:
 	ldr r1, [r0, #4]
 	adds r0, r7, #0
 	movs r2, #3
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080C422E:
 	movs r3, #1
 _080C4230:

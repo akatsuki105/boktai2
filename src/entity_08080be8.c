@@ -34,7 +34,7 @@ typedef struct Entity08080be8 {
   u16 unk_be;                         // 0x0BE, Init の第4引数, Entity08080be8_Reposition で gSineTable に掛ける
   u16 unk_c0;                         // 0x0C0, Init の第5引数, unk_be と対で使う
   u16 offsetRadius;                   // 0x0C2, Init の第6引数, offset.x と offset.z の大きさ
-  u16 eneCost;                        // 0x0C4, Init の第12引数, Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
+  u16 eneCost;                        // 0x0C4, Init の第12引数, Entity08080be8_PayENE が Player_ReduceENE に渡す
   u8 unk_c6[2];                       // 0x0C6
   DirU8 dir;                          // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
   u8 charge;                          // 0x0C9, player の 0xA8F の写し, damage を 1 + charge/2 倍にし、sprite.poseIdx にも入る
@@ -105,7 +105,7 @@ NON_MATCH void Entity08080be8_UpdateParticles(Entity08080be8* p) {
         s32 angle = (dirBase + p->ptcls[i].angleOffset + 0x100) & 0xFF;
 
         p->ptcls[i].base.pos = p->sprite.pos;
-        p->ptcls[i].base.pos.x += dist * gSineTable[(angle + 0x40) & 0xFF] / 4096;
+        p->ptcls[i].base.pos.x += dist * COS(angle) / 4096;
         p->ptcls[i].base.pos.z += dist * gSineTable[angle] / 4096;
       }
     }
@@ -129,7 +129,7 @@ NON_MATCH void Entity08080be8_SpawnParticle(Entity08080be8* p) {
   p->ptcls[p->ptclIdx].angleOffset = Mod(gRandomTable[gRandTableIdx], 0x60) - 0x30;
   angle = (((p->dir + 5) & 7) * 32 + p->ptcls[p->ptclIdx].angleOffset + 0x100) & 0xFF;
   p->ptcls[p->ptclIdx].base.pos = p->sprite.pos;
-  p->ptcls[p->ptclIdx].base.pos.x += p->ptcls[p->ptclIdx].radius * gSineTable[(angle + 0x40) & 0xFF] / 4096;
+  p->ptcls[p->ptclIdx].base.pos.x += p->ptcls[p->ptclIdx].radius * COS(angle) / 4096;
   p->ptcls[p->ptclIdx].base.pos.z += p->ptcls[p->ptclIdx].radius * gSineTable[angle] / 4096;
   p->ptclIdx++;
   if (p->ptclIdx > 3) {
@@ -154,14 +154,14 @@ void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080
 
 // 発動時に ENE を払う
 void Entity08080be8_PayENE(Entity08080be8* p) {
-  if (gFlag030047a4 & FLAG030047A4_LINK) {
+  if (gGameFlags & FLAG030047A4_LINK) {
     s32 cost = p->eneCost;
 
     if (gEntity9A9F != NULL) {
       gEntity9A9F->unk_140 += cost;
     }
   }
-  Player_ReduceENE_0807aa60(p->player, p->eneCost);
+  Player_ReduceENE(p->player, p->eneCost);
 }
 
 // チャージ量に応じた威力を出す
@@ -171,7 +171,7 @@ s32 Entity08080be8_GetDamage(Entity08080be8* p) {
   if (p->unk_cd != 0) {
     return 8;
   }
-  if (gFlag030047a4 & FLAG030047A4_LINK) {
+  if (gGameFlags & FLAG030047A4_LINK) {
     dmg = FUN_080d1b04(p->player);
   } else {
     dmg = FUN_0806f900(p->player);
@@ -184,7 +184,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   u8 state;
 
-  if (p->player->action != 3) {
+  if (p->player->action != PACT_ATTACK) {
     KillEntity(&p->e);
     return;
   }
@@ -212,7 +212,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
   } else if (p->charge != 0) {
     AuxSprite_Show(&p->sprite);
   }
-  p->charge = p->player->charge;
+  p->charge = p->player->wpn.charge;
   p->sprite.poseIdx = ((p->timer >> 2) & 1) ? p->charge + 1 : p->charge;
   p->timer++;
 #else
@@ -223,7 +223,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
 // サバタ側の溜め状態, 溜め中は粒子を出し、発射で StateFly へ、中断なら消える
 NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
 #ifdef NONMATCHING_C
-  if (p->player->action == 3) {
+  if (p->player->action == PACT_ATTACK) {
     u8 state;
 
     Entity08080be8_Reposition(p);
@@ -250,7 +250,7 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
       } else if (state == 3 && (p->timer & 3) == 3) {
         Entity08080be8_SpawnParticle(p);
       }
-      p->charge = p->player->charge;
+      p->charge = p->player->wpn.charge;
       p->timer++;
       return;
     }
@@ -343,9 +343,9 @@ void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, HitboxAttrib
   HitboxData* hitbox = &p->hitbox;
   Vec3 offset, halfSize;
 
-  VEC3_SET(halfSize, 30, 30, 30);
+  VEC3_SET(halfSize, Q8(0.12), Q8(0.12), Q8(0.12));
   if (p->unk_cd != 0) {
-    VEC3_SET(offset, 0, 30, 0);
+    VEC3_SET(offset, 0, Q8(0.12), 0);
   } else {
     VEC3_SET(offset, 0, 0, 0);
   }
@@ -364,7 +364,7 @@ void Entity08080be8_SetupParticles(Entity08080be8* p, s32 val) {
   for (i = 0; i < 4; i++) {
     Particle_Add(&p->ptcls[i].base, p->group, SPRFLAG_HIDDEN);
     Particle_SetOffset(&p->ptcls[i].base, -4, -4);
-    Particle_SetFrame(&p->ptcls[i].base, p->group, val);
+    Particle_SetPose(&p->ptcls[i].base, p->group, val);
     Particle_SetPltt(&p->ptcls[i].base, 1);
     p->ptcls[i].active = FALSE;
   }

@@ -299,7 +299,7 @@ _081EE9D6:
 	ldr r1, [r7, #0x18]
 	adds r0, r6, #0
 	movs r2, #0x34
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r6]
 	orrs r0, r4
 	str r0, [r6]

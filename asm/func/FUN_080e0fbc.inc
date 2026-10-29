@@ -7,7 +7,7 @@
 	bl EmoteManager_Clear
 	bl FUN_080dbea4
 	bl FUN_080dc498
-	bl FUN_080ec4d0
+	bl Cmd_300F
 	bl EnemyTargetManager_ClearGlobal
 	bl FUN_081e9cf8
 	bl FUN_081ea86c

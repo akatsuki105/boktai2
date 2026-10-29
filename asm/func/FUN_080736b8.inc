@@ -118,7 +118,7 @@ _0807379C:
 	adds r4, r5, r2
 	ldrb r0, [r4]
 	movs r1, #0x29
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -192,7 +192,7 @@ _08073840:
 	adds r0, r5, r2
 	ldrb r0, [r0]
 	movs r1, #0x12
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40

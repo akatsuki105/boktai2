@@ -29,7 +29,7 @@ _080C1A3C:
 	ldr r1, [r5, #0x78]
 	adds r0, r4, #0
 	movs r2, #0x11
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	adds r0, r4, #0
 	movs r1, #1
 	bl Particle_SetPltt

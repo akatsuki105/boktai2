@@ -42,15 +42,15 @@ void FUN_080cb8f8(Entity080cbabc* p, WorldPos* pos, s32 poseIdx, s32 plttID) {
 }
 
 // 弾の当たり判定を作って登録する
-void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44) {
+void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
-  VEC3_SET(halfSize, 30, 30, 30);
+  VEC3_SET(halfSize, Q8(0.12), Q8(0.12), Q8(0.12));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attrs, unk_44);
+  Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attrs, invincibleTime);
   Hitbox_SetHandler(hitbox, FUN_080cb7b4, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   hitbox->angle = angle;

@@ -235,7 +235,7 @@ separate assignment, either declaration order, `u32` vs `s32` for the index,
 reading the element twice so CSE makes the temp explicit, a
 `static inline Player* GetPlayerPtr(s32 n)` accessor with the index passed in or
 the call nested inside, and splitting the two early-outs. Leaves
-`FUN_0807b1a4` and `FUN_0807b2dc` at a one-instruction residual.
+`Cmd_TestEquipBuff` and `Cmd_GetGoodCond` at a one-instruction residual.
 
 ### A `Vec3` local filled field-by-field is a word read-modify-write
 
@@ -305,6 +305,29 @@ Still source-level, still defensible.
   function is a narrow return type; the same pair after a `bl` is a cast of the
   call's result; a plain `strh`/`strb` with no shifts is a store-only
   truncation.
+- **A predicate that the target turns into 0/1 and then tests again is a
+  `static inline` returning `bool8`.** The signature in the target is
+
+  ```asm
+  	movs r0, #1
+  	b .L1
+  .L0:	movs r0, #0
+  .L1:	cmp r0, #0
+  	beq ...
+  ```
+
+  — the condition is materialized into a register and immediately re-tested,
+  instead of branching on the comparison itself. Writing the condition inline,
+  through `&&`, through a ternary, or through a `static inline` that returns
+  `bool32` all let agbcc fold the inner 0/1 back into the branch and lose those
+  five instructions. A `static inline` returning `bool8` (`u8`) keeps them:
+  `if (cond) { return TRUE; } return FALSE;` in a `bool8` helper, called from an
+  `if` or a `&&` (`Map_IsLavaFrozen` in `Player_IsInLava`). `[unverified]`
+  why the narrow return blocks the fold — the reason has not been read in the
+  compiler source, so this is recorded as a lever, not in `agbcc-internals.md`.
+  The corpus shows the same shape in 56 places in already-matched code, all
+  through `bool8` helpers such as `Boss_EnterSubState` (`include/boss.h`); grep
+  the built `.s` for the sequence above to find more examples.
 - **Where a parameter's truncation sits says whose parameter is narrow.** A `u8`
   or `u16` parameter of *this* function is truncated once at entry, before the
   body's first load. The same `lsl`/`lsr` pair sitting *between* two argument
@@ -376,7 +399,7 @@ Four positions, cheapest first:
   `include/global.h` includes `macro.h`, so every file that includes
   `global.h` already has them — no extra `#include` is needed.
   Reach for them before inventing a flag accessor or a mask local. Examples:
-  `Entity5CCC_AddEneCharge` (`TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)`),
+  `Entity5CCC_AddEneCharge` (`TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)`),
   `Player_ApplyDarkbug` (`TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)`), the
   `SET_FLAGS(p->flags, …)` calls in `src/title.c`. `TEST_FLAGS` yields the masked
   value, not a 0/1; where a 0/1 argument is needed the replacement used

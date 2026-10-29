@@ -200,7 +200,8 @@ s32 FUN_08049f5c(void) {
   return 0;
 }
 
-s32 FUN_08049f84(void) {
+// 表示中のマーキーに閉じる要求を出す, 無ければ -1
+s32 Marquee_RequestClose(void) {
   if (gMarquee == NULL) {
     return -1;
   }

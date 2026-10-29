@@ -84,6 +84,7 @@ NAKED void FUN_081d7358(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d7358.inc"
 NAKED void FUN_081d76bc(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d76bc.inc"); }
 
 // 生成した衝突タイルの上書きを取り消す
+// フラグ判定を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 原典は &flags を Map_RemoveTileOverride の呼び出しをまたいでレジスタに持つ
 NON_MATCH void FUN_081d7814(EntityC60FItem* p) {
 #ifdef NONMATCHING_C
   if (p->state == 3 || p->state == 4) {
@@ -102,7 +103,7 @@ NAKED void FUN_081d785c(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d785c.inc"
 NAKED void FUN_081d7a60(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d7a60.inc"); }
 
 // 0x377D
-NAKED void FUN_081d7ca8(void) { INCFUNC("asm/func/FUN_081d7ca8.inc"); }
+NAKED void Cmd_377D(void) { INCFUNC("asm/func/Cmd_377D.inc"); }
 
 void (*const PTR_ARRAY_085ae118[5])(EntityC60FItem*) = {
     FUN_081d6f60,

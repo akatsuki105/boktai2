@@ -384,7 +384,7 @@ _0803514A:
 	str r4, [sp, #4]
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 _080351CC:
 	movs r0, #0xff
 	strb r0, [r5]

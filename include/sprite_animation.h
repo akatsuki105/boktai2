@@ -24,8 +24,8 @@ typedef u16 AuxAnimCmd;
 
 // AuxSprite's animation
 typedef struct {
-  u16 animationCount;  // 0x00
-  u16 cmdCount;        // 0x02
+  u16 animationCount;  // 0x00, このファイルのアニメーション数
+  u16 cmdCount;        // 0x02, このファイルの総コマンド数
   // body:
   //   AuxAnim animations[animationCount];
   //   AuxAnimCmd cmds[cmdCount];

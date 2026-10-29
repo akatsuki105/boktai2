@@ -15,7 +15,7 @@
 	adds r4, r7, r4
 	adds r0, r4, #0
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0

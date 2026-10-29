@@ -17,7 +17,7 @@ NAKED f64 fdlibm_acos(f64 x) {
 	bl __ieee754_acos\n\
 	adds r7, r1, #0\n\
 	adds r6, r0, #0\n\
-	ldr r0, _0824EE44 @ =u32_085a90b8\n\
+	ldr r0, _0824EE44 @ =libm_LIB_VERSION\n\
 	ldr r0, [r0]\n\
 	mov sb, r0\n\
 	movs r0, #1\n\
@@ -75,7 +75,7 @@ _0824EE3C:\n\
 	ldr r1, [sp, #0x1c]\n\
 	b _0824EE60\n\
 	.align 2, 0\n\
-_0824EE44: .4byte u32_085a90b8\n\
+_0824EE44: .4byte libm_LIB_VERSION\n\
 _0824EE48: .4byte 0x3FF00000\n\
 _0824EE4C: .4byte 0x00000000\n\
 _0824EE50: .4byte name\n\

@@ -91,7 +91,7 @@ void Entity080c1abc_InitSprite(Entity080c1abc* p) {
 
   Video_GetAuxSprite(gfx, SPRITE_210E);
   spr = &p->sprite;
-  AuxSprite_Add(spr, gfx, 1);
+  AuxSprite_Add(spr, gfx, SPRFLAG_HIDDEN);
   spr->poseIdx = 0;
   Video_SetAuxSpritePltt(gfx, 46);
 }

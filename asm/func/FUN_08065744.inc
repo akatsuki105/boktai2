@@ -144,7 +144,7 @@ _0806584C:
 	adds r0, r5, #0
 	bl Player_InitSprite
 	adds r0, r5, #0
-	bl FUN_08065514
+	bl Player_InitBeastSprite
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r5, r1

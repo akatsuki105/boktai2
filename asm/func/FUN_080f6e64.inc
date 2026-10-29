@@ -342,7 +342,7 @@ _080F70F2:
 	str r2, [sp, #4]
 	movs r2, #0
 	ldr r3, [sp, #0x44]
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080F7106:
 	adds r0, r6, #0
 	ldr r1, [sp, #0x1c]
@@ -1518,7 +1518,7 @@ _080F7A84:
 	cmp r0, #0
 	bne _080F7AA4
 	adds r0, r6, #0
-	bl FUN_080e7f30
+	bl Enemy_PlayVoice
 	movs r2, #0x8a
 	lsls r2, r2, #3
 	adds r1, r6, r2
@@ -1698,7 +1698,7 @@ _080F7BE0:
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080F7BF4:
 	movs r0, #0x10
 	ldrh r2, [r7]

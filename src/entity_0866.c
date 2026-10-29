@@ -150,7 +150,7 @@ Entity0866* Entity0866_Create(u32 _, u32 unused) {
   return p;
 }
 
-NAKED s32 FUN_0800a2f8(void) { INCFUNC("asm/func/FUN_0800a2f8.inc"); }
+NAKED s32 Cmd_0866(void) { INCFUNC("asm/func/Cmd_0866.inc"); }
 
 // 使われてなさそう
 // 使用中の枠の数を数えてスクリプト変数へ書き出す
@@ -170,12 +170,12 @@ u32 Cmd_78EE(void) {
     }
   }
 
-  FUN_0823167c(desc);
-  FUN_0823206c(desc, 0, count);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, count);
   return count;
 }
 
-void FUN_0800a458(void) {
+void Cmd_E0A5(void) {
   Entity0866* p = gEntity0866;
   s32 i;
 

@@ -57,7 +57,7 @@ void FreezeEffect_GatherSubParticles(FreezeEffect* p) {
         p->subPtcls[i].base.pos.y = Div(p->subPtcls[i].base.pos.y * n + p->ptcl.pos.y, d);
         p->subPtcls[i].base.pos.z = Div(p->subPtcls[i].base.pos.z * n + p->ptcl.pos.z, d);
         if (p->subPtcls[i].frame == 4) {
-          Particle_SetFrame(&p->subPtcls[i].base, p->subPtclGroup, 9);
+          Particle_SetPose(&p->subPtcls[i].base, p->subPtclGroup, PTCL2_FROST_S);
         }
       }
     }
@@ -190,7 +190,7 @@ s32 FreezeEffect_Destroy(FreezeEffect* p) {
 void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 param_4) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
-  VEC3_SET(size, 100, 100, 100);
+  VEC3_SET(size, Q8(0.391), Q8(0.391), Q8(0.391));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE, 0, param_2, &size, &offset);
   Hitbox_SetAttack(hitbox, param_3, 0, 0x4000, 0, 0);
@@ -206,7 +206,7 @@ void FreezeEffect_InitCenterParticle(FreezeEffect* p) {
   p->ptclGroup = GetParticleGroup(PTCL_GROUP_0);
   Particle_Add(ptcl, p->ptclGroup, SPRFLAG_HIDDEN);
   Particle_SetOffset(ptcl, -8, -8);
-  Particle_SetFrame(ptcl, p->ptclGroup, 10);
+  Particle_SetPose(ptcl, p->ptclGroup, 10);
   ptcl->pos = p->pos;
   ptcl->pos.y += 0xD7;
   ptcl->priority = 1;
@@ -222,10 +222,10 @@ void FreezeEffect_InitSubParticles(FreezeEffect* p) {
     Particle* ptcl = &p->subPtcls[i].base;
     Particle_Add(ptcl, p->subPtclGroup, SPRFLAG_HIDDEN);
     Particle_SetOffset(ptcl, -4, -4);
-    Particle_SetFrame(ptcl, p->subPtclGroup, 8);
+    Particle_SetPose(ptcl, p->subPtclGroup, PTCL2_FROST_L);
     Particle_SetPltt(ptcl, 1);
     ptcl->priority = 2;
-    ptcl->offsetZ = 0xEC;
+    ptcl->offsetZ = -20;
     p->subPtcls[i].active = FALSE;
     p->subPtcls[i].frame = 0;
   }

@@ -178,7 +178,7 @@ _08006868:
 	str r2, [sp, #8]
 	str r6, [sp, #0xc]
 	movs r2, #1
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 _080068C6:
 	ldr r0, _080068D4 @ =FUN_08006a80
 	b _080068FC
@@ -202,7 +202,7 @@ _080068D8:
 	str r2, [sp, #8]
 	str r6, [sp, #0xc]
 	movs r2, #0
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 _080068FA:
 	ldr r0, _08006918 @ =MapItem_UpdateGive
 _080068FC:

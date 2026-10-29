@@ -349,7 +349,7 @@ _080E1BA6:
 	adds r0, r5, r2
 	strh r1, [r0]
 	adds r0, r5, #0
-	bl FUN_080e4e20
+	bl Enemy_SnapToFloor
 	movs r1, #0x80
 	lsls r1, r1, #6
 	mov r3, sl

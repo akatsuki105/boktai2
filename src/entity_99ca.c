@@ -13,6 +13,8 @@ typedef struct {
 } Entity99CAElem;
 static_assert(sizeof(Entity99CAElem) == 48);
 
+// エレメントのパーティクルを下から上に沸かすエミッタ
+// ソルデバの入手時などに使われる
 typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_11
   s32 timer;                // 0x018, 毎フレーム +1, lifetime と比べて湧かすのを止める
@@ -20,8 +22,8 @@ typedef struct {
   u16 riseSpeed;            // 0x020, 0x14, 各枠の height に毎フレーム足す
   u16 maxHeight;            // 0x022, 400, height がここに届いた枠を消す
   u16 count;                // 0x024, '.n=8', 使う枠数
-  u16 frame;                // 0x026, '.T' で選ぶ Particle のコマ番号 (0,2,4,...,14)
-  ParticleGroup* group;     // 0x028, PTCL_GROUP_2
+  u16 poseIdx;              // 0x026, '.T' で選ぶ Particle のpose番号 (0,2,4,...,14)
+  ParticleGroup* group;     // 0x028, PTCL_GROUP_2, エレメントのパーティクル
   Vec3 pos;                 // 0x02C, '.p', y はタイルの attr から計算し直す
   Entity99CAElem elems[8];  // 0x034
 } Entity99CA;
@@ -43,7 +45,7 @@ NAKED void Entity99CAElem_TryRespawn(Entity99CA* p, Entity99CAElem* elem) { INCF
 void Entity99CAElem_Update(Entity99CA* p, Entity99CAElem* elem) {
   elem->height += p->riseSpeed;
   if ((elem->timer & 3) == 0) {
-    Particle_SetFrame(&elem->ptcl, p->group, p->frame + (((u16)elem->timer >> 2) & 1));
+    Particle_SetPose(&elem->ptcl, p->group, p->poseIdx + (((u16)elem->timer >> 2) & 1));
   }
   elem->timer++;
 
@@ -69,4 +71,5 @@ NAKED s32 Entity99CA_Init(Entity99CA* p, Vec3* pos, u16 param_3, s32 lifetime, s
 
 NAKED Entity99CA* Entity99CA_CreateAt(Vec3* pos, u16 param_2, s32 lifetime, s32 count, s32 kind) { INCFUNC("asm/func/Entity99CA_CreateAt.inc"); }
 
+// 0x99CA
 NAKED Entity99CA* Entity99CA_Create(void) { INCFUNC("asm/func/Entity99CA_Create.inc"); }

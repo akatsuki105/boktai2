@@ -7,36 +7,24 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-// タイルに高さの上書きを足して置かれる当たり判定つきの置物, 殴られると粒子を散らして消え scriptID を走らせる
-typedef struct Entity3DB0 {
+// 魔法"ダイナマイト"で壊せるブロック?
+typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
   AuxSprite sprite;              // 0x18
-  AuxSpriteGfx gfx;              // 0x44, '.t=SPRITE_9D41'
-  HitboxData hitbox;             // 0x60, 攻撃を受ける側として登録される
+  AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_CUBE_ROCK`, SPRITE_DB6C, SPRITE_4AEE
+  HitboxData hurtbox;            // 0x60
   MapTileOverride tileOverride;  // 0xB0, tileIdx のタイルの高さを height で上書きする
   u8 unk_c0;                     // 0xC0
   u8 height;                     // 0xC1, Map_AddTileOverride に渡す上書き後の高さ
   u16 tileIdx;                   // 0xC2, '.p' の位置から引いた当たり判定マップのタイル番号
-  bool8 triggered;               // 0xC4, Entity3DB0_OnHit が立て, _Update が見て自壊する
-  u8 unk_c5[3];                  // 0xC5
+  bool8 triggered;               // 0xC4, Entity3DB0_OnHurt が立て, _Update が見て自壊する
   u32 scriptID;                  // 0xC8, '.R', 壊れたときに VM_ExecByID へ渡す
 } Entity3DB0;
 static_assert(sizeof(Entity3DB0) == 204);
 
-s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);
+s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 
-// pos が乗っているタイルの索引, マップ外なら 0
-static inline s32 TileIndexAt(WorldPos* pos) {
-  s32 bx = (s8)(pos->x >> 8);
-  s32 bz = (s8)(pos->z >> 8);
-
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    return 0;
-  }
-  return gCollisionMap->rowOffsets[bz] + bx;
-}
-
-void Entity3DB0_OnHit(HitboxData* a, HitboxData* b, Entity3DB0* p) {
+void Entity3DB0_OnHurt(HitboxData* a, HitboxData* b, Entity3DB0* p) {
   if (Hitbox_HasWeakness(a, HBATTR_ALL)) {
     p->triggered = TRUE;
   }
@@ -50,7 +38,7 @@ void Entity3DB0_SpawnBurstPtcl(Entity3DB0* p) {
 
   param.kind = 2;
   param.flags = 0;
-  param.animSpeed = 0x40;
+  param.animSpeed = Q6(1);
   param.speedY = 3;
   param.speedYRand = 6;
   param.speedXZ = 2;
@@ -73,7 +61,7 @@ void Entity3DB0_SpawnBurstPtcl(Entity3DB0* p) {
     pos.x += Mod(_Random(table), 300) - 150;
     pos.y += Mod(_Random(table), 300);
     pos.z += Mod(_Random(table), 300) - 150;
-    FUN_080155e4(1, &pos, &param);
+    Entity08015584_Spawn(1, &pos, &param);
   }
 }
 
@@ -94,7 +82,7 @@ s32 Entity3DB0_Update(Entity3DB0* p) {
 
 s32 Entity3DB0_Destroy(Entity3DB0* p) {
   AuxSprite_Remove(&p->sprite);
-  Hitbox_Unregister(&p->hitbox);
+  Hitbox_Unregister(&p->hurtbox);
   Map_RemoveTileOverride(&p->tileOverride);
   // 戻り値のある宣言だが return なし
 }
@@ -109,7 +97,7 @@ NON_MATCH void Entity3DB0_InitSprite(Entity3DB0* p, Vec3* pos) {
   if (VM_SeekToNamedArg('t')) {
     Video_GetAuxSprite(gfx, VM_GetValue());
   } else {
-    Video_GetAuxSprite(gfx, SPRITE_9D41);
+    Video_GetAuxSprite(gfx, SPRITE_CUBE_ROCK);
   }
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;
@@ -123,19 +111,19 @@ NON_MATCH void Entity3DB0_InitSprite(Entity3DB0* p, Vec3* pos) {
 }
 
 void Entity3DB0_InitHitbox(Entity3DB0* p, u32 id, Vec3* pos) {
-  HitboxData* hitbox = &p->hitbox;
+  HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
-  VEC3_SET(halfSize, 0x80, 0x80, 0x80);
-  VEC3_SET(offset, 0, 0x80, 0);
-  Hitbox_Init(hitbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x20, &halfSize, &offset);
-  Hitbox_SetHandler(hitbox, Entity3DB0_OnHit, p);
-  Hitbox_SetPos(hitbox, pos, 0);
-  Hitbox_Register(hitbox);
+  VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
+  Hitbox_Init(hurtbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, (1 << 5), &halfSize, &offset);
+  Hitbox_SetHandler(hurtbox, Entity3DB0_OnHurt, p);
+  Hitbox_SetPos(hurtbox, pos, 0);
+  Hitbox_Register(hurtbox);
 }
 
 // 残差はレジスタ順列のみ (174/174, 同数同順, hunk 12件): 原典は p を r5 / &pos を r6 に置くが agbcc は逆, 他は全部この派生
 // Tier A-C は試済: (s32) キャストで >> 8 の asrs 化, scriptID を if/else にして命令数一致まで到達
-NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 param_2, u32 _) {
+NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 id, u32 _) {
 #ifdef NONMATCHING_C
   WorldPos pos;
 
@@ -144,17 +132,15 @@ NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 param_2, u32 _) {
     pos.y = VM_GetValue();
     pos.z = (((s32)VM_GetValue() >> 8) << 8) + 0x80;
   } else {
-    pos.x = 0;
-    pos.y = 0;
-    pos.z = 0;
+    VEC3_SET(pos, 0, 0, 0);
   }
 
   pos.y = TileHeightAt(&pos);
-  p->tileIdx = TileIndexAt(&pos);
+  p->tileIdx = GetCollisionTileIdx(&pos);
   p->height = (s8)(pos.y >> 8) + 1;
-  Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, 0x103);
+  Map_AddTileOverride(&p->tileOverride, p->tileIdx, STAIRS_NONE, p->height, 0xFF, TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_8);
   Entity3DB0_InitSprite(p, &pos);
-  Entity3DB0_InitHitbox(p, param_2, &pos);
+  Entity3DB0_InitHitbox(p, id, &pos);
   if (VM_SeekToNamedArg('R')) {
     p->scriptID = VM_GetValue();
   } else {
@@ -166,12 +152,13 @@ NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 param_2, u32 _) {
 #endif
 }
 
-Entity3DB0* Entity3DB0_Create(u32 param_1, u32 param_2) {
+// 0x3DB0
+Entity3DB0* Entity3DB0_Create(u32 id, u32 _) {
   Entity3DB0* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity3DB0));
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity3DB0_Update, Entity3DB0_Destroy);
-    if (Entity3DB0_Init(p, param_1, param_2) < 0) {
+    if (Entity3DB0_Init(p, id, _) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

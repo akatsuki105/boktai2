@@ -1225,7 +1225,7 @@ _0816B2CA:
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldrh r1, [r1]
-	bl Player_ReduceENE_0807aa60
+	bl Player_ReduceENE
 	b _0816B344
 	.align 2, 0
 _0816B300: .4byte 0x000007E4
@@ -1249,7 +1249,7 @@ _0816B308:
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldrh r1, [r1]
-	bl Player_ReduceENE_0807aa60
+	bl Player_ReduceENE
 _0816B332:
 	ldr r0, _0816B368 @ =0x03002BE0
 	ldr r0, [r0]
@@ -2457,7 +2457,7 @@ _0816BC6A:
 	movs r1, #0xa
 	bl Enemy_PlayAnim
 	adds r0, r4, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r3, #0xbc
 	lsls r3, r3, #1
 	adds r2, r4, r3
@@ -2534,7 +2534,7 @@ _0816BCEC:
 	adds r0, r6, #0
 	movs r1, #0
 	adds r3, r7, #0
-	bl Entity0800a89c_SpawnAt
+	bl SpawnSpiritBugsAt
 _0816BD1A:
 	ldr r7, _0816BDD4 @ =0x0000046E
 	adds r0, r4, r7
@@ -9193,7 +9193,7 @@ FUN_0816f05c: @ 0x0816F05C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_0816e128
 	movs r0, #1
@@ -9379,7 +9379,7 @@ EnemyGhost_Init: @ 0x0816F19C
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0816F23C @ =0x000029FB
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _0816F230 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -11792,7 +11792,7 @@ _08170506:
 	str r0, [r1]
 	ldr r0, _081705A4 @ =0x0000057C
 	adds r1, r7, r0
-	ldr r0, _081705A8 @ =FUN_080f09e0
+	ldr r0, _081705A8 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r2, _081705AC @ =0x0000061C
 	adds r1, r7, r2
@@ -11814,7 +11814,7 @@ _08170506:
 _0817059C: .4byte 0x00000574
 _081705A0: .4byte 0x000007DC
 _081705A4: .4byte 0x0000057C
-_081705A8: .4byte FUN_080f09e0
+_081705A8: .4byte Enemy_DispatchMsg
 _081705AC: .4byte 0x0000061C
 _081705B0: .4byte FUN_0816f098
 _081705B4: .4byte EnemyGhost_Destroy

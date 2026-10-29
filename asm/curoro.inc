@@ -1187,7 +1187,7 @@ _0813AB0C:
 	ldr r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_0807e7fc
+	bl Player_TakeInstantHit
 	b _0813ABB2
 	.align 2, 0
 _0813AB5C: .4byte 0x03002BE0
@@ -2617,7 +2617,7 @@ _0813B65E:
 	movs r1, #0xa
 	bl FUN_080efe38
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r1, #0xbc
 	lsls r1, r1, #1
 	adds r2, r6, r1
@@ -6484,7 +6484,7 @@ FUN_0813d404: @ 0x0813D404
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_0813ce10
 	movs r0, #1
@@ -6670,7 +6670,7 @@ EnemyCuroro_Init: @ 0x0813D540
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0813D5D8 @ =0x00009607
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _0813D5CC @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -8724,7 +8724,7 @@ _0813E5CA:
 	strb r0, [r1]
 	ldr r2, _0813E664 @ =0x0000057C
 	adds r1, r7, r2
-	ldr r0, _0813E668 @ =FUN_080f09e0
+	ldr r0, _0813E668 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r3, _0813E66C @ =0x0000061C
 	adds r1, r7, r3
@@ -8744,7 +8744,7 @@ _0813E5CA:
 	b _0813E67C
 	.align 2, 0
 _0813E664: .4byte 0x0000057C
-_0813E668: .4byte FUN_080f09e0
+_0813E668: .4byte Enemy_DispatchMsg
 _0813E66C: .4byte 0x0000061C
 _0813E670: .4byte FUN_0813d440
 _0813E674: .4byte EnemyCuroro_Destroy

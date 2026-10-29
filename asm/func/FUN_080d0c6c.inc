@@ -56,7 +56,7 @@ _080D0CC8:
 	adds r0, r7, r2
 	ldrb r0, [r0]
 	movs r1, #2
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	mov sb, r0
 	movs r3, #0xb9
 	lsls r3, r3, #2
@@ -150,7 +150,7 @@ _080D0D68:
 	ldrb r0, [r0]
 	movs r1, #3
 	str r2, [sp, #0x1c]
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	mov sb, r0
 	ldr r2, [sp, #0x1c]
 	cmp r6, r4
@@ -579,7 +579,7 @@ _080D10C4:
 	lsls r3, r3, #2
 	adds r0, r7, r3
 	ldrb r0, [r0]
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	mov sb, r0
 	adds r0, r7, #0
 	adds r0, #0x9c
@@ -677,7 +677,7 @@ _080D117E:
 	adds r0, r7, r3
 	ldrb r0, [r0]
 	movs r1, #5
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r7, #0
 	movs r2, #0x40

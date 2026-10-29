@@ -37,7 +37,7 @@ _080A3582:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #2
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r0, #1
 	strb r0, [r4, #0xf]
 	movs r0, #0x14

@@ -197,3 +197,5 @@ _082513CE:\n\
 	pop {r4, r5, r6, r7, pc}\n\
  .syntax divided\n");
 }
+
+const u32 libm_LIB_VERSION = 1;  // 0x085A90B8

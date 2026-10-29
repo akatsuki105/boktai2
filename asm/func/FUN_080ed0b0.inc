@@ -256,7 +256,7 @@ _080ED2A2:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080ED2B8:
 	adds r0, r7, #0
 	ldr r1, [sp, #0x1c]

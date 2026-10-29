@@ -33,7 +33,7 @@ _080A1E48:
 	ands r2, r0
 	adds r2, #2
 	adds r0, r3, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080A1E70:
 	pop {r4}
 	pop {r0}

@@ -1,5 +1,7 @@
 #include "global.h"
 
+#define Q_4_12(n) ((s16)((n) * 4096))  // Converts a number to Q4.12 fixed-point format
+
 const ALIGNED(4) s4_12 gSineTable[320] = {
     Q_4_12(0),                // sin(0*(π/128))
     Q_4_12(0.0244140625),     // sin(1*(π/128))

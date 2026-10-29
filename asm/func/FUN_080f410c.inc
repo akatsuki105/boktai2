@@ -302,7 +302,7 @@ _080F4360:
 	bl PlaySound_082406e0
 _080F4366:
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	ldr r2, _080F4418 @ =0x000001DF
 	adds r0, r7, r2
 	ldrb r0, [r0]

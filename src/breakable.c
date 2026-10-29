@@ -287,8 +287,8 @@ s32 Breakable_Spawn(void) {
   item->brokenPose = pose + 1;
   item->flashTimer = 0;
   hitbox = &item->hitbox;
-  VEC3_SET(size, (BLOCK / 2), BLOCK, (BLOCK / 2));
-  VEC3_SET(offset, -(BLOCK / 2), (BLOCK / 2), (BLOCK / 2));
+  VEC3_SET(size, Q8(0.5), Q8(1), Q8(0.5));
+  VEC3_SET(offset, -Q8(0.5), Q8(0.5), Q8(0.5));
   Hitbox_Init(hitbox, item->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hitbox, Breakable_OnHit, item);
   Hitbox_SetPos(hitbox, &item->pos, 0);

@@ -57,6 +57,7 @@ INCASM("asm/root_of_darkness.inc");
 
 NAKED s32 EnemyRootOfDarkness_Destroy(RootOfDarkness* p) { INCFUNC("asm/func/EnemyRootOfDarkness_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 EnemyRootOfDarkness_Init(RootOfDarkness* p) { INCFUNC("asm/func/EnemyRootOfDarkness_Init.inc"); }
 
 void EnemyRootOfDarkness_Create(void) {

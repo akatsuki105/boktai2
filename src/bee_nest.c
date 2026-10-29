@@ -12,43 +12,43 @@
 
 // 蜂の巣が落ちて砕け散った時の破片1つ
 typedef struct BeeNestFragment {
-  AuxSprite sprite;   // 0x000
-  AuxAnimState anim;  // 0x02C, ANIM_74C9
-  AuxSpriteGfx gfx;   // 0x03C, SPRITE_BEE_NEST_BROKEN
-  HitboxData hitbox;  // 0x058
-  AuxShadow shadow;   // 0x0A8, shadowId で管理
-  Vec3 basePos;       // 0x114, 揺れの基準位置, sprite.pos へ複写する
-  s16 unk_11c;        // 0x11C, 揺れの角速度, 折り返すたびに符号を反転して半分になる
-  s16 unk_11e;        // 0x11E, 落下速度, 毎フレーム +2
-  u8 unk_120[4];      // 0x120
-  s16 unk_124;        // 0x124, basePos からの半径 (X 成分)
-  u8 unk_126[2];      // 0x126
-  s16 unk_128;        // 0x128, basePos からの半径 (Z 成分)
-  u8 unk_12a[2];      // 0x12A
-  s32 unk_12c;        // 0x12C, 1フレーム前の距離の2乗
-  s32 unk_130;        // 0x130, プレイヤーとの距離の2乗
-  s32 unk_134;        // 0x134, この距離まで近づかれると反応する
-  u16 scriptID;       // 0x138, 破片1個ごとに VM_ExecByID へ渡す
-  u16 unk_13a;        // 0x13A, 1マスぶんの距離
-  u8 unk_13c;         // 0x13C, 現在のマス番号, FUN_081d6ae8 が1つずつ進める
-  u8 unk_13d;         // 0x13D, '.b', 全体のマス数
-  u16 groundY;        // 0x13E, 足元のタイルの高さ, 落下がここに届くと state 4 へ移る
-  s16 hp;             // 0x140, '.A=100', 0 以下になると state 4 (または 3) へ移る
-  s16 maxHp;          // 0x142, hp の初期値, FUN_0809c344 へ渡す
-  u8 unk_144[2];      // 0x144
-  u8 unk_146;         // 0x146, '.A' の3番目
-  u8 unk_147;         // 0x147, FUN_0809c344 の第4引数
-  u16 state;          // 0x148, PTR_ARRAY_085ae104 の添字
-  s16 idx;            // 0x14A, fragments の中での自分の添字, FUN_081d5864 が入れる
-  u16 flags;          // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
-  s8 shadowId;        // 0x14E, -1 なら影なし
-  u8 unk_14f;         // 0x14F
-  u16 unk_150;        // 0x150, HitboxData の unk_4 に入れる
-  u8 unk_152;         // 0x152
-  u8 unk_153;         // 0x153, 0 でない間はパレット 306 を強制して減らす
-  u16 unk_154;        // 0x154, FUN_081d5d18 が毎フレーム 1 足すカウンタ
-  u8 unk_156;         // 0x156, 立っていると FUN_081d5d18 が状態を初期化して落とす
-  u8 unk_157;         // 0x157, 0 でない間はスプライトを ±10 揺らして減らす
+  AuxSprite sprite;          // 0x000
+  AuxAnimState anim;         // 0x02C, ANIM_74C9
+  AuxSpriteGfx gfx;          // 0x03C, SPRITE_BEE_NEST_BROKEN
+  HitboxData hitbox;         // 0x058
+  AuxShadow shadow;          // 0x0A8, shadowId で管理
+  Vec3 basePos;              // 0x114, 揺れの基準位置, sprite.pos へ複写する
+  s16 unk_11c;               // 0x11C, 揺れの角速度, 折り返すたびに符号を反転して半分になる
+  s16 unk_11e;               // 0x11E, 落下速度, 毎フレーム +2
+  u8 unk_120[4];             // 0x120
+  s16 unk_124;               // 0x124, basePos からの半径 (X 成分)
+  u8 unk_126[2];             // 0x126
+  s16 unk_128;               // 0x128, basePos からの半径 (Z 成分)
+  u8 unk_12a[2];             // 0x12A
+  s32 unk_12c;               // 0x12C, 1フレーム前の距離の2乗
+  s32 unk_130;               // 0x130, プレイヤーとの距離の2乗
+  s32 unk_134;               // 0x134, この距離まで近づかれると反応する
+  u16 scriptID;              // 0x138, 破片1個ごとに VM_ExecByID へ渡す
+  u16 unk_13a;               // 0x13A, 1マスぶんの距離
+  u8 unk_13c;                // 0x13C, 現在のマス番号, FUN_081d6ae8 が1つずつ進める
+  u8 unk_13d;                // 0x13D, '.b', 全体のマス数
+  u16 groundY;               // 0x13E, 足元のタイルの高さ, 落下がここに届くと state 4 へ移る
+  s16 hp;                    // 0x140, '.A=100', 0 以下になると state 4 (または 3) へ移る
+  s16 maxHp;                 // 0x142, hp の初期値, FUN_0809c344 へ渡す
+  u8 unk_144[2];             // 0x144
+  u8 unk_146;                // 0x146, '.A' の3番目
+  u8 unk_147;                // 0x147, FUN_0809c344 の第4引数
+  u16 state;                 // 0x148, PTR_ARRAY_085ae104 の添字
+  s16 idx;                   // 0x14A, fragments の中での自分の添字, FUN_081d5864 が入れる
+  u16 flags;                 // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
+  s8 shadowId;               // 0x14E, -1 なら影なし
+  u8 unk_14f;                // 0x14F
+  u16 unk_150;               // 0x150, HitboxData の unk_4 に入れる
+  AuxAnimPlayFlags unk_152;  // 0x152
+  u8 unk_153;                // 0x153, 0 でない間はパレット 306 を強制して減らす
+  u16 unk_154;               // 0x154, FUN_081d5d18 が毎フレーム 1 足すカウンタ
+  u8 unk_156;                // 0x156, 立っていると FUN_081d5d18 が状態を初期化して落とす
+  u8 unk_157;                // 0x157, 0 でない間はスプライトを ±10 揺らして減らす
 } BeeNestFragment;
 static_assert(sizeof(BeeNestFragment) == 344);
 
@@ -65,13 +65,18 @@ static_assert(sizeof(BeeNest) == 1408);
 
 IWRAM_DATA BeeNest* gBeeNest = NULL;  // 0x03000198
 
+static inline bool8 BeeNest_IsActive(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 
 void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 void FUN_081d5f54(BeeNestFragment* frag);
 bool8 FUN_081d6cb0(BeeNestFragment* frag);
-s32 FUN_081ef708(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
+s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
 
 BeeNest* BeeNest_Create(void);
 BeeNestFragment* FUN_081d5864(BeeNest* p);
@@ -80,8 +85,7 @@ void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttribu
 void FUN_081d6444(BeeNestFragment* frag);
 void FUN_081d65e8(BeeNestFragment* frag);
 void FUN_081d6bc0(BeeNestFragment* frag);
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
-void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u8 param_4, s32 param_5);
+void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void FUN_081d6764(BeeNestFragment* frag);
 void FUN_081d6ae8(BeeNestFragment* frag, s32 n);
 void FUN_081d6c24(BeeNestFragment* frag);
@@ -98,13 +102,11 @@ bool8 FUN_081d5848(BeeNestFragment* frag, u16 n) {
 }
 
 // 空いているアイテムを確保して返す, 無ければ NULL
-// 残差8命令 (37/45). 5命令は使用中判定の 0/1 の作り置き, 残りは原典がビットマスクの定数 1 をループ外のレジスタに持つ点
-NON_MATCH BeeNestFragment* FUN_081d5864(BeeNest* p) {
-#ifdef NONMATCHING_C
+BeeNestFragment* FUN_081d5864(BeeNest* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!BeeNest_IsActive(&p->activeMask, i)) {
       BeeNestFragment* frag = &p->fragments[i];
 
       p->activeMask |= 1 << i;
@@ -114,13 +116,11 @@ NON_MATCH BeeNestFragment* FUN_081d5864(BeeNest* p) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_081d5864.inc");
-#endif
 }
 
 // unk_150 が id の使用中アイテムを探す
 // 残差5命令 (36/41), 使用中判定の 0/1 の作り置き1ブロックだけが足りない
+// bool8 を返す static inline (BeeNest_IsActive(&p->activeMask, i)) にすると 0/1 の作り置きは出るが, 原典は activeMask をループ外で1回読んでレジスタに持つ
 NON_MATCH BeeNestFragment* FUN_081d58c4(s32 id) {
 #ifdef NONMATCHING_C
   BeeNest* p = gBeeNest;
@@ -270,9 +270,9 @@ NON_MATCH void Cmd_CreateBeeNest(void) {
 // 無敵時間を数えつつ、点滅用のパレットを選ぶ
 NON_MATCH void FUN_081d5cac(BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
-  if (frag->hitbox.unk_44 != 0) {
+  if (frag->hitbox.invincibleTime != 0) {
     frag->hitbox.flags |= HBFLAG_HIDDEN;
-    frag->hitbox.unk_44--;
+    frag->hitbox.invincibleTime--;
   } else {
     frag->hitbox.flags &= ~HBFLAG_HIDDEN;
   }
@@ -484,37 +484,29 @@ void (*const PTR_ARRAY_085ae104[5])(BeeNest*, BeeNestFragment*) = {
 };  // 0x085AE104
 
 // 使用中のアイテムについて state ごとの更新関数を呼ぶ
-// 残差6命令 (44/50). 5命令は使用中判定の 0/1 の作り置き, 残り1命令は &activeMask の作り方の違い
-NON_MATCH s32 BeeNest_Update(BeeNest* p) {
-#ifdef NONMATCHING_C
+s32 BeeNest_Update(BeeNest* p) {
   BeeNestFragment* fragments = p->fragments;
+  s32 i;
 
-  if (p->activeMask != 0) {
-    s32 i;
+  if (p->activeMask == 0) {
+    return 0;
+  }
 
-    for (i = 0; i < 4; i++) {
-      if (p->activeMask & (1 << i)) {
-        BeeNestFragment* frag = &fragments[i];
-
-        PTR_ARRAY_085ae104[frag->state](p, frag);
-      }
+  for (i = 0; i < 4; i++) {
+    if (BeeNest_IsActive(&p->activeMask, i)) {
+      PTR_ARRAY_085ae104[fragments[i].state](p, &fragments[i]);
     }
   }
 
   return 0;
-#else
-  INCFUNC("asm/func/BeeNest_Update.inc");
-#endif
 }
 
 // 使用中のアイテムのスプライト・判定・影をまとめて外す
-// 残差5命令 (53/58), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
-NON_MATCH s32 BeeNest_Destroy(BeeNest* p) {
-#ifdef NONMATCHING_C
+s32 BeeNest_Destroy(BeeNest* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (p->activeMask & (1 << i)) {
+    if (BeeNest_IsActive(&p->activeMask, i)) {
       BeeNestFragment* frag = &p->fragments[i];
 
       AuxSprite_Remove(&frag->sprite);
@@ -528,9 +520,6 @@ NON_MATCH s32 BeeNest_Destroy(BeeNest* p) {
 
   gBeeNest = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/BeeNest_Destroy.inc");
-#endif
 }
 
 s32 BeeNest_Init(BeeNest* p) {
@@ -572,19 +561,19 @@ void FUN_081d6444(BeeNestFragment* frag) {
 }
 
 // 被弾ハンドラ, 体力を削って演出を出し, 0 になったら state 4 へ移す
-// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hitbox.unk_44 を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
+// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hitbox.invincibleTime を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
 // dealt は min(unk_140, damage) だが, 原典の形 (差を取ってから符号で分岐) に合わせて if/else で書いた
 NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
   s32 dealt;
   Vec3 v;
 
-  if (frag->hitbox.unk_44 != 0) {
+  if (frag->hitbox.invincibleTime != 0) {
     return;
   }
 
   Hitbox_ApplyDamage(a, b);
-  b->unk_44 = a->unk_44;
+  b->invincibleTime = a->invincibleTime;
   dealt = frag->hp - frag->hitbox.damage;
   if (dealt >= 0) {
     dealt = frag->hitbox.damage;
@@ -599,10 +588,10 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag)
 
   FUN_0809c344(frag->unk_150, frag->hp, frag->maxHp, frag->unk_147, 0);
   CpuFill32(0, &v, sizeof(v));
-  FUN_0805fe7c(b, dealt, 0, &frag->sprite.pos, &v, 1);
+  CreateDamageNumber(b, dealt, 0, &frag->sprite.pos, &v, 1);
   frag->unk_153 = 3;
   frag->unk_157 = 10;
-  frag->hitbox.unk_44 = 0x18;
+  frag->hitbox.invincibleTime = 0x18;
   FUN_081d65e8(frag);
   FUN_081d6bc0(frag);
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
@@ -639,8 +628,8 @@ void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttribu
   HitboxData* hitbox = &frag->hitbox;
   Vec3 offset, halfSize;
 
-  VEC3_SET(offset, 0, 0x50, 0);
-  VEC3_SET(halfSize, 0x40, 0x50, 0x40);
+  VEC3_SET(offset, 0, Q8(0.313), 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.313), Q8(0.25));
   hitbox->id = frag->unk_150;
   Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, power, attributes, weakness);
@@ -660,27 +649,27 @@ NON_MATCH void FUN_081d6764(BeeNestFragment* frag) {
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x40;
-  FUN_081ef708(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  FUN_081ef708(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  FUN_081ef708(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 1, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 1, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  FUN_081ef708(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 1, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 1, 0, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  FUN_081ef708(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 2, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 2, 0, 0, 0, 0, 0);
 
   FUN_081d65e8(frag);
 #else

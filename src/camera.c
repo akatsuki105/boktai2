@@ -62,7 +62,7 @@ EWRAM_DATA u8 gDecompressedCollisionMapFile[16380] = {};  // 0x02031404, 展開�
 COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
 COMMON_DATA u8 u8_030047d4[4] = {};     // todo
-COMMON_DATA u16 u16_030047d8 = 0;       // 0x030047D8, TextRenderer_PlayCharSound がこのIDのメッセージでは音を鳴らさない
+COMMON_DATA u16 gSilentCharcode = 0;    // 0x030047D8, TextRenderer_PlayCharSound がこのIDのメッセージでは音を鳴らさない
 COMMON_DATA u8 u8_030047da[6] = {};     // todo
 
 s32 Map_LoadTileData(FileID id);
@@ -73,19 +73,6 @@ void Map_SetTileData(CollisionMapTileData* tiledata);
 void Map_SetZones(ZoneData* zones);
 void Map_SetPaths(PathData* paths);
 void Map_SetNavMesh(NavMesh* navMesh);
-
-// ワールド座標をアイソメトリック投影して視点座標にする
-static inline void WorldToVp(Vec3* vp, WorldPos* world) {
-  s32 hx = world->x >> 1;
-  s32 hz = world->z >> 1;
-  s32 a, b;
-
-  vp->x = FixToInt(8, (hx - hz) * 48);
-  a = FixToInt(8, (hx + hz) * 48);
-  b = FixToInt(8, world->y * 24);
-  vp->y = a - b;
-  vp->z = a + b;
-}
 
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {
@@ -283,8 +270,9 @@ void FUN_0823b980(s32 n, Vec3* pos) {
   }
 }
 
-void FUN_0823b9cc(s32 n) {
-  if (gCamera != NULL && !(gFlag030047a4 & FLAG030047A4_LINK)) {
+// 画面の揺れ幅を n まで引き上げる, 通信中は揺らさない
+void Camera_Shake(s32 n) {
+  if (gCamera != NULL && !(gGameFlags & FLAG030047A4_LINK)) {
     if (n > gCamera->shakeAmplitude) {
       gCamera->shakeAmplitude = n;
     }
@@ -408,7 +396,7 @@ void FUN_0823bce4(Vec3* pos, s32* enabled) {
 // Tier A-C は試済: 早期 return 形, shakeTimer 経由の 0 判定 (これで命令数は一致した)
 NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 #ifdef NONMATCHING_C
-  if (gCamera != NULL && (gFlag030047a4 & FLAG030047A4_LINK) == 0) {
+  if (gCamera != NULL && (gGameFlags & FLAG030047A4_LINK) == 0) {
     if (frames == 0 && stopOnEnd == 1) {
       gCamera->shakeActive = FALSE;
       gCamera->shakeStopOnEnd = FALSE;
@@ -447,12 +435,12 @@ void FUN_0823bd98(Camera* cam) {
   }
 }
 
-void FUN_0823bdf8(void) {
+void Cmd_2141(void) {
   FUN_0823baa8();
   FUN_0823bd98(gCamera);
 }
 
-void FUN_0823be10(void) {
+void Cmd_9769(void) {
   if (VM_SeekToNamedArg('p')) {
     Vec3 pos;
     VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
@@ -473,7 +461,7 @@ void Cmd_CameraPanTo(void) {
   }
 }
 
-void FUN_0823bee8(void) {
+void Cmd_619C(void) {
   if (VM_SeekToNamedArg('n')) {
     Vec3 pos;
     s32 targetID = VM_GetValue();
@@ -487,7 +475,7 @@ void FUN_0823bee8(void) {
   }
 }
 
-void FUN_0823bf70(void) {
+void Cmd_C15E(void) {
   if (VM_SeekToNamedArg('f')) {
     s32 n = VM_GetValue();
     if (VM_SeekToNamedArg('n')) {
@@ -504,7 +492,7 @@ void FUN_0823bf70(void) {
   }
 }
 
-void FUN_0823c008(void) {
+void Cmd_BBAA(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_0823bc70(VM_GetValue());
     FUN_0823bd98(gCamera);
@@ -518,7 +506,7 @@ void Camera_Reset(void) {
   }
 }
 
-void FUN_0823c050(void) {
+void Cmd_CAEE(void) {
   if (VM_SeekToNamedArg('w')) {
     s32 amplitude = VM_GetValue();
     s32 frames = VM_SeekToNamedArg('f') ? VM_GetValue() : 1;
@@ -613,7 +601,7 @@ void Camera_RunCompleteAction(Camera* cam) {
   }
 }
 
-void FUN_0823c244(void) {
+void Cmd_75B7(void) {
   if (gCamera != NULL) {
     gCamera->unk_8c = 0;
   }
@@ -667,7 +655,7 @@ void Camera_SetBoundsType2Scripted(void) {
 void Camera_StepMove(Camera* cam) {
   switch (cam->moveMode) {
     case FOLLOW_PLAYER: {
-      if (gFlag030047a4 & FLAG030047A4_LINK) {
+      if (gGameFlags & FLAG030047A4_LINK) {
         if (gEntity9A9F != NULL) {
           s32 idx = gEntity9A9F->playerIdx;
 
@@ -846,7 +834,7 @@ NON_MATCH void* Camera_StepShake(Camera* cam) {
 }
 
 s32 Camera_Update(Camera* cam) {
-  if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
+  if (!(gGameFlags & FLAG030047A4_LINK)) {
     Camera_PollMessages(cam);
   }
 
@@ -865,7 +853,7 @@ s32 Camera_Update(Camera* cam) {
 }
 
 s32 Camera_Destroy(Camera* cam) {
-  if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
+  if (!(gGameFlags & FLAG030047A4_LINK)) {
     MsgQueue_Unregister(&cam->mq);
   }
   gCamera = NULL;
@@ -891,8 +879,8 @@ s32 Camera_Init(Camera* cam, u32 id) {
   cam->shakeOffsetZ = 0;
   cam->scriptID = 0;
   WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
-  if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
-    MsgQueue_Register(&cam->mq, cam->id, 6);
+  if (!(gGameFlags & FLAG030047A4_LINK)) {
+    MsgQueue_Register(&cam->mq, cam->id, CLS_CAMERA);
   }
   gCamera = cam;
   return 0;

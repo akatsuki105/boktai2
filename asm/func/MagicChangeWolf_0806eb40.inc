@@ -23,7 +23,7 @@
 	adds r0, r5, r2
 	strh r1, [r0]
 	adds r0, r5, #0
-	bl FUN_0806ea98
+	bl Player_FindCWolfTarget
 	ldr r1, _0806EB98 @ =0x03002BA8
 	str r0, [r1]
 	cmp r0, #0
@@ -99,7 +99,7 @@ _0806EC04:
 	adds r0, r5, r3
 	ldrb r0, [r0]
 	movs r1, #0
-	bl FUN_08066ee4
+	bl Player_GetAnimIdx
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -125,7 +125,7 @@ _0806EC42:
 	b _0806F1DE
 _0806EC56:
 	adds r0, r5, #0
-	bl FUN_0806ea98
+	bl Player_FindCWolfTarget
 	ldr r1, _0806EC78 @ =0x03002BA8
 	str r0, [r1]
 	cmp r0, #0
@@ -584,7 +584,7 @@ _0806EFE2:
 	adds r1, r6, #0
 	movs r2, #1
 	adds r3, r4, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _0806F002:
 	ldr r1, _0806F014 @ =0x03002B70
 	ldrh r0, [r1]

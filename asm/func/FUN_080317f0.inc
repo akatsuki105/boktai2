@@ -256,7 +256,7 @@ _080319A4:
 	str r2, [sp, #0x10]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 _080319F4:
 	movs r0, #0x84
 	lsls r0, r0, #7
@@ -764,7 +764,7 @@ _08031D84:
 	str r4, [sp, #4]
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 _08031DF6:
 	movs r0, #0xff
 	mov r3, r8

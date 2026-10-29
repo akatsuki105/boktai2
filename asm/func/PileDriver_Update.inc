@@ -36,7 +36,7 @@ _080B25C0:
 	bne _080B2604
 	adds r0, r4, #0
 	movs r1, #0xe
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	ldr r2, _080B2630 @ =0x00000C6C
 	adds r0, r4, r2
 	movs r1, #9

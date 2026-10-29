@@ -57,6 +57,7 @@
     "asm/func/*.inc": true,
     "build/**/*.o": true,
     "build/**/*.i": true,
-    "build/**/*.d": true
+    "build/**/*.d": true,
+    "build/nonmatch/**": true
   }
 }

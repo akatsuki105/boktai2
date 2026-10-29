@@ -265,12 +265,12 @@ _080A24A8:
 	beq _080A24BC
 	movs r0, #1
 	strh r0, [r4]
-	bl FUN_0808670c
+	bl Coffin_SetInsideSolarCircle
 	b _080A24C4
 _080A24BC:
 	strh r0, [r4]
 	movs r0, #0
-	bl FUN_0808670c
+	bl Coffin_SetInsideSolarCircle
 _080A24C4:
 	movs r0, #0
 	pop {r3, r4, r5}

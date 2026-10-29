@@ -63,7 +63,7 @@ static_assert(sizeof(Entity8B8E) == 5680);
 #define E8B8E1610_UNK_19 (1 << 19)  // 0x00080000, 同上, FUN_081e4cb4 の送信ぶん
 #define E8B8E1610_UNK_22 (1 << 22)  // 0x00400000, FUN_081e3cc0 が立てる
 
-extern u32 u32_0300481c;  // src/time.c
+extern u32 gRtcReadInhibit;  // src/time.c
 
 bool8 LinkShopManager_IsFinished(void);                    // src/link_shop.c
 bool32 IsWeaponSellable(slot32_t n);                       // src/weapon.c
@@ -165,7 +165,7 @@ void FUN_081e3cc0(Entity8B8E* p) { SET_FLAGS(p->unk_1610, E8B8E1610_UNK_22); }
 
 void FUN_081e3cd4(void) {
   Taiyo_Enable();
-  u32_0300481c = 0;
+  gRtcReadInhibit = 0;
 }
 
 NAKED void FUN_081e3ce8(s32 param_1) { INCFUNC("asm/func/FUN_081e3ce8.inc"); }
@@ -212,7 +212,7 @@ s32 FUN_081e4014(Entity8B8E* p) {
   Vec3 pos;
 
   VEC3_SET(pos, 0, 0x80, 0);
-  return MainSprite_Add(&p->sprite_150c, &p->gfx_156c, 0xD0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 0, &pos);
+  return MainSprite_Add(&p->sprite_150c, &p->gfx_156c, 0xD0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 0, &pos);
 }
 
 NAKED void FUN_081e4054(s32 param_1) { INCFUNC("asm/func/FUN_081e4054.inc"); }
@@ -470,7 +470,7 @@ s32 Entity8B8E_Destroy(Entity8B8E* p) {
     ClearBGTilemapBuffer(0);
     ClearBGTilemapBuffer(3);
     Taiyo_Enable();
-    u32_0300481c = 0;
+    gRtcReadInhibit = 0;
     if (p->exitScriptID != 0) {
       VM_ExecByID(p->exitScriptID, NULL);
     }

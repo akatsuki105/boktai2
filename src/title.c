@@ -62,7 +62,8 @@ typedef struct Title {
 } Title;
 static_assert(sizeof(Title) == 1068);
 
-extern const u8 u8_ARRAY_08252778[8];
+const __attribute__((section(".rodata.faraddr"))) u32 u32_ARRAY_08252750[10] = {0x2BC, 0x2BB, 0x2C4, 0x2C8, 0x2C5, 0x2C9, 0x2C6, 0x2CA, 0x2C7, 0x2CB};  // 0x08252750
+const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252778[8] = {6, 2, 7, 3, 8, 4, 7, 3};                                                   // 0x08252778
 
 bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 void FUN_0823d4ac(void);
@@ -267,7 +268,7 @@ NON_MATCH void FUN_082127e4(Title* p) {
 #endif
 }
 
-void FUN_082128b0(Title* p) { MainSprite_SetPose(&p->spr_f4, &p->gfx, p->unk_41c + 11, 1); }
+void FUN_082128b0(Title* p) { MainSprite_SetPose(&p->spr_f4, &p->gfx, p->unk_41c + 11, PLAYMODE_LOOP); }
 
 void FUN_082128d8(Title* p) {
   MainSprite_Show(&p->spr_214);

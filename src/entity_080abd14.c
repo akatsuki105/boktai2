@@ -41,7 +41,7 @@ typedef struct {
 } Entity080abd14;
 static_assert(sizeof(Entity080abd14) == 1136);
 
-extern u16 u16_03002bf0;
+extern u16 gRisingSunCount;
 
 NAKED void FUN_080ab018(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab018.inc"); }
 
@@ -131,7 +131,7 @@ s32 Entity080abd14_Destroy(Entity080abd14* p) {
   FUN_080ab8ec(p);
   FUN_080ab6d8(p);
   if (p->unk_19) {
-    u16_03002bf0--;
+    gRisingSunCount--;
   }
 }
 

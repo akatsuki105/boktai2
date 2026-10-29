@@ -23,11 +23,11 @@ NAKED void FUN_080f9c20(Enemy* p) { INCFUNC("asm/func/FUN_080f9c20.inc"); }
 NAKED void FUN_080f9e34(Enemy* p) { INCFUNC("asm/func/FUN_080f9e34.inc"); }
 
 void FUN_080f9ee0(Enemy* p) {
-  if (p->unk_46c != 0) {
-    p->unk_46c = 0;
+  if (p->subStateBegun != 0) {
+    p->subStateBegun = 0;
   }
   if (!p->unk_608(p)) {
-    p->unk_484++;
+    p->subStateTimer++;
   }
 }
 
@@ -54,7 +54,7 @@ void FUN_080fa77c(Enemy* p) {
   }
 }
 
-NAKED s32 FUN_080fa7a4(Enemy* p) { INCFUNC("asm/func/FUN_080fa7a4.inc"); }
+NAKED bool8 FUN_080fa7a4(Enemy* p) { INCFUNC("asm/func/FUN_080fa7a4.inc"); }
 
 NAKED s32 FUN_080fa958(Vec3* pos) { INCFUNC("asm/func/FUN_080fa958.inc"); }
 

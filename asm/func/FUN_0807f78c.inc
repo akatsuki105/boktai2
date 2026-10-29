@@ -72,7 +72,7 @@ _0807F7B8:
 	ldr r1, [r0]
 	adds r0, r7, #0
 	movs r2, #4
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	ldr r2, _0807F84C @ =gSineTable
 	mov r0, r8
 	adds r0, #0x40

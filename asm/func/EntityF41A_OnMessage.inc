@@ -27,7 +27,7 @@
 	str r1, [sp, #4]
 	adds r1, r2, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080CBBA6:
 	adds r0, r4, #0
 	movs r1, #1

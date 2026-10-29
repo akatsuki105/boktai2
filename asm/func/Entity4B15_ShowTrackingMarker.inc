@@ -39,7 +39,7 @@ _0801A0CC:
 	adds r2, r2, r1
 	ldr r1, [r2]
 	movs r2, #0x33
-	bl Particle_SetFrame
+	bl Particle_SetPose
 	movs r1, #1
 	movs r0, #0
 	strb r1, [r4]

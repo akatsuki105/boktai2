@@ -77,7 +77,7 @@
 	ldr r2, _080BB25C @ =0x00000D98
 	adds r1, r6, r2
 	adds r0, r4, #0
-	bl FUN_080b9fc4
+	bl ShopCursor_PlaceSprite
 	adds r0, r6, #0
 	bl FUN_080ba410
 	adds r0, r6, #0

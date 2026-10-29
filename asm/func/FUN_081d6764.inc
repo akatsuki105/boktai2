@@ -86,7 +86,7 @@ _081D67DE:
 	str r1, [sp, #0x28]
 	adds r0, r4, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _081D6858 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -171,7 +171,7 @@ _081D6892:
 	str r1, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _081D6904 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -255,7 +255,7 @@ _081D693E:
 	str r4, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _081D69B0 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -339,7 +339,7 @@ _081D69EA:
 	str r4, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r2, _081D6A5C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -423,7 +423,7 @@ _081D6A96:
 	str r4, [sp, #0x28]
 	adds r0, r7, #0
 	add r1, sp, #0x2c
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	mov r0, r8
 	bl FUN_081d65e8
 	add sp, #0x34

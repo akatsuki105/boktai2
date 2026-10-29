@@ -28,7 +28,7 @@ _080ABD9C:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r6, #0
-	bl Particle_SetFrame
+	bl Particle_SetPose
 _080ABDB2:
 	ldrb r0, [r4]
 	movs r1, #0x2b

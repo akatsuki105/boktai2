@@ -24,17 +24,17 @@ typedef struct SolarCircle {
   AuxSpriteGfx gfx;                             // 0x044, SPRITE_MAGIC_CIRCLE, パレット 99
   AuxSprite sprite2;                            // 0x060, flags に SPRFLAG_BLINK_EVEN が立つ
   AuxSpriteGfx gfx2;                            // 0x08C, SPRITE_MAGIC_CIRCLE, パレット 97
-  u16 enabled;                                  // 0x0A8, IsCoffinInside の結果
+  bool16 enabled;                               // 0x0A8, IsCoffinInside の結果
   u16 stateTimer;                               // 0x0AA, Init が 0 を書く
   Vec3 pos;                                     // 0x0AC, '.p', y はタイルの attr から計算し直す
   void (*updateCallback)(struct SolarCircle*);  // 0x0B4, '.m' があるかで切り替える
-  ParticleGroup* group;                         // 0x0B8, 各枠の更新に渡す
+  ParticleGroup* group;                         // 0x0B8, PTCL_GROUP_2
   u8 unk_bc;                                    // 0x0BC
   u8 unk_bd;                                    // 0x0BD
   u16 unk_be;                                   // 0x0BE, 2フレームに1回だけ FUN_080a1e78 を呼ぶためのカウンタ
   SolarCirclePtcl ptcls[8];                     // 0x0C0
-  u32 unk_260;                                  // 0x260, '.i'
-  u32 unk_264;                                  // 0x264, '.o'
+  u32 scriptIn;                                 // 0x260, '.i', 棺桶が太陽結界に入った時に呼ばれるスクリプトID
+  u32 scriptOut;                                // 0x264, '.o', 棺桶が太陽結界から出た時に呼ばれるスクリプトID
 } SolarCircle;
 static_assert(sizeof(SolarCircle) == 616);
 
@@ -50,7 +50,7 @@ NON_MATCH void FUN_080a1e28(SolarCirclePtcl* elem, ParticleGroup* g) {
     elem->ptcl.pos.x += elem->vel.x;
     elem->ptcl.pos.y += elem->vel.y;
     elem->ptcl.pos.z += elem->vel.z;
-    Particle_SetFrame(&elem->ptcl, g, ((elem->timer >> 2) & 1) + 2);
+    Particle_SetPose(&elem->ptcl, g, ((elem->timer >> 2) & 1) + 2);
   }
 #else
   INCFUNC("asm/func/FUN_080a1e28.inc");
@@ -64,7 +64,7 @@ NON_MATCH void FUN_080a1e78(SolarCircle* p, ParticleGroup* g) {
   SolarCirclePtcl* q = &p->ptcls[p->unk_bd];
   s32 idx;
 
-  Particle_SetFrame(&q->ptcl, g, 2);
+  Particle_SetPose(&q->ptcl, g, 2);
   q->ptcl.flags &= ~SPRFLAG_HIDDEN;
 
   idx = (gRandTableIdx + 1) & 0x3FF;
@@ -90,7 +90,7 @@ NON_MATCH void FUN_080a1e78(SolarCircle* p, ParticleGroup* g) {
 #endif
 }
 
-// 棺桶が結界の内側 (半径 0x7F の円) にいるかどうか
+// 棺桶が結界の内側にいるかどうか
 static bool32 IsCoffinInside(SolarCircle* p) {
   WorldPos* pos = Coffin_GetPos();
   u16 dx, dz;
@@ -101,11 +101,11 @@ static bool32 IsCoffinInside(SolarCircle* p) {
 
   dx = abs(pos->x - p->pos.x);
   dz = abs(pos->z - p->pos.z);
-  if (dx > 0x7F || dz > 0x7F) {
+  if (dx >= Q8(0.5) || dz >= Q8(0.5)) {
     return FALSE;
   }
 
-  if (dx * dx + dz * dz <= 0x3FFF) {
+  if (dx * dx + dz * dz < (Q8(0.5) * Q8(0.5))) {
     return TRUE;
   }
 
@@ -117,13 +117,13 @@ static bool32 IsCoffinInside(SolarCircle* p) {
 // Tier A-B 試済: (u16) の明示キャスト, ローカルへの代入 (どちらも畳まれたまま)
 NON_MATCH void FUN_080a1fc4(SolarCircle* p) {
 #ifdef NONMATCHING_C
-  if (p->enabled == 0) {
+  if (!p->enabled) {
     if (IsCoffinInside(p) && gCoffin->state == 1) {
-      p->enabled = 1;
-      if (p->unk_260 != 0) {
-        VM_ExecByID(p->unk_260, NULL);
+      p->enabled = TRUE;
+      if (p->scriptIn != 0) {
+        VM_ExecByID(p->scriptIn, NULL);
       }
-      FUN_0808670c(1);
+      Coffin_SetInsideSolarCircle(TRUE);
       PlaySound_082406e0(SONG_408);
     }
 
@@ -133,11 +133,11 @@ NON_MATCH void FUN_080a1fc4(SolarCircle* p) {
     }
   } else {
     if (!IsCoffinInside(p)) {
-      if (p->unk_264 != 0) {
-        VM_ExecByID(p->unk_264, NULL);
+      if (p->scriptOut != 0) {
+        VM_ExecByID(p->scriptOut, NULL);
       }
-      FUN_0808670c(0);
-      p->enabled = 0;
+      Coffin_SetInsideSolarCircle(FALSE);
+      p->enabled = FALSE;
       PlaySound_082406e0(SONG_409);
     }
 
@@ -158,7 +158,7 @@ NON_MATCH void FUN_080a20a0(SolarCircle* p) {
   p->sprite.flags &= ~SPRFLAG_HIDDEN;
   p->stateTimer++;
   if (p->stateTimer > 14) {
-    p->sprite.pos.y = p->pos.y + 0x1E;
+    p->sprite.pos.y = p->pos.y + Q8(0.12);
     p->stateTimer = 0;
     p->updateCallback = FUN_080a1fc4;
   } else {
@@ -181,8 +181,8 @@ void FUN_080a2114(SolarCircle* p) {
   p->stateTimer++;
   if (p->stateTimer > 0x3F) {
     p->sprite2.flags &= ~SPRFLAG_AFFINE;
-    p->sprite2.scaleX = 0x40;
-    p->sprite2.scaleY = 0x40;
+    p->sprite2.scaleX = Q6(1);
+    p->sprite2.scaleY = Q6(1);
     p->stateTimer = 0;
     p->updateCallback = FUN_080a20a0;
     PlaySound_082406e0(SONG_815);
@@ -229,7 +229,7 @@ void FUN_080a21fc(SolarCircle* p) {
 
     Particle_Add(ptcl, p->group, 0);
     Particle_SetOffset(ptcl, -4, -4);
-    Particle_SetFrame(ptcl, p->group, 2);
+    Particle_SetPose(ptcl, p->group, 2);
     Particle_SetPltt(ptcl, 1);
     ptcl->priority = 1;
     ptcl->offsetZ = 0x14;
@@ -267,7 +267,7 @@ NON_MATCH s32 SolarCircle_Init(SolarCircle* p, u32 id, u32 _) {
   p->sprite.flags |= SPRFLAG_BLINK_ODD;
   p->sprite.priority = 3;
   p->sprite.pos = p->pos;
-  p->sprite.pos.y += 0x1E;
+  p->sprite.pos.y += Q8(0.12);
 
   gfx = &p->gfx2;
   Video_GetAuxSprite(gfx, SPRITE_MAGIC_CIRCLE);
@@ -292,29 +292,29 @@ NON_MATCH s32 SolarCircle_Init(SolarCircle* p, u32 id, u32 _) {
 
   p->stateTimer = 0;
   if (IsCoffinInside(p)) {
-    p->enabled = 1;
+    p->enabled = TRUE;
   } else {
-    p->enabled = 0;
+    p->enabled = FALSE;
   }
 
   if (VM_SeekToNamedArg('i')) {
-    p->unk_260 = VM_GetValue();
+    p->scriptIn = VM_GetValue();
   } else {
-    p->unk_260 = 0;
+    p->scriptIn = 0;
   }
 
   if (VM_SeekToNamedArg('o')) {
-    p->unk_264 = VM_GetValue();
+    p->scriptOut = VM_GetValue();
   } else {
-    p->unk_264 = 0;
+    p->scriptOut = 0;
   }
 
   if (IsCoffinInside(p)) {
-    p->enabled = 1;
-    FUN_0808670c(1);
+    p->enabled = TRUE;
+    Coffin_SetInsideSolarCircle(TRUE);
   } else {
-    p->enabled = 0;
-    FUN_0808670c(0);
+    p->enabled = FALSE;
+    Coffin_SetInsideSolarCircle(FALSE);
   }
 
   return 0;

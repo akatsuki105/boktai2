@@ -54,7 +54,7 @@ typedef struct Boss {
   s16 hp;                              // 0x090, 0..maxHP, HUD 用に gStat の 0x2B8 へ写される
   s16 maxHP;                           // 0x092, HUD 用に gStat の 0x2BC へ写される
   s16 hurtboxPower;                    // 0x094, 各ボスが hurtbox の power と同じ値を入れる
-  u8 unk_96;                           // 0x096
+  u8 canDie;                           // 0x096, 下位状態ハンドラが毎フレーム立て, hp <= 0 かつ立っているときだけ死亡状態へ移る
   u8 bossID;                           // 0x097, see BossID, gBossList の添字
   BossFlags flags;                     // 0x098
   bool8 lowHP;                         // 0x09C, hpRatio < 0x40
@@ -71,8 +71,8 @@ typedef struct Boss {
   bool8 subStateEntered;               // 0x0A8, 下位状態を差し替えると 1, その状態の最初のフレームで 0 に戻す
   bool8 stateEntered;                  // 0x0A9, updateCallback を差し替えると 1, 各状態の最初のフレームで 0 に戻す
   bool8 animDone;                      // 0x0AA, MainSprite_AdvanceAnim の戻り値
-  u8 unk_ab;                           // 0x0AB, 0 のボスだけを FUN_08022a3c が拾う
-  u8 unk_ac;                           // 0x0AC, 0 でない間 FUN_08022ec0 が減らしながら FUN_0823b9cc(unk_ad) を呼ぶ
+  u8 isDemo;                           // 0x0AB, '.i', 立っていると初期状態を '.D' で選ぶ, 0 のボスだけを FUN_08022a3c が拾う
+  u8 unk_ac;                           // 0x0AC, 0 でない間 FUN_08022ec0 が減らしながら Camera_Shake(unk_ad) を呼ぶ
   u8 unk_ad;                           // 0x0AD
   u8 animVariant;                      // 0x0AE, facing から決まるアニメ番号のオフセット
   bool8 xflip;                         // 0x0AF, 0 以外なら MainSprite に SPRFLAG_XFLIP を立てる
@@ -100,7 +100,7 @@ typedef struct Boss {
   BossCheckFunc stateRequestCallback;  // 0x100, state が有効なら updateCallback を差し替えて 1 を返す
   struct Player* players[2];           // 0x104
   Vec3* playerPos[2];                  // 0x10C, players[i] の mover.pos
-  s8 unk_114;                          // 0x114, Boss_Init の angle
+  s8 destAngle;                        // 0x114, Boss_Init の angle, mover.angle をこの角度まで回す
   u8 unk_115[0x118 - 0x115];           // 0x115
   MsgQueue msgQueue;                   // 0x118
   Emote* emote;                        // 0x14C, Boss_ShowEmote が Emote_Show に渡して戻り値を入れ直す
@@ -128,9 +128,9 @@ static inline void Boss_SetWeaponExpMask(Boss* p, u32 mask) { p->weaponExpMask =
 static inline void Boss_SetHurtAttributes(Boss* p, HitboxAttributes attributes) { p->hurtAttributes = attributes; }
 
 // updateCallback を差し替えて timer を 0 に戻す
-static inline void Boss_SetState(Boss* p, BossUpdateFunc func, u32 state) {
+static inline void Boss_SetState(Boss* p, void* fn, u32 state) {
   p->curState = state;
-  p->updateCallback = func;
+  p->updateCallback = fn;
   p->timer = 0;
   p->stateEntered = TRUE;
 }
@@ -207,5 +207,6 @@ void FUN_08023024(Boss* p, Vec3* pos);
 void Boss_GiveWeaponExp(Boss* p, s32 amount);
 s32 FUN_080230a0(Vec3* out);
 void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4);
+void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 
 #endif  // __INCLUDE_BOSS_H__

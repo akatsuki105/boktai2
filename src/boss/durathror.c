@@ -291,12 +291,11 @@ void (*const durathror_085aaecc[24])(Boss*, s32) = {
 
 void FUN_080390f8(Durathror*);
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
-s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);
+s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 void FUN_081a4e88(void);
 s32 FUN_08060220(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
 void FUN_0800e594(u32 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, s32 param_7, s32 param_8, Vec3* pos);
 void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 void FUN_0805dd44(struct Entity0805dcd4* p, s32 power, s32 unk_8, Vec3* pos);
 s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
@@ -304,9 +303,8 @@ s32 FUN_0805d80c(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3
 struct Entity0805d79c* Entity0805d79c_Create(void);
 struct Entity0805dcd4* Entity0805dcd4_Create(void);
 struct Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt);
-void BlendPltt(rgb555* dst, rgb555* src1, rgb555* src2, s32 t, s32 shift);
 
-extern s32 s32_03002b48;
+extern s32 gLightningTimer;
 void FUN_0803767c(Durathror* p, DurathrorElem* elem);
 void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 void FUN_0803a104(Durathror*);
@@ -436,9 +434,9 @@ NON_MATCH void FUN_08036b2c(Durathror* p, s32 count, u32 speedXZ) {
   Vec3 pos = p->sprite_280.pos;
   u16* table = gRandomTable;
 
-  pos.x = pos.x - 0x40 + (_Random(table) & 0x7F);
-  pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
-  pos.z = pos.z - 0x40 + (_Random(table) & 0x7F);
+  pos.x = pos.x - Q8(0.25) + (_Random(table) & 0x7F);
+  pos.y = pos.y + Q8(0.5) + (_Random(table) & 0x3F);
+  pos.z = pos.z - Q8(0.25) + (_Random(table) & 0x7F);
   FUN_08015c28(&pos, p->unk_158, 16, count, 6, 0x3001, 48, speedXZ, 512, 0);
 #else
   INCFUNC("asm/func/FUN_08036b2c.inc");
@@ -522,16 +520,15 @@ void FUN_08036ec4(Durathror* p) {
   u16* table;
   s32 i;
 
-  pos.x = 0x1280;
-  pos.y = 4000;
+  pos.x = Q8(18.5), pos.y = Q8(15.625);
   table = gRandomTable;
   for (i = 0; i < 7; i++) {
-    pos.y = (_Random(table) & 7) * 256 + 4000;
-    pos.z = Mod(_Random(table), 5) * 256 + 0x280;
-    if (abs(mover->pos.x - pos.x) > 255 || abs(mover->pos.z - pos.z) > 255) {
+    pos.y = (_Random(table) & 7) * 256 + Q8(15.625);
+    pos.z = Mod(_Random(table), 5) * 256 + Q8(2.5);
+    if (abs(mover->pos.x - pos.x) >= Q8(1) || abs(mover->pos.z - pos.z) >= Q8(1)) {
       FUN_0800e594(0, 2, 2, 60, 48, 32, p->unk_19a, p->unk_19c, &pos);
     }
-    pos.x += 256;
+    pos.x += Q8(1);
   }
 }
 
@@ -543,8 +540,8 @@ s32 FUN_08036fd8(Mover* mover, s32 kind, s32 damage) {
     if (damage > 0) {
       Vec3 ofs;
 
-      VEC3_SET(ofs, 0x10, 0, 0x10);
-      FUN_0805fe7c(&p->hurtbox, damage, 0, &mover->pos, &ofs, 1);
+      VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+      CreateDamageNumber(&p->hurtbox, damage, 0, &mover->pos, &ofs, 1);
     }
     if (p->base.hp <= 0) {
       p->unk_158 = p->base.players[0]->mover.angle;
@@ -594,7 +591,7 @@ NON_MATCH void FUN_080371d4(WorldPos* pos) {
 #ifdef NONMATCHING_C
   Vec3 size;
 
-  VEC3_SET(size, 0xA4, 0x100, 0xA4);
+  VEC3_SET(size, Q8(0.641), Q8(1), Q8(0.641));
   EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
   EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
 #else
@@ -626,8 +623,8 @@ s32 Durathror_ApplyElemDamage(Durathror* p, DurathrorElem* elem) {
 
     Boss_SetHP(&p->base, p->base.hp - elem->damage);
     elem->hits--;
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(&elem->hurtbox, elem->damage, 0, &elem->sprite.pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(&elem->hurtbox, elem->damage, 0, &elem->sprite.pos, &ofs, 1);
     elem->damage = 0;
     elem->unk_18 = 10;
     elem->unk_1a = 10;
@@ -669,8 +666,8 @@ void Durathror_InitElemHitbox(Durathror* p, DurathrorElem* elem) {
   HitboxData* hitbox = &elem->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_080373b8, elem);
@@ -681,8 +678,8 @@ void Durathror_InitElemHurtbox(Durathror* p, DurathrorElem* elem) {
   HitboxData* hurtbox = &elem->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x80, 0x80, 0x80);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_HIDDEN | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, Durathror_OnElemHurt, elem);
@@ -699,8 +696,8 @@ void Durathror_InitElem(Durathror* p, DurathrorElem* elem, u32 unk_0, u32 state,
   elem->hits = maxHits;
   elem->unk_14 = 0;
   sprite = &elem->sprite;
-  MainSprite_Add(sprite, &p->gfx, 0, 1, 2, 0, 60, pos);
-  MainSprite_SetAnim(sprite, &p->gfx, 0, 1, 4);
+  MainSprite_Add(sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, pos);
+  MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   Durathror_InitElemHitbox(p, elem);
   Durathror_InitElemHurtbox(p, elem);
 }
@@ -817,7 +814,7 @@ void FUN_080378b4(Durathror* p, DurathrorElem* elem, s32 idx) {
   MainSprite* sprite = &elem->sprite;
 
   if (DurathrorElem_EnterState(elem)) {
-    MainSprite_SetAnim(sprite, &p->gfx, 0, 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     sprite->pos.y -= 120;
     if (elem->unk_0) {
       p->base.mover.pos = elem->unk_1c;
@@ -842,7 +839,7 @@ void FUN_080378b4(Durathror* p, DurathrorElem* elem, s32 idx) {
       Vec3 pos;
 
       Vec3_CopyOffsetY(&pos, &sprite->pos, 0xA4);
-      FUN_080155e4(0, &pos, &p->ptclSpawn);
+      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
     }
   }
   if (elem->timer == 15) {
@@ -862,7 +859,7 @@ void FUN_080379a8(Durathror* p, DurathrorElem* elem, s32 idx) {
   MainSprite* sprite = &elem->sprite;
 
   if (DurathrorElem_EnterState(elem)) {
-    MainSprite_SetAnim(sprite, &p->gfx, 1, 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 1, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   }
   DurathrorElem_SetFlags(elem, 2);
   if (Durathror_ApplyElemDamage(p, elem) && elem->unk_1 == 1) {
@@ -888,7 +885,7 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
   MainSprite* sprite = &elem->sprite;
 
   if (DurathrorElem_EnterState(elem)) {
-    MainSprite_SetAnim(sprite, &p->gfx, 1, 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 1, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     p->unk_ddc = 60;
     p->unk_dde = 0;
     p->unk_de0 = 0;
@@ -932,9 +929,9 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
       if (++p->unk_dde > 1) {
         p->unk_dde = 0;
         p->unk_de2 = TRUE;
-        MainSprite_SetAnim(sprite, &p->gfx, 0, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       } else {
-        MainSprite_SetAnim(sprite, &p->gfx, 44, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx, 44, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
     }
   } else {
@@ -942,12 +939,12 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
       if (p->unk_ddc == 16) {
         MainSprite_SetAnimSpeed(sprite, 0x80);
       } else if (p->unk_ddc == 22) {
-        MainSprite_SetAnim(sprite, &p->gfx, 1, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx, 1, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
     }
     if (p->unk_de3 <= 1) {
       if (p->unk_ddc == 96) {
-        MainSprite_SetAnim(sprite, &p->gfx, 0, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_SetAnimSpeed(sprite, 0x80);
       } else if (p->unk_ddc == 112) {
         MainSprite_SetAnimSpeed(sprite, 0x40);
@@ -962,7 +959,7 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
         DurathrorElem_SetState(elem, 5);
       } else {
         p->unk_de2 = FALSE;
-        MainSprite_SetAnim(sprite, &p->gfx, 44, 1, 4);
+        MainSprite_SetAnim(sprite, &p->gfx, 44, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
       p->unk_de3++;
     }
@@ -973,7 +970,7 @@ void FUN_08037e10(Durathror* p, DurathrorElem* elem, s32 idx) {
   MainSprite* sprite = &elem->sprite;
 
   if (DurathrorElem_EnterState(elem)) {
-    MainSprite_SetAnim(sprite, &p->gfx, 0, 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     MainSprite_SetAnimSpeed(sprite, 128);
     if (!elem->unk_1) {
       FUN_081a4e88();
@@ -996,7 +993,7 @@ void FUN_08037e10(Durathror* p, DurathrorElem* elem, s32 idx) {
       Vec3 pos;
 
       Vec3_CopyOffsetY(&pos, &sprite->pos, 0x40);
-      FUN_080155e4(0, &pos, &p->ptclSpawn);
+      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
     }
   }
   if (elem->timer > 59) {
@@ -1013,7 +1010,7 @@ void FUN_08037ee0(Durathror* p, DurathrorElem* elem, s32 idx) {
 
   if (DurathrorElem_EnterState(elem)) {
     elem->unk_4 = 0;
-    MainSprite_SetAnim(sprite, &p->gfx, 2, 2, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 2, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
   }
   DurathrorElem_SetFlags(elem, 2);
   if (elem->unk_0 && Boss_GetHPRatio(boss) <= 41) {
@@ -1058,7 +1055,7 @@ void FUN_08037ee0(Durathror* p, DurathrorElem* elem, s32 idx) {
         } else {
           anim = elem->unk_4 + 2;
         }
-        MainSprite_SetAnim(sprite, &p->gfx, anim, 2, 1);
+        MainSprite_SetAnim(sprite, &p->gfx, anim, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_KEEP_FRAME);
         if (elem->unk_4 == 5) {
           Vec3 pos;
 
@@ -1086,9 +1083,9 @@ void FUN_08038080(Durathror* p, DurathrorElem* elem, s32 idx) {
   }
   if (DurathrorElem_EnterState(elem)) {
     if (elem->unk_0) {
-      MainSprite_SetAnim(sprite, &p->gfx, dir + 11, 1, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, dir + 11, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     } else {
-      MainSprite_SetAnim(sprite, &p->gfx, 46, 1, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, 46, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     }
     if (elem->unk_0) {
       Hitbox_SetPowerAndAttributes(&elem->hurtbox, p->elemHurtboxPower4, HBATTR_IMMORTAL, 0);
@@ -1110,7 +1107,7 @@ void FUN_08038080(Durathror* p, DurathrorElem* elem, s32 idx) {
       }
     } else {
       if (elem->unk_0) {
-        MainSprite_SetAnim(sprite, &p->gfx, dir + 11, 1, 1);
+        MainSprite_SetAnim(sprite, &p->gfx, dir + 11, PLAYMODE_LOOP, MAIN_ANIM_KEEP_FRAME);
       }
       if (elem->unk_0) {
         if (elem->unk_9) {
@@ -1142,9 +1139,9 @@ void FUN_08038200(Durathror* p, DurathrorElem* elem, s32 idx) {
   }
   if (DurathrorElem_EnterState(elem)) {
     if (elem->unk_0) {
-      MainSprite_SetAnim(sprite, &p->gfx, dir + 15, 2, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, dir + 15, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     } else {
-      MainSprite_SetAnim(sprite, &p->gfx, 47, 2, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, 47, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     }
     if (elem->unk_0) {
       Hitbox_SetPowerAndAttributes(&elem->hurtbox, p->elemHurtboxPower2, HBATTR_IMMORTAL, 0);
@@ -1163,7 +1160,7 @@ void FUN_080382f0(Durathror* p, DurathrorElem* elem, s32 idx) {
   MainSprite* sprite = &elem->sprite;
 
   if (DurathrorElem_EnterState(elem)) {
-    MainSprite_SetAnim(sprite, &p->gfx, 1, 1, 4);
+    MainSprite_SetAnim(sprite, &p->gfx, 1, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_382);
   }
   DurathrorElem_SetFlags(elem, 1);
@@ -1224,7 +1221,7 @@ void bee_08038358(Durathror* p, DurathrorElem* elem, s32 idx) {
         } else {
           anim = elem->unk_4 + 2;
         }
-        MainSprite_SetAnim(sprite, &p->gfx, anim, 2, 1);
+        MainSprite_SetAnim(sprite, &p->gfx, anim, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_KEEP_FRAME);
         if (elem->unk_4 == 4) {
           FUN_0803767c(p, elem);
         }
@@ -1249,11 +1246,11 @@ void bee_08038514(Durathror* p, DurathrorElem* elem, s32 idx) {
   }
   if (DurathrorElem_EnterState(elem)) {
     if (elem->unk_0) {
-      MainSprite_SetAnim(sprite, &p->gfx, dir + 11, 1, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, dir + 11, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       FUN_080377b8(p);
       PlaySound_0824078c(SE_BEE_DEATH);
     } else {
-      MainSprite_SetAnim(sprite, &p->gfx, 46, 1, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, 46, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     }
     FUN_0803767c(p, elem);
     PlaySound_0824078c(SE_382);
@@ -1280,7 +1277,7 @@ NON_MATCH void FUN_080385f8(Durathror* p, DurathrorElem* elem, s32 idx) {
       Boss_SetAngle(&p->base, p->base.playerAngle[0]);
       target = p->base.playerPos[0];
       pos = &elem->sprite.pos;
-      MainSprite_SetAnim(sprite, &p->gfx, ((Angle_ToDir4(ArcTan2_8(target->x - pos->x, target->z - pos->z)) - 1) & 3) + 19, 1, 4);
+      MainSprite_SetAnim(sprite, &p->gfx, ((Angle_ToDir4(ArcTan2_8(target->x - pos->x, target->z - pos->z)) - 1) & 3) + 19, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       p->unk_162 = 1;
       FUN_0803781c(p);
       p->unk_160 = 1;
@@ -1327,7 +1324,7 @@ NON_MATCH void FUN_08038878(Durathror* p) {
   DurathrorElem* elem;
   s32 i;
 
-  if (TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     return;
   }
   p->unk_174 = 0;
@@ -1376,7 +1373,7 @@ void FUN_080389b0(Durathror* p) {
   param = &p->ptclSpawn;
   param->kind = 7;
   param->flags = 0x3000;
-  param->animSpeed = 64;
+  param->animSpeed = Q6(1);
   param->speedY = 0;
   param->speedYRand = 0;
   param->speedXZ = 3;
@@ -1396,7 +1393,7 @@ void FUN_080389b0(Durathror* p) {
   param = &p->ptclSpawn2;
   param->kind = 7;
   param->flags = 0x3000;
-  param->animSpeed = 64;
+  param->animSpeed = Q6(1);
   param->speedY = 1;
   param->speedYRand = 1;
   param->speedXZ = 4;
@@ -1509,8 +1506,8 @@ void Durathror_InitHitbox(Durathror* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x81, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.504), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite_280.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08036844, p);
@@ -1521,8 +1518,8 @@ void Durathror_InitHurtbox(Durathror* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite_280.pos, 0);
   Hitbox_SetHandler(hurtbox, Durathror_OnHurt, p);
@@ -1549,7 +1546,7 @@ NON_MATCH void Durathror_PollMessages(Durathror* p) {
         break;
       }
       case 2: {
-        boss->unk_114 = ((u8)msg->args[0] + 5) * 32;
+        boss->destAngle = ((u8)msg->args[0] + 5) * 32;
         Boss_SetSubStates(boss, 2, 0, 1);
         break;
       }
@@ -1564,12 +1561,12 @@ NON_MATCH void Durathror_PollMessages(Durathror* p) {
         break;
       }
       case 10: {
-        boss->unk_114 = ((u8)msg->args[0] + 5) * 32;
+        boss->destAngle = ((u8)msg->args[0] + 5) * 32;
         Boss_SetSubStates(boss, 2, 0, 2);
         break;
       }
       case 5: {
-        boss->unk_114 = ((u8)msg->args[0] + 5) * 32;
+        boss->destAngle = ((u8)msg->args[0] + 5) * 32;
         Boss_SetSubStates(boss, 2, 0, 3);
         break;
       }
@@ -1607,7 +1604,7 @@ void FUN_080390f8(Durathror* p) {
 
   Durathror_PollMessages(p);
   Mover_ApplyMove(mover);
-  if (p->base.unk_ab == 0) {
+  if (p->base.isDemo == 0) {
     FUN_080368c4(&p->base.mover.pos);
   }
   Boss_AdvanceAnim(&p->base, &p->sprite_280, &p->gfx);
@@ -1676,14 +1673,14 @@ NON_MATCH void FUN_08039280(Durathror* p) {
     }
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_17)) {
-    bool32 seen;
+    bool32 seen;  // 千里眼の実、 Cバットだと、どのつぼみに本物がいるか見える
 
-    if (gFlag030047a4 & FLAG030047A4_LINK) {
+    if (gGameFlags & FLAG030047A4_LINK) {
       Player* player = gPlayerPtr[0];
 
       seen = player != NULL && player->goodCondTimer != 0 && player->goodCondID == GOOD_SEE;
     } else {
-      seen = s32_03002b48 > 0 || gStat->playerKind == PLAYER_BAT || (gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE);
+      seen = gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT || (gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE);
     }
     if (seen) {
       Vec3* target;
@@ -1699,7 +1696,7 @@ NON_MATCH void FUN_08039280(Durathror* p) {
       } else {
         p->sprite_4e8.flags &= ~SPRFLAG_XFLIP;
       }
-      MainSprite_SetPose(&p->sprite_4e8, &p->gfx, pose, 0);
+      MainSprite_SetPose(&p->sprite_4e8, &p->gfx, pose, PLAYMODE_PAUSE);
     } else {
       MainSprite_Hide(&p->sprite_4e8);
     }
@@ -2008,7 +2005,7 @@ void FUN_0803a058(Durathror* p) { PTR_ARRAY_085aae88[p->base.subState2](p); }
 void FUN_0803a074(Durathror* p) { PTR_ARRAY_085aae98[p->base.subState2](p); }
 
 void FUN_0803a090(Durathror* p) {
-  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2) && !FUN_080395a4(p)) {
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_080395a4(p)) {
     PTR_ARRAY_085aaeb4[p->base.subState1](p);
   }
 }
@@ -2027,7 +2024,7 @@ void FUN_0803a128(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, PLAYMODE_LOOP, 0);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_HIDDEN);
   p->unk_15c = 0;
@@ -2039,7 +2036,7 @@ void FUN_0803a180(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, PLAYMODE_LOOP, 0);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_HIDDEN);
   p->unk_15c = 0;
@@ -2054,7 +2051,7 @@ NON_MATCH void FUN_0803a1d8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     p->unk_16c = 0;
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2085,7 +2082,7 @@ void FUN_0803a3d0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SONG_716);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2099,9 +2096,9 @@ void FUN_0803a438(Boss* boss, s32 timer) {
   Boss_SetAngle(boss, boss->playerAngle[0]);
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, 1, 1, 1);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss) && timer >= p->unk_18e) {
     boss->subStateDone = TRUE;
@@ -2113,7 +2110,7 @@ void FUN_0803a500(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 29, 1, 4);
+    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 29, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     p->unk_16c = 0;
     PlaySound_0824078c(SE_373);
   }
@@ -2124,7 +2121,7 @@ void FUN_0803a500(Boss* boss, s32 timer) {
       Vec3 pos = p->sprite_280.pos;
 
       pos.y = TileHeightAt(&pos);
-      FUN_080155e4(0, &pos, &p->ptclSpawn);
+      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
     }
     if (timer > 40) {
       p->unk_16c--;
@@ -2142,7 +2139,7 @@ void FUN_0803a668(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 29, 1, 4);
+    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 29, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     p->unk_16c = -6;
     FUN_08036884(p, 512);
     p->unk_168 = p->unk_166;
@@ -2157,7 +2154,7 @@ void FUN_0803a6ec(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 29, 1, 4);
+    Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 29, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
     PlaySound_0824078c(SE_380);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
@@ -2167,7 +2164,7 @@ void FUN_0803a6ec(Boss* boss, s32 timer) {
       Vec3 pos = p->sprite_280.pos;
 
       pos.y = TileHeightAt(&pos);
-      FUN_080155e4(0, &pos, &p->ptclSpawn);
+      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
     }
     if (timer <= 29) {
       SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
@@ -2193,7 +2190,7 @@ void FUN_0803a8c0(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 30, 1, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 30, PLAYMODE_LOOP, 5, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
   p->unk_15c = 0;
@@ -2202,11 +2199,11 @@ void FUN_0803a8c0(Boss* boss, s32 timer) {
   }
   p->unk_16c++;
   if (p->unk_16c == 12) {
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 31, 1, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 31, PLAYMODE_LOOP, 5, MAIN_ANIM_FORCE_POSE);
   } else if (p->unk_16c == 20) {
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 30, 1, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 30, PLAYMODE_LOOP, 5, MAIN_ANIM_FORCE_POSE);
   } else if (p->unk_16c == 32) {
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 32, 1, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 32, PLAYMODE_LOOP, 5, MAIN_ANIM_FORCE_POSE);
   }
   if (p->unk_16c > 31) {
     if (p->sprite_280.animEvents & MAIN_ANIM_EVENT_WILL_END) {
@@ -2237,7 +2234,7 @@ NON_MATCH void durathror_0803aae8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 33, 1, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 33, PLAYMODE_LOOP, 5, MAIN_ANIM_FORCE_POSE);
     FUN_08022c24(boss, 10, 10);
     p->unk_164 = 0;
     p->unk_163 = boss->playerAngle[0];
@@ -2272,7 +2269,7 @@ void durathror_0803acbc(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 33, 1, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 33, PLAYMODE_LOOP, 5, MAIN_ANIM_FORCE_POSE);
     FUN_08022c24(boss, 20, 20);
     FUN_08036ec4(p);
     PlaySound_0824078c(SE_375);
@@ -2291,7 +2288,7 @@ void FUN_0803ad74(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 34, 2, 5, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 34, PLAYMODE_ONCE_AND_STOP, 5, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss) && (p->sprite_280.animEvents & MAIN_ANIM_EVENT_WILL_END)) {
     boss->subStateDone = TRUE;
@@ -2303,7 +2300,7 @@ void FUN_0803adf0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     p->unk_168 = p->unk_166;
     FUN_08036b2c(p, 5, 12);
   }
@@ -2323,7 +2320,7 @@ void bee_0803aee4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     PlaySound_082406e0(SE_BEE_DEATH);
   }
   p->unk_15c = 0;
@@ -2336,7 +2333,7 @@ void FUN_0803af44(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 23, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     FUN_08036b2c(p, 5, 12);
   }
   p->unk_190 = 0;
@@ -2358,7 +2355,7 @@ void durathror_0803b024(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 40, 2, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 40, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     FUN_08022fb8(boss, &p->sprite_280.pos);
     Boss_GiveWeaponExp(boss, p->weaponExp);
     p->unk_16c = 0;
@@ -2401,8 +2398,8 @@ void FUN_0803b1e0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->unk_114);
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 4);
+    Boss_SetAngle(boss, boss->destAngle);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2414,8 +2411,8 @@ void FUN_0803b278(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, boss->unk_114);
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 4);
+    Boss_SetAngle(boss, boss->destAngle);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2428,17 +2425,17 @@ void FUN_0803b310(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   } else {
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 1);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   if (!boss->stateRequestCallback(boss)) {
-    s8 d = mover->angle - boss->unk_114;
+    s8 d = mover->angle - boss->destAngle;
 
     if (abs(d) <= 3) {
-      Boss_SetAngle(boss, boss->unk_114);
+      Boss_SetAngle(boss, boss->destAngle);
       boss->subStateDone = TRUE;
     } else {
       Boss_SetAngle(boss, d < 0 ? mover->angle + 4 : mover->angle - 4);
@@ -2452,7 +2449,7 @@ void FUN_0803b42c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
     boss->targetPos = mover->pos;
     PlaySound_0824078c(SE_808);
@@ -2475,7 +2472,7 @@ void FUN_0803b52c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     boss->targetPos = mover->pos;
     PlaySound_0824078c(SE_808);
   }
@@ -2497,7 +2494,7 @@ NON_MATCH void FUN_0803b628(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, 1, 1, 4);
+    Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2527,7 +2524,7 @@ NON_MATCH void FUN_0803b628(Boss* boss, s32 timer) {
 
 void FUN_0803b7c4(Durathror* p) {
   p->base.subStateDone = FALSE;
-  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     Boss_UpdateState(&p->base);
   }
 }
@@ -2555,8 +2552,8 @@ s32 Durathror_HandleDamage(Durathror* p) {
     p->unk_15e = 10;
     p->sprite_280.plttID = 306;
     p->sprite_280.pltt = p->pltt_3e0[0];
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
     if (p->base.hp <= 0) {
       p->base.hp = 0;
       SET_FLAGS(p->base.flags, BOSSFLAG_UNK_1);
@@ -2677,10 +2674,10 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
     p->elemHurtboxPower5 = 50;
   }
   Boss_Init(boss, id, bossID, &pos, angle);
-  boss->unk_114 = angle;
-  boss->unk_ab = VM_GetNamedArgValue('i', 0);
-  MainSprite_Add(&p->sprite_280, &p->gfx, 0, 0, 2, 0, 60, &pos);
-  Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, 1, 0);
+  boss->destAngle = angle;
+  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  MainSprite_Add(&p->sprite_280, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
+  Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, PLAYMODE_LOOP, 0);
   CpuCopy32(&gObjPlttData[0x2F4 * 16], p->pltt, sizeof(p->pltt));
   {
     rgb555* src = &gObjPlttData[0x132 * 16];
@@ -2691,7 +2688,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
     }
   }
   p->unk_4e0 = pos;
-  MainSprite_Add(&p->sprite_4e8, &p->gfx, 0x40, 0x201, 2, 0, 60, &pos);
+  MainSprite_Add(&p->sprite_4e8, &p->gfx, 0x40, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, &pos);
   {
     s32 i;
 
@@ -2705,7 +2702,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
   }
   p->sprite_4e8.plttID = 0x6583;
   p->sprite_4e8.pltt = p->pltt_548[0];
-  if (boss->unk_ab) {
+  if (boss->isDemo) {
     switch (VM_GetNamedArgValue('D', 1)) {
       case 0: {
         Boss_SetSubStates(boss, 2, 0, 0);
@@ -2761,7 +2758,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
     p->unk_16a = 50;
   }
   p->unk_168 = p->unk_166;
-  if (!boss->unk_ab) {
+  if (!boss->isDemo) {
     Path* path = Map_GetPath(5);
 
     p->unk_18a = Mod(Random(), path->nodeCount);

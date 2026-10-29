@@ -179,7 +179,7 @@ _080C03C8:
 	cmp r0, #1
 	bls _080C04AE
 	lsls r0, r0, #2
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	b _080C04AE
 	.align 2, 0
 _080C03E4: .4byte 0x03002BE0

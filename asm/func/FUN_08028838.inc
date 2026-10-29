@@ -102,7 +102,7 @@ _08028904: .4byte 0x00000914
 _08028908: .4byte 0x000008E8
 _0802890C:
 	adds r0, r4, #0
-	bl FUN_08027ed0
+	bl Ringo_GetPlttID
 	adds r1, r0, #0
 _08028914:
 	ldr r0, _08028954 @ =0x03003584

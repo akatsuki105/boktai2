@@ -74,7 +74,7 @@ _080C78DC:
 	add r1, sp, #0x14
 	movs r2, #0
 	movs r3, #2
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	mov r0, r8
 	cmp r0, #3
 	ble _080C7956

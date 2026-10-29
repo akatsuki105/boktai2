@@ -16,7 +16,7 @@
 	adds r5, r4, r0
 	ldrb r1, [r5]
 	adds r0, r6, #0
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	ldr r1, _080948A4 @ =0x0000144C
 	adds r2, r4, r1
 	ldr r0, [r2]
@@ -35,7 +35,7 @@
 	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	adds r0, r6, #0
-	bl FUN_080921e8
+	bl MainMenu_GetSlotPos
 	add sp, #4
 	pop {r4, r5, r6}
 	pop {r0}

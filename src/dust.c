@@ -331,15 +331,15 @@ s32 DustManager_Update(DustManager* p) {
       switch (p->attrKind) {
         case 0:
         case 3: {
-          FUN_0807e7fc(p->player, p->power, 0, 0, 8, HBATTR_CLOUD);
+          Player_TakeInstantHit(p->player, p->power, 0, 0, 8, HBATTR_CLOUD);
           break;
         }
         case 1: {
-          FUN_0807e7fc(p->player, p->power, 0, 0, 8, HBATTR_EARTH);
+          Player_TakeInstantHit(p->player, p->power, 0, 0, 8, HBATTR_EARTH);
           break;
         }
         case 2: {
-          FUN_0807e7fc(p->player, p->power, 0, 0, 8, HBATTR_DARK);
+          Player_TakeInstantHit(p->player, p->power, 0, 0, 8, HBATTR_DARK);
           break;
         }
       }

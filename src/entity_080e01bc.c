@@ -20,8 +20,8 @@ typedef struct {
   u8 unk_173[0x176 - 0x173];        // 0x173, まだ未解析
   u8 unk_176;                       // 0x176
   u8 unk_177[0x1AE - 0x177];        // 0x177, まだ未解析
-  u8 unk_1ae;                       // 0x1AE, 1 なら FUN_080e0248 が 2 にして unk_1b2 を立てる
-  u8 unk_1af[0x1B2 - 0x1AF];        // 0x1AF, まだ未解析
+  u8 unk_1ae;                       // 0x1AE, 1 なら Cmd_E0E1 が 2 にして unk_1b2 を立てる
+  u8 unk_1af[0x1B2 - 0x1AF];        // 0x1AF, [0] は枠を確保したときに自分の添字を入れる
   u8 unk_1b2;                       // 0x1B2
   u8 unk_1b3[0x1B4 - 0x1B3];        // 0x1B3, まだ未解析
 } Entity080e01bcElem;
@@ -33,11 +33,16 @@ typedef struct {
   Vec3 pos;                     // 0x01C, elems[0] の2本の Hitbox の位置に渡す
   u8 unk_24[0x38 - 0x24];       // 0x024, まだ未解析
   u32 unk_38;                   // 0x038, _Init が 0 を入れる
-  Entity080e01bcElem elems[8];  // 0x03C, 根拠: FUN_080e0248 が 0x1B4 刻みで8個まわり, 8個で構造体末尾ぴったり
+  Entity080e01bcElem elems[8];  // 0x03C, 根拠: Cmd_E0E1 が 0x1B4 刻みで8個まわり, 8個で構造体末尾ぴったり
 } Entity080e01bc;
 static_assert(sizeof(Entity080e01bc) == 3548);
 
 IWRAM_DATA Entity080e01bc* gEntity080e01bc = NULL;  // 0x0300017C
+
+static inline bool8 Entity080e01bc_IsActive(Entity080e01bc* p, s32 i) {
+  if (TEST_FLAGS(p->unk_38, 1 << i)) return TRUE;
+  return FALSE;
+}
 
 void nop_080dfa20(Entity080e01bc*, s32);
 void FUN_080dfa24(Entity080e01bc*, s32);
@@ -109,26 +114,19 @@ void FUN_080df880(Entity080e01bc* p) {
 }
 
 // 空いている枠を1つ確保して返す, 空きが無ければ NULL
-// 残差3命令 (33 対 36), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
-// さらに原典は i * 0x1B4 を分岐の中で掛け算のまま残すが, gcc は giv にしてループ外へ出す
-// 枠のアドレスをローカルに取らず p->elems[i] を2回書くと giv は消えるが r8 まで使い出して 38命令に増える
-NON_MATCH Entity080e01bcElem* FUN_080df8b0(Entity080e01bc* p) {
-#ifdef NONMATCHING_C
+Entity080e01bcElem* FUN_080df8b0(Entity080e01bc* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (!(p->unk_38 & (1 << i))) {
+    if (!Entity080e01bc_IsActive(p, i)) {
       Entity080e01bcElem* elem = &p->elems[i];
 
       p->unk_38 |= 1 << i;
-      elem->unk_1af[0] = 0;
+      elem->unk_1af[0] = i;
       return elem;
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_080df8b0.inc");
-#endif
 }
 
 NAKED void FUN_080df900(unknown* p) { INCFUNC("asm/func/FUN_080df900.inc"); }
@@ -189,7 +187,7 @@ void FUN_080e0214(void) {
 }
 
 // 発動待ちの枠を発動済みにする
-void FUN_080e0248(void) {
+void Cmd_E0E1(void) {
   Entity080e01bc* p = gEntity080e01bc;
   s32 i;
 
@@ -205,4 +203,4 @@ void FUN_080e0248(void) {
   }
 }
 
-NAKED void FUN_080e028c(void) { INCFUNC("asm/func/FUN_080e028c.inc"); }
+NAKED void Cmd_983A(void) { INCFUNC("asm/func/Cmd_983A.inc"); }

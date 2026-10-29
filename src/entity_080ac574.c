@@ -30,7 +30,7 @@ static_assert(sizeof(Entity080ac574) == 280);
 NON_MATCH void FUN_080ac3d4(Entity080ac574Particle* ptcl) {
 #ifdef NONMATCHING_C
   ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
-  Particle_SetFrame(&ptcl->ptcl, ptcl->group, 3);
+  Particle_SetPose(&ptcl->ptcl, ptcl->group, PTCL2_SOL_S);
   ptcl->ptcl.pos = ptcl->origin;
   ptcl->ptcl.pos.x += (Random() & 0x3F) - 31;
   ptcl->ptcl.pos.z += (Random() & 0x3F) - 31;
@@ -48,9 +48,9 @@ NON_MATCH void FUN_080ac3d4(Entity080ac574Particle* ptcl) {
 void FUN_080ac46c(Entity080ac574Particle* ptcl) {
   ptcl->timer++;
   if (ptcl->timer <= 3) {
-    Particle_SetFrame(&ptcl->ptcl, ptcl->group, 3);
+    Particle_SetPose(&ptcl->ptcl, ptcl->group, PTCL2_SOL_S);
   } else if (ptcl->timer <= 7) {
-    Particle_SetFrame(&ptcl->ptcl, ptcl->group, 2);
+    Particle_SetPose(&ptcl->ptcl, ptcl->group, PTCL2_SOL_L);
   } else if (ptcl->timer < ptcl->lifetime) {
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
   } else {
@@ -91,7 +91,7 @@ s32 Entity080ac574_Init(Entity080ac574* p) {
     Particle_SetPltt(&ptcl->ptcl, 1);
     Particle_SetOffset(&ptcl->ptcl, -4, -4);
     ptcl->ptcl.priority = 2;
-    ptcl->ptcl.offsetZ = 0xEC;
+    ptcl->ptcl.offsetZ = -20;
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
     ptcl->unk_34 = 0;
     ptcl->active = 0;
@@ -130,7 +130,7 @@ void FUN_080ac5b4(u32 id) {
   }
 }
 
-void FUN_080ac5f4(void) {
+void Cmd_55C5(void) {
   if (VM_SeekToNamedArg('n')) {
     FUN_080ac5b4(VM_GetValue());
   }

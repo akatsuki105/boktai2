@@ -458,7 +458,7 @@ _080F3AD8:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	b _080F3C92
 	.align 2, 0
 _080F3AEC: .4byte 0x000001DF
@@ -469,7 +469,7 @@ _080F3AF0:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	b _080F3C92
 	.align 2, 0
 _080F3B04: .4byte 0x000001DF
@@ -480,7 +480,7 @@ _080F3B08:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	b _080F3C92
 	.align 2, 0
 _080F3B1C: .4byte 0x000001DF

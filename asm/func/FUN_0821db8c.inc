@@ -51,7 +51,7 @@ _0821DBB0:
 	str r3, [sp, #0xc]
 	str r3, [sp, #0x10]
 	add r2, sp, #0x14
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	add sp, #0x1c
 	pop {r4}
 	pop {r0}

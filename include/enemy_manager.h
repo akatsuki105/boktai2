@@ -50,7 +50,7 @@ typedef struct EnemyManager {
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
   EnemyManagerFlags flags;      // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
-  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が '.l=3' を代入, FUN_080ec5b4 がレコードの3語目へコピーする
+  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、Cmd_2571 が '.l=3' を代入, FUN_080ec5b4 がレコードの3語目へコピーする
   u8 unk_31;                    // 0x31, 読み手も書き手も未発見, padding?
   s16 enemyCount;               // 0x32, Enemy_Init_080ec640 で +1 / FUN_080ec6fc で -1. 0x13 を超えると新規生成を拒否する
   Entity* sharedEntity[8];      // 0x34, FUN_080eca74 が種族に応じて生成する共有エンティティのキャッシュ, [0]=Entity080db520, [1]=Entity081e8d0c_Create, [2]=EmoteManager_Create, [6]=Entity081ea120_Create, [7]=Entity081ea820_Create
@@ -64,7 +64,7 @@ extern EnemyListNode* gEnemyListHead;  // 0x03002C60
 
 EnemyManager* GetEnemyManager(void);
 
-void FUN_080ec7e8(u8 kind, u8 unk_480, void* payload);
+void FUN_080ec7e8(u8 kind, u8 variant, void* payload);
 void FUN_080eeee0(Enemy* p);
 
 #endif  // __INCLUDE_ENEMY_MANAGER_H__

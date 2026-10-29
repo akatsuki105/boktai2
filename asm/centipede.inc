@@ -1398,7 +1398,7 @@ _08132D74:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _08132D90:
 	ldr r1, _08132DE0 @ =0x00000466
 	adds r0, r5, r1
@@ -4095,22 +4095,22 @@ _081341D2:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
 	bl FUN_080e64b4
 	adds r0, r6, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r7, #0xbc
 	lsls r7, r7, #1
 	adds r2, r6, r7
@@ -14100,7 +14100,7 @@ FUN_08138de0: @ 0x08138DE0
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_08138c74
 	movs r0, #1
@@ -14289,7 +14289,7 @@ EnemyCentipede_Init: @ 0x08138F24
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08138FBC @ =0x0000C102
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _08138FB0 @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -16414,7 +16414,7 @@ _0813A00A:
 	strb r0, [r1]
 	ldr r2, _0813A100 @ =0x0000057C
 	adds r1, r7, r2
-	ldr r0, _0813A104 @ =FUN_080f09e0
+	ldr r0, _0813A104 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r3, _0813A108 @ =0x0000061C
 	adds r1, r7, r3
@@ -16436,7 +16436,7 @@ _0813A00A:
 _0813A0F8: .4byte 0x0000D636
 _0813A0FC: .4byte 0x0000C102
 _0813A100: .4byte 0x0000057C
-_0813A104: .4byte FUN_080f09e0
+_0813A104: .4byte Enemy_DispatchMsg
 _0813A108: .4byte 0x0000061C
 _0813A10C: .4byte FUN_08138e1c
 _0813A110: .4byte EnemyCentipede_Destroy

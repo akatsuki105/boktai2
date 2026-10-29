@@ -15,7 +15,7 @@ _080B20A4:
 	bl FUN_080b1a88
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B21CE
 _080B20BE:
 	movs r0, #0x4f
@@ -73,7 +73,7 @@ _080B211E:
 	beq _080B213E
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B21CE
 	.align 2, 0
 _080B212C: .4byte 0x03002C00
@@ -85,7 +85,7 @@ _080B2138:
 _080B213E:
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 	b _080B21CE
 _080B2148:
 	adds r0, r5, #0
@@ -148,7 +148,7 @@ _080B21B2:
 	bl FUN_080b1b1c
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_080ad1ec
+	bl PileDriver_SetSubState
 _080B21CE:
 	pop {r4, r5, r6}
 	pop {r0}

@@ -122,7 +122,7 @@ _080C2E14:
 	adds r0, r2, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0807e7fc
+	bl Player_TakeInstantHit
 	movs r6, #1
 _080C2E32:
 	adds r1, r4, #0

@@ -86,7 +86,7 @@ _080C6400:
 	cmp r6, #0x20
 	ble _080C640A
 	adds r0, r7, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 _080C640A:
 	add sp, #0xc
 	pop {r4, r5, r6, r7}

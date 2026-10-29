@@ -22,7 +22,7 @@ blockers when you get this backwards. Do them one at a time, all the way
 through, before starting the next.
 
 **`-p` / `--push`** — after step 4 passes, commit and push the whole promotion
-(step 6). Without it this skill leaves the working tree dirty for the user.
+(step 7). Without it this skill leaves the working tree dirty for the user.
 Nothing parses the arguments, so read the argument string literally and resolve
 the flag yourself before anything else. `--push` is the only option here;
 **anything else starting with `-`** — an option this skill does not have, or a
@@ -112,9 +112,33 @@ unstubbed, the second only unstubbed.
    A stale object file will happily report a match that isn't there, so do not
    skip `clean-code`.
 
-5. **Report** what was promoted, the signature, and the evidence for the name.
+5. **Reflect the signatures into Ghidra.** Every promotion, with or without
+   `--push`: write each `NAKED` line's prototype to the function in Ghidra and
+   save, so the next decompile reads with the types this pass settled. Use the
+   function's current name and `__stdcall` (see
+   `.claude/skills/ghidra-struct/references/http-api.md`):
 
-6. **Commit and push** — only with `--push`. Without it, stop after step 5 and
+   ```sh
+   curl -s -X POST "$G/set_function_prototype" -H 'Content-Type: application/json' \
+     -d '{"function_address":"0x080AD1A8","prototype":"Entity5292* Entity5292_Create(u32 id)","calling_convention":"__stdcall"}'
+   curl -s -X POST "$G/save_program" -H 'Content-Type: application/json' -d '{}'
+   ```
+
+   - The address is the one on the function's label in the bulk asm file
+     (`NAME: @ 0x080AD1A8`); read it before `prepare_asm.ts` deletes the blob,
+     or from `git show HEAD:asm/foo.inc` afterwards.
+   - `set_function_prototype` renames the function to whatever name the
+     prototype string carries, so copy the name from the `NAKED` line exactly.
+   - Every type in the prototype has to exist in Ghidra (`search_data_types`);
+     a type only the repository knows makes the call fail, and `unknown*` then
+     goes in as `void*`.
+   - `save_program` sometimes answers `Unable to lock due to active
+     transaction`; wait a moment and send it again.
+   - Read a few back with `get_function_by_address` before reporting.
+
+6. **Report** what was promoted, the signature, and the evidence for the name.
+
+7. **Commit and push** — only with `--push`. Without it, stop after step 6 and
    leave the working tree dirty.
 
    ```sh

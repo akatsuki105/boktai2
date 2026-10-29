@@ -52,7 +52,7 @@ _08015AF6:
 	movs r0, #1
 	mov r1, r8
 	mov r2, sp
-	bl FUN_080155e4
+	bl Entity08015584_Spawn
 	ldrh r0, [r5, #0x14]
 	adds r0, r0, r6
 	strh r0, [r5, #0x14]

@@ -99,7 +99,7 @@ NAKED void FUN_080ba0f0(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba0
 
 // 道具の買値を返す, 果実系は nutsRate を掛けて 1〜9999 に収める (太陽光に応じて値段が変わる設定)
 s32 Item_GetBuyPrice(u32 itemID) {
-  if (itemID <= 4 || itemID == 6 || itemID == 7 || itemID == 9 || itemID == 10) {
+  if (itemID <= ITEM_POWER_NUT || itemID == ITEM_BEARNUT || itemID == ITEM_SEE_ALL_NUT || itemID == ITEM_RED_MUSHROOM || itemID == ITEM_BLUE_MUSHROOM) {
     s32 price = Div(gItemDB[itemID].price * gStat->nutsRate, 100);
 
     if (price <= 0) {
@@ -170,7 +170,7 @@ void FUN_080ba2d8(ItemShop* p) {
     s32 base;
 
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[33], &p->icons, pose, 1);
+    MainSprite_SetPose(&p->sprites[33], &p->icons, pose, PLAYMODE_LOOP);
     MessageWindow_Start(p->unk_12e4);
     MessageWindow_SetRect(2, 16, 28, 2);
     MessageWindow_SetInstant(1);
@@ -225,7 +225,7 @@ void FUN_080ba57c(ItemShop* p) {
   if (id >= 0) {
     Vec3 pos;
 
-    FUN_080b9938(&pos.x, (u8)p->cursor.slot);
+    Shop_GetSlotPos(&pos.x, (u8)p->cursor.slot);
     FUN_080b9658(&p->gfx2, &p->sprites[37], &pos, price, kind);
   } else {
     FUN_080b9724(&p->sprites[37]);
@@ -233,19 +233,12 @@ void FUN_080ba57c(ItemShop* p) {
 }
 
 // カーソル位置と退避位置の2本の道具を入れ替えるアニメを仕込む
-// 残差2命令 (100/102): shop_weapon.c の FUN_080bd47c と同じ残差クラスで, 原典は3本のポインタをスタックに退避するが agbcc は高位レジスタに置く
-NON_MATCH void FUN_080ba624(ItemShop* p) {
-#ifdef NONMATCHING_C
+void FUN_080ba624(ItemShop* p) {
   WorldPos a[2];
   WorldPos b[2];
   s32 unk1[2];
   s32 anims[2];
   s32 strIDs[2];
-  s32* strPtr = strIDs;
-  s32* animPtr = anims;
-  s32* flagPtr = unk1;
-  WorldPos* ap;
-  WorldPos* bp;
   s32 i;
 
   for (i = 0; i < 2; i++) {
@@ -255,28 +248,22 @@ NON_MATCH void FUN_080ba624(ItemShop* p) {
     p->sprites[slot + 3].flags |= SPRFLAG_HIDDEN;
     id = GetNormalItemID(slot);
     if (id >= 0) {
-      *flagPtr = 1;
+      unk1[i] = 1;
     } else {
-      *flagPtr = 0;
+      unk1[i] = 0;
     }
 
-    *animPtr++ = id + 0x68;
-    *strPtr++ = 0x2DF;
-    FUN_080b9938(&a[i].x, slot);
-    flagPtr++;
+    anims[i] = id + 0x68;
+    strIDs[i] = 0x2DF;
+    Shop_GetSlotPos(&a[i].x, slot);
   }
 
-  bp = b;
-  ap = &a[1];
-  for (i = 1; i >= 0; i--) {
-    *bp++ = *ap--;
+  for (i = 0; i < 2; i++) {
+    b[i] = a[1 - i];
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
-#else
-  INCFUNC("asm/func/FUN_080ba624.inc");
-#endif
 }
 
 // 持っている道具を売る演出を仕込む, 元のアイコンを隠して入れ替え先へ飛ばす
@@ -291,8 +278,8 @@ void FUN_080ba710(ItemShop* p) {
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
   anims[0] = GetNormalItemID((u8)p->cursor.savedSlot) + 0x68;
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&a[0].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&b[0].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
   anims[1] = 0x68;
   strIDs[1] = 0x2DF;
@@ -313,8 +300,8 @@ void FUN_080ba7bc(ItemShop* p) {
   unk1[0] = 1;
   anims[0] = p->items0[(u8)p->cursor.savedSlot - 16] + 0x68;
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&a[0].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&b[0].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
   anims[1] = 0x68;
   strIDs[1] = 0x2DF;
@@ -435,7 +422,7 @@ void FUN_080baa64(ItemShop* p) {
   p->sprites[35].flags &= ~SPRFLAG_HIDDEN;
   p->unk_12f2 = FUN_080baa40(p);
   FUN_080b9fe8(&p->cursor);
-  FUN_080b9fc4(&p->cursor, &p->sprites[35]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[35]);
   FUN_080b9d94(&p->cursor, 20);
   FUN_080ba410(p);
   FUN_080ba57c(p);
@@ -584,7 +571,7 @@ NON_MATCH void FUN_080bb160(ItemShop* p) {
   FUN_080b94cc(p->kind);
   FUN_080b9400(p->kind);
   ShopCursor_Init(&p->cursor, 1, 4, 0, 20);
-  FUN_080b9fc4(&p->cursor, &p->sprites[35]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[35]);
   FUN_080ba410(p);
   FUN_080ba57c(p);
   FUN_080ba2d8(p);
@@ -618,7 +605,7 @@ void FUN_080bb294(ItemShop* p) {
     Marquee_Clear();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[33], &p->icons, ICON_TIMER_NONE, 1);
+    MainSprite_SetPose(&p->sprites[33], &p->icons, ICON_TIMER_NONE, PLAYMODE_LOOP);
     MessageWindow_Start(p->unk_12e8);
     MessageWindow_SetRect(2, 16, 28, 2);
     Marquee_SetVarValue(0, gArmorDB[id].defence);
@@ -660,7 +647,7 @@ void FUN_080bb5bc(ItemShop* p) {
   if (id >= 0 && price > 0) {
     Vec3 pos;
 
-    FUN_080b9938(&pos.x, (u8)p->cursor.slot);
+    Shop_GetSlotPos(&pos.x, (u8)p->cursor.slot);
     FUN_080b9658(&p->gfx2, &p->sprites[37], &pos, price, kind);
   } else {
     FUN_080b9724(&p->sprites[37]);
@@ -668,19 +655,12 @@ void FUN_080bb5bc(ItemShop* p) {
 }
 
 // カーソル位置と退避位置の2枚の防具を入れ替えるアニメを仕込む
-// 残差0命令 (118/118), 退避先だけ違う: FUN_080ba624 と同じ残差クラスで, 原典は3本のポインタをスタックに置くが agbcc は高位レジスタに置く
-NON_MATCH void FUN_080bb688(ItemShop* p) {
-#ifdef NONMATCHING_C
+void FUN_080bb688(ItemShop* p) {
   WorldPos a[2];
   WorldPos b[2];
   s32 unk1[2];
   s32 anims[2];
   s32 strIDs[2];
-  s32* strPtr = strIDs;
-  s32* animPtr = anims;
-  s32* flagPtr = unk1;
-  WorldPos* ap;
-  WorldPos* bp;
   s32 i;
 
   for (i = 0; i < 2; i++) {
@@ -694,28 +674,22 @@ NON_MATCH void FUN_080bb688(ItemShop* p) {
 
     id = ARMORS(slot);
     if (id >= 0) {
-      *flagPtr = 1;
+      unk1[i] = 1;
     } else {
-      *flagPtr = 0;
+      unk1[i] = 0;
     }
 
-    *animPtr++ = id + 0x43;
-    *strPtr++ = 0x2DF;
-    FUN_080b9938(&a[i].x, slot);
-    flagPtr++;
+    anims[i] = id + 0x43;
+    strIDs[i] = 0x2DF;
+    Shop_GetSlotPos(&a[i].x, slot);
   }
 
-  bp = b;
-  ap = &a[1];
-  for (i = 1; i >= 0; i--) {
-    *bp++ = *ap--;
+  for (i = 0; i < 2; i++) {
+    b[i] = a[1 - i];
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
-#else
-  INCFUNC("asm/func/FUN_080bb688.inc");
-#endif
 }
 
 // 持っている防具を売る演出を仕込む, 元のアイコンを隠して入れ替え先へ飛ばす
@@ -730,8 +704,8 @@ void FUN_080bb798(ItemShop* p) {
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
   anims[0] = ARMORS((u8)p->cursor.savedSlot) + 0x43;
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&a[0].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&b[0].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
   anims[1] = 0x43;
   strIDs[1] = 0x2DF;
@@ -752,8 +726,8 @@ void FUN_080bb854(ItemShop* p) {
   unk1[0] = 1;
   anims[0] = p->items1[(u8)p->cursor.savedSlot - 16] + 0x43;
   strIDs[0] = 0x2DF;
-  FUN_080b9938(&a[0].x, (u8)p->cursor.savedSlot);
-  FUN_080b9938(&b[0].x, (u8)p->cursor.slot);
+  Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
+  Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
   anims[1] = 0x68;
   strIDs[1] = 0x2DF;
@@ -837,7 +811,7 @@ void FUN_080bbbdc(ItemShop* p) {
   p->sprites[35].flags &= ~SPRFLAG_HIDDEN;
   p->unk_12f2 = FindEmptyArmorSlot(p);
   FUN_080b9fe8(&p->cursor);
-  FUN_080b9fc4(&p->cursor, &p->sprites[35]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[35]);
   FUN_080b9d94(&p->cursor, 20);
   FUN_080bb294(p);
   FUN_080bb388(p);
@@ -976,7 +950,7 @@ void FUN_080bc350(ItemShop* p) {
   FUN_080b94cc(p->kind);
   FUN_080b9400(p->kind);
   ShopCursor_Init(&p->cursor, 1, 4, 0, 20);
-  FUN_080b9fc4(&p->cursor, &p->sprites[35]);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[35]);
   FUN_080bb388(p);
   FUN_080bb5bc(p);
   FUN_080bb294(p);

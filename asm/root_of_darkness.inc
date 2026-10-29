@@ -1316,7 +1316,7 @@ _081A3452:
 	adds r1, r5, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	b _081A35C0
 	.align 2, 0
 _081A3550: .4byte 0x000001DD
@@ -1909,7 +1909,7 @@ _081A39F0:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _081A3A06:
 	movs r1, #3
 	movs r4, #0x8d
@@ -2124,7 +2124,7 @@ _081A3B8A:
 	mov r0, sb
 	add r1, sp, #0x1c
 	movs r2, #0x40
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 	ldr r3, [sp, #0x30]
 	movs r7, #0xcc
 	lsls r7, r7, #3
@@ -2200,7 +2200,7 @@ _081A3C2C:
 	mov r0, sb
 	add r1, sp, #0x1c
 	movs r2, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 	b _081A3C84
 	.align 2, 0
 _081A3C60: .4byte 0x00000226
@@ -2218,7 +2218,7 @@ _081A3C64:
 	mov r0, sb
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0807ab64
+	bl Player_HoldGrabbed
 _081A3C84:
 	adds r0, r6, #0
 	movs r1, #0x12
@@ -2388,7 +2388,7 @@ _081A3DB6:
 	str r1, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r2, #0x40
-	bl FUN_0807ac74
+	bl Player_ReleaseGrabbed
 _081A3DD8:
 	ldr r1, [r6, #0x44]
 	movs r0, #2
@@ -2695,17 +2695,17 @@ _081A4004:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -2725,7 +2725,7 @@ _081A4004:
 	orrs r0, r1
 	strh r0, [r2]
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	add r4, sp, #0x50
 	str r5, [sp, #0x2c]
 	add r0, sp, #0x2c
@@ -2834,7 +2834,7 @@ _081A4106:
 	str r4, [sp, #0x24]
 	str r4, [sp, #0x28]
 	mov r1, r8
-	bl FUN_081ef708
+	bl Entity081efa9c_Spawn
 	ldr r1, _081A417C @ =0x0000049C
 	adds r0, r7, r1
 	ldr r4, [r0]
@@ -5097,7 +5097,7 @@ FUN_081a546c: @ 0x081A546C
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 	adds r0, r4, #0
 	bl FUN_081a4634
 	movs r0, #1

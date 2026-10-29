@@ -1431,7 +1431,7 @@ _0814AA08:
 	str r0, [sp, #0x34]
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl FUN_081f22c0
+	bl Entity081f26bc_Spawn
 _0814AA86:
 	ldr r2, _0814AABC @ =0x085AD8C0
 	mov r3, sb
@@ -3530,7 +3530,7 @@ _0814BA30:
 	movs r0, #0
 	movs r2, #3
 	movs r3, #0
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 	cmp r0, #0
 	bge _0814BA6C
 	ldrh r1, [r5]
@@ -5572,7 +5572,7 @@ _0814C9B4:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _0814C9D0:
 	ldr r1, _0814CA20 @ =0x00000466
 	adds r0, r5, r1
@@ -9355,22 +9355,22 @@ _0814E69E:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #4
 	bl FUN_080e64b4
 	adds r0, r5, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 	movs r6, #0xbc
 	lsls r6, r6, #1
 	adds r2, r5, r6
@@ -9400,7 +9400,7 @@ _0814E712:
 	adds r0, r5, #0
 	bl FUN_080e4b3c
 	adds r0, r5, #0
-	bl FUN_080e4e20
+	bl Enemy_SnapToFloor
 	ldr r1, _0814E7D8 @ =0x0000046E
 	adds r0, r5, r1
 	ldrb r0, [r0]
@@ -9632,7 +9632,7 @@ FUN_0814e8ec: @ 0x0814E8EC
 	adds r0, r5, #0
 	bl FUN_080e4b3c
 	adds r0, r5, #0
-	bl FUN_080e4e20
+	bl Enemy_SnapToFloor
 	ldr r0, [r5, #0x44]
 	adds r1, r4, #0
 	movs r2, #0xa
@@ -12074,7 +12074,7 @@ _0814FBC2:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	bl FUN_080e6750
 	ldr r2, _0814FC60 @ =0x000001DF
@@ -12180,7 +12180,7 @@ _0814FCD0:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r0, #3
 	movs r4, #0x8d
 	lsls r4, r4, #3
@@ -13696,7 +13696,7 @@ _08150862:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r2, #0x10
 	movs r1, #0x8d
 	lsls r1, r1, #3
@@ -15807,7 +15807,7 @@ FUN_081518c0: @ 0x081518C0
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 _081518F4:
 	adds r0, r5, #0
 	bl FUN_08150510
@@ -15989,7 +15989,7 @@ EnemyDog_Init: @ 0x081519F8
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08151A98 @ =0x0000F6E7
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r6, _08151A8C @ =0x000001DF
 	adds r0, r7, r6
 	ldrb r1, [r0]
@@ -18067,7 +18067,7 @@ _08152AD6:
 	strb r0, [r1]
 	ldr r2, _08152B84 @ =0x0000057C
 	adds r1, r7, r2
-	ldr r0, _08152B88 @ =FUN_080f09e0
+	ldr r0, _08152B88 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r3, _08152B8C @ =0x0000061C
 	adds r1, r7, r3
@@ -18090,7 +18090,7 @@ _08152B78: .4byte 0x000006AC
 _08152B7C: .4byte 0x0000FFFF
 _08152B80: .4byte 0x000006BC
 _08152B84: .4byte 0x0000057C
-_08152B88: .4byte FUN_080f09e0
+_08152B88: .4byte Enemy_DispatchMsg
 _08152B8C: .4byte 0x0000061C
 _08152B90: .4byte FUN_0815190c
 _08152B94: .4byte EnemyDog_Destroy

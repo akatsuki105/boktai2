@@ -120,7 +120,7 @@ s32 FUN_0801e2a8(EntityEF6F* p, s32 bgIndex) {
   SetBGPrioDirect(2, 2);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   p->plttSrc = GetBgPlttFile(BGP_A41A)->body;
-  CpuCopy32(&p->plttSrc[208], &gBgPlttBuffer[208], 96);
+  CpuCopy32(&p->plttSrc[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
   return 0;
 }
 
@@ -138,7 +138,7 @@ void FUN_0801e378(EntityEF6F* p) {
   EntityEF6FEffect* eff = &p->effects[p->unk_3a];
   MainSprite* spr = &p->sprites[8 + p->unk_3a];
 
-  MainSprite_SetPose(spr, &p->gfx0, p->unk_66 + 20, 0);
+  MainSprite_SetPose(spr, &p->gfx0, p->unk_66 + 20, PLAYMODE_PAUSE);
   MainSprite_Show(spr);
   eff->state = 1;
   eff->timer = 0;
@@ -204,7 +204,7 @@ NON_MATCH void FUN_0801e458(EntityEF6F* p) {
 
   CpuFill32(0, dst, sizeof(pos));
   for (i = 0; i < 13; i++) {
-    MainSprite_Add(&p->sprites[i], &p->gfx0, 0, 0x11, 0, 0, 60, dst);
+    MainSprite_Add(&p->sprites[i], &p->gfx0, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, dst);
   }
 #else
   INCFUNC("asm/func/FUN_0801e458.inc");
@@ -242,52 +242,52 @@ NON_MATCH s32 FUN_0801e4b0(EntityEF6F* p) {
 
   spr = &p->sprites[0];
   spr->pos.x = 0;
-  MainSprite_SetPose(spr, &p->gfx0, 4, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 4, PLAYMODE_PAUSE);
   spr->priority = 2;
   spr->flags |= SPRFLAG_HIDDEN;
 
   spr = &p->sprites[1];
   spr->pos.x = 0;
-  MainSprite_SetPose(spr, &p->gfx0, 3, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 3, PLAYMODE_PAUSE);
   spr->flags |= SPRFLAG_HIDDEN;
   spr->priority = 2;
 
   spr = &p->sprites[2];
   spr->pos.x = p->unk_30;
-  MainSprite_SetPose(spr, &p->gfx0, 1, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 1, PLAYMODE_PAUSE);
   spr->priority = 2;
   spr->flags |= SPRFLAG_HIDDEN;
 
   spr = &p->sprites[3];
   spr->pos.x = p->unk_32;
-  MainSprite_SetPose(spr, &p->gfx0, 2, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 2, PLAYMODE_PAUSE);
   spr->priority = 2;
   spr->flags |= SPRFLAG_HIDDEN;
 
   spr = &p->sprites[4];
   spr->pos.x = p->unk_34;
-  MainSprite_SetPose(spr, &p->gfx0, 6, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 6, PLAYMODE_PAUSE);
   spr->priority = 2;
   spr->flags &= ~SPRFLAG_HIDDEN;
 
   spr = &p->sprites[5];
   spr->pos.x = p->unk_36 - 176;
-  MainSprite_SetPose(spr, &p->gfx0, 9, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 9, PLAYMODE_PAUSE);
   spr->priority = 3;
   spr->flags &= ~SPRFLAG_HIDDEN;
-  CpuCopy32(&gObjPlttData[0x29F0], p->pltt, sizeof(p->pltt));
+  CpuCopy32(&gObjPlttData[671 * 16], p->pltt, sizeof(p->pltt));
   spr->plttID = 0x8100;
   spr->pltt = p->pltt;
 
   spr = &p->sprites[6];
   spr->pos.x = 0;
-  MainSprite_SetPose(spr, &p->gfx0, 10, 0);
+  MainSprite_SetPose(spr, &p->gfx0, 10, PLAYMODE_PAUSE);
   spr->priority = 3;
   spr->flags &= ~SPRFLAG_HIDDEN;
 
   spr = &p->sprites[7];
   spr->pos.x = 0;
-  MainSprite_SetAnim(spr, &p->gfx0, 0, 1, 0);
+  MainSprite_SetAnim(spr, &p->gfx0, 0, PLAYMODE_LOOP, 0);
   spr->priority = 2;
   spr->flags &= ~SPRFLAG_HIDDEN;
 
@@ -295,7 +295,7 @@ NON_MATCH s32 FUN_0801e4b0(EntityEF6F* p) {
   y = 32;
   for (i = 0; i < 5; i++, spr++, y += 8) {
     spr->pos.x = 8, spr->pos.y = y;
-    MainSprite_SetPose(spr, &p->gfx0, 22, 0);
+    MainSprite_SetPose(spr, &p->gfx0, 22, PLAYMODE_PAUSE);
     spr->priority = 0;
     spr->flags |= SPRFLAG_HIDDEN;
   }
@@ -308,7 +308,7 @@ NON_MATCH s32 FUN_0801e4b0(EntityEF6F* p) {
 
 // unk_60 の進み具合に応じて、pltt[15] を (31, 4, 0) から元の色へ 1/32 刻みで寄せていく
 void FUN_0801e6a0(EntityEF6F* p) {
-  rgb555* pal = &gObjPlttData[0x29F0];
+  rgb555* pal = &gObjPlttData[671 * 16];
   s32 t = Div(p->unk_60 * 32, 5);
   s32 u = 32 - t;
   s32 r = ((u * 31) + (pal[15] & 0x1F) * t) >> 5;

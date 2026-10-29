@@ -67,7 +67,7 @@ _0800ED86:
 	subs r0, r0, r1
 	strh r0, [r5, #0x1a]
 	movs r0, #0x28
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	b _0800EDD6
 	.align 2, 0
 _0800EDA4: .4byte 0x030047A4

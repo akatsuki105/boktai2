@@ -58,7 +58,7 @@ _080B279A:
 	adds r0, r4, #0
 	bl FUN_080b1de8
 	adds r0, r4, #0
-	bl FUN_080b2410
+	bl PileDriver_RegisterMsgQueue
 	ldr r0, _080B27E0 @ =0x030046A0
 	ldr r0, [r0]
 	ldr r1, _080B27E4 @ =0x00000942

@@ -51,7 +51,7 @@ _0805A4A6:
 	str r7, [sp, #4]
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	ldrh r0, [r5, #0x3e]
 	adds r0, #2
 	movs r2, #0

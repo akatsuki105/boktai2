@@ -34,9 +34,9 @@ void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 id
   elem->unk_1 = 1;
   elem->timer = 0;
   elem->lifetime = 0;
-  Particle_Setup(ptcl, p->group, 1);
+  Particle_Setup(ptcl, p->group, SPRFLAG_HIDDEN);
   Particle_SetPltt(ptcl, 1);
-  Particle_SetFrame(ptcl, p->group, 3);
+  Particle_SetPose(ptcl, p->group, PTCL2_SOL_S);
   Particle_SetOffset(ptcl, -4, -4);
 }
 

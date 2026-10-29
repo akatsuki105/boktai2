@@ -43,11 +43,11 @@ static_assert(sizeof(OpRunner) == 392);
 
 COMMON_DATA OpRunner* gOpRunners[2] = {};  // 0x03002C98, [0: ジャンゴ, 1: おてんこ]
 
-NAKED void FUN_0821a87c(void) { INCFUNC("asm/func/FUN_0821a87c.inc"); }
+NAKED void Cmd_641D(void) { INCFUNC("asm/func/Cmd_641D.inc"); }
 
-NAKED void FUN_0821a974(void) { INCFUNC("asm/func/FUN_0821a974.inc"); }
+NAKED void Cmd_88B7(void) { INCFUNC("asm/func/Cmd_88B7.inc"); }
 
-NAKED void FUN_0821a9d8(void) { INCFUNC("asm/func/FUN_0821a9d8.inc"); }
+NAKED void Cmd_1ED1(void) { INCFUNC("asm/func/Cmd_1ED1.inc"); }
 
 NAKED void FUN_0821aa3c(OpRunner* p) { INCFUNC("asm/func/FUN_0821aa3c.inc"); }
 
@@ -89,8 +89,8 @@ NON_MATCH void OpRunner_AddSprites(OpRunner* p) {
     CpuFill32(0, &pos, sizeof(pos));
     pos.x = x;
     pos.y = y;
-    MainSprite_Add(&p->django, &p->djangoGfx, 7, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE, 1, 0, 60, &pos);
-    MainSprite_SetAnim(&p->django, &p->djangoGfx, 5, 1, 0);
+    MainSprite_Add(&p->django, &p->djangoGfx, 7, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE, 1, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_SetAnim(&p->django, &p->djangoGfx, 5, PLAYMODE_LOOP, 0);
     p->django.scaleX = scale;
     p->django.scaleY = scale;
   } else {

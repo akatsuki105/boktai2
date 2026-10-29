@@ -121,7 +121,7 @@ _0809ED32:
 	ble _0809ED3E
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_0807aa30
+	bl Player_AddENE
 _0809ED3E:
 	adds r3, r5, #0
 	cmp r3, #3

@@ -55,7 +55,7 @@ _080F6002:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r1, #0x95
 	lsls r1, r1, #3
 	adds r0, r7, r1

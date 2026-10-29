@@ -59,44 +59,44 @@ typedef struct {
 } Entity5645;
 static_assert(sizeof(Entity5645) == 7712);
 
-IWRAM_DATA Entity5645* gEntity5645 = NULL;  // 0x03000120
+static Entity5645* sEntity5645;  // 0x03000120
 
 // 0x085AB748 の8件のテーブル, FUN_08054848 が 0x38 刻みで引く
 typedef struct {
   SpriteID32 id;                                  // 0x00, Entity286F_FindSpriteData の第1引数
   s32 idx;                                        // 0x04, Entity286F_FindSpriteData の第2引数
   u32 unk_08;                                     // 0x08, FUN_080533ec に渡す, 2 の要素だけ Entity5645.gfx[] に入る
-  u32 unk_0c;                                     // 0x0C, FUN_080533ec に渡す, SPRITE_MOUSE の要素だけ ANIM_AF44
+  u32 unk_0c;                                     // 0x0C, FUN_080533ec に渡す, SPRITE_MOUSE の要素だけ ANIM_MOUSE
   void (*fns[10])(Entity5645*, Entity5645Elem*);  // 0x10, FUN_08054960 が Entity5645Elem + 0x0D で引く
 } Entity5645Entry;
 static_assert(sizeof(Entity5645Entry) == 56);
 
-void FUN_08053dac(Entity5645* p, Entity5645Elem* elem);
-void FUN_08053dcc(Entity5645* p, Entity5645Elem* elem);
-void FUN_08053dfc(Entity5645* p, Entity5645Elem* elem);
-void FUN_08053e2c(Entity5645* p, Entity5645Elem* elem);
-void FUN_08053e64(Entity5645* p, Entity5645Elem* elem);
-void FUN_08053f44(Entity5645* p, Entity5645Elem* elem);
-void FUN_08053fd0(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054054(Entity5645* p, Entity5645Elem* elem);
-void FUN_080540d4(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054130(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054170(Entity5645* p, Entity5645Elem* elem);
-void FUN_080541cc(Entity5645* p, Entity5645Elem* elem);
-void FUN_080541fc(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054290(Entity5645* p, Entity5645Elem* elem);
-void FUN_080542ac(Entity5645* p, Entity5645Elem* elem);
-void FUN_0805431c(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054444(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054490(Entity5645* p, Entity5645Elem* elem);
-void FUN_080544b4(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054520(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054670(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054698(Entity5645* p, Entity5645Elem* elem);
-void FUN_08054700(Entity5645* p, Entity5645Elem* elem);
-void FUN_0805474c(Entity5645* p, Entity5645Elem* elem);
-void FUN_080547a8(Entity5645* p, Entity5645Elem* elem);
-void FUN_080547f4(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053dac(Entity5645*, Entity5645Elem*);
+void FUN_08053dcc(Entity5645*, Entity5645Elem*);
+void FUN_08053dfc(Entity5645*, Entity5645Elem*);
+void FUN_08053e2c(Entity5645*, Entity5645Elem*);
+void FUN_08053e64(Entity5645*, Entity5645Elem*);
+void FUN_08053f44(Entity5645*, Entity5645Elem*);
+void FUN_08053fd0(Entity5645*, Entity5645Elem*);
+void FUN_08054054(Entity5645*, Entity5645Elem*);
+void FUN_080540d4(Entity5645*, Entity5645Elem*);
+void FUN_08054130(Entity5645*, Entity5645Elem*);
+void FUN_08054170(Entity5645*, Entity5645Elem*);
+void FUN_080541cc(Entity5645*, Entity5645Elem*);
+void FUN_080541fc(Entity5645*, Entity5645Elem*);
+void FUN_08054290(Entity5645*, Entity5645Elem*);
+void FUN_080542ac(Entity5645*, Entity5645Elem*);
+void FUN_0805431c(Entity5645*, Entity5645Elem*);
+void FUN_08054444(Entity5645*, Entity5645Elem*);
+void FUN_08054490(Entity5645*, Entity5645Elem*);
+void FUN_080544b4(Entity5645*, Entity5645Elem*);
+void FUN_08054520(Entity5645*, Entity5645Elem*);
+void FUN_08054670(Entity5645*, Entity5645Elem*);
+void FUN_08054698(Entity5645*, Entity5645Elem*);
+void FUN_08054700(Entity5645*, Entity5645Elem*);
+void FUN_0805474c(Entity5645*, Entity5645Elem*);
+void FUN_080547a8(Entity5645*, Entity5645Elem*);
+void FUN_080547f4(Entity5645*, Entity5645Elem*);
 
 // clang-format off
 const Entity5645Entry Entity5645Entry_ARRAY_085ab748[8] = {
@@ -153,7 +153,7 @@ const Entity5645Entry Entity5645Entry_ARRAY_085ab748[8] = {
         .id = SPRITE_MOUSE,
         .idx = 0,
         .unk_08 = 1,
-        .unk_0c = ANIM_AF44,
+        .unk_0c = ANIM_MOUSE,
         .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08054054, FUN_08053dac, FUN_08053dac, FUN_08053dac},
     },
 };  // 0x085AB748

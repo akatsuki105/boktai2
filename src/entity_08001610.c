@@ -54,7 +54,7 @@ typedef struct {
   u16 moving;          // 0x44, コマンド0 で 0, コマンド1 で 1, C 側に読み手は見つかっていない
   u16 unk_46;          // 0x46
   u16 moveFrames;      // 0x48, コマンド1 の引数[0], stepX = (targetX - x) / moveFrames
-  u16 windAmp;         // 0x4A, flags bit3 の経路で風の強さ u16_03002bac と掛けて offsetX/offsetY の揺れ幅にする
+  u16 windAmp;         // 0x4A, flags bit3 の経路で風の強さ gWindStrength と掛けて offsetX/offsetY の揺れ幅にする
   bool8 active;        // 0x4C, 0 だと Update が何もせず戻る, コマンド4 で 0, コマンド5 で 1
   u8 unk_4d;           // 0x4D
   u16 blending;        // 0x4E, 1 の間 blendEvb/blendEva に毎フレーム blendStep を足す, コマンド3 で立つ
@@ -77,7 +77,7 @@ static_assert(sizeof(Entity08001610) == 248);
 IWRAM_DATA Entity08001610* gEntity08001610[4] = {};  // 0x03000010, BG ごとの Entity08001610, Init が bgIdx の位置に自分を入れ、Destroy が NULL に戻す
 
 extern u16 gWindAngle;
-extern u16 u16_03002bac;
+extern u16 gWindStrength;
 
 // BG ごとの Entity08001610 の登録表を NULL で埋める
 void Entity08001610_ClearTable(void) {
@@ -165,14 +165,14 @@ NON_MATCH s32 Entity08001610_Update(Entity08001610* p) {
   limY = p->wrapY * 16;
 
   if (p->flags & 8) {
-    s32 amp = (s16)p->windAmp * u16_03002bac;
+    s32 amp = (s16)p->windAmp * gWindStrength;
     s32 angle = gWindAngle + 0xA0;
     s32 vx;
     s32 vy;
 
     // POLAR_Z/POLAR_X は FixToInt(12, ...) を内側に畳んでいるが, 原典は生の積を offsetX に積んで最後に 18bit 分まとめて落とすので使えない
-    p->offsetX += gSineTable[(angle + 0x40) & 0xFF] * amp;
-    p->offsetY += gSineTable[angle & 0xFF] * amp;
+    p->offsetX += COS(angle) * amp;
+    p->offsetY += SIN(angle) * amp;
     vx = FixToInt(18, p->offsetX);
     vy = FixToInt(18, p->offsetY);
 

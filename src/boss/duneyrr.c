@@ -50,10 +50,10 @@ typedef struct Duneyrr {
   u16 unk_174;                     // 0x174
   u8 unk_176[0x178 - 0x176];       // 0x176
   Vec3 shakeOrigin;                // 0x178, 揺れる前の base.mover.pos
-  s32 unk_180;                     // 0x180, unk_188 から unk_190 へ跳ぶ速さ
-  s32 unk_184;                     // 0x184, unk_188 から unk_190 へ跳ぶのにかかるフレーム数
-  Vec3 unk_188;                    // 0x188, FUN_08023530 を呼んだときの base.mover.pos
-  Vec3 unk_190;                    // 0x190, unk_188 から unk_167 の向きに進んだ先を壁沿いに寄せた位置
+  s32 jumpSpeed;                   // 0x180, jumpFrom から jumpTo へ跳ぶ速さ
+  s32 jumpDuration;                // 0x184, jumpFrom から jumpTo へ跳ぶのにかかるフレーム数
+  Vec3 jumpFrom;                   // 0x188, FUN_08023530 を呼んだときの base.mover.pos
+  Vec3 jumpTo;                     // 0x190, jumpFrom から unk_167 の向きに進んだ先を壁沿いに寄せた位置
   HitboxData hitbox;               // 0x198
   HitboxData hurtbox;              // 0x1E8, ハンドラは Duneyrr_OnHurt
   MainSpriteGfx gfx;               // 0x238, SPRITE_DUNEYRR
@@ -127,9 +127,8 @@ const u16 u16_ARRAY_085aaaf6[4][2] = {
     {0x900, 0xA00}
 };  // 0x085AAAF6
 
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 void FUN_08059248(void);
-s32 FUN_080591f4(void);
+s32 Entity08058ffc_GetActiveCount(void);
 s32 FUN_08059054(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, Vec3* pos);
 s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 s32 FUN_08059210(void);
@@ -137,7 +136,6 @@ s32 FUN_080592a4(void);
 unknown* Entity08058ffc_Create(s32 param_1, s32 param_2, s32 param_3);
 void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 s32 Entity5DA5_SetState(s32 index, s32 state, s32 param_3);
-void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 Entity5DA5_AreAllLit(void);
 
@@ -354,48 +352,48 @@ NON_MATCH void FUN_08023530(Duneyrr* p) {
   Mover* mover = &p->base.mover;
   s32 dir;
 
-  p->unk_188 = mover->pos;
+  p->jumpFrom = mover->pos;
   dir = ((((p->unk_167 + 0x20) & 0xFF) >> 6) + 1) & 3;
   p->unk_170 = u8_ARRAY_085aaacc[Duneyrr_GetQuadrant(&mover->pos)][dir][p->unk_16f];
-  p->unk_190.x = POLAR_X(0x1000, p->unk_167);
-  p->unk_190.y = 0;
-  p->unk_190.z = POLAR_Z(0x1000, p->unk_167);
-  Vec3_Add(&p->unk_190, &p->unk_188);
-  p->unk_190.y = (p->unk_16f << 9) + 0x400;
+  p->jumpTo.x = POLAR_X(0x1000, p->unk_167);
+  p->jumpTo.y = 0;
+  p->jumpTo.z = POLAR_Z(0x1000, p->unk_167);
+  Vec3_Add(&p->jumpTo, &p->jumpFrom);
+  p->jumpTo.y = (p->unk_16f << 9) + 0x400;
   switch (p->unk_170) {
     case 0: {
-      if (p->unk_190.x < 0x180) {
-        p->unk_190.x = 0x180;
-      } else if (p->unk_190.x > 0xB80) {
-        p->unk_190.x = 0xB80;
+      if (p->jumpTo.x < 0x180) {
+        p->jumpTo.x = 0x180;
+      } else if (p->jumpTo.x > 0xB80) {
+        p->jumpTo.x = 0xB80;
       }
-      p->unk_190.z = 0x100;
+      p->jumpTo.z = 0x100;
       break;
     }
     case 1: {
-      p->unk_190.x = 0xC00;
-      if (p->unk_190.z < 0x180) {
-        p->unk_190.z = 0x180;
-      } else if (p->unk_190.z > 0xB80) {
-        p->unk_190.z = 0xB80;
+      p->jumpTo.x = 0xC00;
+      if (p->jumpTo.z < 0x180) {
+        p->jumpTo.z = 0x180;
+      } else if (p->jumpTo.z > 0xB80) {
+        p->jumpTo.z = 0xB80;
       }
       break;
     }
     case 2: {
-      if (p->unk_190.x < 0x180) {
-        p->unk_190.x = 0x180;
-      } else if (p->unk_190.x > 0xB80) {
-        p->unk_190.x = 0xB80;
+      if (p->jumpTo.x < 0x180) {
+        p->jumpTo.x = 0x180;
+      } else if (p->jumpTo.x > 0xB80) {
+        p->jumpTo.x = 0xB80;
       }
-      p->unk_190.z = 0xC00;
+      p->jumpTo.z = 0xC00;
       break;
     }
     case 3: {
-      p->unk_190.x = 0x100;
-      if (p->unk_190.z < 0x180) {
-        p->unk_190.z = 0x180;
-      } else if (p->unk_190.z > 0xB80) {
-        p->unk_190.z = 0xB80;
+      p->jumpTo.x = 0x100;
+      if (p->jumpTo.z < 0x180) {
+        p->jumpTo.z = 0x180;
+      } else if (p->jumpTo.z > 0xB80) {
+        p->jumpTo.z = 0xB80;
       }
       break;
     }
@@ -459,8 +457,8 @@ void Duneyrr_InitElems(Duneyrr* p) {
     Vec3* offset = &elem->offset;
 
     CpuFill32(0, offset, sizeof(Vec3));
-    MainSprite_Setup(sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, 0, 60, &p->sprite.pos);
-    MainSprite_SetAnim(sprite, &p->gfx, u16_ARRAY_085aaaec[i], 2, 0);
+    MainSprite_Setup(sprite, &p->gfx, 0, SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, &p->sprite.pos);
+    MainSprite_SetAnim(sprite, &p->gfx, u16_ARRAY_085aaaec[i], PLAYMODE_ONCE_AND_STOP, 0);
   }
   p->elemsActive = FALSE;
 }
@@ -643,7 +641,7 @@ void Duneyrr_GetQuadrantPos(Vec3* out, u32 quadrant, u32 y) {
 // 残差は乱数オフセットの足し方 (231/228): 原典は pos.x - 0x40 を先に作ってから乱数を足すが, こちらは乱数側に -0x40 を畳む, 乱数を u32/s32 のローカルに受けても揃わない
 NON_MATCH void FUN_08023de8(Duneyrr* p) {
 #ifdef NONMATCHING_C
-  if (p->unk_550 != 0 && FUN_080591f4() < 12) {
+  if (p->unk_550 != 0 && Entity08058ffc_GetActiveCount() < 12) {
     Vec3 pos = p->sprite.pos;
 
     pos.z -= 0x80;
@@ -666,12 +664,12 @@ void Duneyrr_SetHurtboxPower(Duneyrr* p, u32 power) {
   hurtbox->power = power;
 }
 
-void Duneyrr_SetHitboxAttack(Duneyrr* p, u32 power, u32 knockbackPower, u32 unk_44) {
+void Duneyrr_SetHitboxAttack(Duneyrr* p, u32 power, u32 knockbackPower, u32 invincibleTime) {
   HitboxData* hitbox = &p->hitbox;
 
   hitbox->power = power;
   hitbox->knockbackPower = knockbackPower;
-  hitbox->unk_44 = unk_44;
+  hitbox->invincibleTime = invincibleTime;
 }
 
 void Duneyrr_SetHitboxHalfSize(Duneyrr* p, u32 x, u32 y, u32 z) {
@@ -700,7 +698,7 @@ void FUN_08024100(WorldPos* pos) {
   s32 speed;
   s32 velY;
 
-  VEC3_SET(size, 0xA4, 0x10, 0xA4);
+  VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
   table = gRandomTable;
   angle = (u8)_Random(table);
   speed = (_Random(table) & 3) + 2;
@@ -716,8 +714,8 @@ void Duneyrr_InitHitbox(Duneyrr* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0x40, 0x81, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.504), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_080234d8, p);
@@ -728,8 +726,8 @@ void Duneyrr_InitHurtbox(Duneyrr* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  VEC3_SET(halfSize, 0xA4, 0x80, 0xA4);
-  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, Q8(0.641), Q8(0.5), Q8(0.641));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, Duneyrr_OnHurt, p);
@@ -762,7 +760,7 @@ NON_MATCH void Duneyrr_PollMessages(Duneyrr* p) {
         break;
       }
       case 2: {
-        boss->unk_114 = ((u8)msg->args[0] + 5) * 32;
+        boss->destAngle = ((u8)msg->args[0] + 5) * 32;
         Boss_SetSubStates(boss, 2, 0, 1);
         break;
       }
@@ -839,7 +837,7 @@ NON_MATCH void FUN_080245e4(Duneyrr* p) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
     p->invincibleTimer--;
   }
-  if (mover->pos.y > 0x27F) {
+  if (mover->pos.y >= Q8(2.5)) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX);
   }
   hitbox = &p->hurtbox;
@@ -860,7 +858,7 @@ NON_MATCH void FUN_080245e4(Duneyrr* p) {
   if (p->shakeAmp != 0) {
     u32 angle = Random();
 
-    p->sprite.pos.x += Trig_Fix12ToInt(COS(angle) * (p->shakeAmp * 2));
+    p->sprite.pos.x += FixToInt(12, COS(angle) * (p->shakeAmp * 2));
     p->sprite.pos.z += POLAR_Z(p->shakeAmp * 2, angle);
     p->shakeAmp--;
   }
@@ -876,8 +874,8 @@ NON_MATCH void FUN_080245e4(Duneyrr* p) {
     }
   }
   if (p->flashTimer > 0 && --p->flashTimer == 0) {
-    p->sprite.plttID = 0x223;
-    p->sprite.pltt = &gObjPlttData[0x223 * 16];
+    p->sprite.plttID = 547;
+    p->sprite.pltt = &gObjPlttData[547 * 16];
   }
   p->unk_564++;
   boss->weaponExpMask = 0;
@@ -902,17 +900,10 @@ NON_MATCH void FUN_08024834(Duneyrr* p) {
   Boss* boss = &p->base;
 
   if (Entity5DA5_AreAllLit()) {
-    if (p->height <= 0xA3) {
+    if (p->height < Q8(0.641)) {
       s32 dx = boss->mover.pos.x - p->homePos.x;
       s32 dz = boss->mover.pos.z - p->homePos.z;
-
-      if (dx < 0) {
-        dx = -dx;
-      }
-      if (dz < 0) {
-        dz = -dz;
-      }
-      if (dx < 0x40 && dz < 0x40) {
+      if (abs(dx) < Q8(0.25) && abs(dz) < Q8(0.25)) {
         if (p->unk_553 >= p->unk_77c) {
           Boss_SetSubState2(boss, 7);
         } else {
@@ -921,15 +912,15 @@ NON_MATCH void FUN_08024834(Duneyrr* p) {
       } else {
         Vec3* home = &p->homePos;
 
-        if (home->x < 0x120) {
-          home->x = 0x120;
-        } else if (home->x > 0xBE0) {
-          home->x = 0xBE0;
+        if (home->x < Q8(1.125)) {
+          home->x = Q8(1.125);
+        } else if (home->x > Q8(11.875)) {
+          home->x = Q8(11.875);
         }
-        if (home->z < 0x220) {
-          home->z = 0x220;
-        } else if (home->z > 0xCE0) {
-          home->z = 0xCE0;
+        if (home->z < Q8(2.125)) {
+          home->z = Q8(2.125);
+        } else if (home->z > Q8(12.875)) {
+          home->z = Q8(12.875);
         }
         Boss_SetTarget(boss, home->x, home->y, home->z);
         Boss_SetSubStates(boss, 0, 0, 1);
@@ -939,10 +930,10 @@ NON_MATCH void FUN_08024834(Duneyrr* p) {
     }
   } else if (p->unk_54c != 0) {
     Boss_SetSubState2(boss, 2);
-  } else if (p->height <= 0x2FF) {
+  } else if (p->height < Q8(3)) {
     Vec3 pos;
 
-    Duneyrr_GetQuadrantPos(&pos, (p->playerQuadrant + 2) & 3, 0x300);
+    Duneyrr_GetQuadrantPos(&pos, (p->playerQuadrant + 2) & 3, Q8(3));
     if (pos.x < 0x120) {
       pos.x = 0x120;
     } else if (pos.x > 0xBE0) {
@@ -956,7 +947,7 @@ NON_MATCH void FUN_08024834(Duneyrr* p) {
     Boss_SetTarget(boss, pos.x, pos.y, pos.z);
     Boss_SetSubStates(boss, 0, 0, 1);
     if (Boss_GetHPRatio(boss) < 0x60) {
-      p->unk_551 = FUN_080591f4() > 5 ? 0 : FUN_08059210() != 0 ? 4 : 6;
+      p->unk_551 = Entity08058ffc_GetActiveCount() > 5 ? 0 : FUN_08059210() != 0 ? 4 : 6;
     }
   } else if (boss->lowHP) {
     Boss_SetSubState2(boss, (p->unk_554 & 7) == 0 ? 8 : 2);
@@ -1044,8 +1035,8 @@ NON_MATCH void FUN_08024cec(Duneyrr* p) {
   }
   playerPos = boss->playerPos[0];
   x = playerPos->x;
-  z = playerPos->z - 0x200;
-  y = p->unk_54c == 0 ? 0x300 : 0x80;
+  z = playerPos->z - Q8(2);
+  y = p->unk_54c == 0 ? Q8(3) : Q8(0.5);
   if (x < 0x120) {
     x = 0x120;
   } else if (x > 0xBE0) {
@@ -1072,9 +1063,7 @@ NON_MATCH void FUN_08024e58(Duneyrr* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Vec3* playerPos;
-  s32 x;
-  s32 y;
-  s32 z;
+  s32 x, y, z;
 
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 3);
@@ -1274,7 +1263,7 @@ void FUN_080255a0(Duneyrr* p) { PTR_ARRAY_085aab34[p->base.subState2](p); }
 void FUN_080255bc(Duneyrr* p) {
   u32 mask = FLAG03002BC0_UNK_2;
 
-  if (!(u32_03002bc0[0] & mask) && !FUN_08024be4(p)) {
+  if (!(gPlayerStates[0] & mask) && !FUN_08024be4(p)) {
     PTR_ARRAY_085aab48[p->base.subState1](p);
   }
 }
@@ -1293,7 +1282,7 @@ void FUN_08025654(Boss* boss, s32 timer) {
 
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
-    Boss_PlayAnim(&p->base, &p->sprite, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(&p->base, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
   }
   if (!p->base.damageCallback(&p->base) && !p->base.stateRequestCallback(&p->base) && timer >= p->stateDuration) {
     p->base.subStateDone = TRUE;
@@ -1307,7 +1296,7 @@ NON_MATCH void FUN_080256c4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
     p->unk_550 = p->unk_551;
     p->unk_551 = 0;
   }
@@ -1358,7 +1347,7 @@ NON_MATCH void FUN_08025830(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 1, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 1, PLAYMODE_ONCE_AND_STOP, 0);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     if (boss->targetDistSq <= p->arriveDistSq) {
@@ -1388,7 +1377,7 @@ NON_MATCH void FUN_08025948(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 2, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 2, PLAYMODE_LOOP, 0);
     p->unk_160 = 0;
     p->unk_171 = 0;
     p->shakeOrigin = mover->pos;
@@ -1446,7 +1435,7 @@ void FUN_08025c84(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 3, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 3, PLAYMODE_ONCE_AND_STOP, 0);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss) && (p->sprite.animEvents & MAIN_ANIM_EVENT_ENDED)) {
     boss->subStateDone = TRUE;
@@ -1461,7 +1450,7 @@ NON_MATCH void FUN_08025cf8(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     s32 d;
@@ -1503,7 +1492,7 @@ NON_MATCH void FUN_08025e10(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 4, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 0);
     p->unk_16a = (Random() & 7) + 3;
     FUN_08024068(p);
     PlaySound_0824078c(SE_CHANGE_BAT | BGM_16 | BGM_QUAKE);
@@ -1545,7 +1534,7 @@ void FUN_08025f8c(Boss* boss, s32 timer) {
     WorldPos* pos;
 
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 5, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 5, PLAYMODE_ONCE_AND_STOP, 0);
     pos = &boss->mover.pos;
     FUN_08015a90(pos, 4, 5, 0x3001, 0x40, 8, 0x100, 0x100);
     FUN_08015a90(pos, 6, 5, 0x3001, 0x40, 10, 0x100, 0x100);
@@ -1563,14 +1552,14 @@ NON_MATCH void FUN_0802604c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
     Duneyrr_SetHurtboxPower(p, p->hurtboxPower2);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     bool32 arrived;
 
     if (boss->targetDistSq < 0x40000 && boss->prevAnimID == 0) {
-      Boss_PlayAnim(boss, &p->sprite, &p->gfx, 6, 2, 0);
+      Boss_PlayAnim(boss, &p->sprite, &p->gfx, 6, PLAYMODE_ONCE_AND_STOP, 0);
     }
     if (boss->targetDistSq > p->arriveDistSq) {
       u32 angle = boss->targetAngle;
@@ -1604,7 +1593,7 @@ void FUN_080261b4(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 6, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 6, PLAYMODE_LOOP, 0);
     p->unk_160 = 0;
     p->unk_16e = 0;
     PlaySound_0824078c(SONG_951);
@@ -1631,7 +1620,7 @@ void FUN_080262c0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 7, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 7, PLAYMODE_ONCE_AND_STOP, 0);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss) && (p->sprite.animEvents & MAIN_ANIM_EVENT_ENDED)) {
     boss->subStateDone = TRUE;
@@ -1646,7 +1635,7 @@ NON_MATCH void FUN_08026334(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 9, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 9, PLAYMODE_ONCE_AND_STOP, 0);
     if (Entity5DA5_AreAllLit()) {
       s32 i;
       s32 delay = 24;
@@ -1698,8 +1687,8 @@ NON_MATCH void FUN_08026514(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
-    p->unk_550 = FUN_080591f4() > 6 ? 3 : 6;
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
+    p->unk_550 = Entity08058ffc_GetActiveCount() > 6 ? 3 : 6;
     p->unk_160 = 0;
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
@@ -1751,7 +1740,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 8, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 8, PLAYMODE_LOOP, 0);
     p->unk_160 = 0;
     p->unk_544 = p->unk_542;
     for (i = 0; i < 4; i++) {
@@ -1785,7 +1774,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
   if (p->sprite.animEvents & MAIN_ANIM_EVENT_ENDED) {
     if (boss->prevAnimID == 8) {
       if (p->unk_160 > 3) {
-        Boss_PlayAnim(boss, &p->sprite, &p->gfx, 9, 2, 0);
+        Boss_PlayAnim(boss, &p->sprite, &p->gfx, 9, PLAYMODE_ONCE_AND_STOP, 0);
         if (Entity5DA5_AreAllLit()) {
           s32 delay = 24;
 
@@ -1806,7 +1795,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は p と boss のレジスタの持ち方 (318/326), 高さの補間で unk_184 == 0 のときと時間切れのときの代入を原典は別々に持つがこちらは1つに畳む
+// 残差は p と boss のレジスタの持ち方 (318/326), 高さの補間で jumpDuration == 0 のときと時間切れのときの代入を原典は別々に持つがこちらは1つに畳む
 NON_MATCH void FUN_08026968(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Duneyrr* p = (Duneyrr*)boss;
@@ -1815,16 +1804,16 @@ NON_MATCH void FUN_08026968(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 10, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 10, PLAYMODE_LOOP, 0);
     p->unk_16a = (Random() & 7) + 3;
     FUN_08023530(p);
-    if (p->unk_180 != 0) {
-      s32 dx = p->unk_190.x - p->unk_188.x;
-      s32 dz = p->unk_190.z - p->unk_188.z;
+    if (p->jumpSpeed != 0) {
+      s32 dx = p->jumpTo.x - p->jumpFrom.x;
+      s32 dz = p->jumpTo.z - p->jumpFrom.z;
 
-      p->unk_184 = Div(Sqrt(dx * dx + dz * dz), p->unk_180);
+      p->jumpDuration = Div(Sqrt(dx * dx + dz * dz), p->jumpSpeed);
     } else {
-      p->unk_184 = 1;
+      p->jumpDuration = 1;
     }
     if (p->unk_16f == 0) {
       Boss_GiveWeaponExp(boss, p->weaponExp);
@@ -1837,25 +1826,25 @@ NON_MATCH void FUN_08026968(Boss* boss, s32 timer) {
   Camera_MoveTo(&pos);
   p->damage = 0;
   {
-    u32 angle = ArcTan2_8(p->unk_190.x - mover->pos.x, p->unk_190.z - mover->pos.z);
-    s32 speed = p->unk_180;
+    u32 angle = ArcTan2_8(p->jumpTo.x - mover->pos.x, p->jumpTo.z - mover->pos.z);
+    s32 speed = p->jumpSpeed;
 
     mover->delta.x = POLAR_X(speed, angle);
     mover->delta.y = 0;
     mover->delta.z = POLAR_Z(speed, angle);
   }
-  if (timer < p->unk_184) {
-    if (p->unk_184 != 0) {
-      p->height = p->unk_188.y + Div(timer * (p->unk_190.y - p->unk_188.y), p->unk_184);
+  if (timer < p->jumpDuration) {
+    if (p->jumpDuration != 0) {
+      p->height = p->jumpFrom.y + Div(timer * (p->jumpTo.y - p->jumpFrom.y), p->jumpDuration);
     } else {
-      p->height = p->unk_190.y;
+      p->height = p->jumpTo.y;
     }
   } else {
-    p->height = p->unk_190.y;
+    p->height = p->jumpTo.y;
   }
   FUN_08023bd8(p, 0);
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
-  if (timer >= p->unk_184) {
+  if (timer >= p->jumpDuration) {
     if (p->unk_16f == 0) {
       PlaySound_0824078c(SONG_955);
     } else {
@@ -1864,7 +1853,7 @@ NON_MATCH void FUN_08026968(Boss* boss, s32 timer) {
     if (++p->unk_16f <= 1) {
       s32 i;
 
-      p->unk_180 = (p->unk_180 * 32) >> 6;
+      p->jumpSpeed = (p->jumpSpeed * 32) >> 6;
       Boss_SetState(boss, FUN_08026968, 15);
       for (i = 0; i < 8; i++) {
         FUN_08023bd8(p, 0);
@@ -1891,16 +1880,16 @@ NON_MATCH void FUN_08026c50(Boss* boss, s32 timer) {
     s32 dz;
 
     boss->stateEntered = FALSE;
-    p->unk_188 = mover->pos;
-    p->unk_190.x = 0x680;
-    p->unk_190.y = 0;
-    p->unk_190.z = 0x500;
+    p->jumpFrom = mover->pos;
+    p->jumpTo.x = 0x680;
+    p->jumpTo.y = 0;
+    p->jumpTo.z = 0x500;
     p->unk_162 = 0;
-    p->unk_180 = 8;
-    dx = p->unk_190.x - p->unk_188.x;
-    dz = p->unk_190.z - p->unk_188.z;
-    p->unk_184 = Div(Sqrt(dx * dx + dz * dz), p->unk_180);
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 11, 2, 0);
+    p->jumpSpeed = 8;
+    dx = p->jumpTo.x - p->jumpFrom.x;
+    dz = p->jumpTo.z - p->jumpFrom.z;
+    p->jumpDuration = Div(Sqrt(dx * dx + dz * dz), p->jumpSpeed);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 11, PLAYMODE_ONCE_AND_STOP, 0);
   }
   pos = mover->pos;
   pos.y += p->unk_174;
@@ -1908,29 +1897,29 @@ NON_MATCH void FUN_08026c50(Boss* boss, s32 timer) {
   p->damage = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0 | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   {
-    s32 dx = p->unk_190.x - mover->pos.x;
-    s32 dz = p->unk_190.z - mover->pos.z;
+    s32 dx = p->jumpTo.x - mover->pos.x;
+    s32 dz = p->jumpTo.z - mover->pos.z;
 
-    if (dx * dx + dz * dz >= p->unk_180 * p->unk_180) {
+    if (dx * dx + dz * dz >= p->jumpSpeed * p->jumpSpeed) {
       u32 angle = ArcTan2_8(dx, dz);
-      s32 speed = p->unk_180;
+      s32 speed = p->jumpSpeed;
 
       mover->delta.x = POLAR_X(speed, angle);
       mover->delta.y = 0;
       mover->delta.z = POLAR_Z(speed, angle);
     }
   }
-  if (timer < p->unk_184) {
-    if (p->unk_184 != 0) {
-      p->height = p->unk_188.y + Div(timer * (p->unk_190.y - p->unk_188.y), p->unk_184);
+  if (timer < p->jumpDuration) {
+    if (p->jumpDuration != 0) {
+      p->height = p->jumpFrom.y + Div(timer * (p->jumpTo.y - p->jumpFrom.y), p->jumpDuration);
     } else {
-      p->height = p->unk_190.y;
+      p->height = p->jumpTo.y;
     }
   } else {
-    p->height = p->unk_190.y;
+    p->height = p->jumpTo.y;
   }
-  if (p->unk_184 > 0) {
-    p->height += Trig_Fix12ToInt(SIN(Div(timer * 128, p->unk_184)) * 256);
+  if (p->jumpDuration > 0) {
+    p->height += Trig_Fix12ToInt(SIN(Div(timer * 128, p->jumpDuration)) * 256);
   }
   if (p->height > 0x1FF) {
     FUN_08023bd8(p, 1);
@@ -1978,10 +1967,10 @@ NON_MATCH void FUN_08026c50(Boss* boss, s32 timer) {
   if (boss->animDone && p->unk_162 == 0) {
     FUN_08023818(p);
     p->unk_54b = 200;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 19, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 19, PLAYMODE_ONCE_AND_STOP, 0);
     p->unk_162 = 1;
   }
-  if (timer >= p->unk_184) {
+  if (timer >= p->jumpDuration) {
     PlaySound_0824078c(SE_899);
     FUN_080592a4();
     if (Entity5DA5_AreAllLit()) {
@@ -2005,7 +1994,7 @@ void FUN_08027090(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 19, 2, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 19, PLAYMODE_ONCE_AND_STOP, 0);
     FUN_08023024(boss, &p->sprite.pos);
     p->unk_54b = 0;
   }
@@ -2034,7 +2023,7 @@ void FUN_08027188(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
   }
   p->damage = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_HIDDEN);
@@ -2046,7 +2035,7 @@ void FUN_080271e0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
+    Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
     p->height = 0x80;
     AuxShadow_SetScaleParams(&p->shadow, 0x60, 0x60, 0x60, 0x60, 0x1964, 100, 6, 1);
     p->height = 0x180;
@@ -2062,7 +2051,7 @@ void FUN_08027278(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, 17, 1, 0);
+    Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, 17, PLAYMODE_LOOP, 0);
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
     p->height = 0x100;
     p->spriteOffsetY = 0;
@@ -2079,7 +2068,7 @@ NON_MATCH void FUN_0802730c(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, 17, 1, 0);
+    Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, 17, PLAYMODE_LOOP, 0);
     boss->targetPos = boss->mover.pos;
     SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
@@ -2113,7 +2102,7 @@ NON_MATCH void FUN_08027454(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, 17, 1, 0);
+    Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, 17, PLAYMODE_LOOP, 0);
     boss->targetPos = boss->mover.pos;
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
     p->height = 0x100;
@@ -2141,7 +2130,7 @@ void FUN_08027588(Duneyrr* p) {
 
   p->base.subStateDone = 0;
   mask = FLAG03002BC0_UNK_2;
-  if (!(u32_03002bc0[0] & mask)) {
+  if (!(gPlayerStates[0] & mask)) {
     Boss_UpdateState(&p->base);
   }
 }
@@ -2169,15 +2158,15 @@ s32 Duneyrr_HandleDamage(Duneyrr* p) {
     p->flashTimer = 10;
     p->sprite.plttID = 0x223;
     p->sprite.pltt = p->pltt[0];
-    VEC3_SET(ofs, 0x10, 0, 0x10);
-    FUN_0805fe7c(hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
+    VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
+    CreateDamageNumber(hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
     if (p->base.hp <= 0) {
       PlaySound_0824078c(SE_CHANGE_BAT | BGM_16 | BGM_10);
       p->base.hp = 0;
       SET_FLAGS(p->base.flags, BOSSFLAG_UNK_1);
       p->unk_16f = 0;
       p->unk_162 = 0;
-      p->unk_180 = 0x80;
+      p->jumpSpeed = 0x80;
       p->unk_167 = p->base.players[0]->mover.angle;
       Boss_SetState(&p->base, FUN_08026968, 15);
       FUN_08059248();
@@ -2237,9 +2226,7 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  p->homePos.x = 0x680;
-  p->homePos.y = 0x80;
-  p->homePos.z = 0x600;
+  VEC3_SET(p->homePos, Q8(6.5), Q8(0.5), Q8(6));
   if (VM_SeekToNamedArg('p')) {
     VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
     angle = VM_GetValue();
@@ -2276,11 +2263,11 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
     p->unk_78c = 35;
   }
   Boss_Init(boss, id, bossID, &pos, angle);
-  boss->unk_114 = angle;
-  boss->unk_ab = VM_GetNamedArgValue('i', 0);
-  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, 0, 60, &pos);
-  Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, 1, 0);
-  if (boss->unk_ab != 0) {
+  boss->destAngle = angle;
+  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
+  Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
+  if (boss->isDemo != 0) {
     switch (VM_GetNamedArgValue('D', 1)) {
       case 0: {
         Boss_SetSubStates(boss, 2, 0, 0);
@@ -2370,7 +2357,7 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
   {
     s32 i;
 
-    rgb555* src = &gObjPlttData[0x132 * 16];
+    rgb555* src = &gObjPlttData[306 * 16];
 
     for (i = 0; i < 16; i++) {
       CpuCopy32(src, p->pltt[i], sizeof(p->pltt[i]));

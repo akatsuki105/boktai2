@@ -31,7 +31,7 @@ static_assert(sizeof(Entity08203ad0) == 1280);
 
 static Entity08203ad0* gEntity08203ad0;  // 0x0300021C
 
-void FUN_08203690(Entity08203ad0Slot* slot, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44);
+void FUN_08203690(Entity08203ad0Slot* slot, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime);
 
 // 空いている枠を探す, ttl が 0 で非表示のものが空き
 // 残差1命令: 原典は return slot のブロックをループの手前に置くので、ガードが bls + b の2段になる
@@ -56,7 +56,7 @@ NON_MATCH Entity08203ad0Slot* FUN_0820372c(void) {
 }
 
 // 空き枠を1つ取ってエフェクトを出す, Y座標は足元のタイルの高さに合わせる
-void FUN_08203770(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44, s32 ttl) {
+void FUN_08203770(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime, s32 ttl) {
   Entity08203ad0* p = gEntity08203ad0;
   Entity08203ad0Slot* slot = FUN_0820372c();
 
@@ -76,7 +76,7 @@ void FUN_08203770(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 
     slot->sprite.pos.y = (GetTileAt(&slot->sprite.pos)->heightStairs & 0xF) << 8;
     slot->ttl = ttl;
     slot->sprite.flags &= ~SPRFLAG_HIDDEN;
-    FUN_08203690(slot, power, unk_40, attrs, unk_44);
+    FUN_08203690(slot, power, unk_40, attrs, invincibleTime);
   }
 }
 
@@ -216,9 +216,9 @@ Entity08203ad0* Entity08203ad0_Create(void) {
 }
 
 // エフェクトを出す入口, エンティティがまだなければ先に作る
-s32 FUN_08203b1c(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44, s32 ttl) {
+s32 FUN_08203b1c(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 invincibleTime, s32 ttl) {
   if (gEntity08203ad0 == NULL) {
     gEntity08203ad0 = Entity08203ad0_Create();
   }
-  FUN_08203770(pos, power, unk_40, attrs, unk_44, ttl);
+  FUN_08203770(pos, power, unk_40, attrs, invincibleTime, ttl);
 }

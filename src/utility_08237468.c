@@ -243,7 +243,7 @@ NON_MATCH void MainSprite_SetNumber(MainSprite* p, MainSpriteGfx* gfx, s32 value
       p->flags |= SPRFLAG_HIDDEN;
     } else {
       p->flags &= ~SPRFLAG_HIDDEN;
-      MainSprite_SetPose(p, gfx, digits[off + j], 0);
+      MainSprite_SetPose(p, gfx, digits[off + j], PLAYMODE_PAUSE);
       p->pos.x = px;
       p->pos.y = y;
     }

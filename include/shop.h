@@ -51,17 +51,17 @@ typedef struct {
 } ShopSpritePair;
 static_assert(sizeof(ShopSpritePair) == 224);
 
-void FUN_080b95d0(ShopCursor* cursor, s32 param_2, MainSprite* sprite1, MainSprite* sprite2);
+void FUN_080b95d0(ShopCursor* cursor, MainSprite* sprite0, MainSprite* sprite1, MainSprite* sprite2);
 void FUN_080b9a0c(ShopSpritePair* p);
 void FUN_080b9400(s32 kind);
 void FUN_080b94cc(s32 kind);
 void FUN_080b9894(ShopSpritePair* p);
 void ShopCursor_Init(ShopCursor* p, u32 kind, u32 row, u32 col, u32 unk);
-void FUN_080b9fc4(ShopCursor* p, MainSprite* sprite);
+void ShopCursor_PlaceSprite(ShopCursor* p, MainSprite* sprite);
 s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3);
 void FUN_080b9fe8(ShopCursor* p);
 void FUN_080b9d94(ShopCursor* p, u32 unk);
-void FUN_080b9938(s16* param_1, s32 param_2);
+void Shop_GetSlotPos(s16* pos, s32 idx);
 void FUN_080b98c0(MainSpriteGfx* gfx, s32 param_2, s32 param_3);
 void FUN_080b95bc(MainSprite* p, u16 plttID);
 void FUN_080b99a0(ShopSpritePair* p);

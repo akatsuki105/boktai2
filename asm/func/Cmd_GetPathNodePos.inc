@@ -16,27 +16,27 @@
 	blt _0823502C
 	add r4, sp, #8
 	adds r0, r4, #0
-	bl FUN_0823167c
+	bl VM_GetMemoryRef
 	mov r0, sp
 	movs r1, #0
 	ldrsh r2, [r0, r1]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0823206c
+	bl VM_StoreMemoryRef
 	adds r0, r4, #0
-	bl FUN_0823167c
+	bl VM_GetMemoryRef
 	movs r0, #2
 	ldrsh r2, [r5, r0]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0823206c
+	bl VM_StoreMemoryRef
 	adds r0, r4, #0
-	bl FUN_0823167c
+	bl VM_GetMemoryRef
 	movs r1, #4
 	ldrsh r2, [r5, r1]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0823206c
+	bl VM_StoreMemoryRef
 	movs r0, #0
 	b _08235030
 _0823502C:

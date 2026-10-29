@@ -24,16 +24,16 @@ static_assert(sizeof(AlarmPanel) == 248);
 
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 
-// 太陽ゲージが残っていて、プレイヤーが1タイル以内にいるか
-s32 AlarmPanel_IsTriggered(AlarmPanel* p) {
+// 太陽ゲージが残っていて、プレイヤーが範囲内にいるかどうかを判定する
+bool32 AlarmPanel_IsTriggered(AlarmPanel* p) {
   if (gStat->sunGauge != 0) {
     s32 dx = gPlayerPtr[0]->mover.pos.x - p->mover.pos.x;
     s32 dz = gPlayerPtr[0]->mover.pos.z - p->mover.pos.z;
-    if (dx <= 0x7F && dz <= 0x7F && dx * dx + dz * dz <= 0x3FFF) {
-      return 1;
+    if (dx < Q8(0.5) && dz < Q8(0.5) && dx * dx + dz * dz < (Q8(0.5) * Q8(0.5))) {
+      return TRUE;
     }
   }
-  return 0;
+  return FALSE;
 }
 
 s32 AlarmPanel_Update(AlarmPanel* p) {
@@ -94,13 +94,9 @@ NON_MATCH s32 AlarmPanel_Init(AlarmPanel* p, u32 id) {
   s32 scriptID;
   p->id = id;
   if (VM_SeekToNamedArg('p')) {
-    p->mover.pos.x = VM_GetValue();
-    p->mover.pos.y = VM_GetValue();
-    p->mover.pos.z = VM_GetValue();
+    VEC3_SET(p->mover.pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    p->mover.pos.x = 0;
-    p->mover.pos.y = 0;
-    p->mover.pos.z = 0;
+    VEC3_SET(p->mover.pos, 0, 0, 0);
   }
   sprite = &p->sprite;
   gfx = &p->gfx;
@@ -132,8 +128,8 @@ NON_MATCH s32 AlarmPanel_Init(AlarmPanel* p, u32 id) {
   Video_SetAuxSpritePltt(gfx, 69);
   sprite->flags |= SPRFLAG_BLINK_ODD | SPRFLAG_HIDDEN;
   sprite->pos = p->mover.pos;
-  sprite->pos.x -= 0x80;
-  sprite->pos.z -= 0x80;
+  sprite->pos.x -= Q8(0.5);
+  sprite->pos.z -= Q8(0.5);
   scriptID = VM_SeekToNamedArg('R');
   if (scriptID != 0) {
     scriptID = VM_GetValue();

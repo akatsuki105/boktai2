@@ -93,7 +93,7 @@ s32 Entity080601a8_Init(Entity080601a8* p, s32 plttID, rgb555* pltt) {
   s32 i;
 
   p->activeMask = 0;
-  Video_GetAuxSprite(&p->gfx, 0x61F9);
+  Video_GetAuxSprite(&p->gfx, SPRITE_DUNEYRR_AUX);
   Video_SetAuxSpritePltt(&p->gfx, 758);
   if (pltt != NULL) {
     p->gfx.plttID = plttID;

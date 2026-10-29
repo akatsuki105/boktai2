@@ -423,6 +423,79 @@ in source position. The rejection conditions have not been read here.
 
 ---
 
+## 10. Constant-pool label numbers leak between functions through GCSE
+
+`[source]` `varasm.c:3228-3245` (`force_const_mem`) names every pooled constant
+after a counter that is never reset between functions:
+
+```c
+      pool->labelno = const_labelno;
+      ...
+      ASM_GENERATE_INTERNAL_LABEL (label, "LC", const_labelno);
+
+      ++const_labelno;
+```
+
+`[source]` `gcse.c:1501-1513` (`hash_expr_1`) hashes a `SYMBOL_REF` by the
+characters of its name, so `*.LC99` and `*.LC100` land in buckets decided by
+that counter:
+
+```c
+    case SYMBOL_REF:
+      {
+	unsigned int h = 0;
+	unsigned char *p = (unsigned char *) XSTR (x, 0);
+	while (*p)
+	  h += (h << 7) + *p++; /* ??? revisit */
+	hash += ((unsigned) SYMBOL_REF << 7) + h;
+	return hash;
+      }
+```
+
+`[source]` `gcse.c:4521-4550` (`pre_delete`) walks the expression hash table
+bucket by bucket and creates a new pseudo for each redundant expression in that
+order:
+
+```c
+  for (i = 0; i < expr_hash_table_size; i++)
+    {
+      ...
+		  if (expr->reaching_reg == NULL)
+		    expr->reaching_reg
+		      = gen_reg_rtx (GET_MODE (SET_DEST (set)));
+```
+
+`[derived]` The pseudo numbers that PRE gives to the loads of pooled addresses
+(`ldr rN, =gSomething`) therefore depend on how many pool constants every
+earlier function in the translation unit produced, and register allocation
+breaks priority ties on that number (§4.3). A function's allocation can change
+when nothing in it changes, only because a function before it in the same `.c`
+gained or lost pool constants. A `NAKED` function emits no pool constants
+through the compiler at all, so turning one into C shifts every later
+function's `.LC` numbers by however many constants it uses.
+
+Seen on `FUN_0807a270` (`src/player.c`), which stores 0 to seven `u16` globals
+through seven hoisted address registers. With `FUN_08079f1c` just before it left
+`NAKED`, its constants are `.LC86`-`.LC101` and the seven addresses go to r5, r6,
+r7, ip, r8, r9, sl in source order, matching the ROM. With `FUN_08079f1c` in C
+(its own stream identical to the target, 360/360), they become `.LC91`-`.LC106`;
+in the `-dG` dump the pseudos for `.LC100`-`.LC106` are created first (76-82), so
+the last two globals take r5/r6 and the ROM no longer matches. Reordering the
+seven stores, chaining them, or moving the other statements did not move the
+result, as expected when the order comes from the label names.
+
+**From C.** Nothing inside the affected function reaches this; the input is the
+`.LC` count of everything before it in the file. A function whose match depends
+on it is matched only for the current count. The original game compiled with
+all the earlier functions in C, so such a pair is expected to match together
+again once enough of the earlier functions in the file are decompiled; padding
+the count with unused constants would also work but is not natural C. To check
+whether a mismatch is this effect, build the file twice with the earlier
+function as `NAKED` and as C and compare the later function, or diff the
+`-dG` (`.gcse`) dumps of the two builds for that function.
+
+---
+
 ## Adding an entry
 
 Three requirements, in order of importance:

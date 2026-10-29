@@ -215,7 +215,7 @@ _080FA4F8:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r3, #0xb9
 	lsls r3, r3, #3
 	adds r0, r5, r3

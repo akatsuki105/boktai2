@@ -29,7 +29,7 @@ typedef struct {
   s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
   s16 shakeTimer;                  // 0x44, 20 から数え下げ, 10 を超えている間はスプライトを揺らす
   ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
-  u16 baseAngle;                   // 0x48, 掴んだ瞬間のプレイヤーの angle_400
+  u16 grabMashBase;                // 0x48, 掴んだ瞬間のプレイヤーの mashCount
   u16 prevAngleDelta;              // 0x4A, 前回 FUN_080dac24 を回したときの角度差
   HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
   Vec3 pos;                        // 0x9C, Hitbox_SetPos と spr.pos へ渡される
@@ -49,6 +49,16 @@ bool32 FUN_0809dfec(s32 mapArea);
 void FUN_080db0f8(Entity080db520Elem* elem);
 
 IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
+
+static inline bool8 Entity080db520_IsActive(Entity080db520* p, s32 i) {
+  if (TEST_FLAGS(p->activeMask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
+static inline bool8 IsCurrentZone(u32 zoneID) {
+  if (gStat->zoneID == zoneID) return TRUE;
+  return FALSE;
+}
 
 // timer が進むほど短い周期になる, FUN_080db040 の点滅間隔
 const u8 sBlinkIntervals[4] = {8, 4, 2, 1};  // 0x085AD310
@@ -121,8 +131,8 @@ void Entity080db520_InitHurtbox(Entity080db520Elem* elem, u32 param_2, u32 param
   Vec3 offset;
   Vec3 halfSize;
 
-  VEC3_SET(offset, 0x40, 0x80, 0x40);
-  VEC3_SET(halfSize, 0x10, 0x80, 0x10);
+  VEC3_SET(offset, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(halfSize, Q8(0.063), Q8(0.5), Q8(0.063));
   Hitbox_Init(&elem->hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(&elem->hitbox, &elem->pos, 0);
   Hitbox_SetHandler(&elem->hitbox, FUN_080dacac, elem);
@@ -130,14 +140,11 @@ void Entity080db520_InitHurtbox(Entity080db520Elem* elem, u32 param_2, u32 param
 }
 
 // 空いている枠を確保して返す, 無ければ NULL
-// 残差1命令 (34 対 35), 原典は &elems[i] を muls で毎回作るが agbcc は誘導変数に落として基底をループ外へ巻き上げる
-// 使用中判定を static inline bool32 (attack_box.c の AttackBoxManager_IsSlotUsed と同じ形) にすると 0/1 の作り置きは再現できるが, 誘導変数の方は動かない
-NON_MATCH Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
-#ifdef NONMATCHING_C
+Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (!(p->activeMask & (1 << i))) {
+    if (!Entity080db520_IsActive(p, i)) {
       Entity080db520Elem* e = &p->elems[i];
 
       p->activeMask |= 1 << i;
@@ -146,50 +153,31 @@ NON_MATCH Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_080dad4c.inc");
-#endif
 }
 
 // 日中で, かつ今いるゾーンがこの枠の指定と同じなら TRUE
-// 残差1命令 (37/38), 原典は 0/1 を bne/movs#1/b/movs#0 の二分岐で作るが agbcc は movs#0 を手前のガードより上へ巻き上げて条件付き代入1つに畳む
-// bool8 のローカルを宣言と代入に分けると 0/1 の作り置き自体は再現できる (static inline bool32 や初期化子つき宣言では畳まれる). 比較の左右入れ替え, 分岐極性反転, ?: も試済
-NON_MATCH bool8 FUN_080dad94(Entity080db520Elem* elem) {
-#ifdef NONMATCHING_C
-  bool8 same;
-
+bool8 FUN_080dad94(Entity080db520Elem* elem) {
   if (gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4) {
     return FALSE;
   }
-  if (!(gStat->unk_934 & 2)) {
+  if (!(gStat->mapFlags & MPF_OUTDOOR)) {
     return FALSE;
   }
-  if (gStat->zoneID == elem->zoneID) {
-    same = TRUE;
-  } else {
-    same = FALSE;
-  }
-  if (!same) {
+  if (!IsCurrentZone(elem->zoneID)) {
     return FALSE;
   }
   return TRUE;
-#else
-  INCFUNC("asm/func/FUN_080dad94.inc");
-#endif
 }
 
 // 使用中の枠を見渡して, UNK_4 / UNK_6 がどこにも立っていなければプレイヤーと棺桶の値を戻す
-// 残差5命令 (47/52), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
-// unk_40 をローカルに取ると余計な register copy が1つ増えるので直接2回読む形にした
-NON_MATCH void FUN_080dadec(Entity080db520* p) {
-#ifdef NONMATCHING_C
+void FUN_080dadec(Entity080db520* p) {
   Entity080db520Elem* elems = p->elems;
   bool8 anyUnk4 = FALSE;
   bool8 anyUnk6 = FALSE;
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (p->activeMask & (1 << i)) {
+    if (Entity080db520_IsActive(p, i)) {
       if (elems[i].unk_40 & E080DB520_UNK_4) {
         anyUnk4 = TRUE;
       }
@@ -205,9 +193,6 @@ NON_MATCH void FUN_080dadec(Entity080db520* p) {
   if (!anyUnk6) {
     FUN_0808689c(-1);
   }
-#else
-  INCFUNC("asm/func/FUN_080dadec.inc");
-#endif
 }
 
 // state 1 の更新, プレイヤーに掴まれている間は角度差で揺らし, 条件が切れたら state 2 へ移す
@@ -221,10 +206,10 @@ NON_MATCH void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) {
 
   delta = elem->unk_40 & E080DB520_UNK_4;
   if (delta != 0) {
-    if (gPlayerPtr[0]->angle_400 >= elem->baseAngle) {
-      delta = gPlayerPtr[0]->angle_400 - elem->baseAngle;
+    if (gPlayerPtr[0]->mashCount >= elem->grabMashBase) {
+      delta = gPlayerPtr[0]->mashCount - elem->grabMashBase;
     } else {
-      delta = gPlayerPtr[0]->angle_400 - (elem->baseAngle - 256);
+      delta = gPlayerPtr[0]->mashCount - (elem->grabMashBase - 256);
     }
 
     if (elem->prevAngleDelta != delta && (delta & 4)) {
@@ -367,9 +352,9 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
       player->unk_3ff = elem->unk_42;
       elem->unk_40 |= E080DB520_UNK_4;
       elem->hitbox.flags |= HBFLAG_HIDDEN;
-      elem->baseAngle = gPlayerPtr[0]->angle_400;
+      elem->grabMashBase = gPlayerPtr[0]->mashCount;
       payload = 6;
-      FUN_080ec7e8(2, 1, &payload);
+      FUN_080ec7e8(ENEK_SPIDER, 1, &payload);
       PlaySound_082406e0(SE_UNK_277);
       return;
     }
@@ -431,7 +416,7 @@ NON_MATCH s32 FUN_080db290(Entity080db520* p, Mover* mover) {
   elem->pos = mover->pos;
   elem->zoneID = GetZoneAt(&elem->pos);
   elem->unk_40 = 0;
-  elem->baseAngle = 0;
+  elem->grabMashBase = 0;
   elem->spr.pos = elem->pos;
   AuxSprite_Setup(&elem->spr, &p->gfx, 0);
 
@@ -491,38 +476,28 @@ void (*const sElemUpdates[3])(Entity080db520*, Entity080db520Elem*) = {
 };  // 0x085AD314
 
 // 使用中の枠について unk_3e ごとの更新関数を呼ぶ
-// 残差5命令 (35/40) でこちらが短い, 使用中判定の 0/1 が畳まれる (FUN_080dad4c / Entity080db520_Destroy / attack_box.c と同じ壁)
-// static inline bool32, 明示的な if/else での TRUE/FALSE 代入, != 0, ?:, !used + continue の5通りを試したがどれも作り置きは出ない. elems の基底をローカルに取ると 9→5 ハンクまで寄る
-NON_MATCH s32 Entity080db520_Update(Entity080db520* p) {
-#ifdef NONMATCHING_C
+s32 Entity080db520_Update(Entity080db520* p) {
+  Entity080db520Elem* elems = p->elems;
+
   if (p->activeMask != 0) {
-    Entity080db520Elem* elems = p->elems;
     s32 i;
 
     for (i = 0; i < 8; i++) {
-      if (p->activeMask & (1 << i)) {
-        Entity080db520Elem* e = &elems[i];
-
-        sElemUpdates[e->state](p, e);
+      if (Entity080db520_IsActive(p, i)) {
+        sElemUpdates[elems[i].state](p, &elems[i]);
       }
     }
     FUN_080dadec(p);
   }
 
   return 0;
-#else
-  INCFUNC("asm/func/Entity080db520_Update.inc");
-#endif
 }
 
-// 残差5命令 (30 対 35), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
-// static inline bool32 の判定関数にすると 32 対 35 まで寄るが作り置きは出ない, FUN_080dad4c と同じ壁
-NON_MATCH s32 Entity080db520_Destroy(Entity080db520* p) {
-#ifdef NONMATCHING_C
+s32 Entity080db520_Destroy(Entity080db520* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (p->activeMask & (1 << i)) {
+    if (Entity080db520_IsActive(p, i)) {
       Entity080db520Elem* e = &p->elems[i];
 
       if (e->spr.active) {
@@ -534,9 +509,6 @@ NON_MATCH s32 Entity080db520_Destroy(Entity080db520* p) {
 
   gEntity080db520 = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/Entity080db520_Destroy.inc");
-#endif
 }
 
 s32 Entity080db520_Init(Entity080db520* p) {
@@ -603,7 +575,7 @@ NON_MATCH void FUN_080db578(void) {
   variant = VM_GetNamedArgValue('r', 0);
   elem->zoneID = GetZoneAt(&elem->pos);
   elem->unk_40 = 0;
-  elem->baseAngle = 0;
+  elem->grabMashBase = 0;
   elem->spr.pos = elem->pos;
   AuxSprite_Setup(&elem->spr, &p->gfx, 0);
 
@@ -656,17 +628,14 @@ NON_MATCH void FUN_080db578(void) {
 }
 
 // 不使用?
-// 残差5命令 (43/48), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
-// bool8 / bool32 のローカルを if/else で埋める形も試したが, ループ内では rsbs/orrs の符号技に化けて遠のく
-NON_MATCH void Entity080db520_EnableAllHitboxes(void) {
-#ifdef NONMATCHING_C
+void Entity080db520_EnableAllHitboxes(void) {
   Entity080db520* p = gEntity080db520;
 
   if (p != NULL) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
-      if (p->activeMask & (1 << i)) {
+      if (Entity080db520_IsActive(p, i)) {
         Entity080db520Elem* e = &p->elems[i];
 
         if (e->unk_42 >= 0 && e->state != 2) {
@@ -676,7 +645,4 @@ NON_MATCH void Entity080db520_EnableAllHitboxes(void) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Entity080db520_EnableAllHitboxes.inc");
-#endif
 }

@@ -75,7 +75,7 @@ _080E7326:
 	adds r0, r5, r2
 	ldrb r2, [r0]
 	movs r0, #0
-	bl FUN_080e510c
+	bl PlayEnemyEmoteCry
 _080E734E:
 	cmp r6, #0x64
 	bne _080E7362

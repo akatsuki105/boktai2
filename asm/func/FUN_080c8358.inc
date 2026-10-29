@@ -75,7 +75,7 @@ _080C83E0:
 	cmp r4, #0
 	bne _080C841A
 	adds r0, r5, #0
-	bl FUN_080c4990
+	bl Jormungandr_EasePos
 	mov r0, sl
 	cmp r0, #0x3b
 	ble _080C841A

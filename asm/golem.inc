@@ -4751,7 +4751,7 @@ _08117704:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _08117720:
 	ldr r1, _08117770 @ =0x00000466
 	adds r0, r5, r1
@@ -11422,17 +11422,17 @@ _0811AA8E:
 	movs r1, #0
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x7f
 	movs r3, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
 	bl FUN_080e64b4
@@ -11838,7 +11838,7 @@ _0811AE12:
 	adds r0, r7, #0
 	bl FUN_080f8ae0
 	adds r0, r7, #0
-	bl FUN_080e8360
+	bl PlayEnemyDeathCry
 _0811AE1E:
 	add sp, #0x44
 	pop {r3, r4, r5}
@@ -16185,7 +16185,7 @@ _0811CFD6:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	adds r0, r5, #0
 	bl FUN_080e6750
 	ldr r2, _0811D074 @ =0x000001DF
@@ -16291,7 +16291,7 @@ _0811D0E4:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 	movs r0, #3
 	movs r1, #1
 	movs r4, #0x8d
@@ -17390,7 +17390,7 @@ FUN_0811d928: @ 0x0811D928
 	lsls r1, r1, #3
 	adds r0, r2, r1
 	ldrh r0, [r0]
-	bl FUN_0823b9cc
+	bl Camera_Shake
 	ldrh r0, [r4]
 	subs r0, #1
 	strh r0, [r4]
@@ -21256,7 +21256,7 @@ _0811F770:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #2
-	bl FUN_080e5718
+	bl Enemy_SetEmote
 _0811F780:
 	movs r1, #0x10
 	ldr r0, [r4]
@@ -23497,7 +23497,7 @@ _081208DC:
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e4964
+	bl Enemy_RunStateHandler
 _081208FC:
 	adds r0, r4, #0
 	bl FUN_0811d928
@@ -23675,7 +23675,7 @@ EnemyGolem_Init: @ 0x08120A00
 	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08120A98 @ =0x00001E38
-	bl FUN_080e3804
+	bl EnemyAuxSprite_LoadAnim
 	ldr r4, _08120A8C @ =0x000001DF
 	adds r0, r7, r4
 	ldrb r1, [r0]
@@ -25634,7 +25634,7 @@ _081219A2:
 	strb r0, [r2]
 	ldr r3, _08121A8C @ =0x0000057C
 	adds r1, r7, r3
-	ldr r0, _08121A90 @ =FUN_080f09e0
+	ldr r0, _08121A90 @ =Enemy_DispatchMsg
 	str r0, [r1]
 	ldr r4, _08121A94 @ =0x0000061C
 	adds r1, r7, r4
@@ -25658,7 +25658,7 @@ _08121A80: .4byte 0x000006BA
 _08121A84: .4byte 0x000006B6
 _08121A88: .4byte 0x000006BE
 _08121A8C: .4byte 0x0000057C
-_08121A90: .4byte FUN_080f09e0
+_08121A90: .4byte Enemy_DispatchMsg
 _08121A94: .4byte 0x0000061C
 _08121A98: .4byte FUN_08120914
 _08121A9C: .4byte EnemyGolem_Destroy

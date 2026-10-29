@@ -4,6 +4,15 @@
 #include "malloc.h"
 #include "vm.h"
 
+// 状態に入った最初の呼び出しだけ TRUE, 入場フラグを下ろす
+static inline bool8 Enemy_ConsumeStateBegun(Enemy* p) {
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    return TRUE;
+  }
+  return FALSE;
+}
+
 typedef struct {
   ENEMY_HDR;
   u8 unk_654[0x658 - 0x654];  // 0x654
@@ -17,8 +26,7 @@ typedef struct {
 } Boku;
 static_assert(sizeof(Boku) == 1708);
 
-bool32 FUN_080f06b0(Enemy* p);
-void FUN_080e4964(Enemy* p);
+void Enemy_RunStateHandler(Enemy* p);
 
 void FUN_080f2864(Enemy* p);
 void FUN_080f248c(Enemy* p);
@@ -65,16 +73,8 @@ NAKED void FUN_080fba64(Enemy* p) { INCFUNC("asm/func/FUN_080fba64.inc"); }
 
 NAKED void FUN_080fc0b8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc0b8.inc"); }
 
-// 残差2命令, 原典は then と else で 0 を別々に作る (FUN_080f3cdc と同じ)
-NON_MATCH void FUN_080fc174(Enemy* p, s32 param_2) {
-#ifdef NONMATCHING_C
-  bool32 begun = FALSE;
-
-  if (p->stateBegun) {
-    p->stateBegun = FALSE;
-    begun = TRUE;
-  }
-  if (begun) {
+void FUN_080fc174(Enemy* p, s32 param_2) {
+  if (Enemy_ConsumeStateBegun(p)) {
     Enemy_PlayAnim(p, 7);
     Enemy_ClearFlag3(p, ENEFLAG3_UNK_0);
   }
@@ -84,11 +84,8 @@ NON_MATCH void FUN_080fc174(Enemy* p, s32 param_2) {
   }
 
   if (p->animForceRestart != 0 && param_2 > 120) {
-    p->unk_46b = 1;
+    p->subStateDone = 1;
   }
-#else
-  INCFUNC("asm/func/FUN_080fc174.inc");
-#endif
 }
 
 NAKED void FUN_080fc1e4(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc1e4.inc"); }
@@ -226,10 +223,10 @@ bool32 FUN_08101bc0(Boku* p) {
   FUN_081019e0(p);
 
   if (Enemy_TestFlag3((Enemy*)p, ENEFLAG3_UNK_13) || p->unk_4be == 0) {
-    u32 idx = p->unk_468;
+    u32 idx = p->subState0;
     EnemyHandler* table = p->handlerTables[0];
     table[idx]((Enemy*)p);
-    FUN_080e4964((Enemy*)p);
+    Enemy_RunStateHandler((Enemy*)p);
   }
 
   FUN_08101bb4(p);
@@ -237,13 +234,14 @@ bool32 FUN_08101bc0(Boku* p) {
 }
 
 // FUN_080edebc から呼ばれる
-s32 FUN_08101c1c(unknown* p) {
-  FUN_080f06b0(p);
+s32 FUN_08101c1c(Boku* p) {
+  FUN_080f06b0((Enemy*)p);
   return 0;
 }
 
 NAKED s32 EnemyBoku_Destroy(Boku* p) { INCFUNC("asm/func/EnemyBoku_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 EnemyBoku_Init(Boku* p) { INCFUNC("asm/func/EnemyBoku_Init.inc"); }
 
 void EnemyBoku_Create(void) {

@@ -38,8 +38,8 @@ extern u16 gObjPlttFadeSkipMask;  // 0x03004490
 
 extern u16* gHBlankEffectBuffer;
 extern vu16* gHBlankEffectReg;
-extern u16 u16_03003510;
-extern u16 u16_03003514;
+extern u16 gHBlankDmaCount;
+extern s16 gHBlankDmaMode;
 
 extern u32 gOamDirty;
 extern u32 gVBlankCount;

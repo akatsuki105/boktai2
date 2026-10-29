@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "camera_inline.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"
@@ -19,7 +20,7 @@ typedef struct Entity080aace8Particle {
   u16 velX;                                    // 0x2C, 毎フレーム ptcl.pos.x に足す
   u16 velY;                                    // 0x2E, 毎フレーム ptcl.pos.y に足す, 8フレームごとに 1 増える
   u8 unk_30[4];                                // 0x30
-  ParticleGroup* group;                        // 0x34, Particle_SetFrame に渡す
+  ParticleGroup* group;                        // 0x34, PTCL_GROUP_2
   void (*fn)(struct Entity080aace8Particle*);  // 0x38, FUN_080aa208 が active な枠について呼ぶ
 } Entity080aace8Particle;
 static_assert(sizeof(Entity080aace8Particle) == 60);
@@ -28,8 +29,8 @@ static_assert(sizeof(Entity080aace8Particle) == 60);
 typedef struct Entity080aace8 {
   Entity e;                                        // 0x000, ENTITY_UNK_11
   Player* player;                                  // 0x018, _Init の第2引数
-  MainSprite sprite;                               // 0x01C, _Destroy が MainSprite_Remove に渡す
-  Vec3 spritePos;                                  // 0x07C, screen から少しずらした sprite の表示位置
+  MainSprite icon;                                 // 0x01C, SPRITE_INVENTORY_ICONS
+  Vec3 spritePos;                                  // 0x07C, screen から少しずらした icon の表示位置
   Vec3 screen;                                     // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   u8 unk_8c[8];                                    // 0x08C
   HitboxData hitbox;                               // 0x094
@@ -59,7 +60,7 @@ NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
     q->ptcl.flags |= SPRFLAG_HIDDEN;
     q->active = 0;
   } else {
-    Particle_SetFrame(&q->ptcl, q->group, ((q->timer >> 2) & 1) + 2);
+    Particle_SetPose(&q->ptcl, q->group, PTCL2_SOL_L + ((q->timer >> 2) & 1));
     q->ptcl.pos.x += q->velX;
     q->ptcl.pos.y += q->velY;
     if ((q->timer & 7) == 0) {
@@ -114,11 +115,11 @@ void FUN_080aa208(Entity080aace8* p) {
 
 // 画面を揺らしながら 16 フレームで消える
 void FUN_080aa23c(Entity080aace8* p) {
-  FUN_0823b9cc((0x10 - p->unk_34a) * 2);
+  Camera_Shake((0x10 - p->unk_34a) * 2);
   if (p->unk_34a <= 5) {
     Hitbox_Register(&p->hitbox);
   } else if (p->unk_34a == 6) {
-    gFlag030047a4 &= ~FLAG030047A4_UNK_0;
+    gGameFlags &= ~FLAG030047A4_UNK_0;
   }
 
   p->unk_34a++;
@@ -150,7 +151,7 @@ NON_MATCH void FUN_080aa29c(Entity080aace8* p) {
   gRandTableIdx = idx;
   dist = (*(gRandomTable + idx) & 0xFF) + 0x80;
 
-  dx = FixToInt(12, dist * gSineTable[(angle + 0x40) & 0xFF]);
+  dx = FixToInt(12, dist * COS(angle));
   dy = FixToInt(13, gSineTable[angle] * dist * 3);
 
   spr->flags &= ~SPRFLAG_HIDDEN;
@@ -177,7 +178,7 @@ NON_MATCH void FUN_080aa29c(Entity080aace8* p) {
     tile = &gCollisionMap->tiledata->tiles[tileIdx];
   }
 
-  if (tile->attr & TATTR_ICE) {
+  if (tile->attr & TATTR_UNK_6) {
     p->unk_15c[p->unk_158] = 0;
   } else {
     p->unk_15c[p->unk_158] = TileHeightAt(&spr->pos);
@@ -270,16 +271,16 @@ NON_MATCH void FUN_080aa658(Entity080aace8* p) {
   if (p->unk_34a <= 5) {
     Hitbox_Register(&p->hitbox);
   } else if (p->unk_34a == 6) {
-    gFlag030047a4 &= ~FLAG030047A4_UNK_0;
+    gGameFlags &= ~FLAG030047A4_UNK_0;
   }
 
   p->unk_34a++;
   if (p->unk_34a > 0x2F) {
     KillEntity((Entity*)p);
   } else if (p->unk_34a <= 0xF) {
-    FUN_0823b9cc(0x20);
+    Camera_Shake(0x20);
   } else {
-    FUN_0823b9cc(0x30 - p->unk_34a);
+    Camera_Shake(0x30 - p->unk_34a);
   }
 #else
   INCFUNC("asm/func/FUN_080aa658.inc");
@@ -295,14 +296,14 @@ NON_MATCH void FUN_080aa708(Entity080aace8* p) {
   if (p->unk_34a < 8) {
     u16* table = gRandomTable;
     s32 amp = 8 - p->unk_34a;
-    p->sprite.pos.x = p->spritePos.x + Mod(_Random(table) / 8, amp) - (amp >> 1);
-    p->sprite.pos.y = p->spritePos.y + Mod(_Random(table) / 8, amp) - (amp >> 1);
+    p->icon.pos.x = p->spritePos.x + Mod(_Random(table) / 8, amp) - (amp >> 1);
+    p->icon.pos.y = p->spritePos.y + Mod(_Random(table) / 8, amp) - (amp >> 1);
   }
 
   if (p->unk_34a == 30) {
     FUN_080aa0e4(p);
     PlaySound_082406e0(SONG_645);
-    p->sprite.flags |= SPRFLAG_HIDDEN;
+    p->icon.flags |= SPRFLAG_HIDDEN;
   }
 
   if (p->kind == 1 && p->unk_34a == 29) {
@@ -325,20 +326,20 @@ NON_MATCH void FUN_080aa708(Entity080aace8* p) {
 
 // 8フレームかけてアイコンを spritePos から screen へ寄せながら拡大する
 void FUN_080aa834(Entity080aace8* p) {
-  p->sprite.flags &= ~SPRFLAG_HIDDEN;
+  p->icon.flags &= ~SPRFLAG_HIDDEN;
   p->unk_34a++;
   if (p->unk_34a > 7) {
-    p->sprite.flags &= ~SPRFLAG_AFFINE;
+    p->icon.flags &= ~SPRFLAG_AFFINE;
     p->updateCallback = FUN_080aa708;
     p->unk_34a = 0;
     PlaySound_082406e0(SONG_644);
   } else {
     s32 scale = p->unk_34a * 2 + 0x20;
 
-    p->sprite.scaleY = scale;
-    p->sprite.scaleX = scale;
-    p->sprite.pos.x = Div(p->spritePos.x * p->unk_34a + p->screen.x * (8 - p->unk_34a), 8);
-    p->sprite.pos.y = Div(p->spritePos.y * p->unk_34a + p->screen.y * (8 - p->unk_34a), 8);
+    p->icon.scaleY = scale;
+    p->icon.scaleX = scale;
+    p->icon.pos.x = Div(p->spritePos.x * p->unk_34a + p->screen.x * (8 - p->unk_34a), 8);
+    p->icon.pos.y = Div(p->spritePos.y * p->unk_34a + p->screen.y * (8 - p->unk_34a), 8);
   }
 }
 
@@ -351,7 +352,7 @@ s32 Entity080aace8_Update(Entity080aace8* p) {
 s32 Entity080aace8_Destroy(Entity080aace8* p) {
   s32 i;
 
-  MainSprite_Remove(&p->sprite);
+  MainSprite_Remove(&p->icon);
   for (i = 0; i < 8; i++) {
     Particle_Remove(&p->ptcls[i].ptcl);
   }
@@ -376,9 +377,9 @@ void FUN_080aa940(Entity080aace8* p) {
   p->spritePos.x = p->screen.x - 8;
   p->spritePos.y = p->screen.y - 0x28;
   p->spritePos.z = p->screen.z;
-  MainSprite_Add(&p->sprite, &gfx, ICON_ITEM(poseIdx), 0x32, 1, 0, 60, &p->screen);
-  p->sprite.scaleY = 0x22;
-  p->sprite.scaleX = 0x22;
+  MainSprite_Add(&p->icon, &gfx, ICON_ITEM(poseIdx), SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 1, PLAYMODE_PAUSE, 60, &p->screen);
+  p->icon.scaleY = 0x22;
+  p->icon.scaleX = 0x22;
 }
 
 // 鉄球のスプライトを2枚用意してプレイヤーの位置に置く
@@ -405,7 +406,7 @@ NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
     q->group = g;
     Particle_Add(&q->ptcl, g, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&q->ptcl, -4, -4);
-    Particle_SetFrame(&q->ptcl, q->group, 2);
+    Particle_SetPose(&q->ptcl, q->group, PTCL2_SOL_L);
     Particle_SetPltt(&q->ptcl, 1);
     q->ptcl.priority = 0;
     q->timer = 0;
@@ -447,7 +448,7 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
   }
 
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, 0xA, 0, HBATTR_NAMAKURA, 0x1E);
+  Hitbox_SetAttack(hitbox, power, 10, 0, HBATTR_NAMAKURA, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->player->mover.pos, 0);
 #else
@@ -456,41 +457,27 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
 }
 
 // プレイヤーの頭上に画面座標を作り、アイコンと棘鉄球と全画面判定を用意する
-// 残差4命令 (137/141) でこちらが短い: 原典はローカルの pos をスタックに置いたまま読み書きするが, こちらはレジスタに載せてしまう
-NON_MATCH s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
-#ifdef NONMATCHING_C
+s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
   WorldPos pos;
-  s32 sx;
-  s32 sz;
-  s32 h;
-  s32 sy;
 
   p->player = player;
   p->kind = kind;
   pos = p->player->mover.pos;
   pos.y += 0x96;
-
-  sx = pos.x >> 1;
-  sz = pos.z >> 1;
-  p->screen.x = FixToInt(8, (sx - sz) * 48);
-  sy = FixToInt(8, (sx + sz) * 48);
-  h = FixToInt(8, pos.y * 24);
-  p->screen.x = p->screen.x - gCameraVpCoords.x + 0x78;
-  p->screen.y = sy - h - gCameraVpCoords.y + 0x5A;
-  p->screen.z = sy + h - gCameraVpCoords.z;
+  WorldToScreen(&p->screen, &pos);
 
   FUN_080aa940(p);
   FUN_080aaa2c(p);
   FUN_080aaaa8(p);
-  if (p->player->unk_359 == 0) {
+  if (p->player->useAuxSprite == 0) {
     p->player->human.flags &= ~SPRFLAG_HIDDEN;
   } else {
-    p->player->sprite_e8.flags &= ~SPRFLAG_HIDDEN;
+    p->player->beast.flags &= ~SPRFLAG_HIDDEN;
   }
 
-  p->player->hurtbox.unk_44 = 0;
-  gFlag030047a4 |= FLAG030047A4_UNK_0;
-  gEntityDisableFlags |= ENTITY_DISABLE_2;
+  p->player->hurtbox.invincibleTime = 0;
+  gGameFlags |= FLAG030047A4_UNK_0;
+  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
   if (p->kind == 0) {
     FUN_080aa9d0(p);
   }
@@ -498,9 +485,6 @@ NON_MATCH s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
   p->updateCallback = FUN_080aa834;
   p->unk_34a = 0;
   return 0;
-#else
-  INCFUNC("asm/func/Entity080aace8_Init.inc");
-#endif
 }
 
 Entity080aace8* Entity080aace8_Create(Player* player, u32 kind) {

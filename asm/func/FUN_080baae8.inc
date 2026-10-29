@@ -245,7 +245,7 @@ _080BAD00:
 	beq _080BAD26
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_080b9fc4
+	bl ShopCursor_PlaceSprite
 	adds r0, r5, #0
 	bl FUN_080ba2d8
 	adds r0, r5, #0

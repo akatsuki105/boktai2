@@ -106,7 +106,7 @@ typedef struct Coffin {
   u16 unk_404;          // 0x404, 8方向の向き
   u16 unk_406;          // 0x406, _Update が毎フレーム 0 に戻す
   u16 unk_408;          // 0x408, FUN_080893c0 が Coffin_SetState に渡す遷移先の state
-  u8 unk_40a;           // 0x40A
+  bool8 inSolarCircle;  // 0x40A, 棺桶が太陽結界内にいるかどうか (太陽結界内にいると棺桶は自力で動けなくなる)
   bool8 killRequested;  // 0x40B, 0 以外になると _Update が KillEntity する
   Vec3 unk_40c;         // 0x40C, FUN_080865dc が丸ごと返す
   struct Emote* emote;  // 0x414, 棺桶の中のイモータルがおとなしくなったときの "..." アイコン用?
@@ -117,7 +117,7 @@ static_assert(sizeof(Coffin) == 1052);
 
 extern Coffin* gCoffin;  // 0x03002C00
 
-void FUN_0808670c(s32 n);
+void Coffin_SetInsideSolarCircle(bool32 n);
 WorldPos* Coffin_GetPos(void);
 bool32 Coffin_CopyPos(WorldPos* out);
 bool32 Coffin_IsIdle(void);

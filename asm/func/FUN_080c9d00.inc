@@ -37,7 +37,7 @@
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	adds r0, r4, #0
 	adds r0, #0xa3
 	ldrb r0, [r0]
@@ -85,7 +85,7 @@ _080C9D84:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	adds r0, r4, #0
 	adds r0, #0xa3
 	ldrb r0, [r0]
@@ -135,7 +135,7 @@ _080C9DE8:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 _080C9E28:
 	ldr r5, _080C9EF0 @ =0x00001912
 	adds r7, r4, r5
@@ -163,7 +163,7 @@ _080C9E28:
 	movs r2, #1
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_0805fe7c
+	bl CreateDamageNumber
 	ldr r0, _080C9EF4 @ =0x0000022E
 	bl PlaySound_082406e0
 _080C9E66:

@@ -203,7 +203,7 @@ _08006070:
 	str r5, [sp, #0xc]
 	movs r2, #1
 	mov r3, r8
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 	movs r0, #0x88
 	lsls r0, r0, #1
 	bl PlaySound_0824078c
@@ -239,7 +239,7 @@ _08006100:
 	str r5, [sp, #0xc]
 	movs r2, #0
 	mov r3, r8
-	bl FUN_080177b4
+	bl ItemIconPopupManager_AddIcon
 _08006124:
 	ldr r6, _08006168 @ =0x030047A4
 	ldr r0, [r6]

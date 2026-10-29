@@ -141,7 +141,7 @@ _080BAE58:
 	ldr r0, _080BAEA8 @ =0x00000D98
 	adds r1, r5, r0
 	adds r0, r6, #0
-	bl FUN_080b9fc4
+	bl ShopCursor_PlaceSprite
 	adds r0, r5, #0
 	bl FUN_080ba2d8
 	adds r0, r5, #0
