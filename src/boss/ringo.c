@@ -1217,8 +1217,7 @@ void Ringo_InitAuxSprites(Ringo* p) {
   Video_SetAuxSpritePltt(&p->auxGfx[0], 196);
   Video_SetAuxSpritePltt(&p->auxGfx[1], 200);
   p->auxAnimFile = GetFile(DIR_ANIMATION, ANIM_78E1);
-  sprite = p->auxSprites;
-  for (i = 0; i < 16; i++, sprite++) {
+  for (i = 0, sprite = p->auxSprites; i < 16; i++, sprite++) {
     AuxSprite_Add(sprite, &p->auxGfx[0], SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     AuxAnim_SetAnim(&p->auxAnims[i], p->auxAnimFile, 2, 0, 0);
     AuxAnim_SetAnimSpeed(&p->auxAnims[i], 32);
@@ -1237,12 +1236,13 @@ void Ringo_RemoveAuxSprites(Ringo* p) {
   }
 }
 
-// 残差はループの誘導変数 (255/253), 原典は auxActive と auxAnims も p からの歩進ポインタで持つ, AuxAnim の手動送りはリポジトリ共通の壁
+// 253/253命令 (12 hunk), 手動送りは AuxSprite_AdvanceAnim で揃い vp / pos の初期化順も合わせた, 残差はループ前の i = 0 と sp 複写の置き場所, ldrb の base を r4 か r3 に置くかのレジスタ割当だけ
+// 試済: sprite の初期化を for に入れる, anim / active を歩くポインタにする (悪化), 画面座標を vp-> で読む (悪化), i と sprite の宣言順
 NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
 #ifdef NONMATCHING_C
   Vec3 screen;
-  Vec3* pos = &p->base.mover.pos;
   Vec3* vp = &screen;
+  Vec3* pos = &p->base.mover.pos;
   AuxSprite* sprite;
   s32 i;
 
@@ -1251,9 +1251,6 @@ NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
   for (i = 0; i < 16; i++, sprite++) {
     if (p->auxActive[i]) {
       Vec3* ofs = &p->auxOffsets[i];
-      AuxAnimState* anim;
-      AuxAnimCmd* cmd;
-      bool32 ended;
 
       if (p->auxAnims[i].tick & 1) {
         ofs->y--;
@@ -1261,49 +1258,7 @@ NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
       sprite->pos.x = screen.x + ofs->x;
       sprite->pos.y = screen.y + ofs->y;
       sprite->pos.z = screen.z + ofs->z;
-      anim = &p->auxAnims[i];
-      cmd = &anim->cmds[anim->cmdIdx];
-      sprite->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-            ended = TRUE;
-          } else {
-            anim->cmdIdx--;
-            ended = FALSE;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx < anim->cmdCount) {
-            ended = FALSE;
-          } else {
-            anim->cmdIdx = 0;
-            ended = TRUE;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      } else {
-        ended = FALSE;
-      }
-      if (ended) {
+      if (AuxSprite_AdvanceAnim(sprite, &p->auxAnims[i])) {
         sprite->flags |= SPRFLAG_HIDDEN;
         p->auxActive[i] = FALSE;
       }
