@@ -194,7 +194,7 @@ typedef struct MainMenu {
   MainSprite unk_aa0[2];         // 0x0AA0
   AuxSprite sprite_b60;          // 0x0B60, ->gfx_b8c
   AuxSpriteGfx gfx_b8c;          // 0x0B8C, SPRITE_BAT
-  u8 unk_ba8[0xBB8 - 0xBA8];     // 0x0BA8, まだ未解析
+  AuxAnimState anim_ba8;         // 0x0BA8, sprite_b60 のアニメの再生状態
   AuxSprite stand;               // 0x0BB8, ->standGfx
   AuxSpriteGfx standGfx;         // 0x0BE4, SPRITE_SOLAR_STATION (暗黒カードの太陽スタンド)
   struct {
@@ -634,7 +634,23 @@ s32 FUN_0808ba64(MainMenu* p) {
 
 NAKED void FUN_0808bac4(MainMenu* p) { INCFUNC("asm/func/FUN_0808bac4.inc"); }
 
-NAKED void FUN_0808c028(MainMenu* p) { INCFUNC("asm/func/FUN_0808c028.inc"); }
+// プレイヤーの絵のアニメを1コマ進める, 人型は MainSprite, 変身中は sprite_b60
+void FUN_0808c028(MainMenu* p) {
+  switch (p->player->kind) {
+    case PLAYER_SOLAR_DJANGO:
+    case PLAYER_DARK_DJANGO:
+    case PLAYER_SABATA: {
+      MainSprite_AdvanceAnim(&p->sprites[57], &p->gfx.player);
+      break;
+    }
+    case PLAYER_BAT:
+    case PLAYER_MOUSE:
+    case PLAYER_SLEEPING: {
+      AuxSprite_AdvanceAnim(&p->sprite_b60, &p->anim_ba8);
+      break;
+    }
+  }
+}
 
 NAKED void FUN_0808c164(MainMenu* p, u16 param_2, u16 param_3, u8 param_4) { INCFUNC("asm/func/FUN_0808c164.inc"); }
 

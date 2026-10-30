@@ -57,7 +57,7 @@ bool32 FUN_080091d0(Entity83B2Data* p) {
   }
 }
 
-// list の1要素にアクタースプライトを割り当てて描画リストに繋ぐ
+// list の1要素に SpriteAux を割り当てて描画リストに繋ぐ
 s32 FUN_080091e8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   if (!Video_GetAuxSprite(&data->gfx, SPRITE_HINT_PANEL)) {
     return -1;

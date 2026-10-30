@@ -76,14 +76,8 @@ NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
 void FUN_080b2a14(Generator* p) {}
 
 // ジェネレーターの出現 (state 1), unk_dc フレーム待ってから姿と食らい判定を出し, アニメ 1 周で state 2 に進む
-// 残差は 145/161 (初稿のみ), AuxAnim 手動送り (終端判定つき) の壁と, 前半の hurtbox / sprite への書き込みの並び
-// Tier A-C は未着手
-NON_MATCH void FUN_080b2a18(Generator* p) {
-#ifdef NONMATCHING_C
+void FUN_080b2a18(Generator* p) {
   AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  AuxSprite* spr;
-  bool32 done;
 
   if (p->unk_dc != 0) {
     p->unk_dc--;
@@ -93,405 +87,96 @@ NON_MATCH void FUN_080b2a18(Generator* p) {
   p->hurtbox.flags &= ~HBFLAG_HIDDEN;
   p->sprite.priority = 2;
   anim = &p->anim;
-  spr = &p->sprite;
-  cmd = &anim->cmds[anim->cmdIdx];
-  spr->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    p->sprite.flags |= SPRFLAG_XFLIP;
-  } else {
-    p->sprite.flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    spr->flags |= SPRFLAG_YFLIP;
-  } else {
-    spr->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick < anim->wait) {
-    done = FALSE;
-  } else {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        done = TRUE;
-      } else {
-        anim->cmdIdx--;
-        done = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-        done = TRUE;
-      } else {
-        done = FALSE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = anim->duration * anim->speed >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
-  if (done) {
+  AuxAnim_SetAnim(anim, p->animFile, 0, p->animVariant, p->animFlags);
+  if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
     Hitbox_Register(&p->hurtbox);
     Generator_SetState(p, 2);
   }
-#else
-  INCFUNC("asm/func/FUN_080b2a18.inc");
-#endif
 }
 
 // ジェネレーターの待機 (state 1), アニメ 1 を1コマ進めてパレットを 451 にする
-// 残差は AuxAnim 手動送りの壁 (125/126), Player 側 (FUN_080772ec) と同じ
-// Tier A-C は FUN_080772ec で試済
-NON_MATCH void FUN_080b2b68(Generator* p) {
-#ifdef NONMATCHING_C
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  AuxSprite* spr;
+void FUN_080b2b68(Generator* p) {
+  AuxAnimState* anim = &p->anim;
 
-  anim = &p->anim;
   AuxAnim_SetAnim(anim, p->animFile, 1, p->animVariant, p->animFlags);
-  spr = &p->sprite;
-  cmd = &anim->cmds[anim->cmdIdx];
-  spr->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    p->sprite.flags |= SPRFLAG_XFLIP;
-  } else {
-    p->sprite.flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    spr->flags |= SPRFLAG_YFLIP;
-  } else {
-    spr->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      s32 idx = anim->cmdIdx;
-
-      if (idx == 0) {
-        idx = anim->cmdCount;
-      }
-      anim->cmdIdx = idx - 1;
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = anim->duration * anim->speed >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
+  AuxSprite_AdvanceAnim(&p->sprite, anim);
   p->plttID = 451;
-#else
-  INCFUNC("asm/func/FUN_080b2b68.inc");
-#endif
 }
 
 // ジェネレーターの起動 (state 3), アニメのコマ 5 / 6 以降でパレットを切り替え, アニメ 1 周で state 4 (稼働) に進む
-// 残差は 175/182 (初稿のみ), AuxAnim 手動送り (終端判定つき) の壁と, 先頭のパレット判定の分岐の並び
-// Tier A-C は未着手
-NON_MATCH void FUN_080b2c70(Generator* p) {
-#ifdef NONMATCHING_C
+void FUN_080b2c70(Generator* p) {
   AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  AuxSprite* spr;
-  bool32 done;
 
-  if (p->unk_ce == 0) {
+  if (p->unk_ce != 0) {
     if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
       p->plttID = 452;
+    } else if (p->anim.cmdIdx > 5) {
+      if (p->unk_ea) {
+        p->plttID = 453;
+      } else {
+        p->plttID = 452;
+      }
     }
   } else if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
     p->plttID = 452;
-  } else if (p->anim.cmdIdx >= 6) {
-    p->plttID = p->unk_ea ? 453 : 452;
   }
   anim = &p->anim;
-  spr = &p->sprite;
-  cmd = &anim->cmds[anim->cmdIdx];
-  spr->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    p->sprite.flags |= SPRFLAG_XFLIP;
-  } else {
-    p->sprite.flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    spr->flags |= SPRFLAG_YFLIP;
-  } else {
-    spr->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick < anim->wait) {
-    done = FALSE;
-  } else {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        done = TRUE;
-      } else {
-        anim->cmdIdx--;
-        done = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-        done = TRUE;
-      } else {
-        done = FALSE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = anim->duration * anim->speed >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
-  if (done) {
+  AuxAnim_SetAnim(anim, p->animFile, 2, p->animVariant, p->animFlags);
+  if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
     p->unk_ec = 1;
     Generator_SetState(p, 4);
   }
-#else
-  INCFUNC("asm/func/FUN_080b2c70.inc");
-#endif
 }
 
 // ジェネレーターの稼働 (state 4), アニメ 3 を1コマ進め, unk_ea でパレットを 452 / 453 に切り替える
-// 残差は AuxAnim 手動送りの壁 (134/136), FUN_080772ec と同じ
-// Tier A-C は FUN_080772ec で試済
-NON_MATCH void FUN_080b2dec(Generator* p) {
-#ifdef NONMATCHING_C
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  AuxSprite* spr;
+void FUN_080b2dec(Generator* p) {
+  AuxAnimState* anim = &p->anim;
 
-  anim = &p->anim;
   AuxAnim_SetAnim(anim, p->animFile, 3, p->animVariant, p->animFlags);
-  spr = &p->sprite;
-  cmd = &anim->cmds[anim->cmdIdx];
-  spr->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    p->sprite.flags |= SPRFLAG_XFLIP;
+  AuxSprite_AdvanceAnim(&p->sprite, anim);
+  if (p->unk_ea) {
+    p->plttID = 453;
   } else {
-    p->sprite.flags &= ~SPRFLAG_XFLIP;
+    p->plttID = 452;
   }
-  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    spr->flags |= SPRFLAG_YFLIP;
-  } else {
-    spr->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      s32 idx = anim->cmdIdx;
-
-      if (idx == 0) {
-        idx = anim->cmdCount;
-      }
-      anim->cmdIdx = idx - 1;
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = anim->duration * anim->speed >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
-  p->plttID = p->unk_ea ? 453 : 452;
-#else
-  INCFUNC("asm/func/FUN_080b2dec.inc");
-#endif
 }
 
 // ジェネレーターの停止 (state 5), 停止アニメ 4 を流してパレットを暗くし, 終わったら state 2 (unk_ce なら 90 フレーム揺れる state 6) に移る
-// AuxAnim 手動送り (終端判定つき) の壁を2か所に持つ, 初稿のみ
-// Tier A-C は未着手
-NON_MATCH void FUN_080b2f0c(Generator* p) {
-#ifdef NONMATCHING_C
+void FUN_080b2f0c(Generator* p) {
   AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  AuxSprite* spr;
-  bool32 done;
 
-  if (p->unk_ce == 0) {
+  if (p->unk_ce != 0) {
+    if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
+      p->plttID = 452;
+    } else if (p->anim.cmdIdx == 6 && p->anim.tick == 0) {
+      p->plttID = 451;
+    }
+    anim = &p->anim;
+    AuxAnim_SetAnim(anim, p->animFile, 4, p->animVariant, p->animFlags);
+    if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
+      p->unk_d2 = 0;
+      p->unk_de = 90;
+      Generator_SetState(p, 6);
+    }
+  } else {
     if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
       p->plttID = 451;
     }
     anim = &p->anim;
     AuxAnim_SetAnim(anim, p->animFile, 4, p->animVariant, p->animFlags);
-    spr = &p->sprite;
-    cmd = &anim->cmds[anim->cmdIdx];
-    spr->poseIdx = *cmd >> 6;
-    if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-      p->sprite.flags |= SPRFLAG_XFLIP;
-    } else {
-      p->sprite.flags &= ~SPRFLAG_XFLIP;
-    }
-    if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-      spr->flags |= SPRFLAG_YFLIP;
-    } else {
-      spr->flags &= ~SPRFLAG_YFLIP;
-    }
-    anim->tick++;
-    if (anim->tick < anim->wait) {
-      done = FALSE;
-    } else {
-      anim->tick = 0;
-      if (anim->flags & ANIM_PLAY_REVERSE) {
-        if (anim->cmdIdx == 0) {
-          anim->cmdIdx = anim->cmdCount - 1;
-          done = TRUE;
-        } else {
-          anim->cmdIdx--;
-          done = FALSE;
-        }
-      } else {
-        anim->cmdIdx++;
-        if (anim->cmdIdx >= anim->cmdCount) {
-          anim->cmdIdx = 0;
-          done = TRUE;
-        } else {
-          done = FALSE;
-        }
-      }
-      cmd = &anim->cmds[anim->cmdIdx];
-      anim->duration = *cmd & 0xF;
-      anim->wait = anim->duration * anim->speed >> 6;
-      if (anim->wait == 0) {
-        anim->wait = 1;
-      }
-    }
-    if (done) {
+    if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
       p->unk_d2 = 0;
       Generator_SetState(p, 2);
     }
-    return;
   }
-
-  if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
-    p->plttID = 452;
-  } else if (p->anim.cmdIdx == 6 && p->anim.tick == 0) {
-    p->plttID = 451;
-  }
-  anim = &p->anim;
-  AuxAnim_SetAnim(anim, p->animFile, 4, p->animVariant, p->animFlags);
-  spr = &p->sprite;
-  cmd = &anim->cmds[anim->cmdIdx];
-  spr->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    p->sprite.flags |= SPRFLAG_XFLIP;
-  } else {
-    p->sprite.flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    spr->flags |= SPRFLAG_YFLIP;
-  } else {
-    spr->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick < anim->wait) {
-    done = FALSE;
-  } else {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        done = TRUE;
-      } else {
-        anim->cmdIdx--;
-        done = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-        done = TRUE;
-      } else {
-        done = FALSE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = anim->duration * anim->speed >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
-  if (done) {
-    p->unk_d2 = 0;
-    p->unk_de = 90;
-    Generator_SetState(p, 6);
-  }
-#else
-  INCFUNC("asm/func/FUN_080b2f0c.inc");
-#endif
 }
 
 // ジェネレーターの被弾 (state 6), アニメ 1 を進めながら unk_de フレームの間揺れ, 終わったら元の位置に戻して state 2 に戻る
-// 残差は AuxAnim 手動送りの壁 (142/143), FUN_080772ec と同じ
-// Tier A-C は FUN_080772ec で試済
-NON_MATCH void FUN_080b31b4(Generator* p) {
-#ifdef NONMATCHING_C
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  AuxSprite* spr;
+void FUN_080b31b4(Generator* p) {
+  AuxAnimState* anim = &p->anim;
 
-  anim = &p->anim;
   AuxAnim_SetAnim(anim, p->animFile, 1, p->animVariant, p->animFlags);
-  spr = &p->sprite;
-  cmd = &anim->cmds[anim->cmdIdx];
-  spr->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    p->sprite.flags |= SPRFLAG_XFLIP;
-  } else {
-    p->sprite.flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    spr->flags |= SPRFLAG_YFLIP;
-  } else {
-    spr->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      s32 idx = anim->cmdIdx;
-
-      if (idx == 0) {
-        idx = anim->cmdCount;
-      }
-      anim->cmdIdx = idx - 1;
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = anim->duration * anim->speed >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
+  AuxSprite_AdvanceAnim(&p->sprite, anim);
   if (--p->unk_de == 0) {
     p->unk_ed = 0;
     p->sprite.pos = p->pos;
@@ -499,9 +184,6 @@ NON_MATCH void FUN_080b31b4(Generator* p) {
   } else {
     FUN_080b2888(p);
   }
-#else
-  INCFUNC("asm/func/FUN_080b31b4.inc");
-#endif
 }
 
 // 起動中はゲージ音を鳴らし、待機中は16フレームで state 4 へ進む

@@ -169,51 +169,17 @@ NAKED void FUN_081d0578(Entity081d0e20Elem* p) { INCFUNC("asm/func/FUN_081d0578.
 
 void FUN_081d070c(Entity081d0e20Elem* p) { FUN_081cf944(p); }
 
-NON_MATCH void FUN_081d0718(Entity081d0e20* p, Entity081d0e20Elem* elem) {
-#ifdef NONMATCHING_C
+// アニメ 0 の2コマ目から再生を始めて1コマ進め, state 6 へ移る
+void FUN_081d0718(Entity081d0e20* p, Entity081d0e20Elem* elem) {
   AuxAnimState* anim;
-  AuxAnimCmd* cmd;
 
   elem->sprite.flags &= ~SPRFLAG_HIDDEN;
   anim = &elem->anim;
   AuxAnim_SetAnim(anim, p->anim, 0, elem->unk_b0, 0);
-  anim->cmdIdx = 1;
-  cmd = &anim->cmds[anim->cmdIdx];
-  elem->sprite.poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    elem->sprite.flags &= ~SPRFLAG_XFLIP;
-  } else {
-    elem->sprite.flags |= SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    elem->sprite.flags &= ~SPRFLAG_YFLIP;
-  } else {
-    elem->sprite.flags |= SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount;
-      }
-      anim->cmdIdx--;
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = anim->flags & 4;
-      }
-    }
-    anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
+  elem->anim.cmdIdx = 1;
+  AuxSprite_AdvanceAnim(&elem->sprite, anim);
+  elem->state = 6;
   elem->flags = (elem->flags & ~0x20) | 2;
-#else
-  INCFUNC("asm/func/FUN_081d0718.inc");
-#endif
 }
 
 void FUN_081d0838(Entity081d0e20* p, Entity081d0e20Elem* elem) {

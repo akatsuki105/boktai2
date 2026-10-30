@@ -58,7 +58,7 @@ NAKED void MainSprite_DrawListGameover(void) { ARM_TRAMPOLINE(MainSprite_DrawLis
 
 NAKED void FUN_0822f264(void) { ARM_TRAMPOLINE(FUN_08230594); }
 
-// spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
+// sprite_main ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
 s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f) {
   *gfx = *(MainSpriteGfx*)f;
   gfx->poses = (MainSpritePose*)((u32)gfx->poses + (u32)f);

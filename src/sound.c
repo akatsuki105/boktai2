@@ -4,6 +4,13 @@
 #include "global.h"
 #include "vm.h"
 
+// songs.s の gSongTable の .ms
+typedef enum {
+  P_BGM = 10,    // = gSoundIDs[10] = gMPlayTable[10]
+  P_SE = 20,     // 足音や武器を振った時の音はここだった
+  P_NOISE = 29,  // 太陽チャージSEなどのループする環境音?
+} PlayerUsage;
+
 extern MusicPlayerInfo gMPlayInfo_00;
 extern MusicPlayerInfo gMPlayInfo_01;
 extern MusicPlayerInfo gMPlayInfo_02;
@@ -56,9 +63,9 @@ void sound_082402f8(SoundID32 id) {
       m4aSongNumStop(id);
       gSoundIDs[gSongTable[id].ms] = 0;
     }
-  } else if (gSoundIDs[10] != 0) {
-    m4aSongNumStop(gSoundIDs[10]);
-    gSoundIDs[10] = id;
+  } else if (gSoundIDs[P_BGM] != 0) {
+    m4aSongNumStop(gSoundIDs[P_BGM]);
+    gSoundIDs[P_BGM] = id;
   }
 }
 
@@ -67,8 +74,8 @@ void sound_08240344(void) { sound_082402f8(VM_SeekToNamedArg('i') ? VM_GetValue(
 
 // 再生中のBGMを最小音量から指定速度でフェードインさせ直す
 void Sound_FadeInBGM(u32 speed) {
-  if (gSoundIDs[10] != 0) {
-    SoundID16 id = gSoundIDs[10];
+  if (gSoundIDs[P_BGM] != 0) {
+    SoundID16 id = gSoundIDs[P_BGM];
     u16 ms = gSongTable[id].ms;
     MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
@@ -87,8 +94,8 @@ void Cmd_FadeInBGM(void) {
 
 // 再生中のBGMを指定速度でフェードアウトさせて一時停止する(Sound_FadeInBGM で再開できる)
 void Sound_FadeOutBGMTemporarily(u32 speed) {
-  if (gSoundIDs[10] != 0) {
-    u16 ms = gSongTable[gSoundIDs[10]].ms;
+  if (gSoundIDs[P_BGM] != 0) {
+    u16 ms = gSongTable[gSoundIDs[P_BGM]].ms;
     MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0x100);
@@ -106,8 +113,8 @@ void Cmd_D0C7(void) {
 
 // 再生中のBGMを指定速度でフェードアウトさせて停止する(一時停止ではないので Sound_FadeInBGM では戻らない)
 void Sound_FadeOutBGM(u32 speed) {
-  if (gSoundIDs[10] != 0) {
-    u16 ms = gSongTable[gSoundIDs[10]].ms;
+  if (gSoundIDs[P_BGM] != 0) {
+    u16 ms = gSongTable[gSoundIDs[P_BGM]].ms;
     MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0xFF);
@@ -271,8 +278,8 @@ void FUN_082407e0(void) {
 
   for (i = 0; i < MUSIC_PLAYER_LENGTH; i++) {
     if (i == 10) {
-      if (!(gMPlayTable[10].info->status & MUSICPLAYER_STATUS_TRACK)) gSoundIDs[10] = 0;
-    } else if (i != 12 && i != 29 && i != 30) {
+      if (!(gMPlayTable[P_BGM].info->status & MUSICPLAYER_STATUS_TRACK)) gSoundIDs[P_BGM] = 0;
+    } else if (i != 12 && i != P_NOISE && i != 30) {
       gSoundIDs[i] = 0;
     }
   }
@@ -285,9 +292,9 @@ void Sound_Resume(void) {
 
   for (i = 0; i < MUSIC_PLAYER_LENGTH; i++) {
     if (gSoundIDs[i] != 0) {
-      if (i == 10) {
-        m4aSongNumStartOrContinue(gSoundIDs[10]);
-      } else if (i == 12 || i == 29 || i == 30) {
+      if (i == P_BGM) {
+        m4aSongNumStartOrContinue(gSoundIDs[P_BGM]);
+      } else if (i == 12 || i == P_NOISE || i == 30) {
         m4aSongNumStartOrChange(gSoundIDs[i]);
       }
     }
@@ -314,12 +321,12 @@ void Cmd_CA3D(void) {
 }
 
 void FUN_082408d0(void) {
-  if (gSoundIDs[29] != 0) m4aSongNumStop(gSoundIDs[29]);
+  if (gSoundIDs[P_NOISE] != 0) m4aSongNumStop(gSoundIDs[P_NOISE]);
   if (gSoundIDs[30] != 0) m4aSongNumStop(gSoundIDs[30]);
 }
 
 void FUN_082408f4(void) {
-  if (gSoundIDs[29] != 0) m4aSongNumStart(gSoundIDs[29]);
+  if (gSoundIDs[P_NOISE] != 0) m4aSongNumStart(gSoundIDs[P_NOISE]);
   if (gSoundIDs[30] != 0) m4aSongNumStart(gSoundIDs[30]);
 }
 

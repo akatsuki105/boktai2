@@ -130,21 +130,95 @@ void Eff082473e0Particle_Clear(Eff082473e0Particle* ptcl) {
 
 void FUN_082469d0(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {}
 
-NAKED void FUN_082469d4(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) { INCFUNC("asm/func/FUN_082469d4.inc"); }
+// kind 1 の生存中の枠, アニメを進めて5コマ目で頭に戻しつつ unk_4 を数え下げ, 0 になったら消えかけに移す
+void FUN_082469d4(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  if (ptcl->anim.cmdIdx == 5) {
+    ptcl->anim.cmdIdx = 0;
+  }
+  if (ptcl->unk_4 > 0) {
+    if (--ptcl->unk_4 == 0) {
+      ptcl->state = 2;
+      ptcl->unk_1 = 10;
+      ptcl->unk_2 = 0;
+      e->unk_3--;
+    }
+  }
+}
 
-NAKED void FUN_08246afc(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) { INCFUNC("asm/func/FUN_08246afc.inc"); }
+// kind 1 の消えかけの枠, アニメを1コマ進め, 一巡したら枠を空ける
+void FUN_08246afc(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
+  if (Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim)) {
+    Eff082473e0Particle_Clear(ptcl);
+    e->activeCount--;
+  }
+}
 
 void FUN_08246c10(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {}
 
-NAKED void FUN_08246c14(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) { INCFUNC("asm/func/FUN_08246c14.inc"); }
+// kind 2 の生存中の枠, アニメを進めつつ unk_4 を数え下げ, 0 になったら消えかけに移す
+void FUN_08246c14(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  if (ptcl->unk_4 > 0) {
+    if (--ptcl->unk_4 == 0) {
+      ptcl->state = 2;
+      ptcl->unk_1 = 10;
+      ptcl->unk_2 = 0;
+      e->unk_3--;
+    }
+  }
+}
 
-NAKED void FUN_08246d2c(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) { INCFUNC("asm/func/FUN_08246d2c.inc"); }
+// kind 2 の消えかけの枠, アニメを進めながら unk_1 フレームごとに点滅させ, 間隔が詰まり切ったら枠を空ける
+void FUN_08246d2c(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  if (ptcl->unk_2 == ptcl->unk_1) {
+    ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
+    if (ptcl->unk_1 != 0) {
+      ptcl->unk_1--;
+    }
+    ptcl->unk_2 = 0;
+  } else {
+    ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
+  }
+  if (ptcl->unk_1 == 0) {
+    Eff082473e0Particle_Clear(ptcl);
+    e->activeCount--;
+  }
+}
 
 void FUN_08246e5c(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {}
 
-NAKED void FUN_08246e60(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) { INCFUNC("asm/func/FUN_08246e60.inc"); }
+// kind 3 の生存中の枠, FUN_08246c14 と同じ処理
+void FUN_08246e60(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  if (ptcl->unk_4 > 0) {
+    if (--ptcl->unk_4 == 0) {
+      ptcl->state = 2;
+      ptcl->unk_1 = 10;
+      ptcl->unk_2 = 0;
+      e->unk_3--;
+    }
+  }
+}
 
-NAKED void FUN_08246f78(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) { INCFUNC("asm/func/FUN_08246f78.inc"); }
+// kind 3 の消えかけの枠, FUN_08246d2c と同じ処理
+void FUN_08246f78(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  if (ptcl->unk_2 == ptcl->unk_1) {
+    ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
+    if (ptcl->unk_1 != 0) {
+      ptcl->unk_1--;
+    }
+    ptcl->unk_2 = 0;
+  } else {
+    ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
+  }
+  if (ptcl->unk_1 == 0) {
+    Eff082473e0Particle_Clear(ptcl);
+    e->activeCount--;
+  }
+}
 
 void (*const PTR_ARRAY_08dbd818[3])(Eff082473e0*, Eff082473e0Emitter*, Eff082473e0Particle*) = {
     FUN_082469d0,

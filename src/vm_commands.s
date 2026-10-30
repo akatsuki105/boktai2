@@ -97,7 +97,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x274E, Cmd_274E
 	.4byte 0x277A, Entity080ac574_SpawnScripted
 	.4byte 0x286B, Cmd_286B
-	.4byte 0x286F, Entity286F_Create
+	.4byte 0x286F, ActorManager_Create
 	.4byte 0x28CB, CoffinSealEffect_Create
 	.4byte 0x2924, EntityA628_StopFollowCameraScripted
 	.4byte 0x29F1, Cmd_29F1
@@ -419,7 +419,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA222, Save_ReadSystemDataOrInit
 	.4byte 0xA285, Cmd_A285
 	.4byte 0xA288, EntityA288_Create
-	.4byte 0xA2E1, Cmd_A2E1
+	.4byte 0xA2E1, Cmd_Riremito
 	.4byte 0xA2E4, Cmd_A2E4
 	.4byte 0xA301, Cmd_A301
 	.4byte 0xA39F, Cmd_A39F
@@ -484,7 +484,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB8C7, Cmd_B8C7
 	.4byte 0xBA36, EntityBA36_Create
 	.4byte 0xBA4B, Ringo_Create @ HashName("リンゴ")
-	.4byte 0xBB01, Cmd_BB01
+	.4byte 0xBB01, Cmd_Retry
 	.4byte 0xBB34, Cmd_BB34 @ HashName("おてんこ")
 	.4byte 0xBBAA, Cmd_BBAA
 	.4byte 0xBD74, BlackHole_Create @ HashName("ブラックホール")

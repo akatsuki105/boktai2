@@ -123,7 +123,22 @@ void EntityF41A_UpdateKnockback(EntityF41A* p) {
   }
 }
 
-NAKED void EntityF41A_UpdateAnim(EntityF41A* p) { INCFUNC("asm/func/EntityF41A_UpdateAnim.inc"); }
+// 向きを4方向に丸めてアニメの variant と左右反転を決め, アニメを1コマ進める
+void EntityF41A_UpdateAnim(EntityF41A* p) {
+  s32 dir = ((((p->data.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+  s32 variant;
+  s32 xflip;
+
+  if (dir > 1) {
+    variant = 3 - dir;
+    xflip = TRUE;
+  } else {
+    variant = dir;
+    xflip = FALSE;
+  }
+  AuxAnim_SetAnim(&p->anim, p->animFile, p->animIdx, variant, xflip);
+  AuxSprite_AdvanceAnim(&p->sprite, &p->anim);
+}
 
 s32 EntityF41A_Update(EntityF41A* p) {
   p->update(p);

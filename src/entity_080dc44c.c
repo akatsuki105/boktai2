@@ -43,14 +43,8 @@ void FUN_080dbeb0(Entity080dc44c* p, Entity080dc44cSlot* elem) {}
 s32 FUN_080dc0d0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 
 // state 1 の更新, 粒子を基準位置へ置いてアニメを1コマ進め, 一巡したら state 2 へ移す
-// 残差6命令 (163/169). 原典は slot を ip に追い出して使うたび低位レジスタへ mov し直すほどレジスタが足りていないが, こちらは r7 に収まってしまう
-// p->group をローカルに取っても変わらず (163). アニメ進行の本体は eff_smoke.c の SmokeEmitter_Update と同形
-NON_MATCH void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* slot) {
-#ifdef NONMATCHING_C
+void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* slot) {
   Particle* ptcl = &p->ptcls[slot->idx];
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  bool32 finished;
 
   if (slot->delay > 0) {
     slot->delay--;
@@ -58,56 +52,14 @@ NON_MATCH void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* slot) {
   }
 
   ptcl->flags &= ~SPRFLAG_HIDDEN;
-  ptcl->pos.x = slot->offset.x + slot->basePos->x;
-  ptcl->pos.y = slot->offset.y + slot->basePos->y;
-  ptcl->pos.z = slot->offset.z + slot->basePos->z;
+  ptcl->pos.x = slot->basePos->x + slot->offset.x;
+  ptcl->pos.y = slot->basePos->y + slot->offset.y;
+  ptcl->pos.z = slot->basePos->z + slot->offset.z;
 
-  anim = &p->anims[slot->idx];
-  cmd = &anim->cmds[anim->cmdIdx];
-  ptcl->tileNum = (*cmd >> 6) * ((ptcl->spriteWidth >> 3) * (ptcl->spriteHeight >> 3)) + p->group->tile;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    ptcl->flags |= SPRFLAG_XFLIP;
-  } else {
-    ptcl->flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    ptcl->flags |= SPRFLAG_YFLIP;
-  } else {
-    ptcl->flags &= ~SPRFLAG_YFLIP;
-  }
-
-  anim->tick++;
-  if (anim->tick < anim->wait) {
-    finished = FALSE;
-  } else {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        finished = TRUE;
-      } else {
-        anim->cmdIdx--;
-        finished = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx < anim->cmdCount) {
-        finished = FALSE;
-      } else {
-        anim->cmdIdx = 0;
-        finished = TRUE;
-      }
-    }
-    anim->wait = (anim->speed * (anim->cmds[anim->cmdIdx] & 0xF)) >> 6;
-  }
-
-  if (finished) {
+  if (Particle_AdvanceAnim(ptcl, p->group, &p->anims[slot->idx])) {
     slot->state = 2;
   }
   slot->timer++;
-#else
-  INCFUNC("asm/func/FUN_080dbeb4.inc");
-#endif
 }
 
 // 枠を解放する, パーティクルを外して activeMask のビットを落とす

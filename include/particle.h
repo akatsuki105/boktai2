@@ -2,6 +2,7 @@
 #define __INCLUDE_PARTICLE_H__
 
 #include "gba/gba.h"
+#include "sprite_animation.h"
 #include "sprite_common.h"
 #include "types.h"
 
@@ -74,5 +75,50 @@ void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
 void Particle_SetPose(Particle* p, ParticleGroup* g, u32 poseIdx);
 
 static inline void Particle_Hide(Particle* p) { p->flags |= SPRFLAG_HIDDEN; }
+
+static inline void Particle_SetTile(Particle* ptcl, ParticleGroup* group, u32 poseIdx) { ptcl->tileNum = poseIdx * ((ptcl->spriteWidth >> 3) * (ptcl->spriteHeight >> 3)) + group->tile; }
+
+// 今のコマを粒子に当ててアニメを1コマ進める, 一巡したら TRUE を返す
+static inline bool32 Particle_AdvanceAnim(Particle* ptcl, ParticleGroup* group, AuxAnimState* anim) {
+  AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
+  bool32 finished;
+
+  Particle_SetTile(ptcl, group, *cmd >> 6);
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (AuxAnimCmd_GetFlip(cmd) & ANIM_PLAY_XFLIP)) {
+    ptcl->flags |= SPRFLAG_XFLIP;
+  } else {
+    ptcl->flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (AuxAnimCmd_GetFlip(cmd) & ANIM_PLAY_YFLIP)) {
+    ptcl->flags |= SPRFLAG_YFLIP;
+  } else {
+    ptcl->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  if (++anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount - 1;
+        finished = TRUE;
+      } else {
+        anim->cmdIdx--;
+        finished = FALSE;
+      }
+    } else {
+      if (++anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+        finished = TRUE;
+      } else {
+        finished = FALSE;
+      }
+    }
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->wait = ((*cmd & 0xF) * anim->speed) >> 6;
+  } else {
+    finished = FALSE;
+  }
+  return finished;
+}
 
 #endif  // __INCLUDE_PARTICLE_H__

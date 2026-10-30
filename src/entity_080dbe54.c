@@ -6,10 +6,13 @@
 
 // 32枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
-  u8 unk_0[0x12];  // 0x00
-  u8 unk_12;       // 0x12, FUN_080db970 が解放時に 0 にする
-  s8 idx;          // 0x13, 自分の添字, ptcls と activeMask のビットを指す, 解放後は 0xFF
-  u8 unk_14[4];    // 0x14
+  Vec3 pos;      // 0x00, 粒子の座標, 毎フレーム vel を足して ptcls[idx].pos に写す
+  Vec3 vel;      // 0x08, 毎フレーム 7/10 に減衰する
+  u8 unk_10[2];  // 0x10
+  u8 unk_12;     // 0x12, FUN_080db970 が解放時に 0 にし, FUN_080db7e8 はアニメが一巡すると 2 にする
+  s8 idx;        // 0x13, 自分の添字, ptcls と activeMask のビットを指す, 解放後は 0xFF
+  u16 timer;     // 0x14, 毎フレーム +1
+  s16 delay;     // 0x16, 0 を超えている間は数え下げるだけで何もしない
 } Entity080dbe54Slot;
 static_assert(sizeof(Entity080dbe54Slot) == 24);
 
@@ -18,7 +21,7 @@ typedef struct {
   AuxAnimFile* anim;             // 0x018, ANIM_D1B8
   ParticleGroup* group;          // 0x01C, PTCL_GROUP_0
   Particle ptcls[32];            // 0x020, slots[i].idx が添字
-  u8 unk_520[0x200];             // 0x520
+  AuxAnimState anims[32];        // 0x520, slots[i].idx が添字, ANIM_D1B8 の再生状態
   u32 activeMask;                // 0x720, 使用中の slots のビットマスク
   u32 unk_724;                   // 0x724, _Init の第2引数
   Entity080dbe54Slot slots[32];  // 0x728, 根拠: FUN_080db970 の ClearMemory(slot, 0x18) と _Destroy の32回ループ
@@ -36,7 +39,29 @@ static inline bool8 Entity080dbe54_IsActive(u32* mask, s32 i) {
 
 void FUN_080db7e4(Entity080dbe54* p, Entity080dbe54Slot* param_2) {}
 
-NAKED void FUN_080db7e8(Entity080dbe54* p, Entity080dbe54Slot* param_2) { INCFUNC("asm/func/FUN_080db7e8.inc"); }
+// state 1 の更新, 粒子を減速しながら動かしてアニメを1コマ進め, 一巡したら state 2 へ移す
+void FUN_080db7e8(Entity080dbe54* p, Entity080dbe54Slot* slot) {
+  Particle* ptcl = &p->ptcls[slot->idx];
+
+  if (slot->delay > 0) {
+    slot->delay--;
+    return;
+  }
+
+  ptcl->flags &= ~SPRFLAG_HIDDEN;
+  slot->pos.x += slot->vel.x;
+  slot->pos.y += slot->vel.y;
+  slot->pos.z += slot->vel.z;
+  slot->vel.x = Div(slot->vel.x * 7, 10);
+  slot->vel.y = Div(slot->vel.y * 7, 10);
+  slot->vel.z = Div(slot->vel.z * 7, 10);
+  ptcl->pos = slot->pos;
+
+  if (Particle_AdvanceAnim(ptcl, p->group, &p->anims[slot->idx])) {
+    slot->unk_12 = 2;
+  }
+  slot->timer++;
+}
 
 // スロットを解放する
 void FUN_080db970(Entity080dbe54* p, Entity080dbe54Slot* slot) {

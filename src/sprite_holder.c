@@ -41,70 +41,19 @@ s32 SpriteHolder_SetAnim(SpriteHolder* p, u32 pose, u32 variant, u32 xflip, u32 
 }
 
 // アニメを1フレーム進め, 終わったかを返す
-// 残差は AuxAnim 手動送りの定数の使い回しと u8 / u16 の切り詰め, MagicSleeping_Update などと同じ壁, Tier A-C は試済
-// コマのフリップと長さを u8 の static inline で読むと 24 から 16 ハンクまで縮むが一致しないので残していない
-NON_MATCH s32 SpriteHolder_AdvanceAnim(SpriteHolder* p) {
-#ifdef NONMATCHING_C
+s32 SpriteHolder_AdvanceAnim(SpriteHolder* p) {
   if (p->kind == 0) {
     return -1;
   }
   if (p->kind == 1) {
     if (p->u.aux.animFile != NULL) {
-      AuxSprite* sprite = &p->u.aux.sprite;
-      AuxAnimState* anim = &p->u.aux.anim;
-      AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-      bool32 ended;
-
-      sprite->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-            ended = TRUE;
-          } else {
-            anim->cmdIdx--;
-            ended = FALSE;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx < anim->cmdCount) {
-            ended = FALSE;
-          } else {
-            anim->cmdIdx = 0;
-            ended = TRUE;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      } else {
-        ended = FALSE;
-      }
-      p->animEnded = ended;
+      p->animEnded = AuxSprite_AdvanceAnim(&p->u.aux.sprite, &p->u.aux.anim);
     }
   } else {
     SpriteHolderMain* main = &p->u.main;
     p->animEnded = MainSprite_AdvanceAnim(&main->sprite, &main->gfx);
   }
   return p->animEnded;
-#else
-  INCFUNC("asm/func/SpriteHolder_AdvanceAnim.inc");
-#endif
 }
 
 s32 SpriteHolder_IsAnimEnded(SpriteHolder* p) {
@@ -151,7 +100,7 @@ s32 SpriteHolder_Remove(SpriteHolder* p) {
   return 0;
 }
 
-s32 SpriteHolder_InitAux(SpriteHolder* p, u32 spriteID, u32 animFileID, SpriteFlags flags, Vec3* pos) {
+s32 SpriteHolder_InitAux(SpriteHolder* p, SpriteID32 id, u32 animFileID, SpriteFlags flags, Vec3* pos) {
   SpriteHolderAux* aux;
 
   if (p->kind != 0) {
@@ -160,7 +109,7 @@ s32 SpriteHolder_InitAux(SpriteHolder* p, u32 spriteID, u32 animFileID, SpriteFl
   ClearMemory(p, sizeof(SpriteHolder));
   p->kind = 1;
   aux = &p->u.aux;
-  if (!Video_GetAuxSprite(&aux->gfx, spriteID)) {
+  if (!Video_GetAuxSprite(&aux->gfx, id)) {
     return -1;
   }
   if (animFileID != 0) {
@@ -178,7 +127,7 @@ s32 SpriteHolder_InitAux(SpriteHolder* p, u32 spriteID, u32 animFileID, SpriteFl
   return 0;
 }
 
-s32 SpriteHolder_InitMain(SpriteHolder* p, u32 spriteID, SpriteFlags flags, Vec3* pos) {
+s32 SpriteHolder_InitMain(SpriteHolder* p, SpriteID32 id, SpriteFlags flags, Vec3* pos) {
   SpriteHolderMain* main;
   MainSpriteGfxFile* f;
 
@@ -188,7 +137,7 @@ s32 SpriteHolder_InitMain(SpriteHolder* p, u32 spriteID, SpriteFlags flags, Vec3
   ClearMemory(p, sizeof(SpriteHolder));
   p->kind = 2;
   main = &p->u.main;
-  f = GetFile(DIR_MAIN_SPRITE, spriteID);
+  f = GetFile(DIR_MAIN_SPRITE, id);
   if (f == NULL) {
     return -1;
   }

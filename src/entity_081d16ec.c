@@ -170,7 +170,21 @@ NON_MATCH void FUN_081d1470(Entity081d16ecItem* item) {
 #endif
 }
 
-NAKED void FUN_081d14e0(Entity081d16ec* p, Entity081d16ecItem* item) { INCFUNC("asm/func/FUN_081d14e0.inc"); }
+void FUN_081d1744(Entity081d16ecItem* item);
+
+// 待機中, アニメを1コマ進め, 点滅・開閉の判定・揺れを更新して経過フレームを数える
+void FUN_081d14e0(Entity081d16ec* p, Entity081d16ecItem* item) {
+  if (item->unk_c6) {
+    item->unk_c4 = 0;
+    item->sprite.flags &= ~SPRFLAG_HIDDEN;
+    item->unk_c6 = 0;
+  }
+  AuxSprite_AdvanceAnim(&item->sprite, &item->anim);
+  FUN_081d1260(item);
+  FUN_081d1470(item);
+  FUN_081d1744(item);
+  item->unk_c4++;
+}
 
 // state 3 のハンドラ, 何もしない
 void FUN_081d15f8(Entity081d16ec* p, Entity081d16ecItem* item) {}

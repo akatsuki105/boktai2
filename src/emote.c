@@ -577,7 +577,7 @@ NON_MATCH void FUN_080d8de0(Emote* p, u32 idx) {
 // 以下5本は sEmoteKindUpdates の各エントリ (kind ごとの毎フレーム更新), 各 kind の意味が未解明なので名前は据え置き
 // kind 3, 3個のパーティクルを持ち主の周りで回し, timer が段階を越えるごとに1個ずつ弾けさせ, 全部消えたら片付ける
 // 残差は全体のレジスタ割当とスタック配置 (493/503, 88 hunk), AuxAnim 手動送りが2か所に展開されており SpriteHolder_AdvanceAnim と同じ壁を2回含む
-// Tier A は一部のみ (ptcls ローカル), 未: 手動送りの inline 化, Vec3 v の扱い
+// Tier A は一部のみ (ptcls ローカル), 未: Vec3 v の扱い, 手動送りは Particle_AdvanceAnim とは別形 (反転判定の定数を使い回さず, 逆再生は ==0 なら cmdCount を入れてから -1, 戻り値なし) なので当てても縮まない
 NON_MATCH void FUN_080d8e98(Emote* p) {
 #ifdef NONMATCHING_C
   if (gEmoteManager != NULL) {
@@ -729,8 +729,8 @@ NON_MATCH void FUN_080d8e98(Emote* p) {
 }
 
 // kind 2, Zzz のパーティクルを持ち主の上で左右に揺らしながら昇らせ, 高さ 210 を超えたら片付ける
-// 残差は AuxAnim 手動送りのフリップ判定で定数 1 / 2 を使い回さない点とレジスタ割当 (242/243), SpriteHolder_AdvanceAnim と同じ壁
-// Tier A-B は試済 (mgr の受け方, 逆再生の形, 前置 ++ で & 0xFFFF を再現, cmd の再利用, 加算順), 未: フリップ判定を inline にする形
+// 残差は p->idx の読み方 (242/243), 原典は &p->idx を 0x39+p で r8 に作り ldrb + lsl/asr で符号拡張するが, こちらは ldrsb, ほかは乱数加算と ldrsh の r1/r2 入れ替わりのみ
+// 手動送りは Particle_AdvanceAnim で一致, s8* に取ると ldrb 形は出るが末尾の = -1 が崩れる, s8 引数の inline や s8 ローカルは ldrsb のまま
 NON_MATCH void FUN_080d92ac(Emote* p) {
 #ifdef NONMATCHING_C
   if (gEmoteManager != NULL) {
@@ -738,7 +738,6 @@ NON_MATCH void FUN_080d92ac(Emote* p) {
     Particle* ptcl = &p->ptcls[0];
     AuxAnimState* anim = &p->anim[0];
     ParticleGroup* g;
-    AuxAnimCmd* cmd;
 
     switch (p->animSet) {
       case 2: {
@@ -754,34 +753,7 @@ NON_MATCH void FUN_080d92ac(Emote* p) {
         break;
       }
     }
-    cmd = &anim->cmds[anim->cmdIdx];
-    ptcl->tileNum = (*cmd >> 6) * ((ptcl->spriteWidth >> 3) * (ptcl->spriteHeight >> 3)) + g->tile;
-    if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-      ptcl->flags |= SPRFLAG_XFLIP;
-    } else {
-      ptcl->flags &= ~SPRFLAG_XFLIP;
-    }
-    if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-      ptcl->flags |= SPRFLAG_YFLIP;
-    } else {
-      ptcl->flags &= ~SPRFLAG_YFLIP;
-    }
-    if (++anim->tick >= anim->wait) {
-      anim->tick = 0;
-      if (anim->flags & ANIM_PLAY_REVERSE) {
-        if (anim->cmdIdx == 0) {
-          anim->cmdIdx = anim->cmdCount - 1;
-        } else {
-          anim->cmdIdx--;
-        }
-      } else {
-        if (++anim->cmdIdx >= anim->cmdCount) {
-          anim->cmdIdx = 0;
-        }
-      }
-      cmd = &anim->cmds[anim->cmdIdx];
-      anim->wait = ((*cmd & 0xF) * anim->speed) >> 6;
-    }
+    Particle_AdvanceAnim(ptcl, g, anim);
 
     p->unk_4[0].x = ((p->unk_4c[0] >> 1) * SIN(p->unk_35[0])) >> 12;
     p->unk_4[0].y += 2;
@@ -816,56 +788,14 @@ NON_MATCH void FUN_080d92ac(Emote* p) {
 }
 
 // kind 0, アニメを進めながら持ち主の上まで浮き上がらせ, アニメが一周したら片付ける
-// 残差は AuxAnim 手動送りのフリップ判定の定数の使い回し, duration を読む幅 (原典は ldrh), ended のレジスタ (253/249), SpriteHolder_AdvanceAnim と同じ壁
-// Tier A-B は試済 (前置 ++, 加算順, duration の読み方), 未: フリップ判定と長さ取得を inline にする形
-NON_MATCH void FUN_080d94b4(Emote* p) {
-#ifdef NONMATCHING_C
+void FUN_080d94b4(Emote* p) {
   if (gEmoteManager != NULL) {
     EmoteManager* mgr = gEmoteManager;
     AuxSprite* spr = &p->spr;
     AuxAnimState* anim = &p->anim[0];
-    AuxAnimCmd* cmd;
     bool32 ended;
 
-    cmd = &anim->cmds[anim->cmdIdx];
-    AuxSprite_SetPoseIdx(spr, *cmd >> 6);
-    if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-      p->spr.flags |= SPRFLAG_XFLIP;
-    } else {
-      p->spr.flags &= ~SPRFLAG_XFLIP;
-    }
-    if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-      spr->flags |= SPRFLAG_YFLIP;
-    } else {
-      spr->flags &= ~SPRFLAG_YFLIP;
-    }
-    if (++anim->tick >= anim->wait) {
-      anim->tick = 0;
-      if (anim->flags & ANIM_PLAY_REVERSE) {
-        if (anim->cmdIdx == 0) {
-          anim->cmdIdx = anim->cmdCount - 1;
-          ended = TRUE;
-        } else {
-          anim->cmdIdx--;
-          ended = FALSE;
-        }
-      } else {
-        if (++anim->cmdIdx >= anim->cmdCount) {
-          anim->cmdIdx = 0;
-          ended = TRUE;
-        } else {
-          ended = FALSE;
-        }
-      }
-      cmd = &anim->cmds[anim->cmdIdx];
-      anim->duration = *cmd & 0xF;
-      anim->wait = (anim->duration * anim->speed) >> 6;
-      if (anim->wait == 0) {
-        anim->wait = 1;
-      }
-    } else {
-      ended = FALSE;
-    }
+    ended = AuxSprite_AdvanceAnim(spr, anim);
 
     if (p->animID <= 1) {
       p->unk_30 += 25;
@@ -908,9 +838,6 @@ NON_MATCH void FUN_080d94b4(Emote* p) {
       p->unk_4c[0]++;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080d94b4.inc");
-#endif
 }
 
 // FUN_080d9758 の下請け, timer の残りに応じて animID を 0..3 から選び直し, 残りが尽きたら animID を 4 にして unk_3c に 20 を入れる, unk_32 の bit2 が立っていれば何もしない

@@ -231,7 +231,7 @@ NON_MATCH bool32 FUN_081d27c8(void) {
     return FALSE;
   }
 
-  if (gPlayerPtr[0]->action != PACT_UNK_6) {
+  if (gPlayerPtr[0]->action != PACT_PULL_COFFIN) {
     return FALSE;
   }
   return TRUE;

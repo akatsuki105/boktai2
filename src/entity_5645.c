@@ -63,8 +63,8 @@ static Entity5645* sEntity5645;  // 0x03000120
 
 // 0x085AB748 の8件のテーブル, FUN_08054848 が 0x38 刻みで引く
 typedef struct {
-  SpriteID32 id;                                  // 0x00, Entity286F_FindSpriteData の第1引数
-  s32 idx;                                        // 0x04, Entity286F_FindSpriteData の第2引数
+  SpriteID32 id;                                  // 0x00, ActorManager_FindSpriteData の第1引数
+  s32 idx;                                        // 0x04, ActorManager_FindSpriteData の第2引数
   u32 unk_08;                                     // 0x08, FUN_080533ec に渡す, 2 の要素だけ Entity5645.gfx[] に入る
   u32 unk_0c;                                     // 0x0C, FUN_080533ec に渡す, SPRITE_MOUSE の要素だけ ANIM_MOUSE
   void (*fns[10])(Entity5645*, Entity5645Elem*);  // 0x10, FUN_08054960 が Entity5645Elem + 0x0D で引く

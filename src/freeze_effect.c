@@ -98,7 +98,7 @@ void FreezeEffect_StateGather(FreezeEffect* p) {
   FreezeEffect_SpawnSubParticle(p);
   if (++p->stateTimer > 31) {
     p->ptcl.flags &= ~SPRFLAG_HIDDEN;
-    PlaySound_082406e0(SE_CRASH_307);
+    PlaySound_082406e0(SE_SOLIDIFY);
     FreezeEffect_SetState(p, FreezeEffect_StateVanish);
   }
 }

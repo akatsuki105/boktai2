@@ -53,19 +53,18 @@ void (*const PTR_ARRAY_085ab998[3])(DustManager*, Dust*, s32) = {
     FUN_080563b0,
 };  // 0x085AB998
 
-// 残差は前半の attrKind / playerPos のレジスタ割り当てと, 後半の AuxAnim 手動送り (FUN_080563b0 と同じ壁), Tier A-C は試済
+// 生まれて 16 フレーム経ったらプレイヤーとの当たりを数えつつ, 動かしてアニメを進め, 一巡したら次の状態へ移す
+// 残差は前半のプレイヤー判定のレジスタ割当 (230/226), 原典は attrKind を r5, power を sb に置くが, こちらは attrKind が r8 に回り callee-saved が1本増える
+// 手動送りは AuxSprite_AdvanceAnim で原典と同形, attrKind / power の型, 宣言位置, pos / vel を頭で取る形, anim のローカル有無は試済
 NON_MATCH void FUN_08055fe4(DustManager* p, Dust* elem, s32 idx) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite = &elem->sprite;
   Vec3* pos;
   Vec3* vel;
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  bool32 ended;
 
   if (elem->timer > 15) {
     u8 power;
-    u8 attrKind;
+    s32 attrKind;
     WorldPos* playerPos;
 
     power = elem->power;
@@ -89,69 +88,24 @@ NON_MATCH void FUN_08055fe4(DustManager* p, Dust* elem, s32 idx) {
   pos->x += vel->x;
   pos->y += vel->y;
   pos->z += vel->z;
-  anim = &elem->anim;
-  cmd = &anim->cmds[anim->cmdIdx];
-  sprite->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    sprite->flags |= SPRFLAG_XFLIP;
-  } else {
-    sprite->flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    sprite->flags |= SPRFLAG_YFLIP;
-  } else {
-    sprite->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        ended = TRUE;
-      } else {
-        anim->cmdIdx--;
-        ended = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx < anim->cmdCount) {
-        ended = FALSE;
-      } else {
-        anim->cmdIdx = 0;
-        ended = TRUE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  } else {
-    ended = FALSE;
-  }
-  if (ended) {
+  if (AuxSprite_AdvanceAnim(sprite, &elem->anim)) {
     elem->state++;
     elem->timer = 0;
-    AuxAnim_SetAnim(anim, p->animFile, elem->state + 3, 0, 0);
+    AuxAnim_SetAnim(&elem->anim, p->animFile, elem->state + 3, 0, 0);
   }
 #else
   INCFUNC("asm/func/FUN_08055fe4.inc");
 #endif
 }
 
-// 残差は AuxAnim 手動送りの部分 (FUN_080563b0 と同じ壁), 前半のプレイヤー判定は FUN_08055fe4 と同じ形, 1 回目で打ち切り
-NON_MATCH void FUN_080561b8(DustManager* p, Dust* elem, s32 idx) {
-#ifdef NONMATCHING_C
+// 動かしながらプレイヤーとの当たりを数えてアニメを進め, delay が切れた後に一巡したら次の状態へ移るか枠を空ける
+void FUN_080561b8(DustManager* p, Dust* elem, s32 idx) {
   AuxSprite* sprite = &elem->sprite;
   Vec3* pos = &sprite->pos;
   Vec3* vel = &elem->vel;
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
   bool32 ended;
   u8 power;
-  u8 attrKind;
+  s32 attrKind;
   WorldPos* playerPos;
 
   pos->x += vel->x;
@@ -175,126 +129,32 @@ NON_MATCH void FUN_080561b8(DustManager* p, Dust* elem, s32 idx) {
   if (elem->delay != 0) {
     elem->delay--;
   }
-  anim = &elem->anim;
-  cmd = &anim->cmds[anim->cmdIdx];
-  sprite->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    sprite->flags |= SPRFLAG_XFLIP;
-  } else {
-    sprite->flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    sprite->flags |= SPRFLAG_YFLIP;
-  } else {
-    sprite->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        ended = TRUE;
-      } else {
-        anim->cmdIdx--;
-        ended = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx < anim->cmdCount) {
-        ended = FALSE;
-      } else {
-        anim->cmdIdx = 0;
-        ended = TRUE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  } else {
-    ended = FALSE;
-  }
+  ended = AuxSprite_AdvanceAnim(sprite, &elem->anim);
   if (ended && elem->delay == 0) {
     if (elem->kind == 0 || elem->kind == 3) {
       elem->state++;
       elem->timer = 0;
-      AuxAnim_SetAnim(anim, p->animFile, elem->state + 3, 0, 0);
+      AuxAnim_SetAnim(&elem->anim, p->animFile, elem->state + 3, 0, 0);
     } else {
       CLEAR_BIT(p->usedMask, idx);
       AuxSprite_Remove(sprite);
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080561b8.inc");
-#endif
 }
 
-// 残差は AuxAnim 手動送りの部分だけ (フリップ判定の定数の使い回し, cmdIdx の & 0xFFFF, ended の分岐の置き方), SpriteHolder_AdvanceAnim と同じ壁, Tier A-C は試済
-// フリップ判定を static inline にすると定数は共有されるが eors に畳まれて遠のく
-NON_MATCH void FUN_080563b0(DustManager* p, Dust* elem, s32 idx) {
-#ifdef NONMATCHING_C
+// 速度ぶん動かしてアニメを1コマ進め, 一巡したら枠を空けてスプライトを外す
+void FUN_080563b0(DustManager* p, Dust* elem, s32 idx) {
   AuxSprite* sprite = &elem->sprite;
   Vec3* pos = &sprite->pos;
   Vec3* vel = &elem->vel;
-  AuxAnimState* anim;
-  AuxAnimCmd* cmd;
-  bool32 ended;
 
   pos->x += vel->x;
   pos->y += vel->y;
   pos->z += vel->z;
-  anim = &elem->anim;
-  cmd = &anim->cmds[anim->cmdIdx];
-  sprite->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    sprite->flags |= SPRFLAG_XFLIP;
-  } else {
-    sprite->flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    sprite->flags |= SPRFLAG_YFLIP;
-  } else {
-    sprite->flags &= ~SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        ended = TRUE;
-      } else {
-        anim->cmdIdx--;
-        ended = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx < anim->cmdCount) {
-        ended = FALSE;
-      } else {
-        anim->cmdIdx = 0;
-        ended = TRUE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  } else {
-    ended = FALSE;
-  }
-  if (ended) {
+  if (AuxSprite_AdvanceAnim(sprite, &elem->anim)) {
     CLEAR_BIT(p->usedMask, idx);
     AuxSprite_Remove(sprite);
   }
-#else
-  INCFUNC("asm/func/FUN_080563b0.inc");
-#endif
 }
 
 s32 DustManager_Update(DustManager* p) {

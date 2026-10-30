@@ -56,7 +56,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define TGT_LADY 0x0A5A       // BOKHASH("レディ")
 #define TGT_MEGAMAN 0xB548    // BOKHASH("ロックマン")
 #define TGT_SHADEMAN 0x0623   // BOKHASH("シェードマン")
-#define TGT_SNAKE 0x04B1      // BOKHASH("ハテナ")
+#define TGT_HATENA 0x04B1     // BOKHASH("ハテナ")
 
 #define M(x) (const MsgPacket*)&x
 

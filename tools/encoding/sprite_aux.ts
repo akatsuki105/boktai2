@@ -41,7 +41,7 @@ export const ParseFile = (rom: DataView, start: addr, end: addr): AuxSpriteFile 
     offsetToSubsprites: gba.getU32(rom, start + 20),
   };
 
-  // Actors
+  // AuxSprite
   const entries: AuxSpriteFile["entries"] = [];
   for (let i = 0; i < header.entryCount; i++) {
     const p: addr = (start + 0x18) + (i * 12);

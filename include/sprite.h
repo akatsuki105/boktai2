@@ -24,7 +24,7 @@ typedef struct {
 } SpriteHolderMain;
 
 // SpriteHolder_InitAux / SpriteHolder_InitMain が作るスプライトの器, kind で AuxSprite と MainSprite を使い分ける
-// 図鑑専用ではなく、Entity286FNode も1つ、PreviewStage は5つ持つ
+// 図鑑専用ではなく、Actor も1つ、PreviewStage は5つ持つ
 typedef struct {
   u32 kind;         // 0x00, 0: 未使用, 1: AuxSprite, 2: MainSprite
   u32 animID;       // 0x04, SpriteHolder_SetAnim の pose, MainSprite のときは variant を足した値
@@ -46,8 +46,8 @@ s32 SpriteHolder_AdvanceAnim(SpriteHolder* p);
 s32 SpriteHolder_IsAnimEnded(SpriteHolder* p);
 s32 SpriteHolder_GetAdvancedCmdIdx(SpriteHolder* p, u32* out);
 s32 SpriteHolder_Remove(SpriteHolder* p);
-s32 SpriteHolder_InitAux(SpriteHolder* p, u32 spriteID, u32 animFileID, SpriteFlags flags, Vec3* pos);
-s32 SpriteHolder_InitMain(SpriteHolder* p, u32 spriteID, SpriteFlags flags, Vec3* pos);
+s32 SpriteHolder_InitAux(SpriteHolder* p, SpriteID32 id, u32 animFileID, SpriteFlags flags, Vec3* pos);
+s32 SpriteHolder_InitMain(SpriteHolder* p, SpriteID32 id, SpriteFlags flags, Vec3* pos);
 s32 SpriteHolder_SetPos(SpriteHolder* p, Vec3* pos);
 s32 SpriteHolder_SetFlags(SpriteHolder* p, SpriteFlags flags);
 s32 SpriteHolder_ClearFlags(SpriteHolder* p, SpriteFlags flags);

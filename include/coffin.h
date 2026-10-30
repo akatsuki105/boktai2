@@ -29,7 +29,7 @@ typedef struct Coffin {
   HitboxData hitbox;          // 0x12C, 威力50の攻撃判定 (多分棺桶が暴れ出した時の攻撃判定)
   NavAgent navAgent;          // 0x17C, mover.pos から destPos への経路を見るのに使う
   ZoneEventSource zoneEvent;  // 0x1A0, id は mover.id の写し, pos は &mover.pos
-  u8 unk_1d0[0x1E0 - 0x1D0];  // 0x1D0
+  AuxAnimState animState;     // 0x1D0, anim の再生状態
   AuxAnimFile* anim;          // 0x1E0, ANIM_COFFIN
   EnemyTarget target;         // 0x1E4, 敵から狙われる側としての登録, coffinID が COFFIN_SILVER のときは登録しない
   bool8 unk_1f4;              // 0x1F4, target を登録済みなら 1

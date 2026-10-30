@@ -2,23 +2,32 @@
 #include "global.h"
 #include "hitbox.h"
 #include "particle.h"
+#include "random.h"
+#include "sound.h"
+#include "spirit_bugs.h"
 #include "sprite.h"
+#include "sprite_animation.h"
 #include "vm.h"
 
 // Entity0866 が16個抱える枠
 typedef struct {
-  u8 unk_00[2];            // 0x00, まだ未解析
-  u8 unk_02;               // 0x02, FUN_08009e28 が 2 を入れる
-  u8 unk_03[2];            // 0x03, まだ未解析
-  bool8 active;            // 0x05, 0 の枠を FUN_08009b10 が空きとして返す
-  u8 unk_06;               // 0x06, まだ未解析
-  bool8 unk_07;            // 0x07, FUN_08009c28 が読んで落とす目印
-  u8 unk_08[2];            // 0x08, まだ未解析
-  u16 unk_0a;              // 0x0A, FUN_08009e28 が毎フレーム +1 して 30 を超えたら 0 に戻す
-  u8 unk_0c[0x14 - 0x0C];  // 0x0C, まだ未解析
-  HitboxData hitbox;       // 0x14
-  Particle ptcl;           // 0x64
-  u8 unk_8c[0x9C - 0x8C];  // 0x8C, まだ未解析
+  u8 unk_00[2];       // 0x00, まだ未解析
+  u8 unk_02;          // 0x02, FUN_08009e28 が 2 を入れる
+  u8 unk_03;          // 0x03, SpawnSpiritBugs の kind の下位ビット, 2 なら出現音を変える
+  u8 unk_04;          // 0x04, SpawnSpiritBugs の count
+  bool8 active;       // 0x05, 0 の枠を FUN_08009b10 が空きとして返す
+  u8 unk_06;          // 0x06, FUN_08009e54 がアニメが一巡したら 1 にする
+  bool8 unk_07;       // 0x07, FUN_08009c28 が読んで落とす目印
+  bool8 unk_08;       // 0x08, FUN_08009c44 / FUN_08009e54 がアニメが一巡したフレームだけ TRUE にする
+  u8 unk_09;          // 0x09, まだ未解析
+  u16 unk_0a;         // 0x0A, FUN_08009e28 が毎フレーム +1 して 30 を超えたら 0 に戻す
+  u16 unk_0c;         // 0x0C, unk_0a がこれを超えたら粒子を出し直す, 120..247 の乱数
+  u16 unk_0e;         // 0x0E, SpawnSpiritBugs の amount
+  u16 unk_10;         // 0x10, SpawnSpiritBugs の lifetime
+  u16 unk_12;         // 0x12, SpawnSpiritBugs の lifetimeRand
+  HitboxData hitbox;  // 0x14
+  Particle ptcl;      // 0x64
+  AuxAnimState anim;  // 0x8C, Particle_AdvanceAnim で ptcl に当てる
 } Entity0866Elem;
 static_assert(sizeof(Entity0866Elem) == 156);
 
@@ -98,7 +107,38 @@ void FUN_08009c28(Entity0866* p, Entity0866Elem* e) {
   }
 }
 
-NAKED void FUN_08009c44(Entity0866* p, Entity0866Elem* param_2) { INCFUNC("asm/func/FUN_08009c44.inc"); }
+// 隠れている間は unk_0c フレーム待って粒子を出し直し, 見えている間はアニメを進めて一巡したら隠す
+// 残差は r1/r2 の入れ替わり3か所のみ (227/227), 手動送りは Particle_AdvanceAnim で一致
+// 出し直しの inline 化, 比較の向き, 120 + 乱数の順, ptcl のローカル化は試済
+NON_MATCH void FUN_08009c44(Entity0866* p, Entity0866Elem* e) {
+#ifdef NONMATCHING_C
+  if (e->unk_07) {
+    e->unk_07 = FALSE;
+    Particle_SetOffset(&e->ptcl, -4, -4);
+    Particle_SetPose(&e->ptcl, p->group1, 0);
+    AuxAnim_SetAnim(&e->anim, p->anim_28, 8, 0, 0);
+    e->ptcl.flags &= ~SPRFLAG_HIDDEN;
+    e->unk_0c = (Random() & 0x7F) + 120;
+  }
+  if (e->ptcl.flags & SPRFLAG_HIDDEN) {
+    if (e->unk_0a++ > e->unk_0c) {
+      e->unk_0a = 0;
+      e->unk_0c = (Random() & 0x7F) + 120;
+      Particle_SetOffset(&e->ptcl, -4, -4);
+      Particle_SetPose(&e->ptcl, p->group1, 0);
+      AuxAnim_SetAnim(&e->anim, p->anim_28, 8, 0, 0);
+      e->ptcl.flags &= ~SPRFLAG_HIDDEN;
+    }
+  } else {
+    e->unk_08 = Particle_AdvanceAnim(&e->ptcl, p->group1, &e->anim);
+    if (e->unk_08) {
+      e->ptcl.flags |= SPRFLAG_HIDDEN;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_08009c44.inc");
+#endif
+}
 
 // 残差は定数 0 と 2 のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致)
 NON_MATCH void FUN_08009e28(Entity0866* p, Entity0866Elem* e) {
@@ -117,7 +157,39 @@ NON_MATCH void FUN_08009e28(Entity0866* p, Entity0866Elem* e) {
 #endif
 }
 
-NAKED void FUN_08009e54(Entity0866* p, Entity0866Elem* param_2) { INCFUNC("asm/func/FUN_08009e54.inc"); }
+// 出現時に粒子とアニメを用意し, コマに合わせて上下させつつ4コマ目で太陽虫を撒き, アニメが一巡したら隠す
+void FUN_08009e54(Entity0866* p, Entity0866Elem* e) {
+  if (e->unk_07) {
+    e->unk_07 = FALSE;
+    e->ptcl.flags &= ~SPRFLAG_HIDDEN;
+    Particle_SetOffset(&e->ptcl, -8, -8);
+    Particle_SetPose(&e->ptcl, p->group0, 0);
+    AuxAnim_SetAnim(&e->anim, p->anim_24, 0, 0, 0);
+    PlaySound_0824078c(SE_UNK_290);
+  }
+  if (e->anim.cmdIdx == 1 && e->anim.tick == 0) {
+    e->ptcl.pos.y += 16;
+  }
+  if (e->anim.cmdIdx == 2 && e->anim.tick == 0) {
+    e->ptcl.pos.y -= 16;
+  }
+  if (e->anim.cmdIdx == 4 && e->anim.tick == 0) {
+    Vec3 spread;
+
+    VEC3_SET(spread, 10, 10, 10);
+    SpawnSpiritBugs(e->unk_04, e->unk_03 | 0x10, e->unk_0e, &e->ptcl.pos, &spread, e->unk_10, e->unk_12);
+    if (e->unk_03 == 2) {
+      PlaySound_0824078c(SONG_696);
+    } else {
+      PlaySound_0824078c(SE_SOLAR_INSECT_285);
+    }
+  }
+  e->unk_08 = Particle_AdvanceAnim(&e->ptcl, p->group0, &e->anim);
+  if (e->unk_08) {
+    e->unk_06 = 1;
+    e->ptcl.flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 NAKED s32 Entity0866_Update(Entity0866* p) { INCFUNC("asm/func/Entity0866_Update.inc"); }
 

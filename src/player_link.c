@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "enemy_target.h"
 #include "entity_9a9f.h"
+#include "file.h"
 #include "global.h"
 #include "input.h"
 #include "magic.h"
@@ -315,7 +316,21 @@ NAKED void FUN_080cc780(Player* p) { INCFUNC("asm/func/FUN_080cc780.inc"); }
 
 NAKED void FUN_080cc8e0(Player* p) { INCFUNC("asm/func/FUN_080cc8e0.inc"); }
 
-NAKED void FUN_080cc944(Player* p) { INCFUNC("asm/func/FUN_080cc944.inc"); }
+// 衝撃波のアニメーションを1コマ進めて動かし, 末尾まで行ったら消して finished を落とす (PlayerShockwave_UpdateAnim と同じ)
+void FUN_080cc944(PlayerShockwave* p) {
+  if (!p->finished) {
+    return;
+  }
+
+  if (AuxSprite_AdvanceAnim(&p->sprite, &p->anim)) {
+    p->finished = FALSE;
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+    return;
+  }
+
+  p->sprite.pos.x += p->vel.x;
+  p->sprite.pos.z += p->vel.z;
+}
 
 // アニメが最後まで行った印を消費し, まだなら衝撃波を隠す
 void FUN_080cca80(PlayerShockwave* p) {
@@ -740,7 +755,31 @@ NAKED s32 FUN_080cf0b4(Player* p) { INCFUNC("asm/func/FUN_080cf0b4.inc"); }
 
 NAKED void FUN_080cf15c(Player* p) { INCFUNC("asm/func/FUN_080cf15c.inc"); }
 
-NAKED void FUN_080cf248(Player* p) { INCFUNC("asm/func/FUN_080cf248.inc"); }
+// マウスのスプライトとアニメを読み込んで beast に出し, 最初のコマを当てる (Player_InitBeastSprite のマウスだけの版)
+void FUN_080cf248(Player* p) {
+  AuxSprite* sprite;
+  AuxAnimState* anim;
+  AuxAnimFile* file;
+  u32 animIdx;
+
+  Video_GetAuxSprite(&p->beastGfxs[1], SPRITE_MOUSE);
+  file = GetFile(DIR_ANIMATION, ANIM_MOUSE);
+  p->mouseAnim = file;
+
+  sprite = &p->beast;
+  p->beastGfx = &p->beastGfxs[1];
+  animIdx = 0;
+
+  AuxSprite_Add(sprite, p->beastGfx, SPRFLAG_GAMEOVER | SPRFLAG_HIDDEN);
+  p->beast.pos.x = p->mover.pos.x;
+  p->beast.pos.y = p->mover.pos.y;
+  p->beast.pos.z = p->mover.pos.z;
+  p->floatHeight = 0;
+
+  anim = &p->beastAnim;
+  AuxAnim_SetAnim(anim, file, animIdx, p->animIDOffset, p->xflip);
+  AuxSprite_AdvanceAnim(sprite, anim);
+}
 
 NAKED s32 FUN_080cf3c0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cf3c0.inc"); }
 
@@ -1077,7 +1116,15 @@ NAKED void FUN_080d5510(Player* p) { INCFUNC("asm/func/FUN_080d5510.inc"); }
 
 NAKED void FUN_080d55d8(Player* p) { INCFUNC("asm/func/FUN_080d55d8.inc"); }
 
-NAKED void FUN_080d57e4(Player* p) { INCFUNC("asm/func/FUN_080d57e4.inc"); }
+// マウスの待機 (PACT_IDLE), マウスのアニメを向きに合わせて1コマ進める
+void FUN_080d57e4(Player* p) {
+  p->flag20 &= ~PFLAG20_UNK_0;
+  if (p->action != PACT_IDLE) {
+    PlayerLink_SetAction(p, PACT_IDLE, 0);
+  }
+  AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animIDOffset, p->xflip);
+  AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
+}
 
 s32 FUN_080d5908(Player* p) {
   s32 v = 12;

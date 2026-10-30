@@ -1,6 +1,7 @@
 #include "preview_stage.h"
 
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "random.h"
 #include "sprite.h"
@@ -29,7 +30,7 @@ typedef u8 PreviewModelFlags;
 
 typedef struct PreviewModel {
   SpriteID16 id;                    // 0x00
-  u16 animFileID;                   // 0x02, SpriteHolder_InitAux の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
+  FileID animFileID;                // 0x02, ANIM_xxx, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
   u16 kind;                         // 0x04, 1: AuxSprite+AuxAnimState, 2: MainSprite
   u16 poseBase;                     // 0x06, PreviewStage.poseBase に控え、SpriteHolder_SetAnim の第2引数になる
   u16 plttID;                       // 0x08, SpriteHolder_SetPlttID に渡すパレットID

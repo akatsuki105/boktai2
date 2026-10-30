@@ -313,7 +313,7 @@ void GameOverManager_StateWaitFlag(GameOverManager* p) {
   }
   GameOverManager_AddSprites(p);
   FUN_0809c08c(7);
-  if (gPlayerPtr[0]->action >= PACT_UNK_28 && gPlayerPtr[0]->action <= PACT_UNK_29) {
+  if (gPlayerPtr[0]->action >= PACT_UNK_28 && gPlayerPtr[0]->action <= PACT_FALLDEATH) {
     p->costIdx = 1;
   } else {
     FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);

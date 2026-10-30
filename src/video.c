@@ -527,7 +527,7 @@ void LoadAuxSpriteFile(AuxSpriteFile* f) {
   gAuxSpriteTiles = (u8*)f + f->offsetToTiles;
 }
 
-// ロード中の AuxSpriteFile から id のアクターを探し、描画に必要な情報を AuxSpriteGfx に詰める
+// ロード中の AuxSpriteFile から id の AuxSprite を探し、描画に必要な情報を AuxSpriteGfx に詰める
 bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id) {
   AuxSpriteFile* f = gAuxSpriteFile;
   u8* tiles;

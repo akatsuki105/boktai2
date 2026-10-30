@@ -619,7 +619,7 @@ bool32 FUN_080b1038(Vec3* a, Vec3* b, s32 radius) {
 }
 
 s32 FUN_080b1078(PileDriver* p) {
-  if (gCoffin != NULL && gPlayerPtr[0]->mode == PMODE_ACTIVE && gPlayerPtr[0]->action == PACT_UNK_6 && FUN_080b1038(&gCoffin->mover.pos, &p->pos_510, 70)) {
+  if (gCoffin != NULL && gPlayerPtr[0]->mode == PMODE_ACTIVE && gPlayerPtr[0]->action == PACT_PULL_COFFIN && FUN_080b1038(&gCoffin->mover.pos, &p->pos_510, 70)) {
     return 1;
   }
   return 0;

@@ -12,7 +12,7 @@ import { getPlttData } from "../encoding/mft_spritepltt.ts";
 
 const ID = 0x2117;
 
-// e.g. sprite_aux.ts tile ./baserom.gba tmp/actorsprite 0xA895
+// e.g. sprite_aux.ts tile ./baserom.gba tmp/sprite 0xA895
 const tileCmd = new Command()
   .name("sprite_aux.ts")
   .argument("<rom:string>", "Path to a GBA ROM file.")
@@ -58,15 +58,15 @@ const tileCmd = new Command()
         }
       }
 
-      // アクターのタイルデータを ${ID}.4bpp を取得
-      const tileID = f.metasprites[metaspriteStart].tileID; // アクターの最初のメタスプライトのtileID
+      // SpriteAux のタイルデータを ${ID}.4bpp を取得
+      const tileID = f.metasprites[metaspriteStart].tileID; // SpriteAux の最初のメタスプライトのtileID
       const from: addr = tilebase + (tileID * 32);
       const legnth = tileCount * 32;
       const bpp = gba.copyBytes(rom, from, legnth).slice(0, legnth);
       const bppPath = path.join(outDir, `${gba.toHex16(spriteID)}.4bpp`);
       Deno.writeFileSync(bppPath, bpp);
 
-      // アクターのパレットを ${ID}.gbapal を取得
+      // SpriteAux のパレットを ${ID}.gbapal を取得
       const plttID = (options.pltt >= 0) ? options.pltt : f.metasprites[metaspriteStart].plttID;
       const gbapal = getPlttData(rom, plttID);
       const palPath = path.join(outDir, `${gba.toHex16(spriteID)}.gbapal`);
@@ -89,11 +89,11 @@ const tileCmd = new Command()
       }
 
       if (tileCount % width !== 0) {
-        const rule = `data/actor_sprites/${gba.toHex16(spriteID)}.4bpp: GFX_OPTS := -num_tiles ${tileCount}`;
+        const rule = `data/sprite_aux/${gba.toHex16(spriteID)}.4bpp: GFX_OPTS := -num_tiles ${tileCount}`;
         makerules.push(rule);
       }
 
-      const incbin = `.incbin "data/actor_sprites/${gba.toHex16(spriteID)}.4bpp" @ 0x${gba.toHex32(from)}, ActorID: 0x${gba.toHex16(spriteID)}, PlttID: ${plttID}`;
+      const incbin = `.incbin "data/sprite_aux/${gba.toHex16(spriteID)}.4bpp" @ 0x${gba.toHex32(from)}, SpriteID: 0x${gba.toHex16(spriteID)}, PlttID: ${plttID}`;
       incbins.push(incbin);
     }
 

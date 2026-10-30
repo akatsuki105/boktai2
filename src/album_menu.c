@@ -82,9 +82,7 @@ s32 FUN_08211164(s32 page) {
 }
 
 // カーソル位置が実際に写真のあるマスか
-// 残差2命令, 原典は (y*5 + 1) を作ってから x を足すが gcc は (x + 1) を先に畳む (括弧も効かず)
-NON_MATCH bool32 AlbumMenu_CheckCursorPos(s32 x, s32 y, s32 page) {
-#ifdef NONMATCHING_C
+bool32 AlbumMenu_CheckCursorPos(s32 x, s32 y, s32 page) {
   if (x < 0 || x > 4) {
     return FALSE;
   }
@@ -94,13 +92,10 @@ NON_MATCH bool32 AlbumMenu_CheckCursorPos(s32 x, s32 y, s32 page) {
   if (y > 1) {
     return FALSE;
   }
-  if (AlbumMenu_GetPhotoSlotCount(page) < (y * 5 + 1) + x) {
+  if (AlbumMenu_GetPhotoSlotCount(page) < x + 1 + y * 5) {
     return FALSE;
   }
   return TRUE;
-#else
-  INCFUNC("asm/func/AlbumMenu_CheckCursorPos.inc");
-#endif
 }
 
 // 27枚以上集まっているか
@@ -247,6 +242,7 @@ s32 AlbumMenu_Destroy(AlbumMenu* p) {
 
 NAKED s32 AlbumMenu_Init(AlbumMenu* p, u32 n) { INCFUNC("asm/func/AlbumMenu_Init.inc"); }
 
+// 0x52BF
 AlbumMenu* AlbumMenu_Create(s32 n) {
   AlbumMenu* p = CreateEntity(ENTITY_UNK_8, sizeof(AlbumMenu));
 

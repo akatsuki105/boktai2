@@ -159,7 +159,7 @@
 #define SONG_155 155
 #define SONG_156 156
 #define SONG_157 157
-#define SONG_158 158
+#define BGM_SUNMIGUERE 158
 #define SONG_159 159
 #define SONG_160 160
 #define SONG_161 161
@@ -202,13 +202,13 @@
 #define SONG_198 198
 #define SONG_199 199
 #define SONG_200 200
-#define SONG_201 201
-#define SONG_202 202
+#define SE_FSTEP_M_0 201  // 男性キャラの足音 (SE_FSTEP_M_1 と交互に鳴らす)
+#define SE_FSTEP_M_1 202  // 男性キャラの足音 (SE_FSTEP_M_0 と交互に鳴らす)
 #define SONG_203 203
 #define SONG_204 204
-#define SE_GUN_FIRE 205  // 太陽銃を撃った時のSE
-#define SONG_206 206
-#define SONG_207 207
+#define SE_GUN_FIRE 205         // 太陽銃を撃った時のSE
+#define SE_WOOD_DOOR_OPEN 206   // 木のドアが開く音
+#define SE_WOOD_DOOR_CLOSE 207  // 木のドアが閉まる音
 #define SONG_208 208
 #define SONG_209 209
 #define SONG_210 210
@@ -308,7 +308,7 @@
 #define SE_UNK_304 304
 #define SONG_305 305
 #define SONG_306 306
-#define SE_CRASH_307 307  // 砕けるような音(太陽タケノコとか石化がくだけるような)
+#define SE_SOLIDIFY 307  // 氷結や石化時などで使う凍りつく音
 #define SE_308 308
 #define SONG_309 309
 #define SONG_310 310
@@ -402,8 +402,8 @@
 #define SONG_398 398
 #define SONG_399 399
 #define SONG_400 400
-#define SE_401 401  // 空ぶったようなSE
-#define SE_NG 402   // 汎用的なNG音
+#define SE_IGNITE 401  // 着火時のSE(火が噴き出すような音)
+#define SE_NG 402      // 汎用的なNG音
 #define SONG_403 403
 #define SONG_404 404
 #define SONG_405 405
@@ -604,8 +604,8 @@
 #define SONG_600 600
 #define SONG_601 601
 #define SONG_602 602
-#define SONG_603 603
-#define SONG_604 604
+#define SE_FSTEP_F_0 603  // 女性キャラの足音 (SE_FSTEP_F_1 と交互に鳴らす)
+#define SE_FSTEP_F_1 604  // 女性キャラの足音 (SE_FSTEP_F_0 と交互に鳴らす)
 #define SONG_605 605
 #define SONG_606 606
 #define SONG_607 607
@@ -654,8 +654,8 @@
 #define SONG_650 650
 #define SONG_651 651
 #define SONG_652 652
-#define SONG_653 653
-#define SONG_654 654
+#define SE_FSTEP_STAIRS_0 653  // 階段の登り降り時の足音 (SE_FSTEP_STAIRS_1 と交互に鳴らす)
+#define SE_FSTEP_STAIRS_1 654  // 階段の登り降り時の足音 (SE_FSTEP_STAIRS_0 と交互に鳴らす)
 #define SONG_655 655
 #define SONG_656 656
 #define SONG_657 657
@@ -750,7 +750,7 @@
 #define VO_SABATA_STUN 746
 #define VO_SABATA_DEATH 747
 #define SONG_748 748
-#define SONG_749 749
+#define VO_SABATA_749 749
 #define SONG_750 750
 #define SONG_751 751
 #define SONG_752 752
@@ -774,7 +774,7 @@
 #define VO_DARK_DJANGO_UGH_770 770
 #define VO_DARK_DJANGO_SCREAM 771  // 黒ジャンゴが暴走した時のボイス?
 #define VO_SOLAR_DJANGO_SCREAM 772
-#define VO_DJANGO_773 773       // 驚いたような声
+#define VO_DJANGO_773 773       // 驚いたような声(落とし穴に落ちた時など)
 #define VO_DJANGO_MAGIC 774     // ヒーリングやトランスを使った時のｵｵｫｫ!みたいな声
 #define VO_DJANGO_BOKURANO 775  // ﾎﾞｸﾗﾉ…!
 #define SONG_776 776
@@ -915,7 +915,7 @@
 #define SONG_911 911
 #define SONG_912 912
 #define SONG_913 913
-#define SONG_914 914
+#define SE_MAGIC_DASH 914  // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
 #define SE_ENCHANT 915
 #define SONG_916 916
 #define SONG_917 917

@@ -60,15 +60,15 @@ void EntityB3D1_SetState(EntityB3D1* p, EntityB3D1Func* fn) {
   p->stateTimer = 0;
 }
 
-// プレイヤー1の unk_40c と unk_42e を空にする
+// プレイヤー1の連打の履歴を空にする
 void FUN_080bfa74(void) {
   s32 i;
 
   for (i = 0; i < 32; i++) {
-    gPlayerPtr[0]->unk_40c[i] = 0;
+    gPlayerPtr[0]->mashHistory[i] = FALSE;
   }
 
-  gPlayerPtr[0]->unk_42e = 0;
+  gPlayerPtr[0]->mashHits = 0;
 }
 
 NAKED void FUN_080bfaac(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfaac.inc"); }
@@ -104,7 +104,7 @@ void FUN_080bfd04(EntityB3D1* p) {
 }
 
 void FUN_080bfd24(EntityB3D1* p) {
-  if (gPlayerPtr[0]->unk_42e > 3) {
+  if (gPlayerPtr[0]->mashHits > 3) {
     p->unk_588++;
   } else {
     p->unk_588 = 0;
@@ -224,12 +224,12 @@ NAKED void FUN_080c0248(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
 void FUN_080c04d8(EntityB3D1* p) {
   Player* q = gPlayerPtr[0];
 
-  if (q->unk_42e <= 3) {
+  if (q->mashHits <= 3) {
     REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN;
-    REG_BLDY = (4 - q->unk_42e) * 2;
+    REG_BLDY = (4 - q->mashHits) * 2;
   } else {
     REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_BD | BLDCNT_EFFECT_LIGHTEN;
-    REG_BLDY = q->unk_42e - 4;
+    REG_BLDY = q->mashHits - 4;
   }
   REG_BLDALPHA = 0;
 }

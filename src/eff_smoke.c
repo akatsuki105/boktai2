@@ -28,10 +28,8 @@ static SmokeEmitter* gSmokeEmitter;  // 0x03000174
 
 SmokeEmitter* SmokeEmitter_Create(void);
 
-// 残差5命令 (178/183), 原典はループ外に 1 と 2 の両方を括り出すがこちらは 1 だけ, muls の前にコピーが2つ入る
-// Tier A-C 試済, 兄弟の Entity0800a89c_UpdateCollectedBug と同じ形まで追い込んだ
-NON_MATCH s32 SmokeEmitter_Update(SmokeEmitter* p) {
-#ifdef NONMATCHING_C
+// 煙を速度ぶん動かしてアニメを1コマ進め, アニメが一巡したものから消す
+s32 SmokeEmitter_Update(SmokeEmitter* p) {
   s32 i;
 
   if (p->activeCount == 0) {
@@ -40,62 +38,21 @@ NON_MATCH s32 SmokeEmitter_Update(SmokeEmitter* p) {
 
   for (i = 0; i < 48; i++) {
     SmokePtcl* e = &p->ptcls[i];
+    Particle* ptcl = &e->ptcl;
 
     if (e->active) {
-      AuxAnimCmd* cmd;
-      bool32 finished;
+      ptcl->pos.x += e->vel.x;
+      ptcl->pos.y += e->vel.y;
+      ptcl->pos.z += e->vel.z;
 
-      e->ptcl.pos.x += e->vel.x;
-      e->ptcl.pos.y += e->vel.y;
-      e->ptcl.pos.z += e->vel.z;
-
-      cmd = &e->anim.cmds[e->anim.cmdIdx];
-      e->ptcl.tileNum = (*cmd >> 6) * ((e->ptcl.spriteWidth >> 3) * (e->ptcl.spriteHeight >> 3)) + p->group->tile;
-      if ((e->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        e->ptcl.flags |= SPRFLAG_XFLIP;
-      } else {
-        e->ptcl.flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((e->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        e->ptcl.flags |= SPRFLAG_YFLIP;
-      } else {
-        e->ptcl.flags &= ~SPRFLAG_YFLIP;
-      }
-      e->anim.tick++;
-      if (e->anim.tick < e->anim.wait) {
-        finished = FALSE;
-      } else {
-        e->anim.tick = 0;
-        if (e->anim.flags & ANIM_PLAY_REVERSE) {
-          if (e->anim.cmdIdx == 0) {
-            e->anim.cmdIdx = e->anim.cmdCount - 1;
-            finished = TRUE;
-          } else {
-            e->anim.cmdIdx--;
-            finished = FALSE;
-          }
-        } else {
-          e->anim.cmdIdx++;
-          if (e->anim.cmdIdx < e->anim.cmdCount) {
-            finished = FALSE;
-          } else {
-            e->anim.cmdIdx = 0;
-            finished = TRUE;
-          }
-        }
-        e->anim.wait = (e->anim.speed * (e->anim.cmds[e->anim.cmdIdx] & 0xF)) >> 6;
-      }
-      if (finished) {
+      if (Particle_AdvanceAnim(ptcl, p->group, &e->anim)) {
         e->active = FALSE;
-        e->ptcl.flags |= SPRFLAG_HIDDEN;
+        ptcl->flags |= SPRFLAG_HIDDEN;
         p->activeCount--;
       }
     }
   }
   return 0;
-#else
-  INCFUNC("asm/func/SmokeEmitter_Update.inc");
-#endif
 }
 
 // 全要素の粒子を描画リストから外す

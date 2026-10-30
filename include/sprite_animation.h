@@ -38,7 +38,7 @@ typedef struct {
   AuxAnimPlayFlags flags;  // 0x04, see AuxAnimPlayFlags
   u8 cmdCount;             // 0x05
   u8 duration;             // 0x06, 現フレームの表示時間 (AuxAnimCmd の bit0-3)
-  u8 wait;                 // 0x07, duration * speed >> 6 (0 なら 1)
+  u8 wait;                 // 0x07, 今のコマを実際に表示するフレーム数, duration を再生速度で伸縮したもの
   u16 cmdIdx;              // 0x08, cmds の添字
   u16 animIdx;             // 0x0A, 再生中のアニメーション番号, 同じ番号で AuxAnim_SetAnim を呼んでも再開しない
   u16 speed;               // 0x0C, 再生速度, 0x40 が等速
@@ -50,5 +50,11 @@ static_assert(sizeof(AuxAnimState) == 16);
 bool32 AuxAnim_SetAnim(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags);
 void AuxAnim_SetAnimSpeed(AuxAnimState* p, u16 speed);
 bool32 AuxAnim_RestartAnim(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags);
+
+// コマの表示時間 (bit0-3) を取り出す
+static inline u32 AuxAnimCmd_GetDuration(AuxAnimCmd* cmd) { return *cmd & 0xF; }
+
+// スプライトの反転指定 (bit4: X, bit5: Y) を AuxAnimPlayFlags と同じ並びで取り出す
+static inline u32 AuxAnimCmd_GetFlip(AuxAnimCmd* cmd) { return (*cmd & 0x30) >> 4; }
 
 #endif  // __INCLUDE_ANIMATION_H__

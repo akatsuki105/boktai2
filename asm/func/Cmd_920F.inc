@@ -80,7 +80,7 @@ _08044392:
 	adds r7, r0, #0
 	mov r0, sb
 	adds r1, r5, #0
-	bl Entity286FNode_Alloc
+	bl Actor_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _080443D6
@@ -109,7 +109,7 @@ _080443FC:
 	blt _08044408
 	adds r0, r4, #0
 	adds r1, r7, #0
-	bl Entity286FNode_SetPltt
+	bl Actor_SetPltt
 _08044408:
 	movs r1, #0xae
 	lsls r1, r1, #1
@@ -190,7 +190,7 @@ _08044408:
 	strb r5, [r4, #0x18]
 	mov r0, sl
 	movs r1, #0
-	bl Entity286F_FindSpriteData
+	bl ActorManager_FindSpriteData
 	movs r2, #0xae
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -247,7 +247,7 @@ _08044520:
 _08044534:
 	ldr r0, [sp, #0x10]
 	adds r1, r4, #0
-	bl Entity286F_LinkNode
+	bl ActorManager_LinkActor
 _0804453C:
 	add sp, #0x14
 	pop {r3, r4, r5}

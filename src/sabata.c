@@ -29,6 +29,7 @@ extern u16 gRisingSunCount;
 void* Entity080abd14_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 WorldPos* FUN_080230c4(void);
 void FUN_08084734(WorldPos* out);
+s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
 void* Entity080cbabc_Create(WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
@@ -179,7 +180,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
   }
 
   if (Hitbox_TestAttr(a, HBATTR_18)) {
-    p->unk_3d2 = 1;
+    p->blownAway = 1;
     p->facing = FUN_08080f20(a, b);
     return;
   }
@@ -210,7 +211,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
     return;
   }
 
-  p->unk_3d2 = 0;
+  p->blownAway = 0;
   p->facing = FUN_08080f20(a, b);
 }
 
@@ -548,11 +549,11 @@ void AllySabata_SetupHurtbox(Player* p) {
   Hitbox_Register(hurtbox);
 }
 
-void FUN_08084330(Player* p);
+void AllySabata_UpdateActions(Player* p);
 
 s32 FUN_080817ec(Player* p) {
   p->mode = PMODE_ACTIVE;
-  p->updateCallback = FUN_08084330;
+  p->updateCallback = AllySabata_UpdateActions;
   p->action = PACT_IDLE;
   p->state = 0;
   p->stateTimer = 0;
@@ -580,13 +581,7 @@ void FUN_08081830(Player* p) {
     p->facing = FACE_UP;
   }
 
-  if (p->facing > 4) {
-    p->animIDOffset = 8 - p->facing;
-    p->xflip = 1;
-  } else {
-    p->animIDOffset = p->facing;
-    p->xflip = 0;
-  }
+  PLAYER_SET_ANIM_DIR(p, p->facing);
 
   p->animID = 0;
   MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, PLAYMODE_LOOP, 0);
@@ -990,15 +985,9 @@ void FUN_08082464(Player* p) {
 
 // サバタの行動 0x18, 吹き飛ばされている間の移動と, 止まったあとの復帰
 void FUN_08082498(Player* p) {
-  if (p->action != PACT_UNK_24) {
-    AllySabata_SetAction(p, PACT_UNK_24, 0);
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = 1;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = 0;
-    }
+  if (p->action != PACT_DAMAGED) {
+    AllySabata_SetAction(p, PACT_DAMAGED, 0);
+    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
 
     AllySabata_PlayAnim(p, 446, Q6(1));
     sound_08240740(SONG_870);
@@ -1014,7 +1003,7 @@ void FUN_08082498(Player* p) {
       p->mover.delta.x = FixToInt(3, -dx);
       p->mover.delta.z = FixToInt(3, -dz);
       if (p->knockbackTimer > 0x55 && !(p->knockbackTimer & 1)) {
-        PlaySound_082406e0(SE_401);
+        PlaySound_082406e0(SE_IGNITE);
       }
     } else {
       s32 angle = ((p->facing + 5) & 7) * 32;
@@ -1042,15 +1031,9 @@ void FUN_08082498(Player* p) {
 
 // サバタの行動 0x19, 吹き飛ばされて浮き上がり、落ちて起き上がるまでの一連
 void FUN_08082670(Player* p) {
-  if (p->action != PACT_UNK_25) {
-    AllySabata_SetAction(p, PACT_UNK_25, 0);
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = 1;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = 0;
-    }
+  if (p->action != PACT_BLOWN_AWAY) {
+    AllySabata_SetAction(p, PACT_BLOWN_AWAY, 0);
+    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
 
     sound_08240740(SONG_870);
     PlaySound_082406e0(SONG_875);
@@ -1061,7 +1044,7 @@ void FUN_08082670(Player* p) {
       AllySabata_PlayAnim(p, 446, Q6(1));
       p->stateTimer++;
       if (p->stateTimer > 2) {
-        AllySabata_SetAction(p, PACT_UNK_25, 1);
+        AllySabata_SetAction(p, PACT_BLOWN_AWAY, 1);
       }
       break;
     }
@@ -1089,7 +1072,7 @@ void FUN_08082670(Player* p) {
       if (p->hurtbox.knockbackPower <= 19 && p->floatHeight == 0) {
         p->floatHeight = 0;
         PlaySound_082406e0(SE_826);
-        AllySabata_SetAction(p, PACT_UNK_25, 2);
+        AllySabata_SetAction(p, PACT_BLOWN_AWAY, 2);
       }
       break;
     }
@@ -1100,20 +1083,20 @@ void FUN_08082670(Player* p) {
       p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
       if (AllySabata_PlayAnim(p, 454, Q6(1))) {
         p->hurtbox.knockbackPower = 0;
-        AllySabata_SetAction(p, PACT_UNK_25, 3);
+        AllySabata_SetAction(p, PACT_BLOWN_AWAY, 3);
       }
       break;
     }
     case 3: {
       p->stateTimer++;
       if (p->stateTimer > 0x13) {
-        AllySabata_SetAction(p, PACT_UNK_25, 4);
+        AllySabata_SetAction(p, PACT_BLOWN_AWAY, 4);
       }
       break;
     }
     case 4: {
       if (AllySabata_PlayAnim(p, 456, Q6(1))) {
-        p->unk_3d2 = 0;
+        p->blownAway = 0;
         AllySabata_SetAnimFacing(p);
         p->unk_46d++;
         if (p->unk_46d >= p->unk_46c) {
@@ -1543,7 +1526,192 @@ void FUN_080832b8(Player* p) {
   }
 }
 
-NAKED void FUN_080835d8(Player* p) { INCFUNC("asm/func/FUN_080835d8.inc"); }
+// 同行サバタの PACT_UNK_20, 構えて 1-2 回溜めたあと, 段差を避けて unk_3b0 の辺りをうろつきながら暗黒銃の散弾を撃ち続ける
+// 残差1命令 (917/916) と段差判定まわり, 原典は unk_3b0 のずらしで x を乱数の後に ldrh で読み, 段差で向きを反転する所に結果を使わない ldrsb と畳まれない blocked = 1 の判定が残る
+// Tier A-C 試済 (乱数の式の書き順 4 通り, _Random(table) と table の取り位置, unk_4a7 は += 254 で一致, 段差判定の Vec3 を分ける)
+NON_MATCH void FUN_080835d8(Player* p) {
+#ifdef NONMATCHING_C
+  if (p->action != PACT_UNK_20) {
+    AllySabata_SetAction(p, PACT_UNK_20, 0);
+  }
+  p->unk_951 = 9;
+  if (p->knockbackSpeed != 0) {
+    s32 angle = ((p->knockbackDir + 5) & 7) << 5;
+
+    p->mover.delta.x = POLAR_X(p->knockbackSpeed, angle);
+    p->mover.delta.z = POLAR_Z(p->knockbackSpeed, angle);
+    p->knockbackSpeed = (p->knockbackSpeed * 3) >> 2;
+  }
+
+  switch (p->state) {
+    case 0: {
+      Player_SetFlag20(p, PFLAG20_UNK_15);
+      if (AllySabata_PlayAnim(p, 478, Q6(1))) {
+        AllySabata_SetAction(p, PACT_UNK_20, 1);
+      }
+      break;
+    }
+    case 1: {
+      if (p->stateTimer == 0) {
+        PlaySound_082406e0(SE_GUN_AIM);
+      }
+      Player_SetFlag20(p, PFLAG20_UNK_15);
+      AllySabata_PlayAnim(p, 483, Q6(1));
+      if (++p->stateTimer > 4) {
+        p->speedPenalty = 0;
+        p->unk_403 = Random() & 1;
+        AllySabata_SetAction(p, PACT_UNK_20, 2);
+      }
+      break;
+    }
+    case 2: {
+      Player_SetFlag20(p, PFLAG20_UNK_15);
+      AllySabata_PlayAnim(p, 483, Q6(1));
+      if (++p->stateTimer > 44) {
+        if (p->speedPenalty >= p->unk_403) {
+          PlaySound_082406e0(VO_SABATA_TAKETHIS);
+          AllySabata_SetAction(p, PACT_UNK_20, 3);
+        } else {
+          AllySabata_SetAction(p, PACT_UNK_20, 2);
+          p->speedPenalty++;
+        }
+        p->plttID_95e = 290;
+        p->plttFlashTimer = 32;
+      }
+      break;
+    }
+    case 3: {
+      Player_SetFlag20(p, PFLAG20_UNK_15);
+      AllySabata_PlayAnim(p, 483, Q6(1));
+      if (++p->stateTimer > 14) {
+        PlaySound_082406e0(SONG_870);
+        p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
+        p->knockbackSpeed_4a4 = 0;
+        p->unk_4a7 = ((p->facing + 5) & 7) << 5;
+        FUN_08084734(&p->unk_3b0);
+        AllySabata_SetAction(p, PACT_UNK_20, 4);
+      }
+      break;
+    }
+    case 4: {
+      Vec3 pos;
+      s32 diff;
+      s32 angle;
+
+      p->knockbackSpeed = 0;
+      AllySabata_SetFlag35a(p, PFLAG35A_UNK_7);
+      if (p->tile.unk_0[0] & 1) {
+        Vec3 probe;
+        bool32 blocked;
+
+        blocked = FALSE;
+        probe = p->mover.pos;
+        probe.x += 35;
+        if (TileHeightAt(&probe) == p->mover.pos.y) {
+          probe.x -= 70;
+          if (TileHeightAt(&probe) != p->mover.pos.y) {
+            blocked = TRUE;
+          }
+        } else {
+          blocked = TRUE;
+        }
+        if (blocked) {
+          p->unk_4a7 = 0x80 - p->unk_4a7;
+        }
+
+        blocked = FALSE;
+        probe = p->mover.pos;
+        probe.z += 35;
+        if (TileHeightAt(&probe) == p->mover.pos.y) {
+          probe.z -= 70;
+          if (TileHeightAt(&probe) != p->mover.pos.y) {
+            blocked = TRUE;
+          }
+        } else {
+          blocked = TRUE;
+        }
+        if (blocked) {
+          p->unk_4a7 = -p->unk_4a7;
+        }
+      }
+      if (!(p->stateTimer & 0x3F)) {
+        u16* table;
+
+        FUN_08084734(&p->unk_3b0);
+        table = gRandomTable;
+        p->unk_3b0.x = (_Random(table) & 0x1FF) - 255 + p->unk_3b0.x;
+        p->unk_3b0.z = (_Random(table) & 0x1FF) - 255 + p->unk_3b0.z;
+      }
+      diff = (ArcTan2_8(p->unk_3b0.x - p->mover.pos.x, p->unk_3b0.z - p->mover.pos.z) - p->unk_4a7 + 256) & 0xFF;
+      if (diff < 128) {
+        p->unk_4a7 += 2;
+      } else {
+        p->unk_4a7 += 254;
+      }
+      if (diff < 64 || diff > 192) {
+        if (++p->knockbackSpeed_4a4 > 31) {
+          p->knockbackSpeed_4a4 = 32;
+        }
+      } else if (diff > 96 && diff < 160) {
+        if (p->knockbackSpeed_4a4 != 0) {
+          p->knockbackSpeed_4a4--;
+        }
+      }
+      p->mover.delta.x = POLAR_X(8, p->unk_4a7);
+      p->mover.delta.z = POLAR_Z(8, p->unk_4a7);
+
+      p->wpn.gunSpreadAngle = (p->wpn.gunSpreadAngle + 16) & 0xFF;
+      p->wpn.sprite.pos = p->mover.pos;
+      p->wpn.sprite.pos.y += 230;
+      p->wpn.sprite.rotation = p->wpn.gunSpreadAngle;
+      p->facing = ((271 - p->wpn.gunSpreadAngle) & 0xFF) >> 5;
+      AllySabata_SetAnimFacing(p);
+
+      pos = p->mover.pos;
+      angle = (416 - p->wpn.gunSpreadAngle) & 0xFF;
+      pos.x += POLAR_X(170, angle);
+      pos.y += 230;
+      pos.z += POLAR_Z(170, angle);
+      Hitbox_SetPos(&p->wpn.hitbox, &pos, 0);
+      p->wpn.hitbox.angle = angle;
+      Hitbox_Register(&p->wpn.hitbox);
+      AllySabata_PlayAnim(p, 488, Q6(1));
+      if (!(p->stateTimer & 3)) {
+        Vec3 ofs;
+        Vec3 size;
+
+        VEC3_SET(ofs, 0, 0, 0);
+        VEC3_SET(size, 32, 0, 32);
+        FUN_080dbcec(&p->mover.pos, &ofs, &size, 1, 2, 4);
+      }
+      if (!(p->stateTimer & 15)) {
+        PlaySound_082406e0(SONG_516);
+      }
+      if (++p->stateTimer >= (p->unk_403 + 1) << 5) {
+        sound_08240740(SONG_870);
+        AllySabata_SetAction(p, PACT_UNK_20, 5);
+      }
+      break;
+    }
+    case 5: {
+      AllySabata_PlayAnim(p, 483, Q6(1));
+      if (++p->stateTimer > 4) {
+        AllySabata_SetAction(p, PACT_UNK_20, 6);
+      }
+      break;
+    }
+    case 6: {
+      AllySabata_PlayAnim(p, 478, Q6(1));
+      if (++p->stateTimer > 4) {
+        AllySabata_SetAction(p, PACT_IDLE, 0);
+      }
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080835d8.inc");
+#endif
+}
 
 // 次に移る action を決める, 被弾・停止中・巡回・1P への接近の順に見ていく
 s32 FUN_08083eac(Player* p) {
@@ -1555,23 +1723,23 @@ s32 FUN_08083eac(Player* p) {
   }
 
   if (p->hurtbox.knockbackPower != 0) {
-    if (p->unk_3d2 != 0) {
-      return PACT_UNK_25;
+    if (p->blownAway != 0) {
+      return PACT_BLOWN_AWAY;
     }
-    return PACT_UNK_24;
+    return PACT_DAMAGED;
   }
 
   action = p->action;
-  if (action == PACT_UNK_24 || action == PACT_UNK_25 || action == PACT_GRABBED) {
+  if (action == PACT_DAMAGED || action == PACT_BLOWN_AWAY || action == PACT_GRABBED) {
     return action;
   }
 
   if (gRisingSunCount != 0) {
     p->human.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD | SPRFLAG_BLINK_EVEN);
     p->hurtbox.knockbackPower = 50;
-    p->unk_3d2 = 0;
+    p->blownAway = 0;
     p->facing |= 1;
-    return PACT_UNK_24;
+    return PACT_DAMAGED;
   }
 
   if (action == PACT_UNK_18 || p->unk_474 != 0) {
@@ -1688,41 +1856,26 @@ void FUN_08084078(Player* p) {
   }
 }
 
-void FUN_08081f80(Player* p);
-void FUN_08081fb4(Player* p);
-void FUN_08082bdc(Player* p);
-void FUN_080832b8(Player* p);
-void FUN_08082154(Player* p);
-void FUN_0808301c(Player* p);
-void FUN_08082dac(Player* p);
-void FUN_08082970(Player* p);
-void FUN_08082a94(Player* p);
-void FUN_080835d8(Player* p);
-void FUN_08082464(Player* p);
-void FUN_08082498(Player* p);
-void FUN_08082670(Player* p);
+// PMODE_ACTIVE なら行動関数表から今の行動を呼び, PMODE_LOCKED なら fn_498 を呼ぶ
+void AllySabata_UpdateActions(Player* p) {
+  static const PlayerFunc sAllySabataActionFuncs[29] = {
+      [PACT_IDLE] = FUN_08081f80,
+      [PACT_WALK] = FUN_08081fb4,
+      [PACT_DASH] = FUN_08082bdc,
+      [PACT_ATTACK] = FUN_080832b8,
+      [PACT_UNK_7] = FUN_08082154,
+      [PACT_UNK_8] = FUN_0808301c,
+      [PACT_SUN_MAGIC] = FUN_08082dac,
+      [PACT_UNK_18] = FUN_08082970,
+      [PACT_UNK_19] = FUN_08082a94,
+      [PACT_UNK_20] = FUN_080835d8,
+      [PACT_GRABBED] = FUN_08082464,
+      [PACT_DAMAGED] = FUN_08082498,
+      [PACT_BLOWN_AWAY] = FUN_08082670,
+  };  // 0x085ABF54
 
-const PlayerFunc PTR_ARRAY_085abf54[29] = {
-    [PACT_IDLE] = FUN_08081f80,
-    [PACT_WALK] = FUN_08081fb4,
-    [PACT_DASH] = FUN_08082bdc,
-    [PACT_ATTACK] = FUN_080832b8,
-    [PACT_UNK_7] = FUN_08082154,
-    [PACT_UNK_8] = FUN_0808301c,
-    [PACT_SUN_MAGIC] = FUN_08082dac,
-    [PACT_UNK_18] = FUN_08082970,
-    [PACT_UNK_19] = FUN_08082a94,
-    [PACT_UNK_20] = FUN_080835d8,
-    [PACT_GRABBED] = FUN_08082464,
-    [PACT_UNK_24] = FUN_08082498,
-    [PACT_UNK_25] = FUN_08082670,
-};  // 0x085ABF54
+  s32 action;
 
-// state 1 なら太陽ゲージの半分を渡してから行動関数表を引いて呼び、state 2 なら fn_498 を呼ぶ
-// 残差は p が r4 か r5 かだけ (47対47, 命令列は一致), こちらは callee-saved を1本多く使って push {r4,r5,lr} になる
-// Tier A-C 試済: switch 形にして分岐は一致, FUN_08081d18 の第2引数を s32 に, ゲージをローカルに受けて ldrsh 化
-NON_MATCH void FUN_08084330(Player* p) {
-#ifdef NONMATCHING_C
   switch (p->mode) {
     case PMODE_ACTIVE: {
       if (p->flag20 & PFLAG20_SUNBATHING) {
@@ -1730,7 +1883,8 @@ NON_MATCH void FUN_08084330(Player* p) {
 
         FUN_08081d18(p, gauge >> 1);
       }
-      PTR_ARRAY_085abf54[FUN_08083eac(p)](p);
+      action = FUN_08083eac(p);
+      sAllySabataActionFuncs[action](p);
       FUN_08084078(p);
       break;
     }
@@ -1741,9 +1895,6 @@ NON_MATCH void FUN_08084330(Player* p) {
       break;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_08084330.inc");
-#endif
 }
 
 // サバタの被弾処理, 行動8 の間は規定回数まで弾き, 超えたら弾き返すか行動 0x14 に移る
@@ -1779,7 +1930,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
       if (p->blockCount >= p->blockLimit) {
         p->blockCount = 0;
         p->facing = FUN_08080f20(a, b);
-        p->unk_3d2 = 1;
+        p->blownAway = 1;
         b->knockbackPower = 100;
         return;
       }

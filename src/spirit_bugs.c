@@ -5,6 +5,7 @@
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "random.h"
 #include "sprite_aux.h"
 
 // 精霊虫1匹, state で sSwarmUpdates[kind * 5 + state] のハンドラに分岐する, 根拠: Entity0800a89c_UpdateSwarm
@@ -281,58 +282,70 @@ NAKED void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx,
 NAKED void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800ba78.inc"); }
 
 // state 4 (プレイヤーに回収された) のハンドラ, アニメを1コマ進め、一巡したら虫を消す
-NON_MATCH void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {
+void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Particle* ptcl = &bug->ptcl;
+
+  if (Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim)) {
+    bug->state = 0;
+    ptcl->flags |= SPRFLAG_HIDDEN;
+    swarm->aliveCount--;
+    if (swarm->aliveCount == 0) {
+      Entity0800a89c_ReleaseSwarm(p, swarm);
+    }
+  }
+}
+
+// 目標へ向き直りながら飛び, 点滅しながら unk_6 を減らして 0 になったら消える
+// 残差は旋回時の angle への書き込み2か所 (原典は &bug->angle のレジスタ経由, こちらは bug+2) と乱数テーブルのレジスタのみ (295/295), 手動送りは Particle_AdvanceAnim で一致
+// 旋回部分の inline 化 (if の内外), 差分を bug->angle で取る形, 加算を if/else に分ける形は試済
+NON_MATCH void FUN_0800be38(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {
 #ifdef NONMATCHING_C
   SpiritBug* bug = &swarm->bugs[bugIdx];
-  AuxAnimCmd* cmd = &bug->anim.cmds[bug->anim.cmdIdx];
-  bool32 finished;
+  Vec3* target = &bug->target;
+  Particle* ptcl = &bug->ptcl;
+  u8* angle = &bug->angle;
 
-  bug->ptcl.tileNum = p->group0->tile + (*cmd >> 6) * (bug->ptcl.spriteWidth >> 3) * (bug->ptcl.spriteHeight >> 3);
-  if ((bug->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    bug->ptcl.flags |= SPRFLAG_XFLIP;
-  } else {
-    bug->ptcl.flags &= ~SPRFLAG_XFLIP;
-  }
-  if ((bug->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    bug->ptcl.flags |= SPRFLAG_YFLIP;
-  } else {
-    bug->ptcl.flags &= ~SPRFLAG_YFLIP;
-  }
-  bug->anim.tick++;
-  if (bug->anim.tick < bug->anim.wait) {
-    finished = FALSE;
-  } else {
-    bug->anim.tick = 0;
-    if (bug->anim.flags & ANIM_PLAY_REVERSE) {
-      if (bug->anim.cmdIdx == 0) {
-        bug->anim.cmdIdx = bug->anim.cmdCount - 1;
-        finished = TRUE;
-      } else {
-        bug->anim.cmdIdx--;
-        finished = FALSE;
+  if ((bugIdx & 1) == frameBit) {
+    s32 diff = ArcTan2_8(target->x - ptcl->pos.x, target->z - ptcl->pos.z) - *angle;
+
+    if (bug->turnTimer < 0) {
+      *angle += abs(diff) <= 4 ? diff : 4;
+      if (++bug->turnTimer == 0) {
+        bug->turnTimer = (Random() & 0x3F) + 0x40;
       }
     } else {
-      bug->anim.cmdIdx++;
-      if (bug->anim.cmdIdx < bug->anim.cmdCount) {
-        finished = FALSE;
-      } else {
-        bug->anim.cmdIdx = 0;
-        finished = TRUE;
+      *angle -= abs(diff) <= 4 ? diff : 4;
+      if (--bug->turnTimer == 0) {
+        bug->turnTimer = -(Random() & 0x3F) - 0x40;
       }
     }
-    bug->anim.wait = (bug->anim.speed * (bug->anim.cmds[bug->anim.cmdIdx] & 0xF)) >> 6;
+    bug->vel.x = (COS(*angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(*angle) * bug->speed) >> 12;
   }
-  if (finished) {
-    bug->state = 0;
+  ptcl->pos.x += bug->vel.x;
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (bug->speed > 5) {
+    bug->speed--;
+  }
+  if (bug->timer >= bug->unk_6) {
     bug->ptcl.flags |= SPRFLAG_HIDDEN;
+    bug->unk_6--;
+    bug->timer = 0;
+  } else {
+    bug->ptcl.flags &= ~SPRFLAG_HIDDEN;
+  }
+  bug->timer++;
+  if (bug->unk_6 == 0) {
+    bug->state = 0;
+    ptcl->flags |= SPRFLAG_HIDDEN;
     swarm->aliveCount--;
     if (swarm->aliveCount == 0) {
       Entity0800a89c_ReleaseSwarm(p, swarm);
     }
   }
 #else
-  INCFUNC("asm/func/Entity0800a89c_UpdateCollectedBug.inc");
+  INCFUNC("asm/func/FUN_0800be38.inc");
 #endif
 }
-
-NAKED void FUN_0800be38(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800be38.inc"); }

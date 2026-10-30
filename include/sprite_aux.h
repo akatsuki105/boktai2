@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_SPRITE_ACTOR_H__
-#define __INCLUDE_SPRITE_ACTOR_H__
+#ifndef __INCLUDE_SPRITE_AUX_H__
+#define __INCLUDE_SPRITE_AUX_H__
 
 #include "gba/gba.h"
 #include "sprite_animation.h"
@@ -10,14 +10,14 @@ typedef u8 AuxSpriteGfxFlags;  // AuxSpriteGfx.flags, ParticleGroupFlags と同�
 #define ASGFLAG_BPP8 (1 << 4)  // 0x10, 8bpp
 
 typedef struct {
-  u16 id;                   // 0x00, ID of this actor, used for loading it
+  SpriteID16 id;            // 0x00, ID of this sprite, used for loading it
   AuxSpriteGfxFlags flags;  // 0x02, このゲームでは全て0
   u8 unk_03;                // 0x03, このゲームでは全て0, padding?
   u8 pw;                    // 0x04, pixel width
   u8 ph;                    // 0x05, pixel height
   s8 px;                    // 0x06, offset pixel x
   s8 py;                    // 0x07, offset pixel y
-  u32 spritesOffset;        // 0x08, poses[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり poses[spritesOffset>>3]
+  u32 spritesOffset;        // 0x08, poses[] の先頭から SpriteAux の最初のスプライトまでのバイトオフセット, つまり poses[spritesOffset>>3]
 } AuxSpriteEntry;
 static_assert(sizeof(AuxSpriteEntry) == 12);
 
@@ -129,4 +129,51 @@ static inline void AuxSprite_Show(AuxSprite* spr) { spr->flags &= ~SPRFLAG_HIDDE
 static inline void AuxSprite_Hide(AuxSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
 static inline void AuxSprite_SetPoseIdx(AuxSprite* spr, s32 val) { spr->poseIdx = val; }
 
-#endif  // __INCLUDE_SPRITE_ACTOR_H__
+// 今のコマを AuxSprite に当ててアニメを1コマ進める, 一巡したら TRUE を返す
+static inline bool32 AuxSprite_AdvanceAnim(AuxSprite* sprite, AuxAnimState* anim) {
+  AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
+  bool32 finished;
+
+  sprite->poseIdx = *cmd >> 6;
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (AuxAnimCmd_GetFlip(cmd) & ANIM_PLAY_XFLIP)) {
+    sprite->flags |= SPRFLAG_XFLIP;
+  } else {
+    sprite->flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (AuxAnimCmd_GetFlip(cmd) & ANIM_PLAY_YFLIP)) {
+    sprite->flags |= SPRFLAG_YFLIP;
+  } else {
+    sprite->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  if (++anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount - 1;
+        finished = TRUE;
+      } else {
+        anim->cmdIdx--;
+        finished = FALSE;
+      }
+    } else {
+      if (++anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+        finished = TRUE;
+      } else {
+        finished = FALSE;
+      }
+    }
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->duration = AuxAnimCmd_GetDuration(cmd);
+    anim->wait = (anim->duration * anim->speed) >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  } else {
+    finished = FALSE;
+  }
+  return finished;
+}
+
+#endif  // __INCLUDE_SPRITE_AUX_H__

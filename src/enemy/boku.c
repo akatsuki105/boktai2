@@ -19,14 +19,22 @@ typedef struct {
   u16 scriptID_658;           // 0x658, 0 でなければ unk_65b が unk_65a に届いたときに実行する
   u8 unk_65a;                 // 0x65A, scriptID_658 を実行するまでのフレーム数
   u8 unk_65b;                 // 0x65B, 毎フレーム +1
-  u8 unk_65c[0x670 - 0x65C];  // 0x65C
+  u16 unk_65c;                // 0x65C
+  u16 unk_65e;                // 0x65E
+  Vec3 unk_660;               // 0x660
+  Vec3 unk_668;               // 0x668
   u16 timer_670;              // 0x670, FUN_080ffd28 が毎フレーム 1 減らす, 0 になるまで FUN_080ff270 が状態ハンドラを呼ばない
   u16 unk_672;                // 0x672, FUN_080ff470 が timer_670 の初期値として写す
-  u8 unk_674[1708 - 0x674];   // 0x674
+  u8 unk_674[0x67C - 0x674];  // 0x674
+  u16 unk_67c;                // 0x67C
+  u8 unk_67e[1708 - 0x67E];   // 0x67E
 } Boku;
 static_assert(sizeof(Boku) == 1708);
 
 void Enemy_RunStateHandler(Enemy* p);
+void FUN_080e6204(Enemy* p);
+
+extern const char s_bokucom_c_08251fc0[];  // "bokucom.c"
 
 void FUN_080f2864(Enemy* p);
 void FUN_080f248c(Enemy* p);
@@ -164,7 +172,30 @@ NAKED void FUN_080ff7c0(unknown* p) { INCFUNC("asm/func/FUN_080ff7c0.inc"); }
 
 NAKED void FUN_080ffa44(unknown* p) { INCFUNC("asm/func/FUN_080ffa44.inc"); }
 
-NAKED void FUN_080ffad8(unknown* p) { INCFUNC("asm/func/FUN_080ffad8.inc"); }
+// 状態を初期化して待機アニメ 0 に戻し, 1コマ進める
+// 残差1命令 (152/153), 原典は p->sprite を r0 に読んでから r5 へ移すが, こちらは r5 へ直接読む, 手動送りは AuxSprite_AdvanceAnim で一致
+// aux のローカル化, 引数に直接書く形, 敵用の送り inline を挟む形は試済
+NON_MATCH void FUN_080ffad8(Enemy* p) {
+#ifdef NONMATCHING_C
+  Boku* q = p->unk_1cc;
+  EnemyAuxSpriteData* aux;
+
+  q->unk_65e = 0;
+  q->unk_65c = 0;
+  q->timer_670 = 0;
+  q->unk_67c = 0;
+  ClearMemory(p->unk_4a8, sizeof(Vec3));
+  ClearMemory(&q->unk_668, sizeof(Vec3));
+  ClearMemory(&q->unk_660, sizeof(Vec3));
+  Enemy_ClearPendingState(p, s_bokucom_c_08251fc0, 147);
+  FUN_080e6204(p);
+  Enemy_PlayAnim(p, 0);
+  aux = (EnemyAuxSpriteData*)p->sprite;
+  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+#else
+  INCFUNC("asm/func/FUN_080ffad8.inc");
+#endif
+}
 
 void FUN_080ffc28(void) {}
 

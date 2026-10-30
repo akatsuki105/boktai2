@@ -7,12 +7,9 @@
 // 32枠を使い回す粒子1個
 typedef struct {
   Particle ptcl;           // 0x00, FUN_081eb0ec が Particle_Remove に渡す
-  u8 unk_28[0x30 - 0x28];  // 0x28, まだ未解析
-  u16 unk_30;              // 0x30, FUN_081eafc0 が 1 かどうかを見る
-  u8 unk_32[0x36 - 0x32];  // 0x32, まだ未解析
-  u16 unk_36;              // 0x36, FUN_081eafc0 が 0 かどうかを見る
+  AuxAnimState anim;       // 0x28, Particle_AdvanceAnim で ptcl に当てる
   u8 unk_38[0x42 - 0x38];  // 0x38, まだ未解析
-  u8 unk_42;               // 0x42, FUN_081eb0ec が 0 に戻す
+  u8 unk_42;               // 0x42, FUN_081eb0ec が 0 に戻し, FUN_081eafc0 はアニメが一巡すると 2 にする
   s8 slot;                 // 0x43, activeMask 上の自分のビット番号, 解放時は -1
   u8 unk_44;               // 0x44, FUN_081eafc0 が立っていたら ptcl.flags の bit0 を落として 0 に戻す
   u8 unk_45[0x48 - 0x45];  // 0x45, まだ未解析
@@ -37,7 +34,21 @@ static Entity081eb2f0* gEntity081eb2f0;  // 0x030001C4
 
 void FUN_081eafbc(Entity081eb2f0* p, Entity081eb2f0Elem* e) {}
 
-NAKED void FUN_081eafc0(Entity081eb2f0* p, Entity081eb2f0Elem* e) { INCFUNC("asm/func/FUN_081eafc0.inc"); }
+// 生存中の枠, 出現直後に粒子を表示し, アニメを1コマ進めて一巡したら解放待ち (state 2) にする
+void FUN_081eafc0(Entity081eb2f0* p, Entity081eb2f0Elem* e) {
+  Particle* ptcl = &e->ptcl;
+
+  if (e->unk_44) {
+    ptcl->flags &= ~SPRFLAG_HIDDEN;
+    e->unk_44 = 0;
+  }
+  if (e->anim.cmdIdx == 1 && e->anim.tick == 0) {
+    ptcl->pos.y += 32;
+  }
+  if (Particle_AdvanceAnim(ptcl, p->group, &e->anim)) {
+    e->unk_42 = 2;
+  }
+}
 
 // 枠を1つ解放する
 void FUN_081eb0ec(Entity081eb2f0* p, Entity081eb2f0Elem* e) {

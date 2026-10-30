@@ -274,7 +274,7 @@ _0801A332:
 	ble _0801A332
 	ldr r0, _0801A3C4 @ =0x03002BE0
 	ldr r0, [r0]
-	bl FUN_0807a8e0
+	bl Player_RemoveKaamos
 _0801A3A0:
 	ldr r0, [r7, #8]
 	ldr r1, [r7, #0xc]

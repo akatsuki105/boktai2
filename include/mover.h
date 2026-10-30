@@ -79,4 +79,10 @@ bool32 FUN_0823b464(Mover* p, u32 unk_20);
 // Mover_FindByID を呼ぶだけのラッパ, 他モジュールが使っているのはこちら (11箇所)
 Mover* Mover_FindByID_Proxy(u16 id);
 
+static inline void Mover_SetUnk30(Mover* m, s16 x, s16 y, s16 z) {
+  m->unk_30.x = x;
+  m->unk_30.y = y;
+  m->unk_30.z = z;
+}
+
 #endif  // __INCLUDE_MOVER_H__

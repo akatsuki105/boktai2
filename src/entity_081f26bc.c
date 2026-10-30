@@ -2,8 +2,16 @@
 #include "global.h"
 #include "hitbox.h"
 #include "malloc.h"
+#include "particle.h"
 #include "sprite.h"
 #include "sprite_animation.h"
+
+// flags の bit4 で obj が指す粒子
+typedef struct {
+  Particle ptcl;         // 0x00
+  ParticleGroup* group;  // 0x28
+} Entity081f26bcPtcl;
+static_assert(sizeof(Entity081f26bcPtcl) == 44);
 
 // 動く破片 1 つ, Entity081f26bc_Spawn で出す
 typedef struct {
@@ -60,7 +68,49 @@ NAKED void FUN_081f1994(Entity081f26bc* p, Entity081f26bcElem* e) { INCFUNC("asm
 
 NAKED void Entity081f26bc_StateBounce(Entity081f26bc* p, Entity081f26bcElem* e) { INCFUNC("asm/func/Entity081f26bc_StateBounce.inc"); }
 
-NAKED void Entity081f26bc_StateVanish(Entity081f26bc* p, Entity081f26bcElem* e) { INCFUNC("asm/func/Entity081f26bc_StateVanish.inc"); }
+// 点滅して消える状態, アニメを進めながら点滅させ, 消えきったら obj を解放して枠を空ける
+// 残差はレジスタ割当 (292/321), 原典は anim を ip に追い出して使うたび低位レジスタへ移すが, こちらは r4 に収まり &e->flags が r8 に回る
+// 手動送りは AuxSprite_AdvanceAnim / Particle_AdvanceAnim で原典と同形, anim のローカル化 (関数頭 / 分岐内), 送り全体の inline 化は試済
+NON_MATCH void Entity081f26bc_StateVanish(Entity081f26bc* p, Entity081f26bcElem* e) {
+#ifdef NONMATCHING_C
+  if (e->stateEntered) {
+    e->stateEntered = FALSE;
+    e->vanishTimer = 0;
+  }
+  if (e->flags & 8) {
+    AuxSprite_AdvanceAnim(e->obj, &e->anim);
+  } else {
+    Entity081f26bcPtcl* ptcl = e->obj;
+
+    Particle_AdvanceAnim(&ptcl->ptcl, ptcl->group, &e->anim);
+  }
+  if (Sprite_UpdateVanishBlink(e->flags & 8 ? &((AuxSprite*)e->obj)->flags : &((Particle*)e->obj)->flags, e->vanishTimer, 60, 40)) {
+    CLEAR_BIT(gEntity081f26bc->usedMask, e->idx);
+    e->state = 0;
+    if (e->flags & 8) {
+      AuxSprite* spr = e->obj;
+
+      if (spr->active) {
+        AuxSprite_Remove(spr);
+        Free(e->obj);
+      }
+    } else {
+      Particle* ptcl = e->obj;
+
+      if (ptcl->active) {
+        Particle_Remove(ptcl);
+        Free(e->obj);
+      }
+    }
+    e->idx = -1;
+    e->flags = 0;
+  } else {
+    e->vanishTimer++;
+  }
+#else
+  INCFUNC("asm/func/Entity081f26bc_StateVanish.inc");
+#endif
+}
 
 NAKED AuxAnimFile* Entity081f26bc_LoadAuxSprite(Entity081f26bcElem* e, SpriteID32 spriteID, u32 animFileID) { INCFUNC("asm/func/Entity081f26bc_LoadAuxSprite.inc"); }
 

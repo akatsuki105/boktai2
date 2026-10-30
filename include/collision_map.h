@@ -196,13 +196,13 @@ typedef struct {
 // --------------------------------------------
 
 // ゾーンイベントを起こした側の情報, Map_RunZoneEventScript がスクリプトの引数に積む
-// 根拠: FUN_080412fc が Entity286F の 0x0A0 に mover.id と &mover.pos を入れて FUN_08234660 に渡す
+// 根拠: FUN_080412fc が Actor の 0x0A0 に mover.id と &mover.pos を入れて FUN_08234660 に渡す
 typedef struct {
   u16 id;                // 0x00, Mover.id の複写
   u8 unk_2;              // 0x02
   u8 activeCount;        // 0x03, activeEvents の件数
   Vec3* pos;             // 0x04, Mover.pos を指す
-  u32 activeEvents[10];  // 0x08, いま範囲内にいる CollisionMapEvent.id, 要素数は Entity286F の空き領域ちょうど (暫定)
+  u32 activeEvents[10];  // 0x08, いま範囲内にいる CollisionMapEvent.id, 要素数は ActorManager の空き領域ちょうど (暫定)
 } ZoneEventSource;
 static_assert(sizeof(ZoneEventSource) == 48);
 

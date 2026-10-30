@@ -31,7 +31,7 @@ COMMON_DATA AuxSprite* gAuxSpriteLists[2] = {};    // 0x03003560
 COMMON_DATA MainSprite* gMainSpriteLists[2] = {};  // 0x03003568
 COMMON_DATA Particle* gParticleLists[2] = {};      // 0x03003570, 根拠: Video_AddParticleIntoDrawList
 
-COMMON_DATA s16 gAuxSpriteTileCount = 0;   // 0x03003578, このフレームに Video_AllocObjTiles が積んだアクタースプライトのタイル数, 根拠: CopyObjTileDataToVram が ldrsh で読んで DMA 先の起点計算に使う
+COMMON_DATA s16 gAuxSpriteTileCount = 0;   // 0x03003578, このフレームに Video_AllocObjTiles が積んだ SpriteAux のタイル数, 根拠: CopyObjTileDataToVram が ldrsh で読んで DMA 先の起点計算に使う
 COMMON_DATA u16 u16_0300357a = 0;          // todo
 COMMON_DATA u16 gMainSpriteTileCount = 0;  // 0x0300357C, MainSprite_DrawInternal が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
 COMMON_DATA u16 u16_0300357e = 0;          // todo

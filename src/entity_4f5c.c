@@ -37,6 +37,8 @@ static_assert(sizeof(Entity4F5C) == 480);
 
 const u16 u16_ARRAY_085aa970[2] = {3, 3};  // 0x085AA970
 
+void Player_RemoveKaamos(Player*);
+
 void nop_0801a170(Entity4F5C*, Entity4F5CElem*);
 void Entity4F5C_ElemFall(Entity4F5C*, Entity4F5CElem*);
 void Entity4F5C_ElemScatter(Entity4F5C*, Entity4F5CElem*);
@@ -111,7 +113,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
       elem->animTimer[j] = Random() & 3;
     }
 
-    FUN_0807a8e0(gPlayerPtr[0]);
+    Player_RemoveKaamos(gPlayerPtr[0]);
   }
 
   elem->ptcls[0].pos = elem->pos;
@@ -287,6 +289,7 @@ NON_MATCH s32 Entity4F5C_Init(Entity4F5C* p) {
 #endif
 }
 
+// 0x4F5C
 Entity4F5C* Entity4F5C_Create(u32 id, u32 _) {
   Entity4F5C* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity4F5C));
 

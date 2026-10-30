@@ -95,48 +95,6 @@ s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 pl
 
 IWRAM_DATA MapItemManager* gMapItemManager = NULL;  // 0x0300002C
 
-#ifdef NONMATCHING_C
-// AuxSprite のアニメーションを1コマ進める
-static inline void MapItem_AdvanceAnim(MapItem* item) {
-  AuxSprite* sprite = item->sprite;
-  AuxAnimState* anim = item->anim;
-  AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-
-  sprite->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    sprite->flags &= ~SPRFLAG_XFLIP;
-  } else {
-    sprite->flags |= SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    sprite->flags &= ~SPRFLAG_YFLIP;
-  } else {
-    sprite->flags |= SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick >= anim->wait) {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount;
-      }
-      anim->cmdIdx--;
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
-}
-#endif
-
 void MapItemManager_ClearGlobal(void) { gMapItemManager = NULL; }
 
 // 拾ったときや開けたときのスクリプトを、位置とアイテムと拾い手を引数にして起動する
@@ -400,11 +358,8 @@ void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
 }
 
 // 宝箱が出てくるときの演出, アニメを1コマ進めながら4フレーム上がって4フレーム下がり, 待機 (MapItem_UpdateIdle) に移る
-// 残差は MapItem_AdvanceAnim (AuxAnim 手動送り) の壁, MapItem_UpdateIdle と同じ
-// Tier A-C は MapItem_UpdateIdle で試済
-NON_MATCH void MapItem_UpdateAppear(MapItemManager* p, MapItem* item) {
-#ifdef NONMATCHING_C
-  MapItem_AdvanceAnim(item);
+void MapItem_UpdateAppear(MapItemManager* p, MapItem* item) {
+  AuxSprite_AdvanceAnim(item->sprite, item->anim);
   if (item->unk_7 != 0) {
     item->sprite->flags |= SPRFLAG_XFLIP;
   }
@@ -418,9 +373,6 @@ NON_MATCH void MapItem_UpdateAppear(MapItemManager* p, MapItem* item) {
     item->pos->y -= 8;
   }
   item->stateTimer++;
-#else
-  INCFUNC("asm/func/MapItem_UpdateAppear.inc");
-#endif
 }
 
 // 地面で揺れながら拾われるのを待つ, 900F 経つか、タイルに上書きが入ると消えにいく
@@ -450,68 +402,18 @@ void MapItem_UpdateExpire(MapItemManager* p, MapItem* item) {
   item->stateTimer++;
 }
 
-NON_MATCH void MapItem_UpdateIdle(MapItemManager* p, MapItem* item) {
-#ifdef NONMATCHING_C
-  MapItem_AdvanceAnim(item);
+// 待機中, AuxSprite のアニメを1コマ進め, unk_7 なら左右反転させる
+void MapItem_UpdateIdle(MapItemManager* p, MapItem* item) {
+  AuxSprite_AdvanceAnim(item->sprite, item->anim);
   if (item->unk_7 != 0) {
     item->sprite->flags |= SPRFLAG_XFLIP;
   }
   item->stateTimer++;
-#else
-  INCFUNC("asm/func/MapItem_UpdateIdle.inc");
-#endif
 }
 
 // 宝箱が開くアニメを流し, 開ききったら中身のアイコンを出す, 持ちきれなければ FUN_08006a80 (閉じ直す) へ, 持てれば MapItem_UpdateGive へ移る
-// 残差は AuxAnim 手動送りの壁 (205/206), FUN_08006ba0 と同じ
-// Tier A-C は MapItem_UpdateIdle で試済
-NON_MATCH void MapItem_UpdateOpen(MapItemManager* p, MapItem* item) {
-#ifdef NONMATCHING_C
-  AuxSprite* sprite = item->sprite;
-  AuxAnimState* anim = item->anim;
-  AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-  bool32 done;
-
-  sprite->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    sprite->flags &= ~SPRFLAG_XFLIP;
-  } else {
-    sprite->flags |= SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    sprite->flags &= ~SPRFLAG_YFLIP;
-  } else {
-    sprite->flags |= SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick < anim->wait) {
-    done = FALSE;
-  } else {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        done = TRUE;
-      } else {
-        anim->cmdIdx--;
-        done = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-        done = TRUE;
-      } else {
-        done = FALSE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
+void MapItem_UpdateOpen(MapItemManager* p, MapItem* item) {
+  bool32 done = AuxSprite_AdvanceAnim(item->sprite, item->anim);
 
   if (item->unk_7 != 0) {
     item->sprite->flags |= SPRFLAG_XFLIP;
@@ -536,17 +438,11 @@ NON_MATCH void MapItem_UpdateOpen(MapItemManager* p, MapItem* item) {
   } else {
     item->stateTimer++;
   }
-#else
-  INCFUNC("asm/func/MapItem_UpdateOpen.inc");
-#endif
 }
 
 // 宝箱の中身を渡す, アニメを進め 8 フレーム目に拾った音と拾ったときのスクリプトを出し, その後点滅して消える
-// 残差は MapItem_AdvanceAnim (AuxAnim 手動送り) の壁, MapItem_UpdateIdle と同じ
-// Tier A-C は MapItem_UpdateIdle で試済
-NON_MATCH void MapItem_UpdateGive(MapItemManager* p, MapItem* item) {
-#ifdef NONMATCHING_C
-  MapItem_AdvanceAnim(item);
+void MapItem_UpdateGive(MapItemManager* p, MapItem* item) {
+  AuxSprite_AdvanceAnim(item->sprite, item->anim);
   if (item->unk_7 != 0) {
     item->sprite->flags |= SPRFLAG_XFLIP;
   }
@@ -559,17 +455,11 @@ NON_MATCH void MapItem_UpdateGive(MapItemManager* p, MapItem* item) {
     item->flags |= 1;
   }
   item->stateTimer++;
-#else
-  INCFUNC("asm/func/MapItem_UpdateGive.inc");
-#endif
 }
 
 // 宝箱の開いたまま (アニメ 5 を進める) を 32 フレーム続け, 閉じるアニメ (5 の逆再生) で FUN_08006ba0 に移る
-// 残差は MapItem_AdvanceAnim (AuxAnim 手動送り) の壁, MapItem_UpdateIdle と同じ
-// Tier A-C は MapItem_UpdateIdle で試済
-NON_MATCH void FUN_08006a80(MapItemManager* p, MapItem* item) {
-#ifdef NONMATCHING_C
-  MapItem_AdvanceAnim(item);
+void FUN_08006a80(MapItemManager* p, MapItem* item) {
+  AuxSprite_AdvanceAnim(item->sprite, item->anim);
   if (item->unk_7 != 0) {
     item->sprite->flags |= SPRFLAG_XFLIP;
   }
@@ -579,61 +469,11 @@ NON_MATCH void FUN_08006a80(MapItemManager* p, MapItem* item) {
     AuxAnim_SetAnim(item->anim, gMapItemManager->anim, 5, 0, ANIM_PLAY_REVERSE);
   }
   item->stateTimer++;
-#else
-  INCFUNC("asm/func/FUN_08006a80.inc");
-#endif
 }
 
 // 宝箱が閉じるアニメを流し, 閉じきったら持ち主を外して待機 (MapItem_UpdateIdle) に戻す
-// 残差は AuxAnim 手動送りの壁 (145/146), PlayerShockwave_UpdateAnim と同じ
-// Tier A-C は MapItem_UpdateIdle で試済
-NON_MATCH void FUN_08006ba0(MapItemManager* p, MapItem* item) {
-#ifdef NONMATCHING_C
-  AuxSprite* sprite = item->sprite;
-  AuxAnimState* anim = item->anim;
-  AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-  bool32 done;
-
-  sprite->poseIdx = *cmd >> 6;
-  if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-    sprite->flags &= ~SPRFLAG_XFLIP;
-  } else {
-    sprite->flags |= SPRFLAG_XFLIP;
-  }
-  if ((anim->flags & ANIM_PLAY_YFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-    sprite->flags &= ~SPRFLAG_YFLIP;
-  } else {
-    sprite->flags |= SPRFLAG_YFLIP;
-  }
-  anim->tick++;
-  if (anim->tick < anim->wait) {
-    done = FALSE;
-  } else {
-    anim->tick = 0;
-    if (anim->flags & ANIM_PLAY_REVERSE) {
-      if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        done = TRUE;
-      } else {
-        anim->cmdIdx--;
-        done = FALSE;
-      }
-    } else {
-      anim->cmdIdx++;
-      if (anim->cmdIdx >= anim->cmdCount) {
-        anim->cmdIdx = 0;
-        done = TRUE;
-      } else {
-        done = FALSE;
-      }
-    }
-    cmd = &anim->cmds[anim->cmdIdx];
-    anim->duration = *cmd & 0xF;
-    anim->wait = (anim->duration * anim->speed) >> 6;
-    if (anim->wait == 0) {
-      anim->wait = 1;
-    }
-  }
+void FUN_08006ba0(MapItemManager* p, MapItem* item) {
+  bool32 done = AuxSprite_AdvanceAnim(item->sprite, item->anim);
 
   if (item->unk_7 != 0) {
     item->sprite->flags |= SPRFLAG_XFLIP;
@@ -646,9 +486,6 @@ NON_MATCH void FUN_08006ba0(MapItemManager* p, MapItem* item) {
   } else {
     item->stateTimer++;
   }
-#else
-  INCFUNC("asm/func/FUN_08006ba0.inc");
-#endif
 }
 
 // プレイヤーの位置を画面に投影して控え, 置きアイテムごとに解放 / ゾーン外の非表示 / 隠し宝箱の点滅を処理して update を呼ぶ

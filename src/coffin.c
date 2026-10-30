@@ -199,7 +199,21 @@ void Coffin_SetState(Coffin* p, s32 state) {
   p->stateTimer = 0;
 }
 
-NAKED s32 FUN_08085ef8(Coffin* p, s32 param_2) { INCFUNC("asm/func/FUN_08085ef8.inc"); }
+// 向きに合わせた variant と左右反転で animIdx のアニメを流し, 1コマ進める, 一巡したら TRUE を返す
+s32 FUN_08085ef8(Coffin* p, s32 animIdx) {
+  s32 variant;
+  bool32 xflip;
+
+  if (p->facing > 4) {
+    variant = 8 - p->facing;
+    xflip = TRUE;
+  } else {
+    variant = p->facing;
+    xflip = FALSE;
+  }
+  AuxAnim_SetAnim(&p->animState, p->anim, animIdx, variant, xflip);
+  return AuxSprite_AdvanceAnim(&p->sprite, &p->animState);
+}
 
 s32 FUN_08086024(Coffin* p, s32 param_2) { return FUN_08085ef8(p, param_2 + p->coffinID); }
 
