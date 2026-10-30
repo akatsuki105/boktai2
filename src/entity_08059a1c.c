@@ -201,6 +201,7 @@ s32 FUN_08059804(Entity08059a1c* p, Entity08059a1cElem* elem, s32 idx) {
   return 0;
 }
 
+// 使用中の要素ごとに state の処理を呼んでアニメを1コマ進め, 当たり判定の位置を合わせ, state 1 の数を数える
 s32 Entity08059a1c_Update(Entity08059a1c* p) {
   s32 count = 0;
   Entity08059a1cElem* elem = p->elems;
