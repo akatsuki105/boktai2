@@ -229,8 +229,8 @@ static inline bool8 Enemy_IsDisposable(Enemy* p) {
 }
 
 // 敵の毎フレームの共通処理, アニメを1コマ進め, 生きていれば移動と床合わせをして, 新しく踏んだタイルが氷なら状態22へ, 凍った溶岩ならダメージを控え, 経路を進めてゾーンイベントを更新する
-// 命令数は 702/702 で同じ, 残差は AuxAnim の手動送り (SpriteHolder_AdvanceAnim と同じ壁) とレジスタ割当
-// 原典は冒頭の定数 1 を caller-save で MainSprite_AdvanceAnim をまたいで animForceRestart への書き込みに使い, &p->mover.pos / &p->flags / &p->kind をスタックに置いて持ち越す (フレーム 0x20, こちらは 0x14)
+// 700/702命令, AuxAnim の手動送りは AuxSprite_AdvanceAnim で揃った, 残差は &p->flags4 / &p->flags / &p->kind / &p->mover.pos を原典が分岐の両側でレジスタやスタックに作って持ち越す (PRE らしい) 点とフレーム 0x20 (こちらは 0x18)
+// 試済: flags4 の立て方を |= 直書きにする, delta と prevPos の条件を1つの if にまとめる (どちらも悪化), FUN_080e35b4 も同じ &p->flags4 の持ち越しで止まっている
 NON_MATCH s32 FUN_080e191c(Enemy* p) {
 #ifdef NONMATCHING_C
   p->unk_46f = 1;
@@ -241,51 +241,8 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   if (p->animForceRestart != 1) {
     if (p->spriteKind == 0) {
       EnemyAuxSpriteData* aux = (EnemyAuxSpriteData*)p->sprite;
-      AuxAnimState* anim = &aux->anim;
-      AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-      bool32 ended;
 
-      aux->sprite.poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        aux->sprite.flags |= SPRFLAG_XFLIP;
-      } else {
-        aux->sprite.flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        aux->sprite.flags |= SPRFLAG_YFLIP;
-      } else {
-        aux->sprite.flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-            ended = TRUE;
-          } else {
-            anim->cmdIdx--;
-            ended = FALSE;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx < anim->cmdCount) {
-            ended = FALSE;
-          } else {
-            anim->cmdIdx = 0;
-            ended = TRUE;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      } else {
-        ended = FALSE;
-      }
-      p->animForceRestart = ended;
+      p->animForceRestart = AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
     } else {
       MainSprite* s = &p->sprite->s;
       bool32 done = MainSprite_AdvanceAnim(s, &p->sprite->gfx);
