@@ -1082,67 +1082,26 @@ NON_MATCH void FUN_08058ae4(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
 }
 
 // 使用中の要素ごとにアニメを手動で1コマ進め, 4フレームに1回 player との距離を測り, state のハンドラを呼んで hitbox を更新する
-// 残差は AuxAnim 手動送りの壁 (dust.c と同じ) とレジスタ割当で, 命令数は 249/249
+// 251/249命令, 手動送りは AuxSprite_AdvanceAnim で揃った, 残差はループの誘導変数: 原典は &elem->anim を歩進ポインタ (r8) にして &elem->sprite.pos を毎回作ってスタックに置くが, こちらは pos 側が歩進になり p が高位レジスタに回る
+// 試済: elem の代入を初期化の後へ, sprite / anim のローカル化, anim / pos をループ頭で取る (anim を頭で取ると 242 命令に崩れる)
 NON_MATCH s32 Entity08058ffc_Update(Entity08058ffc* p) {
 #ifdef NONMATCHING_C
-  Entity08058ffcElem* elem = p->elems;
+  Entity08058ffcElem* elem;
   s32 i;
 
   p->unk_24 = 0;
   p->activeCount = 0;
+  elem = p->elems;
   for (i = 0; i < 12; i++, elem++) {
-    if (p->activeMask & (1 << i)) {
-      AuxSprite* sprite = &elem->sprite;
-      AuxAnimState* anim = &elem->anim;
-      AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-      bool8 ended;
+    Vec3* pos = &elem->sprite.pos;
 
-      sprite->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-            ended = TRUE;
-          } else {
-            anim->cmdIdx--;
-            ended = FALSE;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx < anim->cmdCount) {
-            ended = FALSE;
-          } else {
-            anim->cmdIdx = 0;
-            ended = TRUE;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      } else {
-        ended = FALSE;
-      }
-      elem->animLooped = ended;
+    if (p->activeMask & (1 << i)) {
+      elem->animLooped = AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
       elem->flags = 0;
 
       if ((p->frameCounter & 3) == (i & 3)) {
-        s32 dx = p->player->mover.pos.x - elem->sprite.pos.x;
-        s32 dz = p->player->mover.pos.z - elem->sprite.pos.z;
+        s32 dx = p->player->mover.pos.x - pos->x;
+        s32 dz = p->player->mover.pos.z - pos->z;
 
         elem->playerDistSq = dx * dx + dz * dz;
       }
@@ -1152,7 +1111,7 @@ NON_MATCH s32 Entity08058ffc_Update(Entity08058ffc* p) {
         elem->hitbox.flags |= HBFLAG_HIDDEN;
       } else {
         elem->hitbox.flags &= ~HBFLAG_HIDDEN;
-        Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+        Hitbox_SetPos(&elem->hitbox, pos, 0);
       }
       if (elem->flags & 2) {
         FUN_08057214(p, elem);
