@@ -201,56 +201,15 @@ s32 FUN_08059804(Entity08059a1c* p, Entity08059a1cElem* elem, s32 idx) {
   return 0;
 }
 
-// 残差は AuxAnim 手動送りの部分 (dust.c の FUN_080563b0 と同じ壁), 1 回目で打ち切り
-NON_MATCH s32 Entity08059a1c_Update(Entity08059a1c* p) {
-#ifdef NONMATCHING_C
-  Entity08059a1cElem* elem = p->elems;
+s32 Entity08059a1c_Update(Entity08059a1c* p) {
   s32 count = 0;
+  Entity08059a1cElem* elem = p->elems;
   s32 i;
 
   for (i = 0; i < 8; i++, elem++) {
     if (p->activeMask & (1 << i)) {
-      AuxSprite* sprite;
-      AuxAnimState* anim;
-      AuxAnimCmd* cmd;
-
       PTR_ARRAY_085ab9dc[elem->state](p, elem, i);
-      sprite = &elem->sprite;
-      anim = &elem->anim;
-      cmd = &anim->cmds[anim->cmdIdx];
-      sprite->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-          } else {
-            anim->cmdIdx--;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx >= anim->cmdCount) {
-            anim->cmdIdx = 0;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      }
+      AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
       Hitbox_SetPos(&elem->hurtbox, &elem->sprite.pos, 0);
       if (elem->state == 1) {
         count++;
@@ -261,9 +220,6 @@ NON_MATCH s32 Entity08059a1c_Update(Entity08059a1c* p) {
   p->circlingCount = count;
   p->frameCount++;
   return 0;
-#else
-  INCFUNC("asm/func/Entity08059a1c_Update.inc");
-#endif
 }
 
 s32 Entity08059a1c_Destroy(Entity08059a1c* p) {
