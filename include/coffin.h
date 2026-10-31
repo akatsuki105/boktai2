@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_IMMORTAL_COFFIN_H__
 #define __INCLUDE_IMMORTAL_COFFIN_H__
 
+#include "elevator.h"
 #include "enemy_target.h"
 #include "entity.h"
 #include "hitbox.h"
@@ -58,7 +59,7 @@ typedef struct Coffin {
   bool8 effSpriteAdded;          // 0x33B, effSprite を AuxSprite_Add 済みなら 1
   AuxSprite effSprite;           // 0x33C
   AuxSpriteGfx effGfx;           // 0x368, SPRITE_EFF_1C1B
-  u8 unk_384;                    // 0x384, Player.unk_390 と同じビット構成, bit2 が立つとエレベータに乗っている
+  u8 unk_384;                    // 0x384, Player.elevatorFlags と同じビット構成, bit2 が立つとエレベータに乗っている
   u8 unk_385;                    // 0x385
   u16 elevatorID;                // 0x386, 搭乗中のエレベータのID
   Vec3 unk_388;                  // 0x388, pos_1f8 の写し
@@ -111,5 +112,6 @@ void FUN_08086a4c(Vec3* pos);
 bool32 FUN_0808626c(u32 playerEleveterID, u32 param_2, u32 coffinEleveterID, u32 param_4);
 void FUN_080869f8(u32 flags);
 void FUN_080869c8(u32 flags, u32 value);
+bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags);
 
 #endif  // __INCLUDE_IMMORTAL_COFFIN_H__

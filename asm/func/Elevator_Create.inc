@@ -714,7 +714,7 @@ _081D4D3C:
 	ldr r0, [r4]
 	ldrh r2, [r6]
 	movs r1, #1
-	bl FUN_0807a97c
+	bl Player_SetElevatorFlags
 	movs r0, #8
 	mov r2, sl
 	ldrh r1, [r2]

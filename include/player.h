@@ -3,6 +3,7 @@
 
 #include "constants/constants.h"
 #include "eff_082473e0.h"
+#include "elevator.h"
 #include "enemy_target.h"
 #include "entity.h"
 #include "gba/gba.h"
@@ -300,8 +301,8 @@ typedef struct Player {
   u16 eneAccum;                     // 0x38C, 棺桶で寝ている間の ENE 回復の端数, 棺桶ごとの寝心地を毎フレーム足して 0x80 ごとに ene を 1 増やす
   bool8 isSabata;                   // 0x38E, 根拠: Player_InitState
   u8 unk_38f;                       // 0x38F, 雨の中でトードパワーの ENE 回復の間隔を数える (15 で1回復)
-  u16 unk_390;                      // 0x390
-  u16 elevatorID;                   // 0x392, 搭乗中のエレベータのID
+  ElevatorFlagsU16 elevatorFlags;   // 0x390, see ElevatorFlagsU16, 0 ならどのエレベータにも乗っていない
+  u16 elevatorID;                   // 0x392, 乗っているエレベータの id, Player_ClearElevatorFlags が 0 にするので止まっているエレベータに乗っている間は 0
   bool8 originHitPending;           // 0x394, knockbackOrigin から弾かれる被弾が保留中, Player_SetKnockbackOrigin が立て Player_UpdateDamage が FUN_08065cb8 で処理して落とす
   bool8 originKnockback;            // 0x395, 今の吹き飛ばしが knockbackOrigin から離れる向き, FUN_08065cb8 が立てダメージの行動 (PACT_DAMAGED) の終わりと Player_Unlock が落とす
   bool8 tileHitPending;             // 0x396, 太陽で切り替わる設置物 (Entity1DBE) を踏んだ被弾が保留中, Player_CheckTileHit が立て Player_UpdateDamage が FUN_08065e24 で処理して落とす
@@ -530,9 +531,9 @@ bool32 FUN_0807ad60(Player* p, s32 param_2);
 DirS32 Player_GetDpadFacing(Player* p);
 void AddPlayerExp(s32 amount);
 
-bool32 FUN_0807a954(Player* p, u32 mask);
-void FUN_0807a97c(Player* p, u32 flags, u32 elevatorID);
-void FUN_0807a99c(Player* p, u32 flags);
+bool32 Player_TestElevatorFlags(Player* p, ElevatorFlagsU16 mask);
+void Player_SetElevatorFlags(Player* p, u32 flags, u32 elevatorID);
+void Player_ClearElevatorFlags(Player* p, u32 flags);
 void Player_SetKnockbackOrigin(Player* p, Vec3* origin);
 
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->flag20 |= bit; }

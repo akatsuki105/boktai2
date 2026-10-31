@@ -221,7 +221,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x546C, Cmd_546C
 	.4byte 0x5470, Cmd_5470
 	.4byte 0x54C1, UnlockMap @ HashName("マップ取得")
-	.4byte 0x54DF, Elevator_SetPltt
+	.4byte 0x54DF, Cmd_SetElevatorPltt
 	.4byte 0x5517, Cmd_5517
 	.4byte 0x554B, EntityA628_DeactivateScripted
 	.4byte 0x55C2, Entity55C2_Create

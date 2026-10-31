@@ -93,7 +93,7 @@ _081D2B10:
 	ldr r4, _081D2B84 @ =0x03002BE0
 	ldr r0, [r4]
 	movs r1, #1
-	bl FUN_0807a954
+	bl Player_TestElevatorFlags
 	cmp r0, #0
 	beq _081D2B2E
 	movs r7, #1

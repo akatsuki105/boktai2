@@ -433,16 +433,16 @@ NON_MATCH void Cmd_ReturnCoffinToBag(void) {
 #endif
 }
 
-// プレイヤーと棺桶が同じエレベータに乗っているか, どちらも乗っていなければ TRUE
-bool32 FUN_0808626c(u32 playerElevatorID, u32 playerFlags, u32 coffinElevatorID, u32 coffinFlags) {
-  if (playerFlags & 4) {
-    if ((coffinFlags & 4) == 0) {
+// プレイヤーと棺桶が同じエレベータで動いているか, どちらも乗っていなければ TRUE
+bool32 FUN_0808626c(u32 playerElevatorID, u32 playerElevatorFlags, u32 coffinElevatorID, u32 coffinFlags) {
+  if (playerElevatorFlags & ELEV_MOVING) {
+    if (!(coffinFlags & ELEV_MOVING)) {
       return FALSE;
     }
     if (playerElevatorID != coffinElevatorID) {
       return FALSE;
     }
-  } else if (coffinFlags & 4) {
+  } else if (coffinFlags & ELEV_MOVING) {
     return FALSE;
   }
   return TRUE;
@@ -466,7 +466,7 @@ static inline s32 TestTileIdx(WorldPos* pos) {
 
 // 338/337命令, 残差は posIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を bx と同じ r4 に作るが, こちらは r0 に作って r4 へ写す (FUN_08087cbc と同じ)
 // 試済: 早期 return を入れ子の if にして TRUE を1か所に寄せる (これで分岐の並びは揃った), 局所変数の宣言順, 自前の inline / マクロで索引を出す
-NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3) {
+NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags) {
 #ifdef NONMATCHING_C
   s32 dx, dz, posIdx, coffinIdx;
   Vec3 v;
@@ -486,7 +486,7 @@ NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3) {
   if (gCoffin->state != 0 && gCoffin->state != 3 && gCoffin->state != 4) {
     return FALSE;
   }
-  if (!FUN_0808626c(elevatorID, param_3, gCoffin->elevatorID, gCoffin->unk_384)) {
+  if (!FUN_0808626c(elevatorID, elevatorFlags, gCoffin->elevatorID, gCoffin->unk_384)) {
     return FALSE;
   }
 

@@ -43,7 +43,6 @@ void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_
 struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd);
 void FUN_08072724(Player* p);
 void FUN_080d040c(Player* p);
-bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3);
 void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
 void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID);
 bool32 FUN_0809df78(Vec3* pos);
@@ -3516,7 +3515,7 @@ bool32 Player_IsOnIce(u32 attr) {
 
 // 溶岩タイルに乗ったら, そのタイルの中心を knockbackOrigin にして位置をタイルの内側に収め, 被弾を保留する (エレベーター上と吹き飛ばし中は除く)
 void FUN_08065b7c(Player* p) {
-  if (Player_IsInLava(GetTileAttrAt(&p->mover.pos)) && p->unk_390 == 0 && !p->originKnockback && !Elevator_FindAtPos(&p->mover.pos)) {
+  if (Player_IsInLava(GetTileAttrAt(&p->mover.pos)) && p->elevatorFlags == 0 && !p->originKnockback && !Elevator_FindAtPos(&p->mover.pos)) {
     s32 bx = Mod(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 bz = Div(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 minX, maxX, minZ, maxZ;
@@ -4819,7 +4818,7 @@ void Player_UpdatePullCoffin(Player* p) {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_403);
       }
     } else {
-      if (p->unk_390 != 0 || p->tile.stairs[1] == 0) {
+      if (p->elevatorFlags != 0 || p->tile.stairs[1] == 0) {
         if (p->human.animCmdIdx == 0) {
           PlaySound_082406e0(SE_FSTEP_M_1);
         } else {
@@ -5008,7 +5007,7 @@ void MagicHealing_08069928(Player* p) {
 // ダイナマイトの魔法, 太陽ゲージが足りていれば爆弾を1個出し, 以降は発動したかどうかで演出を振り分ける
 void MagicDynamite_08069b18(Player* p) {
   if (p->action != PACT_DYNAMITE) {
-    if (p->unk_390 != 0) {
+    if (p->elevatorFlags != 0) {
       p->magicFired = FALSE;
     } else if (Player_HasEnoughSunGauge(p, 3)) {
       p->magicFired = TRUE;
@@ -8964,7 +8963,7 @@ NAKED s32 FUN_0807868c(Player* p) { INCFUNC("asm/func/FUN_0807868c.inc"); }
 // 残差2命令: 原典は gCoffin をアドレスだけ保持して引数作りのところで読み直すが、こちらは1回のロードに畳まれる (agbcc-levers.md 参照)
 NON_MATCH s32 FUN_08078844(Player* p) {
 #ifdef NONMATCHING_C
-  if ((p->input->down & A_BUTTON) && gCoffin != NULL && (gCoffin->state == 1 || gCoffin->state == 0x10) && FUN_0808626c(p->elevatorID, p->unk_390, gCoffin->elevatorID, gCoffin->unk_384)) {
+  if ((p->input->down & A_BUTTON) && gCoffin != NULL && (gCoffin->state == 1 || gCoffin->state == 0x10) && FUN_0808626c(p->elevatorID, p->elevatorFlags, gCoffin->elevatorID, gCoffin->unk_384)) {
     return TRUE;
   }
   return FALSE;
@@ -8973,13 +8972,13 @@ NON_MATCH s32 FUN_08078844(Player* p) {
 #endif
 }
 
-bool32 FUN_080788b0(Player* p) { return FUN_08086294(&p->mover.pos, p->elevatorID, p->unk_390); }
+bool32 FUN_080788b0(Player* p) { return FUN_08086294(&p->mover.pos, p->elevatorID, p->elevatorFlags); }
 
 NAKED s32 FUN_080788d0(Player* p) { INCFUNC("asm/func/FUN_080788d0.inc"); }
 
 // 人型 (ジャンゴ / サバタ) の毎フレームの後処理, 移動と表示・食らい判定のフラグを反映して human を mover の位置に置き, unk_448[3] の間は human を揺らす
 void Player_PostUpdateHuman(Player* p) {
-  if (p->unk_390 == 0) {
+  if (p->elevatorFlags == 0) {
     if (Player_TestFlag35a(p, PFLAG35A_NO_TILE)) {
       p->mover.tile = NULL;
     } else if (p->mover.tile == NULL) {
@@ -9276,7 +9275,7 @@ void FUN_08079644(Player* p) {
 
   pos.x = p->mover.pos.x + p->mover.delta.x;
   pos.z = p->mover.pos.z + p->mover.delta.z;
-  if (p->unk_390 & 4) {
+  if (p->elevatorFlags & ELEV_MOVING) {
     Vec3* center = Elevator_GetPosByID(p->elevatorID);
     if (pos.x <= center->x - 100) {
       pos.x = center->x - 100;
@@ -10068,8 +10067,8 @@ NON_MATCH void FUN_0807a91c(Player* p, Vec3* pos) {
 #endif
 }
 
-bool32 FUN_0807a954(Player* p, u32 mask) {
-  if (p->unk_390 & mask) {
+bool32 Player_TestElevatorFlags(Player* p, ElevatorFlagsU16 mask) {
+  if (p->elevatorFlags & mask) {
     return TRUE;
   }
   return FALSE;
@@ -10077,13 +10076,13 @@ bool32 FUN_0807a954(Player* p, u32 mask) {
 
 u32 Player_GetElevatorID(Player* p) { return p->elevatorID; }
 
-void FUN_0807a97c(Player* p, u32 flags, u32 elevatorID) {
-  p->unk_390 |= flags;
+void Player_SetElevatorFlags(Player* p, u32 flags, u32 elevatorID) {
+  p->elevatorFlags |= flags;
   p->elevatorID = elevatorID;
 }
 
-void FUN_0807a99c(Player* p, u32 flags) {
-  p->unk_390 &= ~flags;
+void Player_ClearElevatorFlags(Player* p, u32 flags) {
+  p->elevatorFlags &= ~flags;
   p->elevatorID = 0;
 }
 
@@ -12339,7 +12338,7 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
 #ifdef NONMATCHING_C
   CollisionMapTile* tile = Player_GetTileAt(&p->mover.pos);
 
-  if ((tile->attr & TATTR_FALLDEATH) && p->unk_390 == 0) {
+  if ((tile->attr & TATTR_FALLDEATH) && p->elevatorFlags == 0) {
     if (gStat->mapFlags & MPF_UNK_13) {
       Player_SetAction(p, PACT_DROWNING, 0);
     } else {

@@ -299,13 +299,13 @@ void Elevator_EmitMoveEffect(Elevator* e) {
         pos.x = e->mover.pos.x + off[0].x;
         pos.y = e->mover.pos.y + off[0].y;
         pos.z = e->mover.pos.z + off[0].z;
-        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, 0xF422, 0x121B, 0, 0, 0xDA);
+        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
         e->unk_ca = 1;
       } else {
         pos.x = e->mover.pos.x + off[1].x;
         pos.y = e->mover.pos.y + off[1].y;
         pos.z = e->mover.pos.z + off[1].z;
-        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, 0xF422, 0x121B, 0, 0, 0xDA);
+        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
         e->unk_ca = 0;
       }
       break;
@@ -378,7 +378,7 @@ void FUN_081d276c(Elevator* e) {
 bool8 Elevator_IsLoadingCoffin(Elevator* e) {
   Player** players = gPlayerPtr;
 
-  if (FUN_0807a954(players[0], 1) ? FUN_08086978(3) : !FUN_08086978(3)) {
+  if (Player_TestElevatorFlags(players[0], ELEV_RIDING) ? FUN_08086978(3) : !FUN_08086978(3)) {
     return FALSE;
   }
 
@@ -393,7 +393,6 @@ void Elevator_UpdateState0(Elevator* e) {}
 // 昇降床を speed ずつ上下に動かし, minY か maxY に着いたら止める
 void Elevator_UpdateState2(Elevator* e) {
   Vec3 v;
-  bool8 up;
 
   ClearMemory(&e->moveDelta, sizeof(Vec3));
   Vec3_Delta(&v, &e->mover.pos, &gPlayerPtr[0]->mover.pos);
@@ -405,13 +404,12 @@ void Elevator_UpdateState2(Elevator* e) {
 
   if (Elevator_TestFlags(e, ELEVATOR_V_HALT)) return;
 
-  up = Elevator_TestFlags(e, ELEVATOR_V_UPPER);
-  if (up) {
+  if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
     e->mover.pos.y += e->speed;
     e->moveDelta.y = e->speed;
     if (e->maxY <= e->mover.pos.y) {
       e->mover.pos.y = e->maxY;
-      if (FUN_0807a954(gPlayerPtr[0], 1)) {
+      if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
         v = gPlayerPtr[0]->mover.pos;
         v.y = e->mover.pos.y;
         FUN_0807a91c(gPlayerPtr[0], &v);
@@ -434,7 +432,7 @@ void Elevator_UpdateState2(Elevator* e) {
     e->moveDelta.y = -e->speed;
     if (e->minY >= e->mover.pos.y) {
       e->mover.pos.y = e->minY;
-      if (FUN_0807a954(gPlayerPtr[0], 1)) {
+      if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
         v = gPlayerPtr[0]->mover.pos;
         v.y = e->mover.pos.y;
         FUN_0807a91c(gPlayerPtr[0], &v);
@@ -508,7 +506,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
     }
   }
 
-  if (FUN_0807a954(gPlayerPtr[0], 1)) riding = TRUE;
+  if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) riding = TRUE;
 
   e = Elevator_FindByID(gPlayerPtr[0]->elevatorID);
   if (e == NULL) return;
@@ -884,7 +882,7 @@ void Elevator_KnockbackPlayer(Elevator* e) {
   s32 i;
 
   for (i = 0; i < 1; i++) {
-    if (gPlayerPtr[i] != NULL && FUN_0807a954(gPlayerPtr[i], 1) && Elevator_TestFlags(e, PLAYER_RIDING)) {
+    if (gPlayerPtr[i] != NULL && Player_TestElevatorFlags(gPlayerPtr[i], ELEV_RIDING) && Elevator_TestFlags(e, PLAYER_RIDING)) {
       s32 idx = GetCollisionTileIdx(&gPlayerPtr[i]->mover.pos);
 
       if (!Elevator_IsTileOverridden(idx)) {
@@ -914,7 +912,7 @@ void Elevator_CheckPlayerFallInWater(Elevator* e) {
     bool32 outside = FALSE;
 
     if (gPlayerPtr[i] != NULL) {
-      if (!FUN_0807a954(gPlayerPtr[i], 1) && !FUN_0807a954(gPlayerPtr[i], 2)) return;
+      if (!Player_TestElevatorFlags(gPlayerPtr[i], ELEV_RIDING) && !Player_TestElevatorFlags(gPlayerPtr[i], ELEV_UNK_1)) return;
 
       if (Elevator_TestFlags(e, PLAYER_RIDING)) {
         s32 idx;
@@ -960,7 +958,7 @@ void Elevator_ClampPlayerToRange(Elevator* e) {
   s32 i;
 
   for (i = 0; i < 1; i++) {
-    if (gPlayerPtr[i] != NULL && e->state != ELEVATOR_STATE_V_STOP && FUN_0807a954(gPlayerPtr[i], 1)) {
+    if (gPlayerPtr[i] != NULL && e->state != ELEVATOR_STATE_V_STOP && Player_TestElevatorFlags(gPlayerPtr[i], ELEV_RIDING)) {
       Vec3 d;
 
       if (!Elevator_TestFlags(e, PLAYER_RIDING)) return;
@@ -1130,10 +1128,10 @@ void Elevator_ClearRidingFlag(s32 id, s32 which) {
 
 void FUN_081d4034(Elevator* e) {
   if (e->state != ELEVATOR_STATE_H_STOP && e->state != ELEVATOR_STATE_V_STOP) {
-    FUN_0807a97c(gPlayerPtr[0], 5, e->id);
+    Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING | ELEV_MOVING, e->id);
   } else {
-    FUN_0807a97c(gPlayerPtr[0], 1, e->id);
-    FUN_0807a99c(gPlayerPtr[0], 4);
+    Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING, e->id);
+    Player_ClearElevatorFlags(gPlayerPtr[0], ELEV_MOVING);
   }
 }
 
@@ -1177,7 +1175,7 @@ void Elevator_UpdatePlayerRiding(Elevator* e) {
     }
     p->ridingID = 0;
     gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
-    FUN_0807a99c(gPlayerPtr[0], 5);
+    Player_ClearElevatorFlags(gPlayerPtr[0], ELEV_RIDING | ELEV_MOVING);
     CLEAR_FLAGS(e->flags, PLAYER_RIDING);
     gPlayerPtr[0]->shadow.flags &= ~1;
   }
@@ -1250,7 +1248,7 @@ void FUN_081d4540(Elevator* e) {
     Elevator_UpdatePlayerRiding(e);
     Elevator_UpdateCoffinRiding(e);
 
-    if (FUN_0807a954(gPlayerPtr[0], 1)) {
+    if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
       Elevator_CarryPlayer(e);
     }
     if (FUN_08086978(1)) {
@@ -1503,7 +1501,7 @@ NON_MATCH void Elevator_Create(void) {
 
     Elevator_ClearRidingFlag(p->ridingID, 0);
     p->ridingID = e->id;
-    FUN_0807a97c(gPlayerPtr[0], 1, e->id);
+    Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING, e->id);
     SET_FLAGS(e->flags, PLAYER_RIDING);
     gPlayerPtr[0]->shadow.flags |= 1;
     Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
@@ -1767,17 +1765,17 @@ void Cmd_5D74(void) {
   }
 }
 
-// VM: 指定した id のエレベータのパレットを差し替える
-void Elevator_SetPltt(void) {
+// 0x54DF, 指定した id のエレベータのパレットを差し替える
+void Cmd_SetElevatorPltt(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
     Elevator* e = Elevator_FindByID(id);
 
     if (e != NULL) {
-      s32 plttID = VM_GetNamedArgValue('c', 0);
+      s32 color = VM_GetNamedArgValue('c', 0);
 
-      Video_SetAuxSpritePltt(&e->gfx, plttID + 439);
+      Video_SetAuxSpritePltt(&e->gfx, 439 + color);
     }
   }
 }
@@ -1802,7 +1800,7 @@ void Cmd_5844(void) {
 
   p->ridingID = 0;
   gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
-  FUN_0807a99c(gPlayerPtr[0], 1);
+  Player_ClearElevatorFlags(gPlayerPtr[0], ELEV_RIDING);
   CLEAR_FLAGS(e->flags, PLAYER_RIDING);
   gPlayerPtr[0]->shadow.flags &= ~1;
 }
@@ -1865,7 +1863,7 @@ void Elevator_PlayArrivalSound(Elevator* e) {
   if (p == NULL) return;
 
   if (!(e->unk_d6 & 0x10)) {
-    if (!FUN_0807a954(gPlayerPtr[0], 1)) return;
+    if (!Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) return;
     if (p->ridingID != e->id) return;
     if (e->unk_d6 & 4) return;
   }

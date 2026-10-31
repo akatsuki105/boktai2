@@ -241,7 +241,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     spawnPos.x = p->pos.x + 64;
     spawnPos.y = p->pos.y - 32;
     spawnPos.z = p->pos.z + 64;
-    Entity081f26bc_Spawn(&spawnPos, &vel, 0xF422, 0x121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Entity081f26bc_Spawn(&spawnPos, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     PlaySound_082406e0(SONG_438);
   }
 
@@ -283,7 +283,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     p->unk_6d9 = 1;
   }
   if (Mod(val, 8) == 0) {
-    FUN_081ee53c(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, 0xF422, 0x121B, 0, 0, 0xDA);
+    FUN_081ee53c(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
   }
 #else
   INCFUNC("asm/func/FUN_082010f8.inc");
@@ -553,7 +553,7 @@ NON_MATCH void FUN_08201f74(Entity08202cd8* p, s32 val) {
 
   if (done < 8) {
     if (Mod(val, 8) == 0) {
-      FUN_081ee53c(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, 0xF422, 0x121B, 0, 0, 0x237);
+      FUN_081ee53c(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0x237);
     }
   } else {
     p->unk_6d9 = 1;
