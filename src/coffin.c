@@ -211,8 +211,8 @@ s32 FUN_08085ef8(Coffin* p, s32 animIdx) {
     variant = p->facing;
     xflip = FALSE;
   }
-  AuxAnim_SetAnim(&p->animState, p->anim, animIdx, variant, xflip);
-  return AuxSprite_AdvanceAnim(&p->sprite, &p->animState);
+  AuxAnim_SetAnim(&p->anim, p->animFile, animIdx, variant, xflip);
+  return AuxSprite_AdvanceAnim(&p->sprite, &p->anim);
 }
 
 s32 FUN_08086024(Coffin* p, s32 param_2) { return FUN_08085ef8(p, param_2 + p->coffinID); }
@@ -719,7 +719,7 @@ void Coffin_InitSprite(Coffin* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   p->unk_32e = p->unk_31c;
-  Video_SetAuxSpritePltt(&p->gfx, p->unk_32e + 519);
+  Video_SetAuxSpritePltt(&p->gfx, 519 + p->unk_32e);
 
   src = p->gfx.pltt;
   for (i = 0; i < 16; i++) {
@@ -732,7 +732,7 @@ void Coffin_InitSprite(Coffin* p) {
   } else {
     p->facing = FACE_UP;
   }
-  p->anim = GetFile(DIR_ANIMATION, ANIM_COFFIN);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_COFFIN);
   FUN_08086024(p, 0);
   p->unk_31e = 0;
   p->unk_320 = 0;
@@ -749,12 +749,7 @@ void Coffin_InitHurtbox(Coffin* p) {
   VEC3_SET(size, Q8(0.352), Q8(0.125), Q8(0.352));
   VEC3_SET(offset, Q8(0.391), Q8(0.782), Q8(0.391));
   if (p->coffinID != COFFIN_SILVER) {
-    s32 kind = p->unk_1c;
-
-    ignoreMask = HIM_1;
-    if (kind == 0) {
-      ignoreMask = HIM_4;
-    }
+    ignoreMask = (p->unk_1c == 0) ? HIM_4 : HIM_1;
   } else {
     ignoreMask = HIM_4;
   }

@@ -23,14 +23,14 @@ typedef struct Coffin {
   rgb555 pltt[16];            // 0x020, gfx.pltt の複写先, gfx.pltt はここを指すように差し替えられる
   Mover mover;                // 0x040, angle は (facing + 5) * 32
   AuxSprite sprite;           // 0x084, ->gfx
-  AuxSpriteGfx gfx;           // 0x0B0, SPRITE_COFFIN, パレット行は coffinID + 519
+  AuxSpriteGfx gfx;           // 0x0B0, SPRITE_COFFIN, パレットIDは coffinID + 519
   u8 unk_cc[0xDC - 0xCC];     // 0x0CC
   HitboxData hurtbox;         // 0x0DC, mover.pos に追従する被弾判定, これだけ Init で登録される
   HitboxData hitbox;          // 0x12C, 威力50の攻撃判定 (多分棺桶が暴れ出した時の攻撃判定)
   NavAgent navAgent;          // 0x17C, mover.pos から destPos への経路を見るのに使う
   ZoneEventSource zoneEvent;  // 0x1A0, id は mover.id の写し, pos は &mover.pos
-  AuxAnimState animState;     // 0x1D0, anim の再生状態
-  AuxAnimFile* anim;          // 0x1E0, ANIM_COFFIN
+  AuxAnimState anim;          // 0x1D0, ->animFile
+  AuxAnimFile* animFile;      // 0x1E0, ANIM_COFFIN
   EnemyTarget target;         // 0x1E4, 敵から狙われる側としての登録, coffinID が COFFIN_SILVER のときは登録しない
   bool8 unk_1f4;              // 0x1F4, target を登録済みなら 1
   u8 state;                   // 0x1F5, 1 / 0x10 / 12 / 13 などを取る, Player は 1 か 0x10 のときだけ掴める
