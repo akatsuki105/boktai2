@@ -102,7 +102,7 @@ static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
 }
 
 static inline bool8 Elevator_IsSlotUsed(ElevatorManager* p, s32 i) {
-  if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
+  if (p->usedMask & (1 << i)) return TRUE;
   return FALSE;
 }
 
@@ -190,25 +190,20 @@ NON_MATCH Elevator* Elevator_FindAtPos(Vec3* pos) {
 }
 
 // 空いているスロットを1つ確保して返す, 全部埋まっていれば NULL
-// 残差はビット判定を 0/1 の値に起こす分だけ: 原典は (flags & bits) を movs 1 / movs 0 で値にしてから test するが, agbcc はどう書いても分岐に畳む
-// Tier A-B 試済: static inline の if/else, ローカルの bool32 受け, != 0, == FALSE, !!(...), static (非 inline) は bl が出て不可
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出る (39/39) が, ループ外に置く定数とポインタの順が原典と違う
-NON_MATCH Elevator* ElevatorManager_AllocSlot(ElevatorManager* p) {
-#ifdef NONMATCHING_C
+Elevator* ElevatorManager_AllocSlot(ElevatorManager* p) {
   s32 i;
 
   for (i = 0; i < 12; i++) {
     if (!Elevator_IsSlotUsed(p, i)) {
+      Elevator* e = &p->elevators[i];
+
       p->usedMask |= 1 << i;
-      p->elevators[i].slotIdx = i;
-      return &p->elevators[i];
+      e->slotIdx = i;
+      return e;
     }
   }
 
   return NULL;
-#else
-  INCFUNC("asm/func/ElevatorManager_AllocSlot.inc");
-#endif
 }
 
 // 動いている間, 向きに合わせた位置から4フレームおきにエフェクトを出す
