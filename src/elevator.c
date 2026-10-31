@@ -557,11 +557,14 @@ NON_MATCH void Elevator_UpdateShake(Elevator* e) {
 #endif
 }
 
-// 残差は後半の gElevatorManager のアドレスを原典が r6 に先読みして持つ点のみ (143/143), Tier A-C は試済 (比較の向き, 判定の分け方, walker ローカル, argv[0] の書き方)
+// 残差は後半の gElevatorManager のアドレスを原典が FUN_081d27c8 の前に r6 へ先読みして持つ点のみ (143/143), 前半は Elevator_UpdateState4 と同じくブロック内の p で一致
+// Tier A-C は試済 (比較の向き, 判定の分け方, walker ローカル, argv[0] の書き方, p ローカルの置き場所)
 NON_MATCH void Elevator_UpdateState3(Elevator* e) {
 #ifdef NONMATCHING_C
   if (e->arrived) {
-    if (e->id == gElevatorManager->ridingID && e->arriveScriptID != 0) {
+    ElevatorManager* p = gElevatorManager;
+
+    if (e->id == p->ridingID && e->arriveScriptID != 0) {
       u32 argv[3];
       ScriptArgs sa;
 
@@ -590,8 +593,11 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
     if (walker->unk_3++ >= (walker->node->delay & 0xFFF)) {
       Map_AdvancePathWalker(walker);
       if (Map_IsPosOutsidePathNode(walker, &e->mover.pos, 16, 16)) {
+        ElevatorManager* p;
+
         e->state = 1;
-        if (e->id == gElevatorManager->ridingID && e->departScriptID != 0) {
+        p = gElevatorManager;
+        if (e->id == p->ridingID && e->departScriptID != 0) {
           u32 arg = e->id;
           ScriptArgs sa;
 
