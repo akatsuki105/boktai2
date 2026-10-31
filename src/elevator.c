@@ -686,10 +686,7 @@ void Elevator_UpdateCoffinRiding(Elevator* e) {
 }
 
 // pos がエレベータの範囲 (gElevatorRange0/1) をはみ出していたら, 速さのぶん内側に戻す
-// 残差は range の選び方のみ (167/165), 原典は gElevatorRange1 と [0] のアドレスを別々のプール定数で引く, & で選ぶ形にすると 164/165 まで寄るが基底+8 に畳まれる
-// Tier A-C は試済 (構造体代入, 三項演算子, ポインタ選択, 添字選択)
-NON_MATCH void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
-#ifdef NONMATCHING_C
+void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
   Vec3 d;
   Vec3 range;
 
@@ -724,9 +721,6 @@ NON_MATCH void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
   pos->x = d.x + e->mover.pos.x;
   pos->y = d.y + e->mover.pos.y;
   pos->z = d.z + e->mover.pos.z;
-#else
-  INCFUNC("asm/func/Elevator_ClampRiderPos.inc");
-#endif
 }
 
 void FUN_081d4540(Elevator* e) {
