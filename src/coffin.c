@@ -1425,7 +1425,25 @@ void Coffin_UpdateState14(Coffin* p) {
   }
 }
 
-NAKED void FUN_08089410(Coffin* p) { INCFUNC("asm/func/FUN_08089410.inc"); }
+void FUN_08089410(Coffin* p) {
+  if (p->unk_402 == 30) {
+    s32 dx = p->mover.pos.x - p->unk_3bc.x;
+    s32 dz = p->mover.pos.z - p->unk_3bc.z;
+    if (dx != 0 || dz != 0) {
+      p->facing = p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+    }
+    p->unk_33a = 1;
+  } else if (p->unk_402 < 30) {
+    s32 angle = ((p->unk_404 + 5) & 7) << 5;
+    p->mover.pos.x += POLAR_X(5, angle);
+    p->mover.pos.z += POLAR_Z(5, angle);
+    p->facing = p->unk_404;
+  }
+
+  if (--p->unk_402 == 0) {
+    p->unk_402 = (Random() & 0x3F) + 45;
+  }
+}
 
 void Coffin_UpdateState15(Coffin* p) {
   if (p->state != 15) {
