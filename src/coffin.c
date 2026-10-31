@@ -1306,7 +1306,36 @@ void Coffin_UpdateState0(Coffin* p) {
   }
 }
 
-NAKED void FUN_08087cbc(Coffin* p) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
+// 301/300命令, 残差は playerIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を直接 r4 に作るが, こちらは r0 に作って r4 へ写す1命令が増える
+// 試済: 2つの索引の計算順と宣言順, 型 (u32), ブロックで宣言して初期化, 比較の左右, 先頭の条件を && にまとめる
+NON_MATCH void FUN_08087cbc(Coffin* p) {
+#ifdef NONMATCHING_C
+  s32 playerIdx, coffinIdx;
+
+  if (!(GetTileAttrAt(&gPlayerPtr[0]->mover.pos) & TATTR_UNK_0)) {
+    if (abs(TileHeightAt(&gPlayerPtr[0]->mover.pos) - TileHeightAt(&p->mover.pos)) < 256) {
+      return;
+    }
+  }
+
+  playerIdx = GetCollisionTileIdx(&gPlayerPtr[0]->mover.pos);
+  coffinIdx = GetCollisionTileIdx(&p->mover.pos);
+  if (coffinIdx == playerIdx + 1) {
+    gPlayerPtr[0]->mover.pos.x = (s8)(p->mover.pos.x >> 8) * 256 + 2;
+  } else if (coffinIdx == playerIdx - 1) {
+    gPlayerPtr[0]->mover.pos.x = ((s8)(p->mover.pos.x >> 8) + 1) * 256 - 2;
+  } else if (coffinIdx == playerIdx + gCollisionMap->tiledata->width) {
+    gPlayerPtr[0]->mover.pos.z = (s8)(p->mover.pos.z >> 8) * 256 + 2;
+  } else if (coffinIdx == playerIdx - gCollisionMap->tiledata->width) {
+    gPlayerPtr[0]->mover.pos.z = ((s8)(p->mover.pos.z >> 8) + 1) * 256 - 2;
+  } else {
+    gPlayerPtr[0]->mover.pos.x = p->mover.pos.x;
+    gPlayerPtr[0]->mover.pos.z = p->mover.pos.z;
+  }
+#else
+  INCFUNC("asm/func/FUN_08087cbc.inc");
+#endif
+}
 
 // プレイヤーの前方 70 の点が棺桶から 150 より離れたら, プレイヤーを棺桶から 150 の位置へ 1/4 ずつ寄せる
 void FUN_08087f7c(Coffin* p) {
