@@ -24,7 +24,6 @@ bool8 FUN_080e4384(Enemy* p, Vec3* pos);
 s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst);
 s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit);
 bool32 FUN_080865dc(Vec3* out);
-bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param);
 
 static void nop_080f8cec(void);
 
@@ -54,7 +53,7 @@ void EnemyTargetManager_Clear(void) {
 bool8 FUN_080f8c2c(EnemyTarget* node) {
   if (node->flags & ENEMYTARGET_LINKED) return FALSE;
   if (node->cooldown != 0) return FALSE;
-  if (node->kindMask == 1) {
+  if (node->kindMask == ETGT_0) {
     if (!FUN_0808672c()) {
       return FALSE;
     }
@@ -222,7 +221,7 @@ void EnemyTargetManager_Release(EnemyTarget* node) {
 }
 
 // owner->unk_4 のプレイヤーについて, kind 0 なら goodCondID が param と一致するか, kind 1 なら frameCounter のビットが立っているかを返す
-bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
+bool8 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
   s32 n = 0;
   Player* player;
 
@@ -278,8 +277,8 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
 NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* best) {
 #ifdef NONMATCHING_C
   switch (node->kindMask) {
-    case 1:
-    case 4: {
+    case ETGT_0:
+    case ETGT_2: {
       Mover m = *node->owner;
       s32 i;
 
@@ -296,7 +295,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
           distSq = d.x * d.x + d.z * d.z;
           if (FUN_080e4384(enemy, &m.pos)) {
             *best = distSq;
-            enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+            enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
             ok = TRUE;
           } else {
             s32 diff = ArcTan2_8(d.x, d.z) - enemy->mover.angle;
@@ -306,19 +305,16 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
             } else if (diff < -0x80) {
               diff += 0x100;
             }
-            if (diff < 0) {
-              diff = -diff;
-            }
-            if (diff <= enemy->unk_1fd) {
+            if (abs(diff) <= enemy->unk_1fd) {
               s32 limit;
               u32 near;
               bool32 dim;
 
-              if (node->kindMask == 2) {
+              if (node->kindMask == ETGT_1) {
                 if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
-                  dim = (u8)FUN_080f8e84(&m, 1, 0x10000);
+                  dim = FUN_080f8e84(&m, 1, 0x10000);
                 } else {
-                  dim = (u8)FUN_080f8e84(&m, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
+                  dim = FUN_080f8e84(&m, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
                 }
               } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
                 dim = !(gStat->mapFlags & MPF_BRIGHT);
@@ -356,12 +352,12 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
                   if (adjacent) {
                     if ((enemy->flags5 & ENEFLAG5_UNK_3) || Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &m.pos)) {
                       *best = distSq;
-                      enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+                      enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
                       ok = TRUE;
                     }
                   } else if ((step == 2 || FUN_082340c8(&enemy->mover.pos, &m.pos, 10, 0x100)) && distSq < *best) {
                     *best = distSq;
-                    if ((node->kindMask & 6) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
+                    if ((node->kindMask & (ETGT_1 | ETGT_2)) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
                       enemy->unk_1f8 = 1;
                     } else {
                       enemy->unk_1f8 = 0;
@@ -381,7 +377,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
       }
       return FALSE;
     }
-    case 2: {
+    case ETGT_1: {
       Mover* owner;
 
       if (!(enemy->flags & ENEFLAG_UNK_3)) {
@@ -402,7 +398,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
           return FALSE;
         }
       }
-      if ((u8)FUN_080f8e84(owner, 1, 0x21000)) {
+      if (FUN_080f8e84(owner, 1, 0x21000)) {
         return FALSE;
       }
       {
@@ -417,7 +413,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
         distSq = d.x * d.x + d.z * d.z;
         if (FUN_080e4384(enemy, &node->owner->pos)) {
           *best = distSq;
-          enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+          enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
           ok = TRUE;
         } else {
           s32 diff = ArcTan2_8(d.x, d.z) - enemy->mover.angle;
@@ -435,11 +431,11 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
             u32 near;
             bool32 dim;
 
-            if (node->kindMask == 2) {
+            if (node->kindMask == ETGT_1) {
               if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
-                dim = (u8)FUN_080f8e84(node->owner, 1, 0x10000);
+                dim = FUN_080f8e84(node->owner, 1, 0x10000);
               } else {
-                dim = (u8)FUN_080f8e84(node->owner, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
+                dim = FUN_080f8e84(node->owner, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
               }
             } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
               dim = !(gStat->mapFlags & MPF_BRIGHT);
@@ -477,12 +473,12 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
                 if (adjacent) {
                   if ((enemy->flags5 & ENEFLAG5_UNK_3) || Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &node->owner->pos)) {
                     *best = distSq;
-                    enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+                    enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
                     ok = TRUE;
                   }
                 } else if ((step == 2 || FUN_082340c8(&enemy->mover.pos, &node->owner->pos, 10, 0x100)) && distSq < *best) {
                   *best = distSq;
-                  if ((node->kindMask & 6) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
+                  if ((node->kindMask & (ETGT_1 | ETGT_2)) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
                     enemy->unk_1f8 = 1;
                   } else {
                     enemy->unk_1f8 = 0;
@@ -531,13 +527,13 @@ EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
 
   if (hit >= 0) {
     switch (found->kindMask) {
-      case 1: {
+      case ETGT_0: {
         found->flags |= ENEMYTARGET_LINKED;
         found->enemy = p;
         break;
       }
-      case 2:
-      case 4: {
+      case ETGT_1:
+      case ETGT_2: {
         Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
         FUN_080f8bb8(found->owner);
         break;

@@ -15,7 +15,7 @@
 COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
 COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
-void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
+void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
 s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 
 void Coffin_InitParticles(Coffin* p) {
@@ -161,7 +161,7 @@ void FUN_08085cb0(Coffin* p, s32 coffinID) {
 
 void FUN_08085cec(Coffin* p) {
   if (p->inSolarCircle || p->unk_406 != 0) {
-    if (p->unk_334 <= 0x3F) {
+    if (p->unk_334 < 64) {
       p->unk_334++;
     }
   } else if (p->unk_334 != 0) {
@@ -354,6 +354,7 @@ void Cmd_6B24(void) {
   Coffin_SetState(p, 3);
 }
 
+// 0x7566
 void Cmd_7566(void) {
   if (gCoffin != NULL) {
     Coffin_SetState(gCoffin, 0);
@@ -642,7 +643,7 @@ s32 Cmd_7A0A(void) {
 }
 
 // 選択中の棺種別を返す, 未選択なら貴重品の中の棺アイテムを1つ消費してその種別を返す
-s32 Coffin_TakeKind(void) {
+u32 Coffin_TakeKind(void) {
   s32 i;
 
   if (gStat->coffin >= 0) {
@@ -650,9 +651,8 @@ s32 Coffin_TakeKind(void) {
   }
 
   for (i = 0; i < 16; i++) {
-    s32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
-
-    if ((u32)id < COFFIN_NUM) {
+    u32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+    if (id < COFFIN_NUM) {
       RemoveValuable(i);
       return id;
     }
@@ -676,16 +676,14 @@ static const u16 sCoffinWeights[8] = {
 // static inline アクセサ経由にすると値は読み直すがポインタは r1 に残り 39/40 まで, 未: per-TU フラグ
 NON_MATCH void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
 #ifdef NONMATCHING_C
-  s32 v;
-
   p->subroutineID = id;
   gStat->coffin = Coffin_TakeKind();
   p->coffinID = gStat->coffin;
-  v = VM_SeekToNamedArg('c');
-  if (v) {
-    v = VM_GetValue();
+  if (VM_SeekToNamedArg('c')) {
+    p->unk_1c = VM_GetValue();
+  } else {
+    p->unk_1c = 0;
   }
-  p->unk_1c = v;
   p->weight = sCoffinWeights[p->coffinID];
   if (VM_SeekToNamedArg('a')) {
     Coffin_SetState(p, VM_GetValue());
@@ -761,7 +759,7 @@ void Coffin_InitHurtbox(Coffin* p) {
   }
   Hitbox_Init(hurtbox, p->subroutineID, HBFLAG_HURTBOX | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
-  Hitbox_SetHandler(hurtbox, FUN_08087528, p);
+  Hitbox_SetHandler(hurtbox, Coffin_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->mover.pos, 0);
   Hitbox_Register(hurtbox);
 }
@@ -858,7 +856,7 @@ void FUN_080874cc(Coffin* p) {
 
 // 残差9命令, 原典は unk_1c != 0 を 0/1 のフラグ (r2) に落としてから || の残りを見る bool diamond 形
 // && の早期 return では materialize が消えて短くなる, Tier A-B は試済, 未: bool diamond の再現方法
-NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
+NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
 #ifdef NONMATCHING_C
   s32 damage;
   s32 timer;
@@ -869,7 +867,7 @@ NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
   if (p->unk_1b == 1) {
     return;
   }
-  if (p->unk_1c == 0 && (a->ignoreMask & 1) == 0 && (a->attributes & HBATTR_ALL) == 0) {
+  if (p->unk_1c == 0 && !(a->ignoreMask & 1) && !(a->attributes & HBATTR_ALL)) {
     return;
   }
   if (p->unk_332 != 0) {
@@ -898,7 +896,7 @@ NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
   p->unk_330 = 4;
   p->unk_332 = timer;
 #else
-  INCFUNC("asm/func/FUN_08087528.inc");
+  INCFUNC("asm/func/Coffin_OnHurt.inc");
 #endif
 }
 
@@ -1022,12 +1020,8 @@ NON_MATCH bool32 FUN_08088430(WorldPos* pos, Vec3* delta, s32 param_3) {
 }
 
 bool32 FUN_080884f4(s32 dx, s32 dz) {
-  if (abs(dx) > 0x20) {
-    return FALSE;
-  }
-  if (abs(dz) > 0x20) {
-    return FALSE;
-  }
+  if (abs(dx) > Q8(0.125)) return FALSE;
+  if (abs(dz) > Q8(0.125)) return FALSE;
   return TRUE;
 }
 
@@ -1037,31 +1031,33 @@ NAKED void FUN_08088718(Coffin* p) { INCFUNC("asm/func/FUN_08088718.inc"); }
 
 NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
 
+// 多分、棺桶が(変な場所に入ったりして回収不可能になったときに)ボス部屋に戻るときのアニメーション処理
 void FUN_08088bbc(Coffin* p) {
   p->facing = FACE_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->stateTimer++;
   FUN_08086024(p, 0);
 
-  if (p->stateTimer <= 0x1B) {
+  if (p->stateTimer < 28) {
     return;
   }
-
-  if (p->stateTimer <= 0x2B) {
+  if (p->stateTimer < 44) {
     s32 t = p->stateTimer;
-    s32 n = t - 0x1C;
+    s32 n = t - 28;
 
     p->sprite.flags |= SPRFLAG_AFFINE;
-    p->sprite.scaleX = 0x40 - (n << 2);
+    p->sprite.scaleX = Q6(1) - (n << 2);
     if (n > 8) {
       p->sprite.scaleY = n << 3;
-      p->unk_320 = (t - 0x24) * 30;
+      p->unk_320 = (t - 36) * 30;
     }
-  } else if (p->stateTimer <= 0x33) {
-    p->unk_320 = (p->stateTimer - 0x2C) * 200 + 240;
-  } else {
-    p->sprite.flags |= SPRFLAG_HIDDEN;
+    return;
   }
+  if (p->stateTimer < 52) {
+    p->unk_320 = (p->stateTimer - 44) * 200 + 240;
+    return;
+  }
+  p->sprite.flags |= SPRFLAG_HIDDEN;
 }
 
 NAKED void FUN_08088c54(Coffin* p) { INCFUNC("asm/func/FUN_08088c54.inc"); }
@@ -1214,27 +1210,27 @@ NAKED void FUN_080895d0(Coffin* p) { INCFUNC("asm/func/FUN_080895d0.inc"); }
 
 NAKED void FUN_08089720(Coffin* p) { INCFUNC("asm/func/FUN_08089720.inc"); }
 
-static void (*const sCoffinUpdates[17])(Coffin*) = {
-    FUN_08087c04,
-    FUN_08088148,
-    FUN_0808890c,
-    FUN_08088514,
-    FUN_08088718,
-    FUN_08088d44,
-    FUN_08088fbc,
-    FUN_08089088,
-    FUN_08089144,
-    FUN_08088bbc,
-    FUN_08088c54,
-    FUN_080892a8,
-    FUN_08089344,
-    FUN_080892f8,
-    FUN_080893c0,
-    FUN_08089548,
-    FUN_08089720,
-};  // 0x085AC000
-
 s32 Coffin_Update(Coffin* p) {
+  static void (*const sCoffinUpdates[17])(Coffin*) = {
+      FUN_08087c04,
+      FUN_08088148,
+      FUN_0808890c,
+      FUN_08088514,
+      FUN_08088718,
+      FUN_08088d44,
+      FUN_08088fbc,
+      FUN_08089088,
+      FUN_08089144,
+      FUN_08088bbc,
+      FUN_08088c54,
+      FUN_080892a8,
+      FUN_08089344,
+      FUN_080892f8,
+      FUN_080893c0,
+      FUN_08089548,
+      FUN_08089720,
+  };  // 0x085AC000
+
   s32 idx;
 
   p->unk_406 = 0;
