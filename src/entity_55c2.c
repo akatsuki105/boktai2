@@ -3,33 +3,41 @@
 #include "hitbox.h"
 #include "vm.h"
 
-// ヒットボックスを1つ持ち、当たったらスクリプトの引数で指定された条件を見て反応するエンティティ
+typedef enum {
+  F_UNK_0 = (1 << 0),
+  F_UNK_1 = (1 << 1),
+  F_UNK_2 = (1 << 2),
+  F_UNK_3 = (1 << 3),
+  F_UNK_4 = (1 << 4),
+} Entity55C2Flags;
+
+// 食らい判定を1つ持ち、当たったらスクリプトの引数で指定された条件を見て反応するエンティティ
 typedef struct {
-  Entity e;           // 0x00, ENTITY_UNK_8
-  HitboxData hitbox;  // 0x18, _Destroy が Hitbox_Unregister に渡す
-  u16 id;             // 0x68, _Create / _Init の引数, Hitbox_Init の第2引数にもなる
-  s16 unk_6a;         // 0x6A, _Init が '.l=100' を入れる (unk_6c と同じ値)
-  u16 unk_6c;         // 0x6C, _Init が '.l=100' を入れる
-  u16 flags;          // 0x6E, _Init が '.f' を入れ、'.w' が無ければ bit3、'.a' が無ければ bit4 を足す
-  u32 unk_70;         // 0x70, _Init が '.w' を入れる, 無ければ 0 で flags bit3
-  u32 unk_74;         // 0x74, _Init が '.a' を入れる, 無ければ 0 で flags bit4
-  u32 unk_78;         // 0x78, _Init が '.S=0x10' を入れ、Hitbox_Init の第5引数に渡す
-  u16 unk_7c;         // 0x7C, _Init が 0 を入れる
-  u16 unk_7e;         // 0x7E, _Init が '.i' を入れる
-  u16 unk_80;         // 0x80, _Init が '.D' を入れる
-  u16 unk_82;         // 0x82, _Init が '.d' を入れる
-  Vec3 hitPos;        // 0x84, _OnHit が当たったヒットボックスの pos を写す
+  Entity e;            // 0x00, ENTITY_UNK_8
+  HitboxData hurtbox;  // 0x18, _Destroy が Hitbox_Unregister に渡す
+  u16 id;              // 0x68, _Create / _Init の引数, Hitbox_Init の第2引数にもなる
+  s16 hp;              // 0x6A, '.l=100' を入れる
+  u16 maxHP;           // 0x6C, '.l=100' を入れる, hp が 0になった処理の後にこれを再設定する
+  u16 flags;           // 0x6E, '.f', Entity55C2Flags
+  u32 unk_70;          // 0x70, '.w'
+  u32 unk_74;          // 0x74, '.a'
+  u32 ignoreMask;      // 0x78, '.S'
+  u16 unk_7c;          // 0x7C
+  u16 unk_7e;          // 0x7E, '.i'
+  u16 unk_80;          // 0x80, '.D'
+  u16 unk_82;          // 0x82, '.d'
+  Vec3 hurtPos;        // 0x84
 } Entity55C2;
 static_assert(sizeof(Entity55C2) == 140);
 
 // 当たった相手の weakness と attributes が flags で指定された条件を満たしていたら、与ダメージを足して当たった位置を覚える
-void Entity55C2_OnHit(HitboxData* a, HitboxData* b, Entity55C2* p) {
+void Entity55C2_OnHurt(HitboxData* a, HitboxData* b, Entity55C2* p) {
   s32 okWeakness = 0;
   s32 okAttributes;
 
-  if (p->flags & 8) {
+  if (p->flags & F_UNK_3) {
     okWeakness = 1;
-  } else if (p->flags & 2) {
+  } else if (p->flags & F_UNK_1) {
     if (p->unk_70 == a->weakness) {
       okWeakness = 1;
     }
@@ -38,9 +46,9 @@ void Entity55C2_OnHit(HitboxData* a, HitboxData* b, Entity55C2* p) {
   }
 
   okAttributes = 0;
-  if (p->flags & 0x10) {
+  if (p->flags & F_UNK_4) {
     okAttributes = 1;
-  } else if (p->flags & 4) {
+  } else if (p->flags & F_UNK_2) {
     if (p->unk_74 == a->attributes) {
       okAttributes = 1;
     }
@@ -50,59 +58,53 @@ void Entity55C2_OnHit(HitboxData* a, HitboxData* b, Entity55C2* p) {
 
   if (okWeakness && okAttributes) {
     b->damage += a->damage;
-    p->hitPos = a->pos;
+    p->hurtPos = a->pos;
   }
 }
 
-// 被弾した分だけ unk_6a を削り, 0 を切ったら '.d' のスクリプト, まだ残っていれば '.D' のスクリプトを呼ぶ
+// 被弾した分だけ hp を削り, 0 を切ったら '.d' のスクリプト, まだ残っていれば '.D' のスクリプトを呼ぶ
 s32 Entity55C2_Update(Entity55C2* p) {
-  HitboxData* hitbox = &p->hitbox;
+  HitboxData* hurtbox = &p->hurtbox;
   s32 argv[3];
 
   if (p->unk_7c != 0) {
     p->unk_7c--;
-    p->hitbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
   } else {
-    p->hitbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
   }
 
-  if (hitbox->damage != 0) {
+  if (hurtbox->damage != 0) {
     p->unk_7c = p->unk_7e;
-    p->unk_6a -= hitbox->damage;
+    p->hp -= hurtbox->damage;
 
-    if (p->unk_6a < 0) {
+    if (p->hp < 0) {
       if (p->unk_82 != 0) {
         ScriptArgs sa;
 
-        argv[0] = p->hitPos.x;
-        argv[1] = p->hitPos.y;
-        argv[2] = p->hitPos.z;
+        argv[0] = p->hurtPos.x, argv[1] = p->hurtPos.y, argv[2] = p->hurtPos.z;
         VM_ExecByID(p->unk_82, &sa);
       }
       if (p->flags & 1) {
         KillEntity((Entity*)p);
       } else {
-        p->unk_6a = p->unk_6c;
+        p->hp = p->maxHP;
       }
-    } else {
-      if (p->unk_80 != 0) {
-        ScriptArgs sa;
+    } else if (p->unk_80 != 0) {
+      ScriptArgs sa;
 
-        argv[0] = p->hitPos.x;
-        argv[1] = p->hitPos.y;
-        argv[2] = p->hitPos.z;
-        VM_ExecByID(p->unk_80, &sa);
-      }
+      argv[0] = p->hurtPos.x, argv[1] = p->hurtPos.y, argv[2] = p->hurtPos.z;
+      VM_ExecByID(p->unk_80, &sa);
     }
 
-    hitbox->damage = 0;
+    hurtbox->damage = 0;
   }
 
   return 0;
 }
 
 s32 Entity55C2_Destroy(Entity55C2* p) {
-  Hitbox_Unregister(&p->hitbox);
+  Hitbox_Unregister(&p->hurtbox);
   return 0;
 }
 
@@ -111,9 +113,9 @@ s32 Entity55C2_Init(Entity55C2* p, u32 id) {
   Vec3 pos, size, offset;
 
   p->id = id;
-  p->unk_6c = VM_GetNamedArgValue('l', 100);
-  p->unk_6a = p->unk_6c;
-  p->unk_78 = VM_GetNamedArgValue('S', 0x10);
+  p->maxHP = VM_GetNamedArgValue('l', 100);
+  p->hp = p->maxHP;
+  p->ignoreMask = VM_GetNamedArgValue('S', HIM_4);
 
   if (VM_SeekToNamedArg('p')) {
     VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
@@ -133,24 +135,24 @@ s32 Entity55C2_Init(Entity55C2* p, u32 id) {
     VEC3_SET(offset, 0, 0, 0);
   }
 
-  Hitbox_Init(&p->hitbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, p->unk_78, &size, &offset);
-  Hitbox_SetPos(&p->hitbox, &pos, 0);
-  Hitbox_SetHandler(&p->hitbox, Entity55C2_OnHit, p);
-  Hitbox_SetPowerAndAttributes(&p->hitbox, 0, 0, 0);
-  Hitbox_Register(&p->hitbox);
+  Hitbox_Init(&p->hurtbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, p->ignoreMask, &size, &offset);
+  Hitbox_SetPos(&p->hurtbox, &pos, 0);
+  Hitbox_SetHandler(&p->hurtbox, Entity55C2_OnHurt, p);
+  Hitbox_SetPowerAndAttributes(&p->hurtbox, 0, 0, 0);
+  Hitbox_Register(&p->hurtbox);
 
   p->flags = VM_GetNamedArgValue('f', 0);
   if (VM_SeekToNamedArg('w')) {
     p->unk_70 = VM_GetValue();
   } else {
     p->unk_70 = 0;
-    p->flags |= 8;
+    p->flags |= F_UNK_3;
   }
   if (VM_SeekToNamedArg('a')) {
     p->unk_74 = VM_GetValue();
   } else {
     p->unk_74 = 0;
-    p->flags |= 0x10;
+    p->flags |= F_UNK_4;
   }
 
   p->unk_80 = VM_GetNamedArgValue('D', 0);
@@ -160,6 +162,7 @@ s32 Entity55C2_Init(Entity55C2* p, u32 id) {
   return 0;
 }
 
+// 0x55C2
 Entity55C2* Entity55C2_Create(u32 id) {
   Entity55C2* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity55C2));
 
