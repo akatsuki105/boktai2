@@ -1023,7 +1023,42 @@ void FUN_081d407c(Elevator* e) {
   }
 }
 
-NAKED void FUN_081d40b4(Elevator* e) { INCFUNC("asm/func/FUN_081d40b4.inc"); }
+void Elevator_UpdatePlayerRiding(Elevator* e) {
+  ElevatorManager* p;
+  Vec3 pos;
+  Vec3 delta;
+
+  pos.x = gPlayerPtr[0]->mover.pos.x + e->moveDelta.x;
+  pos.y = gPlayerPtr[0]->mover.pos.y + e->moveDelta.y;
+  pos.z = gPlayerPtr[0]->mover.pos.z + e->moveDelta.z;
+  Vec3_Delta(&delta, &e->mover.pos, &pos);
+
+  p = gElevatorManager;
+  if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+    FUN_081d3fac(p->ridingID, 0);
+    p->ridingID = e->id;
+    FUN_081d4034(e);
+    SET_FLAGS(e->flags, PLAYER_RIDING);
+    gPlayerPtr[0]->shadow.flags |= 1;
+  } else if (p->ridingID == e->id) {
+    if (e->unk_e7 == 1 && !(e->unk_d6 & 8)) {
+      if (delta.x <= gElevatorRange1.x && delta.x >= -gElevatorRange1.x && delta.y <= gElevatorRange1.y && delta.y >= -gElevatorRange1.y && delta.z <= gElevatorRange1.z && delta.z >= -gElevatorRange1.z) {
+        FUN_081d4034(e);
+        return;
+      }
+    } else {
+      if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+        FUN_081d4034(e);
+        return;
+      }
+    }
+    p->ridingID = 0;
+    gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
+    FUN_0807a99c(gPlayerPtr[0], 5);
+    CLEAR_FLAGS(e->flags, PLAYER_RIDING);
+    gPlayerPtr[0]->shadow.flags &= ~1;
+  }
+}
 
 void Elevator_UpdateCoffinRiding(Elevator* e) {
   ElevatorManager* p;
@@ -1089,7 +1124,7 @@ void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
 
 void FUN_081d4540(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
-    FUN_081d40b4(e);
+    Elevator_UpdatePlayerRiding(e);
     Elevator_UpdateCoffinRiding(e);
 
     if (FUN_0807a954(gPlayerPtr[0], 1)) {

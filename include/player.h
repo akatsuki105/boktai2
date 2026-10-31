@@ -415,7 +415,7 @@ typedef struct Player {
   Eff082473e0Emitter emitter;       // 0x4C4
   Vec3 shadowPos;                   // 0x5FC, mover.pos に下の3つを足した値, 根拠: Player_UpdatePoseAndShadow
   Vec3 shadowOffset;                // 0x604, shadowPos を作るときに mover.pos に足す分, Player_BeginAction が 0 に戻す
-  ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, FUN_081d40b4 がエレベータ搭乗中に flags の bit0 を立てる
+  ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, Elevator_UpdatePlayerRiding がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
   PlayerShockwave meleeShockwave;   // 0x6AC
