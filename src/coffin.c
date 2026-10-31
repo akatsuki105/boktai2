@@ -1172,7 +1172,37 @@ void Coffin_UpdateState9(Coffin* p) {
   p->sprite.flags |= SPRFLAG_HIDDEN;
 }
 
-NAKED void Coffin_UpdateState10(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState10.inc"); }
+void Coffin_UpdateState10(Coffin* p) {
+  p->facing = FACE_UP;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  FUN_08086024(p, 0);
+
+  if (p->stateTimer < 76) {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+  } else if (p->stateTimer < 84) {
+    s32 t = p->stateTimer;
+    p->sprite.flags = (p->sprite.flags & ~SPRFLAG_HIDDEN) | SPRFLAG_AFFINE;
+    p->sprite.scaleX = 4;
+    p->sprite.scaleY = 120;
+    p->unk_320 = (84 - t) * 200 + 240;
+  } else if (p->stateTimer < 100) {
+    s32 t = p->stateTimer - 84;
+    s32 u = 15 - t;
+    p->sprite.scaleX = 64 - u * 4;
+    if (t < 8) {
+      p->sprite.scaleY = u * 8;
+      p->unk_320 = (8 - t) * 30;
+    } else {
+      p->sprite.scaleY = 64;
+      p->unk_320 = 0;
+    }
+  }
+
+  if (++p->stateTimer >= 104) {
+    p->sprite.flags &= ~SPRFLAG_AFFINE;
+    Coffin_SetState(p, 0);
+  }
+}
 
 NAKED void Coffin_UpdateState5(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState5.inc"); }
 
