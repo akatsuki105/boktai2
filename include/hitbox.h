@@ -56,6 +56,14 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 #define HBATTR_INKA (1 << 21)      // 0x200000, (プレイヤーに)当たると引火の状態異常
 #define HBATTR_HYOKETU (1 << 22)   // 0x400000, (プレイヤーに)当たると氷結の状態異常
 
+// HitboxData.ignoreMask
+#define HIM_0 (1 << 0)  // 0x1
+#define HIM_1 (1 << 1)  // 0x2
+#define HIM_2 (1 << 2)  // 0x4
+#define HIM_3 (1 << 3)  // 0x8
+#define HIM_4 (1 << 4)  // 0x10
+#define HIM_5 (1 << 5)  // 0x20
+
 // TODO: 解析が終わって問題なさそうなら HitboxData じゃなくて Hitbox にリネームする
 // 当たり判定も食らい判定も同じ構造体で扱う, HBFLAG_HITBOX で攻撃判定かどうかを区別する
 typedef struct HitboxData {

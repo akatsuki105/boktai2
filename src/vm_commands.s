@@ -309,7 +309,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7999, Entity7999_Create
 	.4byte 0x79B7, Map_AddLoadingZoneIndicatorScripted
 	.4byte 0x79EC, Cmd_79EC
-	.4byte 0x7A0A, Cmd_7A0A
+	.4byte 0x7A0A, Cmd_GetCoffinID
 	.4byte 0x7A25, Cmd_7A25 @ HashName("シングルプレイ")
 	.4byte 0x7A27, Cmd_LoadTileMap
 	.4byte 0x7A75, Cmd_7A75
@@ -536,7 +536,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD169, Cmd_D169
 	.4byte 0xD1C0, Cmd_SetEnemyDexSeenFlag
 	.4byte 0xD229, Cmd_D229
-	.4byte 0xD24B, coffin_0808623c
+	.4byte 0xD24B, Cmd_ReturnCoffinToBag
 	.4byte 0xD25F, Entity5CCC_AddLightAreaScripted
 	.4byte 0xD285, Cmd_D285
 	.4byte 0xD37F, Jormungandr_Create @ HashName("ヨルムンガンド")

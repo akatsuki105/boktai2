@@ -262,15 +262,15 @@ NAKED void FUN_0808613c(Coffin* p) { INCFUNC("asm/func/FUN_0808613c.inc"); }
 
 void Coffin_ClearGlobal(void) { gCoffin = NULL; }
 
-// 0xD24B, 装備している棺桶をアイテムとして持ち物に戻し, 装備を外す
+// 0xD24B, 場に出ている棺桶を持ち物に戻す
 // 残差は17/19命令でこちらが短い, 原典は -1 を movs/rsbs で作って別レジスタから写すが agbcc はプール定数1本で済ませる
 // Tier A-B 試済 (定数の書き方, 代入順)
-NON_MATCH void coffin_0808623c(void) {
+NON_MATCH void Cmd_ReturnCoffinToBag(void) {
 #ifdef NONMATCHING_C
   TryAddItem(gStat->coffin + ITEM_OAK_COFFIN, 0);
   gStat->coffin = -1;
 #else
-  INCFUNC("asm/func/coffin_0808623c.inc");
+  INCFUNC("asm/func/Cmd_ReturnCoffinToBag.inc");
 #endif
 }
 
@@ -453,11 +453,11 @@ void FUN_0808689c(s32 val) {
   }
 }
 
-void FUN_080868b8(s32 param_1) {
+void FUN_080868b8(bool32 param_1) {
   Coffin* p = gCoffin;
 
   if (p != NULL) {
-    if (param_1 != 0) {
+    if (param_1) {
       Coffin_SetState(p, 7);
     } else {
       Coffin_SetState(p, 6);
@@ -624,8 +624,8 @@ void Coffin_RequestKill(void) {
   }
 }
 
-// 0x7A0A, 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
-s32 Cmd_7A0A(void) {
+// 0x7A0A, 持っている棺桶のIDを取得
+u32 Cmd_GetCoffinID(void) {
   s32 i;
 
   if (gStat->coffin >= 0) {
@@ -633,23 +633,25 @@ s32 Cmd_7A0A(void) {
   }
 
   for (i = 0; i < 16; i++) {
-    s32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+    u32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
 
-    if ((u32)id < COFFIN_NUM) {
+    if (id < COFFIN_NUM) {
       return id;
     }
   }
   return COFFIN_OAK;
 }
 
-// 選択中の棺種別を返す, 未選択なら貴重品の中の棺アイテムを1つ消費してその種別を返す
+// 持っている棺桶のIDを取得
 u32 Coffin_TakeKind(void) {
   s32 i;
 
+  // 棺桶が場に出ている
   if (gStat->coffin >= 0) {
     return gStat->coffin;
   }
 
+  // かばんの中
   for (i = 0; i < 16; i++) {
     u32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
     if (id < COFFIN_NUM) {
@@ -741,8 +743,7 @@ NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
 
 void Coffin_InitHurtbox(Coffin* p) {
   HitboxData* hurtbox = &p->hurtbox;
-  Vec3 size;
-  Vec3 offset;
+  Vec3 size, offset;
   s32 ignoreMask;
 
   VEC3_SET(size, Q8(0.352), Q8(0.125), Q8(0.352));
@@ -750,12 +751,12 @@ void Coffin_InitHurtbox(Coffin* p) {
   if (p->coffinID != COFFIN_SILVER) {
     s32 kind = p->unk_1c;
 
-    ignoreMask = 2;
+    ignoreMask = HIM_1;
     if (kind == 0) {
-      ignoreMask = 0x10;
+      ignoreMask = HIM_4;
     }
   } else {
-    ignoreMask = 0x10;
+    ignoreMask = HIM_4;
   }
   Hitbox_Init(hurtbox, p->subroutineID, HBFLAG_HURTBOX | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
@@ -770,7 +771,7 @@ void Coffin_InitHitbox(Coffin* p) {
 
   VEC3_SET(size, Q8(0.5), Q8(0.125), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.125), 0);
-  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
