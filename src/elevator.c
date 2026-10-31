@@ -1083,8 +1083,7 @@ void Elevator_ClampCoffinOffFloor(Elevator* e) {
   SET_FLAGS(e->flags, ELEVATOR_UNK_9);
 }
 
-// 残差はビット判定を 0/1 の値に起こす分だけ (src/elevator.c の ElevatorManager_AllocSlot と同じ現象)
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (62/63)
+// 残差は先頭で作った &usedMask をループで使い回さない点と, ~16 を ~8 から subs で作らない点 (64/63), Tier A-C は試済 (早期 return, Elevator ポインタ, CLEAR_FLAGS と &= ~ の組み合わせ)
 NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
 #ifdef NONMATCHING_C
   ElevatorManager* p = gElevatorManager;
@@ -1094,9 +1093,9 @@ NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
     for (i = 0; i < 12; i++) {
       if (Elevator_IsSlotUsed(p, i) && p->elevators[i].id == id) {
         if (which == 0) {
-          p->elevators[i].flags &= ~PLAYER_RIDING;
+          CLEAR_FLAGS(p->elevators[i].flags, PLAYER_RIDING);
         } else {
-          p->elevators[i].flags &= ~COFFIN_RIDING;
+          CLEAR_FLAGS(p->elevators[i].flags, COFFIN_RIDING);
         }
         return;
       }
