@@ -1797,10 +1797,10 @@ void Cmd_CED9(void) {
     Elevator* e = Elevator_FindByID(id);
 
     if (e != NULL) {
-      s32 h = VM_GetNamedArgValue('h', -1);
-      s32 l = VM_GetNamedArgValue('l', -1);
-      if (h > 0) e->maxY = h;
-      if (l > 0) e->minY = l;
+      s32 high = VM_GetNamedArgValue('h', -1);
+      s32 low = VM_GetNamedArgValue('l', -1);
+      if (high > 0) e->maxY = high;
+      if (low > 0) e->minY = low;
     }
   }
 }
