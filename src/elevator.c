@@ -1697,9 +1697,7 @@ s32 Cmd_7A75(void) {
 }
 
 // 0x7E33, 指定した id のエレベータを動かす, '.m' で動かし方を選ぶ
-// 残差は割当だけ (61対61): 原典は定数 2 を r6 に置いて ~2 を mvns で作り, mode の値も r4 に残すが, こちらは ~2 をプール定数にして mode を 4 に伝播させる
-NON_MATCH void Elevator_Start(void) {
-#ifdef NONMATCHING_C
+void Elevator_Start(void) {
   s32 mode = VM_GetNamedArgValue('m', 1);
   s32 id = VM_GetNamedArgValue('n', 0);
 
@@ -1709,22 +1707,20 @@ NON_MATCH void Elevator_Start(void) {
     if (e != NULL && (e->unk_d6 & 2)) {
       e->state = 2;
       if (mode == 4) {
-        e->flags = (e->flags & ~ELEVATOR_MOVE_UP) | mode;
+        CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        SET_FLAGS(e->flags, mode);
       } else {
-        e->flags &= ~ELEVATOR_STOPPED;
+        CLEAR_FLAGS(e->flags, ELEVATOR_STOPPED);
         if (mode == 2) {
-          e->flags |= mode;
+          SET_FLAGS(e->flags, mode);
         } else {
-          e->flags &= ~ELEVATOR_MOVE_UP;
+          CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
         }
 
         FUN_081d21d8(e);
       }
     }
   }
-#else
-  INCFUNC("asm/func/Elevator_Start.inc");
-#endif
 }
 
 void Cmd_AE3A(void) {
