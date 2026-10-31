@@ -81,13 +81,10 @@ const Vec3 gElevatorRanges[3] = {
     {Q8(0.383), Q8(0.125), Q8(0.383)}
 };  // 0x085AE0D0
 
-bool32 FUN_0807a954(Player* p, u32 mask);
 bool32 FUN_08086978(u32 mask);
 void FUN_081d4590(Elevator* p);
 void FUN_081d4658(Elevator* p);
 void FUN_081d5588(Elevator* p);
-void FUN_0807a97c(Player* p, u32 flags, u32 elevatorID);
-void FUN_0807a99c(Player* p, u32 flags);
 
 static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
   out->x = target->x - origin->x;
@@ -444,7 +441,6 @@ void FUN_081d4540(Elevator* p) {
     if (FUN_0807a954(gPlayerPtr[0], 1)) {
       FUN_081d4590(p);
     }
-
     if (FUN_08086978(1)) {
       FUN_081d4658(p);
     }
@@ -817,14 +813,8 @@ void Cmd_CED9(void) {
     if (p != NULL) {
       s32 h = VM_GetNamedArgValue('h', -1);
       s32 l = VM_GetNamedArgValue('l', -1);
-
-      if (h > 0) {
-        p->unk_d0 = h;
-      }
-
-      if (l > 0) {
-        p->unk_cc = l;
-      }
+      if (h > 0) p->unk_d0 = h;
+      if (l > 0) p->unk_cc = l;
     }
   }
 }

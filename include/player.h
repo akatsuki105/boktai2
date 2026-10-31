@@ -530,6 +530,10 @@ bool32 FUN_0807ad60(Player* p, s32 param_2);
 DirS32 Player_GetDpadFacing(Player* p);
 void AddPlayerExp(s32 amount);
 
+bool32 FUN_0807a954(Player* p, u32 mask);
+void FUN_0807a97c(Player* p, u32 flags, u32 elevatorID);
+void FUN_0807a99c(Player* p, u32 flags);
+
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->flag20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->flag20 & bit; }
 
