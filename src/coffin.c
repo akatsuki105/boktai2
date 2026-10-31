@@ -451,7 +451,74 @@ bool32 FUN_0808626c(u32 playerElevatorID, u32 playerFlags, u32 coffinElevatorID,
   return TRUE;
 }
 
-NAKED bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3) { INCFUNC("asm/func/FUN_08086294.inc"); }
+static inline s32 TestTileIdx(WorldPos* pos) {
+  s32 bx = (s8)(pos->x >> 8);
+  s32 bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    return 0;
+  }
+  return gCollisionMap->rowOffsets[bz] + bx;
+}
+
+#define TestTileIdx(pos)                                                                                                           \
+  ({                                                                                                                               \
+    s32 _bx = (s8)((pos)->x >> 8);                                                                                                 \
+    s32 _bz = (s8)((pos)->z >> 8);                                                                                                 \
+    (_bx < 0 || _bz < 0 || (u32)_bx >= (u32)gMapBlockW || (u32)_bz >= (u32)gMapBlockH) ? 0 : gCollisionMap->rowOffsets[_bz] + _bx; \
+  })
+
+// 338/337命令, 残差は posIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を bx と同じ r4 に作るが, こちらは r0 に作って r4 へ写す (FUN_08087cbc と同じ)
+// 試済: 早期 return を入れ子の if にして TRUE を1か所に寄せる (これで分岐の並びは揃った), 局所変数の宣言順, 自前の inline / マクロで索引を出す
+NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3) {
+#ifdef NONMATCHING_C
+  s32 dx, dz, posIdx, coffinIdx;
+  Vec3 v;
+
+  if (gCoffin == NULL) {
+    return FALSE;
+  }
+
+  dx = pos->x - gCoffin->mover.pos.x;
+  dz = pos->z - gCoffin->mover.pos.z;
+  if (dx * dx + dz * dz > 220 * 220) {
+    return FALSE;
+  }
+  if (gCoffin->state == 15 || gCoffin->state == 16) {
+    return TRUE;
+  }
+  if (gCoffin->state != 0 && gCoffin->state != 3 && gCoffin->state != 4) {
+    return FALSE;
+  }
+  if (!FUN_0808626c(elevatorID, param_3, gCoffin->elevatorID, gCoffin->unk_384)) {
+    return FALSE;
+  }
+
+  posIdx = GetCollisionTileIdx(pos);
+  coffinIdx = GetCollisionTileIdx(&gCoffin->mover.pos);
+  if (posIdx == coffinIdx) {
+    return TRUE;
+  }
+  if (posIdx == coffinIdx + 1 || posIdx == coffinIdx - 1 || posIdx == coffinIdx + gCollisionMap->tiledata->width || posIdx == coffinIdx - gCollisionMap->tiledata->width) {
+    if (abs(pos->y - gCoffin->mover.pos.y) <= 255) {
+      return TRUE;
+    }
+  } else if (abs(pos->y - gCoffin->mover.pos.y) <= 255) {
+    v.x = pos->x - dx;
+    v.z = pos->z;
+    if (abs(pos->y - TileHeightAt(&v)) < 128) {
+      return TRUE;
+    }
+    v.x = pos->x;
+    v.z = pos->z - dz;
+    if (abs(pos->y - TileHeightAt(&v)) < 128) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_08086294.inc");
+#endif
+}
 
 void FUN_08086590(Vec3* pos, s32 val) {
   if (gCoffin != NULL) {
