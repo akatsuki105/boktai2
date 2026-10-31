@@ -192,30 +192,32 @@ const __attribute__((section(".rodata.faraddr"))) char gStringSabata_08252844[10
 const __attribute__((section(".rodata.faraddr"))) u32 u32_ARRAY_08252850[5] = {0, 4, 5, 6, 2};                                                                                                                    // 0x08252850
 
 // clang-format off
+// "SOUND"モードで聴ける BGM 一覧
 const SoundID16 u16_ARRAY_085afa30[95] = {
     SONG_163,             SONG_167,        SONG_164,        SONG_179,     SONG_56,
     SONG_18,              SONG_62,         SONG_57,         BGM_PROLOGUE, BGM_FIELD,
     SONG_165,             BGM_TRAP_BATTLE, BGM_COMPLETE,    SONG_59,      SONG_152,
     BGM_15,               SONG_54,         BGM_GAMEOVER,    SONG_156,     SONG_66,
-    SONG_154,             SONG_160,        SONG_161,        SONG_162,     SONG_20,
-    SONG_68,              SONG_21,         SONG_22,         SONG_23,      SONG_69,
-    SONG_24,              SONG_70,         SONG_65,         SONG_150,     SONG_151,
-    BGM_PILEDRIVER_POINT, BGM_BOSS_BATTLE, BGM_BOSS_CLIMAX, BGM_10,       SONG_74,
-    SONG_170,             SONG_169,        SONG_25,         SONG_26,      SONG_178,
-    SONG_71,              SONG_27,         SONG_28,         SONG_60,      SONG_76,
-    SONG_81,              SONG_153,        SONG_29,         SONG_77,      SONG_32,
-    SONG_30,              SONG_33,         SONG_31,         SONG_80,      SONG_155,
-    SONG_82,              SONG_159,        SONG_84,         SONG_157,     BGM_16,
-    BGM_14,               BGM_AQUADUCT,         SONG_181,        SONG_35,      SONG_64,
-    SONG_36,              SONG_39,         SONG_37,         SONG_83,      SONG_41,
-    SONG_42,              SONG_61,         SONG_48,         SONG_17,      SONG_72,
-    BGM_HEN1,              BGM_HEN2,         BGM_HEN3,         BGM_HEN4,      SONG_47,
-    BGM_SUNMIGUERE,       SONG_88,         SONG_90,         SONG_166,     SONG_168,
-    SONG_176,             SONG_177,        SONG_180,        SONG_173,     -1,
+    SONG_154,             SONG_160,        BGM_DARKLOAN,        BGM_OSHIOKI,     BGM_DAISEIDOU_REIEN,
+    BGM_WHAT,              BGM_DAISEIDOU_B,         BGM_DAISEIDOU_1F,         BGM_DAISEIDOU_2F,      BGM_SANSHIMAI,
+    BGM_DUNEYRR,              BGM_SMITH,         BGM_WEDGE,         BGM_AKATSUKI,     BGM_TASOGARE,
+    BGM_PILEDRIVER, BGM_BATTLE_DRIVE, BGM_CLIMAX, BGM_NIGERARETAZO,       BGM_RITA,
+    BGM_SOLAR_FORGE,             BGM_END,        BGM_ISEKI_SABAKU,         BGM_ISEKI_SIRO_NO_OKA,      BGM_BBB,
+    BGM_DARKBOY_SABATA,              BGM_ISEKI_KURO_NO_TANI,         BGM_BATTLE_RINGO,         BGM_RED_RINGO,      BGM_RAIMEI,
+    BGM_JOKA,              BGM_BLACK_DJANGO,        BGM_ANKOKUGAI1,         BGM_KAZE_NO_SENSHI,      BGM_SHAIAN,
+    BGM_ANKOKUGAI2,              BGM_DURATHROR,         BGM_ANKOKUGAI3,         BGM_GEKKA_BIJIN,      BGM_TAIYO,
+    BGM_RAINBOW,              BGM_SOLAR_TREE,        BGM_KOMOREBI,         BGM_SUNMIGUERE2,     BGM_TOKI_NO_IE_GENZAI,
+    BGM_TOKI_NO_IE_KAKO,               BGM_AQUADUCT,         BGM_NAKAMA1,        BGM_KYOUFU,      BGM_BLACK_DAINN,
+    BGM_DVALINN,              BGM_SOLAR_TOWER,         BGM_DARK_TOWER,         BGM_DARK,      BGM_DAINN1,
+    BGM_DAINN2,              BGM_RINNE,         BGM_JORMUNGANDR,         BGM_MUGEN,      BGM_GEKKA_BIJIN_SABATA,
+    BGM_HEN1,              BGM_HEN2,         BGM_HEN3,         BGM_HEN4,      BGM_HEN5,
+    BGM_NAKAMA2,       BGM_ZOKTAI,         BGM_YUUHI,         BGM_TAIYO_NO_KISETSU,     BGM_LINK_SELECT,
+    BGM_WIN,             BGM_LOSE,        BGM_ANUN,        BGM_SHADEMAN,     -1,
 };  // 0x085afa30
 // clang-format on
 
 // clang-format off
+// "SOUND"モードで聴ける SE 一覧
 const SoundID16 u16_ARRAY_085afaee[482] = {
     SONG_224,             SONG_223,              SE_CURSOR_MOVE,  SE_SELECT,                SE_CANCEL,
     SE_SAVE_SUCCESS,      SE_UNK_299,            SE_UNK_300,      SE_UNK_301,               SONG_410,
@@ -227,8 +229,8 @@ const SoundID16 u16_ARRAY_085afaee[482] = {
     SONG_651,             SONG_629,              SONG_630,        SE_FSTEP_M_0,             SE_FSTEP_M_1,
     SE_FSTEP_STAIRS_0,    SE_FSTEP_STAIRS_1,     SONG_354,        SONG_355,                 SONG_403,
     SONG_404,             SONG_199,              SONG_200,        SONG_821,                 SE_WALL_COVER,
-    SONG_219,             SONG_236,              SONG_235,        SONG_203,                 SONG_908,
-    SONG_907,             SE_SPEAR_ATK_R,              SE_SPEAR_ATK_B,        SONG_912,                 SONG_910,
+    SONG_219,             SONG_236,              SONG_235,        SONG_203,                 SE_SWORD_ATK_R,
+    SE_SWORD_ATK_B,             SE_SPEAR_ATK_R,              SE_SPEAR_ATK_B,        SE_HAMMER_ATK_R,                 SE_HAMMER_ATK_B,
     SONG_913,             SE_GUN_FIRE,           SONG_213,        SE_GUN_AIM,               SE_GUN_MISFIRE,
     SE_GUN_CHARGED,       SONG_425,              SONG_426,        SE_ENCHANT,               SE_HEALING,
     SONG_920,             SONG_921,              SONG_922,        SE_TRANSFORM,             SONG_924,
@@ -318,6 +320,7 @@ const SoundID16 u16_ARRAY_085afaee[482] = {
 // clang-format on
 
 // clang-format off
+// "SOUND"モードで聴ける VOICE 一覧
 const SoundID16 u16_ARRAY_085afeb2[99] = {
     SONG_700,             SONG_708,              SONG_709,              SONG_710,                   SONG_711,
     VO_RDJANGO_TAIYO_296, SONG_776,              SONG_231,              VO_DJANGO_773,              SONG_576,

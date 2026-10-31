@@ -438,7 +438,7 @@ NAKED void FUN_0801db1c(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801db1c.inc"); }
 void FUN_0801dc90(EntityDA0B* p) {
   if (EntityDA0B_TakeFnChanged(p)) {
     FUN_0801d4dc(p, 9, 0, 0);
-    sound_08240264(SONG_169);
+    sound_08240264(BGM_END);
   }
 
   FUN_0801d540(p);

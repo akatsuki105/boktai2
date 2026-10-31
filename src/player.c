@@ -7523,9 +7523,9 @@ NON_MATCH bool32 FUN_0806fd58(Player* p) {
 
   if (p->wpn.gunSpreadAngle == 0) {
     if (p->kind == PLAYER_SOLAR_DJANGO) {
-      PlaySound_082406e0(SONG_908);
+      PlaySound_082406e0(SE_SWORD_ATK_R);
     } else {
-      PlaySound_082406e0(SONG_907);
+      PlaySound_082406e0(SE_SWORD_ATK_B);
     }
   }
   if (++wpn->gunSpreadAngle <= wpn->unk_b8[2]) {
@@ -8298,9 +8298,9 @@ void FUN_08073f88(Player* p) {
       bool32 done;
       if (p->stateTimer == 0) {
         if (p->kind == PLAYER_SOLAR_DJANGO) {
-          PlaySound_082406e0(SONG_908);
+          PlaySound_082406e0(SE_SWORD_ATK_R);
         } else {
-          PlaySound_082406e0(SONG_907);
+          PlaySound_082406e0(SE_SWORD_ATK_B);
         }
         p->stateTimer++;
       }
@@ -8400,10 +8400,10 @@ void FUN_08074244(Player* p) {
       bool32 done;
       if (p->kind == PLAYER_SOLAR_DJANGO) {
         if (p->stateTimer == 17) {
-          PlaySound_082406e0(SONG_912);
+          PlaySound_082406e0(SE_HAMMER_ATK_R);
         }
       } else if (p->stateTimer == 11) {
-        PlaySound_082406e0(SONG_910);
+        PlaySound_082406e0(SE_HAMMER_ATK_B);
       }
       p->stateTimer++;
       done = Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 31), speed);

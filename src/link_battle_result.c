@@ -418,7 +418,7 @@ NON_MATCH void FUN_081dd36c(LinkBattleResult* p) {
   count = p->playerCount;
   for (i = 0; i < count; i++) {
     if (p->unk_6fc[i] == playerIdx && p->unk_700[i] == 0) {
-      sound_08240264(SONG_169);
+      sound_08240264(BGM_END);
       return;
     }
   }

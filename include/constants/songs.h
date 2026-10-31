@@ -4,52 +4,52 @@
 #define SONG_NONE 0  // 無音
 #define BGM_PROLOGUE 1
 #define BGM_GAMEOVER 2
-#define BGM_BOSS_BATTLE 3
-#define BGM_BOSS_CLIMAX 4  // パイルドライバーの浄化間近とか
+#define BGM_BATTLE_DRIVE 3  // BGM:"バトルドライブ", 浄化時(通常)
+#define BGM_CLIMAX 4        // BGM:"死線", 浄化時(敵のHP残りわずか)
 #define SE_PILEDRIVER_05 5
 #define BGM_PILEDRIVER_ALERT 6
 #define SE_PILEDRIVER_07 7
 #define BGM_QUAKE 8
-#define BGM_PILEDRIVER_POINT 9  // パイルドライバー設置場所のBGM
-#define BGM_10 10
+#define BGM_PILEDRIVER 9     // BGM:"パイルドライバー", パイルドライバー設置場所のBGM
+#define BGM_NIGERARETAZO 10  // BGM:"逃げられたぞ！！"
 #define BGM_NONE_11 11
 #define BGM_COMPLETE 12  // 初代ならダンジョン突破時のリザルト画面
 #define BGM_TRAP_BATTLE 13
-#define BGM_14 14
+#define BGM_TOKI_NO_IE_KAKO 14  // BGM:"時の家・過去"
 #define BGM_15 15
-#define BGM_16 16
-#define SONG_17 17
+#define BGM_TOKI_NO_IE_GENZAI 16  // BGM:"時の家・現在"
+#define BGM_MUGEN 17              // BGM:"夢幻街"
 #define SONG_18 18
-#define BGM_FIELD 19  // n番外
-#define SONG_20 20
-#define SONG_21 21
-#define SONG_22 22
-#define SONG_23 23
-#define SONG_24 24
-#define SONG_25 25
-#define SONG_26 26
-#define SONG_27 27
-#define SONG_28 28
-#define SONG_29 29
-#define SONG_30 30
-#define SONG_31 31
-#define SONG_32 32
-#define SONG_33 33
-#define BGM_AQUADUCT 34  // 地下水路のBGM
-#define SONG_35 35
-#define SONG_36 36
-#define SONG_37 37
+#define BGM_FIELD 19               // n番外
+#define BGM_DAISEIDOU_REIEN 20     // BGM:"大聖堂・霊園"
+#define BGM_DAISEIDOU_B 21         // BGM:"大聖堂・地下"
+#define BGM_DAISEIDOU_1F 22        // BGM:"大聖堂・1階"
+#define BGM_DAISEIDOU_2F 23        // BGM:"大聖堂・2階"
+#define BGM_DUNEYRR 24             // BGM:"ドゥネイル", ドゥネイル戦
+#define BGM_ISEKI_SABAKU 25        // BGM:"遺跡・砂漠"
+#define BGM_ISEKI_SIRO_NO_OKA 26   // BGM:"遺跡・白の丘"
+#define BGM_ISEKI_KURO_NO_TANI 27  // BGM:"遺跡・黒の谷"
+#define BGM_BATTLE_RINGO 28        // BGM:"ヴァンパイア", リンゴ戦
+#define BGM_ANKOKUGAI1 29          // BGM:"暗黒街・路地"
+#define BGM_ANKOKUGAI2 30          // BGM:"暗黒街・暗黒樹"
+#define BGM_ANKOKUGAI3 31          // BGM:"暗黒街・裏道"
+#define BGM_SHAIAN 32              // BGM:"シャイアン", シャイアン戦
+#define BGM_DURATHROR 33           // BGM:"ドゥラスロール", ドゥラスロール戦
+#define BGM_AQUADUCT 34            // BGM:"地下水路"
+#define BGM_KYOUFU 35              // BGM:"狂風"
+#define BGM_DVALINN 36             // BGM:"ドヴァリン", ドヴァリン戦
+#define BGM_DARK_TOWER 37          // BGM:"暗黒の塔", 螺旋の塔のサバタ側
 #define SONG_38 38
-#define SONG_39 39
+#define BGM_SOLAR_TOWER 39  // BGM:"太陽の塔", 螺旋の塔のジャンゴ側
 #define SONG_40 40
-#define SONG_41 41
-#define SONG_42 42
-#define BGM_HEN1 43  // 変異域B1
-#define BGM_HEN2 44  // 変異域B2
-#define BGM_HEN3 45  // 変異域B3
-#define BGM_HEN4 46  // 変異域B4
-#define SONG_47 47
-#define SONG_48 48
+#define BGM_DAINN1 41       // BGM:"ダーイン・その1", ダーイン戦
+#define BGM_DAINN2 42       // BGM:"ダーイン・その2"
+#define BGM_HEN1 43         // BGM:"変異域・第1階層"
+#define BGM_HEN2 44         // BGM:"変異域・第2階層"
+#define BGM_HEN3 45         // BGM:"変異域・第3階層"
+#define BGM_HEN4 46         // BGM:"変異域・第4階層"
+#define BGM_HEN5 47         // BGM:"変異域・第５階層"
+#define BGM_JORMUNGANDR 48  // BGM:"ヨルムンガンド"
 #define SONG_49 49
 #define SONG_50 50
 #define SONG_51 51
@@ -61,37 +61,37 @@
 #define SONG_57 57
 #define SONG_58 58
 #define SONG_59 59
-#define SONG_60 60
-#define SONG_61 61
+#define BGM_RED_RINGO 60  // BGM:"紅のリンゴ"
+#define BGM_RINNE 61      // BGM:"生と死の輪廻"
 #define SONG_62 62
 #define SONG_63 63
-#define SONG_64 64
-#define SONG_65 65
+#define BGM_BLACK_DAINN 64  // BGM:"黒きダーイン"
+#define BGM_WEDGE 65        // BGM:"くさび"
 #define SONG_66 66
 #define SONG_67 67
-#define SONG_68 68
-#define SONG_69 69
-#define SONG_70 70
-#define SONG_71 71
-#define SONG_72 72
+#define BGM_WHAT 68                // BGM:"ん？", クロを見つけたときのBGM
+#define BGM_SANSHIMAI 69           // BGM:"三姉妹"
+#define BGM_SMITH 70               // BGM:"鋼鉄のスミス"
+#define BGM_DARKBOY_SABATA 71      // BGM:"暗黒少年サバタ"
+#define BGM_GEKKA_BIJIN_SABATA 72  // BGM:"月下美人サバタ"
 #define SONG_73 73
-#define SONG_74 74
+#define BGM_RITA 74  // BGM:"大地の巫女リタ"
 #define SONG_75 75
-#define SONG_76 76
-#define SONG_77 77
+#define BGM_RAIMEI 76          // BGM:"雷鳴"
+#define BGM_KAZE_NO_SENSHI 77  // BGM:"風の戦士", シャイアン戦の前のBGM
 #define SONG_78 78
 #define SONG_79 79
-#define SONG_80 80
-#define SONG_81 81
-#define SONG_82 82
-#define SONG_83 83
-#define SONG_84 84
+#define BGM_GEKKA_BIJIN 80  // BGM:"月下美人"
+#define BGM_JOKA 81         // BGM:"浄化"
+#define BGM_RAINBOW 82      // BGM:"虹"
+#define BGM_DARK 83         // BGM:"闇"
+#define BGM_KOMOREBI 84     // BGM:"木漏れ日"
 #define SONG_85 85
 #define SONG_86 86
 #define SONG_87 87
-#define SONG_88 88
+#define BGM_ZOKTAI 88  // BGM:"続・ボクらの太陽"
 #define SONG_89 89
-#define SONG_90 90
+#define BGM_YUUHI 90  // BGM:"夕陽"
 #define SONG_91 91
 #define SONG_92 92
 #define SONG_93 93
@@ -151,38 +151,38 @@
 #define SONG_147 147
 #define SONG_148 148
 #define SONG_149 149
-#define SONG_150 150
-#define SONG_151 151
+#define BGM_AKATSUKI 150  // BGM:"あかつき"
+#define BGM_TASOGARE 151  // BGM:"たそがれ"
 #define SONG_152 152
-#define SONG_153 153
+#define BGM_BLACK_DJANGO 153  // BGM:"暗黒！", 黒ジャンゴに初めてなったときのBGM
 #define SONG_154 154
-#define SONG_155 155
+#define BGM_TAIYO 155  // BGM:"太陽！"
 #define SONG_156 156
-#define SONG_157 157
-#define BGM_SUNMIGUERE 158
-#define SONG_159 159
+#define BGM_SUNMIGUERE2 157  // BGM:"太陽街・その2"
+#define BGM_NAKAMA2 158      // BGM:"街の仲間・その2"
+#define BGM_SOLAR_TREE 159   // BGM:"太陽樹"
 #define SONG_160 160
-#define SONG_161 161
-#define SONG_162 162
+#define BGM_DARKLOAN 161  // BGM:"暗黒ローン"
+#define BGM_OSHIOKI 162   // BGM:"おしおき"
 #define SONG_163 163
 #define SONG_164 164
 #define SONG_165 165
-#define SONG_166 166
+#define BGM_TAIYO_NO_KISETSU 166  // BGM:"太陽の季節"
 #define SONG_167 167
-#define SONG_168 168
-#define SONG_169 169
-#define SONG_170 170
+#define BGM_LINK_SELECT 168  // BGM:"選択"
+#define BGM_END 169          // BGM:"終了", 太陽鍛治の終了時や通信対戦のリザルト時に流れる
+#define BGM_SOLAR_FORGE 170  // BGM:"太陽鍛治"
 #define SONG_171 171
 #define SONG_172 172
-#define SONG_173 173
+#define BGM_SHADEMAN 173  // BGM:"シェードマン"
 #define SONG_174 174
 #define SONG_175 175
-#define SONG_176 176
-#define SONG_177 177
-#define SONG_178 178
+#define BGM_WIN 176   // BGM:"勝ち！"
+#define BGM_LOSE 177  // BGM:"負け！"
+#define BGM_BBB 178   // BGM:"道具屋キッド"
 #define SONG_179 179
-#define SONG_180 180
-#define SONG_181 181
+#define BGM_ANUN 180     // BGM:"暗雲"
+#define BGM_NAKAMA1 181  // BGM:"街の仲間・その1"
 #define SONG_182 182
 #define SONG_183 183
 #define SONG_184 184
@@ -908,12 +908,12 @@
 #define SE_LEVEL_UP 904
 #define SONG_905 905
 #define SE_SWAP_SLOT 906  // インベントリのスロットをスワップする時の音
-#define SONG_907 907
-#define SONG_908 908
-#define SE_SPEAR_ATK_B 909  // 黒ジャンゴでの槍攻撃SE
-#define SONG_910 910
-#define SE_SPEAR_ATK_R 911  // 赤ジャンゴでの槍攻撃SE
-#define SONG_912 912
+#define SE_SWORD_ATK_B 907
+#define SE_SWORD_ATK_R 908
+#define SE_SPEAR_ATK_B 909   // 黒ジャンゴでの槍攻撃SE
+#define SE_HAMMER_ATK_B 910  // 黒ジャンゴでの槌攻撃SE
+#define SE_SPEAR_ATK_R 911   // 赤ジャンゴでの槍攻撃SE
+#define SE_HAMMER_ATK_R 912  // 赤ジャンゴでの槌攻撃SE
 #define SONG_913 913
 #define SE_MAGIC_DASH 914  // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
 #define SE_ENCHANT 915
