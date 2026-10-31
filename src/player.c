@@ -4719,7 +4719,7 @@ bool32 FUN_08068d18(Player* p, Vec3* pos) {
   if (attr & TATTR_UNK_0) {
     return FALSE;
   }
-  if (!FUN_08086958() && (Player_IsInLava(attr) || (attr & TATTR_UNK_6))) {
+  if (!FUN_08086958() && (Player_IsInLava(attr) || (attr & TATTR_FALLDEATH))) {
     return FALSE;
   }
   if (abs(TileHeightAt(pos) - p->mover.pos.y) > 255) {
@@ -5487,71 +5487,8 @@ void Player_UpdateBlownAwayDeath(Player* p) {
   }
 }
 
-// 落下して死ぬ (PACT_UNK_28), 沈みながら点滅して消え, 1秒後にゲームオーバーへ移る
+// 落下して死ぬ (PACT_FALLDEATH), 沈みながら点滅して消え, 1秒後にゲームオーバーへ移る
 void Player_UpdateFallDeath(Player* p) {
-  Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
-  switch (p->state) {
-    case 0: {
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
-      PlaySound_082406e0(SONG_429);
-      p->beast.priority = 1;
-      Player_SetAction(p, PACT_UNK_28, 1);
-      p->floatHeight = 0;
-      p->mover.tile = NULL;
-      break;
-    }
-    case 1: {
-      if (++p->stateTimer > 14) {
-        FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
-        p->floatHeight = 0;
-        Player_SetAction(p, PACT_UNK_28, 2);
-      }
-      break;
-    }
-    case 2: {
-      if (p->stateTimer == 9) {
-        if (p->kind == PLAYER_SABATA) {
-          PlaySound_082406e0(SONG_748);
-        } else {
-          PlaySound_082406e0(VO_SOLAR_DJANGO_SCREAM);
-        }
-      }
-      if (++p->stateTimer > 14) {
-        Player_SetAction(p, PACT_UNK_28, 3);
-        p->floatHeight = 0;
-        PlaySound_082406e0(SONG_431);
-      }
-      break;
-    }
-    case 3: {
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
-      p->floatHeight -= 30;
-      if (++p->stateTimer > 39) {
-        p->hp = 0;
-        Player_SetAction(p, PACT_UNK_28, 4);
-      } else {
-        Sprite_UpdateVanishBlink(&p->beast.flags, p->stateTimer, 10, 20);
-      }
-      break;
-    }
-    case 4: {
-      p->floatHeight = 0;
-      Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
-      if (++p->stateTimer > 59) {
-        Player_SetAction(p, PACT_UNK_28, 5);
-        gGameFlags |= FLAG030047A4_GAMEOVER;
-      }
-      break;
-    }
-    case 5: {
-      Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
-      break;
-    }
-  }
-}
-
-// PACT_FALLDEATH の行動, 足元の TATTR_UNK_6 に落ちて沈み (MPF_UNK_13 のマップ), HP を 0 にして画面を暗転させゲームオーバーにする
-void FUN_0806adc8(Player* p) {
   Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
   switch (p->state) {
     case 0: {
@@ -5565,9 +5502,72 @@ void FUN_0806adc8(Player* p) {
     }
     case 1: {
       if (++p->stateTimer > 14) {
+        FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
+        p->floatHeight = 0;
+        Player_SetAction(p, PACT_FALLDEATH, 2);
+      }
+      break;
+    }
+    case 2: {
+      if (p->stateTimer == 9) {
+        if (p->kind == PLAYER_SABATA) {
+          PlaySound_082406e0(SONG_748);
+        } else {
+          PlaySound_082406e0(VO_SOLAR_DJANGO_SCREAM);
+        }
+      }
+      if (++p->stateTimer > 14) {
+        Player_SetAction(p, PACT_FALLDEATH, 3);
+        p->floatHeight = 0;
+        PlaySound_082406e0(SONG_431);
+      }
+      break;
+    }
+    case 3: {
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
+      p->floatHeight -= 30;
+      if (++p->stateTimer > 39) {
+        p->hp = 0;
+        Player_SetAction(p, PACT_FALLDEATH, 4);
+      } else {
+        Sprite_UpdateVanishBlink(&p->beast.flags, p->stateTimer, 10, 20);
+      }
+      break;
+    }
+    case 4: {
+      p->floatHeight = 0;
+      Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
+      if (++p->stateTimer > 59) {
+        Player_SetAction(p, PACT_FALLDEATH, 5);
+        gGameFlags |= FLAG030047A4_GAMEOVER;
+      }
+      break;
+    }
+    case 5: {
+      Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
+      break;
+    }
+  }
+}
+
+// PACT_DROWNING の行動, Player_UpdateFallDeath 水辺ばーじょん
+void FUN_0806adc8(Player* p) {
+  Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
+  switch (p->state) {
+    case 0: {
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
+      PlaySound_082406e0(SONG_429);
+      p->beast.priority = 1;
+      Player_SetAction(p, PACT_DROWNING, 1);
+      p->floatHeight = 0;
+      p->mover.tile = NULL;
+      break;
+    }
+    case 1: {
+      if (++p->stateTimer > 14) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
         PlaySound_082406e0(SONG_430);
-        Player_SetAction(p, PACT_FALLDEATH, 2);
+        Player_SetAction(p, PACT_DROWNING, 2);
       }
       break;
     }
@@ -5577,7 +5577,7 @@ void FUN_0806adc8(Player* p) {
         FUN_08016110(1, 0, 0, 30, &p->mover.pos);
         PlaySound_082406e0(SONG_325);
         p->hp = 0;
-        Player_SetAction(p, PACT_FALLDEATH, 3);
+        Player_SetAction(p, PACT_DROWNING, 3);
       }
       break;
     }
@@ -5585,14 +5585,14 @@ void FUN_0806adc8(Player* p) {
       Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
       if (++p->stateTimer > 29) {
         FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
-        Player_SetAction(p, PACT_FALLDEATH, 4);
+        Player_SetAction(p, PACT_DROWNING, 4);
       }
       break;
     }
     case 4: {
       Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
       if (++p->stateTimer > 29) {
-        Player_SetAction(p, PACT_FALLDEATH, 5);
+        Player_SetAction(p, PACT_DROWNING, 5);
         gGameFlags |= FLAG030047A4_GAMEOVER;
       }
       break;
@@ -9062,8 +9062,8 @@ static const PlayerFunc sDjangoActionFuncs[33] = {
     [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
     [PACT_UNK_26] = Player_UpdateDeath,
     [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
-    [PACT_UNK_28] = Player_UpdateFallDeath,
-    [PACT_FALLDEATH] = FUN_0806adc8,
+    [PACT_FALLDEATH] = Player_UpdateFallDeath,
+    [PACT_DROWNING] = FUN_0806adc8,
     [PACT_UNK_30] = FUN_0806af70,
     [PACT_UNK_31] = FUN_0806f1ec,
     [PACT_UNK_32] = FUN_0806b06c,
@@ -9186,7 +9186,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
 
       p->flag20 |= PFLAG20_UNK_18;
       Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
-      if (p->action >= PACT_UNK_28 && p->action <= PACT_UNK_31) {
+      if (p->action >= PACT_FALLDEATH && p->action <= PACT_UNK_31) {
         n = p->action;
       } else {
         n = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
@@ -9222,8 +9222,8 @@ static const PlayerFunc sSabataActionFuncs[32] = {
     [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
     [PACT_UNK_26] = Player_UpdateDeath,
     [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
-    [PACT_UNK_28] = Player_UpdateFallDeath,
-    [PACT_FALLDEATH] = FUN_0806adc8,
+    [PACT_FALLDEATH] = Player_UpdateFallDeath,
+    [PACT_DROWNING] = FUN_0806adc8,
     [PACT_UNK_30] = FUN_0806af70,
     [PACT_UNK_31] = FUN_0806b758,
 };  // 0x085ABD30
@@ -9261,7 +9261,7 @@ s32 Player_GetBatAction(Player* p) {
 // pos のタイルが滑る床か, 氷タイルか氷結した溶岩タイルなら真
 bool32 Player_IsIcyTileAt(Vec3* pos) {
   TileAttr attr = GetTileAttrAt(pos);
-  if (attr & TATTR_UNK_6) {
+  if (attr & TATTR_FALLDEATH) {
     return TRUE;
   }
   if (Player_IsInLava(attr)) {
@@ -9750,7 +9750,7 @@ void FUN_08079f1c(Player* p) {
     }
     case PMODE_DEAD: {
       Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
-      if (p->action >= PACT_UNK_28 && p->action <= PACT_UNK_30) {
+      if (p->action >= PACT_FALLDEATH && p->action <= PACT_UNK_30) {
         action = p->action;
       } else {
         action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
@@ -9855,7 +9855,7 @@ bool32 FUN_0807a570(Player* p, s32 param_2) {
 
   if (gGameFlags & FLAG030047A4_LINK) {
     FUN_080d040c(p);
-    Player_SetAction(p, PACT_UNK_28, 0);
+    Player_SetAction(p, PACT_FALLDEATH, 0);
     return FALSE;
   }
   if (p->action == PACT_PULL_COFFIN) {
@@ -12339,11 +12339,11 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
 #ifdef NONMATCHING_C
   CollisionMapTile* tile = Player_GetTileAt(&p->mover.pos);
 
-  if ((tile->attr & TATTR_UNK_6) && p->unk_390 == 0) {
+  if ((tile->attr & TATTR_FALLDEATH) && p->unk_390 == 0) {
     if (gStat->mapFlags & MPF_UNK_13) {
-      Player_SetAction(p, PACT_FALLDEATH, 0);
+      Player_SetAction(p, PACT_DROWNING, 0);
     } else {
-      Player_SetAction(p, PACT_UNK_28, 0);
+      Player_SetAction(p, PACT_FALLDEATH, 0);
     }
     return TRUE;
   }

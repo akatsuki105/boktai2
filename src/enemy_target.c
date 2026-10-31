@@ -344,7 +344,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
 
                   if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
                     if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
-                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
                       adjacent = TRUE;
                     }
                   }
@@ -465,7 +465,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
 
                 if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
                   if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
-                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
                     adjacent = TRUE;
                   }
                 }

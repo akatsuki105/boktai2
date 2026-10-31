@@ -28,22 +28,22 @@ static_assert(sizeof(CollisionMapFile) == 20);
 // 例:
 //   変異域炎の溶岩: 0x0482 (TATTR_WALL, TATTR_SPECIAL, TATTR_WALLISH)
 //   変異域氷のすべる床: 0x0080 (TATTR_SPECIAL)
-//   地下水路で水に落ちた: 0x0041 (TATTR_UNK_0, TATTR_UNK_6)
+//   地下水路で水に落ちた: 0x0041 (TATTR_UNK_0, TATTR_FALLDEATH)
 //   暗黒街のワープ前の壁渡り: 0x082A (TATTR_WALL, TATTR_UNK_3, TATTR_UNK_5, TATTR_UNK_11)
 //   宿屋, 暗黒街のワープ先, 暗黒街のダクト: 0x040A (TATTR_WALL, TATTR_UNK_3, TATTR_WALLISH)
-typedef u16 TileAttr;            // CollisionMapTile.attr
-#define TATTR_UNK_0 (1 << 0)     // 0x0001, 未検証
-#define TATTR_WALL (1 << 1)      // 0x0002, 壁(常に侵入不可)
-#define TATTR_UNK_2 (1 << 2)     // 0x0004, 未検証, 移動床に乗っている時 (変異域の上下昇降床, 地下水路の移動床)
-#define TATTR_UNK_3 (1 << 3)     // 0x0008, 未検証
-#define TATTR_UNK_4 (1 << 4)     // 0x0010, 未検証
-#define TATTR_UNK_5 (1 << 5)     // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
-#define TATTR_UNK_6 (1 << 6)     // 0x0040, 未検証, 地下水路で水に落ちた瞬間にセットされた
-#define TATTR_SPECIAL (1 << 7)   // 0x0080, MPF_COLD: ツルツルすべる氷の床, MPF_HOT: 溶岩, MPF_UNK_13: ??? (おそらく前作のギミックの名残？)
-#define TATTR_UNK_8 (1 << 8)     // 0x0100, ???
-#define TATTR_WALLISH (1 << 10)  // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
-#define TATTR_UNK_11 (1 << 11)   // 0x0800
-#define TATTR_UNK_12 (1 << 12)   // 0x1000
+typedef u16 TileAttr;             // CollisionMapTile.attr
+#define TATTR_UNK_0 (1 << 0)      // 0x0001, 未検証
+#define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可)
+#define TATTR_UNK_2 (1 << 2)      // 0x0004, 未検証, 移動床に乗っている時 (変異域の上下昇降床, 地下水路の移動床)
+#define TATTR_UNK_3 (1 << 3)      // 0x0008, 未検証
+#define TATTR_UNK_4 (1 << 4)      // 0x0010, 未検証
+#define TATTR_UNK_5 (1 << 5)      // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
+#define TATTR_FALLDEATH (1 << 6)  // 0x0040, 未検証, 地下水路で水に落ちたり、落下死する場所にいくとセットされた
+#define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: ツルツルすべる氷の床, MPF_HOT: 溶岩, MPF_UNK_13: ??? (おそらく前作のギミックの名残？)
+#define TATTR_UNK_8 (1 << 8)      // 0x0100, ???
+#define TATTR_WALLISH (1 << 10)   // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
+#define TATTR_UNK_11 (1 << 11)    // 0x0800
+#define TATTR_UNK_12 (1 << 12)    // 0x1000
 
 // コリジョンマップの1タイル
 // 根拠: heightStairs を 上位/下位4bit に割って使うのは Map_GetTileHeightAt と EntityE06A_Create など6ファイル, attr の位置は FUN_08235f40

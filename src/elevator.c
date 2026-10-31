@@ -10,10 +10,13 @@
 #include "sprite.h"
 #include "vm.h"
 
+// 水平方向 (H) か垂直方向 (V) のどちらか一方に動く床
+// 水平方向 は 移動床, 垂直方向 は 昇降床　と呼ぶようにすること
+
 typedef u16 ElevatorFlags;                  // Elevator.flags
 #define ELEVATOR_TILEOVERRIDE (1 << 0)      // tileOverride を登録済み
-#define ELEVATOR_MOVE_UP (1 << 1)           // 上に動く, Elevator_Start が '.m=2' のとき立て '.m=1' のとき落とす
-#define ELEVATOR_STOPPED (1 << 2)           // 止まっている, Elevator_Start が '.m=4' のとき立てる
+#define ELEVATOR_V_UPPER (1 << 1)           // 昇降床が上側にあるか
+#define ELEVATOR_V_HALT (1 << 2)            // 昇降床が止まっているか(= 稼働していないか)
 #define PLAYER_RIDING (1 << 3)              // プレイヤーが乗っている, ElevatorManager.ridingID と対
 #define COFFIN_RIDING (1 << 4)              // 棺桶が乗っている, Elevator_ClearRidingFlag が第2引数で落とし分ける
 #define ELEVATOR_SHAKE (1 << 5)             // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
@@ -23,20 +26,26 @@ typedef u16 ElevatorFlags;                  // Elevator.flags
 #define ELEVATOR_TILEOVERRIDES (1 << 11)    // tileOverrides[] を登録済み
 #define ELEVATOR_FLAG_12 (1 << 12)          // まだ不明
 
+// Elevator.kind, '.k'
+typedef enum {
+  ELEVATOR_H_0 = 0,          // 移動床, 足場の外の特殊床に出たプレイヤーを弾き返す
+  ELEVATOR_H_FALLDEATH = 1,  // 移動床, 足場の外に出ると落下死
+  ELEVATOR_V = 2,            // 昇降床
+  ELEVATOR_H_3 = 3,          // 移動床, ELEVATOR_H_0 とパレットだけ違う
+} ElevatorKind;
+
 // Elevator.state, sElevatorUpdates の添字
 #define ELEVATOR_STATE_UNK_0 0      // 何もしない
-#define ELEVATOR_STATE_MOVE 1       // 移動床が経路に沿って進む, ノードに着くと ELEVATOR_STATE_STOP
-#define ELEVATOR_STATE_LIFT 2       // 昇降床が上下に動く, 端に着くと ELEVATOR_STATE_LIFT_STOP
-#define ELEVATOR_STATE_STOP 3       // 移動床がノードで止まっている, 待ち時間が過ぎると ELEVATOR_STATE_MOVE
-#define ELEVATOR_STATE_LIFT_STOP 4  // 昇降床が端で止まっている, プレイヤーが waitTime 乗っていると ELEVATOR_STATE_LIFT
+#define ELEVATOR_STATE_H_MOVE 1     // 移動床が経路に沿って進む, ノードに着くと ELEVATOR_STATE_H_STOP
+#define ELEVATOR_STATE_V_MOVE 2     // 昇降床が上下に動く, 端に着くと ELEVATOR_STATE_V_STOP
+#define ELEVATOR_STATE_H_STOP 3     // 移動床がノードで止まっている, 待ち時間が過ぎると ELEVATOR_STATE_H_MOVE
+#define ELEVATOR_STATE_V_STOP 4     // 昇降床が端で止まっている, プレイヤーが waitTime 乗っていると ELEVATOR_STATE_V_MOVE
 #define ELEVATOR_STATE_UNK_5 5      // 何もしない
 #define ELEVATOR_STATE_DESTROYED 6  // Elevator_Destroy が入れる, ElevatorManager_Update は飛ばす
 
 struct Elevator;
 typedef void ElevatorFunc(struct Elevator* e);
 
-// このゲームには、水平方向と垂直方向に動く床が存在するが、これがどっちも担うのかはまだ不明
-// 水平方向 は 移動床, 垂直方向 は 昇降床　と呼ぶようにすること
 typedef struct Elevator {
   AuxSprite sprite;                  // 0x000
   AuxSpriteGfx gfx;                  // 0x02C, e.g. SPRITE_LIFT_IRON
@@ -68,7 +77,7 @@ typedef struct Elevator {
   u8 pathIdx;                        // 0x0E4, '.r[0]', 経路番号
   u8 unk_e5;                         // 0x0E5
   u8 nodeIdx;                        // 0x0E6, '.r[1]', 最初にいるノード番号
-  u8 kind;                           // 0x0E7, '.k', 0/1/3 は移動床, 2 は昇降床, 走行音とアニメもこれで決まる
+  u8 kind;                           // 0x0E7, '.k', ELEVATOR_KIND_*, 走行音とアニメもこれで決まる
   PathWalker pathWalker;             // 0x0E8, mover.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
   Mover mover;                       // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
   MapTileOverride tileOverride;      // 0x138, flags bit0 が立っているときだけ有効
@@ -93,7 +102,7 @@ IWRAM_DATA ElevatorManager* gElevatorManager = NULL;  // 0x03000194
 
 // エレベータが乗り手との距離を測るときの許容範囲 (±)
 const Vec3 gElevatorRange0 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D0
-const Vec3 gElevatorRange1 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D8, Elevator_ClampPlayerPos が kind == 1 のときに使う
+const Vec3 gElevatorRange1 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D8, Elevator_ClampPlayerPos が kind == ELEVATOR_H_FALLDEATH のときに使う
 const Vec3 gElevatorRange2 = {Q8(0.383), Q8(0.125), Q8(0.383)};  // 0x085AE0E0, 棺桶用
 
 bool32 FUN_08086978(u32 mask);
@@ -138,7 +147,7 @@ static inline bool8 IsFloorTileAt(s32 idx, s32 height) {
   ov = Map_FindTileOverride(idx, 1);
   tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
   attr = tile->attr;
-  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6 | TATTR_SPECIAL)) return FALSE;
+  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) return FALSE;
   return TRUE;
 }
 
@@ -269,7 +278,7 @@ void Elevator_EmitMoveEffect(Elevator* e) {
   }
 
   switch (e->kind) {
-    case 0: {
+    case ELEVATOR_H_0: {
       if (e->unk_ca == 0) {
         pos.x = e->mover.pos.x + off[0].x;
         pos.y = e->mover.pos.y + off[0].y;
@@ -285,7 +294,7 @@ void Elevator_EmitMoveEffect(Elevator* e) {
       }
       break;
     }
-    case 3: {
+    case ELEVATOR_H_3: {
       if (e->unk_ca == 0) {
         pos.x = e->mover.pos.x + off[0].x;
         pos.y = e->mover.pos.y + off[0].y;
@@ -360,7 +369,7 @@ void FUN_081d276c(Elevator* e) {
     Player* player = gPlayerPtr[i];
 
     if (player != NULL && e->id == p->ridingID) {
-      player->mover.tile = (e->state == ELEVATOR_STATE_STOP || e->state == ELEVATOR_STATE_LIFT_STOP) ? &player->tile : NULL;
+      player->mover.tile = (e->state == ELEVATOR_STATE_H_STOP || e->state == ELEVATOR_STATE_V_STOP) ? &player->tile : NULL;
     }
   }
 }
@@ -394,9 +403,9 @@ void Elevator_UpdateState2(Elevator* e) {
     e->arrived = FALSE;
   }
 
-  if (Elevator_TestFlags(e, ELEVATOR_STOPPED)) return;
+  if (Elevator_TestFlags(e, ELEVATOR_V_HALT)) return;
 
-  up = Elevator_TestFlags(e, ELEVATOR_MOVE_UP);
+  up = Elevator_TestFlags(e, ELEVATOR_V_UPPER);
   if (up) {
     e->mover.pos.y += e->speed;
     e->moveDelta.y = e->speed;
@@ -409,7 +418,7 @@ void Elevator_UpdateState2(Elevator* e) {
         SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
         e->moveDelta.y = 0;
       }
-      e->state = ELEVATOR_STATE_LIFT_STOP;
+      e->state = ELEVATOR_STATE_V_STOP;
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
         sound_08240740(SONG_344);
@@ -432,7 +441,7 @@ void Elevator_UpdateState2(Elevator* e) {
         SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
         e->moveDelta.y = 0;
       }
-      e->state = ELEVATOR_STATE_LIFT_STOP;
+      e->state = ELEVATOR_STATE_V_STOP;
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
         sound_08240740(SONG_344);
@@ -449,7 +458,7 @@ void Elevator_UpdateState2(Elevator* e) {
 // 目的地に着いていたら状態3へ進め, まだなら移動を続ける
 void Elevator_UpdateState1(Elevator* e) {
   if (FUN_081d2698(&e->mover, &e->pathWalker, &e->moveDelta, e->speed, e->speed, e->speed)) {
-    e->state = ELEVATOR_STATE_STOP;
+    e->state = ELEVATOR_STATE_H_STOP;
     e->arrived = TRUE;
     Elevator_PlayArrivalSound(e);
   } else {
@@ -468,7 +477,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
 
   for (i = 0; i < 12; i++) {
     if (Elevator_IsSlotUsed(p, i) && p->elevators[i].state != ELEVATOR_STATE_DESTROYED && (p->elevators[i].unk_d6 & 0x10)) {
-      if (p->elevators[i].state != ELEVATOR_STATE_MOVE) {
+      if (p->elevators[i].state != ELEVATOR_STATE_H_MOVE) {
         if (p->soundPlaying == TRUE) {
           sound_08240740(SONG_648);
           sound_08240740(SONG_650);
@@ -479,11 +488,11 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
         s32 id;
 
         switch (p->elevators[i].kind) {
-          case 0: {
+          case ELEVATOR_H_0: {
             id = SONG_650;
             break;
           }
-          case 3: {
+          case ELEVATOR_H_3: {
             id = SONG_648;
             break;
           }
@@ -506,7 +515,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
   if (e->unk_d6 & 4) return;
 
   if (riding) {
-    if (e->state != ELEVATOR_STATE_MOVE) {
+    if (e->state != ELEVATOR_STATE_H_MOVE) {
       if (p->soundPlaying == TRUE) {
         sound_08240740(SONG_648);
         sound_08240740(SONG_650);
@@ -517,11 +526,11 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
       s32 id;
 
       switch (e->kind) {
-        case 0: {
+        case ELEVATOR_H_0: {
           id = SONG_650;
           break;
         }
-        case 3: {
+        case ELEVATOR_H_3: {
           id = SONG_648;
           break;
         }
@@ -577,8 +586,8 @@ void Elevator_UpdateState4(Elevator* e) {
       u32 argv[3];
       ScriptArgs sa;
 
-      if (e->kind == 2) {
-        if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
+      if (e->kind == ELEVATOR_V) {
+        if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
           argv[0] = 2;
         } else {
           argv[0] = 1;
@@ -602,11 +611,11 @@ void Elevator_UpdateState4(Elevator* e) {
 
     if (e->unk_d6 & 1) {
       if (e->timer >= e->waitTime && Elevator_IsPlayerInRange(e)) {
-        e->state = ELEVATOR_STATE_LIFT;
-        if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
-          CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        e->state = ELEVATOR_STATE_V_MOVE;
+        if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
+          CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
         } else {
-          SET_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+          SET_FLAGS(e->flags, ELEVATOR_V_UPPER);
         }
         e->timer = 0;
         e->arrived = TRUE;
@@ -687,8 +696,8 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
       u32 argv[3];
       ScriptArgs sa;
 
-      if (e->kind == 2) {
-        if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
+      if (e->kind == ELEVATOR_V) {
+        if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
           argv[0] = 2;
         } else {
           argv[0] = 1;
@@ -714,7 +723,7 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
       if (Map_IsPosOutsidePathNode(walker, &e->mover.pos, 16, 16)) {
         ElevatorManager* p;
 
-        e->state = ELEVATOR_STATE_MOVE;
+        e->state = ELEVATOR_STATE_H_MOVE;
         p = gElevatorManager;
         if (e->id == p->ridingID && e->departScriptID != 0) {
           u32 arg = e->id;
@@ -725,7 +734,7 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
           VM_ExecByID(e->departScriptID, &sa);
         }
       } else {
-        e->state = ELEVATOR_STATE_STOP;
+        e->state = ELEVATOR_STATE_H_STOP;
       }
     }
   }
@@ -789,7 +798,7 @@ NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
 #ifdef NONMATCHING_C
   ElevatorManager* p = gElevatorManager;
 
-  if (p == NULL || e->id != p->ridingID || e->kind == 2 || gPlayerPtr[0]->action != PACT_PULL_COFFIN || e->state != ELEVATOR_STATE_STOP) {
+  if (p == NULL || e->id != p->ridingID || e->kind == ELEVATOR_V || gPlayerPtr[0]->action != PACT_PULL_COFFIN || e->state != ELEVATOR_STATE_H_STOP) {
     Elevator_RemoveTileOverrides(e);
     return;
   }
@@ -802,7 +811,7 @@ NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
     for (i = 0; i < 4; i++) {
       MapTileOverride* ov = Map_FindTileOverride(idx, 1);
       CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-      bool8 hit = (tile->attr & (TATTR_SPECIAL | TATTR_UNK_6)) ? TRUE : FALSE;
+      bool8 hit = (tile->attr & (TATTR_SPECIAL | TATTR_FALLDEATH)) ? TRUE : FALSE;
 
       if (hit) {
         Vec3 center;
@@ -843,7 +852,7 @@ NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
 
 // 状態 3/4 の間はプレイヤーと同じ高さにいれば足元のタイルを移動床で上書きし, それ以外の状態では上書きを外す
 void Elevator_UpdateTileOverride(Elevator* e) {
-  if (e->state != ELEVATOR_STATE_STOP && e->state != ELEVATOR_STATE_LIFT_STOP) {
+  if (e->state != ELEVATOR_STATE_H_STOP && e->state != ELEVATOR_STATE_V_STOP) {
     if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
       Map_RemoveTileOverride(&e->tileOverride);
       CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
@@ -924,7 +933,7 @@ void Elevator_CheckPlayerFallInWater(Elevator* e) {
         tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
         attr = tile->attr;
 
-        if ((attr & TATTR_UNK_6) && !Elevator_IsTileOverridden(idx)) {
+        if ((attr & TATTR_FALLDEATH) && !Elevator_IsTileOverridden(idx)) {
           Vec3 d;
 
           Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
@@ -951,7 +960,7 @@ void Elevator_ClampPlayerToRange(Elevator* e) {
   s32 i;
 
   for (i = 0; i < 1; i++) {
-    if (gPlayerPtr[i] != NULL && e->state != ELEVATOR_STATE_LIFT_STOP && FUN_0807a954(gPlayerPtr[i], 1)) {
+    if (gPlayerPtr[i] != NULL && e->state != ELEVATOR_STATE_V_STOP && FUN_0807a954(gPlayerPtr[i], 1)) {
       Vec3 d;
 
       if (!Elevator_TestFlags(e, PLAYER_RIDING)) return;
@@ -1075,7 +1084,7 @@ void Elevator_ClampCoffinOffFloor(Elevator* e) {
       ov = Map_FindTileOverride(idx, 1);
       tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
       attr = tile->attr;
-      if (!(attr & TATTR_UNK_6)) return;
+      if (!(attr & TATTR_FALLDEATH)) return;
     }
   }
 
@@ -1120,7 +1129,7 @@ void Elevator_ClearRidingFlag(s32 id, s32 which) {
 }
 
 void FUN_081d4034(Elevator* e) {
-  if (e->state != ELEVATOR_STATE_STOP && e->state != ELEVATOR_STATE_LIFT_STOP) {
+  if (e->state != ELEVATOR_STATE_H_STOP && e->state != ELEVATOR_STATE_V_STOP) {
     FUN_0807a97c(gPlayerPtr[0], 5, e->id);
   } else {
     FUN_0807a97c(gPlayerPtr[0], 1, e->id);
@@ -1129,7 +1138,7 @@ void FUN_081d4034(Elevator* e) {
 }
 
 void FUN_081d407c(Elevator* e) {
-  if (e->state != ELEVATOR_STATE_STOP && e->state != ELEVATOR_STATE_LIFT_STOP) {
+  if (e->state != ELEVATOR_STATE_H_STOP && e->state != ELEVATOR_STATE_V_STOP) {
     FUN_080869c8(7, e->id);
   } else {
     FUN_080869c8(3, e->id);
@@ -1155,7 +1164,7 @@ void Elevator_UpdatePlayerRiding(Elevator* e) {
     SET_FLAGS(e->flags, PLAYER_RIDING);
     gPlayerPtr[0]->shadow.flags |= 1;
   } else if (p->ridingID == e->id) {
-    if (e->kind == 1 && !(e->unk_d6 & 8)) {
+    if (e->kind == ELEVATOR_H_FALLDEATH && !(e->unk_d6 & 8)) {
       if (delta.x <= gElevatorRange1.x && delta.x >= -gElevatorRange1.x && delta.y <= gElevatorRange1.y && delta.y >= -gElevatorRange1.y && delta.z <= gElevatorRange1.z && delta.z >= -gElevatorRange1.z) {
         FUN_081d4034(e);
         return;
@@ -1207,9 +1216,9 @@ void Elevator_ClampPlayerPos(Vec3* pos, Vec3* b, Elevator* e) {
   d.y = pos->y - e->mover.pos.y;
   d.z = pos->z - e->mover.pos.z;
 
-  if (e->kind == 2) return;
+  if (e->kind == ELEVATOR_V) return;
 
-  if (e->kind == 1 && !(e->unk_d6 & 8)) {
+  if (e->kind == ELEVATOR_H_FALLDEATH && !(e->unk_d6 & 8)) {
     range = gElevatorRange1;
   } else {
     range = gElevatorRange0;
@@ -1298,7 +1307,7 @@ void Elevator_CarryCoffin(Elevator* e) {
 
 // 昇降床のとき, 棺桶が許容範囲に収まっていたら乗せる
 void Elevator_TryBoardCoffin(ElevatorManager* p, Elevator* e) {
-  if (e->kind == 2) {
+  if (e->kind == ELEVATOR_V) {
     WorldPos pos;
     Vec3 delta;
 
@@ -1350,13 +1359,13 @@ NON_MATCH void Elevator_Create(void) {
     e->minY = VM_GetPC() != NULL ? VM_GetValue() : 0;
     e->maxY = VM_GetPC() != NULL ? VM_GetValue() : 0;
     y = VM_GetPC() != NULL ? VM_GetValue() : 0;
-    if (e->kind == 2) {
+    if (e->kind == ELEVATOR_V) {
       if (y == e->minY) {
         sprite->pos.y = y;
-        CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
       } else if (y == e->maxY) {
         sprite->pos.y = y;
-        SET_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        SET_FLAGS(e->flags, ELEVATOR_V_UPPER);
       }
     } else {
       sprite->pos.y = e->minY;
@@ -1372,11 +1381,11 @@ NON_MATCH void Elevator_Create(void) {
   Video_GetAuxSprite(&e->gfx, SPRITE_LIFT_IRON);
 
   switch (e->kind) {
-    case 0: {
+    case ELEVATOR_H_0: {
       s32 m;
 
       sprite->pos.y = e->minY;
-      e->state = ELEVATOR_STATE_MOVE;
+      e->state = ELEVATOR_STATE_H_MOVE;
       e->checkPlayerOut = Elevator_KnockbackPlayer;
       e->checkCoffinOut = Elevator_ClampCoffinOnSpecialTile;
       e->unk_e0 = Elevator_UpdateTileOverride;
@@ -1387,11 +1396,11 @@ NON_MATCH void Elevator_Create(void) {
       e->variant = 0;
       break;
     }
-    case 1: {
+    case ELEVATOR_H_FALLDEATH: {
       s32 m;
 
       sprite->pos.y = e->minY;
-      e->state = ELEVATOR_STATE_MOVE;
+      e->state = ELEVATOR_STATE_H_MOVE;
       e->checkPlayerOut = Elevator_CheckPlayerFallInWater;
       e->checkCoffinOut = Elevator_ClampCoffinOffFloor;
       e->unk_e0 = Elevator_UpdateTileOverride;
@@ -1415,8 +1424,8 @@ NON_MATCH void Elevator_Create(void) {
       if (e->variant > 2) e->variant = 0;
       break;
     }
-    case 2: {
-      e->state = ELEVATOR_STATE_LIFT_STOP;
+    case ELEVATOR_V: {
+      e->state = ELEVATOR_STATE_V_STOP;
       e->checkPlayerOut = Elevator_ClampPlayerToRange;
       e->checkCoffinOut = Elevator_ClampCoffinPos;
       e->unk_e0 = Elevator_UpdateTileOverride;
@@ -1444,11 +1453,11 @@ NON_MATCH void Elevator_Create(void) {
       if (VM_GetNamedArgValue('M', 0)) e->timer = e->waitTime;
       break;
     }
-    case 3: {
+    case ELEVATOR_H_3: {
       s32 m;
 
       sprite->pos.y = e->minY;
-      e->state = ELEVATOR_STATE_MOVE;
+      e->state = ELEVATOR_STATE_H_MOVE;
       e->checkPlayerOut = Elevator_KnockbackPlayer;
       e->checkCoffinOut = Elevator_ClampCoffinOnSpecialTile;
       e->unk_e0 = Elevator_UpdateTileOverride;
@@ -1480,14 +1489,14 @@ NON_MATCH void Elevator_Create(void) {
   riding = VM_GetNamedArgValue('f', 0);
   if (riding != 0) {
     switch (e->kind) {
-      case 0:
-      case 1:
-      case 3: {
-        e->state = ELEVATOR_STATE_MOVE;
+      case ELEVATOR_H_0:
+      case ELEVATOR_H_FALLDEATH:
+      case ELEVATOR_H_3: {
+        e->state = ELEVATOR_STATE_H_MOVE;
         break;
       }
-      case 2: {
-        e->state = ELEVATOR_STATE_LIFT_STOP;
+      case ELEVATOR_V: {
+        e->state = ELEVATOR_STATE_V_STOP;
         break;
       }
     }
@@ -1512,11 +1521,11 @@ NON_MATCH void Elevator_Create(void) {
   Elevator_TryBoardCoffin(p, e);
   e->speed = VM_GetNamedArgValue('s', 6);
   switch (e->kind) {
-    case 0:
-    case 1:
-    case 3: {
+    case ELEVATOR_H_0:
+    case ELEVATOR_H_FALLDEATH:
+    case ELEVATOR_H_3: {
       if (FUN_081d2660(&e->pathWalker, &e->mover.pos, e->speed, e->speed)) {
-        e->state = ELEVATOR_STATE_STOP;
+        e->state = ELEVATOR_STATE_H_STOP;
       }
       break;
     }
@@ -1686,16 +1695,16 @@ void Elevator_Start(void) {
     Elevator* e = Elevator_FindByID(id);
 
     if (e != NULL && (e->unk_d6 & 2)) {
-      e->state = ELEVATOR_STATE_LIFT;
+      e->state = ELEVATOR_STATE_V_MOVE;
       if (mode == 4) {
-        CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
         SET_FLAGS(e->flags, mode);
       } else {
-        CLEAR_FLAGS(e->flags, ELEVATOR_STOPPED);
+        CLEAR_FLAGS(e->flags, ELEVATOR_V_HALT);
         if (mode == 2) {
           SET_FLAGS(e->flags, mode);
         } else {
-          CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+          CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
         }
 
         FUN_081d21d8(e);

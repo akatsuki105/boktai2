@@ -1239,7 +1239,7 @@ s32 FUN_08087818(Coffin* p) {
   if (p->unk_3fc == 0) {
     p->unk_3fc++;
   } else if (p->state != 5 && p->unk_384 == 0) {
-    if (GetTileAttrAt(&p->mover.pos) & TATTR_UNK_6) {
+    if (GetTileAttrAt(&p->mover.pos) & TATTR_FALLDEATH) {
       return TRUE;
     }
     if (p->state != 1 && abs(TileHeightAt(&p->mover.pos) - p->mover.pos.y) > 255) {
@@ -1573,7 +1573,7 @@ void Coffin_UpdateState3(Coffin* p) {
         delta.x = POLAR_X(3, angle);
         delta.y = 0;
         delta.z = POLAR_Z(3, angle);
-        if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_UNK_6 | TATTR_UNK_11)) {
+        if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_FALLDEATH | TATTR_UNK_11)) {
           p->mover.pos.x += delta.x;
           p->mover.pos.z += delta.z;
           p->unk_33a = 1;
@@ -1631,7 +1631,7 @@ NON_MATCH void Coffin_UpdateState4(Coffin* p) {
     delta.x = POLAR_X(3, angle);
     delta.y = 0;
     delta.z = POLAR_Z(3, angle);
-    if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6 | TATTR_UNK_11)) {
+    if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_UNK_11)) {
       p->mover.pos.x += delta.x;
       p->mover.pos.z += delta.z;
       p->unk_33a = 1;

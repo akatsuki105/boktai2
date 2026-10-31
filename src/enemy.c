@@ -277,7 +277,7 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   if (Enemy_TestFlag4(p, ENEFLAG4_UNK_13) && p->unk_256 != p->prevTileIdx && !IsSmallEnemy(p) && p->kind != ENEK_SERPENT) {
     TileAttr attr = TileAtIndex(p->unk_256)->attr;
 
-    if ((attr & TATTR_UNK_6) && p->mover.pos.y + p->heightAboveFloor <= p->floorY) {
+    if ((attr & TATTR_FALLDEATH) && p->mover.pos.y + p->heightAboveFloor <= p->floorY) {
       if (!Enemy_IsDead(p)) {
         void* handler = p->unk_5d8;
 
@@ -323,7 +323,7 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_22)) {
     TileAttr attr = TileAtIndex(p->unk_256)->attr;
 
-    if ((attr & (TATTR_UNK_0 | TATTR_WALL)) != (TATTR_UNK_0 | TATTR_WALL) && !(attr & (TATTR_UNK_6 | TATTR_WALLISH))) {
+    if ((attr & (TATTR_UNK_0 | TATTR_WALL)) != (TATTR_UNK_0 | TATTR_WALL) && !(attr & (TATTR_FALLDEATH | TATTR_WALLISH))) {
       Map_StepNavPath(p->navAgent, &p->mover.pos);
     }
   }
@@ -770,7 +770,7 @@ NON_MATCH Mover* FUN_080e4444(Enemy* p) {
   height = (s8)(p->mover.pos.y >> 8);
   adjacent = FALSE;
   if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
-    if ((TileAtIndex(tile)->heightStairs & 0xF) == height && !(TileAtIndex(tile)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+    if ((TileAtIndex(tile)->heightStairs & 0xF) == height && !(TileAtIndex(tile)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
       adjacent = TRUE;
     }
   }
@@ -1919,7 +1919,7 @@ void FUN_080e6658(Enemy* p) {
     return;
   }
   attr = TileAtIndex(p->unk_256)->attr;
-  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6)) {
+  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) {
     return;
   }
   if (p->floorY - p->mover.pos.y > Q8(1)) {
@@ -2484,7 +2484,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
       case 0: {
         cur = start + 1;
         for (x = Mod(cur, gCollisionMap->tiledata->width); x < gCollisionMap->tiledata->width; x++) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
             idx = cur - 1;
             break;
           }
@@ -2494,7 +2494,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
       }
       case 1: {
         for (cur = start + gCollisionMap->tiledata->width; cur < size; cur += gCollisionMap->tiledata->width) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
             idx = cur - gCollisionMap->tiledata->width;
             break;
           }
@@ -2504,7 +2504,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
       case 2: {
         cur = start - 1;
         for (x = Mod(cur, gCollisionMap->tiledata->width); x >= 0; x--) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
             idx = cur + 1;
             break;
           }
@@ -2514,7 +2514,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
       }
       case 3: {
         for (cur = start - gCollisionMap->tiledata->width; cur >= 0; cur -= gCollisionMap->tiledata->width) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
             idx = cur + gCollisionMap->tiledata->width;
             break;
           }
@@ -2614,7 +2614,7 @@ NON_MATCH bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStair
   }
 
   attr = TileAtIndex(idx)->attr;
-  if (!(attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+  if (!(attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
     if (stepped) {
       if (abs((height >> 8) - (fromHeight >> 8)) <= 1) {
         return TRUE;
@@ -2969,7 +2969,7 @@ NON_MATCH void FUN_080e8ae4(Enemy* p, Vec3* out, Vec3* target) {
   s32 idx = GetCollisionTileIdx(target);
   s32 i;
 
-  if (!(TileAtIndex(idx)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6 | TATTR_SPECIAL)) && Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, target)) {
+  if (!(TileAtIndex(idx)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) && Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, target)) {
     *out = *target;
     return;
   }
@@ -2993,7 +2993,7 @@ NON_MATCH void FUN_080e8ae4(Enemy* p, Vec3* out, Vec3* target) {
   FUN_080e8aa0(cands[0], 4);
 
   for (i = 0; i < 4; i++) {
-    if (!(TileAtIndex(cands[i][1])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6 | TATTR_SPECIAL))) {
+    if (!(TileAtIndex(cands[i][1])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL))) {
       TilePosAtIndex(&pos, cands[i][1]);
       if (Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, &pos)) {
         *out = pos;

@@ -178,7 +178,7 @@ NON_MATCH void FUN_080aa29c(Entity080aace8* p) {
     tile = &gCollisionMap->tiledata->tiles[tileIdx];
   }
 
-  if (tile->attr & TATTR_UNK_6) {
+  if (tile->attr & TATTR_FALLDEATH) {
     p->unk_15c[p->unk_158] = 0;
   } else {
     p->unk_15c[p->unk_158] = TileHeightAt(&spr->pos);
