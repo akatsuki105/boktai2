@@ -19,6 +19,12 @@ COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
 s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
+struct ElevatorUnkData* Elevator_FindAtPos(Vec3* pos);
+
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
 
 void Coffin_InitParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -1231,7 +1237,24 @@ void FUN_080880fc(Coffin* p) {
 
 NAKED void Coffin_UpdateState1(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState1.inc"); }
 
-NAKED bool32 FUN_080882e4(WorldPos* pos, Vec3* dst, s32 param_3) { INCFUNC("asm/func/FUN_080882e4.inc"); }
+// pos から dst のタイルへ移れるかを返す, param_3 の属性を持つタイル, 溶岩, 高さが 50 より離れたタイル, エレベータの上には移れない
+bool32 Coffin_CanMoveTo(WorldPos* pos, Vec3* dst, s32 param_3) {
+  TileAttr attr = GetTileAttrAt(dst);
+
+  if (attr & param_3) {
+    return FALSE;
+  }
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_HOT)) {
+    return FALSE;
+  }
+  if (abs(pos->y - TileHeightAt(dst)) > 50) {
+    return FALSE;
+  }
+  if (Elevator_FindAtPos(dst) != NULL) {
+    return FALSE;
+  }
+  return TRUE;
+}
 
 // 残差5命令, 原典は分岐ごとに v.x への strh と引数設定を持つが, こちらは同形の 3 箇所が畳まれて共通末尾に寄る
 // Tier A-B は試済, 未: tail merge を抑える書き方
@@ -1242,28 +1265,28 @@ NON_MATCH bool32 FUN_08088430(WorldPos* pos, Vec3* delta, s32 param_3) {
   if (delta->x == 0) {
     v = *pos;
     v.z += delta->z;
-    return FUN_080882e4(pos, &v, param_3) != 0;
+    return Coffin_CanMoveTo(pos, &v, param_3) != 0;
   }
   if (delta->z == 0) {
     v = *pos;
     v.x = delta->x + v.x;
-    return FUN_080882e4(pos, &v, param_3) != 0;
+    return Coffin_CanMoveTo(pos, &v, param_3) != 0;
   }
 
   v = *pos;
   v.x = delta->x + v.x;
-  if (!FUN_080882e4(pos, &v, param_3)) {
+  if (!Coffin_CanMoveTo(pos, &v, param_3)) {
     return FALSE;
   }
 
   v = *pos;
   v.z = delta->z + v.z;
-  if (!FUN_080882e4(pos, &v, param_3)) {
+  if (!Coffin_CanMoveTo(pos, &v, param_3)) {
     return FALSE;
   }
 
   v.x = delta->x + v.x;
-  return FUN_080882e4(pos, &v, param_3) != 0;
+  return Coffin_CanMoveTo(pos, &v, param_3) != 0;
 #else
   INCFUNC("asm/func/FUN_08088430.inc");
 #endif

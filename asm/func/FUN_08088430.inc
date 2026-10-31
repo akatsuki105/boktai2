@@ -59,7 +59,7 @@ _0808848C:
 	adds r0, r4, #0
 	mov r1, sp
 	adds r2, r7, #0
-	bl FUN_080882e4
+	bl Coffin_CanMoveTo
 	cmp r0, #0
 	beq _080884E4
 	ldr r0, [r4]
@@ -73,7 +73,7 @@ _0808848C:
 	adds r0, r4, #0
 	mov r1, sp
 	adds r2, r7, #0
-	bl FUN_080882e4
+	bl Coffin_CanMoveTo
 	cmp r0, #0
 	beq _080884E4
 	mov r1, sp
@@ -85,7 +85,7 @@ _0808848C:
 	adds r0, r4, #0
 _080884DA:
 	adds r2, r7, #0
-	bl FUN_080882e4
+	bl Coffin_CanMoveTo
 	cmp r0, #0
 	bne _080884E8
 _080884E4:
