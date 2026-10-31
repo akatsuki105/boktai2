@@ -91,7 +91,7 @@ bool32 FUN_08086978(u32 mask);
 Elevator* Elevator_FindByID(s32 id);
 void FUN_081d4590(Elevator* e);
 void FUN_081d4658(Elevator* e);
-void FUN_081d5588(Elevator* e);
+void Elevator_PlayArrivalSound(Elevator* e);
 
 static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
   out->x = target->x - origin->x;
@@ -108,6 +108,28 @@ static inline void Elevator_FreeSlot(ElevatorManager* p, s32 i) { p->usedMask &=
 
 static inline bool8 Elevator_TestFlags(Elevator* e, ElevatorFlags bits) {
   if (TEST_FLAGS(e->flags, bits)) return TRUE;
+  return FALSE;
+}
+
+static inline bool8 IsFloorTileAt(s32 idx, s32 height) {
+  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+  CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  TileAttr attr;
+
+  if ((tile->heightStairs & 0xF) != height) return FALSE;
+
+  ov = Map_FindTileOverride(idx, 1);
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  attr = tile->attr;
+  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6 | TATTR_SPECIAL)) return FALSE;
+  return TRUE;
+}
+
+static inline bool8 Elevator_PlayArrivalSoundAt(s32 idx, s32 height) {
+  if (IsFloorTileAt(idx, height)) {
+    PlaySound_082406e0(SONG_337);
+    return TRUE;
+  }
   return FALSE;
 }
 
@@ -338,7 +360,7 @@ void Elevator_UpdateState1(Elevator* e) {
   if (FUN_081d2698(&e->mover, &e->pathWalker, &e->moveDelta, e->speed, e->speed, e->speed)) {
     e->state = 3;
     e->arrived = TRUE;
-    FUN_081d5588(e);
+    Elevator_PlayArrivalSound(e);
   } else {
     FUN_081d2368(e);
   }
@@ -1582,4 +1604,35 @@ Vec3* Elevator_GetPos(Elevator* e) {
   return &e->mover.pos;
 }
 
-NAKED void FUN_081d5588(Elevator* e) { INCFUNC("asm/func/FUN_081d5588.inc"); }
+// 着いた先の隣に同じ高さで歩ける床があれば到着音を鳴らす
+void Elevator_PlayArrivalSound(Elevator* e) {
+  ElevatorManager* p = gElevatorManager;
+
+  if (p == NULL) return;
+
+  if (!(e->unk_d6 & 0x10)) {
+    if (!FUN_0807a954(gPlayerPtr[0], 1)) return;
+    if (p->ridingID != e->id) return;
+    if (e->unk_d6 & 4) return;
+  }
+
+  {
+    Vec3* pos = &e->mover.pos;
+    s32 bx = (s8)(pos->x >> 8);
+    s32 bz = (s8)(pos->z >> 8);
+    s32 idx;
+    s32 height;
+
+    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+      idx = 0;
+    } else {
+      idx = gCollisionMap->rowOffsets[bz] + bx;
+    }
+    height = (s8)(e->mover.pos.y >> 8);
+
+    if (Elevator_PlayArrivalSoundAt(idx + 1, height)) return;
+    if (Elevator_PlayArrivalSoundAt(idx - 1, height)) return;
+    if (Elevator_PlayArrivalSoundAt(idx + gCollisionMap->tiledata->width, height)) return;
+    Elevator_PlayArrivalSoundAt(idx - gCollisionMap->tiledata->width, height);
+  }
+}
