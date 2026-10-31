@@ -15,7 +15,7 @@ typedef u16 ElevatorFlags;                 // Elevator.flags
 #define ELEVATOR_MOVE_UP (1 << 1)          // 上に動く, Elevator_Start が '.m=2' のとき立て '.m=1' のとき落とす
 #define ELEVATOR_STOPPED (1 << 2)          // 止まっている, Elevator_Start が '.m=4' のとき立てる
 #define PLAYER_RIDING (1 << 3)             // プレイヤーが乗っている, ElevatorManager.ridingID と対
-#define COFFIN_RIDING (1 << 4)             // 棺桶が乗っている, FUN_081d3fac が第2引数で落とし分ける
+#define COFFIN_RIDING (1 << 4)             // 棺桶が乗っている, Elevator_ClearRidingFlag が第2引数で落とし分ける
 #define ELEVATOR_SHAKE (1 << 5)            // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
 #define ELEVATOR_UNK_7 (1 << 7)            // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
 #define ELEVATOR_RIDER_KNOCKBACK (1 << 8)  // プレイヤーを弾き返した, 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
@@ -1083,8 +1083,9 @@ void Elevator_ClampCoffinOffFloor(Elevator* e) {
   SET_FLAGS(e->flags, ELEVATOR_UNK_9);
 }
 
+// id のエレベータから, which が 0 ならプレイヤー, それ以外なら棺桶が乗っている印を落とす
 // 残差は先頭で作った &usedMask をループで使い回さない点と, ~16 を ~8 から subs で作らない点 (64/63), Tier A-C は試済 (早期 return, Elevator ポインタ, CLEAR_FLAGS と &= ~ の組み合わせ)
-NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
+NON_MATCH void Elevator_ClearRidingFlag(s32 id, s32 which) {
 #ifdef NONMATCHING_C
   ElevatorManager* p = gElevatorManager;
   s32 i;
@@ -1102,7 +1103,7 @@ NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_081d3fac.inc");
+  INCFUNC("asm/func/Elevator_ClearRidingFlag.inc");
 #endif
 }
 
@@ -1136,7 +1137,7 @@ void Elevator_UpdatePlayerRiding(Elevator* e) {
 
   p = gElevatorManager;
   if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
-    FUN_081d3fac(p->ridingID, 0);
+    Elevator_ClearRidingFlag(p->ridingID, 0);
     p->ridingID = e->id;
     FUN_081d4034(e);
     SET_FLAGS(e->flags, PLAYER_RIDING);
@@ -1174,7 +1175,7 @@ void Elevator_UpdateCoffinRiding(Elevator* e) {
 
   p = gElevatorManager;
   if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
-    FUN_081d3fac(p->coffinRidingID, 1);
+    Elevator_ClearRidingFlag(p->coffinRidingID, 1);
     p->coffinRidingID = e->id;
     FUN_081d407c(e);
     SET_FLAGS(e->flags, COFFIN_RIDING);
@@ -1325,7 +1326,7 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
     }
 
     FUN_08086a4c(&e->mover.pos);
-    FUN_081d3fac(p->coffinRidingID, 1);
+    Elevator_ClearRidingFlag(p->coffinRidingID, 1);
     p->coffinRidingID = e->id;
     FUN_080869c8(3, e->id);
     e->flags |= COFFIN_RIDING;
@@ -1513,7 +1514,7 @@ NON_MATCH void Elevator_Create(void) {
       }
     }
 
-    FUN_081d3fac(p->ridingID, 0);
+    Elevator_ClearRidingFlag(p->ridingID, 0);
     p->ridingID = e->id;
     FUN_0807a97c(gPlayerPtr[0], 1, e->id);
     SET_FLAGS(e->flags, PLAYER_RIDING);
@@ -1523,7 +1524,7 @@ NON_MATCH void Elevator_Create(void) {
     FUN_0807a91c(gPlayerPtr[0], &e->mover.pos);
     if (riding == 2) {
       FUN_08086a4c(&e->mover.pos);
-      FUN_081d3fac(p->coffinRidingID, 1);
+      Elevator_ClearRidingFlag(p->coffinRidingID, 1);
       p->coffinRidingID = e->id;
       FUN_080869c8(3, e->id);
       SET_FLAGS(e->flags, COFFIN_RIDING);

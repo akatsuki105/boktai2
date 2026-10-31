@@ -707,7 +707,7 @@ _081D4D3C:
 	adds r4, r2, r0
 	ldrh r0, [r4]
 	movs r1, #0
-	bl FUN_081d3fac
+	bl Elevator_ClearRidingFlag
 	ldrh r0, [r6]
 	strh r0, [r4]
 	ldr r4, _081D4DA4 @ =0x03002BE0
@@ -800,7 +800,7 @@ _081D4DC2:
 	adds r4, r0, r1
 	ldrh r0, [r4]
 	movs r1, #1
-	bl FUN_081d3fac
+	bl Elevator_ClearRidingFlag
 	ldrh r0, [r6]
 	strh r0, [r4]
 	ldrh r1, [r6]

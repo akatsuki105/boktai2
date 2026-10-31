@@ -57,7 +57,7 @@
 	add r4, r8
 	ldrh r0, [r4]
 	movs r1, #1
-	bl FUN_081d3fac
+	bl Elevator_ClearRidingFlag
 	adds r1, r7, #0
 	adds r1, #0xd4
 	ldrh r0, [r1]
