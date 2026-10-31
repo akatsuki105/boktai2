@@ -449,8 +449,8 @@ void Elevator_UpdateState1(Elevator* e) {
 }
 
 // 動いているエレベータに合わせて走行音を鳴らし始め, 止まったら止める
-// 残差17ハンク (162/158), 原典はループ側の &elevators[i] を p+0x1C から始まる別の誘導変数に持ち, 鳴らす音の選択は2か所に展開したまま PlaySound の呼び出しだけを共有する
-// Tier A-C は試済 (添字/ポインタの持ち方, 音の選択の switch 化, 停止/開始の static inline 化, unk_d6 の s16 化)
+// 残差10ハンク (148/158), 原典はループ側の &elevators[i] を p+0x1C から始まる別の誘導変数に持ち, 鳴らす音の選択をループ側と後半の2か所に展開したまま PlaySound の呼び出しだけを共有する, (e->unk_d6 & 4) も s16 で受ける
+// Tier A-C は試済 (添字/ポインタの持ち方, switch 化, 停止/開始の static inline 化, unk_d6 の s16 化)
 NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
 #ifdef NONMATCHING_C
   bool32 riding = FALSE;
