@@ -137,7 +137,7 @@ _081D4FAA:
 	cmp r2, #0xb
 	ble _081D4F2A
 	mov r0, r8
-	bl FUN_081d2a64
+	bl ElevatorManager_UpdateSound
 _081D4FC6:
 	movs r0, #0
 	pop {r3, r4}

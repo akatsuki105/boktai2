@@ -51,14 +51,14 @@ typedef struct Elevator {
   s32 unk_cc;                        // 0x0CC, Cmd_CED9 が '.l' の値 (正のときだけ) を入れる
   s32 unk_d0;                        // 0x0D0, Cmd_CED9 が '.h' の値 (正のときだけ) を入れる
   u16 id;                            // 0x0D4, Elevator_FindByID が Player.elevatorID や '.n' の値と比較して探す
-  u16 unk_d6;                        // 0x0D6, '.m', FUN_081d21d8 / FUN_081d2a64 が bit2,bit5 を見る
+  u16 unk_d6;                        // 0x0D6, '.m', bit2 が立つと音を鳴らさない, bit4 が立つとプレイヤーが乗っていなくても走行音を鳴らす, bit5 で効果音を選ぶ
   ElevatorFunc* unk_d8;              // 0x0D8, ElevatorManager_Update が毎フレーム呼ぶ
   ElevatorFunc* unk_dc;              // 0x0DC
   ElevatorFunc* unk_e0;              // 0x0E0
   u8 unk_e4;                         // 0x0E4, Elevator_Create が VM 値を入れる
   u8 unk_e5;                         // 0x0E5
   u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて Map_GetPathNodePos に渡す
-  u8 unk_e7;                         // 0x0E7, FUN_081d2a64 が 0/1/3 で走行音を出し分ける
+  u8 unk_e7;                         // 0x0E7, ElevatorManager_UpdateSound が 0/1/3 で走行音を出し分ける
   PathWalker pathWalker;             // 0x0E8, mover.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
   Mover mover;                       // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
   MapTileOverride tileOverride;      // 0x138, flags bit0 が立っているときだけ有効
@@ -89,6 +89,7 @@ const Vec3 gElevatorRanges[3] = {
 };  // 0x085AE0D0
 
 bool32 FUN_08086978(u32 mask);
+Elevator* Elevator_FindByID(s32 id);
 void FUN_081d4590(Elevator* e);
 void FUN_081d4658(Elevator* e);
 void FUN_081d5588(Elevator* e);
@@ -281,7 +282,92 @@ void Elevator_UpdateState1(Elevator* e) {
   }
 }
 
-NAKED void FUN_081d2a64(ElevatorManager* p) { INCFUNC("asm/func/FUN_081d2a64.inc"); }
+// 動いているエレベータに合わせて走行音を鳴らし始め, 止まったら止める
+// 残差17ハンク (162/158), 原典はループ側の &elevators[i] を p+0x1C から始まる別の誘導変数に持ち, 鳴らす音の選択は2か所に展開したまま PlaySound の呼び出しだけを共有する
+// Tier A-C は試済 (添字/ポインタの持ち方, 音の選択の switch 化, 停止/開始の static inline 化, unk_d6 の s16 化)
+NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
+#ifdef NONMATCHING_C
+  bool32 riding = FALSE;
+  Elevator* e;
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    if (Elevator_IsSlotUsed(p, i) && p->elevators[i].state != 6 && (p->elevators[i].unk_d6 & 0x10)) {
+      if (p->elevators[i].state != 1) {
+        if (p->soundPlaying == TRUE) {
+          sound_08240740(SONG_648);
+          sound_08240740(SONG_650);
+          sound_08240740(SONG_649);
+          p->soundPlaying = FALSE;
+        }
+      } else if (p->soundPlaying == FALSE) {
+        s32 id;
+
+        switch (p->elevators[i].unk_e7) {
+          case 0: {
+            id = SONG_650;
+            break;
+          }
+          case 3: {
+            id = SONG_648;
+            break;
+          }
+          default: {
+            id = SONG_649;
+            break;
+          }
+        }
+        PlaySound_082406e0(id);
+        p->soundPlaying = TRUE;
+      }
+      return;
+    }
+  }
+
+  if (FUN_0807a954(gPlayerPtr[0], 1)) riding = TRUE;
+
+  e = Elevator_FindByID(gPlayerPtr[0]->elevatorID);
+  if (e == NULL) return;
+  if (e->unk_d6 & 4) return;
+
+  if (riding) {
+    if (e->state != 1) {
+      if (p->soundPlaying == TRUE) {
+        sound_08240740(SONG_648);
+        sound_08240740(SONG_650);
+        sound_08240740(SONG_649);
+        p->soundPlaying = FALSE;
+      }
+    } else if (p->soundPlaying == FALSE) {
+      s32 id;
+
+      switch (e->unk_e7) {
+        case 0: {
+          id = SONG_650;
+          break;
+        }
+        case 3: {
+          id = SONG_648;
+          break;
+        }
+        default: {
+          id = SONG_649;
+          break;
+        }
+      }
+      PlaySound_082406e0(id);
+      p->soundPlaying = TRUE;
+    }
+  } else if (p->soundPlaying == TRUE) {
+    sound_08240740(SONG_648);
+    sound_08240740(SONG_650);
+    sound_08240740(SONG_649);
+    p->soundPlaying = FALSE;
+  }
+#else
+  INCFUNC("asm/func/ElevatorManager_UpdateSound.inc");
+#endif
+}
 
 void FUN_081d2c10(void) {
   WorldPos pos = gPlayerPtr[0]->mover.pos;
@@ -749,7 +835,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
     }
   }
 
-  FUN_081d2a64(p);
+  ElevatorManager_UpdateSound(p);
   return 0;
 #else
   INCFUNC("asm/func/ElevatorManager_Update.inc");
