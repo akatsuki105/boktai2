@@ -77,7 +77,7 @@ void Entity7C62_UpdateIdle(Entity7C62* p) {
 
   if (Entity7C62_IsPlayerNear(p)) {
     if (p->nearState != 1) {
-      PlaySound_082406e0(SONG_408);
+      PlaySound_082406e0(SE_CIRCLE_IN);
       p->nearState = 1;
     }
     if (p->highlight < 8) {
@@ -96,7 +96,7 @@ void Entity7C62_UpdateIdle(Entity7C62* p) {
     }
   } else {
     if (p->nearState != 0) {
-      PlaySound_082406e0(SONG_409);
+      PlaySound_082406e0(SE_CIRCLE_OUT);
       p->nearState = 0;
     }
     if (p->highlight != 0) {

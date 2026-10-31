@@ -3817,7 +3817,7 @@ NON_MATCH bool32 FUN_08066d2c(Player* p, s32 val) {
 
 void FUN_08066d7c(Player* p, s32 val) {
   if ((p->input->down & R_BUTTON) && FUN_08066d2c(p, val)) {
-    if ((p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) && p->action == PACT_UNK_4) {
+    if ((p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) && p->action == PACT_WALL) {
       Player_StartLookAround(p);
     } else {
       Player_UpdateLookAround(p);
@@ -4106,16 +4106,16 @@ NON_MATCH bool32 Player_IsNearTileCenter(Player* p) {
 #endif
 }
 
-// 壁に張り付く (PACT_UNK_4), state 1 で壁沿いに横歩きし, 壁の上へ登れる所では登り, A で壁を叩いて音を出す
+// 壁に張り付く (PACT_WALL), state 1 で壁沿いに横歩きし, 壁の上へ登れる所では登り, A で壁を叩いて音を出す
 // 残差3命令 (983/980), 横歩きで GetCollisionTileIdx の結果を受ける idx が原典は r6 に直接入るが, こちらは r0 で作って r6 へ写す (それで分岐先が1つずつずれる)
 // Tier A-C 試済 (分岐の向き, + 8 を畳ませない分割, dir の使い回しで & 0xFF を残す, case 2 を if 連鎖, angle ローカル)
 NON_MATCH void FUN_08067510(Player* p) {
 #ifdef NONMATCHING_C
   u32 animIdx;
 
-  p->action = PACT_UNK_4;
+  p->action = PACT_WALL;
   if (p->state == 1 && (p->input->pressed & A_BUTTON)) {
-    Player_SetAction(p, PACT_UNK_4, 2);
+    Player_SetAction(p, PACT_WALL, 2);
   }
 
   switch (p->state) {
@@ -4123,12 +4123,12 @@ NON_MATCH void FUN_08067510(Player* p) {
       Player_SetFlag20(p, PFLAG20_UNK_2);
       animIdx = Player_GetAnimIdx(p->kind, 2);
       if (p->animID != animIdx) {
-        PlaySound_082406e0(SONG_208);
+        PlaySound_082406e0(SE_WALL_COVER);
         p->facing = (p->actionDir + 4) & 7;
         PLAYER_SET_ANIM_DIR_HALF(p, p->actionDir);
       }
       if (Player_PlayAnim(p, animIdx, Q6(1))) {
-        Player_SetAction(p, PACT_UNK_4, 1);
+        Player_SetAction(p, PACT_WALL, 1);
       }
       break;
     }
@@ -4225,7 +4225,7 @@ NON_MATCH void FUN_08067510(Player* p) {
         if (FUN_08020358(GetCollisionTileIdx(&doorPos))) {
           PlaySound_082406e0(SONG_388);
         }
-        Player_SetAction(p, PACT_UNK_4, 1);
+        Player_SetAction(p, PACT_WALL, 1);
       }
       break;
     }
@@ -4263,7 +4263,7 @@ void FUN_08067de8(Player* p) {
     }
     case 2: {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 7), Q6(1))) {
-        Player_SetAction(p, PACT_UNK_4, 1);
+        Player_SetAction(p, PACT_WALL, 1);
         p->unk_3bc = 0;
       }
       break;
@@ -5887,7 +5887,7 @@ void FUN_0806b758(Player* p) {
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
       if (++p->stateTimer > 89) {
-        PlaySound_082406e0(SONG_208);
+        PlaySound_082406e0(SE_WALL_COVER);
         Player_SetAction(p, PACT_UNK_31, 1);
       }
       break;
@@ -6180,7 +6180,7 @@ void MagicSleeping_0806c124(Player* p) {
   if (p->stateTimer > 7) {
     p->formRequest = TRUE;
     p->formRequestKind = PLAYER_SLEEPING;
-    Player_SetAction(p, PACT_UNK_4, 0);
+    Player_SetAction(p, PACT_WALL, 0);
   }
 }
 
@@ -6453,16 +6453,16 @@ void Player_UpdateMouseWalk(Player* p) {
   }
 }
 
-// マウスの PACT_UNK_4, 入った瞬間に前方 64 上方 64 の位置へ FUN_08066e9c で SE_CHANGE_MOUSE の演出を出し, アニメ 0 を進めて 16 フレームで PACT_IDLE に戻る
+// マウスの PACT_WALL, 入った瞬間に前方 64 上方 64 の位置へ FUN_08066e9c で SE_CHANGE_MOUSE の演出を出し, アニメ 0 を進めて 16 フレームで PACT_IDLE に戻る
 void FUN_0806d22c(Player* p) {
-  if (p->action != PACT_UNK_4) {
+  if (p->action != PACT_WALL) {
     Vec3 pos = p->mover.pos;
     s32 angle = ((p->facing + 5) & 7) * 32;
 
     pos.x += POLAR_X(64, angle);
     pos.y += 64;
     pos.z += POLAR_Z(64, angle);
-    Player_SetAction(p, PACT_UNK_4, 0);
+    Player_SetAction(p, PACT_WALL, 0);
     FUN_08066e9c(p, &p->mover.pos, 1, 1, &pos, 0, SE_CHANGE_MOUSE);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animIDOffset, p->xflip);
@@ -6760,10 +6760,10 @@ void FUN_0806e404(Player* p) {
   }
 }
 
-// スリーピングの PACT_UNK_4, 10フレームの間は棺桶のアニメ coffin + 16 を進め, 18フレームまで乱数で揺らし, 24フレームで向きを戻して PACT_IDLE に戻る
+// スリーピングの PACT_WALL, 10フレームの間は棺桶のアニメ coffin + 16 を進め, 18フレームまで乱数で揺らし, 24フレームで向きを戻して PACT_IDLE に戻る
 void FUN_0806e4b4(Player* p) {
-  if (p->action != PACT_UNK_4) {
-    Player_SetAction(p, PACT_UNK_4, 0);
+  if (p->action != PACT_WALL) {
+    Player_SetAction(p, PACT_WALL, 0);
   }
   if (p->stateTimer == 0) {
     PlaySound_082406e0(SONG_491);
@@ -8127,7 +8127,7 @@ void FUN_08073574(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_208);
+        PlaySound_082406e0(SE_WALL_COVER);
       }
       if (p->stateTimer == 8) {
         PlaySound_082406e0(SONG_219);
@@ -8149,7 +8149,7 @@ void FUN_08073574(Player* p) {
     }
     case 3: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_208);
+        PlaySound_082406e0(SE_WALL_COVER);
       }
       if (++p->stateTimer <= 4) {
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 50), Q6(1));
@@ -9037,7 +9037,7 @@ static const PlayerFunc sDjangoActionFuncs[33] = {
     [PACT_WALK] = FUN_080672b0,
     [PACT_DASH] = MagicDash_Update,
     [PACT_ATTACK] = FUN_080695ec,
-    [PACT_UNK_4] = FUN_08067510,
+    [PACT_WALL] = FUN_08067510,
     [PACT_UNK_5] = FUN_08067de8,
     [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
     [PACT_UNK_7] = Player_UpdateSolarCharge,
@@ -9169,7 +9169,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
 
       p->actionDir = p->facing;
       p->unk_3bc = 0;
-      Player_SetAction(p, PACT_UNK_4, 0);
+      Player_SetAction(p, PACT_WALL, 0);
       break;
     }
     case PMODE_LOCKED: {
@@ -9206,7 +9206,7 @@ static const PlayerFunc sSabataActionFuncs[32] = {
     [PACT_WALK] = FUN_080672b0,
     [PACT_DASH] = Magic_ZeroShift,
     [PACT_ATTACK] = Player_UpdateSabataAttack,
-    [PACT_UNK_4] = FUN_08067510,
+    [PACT_WALL] = FUN_08067510,
     [PACT_UNK_5] = FUN_08067de8,
     [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
     [PACT_UNK_7] = Player_UpdateDarkCharge,
@@ -9406,7 +9406,7 @@ void Player_UpdateBat(Player* p) {
 
 // --------------------------------------------
 
-// マウス時の次の行動を入力から決める, Player_GetBatAction の別版, A で何も開けられなければ PACT_UNK_4 に, PACT_UNK_23 / PACT_UNK_4 / PACT_CMOUSE 中も行動を据え置く
+// マウス時の次の行動を入力から決める, Player_GetBatAction の別版, A で何も開けられなければ PACT_WALL に, PACT_UNK_23 / PACT_WALL / PACT_CMOUSE 中も行動を据え置く
 s32 Player_GetMouseAction(Player* p) {
   u32 action;
   if (p->action != PACT_UNK_20 && p->unk_3ff >= 0) {
@@ -9421,13 +9421,13 @@ s32 Player_GetMouseAction(Player* p) {
   }
   if (p->hurtbox.knockbackPower != 0) {
     action = PACT_DAMAGED;
-  } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_UNK_23 && action != PACT_UNK_4 && action != PACT_CMOUSE) {
+  } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_UNK_23 && action != PACT_WALL && action != PACT_CMOUSE) {
     struct Input* input = p->input;
     if (input->pressed & A_BUTTON) {
       if (MapItemManager_TryOpen(&p->mover)) {
         action = PACT_IDLE;
       } else {
-        action = PACT_UNK_4;
+        action = PACT_WALL;
       }
     } else if ((s16)p->facingHistory[0] == -1 || (input->down & R_BUTTON)) {
       action = PACT_IDLE;
@@ -9479,7 +9479,7 @@ void Player_UpdateMouse(Player* p) {
   static const PlayerFunc sMouseActionFuncs[27] = {
       [PACT_IDLE] = FUN_0806ceb0,
       [PACT_WALK] = Player_UpdateMouseWalk,
-      [PACT_UNK_4] = FUN_0806d22c,
+      [PACT_WALL] = FUN_0806d22c,
       [PACT_CMOUSE] = Player_UndoChangeMouse,
       [PACT_UNK_19] = FUN_0806d420,
       [PACT_UNK_20] = FUN_0806d5b0,
@@ -9605,7 +9605,7 @@ void Player_UpdateSleeping(Player* p) {
       [PACT_IDLE] = MagicSleeping_Update,
       [PACT_WALK] = Player_UpdateSleepingWalk,
       [PACT_ATTACK] = FUN_0806e404,
-      [PACT_UNK_4] = FUN_0806e4b4,
+      [PACT_WALL] = FUN_0806e4b4,
       [PACT_SLEEPING] = Player_UndoSleeping,
       [PACT_UNK_20] = FUN_0806e674,
   };  // 0x085ABE88
@@ -9656,7 +9656,7 @@ void FUN_08079f1c(Player* p) {
       [PACT_WALK] = FUN_080672b0,
       [PACT_DASH] = FUN_0806f284,
       [PACT_ATTACK] = FUN_080695ec,
-      [PACT_UNK_4] = FUN_08067510,
+      [PACT_WALL] = FUN_08067510,
       [PACT_UNK_5] = FUN_08067de8,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
       [PACT_UNK_7] = Player_UpdateSolarCharge,
@@ -9738,7 +9738,7 @@ void FUN_08079f1c(Player* p) {
             if (!(attr & TATTR_UNK_2)) {
               p->actionDir = p->facing;
               p->unk_3bc = 0;
-              Player_SetAction(p, PACT_UNK_4, 0);
+              Player_SetAction(p, PACT_WALL, 0);
             }
           }
         }
@@ -9820,7 +9820,7 @@ void FUN_0807a334(Player* p) {
 }
 
 void FUN_0807a44c(Player* p, s32 dir) {
-  Player_SetAction(p, PACT_UNK_4, 1);
+  Player_SetAction(p, PACT_WALL, 1);
   p->actionDir = dir;
   p->facing = (dir + 4) & 7;
   PLAYER_SET_ANIM_DIR_HALF(p, p->actionDir);
@@ -10383,7 +10383,7 @@ NON_MATCH s32 Cmd_7017(void) {
   if (p == NULL) {
     return gStat->playerFacing;
   }
-  if (p->action == PACT_UNK_4 || p->action == PACT_UNK_5) {
+  if (p->action == PACT_WALL || p->action == PACT_UNK_5) {
     return (p->actionDir + 4) & 7;
   }
   return p->facing;

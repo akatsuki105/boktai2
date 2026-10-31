@@ -124,7 +124,7 @@ NON_MATCH void FUN_080a1fc4(SolarCircle* p) {
         VM_ExecByID(p->scriptIn, NULL);
       }
       Coffin_SetInsideSolarCircle(TRUE);
-      PlaySound_082406e0(SONG_408);
+      PlaySound_082406e0(SE_CIRCLE_IN);
     }
 
     p->unk_be++;
@@ -138,7 +138,7 @@ NON_MATCH void FUN_080a1fc4(SolarCircle* p) {
       }
       Coffin_SetInsideSolarCircle(FALSE);
       p->enabled = FALSE;
-      PlaySound_082406e0(SONG_409);
+      PlaySound_082406e0(SE_CIRCLE_OUT);
     }
 
     p->unk_be++;

@@ -98,7 +98,7 @@ void FUN_080a2bdc(EntityA8F1* p) {
   } else {
     p->stateTimer++;
     if (p->stateTimer > 0x1F) {
-      PlaySound_082406e0(SONG_351);
+      PlaySound_082406e0(SE_WARP_START);
       FUN_080a2a14(p, FUN_080a2c2c);
     }
   }
@@ -128,7 +128,7 @@ void FUN_080a30bc(EntityA8F1* p) {
   } else {
     p->stateTimer++;
     if (p->stateTimer > 0x1F) {
-      PlaySound_082406e0(SONG_351);
+      PlaySound_082406e0(SE_WARP_START);
       FUN_080a2a14(p, FUN_080a310c);
     }
   }

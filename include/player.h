@@ -20,7 +20,7 @@
 typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_0 (1 << 0)       // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_1 (1 << 1)       // 0x00000002
-#define PFLAG20_UNK_2 (1 << 2)       // 0x00000004, 壁張り付き (PACT_UNK_4) の始めに立つ
+#define PFLAG20_UNK_2 (1 << 2)       // 0x00000004, 壁張り付き (PACT_WALL) の始めに立つ
 #define PFLAG20_UNK_3 (1 << 3)       // 0x00000008
 #define PFLAG20_SUNBATHING (1 << 4)  // 0x00000010, プレイヤーに日光が当たっているか
 #define PFLAG20_QC (1 << 5)          // 0x00000020, プレイヤーが急速チャージ中, つまり (ジャンゴなら) 太陽チャージ中 && ENEがまだ最大でない && 太陽が当たっている状態, (サバタなら) 暗黒チャージ中 && ENEがまだ最大でない && 太陽が当たっていない状態
@@ -42,7 +42,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_WALK 1         // 歩く, FUN_080672b0
 #define PACT_DASH 2         // ダッシュ, MagicDash_Update (サバタは Magic_ZeroShift)
 #define PACT_ATTACK 3       // 攻撃中 (武器は問わない)
-#define PACT_UNK_4 4        // 壁張り付き?
+#define PACT_WALL 4         // 壁張り付き, 壁沿いに横歩きする状態
 #define PACT_UNK_5 5        // ブロック動かし? (すでに壁とかにあって動かないブロックを押しても4のままだった)
 #define PACT_PULL_COFFIN 6  // 棺桶を引く, 入力が無く止まっているときも含む
 #define PACT_UNK_7 7        // 太陽チャージ, ワープ, 太陽鍛治

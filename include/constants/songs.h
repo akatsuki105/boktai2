@@ -20,7 +20,7 @@
 #define BGM_16 16
 #define SONG_17 17
 #define SONG_18 18
-#define SONG_19 19
+#define BGM_FIELD 19  // n番外
 #define SONG_20 20
 #define SONG_21 21
 #define SONG_22 22
@@ -35,7 +35,7 @@
 #define SONG_31 31
 #define SONG_32 32
 #define SONG_33 33
-#define SONG_34 34
+#define BGM_AQUADUCT 34  // 地下水路のBGM
 #define SONG_35 35
 #define SONG_36 36
 #define SONG_37 37
@@ -209,7 +209,7 @@
 #define SE_GUN_FIRE 205         // 太陽銃を撃った時のSE
 #define SE_WOOD_DOOR_OPEN 206   // 木のドアが開く音
 #define SE_WOOD_DOOR_CLOSE 207  // 木のドアが閉まる音
-#define SONG_208 208
+#define SE_WALL_COVER 208       // 壁張り付きのSE
 #define SONG_209 209
 #define SONG_210 210
 #define SONG_211 211
@@ -258,7 +258,7 @@
 #define SE_UNK_254 254
 #define CRY_MUMMY_255 255  // マミーのボイス
 #define CRY_MUMMY_DEATH 256
-#define CRY_MUMMY_257 257
+#define CRY_MUMMY_ATK 257  // マミーの攻撃時のボイス (飛びかかり, 爆弾吐き両方)
 #define CRY_MUMMY_DETECT 258
 #define CRY_MUMMY_ALERT 259
 #define CRY_MUMMY_QUESTION 260
@@ -352,8 +352,8 @@
 #define SONG_348 348
 #define SONG_349 349
 #define SONG_350 350
-#define SONG_351 351
-#define SONG_352 352
+#define SE_WARP_START 351  // 転移魔方陣を起動したときのSE
+#define SE_WARP_END 352    // 転移魔方陣が終了したときのSE
 #define SONG_353 353
 #define SONG_354 354
 #define SONG_355 355
@@ -409,8 +409,8 @@
 #define SONG_405 405
 #define SONG_406 406
 #define SONG_407 407
-#define SONG_408 408
-#define SONG_409 409
+#define SE_CIRCLE_IN 408   // 魔方陣の有効範囲に入ったときのSE
+#define SE_CIRCLE_OUT 409  // 魔方陣から離れたときのSE
 #define SONG_410 410
 #define SONG_411 411
 #define SONG_412 412
@@ -649,8 +649,8 @@
 #define SONG_645 645
 #define SONG_646 646
 #define SONG_647 647
-#define SONG_648 648
-#define SONG_649 649
+#define SE_ELEV_WATER 648  // 地下水路などでの移動床の動作音
+#define SE_ELEV_MECHA 649  // SPRITE_LIFT_MECHA の動作音
 #define SONG_650 650
 #define SONG_651 651
 #define SONG_652 652
