@@ -899,14 +899,14 @@ void Elevator_CheckRiderFallInWater(Elevator* e) {
       if (!FUN_0807a954(gPlayerPtr[i], 1) && !FUN_0807a954(gPlayerPtr[i], 2)) return;
 
       if (Elevator_TestFlags(e, PLAYER_RIDING)) {
-        s32 bx = (s8)(gPlayerPtr[i]->mover.pos.x >> 8);
-        s32 bz = (s8)(gPlayerPtr[i]->mover.pos.z >> 8);
         s32 idx;
         MapTileOverride* ov;
         CollisionMapTile* tile;
         TileAttr attr;
 
-        if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+        s32 bx = (s8)(gPlayerPtr[i]->mover.pos.x >> 8);
+        s32 bz = (s8)(gPlayerPtr[i]->mover.pos.z >> 8);
+        if (IsOutsideMap(bx, bz)) {
           idx = 0;
         } else {
           idx = gCollisionMap->rowOffsets[bz] + bx;

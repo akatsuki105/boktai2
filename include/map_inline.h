@@ -6,12 +6,14 @@
 // グローバル変数を参照する static inline は、 include したファイルのコンパイル結果に影響を与えることがある (たとえその関数を使わないとしても)
 // これらは gCollisionMap といったグローバル変数を参照するため、 必要のない include は決してしないこと
 
+#define IsOutsideMap(blockX, blockZ) ((blockX) < 0 || (blockZ) < 0 || ((u32)(blockX)) >= (u32)gMapBlockW || ((u32)(blockZ)) >= (u32)gMapBlockH)
+
 static inline s32 GetCollisionTileIdx(WorldPos* pos) {
   s32 idx;
 
   s32 bx = (s8)(pos->x >> 8);
   s32 bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+  if (IsOutsideMap(bx, bz)) {
     idx = 0;
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
