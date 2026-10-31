@@ -63,7 +63,7 @@ void FUN_08079f1c(Player* p);
 void Camera_LookAt(Vec3* pos);
 bool8 MapItemManager_TryOpen(Mover* mover);
 Vec3* Elevator_GetPosByID(s32 id);
-struct ElevatorUnkData* Elevator_FindAtPos(Vec3* pos);
+struct Elevator* Elevator_FindAtPos(Vec3* pos);
 void FUN_080417dc(Mover* mover);
 s32 FUN_08003f24(Vec3* pos, u32 dir);
 s32 FUN_08086958(void);
@@ -10077,9 +10077,9 @@ bool32 FUN_0807a954(Player* p, u32 mask) {
 
 u32 Player_GetElevatorID(Player* p) { return p->elevatorID; }
 
-void FUN_0807a97c(Player* p, u32 flags, u32 value) {
+void FUN_0807a97c(Player* p, u32 flags, u32 elevatorID) {
   p->unk_390 |= flags;
-  p->elevatorID = value;
+  p->elevatorID = elevatorID;
 }
 
 void FUN_0807a99c(Player* p, u32 flags) {

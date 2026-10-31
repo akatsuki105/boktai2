@@ -109,5 +109,7 @@ s32 FUN_08086878(void);
 void FUN_0808689c(s32 val);
 void FUN_08086a4c(Vec3* pos);
 bool32 FUN_0808626c(u32 playerEleveterID, u32 param_2, u32 coffinEleveterID, u32 param_4);
+void FUN_080869f8(u32 flags);
+void FUN_080869c8(u32 flags, u32 value);
 
 #endif  // __INCLUDE_IMMORTAL_COFFIN_H__
