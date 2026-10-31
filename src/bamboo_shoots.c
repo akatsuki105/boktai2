@@ -37,12 +37,12 @@ static_assert(sizeof(BambooShoot) == 156);
 // 最初は隠れていて、プレイヤーが攻撃すると結晶が出現して、そこから 精霊虫 が出現する
 typedef struct {
   Entity e;                // 0x0, ENTITY_UNK_10
-  bool8 revealed;          // 0x18, Init が夜, 雷の最中, バットに変身中, 千里眼の実の効果中なら TRUE にする
+  bool8 visible;           // 0x18, 本来、太陽タケノコは攻撃されるまで見えないが、いくつかの条件下(e.g. 千里眼の実の効果中)では最初から見える
   u8 unk_19[3];            // padding?
   ParticleGroup* group0;   // 0x1C, PTCL_GROUP_0
   ParticleGroup* group1;   // 0x20, PTCL_GROUP_1
-  AuxAnimFile* anim_24;    // 0x24
-  AuxAnimFile* anim_28;    // 0x28
+  AuxAnimFile* anim_24;    // 0x24, ANIM_D1B8
+  AuxAnimFile* anim_28;    // 0x28, ANIM_D41F
   BambooShoot shoots[16];  // 0x2C
 } BambooShootManager;
 static_assert(sizeof(BambooShootManager) == 2540);
@@ -209,19 +209,19 @@ s32 BambooShootManager_Destroy(BambooShootManager* p) {
 // 試済: 判定を static inline (HasGoodCond / GetPlayer / BambooShoot_CanSee) にすると 87/87 命令 9 hunk まで縮むが一致せず, NULL 判定の FALSE の置き場と最後の strb の形が残る
 NON_MATCH s32 BambooShootManager_Init(BambooShootManager* p, u32 _) {
 #ifdef NONMATCHING_C
-  bool32 revealed;
+  bool32 visible;
 
   sBambooShootManager = p;
   if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
-    revealed = TRUE;
+    visible = TRUE;
   } else if (gGameFlags & FLAG030047A4_LINK) {
-    revealed = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
+    visible = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
   } else if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
-    revealed = TRUE;
+    visible = TRUE;
   } else {
-    revealed = gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
+    visible = gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
   }
-  p->revealed = revealed;
+  p->visible = visible;
   p->group0 = GetParticleGroup(PTCL_GROUP_0);
   p->group1 = GetParticleGroup(PTCL_GROUP_1);
   p->anim_24 = GetFile(DIR_ANIMATION, ANIM_D1B8);
