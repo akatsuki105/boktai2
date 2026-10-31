@@ -39,7 +39,54 @@ void Coffin_InitParticles(Coffin* p) {
   }
 }
 
-NAKED void FUN_08085408(Coffin* p) { INCFUNC("asm/func/FUN_08085408.inc"); }
+// 棺桶を引いている間, プレイヤーの手元から棺桶の取っ手までの間に 7 個のパーティクルを等間隔に並べる (ロープの表示)
+void Coffin_UpdateRope(Coffin* p) {
+  Vec3 from, to;
+  Particle* ptcl;
+  s32 angle, c, s, ox, oz;
+  s32 offsetZ;
+  s32 i;
+
+  if (gPlayerPtr[0]->action != PACT_PULL_COFFIN) {
+    for (i = 0, ptcl = p->ptcls; i < 7; i++, ptcl++) {
+      Particle_Hide(ptcl);
+    }
+    return;
+  }
+
+  angle = ((gPlayerPtr[0]->animIDOffset + 1) & 7) << 5;
+  c = COS(angle);
+  s = SIN(angle);
+  if (gPlayerPtr[0]->xflip) {
+    ox = FixToInt(12, (s - c) * 20);
+    oz = FixToInt(12, (c + s) * 20);
+  } else {
+    ox = FixToInt(12, (c + s) * 20);
+    oz = FixToInt(12, (s - c) * 20);
+  }
+  from.x = gPlayerPtr[0]->mover.pos.x + ox;
+  from.y = gPlayerPtr[0]->mover.pos.y + 220;
+  from.z = gPlayerPtr[0]->mover.pos.z + oz;
+
+  angle = ((p->facing + 5) & 7) << 5;
+  to.x = p->mover.pos.x + POLAR_X(100, angle);
+  to.y = p->mover.pos.y - 50;
+  to.z = p->mover.pos.z + POLAR_Z(100, angle);
+
+  if (gPlayerPtr[0]->animIDOffset == 4) {
+    offsetZ = -20;
+  } else {
+    offsetZ = -2;
+  }
+
+  for (ptcl = p->ptcls, i = 0; i < 7; i++, ptcl++) {
+    ptcl->pos.x = (to.x * (i + 1) + from.x * (7 - i)) >> 3;
+    ptcl->pos.y = (to.y * (i + 1) + from.y * (7 - i)) >> 3;
+    ptcl->pos.z = (to.z * (i + 1) + from.z * (7 - i)) >> 3;
+    ptcl->offsetZ = offsetZ;
+    ptcl->flags &= ~SPRFLAG_HIDDEN;
+  }
+}
 
 static void Coffin_RemoveParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -293,7 +340,7 @@ void FUN_08085da8(Coffin* p) {
 void FUN_08085ec4(Coffin* p) {
   FUN_08085cec(p);
   FUN_08085da8(p);
-  FUN_08085408(p);
+  Coffin_UpdateRope(p);
 }
 
 void Coffin_SetState(Coffin* p, s32 state) {
@@ -1855,7 +1902,7 @@ s32 Coffin_Update(Coffin* p) {
   p->unk_406 = 0;
 
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
-    FUN_08085408(p);
+    Coffin_UpdateRope(p);
     return 0;
   }
 
