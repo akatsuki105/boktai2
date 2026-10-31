@@ -80,7 +80,19 @@ NON_MATCH void FUN_080856f4(Coffin* p) {
 #endif
 }
 
-NAKED void FUN_08085764(Coffin* p) { INCFUNC("asm/func/FUN_08085764.inc"); }
+void FUN_08085764(Coffin* p) {
+  Vec3 pos, vel, accel;
+  s32 angle = ((p->facing + 1) & 7) << 5;
+
+  pos.x = p->mover.pos.x + POLAR_X(100, angle);
+  pos.y = p->mover.pos.y;
+  pos.z = p->mover.pos.z + POLAR_Z(100, angle);
+  vel.x = POLAR_X(10, angle);
+  vel.y = 0;
+  vel.z = POLAR_Z(10, angle);
+  VEC3_SET(accel, 32, 0, 32);
+  FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+}
 
 void FUN_08085880(Coffin* p) {
   Vec3 vel, pos, accel;
