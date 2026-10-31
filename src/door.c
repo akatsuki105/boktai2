@@ -87,7 +87,7 @@ void FUN_08020b24(Door* door);
 void FUN_08020c1c(Door* door);
 void FUN_08020cd8(Door* door);
 void FUN_08020d10(Door* door);
-s32 FUN_080dbd08(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
+s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 void FUN_080206b8(Door* door);
 void FUN_08020734(Door* door);
 void FUN_080206b4(Door* door);
@@ -623,10 +623,10 @@ NON_MATCH void FUN_08020c1c(Door* door) {
     VEC3_SET(v, 0, 0, 0);
     if (door->dir & 1) {
       v.x = Q8(0.5);
-      FUN_080dbd08(&door->pos_70, 0, (u32)&v, 5, 2, 0);
+      FUN_080dbd08(&door->pos_70, NULL, &v, 5, 2, 0);
     } else {
       v.z = Q8(0.5);
-      FUN_080dbd08(&door->pos_70, 0, (u32)&v, 5, 2, 0);
+      FUN_080dbd08(&door->pos_70, NULL, &v, 5, 2, 0);
     }
   }
 

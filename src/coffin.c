@@ -18,6 +18,7 @@ COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
 s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
+s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 
 void Coffin_InitParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -81,7 +82,22 @@ NON_MATCH void FUN_080856f4(Coffin* p) {
 
 NAKED void FUN_08085764(Coffin* p) { INCFUNC("asm/func/FUN_08085764.inc"); }
 
-NAKED void FUN_08085880(Coffin* p) { INCFUNC("asm/func/FUN_08085880.inc"); }
+void FUN_08085880(Coffin* p) {
+  Vec3 vel, pos, accel;
+  s32 angle = Random() & 0xFF;
+
+  vel.x = POLAR_X(32, angle);
+  vel.y = 0;
+  vel.z = POLAR_Z(32, angle);
+  pos.x = p->mover.pos.x + (vel.x << 2);
+  pos.y = p->mover.pos.y;
+  pos.z = p->mover.pos.z + (vel.z << 2);
+  VEC3_SET(accel, 0, 0, 0);
+  FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+  if (angle & 1) {
+    PlaySound_082406e0(SONG_211);
+  }
+}
 
 NAKED void FUN_0808596c(Coffin* p) { INCFUNC("asm/func/FUN_0808596c.inc"); }
 

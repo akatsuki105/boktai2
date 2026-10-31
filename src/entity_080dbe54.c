@@ -88,11 +88,11 @@ Entity080dbe54Slot* FUN_080db9b4(Entity080dbe54* p) {
   return NULL;
 }
 
-NAKED s32 FUN_080dba00(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080dba00.inc"); }
+NAKED s32 FUN_080dba00(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080dba00.inc"); }
 
-s32 FUN_080dbcec(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(pos, param_2, param_3, param_4, param_5, param_6, 1); }
+s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(pos, param_2, param_3, param_4, param_5, param_6, 1); }
 
-s32 FUN_080dbd08(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(pos, param_2, param_3, param_4, param_5, param_6, 0); }
+s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(pos, param_2, param_3, param_4, param_5, param_6, 0); }
 
 void (*const PTR_ARRAY_085ad320[3])(Entity080dbe54*, Entity080dbe54Slot*) = {
     FUN_080db7e4,
