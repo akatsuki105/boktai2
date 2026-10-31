@@ -1146,7 +1146,7 @@ void FUN_080874cc(Coffin* p) {
   }
 }
 
-// 88/89命令, 属性は a->attributes (0x38) でなく a->weakness (0x34) を見ている, timer = 8 は各分岐に置くと共通末尾に畳まれて揃う
+// 88/89命令, ダメージは攻撃元の武器の種類 (a->weakness) で決まる, timer = 8 は各分岐に置くと共通末尾に畳まれて揃う
 // 残差は unk_1c / ignoreMask / weakness の || の飛び先 (原典は unk_1c != 0 だけ 0/1 に落としてから見る) と p の写しの位置, 試済: || をローカルに受ける, 三項演算子, inline の述語
 NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
 #ifdef NONMATCHING_C
@@ -1160,7 +1160,7 @@ NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
   if (p->unk_1b == 1) {
     return;
   }
-  canHit = p->unk_1c != 0 || (a->ignoreMask & 1) || (a->weakness & HBATTR_ALL);
+  canHit = p->unk_1c != 0 || (a->ignoreMask & 1) || (a->weakness & 0x40);  // 0x40 は武器以外の攻撃
   if (!canHit) {
     return;
   }
@@ -1171,19 +1171,19 @@ NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
     return;
   }
 
-  if (a->weakness & HBATTR_SOL) {
+  if (a->weakness & (1 << WK_SWORD)) {
     damage = 200;
     timer = 8;
-  } else if (a->weakness & HBATTR_DARK) {
+  } else if (a->weakness & (1 << WK_SPEAR)) {
     damage = 300;
     timer = 12;
-  } else if (a->weakness & HBATTR_FLAME) {
+  } else if (a->weakness & (1 << WK_HAMMER)) {
     damage = 500;
     timer = 8;
-  } else if (a->weakness & HBATTR_FROST) {
+  } else if (a->weakness & (1 << WK_OTHERS)) {
     damage = 150;
     timer = 8;
-  } else if (a->weakness & HBATTR_CLOUD) {
+  } else if (a->weakness & (1 << WK_GUN)) {
     damage = 500;
     timer = 8;
   } else {

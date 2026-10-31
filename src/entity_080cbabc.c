@@ -50,7 +50,7 @@ void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAtt
   VEC3_SET(halfSize, Q8(0.12), Q8(0.12), Q8(0.12));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attrs, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, unk_40, 1 << WK_GUN, attrs, invincibleTime);
   Hitbox_SetHandler(hitbox, FUN_080cb7b4, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   hitbox->angle = angle;

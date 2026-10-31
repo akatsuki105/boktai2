@@ -714,7 +714,7 @@ NON_MATCH void FUN_08081c04(Player* p) {
   halfSize.x = 170, halfSize.y = 50, halfSize.z = 170;
   offset.x = 0, offset.y = -20, offset.z = 0;
   Hitbox_Init(&p->wpn.hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 0x10, 2, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 1 << WK_GUN, 2, p->wpn.atkInvincibleTime);
   Hitbox_SetHandler(&p->wpn.hitbox, NULL, p);
 #else
   INCFUNC("asm/func/FUN_08081c04.inc");
@@ -1918,7 +1918,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 
   if (p->action == PACT_UNK_8 && p->state != 0) {
     p->unk_476 = 4;
-    if (Hitbox_HasWeakness(a, HBATTR_NAMAKURA)) {
+    if (Hitbox_HasWeakness(a, 0x1000)) {  // 攻撃元の種別マスクの 0x1000, 未解析
       p->namakuraCount++;
       if (p->namakuraCount >= p->namakuraLimit) {
         p->namakuraCount = 0;

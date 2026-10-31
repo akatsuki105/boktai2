@@ -2456,21 +2456,21 @@ NON_MATCH void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) {
 #endif
 }
 
-// 武器種ごとに当たり判定の大きさ・位置・属性を設定する, サバタは固定値
+// 武器種ごとに当たり判定の大きさ・位置・攻撃元の種別を設定する, サバタは固定値
 // 残差25命令 (224/249): 原典は各 case で Vec3 の半分ずつを and/or で差し込むが, agbcc は定数同士をまとめて1ワードで書いてしまう
 // HitboxData* のローカル化は試済
 NON_MATCH void Player_SetWeaponHitbox(Player* p) {
 #ifdef NONMATCHING_C
   HitboxData* hitbox = &p->wpn.hitbox;
   Vec3 halfSize, offset;
-  HitboxAttributes attrs;
+  u32 weakness;
 
   if (p->kind == PLAYER_SABATA) {
-    attrs = 0;
+    weakness = 0;
     VEC3_SET(halfSize, Q8(0.665), Q8(0.196), Q8(0.665));
     VEC3_SET(offset, 0, Q8(-0.08), 0);
     Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, 1 << p->mover.unk_4, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, 20, 0x32, 0x10, HBATTR_DARK, 0x14);
+    Hitbox_SetAttack(hitbox, 20, 0x32, 1 << WK_GUN, HBATTR_DARK, 0x14);
     Hitbox_SetHandler(hitbox, NULL, p);
     return;
   }
@@ -2483,7 +2483,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     case WK_SWORD: {
       VEC3_SET(halfSize, Q8(0.352), Q8(3.125), Q8(0.352));
       VEC3_SET(offset, 0, Q8(-0.1), 0);
-      attrs = 1;
+      weakness = 1 << WK_SWORD;
       p->wpn.knockbackPower = 32;
       p->wpn.atkInvincibleTime = 10;
       break;
@@ -2491,7 +2491,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     case WK_SPEAR: {
       VEC3_SET(halfSize, Q8(0.235), Q8(6.25), Q8(0.235));
       VEC3_SET(offset, 0, 0, 0);
-      attrs = 2;
+      weakness = 1 << WK_SPEAR;
       p->wpn.knockbackPower = 64;
       p->wpn.atkInvincibleTime = 20;
       break;
@@ -2499,7 +2499,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     case WK_HAMMER: {
       VEC3_SET(halfSize, Q8(0.313), Q8(4.375), Q8(0.313));
       VEC3_SET(offset, 0, Q8(0.12), 0);
-      attrs = 4;
+      weakness = 1 << WK_HAMMER;
       p->wpn.knockbackPower = 48;
       p->wpn.atkInvincibleTime = 20;
       break;
@@ -2507,7 +2507,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     case WK_OTHERS: {
       VEC3_SET(halfSize, Q8(0.235), Q8(6.25), Q8(0.235));
       VEC3_SET(offset, 0, Q8(-0.313), 0);
-      attrs = 8;
+      weakness = 1 << WK_OTHERS;
       p->wpn.knockbackPower = 1;
       p->wpn.atkInvincibleTime = 5;
       break;
@@ -2515,7 +2515,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     case WK_GUN: {
       VEC3_SET(halfSize, Q8(0.235), Q8(3.125), Q8(0.235));
       VEC3_SET(offset, 0, Q8(-0.1), 0);
-      attrs = 0x10;
+      weakness = 1 << WK_GUN;
       p->wpn.knockbackPower = 32;
       p->wpn.atkInvincibleTime = 20;
       break;
@@ -2523,7 +2523,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
   }
 
   Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, 1 << p->mover.unk_4, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockbackPower, attrs, 0, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockbackPower, weakness, 0, p->wpn.atkInvincibleTime);
   Hitbox_SetHandler(hitbox, dark_django_0806f990, p);
 #else
   INCFUNC("asm/func/Player_SetWeaponHitbox.inc");
@@ -7491,7 +7491,7 @@ void FUN_0806fad8(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockbackPower, 1, attrs, invincibleTime);
+  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockbackPower, 1 << WK_SWORD, attrs, invincibleTime);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -7671,7 +7671,7 @@ void FUN_08070adc(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockbackPower, 4, attrs, wpn->atkInvincibleTime);
+  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockbackPower, 1 << WK_HAMMER, attrs, wpn->atkInvincibleTime);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -7714,7 +7714,7 @@ void FUN_08071218(Player* p) {
   p->wpn.angle = ((p->facing + 5) & 7) << 5;
   power = FUN_0806f900(p);
   Video_SetAuxSpritePltt(&p->wpn.gfx, 45);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockbackPower, 8, 0, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockbackPower, 1 << WK_OTHERS, 0, p->wpn.atkInvincibleTime);
   p->wpn.hitbox.angle = p->wpn.angle;
   p->wpn.gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -7813,7 +7813,7 @@ void Player_UpdateSabataAttack(Player* p) {
       } else {
         PlaySound_082406e0(VO_SABATA_TAKETHIS);
         p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
-        Hitbox_SetAttack(&p->wpn.hitbox, FUN_0806f900(p), 32, 16, HBATTR_DARK, 20);
+        Hitbox_SetAttack(&p->wpn.hitbox, FUN_0806f900(p), 32, 1 << WK_GUN, HBATTR_DARK, 20);
         PlaySound_082406e0(SONG_514);
         Player_SetAction(p, PACT_ATTACK, 8);
       }
@@ -7825,7 +7825,7 @@ void Player_UpdateSabataAttack(Player* p) {
       if (!(p->input->down & B_BUTTON)) {
         PlaySound_082406e0(VO_SABATA_TAKETHIS);
         p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
-        Hitbox_SetAttack(&p->wpn.hitbox, FUN_0806f900(p), 32, 16, HBATTR_DARK, 20);
+        Hitbox_SetAttack(&p->wpn.hitbox, FUN_0806f900(p), 32, 1 << WK_GUN, HBATTR_DARK, 20);
         PlaySound_082406e0(SONG_514);
         Player_SetAction(p, PACT_ATTACK, 8);
       }

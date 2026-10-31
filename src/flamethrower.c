@@ -230,7 +230,7 @@ NON_MATCH void FUN_081eabd0(Entity081eaf6cItem* item, s32 a, s32 b, s32 power, s
   }
 
   Hitbox_Init(&item->hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 32, &halfSize, &offset);
-  Hitbox_SetAttack(&item->hitbox, power, knockback, HBATTR_ALL, HBATTR_INKA | HBATTR_FLAME, invincibleTime);
+  Hitbox_SetAttack(&item->hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_FLAME, invincibleTime);  // 0x40 は武器以外の攻撃
   Hitbox_SetPos(&item->hitbox, &item->hitboxPos, 0);
   Hitbox_SetHandler(&item->hitbox, FUN_081eabcc, item);
   item->hitbox.angle = angle;

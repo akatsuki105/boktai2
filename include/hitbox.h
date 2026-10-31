@@ -70,17 +70,17 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 // TODO: 解析が終わって問題なさそうなら HitboxData じゃなくて Hitbox にリネームする
 // 当たり判定も食らい判定も同じ構造体で扱う, HBFLAG_HITBOX で攻撃判定かどうかを区別する
 typedef struct HitboxData {
-  struct HitboxData* next;      // 0x00, 同じキャラの Hitbox なのか、全ての Hitbox をつなげているのかはまだ不明
-  u16 id;                       // 0x04, 0x08236db8, IDっぽい
-  HitboxFlags flags;            // 0x06, see HitboxFlags
-  u16 unk_8;                    // 0x08
-  u16 ignoreMask;               // 0x0A, ((this.ignoreMask & other.ignoreMask) == 0) なら、Overlap 判定を行う, != 0 でなく == 0 に注意
-  WorldPos pos;                 // 0x0C, Hitbox_SetPos が毎フレーム書く判定の基準位置
-  Vec3 offset;                  // 0x14, pos からのずれ
-  Vec3 halfSize;                // 0x1C, 判定の直方体の各軸の半径, Hitbox_Init が引数の Vec3 を8バイトまるごとコピーする
-  WorldPos center;              // 0x24, 判定の直方体の中心, Hitbox_UpdateBoxes が毎フレーム pos + offset で作る
-  Vec3 unk_2c;                  // 0x2C, ShadeManCrossover_OnHurt が 8 バイトまるごと写す
-  u32 weakness;                 // 0x34, 低位7bitが属性マスク, Hitbox_ApplyDamage が (b->weakness & 0x7F & a->attributes) != 0 でダメージ4倍にする
+  struct HitboxData* next;  // 0x00, 同じキャラの Hitbox なのか、全ての Hitbox をつなげているのかはまだ不明
+  u16 id;                   // 0x04, 0x08236db8, IDっぽい
+  HitboxFlags flags;        // 0x06, see HitboxFlags
+  u16 unk_8;                // 0x08
+  u16 ignoreMask;           // 0x0A, ((this.ignoreMask & other.ignoreMask) == 0) なら、Overlap 判定を行う, != 0 でなく == 0 に注意
+  WorldPos pos;             // 0x0C, Hitbox_SetPos が毎フレーム書く判定の基準位置
+  Vec3 offset;              // 0x14, pos からのずれ
+  Vec3 halfSize;            // 0x1C, 判定の直方体の各軸の半径, Hitbox_Init が引数の Vec3 を8バイトまるごとコピーする
+  WorldPos center;          // 0x24, 判定の直方体の中心, Hitbox_UpdateBoxes が毎フレーム pos + offset で作る
+  Vec3 unk_2c;              // 0x2C, ShadeManCrossover_OnHurt が 8 バイトまるごと写す
+  u32 weakness;  // 0x34, 食らい判定では弱点の属性 (HBATTR_* の低位7bit, Hitbox_ApplyDamage が (b->weakness & 0x7F & a->attributes) != 0 でダメージ4倍にする), 攻撃判定では攻撃元の種別マスク (bit0-4 は武器の種類 1 << WK_* で Player_AddWeaponExp が経験値を入れる武器を選ぶ, 0x40 は武器以外の攻撃, 0x4000 はフリーズ, ほかは未解析)
   HitboxAttributes attributes;  // 0x38, see HitboxAttributes
   u16 power;                    // 0x3C (Player: 0x1A8), Hitbox_ApplyDamage の基礎ダメージ = a->power - b->power (1未満なら1), 攻撃側では攻撃力、守備側では防御力
 
@@ -112,6 +112,7 @@ static_assert(sizeof(HitboxData) == 80);
 static inline void Hitbox_SetFlags(HitboxData* hitbox, HitboxFlags flags) { hitbox->flags |= flags; }
 static inline void Hitbox_ClearFlags(HitboxData* hitbox, HitboxFlags flags) { hitbox->flags &= ~flags; }
 static inline HitboxFlags Hitbox_TestFlags(HitboxData* hitbox, HitboxFlags flags) { return hitbox->flags & flags; }
+// 攻撃判定に使うと weakness は攻撃元の種別マスクなので, mask も HBATTR_* ではなくそのビットで指定する
 static inline bool32 Hitbox_HasWeakness(HitboxData* hitbox, u32 mask) { return hitbox->weakness & mask; }
 static inline u32 Hitbox_TestAttr(HitboxData* hitbox, HitboxAttributes mask) { return (hitbox->attributes & mask); }
 static inline s32 Hitbox_GetDamage(HitboxData* hb) { return hb->damage; }
@@ -120,6 +121,7 @@ static inline void Hitbox_ClearDamage(HitboxData* hb) { hb->damage = 0; }
 void Hitbox_Register(HitboxData* p);
 void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset);
 void Hitbox_SetPos(HitboxData* p, Vec3* pos, u32 unk_8);
+// weakness には攻撃元の種別マスク (see HitboxData.weakness) を渡す
 void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 invincibleTime);
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness);
 void Hitbox_SetHandler(HitboxData* p, void* handler, void* owner);

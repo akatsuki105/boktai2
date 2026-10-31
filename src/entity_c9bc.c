@@ -102,7 +102,7 @@ void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
 // 残差0命令 (26/26), レジスタ名だけ違う: 原典は weakness をスクラッチ (r1) に置くが, こちらは r4 に載る
 NON_MATCH void FUN_0800cbd0(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) {
 #ifdef NONMATCHING_C
-  if (a->id != b->id && (a->weakness & 7) && elem->unk_40 == 0) {
+  if (a->id != b->id && (a->weakness & ((1 << WK_SWORD) | (1 << WK_SPEAR) | (1 << WK_HAMMER))) && elem->unk_40 == 0) {
     elem->unk_1c = 1;
     elem->unk_20 = a->weakness;
     elem->unk_24 = a->attributes;

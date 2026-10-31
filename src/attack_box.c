@@ -58,9 +58,9 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 knockback, s32 invincibleTim
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
   if (box->unk_60 == 0) {
-    Hitbox_SetAttack(hitbox, power, knockback, HBATTR_ALL, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, invincibleTime);
+    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, invincibleTime);  // 0x40 は武器以外の攻撃
   } else {
-    Hitbox_SetAttack(hitbox, power, knockback, HBATTR_ALL, HBATTR_18, invincibleTime);
+    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_18, invincibleTime);
   }
 
   hitbox->id = 0x3246;

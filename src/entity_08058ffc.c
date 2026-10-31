@@ -242,15 +242,15 @@ NON_MATCH void FUN_08056f94(HitboxData* a, HitboxData* b, Entity08058ffcElem* el
     angle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
   }
 
-  if (a->weakness & 1) {
+  if (a->weakness & (1 << WK_SWORD)) {
     angle = ArcTan2_8(b->pos.x - gPlayerPtr[0]->mover.pos.x, b->pos.z - gPlayerPtr[0]->mover.pos.z);
     speed = 16;
-  } else if (a->weakness & 2) {
+  } else if (a->weakness & (1 << WK_SPEAR)) {
     speed = 32;
-  } else if (a->weakness & 4) {
+  } else if (a->weakness & (1 << WK_HAMMER)) {
     angle = ArcTan2_8(b->pos.x - a->pos.x, b->pos.z - a->pos.z);
     speed = 24;
-  } else if (a->weakness & 8) {
+  } else if (a->weakness & (1 << WK_OTHERS)) {
     speed = 8;
   } else {
     speed = 16;

@@ -70,7 +70,7 @@ BambooShoot* FUN_08009b10(BambooShootManager* p) {
 }
 
 void BambooShoot_OnHurt(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
-  if (!Hitbox_TestAttr(a, HBATTR_14) && !Hitbox_HasWeakness(a, HBATTR_ALL | HBATTR_BEAST | HBATTR_THING)) {
+  if (!Hitbox_TestAttr(a, HBATTR_14) && !Hitbox_HasWeakness(a, 0x40 | 0x80 | 0x100)) {
     b->hitResult = HBRESULT_NORMAL;
     shoot->unk_02 = 1;
     shoot->unk_0a = 0;

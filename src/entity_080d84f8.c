@@ -60,7 +60,7 @@ void Entity080d84f8_InitHitbox(Entity080d84f8* p, HitboxData* hitbox, s32 ignore
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, attrs, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, unk_40, 0x40, attrs, invincibleTime);  // 0x40 は武器以外の攻撃
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
