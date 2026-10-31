@@ -1146,12 +1146,13 @@ void FUN_080874cc(Coffin* p) {
   }
 }
 
-// 残差9命令, 原典は unk_1c != 0 を 0/1 のフラグ (r2) に落としてから || の残りを見る bool diamond 形
-// && の早期 return では materialize が消えて短くなる, Tier A-B は試済, 未: bool diamond の再現方法
+// 88/89命令, 属性は a->attributes (0x38) でなく a->weakness (0x34) を見ている, timer = 8 は各分岐に置くと共通末尾に畳まれて揃う
+// 残差は unk_1c / ignoreMask / weakness の || の飛び先 (原典は unk_1c != 0 だけ 0/1 に落としてから見る) と p の写しの位置, 試済: || をローカルに受ける, 三項演算子, inline の述語
 NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
 #ifdef NONMATCHING_C
   s32 damage;
   s32 timer;
+  bool32 canHit;
 
   if (a->flags & HBFLAG_UNK_11) {
     return;
@@ -1159,7 +1160,8 @@ NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
   if (p->unk_1b == 1) {
     return;
   }
-  if (p->unk_1c == 0 && !(a->ignoreMask & 1) && !(a->attributes & HBATTR_ALL)) {
+  canHit = p->unk_1c != 0 || (a->ignoreMask & 1) || (a->weakness & HBATTR_ALL);
+  if (!canHit) {
     return;
   }
   if (p->unk_332 != 0) {
@@ -1169,20 +1171,24 @@ NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
     return;
   }
 
-  timer = 8;
-  if (a->attributes & HBATTR_SOL) {
+  if (a->weakness & HBATTR_SOL) {
     damage = 200;
-  } else if (a->attributes & HBATTR_DARK) {
+    timer = 8;
+  } else if (a->weakness & HBATTR_DARK) {
     damage = 300;
     timer = 12;
-  } else if (a->attributes & HBATTR_FLAME) {
+  } else if (a->weakness & HBATTR_FLAME) {
     damage = 500;
-  } else if (a->attributes & HBATTR_FROST) {
+    timer = 8;
+  } else if (a->weakness & HBATTR_FROST) {
     damage = 150;
-  } else if (a->attributes & HBATTR_CLOUD) {
+    timer = 8;
+  } else if (a->weakness & HBATTR_CLOUD) {
     damage = 500;
+    timer = 8;
   } else {
     damage = 400;
+    timer = 8;
   }
   FUN_080873b4(p, damage);
   p->unk_330 = 4;
