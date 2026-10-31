@@ -170,6 +170,7 @@ void FUN_081d21d8(Elevator* e) {
   }
 }
 
+// pos がいずれかのエレベータの範囲 (gElevatorRange0) に入っていればそれを返す
 Elevator* Elevator_FindAtPos(Vec3* pos) {
   ElevatorManager* p = gElevatorManager;
   s32 i;
@@ -1555,7 +1556,7 @@ void (*const sElevatorUpdates[7])(Elevator*) = {
     Elevator_UpdateState6,
 };  // 0x085AE0E8
 
-// 残差は usedMask のアドレスをループ外に括り出すかどうかのみ (原典は毎周 p+0x12AC を作り直す), Tier A-C は試済 (e の持ち方, ネスト, TEST_FLAGS/& の書き分け)
+// 残差は usedMask のアドレスをループ外に括り出すかどうかのみ (133/129, 原典は毎周 p+0x12AC を作り直す), Tier A-C は試済 (e の持ち方, ネスト, TEST_FLAGS/& の書き分け, スロット判定 inline の引数の形)
 NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 #ifdef NONMATCHING_C
   Elevator* elevators = p->elevators;
@@ -1576,16 +1577,18 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 
   for (i = 0; i < 12; i++) {
     if (Elevator_IsSlotUsed(p, i) && elevators[i].state != 6) {
-      elevators[i].unk_d8(&elevators[i]);
-      sElevatorUpdates[elevators[i].state](&elevators[i]);
-      elevators[i].unk_dc(&elevators[i]);
-      elevators[i].unk_e0(&elevators[i]);
-      Elevator_UpdateTileOverrides(&elevators[i]);
-      FUN_081d4540(&elevators[i]);
-      FUN_081d276c(&elevators[i]);
+      Elevator* e = &elevators[i];
+
+      elevators[i].unk_d8(e);
+      sElevatorUpdates[elevators[i].state](e);
+      elevators[i].unk_dc(e);
+      elevators[i].unk_e0(e);
+      Elevator_UpdateTileOverrides(e);
+      FUN_081d4540(e);
+      FUN_081d276c(e);
       elevators[i].sprite.pos = elevators[i].mover.pos;
       elevators[i].sprite.pos.x -= Q8(1);
-      Elevator_UpdateShake(&elevators[i]);
+      Elevator_UpdateShake(e);
     }
   }
 
