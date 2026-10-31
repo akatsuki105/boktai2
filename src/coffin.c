@@ -99,7 +99,22 @@ void FUN_08085880(Coffin* p) {
   }
 }
 
-NAKED void FUN_0808596c(Coffin* p) { INCFUNC("asm/func/FUN_0808596c.inc"); }
+void FUN_0808596c(Coffin* p) {
+  Vec3 vel, pos, accel;
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    s32 angle = i << 5;
+    vel.x = POLAR_X(16, angle);
+    vel.y = 0;
+    vel.z = POLAR_Z(16, angle);
+    pos.x = p->mover.pos.x + (vel.x << 3);
+    pos.y = p->mover.pos.y;
+    pos.z = p->mover.pos.z + (vel.z << 3);
+    VEC3_SET(accel, 0, 0, 0);
+    FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+  }
+}
 
 // 残差1命令, 原典は &gRandTableIdx を ip に置いて毎回 [ip] から読み直すが, こちらは値をレジスタに持つため
 // callee-saved を1本多く push する, Tier A-C は試済, 未: per-TU フラグ
