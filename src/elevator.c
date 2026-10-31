@@ -39,19 +39,20 @@ typedef struct Elevator {
   ElevatorFlags flags;               // 0x0B4, see ElevatorFlags
   bool8 arrived;                     // 0x0B6, ノードに着いたら 1, 到着時のスクリプトを呼ぶと 0 に戻る
   u8 unk_b7;                         // 0x0B7
-  u16 unk_b8;                        // 0x0B8, Elevator_UpdateState3 が到着時のスクリプトを呼んだあと 0 に戻す
+  s16 waitTimer;                     // 0x0B8, プレイヤーが乗ってからのフレーム数, waitTime に達すると動き出す
   s16 speed;                         // 0x0BA, '.s=6', 1フレームに動く量
-  u8 unk_bc[0x0C0 - 0x0BC];          // 0x0BC
+  u16 waitTime;                      // 0x0BC, '.w=120', プレイヤーが乗ってから動き出すまでのフレーム数
+  u16 unk_be;                        // 0x0BE
   u16 unk_c0;                        // 0x0C0, '.p', 乗っているプレイヤーが足場を外れて水の上に出たら呼ぶスクリプト
   u16 arriveScriptID;                // 0x0C2, '.R', プレイヤーが乗っているときノードに着いたら呼ぶスクリプト
   u16 departScriptID;                // 0x0C4, '.S', プレイヤーが乗っているときノードを離れたら呼ぶスクリプト
-  s16 unk_c6;                        // 0x0C6, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
+  s16 sinkY;                         // 0x0C6, プレイヤーが乗った瞬間に -32 が入り, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
   u16 unk_c8;                        // 0x0C8, '.T', FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
   u8 unk_ca[0x0CC - 0x0CA];          // 0x0CA
   s32 minY;                          // 0x0CC, '.l', 昇降床が下りる下限の高さ
   s32 maxY;                          // 0x0D0, '.h', 昇降床が上る上限の高さ
   u16 id;                            // 0x0D4, Elevator_FindByID が Player.elevatorID や '.n' の値と比較して探す
-  u16 unk_d6;                        // 0x0D6, '.m', bit1 が立つと昇降床, bit2 が立つと音を鳴らさない, bit4 が立つとプレイヤーが乗っていなくても走行音を鳴らす, bit5 で効果音を選ぶ
+  u16 unk_d6;                        // 0x0D6, '.m', bit0 が立つと乗って waitTime たつと動き出す, bit1 が立つと昇降床, bit2 が立つと音を鳴らさない, bit4 が立つとプレイヤーが乗っていなくても走行音を鳴らす, bit5 で効果音を選ぶ
   ElevatorFunc* unk_d8;              // 0x0D8, ElevatorManager_Update が毎フレーム呼ぶ
   ElevatorFunc* unk_dc;              // 0x0DC
   ElevatorFunc* unk_e0;              // 0x0E0
@@ -441,7 +442,7 @@ void FUN_081d2c10(void) {
 }
 
 // プレイヤーがこのエレベータの上にいるか
-bool32 FUN_081d2c60(Elevator* e) {
+bool8 Elevator_IsPlayerInRange(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
     Vec3 d;
     Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[0]->mover.pos);
@@ -454,16 +455,90 @@ bool32 FUN_081d2c60(Elevator* e) {
   return FALSE;
 }
 
-NAKED void Elevator_UpdateState4(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateState4.inc"); }
+// 端で止まっている昇降床, プレイヤーが waitTime だけ乗っていたら逆向きに動き出す
+void Elevator_UpdateState4(Elevator* e) {
+  if (e->arrived) {
+    ElevatorManager* p = gElevatorManager;
+
+    if (e->id == p->ridingID && e->arriveScriptID != 0) {
+      u32 argv[3];
+      ScriptArgs sa;
+
+      if (e->unk_e7 == 2) {
+        if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
+          argv[0] = 2;
+        } else {
+          argv[0] = 1;
+        }
+      } else {
+        argv[0] = e->pathWalker.nodeIdx;
+      }
+      argv[1] = e->mover.pos.x;
+      argv[2] = e->mover.pos.z;
+      sa.argc = 3;
+      sa.argv = argv;
+      VM_ExecByID(e->arriveScriptID, &sa);
+    }
+    e->arrived = FALSE;
+    e->waitTimer = 1;
+  }
+
+  if (!FUN_081d27c8(e)) {
+    ElevatorManager* p;
+    Elevator* at;
+
+    if (e->unk_d6 & 1) {
+      if (e->waitTimer >= e->waitTime && Elevator_IsPlayerInRange(e)) {
+        e->state = 2;
+        if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
+          CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        } else {
+          SET_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+        }
+        e->waitTimer = 0;
+        e->arrived = TRUE;
+        p = gElevatorManager;
+        if (e->id == p->ridingID && e->departScriptID != 0) {
+          u32 arg = e->id;
+          ScriptArgs sa;
+
+          sa.argc = 1;
+          sa.argv = &arg;
+          VM_ExecByID(e->departScriptID, &sa);
+        }
+        return;
+      }
+      if (e->waitTimer > e->waitTime - 10) {
+        SET_FLAGS(e->flags, ELEVATOR_SHAKE);
+      }
+    }
+
+    at = Elevator_FindAtPos(&gPlayerPtr[0]->mover.pos);
+    if (at != NULL) {
+      if (at->id == e->id) {
+        if (!Elevator_TestFlags(e, ELEVATOR_FLAG_12) && e->waitTimer == 0) {
+          e->sinkY = -32;
+          PlaySound_082406e0(SONG_546);
+        }
+        if (e->waitTimer < 32000) {
+          e->waitTimer++;
+        }
+      }
+    } else {
+      e->waitTimer = 0;
+      e->sinkY = 0;
+    }
+  }
+}
 
 // 沈み込みを戻しつつ, 揺れフラグが立っていればスプライト位置を乱数で揺らす
 // 残差11命令 (81/92): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す (2箇所)
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (93/92)
 NON_MATCH void Elevator_UpdateShake(Elevator* e) {
 #ifdef NONMATCHING_C
-  if (e->unk_c6 < 0) {
-    e->sprite.pos.y += e->unk_c6;
-    e->unk_c6 = Div(e->unk_c6, 2);
+  if (e->sinkY < 0) {
+    e->sprite.pos.y += e->sinkY;
+    e->sinkY = Div(e->sinkY, 2);
   }
 
   if (!Elevator_TestFlags(e, ELEVATOR_UNK_7)) {
@@ -505,7 +580,7 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
       sa.argv = argv;
       VM_ExecByID(e->arriveScriptID, &sa);
     }
-    e->unk_b8 = 0;
+    e->waitTimer = 0;
     e->arrived = FALSE;
   }
 
