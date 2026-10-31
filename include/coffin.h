@@ -51,7 +51,7 @@ typedef struct Coffin {
   u16 unk_32e;                // 0x32E, unk_31c の写し (つまり coffinID の写し), これに 519 を足したものがパレット行
   u16 unk_330;                // 0x330, 0 でない間は unk_32e を 9 に固定して毎フレーム減る
   u16 unk_332;                // 0x332
-  u16 unk_334;                // 0x334, 0x40 を上限に増減するカウンタ
+  u16 plttBlend;              // 0x334, pltt をパレット行 8 に寄せる割合 (/64), 太陽の魔法陣の中か unk_406 が立つ間は 64 まで増え, 外では 0 まで減る
   u8 unk_336[4];              // 0x336
   u8 unk_33a;                 // 0x33A
   bool8 effSpriteAdded;       // 0x33B, effSprite を AuxSprite_Add 済みなら 1

@@ -144,7 +144,29 @@ NON_MATCH void FUN_08085b34(Coffin* p) {
 #endif
 }
 
-NAKED void FUN_08085bd0(Coffin* p) { INCFUNC("asm/func/FUN_08085bd0.inc"); }
+// 棺桶のパレット行と行 8 を plttBlend / 64 の割合で混ぜて pltt に書く
+void Coffin_BlendPltt(Coffin* p) {
+  rgb555* src1 = &gObjPlttData[(p->unk_31c + 519) * 16];
+  rgb555* src2 = &gObjPlttData[527 * 16];
+  s32 u = 64 - p->plttBlend;
+  s32 t = p->plttBlend;
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    s32 r1 = *src1 & 0x1F;
+    s32 g1 = (*src1 >> 5) & 0x1F;
+    s32 b1 = (*src1 >> 10) & 0x1F;
+    s32 r2 = *src2 & 0x1F;
+    s32 g2 = (*src2 >> 5) & 0x1F;
+    s32 b2 = (*src2 >> 10) & 0x1F;
+    s32 r = ((u * r1 + t * r2) >> 6) & 0x1F;
+    s32 g = ((u * g1 + t * g2) >> 6) & 0x1F;
+    s32 b = ((u * b1 + t * b2) >> 6) & 0x1F;
+    p->pltt[i] = r | (g << 5) | (b << 10);
+    src1++;
+    src2++;
+  }
+}
 
 // 棺桶ごとのパレットを読み, 自前のバッファに複写して gfx をそちらへ向ける
 void FUN_08085cb0(Coffin* p, s32 coffinID) {
@@ -162,11 +184,11 @@ void FUN_08085cb0(Coffin* p, s32 coffinID) {
 
 void FUN_08085cec(Coffin* p) {
   if (p->inSolarCircle || p->unk_406 != 0) {
-    if (p->unk_334 < 64) {
-      p->unk_334++;
+    if (p->plttBlend < 64) {
+      p->plttBlend++;
     }
-  } else if (p->unk_334 != 0) {
-    p->unk_334--;
+  } else if (p->plttBlend != 0) {
+    p->plttBlend--;
   }
 
   if (p->unk_330 != 0) {
@@ -175,9 +197,9 @@ void FUN_08085cec(Coffin* p) {
       FUN_08085cb0(p, 9);
     }
     p->unk_330--;
-  } else if (p->unk_334 != 0) {
+  } else if (p->plttBlend != 0) {
     p->unk_32e = 8;
-    FUN_08085bd0(p);
+    Coffin_BlendPltt(p);
   } else {
     if (p->unk_32e != p->unk_31c) {
       p->unk_32e = p->unk_31c;
