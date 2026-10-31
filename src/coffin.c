@@ -21,6 +21,7 @@ s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 struct ElevatorUnkData* Elevator_FindAtPos(Vec3* pos);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
+void FUN_080dab9c(s32 idx);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -1555,7 +1556,84 @@ NON_MATCH void Coffin_UpdateState4(Coffin* p) {
 #endif
 }
 
-NAKED void Coffin_UpdateState2(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState2.inc"); }
+// 291/292命令, 残差はレジスタ割当: 原典は gGameFlags のゼロを r5, range を r6 に置き, 大きいほうの乱数2回は table を r6 / &gRandTableIdx を ip に置く, また小さいほうの3回目の乱数で gRandomTable を読み直す (FUN_08087a5c と同じ)
+// 試済: Random / _Random(table), table の宣言位置とブロック, damage のローカル化
+NON_MATCH void Coffin_UpdateState2(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (p->state != 2) {
+    Coffin_SetState(p, 2);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_398 > 64) {
+    u16* table;
+
+    p->unk_32a = 2;
+    if (p->unk_3a0 >= 0) {
+      FUN_080dab9c(p->unk_3a0);
+    }
+    if (p->unk_39e == 2) {
+      VEC3_SET(p->hitbox.halfSize, Q8(1), Q8(0.125), Q8(1));
+      p->unk_39e = 1;
+    } else if (p->unk_39e == 1) {
+      VEC3_SET(p->hitbox.halfSize, Q8(0.5), Q8(0.125), Q8(0.5));
+      p->unk_39e = 0;
+    }
+    Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
+    Hitbox_Register(&p->hitbox);
+    if ((p->unk_398 & 0x1F) == 0) {
+      p->facing = (p->facing + Mod(Random(), 3) - 1) & 7;
+      FUN_08086024(p, 0);
+    }
+    table = gRandomTable;
+    p->unk_31e = (_Random(table) & 0x3F) - 31;
+    p->unk_322 = (_Random(table) & 0x3F) - 31;
+    if ((p->unk_398 & 7) == 0) {
+      FUN_08085880(p);
+    }
+    if (p->unk_326 != 0) {
+      s32 damage = p->unk_326 >> 3;
+      if (p->unk_398 < damage + 64) {
+        p->unk_398 = 64;
+      } else {
+        p->unk_398 -= damage;
+      }
+      p->unk_326 = 0;
+      p->unk_324 = 0;
+    }
+  } else {
+    s32 range = p->unk_398 >> 1;
+    u16* table;
+
+    if (range < 2) {
+      range = 2;
+    }
+    table = gRandomTable;
+    p->unk_31e = Mod(_Random(table), range) - (range >> 1);
+    p->unk_322 = Mod(_Random(table), range) - (range >> 1);
+    p->unk_32a = 0;
+    p->unk_326 = 0;
+    p->unk_324 = 0;
+    if ((++p->unk_39c & 7) == 0 && (Random() & 1)) {
+      PlaySound_082406e0(SONG_697);
+    }
+  }
+
+  if (--p->unk_398 == 0) {
+    if (p->unk_1b == 1) {
+      Coffin_SetState(p, 15);
+      p->unk_402 = 30;
+    } else {
+      FUN_080860cc(p);
+    }
+  }
+#else
+  INCFUNC("asm/func/Coffin_UpdateState2.inc");
+#endif
+}
 
 // 多分、棺桶が(変な場所に入ったりして回収不可能になったときに)ボス部屋に戻るときのアニメーション処理
 void Coffin_UpdateState9(Coffin* p) {
