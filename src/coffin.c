@@ -7,6 +7,7 @@
 #include "global.h"
 #include "inventory.h"
 #include "item.h"
+#include "map_inline.h"
 #include "particle.h"
 #include "random.h"
 #include "sound.h"
@@ -739,7 +740,32 @@ void Coffin_InitSprite(Coffin* p) {
   p->unk_322 = 0;
 }
 
-NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
+// '.p' の位置を地面の高さに合わせて初期位置にし, mover を作って敵の狙い先に登録する
+void Coffin_InitMover(Coffin* p) {
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(p->pos_1f8, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(p->pos_1f8, 0, 0, 0);
+  }
+  p->pos_1f8.y = TileHeightAt(&p->pos_1f8);
+  p->sprite.pos = p->pos_1f8;
+  p->unk_3c4 = p->pos_1f8;
+  p->unk_388 = p->pos_1f8;
+
+  Mover_Init(&p->mover, p->subroutineID, &p->pos_1f8, 0, 6, p);
+  Mover_SetAuxSprite(&p->mover, &p->sprite);
+  p->mover.angle = ((p->facing + 5) & 7) * 32;
+  p->zoneEvent.id = p->mover.id;
+  if (p->coffinID != COFFIN_SILVER) {
+    if (p->unk_1c == 0) {
+      EnemyTargetManager_Add(&p->target, &p->mover, ETGT_0);
+    } else {
+      EnemyTargetManager_Add(&p->target, &p->mover, ETGT_2);
+    }
+    p->unk_1f4 = TRUE;
+  }
+  FUN_08002a48(&p->mover);
+}
 
 void Coffin_InitHurtbox(Coffin* p) {
   HitboxData* hurtbox = &p->hurtbox;
@@ -1317,7 +1343,7 @@ s32 Coffin_Destroy(Coffin* p) {
 s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   Coffin_Init_Helper_08086df8(p, id);
   Coffin_InitSprite(p);
-  FUN_08087058(p);
+  Coffin_InitMover(p);
   Coffin_Init_Helper_08086e64(p);
   Coffin_InitHurtbox(p);
   Coffin_InitHitbox(p);

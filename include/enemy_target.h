@@ -28,6 +28,7 @@ typedef struct EnemyTarget {
 } EnemyTarget;
 static_assert(sizeof(EnemyTarget) == 16);
 
+bool32 EnemyTargetManager_Add(EnemyTarget* node, Mover* owner, s32 kindMask);
 void EnemyTargetManager_Remove(EnemyTarget* t);
 void EnemyTargetManager_Release(EnemyTarget* t);
 EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask);
