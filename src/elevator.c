@@ -359,25 +359,18 @@ void FUN_081d276c(Elevator* e) {
   }
 }
 
-// プレイヤーか不死の棺桶のどちらか一方だけが乗っていて、かつ行動6 (乗り込み中?) かどうか
-// 残差は gPlayerPtr のアドレスの扱いだけ (29対29), 原典は r4 に置いて2回読むがこちらはプール定数を2回ロードする
-NON_MATCH bool8 FUN_081d27c8(Elevator* e) {
-#ifdef NONMATCHING_C
-  if (FUN_0807a954(gPlayerPtr[0], 1)) {
-    if (FUN_08086978(3)) {
-      return FALSE;
-    }
-  } else if (!FUN_08086978(3)) {
+// プレイヤーと棺桶のどちらか一方だけが乗っていて, プレイヤーが棺桶を引いている (積み下ろしの途中) かどうか
+bool8 Elevator_IsLoadingCoffin(Elevator* e) {
+  Player** players = gPlayerPtr;
+
+  if (FUN_0807a954(players[0], 1) ? FUN_08086978(3) : !FUN_08086978(3)) {
     return FALSE;
   }
 
-  if (gPlayerPtr[0]->action != PACT_PULL_COFFIN) {
+  if (players[0]->action != PACT_PULL_COFFIN) {
     return FALSE;
   }
   return TRUE;
-#else
-  INCFUNC("asm/func/FUN_081d27c8.inc");
-#endif
 }
 
 void Elevator_UpdateState0(Elevator* e) {}
@@ -597,7 +590,7 @@ void Elevator_UpdateState4(Elevator* e) {
     e->timer = 1;
   }
 
-  if (!FUN_081d27c8(e)) {
+  if (!Elevator_IsLoadingCoffin(e)) {
     ElevatorManager* p;
     Elevator* at;
 
@@ -671,7 +664,7 @@ NON_MATCH void Elevator_UpdateShake(Elevator* e) {
 #endif
 }
 
-// 残差は後半の gElevatorManager のアドレスを原典が FUN_081d27c8 の前に r6 へ先読みして持つ点のみ (143/143), 前半は Elevator_UpdateState4 と同じくブロック内の p で一致
+// 残差は後半の gElevatorManager のアドレスを原典が Elevator_IsLoadingCoffin の前に r6 へ先読みして持つ点のみ (143/143), 前半は Elevator_UpdateState4 と同じくブロック内の p で一致
 // Tier A-C は試済 (比較の向き, 判定の分け方, walker ローカル, argv[0] の書き方, p ローカルの置き場所)
 NON_MATCH void Elevator_UpdateState3(Elevator* e) {
 #ifdef NONMATCHING_C
@@ -701,7 +694,7 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
     e->arrived = FALSE;
   }
 
-  if (!FUN_081d27c8(e)) {
+  if (!Elevator_IsLoadingCoffin(e)) {
     PathWalker* walker = &e->pathWalker;
 
     if (walker->unk_3++ >= (walker->node->delay & 0xFFF)) {

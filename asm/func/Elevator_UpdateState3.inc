@@ -84,7 +84,7 @@ _081D3060:
 _081D306E:
 	ldr r6, _081D30F4 @ =0x03000194
 	adds r0, r5, #0
-	bl FUN_081d27c8
+	bl Elevator_IsLoadingCoffin
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081D3108
