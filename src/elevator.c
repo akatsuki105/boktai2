@@ -155,7 +155,7 @@ static inline bool8 IsFloorTileAt(s32 idx, s32 height) {
 
 static inline bool8 Elevator_PlayArrivalSoundAt(s32 idx, s32 height) {
   if (IsFloorTileAt(idx, height)) {
-    PlaySound_082406e0(SONG_337);
+    PlaySound_082406e0(SE_THUD);
     return TRUE;
   }
   return FALSE;
@@ -171,19 +171,19 @@ void FUN_081d21d8(Elevator* e) {
       }
       case 1:
       case 2: {
-        PlaySound_082406e0(SONG_609);
+        PlaySound_082406e0(SE_ELEV_MECHA_V);
         break;
       }
       case 3: {
         if (e->unk_d6 & 0x20) {
           PlaySound_082406e0(SONG_344);
         } else {
-          PlaySound_082406e0(SONG_609);
+          PlaySound_082406e0(SE_ELEV_MECHA_V);
         }
         break;
       }
       default: {
-        PlaySound_082406e0(SONG_609);
+        PlaySound_082406e0(SE_ELEV_MECHA_V);
         break;
       }
     }
@@ -422,9 +422,9 @@ void Elevator_UpdateState2(Elevator* e) {
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
         sound_08240740(SONG_344);
-        sound_08240740(SONG_609);
-        sound_08240740(SE_ELEV_MECHA);
-        sound_08240740(SONG_650);
+        sound_08240740(SE_ELEV_MECHA_V);
+        sound_08240740(SE_ELEV_MECHA_H);
+        sound_08240740(SE_ELEV_LAVA);
         sound_08240740(SE_ELEV_WATER);
         PlaySound_082406e0(SONG_345);
       }
@@ -445,9 +445,9 @@ void Elevator_UpdateState2(Elevator* e) {
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
         sound_08240740(SONG_344);
-        sound_08240740(SONG_609);
-        sound_08240740(SE_ELEV_MECHA);
-        sound_08240740(SONG_650);
+        sound_08240740(SE_ELEV_MECHA_V);
+        sound_08240740(SE_ELEV_MECHA_H);
+        sound_08240740(SE_ELEV_LAVA);
         sound_08240740(SE_ELEV_WATER);
         PlaySound_082406e0(SONG_345);
       }
@@ -480,8 +480,8 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
       if (p->elevators[i].state != STATE_H_MOVE) {
         if (p->soundPlaying == TRUE) {
           sound_08240740(SE_ELEV_WATER);
-          sound_08240740(SONG_650);
-          sound_08240740(SE_ELEV_MECHA);
+          sound_08240740(SE_ELEV_LAVA);
+          sound_08240740(SE_ELEV_MECHA_H);
           p->soundPlaying = FALSE;
         }
       } else if (p->soundPlaying == FALSE) {
@@ -489,7 +489,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
 
         switch (p->elevators[i].kind) {
           case ELEVATOR_H_0: {
-            id = SONG_650;
+            id = SE_ELEV_LAVA;
             break;
           }
           case ELEVATOR_H_3: {
@@ -497,7 +497,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
             break;
           }
           default: {
-            id = SE_ELEV_MECHA;
+            id = SE_ELEV_MECHA_H;
             break;
           }
         }
@@ -518,8 +518,8 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
     if (e->state != STATE_H_MOVE) {
       if (p->soundPlaying == TRUE) {
         sound_08240740(SE_ELEV_WATER);
-        sound_08240740(SONG_650);
-        sound_08240740(SE_ELEV_MECHA);
+        sound_08240740(SE_ELEV_LAVA);
+        sound_08240740(SE_ELEV_MECHA_H);
         p->soundPlaying = FALSE;
       }
     } else if (p->soundPlaying == FALSE) {
@@ -527,7 +527,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
 
       switch (e->kind) {
         case ELEVATOR_H_0: {
-          id = SONG_650;
+          id = SE_ELEV_LAVA;
           break;
         }
         case ELEVATOR_H_3: {
@@ -535,7 +535,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
           break;
         }
         default: {
-          id = SE_ELEV_MECHA;
+          id = SE_ELEV_MECHA_H;
           break;
         }
       }
@@ -544,8 +544,8 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
     }
   } else if (p->soundPlaying == TRUE) {
     sound_08240740(SE_ELEV_WATER);
-    sound_08240740(SONG_650);
-    sound_08240740(SE_ELEV_MECHA);
+    sound_08240740(SE_ELEV_LAVA);
+    sound_08240740(SE_ELEV_MECHA_H);
     p->soundPlaying = FALSE;
   }
 #else
@@ -640,7 +640,7 @@ void Elevator_UpdateState4(Elevator* e) {
       if (at->id == e->id) {
         if (!Elevator_TestFlags(e, ELEVATOR_FLAG_12) && e->timer == 0) {
           e->sinkY = -32;
-          PlaySound_082406e0(SONG_546);
+          PlaySound_082406e0(SE_ELEV_MECHA_V_RIDE);
         }
         if (e->timer < 32000) {
           e->timer++;
@@ -1556,9 +1556,9 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 
   if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     sound_08240740(SONG_344);
-    sound_08240740(SONG_609);
-    sound_08240740(SE_ELEV_MECHA);
-    sound_08240740(SONG_650);
+    sound_08240740(SE_ELEV_MECHA_V);
+    sound_08240740(SE_ELEV_MECHA_H);
+    sound_08240740(SE_ELEV_LAVA);
     sound_08240740(SE_ELEV_WATER);
     return 0;
   }
@@ -1594,9 +1594,9 @@ s32 ElevatorManager_Destroy(ElevatorManager* p) {
   s32 i;
 
   sound_08240740(SONG_344);
-  sound_08240740(SONG_609);
-  sound_08240740(SE_ELEV_MECHA);
-  sound_08240740(SONG_650);
+  sound_08240740(SE_ELEV_MECHA_V);
+  sound_08240740(SE_ELEV_MECHA_H);
+  sound_08240740(SE_ELEV_LAVA);
   sound_08240740(SE_ELEV_WATER);
 
   for (i = 0; i < 12; i++) {

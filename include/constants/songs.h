@@ -44,10 +44,10 @@
 #define SONG_40 40
 #define SONG_41 41
 #define SONG_42 42
-#define SONG_43 43
-#define SONG_44 44
-#define SONG_45 45
-#define SONG_46 46
+#define BGM_HEN1 43  // 変異域B1
+#define BGM_HEN2 44  // 変異域B2
+#define BGM_HEN3 45  // 変異域B3
+#define BGM_HEN4 46  // 変異域B4
 #define SONG_47 47
 #define SONG_48 48
 #define SONG_49 49
@@ -338,7 +338,7 @@
 #define SONG_334 334
 #define SONG_335 335
 #define SONG_336 336
-#define SONG_337 337
+#define SE_THUD 337  // 移動床が端についたときのSE(昇降床は別), 他の用途でも使われてそう
 #define SONG_338 338
 #define SONG_339 339
 #define SONG_340 340
@@ -547,7 +547,7 @@
 #define SONG_543 543
 #define SONG_544 544
 #define SONG_545 545
-#define SONG_546 546
+#define SE_ELEV_MECHA_V_RIDE 546  // SPRITE_LIFT_MECHA (昇降床) の有効範囲に入ったときのSE
 #define SONG_547 547
 #define SONG_548 548
 #define SONG_549 549
@@ -610,7 +610,7 @@
 #define SONG_606 606
 #define SONG_607 607
 #define SONG_608 608
-#define SONG_609 609
+#define SE_ELEV_MECHA_V 609  // SPRITE_LIFT_MECHA の動作音 (SE_ELEV_MECHA_H の昇降床版)
 #define SONG_610 610
 #define SONG_611 611
 #define SONG_612 612
@@ -649,9 +649,9 @@
 #define SONG_645 645
 #define SONG_646 646
 #define SONG_647 647
-#define SE_ELEV_WATER 648  // 地下水路などでの移動床の動作音
-#define SE_ELEV_MECHA 649  // SPRITE_LIFT_MECHA の動作音
-#define SONG_650 650
+#define SE_ELEV_WATER 648    // 地下水路などでの移動床の動作音
+#define SE_ELEV_MECHA_H 649  // SPRITE_LIFT_MECHA の動作音 (SE_ELEV_MECHA_V の移動床版)
+#define SE_ELEV_LAVA 650     // マグマの移動床の動作音
 #define SONG_651 651
 #define SONG_652 652
 #define SE_FSTEP_STAIRS_0 653  // 階段の登り降り時の足音 (SE_FSTEP_STAIRS_1 と交互に鳴らす)
@@ -910,9 +910,9 @@
 #define SE_SWAP_SLOT 906  // インベントリのスロットをスワップする時の音
 #define SONG_907 907
 #define SONG_908 908
-#define SONG_909 909
+#define SE_SPEAR_ATK_B 909  // 黒ジャンゴでの槍攻撃SE
 #define SONG_910 910
-#define SONG_911 911
+#define SE_SPEAR_ATK_R 911  // 赤ジャンゴでの槍攻撃SE
 #define SONG_912 912
 #define SONG_913 913
 #define SE_MAGIC_DASH 914  // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)

@@ -8349,9 +8349,9 @@ void FUN_080740b0(Player* p) {
       bool32 done;
       if (p->stateTimer == 0) {
         if (p->kind == PLAYER_SOLAR_DJANGO) {
-          PlaySound_082406e0(SONG_911);
+          PlaySound_082406e0(SE_SPEAR_ATK_R);
         } else {
-          PlaySound_082406e0(SONG_909);
+          PlaySound_082406e0(SE_SPEAR_ATK_B);
         }
         p->stateTimer++;
       }
