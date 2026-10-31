@@ -228,7 +228,7 @@ _0806E308:
 	mov r4, r8
 	adds r4, #0x2c
 	adds r0, r4, #0
-	bl Entity1DBE_TouchElemNear
+	bl IsInPuddle
 	adds r6, r0, #0
 	cmp r6, #0
 	beq _0806E35C

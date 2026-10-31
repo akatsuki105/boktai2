@@ -53,7 +53,7 @@ void FUN_080f54e4(Enemy* p, s32 param_2);
 bool8 FUN_080e4b3c(Enemy* p);
 void Enemy_SnapToFloor(Enemy* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
-bool32 Entity1DBE_TouchElemNear(WorldPos* pos);
+bool32 IsInPuddle(WorldPos* pos);
 s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit);
 s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 lifeBase, s32 lifeRandMask);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
@@ -314,7 +314,7 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
         tick = p->sprite->s.animCmdTimer;
       }
       if (tick == 0 && TEST_FLAGS(p->flags2, ENEFLAG2_UNK_16)) {
-        Entity1DBE_TouchElemNear(&p->mover.pos);
+        IsInPuddle(&p->mover.pos);
         CLEAR_FLAGS(p->flags2, ENEFLAG2_UNK_16);
       }
     }

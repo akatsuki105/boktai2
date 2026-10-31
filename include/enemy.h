@@ -73,7 +73,7 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_11 (1 << 11)  // 0x00000800, FUN_080e49c4 が立っているときだけ ENEFLAG4_UNK_12 へ進む
 #define ENEFLAG2_UNK_14 (1 << 14)  // 0x00004000, FUN_080f6868 が落とす
 #define ENEFLAG2_UNK_15 (1 << 15)  // 0x00008000, 立っていると FUN_080f00ec が見つかった回数を数えない
-#define ENEFLAG2_UNK_16 (1 << 16)  // 0x00010000, FUN_080e191c がアニメの頭で Entity1DBE_TouchElemNear を呼んで落とす
+#define ENEFLAG2_UNK_16 (1 << 16)  // 0x00010000, FUN_080e191c がアニメの頭で IsInPuddle を呼んで落とす
 #define ENEFLAG2_UNK_17 (1 << 17)  // 0x00020000, FUN_080ecf18 / FUN_080ed020 が「数えない敵」の判定に使う
 #define ENEFLAG2_UNK_18 (1 << 18)  // 0x00040000, FUN_080e6978 が状態21へ入るときに立てる
 #define ENEFLAG2_UNK_19 (1 << 19)  // 0x00080000, FUN_080f44f4 が立てる

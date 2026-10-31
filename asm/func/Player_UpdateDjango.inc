@@ -118,7 +118,7 @@ _08078E46:
 	cmp r0, #1
 	bne _08078E5E
 	adds r0, r5, #0
-	bl Player_CheckTileHit
+	bl Player_CheckPuddleHurt
 _08078E5E:
 	adds r0, r5, #0
 	bl FUN_0806623c

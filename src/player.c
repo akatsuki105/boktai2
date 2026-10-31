@@ -38,7 +38,7 @@ void Entity080acd4c_Spawn(Vec3* pos);
 void FUN_08050d10(void);
 s32 FUN_08020358(u32 id);
 s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
-bool32 Entity1DBE_TouchElemNear(WorldPos* pos);
+bool32 IsInPuddle(WorldPos* pos);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd);
 void FUN_08072724(Player* p);
@@ -3561,9 +3561,9 @@ s32 FUN_08065cb8(Player* p) {
   return 10;
 }
 
-// 今踏んでいるタイルの中心座標を knockbackTileCenter に入れて knockbackOrigin から参照させる
-void Player_CheckTileHit(Player* p) {
-  if (Entity1DBE_TouchElemNear(&p->mover.pos) && p->tileKnockback == 0) {
+// 黒ジャンゴ or Cマウス は水溜まりに触るとダメージを受けてノックバックする
+void Player_CheckPuddleHurt(Player* p) {
+  if (IsInPuddle(&p->mover.pos) && p->tileKnockback == 0) {
     s32 bx = Mod(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 bz = Div(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
 
@@ -4805,7 +4805,7 @@ void Player_UpdatePullCoffin(Player* p) {
   }
 
   if (moving && (s16)p->facingHistory[1] >= 0 && !(p->human.animCmdIdx & 3) && p->human.animCmdTimer == 0 && !HasGoodCond(p, GOOD_NINJA)) {
-    if (Entity1DBE_TouchElemNear(&p->mover.pos)) {
+    if (IsInPuddle(&p->mover.pos)) {
       if (p->human.animCmdIdx == 0) {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       } else {
@@ -6430,7 +6430,7 @@ void Player_UpdateMouseWalk(Player* p) {
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 1, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
   if (p->beastAnim.cmdIdx == 2 && p->beastAnim.tick == 0) {
-    if (Entity1DBE_TouchElemNear(&p->mover.pos)) {
+    if (IsInPuddle(&p->mover.pos)) {
       if (p->unk_383[3]) {
         p->unk_383[3] = 0;
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
@@ -6709,7 +6709,7 @@ NON_MATCH void Player_UpdateSleepingWalk(Player* p) {
   AuxAnim_SetAnim(&p->beastAnim, p->coffinAnim, 32, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
   if (walking && !(p->beastAnim.cmdIdx & 1) && p->beastAnim.tick == 0) {
-    if (Entity1DBE_TouchElemNear(&p->mover.pos)) {
+    if (IsInPuddle(&p->mover.pos)) {
       if (p->beastAnim.cmdIdx == 0) {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       } else if (p->beastAnim.cmdIdx == 2) {
@@ -9120,7 +9120,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
       }
       FUN_08065b7c(p);
       if (p->kind == PLAYER_DARK_DJANGO) {
-        Player_CheckTileHit(p);
+        Player_CheckPuddleHurt(p);
       }
       FUN_0806623c(p);
 
@@ -9516,7 +9516,7 @@ void Player_UpdateMouse(Player* p) {
         Player_UpdateCameraLookAt(p);
       }
       FUN_08065b7c(p);
-      Player_CheckTileHit(p);
+      Player_CheckPuddleHurt(p);
       FUN_0806623c(p);
       break;
     }

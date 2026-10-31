@@ -703,7 +703,7 @@ _080E1E54:
 	cmp r0, #0
 	beq _080E1E78
 	ldr r0, [sp, #0x10]
-	bl Entity1DBE_TouchElemNear
+	bl IsInPuddle
 	ldr r1, _080E1E9C @ =0xFFFEFFFF
 	ldr r0, [r4]
 	ands r0, r1

@@ -147,7 +147,7 @@ _0809FA60:
 	ldr r2, _0809FA7C @ =FUN_0809f8e4
 	adds r0, r4, #0
 	movs r1, #2
-	bl Entity1DBEElem_SetState
+	bl Puddle_SetState
 _0809FA6E:
 	add sp, #0x14
 	pop {r3}
