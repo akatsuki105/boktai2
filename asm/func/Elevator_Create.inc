@@ -230,7 +230,7 @@ _081D4974:
 	movs r0, #1
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D49BC @ =Elevator_KnockbackRider
+	ldr r0, _081D49BC @ =Elevator_KnockbackPlayer
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D49C0 @ =Elevator_ClampCoffinOnSpecialTile
@@ -256,7 +256,7 @@ _081D49B8:
 	strh r7, [r5]
 	b _081D4B4E
 	.align 2, 0
-_081D49BC: .4byte Elevator_KnockbackRider
+_081D49BC: .4byte Elevator_KnockbackPlayer
 _081D49C0: .4byte Elevator_ClampCoffinOnSpecialTile
 _081D49C4: .4byte Elevator_UpdateTileOverride
 _081D49C8:
@@ -270,7 +270,7 @@ _081D49C8:
 	movs r0, #1
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D4A10 @ =Elevator_KnockbackRider
+	ldr r0, _081D4A10 @ =Elevator_KnockbackPlayer
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D4A14 @ =Elevator_ClampCoffinOnSpecialTile
@@ -294,7 +294,7 @@ _081D49C8:
 	strh r0, [r1]
 	b _081D4A9C
 	.align 2, 0
-_081D4A10: .4byte Elevator_KnockbackRider
+_081D4A10: .4byte Elevator_KnockbackPlayer
 _081D4A14: .4byte Elevator_ClampCoffinOnSpecialTile
 _081D4A18: .4byte Elevator_UpdateTileOverride
 _081D4A1C:
@@ -308,7 +308,7 @@ _081D4A1C:
 	strh r7, [r0]
 	mov r1, r8
 	adds r1, #0xd8
-	ldr r0, _081D4A54 @ =Elevator_CheckRiderFallInWater
+	ldr r0, _081D4A54 @ =Elevator_CheckPlayerFallInWater
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D4A58 @ =Elevator_ClampCoffinOffFloor
@@ -327,7 +327,7 @@ _081D4A1C:
 	beq _081D4A66
 	b _081D4A84
 	.align 2, 0
-_081D4A54: .4byte Elevator_CheckRiderFallInWater
+_081D4A54: .4byte Elevator_CheckPlayerFallInWater
 _081D4A58: .4byte Elevator_ClampCoffinOffFloor
 _081D4A5C: .4byte Elevator_UpdateTileOverride
 _081D4A60:
@@ -375,7 +375,7 @@ _081D4AA8:
 	movs r0, #4
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D4AD8 @ =Elevator_ClampRiderToRange
+	ldr r0, _081D4AD8 @ =Elevator_ClampPlayerToRange
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D4ADC @ =Elevator_ClampCoffinPos
@@ -394,7 +394,7 @@ _081D4AA8:
 	beq _081D4AEE
 	b _081D4B20
 	.align 2, 0
-_081D4AD8: .4byte Elevator_ClampRiderToRange
+_081D4AD8: .4byte Elevator_ClampPlayerToRange
 _081D4ADC: .4byte Elevator_ClampCoffinPos
 _081D4AE0: .4byte Elevator_UpdateTileOverride
 _081D4AE4:

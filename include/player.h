@@ -306,7 +306,7 @@ typedef struct Player {
   bool8 originKnockback;            // 0x395, 今の吹き飛ばしが knockbackOrigin から離れる向き, FUN_08065cb8 が立てダメージの行動 (PACT_DAMAGED) の終わりと Player_Unlock が落とす
   bool8 tileHitPending;             // 0x396, 太陽で切り替わる設置物 (Entity1DBE) を踏んだ被弾が保留中, Player_CheckTileHit が立て Player_UpdateDamage が FUN_08065e24 で処理して落とす
   bool8 tileKnockback;              // 0x397, 今の吹き飛ばしが設置物を踏んだことによるもの, FUN_08065e24 が立てダメージの行動 (PACT_DAMAGED) の終わりに落とす, 立っている間 Player_CheckTileHit は何もしない
-  Vec3* knockbackOrigin;            // 0x398, 弾き飛ばす側の位置, この位置から離れる向きに吹き飛ぶ, エレベーター (Elevator_KnockbackRider) が Player_SetKnockbackOrigin で渡すか Player_CheckTileHit が knockbackTileCenter を指させる
+  Vec3* knockbackOrigin;            // 0x398, 弾き飛ばす側の位置, この位置から離れる向きに吹き飛ぶ, エレベーター (Elevator_KnockbackPlayer) が Player_SetKnockbackOrigin で渡すか Player_CheckTileHit が knockbackTileCenter を指させる
   Vec3 knockbackTileCenter;         // 0x39C, Player_CheckTileHit が今踏んでいるタイルの中心を書く
   u8 useForcedDelta;                // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
   u8 unk_3a5[2];                    // 0x3A5, padding?
