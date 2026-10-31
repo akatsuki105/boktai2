@@ -613,7 +613,37 @@ void Elevator_ClampCoffinPos(Elevator* e) {
   SET_FLAGS(e->flags, ELEVATOR_UNK_9);
 }
 
-NAKED void FUN_081d3c24(Elevator* e) { INCFUNC("asm/func/FUN_081d3c24.inc"); }
+// 乗っている棺桶が特殊床の上で足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampCoffinOnSpecialTile(Elevator* e) {
+  WorldPos pos;
+  Vec3 d;
+
+  if (!FUN_08086978(1)) return;
+  if (!Elevator_TestFlags(e, COFFIN_RIDING)) return;
+
+  Coffin_CopyPos(&pos);
+  if (!(GetTileAttrAt(&pos) & TATTR_SPECIAL)) return;
+
+  Vec3_Delta(&d, &e->mover.pos, &pos);
+  if (d.x <= gElevatorRange0.x && d.x >= -gElevatorRange0.x && d.y <= gElevatorRange0.y && d.y >= -gElevatorRange0.y && d.z <= gElevatorRange0.z && d.z >= -gElevatorRange0.z) return;
+
+  if (d.x > gElevatorRange0.x) {
+    d.x = gElevatorRange0.x;
+  } else if (d.x < -gElevatorRange0.x) {
+    d.x = -gElevatorRange0.x;
+  }
+  if (d.z > gElevatorRange0.z) {
+    d.z = gElevatorRange0.z;
+  } else if (d.z < -gElevatorRange0.z) {
+    d.z = -gElevatorRange0.z;
+  }
+
+  pos.x = e->mover.pos.x + d.x;
+  pos.y = e->mover.pos.y;
+  pos.z = e->mover.pos.z + d.z;
+  FUN_08086a4c(&pos);
+  SET_FLAGS(e->flags, ELEVATOR_UNK_9);
+}
 
 NAKED void FUN_081d3dd0(Elevator* e) { INCFUNC("asm/func/FUN_081d3dd0.inc"); }
 
