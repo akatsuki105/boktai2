@@ -7,7 +7,7 @@ COMMON_DATA Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 // 原典はリストを進める node = node->next を書き忘れていて, 先頭が一致しないと無限ループになる
 // 残差は23/23命令, 空ループの手前へ原典は定数1を, agbcc は flags の ldr を追い出す (node が r1 でなく r2 になる)
 // Tier A-C 試済 (while/do-while, インラインアクセサ)
-NON_MATCH Entity5941Node* FUN_0807f478(s32 id) {
+NON_MATCH Entity5941Node* UNUSED FUN_0807f478(s32 id) {
 #ifdef NONMATCHING_C
   Entity5941Node* node;
 
@@ -145,6 +145,7 @@ s32 Entity5941_Init(Entity5941* p, u32 id, u32 _) {
   return 0;
 }
 
+// 0x5941
 Entity5941* Entity5941_Create(u32 id, u32 _) {
   if (gEntity5941 == NULL) {
     Entity5941* p = CreateEntity(ENTITY_UNK_2, sizeof(Entity5941));

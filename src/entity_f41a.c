@@ -43,7 +43,7 @@ void EntityF41A_SetState(EntityF41A* p, s32 state) {
       EntityF41A_UpdateWander,
       EntityF41A_UpdateHit,
       EntityF41A_UpdateKnockback,
-  };
+  };  // 0x08251E08
 
   p->state = state;
   p->stateTimer = 0;

@@ -6855,7 +6855,7 @@ void Player_UndoSleeping(Player* p) {
 
 // 1P の向きの前方 ±32 (1/8 周) かつ 2 タイル以内にいる敵ノードのうち, 最も近いものを返す
 Entity5941Node* Player_FindCWolfTarget(Player* p) {
-  s32 bestDistSq = 0x40000;
+  s32 bestDistSq = Q8(2) * Q8(2);
   s32 angle = ((p->facing + 5) & 7) << 5;
   Entity5941Node* node;
   Entity5941Node* best;
