@@ -106,6 +106,11 @@ static inline bool8 Elevator_IsSlotUsed(ElevatorManager* p, s32 i) {
   return FALSE;
 }
 
+static inline bool8 TestBit(u32 bits, s32 n) {
+  if (bits & (1 << n)) return TRUE;
+  return FALSE;
+}
+
 static inline void Elevator_FreeSlot(ElevatorManager* p, s32 i) { p->usedMask &= ~(1 << i); }
 
 static inline bool8 Elevator_TestFlags(Elevator* e, ElevatorFlags bits) {
@@ -1669,17 +1674,14 @@ void Cmd_ShakeElevator(void) {
 }
 
 // 0x7A75, 棺桶が乗っているエレベータの id を返す, 見つからなければ -1
-// 残差7命令 (52/59): 原典は使用中判定と flags 判定を分岐で 0/1 に起こし, 要素と &flags を別々の誘導ポインタで回す
-// Tier A-C は試済: 要素をポインタで走査する形 (無影響)
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (65/59)
-NON_MATCH s32 Cmd_7A75(void) {
-#ifdef NONMATCHING_C
-  ElevatorManager* p = gElevatorManager;
+s32 Cmd_7A75(void) {
+  ElevatorManager* p;
   s32 i;
 
-  if (p == NULL) {
+  if (gElevatorManager == NULL) {
     return -1;
   }
+  p = gElevatorManager;
   if (p->usedMask == 0) {
     return -1;
   }
@@ -1688,15 +1690,16 @@ NON_MATCH s32 Cmd_7A75(void) {
   }
 
   for (i = 0; i < 12; i++) {
-    if (Elevator_IsSlotUsed(p, i) && Elevator_TestFlags(&p->elevators[i], COFFIN_RIDING)) {
-      return p->elevators[i].id;
+    if (TestBit(p->usedMask, i)) {
+      Elevator* e = &p->elevators[i];
+
+      if (Elevator_TestFlags(e, COFFIN_RIDING)) {
+        return e->id;
+      }
     }
   }
 
   return -1;
-#else
-  INCFUNC("asm/func/Cmd_7A75.inc");
-#endif
 }
 
 // 0x7E33, 指定した id のエレベータを動かす, '.m' で動かし方を選ぶ
