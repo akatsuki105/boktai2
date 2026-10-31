@@ -45,9 +45,9 @@ typedef struct {
   MainSprite digits[2][3];  // 0x1E0, digits[n][2] が n 番目の番号の1の位
   u8* unk_420;              // 0x420, '.b'
   s32 unk_424;              // 0x424, 選んでいる行, 32倍したものが sprites[0] の縦位置, +0x4B が sprites[1] のポーズ番号
-  s16 bgmCount;             // 0x428, u16_ARRAY_085afa30 の曲数
-  s16 seCount;              // 0x42A, u16_ARRAY_085afaee の効果音数
-  s16 voiceCount;           // 0x42C, u16_ARRAY_085afeb2 のボイス数
+  s16 bgmCount;             // 0x428, sBGMList の曲数
+  s16 seCount;              // 0x42A, sSEList の効果音数
+  s16 voiceCount;           // 0x42C, sVoiceList のボイス数
   s16 unk_42e;              // 0x42E, '.b' の参照先に足す文字列IDのオフセット
   s16 unk_430;              // 0x430, digits[0] に3桁で出す数
   s16 unk_432;              // 0x432, digits[1] に3桁で出す数
@@ -191,34 +191,108 @@ const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252820[36] = {27
 const __attribute__((section(".rodata.faraddr"))) char gStringSabata_08252844[10] = _("サバタ");                                                                                                                  // 0x08252844
 const __attribute__((section(".rodata.faraddr"))) u32 u32_ARRAY_08252850[5] = {0, 4, 5, 6, 2};                                                                                                                    // 0x08252850
 
-// clang-format off
 // "SOUND"モードで聴ける BGM 一覧
-const SoundID16 u16_ARRAY_085afa30[95] = {
-    BGM_NOTIFICATION,             BGM_KAISETSU,        BGM_TITLE,        BGM_ASAHI,     BGM_POEM,
-    BGM_SOLARBOY,              BGM_MATEKI,         BGM_OTENKO,         BGM_PROLOGUE, BGM_FIELD,
-    BGM_DEDEDE,             BGM_TRAP_BATTLE, BGM_COMPLETE,    BGM_ZAJI,      BGM_LEARN_MAGIC,
-    BGM_HAIKYO,               BGM_ASSAULT,         BGM_GAMEOVER,    BGM_SUNMIGUERE1,     BGM_RAIN,
-    BGM_HOSHIYOMI,             BGM_SOLAR_BANK,        BGM_DARK_LOANS,        BGM_OSHIOKI,     BGM_DAISEIDOU_REIEN,
-    BGM_WHAT,              BGM_DAISEIDOU_B,         BGM_DAISEIDOU_1F,         BGM_DAISEIDOU_2F,      BGM_SANSHIMAI,
-    BGM_DUNEYRR,              BGM_SMITH,         BGM_WEDGE,         BGM_AKATSUKI,     BGM_TASOGARE,
-    BGM_PILEDRIVER, BGM_BATTLE_DRIVE, BGM_CLIMAX, BGM_NIGERARETAZO,       BGM_RITA,
-    BGM_SOLAR_FORGE,             BGM_END,        BGM_ISEKI_SABAKU,         BGM_ISEKI_SIRO_NO_OKA,      BGM_BBB,
-    BGM_DARKBOY_SABATA,              BGM_ISEKI_KURO_NO_TANI,         BGM_BATTLE_RINGO,         BGM_RED_RINGO,      BGM_RAIMEI,
-    BGM_JOKA,              BGM_BLACK_DJANGO,        BGM_ANKOKUGAI1,         BGM_KAZE_NO_SENSHI,      BGM_SHAIAN,
-    BGM_ANKOKUGAI2,              BGM_DURATHROR,         BGM_ANKOKUGAI3,         BGM_GEKKA_BIJIN,      BGM_TAIYO,
-    BGM_RAINBOW,              BGM_SOLAR_TREE,        BGM_KOMOREBI,         BGM_SUNMIGUERE2,     BGM_TOKI_NO_IE_GENZAI,
-    BGM_TOKI_NO_IE_KAKO,               BGM_AQUADUCT,         BGM_NAKAMA1,        BGM_KYOUFU,      BGM_BLACK_DAINN,
-    BGM_DVALINN,              BGM_SOLAR_TOWER,         BGM_DARK_TOWER,         BGM_DARK,      BGM_DAINN1,
-    BGM_DAINN2,              BGM_RINNE,         BGM_JORMUNGANDR,         BGM_MUGEN,      BGM_GEKKA_BIJIN_SABATA,
-    BGM_HEN1,              BGM_HEN2,         BGM_HEN3,         BGM_HEN4,      BGM_HEN5,
-    BGM_NAKAMA2,       BGM_ZOKTAI,         BGM_YUUHI,         BGM_TAIYO_NO_KISETSU,     BGM_LINK_SELECT,
-    BGM_WIN,             BGM_LOSE,        BGM_ANUN,        BGM_SHADEMAN,     -1,
-};  // 0x085afa30
-// clang-format on
+const SoundID16 sBGMList[95] = {
+    BGM_NOTIFICATION,
+    BGM_KAISETSU,
+    BGM_TITLE,
+    BGM_ASAHI,
+    BGM_POEM,
+    BGM_SOLARBOY,
+    BGM_MATEKI,
+    BGM_OTENKO,
+    BGM_PROLOGUE,
+    BGM_FIELD,
+    BGM_DEDEDE,
+    BGM_TRAP_BATTLE,
+    BGM_COMPLETE,
+    BGM_ZAJI,
+    BGM_LEARN_MAGIC,
+    BGM_HAIKYO,
+    BGM_ASSAULT,
+    BGM_GAMEOVER,
+    BGM_SUNMIGUERE1,
+    BGM_RAIN,
+    BGM_HOSHIYOMI,
+    BGM_SOLAR_BANK,
+    BGM_DARK_LOANS,
+    BGM_OSHIOKI,
+    BGM_DAISEIDOU_REIEN,
+    BGM_WHAT,
+    BGM_DAISEIDOU_B,
+    BGM_DAISEIDOU_1F,
+    BGM_DAISEIDOU_2F,
+    BGM_SANSHIMAI,
+    BGM_DUNEYRR,
+    BGM_SMITH,
+    BGM_WEDGE,
+    BGM_AKATSUKI,
+    BGM_TASOGARE,
+    BGM_PILEDRIVER,
+    BGM_BATTLE_DRIVE,
+    BGM_CLIMAX,
+    BGM_NIGERARETAZO,
+    BGM_RITA,
+    BGM_SOLAR_FORGE,
+    BGM_END,
+    BGM_ISEKI_SABAKU,
+    BGM_ISEKI_SIRO_NO_OKA,
+    BGM_BBB,
+    BGM_DARKBOY_SABATA,
+    BGM_ISEKI_KURO_NO_TANI,
+    BGM_BATTLE_RINGO,
+    BGM_RED_RINGO,
+    BGM_RAIMEI,
+    BGM_JOKA,
+    BGM_BLACK_DJANGO,
+    BGM_ANKOKUGAI1,
+    BGM_KAZE_NO_SENSHI,
+    BGM_SHAIAN,
+    BGM_ANKOKUGAI2,
+    BGM_DURATHROR,
+    BGM_ANKOKUGAI3,
+    BGM_GEKKA_BIJIN,
+    BGM_TAIYO,
+    BGM_RAINBOW,
+    BGM_SOLAR_TREE,
+    BGM_KOMOREBI,
+    BGM_SUNMIGUERE2,
+    BGM_TOKI_NO_IE_GENZAI,
+    BGM_TOKI_NO_IE_KAKO,
+    BGM_AQUADUCT,
+    BGM_NAKAMA1,
+    BGM_KYOUFU,
+    BGM_BLACK_DAINN,
+    BGM_DVALINN,
+    BGM_SOLAR_TOWER,
+    BGM_DARK_TOWER,
+    BGM_DARK,
+    BGM_DAINN1,
+    BGM_DAINN2,
+    BGM_RINNE,
+    BGM_JORMUNGANDR,
+    BGM_MUGEN,
+    BGM_GEKKA_BIJIN_SABATA,
+    BGM_HEN1,
+    BGM_HEN2,
+    BGM_HEN3,
+    BGM_HEN4,
+    BGM_HEN5,
+    BGM_NAKAMA2,
+    BGM_ZOKTAI,
+    BGM_YUUHI,
+    BGM_TAIYO_NO_KISETSU,
+    BGM_LINK_SELECT,
+    BGM_WIN,
+    BGM_LOSE,
+    BGM_ANUN,
+    BGM_SHADEMAN,
+    -1,
+};  // 0x085AFA30
 
 // clang-format off
 // "SOUND"モードで聴ける SE 一覧
-const SoundID16 u16_ARRAY_085afaee[482] = {
+const SoundID16 sSEList[482] = {
     SONG_224,             SONG_223,              SE_CURSOR_MOVE,  SE_SELECT,                SE_CANCEL,
     SE_SAVE_SUCCESS,      SE_UNK_299,            SE_UNK_300,      SE_UNK_301,               SONG_410,
     SE_NG,                SONG_662,              SONG_660,        SONG_677,                 SONG_266,
@@ -321,7 +395,7 @@ const SoundID16 u16_ARRAY_085afaee[482] = {
 
 // clang-format off
 // "SOUND"モードで聴ける VOICE 一覧
-const SoundID16 u16_ARRAY_085afeb2[99] = {
+const SoundID16 sVoiceList[99] = {
     SONG_700,             SONG_708,              SONG_709,              SONG_710,                   SONG_711,
     VO_RDJANGO_TAIYO_296, SONG_776,              SONG_231,              VO_DJANGO_773,              SONG_576,
     SONG_582,             VO_DJANGO_MAGIC,       VO_DARK_DJANGO_SCREAM, VO_DJANGO_BOKURANO,         SONG_777,
@@ -1784,7 +1858,7 @@ void FUN_08215d24(EntityA288* p) {
   const SoundID16* t;
   s32 n;
 
-  t = u16_ARRAY_085afa30;
+  t = sBGMList;
   n = 0;
   while ((s16)*t != -1) {
     t++;
@@ -1792,7 +1866,7 @@ void FUN_08215d24(EntityA288* p) {
   }
   s->bgmCount = n;
 
-  t = u16_ARRAY_085afaee;
+  t = sSEList;
   n = 0;
   while ((s16)*t != -1) {
     t++;
@@ -1800,7 +1874,7 @@ void FUN_08215d24(EntityA288* p) {
   }
   s->seCount = n;
 
-  t = u16_ARRAY_085afeb2;
+  t = sVoiceList;
   n = 0;
   while ((s16)*t != -1) {
     t++;
@@ -2063,26 +2137,26 @@ void FUN_082164e4(EntityA288* p) {
 
   switch (p->soundTest.unk_424) {
     case 0: {
-      if (sound_08240960((s16)u16_ARRAY_085afa30[p->soundTest.playing[0]])) {
-        sound_08240740((s16)u16_ARRAY_085afa30[p->soundTest.playing[0]]);
+      if (sound_08240960((s16)sBGMList[p->soundTest.playing[0]])) {
+        sound_08240740((s16)sBGMList[p->soundTest.playing[0]]);
       }
-      PlaySound_082406e0((s16)u16_ARRAY_085afa30[p->soundTest.unk_42e]);
+      PlaySound_082406e0((s16)sBGMList[p->soundTest.unk_42e]);
       p->soundTest.playing[0] = p->soundTest.unk_42e;
       break;
     }
     case 1: {
-      if (sound_08240960((s16)u16_ARRAY_085afaee[p->soundTest.playing[1]])) {
-        sound_08240740((s16)u16_ARRAY_085afaee[p->soundTest.playing[1]]);
+      if (sound_08240960((s16)sSEList[p->soundTest.playing[1]])) {
+        sound_08240740((s16)sSEList[p->soundTest.playing[1]]);
       }
-      PlaySound_082406e0((s16)u16_ARRAY_085afaee[p->soundTest.unk_430]);
+      PlaySound_082406e0((s16)sSEList[p->soundTest.unk_430]);
       p->soundTest.playing[1] = p->soundTest.unk_430;
       break;
     }
     case 2: {
-      if (sound_08240960((s16)u16_ARRAY_085afeb2[p->soundTest.playing[2]])) {
-        sound_08240740((s16)u16_ARRAY_085afeb2[p->soundTest.playing[2]]);
+      if (sound_08240960((s16)sVoiceList[p->soundTest.playing[2]])) {
+        sound_08240740((s16)sVoiceList[p->soundTest.playing[2]]);
       }
-      PlaySound_082406e0((s16)u16_ARRAY_085afeb2[p->soundTest.unk_432]);
+      PlaySound_082406e0((s16)sVoiceList[p->soundTest.unk_432]);
       p->soundTest.playing[2] = p->soundTest.unk_432;
       break;
     }
@@ -2094,7 +2168,7 @@ void FUN_082164e4(EntityA288* p) {
 s32 FUN_0821660c(EntityA288* p) {
   EntityA288SoundTest* s = &p->soundTest;
 
-  if (!sound_08240960((s16)u16_ARRAY_085afa30[p->soundTest.playing[0]]) && !sound_08240960((s16)u16_ARRAY_085afaee[p->soundTest.playing[1]]) && !sound_08240960((s16)u16_ARRAY_085afeb2[p->soundTest.playing[2]])) {
+  if (!sound_08240960((s16)sBGMList[p->soundTest.playing[0]]) && !sound_08240960((s16)sSEList[p->soundTest.playing[1]]) && !sound_08240960((s16)sVoiceList[p->soundTest.playing[2]])) {
     p->soundTest.icons[0].flags |= SPRFLAG_HIDDEN;
     p->soundTest.icons[1].flags |= SPRFLAG_HIDDEN;
     p->soundTest.icons[2].flags |= SPRFLAG_HIDDEN;
@@ -2104,15 +2178,15 @@ s32 FUN_0821660c(EntityA288* p) {
 
   switch (s->unk_424) {
     case 0: {
-      sound_08240740(u16_ARRAY_085afa30[s->playing[0]]);
+      sound_08240740(sBGMList[s->playing[0]]);
       break;
     }
     case 1: {
-      sound_08240740(u16_ARRAY_085afaee[s->playing[1]]);
+      sound_08240740(sSEList[s->playing[1]]);
       break;
     }
     case 2: {
-      sound_08240740(u16_ARRAY_085afeb2[s->playing[2]]);
+      sound_08240740(sVoiceList[s->playing[2]]);
       break;
     }
     default: {
@@ -2193,15 +2267,15 @@ NON_MATCH void FUN_08216894(EntityA288* p) {
 
     switch (i) {
       case 0: {
-        id = (s16)u16_ARRAY_085afa30[s->playing[0]];
+        id = (s16)sBGMList[s->playing[0]];
         break;
       }
       case 1: {
-        id = (s16)u16_ARRAY_085afaee[s->playing[1]];
+        id = (s16)sSEList[s->playing[1]];
         break;
       }
       case 2: {
-        id = (s16)u16_ARRAY_085afeb2[s->playing[2]];
+        id = (s16)sVoiceList[s->playing[2]];
         break;
       }
       default: {
