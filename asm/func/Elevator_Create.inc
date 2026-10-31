@@ -236,7 +236,7 @@ _081D4974:
 	ldr r0, _081D49C0 @ =FUN_081d3c24
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D49C4 @ =FUN_081d33f8
+	ldr r0, _081D49C4 @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r2, #1
 	str r2, [sp, #0xc]
@@ -258,7 +258,7 @@ _081D49B8:
 	.align 2, 0
 _081D49BC: .4byte FUN_081d3534
 _081D49C0: .4byte FUN_081d3c24
-_081D49C4: .4byte FUN_081d33f8
+_081D49C4: .4byte Elevator_UpdateTileOverride
 _081D49C8:
 	mov r0, r8
 	adds r0, #0xcc
@@ -276,7 +276,7 @@ _081D49C8:
 	ldr r0, _081D4A14 @ =FUN_081d3c24
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4A18 @ =FUN_081d33f8
+	ldr r0, _081D4A18 @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r2, #1
 	str r2, [sp, #0xc]
@@ -296,7 +296,7 @@ _081D49C8:
 	.align 2, 0
 _081D4A10: .4byte FUN_081d3534
 _081D4A14: .4byte FUN_081d3c24
-_081D4A18: .4byte FUN_081d33f8
+_081D4A18: .4byte Elevator_UpdateTileOverride
 _081D4A1C:
 	mov r0, r8
 	adds r0, #0xcc
@@ -314,7 +314,7 @@ _081D4A1C:
 	ldr r0, _081D4A58 @ =FUN_081d3dd0
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4A5C @ =FUN_081d33f8
+	ldr r0, _081D4A5C @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r2, #2
 	str r2, [sp, #0xc]
@@ -329,7 +329,7 @@ _081D4A1C:
 	.align 2, 0
 _081D4A54: .4byte FUN_081d36c0
 _081D4A58: .4byte FUN_081d3dd0
-_081D4A5C: .4byte FUN_081d33f8
+_081D4A5C: .4byte Elevator_UpdateTileOverride
 _081D4A60:
 	cmp r0, #2
 	beq _081D4A7C
@@ -381,7 +381,7 @@ _081D4AA8:
 	ldr r0, _081D4ADC @ =FUN_081d3a8c
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4AE0 @ =FUN_081d33f8
+	ldr r0, _081D4AE0 @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r0, #0
 	str r0, [sp, #0xc]
@@ -396,7 +396,7 @@ _081D4AA8:
 	.align 2, 0
 _081D4AD8: .4byte FUN_081d38a4
 _081D4ADC: .4byte FUN_081d3a8c
-_081D4AE0: .4byte FUN_081d33f8
+_081D4AE0: .4byte Elevator_UpdateTileOverride
 _081D4AE4:
 	cmp r0, #2
 	beq _081D4B0C

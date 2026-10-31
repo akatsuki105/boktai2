@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "map_inline.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
@@ -382,7 +383,20 @@ void Elevator_RemoveTileOverrides(Elevator* e) {
 
 NAKED void Elevator_UpdateTileOverrides(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc"); }
 
-NAKED void FUN_081d33f8(Elevator* e) { INCFUNC("asm/func/FUN_081d33f8.inc"); }
+// 状態 3/4 の間はプレイヤーと同じ高さにいれば足元のタイルを移動床で上書きし, それ以外の状態では上書きを外す
+void Elevator_UpdateTileOverride(Elevator* e) {
+  if (e->state != 3 && e->state != 4) {
+    if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
+      Map_RemoveTileOverride(&e->tileOverride);
+      CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
+    }
+  } else {
+    if (!Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE) && gCollisionMap != NULL && e->mover.pos.y == gPlayerPtr[0]->mover.pos.y) {
+      Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
+      SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
+    }
+  }
+}
 
 // tileIdx の上書きタイルを登録しているエレベータがあるかどうか
 bool32 FUN_081d34e8(s32 tileIdx) {
