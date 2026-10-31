@@ -1287,42 +1287,22 @@ void Elevator_CarryCoffin(Elevator* e) {
   }
 }
 
-// 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
-// 残差13命令 (92/79): 原典は差分 Vec3 をスタックに置いて s16 で読み直すが, agbcc はレジスタに畳んで半語を詰め替える
-// Tier A-C は試済: 2要素の WorldPos 配列にするとメモリには乗るが 87 で一致せず
-NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
-#ifdef NONMATCHING_C
+// 昇降床のとき, 棺桶が許容範囲に収まっていたら乗せる
+void Elevator_TryBoardCoffin(ElevatorManager* p, Elevator* e) {
   if (e->kind == 2) {
     WorldPos pos;
-    WorldPos delta;
+    Vec3 delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - e->mover.pos.x;
-    delta.y = pos.y - e->mover.pos.y;
-    delta.z = pos.z - e->mover.pos.z;
-
-    if (delta.x > gElevatorRange0.x) {
-      return;
+    Vec3_Delta(&delta, &e->mover.pos, &pos);
+    if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+      FUN_08086a4c(&e->mover.pos);
+      Elevator_ClearRidingFlag(p->coffinRidingID, 1);
+      p->coffinRidingID = e->id;
+      FUN_080869c8(3, e->id);
+      SET_FLAGS(e->flags, COFFIN_RIDING);
     }
-    if (delta.x < -gElevatorRange0.x) {
-      return;
-    }
-    if (delta.z > gElevatorRange0.z) {
-      return;
-    }
-    if (delta.z < -gElevatorRange0.z) {
-      return;
-    }
-
-    FUN_08086a4c(&e->mover.pos);
-    Elevator_ClearRidingFlag(p->coffinRidingID, 1);
-    p->coffinRidingID = e->id;
-    FUN_080869c8(3, e->id);
-    e->flags |= COFFIN_RIDING;
   }
-#else
-  INCFUNC("asm/func/FUN_081d4704.inc");
-#endif
 }
 
 // 0xA4FC, VM の引数からエレベータを1つ作る
@@ -1520,7 +1500,7 @@ NON_MATCH void Elevator_Create(void) {
     }
   }
 
-  FUN_081d4704(p, e);
+  Elevator_TryBoardCoffin(p, e);
   e->speed = VM_GetNamedArgValue('s', 6);
   switch (e->kind) {
     case 0:

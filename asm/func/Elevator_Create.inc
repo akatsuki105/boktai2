@@ -814,7 +814,7 @@ _081D4DC2:
 _081D4E26:
 	ldr r0, [sp, #8]
 	mov r1, r8
-	bl FUN_081d4704
+	bl Elevator_TryBoardCoffin
 	movs r0, #0x73
 	movs r1, #6
 	bl VM_GetNamedArgValue
