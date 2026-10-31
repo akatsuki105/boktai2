@@ -626,7 +626,39 @@ void Elevator_CheckRiderFallInWater(Elevator* e) {
   }
 }
 
-NAKED void FUN_081d38a4(Elevator* e) { INCFUNC("asm/func/FUN_081d38a4.inc"); }
+// 乗っているプレイヤーが足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampRiderToRange(Elevator* e) {
+  s32 i;
+
+  for (i = 0; i < 1; i++) {
+    if (gPlayerPtr[i] != NULL && e->state != 4 && FUN_0807a954(gPlayerPtr[i], 1)) {
+      Vec3 d;
+
+      if (!Elevator_TestFlags(e, PLAYER_RIDING)) return;
+      if (Elevator_IsTileOverridden(GetCollisionTileIdx(&e->mover.pos)) && gPlayerPtr[i]->mover.pos.y == e->mover.pos.y) continue;
+
+      Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
+      if (d.x <= gElevatorRange2.x && d.x >= -gElevatorRange2.x && d.y <= gElevatorRange2.y && d.y >= -gElevatorRange2.y && d.z <= gElevatorRange2.z && d.z >= -gElevatorRange2.z) continue;
+
+      if (d.x > gElevatorRange2.x) {
+        d.x = gElevatorRange2.x;
+      } else if (d.x < -gElevatorRange2.x) {
+        d.x = -gElevatorRange2.x;
+      }
+      if (d.z > gElevatorRange2.z) {
+        d.z = gElevatorRange2.z;
+      } else if (d.z < -gElevatorRange2.z) {
+        d.z = -gElevatorRange2.z;
+      }
+
+      d.x = e->mover.pos.x + d.x;
+      d.y = e->mover.pos.y;
+      d.z = e->mover.pos.z + d.z;
+      FUN_0807a91c(gPlayerPtr[i], &d);
+      SET_FLAGS(e->flags, ELEVATOR_RIDER_KNOCKBACK);
+    }
+  }
+}
 
 // 乗っている棺桶が足場の範囲を外れたら範囲の端まで引き戻す
 void Elevator_ClampCoffinPos(Elevator* e) {
