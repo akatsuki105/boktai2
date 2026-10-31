@@ -1233,7 +1233,28 @@ void Coffin_UpdateState0(Coffin* p) {
 
 NAKED void FUN_08087cbc(Coffin* p) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
 
-NAKED void FUN_08087f7c(Coffin* p) { INCFUNC("asm/func/FUN_08087f7c.inc"); }
+// プレイヤーの前方 70 の点が棺桶から 150 より離れたら, プレイヤーを棺桶から 150 の位置へ 1/4 ずつ寄せる
+void FUN_08087f7c(Coffin* p) {
+  s32 angle = ((gPlayerPtr[0]->facing + 1) & 7) << 5;
+  s32 ox = POLAR_X(70, angle);
+  s32 oz = POLAR_Z(70, angle);
+  s32 dx = gPlayerPtr[0]->mover.pos.x + ox - p->mover.pos.x;
+  s32 dz = gPlayerPtr[0]->mover.pos.z + oz - p->mover.pos.z;
+
+  if (dx * dx + dz * dz > 150 * 150) {
+    s32 tx, tz;
+
+    angle = ArcTan2_8(dx, dz);
+    dx = POLAR_X(150, angle);
+    dz = POLAR_Z(150, angle);
+    tx = p->mover.pos.x - ox + dx;
+    tz = p->mover.pos.z - oz + dz;
+    gPlayerPtr[0]->mover.pos.x = FixToInt(2, gPlayerPtr[0]->mover.pos.x * 3 + tx);
+    gPlayerPtr[0]->mover.pos.z = FixToInt(2, gPlayerPtr[0]->mover.pos.z * 3 + tz);
+    FUN_08087cbc(p);
+    gPlayerPtr[0]->beast.pos = gPlayerPtr[0]->mover.pos;
+  }
+}
 
 void FUN_080880fc(Coffin* p) {
   if (p->unk_384 == 0) {
