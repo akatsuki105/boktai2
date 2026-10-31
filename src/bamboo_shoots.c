@@ -1,7 +1,9 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "particle.h"
+#include "player.h"
 #include "random.h"
 #include "sound.h"
 #include "spirit_bugs.h"
@@ -35,7 +37,7 @@ static_assert(sizeof(BambooShoot) == 156);
 // 最初は隠れていて、プレイヤーが攻撃すると結晶が出現して、そこから 精霊虫 が出現する
 typedef struct {
   Entity e;                // 0x0, ENTITY_UNK_10
-  u8 unk_18;               // 0x18
+  bool8 revealed;          // 0x18, Init が夜, 雷の最中, バットに変身中, 千里眼の実の効果中なら TRUE にする
   u8 unk_19[3];            // padding?
   ParticleGroup* group0;   // 0x1C, PTCL_GROUP_0
   ParticleGroup* group1;   // 0x20, PTCL_GROUP_1
@@ -46,6 +48,8 @@ typedef struct {
 static_assert(sizeof(BambooShootManager) == 2540);
 
 static BambooShootManager* sBambooShootManager;  // 0x03000040
+
+extern s32 gLightningTimer;
 
 void FUN_08009b04(void) { sBambooShootManager = NULL; }
 
@@ -201,7 +205,32 @@ s32 BambooShootManager_Destroy(BambooShootManager* p) {
   return 0;
 }
 
-NAKED s32 BambooShootManager_Init(BambooShootManager* p, u32 _) { INCFUNC("asm/func/BambooShootManager_Init.inc"); }
+// 76/87命令, 原典は千里眼の判定を 0/1 に落としてから見直す bool の形 (inline の述語の戻り値らしい), 直書きだと分岐が畳まれて短くなる
+// 試済: 判定を static inline (HasGoodCond / GetPlayer / BambooShoot_CanSee) にすると 87/87 命令 9 hunk まで縮むが一致せず, NULL 判定の FALSE の置き場と最後の strb の形が残る
+NON_MATCH s32 BambooShootManager_Init(BambooShootManager* p, u32 _) {
+#ifdef NONMATCHING_C
+  bool32 revealed;
+
+  sBambooShootManager = p;
+  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
+    revealed = TRUE;
+  } else if (gGameFlags & FLAG030047A4_LINK) {
+    revealed = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
+  } else if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
+    revealed = TRUE;
+  } else {
+    revealed = gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
+  }
+  p->revealed = revealed;
+  p->group0 = GetParticleGroup(PTCL_GROUP_0);
+  p->group1 = GetParticleGroup(PTCL_GROUP_1);
+  p->anim_24 = GetFile(DIR_ANIMATION, ANIM_D1B8);
+  p->anim_28 = GetFile(DIR_ANIMATION, ANIM_D41F);
+  return 0;
+#else
+  INCFUNC("asm/func/BambooShootManager_Init.inc");
+#endif
+}
 
 BambooShootManager* BambooShootManager_Create(u32 _, u32 unused) {
   BambooShootManager* p = CreateEntity(ENTITY_UNK_10, sizeof(BambooShootManager));
