@@ -378,7 +378,7 @@ _081D4AA8:
 	ldr r0, _081D4AD8 @ =FUN_081d38a4
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4ADC @ =FUN_081d3a8c
+	ldr r0, _081D4ADC @ =Elevator_ClampCoffinPos
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D4AE0 @ =Elevator_UpdateTileOverride
@@ -395,7 +395,7 @@ _081D4AA8:
 	b _081D4B20
 	.align 2, 0
 _081D4AD8: .4byte FUN_081d38a4
-_081D4ADC: .4byte FUN_081d3a8c
+_081D4ADC: .4byte Elevator_ClampCoffinPos
 _081D4AE0: .4byte Elevator_UpdateTileOverride
 _081D4AE4:
 	cmp r0, #2

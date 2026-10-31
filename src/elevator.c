@@ -81,12 +81,10 @@ static_assert(sizeof(ElevatorManager) == 4792);
 
 IWRAM_DATA ElevatorManager* gElevatorManager = NULL;  // 0x03000194
 
-// エレベータが乗り手との距離を測るときの許容範囲 (±), Elevator_FindAtPos ほかが引く
-const Vec3 gElevatorRanges[3] = {
-    {Q8(0.5),   Q8(0.125), Q8(0.5)  },
-    {Q8(0.5),   Q8(0.125), Q8(0.5)  },
-    {Q8(0.383), Q8(0.125), Q8(0.383)}
-};  // 0x085AE0D0
+// エレベータが乗り手との距離を測るときの許容範囲 (±)
+const Vec3 gElevatorRange0 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D0
+const Vec3 gElevatorRange1 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D8, Elevator_ClampRiderPos が unk_e7 == 1 のときに使う
+const Vec3 gElevatorRange2 = {Q8(0.383), Q8(0.125), Q8(0.383)};  // 0x085AE0E0, 棺桶用
 
 bool32 FUN_08086978(u32 mask);
 Elevator* Elevator_FindByID(s32 id);
@@ -155,7 +153,7 @@ NON_MATCH Elevator* Elevator_FindAtPos(Vec3* pos) {
       Vec3 delta;
 
       Vec3_Delta(&delta, &p->elevators[i].mover.pos, pos);
-      if (delta.x <= gElevatorRanges[0].x && delta.x >= -gElevatorRanges[0].x && delta.y <= gElevatorRanges[0].y && delta.y >= -gElevatorRanges[0].y && delta.z <= gElevatorRanges[0].z && delta.z >= -gElevatorRanges[0].z) {
+      if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
         return &p->elevators[i];
       }
     }
@@ -385,7 +383,7 @@ bool32 FUN_081d2c60(Elevator* e) {
     Vec3 d;
     Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[0]->mover.pos);
 
-    if (d.x <= gElevatorRanges[0].x && d.x >= -gElevatorRanges[0].x && d.y <= gElevatorRanges[0].y && d.y >= -gElevatorRanges[0].y && d.z <= gElevatorRanges[0].z && d.z >= -gElevatorRanges[0].z) {
+    if (d.x <= gElevatorRange0.x && d.x >= -gElevatorRange0.x && d.y <= gElevatorRange0.y && d.y >= -gElevatorRange0.y && d.z <= gElevatorRange0.z && d.z >= -gElevatorRange0.z) {
       return TRUE;
     }
   }
@@ -569,7 +567,7 @@ void Elevator_KnockbackRider(Elevator* e) {
           Vec3 d;
 
           Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
-          if (d.x > gElevatorRanges[0].x || d.x < -gElevatorRanges[0].x || d.y > gElevatorRanges[0].y || d.y < -gElevatorRanges[0].y || d.z > gElevatorRanges[0].z || d.z < -gElevatorRanges[0].z) {
+          if (d.x > gElevatorRange0.x || d.x < -gElevatorRange0.x || d.y > gElevatorRange0.y || d.y < -gElevatorRange0.y || d.z > gElevatorRange0.z || d.z < -gElevatorRange0.z) {
             Player_SetKnockbackOrigin(gPlayerPtr[i], &e->mover.pos);
             SET_FLAGS(e->flags, ELEVATOR_RIDER_KNOCKBACK);
           }
@@ -583,7 +581,37 @@ NAKED void FUN_081d36c0(Elevator* e) { INCFUNC("asm/func/FUN_081d36c0.inc"); }
 
 NAKED void FUN_081d38a4(Elevator* e) { INCFUNC("asm/func/FUN_081d38a4.inc"); }
 
-NAKED void FUN_081d3a8c(Elevator* e) { INCFUNC("asm/func/FUN_081d3a8c.inc"); }
+// 乗っている棺桶が足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampCoffinPos(Elevator* e) {
+  WorldPos pos;
+  Vec3 d;
+
+  if (!FUN_08086978(1)) return;
+  if (!Elevator_TestFlags(e, COFFIN_RIDING)) return;
+
+  Coffin_CopyPos(&pos);
+  if (Elevator_IsTileOverridden(GetCollisionTileIdx(&e->mover.pos)) && pos.y == e->mover.pos.y) return;
+
+  Vec3_Delta(&d, &e->mover.pos, &pos);
+  if (d.x <= gElevatorRange2.x && d.x >= -gElevatorRange2.x && d.y <= gElevatorRange2.y && d.y >= -gElevatorRange2.y && d.z <= gElevatorRange2.z && d.z >= -gElevatorRange2.z) return;
+
+  if (d.x > gElevatorRange2.x) {
+    d.x = gElevatorRange2.x;
+  } else if (d.x < -gElevatorRange2.x) {
+    d.x = -gElevatorRange2.x;
+  }
+  if (d.z > gElevatorRange2.z) {
+    d.z = gElevatorRange2.z;
+  } else if (d.z < -gElevatorRange2.z) {
+    d.z = -gElevatorRange2.z;
+  }
+
+  pos.x = e->mover.pos.x + d.x;
+  pos.y = e->mover.pos.y;
+  pos.z = e->mover.pos.z + d.z;
+  FUN_08086a4c(&pos);
+  SET_FLAGS(e->flags, ELEVATOR_UNK_9);
+}
 
 NAKED void FUN_081d3c24(Elevator* e) { INCFUNC("asm/func/FUN_081d3c24.inc"); }
 
@@ -645,7 +673,7 @@ void Elevator_UpdateCoffinRiding(Elevator* e) {
   Vec3_Delta(&delta, &e->mover.pos, &pos);
 
   p = gElevatorManager;
-  if (delta.x <= gElevatorRanges[0].x && delta.x >= -gElevatorRanges[0].x && delta.y <= gElevatorRanges[0].y && delta.y >= -gElevatorRanges[0].y && delta.z <= gElevatorRanges[0].z && delta.z >= -gElevatorRanges[0].z) {
+  if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
     FUN_081d3fac(p->coffinRidingID, 1);
     p->coffinRidingID = e->id;
     FUN_081d407c(e);
@@ -657,8 +685,8 @@ void Elevator_UpdateCoffinRiding(Elevator* e) {
   }
 }
 
-// pos がエレベータの範囲 (gElevatorRanges) をはみ出していたら, 速さのぶん内側に戻す
-// 残差は range の選び方のみ (167/165), 原典は gElevatorRanges[1] と [0] のアドレスを別々のプール定数で引く, & で選ぶ形にすると 164/165 まで寄るが基底+8 に畳まれる
+// pos がエレベータの範囲 (gElevatorRange0/1) をはみ出していたら, 速さのぶん内側に戻す
+// 残差は range の選び方のみ (167/165), 原典は gElevatorRange1 と [0] のアドレスを別々のプール定数で引く, & で選ぶ形にすると 164/165 まで寄るが基底+8 に畳まれる
 // Tier A-C は試済 (構造体代入, 三項演算子, ポインタ選択, 添字選択)
 NON_MATCH void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
 #ifdef NONMATCHING_C
@@ -672,9 +700,9 @@ NON_MATCH void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
   if (e->unk_e7 == 2) return;
 
   if (e->unk_e7 == 1 && !(e->unk_d6 & 8)) {
-    range = gElevatorRanges[1];
+    range = gElevatorRange1;
   } else {
-    range = gElevatorRanges[0];
+    range = gElevatorRange0;
   }
 
   if (d.x < 0) {
@@ -789,16 +817,16 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
     delta.y = pos.y - e->mover.pos.y;
     delta.z = pos.z - e->mover.pos.z;
 
-    if (delta.x > gElevatorRanges[0].x) {
+    if (delta.x > gElevatorRange0.x) {
       return;
     }
-    if (delta.x < -gElevatorRanges[0].x) {
+    if (delta.x < -gElevatorRange0.x) {
       return;
     }
-    if (delta.z > gElevatorRanges[0].z) {
+    if (delta.z > gElevatorRange0.z) {
       return;
     }
-    if (delta.z < -gElevatorRanges[0].z) {
+    if (delta.z < -gElevatorRange0.z) {
       return;
     }
 
