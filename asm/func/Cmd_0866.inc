@@ -6,7 +6,7 @@
 	bne _0800A312
 	movs r0, #0
 	movs r1, #0
-	bl Entity0866_Create
+	bl BambooShootManager_Create
 	adds r7, r0, #0
 	cmp r7, #0
 	beq _0800A31E
