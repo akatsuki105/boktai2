@@ -1601,10 +1601,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 }
 
 // 走行音を止め, 使用中のスロットの上書きタイル・Mover・スプライトを片付ける
-// 残差7命令 (69/76): Cmd_7A75 と同じく, 原典は使用中判定と flags 判定を分岐で 0/1 に起こしてから cmp で読み直す
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出る (76/76) が, 原典は &usedMask をマスクより先に作る
-NON_MATCH s32 ElevatorManager_Destroy(ElevatorManager* p) {
-#ifdef NONMATCHING_C
+s32 ElevatorManager_Destroy(ElevatorManager* p) {
   s32 i;
 
   sound_08240740(SONG_344);
@@ -1629,9 +1626,6 @@ NON_MATCH s32 ElevatorManager_Destroy(ElevatorManager* p) {
 
   gElevatorManager = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/ElevatorManager_Destroy.inc");
-#endif
 }
 
 s32 ElevatorManager_Init(ElevatorManager* p) {
