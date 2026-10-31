@@ -39,7 +39,7 @@ void Coffin_InitParticles(Coffin* p) {
   }
 }
 
-// 棺桶を引いている間, プレイヤーの手元から棺桶の取っ手までの間に 7 個のパーティクルを等間隔に並べる (ロープの表示)
+// 棺桶を引いている間, プレイヤーの手元から棺桶の取っ手までの間に 7 個のパーティクルを等間隔に並べる (引っぱっている綱の表示)
 void Coffin_UpdateRope(Coffin* p) {
   Vec3 from, to;
   Particle* ptcl;
@@ -1003,25 +1003,25 @@ void Coffin_InitHitbox(Coffin* p) {
 }
 
 void FUN_08087310(Coffin* p) {
-  p->unk_3d4 = 2;
-  p->unk_3d6 = 0;
-  p->unk_3da = 0x40;
-  p->unk_3dc = 3;
-  p->unk_3de = 6;
-  p->unk_3e0 = 2;
-  p->unk_3e2 = 2;
-  p->unk_3e4 = 60;
-  p->unk_3e6 = 8;
-  p->unk_3e8 = 0;
-  p->unk_3ea = 0xFF;
-  p->unk_3ec = 0xFF;
-  p->unk_3ee = 0;
-  p->unk_3f0 = 0xFF;
-  p->unk_3f2 = 0;
-  p->unk_3f4 = 0xFF;
-  p->unk_3f6 = 0;
-  p->unk_3f8 = 0xFF;
-  p->unk_3fa = 0;
+  p->ptclParam.kind = 2;
+  p->ptclParam.flags = 0;
+  p->ptclParam.animSpeed = 0x40;
+  p->ptclParam.speedY = 3;
+  p->ptclParam.speedYRand = 6;
+  p->ptclParam.speedXZ = 2;
+  p->ptclParam.speedXZRand = 2;
+  p->ptclParam.angleY = 60;
+  p->ptclParam.angleYRand = 8;
+  p->ptclParam.angleXZ = 0;
+  p->ptclParam.angleXZRand = 0xFF;
+  p->ptclParam.decayStartY = 0xFF;
+  p->ptclParam.decayStartYRand = 0;
+  p->ptclParam.unk_1c = 0xFF;
+  p->ptclParam.unk_1e = 0;
+  p->ptclParam.decayStartXZ = 0xFF;
+  p->ptclParam.decayStartXZRand = 0;
+  p->ptclParam.unk_24 = 0xFF;
+  p->ptclParam.unk_26 = 0;
 }
 
 void FUN_080873b4(Coffin* p, s32 delta) {
@@ -1618,7 +1618,82 @@ void Coffin_UpdateState10(Coffin* p) {
   }
 }
 
-NAKED void Coffin_UpdateState5(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState5.inc"); }
+void Coffin_UpdateState5(Coffin* p) {
+  bool32 visible;
+  bool32 spawn;
+
+  if (p->state != 5) {
+    Coffin_SetState(p, 5);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  p->unk_32a = 2;
+  p->facing = FACE_UP;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  visible = FALSE;
+  spawn = FALSE;
+  if (p->stateTimer < 64) {
+    p->mover.pos.y = (p->mover.pos.y * 7 + p->unk_3cc.y) >> 3;
+    visible = TRUE;
+  } else {
+    if (p->stateTimer < 128) {
+      p->unk_31e = (Random() & 1) * 17 - 8;
+      p->unk_322 = -p->unk_31e;
+      visible = TRUE;
+      if ((p->stateTimer & 0xF) == 0) {
+        spawn = TRUE;
+      }
+    } else if (p->stateTimer < 192) {
+      if ((p->stateTimer >> 1) & 3) {
+        visible = TRUE;
+      }
+      if ((p->stateTimer & 0xF) == 0) {
+        spawn = TRUE;
+      }
+    } else {
+      if ((p->stateTimer >> 1) & 1) {
+        visible = TRUE;
+      }
+      if ((p->stateTimer & 0xF) == 0) {
+        spawn = TRUE;
+      }
+    }
+  }
+
+  if (visible) {
+    p->sprite.flags &= ~SPRFLAG_HIDDEN;
+    p->effSprite.flags &= ~SPRFLAG_HIDDEN;
+    p->effSprite.pos.y = TileHeightAt(&p->effSprite.pos);
+  } else {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+    p->effSprite.flags |= SPRFLAG_HIDDEN;
+  }
+  if (spawn) {
+    FUN_08085a74(&p->mover.pos, &p->ptclParam);
+  }
+  FUN_08086024(p, 0);
+
+  if (++p->stateTimer >= 256) {
+    Coffin_RemoveEffSprite(p);
+    Coffin_SetState(gCoffin, 0);
+    if (p->unk_3b0 != 0) {
+      u32 scriptID = p->unk_3b0;
+      p->unk_3b0 = 0;
+      VM_ExecByID(scriptID, NULL);
+      if (p->killRequested) {
+        p->sprite.flags |= SPRFLAG_HIDDEN;
+      } else {
+        p->sprite.flags &= ~SPRFLAG_HIDDEN;
+      }
+    } else {
+      p->sprite.flags |= SPRFLAG_HIDDEN;
+      p->killRequested = TRUE;
+    }
+  }
+}
 
 // 残差4命令, Coffin_UpdateState7 と同じ stateTimer の u16 切り詰めの作り直し, Tier A-C は試済
 NON_MATCH void Coffin_UpdateState6(Coffin* p) {
