@@ -51,7 +51,7 @@ void EnemyTargetManager_Clear(void) {
   }
 }
 
-bool32 FUN_080f8c2c(EnemyTarget* node) {
+bool8 FUN_080f8c2c(EnemyTarget* node) {
   if (node->flags & ENEMYTARGET_LINKED) return FALSE;
   if (node->cooldown != 0) return FALSE;
   if (node->kindMask == 1) {
@@ -275,7 +275,7 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
 
 // 敵から的 (node->owner) が見えるかを調べて Bind する, kindMask 1/4 は Mover を写して2回まで位置をずらして試す, 2 は 1P の状態も確かめる
 // 下書きの段階で 862/1274 命令, 見えるかの判定 (EnemyTarget_CanSee) は原典で2か所に展開されている, FUN_080e4444 と同じ判定
-NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* best) {
+NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* best) {
 #ifdef NONMATCHING_C
   switch (node->kindMask) {
     case 1:
@@ -523,7 +523,7 @@ EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
   best = 0x7FFFFFFF;
   hit = -1;
   for (node = m->head; node != NULL; node = node->next) {
-    if ((node->flags & ENEMYTARGET_REGISTERED) && node->owner != NULL && (node->kindMask & kindMask) && (u8)FUN_080f8c2c(node) && (u8)EnemyTargetManager_Bind(node, p, &best)) {
+    if ((node->flags & ENEMYTARGET_REGISTERED) && node->owner != NULL && (node->kindMask & kindMask) && FUN_080f8c2c(node) && EnemyTargetManager_Bind(node, p, &best)) {
       found = node;
       hit = (s32)found;
     }
