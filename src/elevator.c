@@ -54,8 +54,8 @@ typedef struct Elevator {
   u8 unk_e5;                         // 0x0E5
   u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて Map_GetPathNodePos に渡す
   u8 unk_e7;                         // 0x0E7, FUN_081d2a64 が 0/1/3 で走行音を出し分ける
-  PathWalker pathWalker;             // 0x0E8, hitbox.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
-  Mover hitbox;                      // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
+  PathWalker pathWalker;             // 0x0E8, mover.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
+  Mover mover;                       // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
   MapTileOverride tileOverride;      // 0x138, flags bit0 が立っているときだけ有効
   MapTileOverride tileOverrides[4];  // 0x148, flags bit11 が立っているときだけ有効
   bool8 tileOverrideActive[4];       // 0x188, tileOverrides[i] の登録有無
@@ -244,7 +244,7 @@ NAKED void Elevator_UpdateState2(Elevator* e) { INCFUNC("asm/func/Elevator_Updat
 
 // 目的地に着いていたら状態3へ進め, まだなら移動を続ける
 void Elevator_UpdateState1(Elevator* e) {
-  if (FUN_081d2698(&e->hitbox, &e->pathWalker, &e->unk_58, e->unk_ba, e->unk_ba, e->unk_ba)) {
+  if (FUN_081d2698(&e->mover, &e->pathWalker, &e->unk_58, e->unk_ba, e->unk_ba, e->unk_ba)) {
     e->state = 3;
     e->unk_b6 = 1;
     FUN_081d5588(e);
@@ -269,7 +269,7 @@ void FUN_081d2c10(void) {
 bool32 FUN_081d2c60(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
     Vec3 d;
-    Vec3_Delta(&d, &e->hitbox.pos, &gPlayerPtr[0]->mover.pos);
+    Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[0]->mover.pos);
 
     if (d.x <= gElevatorRanges[0].x && d.x >= -gElevatorRanges[0].x && d.y <= gElevatorRanges[0].y && d.y >= -gElevatorRanges[0].y && d.z <= gElevatorRanges[0].z && d.z >= -gElevatorRanges[0].z) {
       return TRUE;
@@ -482,7 +482,7 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
 }
 
 // 乗っている棺桶をエレベータの移動ぶんだけ動かす
-// 残差23命令 (54/77): 原典は棺桶と hitbox.pos の差分を Vec3 に組み立てるがどこからも読まないので agbcc が消す, 加えて flags 判定の 0/1 起こしも畳まれる
+// 残差23命令 (54/77): 原典は棺桶と mover.pos の差分を Vec3 に組み立てるがどこからも読まないので agbcc が消す, 加えて flags 判定の 0/1 起こしも畳まれる
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (60/77)
 NON_MATCH void FUN_081d4658(Elevator* e) {
 #ifdef NONMATCHING_C
@@ -491,9 +491,9 @@ NON_MATCH void FUN_081d4658(Elevator* e) {
     WorldPos delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - e->hitbox.pos.x;
-    delta.y = pos.y - e->hitbox.pos.y;
-    delta.z = pos.z - e->hitbox.pos.z;
+    delta.x = pos.x - e->mover.pos.x;
+    delta.y = pos.y - e->mover.pos.y;
+    delta.z = pos.z - e->mover.pos.z;
 
     if (!Elevator_TestFlags(e, ELEVATOR_UNK_9)) {
       pos.x = e->unk_58.x + pos.x;
@@ -510,7 +510,6 @@ NON_MATCH void FUN_081d4658(Elevator* e) {
 }
 
 // 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
-// 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
 // 残差13命令 (92/79): 原典は差分 Vec3 をスタックに置いて s16 で読み直すが, agbcc はレジスタに畳んで半語を詰め替える
 // Tier A-C は試済: 2要素の WorldPos 配列にするとメモリには乗るが 87 で一致せず
 NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
@@ -520,9 +519,9 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
     WorldPos delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - e->hitbox.pos.x;
-    delta.y = pos.y - e->hitbox.pos.y;
-    delta.z = pos.z - e->hitbox.pos.z;
+    delta.x = pos.x - e->mover.pos.x;
+    delta.y = pos.y - e->mover.pos.y;
+    delta.z = pos.z - e->mover.pos.z;
 
     if (delta.x > gElevatorRanges[0].x) {
       return;
@@ -537,7 +536,7 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
       return;
     }
 
-    FUN_08086a4c(&e->hitbox.pos);
+    FUN_08086a4c(&e->mover.pos);
     FUN_081d3fac(p->unk_12b2, 1);
     p->unk_12b2 = e->id;
     FUN_080869c8(3, e->id);
@@ -589,7 +588,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
       Elevator_UpdateTileOverrides(&elevators[i]);
       FUN_081d4540(&elevators[i]);
       FUN_081d276c(&elevators[i]);
-      elevators[i].sprite.pos = elevators[i].hitbox.pos;
+      elevators[i].sprite.pos = elevators[i].mover.pos;
       elevators[i].sprite.pos.x -= Q8(1);
       Elevator_UpdateShake(&elevators[i]);
     }
@@ -624,7 +623,7 @@ NON_MATCH s32 ElevatorManager_Destroy(ElevatorManager* p) {
       }
 
       Elevator_RemoveTileOverrides(e);
-      Mover_Unlink(&e->hitbox);
+      Mover_Unlink(&e->mover);
       AuxSprite_Remove(&e->sprite);
     }
   }
@@ -761,7 +760,7 @@ void Elevator_Destroy(void) {
     }
 
     Elevator_RemoveTileOverrides(e);
-    Mover_Unlink(&e->hitbox);
+    Mover_Unlink(&e->mover);
     e->id = 0;
     e->state = 6;
     AuxSprite_Remove(&e->sprite);
@@ -798,7 +797,7 @@ NON_MATCH void Cmd_5D74(void) {
     }
 
     Map_InitPathWalker(&e->pathWalker, pathIdx, unk, nodeIdx);
-    e->hitbox.path = &e->pathWalker;
+    e->mover.path = &e->pathWalker;
   }
 #else
   INCFUNC("asm/func/Cmd_5D74.inc");
@@ -885,7 +884,7 @@ Vec3* Elevator_GetPosByID(s32 id) {
     return NULL;
   }
 
-  return &e->hitbox.pos;
+  return &e->mover.pos;
 }
 
 Vec3* Elevator_GetPos(Elevator* e) {
@@ -893,7 +892,7 @@ Vec3* Elevator_GetPos(Elevator* e) {
     return NULL;
   }
 
-  return &e->hitbox.pos;
+  return &e->mover.pos;
 }
 
 NAKED void FUN_081d5588(Elevator* e) { INCFUNC("asm/func/FUN_081d5588.inc"); }
