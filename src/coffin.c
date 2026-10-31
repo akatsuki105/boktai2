@@ -390,22 +390,19 @@ bool32 FUN_0808608c(Coffin* p) {
   return FALSE;
 }
 
-// 残差は unk_384 のオフセット定数を 0x3A4 から subs で作ってしまう1命令のみ (原典は movs/lsls で作り直す), Tier A-C は試済
-// inline アクセサ経由 (Coffin_ResetSelfMoveTimer) も試したが改善せず, 未: per-TU フラグ
-NON_MATCH void FUN_080860cc(Coffin* p) {
-#ifdef NONMATCHING_C
+// 自力移動の待ち時間を戻し, 自力で動ける棺桶なら state 3 か 4 に, 動けなければ 0 にする
+void FUN_080860cc(Coffin* p) {
   p->selfMoveTimer = p->selfMoveTimerInit;
 
-  if (p->canSelfMove == 0 || p->unk_384 != 0) {
+  if (p->canSelfMove == 0) {
+    Coffin_SetState(gCoffin, 0);
+  } else if (p->unk_384 != 0) {
     Coffin_SetState(gCoffin, 0);
   } else if (FUN_0808608c(p)) {
     Coffin_SetState(gCoffin, 3);
   } else {
     Coffin_SetState(gCoffin, 4);
   }
-#else
-  INCFUNC("asm/func/FUN_080860cc.inc");
-#endif
 }
 
 void FUN_0808613c(Coffin* p) {
