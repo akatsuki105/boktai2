@@ -31,7 +31,7 @@ typedef void ElevatorFunc(struct Elevator* e);
 typedef struct Elevator {
   AuxSprite sprite;                  // 0x000
   AuxSpriteGfx gfx;                  // 0x02C, e.g. SPRITE_LIFT_IRON
-  u8 unk_48[0x058 - 0x048];          // 0x048
+  AuxAnimState anim;                 // 0x048, ElevatorManager.animFile
   Vec3 moveDelta;                    // 0x058, そのフレームに動いた量, 乗っているプレイヤーや棺桶の座標に足して一緒に運ぶ
   u8 unk_60[0x0B0 - 0x060];          // 0x060
   s16 slotIdx;                       // 0x0B0, ElevatorManager_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
@@ -47,7 +47,7 @@ typedef struct Elevator {
   u16 arriveScriptID;                // 0x0C2, '.R', プレイヤーが乗っているときノードに着いたら呼ぶスクリプト
   u16 departScriptID;                // 0x0C4, '.S', プレイヤーが乗っているときノードを離れたら呼ぶスクリプト
   s16 sinkY;                         // 0x0C6, プレイヤーが乗った瞬間に -32 が入り, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
-  u16 unk_c8;                        // 0x0C8, '.T', FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
+  u16 variant;                       // 0x0C8, '.T', 見た目の種類, パレットとアニメの variant と FUN_081d21d8 の効果音を選ぶ
   u16 unk_ca;                        // 0x0CA, 動いている間のエフェクトを出す位置を2か所で交互に切り替える
   s32 minY;                          // 0x0CC, '.l', 昇降床が下りる下限の高さ
   s32 maxY;                          // 0x0D0, '.h', 昇降床が上る上限の高さ
@@ -56,10 +56,10 @@ typedef struct Elevator {
   ElevatorFunc* unk_d8;              // 0x0D8, ElevatorManager_Update が毎フレーム呼ぶ
   ElevatorFunc* unk_dc;              // 0x0DC
   ElevatorFunc* unk_e0;              // 0x0E0
-  u8 unk_e4;                         // 0x0E4, Elevator_Create が VM 値を入れる
+  u8 pathIdx;                        // 0x0E4, '.r[0]', 経路番号
   u8 unk_e5;                         // 0x0E5
-  u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて Map_GetPathNodePos に渡す
-  u8 unk_e7;                         // 0x0E7, ElevatorManager_UpdateSound が 0/1/3 で走行音を出し分ける
+  u8 nodeIdx;                        // 0x0E6, '.r[1]', 最初にいるノード番号
+  u8 kind;                           // 0x0E7, '.k', 0/1/3 は移動床, 2 は昇降床, 走行音とアニメもこれで決まる
   PathWalker pathWalker;             // 0x0E8, mover.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
   Mover mover;                       // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
   MapTileOverride tileOverride;      // 0x138, flags bit0 が立っているときだけ有効
@@ -84,7 +84,7 @@ IWRAM_DATA ElevatorManager* gElevatorManager = NULL;  // 0x03000194
 
 // エレベータが乗り手との距離を測るときの許容範囲 (±)
 const Vec3 gElevatorRange0 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D0
-const Vec3 gElevatorRange1 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D8, Elevator_ClampRiderPos が unk_e7 == 1 のときに使う
+const Vec3 gElevatorRange1 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D8, Elevator_ClampRiderPos が kind == 1 のときに使う
 const Vec3 gElevatorRange2 = {Q8(0.383), Q8(0.125), Q8(0.383)};  // 0x085AE0E0, 棺桶用
 
 bool32 FUN_08086978(u32 mask);
@@ -135,10 +135,10 @@ static inline bool8 Elevator_PlayArrivalSoundAt(s32 idx, s32 height) {
   return FALSE;
 }
 
-// unk_c8 の種類ごとに走行音を鳴らす
+// variant ごとに走行音を鳴らす
 void FUN_081d21d8(Elevator* e) {
   if (!(e->unk_d6 & 4)) {
-    switch (e->unk_c8) {
+    switch (e->variant) {
       case 0: {
         PlaySound_082406e0(SONG_344);
         break;
@@ -262,7 +262,7 @@ void Elevator_EmitMoveEffect(Elevator* e) {
     }
   }
 
-  switch (e->unk_e7) {
+  switch (e->kind) {
     case 0: {
       if (e->unk_ca == 0) {
         pos.x = e->mover.pos.x + off[0].x;
@@ -479,7 +479,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
       } else if (p->soundPlaying == FALSE) {
         s32 id;
 
-        switch (p->elevators[i].unk_e7) {
+        switch (p->elevators[i].kind) {
           case 0: {
             id = SONG_650;
             break;
@@ -517,7 +517,7 @@ NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
     } else if (p->soundPlaying == FALSE) {
       s32 id;
 
-      switch (e->unk_e7) {
+      switch (e->kind) {
         case 0: {
           id = SONG_650;
           break;
@@ -578,7 +578,7 @@ void Elevator_UpdateState4(Elevator* e) {
       u32 argv[3];
       ScriptArgs sa;
 
-      if (e->unk_e7 == 2) {
+      if (e->kind == 2) {
         if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
           argv[0] = 2;
         } else {
@@ -682,7 +682,7 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
       u32 argv[3];
       ScriptArgs sa;
 
-      if (e->unk_e7 == 2) {
+      if (e->kind == 2) {
         if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
           argv[0] = 2;
         } else {
@@ -784,7 +784,7 @@ NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
 #ifdef NONMATCHING_C
   ElevatorManager* p = gElevatorManager;
 
-  if (p == NULL || e->id != p->ridingID || e->unk_e7 == 2 || gPlayerPtr[0]->action != PACT_PULL_COFFIN || e->state != 3) {
+  if (p == NULL || e->id != p->ridingID || e->kind == 2 || gPlayerPtr[0]->action != PACT_PULL_COFFIN || e->state != 3) {
     Elevator_RemoveTileOverrides(e);
     return;
   }
@@ -1155,7 +1155,7 @@ void Elevator_UpdatePlayerRiding(Elevator* e) {
     SET_FLAGS(e->flags, PLAYER_RIDING);
     gPlayerPtr[0]->shadow.flags |= 1;
   } else if (p->ridingID == e->id) {
-    if (e->unk_e7 == 1 && !(e->unk_d6 & 8)) {
+    if (e->kind == 1 && !(e->unk_d6 & 8)) {
       if (delta.x <= gElevatorRange1.x && delta.x >= -gElevatorRange1.x && delta.y <= gElevatorRange1.y && delta.y >= -gElevatorRange1.y && delta.z <= gElevatorRange1.z && delta.z >= -gElevatorRange1.z) {
         FUN_081d4034(e);
         return;
@@ -1207,9 +1207,9 @@ void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
   d.y = pos->y - e->mover.pos.y;
   d.z = pos->z - e->mover.pos.z;
 
-  if (e->unk_e7 == 2) return;
+  if (e->kind == 2) return;
 
-  if (e->unk_e7 == 1 && !(e->unk_d6 & 8)) {
+  if (e->kind == 1 && !(e->unk_d6 & 8)) {
     range = gElevatorRange1;
   } else {
     range = gElevatorRange0;
@@ -1315,7 +1315,7 @@ NON_MATCH void FUN_081d4658(Elevator* e) {
 // Tier A-C は試済: 2要素の WorldPos 配列にするとメモリには乗るが 87 で一致せず
 NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
 #ifdef NONMATCHING_C
-  if (e->unk_e7 == 2) {
+  if (e->kind == 2) {
     WorldPos pos;
     WorldPos delta;
 
@@ -1348,8 +1348,218 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
 #endif
 }
 
-// 0xA4FC
-NAKED void Elevator_Create(void) { INCFUNC("asm/func/Elevator_Create.inc"); }
+// 0xA4FC, VM の引数からエレベータを1つ作る
+// 残差113ハンク (747/757), 大半は割当: 原典は e を r8, sprite を r9 に置き, animIdx と p をスタックに逃がすが, こちらは e が r7 に入り animIdx がレジスタに残る
+// 形の差は kind ごとの case の並びと畳み方 (原典は case 0 の variant = 0 を kind のレジスタで書き, case 3 は case 1 の variant = 0 と共有する), AuxSprite_AdvanceAnim の部分は一致
+// Tier A-C は試済 (sprite ローカル, 宣言順, kind ローカル)
+NON_MATCH void Elevator_Create(void) {
+#ifdef NONMATCHING_C
+  ElevatorManager* p = gElevatorManager;
+  Elevator* e;
+  AuxSprite* sprite;
+  u16 animIdx;
+  s32 riding;
+
+  if (p == NULL) return;
+
+  animIdx = 0;
+  e = ElevatorManager_AllocSlot(p);
+  if (e == NULL) return;
+
+  e->flags = animIdx;
+  e->timer = animIdx;
+  sprite = &e->sprite;
+
+  if (VM_SeekToNamedArg('r')) {
+    e->pathIdx = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    e->unk_e5 = 0;
+    e->nodeIdx = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    Map_GetPathNodePos(&sprite->pos, e->pathIdx, e->nodeIdx);
+  }
+
+  e->kind = VM_GetNamedArgValue('k', 0);
+  if (VM_SeekToNamedArg('Y')) {
+    s32 y;
+
+    e->minY = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    e->maxY = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    if (e->kind == 2) {
+      if (y == e->minY) {
+        sprite->pos.y = y;
+        CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+      } else if (y == e->maxY) {
+        sprite->pos.y = y;
+        SET_FLAGS(e->flags, ELEVATOR_MOVE_UP);
+      }
+    } else {
+      sprite->pos.y = e->minY;
+    }
+    e->mover.pos.y = sprite->pos.y;
+  }
+
+  e->id = VM_GetNamedArgValue('n', 0);
+  e->unk_c0 = VM_GetNamedArgValue('p', 0);
+  e->arriveScriptID = VM_GetNamedArgValue('R', 0);
+  e->departScriptID = VM_GetNamedArgValue('S', 0);
+  e->variant = VM_GetNamedArgValue('T', 0);
+  Video_GetAuxSprite(&e->gfx, SPRITE_LIFT_IRON);
+
+  switch (e->kind) {
+    case 0: {
+      s32 m;
+
+      sprite->pos.y = e->minY;
+      e->state = 1;
+      e->unk_d8 = Elevator_KnockbackRider;
+      e->unk_dc = Elevator_ClampCoffinOnSpecialTile;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 1;
+      Video_SetAuxSpritePltt(&e->gfx, 0x1B8);
+      m = VM_GetNamedArgValue('m', 0);
+      if (m != 0) e->unk_d6 = m;
+      e->variant = 0;
+      break;
+    }
+    case 1: {
+      s32 m;
+
+      sprite->pos.y = e->minY;
+      e->state = 1;
+      e->unk_d8 = Elevator_CheckRiderFallInWater;
+      e->unk_dc = Elevator_ClampCoffinOffFloor;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 2;
+      switch (e->variant) {
+        case 0: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1B9);
+          break;
+        }
+        case 1: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BC);
+          break;
+        }
+        case 2: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BD);
+          break;
+        }
+      }
+      m = VM_GetNamedArgValue('m', 0);
+      if (m != 0) e->unk_d6 = m;
+      if (e->variant > 2) e->variant = 0;
+      break;
+    }
+    case 2: {
+      e->state = 4;
+      e->unk_d8 = Elevator_ClampRiderToRange;
+      e->unk_dc = Elevator_ClampCoffinPos;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 0;
+      switch (e->variant) {
+        case 0: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1B7);
+          break;
+        }
+        case 1: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1B9);
+          break;
+        }
+        case 2: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BE);
+          break;
+        }
+        case 3: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BD);
+          break;
+        }
+      }
+      e->unk_d6 = VM_GetNamedArgValue('m', 1);
+      e->waitTime = VM_GetNamedArgValue('w', 120);
+      if (VM_GetNamedArgValue('M', 0)) e->timer = e->waitTime;
+      break;
+    }
+    case 3: {
+      s32 m;
+
+      sprite->pos.y = e->minY;
+      e->state = 1;
+      e->unk_d8 = Elevator_KnockbackRider;
+      e->unk_dc = Elevator_ClampCoffinOnSpecialTile;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 1;
+      Video_SetAuxSpritePltt(&e->gfx, 0x1BE);
+      m = VM_GetNamedArgValue('m', 0);
+      if (m != 0) e->unk_d6 = m;
+      e->variant = 0;
+      break;
+    }
+  }
+
+  AuxSprite_Add(sprite, &e->gfx, 0);
+  AuxAnim_SetAnim(&e->anim, p->animFile, animIdx, e->variant, 0);
+  AuxSprite_AdvanceAnim(sprite, &e->anim);
+  sprite->flags &= ~SPRFLAG_HIDDEN;
+  sprite->priority = 2;
+  Mover_Init(&e->mover, e->slotIdx + 0xD0E9, &sprite->pos, 0, 7, e);
+  Mover_SetAuxSprite(&e->mover, sprite);
+  Mover_SetPath(&e->mover, &e->pathWalker, e->pathIdx, e->unk_e5, e->nodeIdx);
+  e->mover.tile = NULL;
+  sprite->pos.x -= Q8(1);
+
+  if (VM_GetNamedArgValue('d', 0)) SET_FLAGS(e->flags, ELEVATOR_UNK_7);
+  if (VM_GetNamedArgValue('F', 0)) SET_FLAGS(e->flags, ELEVATOR_FLAG_12);
+  e->arrived = FALSE;
+  e->sinkY = 0;
+
+  riding = VM_GetNamedArgValue('f', 0);
+  if (riding != 0) {
+    switch (e->kind) {
+      case 0:
+      case 1:
+      case 3: {
+        e->state = 1;
+        break;
+      }
+      case 2: {
+        e->state = 4;
+        break;
+      }
+    }
+
+    FUN_081d3fac(p->ridingID, 0);
+    p->ridingID = e->id;
+    FUN_0807a97c(gPlayerPtr[0], 1, e->id);
+    SET_FLAGS(e->flags, PLAYER_RIDING);
+    gPlayerPtr[0]->shadow.flags |= 1;
+    Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
+    SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
+    FUN_0807a91c(gPlayerPtr[0], &e->mover.pos);
+    if (riding == 2) {
+      FUN_08086a4c(&e->mover.pos);
+      FUN_081d3fac(p->coffinRidingID, 1);
+      p->coffinRidingID = e->id;
+      FUN_080869c8(3, e->id);
+      SET_FLAGS(e->flags, COFFIN_RIDING);
+    }
+  }
+
+  FUN_081d4704(p, e);
+  e->speed = VM_GetNamedArgValue('s', 6);
+  switch (e->kind) {
+    case 0:
+    case 1:
+    case 3: {
+      if (FUN_081d2660(&e->pathWalker, &e->mover.pos, e->speed, e->speed)) {
+        e->state = 3;
+      }
+      break;
+    }
+  }
+  e->unk_b7 = 0;
+#else
+  INCFUNC("asm/func/Elevator_Create.inc");
+#endif
+}
 
 void (*const sElevatorUpdates[7])(Elevator*) = {
     Elevator_UpdateState0,
