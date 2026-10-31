@@ -909,7 +909,47 @@ NAKED void FUN_0808766c(Coffin* p) { INCFUNC("asm/func/FUN_0808766c.inc"); }
 
 NAKED s32 FUN_08087818(Coffin* p) { INCFUNC("asm/func/FUN_08087818.inc"); }
 
-NAKED s32 FUN_08087970(Coffin* p) { INCFUNC("asm/func/FUN_08087970.inc"); }
+// 63/65命令, 残差は return 1 / return 16 の共通化の向きだけ: 原典は case 0 側が case 1 の return 1 へ飛ぶが, こちらは case 1 側が case 0 の return 1 へ飛ぶ
+// 試済: 条件の反転, 三項演算子, 戻り値をローカルに置く, GetPlayer の inline
+NON_MATCH s32 FUN_08087970(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (FUN_08087818(p)) {
+    FUN_0808613c(p);
+  }
+
+  switch (p->state) {
+    case 0:
+    case 3:
+    case 4: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 1;
+      }
+      break;
+    }
+    case 1: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 1;
+      }
+      return 0;
+    }
+    case 15: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 16;
+      }
+      break;
+    }
+    case 16: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 16;
+      }
+      return 15;
+    }
+  }
+  return p->state;
+#else
+  INCFUNC("asm/func/FUN_08087970.inc");
+#endif
+}
 
 NAKED void FUN_08087a5c(Coffin* p) { INCFUNC("asm/func/FUN_08087a5c.inc"); }
 
