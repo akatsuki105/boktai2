@@ -49,7 +49,7 @@ _0800A328:
 	strb r4, [r6, #6]
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl FUN_08009b6c
+	bl BambooShoot_Init
 	movs r0, #0x70
 	bl VM_SeekToNamedArg
 	cmp r0, #0

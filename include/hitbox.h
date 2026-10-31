@@ -11,6 +11,7 @@ typedef u32 HitboxFlags32;
 #define HBFLAG_UNK_1 (1 << 1)     // 0x2
 #define HBFLAG_HIDDEN (1 << 2)    // 0x4, 一時的に食らい判定を外すためのフラグ？, 食らい側に立っていると、どの攻撃とも判定せず center も更新しない (Hitbox_CheckAllPairs, Hitbox_UpdateBoxes)
 #define HBFLAG_UNK_3 (1 << 3)     // 0x8
+#define HBFLAG_UNK_5 (1 << 5)     // 0x20
 #define HBFLAG_UNK_7 (1 << 7)     // 0x80
 #define HBFLAG_ANGLE (1 << 8)     // 0x100, 向きの概念があるものにつける, バックアタックの判定, 攻撃のノックバック方向 などで利用
 #define HBFLAG_UNK_9 (1 << 9)     // 0x200, 立っていると相手の hitState bit0 を消費する (Django_OnHurt)
