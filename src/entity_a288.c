@@ -194,11 +194,11 @@ const __attribute__((section(".rodata.faraddr"))) u32 u32_ARRAY_08252850[5] = {0
 // clang-format off
 // "SOUND"モードで聴ける BGM 一覧
 const SoundID16 u16_ARRAY_085afa30[95] = {
-    SONG_163,             SONG_167,        SONG_164,        SONG_179,     SONG_56,
-    SONG_18,              SONG_62,         SONG_57,         BGM_PROLOGUE, BGM_FIELD,
-    SONG_165,             BGM_TRAP_BATTLE, BGM_COMPLETE,    SONG_59,      SONG_152,
-    BGM_15,               SONG_54,         BGM_GAMEOVER,    SONG_156,     SONG_66,
-    SONG_154,             SONG_160,        BGM_DARKLOAN,        BGM_OSHIOKI,     BGM_DAISEIDOU_REIEN,
+    BGM_NOTIFICATION,             BGM_KAISETSU,        BGM_TITLE,        BGM_ASAHI,     BGM_POEM,
+    BGM_SOLARBOY,              BGM_MATEKI,         BGM_OTENKO,         BGM_PROLOGUE, BGM_FIELD,
+    BGM_DEDEDE,             BGM_TRAP_BATTLE, BGM_COMPLETE,    BGM_ZAJI,      BGM_LEARN_MAGIC,
+    BGM_HAIKYO,               BGM_ASSAULT,         BGM_GAMEOVER,    BGM_SUNMIGUERE1,     BGM_RAIN,
+    BGM_HOSHIYOMI,             BGM_SOLAR_BANK,        BGM_DARK_LOANS,        BGM_OSHIOKI,     BGM_DAISEIDOU_REIEN,
     BGM_WHAT,              BGM_DAISEIDOU_B,         BGM_DAISEIDOU_1F,         BGM_DAISEIDOU_2F,      BGM_SANSHIMAI,
     BGM_DUNEYRR,              BGM_SMITH,         BGM_WEDGE,         BGM_AKATSUKI,     BGM_TASOGARE,
     BGM_PILEDRIVER, BGM_BATTLE_DRIVE, BGM_CLIMAX, BGM_NIGERARETAZO,       BGM_RITA,
@@ -3932,7 +3932,7 @@ NON_MATCH void FUN_082192f4(EntityA288* p) {
         FUN_08218e90(p);
         s->unk_396 = 0;
         if (s->unk_3a0 == 0) {
-          PlaySound_082406e0(SONG_179);
+          PlaySound_082406e0(BGM_ASAHI);
           s->unk_3a0 = 1;
         }
       }

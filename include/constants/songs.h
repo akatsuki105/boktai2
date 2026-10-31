@@ -1,9 +1,9 @@
 #ifndef __INCLUDE_CONSTANTS_SONGS_H__
 #define __INCLUDE_CONSTANTS_SONGS_H__
 
-#define SONG_NONE 0  // 無音
-#define BGM_PROLOGUE 1
-#define BGM_GAMEOVER 2
+#define SONG_NONE 0         // 無音
+#define BGM_PROLOGUE 1      // BGM:"サン・ミゲル", ゲーム開始時のジャンゴとおてんこが走っていくときに流れる
+#define BGM_GAMEOVER 2      // BGM:"ゲームオーバー"
 #define BGM_BATTLE_DRIVE 3  // BGM:"バトルドライブ", 浄化時(通常)
 #define BGM_CLIMAX 4        // BGM:"死線", 浄化時(敵のHP残りわずか)
 #define SE_PILEDRIVER_05 5
@@ -13,14 +13,14 @@
 #define BGM_PILEDRIVER 9     // BGM:"パイルドライバー", パイルドライバー設置場所のBGM
 #define BGM_NIGERARETAZO 10  // BGM:"逃げられたぞ！！"
 #define BGM_NONE_11 11
-#define BGM_COMPLETE 12  // 初代ならダンジョン突破時のリザルト画面
-#define BGM_TRAP_BATTLE 13
-#define BGM_TOKI_NO_IE_KAKO 14  // BGM:"時の家・過去"
-#define BGM_15 15
-#define BGM_TOKI_NO_IE_GENZAI 16  // BGM:"時の家・現在"
-#define BGM_MUGEN 17              // BGM:"夢幻街"
-#define SONG_18 18
-#define BGM_FIELD 19               // n番外
+#define BGM_COMPLETE 12            // BGM:"勝利！", "PURIFICATION COMPLETED!" と一緒に出るファンファーレ
+#define BGM_TRAP_BATTLE 13         // BGM:"襲撃"
+#define BGM_TOKI_NO_IE_KAKO 14     // BGM:"時の家・過去"
+#define BGM_HAIKYO 15              // BGM:"廃墟"
+#define BGM_TOKI_NO_IE_GENZAI 16   // BGM:"時の家・現在"
+#define BGM_MUGEN 17               // BGM:"夢幻街"
+#define BGM_SOLARBOY 18            // BGM:"太陽少年ジャンゴ"
+#define BGM_FIELD 19               // BGM:"死の街", n番外
 #define BGM_DAISEIDOU_REIEN 20     // BGM:"大聖堂・霊園"
 #define BGM_DAISEIDOU_B 21         // BGM:"大聖堂・地下"
 #define BGM_DAISEIDOU_1F 22        // BGM:"大聖堂・1階"
@@ -55,19 +55,19 @@
 #define SONG_51 51
 #define SONG_52 52
 #define SONG_53 53
-#define SONG_54 54
+#define BGM_ASSAULT 54  // BGM:"強襲"
 #define SONG_55 55
-#define SONG_56 56
-#define SONG_57 57
+#define BGM_POEM 56    // BGM:"星読み", プロローグのポエム
+#define BGM_OTENKO 57  // BGM:"おてんこさま"
 #define SONG_58 58
-#define SONG_59 59
+#define BGM_ZAJI 59       // BGM:"ひまわり娘ザジ"
 #define BGM_RED_RINGO 60  // BGM:"紅のリンゴ"
 #define BGM_RINNE 61      // BGM:"生と死の輪廻"
-#define SONG_62 62
+#define BGM_MATEKI 62     // BGM:"魔笛"
 #define SONG_63 63
 #define BGM_BLACK_DAINN 64  // BGM:"黒きダーイン"
 #define BGM_WEDGE 65        // BGM:"くさび"
-#define SONG_66 66
+#define BGM_RAIN 66         // BGM:"雨", 不穏な時のBGM
 #define SONG_67 67
 #define BGM_WHAT 68                // BGM:"ん？", クロを見つけたときのBGM
 #define BGM_SANSHIMAI 69           // BGM:"三姉妹"
@@ -151,36 +151,36 @@
 #define SONG_147 147
 #define SONG_148 148
 #define SONG_149 149
-#define BGM_AKATSUKI 150  // BGM:"あかつき"
-#define BGM_TASOGARE 151  // BGM:"たそがれ"
-#define SONG_152 152
-#define BGM_BLACK_DJANGO 153  // BGM:"暗黒！", 黒ジャンゴに初めてなったときのBGM
-#define SONG_154 154
-#define BGM_TAIYO 155  // BGM:"太陽！"
-#define SONG_156 156
-#define BGM_SUNMIGUERE2 157  // BGM:"太陽街・その2"
-#define BGM_NAKAMA2 158      // BGM:"街の仲間・その2"
-#define BGM_SOLAR_TREE 159   // BGM:"太陽樹"
-#define SONG_160 160
-#define BGM_DARKLOAN 161  // BGM:"暗黒ローン"
-#define BGM_OSHIOKI 162   // BGM:"おしおき"
-#define SONG_163 163
-#define SONG_164 164
-#define SONG_165 165
+#define BGM_AKATSUKI 150          // BGM:"あかつき"
+#define BGM_TASOGARE 151          // BGM:"たそがれ"
+#define BGM_LEARN_MAGIC 152       // BGM:"魔法！！", 魔法取得時のBGM
+#define BGM_BLACK_DJANGO 153      // BGM:"暗黒！", 黒ジャンゴに初めてなったときのBGM
+#define BGM_HOSHIYOMI 154         // BGM:"読めたで！"
+#define BGM_TAIYO 155             // BGM:"太陽！"
+#define BGM_SUNMIGUERE1 156       // BGM:"太陽街・その1"
+#define BGM_SUNMIGUERE2 157       // BGM:"太陽街・その2"
+#define BGM_NAKAMA2 158           // BGM:"街の仲間・その2"
+#define BGM_SOLAR_TREE 159        // BGM:"太陽樹"
+#define BGM_SOLAR_BANK 160        // BGM:"太陽バンク"
+#define BGM_DARK_LOANS 161        // BGM:"暗黒ローン"
+#define BGM_OSHIOKI 162           // BGM:"おしおき"
+#define BGM_NOTIFICATION 163      // BGM:"お知らせ", 暗黒ローンの返済通知
+#define BGM_TITLE 164             // BGM:"太陽", タイトル画面
+#define BGM_DEDEDE 165            // BGM:"トラップ！", でででどん！
 #define BGM_TAIYO_NO_KISETSU 166  // BGM:"太陽の季節"
-#define SONG_167 167
-#define BGM_LINK_SELECT 168  // BGM:"選択"
-#define BGM_END 169          // BGM:"終了", 太陽鍛治の終了時や通信対戦のリザルト時に流れる
-#define BGM_SOLAR_FORGE 170  // BGM:"太陽鍛治"
+#define BGM_KAISETSU 167          // BGM:"解説", 太陽センサーの説明時に流れるBGM
+#define BGM_LINK_SELECT 168       // BGM:"選択"
+#define BGM_END 169               // BGM:"終了", 太陽鍛治の終了時や通信対戦のリザルト時に流れる
+#define BGM_SOLAR_FORGE 170       // BGM:"太陽鍛治"
 #define SONG_171 171
 #define SONG_172 172
 #define BGM_SHADEMAN 173  // BGM:"シェードマン"
 #define SONG_174 174
 #define SONG_175 175
-#define BGM_WIN 176   // BGM:"勝ち！"
-#define BGM_LOSE 177  // BGM:"負け！"
-#define BGM_BBB 178   // BGM:"道具屋キッド"
-#define SONG_179 179
+#define BGM_WIN 176      // BGM:"勝ち！"
+#define BGM_LOSE 177     // BGM:"負け！"
+#define BGM_BBB 178      // BGM:"道具屋キッド"
+#define BGM_ASAHI 179    // BGM:"朝日", タイトル画面の後のはじめから,つづきからの画面
 #define BGM_ANUN 180     // BGM:"暗雲"
 #define BGM_NAKAMA1 181  // BGM:"街の仲間・その1"
 #define SONG_182 182
