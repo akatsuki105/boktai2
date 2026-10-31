@@ -18,7 +18,7 @@ typedef u16 ElevatorFlags;                 // Elevator.flags
 #define COFFIN_RIDING (1 << 4)             // 棺桶が乗っている, Elevator_ClearRidingFlag が第2引数で落とし分ける
 #define ELEVATOR_SHAKE (1 << 5)            // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
 #define ELEVATOR_UNK_7 (1 << 7)            // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
-#define ELEVATOR_RIDER_KNOCKBACK (1 << 8)  // プレイヤーを弾き返した, 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
+#define ELEVATOR_RIDER_KNOCKBACK (1 << 8)  // プレイヤーを弾き返した, 立っていると Elevator_CarryPlayer がプレイヤーを運ばずにフラグだけ落とす
 #define ELEVATOR_UNK_9 (1 << 9)            // FUN_081d4658 が見て落とす
 #define ELEVATOR_TILEOVERRIDES (1 << 11)   // tileOverrides[] を登録済み
 #define ELEVATOR_FLAG_12 (1 << 12)         // まだ不明
@@ -91,7 +91,7 @@ bool32 FUN_08086978(u32 mask);
 Elevator* Elevator_FindByID(s32 id);
 void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 void FUN_081ee53c(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
-void FUN_081d4590(Elevator* e);
+void Elevator_CarryPlayer(Elevator* e);
 void FUN_081d4658(Elevator* e);
 void Elevator_PlayArrivalSound(Elevator* e);
 
@@ -1233,7 +1233,7 @@ void FUN_081d4540(Elevator* e) {
     Elevator_UpdateCoffinRiding(e);
 
     if (FUN_0807a954(gPlayerPtr[0], 1)) {
-      FUN_081d4590(e);
+      Elevator_CarryPlayer(e);
     }
     if (FUN_08086978(1)) {
       FUN_081d4658(e);
@@ -1244,10 +1244,7 @@ void FUN_081d4540(Elevator* e) {
 }
 
 // 乗っているプレイヤーをエレベータの移動ぶんだけ運ぶ
-// 残差10命令 (74/84): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (83/84)
-NON_MATCH void FUN_081d4590(Elevator* e) {
-#ifdef NONMATCHING_C
+void Elevator_CarryPlayer(Elevator* e) {
   ElevatorManager* p = gElevatorManager;
 
   if (gPlayerPtr[0] == NULL) {
@@ -1260,17 +1257,14 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
   if (!Elevator_TestFlags(e, ELEVATOR_RIDER_KNOCKBACK)) {
     Vec3 v;
 
-    v.x = e->moveDelta.x + gPlayerPtr[0]->mover.pos.x;
-    v.y = e->moveDelta.y + gPlayerPtr[0]->mover.pos.y;
-    v.z = e->moveDelta.z + gPlayerPtr[0]->mover.pos.z;
+    v.x = gPlayerPtr[0]->mover.pos.x + e->moveDelta.x;
+    v.y = gPlayerPtr[0]->mover.pos.y + e->moveDelta.y;
+    v.z = gPlayerPtr[0]->mover.pos.z + e->moveDelta.z;
     Elevator_ClampRiderPos(&v, &gPlayerPtr[0]->mover.pos, e);
     FUN_0807a91c(gPlayerPtr[0], &v);
   }
 
-  e->flags &= ~ELEVATOR_RIDER_KNOCKBACK;
-#else
-  INCFUNC("asm/func/FUN_081d4590.inc");
-#endif
+  CLEAR_FLAGS(e->flags, ELEVATOR_RIDER_KNOCKBACK);
 }
 
 // 乗っている棺桶をエレベータの移動ぶんだけ動かす
