@@ -645,7 +645,61 @@ void Elevator_ClampCoffinOnSpecialTile(Elevator* e) {
   SET_FLAGS(e->flags, ELEVATOR_UNK_9);
 }
 
-NAKED void FUN_081d3dd0(Elevator* e) { INCFUNC("asm/func/FUN_081d3dd0.inc"); }
+// 乗っている棺桶が床の高さにいないか水の上にいて, 足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampCoffinOffFloor(Elevator* e) {
+  WorldPos pos;
+  Vec3 d;
+
+  if (!FUN_08086978(1)) return;
+  if (!Elevator_TestFlags(e, COFFIN_RIDING)) return;
+
+  Coffin_CopyPos(&pos);
+  {
+    s32 bx = (s8)(pos.x >> 8);
+    s32 bz = (s8)(pos.z >> 8);
+    s32 idx;
+    s32 y;
+    MapTileOverride* ov;
+    CollisionMapTile* tile;
+    TileAttr attr;
+
+    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+      idx = 0;
+    } else {
+      idx = gCollisionMap->rowOffsets[bz] + bx;
+    }
+    y = pos.y;
+    ov = Map_FindTileOverride(idx, 1);
+    tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+
+    if (y == (tile->heightStairs & 0xF) << 8) {
+      ov = Map_FindTileOverride(idx, 1);
+      tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+      attr = tile->attr;
+      if (!(attr & TATTR_UNK_6)) return;
+    }
+  }
+
+  Vec3_Delta(&d, &e->mover.pos, &pos);
+  if (d.x <= gElevatorRange0.x && d.x >= -gElevatorRange0.x && d.y <= gElevatorRange0.y && d.y >= -gElevatorRange0.y && d.z <= gElevatorRange0.z && d.z >= -gElevatorRange0.z) return;
+
+  if (d.x > gElevatorRange0.x) {
+    d.x = gElevatorRange0.x;
+  } else if (d.x < -gElevatorRange0.x) {
+    d.x = -gElevatorRange0.x;
+  }
+  if (d.z > gElevatorRange0.z) {
+    d.z = gElevatorRange0.z;
+  } else if (d.z < -gElevatorRange0.z) {
+    d.z = -gElevatorRange0.z;
+  }
+
+  pos.x = e->mover.pos.x + d.x;
+  pos.y = e->mover.pos.y;
+  pos.z = e->mover.pos.z + d.z;
+  FUN_08086a4c(&pos);
+  SET_FLAGS(e->flags, ELEVATOR_UNK_9);
+}
 
 // 残差はビット判定を 0/1 の値に起こす分だけ (src/elevator.c の ElevatorManager_AllocSlot と同じ現象)
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (62/63)
