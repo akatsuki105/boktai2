@@ -1900,17 +1900,13 @@ NON_MATCH void Coffin_UpdateState6(Coffin* p) {
 #endif
 }
 
-// 残差3命令, 原典は stateTimer の u16 への切り詰め (lsls/lsrs #16) を比較ごとに作り直すが, こちらは1回で済ませてしまう
-// u16 ローカル経由も試したが同じ, Tier A-C は試済, 未: per-TU フラグ
-NON_MATCH void Coffin_UpdateState7(Coffin* p) {
-#ifdef NONMATCHING_C
+void Coffin_UpdateState7(Coffin* p) {
   if (p->state != 7) {
     Coffin_SetState(p, 7);
   }
   p->unk_32a = 0;
-  p->stateTimer++;
 
-  if (p->stateTimer <= 5) {
+  if (++p->stateTimer <= 5) {
     if (p->stateTimer == 1) {
       p->unk_418 = 0;
       p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 290);
@@ -1925,9 +1921,6 @@ NON_MATCH void Coffin_UpdateState7(Coffin* p) {
   if (p->stateTimer > 0x1D) {
     p->killRequested = TRUE;
   }
-#else
-  INCFUNC("asm/func/Coffin_UpdateState7.inc");
-#endif
 }
 
 void Coffin_UpdateState8(Coffin* p) {
