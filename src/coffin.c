@@ -225,7 +225,36 @@ void FUN_08085cec(Coffin* p) {
   }
 }
 
-NAKED void FUN_08085da8(Coffin* p) { INCFUNC("asm/func/FUN_08085da8.inc"); }
+// 棺桶が動いている間, 動き始めに移動音を鳴らし, 8 フレームごとに FUN_08085764 を呼ぶ
+void FUN_08085da8(Coffin* p) {
+  if (p->unk_338 != 0) {
+    p->unk_338--;
+  }
+
+  if (p->unk_33a && !p->unk_384) {
+    if (p->coffinID == COFFIN_ELEFAN) {
+      if (p->unk_336 == 0 && p->unk_338 == 0) {
+        PlaySound_082406e0(SONG_618);
+        p->unk_338 = 100;
+      }
+    } else {
+      if (p->unk_336 == 0) {
+        s32 stairs = GetTileAt(&p->mover.pos)->heightStairs >> 4;
+        if (stairs == STAIRS_VERTICAL || stairs == STAIRS_HORIZONTAL) {
+          PlaySound_082406e0(SONG_211);
+        } else {
+          PlaySound_082406e0(SONG_210);
+        }
+      }
+      if ((p->unk_336 & 7) == 0) {
+        FUN_08085764(p);
+      }
+    }
+    p->unk_336++;
+  } else {
+    p->unk_336 = 0;
+  }
+}
 
 void FUN_08085ec4(Coffin* p) {
   FUN_08085cec(p);
