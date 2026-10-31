@@ -51,7 +51,7 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 #define HBATTR_POISON (1 << 15)    // 0x8000, 当たると毒になる (EBUFF_IMMUNEPOISON なら防ぐ)
 #define HBATTR_17 (1 << 17)        // 0x20000, 当たると Player_TakeHit が FUN_080dc0b8 を呼ぶ
 #define HBATTR_18 (1 << 18)        // 0x40000, ???
-#define HBATTR_19 (1 << 19)        // 0x40000, ???
+#define HBATTR_19 (1 << 19)        // 0x80000, ???
 #define HBATTR_CONFUSE (1 << 20)   // 0x100000, 当たると混乱になる
 #define HBATTR_INKA (1 << 21)      // 0x200000, (プレイヤーに)当たると引火の状態異常
 #define HBATTR_HYOKETU (1 << 22)   // 0x400000, (プレイヤーに)当たると氷結の状態異常

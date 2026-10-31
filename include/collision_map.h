@@ -36,7 +36,7 @@ typedef u16 TileAttr;            // CollisionMapTile.attr
 #define TATTR_WALL (1 << 1)      // 0x0002, 壁(常に侵入不可)
 #define TATTR_UNK_2 (1 << 2)     // 0x0004, 未検証, 移動床に乗っている時 (変異域の上下昇降床, 地下水路の移動床)
 #define TATTR_UNK_3 (1 << 3)     // 0x0008, 未検証
-#define TATTR_UNK_4 (1 << 3)     // 0x0010, 未検証
+#define TATTR_UNK_4 (1 << 4)     // 0x0010, 未検証
 #define TATTR_UNK_5 (1 << 5)     // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
 #define TATTR_UNK_6 (1 << 6)     // 0x0040, 未検証, 地下水路で水に落ちた瞬間にセットされた
 #define TATTR_SPECIAL (1 << 7)   // 0x0080, MPF_COLD: ツルツルすべる氷の床, MPF_HOT: 溶岩, MPF_UNK_13: ??? (おそらく前作のギミックの名残？)
