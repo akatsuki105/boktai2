@@ -665,8 +665,25 @@ void Cmd_A301(void) {
   }
 }
 
-// 0x4561
-NAKED void Cmd_4561(void) { INCFUNC("asm/func/Cmd_4561.inc"); }
+// 0x4561, '.p' があれば棺桶をその位置の地面に置き直し, '.d' があれば向きを変える
+void Cmd_4561(void) {
+  Coffin* p = gCoffin;
+
+  if (p == NULL) {
+    return;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(p->pos_1f8, VM_GetValue(), VM_GetValue(), VM_GetValue());
+    p->pos_1f8.y = TileHeightAt(&p->pos_1f8);
+    p->mover.pos = p->pos_1f8;
+    p->sprite.pos = p->pos_1f8;
+    p->unk_3c4 = p->pos_1f8;
+  }
+  if (VM_SeekToNamedArg('d')) {
+    p->facing = VM_GetValue();
+  }
+}
 
 // 0xFEE0
 void Coffin_RequestKill(void) {
