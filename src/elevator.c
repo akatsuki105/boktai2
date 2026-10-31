@@ -636,8 +636,7 @@ void Elevator_UpdateState4(Elevator* e) {
 }
 
 // 沈み込みを戻しつつ, 揺れフラグが立っていればスプライト位置を乱数で揺らす
-// 残差11命令 (81/92): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す (2箇所)
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (93/92)
+// 残差は割当のみ (93/92): 原典は &flags を r6, gRandomTable を r8 に置くが, こちらは逆になり hi レジスタ経由の mov が1つ増える, Tier A-C は試済 (table の置き場所, dy ローカル, y の足し方)
 NON_MATCH void Elevator_UpdateShake(Elevator* e) {
 #ifdef NONMATCHING_C
   if (e->sinkY < 0) {
@@ -646,16 +645,23 @@ NON_MATCH void Elevator_UpdateShake(Elevator* e) {
   }
 
   if (!Elevator_TestFlags(e, ELEVATOR_UNK_7)) {
+    u16* table;
+
     if (!Elevator_TestFlags(e, ELEVATOR_SHAKE)) {
       return;
     }
 
-    e->sprite.pos.x += Mod(Random(), 12) - 6;
-    e->sprite.pos.y += Random() & 3;
-    e->sprite.pos.z += Mod(Random(), 12) - 6;
+    table = gRandomTable;
+    e->sprite.pos.x += Mod(_Random(table), 12) - 6;
+    {
+      s32 dy = _Random(table) & 3;
+
+      e->sprite.pos.y += dy;
+    }
+    e->sprite.pos.z += Mod(_Random(table), 12) - 6;
   }
 
-  e->flags &= ~(ELEVATOR_TILEOVERRIDE | ELEVATOR_SHAKE);
+  CLEAR_FLAGS(e->flags, ELEVATOR_SHAKE);
 #else
   INCFUNC("asm/func/Elevator_UpdateShake.inc");
 #endif
