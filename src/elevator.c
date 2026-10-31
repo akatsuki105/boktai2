@@ -69,7 +69,7 @@ typedef struct {
   Elevator elevators[12];        // 0x001C
   u32 usedMask;                  // 0x12AC, スロット i を確保すると bit i が立つ
   u16 ridingID;                  // 0x12B0, 搭乗中のエレベータの id, 降りると 0
-  u16 unk_12b2;                  // 0x12B2, ridingID と同じ作り, FUN_081d4704 / FUN_081d42c4 が 0x03002C00 の乗り手について持つ
+  u16 coffinRidingID;            // 0x12B2, 棺桶が乗っているエレベータの id, 降りると 0
   bool8 soundPlaying;            // 0x12B4, 走行音を鳴らしているか
   u8 unk_12b5[0x12B8 - 0x12B5];  // 0x12B5
 } ElevatorManager;
@@ -468,14 +468,36 @@ void FUN_081d407c(Elevator* e) {
 
 NAKED void FUN_081d40b4(Elevator* e) { INCFUNC("asm/func/FUN_081d40b4.inc"); }
 
-NAKED void FUN_081d42c4(Elevator* e) { INCFUNC("asm/func/FUN_081d42c4.inc"); }
+void Elevator_UpdateCoffinRiding(Elevator* e) {
+  ElevatorManager* p;
+  WorldPos pos;
+  Vec3 delta;
+
+  Coffin_CopyPos(&pos);
+  pos.x += e->unk_58.x;
+  pos.y += e->unk_58.y;
+  pos.z += e->unk_58.z;
+  Vec3_Delta(&delta, &e->mover.pos, &pos);
+
+  p = gElevatorManager;
+  if (delta.x <= gElevatorRanges[0].x && delta.x >= -gElevatorRanges[0].x && delta.y <= gElevatorRanges[0].y && delta.y >= -gElevatorRanges[0].y && delta.z <= gElevatorRanges[0].z && delta.z >= -gElevatorRanges[0].z) {
+    FUN_081d3fac(p->coffinRidingID, 1);
+    p->coffinRidingID = e->id;
+    FUN_081d407c(e);
+    SET_FLAGS(e->flags, COFFIN_RIDING);
+  } else if (e->id == p->coffinRidingID) {
+    p->coffinRidingID = 0;
+    FUN_080869f8(7);
+    CLEAR_FLAGS(e->flags, COFFIN_RIDING);
+  }
+}
 
 NAKED void FUN_081d43d4(Vec3* a, Vec3* b, Elevator* e) { INCFUNC("asm/func/FUN_081d43d4.inc"); }
 
 void FUN_081d4540(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
     FUN_081d40b4(e);
-    FUN_081d42c4(e);
+    Elevator_UpdateCoffinRiding(e);
 
     if (FUN_0807a954(gPlayerPtr[0], 1)) {
       FUN_081d4590(e);
@@ -523,7 +545,7 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (60/77)
 NON_MATCH void FUN_081d4658(Elevator* e) {
 #ifdef NONMATCHING_C
-  if (gElevatorManager->unk_12b2 == e->id) {
+  if (gElevatorManager->coffinRidingID == e->id) {
     WorldPos pos;
     WorldPos delta;
 
@@ -574,8 +596,8 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
     }
 
     FUN_08086a4c(&e->mover.pos);
-    FUN_081d3fac(p->unk_12b2, 1);
-    p->unk_12b2 = e->id;
+    FUN_081d3fac(p->coffinRidingID, 1);
+    p->coffinRidingID = e->id;
     FUN_080869c8(3, e->id);
     e->flags |= COFFIN_RIDING;
   }
