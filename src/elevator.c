@@ -32,7 +32,7 @@ typedef struct Elevator {
   Vec3 unk_58;                       // 0x058, FUN_081d4540 が ClearMemory で 0 にする, FUN_081d4658 が棺桶の座標に足す
   u8 unk_60[0x0B0 - 0x060];          // 0x060
   s16 slotIdx;                       // 0x0B0, ElevatorManager_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
-  s16 state;                         // 0x0B2, ElevatorManager_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
+  s16 state;                         // 0x0B2, sElevatorUpdates の添字, 6 はスキップ
   ElevatorFlags flags;               // 0x0B4, see ElevatorFlags
   u8 unk_b6;                         // 0x0B6, FUN_081d2a14 が到着時に 1 を入れる
   u8 unk_b7[0x0BA - 0x0B7];          // 0x0B7
@@ -548,7 +548,7 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
 
 NAKED void Elevator_Create(void) { INCFUNC("asm/func/Elevator_Create.inc"); }
 
-void (*const PTR_ARRAY_085ae0e8[7])(Elevator*) = {
+void (*const sElevatorUpdates[7])(Elevator*) = {
     FUN_081d280c,
     FUN_081d2a14,
     FUN_081d2810,
@@ -558,7 +558,46 @@ void (*const PTR_ARRAY_085ae0e8[7])(Elevator*) = {
     FUN_081d3114,
 };  // 0x085AE0E8
 
-NAKED s32 ElevatorManager_Update(ElevatorManager* p) { INCFUNC("asm/func/ElevatorManager_Update.inc"); }
+// 残差は usedMask のアドレスをループ外に括り出すかどうかのみ (原典は毎周 p+0x12AC を作り直す), Tier A-C は試済 (e の持ち方, ネスト, TEST_FLAGS/& の書き分け)
+NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
+#ifdef NONMATCHING_C
+  Elevator* elevators = p->unk_1c;
+  s32 i;
+
+  if (p->usedMask == 0) return 0;
+
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    sound_08240740(SONG_344);
+    sound_08240740(SONG_609);
+    sound_08240740(SONG_649);
+    sound_08240740(SONG_650);
+    sound_08240740(SONG_648);
+    return 0;
+  }
+
+  if ((gEntityDisableFlags & ENTITY_DISABLE_3)) return 0;
+
+  for (i = 0; i < 12; i++) {
+    if (Elevator_IsSlotUsed(p, i) && elevators[i].state != 6) {
+      elevators[i].unk_d8(&elevators[i]);
+      sElevatorUpdates[elevators[i].state](&elevators[i]);
+      elevators[i].unk_dc(&elevators[i]);
+      elevators[i].unk_e0(&elevators[i]);
+      Elevator_UpdateTileOverrides(&elevators[i]);
+      FUN_081d4540(&elevators[i]);
+      FUN_081d276c(&elevators[i]);
+      elevators[i].sprite.pos = elevators[i].hitbox.pos;
+      elevators[i].sprite.pos.x -= Q8(1);
+      Elevator_UpdateShake(&elevators[i]);
+    }
+  }
+
+  FUN_081d2a64(p);
+  return 0;
+#else
+  INCFUNC("asm/func/ElevatorManager_Update.inc");
+#endif
+}
 
 // 走行音を止め, 使用中のスロットの上書きタイル・Mover・スプライトを片付ける
 // 残差7命令 (69/76): Cmd_7A75 と同じく, 原典は使用中判定と flags 判定を分岐で 0/1 に起こしてから cmp で読み直す
