@@ -80,9 +80,9 @@ NON_MATCH void FUN_080856f4(Coffin* p) {
 
 NAKED void FUN_08085764(Coffin* p) { INCFUNC("asm/func/FUN_08085764.inc"); }
 
-NAKED void FUN_08085880(void) { INCFUNC("asm/func/FUN_08085880.inc"); }
+NAKED void FUN_08085880(Coffin* p) { INCFUNC("asm/func/FUN_08085880.inc"); }
 
-NAKED void FUN_0808596c(s32 param_1) { INCFUNC("asm/func/FUN_0808596c.inc"); }
+NAKED void FUN_0808596c(Coffin* p) { INCFUNC("asm/func/FUN_0808596c.inc"); }
 
 // 残差1命令, 原典は &gRandTableIdx を ip に置いて毎回 [ip] から読み直すが, こちらは値をレジスタに持つため
 // callee-saved を1本多く push する, Tier A-C は試済, 未: per-TU フラグ
@@ -262,7 +262,7 @@ NAKED void FUN_0808613c(Coffin* p) { INCFUNC("asm/func/FUN_0808613c.inc"); }
 
 void Coffin_ClearGlobal(void) { gCoffin = NULL; }
 
-// 0xD24B, 不使用?, 装備している棺桶をアイテムとして持ち物に戻し, 装備を外す
+// 0xD24B, 装備している棺桶をアイテムとして持ち物に戻し, 装備を外す
 // 残差は17/19命令でこちらが短い, 原典は -1 を movs/rsbs で作って別レジスタから写すが agbcc はプール定数1本で済ませる
 // Tier A-B 試済 (定数の書き方, 代入順)
 NON_MATCH void coffin_0808623c(void) {
@@ -289,7 +289,7 @@ bool32 FUN_0808626c(u32 playerElevatorID, u32 playerFlags, u32 coffinElevatorID,
   return TRUE;
 }
 
-NAKED s32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 b) { INCFUNC("asm/func/FUN_08086294.inc"); }
+NAKED bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3) { INCFUNC("asm/func/FUN_08086294.inc"); }
 
 void FUN_08086590(Vec3* pos, s32 val) {
   if (gCoffin != NULL) {
@@ -938,7 +938,7 @@ void FUN_08087bac(Coffin* p) {
   }
 }
 
-void FUN_08087c04(Coffin* p) {
+void Coffin_UpdateState0(Coffin* p) {
   if (p->state != 0) {
     Coffin_SetState(p, 0);
   }
@@ -963,9 +963,9 @@ void FUN_08087c04(Coffin* p) {
   }
 }
 
-NAKED void FUN_08087cbc(s32 param_1) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
+NAKED void FUN_08087cbc(Coffin* p) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
 
-NAKED void FUN_08087f7c(s32 param_1) { INCFUNC("asm/func/FUN_08087f7c.inc"); }
+NAKED void FUN_08087f7c(Coffin* p) { INCFUNC("asm/func/FUN_08087f7c.inc"); }
 
 void FUN_080880fc(Coffin* p) {
   if (p->unk_384 == 0) {
@@ -979,7 +979,7 @@ void FUN_080880fc(Coffin* p) {
   }
 }
 
-NAKED void FUN_08088148(Coffin* p) { INCFUNC("asm/func/FUN_08088148.inc"); }
+NAKED void Coffin_UpdateState1(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState1.inc"); }
 
 NAKED bool32 FUN_080882e4(WorldPos* pos, Vec3* dst, s32 param_3) { INCFUNC("asm/func/FUN_080882e4.inc"); }
 
@@ -1025,14 +1025,14 @@ bool32 FUN_080884f4(s32 dx, s32 dz) {
   return TRUE;
 }
 
-NAKED void FUN_08088514(Coffin* p) { INCFUNC("asm/func/FUN_08088514.inc"); }
+NAKED void Coffin_UpdateState3(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState3.inc"); }
 
-NAKED void FUN_08088718(Coffin* p) { INCFUNC("asm/func/FUN_08088718.inc"); }
+NAKED void Coffin_UpdateState4(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState4.inc"); }
 
-NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
+NAKED void Coffin_UpdateState2(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState2.inc"); }
 
 // 多分、棺桶が(変な場所に入ったりして回収不可能になったときに)ボス部屋に戻るときのアニメーション処理
-void FUN_08088bbc(Coffin* p) {
+void Coffin_UpdateState9(Coffin* p) {
   p->facing = FACE_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->stateTimer++;
@@ -1060,12 +1060,12 @@ void FUN_08088bbc(Coffin* p) {
   p->sprite.flags |= SPRFLAG_HIDDEN;
 }
 
-NAKED void FUN_08088c54(Coffin* p) { INCFUNC("asm/func/FUN_08088c54.inc"); }
+NAKED void Coffin_UpdateState10(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState10.inc"); }
 
-NAKED void FUN_08088d44(Coffin* p) { INCFUNC("asm/func/FUN_08088d44.inc"); }
+NAKED void Coffin_UpdateState5(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState5.inc"); }
 
-// 残差4命令, FUN_08089088 と同じ stateTimer の u16 切り詰めの作り直し, Tier A-C は試済
-NON_MATCH void FUN_08088fbc(Coffin* p) {
+// 残差4命令, Coffin_UpdateState7 と同じ stateTimer の u16 切り詰めの作り直し, Tier A-C は試済
+NON_MATCH void Coffin_UpdateState6(Coffin* p) {
 #ifdef NONMATCHING_C
   if (p->state != 6) {
     Coffin_SetState(p, 6);
@@ -1094,13 +1094,13 @@ NON_MATCH void FUN_08088fbc(Coffin* p) {
     p->killRequested = TRUE;
   }
 #else
-  INCFUNC("asm/func/FUN_08088fbc.inc");
+  INCFUNC("asm/func/Coffin_UpdateState6.inc");
 #endif
 }
 
 // 残差3命令, 原典は stateTimer の u16 への切り詰め (lsls/lsrs #16) を比較ごとに作り直すが, こちらは1回で済ませてしまう
 // u16 ローカル経由も試したが同じ, Tier A-C は試済, 未: per-TU フラグ
-NON_MATCH void FUN_08089088(Coffin* p) {
+NON_MATCH void Coffin_UpdateState7(Coffin* p) {
 #ifdef NONMATCHING_C
   if (p->state != 7) {
     Coffin_SetState(p, 7);
@@ -1124,13 +1124,13 @@ NON_MATCH void FUN_08089088(Coffin* p) {
     p->killRequested = TRUE;
   }
 #else
-  INCFUNC("asm/func/FUN_08089088.inc");
+  INCFUNC("asm/func/Coffin_UpdateState7.inc");
 #endif
 }
 
-NAKED void FUN_08089144(Coffin* p) { INCFUNC("asm/func/FUN_08089144.inc"); }
+NAKED void Coffin_UpdateState8(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState8.inc"); }
 
-void FUN_080892a8(Coffin* p) {
+void Coffin_UpdateState11(Coffin* p) {
   if (p->state != 11) {
     Coffin_SetState(p, 11);
   }
@@ -1141,7 +1141,7 @@ void FUN_080892a8(Coffin* p) {
   FUN_08086024(p, 0);
 }
 
-void FUN_080892f8(Coffin* p) {
+void Coffin_UpdateState13(Coffin* p) {
   if (p->state != 13) {
     Coffin_SetState(p, 13);
   }
@@ -1152,7 +1152,7 @@ void FUN_080892f8(Coffin* p) {
   }
 }
 
-void FUN_08089344(Coffin* p) {
+void Coffin_UpdateState12(Coffin* p) {
   if (p->state != 12) {
     Coffin_SetState(p, 12);
   }
@@ -1171,7 +1171,7 @@ void FUN_08089344(Coffin* p) {
   FUN_08086024(p, 24);
 }
 
-void FUN_080893c0(Coffin* p) {
+void Coffin_UpdateState14(Coffin* p) {
   if (p->state != 14) {
     Coffin_SetState(p, 14);
   }
@@ -1184,7 +1184,7 @@ void FUN_080893c0(Coffin* p) {
 
 NAKED void FUN_08089410(Coffin* p) { INCFUNC("asm/func/FUN_08089410.inc"); }
 
-void FUN_08089548(Coffin* p) {
+void Coffin_UpdateState15(Coffin* p) {
   if (p->state != 15) {
     Coffin_SetState(p, 15);
   }
@@ -1208,27 +1208,27 @@ void FUN_08089548(Coffin* p) {
 
 NAKED void FUN_080895d0(Coffin* p) { INCFUNC("asm/func/FUN_080895d0.inc"); }
 
-NAKED void FUN_08089720(Coffin* p) { INCFUNC("asm/func/FUN_08089720.inc"); }
+NAKED void Coffin_UpdateState16(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState16.inc"); }
 
 s32 Coffin_Update(Coffin* p) {
   static void (*const sCoffinUpdates[17])(Coffin*) = {
-      FUN_08087c04,
-      FUN_08088148,
-      FUN_0808890c,
-      FUN_08088514,
-      FUN_08088718,
-      FUN_08088d44,
-      FUN_08088fbc,
-      FUN_08089088,
-      FUN_08089144,
-      FUN_08088bbc,
-      FUN_08088c54,
-      FUN_080892a8,
-      FUN_08089344,
-      FUN_080892f8,
-      FUN_080893c0,
-      FUN_08089548,
-      FUN_08089720,
+      Coffin_UpdateState0,
+      Coffin_UpdateState1,
+      Coffin_UpdateState2,
+      Coffin_UpdateState3,
+      Coffin_UpdateState4,
+      Coffin_UpdateState5,
+      Coffin_UpdateState6,
+      Coffin_UpdateState7,
+      Coffin_UpdateState8,
+      Coffin_UpdateState9,
+      Coffin_UpdateState10,
+      Coffin_UpdateState11,
+      Coffin_UpdateState12,
+      Coffin_UpdateState13,
+      Coffin_UpdateState14,
+      Coffin_UpdateState15,
+      Coffin_UpdateState16,
   };  // 0x085AC000
 
   s32 idx;

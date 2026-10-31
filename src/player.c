@@ -43,7 +43,7 @@ void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_
 struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd);
 void FUN_08072724(Player* p);
 void FUN_080d040c(Player* p);
-s32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 b);
+bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 param_3);
 void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
 void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID);
 bool32 FUN_0809df78(Vec3* pos);
@@ -8973,7 +8973,7 @@ NON_MATCH s32 FUN_08078844(Player* p) {
 #endif
 }
 
-s32 FUN_080788b0(Player* p) { return FUN_08086294(&p->mover.pos, p->elevatorID, p->unk_390); }
+bool32 FUN_080788b0(Player* p) { return FUN_08086294(&p->mover.pos, p->elevatorID, p->unk_390); }
 
 NAKED s32 FUN_080788d0(Player* p) { INCFUNC("asm/func/FUN_080788d0.inc"); }
 

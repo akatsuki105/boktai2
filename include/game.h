@@ -119,7 +119,7 @@ typedef struct {
   ZoneID32 zoneID;               // 0x248, 現在のゾーンID
   s32 mapInitScriptID;           // 0x24C, Current map's init script ID
   s16 playerKind;                // 0x250, see PlayerKind in player.h
-  coffin16_t coffin;             // 0x252
+  coffin16_t coffin;             // 0x252, 現在フィールドに出ている棺桶のID (貴重品欄にあるときは -1)
   s16 stageID;                   // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
   s16 unk_256;                   // 0x256, 根拠: Cmd_515D が '.f' の値を入れる
   u16 unk_258;                   // 0x258, 根拠: Cmd_9817 が '.s' の値を入れる

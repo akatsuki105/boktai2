@@ -105,7 +105,7 @@ typedef struct Coffin {
   u16 unk_402;          // 0x402
   u16 unk_404;          // 0x404, 8方向の向き
   u16 unk_406;          // 0x406, _Update が毎フレーム 0 に戻す
-  u16 unk_408;          // 0x408, FUN_080893c0 が Coffin_SetState に渡す遷移先の state
+  u16 unk_408;          // 0x408, Coffin_UpdateState14 が Coffin_SetState に渡す遷移先の state
   bool8 inSolarCircle;  // 0x40A, 棺桶が太陽結界内にいるかどうか (太陽結界内にいると棺桶は自力で動けなくなる)
   bool8 killRequested;  // 0x40B, 0 以外になると _Update が KillEntity する
   Vec3 unk_40c;         // 0x40C, FUN_080865dc が丸ごと返す
