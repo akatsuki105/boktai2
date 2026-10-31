@@ -637,7 +637,7 @@ s32 WeaponDexMenu_Update(WeaponDexMenu* p) {
     p->cursorX = 0;
     p->cursorY = 0;
     moved = TRUE;
-    PlaySound_082406e0(SONG_266);
+    PlaySound_082406e0(SE_MENU_PAGE);
   } else if (gInput[0].pressed & R_BUTTON) {
     if (p->page < 3) {
       p->page++;
@@ -648,7 +648,7 @@ s32 WeaponDexMenu_Update(WeaponDexMenu* p) {
     p->cursorX = 0;
     p->cursorY = 0;
     moved = TRUE;
-    PlaySound_082406e0(SONG_266);
+    PlaySound_082406e0(SE_MENU_PAGE);
   }
 
   if (moved) {

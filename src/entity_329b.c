@@ -259,7 +259,7 @@ void FUN_080100f4(Entity329B* p) {
 
 void FUN_0801019c(Entity329B* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_227);
+    PlaySound_082406e0(SE_DUNGEON_TITLE_CLOSE);
     p->mosaicTop = 0x74;
     p->mosaicBottom = 0xA0;
     p->mosaicAmp = 0;
@@ -278,7 +278,7 @@ void FUN_0801019c(Entity329B* p) {
 NON_MATCH void FUN_08010230(Entity329B* p) {
 #ifdef NONMATCHING_C
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_225);
+    PlaySound_082406e0(SE_DUNGEON_TITLE);
     p->fadeFirst = 1;
     p->fadeEnd = 5;
     p->fadeColor = 0x1084;
@@ -326,7 +326,7 @@ void FUN_080103ac(Entity329B* p) {
     return;
   }
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_225);
+    PlaySound_082406e0(SE_DUNGEON_TITLE);
     p->mosaicTop = 0;
     p->mosaicBottom = 0xA0;
     p->mosaicAmp = 0x100;

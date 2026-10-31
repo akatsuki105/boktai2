@@ -94,8 +94,7 @@ bool32 Entity1DBE_TouchElemNear(WorldPos* pos) {
   return FALSE;
 }
 
-// 0xB6CE
-// '.n' と id が一致する設置物の state を返す, 無ければ -1
+// 0xB6CE, '.n' と id が一致する設置物の state を返す, 無ければ -1
 s32 Cmd_B6CE(void) {
   s32 id;
   s32 i;

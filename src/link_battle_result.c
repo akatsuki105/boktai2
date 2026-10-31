@@ -248,7 +248,7 @@ void FUN_081dccec(LinkBattleResult* p) {
   s32 i;
 
   if (Mod(p->unk_856, 2) == 0) {
-    PlaySound_082406e0(SONG_677);
+    PlaySound_082406e0(SE_COUNT_UP);
   }
   for (i = 0; i < p->playerCount; i++) {
     if (p->unk_6ec[i] != 0) {
@@ -350,7 +350,7 @@ void FUN_081dd1d8(LinkBattleResult* p) {
         FUN_081dcb8c(p, i);
         FUN_081dc8c0(p, i);
         FUN_081dc818(p, i);
-        PlaySound_082406e0(SE_359);
+        PlaySound_082406e0(SE_LINK_359);
         p->unk_858++;
       }
     }

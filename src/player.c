@@ -4807,15 +4807,15 @@ void Player_UpdatePullCoffin(Player* p) {
   if (moving && (s16)p->facingHistory[1] >= 0 && !(p->human.animCmdIdx & 3) && p->human.animCmdTimer == 0 && !HasGoodCond(p, GOOD_NINJA)) {
     if (Entity1DBE_TouchElemNear(&p->mover.pos)) {
       if (p->human.animCmdIdx == 0) {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_355);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       } else {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_354);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_0);
       }
     } else if (Player_IsOnRock(p->tile.attr[1]) && !HasGoodCond(p, GOOD_MINI)) {
       if (p->human.animCmdIdx == 0) {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_404);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_NOISE_1);
       } else {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_403);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_NOISE_0);
       }
     } else {
       if (p->elevatorFlags != 0 || p->tile.stairs[1] == 0) {
@@ -6433,10 +6433,10 @@ void Player_UpdateMouseWalk(Player* p) {
     if (Entity1DBE_TouchElemNear(&p->mover.pos)) {
       if (p->unk_383[3]) {
         p->unk_383[3] = 0;
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_355);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       } else {
         p->unk_383[3] = 1;
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_354);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_0);
       }
     } else {
       if (p->unk_383[3]) {
@@ -6711,15 +6711,15 @@ NON_MATCH void Player_UpdateSleepingWalk(Player* p) {
   if (walking && !(p->beastAnim.cmdIdx & 1) && p->beastAnim.tick == 0) {
     if (Entity1DBE_TouchElemNear(&p->mover.pos)) {
       if (p->beastAnim.cmdIdx == 0) {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_355);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       } else if (p->beastAnim.cmdIdx == 2) {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_355);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       }
     } else if (Player_IsOnRock(p->tile.attr[1])) {
       if (p->beastAnim.cmdIdx == 0) {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_404);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_NOISE_1);
       } else if (p->beastAnim.cmdIdx == 2) {
-        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SONG_403);
+        FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_NOISE_0);
       }
     } else {
       if (p->beastAnim.cmdIdx == 0) {

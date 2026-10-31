@@ -404,7 +404,7 @@ void FUN_0801d788(EntityDA0B* p) {
     EntityDA0B_SetFn(p, FUN_0801db1c);
   } else {
     if (Mod(p->fnTimer, 61) == 60) {
-      PlaySound_082406e0(SONG_540);
+      PlaySound_082406e0(SE_COUNTDOWN);
     }
 
     FUN_0801d540(p);

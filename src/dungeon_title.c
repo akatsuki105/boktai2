@@ -138,7 +138,7 @@ NON_MATCH s32 DungeonTitle_Update(DungeonTitle* p) {
         p->stateTimer = 0;
         p->progressFn = DungeonTitle_UpdateOpen;
         if (p->lineTop != p->lineBottom) {
-          PlaySound_082406e0(SONG_225);
+          PlaySound_082406e0(SE_DUNGEON_TITLE);
         }
         p->noiseAmp = 0x80;
         p->noiseAmpStep = -2;
@@ -159,7 +159,7 @@ NON_MATCH s32 DungeonTitle_Update(DungeonTitle* p) {
         p->stateTimer = 0;
         p->progressFn = DungeonTitle_UpdateClose;
         if (p->lineTop != p->lineBottom) {
-          PlaySound_082406e0(SONG_227);
+          PlaySound_082406e0(SE_DUNGEON_TITLE_CLOSE);
         }
         p->noiseAmp = 0;
         p->noiseAmpStep = 4;

@@ -66,10 +66,10 @@ NAKED void FUN_080a5f40(EntityCF58* p) { INCFUNC("asm/func/FUN_080a5f40.inc"); }
 
 void FUN_080a5fd0(EntityCF58* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_660);
+    PlaySound_082406e0(SE_ANS_WRONG);
   }
   p->stateTimer++;
-  if (p->stateTimer > 0x59) {
+  if (p->stateTimer >= SECOND(1.5)) {
     FUN_080a5ea4(p);
     KillEntity((Entity*)p);
   }

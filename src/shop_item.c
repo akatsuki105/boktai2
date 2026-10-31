@@ -529,7 +529,7 @@ NON_MATCH void FUN_080bb070(ItemShop* p) {
 // 売却後の演出, カーソルの絵を少し持ち上げてから元の状態へ戻す
 void FUN_080bb0e8(ItemShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_630);
+    PlaySound_082406e0(SE_SHOP_SELL);
   }
 
   p->stateTimer++;
@@ -924,7 +924,7 @@ NON_MATCH void FUN_080bc240(ItemShop* p) {
 // 防具売却後の演出, カーソルの絵を少し持ち上げてから一覧へ戻す
 void FUN_080bc2d8(ItemShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_630);
+    PlaySound_082406e0(SE_SHOP_SELL);
   }
 
   p->stateTimer++;

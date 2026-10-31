@@ -505,7 +505,7 @@ void FUN_080b6684(Warehouse* p) {
   MainSprite_AdvanceAnim(&p->sprites[44], &p->gfx0);
   p->sprites[36].flags |= SPRFLAG_HIDDEN;
   if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(SONG_410);
+    PlaySound_082406e0(SE_DRUMROLL);
     ShopCursor_PlaceSprite(&p->cursor, &p->sprites[44]);
     FUN_080b5b94(p);
     Warehouse_SetSubState(p, FUN_080b649c, 0);
@@ -1032,7 +1032,7 @@ void FUN_080b75a0(Warehouse* p) {
   MainSprite_AdvanceAnim(&p->sprites[44], &p->gfx0);
   p->sprites[36].flags |= SPRFLAG_HIDDEN;
   if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(SONG_410);
+    PlaySound_082406e0(SE_DRUMROLL);
     ShopCursor_PlaceSprite(&p->cursor, &p->sprites[44]);
     FUN_080b69b8(p);
     Warehouse_SetSubState(p, FUN_080b73b8, 0);
@@ -1564,7 +1564,7 @@ void FUN_080b85ec(Warehouse* p) {
   MainSprite_AdvanceAnim(&p->sprites[44], &p->gfx0);
   p->sprites[36].flags |= SPRFLAG_HIDDEN;
   if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(SONG_410);
+    PlaySound_082406e0(SE_DRUMROLL);
     ShopCursor_PlaceSprite(&p->cursor, &p->sprites[44]);
     FUN_080b7900(p);
     Warehouse_SetSubState(p, FUN_080b8404, 0);
@@ -1908,7 +1908,7 @@ void FUN_080b90dc(Warehouse* p) {
     }
 
     if (Warehouse_HandleTabInput(p)) {
-      PlaySound_082406e0(SONG_266);
+      PlaySound_082406e0(SE_MENU_PAGE);
       switch (p->kinds[p->unk_1410]) {
         case 0: {
           FUN_080b695c(p, 0);

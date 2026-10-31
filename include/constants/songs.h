@@ -225,10 +225,10 @@
 #define SE_SELECT 221       // メニュー画面でアイテムとかを選んだ時の音
 #define SE_CANCEL 222       // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
 #define SONG_223 223
-#define SONG_224 224
-#define SONG_225 225
-#define SONG_226 226
-#define SONG_227 227
+#define SONG_224 224          // 汎用システム音, タイトル画面で"GAME START"を選んだ時やアイテムを使用した時の音
+#define SE_DUNGEON_TITLE 225  // ダンジョンタイトルとかのSE
+#define SONG_226 226          // 金属のSE
+#define SE_DUNGEON_TITLE_CLOSE 227
 #define CRY_CURORO_DEATH 228
 #define SONG_229 229
 #define SE_DAMAGE 230  // プレイヤーがダメージ食らった時の音
@@ -267,8 +267,8 @@
 #define SE_CHOICE 263  // 選択肢が表示された時の音 (例: 図書館でレディに話しかけた時)
 #define SONG_264 264
 #define SONG_265 265
-#define SONG_266 266
-#define SONG_267 267
+#define SE_MENU_PAGE 266      // メニューでLRボタンでページを切り替えた時のSE
+#define SE_SLOT_267 267       // SE_SLOT と似ている
 #define SE_SLOT 268           // セレクトボタンを押してる時に武器とかを変える時の音
 #define SE_HEAL 269           // 回復アイテムで回復した時の音
 #define SE_TRASH 270          // アイテムを捨てた時の音
@@ -299,8 +299,8 @@
 #define SE_UNK_295 295
 #define VO_TAIYO_R 296  // 赤ジャンゴの太陽チャージ
 #define SE_UNK_297 297
-#define SE_UNK_298 298  // 焼ける様な音
-#define SE_UNK_299 299
+#define SE_UNK_298 298       // 焼ける様な音
+#define SE_TITLE_CURSOR 299  // ゲームタイトルで < XXX > を切り替える時のSE
 #define SE_UNK_300 300
 #define SE_UNK_301 301
 #define SE_DENY_302 302  // ENE満タンのときに太陽スタンドを使おうとしたときとかのビープ音
@@ -355,12 +355,12 @@
 #define SE_WARP_START 351  // 転移魔方陣を起動したときのSE
 #define SE_WARP_END 352    // 転移魔方陣が終了したときのSE
 #define SONG_353 353
-#define SONG_354 354
-#define SONG_355 355
+#define SE_FSTEP_PUDDLE_0 354  // 水溜まりの足音
+#define SE_FSTEP_PUDDLE_1 355
 #define SONG_356 356
 #define SONG_357 357
 #define SONG_358 358
-#define SE_359 359  // ピキーンみたいなSE
+#define SE_LINK_359 359  // ピキーンみたいなSE(通信対戦のSE)
 #define SONG_360 360
 #define SONG_361 361
 #define SONG_362 362
@@ -402,16 +402,16 @@
 #define SONG_398 398
 #define SONG_399 399
 #define SONG_400 400
-#define SE_IGNITE 401  // 着火時のSE(火が噴き出すような音)
-#define SE_NG 402      // 汎用的なNG音
-#define SONG_403 403
-#define SONG_404 404
+#define SE_IGNITE 401         // 着火時のSE(火が噴き出すような音)
+#define SE_NG 402             // 汎用的なNG音 (ユーザーの期待にそぐわない場合に出す音)
+#define SE_FSTEP_NOISE_0 403  // 鳴り床の足音
+#define SE_FSTEP_NOISE_1 404
 #define SONG_405 405
 #define SONG_406 406
 #define SONG_407 407
 #define SE_CIRCLE_IN 408   // 魔方陣の有効範囲に入ったときのSE
 #define SE_CIRCLE_OUT 409  // 魔方陣から離れたときのSE
-#define SONG_410 410
+#define SE_DRUMROLL 410    // ◀︎ NNN ▶︎ のようなドラムロールUIのカーソル移動音 (縦版もある)
 #define SONG_411 411
 #define SONG_412 412
 #define SONG_413 413
@@ -539,9 +539,9 @@
 #define SONG_535 535
 #define SE_536 536  // 氷の属性ブロックが落ちる音？
 #define SE_537 537
-#define SE_538 538  // 属性ブロックが浮き上がる音？
-#define SE_539 539  // 属性ブロック？
-#define SONG_540 540
+#define SE_538 538        // 属性ブロックが浮き上がる音？
+#define SE_539 539        // 属性ブロック？
+#define SE_COUNTDOWN 540  // カウントダウンHUDのカウント音
 #define SONG_541 541
 #define SONG_542 542  // CRY_GHOST_DEATH の代わりに使われることがある
 #define SONG_543 543
@@ -631,7 +631,7 @@
 #define SE_627 627  // 何も聞こえない,無音?
 #define SONG_628 628
 #define SONG_629 629
-#define SONG_630 630
+#define SE_SHOP_SELL 630  // 店でアイテムを売った時のSE
 #define SONG_631 631
 #define SONG_632 632
 #define SONG_633 633
@@ -661,9 +661,9 @@
 #define SONG_657 657
 #define SONG_658 658
 #define SONG_659 659
-#define SONG_660 660
+#define SE_ANS_WRONG 660  // 不正解SE?
 #define SONG_661 661
-#define SONG_662 662
+#define SE_ANS_CORRECT 662  // 正解SE
 #define SONG_663 663
 #define SONG_664 664
 #define SONG_665 665
@@ -678,7 +678,7 @@
 #define SONG_674 674
 #define SONG_675 675
 #define SONG_676 676
-#define SONG_677 677
+#define SE_COUNT_UP 677  // 数字のカウントアップSE
 #define SONG_678 678
 #define SONG_679 679
 #define SONG_680 680

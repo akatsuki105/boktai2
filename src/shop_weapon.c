@@ -796,7 +796,7 @@ NON_MATCH void FUN_080bdfe8(WeaponShop* p) {
 
 void WeaponShop_AnimateSale(WeaponShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_630);
+    PlaySound_082406e0(SE_SHOP_SELL);
   }
 
   p->stateTimer++;
@@ -1049,7 +1049,7 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
         p->unk_1654--;
       }
 
-      PlaySound_082406e0(SONG_266);
+      PlaySound_082406e0(SE_MENU_PAGE);
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & R_BUTTON) {
       if (p->unk_1654 == 2) {
@@ -1058,7 +1058,7 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
         p->unk_1654++;
       }
 
-      PlaySound_082406e0(SONG_266);
+      PlaySound_082406e0(SE_MENU_PAGE);
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & B_BUTTON) {
       PlaySound_082406e0(SE_CLOSE_MENU);

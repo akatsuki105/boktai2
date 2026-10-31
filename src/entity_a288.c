@@ -294,15 +294,15 @@ const SoundID16 sBGMList[95] = {
 // "SOUND"モードで聴ける SE 一覧
 const SoundID16 sSEList[482] = {
     SONG_224,             SONG_223,              SE_CURSOR_MOVE,  SE_SELECT,                SE_CANCEL,
-    SE_SAVE_SUCCESS,      SE_UNK_299,            SE_UNK_300,      SE_UNK_301,               SONG_410,
-    SE_NG,                SONG_662,              SONG_660,        SONG_677,                 SONG_266,
-    SONG_267,             SE_SLOT,               SE_SWAP_SLOT,    SE_HEAL,                  SE_TRASH,
-    SE_WEAPON_BREAK,      SE_OPEN_MENU,          SE_CLOSE_MENU,   SE_CHOICE,                SONG_540,
-    SE_359,               SONG_225,              SONG_227,        SONG_227,                 SONG_226,
+    SE_SAVE_SUCCESS,      SE_TITLE_CURSOR,            SE_UNK_300,      SE_UNK_301,               SE_DRUMROLL,
+    SE_NG,                SE_ANS_CORRECT,              SE_ANS_WRONG,        SE_COUNT_UP,                 SE_MENU_PAGE,
+    SE_SLOT_267,          SE_SLOT,               SE_SWAP_SLOT,    SE_HEAL,                  SE_TRASH,
+    SE_WEAPON_BREAK,      SE_OPEN_MENU,          SE_CLOSE_MENU,   SE_CHOICE,                SE_COUNTDOWN,
+    SE_LINK_359,               SE_DUNGEON_TITLE,              SE_DUNGEON_TITLE_CLOSE,        SE_DUNGEON_TITLE_CLOSE,                 SONG_226,
     SONG_570,             SONG_571,              SONG_572,        SONG_573,                 SONG_574,
-    SONG_651,             SONG_629,              SONG_630,        SE_FSTEP_M_0,             SE_FSTEP_M_1,
-    SE_FSTEP_STAIRS_0,    SE_FSTEP_STAIRS_1,     SONG_354,        SONG_355,                 SONG_403,
-    SONG_404,             SONG_199,              SONG_200,        SONG_821,                 SE_WALL_COVER,
+    SONG_651,             SONG_629,              SE_SHOP_SELL,        SE_FSTEP_M_0,             SE_FSTEP_M_1,
+    SE_FSTEP_STAIRS_0,    SE_FSTEP_STAIRS_1,     SE_FSTEP_PUDDLE_0,        SE_FSTEP_PUDDLE_1,                 SE_FSTEP_NOISE_0,
+    SE_FSTEP_NOISE_1,             SONG_199,              SONG_200,        SONG_821,                 SE_WALL_COVER,
     SONG_219,             SONG_236,              SONG_235,        SONG_203,                 SE_SWORD_ATK_R,
     SE_SWORD_ATK_B,             SE_SPEAR_ATK_R,              SE_SPEAR_ATK_B,        SE_HAMMER_ATK_R,                 SE_HAMMER_ATK_B,
     SONG_913,             SE_GUN_FIRE,           SONG_213,        SE_GUN_AIM,               SE_GUN_MISFIRE,
@@ -390,34 +390,111 @@ const SoundID16 sSEList[482] = {
     SONG_508,             SONG_867,              SONG_868,        SONG_101,                 SONG_131,
     NOISE_SIZZLE,         SOUND_103,             NOISE_CHICKEN,   NOISE_CROW,               NOISE_QUAKE,
     SONG_132,             -1,
-};  // 0x085afaee
+};  // 0x085AFAEE
 // clang-format on
 
-// clang-format off
 // "SOUND"モードで聴ける VOICE 一覧
 const SoundID16 sVoiceList[99] = {
-    VO_TITLECALL_DJANGO,             VO_SPRING_DJANGO,              VO_SUMMER_DJANGO,              VO_AUTUMN_DJANGO,                   VO_WINTER_DJANGO,
-    VO_TAIYO_R, VO_TAIYO_B,              VO_DJANGO_DEATH,              VO_DJANGO_PITFALL,              VO_BDJANGO_BURN,
-    VO_BDJANGO_MAD,             VO_DJANGO_MAGIC,       VO_BERSERK, VO_BOKURANO,         VO_DJANGO_ASUMO,
-    VO_TITLECALL_SABATA,             VO_SPRING_SABATA,              VO_SUMMER_SABATA,              VO_AUTUMN_SABATA,                   VO_WINTER_SABATA,
-    VO_SABATA_ANKOKU,     VO_SABATA_SMIRK,       VO_SABATA_LAUGH,       VO_SABATA_DOKE,             VO_SABATA_IMADA,
-    VO_SABATA_TAKETHIS,   VO_SABATA_PITFALL,         VO_SABATA_STUN,        VO_SABATA_DAMAGE1,                   VO_SABATA_DAMAGE2,
-    VO_SABATA_DEATH,      VO_OTENKO_OTNK,        VO_OTENKO_PILEDRIVER,              VO_OTENKO_TAIYO_TO_TOMO_NI, VO_OTENKO_ASUMO,
-    VO_READY,             VO_FIGHT,              VO_RITA_ITSUTAI,              VO_RITA_ORAORA,                   VO_RITA_WELCOME,
-    VO_LADY_WELCOME,      VO_LADY_ATTACK,              VO_KID_WELCOME,        VO_ENNIO,                   VO_ZAJI_IKUDE,
-    VO_ZAJI_YOMETADE,             VO_ZAJI_HIMAWARI,              VO_ZAJI_LAUGH,              VO_SHAIAN_ATK1,                   VO_SHAIAN_ATK2,
-    VO_SHAIAN_ATK3,             VO_SHAIAN_MIKK,              VO_SHAIAN_KOREDA,              VO_SHAIAN_DAMAGE,                   VO_SHAIAN_DEATH,
-    VO_CHEYENNE_WELCOME,      VO_SUMIRE_ONIICHAN1,   VO_SUMIRE_ONIICHAN2,   VO_SMITH_WELCOME,           VO_SMITH_FORGE1,
-    VO_SMITH_FORGE2,             VO_SMITH_FORGE3,              VO_SMITH_FORGE4,              VO_COFFIN_SHOP,             VO_ANKO_WELCOME,
-    VO_ANKO_THANKS,             VO_DUNEYRR_WAIT,              VO_DUNEYRR_LAUGH,              VO_DUNEYRR_DEATH,                   VO_RINGO_ASUMO,
-    VO_RINGO_TAIYO,             VO_RINGO_LAUGH_856,              VO_RINGO_857,              VO_RINGO_SCREAM,          VO_RINGO_OSOI,
-    VO_RINGO_TAKETHIS,             VO_RINGO_860,          VO_RINGO_DAMAGE,              VO_RINGO_848,                   VO_DURATHROR_SMILE,
-    VO_DURATHROR_YOKUMO,             VO_DURATHROR_YAHH_717, VO_DURATHROR_YAHH_718, VO_DURATHROR_BURN,                   VO_DURATHROR_583,
-    VO_DURATHROR_DEATH_596,             VO_DVALINN_LAUGH,              VO_DVALINN_DEATH,              VO_DAINN_JYAMADAYO,                   VO_DAINN_779,
-    VO_DAINN_780,         VO_DAINN_LAUGH1,        VO_DAINN_LAUGH2,              VO_DAINN_DAMAGE, VO_DAINN_BURN,
-    VO_DAINN_DEATH,       VO_ELEFAN_WALK,              VO_ELEFAN_ATTACK,              -1,
-};  // 0x085afeb2
-// clang-format on
+    VO_TITLECALL_DJANGO,
+    VO_SPRING_DJANGO,
+    VO_SUMMER_DJANGO,
+    VO_AUTUMN_DJANGO,
+    VO_WINTER_DJANGO,
+    VO_TAIYO_R,
+    VO_TAIYO_B,
+    VO_DJANGO_DEATH,
+    VO_DJANGO_PITFALL,
+    VO_BDJANGO_BURN,
+    VO_BDJANGO_MAD,
+    VO_DJANGO_MAGIC,
+    VO_BERSERK,
+    VO_BOKURANO,
+    VO_DJANGO_ASUMO,
+    VO_TITLECALL_SABATA,
+    VO_SPRING_SABATA,
+    VO_SUMMER_SABATA,
+    VO_AUTUMN_SABATA,
+    VO_WINTER_SABATA,
+    VO_SABATA_ANKOKU,
+    VO_SABATA_SMIRK,
+    VO_SABATA_LAUGH,
+    VO_SABATA_DOKE,
+    VO_SABATA_IMADA,
+    VO_SABATA_TAKETHIS,
+    VO_SABATA_PITFALL,
+    VO_SABATA_STUN,
+    VO_SABATA_DAMAGE1,
+    VO_SABATA_DAMAGE2,
+    VO_SABATA_DEATH,
+    VO_OTENKO_OTNK,
+    VO_OTENKO_PILEDRIVER,
+    VO_OTENKO_TAIYO_TO_TOMO_NI,
+    VO_OTENKO_ASUMO,
+    VO_READY,
+    VO_FIGHT,
+    VO_RITA_ITSUTAI,
+    VO_RITA_ORAORA,
+    VO_RITA_WELCOME,
+    VO_LADY_WELCOME,
+    VO_LADY_ATTACK,
+    VO_KID_WELCOME,
+    VO_ENNIO,
+    VO_ZAJI_IKUDE,
+    VO_ZAJI_YOMETADE,
+    VO_ZAJI_HIMAWARI,
+    VO_ZAJI_LAUGH,
+    VO_SHAIAN_ATK1,
+    VO_SHAIAN_ATK2,
+    VO_SHAIAN_ATK3,
+    VO_SHAIAN_MIKK,
+    VO_SHAIAN_KOREDA,
+    VO_SHAIAN_DAMAGE,
+    VO_SHAIAN_DEATH,
+    VO_CHEYENNE_WELCOME,
+    VO_SUMIRE_ONIICHAN1,
+    VO_SUMIRE_ONIICHAN2,
+    VO_SMITH_WELCOME,
+    VO_SMITH_FORGE1,
+    VO_SMITH_FORGE2,
+    VO_SMITH_FORGE3,
+    VO_SMITH_FORGE4,
+    VO_COFFIN_SHOP,
+    VO_ANKO_WELCOME,
+    VO_ANKO_THANKS,
+    VO_DUNEYRR_WAIT,
+    VO_DUNEYRR_LAUGH,
+    VO_DUNEYRR_DEATH,
+    VO_RINGO_ASUMO,
+    VO_RINGO_TAIYO,
+    VO_RINGO_LAUGH_856,
+    VO_RINGO_857,
+    VO_RINGO_SCREAM,
+    VO_RINGO_OSOI,
+    VO_RINGO_TAKETHIS,
+    VO_RINGO_860,
+    VO_RINGO_DAMAGE,
+    VO_RINGO_848,
+    VO_DURATHROR_SMILE,
+    VO_DURATHROR_YOKUMO,
+    VO_DURATHROR_YAHH_717,
+    VO_DURATHROR_YAHH_718,
+    VO_DURATHROR_BURN,
+    VO_DURATHROR_583,
+    VO_DURATHROR_DEATH_596,
+    VO_DVALINN_LAUGH,
+    VO_DVALINN_DEATH,
+    VO_DAINN_JYAMADAYO,
+    VO_DAINN_779,
+    VO_DAINN_780,
+    VO_DAINN_LAUGH1,
+    VO_DAINN_LAUGH2,
+    VO_DAINN_DAMAGE,
+    VO_DAINN_BURN,
+    VO_DAINN_DEATH,
+    VO_ELEFAN_WALK,
+    VO_ELEFAN_ATTACK,
+    -1,
+};  // 0x085AFEB2
 
 bool8 Save_WriteSystemData(void);
 bool8 Save_ReadCurrentSlot(void);
@@ -994,7 +1071,7 @@ NON_MATCH void FUN_082143f4(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 1: {
@@ -1011,7 +1088,7 @@ NON_MATCH void FUN_082143f4(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 2: {
@@ -1031,7 +1108,7 @@ NON_MATCH void FUN_082143f4(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 3: {
@@ -1048,7 +1125,7 @@ NON_MATCH void FUN_082143f4(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 4: {
@@ -1065,7 +1142,7 @@ NON_MATCH void FUN_082143f4(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 5: {
@@ -1227,7 +1304,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 1: {
@@ -1244,7 +1321,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 2: {
@@ -1264,7 +1341,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 3: {
@@ -1281,7 +1358,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 4: {
@@ -1298,7 +1375,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
       } else {
         break;
       }
-      PlaySound_082406e0(SONG_410);
+      PlaySound_082406e0(SE_DRUMROLL);
       break;
     }
     case 5: {
@@ -1799,7 +1876,7 @@ NON_MATCH void FUN_08215950(EntityA288* p) {
           break;
         }
         FUN_082158fc(p);
-        PlaySound_082406e0(SONG_410);
+        PlaySound_082406e0(SE_DRUMROLL);
       } else {
         s->sprites[1].flags |= SPRFLAG_HIDDEN;
       }
@@ -2661,7 +2738,7 @@ s32 FUN_08216f0c(EntityA288* p) {
         name++;
       }
       if (ret == 0) {
-        PlaySound_082406e0(SONG_662);
+        PlaySound_082406e0(SE_ANS_CORRECT);
         SET_FLAGS(p->flags, 0x20);
         return 1;
       }
