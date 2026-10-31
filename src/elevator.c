@@ -39,7 +39,7 @@ typedef struct Elevator {
   ElevatorFlags flags;               // 0x0B4, see ElevatorFlags
   bool8 arrived;                     // 0x0B6, ノードに着いたら 1, 到着時のスクリプトを呼ぶと 0 に戻る
   u8 unk_b7;                         // 0x0B7
-  s16 waitTimer;                     // 0x0B8, プレイヤーが乗ってからのフレーム数, waitTime に達すると動き出す
+  s16 timer;                         // 0x0B8, 止まっている間はプレイヤーが乗ってからのフレーム数 (waitTime に達すると動き出す), 動いている間はエフェクトを出す間隔
   s16 speed;                         // 0x0BA, '.s=6', 1フレームに動く量
   u16 waitTime;                      // 0x0BC, '.w=120', プレイヤーが乗ってから動き出すまでのフレーム数
   u16 unk_be;                        // 0x0BE
@@ -48,7 +48,7 @@ typedef struct Elevator {
   u16 departScriptID;                // 0x0C4, '.S', プレイヤーが乗っているときノードを離れたら呼ぶスクリプト
   s16 sinkY;                         // 0x0C6, プレイヤーが乗った瞬間に -32 が入り, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
   u16 unk_c8;                        // 0x0C8, '.T', FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
-  u8 unk_ca[0x0CC - 0x0CA];          // 0x0CA
+  u16 unk_ca;                        // 0x0CA, 動いている間のエフェクトを出す位置を2か所で交互に切り替える
   s32 minY;                          // 0x0CC, '.l', 昇降床が下りる下限の高さ
   s32 maxY;                          // 0x0D0, '.h', 昇降床が上る上限の高さ
   u16 id;                            // 0x0D4, Elevator_FindByID が Player.elevatorID や '.n' の値と比較して探す
@@ -89,6 +89,8 @@ const Vec3 gElevatorRange2 = {Q8(0.383), Q8(0.125), Q8(0.383)};  // 0x085AE0E0, 
 
 bool32 FUN_08086978(u32 mask);
 Elevator* Elevator_FindByID(s32 id);
+void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+void FUN_081ee53c(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void FUN_081d4590(Elevator* e);
 void FUN_081d4658(Elevator* e);
 void Elevator_PlayArrivalSound(Elevator* e);
@@ -209,7 +211,97 @@ NON_MATCH Elevator* ElevatorManager_AllocSlot(ElevatorManager* p) {
 #endif
 }
 
-NAKED void FUN_081d2368(Elevator* e) { INCFUNC("asm/func/FUN_081d2368.inc"); }
+// 動いている間, 向きに合わせた位置から4フレームおきにエフェクトを出す
+void Elevator_EmitMoveEffect(Elevator* e) {
+  Vec3 off[2];
+  Vec3 pos;
+  s32 dir;
+  s32 a3, a7, a8;
+
+  if (e->timer > 0) {
+    e->timer--;
+    return;
+  }
+
+  dir = e->mover.angle >> 6;
+  switch (dir) {
+    case 0: {
+      VEC3_SET(off[0], Q8(-0.75), Q8(-0.75), 0);
+      VEC3_SET(off[1], Q8(-0.75), Q8(-0.75), Q8(-0.5));
+      a8 = 62;
+      a3 = 4;
+      a7 = 32;
+      break;
+    }
+    case 1: {
+      VEC3_SET(off[0], Q8(-0.25), Q8(-0.75), Q8(-0.25));
+      VEC3_SET(off[1], Q8(-0.86), Q8(-0.75), Q8(-0.25));
+      a8 = 64;
+      a3 = 4;
+      a7 = 32;
+      break;
+    }
+    case 2: {
+      VEC3_SET(off[0], Q8(-0.516), Q8(-0.75), Q8(-0.125));
+      VEC3_SET(off[1], Q8(-0.516), Q8(-0.75), Q8(-0.75));
+      a8 = 62;
+      a3 = 4;
+      a7 = 24;
+      break;
+    }
+    case 3: {
+      VEC3_SET(off[0], Q8(-0.25), Q8(-0.75), Q8(-0.125));
+      VEC3_SET(off[1], Q8(-0.86), Q8(-0.75), Q8(-0.125));
+      a8 = 64;
+      a3 = 4;
+      a7 = 32;
+      break;
+    }
+    default: {
+      return;
+    }
+  }
+
+  switch (e->unk_e7) {
+    case 0: {
+      if (e->unk_ca == 0) {
+        pos.x = e->mover.pos.x + off[0].x;
+        pos.y = e->mover.pos.y + off[0].y;
+        pos.z = e->mover.pos.z + off[0].z;
+        FUN_081ee584(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
+        e->unk_ca = 1;
+      } else {
+        pos.x = e->mover.pos.x + off[1].x;
+        pos.y = e->mover.pos.y + off[1].y;
+        pos.z = e->mover.pos.z + off[1].z;
+        FUN_081ee584(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
+        e->unk_ca = 0;
+      }
+      break;
+    }
+    case 3: {
+      if (e->unk_ca == 0) {
+        pos.x = e->mover.pos.x + off[0].x;
+        pos.y = e->mover.pos.y + off[0].y;
+        pos.z = e->mover.pos.z + off[0].z;
+        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, 0xF422, 0x121B, 0, 0, 0xDA);
+        e->unk_ca = 1;
+      } else {
+        pos.x = e->mover.pos.x + off[1].x;
+        pos.y = e->mover.pos.y + off[1].y;
+        pos.z = e->mover.pos.z + off[1].z;
+        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, 0xF422, 0x121B, 0, 0, 0xDA);
+        e->unk_ca = 0;
+      }
+      break;
+    }
+    default: {
+      return;
+    }
+  }
+
+  e->timer = 4;
+}
 
 // 経路ノードが pos から dx/dz の範囲内かどうか
 bool8 FUN_081d2660(PathWalker* walker, Vec3* pos, u32 dx, u32 dz) {
@@ -362,7 +454,7 @@ void Elevator_UpdateState1(Elevator* e) {
     e->arrived = TRUE;
     Elevator_PlayArrivalSound(e);
   } else {
-    FUN_081d2368(e);
+    Elevator_EmitMoveEffect(e);
   }
 }
 
@@ -502,7 +594,7 @@ void Elevator_UpdateState4(Elevator* e) {
       VM_ExecByID(e->arriveScriptID, &sa);
     }
     e->arrived = FALSE;
-    e->waitTimer = 1;
+    e->timer = 1;
   }
 
   if (!FUN_081d27c8(e)) {
@@ -510,14 +602,14 @@ void Elevator_UpdateState4(Elevator* e) {
     Elevator* at;
 
     if (e->unk_d6 & 1) {
-      if (e->waitTimer >= e->waitTime && Elevator_IsPlayerInRange(e)) {
+      if (e->timer >= e->waitTime && Elevator_IsPlayerInRange(e)) {
         e->state = 2;
         if (Elevator_TestFlags(e, ELEVATOR_MOVE_UP)) {
           CLEAR_FLAGS(e->flags, ELEVATOR_MOVE_UP);
         } else {
           SET_FLAGS(e->flags, ELEVATOR_MOVE_UP);
         }
-        e->waitTimer = 0;
+        e->timer = 0;
         e->arrived = TRUE;
         p = gElevatorManager;
         if (e->id == p->ridingID && e->departScriptID != 0) {
@@ -530,7 +622,7 @@ void Elevator_UpdateState4(Elevator* e) {
         }
         return;
       }
-      if (e->waitTimer > e->waitTime - 10) {
+      if (e->timer > e->waitTime - 10) {
         SET_FLAGS(e->flags, ELEVATOR_SHAKE);
       }
     }
@@ -538,16 +630,16 @@ void Elevator_UpdateState4(Elevator* e) {
     at = Elevator_FindAtPos(&gPlayerPtr[0]->mover.pos);
     if (at != NULL) {
       if (at->id == e->id) {
-        if (!Elevator_TestFlags(e, ELEVATOR_FLAG_12) && e->waitTimer == 0) {
+        if (!Elevator_TestFlags(e, ELEVATOR_FLAG_12) && e->timer == 0) {
           e->sinkY = -32;
           PlaySound_082406e0(SONG_546);
         }
-        if (e->waitTimer < 32000) {
-          e->waitTimer++;
+        if (e->timer < 32000) {
+          e->timer++;
         }
       }
     } else {
-      e->waitTimer = 0;
+      e->timer = 0;
       e->sinkY = 0;
     }
   }
@@ -605,7 +697,7 @@ NON_MATCH void Elevator_UpdateState3(Elevator* e) {
       sa.argv = argv;
       VM_ExecByID(e->arriveScriptID, &sa);
     }
-    e->waitTimer = 0;
+    e->timer = 0;
     e->arrived = FALSE;
   }
 
