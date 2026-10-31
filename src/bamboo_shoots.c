@@ -69,7 +69,7 @@ BambooShoot* FUN_08009b10(BambooShootManager* p) {
   return NULL;
 }
 
-void FUN_08009b30(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
+void BambooShoot_OnHurt(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
   if (!Hitbox_TestAttr(a, HBATTR_14) && !Hitbox_HasWeakness(a, HBATTR_ALL | HBATTR_BEAST | HBATTR_THING)) {
     b->hitResult = HBRESULT_NORMAL;
     shoot->unk_02 = 1;
@@ -82,10 +82,10 @@ void FUN_08009b30(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
 s32 BambooShoot_Init(BambooShootManager* p, BambooShoot* shoot) {
   Vec3 size, offset;
 
-  VEC3_SET(size, Q8(0.118), Q8(1.25), Q8(0.118));
+  VEC3_SET(size, Q8(0.12), Q8(1.25), Q8(0.12));
   VEC3_SET(offset, 0, Q8(0.625), 0);
   Hitbox_Init(&shoot->hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_5, 0, HIM_4, &size, &offset);
-  Hitbox_SetHandler(&shoot->hurtbox, FUN_08009b30, shoot);
+  Hitbox_SetHandler(&shoot->hurtbox, BambooShoot_OnHurt, shoot);
   Hitbox_Register(&shoot->hurtbox);
   Particle_Add(&shoot->ptcl, p->group0, SPRFLAG_HIDDEN);
   Particle_SetPose(&shoot->ptcl, p->group0, 12);
