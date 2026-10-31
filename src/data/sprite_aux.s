@@ -467,12 +467,12 @@ Tiles:
   .incbin "data/sprite_aux/pinpad.4bpp"               @ 0x08AD9DF0, SpriteID: 0x3C13, PlttID: 433, 時の家の暗証番号設定端末
   .incbin "data/sprite_aux/9D3F.4bpp"                 @ 0x08ADA9F0, SpriteID: 0x9D3F, PlttID: 435, "オフセット"(=offset), "20・20"(=32x32) というデバッグ用の文字列がある
   .incbin "data/sprite_aux/emblem_element.4bpp"       @ 0x08ADADB0, SpriteID: 0x7C99, PlttID: 438, 各属性のエンブレム(パズルの床に使うデカール?)
-  .incbin "data/sprite_aux/B019.4bpp"                 @ 0x08ADB9D0, SpriteID: 0xB019, PlttID: 439, elevator lift
-  .incbin "data/sprite_aux/DA09.4bpp"                 @ 0x08ADBE50, SpriteID: 0xDA09, PlttID: 439, elevator lift
-  .incbin "data/sprite_aux/C3BD.4bpp"                 @ 0x08ADC450, SpriteID: 0xC3BD, PlttID: 439, elevator lift
-  .incbin "data/sprite_aux/9462.4bpp"                 @ 0x08ADCA50, SpriteID: 0x9462, PlttID: 439, elevator lift
-  .incbin "data/sprite_aux/75D6.4bpp"                 @ 0x08ADD050, SpriteID: 0x75D6, PlttID: 439, elevator lift
-  .incbin "data/sprite_aux/7605.4bpp"                 @ 0x08ADD4D0, SpriteID: 0x7605, PlttID: 439, elevator lift
+  .incbin "data/sprite_aux/lift_iron.4bpp"            @ 0x08ADB9D0, SpriteID: 0xB019, PlttID: 439, 昇降床(金属)
+  .incbin "data/sprite_aux/lift_rock_0.4bpp"          @ 0x08ADBE50, SpriteID: 0xDA09, PlttID: 440, 移動床(岩), 変異域の溶岩のところや地下水路で使用
+  .incbin "data/sprite_aux/lift_mecha.4bpp"           @ 0x08ADC450, SpriteID: 0xC3BD, PlttID: 441, 移動床(機械), 汎用 (水平,垂直)
+  .incbin "data/sprite_aux/lift_rock_1.4bpp"          @ 0x08ADCA50, SpriteID: 0x9462, PlttID: 442, 移動床(岩), SPRITE_LIFT_ROCK　と似てるけど微妙に違う
+  .incbin "data/sprite_aux/lift_solar_move.4bpp"      @ 0x08ADD050, SpriteID: 0x75D6, PlttID: 444, 太陽移動床(太陽床とは別物), 森 1F で使用
+  .incbin "data/sprite_aux/lift_weight.4bpp"          @ 0x08ADD4D0, SpriteID: 0x7605, PlttID: 445, 重量昇降床(乗ったものの重量に応じて行き先が変わる), 暗黒街で使用
   .incbin "data/sprite_aux/octopus.4bpp"              @ 0x08ADD950, SpriteID: 0xD291, PlttID: 447
   .incbin "data/sprite_aux/water_silhouette.4bpp"     @ 0x08AE3F50, SpriteID: 0xD292, PlttID: 447, 多分オクトパスが水中にいるときのシルエット
   .incbin "data/sprite_aux/7C07.4bpp"                 @ 0x08AE4110, SpriteID: 0x7C07, PlttID: 83, 黒塗り

@@ -25,16 +25,18 @@ typedef u16 ElevatorFlags;                // Elevator.flags
 struct Elevator;
 typedef void ElevatorFunc(struct Elevator* p);
 
+// このゲームには、水平方向と垂直方向に動く床が存在するが、これがどっちも担うのかはまだ不明
+// 水平方向 は 移動床, 垂直方向 は 昇降床　と呼ぶようにすること
 typedef struct Elevator {
   AuxSprite sprite;                  // 0x000
-  AuxSpriteGfx gfx;                  // 0x02C, Elevator_SetPltt が Video_SetAuxSpritePltt に渡す
+  AuxSpriteGfx gfx;                  // 0x02C, e.g. SPRITE_LIFT_IRON
   u8 unk_48[0x058 - 0x048];          // 0x048
   Vec3 unk_58;                       // 0x058, FUN_081d4540 が ClearMemory で 0 にする, FUN_081d4658 が棺桶の座標に足す
   u8 unk_60[0x0B0 - 0x060];          // 0x060
   s16 slotIdx;                       // 0x0B0, ElevatorManager_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
   s16 state;                         // 0x0B2, sElevatorUpdates の添字, 6 はスキップ
   ElevatorFlags flags;               // 0x0B4, see ElevatorFlags
-  u8 unk_b6;                         // 0x0B6, FUN_081d2a14 が到着時に 1 を入れる
+  u8 unk_b6;                         // 0x0B6, Elevator_UpdateState1 が到着時に 1 を入れる
   u8 unk_b7[0x0BA - 0x0B7];          // 0x0B7
   s16 unk_ba;                        // 0x0BA, Cmd_15ED が '.s=6' を入れる
   u8 unk_bc[0x0C6 - 0x0BC];          // 0x0BC
@@ -236,12 +238,12 @@ NON_MATCH bool32 FUN_081d27c8(void) {
 #endif
 }
 
-void FUN_081d280c(Elevator* p) {}
+void Elevator_UpdateState0(Elevator* p) {}
 
-NAKED void FUN_081d2810(Elevator* p) { INCFUNC("asm/func/FUN_081d2810.inc"); }
+NAKED void Elevator_UpdateState2(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateState2.inc"); }
 
 // 目的地に着いていたら状態3へ進め, まだなら移動を続ける
-void FUN_081d2a14(Elevator* p) {
+void Elevator_UpdateState1(Elevator* p) {
   if (FUN_081d2698(&p->hitbox, &p->pathWalker, &p->unk_58, p->unk_ba, p->unk_ba, p->unk_ba)) {
     p->state = 3;
     p->unk_b6 = 1;
@@ -277,7 +279,7 @@ bool32 FUN_081d2c60(Elevator* p) {
   return FALSE;
 }
 
-NAKED void FUN_081d2cf8(Elevator* p) { INCFUNC("asm/func/FUN_081d2cf8.inc"); }
+NAKED void Elevator_UpdateState4(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateState4.inc"); }
 
 // 沈み込みを戻しつつ, 揺れフラグが立っていればスプライト位置を乱数で揺らす
 // 残差11命令 (81/92): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す (2箇所)
@@ -305,11 +307,11 @@ NON_MATCH void Elevator_UpdateShake(Elevator* p) {
 #endif
 }
 
-NAKED void FUN_081d2fd0(Elevator* p) { INCFUNC("asm/func/FUN_081d2fd0.inc"); }
+NAKED void Elevator_UpdateState3(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateState3.inc"); }
 
-void FUN_081d3110(Elevator* p) {}
+void Elevator_UpdateState5(Elevator* p) {}
 
-void FUN_081d3114(Elevator* p) {}
+void Elevator_UpdateState6(Elevator* p) {}
 
 // id が一致する要素を探す
 Elevator* Elevator_FindByID(s32 id) {
@@ -546,16 +548,17 @@ NON_MATCH void FUN_081d4704(ElevatorManager* p, Elevator* e) {
 #endif
 }
 
+// 0xA4FC
 NAKED void Elevator_Create(void) { INCFUNC("asm/func/Elevator_Create.inc"); }
 
 void (*const sElevatorUpdates[7])(Elevator*) = {
-    FUN_081d280c,
-    FUN_081d2a14,
-    FUN_081d2810,
-    FUN_081d2fd0,
-    FUN_081d2cf8,
-    FUN_081d3110,
-    FUN_081d3114,
+    Elevator_UpdateState0,
+    Elevator_UpdateState1,
+    Elevator_UpdateState2,
+    Elevator_UpdateState3,
+    Elevator_UpdateState4,
+    Elevator_UpdateState5,
+    Elevator_UpdateState6,
 };  // 0x085AE0E8
 
 // 残差は usedMask のアドレスをループ外に括り出すかどうかのみ (原典は毎周 p+0x12AC を作り直す), Tier A-C は試済 (e の持ち方, ネスト, TEST_FLAGS/& の書き分け)

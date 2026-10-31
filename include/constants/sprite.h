@@ -200,12 +200,12 @@
 #define SPRITE_PINPAD 0x3C13                   // "時の家"の暗証番号設定端末
 #define SPRITE_9D3F 0x9D3F                     // "オフセット"(=offset), "20・20"(=32x32) というデバッグ用の文字列がある
 #define SPRITE_7C99 0x7C99                     // 各属性のエンブレム(パズルの床に使うデカール?)
-#define SPRITE_B019 0xB019                     // elevator lift
-#define SPRITE_DA09 0xDA09                     // elevator lift
-#define SPRITE_C3BD 0xC3BD                     // elevator lift
-#define SPRITE_9462 0x9462                     // elevator lift
-#define SPRITE_75D6 0x75D6                     // elevator lift
-#define SPRITE_7605 0x7605                     // elevator lift
+#define SPRITE_LIFT_IRON 0xB019                // 昇降床(金属)
+#define SPRITE_LIFT_ROCK0 0xDA09               // 移動床(岩), 変異域の溶岩のところや地下水路で使用
+#define SPRITE_LIFT_MECHA 0xC3BD               // 移動床(機械), 汎用 (水平,垂直)
+#define SPRITE_LIFT_ROCK1 0x9462               // 移動床(岩), SPRITE_LIFT_ROCK0 と似てるけど微妙に違う
+#define SPRITE_LIFT_SMOVE 0x75D6               // 太陽移動床(太陽床とは別物), 森 1F で使用
+#define SPRITE_LIFT_WEIGHT 0x7605              // 重量昇降床(乗ったものの重量に応じて行き先が変わる), 暗黒街で使用
 #define SPRITE_OCTOPUS 0xD291                  // オクトパス
 #define SPRITE_D292 0xD292                     // 多分オクトパスが水中にいるときのシルエット
 #define SPRITE_7C07 0x7C07                     // 黒塗り

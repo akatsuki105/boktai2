@@ -184,7 +184,7 @@ u32 FUN_0823cdf8(SpriteID16 id) {
       {SPRITE_A6A0,            0x47 },
       {SPRITE_HINT_PANEL,      0x49 },
       {0xA9D6,                 0x2EA},
-      {SPRITE_B019,            0x1B7},
+      {SPRITE_LIFT_IRON,       0x1B7},
       {SPRITE_B0BC,            0x11F},
       {SPRITE_B0E2,            0x36 },
       {SPRITE_B306,            0x2  },
