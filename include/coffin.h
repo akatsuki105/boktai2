@@ -78,7 +78,8 @@ typedef struct Coffin {
   u32 unk_3b0;                // 0x3B0, '.O'
   u16 unk_3b4;                // 0x3B4
   u16 unk_3b6;                // 0x3B6, state が 1 のときは毎回 2, それ以外は 1 ずつ減るカウンタ
-  u8 unk_3b8[4];              // 0x3B8
+  u16 unk_3b8;                // 0x3B8
+  u16 unk_3ba;                // 0x3BA
   Vec3 unk_3bc;               // 0x3BC, FUN_08086b18 が受け取る位置, プレイヤーとの角度を出すのに使う
   Vec3 unk_3c4;               // 0x3C4, pos_1f8 の写し
   Vec3 unk_3cc;               // 0x3CC, mover.pos を 1.5 だけ持ち上げた位置

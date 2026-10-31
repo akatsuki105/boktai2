@@ -1403,7 +1403,62 @@ bool32 FUN_080884f4(s32 dx, s32 dz) {
 
 NAKED void Coffin_UpdateState3(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState3.inc"); }
 
-NAKED void Coffin_UpdateState4(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState4.inc"); }
+// 206/206命令, 残差は Mod(Random(), 3) 側の gRandomTable の受け皿だけ (原典 r2, こちら r1)
+// 試済: gRandomTable[gRandTableIdx] 直書き, _Random(table), 乱数をローカルに取る, 分岐の向き, delta / angle の宣言位置
+NON_MATCH void Coffin_UpdateState4(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (p->state != 4) {
+    Coffin_SetState(p, 4);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_324 != 0) {
+    p->unk_32a = 0;
+    p->unk_3b8 = 0;
+    FUN_080856f4(p);
+    return;
+  }
+
+  p->unk_32a = 1;
+  if (p->unk_3b8 == 90) {
+    if (p->unk_3ba != 0) {
+      p->facing = (p->facing + Mod(Random(), 5) + 2) & 7;
+      p->unk_3ba = 0;
+    } else {
+      p->facing = (p->facing + Mod(Random(), 3) + 7) & 7;
+    }
+  } else if (p->unk_3b8 > 90) {
+    Vec3 delta;
+    s32 angle = ((p->facing + 5) & 7) << 5;
+    delta.x = POLAR_X(3, angle);
+    delta.y = 0;
+    delta.z = POLAR_Z(3, angle);
+    if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6 | TATTR_UNK_11)) {
+      p->mover.pos.x += delta.x;
+      p->mover.pos.z += delta.z;
+      p->unk_33a = 1;
+    } else {
+      p->unk_3b8 = 30;
+      p->unk_3ba = 1;
+    }
+  }
+
+  if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+    FUN_08085ef8(p, 32);
+  } else {
+    FUN_08086024(p, 0);
+  }
+  if (++p->unk_3b8 >= 120) {
+    FUN_080860cc(p);
+    p->unk_3b8 = 0;
+  }
+#else
+  INCFUNC("asm/func/Coffin_UpdateState4.inc");
+#endif
+}
 
 NAKED void Coffin_UpdateState2(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState2.inc"); }
 
