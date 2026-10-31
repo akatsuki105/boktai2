@@ -1268,7 +1268,51 @@ void FUN_080880fc(Coffin* p) {
   }
 }
 
-NAKED void Coffin_UpdateState1(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState1.inc"); }
+void Coffin_UpdateState1(Coffin* p) {
+  if (p->state != 1) {
+    Coffin_SetState(p, 1);
+  }
+  if (p->unk_3b4 != 0 && p->canSelfMove) {
+    s32 dx = abs(p->mover.pos.x - p->destPos.x);
+    s32 dz = abs(p->mover.pos.x - p->destPos.z);  // z 側も pos.x と比べている
+    if (dx > Q8(1) || dz > Q8(1)) {
+      p->unk_3b4 = 0;
+    }
+  }
+  p->unk_32a = 0;
+
+  if (p->unk_3a0 >= 0) {
+    FUN_08087f7c(p);
+  } else {
+    if (abs(p->mover.pos.x - p->unk_388.x) > 2 || abs(p->mover.pos.z - p->unk_388.z) > 2) {
+      p->unk_33a = 1;
+    }
+    p->mover.pos.x = p->unk_388.x;
+    p->mover.pos.z = p->unk_388.z;
+  }
+  p->facing = p->unk_388.val;
+  if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+    FUN_08085ef8(p, 32);
+  } else {
+    FUN_08086024(p, 0);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_394 != 0) {
+    FUN_08087a5c(p);
+  } else if (p->unk_324 != 0) {
+    FUN_080856f4(p);
+  } else if (p->inSolarCircle) {
+    p->unk_390 = p->unk_392;
+    p->selfMoveTimer = p->selfMoveTimerInit;
+    p->unk_394 = 0;
+  } else {
+    FUN_080880fc(p);
+  }
+}
 
 // pos から dst のタイルへ移れるかを返す, param_3 の属性を持つタイル, 溶岩, 高さが 50 より離れたタイル, エレベータの上には移れない
 bool32 Coffin_CanMoveTo(WorldPos* pos, Vec3* dst, s32 param_3) {
