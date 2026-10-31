@@ -1443,7 +1443,50 @@ NON_MATCH void Coffin_UpdateState7(Coffin* p) {
 #endif
 }
 
-NAKED void Coffin_UpdateState8(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState8.inc"); }
+void Coffin_UpdateState8(Coffin* p) {
+  if (p->state != 8) {
+    Coffin_SetState(p, 8);
+  }
+  p->unk_32a = 0;
+
+  if (p->stateTimer == 0) {
+    p->unk_31e = 0;
+    p->unk_322 = 0;
+    if (p->unk_320 <= 30) {
+      Coffin_RemoveEffSprite(p);
+      p->unk_320 = 0;
+      p->stateTimer = 1;
+    } else {
+      p->unk_320 -= 30;
+    }
+    return;
+  }
+
+  if (++p->stateTimer < 8) {
+    if (p->stateTimer < 4) {
+      p->unk_320 = p->stateTimer << 4;
+    } else {
+      p->unk_320 = (7 - p->stateTimer) << 4;
+    }
+  } else {
+    p->unk_320 = 0;
+  }
+
+  if (p->stateTimer < 12) {
+    u16* table = gRandomTable;
+    p->unk_31e = (_Random(table) & 0x1F) - 16;
+    p->unk_322 = (_Random(table) & 0x1F) - 16;
+  }
+  if (p->stateTimer == 2) {
+    FUN_0808596c(p);
+  }
+  if (p->stateTimer >= 30) {
+    Coffin_SetState(p, 0);
+    p->unk_324 = 1;
+    p->unk_326 = 287;
+    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_326, 287, 250, 290);
+  }
+}
 
 void Coffin_UpdateState11(Coffin* p) {
   if (p->state != 11) {
