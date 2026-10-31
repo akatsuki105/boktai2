@@ -42,7 +42,7 @@ typedef struct Elevator {
   u16 unk_b8;                        // 0x0B8, Elevator_UpdateState3 が到着時のスクリプトを呼んだあと 0 に戻す
   s16 unk_ba;                        // 0x0BA, Cmd_15ED が '.s=6' を入れる
   u8 unk_bc[0x0C0 - 0x0BC];          // 0x0BC
-  u16 unk_c0;                        // 0x0C0, '.p'
+  u16 unk_c0;                        // 0x0C0, '.p', 乗っているプレイヤーが足場を外れて水の上に出たら呼ぶスクリプト
   u16 arriveScriptID;                // 0x0C2, '.R', プレイヤーが乗っているときノードに着いたら呼ぶスクリプト
   u16 departScriptID;                // 0x0C4, '.S', プレイヤーが乗っているときノードを離れたら呼ぶスクリプト
   s16 unk_c6;                        // 0x0C6, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
@@ -577,7 +577,54 @@ void Elevator_KnockbackRider(Elevator* e) {
   }
 }
 
-NAKED void FUN_081d36c0(Elevator* e) { INCFUNC("asm/func/FUN_081d36c0.inc"); }
+// 乗っているプレイヤーが足場の範囲を外れて水の上に出たら unk_c0 のスクリプトを呼ぶ
+void Elevator_CheckRiderFallInWater(Elevator* e) {
+  s32 i;
+
+  for (i = 0; i < 1; i++) {
+    bool32 outside = FALSE;
+
+    if (gPlayerPtr[i] != NULL) {
+      if (!FUN_0807a954(gPlayerPtr[i], 1) && !FUN_0807a954(gPlayerPtr[i], 2)) return;
+
+      if (Elevator_TestFlags(e, PLAYER_RIDING)) {
+        s32 bx = (s8)(gPlayerPtr[i]->mover.pos.x >> 8);
+        s32 bz = (s8)(gPlayerPtr[i]->mover.pos.z >> 8);
+        s32 idx;
+        MapTileOverride* ov;
+        CollisionMapTile* tile;
+        TileAttr attr;
+
+        if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+          idx = 0;
+        } else {
+          idx = gCollisionMap->rowOffsets[bz] + bx;
+        }
+        ov = Map_FindTileOverride(idx, 1);
+        tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+        attr = tile->attr;
+
+        if ((attr & TATTR_UNK_6) && !Elevator_IsTileOverridden(idx)) {
+          Vec3 d;
+
+          Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
+          if (e->unk_d6 & 8) {
+            if (d.x > gElevatorRange0.x || d.x < -gElevatorRange0.x || d.y > gElevatorRange0.y || d.y < -gElevatorRange0.y || d.z > gElevatorRange0.z || d.z < -gElevatorRange0.z) {
+              outside = TRUE;
+            }
+          } else {
+            if (d.x > gElevatorRange1.x || d.x < -gElevatorRange1.x || d.y > gElevatorRange1.y || d.y < -gElevatorRange1.y || d.z > gElevatorRange1.z || d.z < -gElevatorRange1.z) {
+              outside = TRUE;
+            }
+          }
+          if (outside && e->unk_c0 != 0) {
+            VM_ExecByID(e->unk_c0, NULL);
+          }
+        }
+      }
+    }
+  }
+}
 
 NAKED void FUN_081d38a4(Elevator* e) { INCFUNC("asm/func/FUN_081d38a4.inc"); }
 

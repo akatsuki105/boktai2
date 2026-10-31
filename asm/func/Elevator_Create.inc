@@ -308,7 +308,7 @@ _081D4A1C:
 	strh r7, [r0]
 	mov r1, r8
 	adds r1, #0xd8
-	ldr r0, _081D4A54 @ =FUN_081d36c0
+	ldr r0, _081D4A54 @ =Elevator_CheckRiderFallInWater
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D4A58 @ =Elevator_ClampCoffinOffFloor
@@ -327,7 +327,7 @@ _081D4A1C:
 	beq _081D4A66
 	b _081D4A84
 	.align 2, 0
-_081D4A54: .4byte FUN_081d36c0
+_081D4A54: .4byte Elevator_CheckRiderFallInWater
 _081D4A58: .4byte Elevator_ClampCoffinOffFloor
 _081D4A5C: .4byte Elevator_UpdateTileOverride
 _081D4A60:
