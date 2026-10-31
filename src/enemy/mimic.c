@@ -4,7 +4,7 @@
 
 typedef struct {
   ENEMY_HDR;
-  u8 unk_654[1684 - sizeof(Enemy)];
+  u8 unk_654[64];
 } Mimic;
 static_assert(sizeof(Mimic) == 1684);
 
@@ -14,7 +14,6 @@ void FUN_08146970(Enemy* p);
 void FUN_08146a34(Enemy* p);
 void FUN_08146ae8(Enemy* p);
 void FUN_08146ce0(Enemy* p);
-void FUN_08148c00(Enemy* p);
 
 void (*const PTR_ARRAY_085ad874[18])(Enemy*) = {
     FUN_081467bc,
@@ -36,6 +35,8 @@ void (*const PTR_ARRAY_085ad874[18])(Enemy*) = {
     FUN_08146ae8,
     FUN_08146970,
 };  // 0x085AD874
+
+void FUN_08148c00(Enemy* p);
 
 void (*const PTR_ARRAY_085ad8bc[1])(Enemy*) = {
     FUN_08148c00,
