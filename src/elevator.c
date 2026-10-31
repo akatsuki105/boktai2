@@ -106,8 +106,9 @@ static inline bool8 Elevator_IsSlotUsed(ElevatorManager* p, s32 i) {
   return FALSE;
 }
 
-static inline bool8 TestBit(u32 bits, s32 n) {
-  if (bits & (1 << n)) return TRUE;
+// usedMask をアドレスで受ける版, 呼び出し側で先に usedMask を読んでいると同じアドレスが使い回される
+static inline bool8 Elevator_TestSlotMask(u32* usedMask, s32 i) {
+  if (TEST_FLAGS(*usedMask, 1 << i)) return TRUE;
   return FALSE;
 }
 
@@ -169,9 +170,7 @@ void FUN_081d21d8(Elevator* e) {
   }
 }
 
-// 残差は p と添字オフセットの r8/r9 入れ替えと, 先頭で作った &usedMask をループで使い回さない点のみ (110/108), Tier A-C は試済 (早期 return の形, 宣言順, グローバル直参照)
-NON_MATCH Elevator* Elevator_FindAtPos(Vec3* pos) {
-#ifdef NONMATCHING_C
+Elevator* Elevator_FindAtPos(Vec3* pos) {
   ElevatorManager* p = gElevatorManager;
   s32 i;
 
@@ -179,7 +178,7 @@ NON_MATCH Elevator* Elevator_FindAtPos(Vec3* pos) {
   if (p->usedMask == 0) return NULL;
 
   for (i = 0; i < 12; i++) {
-    if (Elevator_IsSlotUsed(p, i)) {
+    if (Elevator_TestSlotMask(&p->usedMask, i)) {
       Vec3 delta;
 
       Vec3_Delta(&delta, &p->elevators[i].mover.pos, pos);
@@ -189,9 +188,6 @@ NON_MATCH Elevator* Elevator_FindAtPos(Vec3* pos) {
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/Elevator_FindAtPos.inc");
-#endif
 }
 
 // 空いているスロットを1つ確保して返す, 全部埋まっていれば NULL
@@ -1089,15 +1085,13 @@ void Elevator_ClampCoffinOffFloor(Elevator* e) {
 }
 
 // id のエレベータから, which が 0 ならプレイヤー, それ以外なら棺桶が乗っている印を落とす
-// 残差は先頭で作った &usedMask をループで使い回さない点と, ~16 を ~8 から subs で作らない点 (64/63), Tier A-C は試済 (早期 return, Elevator ポインタ, CLEAR_FLAGS と &= ~ の組み合わせ)
-NON_MATCH void Elevator_ClearRidingFlag(s32 id, s32 which) {
-#ifdef NONMATCHING_C
+void Elevator_ClearRidingFlag(s32 id, s32 which) {
   ElevatorManager* p = gElevatorManager;
   s32 i;
 
   if (p->usedMask != 0) {
     for (i = 0; i < 12; i++) {
-      if (Elevator_IsSlotUsed(p, i) && p->elevators[i].id == id) {
+      if (Elevator_TestSlotMask(&p->usedMask, i) && p->elevators[i].id == id) {
         if (which == 0) {
           CLEAR_FLAGS(p->elevators[i].flags, PLAYER_RIDING);
         } else {
@@ -1107,9 +1101,6 @@ NON_MATCH void Elevator_ClearRidingFlag(s32 id, s32 which) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Elevator_ClearRidingFlag.inc");
-#endif
 }
 
 void FUN_081d4034(Elevator* e) {
@@ -1690,7 +1681,7 @@ s32 Cmd_7A75(void) {
   }
 
   for (i = 0; i < 12; i++) {
-    if (TestBit(p->usedMask, i)) {
+    if (Elevator_TestSlotMask(&p->usedMask, i)) {
       Elevator* e = &p->elevators[i];
 
       if (Elevator_TestFlags(e, COFFIN_RIDING)) {
