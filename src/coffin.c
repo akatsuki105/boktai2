@@ -20,6 +20,7 @@ void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
 s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 struct ElevatorUnkData* Elevator_FindAtPos(Vec3* pos);
+void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -1401,7 +1402,54 @@ bool32 FUN_080884f4(s32 dx, s32 dz) {
   return TRUE;
 }
 
-NAKED void Coffin_UpdateState3(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState3.inc"); }
+void Coffin_UpdateState3(Coffin* p) {
+  if (p->state != 3) {
+    Coffin_SetState(p, 3);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_324 != 0) {
+    p->unk_32a = 0;
+    p->unk_3b8 = 0;
+    FUN_080856f4(p);
+  } else {
+    p->unk_32a = 1;
+    if (p->unk_3b8 > 90) {
+      s32 dx = p->navAgent.unk_1c.x - p->mover.pos.x;
+      s32 dz = p->navAgent.unk_1c.z - p->mover.pos.z;
+      if (dx != 0 || dz != 0) {
+        Vec3 delta;
+        s32 angle = ArcTan2_8(dx, dz);
+        delta.x = POLAR_X(3, angle);
+        delta.y = 0;
+        delta.z = POLAR_Z(3, angle);
+        if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_UNK_6 | TATTR_UNK_11)) {
+          p->mover.pos.x += delta.x;
+          p->mover.pos.z += delta.z;
+          p->unk_33a = 1;
+        } else {
+          p->unk_33a = 0;
+        }
+        p->facing = Angle_ToDir8(angle);
+      }
+      if (!(p->navAgent.flags & 1) && FUN_080884f4(dx, dz) && p->unk_3b0 != 0) {
+        VM_ExecByID(p->unk_3b0, NULL);
+      }
+    }
+    if (++p->unk_3b8 >= 120) {
+      p->unk_3b8 = 0;
+    }
+    if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+      FUN_08085ef8(p, 32);
+    } else {
+      FUN_08086024(p, 0);
+    }
+  }
+  Map_StepNavPath(&p->navAgent, &p->mover.pos);
+}
 
 // 206/206命令, 残差は Mod(Random(), 3) 側の gRandomTable の受け皿だけ (原典 r2, こちら r1)
 // 試済: gRandomTable[gRandTableIdx] 直書き, _Random(table), 乱数をローカルに取る, 分岐の向き, delta / angle の宣言位置
