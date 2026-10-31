@@ -46,7 +46,7 @@ SECTIONS {
       src/entity_2d2b.o(.bss);
       src/duneyrr_chandelier.o(.bss);
       src/entity_83b2.o(iwram_data);
-      src/entity_0866.o(.bss);
+      src/bamboo_shoots.o(.bss);
       src/spirit_bugs.o(.bss);
       src/entity_329b.o(iwram_data);
       src/sun_countdown.o(iwram_data);
@@ -262,9 +262,9 @@ SECTIONS {
 			src/entity_2d2b.o (.text);
 			src/duneyrr_chandelier.o (.text);
 			src/entity_83b2.o (.text);
-			src/entity_0866.o (.text);
+			src/bamboo_shoots.o (.text);
 			src/spirit_bugs.o (.text);
-			src/solar_bamboo.o (.text);
+			src/bamboo.o (.text);
 			src/cactus.o (.text);
 			src/entity_c9bc.o (.text);
 			src/entity_55c2.o (.text);
@@ -703,9 +703,9 @@ SECTIONS {
     src/entity_2d2b.o (.rodata);
     src/duneyrr_chandelier.o (.rodata);
     src/entity_83b2.o (.rodata);
-    src/entity_0866.o (.rodata);
+    src/bamboo_shoots.o (.rodata);
     src/spirit_bugs.o (.rodata);
-    src/solar_bamboo.o (.rodata);
+    src/bamboo.o (.rodata);
     src/entity_c9bc.o (.rodata);
     src/entity_0800f110.o (.rodata);
     src/entity_329b.o (.rodata);

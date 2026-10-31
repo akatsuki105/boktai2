@@ -9,7 +9,7 @@
 #include "sprite_animation.h"
 #include "vm.h"
 
-// Entity0866 が16個抱える枠
+// 太陽タケノコ1つ
 typedef struct {
   u8 unk_00[2];       // 0x00, まだ未解析
   u8 unk_02;          // 0x02, FUN_08009e28 が 2 を入れる
