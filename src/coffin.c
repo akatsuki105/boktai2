@@ -1088,7 +1088,33 @@ void FUN_080875e8(Coffin* p) {
   p->unk_40c.z += POLAR_Z(0x80, angle);
 }
 
-NAKED void FUN_0808766c(Coffin* p) { INCFUNC("asm/func/FUN_0808766c.inc"); }
+// 棺桶を地面の高さに合わせ, スプライトと当たり判定の位置, 踏んでいるタイルの控えを更新する
+void FUN_0808766c(Coffin* p) {
+  MapTileOverride* ov;
+  CollisionMapTile* tile;
+  Vec3* pos;
+  u32 idx;
+
+  if (!p->unk_384 && p->state != 5) {
+    p->mover.pos.y = TileHeightAt(&p->mover.pos);
+  }
+  pos = &p->mover.pos;
+  p->sprite.pos.x = p->mover.pos.x + p->unk_31e;
+  p->sprite.pos.y = p->mover.pos.y + p->unk_320;
+  p->sprite.pos.z = p->mover.pos.z + p->unk_322;
+  Hitbox_SetPos(&p->hurtbox, pos, 0);
+
+  p->tile.tileIdx[1] = GetCollisionTileIdx(pos);
+  idx = p->tile.tileIdx[1];
+  ov = Map_FindTileOverride(idx, 1);
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  p->tile.stairs[1] = tile->heightStairs >> 4;
+  p->tile.height[1] = tile->heightStairs & 0xF;
+  p->tile.attr[1] = tile->attr;
+  FUN_080875e8(p);
+  p->unk_388 = p->mover.pos;
+  p->unk_388.val = p->facing;
+}
 
 s32 FUN_08087818(Coffin* p) {
   if (p->unk_3fc == 0) {

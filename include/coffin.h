@@ -24,7 +24,7 @@ typedef struct Coffin {
   Mover mover;                // 0x040, angle は (facing + 5) * 32
   AuxSprite sprite;           // 0x084, ->gfx
   AuxSpriteGfx gfx;           // 0x0B0, SPRITE_COFFIN, パレットIDは coffinID + 519
-  u8 unk_cc[0xDC - 0xCC];     // 0x0CC
+  MoverTile tile;             // 0x0CC
   HitboxData hurtbox;         // 0x0DC, mover.pos に追従する被弾判定, これだけ Init で登録される
   HitboxData hitbox;          // 0x12C, 威力50の攻撃判定 (多分棺桶が暴れ出した時の攻撃判定)
   NavAgent navAgent;          // 0x17C, mover.pos から destPos への経路を見るのに使う
