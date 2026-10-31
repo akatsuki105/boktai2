@@ -821,7 +821,35 @@ static const u8 sCoffinPowers[8] = {
     [COFFIN_IRON_MAIDEN] = 30,
 };  // 0x085ABFF8
 
-NAKED void Coffin_Init_Helper_08086e64(Coffin* p) { INCFUNC("asm/func/Coffin_Init_Helper_08086e64.inc"); }
+// '.r' と '.O' を読み, 棺桶ごとの値から自力移動の待ち時間などのタイマーを初期化する
+void Coffin_InitSelfMove(Coffin* p) {
+  if (VM_SeekToNamedArg('r')) {
+    VEC3_SET(p->destPos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(p->destPos, 0, 0, 0);
+  }
+  if (VM_SeekToNamedArg('O')) {
+    p->unk_3b0 = VM_GetValue();
+  } else {
+    p->unk_3b0 = 0;
+  }
+
+  p->selfMoveTimer = p->selfMoveTimerInit = sCoffinPowers[p->coffinID] * 120;
+  if (p->coffinID == COFFIN_IRON) {
+    p->canSelfMove = FALSE;
+    if (p->state == 3 || p->state == 4) {
+      p->state = 0;
+    }
+  } else {
+    p->canSelfMove = TRUE;
+    if (p->state == 3 || p->state == 4) {
+      FUN_080860cc(p);
+    }
+  }
+  p->unk_390 = p->unk_392 = sCoffinPowers[p->coffinID] * 60;
+  p->unk_39a = 300;
+  p->unk_398 = 0;
+}
 
 void Coffin_InitSprite(Coffin* p) {
   rgb555* src;
@@ -1514,7 +1542,7 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   Coffin_Init_Helper_08086df8(p, id);
   Coffin_InitSprite(p);
   Coffin_InitMover(p);
-  Coffin_Init_Helper_08086e64(p);
+  Coffin_InitSelfMove(p);
   Coffin_InitHurtbox(p);
   Coffin_InitHitbox(p);
   Coffin_InitParticles(p);
