@@ -19,7 +19,7 @@ typedef u16 ElevatorFlags;                 // Elevator.flags
 #define ELEVATOR_SHAKE (1 << 5)            // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
 #define ELEVATOR_UNK_7 (1 << 7)            // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
 #define ELEVATOR_RIDER_KNOCKBACK (1 << 8)  // プレイヤーを弾き返した, 立っていると Elevator_CarryPlayer がプレイヤーを運ばずにフラグだけ落とす
-#define ELEVATOR_UNK_9 (1 << 9)            // FUN_081d4658 が見て落とす
+#define ELEVATOR_COFFIN_CLAMPED (1 << 9)   // 棺桶を範囲の端まで引き戻した, 立っていると Elevator_CarryCoffin が棺桶を運ばずにフラグだけ落とす
 #define ELEVATOR_TILEOVERRIDES (1 << 11)   // tileOverrides[] を登録済み
 #define ELEVATOR_FLAG_12 (1 << 12)         // まだ不明
 
@@ -92,7 +92,7 @@ Elevator* Elevator_FindByID(s32 id);
 void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 void FUN_081ee53c(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void Elevator_CarryPlayer(Elevator* e);
-void FUN_081d4658(Elevator* e);
+void Elevator_CarryCoffin(Elevator* e);
 void Elevator_PlayArrivalSound(Elevator* e);
 
 static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
@@ -1000,7 +1000,7 @@ void Elevator_ClampCoffinPos(Elevator* e) {
   pos.y = e->mover.pos.y;
   pos.z = e->mover.pos.z + d.z;
   FUN_08086a4c(&pos);
-  SET_FLAGS(e->flags, ELEVATOR_UNK_9);
+  SET_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
 }
 
 // 乗っている棺桶が特殊床の上で足場の範囲を外れたら範囲の端まで引き戻す
@@ -1032,7 +1032,7 @@ void Elevator_ClampCoffinOnSpecialTile(Elevator* e) {
   pos.y = e->mover.pos.y;
   pos.z = e->mover.pos.z + d.z;
   FUN_08086a4c(&pos);
-  SET_FLAGS(e->flags, ELEVATOR_UNK_9);
+  SET_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
 }
 
 // 乗っている棺桶が床の高さにいないか水の上にいて, 足場の範囲を外れたら範囲の端まで引き戻す
@@ -1088,7 +1088,7 @@ void Elevator_ClampCoffinOffFloor(Elevator* e) {
   pos.y = e->mover.pos.y;
   pos.z = e->mover.pos.z + d.z;
   FUN_08086a4c(&pos);
-  SET_FLAGS(e->flags, ELEVATOR_UNK_9);
+  SET_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
 }
 
 // id のエレベータから, which が 0 ならプレイヤー, それ以外なら棺桶が乗っている印を落とす
@@ -1236,7 +1236,7 @@ void FUN_081d4540(Elevator* e) {
       Elevator_CarryPlayer(e);
     }
     if (FUN_08086978(1)) {
-      FUN_081d4658(e);
+      Elevator_CarryCoffin(e);
     }
 
     ClearMemory(&e->moveDelta, sizeof(e->moveDelta));
@@ -1268,31 +1268,23 @@ void Elevator_CarryPlayer(Elevator* e) {
 }
 
 // 乗っている棺桶をエレベータの移動ぶんだけ動かす
-// 残差23命令 (54/77): 原典は棺桶と mover.pos の差分を Vec3 に組み立てるがどこからも読まないので agbcc が消す, 加えて flags 判定の 0/1 起こしも畳まれる
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (60/77)
-NON_MATCH void FUN_081d4658(Elevator* e) {
-#ifdef NONMATCHING_C
+void Elevator_CarryCoffin(Elevator* e) {
   if (gElevatorManager->coffinRidingID == e->id) {
     WorldPos pos;
     WorldPos delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - e->mover.pos.x;
-    delta.y = pos.y - e->mover.pos.y;
-    delta.z = pos.z - e->mover.pos.z;
+    Vec3_Delta(&delta, &e->mover.pos, &pos);
 
-    if (!Elevator_TestFlags(e, ELEVATOR_UNK_9)) {
-      pos.x = e->moveDelta.x + pos.x;
-      pos.y = pos.y + e->moveDelta.y;
-      pos.z = e->moveDelta.z + pos.z;
+    if (!Elevator_TestFlags(e, ELEVATOR_COFFIN_CLAMPED)) {
+      pos.x += e->moveDelta.x;
+      pos.y += e->moveDelta.y;
+      pos.z += e->moveDelta.z;
       FUN_08086a4c(&pos);
     }
 
-    e->flags &= ~ELEVATOR_UNK_9;
+    CLEAR_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
   }
-#else
-  INCFUNC("asm/func/FUN_081d4658.inc");
-#endif
 }
 
 // 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
