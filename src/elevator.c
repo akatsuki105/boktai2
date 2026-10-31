@@ -23,7 +23,7 @@ typedef u16 ElevatorFlags;                // Elevator.flags
 #define ELEVATOR_FLAG_12 (1 << 12)        // まだ不明
 
 struct Elevator;
-typedef void ElevatorFunc(struct Elevator* p);
+typedef void ElevatorFunc(struct Elevator* e);
 
 // このゲームには、水平方向と垂直方向に動く床が存在するが、これがどっちも担うのかはまだ不明
 // 水平方向 は 移動床, 垂直方向 は 昇降床　と呼ぶようにすること
@@ -65,7 +65,7 @@ static_assert(sizeof(Elevator) == 396);
 typedef struct {
   Entity e;                      // 0x0000, ENTITY_UNK_5
   AuxAnimFile* animFile;         // 0x0018, ANIM_13F9
-  Elevator unk_1c[12];           // 0x001C
+  Elevator elevators[12];        // 0x001C
   u32 usedMask;                  // 0x12AC, スロット i を確保すると bit i が立つ
   u16 ridingID;                  // 0x12B0, 搭乗中のエレベータの id, 降りると 0
   u16 unk_12b2;                  // 0x12B2, ridingID と同じ作り, FUN_081d4704 / FUN_081d42c4 が 0x03002C00 の乗り手について持つ
@@ -84,9 +84,9 @@ const Vec3 gElevatorRanges[3] = {
 };  // 0x085AE0D0
 
 bool32 FUN_08086978(u32 mask);
-void FUN_081d4590(Elevator* p);
-void FUN_081d4658(Elevator* p);
-void FUN_081d5588(Elevator* p);
+void FUN_081d4590(Elevator* e);
+void FUN_081d4658(Elevator* e);
+void FUN_081d5588(Elevator* e);
 
 static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
   out->x = target->x - origin->x;
@@ -101,15 +101,15 @@ static inline bool8 Elevator_IsSlotUsed(ElevatorManager* p, s32 i) {
 
 static inline void Elevator_FreeSlot(ElevatorManager* p, s32 i) { p->usedMask &= ~(1 << i); }
 
-static inline bool8 Elevator_TestFlags(Elevator* p, ElevatorFlags bits) {
-  if (TEST_FLAGS(p->flags, bits)) return TRUE;
+static inline bool8 Elevator_TestFlags(Elevator* e, ElevatorFlags bits) {
+  if (TEST_FLAGS(e->flags, bits)) return TRUE;
   return FALSE;
 }
 
 // unk_c8 の種類ごとに走行音を鳴らす
-void FUN_081d21d8(Elevator* p) {
-  if (!(p->unk_d6 & 4)) {
-    switch (p->unk_c8) {
+void FUN_081d21d8(Elevator* e) {
+  if (!(e->unk_d6 & 4)) {
+    switch (e->unk_c8) {
       case 0: {
         PlaySound_082406e0(SONG_344);
         break;
@@ -120,7 +120,7 @@ void FUN_081d21d8(Elevator* p) {
         break;
       }
       case 3: {
-        if (p->unk_d6 & 0x20) {
+        if (e->unk_d6 & 0x20) {
           PlaySound_082406e0(SONG_344);
         } else {
           PlaySound_082406e0(SONG_609);
@@ -148,8 +148,8 @@ NON_MATCH Elevator* ElevatorManager_AllocSlot(ElevatorManager* p) {
   for (i = 0; i < 12; i++) {
     if (!Elevator_IsSlotUsed(p, i)) {
       p->usedMask |= 1 << i;
-      p->unk_1c[i].slotIdx = i;
-      return &p->unk_1c[i];
+      p->elevators[i].slotIdx = i;
+      return &p->elevators[i];
     }
   }
 
@@ -159,7 +159,7 @@ NON_MATCH Elevator* ElevatorManager_AllocSlot(ElevatorManager* p) {
 #endif
 }
 
-NAKED void FUN_081d2368(Elevator* p) { INCFUNC("asm/func/FUN_081d2368.inc"); }
+NAKED void FUN_081d2368(Elevator* e) { INCFUNC("asm/func/FUN_081d2368.inc"); }
 
 // 経路ノードが pos から dx/dz の範囲内かどうか
 bool8 FUN_081d2660(PathWalker* walker, Vec3* pos, u32 dx, u32 dz) {
@@ -204,15 +204,15 @@ bool8 FUN_081d2698(Mover* mover, PathWalker* walker, Vec3* out, u32 dx, u32 dz, 
   return FALSE;
 }
 
-void FUN_081d276c(Elevator* p) {
-  ElevatorManager* q = gElevatorManager;
+void FUN_081d276c(Elevator* e) {
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 1; i++) {
     Player* player = gPlayerPtr[i];
 
-    if (player != NULL && p->id == q->ridingID) {
-      player->mover.tile = (p->state == 3 || p->state == 4) ? &player->tile : NULL;
+    if (player != NULL && e->id == p->ridingID) {
+      player->mover.tile = (e->state == 3 || e->state == 4) ? &player->tile : NULL;
     }
   }
 }
@@ -238,18 +238,18 @@ NON_MATCH bool32 FUN_081d27c8(void) {
 #endif
 }
 
-void Elevator_UpdateState0(Elevator* p) {}
+void Elevator_UpdateState0(Elevator* e) {}
 
-NAKED void Elevator_UpdateState2(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateState2.inc"); }
+NAKED void Elevator_UpdateState2(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateState2.inc"); }
 
 // 目的地に着いていたら状態3へ進め, まだなら移動を続ける
-void Elevator_UpdateState1(Elevator* p) {
-  if (FUN_081d2698(&p->hitbox, &p->pathWalker, &p->unk_58, p->unk_ba, p->unk_ba, p->unk_ba)) {
-    p->state = 3;
-    p->unk_b6 = 1;
-    FUN_081d5588(p);
+void Elevator_UpdateState1(Elevator* e) {
+  if (FUN_081d2698(&e->hitbox, &e->pathWalker, &e->unk_58, e->unk_ba, e->unk_ba, e->unk_ba)) {
+    e->state = 3;
+    e->unk_b6 = 1;
+    FUN_081d5588(e);
   } else {
-    FUN_081d2368(p);
+    FUN_081d2368(e);
   }
 }
 
@@ -266,10 +266,10 @@ void FUN_081d2c10(void) {
 }
 
 // プレイヤーがこのエレベータの上にいるか
-bool32 FUN_081d2c60(Elevator* p) {
+bool32 FUN_081d2c60(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
     Vec3 d;
-    Vec3_Delta(&d, &p->hitbox.pos, &gPlayerPtr[0]->mover.pos);
+    Vec3_Delta(&d, &e->hitbox.pos, &gPlayerPtr[0]->mover.pos);
 
     if (d.x <= gElevatorRanges[0].x && d.x >= -gElevatorRanges[0].x && d.y <= gElevatorRanges[0].y && d.y >= -gElevatorRanges[0].y && d.z <= gElevatorRanges[0].z && d.z >= -gElevatorRanges[0].z) {
       return TRUE;
@@ -279,48 +279,48 @@ bool32 FUN_081d2c60(Elevator* p) {
   return FALSE;
 }
 
-NAKED void Elevator_UpdateState4(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateState4.inc"); }
+NAKED void Elevator_UpdateState4(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateState4.inc"); }
 
 // 沈み込みを戻しつつ, 揺れフラグが立っていればスプライト位置を乱数で揺らす
 // 残差11命令 (81/92): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す (2箇所)
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (93/92)
-NON_MATCH void Elevator_UpdateShake(Elevator* p) {
+NON_MATCH void Elevator_UpdateShake(Elevator* e) {
 #ifdef NONMATCHING_C
-  if (p->unk_c6 < 0) {
-    p->sprite.pos.y += p->unk_c6;
-    p->unk_c6 = Div(p->unk_c6, 2);
+  if (e->unk_c6 < 0) {
+    e->sprite.pos.y += e->unk_c6;
+    e->unk_c6 = Div(e->unk_c6, 2);
   }
 
-  if (!Elevator_TestFlags(p, ELEVATOR_UNK_7)) {
-    if (!Elevator_TestFlags(p, ELEVATOR_SHAKE)) {
+  if (!Elevator_TestFlags(e, ELEVATOR_UNK_7)) {
+    if (!Elevator_TestFlags(e, ELEVATOR_SHAKE)) {
       return;
     }
 
-    p->sprite.pos.x += Mod(Random(), 12) - 6;
-    p->sprite.pos.y += Random() & 3;
-    p->sprite.pos.z += Mod(Random(), 12) - 6;
+    e->sprite.pos.x += Mod(Random(), 12) - 6;
+    e->sprite.pos.y += Random() & 3;
+    e->sprite.pos.z += Mod(Random(), 12) - 6;
   }
 
-  p->flags &= ~(ELEVATOR_TILEOVERRIDE | ELEVATOR_SHAKE);
+  e->flags &= ~(ELEVATOR_TILEOVERRIDE | ELEVATOR_SHAKE);
 #else
   INCFUNC("asm/func/Elevator_UpdateShake.inc");
 #endif
 }
 
-NAKED void Elevator_UpdateState3(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateState3.inc"); }
+NAKED void Elevator_UpdateState3(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateState3.inc"); }
 
-void Elevator_UpdateState5(Elevator* p) {}
+void Elevator_UpdateState5(Elevator* e) {}
 
-void Elevator_UpdateState6(Elevator* p) {}
+void Elevator_UpdateState6(Elevator* e) {}
 
 // id が一致する要素を探す
 Elevator* Elevator_FindByID(s32 id) {
-  ElevatorManager* q = gElevatorManager;
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (q->unk_1c[i].id == id) {
-      return &q->unk_1c[i];
+    if (p->elevators[i].id == id) {
+      return &p->elevators[i];
     }
   }
 
@@ -329,12 +329,12 @@ Elevator* Elevator_FindByID(s32 id) {
 
 // プレイヤーが乗っているエレベータを探す
 Elevator* Elevator_FindRiding(void) {
-  ElevatorManager* q = gElevatorManager;
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (q->ridingID == q->unk_1c[i].id) {
-      return &q->unk_1c[i];
+    if (p->ridingID == p->elevators[i].id) {
+      return &p->elevators[i];
     }
   }
 
@@ -342,32 +342,32 @@ Elevator* Elevator_FindRiding(void) {
 }
 
 // 登録してあった上書きタイルを全部外す
-void Elevator_RemoveTileOverrides(Elevator* p) {
-  if (Elevator_TestFlags(p, ELEVATOR_TILEOVERRIDES)) {
+void Elevator_RemoveTileOverrides(Elevator* e) {
+  if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDES)) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-      if (p->tileOverrideActive[i]) {
-        Map_RemoveTileOverride(&p->tileOverrides[i]);
-        p->tileOverrideActive[i] = 0;
+      if (e->tileOverrideActive[i]) {
+        Map_RemoveTileOverride(&e->tileOverrides[i]);
+        e->tileOverrideActive[i] = 0;
       }
     }
 
-    CLEAR_FLAGS(p->flags, ELEVATOR_TILEOVERRIDES);
+    CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDES);
   }
 }
 
-NAKED void Elevator_UpdateTileOverrides(Elevator* p) { INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc"); }
+NAKED void Elevator_UpdateTileOverrides(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc"); }
 
-NAKED void FUN_081d33f8(Elevator* p) { INCFUNC("asm/func/FUN_081d33f8.inc"); }
+NAKED void FUN_081d33f8(Elevator* e) { INCFUNC("asm/func/FUN_081d33f8.inc"); }
 
 // tileIdx の上書きタイルを登録しているエレベータがあるかどうか
 bool32 FUN_081d34e8(s32 tileIdx) {
-  ElevatorManager* q = gElevatorManager;
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (Elevator_TestFlags(&q->unk_1c[i], ELEVATOR_TILEOVERRIDE) && q->unk_1c[i].tileOverride.tileIdx == tileIdx) {
+    if (Elevator_TestFlags(&p->elevators[i], ELEVATOR_TILEOVERRIDE) && p->elevators[i].tileOverride.tileIdx == tileIdx) {
       return TRUE;
     }
   }
@@ -375,32 +375,32 @@ bool32 FUN_081d34e8(s32 tileIdx) {
   return FALSE;
 }
 
-NAKED void FUN_081d3534(Elevator* p) { INCFUNC("asm/func/FUN_081d3534.inc"); }
+NAKED void FUN_081d3534(Elevator* e) { INCFUNC("asm/func/FUN_081d3534.inc"); }
 
-NAKED void FUN_081d36c0(Elevator* p) { INCFUNC("asm/func/FUN_081d36c0.inc"); }
+NAKED void FUN_081d36c0(Elevator* e) { INCFUNC("asm/func/FUN_081d36c0.inc"); }
 
-NAKED void FUN_081d38a4(Elevator* p) { INCFUNC("asm/func/FUN_081d38a4.inc"); }
+NAKED void FUN_081d38a4(Elevator* e) { INCFUNC("asm/func/FUN_081d38a4.inc"); }
 
-NAKED void FUN_081d3a8c(Elevator* p) { INCFUNC("asm/func/FUN_081d3a8c.inc"); }
+NAKED void FUN_081d3a8c(Elevator* e) { INCFUNC("asm/func/FUN_081d3a8c.inc"); }
 
-NAKED void FUN_081d3c24(Elevator* p) { INCFUNC("asm/func/FUN_081d3c24.inc"); }
+NAKED void FUN_081d3c24(Elevator* e) { INCFUNC("asm/func/FUN_081d3c24.inc"); }
 
-NAKED void FUN_081d3dd0(Elevator* p) { INCFUNC("asm/func/FUN_081d3dd0.inc"); }
+NAKED void FUN_081d3dd0(Elevator* e) { INCFUNC("asm/func/FUN_081d3dd0.inc"); }
 
 // 残差はビット判定を 0/1 の値に起こす分だけ (src/elevator.c の ElevatorManager_AllocSlot と同じ現象)
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (62/63)
 NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
 #ifdef NONMATCHING_C
-  ElevatorManager* q = gElevatorManager;
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
-  if (q->usedMask != 0) {
+  if (p->usedMask != 0) {
     for (i = 0; i < 12; i++) {
-      if (Elevator_IsSlotUsed(q, i) && q->unk_1c[i].id == id) {
+      if (Elevator_IsSlotUsed(p, i) && p->elevators[i].id == id) {
         if (which == 0) {
-          q->unk_1c[i].flags &= ~PLAYER_RIDING;
+          p->elevators[i].flags &= ~PLAYER_RIDING;
         } else {
-          q->unk_1c[i].flags &= ~COFFIN_RIDING;
+          p->elevators[i].flags &= ~COFFIN_RIDING;
         }
         return;
       }
@@ -411,43 +411,43 @@ NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
 #endif
 }
 
-void FUN_081d4034(Elevator* p) {
-  if (p->state != 3 && p->state != 4) {
-    FUN_0807a97c(gPlayerPtr[0], 5, p->id);
+void FUN_081d4034(Elevator* e) {
+  if (e->state != 3 && e->state != 4) {
+    FUN_0807a97c(gPlayerPtr[0], 5, e->id);
   } else {
-    FUN_0807a97c(gPlayerPtr[0], 1, p->id);
+    FUN_0807a97c(gPlayerPtr[0], 1, e->id);
     FUN_0807a99c(gPlayerPtr[0], 4);
   }
 }
 
-void FUN_081d407c(Elevator* p) {
-  if (p->state != 3 && p->state != 4) {
-    FUN_080869c8(7, p->id);
+void FUN_081d407c(Elevator* e) {
+  if (e->state != 3 && e->state != 4) {
+    FUN_080869c8(7, e->id);
   } else {
-    FUN_080869c8(3, p->id);
+    FUN_080869c8(3, e->id);
     FUN_080869f8(4);
   }
 }
 
-NAKED void FUN_081d40b4(Elevator* p) { INCFUNC("asm/func/FUN_081d40b4.inc"); }
+NAKED void FUN_081d40b4(Elevator* e) { INCFUNC("asm/func/FUN_081d40b4.inc"); }
 
-NAKED void FUN_081d42c4(Elevator* p) { INCFUNC("asm/func/FUN_081d42c4.inc"); }
+NAKED void FUN_081d42c4(Elevator* e) { INCFUNC("asm/func/FUN_081d42c4.inc"); }
 
-NAKED void FUN_081d43d4(Vec3* a, Vec3* b, Elevator* p) { INCFUNC("asm/func/FUN_081d43d4.inc"); }
+NAKED void FUN_081d43d4(Vec3* a, Vec3* b, Elevator* e) { INCFUNC("asm/func/FUN_081d43d4.inc"); }
 
-void FUN_081d4540(Elevator* p) {
+void FUN_081d4540(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
-    FUN_081d40b4(p);
-    FUN_081d42c4(p);
+    FUN_081d40b4(e);
+    FUN_081d42c4(e);
 
     if (FUN_0807a954(gPlayerPtr[0], 1)) {
-      FUN_081d4590(p);
+      FUN_081d4590(e);
     }
     if (FUN_08086978(1)) {
-      FUN_081d4658(p);
+      FUN_081d4658(e);
     }
 
-    ClearMemory(&p->unk_58, sizeof(p->unk_58));
+    ClearMemory(&e->unk_58, sizeof(e->unk_58));
   }
 }
 
@@ -456,12 +456,12 @@ void FUN_081d4540(Elevator* p) {
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (83/84)
 NON_MATCH void FUN_081d4590(Elevator* e) {
 #ifdef NONMATCHING_C
-  ElevatorManager* q = gElevatorManager;
+  ElevatorManager* p = gElevatorManager;
 
   if (gPlayerPtr[0] == NULL) {
     return;
   }
-  if (e->id != q->ridingID) {
+  if (e->id != p->ridingID) {
     return;
   }
 
@@ -484,25 +484,25 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
 // 乗っている棺桶をエレベータの移動ぶんだけ動かす
 // 残差23命令 (54/77): 原典は棺桶と hitbox.pos の差分を Vec3 に組み立てるがどこからも読まないので agbcc が消す, 加えて flags 判定の 0/1 起こしも畳まれる
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (60/77)
-NON_MATCH void FUN_081d4658(Elevator* p) {
+NON_MATCH void FUN_081d4658(Elevator* e) {
 #ifdef NONMATCHING_C
-  if (gElevatorManager->unk_12b2 == p->id) {
+  if (gElevatorManager->unk_12b2 == e->id) {
     WorldPos pos;
     WorldPos delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - p->hitbox.pos.x;
-    delta.y = pos.y - p->hitbox.pos.y;
-    delta.z = pos.z - p->hitbox.pos.z;
+    delta.x = pos.x - e->hitbox.pos.x;
+    delta.y = pos.y - e->hitbox.pos.y;
+    delta.z = pos.z - e->hitbox.pos.z;
 
-    if (!Elevator_TestFlags(p, ELEVATOR_UNK_9)) {
-      pos.x = p->unk_58.x + pos.x;
-      pos.y = pos.y + p->unk_58.y;
-      pos.z = p->unk_58.z + pos.z;
+    if (!Elevator_TestFlags(e, ELEVATOR_UNK_9)) {
+      pos.x = e->unk_58.x + pos.x;
+      pos.y = pos.y + e->unk_58.y;
+      pos.z = e->unk_58.z + pos.z;
       FUN_08086a4c(&pos);
     }
 
-    p->flags &= ~ELEVATOR_UNK_9;
+    e->flags &= ~ELEVATOR_UNK_9;
   }
 #else
   INCFUNC("asm/func/FUN_081d4658.inc");
@@ -564,7 +564,7 @@ void (*const sElevatorUpdates[7])(Elevator*) = {
 // 残差は usedMask のアドレスをループ外に括り出すかどうかのみ (原典は毎周 p+0x12AC を作り直す), Tier A-C は試済 (e の持ち方, ネスト, TEST_FLAGS/& の書き分け)
 NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 #ifdef NONMATCHING_C
-  Elevator* elevators = p->unk_1c;
+  Elevator* elevators = p->elevators;
   s32 i;
 
   if (p->usedMask == 0) return 0;
@@ -617,7 +617,7 @@ NON_MATCH s32 ElevatorManager_Destroy(ElevatorManager* p) {
 
   for (i = 0; i < 12; i++) {
     if (Elevator_IsSlotUsed(p, i)) {
-      Elevator* e = &p->unk_1c[i];
+      Elevator* e = &p->elevators[i];
 
       if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
         Map_RemoveTileOverride(&e->tileOverride);
@@ -669,9 +669,9 @@ void Cmd_ShakeElevator(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
-    if (p != NULL) {
-      SET_FLAGS(p->flags, ELEVATOR_SHAKE);
+    Elevator* e = Elevator_FindByID(id);
+    if (e != NULL) {
+      SET_FLAGS(e->flags, ELEVATOR_SHAKE);
     }
   }
 }
@@ -682,13 +682,13 @@ void Cmd_ShakeElevator(void) {
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (65/59)
 NON_MATCH s32 Cmd_7A75(void) {
 #ifdef NONMATCHING_C
-  ElevatorManager* q = gElevatorManager;
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
-  if (q == NULL) {
+  if (p == NULL) {
     return -1;
   }
-  if (q->usedMask == 0) {
+  if (p->usedMask == 0) {
     return -1;
   }
   if (!FUN_08086978(1)) {
@@ -696,8 +696,8 @@ NON_MATCH s32 Cmd_7A75(void) {
   }
 
   for (i = 0; i < 12; i++) {
-    if (Elevator_IsSlotUsed(q, i) && Elevator_TestFlags(&q->unk_1c[i], COFFIN_RIDING)) {
-      return q->unk_1c[i].id;
+    if (Elevator_IsSlotUsed(p, i) && Elevator_TestFlags(&p->elevators[i], COFFIN_RIDING)) {
+      return p->elevators[i].id;
     }
   }
 
@@ -715,21 +715,21 @@ NON_MATCH void Elevator_Start(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL && (p->unk_d6 & ELEVATOR_UNK_1)) {
-      p->state = 2;
+    if (e != NULL && (e->unk_d6 & ELEVATOR_UNK_1)) {
+      e->state = 2;
       if (mode == 4) {
-        p->flags = (p->flags & ~ELEVATOR_UNK_1) | mode;
+        e->flags = (e->flags & ~ELEVATOR_UNK_1) | mode;
       } else {
-        p->flags &= ~ELEVATOR_UNK_2;
+        e->flags &= ~ELEVATOR_UNK_2;
         if (mode == 2) {
-          p->flags |= mode;
+          e->flags |= mode;
         } else {
-          p->flags &= ~ELEVATOR_UNK_1;
+          e->flags &= ~ELEVATOR_UNK_1;
         }
 
-        FUN_081d21d8(p);
+        FUN_081d21d8(e);
       }
     }
   }
@@ -742,9 +742,9 @@ void Cmd_AE3A(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
+    Elevator* e = Elevator_FindByID(id);
 
-    p->unk_d6 = VM_GetNamedArgValue('m', -1);
+    e->unk_d6 = VM_GetNamedArgValue('m', -1);
   }
 }
 
@@ -752,21 +752,21 @@ void Elevator_Destroy(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
-    ElevatorManager* q = gElevatorManager;
+    Elevator* e = Elevator_FindByID(id);
+    ElevatorManager* p = gElevatorManager;
 
-    if (Elevator_TestFlags(p, ELEVATOR_TILEOVERRIDE)) {
-      Map_RemoveTileOverride(&p->tileOverride);
-      CLEAR_FLAGS(p->flags, ELEVATOR_TILEOVERRIDE);
+    if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
+      Map_RemoveTileOverride(&e->tileOverride);
+      CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
     }
 
-    Elevator_RemoveTileOverrides(p);
-    Mover_Unlink(&p->hitbox);
-    p->id = 0;
-    p->state = 6;
-    AuxSprite_Remove(&p->sprite);
-    Elevator_FreeSlot(q, p->slotIdx);
-    p->slotIdx = 0xFFFF;
+    Elevator_RemoveTileOverrides(e);
+    Mover_Unlink(&e->hitbox);
+    e->id = 0;
+    e->state = 6;
+    AuxSprite_Remove(&e->sprite);
+    Elevator_FreeSlot(p, e->slotIdx);
+    e->slotIdx = 0xFFFF;
   }
 }
 
@@ -777,7 +777,7 @@ NON_MATCH void Cmd_5D74(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
+    Elevator* e = Elevator_FindByID(id);
     u32 pathIdx = 0;
     u32 unk = 0;
     u32 nodeIdx = 0;
@@ -797,8 +797,8 @@ NON_MATCH void Cmd_5D74(void) {
       }
     }
 
-    Map_InitPathWalker(&p->pathWalker, pathIdx, unk, nodeIdx);
-    p->hitbox.path = &p->pathWalker;
+    Map_InitPathWalker(&e->pathWalker, pathIdx, unk, nodeIdx);
+    e->hitbox.path = &e->pathWalker;
   }
 #else
   INCFUNC("asm/func/Cmd_5D74.inc");
@@ -810,12 +810,12 @@ void Elevator_SetPltt(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL) {
+    if (e != NULL) {
       s32 plttID = VM_GetNamedArgValue('c', 0);
 
-      Video_SetAuxSpritePltt(&p->gfx, plttID + 439);
+      Video_SetAuxSpritePltt(&e->gfx, plttID + 439);
     }
   }
 }
@@ -825,23 +825,23 @@ void Cmd_15ED(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL) {
-      p->unk_ba = VM_GetNamedArgValue('s', 6);
+    if (e != NULL) {
+      e->unk_ba = VM_GetNamedArgValue('s', 6);
     }
   }
 }
 
 // 0x5844, プレイヤーをエレベータから降ろす
 void Cmd_5844(void) {
-  ElevatorManager* q = gElevatorManager;
-  Elevator* p = Elevator_FindRiding();
+  ElevatorManager* p = gElevatorManager;
+  Elevator* e = Elevator_FindRiding();
 
-  q->ridingID = 0;
+  p->ridingID = 0;
   gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
   FUN_0807a99c(gPlayerPtr[0], 1);
-  CLEAR_FLAGS(p->flags, PLAYER_RIDING);
+  CLEAR_FLAGS(e->flags, PLAYER_RIDING);
   gPlayerPtr[0]->shadow.flags &= ~1;
 }
 
@@ -850,13 +850,13 @@ void Cmd_CED9(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL) {
+    if (e != NULL) {
       s32 h = VM_GetNamedArgValue('h', -1);
       s32 l = VM_GetNamedArgValue('l', -1);
-      if (h > 0) p->unk_d0 = h;
-      if (l > 0) p->unk_cc = l;
+      if (h > 0) e->unk_d0 = h;
+      if (l > 0) e->unk_cc = l;
     }
   }
 }
@@ -866,34 +866,34 @@ void Cmd_0BCE(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
-    Elevator* p = Elevator_FindByID(id);
-    if (p != NULL) {
-      CLEAR_FLAGS(p->flags, ELEVATOR_FLAG_12);
+    Elevator* e = Elevator_FindByID(id);
+    if (e != NULL) {
+      CLEAR_FLAGS(e->flags, ELEVATOR_FLAG_12);
     }
   }
 }
 
 Vec3* Elevator_GetPosByID(s32 id) {
-  Elevator* p;
+  Elevator* e;
 
   if (gElevatorManager == NULL || id == 0) {
     return NULL;
   }
 
-  p = Elevator_FindByID(id);
-  if (p == NULL) {
+  e = Elevator_FindByID(id);
+  if (e == NULL) {
     return NULL;
   }
 
-  return &p->hitbox.pos;
+  return &e->hitbox.pos;
 }
 
-Vec3* Elevator_GetPos(Elevator* p) {
+Vec3* Elevator_GetPos(Elevator* e) {
   if (gElevatorManager == NULL) {
     return NULL;
   }
 
-  return &p->hitbox.pos;
+  return &e->hitbox.pos;
 }
 
-NAKED void FUN_081d5588(Elevator* p) { INCFUNC("asm/func/FUN_081d5588.inc"); }
+NAKED void FUN_081d5588(Elevator* e) { INCFUNC("asm/func/FUN_081d5588.inc"); }
