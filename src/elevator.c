@@ -17,7 +17,7 @@ typedef u16 ElevatorFlags;                // ElevatorUnkData.flags
 #define ELEVATOR_TILEOVERRIDES (1 << 11)  // tileOverrides[] を登録済み
 #define ELEVATOR_UNK_1 (1 << 1)           // Elevator_Start が '.m=2' のとき立てる
 #define ELEVATOR_UNK_2 (1 << 2)           // Elevator_Start が '.m=4' のとき立てる
-#define ELEVATOR_PLAYER_RIDING (1 << 3)   // プレイヤーが乗っている, Elevator.ridingID と対
+#define ELEVATOR_PLAYER_RIDING (1 << 3)   // プレイヤーが乗っている, ElevatorManager.ridingID と対
 #define ELEVATOR_UNK_4 (1 << 4)           // 不死の棺桶が乗っている?, FUN_081d3fac が第2引数で落とし分ける
 #define ELEVATOR_UNK_9 (1 << 9)           // FUN_081d4658 が見て落とす
 #define ELEVATOR_UNK_8 (1 << 8)           // 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
@@ -31,8 +31,8 @@ typedef struct ElevatorUnkData {
   u8 unk_48[0x058 - 0x048];          // 0x048
   Vec3 unk_58;                       // 0x058, FUN_081d4540 が ClearMemory で 0 にする, FUN_081d4658 が棺桶の座標に足す
   u8 unk_60[0x0B0 - 0x060];          // 0x060
-  s16 slotIdx;                       // 0x0B0, ElevatorController_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
-  s16 state;                         // 0x0B2, ElevatorController_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
+  s16 slotIdx;                       // 0x0B0, ElevatorManager_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
+  s16 state;                         // 0x0B2, ElevatorManager_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
   ElevatorFlags flags;               // 0x0B4, bit0=tileOverride登録済, bit5=Cmd_ShakeElevator, bit11=tileOverrides登録済
   u8 unk_b6;                         // 0x0B6, FUN_081d2a14 が到着時に 1 を入れる
   u8 unk_b7[0x0BA - 0x0B7];          // 0x0B7
@@ -45,7 +45,7 @@ typedef struct ElevatorUnkData {
   s32 unk_d0;                        // 0x0D0, Cmd_CED9 が '.h' の値 (正のときだけ) を入れる
   u16 id;                            // 0x0D4, Elevator_FindByID が Player.elevatorID や '.n' の値と比較して探す
   u16 unk_d6;                        // 0x0D6, '.m', FUN_081d21d8 / FUN_081d2a64 が bit2,bit5 を見る
-  ElevatorUnkDataFunc* unk_d8;       // 0x0D8, ElevatorController_Update が毎フレーム呼ぶ
+  ElevatorUnkDataFunc* unk_d8;       // 0x0D8, ElevatorManager_Update が毎フレーム呼ぶ
   ElevatorUnkDataFunc* unk_dc;       // 0x0DC
   ElevatorUnkDataFunc* unk_e0;       // 0x0E0
   u8 unk_e4;                         // 0x0E4, Elevator_Create が VM 値を入れる
@@ -69,10 +69,10 @@ typedef struct {
   u16 unk_12b2;                  // 0x12B2, ridingID と同じ作り, FUN_081d4704 / FUN_081d42c4 が 0x03002C00 の乗り手について持つ
   bool8 soundPlaying;            // 0x12B4, 走行音を鳴らしているか
   u8 unk_12b5[0x12B8 - 0x12B5];  // 0x12B5
-} Elevator;
-static_assert(sizeof(Elevator) == 4792);
+} ElevatorManager;
+static_assert(sizeof(ElevatorManager) == 4792);
 
-IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
+IWRAM_DATA ElevatorManager* gElevatorManager = NULL;  // 0x03000194
 
 // エレベータが乗り手との距離を測るときの許容範囲 (±), Elevator_FindAtPos ほかが引く
 const Vec3 gElevatorRanges[3] = {
@@ -91,12 +91,12 @@ static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
   out->z = target->z - origin->z;
 }
 
-static inline bool8 Elevator_IsSlotUsed(Elevator* p, s32 i) {
+static inline bool8 Elevator_IsSlotUsed(ElevatorManager* p, s32 i) {
   if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
   return FALSE;
 }
 
-static inline void Elevator_FreeSlot(Elevator* p, s32 i) { p->usedMask &= ~(1 << i); }
+static inline void Elevator_FreeSlot(ElevatorManager* p, s32 i) { p->usedMask &= ~(1 << i); }
 
 static inline bool8 Elevator_TestFlags(ElevatorUnkData* p, ElevatorFlags bits) {
   if (TEST_FLAGS(p->flags, bits)) return TRUE;
@@ -143,7 +143,7 @@ NAKED ElevatorUnkData* Elevator_FindAtPos(Vec3* pos) { INCFUNC("asm/func/Elevato
 // 残差はビット判定を 0/1 の値に起こす分だけ: 原典は (flags & bits) を movs 1 / movs 0 で値にしてから test するが, agbcc はどう書いても分岐に畳む
 // Tier A-B 試済: static inline の if/else, ローカルの bool32 受け, != 0, == FALSE, !!(...), static (非 inline) は bl が出て不可
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出る (39/39) が, ループ外に置く定数とポインタの順が原典と違う
-NON_MATCH ElevatorUnkData* ElevatorController_AllocSlot(Elevator* p) {
+NON_MATCH ElevatorUnkData* ElevatorManager_AllocSlot(ElevatorManager* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -157,7 +157,7 @@ NON_MATCH ElevatorUnkData* ElevatorController_AllocSlot(Elevator* p) {
 
   return NULL;
 #else
-  INCFUNC("asm/func/ElevatorController_AllocSlot.inc");
+  INCFUNC("asm/func/ElevatorManager_AllocSlot.inc");
 #endif
 }
 
@@ -207,7 +207,7 @@ bool8 FUN_081d2698(Mover* mover, PathWalker* walker, Vec3* out, u32 dx, u32 dz, 
 }
 
 void FUN_081d276c(ElevatorUnkData* p) {
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 1; i++) {
@@ -255,7 +255,7 @@ void FUN_081d2a14(ElevatorUnkData* p) {
   }
 }
 
-NAKED void FUN_081d2a64(Elevator* p) { INCFUNC("asm/func/FUN_081d2a64.inc"); }
+NAKED void FUN_081d2a64(ElevatorManager* p) { INCFUNC("asm/func/FUN_081d2a64.inc"); }
 
 void FUN_081d2c10(void) {
   WorldPos pos = gPlayerPtr[0]->mover.pos;
@@ -317,7 +317,7 @@ void FUN_081d3114(ElevatorUnkData* p) {}
 
 // id が一致する要素を探す
 ElevatorUnkData* Elevator_FindByID(s32 id) {
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
@@ -331,7 +331,7 @@ ElevatorUnkData* Elevator_FindByID(s32 id) {
 
 // プレイヤーが乗っているエレベータを探す
 ElevatorUnkData* Elevator_FindRiding(void) {
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
@@ -365,7 +365,7 @@ NAKED void FUN_081d33f8(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d33f8.inc
 
 // tileIdx の上書きタイルを登録しているエレベータがあるかどうか
 bool32 FUN_081d34e8(s32 tileIdx) {
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
@@ -389,11 +389,11 @@ NAKED void FUN_081d3c24(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d3c24.inc
 
 NAKED void FUN_081d3dd0(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d3dd0.inc"); }
 
-// 残差はビット判定を 0/1 の値に起こす分だけ (src/elevator.c の ElevatorController_AllocSlot と同じ現象)
+// 残差はビット判定を 0/1 の値に起こす分だけ (src/elevator.c の ElevatorManager_AllocSlot と同じ現象)
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (62/63)
 NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
 #ifdef NONMATCHING_C
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   s32 i;
 
   if (q->usedMask != 0) {
@@ -462,7 +462,7 @@ void FUN_081d4540(ElevatorUnkData* p) {
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (83/84)
 NON_MATCH void FUN_081d4590(ElevatorUnkData* p) {
 #ifdef NONMATCHING_C
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
 
   if (gPlayerPtr[0] == NULL) {
     return;
@@ -492,7 +492,7 @@ NON_MATCH void FUN_081d4590(ElevatorUnkData* p) {
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (60/77)
 NON_MATCH void FUN_081d4658(ElevatorUnkData* p) {
 #ifdef NONMATCHING_C
-  if (gElevator->unk_12b2 == p->id) {
+  if (gElevatorManager->unk_12b2 == p->id) {
     WorldPos pos;
     WorldPos delta;
 
@@ -519,7 +519,7 @@ NON_MATCH void FUN_081d4658(ElevatorUnkData* p) {
 // 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
 // 残差13命令 (92/79): 原典は差分 Vec3 をスタックに置いて s16 で読み直すが, agbcc はレジスタに畳んで半語を詰め替える
 // Tier A-C は試済: 2要素の WorldPos 配列にするとメモリには乗るが 87 で一致せず
-NON_MATCH void FUN_081d4704(Elevator* q, ElevatorUnkData* p) {
+NON_MATCH void FUN_081d4704(ElevatorManager* q, ElevatorUnkData* p) {
 #ifdef NONMATCHING_C
   if (p->unk_e7 == 2) {
     WorldPos pos;
@@ -566,12 +566,12 @@ void (*const PTR_ARRAY_085ae0e8[7])(ElevatorUnkData*) = {
     FUN_081d3114,
 };  // 0x085AE0E8
 
-NAKED s32 ElevatorController_Update(Elevator* p) { INCFUNC("asm/func/ElevatorController_Update.inc"); }
+NAKED s32 ElevatorManager_Update(ElevatorManager* p) { INCFUNC("asm/func/ElevatorManager_Update.inc"); }
 
 // 走行音を止め, 使用中のスロットの上書きタイル・Mover・スプライトを片付ける
 // 残差7命令 (69/76): Cmd_7A75 と同じく, 原典は使用中判定と flags 判定を分岐で 0/1 に起こしてから cmp で読み直す
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出る (76/76) が, 原典は &usedMask をマスクより先に作る
-NON_MATCH s32 ElevatorController_Destroy(Elevator* p) {
+NON_MATCH s32 ElevatorManager_Destroy(ElevatorManager* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -595,31 +595,31 @@ NON_MATCH s32 ElevatorController_Destroy(Elevator* p) {
     }
   }
 
-  gElevator = NULL;
+  gElevatorManager = NULL;
   return 0;
 #else
-  INCFUNC("asm/func/ElevatorController_Destroy.inc");
+  INCFUNC("asm/func/ElevatorManager_Destroy.inc");
 #endif
 }
 
-s32 ElevatorController_Init(Elevator* p) {
+s32 ElevatorManager_Init(ElevatorManager* p) {
   p->animFile = GetFile(DIR_ANIMATION, ANIM_13F9);
-  gElevator = p;
+  gElevatorManager = p;
   p->usedMask = 0;
   return 0;
 }
 
-Elevator* ElevatorController_Create(void) {
-  Elevator* p;
+ElevatorManager* ElevatorManager_Create(void) {
+  ElevatorManager* p;
 
-  if (gElevator != NULL) {
-    return gElevator;
+  if (gElevatorManager != NULL) {
+    return gElevatorManager;
   }
 
-  p = CreateEntity(ENTITY_UNK_5, sizeof(Elevator));
+  p = CreateEntity(ENTITY_UNK_5, sizeof(ElevatorManager));
   if (p != NULL) {
-    SetEntityRoutine(p, ElevatorController_Update, ElevatorController_Destroy);
-    if (ElevatorController_Init(p) < 0) {
+    SetEntityRoutine(p, ElevatorManager_Update, ElevatorManager_Destroy);
+    if (ElevatorManager_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -628,13 +628,13 @@ Elevator* ElevatorController_Create(void) {
   return p;
 }
 
-void ElevatorController_ClearPtr(void) { gElevator = NULL; }
+void ElevatorManager_ClearPtr(void) { gElevatorManager = NULL; }
 
 // 0xB1C4, 指定した id のエレベータを揺らす
 void Cmd_ShakeElevator(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
     if (p != NULL) {
       SET_FLAGS(p->flags, ELEVATOR_SHAKE);
@@ -648,7 +648,7 @@ void Cmd_ShakeElevator(void) {
 // Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (65/59)
 NON_MATCH s32 Cmd_7A75(void) {
 #ifdef NONMATCHING_C
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   s32 i;
 
   if (q == NULL) {
@@ -680,7 +680,7 @@ NON_MATCH void Elevator_Start(void) {
   s32 mode = VM_GetNamedArgValue('m', 1);
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL && (p->unk_d6 & ELEVATOR_UNK_1)) {
@@ -707,7 +707,7 @@ NON_MATCH void Elevator_Start(void) {
 void Cmd_AE3A(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     p->unk_d6 = VM_GetNamedArgValue('m', -1);
@@ -717,9 +717,9 @@ void Cmd_AE3A(void) {
 void Elevator_Destroy(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
-    Elevator* q = gElevator;
+    ElevatorManager* q = gElevatorManager;
 
     if (Elevator_TestFlags(p, ELEVATOR_TILEOVERRIDE)) {
       Map_RemoveTileOverride(&p->tileOverride);
@@ -742,7 +742,7 @@ NON_MATCH void Cmd_5D74(void) {
 #ifdef NONMATCHING_C
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
     u32 pathIdx = 0;
     u32 unk = 0;
@@ -775,7 +775,7 @@ NON_MATCH void Cmd_5D74(void) {
 void Elevator_SetPltt(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL) {
@@ -789,7 +789,7 @@ void Elevator_SetPltt(void) {
 void Cmd_15ED(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL) {
@@ -800,7 +800,7 @@ void Cmd_15ED(void) {
 
 // VM: プレイヤーをエレベータから降ろす
 void Cmd_5844(void) {
-  Elevator* q = gElevator;
+  ElevatorManager* q = gElevatorManager;
   ElevatorUnkData* p = Elevator_FindRiding();
 
   q->ridingID = 0;
@@ -813,7 +813,7 @@ void Cmd_5844(void) {
 void Cmd_CED9(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL) {
@@ -834,7 +834,7 @@ void Cmd_CED9(void) {
 void Cmd_0BCE(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
+  if (gElevatorManager != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
     if (p != NULL) {
       CLEAR_FLAGS(p->flags, ELEVATOR_FLAG_12);
@@ -845,7 +845,7 @@ void Cmd_0BCE(void) {
 Vec3* Elevator_GetPosByID(s32 id) {
   ElevatorUnkData* p;
 
-  if (gElevator == NULL || id == 0) {
+  if (gElevatorManager == NULL || id == 0) {
     return NULL;
   }
 
@@ -858,7 +858,7 @@ Vec3* Elevator_GetPosByID(s32 id) {
 }
 
 Vec3* Elevator_GetPos(ElevatorUnkData* p) {
-  if (gElevator == NULL) {
+  if (gElevatorManager == NULL) {
     return NULL;
   }
 

@@ -414,7 +414,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA062, Cmd_A062
 	.4byte 0xA0A6, EntityA0A6_Create
 	.4byte 0xA133, Cmd_A133
-	.4byte 0xA16F, ElevatorController_Create
+	.4byte 0xA16F, ElevatorManager_Create
 	.4byte 0xA1D7, Cmd_A1D7
 	.4byte 0xA222, Save_ReadSystemDataOrInit
 	.4byte 0xA285, Cmd_A285

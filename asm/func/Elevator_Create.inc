@@ -14,7 +14,7 @@ _081D47CC:
 	movs r0, #0
 	str r0, [sp, #0xc]
 	ldr r0, [sp, #8]
-	bl ElevatorController_AllocSlot
+	bl ElevatorManager_AllocSlot
 	mov r8, r0
 	cmp r0, #0
 	bne _081D47DE
