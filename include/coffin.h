@@ -79,7 +79,7 @@ typedef struct Coffin {
   u8 unk_3b8[4];              // 0x3B8
   Vec3 unk_3bc;               // 0x3BC, FUN_08086b18 が受け取る位置, プレイヤーとの角度を出すのに使う
   Vec3 unk_3c4;               // 0x3C4, pos_1f8 の写し
-  u8 unk_3cc[0x3D4 - 0x3CC];  // 0x3CC
+  Vec3 unk_3cc;               // 0x3CC, mover.pos を 1.5 だけ持ち上げた位置
   // 0x3D4 から 0x3FA までは FUN_08087310 がそれぞれ別の定数で初期化する一群
   u16 unk_3d4;          // 0x3D4, 初期値 2
   u16 unk_3d6;          // 0x3D6, 初期値 0

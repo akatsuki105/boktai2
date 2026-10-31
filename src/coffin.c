@@ -297,7 +297,19 @@ NON_MATCH void FUN_080860cc(Coffin* p) {
 #endif
 }
 
-NAKED void FUN_0808613c(Coffin* p) { INCFUNC("asm/func/FUN_0808613c.inc"); }
+void FUN_0808613c(Coffin* p) {
+  p->unk_3cc = p->mover.pos;
+  p->unk_3cc.y += Q8(1.5);
+  Coffin_CreateEffSprite(p);
+  p->effSprite.pos = p->mover.pos;
+  p->effSprite.pos.y = TileHeightAt(&p->effSprite.pos);
+  if (p->unk_1f4) {
+    EnemyTargetManager_Remove(&p->target);
+    p->unk_1f4 = FALSE;
+  }
+  FUN_08086080(p);
+  Coffin_SetState(p, 5);
+}
 
 void Coffin_ClearGlobal(void) { gCoffin = NULL; }
 
