@@ -1128,7 +1128,44 @@ NON_MATCH s32 FUN_08087970(Coffin* p) {
 #endif
 }
 
-NAKED void FUN_08087a5c(Coffin* p) { INCFUNC("asm/func/FUN_08087a5c.inc"); }
+// 131/132命令, 残差は p / range / &gRandTableIdx のレジスタ割当 (原典 r6 / r7 / r5, こちら r5 / r6 / r7) と, 3回目の乱数で原典は gRandomTable を読み直すがこちらは table を使い回す点
+// 試済: Random / _Random(table) / _Random(gRandomTable), table の宣言位置, range の型, 三項演算子と if/else
+NON_MATCH void FUN_08087a5c(Coffin* p) {
+#ifdef NONMATCHING_C
+  s32 range;
+  u16* table;
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_396 < 64) {
+    range = 16;
+  } else {
+    p->unk_32a = 2;
+    range = (p->unk_396 >> 2) + 16;
+  }
+  table = gRandomTable;
+  p->unk_31e = Mod(_Random(table), range) - (range >> 1);
+  p->unk_322 = Mod(_Random(table), range) - (range >> 1);
+  if ((++p->unk_39c & 7) == 0 && (Random() & 1)) {
+    PlaySound_082406e0(SONG_697);
+  }
+
+  if (++p->unk_396 >= 128) {
+    p->unk_394 = 0;
+    if (p->state == 1) {
+      p->unk_39e = 2;
+    } else {
+      p->unk_39e = 1;
+    }
+    Coffin_SetState(p, 2);
+    p->unk_398 = p->unk_39a;
+  }
+#else
+  INCFUNC("asm/func/FUN_08087a5c.inc");
+#endif
+}
 
 void FUN_08087bac(Coffin* p) {
   if (gGameFlags & FLAG030047A4_UNK_9) {

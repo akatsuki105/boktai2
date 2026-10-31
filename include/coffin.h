@@ -68,7 +68,8 @@ typedef struct Coffin {
   u16 unk_396;                // 0x396
   u16 unk_398;                // 0x398
   u16 unk_39a;                // 0x39A, 初期値 300
-  u8 unk_39c[0x3A0 - 0x39C];  // 0x39C
+  u16 unk_39c;                // 0x39C
+  u16 unk_39e;                // 0x39E
   s16 unk_3a0;                // 0x3A0, 初期値 -1, FUN_08086878 が符号付きで読んで -1 を「無し」として扱う
   u16 canSelfMove;            // 0x3A2, 棺桶が自力で動けるか, COFFIN_IRON だけ 0
   u16 selfMoveTimer;          // 0x3A4, (canSelfMove が TRUE のとき) 0 まで毎フレーム減り, 尽きると destPos へ向かって自力で動き出す
