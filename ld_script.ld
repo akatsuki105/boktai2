@@ -81,7 +81,7 @@ SECTIONS {
       src/entity_08051b70.o(iwram_data);
       src/entity_723e.o(iwram_data);
       src/entity_5645.o(.bss);
-      src/entity_d438.o(iwram_data);
+      src/entity_d438.o(.bss);
       src/dust.o(.bss);
       src/entity_08058ffc.o(iwram_data);
       src/damage_number.o(.bss);

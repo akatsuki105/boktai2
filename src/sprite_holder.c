@@ -2,6 +2,7 @@
 #include "global.h"
 #include "sprite.h"
 
+// 0x3D0C
 void Cmd_3D0C(void) {}
 
 // kind に応じて AuxSprite / MainSprite のアニメを設定する, kind == 0 なら -1
