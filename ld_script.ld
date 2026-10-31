@@ -105,7 +105,7 @@ SECTIONS {
       src/entity_080df420.o(iwram_data);
       src/entity_080e01bc.o(iwram_data);
       src/entity_778b.o(iwram_data);
-      src/enemy_target.o(iwram_data);
+      src/enemy_target.o(.bss);
       src/entity_081d0e20.o(iwram_data);
       src/entity_081d16ec.o(iwram_data);
       src/entity_081d2180.o(iwram_data);
