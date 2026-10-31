@@ -103,7 +103,8 @@ typedef struct Coffin {
   u16 unk_3f6;          // 0x3F6, 初期値 0
   u16 unk_3f8;          // 0x3F8, 初期値 0xFF
   u16 unk_3fa;          // 0x3FA, 初期値 0
-  u8 unk_3fc[6];        // 0x3FC
+  u16 unk_3fc;          // 0x3FC, 0 なら FUN_08087818 が 1 にして, その回の判定を飛ばす
+  u8 unk_3fe[4];        // 0x3FE
   u16 unk_402;          // 0x402
   u16 unk_404;          // 0x404, 8方向の向き
   u16 unk_406;          // 0x406, _Update が毎フレーム 0 に戻す

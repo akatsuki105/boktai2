@@ -1090,7 +1090,19 @@ void FUN_080875e8(Coffin* p) {
 
 NAKED void FUN_0808766c(Coffin* p) { INCFUNC("asm/func/FUN_0808766c.inc"); }
 
-NAKED s32 FUN_08087818(Coffin* p) { INCFUNC("asm/func/FUN_08087818.inc"); }
+s32 FUN_08087818(Coffin* p) {
+  if (p->unk_3fc == 0) {
+    p->unk_3fc++;
+  } else if (p->state != 5 && p->unk_384 == 0) {
+    if (GetTileAttrAt(&p->mover.pos) & TATTR_UNK_6) {
+      return TRUE;
+    }
+    if (p->state != 1 && abs(TileHeightAt(&p->mover.pos) - p->mover.pos.y) > 255) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
 
 // 63/65命令, 残差は return 1 / return 16 の共通化の向きだけ: 原典は case 0 側が case 1 の return 1 へ飛ぶが, こちらは case 1 側が case 0 の return 1 へ飛ぶ
 // 試済: 条件の反転, 三項演算子, 戻り値をローカルに置く, GetPlayer の inline
