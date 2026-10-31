@@ -663,7 +663,64 @@ void Elevator_RemoveTileOverrides(Elevator* e) {
   }
 }
 
-NAKED void Elevator_UpdateTileOverrides(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc"); }
+// 棺桶を引くプレイヤーを乗せて止まっている間, 隣の特殊床や水のタイルを足場の高さで上書きする
+// 残差は使われない center の計算 (189/231), 原典は center を static inline の出力引数 (Vec3* out) で埋めるのでスタックへの格納が残る, その形にすると 228/231 まで寄り, 残りは e を r8 に置くか base をスタックに置くかの割当と hit の 0/1 起こし
+// Tier A-C は試済 (center の inline 化, 属性判定の bool8 inline, 添字計算の手書き, 宣言順, override ポインタ)
+NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
+#ifdef NONMATCHING_C
+  ElevatorManager* p = gElevatorManager;
+
+  if (p == NULL || e->id != p->ridingID || e->unk_e7 == 2 || gPlayerPtr[0]->action != PACT_PULL_COFFIN || e->state != 3) {
+    Elevator_RemoveTileOverrides(e);
+    return;
+  }
+
+  if (!Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDES)) {
+    s32 base = GetCollisionTileIdx(&e->mover.pos);
+    s32 idx = base + 1;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+      MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+      CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+      bool8 hit = (tile->attr & (TATTR_SPECIAL | TATTR_UNK_6)) ? TRUE : FALSE;
+
+      if (hit) {
+        Vec3 center;
+        s32 bx, bz;
+
+        Map_AddTileOverride(&e->tileOverrides[i], idx, STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_0 | TATTR_UNK_2);
+        e->tileOverrideActive[i] = TRUE;
+        bx = Mod(idx, gCollisionMap->tiledata->width);
+        bz = Div(idx, gCollisionMap->tiledata->width);
+        center.x = bx * Q8(1) + Q8(0.5);
+        ov = Map_FindTileOverride(idx, 1);
+        tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+        center.y = (tile->heightStairs & 0xF) << 8;
+        center.z = bz * Q8(1) + Q8(0.5);
+        SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDES);
+      }
+
+      switch (i) {
+        case 0: {
+          idx = base + gCollisionMap->tiledata->width;
+          break;
+        }
+        case 1: {
+          idx = base - 1;
+          break;
+        }
+        case 2: {
+          idx = base - gCollisionMap->tiledata->width;
+          break;
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc");
+#endif
+}
 
 // 状態 3/4 の間はプレイヤーと同じ高さにいれば足元のタイルを移動床で上書きし, それ以外の状態では上書きを外す
 void Elevator_UpdateTileOverride(Elevator* e) {
