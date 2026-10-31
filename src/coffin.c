@@ -1866,9 +1866,7 @@ void Coffin_UpdateState5(Coffin* p) {
   }
 }
 
-// 残差4命令, Coffin_UpdateState7 と同じ stateTimer の u16 切り詰めの作り直し, Tier A-C は試済
-NON_MATCH void Coffin_UpdateState6(Coffin* p) {
-#ifdef NONMATCHING_C
+void Coffin_UpdateState6(Coffin* p) {
   if (p->state != 6) {
     Coffin_SetState(p, 6);
   }
@@ -1878,9 +1876,7 @@ NON_MATCH void Coffin_UpdateState6(Coffin* p) {
   }
 
   p->unk_32a = 0;
-  p->stateTimer++;
-
-  if (p->stateTimer <= 5) {
+  if (++p->stateTimer <= 5) {
     if (p->stateTimer == 1) {
       p->unk_418 = 0;
       p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 290);
@@ -1895,9 +1891,6 @@ NON_MATCH void Coffin_UpdateState6(Coffin* p) {
   if (p->stateTimer > 8) {
     p->killRequested = TRUE;
   }
-#else
-  INCFUNC("asm/func/Coffin_UpdateState6.inc");
-#endif
 }
 
 void Coffin_UpdateState7(Coffin* p) {
