@@ -8,10 +8,10 @@
 #include "sprite.h"
 #include "vm.h"
 
-// SolarBamboo_Init で太陽ダケのスプライトをロードしているので太陽ダケのEntityだと思われる
+// 太陽ダケ, プレイヤーが攻撃すると月光虫を出す
 typedef struct {
   Entity e;                // ENTITY_UNK_8
-  u16 unk_18;              // 0x18
+  u16 id;                  // 0x18
   u8 unk_1a[0x20 - 0x1A];  // 0x1A
   ZoneID32 zoneID;         // 0x20
   u16 hp;                  // 0x24
@@ -117,15 +117,13 @@ s32 SolarBamboo_Destroy(SolarBamboo* p) {
 }
 
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
-s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
+s32 SolarBamboo_Init(SolarBamboo* p, u32 id, u32 _) {
   HitboxData* hurtbox;
   AuxSpriteGfx* gfx;
   AuxSprite* spr;
-  Vec3 pos;
-  Vec3 size;
-  Vec3 offset;
+  Vec3 pos, size, offset;
 
-  p->unk_18 = param;
+  p->id = id;
   p->maxHP = VM_GetNamedArgValue('l', 200);
   p->hp = 1;
   p->unk_28 = 0;
@@ -146,7 +144,7 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
   VEC3_SET(size, Q8(0.12), Q8(1.25), Q8(0.12));
   VEC3_SET(offset, 0, Q8(0.625), 0);
   hurtbox = &p->hurtbox;
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
   Hitbox_SetHandler(hurtbox, SolarBamboo_OnHurt, p);
   Hitbox_SetPos(hurtbox, &pos, 0);
   Hitbox_Register(hurtbox);
@@ -161,11 +159,12 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
   return 0;
 }
 
-SolarBamboo* SolarBamboo_Create(u32 param, u32 _) {
+// 0x95A8, HashName("太陽竹")
+SolarBamboo* SolarBamboo_Create(u32 id, u32 _) {
   SolarBamboo* p = CreateEntity(ENTITY_UNK_8, sizeof(SolarBamboo));
   if (p != NULL) {
     SetEntityRoutine(p, SolarBamboo_Update, SolarBamboo_Destroy);
-    if (SolarBamboo_Init(p, param, _) < 0) {
+    if (SolarBamboo_Init(p, id, _) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
