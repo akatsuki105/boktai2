@@ -546,7 +546,49 @@ void Elevator_UpdateCoffinRiding(Elevator* e) {
   }
 }
 
-NAKED void FUN_081d43d4(Vec3* a, Vec3* b, Elevator* e) { INCFUNC("asm/func/FUN_081d43d4.inc"); }
+// pos がエレベータの範囲 (gElevatorRanges) をはみ出していたら, 速さのぶん内側に戻す
+// 残差は range の選び方のみ (167/165), 原典は gElevatorRanges[1] と [0] のアドレスを別々のプール定数で引く, & で選ぶ形にすると 164/165 まで寄るが基底+8 に畳まれる
+// Tier A-C は試済 (構造体代入, 三項演算子, ポインタ選択, 添字選択)
+NON_MATCH void Elevator_ClampRiderPos(Vec3* pos, Vec3* b, Elevator* e) {
+#ifdef NONMATCHING_C
+  Vec3 d;
+  Vec3 range;
+
+  d.x = pos->x - e->mover.pos.x;
+  d.y = pos->y - e->mover.pos.y;
+  d.z = pos->z - e->mover.pos.z;
+
+  if (e->unk_e7 == 2) return;
+
+  if (e->unk_e7 == 1 && !(e->unk_d6 & 8)) {
+    range = gElevatorRanges[1];
+  } else {
+    range = gElevatorRanges[0];
+  }
+
+  if (d.x < 0) {
+    if (d.x < -range.x) d.x = e->unk_ba - range.x;
+  } else {
+    if (d.x > range.x) d.x = range.x - e->unk_ba;
+  }
+  if (d.y < 0) {
+    if (d.y < -range.y) d.y = e->unk_ba - range.y;
+  } else {
+    if (d.y > range.y) d.y = range.y - e->unk_ba;
+  }
+  if (d.z < 0) {
+    if (d.z < -range.z) d.z = e->unk_ba - range.z;
+  } else {
+    if (d.z > range.z) d.z = range.z - e->unk_ba;
+  }
+
+  pos->x = d.x + e->mover.pos.x;
+  pos->y = d.y + e->mover.pos.y;
+  pos->z = d.z + e->mover.pos.z;
+#else
+  INCFUNC("asm/func/Elevator_ClampRiderPos.inc");
+#endif
+}
 
 void FUN_081d4540(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
@@ -584,7 +626,7 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
     v.x = e->unk_58.x + gPlayerPtr[0]->mover.pos.x;
     v.y = e->unk_58.y + gPlayerPtr[0]->mover.pos.y;
     v.z = e->unk_58.z + gPlayerPtr[0]->mover.pos.z;
-    FUN_081d43d4(&v, &gPlayerPtr[0]->mover.pos, e);
+    Elevator_ClampRiderPos(&v, &gPlayerPtr[0]->mover.pos, e);
     FUN_0807a91c(gPlayerPtr[0], &v);
   }
 

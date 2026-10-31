@@ -76,7 +76,7 @@ _081D45DA:
 	adds r1, #0x2c
 	mov r0, sp
 	mov r2, ip
-	bl FUN_081d43d4
+	bl Elevator_ClampRiderPos
 	ldr r0, [r4]
 	mov r1, sp
 	bl FUN_0807a91c
