@@ -106,7 +106,7 @@ _081D3780:
 	cmp r0, #0
 	beq _081D3884
 	adds r0, r4, #0
-	bl FUN_081d34e8
+	bl Elevator_IsTileOverridden
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081D3884

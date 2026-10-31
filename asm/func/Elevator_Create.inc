@@ -230,7 +230,7 @@ _081D4974:
 	movs r0, #1
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D49BC @ =FUN_081d3534
+	ldr r0, _081D49BC @ =Elevator_KnockbackRider
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D49C0 @ =FUN_081d3c24
@@ -256,7 +256,7 @@ _081D49B8:
 	strh r7, [r5]
 	b _081D4B4E
 	.align 2, 0
-_081D49BC: .4byte FUN_081d3534
+_081D49BC: .4byte Elevator_KnockbackRider
 _081D49C0: .4byte FUN_081d3c24
 _081D49C4: .4byte Elevator_UpdateTileOverride
 _081D49C8:
@@ -270,7 +270,7 @@ _081D49C8:
 	movs r0, #1
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D4A10 @ =FUN_081d3534
+	ldr r0, _081D4A10 @ =Elevator_KnockbackRider
 	str r0, [r1]
 	adds r1, #4
 	ldr r0, _081D4A14 @ =FUN_081d3c24
@@ -294,7 +294,7 @@ _081D49C8:
 	strh r0, [r1]
 	b _081D4A9C
 	.align 2, 0
-_081D4A10: .4byte FUN_081d3534
+_081D4A10: .4byte Elevator_KnockbackRider
 _081D4A14: .4byte FUN_081d3c24
 _081D4A18: .4byte Elevator_UpdateTileOverride
 _081D4A1C:

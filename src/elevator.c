@@ -10,18 +10,18 @@
 #include "sprite.h"
 #include "vm.h"
 
-typedef u16 ElevatorFlags;                // Elevator.flags
-#define ELEVATOR_TILEOVERRIDE (1 << 0)    // tileOverride を登録済み
-#define ELEVATOR_UNK_1 (1 << 1)           // Elevator_Start が '.m=2' のとき立てる
-#define ELEVATOR_UNK_2 (1 << 2)           // Elevator_Start が '.m=4' のとき立てる
-#define PLAYER_RIDING (1 << 3)            // プレイヤーが乗っている, ElevatorManager.ridingID と対
-#define COFFIN_RIDING (1 << 4)            // 棺桶が乗っている, FUN_081d3fac が第2引数で落とし分ける
-#define ELEVATOR_SHAKE (1 << 5)           // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
-#define ELEVATOR_UNK_7 (1 << 7)           // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
-#define ELEVATOR_UNK_8 (1 << 8)           // 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
-#define ELEVATOR_UNK_9 (1 << 9)           // FUN_081d4658 が見て落とす
-#define ELEVATOR_TILEOVERRIDES (1 << 11)  // tileOverrides[] を登録済み
-#define ELEVATOR_FLAG_12 (1 << 12)        // まだ不明
+typedef u16 ElevatorFlags;                 // Elevator.flags
+#define ELEVATOR_TILEOVERRIDE (1 << 0)     // tileOverride を登録済み
+#define ELEVATOR_UNK_1 (1 << 1)            // Elevator_Start が '.m=2' のとき立てる
+#define ELEVATOR_UNK_2 (1 << 2)            // Elevator_Start が '.m=4' のとき立てる
+#define PLAYER_RIDING (1 << 3)             // プレイヤーが乗っている, ElevatorManager.ridingID と対
+#define COFFIN_RIDING (1 << 4)             // 棺桶が乗っている, FUN_081d3fac が第2引数で落とし分ける
+#define ELEVATOR_SHAKE (1 << 5)            // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
+#define ELEVATOR_UNK_7 (1 << 7)            // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
+#define ELEVATOR_RIDER_KNOCKBACK (1 << 8)  // プレイヤーを弾き返した, 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
+#define ELEVATOR_UNK_9 (1 << 9)            // FUN_081d4658 が見て落とす
+#define ELEVATOR_TILEOVERRIDES (1 << 11)   // tileOverrides[] を登録済み
+#define ELEVATOR_FLAG_12 (1 << 12)         // まだ不明
 
 struct Elevator;
 typedef void ElevatorFunc(struct Elevator* e);
@@ -539,7 +539,7 @@ void Elevator_UpdateTileOverride(Elevator* e) {
 }
 
 // tileIdx の上書きタイルを登録しているエレベータがあるかどうか
-bool32 FUN_081d34e8(s32 tileIdx) {
+bool8 Elevator_IsTileOverridden(s32 tileIdx) {
   ElevatorManager* p = gElevatorManager;
   s32 i;
 
@@ -552,7 +552,32 @@ bool32 FUN_081d34e8(s32 tileIdx) {
   return FALSE;
 }
 
-NAKED void FUN_081d3534(Elevator* e) { INCFUNC("asm/func/FUN_081d3534.inc"); }
+// 乗っているプレイヤーが足場の範囲を外れて特殊床の上に出たら, エレベータの位置から弾き返す
+void Elevator_KnockbackRider(Elevator* e) {
+  s32 i;
+
+  for (i = 0; i < 1; i++) {
+    if (gPlayerPtr[i] != NULL && FUN_0807a954(gPlayerPtr[i], 1) && Elevator_TestFlags(e, PLAYER_RIDING)) {
+      s32 idx = GetCollisionTileIdx(&gPlayerPtr[i]->mover.pos);
+
+      if (!Elevator_IsTileOverridden(idx)) {
+        MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+        CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+        TileAttr attr = tile->attr;
+
+        if (attr & TATTR_SPECIAL) {
+          Vec3 d;
+
+          Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
+          if (d.x > gElevatorRanges[0].x || d.x < -gElevatorRanges[0].x || d.y > gElevatorRanges[0].y || d.y < -gElevatorRanges[0].y || d.z > gElevatorRanges[0].z || d.z < -gElevatorRanges[0].z) {
+            Player_SetKnockbackOrigin(gPlayerPtr[i], &e->mover.pos);
+            SET_FLAGS(e->flags, ELEVATOR_RIDER_KNOCKBACK);
+          }
+        }
+      }
+    }
+  }
+}
 
 NAKED void FUN_081d36c0(Elevator* e) { INCFUNC("asm/func/FUN_081d36c0.inc"); }
 
@@ -706,7 +731,7 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
     return;
   }
 
-  if (!Elevator_TestFlags(e, ELEVATOR_UNK_8)) {
+  if (!Elevator_TestFlags(e, ELEVATOR_RIDER_KNOCKBACK)) {
     Vec3 v;
 
     v.x = e->unk_58.x + gPlayerPtr[0]->mover.pos.x;
@@ -716,7 +741,7 @@ NON_MATCH void FUN_081d4590(Elevator* e) {
     FUN_0807a91c(gPlayerPtr[0], &v);
   }
 
-  e->flags &= ~ELEVATOR_UNK_8;
+  e->flags &= ~ELEVATOR_RIDER_KNOCKBACK;
 #else
   INCFUNC("asm/func/FUN_081d4590.inc");
 #endif

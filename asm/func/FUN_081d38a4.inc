@@ -87,7 +87,7 @@ _081D393C:
 	ldrh r0, [r0]
 	adds r0, r0, r2
 _081D394A:
-	bl FUN_081d34e8
+	bl Elevator_IsTileOverridden
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081D396A
