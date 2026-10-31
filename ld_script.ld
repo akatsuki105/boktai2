@@ -46,7 +46,7 @@ SECTIONS {
       src/entity_2d2b.o(.bss);
       src/duneyrr_chandelier.o(.bss);
       src/entity_83b2.o(iwram_data);
-      src/entity_0866.o(iwram_data);
+      src/entity_0866.o(.bss);
       src/spirit_bugs.o(.bss);
       src/entity_329b.o(iwram_data);
       src/sun_countdown.o(iwram_data);

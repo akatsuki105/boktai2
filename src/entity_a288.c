@@ -280,7 +280,7 @@ const SoundID16 u16_ARRAY_085afaee[482] = {
     SE_GENERATOR_ENABLED, SE_GENERATOR_DISABLED, SONG_245,        SONG_243,                 SONG_244,
     SE_UNK_297,           SONG_490,              SONG_491,        SE_OPEN_TREASURE,         SE_PICKUP,
     SE_EQUIP,             SE_UNK_291,            SONG_387,        SONG_623,                 SONG_668,
-    SONG_679,             SONG_695,              SE_UNK_290,      SE_SOLAR_INSECT_285,      SONG_696,
+    SONG_679,             SONG_695,              SE_BAMBOO_SHOOT,      SE_POP_SPIRIT_BUGS,      SE_POP_DARKBUGS,
     SONG_657,             SONG_658,              SONG_659,        SE_UNK_282,               SE_SPIRIT_BUGS_283,
     SE_SPIRIT_BUGS_284,   SE_WOOD_DOOR_OPEN,              SE_WOOD_DOOR_CLOSE,        SONG_655,                 SONG_388,
     SONG_322,             SE_BLOCK_COLLISION,    SE_326,          SONG_337,                 SONG_347,

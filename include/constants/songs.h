@@ -286,12 +286,12 @@
 #define SE_UNK_282 282
 #define SE_SPIRIT_BUGS_283 283  // 太陽虫とかを吸収した音？
 #define SE_SPIRIT_BUGS_284 284
-#define SE_SOLAR_INSECT_285 285  // 太陽タケノコから虫が出てきた時の音
+#define SE_POP_SPIRIT_BUGS 285  // 太陽タケノコから 月光虫 or 太陽虫 が出てきた時の音
 #define SE_INFO 286
 #define SE_UNK_287 287
-#define VO_OTENKO_OTNK 288  // おてんこ！
-#define CRY_MUMMY_BURN 289  // ｱﾁ!
-#define SE_UNK_290 290
+#define VO_OTENKO_OTNK 288   // おてんこ！
+#define CRY_MUMMY_BURN 289   // ｱﾁ!
+#define SE_BAMBOO_SHOOT 290  // 太陽タケノコが出た時のSE
 #define SE_UNK_291 291
 #define SE_SOLAR_STAND_DENY 292
 #define SE_RUNNING_FOOTSTEPS 293  // 足音一回でなく複数回まとめて
@@ -697,7 +697,7 @@
 #define SONG_693 693
 #define SONG_694 694
 #define SONG_695 695
-#define SONG_696 696
+#define SE_POP_DARKBUGS 696  // 太陽タケノコから暗黒虫が出てきた時の音
 #define SONG_697 697
 #define SONG_698 698
 #define SONG_699 699

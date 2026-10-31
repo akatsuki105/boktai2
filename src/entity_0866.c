@@ -13,8 +13,8 @@
 typedef struct {
   u8 unk_00[2];       // 0x00, まだ未解析
   u8 unk_02;          // 0x02, FUN_08009e28 が 2 を入れる
-  u8 unk_03;          // 0x03, SpawnSpiritBugs の kind の下位ビット, 2 なら出現音を変える
-  u8 unk_04;          // 0x04, SpawnSpiritBugs の count
+  u8 kind;            // 0x03, 精霊虫の種類, see SpiritBugKind
+  u8 count;           // 0x04, この太陽タケノコから出す精霊虫の数
   bool8 active;       // 0x05, 0 の枠を FUN_08009b10 が空きとして返す
   u8 unk_06;          // 0x06, FUN_08009e54 がアニメが一巡したら 1 にする
   bool8 unk_07;       // 0x07, FUN_08009c28 が読んで落とす目印
@@ -22,15 +22,17 @@ typedef struct {
   u8 unk_09;          // 0x09, まだ未解析
   u16 unk_0a;         // 0x0A, FUN_08009e28 が毎フレーム +1 して 30 を超えたら 0 に戻す
   u16 unk_0c;         // 0x0C, unk_0a がこれを超えたら粒子を出し直す, 120..247 の乱数
-  u16 unk_0e;         // 0x0E, SpawnSpiritBugs の amount
-  u16 unk_10;         // 0x10, SpawnSpiritBugs の lifetime
-  u16 unk_12;         // 0x12, SpawnSpiritBugs の lifetimeRand
+  u16 amount;         // 0x0E, この太陽タケノコから出す精霊虫の効果量
+  u16 lifetime;       // 0x10, SpawnSpiritBugs の lifetime
+  u16 lifetimeRand;   // 0x12, SpawnSpiritBugs の lifetimeRand
   HitboxData hitbox;  // 0x14
   Particle ptcl;      // 0x64
-  AuxAnimState anim;  // 0x8C, Particle_AdvanceAnim で ptcl に当てる
+  AuxAnimState anim;  // 0x8C
 } Entity0866Elem;
 static_assert(sizeof(Entity0866Elem) == 156);
 
+// 太陽タケノコ (設定的には 太陽ダケの子だが、処理的にはあまり関係ない) の管理構造体
+// 最初は隠れていて、プレイヤーが攻撃すると結晶が出現して、そこから 精霊虫 が出現する
 typedef struct {
   Entity e;                  // 0x0, ENTITY_UNK_10
   u8 unk_18;                 // 0x18
@@ -43,7 +45,7 @@ typedef struct {
 } Entity0866;
 static_assert(sizeof(Entity0866) == 2540);
 
-IWRAM_DATA Entity0866* gEntity0866 = NULL;  // 0x03000040
+static Entity0866* gEntity0866;  // 0x03000040
 
 // --------------------------------------------
 
@@ -165,7 +167,7 @@ void FUN_08009e54(Entity0866* p, Entity0866Elem* e) {
     Particle_SetOffset(&e->ptcl, -8, -8);
     Particle_SetPose(&e->ptcl, p->group0, 0);
     AuxAnim_SetAnim(&e->anim, p->anim_24, 0, 0, 0);
-    PlaySound_0824078c(SE_UNK_290);
+    PlaySound_0824078c(SE_BAMBOO_SHOOT);
   }
   if (e->anim.cmdIdx == 1 && e->anim.tick == 0) {
     e->ptcl.pos.y += 16;
@@ -177,11 +179,11 @@ void FUN_08009e54(Entity0866* p, Entity0866Elem* e) {
     Vec3 spread;
 
     VEC3_SET(spread, 10, 10, 10);
-    SpawnSpiritBugs(e->unk_04, e->unk_03 | 0x10, e->unk_0e, &e->ptcl.pos, &spread, e->unk_10, e->unk_12);
-    if (e->unk_03 == 2) {
-      PlaySound_0824078c(SONG_696);
+    SpawnSpiritBugs(e->count, e->kind | 0x10, e->amount, &e->ptcl.pos, &spread, e->lifetime, e->lifetimeRand);
+    if (e->kind == DARKBUG) {
+      PlaySound_0824078c(SE_POP_DARKBUGS);
     } else {
-      PlaySound_0824078c(SE_SOLAR_INSECT_285);
+      PlaySound_0824078c(SE_POP_SPIRIT_BUGS);
     }
   }
   e->unk_08 = Particle_AdvanceAnim(&e->ptcl, p->group0, &e->anim);
@@ -222,10 +224,10 @@ Entity0866* Entity0866_Create(u32 _, u32 unused) {
   return p;
 }
 
+// 0x0866
 NAKED s32 Cmd_0866(void) { INCFUNC("asm/func/Cmd_0866.inc"); }
 
-// 使われてなさそう
-// 使用中の枠の数を数えてスクリプト変数へ書き出す
+// 0x78EE, 使用中の枠の数を数えてスクリプト変数へ書き出す (使われてなさそう)
 u32 Cmd_78EE(void) {
   Entity0866* p = gEntity0866;
   u8 desc[8];
@@ -247,6 +249,7 @@ u32 Cmd_78EE(void) {
   return count;
 }
 
+// 0xE0A5
 void Cmd_E0A5(void) {
   Entity0866* p = gEntity0866;
   s32 i;
