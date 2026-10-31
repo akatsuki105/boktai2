@@ -135,7 +135,30 @@ void FUN_081d21d8(Elevator* e) {
   }
 }
 
-NAKED Elevator* Elevator_FindAtPos(Vec3* pos) { INCFUNC("asm/func/Elevator_FindAtPos.inc"); }
+// 残差は p と添字オフセットの r8/r9 入れ替えと, 先頭で作った &usedMask をループで使い回さない点のみ (110/108), Tier A-C は試済 (早期 return の形, 宣言順, グローバル直参照)
+NON_MATCH Elevator* Elevator_FindAtPos(Vec3* pos) {
+#ifdef NONMATCHING_C
+  ElevatorManager* p = gElevatorManager;
+  s32 i;
+
+  if (p == NULL) return NULL;
+  if (p->usedMask == 0) return NULL;
+
+  for (i = 0; i < 12; i++) {
+    if (Elevator_IsSlotUsed(p, i)) {
+      Vec3 delta;
+
+      Vec3_Delta(&delta, &p->elevators[i].mover.pos, pos);
+      if (delta.x <= gElevatorRanges[0].x && delta.x >= -gElevatorRanges[0].x && delta.y <= gElevatorRanges[0].y && delta.y >= -gElevatorRanges[0].y && delta.z <= gElevatorRanges[0].z && delta.z >= -gElevatorRanges[0].z) {
+        return &p->elevators[i];
+      }
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/Elevator_FindAtPos.inc");
+#endif
+}
 
 // 空いているスロットを1つ確保して返す, 全部埋まっていれば NULL
 // 残差はビット判定を 0/1 の値に起こす分だけ: 原典は (flags & bits) を movs 1 / movs 0 で値にしてから test するが, agbcc はどう書いても分岐に畳む
