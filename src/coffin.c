@@ -1320,7 +1320,36 @@ void Coffin_UpdateState15(Coffin* p) {
 
 NAKED void FUN_080895d0(Coffin* p) { INCFUNC("asm/func/FUN_080895d0.inc"); }
 
-NAKED void Coffin_UpdateState16(Coffin* p) { INCFUNC("asm/func/Coffin_UpdateState16.inc"); }
+void Coffin_UpdateState16(Coffin* p) {
+  if (p->state != 16) {
+    Coffin_SetState(p, 16);
+  }
+  p->unk_32a = 1;
+  p->mover.pos = p->unk_388;
+  if (abs(p->mover.pos.x - p->unk_388.x) > 2 || abs(p->mover.pos.z - p->unk_388.z) > 2) {
+    p->unk_33a = 1;
+  }
+  p->facing = p->unk_388.val;
+  if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+    FUN_08085ef8(p, 32);
+  } else {
+    FUN_08086024(p, 0);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_394 != 0) {
+    FUN_08087a5c(p);
+  } else if (p->unk_324 != 0) {
+    p->unk_32a = 0;
+    FUN_080856f4(p);
+  } else {
+    FUN_080895d0(p);
+    FUN_080880fc(p);
+  }
+}
 
 s32 Coffin_Update(Coffin* p) {
   static void (*const sCoffinUpdates[17])(Coffin*) = {
