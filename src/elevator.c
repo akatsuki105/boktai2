@@ -1763,38 +1763,25 @@ void Elevator_Destroy(void) {
 }
 
 // 0x5D74, '.n' のエレベータに '.r' の経路をたどらせる
-// 残差3命令 (57/60): 原典は 0 の定数を変数ごとに作り直すが, agbcc は1つの 0 を使い回す
-NON_MATCH void Cmd_5D74(void) {
-#ifdef NONMATCHING_C
+void Cmd_5D74(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {
     Elevator* e = Elevator_FindByID(id);
-    u32 pathIdx = 0;
-    u32 unk = 0;
-    u32 nodeIdx = 0;
+    u8 pathIdx = 0;
+    u8 unk = 0;
+    u8 nodeIdx = 0;
 
     if (VM_SeekToNamedArg('r')) {
-      if (VM_GetPC() != NULL) {
-        pathIdx = (u8)VM_GetValue();
-      } else {
-        pathIdx = 0;
-      }
+      pathIdx = VM_GetPC() != NULL ? (u8)VM_GetValue() : 0;
 
       unk = 0;
-      if (VM_GetPC() != NULL) {
-        nodeIdx = (u8)VM_GetValue();
-      } else {
-        nodeIdx = 0;
-      }
+      nodeIdx = VM_GetPC() != NULL ? (u8)VM_GetValue() : 0;
     }
 
     Map_InitPathWalker(&e->pathWalker, pathIdx, unk, nodeIdx);
     e->mover.path = &e->pathWalker;
   }
-#else
-  INCFUNC("asm/func/Cmd_5D74.inc");
-#endif
 }
 
 // VM: 指定した id のエレベータのパレットを差し替える
