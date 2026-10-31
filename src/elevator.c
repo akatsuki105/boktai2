@@ -37,12 +37,16 @@ typedef struct Elevator {
   s16 slotIdx;                       // 0x0B0, ElevatorManager_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
   s16 state;                         // 0x0B2, sElevatorUpdates の添字, 6 はスキップ
   ElevatorFlags flags;               // 0x0B4, see ElevatorFlags
-  u8 unk_b6;                         // 0x0B6, Elevator_UpdateState1 が到着時に 1 を入れる
-  u8 unk_b7[0x0BA - 0x0B7];          // 0x0B7
+  bool8 arrived;                     // 0x0B6, ノードに着いたら 1, 到着時のスクリプトを呼ぶと 0 に戻る
+  u8 unk_b7;                         // 0x0B7
+  u16 unk_b8;                        // 0x0B8, Elevator_UpdateState3 が到着時のスクリプトを呼んだあと 0 に戻す
   s16 unk_ba;                        // 0x0BA, Cmd_15ED が '.s=6' を入れる
-  u8 unk_bc[0x0C6 - 0x0BC];          // 0x0BC
+  u8 unk_bc[0x0C0 - 0x0BC];          // 0x0BC
+  u16 unk_c0;                        // 0x0C0, '.p'
+  u16 arriveScriptID;                // 0x0C2, '.R', プレイヤーが乗っているときノードに着いたら呼ぶスクリプト
+  u16 departScriptID;                // 0x0C4, '.S', プレイヤーが乗っているときノードを離れたら呼ぶスクリプト
   s16 unk_c6;                        // 0x0C6, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
-  u16 unk_c8;                        // 0x0C8, FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
+  u16 unk_c8;                        // 0x0C8, '.T', FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
   u8 unk_ca[0x0CC - 0x0CA];          // 0x0CA
   s32 unk_cc;                        // 0x0CC, Cmd_CED9 が '.l' の値 (正のときだけ) を入れる
   s32 unk_d0;                        // 0x0D0, Cmd_CED9 が '.h' の値 (正のときだけ) を入れる
@@ -243,7 +247,7 @@ void FUN_081d276c(Elevator* e) {
 
 // プレイヤーか不死の棺桶のどちらか一方だけが乗っていて、かつ行動6 (乗り込み中?) かどうか
 // 残差は gPlayerPtr のアドレスの扱いだけ (29対29), 原典は r4 に置いて2回読むがこちらはプール定数を2回ロードする
-NON_MATCH bool32 FUN_081d27c8(void) {
+NON_MATCH bool8 FUN_081d27c8(Elevator* e) {
 #ifdef NONMATCHING_C
   if (FUN_0807a954(gPlayerPtr[0], 1)) {
     if (FUN_08086978(3)) {
@@ -270,7 +274,7 @@ NAKED void Elevator_UpdateState2(Elevator* e) { INCFUNC("asm/func/Elevator_Updat
 void Elevator_UpdateState1(Elevator* e) {
   if (FUN_081d2698(&e->mover, &e->pathWalker, &e->unk_58, e->unk_ba, e->unk_ba, e->unk_ba)) {
     e->state = 3;
-    e->unk_b6 = 1;
+    e->arrived = TRUE;
     FUN_081d5588(e);
   } else {
     FUN_081d2368(e);
@@ -331,7 +335,57 @@ NON_MATCH void Elevator_UpdateShake(Elevator* e) {
 #endif
 }
 
-NAKED void Elevator_UpdateState3(Elevator* e) { INCFUNC("asm/func/Elevator_UpdateState3.inc"); }
+// 残差は後半の gElevatorManager のアドレスを原典が r6 に先読みして持つ点のみ (143/143), Tier A-C は試済 (比較の向き, 判定の分け方, walker ローカル, argv[0] の書き方)
+NON_MATCH void Elevator_UpdateState3(Elevator* e) {
+#ifdef NONMATCHING_C
+  if (e->arrived) {
+    if (e->id == gElevatorManager->ridingID && e->arriveScriptID != 0) {
+      u32 argv[3];
+      ScriptArgs sa;
+
+      if (e->unk_e7 == 2) {
+        if (Elevator_TestFlags(e, ELEVATOR_UNK_1)) {
+          argv[0] = 2;
+        } else {
+          argv[0] = 1;
+        }
+      } else {
+        argv[0] = e->pathWalker.nodeIdx;
+      }
+      argv[1] = e->mover.pos.x;
+      argv[2] = e->mover.pos.z;
+      sa.argc = 3;
+      sa.argv = argv;
+      VM_ExecByID(e->arriveScriptID, &sa);
+    }
+    e->unk_b8 = 0;
+    e->arrived = FALSE;
+  }
+
+  if (!FUN_081d27c8(e)) {
+    PathWalker* walker = &e->pathWalker;
+
+    if (walker->unk_3++ >= (walker->node->delay & 0xFFF)) {
+      Map_AdvancePathWalker(walker);
+      if (Map_IsPosOutsidePathNode(walker, &e->mover.pos, 16, 16)) {
+        e->state = 1;
+        if (e->id == gElevatorManager->ridingID && e->departScriptID != 0) {
+          u32 arg = e->id;
+          ScriptArgs sa;
+
+          sa.argc = 1;
+          sa.argv = &arg;
+          VM_ExecByID(e->departScriptID, &sa);
+        }
+      } else {
+        e->state = 3;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Elevator_UpdateState3.inc");
+#endif
+}
 
 void Elevator_UpdateState5(Elevator* e) {}
 
