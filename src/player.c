@@ -4340,9 +4340,9 @@ void Player_UpdateSolarCharge(Player* p) {
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           if (p->kind == PLAYER_DARK_DJANGO) {
-            PlaySound_082406e0(SONG_776);
+            PlaySound_082406e0(VO_TAIYO_B);
           } else {
-            PlaySound_082406e0(VO_RDJANGO_TAIYO_296);
+            PlaySound_082406e0(VO_TAIYO_R);
           }
         }
       }
@@ -4628,7 +4628,7 @@ void MagicRisingSun_08068944(Player* p) {
       }
 
       if (p->magicFired) {
-        PlaySound_082406e0(VO_RDJANGO_TAIYO_296);
+        PlaySound_082406e0(VO_TAIYO_R);
         p->plttID_95e = 289;
         p->plttFlashTimer = 2;
         Entity080abd14_Create(p, &p->mover.pos, &p->pos_930, 0, p->unk_3ba);
@@ -5136,9 +5136,9 @@ void Player_UpdateFall(Player* p) {
       p->floatHeight -= 60;
       if (p->stateTimer == 4) {
         if (p->kind == PLAYER_SABATA) {
-          PlaySound_082406e0(VO_SABATA_749);
+          PlaySound_082406e0(VO_SABATA_PITFALL);
         } else {
-          PlaySound_082406e0(VO_DJANGO_773);
+          PlaySound_082406e0(VO_DJANGO_PITFALL);
         }
       }
       if (++p->stateTimer > 29) {
@@ -5335,7 +5335,7 @@ void Player_UpdateDeath(Player* p) {
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
     } else {
-      PlaySound_082406e0(SONG_231);
+      PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
     if (gGameFlags & FLAG030047A4_UNK_12) {
@@ -5405,7 +5405,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
     } else {
-      PlaySound_082406e0(SONG_231);
+      PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
     if (gGameFlags & FLAG030047A4_UNK_12) {
@@ -5875,7 +5875,7 @@ void FUN_0806b758(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_231);
+        PlaySound_082406e0(VO_DJANGO_DEATH);
         p->emoteKind = EMOTE_0;
         p->unk_992 = 0;
         p->emote = Emote_Show(p->emote, &p->mover, p->emoteKind, 1, NULL, 0, 0, 80);
@@ -6684,7 +6684,7 @@ void MagicSleeping_Update(Player* p) {
   }
 }
 
-// スリーピングの歩き (PACT_WALK), unk_388 フレームごとに SONG_618 を鳴らし, 入力方向へ動かして棺桶のアニメ 32 を進め, 偶数コマの頭で床に合わせた足音を鳴らす
+// 棺桶獣エレファンでスリーピングしたときの歩き (PACT_WALK), unk_388 フレームごとに VO_ELEFAN_WALK を鳴らし, 入力方向へ動かして棺桶のアニメ 32 を進め, 偶数コマの頭で床に合わせた足音を鳴らす
 // 残差は2回目の Random() で gRandomTable のアドレスを置くレジスタ (r1 / r2) の1か所のみ (293/293), 手動送りは AuxSprite_AdvanceAnim で一致
 // 加算の順, 減算の書き方, 乱数の取り直しを inline にまとめる形は試済
 NON_MATCH void Player_UpdateSleepingWalk(Player* p) {
@@ -6692,13 +6692,13 @@ NON_MATCH void Player_UpdateSleepingWalk(Player* p) {
   bool32 walking = TRUE;
 
   if (p->action != PACT_WALK) {
-    PlaySound_082406e0(SONG_618);
+    PlaySound_082406e0(VO_ELEFAN_WALK);
     p->unk_388 = (Random() & 0x3F) + 64;
     Player_SetAction(p, PACT_WALK, 0);
     walking = FALSE;
   }
   if (p->unk_388 == 0) {
-    PlaySound_082406e0(SONG_618);
+    PlaySound_082406e0(VO_ELEFAN_WALK);
     p->unk_388 = (Random() & 0x3F) + 64;
   } else {
     p->unk_388--;
@@ -6747,7 +6747,7 @@ void FUN_0806e404(Player* p) {
       PlaySound_082406e0(SONG_213);
     } else {
       if (p->unk_38a == 0) {
-        PlaySound_082406e0(SONG_619);
+        PlaySound_082406e0(VO_ELEFAN_ATTACK);
         p->unk_38a = 40;
       }
       PlaySound_082406e0(SE_GUN_FIRE);
@@ -8249,7 +8249,7 @@ void FUN_08073e18(Player* p) {
         PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
         if (p->kind != PLAYER_SABATA) {
-          PlaySound_082406e0(SONG_231);
+          PlaySound_082406e0(VO_DJANGO_DEATH);
         }
       }
       angle = ((p->facing + 5) & 7) * 32;

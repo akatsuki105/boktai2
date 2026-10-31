@@ -224,7 +224,7 @@ void FUN_080b4d98(DarkLoans* p) {
   Video_SetBGLayer(0, p->tilemap, 5);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   FUN_080b4abc(p);
-  PlaySound_082406e0(SONG_705);
+  PlaySound_082406e0(VO_ANKO_THANKS);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetAnim(&p->sprites[0], &p->gfx0, 6, PLAYMODE_ONCE_AND_STOP, 0);
   MessageWindow_ShowLine(3);
@@ -264,7 +264,7 @@ void FUN_080b4e8c(DarkLoans* p) {
 void FUN_080b4f08(DarkLoans* p) {
   MainSprite_AdvanceAnim(&p->sprites[0], &p->gfx0);
   if (p->unk_844 == 0x20) {
-    PlaySound_082406e0(SONG_704);
+    PlaySound_082406e0(VO_ANKO_WELCOME);
   }
   p->unk_844++;
   if (p->unk_844 > 0x68) {

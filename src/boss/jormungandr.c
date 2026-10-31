@@ -2437,7 +2437,7 @@ void FUN_080c6850(Boss* boss, s32 timer) {
     SpriteHolder_SetAnim(&p->sprites[3].holder, 1, p->sprites[3].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 36) {
     SpriteHolder_SetAnim(&p->sprites[2].holder, 0, p->sprites[2].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
-    PlaySound_082406e0(SONG_231);
+    PlaySound_082406e0(VO_DJANGO_DEATH);
   } else if (timer == 40) {
     SpriteHolder_SetAnim(&p->sprites[4].holder, 1, p->sprites[4].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 44) {
@@ -2922,7 +2922,7 @@ void FUN_080c7c20(Boss* boss, s32 timer) {
   } else if (timer == 36) {
     SpriteHolder_SetAnim(&p->sprites[2].holder, 0, p->sprites[2].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
     gPlayerPtr[0]->hp = 0;
-    PlaySound_082406e0(SONG_231);
+    PlaySound_082406e0(VO_DJANGO_DEATH);
   } else if (timer == 40) {
     SpriteHolder_SetAnim(&p->sprites[4].holder, 1, p->sprites[4].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 44) {

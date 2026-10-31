@@ -275,7 +275,7 @@ static inline void Ringo_UpdateUnk88c(Ringo* p) {
   } else {
     Ringo_SetSubState2Unk17b(p, 12, 1, 0x20);
     p->unk_88c++;
-    PlaySound_0824078c(SONG_858);
+    PlaySound_0824078c(VO_RINGO_OSOI);
   }
 }
 
@@ -2083,9 +2083,9 @@ void FUN_0802bccc(Ringo* p) {
     FUN_0823585c(&p->unk_84c, &mover->pos, 2, 6, 0x100, NULL, NULL);
     Boss_SetSubState2(boss, 1);
     if (p->unk_820 != 0) {
-      PlaySound_0824078c(SONG_778);
+      PlaySound_0824078c(VO_DAINN_JYAMADAYO);
     } else {
-      PlaySound_0824078c(SONG_859);
+      PlaySound_0824078c(VO_RINGO_TAKETHIS);
     }
   }
 }
@@ -2124,9 +2124,9 @@ void FUN_0802be88(Ringo* p) {
     FUN_0823585c(&p->unk_84c, &mover->pos, 2, 5, 0x100, NULL, NULL);
     Boss_SetSubState2(boss, 1);
     if (p->unk_820 != 0) {
-      PlaySound_0824078c(SONG_778);
+      PlaySound_0824078c(VO_DAINN_JYAMADAYO);
     } else {
-      PlaySound_0824078c(SONG_859);
+      PlaySound_0824078c(VO_RINGO_TAKETHIS);
     }
   }
 }
@@ -4301,7 +4301,7 @@ void dainn_0803141c(Boss* boss, s32 timer) {
     p->phase = 1;
     p->phaseTimer = 0;
     p->unk_872 = 0;
-    PlaySound_0824078c(VO_DAINN_LAUGH);
+    PlaySound_0824078c(VO_DAINN_LAUGH1);
   }
   p->damage = 0;
   p->hitBySol = 0;
@@ -5011,7 +5011,7 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
         p->phase++;
         p->phaseTimer = 0;
         FUN_08029cc8(p);
-        PlaySound_0824078c(VO_RINGO_DEFEATED);
+        PlaySound_0824078c(VO_RINGO_SCREAM);
         PlaySound_0824078c(SONG_453);
       }
       break;
@@ -5558,7 +5558,7 @@ void FUN_080346cc(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, 0x20);
     Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(VO_RINGO_DEFEATED);
+    PlaySound_0824078c(VO_RINGO_SCREAM);
   }
   p->damage = 0;
   p->hitBySol = 0;
@@ -6183,7 +6183,7 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
         PlaySound_0824078c(SONG_973);
       } else {
         Boss_SetState(boss, FUN_08032e1c, 33);
-        PlaySound_0824078c(SONG_848);
+        PlaySound_0824078c(VO_RINGO_848);
       }
       return TRUE;
     }
@@ -6204,9 +6204,9 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
       PlaySound_0824078c(SE_ENEMY_DAMAGED);
     } else if (boss->curState == 19) {
       if (p->unk_820) {
-        PlaySound_0824078c(SE_DAINN_STUN_BY_RINGO_BAT);
+        PlaySound_0824078c(VO_DAINN_DAMAGE);
       } else {
-        PlaySound_0824078c(SONG_847);
+        PlaySound_0824078c(VO_RINGO_DAMAGE);
       }
     } else {
       PlaySound_0824078c(SE_ENEMY_DAMAGED);

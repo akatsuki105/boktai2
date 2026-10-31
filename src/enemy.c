@@ -2806,7 +2806,7 @@ void PlayEnemyDeathCry(Enemy* p) {
     }
     case ENEK_SHAIAN: {
       PlaySound_082406e0(SONG_973);
-      PlaySound_082406e0(SONG_726);
+      PlaySound_082406e0(VO_SHAIAN_DEATH);
       break;
     }
     case ENEK_DARKROOT: {

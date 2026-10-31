@@ -1771,7 +1771,7 @@ void FUN_08039680(Durathror* p) {
     FUN_08038b88(p);
   }
   if (p->unk_18b && --p->unk_18b == 0) {
-    PlaySound_082406e0(SONG_719);
+    PlaySound_082406e0(VO_DURATHROR_SMILE);
   }
   boss->subStateTimer++;
 }
@@ -2083,7 +2083,7 @@ void FUN_0803a3d0(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(SONG_716);
+    PlaySound_0824078c(VO_DURATHROR_YOKUMO);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   p->unk_15c = 0;

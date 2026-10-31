@@ -54,7 +54,7 @@ typedef struct Coffin {
   u16 unk_332;                   // 0x332
   u16 plttBlend;                 // 0x334, pltt をパレット行 8 に寄せる割合 (/64), 太陽の魔法陣の中か unk_406 が立つ間は 64 まで増え, 外では 0 まで減る
   u16 unk_336;                   // 0x336, unk_33a が立って動いている間 1 ずつ増え, 0 のときに移動音を鳴らし 8 フレームごとに FUN_08085764 を呼ぶ
-  u16 unk_338;                   // 0x338, COFFIN_ELEFAN が SONG_618 を鳴らしてからの待ち時間, 鳴らすと 100 になり毎フレーム減る
+  u16 unk_338;                   // 0x338, COFFIN_ELEFAN が VO_ELEFAN_WALK を鳴らしてからの待ち時間, 鳴らすと 100 になり毎フレーム減る
   u8 unk_33a;                    // 0x33A
   bool8 effSpriteAdded;          // 0x33B, effSprite を AuxSprite_Add 済みなら 1
   AuxSprite effSprite;           // 0x33C

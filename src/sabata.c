@@ -917,7 +917,7 @@ void FUN_08082154(Player* p) {
       if (p->unk_404 <= 4) {
         p->unk_404++;
         if (p->unk_404 == 5) {
-          PlaySound_082406e0(VO_RDJANGO_TAIYO_296);
+          PlaySound_082406e0(VO_TAIYO_R);
         }
       }
 
@@ -991,7 +991,7 @@ void FUN_08082498(Player* p) {
 
     AllySabata_PlayAnim(p, 446, Q6(1));
     sound_08240740(SONG_870);
-    PlaySound_082406e0(SONG_874);
+    PlaySound_082406e0(VO_SABATA_DAMAGE1);
     return;
   }
 
@@ -1036,7 +1036,7 @@ void FUN_08082670(Player* p) {
     PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
 
     sound_08240740(SONG_870);
-    PlaySound_082406e0(SONG_875);
+    PlaySound_082406e0(VO_SABATA_DAMAGE2);
   }
 
   switch (p->state) {
@@ -1718,7 +1718,7 @@ s32 FUN_08083eac(Player* p) {
   s32 action;
 
   if (gRisingSunCount != 0) {
-    PlaySound_082406e0(SONG_874);
+    PlaySound_082406e0(VO_SABATA_DAMAGE1);
     p->unk_474 = p->unk_472;
   }
 
@@ -1936,7 +1936,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
       }
     }
 
-    PlaySound_082406e0(SONG_874);
+    PlaySound_082406e0(VO_SABATA_DAMAGE1);
     return;
   }
 

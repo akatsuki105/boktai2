@@ -316,7 +316,7 @@ void FUN_08085da8(Coffin* p) {
   if (p->unk_33a && !p->unk_384) {
     if (p->coffinID == COFFIN_ELEFAN) {
       if (p->unk_336 == 0 && p->unk_338 == 0) {
-        PlaySound_082406e0(SONG_618);
+        PlaySound_082406e0(VO_ELEFAN_WALK);
         p->unk_338 = 100;
       }
     } else {
