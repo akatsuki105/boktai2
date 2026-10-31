@@ -89,7 +89,7 @@ SECTIONS {
       src/explosion.o(iwram_data);
       src/menu.o(iwram_data);
       src/entity_5ccc.o(iwram_data);
-      src/entity_1dbe.o(.bss);
+      src/puddle.o(.bss);
       src/entity_ef66.o(iwram_data);
       src/entity_cf58.o(iwram_data);
       src/gameover.o(iwram_data);
@@ -367,7 +367,7 @@ SECTIONS {
 			src/entity_1b24.o (.text);
 			src/entity_5ccc.o (.text);
 			src/solar_station.o (.text);
-			src/entity_1dbe.o (.text);
+			src/puddle.o (.text);
 			src/entity_71ba.o (.text);
 			src/entity_a628.o (.text);
 			src/tasty_water.o (.text);

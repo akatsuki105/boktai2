@@ -8,6 +8,9 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
+// 水たまり
+// 上を歩くと音が鳴る, また 黒ジャンゴのときに踏むとダメージを受けてしまう
+
 // Entity1DBEElem.lockFlags
 typedef enum {
   E1DBE_LOCK_STATE2 = 1 << 0,  // 0x1, 日照が強くても state 2 へ遷移しない
@@ -19,12 +22,12 @@ typedef struct Entity1DBEElem {
   AuxSprite sprite;                                // 0x000, poseIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
   AuxSpriteGfx gfx;                                // 0x02C, SPRITE_TRAP_FLOOR
   Mover mover;                                     // 0x048, moverLinked が立っているときだけリストに繋がれる
-  HitboxData hitbox;                               // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
+  HitboxData hurtbox;                              // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
   u8 state;                                        // 0x0DC, '.s', 0/1/2 で updateCallback を選ぶ
   u8 lockFlags;                                    // 0x0DD, '.f', see Entity1DBELockFlags
   u8 unk_de;                                       // 0x0DE, 読み手も書き手も見つかっていない
   bool8 touched;                                   // 0x0DF, 近くに来るか属性なしの攻撃を受けると立つ, state 0 が消費して点滅を始める
-  u16 id;                                          // 0x0E0, '.n', mover.id と hitbox の id を兼ねる
+  u16 id;                                          // 0x0E0, '.n', mover.id と hurtbox の id を兼ねる
   u16 unk_e2;                                      // 0x0E2, 状態が変わるたび 0x10 が入るが読み手が見つかっていない
   bool8 moverLinked;                               // 0x0E4, '.h', 立っていれば mover を使う
   bool8 flickering;                                // 0x0E5, touched のあと animTimer が 90 になるまで点滅する
@@ -327,7 +330,7 @@ void Entity1DBEElem_Update(Entity1DBEElem* elem) {
   if (elem->areaBound) {
     if (elem->zoneID == gStat->zoneID) {
       if (!elem->unk_e7) {
-        elem->hitbox.flags &= ~HBFLAG_HIDDEN;
+        elem->hurtbox.flags &= ~HBFLAG_HIDDEN;
       }
       elem->updateCallback(elem);
     } else if (elem->unk_e7) {
@@ -345,15 +348,15 @@ void Entity1DBEElem_Update(Entity1DBEElem* elem) {
         elem->sprite.poseIdx = 5;
         elem->unk_e2 = 0x10;
       }
-      elem->hitbox.flags |= HBFLAG_HIDDEN;
+      elem->hurtbox.flags |= HBFLAG_HIDDEN;
       elem->unk_e7 = FALSE;
     }
   } else {
     elem->updateCallback(elem);
   }
 
-  if (elem->hitbox.invincibleTime != 0) {
-    elem->hitbox.invincibleTime--;
+  if (elem->hurtbox.invincibleTime != 0) {
+    elem->hurtbox.invincibleTime--;
   }
 }
 
@@ -386,16 +389,16 @@ void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked)
   }
 }
 
-void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) {
-  HitboxData* hitbox = &elem->hitbox;
+void Entity1DBEElem_InitHurtbox(Entity1DBEElem* elem) {
+  HitboxData* hurtbox = &elem->hurtbox;
   Vec3 size, offset;
   VEC3_SET(size, Q8(0.5), Q8(0.196), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, elem->id, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  Hitbox_SetHandler(hitbox, Entity1DBEElem_OnHit, elem);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  Hitbox_Register(hitbox);
-  hitbox->damage = 600;
+  Hitbox_Init(hurtbox, elem->id, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_SetHandler(hurtbox, Entity1DBEElem_OnHit, elem);
+  Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
+  Hitbox_Register(hurtbox);
+  hurtbox->damage = 600;
 }
 
 // '.s' の値ごとに見た目と更新関数を決める
@@ -417,7 +420,7 @@ void Entity1DBE_AddElem(Entity1DBE* p, u32 id, Vec3* pos, u32 state, u32 moverLi
 
   Entity1DBEElem_InitParams(elem, id, pos, state, lockFlags, areaBound);
   Entity1DBEElem_InitSprite(elem, pos, moverLinked);
-  Entity1DBEElem_InitHitbox(elem);
+  Entity1DBEElem_InitHurtbox(elem);
   Entity1DBEElem_InitState(elem);
 }
 
@@ -438,7 +441,7 @@ s32 Entity1DBE_Destroy(Entity1DBE* p) {
       Mover_Unlink(&p->elems[i].mover);
     }
     AuxSprite_Remove(&p->elems[i].sprite);
-    Hitbox_Unregister(&p->elems[i].hitbox);
+    Hitbox_Unregister(&p->elems[i].hurtbox);
   }
   gEntity1DBE = NULL;
   return 0;
