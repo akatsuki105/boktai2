@@ -58,6 +58,7 @@ s32 Entity8D5C_Init(Entity8D5C* p) {
   return 0;
 }
 
+// 0x8D5C
 Entity8D5C* Entity8D5C_Create(void) {
   Entity8D5C* p = CreateEntity(ENTITY_UNK_4, sizeof(Entity8D5C));
 

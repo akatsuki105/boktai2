@@ -52,29 +52,6 @@ void (*const PTR_ARRAY_085ab724[6])(Entity723E*) = {
     FUN_080528c4,
 };  // 0x085AB724
 
-// state を差し替えて MainSprite 4つ分の flags に bit0 を立てる
-// ただし先頭は p+0x40 なので gfx の末尾と sprites[0..2] の途中を踏んでおり, 原典の書き間違いとみられる
-s32 Entity723E_SetState(Entity723E* p, u8 state) {
-  MainSprite* spr;
-  s32 i;
-
-  p->state = state;
-  p->stateEntered = TRUE;
-  p->timer = 0;
-  p->timeA[0] = 0;
-
-  spr = (MainSprite*)&p->gfx.anims;
-  for (i = 0; i < 4; i++, spr++) {
-    spr->flags |= SPRFLAG_HIDDEN;
-  }
-  return 0;
-}
-
-bool32 Entity723E_ConsumeStateEntered(Entity723E* p) {
-  p->timeA[0] = 1;
-  return FALSE;
-}
-
 Entity723E* GetEntity723E(void) { return gEntity723E; }
 
 NAKED void FUN_080522d0(Entity723E* p) { INCFUNC("asm/func/FUN_080522d0.inc"); }

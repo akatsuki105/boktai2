@@ -176,7 +176,7 @@ NON_MATCH void MessageChoice_HandleInput(MessageChoice* p) {
       }
     }
     MessageChoice_SetCursor(p, p->defaultIndex);
-    PlaySound_082406e0(SE_CHOICE);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     return;
   }
   if (p->cursorDelay != 0) {
@@ -526,7 +526,7 @@ s32 MessageChoice_Init(MessageChoice* p, u8* textPC, s32 stringBase, s32* settin
     MessageChoice_OpenBox(p);
   }
   if (FUN_080488fc() == 0) {
-    PlaySound_082406e0(SE_CHOICE);
+    PlaySound_082406e0(SE_TEXT_SHOW);
   }
   return 0;
 }

@@ -218,7 +218,7 @@
 #define BGP_E853 0xE853
 #define BGP_E8AD 0xE8AD
 #define BGP_E9C3 0xE9C3
-#define BGP_EAA8 0xEAA8
+#define BGP_BANK 0xEAA8  // 0xEAA8, 太陽バンクと暗黒ローン用?
 #define BGP_EAEF 0xEAEF
 #define BGP_EB7D 0xEB7D
 #define BGP_EC16 0xEC16

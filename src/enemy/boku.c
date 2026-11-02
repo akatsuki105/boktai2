@@ -4,17 +4,8 @@
 #include "malloc.h"
 #include "vm.h"
 
-// 状態に入った最初の呼び出しだけ TRUE, 入場フラグを下ろす
-static inline bool8 Enemy_ConsumeStateBegun(Enemy* p) {
-  if (p->stateBegun) {
-    p->stateBegun = FALSE;
-    return TRUE;
-  }
-  return FALSE;
-}
-
 typedef struct {
-  ENEMY_HDR;
+  Enemy e;
   u8 unk_654[0x658 - 0x654];  // 0x654
   u16 scriptID_658;           // 0x658, 0 でなければ unk_65b が unk_65a に届いたときに実行する
   u8 unk_65a;                 // 0x65A, scriptID_658 を実行するまでのフレーム数
@@ -30,9 +21,6 @@ typedef struct {
   u8 unk_67e[1708 - 0x67E];   // 0x67E
 } Boku;
 static_assert(sizeof(Boku) == 1708);
-
-void Enemy_RunStateHandler(Enemy* p);
-void FUN_080e6204(Enemy* p);
 
 extern const char s_bokucom_c_08251fc0[];  // "bokucom.c"
 
@@ -50,6 +38,15 @@ void FUN_080f0e78(Enemy* p);
 void FUN_080f11d0(Enemy* p);
 void FUN_080f12c4(Enemy* p);
 void FUN_080ff36c(Enemy* p);
+
+// 状態に入った最初の呼び出しだけ TRUE, 入場フラグを下ろす
+static inline bool8 Enemy_ConsumeStateBegun(Enemy* p) {
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    return TRUE;
+  }
+  return FALSE;
+}
 
 void FUN_080fadd4(unknown* param_1, MsgPacket* msg, Enemy* enemy) {
   if (Enemy_IsDead(enemy) == 0) {
@@ -152,7 +149,7 @@ void FUN_080ff45c(Boku* p) {
       FUN_080ff270,
       FUN_080ff36c,
   };  // 0x085AD490
-  p->handlerTables[2] = (void*)PTR_ARRAY_085ad490;
+  (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad490;
 }
 
 NAKED void FUN_080ff470(Enemy* p) { INCFUNC("asm/func/FUN_080ff470.inc"); }
@@ -161,7 +158,7 @@ void FUN_080ff668(Boku* p) {
   static void (*const PTR_ARRAY_085ad4d8[1])(Enemy*) = {
       FUN_080ff470,
   };  // 0x085AD4D8
-  p->handlerTables[4] = (void*)PTR_ARRAY_085ad4d8;
+  (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad4d8;
 }
 
 NAKED void FUN_080ff67c(unknown* p) { INCFUNC("asm/func/FUN_080ff67c.inc"); }
@@ -206,7 +203,7 @@ const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
 NAKED unknown* FUN_080ffcd0(unknown* p) { INCFUNC("asm/func/FUN_080ffcd0.inc"); }
 
 void FUN_080ffd28(Boku* p) {
-  Boku* q = p->unk_1cc;
+  Boku* q = (p->e).unk_1cc;
 
   if (q->timer_670 != 0) {
     q->timer_670--;
@@ -223,7 +220,7 @@ NAKED void FUN_08100164(Boku* p) { INCFUNC("asm/func/FUN_08100164.inc"); }
 
 // 予約してあるスクリプトを unk_65a フレーム後に実行する
 void FUN_081001dc(Boku* p) {
-  Boku* q = p->unk_1cc;
+  Boku* q = (p->e).unk_1cc;
 
   if (q->scriptID_658 == 0) {
     return;
@@ -253,9 +250,9 @@ bool32 FUN_08101bb4(Boku* p) {
 bool32 FUN_08101bc0(Boku* p) {
   FUN_081019e0(p);
 
-  if (Enemy_TestFlag3((Enemy*)p, ENEFLAG3_UNK_13) || p->unk_4be == 0) {
-    u32 idx = p->subState0;
-    EnemyHandler* table = p->handlerTables[0];
+  if (Enemy_TestFlag3((Enemy*)p, ENEFLAG3_UNK_13) || (p->e).unk_4be == 0) {
+    u32 idx = (p->e).subState0;
+    EnemyHandler* table = (p->e).handlerTables[0];
     table[idx]((Enemy*)p);
     Enemy_RunStateHandler((Enemy*)p);
   }

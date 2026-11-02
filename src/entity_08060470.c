@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "vec3.h"
 
 // 生成元 (Entity08060470_Spawn) が角度と速度から vel を作り、以降は Entity08060470_UpdateElem が毎フレーム ptcl.pos に vel を足すだけ
 typedef struct Entity08060470Elem {
@@ -25,6 +26,14 @@ typedef struct {
 static_assert(sizeof(Entity08060470) == 932);
 
 IWRAM_DATA Entity08060470* gEntity08060470 = NULL;  // 0x03000134
+
+void Particle_AddToDrawList(Particle* p, u32 flags);
+
+static inline void Entity08060470Elem_SetState(Entity08060470Elem* elem, u8 state) {
+  elem->state = state;
+  elem->unk_1 = 1;
+  elem->timer = 0;
+}
 
 // 粒子を1個分だけ初期化する
 void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
@@ -154,4 +163,24 @@ Entity08060470Elem* Entity08060470_FindFreeElem(Entity08060470* p, u32* outIdx) 
   return NULL;
 }
 
-NAKED s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos) { INCFUNC("asm/func/Entity08060470_Spawn.inc"); }
+s32 Entity08060470_Spawn(u32 angle, s32 speed, u32 radius, Vec3* pos) {
+  Entity08060470* p = Entity08060470_Create();
+  s32 idx;
+  Entity08060470Elem* elem = Entity08060470_FindFreeElem(p, &idx);
+  Particle* ptcl;
+
+  if (elem == NULL) {
+    return -1;
+  }
+  ptcl = &elem->ptcl;
+  Entity08060470Elem_SetState(elem, 1);
+  elem->lifetime = radius;
+  Vec3_SetPolar(&ptcl->pos, angle, speed * elem->lifetime);
+  Vec3_Add(&ptcl->pos, pos);
+  elem->lifetime -= 3;
+  Vec3_SetPolar(&elem->vel, angle + 0x80, speed);
+  ptcl->flags &= ~SPRFLAG_HIDDEN;
+  Particle_AddToDrawList(ptcl, 0);
+  SET_BIT(p->activeMask, idx);
+  return 0;
+}

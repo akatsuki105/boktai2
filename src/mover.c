@@ -209,7 +209,7 @@ void Mover_ApplyMove(Mover* p) {
   if (p->tile != NULL) {
     switch (gCameraCoords.drawMode) {
       case DRAW_ISOMETRIC: {
-        FUN_0823349c(p->tile, &p->pos, &p->delta, p->sizeX, p->sizeZ, p->unk_4);
+        Map_MoveBoxAlongWalls(p->tile, &p->pos, &p->delta, p->sizeX, p->sizeZ, p->unk_4);
         break;
       }
       case DRAW_SCREEN: {

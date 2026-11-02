@@ -66,7 +66,7 @@ s32 Boss_Destroy(Boss* p) {
   return 0;
 }
 
-// 残差1命令 (61/62), 原典は gStat->gaugeMax への書き込みのあと gStat を読み直すが agbcc は値を使い回す (agbcc-levers.md の A cached global pointer that the target reloads per store と同じ)
+// 残差1命令 (61/62), 原典は gStat->bossHPMax への書き込みのあと gStat を読み直すが agbcc は値を使い回す (agbcc-levers.md の A cached global pointer that the target reloads per store と同じ)
 // 試済: 間に基本ブロックを挟む, 固定アドレス (*(GameInfo**)0x030046A0) で参照, 未: per-TU フラグ
 NON_MATCH s32 Boss_InitHP(Boss* p, s32 hp, s32 maxHP, s32 hurtboxPower) {
 #ifdef NONMATCHING_C
@@ -77,8 +77,8 @@ NON_MATCH s32 Boss_InitHP(Boss* p, s32 hp, s32 maxHP, s32 hurtboxPower) {
     p->hp = p->maxHP;
   }
   Boss_UpdateHPRatio(p);
-  gStat->gaugeMax = p->maxHP;
-  gStat->gaugeValue = p->hp;
+  gStat->bossHPMax = p->maxHP;
+  gStat->bossHP = p->hp;
   return 0;
 #else
   INCFUNC("asm/func/Boss_InitHP.inc");
@@ -203,9 +203,9 @@ void FUN_08022e20(Boss* p) {
 
 void FUN_08022ec0(Boss* p) {
   if (p->hp > 0) {
-    gStat->gaugeValue = p->hp;
+    gStat->bossHP = p->hp;
   } else {
-    gStat->gaugeValue = 0;
+    gStat->bossHP = 0;
   }
   if (p->unk_ac != 0) {
     Camera_Shake(p->unk_ad);

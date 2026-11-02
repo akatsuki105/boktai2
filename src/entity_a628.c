@@ -114,4 +114,5 @@ EntityA628* EntityA628_Create(u32 param_1, u32 playerIdx, u32 active) {
   return p;
 }
 
-NAKED s32 EntityA628_CreateScripted(u16 param_1) { INCFUNC("asm/func/EntityA628_CreateScripted.inc"); }
+// 0xA628
+NAKED s32 Cmd_CreateEntityA628(u32 param_1) { INCFUNC("asm/func/Cmd_CreateEntityA628.inc"); }

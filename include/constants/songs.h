@@ -1,97 +1,98 @@
 #ifndef __INCLUDE_CONSTANTS_SONGS_H__
 #define __INCLUDE_CONSTANTS_SONGS_H__
 
-#define SONG_NONE 0  // 無音
-#define BGM_PROLOGUE 1
-#define BGM_GAMEOVER 2
-#define BGM_BOSS_BATTLE 3
-#define BGM_BOSS_CLIMAX 4  // パイルドライバーの浄化間近とか
+// コメントの使用例は、あくまで一例でそのサウンドIDの用途を一意に定めるものではない (同じサウンドIDが複数の用途で使われることもある)
+#define SONG_NONE 0         // 無音
+#define BGM_PROLOGUE 1      // BGM:"サン・ミゲル", ゲーム開始時のジャンゴとおてんこが走っていくときに流れる
+#define BGM_GAMEOVER 2      // BGM:"ゲームオーバー"
+#define BGM_BATTLE_DRIVE 3  // BGM:"バトルドライブ", 浄化時(通常)
+#define BGM_CLIMAX 4        // BGM:"死線", 浄化時(敵のHP残りわずか)
 #define SE_PILEDRIVER_05 5
 #define BGM_PILEDRIVER_ALERT 6
 #define SE_PILEDRIVER_07 7
 #define BGM_QUAKE 8
-#define BGM_PILEDRIVER_POINT 9  // パイルドライバー設置場所のBGM
-#define BGM_10 10
+#define BGM_PILEDRIVER 9     // BGM:"パイルドライバー", パイルドライバー設置場所のBGM
+#define BGM_NIGERARETAZO 10  // BGM:"逃げられたぞ！！"
 #define BGM_NONE_11 11
-#define BGM_COMPLETE 12  // 初代ならダンジョン突破時のリザルト画面
-#define BGM_TRAP_BATTLE 13
-#define BGM_14 14
-#define BGM_15 15
-#define BGM_16 16
-#define SONG_17 17
-#define SONG_18 18
-#define SONG_19 19
-#define SONG_20 20
-#define SONG_21 21
-#define SONG_22 22
-#define SONG_23 23
-#define SONG_24 24
-#define SONG_25 25
-#define SONG_26 26
-#define SONG_27 27
-#define SONG_28 28
-#define SONG_29 29
-#define SONG_30 30
-#define SONG_31 31
-#define SONG_32 32
-#define SONG_33 33
-#define SONG_34 34
-#define SONG_35 35
-#define SONG_36 36
-#define SONG_37 37
+#define BGM_COMPLETE 12            // BGM:"勝利！", "PURIFICATION COMPLETED!" と一緒に出るファンファーレ
+#define BGM_TRAP_BATTLE 13         // BGM:"襲撃"
+#define BGM_TOKI_NO_IE_KAKO 14     // BGM:"時の家・過去"
+#define BGM_HAIKYO 15              // BGM:"廃墟"
+#define BGM_TOKI_NO_IE_GENZAI 16   // BGM:"時の家・現在"
+#define BGM_MUGEN 17               // BGM:"夢幻街"
+#define BGM_SOLARBOY 18            // BGM:"太陽少年ジャンゴ"
+#define BGM_FIELD 19               // BGM:"死の街", n番外
+#define BGM_DAISEIDOU_REIEN 20     // BGM:"大聖堂・霊園"
+#define BGM_DAISEIDOU_B 21         // BGM:"大聖堂・地下"
+#define BGM_DAISEIDOU_1F 22        // BGM:"大聖堂・1階"
+#define BGM_DAISEIDOU_2F 23        // BGM:"大聖堂・2階"
+#define BGM_DUNEYRR 24             // BGM:"ドゥネイル", ドゥネイル戦
+#define BGM_ISEKI_SABAKU 25        // BGM:"遺跡・砂漠"
+#define BGM_ISEKI_SIRO_NO_OKA 26   // BGM:"遺跡・白の丘"
+#define BGM_ISEKI_KURO_NO_TANI 27  // BGM:"遺跡・黒の谷"
+#define BGM_BATTLE_RINGO 28        // BGM:"ヴァンパイア", リンゴ戦
+#define BGM_ANKOKUGAI1 29          // BGM:"暗黒街・路地"
+#define BGM_ANKOKUGAI2 30          // BGM:"暗黒街・暗黒樹"
+#define BGM_ANKOKUGAI3 31          // BGM:"暗黒街・裏道"
+#define BGM_SHAIAN 32              // BGM:"シャイアン", シャイアン戦
+#define BGM_DURATHROR 33           // BGM:"ドゥラスロール", ドゥラスロール戦
+#define BGM_AQUADUCT 34            // BGM:"地下水路"
+#define BGM_KYOUFU 35              // BGM:"狂風"
+#define BGM_DVALINN 36             // BGM:"ドヴァリン", ドヴァリン戦
+#define BGM_DARK_TOWER 37          // BGM:"暗黒の塔", 螺旋の塔のサバタ側
 #define SONG_38 38
-#define SONG_39 39
+#define BGM_SOLAR_TOWER 39  // BGM:"太陽の塔", 螺旋の塔のジャンゴ側
 #define SONG_40 40
-#define SONG_41 41
-#define SONG_42 42
-#define SONG_43 43
-#define SONG_44 44
-#define SONG_45 45
-#define SONG_46 46
-#define SONG_47 47
-#define SONG_48 48
+#define BGM_DAINN1 41       // BGM:"ダーイン・その1", ダーイン戦
+#define BGM_DAINN2 42       // BGM:"ダーイン・その2"
+#define BGM_HEN1 43         // BGM:"変異域・第1階層"
+#define BGM_HEN2 44         // BGM:"変異域・第2階層"
+#define BGM_HEN3 45         // BGM:"変異域・第3階層"
+#define BGM_HEN4 46         // BGM:"変異域・第4階層"
+#define BGM_HEN5 47         // BGM:"変異域・第５階層"
+#define BGM_JORMUNGANDR 48  // BGM:"ヨルムンガンド"
 #define SONG_49 49
 #define SONG_50 50
 #define SONG_51 51
 #define SONG_52 52
 #define SONG_53 53
-#define SONG_54 54
+#define BGM_ASSAULT 54  // BGM:"強襲"
 #define SONG_55 55
-#define SONG_56 56
-#define SONG_57 57
+#define BGM_POEM 56    // BGM:"星読み", プロローグのポエム
+#define BGM_OTENKO 57  // BGM:"おてんこさま"
 #define SONG_58 58
-#define SONG_59 59
-#define SONG_60 60
-#define SONG_61 61
-#define SONG_62 62
+#define BGM_ZAJI 59       // BGM:"ひまわり娘ザジ"
+#define BGM_RED_RINGO 60  // BGM:"紅のリンゴ"
+#define BGM_RINNE 61      // BGM:"生と死の輪廻"
+#define BGM_MATEKI 62     // BGM:"魔笛"
 #define SONG_63 63
-#define SONG_64 64
-#define SONG_65 65
-#define SONG_66 66
+#define BGM_BLACK_DAINN 64  // BGM:"黒きダーイン"
+#define BGM_WEDGE 65        // BGM:"くさび"
+#define BGM_RAIN 66         // BGM:"雨", 不穏な時のBGM
 #define SONG_67 67
-#define SONG_68 68
-#define SONG_69 69
-#define SONG_70 70
-#define SONG_71 71
-#define SONG_72 72
+#define BGM_WHAT 68                // BGM:"ん？", クロを見つけたときのBGM
+#define BGM_SANSHIMAI 69           // BGM:"三姉妹"
+#define BGM_SMITH 70               // BGM:"鋼鉄のスミス"
+#define BGM_DARKBOY_SABATA 71      // BGM:"暗黒少年サバタ"
+#define BGM_GEKKA_BIJIN_SABATA 72  // BGM:"月下美人サバタ"
 #define SONG_73 73
-#define SONG_74 74
+#define BGM_RITA 74  // BGM:"大地の巫女リタ"
 #define SONG_75 75
-#define SONG_76 76
-#define SONG_77 77
+#define BGM_RAIMEI 76          // BGM:"雷鳴"
+#define BGM_KAZE_NO_SENSHI 77  // BGM:"風の戦士", シャイアン戦の前のBGM
 #define SONG_78 78
 #define SONG_79 79
-#define SONG_80 80
-#define SONG_81 81
-#define SONG_82 82
-#define SONG_83 83
-#define SONG_84 84
+#define BGM_GEKKA_BIJIN 80  // BGM:"月下美人"
+#define BGM_JOKA 81         // BGM:"浄化"
+#define BGM_RAINBOW 82      // BGM:"虹"
+#define BGM_DARK 83         // BGM:"闇"
+#define BGM_KOMOREBI 84     // BGM:"木漏れ日"
 #define SONG_85 85
 #define SONG_86 86
 #define SONG_87 87
-#define SONG_88 88
+#define BGM_ZOKTAI 88  // BGM:"続・ボクらの太陽"
 #define SONG_89 89
-#define SONG_90 90
+#define BGM_YUUHI 90  // BGM:"夕陽"
 #define SONG_91 91
 #define SONG_92 92
 #define SONG_93 93
@@ -102,25 +103,25 @@
 #define SONG_98 98
 #define SONG_99 99
 #define SONG_100 100
-#define SONG_101 101
+#define NOISE_WIND 101  // 風の環境音(螺旋の塔のボス前で使用)
 #define SOUND_102 102
-#define SOUND_103 103
+#define SE_THE_TOWER 103   // 塔のカードの雷鳴
 #define NOISE_CHICKEN 104  // 鶏のコケコッコー
-#define NOISE_CROW 105     // カラス
-#define NOISE_QUAKE 106    // 地響き音
+#define NOISE_CROW 105     // カラス(クロウの鳴き声ではなく、環境音として)
+#define NOISE_QUAKE 106    // 地響き音(ループ音源)
 #define NOISE_NONE_107 107
 #define NOISE_NONE_108 108
-#define NOISE_SIZZLE 109     // 焼く様なジュージュー音
-#define NOISE_HEARTBEAT 110  // 心臓の鼓動
-#define NOISE_UNK_111 111    // ギミックが解けたときになるやつ？
-#define NOISE_SMOKE 112      // イモータルが煙を出す時の音
-#define NOISE_UNK_113 113
+#define NOISE_SIZZLE 109      // 焼く様なジュージュー音
+#define NOISE_HEARTBEAT 110   // 心臓の鼓動
+#define NOISE_UNK_111 111     // ギミックが解けたときになるやつ？
+#define NOISE_SMOKE 112       // イモータルが煙を出す時の音
+#define NOISE_UNDERWATER 113  // ドヴァリン戦直前のイベントで水中にいるときの環境音
 #define NOISE_NONE_114 114
 #define NOISE_NONE_115 115
 #define NOISE_UNK_116 116
 #define NOISE_UNK_117 117
 #define NOISE_NONE_118 118
-#define NOISE_WIND 119  // 崖とかで吹いてそうな風の音
+#define NOISE_WIND_119 119  // 崖とかで吹いてそうな風の音
 #define NOISE_NONE_120 120
 #define NOISE_QUAKE_121 121
 #define NOISE_UNK_122 122
@@ -132,8 +133,8 @@
 #define NOISE_UNK_128 128
 #define SONG_129 129
 #define SONG_130 130
-#define SONG_131 131
-#define SONG_132 132
+#define NOISE_WIND_STRONG 131  // NOISE_WIND より強めの風の音, 使用箇所はまだ不明
+#define SE_CHIME 132           // 夕方の時計塔の鐘の音
 #define SONG_133 133
 #define SONG_134 134
 #define SONG_135 135
@@ -151,38 +152,38 @@
 #define SONG_147 147
 #define SONG_148 148
 #define SONG_149 149
-#define SONG_150 150
-#define SONG_151 151
-#define SONG_152 152
-#define SONG_153 153
-#define SONG_154 154
-#define SONG_155 155
-#define SONG_156 156
-#define SONG_157 157
-#define BGM_SUNMIGUERE 158
-#define SONG_159 159
-#define SONG_160 160
-#define SONG_161 161
-#define SONG_162 162
-#define SONG_163 163
-#define SONG_164 164
-#define SONG_165 165
-#define SONG_166 166
-#define SONG_167 167
-#define SONG_168 168
-#define SONG_169 169
-#define SONG_170 170
+#define BGM_AKATSUKI 150          // BGM:"あかつき"
+#define BGM_TASOGARE 151          // BGM:"たそがれ"
+#define BGM_LEARN_MAGIC 152       // BGM:"魔法！！", 魔法取得時のBGM
+#define BGM_BLACK_DJANGO 153      // BGM:"暗黒！", 黒ジャンゴに初めてなったときのBGM
+#define BGM_HOSHIYOMI 154         // BGM:"読めたで！"
+#define BGM_TAIYO 155             // BGM:"太陽！"
+#define BGM_SUNMIGUERE1 156       // BGM:"太陽街・その1"
+#define BGM_SUNMIGUERE2 157       // BGM:"太陽街・その2"
+#define BGM_NAKAMA2 158           // BGM:"街の仲間・その2"
+#define BGM_SOLAR_TREE 159        // BGM:"太陽樹"
+#define BGM_SOLAR_BANK 160        // BGM:"太陽バンク"
+#define BGM_DARK_LOANS 161        // BGM:"暗黒ローン"
+#define BGM_OSHIOKI 162           // BGM:"おしおき"
+#define BGM_NOTIFICATION 163      // BGM:"お知らせ", 暗黒ローンの返済通知
+#define BGM_TITLE 164             // BGM:"太陽", タイトル画面
+#define BGM_DEDEDE 165            // BGM:"トラップ！", でででどん！
+#define BGM_TAIYO_NO_KISETSU 166  // BGM:"太陽の季節"
+#define BGM_KAISETSU 167          // BGM:"解説", 太陽センサーの説明時に流れるBGM
+#define BGM_LINK_SELECT 168       // BGM:"選択"
+#define BGM_END 169               // BGM:"終了", 太陽鍛治の終了時や通信対戦のリザルト時に流れる
+#define BGM_SOLAR_FORGE 170       // BGM:"太陽鍛治"
 #define SONG_171 171
 #define SONG_172 172
-#define SONG_173 173
+#define BGM_SHADEMAN 173  // BGM:"シェードマン"
 #define SONG_174 174
 #define SONG_175 175
-#define SONG_176 176
-#define SONG_177 177
-#define SONG_178 178
-#define SONG_179 179
-#define SONG_180 180
-#define SONG_181 181
+#define BGM_WIN 176      // BGM:"勝ち！"
+#define BGM_LOSE 177     // BGM:"負け！"
+#define BGM_BBB 178      // BGM:"道具屋キッド"
+#define BGM_ASAHI 179    // BGM:"朝日", タイトル画面の後のはじめから,つづきからの画面
+#define BGM_ANUN 180     // BGM:"暗雲"
+#define BGM_NAKAMA1 181  // BGM:"街の仲間・その1"
 #define SONG_182 182
 #define SONG_183 183
 #define SONG_184 184
@@ -209,30 +210,30 @@
 #define SE_GUN_FIRE 205         // 太陽銃を撃った時のSE
 #define SE_WOOD_DOOR_OPEN 206   // 木のドアが開く音
 #define SE_WOOD_DOOR_CLOSE 207  // 木のドアが閉まる音
-#define SONG_208 208
+#define SE_COVER 208            // 汎用SE (壁張り付き や 立ち上がった ときの音)
 #define SONG_209 209
 #define SONG_210 210
 #define SONG_211 211
 #define CRY_BOKU_DAMAGED 212
-#define SONG_213 213
+#define SE_GUN_MISFIRE 213  // エナジーが足りなくて、空撃ちした時のSE
 #define SONG_214 214
 #define CRY_BOKU_DEATH 215
 #define NOISE_SOLAR_CHARGE 216  // 太陽エネルギーチャージSE(無限ループ)
 #define SONG_217 217
 #define SONG_218 218
 #define SONG_219 219
-#define SE_CURSOR_MOVE 220  // インベントリでカーソルを動かした時の音
+#define SE_CURSOR_MOVE 220  // カーソルの汎用SE (インベントリでカーソル移動, 選択肢でのカーソル移動など)
 #define SE_SELECT 221       // メニュー画面でアイテムとかを選んだ時の音
 #define SE_CANCEL 222       // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
 #define SONG_223 223
-#define SONG_224 224
-#define SONG_225 225
-#define SONG_226 226
-#define SONG_227 227
+#define SONG_224 224          // 汎用システム音, タイトル画面で"GAME START"を選んだ時やアイテムを使用した時の音
+#define SE_DUNGEON_TITLE 225  // ダンジョンタイトルとかのSE
+#define SE_METAL_226 226      // 金属のSE (棺桶に閉じ込めた時?)
+#define SE_DUNGEON_TITLE_CLOSE 227
 #define CRY_CURORO_DEATH 228
 #define SONG_229 229
 #define SE_DAMAGE 230  // プレイヤーがダメージ食らった時の音
-#define SONG_231 231
+#define VO_DJANGO_DEATH 231
 #define CRY_BAT_DEATH 232
 #define SONG_233 233
 #define SONG_234 234
@@ -247,8 +248,8 @@
 #define SONG_243 243
 #define SONG_244 244
 #define SONG_245 245
-#define SONG_246 246
-#define SONG_247 247
+#define CRY_CROW_WING 246  // クロウ系の敵が羽ばたく音
+#define CRY_CROW_ATK 247   // クロウ系の敵が攻撃する時の鳴き声
 #define CRY_CROW_DEATH 248
 #define SONG_249 249
 #define SONG_250 250
@@ -258,25 +259,25 @@
 #define SE_UNK_254 254
 #define CRY_MUMMY_255 255  // マミーのボイス
 #define CRY_MUMMY_DEATH 256
-#define CRY_MUMMY_257 257
+#define CRY_MUMMY_ATK 257  // マミーの攻撃時のボイス (飛びかかり, 爆弾吐き両方)
 #define CRY_MUMMY_DETECT 258
 #define CRY_MUMMY_ALERT 259
 #define CRY_MUMMY_QUESTION 260
-#define SE_NONE_261 261  // 無音？
-#define SONG_262 262
-#define SE_CHOICE 263  // 選択肢が表示された時の音 (例: 図書館でレディに話しかけた時)
+#define SE_TYPING1 261    // 文字送りSE1 (システムメッセージ用?)
+#define SE_TYPING2 262    // 文字送りSE2 (キャラとの会話用?)
+#define SE_TEXT_SHOW 263  // 会話中Aボタンで次のテキストを表示する時, 選択肢が表示された時になる (テキストを読みとばさないための音), 会話の開始時には鳴らない(ただし会話の最初のテキストが選択肢なら鳴る)
 #define SONG_264 264
 #define SONG_265 265
-#define SONG_266 266
-#define SONG_267 267
-#define SE_SLOT 268           // セレクトボタンを押してる時に武器とかを変える時の音
-#define SE_HEAL 269           // 回復アイテムで回復した時の音
-#define SE_TRASH 270          // アイテムを捨てた時の音
-#define SE_OPEN_TREASURE 271  // 宝箱開けた時の音
-#define SE_PICKUP 272         // 袋アイテム取得時の音
-#define SE_EQUIP 273          // メニューでの武器と防具装備時の音
-#define SE_UNK_274 274        // バット？
-#define CRY_SPIDER_DEATH 275  // スパイダー以外にも、サンドウォームとサーペントの死亡音にも使われる
+#define SE_MENU_PAGE 266       // メニューでLRボタンでページを切り替えた時のSE
+#define SE_QUICK_CHANGE 267    // クイックチェンジ(マップ上のHUDとスタートメニューの装備ページでセレクト押した状態　で装備を変更する時の音)
+#define SE_SIDEBAR_TOGGLE 268  // スタートメニューで、"START"ボタンを押した時(左から、ページ一覧のサイドバーが現れたり消えたりする時の音)
+#define SE_HEAL 269            // 回復アイテムで回復した時の音
+#define SE_TRASH 270           // アイテムを捨てた時の音
+#define SE_OPEN_TREASURE 271   // 宝箱開けた時の音
+#define SE_PICKUP 272          // 袋アイテム取得時の音
+#define SE_EQUIP 273           // メニューでの武器と防具装備時の音
+#define SE_UNK_274 274         // バット？
+#define CRY_SPIDER_DEATH 275   // スパイダー以外にも、サンドウォームとサーペントの死亡音にも使われる
 #define SE_UNK_276 276
 #define SE_UNK_277 277  // レイス？
 #define SE_UNK_278 278
@@ -286,21 +287,21 @@
 #define SE_UNK_282 282
 #define SE_SPIRIT_BUGS_283 283  // 太陽虫とかを吸収した音？
 #define SE_SPIRIT_BUGS_284 284
-#define SE_SOLAR_INSECT_285 285  // 太陽タケノコから虫が出てきた時の音
+#define SE_POP_SPIRIT_BUGS 285  // 太陽タケノコから 月光虫 or 太陽虫 が出てきた時の音
 #define SE_INFO 286
 #define SE_UNK_287 287
-#define VO_OTENKO_OTNK 288  // おてんこ！
-#define CRY_MUMMY_BURN 289  // ｱﾁ!
-#define SE_UNK_290 290
+#define VO_OTENKO_OTNK 288   // おてんこ！
+#define CRY_MUMMY_BURN 289   // ｱﾁ!
+#define SE_BAMBOO_SHOOT 290  // 太陽タケノコが出た時のSE
 #define SE_UNK_291 291
 #define SE_SOLAR_STAND_DENY 292
 #define SE_RUNNING_FOOTSTEPS 293  // 足音一回でなく複数回まとめて
 #define SE_UNK_294 294
 #define SE_UNK_295 295
-#define VO_RDJANGO_TAIYO_296 296
+#define VO_TAIYO_R 296  // 赤ジャンゴの太陽チャージ
 #define SE_UNK_297 297
-#define SE_UNK_298 298  // 焼ける様な音
-#define SE_UNK_299 299
+#define SE_UNK_298 298       // 焼ける様な音
+#define SE_TITLE_CURSOR 299  // ゲームタイトルで < XXX > を切り替える時のSE
 #define SE_UNK_300 300
 #define SE_UNK_301 301
 #define SE_DENY_302 302  // ENE満タンのときに太陽スタンドを使おうとしたときとかのビープ音
@@ -338,7 +339,7 @@
 #define SONG_334 334
 #define SONG_335 335
 #define SONG_336 336
-#define SONG_337 337
+#define SE_THUD 337  // 移動床が端についたときのSE(昇降床は別), 他の用途でも使われてそう
 #define SONG_338 338
 #define SONG_339 339
 #define SONG_340 340
@@ -350,17 +351,17 @@
 #define SONG_346 346
 #define SONG_347 347
 #define SONG_348 348
-#define SONG_349 349
+#define VO_OTENKO_PILEDRIVER 349  // おてんこさまがパイルドライバーを呼び出すときのボイス
 #define SONG_350 350
-#define SONG_351 351
-#define SONG_352 352
+#define SE_WARP_START 351  // 転移魔方陣を起動したときのSE
+#define SE_WARP_END 352    // 転移魔方陣が終了したときのSE
 #define SONG_353 353
-#define SONG_354 354
-#define SONG_355 355
+#define SE_FSTEP_PUDDLE_0 354  // 水溜まりの足音
+#define SE_FSTEP_PUDDLE_1 355
 #define SONG_356 356
 #define SONG_357 357
 #define SONG_358 358
-#define SE_359 359  // ピキーンみたいなSE
+#define SE_LINK_359 359  // ピキーンみたいなSE(通信対戦のSE)
 #define SONG_360 360
 #define SONG_361 361
 #define SONG_362 362
@@ -402,16 +403,16 @@
 #define SONG_398 398
 #define SONG_399 399
 #define SONG_400 400
-#define SE_IGNITE 401  // 着火時のSE(火が噴き出すような音)
-#define SE_NG 402      // 汎用的なNG音
-#define SONG_403 403
-#define SONG_404 404
-#define SONG_405 405
+#define SE_IGNITE 401         // 着火時のSE(火が噴き出すような音)
+#define SE_NG 402             // 汎用的なNG音 (ユーザーの期待にそぐわない場合に出す音)
+#define SE_FSTEP_NOISE_0 403  // 鳴り床の足音
+#define SE_FSTEP_NOISE_1 404
+#define SE_EXPLOSION 405  // 爆弾が爆発したときのSE (ダイナマイト, マミーの吐く爆弾爆発, マミーの死亡時の爆発)
 #define SONG_406 406
 #define SONG_407 407
-#define SONG_408 408
-#define SONG_409 409
-#define SONG_410 410
+#define SE_CIRCLE_IN 408   // 魔方陣の有効範囲に入ったときのSE
+#define SE_CIRCLE_OUT 409  // 魔方陣から離れたときのSE
+#define SE_DRUMROLL 410    // ◀︎ NNN ▶︎ のようなドラムロールUIのカーソル移動音 (縦版もある)
 #define SONG_411 411
 #define SONG_412 412
 #define SONG_413 413
@@ -446,8 +447,8 @@
 #define SONG_442 442
 #define SONG_443 443
 #define SONG_444 444
-#define SONG_445 445
-#define SONG_446 446
+#define SE_TRANSITION_445 445  // トランジションで使用されてるSEの1つ？ ()
+#define SE_DVALINN_446 446     // ドヴァリン戦前のイベントで、ドヴァリンがタコ足を出したときのSE
 #define SONG_447 447
 #define SONG_448 448
 #define SONG_449 449
@@ -491,8 +492,8 @@
 #define SONG_487 487
 #define SONG_488 488
 #define SONG_489 489
-#define SONG_490 490
-#define SONG_491 491
+#define SE_COFFIN_OPEN 490   // 棺桶を開けた時の音(スリーピング終了時)
+#define SE_COFFIN_CLOSE 491  // 棺桶を閉めた時の音(スリーピング開始時)
 #define SONG_492 492
 #define SONG_493 493
 #define SONG_494 494
@@ -503,11 +504,11 @@
 #define SONG_499 499
 #define SONG_500 500
 #define SONG_501 501
-#define SONG_502 502
-#define SE_GUN_AIM 503      // 太陽銃,暗黒銃を構えた時のカチッっという音
-#define SE_GUN_MISFIRE 504  // ENEがなくて太陽銃,暗黒銃から弾が出なかった時のSE
-#define SE_GUN_CHARGED 505  // 太陽銃,暗黒銃のチャージ完了SE
-#define SE_506 506          // 何かが発動したようなSEだが聞き覚えがない
+#define SE_ROCKBUSTER_FIRE 502  // ロックバスターの発射音
+#define SE_GUN_AIM 503          // 太陽銃,暗黒銃,ロックバスターを構えた時のカチッっという音
+#define SE_GUN_CHARGING 504     // 太陽銃チャージ中のSE
+#define SE_GUN_CHARGED 505      // 太陽銃,暗黒銃のチャージ完了SE
+#define SE_506 506              // 何かが発動したようなSEだが聞き覚えがない
 #define SONG_507 507
 #define SONG_508 508
 #define SONG_509 509
@@ -539,33 +540,33 @@
 #define SONG_535 535
 #define SE_536 536  // 氷の属性ブロックが落ちる音？
 #define SE_537 537
-#define SE_538 538  // 属性ブロックが浮き上がる音？
-#define SE_539 539  // 属性ブロック？
-#define SONG_540 540
+#define SE_538 538        // 属性ブロックが浮き上がる音？
+#define SE_539 539        // 属性ブロック？
+#define SE_COUNTDOWN 540  // カウントダウンHUDのカウント音
 #define SONG_541 541
 #define SONG_542 542  // CRY_GHOST_DEATH の代わりに使われることがある
 #define SONG_543 543
 #define SONG_544 544
 #define SONG_545 545
-#define SONG_546 546
+#define SE_ELEV_MECHA_V_RIDE 546  // SPRITE_LIFT_MECHA (昇降床) の有効範囲に入ったときのSE
 #define SONG_547 547
-#define SONG_548 548
-#define SONG_549 549
+#define SE_JORMY_BITE1 548  // ヨルムンガンドの噛みつきSE(攻撃前にこっちに顔を近づけたときのSE)
+#define SE_JORMY_BITE2 549  // ヨルムンガンドの噛みつきSE(歯がカチンとなるようなSE)
 #define SONG_550 550
 #define SONG_551 551
 #define SONG_552 552
 #define SONG_553 553
-#define SONG_554 554
-#define SONG_555 555
-#define SONG_556 556
-#define SONG_557 557
+#define SE_554 554                    // なんか NG っぽいSE
+#define SE_HEAVY_OBJECT_FALL_555 555  // とても重くて大きい物体が地面に落ちたような音 (ヨルムンガンドのHPを0にした後でヨルムンガンドが倒れ込むときに使用)
+#define SE_JORMY_LEG_TOGGLE 556       // ヨルムンガンドがタコ足を出したり引っ込めたりする時のSE
+#define SE_557 557                    // 何かを投げるようなSE (ヨルムンガンドのタコ足薙ぎ払い?)
 #define CRY_JORMY_TONGUE_DAMAGED 558  // ヨルムンガンドが弱点の舌を攻撃されてる時の鳴き声
-#define SONG_559 559
-#define SONG_560 560
-#define SONG_561 561
-#define SONG_562 562
-#define SONG_563 563
-#define SONG_564 564
+#define CRY_JORMY_DEATH 559           // ヨルムンガンド戦でHPを0にしたときの断末魔
+#define CRY_JORMY_GRRRR 560           // ヨルムンガンドの唸り
+#define CRY_JORMY_561 561             // ヨルムンガンドの叫び
+#define SE_WEDGE_BREAK 562            // ヨルムンガンド戦の直前のイベントで楔が壊れるときのSE
+#define SE_WEDGE_PIERCE 563           // ヨルムンガンド戦の後のイベントで楔が打ち込まれるときのSE
+#define CRY_JORMY_EVENT_DEATH 564     // ヨルムンガンド戦の後のイベントで太陽チャージを終えた後のヨルムンガンドの断末魔
 #define SONG_565 565
 #define SONG_566 566
 #define SONG_567 567
@@ -577,28 +578,28 @@
 #define SONG_573 573
 #define SONG_574 574
 #define SONG_575 575
-#define SONG_576 576
-#define SONG_577 577
+#define VO_BDJANGO_BURN 576    // 暑い!, 黒ジャンゴを浄化する際の悲鳴
+#define VO_DURATHROR_BURN 577  // 暑い!
 #define SONG_578 578
-#define SONG_579 579
+#define VO_DAINN_BURN 579  // 暑い!
 #define SONG_580 580
 #define SONG_581 581
-#define SONG_582 582
-#define SONG_583 583
+#define VO_BDJANGO_MAD 582  // 黒ジャンゴの暴走条件を満たした時のうめき声
+#define VO_DURATHROR_583 583
 #define SONG_584 584
 #define SONG_585 585
 #define SONG_586 586
-#define SONG_587 587
+#define VO_DUNEYRR_LAUGH 587
 #define SONG_588 588
 #define SONG_589 589
-#define SONG_590 590
+#define VO_DVALINN_LAUGH 590
 #define SONG_591 591
 #define SONG_592 592
 #define SONG_593 593
-#define SONG_594 594
+#define VO_DUNEYRR_PURIFY 594
 #define SONG_595 595
-#define SONG_596 596
-#define SONG_597 597
+#define VO_DURATHROR_PURIFY 596  // 浄化時 (ボス戦時は VO_DURATHROR_DEATH を使用?)
+#define VO_DVALINN_PURIFY 597    // ドヴァリンを浄化したとき
 #define SONG_598 598
 #define SONG_599 599
 #define SONG_600 600
@@ -610,17 +611,17 @@
 #define SONG_606 606
 #define SONG_607 607
 #define SONG_608 608
-#define SONG_609 609
+#define SE_ELEV_MECHA_V 609  // SPRITE_LIFT_MECHA の動作音 (SE_ELEV_MECHA_H の昇降床版)
 #define SONG_610 610
 #define SONG_611 611
-#define SONG_612 612
+#define SONG_612 612  //
 #define SONG_613 613
 #define SONG_614 614
 #define SONG_615 615
 #define SONG_616 616
 #define SONG_617 617
-#define SONG_618 618
-#define SONG_619 619
+#define VO_ELEFAN_WALK 618  // 棺桶獣エレファンの鳴き声
+#define VO_ELEFAN_ATTACK 619
 #define SONG_620 620
 #define SE_WOOD_DOOR_621 621
 #define SONG_622 622
@@ -631,27 +632,27 @@
 #define SE_627 627  // 何も聞こえない,無音?
 #define SONG_628 628
 #define SONG_629 629
-#define SONG_630 630
+#define SE_SHOP_SELL 630  // 店でアイテムを売った時のSE
 #define SONG_631 631
 #define SONG_632 632
 #define SONG_633 633
 #define SONG_634 634
 #define SONG_635 635
 #define SONG_636 636
-#define SONG_637 637
+#define SE_GETA_THROW 637  // おてんきゲタを投げたときの音(転がるSEも含める)
 #define SONG_638 638
 #define SONG_639 639
 #define SONG_640 640
-#define SONG_641 641
+#define SE_TRANSITION_641 641  // トランジションSE, ドヴァリン戦開始時で使用を確認
 #define SONG_642 642
 #define SONG_643 643
 #define SONG_644 644
 #define SONG_645 645
 #define SONG_646 646
 #define SONG_647 647
-#define SONG_648 648
-#define SONG_649 649
-#define SONG_650 650
+#define SE_ELEV_WATER 648    // 地下水路などでの移動床の動作音
+#define SE_ELEV_MECHA_H 649  // SPRITE_LIFT_MECHA の動作音 (SE_ELEV_MECHA_V の移動床版)
+#define SE_ELEV_LAVA 650     // マグマの移動床の動作音
 #define SONG_651 651
 #define SONG_652 652
 #define SE_FSTEP_STAIRS_0 653  // 階段の登り降り時の足音 (SE_FSTEP_STAIRS_1 と交互に鳴らす)
@@ -661,9 +662,9 @@
 #define SONG_657 657
 #define SONG_658 658
 #define SONG_659 659
-#define SONG_660 660
+#define SE_ANS_WRONG 660  // 不正解SE?
 #define SONG_661 661
-#define SONG_662 662
+#define SE_ANS_CORRECT 662  // 正解SE
 #define SONG_663 663
 #define SONG_664 664
 #define SONG_665 665
@@ -678,7 +679,7 @@
 #define SONG_674 674
 #define SONG_675 675
 #define SONG_676 676
-#define SONG_677 677
+#define SE_COUNT_UP 677  // 数字のカウントアップSE
 #define SONG_678 678
 #define SONG_679 679
 #define SONG_680 680
@@ -697,49 +698,49 @@
 #define SONG_693 693
 #define SONG_694 694
 #define SONG_695 695
-#define SONG_696 696
+#define SE_POP_DARKBUGS 696  // 太陽タケノコから暗黒虫が出てきた時の音
 #define SONG_697 697
 #define SONG_698 698
-#define SONG_699 699
-#define SONG_700 700
-#define SONG_701 701
+#define VO_TITLECALL_SABATA 699  // VO_TITLECALL_DJANGO のサバタ版
+#define VO_TITLECALL_DJANGO 700  // タイトルコール"続・ボクらの太陽"
+#define VO_DUNEYRR_WAIT 701      // ドゥネイルの"ｵﾏﾁﾅｻｲ"
 #define SONG_702 702
 #define SONG_703 703
-#define SONG_704 704
-#define SONG_705 705
-#define SONG_706 706
-#define SONG_707 707
-#define SONG_708 708
-#define SONG_709 709
-#define SONG_710 710
-#define SONG_711 711
-#define SONG_712 712
-#define SONG_713 713
-#define SONG_714 714
-#define SONG_715 715
-#define SONG_716 716
+#define VO_ANKO_WELCOME 704   // 暗黒ローンのｲﾗｯｼｬｲﾏｾｰ!
+#define VO_ANKO_THANKS 705    // 暗黒ローンのｱﾘｶﾞﾄｳｺﾞｻﾞｲﾏｼﾀ
+#define VO_READY 706          // 通信対戦などのREADY!
+#define VO_FIGHT 707          // 通信対戦などのFIGHT!
+#define VO_SPRING_DJANGO 708  // タイトルコールの"春"
+#define VO_SUMMER_DJANGO 709  // タイトルコールの"夏"
+#define VO_AUTUMN_DJANGO 710  // タイトルコールの"秋"
+#define VO_WINTER_DJANGO 711  // タイトルコールの"冬"
+#define VO_SPRING_SABATA 712
+#define VO_SUMMER_SABATA 713
+#define VO_AUTUMN_SABATA 714
+#define VO_WINTER_SABATA 715
+#define VO_DURATHROR_YOKUMO 716    // よくも！
 #define VO_DURATHROR_YAHH_717 717  // 棘の柱?
 #define VO_DURATHROR_YAHH_718 718  // 棘の柱?
-#define SONG_719 719
-#define SONG_720 720
-#define SONG_721 721
-#define SONG_722 722
-#define SONG_723 723
-#define SONG_724 724
-#define SONG_725 725
-#define SONG_726 726
-#define VO_CHEYENNE_727 727  // 武器屋に入った時のシャイアンのボイス
-#define SONG_728 728
-#define SONG_729 729
-#define SONG_730 730
-#define SONG_731 731
+#define VO_DURATHROR_SMILE 719
+#define VO_SHAIAN_ATK1 720  // シャイアンの弱攻撃
+#define VO_SHAIAN_ATK2 721  // シャイアンの中攻撃, ﾄﾞﾘｬ！
+#define VO_SHAIAN_ATK3 722  // シャイアンの強攻撃, ﾄﾞﾘｬｰ!
+#define VO_SHAIAN_MIKK 723  // 見切った!
+#define VO_SHAIAN_KOREDA 724
+#define VO_SHAIAN_DAMAGE 725
+#define VO_SHAIAN_DEATH 726
+#define VO_CHEYENNE_WELCOME 727  // 武器屋に入った時のシャイアンのボイス
+#define VO_ZAJI_IKUDE 728
+#define VO_ZAJI_YOMETADE 729
+#define VO_ZAJI_HIMAWARI 730  // ひまわりはうつむかへん
+#define VO_ZAJI_LAUGH 731
 #define SONG_732 732
-#define VO_SMITH_WELCOME 733  // ｷﾀﾅ!
-#define SONG_734 734
-#define SONG_735 735
-#define SONG_736 736
-#define SONG_737 737
-#define SONG_738 738
+#define VO_SMITH_WELCOME 733    // ｷﾀﾅ!
+#define VO_SMITH_FORGE1 734     // 太陽鍛治時のボイス1, "ﾊｯ"
+#define VO_SMITH_FORGE2 735     // 太陽鍛治時のボイス2, "ｵﾘｬ"
+#define VO_SMITH_FORGE3 736     // 太陽鍛治時のボイス3, "ｾｲｯ"
+#define VO_SMITH_FORGE4 737     // 太陽鍛治終了時のボイス, "ﾊｧｰ"
+#define VO_LADY_ATTACK 738      // ラスボス直前のイベントで図書館のレディの戦闘ボイス
 #define VO_LADY_WELCOME 739     // 図書館のレディのｲﾗｯｼｬｲ
 #define VO_SABATA_ANKOKU 740    // サバタのｱﾝｺｰｸ!
 #define VO_SABATA_DOKE 741      // サバタのﾄﾞｹｯ!
@@ -747,10 +748,10 @@
 #define VO_SABATA_LAUGH 743     // ﾊﾊﾊﾊ
 #define VO_SABATA_IMADA 744     // ｲﾏﾀﾞｯ
 #define VO_SABATA_TAKETHIS 745  // ｸﾗｴｯ
-#define VO_SABATA_STUN 746
+#define VO_SABATA_STUN 746      // 黒ジャンゴ浄化後の気絶ボイス?
 #define VO_SABATA_DEATH 747
 #define SONG_748 748
-#define VO_SABATA_749 749
+#define VO_SABATA_PITFALL 749  // VO_DJANGO_PITFALL のサバタ版
 #define SONG_750 750
 #define SONG_751 751
 #define SONG_752 752
@@ -758,12 +759,12 @@
 #define VO_KID_WELCOME 754              // 店に入った時のボイス
 #define VO_ENNIO 755                    // 時計合わせジジイの鳴き声
 #define VO_SUMIRE_ONIICHAN1 756         // 元気
-#define VO_SUMIRE_ONIICHAN2 757         // おちんこでる感じ
+#define VO_SUMIRE_ONIICHAN2 757         // しょんぼり
 #define VO_COFFIN_SHOP 758              // 棺桶屋の鳴き声 ﾔｧ
 #define VO_DARK_DJANGO_UGH_759 759      // 黒ジャンゴが暴走する攻撃回数になった時のｳｯというボイス
 #define VO_SOLAR_DJANGO_TAIYO 760       // 赤ジャンゴのﾀｲﾖｰ!
 #define VO_OTENKO_TAIYO_TO_TOMO_NI 761  // 太陽とともにあらんことを
-#define VO_OTENKO_ASU_MO 762            // 明日もまた陽はのぼる
+#define VO_OTENKO_ASUMO 762             // 明日もまた陽はのぼる
 #define VO_TAIYO_763 763                // ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
 #define VO_TAIYO_764 764                // 黒ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
 #define VO_TAIYO_765 765                // ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
@@ -772,29 +773,29 @@
 #define SONG_768 768
 #define SONG_769 769
 #define VO_DARK_DJANGO_UGH_770 770
-#define VO_DARK_DJANGO_SCREAM 771  // 黒ジャンゴが暴走した時のボイス?
-#define VO_SOLAR_DJANGO_SCREAM 772
-#define VO_DJANGO_773 773       // 驚いたような声(落とし穴に落ちた時など)
+#define VO_BERSERK 771          // 黒ジャンゴが暴走した時のボイス
+#define VO_DJANGO_SCREAM 772    // 悲鳴, 落下死やドヴァリン戦前のイベントで水に引き込まれた時
+#define VO_DJANGO_PITFALL 773   // 驚いたような声(落とし穴に落ちた時など)
 #define VO_DJANGO_MAGIC 774     // ヒーリングやトランスを使った時のｵｵｫｫ!みたいな声
-#define VO_DJANGO_BOKURANO 775  // ﾎﾞｸﾗﾉ…!
-#define SONG_776 776
-#define SONG_777 777
-#define SONG_778 778
-#define VO_DAINN_779 779
-#define VO_DAINN_780 780                // ｲｸﾖｰ!!
-#define SE_DAINN_STUN_BY_RINGO_BAT 781  // ダーインがドュラスロール戦前にリンゴの蝙蝠に怯ませられる音
-#define VO_DAINN_LAUGH 782              // ﾊﾊﾊﾊ
-#define SONG_783 783
+#define VO_BOKURANO 775         // ﾎﾞｸﾗﾉ…! (ドゥラスロール浄化イベントで使用)
+#define VO_TAIYO_B 776          // 黒ジャンゴの太陽チャージ (VO_TAIYO_R の対)
+#define VO_DJANGO_ASUMO 777     // 明日もまた陽はのぼる
+#define VO_DAINN_JYAMADAYO 778  // ｼﾞｬﾏﾀﾞﾖ!
+#define VO_DAINN_779 779        // ﾊｧｯ!
+#define VO_DAINN_780 780        // ｲｸﾖｰ!!
+#define VO_DAINN_DAMAGE 781     // ダーインがダメージを受けた時のボイス
+#define VO_DAINN_LAUGH1 782     // ﾊﾊﾊﾊ(高笑い)
+#define VO_DAINN_LAUGH2 783     // ﾊﾊﾊﾊ...(渇いた感じの笑い)
 #define SONG_784 784
 #define VO_DAINN_DEATH 785
 #define SONG_786 786
 #define VO_DAINN_787 787  // ｳﾜｯ!!
 #define SONG_788 788
 #define SONG_789 789
-#define SONG_790 790
-#define VO_LITA_WELCOME 791  // 店に入った時の ｲﾗｯｼｬｲﾏｾｰ!
+#define VO_RITA_ITSUTAI 790  // いつも心に太陽を！
+#define VO_RITA_WELCOME 791  // 店に入った時の ｲﾗｯｼｬｲﾏｾｰ!
 #define SONG_792 792
-#define SONG_793 793
+#define VO_RITA_ORAORA 793  // リタのオラオララッシュ
 #define SONG_794 794
 #define SONG_795 795
 #define SONG_796 796
@@ -813,7 +814,7 @@
 #define SONG_809 809
 #define SONG_810 810
 #define SONG_811 811
-#define SONG_812 812
+#define SONG_812 812  // ドヴァリン戦前のイベントで、リンゴに憑依したダーインが正体を表すときのSE
 #define SONG_813 813
 #define SONG_814 814
 #define SONG_815 815
@@ -843,24 +844,24 @@
 #define SONG_839 839
 #define SONG_840 840
 #define SONG_841 841
-#define SE_842 842
-#define SE_843 843  // 攻撃っぽいSE
+#define SE_WHOOSH_842 842  // 高速移動っぽいSE (ドヴァリン戦前のイベントでダーインが逃げる時になったり)
+#define SE_843 843         // 攻撃っぽいSE
 #define SONG_844 844
 #define SONG_845 845
 #define SE_846 846
-#define SONG_847 847
-#define SONG_848 848
+#define VO_RINGO_DAMAGE 847
+#define VO_RINGO_848 848
 #define SE_UNK_849 849
-#define SE_UNK_850 850         // ふわっとしたSE
-#define SE_UNK_851 851         // テレポートしてそうなSE
-#define SE_UNK_852 852         // テレポートしてそうなSE
-#define VO_RINGO_DEFEATED 853  // リンゴの ｱｱｱｱｱｱｱ!! という叫び声
-#define SONG_854 854
-#define SONG_855 855
-#define SONG_856 856
-#define SONG_857 857
-#define SONG_858 858
-#define SONG_859 859
+#define SE_UNK_850 850       // ふわっとしたSE
+#define SE_UNK_851 851       // テレポートしてそうなSE
+#define SE_UNK_852 852       // テレポートしてそうなSE
+#define VO_RINGO_SCREAM 853  // リンゴの ｱｱｱｱｱｱｱ!! という叫び声
+#define VO_RINGO_ASUMO 854
+#define VO_RINGO_TAIYO 855
+#define VO_RINGO_LAUGH_856 856  // ダーイン憑依時の笑い声(ドヴァリン戦のイベント)
+#define VO_RINGO_857 857
+#define VO_RINGO_OSOI 858
+#define VO_RINGO_TAKETHIS 859
 #define VO_RINGO_860 860    // リンゴが攻撃してる時のような声
 #define VO_RINGO_LAUGH 861  // 3賢者のカードで封印を解くイベント時
 #define SONG_862 862
@@ -868,22 +869,22 @@
 #define SONG_864 864
 #define SONG_865 865
 #define SONG_866 866
-#define SONG_867 867
-#define SONG_868 868
+#define SONG_867 867  //
+#define SE_868 868    // 棺桶封印のようなSE
 #define SONG_869 869
 #define SONG_870 870
 #define SONG_871 871
 #define SONG_872 872
 #define SONG_873 873
-#define SONG_874 874
-#define SONG_875 875
+#define VO_SABATA_DAMAGE1 874  // サバタのダメージボイス?
+#define VO_SABATA_DAMAGE2 875
 #define SONG_876 876
 #define SONG_877 877
 #define SONG_878 878
 #define SONG_879 879
 #define SONG_880 880
 #define SONG_881 881
-#define SONG_882 882
+#define SE_882 882  // ゴングのようなSE
 #define SONG_883 883
 #define SONG_884 884
 #define SONG_885 885
@@ -894,7 +895,7 @@
 #define SONG_890 890
 #define SONG_891 891
 #define SONG_892 892
-#define SONG_893 893
+#define SE_MONEY_TRANSFER 893  // 太陽バンク, 暗黒ローンで 十字キー右左で太陽エネルギーの移し替えをするときのSE
 #define SONG_894 894
 #define SONG_895 895
 #define SONG_896 896
@@ -908,21 +909,21 @@
 #define SE_LEVEL_UP 904
 #define SONG_905 905
 #define SE_SWAP_SLOT 906  // インベントリのスロットをスワップする時の音
-#define SONG_907 907
-#define SONG_908 908
-#define SONG_909 909
-#define SONG_910 910
-#define SONG_911 911
-#define SONG_912 912
+#define SE_SWORD_ATK_B 907
+#define SE_SWORD_ATK_R 908
+#define SE_SPEAR_ATK_B 909   // 黒ジャンゴでの槍攻撃SE
+#define SE_HAMMER_ATK_B 910  // 黒ジャンゴでの槌攻撃SE
+#define SE_SPEAR_ATK_R 911   // 赤ジャンゴでの槍攻撃SE
+#define SE_HAMMER_ATK_R 912  // 赤ジャンゴでの槌攻撃SE
 #define SONG_913 913
-#define SE_MAGIC_DASH 914  // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
-#define SE_ENCHANT 915
+#define SE_M_DASH 914     // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
+#define SE_M_ENCHANT 915  // エンチャントをONにした時のSE
 #define SONG_916 916
 #define SONG_917 917
 #define SONG_918 918
-#define SE_HEALING 919  // ヒーリングを使った時の魔法音(ボイスの方ではない)
-#define SONG_920 920
-#define SONG_921 921
+#define SE_M_HEALING 919   // 魔法"ヒーリング"を使った時の魔法音(ボイスの方ではない)
+#define SE_M_FREEZE 920    // 魔法"フリーズ"を使った時の魔法音
+#define SE_M_DYNAMITE 921  // 魔法"ダイナマイト"を発動した時のSE (ダイナマイトの爆発は SE_EXPLOSION)
 #define SONG_922 922
 #define SE_TRANSFORM 923  // トランス使用時のSE
 #define SONG_924 924

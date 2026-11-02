@@ -7,7 +7,7 @@ struct Entity080c1abc;
 typedef void(Entity080c1abcFunc)(struct Entity080c1abc* p);
 
 typedef struct {
-  Particle ptcl;  // 0x00, コマ 0x11, パレット 1, オフセット (-4,-4)
+  Particle ptcl;  // 0x00, PTCL2_17, パレット 1, オフセット (-4,-4)
   bool8 active;   // 0x28, 初期化で 0 を書く
   u8 unk_29[7];   // 0x29, まだ未解析
 } Entity080c1abcPtcl;
@@ -17,7 +17,7 @@ typedef struct Entity080c1abc {
   Entity e;                            // 0x000, ENTITY_UNK_8
   u32 unk_18;                          // 0x018, Init の第2引数
   AuxSprite sprite;                    // 0x01C
-  AuxSpriteGfx gfx;                    // 0x048, SPRITE_EFF_210E, パレット 46
+  AuxSpriteGfx gfx;                    // 0x048, SPRITE_210E, パレット 46
   u16 velX;                            // 0x064, 毎フレーム sprite.pos.x に加算される
   u8 unk_66[2];                        // 0x066, まだ未解析
   u16 velZ;                            // 0x068, 毎フレーム sprite.pos.z に加算される
@@ -29,7 +29,7 @@ typedef struct Entity080c1abc {
   u16 unk_72;                          // 0x072, Init の第4引数
   u8 unk_74[3];                        // 0x074, まだ未解析
   u8 unk_77;                           // 0x077, 初期化で 0 を書く
-  ParticleGroup* group;                // 0x078, PTCL_GROUP_2
+  ParticleGroup* group2;               // 0x078, PTCL_GROUP_2
   Entity080c1abcPtcl ptcls[4];         // 0x07C
   Entity080c1abcFunc* updateCallback;  // 0x13C
 } Entity080c1abc;

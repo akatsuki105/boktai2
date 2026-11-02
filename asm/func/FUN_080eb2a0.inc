@@ -831,7 +831,7 @@ _080EB8FC:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080EB91C
 	cmp r0, #2
@@ -2236,7 +2236,7 @@ _080EC374:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x34]
 	adds r2, r7, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080EC394
 	cmp r0, #2

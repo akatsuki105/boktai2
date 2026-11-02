@@ -116,7 +116,7 @@ _08046A34:
 	add r2, sb
 	mov r0, sl
 	adds r1, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	movs r0, #1
 	strb r0, [r5, #0xa]
 _08046A60:

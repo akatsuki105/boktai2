@@ -28,18 +28,11 @@ s32 Entity56DC_Update(Entity56DC* p) {
     p->scaleX++;
     p->scaleY++;
   }
-  if (p->scaleX <= 16) {
-    p->scaleX = 16;
-  }
-  if (p->scaleX >= 127) {
-    p->scaleX = 127;
-  }
-  if (p->scaleY <= 16) {
-    p->scaleY = 16;
-  }
-  if (p->scaleY >= 127) {
-    p->scaleY = 127;
-  }
+  if (p->scaleX <= 16) p->scaleX = 16;
+  if (p->scaleX >= 127) p->scaleX = 127;
+  if (p->scaleY <= 16) p->scaleY = 16;
+  if (p->scaleY >= 127) p->scaleY = 127;
+
   if (gInput[0].down & DPAD_UP) {
     p->unk_28--;
   } else if (gInput[0].down & DPAD_DOWN) {
@@ -85,17 +78,17 @@ s32 Entity56DC_Init(Entity56DC* p, unknown* param_2, unknown* param_3) {
   p->frameCounter = 0;
   p->unk_24 = 0;
   p->unk_28 = 0;
-  p->scaleX = 64;
-  p->scaleY = 64;
+  p->scaleX = Q6(1), p->scaleY = Q6(1);
   p->unk_2c = 0;
   p->unk_30 = 0;
   VEC3_SET(pos, 120, 80, 0);
-  MainSprite_Add(&p->sprite, &p->gfx, 1, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD, 2, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprite, &p->gfx, 1, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD, 2, PLAYMODE_PAUSE, SECOND(1), &pos);
   p->sprite.scaleX = p->scaleX;
   p->sprite.scaleY = p->scaleY;
   return 0;
 }
 
+// 0x56DC
 Entity56DC* Entity56DC_Create(unknown* param_1, unknown* param_2) {
   Entity56DC* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity56DC));
   if (p != NULL) {

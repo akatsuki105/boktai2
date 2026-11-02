@@ -805,7 +805,7 @@ _0803C0B2:
 	ldr r2, _0803C144 @ =FUN_08036fd8
 	adds r0, r4, #0
 	ldr r1, [sp, #0x24]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 	movs r1, #2
 	rsbs r1, r1, #0
 	ldr r0, [r4, #4]
@@ -854,7 +854,7 @@ _0803C0B2:
 	str r0, [r1]
 	cmp r0, #0
 	beq _0803C158
-	bl Entity0805dcd4_Create
+	bl DurathrorImpale_Create
 	ldr r6, _0803C154 @ =0x00000DEC
 	adds r1, r7, r6
 	str r0, [r1]

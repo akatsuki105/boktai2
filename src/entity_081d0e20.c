@@ -46,9 +46,9 @@ static inline bool8 Entity081d0e20_IsActive(u32* mask, s32 i) {
   return FALSE;
 }
 
-unknown* FUN_081ee9bc(Vec3* pos);
-s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
-s32 FUN_080e1100(Vec3* pos, Vec3* size, u32* out);
+unknown* Entity081eeb28_Spawn(Vec3* pos);
+struct Player* FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
+struct Enemy* FUN_080e1100(Vec3* pos, Vec3* size, u32* id);
 
 Entity081d0e20* Entity081d0e20_Create(void);
 
@@ -289,7 +289,7 @@ NON_MATCH void Cmd_2FA5(void) {
       }
     }
     pos = elem->pos;
-    FUN_081ee9bc(&pos);
+    Entity081eeb28_Spawn(&pos);
     if (VM_GetNamedArgValue('s', 0) != 0) {
       elem->flags |= 8;
       Mover_Init(&elem->mover, elem->id, &elem->pos, 0, 7, elem);

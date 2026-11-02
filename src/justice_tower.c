@@ -12,6 +12,9 @@
 #include "sound.h"
 #include "sprite.h"
 
+#define TYPE_JUSTICE 0  // 正義のカード
+#define TYPE_TOWER 1    // 塔のカード
+
 // 演出で飛ばす粒子1個ぶんの枠, 8個を使い回す
 typedef struct Entity080aace8Particle {
   Particle ptcl;                               // 0x00, _Destroy が Particle_Remove に渡す
@@ -178,7 +181,7 @@ NON_MATCH void FUN_080aa29c(Entity080aace8* p) {
     tile = &gCollisionMap->tiledata->tiles[tileIdx];
   }
 
-  if (tile->attr & TATTR_UNK_6) {
+  if (tile->attr & TATTR_FALLDEATH) {
     p->unk_15c[p->unk_158] = 0;
   } else {
     p->unk_15c[p->unk_158] = TileHeightAt(&spr->pos);
@@ -264,7 +267,7 @@ NON_MATCH void FUN_080aa658(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   if (p->unk_34a == 0) {
     gEntityDisableFlags &= ~ENTITY_DISABLE_2;
-    PlaySound_082406e0(SOUND_103);
+    PlaySound_082406e0(SE_THE_TOWER);
     FUN_0823ce68(2, 4, 0x1F, 0x1F, 0x1F, 0x1FFF, 1);
   }
 
@@ -306,12 +309,12 @@ NON_MATCH void FUN_080aa708(Entity080aace8* p) {
     p->icon.flags |= SPRFLAG_HIDDEN;
   }
 
-  if (p->kind == 1 && p->unk_34a == 29) {
+  if (p->kind == TYPE_TOWER && p->unk_34a == 29) {
     FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 1);
   }
 
   if (p->unk_34a > 44) {
-    if (p->kind == 0) {
+    if (p->kind == TYPE_JUSTICE) {
       p->updateCallback = FUN_080aa5d0;
     } else {
       p->updateCallback = FUN_080aa658;
@@ -431,10 +434,11 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
   halfSize.x = 0x7530, halfSize.y = 0x7530, halfSize.z = 0x7530;
   offset.x = 0, offset.y = 0, offset.z = 0;
 
-  if (p->kind == 0) {
+  if (p->kind == TYPE_JUSTICE) {
     ignoreMask = 1 << p->player->mover.unk_4;
     power = p->player->maxHP - p->player->hp;
   } else {
+    // TYPE_TOWER
     s32 lv;
     if (p->player->kind == PLAYER_SABATA) {
       lv = gStat->lv + 10;
@@ -478,7 +482,7 @@ s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
   p->player->hurtbox.invincibleTime = 0;
   gGameFlags |= FLAG030047A4_UNK_0;
   SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
-  if (p->kind == 0) {
+  if (p->kind == TYPE_JUSTICE) {
     FUN_080aa9d0(p);
   }
 

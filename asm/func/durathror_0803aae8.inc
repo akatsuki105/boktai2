@@ -194,7 +194,7 @@ _0803AC38:
 	ldrsh r1, [r1, r2]
 	movs r2, #0x20
 	adds r3, r4, #0
-	bl FUN_0805dd44
+	bl DurathrorImpale_Spawn
 _0803AC7E:
 	mov r3, sl
 	cmp r3, #0xff

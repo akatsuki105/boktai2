@@ -51,7 +51,7 @@ _0800D3A6:
 	adds r0, r2, #0
 	adds r0, #0x50
 	movs r1, #0x80
-	bl FUN_08003014
+	bl EntityD9AE_SpawnDust
 	ldr r0, _0800D3D8 @ =0x00000143
 	bl PlaySound_082406e0
 	b _0800D3EA

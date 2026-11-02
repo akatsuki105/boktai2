@@ -1,25 +1,30 @@
+#include "collision_map.h"
 #include "entity.h"
 #include "global.h"
 #include "vm.h"
 
 typedef struct {
-  u16 unk_0;  // 0x00
-  u8 unk_2[2];
-  u16 unk_4;  // 0x04
-  u8 unk_6[16 - 0x06];
+  Vec3 pos;   // 0x00
+  s16 size;   // 0x08, 判定の半径, 負なら空き枠
+  u16 unk_a;  // 0x0A
+  u16 flags;  // 0x0C, bit2 は今のフレームに積まれた印, 残りは探すときのマスク
+  u16 tag;    // 0x0E, FUN_08240d20 の除外キー
 } Entity794CData;
 static_assert(sizeof(Entity794CData) == 16);
 
 typedef struct {
   Entity e;                // 0x00, ENTITY_UNK_5
-  u8 unk_18[0x20 - 0x18];  // 0x18
-  Entity794CData data[7];  // 0x20, FUN_08240b44 は 0xA0 まで8個ぶんまわるので最後の1個は slots[0..1] と重なる
-  u8 unk_90[0x98 - 0x90];  // 0x90
+  Entity794CData data[8];  // 0x18
   u32 slots[16];           // 0x98, FUN_08240f20 が線形探索し Cmd_79EC が全部 0 に戻す
 } Entity794C;
 static_assert(sizeof(Entity794C) == 216);
 
 static Entity794C* sEntity794C;  // 0x03001700
+
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
 
 // 2点が size1 + size2 の正方範囲に収まっているか
 bool32 BoxesOverlap(s32 x1, s32 y1, s32 size1, s32 x2, s32 y2, s32 size2) {
@@ -32,25 +37,118 @@ bool32 BoxesOverlap(s32 x1, s32 y1, s32 size1, s32 x2, s32 y2, s32 size2) {
   return FALSE;
 }
 
-NAKED bool8 FUN_08240b00(Vec3* pos) { INCFUNC("asm/func/FUN_08240b00.inc"); }
+bool8 FUN_08240b00(Vec3* pos) {
+  u32* slot;
+  s32 i;
 
-NAKED void FUN_08240b44(void) { INCFUNC("asm/func/FUN_08240b44.inc"); }
+  if (sEntity794C == NULL) {
+    return FALSE;
+  }
+  for (i = 0, slot = sEntity794C->slots; i < 16; i++) {
+    if ((s32)*slot > 0 && Map_IsPosInZoneByID(*slot, pos)) {
+      return TRUE;
+    }
+    slot++;
+  }
+  return FALSE;
+}
 
-NAKED u16 FUN_08240b98(Vec3* out, u8 idx) { INCFUNC("asm/func/FUN_08240b98.inc"); }
+void FUN_08240b44(void) {
+  Entity794C* p = sEntity794C;
 
-NAKED void FUN_08240bcc(u16 x, u16 z, u16 param_3, u16 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08240bcc.inc"); }
+  if (p != NULL) {
+    s32 i;
 
-NAKED void FUN_08240c9c(s16 x, s16 z, s16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_08240c9c.inc"); }
+    for (i = 0; i < 8; i++) {
+      if (p->data[i].flags & 4) {
+        p->data[i].flags &= ~4;
+      } else {
+        p->data[i].size = -1;
+        p->data[i].flags = 0;
+      }
+    }
+  }
+}
 
-NAKED void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5) { INCFUNC("asm/func/FUN_08240cc4.inc"); }
+u16 FUN_08240b98(Vec3* out, u8 idx) {
+  Entity794C* p = sEntity794C;
 
-NAKED void FUN_08240cf0(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08240cf0.inc"); }
+  if (p == NULL) {
+    return 0;
+  }
+  out->x = p->data[(s8)idx].pos.x;
+  out->y = 0;
+  out->z = p->data[(s8)idx].pos.z;
+  return p->data[(s8)idx].tag;
+}
 
-NAKED s8 FUN_08240d20(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) { INCFUNC("asm/func/FUN_08240d20.inc"); }
+// 原典はプロトタイプなしの K&R 定義 (呼び出し側は s16 のまま渡し, ここで u16 に切り詰める), その形で命令は 97/94, 残差は z が r7 に載らずスタックへ逃げる割当
+NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, u16 param_6) {
+#ifdef NONMATCHING_C
+  Entity794C* p = sEntity794C;
+  Vec3 pos;
 
-NAKED s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 param_5) { INCFUNC("asm/func/FUN_08240dc8.inc"); }
+  if (p != NULL) {
+    pos.x = x;
+    pos.y = 0;
+    pos.z = z;
+    if (!FUN_08240b00(&pos)) {
+      s32 i;
 
-NAKED s8 FUN_08240dec(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) { INCFUNC("asm/func/FUN_08240dec.inc"); }
+      for (i = 0; i < 8; i++) {
+        if (p->data[i].size < 0) {
+          p->data[i].pos.x = x;
+          p->data[i].pos.y = 0;
+          p->data[i].pos.z = z;
+          p->data[i].tag = param_6;
+          if (TestMapFlag(0x80)) {
+            p->data[i].size = (s16)param_3 * 2;
+          } else {
+            p->data[i].size = param_3;
+          }
+          p->data[i].unk_a = param_4;
+          p->data[i].flags = param_5 | 4;
+          return;
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_08240bcc.inc");
+#endif
+}
+
+void FUN_08240c9c(s16 x, s16 z, s16 param_3, s16 param_4) { FUN_08240bcc(x, z, param_3, param_4, 1, 0); }
+
+void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5) { FUN_08240bcc(x, z, param_3, param_4, param_5, 0); }
+
+void FUN_08240cf0(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, u16 param_6) { FUN_08240bcc(x, z, param_3, param_4, param_5, param_6); }
+
+s8 FUN_08240d20(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) {
+  Entity794C* p = sEntity794C;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+  for (i = start; i < 8; i++) {
+    Entity794CData* data = &p->data[i];
+
+    if (!(data->flags & 4) && (data->tag == 0 || data->tag != param_5)) {
+      if (data->flags & 0x80) {
+        return i;
+      }
+      if (data->size >= 0 && (data->flags & mask) && (u8)BoxesOverlap(data->pos.x, data->pos.z, data->size, x, y, size)) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 param_5) { return FUN_08240d20(x, y, size, mask, param_5, 0); }
+
+s8 FUN_08240dec(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) { return FUN_08240d20(x, y, size, mask, param_5, start); }
 
 s32 Entity794C_Update(Entity794C* p) {
   FUN_08240b44();
@@ -59,13 +157,69 @@ s32 Entity794C_Update(Entity794C* p) {
 
 s32 Entity794C_Destroy(Entity794C* p) { sEntity794C = NULL; }
 
-NAKED s32 Entity794C_Init(Entity794C* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity794C_Init.inc"); }
+s32 Entity794C_Init(Entity794C* p, u32 param_2, u32 param_3) {
+  if (VM_SeekToNamedArg('a')) {
+    u32* slot = p->slots;
 
-NAKED Entity794C* Entity794C_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity794C_Create.inc"); }
+    while (VM_GetPC() != NULL) {
+      *slot++ = VM_GetValue();
+    }
+  }
+  FUN_08240b44();
+  sEntity794C = p;
+  return 1;
+}
 
-NAKED void Cmd_1693(void) { INCFUNC("asm/func/Cmd_1693.inc"); }
+Entity794C* Entity794C_Create(u32 param_1, u32 param_2) {
+  Entity794C* p = CreateEntity(ENTITY_UNK_5, sizeof(Entity794C));
 
-NAKED s32 FUN_08240f20(Entity794C* p, u32 val) { INCFUNC("asm/func/FUN_08240f20.inc"); }
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity794C_Update, Entity794C_Destroy);
+    if (Entity794C_Init(p, param_1, param_2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
+
+// 残差は 1 命令, 第 4 引数と第 6 引数の 0 を 1 本の r3 で共有する形
+NON_MATCH void Cmd_1693(void) {
+#ifdef NONMATCHING_C
+  u16 x;
+  u16 z;
+  u16 size;
+  u8 flags;
+
+  if (VM_SeekToNamedArg('p')) {
+    x = (VM_GetPC() != NULL) ? VM_GetValue() : 0;
+    z = (VM_GetPC() != NULL) ? VM_GetValue() : 0;
+  } else {
+    x = 0;
+    z = 0;
+  }
+  size = VM_GetNamedArgValue('r', 0);
+  flags = VM_GetNamedArgValue('f', 1);
+  FUN_08240bcc(x, z, size, 0, flags, 0);
+#else
+  INCFUNC("asm/func/Cmd_1693.inc");
+#endif
+}
+
+s32 FUN_08240f20(Entity794C* p, u32 val) {
+  s32 free = 16;
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    if (p->slots[i] == val) {
+      return i;
+    }
+    if (p->slots[i] == 0) {
+      free = i;
+    }
+  }
+  return -free;
+}
 
 // '.a' の値を空き枠に積む
 void Cmd_1422(void) {

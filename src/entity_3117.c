@@ -215,8 +215,8 @@ void Entity3117_SetAnimScripted(void) {
 }
 
 // 要素を1フレーム進める, 位置・パレット・拡大率を線形補間し, アニメを1コマ進めて終端で '.e' のスクリプトを実行する
-// 残差は 437/442, パレット補間のループの並び (原典はループ本体を後ろに置く) と, 後半の AuxAnim 手動送りの壁 (PlayerShockwave_UpdateAnim と同じ)
-// Tier A は未着手 (ループの書き方), 初稿のみ
+// 440/442命令, 手動送りは AuxSprite_AdvanceAnim で揃い, パレット補間の分岐は ++plttTick >= plttFrames を先に書くと原典の並びになった
+// 残差はパレット補間ループの中身: 原典は from / to の2色を先に読んで r/g/b を (c << 16) >> 21 の形で全部取り出してから掛け算する, 試済: 成分を先にローカルへ取る (lsrs のまま), rgb555 で受ける (悪化)
 NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
 #ifdef NONMATCHING_C
   if (e->flags == 0) {
@@ -237,7 +237,10 @@ NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
   }
 
   if (e->flags & 2) {
-    if (++e->plttTick < e->plttFrames) {
+    if (++e->plttTick >= e->plttFrames) {
+      Video_SetAuxSpritePltt(&e->gfx, e->plttBase + e->plttTo);
+      e->flags &= ~2;
+    } else {
       rgb555* from = &gObjPlttData[(e->plttBase + e->plttFrom) * 16];
       rgb555* to = &gObjPlttData[(e->plttBase + e->plttTo) * 16];
       s32 rest = e->plttFrames - e->plttTick;
@@ -257,9 +260,6 @@ NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
       }
       e->gfx.pltt = e->pltt;
       e->gfx.plttID = e->id + 600;
-    } else {
-      Video_SetAuxSpritePltt(&e->gfx, e->plttBase + e->plttTo);
-      e->flags &= ~2;
     }
   }
 
@@ -280,52 +280,8 @@ NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
   }
 
   if (e->flags & 8) {
-    AuxAnimState* anim = &e->anim;
-    AuxSprite* sprite = &e->sprite;
-    AuxAnimCmd* cmd;
-    bool32 done;
+    bool32 done = AuxSprite_AdvanceAnim(&e->sprite, &e->anim);
 
-    cmd = &anim->cmds[anim->cmdIdx];
-    e->sprite.poseIdx = *cmd >> 6;
-    if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-      e->sprite.flags |= SPRFLAG_XFLIP;
-    } else {
-      e->sprite.flags &= ~SPRFLAG_XFLIP;
-    }
-    if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-      sprite->flags |= SPRFLAG_YFLIP;
-    } else {
-      sprite->flags &= ~SPRFLAG_YFLIP;
-    }
-    anim->tick++;
-    if (anim->tick < anim->wait) {
-      done = FALSE;
-    } else {
-      anim->tick = 0;
-      if (anim->flags & ANIM_PLAY_REVERSE) {
-        if (anim->cmdIdx == 0) {
-          anim->cmdIdx = anim->cmdCount - 1;
-          done = TRUE;
-        } else {
-          anim->cmdIdx--;
-          done = FALSE;
-        }
-      } else {
-        anim->cmdIdx++;
-        if (anim->cmdIdx >= anim->cmdCount) {
-          anim->cmdIdx = 0;
-          done = TRUE;
-        } else {
-          done = FALSE;
-        }
-      }
-      cmd = &anim->cmds[anim->cmdIdx];
-      anim->duration = *cmd & 0xF;
-      anim->wait = anim->duration * anim->speed >> 6;
-      if (anim->wait == 0) {
-        anim->wait = 1;
-      }
-    }
     if (done && e->runScriptOnAnimEnd) {
       e->flags &= ~8;
       if (e->scriptID != 0) {

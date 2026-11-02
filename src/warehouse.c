@@ -251,9 +251,9 @@ void FUN_080b5e48(Warehouse* p, s32 param_2) {
 
   if (param_2 == 0) {
     if (p->cursor.shopColX == 8) {
-      FUN_080b98c0(&p->pair1.gfx, 0, 4);
+      FUN_080b98c0(&p->pair1, 0, 4);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, 0, -1);
+      FUN_080b98c0(&p->pair1, 0, -1);
     }
     return;
   }
@@ -267,9 +267,9 @@ void FUN_080b5e48(Warehouse* p, s32 param_2) {
   }
 
   if (ok == 1) {
-    FUN_080b98c0(&p->pair1.gfx, 3, -1);
+    FUN_080b98c0(&p->pair1, 3, -1);
   } else {
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
   }
 }
 
@@ -341,7 +341,7 @@ void FUN_080b601c(Warehouse* p) {
     b[i] = a[1 - i];
   }
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -364,7 +364,7 @@ void FUN_080b6114(Warehouse* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -393,7 +393,7 @@ void FUN_080b6230(Warehouse* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     FUN_080b5ac8(p, 0);
     MainSprite_SetPose(&p->sprites[44], &p->gfx0, 56, PLAYMODE_LOOP);
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     if (gInput[0].pressed & A_BUTTON) {
       PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
@@ -411,14 +411,14 @@ void FUN_080b6230(Warehouse* p) {
         FUN_080b9fd8(&p->cursor);
         Warehouse_ShowMessage(p, 3, p->unk_13f4, -1);
         FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         Warehouse_SetSubState(p, FUN_080b6754, 0);
       } else if ((u8)p->cursor.slot == 34) {
         PlaySound_082406e0(SE_SELECT);
         FUN_080b9fd8(&p->cursor);
         Warehouse_ShowMessage(p, 4, p->unk_13f4, -1);
         FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         Warehouse_SetSubState(p, FUN_080b67c0, 0);
       } else {
         FUN_080b9fd8(&p->cursor);
@@ -464,15 +464,15 @@ void FUN_080b649c(Warehouse* p) {
     p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
     Shop_GetSlotPos(&p->sprites[44].pos.x, 32);
     MainSprite_SetPose(&p->sprites[44], &p->gfx0, 56, PLAYMODE_LOOP);
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
-    PlaySound_082406e0(SE_CHOICE);
+    FUN_080b98c0(&p->pair1, -1, -1);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     Warehouse_ShowMessage(p, 2, p->unk_13f4, -1);
     FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 0);
     Warehouse_SetSubState(p, FUN_080b685c, 0);
   } else if (gInput[0].pressed & A_BUTTON) {
     s32 r = FUN_080b5f18(p);
 
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     switch (r) {
       case 1: {
         FUN_080b601c(p);
@@ -505,14 +505,14 @@ void FUN_080b6684(Warehouse* p) {
   MainSprite_AdvanceAnim(&p->sprites[44], &p->gfx0);
   p->sprites[36].flags |= SPRFLAG_HIDDEN;
   if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(SONG_410);
+    PlaySound_082406e0(SE_DRUMROLL);
     ShopCursor_PlaceSprite(&p->cursor, &p->sprites[44]);
     FUN_080b5b94(p);
     Warehouse_SetSubState(p, FUN_080b649c, 0);
   } else if (gInput[0].pressed & A_BUTTON) {
     p->sprites[44].flags |= SPRFLAG_HIDDEN;
     p->sprites[39].flags |= SPRFLAG_HIDDEN;
-    PlaySound_082406e0(SE_CHOICE);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     Warehouse_ShowMessage(p, 2, p->unk_13f4, -1);
     FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 0);
     Warehouse_SetSubState(p, FUN_080b685c, 0);
@@ -746,7 +746,7 @@ void FUN_080b6ca8(Warehouse* p) {
     b[i] = a[1 - i];
   }
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -769,7 +769,7 @@ void FUN_080b6dc4(Warehouse* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -781,9 +781,9 @@ NON_MATCH void FUN_080b6e70(Warehouse* p, s32 param_2) {
 
   if (param_2 == 0) {
     if (p->cursor.shopColX == 8) {
-      FUN_080b98c0(&p->pair1.gfx, 0, 4);
+      FUN_080b98c0(&p->pair1, 0, 4);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, 0, -1);
+      FUN_080b98c0(&p->pair1, 0, -1);
     }
     return;
   }
@@ -821,9 +821,9 @@ NON_MATCH void FUN_080b6e70(Warehouse* p, s32 param_2) {
     }
 
     if (ok == 1) {
-      FUN_080b98c0(&p->pair1.gfx, 3, -1);
+      FUN_080b98c0(&p->pair1, 3, -1);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, -1, -1);
+      FUN_080b98c0(&p->pair1, -1, -1);
     }
   }
 #else
@@ -911,7 +911,7 @@ void FUN_080b7118(Warehouse* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     FUN_080b5ac8(p, 0);
     MainSprite_SetPose(&p->sprites[44], &p->gfx0, 56, PLAYMODE_LOOP);
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     if (gInput[0].pressed & A_BUTTON) {
       PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
@@ -930,14 +930,14 @@ void FUN_080b7118(Warehouse* p) {
         FUN_080b9fd8(&p->cursor);
         Warehouse_ShowMessage(p, 3, p->unk_13f4, -1);
         FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         Warehouse_SetSubState(p, FUN_080b7670, 0);
       } else if ((u8)p->cursor.slot == 34) {
         PlaySound_082406e0(SE_SELECT);
         FUN_080b9fd8(&p->cursor);
         Warehouse_ShowMessage(p, 4, p->unk_13f4, -1);
         FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         Warehouse_SetSubState(p, FUN_080b76dc, 0);
       } else {
         weapon32_t id;
@@ -991,15 +991,15 @@ void FUN_080b73b8(Warehouse* p) {
     p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
     Shop_GetSlotPos(&p->sprites[44].pos.x, 32);
     MainSprite_SetPose(&p->sprites[44], &p->gfx0, 56, PLAYMODE_LOOP);
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
-    PlaySound_082406e0(SE_CHOICE);
+    FUN_080b98c0(&p->pair1, -1, -1);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     Warehouse_ShowMessage(p, 2, p->unk_13f4, -1);
     FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 0);
     Warehouse_SetSubState(p, FUN_080b7794, 0);
   } else if (gInput[0].pressed & A_BUTTON) {
     s32 r = FUN_080b6fa4(p);
 
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     switch (r) {
       case 1: {
         FUN_080b6ca8(p);
@@ -1032,14 +1032,14 @@ void FUN_080b75a0(Warehouse* p) {
   MainSprite_AdvanceAnim(&p->sprites[44], &p->gfx0);
   p->sprites[36].flags |= SPRFLAG_HIDDEN;
   if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(SONG_410);
+    PlaySound_082406e0(SE_DRUMROLL);
     ShopCursor_PlaceSprite(&p->cursor, &p->sprites[44]);
     FUN_080b69b8(p);
     Warehouse_SetSubState(p, FUN_080b73b8, 0);
   } else if (gInput[0].pressed & A_BUTTON) {
     p->sprites[44].flags |= SPRFLAG_HIDDEN;
     p->sprites[39].flags |= SPRFLAG_HIDDEN;
-    PlaySound_082406e0(SE_CHOICE);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     Warehouse_ShowMessage(p, 2, p->unk_13f4, -1);
     FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 0);
     Warehouse_SetSubState(p, FUN_080b7794, 0);
@@ -1233,9 +1233,9 @@ NON_MATCH void FUN_080b7c18(Warehouse* p, s32 param_2) {
 
   if (param_2 == 0) {
     if (p->cursor.shopColX == 8) {
-      FUN_080b98c0(&p->pair1.gfx, 0, 4);
+      FUN_080b98c0(&p->pair1, 0, 4);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, 0, -1);
+      FUN_080b98c0(&p->pair1, 0, -1);
     }
     return;
   }
@@ -1273,9 +1273,9 @@ NON_MATCH void FUN_080b7c18(Warehouse* p, s32 param_2) {
     }
 
     if (ok == 1) {
-      FUN_080b98c0(&p->pair1.gfx, 3, -1);
+      FUN_080b98c0(&p->pair1, 3, -1);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, -1, -1);
+      FUN_080b98c0(&p->pair1, -1, -1);
     }
   }
 #else
@@ -1393,7 +1393,7 @@ void FUN_080b7f20(Warehouse* p) {
     b[i] = a[1 - i];
   }
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -1416,7 +1416,7 @@ void FUN_080b8044(Warehouse* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -1445,7 +1445,7 @@ void FUN_080b8170(Warehouse* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     FUN_080b5ac8(p, 0);
     MainSprite_SetPose(&p->sprites[44], &p->gfx0, 56, PLAYMODE_LOOP);
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     if (gInput[0].pressed & A_BUTTON) {
       PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
@@ -1463,14 +1463,14 @@ void FUN_080b8170(Warehouse* p) {
         FUN_080b9fd8(&p->cursor);
         Warehouse_ShowMessage(p, 3, p->unk_13f4, -1);
         FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         Warehouse_SetSubState(p, FUN_080b86bc, 0);
       } else if ((u8)p->cursor.slot == 34) {
         PlaySound_082406e0(SE_SELECT);
         FUN_080b9fd8(&p->cursor);
         Warehouse_ShowMessage(p, 4, p->unk_13f4, -1);
         FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         Warehouse_SetSubState(p, FUN_080b8728, 0);
       } else {
         s32 idx;
@@ -1523,15 +1523,15 @@ void FUN_080b8404(Warehouse* p) {
     p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
     Shop_GetSlotPos(&p->sprites[44].pos.x, 32);
     MainSprite_SetPose(&p->sprites[44], &p->gfx0, 56, PLAYMODE_LOOP);
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
-    PlaySound_082406e0(SE_CHOICE);
+    FUN_080b98c0(&p->pair1, -1, -1);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     Warehouse_ShowMessage(p, 2, p->unk_13f4, -1);
     FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 0);
     Warehouse_SetSubState(p, FUN_080b87c4, 0);
   } else if (gInput[0].pressed & A_BUTTON) {
     s32 r = FUN_080b7d68(p);
 
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     switch (r) {
       case 1: {
         FUN_080b7f20(p);
@@ -1564,14 +1564,14 @@ void FUN_080b85ec(Warehouse* p) {
   MainSprite_AdvanceAnim(&p->sprites[44], &p->gfx0);
   p->sprites[36].flags |= SPRFLAG_HIDDEN;
   if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(SONG_410);
+    PlaySound_082406e0(SE_DRUMROLL);
     ShopCursor_PlaceSprite(&p->cursor, &p->sprites[44]);
     FUN_080b7900(p);
     Warehouse_SetSubState(p, FUN_080b8404, 0);
   } else if (gInput[0].pressed & A_BUTTON) {
     p->sprites[44].flags |= SPRFLAG_HIDDEN;
     p->sprites[39].flags |= SPRFLAG_HIDDEN;
-    PlaySound_082406e0(SE_CHOICE);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     Warehouse_ShowMessage(p, 2, p->unk_13f4, -1);
     FUN_080b9740(&p->sprites[46], &p->gfx0, (char*)&p->unk_140d, 0);
     Warehouse_SetSubState(p, FUN_080b87c4, 0);
@@ -1908,7 +1908,7 @@ void FUN_080b90dc(Warehouse* p) {
     }
 
     if (Warehouse_HandleTabInput(p)) {
-      PlaySound_082406e0(SONG_266);
+      PlaySound_082406e0(SE_MENU_PAGE);
       switch (p->kinds[p->unk_1410]) {
         case 0: {
           FUN_080b695c(p, 0);

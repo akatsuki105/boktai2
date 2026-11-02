@@ -305,7 +305,7 @@ _080FA18C:
 	adds r0, r5, #0
 	mov r1, sb
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080FA1AC
 	cmp r0, #2

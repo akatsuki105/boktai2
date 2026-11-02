@@ -1,0 +1,144 @@
+#include "entity.h"
+#include "global.h"
+#include "sprite_aux.h"
+
+// ドゥラスロールの花びら?
+
+// SPRITE_DUNEYRR_AUX の poseIdx
+#define POSE_PETAL(idx) (54 + (idx))
+
+// Entity080601a8 が持つ粒子1個, FUN_08060220 が角度と速度を与えて飛ばし、
+// FUN_0805ff58 が毎フレーム sprite.pos を動かして lifetime で解放する
+typedef struct Entity080601a8Elem {
+  u8 state;          // 0x00, PTR_ARRAY_085abaa4 の添字 (0 = 何もしない, 1 = 飛行中)
+  u8 unk_1;          // 0x01, 生成時に1、最初の更新で0にされる, 読み手は未発見
+  u16 timer;         // 0x02, 毎フレーム +1
+  s16 speed;         // 0x04, gSineTable との積が移動量になる
+  s16 velY;          // 0x06, 毎フレーム sprite.pos.y に加算される
+  s8 angle;          // 0x08, gSineTable の添字 (向き), 毎フレーム angleStep が足される
+  s8 angleStep;      // 0x09, 生成時 (rand & 3) - 2
+  u8 pose;           // 0x0A, 0..3, POSE_PETAL(pose)
+  u8 poseTimer;      // 0x0B, 毎フレーム +1、 poseDuration に達したら pose を進めて0に戻す
+  u8 poseDuration;   // 0x0C, 生成時 (rand & 3) + 7
+  u8 unk_d;          // 0x0D, FUN_08060220 の第6引数が入る, 読み手は未発見
+  u16 lifetime;      // 0x0E, timer がこれ以上になると解放される
+  AuxSprite sprite;  // 0x10
+} Entity080601a8Elem;
+static_assert(sizeof(Entity080601a8Elem) == 60);
+
+// 粒子を32個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
+typedef struct Entity080601a8 {
+  Entity e;                      // 0x00, ENTITY_UNK_8
+  u32 unk_18;                    // 0x18, 読み手も書き手も未発見
+  u32 activeMask;                // 0x1C, 1 << i で elems[i] が使用中
+  u32 unk_20;                    // 0x20, 読み手も書き手も未発見
+  u32 unk_24;                    // 0x24, 読み手も書き手も未発見
+  AuxSpriteGfx gfx;              // 0x28, SPRITE_DUNEYRR_AUX
+  Entity080601a8Elem elems[32];  // 0x44
+} Entity080601a8;
+static_assert(sizeof(Entity080601a8) == 1988);
+
+// スロットを飛行前の状態に戻す
+void FUN_0805ff04(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {
+  AuxSprite* sprite = &elem->sprite;
+
+  elem->state = 0;
+  elem->unk_1 = 1;
+  elem->timer = 0;
+  elem->angle = 0;
+  elem->speed = 0;
+  elem->velY = 0;
+  elem->angleStep = 0;
+  AuxSprite_Setup(sprite, &p->gfx, 0);
+  sprite->poseIdx = POSE_PETAL(0);
+}
+
+void FUN_0805ff34(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {
+  AuxSprite_Remove(&elem->sprite);
+  p->activeMask &= ~(1 << idx);
+}
+
+void FUN_0805ff54(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {}
+
+NAKED void FUN_0805ff58(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff58.inc"); }
+
+s32 Entity080601a8_Update(Entity080601a8* p) {
+  static void (*const PTR_ARRAY_085abaa4[2])(Entity080601a8*, Entity080601a8Elem*, s32) = {
+      FUN_0805ff54,
+      FUN_0805ff58,
+  };  // 0x085ABAA4
+
+  Entity080601a8Elem* e = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, e++) {
+    if (p->activeMask & 1 << i) {
+      PTR_ARRAY_085abaa4[e->state](p, e, i);
+      e->timer++;
+    }
+  }
+  return 0;
+}
+
+s32 Entity080601a8_Destroy(Entity080601a8* p) {
+  Entity080601a8Elem* e = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, e++) {
+    if (p->activeMask & (1 << i)) {
+      FUN_0805ff34(p, e, i);
+    }
+  }
+
+  return 0;
+}
+
+s32 Entity080601a8_Init(Entity080601a8* p, s32 plttID, rgb555* pltt) {
+  Entity080601a8Elem* e;
+  s32 i;
+
+  p->activeMask = 0;
+  Video_GetAuxSprite(&p->gfx, SPRITE_DUNEYRR_AUX);
+  Video_SetAuxSpritePltt(&p->gfx, 758);
+  if (pltt != NULL) {
+    p->gfx.plttID = plttID;
+    p->gfx.pltt = pltt;
+  }
+
+  for (e = p->elems, i = 0; i < 32; i++, e++) {
+    FUN_0805ff04(p, e, i);
+  }
+  return 0;
+}
+
+Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt) {
+  Entity080601a8* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080601a8));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080601a8_Update, Entity080601a8_Destroy);
+    if (Entity080601a8_Init(p, plttID, pltt) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
+
+// 空きスロットを探して添字を *outIdx に入れて返す
+Entity080601a8Elem* FUN_080601f0(Entity080601a8* p, u32* outIdx) {
+  Entity080601a8Elem* elem = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, elem++) {
+    if (!(p->activeMask & (1 << i))) {
+      *outIdx = i;
+      return elem;
+    }
+  }
+
+  *outIdx = 0;
+  return NULL;
+}
+
+NAKED s32 FUN_08060220(Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos) { INCFUNC("asm/func/FUN_08060220.inc"); }

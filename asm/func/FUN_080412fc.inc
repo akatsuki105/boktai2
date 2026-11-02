@@ -10,7 +10,7 @@
 	adds r1, r4, #0
 	adds r1, #0x64
 	str r1, [r2]
-	bl FUN_08234660
+	bl Map_UpdateZoneEvents
 	movs r1, #0x80
 	lsls r1, r1, #1
 	ldrh r0, [r4, #0xe]

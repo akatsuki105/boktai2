@@ -1,3 +1,4 @@
+#include "cwolf_target.h"
 #include "eff_082473e0.h"
 #include "emote.h"
 #include "enemy.h"
@@ -33,12 +34,10 @@ s32 FUN_080e1f48(Enemy* p);
 s32 FUN_080e35b4(Enemy* p);
 bool32 FUN_080eafdc(Enemy* p);
 bool32 FUN_080eb168(Enemy* p);
-void FUN_080e6204(Enemy* p);
 EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask);
 s32 FUN_080f8abc(Enemy* p);
 bool8 FUN_080e5ed4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
 bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-bool32 FUN_08235fd8(u16* p);
 
 const EnemyHandler gEnemyHandlerTable0[4] = {
     FUN_080f22e8,
@@ -313,7 +312,7 @@ NON_MATCH void FUN_080f00ec(Enemy* p) {
   p->unk_220 = 0;
   p->unk_202 = 0;
   Enemy_ClearPendingState(p, s_enedefault_c_08251f80, 272);
-  Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+  Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
   Enemy_ResetState(p, 3, 1, 0);
   CLEAR_FLAGS(p->flags, ENEFLAG_UNK_7);
   CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_0);
@@ -434,7 +433,7 @@ NON_MATCH bool8 FUN_080f0430(Enemy* p) {
         bool8 moved = FALSE;
 
         if (Map_IsPosInAgentIsland(agent, &p->mover.pos, dst)) {
-          s32 result = FUN_08235f40(agent, &p->mover.pos, dst);
+          s32 result = Map_TryFindNavRoute(agent, &p->mover.pos, dst);
 
           if (result != 0) {
             if (result != 2) {
@@ -465,7 +464,7 @@ NON_MATCH bool8 FUN_080f0430(Enemy* p) {
   SET_FLAGS(p->flags, ENEFLAG_UNK_7);
   CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_8);
   Enemy_ClearPendingState(p, s_enedefault_c_08251f80, 378);
-  Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+  Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
   Enemy_ResetState(p, 3, 1, 0);
   CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_10);
   p->unk_542 = 0xFF;
@@ -541,7 +540,7 @@ void FUN_080f0868(Enemy* p, u16* _) {
     p->hitbox.flags &= ~HBFLAG_HIDDEN;
     FUN_080ee2c8(p);
     Enemy_ResetState(p, 3, 0, 0);
-    Enemy_EnterState(p, p->unk_584, 12);
+    Enemy_EnterState(p, p->unk_584, ES_UNK_12);
   }
 }
 
@@ -604,7 +603,7 @@ NON_MATCH bool8 FUN_080f0a0c(Enemy* p) {
     p->unk_220 = 0;
     p->unk_202 = 0;
     p->target = target;
-    Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+    Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(p, 3, 1, 0);
     Enemy_ClearFlag(p, ENEFLAG_UNK_4);
     Enemy_SetFlag4(p, ENEFLAG4_UNK_11);
@@ -642,7 +641,7 @@ NON_MATCH void FUN_080f0b3c(Enemy* p) {
       Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
       moved = FALSE;
     } else {
-      s32 result = FUN_08235f40(agent, pos, dst);
+      s32 result = Map_TryFindNavRoute(agent, pos, dst);
 
       if (result != 0) {
         if (result != 2) {
@@ -669,7 +668,7 @@ NON_MATCH void FUN_080f0b3c(Enemy* p) {
     if (!Map_IsPosInAgentIsland(agent, &p->mover.pos, &dst)) {
       Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
     } else {
-      s32 result = FUN_08235f40(agent, &p->mover.pos, &dst);
+      s32 result = Map_TryFindNavRoute(agent, &p->mover.pos, &dst);
 
       if (result == 0) {
         Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
@@ -677,14 +676,14 @@ NON_MATCH void FUN_080f0b3c(Enemy* p) {
         ClearMemory(&p->mover.delta, 8);
       }
     }
-    Enemy_EnterState(p, p->unk_5a0, 1);
+    Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
     Enemy_ResetState(p, 0, 0, 2);
     return;
   }
 
   Enemy_SetEmote(p, 0, 1, p->kind);
   Enemy_ResetState(p, 3, 1, 0);
-  Enemy_EnterState(p, FUN_080e6794, 14);
+  Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
   p->unk_554 = 30;
   p->unk_558 = p->unk_5a0;
   p->unk_550 = 0;
@@ -718,7 +717,7 @@ NON_MATCH void FUN_080f0e78(Enemy* p) {
   speed = p->unk_588(p);
   Enemy_UpdateWalkAnimSpeed(p);
 
-  if (FUN_08235fd8(&p->navAgent->flags)) {
+  if (Map_ConsumeNavWaypointChanged(p->navAgent)) {
     if (!FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
       p->subStateTimer++;
       return;
@@ -751,7 +750,7 @@ NON_MATCH void FUN_080f0e78(Enemy* p) {
             p->unk_54d = p->subState1;
             p->unk_54e = p->subState2;
             p->unk_541 = angle2;
-            Enemy_EnterState(p, p->unk_5bc, 27);
+            Enemy_EnterState(p, p->unk_5bc, ES_UNK_27);
             Enemy_ResetState(p, 3, 1, 0);
             p->unk_542 = 2;
             return;
@@ -781,7 +780,7 @@ NON_MATCH void FUN_080f0e78(Enemy* p) {
 // いろんなEnemyで使われるハンドラ
 void FUN_080f11d0(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_590, 2);
+    Enemy_EnterState(p, p->unk_590, ES_UNK_2);
   }
 
   if (p->unk_608(p)) {
@@ -793,7 +792,7 @@ void FUN_080f11d0(Enemy* p) {
   if (p->subStateDone) {
     Enemy_PlayAnim(p, 0);
     Enemy_SetSubState2(p, 12);
-    Enemy_EnterState(p, p->unk_5b8, 26);
+    Enemy_EnterState(p, p->unk_5b8, ES_UNK_26);
   } else {
     p->subStateTimer++;
   }
@@ -808,7 +807,7 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
   s32 idx;
 
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
     CLEAR_FLAGS(p->flags, ENEFLAG_UNK_7);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_9);
   }
@@ -824,7 +823,7 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
   }
 
   p->unk_222 &= ~(ENEMY222_UNK_1 | ENEMY222_UNK_2);
-  Enemy_EnterState(p, FUN_080e6794, 14);
+  Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
   p->unk_554 = p->unk_543;
   p->unk_558 = p->unk_5b8;
   p->unk_550 = 0;
@@ -876,7 +875,7 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
       WorldPos* pos = &p->mover.pos;
 
       if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
-        s32 result = FUN_08235f40(agent, pos, &tilePos);
+        s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
 
         if (result != 0) {
           if (result != 2) {
@@ -900,10 +899,10 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
   }
   p->unk_222 &= ~ENEMY222_UNK_2;
   if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_7)) {
-    Enemy_EnterState(p, p->unk_5b8, 26);
+    Enemy_EnterState(p, p->unk_5b8, ES_UNK_26);
     Enemy_ResetState(p, 0, 0, 12);
   } else {
-    Enemy_EnterState(p, p->unk_5a0, 1);
+    Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
     Enemy_ResetState(p, 0, 0, 5);
     {
       Vec3* dst = p->unk_4a8;
@@ -940,7 +939,7 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
       p->unk_54d = p->subState1;
       p->unk_54e = p->subState2;
       p->unk_541 = angle;
-      Enemy_EnterState(p, p->unk_5bc, 27);
+      Enemy_EnterState(p, p->unk_5bc, ES_UNK_27);
       Enemy_ResetState(p, 3, 1, 0);
       p->unk_542 = 6;
     }
@@ -975,7 +974,7 @@ NON_MATCH void FUN_080f19cc(Enemy* p) {
     CLEAR_FLAGS(p->flags, ENEFLAG_UNK_8);
     Enemy_SetEmote(p, 0, 2, p->kind);
     Enemy_ResetState(p, 3, 1, 0);
-    Enemy_EnterState(p, FUN_080e6794, 14);
+    Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
     SET_FLAGS(p->flags, ENEFLAG_UNK_4);
     d = &dst;
     walker = &p->pathWalker;
@@ -988,7 +987,7 @@ NON_MATCH void FUN_080f19cc(Enemy* p) {
       bool8 moved = FALSE;
 
       if (Map_IsPosInAgentIsland(agent, &p->mover.pos, &dst)) {
-        s32 result = FUN_08235f40(agent, &p->mover.pos, &dst);
+        s32 result = Map_TryFindNavRoute(agent, &p->mover.pos, &dst);
 
         if (result != 0) {
           if (result != 2) {
@@ -1055,7 +1054,7 @@ void FUN_080f1cf0(Enemy* p) {
   VEC3_SET(p->mover.pos, 0, 30000, 0);
   Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
   Enemy_ResetState(p, 3, 0, 0);
-  Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+  Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
   FUN_080e49c4(p);
   Enemy_SetFlag3(p, ENEFLAG3_UNK_6);
   p->subStateTimer++;
@@ -1071,7 +1070,7 @@ void FUN_080f1de4(Enemy* p) {
 // 巻き戻しの印が立っていたら状態16(入場フラグを食うだけのハンドラ)へ移す
 void FUN_080f1e0c(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+    Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
   }
   p->subStateTimer++;
 }
@@ -1079,7 +1078,7 @@ void FUN_080f1e0c(Enemy* p) {
 // 巻き戻しの印が立っていたら unk_5a4 のハンドラへ移し、そうでなければ最初のフレームでデモの待ちを解除する
 void FUN_080f1e78(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
   } else {
     if (p->subStateTimer == 0) {
       MsgQueue_EndWait(&p->mq, 1);
@@ -1093,7 +1092,7 @@ void FUN_080f1ef8(Enemy* p) {
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a0, 1);
+    Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
     return;
   }
 
@@ -1104,7 +1103,7 @@ void FUN_080f1ef8(Enemy* p) {
   if (FUN_080e5ed4(p, p->navAgent, 32, 32, speed)) {
     MsgQueue_EndWait(&p->mq, 1);
     Enemy_ResetState(p, 2, 0, 2);
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
   } else {
     p->subStateTimer++;
   }
@@ -1154,10 +1153,10 @@ NON_MATCH void FUN_080f2074(Enemy* p) {
 // 巻き戻しの直後は状態17へ移り, 下位状態が済んだらデモの待ちを解いて状態16へ移り破棄側へ回す
 void FUN_080f2160(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5d0, 17);
+    Enemy_EnterState(p, p->unk_5d0, ES_DYING);
   } else if (p->subStateDone) {
     MsgQueue_EndWait(&p->mq, 1);
-    Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+    Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(p, 3, 0, 0);
     Enemy_SetFlag4(p, ENEFLAG4_UNK_12);
   } else {
@@ -1216,7 +1215,7 @@ void FUN_080f2364(Enemy* p) {
   PathWalker* walker = p->mover.path;
 
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5c0, 5);
+    Enemy_EnterState(p, p->unk_5c0, ES_UNK_5);
     p->nodeWait = walker->node->delay & 0xFFF;
   }
 
@@ -1240,7 +1239,7 @@ void FUN_080f248c(Enemy* p) {
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a0, 1);
+    Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
   }
   if (p->unk_608(p)) {
     return;
@@ -1253,7 +1252,7 @@ void FUN_080f248c(Enemy* p) {
   speed = p->unk_588(p);
   Enemy_UpdateWalkAnimSpeed(p);
 
-  if (!FUN_08235fd8(&p->navAgent->flags)) {
+  if (!Map_ConsumeNavWaypointChanged(p->navAgent)) {
     if (FUN_080e5ed4(p, p->navAgent, 32, 32, speed)) {
       Enemy_ResetState(p, 0, 0, 0);
       return;
@@ -1271,7 +1270,7 @@ void FUN_080f2644(Enemy* p) {
   u32 cmd;
 
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
   }
   if (p->unk_608(p)) {
     return;
@@ -1287,7 +1286,7 @@ void FUN_080f2644(Enemy* p) {
     return;
   }
 
-  if (walker->unk_3++ >= (walker->node->delay & 0xFFF)) {
+  if (walker->waitTimer++ >= (walker->node->delay & 0xFFF)) {
     if (p->unk_194 != 0) {
       u32 argv[3];
       ScriptArgs sa;
@@ -1328,7 +1327,7 @@ void FUN_080f2864(Enemy* p) {
   PathWalker* walker = &p->pathWalker;
 
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_590, 2);
+    Enemy_EnterState(p, p->unk_590, ES_UNK_2);
   }
   if (p->unk_608(p)) {
     return;
@@ -1341,7 +1340,7 @@ void FUN_080f2864(Enemy* p) {
     Enemy_SetFlag2(p, ENEFLAG2_UNK_5);
   }
   if (Enemy_GetFlag2(p, ENEFLAG2_UNK_5)) {
-    if (walker->unk_3++ >= (walker->node->delay & 0xFFF)) {
+    if (walker->waitTimer++ >= (walker->node->delay & 0xFFF)) {
       u32 cmd = walker->node->command >> 4;
 
       if (u8_ARRAY_085ad468[cmd] == 1) {
@@ -1389,10 +1388,10 @@ void FUN_080f2a40(Enemy* p) {
   speed = p->unk_588(p);
   Enemy_UpdateWalkAnimSpeed(p);
 
-  if (FUN_08235fd8(&p->navAgent->flags)) {
+  if (Map_ConsumeNavWaypointChanged(p->navAgent)) {
     if (FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
       Enemy_ResetState(p, 0, 0, 6);
-      Enemy_EnterState(p, p->unk_5a4, 0);
+      Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
     }
   } else if (FUN_080e5ed4(p, p->navAgent, 32, 32, speed)) {
     p->unk_202 = 0;
@@ -1405,7 +1404,7 @@ void FUN_080f2a40(Enemy* p) {
     } else {
       Enemy_ResetState(p, 0, 0, 5);
     }
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
     return;
   }
   p->subStateTimer++;
@@ -1414,7 +1413,7 @@ void FUN_080f2a40(Enemy* p) {
 // 状態2の更新, 下位状態が終わったら ENEFLAG3_UNK_4 なら状態19へ, そうでなければ ENEFLAG_UNK_4 で下位状態を選んで状態1へ移す
 void FUN_080f2d04(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_590, 2);
+    Enemy_EnterState(p, p->unk_590, ES_UNK_2);
   }
   if (p->unk_608(p)) {
     return;
@@ -1426,14 +1425,14 @@ void FUN_080f2d04(Enemy* p) {
   if (p->subStateDone) {
     if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4)) {
       Enemy_ResetState(p, 0, 0, 8);
-      Enemy_EnterState(p, p->unk_5a8, 19);
+      Enemy_EnterState(p, p->unk_5a8, ES_UNK_19);
     } else {
       if (TEST_FLAGS(p->flags, ENEFLAG_UNK_4)) {
         Enemy_ResetState(p, 0, 0, 7);
       } else {
         Enemy_ResetState(p, 0, 0, 2);
       }
-      Enemy_EnterState(p, p->unk_5a0, 1);
+      Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
     }
   } else {
     p->subStateTimer++;
@@ -1446,7 +1445,7 @@ void FUN_080f2d04(Enemy* p) {
 NON_MATCH void FUN_080f2ec0(Enemy* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
     CLEAR_FLAGS(p->flags, ENEFLAG_UNK_7);
     Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_9);
@@ -1467,7 +1466,7 @@ NON_MATCH void FUN_080f2ec0(Enemy* p) {
 
     Vec3_Diff(dst, &target->owner->pos, pos);
     if ((u32)(d.x * d.x + d.z * d.z) < 0xFFFF) {
-      Enemy_EnterState(p, p->unk_5e8, 25);
+      Enemy_EnterState(p, p->unk_5e8, ES_ATTACK);
       Enemy_ResetState(p, 3, 1, 0);
       return;
     }
@@ -1485,7 +1484,7 @@ NON_MATCH void FUN_080f2ec0(Enemy* p) {
     bool8 moved;
 
     Enemy_ResetState(p, 0, 0, 7);
-    Enemy_EnterState(p, p->unk_5a0, 1);
+    Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
     p->unk_4a8->val = 1;
     moved = FALSE;
     {
@@ -1494,7 +1493,7 @@ NON_MATCH void FUN_080f2ec0(Enemy* p) {
       Vec3* dst = p->unk_4a8;
 
       if (Map_IsPosInAgentIsland(agent, pos, dst)) {
-        s32 result = FUN_08235f40(agent, pos, dst);
+        s32 result = Map_TryFindNavRoute(agent, pos, dst);
 
         if (result != 0) {
           if (result != 2) {
@@ -1539,13 +1538,13 @@ NON_MATCH void FUN_080f31c4(Enemy* p) {
   speed = p->unk_588(p);
   Enemy_UpdateWalkAnimSpeed(p);
 
-  if (FUN_08235fd8(&p->navAgent->flags)) {
+  if (Map_ConsumeNavWaypointChanged(p->navAgent)) {
     if (FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
       Enemy_ResetState(p, 0, 0, 6);
     }
   } else if (FUN_080e5ed4(p, p->navAgent, 32, 32, speed)) {
     Enemy_ResetState(p, 0, 0, 8);
-    Enemy_EnterState(p, p->unk_5a8, 19);
+    Enemy_EnterState(p, p->unk_5a8, ES_UNK_19);
     if (IsLinkPlay()) {
       if (!FUN_080fa7a4(p)) {
         FUN_080faad8(p);
@@ -1558,7 +1557,7 @@ NON_MATCH void FUN_080f31c4(Enemy* p) {
         next = Mod(next + 1, walker->path->nodeCount);
       }
       walker->nodeIdx = next;
-      walker->unk_3 = 0;
+      walker->waitTimer = 0;
       walker->node = (PathNode*)((u8*)gCollisionMap->paths + walker->path->nodeOffset) + walker->nodeIdx;
       FUN_080e6204(p);
     }
@@ -1572,7 +1571,7 @@ NON_MATCH void FUN_080f31c4(Enemy* p) {
 
 void FUN_080f33e8(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
-    Enemy_EnterState(p, p->unk_5a4, 0);
+    Enemy_EnterState(p, p->unk_5a4, ES_UNK_0);
   }
 
   if (p->unk_608(p)) {
@@ -1668,18 +1667,18 @@ NON_MATCH bool8 FUN_080f3718(Enemy* p) {
 
     switch (msg->cmd) {
       case 0: {
-        p->navAgent->unk_1c.x = msg->args[0];
-        p->navAgent->unk_1c.y = msg->args[1];
-        p->navAgent->unk_1c.z = msg->args[2];
+        p->navAgent->waypoint.x = msg->args[0];
+        p->navAgent->waypoint.y = msg->args[1];
+        p->navAgent->waypoint.z = msg->args[2];
         p->animSpeedDiv = msg->args[3];
         if (msg->args[4] != 0) {
           SET_FLAGS(p->flags3, ENEFLAG3_UNK_9);
         } else {
           CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_9);
         }
-        p->navAgent->unk_0c = p->navAgent->unk_1c;
+        p->navAgent->dest = p->navAgent->waypoint;
         Enemy_ResetState(p, 2, 0, 3);
-        Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+        Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
         break;
       }
       case 1: {
@@ -1690,14 +1689,14 @@ NON_MATCH bool8 FUN_080f3718(Enemy* p) {
           if (diff != 0) {
             p->unk_1dc = ((msg->args[0] + 5) & 7) << 5;
             Enemy_ResetState(p, 2, 0, 4);
-            Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+            Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
             break;
           }
         } else {
           if (diff > 1) {
             p->unk_1dc = msg->args[0];
             Enemy_ResetState(p, 2, 0, 4);
-            Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+            Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
             break;
           }
         }
@@ -1707,12 +1706,12 @@ NON_MATCH bool8 FUN_080f3718(Enemy* p) {
       case 2: {
         p->mover.angle = ((msg->args[0] + 5) & 7) << 5;
         Enemy_ResetState(p, 2, 0, 2);
-        Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+        Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
         break;
       }
       case 4: {
         Enemy_ResetState(p, 2, 0, 5);
-        Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+        Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
         break;
       }
       case 5: {
@@ -1836,7 +1835,7 @@ NON_MATCH void UNUSED FUN_080f3d28(Enemy* p) {
   if (p->hp <= 1) {
     p->hp = 0;
     SET_FLAGS(p->flags3, ENEFLAG3_UNK_3);
-    Enemy_EnterState(p, p->unk_5d0, 17);
+    Enemy_EnterState(p, p->unk_5d0, ES_DYING);
     Enemy_ResetState(p, 3, 0, 0);
     return;
   }
@@ -1859,7 +1858,7 @@ NON_MATCH void UNUSED FUN_080f3d28(Enemy* p) {
     Vec3* dst = p->unk_4a8;
 
     if (Map_IsPosInAgentIsland(agent, pos, dst)) {
-      s32 result = FUN_08235f40(agent, pos, dst);
+      s32 result = Map_TryFindNavRoute(agent, pos, dst);
 
       if (result != 0) {
         if (result != 2) {
@@ -1873,14 +1872,14 @@ NON_MATCH void UNUSED FUN_080f3d28(Enemy* p) {
     }
   }
   if (!moved) {
-    Enemy_EnterState(p, Enemy_ClearStateBegun, 0);
+    Enemy_EnterState(p, Enemy_ClearStateBegun, ES_UNK_0);
     Enemy_ResetState(p, 3, 0, 0);
     return;
   }
 
   p->unk_4a8->val = 1;
   Enemy_ResetState(p, 3, 1, 0);
-  Enemy_EnterState(p, FUN_080e6794, 14);
+  Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
   SET_FLAGS(p->flags, ENEFLAG_UNK_4);
   p->animSpeedDiv = 1;
   p->unk_554 = 30;
@@ -1949,7 +1948,7 @@ NON_MATCH void FUN_080f410c(Enemy* p) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+    Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(p, 1, 0, 2);
     if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
       FUN_080ec5b4(gMapInitScriptID, p->mover.id);
@@ -2072,7 +2071,7 @@ NON_MATCH void FUN_080f47c8(Enemy* p) {
 #endif
 }
 
-// Entity5941 から届く通知, 0 = 攻撃が当たった (状態31へ移し, 状態フラグに応じて追跡や警戒を解き, 被ダメージ値を控える), 1 = 吹き飛ばし開始 (向きと value から跳ねる速さを作って状態32へ)
+// CWolfTargetManager から届く通知, 0 = 攻撃が当たった (状態31へ移し, 状態フラグに応じて追跡や警戒を解き, 被ダメージ値を控える), 1 = 吹き飛ばし開始 (向きと value から跳ねる速さを作って状態32へ)
 // 残差は 1006/1000 命令で, 同じ形の後始末 (ENEFLAG_UNK_21 の片付け, UNK_10 を落として unk_542 = 0xFF) が何度も出てくる区間のレジスタ割当とアドレスの持ち越しがずれる
 // 原典は E 節 (ENEFLAG3_UNK_4) で -1 をスタックの1バイトに置いて2度目の unk_542 に OR で書くが, SET_FLAGS(p->unk_542, 0xFF) ではフレームが 0x10 になって再現しない
 NON_MATCH bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value) {
@@ -2086,7 +2085,7 @@ NON_MATCH bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value) {
       }
       Hitbox_SetFlags(&p->atkHitbox, HBFLAG_HIDDEN);
       Hitbox_SetFlags(&p->hitbox, HBFLAG_HIDDEN);
-      Enemy_EnterState(p, FUN_080f46a4, 31);
+      Enemy_EnterState(p, FUN_080f46a4, ES_UNK_31);
       Enemy_ResetState(p, 3, 0, 0);
       SET_FLAGS(p->flags3, ENEFLAG3_UNK_15);
       if (p->flags3 == 0) {
@@ -2250,7 +2249,7 @@ NON_MATCH bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value) {
       }
 
       if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_10)) {
-        if ((s8)p->unk_542 < 0 || (p->state != 27 && p->state != 2)) {
+        if ((s8)p->unk_542 < 0 || (p->state != ES_UNK_27 && p->state != ES_UNK_2)) {
           p->unk_542 = 0xFF;
           CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_10);
         }
@@ -2310,7 +2309,7 @@ NON_MATCH bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value) {
       }
       p->jumpVel.y = 4;
       Enemy_ResetState(p, 3, 0, 0);
-      Enemy_EnterState(p, p->unk_5ec, 32);
+      Enemy_EnterState(p, p->unk_5ec, ES_BLOWN_AWAY);
       break;
     }
   }
@@ -2358,7 +2357,7 @@ void FUN_080f5208(Enemy* p) {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
     p->unk_192 = 0;
-    Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
+    Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(p, 1, 0, 2);
     if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
       FUN_080ec5b4(gMapInitScriptID, p->mover.id);
@@ -2429,7 +2428,7 @@ void FUN_080f54e4(Enemy* p, s32 param_2) {
   Enemy_SetEmote(p, 1, 0x7F, 0);
   Enemy_SetEmote(p, 3, 0x7F, 0);
   FUN_080e64b4(p, 4);
-  Enemy_EnterState(p, FUN_080f5208, 23);
+  Enemy_EnterState(p, FUN_080f5208, ES_DEFEATED);
   Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
 }
 
@@ -2521,7 +2520,7 @@ NON_MATCH void FUN_080f56ec(Enemy* p) {
     }
   }
 
-  if ((u16)(p->unk_192 - 30) < 90) {
+  if (p->unk_192 >= 30 && p->unk_192 < 120) {
     if (Mod((s16)p->unk_192, 30) < 15 - Div((s16)p->unk_192, 10)) {
       SET_FLAGS(p->flags4, ENEFLAG4_UNK_5);
     }
@@ -2548,7 +2547,7 @@ NON_MATCH void FUN_080f56ec(Enemy* p) {
       p->unk_192 = 0;
       p->angle = (FixToInt(5, p->mover.angle) + 7) & 7;
       Enemy_ResetState(p, 3, 1, 0);
-      Enemy_EnterState(p, p->unk_598, 8);
+      Enemy_EnterState(p, p->unk_598, ES_UNK_8);
       CLEAR_FLAGS(p->flags2, ENEFLAG2_UNK_1);
       CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5);
       Enemy_ResetState(p, 3, 1, 0);
@@ -2573,7 +2572,7 @@ void FUN_080f5b34(Enemy* p) {
     SET_FLAGS(p->flags, ENEFLAG_UNK_4);
     Enemy_PlayAnim(p, 0);
     Enemy_ResetState(p, 3, 1, 0);
-    Enemy_EnterState(p, p->unk_59c, 15);
+    Enemy_EnterState(p, p->unk_59c, ES_UNK_15);
   }
 }
 
@@ -2645,7 +2644,7 @@ NON_MATCH void FUN_080f5c0c(Enemy* p) {
     FUN_080e64e4(p);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_13);
     Enemy_ResetState(p, 3, 1, 0);
-    Enemy_EnterState(p, p->unk_59c, 15);
+    Enemy_EnterState(p, p->unk_59c, ES_UNK_15);
     p->angle = (FixToInt(5, (p->mover.angle + 0x80) & 0xFF) + 7) & 7;
   } else {
     p->unk_4be--;
@@ -2656,7 +2655,7 @@ NON_MATCH void FUN_080f5c0c(Enemy* p) {
 }
 
 // 入場時に向きを 8 方向に揃え, timer が 60 を超えてアニメが一巡したら経路の今のノードへ向かう, 向かえなければ状態0へ戻す
-// 残差は279/280命令, 一歩動く部分を「p を受けて unk_4a8 を目標に読む bool8 inline (島の外なら落として FALSE, そうでなければ FUN_08235f40 の結果で TRUE / 落として FALSE)」,
+// 残差は279/280命令, 一歩動く部分を「p を受けて unk_4a8 を目標に読む bool8 inline (島の外なら落として FALSE, そうでなければ Map_TryFindNavRoute の結果で TRUE / 落として FALSE)」,
 // 予約を (p, handler, s0, s1, s2, priority) の inline にすると形は揃い, 残りは &p->kind や定数のレジスタと, 状態0へ戻すときの定数の作り順
 NON_MATCH void FUN_080f5fac(Enemy* p, s32 timer) {
 #ifdef NONMATCHING_C
@@ -2685,7 +2684,7 @@ NON_MATCH void FUN_080f5fac(Enemy* p, s32 timer) {
       Vec3* dst = p->unk_4a8;
 
       if (Map_IsPosInAgentIsland(agent, pos, dst)) {
-        s32 result = FUN_08235f40(agent, pos, dst);
+        s32 result = Map_TryFindNavRoute(agent, pos, dst);
 
         if (result != 0) {
           if (result != 2) {
@@ -2699,12 +2698,12 @@ NON_MATCH void FUN_080f5fac(Enemy* p, s32 timer) {
       }
     }
     if (!moved) {
-      Enemy_EnterState(p, Enemy_ClearStateBegun, 0);
+      Enemy_EnterState(p, Enemy_ClearStateBegun, ES_UNK_0);
       Enemy_ResetState(p, 3, 0, 0);
     } else {
       p->unk_4a8->val = 1;
       Enemy_ResetState(p, 3, 1, 0);
-      Enemy_EnterState(p, FUN_080e6794, 14);
+      Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
       SET_FLAGS(p->flags, ENEFLAG_UNK_4);
       p->animSpeedDiv = 1;
       p->unk_554 = 60;
@@ -2754,7 +2753,7 @@ NON_MATCH bool32 FUN_080f62b0(Enemy* p) {
   p->animSpeedDiv = 1;
   Enemy_PlayAnim(p, 0);
   Enemy_ResetState(p, 3, 1, 0);
-  Enemy_EnterState(p, FUN_080e6794, 14);
+  Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
   SET_FLAGS(p->flags, ENEFLAG_UNK_4);
   p->unk_554 = 30;
   p->unk_558 = p->unk_5a4;
@@ -2794,7 +2793,7 @@ bool32 FUN_080f64f0(Enemy* p) {
     Enemy_SetFlag3(p, ENEFLAG3_UNK_5);
   }
 
-  Enemy_EnterState(p, p->unk_5cc, 18);
+  Enemy_EnterState(p, p->unk_5cc, ES_DAMAGED);
   Enemy_ResetState(p, 3, 0, 0);
   Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
   Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_3 | ENEFLAG4_UNK_6 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
@@ -2812,7 +2811,7 @@ bool32 FUN_080f65a8(Enemy* p) {
 
 // hp が残っていれば unk_58c に任せる, 尽きていれば状態17へ移して経験値を渡し, 倒した数を数えて図鑑に載せる
 // 残差は255/257命令, 頭打ちの 9999 を原典は r1 に読んでから r0 へ移す (FUN_080f00ec と同じ形), こちらは r0 に直接読む
-// node5941.flags の bit0 は Entity5941Node* を受ける inline で立てると &p->node5941 からの +4 で揃い, flags5 の検査は bool8 を返す inline で 0/1 の作り置きが揃う, 試済: 頭打ちを MIN 風の三項演算子 / n のローカルで書く (248)
+// cwolfNode.flags の bit0 は CWolfTargetNode* を受ける inline で立てると &p->cwolfNode からの +4 で揃い, flags5 の検査は bool8 を返す inline で 0/1 の作り置きが揃う, 試済: 頭打ちを MIN 風の三項演算子 / n のローカルで書く (248)
 NON_MATCH bool8 FUN_080f6604(Enemy* p) {
 #ifdef NONMATCHING_C
   if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_12)) {
@@ -2824,9 +2823,9 @@ NON_MATCH bool8 FUN_080f6604(Enemy* p) {
     Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_3 | ENEFLAG4_UNK_6 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11 | ENEFLAG4_UNK_14);
     p->unk_4be = 0;
     if (TEST_FLAGS(p->flags5, ENEFLAG5_UNK_9)) {
-      SET_FLAGS(p->node5941.flags, 1);
+      SET_FLAGS(p->cwolfNode.flags, 1);
     }
-    Enemy_EnterState(p, p->unk_5d0, 17);
+    Enemy_EnterState(p, p->unk_5d0, ES_DYING);
     Enemy_ResetState(p, 3, 0, 0);
 
     if (IsLinkPlay()) {
@@ -2988,11 +2987,11 @@ bool32 FUN_080f6bac(Enemy* p) {
 NON_MATCH bool32 FUN_080f6c74(Enemy* p) {
 #ifdef NONMATCHING_C
   if (TEST_FLAGS(p->flags2, ENEFLAG2_UNK_27) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_15) && TEST_FLAGS(p->flags3, ENEFLAG3_UNK_13) && p->unk_4be != 0) {
-    if (p->state == 29) {
+    if (p->state == ES_UNK_29) {
       return TRUE;
     }
 
-    Enemy_EnterState(p, FUN_080f5c0c, 29);
+    Enemy_EnterState(p, FUN_080f5c0c, ES_UNK_29);
     Enemy_ResetState(p, 3, 0, 0);
     FUN_080e499c(p);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_4);
@@ -3043,7 +3042,7 @@ bool32 FUN_080f8400(Enemy* p) {
     }
   }
 
-  Enemy_EnterState(p, p->unk_5cc, 18);
+  Enemy_EnterState(p, p->unk_5cc, ES_DAMAGED);
   Enemy_ResetState(p, 3, 0, 0);
   Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_3 | ENEFLAG4_UNK_6 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
   Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
@@ -3080,7 +3079,7 @@ NON_MATCH bool32 FUN_080f84d4(Enemy* p) {
     p->unk_202 = 0;
     p->unk_202 = 180;
     Enemy_SetEmote(p, 0, 1, p->kind);
-    Enemy_EnterState(p, p->unk_5c8, 9);
+    Enemy_EnterState(p, p->unk_5c8, ES_UNK_9);
     Enemy_ResetState(p, 0, 0, 11);
     noticed = TRUE;
   }
@@ -3109,7 +3108,7 @@ NON_MATCH bool32 FUN_080f84d4(Enemy* p) {
     bool8 moved = FALSE;
 
     if (Map_IsPosInAgentIsland(agent, &p->mover.pos, &p->unk_204)) {
-      s32 result = FUN_08235f40(agent, &p->mover.pos, &p->unk_204);
+      s32 result = Map_TryFindNavRoute(agent, &p->mover.pos, &p->unk_204);
 
       if (result != 0) {
         if (result != 2) {

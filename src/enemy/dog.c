@@ -2,6 +2,8 @@
 #include "global.h"
 #include "malloc.h"
 
+const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
+
 void FUN_0814fba4(Enemy* p);
 void FUN_0814fc7c(Enemy* p);
 void FUN_08150534(Enemy* p);

@@ -1,72 +1,86 @@
 #include "entity.h"
 #include "global.h"
-#include "sprite.h"
+#include "hitbox.h"
+#include "sound.h"
+#include "sprite_aux.h"
 
-// 爆発 1 個, 飛びながら 24 フレームで消える
+// 爆発の 効果処理 及び 演出 (おそらくゲーム内のほぼ全ての爆発がこれを使う)
+
+// _Create が Explosion_Create と Explosion_CreateDelayed と Explosion_CreateWithAttrs の 3つある (_Init, _Update, _Destroy は共有)
 typedef struct {
-  bool8 active;      // 0x00, ExplosionManager_Spawn が空きスロットに 1 を立て、_Update が timer > 24 で 0 に戻す
-  u8 flags;          // 0x01, Spawn の第2引数の下位バイト, bit0 で sprite.flags の BLINK_ODD、bit1 で SCREEN_COORD が決まる
-  u16 timer;         // 0x02, 毎フレーム +1, sprite.poseIdx = timer >> 2
-  u16 dampFrom;      // 0x04, timer がこの値以上になったら vel を減衰させる, Spawn の第5引数
-  u16 damping;       // 0x06, vel = vel * damping >> 8 (0 方向に丸める), Spawn の第6引数
-  Vec3 vel;          // 0x08, Spawn が第4引数を 2 ワードでコピーする, _Update が sprite.pos に足す
-  AuxSpriteGfx gfx;  // 0x10, SPRITE_EXPLOSION
-  AuxSprite sprite;  // 0x2C
+  Entity e;           // 0x00, ENTITY_UNK_10
+  AuxSprite sprite;   // 0x18
+  AuxSpriteGfx gfx;   // 0x44, SPRITE_EXPLOSION
+  HitboxData hitbox;  // 0x60, timer が 8 未満の間だけ毎フレーム登録し直す
+  u16 delay;          // 0xB0, 0 になるまで何もしない
+  u16 timer;          // 0xB2, 毎フレーム +1, 23 を越えると自分を消す
 } Explosion;
-static_assert(sizeof(Explosion) == 88);
+static_assert(sizeof(Explosion) == 180);
 
-// 爆発を最大16個まとめて動かすシングルトン
-typedef struct {
-  Entity e;             // 0x00, ENTITY_UNK_10
-  Explosion items[16];  // 0x18, _Init / _Update / _Destroy が 16 回まわす
-} ExplosionManager;
-static_assert(sizeof(ExplosionManager) == 1432);
-
-IWRAM_DATA ExplosionManager* gExplosionManager = NULL;  // 0x03000138
-
-void ExplosionManager_ClearGlobal(void) { gExplosionManager = NULL; }
-
-NAKED s32 ExplosionManager_Update(ExplosionManager* p) { INCFUNC("asm/func/ExplosionManager_Update.inc"); }
-
-s32 ExplosionManager_Destroy(ExplosionManager* p) {
-  s32 i;
-
-  for (i = 0; i < 16; i++) {
-    Explosion* e = &p->items[i];
-    if (e->active) {
-      AuxSprite_Remove(&e->sprite);
+// delay を待ってから爆発を見せ, アニメが終わったら自分を消す
+s32 Explosion_Update(Explosion* p) {
+  if (p->delay != 0) {
+    p->delay--;
+  } else {
+    AuxSprite_SetPoseIdx(&p->sprite, p->timer >> 2);
+    if (p->timer == 0) {
+      AuxSprite_Show(&p->sprite);
+      PlaySound_082406e0(SE_EXPLOSION);
     }
-  }
-  gExplosionManager = NULL;
-  return 0;
-}
-
-s32 ExplosionManager_Init(ExplosionManager* p, void* _) {
-  Vec3 pos;
-  s32 i;
-
-  gExplosionManager = p;
-  VEC3_SET(pos, 0, 0, 0);
-  for (i = 0; i < 16; i++) {
-    Explosion* e = &p->items[i];
-
-    e->active = FALSE;
-    if (!Video_GetAuxSprite(&e->gfx, SPRITE_EXPLOSION)) {
-      return -1;
+    if (p->timer < 8) {
+      Hitbox_Register(&p->hitbox);
     }
-    AuxSprite_Setup(&e->sprite, &e->gfx, 0);
-    e->sprite.priority = 1;
-    e->sprite.pos = pos;
+    p->timer++;
+    if (p->timer > 23) {
+      KillEntity(&p->e);
+    }
   }
   return 0;
 }
 
-ExplosionManager* ExplosionManager_Create(void* _) {
-  ExplosionManager* p = CreateEntity(ENTITY_UNK_10, sizeof(ExplosionManager));
+s32 Explosion_Destroy(Explosion* p) {
+  AuxSprite_Remove(&p->sprite);
+  return 0;
+}
+
+// 爆発のスプライトを1枚用意する, 隠した状態で始める
+void Explosion_InitSprite(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 plttOffset) {
+  Video_GetAuxSprite(gfx, SPRITE_EXPLOSION);
+  AuxSprite_Add(sprite, gfx, 0);
+  sprite->poseIdx = 0;
+  Video_SetAuxSpritePltt(gfx, 275 + plttOffset);
+  sprite->pos = *pos;
+  sprite->priority = 1;
+  sprite->flags |= SPRFLAG_HIDDEN;
+}
+
+// 爆発の攻撃判定を 0x100 角で作る
+void Explosion_InitHitbox(Explosion* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+  Vec3 halfSize;
+  Vec3 offset;
+
+  VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
+  VEC3_SET(offset, 0, 0, 0);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, knockbackPower, 0x40, attrs, invincibleTime);  // 0x40 は武器以外の攻撃
+  Hitbox_SetHandler(hitbox, NULL, p);
+}
+
+s32 Explosion_Init(Explosion* p, Vec3* pos, s32 ignoreMask, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay) {
+  Explosion_InitSprite(&p->sprite, &p->gfx, pos, plttOffset);
+  Explosion_InitHitbox(p, &p->hitbox, ignoreMask, power, knockbackPower, attrs, invincibleTime);
+  Hitbox_SetPos(&p->hitbox, pos, 0);
+  p->delay = delay;
+  p->timer = 0;
+  return 0;
+}
+
+Explosion* Explosion_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, s32 plttOffset) {
+  Explosion* p = CreateEntity(ENTITY_UNK_10, sizeof(Explosion));
 
   if (p != NULL) {
-    SetEntityRoutine(p, ExplosionManager_Update, ExplosionManager_Destroy);
-    if (ExplosionManager_Init(p, _) < 0) {
+    SetEntityRoutine(p, Explosion_Update, Explosion_Destroy);
+    if (Explosion_Init(p, pos, ignoreMask, power, knockback, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, 0) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -74,6 +88,28 @@ ExplosionManager* ExplosionManager_Create(void* _) {
   return p;
 }
 
-NAKED s32 ExplosionManager_Spawn(s32 plttID, u32 flags, Vec3* pos, Vec3* vel, u16 dampFrom, u16 damping) { INCFUNC("asm/func/ExplosionManager_Spawn.inc"); }
+Explosion* Explosion_CreateDelayed(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, s32 plttOffset, s32 delay) {
+  Explosion* p = CreateEntity(ENTITY_UNK_10, sizeof(Explosion));
 
-NAKED s32 ExplosionManager_SpawnFromScript(void) { INCFUNC("asm/func/ExplosionManager_SpawnFromScript.inc"); }
+  if (p != NULL) {
+    SetEntityRoutine(p, Explosion_Update, Explosion_Destroy);
+    if (Explosion_Init(p, pos, ignoreMask, power, knockback, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, delay) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
+
+Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay) {
+  Explosion* p = CreateEntity(ENTITY_UNK_10, sizeof(Explosion));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Explosion_Update, Explosion_Destroy);
+    if (Explosion_Init(p, pos, ignoreMask, power, knockback, attrs, invincibleTime, plttOffset, delay) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

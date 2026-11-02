@@ -3,165 +3,317 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "map_inline.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
+#include "vec3.h"
 #include "vm.h"
 
-struct ElevatorUnkData;
-typedef void ElevatorUnkDataFunc(struct ElevatorUnkData* p);
+// 水平方向 (H) か垂直方向 (V) のどちらか一方に動く床
+// 水平方向 は 移動床, 垂直方向 は 昇降床　と呼ぶようにすること
 
-typedef u16 ElevatorFlags;                // ElevatorUnkData.flags
-#define ELEVATOR_TILEOVERRIDE (1 << 0)    // tileOverride を登録済み
-#define ELEVATOR_TILEOVERRIDES (1 << 11)  // tileOverrides[] を登録済み
-#define ELEVATOR_UNK_1 (1 << 1)           // Elevator_Start が '.m=2' のとき立てる
-#define ELEVATOR_UNK_2 (1 << 2)           // Elevator_Start が '.m=4' のとき立てる
-#define ELEVATOR_PLAYER_RIDING (1 << 3)   // プレイヤーが乗っている, Elevator.ridingID と対
-#define ELEVATOR_UNK_4 (1 << 4)           // 不死の棺桶が乗っている?, FUN_081d3fac が第2引数で落とし分ける
-#define ELEVATOR_UNK_9 (1 << 9)           // FUN_081d4658 が見て落とす
-#define ELEVATOR_UNK_8 (1 << 8)           // 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
-#define ELEVATOR_UNK_7 (1 << 7)           // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
-#define ELEVATOR_SHAKE (1 << 5)           // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
-#define ELEVATOR_FLAG_12 (1 << 12)        // まだ不明
+typedef u16 ElevatorFlags;                  // Elevator.flags
+#define ELEVATOR_TILEOVERRIDE (1 << 0)      // tileOverride を登録済み
+#define ELEVATOR_V_UPPER (1 << 1)           // 昇降床が上側にあるか
+#define ELEVATOR_V_HALT (1 << 2)            // 昇降床が止まっているか(= 稼働していないか)
+#define PLAYER_RIDING (1 << 3)              // プレイヤーが乗っている, ElevatorManager.ridingID と対
+#define COFFIN_RIDING (1 << 4)              // 棺桶が乗っている, Elevator_ClearRidingFlag が第2引数で落とし分ける
+#define ELEVATOR_SHAKE (1 << 5)             // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
+#define ELEVATOR_UNK_7 (1 << 7)             // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
+#define ELEVATOR_PLAYER_KNOCKBACK (1 << 8)  // プレイヤーを弾き返した, 立っていると Elevator_CarryPlayer がプレイヤーを運ばずにフラグだけ落とす
+#define ELEVATOR_COFFIN_CLAMPED (1 << 9)    // 棺桶を範囲の端まで引き戻した, 立っていると Elevator_CarryCoffin が棺桶を運ばずにフラグだけ落とす
+#define ELEVATOR_TILEOVERRIDES (1 << 11)    // tileOverrides[] を登録済み
+#define ELEVATOR_FLAG_12 (1 << 12)          // まだ不明
 
-typedef struct ElevatorUnkData {
+// Elevator.kind, '.k'
+typedef enum {
+  ELEVATOR_H_0 = 0,          // 移動床, 足場の外の特殊床に出たプレイヤーを弾き返す
+  ELEVATOR_H_FALLDEATH = 1,  // 移動床, 足場の外に出ると落下死
+  ELEVATOR_V = 2,            // 昇降床
+  ELEVATOR_H_3 = 3,          // 移動床, ELEVATOR_H_0 とパレットだけ違う
+} ElevatorKind;
+
+// Elevator.state, sElevatorUpdates の添字
+typedef enum {
+  STATE_UNK_0 = 0,      // 何もしない
+  STATE_H_MOVE = 1,     // 移動床が経路に沿って進む, ノードに着くと STATE_H_STOP
+  STATE_V_MOVE = 2,     // 昇降床が上下に動く, 端に着くと STATE_V_STOP
+  STATE_H_STOP = 3,     // 移動床がノードで止まっている, 待ち時間が過ぎると STATE_H_MOVE
+  STATE_V_STOP = 4,     // 昇降床が端で止まっている, プレイヤーが waitTime 乗っていると STATE_V_MOVE
+  STATE_UNK_5 = 5,      // 何もしない
+  STATE_DESTROYED = 6,  // Elevator_Destroy が入れる, ElevatorManager_Update は飛ばす
+} ElevatorState;
+
+struct Elevator;
+typedef void ElevatorFunc(struct Elevator* e);
+
+typedef struct Elevator {
   AuxSprite sprite;                  // 0x000
-  AuxSpriteGfx gfx;                  // 0x02C, Elevator_SetPltt が Video_SetAuxSpritePltt に渡す
-  u8 unk_48[0x058 - 0x048];          // 0x048
-  Vec3 unk_58;                       // 0x058, FUN_081d4540 が ClearMemory で 0 にする, FUN_081d4658 が棺桶の座標に足す
+  AuxSpriteGfx gfx;                  // 0x02C, e.g. SPRITE_LIFT_IRON
+  AuxAnimState anim;                 // 0x048, ElevatorManager.animFile
+  Vec3 moveDelta;                    // 0x058, そのフレームに動いた量, 乗っているプレイヤーや棺桶の座標に足して一緒に運ぶ
   u8 unk_60[0x0B0 - 0x060];          // 0x060
-  s16 slotIdx;                       // 0x0B0, ElevatorController_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
-  s16 state;                         // 0x0B2, ElevatorController_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
-  ElevatorFlags flags;               // 0x0B4, bit0=tileOverride登録済, bit5=Cmd_ShakeElevator, bit11=tileOverrides登録済
-  u8 unk_b6;                         // 0x0B6, FUN_081d2a14 が到着時に 1 を入れる
-  u8 unk_b7[0x0BA - 0x0B7];          // 0x0B7
-  s16 unk_ba;                        // 0x0BA, Cmd_15ED が '.s=6' を入れる
-  u8 unk_bc[0x0C6 - 0x0BC];          // 0x0BC
-  s16 unk_c6;                        // 0x0C6, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
-  u16 unk_c8;                        // 0x0C8, FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
-  u8 unk_ca[0x0CC - 0x0CA];          // 0x0CA
-  s32 unk_cc;                        // 0x0CC, Cmd_CED9 が '.l' の値 (正のときだけ) を入れる
-  s32 unk_d0;                        // 0x0D0, Cmd_CED9 が '.h' の値 (正のときだけ) を入れる
+  s16 slotIdx;                       // 0x0B0, ElevatorManager_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
+  s16 state;                         // 0x0B2, see ElevatorState
+  ElevatorFlags flags;               // 0x0B4, see ElevatorFlags
+  bool8 arrived;                     // 0x0B6, ノードに着いたら 1, 到着時のスクリプトを呼ぶと 0 に戻る
+  u8 unk_b7;                         // 0x0B7
+  s16 timer;                         // 0x0B8, 止まっている間はプレイヤーが乗ってからのフレーム数 (waitTime に達すると動き出す), 動いている間はエフェクトを出す間隔
+  s16 speed;                         // 0x0BA, '.s=6', 1フレームに動く量
+  u16 waitTime;                      // 0x0BC, '.w=120', プレイヤーが乗ってから動き出すまでのフレーム数
+  u16 unk_be;                        // 0x0BE
+  u16 unk_c0;                        // 0x0C0, '.p', 乗っているプレイヤーが足場を外れて水の上に出たら呼ぶスクリプト
+  u16 arriveScriptID;                // 0x0C2, '.R', プレイヤーが乗っているときノードに着いたら呼ぶスクリプト
+  u16 departScriptID;                // 0x0C4, '.S', プレイヤーが乗っているときノードを離れたら呼ぶスクリプト
+  s16 sinkY;                         // 0x0C6, プレイヤーが乗った瞬間に -32 が入り, 負の間だけ sprite.pos.y に足されて半分ずつ減る沈み込み量
+  u16 variant;                       // 0x0C8, '.T', 見た目の種類, パレットとアニメの variant と FUN_081d21d8 の効果音を選ぶ
+  u16 unk_ca;                        // 0x0CA, 動いている間のエフェクトを出す位置を2か所で交互に切り替える
+  s32 minY;                          // 0x0CC, '.l', 昇降床が下りる下限の高さ
+  s32 maxY;                          // 0x0D0, '.h', 昇降床が上る上限の高さ
   u16 id;                            // 0x0D4, Elevator_FindByID が Player.elevatorID や '.n' の値と比較して探す
-  u16 unk_d6;                        // 0x0D6, '.m', FUN_081d21d8 / FUN_081d2a64 が bit2,bit5 を見る
-  ElevatorUnkDataFunc* unk_d8;       // 0x0D8, ElevatorController_Update が毎フレーム呼ぶ
-  ElevatorUnkDataFunc* unk_dc;       // 0x0DC
-  ElevatorUnkDataFunc* unk_e0;       // 0x0E0
-  u8 unk_e4;                         // 0x0E4, Elevator_Create が VM 値を入れる
+  u16 unk_d6;                        // 0x0D6, '.m', bit0 が立つと乗って waitTime たつと動き出す, bit1 が立つと昇降床, bit2 が立つと音を鳴らさない, bit4 が立つとプレイヤーが乗っていなくても走行音を鳴らす, bit5 で効果音を選ぶ
+  ElevatorFunc* checkPlayerOut;      // 0x0D8, ElevatorManager_Update が毎フレーム呼び, プレイヤーが足場の外に出ているかのチェック
+  ElevatorFunc* checkCoffinOut;      // 0x0DC, ElevatorManager_Update が毎フレーム呼び, 棺桶が足場の外に出ているかのチェック
+  ElevatorFunc* unk_e0;              // 0x0E0
+  u8 pathIdx;                        // 0x0E4, '.r[0]', 経路番号
   u8 unk_e5;                         // 0x0E5
-  u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて Map_GetPathNodePos に渡す
-  u8 unk_e7;                         // 0x0E7, FUN_081d2a64 が 0/1/3 で走行音を出し分ける
-  PathWalker pathWalker;             // 0x0E8, hitbox.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
-  Mover hitbox;                      // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
+  u8 nodeIdx;                        // 0x0E6, '.r[1]', 最初にいるノード番号
+  u8 kind;                           // 0x0E7, '.k', ELEVATOR_KIND_*, 走行音とアニメもこれで決まる
+  PathWalker pathWalker;             // 0x0E8, mover.path がここを指す, Cmd_5D74 が '.r' の経路で初期化する
+  Mover mover;                       // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
   MapTileOverride tileOverride;      // 0x138, flags bit0 が立っているときだけ有効
   MapTileOverride tileOverrides[4];  // 0x148, flags bit11 が立っているときだけ有効
   bool8 tileOverrideActive[4];       // 0x188, tileOverrides[i] の登録有無
-} ElevatorUnkData;
-static_assert(sizeof(ElevatorUnkData) == 396);
+} Elevator;
+static_assert(sizeof(Elevator) == 396);
 
 typedef struct {
   Entity e;                      // 0x0000, ENTITY_UNK_5
   AuxAnimFile* animFile;         // 0x0018, ANIM_13F9
-  ElevatorUnkData unk_1c[12];    // 0x001C
+  Elevator elevators[12];        // 0x001C
   u32 usedMask;                  // 0x12AC, スロット i を確保すると bit i が立つ
   u16 ridingID;                  // 0x12B0, 搭乗中のエレベータの id, 降りると 0
-  u16 unk_12b2;                  // 0x12B2, ridingID と同じ作り, FUN_081d4704 / FUN_081d42c4 が 0x03002C00 の乗り手について持つ
+  u16 coffinRidingID;            // 0x12B2, 棺桶が乗っているエレベータの id, 降りると 0
   bool8 soundPlaying;            // 0x12B4, 走行音を鳴らしているか
   u8 unk_12b5[0x12B8 - 0x12B5];  // 0x12B5
-} Elevator;
-static_assert(sizeof(Elevator) == 4792);
+} ElevatorManager;
+static_assert(sizeof(ElevatorManager) == 4792);
 
-IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
+IWRAM_DATA ElevatorManager* gElevatorManager = NULL;  // 0x03000194
 
-// エレベータが乗り手との距離を測るときの許容範囲 (±), Elevator_FindAtPos ほかが引く
-const Vec3 gElevatorRanges[3] = {
-    {Q8(0.5),   Q8(0.125), Q8(0.5)  },
-    {Q8(0.5),   Q8(0.125), Q8(0.5)  },
-    {Q8(0.383), Q8(0.125), Q8(0.383)}
-};  // 0x085AE0D0
+// エレベータが乗り手との距離を測るときの許容範囲 (±)
+const Vec3 gElevatorRange0 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D0
+const Vec3 gElevatorRange1 = {Q8(0.5), Q8(0.125), Q8(0.5)};      // 0x085AE0D8, Elevator_ClampPlayerPos が kind == ELEVATOR_H_FALLDEATH のときに使う
+const Vec3 gElevatorRange2 = {Q8(0.383), Q8(0.125), Q8(0.383)};  // 0x085AE0E0, 棺桶用
 
-bool32 FUN_0807a954(Player* p, u32 mask);
 bool32 FUN_08086978(u32 mask);
-void FUN_081d5588(ElevatorUnkData* p);
+Elevator* Elevator_FindByID(s32 id);
+void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+void FUN_081ee53c(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
+void Elevator_CarryPlayer(Elevator* e);
+void Elevator_CarryCoffin(Elevator* e);
+void Elevator_PlayArrivalSound(Elevator* e);
 
-static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
-  out->x = target->x - origin->x;
-  out->y = target->y - origin->y;
-  out->z = target->z - origin->z;
-}
-
-static inline bool8 Elevator_IsSlotUsed(Elevator* p, s32 i) {
-  if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
+static inline bool8 Elevator_IsSlotUsed(ElevatorManager* p, s32 i) {
+  if (p->usedMask & (1 << i)) return TRUE;
   return FALSE;
 }
 
-static inline void Elevator_FreeSlot(Elevator* p, s32 i) { p->usedMask &= ~(1 << i); }
-
-static inline bool8 Elevator_TestFlags(ElevatorUnkData* p, ElevatorFlags bits) {
-  if (TEST_FLAGS(p->flags, bits)) return TRUE;
+// usedMask をアドレスで受ける版, 呼び出し側で先に usedMask を読んでいると同じアドレスが使い回される
+static inline bool8 Elevator_TestSlotMask(u32* usedMask, s32 i) {
+  if (TEST_FLAGS(*usedMask, 1 << i)) return TRUE;
   return FALSE;
 }
 
-void FUN_0807a97c(Player* p, u32 flags, u32 value);
-void FUN_0807a99c(Player* p, u32 flags);
-void FUN_080869c8(u32 flags, u32 value);
-void FUN_080869f8(u32 flags);
+static inline void Elevator_FreeSlot(ElevatorManager* p, s32 i) { p->usedMask &= ~(1 << i); }
 
-// unk_c8 の種類ごとに走行音を鳴らす
-void FUN_081d21d8(ElevatorUnkData* p) {
-  if (!(p->unk_d6 & 4)) {
-    switch (p->unk_c8) {
+static inline bool8 Elevator_TestFlags(Elevator* e, ElevatorFlags bits) {
+  if (TEST_FLAGS(e->flags, bits)) return TRUE;
+  return FALSE;
+}
+
+static inline bool8 IsFloorTileAt(s32 idx, s32 height) {
+  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+  CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  TileAttr attr;
+
+  if ((tile->heightStairs & 0xF) != height) return FALSE;
+
+  ov = Map_FindTileOverride(idx, 1);
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  attr = tile->attr;
+  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) return FALSE;
+  return TRUE;
+}
+
+static inline bool8 Elevator_PlayArrivalSoundAt(s32 idx, s32 height) {
+  if (IsFloorTileAt(idx, height)) {
+    PlaySound_082406e0(SE_THUD);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// variant ごとに走行音を鳴らす
+void FUN_081d21d8(Elevator* e) {
+  if (!(e->unk_d6 & 4)) {
+    switch (e->variant) {
       case 0: {
         PlaySound_082406e0(SONG_344);
         break;
       }
       case 1:
       case 2: {
-        PlaySound_082406e0(SONG_609);
+        PlaySound_082406e0(SE_ELEV_MECHA_V);
         break;
       }
       case 3: {
-        if (p->unk_d6 & 0x20) {
+        if (e->unk_d6 & 0x20) {
           PlaySound_082406e0(SONG_344);
         } else {
-          PlaySound_082406e0(SONG_609);
+          PlaySound_082406e0(SE_ELEV_MECHA_V);
         }
         break;
       }
       default: {
-        PlaySound_082406e0(SONG_609);
+        PlaySound_082406e0(SE_ELEV_MECHA_V);
         break;
       }
     }
   }
 }
 
-NAKED ElevatorUnkData* Elevator_FindAtPos(Vec3* pos) { INCFUNC("asm/func/Elevator_FindAtPos.inc"); }
+// pos がいずれかのエレベータの範囲 (gElevatorRange0) に入っていればそれを返す
+Elevator* Elevator_FindAtPos(Vec3* pos) {
+  ElevatorManager* p = gElevatorManager;
+  s32 i;
+
+  if (p == NULL) return NULL;
+  if (p->usedMask == 0) return NULL;
+
+  for (i = 0; i < 12; i++) {
+    if (Elevator_TestSlotMask(&p->usedMask, i)) {
+      Vec3 delta;
+
+      Vec3_Delta(&delta, &p->elevators[i].mover.pos, pos);
+      if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+        return &p->elevators[i];
+      }
+    }
+  }
+  return NULL;
+}
 
 // 空いているスロットを1つ確保して返す, 全部埋まっていれば NULL
-// 残差はビット判定を 0/1 の値に起こす分だけ: 原典は (flags & bits) を movs 1 / movs 0 で値にしてから test するが, agbcc はどう書いても分岐に畳む
-// Tier A-B 試済: static inline の if/else, ローカルの bool32 受け, != 0, == FALSE, !!(...), static (非 inline) は bl が出て不可
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出る (39/39) が, ループ外に置く定数とポインタの順が原典と違う
-NON_MATCH ElevatorUnkData* ElevatorController_AllocSlot(Elevator* p) {
-#ifdef NONMATCHING_C
+Elevator* ElevatorManager_AllocSlot(ElevatorManager* p) {
   s32 i;
 
   for (i = 0; i < 12; i++) {
     if (!Elevator_IsSlotUsed(p, i)) {
+      Elevator* e = &p->elevators[i];
+
       p->usedMask |= 1 << i;
-      p->unk_1c[i].slotIdx = i;
-      return &p->unk_1c[i];
+      e->slotIdx = i;
+      return e;
     }
   }
 
   return NULL;
-#else
-  INCFUNC("asm/func/ElevatorController_AllocSlot.inc");
-#endif
 }
 
-NAKED void FUN_081d2368(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d2368.inc"); }
+// 動いている間, 向きに合わせた位置から4フレームおきにエフェクトを出す
+void Elevator_EmitMoveEffect(Elevator* e) {
+  Vec3 off[2];
+  Vec3 pos;
+  s32 dir;
+  s32 a3, a7, a8;
+
+  if (e->timer > 0) {
+    e->timer--;
+    return;
+  }
+
+  dir = e->mover.angle >> 6;
+  switch (dir) {
+    case 0: {
+      VEC3_SET(off[0], Q8(-0.75), Q8(-0.75), 0);
+      VEC3_SET(off[1], Q8(-0.75), Q8(-0.75), Q8(-0.5));
+      a8 = 62;
+      a3 = 4;
+      a7 = 32;
+      break;
+    }
+    case 1: {
+      VEC3_SET(off[0], Q8(-0.25), Q8(-0.75), Q8(-0.25));
+      VEC3_SET(off[1], Q8(-0.86), Q8(-0.75), Q8(-0.25));
+      a8 = 64;
+      a3 = 4;
+      a7 = 32;
+      break;
+    }
+    case 2: {
+      VEC3_SET(off[0], Q8(-0.516), Q8(-0.75), Q8(-0.125));
+      VEC3_SET(off[1], Q8(-0.516), Q8(-0.75), Q8(-0.75));
+      a8 = 62;
+      a3 = 4;
+      a7 = 24;
+      break;
+    }
+    case 3: {
+      VEC3_SET(off[0], Q8(-0.25), Q8(-0.75), Q8(-0.125));
+      VEC3_SET(off[1], Q8(-0.86), Q8(-0.75), Q8(-0.125));
+      a8 = 64;
+      a3 = 4;
+      a7 = 32;
+      break;
+    }
+    default: {
+      return;
+    }
+  }
+
+  switch (e->kind) {
+    case ELEVATOR_H_0: {
+      if (e->unk_ca == 0) {
+        pos.x = e->mover.pos.x + off[0].x;
+        pos.y = e->mover.pos.y + off[0].y;
+        pos.z = e->mover.pos.z + off[0].z;
+        FUN_081ee584(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
+        e->unk_ca = 1;
+      } else {
+        pos.x = e->mover.pos.x + off[1].x;
+        pos.y = e->mover.pos.y + off[1].y;
+        pos.z = e->mover.pos.z + off[1].z;
+        FUN_081ee584(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
+        e->unk_ca = 0;
+      }
+      break;
+    }
+    case ELEVATOR_H_3: {
+      if (e->unk_ca == 0) {
+        pos.x = e->mover.pos.x + off[0].x;
+        pos.y = e->mover.pos.y + off[0].y;
+        pos.z = e->mover.pos.z + off[0].z;
+        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+        e->unk_ca = 1;
+      } else {
+        pos.x = e->mover.pos.x + off[1].x;
+        pos.y = e->mover.pos.y + off[1].y;
+        pos.z = e->mover.pos.z + off[1].z;
+        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+        e->unk_ca = 0;
+      }
+      break;
+    }
+    default: {
+      return;
+    }
+  }
+
+  e->timer = 4;
+}
 
 // 経路ノードが pos から dx/dz の範囲内かどうか
 bool8 FUN_081d2660(PathWalker* walker, Vec3* pos, u32 dx, u32 dz) {
@@ -206,56 +358,195 @@ bool8 FUN_081d2698(Mover* mover, PathWalker* walker, Vec3* out, u32 dx, u32 dz, 
   return FALSE;
 }
 
-void FUN_081d276c(ElevatorUnkData* p) {
-  Elevator* q = gElevator;
+void FUN_081d276c(Elevator* e) {
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 1; i++) {
     Player* player = gPlayerPtr[i];
 
-    if (player != NULL && p->id == q->ridingID) {
-      player->mover.tile = (p->state == 3 || p->state == 4) ? &player->tile : NULL;
+    if (player != NULL && e->id == p->ridingID) {
+      player->mover.tile = (e->state == STATE_H_STOP || e->state == STATE_V_STOP) ? &player->tile : NULL;
     }
   }
 }
 
-// プレイヤーか不死の棺桶のどちらか一方だけが乗っていて、かつ行動6 (乗り込み中?) かどうか
-// 残差は gPlayerPtr のアドレスの扱いだけ (29対29), 原典は r4 に置いて2回読むがこちらはプール定数を2回ロードする
-NON_MATCH bool32 FUN_081d27c8(void) {
-#ifdef NONMATCHING_C
-  if (FUN_0807a954(gPlayerPtr[0], 1)) {
-    if (FUN_08086978(3)) {
-      return FALSE;
-    }
-  } else if (!FUN_08086978(3)) {
+// プレイヤーと棺桶のどちらか一方だけが乗っていて, プレイヤーが棺桶を引いている (積み下ろしの途中) かどうか
+bool8 Elevator_IsLoadingCoffin(Elevator* e) {
+  Player** players = gPlayerPtr;
+
+  if (Player_TestElevatorFlags(players[0], ELEV_RIDING) ? FUN_08086978(3) : !FUN_08086978(3)) {
     return FALSE;
   }
 
-  if (gPlayerPtr[0]->action != PACT_PULL_COFFIN) {
+  if (players[0]->action != PACT_PULL_COFFIN) {
     return FALSE;
   }
   return TRUE;
-#else
-  INCFUNC("asm/func/FUN_081d27c8.inc");
-#endif
 }
 
-void FUN_081d280c(ElevatorUnkData* p) {}
+void Elevator_UpdateState0(Elevator* e) {}
 
-NAKED void FUN_081d2810(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d2810.inc"); }
+// 昇降床を speed ずつ上下に動かし, minY か maxY に着いたら止める
+void Elevator_UpdateState2(Elevator* e) {
+  Vec3 v;
 
-// 目的地に着いていたら状態3へ進め, まだなら移動を続ける
-void FUN_081d2a14(ElevatorUnkData* p) {
-  if (FUN_081d2698(&p->hitbox, &p->pathWalker, &p->unk_58, p->unk_ba, p->unk_ba, p->unk_ba)) {
-    p->state = 3;
-    p->unk_b6 = 1;
-    FUN_081d5588(p);
+  ClearMemory(&e->moveDelta, sizeof(Vec3));
+  Vec3_Delta(&v, &e->mover.pos, &gPlayerPtr[0]->mover.pos);
+
+  if (e->arrived) {
+    FUN_081d21d8(e);
+    e->arrived = FALSE;
+  }
+
+  if (Elevator_TestFlags(e, ELEVATOR_V_HALT)) return;
+
+  if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
+    e->mover.pos.y += e->speed;
+    e->moveDelta.y = e->speed;
+    if (e->maxY <= e->mover.pos.y) {
+      e->mover.pos.y = e->maxY;
+      if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
+        v = gPlayerPtr[0]->mover.pos;
+        v.y = e->mover.pos.y;
+        FUN_0807a91c(gPlayerPtr[0], &v);
+        SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
+        e->moveDelta.y = 0;
+      }
+      e->state = STATE_V_STOP;
+      e->arrived = TRUE;
+      if (!(e->unk_d6 & 4)) {
+        sound_08240740(SONG_344);
+        sound_08240740(SE_ELEV_MECHA_V);
+        sound_08240740(SE_ELEV_MECHA_H);
+        sound_08240740(SE_ELEV_LAVA);
+        sound_08240740(SE_ELEV_WATER);
+        PlaySound_082406e0(SONG_345);
+      }
+    }
   } else {
-    FUN_081d2368(p);
+    e->mover.pos.y -= e->speed;
+    e->moveDelta.y = -e->speed;
+    if (e->minY >= e->mover.pos.y) {
+      e->mover.pos.y = e->minY;
+      if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
+        v = gPlayerPtr[0]->mover.pos;
+        v.y = e->mover.pos.y;
+        FUN_0807a91c(gPlayerPtr[0], &v);
+        SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
+        e->moveDelta.y = 0;
+      }
+      e->state = STATE_V_STOP;
+      e->arrived = TRUE;
+      if (!(e->unk_d6 & 4)) {
+        sound_08240740(SONG_344);
+        sound_08240740(SE_ELEV_MECHA_V);
+        sound_08240740(SE_ELEV_MECHA_H);
+        sound_08240740(SE_ELEV_LAVA);
+        sound_08240740(SE_ELEV_WATER);
+        PlaySound_082406e0(SONG_345);
+      }
+    }
   }
 }
 
-NAKED void FUN_081d2a64(Elevator* p) { INCFUNC("asm/func/FUN_081d2a64.inc"); }
+// 目的地に着いていたら状態3へ進め, まだなら移動を続ける
+void Elevator_UpdateState1(Elevator* e) {
+  if (FUN_081d2698(&e->mover, &e->pathWalker, &e->moveDelta, e->speed, e->speed, e->speed)) {
+    e->state = STATE_H_STOP;
+    e->arrived = TRUE;
+    Elevator_PlayArrivalSound(e);
+  } else {
+    Elevator_EmitMoveEffect(e);
+  }
+}
+
+// 動いているエレベータに合わせて走行音を鳴らし始め, 止まったら止める
+// 残差10ハンク (148/158), 原典はループ側の &elevators[i] を p+0x1C から始まる別の誘導変数に持ち, 鳴らす音の選択をループ側と後半の2か所に展開したまま PlaySound の呼び出しだけを共有する, (e->unk_d6 & 4) も s16 で受ける
+// Tier A-C は試済 (添字/ポインタの持ち方, switch 化, 停止/開始の static inline 化, unk_d6 の s16 化)
+NON_MATCH void ElevatorManager_UpdateSound(ElevatorManager* p) {
+#ifdef NONMATCHING_C
+  bool32 riding = FALSE;
+  Elevator* e;
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    if (Elevator_IsSlotUsed(p, i) && p->elevators[i].state != STATE_DESTROYED && (p->elevators[i].unk_d6 & 0x10)) {
+      if (p->elevators[i].state != STATE_H_MOVE) {
+        if (p->soundPlaying == TRUE) {
+          sound_08240740(SE_ELEV_WATER);
+          sound_08240740(SE_ELEV_LAVA);
+          sound_08240740(SE_ELEV_MECHA_H);
+          p->soundPlaying = FALSE;
+        }
+      } else if (p->soundPlaying == FALSE) {
+        s32 id;
+
+        switch (p->elevators[i].kind) {
+          case ELEVATOR_H_0: {
+            id = SE_ELEV_LAVA;
+            break;
+          }
+          case ELEVATOR_H_3: {
+            id = SE_ELEV_WATER;
+            break;
+          }
+          default: {
+            id = SE_ELEV_MECHA_H;
+            break;
+          }
+        }
+        PlaySound_082406e0(id);
+        p->soundPlaying = TRUE;
+      }
+      return;
+    }
+  }
+
+  if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) riding = TRUE;
+
+  e = Elevator_FindByID(gPlayerPtr[0]->elevatorID);
+  if (e == NULL) return;
+  if (e->unk_d6 & 4) return;
+
+  if (riding) {
+    if (e->state != STATE_H_MOVE) {
+      if (p->soundPlaying == TRUE) {
+        sound_08240740(SE_ELEV_WATER);
+        sound_08240740(SE_ELEV_LAVA);
+        sound_08240740(SE_ELEV_MECHA_H);
+        p->soundPlaying = FALSE;
+      }
+    } else if (p->soundPlaying == FALSE) {
+      s32 id;
+
+      switch (e->kind) {
+        case ELEVATOR_H_0: {
+          id = SE_ELEV_LAVA;
+          break;
+        }
+        case ELEVATOR_H_3: {
+          id = SE_ELEV_WATER;
+          break;
+        }
+        default: {
+          id = SE_ELEV_MECHA_H;
+          break;
+        }
+      }
+      PlaySound_082406e0(id);
+      p->soundPlaying = TRUE;
+    }
+  } else if (p->soundPlaying == TRUE) {
+    sound_08240740(SE_ELEV_WATER);
+    sound_08240740(SE_ELEV_LAVA);
+    sound_08240740(SE_ELEV_MECHA_H);
+    p->soundPlaying = FALSE;
+  }
+#else
+  INCFUNC("asm/func/ElevatorManager_UpdateSound.inc");
+#endif
+}
 
 void FUN_081d2c10(void) {
   WorldPos pos = gPlayerPtr[0]->mover.pos;
@@ -268,12 +559,12 @@ void FUN_081d2c10(void) {
 }
 
 // プレイヤーがこのエレベータの上にいるか
-bool32 FUN_081d2c60(ElevatorUnkData* p) {
+bool8 Elevator_IsPlayerInRange(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
     Vec3 d;
-    Vec3_Delta(&d, &p->hitbox.pos, &gPlayerPtr[0]->mover.pos);
+    Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[0]->mover.pos);
 
-    if (d.x <= gElevatorRanges[0].x && d.x >= -gElevatorRanges[0].x && d.y <= gElevatorRanges[0].y && d.y >= -gElevatorRanges[0].y && d.z <= gElevatorRanges[0].z && d.z >= -gElevatorRanges[0].z) {
+    if (d.x <= gElevatorRange0.x && d.x >= -gElevatorRange0.x && d.y <= gElevatorRange0.y && d.y >= -gElevatorRange0.y && d.z <= gElevatorRange0.z && d.z >= -gElevatorRange0.z) {
       return TRUE;
     }
   }
@@ -281,48 +572,184 @@ bool32 FUN_081d2c60(ElevatorUnkData* p) {
   return FALSE;
 }
 
-NAKED void FUN_081d2cf8(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d2cf8.inc"); }
+// 端で止まっている昇降床, プレイヤーが waitTime だけ乗っていたら逆向きに動き出す
+void Elevator_UpdateState4(Elevator* e) {
+  if (e->arrived) {
+    ElevatorManager* p = gElevatorManager;
 
-// 沈み込みを戻しつつ, 揺れフラグが立っていればスプライト位置を乱数で揺らす
-// 残差11命令 (81/92): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す (2箇所)
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (93/92)
-NON_MATCH void Elevator_UpdateShake(ElevatorUnkData* p) {
-#ifdef NONMATCHING_C
-  if (p->unk_c6 < 0) {
-    p->sprite.pos.y += p->unk_c6;
-    p->unk_c6 = Div(p->unk_c6, 2);
+    if (e->id == p->ridingID && e->arriveScriptID != 0) {
+      u32 argv[3];
+      ScriptArgs sa;
+
+      if (e->kind == ELEVATOR_V) {
+        if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
+          argv[0] = 2;
+        } else {
+          argv[0] = 1;
+        }
+      } else {
+        argv[0] = e->pathWalker.nodeIdx;
+      }
+      argv[1] = e->mover.pos.x;
+      argv[2] = e->mover.pos.z;
+      sa.argc = 3;
+      sa.argv = argv;
+      VM_ExecByID(e->arriveScriptID, &sa);
+    }
+    e->arrived = FALSE;
+    e->timer = 1;
   }
 
-  if (!Elevator_TestFlags(p, ELEVATOR_UNK_7)) {
-    if (!Elevator_TestFlags(p, ELEVATOR_SHAKE)) {
+  if (!Elevator_IsLoadingCoffin(e)) {
+    ElevatorManager* p;
+    Elevator* at;
+
+    if (e->unk_d6 & 1) {
+      if (e->timer >= e->waitTime && Elevator_IsPlayerInRange(e)) {
+        e->state = STATE_V_MOVE;
+        if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
+          CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
+        } else {
+          SET_FLAGS(e->flags, ELEVATOR_V_UPPER);
+        }
+        e->timer = 0;
+        e->arrived = TRUE;
+        p = gElevatorManager;
+        if (e->id == p->ridingID && e->departScriptID != 0) {
+          u32 arg = e->id;
+          ScriptArgs sa;
+
+          sa.argc = 1;
+          sa.argv = &arg;
+          VM_ExecByID(e->departScriptID, &sa);
+        }
+        return;
+      }
+      if (e->timer > e->waitTime - 10) {
+        SET_FLAGS(e->flags, ELEVATOR_SHAKE);
+      }
+    }
+
+    at = Elevator_FindAtPos(&gPlayerPtr[0]->mover.pos);
+    if (at != NULL) {
+      if (at->id == e->id) {
+        if (!Elevator_TestFlags(e, ELEVATOR_FLAG_12) && e->timer == 0) {
+          e->sinkY = -32;
+          PlaySound_082406e0(SE_ELEV_MECHA_V_RIDE);
+        }
+        if (e->timer < 32000) {
+          e->timer++;
+        }
+      }
+    } else {
+      e->timer = 0;
+      e->sinkY = 0;
+    }
+  }
+}
+
+// 沈み込みを戻しつつ, 揺れフラグが立っていればスプライト位置を乱数で揺らす
+// 残差は割当のみ (93/92): 原典は &flags を r6, gRandomTable を r8 に置くが, こちらは逆になり hi レジスタ経由の mov が1つ増える, Tier A-C は試済 (table の置き場所, dy ローカル, y の足し方)
+NON_MATCH void Elevator_UpdateShake(Elevator* e) {
+#ifdef NONMATCHING_C
+  if (e->sinkY < 0) {
+    e->sprite.pos.y += e->sinkY;
+    e->sinkY = Div(e->sinkY, 2);
+  }
+
+  if (!Elevator_TestFlags(e, ELEVATOR_UNK_7)) {
+    u16* table;
+
+    if (!Elevator_TestFlags(e, ELEVATOR_SHAKE)) {
       return;
     }
 
-    p->sprite.pos.x += Mod(Random(), 12) - 6;
-    p->sprite.pos.y += Random() & 3;
-    p->sprite.pos.z += Mod(Random(), 12) - 6;
+    table = gRandomTable;
+    e->sprite.pos.x += Mod(_Random(table), 12) - 6;
+    {
+      s32 dy = _Random(table) & 3;
+
+      e->sprite.pos.y += dy;
+    }
+    e->sprite.pos.z += Mod(_Random(table), 12) - 6;
   }
 
-  p->flags &= ~(ELEVATOR_TILEOVERRIDE | ELEVATOR_SHAKE);
+  CLEAR_FLAGS(e->flags, ELEVATOR_SHAKE);
 #else
   INCFUNC("asm/func/Elevator_UpdateShake.inc");
 #endif
 }
 
-NAKED void FUN_081d2fd0(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d2fd0.inc"); }
+// 残差は後半の gElevatorManager のアドレスを原典が Elevator_IsLoadingCoffin の前に r6 へ先読みして持つ点のみ (143/143), 前半は Elevator_UpdateState4 と同じくブロック内の p で一致
+// Tier A-C は試済 (比較の向き, 判定の分け方, walker ローカル, argv[0] の書き方, p ローカルの置き場所)
+NON_MATCH void Elevator_UpdateState3(Elevator* e) {
+#ifdef NONMATCHING_C
+  if (e->arrived) {
+    ElevatorManager* p = gElevatorManager;
 
-void FUN_081d3110(ElevatorUnkData* p) {}
+    if (e->id == p->ridingID && e->arriveScriptID != 0) {
+      u32 argv[3];
+      ScriptArgs sa;
 
-void FUN_081d3114(ElevatorUnkData* p) {}
+      if (e->kind == ELEVATOR_V) {
+        if (Elevator_TestFlags(e, ELEVATOR_V_UPPER)) {
+          argv[0] = 2;
+        } else {
+          argv[0] = 1;
+        }
+      } else {
+        argv[0] = e->pathWalker.nodeIdx;
+      }
+      argv[1] = e->mover.pos.x;
+      argv[2] = e->mover.pos.z;
+      sa.argc = 3;
+      sa.argv = argv;
+      VM_ExecByID(e->arriveScriptID, &sa);
+    }
+    e->timer = 0;
+    e->arrived = FALSE;
+  }
+
+  if (!Elevator_IsLoadingCoffin(e)) {
+    PathWalker* walker = &e->pathWalker;
+
+    if (walker->waitTimer++ >= (walker->node->delay & 0xFFF)) {
+      Map_AdvancePathWalker(walker);
+      if (Map_IsPosOutsidePathNode(walker, &e->mover.pos, 16, 16)) {
+        ElevatorManager* p;
+
+        e->state = STATE_H_MOVE;
+        p = gElevatorManager;
+        if (e->id == p->ridingID && e->departScriptID != 0) {
+          u32 arg = e->id;
+          ScriptArgs sa;
+
+          sa.argc = 1;
+          sa.argv = &arg;
+          VM_ExecByID(e->departScriptID, &sa);
+        }
+      } else {
+        e->state = STATE_H_STOP;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Elevator_UpdateState3.inc");
+#endif
+}
+
+void Elevator_UpdateState5(Elevator* e) {}
+
+void Elevator_UpdateState6(Elevator* e) {}
 
 // id が一致する要素を探す
-ElevatorUnkData* Elevator_FindByID(s32 id) {
-  Elevator* q = gElevator;
+Elevator* Elevator_FindByID(s32 id) {
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (q->unk_1c[i].id == id) {
-      return &q->unk_1c[i];
+    if (p->elevators[i].id == id) {
+      return &p->elevators[i];
     }
   }
 
@@ -330,13 +757,13 @@ ElevatorUnkData* Elevator_FindByID(s32 id) {
 }
 
 // プレイヤーが乗っているエレベータを探す
-ElevatorUnkData* Elevator_FindRiding(void) {
-  Elevator* q = gElevator;
+Elevator* Elevator_FindRiding(void) {
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (q->ridingID == q->unk_1c[i].id) {
-      return &q->unk_1c[i];
+    if (p->ridingID == p->elevators[i].id) {
+      return &p->elevators[i];
     }
   }
 
@@ -344,32 +771,102 @@ ElevatorUnkData* Elevator_FindRiding(void) {
 }
 
 // 登録してあった上書きタイルを全部外す
-void Elevator_RemoveTileOverrides(ElevatorUnkData* p) {
-  if (Elevator_TestFlags(p, ELEVATOR_TILEOVERRIDES)) {
+void Elevator_RemoveTileOverrides(Elevator* e) {
+  if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDES)) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-      if (p->tileOverrideActive[i]) {
-        Map_RemoveTileOverride(&p->tileOverrides[i]);
-        p->tileOverrideActive[i] = 0;
+      if (e->tileOverrideActive[i]) {
+        Map_RemoveTileOverride(&e->tileOverrides[i]);
+        e->tileOverrideActive[i] = 0;
       }
     }
 
-    CLEAR_FLAGS(p->flags, ELEVATOR_TILEOVERRIDES);
+    CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDES);
   }
 }
 
-NAKED void Elevator_UpdateTileOverrides(ElevatorUnkData* p) { INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc"); }
+// 棺桶を引くプレイヤーを乗せて止まっている間, 隣の特殊床や水のタイルを足場の高さで上書きする
+// 残差は使われない center の計算 (189/231), 原典は center を static inline の出力引数 (Vec3* out) で埋めるのでスタックへの格納が残る, その形にすると 228/231 まで寄り, 残りは e を r8 に置くか base をスタックに置くかの割当と hit の 0/1 起こし
+// Tier A-C は試済 (center の inline 化, 属性判定の bool8 inline, 添字計算の手書き, 宣言順, override ポインタ)
+NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
+#ifdef NONMATCHING_C
+  ElevatorManager* p = gElevatorManager;
 
-NAKED void FUN_081d33f8(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d33f8.inc"); }
+  if (p == NULL || e->id != p->ridingID || e->kind == ELEVATOR_V || gPlayerPtr[0]->action != PACT_PULL_COFFIN || e->state != STATE_H_STOP) {
+    Elevator_RemoveTileOverrides(e);
+    return;
+  }
+
+  if (!Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDES)) {
+    s32 base = GetCollisionTileIdx(&e->mover.pos);
+    s32 idx = base + 1;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+      MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+      CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+      bool8 hit = (tile->attr & (TATTR_SPECIAL | TATTR_FALLDEATH)) ? TRUE : FALSE;
+
+      if (hit) {
+        Vec3 center;
+        s32 bx, bz;
+
+        Map_AddTileOverride(&e->tileOverrides[i], idx, STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_0 | TATTR_UNK_2);
+        e->tileOverrideActive[i] = TRUE;
+        bx = Mod(idx, gCollisionMap->tiledata->width);
+        bz = Div(idx, gCollisionMap->tiledata->width);
+        center.x = bx * Q8(1) + Q8(0.5);
+        ov = Map_FindTileOverride(idx, 1);
+        tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+        center.y = (tile->heightStairs & 0xF) << 8;
+        center.z = bz * Q8(1) + Q8(0.5);
+        SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDES);
+      }
+
+      switch (i) {
+        case 0: {
+          idx = base + gCollisionMap->tiledata->width;
+          break;
+        }
+        case 1: {
+          idx = base - 1;
+          break;
+        }
+        case 2: {
+          idx = base - gCollisionMap->tiledata->width;
+          break;
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Elevator_UpdateTileOverrides.inc");
+#endif
+}
+
+// 状態 3/4 の間はプレイヤーと同じ高さにいれば足元のタイルを移動床で上書きし, それ以外の状態では上書きを外す
+void Elevator_UpdateTileOverride(Elevator* e) {
+  if (e->state != STATE_H_STOP && e->state != STATE_V_STOP) {
+    if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
+      Map_RemoveTileOverride(&e->tileOverride);
+      CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
+    }
+  } else {
+    if (!Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE) && gCollisionMap != NULL && e->mover.pos.y == gPlayerPtr[0]->mover.pos.y) {
+      Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
+      SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
+    }
+  }
+}
 
 // tileIdx の上書きタイルを登録しているエレベータがあるかどうか
-bool32 FUN_081d34e8(s32 tileIdx) {
-  Elevator* q = gElevator;
+bool8 Elevator_IsTileOverridden(s32 tileIdx) {
+  ElevatorManager* p = gElevatorManager;
   s32 i;
 
   for (i = 0; i < 12; i++) {
-    if (Elevator_TestFlags(&q->unk_1c[i], ELEVATOR_TILEOVERRIDE) && q->unk_1c[i].tileOverride.tileIdx == tileIdx) {
+    if (Elevator_TestFlags(&p->elevators[i], ELEVATOR_TILEOVERRIDE) && p->elevators[i].tileOverride.tileIdx == tileIdx) {
       return TRUE;
     }
   }
@@ -377,249 +874,762 @@ bool32 FUN_081d34e8(s32 tileIdx) {
   return FALSE;
 }
 
-NAKED void FUN_081d3534(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d3534.inc"); }
-
-NAKED void FUN_081d36c0(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d36c0.inc"); }
-
-NAKED void FUN_081d38a4(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d38a4.inc"); }
-
-NAKED void FUN_081d3a8c(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d3a8c.inc"); }
-
-NAKED void FUN_081d3c24(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d3c24.inc"); }
-
-NAKED void FUN_081d3dd0(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d3dd0.inc"); }
-
-// 残差はビット判定を 0/1 の値に起こす分だけ (src/elevator.c の ElevatorController_AllocSlot と同じ現象)
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (62/63)
-NON_MATCH void FUN_081d3fac(s32 id, s32 which) {
-#ifdef NONMATCHING_C
-  Elevator* q = gElevator;
+// 乗っているプレイヤーが足場の範囲を外れて特殊床の上に出たら, エレベータの位置から弾き返す
+void Elevator_KnockbackPlayer(Elevator* e) {
   s32 i;
 
-  if (q->usedMask != 0) {
-    for (i = 0; i < 12; i++) {
-      if (Elevator_IsSlotUsed(q, i) && q->unk_1c[i].id == id) {
-        if (which == 0) {
-          q->unk_1c[i].flags &= ~ELEVATOR_PLAYER_RIDING;
+  for (i = 0; i < 1; i++) {
+    if (gPlayerPtr[i] != NULL && Player_TestElevatorFlags(gPlayerPtr[i], ELEV_RIDING) && Elevator_TestFlags(e, PLAYER_RIDING)) {
+      s32 idx = GetCollisionTileIdx(&gPlayerPtr[i]->mover.pos);
+
+      if (!Elevator_IsTileOverridden(idx)) {
+        MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+        CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+        TileAttr attr = tile->attr;
+
+        if (attr & TATTR_SPECIAL) {
+          Vec3 d;
+
+          Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
+          if (d.x > gElevatorRange0.x || d.x < -gElevatorRange0.x || d.y > gElevatorRange0.y || d.y < -gElevatorRange0.y || d.z > gElevatorRange0.z || d.z < -gElevatorRange0.z) {
+            Player_SetKnockbackOrigin(gPlayerPtr[i], &e->mover.pos);
+            SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
+          }
+        }
+      }
+    }
+  }
+}
+
+// 乗っているプレイヤーが足場の範囲を外れて水の上に出たら unk_c0 のスクリプトを呼ぶ
+void Elevator_CheckPlayerFallInWater(Elevator* e) {
+  s32 i;
+
+  for (i = 0; i < 1; i++) {
+    bool32 outside = FALSE;
+
+    if (gPlayerPtr[i] != NULL) {
+      if (!Player_TestElevatorFlags(gPlayerPtr[i], ELEV_RIDING) && !Player_TestElevatorFlags(gPlayerPtr[i], ELEV_UNK_1)) return;
+
+      if (Elevator_TestFlags(e, PLAYER_RIDING)) {
+        s32 idx;
+        MapTileOverride* ov;
+        CollisionMapTile* tile;
+        TileAttr attr;
+
+        s32 bx = (s8)(gPlayerPtr[i]->mover.pos.x >> 8);
+        s32 bz = (s8)(gPlayerPtr[i]->mover.pos.z >> 8);
+        if (IsOutsideMap(bx, bz)) {
+          idx = 0;
         } else {
-          q->unk_1c[i].flags &= ~ELEVATOR_UNK_4;
+          idx = gCollisionMap->rowOffsets[bz] + bx;
+        }
+        ov = Map_FindTileOverride(idx, 1);
+        tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+        attr = tile->attr;
+
+        if ((attr & TATTR_FALLDEATH) && !Elevator_IsTileOverridden(idx)) {
+          Vec3 d;
+
+          Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
+          if (e->unk_d6 & 8) {
+            if (d.x > gElevatorRange0.x || d.x < -gElevatorRange0.x || d.y > gElevatorRange0.y || d.y < -gElevatorRange0.y || d.z > gElevatorRange0.z || d.z < -gElevatorRange0.z) {
+              outside = TRUE;
+            }
+          } else {
+            if (d.x > gElevatorRange1.x || d.x < -gElevatorRange1.x || d.y > gElevatorRange1.y || d.y < -gElevatorRange1.y || d.z > gElevatorRange1.z || d.z < -gElevatorRange1.z) {
+              outside = TRUE;
+            }
+          }
+          if (outside && e->unk_c0 != 0) {
+            VM_ExecByID(e->unk_c0, NULL);
+          }
+        }
+      }
+    }
+  }
+}
+
+// 乗っているプレイヤーが足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampPlayerToRange(Elevator* e) {
+  s32 i;
+
+  for (i = 0; i < 1; i++) {
+    if (gPlayerPtr[i] != NULL && e->state != STATE_V_STOP && Player_TestElevatorFlags(gPlayerPtr[i], ELEV_RIDING)) {
+      Vec3 d;
+
+      if (!Elevator_TestFlags(e, PLAYER_RIDING)) return;
+      if (Elevator_IsTileOverridden(GetCollisionTileIdx(&e->mover.pos)) && gPlayerPtr[i]->mover.pos.y == e->mover.pos.y) continue;
+
+      Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
+      if (d.x <= gElevatorRange2.x && d.x >= -gElevatorRange2.x && d.y <= gElevatorRange2.y && d.y >= -gElevatorRange2.y && d.z <= gElevatorRange2.z && d.z >= -gElevatorRange2.z) continue;
+
+      if (d.x > gElevatorRange2.x) {
+        d.x = gElevatorRange2.x;
+      } else if (d.x < -gElevatorRange2.x) {
+        d.x = -gElevatorRange2.x;
+      }
+      if (d.z > gElevatorRange2.z) {
+        d.z = gElevatorRange2.z;
+      } else if (d.z < -gElevatorRange2.z) {
+        d.z = -gElevatorRange2.z;
+      }
+
+      d.x = e->mover.pos.x + d.x;
+      d.y = e->mover.pos.y;
+      d.z = e->mover.pos.z + d.z;
+      FUN_0807a91c(gPlayerPtr[i], &d);
+      SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
+    }
+  }
+}
+
+// 乗っている棺桶が足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampCoffinPos(Elevator* e) {
+  WorldPos pos;
+  Vec3 d;
+
+  if (!FUN_08086978(1)) return;
+  if (!Elevator_TestFlags(e, COFFIN_RIDING)) return;
+
+  Coffin_CopyPos(&pos);
+  if (Elevator_IsTileOverridden(GetCollisionTileIdx(&e->mover.pos)) && pos.y == e->mover.pos.y) return;
+
+  Vec3_Delta(&d, &e->mover.pos, &pos);
+  if (d.x <= gElevatorRange2.x && d.x >= -gElevatorRange2.x && d.y <= gElevatorRange2.y && d.y >= -gElevatorRange2.y && d.z <= gElevatorRange2.z && d.z >= -gElevatorRange2.z) return;
+
+  if (d.x > gElevatorRange2.x) {
+    d.x = gElevatorRange2.x;
+  } else if (d.x < -gElevatorRange2.x) {
+    d.x = -gElevatorRange2.x;
+  }
+  if (d.z > gElevatorRange2.z) {
+    d.z = gElevatorRange2.z;
+  } else if (d.z < -gElevatorRange2.z) {
+    d.z = -gElevatorRange2.z;
+  }
+
+  pos.x = e->mover.pos.x + d.x;
+  pos.y = e->mover.pos.y;
+  pos.z = e->mover.pos.z + d.z;
+  FUN_08086a4c(&pos);
+  SET_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
+}
+
+// 乗っている棺桶が特殊床の上で足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampCoffinOnSpecialTile(Elevator* e) {
+  WorldPos pos;
+  Vec3 d;
+
+  if (!FUN_08086978(1)) return;
+  if (!Elevator_TestFlags(e, COFFIN_RIDING)) return;
+
+  Coffin_CopyPos(&pos);
+  if (!(GetTileAttrAt(&pos) & TATTR_SPECIAL)) return;
+
+  Vec3_Delta(&d, &e->mover.pos, &pos);
+  if (d.x <= gElevatorRange0.x && d.x >= -gElevatorRange0.x && d.y <= gElevatorRange0.y && d.y >= -gElevatorRange0.y && d.z <= gElevatorRange0.z && d.z >= -gElevatorRange0.z) return;
+
+  if (d.x > gElevatorRange0.x) {
+    d.x = gElevatorRange0.x;
+  } else if (d.x < -gElevatorRange0.x) {
+    d.x = -gElevatorRange0.x;
+  }
+  if (d.z > gElevatorRange0.z) {
+    d.z = gElevatorRange0.z;
+  } else if (d.z < -gElevatorRange0.z) {
+    d.z = -gElevatorRange0.z;
+  }
+
+  pos.x = e->mover.pos.x + d.x;
+  pos.y = e->mover.pos.y;
+  pos.z = e->mover.pos.z + d.z;
+  FUN_08086a4c(&pos);
+  SET_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
+}
+
+// 乗っている棺桶が床の高さにいないか水の上にいて, 足場の範囲を外れたら範囲の端まで引き戻す
+void Elevator_ClampCoffinOffFloor(Elevator* e) {
+  WorldPos pos;
+  Vec3 d;
+
+  if (!FUN_08086978(1)) return;
+  if (!Elevator_TestFlags(e, COFFIN_RIDING)) return;
+
+  Coffin_CopyPos(&pos);
+  {
+    s32 bx = (s8)(pos.x >> 8);
+    s32 bz = (s8)(pos.z >> 8);
+    s32 idx;
+    s32 y;
+    MapTileOverride* ov;
+    CollisionMapTile* tile;
+    TileAttr attr;
+
+    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+      idx = 0;
+    } else {
+      idx = gCollisionMap->rowOffsets[bz] + bx;
+    }
+    y = pos.y;
+    ov = Map_FindTileOverride(idx, 1);
+    tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+
+    if (y == (tile->heightStairs & 0xF) << 8) {
+      ov = Map_FindTileOverride(idx, 1);
+      tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+      attr = tile->attr;
+      if (!(attr & TATTR_FALLDEATH)) return;
+    }
+  }
+
+  Vec3_Delta(&d, &e->mover.pos, &pos);
+  if (d.x <= gElevatorRange0.x && d.x >= -gElevatorRange0.x && d.y <= gElevatorRange0.y && d.y >= -gElevatorRange0.y && d.z <= gElevatorRange0.z && d.z >= -gElevatorRange0.z) return;
+
+  if (d.x > gElevatorRange0.x) {
+    d.x = gElevatorRange0.x;
+  } else if (d.x < -gElevatorRange0.x) {
+    d.x = -gElevatorRange0.x;
+  }
+  if (d.z > gElevatorRange0.z) {
+    d.z = gElevatorRange0.z;
+  } else if (d.z < -gElevatorRange0.z) {
+    d.z = -gElevatorRange0.z;
+  }
+
+  pos.x = e->mover.pos.x + d.x;
+  pos.y = e->mover.pos.y;
+  pos.z = e->mover.pos.z + d.z;
+  FUN_08086a4c(&pos);
+  SET_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
+}
+
+// id のエレベータから, which が 0 ならプレイヤー, それ以外なら棺桶が乗っている印を落とす
+void Elevator_ClearRidingFlag(s32 id, s32 which) {
+  ElevatorManager* p = gElevatorManager;
+  s32 i;
+
+  if (p->usedMask != 0) {
+    for (i = 0; i < 12; i++) {
+      if (Elevator_TestSlotMask(&p->usedMask, i) && p->elevators[i].id == id) {
+        if (which == 0) {
+          CLEAR_FLAGS(p->elevators[i].flags, PLAYER_RIDING);
+        } else {
+          CLEAR_FLAGS(p->elevators[i].flags, COFFIN_RIDING);
         }
         return;
       }
     }
   }
-#else
-  INCFUNC("asm/func/FUN_081d3fac.inc");
-#endif
 }
 
-void FUN_081d4034(ElevatorUnkData* p) {
-  if (p->state != 3 && p->state != 4) {
-    FUN_0807a97c(gPlayerPtr[0], 5, p->id);
+void FUN_081d4034(Elevator* e) {
+  if (e->state != STATE_H_STOP && e->state != STATE_V_STOP) {
+    Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING | ELEV_MOVING, e->id);
   } else {
-    FUN_0807a97c(gPlayerPtr[0], 1, p->id);
-    FUN_0807a99c(gPlayerPtr[0], 4);
+    Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING, e->id);
+    Player_ClearElevatorFlags(gPlayerPtr[0], ELEV_MOVING);
   }
 }
 
-void FUN_081d407c(ElevatorUnkData* p) {
-  if (p->state != 3 && p->state != 4) {
-    FUN_080869c8(7, p->id);
+void FUN_081d407c(Elevator* e) {
+  if (e->state != STATE_H_STOP && e->state != STATE_V_STOP) {
+    FUN_080869c8(7, e->id);
   } else {
-    FUN_080869c8(3, p->id);
+    FUN_080869c8(3, e->id);
     FUN_080869f8(4);
   }
 }
 
-void FUN_081d4590(ElevatorUnkData* p);
-void FUN_081d4658(ElevatorUnkData* p);
+void Elevator_UpdatePlayerRiding(Elevator* e) {
+  ElevatorManager* p;
+  Vec3 pos;
+  Vec3 delta;
 
-NAKED void FUN_081d40b4(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d40b4.inc"); }
+  pos.x = gPlayerPtr[0]->mover.pos.x + e->moveDelta.x;
+  pos.y = gPlayerPtr[0]->mover.pos.y + e->moveDelta.y;
+  pos.z = gPlayerPtr[0]->mover.pos.z + e->moveDelta.z;
+  Vec3_Delta(&delta, &e->mover.pos, &pos);
 
-NAKED void FUN_081d42c4(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d42c4.inc"); }
+  p = gElevatorManager;
+  if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+    Elevator_ClearRidingFlag(p->ridingID, 0);
+    p->ridingID = e->id;
+    FUN_081d4034(e);
+    SET_FLAGS(e->flags, PLAYER_RIDING);
+    gPlayerPtr[0]->shadow.flags |= 1;
+  } else if (p->ridingID == e->id) {
+    if (e->kind == ELEVATOR_H_FALLDEATH && !(e->unk_d6 & 8)) {
+      if (delta.x <= gElevatorRange1.x && delta.x >= -gElevatorRange1.x && delta.y <= gElevatorRange1.y && delta.y >= -gElevatorRange1.y && delta.z <= gElevatorRange1.z && delta.z >= -gElevatorRange1.z) {
+        FUN_081d4034(e);
+        return;
+      }
+    } else {
+      if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+        FUN_081d4034(e);
+        return;
+      }
+    }
+    p->ridingID = 0;
+    gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
+    Player_ClearElevatorFlags(gPlayerPtr[0], ELEV_RIDING | ELEV_MOVING);
+    CLEAR_FLAGS(e->flags, PLAYER_RIDING);
+    gPlayerPtr[0]->shadow.flags &= ~1;
+  }
+}
 
-NAKED void FUN_081d43d4(Vec3* a, Vec3* b, ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d43d4.inc"); }
+void Elevator_UpdateCoffinRiding(Elevator* e) {
+  ElevatorManager* p;
+  WorldPos pos;
+  Vec3 delta;
 
-void FUN_081d4540(ElevatorUnkData* p) {
+  Coffin_CopyPos(&pos);
+  pos.x += e->moveDelta.x;
+  pos.y += e->moveDelta.y;
+  pos.z += e->moveDelta.z;
+  Vec3_Delta(&delta, &e->mover.pos, &pos);
+
+  p = gElevatorManager;
+  if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.y <= gElevatorRange0.y && delta.y >= -gElevatorRange0.y && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+    Elevator_ClearRidingFlag(p->coffinRidingID, 1);
+    p->coffinRidingID = e->id;
+    FUN_081d407c(e);
+    SET_FLAGS(e->flags, COFFIN_RIDING);
+  } else if (e->id == p->coffinRidingID) {
+    p->coffinRidingID = 0;
+    FUN_080869f8(7);
+    CLEAR_FLAGS(e->flags, COFFIN_RIDING);
+  }
+}
+
+// pos がエレベータの範囲 (gElevatorRange0/1) をはみ出していたら, 速さのぶん内側に戻す
+void Elevator_ClampPlayerPos(Vec3* pos, Vec3* b, Elevator* e) {
+  Vec3 d;
+  Vec3 range;
+
+  d.x = pos->x - e->mover.pos.x;
+  d.y = pos->y - e->mover.pos.y;
+  d.z = pos->z - e->mover.pos.z;
+
+  if (e->kind == ELEVATOR_V) return;
+
+  if (e->kind == ELEVATOR_H_FALLDEATH && !(e->unk_d6 & 8)) {
+    range = gElevatorRange1;
+  } else {
+    range = gElevatorRange0;
+  }
+
+  if (d.x < 0) {
+    if (d.x < -range.x) d.x = e->speed - range.x;
+  } else {
+    if (d.x > range.x) d.x = range.x - e->speed;
+  }
+  if (d.y < 0) {
+    if (d.y < -range.y) d.y = e->speed - range.y;
+  } else {
+    if (d.y > range.y) d.y = range.y - e->speed;
+  }
+  if (d.z < 0) {
+    if (d.z < -range.z) d.z = e->speed - range.z;
+  } else {
+    if (d.z > range.z) d.z = range.z - e->speed;
+  }
+
+  pos->x = d.x + e->mover.pos.x;
+  pos->y = d.y + e->mover.pos.y;
+  pos->z = d.z + e->mover.pos.z;
+}
+
+void FUN_081d4540(Elevator* e) {
   if (gPlayerPtr[0] != NULL) {
-    FUN_081d40b4(p);
-    FUN_081d42c4(p);
+    Elevator_UpdatePlayerRiding(e);
+    Elevator_UpdateCoffinRiding(e);
 
-    if (FUN_0807a954(gPlayerPtr[0], 1)) {
-      FUN_081d4590(p);
+    if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
+      Elevator_CarryPlayer(e);
     }
-
     if (FUN_08086978(1)) {
-      FUN_081d4658(p);
+      Elevator_CarryCoffin(e);
     }
 
-    ClearMemory(&p->unk_58, sizeof(p->unk_58));
+    ClearMemory(&e->moveDelta, sizeof(e->moveDelta));
   }
 }
 
 // 乗っているプレイヤーをエレベータの移動ぶんだけ運ぶ
-// 残差10命令 (74/84): Cmd_7A75 と同じく, 原典は flags 判定を分岐で 0/1 に起こしてから cmp で読み直す
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (83/84)
-NON_MATCH void FUN_081d4590(ElevatorUnkData* p) {
-#ifdef NONMATCHING_C
-  Elevator* q = gElevator;
+void Elevator_CarryPlayer(Elevator* e) {
+  ElevatorManager* p = gElevatorManager;
 
   if (gPlayerPtr[0] == NULL) {
     return;
   }
-  if (p->id != q->ridingID) {
+  if (e->id != p->ridingID) {
     return;
   }
 
-  if (!Elevator_TestFlags(p, ELEVATOR_UNK_8)) {
+  if (!Elevator_TestFlags(e, ELEVATOR_PLAYER_KNOCKBACK)) {
     Vec3 v;
 
-    v.x = p->unk_58.x + gPlayerPtr[0]->mover.pos.x;
-    v.y = p->unk_58.y + gPlayerPtr[0]->mover.pos.y;
-    v.z = p->unk_58.z + gPlayerPtr[0]->mover.pos.z;
-    FUN_081d43d4(&v, &gPlayerPtr[0]->mover.pos, p);
+    v.x = gPlayerPtr[0]->mover.pos.x + e->moveDelta.x;
+    v.y = gPlayerPtr[0]->mover.pos.y + e->moveDelta.y;
+    v.z = gPlayerPtr[0]->mover.pos.z + e->moveDelta.z;
+    Elevator_ClampPlayerPos(&v, &gPlayerPtr[0]->mover.pos, e);
     FUN_0807a91c(gPlayerPtr[0], &v);
   }
 
-  p->flags &= ~ELEVATOR_UNK_8;
-#else
-  INCFUNC("asm/func/FUN_081d4590.inc");
-#endif
+  CLEAR_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
 }
 
 // 乗っている棺桶をエレベータの移動ぶんだけ動かす
-// 残差23命令 (54/77): 原典は棺桶と hitbox.pos の差分を Vec3 に組み立てるがどこからも読まないので agbcc が消す, 加えて flags 判定の 0/1 起こしも畳まれる
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (60/77)
-NON_MATCH void FUN_081d4658(ElevatorUnkData* p) {
-#ifdef NONMATCHING_C
-  if (gElevator->unk_12b2 == p->id) {
+void Elevator_CarryCoffin(Elevator* e) {
+  if (gElevatorManager->coffinRidingID == e->id) {
     WorldPos pos;
     WorldPos delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - p->hitbox.pos.x;
-    delta.y = pos.y - p->hitbox.pos.y;
-    delta.z = pos.z - p->hitbox.pos.z;
+    Vec3_Delta(&delta, &e->mover.pos, &pos);
 
-    if (!Elevator_TestFlags(p, ELEVATOR_UNK_9)) {
-      pos.x = p->unk_58.x + pos.x;
-      pos.y = pos.y + p->unk_58.y;
-      pos.z = p->unk_58.z + pos.z;
+    if (!Elevator_TestFlags(e, ELEVATOR_COFFIN_CLAMPED)) {
+      pos.x += e->moveDelta.x;
+      pos.y += e->moveDelta.y;
+      pos.z += e->moveDelta.z;
       FUN_08086a4c(&pos);
     }
 
-    p->flags &= ~ELEVATOR_UNK_9;
+    CLEAR_FLAGS(e->flags, ELEVATOR_COFFIN_CLAMPED);
   }
-#else
-  INCFUNC("asm/func/FUN_081d4658.inc");
-#endif
 }
 
-// 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
-// 棺桶がエレベータの許容範囲に収まっていたら乗り手として登録する
-// 残差13命令 (92/79): 原典は差分 Vec3 をスタックに置いて s16 で読み直すが, agbcc はレジスタに畳んで半語を詰め替える
-// Tier A-C は試済: 2要素の WorldPos 配列にするとメモリには乗るが 87 で一致せず
-NON_MATCH void FUN_081d4704(Elevator* q, ElevatorUnkData* p) {
-#ifdef NONMATCHING_C
-  if (p->unk_e7 == 2) {
+// 昇降床のとき, 棺桶が許容範囲に収まっていたら乗せる
+void Elevator_TryBoardCoffin(ElevatorManager* p, Elevator* e) {
+  if (e->kind == ELEVATOR_V) {
     WorldPos pos;
-    WorldPos delta;
+    Vec3 delta;
 
     Coffin_CopyPos(&pos);
-    delta.x = pos.x - p->hitbox.pos.x;
-    delta.y = pos.y - p->hitbox.pos.y;
-    delta.z = pos.z - p->hitbox.pos.z;
-
-    if (delta.x > gElevatorRanges[0].x) {
-      return;
+    Vec3_Delta(&delta, &e->mover.pos, &pos);
+    if (delta.x <= gElevatorRange0.x && delta.x >= -gElevatorRange0.x && delta.z <= gElevatorRange0.z && delta.z >= -gElevatorRange0.z) {
+      FUN_08086a4c(&e->mover.pos);
+      Elevator_ClearRidingFlag(p->coffinRidingID, 1);
+      p->coffinRidingID = e->id;
+      FUN_080869c8(3, e->id);
+      SET_FLAGS(e->flags, COFFIN_RIDING);
     }
-    if (delta.x < -gElevatorRanges[0].x) {
-      return;
-    }
-    if (delta.z > gElevatorRanges[0].z) {
-      return;
-    }
-    if (delta.z < -gElevatorRanges[0].z) {
-      return;
-    }
-
-    FUN_08086a4c(&p->hitbox.pos);
-    FUN_081d3fac(q->unk_12b2, 1);
-    q->unk_12b2 = p->id;
-    FUN_080869c8(3, p->id);
-    p->flags |= ELEVATOR_UNK_4;
   }
+}
+
+// 0xA4FC, VM の引数からエレベータを1つ作る
+// 残差113ハンク (747/757), 大半は割当: 原典は e を r8, sprite を r9 に置き, animIdx と p をスタックに逃がすが, こちらは e が r7 に入り animIdx がレジスタに残る
+// 形の差は kind ごとの case の並びと畳み方 (原典は case 0 の variant = 0 を kind のレジスタで書き, case 3 は case 1 の variant = 0 と共有する), AuxSprite_AdvanceAnim の部分は一致
+// Tier A-C は試済 (sprite ローカル, 宣言順, kind ローカル)
+NON_MATCH void Elevator_Create(void) {
+#ifdef NONMATCHING_C
+  ElevatorManager* p = gElevatorManager;
+  Elevator* e;
+  AuxSprite* sprite;
+  u16 animIdx;
+  s32 riding;
+
+  if (p == NULL) return;
+
+  animIdx = 0;
+  e = ElevatorManager_AllocSlot(p);
+  if (e == NULL) return;
+
+  e->flags = animIdx;
+  e->timer = animIdx;
+  sprite = &e->sprite;
+
+  if (VM_SeekToNamedArg('r')) {
+    e->pathIdx = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    e->unk_e5 = 0;
+    e->nodeIdx = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    Map_GetPathNodePos(&sprite->pos, e->pathIdx, e->nodeIdx);
+  }
+
+  e->kind = VM_GetNamedArgValue('k', 0);
+  if (VM_SeekToNamedArg('Y')) {
+    s32 y;
+
+    e->minY = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    e->maxY = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    if (e->kind == ELEVATOR_V) {
+      if (y == e->minY) {
+        sprite->pos.y = y;
+        CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
+      } else if (y == e->maxY) {
+        sprite->pos.y = y;
+        SET_FLAGS(e->flags, ELEVATOR_V_UPPER);
+      }
+    } else {
+      sprite->pos.y = e->minY;
+    }
+    e->mover.pos.y = sprite->pos.y;
+  }
+
+  e->id = VM_GetNamedArgValue('n', 0);
+  e->unk_c0 = VM_GetNamedArgValue('p', 0);
+  e->arriveScriptID = VM_GetNamedArgValue('R', 0);
+  e->departScriptID = VM_GetNamedArgValue('S', 0);
+  e->variant = VM_GetNamedArgValue('T', 0);
+  Video_GetAuxSprite(&e->gfx, SPRITE_LIFT_IRON);
+
+  switch (e->kind) {
+    case ELEVATOR_H_0: {
+      s32 m;
+
+      sprite->pos.y = e->minY;
+      e->state = STATE_H_MOVE;
+      e->checkPlayerOut = Elevator_KnockbackPlayer;
+      e->checkCoffinOut = Elevator_ClampCoffinOnSpecialTile;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 1;
+      Video_SetAuxSpritePltt(&e->gfx, 0x1B8);
+      m = VM_GetNamedArgValue('m', 0);
+      if (m != 0) e->unk_d6 = m;
+      e->variant = 0;
+      break;
+    }
+    case ELEVATOR_H_FALLDEATH: {
+      s32 m;
+
+      sprite->pos.y = e->minY;
+      e->state = STATE_H_MOVE;
+      e->checkPlayerOut = Elevator_CheckPlayerFallInWater;
+      e->checkCoffinOut = Elevator_ClampCoffinOffFloor;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 2;
+      switch (e->variant) {
+        case 0: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1B9);
+          break;
+        }
+        case 1: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BC);
+          break;
+        }
+        case 2: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BD);
+          break;
+        }
+      }
+      m = VM_GetNamedArgValue('m', 0);
+      if (m != 0) e->unk_d6 = m;
+      if (e->variant > 2) e->variant = 0;
+      break;
+    }
+    case ELEVATOR_V: {
+      e->state = STATE_V_STOP;
+      e->checkPlayerOut = Elevator_ClampPlayerToRange;
+      e->checkCoffinOut = Elevator_ClampCoffinPos;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 0;
+      switch (e->variant) {
+        case 0: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1B7);
+          break;
+        }
+        case 1: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1B9);
+          break;
+        }
+        case 2: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BE);
+          break;
+        }
+        case 3: {
+          Video_SetAuxSpritePltt(&e->gfx, 0x1BD);
+          break;
+        }
+      }
+      e->unk_d6 = VM_GetNamedArgValue('m', 1);
+      e->waitTime = VM_GetNamedArgValue('w', 120);
+      if (VM_GetNamedArgValue('M', 0)) e->timer = e->waitTime;
+      break;
+    }
+    case ELEVATOR_H_3: {
+      s32 m;
+
+      sprite->pos.y = e->minY;
+      e->state = STATE_H_MOVE;
+      e->checkPlayerOut = Elevator_KnockbackPlayer;
+      e->checkCoffinOut = Elevator_ClampCoffinOnSpecialTile;
+      e->unk_e0 = Elevator_UpdateTileOverride;
+      animIdx = 1;
+      Video_SetAuxSpritePltt(&e->gfx, 0x1BE);
+      m = VM_GetNamedArgValue('m', 0);
+      if (m != 0) e->unk_d6 = m;
+      e->variant = 0;
+      break;
+    }
+  }
+
+  AuxSprite_Add(sprite, &e->gfx, 0);
+  AuxAnim_SetAnim(&e->anim, p->animFile, animIdx, e->variant, 0);
+  AuxSprite_AdvanceAnim(sprite, &e->anim);
+  sprite->flags &= ~SPRFLAG_HIDDEN;
+  sprite->priority = 2;
+  Mover_Init(&e->mover, 0xD0E9 + e->slotIdx, &sprite->pos, 0, 7, e);  // 0xD0E9: HashName("floor")?
+  Mover_SetAuxSprite(&e->mover, sprite);
+  Mover_SetPath(&e->mover, &e->pathWalker, e->pathIdx, e->unk_e5, e->nodeIdx);
+  e->mover.tile = NULL;
+  sprite->pos.x -= Q8(1);
+
+  if (VM_GetNamedArgValue('d', 0)) SET_FLAGS(e->flags, ELEVATOR_UNK_7);
+  if (VM_GetNamedArgValue('F', 0)) SET_FLAGS(e->flags, ELEVATOR_FLAG_12);
+  e->arrived = FALSE;
+  e->sinkY = 0;
+
+  riding = VM_GetNamedArgValue('f', 0);
+  if (riding != 0) {
+    switch (e->kind) {
+      case ELEVATOR_H_0:
+      case ELEVATOR_H_FALLDEATH:
+      case ELEVATOR_H_3: {
+        e->state = STATE_H_MOVE;
+        break;
+      }
+      case ELEVATOR_V: {
+        e->state = STATE_V_STOP;
+        break;
+      }
+    }
+
+    Elevator_ClearRidingFlag(p->ridingID, 0);
+    p->ridingID = e->id;
+    Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING, e->id);
+    SET_FLAGS(e->flags, PLAYER_RIDING);
+    gPlayerPtr[0]->shadow.flags |= 1;
+    Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
+    SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
+    FUN_0807a91c(gPlayerPtr[0], &e->mover.pos);
+    if (riding == 2) {
+      FUN_08086a4c(&e->mover.pos);
+      Elevator_ClearRidingFlag(p->coffinRidingID, 1);
+      p->coffinRidingID = e->id;
+      FUN_080869c8(3, e->id);
+      SET_FLAGS(e->flags, COFFIN_RIDING);
+    }
+  }
+
+  Elevator_TryBoardCoffin(p, e);
+  e->speed = VM_GetNamedArgValue('s', 6);
+  switch (e->kind) {
+    case ELEVATOR_H_0:
+    case ELEVATOR_H_FALLDEATH:
+    case ELEVATOR_H_3: {
+      if (FUN_081d2660(&e->pathWalker, &e->mover.pos, e->speed, e->speed)) {
+        e->state = STATE_H_STOP;
+      }
+      break;
+    }
+  }
+  e->unk_b7 = 0;
 #else
-  INCFUNC("asm/func/FUN_081d4704.inc");
+  INCFUNC("asm/func/Elevator_Create.inc");
 #endif
 }
 
-NAKED void Elevator_Create(void) { INCFUNC("asm/func/Elevator_Create.inc"); }
-
-void (*const PTR_ARRAY_085ae0e8[7])(ElevatorUnkData*) = {
-    FUN_081d280c,
-    FUN_081d2a14,
-    FUN_081d2810,
-    FUN_081d2fd0,
-    FUN_081d2cf8,
-    FUN_081d3110,
-    FUN_081d3114,
+void (*const sElevatorUpdates[7])(Elevator*) = {
+    Elevator_UpdateState0,
+    Elevator_UpdateState1,
+    Elevator_UpdateState2,
+    Elevator_UpdateState3,
+    Elevator_UpdateState4,
+    Elevator_UpdateState5,
+    Elevator_UpdateState6,
 };  // 0x085AE0E8
 
-NAKED s32 ElevatorController_Update(Elevator* p) { INCFUNC("asm/func/ElevatorController_Update.inc"); }
+// 残差は usedMask のアドレスをループ外に括り出すかどうかのみ (133/129, 原典は毎周 p+0x12AC を作り直す), Tier A-C は試済 (e の持ち方, ネスト, TEST_FLAGS/& の書き分け, スロット判定 inline の引数の形)
+NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
+#ifdef NONMATCHING_C
+  Elevator* elevators = p->elevators;
+  s32 i;
+
+  if (p->usedMask == 0) return 0;
+
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    sound_08240740(SONG_344);
+    sound_08240740(SE_ELEV_MECHA_V);
+    sound_08240740(SE_ELEV_MECHA_H);
+    sound_08240740(SE_ELEV_LAVA);
+    sound_08240740(SE_ELEV_WATER);
+    return 0;
+  }
+
+  if ((gEntityDisableFlags & ENTITY_DISABLE_3)) return 0;
+
+  for (i = 0; i < 12; i++) {
+    if (Elevator_IsSlotUsed(p, i) && elevators[i].state != STATE_DESTROYED) {
+      Elevator* e = &elevators[i];
+
+      elevators[i].checkPlayerOut(e);
+      sElevatorUpdates[elevators[i].state](e);
+      elevators[i].checkCoffinOut(e);
+      elevators[i].unk_e0(e);
+      Elevator_UpdateTileOverrides(e);
+      FUN_081d4540(e);
+      FUN_081d276c(e);
+      elevators[i].sprite.pos = elevators[i].mover.pos;
+      elevators[i].sprite.pos.x -= Q8(1);
+      Elevator_UpdateShake(e);
+    }
+  }
+
+  ElevatorManager_UpdateSound(p);
+  return 0;
+#else
+  INCFUNC("asm/func/ElevatorManager_Update.inc");
+#endif
+}
 
 // 走行音を止め, 使用中のスロットの上書きタイル・Mover・スプライトを片付ける
-// 残差7命令 (69/76): Cmd_7A75 と同じく, 原典は使用中判定と flags 判定を分岐で 0/1 に起こしてから cmp で読み直す
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出る (76/76) が, 原典は &usedMask をマスクより先に作る
-NON_MATCH s32 ElevatorController_Destroy(Elevator* p) {
-#ifdef NONMATCHING_C
+s32 ElevatorManager_Destroy(ElevatorManager* p) {
   s32 i;
 
   sound_08240740(SONG_344);
-  sound_08240740(SONG_609);
-  sound_08240740(SONG_649);
-  sound_08240740(SONG_650);
-  sound_08240740(SONG_648);
+  sound_08240740(SE_ELEV_MECHA_V);
+  sound_08240740(SE_ELEV_MECHA_H);
+  sound_08240740(SE_ELEV_LAVA);
+  sound_08240740(SE_ELEV_WATER);
 
   for (i = 0; i < 12; i++) {
     if (Elevator_IsSlotUsed(p, i)) {
-      ElevatorUnkData* e = &p->unk_1c[i];
+      Elevator* e = &p->elevators[i];
 
       if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
         Map_RemoveTileOverride(&e->tileOverride);
       }
 
       Elevator_RemoveTileOverrides(e);
-      Mover_Unlink(&e->hitbox);
+      Mover_Unlink(&e->mover);
       AuxSprite_Remove(&e->sprite);
     }
   }
 
-  gElevator = NULL;
+  gElevatorManager = NULL;
   return 0;
-#else
-  INCFUNC("asm/func/ElevatorController_Destroy.inc");
-#endif
 }
 
-s32 ElevatorController_Init(Elevator* p) {
+s32 ElevatorManager_Init(ElevatorManager* p) {
   p->animFile = GetFile(DIR_ANIMATION, ANIM_13F9);
-  gElevator = p;
+  gElevatorManager = p;
   p->usedMask = 0;
   return 0;
 }
 
-Elevator* ElevatorController_Create(void) {
-  Elevator* p;
+ElevatorManager* ElevatorManager_Create(void) {
+  ElevatorManager* p;
 
-  if (gElevator != NULL) {
-    return gElevator;
+  if (gElevatorManager != NULL) {
+    return gElevatorManager;
   }
 
-  p = CreateEntity(ENTITY_UNK_5, sizeof(Elevator));
+  p = CreateEntity(ENTITY_UNK_5, sizeof(ElevatorManager));
   if (p != NULL) {
-    SetEntityRoutine(p, ElevatorController_Update, ElevatorController_Destroy);
-    if (ElevatorController_Init(p) < 0) {
+    SetEntityRoutine(p, ElevatorManager_Update, ElevatorManager_Destroy);
+    if (ElevatorManager_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -628,33 +1638,30 @@ Elevator* ElevatorController_Create(void) {
   return p;
 }
 
-void ElevatorController_ClearPtr(void) { gElevator = NULL; }
+void ElevatorManager_ClearPtr(void) { gElevatorManager = NULL; }
 
 // 0xB1C4, 指定した id のエレベータを揺らす
 void Cmd_ShakeElevator(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
-    if (p != NULL) {
-      SET_FLAGS(p->flags, ELEVATOR_SHAKE);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
+    if (e != NULL) {
+      SET_FLAGS(e->flags, ELEVATOR_SHAKE);
     }
   }
 }
 
-// 不死の棺桶が乗っているエレベータの id を返す, 見つからなければ -1
-// 残差7命令 (52/59): 原典は使用中判定と flags 判定を分岐で 0/1 に起こし, 要素と &flags を別々の誘導ポインタで回す
-// Tier A-C は試済: 要素をポインタで走査する形 (無影響)
-// Elevator_IsSlotUsed / Elevator_TestFlags を bool8 を返す形にすると 0/1 の作り置きは出るが, それだけでは一致しない (65/59)
-NON_MATCH s32 Cmd_7A75(void) {
-#ifdef NONMATCHING_C
-  Elevator* q = gElevator;
+// 0x7A75, 棺桶が乗っているエレベータの id を返す, 見つからなければ -1
+s32 Cmd_7A75(void) {
+  ElevatorManager* p;
   s32 i;
 
-  if (q == NULL) {
+  if (gElevatorManager == NULL) {
     return -1;
   }
-  if (q->usedMask == 0) {
+  p = gElevatorManager;
+  if (p->usedMask == 0) {
     return -1;
   }
   if (!FUN_08086978(1)) {
@@ -662,207 +1669,221 @@ NON_MATCH s32 Cmd_7A75(void) {
   }
 
   for (i = 0; i < 12; i++) {
-    if (Elevator_IsSlotUsed(q, i) && Elevator_TestFlags(&q->unk_1c[i], ELEVATOR_UNK_4)) {
-      return q->unk_1c[i].id;
+    if (Elevator_TestSlotMask(&p->usedMask, i)) {
+      Elevator* e = &p->elevators[i];
+
+      if (Elevator_TestFlags(e, COFFIN_RIDING)) {
+        return e->id;
+      }
     }
   }
 
   return -1;
-#else
-  INCFUNC("asm/func/Cmd_7A75.inc");
-#endif
 }
 
-// VM: 指定した id のエレベータを動かす, '.m' で動かし方を選ぶ
-// 残差は割当だけ (61対61): 原典は定数 2 を r6 に置いて ~2 を mvns で作り, mode の値も r4 に残すが, こちらは ~2 をプール定数にして mode を 4 に伝播させる
-NON_MATCH void Elevator_Start(void) {
-#ifdef NONMATCHING_C
+// 0x7E33, 指定した id のエレベータを動かす, '.m' で動かし方を選ぶ
+void Elevator_Start(void) {
   s32 mode = VM_GetNamedArgValue('m', 1);
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL && (p->unk_d6 & ELEVATOR_UNK_1)) {
-      p->state = 2;
+    if (e != NULL && (e->unk_d6 & 2)) {
+      e->state = STATE_V_MOVE;
       if (mode == 4) {
-        p->flags = (p->flags & ~ELEVATOR_UNK_1) | mode;
+        CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
+        SET_FLAGS(e->flags, mode);
       } else {
-        p->flags &= ~ELEVATOR_UNK_2;
+        CLEAR_FLAGS(e->flags, ELEVATOR_V_HALT);
         if (mode == 2) {
-          p->flags |= mode;
+          SET_FLAGS(e->flags, mode);
         } else {
-          p->flags &= ~ELEVATOR_UNK_1;
+          CLEAR_FLAGS(e->flags, ELEVATOR_V_UPPER);
         }
 
-        FUN_081d21d8(p);
+        FUN_081d21d8(e);
       }
     }
   }
-#else
-  INCFUNC("asm/func/Elevator_Start.inc");
-#endif
 }
 
+// 0xAE3A
 void Cmd_AE3A(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
 
-    p->unk_d6 = VM_GetNamedArgValue('m', -1);
+    e->unk_d6 = VM_GetNamedArgValue('m', -1);
   }
 }
 
+// 0x3E91
 void Elevator_Destroy(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
-    Elevator* q = gElevator;
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
+    ElevatorManager* p = gElevatorManager;
 
-    if (Elevator_TestFlags(p, ELEVATOR_TILEOVERRIDE)) {
-      Map_RemoveTileOverride(&p->tileOverride);
-      CLEAR_FLAGS(p->flags, ELEVATOR_TILEOVERRIDE);
+    if (Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE)) {
+      Map_RemoveTileOverride(&e->tileOverride);
+      CLEAR_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
     }
 
-    Elevator_RemoveTileOverrides(p);
-    Mover_Unlink(&p->hitbox);
-    p->id = 0;
-    p->state = 6;
-    AuxSprite_Remove(&p->sprite);
-    Elevator_FreeSlot(q, p->slotIdx);
-    p->slotIdx = 0xFFFF;
+    Elevator_RemoveTileOverrides(e);
+    Mover_Unlink(&e->mover);
+    e->id = 0;
+    e->state = STATE_DESTROYED;
+    AuxSprite_Remove(&e->sprite);
+    Elevator_FreeSlot(p, e->slotIdx);
+    e->slotIdx = 0xFFFF;
   }
 }
 
-// '.n' のエレベータに '.r' の経路をたどらせる
-// 残差3命令 (57/60): 原典は 0 の定数を変数ごとに作り直すが, agbcc は1つの 0 を使い回す
-NON_MATCH void Cmd_5D74(void) {
-#ifdef NONMATCHING_C
+// 0x5D74, '.n' のエレベータに '.r' の経路をたどらせる
+void Cmd_5D74(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
-    u32 pathIdx = 0;
-    u32 unk = 0;
-    u32 nodeIdx = 0;
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
+    u8 pathIdx = 0;
+    u8 unk = 0;
+    u8 nodeIdx = 0;
 
     if (VM_SeekToNamedArg('r')) {
-      if (VM_GetPC() != NULL) {
-        pathIdx = (u8)VM_GetValue();
-      } else {
-        pathIdx = 0;
-      }
+      pathIdx = VM_GetPC() != NULL ? (u8)VM_GetValue() : 0;
 
       unk = 0;
-      if (VM_GetPC() != NULL) {
-        nodeIdx = (u8)VM_GetValue();
-      } else {
-        nodeIdx = 0;
-      }
+      nodeIdx = VM_GetPC() != NULL ? (u8)VM_GetValue() : 0;
     }
 
-    Map_InitPathWalker(&p->pathWalker, pathIdx, unk, nodeIdx);
-    p->hitbox.path = &p->pathWalker;
+    Map_InitPathWalker(&e->pathWalker, pathIdx, unk, nodeIdx);
+    e->mover.path = &e->pathWalker;
   }
-#else
-  INCFUNC("asm/func/Cmd_5D74.inc");
-#endif
 }
 
-// VM: 指定した id のエレベータのパレットを差し替える
-void Elevator_SetPltt(void) {
+// 0x54DF, 指定した id のエレベータのパレットを差し替える
+void Cmd_SetElevatorPltt(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL) {
-      s32 plttID = VM_GetNamedArgValue('c', 0);
+    if (e != NULL) {
+      s32 color = VM_GetNamedArgValue('c', 0);
 
-      Video_SetAuxSpritePltt(&p->gfx, plttID + 439);
+      Video_SetAuxSpritePltt(&e->gfx, 439 + color);
     }
   }
 }
 
+// 0x15ED
 void Cmd_15ED(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL) {
-      p->unk_ba = VM_GetNamedArgValue('s', 6);
+    if (e != NULL) {
+      e->speed = VM_GetNamedArgValue('s', 6);
     }
   }
 }
 
-// VM: プレイヤーをエレベータから降ろす
+// 0x5844, プレイヤーをエレベータから降ろす
 void Cmd_5844(void) {
-  Elevator* q = gElevator;
-  ElevatorUnkData* p = Elevator_FindRiding();
+  ElevatorManager* p = gElevatorManager;
+  Elevator* e = Elevator_FindRiding();
 
-  q->ridingID = 0;
+  p->ridingID = 0;
   gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
-  FUN_0807a99c(gPlayerPtr[0], 1);
-  CLEAR_FLAGS(p->flags, ELEVATOR_PLAYER_RIDING);
+  Player_ClearElevatorFlags(gPlayerPtr[0], ELEV_RIDING);
+  CLEAR_FLAGS(e->flags, PLAYER_RIDING);
   gPlayerPtr[0]->shadow.flags &= ~1;
 }
 
+// 0xCED9
 void Cmd_CED9(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
 
-    if (p != NULL) {
-      s32 h = VM_GetNamedArgValue('h', -1);
-      s32 l = VM_GetNamedArgValue('l', -1);
-
-      if (h > 0) {
-        p->unk_d0 = h;
-      }
-
-      if (l > 0) {
-        p->unk_cc = l;
-      }
+    if (e != NULL) {
+      s32 high = VM_GetNamedArgValue('h', -1);
+      s32 low = VM_GetNamedArgValue('l', -1);
+      if (high > 0) e->maxY = high;
+      if (low > 0) e->minY = low;
     }
   }
 }
 
+// 0x0BCE
 void Cmd_0BCE(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
-  if (gElevator != NULL && id != 0) {
-    ElevatorUnkData* p = Elevator_FindByID(id);
-    if (p != NULL) {
-      CLEAR_FLAGS(p->flags, ELEVATOR_FLAG_12);
+  if (gElevatorManager != NULL && id != 0) {
+    Elevator* e = Elevator_FindByID(id);
+    if (e != NULL) {
+      CLEAR_FLAGS(e->flags, ELEVATOR_FLAG_12);
     }
   }
 }
 
 Vec3* Elevator_GetPosByID(s32 id) {
-  ElevatorUnkData* p;
+  Elevator* e;
 
-  if (gElevator == NULL || id == 0) {
+  if (gElevatorManager == NULL || id == 0) {
     return NULL;
   }
 
-  p = Elevator_FindByID(id);
-  if (p == NULL) {
+  e = Elevator_FindByID(id);
+  if (e == NULL) {
     return NULL;
   }
 
-  return &p->hitbox.pos;
+  return &e->mover.pos;
 }
 
-Vec3* Elevator_GetPos(ElevatorUnkData* p) {
-  if (gElevator == NULL) {
+Vec3* Elevator_GetPos(Elevator* e) {
+  if (gElevatorManager == NULL) {
     return NULL;
   }
 
-  return &p->hitbox.pos;
+  return &e->mover.pos;
 }
 
-NAKED void FUN_081d5588(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d5588.inc"); }
+// 着いた先の隣に同じ高さで歩ける床があれば到着音を鳴らす
+void Elevator_PlayArrivalSound(Elevator* e) {
+  ElevatorManager* p = gElevatorManager;
+
+  if (p == NULL) return;
+
+  if (!(e->unk_d6 & 0x10)) {
+    if (!Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) return;
+    if (p->ridingID != e->id) return;
+    if (e->unk_d6 & 4) return;
+  }
+
+  {
+    s32 idx;
+    s32 height;
+
+    Vec3* pos = &e->mover.pos;
+    s32 bx = (s8)(pos->x >> 8);
+    s32 bz = (s8)(pos->z >> 8);
+    if (IsOutsideMap(bx, bz)) {
+      idx = 0;
+    } else {
+      idx = gCollisionMap->rowOffsets[bz] + bx;
+    }
+    height = (s8)(e->mover.pos.y >> 8);
+
+    if (Elevator_PlayArrivalSoundAt(idx + 1, height)) return;
+    if (Elevator_PlayArrivalSoundAt(idx - 1, height)) return;
+    if (Elevator_PlayArrivalSoundAt(idx + gCollisionMap->tiledata->width, height)) return;
+    Elevator_PlayArrivalSoundAt(idx - gCollisionMap->tiledata->width, height);
+  }
+}

@@ -201,7 +201,7 @@ _081FB7D8:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	ldrh r0, [r7, #2]
 	adds r0, #0x20
 	strh r0, [r7, #2]
@@ -428,7 +428,7 @@ _081FB9A0:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	ldrh r0, [r7, #2]
 	adds r0, #0x20
 	strh r0, [r7, #2]

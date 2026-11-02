@@ -400,7 +400,7 @@ void FUN_080bd47c(WeaponShop* p) {
     b[i] = a[1 - i];
   }
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -422,7 +422,7 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(from[1], 0, 0, 0);
   VEC3_SET(to[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, from, to, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -452,7 +452,7 @@ NON_MATCH void FUN_080bd624(WeaponShop* p) {
   to[1].x = 0;
   to[1].y = 0;
   to[1].z = 0;
-  FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, from, to, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 #else
   INCFUNC("asm/func/FUN_080bd624.inc");
@@ -467,9 +467,9 @@ NON_MATCH void FUN_080bd6d0(WeaponShop* p, s32 param_2) {
 
   if (param_2 == 0) {
     if (p->cursor.shopColX == SPECIAL_COL) {
-      FUN_080b98c0(&p->pair1.gfx, 0, 4);
+      FUN_080b98c0(&p->pair1, 0, 4);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, 0, -1);
+      FUN_080b98c0(&p->pair1, 0, -1);
     }
 
     return;
@@ -503,19 +503,19 @@ NON_MATCH void FUN_080bd6d0(WeaponShop* p, s32 param_2) {
 
   switch (r) {
     case 4: {
-      FUN_080b98c0(&p->pair1.gfx, 7, -1);
+      FUN_080b98c0(&p->pair1, 7, -1);
       break;
     }
     case 5: {
-      FUN_080b98c0(&p->pair1.gfx, 6, -1);
+      FUN_080b98c0(&p->pair1, 6, -1);
       break;
     }
     case 1: {
-      FUN_080b98c0(&p->pair1.gfx, 3, -1);
+      FUN_080b98c0(&p->pair1, 3, -1);
       break;
     }
     default: {
-      FUN_080b98c0(&p->pair1.gfx, -1, -1);
+      FUN_080b98c0(&p->pair1, -1, -1);
       break;
     }
   }
@@ -602,9 +602,9 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
 
     if (gInput[0].pressed & A_BUTTON) {
       if ((u8)p->cursor.slot == SLOT_SORT) {
-        PlaySound_082406e0(SE_CHOICE);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080bce20(p, 3, p->unk_1644, -1);
-        FUN_080b98c0(&p->pair1.gfx, -1, -1);
+        FUN_080b98c0(&p->pair1, -1, -1);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 1);
         FUN_080bcdf8(p, WeaponShop_ConfirmSort, 0);
       } else if (p->cursor.shopColX > 3) {
@@ -664,7 +664,7 @@ void WeaponShop_HandleActionInput(WeaponShop* p) {
   if (gInput[0].pressed & A_BUTTON) {
     s32 r = FUN_080bd83c(p);
 
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     switch (r) {
       case 1: {
         FUN_080bd47c(p);
@@ -672,14 +672,14 @@ void WeaponShop_HandleActionInput(WeaponShop* p) {
         break;
       }
       case 4: {
-        PlaySound_082406e0(SE_CHOICE);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080bce20(p, 0, p->unk_1644, 0);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 1);
         FUN_080bcdf8(p, FUN_080bde60, 0);
         break;
       }
       case 5: {
-        PlaySound_082406e0(SE_CHOICE);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080bce20(p, 1, p->unk_1644, 0);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 0);
         FUN_080bcdf8(p, FUN_080bdf94, 0);
@@ -796,7 +796,7 @@ NON_MATCH void FUN_080bdfe8(WeaponShop* p) {
 
 void WeaponShop_AnimateSale(WeaponShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_630);
+    PlaySound_082406e0(SE_SHOP_SELL);
   }
 
   p->stateTimer++;
@@ -1049,7 +1049,7 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
         p->unk_1654--;
       }
 
-      PlaySound_082406e0(SONG_266);
+      PlaySound_082406e0(SE_MENU_PAGE);
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & R_BUTTON) {
       if (p->unk_1654 == 2) {
@@ -1058,7 +1058,7 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
         p->unk_1654++;
       }
 
-      PlaySound_082406e0(SONG_266);
+      PlaySound_082406e0(SE_MENU_PAGE);
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & B_BUTTON) {
       PlaySound_082406e0(SE_CLOSE_MENU);

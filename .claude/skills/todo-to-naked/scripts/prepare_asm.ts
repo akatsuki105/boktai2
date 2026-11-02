@@ -17,7 +17,7 @@ import { getRepoRoot } from "../../../../tools/common/common.ts";
 //
 // e.g. .claude/skills/todo-to-naked/scripts/prepare_asm.ts FUN_080a939c
 // e.g. .claude/skills/todo-to-naked/scripts/prepare_asm.ts FUN_080a939c --sig "void FUN_080a939c(HealingEffect* p)"
-// e.g. .claude/skills/todo-to-naked/scripts/prepare_asm.ts FUN_080a939c asm/healing_effect.inc
+// e.g. .claude/skills/todo-to-naked/scripts/prepare_asm.ts FUN_080a939c asm/eff_mhealing.inc
 
 const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -298,7 +298,7 @@ const main = () => {
     .description("TODO レベルの関数を切り出し、bulk asm ファイルからスタブを削除する (--sig があれば .c に NAKED 宣言も追加する)。")
     .argument("<functionName:string>", "対象の関数名")
     .argument("[asmFile:string]", "関数が入っている .s/.inc (省略時は自動検出)")
-    .option("--sig <signature:string>", "渡すと .c に NAKED 宣言をアドレス順で挿入する。例: \"void FUN_080a939c(HealingEffect* p)\"")
+    .option("--sig <signature:string>", '渡すと .c に NAKED 宣言をアドレス順で挿入する。例: "void FUN_080a939c(HealingEffect* p)"')
     .action((opts, functionName, asmFile) => {
       prepare(getRepoRoot(), functionName, asmFile, opts.sig);
     })

@@ -75,11 +75,89 @@ void Entity6978_SetRequest(u32 request, s32 count, u32* params) {
   }
 }
 
-NAKED s32 Entity6978_Update(Entity6978* p) { INCFUNC("asm/func/Entity6978_Update.inc"); }
+// request を state に移し, 上げるか下げるかを 1 ステップ進める
+// 残差は request を読んで比較し, 1 / 2 ならそのまま 3 / 4 に置き換える分岐の形 (値を r1 に載せて共通の後半へ飛ぶ), Tier A は試済
+NON_MATCH s32 Entity6978_Update(Entity6978* p) {
+#ifdef NONMATCHING_C
+  if (p->state < 3) {
+    switch (p->request) {
+      case 1:
+      case 3: {
+        p->state = (p->request == 1) ? p->request : 3;
+        p->timer = 0;
+        p->durationShift = p->params[0];
+        gObjPlttBlendColor = p->params[1] | (p->params[2] << 5) | (p->params[3] << 10);
+        gObjPlttFadeSkipMask = p->params[4];
+        break;
+      }
+      case 2:
+      case 4: {
+        p->state = (p->request == 2) ? p->request : 4;
+        p->timer = 0;
+        p->durationShift = p->params[0];
+        gObjPlttBlendColor = p->params[1] | (p->params[2] << 5) | (p->params[3] << 10);
+        gObjPlttFadeSkipMask = p->params[4];
+        break;
+      }
+    }
+  } else {
+    switch (p->request) {
+      case 3:
+      case 4: {
+        p->state = p->request;
+        p->timer = 0;
+        p->durationShift = p->params[0];
+        gObjPlttBlendColor = p->params[1] | (p->params[2] << 5) | (p->params[3] << 10);
+        gObjPlttFadeSkipMask = p->params[4];
+        break;
+      }
+    }
+  }
+  switch (p->state) {
+    case 1:
+    case 3: {
+      Entity6978_StepUp(p);
+      break;
+    }
+    case 2:
+    case 4: {
+      Entity6978_StepDown(p);
+      break;
+    }
+  }
+  p->request = 0;
+#else
+  INCFUNC("asm/func/Entity6978_Update.inc");
+#endif
+}
 
 s32 Entity6978_Destroy(Entity6978* p) { gEntity6978 = NULL; }
 
-NAKED s32 Entity6978_Init(Entity6978* p, u16 id) { INCFUNC("asm/func/Entity6978_Init.inc"); }
+// 残差は 0 の読み込み位置だけ (ループの前に 0 を先に読む, 末尾の gObjPlttFadeSkipMask 用の 0 が 0x40 より先)
+NON_MATCH s32 Entity6978_Init(Entity6978* p, u16 id) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  gEntity6978 = p;
+  p->unk_18 = id;
+  p->unk_1a = VM_GetNamedArgValue('f', 0);
+  p->unk_1c = 0;
+  p->state = 0;
+  p->timer = 0;
+  p->durationShift = 0;
+  p->request = 0;
+  for (i = 6; i >= 0; i--) {
+    p->params[i] = 0;
+  }
+  gObjBrightness = Q6(1);
+  gObjBrightnessApplied = Q6(1);
+  gObjPlttBlendColor = 0x1084;
+  gObjPlttFadeSkipMask = 0;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity6978_Init.inc");
+#endif
+}
 
 Entity6978* Entity6978_Create(u32 id) {
   Entity6978* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity6978));

@@ -3,6 +3,7 @@
 
 #include "constants/constants.h"
 #include "eff_082473e0.h"
+#include "elevator.h"
 #include "enemy_target.h"
 #include "entity.h"
 #include "gba/gba.h"
@@ -19,7 +20,7 @@
 typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_0 (1 << 0)       // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_1 (1 << 1)       // 0x00000002
-#define PFLAG20_UNK_2 (1 << 2)       // 0x00000004, 壁張り付き (PACT_UNK_4) の始めに立つ
+#define PFLAG20_UNK_2 (1 << 2)       // 0x00000004, 壁張り付き (PACT_WALL) の始めに立つ
 #define PFLAG20_UNK_3 (1 << 3)       // 0x00000008
 #define PFLAG20_SUNBATHING (1 << 4)  // 0x00000010, プレイヤーに日光が当たっているか
 #define PFLAG20_QC (1 << 5)          // 0x00000020, プレイヤーが急速チャージ中, つまり (ジャンゴなら) 太陽チャージ中 && ENEがまだ最大でない && 太陽が当たっている状態, (サバタなら) 暗黒チャージ中 && ENEがまだ最大でない && 太陽が当たっていない状態
@@ -37,39 +38,39 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_19 (1 << 19)     // 0x00080000
 
 // Player.action, sDjangoActionFuncs (サバタは sSabataActionFuncs) の添字, 2つの表は同じ番号に同じ種類の行動が並ぶ
-#define PACT_IDLE 0         // 立ち止まっている, FUN_08066f7c
-#define PACT_WALK 1         // 歩く, FUN_080672b0
-#define PACT_DASH 2         // ダッシュ, MagicDash_Update (サバタは Magic_ZeroShift)
-#define PACT_ATTACK 3       // 攻撃中 (武器は問わない)
-#define PACT_UNK_4 4        // 壁張り付き?
-#define PACT_UNK_5 5        // ブロック動かし? (すでに壁とかにあって動かないブロックを押しても4のままだった)
-#define PACT_PULL_COFFIN 6  // 棺桶を引く, 入力が無く止まっているときも含む
-#define PACT_UNK_7 7        // 太陽チャージ, ワープ, 太陽鍛治
-#define PACT_UNK_8 8        // 太陽スタンド使用中?
-#define PACT_SUN_MAGIC 9    // ライジングサン (サバタはブラックサン)
-#define PACT_TRANSFORM 10   // トランス, MagicTransform_0806b92c
-#define PACT_CWOLF 11       // チェンジウルフ(Cウルフ)
-#define PACT_CBAT 12        // チェンジバット(Cバット)
-#define PACT_CMOUSE 13      // チェンジマウス(Cマウス)
-#define PACT_SLEEPING 14    // スリーピング
-#define PACT_FREEZE 15      // フリーズ
-#define PACT_HEALING 16     // ヒーリング
-#define PACT_DYNAMITE 17    // ダイナマイト
-#define PACT_UNK_18 18      // ?
-#define PACT_UNK_19 19      // 石化時
-#define PACT_UNK_20 20      //
-#define PACT_GRABBED 21     // 敵に掴まれて拘束されている (オクトパス, リンゴ, シェードマン, ヨルムンガンド), Player_EnterGrabbed が入れる
-#define PACT_UNK_22 22      // 落とし穴によるエリア単位での落下?
-#define PACT_UNK_23 23      // 落下?
-#define PACT_DAMAGED 24     // ダメージ時
-#define PACT_BLOWN_AWAY 25  // 吹っ飛ばされて仰向けに倒れる (e.g. オクトパスの拘束から投げ飛ばされるとき)
-#define PACT_UNK_26 26      //
-#define PACT_UNK_27 27      //
-#define PACT_UNK_28 28      //
-#define PACT_FALLDEATH 29   // 落下死
-#define PACT_UNK_30 30      //
-#define PACT_UNK_31 31      //
-#define PACT_UNK_32 32      //
+#define PACT_IDLE 0           // 立ち止まっている, FUN_08066f7c
+#define PACT_WALK 1           // 歩く, FUN_080672b0
+#define PACT_DASH 2           // ダッシュ, MagicDash_Update (サバタは Magic_ZeroShift)
+#define PACT_ATTACK 3         // 攻撃中 (武器は問わない)
+#define PACT_WALL 4           // 壁張り付き, 壁沿いに横歩きする状態
+#define PACT_UNK_5 5          // ブロック動かし? (すでに壁とかにあって動かないブロックを押しても4のままだった)
+#define PACT_PULL_COFFIN 6    // 棺桶を引く, 入力が無く止まっているときも含む
+#define PACT_UNK_7 7          // 太陽チャージ, ワープ, 太陽鍛治
+#define PACT_UNK_8 8          // 太陽スタンド使用中?
+#define PACT_SUN_MAGIC 9      // ライジングサン (サバタはブラックサン)
+#define PACT_TRANSFORM 10     // トランス, MagicTransform_0806b92c
+#define PACT_CWOLF 11         // チェンジウルフ(Cウルフ)
+#define PACT_CBAT 12          // チェンジバット(Cバット)
+#define PACT_CMOUSE 13        // チェンジマウス(Cマウス)
+#define PACT_SLEEPING 14      // スリーピング
+#define PACT_FREEZE 15        // フリーズ
+#define PACT_HEALING 16       // ヒーリング
+#define PACT_DYNAMITE 17      // ダイナマイト
+#define PACT_UNK_18 18        // ?
+#define PACT_UNK_19 19        // 石化時
+#define PACT_UNK_20 20        //
+#define PACT_GRABBED 21       // 敵に掴まれて拘束されている (オクトパス, リンゴ, シェードマン, ヨルムンガンド), Player_EnterGrabbed が入れる
+#define PACT_UNK_22 22        // 落とし穴によるエリア単位での落下?
+#define PACT_UNK_23 23        // 落下?
+#define PACT_DAMAGED 24       // ダメージ時
+#define PACT_BLOWN_AWAY 25    // 吹っ飛ばされて仰向けに倒れる (e.g. オクトパスの拘束から投げ飛ばされるとき)
+#define PACT_UNK_26 26        //
+#define PACT_UNK_27 27        //
+#define PACT_FALLDEATH 28     // 落下死
+#define PACT_DROWNING 29      // 溺死 (水フィールドでの落下死)
+#define PACT_UNK_30 30        //
+#define PACT_SPECIALDEATH 31  // キャラ固有のゲームオーバー(ジャンゴ: ウルフイベント, サバタ: 運搬中の黒ジャンゴのHPが0になった)
+#define PACT_UNK_32 32        //
 
 // Player.mode, 毎フレーム gPlayerStates[idx] にも写される
 typedef u32 PlayerMode;
@@ -145,7 +146,7 @@ typedef struct {
   Vec3 vel;       // 0x28, Player_SpawnPtcl718 が第3引数の Vec3 をそのまま入れる
   bool8 active;   // 0x30, Player_SpawnPtcl718 が 1 を書く
   u8 unk_31;      // 0x31, Player_SpawnPtcl718 が 0 を書く
-  u8 frameBase;   // 0x32, Particle_SetPose に渡すコマ番号
+  u8 poseIdx;     // 0x32, Particle_SetPose に渡すコマ番号
   u8 unk_33;      // 0x33, padding?
 } Particle52;
 static_assert(sizeof(Particle52) == 52);
@@ -155,7 +156,7 @@ typedef struct {
   Particle ptcl;          // 0x04
   bool8 active;           // 0x2C, 0 なら更新しない, 再生が終わると 0 に戻る
   u8 timer;               // 0x2D, 毎フレーム +1, 5 を超えると終わり
-  u8 frameBase;           // 0x2E, Particle_SetPose に渡すコマ番号の起点, timer >> 2 が足される
+  u8 poseIdx;             // 0x2E, Particle_SetPose に渡すコマ番号の起点, timer >> 2 が足される
   u8 unk_2f;              // 0x2F, padding?
 } PlayerParticleGroup1;
 static_assert(sizeof(PlayerParticleGroup1) == 48);
@@ -177,13 +178,13 @@ typedef struct {
   bool8 active;   // 0x28, 0 なら更新しない
   u8 timer;       // 0x29, 毎フレーム +1
   u8 speed;       // 0x2A, 中心へ寄る速さ
-  u8 frameBase;   // 0x2B, Particle_SetPose に渡すコマ番号の起点
+  u8 poseIdx;     // 0x2B, Particle_SetPose に渡すコマ番号の起点
   Vec3 offset;    // 0x2C, pos_930 からのずれ, y と val は使われない
 } PlayerPtcl858;
 static_assert(sizeof(PlayerPtcl858) == 52);
 
 typedef struct {
-  ParticleGroup* group;    // 0x00, PTCL_GROUP_2
+  ParticleGroup* group2;   // 0x00, PTCL_GROUP_2
   bool8 active;            // 0x04, 生きている要素が無くなると 0 に戻る
   u8 unk_05;               // 0x05
   u8 unk_06;               // 0x06
@@ -254,7 +255,7 @@ typedef struct Player {
   AuxSpriteGfx beastGfxs[3];        // 0x118, 変身3種のグラフィック [Bat, Mouse, Sleeping]
   HitboxData hurtbox;               // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
-  ZoneEventSource zoneEvents;       // 0x1CC, pos は mover.pos を指す, 毎フレーム FUN_08234660 に渡して範囲内のイベントを拾う
+  ZoneEventSource zoneEvents;       // 0x1CC, pos は mover.pos を指す, 毎フレーム Map_UpdateZoneEvents に渡して範囲内のイベントを拾う
   NavAgent navAgent;                // 0x1FC, FUN_08081ab0 が Map_InitNavAgent に渡す
   EnemyTarget target;               // 0x220, kindMask 2 で登録される
   MsgQueue mq;                      // 0x230, Player_UnregisterMsgQueue が MsgQueue_Unregister に渡す
@@ -300,14 +301,14 @@ typedef struct Player {
   u16 eneAccum;                     // 0x38C, 棺桶で寝ている間の ENE 回復の端数, 棺桶ごとの寝心地を毎フレーム足して 0x80 ごとに ene を 1 増やす
   bool8 isSabata;                   // 0x38E, 根拠: Player_InitState
   u8 unk_38f;                       // 0x38F, 雨の中でトードパワーの ENE 回復の間隔を数える (15 で1回復)
-  u16 unk_390;                      // 0x390
-  u16 elevatorID;                   // 0x392, 搭乗中のエレベータのID
+  ElevatorFlagsU16 elevatorFlags;   // 0x390, see ElevatorFlagsU16, 0 ならどのエレベータにも乗っていない
+  u16 elevatorID;                   // 0x392, 乗っているエレベータの id, Player_ClearElevatorFlags が 0 にするので止まっているエレベータに乗っている間は 0
   bool8 originHitPending;           // 0x394, knockbackOrigin から弾かれる被弾が保留中, Player_SetKnockbackOrigin が立て Player_UpdateDamage が FUN_08065cb8 で処理して落とす
   bool8 originKnockback;            // 0x395, 今の吹き飛ばしが knockbackOrigin から離れる向き, FUN_08065cb8 が立てダメージの行動 (PACT_DAMAGED) の終わりと Player_Unlock が落とす
-  bool8 tileHitPending;             // 0x396, 太陽で切り替わる設置物 (Entity1DBE) を踏んだ被弾が保留中, Player_CheckTileHit が立て Player_UpdateDamage が FUN_08065e24 で処理して落とす
-  bool8 tileKnockback;              // 0x397, 今の吹き飛ばしが設置物を踏んだことによるもの, FUN_08065e24 が立てダメージの行動 (PACT_DAMAGED) の終わりに落とす, 立っている間 Player_CheckTileHit は何もしない
-  Vec3* knockbackOrigin;            // 0x398, 弾き飛ばす側の位置, この位置から離れる向きに吹き飛ぶ, エレベーター (FUN_081d3534) が Player_SetKnockbackOrigin で渡すか Player_CheckTileHit が knockbackTileCenter を指させる
-  Vec3 knockbackTileCenter;         // 0x39C, Player_CheckTileHit が今踏んでいるタイルの中心を書く
+  bool8 tileHitPending;             // 0x396, 太陽で切り替わる水たまり (Puddle) を踏んだ被弾が保留中, Player_CheckPuddleHurt が立て Player_UpdateDamage が FUN_08065e24 で処理して落とす
+  bool8 tileKnockback;              // 0x397, 今の吹き飛ばしが設置物を踏んだことによるもの, FUN_08065e24 が立てダメージの行動 (PACT_DAMAGED) の終わりに落とす, 立っている間 Player_CheckPuddleHurt は何もしない
+  Vec3* knockbackOrigin;            // 0x398, 弾き飛ばす側の位置, この位置から離れる向きに吹き飛ぶ, エレベーター (Elevator_KnockbackPlayer) が Player_SetKnockbackOrigin で渡すか Player_CheckPuddleHurt が knockbackTileCenter を指させる
+  Vec3 knockbackTileCenter;         // 0x39C, Player_CheckPuddleHurt が今踏んでいるタイルの中心を書く
   u8 useForcedDelta;                // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
   u8 unk_3a5[2];                    // 0x3A5, padding?
   DirU8 dir_3a7;                    // 0x3A7, FUN_0806623c が facing を写す, useForcedDelta が 0 以外のとき棺桶を引く向きに使う
@@ -345,7 +346,7 @@ typedef struct Player {
   u16 floatHeight;                  // 0x3F6, human の表示高さに足す浮き上がり量
   s16 heightAboveTile;              // 0x3F8, action 23 に入った時点の pos.y から足元タイルの高さ(階段補正込み)を引いた値
   u8 magicFired;                    // 0x3FA, 魔法の発動フレームに Player_HasEnoughSunGauge (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
-  u8 dynamiteCount;                 // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)
+  u8 dynamiteCount;                 // 0x3FB, 生存中の DynamiteEffect の数, DynamiteEffect_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)
   u8 dashSpeed;                     // 0x3FC, 太陽ゲージ*2+14 (上限32), Player_SetMoveDelta に渡す1フレームの移動量
   u8 dashFrames;                    // 0x3FD, 512 / dashSpeed, 移動距離を一定にするためのダッシュ継続フレーム数
   u8 unk_3fe;                       // 0x3FE, FUN_0806a050 が見て Player_SetFlag35a に渡す番号を選ぶ
@@ -415,7 +416,7 @@ typedef struct Player {
   Eff082473e0Emitter emitter;       // 0x4C4
   Vec3 shadowPos;                   // 0x5FC, mover.pos に下の3つを足した値, 根拠: Player_UpdatePoseAndShadow
   Vec3 shadowOffset;                // 0x604, shadowPos を作るときに mover.pos に足す分, Player_BeginAction が 0 に戻す
-  ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, FUN_081d40b4 がエレベータ搭乗中に flags の bit0 を立てる
+  ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, Elevator_UpdatePlayerRiding がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
   PlayerShockwave meleeShockwave;   // 0x6AC
@@ -436,8 +437,8 @@ typedef struct Player {
   u16 flashPose;                    // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
   u16 flashTimer;                   // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
   u16 plttID_95e;                   // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
-  u16 plttFlashTimer;               // 0x960, FUN_08074994 が plttID_95e と対で書く
-  u16 enchantPlttID;                // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
+  u16 plttFlashTimer;               // 0x960, enchantPlttID とプレイヤー自身のパレットのブレンドを pulse させるタイマ
+  u16 enchantPlttID;                // 0x962, エレメントエンチャント時にプレイヤー自身のパレットとブレンドされるパレット
   u16 enchantPlttTimer;             // 0x964, 同じ呼び出しで 0x20 を入れる, enchantPlttID が 0 のときだけ 0 に戻される
   u8 unk_966[0x96C - 0x966];        // 0x966
   u16 unk_96c;                      // 0x96C, FUN_0807b8c0 が 0 を書く
@@ -529,6 +530,11 @@ void Player_EnterDeadState(Player* p);
 bool32 FUN_0807ad60(Player* p, s32 param_2);
 DirS32 Player_GetDpadFacing(Player* p);
 void AddPlayerExp(s32 amount);
+
+bool32 Player_TestElevatorFlags(Player* p, ElevatorFlagsU16 mask);
+void Player_SetElevatorFlags(Player* p, u32 flags, u32 elevatorID);
+void Player_ClearElevatorFlags(Player* p, u32 flags);
+void Player_SetKnockbackOrigin(Player* p, Vec3* origin);
 
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->flag20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->flag20 & bit; }

@@ -12,11 +12,6 @@
 COMMON_DATA Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
 IWRAM_DATA u32 bool32_030001ac = FALSE;      // 0x030001AC
 
-static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
-  if (p->state == 0) return TRUE;
-  return FALSE;
-}
-
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
@@ -30,6 +25,11 @@ void FUN_081df568(Entity9A9F* p);
 s32 FUN_081df62c(Entity9A9F* p);
 void EntityCF58_RequestKill(void);
 s32 FUN_0809c08c(s32 mode);
+
+static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
+  if (p->state == 0) return TRUE;
+  return FALSE;
+}
 
 Entity9A9F* GetEntity9A9F(void) { return gEntity9A9F; }
 
@@ -592,6 +592,7 @@ s32 Entity9A9F_Destroy(Entity9A9F* p) {
   return 0;
 }
 
+// 0x9A9F
 NAKED Entity9A9F* Entity9A9F_Create(void) { INCFUNC("asm/func/Entity9A9F_Create.inc"); }
 
 void FUN_081dfe5c(void) {

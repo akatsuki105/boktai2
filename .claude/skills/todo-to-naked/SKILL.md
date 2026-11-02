@@ -42,9 +42,9 @@ FUN_080a939c: @ 0x080A939C
 	push {r4, r5, r6, lr}
 	...
 
-	thumb_func_start HealingParticles_Destroy    ← already extracted
-HealingParticles_Destroy: @ 0x080A91BC
-  .include "asm/func/HealingParticles_Destroy.inc"
+	thumb_func_start HealingEffect_Destroy    ← already extracted
+HealingEffect_Destroy: @ 0x080A91BC
+  .include "asm/func/HealingEffect_Destroy.inc"
 ```
 
 `scripts/prepare_asm.ts` handles both: the first gets extracted and then
@@ -186,6 +186,20 @@ Spending the time here only pays off when the answer is one xref away.
 
 ## Pitfalls seen in practice
 
+- **A blob can hold functions that belong to the file next to it in address
+  order.** Blob boundaries were cut by guesswork, so the first or last few
+  functions are often a neighbour's (the `.c` just before or after this one in
+  `ld_script.ld`). Before giving one a signature, check what its body touches
+  and who calls it: a function that works on the neighbour's struct, or is only
+  called from the neighbour's code, belongs there. Put it in that file:
+  run `prepare_asm.ts` without `--sig` (it stops after the asm side), then add
+  the `NAKED` line to the neighbour's `.c` by hand — after its last function
+  when it comes from the previous file, before its first function when it
+  comes from the next one — and say in the report that you moved it. When the
+  neighbour's adjacent end is still an `INCASM` blob, move the function's asm
+  into that blob's edge instead (it stays TODO there). Only a function in the
+  middle of this blob, which cannot move without reordering `.text`, is left
+  where it is and reported.
 - `prepare_asm.ts` counts the extracted body in lines, not functions — a "61 行"
   message does not mean it found the right boundaries. Check the tail of the
   new `.inc` ends at the function's own `bx`/pool constants.

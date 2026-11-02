@@ -2,8 +2,6 @@
 #include "global.h"
 #include "sprite.h"
 
-void Cmd_3D0C(void) {}
-
 // kind に応じて AuxSprite / MainSprite のアニメを設定する, kind == 0 なら -1
 s32 SpriteHolder_SetAnim(SpriteHolder* p, u32 pose, u32 variant, u32 xflip, u32 playMode, u32 auxFlags, u32 mainFlags) {
   if (p->kind == 0) {

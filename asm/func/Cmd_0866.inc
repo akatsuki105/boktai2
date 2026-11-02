@@ -6,7 +6,7 @@
 	bne _0800A312
 	movs r0, #0
 	movs r1, #0
-	bl Entity0866_Create
+	bl BambooShootManager_Create
 	adds r7, r0, #0
 	cmp r7, #0
 	beq _0800A31E
@@ -49,7 +49,7 @@ _0800A328:
 	strb r4, [r6, #6]
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl FUN_08009b6c
+	bl BambooShoot_Init
 	movs r0, #0x70
 	bl VM_SeekToNamedArg
 	cmp r0, #0

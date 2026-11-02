@@ -5,24 +5,24 @@
 #include "sprite_aux.h"
 
 typedef struct {
-  bool8 active;             // 0x000, 初期化で 1 を書く
-  u8 state;                 // 0x001, PTR_ARRAY_085aba04 の添字
-  u8 unk_2[4];              // 0x002, まだ未解析
-  u16 timer;                // 0x006, 初期化で 0 を書く
-  u8 unk_8[2];              // 0x008, まだ未解析
-  u8 angle;                 // 0x00A, 被弾したとき攻撃元への角度を入れる
-  u8 unk_b;                 // 0x00B, 初期化で 0 を書く
-  u8 unk_c[6];              // 0x00C, まだ未解析
-  u16 hp;                   // 0x012, 被弾で相手の damage の分だけ減り、0 で state 6 へ移る
-  Vec3 pos;                 // 0x014, 両方の Hitbox_SetPos に渡す
-  u8 unk_1c[0x44 - 0x1C];   // 0x01C, まだ未解析
-  Vec3* target;             // 0x044, 向きを合わせる相手の座標
-  u8 unk_48[0x48 - 0x48];   // 0x048
-  HitboxData attackHitbox;  // 0x048, flags 0x2001, ignoreMask 0x10, 攻撃側
-  HitboxData bodyHitbox;    // 0x098, flags 0x5005, ignoreMask 0x10, 被弾側
-  AuxAnimState animState;   // 0x0E8, sprites[0] の再生状態
-  AuxSprite sprites[4];     // 0x0F8, [0] は priority 1 でアニメ付き, [1..3] は priority 2, 0 と 1..3 を別のメンバにした方がいいかも？
-  AuxSpriteGfx gfx;         // 0x1A8, SPRITE_EFF_3668, パレット 200
+  bool8 active;            // 0x000, 初期化で 1 を書く
+  u8 state;                // 0x001, PTR_ARRAY_085aba04 の添字
+  u8 unk_2[4];             // 0x002, まだ未解析
+  u16 timer;               // 0x006, 初期化で 0 を書く
+  u8 unk_8[2];             // 0x008, まだ未解析
+  u8 angle;                // 0x00A, 被弾したとき攻撃元への角度を入れる
+  u8 unk_b;                // 0x00B, 初期化で 0 を書く
+  u8 unk_c[6];             // 0x00C, まだ未解析
+  u16 hp;                  // 0x012, 被弾で相手の damage の分だけ減り、0 で state 6 へ移る
+  Vec3 pos;                // 0x014, 両方の Hitbox_SetPos に渡す
+  u8 unk_1c[0x44 - 0x1C];  // 0x01C, まだ未解析
+  Vec3* target;            // 0x044, 向きを合わせる相手の座標
+  u8 unk_48[0x48 - 0x48];  // 0x048
+  HitboxData hitbox;       // 0x048
+  HitboxData hurtbox;      // 0x098
+  AuxAnimState anim;       // 0x0E8, sprites[0] の再生状態
+  AuxSprite sprites[4];    // 0x0F8, [0] は priority 1 でアニメ付き, [1..3] は priority 2, 0 と 1..3 を別のメンバにした方がいいかも？
+  AuxSpriteGfx gfx;        // 0x1A8, SPRITE_3668, パレット 200
 } Entity0805b068Elem;
 static_assert(sizeof(Entity0805b068Elem) == 452);
 
@@ -31,7 +31,7 @@ typedef struct Entity0805b068 {
   u32 activeMask;               // 0x018, 立っているビットの枠だけ Update が回す
   u16 attackID;                 // 0x01C, Init の第2引数, 各枠の Hitbox_SetAttack に渡す
   u16 power;                    // 0x01E, Init の第3引数, 各枠の Hitbox_SetPowerAndAttributes に渡す
-  AuxAnimFile* anim;            // 0x020, ANIM_78E1
+  AuxAnimFile* animFile;        // 0x020, ANIM_78E1
   Entity0805b068Elem elems[8];  // 0x024
 } Entity0805b068;
 static_assert(sizeof(Entity0805b068) == 3652);
@@ -42,25 +42,6 @@ static inline void Entity0805b068Elem_SetState(Entity0805b068Elem* p, u8 state) 
   p->active = TRUE;
   p->timer = 0;
 }
-
-void FUN_0805a938(Entity0805b068*, Entity0805b068Elem*, s32);
-void FUN_0805a988(Entity0805b068*, Entity0805b068Elem*, s32);
-void FUN_0805a9e8(Entity0805b068*, Entity0805b068Elem*, s32);
-void FUN_0805ab18(Entity0805b068*, Entity0805b068Elem*, s32);
-void FUN_0805ab70(Entity0805b068*, Entity0805b068Elem*, s32);
-void FUN_0805ad78(Entity0805b068*, Entity0805b068Elem*, s32);
-void FUN_0805ae44(Entity0805b068*, Entity0805b068Elem*, s32);
-
-// Entity0805b068_Update が引く
-void (*const PTR_ARRAY_085aba04[7])(Entity0805b068*, Entity0805b068Elem*, s32) = {
-    FUN_0805a938,
-    FUN_0805a988,
-    FUN_0805a9e8,
-    FUN_0805ab18,
-    FUN_0805ab70,
-    FUN_0805ad78,
-    FUN_0805ae44,
-};  // 0x085ABA04
 
 // 空いている枠を返し, 添字を *outIdx に入れる, 無ければ NULL
 Entity0805b068Elem* FUN_0805a43c(Entity0805b068* p, u32* outIdx) {
@@ -87,7 +68,7 @@ s32 FUN_0805a6c8(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
   AuxSprite* spr;
   s32 i;
 
-  Hitbox_Unregister(&elem->bodyHitbox);
+  Hitbox_Unregister(&elem->hurtbox);
 
   spr = &elem->sprites[0];
   for (i = 0; i < 4; i++, spr++) {
@@ -104,7 +85,7 @@ s32 FUN_0805a6ec(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
   for (i = 0; i < 4; i++, spr++) {
     spr->flags |= SPRFLAG_HIDDEN;
   }
-  hitbox = &elem->bodyHitbox;
+  hitbox = &elem->hurtbox;
   hitbox->flags |= HBFLAG_HIDDEN;
   p->activeMask &= ~(1 << index);
 }
@@ -162,14 +143,14 @@ NON_MATCH void FUN_0805a938(Entity0805b068* p, Entity0805b068Elem* elem, s32 ind
 #ifdef NONMATCHING_C
   if (elem->active) {
     elem->active = FALSE;
-    AuxAnim_SetAnim(&elem->animState, p->anim, 1, 0, 0);
+    AuxAnim_SetAnim(&elem->anim, p->animFile, 1, 0, 0);
   }
 
   if (elem->unk_2[2] != 0) {
     elem->state = 1;
     elem->active = TRUE;
     elem->timer = 0;
-    AuxAnim_SetAnim(&elem->animState, p->anim, 0, 0, 0);
+    AuxAnim_SetAnim(&elem->anim, p->animFile, 0, 0, 0);
   }
 
   elem->timer++;
@@ -191,6 +172,16 @@ NAKED void FUN_0805ad78(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) 
 NAKED void FUN_0805ae44(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) { INCFUNC("asm/func/FUN_0805ae44.inc"); }
 
 s32 Entity0805b068_Update(Entity0805b068* p) {
+  static void (*const PTR_ARRAY_085aba04[7])(Entity0805b068*, Entity0805b068Elem*, s32) = {
+      FUN_0805a938,
+      FUN_0805a988,
+      FUN_0805a9e8,
+      FUN_0805ab18,
+      FUN_0805ab70,
+      FUN_0805ad78,
+      FUN_0805ae44,
+  };  // 0x085ABA04
+
   Entity0805b068Elem* e = p->elems;
   s32 i;
 
@@ -219,7 +210,7 @@ s32 Entity0805b068_Init(Entity0805b068* p, u32 attackID, u32 power) {
 
   p->attackID = attackID;
   p->power = power;
-  p->anim = GetFile(DIR_ANIMATION, ANIM_78E1);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_78E1);
   elem = &p->elems[0];
   for (i = 0; i < 8; i++, elem++) {
     FUN_0805a53c(p, elem, i);
@@ -240,4 +231,4 @@ Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2) {
   return p;
 }
 
-NAKED s32 FUN_0805b0b0(unknown* p) { INCFUNC("asm/func/FUN_0805b0b0.inc"); }
+NAKED s32 FUN_0805b0b0(Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_0805b0b0.inc"); }

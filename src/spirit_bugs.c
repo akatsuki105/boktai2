@@ -217,7 +217,7 @@ SpiritBugsManager* Entity0800a89c_Create(u32 id) {
   return p;
 }
 
-// kind = SpiritBugKind, amount = 効果量 (sSpiritBugHandler の 第2引数)
+// kind = SpiritBugKind (bit4 以降は別の意味?), amount = 効果量 (sSpiritBugHandler の 第2引数)
 NAKED s32 SpawnSpiritBugs(u32 count, s32 kind, s32 amount, Vec3* pos, Vec3* spread, s32 lifetime, s32 lifetimeRand) { INCFUNC("asm/func/SpawnSpiritBugs.inc"); }
 
 // kind = SpiritBugKind, amount = 効果量 (sSpiritBugHandler の 第2引数)

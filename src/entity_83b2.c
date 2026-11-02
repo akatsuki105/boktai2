@@ -379,7 +379,7 @@ s32 Entity83B2_Destroy(Entity83B2* p) {
   return 0;
 }
 
-s32 Entity83B2_Init(Entity83B2* p, void* _) {
+s32 Entity83B2_Init(Entity83B2* p, u32 _) {
   Entity83B2Data* data;
   s32 i;
 
@@ -408,12 +408,13 @@ s32 Entity83B2_Init(Entity83B2* p, void* _) {
   return 0;
 }
 
-Entity83B2* Entity83B2_Create(void* _) {
+// 0x83B2
+Entity83B2* Entity83B2_Create(u32 id) {
   if (gEntity83B2 == NULL) {
     Entity83B2* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity83B2));
     if (p != NULL) {
       SetEntityRoutine(p, Entity83B2_Update, Entity83B2_Destroy);
-      if (Entity83B2_Init(p, _) < 0) {
+      if (Entity83B2_Init(p, id) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
@@ -423,7 +424,7 @@ Entity83B2* Entity83B2_Create(void* _) {
   return gEntity83B2;
 }
 
-// マップ切り替わり時に (多分 Entity83B2 の数だけ)　呼ばれた (銀行に入ると3回呼ばれた, 多分 ヒントパネル1個 + ATM2個 で3回と思われる)
+// 0x883A, マップ切り替わり時に (多分 Entity83B2 の数だけ)　呼ばれた (銀行に入ると3回呼ばれた, 多分 ヒントパネル1個 + ATM2個 で3回と思われる)
 // マップ切り替え時に呼ばれ、スクリプトの名前付き引数から list の各要素を作る
 NON_MATCH s32 Cmd_883A(void) {
 #ifdef NONMATCHING_C
@@ -496,7 +497,7 @@ NON_MATCH s32 Cmd_883A(void) {
 #endif
 }
 
-// ヒントパネルを閉じると呼ばれる, ATMを終了しても呼ばれない
+// 0x2740, ヒントパネルを閉じると呼ばれる, ATMを終了しても呼ばれない
 s32 Cmd_2740(void) {
   Entity83B2* p = gEntity83B2;
   if (p == NULL || p->unk_19 < 0 || p->unk_19 >= p->length) {
@@ -507,7 +508,7 @@ s32 Cmd_2740(void) {
   return 0;
 }
 
-// スクリプトから対象の座標を設定し直す
+// 0x1F65, スクリプトから対象の座標を設定し直す
 s32 Cmd_1F65(void) {
   Vec3 pos;
   Entity83B2Data* data;

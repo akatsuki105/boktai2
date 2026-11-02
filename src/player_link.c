@@ -452,11 +452,11 @@ void PlayerLink_InitPtcl858(Player* p) {
   PlayerParticleState858* st = &p->ptcl_858;
   s32 i;
 
-  st->group = GetParticleGroup(PTCL_GROUP_2);
+  st->group2 = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 4; i++) {
     PlayerPtcl858* ptcl = &st->ptcls[i];
 
-    Particle_Add(&ptcl->base, st->group, SPRFLAG_HIDDEN);
+    Particle_Add(&ptcl->base, st->group2, SPRFLAG_HIDDEN);
     Particle_SetOffset(&ptcl->base, -4, -4);
     Particle_SetPltt(&ptcl->base, 1);
     ptcl->base.priority = 2;

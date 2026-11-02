@@ -19,8 +19,8 @@ typedef struct Entity08202cd8 {
   u16 plttID;                               // 0x026, gfx0->plttID
   AuxSprite sprites[8];                     // 0x028, i<3 は gfx1、それ以外は gfx0 で AuxSprite_Add する
   u8 unk_188[8];                            // 0x188
-  HitboxData hitboxA[8];                    // 0x190, Hitbox_SetHandler(0x082029B8) と Hitbox_SetAttack を受ける組
-  HitboxData hitboxB[8];                    // 0x410, Hitbox_SetHandler(0x082029BC) と Hitbox_SetPowerAndAttributes を受ける組
+  HitboxData hitboxes[8];                   // 0x190, Hitbox_SetHandler(0x082029B8) と Hitbox_SetAttack を受ける組
+  HitboxData hurtboxes[8];                  // 0x410, Hitbox_SetHandler(0x082029BC) と Hitbox_SetPowerAndAttributes を受ける組
   u8 unk_690;                               // 0x690, 叩きつけ攻撃の段階, 0: 狙う 1: 振り下ろす 2: 当たった 3: 終わり
   u8 unk_691;                               // 0x691
   u8 unk_692;                               // 0x692, unk_690 の段階に入ってからのフレーム数

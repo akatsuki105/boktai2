@@ -486,7 +486,7 @@ _080E7EEC:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x14]
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080E7F0A
 	cmp r0, #2

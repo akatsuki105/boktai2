@@ -30,11 +30,12 @@ extern MusicPlayerInfo gMPlayInfo_15;
 
 static MusicPlayerTrack sMPlayTracks[50];  // 0x03001710
 
+// 再生しているサウンドIDをメモしておくためのもの, SE などの一時的な音はメモしない場合もある
 COMMON_DATA SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH] = {};  // 0x03004820
 
 // サウンドを音量最大で鳴らし(BGM は再生中なら継続)、再生中 ID として記録する
 void sound_08240264(SoundID32 id) {
-  if (gSongTable[id].ms == 10) {
+  if (gSongTable[id].ms == P_BGM) {
     m4aSongNumStartOrContinue(id);
   } else {
     m4aSongNumStart(id);

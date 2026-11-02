@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "inventory.h"
 #include "item.h"
 #include "shop.h"
@@ -48,7 +49,8 @@ typedef struct ItemShop {
   u8 kind;                       // 0x151A, _Update が FUN_080b94cc / FUN_080b9400 に渡す
   u8 unk_151b;                   // 0x151B, _Init が 0 を入れる
   u8 unk_151c;                   // 0x151C, _Init が 0 を入れる
-  u8 unk_151d[0x1534 - 0x151D];  // 0x151D, まだ未解析
+  u8 unk_151d;                   // 0x151D
+  u8 unk_151e[0x1534 - 0x151E];  // 0x151E, まだ未解析
   u32 unk_1534;                  // 0x1534, '.e' (なければ 0)
   ItemShopFunc* updateCallback;  // 0x1538
   ItemShopFunc* unk_153c;        // 0x153C, FUN_080ba054 が入れる, 読み手は未調査
@@ -56,6 +58,23 @@ typedef struct ItemShop {
 static_assert(sizeof(ItemShop) == 5440);
 
 void FUN_080baae8(ItemShop* p);
+void GetRegisteredWeaponData(s32 idx, WeaponData* data);
+s32 FUN_0807a6cc(WeaponData* w);
+s32 FUN_0807a5d8(WeaponData* w, const ArmorData* armor);
+s32 FUN_0807a70c(const ArmorData* data);
+void FUN_080baf50(ItemShop* p);
+void ItemShop_SwapSelectedItem(ItemShop* p);
+void ItemShop_SwapSelectedArmor(ItemShop* p);
+void FUN_080bc11c(ItemShop* p);
+void FUN_080bc07c(ItemShop* p);
+void FUN_080bbeec(ItemShop* p);
+void FUN_080baeb0(ItemShop* p);
+void FUN_080bad30(ItemShop* p);
+void FUN_080bcbf4(ItemShop* p);
+void FUN_080bc350(ItemShop* p);
+void FUN_080bb160(ItemShop* p);
+void FUN_080bc1ec(ItemShop* p);
+void FUN_080bb01c(ItemShop* p);
 s32 Marquee_SetVarValue(s32 idx, s32 value);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_080bbc60(ItemShop* p);
@@ -78,7 +97,7 @@ void FUN_080ba054(ItemShop* p, ItemShopFunc* fn, s32 val) {
   p->stateTimer = 0;
 }
 
-void FUN_080ba07c(ItemShop* p, s32 line) {
+void FUN_080ba07c(ItemShop* p, s32 line, u8* pc, s32 id) {
   Marquee_Clear();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_12e0);
@@ -95,7 +114,65 @@ void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
   digits[2] = value - digits[1] * 10;
 }
 
-NAKED void FUN_080ba0f0(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba0f0.inc"); }
+// 126/127 命令, param_2 < 0 の枝で base を r0 に写す形だけ合わない
+NON_MATCH void FUN_080ba0f0(ItemShop* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  const ArmorData* data;
+  WeaponData w;
+  s32 digits[3];
+  s32 base;
+  s32 value;
+  s32 color;
+  s32 i;
+
+  if (gStat->armor < 0) {
+    data = NULL;
+  } else {
+    data = &gArmorDB[GetInventoryArmor(gStat->armor)];
+  }
+
+  base = FUN_0807a70c(data);
+  if (param_2 < 0) {
+    value = base;
+    color = 0;
+  } else {
+    value = FUN_0807a70c(&gArmorDB[param_2]);
+    color = 0;
+    if (value != base) {
+      color = 2;
+      if (base < value) {
+        color = 1;
+      }
+    }
+  }
+  SplitDecimal3_080ba0c0(value, digits);
+  for (i = 0; i < 3; i++) {
+    MainSprite_SetPose(&p->sprites[45 + i], &p->gfx0, digits[i] + color * 10, PLAYMODE_LOOP);
+  }
+
+  GetRegisteredWeaponData(gStat->equippedWeaponIdx, &w);
+  base = FUN_0807a6cc(&w);
+  if (param_2 < 0) {
+    value = base;
+    color = 0;
+  } else {
+    value = FUN_0807a5d8(&w, &gArmorDB[param_2]);
+    color = 0;
+    if (value != base) {
+      color = 2;
+      if (base < value) {
+        color = 1;
+      }
+    }
+  }
+  SplitDecimal3_080ba0c0(value, digits);
+  for (i = 0; i < 3; i++) {
+    MainSprite_SetPose(&p->sprites[42 + i], &p->gfx0, digits[i] + color * 10, PLAYMODE_LOOP);
+  }
+#else
+  INCFUNC("asm/func/FUN_080ba0f0.inc");
+#endif
+}
 
 // 道具の買値を返す, 果実系は nutsRate を掛けて 1〜9999 に収める (太陽光に応じて値段が変わる設定)
 s32 Item_GetBuyPrice(u32 itemID) {
@@ -196,7 +273,45 @@ void FUN_080ba2d8(ItemShop* p) {
   }
 }
 
-NAKED void FUN_080ba410(ItemShop* p) { INCFUNC("asm/func/FUN_080ba410.inc"); }
+// 146/165 命令, 行ごとのオフセットをスタックに積む2重ループの形が未解決
+NON_MATCH void FUN_080ba410(ItemShop* p) {
+#ifdef NONMATCHING_C
+  s32 y;
+  s32 x;
+
+  for (y = 0; y < 4; y++) {
+    for (x = 0; x < 4; x++) {
+      s32 id = GetNormalItemID(y * 4 + x);
+
+      p->sprites[3 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
+      MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, id + 104, PLAYMODE_LOOP);
+      FUN_080b95bc(&p->sprites[3 + y * 4 + x], 735);
+    }
+  }
+
+  for (y = 0; y < 3; y++) {
+    for (x = 0; x < 4; x++) {
+      s32 id = p->items0[y * 4 + x];
+
+      if (id < 0) {
+        p->sprites[19 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
+      } else {
+        p->sprites[19 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
+        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, id + 104, PLAYMODE_LOOP);
+        if ((s16)gStat->solarBank < Item_GetBuyPrice(id)) {
+          FUN_080b95bc(&p->sprites[19 + y * 4 + x], 736);
+        } else {
+          FUN_080b95bc(&p->sprites[19 + y * 4 + x], 735);
+        }
+      }
+    }
+  }
+
+  p->sprites[34].flags |= SPRFLAG_HIDDEN;
+#else
+  INCFUNC("asm/func/FUN_080ba410.inc");
+#endif
+}
 
 // カーソル位置の道具の値段表示を更新する, 対象がなければ表示を消す
 void FUN_080ba57c(ItemShop* p) {
@@ -262,7 +377,7 @@ void FUN_080ba624(ItemShop* p) {
     b[i] = a[1 - i];
   }
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -285,7 +400,7 @@ void FUN_080ba710(ItemShop* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -307,7 +422,7 @@ void FUN_080ba7bc(ItemShop* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -317,9 +432,9 @@ void FUN_080ba85c(ItemShop* p, s32 param_2) {
 
   if (param_2 == 0) {
     if (p->cursor.shopColX == SPECIAL_COL) {
-      FUN_080b98c0(&p->pair1.gfx, 0, 4);
+      FUN_080b98c0(&p->pair1, 0, 4);
     } else {
-      FUN_080b98c0(&p->pair1.gfx, 0, -1);
+      FUN_080b98c0(&p->pair1, 0, -1);
     }
     return;
   }
@@ -345,19 +460,19 @@ void FUN_080ba85c(ItemShop* p, s32 param_2) {
 
   switch (kind) {
     case 4: {
-      FUN_080b98c0(&p->pair1.gfx, 7, -1);
+      FUN_080b98c0(&p->pair1, 7, -1);
       break;
     }
     case 5: {
-      FUN_080b98c0(&p->pair1.gfx, 6, -1);
+      FUN_080b98c0(&p->pair1, 6, -1);
       break;
     }
     case 1: {
-      FUN_080b98c0(&p->pair1.gfx, 3, -1);
+      FUN_080b98c0(&p->pair1, 3, -1);
       break;
     }
     default: {
-      FUN_080b98c0(&p->pair1.gfx, -1, -1);
+      FUN_080b98c0(&p->pair1, -1, -1);
       break;
     }
   }
@@ -431,9 +546,118 @@ void FUN_080baa64(ItemShop* p) {
   FUN_080ba054(p, FUN_080baae8, 1);
 }
 
-NAKED void FUN_080baae8(ItemShop* p) { INCFUNC("asm/func/FUN_080baae8.inc"); }
+// 215/219 命令, 買う枝の並びは一致, movs r7, #1 の定数の持ち方が違う
+NON_MATCH void FUN_080baae8(ItemShop* p) {
+#ifdef NONMATCHING_C
+  ShopCursor* cursor = &p->cursor;
 
-NAKED void FUN_080bad30(ItemShop* p) { INCFUNC("asm/func/FUN_080bad30.inc"); }
+  FUN_080b95d0(cursor, NULL, &p->sprites[32], &p->sprites[31]);
+  if (gInput[0].down & SELECT_BUTTON) {
+    FUN_080ba048(p, 0);
+    MainSprite_SetPose(&p->sprites[35], &p->gfx0, 56, PLAYMODE_LOOP);
+    if (gInput[0].pressed & A_BUTTON) {
+      PlaySound_082406e0(SE_CURSOR_MOVE);
+      if (++p->kind > 2) {
+        p->kind = 0;
+      }
+    }
+    return;
+  }
+
+  FUN_080ba048(p, 1);
+  MainSprite_AdvanceAnim(&p->sprites[35], &p->gfx0);
+  if (gInput[0].pressed & A_BUTTON) {
+    s8* slot = &p->cursor.slot;
+
+    if ((u8)*slot == SLOT_SORT) {
+      PlaySound_082406e0(263);
+      FUN_080ba07c(p, 3, p->unk_12e4, -1);
+      FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
+      FUN_080b98c0(&p->pair1, -1, -1);
+      FUN_080ba054(p, FUN_080baeb0, 0);
+    } else {
+      if (p->cursor.shopColX > 3) {
+        if (p->items0[(u8)*slot - 16] < 0 || (s16)gStat->solarBank < Item_GetBuyPrice(p->items0[(u8)*slot - 16]) || (s16)p->unk_12f2 < 0) {
+          PlaySound_082406e0(SE_NG);
+          return;
+        }
+        PlaySound_082406e0(SE_SELECT);
+        FUN_080b9fd8(cursor);
+        p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
+        p->sprites[36].pos = p->sprites[35].pos;
+        FUN_080b9d94(cursor, 60);
+      } else {
+        PlaySound_082406e0(SE_SELECT);
+        FUN_080b9fd8(cursor);
+        p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
+        p->sprites[36].pos = p->sprites[35].pos;
+        if (GetNormalItemID((u8)p->cursor.savedSlot) < 0) {
+          FUN_080b9d94(cursor, 30);
+        } else {
+          FUN_080b9d94(cursor, 14);
+        }
+      }
+      FUN_080ba85c(p, 1);
+      FUN_080ba054(p, FUN_080bad30, 0);
+    }
+  } else if (ShopCursor_Move(cursor)) {
+    ShopCursor_PlaceSprite(cursor, &p->sprites[35]);
+    FUN_080ba2d8(p);
+    FUN_080ba57c(p);
+    FUN_080ba85c(p, 0);
+  }
+#else
+  INCFUNC("asm/func/FUN_080baae8.inc");
+#endif
+}
+
+// 120/137 命令, 分岐の並びが違う, 下書き段階
+void FUN_080bad30(ItemShop* p) {
+  if (gInput[0].pressed & A_BUTTON) {
+    s32 result = FUN_080ba980(p);
+
+    FUN_080b98c0(&p->pair1, -1, -1);
+    switch (result) {
+      case 1: {
+        FUN_080ba624(p);
+        FUN_080ba054(p, ItemShop_SwapSelectedItem, 0);
+        break;
+      }
+      case 4: {
+        PlaySound_082406e0(263);
+        FUN_080ba07c(p, 0, p->unk_12e4, p->items0[(u8)p->cursor.savedSlot - 16]);
+        FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
+        FUN_080ba054(p, FUN_080baf50, 0);
+        break;
+      }
+      case 5: {
+        PlaySound_082406e0(263);
+        FUN_080ba07c(p, 1, p->unk_12e4, GetNormalItemID((u8)p->cursor.savedSlot));
+        FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 0);
+        FUN_080ba054(p, FUN_080bb01c, 0);
+        break;
+      }
+      default: {
+        PlaySound_082406e0(SE_NG);
+        break;
+      }
+    }
+  } else if (gInput[0].pressed & B_BUTTON) {
+    PlaySound_082406e0(SE_CANCEL);
+    FUN_080baa64(p);
+  } else {
+    ShopCursor* cursor = &p->cursor;
+
+    if (ShopCursor_Move(cursor)) {
+      ShopCursor_PlaceSprite(cursor, &p->sprites[35]);
+      FUN_080ba2d8(p);
+      FUN_080ba85c(p, 1);
+    }
+  }
+
+  FUN_080b95d0(&p->cursor, NULL, &p->sprites[32], &p->sprites[31]);
+  MainSprite_AdvanceAnim(&p->sprites[35], &p->gfx0);
+}
 
 // 購入の結果に応じて効果音を鳴らし, 決定ならカーソルの退避値を戻してから FUN_080baa64 へ戻る
 void FUN_080baeb0(ItemShop* p) {
@@ -529,7 +753,7 @@ NON_MATCH void FUN_080bb070(ItemShop* p) {
 // 売却後の演出, カーソルの絵を少し持ち上げてから元の状態へ戻す
 void FUN_080bb0e8(ItemShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_630);
+    PlaySound_082406e0(SE_SHOP_SELL);
   }
 
   p->stateTimer++;
@@ -622,7 +846,59 @@ void FUN_080bb294(ItemShop* p) {
   FUN_080ba0f0(p, id);
 }
 
-NAKED void FUN_080bb388(ItemShop* p) { INCFUNC("asm/func/FUN_080bb388.inc"); }
+// 238/250 命令, 行ごとのオフセットをスタックに積む2重ループの形が未解決
+NON_MATCH void FUN_080bb388(ItemShop* p) {
+#ifdef NONMATCHING_C
+  s32 y;
+  s32 x;
+
+  for (y = 0; y < 4; y++) {
+    for (x = 0; x < 4; x++) {
+      s16 id = gStat->armors[y * 4 + x];
+
+      if (id < 0) {
+        p->sprites[3 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
+      } else {
+        p->sprites[3 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
+        MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, id + 67, PLAYMODE_LOOP);
+      }
+      if (gArmorDB[id].price == 0 || y * 4 + x == gStat->armor) {
+        FUN_080b95bc(&p->sprites[3 + y * 4 + x], 736);
+      } else {
+        FUN_080b95bc(&p->sprites[3 + y * 4 + x], 735);
+      }
+    }
+  }
+
+  for (y = 0; y < 3; y++) {
+    for (x = 0; x < 4; x++) {
+      s32 id = p->items1[y * 4 + x];
+
+      if (id < 0) {
+        p->sprites[19 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
+      } else {
+        p->sprites[19 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
+        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, id + 67, PLAYMODE_LOOP);
+        if ((s16)gStat->solarBank < gArmorDB[id].price) {
+          FUN_080b95bc(&p->sprites[19 + y * 4 + x], 736);
+        } else {
+          FUN_080b95bc(&p->sprites[19 + y * 4 + x], 735);
+        }
+      }
+    }
+  }
+
+  if (gStat->armor < 0) {
+    p->sprites[34].flags |= SPRFLAG_HIDDEN;
+  } else {
+    p->sprites[34].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites[34].pos.x = (gStat->armor & 3) * 24 + 144;
+    p->sprites[34].pos.y = (gStat->armor >> 2) * 24 + 32;
+  }
+#else
+  INCFUNC("asm/func/FUN_080bb388.inc");
+#endif
+}
 
 // カーソル位置の防具の値段表示を更新する, 対象がなければ表示を消す
 void FUN_080bb5bc(ItemShop* p) {
@@ -688,7 +964,7 @@ void FUN_080bb688(ItemShop* p) {
     b[i] = a[1 - i];
   }
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -711,7 +987,7 @@ void FUN_080bb798(ItemShop* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -733,11 +1009,71 @@ void FUN_080bb854(ItemShop* p) {
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
-  FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
-NAKED void FUN_080bb8f4(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080bb8f4.inc"); }
+// 157/157 命令, p が r3 に載らずレジスタ割当だけの差
+NON_MATCH void FUN_080bb8f4(ItemShop* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  s32 kind;
+
+  if (param_2 == 0) {
+    if (p->cursor.shopColX == SPECIAL_COL) {
+      FUN_080b98c0(&p->pair1, 0, 4);
+    } else {
+      FUN_080b98c0(&p->pair1, 0, -1);
+    }
+    return;
+  }
+
+  kind = 0;
+  if (p->cursor.savedShopColX <= 3) {
+    u32 slot = (u8)p->cursor.savedSlot;
+    GameInfo* stat = gStat;
+
+    if (stat->armors[slot] < 0) {
+      kind = stat->armors[(u8)p->cursor.slot] >= 0;
+    } else if (p->cursor.shopColX == SPECIAL_COL) {
+      if (stat->armor != slot && (u8)p->cursor.slot == SLOT_SELL) {
+        kind = 5;
+      }
+    } else if ((u8)p->cursor.slot == slot) {
+      kind = 5;
+      if (stat->armor == slot) {
+        kind = 0;
+      }
+    } else {
+      kind = 1;
+    }
+  } else if (p->cursor.slot == p->cursor.savedSlot) {
+    kind = 4;
+  } else if (p->cursor.shopColX <= 3) {
+    kind = (gStat->armors[(u8)p->cursor.slot] < 0) ? 4 : 0;
+  }
+
+  switch (kind) {
+    case 4: {
+      FUN_080b98c0(&p->pair1, 7, -1);
+      break;
+    }
+    case 5: {
+      FUN_080b98c0(&p->pair1, 6, -1);
+      break;
+    }
+    case 1: {
+      FUN_080b98c0(&p->pair1, 3, -1);
+      break;
+    }
+    default: {
+      FUN_080b98c0(&p->pair1, -1, -1);
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080bb8f4.inc");
+#endif
+}
 
 // 防具のカーソル入れ替え操作の可否を判定し, 必要ならカーソルを移し替えて種別コードを返す
 // 残差1命令 (115/116): 原典は shopColX==SPECIAL_COL 側の return 5 を別ブロックで持つが, agbcc はもう一方の return 5 と畳む
@@ -820,9 +1156,122 @@ void FUN_080bbbdc(ItemShop* p) {
   FUN_080ba054(p, FUN_080bbc60, 1);
 }
 
-NAKED void FUN_080bbc60(ItemShop* p) { INCFUNC("asm/func/FUN_080bbc60.inc"); }
+// 241/244 命令, FUN_080baae8 と同じ形, movs r7, #1 の持ち方が違う
+NON_MATCH void FUN_080bbc60(ItemShop* p) {
+#ifdef NONMATCHING_C
+  ShopCursor* cursor = &p->cursor;
 
-NAKED void FUN_080bbeec(ItemShop* p) { INCFUNC("asm/func/FUN_080bbeec.inc"); }
+  FUN_080b95d0(cursor, NULL, &p->sprites[32], &p->sprites[31]);
+  if (gInput[0].down & SELECT_BUTTON) {
+    FUN_080ba048(p, 0);
+    MainSprite_SetPose(&p->sprites[35], &p->gfx0, 56, PLAYMODE_LOOP);
+    if (gInput[0].pressed & A_BUTTON) {
+      PlaySound_082406e0(SE_CURSOR_MOVE);
+      if (++p->kind > 2) {
+        p->kind = 0;
+      }
+    }
+    return;
+  }
+
+  FUN_080ba048(p, 1);
+  MainSprite_AdvanceAnim(&p->sprites[35], &p->gfx0);
+  if (gInput[0].pressed & A_BUTTON) {
+    s8* slot = &p->cursor.slot;
+
+    if ((u8)*slot == SLOT_SORT) {
+      PlaySound_082406e0(263);
+      FUN_080ba07c(p, 3, p->unk_12e4, -1);
+      FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
+      FUN_080b98c0(&p->pair1, -1, -1);
+      FUN_080ba054(p, FUN_080bc07c, 0);
+    } else {
+      if (p->cursor.shopColX > 3) {
+        if (p->items0[(u8)*slot] < 0 || (s16)gStat->solarBank < gArmorDB[p->items0[(u8)*slot]].price || (s16)p->unk_12f2 < 0) {
+          PlaySound_082406e0(SE_NG);
+          return;
+        }
+        PlaySound_082406e0(SE_SELECT);
+        FUN_080b9fd8(cursor);
+        p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
+        p->sprites[36].pos = p->sprites[35].pos;
+        FUN_080b9d94(cursor, 60);
+      } else {
+        PlaySound_082406e0(SE_SELECT);
+        FUN_080b9fd8(cursor);
+        p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
+        p->sprites[36].pos = p->sprites[35].pos;
+        if ((u8)*slot == gStat->armor || gStat->armors[(u8)*slot] < 0 || gArmorDB[gStat->armors[(u8)*slot]].price == 0) {
+          FUN_080b9d94(cursor, 30);
+        } else {
+          FUN_080b9d94(cursor, 14);
+        }
+      }
+      FUN_080bb8f4(p, 1);
+      FUN_080ba054(p, FUN_080bbeec, 0);
+    }
+  } else if (ShopCursor_Move(cursor)) {
+    ShopCursor_PlaceSprite(cursor, &p->sprites[35]);
+    FUN_080bb294(p);
+    FUN_080bb5bc(p);
+    FUN_080bb8f4(p, 0);
+  }
+#else
+  INCFUNC("asm/func/FUN_080bbc60.inc");
+#endif
+}
+
+// 143/143 命令, pool を読む一時レジスタが r3 になり 0x12E8 + 12 の流用が起きる, 残りは FUN_080bad30 と同じ形
+NON_MATCH void FUN_080bbeec(ItemShop* p) {
+#ifdef NONMATCHING_C
+  if (gInput[0].pressed & A_BUTTON) {
+    s32 result = FUN_080bba88(p);
+
+    FUN_080b98c0(&p->pair1, -1, -1);
+    switch (result) {
+      case 1: {
+        FUN_080bb688(p);
+        FUN_080ba054(p, ItemShop_SwapSelectedArmor, 0);
+        break;
+      }
+      case 4: {
+        PlaySound_082406e0(263);
+        FUN_080ba07c(p, 0, p->unk_12e8, p->items1[(u8)p->cursor.savedSlot - 16]);
+        FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
+        FUN_080ba054(p, FUN_080bc11c, 0);
+        break;
+      }
+      case 5: {
+        PlaySound_082406e0(263);
+        FUN_080ba07c(p, 1, p->unk_12e8, gStat->armors[(u8)p->cursor.savedSlot]);
+        FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 0);
+        FUN_080ba054(p, FUN_080bc1ec, 0);
+        break;
+      }
+      default: {
+        PlaySound_082406e0(SE_NG);
+        break;
+      }
+    }
+  } else if (gInput[0].pressed & B_BUTTON) {
+    PlaySound_082406e0(SE_CANCEL);
+    FUN_080bbbdc(p);
+  } else {
+    ShopCursor* cursor = &p->cursor;
+
+    if (ShopCursor_Move(cursor)) {
+      ShopCursor_PlaceSprite(cursor, &p->sprites[35]);
+      FUN_080bb294(p);
+      FUN_080bb8f4(p, 1);
+    }
+  }
+
+  FUN_080b95d0(&p->cursor, NULL, &p->sprites[32], &p->sprites[31]);
+  MainSprite_AdvanceAnim(&p->sprites[35], &p->gfx0);
+#else
+  INCFUNC("asm/func/FUN_080bbeec.inc");
+#endif
+}
 
 // 購入の結果に応じて効果音を鳴らし, 決定ならカーソルの退避値を戻してから FUN_080bbbdc へ戻る
 void FUN_080bc07c(ItemShop* p) {
@@ -924,7 +1373,7 @@ NON_MATCH void FUN_080bc240(ItemShop* p) {
 // 防具売却後の演出, カーソルの絵を少し持ち上げてから一覧へ戻す
 void FUN_080bc2d8(ItemShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(SONG_630);
+    PlaySound_082406e0(SE_SHOP_SELL);
   }
 
   p->stateTimer++;
@@ -975,7 +1424,102 @@ void ItemShop_LoadBgPltt(ItemShop* p) {
   CpuCopy32(p->bgPltt, &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 }
 
-NAKED void FUN_080bc498(ItemShop* p) { INCFUNC("asm/func/FUN_080bc498.inc"); }
+// 460/465 命令, &p->gfx2 のレジスタとスタック上の局所の持ち方が違う
+NON_MATCH void FUN_080bc498(ItemShop* p) {
+#ifdef NONMATCHING_C
+  MainSpriteGfxFile* f;
+  MainSpriteGfx* gfx;
+  MainSpriteGfx* icons;
+  MainSpriteGfx* menu;
+  MainSprite* sprite;
+  Vec3 pos;
+  s32 i;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  p->icons = *f;
+  OpenMainSpriteFile(&p->icons, f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  p->gfx0 = *f;
+  OpenMainSpriteFile(&p->gfx0, f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_MISC);
+  p->gfx2 = *f;
+  gfx = &p->gfx2;
+  OpenMainSpriteFile(gfx, f);
+
+  pos.x = 0, pos.y = 0, pos.z = 0;
+  if ((u8)p->unk_12ec == 1) {
+    SpriteFlags flags = SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN;
+
+    if (gStat->playerKind != 5) {
+      flags = SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD;
+    }
+    MainSprite_Add(&p->sprites[0], gfx, 37, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[1], gfx, 35, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[2], gfx, 36, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+  } else {
+    MainSprite_Add(&p->sprites[0], gfx, 38, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[1], gfx, 35, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[2], gfx, 36, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  }
+
+  icons = &p->icons;
+  menu = &p->gfx0;
+  for (i = 0; i < 16; i++) {
+    pos.y = (i >> 2) * 24 + 32;
+    pos.x = (i & 3) * 24 + 144;
+    MainSprite_Add(&p->sprites[3 + i], icons, 104, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  }
+  for (i = 0; i < 12; i++) {
+    pos.y = (i >> 2) * 24 + 32;
+    pos.x = (i & 3) * 24 + 8;
+    MainSprite_Add(&p->sprites[19 + i], icons, 104, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  }
+
+  MainSprite_Add(&p->sprites[34], menu, 65, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 128;
+  MainSprite_Add(&p->sprites[33], icons, 208, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 120;
+  pos.y = 104;
+  MainSprite_Add(&p->sprites[32], icons, 203, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 104;
+  pos.y = 32;
+  MainSprite_Add(&p->sprites[31], icons, 204, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  FUN_080b95bc(&p->sprites[31], 736);
+  MainSprite_Add(&p->sprites[36], menu, 60, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 144;
+  pos.y = 32;
+  MainSprite_Add(&p->sprites[35], menu, 57, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[35], menu, 0, PLAYMODE_LOOP, 0);
+  MainSprite_Add(&p->sprites[37], gfx, 24, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x -= 11;
+  sprite = &p->sprites[38];
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(sprite, gfx, 25, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    pos.x += 6;
+    sprite++;
+  }
+  pos.x = 48;
+  pos.y = 104;
+  for (i = 0; i < 3; i++) {
+    MainSprite_Add(&p->sprites[42 + i], menu, 0, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    pos.x += 8;
+  }
+  pos.x = 48;
+  pos.y = 112;
+  for (i = 0; i < 3; i++) {
+    MainSprite_Add(&p->sprites[45 + i], menu, 0, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    pos.x += 8;
+  }
+  pos.x = 0;
+  pos.y = 0;
+  MainSprite_Add(&p->sprites[48], menu, 148, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  FUN_080b99a0(&p->pair0);
+  FUN_080b9814(&p->pair1);
+#else
+  INCFUNC("asm/func/FUN_080bc498.inc");
+#endif
+}
 
 void FUN_080bc8c8(ItemShop* p) {
   if (VM_SeekToNamedArg('s')) {
@@ -1073,7 +1617,47 @@ void FUN_080bca50(ItemShop* p) {
   }
 }
 
-NAKED void FUN_080bca7c(ItemShop* p) { INCFUNC("asm/func/FUN_080bca7c.inc"); }
+void FUN_080bca7c(ItemShop* p) {
+  if (p->unk_12ee != 0) {
+    if ((u8)p->unk_12ec == 1 && gStat->playerKind != 5) {
+      if ((++p->unk_151d >> 5) & 1) {
+        p->sprites[1].flags |= SPRFLAG_HIDDEN;
+        p->sprites[2].flags |= SPRFLAG_HIDDEN;
+      } else {
+        p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
+        p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
+      }
+      if (gInput[0].pressed & (L_BUTTON | R_BUTTON)) {
+        PlaySound_082406e0(266);
+        if (p->unk_12ed == 0) {
+          FUN_080bc350(p);
+        } else {
+          FUN_080bb160(p);
+        }
+      } else if (gInput[0].pressed & B_BUTTON) {
+        PlaySound_082406e0(SE_CLOSE_MENU);
+        FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+        ItemShop_SetState(p, FUN_080bcbf4);
+        return;
+      }
+    } else {
+      p->sprites[1].flags |= SPRFLAG_HIDDEN;
+      p->sprites[2].flags |= SPRFLAG_HIDDEN;
+      if (gInput[0].pressed & B_BUTTON) {
+        PlaySound_082406e0(SE_CLOSE_MENU);
+        FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+        ItemShop_SetState(p, FUN_080bcbf4);
+        return;
+      }
+    }
+  } else {
+    p->sprites[1].flags |= SPRFLAG_HIDDEN;
+    p->sprites[2].flags |= SPRFLAG_HIDDEN;
+    p->unk_151d = 0;
+  }
+
+  p->unk_153c(p);
+}
 
 // 32フレーム待ってから終了スクリプトを走らせて自分を破棄する
 void FUN_080bcbf4(ItemShop* p) {

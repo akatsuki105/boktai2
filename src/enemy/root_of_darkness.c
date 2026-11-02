@@ -4,7 +4,7 @@
 
 // 暗黒の根
 typedef struct {
-  ENEMY_HDR;
+  Enemy e;
   u8 unk_654[1696 - sizeof(Enemy)];
 } RootOfDarkness;
 static_assert(sizeof(RootOfDarkness) == 1696);

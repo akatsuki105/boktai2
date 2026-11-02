@@ -7,6 +7,7 @@
 #include "global.h"
 #include "inventory.h"
 #include "item.h"
+#include "map_inline.h"
 #include "particle.h"
 #include "random.h"
 #include "sound.h"
@@ -15,8 +16,17 @@
 COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
 COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
-void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
+void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
 s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
+s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
+struct Elevator* Elevator_FindAtPos(Vec3* pos);
+void Map_StepNavPath(NavAgent* agent, Vec3* pos);
+void FUN_080dab9c(s32 idx);
+
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
 
 void Coffin_InitParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -30,7 +40,54 @@ void Coffin_InitParticles(Coffin* p) {
   }
 }
 
-NAKED void FUN_08085408(Coffin* p) { INCFUNC("asm/func/FUN_08085408.inc"); }
+// 棺桶を引いている間, プレイヤーの手元から棺桶の取っ手までの間に 7 個のパーティクルを等間隔に並べる (引っぱっている綱の表示)
+void Coffin_UpdateRope(Coffin* p) {
+  Vec3 from, to;
+  Particle* ptcl;
+  s32 angle, c, s, ox, oz;
+  s32 offsetZ;
+  s32 i;
+
+  if (gPlayerPtr[0]->action != PACT_PULL_COFFIN) {
+    for (i = 0, ptcl = p->ptcls; i < 7; i++, ptcl++) {
+      Particle_Hide(ptcl);
+    }
+    return;
+  }
+
+  angle = ((gPlayerPtr[0]->animIDOffset + 1) & 7) << 5;
+  c = COS(angle);
+  s = SIN(angle);
+  if (gPlayerPtr[0]->xflip) {
+    ox = FixToInt(12, (s - c) * 20);
+    oz = FixToInt(12, (c + s) * 20);
+  } else {
+    ox = FixToInt(12, (c + s) * 20);
+    oz = FixToInt(12, (s - c) * 20);
+  }
+  from.x = gPlayerPtr[0]->mover.pos.x + ox;
+  from.y = gPlayerPtr[0]->mover.pos.y + 220;
+  from.z = gPlayerPtr[0]->mover.pos.z + oz;
+
+  angle = ((p->facing + 5) & 7) << 5;
+  to.x = p->mover.pos.x + POLAR_X(100, angle);
+  to.y = p->mover.pos.y - 50;
+  to.z = p->mover.pos.z + POLAR_Z(100, angle);
+
+  if (gPlayerPtr[0]->animIDOffset == 4) {
+    offsetZ = -20;
+  } else {
+    offsetZ = -2;
+  }
+
+  for (ptcl = p->ptcls, i = 0; i < 7; i++, ptcl++) {
+    ptcl->pos.x = (to.x * (i + 1) + from.x * (7 - i)) >> 3;
+    ptcl->pos.y = (to.y * (i + 1) + from.y * (7 - i)) >> 3;
+    ptcl->pos.z = (to.z * (i + 1) + from.z * (7 - i)) >> 3;
+    ptcl->offsetZ = offsetZ;
+    ptcl->flags &= ~SPRFLAG_HIDDEN;
+  }
+}
 
 static void Coffin_RemoveParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -78,11 +135,53 @@ NON_MATCH void FUN_080856f4(Coffin* p) {
 #endif
 }
 
-NAKED void FUN_08085764(Coffin* p) { INCFUNC("asm/func/FUN_08085764.inc"); }
+void FUN_08085764(Coffin* p) {
+  Vec3 pos, vel, accel;
+  s32 angle = ((p->facing + 1) & 7) << 5;
 
-NAKED void FUN_08085880(void) { INCFUNC("asm/func/FUN_08085880.inc"); }
+  pos.x = p->mover.pos.x + POLAR_X(100, angle);
+  pos.y = p->mover.pos.y;
+  pos.z = p->mover.pos.z + POLAR_Z(100, angle);
+  vel.x = POLAR_X(10, angle);
+  vel.y = 0;
+  vel.z = POLAR_Z(10, angle);
+  VEC3_SET(accel, 32, 0, 32);
+  FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+}
 
-NAKED void FUN_0808596c(s32 param_1) { INCFUNC("asm/func/FUN_0808596c.inc"); }
+void FUN_08085880(Coffin* p) {
+  Vec3 vel, pos, accel;
+  s32 angle = Random() & 0xFF;
+
+  vel.x = POLAR_X(32, angle);
+  vel.y = 0;
+  vel.z = POLAR_Z(32, angle);
+  pos.x = p->mover.pos.x + (vel.x << 2);
+  pos.y = p->mover.pos.y;
+  pos.z = p->mover.pos.z + (vel.z << 2);
+  VEC3_SET(accel, 0, 0, 0);
+  FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+  if (angle & 1) {
+    PlaySound_082406e0(SONG_211);
+  }
+}
+
+void FUN_0808596c(Coffin* p) {
+  Vec3 vel, pos, accel;
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    s32 angle = i << 5;
+    vel.x = POLAR_X(16, angle);
+    vel.y = 0;
+    vel.z = POLAR_Z(16, angle);
+    pos.x = p->mover.pos.x + (vel.x << 3);
+    pos.y = p->mover.pos.y;
+    pos.z = p->mover.pos.z + (vel.z << 3);
+    VEC3_SET(accel, 0, 0, 0);
+    FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+  }
+}
 
 // 残差1命令, 原典は &gRandTableIdx を ip に置いて毎回 [ip] から読み直すが, こちらは値をレジスタに持つため
 // callee-saved を1本多く push する, Tier A-C は試済, 未: per-TU フラグ
@@ -143,14 +242,36 @@ NON_MATCH void FUN_08085b34(Coffin* p) {
 #endif
 }
 
-NAKED void FUN_08085bd0(Coffin* p) { INCFUNC("asm/func/FUN_08085bd0.inc"); }
+// 棺桶のパレット行と行 8 を plttBlend / 64 の割合で混ぜて pltt に書く
+void Coffin_BlendPltt(Coffin* p) {
+  rgb555* src1 = &gObjPlttData[OBP_COFFIN(p->unk_31c) * 16];
+  rgb555* src2 = &gObjPlttData[527 * 16];
+  s32 u = 64 - p->plttBlend;
+  s32 t = p->plttBlend;
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    s32 r1 = *src1 & 0x1F;
+    s32 g1 = (*src1 >> 5) & 0x1F;
+    s32 b1 = (*src1 >> 10) & 0x1F;
+    s32 r2 = *src2 & 0x1F;
+    s32 g2 = (*src2 >> 5) & 0x1F;
+    s32 b2 = (*src2 >> 10) & 0x1F;
+    s32 r = ((u * r1 + t * r2) >> 6) & 0x1F;
+    s32 g = ((u * g1 + t * g2) >> 6) & 0x1F;
+    s32 b = ((u * b1 + t * b2) >> 6) & 0x1F;
+    p->pltt[i] = r | (g << 5) | (b << 10);
+    src1++;
+    src2++;
+  }
+}
 
 // 棺桶ごとのパレットを読み, 自前のバッファに複写して gfx をそちらへ向ける
 void FUN_08085cb0(Coffin* p, s32 coffinID) {
   rgb555* src;
   s32 i;
 
-  Video_SetAuxSpritePltt(&p->gfx, coffinID + 519);
+  Video_SetAuxSpritePltt(&p->gfx, OBP_COFFIN(coffinID));
 
   src = p->gfx.pltt;
   for (i = 0; i < 16; i++) {
@@ -161,11 +282,11 @@ void FUN_08085cb0(Coffin* p, s32 coffinID) {
 
 void FUN_08085cec(Coffin* p) {
   if (p->inSolarCircle || p->unk_406 != 0) {
-    if (p->unk_334 <= 0x3F) {
-      p->unk_334++;
+    if (p->plttBlend < 64) {
+      p->plttBlend++;
     }
-  } else if (p->unk_334 != 0) {
-    p->unk_334--;
+  } else if (p->plttBlend != 0) {
+    p->plttBlend--;
   }
 
   if (p->unk_330 != 0) {
@@ -174,9 +295,9 @@ void FUN_08085cec(Coffin* p) {
       FUN_08085cb0(p, 9);
     }
     p->unk_330--;
-  } else if (p->unk_334 != 0) {
+  } else if (p->plttBlend != 0) {
     p->unk_32e = 8;
-    FUN_08085bd0(p);
+    Coffin_BlendPltt(p);
   } else {
     if (p->unk_32e != p->unk_31c) {
       p->unk_32e = p->unk_31c;
@@ -186,12 +307,41 @@ void FUN_08085cec(Coffin* p) {
   }
 }
 
-NAKED void FUN_08085da8(Coffin* p) { INCFUNC("asm/func/FUN_08085da8.inc"); }
+// 棺桶が動いている間, 動き始めに移動音を鳴らし, 8 フレームごとに FUN_08085764 を呼ぶ
+void FUN_08085da8(Coffin* p) {
+  if (p->unk_338 != 0) {
+    p->unk_338--;
+  }
+
+  if (p->unk_33a && !p->unk_384) {
+    if (p->coffinID == COFFIN_ELEFAN) {
+      if (p->unk_336 == 0 && p->unk_338 == 0) {
+        PlaySound_082406e0(VO_ELEFAN_WALK);
+        p->unk_338 = 100;
+      }
+    } else {
+      if (p->unk_336 == 0) {
+        s32 stairs = GetTileAt(&p->mover.pos)->heightStairs >> 4;
+        if (stairs == STAIRS_VERTICAL || stairs == STAIRS_HORIZONTAL) {
+          PlaySound_082406e0(SONG_211);
+        } else {
+          PlaySound_082406e0(SONG_210);
+        }
+      }
+      if ((p->unk_336 & 7) == 0) {
+        FUN_08085764(p);
+      }
+    }
+    p->unk_336++;
+  } else {
+    p->unk_336 = 0;
+  }
+}
 
 void FUN_08085ec4(Coffin* p) {
   FUN_08085cec(p);
   FUN_08085da8(p);
-  FUN_08085408(p);
+  Coffin_UpdateRope(p);
 }
 
 void Coffin_SetState(Coffin* p, s32 state) {
@@ -211,8 +361,8 @@ s32 FUN_08085ef8(Coffin* p, s32 animIdx) {
     variant = p->facing;
     xflip = FALSE;
   }
-  AuxAnim_SetAnim(&p->animState, p->anim, animIdx, variant, xflip);
-  return AuxSprite_AdvanceAnim(&p->sprite, &p->animState);
+  AuxAnim_SetAnim(&p->anim, p->animFile, animIdx, variant, xflip);
+  return AuxSprite_AdvanceAnim(&p->sprite, &p->anim);
 }
 
 s32 FUN_08086024(Coffin* p, s32 param_2) { return FUN_08085ef8(p, param_2 + p->coffinID); }
@@ -234,62 +384,138 @@ bool32 FUN_0808608c(Coffin* p) {
   }
 
   Map_InitNavAgent(&p->navAgent, &p->mover.pos);
-  if (FUN_08235a84(&p->navAgent, &p->mover.pos, &p->destPos) != 0) {
+  if (Map_FindNavRoute(&p->navAgent, &p->mover.pos, &p->destPos) != 0) {
     return TRUE;
   }
   return FALSE;
 }
 
-// 残差は unk_384 のオフセット定数を 0x3A4 から subs で作ってしまう1命令のみ (原典は movs/lsls で作り直す), Tier A-C は試済
-// inline アクセサ経由 (Coffin_ResetSelfMoveTimer) も試したが改善せず, 未: per-TU フラグ
-NON_MATCH void FUN_080860cc(Coffin* p) {
-#ifdef NONMATCHING_C
+// 自力移動の待ち時間を戻し, 自力で動ける棺桶なら state 3 か 4 に, 動けなければ 0 にする
+void FUN_080860cc(Coffin* p) {
   p->selfMoveTimer = p->selfMoveTimerInit;
 
-  if (p->canSelfMove == 0 || p->unk_384 != 0) {
+  if (p->canSelfMove == 0) {
+    Coffin_SetState(gCoffin, 0);
+  } else if (p->unk_384 != 0) {
     Coffin_SetState(gCoffin, 0);
   } else if (FUN_0808608c(p)) {
     Coffin_SetState(gCoffin, 3);
   } else {
     Coffin_SetState(gCoffin, 4);
   }
-#else
-  INCFUNC("asm/func/FUN_080860cc.inc");
-#endif
 }
 
-NAKED void FUN_0808613c(Coffin* p) { INCFUNC("asm/func/FUN_0808613c.inc"); }
+void FUN_0808613c(Coffin* p) {
+  p->unk_3cc = p->mover.pos;
+  p->unk_3cc.y += Q8(1.5);
+  Coffin_CreateEffSprite(p);
+  p->effSprite.pos = p->mover.pos;
+  p->effSprite.pos.y = TileHeightAt(&p->effSprite.pos);
+  if (p->unk_1f4) {
+    EnemyTargetManager_Remove(&p->target);
+    p->unk_1f4 = FALSE;
+  }
+  FUN_08086080(p);
+  Coffin_SetState(p, 5);
+}
 
 void Coffin_ClearGlobal(void) { gCoffin = NULL; }
 
-// 0xD24B, 不使用?, 装備している棺桶をアイテムとして持ち物に戻し, 装備を外す
+// 0xD24B, 場に出ている棺桶を持ち物に戻す
 // 残差は17/19命令でこちらが短い, 原典は -1 を movs/rsbs で作って別レジスタから写すが agbcc はプール定数1本で済ませる
 // Tier A-B 試済 (定数の書き方, 代入順)
-NON_MATCH void coffin_0808623c(void) {
+NON_MATCH void Cmd_ReturnCoffinToBag(void) {
 #ifdef NONMATCHING_C
   TryAddItem(gStat->coffin + ITEM_OAK_COFFIN, 0);
   gStat->coffin = -1;
 #else
-  INCFUNC("asm/func/coffin_0808623c.inc");
+  INCFUNC("asm/func/Cmd_ReturnCoffinToBag.inc");
 #endif
 }
 
-// プレイヤーと棺桶が同じエレベータに乗っているか, どちらも乗っていなければ TRUE
-bool32 FUN_0808626c(u32 playerElevatorID, u32 playerFlags, u32 coffinElevatorID, u32 coffinFlags) {
-  if (playerFlags & 4) {
-    if ((coffinFlags & 4) == 0) {
+// プレイヤーと棺桶が同じエレベータで動いているか, どちらも乗っていなければ TRUE
+bool32 FUN_0808626c(u32 playerElevatorID, u32 playerElevatorFlags, u32 coffinElevatorID, u32 coffinFlags) {
+  if (playerElevatorFlags & ELEV_MOVING) {
+    if (!(coffinFlags & ELEV_MOVING)) {
       return FALSE;
     }
     if (playerElevatorID != coffinElevatorID) {
       return FALSE;
     }
-  } else if (coffinFlags & 4) {
+  } else if (coffinFlags & ELEV_MOVING) {
     return FALSE;
   }
   return TRUE;
 }
 
-NAKED s32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 b) { INCFUNC("asm/func/FUN_08086294.inc"); }
+static inline s32 TestTileIdx(WorldPos* pos) {
+  s32 bx = (s8)(pos->x >> 8);
+  s32 bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    return 0;
+  }
+  return gCollisionMap->rowOffsets[bz] + bx;
+}
+
+#define TestTileIdx(pos)                                                                                                           \
+  ({                                                                                                                               \
+    s32 _bx = (s8)((pos)->x >> 8);                                                                                                 \
+    s32 _bz = (s8)((pos)->z >> 8);                                                                                                 \
+    (_bx < 0 || _bz < 0 || (u32)_bx >= (u32)gMapBlockW || (u32)_bz >= (u32)gMapBlockH) ? 0 : gCollisionMap->rowOffsets[_bz] + _bx; \
+  })
+
+// 338/337命令, 残差は posIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を bx と同じ r4 に作るが, こちらは r0 に作って r4 へ写す (FUN_08087cbc と同じ)
+// 試済: 早期 return を入れ子の if にして TRUE を1か所に寄せる (これで分岐の並びは揃った), 局所変数の宣言順, 自前の inline / マクロで索引を出す
+NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags) {
+#ifdef NONMATCHING_C
+  s32 dx, dz, posIdx, coffinIdx;
+  Vec3 v;
+
+  if (gCoffin == NULL) {
+    return FALSE;
+  }
+
+  dx = pos->x - gCoffin->mover.pos.x;
+  dz = pos->z - gCoffin->mover.pos.z;
+  if (dx * dx + dz * dz > 220 * 220) {
+    return FALSE;
+  }
+  if (gCoffin->state == 15 || gCoffin->state == 16) {
+    return TRUE;
+  }
+  if (gCoffin->state != 0 && gCoffin->state != 3 && gCoffin->state != 4) {
+    return FALSE;
+  }
+  if (!FUN_0808626c(elevatorID, elevatorFlags, gCoffin->elevatorID, gCoffin->unk_384)) {
+    return FALSE;
+  }
+
+  posIdx = GetCollisionTileIdx(pos);
+  coffinIdx = GetCollisionTileIdx(&gCoffin->mover.pos);
+  if (posIdx == coffinIdx) {
+    return TRUE;
+  }
+  if (posIdx == coffinIdx + 1 || posIdx == coffinIdx - 1 || posIdx == coffinIdx + gCollisionMap->tiledata->width || posIdx == coffinIdx - gCollisionMap->tiledata->width) {
+    if (abs(pos->y - gCoffin->mover.pos.y) <= 255) {
+      return TRUE;
+    }
+  } else if (abs(pos->y - gCoffin->mover.pos.y) <= 255) {
+    v.x = pos->x - dx;
+    v.z = pos->z;
+    if (abs(pos->y - TileHeightAt(&v)) < 128) {
+      return TRUE;
+    }
+    v.x = pos->x;
+    v.z = pos->z - dz;
+    if (abs(pos->y - TileHeightAt(&v)) < 128) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_08086294.inc");
+#endif
+}
 
 void FUN_08086590(Vec3* pos, s32 val) {
   if (gCoffin != NULL) {
@@ -347,13 +573,14 @@ void Cmd_6B24(void) {
   }
 
   Map_InitNavAgent(&p->navAgent, &p->mover.pos);
-  if (FUN_08235a84(&p->navAgent, &p->mover.pos, &p->destPos) == 0) {
+  if (Map_FindNavRoute(&p->navAgent, &p->mover.pos, &p->destPos) == 0) {
     Coffin_SetState(p, 0);
     return;
   }
   Coffin_SetState(p, 3);
 }
 
+// 0x7566
 void Cmd_7566(void) {
   if (gCoffin != NULL) {
     Coffin_SetState(gCoffin, 0);
@@ -452,11 +679,11 @@ void FUN_0808689c(s32 val) {
   }
 }
 
-void FUN_080868b8(s32 param_1) {
+void FUN_080868b8(bool32 param_1) {
   Coffin* p = gCoffin;
 
   if (p != NULL) {
-    if (param_1 != 0) {
+    if (param_1) {
       Coffin_SetState(p, 7);
     } else {
       Coffin_SetState(p, 6);
@@ -613,8 +840,25 @@ void Cmd_A301(void) {
   }
 }
 
-// 0x4561
-NAKED void Cmd_4561(void) { INCFUNC("asm/func/Cmd_4561.inc"); }
+// 0x4561, '.p' があれば棺桶をその位置の地面に置き直し, '.d' があれば向きを変える
+void Cmd_4561(void) {
+  Coffin* p = gCoffin;
+
+  if (p == NULL) {
+    return;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(p->pos_1f8, VM_GetValue(), VM_GetValue(), VM_GetValue());
+    p->pos_1f8.y = TileHeightAt(&p->pos_1f8);
+    p->mover.pos = p->pos_1f8;
+    p->sprite.pos = p->pos_1f8;
+    p->unk_3c4 = p->pos_1f8;
+  }
+  if (VM_SeekToNamedArg('d')) {
+    p->facing = VM_GetValue();
+  }
+}
 
 // 0xFEE0
 void Coffin_RequestKill(void) {
@@ -623,8 +867,8 @@ void Coffin_RequestKill(void) {
   }
 }
 
-// 0x7A0A, 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
-s32 Cmd_7A0A(void) {
+// 0x7A0A, 持っている棺桶のIDを取得
+u32 Cmd_GetCoffinID(void) {
   s32 i;
 
   if (gStat->coffin >= 0) {
@@ -632,27 +876,28 @@ s32 Cmd_7A0A(void) {
   }
 
   for (i = 0; i < 16; i++) {
-    s32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+    u32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
 
-    if ((u32)id < COFFIN_NUM) {
+    if (id < COFFIN_NUM) {
       return id;
     }
   }
   return COFFIN_OAK;
 }
 
-// 選択中の棺種別を返す, 未選択なら貴重品の中の棺アイテムを1つ消費してその種別を返す
-s32 Coffin_TakeKind(void) {
+// 持っている棺桶のIDを取得
+u32 Coffin_TakeKind(void) {
   s32 i;
 
+  // 棺桶が場に出ている
   if (gStat->coffin >= 0) {
     return gStat->coffin;
   }
 
+  // かばんの中
   for (i = 0; i < 16; i++) {
-    s32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
-
-    if ((u32)id < COFFIN_NUM) {
+    u32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+    if (id < COFFIN_NUM) {
       RemoveValuable(i);
       return id;
     }
@@ -676,16 +921,14 @@ static const u16 sCoffinWeights[8] = {
 // static inline アクセサ経由にすると値は読み直すがポインタは r1 に残り 39/40 まで, 未: per-TU フラグ
 NON_MATCH void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
 #ifdef NONMATCHING_C
-  s32 v;
-
   p->subroutineID = id;
   gStat->coffin = Coffin_TakeKind();
   p->coffinID = gStat->coffin;
-  v = VM_SeekToNamedArg('c');
-  if (v) {
-    v = VM_GetValue();
+  if (VM_SeekToNamedArg('c')) {
+    p->unk_1c = VM_GetValue();
+  } else {
+    p->unk_1c = 0;
   }
-  p->unk_1c = v;
   p->weight = sCoffinWeights[p->coffinID];
   if (VM_SeekToNamedArg('a')) {
     Coffin_SetState(p, VM_GetValue());
@@ -709,7 +952,35 @@ static const u8 sCoffinPowers[8] = {
     [COFFIN_IRON_MAIDEN] = 30,
 };  // 0x085ABFF8
 
-NAKED void Coffin_Init_Helper_08086e64(Coffin* p) { INCFUNC("asm/func/Coffin_Init_Helper_08086e64.inc"); }
+// '.r' と '.O' を読み, 棺桶ごとの値から自力移動の待ち時間などのタイマーを初期化する
+void Coffin_InitSelfMove(Coffin* p) {
+  if (VM_SeekToNamedArg('r')) {
+    VEC3_SET(p->destPos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(p->destPos, 0, 0, 0);
+  }
+  if (VM_SeekToNamedArg('O')) {
+    p->unk_3b0 = VM_GetValue();
+  } else {
+    p->unk_3b0 = 0;
+  }
+
+  p->selfMoveTimer = p->selfMoveTimerInit = sCoffinPowers[p->coffinID] * 120;
+  if (p->coffinID == COFFIN_IRON) {
+    p->canSelfMove = FALSE;
+    if (p->state == 3 || p->state == 4) {
+      p->state = 0;
+    }
+  } else {
+    p->canSelfMove = TRUE;
+    if (p->state == 3 || p->state == 4) {
+      FUN_080860cc(p);
+    }
+  }
+  p->unk_390 = p->unk_392 = sCoffinPowers[p->coffinID] * 60;
+  p->unk_39a = 300;
+  p->unk_398 = 0;
+}
 
 void Coffin_InitSprite(Coffin* p) {
   rgb555* src;
@@ -719,7 +990,7 @@ void Coffin_InitSprite(Coffin* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   p->unk_32e = p->unk_31c;
-  Video_SetAuxSpritePltt(&p->gfx, p->unk_32e + 519);
+  Video_SetAuxSpritePltt(&p->gfx, OBP_COFFIN(p->unk_32e));
 
   src = p->gfx.pltt;
   for (i = 0; i < 16; i++) {
@@ -732,36 +1003,55 @@ void Coffin_InitSprite(Coffin* p) {
   } else {
     p->facing = FACE_UP;
   }
-  p->anim = GetFile(DIR_ANIMATION, ANIM_COFFIN);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_COFFIN);
   FUN_08086024(p, 0);
   p->unk_31e = 0;
   p->unk_320 = 0;
   p->unk_322 = 0;
 }
 
-NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
+// '.p' の位置を地面の高さに合わせて初期位置にし, mover を作って敵の狙い先に登録する
+void Coffin_InitMover(Coffin* p) {
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(p->pos_1f8, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(p->pos_1f8, 0, 0, 0);
+  }
+  p->pos_1f8.y = TileHeightAt(&p->pos_1f8);
+  p->sprite.pos = p->pos_1f8;
+  p->unk_3c4 = p->pos_1f8;
+  p->unk_388 = p->pos_1f8;
+
+  Mover_Init(&p->mover, p->subroutineID, &p->pos_1f8, 0, 6, p);
+  Mover_SetAuxSprite(&p->mover, &p->sprite);
+  p->mover.angle = ((p->facing + 5) & 7) * 32;
+  p->zoneEvent.id = p->mover.id;
+  if (p->coffinID != COFFIN_SILVER) {
+    if (p->unk_1c == 0) {
+      EnemyTargetManager_Add(&p->target, &p->mover, ETGT_0);
+    } else {
+      EnemyTargetManager_Add(&p->target, &p->mover, ETGT_2);
+    }
+    p->unk_1f4 = TRUE;
+  }
+  FUN_08002a48(&p->mover);
+}
 
 void Coffin_InitHurtbox(Coffin* p) {
   HitboxData* hurtbox = &p->hurtbox;
-  Vec3 size;
-  Vec3 offset;
+  Vec3 size, offset;
   s32 ignoreMask;
 
   VEC3_SET(size, Q8(0.352), Q8(0.125), Q8(0.352));
   VEC3_SET(offset, Q8(0.391), Q8(0.782), Q8(0.391));
   if (p->coffinID != COFFIN_SILVER) {
-    s32 kind = p->unk_1c;
-
-    ignoreMask = 2;
-    if (kind == 0) {
-      ignoreMask = 0x10;
-    }
+    ignoreMask = (p->unk_1c == 0) ? HIM_4 : HIM_1;
   } else {
-    ignoreMask = 0x10;
+    ignoreMask = HIM_4;
   }
   Hitbox_Init(hurtbox, p->subroutineID, HBFLAG_HURTBOX | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
-  Hitbox_SetHandler(hurtbox, FUN_08087528, p);
+  Hitbox_SetHandler(hurtbox, Coffin_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->mover.pos, 0);
   Hitbox_Register(hurtbox);
 }
@@ -772,31 +1062,31 @@ void Coffin_InitHitbox(Coffin* p) {
 
   VEC3_SET(size, Q8(0.5), Q8(0.125), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.125), 0);
-  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
 void FUN_08087310(Coffin* p) {
-  p->unk_3d4 = 2;
-  p->unk_3d6 = 0;
-  p->unk_3da = 0x40;
-  p->unk_3dc = 3;
-  p->unk_3de = 6;
-  p->unk_3e0 = 2;
-  p->unk_3e2 = 2;
-  p->unk_3e4 = 60;
-  p->unk_3e6 = 8;
-  p->unk_3e8 = 0;
-  p->unk_3ea = 0xFF;
-  p->unk_3ec = 0xFF;
-  p->unk_3ee = 0;
-  p->unk_3f0 = 0xFF;
-  p->unk_3f2 = 0;
-  p->unk_3f4 = 0xFF;
-  p->unk_3f6 = 0;
-  p->unk_3f8 = 0xFF;
-  p->unk_3fa = 0;
+  p->ptclParam.kind = 2;
+  p->ptclParam.flags = 0;
+  p->ptclParam.animSpeed = 0x40;
+  p->ptclParam.speedY = 3;
+  p->ptclParam.speedYRand = 6;
+  p->ptclParam.speedXZ = 2;
+  p->ptclParam.speedXZRand = 2;
+  p->ptclParam.angleY = 60;
+  p->ptclParam.angleYRand = 8;
+  p->ptclParam.angleXZ = 0;
+  p->ptclParam.angleXZRand = 0xFF;
+  p->ptclParam.decayStartY = 0xFF;
+  p->ptclParam.decayStartYRand = 0;
+  p->ptclParam.unk_1c = 0xFF;
+  p->ptclParam.unk_1e = 0;
+  p->ptclParam.decayStartXZ = 0xFF;
+  p->ptclParam.decayStartXZRand = 0;
+  p->ptclParam.unk_24 = 0xFF;
+  p->ptclParam.unk_26 = 0;
 }
 
 void FUN_080873b4(Coffin* p, s32 delta) {
@@ -856,12 +1146,13 @@ void FUN_080874cc(Coffin* p) {
   }
 }
 
-// 残差9命令, 原典は unk_1c != 0 を 0/1 のフラグ (r2) に落としてから || の残りを見る bool diamond 形
-// && の早期 return では materialize が消えて短くなる, Tier A-B は試済, 未: bool diamond の再現方法
-NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
+// 88/89命令, ダメージは攻撃元の武器の種類 (a->weakness) で決まる, timer = 8 は各分岐に置くと共通末尾に畳まれて揃う
+// 残差は unk_1c / ignoreMask / weakness の || の飛び先 (原典は unk_1c != 0 だけ 0/1 に落としてから見る) と p の写しの位置, 試済: || をローカルに受ける, 三項演算子, inline の述語
+NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
 #ifdef NONMATCHING_C
   s32 damage;
   s32 timer;
+  bool32 canHit;
 
   if (a->flags & HBFLAG_UNK_11) {
     return;
@@ -869,7 +1160,8 @@ NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
   if (p->unk_1b == 1) {
     return;
   }
-  if (p->unk_1c == 0 && (a->ignoreMask & 1) == 0 && (a->attributes & HBATTR_ALL) == 0) {
+  canHit = p->unk_1c != 0 || (a->ignoreMask & 1) || (a->weakness & 0x40);  // 0x40 は武器以外の攻撃
+  if (!canHit) {
     return;
   }
   if (p->unk_332 != 0) {
@@ -879,26 +1171,30 @@ NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
     return;
   }
 
-  timer = 8;
-  if (a->attributes & HBATTR_SOL) {
+  if (a->weakness & (1 << WK_SWORD)) {
     damage = 200;
-  } else if (a->attributes & HBATTR_DARK) {
+    timer = 8;
+  } else if (a->weakness & (1 << WK_SPEAR)) {
     damage = 300;
     timer = 12;
-  } else if (a->attributes & HBATTR_FLAME) {
+  } else if (a->weakness & (1 << WK_HAMMER)) {
     damage = 500;
-  } else if (a->attributes & HBATTR_FROST) {
+    timer = 8;
+  } else if (a->weakness & (1 << WK_OTHERS)) {
     damage = 150;
-  } else if (a->attributes & HBATTR_CLOUD) {
+    timer = 8;
+  } else if (a->weakness & (1 << WK_GUN)) {
     damage = 500;
+    timer = 8;
   } else {
     damage = 400;
+    timer = 8;
   }
   FUN_080873b4(p, damage);
   p->unk_330 = 4;
   p->unk_332 = timer;
 #else
-  INCFUNC("asm/func/FUN_08087528.inc");
+  INCFUNC("asm/func/Coffin_OnHurt.inc");
 #endif
 }
 
@@ -911,13 +1207,128 @@ void FUN_080875e8(Coffin* p) {
   p->unk_40c.z += POLAR_Z(0x80, angle);
 }
 
-NAKED void FUN_0808766c(Coffin* p) { INCFUNC("asm/func/FUN_0808766c.inc"); }
+// 棺桶を地面の高さに合わせ, スプライトと当たり判定の位置, 踏んでいるタイルの控えを更新する
+void FUN_0808766c(Coffin* p) {
+  MapTileOverride* ov;
+  CollisionMapTile* tile;
+  Vec3* pos;
+  u32 idx;
 
-NAKED s32 FUN_08087818(Coffin* p) { INCFUNC("asm/func/FUN_08087818.inc"); }
+  if (!p->unk_384 && p->state != 5) {
+    p->mover.pos.y = TileHeightAt(&p->mover.pos);
+  }
+  pos = &p->mover.pos;
+  p->sprite.pos.x = p->mover.pos.x + p->unk_31e;
+  p->sprite.pos.y = p->mover.pos.y + p->unk_320;
+  p->sprite.pos.z = p->mover.pos.z + p->unk_322;
+  Hitbox_SetPos(&p->hurtbox, pos, 0);
 
-NAKED s32 FUN_08087970(Coffin* p) { INCFUNC("asm/func/FUN_08087970.inc"); }
+  p->tile.tileIdx[1] = GetCollisionTileIdx(pos);
+  idx = p->tile.tileIdx[1];
+  ov = Map_FindTileOverride(idx, 1);
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  p->tile.stairs[1] = tile->heightStairs >> 4;
+  p->tile.height[1] = tile->heightStairs & 0xF;
+  p->tile.attr[1] = tile->attr;
+  FUN_080875e8(p);
+  p->unk_388 = p->mover.pos;
+  p->unk_388.val = p->facing;
+}
 
-NAKED void FUN_08087a5c(Coffin* p) { INCFUNC("asm/func/FUN_08087a5c.inc"); }
+s32 FUN_08087818(Coffin* p) {
+  if (p->unk_3fc == 0) {
+    p->unk_3fc++;
+  } else if (p->state != 5 && p->unk_384 == 0) {
+    if (GetTileAttrAt(&p->mover.pos) & TATTR_FALLDEATH) {
+      return TRUE;
+    }
+    if (p->state != 1 && abs(TileHeightAt(&p->mover.pos) - p->mover.pos.y) > 255) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+// 63/65命令, 残差は return 1 / return 16 の共通化の向きだけ: 原典は case 0 側が case 1 の return 1 へ飛ぶが, こちらは case 1 側が case 0 の return 1 へ飛ぶ
+// 試済: 条件の反転, 三項演算子, 戻り値をローカルに置く, GetPlayer の inline
+NON_MATCH s32 FUN_08087970(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (FUN_08087818(p)) {
+    FUN_0808613c(p);
+  }
+
+  switch (p->state) {
+    case 0:
+    case 3:
+    case 4: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 1;
+      }
+      break;
+    }
+    case 1: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 1;
+      }
+      return 0;
+    }
+    case 15: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 16;
+      }
+      break;
+    }
+    case 16: {
+      if (gPlayerPtr[0]->action == PACT_PULL_COFFIN) {
+        return 16;
+      }
+      return 15;
+    }
+  }
+  return p->state;
+#else
+  INCFUNC("asm/func/FUN_08087970.inc");
+#endif
+}
+
+// 131/132命令, 残差は p / range / &gRandTableIdx のレジスタ割当 (原典 r6 / r7 / r5, こちら r5 / r6 / r7) と, 3回目の乱数で原典は gRandomTable を読み直すがこちらは table を使い回す点
+// 試済: Random / _Random(table) / _Random(gRandomTable), table の宣言位置, range の型, 三項演算子と if/else
+NON_MATCH void FUN_08087a5c(Coffin* p) {
+#ifdef NONMATCHING_C
+  s32 range;
+  u16* table;
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_396 < 64) {
+    range = 16;
+  } else {
+    p->unk_32a = 2;
+    range = (p->unk_396 >> 2) + 16;
+  }
+  table = gRandomTable;
+  p->unk_31e = Mod(_Random(table), range) - (range >> 1);
+  p->unk_322 = Mod(_Random(table), range) - (range >> 1);
+  if ((++p->unk_39c & 7) == 0 && (Random() & 1)) {
+    PlaySound_082406e0(SONG_697);
+  }
+
+  if (++p->unk_396 >= 128) {
+    p->unk_394 = 0;
+    if (p->state == 1) {
+      p->unk_39e = 2;
+    } else {
+      p->unk_39e = 1;
+    }
+    Coffin_SetState(p, 2);
+    p->unk_398 = p->unk_39a;
+  }
+#else
+  INCFUNC("asm/func/FUN_08087a5c.inc");
+#endif
+}
 
 void FUN_08087bac(Coffin* p) {
   if (gGameFlags & FLAG030047A4_UNK_9) {
@@ -940,7 +1351,7 @@ void FUN_08087bac(Coffin* p) {
   }
 }
 
-void FUN_08087c04(Coffin* p) {
+void Coffin_UpdateState0(Coffin* p) {
   if (p->state != 0) {
     Coffin_SetState(p, 0);
   }
@@ -965,9 +1376,59 @@ void FUN_08087c04(Coffin* p) {
   }
 }
 
-NAKED void FUN_08087cbc(s32 param_1) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
+// 301/300命令, 残差は playerIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を直接 r4 に作るが, こちらは r0 に作って r4 へ写す1命令が増える
+// 試済: 2つの索引の計算順と宣言順, 型 (u32), ブロックで宣言して初期化, 比較の左右, 先頭の条件を && にまとめる
+NON_MATCH void FUN_08087cbc(Coffin* p) {
+#ifdef NONMATCHING_C
+  s32 playerIdx, coffinIdx;
 
-NAKED void FUN_08087f7c(s32 param_1) { INCFUNC("asm/func/FUN_08087f7c.inc"); }
+  if (!(GetTileAttrAt(&gPlayerPtr[0]->mover.pos) & TATTR_UNK_0)) {
+    if (abs(TileHeightAt(&gPlayerPtr[0]->mover.pos) - TileHeightAt(&p->mover.pos)) < 256) {
+      return;
+    }
+  }
+
+  playerIdx = GetCollisionTileIdx(&gPlayerPtr[0]->mover.pos);
+  coffinIdx = GetCollisionTileIdx(&p->mover.pos);
+  if (coffinIdx == playerIdx + 1) {
+    gPlayerPtr[0]->mover.pos.x = (s8)(p->mover.pos.x >> 8) * 256 + 2;
+  } else if (coffinIdx == playerIdx - 1) {
+    gPlayerPtr[0]->mover.pos.x = ((s8)(p->mover.pos.x >> 8) + 1) * 256 - 2;
+  } else if (coffinIdx == playerIdx + gCollisionMap->tiledata->width) {
+    gPlayerPtr[0]->mover.pos.z = (s8)(p->mover.pos.z >> 8) * 256 + 2;
+  } else if (coffinIdx == playerIdx - gCollisionMap->tiledata->width) {
+    gPlayerPtr[0]->mover.pos.z = ((s8)(p->mover.pos.z >> 8) + 1) * 256 - 2;
+  } else {
+    gPlayerPtr[0]->mover.pos.x = p->mover.pos.x;
+    gPlayerPtr[0]->mover.pos.z = p->mover.pos.z;
+  }
+#else
+  INCFUNC("asm/func/FUN_08087cbc.inc");
+#endif
+}
+
+// プレイヤーの前方 70 の点が棺桶から 150 より離れたら, プレイヤーを棺桶から 150 の位置へ 1/4 ずつ寄せる
+void FUN_08087f7c(Coffin* p) {
+  s32 angle = ((gPlayerPtr[0]->facing + 1) & 7) << 5;
+  s32 ox = POLAR_X(70, angle);
+  s32 oz = POLAR_Z(70, angle);
+  s32 dx = gPlayerPtr[0]->mover.pos.x + ox - p->mover.pos.x;
+  s32 dz = gPlayerPtr[0]->mover.pos.z + oz - p->mover.pos.z;
+
+  if (dx * dx + dz * dz > 150 * 150) {
+    s32 tx, tz;
+
+    angle = ArcTan2_8(dx, dz);
+    dx = POLAR_X(150, angle);
+    dz = POLAR_Z(150, angle);
+    tx = p->mover.pos.x - ox + dx;
+    tz = p->mover.pos.z - oz + dz;
+    gPlayerPtr[0]->mover.pos.x = FixToInt(2, gPlayerPtr[0]->mover.pos.x * 3 + tx);
+    gPlayerPtr[0]->mover.pos.z = FixToInt(2, gPlayerPtr[0]->mover.pos.z * 3 + tz);
+    FUN_08087cbc(p);
+    gPlayerPtr[0]->beast.pos = gPlayerPtr[0]->mover.pos;
+  }
+}
 
 void FUN_080880fc(Coffin* p) {
   if (p->unk_384 == 0) {
@@ -981,9 +1442,70 @@ void FUN_080880fc(Coffin* p) {
   }
 }
 
-NAKED void FUN_08088148(Coffin* p) { INCFUNC("asm/func/FUN_08088148.inc"); }
+void Coffin_UpdateState1(Coffin* p) {
+  if (p->state != 1) {
+    Coffin_SetState(p, 1);
+  }
+  if (p->unk_3b4 != 0 && p->canSelfMove) {
+    s32 dx = abs(p->mover.pos.x - p->destPos.x);
+    s32 dz = abs(p->mover.pos.x - p->destPos.z);  // z 側も pos.x と比べている
+    if (dx > Q8(1) || dz > Q8(1)) {
+      p->unk_3b4 = 0;
+    }
+  }
+  p->unk_32a = 0;
 
-NAKED bool32 FUN_080882e4(WorldPos* pos, Vec3* dst, s32 param_3) { INCFUNC("asm/func/FUN_080882e4.inc"); }
+  if (p->unk_3a0 >= 0) {
+    FUN_08087f7c(p);
+  } else {
+    if (abs(p->mover.pos.x - p->unk_388.x) > 2 || abs(p->mover.pos.z - p->unk_388.z) > 2) {
+      p->unk_33a = 1;
+    }
+    p->mover.pos.x = p->unk_388.x;
+    p->mover.pos.z = p->unk_388.z;
+  }
+  p->facing = p->unk_388.val;
+  if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+    FUN_08085ef8(p, 32);
+  } else {
+    FUN_08086024(p, 0);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_394 != 0) {
+    FUN_08087a5c(p);
+  } else if (p->unk_324 != 0) {
+    FUN_080856f4(p);
+  } else if (p->inSolarCircle) {
+    p->unk_390 = p->unk_392;
+    p->selfMoveTimer = p->selfMoveTimerInit;
+    p->unk_394 = 0;
+  } else {
+    FUN_080880fc(p);
+  }
+}
+
+// pos から dst のタイルへ移れるかを返す, param_3 の属性を持つタイル, 溶岩, 高さが 50 より離れたタイル, エレベータの上には移れない
+bool32 Coffin_CanMoveTo(WorldPos* pos, Vec3* dst, s32 param_3) {
+  TileAttr attr = GetTileAttrAt(dst);
+
+  if (attr & param_3) {
+    return FALSE;
+  }
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_HOT)) {
+    return FALSE;
+  }
+  if (abs(pos->y - TileHeightAt(dst)) > 50) {
+    return FALSE;
+  }
+  if (Elevator_FindAtPos(dst) != NULL) {
+    return FALSE;
+  }
+  return TRUE;
+}
 
 // 残差5命令, 原典は分岐ごとに v.x への strh と引数設定を持つが, こちらは同形の 3 箇所が畳まれて共通末尾に寄る
 // Tier A-B は試済, 未: tail merge を抑える書き方
@@ -994,83 +1516,363 @@ NON_MATCH bool32 FUN_08088430(WorldPos* pos, Vec3* delta, s32 param_3) {
   if (delta->x == 0) {
     v = *pos;
     v.z += delta->z;
-    return FUN_080882e4(pos, &v, param_3) != 0;
+    return Coffin_CanMoveTo(pos, &v, param_3) != 0;
   }
   if (delta->z == 0) {
     v = *pos;
     v.x = delta->x + v.x;
-    return FUN_080882e4(pos, &v, param_3) != 0;
+    return Coffin_CanMoveTo(pos, &v, param_3) != 0;
   }
 
   v = *pos;
   v.x = delta->x + v.x;
-  if (!FUN_080882e4(pos, &v, param_3)) {
+  if (!Coffin_CanMoveTo(pos, &v, param_3)) {
     return FALSE;
   }
 
   v = *pos;
   v.z = delta->z + v.z;
-  if (!FUN_080882e4(pos, &v, param_3)) {
+  if (!Coffin_CanMoveTo(pos, &v, param_3)) {
     return FALSE;
   }
 
   v.x = delta->x + v.x;
-  return FUN_080882e4(pos, &v, param_3) != 0;
+  return Coffin_CanMoveTo(pos, &v, param_3) != 0;
 #else
   INCFUNC("asm/func/FUN_08088430.inc");
 #endif
 }
 
 bool32 FUN_080884f4(s32 dx, s32 dz) {
-  if (abs(dx) > 0x20) {
-    return FALSE;
-  }
-  if (abs(dz) > 0x20) {
-    return FALSE;
-  }
+  if (abs(dx) > Q8(0.125)) return FALSE;
+  if (abs(dz) > Q8(0.125)) return FALSE;
   return TRUE;
 }
 
-NAKED void FUN_08088514(Coffin* p) { INCFUNC("asm/func/FUN_08088514.inc"); }
+void Coffin_UpdateState3(Coffin* p) {
+  if (p->state != 3) {
+    Coffin_SetState(p, 3);
+  }
 
-NAKED void FUN_08088718(Coffin* p) { INCFUNC("asm/func/FUN_08088718.inc"); }
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
 
-NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
+  if (p->unk_324 != 0) {
+    p->unk_32a = 0;
+    p->unk_3b8 = 0;
+    FUN_080856f4(p);
+  } else {
+    p->unk_32a = 1;
+    if (p->unk_3b8 > 90) {
+      s32 dx = p->navAgent.waypoint.x - p->mover.pos.x;
+      s32 dz = p->navAgent.waypoint.z - p->mover.pos.z;
+      if (dx != 0 || dz != 0) {
+        Vec3 delta;
+        s32 angle = ArcTan2_8(dx, dz);
+        delta.x = POLAR_X(3, angle);
+        delta.y = 0;
+        delta.z = POLAR_Z(3, angle);
+        if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_FALLDEATH | TATTR_UNK_11)) {
+          p->mover.pos.x += delta.x;
+          p->mover.pos.z += delta.z;
+          p->unk_33a = 1;
+        } else {
+          p->unk_33a = 0;
+        }
+        p->facing = Angle_ToDir8(angle);
+      }
+      if (!(p->navAgent.flags & NAVFLAG_VIA_PORTAL) && FUN_080884f4(dx, dz) && p->unk_3b0 != 0) {
+        VM_ExecByID(p->unk_3b0, NULL);
+      }
+    }
+    if (++p->unk_3b8 >= 120) {
+      p->unk_3b8 = 0;
+    }
+    if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+      FUN_08085ef8(p, 32);
+    } else {
+      FUN_08086024(p, 0);
+    }
+  }
+  Map_StepNavPath(&p->navAgent, &p->mover.pos);
+}
 
-void FUN_08088bbc(Coffin* p) {
+// 206/206命令, 残差は Mod(Random(), 3) 側の gRandomTable の受け皿だけ (原典 r2, こちら r1)
+// 試済: gRandomTable[gRandTableIdx] 直書き, _Random(table), 乱数をローカルに取る, 分岐の向き, delta / angle の宣言位置
+NON_MATCH void Coffin_UpdateState4(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (p->state != 4) {
+    Coffin_SetState(p, 4);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_324 != 0) {
+    p->unk_32a = 0;
+    p->unk_3b8 = 0;
+    FUN_080856f4(p);
+    return;
+  }
+
+  p->unk_32a = 1;
+  if (p->unk_3b8 == 90) {
+    if (p->unk_3ba != 0) {
+      p->facing = (p->facing + Mod(Random(), 5) + 2) & 7;
+      p->unk_3ba = 0;
+    } else {
+      p->facing = (p->facing + Mod(Random(), 3) + 7) & 7;
+    }
+  } else if (p->unk_3b8 > 90) {
+    Vec3 delta;
+    s32 angle = ((p->facing + 5) & 7) << 5;
+    delta.x = POLAR_X(3, angle);
+    delta.y = 0;
+    delta.z = POLAR_Z(3, angle);
+    if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_UNK_11)) {
+      p->mover.pos.x += delta.x;
+      p->mover.pos.z += delta.z;
+      p->unk_33a = 1;
+    } else {
+      p->unk_3b8 = 30;
+      p->unk_3ba = 1;
+    }
+  }
+
+  if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+    FUN_08085ef8(p, 32);
+  } else {
+    FUN_08086024(p, 0);
+  }
+  if (++p->unk_3b8 >= 120) {
+    FUN_080860cc(p);
+    p->unk_3b8 = 0;
+  }
+#else
+  INCFUNC("asm/func/Coffin_UpdateState4.inc");
+#endif
+}
+
+// 291/292命令, 残差はレジスタ割当: 原典は gGameFlags のゼロを r5, range を r6 に置き, 大きいほうの乱数2回は table を r6 / &gRandTableIdx を ip に置く, また小さいほうの3回目の乱数で gRandomTable を読み直す (FUN_08087a5c と同じ)
+// 試済: Random / _Random(table), table の宣言位置とブロック, damage のローカル化
+NON_MATCH void Coffin_UpdateState2(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (p->state != 2) {
+    Coffin_SetState(p, 2);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_398 > 64) {
+    u16* table;
+
+    p->unk_32a = 2;
+    if (p->unk_3a0 >= 0) {
+      FUN_080dab9c(p->unk_3a0);
+    }
+    if (p->unk_39e == 2) {
+      VEC3_SET(p->hitbox.halfSize, Q8(1), Q8(0.125), Q8(1));
+      p->unk_39e = 1;
+    } else if (p->unk_39e == 1) {
+      VEC3_SET(p->hitbox.halfSize, Q8(0.5), Q8(0.125), Q8(0.5));
+      p->unk_39e = 0;
+    }
+    Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
+    Hitbox_Register(&p->hitbox);
+    if ((p->unk_398 & 0x1F) == 0) {
+      p->facing = (p->facing + Mod(Random(), 3) - 1) & 7;
+      FUN_08086024(p, 0);
+    }
+    table = gRandomTable;
+    p->unk_31e = (_Random(table) & 0x3F) - 31;
+    p->unk_322 = (_Random(table) & 0x3F) - 31;
+    if ((p->unk_398 & 7) == 0) {
+      FUN_08085880(p);
+    }
+    if (p->unk_326 != 0) {
+      s32 damage = p->unk_326 >> 3;
+      if (p->unk_398 < damage + 64) {
+        p->unk_398 = 64;
+      } else {
+        p->unk_398 -= damage;
+      }
+      p->unk_326 = 0;
+      p->unk_324 = 0;
+    }
+  } else {
+    s32 range = p->unk_398 >> 1;
+    u16* table;
+
+    if (range < 2) {
+      range = 2;
+    }
+    table = gRandomTable;
+    p->unk_31e = Mod(_Random(table), range) - (range >> 1);
+    p->unk_322 = Mod(_Random(table), range) - (range >> 1);
+    p->unk_32a = 0;
+    p->unk_326 = 0;
+    p->unk_324 = 0;
+    if ((++p->unk_39c & 7) == 0 && (Random() & 1)) {
+      PlaySound_082406e0(SONG_697);
+    }
+  }
+
+  if (--p->unk_398 == 0) {
+    if (p->unk_1b == 1) {
+      Coffin_SetState(p, 15);
+      p->unk_402 = 30;
+    } else {
+      FUN_080860cc(p);
+    }
+  }
+#else
+  INCFUNC("asm/func/Coffin_UpdateState2.inc");
+#endif
+}
+
+// 多分、棺桶が(変な場所に入ったりして回収不可能になったときに)ボス部屋に戻るときのアニメーション処理
+void Coffin_UpdateState9(Coffin* p) {
   p->facing = FACE_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->stateTimer++;
   FUN_08086024(p, 0);
 
-  if (p->stateTimer <= 0x1B) {
+  if (p->stateTimer < 28) {
     return;
   }
-
-  if (p->stateTimer <= 0x2B) {
+  if (p->stateTimer < 44) {
     s32 t = p->stateTimer;
-    s32 n = t - 0x1C;
+    s32 n = t - 28;
 
     p->sprite.flags |= SPRFLAG_AFFINE;
-    p->sprite.scaleX = 0x40 - (n << 2);
+    p->sprite.scaleX = Q6(1) - (n << 2);
     if (n > 8) {
       p->sprite.scaleY = n << 3;
-      p->unk_320 = (t - 0x24) * 30;
+      p->unk_320 = (t - 36) * 30;
     }
-  } else if (p->stateTimer <= 0x33) {
-    p->unk_320 = (p->stateTimer - 0x2C) * 200 + 240;
-  } else {
+    return;
+  }
+  if (p->stateTimer < 52) {
+    p->unk_320 = (p->stateTimer - 44) * 200 + 240;
+    return;
+  }
+  p->sprite.flags |= SPRFLAG_HIDDEN;
+}
+
+void Coffin_UpdateState10(Coffin* p) {
+  p->facing = FACE_UP;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  FUN_08086024(p, 0);
+
+  if (p->stateTimer < 76) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
+  } else if (p->stateTimer < 84) {
+    s32 t = p->stateTimer;
+    p->sprite.flags = (p->sprite.flags & ~SPRFLAG_HIDDEN) | SPRFLAG_AFFINE;
+    p->sprite.scaleX = 4;
+    p->sprite.scaleY = 120;
+    p->unk_320 = (84 - t) * 200 + 240;
+  } else if (p->stateTimer < 100) {
+    s32 t = p->stateTimer - 84;
+    s32 u = 15 - t;
+    p->sprite.scaleX = 64 - u * 4;
+    if (t < 8) {
+      p->sprite.scaleY = u * 8;
+      p->unk_320 = (8 - t) * 30;
+    } else {
+      p->sprite.scaleY = 64;
+      p->unk_320 = 0;
+    }
+  }
+
+  if (++p->stateTimer >= 104) {
+    p->sprite.flags &= ~SPRFLAG_AFFINE;
+    Coffin_SetState(p, 0);
   }
 }
 
-NAKED void FUN_08088c54(Coffin* p) { INCFUNC("asm/func/FUN_08088c54.inc"); }
+void Coffin_UpdateState5(Coffin* p) {
+  bool32 visible;
+  bool32 spawn;
 
-NAKED void FUN_08088d44(Coffin* p) { INCFUNC("asm/func/FUN_08088d44.inc"); }
+  if (p->state != 5) {
+    Coffin_SetState(p, 5);
+  }
 
-// 残差4命令, FUN_08089088 と同じ stateTimer の u16 切り詰めの作り直し, Tier A-C は試済
-NON_MATCH void FUN_08088fbc(Coffin* p) {
-#ifdef NONMATCHING_C
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  p->unk_32a = 2;
+  p->facing = FACE_UP;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  visible = FALSE;
+  spawn = FALSE;
+  if (p->stateTimer < 64) {
+    p->mover.pos.y = (p->mover.pos.y * 7 + p->unk_3cc.y) >> 3;
+    visible = TRUE;
+  } else {
+    if (p->stateTimer < 128) {
+      p->unk_31e = (Random() & 1) * 17 - 8;
+      p->unk_322 = -p->unk_31e;
+      visible = TRUE;
+      if ((p->stateTimer & 0xF) == 0) {
+        spawn = TRUE;
+      }
+    } else if (p->stateTimer < 192) {
+      if ((p->stateTimer >> 1) & 3) {
+        visible = TRUE;
+      }
+      if ((p->stateTimer & 0xF) == 0) {
+        spawn = TRUE;
+      }
+    } else {
+      if ((p->stateTimer >> 1) & 1) {
+        visible = TRUE;
+      }
+      if ((p->stateTimer & 0xF) == 0) {
+        spawn = TRUE;
+      }
+    }
+  }
+
+  if (visible) {
+    p->sprite.flags &= ~SPRFLAG_HIDDEN;
+    p->effSprite.flags &= ~SPRFLAG_HIDDEN;
+    p->effSprite.pos.y = TileHeightAt(&p->effSprite.pos);
+  } else {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+    p->effSprite.flags |= SPRFLAG_HIDDEN;
+  }
+  if (spawn) {
+    FUN_08085a74(&p->mover.pos, &p->ptclParam);
+  }
+  FUN_08086024(p, 0);
+
+  if (++p->stateTimer >= 256) {
+    Coffin_RemoveEffSprite(p);
+    Coffin_SetState(gCoffin, 0);
+    if (p->unk_3b0 != 0) {
+      u32 scriptID = p->unk_3b0;
+      p->unk_3b0 = 0;
+      VM_ExecByID(scriptID, NULL);
+      if (p->killRequested) {
+        p->sprite.flags |= SPRFLAG_HIDDEN;
+      } else {
+        p->sprite.flags &= ~SPRFLAG_HIDDEN;
+      }
+    } else {
+      p->sprite.flags |= SPRFLAG_HIDDEN;
+      p->killRequested = TRUE;
+    }
+  }
+}
+
+void Coffin_UpdateState6(Coffin* p) {
   if (p->state != 6) {
     Coffin_SetState(p, 6);
   }
@@ -1080,9 +1882,7 @@ NON_MATCH void FUN_08088fbc(Coffin* p) {
   }
 
   p->unk_32a = 0;
-  p->stateTimer++;
-
-  if (p->stateTimer <= 5) {
+  if (++p->stateTimer <= 5) {
     if (p->stateTimer == 1) {
       p->unk_418 = 0;
       p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 290);
@@ -1097,22 +1897,15 @@ NON_MATCH void FUN_08088fbc(Coffin* p) {
   if (p->stateTimer > 8) {
     p->killRequested = TRUE;
   }
-#else
-  INCFUNC("asm/func/FUN_08088fbc.inc");
-#endif
 }
 
-// 残差3命令, 原典は stateTimer の u16 への切り詰め (lsls/lsrs #16) を比較ごとに作り直すが, こちらは1回で済ませてしまう
-// u16 ローカル経由も試したが同じ, Tier A-C は試済, 未: per-TU フラグ
-NON_MATCH void FUN_08089088(Coffin* p) {
-#ifdef NONMATCHING_C
+void Coffin_UpdateState7(Coffin* p) {
   if (p->state != 7) {
     Coffin_SetState(p, 7);
   }
   p->unk_32a = 0;
-  p->stateTimer++;
 
-  if (p->stateTimer <= 5) {
+  if (++p->stateTimer <= 5) {
     if (p->stateTimer == 1) {
       p->unk_418 = 0;
       p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 290);
@@ -1127,14 +1920,54 @@ NON_MATCH void FUN_08089088(Coffin* p) {
   if (p->stateTimer > 0x1D) {
     p->killRequested = TRUE;
   }
-#else
-  INCFUNC("asm/func/FUN_08089088.inc");
-#endif
 }
 
-NAKED void FUN_08089144(Coffin* p) { INCFUNC("asm/func/FUN_08089144.inc"); }
+void Coffin_UpdateState8(Coffin* p) {
+  if (p->state != 8) {
+    Coffin_SetState(p, 8);
+  }
+  p->unk_32a = 0;
 
-void FUN_080892a8(Coffin* p) {
+  if (p->stateTimer == 0) {
+    p->unk_31e = 0;
+    p->unk_322 = 0;
+    if (p->unk_320 <= 30) {
+      Coffin_RemoveEffSprite(p);
+      p->unk_320 = 0;
+      p->stateTimer = 1;
+    } else {
+      p->unk_320 -= 30;
+    }
+    return;
+  }
+
+  if (++p->stateTimer < 8) {
+    if (p->stateTimer < 4) {
+      p->unk_320 = p->stateTimer << 4;
+    } else {
+      p->unk_320 = (7 - p->stateTimer) << 4;
+    }
+  } else {
+    p->unk_320 = 0;
+  }
+
+  if (p->stateTimer < 12) {
+    u16* table = gRandomTable;
+    p->unk_31e = (_Random(table) & 0x1F) - 16;
+    p->unk_322 = (_Random(table) & 0x1F) - 16;
+  }
+  if (p->stateTimer == 2) {
+    FUN_0808596c(p);
+  }
+  if (p->stateTimer >= 30) {
+    Coffin_SetState(p, 0);
+    p->unk_324 = 1;
+    p->unk_326 = 287;
+    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_326, 287, 250, 290);
+  }
+}
+
+void Coffin_UpdateState11(Coffin* p) {
   if (p->state != 11) {
     Coffin_SetState(p, 11);
   }
@@ -1145,7 +1978,7 @@ void FUN_080892a8(Coffin* p) {
   FUN_08086024(p, 0);
 }
 
-void FUN_080892f8(Coffin* p) {
+void Coffin_UpdateState13(Coffin* p) {
   if (p->state != 13) {
     Coffin_SetState(p, 13);
   }
@@ -1156,7 +1989,7 @@ void FUN_080892f8(Coffin* p) {
   }
 }
 
-void FUN_08089344(Coffin* p) {
+void Coffin_UpdateState12(Coffin* p) {
   if (p->state != 12) {
     Coffin_SetState(p, 12);
   }
@@ -1175,7 +2008,7 @@ void FUN_08089344(Coffin* p) {
   FUN_08086024(p, 24);
 }
 
-void FUN_080893c0(Coffin* p) {
+void Coffin_UpdateState14(Coffin* p) {
   if (p->state != 14) {
     Coffin_SetState(p, 14);
   }
@@ -1186,9 +2019,27 @@ void FUN_080893c0(Coffin* p) {
   }
 }
 
-NAKED void FUN_08089410(Coffin* p) { INCFUNC("asm/func/FUN_08089410.inc"); }
+void FUN_08089410(Coffin* p) {
+  if (p->unk_402 == 30) {
+    s32 dx = p->mover.pos.x - p->unk_3bc.x;
+    s32 dz = p->mover.pos.z - p->unk_3bc.z;
+    if (dx != 0 || dz != 0) {
+      p->facing = p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+    }
+    p->unk_33a = 1;
+  } else if (p->unk_402 < 30) {
+    s32 angle = ((p->unk_404 + 5) & 7) << 5;
+    p->mover.pos.x += POLAR_X(5, angle);
+    p->mover.pos.z += POLAR_Z(5, angle);
+    p->facing = p->unk_404;
+  }
 
-void FUN_08089548(Coffin* p) {
+  if (--p->unk_402 == 0) {
+    p->unk_402 = (Random() & 0x3F) + 45;
+  }
+}
+
+void Coffin_UpdateState15(Coffin* p) {
   if (p->state != 15) {
     Coffin_SetState(p, 15);
   }
@@ -1210,37 +2061,86 @@ void FUN_08089548(Coffin* p) {
   }
 }
 
-NAKED void FUN_080895d0(Coffin* p) { INCFUNC("asm/func/FUN_080895d0.inc"); }
+void FUN_080895d0(Coffin* p) {
+  if (p->unk_402 == 30) {
+    s32 dx = p->mover.pos.x - p->unk_3bc.x;
+    s32 dz = p->mover.pos.z - p->unk_3bc.z;
+    if (dx != 0 || dz != 0) {
+      p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->facing = (p->unk_404 + 4) & 7;
+    }
+  } else if (p->unk_402 < 30) {
+    s32 angle = ((p->unk_404 + 5) & 7) << 5;
+    p->mover.pos.x += POLAR_X(6, angle);
+    p->mover.pos.z += POLAR_Z(6, angle);
+    p->facing = (p->unk_404 + 4) & 7;
+    FUN_08087f7c(p);
+    p->unk_33a = 1;
+  }
 
-NAKED void FUN_08089720(Coffin* p) { INCFUNC("asm/func/FUN_08089720.inc"); }
+  if (--p->unk_402 == 0) {
+    p->unk_402 = (Random() & 0x3F) + 45;
+  }
+}
 
-static void (*const sCoffinUpdates[17])(Coffin*) = {
-    FUN_08087c04,
-    FUN_08088148,
-    FUN_0808890c,
-    FUN_08088514,
-    FUN_08088718,
-    FUN_08088d44,
-    FUN_08088fbc,
-    FUN_08089088,
-    FUN_08089144,
-    FUN_08088bbc,
-    FUN_08088c54,
-    FUN_080892a8,
-    FUN_08089344,
-    FUN_080892f8,
-    FUN_080893c0,
-    FUN_08089548,
-    FUN_08089720,
-};  // 0x085AC000
+void Coffin_UpdateState16(Coffin* p) {
+  if (p->state != 16) {
+    Coffin_SetState(p, 16);
+  }
+  p->unk_32a = 1;
+  p->mover.pos = p->unk_388;
+  if (abs(p->mover.pos.x - p->unk_388.x) > 2 || abs(p->mover.pos.z - p->unk_388.z) > 2) {
+    p->unk_33a = 1;
+  }
+  p->facing = p->unk_388.val;
+  if (p->coffinID == COFFIN_ELEFAN && p->unk_33a) {
+    FUN_08085ef8(p, 32);
+  } else {
+    FUN_08086024(p, 0);
+  }
+
+  if (gGameFlags & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_394 != 0) {
+    FUN_08087a5c(p);
+  } else if (p->unk_324 != 0) {
+    p->unk_32a = 0;
+    FUN_080856f4(p);
+  } else {
+    FUN_080895d0(p);
+    FUN_080880fc(p);
+  }
+}
 
 s32 Coffin_Update(Coffin* p) {
+  static void (*const sCoffinUpdates[17])(Coffin*) = {
+      Coffin_UpdateState0,
+      Coffin_UpdateState1,
+      Coffin_UpdateState2,
+      Coffin_UpdateState3,
+      Coffin_UpdateState4,
+      Coffin_UpdateState5,
+      Coffin_UpdateState6,
+      Coffin_UpdateState7,
+      Coffin_UpdateState8,
+      Coffin_UpdateState9,
+      Coffin_UpdateState10,
+      Coffin_UpdateState11,
+      Coffin_UpdateState12,
+      Coffin_UpdateState13,
+      Coffin_UpdateState14,
+      Coffin_UpdateState15,
+      Coffin_UpdateState16,
+  };  // 0x085AC000
+
   s32 idx;
 
   p->unk_406 = 0;
 
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
-    FUN_08085408(p);
+    Coffin_UpdateRope(p);
     return 0;
   }
 
@@ -1260,7 +2160,7 @@ s32 Coffin_Update(Coffin* p) {
   FUN_08085ec4(p);
 
   p->zoneEvent.pos = &p->mover.pos;
-  FUN_08234660(&p->zoneEvent);
+  Map_UpdateZoneEvents(&p->zoneEvent);
 
   if (p->killRequested != FALSE) {
     KillEntity((Entity*)p);
@@ -1285,8 +2185,8 @@ s32 Coffin_Destroy(Coffin* p) {
 s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   Coffin_Init_Helper_08086df8(p, id);
   Coffin_InitSprite(p);
-  FUN_08087058(p);
-  Coffin_Init_Helper_08086e64(p);
+  Coffin_InitMover(p);
+  Coffin_InitSelfMove(p);
   Coffin_InitHurtbox(p);
   Coffin_InitHitbox(p);
   Coffin_InitParticles(p);

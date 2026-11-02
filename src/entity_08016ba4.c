@@ -27,7 +27,7 @@ static_assert(sizeof(Entity08016ba4Burst) == 548);
 typedef struct {
   Entity e;                       // 0x0000, ENTITY_UNK_10
   s32 frame;                      // 0x0018, _Update が毎フレーム 1 足す
-  ParticleGroup* group;           // 0x001C, PTCL_GROUP_0
+  ParticleGroup* group0;          // 0x001C, PTCL_GROUP_0
   AuxAnimFile* anim;              // 0x0020, ANIM_D1B8
   Entity08016ba4Burst bursts[6];  // 0x0024, Entity08016ba4_Spawn が空いている枠を先頭から探す
 } Entity08016ba4;
@@ -76,14 +76,14 @@ s32 Entity08016ba4_Init(Entity08016ba4* p, u32 id) {
   s32 i, j;
 
   gEntity08016ba4 = p;
-  p->group = GetParticleGroup(PTCL_GROUP_0);
+  p->group0 = GetParticleGroup(PTCL_GROUP_0);
   p->anim = GetFile(DIR_ANIMATION, ANIM_D1B8);
 
   for (i = 0; i < 6; i++) {
     Entity08016ba4Burst* b = &p->bursts[i];
     b->active = FALSE;
     for (j = 0; j < 8; j++) {
-      Particle_Setup(&b->pieces[j].ptcl, p->group, 0);
+      Particle_Setup(&b->pieces[j].ptcl, p->group0, 0);
       AuxAnim_SetAnim(&b->pieces[j].anim, p->anim, 3, 0, 0);
     }
   }

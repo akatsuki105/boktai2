@@ -289,8 +289,8 @@ void Generator_InitHurtbox(Generator* p, u32 power) {
 }
 
 // ジェネレーターを初期化する, スプライトと食らい判定を作り, 指定の state に合わせてアニメとパレットの初期状態を整える
-// 残差は 394/395 (初稿のみ), スタックフレームが 0x10 対 0x8 で引数の読み出し位置と順がずれる, Ghidra は param_3/4/6 を u8, param_7/9 を u16 と見ている
-// Tier B 未着手 (引数の型), AuxAnim 手動送りの壁も2か所に持つ
+// 397/395命令, 手動送り2か所を AuxSprite_AdvanceAnim にすると 86 → 81 hunk に縮むが, 主な残差はスタックフレーム (原典 0x8, こちらは 0x10) と引数の読み出し順
+// 試済: param_9 を u16 にする (変化なし), 未: animVariant / animFlags / param_6 の型と、フィールドへの格納順
 NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animFlags, s32 state, s32 param_6, s32 param_7, u32 power, s32 param_9) {
 #ifdef NONMATCHING_C
   AuxAnimState* anim;
@@ -324,41 +324,7 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
       p->plttID = 451;
       anim = &p->anim;
       AuxAnim_SetAnim(anim, p->animFile, 1, p->animVariant, p->animFlags);
-      cmd = &anim->cmds[anim->cmdIdx];
-      spr->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        p->sprite.flags |= SPRFLAG_XFLIP;
-      } else {
-        p->sprite.flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        spr->flags |= SPRFLAG_YFLIP;
-      } else {
-        spr->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          s32 idx = anim->cmdIdx;
-
-          if (idx == 0) {
-            idx = anim->cmdCount;
-          }
-          anim->cmdIdx = idx - 1;
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx >= anim->cmdCount) {
-            anim->cmdIdx = 0;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = anim->duration * anim->speed >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      }
+      AuxSprite_AdvanceAnim(spr, anim);
       Hitbox_Register(&p->hurtbox);
       break;
     }
@@ -367,41 +333,7 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
       p->plttID = 452;
       anim = &p->anim;
       AuxAnim_SetAnim(anim, p->animFile, 3, p->animVariant, p->animFlags);
-      cmd = &anim->cmds[anim->cmdIdx];
-      spr->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        p->sprite.flags |= SPRFLAG_XFLIP;
-      } else {
-        p->sprite.flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        spr->flags |= SPRFLAG_YFLIP;
-      } else {
-        spr->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          s32 idx = anim->cmdIdx;
-
-          if (idx == 0) {
-            idx = anim->cmdCount;
-          }
-          anim->cmdIdx = idx - 1;
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx >= anim->cmdCount) {
-            anim->cmdIdx = 0;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = anim->duration * anim->speed >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      }
+      AuxSprite_AdvanceAnim(spr, anim);
       Hitbox_Register(&p->hurtbox);
       break;
     }

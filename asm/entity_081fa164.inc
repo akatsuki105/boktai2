@@ -33,7 +33,7 @@ FUN_081f9db4: @ 0x081F9DB4
 	movs r1, #0x78
 	movs r2, #0
 	movs r3, #0
-	bl FUN_081f9b20
+	bl Entity081f9cb8_Spawn
 	add sp, #0x10
 	pop {r0}
 	bx r0

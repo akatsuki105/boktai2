@@ -202,7 +202,7 @@ void CoffinShop_StartSwapAnim(CoffinShop* p) {
   Shop_GetSlotPos(&from[1].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&to[1].x, (u8)p->cursor.slot);
 
-  FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
+  FUN_080b9a28((ShopFlyingPair*)&p->pair0, unk1, from, to, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
@@ -211,7 +211,7 @@ void FUN_080bef00(CoffinShop* p, s32 param_2) {
   s32 r;
 
   if (param_2 == 0) {
-    FUN_080b98c0(&p->pair1.gfx, 0, -1);
+    FUN_080b98c0(&p->pair1, 0, -1);
     return;
   }
 
@@ -230,9 +230,9 @@ void FUN_080bef00(CoffinShop* p, s32 param_2) {
   }
 
   if (r == 4) {
-    FUN_080b98c0(&p->pair1.gfx, 7, -1);
+    FUN_080b98c0(&p->pair1, 7, -1);
   } else {
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
   }
 }
 
@@ -326,9 +326,9 @@ void CoffinShop_HandleSelectInput(CoffinShop* p) {
   if (gInput[0].pressed & A_BUTTON) {
     s32 r = FUN_080bef88(p);
 
-    FUN_080b98c0(&p->pair1.gfx, -1, -1);
+    FUN_080b98c0(&p->pair1, -1, -1);
     if (r == 4) {
-      PlaySound_082406e0(SE_CHOICE);
+      PlaySound_082406e0(SE_TEXT_SHOW);
       CoffinShop_ShowMessage(p, 0, p->unk_ec4, 0);
       FUN_080b9740(&p->sprites[37], &p->gfx0, (char*)&p->unk_ec9, 1);
       CoffinShop_SetSubState(p, FUN_080bf29c, 0);

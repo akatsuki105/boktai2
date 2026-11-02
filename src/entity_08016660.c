@@ -250,71 +250,23 @@ void FUN_08016454(Entity08016660Node* p) {
   }
 }
 
-// 下書き1回で止めた (145/156), アニメの手動送り (AuxAnim を1コマ進める) の壁で, 原典は sprite.flags のアドレスと cmd を高位レジスタに持つ
-// AuxAnim の手動送りは他のファイルでも同じ残差で止まっている
 // 各ノードのアニメを1コマ進め, 位置を合わせて fnIdx の処理を呼ぶ, 消える印のノードは解放する
-NON_MATCH s32 Entity08016660_Update(Entity08016660* p) {
-#ifdef NONMATCHING_C
+s32 Entity08016660_Update(Entity08016660* p) {
   Entity08016660Node* node = p->list;
 
   while (node != NULL) {
     Entity08016660Node* next = node->next;
-    AuxAnimState* anim;
-    AuxAnimCmd* cmd;
-    bool8 ended;
 
     if (node->unk_05) {
       FUN_080160cc(node);
-      node = next;
-      continue;
-    }
-
-    anim = &node->anim;
-    cmd = &anim->cmds[anim->cmdIdx];
-    node->sprite.poseIdx = *cmd >> 6;
-    if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-      node->sprite.flags |= SPRFLAG_XFLIP;
     } else {
-      node->sprite.flags &= ~SPRFLAG_XFLIP;
+      node->unk_04 = AuxSprite_AdvanceAnim(&node->sprite, &node->anim);
+      node->sprite.pos = node->pos;
+      PTR_ARRAY_085aa918[node->fnIdx](node);
     }
-    if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-      node->sprite.flags |= SPRFLAG_YFLIP;
-    } else {
-      node->sprite.flags &= ~SPRFLAG_YFLIP;
-    }
-    if (++anim->tick < anim->wait) {
-      ended = FALSE;
-    } else {
-      anim->tick = 0;
-      if (!(anim->flags & ANIM_PLAY_REVERSE)) {
-        if (++anim->cmdIdx >= anim->cmdCount) {
-          anim->cmdIdx = anim->flags & ANIM_PLAY_REVERSE;
-          ended = TRUE;
-        } else {
-          ended = FALSE;
-        }
-      } else if (anim->cmdIdx == 0) {
-        anim->cmdIdx = anim->cmdCount - 1;
-        ended = TRUE;
-      } else {
-        anim->cmdIdx--;
-        ended = FALSE;
-      }
-      anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
-      anim->wait = anim->duration * anim->speed >> 6;
-      if (anim->wait == 0) {
-        anim->wait = 1;
-      }
-    }
-    node->unk_04 = ended;
-    node->sprite.pos = node->pos;
-    PTR_ARRAY_085aa918[node->fnIdx](node);
     node = next;
   }
   return 0;
-#else
-  INCFUNC("asm/func/Entity08016660_Update.inc");
-#endif
 }
 
 s32 Entity08016660_Destroy(Entity08016660* p) {

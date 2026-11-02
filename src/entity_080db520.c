@@ -31,7 +31,7 @@ typedef struct {
   ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
   u16 grabMashBase;                // 0x48, 掴んだ瞬間のプレイヤーの mashCount
   u16 prevAngleDelta;              // 0x4A, 前回 FUN_080dac24 を回したときの角度差
-  HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
+  HitboxData hurtbox;              // 0x4C
   Vec3 pos;                        // 0x9C, Hitbox_SetPos と spr.pos へ渡される
 } Entity080db520Elem;
 static_assert(sizeof(Entity080db520Elem) == 164);
@@ -81,7 +81,7 @@ void FUN_080dab9c(s32 idx) {
   }
 
   e->unk_40 |= E080DB520_UNK_1;
-  e->hitbox.flags |= HBFLAG_HIDDEN;
+  e->hurtbox.flags |= HBFLAG_HIDDEN;
 }
 
 // idx 番の要素に UNK_2 を立てる
@@ -123,7 +123,7 @@ NON_MATCH void FUN_080dac24(Entity080db520* p, Entity080db520Elem* elem) {
 
 void FUN_080dacac(HitboxData* a, HitboxData* b, Entity080db520Elem* elem) {
   elem->unk_40 |= E080DB520_UNK_1;
-  elem->hitbox.flags |= HBFLAG_HIDDEN;
+  elem->hurtbox.flags |= HBFLAG_HIDDEN;
 }
 
 // この枠の被弾判定を作って登録する
@@ -133,10 +133,10 @@ void Entity080db520_InitHurtbox(Entity080db520Elem* elem, u32 param_2, u32 param
 
   VEC3_SET(offset, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(halfSize, Q8(0.063), Q8(0.5), Q8(0.063));
-  Hitbox_Init(&elem->hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetPos(&elem->hitbox, &elem->pos, 0);
-  Hitbox_SetHandler(&elem->hitbox, FUN_080dacac, elem);
-  Hitbox_Register(&elem->hitbox);
+  Hitbox_Init(&elem->hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_SetPos(&elem->hurtbox, &elem->pos, 0);
+  Hitbox_SetHandler(&elem->hurtbox, FUN_080dacac, elem);
+  Hitbox_Register(&elem->hurtbox);
 }
 
 // 空いている枠を確保して返す, 無ければ NULL
@@ -317,7 +317,7 @@ NON_MATCH void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) {
   if (elem->timer > 90) {
     p->activeMask &= ~(1 << elem->unk_42);
     elem->state = 0;
-    Hitbox_Unregister(&elem->hitbox);
+    Hitbox_Unregister(&elem->hurtbox);
     Video_RemoveAuxSpriteFromDrawList(spr, 0);
     elem->unk_42 = -1;
     elem->unk_40 = 0;
@@ -351,7 +351,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
     if (player->unk_3ff < 0) {
       player->unk_3ff = elem->unk_42;
       elem->unk_40 |= E080DB520_UNK_4;
-      elem->hitbox.flags |= HBFLAG_HIDDEN;
+      elem->hurtbox.flags |= HBFLAG_HIDDEN;
       elem->grabMashBase = gPlayerPtr[0]->mashCount;
       payload = 6;
       FUN_080ec7e8(ENEK_SPIDER, 1, &payload);
@@ -503,7 +503,7 @@ s32 Entity080db520_Destroy(Entity080db520* p) {
       if (e->spr.active) {
         AuxSprite_Remove(&e->spr);
       }
-      Hitbox_Unregister(&e->hitbox);
+      Hitbox_Unregister(&e->hurtbox);
     }
   }
 
@@ -640,7 +640,7 @@ void Entity080db520_EnableAllHitboxes(void) {
 
         if (e->unk_42 >= 0 && e->state != 2) {
           e->unk_40 |= E080DB520_UNK_1;
-          e->hitbox.flags |= HBFLAG_HIDDEN;
+          e->hurtbox.flags |= HBFLAG_HIDDEN;
         }
       }
     }

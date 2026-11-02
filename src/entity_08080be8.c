@@ -350,7 +350,7 @@ void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, HitboxAttrib
     VEC3_SET(offset, 0, 0, 0);
   }
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1 << p->player->mover.unk_4, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 0x10, attrs, hitboxUnk44);
+  Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 1 << WK_GUN, attrs, hitboxUnk44);
   Hitbox_SetHandler(hitbox, FUN_08080648, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
 }

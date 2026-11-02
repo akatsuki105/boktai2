@@ -39,7 +39,84 @@ NON_MATCH u16* SunCountdown_GetTilePtr(s32 bgNum, s32 x, s32 y) {
 }
 
 // 画面下部に「日の入まであと HH:MM」(夜なら日の出まで) を描く
-NAKED void SunCountdown_Draw(SunCountdown* p) { INCFUNC("asm/func/SunCountdown_Draw.inc"); }
+// 191/206 命令, gClock を毎回読み直す形とタイル番号のレジスタの持ち方が違う
+NON_MATCH void SunCountdown_Draw(SunCountdown* p) {
+#ifdef NONMATCHING_C
+  Clock* clock = &gClock;
+  u16* tile;
+  u8 hour;
+  u8 minute;
+  s32 base;
+  s32 digits[2];
+  s32 y;
+  s32 x;
+
+  if (clock != NULL) {
+    if (clock->spanOfTime == TIME_NIGHT || clock->spanOfTime == TIME_UNK4 || clock->spanOfTime == TIME_UNK5) {
+      tile = SunCountdown_GetTilePtr(0, 4, 15);
+      hour = gClock.untilSunrise.hour;
+      minute = gClock.untilSunrise.minute;
+    } else {
+      tile = SunCountdown_GetTilePtr(0, 4, 15);
+      hour = gClock.untilSunset.hour;
+      minute = gClock.untilSunset.minute;
+    }
+
+    base = 106;
+    for (y = 0; y < 2; y++) {
+      u16* dst = tile;
+
+      for (x = 0; x < 4; x++) {
+        *dst++ = (base + x) | (s16)0xD000;
+      }
+      tile += gBgStates[0].width16 * 2;
+      base += 16;
+    }
+
+    tile = SunCountdown_GetTilePtr(0, 8, 15);
+    if (gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5) {
+      base = 110;
+    } else {
+      base = 78;
+    }
+    for (y = 0; y < 2; y++) {
+      u16* dst = tile;
+
+      for (x = 0; x < 2; x++) {
+        *dst++ = (base + x) | (s16)0xD000;
+      }
+      tile += gBgStates[0].width16 * 2;
+      base += 16;
+    }
+
+    digits[0] = Div(hour, 10);
+    digits[1] = hour - digits[0] * 10;
+    tile = SunCountdown_GetTilePtr(0, 16, 15);
+    for (y = 0; y < 2; y++) {
+      u16* dst = tile;
+
+      for (x = 0; x < 2; x++) {
+        *dst++ = (y * 16 + digits[x] + 96) | (s16)0xD000;
+      }
+      tile += gBgStates[0].width16 * 2;
+    }
+
+    digits[0] = Div(minute, 10);
+    digits[1] = minute - digits[0] * 10;
+    tile = SunCountdown_GetTilePtr(0, 22, 15);
+    for (y = 0; y < 2; y++) {
+      u16* dst = tile;
+
+      for (x = 0; x < 2; x++) {
+        *dst++ = (y * 16 + digits[x] + 96) | (s16)0xD000;
+      }
+      tile += gBgStates[0].width16 * 2;
+    }
+  }
+#else
+  INCFUNC("asm/func/SunCountdown_Draw.inc");
+#endif
+}
 
 void SunCountdown_Redraw(SunCountdown* p) {
   s32 year;

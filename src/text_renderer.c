@@ -84,7 +84,7 @@ const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_LABEL_08251d1
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PAREN_08251d20[] = "/PAREN";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ALTER_08251d28[] = "/ALTER";
 
-const s16 gCharSounds[2] = {SE_NONE_261, SONG_262};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
+const s16 gCharSounds[2] = {SE_TYPING1, SE_TYPING2};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
 // 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Font_DrawZenkakuChar 側)
 // clang-format off

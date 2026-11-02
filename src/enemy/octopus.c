@@ -3,7 +3,7 @@
 #include "malloc.h"
 
 typedef struct {
-  ENEMY_HDR;
+  Enemy e;
   u8 unk_654[1692 - sizeof(Enemy)];
 } EnemyOctopus;
 static_assert(sizeof(EnemyOctopus) == 1692);

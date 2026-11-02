@@ -8,6 +8,7 @@
 const u32 gScriptDirectory = 1084758124;  // 2004-05-17 01:42:04 UTC
 
 // 0x08CBF24C
+// 11540 のうち 7162 個は 全て Script_0x0001 を指している, それ以外はユニークなスクリプトを指している
 const ScriptOffset ScriptEntries[11539 + 1] = INCBIN_U32("data/script_entries.bin");
 
 const u32 sOffsets[] = {

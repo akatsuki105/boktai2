@@ -164,7 +164,7 @@ _0806765C:
 	lsls r3, r3, #2
 	adds r1, r7, r3
 	ldrb r1, [r1]
-	bl FUN_08003f24
+	bl EntityD9AE_PushAtDir8
 	cmp r0, #0
 	bgt _08067672
 	b _08067A50

@@ -199,7 +199,7 @@ _081FE452:
 	add r0, r8
 	ldr r0, [r0]
 	movs r1, #3
-	bl FUN_08203d0c
+	bl Entity082047f0_SetMode
 _081FE484:
 	movs r1, #0x8f
 	lsls r1, r1, #2
@@ -904,7 +904,7 @@ _081FE9DC:
 	ldr r0, _081FEA14 @ =0x000007CC
 	add r0, r8
 	ldr r0, [r0]
-	bl FUN_08203d38
+	bl Entity082047f0_RequestEnd
 	b _081FEA42
 	.align 2, 0
 _081FEA14: .4byte 0x000007CC

@@ -119,7 +119,7 @@ typedef struct {
   ZoneID32 zoneID;               // 0x248, 現在のゾーンID
   s32 mapInitScriptID;           // 0x24C, Current map's init script ID
   s16 playerKind;                // 0x250, see PlayerKind in player.h
-  coffin16_t coffin;             // 0x252
+  coffin16_t coffin;             // 0x252, 現在フィールドに出ている棺桶のID (貴重品欄にあるときは -1)
   s16 stageID;                   // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
   s16 unk_256;                   // 0x256, 根拠: Cmd_515D が '.f' の値を入れる
   u16 unk_258;                   // 0x258, 根拠: Cmd_9817 が '.s' の値を入れる
@@ -132,8 +132,8 @@ typedef struct {
   s32 unk_2ac;                   // 0x2AC, darkDjangoAtkCounter がここに届くとバーサークの準備ができる, 発動のたびに 200 + 0..99 で引き直す
   s16 unk_2b0[2];                // 0x2B0
   s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
-  s32 gaugeValue;                // 0x2B8, 画面のゲージの値, ボス戦ではボスの hp が写され、 Entity162E では残り回数として減っていく
-  s32 gaugeMax;                  // 0x2BC, gaugeValue の最大値, ボス戦ではボスの maxHP
+  s32 bossHP;                    // 0x2B8, 画面右上のゲージの値, ボスのHPゲージ, 黒ジャンゴ運搬の残りHP(実質的な残り時間) として使用, 雑魚敵のHPでは使わない
+  s32 bossHPMax;                 // 0x2BC, bossHP の最大値, ボス戦ではボスの maxHP
   s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
   s32 isKaamos[2];               // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
   u8 unk_2d0[8];                 // 0x2D0
@@ -150,7 +150,8 @@ typedef struct {
   u32 enemyDexDrop[4];           // 0x390, 魔物図鑑のドロップアイテム発見フラグ, 1体につき2bit (bit0: 通常ドロップ, bit1: レアドロップ)
   u32 armorDex[2];               // 0x3A0
   u32 photo;                     // 0x3A8, ブロマイドの取得フラグ, アルバム画面のカーソル位置とbitが対応してそう
-  u8 unk_3ac[12];                // 0x3AC
+  u8 blackPantherResult[8];      // 0x3AC, ミニゲーム"ブラックパンサー"の結果, u16 4つ分, see MINIGAME_* in black_panther.c
+  u8 unk_3b4[4];                 // 0x3B4
 
   // セーブ時には ここからweaponDexまで をセーブデータとして扱っている (根拠: Save_WriteExtra)
   u8 unk_3b8[2];                 // 0x3B8

@@ -1495,7 +1495,7 @@ NON_MATCH void FUN_08025e10(Boss* boss, s32 timer) {
     Boss_PlayAnim(boss, &p->sprite, &p->gfx, 4, PLAYMODE_ONCE_AND_STOP, 0);
     p->unk_16a = (Random() & 7) + 3;
     FUN_08024068(p);
-    PlaySound_0824078c(SE_CHANGE_BAT | BGM_16 | BGM_QUAKE);
+    PlaySound_0824078c(SONG_952);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
     if (p->sprite.pos.y > 0xFFF) {
@@ -2161,7 +2161,7 @@ s32 Duneyrr_HandleDamage(Duneyrr* p) {
     VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
     CreateDamageNumber(hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);
     if (p->base.hp <= 0) {
-      PlaySound_0824078c(SE_CHANGE_BAT | BGM_16 | BGM_10);
+      PlaySound_0824078c(SONG_954);
       p->base.hp = 0;
       SET_FLAGS(p->base.flags, BOSSFLAG_UNK_1);
       p->unk_16f = 0;

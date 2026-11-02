@@ -202,7 +202,7 @@ _080F1B60:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080F1B7E
 	cmp r0, #2

@@ -62,7 +62,7 @@
 	adds r0, r6, r5
 	ldr r0, [r0]
 	movs r1, #2
-	bl FUN_08203d0c
+	bl Entity082047f0_SetMode
 _081FD294:
 	adds r0, r6, #0
 	adds r0, #0xfc
@@ -502,7 +502,7 @@ _081FD584:
 	adds r0, r7, r1
 	ldr r0, [r0]
 	movs r1, #1
-	bl FUN_08203c4c
+	bl Entity082047f0_SetFlags
 	b _081FD7EA
 	.align 2, 0
 _081FD600: .4byte 0x000007F6
@@ -515,7 +515,7 @@ _081FD614:
 	adds r4, r7, r2
 	ldr r0, [r4]
 	movs r1, #1
-	bl FUN_08203c4c
+	bl Entity082047f0_SetFlags
 	ldr r3, [sp, #0x48]
 	ldr r0, [r3, #8]
 	adds r5, r0, #1
@@ -528,7 +528,7 @@ _081FD614:
 	bls _081FD65A
 	ldr r0, [r4]
 	movs r1, #1
-	bl FUN_08203c58
+	bl Entity082047f0_ClearFlags
 	ldr r2, [sp, #0x48]
 	ldr r0, [r2, #4]
 	cmp r0, #2
@@ -704,7 +704,7 @@ _081FD75A:
 	ldr r1, _081FD790 @ =0x000007CC
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl FUN_08203d38
+	bl Entity082047f0_RequestEnd
 	b _081FD7BE
 	.align 2, 0
 _081FD790: .4byte 0x000007CC

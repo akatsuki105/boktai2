@@ -1158,7 +1158,7 @@ _08184E74:
 	movs r1, #1
 	movs r2, #2
 	movs r3, #0
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	adds r4, #0x24
 	movs r1, #0x89
 	lsls r1, r1, #2
@@ -1177,7 +1177,7 @@ _08184E74:
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_081ea540
+	bl Entity081ea820_ThrowAt
 	movs r0, #0xf0
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -2474,7 +2474,7 @@ _081858C2:
 	movs r1, #1
 	movs r2, #2
 	movs r3, #0
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	b _08185946
 _0818590C:
 	lsls r0, r2, #0x18
@@ -2503,7 +2503,7 @@ _0818590C:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 _08185946:
 	add sp, #0x20
 	pop {r3}
@@ -2926,7 +2926,7 @@ _08185C42:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #1
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	ldr r0, _08185D2C @ =0x000001DF
 	bl PlaySound_082406e0
 _08185C88:
@@ -3119,7 +3119,7 @@ _08185DEE:
 	movs r1, #1
 	movs r2, #2
 	movs r3, #1
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	ldr r0, _08185E38 @ =0x000001D9
 	bl PlaySound_082406e0
 	adds r0, r5, #0
@@ -3694,7 +3694,7 @@ _08186268:
 	movs r1, #1
 	movs r2, #2
 	movs r3, #0
-	bl FUN_081e9f78
+	bl Entity081ea120_Spawn
 	movs r0, #0xec
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -6313,7 +6313,7 @@ _081876AA:
 	beq _081876B6
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _081876B6:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -7427,7 +7427,7 @@ _08187FCA:
 	adds r0, #0x7c
 	ldr r2, _08188004 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _08187FDA:
 	ldr r3, [sp, #0xd4]
 	ldrb r0, [r3]

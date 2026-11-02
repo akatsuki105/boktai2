@@ -679,7 +679,7 @@ _080F93E4:
 	movs r2, #0xa
 	movs r3, #0x80
 	lsls r3, r3, #1
-	bl FUN_082340c8
+	bl Map_HasLineOfSight
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080F945E
@@ -1448,7 +1448,7 @@ _080F9968:
 	movs r2, #0xa
 	movs r3, #0x80
 	lsls r3, r3, #1
-	bl FUN_082340c8
+	bl Map_HasLineOfSight
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080F9A00

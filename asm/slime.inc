@@ -6523,7 +6523,7 @@ _0816562A:
 	beq _08165636
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _08165636:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -7648,7 +7648,7 @@ _08165F66:
 	adds r0, #0x7c
 	ldr r2, _08165FA0 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _08165F76:
 	ldr r6, [sp, #0xf8]
 	ldrb r0, [r6]

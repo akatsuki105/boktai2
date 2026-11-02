@@ -1,10 +1,8 @@
 #include "collision_map.h"
 #include "entity.h"
 #include "global.h"
-#include "inline.h"
 #include "particle.h"
 #include "random.h"
-#include "trig.h"
 #include "vm.h"
 
 // 飛び散って消える粒子1個, 速度と重力で動き、寿命が来ると消える

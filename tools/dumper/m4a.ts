@@ -7,6 +7,7 @@ import * as Symfile from "../encoding/symbol.ts";
 import * as m4a from "../encoding/m4a/m4a.ts";
 import * as GAS from "../encoding/gas/gas.ts";
 import * as path from "@std/path";
+import * as ConstHeader from "../encoding/constants_header.ts";
 
 const filename = path.basename(import.meta.filename ?? "unknown.ts");
 const indent = "  ";
@@ -64,6 +65,14 @@ const songtable = new Command()
     const name = "gSongTable";
 
     try {
+      const defines = ConstHeader.ParseFile("./include/constants/songs.h") as Record<string, number>;
+      const getSongName = (id: number) => {
+        for (const key in defines) {
+          if (defines[key] === id) return key;
+        }
+        return ``;
+      };
+
       const songs = m4a.parseSongTable(rom, targetAddr, entryCount);
 
       if (dumpC) {
@@ -80,7 +89,7 @@ const songtable = new Command()
           const song = songs[i];
           const sym = syms.find((s) => s.offset === song.header);
           const header = (sym && sym.name) ? sym.name : `0x${gba.toHex32(song.header)}`;
-          console.log(indent + `song ${header}, ${song.ms}, ${song.me}`);
+          console.log(indent + `song ${header}, ${song.ms}, ${song.me} @ ${getSongName(i)}`);
         }
       }
     } catch (e) {

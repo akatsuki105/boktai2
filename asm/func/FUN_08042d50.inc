@@ -42,7 +42,7 @@
 	adds r2, r6, r3
 	mov r0, r8
 	adds r1, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	movs r4, #0x89
 	lsls r4, r4, #2
 	adds r0, r6, r4

@@ -9,12 +9,12 @@
 static inline s32 GetCollisionTileIdx(WorldPos* pos) {
   s32 idx;
 
-  s32 bx = (s8)(pos->x >> 8);
-  s32 bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+  s32 tileX = (s8)(pos->x >> 8);
+  s32 tileZ = (s8)(pos->z >> 8);
+  if (IsOutsideMap(tileX, tileZ)) {
     idx = 0;
   } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
+    idx = gCollisionMap->rowOffsets[tileZ] + tileX;
   }
   return idx;
 }

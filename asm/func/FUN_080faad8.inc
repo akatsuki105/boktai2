@@ -289,7 +289,7 @@ _080FAD14:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080FAD34
 	cmp r0, #2

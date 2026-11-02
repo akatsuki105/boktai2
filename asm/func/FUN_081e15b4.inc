@@ -17,7 +17,7 @@ _081E15CA:
 	beq _081E15FC
 	adds r0, r5, #0
 	movs r1, #0x80
-	bl FUN_082342cc
+	bl Map_IsBehindHigherTile
 	strb r0, [r4, #1]
 	lsls r0, r0, #0x18
 	cmp r0, #0

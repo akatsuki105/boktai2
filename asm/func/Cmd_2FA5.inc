@@ -352,7 +352,7 @@ _081D0B1E:
 	str r0, [sp, #8]
 	str r1, [sp, #0xc]
 	add r0, sp, #8
-	bl FUN_081ee9bc
+	bl Entity081eeb28_Spawn
 	movs r0, #0x73
 	movs r1, #0
 	bl VM_GetNamedArgValue

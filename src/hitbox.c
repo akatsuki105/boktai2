@@ -219,7 +219,70 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
 }
 
 // Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
-NAKED void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Hitbox_ApplyDamageAlt.inc"); }
+// 131/148 命令, Hitbox_ApplyDamage と同じ形では分岐の並びが合わない
+NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
+#ifdef NONMATCHING_C
+  s32 damage;
+  s32 atk;
+  s32 def;
+  s32 weak;
+  s32 diff;
+
+  if (b->damage != 0) {
+    return;
+  }
+  damage = (a->attributes & HBATTR_NAMAKURA) ? a->power : a->power - b->power;
+  if (damage <= 0) {
+    damage = 1;
+  }
+
+  if (a->attributes & HBATTR_13) {
+    def = 0;
+  } else {
+    def = b->attributes & 0x7F;
+  }
+
+  weak = b->weakness & 0x7F;
+  atk = a->attributes & 0x7F;
+  if (atk == 0) {
+    b->damage = damage;  // 等倍
+    b->hitResult = HBRESULT_NORMAL;
+  } else if (def == 0) {
+    b->damage = damage * 5 >> 2;  // 1.25倍
+    b->hitResult = HBRESULT_NORMAL;
+  } else if (def == 0x40) {
+    b->damage = damage * 3 >> 2;  // 0.75倍
+    b->hitResult = HBRESULT_RESIST;
+  } else if (atk == 0x40) {
+    b->damage = damage * 5 >> 2;  // 1.25倍
+    b->hitResult = HBRESULT_NORMAL;
+  } else if (def & atk) {
+    b->damage = damage * 3 >> 2;  // 0.75倍
+    b->hitResult = HBRESULT_RESIST;
+  } else if (weak & atk) {
+    b->damage = damage * 3 >> 1;  // 1.5倍
+    b->hitResult = HBRESULT_WEAK;
+  } else {
+    b->damage = damage * 5 >> 2;  // 1.25倍
+    b->hitResult = HBRESULT_NORMAL;
+  }
+
+  // バックアタック
+  if ((b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+    s32 diff = abs(b->angle - a->angle);
+    if (diff <= 0x20) {
+      b->damage = (u32)b->damage * 3 >> 1;  // 1.5倍
+      b->hitResult |= HBRESULT_BONUS;
+    }
+  }
+
+  if (b->damage == 0) {
+    b->damage = 1;
+  }
+#else
+  INCFUNC("asm/func/Hitbox_ApplyDamageAlt.inc");
+#endif
+}
 
 // a->angle の象限から、a を b の外へ押し出す方向を out に入れる
 void Hitbox_GetPushDir(HitboxData* a, HitboxData* b, Vec3* out) {

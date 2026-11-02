@@ -5,6 +5,7 @@
 #include "player.h"
 #include "sound.h"
 
+// 画面の振動演出?
 // 一定間隔で gCamera->shakeAmplitude を上げて NOISE_QUAKE_121 を鳴らすシングルトン, メッセージ (cmd 4/5) で外部からも起こせる
 typedef struct {
   Entity e;             // 0x00, ENTITY_UNK_4
@@ -65,6 +66,7 @@ s32 Entity8EC8_Destroy(Entity8EC8* p) {
 
 NAKED s32 Entity8EC8_Init(Entity8EC8* p, u32 id) { INCFUNC("asm/func/Entity8EC8_Init.inc"); }
 
+// 0x8EC8
 Entity8EC8* Entity8EC8_Create(u32 id) {
   Entity8EC8* p = CreateEntity(ENTITY_UNK_4, sizeof(Entity8EC8));
 

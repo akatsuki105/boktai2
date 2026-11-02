@@ -10346,7 +10346,7 @@ _081AB552:
 	movs r1, #0x10
 	movs r2, #0x40
 	movs r3, #0x2a
-	bl Entity080d84f8_CreateWithAttrs
+	bl Explosion_CreateWithAttrs
 	movs r0, #0xd0
 	muls r0, r4, r0
 	adds r5, r7, r0
@@ -13525,7 +13525,7 @@ FUN_081acd2c: @ 0x081ACD2C
 	movs r1, #0
 	movs r2, #0x78
 	movs r3, #0x3c
-	bl FUN_081f9b20
+	bl Entity081f9cb8_Spawn
 	add sp, #0x10
 	pop {r0}
 	bx r0
@@ -13545,7 +13545,7 @@ FUN_081acd70: @ 0x081ACD70
 	movs r1, #0x78
 	movs r2, #0x78
 	movs r3, #0x3c
-	bl FUN_081f9b20
+	bl Entity081f9cb8_Spawn
 	add sp, #8
 	pop {r0}
 	bx r0
@@ -14025,7 +14025,7 @@ _081AD13E:
 	beq _081AD14A
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _081AD14A:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -15193,7 +15193,7 @@ _081ADADA:
 	adds r0, #0x7c
 	ldr r2, _081ADB14 @ =FUN_080f48ac
 	ldr r1, [sp, #0x34]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _081ADAEA:
 	ldr r3, [sp, #0x114]
 	ldrb r0, [r3]

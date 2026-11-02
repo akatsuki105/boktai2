@@ -34,4 +34,60 @@ typedef struct Entity501B {
 } Entity501B;
 static_assert(sizeof(Entity501B) == 1004);
 
-INCASM("asm/entity_501b.inc");
+NAKED void Entity501B_InitBg(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitBg.inc"); }
+
+NAKED void Entity501B_InitTextPanels(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitTextPanels.inc"); }
+
+NAKED void Entity501B_HideTextPanels(Entity501B* p) { INCFUNC("asm/func/Entity501B_HideTextPanels.inc"); }
+
+NAKED BgMapEntry* Entity501B_GetBgMapAddr(s32 bg, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_GetBgMapAddr.inc"); }
+
+NAKED void Entity501B_DrawBgNumber(s32 value, s32 divisor, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_DrawBgNumber.inc"); }
+
+NAKED void Entity501B_InitAuxSprite(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitAuxSprite.inc"); }
+
+NAKED void Entity501B_RemoveAuxSprite(Entity501B* p) { INCFUNC("asm/func/Entity501B_RemoveAuxSprite.inc"); }
+
+NAKED void Entity501B_InitSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSprites.inc"); }
+
+NAKED void Entity501B_InitSpritePos(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSpritePos.inc"); }
+
+NAKED void Entity501B_HideSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_HideSprites.inc"); }
+
+NAKED void Entity501B_RemoveSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_RemoveSprites.inc"); }
+
+NAKED void Entity501B_SetNumber(Entity501B* p, s32 row, s32 value) { INCFUNC("asm/func/Entity501B_SetNumber.inc"); }
+
+NAKED void Entity501B_SpinNumber(Entity501B* p, s32 row) { INCFUNC("asm/func/Entity501B_SpinNumber.inc"); }
+
+NAKED void FUN_081e02ac(Entity501B* p) { INCFUNC("asm/func/FUN_081e02ac.inc"); }
+
+NAKED void FUN_081e02ec(Entity501B* p) { INCFUNC("asm/func/FUN_081e02ec.inc"); }
+
+NAKED void Entity501B_LoadScore(Entity501B* p) { INCFUNC("asm/func/Entity501B_LoadScore.inc"); }
+
+NAKED void FUN_081e03d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e03d8.inc"); }
+
+NAKED void FUN_081e04a8(Entity501B* p) { INCFUNC("asm/func/FUN_081e04a8.inc"); }
+
+NAKED void FUN_081e0544(Entity501B* p) { INCFUNC("asm/func/FUN_081e0544.inc"); }
+
+NAKED void FUN_081e0588(Entity501B* p) { INCFUNC("asm/func/FUN_081e0588.inc"); }
+
+NAKED void Entity501B_StateSaveDone(Entity501B* p) { INCFUNC("asm/func/Entity501B_StateSaveDone.inc"); }
+
+NAKED void Entity501B_StateSaveFailed(Entity501B* p) { INCFUNC("asm/func/Entity501B_StateSaveFailed.inc"); }
+
+NAKED void FUN_081e06d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e06d8.inc"); }
+
+NAKED void FUN_081e084c(Entity501B* p) { INCFUNC("asm/func/FUN_081e084c.inc"); }
+
+NAKED void FUN_081e0a18(Entity501B* p) { INCFUNC("asm/func/FUN_081e0a18.inc"); }
+
+NAKED s32 Entity501B_Update(Entity501B* p) { INCFUNC("asm/func/Entity501B_Update.inc"); }
+
+NAKED s32 Entity501B_Destroy(Entity501B* p) { INCFUNC("asm/func/Entity501B_Destroy.inc"); }
+
+NAKED s32 Entity501B_Init(Entity501B* p) { INCFUNC("asm/func/Entity501B_Init.inc"); }
+
+NAKED Entity501B* Entity501B_Create(void) { INCFUNC("asm/func/Entity501B_Create.inc"); }

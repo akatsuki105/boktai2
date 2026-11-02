@@ -8,7 +8,7 @@ typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_11
   u32 updateCounter;  // 0x18, SignalStrengthIcon_Update が毎フレーム +1 するだけ, 読み手は見つかっていない
   u32 animCounter;    // 0x1C, SignalStrengthIcon_SetStrength が呼ばれるたびに +1, & 0x1F の値で同じ強度内の点滅段を選ぶ
-  s32 poseIdx;        // 0x20, 現在表示しているアイコン番号 (62..66)
+  s32 pose;           // 0x20, 現在表示しているアイコン番号 (62..66)
   MainSpriteGfx gfx;  // 0x24, SPRITE_UI_LINK
   MainSprite sprite;  // 0x44
 } SignalStrengthIcon;
@@ -30,13 +30,13 @@ NON_MATCH void SignalStrengthIcon_SetStrength(SignalStrengthIcon* p, s32 strengt
   if (strength > RFU_LINK_ICON_LEVEL3_MAX) {
     s32 phase = p->animCounter & 0x1F;
     if (phase <= 7) {
-      idx = 63;
+      idx = LINK_STRENGTH_ICON(0);
     } else if (phase <= 15) {
-      idx = 64;
+      idx = LINK_STRENGTH_ICON(1);
     } else if (phase <= 23) {
-      idx = 65;
+      idx = LINK_STRENGTH_ICON(2);
     } else {
-      idx = 66;
+      idx = LINK_STRENGTH_ICON(3);
     }
   } else if (strength > RFU_LINK_ICON_LEVEL2_MAX) {
     s32 phase = p->animCounter & 0x1F;
@@ -65,8 +65,8 @@ NON_MATCH void SignalStrengthIcon_SetStrength(SignalStrengthIcon* p, s32 strengt
     }
   }
   p->animCounter++;
-  if (idx != p->poseIdx) {
-    p->poseIdx = idx;
+  if (idx != p->pose) {
+    p->pose = idx;
     MainSprite_SetPose(&p->sprite, &p->gfx, idx, PLAYMODE_PAUSE);
   }
 #else
@@ -138,7 +138,7 @@ s32 SignalStrengthIcon_Init(SignalStrengthIcon* p) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  MainSprite_Add(&p->sprite, &p->gfx, 63, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, NULL);
+  MainSprite_Add(&p->sprite, &p->gfx, LINK_STRENGTH_ICON(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, SECOND(1), NULL);
   return 0;
 }
 
@@ -164,9 +164,8 @@ void SignalStrengthIcon_CreateAt(s32 x, s32 y) {
   SignalStrengthIcon* p = SignalStrengthIcon_Create();
 
   if (p != NULL) {
-    MainSprite* sprite = &p->sprite;
-
-    sprite->pos.x = x;
-    sprite->pos.y = y;
+    MainSprite* spr = &p->sprite;
+    spr->pos.x = x;
+    spr->pos.y = y;
   }
 }

@@ -232,7 +232,7 @@ _081FDEF4:
 	adds r0, r6, r5
 	ldr r0, [r0]
 	movs r1, #1
-	bl FUN_08203d0c
+	bl Entity082047f0_SetMode
 _081FDF08:
 	movs r0, #0x8f
 	lsls r0, r0, #2
@@ -602,7 +602,7 @@ _081FE1B0:
 	ldr r1, _081FE20C @ =0x000007CC
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_08203d38
+	bl Entity082047f0_RequestEnd
 	ldr r2, _081FE210 @ =0x00000233
 	movs r3, #0xf9
 	lsls r3, r3, #3

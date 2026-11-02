@@ -423,7 +423,7 @@ NON_MATCH void FUN_080c2978(JormungandrSegment* part) {
     part->sprites[i].pos.z = FixToInt(3, part->unk_10.z * i + head.z * w);
   }
   if (++part->timer > 3) {
-    PlaySound_082406e0(SONG_563);
+    PlaySound_082406e0(SE_WEDGE_PIERCE);
     FUN_080c2680(part, FUN_080c26cc);
   }
 #else
@@ -1717,7 +1717,7 @@ NON_MATCH void FUN_080c52f0(JormungandrLeg* part) {
   s32 i;
 
   if (part->timer == 0) {
-    PlaySound_082406e0(SONG_556);
+    PlaySound_082406e0(SE_JORMY_LEG_TOGGLE);
   }
   if (++part->timer >= 32) {
     for (i = 0; i < 14; i++) {
@@ -1761,7 +1761,7 @@ NON_MATCH void FUN_080c5458(JormungandrLeg* part) {
   s32 i;
 
   if (part->timer == 0) {
-    PlaySound_082406e0(SONG_557);
+    PlaySound_082406e0(SE_557);
   }
   hit = FALSE;
   if (part->timer >= 28 && part->timer < 70) {
@@ -1851,7 +1851,7 @@ NON_MATCH void FUN_080c5678(JormungandrLeg* part) {
   s32 i;
 
   if (part->timer == 0) {
-    PlaySound_082406e0(SONG_556);
+    PlaySound_082406e0(SE_JORMY_LEG_TOGGLE);
   }
   found = FALSE;
   base = 0;
@@ -2089,7 +2089,7 @@ NON_MATCH void FUN_080c5c58(Jormungandr* p, s32 timer) {
     Jormungandr_EasePos(p);
   }
   if (timer == 26) {
-    PlaySound_082406e0(SONG_562);
+    PlaySound_082406e0(SE_WEDGE_BREAK);
     FUN_080c2680(&p->segSet.segments[0], FUN_080c2824);
   }
   if (timer == 28) {
@@ -2115,7 +2115,7 @@ void FUN_080c5dd0(Jormungandr* p, s32 timer) {
     p->pos_2f0.x = p->pos_2f8.x;
     p->pos_2f0.y = p->pos_2f8.y + 0x200;
     p->pos_2f0.z = p->pos_2f8.z + 0x200;
-    PlaySound_082406e0(SONG_561);
+    PlaySound_082406e0(CRY_JORMY_561);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 2, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_UNK_17 | BOSSFLAG_UNK_19 | BOSSFLAG_HITBOX2);
@@ -2149,7 +2149,7 @@ void FUN_080c5f44(Jormungandr* p, s32 timer) {
     p->base.stateEntered = FALSE;
     p->pos_2f0.z = p->pos_2f8.z + 0x200;
     p->moveAngle = 0xC0;
-    PlaySound_082406e0(SONG_549);
+    PlaySound_082406e0(SE_JORMY_BITE2);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 3, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_UNK_17 | BOSSFLAG_UNK_19 | BOSSFLAG_HITBOX2);
@@ -2205,7 +2205,7 @@ NON_MATCH void FUN_080c6170(Jormungandr* p, s32 timer) {
     p->pos_2f0.x = p->pos_2f8.x;
     p->pos_2f0.z = p->pos_2f8.z + 0x20;
     p->pos_2f0.y = p->pos_2f8.y + 0x80;
-    PlaySound_082406e0(SONG_548);
+    PlaySound_082406e0(SE_JORMY_BITE1);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 2, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
     SpriteHolder_SetAnim(&p->sprites[1].holder, 0x18, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
@@ -2238,7 +2238,7 @@ NON_MATCH void FUN_080c62cc(Jormungandr* p, s32 timer) {
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
     MsgQueue_EndWait(&p->base.msgQueue, 1);
-    PlaySound_082406e0(SONG_549);
+    PlaySound_082406e0(SE_JORMY_BITE2);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 4, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_UNK_17 | BOSSFLAG_UNK_19 | BOSSFLAG_HITBOX2);
@@ -2345,8 +2345,8 @@ NON_MATCH void FUN_080c6538(Jormungandr* p) {
     p->chargeVoice = FALSE;
     HUD_StartCountdown(&p->chargeTimeLeft);
     p->base.hp = p->chargeMax;
-    gStat->gaugeValue = p->base.hp;
-    gStat->gaugeMax = p->base.hp;
+    gStat->bossHP = p->base.hp;
+    gStat->bossHPMax = p->base.hp;
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_UNK_17 | BOSSFLAG_UNK_19 | BOSSFLAG_HITBOX2);
   levelUp = FALSE;
@@ -2361,7 +2361,7 @@ NON_MATCH void FUN_080c6538(Jormungandr* p) {
       p->chargeVoice = TRUE;
     }
     p->charge += sun;
-    p->base.hp = gStat->gaugeMax - p->charge;
+    p->base.hp = gStat->bossHPMax - p->charge;
     if (p->base.hp < 0) {
       p->base.hp = 0;
     }
@@ -2437,7 +2437,7 @@ void FUN_080c6850(Boss* boss, s32 timer) {
     SpriteHolder_SetAnim(&p->sprites[3].holder, 1, p->sprites[3].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 36) {
     SpriteHolder_SetAnim(&p->sprites[2].holder, 0, p->sprites[2].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
-    PlaySound_082406e0(SONG_231);
+    PlaySound_082406e0(VO_DJANGO_DEATH);
   } else if (timer == 40) {
     SpriteHolder_SetAnim(&p->sprites[4].holder, 1, p->sprites[4].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 44) {
@@ -2449,7 +2449,7 @@ void FUN_080c6850(Boss* boss, s32 timer) {
   } else if (timer == 158) {
     SpriteHolder_SetAnim(&p->sprites[0].holder, 1, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 168) {
-    PlaySound_082406e0(SONG_561);
+    PlaySound_082406e0(CRY_JORMY_561);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 2, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer > 168) {
     FUN_080c4a54(p, 16);
@@ -2469,7 +2469,7 @@ NON_MATCH void FUN_080c6a5c(Jormungandr* p, s32 timer) {
     p->pos_2f0.x = p->pos_2f8.x;
     p->pos_2f0.y = p->pos_2f8.y + 0x200;
     p->pos_2f0.z = p->pos_2f8.z + 0x200;
-    PlaySound_082406e0(SONG_564);
+    PlaySound_082406e0(CRY_JORMY_EVENT_DEATH);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 0xF, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_UNK_17 | BOSSFLAG_UNK_19 | BOSSFLAG_HITBOX2);
@@ -2680,7 +2680,7 @@ NON_MATCH void FUN_080c73c0(Jormungandr* p, s32 timer) {
     p->pos_2f0.x = gPlayerPtr[0]->mover.pos.x;
     p->pos_2f0.z = p->pos_2f8.z + 0x20;
     p->pos_2f0.y = p->pos_2f8.y + 0x80;
-    PlaySound_082406e0(SONG_548);
+    PlaySound_082406e0(SE_JORMY_BITE1);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 2, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
     SpriteHolder_SetAnim(&p->sprites[1].holder, 0x18, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
@@ -2713,7 +2713,7 @@ NON_MATCH void FUN_080c7518(Jormungandr* p, s32 timer) {
     p->base.stateEntered = FALSE;
     p->pos_2f0.z = p->pos_2f8.z + 0x200;
     p->moveAngle = 0xC0;
-    PlaySound_082406e0(SONG_549);
+    PlaySound_082406e0(SE_JORMY_BITE2);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 3, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   if (!p->base.damageCallback(&p->base)) {
@@ -2812,7 +2812,7 @@ NON_MATCH void FUN_080c789c(Jormungandr* p, s32 timer) {
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
     p->slamCount = 0;
-    PlaySound_082406e0(SONG_549);
+    PlaySound_082406e0(SE_JORMY_BITE2);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 4, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_UNK_18);
@@ -2922,7 +2922,7 @@ void FUN_080c7c20(Boss* boss, s32 timer) {
   } else if (timer == 36) {
     SpriteHolder_SetAnim(&p->sprites[2].holder, 0, p->sprites[2].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
     gPlayerPtr[0]->hp = 0;
-    PlaySound_082406e0(SONG_231);
+    PlaySound_082406e0(VO_DJANGO_DEATH);
   } else if (timer == 40) {
     SpriteHolder_SetAnim(&p->sprites[4].holder, 1, p->sprites[4].variant, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 44) {
@@ -2934,7 +2934,7 @@ void FUN_080c7c20(Boss* boss, s32 timer) {
   } else if (timer == 158) {
     SpriteHolder_SetAnim(&p->sprites[0].holder, 1, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer == 168) {
-    PlaySound_082406e0(SONG_561);
+    PlaySound_082406e0(CRY_JORMY_561);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 2, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   } else if (timer > 168) {
     FUN_080c4a54(p, 16);
@@ -3054,7 +3054,7 @@ NON_MATCH void FUN_080c81e0(Jormungandr* p, s32 timer) {
     p->pos_2f0 = p->pos_2f8;
     p->pos_2f0.y += 0x280;
     p->pos_2f0.z += 0x180;
-    PlaySound_082406e0(SONG_560);
+    PlaySound_082406e0(CRY_JORMY_GRRRR);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 0, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
     SpriteHolder_SetAnim(&p->sprites[1].holder, 0x19, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
@@ -3128,7 +3128,7 @@ NON_MATCH void FUN_080c852c(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
-    PlaySound_082406e0(SONG_548);
+    PlaySound_082406e0(SE_JORMY_BITE1);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 2, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
     SpriteHolder_SetAnim(&p->sprites[1].holder, 0x18, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
@@ -3393,7 +3393,7 @@ void FUN_080c8e14(Jormungandr* p, s32 timer) {
     p->base.stateEntered = FALSE;
     FUN_0807ad60(gPlayerPtr[0], 240);
     FUN_080c3528(&p->blade, p->base.mover.id);
-    PlaySound_082406e0(SONG_555);
+    PlaySound_082406e0(SE_HEAVY_OBJECT_FALL_555);
     SpriteHolder_SetAnim(&p->sprites[6].holder, 0x2B, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   if (!p->base.damageCallback(&p->base)) {

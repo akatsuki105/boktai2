@@ -5,7 +5,7 @@
 	adds r2, r3, #0
 	ldr r4, [sp, #0x14]
 	movs r0, #0
-	bl GetBgTilemapAddr
+	bl GetBgMapAddr
 	adds r7, r0, #0
 	lsls r4, r4, #4
 	adds r4, #0x21

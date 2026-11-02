@@ -195,7 +195,7 @@ _08082D5E:
 	movs r1, #0xfe
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_08235fd8
+	bl Map_ConsumeNavWaypointChanged
 	cmp r0, #0
 	beq _08082D96
 	adds r0, r6, #0

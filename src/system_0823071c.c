@@ -2,10 +2,16 @@
 #include "global.h"
 #include "input.h"
 #include "random.h"
+#include "registry.h"
 
 // 他のEntityと違い、SystemManager_Update のみ
 IWRAM_DATA Entity gSystemManager = {};  // 0x03000728
 
+extern u16 gEntityCount;  // 0x030044C0
+
+void InitHeap(void);
+void ResetEntityManager(void);
+void ScriptRecord_ResetAll(void);
 void FUN_081dfe5c(void);
 void FUN_0804e36c(void);
 void ReadKeyInput(void);
@@ -20,7 +26,31 @@ s32 SystemManager_Update(Entity* p) {
   return 0;
 }
 
-NAKED void InitSystemManager(void) { INCFUNC("asm/func/InitSystemManager.inc"); }
+// 38/36 命令, gLinkKeyInput を埋める後ろ向きのループでカウンタが消えず, 符号付きのポインタ比較 (bge) で回す形が作れない
+NON_MATCH void InitSystemManager(void) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  InitHeap();
+  ResetEntityManager();
+  Registry_Reset();
+  ScriptRecord_ResetAll();
+  gRngValue = 123456;
+  SetEntityRoutine(&gSystemManager, SystemManager_Update, NULL);
+  gSystemManager.kind = ENTITY_SYSTEM;
+  gSystemManager.unk_16 = TRUE;
+  gSystemManager.id = 0;
+  AddEntity(&gSystemManager);
+  gEntityDisableFlags = 0;
+  gEntityCount = 1;
+  gUseLinkInput = FALSE;
+  for (i = 3; i >= 0; i--) {
+    gLinkKeyInput[i] = KEYS_MASK;
+  }
+#else
+  INCFUNC("asm/func/InitSystemManager.inc");
+#endif
+}
 
 // KEYINPUT (通信対戦時は受信したキー) から gInput の5人分の押下・押した瞬間・離した瞬間を更新する
 void ReadKeyInput(void) {

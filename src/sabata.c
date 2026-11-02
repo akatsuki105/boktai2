@@ -22,7 +22,6 @@
 
 void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p);
 bool32 FUN_0809e138(Player* p);
-bool32 FUN_08235fd8(u16* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 FUN_080298dc(void);
 extern u16 gRisingSunCount;
@@ -32,7 +31,7 @@ void FUN_08084734(WorldPos* out);
 s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
-void* Entity080cbabc_Create(WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
+struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -714,7 +713,7 @@ NON_MATCH void FUN_08081c04(Player* p) {
   halfSize.x = 170, halfSize.y = 50, halfSize.z = 170;
   offset.x = 0, offset.y = -20, offset.z = 0;
   Hitbox_Init(&p->wpn.hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 0x10, 2, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 1 << WK_GUN, 2, p->wpn.atkInvincibleTime);
   Hitbox_SetHandler(&p->wpn.hitbox, NULL, p);
 #else
   INCFUNC("asm/func/FUN_08081c04.inc");
@@ -817,12 +816,12 @@ NON_MATCH void FUN_08081fb4(Player* p) {
   }
   AllySabata_SetFlag35a(p, PFLAG35A_NO_TILE);
 
-  dx = p->navAgent.unk_0c.x - p->mover.pos.x;
-  dz = p->navAgent.unk_0c.z - p->mover.pos.z;
+  dx = p->navAgent.dest.x - p->mover.pos.x;
+  dz = p->navAgent.dest.z - p->mover.pos.z;
   if (dx * dx + dz * dz <= 144) {
     u8 dir;
 
-    p->mover.pos = p->navAgent.unk_0c;
+    p->mover.pos = p->navAgent.dest;
     dir = p->pathEndFacing;
     p->facing = dir;
     if (dir > 4) {
@@ -836,11 +835,11 @@ NON_MATCH void FUN_08081fb4(Player* p) {
     AllySabata_PlayAnim(p, 414, Q6(1));
     AllySabata_SetAction(p, p->pathEndAction, 0);
   } else {
-    s32 angle = ArcTan2_8(p->navAgent.unk_1c.x - p->mover.pos.x, p->navAgent.unk_1c.z - p->mover.pos.z);
+    s32 angle = ArcTan2_8(p->navAgent.waypoint.x - p->mover.pos.x, p->navAgent.waypoint.z - p->mover.pos.z);
 
     p->mover.delta.x = FixToInt(12, COS(angle) * 12);
     p->mover.delta.z = FixToInt(12, SIN(angle) * 12);
-    if (FUN_08235fd8(&p->navAgent.flags)) {
+    if (Map_ConsumeNavWaypointChanged(&p->navAgent)) {
       p->facing = (((((u16)angle + 0x10) & 0xFF) >> 5) + 3) & 7;
       AllySabata_SetAnimFacing(p);
     }
@@ -917,7 +916,7 @@ void FUN_08082154(Player* p) {
       if (p->unk_404 <= 4) {
         p->unk_404++;
         if (p->unk_404 == 5) {
-          PlaySound_082406e0(VO_RDJANGO_TAIYO_296);
+          PlaySound_082406e0(VO_TAIYO_R);
         }
       }
 
@@ -991,7 +990,7 @@ void FUN_08082498(Player* p) {
 
     AllySabata_PlayAnim(p, 446, Q6(1));
     sound_08240740(SONG_870);
-    PlaySound_082406e0(SONG_874);
+    PlaySound_082406e0(VO_SABATA_DAMAGE1);
     return;
   }
 
@@ -1036,7 +1035,7 @@ void FUN_08082670(Player* p) {
     PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
 
     sound_08240740(SONG_870);
-    PlaySound_082406e0(SONG_875);
+    PlaySound_082406e0(VO_SABATA_DAMAGE2);
   }
 
   switch (p->state) {
@@ -1198,12 +1197,12 @@ NON_MATCH void FUN_08082bdc(Player* p) {
   }
   AllySabata_SetFlag35a(p, PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HURTBOX | PFLAG35A_NO_TILE);
 
-  dx = abs(p->navAgent.unk_0c.x - p->mover.pos.x);
-  dz = abs(p->navAgent.unk_0c.z - p->mover.pos.z);
+  dx = abs(p->navAgent.dest.x - p->mover.pos.x);
+  dz = abs(p->navAgent.dest.z - p->mover.pos.z);
   if (dx <= 0x1F && dz <= 0x1F) {
     p->unk_3f2 = 0;
-    p->mover.pos.x = p->navAgent.unk_0c.x;
-    p->mover.pos.z = p->navAgent.unk_0c.z;
+    p->mover.pos.x = p->navAgent.dest.x;
+    p->mover.pos.z = p->navAgent.dest.z;
     AllySabata_PlayAnim(p, 419, Q6(0.5));
     p->facing = p->pathEndFacing;
     AllySabata_SetAnimFacing(p);
@@ -1227,12 +1226,12 @@ NON_MATCH void FUN_08082bdc(Player* p) {
       AllySabata_SetFlag35a(p, PFLAG35A_BLINK);
     }
 
-    dx = p->navAgent.unk_1c.x - p->mover.pos.x;
-    dz = p->navAgent.unk_1c.z - p->mover.pos.z;
+    dx = p->navAgent.waypoint.x - p->mover.pos.x;
+    dz = p->navAgent.waypoint.z - p->mover.pos.z;
     angle = ArcTan2_8(dx, dz);
     p->mover.delta.x = FixToInt(12, COS(angle) * 32);
     p->mover.delta.z = FixToInt(12, SIN(angle) * 32);
-    if (FUN_08235fd8(&p->navAgent.flags)) {
+    if (Map_ConsumeNavWaypointChanged(&p->navAgent)) {
       p->facing = (((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
       AllySabata_SetAnimFacing(p);
     }
@@ -1398,7 +1397,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
           }
         }
 
-        if (((p->unk_4a6 + 3) & 3) != idx && FUN_08235f40(&p->navAgent, &p->mover.pos, &p->waypoints[idx])) {
+        if (((p->unk_4a6 + 3) & 3) != idx && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &p->waypoints[idx])) {
           p->pathEndAction = PACT_UNK_8;
           p->pathEndFacing = p->waypoints[idx].val;
           p->unk_4a6 = (idx + 1) & 3;
@@ -1417,18 +1416,18 @@ NON_MATCH void FUN_0808301c(Player* p) {
 }
 
 // 向いている方向の少し前に Entity080cbabc を出して効果音を鳴らす
-void FUN_080831e0(Player* p, s32 param_2, s32 param_3, s32 param_4) {
+void FUN_080831e0(Player* p, s32 size, s32 plttOfs, HitboxAttributes attrs) {
   s32 angle = ((p->facing + 5) & 7) * 32;
   WorldPos pos = p->mover.pos;
 
-  pos.x = p->mover.pos.x + POLAR_X(150, angle);
+  pos.x = p->mover.pos.x + POLAR_X(Q8(0.586), angle);
   pos.y = p->mover.pos.y + Q8(0.9);
-  pos.z = p->mover.pos.z + POLAR_Z(150, angle);
-  Entity080cbabc_Create(&pos, angle, 0x20, param_2, param_3, p->wpn.atkPower, p->wpn.knockbackPower, param_4, p->wpn.atkInvincibleTime);
+  pos.z = p->mover.pos.z + POLAR_Z(Q8(0.586), angle);
+  Entity080cbabc_Create(&pos, angle, Q8(0.125), size, plttOfs, p->wpn.atkPower, p->wpn.knockbackPower, attrs, p->wpn.atkInvincibleTime);
   PlaySound_082406e0(SONG_871);
 }
 
-// サバタの行動3, 2〜3回斬りつけてから間合いを取り直す
+// サバタの PACT_ATTACK, 2〜3回斬りつけてから間合いを取り直す
 void FUN_080832b8(Player* p) {
   if (p->action != PACT_ATTACK) {
     AllySabata_SetAction(p, PACT_ATTACK, 0);
@@ -1455,7 +1454,7 @@ void FUN_080832b8(Player* p) {
         if (FUN_080298dc()) {
           AllySabata_SetAction(p, PACT_ATTACK, 2);
         } else {
-          FUN_080831e0(p, 1, 6, 2);
+          FUN_080831e0(p, 1, 6, HBATTR_DARK);
           AllySabata_SetAction(p, PACT_ATTACK, 5);
         }
       }
@@ -1468,7 +1467,7 @@ void FUN_080832b8(Player* p) {
         WorldPos pos;
         s32 dir;
 
-        if (FUN_08081de0(p, &pos, &dir) && FUN_08235f40(&p->navAgent, &p->mover.pos, &pos)) {
+        if (FUN_08081de0(p, &pos, &dir) && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &pos)) {
           p->pathEndAction = PACT_ATTACK;
           p->pathEndFacing = dir;
           AllySabata_SetAction(p, PACT_DASH, 6);
@@ -1489,7 +1488,7 @@ void FUN_080832b8(Player* p) {
           WorldPos pos;
           s32 dir;
 
-          if (FUN_08081de0(p, &pos, &dir) && FUN_08235f40(&p->navAgent, &p->mover.pos, &pos)) {
+          if (FUN_08081de0(p, &pos, &dir) && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &pos)) {
             p->pathEndAction = PACT_ATTACK;
             p->pathEndFacing = dir;
             AllySabata_SetAction(p, PACT_DASH, 6);
@@ -1512,7 +1511,7 @@ void FUN_080832b8(Player* p) {
       AllySabata_PlayAnim(p, 478, Q6(1));
       p->stateTimer++;
       if (p->stateTimer > 4) {
-        if (FUN_08235f40(&p->navAgent, &p->mover.pos, &p->waypoints[p->unk_4a6])) {
+        if (Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &p->waypoints[p->unk_4a6])) {
           p->pathEndAction = PACT_UNK_8;
           p->pathEndFacing = p->waypoints[p->unk_4a6].val;
           AllySabata_SetAction(p, PACT_DASH, 0);
@@ -1718,7 +1717,7 @@ s32 FUN_08083eac(Player* p) {
   s32 action;
 
   if (gRisingSunCount != 0) {
-    PlaySound_082406e0(SONG_874);
+    PlaySound_082406e0(VO_SABATA_DAMAGE1);
     p->unk_474 = p->unk_472;
   }
 
@@ -1757,7 +1756,7 @@ s32 FUN_08083eac(Player* p) {
       WorldPos pos;
       s32 dir;
 
-      if (FUN_08081da4(p->unk_467) && FUN_08081de0(p, &pos, &dir) && FUN_08235f40(&p->navAgent, &p->mover.pos, &pos)) {
+      if (FUN_08081da4(p->unk_467) && FUN_08081de0(p, &pos, &dir) && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &pos)) {
         p->pathEndAction = PACT_ATTACK;
         p->pathEndFacing = dir;
         return PACT_UNK_19;
@@ -1778,7 +1777,7 @@ s32 FUN_08083eac(Player* p) {
     return PACT_UNK_8;
   }
 
-  if (FUN_08235f40(&p->navAgent, &p->mover.pos, &p->waypoints[p->unk_4a6])) {
+  if (Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &p->waypoints[p->unk_4a6])) {
     p->pathEndAction = PACT_UNK_8;
     p->pathEndFacing = p->waypoints[p->unk_4a6].val;
     p->unk_4a6 = (p->unk_4a6 + 1) & 3;
@@ -1918,7 +1917,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 
   if (p->action == PACT_UNK_8 && p->state != 0) {
     p->unk_476 = 4;
-    if (Hitbox_HasWeakness(a, HBATTR_NAMAKURA)) {
+    if (Hitbox_HasWeakness(a, 0x1000)) {  // 攻撃元の種別マスクの 0x1000, 未解析
       p->namakuraCount++;
       if (p->namakuraCount >= p->namakuraLimit) {
         p->namakuraCount = 0;
@@ -1936,7 +1935,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
       }
     }
 
-    PlaySound_082406e0(SONG_874);
+    PlaySound_082406e0(VO_SABATA_DAMAGE1);
     return;
   }
 

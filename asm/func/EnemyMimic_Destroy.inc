@@ -93,7 +93,7 @@ _08148D76:
 	beq _08148D82
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _08148D82:
 	adds r0, r4, #0
 	bl Mover_Unlink

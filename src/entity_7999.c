@@ -1,6 +1,11 @@
+#include "bg_pltt.h"
 #include "entity.h"
+#include "entity_9a9f.h"
+#include "file.h"
 #include "global.h"
+#include "input.h"
 #include "magic.h"
+#include "sound.h"
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
@@ -31,7 +36,8 @@ typedef struct Entity7999 {
   u8 unk_286;                                  // 0x286, gEntity9A9F->unk_15c + 0x40 の写し, 0/1/2 で分岐する種別
   u8 unk_287;                                  // 0x287, 同 +0x41 の写し
   u8 unk_288;                                  // 0x288, 同 +0x42 の写し
-  u8 unk_289[2];                               // 0x289, まだ未解析
+  u8 unk_289;                                  // 0x289
+  u8 unk_28a;                                  // 0x28A
   u8 unk_28b;                                  // 0x28B, 種別ごとに magicCount / 2 / 1 のどれかが入る
   u16 magicCount;                              // 0x28C, magicIDs に詰めた数
   u8 unk_28e[0x290 - 0x28E];                   // 0x28E, まだ未解析
@@ -53,6 +59,22 @@ bool32 FUN_081dfa04(void);
 
 static void Entity7999_HidePanels(Entity7999* p);
 static void Entity7999_HideSprites(Entity7999* p);
+void FUN_081da0c4(Entity7999* p);
+void FUN_081da930(Entity7999* p);
+void FUN_081da218(Entity7999* p);
+void FUN_081da814(Entity7999* p);
+void FUN_081da69c(Entity7999* p);
+void FUN_081da468(Entity7999* p);
+s32 FUN_0809c08c(s32 mode);
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
+void FUN_080e1238(s32 x, s32 y, s32 width, s32 height, u32 value, s32 bgIdx);
+
+static inline bool8 Entity7999_IsUnk56Set(void) {
+  if (gEntity9A9F != NULL && gEntity9A9F->unk_54[2] == 1) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 const u32 u32_ARRAY_085ae144[7] = {0, 2, 3, 4, 5, 11, 13};  // 0x085AE144
 
@@ -66,9 +88,87 @@ const s32 s32_ARRAY_085ae16c[3][6] = {
     {0, 0, 0, 32, 0,   64},
 };  // 0x085AE16C
 
-NAKED s32 FUN_081d9da4(unknown* param_1) { INCFUNC("asm/func/FUN_081d9da4.inc"); }
+// gEntity9A9F->unk_15c の NULL 判定の形が未解決, Tier A の途中
+NON_MATCH s32 FUN_081d9da4(Entity7999* p) {
+#ifdef NONMATCHING_C
+  Entity9A9F* e = gEntity9A9F;
+  u8* out;
+  const u32* table;
 
-NAKED void FUN_081d9e50(unknown* param_1) { INCFUNC("asm/func/FUN_081d9e50.inc"); }
+  if (e == NULL || e->unk_15c == NULL) {
+    return -1;
+  }
+  out = e->unk_19c;
+  out[0] = p->unk_286;
+  e->unk_19c[1] = p->unk_287;
+  switch (out[0]) {
+    case 0: {
+      e->unk_19c[2] = p->magicIDs[p->unk_288];
+      break;
+    }
+    case 1: {
+      table = u32_ARRAY_085ae160;
+      e->unk_19c[2] = table[p->unk_288];
+      break;
+    }
+    case 2: {
+      table = u32_ARRAY_085ae160 + 2;
+      e->unk_19c[2] = table[p->unk_288];
+      break;
+    }
+    default: {
+      e->unk_19c[2] = p->magicIDs[0];
+      break;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_081d9da4.inc");
+#endif
+}
+
+// 命令数は一致, 残差は magicIDs 走査の配置とレジスタ
+NON_MATCH void FUN_081d9e50(Entity7999* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+  const u32* table;
+
+  switch (p->unk_286) {
+    case 0: {
+      for (i = 0; i < p->magicCount; i++) {
+        if (p->unk_288 == p->magicIDs[i]) {
+          p->unk_288 = i;
+          return;
+        }
+      }
+      return;
+    }
+    case 1: {
+      for (i = 0, table = u32_ARRAY_085ae160; i < 2; i++) {
+        if (p->unk_288 == *table) {
+          p->unk_288 = i;
+          return;
+        }
+        table++;
+      }
+      return;
+    }
+    case 2: {
+      for (i = 0, table = u32_ARRAY_085ae160 + 2; i < 1; i++) {
+        if (p->unk_288 == *table) {
+          p->unk_288 = i;
+          return;
+        }
+        table++;
+      }
+      return;
+    }
+  }
+  p->unk_288 = 0;
+#else
+  INCFUNC("asm/func/FUN_081d9e50.inc");
+#endif
+}
 
 void FUN_081d9ef4(Entity7999* p) {
   Entity7999_HidePanels(p);
@@ -99,7 +199,24 @@ void FUN_081d9f3c(Entity7999* p) {
   }
 }
 
-NAKED void Entity7999_InitBG(Entity7999* p) { INCFUNC("asm/func/Entity7999_InitBG.inc"); }
+void Entity7999_InitBG(Entity7999* p) {
+  TilemapFile* f = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  s32 param;
+
+  p->tilemap = f;
+  param = 5;
+  Video_SetupBGLayout(2, 0, f, 0, 0, 1, &param);
+  Video_GenerateBGMap(3, 0, 0, 0, 0);
+  p->bgp = GetBgPlttFile(0x26BB)->body;
+  CpuCopy16(p->bgp, gBgPlttBuffer, 512);
+  if (!Entity7999_IsUnk56Set()) {
+    s32 i;
+
+    for (i = 0; i < 5; i++) {
+      FUN_080e1238(i + 25, 16, 1, 1, i + 22, 3);
+    }
+  }
+}
 
 // 解放済みの魔法だけを magicIDs に詰め直す
 void FUN_081da038(Entity7999* p) {
@@ -134,13 +251,123 @@ void FUN_081da074(Entity7999* p) {
   }
 }
 
-NAKED void FUN_081da0c4(unknown* param_1) { INCFUNC("asm/func/FUN_081da0c4.inc"); }
+void FUN_081da0c4(Entity7999* p) {
+  p->unk_29d = 0;
+  p->unk_286 = 0;
+  p->unk_287 = 0;
+  p->unk_288 = 0;
+  if (gStat->lap >= 1) {
+    p->unk_289 = 3;
+  } else if (*(s16*)&gStat->unk_232[6] != 0) {
+    p->unk_289 = 2;
+  } else {
+    p->unk_289 = 1;
+  }
+  p->unk_28a = 4;
+  FUN_081da038(p);
+  FUN_081da074(p);
+}
 
-NAKED void FUN_081da14c(unknown* param_1) { INCFUNC("asm/func/FUN_081da14c.inc"); }
+// 命令数は一致, 残差は id と id + 25 のレジスタ (r1, r4) だけ
+NON_MATCH void FUN_081da14c(Entity7999* p) {
+#ifdef NONMATCHING_C
+  u32 id;
+  const u32* table;
 
-NAKED void FUN_081da218(unknown* param_1) { INCFUNC("asm/func/FUN_081da218.inc"); }
+  switch (p->unk_29d) {
+    case 0: {
+      id = p->unk_286;
+      break;
+    }
+    case 1: {
+      id = p->unk_287 + 3;
+      break;
+    }
+    case 2: {
+      switch (p->unk_286) {
+        case 0: {
+          id = p->magicIDs[p->unk_288] + 7;
+          break;
+        }
+        case 1: {
+          table = u32_ARRAY_085ae160;
+          id = table[p->unk_288] + 7;
+          break;
+        }
+        case 2: {
+          table = u32_ARRAY_085ae160 + 2;
+          id = table[p->unk_288] + 7;
+          break;
+        }
+        default: {
+          id = 0;
+          break;
+        }
+      }
+      break;
+    }
+    default: {
+      id = 0;
+      break;
+    }
+  }
+  if ((s8)p->unk_29b != id + 25) {
+    Marquee_Clear();
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->script) + (id + 25)));
+    p->unk_29b = id + 25;
+  }
+#else
+  INCFUNC("asm/func/FUN_081da14c.inc");
+#endif
+}
 
-NAKED void Entity7999_InitPanels(Entity7999* p) { INCFUNC("asm/func/Entity7999_InitPanels.inc"); }
+void FUN_081da218(Entity7999* p) {
+  u32 id;
+  const u32* table;
+
+  TextPanel_SetScript(p->windowID0, p->script);
+  TextPanel_SetMessage(p->windowID0, p->unk_286);
+  TextPanel_Start(p->windowID0);
+  p->unk_298 = p->unk_286;
+  TextPanel_SetScript(p->windowID1, p->script);
+  TextPanel_SetMessage(p->windowID1, p->unk_287 + 3);
+  TextPanel_Start(p->windowID1);
+  p->unk_299 = p->unk_287;
+  switch (p->unk_286) {
+    case 0: {
+      id = p->magicIDs[p->unk_288];
+      break;
+    }
+    case 1: {
+      table = u32_ARRAY_085ae160;
+      id = table[p->unk_288];
+      break;
+    }
+    case 2: {
+      table = u32_ARRAY_085ae160 + 2;
+      id = table[p->unk_288];
+      break;
+    }
+    default: {
+      id = 0;
+      break;
+    }
+  }
+  TextPanel_SetScript(p->windowID2, p->script);
+  TextPanel_SetMessage(p->windowID2, id + 7);
+  TextPanel_Start(p->windowID2);
+  p->unk_29a = p->unk_288;
+}
+
+void Entity7999_InitPanels(Entity7999* p) {
+  p->windowID0 = TextPanel_Create(18, 4, 10, 2);
+  p->windowID1 = TextPanel_Create(18, 8, 10, 2);
+  p->windowID2 = TextPanel_Create(16, 12, 12, 2);
+  FUN_08049f5c();
+  Marquee_Clear();
+  SET_FLAGS(p->flags, 1);
+  FUN_081da0c4(p);
+}
 
 static void Entity7999_HidePanels(Entity7999* p) {
   TextPanel_Hide(p->windowID0);
@@ -148,9 +375,101 @@ static void Entity7999_HidePanels(Entity7999* p) {
   TextPanel_Hide(p->windowID2);
 }
 
-NAKED void Entity7999_InitSprites(Entity7999* p) { INCFUNC("asm/func/Entity7999_InitSprites.inc"); }
+void Entity7999_InitSprites(Entity7999* p) {
+  s32 i;
 
-NAKED void FUN_081da468(unknown* param_1) { INCFUNC("asm/func/FUN_081da468.inc"); }
+  p->fileLink = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  OpenMainSpriteFile(&p->gfxLink, p->fileLink);
+  p->fileIcon = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  OpenMainSpriteFile(&p->gfxIcon, p->fileIcon);
+  for (i = 0; i < 5; i++) {
+    MainSpriteGfx* gfx;
+    u16 poseIdx;
+
+    switch (i) {
+      case 0: {
+        poseIdx = 0x33;
+        gfx = &p->gfxLink;
+        break;
+      }
+      case 1: {
+        poseIdx = 0x34;
+        gfx = &p->gfxLink;
+        break;
+      }
+      case 2: {
+        poseIdx = 0x35;
+        gfx = &p->gfxLink;
+        break;
+      }
+      case 3: {
+        poseIdx = 0xB6;
+        gfx = &p->gfxIcon;
+        break;
+      }
+      case 4: {
+        poseIdx = 0x15;
+        gfx = &p->gfxLink;
+        break;
+      }
+      default: {
+        poseIdx = 0;
+        gfx = &p->gfxIcon;
+        break;
+      }
+    }
+    MainSprite_Add(&p->sprites[i], gfx, poseIdx, SPRFLAG_SCREEN_COORD, 0, 0, 0, NULL);
+  }
+}
+
+// 151/143 命令, case 1, 2 の後半を共有する形が未解決
+NON_MATCH void FUN_081da468(Entity7999* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    switch (i) {
+      case 0: {
+        p->sprites[i].pos.x = s32_ARRAY_085ae16c[0][p->unk_29d * 2];
+        p->sprites[i].pos.y = s32_ARRAY_085ae16c[0][p->unk_29d * 2 + 1];
+        break;
+      }
+      case 1: {
+        if ((p->unk_29d == 0 && p->unk_289 < 2) || (p->unk_29d == 2 && p->unk_28b < 2)) {
+          p->sprites[i].flags |= SPRFLAG_HIDDEN;
+        } else {
+          p->sprites[i].pos.x = s32_ARRAY_085ae16c[1][p->unk_29d * 2];
+          p->sprites[i].pos.y = s32_ARRAY_085ae16c[1][p->unk_29d * 2 + 1];
+          p->sprites[i].flags &= ~SPRFLAG_HIDDEN;
+        }
+        break;
+      }
+      case 2: {
+        if ((p->unk_29d == 0 && p->unk_289 < 2) || (p->unk_29d == 2 && p->unk_28b < 2)) {
+          p->sprites[i].flags |= SPRFLAG_HIDDEN;
+        } else {
+          p->sprites[i].pos.x = s32_ARRAY_085ae16c[2][p->unk_29d * 2];
+          p->sprites[i].pos.y = s32_ARRAY_085ae16c[2][p->unk_29d * 2 + 1];
+          p->sprites[i].flags &= ~SPRFLAG_HIDDEN;
+        }
+        break;
+      }
+      case 3: {
+        p->sprites[i].pos.x = 72;
+        p->sprites[i].pos.y = 96;
+        break;
+      }
+      case 4: {
+        p->sprites[i].pos.x = 0;
+        p->sprites[i].pos.y = 0;
+        break;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081da468.inc");
+#endif
+}
 
 static void Entity7999_HideSprites(Entity7999* p) {
   s32 i;
@@ -179,13 +498,120 @@ void Entity7999_SavePltt(Entity7999* p) {
   p->unk_268 = 0;
 }
 
-NAKED void FUN_081da64c(unknown* param_1) { INCFUNC("asm/func/FUN_081da64c.inc"); }
+void FUN_081da64c(Entity7999* p) {
+  rgb555 color;
 
-NAKED void FUN_081da69c(unknown* param_1) { INCFUNC("asm/func/FUN_081da69c.inc"); }
+  if (p->unk_268 < 10) {
+    color = 31;
+  } else if (p->unk_268 < 18) {
+    color = 27;
+  } else if (p->unk_268 < 26) {
+    color = 18;
+  } else if (p->unk_268 < 34) {
+    color = 10;
+  } else if (p->unk_268 < 42) {
+    color = 18;
+  } else {
+    color = 27;
+  }
+  if (++p->unk_268 >= 50) {
+    p->unk_268 = 0;
+  }
+  p->savedPltt[12] = color;
+}
 
-NAKED void FUN_081da730(unknown* param_1) { INCFUNC("asm/func/FUN_081da730.inc"); }
+void FUN_081da69c(Entity7999* p) {
+  u32 id;
+  const u32* table;
 
-NAKED void FUN_081da814(unknown* param_1) { INCFUNC("asm/func/FUN_081da814.inc"); }
+  if (p->unk_288 == (s8)p->unk_29a) {
+    return;
+  }
+  switch (p->unk_286) {
+    case 0: {
+      id = p->magicIDs[p->unk_288];
+      break;
+    }
+    case 1: {
+      table = u32_ARRAY_085ae160;
+      id = table[p->unk_288];
+      break;
+    }
+    case 2: {
+      table = u32_ARRAY_085ae160 + 2;
+      id = table[p->unk_288];
+      break;
+    }
+    default: {
+      id = 0;
+      break;
+    }
+  }
+  TextPanel_SetScript(p->windowID2, p->script);
+  TextPanel_SetMessage(p->windowID2, id + 7);
+  TextPanel_Start(p->windowID2);
+  p->unk_29a = p->unk_288;
+}
+
+void FUN_081da730(Entity7999* p) {
+  switch (p->unk_29d) {
+    case 0: {
+      if (p->unk_286 != (s8)p->unk_298) {
+        TextPanel_SetScript(p->windowID0, p->script);
+        TextPanel_SetMessage(p->windowID0, p->unk_286);
+        TextPanel_Start(p->windowID0);
+        p->unk_298 = p->unk_286;
+        p->unk_29a = -1;
+        p->unk_288 = 0;
+        FUN_081da074(p);
+        FUN_081da69c(p);
+        FUN_081da814(p);
+      }
+      break;
+    }
+    case 1: {
+      if (p->unk_287 != (s8)p->unk_299) {
+        TextPanel_SetScript(p->windowID1, p->script);
+        TextPanel_SetMessage(p->windowID1, p->unk_287 + 3);
+        TextPanel_Start(p->windowID1);
+        p->unk_299 = p->unk_287;
+      }
+      break;
+    }
+    case 2: {
+      FUN_081da69c(p);
+      break;
+    }
+  }
+}
+
+void FUN_081da814(Entity7999* p) {
+  u32 id;
+  const u32* table;
+
+  switch (p->unk_286) {
+    case 0: {
+      id = p->magicIDs[p->unk_288];
+      break;
+    }
+    case 1: {
+      table = u32_ARRAY_085ae160;
+      id = table[p->unk_288];
+      break;
+    }
+    case 2: {
+      table = u32_ARRAY_085ae160 + 2;
+      id = table[p->unk_288];
+      break;
+    }
+    default: {
+      id = 0;
+      break;
+    }
+  }
+  id += 0xB6;
+  MainSprite_LoadPose(&p->sprites[3], &p->gfxIcon, id);
+}
 
 void FUN_081da890(Entity7999* p) {
   if (p->unk_29c != 0) {
@@ -200,9 +626,216 @@ void FUN_081da890(Entity7999* p) {
   p->state_29e++;
 }
 
-NAKED void FUN_081da8d4(unknown* param_1) { INCFUNC("asm/func/FUN_081da8d4.inc"); }
+void FUN_081da8d4(Entity7999* p) {
+  if (p->unk_29c) {
+    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    p->state_29e = 0;
+    p->unk_29c = FALSE;
+  }
+  if (p->state_29e == 20) {
+    FUN_081d9f3c(p);
+  }
+  p->state_29e++;
+}
 
-NAKED void FUN_081da930(unknown* param_1) { INCFUNC("asm/func/FUN_081da930.inc"); }
+// 左右入力の switch の形が未解決, 下書き段階
+NON_MATCH void FUN_081da930(Entity7999* p) {
+#ifdef NONMATCHING_C
+  u32 cursor;
+  u32 keys;
+  u8* entered = &p->unk_29c;
+  u8* repeat;
+  u32 wait;
+
+  if (*entered != 0) {
+    s32 id;
+
+    Marquee_Clear();
+    id = p->unk_286 + 25;
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->script) + id));
+    FUN_081da730(p);
+    p->unk_29d = 0;
+    p->state_29e = 0;
+    *entered = 0;
+  }
+
+  if (p->state_29e < 30) {
+    FUN_081da64c(p);
+    FUN_081da14c(p);
+    p->state_29e++;
+    return;
+  }
+
+  cursor = p->unk_29d;
+  repeat = &p->unk_285;
+  keys = 0;
+  if (gInput[0].pressed & DPAD_UP) {
+    keys = 1;
+  } else if (gInput[0].pressed & DPAD_DOWN) {
+    keys = 2;
+  } else if (gInput[0].pressed & DPAD_LEFT) {
+    keys = 4;
+  } else if (gInput[0].pressed & DPAD_RIGHT) {
+    keys = 8;
+  } else if (gInput[0].pressed & START_BUTTON) {
+    keys = 32;
+  } else if (gInput[0].pressed & B_BUTTON) {
+    keys = 16;
+  }
+
+  wait = gInput[0].down & DPAD_ANY;
+  if (wait != 0) {
+    wait = *repeat;
+    if (wait >= 12) {
+      if (gInput[0].down & DPAD_UP) {
+        keys |= 1;
+      } else if (gInput[0].down & DPAD_DOWN) {
+        keys |= 2;
+      }
+      if (gInput[0].down & DPAD_LEFT) {
+        keys |= 4;
+      } else if (gInput[0].down & DPAD_RIGHT) {
+        keys |= 8;
+      }
+      wait = 0;
+    } else {
+      wait++;
+    }
+  }
+  *repeat = wait;
+
+  if (TEST_FLAGS(keys, 1)) {
+    if (cursor == 0) {
+      cursor = 2;
+    } else {
+      cursor--;
+    }
+    p->unk_285 = 0;
+  } else if (TEST_FLAGS(keys, 2)) {
+    if (cursor == 2) {
+      cursor = 0;
+    } else {
+      cursor++;
+    }
+    p->unk_285 = 0;
+  } else if (TEST_FLAGS(keys, 4)) {
+    u32 prev;
+    u32 next;
+
+    switch (p->unk_29d) {
+      case 0: {
+        prev = p->unk_286;
+        if (prev == 0) {
+          next = p->unk_289 - 1;
+        } else {
+          next = prev - 1;
+        }
+        p->unk_286 = next;
+        if (prev != next) {
+          PlaySound_082406e0(220);
+        }
+        break;
+      }
+      case 1: {
+        prev = p->unk_287;
+        if (prev == 0) {
+          next = p->unk_28a - 1;
+        } else {
+          next = prev - 1;
+        }
+        p->unk_287 = next;
+        if (prev != next) {
+          PlaySound_082406e0(220);
+        }
+        break;
+      }
+      case 2: {
+        prev = p->unk_288;
+        if (prev == 0) {
+          next = p->unk_28b - 1;
+        } else {
+          next = prev - 1;
+        }
+        p->unk_288 = next;
+        if (prev != next) {
+          PlaySound_082406e0(220);
+        }
+        FUN_081da814(p);
+        break;
+      }
+    }
+    FUN_081da730(p);
+    p->unk_285 = 0;
+  } else if (TEST_FLAGS(keys, 8)) {
+    u32 prev;
+    u32 next;
+
+    switch (p->unk_29d) {
+      case 0: {
+        prev = p->unk_286;
+        next = prev + 1;
+        if (prev == p->unk_289 - 1) {
+          next = 0;
+        }
+        p->unk_286 = next;
+        if (prev != next) {
+          PlaySound_082406e0(220);
+        }
+        break;
+      }
+      case 1: {
+        prev = p->unk_287;
+        next = prev + 1;
+        if (prev == p->unk_28a - 1) {
+          next = 0;
+        }
+        p->unk_287 = next;
+        if (prev != next) {
+          PlaySound_082406e0(220);
+        }
+        break;
+      }
+      case 2: {
+        prev = p->unk_288;
+        next = prev + 1;
+        if (prev == p->unk_28b - 1) {
+          next = 0;
+        }
+        p->unk_288 = next;
+        if (prev != next) {
+          PlaySound_082406e0(220);
+        }
+        FUN_081da814(p);
+        break;
+      }
+    }
+    FUN_081da730(p);
+    p->unk_285 = 0;
+  } else if (TEST_FLAGS(keys, 32)) {
+    p->updateCallback = FUN_081da890;
+    p->unk_29c = 1;
+    p->unk_284 = 2;
+    PlaySound_082406e0(SE_SELECT);
+    return;
+  } else if (TEST_FLAGS(keys, 16) && !Entity7999_IsUnk56Set()) {
+    p->updateCallback = FUN_081da8d4;
+    p->unk_29c = 1;
+    p->unk_284 = 1;
+    PlaySound_082406e0(SE_CANCEL);
+    return;
+  }
+
+  if (p->unk_29d != cursor) {
+    p->unk_29d = cursor;
+    FUN_081da468(p);
+    PlaySound_082406e0(220);
+  }
+  FUN_081da64c(p);
+  FUN_081da14c(p);
+#else
+  INCFUNC("asm/func/FUN_081da930.inc");
+#endif
+}
 
 s32 Entity7999_Update(Entity7999* p) {
   if (!FUN_081dfa04()) {
@@ -224,7 +857,48 @@ s32 Entity7999_Destroy(Entity7999* p) {
   return 1;
 }
 
-NAKED s32 Entity7999_Init(Entity7999* p) { INCFUNC("asm/func/Entity7999_Init.inc"); }
+s32 Entity7999_Init(Entity7999* p) {
+  u8* data;
+  void (*update)(Entity7999*);
+
+  if (VM_SeekToNamedArg('s')) {
+    p->script = VM_GetPC_Proxy();
+    if (p->script == NULL) {
+      return -1;
+    }
+  }
+  p->unk_2a0 = VM_GetNamedArgValue('l', 0);
+  p->unk_2a2 = VM_GetNamedArgValue('e', 0);
+  Entity7999_InitBG(p);
+  Entity7999_InitPanels(p);
+  Entity7999_InitSprites(p);
+  FUN_081da468(p);
+  Entity7999_SavePltt(p);
+  p->unk_29b = -1;
+  p->unk_298 = -1;
+  p->unk_299 = -1;
+  p->unk_29a = -1;
+  update = FUN_081da930;
+  p->updateCallback = update;
+  p->unk_29c = TRUE;
+  p->unk_284 = 0;
+  if (VM_GetNamedArgValue('f', 0)) {
+    FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
+  }
+  FUN_0809c08c(7);
+  data = gEntity9A9F->unk_15c;
+  if (gEntity9A9F == NULL) {
+    data = NULL;
+  }
+  p->unk_286 = data[0x40];
+  p->unk_287 = data[0x41];
+  p->unk_288 = data[0x42];
+  FUN_081d9e50(p);
+  FUN_081da814(p);
+  FUN_081da074(p);
+  FUN_081da218(p);
+  return 1;
+}
 
 Entity7999* Entity7999_Create(void) {
   Entity7999* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity7999));

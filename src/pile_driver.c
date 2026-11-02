@@ -730,7 +730,7 @@ void FUN_080b176c(PileDriver* p) {
   if (p->unk_4fe <= 29) {
     p->unk_4fe++;
   } else if (!p->unk_c12) {
-    PlaySound_082406e0(SONG_490);
+    PlaySound_082406e0(SE_COFFIN_OPEN);
     gCoffin->state = 13;
     PileDriver_SetSubState(p, 9);
   }
@@ -747,7 +747,7 @@ NAKED void FUN_080b17f4(PileDriver* p) { INCFUNC("asm/func/FUN_080b17f4.inc"); }
 
 void FUN_080b1888(PileDriver* p) {
   if (p->unk_12e4 == 0) {
-    PlaySound_082406e0(SONG_491);
+    PlaySound_082406e0(SE_COFFIN_CLOSE);
     FUN_08086b18(&p->pos_510);
     PileDriver_SetSubState(p, 12);
     FUN_080ad204(p, 5);

@@ -20,7 +20,7 @@ typedef struct Entity081d16ecItem {
   AuxAnimState anim;              // 0x2C, AuxAnim_SetAnim で再生する
   u8 unk_3c[28];                  // 0x3C
   Vec3 basePos;                   // 0x58, 揺れの基準位置, sprite.pos へ複写する
-  HitboxData hitbox;              // 0x60, _Destroy が Hitbox_Unregister に渡す
+  HitboxData hurtbox;             // 0x60, _Destroy が Hitbox_Unregister に渡す
   u16 state;                      // 0xB0, _Update が PTR_ARRAY_085AE0B8[state](p, item) を呼ぶ
   u16 unk_b2;                     // 0xB2
   u16 slotIndex;                  // 0xB4, FUN_081d0eac が確保時に自分のスロット番号を入れる
@@ -113,11 +113,11 @@ void FUN_081d11b8(Entity081d16ecItem* item) {
 // 無敵時間を数えつつ、点滅用のパレットを選ぶ
 NON_MATCH void FUN_081d1260(Entity081d16ecItem* item) {
 #ifdef NONMATCHING_C
-  if (item->hitbox.invincibleTime != 0) {
-    item->hitbox.flags |= HBFLAG_HIDDEN;
-    item->hitbox.invincibleTime--;
+  if (item->hurtbox.invincibleTime != 0) {
+    item->hurtbox.flags |= HBFLAG_HIDDEN;
+    item->hurtbox.invincibleTime--;
   } else {
-    item->hitbox.flags &= ~HBFLAG_HIDDEN;
+    item->hurtbox.flags &= ~HBFLAG_HIDDEN;
   }
   if (item->unk_bd != 0) {
     Video_SetAuxSpritePltt(item->sprite.gfx, 306);
@@ -156,10 +156,10 @@ NON_MATCH void FUN_081d1470(Entity081d16ecItem* item) {
       busy = FUN_081d0e94(item, E081D16EC_FLAG_1);
     }
     if (!busy) {
-      item->hitbox.flags |= HBFLAG_HIDDEN;
+      item->hurtbox.flags |= HBFLAG_HIDDEN;
       if (!FUN_081d0e94(item, E081D16EC_FLAG_3)) {
         if (item->unk_c2 <= item->unk_c4) {
-          item->hitbox.invincibleTime = 24;
+          item->hurtbox.invincibleTime = 24;
           FUN_081d11b8(item);
         }
       }
@@ -204,7 +204,7 @@ s32 Entity081d16ec_Destroy(Entity081d16ec* p) {
   for (i = 0; i < 12; i++) {
     if (Entity081d16ec_IsActive(&p->activeMask, i)) {
       AuxSprite_Remove(&p->items[i].sprite);
-      Hitbox_Unregister(&p->items[i].hitbox);
+      Hitbox_Unregister(&p->items[i].hurtbox);
     }
   }
   gEntity081d16ec = NULL;
@@ -252,17 +252,17 @@ void FUN_081d1744(Entity081d16ecItem* item) {
 NAKED void FUN_081d17c8(HitboxData* a, HitboxData* b, Entity081d16ecItem* item) { INCFUNC("asm/func/FUN_081d17c8.inc"); }
 
 void FUN_081d1924(Entity081d16ecItem* item) {
-  HitboxData* hitbox = &item->hitbox;
+  HitboxData* hurtbox = &item->hurtbox;
   Vec3 offset;
   Vec3 halfSize;
 
   VEC3_SET(offset, 0, Q8(0.5), 0);
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
-  hitbox->id = item->unk_be;
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetPos(hitbox, &item->sprite.pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_081d17c8, item);
-  Hitbox_Register(hitbox);
+  hurtbox->id = item->unk_be;
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_SetPos(hurtbox, &item->sprite.pos, 0);
+  Hitbox_SetHandler(hurtbox, FUN_081d17c8, item);
+  Hitbox_Register(hurtbox);
 }
 
 // '.n' が指す要素のフラグを返す
@@ -291,7 +291,7 @@ void Cmd_2207(void) {
   }
 }
 
-// '.n' が指す要素を '.c' のビットに応じて開閉させる
+// 0x820B, '.n' が指す要素を '.c' のビットに応じて開閉させる
 void Cmd_820B(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
@@ -303,13 +303,13 @@ void Cmd_820B(void) {
 
       if (mode & 1) {
         if (!FUN_081d0e94(item, E081D16EC_FLAG_0)) {
-          item->hitbox.invincibleTime = 24;
+          item->hurtbox.invincibleTime = 24;
           FUN_081d11b8(item);
           FUN_081d0e74(item, E081D16EC_FLAG_4);
         }
       } else if (mode & 2) {
         if (!FUN_081d0e94(item, E081D16EC_FLAG_1)) {
-          item->hitbox.invincibleTime = 24;
+          item->hurtbox.invincibleTime = 24;
           FUN_081d11b8(item);
           FUN_081d0e74(item, E081D16EC_FLAG_4);
         }

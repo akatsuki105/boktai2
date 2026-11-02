@@ -33,7 +33,7 @@ public class MergeContinuation extends GhidraScript {
       println("吸収対象: " + f.getName() + " " + f.getBody());
     }
     Function after = fm.getFunctionContaining(maxEnd.add(1));
-    if (after != null && !after.getEntryPoint().equals(aParent)) { println("ABORT: 直後が " + after.getName() + " の中"); return; }
+    if (after != null && !after.getEntryPoint().equals(aParent) && !after.getEntryPoint().equals(maxEnd.add(1))) { println("ABORT: 直後が " + after.getName() + " の中"); return; }
 
     // 1. bl による長距離分岐が CALL 扱いなので JUMP に直す (先にやらないと削除時に再生成される)
     int fixed = 0;

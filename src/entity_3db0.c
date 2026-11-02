@@ -110,12 +110,12 @@ NON_MATCH void Entity3DB0_InitSprite(Entity3DB0* p, Vec3* pos) {
 #endif
 }
 
-void Entity3DB0_InitHitbox(Entity3DB0* p, u32 id, Vec3* pos) {
+void Entity3DB0_InitHurtbox(Entity3DB0* p, u32 id, Vec3* pos) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, (1 << 5), &halfSize, &offset);
+  Hitbox_Init(hurtbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_5, &halfSize, &offset);
   Hitbox_SetHandler(hurtbox, Entity3DB0_OnHurt, p);
   Hitbox_SetPos(hurtbox, pos, 0);
   Hitbox_Register(hurtbox);
@@ -140,7 +140,7 @@ NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 id, u32 _) {
   p->height = (s8)(pos.y >> 8) + 1;
   Map_AddTileOverride(&p->tileOverride, p->tileIdx, STAIRS_NONE, p->height, 0xFF, TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_8);
   Entity3DB0_InitSprite(p, &pos);
-  Entity3DB0_InitHitbox(p, id, &pos);
+  Entity3DB0_InitHurtbox(p, id, &pos);
   if (VM_SeekToNamedArg('R')) {
     p->scriptID = VM_GetValue();
   } else {

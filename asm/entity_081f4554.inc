@@ -1810,7 +1810,7 @@ _081F40A6:
 	ldrh r0, [r0]
 	str r0, [sp, #8]
 	add r0, sp, #0xc
-	bl FUN_081f08ec
+	bl Entity081f0b90_Spawn
 	adds r0, r7, #0
 	bl FUN_081f337c
 _081F4108:

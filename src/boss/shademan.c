@@ -1824,7 +1824,7 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
         ShadeMan_PlayAnim(p, 9, 1, 1, 1, 0);
         target = boss->playerPos[0];
         Boss_SetTarget(boss, target->x, target->y, target->z);
-        PlaySound_082406e0(SE_842);
+        PlaySound_082406e0(SE_WHOOSH_842);
       }
       Vec3_SetPolar(&boss->mover.delta, p->angle, 40);
       if (FUN_0821e5f0(p)) {
@@ -1990,7 +1990,7 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
         target = boss->playerPos[0];
         Boss_SetTarget(boss, target->x, target->y, target->z);
         Hitbox_SetAttack(&p->hitbox, p->unk_3ca, p->unk_3cc, 0, HBATTR_17 | HBATTR_18, p->unk_3ce);
-        PlaySound_082406e0(SE_842);
+        PlaySound_082406e0(SE_WHOOSH_842);
       }
       Vec3_SetPolar(&boss->mover.delta, p->angle, 50);
       ahead.x = boss->mover.pos.x + POLAR_X(400, p->angle);
@@ -2134,7 +2134,7 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
         ShadeMan_PlayAnim(p, 9, 1, 0, 1, 0);
         target = boss->playerPos[0];
         Boss_SetTarget(boss, target->x, target->y, target->z);
-        PlaySound_082406e0(SE_842);
+        PlaySound_082406e0(SE_WHOOSH_842);
       }
       Vec3_SetPolar(&boss->mover.delta, p->angle, 40);
       if (gStat->playerKind < 2) {

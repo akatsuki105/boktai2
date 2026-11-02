@@ -76,7 +76,7 @@ _08101A58:
 	movs r3, #0x20
 	ldrsh r2, [r0, r3]
 	adds r0, r6, #0
-	bl FUN_080e6304
+	bl Enemy_SetAngleToward
 	adds r0, r6, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -188,7 +188,7 @@ _08101B68:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	adds r2, r7, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _08101B86
 	cmp r0, #2

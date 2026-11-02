@@ -899,7 +899,7 @@ _080FCDEC:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080FCE0C
 	cmp r0, #2
@@ -1162,7 +1162,7 @@ _080FD004:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080FD024
 	cmp r0, #2

@@ -60,7 +60,63 @@ void FUN_080c0be0(EntityD3A9* p, MsgQueue* mq, MsgPacket* msg) {
   MsgQueue_EndWait(mq, 1);
 }
 
-NAKED void* EntityD3A9_Update_Internal(EntityD3A9* p) { INCFUNC("asm/func/EntityD3A9_Update_Internal.inc"); }
+// 94/95 命令, ループ初回の判定は p + 0x22, 2回目以降は mq + 6 を使っている形が作れない
+NON_MATCH void* EntityD3A9_Update_Internal(EntityD3A9* p) {
+#ifdef NONMATCHING_C
+  MsgQueue* mq = &p->mq;
+  s32 i;
+
+  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+
+    MsgQueue_BeginWait(mq, msg);
+    switch (msg->cmd) {
+      case 0: {
+        FUN_080c0ae4(p, mq, msg);
+        break;
+      }
+      case 1: {
+        FUN_080c0b00(p, mq, msg);
+        break;
+      }
+      case 2: {
+        FUN_080c0b1c(p, mq, msg);
+        break;
+      }
+      case 3: {
+        FUN_080c0b38(p, mq, msg);
+        break;
+      }
+      case 4: {
+        FUN_080c0b54(p, mq, msg);
+        break;
+      }
+      case 5: {
+        FUN_080c0b70(p, mq, msg);
+        break;
+      }
+      case 6: {
+        FUN_080c0b8c(p, mq, msg);
+        break;
+      }
+      case 7: {
+        FUN_080c0ba8(p, mq, msg);
+        break;
+      }
+      case 8: {
+        FUN_080c0bc4(p, mq, msg);
+        break;
+      }
+      case 9: {
+        FUN_080c0be0(p, mq, msg);
+        break;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/EntityD3A9_Update_Internal.inc");
+#endif
+}
 
 s32 EntityD3A9_Update(EntityD3A9* p) {
   EntityD3A9_Update_Internal(p);

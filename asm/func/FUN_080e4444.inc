@@ -517,7 +517,7 @@ _080E480C:
 	add r0, sp, #8
 	ldr r1, [sp, #0x18]
 	movs r2, #0xa
-	bl FUN_082340c8
+	bl Map_HasLineOfSight
 	lsls r0, r0, #0x18
 	lsrs r3, r0, #0x18
 _080E481E:

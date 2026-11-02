@@ -181,7 +181,7 @@ _080A1D7A:
 	adds r0, r5, #0
 	adds r1, r7, #0
 	add r2, sp, #8
-	bl Entity3DB0_InitHitbox
+	bl Entity3DB0_InitHurtbox
 	movs r0, #0x52
 	bl VM_SeekToNamedArg
 	adds r1, r0, #0

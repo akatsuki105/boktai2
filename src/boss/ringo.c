@@ -193,7 +193,7 @@ typedef struct {
 static_assert(sizeof(Ringo) == 4188);
 
 void FUN_0805d5d4(struct Entity0805d364* p);
-void FUN_0805b0b0(struct Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
+s32 FUN_0805b0b0(struct Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
 void FUN_0805d3a8(struct Entity0805d364* p, Vec3* from, Vec3* to, s32 param_4, s32 param_5);
 bool32 FUN_0809df78(Vec3* pos);
 void FUN_080846f8(void);
@@ -259,7 +259,7 @@ static inline void Ringo_UpdateUnk88c(Ringo* p) {
   if (p->unk_820 != 0) {
     if (p->unk_88c > 2) {
       Ringo_SetUnk169(p, 5);
-      FUN_0823585c(&p->unk_84c, &p->base.mover.pos, 3, 1, 0x100, NULL, NULL);
+      Map_PickPathNode(&p->unk_84c, &p->base.mover.pos, 3, 1, 0x100, NULL, NULL);
       p->unk_88c = 0;
       Boss_SetSubState2(&p->base, 2);
     } else {
@@ -269,13 +269,13 @@ static inline void Ringo_UpdateUnk88c(Ringo* p) {
     }
   } else if (p->unk_88c > 2) {
     Ringo_SetUnk169(p, 5);
-    FUN_0823585c(&p->unk_84c, &p->base.mover.pos, 3, 1, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_84c, &p->base.mover.pos, 3, 1, 0x100, NULL, NULL);
     p->unk_88c = 0;
     Boss_SetSubState2(&p->base, 2);
   } else {
     Ringo_SetSubState2Unk17b(p, 12, 1, 0x20);
     p->unk_88c++;
-    PlaySound_0824078c(SONG_858);
+    PlaySound_0824078c(VO_RINGO_OSOI);
   }
 }
 
@@ -995,7 +995,7 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
       break;
     }
     case 3: {
-      Entity080c0fa0_Create(&pos, 0x2C, 2, Angle_ToDir8(p->unk_8da), 32, 0, p->unk_8cc);
+      Entity080c0fa0_Create(&pos, 44, 2, Angle_ToDir8(p->unk_8da), 32, 0, p->unk_8cc);
       PlaySound_0824078c(SONG_837);
       break;
     }
@@ -1127,7 +1127,7 @@ NON_MATCH void FUN_08029a1c(Ringo* p, s32 n) {
       PlaySound_0824078c(SONG_841);
     }
   } else {
-    PlaySound_0824078c(SE_842);
+    PlaySound_0824078c(SE_WHOOSH_842);
   }
 #else
   INCFUNC("asm/func/FUN_08029a1c.inc");
@@ -1217,8 +1217,7 @@ void Ringo_InitAuxSprites(Ringo* p) {
   Video_SetAuxSpritePltt(&p->auxGfx[0], 196);
   Video_SetAuxSpritePltt(&p->auxGfx[1], 200);
   p->auxAnimFile = GetFile(DIR_ANIMATION, ANIM_78E1);
-  sprite = p->auxSprites;
-  for (i = 0; i < 16; i++, sprite++) {
+  for (i = 0, sprite = p->auxSprites; i < 16; i++, sprite++) {
     AuxSprite_Add(sprite, &p->auxGfx[0], SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     AuxAnim_SetAnim(&p->auxAnims[i], p->auxAnimFile, 2, 0, 0);
     AuxAnim_SetAnimSpeed(&p->auxAnims[i], 32);
@@ -1237,12 +1236,13 @@ void Ringo_RemoveAuxSprites(Ringo* p) {
   }
 }
 
-// 残差はループの誘導変数 (255/253), 原典は auxActive と auxAnims も p からの歩進ポインタで持つ, AuxAnim の手動送りはリポジトリ共通の壁
+// 253/253命令 (12 hunk), 手動送りは AuxSprite_AdvanceAnim で揃い vp / pos の初期化順も合わせた, 残差はループ前の i = 0 と sp 複写の置き場所, ldrb の base を r4 か r3 に置くかのレジスタ割当だけ
+// 試済: sprite の初期化を for に入れる, anim / active を歩くポインタにする (悪化), 画面座標を vp-> で読む (悪化), i と sprite の宣言順
 NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
 #ifdef NONMATCHING_C
   Vec3 screen;
-  Vec3* pos = &p->base.mover.pos;
   Vec3* vp = &screen;
+  Vec3* pos = &p->base.mover.pos;
   AuxSprite* sprite;
   s32 i;
 
@@ -1251,9 +1251,6 @@ NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
   for (i = 0; i < 16; i++, sprite++) {
     if (p->auxActive[i]) {
       Vec3* ofs = &p->auxOffsets[i];
-      AuxAnimState* anim;
-      AuxAnimCmd* cmd;
-      bool32 ended;
 
       if (p->auxAnims[i].tick & 1) {
         ofs->y--;
@@ -1261,49 +1258,7 @@ NON_MATCH void Ringo_UpdateAuxSprites(Ringo* p) {
       sprite->pos.x = screen.x + ofs->x;
       sprite->pos.y = screen.y + ofs->y;
       sprite->pos.z = screen.z + ofs->z;
-      anim = &p->auxAnims[i];
-      cmd = &anim->cmds[anim->cmdIdx];
-      sprite->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-            ended = TRUE;
-          } else {
-            anim->cmdIdx--;
-            ended = FALSE;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx < anim->cmdCount) {
-            ended = FALSE;
-          } else {
-            anim->cmdIdx = 0;
-            ended = TRUE;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      } else {
-        ended = FALSE;
-      }
-      if (ended) {
+      if (AuxSprite_AdvanceAnim(sprite, &p->auxAnims[i])) {
         sprite->flags |= SPRFLAG_HIDDEN;
         p->auxActive[i] = FALSE;
       }
@@ -2104,33 +2059,33 @@ void FUN_0802bccc(Ringo* p) {
     if (ratio < 0x40) {
       if (n <= 2) {
         Ringo_SetUnk169(p, 5);
-        FUN_0823585c(&p->unk_84c, &mover->pos, 3, 4, 0x100, NULL, NULL);
+        Map_PickPathNode(&p->unk_84c, &mover->pos, 3, 4, 0x100, NULL, NULL);
       } else if (n == 4) {
         Ringo_SetSubState2Unk17b(p, 14, 3, 0x40);
         return;
       } else {
         Ringo_SetUnk169(p, 9);
-        FUN_0823585c(&p->unk_84c, &mover->pos, 1, 1, 0x100, NULL, NULL);
+        Map_PickPathNode(&p->unk_84c, &mover->pos, 1, 1, 0x100, NULL, NULL);
       }
     } else if (n <= 2) {
       Ringo_SetUnk169(p, 5);
-      FUN_0823585c(&p->unk_84c, &mover->pos, 3, 4, 0x100, NULL, NULL);
+      Map_PickPathNode(&p->unk_84c, &mover->pos, 3, 4, 0x100, NULL, NULL);
     } else if (n == 4) {
       Ringo_SetSubState2Unk17b(p, 12, 3, 0x40);
       return;
     } else {
       Ringo_SetUnk169(p, 8);
-      FUN_0823585c(&p->unk_84c, &mover->pos, 3, 1, 0x100, NULL, NULL);
+      Map_PickPathNode(&p->unk_84c, &mover->pos, 3, 1, 0x100, NULL, NULL);
     }
     Boss_SetSubState2(boss, 1);
   } else {
     Ringo_SetUnk169(p, 6);
-    FUN_0823585c(&p->unk_84c, &mover->pos, 2, 6, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_84c, &mover->pos, 2, 6, 0x100, NULL, NULL);
     Boss_SetSubState2(boss, 1);
     if (p->unk_820 != 0) {
-      PlaySound_0824078c(SONG_778);
+      PlaySound_0824078c(VO_DAINN_JYAMADAYO);
     } else {
-      PlaySound_0824078c(SONG_859);
+      PlaySound_0824078c(VO_RINGO_TAKETHIS);
     }
   }
 }
@@ -2154,24 +2109,24 @@ void FUN_0802be88(Ringo* p) {
   if (p->targetPlayer == 0) {
     if (ratio < 0x40) {
       Ringo_SetUnk169(p, 7);
-      FUN_0823585c(&p->unk_84c, &mover->pos, 2, 5, 0x100, NULL, NULL);
+      Map_PickPathNode(&p->unk_84c, &mover->pos, 2, 5, 0x100, NULL, NULL);
       Boss_SetSubState2(boss, 1);
     } else if (n <= 2) {
       Ringo_SetUnk169(p, 5);
-      FUN_0823585c(&p->unk_84c, &mover->pos, 3, 4, 0x100, NULL, NULL);
+      Map_PickPathNode(&p->unk_84c, &mover->pos, 3, 4, 0x100, NULL, NULL);
     } else {
       Ringo_SetUnk169(p, 8);
-      FUN_0823585c(&p->unk_84c, &mover->pos, 3, 1, 0x100, NULL, NULL);
+      Map_PickPathNode(&p->unk_84c, &mover->pos, 3, 1, 0x100, NULL, NULL);
     }
     Boss_SetSubState2(boss, 1);
   } else {
     Ringo_SetUnk169(p, 7);
-    FUN_0823585c(&p->unk_84c, &mover->pos, 2, 5, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_84c, &mover->pos, 2, 5, 0x100, NULL, NULL);
     Boss_SetSubState2(boss, 1);
     if (p->unk_820 != 0) {
-      PlaySound_0824078c(SONG_778);
+      PlaySound_0824078c(VO_DAINN_JYAMADAYO);
     } else {
-      PlaySound_0824078c(SONG_859);
+      PlaySound_0824078c(VO_RINGO_TAKETHIS);
     }
   }
 }
@@ -2187,16 +2142,16 @@ void FUN_0802c024(Ringo* p) {
   p->unk_17e = p->unk_8db;
   if (n == 0 || n == 4) {
     Ringo_SetUnk169(p, 11);
-    FUN_0823585c(&p->unk_84c, &boss->mover.pos, 2, 8, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_84c, &boss->mover.pos, 2, 8, 0x100, NULL, NULL);
   } else if (n == 1 || n == 5) {
     Ringo_SetUnk169(p, 7);
-    FUN_0823585c(&p->unk_84c, &boss->mover.pos, 3, 8, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_84c, &boss->mover.pos, 3, 8, 0x100, NULL, NULL);
   } else if (n == 2 || n == 6) {
     Boss_SetSubState2(boss, 20);
     return;
   } else {
     Ringo_SetUnk169(p, 8);
-    FUN_0823585c(&p->unk_84c, &boss->mover.pos, 3, 4, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_84c, &boss->mover.pos, 3, 4, 0x100, NULL, NULL);
   }
   Boss_SetSubState2(boss, 1);
 }
@@ -2360,7 +2315,7 @@ void FUN_0802c73c(Ringo* p) {
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 4);
     FUN_08029628(p);
-    FUN_0823585c(&p->unk_85c, &mover->pos, 3, 4, 0x100, NULL, NULL);
+    Map_PickPathNode(&p->unk_85c, &mover->pos, 3, 4, 0x100, NULL, NULL);
   }
   if (boss->subStateDone) {
     p->unk_172 = 0;
@@ -2409,6 +2364,7 @@ NON_MATCH void FUN_0802c8e0(Ringo* p) {
   s32 n;
   Vec3 v;
   bool32 blocked;
+  s32 dy;
 
   boss->canDie = 1;
   if (Boss_EnterSubState(boss)) {
@@ -2451,7 +2407,8 @@ NON_MATCH void FUN_0802c8e0(Ringo* p) {
   mover = &p->base.mover;
   Vec3_SetPolar(&v, mover->angle, 400);
   Vec3_Add(&v, &mover->pos);
-  blocked = (u32)(TileHeightAt(&v) - p->unk_164 + 511) > 766;
+  dy = TileHeightAt(&v) - p->unk_164;
+  blocked = dy < -511 || dy > 255;
   if (blocked || boss->subStateDone) {
     Boss_SetSubState2(boss, 9);
   } else {
@@ -2721,7 +2678,7 @@ void FUN_0802d4bc(Ringo* p) {
       Vec3 to;
 
       Vec3_CopyOffsetY(&from, &mover->pos, 200);
-      FUN_0823585c(&to, &mover->pos, 0, 1, 0x100, NULL, NULL);
+      Map_PickPathNode(&to, &mover->pos, 0, 1, 0x100, NULL, NULL);
       if (p->entity0805d364 != NULL) {
         FUN_0805d3a8(p->entity0805d364, &from, &to, 10, 10);
       }
@@ -3575,7 +3532,7 @@ void FUN_0802f368(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 36, 40), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(SE_842);
+    PlaySound_0824078c(SE_WHOOSH_842);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX);
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -4346,7 +4303,7 @@ void dainn_0803141c(Boss* boss, s32 timer) {
     p->phase = 1;
     p->phaseTimer = 0;
     p->unk_872 = 0;
-    PlaySound_0824078c(VO_DAINN_LAUGH);
+    PlaySound_0824078c(VO_DAINN_LAUGH1);
   }
   p->damage = 0;
   p->hitBySol = 0;
@@ -5056,7 +5013,7 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
         p->phase++;
         p->phaseTimer = 0;
         FUN_08029cc8(p);
-        PlaySound_0824078c(VO_RINGO_DEFEATED);
+        PlaySound_0824078c(VO_RINGO_SCREAM);
         PlaySound_0824078c(SONG_453);
       }
       break;
@@ -5420,7 +5377,7 @@ void FUN_08034014(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 36, 40), PLAYMODE_ONCE_AND_STOP, 2, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(SE_842);
+    PlaySound_0824078c(SE_WHOOSH_842);
   }
   p->damage = 0;
   p->hitBySol = 0;
@@ -5603,7 +5560,7 @@ void FUN_080346cc(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, 0x20);
     Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(VO_RINGO_DEFEATED);
+    PlaySound_0824078c(VO_RINGO_SCREAM);
   }
   p->damage = 0;
   p->hitBySol = 0;
@@ -6228,7 +6185,7 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
         PlaySound_0824078c(SONG_973);
       } else {
         Boss_SetState(boss, FUN_08032e1c, 33);
-        PlaySound_0824078c(SONG_848);
+        PlaySound_0824078c(VO_RINGO_848);
       }
       return TRUE;
     }
@@ -6249,9 +6206,9 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
       PlaySound_0824078c(SE_ENEMY_DAMAGED);
     } else if (boss->curState == 19) {
       if (p->unk_820) {
-        PlaySound_0824078c(SE_DAINN_STUN_BY_RINGO_BAT);
+        PlaySound_0824078c(VO_DAINN_DAMAGE);
       } else {
-        PlaySound_0824078c(SONG_847);
+        PlaySound_0824078c(VO_RINGO_DAMAGE);
       }
     } else {
       PlaySound_0824078c(SE_ENEMY_DAMAGED);

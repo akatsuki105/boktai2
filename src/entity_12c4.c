@@ -1,5 +1,7 @@
+#include "camera_inline.h"
 #include "entity.h"
 #include "global.h"
+#include "player.h"
 #include "video.h"
 #include "vm.h"
 
@@ -7,17 +9,15 @@
 typedef struct {
   Entity e;          // 0x000, ENTITY_UNK_9 または ENTITY_UNK_11
   s16 radius;        // 0x018, '.r=250' << 4 (4000 で頭打ち), 使うときは >> 4
-  s16 unk_1a;        // 0x01A, '.m=0'
+  u16 expand;        // 0x01A, '.m=0', 非0 なら radius を広げ, 0 なら狭める
   s16 radiusStep;    // 0x01C, '.s=8' << 4
-  s8 unk_1e;         // 0x01E, '.d=0'
+  bool8 killAtEnd;   // 0x01E, '.d=0', radius が端まで届いたら自分を消す
   u8 unk_1f;         // 0x01F
-  u16 unk_20;        // 0x020, _Init が 0 を入れる
-  u16 unk_22;        // 0x022, _Init が 0 を入れる
+  u16 frame;         // 0x020, 毎フレーム +1
+  u16 bufIdx;        // 0x022, HBlank に流している winH の添字, 毎フレーム 0 と 1 を行き来する
   u16 winH[2][180];  // 0x024, FUN_0801ad78(p, i) が 0x24 + i*0x168 に走査線1本ぶんの WIN0H (左<<8 | 右) を Sqrt(r*r - dy*dy) で焼く
-  s16 centerX;       // 0x2F4, プレイヤーを投影して 0..0xF0 に丸めたもの, これ以降は Vec3?
-  s16 centerY;       // 0x2F6, 同じく 0..0xB4
-  s16 unk_2f8;       // 0x2F8, 投影した奥行き, 読み手が見つかっていない
-  u8 unk_2fa[6];     // 0x2FA, padding?
+  Vec3 center;       // 0x2F4, プレイヤーを投影した画面座標, x は 0..240, y は 0..180 に丸める
+  u8 unk_2fc[4];     // 0x2FC, padding?
 } Entity12C4;
 static_assert(sizeof(Entity12C4) == 768);
 
@@ -26,42 +26,48 @@ IWRAM_DATA Entity12C4* gEntity12C4 = NULL;  // 0x03000094
 void FUN_0801ad6c(void) { gEntity12C4 = NULL; }
 
 // 走査線1本ずつ円の左右端を求めて WIN0H のバッファに焼く
+// 残差は dead な r - center.y (subs r0, r2, r0) と r の複写の 2 命令だけ, 原典はこの値を使う経路が後段で消えている
 NON_MATCH void FUN_0801ad78(Entity12C4* p, s32 bufIdx) {
 #ifdef NONMATCHING_C
   s32 r = p->radius >> 4;
   s32 rr = r * r;
-  s32 top = p->centerY - r;
+  s32 top = p->center.y - r;
   s32 bottom;
+  s32 dy;
   u16* dst;
   s32 y;
 
   if (top < 0) {
     top = 0;
   }
-  bottom = p->centerY + r;
+  bottom = p->center.y + r;
   if (bottom > 180) {
     bottom = 180;
   }
+  dy = r - p->center.y;
   dst = p->winH[bufIdx];
-  for (y = 0; y < top; y++) {
-    *dst++ = 0;
+  for (y = 0; y < top; y++, dst++) {
+    *dst = 0;
   }
-  for (y = top; y < bottom; y++) {
-    s32 dy = p->centerY - y;
-    s32 half = Sqrt(rr - dy * dy);
-    s32 left = p->centerX - half;
-    s32 right = p->centerX + half;
+  for (y = top; y < bottom; y++, dst++) {
+    s32 half;
+    s32 left;
+    s32 right;
 
+    dy = p->center.y - y;
+    half = Sqrt(rr - dy * dy);
+    left = p->center.x - half;
+    right = p->center.x + half;
     if (left < 0) {
       left = 0;
     }
     if (right > 240) {
       right = 240;
     }
-    *dst++ = ((left & 0xFF) << 8) | (right & 0xFF);
+    *dst = ((left & 0xFF) << 8) | (right & 0xFF);
   }
-  for (y = bottom; y < 180; y++) {
-    *dst++ = 0;
+  for (y = bottom; y < 180; y++, dst++) {
+    *dst = 0;
   }
   p->winH[bufIdx][179] = 0;
 #else
@@ -77,7 +83,54 @@ void FUN_0801ae64(void) {
   gHBlankDmaMode = 0;
 }
 
-NAKED s32 Entity12C4_Update(Entity12C4* p) { INCFUNC("asm/func/Entity12C4_Update.inc"); }
+s32 Entity12C4_Update(Entity12C4* p) {
+  Player* player = gPlayerPtr[0];
+
+  if (player != NULL) {
+    Vec3 pos = player->mover.pos;
+
+    pos.y += 164;
+    WorldToScreen(&p->center, &pos);
+    if (p->center.x < 0) {
+      p->center.x = 0;
+    } else if (p->center.x > 240) {
+      p->center.x = 240;
+    }
+    if (p->center.y < 0) {
+      p->center.y = 0;
+    } else if (p->center.y > 180) {
+      p->center.y = 180;
+    }
+  } else {
+    p->center.x = 120;
+    p->center.y = 90;
+  }
+  FUN_0801ad78(p, 1 - p->bufIdx);
+  gHBlankEffectBuffer = p->winH[p->bufIdx];
+  gHBlankEffectReg = &REG_WIN0H;
+  gHBlankDmaCount = 1;
+  gHBlankDmaMode = 1;
+  if (p->expand) {
+    p->radius += p->radiusStep;
+    if (p->radius >= 4000) {
+      p->radius = 4000;
+      if (p->killAtEnd) {
+        KillEntity((Entity*)p);
+      }
+    }
+  } else {
+    p->radius -= p->radiusStep;
+    if (p->radius <= 512) {
+      p->radius = 512;
+      if (p->killAtEnd) {
+        KillEntity((Entity*)p);
+      }
+    }
+  }
+  p->bufIdx = 1 - p->bufIdx;
+  p->frame++;
+  return 0;
+}
 
 s32 Entity12C4_Destroy(Entity12C4* p) {
   FUN_0801ae64();
@@ -87,7 +140,41 @@ s32 Entity12C4_Destroy(Entity12C4* p) {
   return 0;
 }
 
-NAKED s32 Entity12C4_Init(Entity12C4* p, u16 param_2) { INCFUNC("asm/func/Entity12C4_Init.inc"); }
+s32 Entity12C4_Init(Entity12C4* p, u16 param_2) {
+  Player* player;
+  s32 i;
+
+  gEntity12C4 = p;
+  p->frame = 0;
+  p->bufIdx = 0;
+  p->expand = VM_GetNamedArgValue('m', 0);
+  p->radius = VM_GetNamedArgValue('r', 250) << 4;
+  if (p->radius >= 4000) {
+    p->radius = 4000;
+  }
+  p->radiusStep = VM_GetNamedArgValue('s', 8) << 4;
+  p->killAtEnd = VM_GetNamedArgValue('d', 0);
+  player = gPlayerPtr[0];
+  if (player != NULL) {
+    WorldToScreen(&p->center, &player->mover.pos);
+    if (p->center.x < 0) {
+      p->center.x = 0;
+    } else if (p->center.x > 240) {
+      p->center.x = 240;
+    }
+    if (p->center.y < 0) {
+      p->center.y = 0;
+    } else if (p->center.y > 180) {
+      p->center.y = 180;
+    }
+  } else {
+    p->center.x = 120;
+    p->center.y = 90;
+  }
+  for (i = 0; i < 2; i++) {
+    FUN_0801ad78(p, i);
+  }
+}
 
 // '.a' で所属する更新リストを切り替える
 Entity12C4* Entity12C4_Create(s32 param_1) {

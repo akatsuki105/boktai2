@@ -1,5 +1,6 @@
 *.gba
 *.map
+mgba/
 build/
 tools/agbcc
 *.sav

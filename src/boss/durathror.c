@@ -1,4 +1,5 @@
 #include "boss.h"
+#include "cwolf_target.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -12,6 +13,11 @@
 #include "sprite.h"
 #include "vec3.h"
 #include "vm.h"
+
+// ドゥラスロールは残りHPによって行動パターンが3種類ある
+// 1. つぼみ形態(第1形態)
+// 2. 花形態(第2形態)
+// 3. 本体(第3形態)
 
 // Durathror の 0x648 から6個並ぶ要素, Durathror_DestroyElems が 0x124 刻みで回す
 typedef struct {
@@ -113,14 +119,14 @@ typedef struct Durathror {
   u8 unk_de3;                             // 0xDE3
   struct Entity0805d79c* entity0805d79c;  // 0xDE4
   struct Entity080601a8* entity080601a8;  // 0xDE8
-  struct Entity0805dcd4* entity0805dcd4;  // 0xDEC
+  struct DurathrorImpale* impale;         // 0xDEC, "大棘"(地面から大きな棘を生やして突き刺そうとする攻撃)
   s32 scriptID;                           // 0xDF0, '.r'
   s32 scriptID2;                          // 0xDF4, '.b', scriptArgs の空いている値を引数にして呼ぶ
   s32 scriptID3;                          // 0xDF8, '.k'
   u32 scriptArgCount;                     // 0xDFC
   u32 scriptArgUsed;                      // 0xE00, scriptArgs のうち使ったもののビット
   u16 scriptArgs[8];                      // 0xE04, '.B'
-  Entity5941Node node;                    // 0xE14
+  CWolfTargetNode cwolfNode;              // 0xE14
 } Durathror;
 static_assert(sizeof(Durathror) == 3620);
 
@@ -296,12 +302,12 @@ void FUN_081a4e88(void);
 s32 FUN_08060220(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
 void FUN_0800e594(u32 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, s32 param_7, s32 param_8, Vec3* pos);
 void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
-void FUN_0805dd44(struct Entity0805dcd4* p, s32 power, s32 unk_8, Vec3* pos);
+s32 DurathrorImpale_Spawn(struct DurathrorImpale* p, s32 power, u32 duration, Vec3* pos);
 s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 s32 FUN_0805d80c(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos);
 struct Entity0805d79c* Entity0805d79c_Create(void);
-struct Entity0805dcd4* Entity0805dcd4_Create(void);
+struct DurathrorImpale* DurathrorImpale_Create(void);
 struct Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt);
 
 extern s32 gLightningTimer;
@@ -1704,9 +1710,9 @@ NON_MATCH void FUN_08039280(Durathror* p) {
     MainSprite_Hide(&p->sprite_4e8);
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_18)) {
-    p->node.flags &= ~1;
+    p->cwolfNode.flags &= ~1;
   } else {
-    p->node.flags |= 1;
+    p->cwolfNode.flags |= 1;
   }
   if (p->unk_15e > 0 && --p->unk_15e == 0) {
     p->sprite_280.plttID = 0x6543;
@@ -1714,8 +1720,8 @@ NON_MATCH void FUN_08039280(Durathror* p) {
   }
   p->unk_190++;
   if (p->unk_160) {
-    rgb555* src1 = &gObjPlttData[0x2F6 * 16];
-    rgb555* src2 = &gObjPlttData[0x2F7 * 16];
+    rgb555* src1 = &gObjPlttData[758 * 16];
+    rgb555* src2 = &gObjPlttData[759 * 16];
 
     if ((s8)++p->unk_161 < 0) {
       p->unk_160 = FALSE;
@@ -1771,7 +1777,7 @@ void FUN_08039680(Durathror* p) {
     FUN_08038b88(p);
   }
   if (p->unk_18b && --p->unk_18b == 0) {
-    PlaySound_082406e0(SONG_719);
+    PlaySound_082406e0(VO_DURATHROR_SMILE);
   }
   boss->subStateTimer++;
 }
@@ -2083,7 +2089,7 @@ void FUN_0803a3d0(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 27, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(SONG_716);
+    PlaySound_0824078c(VO_DURATHROR_YOKUMO);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
   p->unk_15c = 0;
@@ -2254,7 +2260,7 @@ NON_MATCH void durathror_0803aae8(Boss* boss, s32 timer) {
     Vec3_SetPolar(&ofs, angle + (_Random(table) & 31) - 16, radius);
     Vec3_Sum(&pos, boss->playerPos[0], &ofs);
     FUN_08036908(&pos);
-    FUN_0805dd44(p->entity0805dcd4, p->unk_1a2, 32, &pos);
+    DurathrorImpale_Spawn(p->impale, p->unk_1a2, 32, &pos);
   }
   if (timer > 255) {
     Boss_SetState(boss, FUN_0803ad74, 12);
@@ -2590,7 +2596,7 @@ s32 Durathror_Destroy(Durathror* p) {
   Durathror_UnregisterHurtbox(p);
   MainSprite_Remove(&p->sprite_280);
   MainSprite_Remove(&p->sprite_4e8);
-  Entity5941_Unregister(&p->node);
+  CWolfTargetManager_Unregister(&p->cwolfNode);
   Boss_Destroy(&p->base);
   return 0;
 }
@@ -2779,8 +2785,8 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
       p->scriptArgCount++;
     }
   }
-  Entity5941_Register(&p->node, &boss->mover, FUN_08036fd8);
-  p->node.flags &= ~1;
+  CWolfTargetManager_Register(&p->cwolfNode, &boss->mover, FUN_08036fd8);
+  p->cwolfNode.flags &= ~1;
   AuxShadow_Init(&p->shadow, &p->sprite_280.pos, 0x40, 0x18, 0x48, 0, 0x200, 1, 5, 1, 0);
   AuxShadow_Hide(&p->shadow);
   FUN_080389b0(p);
@@ -2792,8 +2798,8 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
   if (p->entity080601a8 == NULL) {
     return -1;
   }
-  p->entity0805dcd4 = Entity0805dcd4_Create();
-  if (p->entity0805dcd4 == NULL) {
+  p->impale = DurathrorImpale_Create();
+  if (p->impale == NULL) {
     return -1;
   }
   return 0;
@@ -2802,6 +2808,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
 #endif
 }
 
+// 0x9386, HashName("ドゥラスロール")
 Durathror* Durathror_Create(u32 id) {
   Durathror* p = Boss_Get(BOSS_DURATHROR);
   if (p != NULL) {

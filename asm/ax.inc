@@ -24771,7 +24771,7 @@ _081A198E:
 	beq _081A199A
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _081A199A:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -25899,7 +25899,7 @@ _081A22CE:
 	adds r0, #0x7c
 	ldr r2, _081A2308 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _081A22DE:
 	ldr r6, [sp, #0xec]
 	ldrb r0, [r6]

@@ -346,7 +346,7 @@ _08200020:
 	adds r0, r7, r2
 	ldr r0, [r0]
 	adds r1, r4, #0
-	bl FUN_08203c64
+	bl Entity082047f0_SetPltt
 	ldrb r0, [r5]
 	adds r0, #1
 	strb r0, [r5]
@@ -399,7 +399,7 @@ _08200098:
 	adds r0, r7, r3
 	ldr r0, [r0]
 	adds r1, r5, #0
-	bl FUN_08203c64
+	bl Entity082047f0_SetPltt
 	ldrb r0, [r6]
 	adds r0, #1
 	strb r0, [r6]

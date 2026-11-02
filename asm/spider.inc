@@ -2844,7 +2844,7 @@ _0812F22C:
 	ldrh r1, [r1]
 	str r1, [sp, #4]
 	adds r1, r7, #0
-	bl FUN_081e8ab8
+	bl SpiderVenom_Spawn
 _0812F270:
 	ldr r1, _0812F338 @ =0x0000046E
 	adds r0, r5, r1
@@ -3667,7 +3667,7 @@ _0812F8E0:
 	ldr r2, _0812F92C @ =0x000004A4
 	adds r4, r5, r2
 	ldr r0, [r4]
-	bl FUN_08235fd8
+	bl Map_ConsumeNavWaypointChanged
 	cmp r0, #0
 	beq _0812F938
 	ldr r1, [r4]
@@ -3921,7 +3921,7 @@ _0812FAF0:
 	ldr r3, _0812FB5C @ =0x000004A4
 	adds r4, r5, r3
 	ldr r0, [r4]
-	bl FUN_08235fd8
+	bl Map_ConsumeNavWaypointChanged
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _0812FB6C
@@ -5058,7 +5058,7 @@ _081303E0:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081303FE
 	cmp r0, #2
@@ -5250,7 +5250,7 @@ _08130554:
 	adds r0, r5, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _08130574
 	cmp r0, #2
@@ -5765,7 +5765,7 @@ _08130944:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r5, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _08130964
 	cmp r0, #2
@@ -6120,7 +6120,7 @@ _08130BE6:
 	movs r3, #0x80
 	lsls r3, r3, #1
 	movs r2, #5
-	bl FUN_082340c8
+	bl Map_HasLineOfSight
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08130B14
@@ -6388,7 +6388,7 @@ _08130E06:
 	movs r3, #0x80
 	lsls r3, r3, #1
 	movs r2, #5
-	bl FUN_082340c8
+	bl Map_HasLineOfSight
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08130E2C
@@ -7930,7 +7930,7 @@ _08131A86:
 	adds r0, #0x7c
 	ldr r2, _08131AC0 @ =FUN_080f48ac
 	ldr r1, [sp, #0x38]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _08131A96:
 	ldr r6, [sp, #0x128]
 	ldrb r0, [r6]

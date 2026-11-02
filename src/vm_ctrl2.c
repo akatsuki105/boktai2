@@ -6,7 +6,7 @@
 void VM_ClearCtrlHandlers(void);
 bool32 FUN_0823a8b0(void);
 void FUN_08230eec(ScriptRecord*);
-bool32 FUN_082345ec(void);
+bool32 Map_HasCheckedZoneEvents(void);
 
 void* VM_GetSubroutine(u32 subroutineID);
 
@@ -78,25 +78,25 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
   u8* pc;
   s32 i;
 
-  FUN_082345ec();
+  Map_HasCheckedZoneEvents();
   ClearMemory(&ev, sizeof(ev));
   ev.zoneID = VM_GetValue();
-  ev.unk_6 = VM_GetValue();
+  ev.sourceID = VM_GetValue();
   if (VM_SeekToNamedArg('m')) {
-    ev.unk_4 = VM_GetValue();
+    ev.trigger = VM_GetValue();
   } else {
-    ev.unk_4 = 0xDD2;
+    ev.trigger = 0xDD2;
   }
 
   ev.unk_a = VM_GetNamedArgValue('t', 0);
   ev.flags = 0;
-  if (ev.unk_6 == 0x3F) {
-    ev.unk_6 = 0x14C9;
+  if (ev.sourceID == 0x3F) {
+    ev.sourceID = 0x14C9;
   }
-  if (ev.unk_4 == 0x3F) {
-    ev.unk_4 = 0x14C9;
-  } else if (ev.unk_4 == 0x2A) {
-    ev.unk_4 = 0x1516;
+  if (ev.trigger == 0x3F) {
+    ev.trigger = 0x14C9;
+  } else if (ev.trigger == 0x2A) {
+    ev.trigger = 0x1516;
   }
 
   for (i = 0; i < 4; i++) {

@@ -64,7 +64,7 @@
 	ldr r1, _081FEB70 @ =0x000007CC
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl FUN_08203d38
+	bl Entity082047f0_RequestEnd
 _081FEB10:
 	ldr r0, _081FEB74 @ =0x00000804
 	adds r1, r7, r0

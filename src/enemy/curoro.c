@@ -4,7 +4,7 @@
 
 // クロロホルルン
 typedef struct {
-  ENEMY_HDR;
+  Enemy e;
   u8 unk_654[1712 - sizeof(Enemy)];
 } Curoro;
 static_assert(sizeof(Curoro) == 1712);

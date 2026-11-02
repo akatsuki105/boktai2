@@ -20,7 +20,7 @@
 	movs r4, #0
 	str r4, [sp]
 	movs r1, #0x20
-	bl Entity080d84f8_Create
+	bl Explosion_Create
 	movs r7, #0x1c
 	ldrsh r0, [r5, r7]
 	movs r2, #0x20

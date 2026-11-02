@@ -186,7 +186,7 @@ _08083168:
 	subs r3, #0x2e
 	adds r2, r4, r3
 	adds r2, r5, r2
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _080831C2
 	movs r0, #0x8e

@@ -54,7 +54,7 @@
 #define SPRITE_EFF_1C1B 0x1C1B                 // エフェクト群(煙、蜘蛛の巣,影)
 #define SPRITE_KOMAINU 0xF680                  // 大聖堂の狛犬
 #define SPRITE_EXPLOSION 0x8639                // ExplosionManager が使う爆発
-#define SPRITE_BOMB 0xE74B                     // 丸い爆弾, エフェクト(煙?), ダイナマイト
+#define SPRITE_BOMB 0xE74B                     // 丸い爆弾, ポイズンスパイダーの毒液, ダイナマイト
 #define SPRITE_DOOR_IRON 0x7AD2                // ドア(鉄格子)
 #define SPRITE_SLIME BOKHASH("slime")          // 0xB96C, スライム
 #define SPRITE_DOOR_LOCKED 0x7AD3              // 鍵のかかった青い扉
@@ -126,6 +126,7 @@
 #define SPRITE_B044 0xB044                     // 絨毯
 #define SPRITE_3668 0x3668                     // なんかのエフェクト群
 #define SPRITE_OJAMA_BAT 0x18A8                // オジャマバット
+#define SPRITE_OJAMA_BAT_CTR 0x18A9            // オジャマバットのカウンター (オジャマバットがいくつあるかを示す)
 #define SPRITE_2769 0x2769                     // 接触スイッチ(+電球?)
 #define SPRITE_5B78 0x5B78                     // 天窓の光
 #define SPRITE_16F5 0x16F5                     // 紋章ブロック
@@ -135,7 +136,7 @@
 #define SPRITE_5BA7 0x5BA7                     // 天窓の光
 #define SPRITE_5BB7 0x5BB7                     // 天窓の光
 #define SPRITE_9A1F BOKHASH("start")           // 0x9A1F, "PUSH START BUTTON"の文字(どこで使ってるか不明)
-#define SPRITE_C459 0xC459                     // 太陽床
+#define SPRITE_SOLAR_FLOOR 0xC459              // 太陽床
 #define SPRITE_DC07 0xDC07                     // 天窓の光
 #define SPRITE_SKELETON_MISC 0xD45E            // スケルトン (リッチやアーチャといったスケルトンの派生タイプのスプライト?)
 #define SPRITE_D85E 0xD85E                     // エフェクト群(電気っぽい)
@@ -200,12 +201,12 @@
 #define SPRITE_PINPAD 0x3C13                   // "時の家"の暗証番号設定端末
 #define SPRITE_9D3F 0x9D3F                     // "オフセット"(=offset), "20・20"(=32x32) というデバッグ用の文字列がある
 #define SPRITE_7C99 0x7C99                     // 各属性のエンブレム(パズルの床に使うデカール?)
-#define SPRITE_B019 0xB019                     // elevator lift
-#define SPRITE_DA09 0xDA09                     // elevator lift
-#define SPRITE_C3BD 0xC3BD                     // elevator lift
-#define SPRITE_9462 0x9462                     // elevator lift
-#define SPRITE_75D6 0x75D6                     // elevator lift
-#define SPRITE_7605 0x7605                     // elevator lift
+#define SPRITE_LIFT_IRON 0xB019                // 昇降床(金属)
+#define SPRITE_LIFT_ROCK0 0xDA09               // 移動床(岩), 変異域の溶岩のところや地下水路で使用
+#define SPRITE_LIFT_MECHA 0xC3BD               // 移動床(機械), 汎用 (水平,垂直)
+#define SPRITE_LIFT_ROCK1 0x9462               // 移動床(岩), SPRITE_LIFT_ROCK0 と似てるけど微妙に違う
+#define SPRITE_LIFT_SMOVE 0x75D6               // 太陽移動床(太陽床とは別物), 森 1F で使用
+#define SPRITE_LIFT_WEIGHT 0x7605              // 重量昇降床(乗ったものの重量に応じて行き先が変わる), 暗黒街で使用
 #define SPRITE_OCTOPUS 0xD291                  // オクトパス
 #define SPRITE_D292 0xD292                     // 多分オクトパスが水中にいるときのシルエット
 #define SPRITE_7C07 0x7C07                     // 黒塗り
@@ -236,7 +237,7 @@
 #define SPRITE_4FDA 0x4FDA                     // ??
 #define SPRITE_863A 0x863A                     // 燃える(爆発?)エフェクト
 #define SPRITE_8638 0x8638                     // ??
-#define SPRITE_DUNEYRR_AUX 0x61F9              // ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は別)
+#define SPRITE_DUNEYRR_AUX 0x61F9              // ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は別), ドゥラスロールのものも含む
 #define SPRITE_2058 0x2058                     // 武器屋(シャイアンの店)の内装?
 #define SPRITE_DOOR_WOOD 0x7ACD                // ドア(木)
 #define SPRITE_DVALIN_2E78 0x2E78              // ドヴァリン

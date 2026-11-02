@@ -1100,7 +1100,7 @@ _08141E92:
 	adds r0, #0x7c
 	ldr r2, _08141ECC @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _08141EA2:
 	ldr r3, [sp, #0x16c]
 	ldrb r0, [r3]

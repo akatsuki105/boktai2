@@ -9,37 +9,38 @@
 
 // EntityC9BC が count 個まとめて管理する要素
 typedef struct {
-  bool8 active;  // 0x00, 0 以外なら使用中, FUN_0800cb7c で 0 に戻る
-  u8 unk_01;
-  u8 unk_02;  // 0x02, 根拠: EntityC9BCElem_SaveState が unk_46 に退避する
-  u8 state;   // 0x03, sC9BCElemUpdates の添字
-  u32 timer;  // 0x04, state を変えるたびに 0 に戻る
-  u8 unk_08[0x1C - 0x08];
-  u32 unk_1c;  // 0x1C, FUN_0800cbd0 が被弾時に 1 を入れる
-  u32 unk_20;  // 0x20, 被弾させた側の HitboxData.weakness
-  u32 unk_24;  // 0x24, 被弾させた側の HitboxData.attributes
-  u16 unk_28;  // 0x28, bit0 が立っていると FUN_0800cb7c が FUN_08002a58 を飛ばす
-  u16 unk_2a;  // 0x2A, 根拠: EntityC9BCElem_SaveState が 0 に戻し、各 UpdateState 関数がビットを立てる
-  u8 unk_2c[0x34 - 0x2C];
-  s16 unk_34;  // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
-  s16 unk_36;  // 0x36, unk_34 の上限 (bobOffset を足した値)
-  u16 unk_38;  // 0x38, FUN_0800cd70 が 0 に戻す
-  u8 unk_3a[0x40 - 0x3A];
-  u8 unk_40;  // 0x40, 0 以外の間は被弾を受け付けない, FUN_0800cbd0 が 10 を入れる
-  u8 unk_41;  // 0x41, FUN_0800cd70 が 10 を入れる
-  u8 unk_42[0x44 - 0x42];
-  bool8 releaseReq;  // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
-  u8 unk_45;         // 0x45, 根拠: EntityC9BCElem_SaveState が state を退避する
-  u8 unk_46;         // 0x46, 根拠: EntityC9BCElem_SaveState が unk_02 を退避する
-  u8 unk_47;
-  Mover obj;         // 0x48, 根拠: FUN_0800cb7c, obj.id は EntityC9BC_FindElemById の検索キー
-  AuxSpriteGfx gfx;  // 0x8C, 根拠: FUN_0800ccd0 が Video_SetAuxSpritePltt に渡す
-  AuxSprite spr_a8;  // 0xA8, 根拠: FUN_0800cb7c
-  u8 unk_d4[0xF0 - 0xD4];
-  AuxSprite spr_f0;              // 0xF0, 根拠: FUN_0800cb7c
+  bool8 active;                  // 0x00, 0 以外なら使用中, FUN_0800cb7c で 0 に戻る
+  u8 unk_01;                     // 0x01
+  u8 unk_02;                     // 0x02, unk_46 に退避される
+  u8 state;                      // 0x03, sC9BCElemUpdates の添字
+  u32 timer;                     // 0x04, state を変えるたびに 0 に戻る
+  u8 unk_08[0x1C - 0x08];        // 0x08, まだ未解析
+  u32 unk_1c;                    // 0x1C, FUN_0800cbd0 が被弾時に 1 を入れる
+  u32 unk_20;                    // 0x20, 被弾させた側の HitboxData.weakness
+  u32 unk_24;                    // 0x24, 被弾させた側の HitboxData.attributes
+  u16 unk_28;                    // 0x28, bit0 が立っていると FUN_0800cb7c が FUN_08002a58 を飛ばす
+  u16 unk_2a;                    // 0x2A, 状態関数がビットを立てる, 退避時に 0 に戻る
+  u8 unk_2c[0x34 - 0x2C];        // 0x2C, まだ未解析
+  s16 unk_34;                    // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
+  s16 unk_36;                    // 0x36, unk_34 の上限 (bobOffset を足した値)
+  u16 unk_38;                    // 0x38, FUN_0800cd70 が 0 に戻す
+  u8 unk_3a[0x40 - 0x3A];        // 0x3A, まだ未解析
+  u8 unk_40;                     // 0x40, 0 以外の間は被弾を受け付けない, FUN_0800cbd0 が 10 を入れる
+  u8 unk_41;                     // 0x41, FUN_0800cd70 が 10 を入れる
+  u8 unk_42[2];                  // 0x42, padding?
+  bool8 releaseReq;              // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
+  u8 unk_45;                     // 0x45, state の退避先
+  u8 unk_46;                     // 0x46, unk_02 の退避先
+  u8 unk_47;                     // 0x47
+  Mover obj;                     // 0x48, obj.id は EntityC9BC_FindElemById の検索キー
+  AuxSpriteGfx gfx;              // 0x8C, SPRITE_BCA8
+  AuxSprite spr_a8;              // 0xA8
+  AuxSpriteGfx gfx2;             // 0xD4, SPRITE_BCA8
+  AuxSprite spr_f0;              // 0xF0
   MapTileOverride tileOverride;  // 0x11C
-  HitboxData hitbox;             // 0x12C, 根拠: FUN_0800cb7c
-  u8 unk_17c[0x1FC - 0x17C];
+  HitboxData hurtbox;            // 0x12C
+  HitboxData hitbox;             // 0x17C
+  u8 unk_1cc[0x1FC - 0x1CC];     // 0x1CC, まだ未解析
 } EntityC9BCElem;
 static_assert(sizeof(EntityC9BCElem) == 508);
 
@@ -64,23 +65,7 @@ static_assert(sizeof(EntityC9BC) == 120);
 
 COMMON_DATA EntityC9BC* gEntityC9BC = NULL;  // 0x03002B38
 
-void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-void EntityC9BCElem_UpdateState1(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-void EntityC9BCElem_UpdateState2(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-void EntityC9BCElem_UpdateState3(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-void EntityC9BCElem_UpdateState5(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-void EntityC9BCElem_UpdateState6(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
-
-void (*const sC9BCElemUpdates[7])(EntityC9BC*, EntityC9BCElem*, u32) = {
-    EntityC9BCElem_UpdateState0,
-    EntityC9BCElem_UpdateState1,
-    EntityC9BCElem_UpdateState2,
-    EntityC9BCElem_UpdateState3,
-    EntityC9BCElem_UpdateState4,
-    EntityC9BCElem_UpdateState5,
-    EntityC9BCElem_UpdateState6,
-};  // 0x085aa774
+void EntityD9AE_SpawnDust(Vec3* pos, s32 param_2);
 
 EntityC9BC* GetEntityC9BC(void) { return gEntityC9BC; }
 
@@ -90,7 +75,7 @@ void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
     AuxSprite_Remove(&elem->spr_a8);
     AuxSprite_Remove(&elem->spr_f0);
     Map_RemoveTileOverride(&elem->tileOverride);
-    Hitbox_Unregister(&elem->hitbox);
+    Hitbox_Unregister(&elem->hurtbox);
     if (!(elem->unk_28 & 1)) {
       FUN_08002a58(&elem->obj);
     }
@@ -102,7 +87,7 @@ void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
 // 残差0命令 (26/26), レジスタ名だけ違う: 原典は weakness をスクラッチ (r1) に置くが, こちらは r4 に載る
 NON_MATCH void FUN_0800cbd0(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) {
 #ifdef NONMATCHING_C
-  if (a->id != b->id && (a->weakness & 7) && elem->unk_40 == 0) {
+  if (a->id != b->id && (a->weakness & ((1 << WK_SWORD) | (1 << WK_SPEAR) | (1 << WK_HAMMER))) && elem->unk_40 == 0) {
     elem->unk_1c = 1;
     elem->unk_20 = a->weakness;
     elem->unk_24 = a->attributes;
@@ -149,8 +134,6 @@ NAKED void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, u32 
 
 NAKED void EntityC9BCElem_UpdateState1(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState1.inc"); }
 
-void FUN_08003014(Vec3* pos, s32 param_2);
-
 void EntityC9BCElem_UpdateState2(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
   if (elem->unk_01 != 0) {
     elem->unk_01 = 0;
@@ -165,7 +148,7 @@ void EntityC9BCElem_UpdateState2(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
   elem->state = 1;
   elem->timer = 0;
   elem->unk_01 = 1;
-  FUN_08003014(&elem->obj.pos, 0x80);
+  EntityD9AE_SpawnDust(&elem->obj.pos, 0x80);
 }
 
 // unk_34 を上限まで毎フレーム +2 で戻し, 届いたら state 0 へ
@@ -203,6 +186,16 @@ void EntityC9BCElem_SaveState(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
 
 NAKED void FUN_0800d480(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/FUN_0800d480.inc"); }
 
+void (*const sC9BCElemUpdates[7])(EntityC9BC*, EntityC9BCElem*, u32) = {
+    EntityC9BCElem_UpdateState0,
+    EntityC9BCElem_UpdateState1,
+    EntityC9BCElem_UpdateState2,
+    EntityC9BCElem_UpdateState3,
+    EntityC9BCElem_UpdateState4,
+    EntityC9BCElem_UpdateState5,
+    EntityC9BCElem_UpdateState6,
+};  // 0x085AA774
+
 NAKED s32 EntityC9BC_Update(EntityC9BC* p) { INCFUNC("asm/func/EntityC9BC_Update.inc"); }
 
 s32 EntityC9BC_Destroy(EntityC9BC* p) {
@@ -224,6 +217,7 @@ s32 EntityC9BC_Destroy(EntityC9BC* p) {
 
 NAKED s32 EntityC9BC_Init(EntityC9BC* p, u32 _) { INCFUNC("asm/func/EntityC9BC_Init.inc"); }
 
+// 0xC9BC
 EntityC9BC* EntityC9BC_Create(u32 val) {
   EntityC9BC* p = GetEntityC9BC();
 

@@ -2,7 +2,6 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
-#include "inline.h"
 #include "malloc.h"
 #include "map_inline.h"
 #include "mover.h"
@@ -88,7 +87,6 @@ void MapItem_UpdateGive(MapItemManager* p, MapItem* item);
 void FUN_08006a80(MapItemManager* p, MapItem* item);
 void FUN_08006ba0(MapItemManager* p, MapItem* item);
 bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID);
-s32 FUN_082342cc(Vec3* pos, s32 limit);
 
 extern s32 gLightningTimer;
 s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
@@ -714,7 +712,7 @@ s32 FUN_080070a8(WorldPos* pos, s32 category, s32 itemID, u32 scriptOnPickup, u3
   ClearMemory(item->ptcl, sizeof(Particle));
   Particle_Add(item->ptcl, m->particles, 0);
   Particle_SetOffset(item->ptcl, -8, -10);
-  if (FUN_082342cc(pos, 0x80)) {
+  if (Map_IsBehindHigherTile(pos, 0x80)) {
     item->ptcl->tileNum = m->particles->tile + (item->ptcl->spriteWidth >> 3) * (item->ptcl->spriteHeight >> 3) * 35;
     item->ptcl->priority = 1;
   } else {

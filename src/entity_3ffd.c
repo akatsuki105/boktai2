@@ -33,6 +33,7 @@ s32 Entity3FFD_Destroy(Entity3FFD* p) {
 
 NAKED s32 Entity3FFD_Init(Entity3FFD* p, u32 id) { INCFUNC("asm/func/Entity3FFD_Init.inc"); }
 
+// 0x3FFD
 Entity3FFD* Entity3FFD_Create(u32 id, u32 _) {
   Entity3FFD* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity3FFD));
 

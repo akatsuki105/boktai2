@@ -441,7 +441,7 @@ _081C5FF4:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C6014
 	cmp r0, #2
@@ -2594,7 +2594,7 @@ _081C702E:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x1c]
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C7078
 	cmp r0, #2
@@ -3031,7 +3031,7 @@ _081C73A4:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C73C4
 	cmp r0, #2
@@ -5858,7 +5858,7 @@ _081C88F2:
 	movs r3, #0x20
 	ldrsh r2, [r0, r3]
 	adds r0, r4, #0
-	bl FUN_080e6304
+	bl Enemy_SetAngleToward
 	adds r0, r4, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -6977,7 +6977,7 @@ _081C91BC:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C91DC
 	cmp r0, #2
@@ -7046,7 +7046,7 @@ _081C9244:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C9264
 	cmp r0, #2
@@ -7912,7 +7912,7 @@ _081C9900:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C9920
 	cmp r0, #2
@@ -7981,7 +7981,7 @@ _081C9988:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081C99A8
 	cmp r0, #2
@@ -9076,7 +9076,7 @@ _081CA1C8:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r5, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CA1E8
 	cmp r0, #2
@@ -10780,7 +10780,7 @@ _081CAF10:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CAF30
 	cmp r0, #2
@@ -10958,7 +10958,7 @@ _081CB06C:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CB08C
 	cmp r0, #2
@@ -11868,7 +11868,7 @@ _081CB70C:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CB7A4
 	cmp r0, #2
@@ -12015,7 +12015,7 @@ _081CB89C:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CB8BC
 	cmp r0, #2
@@ -13136,7 +13136,7 @@ _081CC144:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CC164
 	cmp r0, #2
@@ -13315,7 +13315,7 @@ _081CC2A8:
 	ldr r2, _081CC300 @ =0x000004A4
 	adds r4, r5, r2
 	ldr r0, [r4]
-	bl FUN_08235fd8
+	bl Map_ConsumeNavWaypointChanged
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _081CC308
@@ -14590,7 +14590,7 @@ _081CCC8C:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CCCAC
 	cmp r0, #2
@@ -14658,7 +14658,7 @@ _081CCD10:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CCD30
 	cmp r0, #2
@@ -15646,7 +15646,7 @@ _081CD4CC:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CD4EC
 	cmp r0, #2
@@ -15714,7 +15714,7 @@ _081CD550:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CD570
 	cmp r0, #2
@@ -16810,7 +16810,7 @@ _081CDDB4:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CDDD4
 	cmp r0, #2
@@ -16879,7 +16879,7 @@ _081CDE3C:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CDE5C
 	cmp r0, #2
@@ -17744,7 +17744,7 @@ _081CE4F4:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CE514
 	cmp r0, #2
@@ -17813,7 +17813,7 @@ _081CE57C:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081CE59C
 	cmp r0, #2
@@ -18060,7 +18060,7 @@ _081CE762:
 	beq _081CE76E
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _081CE76E:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -19183,7 +19183,7 @@ _081CF096:
 	adds r0, #0x7c
 	ldr r2, _081CF0D0 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _081CF0A6:
 	ldr r3, [sp, #0x10c]
 	ldrb r0, [r3]

@@ -14,7 +14,7 @@ _081D47CC:
 	movs r0, #0
 	str r0, [sp, #0xc]
 	ldr r0, [sp, #8]
-	bl ElevatorController_AllocSlot
+	bl ElevatorManager_AllocSlot
 	mov r8, r0
 	cmp r0, #0
 	bne _081D47DE
@@ -230,13 +230,13 @@ _081D4974:
 	movs r0, #1
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D49BC @ =FUN_081d3534
+	ldr r0, _081D49BC @ =Elevator_KnockbackPlayer
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D49C0 @ =FUN_081d3c24
+	ldr r0, _081D49C0 @ =Elevator_ClampCoffinOnSpecialTile
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D49C4 @ =FUN_081d33f8
+	ldr r0, _081D49C4 @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r2, #1
 	str r2, [sp, #0xc]
@@ -256,9 +256,9 @@ _081D49B8:
 	strh r7, [r5]
 	b _081D4B4E
 	.align 2, 0
-_081D49BC: .4byte FUN_081d3534
-_081D49C0: .4byte FUN_081d3c24
-_081D49C4: .4byte FUN_081d33f8
+_081D49BC: .4byte Elevator_KnockbackPlayer
+_081D49C0: .4byte Elevator_ClampCoffinOnSpecialTile
+_081D49C4: .4byte Elevator_UpdateTileOverride
 _081D49C8:
 	mov r0, r8
 	adds r0, #0xcc
@@ -270,13 +270,13 @@ _081D49C8:
 	movs r0, #1
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D4A10 @ =FUN_081d3534
+	ldr r0, _081D4A10 @ =Elevator_KnockbackPlayer
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4A14 @ =FUN_081d3c24
+	ldr r0, _081D4A14 @ =Elevator_ClampCoffinOnSpecialTile
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4A18 @ =FUN_081d33f8
+	ldr r0, _081D4A18 @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r2, #1
 	str r2, [sp, #0xc]
@@ -294,9 +294,9 @@ _081D49C8:
 	strh r0, [r1]
 	b _081D4A9C
 	.align 2, 0
-_081D4A10: .4byte FUN_081d3534
-_081D4A14: .4byte FUN_081d3c24
-_081D4A18: .4byte FUN_081d33f8
+_081D4A10: .4byte Elevator_KnockbackPlayer
+_081D4A14: .4byte Elevator_ClampCoffinOnSpecialTile
+_081D4A18: .4byte Elevator_UpdateTileOverride
 _081D4A1C:
 	mov r0, r8
 	adds r0, #0xcc
@@ -308,13 +308,13 @@ _081D4A1C:
 	strh r7, [r0]
 	mov r1, r8
 	adds r1, #0xd8
-	ldr r0, _081D4A54 @ =FUN_081d36c0
+	ldr r0, _081D4A54 @ =Elevator_CheckPlayerFallInWater
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4A58 @ =FUN_081d3dd0
+	ldr r0, _081D4A58 @ =Elevator_ClampCoffinOffFloor
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4A5C @ =FUN_081d33f8
+	ldr r0, _081D4A5C @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r2, #2
 	str r2, [sp, #0xc]
@@ -327,9 +327,9 @@ _081D4A1C:
 	beq _081D4A66
 	b _081D4A84
 	.align 2, 0
-_081D4A54: .4byte FUN_081d36c0
-_081D4A58: .4byte FUN_081d3dd0
-_081D4A5C: .4byte FUN_081d33f8
+_081D4A54: .4byte Elevator_CheckPlayerFallInWater
+_081D4A58: .4byte Elevator_ClampCoffinOffFloor
+_081D4A5C: .4byte Elevator_UpdateTileOverride
 _081D4A60:
 	cmp r0, #2
 	beq _081D4A7C
@@ -375,13 +375,13 @@ _081D4AA8:
 	movs r0, #4
 	strh r0, [r1]
 	adds r1, #0x26
-	ldr r0, _081D4AD8 @ =FUN_081d38a4
+	ldr r0, _081D4AD8 @ =Elevator_ClampPlayerToRange
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4ADC @ =FUN_081d3a8c
+	ldr r0, _081D4ADC @ =Elevator_ClampCoffinPos
 	str r0, [r1]
 	adds r1, #4
-	ldr r0, _081D4AE0 @ =FUN_081d33f8
+	ldr r0, _081D4AE0 @ =Elevator_UpdateTileOverride
 	str r0, [r1]
 	movs r0, #0
 	str r0, [sp, #0xc]
@@ -394,9 +394,9 @@ _081D4AA8:
 	beq _081D4AEE
 	b _081D4B20
 	.align 2, 0
-_081D4AD8: .4byte FUN_081d38a4
-_081D4ADC: .4byte FUN_081d3a8c
-_081D4AE0: .4byte FUN_081d33f8
+_081D4AD8: .4byte Elevator_ClampPlayerToRange
+_081D4ADC: .4byte Elevator_ClampCoffinPos
+_081D4AE0: .4byte Elevator_UpdateTileOverride
 _081D4AE4:
 	cmp r0, #2
 	beq _081D4B0C
@@ -707,14 +707,14 @@ _081D4D3C:
 	adds r4, r2, r0
 	ldrh r0, [r4]
 	movs r1, #0
-	bl FUN_081d3fac
+	bl Elevator_ClearRidingFlag
 	ldrh r0, [r6]
 	strh r0, [r4]
 	ldr r4, _081D4DA4 @ =0x03002BE0
 	ldr r0, [r4]
 	ldrh r2, [r6]
 	movs r1, #1
-	bl FUN_0807a97c
+	bl Player_SetElevatorFlags
 	movs r0, #8
 	mov r2, sl
 	ldrh r1, [r2]
@@ -800,7 +800,7 @@ _081D4DC2:
 	adds r4, r0, r1
 	ldrh r0, [r4]
 	movs r1, #1
-	bl FUN_081d3fac
+	bl Elevator_ClearRidingFlag
 	ldrh r0, [r6]
 	strh r0, [r4]
 	ldrh r1, [r6]
@@ -814,7 +814,7 @@ _081D4DC2:
 _081D4E26:
 	ldr r0, [sp, #8]
 	mov r1, r8
-	bl FUN_081d4704
+	bl Elevator_TryBoardCoffin
 	movs r0, #0x73
 	movs r1, #6
 	bl VM_GetNamedArgValue

@@ -21,7 +21,7 @@ typedef struct DarkLoans {
   AuxSprite auxSprite;                        // 0x7D8
   AuxSpriteGfx auxGfx;                        // 0x804
   TilemapFile* tilemap;                       // 0x820, TILEMAP_C091
-  rgb555* pltt;                               // 0x824, BGP_EAA8 の body[208]
+  rgb555* pltt;                               // 0x824, BGP_BANK の body[208]
   u8* script;                                 // 0x828, MessageWindow_Start に渡す本文
   u16 unk_82c;                                // 0x82C
   u16 unk_82e;                                // 0x82E
@@ -224,7 +224,7 @@ void FUN_080b4d98(DarkLoans* p) {
   Video_SetBGLayer(0, p->tilemap, 5);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   FUN_080b4abc(p);
-  PlaySound_082406e0(SONG_705);
+  PlaySound_082406e0(VO_ANKO_THANKS);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetAnim(&p->sprites[0], &p->gfx0, 6, PLAYMODE_ONCE_AND_STOP, 0);
   MessageWindow_ShowLine(3);
@@ -264,7 +264,7 @@ void FUN_080b4e8c(DarkLoans* p) {
 void FUN_080b4f08(DarkLoans* p) {
   MainSprite_AdvanceAnim(&p->sprites[0], &p->gfx0);
   if (p->unk_844 == 0x20) {
-    PlaySound_082406e0(SONG_704);
+    PlaySound_082406e0(VO_ANKO_WELCOME);
   }
   p->unk_844++;
   if (p->unk_844 > 0x68) {
@@ -351,7 +351,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
   }
 
   if ((gInput[0].down & DPAD_LEFT) && (s32)(gStat->darkDebts + p->unk_82c * (p->unk_82e + 1)) < 10000 && (s16)gStat->savedEne + p->unk_82e < (s16)gStat->savedMaxEne) {
-    PlaySound_082406e0(SONG_893);
+    PlaySound_082406e0(SE_MONEY_TRANSFER);
     p->unk_82e++;
     FUN_080b4818(p);
     FUN_080b4a50(p);
@@ -364,7 +364,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
       p->unk_83e = 0;
     }
   } else if ((gInput[0].down & DPAD_RIGHT) && p->unk_82e != 0) {
-    PlaySound_082406e0(SONG_893);
+    PlaySound_082406e0(SE_MONEY_TRANSFER);
     p->unk_82e--;
     FUN_080b4818(p);
     FUN_080b4a50(p);
@@ -498,14 +498,14 @@ s32 DarkLoans_Destroy(DarkLoans* p) {
 void FUN_080b55d4(DarkLoans* p) {
   s32 indices[1];
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_83C0);
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_BANK);
   indices[0] = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, indices);
 }
 
 // 後半48色のパレットを読み込んで BG パレットへ流す
 void FUN_080b5614(DarkLoans* p) {
-  BgPlttFile* f = GetBgPlttFile(BGP_EAA8);
+  BgPlttFile* f = GetBgPlttFile(BGP_BANK);
 
   p->pltt = &f->body[208];
   CpuCopy32(p->pltt, &gBgPlttBuffer[208], 48 * sizeof(rgb555));
@@ -587,7 +587,7 @@ void DarkLoans_Init_Helper_080b593c(DarkLoans* p) {
     p->script = VM_GetPC_Proxy();
   }
 
-  MessageWindow_SetBgPltt(BGP_EAA8);
+  MessageWindow_SetBgPltt(BGP_BANK);
   MessageWindow_Start(p->script);
   MessageWindow_SetRect(1, 15, 28, 4);
   MessageWindow_SetInstant(1);

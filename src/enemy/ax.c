@@ -4,7 +4,7 @@
 
 // アックス(ソードも含む?)
 typedef struct {
-  ENEMY_HDR;
+  Enemy e;
   u8 unk_654[3688 - sizeof(Enemy)];
 } EnemyAx;
 static_assert(sizeof(EnemyAx) == 3688);

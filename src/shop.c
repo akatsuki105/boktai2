@@ -5,16 +5,19 @@
 #include "inventory.h"
 #include "sound.h"
 #include "sprite.h"
+#include "time.h"
 #include "video.h"
 
 // ショップ系の共通関数?
 
-// BG のタイルマップ上の (x, y) のアドレスを返す
-static BgMapEntry* GetBgTilemapAddr(s32 bgID, u32 x, u32 y) {
-  BgState* bg = &gBgStates[bgID];
+s32 FUN_080b9da0(ShopCursor* p, u8 mask);
+
+// BG のタイルマップ上の (x8, y8) のアドレスを返す
+static BgMapEntry* GetBgMapAddr(s32 bgnum, u32 x8, u32 y8) {
+  BgState* bg = &gBgStates[bgnum];
   BgMapEntry* tilemap = bg->tilemap;
 
-  return tilemap + (x & 0x1F) + (y & 0x1F) * 32;
+  return tilemap + (x8 & 0x1F) + (y8 & 0x1F) * 32;
 }
 
 // value を divisor の桁から順に BG のタイルマップへ書く, タイル番号は plttRow * 16 + 0x21 + 数字
@@ -22,7 +25,7 @@ static BgMapEntry* GetBgTilemapAddr(s32 bgID, u32 x, u32 y) {
 // 宣言順の入れ替えと digit/tile を関数スコープに出す形は試済
 NON_MATCH void FUN_080b93b0(s32 value, s32 divisor, u32 x, u32 y, s32 plttRow) {
 #ifdef NONMATCHING_C
-  BgMapEntry* dst = GetBgTilemapAddr(0, x, y);
+  BgMapEntry* dst = GetBgMapAddr(0, x, y);
   s32 base = plttRow * 16 + 0x21;
 
   while (divisor > 0) {
@@ -39,9 +42,56 @@ NON_MATCH void FUN_080b93b0(s32 value, s32 divisor, u32 x, u32 y, s32 plttRow) {
 #endif
 }
 
-NAKED void FUN_080b9400(s32 kind) { INCFUNC("asm/func/FUN_080b9400.inc"); }
+void FUN_080b9400(s32 kind) {
+  BgMapEntry* tilemap = GetBgMapAddr(0, 18, 0);
 
-NAKED void FUN_080b94cc(s32 kind) { INCFUNC("asm/func/FUN_080b94cc.inc"); }
+  if (kind == 0) {
+    *tilemap++ = 0xF03B;
+    *tilemap++ = 0xF03C;
+    *tilemap = 0xF03D;
+    FUN_080b93b0(Time_GetHour(), 10, 22, 0, 0);
+    FUN_080b93b0(Time_GetMinute(), 10, 25, 0, 0);
+  } else if (kind == 1) {
+    *tilemap++ = 0xF045;
+    *tilemap++ = 0xF046;
+    *tilemap = 0xF047;
+    FUN_080b93b0(gClock.morning.hour, 10, 22, 0, 0);
+    FUN_080b93b0(gClock.morning.minute, 10, 25, 0, 0);
+  } else {
+    *tilemap++ = 0xF045;
+    *tilemap++ = 0xF046;
+    *tilemap = 0xF048;
+    FUN_080b93b0(gClock.sunset.hour, 10, 22, 0, 0);
+    FUN_080b93b0(gClock.sunset.minute, 10, 25, 0, 0);
+  }
+}
+
+void FUN_080b94cc(s32 kind) {
+  BgMapEntry* tilemap = GetBgMapAddr(0, 18, 1);
+
+  if (kind == 0) {
+    *tilemap++ = 0xF03E;
+    *tilemap++ = 0xF03D;
+    *tilemap++ = 0xF03F;
+    *tilemap++ = 0xF069;
+    *tilemap = 0xF001;
+    FUN_080b93b0((s16)gStat->solarBank, 1000, 23, 1, kind);
+  } else if (kind == 1) {
+    *tilemap++ = 0xF040;
+    *tilemap++ = 0xF041;
+    *tilemap++ = 0xF03D;
+    *tilemap++ = 0xF069;
+    *tilemap = 0xF030;
+    FUN_080b93b0(gStat->darkDebts, 1000, 23, 1, kind);
+  } else {
+    *tilemap++ = 0xF042;
+    *tilemap++ = 0xF043;
+    *tilemap++ = 0xF03D;
+    *tilemap++ = 0xF044;
+    *tilemap = 0xF069;
+    FUN_080b93b0(gStat->solarStand, 1000, 23, 1, 0);
+  }
+}
 
 // MainSprite_SetPlttID と全く同じ
 void FUN_080b95bc(MainSprite* p, u16 plttID) {
@@ -49,9 +99,67 @@ void FUN_080b95bc(MainSprite* p, u16 plttID) {
   p->pltt = &gObjPlttData[p->plttID * 16];
 }
 
-NAKED void FUN_080b95d0(ShopCursor* cursor, MainSprite* sprite0, MainSprite* sprite1, MainSprite* sprite2) { INCFUNC("asm/func/FUN_080b95d0.inc"); }
+void FUN_080b95d0(ShopCursor* cursor, MainSprite* sprite0, MainSprite* sprite1, MainSprite* sprite2) {
+  if (sprite0 != NULL) {
+    if (FUN_080b9da0(cursor, 4)) {
+      FUN_080b95bc(sprite0, 736);
+    } else {
+      FUN_080b95bc(sprite0, 735);
+    }
+  }
 
-NAKED void FUN_080b9658(MainSpriteGfx* gfx, MainSprite* sprite, unknown* param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080b9658.inc"); }
+  if (sprite1 != NULL) {
+    if (FUN_080b9da0(cursor, 8)) {
+      FUN_080b95bc(sprite1, 736);
+    } else {
+      FUN_080b95bc(sprite1, 735);
+    }
+  }
+
+  if (sprite2 != NULL) {
+    if (FUN_080b9da0(cursor, 16)) {
+      FUN_080b95bc(sprite2, 736);
+    } else {
+      FUN_080b95bc(sprite2, 735);
+    }
+  }
+}
+
+// 95/96 命令, x を r0 で作って r4 に移す形にならない
+NON_MATCH void FUN_080b9658(MainSpriteGfx* gfx, MainSprite* sprite, Vec3* param_3, s32 param_4, s32 param_5) {
+#ifdef NONMATCHING_C
+  s32 digits[4];
+  s32 x;
+  s32 i;
+
+  MainSprite_Show(sprite);
+  sprite->pos = *param_3;
+  MainSprite_SetPose(sprite, gfx, param_5 + 23, PLAYMODE_LOOP);
+  sprite++;
+  digits[0] = Div(param_4, 1000);
+  param_4 -= digits[0] * 1000;
+  digits[1] = Div(param_4, 100);
+  param_4 -= digits[1] * 100;
+  digits[2] = Div(param_4, 10);
+  param_4 -= digits[2] * 10;
+  digits[3] = param_4;
+  if (param_5 == 0) {
+    x = 0;
+  } else {
+    x = -1;
+  }
+  for (i = 0; i < 4; i++) {
+    MainSprite_Show(sprite);
+    MainSprite_SetPose(sprite, gfx, digits[i] + 25, PLAYMODE_LOOP);
+    sprite->pos = *param_3;
+    sprite->pos.x += x;
+    sprite++;
+    x += 6;
+  }
+#else
+  INCFUNC("asm/func/FUN_080b9658.inc");
+#endif
+}
 
 void FUN_080b9724(MainSprite* sprites) {
   MainSprite* p = sprites;
@@ -73,9 +181,53 @@ void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* out, s32 val) {
   MainSprite_AdvanceAnim(sprite, gfx);
 }
 
-NAKED s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3) { INCFUNC("asm/func/FUN_080b977c.inc"); }
+s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3) {
+  s32 moved;
 
-NAKED void FUN_080b9814(ShopSpritePair* p) { INCFUNC("asm/func/FUN_080b9814.inc"); }
+  if (gInput[0].pressed & A_BUTTON) {
+    MainSprite_Hide(sprite);
+    return *param_3;
+  }
+
+  if (gInput[0].pressed & B_BUTTON) {
+    MainSprite_Hide(sprite);
+    return 0;
+  }
+
+  moved = FALSE;
+  if (*param_3 != 0) {
+    if (gInput[0].pressed & DPAD_RIGHT) {
+      moved = TRUE;
+    }
+  } else {
+    if (gInput[0].pressed & DPAD_LEFT) {
+      moved = TRUE;
+    }
+  }
+
+  if (moved) {
+    PlaySound_082406e0(SE_CURSOR_MOVE);
+    *param_3 = 1 - *param_3;
+    MainSprite_SetAnim(sprite, gfx, 5 - *param_3, PLAYMODE_LOOP, 0);
+  }
+
+  MainSprite_AdvanceAnim(sprite, gfx);
+  return -1;
+}
+
+void FUN_080b9814(ShopSpritePair* p) {
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  Vec3 pos;
+  s32 i;
+
+  p->gfx = *f;
+  OpenMainSpriteFile(&p->gfx, f);
+  pos.x = 0, pos.y = 0, pos.z = 0;
+  for (i = 0; i < 2; i++) {
+    MainSprite_Add(&p->sprites[i], &p->gfx, 147, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+    pos.y += 8;
+  }
+}
 
 void FUN_080b9894(ShopSpritePair* p) {
   s32 i;
@@ -94,12 +246,58 @@ s32 FUN_080b98b0(s32 param_1) {
   return param_1;
 }
 
-NAKED void FUN_080b98c0(MainSpriteGfx* gfx, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080b98c0.inc"); }
+void FUN_080b98c0(ShopSpritePair* p, s32 pose0, s32 pose1) {
+  s32 pose;
+
+  if (pose0 >= 0) {
+    p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
+    pose = FUN_080b98b0(pose0);
+    MainSprite_SetPose(&p->sprites[0], &p->gfx, pose, PLAYMODE_LOOP);
+  } else {
+    p->sprites[0].flags |= SPRFLAG_HIDDEN;
+  }
+
+  if (pose1 >= 0) {
+    p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
+    pose = FUN_080b98b0(pose1);
+    MainSprite_SetPose(&p->sprites[1], &p->gfx, pose, PLAYMODE_LOOP);
+  } else {
+    p->sprites[1].flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 // 枠番号から画面上の表示位置を出す
-NAKED void Shop_GetSlotPos(s16* pos, s32 idx) { INCFUNC("asm/func/Shop_GetSlotPos.inc"); }
+void Shop_GetSlotPos(s16* pos, s32 idx) {
+  if (idx < 16) {
+    pos[0] = (idx & 3) * 24 + 144;
+    pos[1] = (idx >> 2) * 24 + 32;
+  } else if (idx < 32) {
+    pos[0] = ((idx - 16) & 3) * 24 + 8;
+    pos[1] = ((idx - 16) >> 2) * 24 + 32;
+  } else if (idx == 32) {
+    pos[0] = 112;
+    pos[1] = 64;
+  } else if (idx == 33) {
+    pos[0] = 120;
+    pos[1] = 104;
+  } else {
+    pos[0] = 104;
+    pos[1] = 32;
+  }
+}
 
-NAKED void FUN_080b99a0(ShopSpritePair* p) { INCFUNC("asm/func/FUN_080b99a0.inc"); }
+void FUN_080b99a0(ShopSpritePair* p) {
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  Vec3 pos;
+  s32 i;
+
+  p->gfx = *f;
+  OpenMainSpriteFile(&p->gfx, f);
+  pos.x = 0, pos.y = 0, pos.z = 0;
+  for (i = 0; i < 2; i++) {
+    MainSprite_Add(&p->sprites[i], &p->gfx, 0, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  }
+}
 
 void FUN_080b9a0c(ShopSpritePair* p) {
   s32 i;
@@ -108,14 +306,150 @@ void FUN_080b9a0c(ShopSpritePair* p) {
   }
 }
 
-NAKED void FUN_080b9a28(MainSpriteGfx* gfx, s32* param_2, WorldPos* pos1, WorldPos* pos2, s32* param_5, s32* param_6, s32 param_7) { INCFUNC("asm/func/FUN_080b9a28.inc"); }
+void FUN_080b9a28(ShopFlyingPair* p, s32* param_2, WorldPos* pos1, WorldPos* pos2, s32* param_5, s32* param_6, s32 param_7) {
+  s32 i;
 
-NAKED bool32 FUN_080b9adc(unknown* p) { INCFUNC("asm/func/FUN_080b9adc.inc"); }
+  for (i = 0; i < 2; i++) {
+    if (param_2[i] == 0) {
+      MainSprite_Hide(&p->pair.sprites[i]);
+    } else {
+      MainSprite_Show(&p->pair.sprites[i]);
+      MainSprite_SetPose(&p->pair.sprites[i], &p->pair.gfx, param_5[i], PLAYMODE_LOOP);
+      p->pair.sprites[i].pos = pos1[i];
+      p->dest[i] = pos2[i];
+    }
+  }
+
+  p->timer = 0;
+  p->duration = param_7;
+}
+
+// 73/73 命令, MainSprite のポインタが flags の位置 (+0x28) を指す形にならずオフセットだけがずれる
+NON_MATCH bool32 FUN_080b9adc(unknown* p) {
+#ifdef NONMATCHING_C
+  ShopFlyingPair* fly = p;
+  MainSprite* sprite;
+  Vec3* dest;
+  s32 remain;
+  s32 i;
+
+  if (++fly->timer >= fly->duration) {
+    fly->pair.sprites[0].flags |= SPRFLAG_HIDDEN;
+    fly->pair.sprites[1].flags |= SPRFLAG_HIDDEN;
+    return TRUE;
+  }
+
+  remain = fly->duration - fly->timer;
+  dest = fly->dest;
+  sprite = fly->pair.sprites;
+  for (i = 0; i < 2; i++) {
+    if (!(sprite->flags & SPRFLAG_HIDDEN)) {
+      sprite->pos.x = Div(remain * sprite->pos.x + dest->x, remain + 1);
+      sprite->pos.y = Div(remain * sprite->pos.y + dest->y, remain + 1);
+    }
+    dest++;
+    sprite++;
+  }
+
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_080b9adc.inc");
+#endif
+}
 
 // 行と列から実際のスロット番号を引く
 s32 ShopCursor_GetSlot(ShopCursor* p) { return SHOP_SLOT(p, p->shopColX, p->shopRowY); }
 
-NAKED void FUN_080b9b88(ShopCursor* p) { INCFUNC("asm/func/FUN_080b9b88.inc"); }
+// 243/255 命令, スロット表を埋めるループのポインタの持ち方が違う
+NON_MATCH void FUN_080b9b88(ShopCursor* p) {
+#ifdef NONMATCHING_C
+  s32 row;
+  s32 col;
+  s8* special;
+
+  if (FUN_080b9da0(p, 1)) {
+    for (row = 0; row < 4; row++) {
+      for (col = 0; col < 4; col++) {
+        p->slots[row + col * 4] = -1;
+      }
+    }
+  } else {
+    for (row = 0; row < 4; row++) {
+      for (col = 3; col >= 0; col--) {
+        p->slots[row + col * 4] = row * 4 + col;
+      }
+    }
+  }
+
+  special = &p->slots[32];
+  if (FUN_080b9da0(p, 2)) {
+    for (row = 0; row < 4; row++) {
+      for (col = 0; col < 4; col++) {
+        p->slots[16 + row + col * 4] = -1;
+      }
+    }
+  } else if (!(p->kind & 1)) {
+    for (row = 0; row < 3; row++) {
+      for (col = 3; col >= 0; col--) {
+        p->slots[16 + row + col * 4] = 16 + row * 4 + col;
+      }
+    }
+    for (col = 3; col >= 0; col--) {
+      p->slots[19 + col * 4] = 28 + col;
+    }
+  } else if (FUN_080b9da0(p, 32)) {
+    for (row = 0; row < 4; row++) {
+      for (col = 0; col < 4; col++) {
+        p->slots[16 + row + col * 4] = p->savedSlot;
+      }
+    }
+  } else {
+    for (row = 0; row < 3; row++) {
+      for (col = 3; col >= 0; col--) {
+        p->slots[16 + row + col * 4] = 16 + row * 4 + col;
+      }
+    }
+    for (col = 0; col < 4; col++) {
+      p->slots[19 + col * 4] = p->slots[18 + col * 4];
+    }
+  }
+
+  if (FUN_080b9da0(p, 16)) {
+    if (FUN_080b9da0(p, 8)) {
+      for (row = 0; row < 4; row++) {
+        special[row] = -1;
+      }
+      return;
+    }
+    for (row = 0; row < 3; row++) {
+      special[row] = -1;
+    }
+  } else {
+    if (p->kind != 1) {
+      *special = 34;
+      p->slots[33] = -1;
+      p->slots[34] = -1;
+      if (FUN_080b9da0(p, 8)) {
+        p->slots[35] = -1;
+      } else {
+        p->slots[35] = 33;
+      }
+      return;
+    }
+    for (row = 2; row >= 0; row--) {
+      special[row] = 34;
+    }
+    if (FUN_080b9da0(p, 8)) {
+      p->slots[35] = 34;
+      return;
+    }
+  }
+
+  p->slots[35] = 33;
+#else
+  INCFUNC("asm/func/FUN_080b9b88.inc");
+#endif
+}
 
 void FUN_080b9d94(ShopCursor* p, u32 unk) {
   p->unk_7 = unk;

@@ -7,6 +7,7 @@
 #include "sprite.h"
 #include "vm.h"
 
+// 暗黒樹の蔦(触るとダメージを受ける, マップ上の破壊可能な障害物としての用途?)
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
   u16 id;                        // 0x18
@@ -18,9 +19,9 @@ typedef struct {
   u32 timer;                     // 0x20, 毎フレーム +1, 被弾して unk_1b が立つときに 0 に戻る
   s32 scriptID;                  // 0x24, '.e', 消滅時に VM_ExecByID に渡す
   Vec3 pos;                      // 0x28, '.p'
-  HitboxData hitbox;             // 0x30
+  HitboxData hurtbox;            // 0x30
   MapTileOverride tileOverride;  // 0x80
-  AuxSpriteGfx gfx;              // 0x90
+  AuxSpriteGfx gfx;              // 0x90, SPRITE_PLANT_2567
   AuxSprite sprite;              // 0xAC
 } EntityEC96;
 static_assert(sizeof(EntityEC96) == 216);
@@ -63,13 +64,13 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
       p->sprite.pos = p->pos;
       if (--p->damageTimer == 0) {
         if (p->breakable) Video_SetAuxSpritePltt(&p->gfx, 648);
-        Hitbox_ClearFlags(&p->hitbox, HBFLAG_HIDDEN);
+        Hitbox_ClearFlags(&p->hurtbox, HBFLAG_HIDDEN);
       } else {
         idx = (gRandTableIdx + 1) & 0x3FF;
         p->sprite.pos.x = p->sprite.pos.x - 8 + (gRandomTable[idx] & 0xF);
         gRandTableIdx = (idx + 1) & 0x3FF;
         p->sprite.pos.z = p->sprite.pos.z - 8 + (gRandomTable[gRandTableIdx] & 0xF);
-        p->hitbox.flags |= HBFLAG_HIDDEN;
+        p->hurtbox.flags |= HBFLAG_HIDDEN;
       }
     }
   } else {
@@ -87,7 +88,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 
 // 当たり判定・マップノード・描画ノードをそれぞれのリストから外す
 s32 EntityEC96_Destroy(EntityEC96* p) {
-  Hitbox_Unregister(&p->hitbox);
+  Hitbox_Unregister(&p->hurtbox);
   Map_RemoveTileOverride(&p->tileOverride);
   AuxSprite_Remove(&p->sprite);
   return 0;
@@ -96,11 +97,11 @@ s32 EntityEC96_Destroy(EntityEC96* p) {
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   AuxSpriteGfx* gfx;
-  HitboxData* hitbox;
+  HitboxData* hurtbox;
   Vec3* pos;
   CollisionMapTile* tile;
   MapTileOverride* ov;
-  s32 bx, bz, idx;
+  s32 tx, tz, idx;
   s32 h;
   Vec3 size, offset;
 
@@ -125,21 +126,23 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   } else {
     Video_SetAuxSpritePltt(gfx, 647);
   }
-  hitbox = &p->hitbox;
+
+  hurtbox = &p->hurtbox;
   VEC3_SET(size, Q8(0.51), Q8(0.5), Q8(0.51));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hurtbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
   pos = &p->pos;
-  Hitbox_SetPos(hitbox, pos, 0);
-  Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
-  Hitbox_SetHandler(hitbox, FUN_08013288, p);
-  Hitbox_Register(hitbox);
-  bx = pos->x >> 8;
-  bz = pos->z >> 8;
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+  Hitbox_SetPos(hurtbox, pos, 0);
+  Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
+  Hitbox_SetHandler(hurtbox, FUN_08013288, p);
+  Hitbox_Register(hurtbox);
+
+  tx = pos->x >> 8;
+  tz = pos->z >> 8;
+  if (IsOutsideMap(tx, tz)) {
     idx = 0;
   } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
+    idx = gCollisionMap->rowOffsets[tz] + tx;
   }
   ov = Map_FindTileOverride(idx, 1);
   tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
@@ -151,6 +154,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   return 0;
 }
 
+// 0xEC96
 EntityEC96* EntityEC96_Create(u32 id) {
   EntityEC96* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityEC96));
   if (p != NULL) {

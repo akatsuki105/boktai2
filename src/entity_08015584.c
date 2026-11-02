@@ -5,10 +5,12 @@
 #include "sprite.h"
 #include "vm.h"
 
+// スプライトを使ったパーティクル(土煙で使用を確認, 他の水しぶきなどでも使うのかは調査中)
+
 // パーティクル1個分, Entity08015584_Spawn で発生させる
 typedef struct {
   bool8 active;       // 0x00, 0 でなければ Update/Destroy が処理する, アニメが終わると 0
-  u8 kind;            // 0x01, 5/6/7 は別スプライト (0x61F9) と animFiles[1], それ以外はパレット kind + 0x7D
+  u8 kind;            // 0x01, 5/6/7 は別スプライト (SPRITE_DUNEYRR_AUX) と animFiles[1], それ以外はパレット kind + 0x7D
   u16 timer;          // 0x02, 発生からのフレーム数
   s16 speedY;         // 0x04, decayStartY に達したら *= decayY / 256
   s16 speedXZ;        // 0x06, decayStartXZ に達したら *= decayXZ / 256
@@ -33,12 +35,12 @@ static_assert(sizeof(Entity08015584Elem) == 120);
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_9
   AuxAnimFile* animFiles[2];     // 0x18, id: FileID_ARRAY_085aa914[i]
-  u32 counter;                   // 0x20, Init で 0, Update で毎フレーム +1
+  u32 frameCounter;              // 0x20
   Entity08015584Elem elems[32];  // 0x24
 } Entity08015584;
 static_assert(sizeof(Entity08015584) == 3876);
 
-IWRAM_DATA Entity08015584* gEntity08015584 = NULL;  // 0x03000060
+static Entity08015584* gEntity08015584;  // 0x03000060
 
 const FileID FileID_ARRAY_085aa914[2] = {ANIM_F62B, ANIM_31F4};  // 0x085AA914
 
@@ -123,7 +125,7 @@ NON_MATCH s32 Entity08015584_Update(Entity08015584* p) {
     }
   }
 
-  p->counter++;
+  p->frameCounter++;
   return 0;
 #else
   INCFUNC("asm/func/Entity08015584_Update.inc");
@@ -160,9 +162,7 @@ s32 Entity08015584_Init(Entity08015584* p, u32 _) {
 
     elem->active = FALSE;
     elem->speedY = 0;
-    elem->dirX = 0;
-    elem->dirY = 0;
-    elem->dirZ = 0;
+    elem->dirX = 0, elem->dirY = 0, elem->dirZ = 0;
     if (!Video_GetAuxSprite(&elem->gfx, SPRITE_4384)) {
       return -1;
     }
@@ -172,7 +172,7 @@ s32 Entity08015584_Init(Entity08015584* p, u32 _) {
     elem->sprite.pos = pos;
   }
 
-  p->counter = 0;
+  p->frameCounter = 0;
   return 0;
 }
 

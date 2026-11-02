@@ -703,7 +703,7 @@ _080E1E54:
 	cmp r0, #0
 	beq _080E1E78
 	ldr r0, [sp, #0x10]
-	bl Entity1DBE_TouchElemNear
+	bl IsInPuddle
 	ldr r1, _080E1E9C @ =0xFFFEFFFF
 	ldr r0, [r4]
 	ands r0, r1
@@ -788,7 +788,7 @@ _080E1F0A:
 	bne _080E1F16
 	adds r0, r5, #0
 	adds r0, #0xa8
-	bl FUN_08234660
+	bl Map_UpdateZoneEvents
 _080E1F16:
 	ldr r4, _080E1F40 @ =0x000004AC
 	adds r2, r5, r4

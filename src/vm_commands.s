@@ -57,7 +57,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x15A9, Cmd_15A9
 	.4byte 0x15B3, Cmd_15B3
 	.4byte 0x15ED, Cmd_15ED
-	.4byte 0x162E, Entity162E_Create
+	.4byte 0x162E, CoffinTimer_Create
 	.4byte 0x164D, Cmd_164D
 	.4byte 0x1693, Cmd_1693
 	.4byte 0x172B, Duneyrr_Create
@@ -221,19 +221,19 @@ gCommandList: @ 0x085A9208
 	.4byte 0x546C, Cmd_546C
 	.4byte 0x5470, Cmd_5470
 	.4byte 0x54C1, UnlockMap @ HashName("マップ取得")
-	.4byte 0x54DF, Elevator_SetPltt
+	.4byte 0x54DF, Cmd_SetElevatorPltt
 	.4byte 0x5517, Cmd_5517
 	.4byte 0x554B, EntityA628_DeactivateScripted
 	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, Cmd_55C5
-	.4byte 0x5645, Entity5645_Create
+	.4byte 0x5645, BlackPanther_Create
 	.4byte 0x56AD, Cmd_56AD
 	.4byte 0x56DC, Entity56DC_Create
 	.4byte 0x571D, CoffinShop_Create @ HashName("棺桶屋")
 	.4byte 0x5844, Cmd_5844
 	.4byte 0x58D7, Cmd_58D7
 	.4byte 0x5933, Cmd_GetMoonPhase
-	.4byte 0x5941, Entity5941_Create
+	.4byte 0x5941, CWolfTargetManager_Create
 	.4byte 0x5986, Cmd_5986
 	.4byte 0x5A36, Cmd_5A36
 	.4byte 0x5B01, Cmd_5B01
@@ -309,7 +309,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7999, Entity7999_Create
 	.4byte 0x79B7, Map_AddLoadingZoneIndicatorScripted
 	.4byte 0x79EC, Cmd_79EC
-	.4byte 0x7A0A, Cmd_7A0A
+	.4byte 0x7A0A, Cmd_GetCoffinID
 	.4byte 0x7A25, Cmd_7A25 @ HashName("シングルプレイ")
 	.4byte 0x7A27, Cmd_LoadTileMap
 	.4byte 0x7A75, Cmd_7A75
@@ -414,7 +414,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA062, Cmd_A062
 	.4byte 0xA0A6, EntityA0A6_Create
 	.4byte 0xA133, Cmd_A133
-	.4byte 0xA16F, ElevatorController_Create
+	.4byte 0xA16F, ElevatorManager_Create
 	.4byte 0xA1D7, Cmd_A1D7
 	.4byte 0xA222, Save_ReadSystemDataOrInit
 	.4byte 0xA285, Cmd_A285
@@ -427,7 +427,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA3B3, Cmd_A3B3
 	.4byte 0xA4FC, Elevator_Create
 	.4byte 0xA61C, Map_SetLoadingZoneIndicatorMode
-	.4byte 0xA628, EntityA628_CreateScripted
+	.4byte 0xA628, Cmd_CreateEntityA628
 	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, Cmd_SetEnemyDexDropItemFlag
 	.4byte 0xA7CE, Cmd_A7CE
@@ -450,7 +450,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xAE3A, Cmd_AE3A
 	.4byte 0xAE4E, Cmd_AE4E
 	.4byte 0xAE71, Cmd_AE71
-	.4byte 0xAEB2, Entity080e18e0_Create
+	.4byte 0xAEB2, SunRangeWatcher_Create
 	.4byte 0xAF33, EntityAF33_Create
 	.4byte 0xAF43, Cmd_AF43
 	.4byte 0xAF8E, Entity4063_Cancel
@@ -536,7 +536,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD169, Cmd_D169
 	.4byte 0xD1C0, Cmd_SetEnemyDexSeenFlag
 	.4byte 0xD229, Cmd_D229
-	.4byte 0xD24B, coffin_0808623c
+	.4byte 0xD24B, Cmd_ReturnCoffinToBag
 	.4byte 0xD25F, Entity5CCC_AddLightAreaScripted
 	.4byte 0xD285, Cmd_D285
 	.4byte 0xD37F, Jormungandr_Create @ HashName("ヨルムンガンド")
@@ -559,7 +559,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD9AE, EntityD9AE_Create @ HashName("パス")?
 	.4byte 0xD9B7, Cmd_RemoveKaamos
 	.4byte 0xD9D3, BgPlttAnimator_Create
-	.4byte 0xDA0B, EntityDA0B_Create
+	.4byte 0xDA0B, Forge_Create
 	.4byte 0xDA19, Cmd_DA19
 	.4byte 0xDA5A, Cmd_GetZoneBounds
 	.4byte 0xDAA4, Cmd_GetPrefecture

@@ -88,7 +88,7 @@ void Emote_PlayEnemySound(Emote* p) {
   if (enemy == NULL) {
     return;
   }
-  if (IsCurrentZone(enemy->zoneID) && !(p->unk_2e & 1) && enemy->state != 21) {
+  if (IsCurrentZone(enemy->zoneID) && !(p->unk_2e & 1) && enemy->state != ES_UNK_21) {
     SoundID32 se;
 
     switch (enemy->kind) {

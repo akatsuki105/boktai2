@@ -31,7 +31,7 @@ typedef struct {
   u8 unk_35[0x38 - 0x35];   // 0x035
   u8 unk_38[4];             // 0x038, _Init が 4バイト 0 クリアする
   EntityAF33Slot slots[3];  // 0x03C, _Init は先頭2件だけ埋める
-  void* unk_60;             // 0x060, _Init が Entity08052250_Create() の戻り値を入れる
+  void* unk_60;             // 0x060, _Init が CrossoverMC_Create() の戻り値を入れる
   void* unk_64;             // 0x064, _Init が Entity08052ffc_Create() の戻り値を入れる
   u32 count78;              // 0x068, unk_78 に積んだ '.w' の件数
   u32 count98;              // 0x06C, unk_98 に積んだ '.m' の件数
@@ -55,11 +55,13 @@ static_assert(sizeof(EntityAF33) == 444);
 IWRAM_DATA EntityAF33* gEntityAF33 = NULL;  // 0x030000F0
 IWRAM_DATA u8 u8_030000f4[0x118 - 0x0F4] = {};
 
+struct CrossoverMC;
+
 s32 FUN_0804e514(void* param_1);  // src/entity_0804e2c0.c
 void FUN_0804e5e8(void);          // src/entity_0804e2c0.c
 
-void Entity723E_SetState(unknown* p);
-void Entity723E_ConsumeStateEntered(unknown* p);
+s32 CrossoverMC_SetState(struct CrossoverMC* p, u32 state);
+void CrossoverMC_RequestExit(struct CrossoverMC* p);
 
 EntityAF33* FUN_0804f820(void) { return gEntityAF33; }
 
@@ -155,15 +157,15 @@ void FUN_0804fb3c(EntityAF33* p) {
 
 NAKED void FUN_0804fb6c(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_0804fb6c.inc"); }
 
-void FUN_0804fbd0(EntityAF33* p) {
+void FUN_0804fbd0(EntityAF33* p, u32 state) {
   if (p->unk_60 != NULL) {
-    Entity723E_SetState(p->unk_60);
+    CrossoverMC_SetState(p->unk_60, state);
   }
 }
 
 void FUN_0804fbe0(EntityAF33* p) {
   if (p->unk_60 != NULL) {
-    Entity723E_ConsumeStateEntered(p->unk_60);
+    CrossoverMC_RequestExit(p->unk_60);
   }
 }
 
@@ -368,3 +370,32 @@ EntityAF33* EntityAF33_Create(void) {
   }
   return p;
 }
+
+NAKED void FUN_08050cb8(Vec3* pos, u32 kind) { INCFUNC("asm/func/FUN_08050cb8.inc"); }
+
+NAKED void FUN_08050d10(void) { INCFUNC("asm/func/FUN_08050d10.inc"); }
+
+NAKED void FUN_08050d28(void) { INCFUNC("asm/func/FUN_08050d28.inc"); }
+
+NAKED s32 FUN_08050d40(void) { INCFUNC("asm/func/FUN_08050d40.inc"); }
+
+NAKED s32 FUN_08050d64(void) { INCFUNC("asm/func/FUN_08050d64.inc"); }
+
+NAKED s32 FUN_08050d7c(void) { INCFUNC("asm/func/FUN_08050d7c.inc"); }
+
+NAKED s32 FUN_08050d94(void) { INCFUNC("asm/func/FUN_08050d94.inc"); }
+
+NAKED s32 FUN_08050dac(void) { INCFUNC("asm/func/FUN_08050dac.inc"); }
+
+NAKED s32 FUN_08050de8(void) { INCFUNC("asm/func/FUN_08050de8.inc"); }
+
+NAKED s32 FUN_08050dfc(void) { INCFUNC("asm/func/FUN_08050dfc.inc"); }
+
+// 0x877F
+NAKED void Cmd_877F(void) { INCFUNC("asm/func/Cmd_877F.inc"); }
+
+NAKED void FUN_08050e2c(u32 idx, u32 mode, Vec3* pos) { INCFUNC("asm/func/FUN_08050e2c.inc"); }
+
+NAKED void FUN_08050e50(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_08050e50.inc"); }
+
+NAKED s32 FUN_08050e80(void) { INCFUNC("asm/func/FUN_08050e80.inc"); }

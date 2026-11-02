@@ -26,6 +26,13 @@ static inline void Vec3_Diff(Vec3* dst, Vec3* a, Vec3* b) {
   dst->z = a->z - b->z;
 }
 
+// out = target - origin, origin から target へのずれ
+static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
+  out->x = target->x - origin->x;
+  out->y = target->y - origin->y;
+  out->z = target->z - origin->z;
+}
+
 // src を dst に写して y だけ dy ずらす
 static inline void Vec3_CopyOffsetY(Vec3* dst, Vec3* src, s32 dy) {
   *dst = *src;

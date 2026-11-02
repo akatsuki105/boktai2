@@ -144,7 +144,7 @@ _08046684:
 	ldr r0, [sp, #0x1c]
 	adds r1, r4, #0
 	add r2, sp, #4
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 _080466D8:
 	ldr r0, [r5, #0x10]
 	cmp r0, #0x77

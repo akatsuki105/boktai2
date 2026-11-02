@@ -93,7 +93,7 @@ _08101CDE:
 	beq _08101CEA
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _08101CEA:
 	adds r0, r4, #0
 	bl Mover_Unlink

@@ -90,7 +90,7 @@ _080D8192:
 	movs r2, #0xe6
 	lsls r2, r2, #1
 	adds r0, r4, r2
-	bl FUN_08234660
+	bl Map_UpdateZoneEvents
 _080D81BC:
 	movs r0, #0
 	pop {r4}

@@ -40,8 +40,8 @@ static inline void CoffinSealEffect_SetState(CoffinSealEffect* p, u16 state) {
 
 // パレット行 from と to を t/64 の割合でブレンドして pltt にする (t が 0 か 64 ならブレンドせずにそのパレットを指す)
 void FUN_08089b48(CoffinSealEffect* p, s32 from, s32 to, s32 t) {
-  rgb555* src1 = &gObjPlttData[(from + 519) * 16];
-  rgb555* src2 = &gObjPlttData[(to + 519) * 16];
+  rgb555* src1 = &gObjPlttData[OBP_COFFIN(from) * 16];
+  rgb555* src2 = &gObjPlttData[OBP_COFFIN(to) * 16];
   rgb555* dst;
   s32 r1, g1, b1, r2, g2, b2;
   s32 i;

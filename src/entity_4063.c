@@ -14,7 +14,7 @@ static_assert(sizeof(Entity4063) == 32);
 
 COMMON_DATA Entity4063* gEntity4063 = NULL;  // 0x03002C50
 
-// 残りフレーム数を返す, Entity がいなければ 0
+// 0x075C, 残りフレーム数を返す, Entity がいなければ 0
 s32 Entity4063_GetRemaining(void) {
   if (gEntity4063 == NULL) {
     return 0;
@@ -22,7 +22,7 @@ s32 Entity4063_GetRemaining(void) {
   return gEntity4063->timer;
 }
 
-// 次の更新でスクリプトを実行せずに消えるようにする
+// 0xAF8E, 次の更新でスクリプトを実行せずに消えるようにする
 void Entity4063_Cancel(void) {
   if (gEntity4063 != NULL) {
     gEntity4063->cancelled = TRUE;

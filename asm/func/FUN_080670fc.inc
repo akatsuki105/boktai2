@@ -40,7 +40,7 @@ _08067142:
 	adds r4, r5, #0
 	adds r4, #0x2c
 	adds r0, r4, #0
-	bl Entity1DBE_TouchElemNear
+	bl IsInPuddle
 	cmp r0, #0
 	beq _0806717A
 	adds r0, r5, #0

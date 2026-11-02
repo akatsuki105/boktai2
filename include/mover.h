@@ -28,14 +28,14 @@ static_assert(sizeof(MoverTile) == 16);
 typedef struct Mover {
   u16 id;                         // 0x00, Mover_FindByID の検索キー
   u16 flags;                      // 0x02
-  u8 unk_4;                       // 0x04, 衝突解決 FUN_0823349c の第6引数, また gPlayerPtr では idx として使われる
+  u8 unk_4;                       // 0x04, 衝突解決 Map_MoveBoxAlongWalls の第6引数, また gPlayerPtr では idx として使われる
   u8 angle;                       // 0x05, 8bit の向き, gSineTable の添字
   u8 unk_6[2];                    // 0x06, 読み手も書き手も未発見, padding?
   WorldPos pos;                   // 0x08, ワールド座標
   Vec3 delta;                     // 0x10, そのフレームの移動要求, Mover_ApplyMove が pos に適用してから 0 に戻す
   MoverTile* tile;                // 0x18, 踏んでいるタイルの控え, 非NULLなら Mover_ApplyMove が衝突解決を通す
-  u16 sizeX;                      // 0x1C, 衝突判定の X 方向の広がり, FUN_0823349c が pos.x に足して角を見る
-  u16 sizeZ;                      // 0x1E, 衝突判定の Z 方向の広がり, FUN_0823349c が pos.z に足して角を見る
+  u16 sizeX;                      // 0x1C, 衝突判定の X 方向の広がり, Map_MoveBoxAlongWalls が pos.x に足して角を見る
+  u16 sizeZ;                      // 0x1E, 衝突判定の Z 方向の広がり, Map_MoveBoxAlongWalls が pos.z に足して角を見る
   u32 unk_20;                     // 0x20, FUN_0823b464 が書くだけで読み手は未発見
   PathWalker* path;               // 0x24, 経路追従の状態, Mover_SetPath が Map_InitPathWalker に渡して初期化させる
   struct AuxSprite* auxSprite;    // 0x28, 非NULLなら Mover_ApplyMove が毎フレーム pos を書き戻す
@@ -51,7 +51,7 @@ static_assert(sizeof(Mover) == 68);
 void Map_InitMoverTile(MoverTile* p, Vec3* pos);
 
 // delta の分だけ衝突を見ながら pos を進める (同上)
-void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4);
+void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4);
 
 // pos と向きを入れてリストに繋ぐ
 s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 unk_4, void* owner);

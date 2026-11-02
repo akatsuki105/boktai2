@@ -16,6 +16,8 @@
 #include "constants/songs.h"
 #include "constants/sprite.h"
 #include "constants/sprite_animation.h"
+#include "constants/sprite_palette.h"
+#include "constants/sprite_pose.h"
 #include "constants/strings.h"
 #include "constants/tilemap.h"
 #include "constants/weapon.h"

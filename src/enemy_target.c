@@ -8,26 +8,24 @@
 
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
-  u32 unk_18;         // 0x18, EnemyTargetManager_Clear が 0 でクリアする
-  s32 count;          // 0x1C, head のリストの登録数, 6件以上だと EnemyTargetManager_Add が登録を拒否する
-  u32 unk_20;         // 0x20, EnemyTargetManager_Update が毎フレーム +1. EnemyTargetManager_Sweep は30フレームに1回だけ走る
-  u16 unk_24;         // 0x24, EnemyTargetManager_Init が引数をそのまま書く
-  u16 unk_26;         // 0x26, 読み手も書き手も未発見, padding?
-  EnemyTarget* head;  // 0x28, 単方向リストの先頭
+  u32 unk_18;         // 0x18
+  s32 count;          // 0x1C, head のリストの登録数 (6件まで登録できる)
+  u32 frameCounter;   // 0x20
+  u16 id;             // 0x24
+  EnemyTarget* head;  // 0x28
 } EnemyTargetManager;
 static_assert(sizeof(EnemyTargetManager) == 44);
 
-IWRAM_DATA EnemyTargetManager* gEnemyTargetManager = NULL;  // 0x03000184
+static EnemyTargetManager* sEnemyTargetManager;  // 0x03000184
 
 bool32 FUN_0808672c(void);
 void FUN_080f8bb8(Mover* owner);
 bool8 FUN_080e4384(Enemy* p, Vec3* pos);
 s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst);
-s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit);
+s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 bool32 FUN_080865dc(Vec3* out);
-bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param);
 
-static void FUN_080f8cec(void);
+static void nop_080f8cec(void);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -38,24 +36,24 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 static inline void EnemyTarget_Unlink(EnemyTarget* t) {
   t->flags &= ~ENEMYTARGET_LINKED;
   t->enemy = NULL;
-  t->timer = 120;
+  t->cooldown = SECOND(2);
 }
 
 // 登録リストを空にする
 void EnemyTargetManager_Clear(void) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
   if (p != NULL) {
     p->count = 0;
-    p->unk_20 = 0;
+    p->frameCounter = 0;
     p->unk_18 = 0;
     p->head = NULL;
   }
 }
 
-bool32 FUN_080f8c2c(EnemyTarget* node) {
+bool8 FUN_080f8c2c(EnemyTarget* node) {
   if (node->flags & ENEMYTARGET_LINKED) return FALSE;
-  if (node->timer != 0) return FALSE;
-  if (node->kindMask == 1) {
+  if (node->cooldown != 0) return FALSE;
+  if (node->kindMask == ETGT_0) {
     if (!FUN_0808672c()) {
       return FALSE;
     }
@@ -65,7 +63,7 @@ bool32 FUN_080f8c2c(EnemyTarget* node) {
 
 // ノードをリストの先頭につなぐ, 6件以上か既に入っていれば拒否する
 bool32 EnemyTargetManager_Add(EnemyTarget* node, Mover* owner, s32 kindMask) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
   EnemyTarget* cur;
 
   if (p == NULL || p->count > 5) {
@@ -83,18 +81,18 @@ bool32 EnemyTargetManager_Add(EnemyTarget* node, Mover* owner, s32 kindMask) {
   node->owner = owner;
   node->kindMask = kindMask;
   node->flags = ENEMYTARGET_REGISTERED;
-  node->timer = 0;
+  node->cooldown = 0;
   node->enemy = NULL;
   node->next = p->head;
   p->head = node;
   p->count++;
-  FUN_080f8cec();
+  nop_080f8cec();
   return TRUE;
 }
 
 // 登録リストからノードを外す
 void EnemyTargetManager_Remove(EnemyTarget* node) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
 
   if (p != NULL) {
     EnemyTarget* cur = p->head;
@@ -116,10 +114,10 @@ void EnemyTargetManager_Remove(EnemyTarget* node) {
   }
 }
 
-static void FUN_080f8cec(void) {}
+static void nop_080f8cec(void) {}
 
 EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
   EnemyTarget* node;
 
   if (p == NULL) return NULL;
@@ -136,7 +134,7 @@ EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask) {
 }
 
 bool8 FUN_080f8d20(EnemyTarget* node) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
   EnemyTarget* cur;
 
   if (p == NULL || node == NULL) return FALSE;
@@ -155,7 +153,7 @@ bool8 FUN_080f8d20(EnemyTarget* node) {
 }
 
 Mover* EnemyTargetManager_FindOwnerByID(u16 id) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
   EnemyTarget* cur;
 
   if (p == NULL || id == 0) return NULL;
@@ -175,13 +173,13 @@ Mover* EnemyTargetManager_FindOwnerByID(u16 id) {
 
 // 30フレームに1回, 敵が死んだか活動停止したノードの紐付けを解いて再登録待ちにする
 void EnemyTargetManager_Sweep(void) {
-  EnemyTargetManager* mgr = gEnemyTargetManager;
+  EnemyTargetManager* mgr = sEnemyTargetManager;
   EnemyTarget* t;
 
   if (mgr == NULL) {
     return;
   }
-  if (Mod(mgr->unk_20, 30) != 0) {
+  if (Mod(mgr->frameCounter, 30) != 0) {
     return;
   }
 
@@ -204,7 +202,7 @@ void EnemyTargetManager_Sweep(void) {
 
 // ノードと敵の紐付けを解除し、再登録までの待ち時間を置く
 void EnemyTargetManager_Release(EnemyTarget* node) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
 
   if ((p != NULL) && (node != NULL)) {
     EnemyTarget* cur = p->head;
@@ -213,8 +211,8 @@ void EnemyTargetManager_Release(EnemyTarget* node) {
       if ((cur == node) && (cur->flags & ENEMYTARGET_REGISTERED)) {
         cur->flags &= ~ENEMYTARGET_LINKED;
         cur->enemy = NULL;
-        cur->timer = 240;
-        FUN_080f8cec();
+        cur->cooldown = SECOND(4);
+        nop_080f8cec();
         return;
       }
       cur = cur->next;
@@ -222,8 +220,8 @@ void EnemyTargetManager_Release(EnemyTarget* node) {
   }
 }
 
-// owner->unk_4 のプレイヤーについて, kind 0 なら goodCondID が param と一致するか, kind 1 なら unk_20 のビットが立っているかを返す
-bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
+// owner->unk_4 のプレイヤーについて, kind 0 なら goodCondID が param と一致するか, kind 1 なら frameCounter のビットが立っているかを返す
+bool8 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
   s32 n = 0;
   Player* player;
 
@@ -276,11 +274,11 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
 
 // 敵から的 (node->owner) が見えるかを調べて Bind する, kindMask 1/4 は Mover を写して2回まで位置をずらして試す, 2 は 1P の状態も確かめる
 // 下書きの段階で 862/1274 命令, 見えるかの判定 (EnemyTarget_CanSee) は原典で2か所に展開されている, FUN_080e4444 と同じ判定
-NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* best) {
+NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* best) {
 #ifdef NONMATCHING_C
   switch (node->kindMask) {
-    case 1:
-    case 4: {
+    case ETGT_0:
+    case ETGT_2: {
       Mover m = *node->owner;
       s32 i;
 
@@ -297,7 +295,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
           distSq = d.x * d.x + d.z * d.z;
           if (FUN_080e4384(enemy, &m.pos)) {
             *best = distSq;
-            enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+            enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
             ok = TRUE;
           } else {
             s32 diff = ArcTan2_8(d.x, d.z) - enemy->mover.angle;
@@ -307,19 +305,16 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
             } else if (diff < -0x80) {
               diff += 0x100;
             }
-            if (diff < 0) {
-              diff = -diff;
-            }
-            if (diff <= enemy->unk_1fd) {
+            if (abs(diff) <= enemy->unk_1fd) {
               s32 limit;
               u32 near;
               bool32 dim;
 
-              if (node->kindMask == 2) {
+              if (node->kindMask == ETGT_1) {
                 if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
-                  dim = (u8)FUN_080f8e84(&m, 1, 0x10000);
+                  dim = FUN_080f8e84(&m, 1, 0x10000);
                 } else {
-                  dim = (u8)FUN_080f8e84(&m, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
+                  dim = FUN_080f8e84(&m, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
                 }
               } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
                 dim = !(gStat->mapFlags & MPF_BRIGHT);
@@ -349,7 +344,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
 
                   if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
                     if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
-                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
                       adjacent = TRUE;
                     }
                   }
@@ -357,12 +352,12 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
                   if (adjacent) {
                     if ((enemy->flags5 & ENEFLAG5_UNK_3) || Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &m.pos)) {
                       *best = distSq;
-                      enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+                      enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
                       ok = TRUE;
                     }
-                  } else if ((step == 2 || FUN_082340c8(&enemy->mover.pos, &m.pos, 10, 0x100)) && distSq < *best) {
+                  } else if ((step == 2 || Map_HasLineOfSight(&enemy->mover.pos, &m.pos, 10, 0x100)) && distSq < *best) {
                     *best = distSq;
-                    if ((node->kindMask & 6) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
+                    if ((node->kindMask & (ETGT_1 | ETGT_2)) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
                       enemy->unk_1f8 = 1;
                     } else {
                       enemy->unk_1f8 = 0;
@@ -382,7 +377,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
       }
       return FALSE;
     }
-    case 2: {
+    case ETGT_1: {
       Mover* owner;
 
       if (!(enemy->flags & ENEFLAG_UNK_3)) {
@@ -403,7 +398,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
           return FALSE;
         }
       }
-      if ((u8)FUN_080f8e84(owner, 1, 0x21000)) {
+      if (FUN_080f8e84(owner, 1, 0x21000)) {
         return FALSE;
       }
       {
@@ -418,7 +413,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
         distSq = d.x * d.x + d.z * d.z;
         if (FUN_080e4384(enemy, &node->owner->pos)) {
           *best = distSq;
-          enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+          enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
           ok = TRUE;
         } else {
           s32 diff = ArcTan2_8(d.x, d.z) - enemy->mover.angle;
@@ -436,11 +431,11 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
             u32 near;
             bool32 dim;
 
-            if (node->kindMask == 2) {
+            if (node->kindMask == ETGT_1) {
               if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
-                dim = (u8)FUN_080f8e84(node->owner, 1, 0x10000);
+                dim = FUN_080f8e84(node->owner, 1, 0x10000);
               } else {
-                dim = (u8)FUN_080f8e84(node->owner, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
+                dim = FUN_080f8e84(node->owner, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
               }
             } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
               dim = !(gStat->mapFlags & MPF_BRIGHT);
@@ -470,7 +465,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
 
                 if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
                   if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
-                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_UNK_6))) {
+                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
                     adjacent = TRUE;
                   }
                 }
@@ -478,12 +473,12 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
                 if (adjacent) {
                   if ((enemy->flags5 & ENEFLAG5_UNK_3) || Map_IsPosInAgentIsland(enemy->navAgent, &enemy->mover.pos, &node->owner->pos)) {
                     *best = distSq;
-                    enemy->unk_1f8 = (node->kindMask & 6) ? 1 : 0;
+                    enemy->unk_1f8 = (node->kindMask & (ETGT_1 | ETGT_2)) ? 1 : 0;
                     ok = TRUE;
                   }
-                } else if ((step == 2 || FUN_082340c8(&enemy->mover.pos, &node->owner->pos, 10, 0x100)) && distSq < *best) {
+                } else if ((step == 2 || Map_HasLineOfSight(&enemy->mover.pos, &node->owner->pos, 10, 0x100)) && distSq < *best) {
                   *best = distSq;
-                  if ((node->kindMask & 6) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
+                  if ((node->kindMask & (ETGT_1 | ETGT_2)) && ((near == 0 && step == 0) || (enemy->flags5 & ENEFLAG5_UNK_3) || (step != 2 && distSq <= near))) {
                     enemy->unk_1f8 = 1;
                   } else {
                     enemy->unk_1f8 = 0;
@@ -510,7 +505,7 @@ NON_MATCH bool32 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* b
 
 // kindMask に合う登録済みの的のうち Bind できた最後のものを敵に割り当てる
 EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
-  EnemyTargetManager* m = gEnemyTargetManager;
+  EnemyTargetManager* m = sEnemyTargetManager;
   EnemyTarget* found;
   EnemyTarget* node;
   s32 best;
@@ -524,7 +519,7 @@ EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
   best = 0x7FFFFFFF;
   hit = -1;
   for (node = m->head; node != NULL; node = node->next) {
-    if ((node->flags & ENEMYTARGET_REGISTERED) && node->owner != NULL && (node->kindMask & kindMask) && (u8)FUN_080f8c2c(node) && (u8)EnemyTargetManager_Bind(node, p, &best)) {
+    if ((node->flags & ENEMYTARGET_REGISTERED) && node->owner != NULL && (node->kindMask & kindMask) && FUN_080f8c2c(node) && EnemyTargetManager_Bind(node, p, &best)) {
       found = node;
       hit = (s32)found;
     }
@@ -532,13 +527,13 @@ EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
 
   if (hit >= 0) {
     switch (found->kindMask) {
-      case 1: {
+      case ETGT_0: {
         found->flags |= ENEMYTARGET_LINKED;
         found->enemy = p;
         break;
       }
-      case 2:
-      case 4: {
+      case ETGT_1:
+      case ETGT_2: {
         Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
         FUN_080f8bb8(found->owner);
         break;
@@ -550,14 +545,14 @@ EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask) {
 }
 
 void EnemyTargetManager_TickTimers(void) {
-  EnemyTargetManager* p = gEnemyTargetManager;
+  EnemyTargetManager* p = sEnemyTargetManager;
 
   if (p != NULL) {
     EnemyTarget* node = p->head;
 
     while (node != NULL) {
-      if (node->timer != 0) {
-        node->timer--;
+      if (node->cooldown != 0) {
+        node->cooldown--;
       }
       node = node->next;
     }
@@ -567,20 +562,20 @@ void EnemyTargetManager_TickTimers(void) {
 s32 EnemyTargetManager_Update(EnemyTargetManager* p) {
   EnemyTargetManager_Sweep();
   EnemyTargetManager_TickTimers();
-  p->unk_20++;
+  p->frameCounter++;
 }
 
-s32 EnemyTargetManager_Destroy(EnemyTargetManager* p) { gEnemyTargetManager = NULL; }
+s32 EnemyTargetManager_Destroy(EnemyTargetManager* p) { sEnemyTargetManager = NULL; }
 
 s32 EnemyTargetManager_Init(EnemyTargetManager* p, u16 id) {
-  gEnemyTargetManager = p;
+  sEnemyTargetManager = p;
   EnemyTargetManager_Clear();
-  p->unk_24 = id;
+  p->id = id;
 }
 
 // 0xD854
 EnemyTargetManager* EnemyTargetManager_Create(u16 id) {
-  if (gEnemyTargetManager == NULL) {
+  if (sEnemyTargetManager == NULL) {
     EnemyTargetManager* p = CreateEntity(ENTITY_UNK_8, sizeof(EnemyTargetManager));
     if (p != NULL) {
       SetEntityRoutine(p, EnemyTargetManager_Update, EnemyTargetManager_Destroy);
@@ -591,7 +586,7 @@ EnemyTargetManager* EnemyTargetManager_Create(u16 id) {
     }
     return p;
   }
-  return gEnemyTargetManager;
+  return sEnemyTargetManager;
 }
 
-void EnemyTargetManager_ClearGlobal(void) { gEnemyTargetManager = NULL; }
+void EnemyTargetManager_ClearGlobal(void) { sEnemyTargetManager = NULL; }

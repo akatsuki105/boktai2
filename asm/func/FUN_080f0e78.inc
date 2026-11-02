@@ -101,7 +101,7 @@ _080F0F48:
 	ldr r0, _080F0F84 @ =0x000004A4
 	adds r4, r5, r0
 	ldr r0, [r4]
-	bl FUN_08235fd8
+	bl Map_ConsumeNavWaypointChanged
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _080F0F5A

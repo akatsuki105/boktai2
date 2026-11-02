@@ -3,7 +3,6 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
-#include "inline.h"
 #include "map_inline.h"
 #include "player.h"
 #include "random.h"
@@ -11,20 +10,19 @@
 #include "sound.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
-#include "trig.h"
 #include "vec3.h"
 #include "vm.h"
 
 typedef struct {
   s16 unk_00;             // 0x000
-  s16 power;              // 0x002, 要素の hitbox の攻撃力
+  s16 power;              // 0x002, 要素の hurtbox の攻撃力
   u8 state;               // 0x004, PTR_ARRAY_085ab9b4 の添字
   u8 unk_05;              // 0x005
   u8 unk_06;              // 0x006
   u8 animLooped;          // 0x007, anim が最後のフレームまで進んだフレームだけ 1
   u8 unk_08;              // 0x008
   u8 flashTimer;          // 0x009, 0 になったフレームにパレットを 0x22A に戻す
-  u8 flags;               // 0x00A, bit0 なら hitbox を動かさない, bit1 なら FUN_08057214 を呼ぶ, _Update が毎フレーム 0 に戻す
+  u8 flags;               // 0x00A, bit0 なら hurtbox を動かさない, bit1 なら FUN_08057214 を呼ぶ, _Update が毎フレーム 0 に戻す
   s8 lastDir;             // 0x00B, 前に進んだ向き, -1 ならなし
   u8 farTimer;            // 0x00C, player が範囲外にいるフレーム数, 32 で FUN_08056a34 が 1 を返す
   u8 angle;               // 0x00D, 8bit の向き, velocity を作る
@@ -41,7 +39,7 @@ typedef struct {
   AuxSpriteGfx gfx;       // 0x030, SPRITE_DUNEYRR_AUX
   AuxSprite sprite;       // 0x04C
   AuxAnimState anim;      // 0x078, ANIM_31F4
-  HitboxData hitbox;      // 0x088
+  HitboxData hurtbox;     // 0x088
   ParticleShadow shadow;  // 0x0D8
 } Entity08058ffcElem;
 static_assert(sizeof(Entity08058ffcElem) == 280);
@@ -242,15 +240,15 @@ NON_MATCH void FUN_08056f94(HitboxData* a, HitboxData* b, Entity08058ffcElem* el
     angle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
   }
 
-  if (a->weakness & 1) {
+  if (a->weakness & (1 << WK_SWORD)) {
     angle = ArcTan2_8(b->pos.x - gPlayerPtr[0]->mover.pos.x, b->pos.z - gPlayerPtr[0]->mover.pos.z);
     speed = 16;
-  } else if (a->weakness & 2) {
+  } else if (a->weakness & (1 << WK_SPEAR)) {
     speed = 32;
-  } else if (a->weakness & 4) {
+  } else if (a->weakness & (1 << WK_HAMMER)) {
     angle = ArcTan2_8(b->pos.x - a->pos.x, b->pos.z - a->pos.z);
     speed = 24;
-  } else if (a->weakness & 8) {
+  } else if (a->weakness & (1 << WK_OTHERS)) {
     speed = 8;
   } else {
     speed = 16;
@@ -286,17 +284,16 @@ NON_MATCH void FUN_08056f94(HitboxData* a, HitboxData* b, Entity08058ffcElem* el
 // 残差は y=0x20 の合成定数 0x200000 をループ外に出してしまうことと, hitboxes[i] の番地を p 込みのポインタで進めること (80/82命令)
 NON_MATCH void FUN_08057154(Entity08058ffc* p, s32 power) {
 #ifdef NONMATCHING_C
-  Vec3 halfSize;
-  Vec3 offset;
+  Vec3 halfSize, offset;
   s32 i;
 
   p->unk_24 = 0;
   for (i = 0; i < 4; i++) {
     HitboxData* hitbox = &p->hitboxes[i];
 
-    VEC3_SET(halfSize, 24, 0x20, 24);
-    VEC3_SET(offset, 0, 0x20, 0);
-    Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+    VEC3_SET(halfSize, Q8(0.094), Q8(0.125), Q8(0.094));
+    VEC3_SET(offset, 0, Q8(0.125), 0);
+    Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetHandler(hitbox, FUN_08056f90, p);
     Hitbox_SetAttack(hitbox, power, 30, 0, 0, 30);
   }
@@ -313,19 +310,19 @@ void FUN_08057214(Entity08058ffc* p, Entity08058ffcElem* elem) {
 
     switch (elem->unk_05) {
       case 0: {
-        pos.z -= 48;
+        pos.z -= Q8(0.19);
         break;
       }
       case 1: {
-        pos.x += 48;
+        pos.x += Q8(0.19);
         break;
       }
       case 2: {
-        pos.z += 48;
+        pos.z += Q8(0.19);
         break;
       }
       case 3: {
-        pos.x -= 48;
+        pos.x -= Q8(0.19);
         break;
       }
     }
@@ -337,20 +334,20 @@ void FUN_08057214(Entity08058ffc* p, Entity08058ffcElem* elem) {
 
 // 要素の食らい判定を作って登録する
 void FUN_080572b8(Entity08058ffc* p, Entity08058ffcElem* elem) {
-  HitboxData* hitbox = &elem->hitbox;
+  HitboxData* hurtbox = &elem->hurtbox;
   Vec3 halfSize;
   Vec3 offset;
 
-  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
-  VEC3_SET(offset, 0, 0x80, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_08056f94, elem);
-  Hitbox_SetPowerAndAttributes(hitbox, elem->power, 0x80, 0);
-  Hitbox_Register(hitbox);
+  VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
+  VEC3_SET(offset, 0, Q8(0.5), 0);
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
+  Hitbox_SetHandler(hurtbox, FUN_08056f94, elem);
+  Hitbox_SetPowerAndAttributes(hurtbox, elem->power, HBATTR_BEAST, 0);
+  Hitbox_Register(hurtbox);
 }
 
-void Entity08058ffc_UnregisterElemHitbox(Entity08058ffc* p, Entity08058ffcElem* elem) { Hitbox_Unregister(&elem->hitbox); }
+void Entity08058ffc_UnregisterElemHitbox(Entity08058ffc* p, Entity08058ffcElem* elem) { Hitbox_Unregister(&elem->hurtbox); }
 
 // unk_38 のスクリプトを要素のスプライト位置 (x, y, z) を引数にして実行する
 void FUN_08057354(Entity08058ffc* p, Entity08058ffcElem* elem) {
@@ -370,8 +367,8 @@ void FUN_08057354(Entity08058ffc* p, Entity08058ffcElem* elem) {
 void FUN_080573a0(Entity08058ffc* p, Entity08058ffcElem* elem, s32 param_3) {
   if (elem->unk_08 != 0) {
     elem->unk_08 = 0;
-    AuxAnim_SetAnim(&elem->anim, p->animFile, 0, (u8)(elem->unk_05 - 1) <= 1, elem->unk_05 > 1);
-    AuxAnim_SetAnimSpeed(&elem->anim, 0x40);
+    AuxAnim_SetAnim(&elem->anim, p->animFile, 0, elem->unk_05 == 1 || elem->unk_05 == 2, elem->unk_05 > 1);
+    AuxAnim_SetAnimSpeed(&elem->anim, Q6(1));
   }
 
   if (elem->unk_0e != 0) {
@@ -391,7 +388,7 @@ void FUN_080573a0(Entity08058ffc* p, Entity08058ffcElem* elem, s32 param_3) {
     Entity08058ffc_SetElemState(p, elem, 4);
     return;
   }
-  if (elem->stateTimer > 59) {
+  if (elem->stateTimer >= SECOND(1)) {
     Entity08058ffc_SetElemState(p, elem, 2);
   } else {
     elem->stateTimer++;
@@ -444,7 +441,7 @@ NON_MATCH void FUN_0805758c(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
     elem->targetZ = (Random() & 0x3FF) + p->unk_3c[idx & 3].z;
     elem->unk_10 = 0;
   }
-  AuxAnim_SetAnim(&elem->anim, p->animFile, 1, (u8)(elem->unk_05 - 1) <= 1, elem->unk_05 > 1);
+  AuxAnim_SetAnim(&elem->anim, p->animFile, 1, elem->unk_05 == 1 || elem->unk_05 == 2, elem->unk_05 > 1);
 
   if (elem->unk_0e != 0) {
     elem->unk_0e--;
@@ -578,7 +575,7 @@ NON_MATCH void FUN_080579a4(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
     elem->targetX = (Random() & 0x3FF) + p->unk_3c[idx & 3].x;
     elem->targetZ = (Random() & 0x3FF) + p->unk_3c[idx & 3].z;
   }
-  AuxAnim_SetAnim(&elem->anim, p->animFile, 1, (u8)(elem->unk_05 - 1) <= 1, elem->unk_05 > 1);
+  AuxAnim_SetAnim(&elem->anim, p->animFile, 1, elem->unk_05 == 1 || elem->unk_05 == 2, elem->unk_05 > 1);
 
   if (elem->unk_0e != 0) {
     elem->unk_0e--;
@@ -715,7 +712,7 @@ NON_MATCH void FUN_08057db0(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
     elem->unk_10 = 1;
   }
   AuxAnim_SetAnimSpeed(&elem->anim, 0x20);
-  AuxAnim_SetAnim(&elem->anim, p->animFile, 1, (u8)(elem->unk_05 - 1) <= 1, elem->unk_05 > 1);
+  AuxAnim_SetAnim(&elem->anim, p->animFile, 1, elem->unk_05 == 1 || elem->unk_05 == 2, elem->unk_05 > 1);
   if ((elem->stateTimer & 0x1F) == 0) {
     elem->targetX = (p->player->mover.pos.x & 0xFF00) + (idx & 3) * 32;
     elem->targetZ = (p->player->mover.pos.z & 0xFF00) + (idx >> 2) * 32;
@@ -862,7 +859,7 @@ NON_MATCH void FUN_080581dc(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
     elem->angle = ArcTan2_8(p->player->mover.pos.x - elem->origin.x, p->player->mover.pos.z - elem->origin.z);
     dir = ((((elem->angle + 0x20) & 0xFF) >> 6) + 1) & 3;
     elem->unk_05 = dir;
-    AuxAnim_SetAnim(&elem->anim, p->animFile, 1, (u8)(dir - 1) <= 1, dir > 1);
+    AuxAnim_SetAnim(&elem->anim, p->animFile, 1, dir == 1 || dir == 2, dir > 1);
     AuxAnim_SetAnimSpeed(&elem->anim, 0x10);
   }
 
@@ -1028,8 +1025,8 @@ NON_MATCH void FUN_080587cc(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
 void FUN_08058a98(Entity08058ffc* p, Entity08058ffcElem* elem, s32 param_3) {
   if (elem->unk_08 != 0) {
     elem->unk_08 = 0;
-    AuxAnim_SetAnim(&elem->anim, p->animFile, 0, (u8)(elem->unk_05 - 1) <= 1, elem->unk_05 > 1);
-    AuxAnim_SetAnimSpeed(&elem->anim, 0x40);
+    AuxAnim_SetAnim(&elem->anim, p->animFile, 0, elem->unk_05 == 1 || elem->unk_05 == 2, elem->unk_05 > 1);
+    AuxAnim_SetAnimSpeed(&elem->anim, Q6(1));
   }
 }
 
@@ -1081,78 +1078,37 @@ NON_MATCH void FUN_08058ae4(Entity08058ffc* p, Entity08058ffcElem* elem, s32 idx
 #endif
 }
 
-// 使用中の要素ごとにアニメを手動で1コマ進め, 4フレームに1回 player との距離を測り, state のハンドラを呼んで hitbox を更新する
-// 残差は AuxAnim 手動送りの壁 (dust.c と同じ) とレジスタ割当で, 命令数は 249/249
+// 使用中の要素ごとにアニメを手動で1コマ進め, 4フレームに1回 player との距離を測り, state のハンドラを呼んで hurtbox を更新する
+// 251/249命令, 手動送りは AuxSprite_AdvanceAnim で揃った, 残差はループの誘導変数: 原典は &elem->anim を歩進ポインタ (r8) にして &elem->sprite.pos を毎回作ってスタックに置くが, こちらは pos 側が歩進になり p が高位レジスタに回る
+// 試済: elem の代入を初期化の後へ, sprite / anim のローカル化, anim / pos をループ頭で取る (anim を頭で取ると 242 命令に崩れる)
 NON_MATCH s32 Entity08058ffc_Update(Entity08058ffc* p) {
 #ifdef NONMATCHING_C
-  Entity08058ffcElem* elem = p->elems;
+  Entity08058ffcElem* elem;
   s32 i;
 
   p->unk_24 = 0;
   p->activeCount = 0;
+  elem = p->elems;
   for (i = 0; i < 12; i++, elem++) {
-    if (p->activeMask & (1 << i)) {
-      AuxSprite* sprite = &elem->sprite;
-      AuxAnimState* anim = &elem->anim;
-      AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
-      bool8 ended;
+    Vec3* pos = &elem->sprite.pos;
 
-      sprite->poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-      anim->tick++;
-      if (anim->tick >= anim->wait) {
-        anim->tick = 0;
-        if (anim->flags & ANIM_PLAY_REVERSE) {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount - 1;
-            ended = TRUE;
-          } else {
-            anim->cmdIdx--;
-            ended = FALSE;
-          }
-        } else {
-          anim->cmdIdx++;
-          if (anim->cmdIdx < anim->cmdCount) {
-            ended = FALSE;
-          } else {
-            anim->cmdIdx = 0;
-            ended = TRUE;
-          }
-        }
-        cmd = &anim->cmds[anim->cmdIdx];
-        anim->duration = *cmd & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      } else {
-        ended = FALSE;
-      }
-      elem->animLooped = ended;
+    if (p->activeMask & (1 << i)) {
+      elem->animLooped = AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
       elem->flags = 0;
 
       if ((p->frameCounter & 3) == (i & 3)) {
-        s32 dx = p->player->mover.pos.x - elem->sprite.pos.x;
-        s32 dz = p->player->mover.pos.z - elem->sprite.pos.z;
+        s32 dx = p->player->mover.pos.x - pos->x;
+        s32 dz = p->player->mover.pos.z - pos->z;
 
         elem->playerDistSq = dx * dx + dz * dz;
       }
       PTR_ARRAY_085ab9b4[elem->state](p, elem, i);
 
       if (elem->flags & 1) {
-        elem->hitbox.flags |= HBFLAG_HIDDEN;
+        elem->hurtbox.flags |= HBFLAG_HIDDEN;
       } else {
-        elem->hitbox.flags &= ~HBFLAG_HIDDEN;
-        Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+        elem->hurtbox.flags &= ~HBFLAG_HIDDEN;
+        Hitbox_SetPos(&elem->hurtbox, pos, 0);
       }
       if (elem->flags & 2) {
         FUN_08057214(p, elem);

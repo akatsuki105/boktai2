@@ -3,9 +3,7 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
-#include "inline.h"
 #include "particle.h"
-#include "trig.h"
 
 // 数字を1桁ずつ Particle で表示する枠, 同時に4つまで出せる
 typedef struct DamageNumber {

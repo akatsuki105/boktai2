@@ -251,7 +251,7 @@ static inline void ShadeManCrossover_SetShake(ShadeManCrossover* p, u32 amp) { p
 // 本体のパレット番号を返す, パレットのフェードもこの番号へ戻す
 s32 ShadeManCrossover_GetPlttID(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
 
-s32 FUN_08235408(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
+s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 s32 Map_FindNearestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
 void FUN_0807ae6c(struct Player* p, u32 param_2, s32 param_3);
@@ -1278,7 +1278,7 @@ void FUN_0803e4f4(ShadeManCrossover* p) {
 
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 12);
-    FUN_08235408(&p->unk_29c, &boss->mover.pos, 4, 0x100);
+    Map_FindNearestPathNodeBeyond(&p->unk_29c, &boss->mover.pos, 4, 0x100);
   }
   if (boss->subStateDone) {
     ShadeManCrossover_ResetSubStates(p, 10);
@@ -1437,7 +1437,7 @@ void FUN_0803ebc4(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprite, &p->gfx, 9, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
-    PlaySound_0824078c(SE_842);
+    PlaySound_0824078c(SE_WHOOSH_842);
   }
   if (boss->subState2 == 11) {
     SET_FLAGS(boss->flags, BOSSFLAG_UNK_22);

@@ -441,7 +441,7 @@ _0814A2CC:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814A2EC
 	cmp r0, #2
@@ -2594,7 +2594,7 @@ _0814B306:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x1c]
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814B350
 	cmp r0, #2
@@ -3031,7 +3031,7 @@ _0814B67C:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814B69C
 	cmp r0, #2
@@ -5858,7 +5858,7 @@ _0814CBCA:
 	movs r3, #0x20
 	ldrsh r2, [r0, r3]
 	adds r0, r4, #0
-	bl FUN_080e6304
+	bl Enemy_SetAngleToward
 	adds r0, r4, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -6977,7 +6977,7 @@ _0814D494:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814D4B4
 	cmp r0, #2
@@ -7046,7 +7046,7 @@ _0814D51C:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814D53C
 	cmp r0, #2
@@ -7912,7 +7912,7 @@ _0814DBD8:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814DBF8
 	cmp r0, #2
@@ -7981,7 +7981,7 @@ _0814DC60:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814DC80
 	cmp r0, #2
@@ -9076,7 +9076,7 @@ _0814E4A0:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r5, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814E4C0
 	cmp r0, #2
@@ -10799,7 +10799,7 @@ _0814F214:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814F234
 	cmp r0, #2
@@ -10867,7 +10867,7 @@ _0814F298:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814F2B8
 	cmp r0, #2
@@ -11855,7 +11855,7 @@ _0814FA4C:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814FA6C
 	cmp r0, #2
@@ -11923,7 +11923,7 @@ _0814FAD0:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0814FAF0
 	cmp r0, #2
@@ -12944,7 +12944,7 @@ _081502C0:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081502E0
 	cmp r0, #2
@@ -13122,7 +13122,7 @@ _0815041C:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _0815043C
 	cmp r0, #2
@@ -13968,7 +13968,7 @@ _08150A40:
 	adds r0, r4, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _08150AD8
 	cmp r0, #2
@@ -14121,7 +14121,7 @@ _08150BDC:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _08150BFC
 	cmp r0, #2
@@ -15249,7 +15249,7 @@ _08151490:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_08235f40
+	bl Map_TryFindNavRoute
 	cmp r0, #0
 	beq _081514B0
 	cmp r0, #2
@@ -15428,7 +15428,7 @@ _081515F4:
 	ldr r2, _0815164C @ =0x000004A4
 	adds r4, r5, r2
 	ldr r0, [r4]
-	bl FUN_08235fd8
+	bl Map_ConsumeNavWaypointChanged
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _08151654
@@ -15924,7 +15924,7 @@ _081519CE:
 	beq _081519DA
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl Entity5941_Unregister
+	bl CWolfTargetManager_Unregister
 _081519DA:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -17050,7 +17050,7 @@ _0815230A:
 	adds r0, #0x7c
 	ldr r2, _08152344 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl Entity5941_Register
+	bl CWolfTargetManager_Register
 _0815231A:
 	ldr r3, [sp, #0x110]
 	ldrb r0, [r3]

@@ -34,7 +34,7 @@ _080D44F0:
 	adds r1, #0x2c
 	adds r0, r4, #0
 	movs r2, #0
-	bl Entity080a8ff8_Create
+	bl DynamiteEffect_Create
 	b _080D451E
 	.align 2, 0
 _080D4514: .4byte 0x000003FA

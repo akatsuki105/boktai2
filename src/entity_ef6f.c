@@ -457,7 +457,7 @@ NON_MATCH void FUN_0801eb64(EntityEF6F* p) {
   if (p->unk_24 > 31 && p->unk_22 == 0 && (gInput[0].pressed & A_BUTTON)) {
     p->unk_21 = 16;
     p->unk_22 = 1;
-    PlaySound_082406e0(SE_CHOICE);
+    PlaySound_082406e0(SE_TEXT_SHOW);
     MainSprite_SetFlags(&p->sprite, SPRFLAG_HIDDEN);
   }
 

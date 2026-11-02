@@ -25,6 +25,18 @@ static_assert(sizeof(Entity08052ffc) == 308);
 
 const u8 u8_ARRAY_085ab73c[4] = {26, 29, 18, 33};  // 0x085AB73C
 
-const u16 u16_ARRAY_085ab740[4] = {0x760, 0x800, 0x8A0, 0x800};  // 0x085AB740
+NAKED void Entity08052ffcElem_Init(Entity08052ffc* p, Entity08052ffcElem* elem, s32 idx) { INCFUNC("asm/func/Entity08052ffcElem_Init.inc"); }
 
-INCASM("asm/entity_08052ffc.inc");
+NAKED void Entity08052ffcElem_Destroy(Entity08052ffc* p, Entity08052ffcElem* elem, s32 idx) { INCFUNC("asm/func/Entity08052ffcElem_Destroy.inc"); }
+
+NAKED void Entity08052ffcElem_Update(Entity08052ffc* p, Entity08052ffcElem* elem, s32 idx) { INCFUNC("asm/func/Entity08052ffcElem_Update.inc"); }
+
+NAKED s32 Entity08052ffc_Update(Entity08052ffc* p) { INCFUNC("asm/func/Entity08052ffc_Update.inc"); }
+
+NAKED s32 Entity08052ffc_Destroy(Entity08052ffc* p) { INCFUNC("asm/func/Entity08052ffc_Destroy.inc"); }
+
+NAKED s32 Entity08052ffc_Init(Entity08052ffc* p) { INCFUNC("asm/func/Entity08052ffc_Init.inc"); }
+
+NAKED Entity08052ffc* Entity08052ffc_Create(void) { INCFUNC("asm/func/Entity08052ffc_Create.inc"); }
+
+NAKED void Entity08052ffc_Spawn(Entity08052ffc* p, u32 idx, u32 mode, Vec3* pos) { INCFUNC("asm/func/Entity08052ffc_Spawn.inc"); }

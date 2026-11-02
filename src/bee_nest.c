@@ -15,7 +15,7 @@ typedef struct BeeNestFragment {
   AuxSprite sprite;          // 0x000
   AuxAnimState anim;         // 0x02C, ANIM_74C9
   AuxSpriteGfx gfx;          // 0x03C, SPRITE_BEE_NEST_BROKEN
-  HitboxData hitbox;         // 0x058
+  HitboxData hurtbox;        // 0x058
   AuxShadow shadow;          // 0x0A8, shadowId で管理
   Vec3 basePos;              // 0x114, 揺れの基準位置, sprite.pos へ複写する
   s16 unk_11c;               // 0x11C, 揺れの角速度, 折り返すたびに符号を反転して半分になる
@@ -270,11 +270,11 @@ NON_MATCH void Cmd_CreateBeeNest(void) {
 // 無敵時間を数えつつ、点滅用のパレットを選ぶ
 NON_MATCH void FUN_081d5cac(BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
-  if (frag->hitbox.invincibleTime != 0) {
-    frag->hitbox.flags |= HBFLAG_HIDDEN;
-    frag->hitbox.invincibleTime--;
+  if (frag->hurtbox.invincibleTime != 0) {
+    frag->hurtbox.flags |= HBFLAG_HIDDEN;
+    frag->hurtbox.invincibleTime--;
   } else {
-    frag->hitbox.flags &= ~HBFLAG_HIDDEN;
+    frag->hurtbox.flags &= ~HBFLAG_HIDDEN;
   }
   if (frag->unk_153 != 0) {
     Video_SetAuxSpritePltt(frag->sprite.gfx, 306);
@@ -465,7 +465,7 @@ NON_MATCH void FUN_081d6200(BeeNest* p, BeeNestFragment* frag) {
   } else {
     frag->sprite.flags |= SPRFLAG_HIDDEN;
     AuxSprite_Remove(&frag->sprite);
-    Hitbox_Unregister(&frag->hitbox);
+    Hitbox_Unregister(&frag->hurtbox);
     frag->state = 0;
     p->activeMask &= ~(1 << frag->idx);
     frag->idx = -1;
@@ -510,7 +510,7 @@ s32 BeeNest_Destroy(BeeNest* p) {
       BeeNestFragment* frag = &p->fragments[i];
 
       AuxSprite_Remove(&frag->sprite);
-      Hitbox_Unregister(&frag->hitbox);
+      Hitbox_Unregister(&frag->hurtbox);
       if (frag->shadowId != -1) {
         AuxShadow_Remove(&frag->shadow);
         frag->shadowId = -1;
@@ -561,27 +561,27 @@ void FUN_081d6444(BeeNestFragment* frag) {
 }
 
 // 被弾ハンドラ, 体力を削って演出を出し, 0 になったら state 4 へ移す
-// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hitbox.invincibleTime を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
+// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hurtbox.invincibleTime を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
 // dealt は min(unk_140, damage) だが, 原典の形 (差を取ってから符号で分岐) に合わせて if/else で書いた
 NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
   s32 dealt;
   Vec3 v;
 
-  if (frag->hitbox.invincibleTime != 0) {
+  if (frag->hurtbox.invincibleTime != 0) {
     return;
   }
 
   Hitbox_ApplyDamage(a, b);
   b->invincibleTime = a->invincibleTime;
-  dealt = frag->hp - frag->hitbox.damage;
+  dealt = frag->hp - frag->hurtbox.damage;
   if (dealt >= 0) {
-    dealt = frag->hitbox.damage;
+    dealt = frag->hurtbox.damage;
   } else {
-    dealt += frag->hitbox.damage;
+    dealt += frag->hurtbox.damage;
   }
 
-  frag->hp -= frag->hitbox.damage;
+  frag->hp -= frag->hurtbox.damage;
   if (frag->hp < 0) {
     frag->hp = 0;
   }
@@ -591,7 +591,7 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag)
   CreateDamageNumber(b, dealt, 0, &frag->sprite.pos, &v, 1);
   frag->unk_153 = 3;
   frag->unk_157 = 10;
-  frag->hitbox.invincibleTime = 0x18;
+  frag->hurtbox.invincibleTime = 0x18;
   FUN_081d65e8(frag);
   FUN_081d6bc0(frag);
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
@@ -625,17 +625,17 @@ NON_MATCH void FUN_081d65e8(BeeNestFragment* frag) {
 }
 
 void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttributes attributes, u32 weakness) {
-  HitboxData* hitbox = &frag->hitbox;
+  HitboxData* hurtbox = &frag->hurtbox;
   Vec3 offset, halfSize;
 
   VEC3_SET(offset, 0, Q8(0.313), 0);
   VEC3_SET(halfSize, Q8(0.25), Q8(0.313), Q8(0.25));
-  hitbox->id = frag->unk_150;
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, power, attributes, weakness);
-  Hitbox_SetPos(hitbox, &frag->sprite.pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_081d64d4, frag);
-  Hitbox_Register(hitbox);
+  hurtbox->id = frag->unk_150;
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_SetPowerAndAttributes(hurtbox, power, attributes, weakness);
+  Hitbox_SetPos(hurtbox, &frag->sprite.pos, 0);
+  Hitbox_SetHandler(hurtbox, FUN_081d64d4, frag);
+  Hitbox_Register(hurtbox);
 }
 
 // 壊れた蜂の巣の破片を5個, ランダムな向きへ飛ばす

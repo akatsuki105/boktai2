@@ -12,7 +12,7 @@
 	cmp r1, #0
 	beq _08004BD2
 	adds r0, r7, #0
-	bl FUN_08004694
+	bl EntityD9AE_FindElemByID
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _08004BD2

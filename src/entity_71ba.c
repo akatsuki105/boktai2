@@ -1,7 +1,9 @@
 #include "collision_map.h"
 #include "entity.h"
 #include "global.h"
+#include "map_inline.h"
 #include "player.h"
+#include "vm.h"
 
 // 条件 (プレイヤーのタイル位置・高さ・フォーム) が揃っている間だけ、あるタイルの当たり判定を上書きする
 typedef struct Entity71BA {
@@ -19,7 +21,21 @@ typedef struct Entity71BA {
 } Entity71BA;
 static_assert(sizeof(Entity71BA) == 60);
 
-NAKED bool32 Entity71BA_IsPlayerOnTile(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_IsPlayerOnTile.inc"); }
+void FUN_0807a334(Player* p);
+void FUN_0807a44c(Player* p, s32 dir);
+
+static inline bool32 Entity71BA_IsPlayerMini(void) {
+  u16 timer = gGoodCondTimer;
+
+  return timer != 0 && gGoodCondID == GOOD_MINI;
+}
+
+bool32 Entity71BA_IsPlayerOnTile(Entity71BA* p) {
+  if (GetCollisionTileIdx(&gPlayerPtr[0]->mover.pos) == p->tileIdx) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 bool32 Entity71BA_IsPlayerAtHeight(Entity71BA* p) {
   if (gPlayerPtr[0]->mover.pos.y == p->height << 8) {
@@ -28,8 +44,8 @@ bool32 Entity71BA_IsPlayerAtHeight(Entity71BA* p) {
   return FALSE;
 }
 
-// 残差は AND の結果を置くレジスタだけ (原典はマスク側, こちらは値側)
-NON_MATCH bool32 FUN_080a0104(Entity71BA* p, s32 param_2) {
+// 残差は AND の結果を置くレジスタだけ (原典はマスク側, こちらは値側), Tier A-C は試済
+NON_MATCH bool32 Entity71BA_IsPlayerWithinTileOffset(Entity71BA* p, s32 param_2) {
 #ifdef NONMATCHING_C
   u16 v;
 
@@ -43,42 +59,181 @@ NON_MATCH bool32 FUN_080a0104(Entity71BA* p, s32 param_2) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080a0104.inc");
+  INCFUNC("asm/func/Entity71BA_IsPlayerWithinTileOffset.inc");
 #endif
 }
 
-NAKED s32 FUN_080a0140(Entity71BA* p) { INCFUNC("asm/func/FUN_080a0140.inc"); }
+s32 FUN_080a0140(Entity71BA* p) {
+  if (gPlayerPtr[0]->action == 4) {
+    u8 dir = gPlayerPtr[0]->actionDir;
 
-NAKED void FUN_080a01d8(Entity71BA* p) { INCFUNC("asm/func/FUN_080a01d8.inc"); }
-
-NAKED s32 FUN_080a0268(Entity71BA* p) { INCFUNC("asm/func/FUN_080a0268.inc"); }
-
-NAKED void Entity71BA_ClampPlayer(Entity71BA* p, s32 param_2) { INCFUNC("asm/func/Entity71BA_ClampPlayer.inc"); }
-
-NAKED void FUN_080a035c(Entity71BA* p) { INCFUNC("asm/func/FUN_080a035c.inc"); }
-
-// 小さい状態 (赤いキノコの効果中, バット,マウス) かを返す
-// 残差0命令 (28/28), 命令順だけ違う: 原典は 0/1 の初期値 0 を最初のグローバル読み出しの後に置く
-NON_MATCH bool32 IsPlayerSmall(void) {
-#ifdef NONMATCHING_C
-  bool32 isMini = gGoodCondTimer != 0 && gGoodCondID == GOOD_MINI;
-
-  if (isMini) {
-    return TRUE;
+    if (dir == 1 && (p->flags & 0x10)) {
+      return TRUE;
+    }
+    if (dir == 7 && (p->flags & 8)) {
+      return TRUE;
+    }
+    return FALSE;
   }
   if (gPlayerPtr[0]->kind == PLAYER_BAT) {
     return TRUE;
   }
-  if (gPlayerPtr[0]->kind == PLAYER_MOUSE) {
+  if (Entity71BA_IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_MOUSE) {
+    if (Entity71BA_IsPlayerWithinTileOffset(p, 40)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+void FUN_080a01d8(Entity71BA* p) {
+  if (Entity71BA_IsPlayerAtHeight(p)) {
+    if (Entity71BA_IsPlayerOnTile(p) && !FUN_080a0140(p)) {
+      if (p->tileOverrideActive) {
+        Map_RemoveTileOverride(&p->tileOverride);
+        p->tileOverrideActive = FALSE;
+        FUN_0807a334(gPlayerPtr[0]);
+        if (p->unk_34 != 0) {
+          VM_ExecByID(p->unk_34, NULL);
+        }
+      }
+    } else if (!p->tileOverrideActive) {
+      Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, 0x82A);
+      p->tileOverrideActive = TRUE;
+    }
+  } else if (p->tileOverrideActive) {
+    Map_RemoveTileOverride(&p->tileOverride);
+    p->tileOverrideActive = FALSE;
+  }
+}
+
+s32 FUN_080a0268(Entity71BA* p) {
+  if (gPlayerPtr[0]->action == 4) {
+    u8 dir = gPlayerPtr[0]->actionDir;
+
+    if (dir == 1 && (p->flags & 0x10)) {
+      return TRUE;
+    }
+    if (dir == 7 && (p->flags & 8)) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+  if (Entity71BA_IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_BAT || gPlayerPtr[0]->kind == PLAYER_MOUSE) {
+    if (Entity71BA_IsPlayerWithinTileOffset(p, 40)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+void Entity71BA_ClampPlayer(Entity71BA* p, s32 param_2) {
+  if (p->flags & 8) {
+    if ((gPlayerPtr[0]->mover.pos.x & 0xFF) >= param_2) {
+      gPlayerPtr[0]->mover.pos.x = ((gPlayerPtr[0]->mover.pos.x >> 8) << 8) + param_2;
+      gPlayerPtr[0]->beast.pos.x = gPlayerPtr[0]->mover.pos.x;
+    }
+  } else {
+    if ((gPlayerPtr[0]->mover.pos.z & 0xFF) >= param_2) {
+      gPlayerPtr[0]->mover.pos.z = ((gPlayerPtr[0]->mover.pos.z >> 8) << 8) + param_2;
+      gPlayerPtr[0]->beast.pos.z = gPlayerPtr[0]->mover.pos.z;
+    }
+  }
+}
+
+void FUN_080a035c(Entity71BA* p) {
+  bool32 ret = Entity71BA_IsPlayerAtHeight(p);
+
+  if (ret) {
+    ret = Entity71BA_IsPlayerOnTile(p);
+    if (ret) {
+      if (!p->unk_22) {
+        gPlayerPtr[0]->unk_3f3[0]++;
+        if (p->flags & 8) {
+          gPlayerPtr[0]->actionDir = 7;
+        } else {
+          gPlayerPtr[0]->actionDir = 1;
+        }
+        p->unk_22 = TRUE;
+      }
+      if (p->tileOverrideActive) {
+        Map_RemoveTileOverride(&p->tileOverride);
+        p->tileOverrideActive = FALSE;
+      }
+      Entity71BA_ClampPlayer(p, 40);
+      if (gPlayerPtr[0]->action != 4 && !Entity71BA_IsPlayerMini() && gPlayerPtr[0]->kind != PLAYER_BAT && gPlayerPtr[0]->kind != PLAYER_MOUSE) {
+        if (p->flags & 8) {
+          FUN_0807a44c(gPlayerPtr[0], 7);
+        } else {
+          FUN_0807a44c(gPlayerPtr[0], 1);
+        }
+      }
+      return;
+    }
+    if (p->unk_22) {
+      gPlayerPtr[0]->unk_3f3[0]--;
+      p->unk_22 = ret;
+    }
+    if (!FUN_080a0268(p)) {
+      if (!p->tileOverrideActive) {
+        Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, 0x80B);
+        p->tileOverrideActive = TRUE;
+      }
+      return;
+    }
+  } else {
+    if (p->unk_22) {
+      gPlayerPtr[0]->unk_3f3[0]--;
+      p->unk_22 = ret;
+    }
+  }
+  if (p->tileOverrideActive) {
+    Map_RemoveTileOverride(&p->tileOverride);
+    p->tileOverrideActive = ret;
+  }
+}
+
+// 小さい状態 (赤いキノコの効果中, バット,マウス) かを返す
+bool32 IsPlayerSmall(Entity71BA* p) {
+  if (Entity71BA_IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_BAT || gPlayerPtr[0]->kind == PLAYER_MOUSE) {
     return TRUE;
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/IsPlayerSmall.inc");
-#endif
 }
 
-NAKED void Entity71BA_UpdateTileOverride(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_UpdateTileOverride.inc"); }
+void Entity71BA_UpdateTileOverride(Entity71BA* p) {
+  if (Entity71BA_IsPlayerAtHeight(p)) {
+    if (Entity71BA_IsPlayerOnTile(p)) {
+      if (IsPlayerSmall(p)) {
+        Entity71BA_ClampPlayer(p, 64);
+      } else if (p->tileOverrideActive) {
+        u8 keep = p->flags & 0x20;
+
+        if (keep) {
+          p->tileOverride.tile.attr |= 0x40;
+        } else {
+          Map_RemoveTileOverride(&p->tileOverride);
+          p->tileOverrideActive = keep;
+          FUN_0807a334(gPlayerPtr[0]);
+        }
+        if (p->unk_34 != 0) {
+          VM_ExecByID(p->unk_34, NULL);
+        }
+      }
+    } else if (IsPlayerSmall(p) && Entity71BA_IsPlayerWithinTileOffset(p, 64)) {
+      if (!p->tileOverrideActive) {
+        Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, 0x82A);
+        p->tileOverrideActive = TRUE;
+      }
+    } else if (p->tileOverrideActive) {
+      Map_RemoveTileOverride(&p->tileOverride);
+      p->tileOverrideActive = FALSE;
+    }
+  } else if (p->tileOverrideActive) {
+    Map_RemoveTileOverride(&p->tileOverride);
+    p->tileOverrideActive = FALSE;
+  }
+}
 
 s32 Entity71BA_Update(Entity71BA* p) {
   if (!(gPlayerPtr[0]->mode & PMODE_DEAD)) {
@@ -94,7 +249,38 @@ s32 Entity71BA_Destroy(Entity71BA* p) {
   }
 }
 
-NAKED s32 Entity71BA_Init(Entity71BA* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity71BA_Init.inc"); }
+s32 Entity71BA_Init(Entity71BA* p, u32 param_2, u32 param_3) {
+  Vec3 pos;
+  u32 scriptID;
+
+  p->unk_18 = param_2;
+  p->tileOverrideActive = FALSE;
+  p->flags = VM_SeekToNamedArg('t') ? VM_GetValue() : 9;
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+  p->tileIdx = GetCollisionTileIdx(&pos);
+  p->height = pos.y >> 8;
+  scriptID = VM_SeekToNamedArg('R');
+  if (scriptID) {
+    scriptID = VM_GetValue();
+  }
+  p->unk_34 = scriptID;
+  if (p->flags & 1) {
+    p->updateCallback = FUN_080a01d8;
+  } else if (p->flags & 2) {
+    p->updateCallback = FUN_080a035c;
+  } else {
+    p->updateCallback = Entity71BA_UpdateTileOverride;
+  }
+  return 0;
+}
 
 Entity71BA* Entity71BA_Create(u32 param_1, u32 param_2) {
   Entity71BA* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity71BA));

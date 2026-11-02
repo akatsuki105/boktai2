@@ -4,7 +4,7 @@
 
 // バット, ヴァンパイアバット (プレイヤーがチェンジバットで変身するコウモリと混同しないように注意)
 typedef struct {
-  ENEMY_HDR;
+  Enemy e;
   u8 unk_654[1728 - sizeof(Enemy)];
 } EnemyBat;
 static_assert(sizeof(EnemyBat) == 1728);

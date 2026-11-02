@@ -44,7 +44,7 @@ void Entity7C62_UpdateDone(Entity7C62* p);
 
 // 人型のプレイヤーが pos から 96 以内にいれば TRUE を返す
 bool32 Entity7C62_IsPlayerNear(Entity7C62* p) {
-  if ((u16)(gStat->playerKind - 2) > 2 && gPlayerPtr[0]->formRequest == 0) {
+  if (gStat->playerKind != PLAYER_BAT && gStat->playerKind != PLAYER_MOUSE && gStat->playerKind != PLAYER_SLEEPING && gPlayerPtr[0]->formRequest == 0) {
     s32 dx = gPlayerPtr[0]->mover.pos.x - p->pos.x;
     s32 dz;
 
@@ -77,7 +77,7 @@ void Entity7C62_UpdateIdle(Entity7C62* p) {
 
   if (Entity7C62_IsPlayerNear(p)) {
     if (p->nearState != 1) {
-      PlaySound_082406e0(SONG_408);
+      PlaySound_082406e0(SE_CIRCLE_IN);
       p->nearState = 1;
     }
     if (p->highlight < 8) {
@@ -96,7 +96,7 @@ void Entity7C62_UpdateIdle(Entity7C62* p) {
     }
   } else {
     if (p->nearState != 0) {
-      PlaySound_082406e0(SONG_409);
+      PlaySound_082406e0(SE_CIRCLE_OUT);
       p->nearState = 0;
     }
     if (p->highlight != 0) {

@@ -49,6 +49,14 @@ typedef struct {
   MainSpriteGfx gfx;      // 0x00, SPRITE_UI_START_MENU (FUN_080b9814) or SPRITE_INVENTORY_ICONS (FUN_080b99a0)
   MainSprite sprites[2];  // 0x20
 } ShopSpritePair;
+
+// 2枚のスプライトを dest へ飛ばす表示部品
+typedef struct {
+  ShopSpritePair pair;  // 0x00
+  Vec3 dest[2];         // 0xE0
+  u16 timer;            // 0xF0
+  u16 duration;         // 0xF2
+} ShopFlyingPair;
 static_assert(sizeof(ShopSpritePair) == 224);
 
 void FUN_080b95d0(ShopCursor* cursor, MainSprite* sprite0, MainSprite* sprite1, MainSprite* sprite2);
@@ -62,7 +70,7 @@ s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3);
 void FUN_080b9fe8(ShopCursor* p);
 void FUN_080b9d94(ShopCursor* p, u32 unk);
 void Shop_GetSlotPos(s16* pos, s32 idx);
-void FUN_080b98c0(MainSpriteGfx* gfx, s32 param_2, s32 param_3);
+void FUN_080b98c0(ShopSpritePair* p, s32 pose0, s32 pose1);
 void FUN_080b95bc(MainSprite* p, u16 plttID);
 void FUN_080b99a0(ShopSpritePair* p);
 void FUN_080b9814(ShopSpritePair* p);
@@ -70,9 +78,9 @@ bool32 FUN_080b9adc(unknown* p);
 void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* out, s32 val);
 s32 ShopCursor_Move(ShopCursor* p);
 void FUN_080b9fd8(ShopCursor* p);
-void FUN_080b9a28(MainSpriteGfx* gfx, s32* param_2, WorldPos* pos1, WorldPos* pos2, s32* param_5, s32* param_6, s32 param_7);
+void FUN_080b9a28(ShopFlyingPair* p, s32* param_2, WorldPos* pos1, WorldPos* pos2, s32* param_5, s32* param_6, s32 param_7);
 void FUN_080b9724(MainSprite* sprites);
-void FUN_080b9658(MainSpriteGfx* gfx, MainSprite* sprite, unknown* param_3, s32 param_4, s32 param_5);
+void FUN_080b9658(MainSpriteGfx* gfx, MainSprite* sprite, Vec3* param_3, s32 param_4, s32 param_5);
 
 #define SHOP_SLOT(p, colX, rowY) ((p)->slots[(rowY) + (colX) * 4])
 

@@ -61,7 +61,7 @@ _0800D4E2:
 	movs r2, #0xe6
 	lsls r2, r2, #1
 	adds r0, r5, r2
-	bl FUN_08234660
+	bl Map_UpdateZoneEvents
 	b _0800D53C
 	.align 2, 0
 _0800D508: .4byte 0x030046A4
@@ -78,7 +78,7 @@ _0800D50C:
 	movs r3, #0xe6
 	lsls r3, r3, #1
 	adds r0, r5, r3
-	bl FUN_08234660
+	bl Map_UpdateZoneEvents
 	b _0800D53C
 	.align 2, 0
 _0800D52C: .4byte 0x0000FFFD
