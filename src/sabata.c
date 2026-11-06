@@ -184,7 +184,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
     return;
   }
 
-  if (p->action == PACT_UNK_5) {
+  if (p->action == PACT_PUSH) {
     b->flags |= HBFLAG_HIDDEN;
     b->knockbackPower = 0;
     return;

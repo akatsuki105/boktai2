@@ -268,7 +268,7 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
     return;
   }
 
-  if (p->action == PACT_UNK_5) {
+  if (p->action == PACT_PUSH) {
     b->flags |= HBFLAG_HIDDEN;
     b->knockbackPower = 0;
     return;
@@ -4458,7 +4458,7 @@ NON_MATCH void FUN_08067510(Player* p) {
           if (HasGoodCond(p, GOOD_POWER)) {
             Player_SetAction(p, PACT_IDLE, 0);
           } else {
-            Player_SetAction(p, PACT_UNK_5, 0);
+            Player_SetAction(p, PACT_PUSH, 0);
             p->unk_3bc = 0;
           }
         }
@@ -4545,7 +4545,7 @@ NON_MATCH void FUN_08067510(Player* p) {
 #endif
 }
 
-// ブロックを押す (PACT_UNK_5), actionDir へ 64 フレーム押し進め, 押し続けていて先へ進めるならもう一度, ちからの実が効いていれば素立ちに戻る
+// ブロックを押す (PACT_PUSH), actionDir へ 64 フレーム押し進め, 押し続けていて先へ進めるならもう一度, ちからの実が効いていれば素立ちに戻る
 void FUN_08067de8(Player* p) {
   switch (p->state) {
     case 0: {
@@ -4554,7 +4554,7 @@ void FUN_08067de8(Player* p) {
       p->mover.delta.z = POLAR_Z(4, angle);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 6), Q6(1));
       if (++p->stateTimer > 63) {
-        Player_SetAction(p, PACT_UNK_5, 1);
+        Player_SetAction(p, PACT_PUSH, 1);
       }
       break;
     }
@@ -4564,10 +4564,10 @@ void FUN_08067de8(Player* p) {
         if (HasGoodCond(p, GOOD_POWER)) {
           Player_SetAction(p, PACT_IDLE, 0);
         } else {
-          Player_SetAction(p, PACT_UNK_5, 0);
+          Player_SetAction(p, PACT_PUSH, 0);
         }
       } else {
-        Player_SetAction(p, PACT_UNK_5, 2);
+        Player_SetAction(p, PACT_PUSH, 2);
       }
       break;
     }
@@ -11421,7 +11421,7 @@ void Player_UpdateDjango(Player* p) {
       [PACT_DASH] = MagicDash_Update,
       [PACT_ATTACK] = FUN_080695ec,
       [PACT_WALL] = FUN_08067510,
-      [PACT_UNK_5] = FUN_08067de8,
+      [PACT_PUSH] = FUN_08067de8,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
       [PACT_UNK_7] = Player_UpdateSolarCharge,
       [PACT_UNK_8] = Player_UpdateSolarStand,
@@ -11545,36 +11545,36 @@ void Player_UpdateDjango(Player* p) {
   }
 }
 
-// clang-format off
-static const PlayerFunc sSabataActionFuncs[32] = {
-    [PACT_IDLE] = FUN_08066f7c,
-    [PACT_WALK] = FUN_080672b0,
-    [PACT_DASH] = Magic_ZeroShift,
-    [PACT_ATTACK] = Player_UpdateSabataAttack,
-    [PACT_WALL] = FUN_08067510,
-    [PACT_UNK_5] = FUN_08067de8,
-    [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-    [PACT_UNK_7] = Player_UpdateDarkCharge,
-    [PACT_UNK_8] = Player_UpdateSolarStand,
-    [PACT_SUN_MAGIC] = Sabata_BlackSun,
-    [PACT_UNK_19] = FUN_0806961c,
-    [PACT_UNK_20] = FUN_08069648,
-    [PACT_GRABBED] = FUN_0806a050,
-    [PACT_UNK_22] = Player_UpdateFall,
-    [PACT_UNK_23] = FUN_08069f60,
-    [PACT_DAMAGED] = Player_UpdateHurt,
-    [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-    [PACT_UNK_26] = Player_UpdateDeath,
-    [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
-    [PACT_FALLDEATH] = Player_UpdateFallDeath,
-    [PACT_DROWNING] = FUN_0806adc8,
-    [PACT_UNK_30] = FUN_0806af70,
-    [PACT_SPECIALDEATH] = FUN_0806b758,
-};  // 0x085ABD30
-// clang-format on
-
 // サバタの毎フレーム更新本体, 状態ごとに行動関数を呼び, 日光を浴びると太陽ゲージの半分だけ焼け, 通常状態では段差を登れるかも見る
 void Player_UpdateSabata(Player* p) {
+  // clang-format off
+  static const PlayerFunc sSabataActionFuncs[32] = {
+      [PACT_IDLE] = FUN_08066f7c,
+      [PACT_WALK] = FUN_080672b0,
+      [PACT_DASH] = Magic_ZeroShift,
+      [PACT_ATTACK] = Player_UpdateSabataAttack,
+      [PACT_WALL] = FUN_08067510,
+      [PACT_PUSH] = FUN_08067de8,
+      [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
+      [PACT_UNK_7] = Player_UpdateDarkCharge,
+      [PACT_UNK_8] = Player_UpdateSolarStand,
+      [PACT_SUN_MAGIC] = Sabata_BlackSun,
+      [PACT_UNK_19] = FUN_0806961c,
+      [PACT_UNK_20] = FUN_08069648,
+      [PACT_GRABBED] = FUN_0806a050,
+      [PACT_UNK_22] = Player_UpdateFall,
+      [PACT_UNK_23] = FUN_08069f60,
+      [PACT_DAMAGED] = Player_UpdateHurt,
+      [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
+      [PACT_UNK_26] = Player_UpdateDeath,
+      [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
+      [PACT_FALLDEATH] = Player_UpdateFallDeath,
+      [PACT_DROWNING] = FUN_0806adc8,
+      [PACT_UNK_30] = FUN_0806af70,
+      [PACT_SPECIALDEATH] = FUN_0806b758,
+  };  // 0x085ABD30
+  // clang-format on
+
   s32 action;
 
   Player_SetFlag20(p, PFLAG20_UPDATED);
@@ -12088,7 +12088,7 @@ void Player_UpdateCrossoverDjango(Player* p) {
       [PACT_DASH] = FUN_0806f284,
       [PACT_ATTACK] = FUN_080695ec,
       [PACT_WALL] = FUN_08067510,
-      [PACT_UNK_5] = FUN_08067de8,
+      [PACT_PUSH] = FUN_08067de8,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
       [PACT_UNK_7] = Player_UpdateSolarCharge,
       [PACT_UNK_8] = Player_UpdateSolarStand,
@@ -12805,14 +12805,14 @@ void Cmd_E14B(void) {
   }
 }
 
-// 0x7017
+// 0x7017, プレイヤーの向き取得
 s32 Cmd_7017(void) {
   Player* p = GetPlayer(VM_GetPlayerIdx());
 
   if (p == NULL) {
     return gStat->playerFacing;
   }
-  if (p->action == PACT_WALL || p->action == PACT_UNK_5) {
+  if (p->action == PACT_WALL || p->action == PACT_PUSH) {  // 壁に背を向けている場合は背中が向いている方 (壁の方向)
     return (p->actionDir + 4) & 7;
   }
   return p->facing;
@@ -13785,8 +13785,8 @@ void FUN_0807ca9c(Player* p, s32 xflip, u32 scriptID) {
   p->lockedUpdate = FUN_080728a8;
 }
 
-void FUN_0807cb14(Player* p, s32 xflip, u32 scriptID) {
-  if (xflip != 0) {
+void FUN_0807cb14(Player* p, bool32 xflip, u32 scriptID) {
+  if (xflip) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
     p->xflip = TRUE;

@@ -43,7 +43,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_DASH 2           // ダッシュ, MagicDash_Update (サバタは Magic_ZeroShift)
 #define PACT_ATTACK 3         // 攻撃中 (武器は問わない)
 #define PACT_WALL 4           // 壁張り付き, 壁沿いに横歩きする状態
-#define PACT_UNK_5 5          // ブロック動かし? (すでに壁とかにあって動かないブロックを押しても4のままだった)
+#define PACT_PUSH 5           // ブロック動かし中 (もう動かせないブロックを押しているときは PACT_WALL のままで、 PACT_PUSH にはならない)
 #define PACT_PULL_COFFIN 6    // 棺桶を引く, 入力が無く止まっているときも含む
 #define PACT_UNK_7 7          // 太陽チャージ, ワープ, 太陽鍛冶
 #define PACT_UNK_8 8          // 太陽スタンド使用中?
@@ -270,7 +270,7 @@ typedef struct Player {
   u16 animID;                       // 0x2E4, 今 human で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
   u8 animIDOffset;                  // 0x2E6, Player_PlayAnim がアニメIDに足すオフセット
   bool8 xflip;                      // 0x2E7, 0 以外なら Player_PlayAnim が human.flags に SPRFLAG_XFLIP を立てる
-  DirU8 facing;                     // 0x2E8
+  DirU8 facing;                     // 0x2E8, プレイヤーの向き, 壁に背を向けている場合は壁と反対方向(=プレイヤーの顔が向いている方)
   u8 unk_2e9[2];                    // 0x2E9
   u8 hitboxTimer;                   // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, Django_Spike が 6 を入れる
   HitboxData hitbox_2ec;            // 0x2EC
