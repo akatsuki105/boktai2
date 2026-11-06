@@ -264,7 +264,7 @@ NON_MATCH void FUN_0807f9d8(DjangoBerserk* p) {
 // 暴走の終わり, アニメが終わったらプレイヤーの向きと姿を戻して最後の状態へ移る
 void FUN_0807fd1c(DjangoBerserk* p) {
   if (p->timer == 0) {
-    PlaySound_082406e0(SONG_432);
+    PlaySound_082406e0(SE_LANDING);
     p->timer++;
   }
   gPlayerPtr[0]->human.flags |= SPRFLAG_HIDDEN;

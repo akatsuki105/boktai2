@@ -203,10 +203,10 @@
 #define SONG_198 198
 #define SONG_199 199
 #define SONG_200 200
-#define SE_FSTEP_M_0 201  // 男性キャラの足音 (SE_FSTEP_M_1 と交互に鳴らす)
-#define SE_FSTEP_M_1 202  // 男性キャラの足音 (SE_FSTEP_M_0 と交互に鳴らす)
-#define SONG_203 203
-#define SONG_204 204
+#define SE_FSTEP_M_0 201        // 男性キャラの足音 (SE_FSTEP_M_1 と交互に鳴らす)
+#define SE_FSTEP_M_1 202        // 男性キャラの足音 (SE_FSTEP_M_0 と交互に鳴らす)
+#define SE_PALM 203             // 手をかざすときのSE (太陽チャージ, 太陽スタンド)
+#define SE_GUN_SPREAD_204 204   // ガンデルソルの照射SE (今作ではガンデルソルの照射アクションがないので、前作のデータが残ってるだけっぽい, ガンデルヘルは SE_GUN_SPREAD を使う)
 #define SE_GUN_FIRE 205         // 太陽銃を撃った時のSE
 #define SE_WOOD_DOOR_OPEN 206   // 木のドアが開く音
 #define SE_WOOD_DOOR_CLOSE 207  // 木のドアが閉まる音
@@ -309,8 +309,8 @@
 #define SE_UNK_304 304
 #define SONG_305 305
 #define SONG_306 306
-#define SE_SOLIDIFY 307  // 氷結や石化時などで使う凍りつく音
-#define SE_308 308
+#define SE_SOLIDIFY 307      // 氷結や石化時などで使う凍りつく音
+#define SE_END_SOLIDIFY 308  // プレイヤーの氷結や石化時が溶けたときの砕ける様なSE
 #define SONG_309 309
 #define SONG_310 310
 #define SONG_311 311
@@ -429,13 +429,13 @@
 #define SE_FLAMETHROWER_424 424  // 火が噴き出す時のSE
 #define SONG_425 425
 #define SE_M_HEALING_GROW 426  // ヒーリングで植物が大きくなる時のSE
-#define SE_WOOD_DOOR_427 427
-#define SONG_428 428
-#define SE_FALL_SURPRISE 429  // プレイヤーが落下するときのびっくりSE (SE_ENEMY_ALERT とすこし違うだけ)
-#define SONG_430 430
-#define SONG_431 431
-#define SONG_432 432
-#define SE_CHARA_SUPRISE 433  // "!"(白), プレイヤーやNPC, ボスが使用 (NPC は雨が降ってきた時とか)
+#define SE_OPEN_427 427        // 軽そうな板が開く様な音, 落とし穴の開く音でも使用
+#define SE_OPEN_428 428        //
+#define SE_FALL_SURPRISE 429   // プレイヤーが落下するときのびっくりSE (SE_ENEMY_ALERT とすこし違うだけ)
+#define SE_FALL_430 430        // 落下SE(ヒュー), こっちの方が音程高め?, 螺旋の塔2Fの下の階に落ちる落とし穴で使用
+#define SE_FALL_431 431        // 落下SE(ヒュー)
+#define SE_LANDING 432         // 着地SE
+#define SE_CHARA_SUPRISE 433   // "!"(白), プレイヤーやNPC, ボスが使用 (NPC は雨が降ってきた時とか)
 #define SONG_434 434
 #define SONG_435 435
 #define SONG_436 436
@@ -516,7 +516,7 @@
 #define SE_SPIKEBALL 511  // 鉄球(SPRITE_SPIKEBALL)が落ちてきたときのSE
 #define SONG_512 512
 #define SONG_513 513
-#define SE_GUN_SPREAD 514  // スプレッド攻撃時の照射SE
+#define SE_GUN_SPREAD 514  // ガンデルヘルスプレッド攻撃時の照射SE
 #define SONG_515 515
 #define SE_SABATA_SPIN 516  // 暗黒独楽(回転しながらスプレッド攻撃)のときのブンブン回るSE
 #define SONG_517 517

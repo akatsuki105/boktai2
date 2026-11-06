@@ -896,7 +896,7 @@ void FUN_08082154(Player* p) {
 
       p->shadowOffset.z = 0xF;
       if (AllySabata_PlayAnim(p, 466, Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           AllySabata_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_08082124(p)) {
@@ -1295,7 +1295,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
 
       p->shadowOffset.z = 0xF;
       if (AllySabata_PlayAnim(p, 466, Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         AllySabata_SetAction(p, PACT_SUN_MAGIC, 2);
       }
       break;

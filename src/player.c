@@ -1647,9 +1647,9 @@ NON_MATCH void Player_BurstFormEffect(Player* p) {
   }
 
   if (p->emitter.kind == 2) {
-    PlaySound_082406e0(SE_308);
+    PlaySound_082406e0(SE_END_SOLIDIFY);
   } else if (p->emitter.kind == 3) {
-    PlaySound_082406e0(SE_308);
+    PlaySound_082406e0(SE_END_SOLIDIFY);
   }
 
   src = p->emitter.pos;
@@ -4630,7 +4630,7 @@ void Player_UpdateSolarCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_08067f58(p)) {
@@ -4732,7 +4732,7 @@ void Player_UpdateDarkCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_080682dc(p)) {
@@ -4840,7 +4840,7 @@ void Player_UpdateSolarStand(Player* p) {
     }
     case 1: {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 12), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_8, 4);
         } else if (p->kind == PLAYER_SABATA) {
@@ -4958,7 +4958,7 @@ void MagicRisingSun_08068944(Player* p) {
 
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (p->magicFired && p->unk_3ba == 0) {
           gSunMagicUsed = 1;
         }
@@ -5489,7 +5489,7 @@ void Player_UpdateFall(Player* p) {
         Player_SetAction(p, PACT_UNK_22, 2);
         p->floatHeight = 0;
         p->beast.priority = 1;
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
       }
       break;
     }
@@ -5521,14 +5521,14 @@ void FUN_08069f60(Player* p) {
   Player_SetFlag35a(p, 8);
   switch (p->state) {
     case 0: {
-      if (p->animID != 0x2C) {
+      if (p->animID != 44) {
         p->facing |= 1;
         PLAYER_SET_ANIM_4DIR(p, p->facing);
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
       if ((u16)p->heightAboveTile <= 30) {
         p->heightAboveTile = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         Player_SetAction(p, PACT_UNK_23, 1);
       } else {
         p->heightAboveTile -= 30;
@@ -5878,7 +5878,7 @@ void Player_UpdateFallDeath(Player* p) {
       if (++p->stateTimer > 14) {
         Player_SetAction(p, PACT_FALLDEATH, 3);
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_431);
+        PlaySound_082406e0(SE_FALL_431);
       }
       break;
     }
@@ -5925,7 +5925,7 @@ void FUN_0806adc8(Player* p) {
     case 1: {
       if (++p->stateTimer > 14) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         Player_SetAction(p, PACT_DROWNING, 2);
       }
       break;
@@ -6066,7 +6066,7 @@ NON_MATCH void FUN_0806b06c(Player* p) {
       }
       Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       if (++p->stateTimer > 5) {
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         if (p->kind == PLAYER_SABATA) {
           PlaySound_082406e0(SONG_748);
         } else {
@@ -6192,7 +6192,7 @@ void Sabata_BlackSun(Player* p) {
 
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (p->magicFired && p->unk_3ba == 0) {
           gSunMagicUsed = 1;
         }
@@ -6870,7 +6870,7 @@ void FUN_0806d74c(Player* p) {
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       if ((u16)p->heightAboveTile <= 30) {
         p->heightAboveTile = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         p->state = 1;
       } else {
         p->heightAboveTile -= 30;
@@ -7426,7 +7426,7 @@ NON_MATCH void MagicChangeWolf_0806eb40(Player* p) {
       p->stateTimer++;
       if (p->stateTimer > 11) {
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         Player_SetAction(p, PACT_CWOLF, 5);
       }
       break;
@@ -9300,7 +9300,7 @@ void FUN_0807304c(Player* p) {
     case 0: {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (p->unk_4a6) {
           p->state = 1;
         } else {
@@ -9542,7 +9542,7 @@ void FUN_080736b8(Player* p) {
       if (++p->stateTimer >= 6) {
         p->floatHeight = 0;
         p->human.priority = 1;
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         Player_SetAction(p, 22, 2);
       }
       break;
@@ -9582,7 +9582,7 @@ void FUN_080738b4(Player* p) {
         p->floatHeight -= 30;
       } else {
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         Player_SetAction(p, PACT_UNK_23, 1);
       }
       break;
@@ -10505,7 +10505,7 @@ void Player_UpdateMouseFall(Player* p) {
       if (++p->stateTimer > 5) {
         p->floatHeight = 0;
         p->beast.priority = 1;
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         Player_SetAction(p, PACT_UNK_22, 2);
       }
       break;
@@ -10541,7 +10541,7 @@ void Player_UpdateMouseLand(Player* p) {
         p->floatHeight -= 30;
       } else {
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         Player_SetAction(p, PACT_UNK_23, 1);
       }
       break;
@@ -10855,7 +10855,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
@@ -10985,7 +10985,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (!Player_TestFlag20(p, PFLAG20_SUNBATHING)) {

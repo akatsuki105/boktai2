@@ -149,7 +149,7 @@ void FUN_081d006c(Entity081d0e20Elem* p) {
         if (gGameFlags & GAMEFLAG_LINK) {
           PlaySound_082406e0(SE_WOOD_DOOR_621);
         } else {
-          PlaySound_082406e0(SE_WOOD_DOOR_427);
+          PlaySound_082406e0(SE_OPEN_427);
         }
         break;
       }
