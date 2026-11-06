@@ -353,7 +353,7 @@ s32 FUN_08085ef8(Coffin* p, s32 animIdx) {
   s32 variant;
   bool32 xflip;
 
-  if (p->facing > 4) {
+  if (IS_8DIR_LEFT(p->facing)) {
     variant = 8 - p->facing;
     xflip = TRUE;
   } else {

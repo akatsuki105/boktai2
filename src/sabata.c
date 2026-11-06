@@ -39,12 +39,13 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 
 // facing から animIDOffset と xflip を決める
 void AllySabata_SetAnimFacing(Player* p) {
-  u8 v = p->facing;
-  if (v > 4) {
-    p->animIDOffset = 8 - v;
+  u8 dir8 = p->facing;
+
+  if (IS_8DIR_LEFT(dir8)) {
+    p->animIDOffset = 8 - dir8;
     p->xflip = TRUE;
   } else {
-    p->animIDOffset = v;
+    p->animIDOffset = dir8;
     p->xflip = FALSE;
   }
 }
@@ -579,7 +580,7 @@ void FUN_08081830(Player* p) {
     p->facing = FACE_UP;
   }
 
-  PLAYER_SET_ANIM_DIR(p, p->facing);
+  PLAYER_SET_ANIM_8DIR(p, p->facing);
 
   p->animID = 0;
   MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, PLAYMODE_LOOP, 0);
@@ -985,7 +986,7 @@ void FUN_08082464(Player* p) {
 void FUN_08082498(Player* p) {
   if (p->action != PACT_DAMAGED) {
     AllySabata_SetAction(p, PACT_DAMAGED, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
 
     AllySabata_PlayAnim(p, 446, Q6(1));
     sound_08240740(SONG_870);
@@ -1031,7 +1032,7 @@ void FUN_08082498(Player* p) {
 void FUN_08082670(Player* p) {
   if (p->action != PACT_BLOWN_AWAY) {
     AllySabata_SetAction(p, PACT_BLOWN_AWAY, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
 
     sound_08240740(SONG_870);
     PlaySound_082406e0(VO_SABATA_DAMAGE2);

@@ -186,14 +186,14 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 
 // facing から animIDOffset と xflip を決める
 void PlayerLink_SetAnimFacing(Player* p) {
-  u8 v = p->facing;
+  u8 dir8 = p->facing;
 
-  if (v > 4) {
-    p->animIDOffset = 8 - v;
-    p->xflip = 1;
+  if (IS_8DIR_LEFT(dir8)) {
+    p->animIDOffset = 8 - dir8;
+    p->xflip = TRUE;
   } else {
-    p->animIDOffset = v;
-    p->xflip = 0;
+    p->animIDOffset = dir8;
+    p->xflip = FALSE;
   }
 }
 

@@ -856,7 +856,7 @@ void Cmd_69CD(void) {
   xflip = FALSE;
   dir &= 7;
   p->unk_f24 = dir;
-  if (dir > 4) {
+  if (IS_8DIR_LEFT(dir)) {
     dir = 8 - dir;
     xflip = TRUE;
   }
@@ -1481,7 +1481,7 @@ NON_MATCH void FUN_08226990(Entity8AAB* p) {
         raw = *defaultDir;
         masked = raw & 7;
         dir = masked;
-        if (masked > 4) {
+        if (IS_8DIR_LEFT(masked)) {
           dir = 8 - masked;
           xflip = TRUE;
         }

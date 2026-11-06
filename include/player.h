@@ -477,28 +477,28 @@ typedef struct Player {
 } Player;
 static_assert(sizeof(Player) == 2756);
 
-// 8方向の dir からアニメの向きオフセット (0..4) と左右反転を決める, 5..7 は 3..1 を左右反転して使う
-#define PLAYER_SET_ANIM_DIR(p, dir)  \
-  ({                                 \
-    if ((dir) > 4) {                 \
-      (p)->animIDOffset = 8 - (dir); \
-      (p)->xflip = TRUE;             \
-    } else {                         \
-      (p)->animIDOffset = (dir);     \
-      (p)->xflip = FALSE;            \
-    }                                \
+// 8方向の dir8 からアニメの向きオフセット (0..4) と左右反転を決める, 5..7 は 3..1 を左右反転して使う
+#define PLAYER_SET_ANIM_8DIR(p, dir8) \
+  ({                                  \
+    if (IS_8DIR_LEFT(dir8)) {         \
+      (p)->animIDOffset = 8 - (dir8); \
+      (p)->xflip = TRUE;              \
+    } else {                          \
+      (p)->animIDOffset = (dir8);     \
+      (p)->xflip = FALSE;             \
+    }                                 \
   })
 
 // 同上, ただし向きを2方向ずつまとめてオフセットを 0..2 にする (アニメが3方向ぶんしかない姿用)
-#define PLAYER_SET_ANIM_DIR_HALF(p, dir)    \
-  ({                                        \
-    if ((dir) > 4) {                        \
-      (p)->animIDOffset = (8 - (dir)) >> 1; \
-      (p)->xflip = TRUE;                    \
-    } else {                                \
-      (p)->animIDOffset = (dir) >> 1;       \
-      (p)->xflip = FALSE;                   \
-    }                                       \
+#define PLAYER_SET_ANIM_4DIR(p, dir8)        \
+  ({                                         \
+    if (IS_8DIR_LEFT(dir8)) {                \
+      (p)->animIDOffset = (8 - (dir8)) >> 1; \
+      (p)->xflip = TRUE;                     \
+    } else {                                 \
+      (p)->animIDOffset = (dir8) >> 1;       \
+      (p)->xflip = FALSE;                    \
+    }                                        \
   })
 
 // ------------------------------------------------------------------------------------------------------------------------------------

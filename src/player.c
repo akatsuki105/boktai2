@@ -127,13 +127,13 @@ static inline bool32 HasGoodCond(Player* p, u32 id) {
 static inline void Player_SetInvincibleTime(Player* p, u16 time) { p->hurtbox.invincibleTime = time; }
 
 void Player_SetAnimFacing(Player* p) {
-  u8 v = p->facing;
+  u8 dir8 = p->facing;
 
-  if (v > 4) {
-    p->animIDOffset = 8 - v;
+  if (IS_8DIR_LEFT(dir8)) {
+    p->animIDOffset = 8 - dir8;
     p->xflip = TRUE;
   } else {
-    p->animIDOffset = v;
+    p->animIDOffset = dir8;
     p->xflip = FALSE;
   }
 }
@@ -3338,7 +3338,7 @@ void Player_InitSprite(Player* p) {
       p->facing = FACE_UP;
     }
 
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
 
     p->animID = 0;
     MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, PLAYMODE_LOOP, 0);
@@ -3561,7 +3561,7 @@ s32 FUN_08065cb8(Player* p) {
   p->blownAway = 0;
   p->floatHeight = 0;
   p->facing = (Angle_ToDir4(ArcTan2_8(p->mover.pos.x - p->knockbackOrigin->x, p->mover.pos.z - p->knockbackOrigin->z)) << 1) + 1;
-  PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
   p->originHitPending = FALSE;
   return 10;
@@ -3594,13 +3594,7 @@ NON_MATCH s32 FUN_08065e24(Player* p) {
   bx = Mod(p->tile.tileIdx[1], gCollisionMap->tiledata->width);
   bz = Div(p->tile.tileIdx[1], gCollisionMap->tiledata->width);
   p->facing = (Angle_ToDir4(ArcTan2_8((bx << 8) - (p->knockbackOrigin->x - 0x80), (bz << 8) - (p->knockbackOrigin->z - 0x80))) << 1) + 1;
-  if (p->facing > 4) {
-    p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = TRUE;
-  } else {
-    p->animIDOffset = p->facing >> 1;
-    p->xflip = FALSE;
-  }
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
   p->tileHitPending = FALSE;
   return 10;
@@ -4446,7 +4440,7 @@ NON_MATCH void FUN_08067510(Player* p) {
       if (p->animID != animIdx) {
         PlaySound_082406e0(SE_COVER);
         p->facing = (p->actionDir + 4) & 7;
-        PLAYER_SET_ANIM_DIR_HALF(p, p->actionDir);
+        PLAYER_SET_ANIM_4DIR(p, p->actionDir);
       }
       if (Player_PlayAnim(p, animIdx, Q6(1))) {
         Player_SetAction(p, PACT_WALL, 1);
@@ -4830,7 +4824,7 @@ void Player_UpdateSolarStand(Player* p) {
         p->facing = p->unk_3b8;
         Player_SetAnimFacing(p);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-        if (p->facing > 4) {
+        if (IS_8DIR_LEFT(p->facing)) {
           p->animIDOffset = 0;
           p->xflip = TRUE;
         } else {
@@ -5489,7 +5483,7 @@ void Player_UpdateFall(Player* p) {
         FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 1);
       }
       PlaySound_082406e0(SE_FALL_SURPRISE);
-      PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
       Player_SetAction(p, PACT_UNK_22, 1);
       p->floatHeight = 0;
@@ -5534,7 +5528,7 @@ void FUN_08069f60(Player* p) {
     case 0: {
       if (p->animID != 0x2C) {
         p->facing |= 1;
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
       if ((u16)p->heightAboveTile <= 30) {
@@ -5569,7 +5563,7 @@ void FUN_0806a050(Player* p) {
 void Player_UpdateHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
     Player_SetAction(p, PACT_DAMAGED, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
     p->floatHeight = 0;
     if (p->hurtSound != SONG_NONE) {
@@ -5629,7 +5623,7 @@ void Player_UpdateHurt(Player* p) {
 void Player_UpdateBlownAway(Player* p) {
   if (p->action != PACT_BLOWN_AWAY) {
     Player_SetAction(p, PACT_BLOWN_AWAY, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->hurtSound != SONG_NONE) {
       PlaySound_082406e0(p->hurtSound);
       p->hurtSound = SONG_NONE;
@@ -5703,7 +5697,7 @@ void Player_UpdateDeath(Player* p) {
   if (p->action != PACT_UNK_26) {
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
     p->knockbackTimer = 0;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_SetAction(p, PACT_UNK_26, 0);
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
@@ -5774,7 +5768,7 @@ void Player_UpdateDeath(Player* p) {
 void Player_UpdateBlownAwayDeath(Player* p) {
   if (p->action != PACT_UNK_27) {
     Player_SetAction(p, PACT_UNK_27, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
     } else {
@@ -6583,13 +6577,7 @@ NON_MATCH void Player_UpdateBatWalk(Player* p) {
     s32 r;
 
     if (dir & 1) {
-      if (dir > 4) {
-        p->animIDOffset = (8 - dir) >> 1;
-        p->xflip = TRUE;
-      } else {
-        p->animIDOffset = dir >> 1;
-        p->xflip = FALSE;
-      }
+      PLAYER_SET_ANIM_4DIR(p, dir);
       r = Random() & 7;
       if (r < 6) {
         p->facing = dir;
@@ -6620,13 +6608,7 @@ NON_MATCH void Player_UpdateBatWalk(Player* p) {
       } else {
         dir = p->facing;
       }
-      if (dir > 4) {
-        p->animIDOffset = (8 - dir) >> 1;
-        p->xflip = TRUE;
-      } else {
-        p->animIDOffset = dir >> 1;
-        p->xflip = FALSE;
-      }
+      PLAYER_SET_ANIM_4DIR(p, dir);
     }
   } else {
     p->unk_383[2]--;
@@ -6649,13 +6631,7 @@ NON_MATCH void FUN_0806c6d4(Player* p) {
   }
   if ((s16)p->facingHistory[0] >= 0) {
     p->facing = (p->facingHistory[0] & 0xFE) + 1;
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 1, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -6694,7 +6670,7 @@ void FUN_0806c868(Player* p) {
 // バットの被弾 (PACT_DAMAGED), アニメ 1 を進めながら knockbackPower の速さで向きの反対へ押し出し毎フレーム 3/4 に減速, 止まったら emitter が kind 3 で残っていれば PACT_UNK_19, そうでなければ PACT_IDLE に戻る
 void Player_UpdateBatHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->hurtSound != SONG_NONE) {
       PlaySound_082406e0(p->hurtSound);
       p->hurtSound = SONG_NONE;
@@ -6743,7 +6719,7 @@ void Player_UndoChangeBat(Player* p) {
   } else {
     Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_SHOW_OTHER);
     p->human.pos = p->mover.pos;
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
   }
 
   Player_PlayAnim(p, 199, Q6(1));
@@ -6852,7 +6828,7 @@ void FUN_0806d420(Player* p) {
 
   if (p->action != PACT_UNK_19) {
     Player_SetAction(p, PACT_UNK_19, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   p->flag20 &= ~PFLAG20_UNK_0;
 
@@ -6877,7 +6853,7 @@ NON_MATCH void FUN_0806d5b0(Player* p) {
   }
   if ((s16)p->facingHistory[0] >= 0) {
     p->facing = (p->facingHistory[0] & 0xFE) + 1;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -6896,7 +6872,7 @@ void FUN_0806d74c(Player* p) {
   switch (p->state) {
     case 0: {
       p->facing |= 1;
-      PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       if ((u16)p->heightAboveTile <= 30) {
@@ -6922,7 +6898,7 @@ void FUN_0806d74c(Player* p) {
 // マウスの被弾 (PACT_DAMAGED), アニメ 2 を進めながら吹き飛び, knockbackOrigin やタイルから弾かれたときはそちらへ寄せながら炎か煙を出し, 止まったら PACT_UNK_19 か PACT_IDLE に戻る
 void Player_UpdateMouseHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->hurtSound != SONG_NONE) {
       PlaySound_082406e0(p->hurtSound);
       p->hurtSound = SONG_NONE;
@@ -9089,13 +9065,7 @@ void Player_UpdateLockedTurn(Player* p) {
     } else {
       p->facing = (p->facing + 1) & 7;
     }
-    if (p->facing > 4) {
-      p->animIDOffset = 8 - p->facing;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     p->stateTimer = 0;
   } else {
     p->stateTimer++;
@@ -9188,7 +9158,7 @@ void Player_UpdateMoveTo(Player* p) {
     } else {
       p->facing = Angle_ToDir8(angle);
     }
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
     Player_ReturnToLockedIdle(p);
     Player_NotifyLockedDone(p);
@@ -9213,7 +9183,7 @@ void Player_UpdateMoveTo(Player* p) {
     u32 dir = ((((angle + 16) & 0xFF) >> 5) + 3) & 7;
 
     p->facing = dir;
-    PLAYER_SET_ANIM_DIR(p, dir);
+    PLAYER_SET_ANIM_8DIR(p, dir);
   }
   if ((p->human.animCmdIdx & 3) == 0 && p->human.animCmdTimer == 0 && !HasGoodCond(p, GOOD_NINJA)) {
     if (HasGoodCond(p, GOOD_MINI)) {
@@ -9254,7 +9224,7 @@ NON_MATCH void FUN_08072d48(Player* p) {
     if (p->targetDir >= 0) {
       p->facing = p->targetDir;
       p->targetDir = -1;
-      PLAYER_SET_ANIM_DIR(p, p->facing);
+      PLAYER_SET_ANIM_8DIR(p, p->facing);
     }
     if (p->unk_4a6) {
       if (p->unk_4a7) {
@@ -9292,7 +9262,7 @@ NON_MATCH void FUN_08072d48(Player* p) {
     moving = TRUE;
     dir = Angle_ToDir8(ArcTan2_8(dx, dz));
     p->facing = dir;
-    PLAYER_SET_ANIM_DIR(p, dir);
+    PLAYER_SET_ANIM_8DIR(p, dir);
     angle = ((p->facing + 1) & 7) << 5;
     cosv = COS(angle);
     sinv = SIN(angle);
@@ -9363,7 +9333,7 @@ void FUN_0807304c(Player* p) {
     case 3: {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 11), Q6(1))) {
-        PLAYER_SET_ANIM_DIR(p, p->facing);
+        PLAYER_SET_ANIM_8DIR(p, p->facing);
         Player_ReturnToLockedIdle(p);
         Player_NotifyLockedDone(p);
       }
@@ -9562,13 +9532,7 @@ void FUN_080736b8(Player* p) {
           FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 1);
         }
       }
-      if (p->facing > 4) {
-        p->animIDOffset = (8 - p->facing) >> 1;
-        p->xflip = TRUE;
-      } else {
-        p->animIDOffset = p->facing >> 1;
-        p->xflip = FALSE;
-      }
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), 64);
       PlaySound_082406e0(SE_FALL_SURPRISE);
       if (p->kind == PLAYER_SABATA) {
@@ -9617,7 +9581,7 @@ void FUN_080738b4(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         p->stateTimer++;
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
@@ -9632,7 +9596,7 @@ void FUN_080738b4(Player* p) {
     }
     case 1: {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 19), Q6(1))) {
-        PLAYER_SET_ANIM_DIR(p, p->facing);
+        PLAYER_SET_ANIM_8DIR(p, p->facing);
         Player_ReturnToLockedIdle(p);
         Player_NotifyLockedDone(p);
       }
@@ -9647,7 +9611,7 @@ void FUN_080739e0(Player* p) {
     case 0: {
       s32 angle;
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
         PlaySound_082406e0(SE_DAMAGE);
         p->stateTimer++;
@@ -9756,7 +9720,7 @@ void FUN_08073e18(Player* p) {
     case 0: {
       s32 angle;
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
         if (p->kind != PLAYER_SABATA) {
           PlaySound_082406e0(VO_DJANGO_DEATH);
@@ -10079,7 +10043,7 @@ NON_MATCH void FUN_080746ec(Player* p) {
     } else {
       p->facing = Angle_ToDir8(angle);
     }
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), 64);
     Player_ReturnToLockedIdle(p);
     Player_NotifyLockedDone(p);
@@ -10114,7 +10078,7 @@ NON_MATCH void FUN_080746ec(Player* p) {
     }
   }
   p->facing = Angle_ToDir8(angle);
-  PLAYER_SET_ANIM_DIR(p, p->facing);
+  PLAYER_SET_ANIM_8DIR(p, p->facing);
   Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 1), 32);
 #else
   INCFUNC("asm/func/FUN_080746ec.inc");
@@ -10298,13 +10262,7 @@ NON_MATCH void Player_UpdateBatMoveTo(Player* p) {
     } else {
       p->facing = (((((angle + 0x10) & 0xFF) >> 5) + 3) & 7) | 1;
     }
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_SetAction(p, PACT_IDLE, 0);
     p->lockedUpdate = FUN_08074d90;
     Player_NotifyLockedDone(p);
@@ -10312,13 +10270,7 @@ NON_MATCH void Player_UpdateBatMoveTo(Player* p) {
     p->mover.delta.x = POLAR_X(9, angle);
     p->mover.delta.z = POLAR_Z(9, angle);
     p->facing = (((((angle + 0x10) & 0xFF) >> 5) + 3) & 7) | 1;
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 0, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -10457,7 +10409,7 @@ void Player_RevertBatToDarkDjango(Player* p) {
   } else {
     Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_SHOW_OTHER);
     p->human.pos = p->mover.pos;
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
   }
 
   Player_PlayAnim(p, 199, Q6(1));
@@ -10501,7 +10453,7 @@ void Player_UpdateMouseMoveTo(Player* p) {
     } else {
       p->facing = Angle_ToDir8(angle);
     }
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animIDOffset, p->xflip);
     AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
     Player_SetAction(p, PACT_IDLE, 0);
@@ -10524,7 +10476,7 @@ void Player_UpdateMouseMoveTo(Player* p) {
       }
     }
     p->facing = Angle_ToDir8(angle);
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 1, p->animIDOffset, p->xflip);
     AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
   }
@@ -10547,7 +10499,7 @@ void Player_UpdateMouseFall(Player* p) {
           FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 1);
         }
       }
-      PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       PlaySound_082406e0(SE_FALL_SURPRISE);
@@ -10587,7 +10539,7 @@ void Player_UpdateMouseLand(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         p->stateTimer++;
       }
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
@@ -12302,7 +12254,7 @@ void FUN_0807a334(Player* p) {
   p->heightAboveTile = p->mover.pos.y - TileHeightAt(&p->mover.pos);
 
   dir = p->facing;
-  PLAYER_SET_ANIM_DIR(p, dir);
+  PLAYER_SET_ANIM_8DIR(p, dir);
   p->hurtbox.knockbackPower = 0;
 }
 
@@ -12310,7 +12262,7 @@ void FUN_0807a44c(Player* p, s32 dir) {
   Player_SetAction(p, PACT_WALL, 1);
   p->actionDir = dir;
   p->facing = (dir + 4) & 7;
-  PLAYER_SET_ANIM_DIR_HALF(p, p->actionDir);
+  PLAYER_SET_ANIM_4DIR(p, p->actionDir);
   p->hurtbox.knockbackPower = 0;
 }
 
@@ -13269,7 +13221,7 @@ void Player_Lock(Player* p, s32 val) {
 
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     p->lockedUpdate = FUN_08074d90;
   } else {
     Player_SetAnimFacing(p);
@@ -13606,7 +13558,7 @@ void FUN_0807c36c(Player* p, DirS32 dir, u32 scriptID) {
   Player_EnterLockedState(p);
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_SetAction(p, PACT_UNK_7, 3);
     p->lockedUpdate = Player_UpdateBatWarp;
   } else {
@@ -15136,7 +15088,7 @@ void Player_EnterDeadState(Player* p) {
     p->formRequestKind = PLAYER_DARK_DJANGO;
   }
   p->facing |= 1;
-  PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->mode = PMODE_DEAD;
   p->state = 0;
   p->stateTimer = 0;

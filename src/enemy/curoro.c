@@ -1153,7 +1153,7 @@ void FUN_0813c938(Curoro* p) {
 
 void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip) {
   s32 dir = ANGLE_TO_DIR8(angle + 0x10);
-  if (dir > 4) {
+  if (IS_8DIR_LEFT(dir)) {
     *variant = 8 - dir;
     *xflip = TRUE;
   } else {
