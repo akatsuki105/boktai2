@@ -301,7 +301,53 @@ NON_MATCH void Entity08051b70Elem_StateFlyIn(Entity08051b70* p, Entity08051b70El
 #endif
 }
 
-NAKED void Entity08051b70Elem_StateDeflect(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08051b70Elem_StateDeflect.inc"); }
+// 右上から置き場へ近づき, 28 フレームで乱数で少しずらした逆向きへ逸れていく
+// 残差 176 対 178 命令: 原典は from と to の番地を別レジスタに残して ArcTan2_8 の y 差分に使い vel は to+8 で作る, 乱数は ArcTan2_8 の後, vel.y は 8 を muls で掛ける
+// 試済: from/to/vel を別ポインタ, from だけ別で v を to/vel に使い回し, 角度を2文に分ける, SetFromTopRight inline
+NON_MATCH void Entity08051b70Elem_StateDeflect(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+#ifdef NONMATCHING_C
+  AuxSprite* batSprite = &elem->batSprite;
+  AuxSprite* counterSprite = &elem->counterSprite;
+
+  if (elem->entered) {
+    Vec3* v;
+    s32 x;
+    s8 angle;
+    u16* table;
+
+    elem->entered = FALSE;
+    counterSprite->poseIdx = elem->count;
+    batSprite->poseIdx = elem->color;
+    AuxSprite_Show(&elem->counterSprite);
+    AuxSprite_Show(&elem->batSprite);
+    v = &elem->from;
+    x = (idx & 3) * 24;
+    VEC3_SET(*v, x + 272, 32, 0);
+    v = &elem->to;
+    VEC3_SET(*v, x + 80, 144, 0);
+    Entity08051b70Elem_SetRandomWobble(elem, 32, 15);
+    table = gRandomTable;
+    angle = (s8)ArcTan2_8(elem->from.x - elem->to.x, elem->from.y - elem->to.y) - 16 + (_Random(table) & 31);
+    v = &elem->vel;
+    VEC3_SET(*v, POLAR_X(8, angle), POLAR_Z(8, angle), 0);
+  }
+  if (elem->timer < 28) {
+    LerpVec3(&batSprite->pos, &elem->from, &elem->to, elem->timer, 5);
+    Entity08051b70_ApplyWobble(&batSprite->pos, elem->timer, elem->wobble);
+  } else {
+    Vec3_Add(&batSprite->pos, &elem->vel);
+  }
+  counterSprite->pos = batSprite->pos;
+  if (elem->timer >= 44) {
+    elem->state = 0;
+    elem->entered = TRUE;
+    elem->timer = 0;
+  }
+  elem->timer++;
+#else
+  INCFUNC("asm/func/Entity08051b70Elem_StateDeflect.inc");
+#endif
+}
 
 void Entity08051b70Elem_StateShow(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
   if (elem->entered) {
