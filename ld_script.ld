@@ -77,9 +77,9 @@ SECTIONS {
       src/signal_strength_icon.o(iwram_data);
       src/entity_d53d.o(iwram_data);
       . = ALIGN(8);
-      src/crossover_af33.o(iwram_data);
+      src/crossover_battle.o(iwram_data);
       src/entity_08051b70.o(iwram_data);
-      src/crossover_723e.o(.bss);
+      src/crossover_result.o(.bss);
       src/black_panther.o(.bss);
       src/entity_d438.o(.bss);
       src/dust.o(.bss);
@@ -327,10 +327,10 @@ SECTIONS {
 			src/signal_strength_icon.o (.text);
 			src/entity_d53d.o (.text);
 			src/crossover_lobby.o (.text);
-			src/crossover_af33.o (.text);
+			src/crossover_battle.o (.text);
 			src/entity_08051b70.o (.text);
 			src/crossover_mc.o (.text);
-			src/crossover_723e.o (.text);
+			src/crossover_result.o (.text);
 			src/entity_08052ffc.o (.text);
 			src/black_panther.o (.text);
 			src/entity_56dc.o (.text);
@@ -743,10 +743,10 @@ SECTIONS {
     src/entity_0804e2c0.o (.rodata);
     src/entity_d53d.o (.rodata);
     src/crossover_lobby.o (.rodata);
-    src/crossover_af33.o (.rodata);
+    src/crossover_battle.o (.rodata);
     src/entity_08051b70.o (.rodata);
     src/crossover_mc.o (.rodata);
-    src/crossover_723e.o (.rodata);
+    src/crossover_result.o (.rodata);
     src/entity_08052ffc.o (.rodata);
     src/black_panther.o (.rodata);
     src/dust.o (.rodata);

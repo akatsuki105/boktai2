@@ -31,7 +31,7 @@ _0804FAC8:
 _0804FACC:
 	movs r0, #1
 	movs r1, #1
-	bl FUN_08050e50
+	bl CrossoverBattle_AddPoint
 _0804FAD4:
 	movs r0, #0
 	b _0804FAFC
@@ -43,7 +43,7 @@ _0804FAD8:
 	bne _0804FAFA
 	movs r0, #1
 	movs r1, #1
-	bl FUN_08050e50
+	bl CrossoverBattle_AddPoint
 	ldr r1, [r5, #8]
 	ldr r0, [r4, #8]
 	cmp r1, r0

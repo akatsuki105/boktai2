@@ -298,8 +298,8 @@ _08050A9C:
 	ldr r7, [sp, #0x30]
 	strb r2, [r7]
 	str r0, [r6, #0x24]
-	ldr r0, _08050B74 @ =FUN_0804f8ec
-	ldr r1, _08050B78 @ =FUN_0804f82c
+	ldr r0, _08050B74 @ =CrossoverBattle_OnSent
+	ldr r1, _08050B78 @ =CrossoverBattle_OnReceive
 	ldr r2, _08050B7C @ =FUN_0804f950
 	ldr r3, _08050B80 @ =FUN_0804f970
 	bl FUN_0804e4dc
@@ -342,10 +342,10 @@ _08050B10:
 	bge _08050B10
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_0804fb04
+	bl CrossoverBattle_ClearOjama
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_0804fb04
+	bl CrossoverBattle_ClearOjama
 	movs r0, #0
 	movs r1, #0
 	bl Entity08051b70_Create
@@ -375,8 +375,8 @@ _08050B64: .4byte 0x03002CF0
 _08050B68: .4byte 0x030046B8
 _08050B6C: .4byte 0x000003FF
 _08050B70: .4byte 0x0203B400
-_08050B74: .4byte FUN_0804f8ec
-_08050B78: .4byte FUN_0804f82c
+_08050B74: .4byte CrossoverBattle_OnSent
+_08050B78: .4byte CrossoverBattle_OnReceive
 _08050B7C: .4byte FUN_0804f950
 _08050B80: .4byte FUN_0804f970
 _08050B84:

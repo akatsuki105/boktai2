@@ -456,11 +456,11 @@ extern u16 gMosaicSize;
 extern u8 gObjMosaicEnabled;
 extern u8 gMosaicTargets;
 
-s32 FUN_08050d64(void);
-s32 FUN_08050d7c(void);
-s32 FUN_08050d94(void);
-s32 FUN_08050de8(void);
-s32 FUN_08050dac(void);
+s32 CrossoverBattle_GetRivalPlayerHP(void);
+s32 CrossoverBattle_GetRivalBossHP(void);
+s32 CrossoverBattle_GetBlockCount(void);
+s32 CrossoverBattle_GetRound(void);
+s32 CrossoverBattle_ToggleBlocking(void);
 void BuildWeaponData(Weapon* w, WeaponData* data);
 void GetWeaponData(slot32_t n, WeaponData* data);
 extern u16 u16_03004864;
@@ -2672,7 +2672,7 @@ void FUN_0808e008(MainMenu* p) {
     if (gInput[0].pressed & START_BUTTON) {
       MainMenu_SetUpdateCallback(p, FUN_0808dfcc);
     } else if (gInput[0].pressed & SELECT_BUTTON) {
-      p->unk_9f9 = FUN_08050dac();
+      p->unk_9f9 = CrossoverBattle_ToggleBlocking();
       if (p->unk_9f9) {
         MainSprite_SetPose(&p->unk_a34, &p->gfx.link, 70, PLAYMODE_LOOP);
       } else {
@@ -2716,7 +2716,7 @@ void FUN_0808e17c(MainMenu* p) {
   *e++ = BGMAP_BGP13 | 0x4D;
   e[0] = BGMAP_BGP13 | 0x4E;
   e[1] = BGMAP_BGP13 | 0x5B;
-  FUN_0808e0e0(p, 22, 3, FUN_08050d64());
+  FUN_0808e0e0(p, 22, 3, CrossoverBattle_GetRivalPlayerHP());
 }
 
 void FUN_0808e1b8(MainMenu* p) {
@@ -2725,7 +2725,7 @@ void FUN_0808e1b8(MainMenu* p) {
   *e++ = BGMAP_BGP13 | 0x0F;
   e[0] = BGMAP_BGP13 | 0x10;
   e[1] = BGMAP_BGP13 | 0x5B;
-  FUN_0808e0e0(p, 23, 4, FUN_08050d7c());
+  FUN_0808e0e0(p, 23, 4, CrossoverBattle_GetRivalBossHP());
 }
 
 // BG0 の (9, 0x11) から2行ぶん 12 タイルを 0xD000 で埋める
@@ -2797,8 +2797,8 @@ void FUN_0808e420(void) {
     MainMenu_RefreshQCMagicIcons(p);
     MainMenu_QC_RefreshIcons(p);
     p->unk_9f9 = 0;
-    if (FUN_08050d94()) {
-      if (!FUN_08050de8()) {
+    if (CrossoverBattle_GetBlockCount()) {
+      if (!CrossoverBattle_GetRound()) {
         p->unk_a34.flags |= SPRFLAG_HIDDEN;
       } else {
         p->unk_a34.flags &= ~SPRFLAG_HIDDEN;

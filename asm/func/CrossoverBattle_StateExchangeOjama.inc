@@ -30,10 +30,10 @@ _08050092:
 	movs r1, #2
 	mov r2, sp
 	movs r3, #1
-	bl FUN_0804fa44
+	bl CrossoverBattle_Send
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0804fbd0
+	bl CrossoverBattle_SetMCState
 	adds r0, r4, #0
 	bl FUN_0804fe24
 	adds r0, r4, #0
@@ -45,7 +45,7 @@ _080500C6:
 	cmp r0, #0xc
 	bne _080500FC
 	adds r0, r4, #0
-	bl FUN_0804f97c
+	bl CrossoverBattle_ResolveOjama
 	movs r1, #0xd
 	rsbs r1, r1, #0
 	ldr r0, [r4, #0x20]
@@ -62,7 +62,7 @@ _080500C6:
 	strb r0, [r1]
 	str r2, [r4, #0x24]
 	adds r0, r4, #0
-	bl FUN_0804fbe0
+	bl CrossoverBattle_RequestMCExit
 	b _08050102
 _080500FC:
 	ldr r0, [r4, #0x24]

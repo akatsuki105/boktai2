@@ -20,9 +20,9 @@ typedef struct {
   bool8 stateEntered;         // 0x01D, state を変えた直後だけ立つ
   u8 timeA[3];                // 0x01E, 秒数を時/分/100分の1秒に分けたもの
   u8 timeB[3];                // 0x021, もう1人のぶん
-  u8 result;                  // 0x024, 0 なら勝ち (BGM_WIN, crossoverWins を増やす), 1 なら負け, それ以外は引き分け?
+  u8 result;                  // 0x024, CrossoverBattle の judgeResult, 0 なら勝ち (BGM_WIN, crossoverWins を増やす), 1 なら負け, 2 なら引き分け
   u8 step;                    // 0x025, remain から total へ1フレームに移す量, 2 が入る
-  u8 unk_26[2];               // 0x026, [0] に Entity723E_Setup の第1引数が入る
+  u8 unk_26[2];               // 0x026, [0] に CrossoverResult_Setup の第1引数が入る
   s16 remain;                 // 0x028, total へ step ずつ移していく残り
   s16 total;                  // 0x02A, 移ってくる累計, 9999 で止まる
   TilemapFile* tilemap;       // 0x02C
@@ -35,19 +35,19 @@ typedef struct {
   s32 textPanels[4];          // 0x8B8, TextPanel_Destroy に渡すID
   u8 unk_8c8[16];             // 0x8C8, GetCrossoverPlayerName(0) の 16 バイトの写し
   u8 unk_8d8[16];             // 0x8D8, GetCrossoverPlayerName(1) の 16 バイトの写し
-} Entity723E;
-static_assert(sizeof(Entity723E) == 2280);
+} CrossoverResult;
+static_assert(sizeof(CrossoverResult) == 2280);
 
-static Entity723E* sEntity723E;  // 0x0300011C
+static CrossoverResult* sCrossoverResult;  // 0x0300011C
 
 bool32 FUN_0804e59c(void);
 s32 MainMenu_SetHudMode(s32 mode);
 u8* GetCrossoverPlayerName(s32 idx);
 
-Entity723E* GetEntity723E(void) { return sEntity723E; }
+CrossoverResult* CrossoverResult_Get(void) { return sCrossoverResult; }
 
 // 結果画面の BG1 と BG パレットを読み込む
-void Entity723E_SetupBG(Entity723E* p, s32 bgIndex) {
+void CrossoverResult_SetupBG(CrossoverResult* p, s32 bgIndex) {
   p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
@@ -55,14 +55,14 @@ void Entity723E_SetupBG(Entity723E* p, s32 bgIndex) {
 }
 
 // 入場フラグを食うだけ
-void Entity723E_UpdateIdle(Entity723E* p) {
+void CrossoverResult_UpdateIdle(CrossoverResult* p) {
   if (p->stateEntered) {
     p->stateEntered = FALSE;
   }
 }
 
 // 2人のタイムを乱数で回してから桁ごとに順に止める
-void Entity723E_UpdateRollTimes(Entity723E* p) {
+void CrossoverResult_UpdateRollTimes(CrossoverResult* p) {
   s32 a0, a1, a2, b0, b1, b2;
 
   if (p->stateEntered) {
@@ -135,7 +135,7 @@ void Entity723E_UpdateRollTimes(Entity723E* p) {
 }
 
 // 112/118命令, 原典は gSystemSaveData を書き戻す前にポインタを読み直し, 乱数の添字も2回目は読み直さずレジスタから進める, 試済: 回数ローカルを u16 に / 三項演算子 / 乱数を先に2つ取ってから書く
-NON_MATCH void Entity723E_UpdateShowResult(Entity723E* p) {
+NON_MATCH void CrossoverResult_UpdateShowResult(CrossoverResult* p) {
 #ifdef NONMATCHING_C
   if (p->stateEntered) {
     u16 pose;
@@ -193,12 +193,12 @@ NON_MATCH void Entity723E_UpdateShowResult(Entity723E* p) {
     p->timer++;
   }
 #else
-  INCFUNC("asm/func/Entity723E_UpdateShowResult.inc");
+  INCFUNC("asm/func/CrossoverResult_UpdateShowResult.inc");
 #endif
 }
 
 // 残りポイントを 64 フレームかけて数え上げて見せる
-void Entity723E_UpdateRevealPoints(Entity723E* p) {
+void CrossoverResult_UpdateRevealPoints(CrossoverResult* p) {
   u32 n;
   MainSprite* spr;
   s32 value;
@@ -238,7 +238,7 @@ void Entity723E_UpdateRevealPoints(Entity723E* p) {
 }
 
 // 残りポイントを step ずつ合計へ移す
-void Entity723E_UpdateTransferPoints(Entity723E* p) {
+void CrossoverResult_UpdateTransferPoints(CrossoverResult* p) {
   MainSprite* spr;
   s32 value;
 
@@ -291,7 +291,7 @@ void Entity723E_UpdateTransferPoints(Entity723E* p) {
 }
 
 // 30フレーム経ったあと何かボタンが押されたら後始末して自分を消す
-void Entity723E_UpdateWaitExit(Entity723E* p) {
+void CrossoverResult_UpdateWaitExit(CrossoverResult* p) {
   if (p->stateEntered) {
     p->stateEntered = FALSE;
   }
@@ -308,14 +308,14 @@ void Entity723E_UpdateWaitExit(Entity723E* p) {
   }
 }
 
-s32 Entity723E_Update(Entity723E* p) {
-  static void (*const PTR_ARRAY_085ab724[6])(Entity723E*) = {
-      Entity723E_UpdateIdle,
-      Entity723E_UpdateRollTimes,
-      Entity723E_UpdateShowResult,
-      Entity723E_UpdateRevealPoints,
-      Entity723E_UpdateTransferPoints,
-      Entity723E_UpdateWaitExit,
+s32 CrossoverResult_Update(CrossoverResult* p) {
+  static void (*const PTR_ARRAY_085ab724[6])(CrossoverResult*) = {
+      CrossoverResult_UpdateIdle,
+      CrossoverResult_UpdateRollTimes,
+      CrossoverResult_UpdateShowResult,
+      CrossoverResult_UpdateRevealPoints,
+      CrossoverResult_UpdateTransferPoints,
+      CrossoverResult_UpdateWaitExit,
   };  // 0x085AB724
 
   if (FUN_0804e59c()) {
@@ -331,7 +331,7 @@ s32 Entity723E_Update(Entity723E* p) {
   return 0;
 }
 
-s32 Entity723E_Destroy(Entity723E* p) {
+s32 CrossoverResult_Destroy(CrossoverResult* p) {
   s32 i;
 
   MainSprite* spr = &p->sprites[0];
@@ -345,16 +345,16 @@ s32 Entity723E_Destroy(Entity723E* p) {
   for (i = 0; i < 4; i++) {
     TextPanel_Destroy(p->textPanels[i]);
   }
-  sEntity723E = NULL;
+  sCrossoverResult = NULL;
   return 0;
 }
 
-s32 Entity723E_Init(Entity723E* p) {
+s32 CrossoverResult_Init(CrossoverResult* p) {
   MainSpriteGfxFile* f;
   MainSprite* spr;
   s32 i;
 
-  sEntity723E = p;
+  sCrossoverResult = p;
   if (VM_SeekToNamedArg('s')) {
     p->script = VM_GetPC_Proxy();
     if (p->script == NULL) {
@@ -390,17 +390,17 @@ s32 Entity723E_Init(Entity723E* p) {
   return 0;
 }
 
-Entity723E* Entity723E_Create(void) {
-  Entity723E* p = GetEntity723E();
+CrossoverResult* CrossoverResult_Create(void) {
+  CrossoverResult* p = CrossoverResult_Get();
 
   if (p != NULL) {
     return p;
   }
 
-  p = CreateEntity(ENTITY_UNK_11, sizeof(Entity723E));
+  p = CreateEntity(ENTITY_UNK_11, sizeof(CrossoverResult));
   if (p != NULL) {
-    SetEntityRoutine(p, Entity723E_Update, Entity723E_Destroy);
-    if (Entity723E_Init(p) < 0) {
+    SetEntityRoutine(p, CrossoverResult_Update, CrossoverResult_Destroy);
+    if (CrossoverResult_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -409,8 +409,8 @@ Entity723E* Entity723E_Create(void) {
 }
 
 // 結果画面に勝敗, 2人のタイム, ポイントを渡して表示を組み立てる
-s32 Entity723E_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32 remain, s32 total, Procedure exitCallback) {
-  Entity723E* p = GetEntity723E();
+s32 CrossoverResult_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32 remain, s32 total, Procedure exitCallback) {
+  CrossoverResult* p = CrossoverResult_Get();
   MainSprite* spr;
   s32* panel;
   s32 rest;
@@ -425,7 +425,7 @@ s32 Entity723E_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32 rema
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG2_ON | DISPCNT_BG3_ON);
   MainMenu_SetHudMode(7);
   ClearBGTilemapBuffer(0);
-  Entity723E_SetupBG(p, 12);
+  CrossoverResult_SetupBG(p, 12);
   Video_SetDrawPasses(0, Particle_DrawListUnk13, AuxSprite_DrawListUnk13, FUN_0822f264);
   p->state = 1;
   p->stateEntered = TRUE;

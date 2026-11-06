@@ -283,7 +283,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x71BA, Entity71BA_Create
 	.4byte 0x71C6, Cmd_ResetItems @ HashName("アイテム初期化")
 	.4byte 0x71E7, MessageChoice_SetTextFromScript
-	.4byte 0x723E, Entity723E_Create
+	.4byte 0x723E, CrossoverResult_Create
 	.4byte 0x727F, MessageWindow_SetInstantScripted
 	.4byte 0x7300, KidShop_Create @ HashName("道具屋")
 	.4byte 0x730A, Entity730A_Create
@@ -451,7 +451,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xAE4E, Cmd_AE4E
 	.4byte 0xAE71, Cmd_AE71
 	.4byte 0xAEB2, SunRangeWatcher_Create
-	.4byte 0xAF33, EntityAF33_Create
+	.4byte 0xAF33, CrossoverBattle_Create
 	.4byte 0xAF43, Cmd_AF43
 	.4byte 0xAF8E, Entity4063_Cancel
 	.4byte 0xB005, Cmd_B005

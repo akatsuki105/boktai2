@@ -258,15 +258,15 @@ void FUN_0807ae6c(struct Player* p, u32 param_2, s32 param_3);
 void FUN_08050e2c(u32 param_1, u32 param_2, Vec3* pos);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
-void FUN_08050e50(u32 param_1, u32 param_2);
-void FUN_08050d28(void);
+void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
+void CrossoverBattle_NotifyBossDefeated(void);
 s32 FUN_08050d40(void);
 void FUN_0823b880(s32 n);
 s32 Entity0805e67c_SpawnSwarm(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
 void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
 s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
-s32 FUN_08050e80(void);
-void FUN_08050cb8(Vec3* pos, u32 kind);
+s32 CrossoverBattle_IsFighting(void);
+void CrossoverBattle_AddOjama(Vec3* pos, u32 kind);
 void FUN_0805ef68(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, Vec3* pos);
 
 void FUN_0803cee4(ShadeManCrossover*);
@@ -1953,8 +1953,8 @@ void FUN_080400a4(Boss* boss, s32 timer) {
     FUN_08022fb8(boss, &p->sprite.pos);
     p->phase = 0;
     p->phaseTimer = 0;
-    FUN_08050e50(0, 1);
-    FUN_08050d28();
+    CrossoverBattle_AddPoint(0, 1);
+    CrossoverBattle_NotifyBossDefeated();
   }
   if (p->unk_162 > 3) {
     p->unk_162 -= 4;
@@ -2009,7 +2009,7 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
   p->unk_166 = 0;
   p->hurtWeakness = 0;
   p->hurtAttributes = 0;
-  if (!FUN_08050e80()) {
+  if (!CrossoverBattle_IsFighting()) {
     damage = 0;
   }
   if (damage > 0) {
@@ -2018,15 +2018,15 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
     boss->hp -= damage;
     p->unk_2a4 = boss->mover.pos;
     if (unk_166 && (weakness & 7)) {
-      FUN_08050cb8(&p->unk_2a4, 0);
+      CrossoverBattle_AddOjama(&p->unk_2a4, 0);
     }
     if (attributes & 0x7F) {
       if (weakness & 1) {
-        FUN_08050cb8(&p->unk_2a4, 1);
+        CrossoverBattle_AddOjama(&p->unk_2a4, 1);
       } else if (weakness & 2) {
-        FUN_08050cb8(&p->unk_2a4, 2);
+        CrossoverBattle_AddOjama(&p->unk_2a4, 2);
       } else if (weakness & 4) {
-        FUN_08050cb8(&p->unk_2a4, 3);
+        CrossoverBattle_AddOjama(&p->unk_2a4, 3);
       }
     }
     if (attributes & 1) {

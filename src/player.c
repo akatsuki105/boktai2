@@ -38,7 +38,7 @@ struct RisingSunEffect* RisingSunEffect_Create(void* owner, WorldPos* pos1, Worl
 struct FreezeEffect* FreezeEffect_Create(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 struct HealingEffect* HealingEffect_Create(Player* player, Vec3* pos);
 void Entity080acd4c_Spawn(Vec3* pos);
-void FUN_08050d10(void);
+void CrossoverBattle_NotifyPlayerDead(void);
 s32 FUN_08020358(u32 id);
 s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
@@ -5706,7 +5706,7 @@ void Player_UpdateDeath(Player* p) {
     }
     PlaySound_082406e0(SE_DAMAGE);
     if (gGameFlags & FLAG030047A4_UNK_12) {
-      FUN_08050d10();
+      CrossoverBattle_NotifyPlayerDead();
     }
   }
 
@@ -5776,7 +5776,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
     }
     PlaySound_082406e0(SE_DAMAGE);
     if (gGameFlags & FLAG030047A4_UNK_12) {
-      FUN_08050d10();
+      CrossoverBattle_NotifyPlayerDead();
     }
   }
 
