@@ -51,7 +51,7 @@
 	adds r0, r5, #0
 	movs r1, #0x20
 	movs r2, #0xf
-	bl Entity08051b70Elem_SetRandomWobble
+	bl CrossoverOjamaBat_SetRandomWobble
 _080512FA:
 	adds r4, r5, #0
 	adds r4, #0x6c
@@ -68,7 +68,7 @@ _080512FA:
 	movs r0, #6
 	ldrsh r2, [r5, r0]
 	adds r0, r4, #0
-	bl Entity08051b70_ApplyWobble
+	bl CrossoverOjama_ApplyWobble
 	ldr r0, [r6, #0x1c]
 	ldr r1, [r6, #0x20]
 	str r0, [r7, #0x1c]

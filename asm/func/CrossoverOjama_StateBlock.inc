@@ -132,7 +132,7 @@ _080517FC:
 	str r1, [r0, #8]
 	adds r0, r6, #0
 	movs r1, #0
-	bl Entity08051b70_NextBlockStep
+	bl CrossoverOjama_NextBlockStep
 _08051816:
 	ldr r0, [r6, #0x18]
 	adds r0, #1

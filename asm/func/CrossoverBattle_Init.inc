@@ -348,7 +348,7 @@ _08050B10:
 	bl CrossoverBattle_ClearOjama
 	movs r0, #0
 	movs r1, #0
-	bl Entity08051b70_Create
+	bl CrossoverOjama_Create
 	bl CrossoverMC_Create
 	str r0, [r6, #0x60]
 	bl Entity08052ffc_Create

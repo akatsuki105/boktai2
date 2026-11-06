@@ -78,7 +78,7 @@ SECTIONS {
       src/entity_d53d.o(iwram_data);
       . = ALIGN(8);
       src/crossover_battle.o(iwram_data);
-      src/entity_08051b70.o(iwram_data);
+      src/crossover_ojama.o(iwram_data);
       src/crossover_result.o(.bss);
       src/black_panther.o(.bss);
       src/entity_d438.o(.bss);
@@ -328,7 +328,7 @@ SECTIONS {
 			src/entity_d53d.o (.text);
 			src/crossover_lobby.o (.text);
 			src/crossover_battle.o (.text);
-			src/entity_08051b70.o (.text);
+			src/crossover_ojama.o (.text);
 			src/crossover_mc.o (.text);
 			src/crossover_result.o (.text);
 			src/entity_08052ffc.o (.text);
@@ -744,7 +744,7 @@ SECTIONS {
     src/entity_d53d.o (.rodata);
     src/crossover_lobby.o (.rodata);
     src/crossover_battle.o (.rodata);
-    src/entity_08051b70.o (.rodata);
+    src/crossover_ojama.o (.rodata);
     src/crossover_mc.o (.rodata);
     src/crossover_result.o (.rodata);
     src/entity_08052ffc.o (.rodata);

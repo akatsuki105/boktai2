@@ -104,7 +104,7 @@ s32 FUN_0804e458(void);
 s32 CrossoverResult_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32 remain, s32 total, Procedure exitCallback);
 bool8 Save_WriteSystemData(void);
 void FUN_0803ca14(void);
-void* Entity08051b70_Create(u32 id, u32 unused);
+void* CrossoverOjama_Create(u32 id, u32 unused);
 void* CrossoverMC_Create();
 void* Entity08052ffc_Create(void);
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
@@ -578,7 +578,7 @@ void CrossoverBattle_StateInterval(CrossoverBattle* p) {
     CrossoverBattle_DealMagic(p);
     p->startPressed = 0;
     FUN_0808e420();
-    Entity08051b70_StartSend(CrossoverBattle_OnScreenDone, &p->sides[0]);
+    CrossoverOjama_StartSend(CrossoverBattle_OnScreenDone, &p->sides[0]);
     p->screenDone = 0;
     p->startDelay = 8;
     CrossoverBattle_SetMCState(p, 2);
@@ -643,7 +643,7 @@ void CrossoverBattle_StateOjamaAnim(CrossoverBattle* p) {
     if (result != 0) {
       p->ojamaAnimActive = 1;
       p->screenDone = 0;
-      if (Entity08051b70_StartExchange(CrossoverBattle_OnScreenDone, &p->sides[0], &p->sides[1], p->incomingOjama)) {
+      if (CrossoverOjama_StartExchange(CrossoverBattle_OnScreenDone, &p->sides[0], &p->sides[1], p->incomingOjama)) {
         p->screenDone = 1;
       }
     } else {
@@ -1068,7 +1068,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
   }
   CrossoverBattle_ClearOjama(p, 0);
   CrossoverBattle_ClearOjama(p, 1);
-  Entity08051b70_Create(0, 0);
+  CrossoverOjama_Create(0, 0);
   p->mc = CrossoverMC_Create();
   p->unk_64 = Entity08052ffc_Create();
   SignalStrengthIcon_CreateAt(4, 24);
@@ -1147,7 +1147,7 @@ void CrossoverBattle_AddOjama(Vec3* pos, u32 kind) {
   if (sum > 9) {
     return;
   }
-  Entity08051b70_SpawnCollected(pos, kind, 1);
+  CrossoverOjama_SpawnCollected(pos, kind, 1);
   counts[kind]++;
   CrossoverBattle_AddPoint(2, 1);
   PlaySound_082406e0(SONG_885);
