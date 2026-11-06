@@ -263,7 +263,7 @@ NON_MATCH void UpdateOverheat(Taiyo* _ UNUSED) {
 // 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める
 NON_MATCH void ApplySunlightGain(Taiyo* p) {
 #ifdef NONMATCHING_C
-  if (gPlayerPtr[0] != NULL && (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_12)) == 0) {
+  if (gPlayerPtr[0] != NULL && (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_CROSSOVER)) == 0) {
     if ((gGameFlags & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->mode != PMODE_LOCKED) {
       if (gInput[0].down == 0) {
         if (p->idleTimer < 900) {

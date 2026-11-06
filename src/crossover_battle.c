@@ -1242,7 +1242,7 @@ s32 CrossoverBattle_IsMaxMode(void) {
 }
 
 // 0x877F
-void Cmd_877F(void) { gGameFlags |= FLAG030047A4_UNK_12; }
+void Cmd_877F(void) { gGameFlags |= FLAG030047A4_CROSSOVER; }
 
 void FUN_08050e2c(u32 idx, u32 mode, Vec3* pos) {
   CrossoverBattle* p = CrossoverBattle_Get();

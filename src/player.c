@@ -409,7 +409,7 @@ static s32 CalcMaxHP(Player* p) {
 static s32 CalcMaxEne(Player* p) {
   s32 val;
   PlayerArmor* armor = &p->armor;
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & FLAG030047A4_CROSSOVER) {
     return 10;
   }
 
@@ -2822,7 +2822,7 @@ static s32 GetMagicCost(magic32_t id) {
       [MAGIC_WOLF] = 0,
   };  // 0x085ABAF0, いつ使うかわからん
 
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & FLAG030047A4_CROSSOVER) {
     return sMagicUnkVal[id];
   } else {
     return sMagicCosts[id];
@@ -3193,7 +3193,7 @@ s32 Player_GetEquippedMagic(Player* p) {
 void Player_RefreshMagicInfo(Player* p) {
   PlayerMagic* m = &p->magic;
 
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & FLAG030047A4_CROSSOVER) {
     m->id = MAGIC_NONE;
   } else {
     m->id = Player_GetEquippedMagic(p);
@@ -3282,7 +3282,7 @@ s32 Player_InitState(Player* p) {
 
   Player_RefreshStats(p);
 
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & FLAG030047A4_CROSSOVER) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
@@ -5705,7 +5705,7 @@ void Player_UpdateDeath(Player* p) {
       PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
-    if (gGameFlags & FLAG030047A4_UNK_12) {
+    if (gGameFlags & FLAG030047A4_CROSSOVER) {
       CrossoverBattle_NotifyPlayerDead();
     }
   }
@@ -5727,7 +5727,7 @@ void Player_UpdateDeath(Player* p) {
         PlaySound_082406e0(SONG_209);
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 46), Q6(1))) {
-        if (!(gGameFlags & FLAG030047A4_UNK_12)) {
+        if (!(gGameFlags & FLAG030047A4_CROSSOVER)) {
           Player_SetAction(p, PACT_UNK_26, 2);
         } else {
           Player_SetAction(p, PACT_UNK_26, 3);
@@ -5775,7 +5775,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
       PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
-    if (gGameFlags & FLAG030047A4_UNK_12) {
+    if (gGameFlags & FLAG030047A4_CROSSOVER) {
       CrossoverBattle_NotifyPlayerDead();
     }
   }
@@ -5816,7 +5816,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
       p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 44), Q6(1))) {
         p->hurtbox.knockbackPower = 0;
-        if (!(gGameFlags & FLAG030047A4_UNK_12)) {
+        if (!(gGameFlags & FLAG030047A4_CROSSOVER)) {
           Player_SetAction(p, PACT_UNK_27, 3);
         } else {
           Player_SetAction(p, PACT_UNK_27, 4);
@@ -7479,7 +7479,7 @@ void FUN_0806f1ec(Player* p) {
   }
 }
 
-// FLAG030047A4_UNK_12 のダッシュ, Ene を1消費して16フレーム前へ進む, Ene が無ければ NG 音を鳴らして8フレーム立ち止まる
+// FLAG030047A4_CROSSOVER のダッシュ, Ene を1消費して16フレーム前へ進む, Ene が無ければ NG 音を鳴らして8フレーム立ち止まる
 void FUN_0806f284(Player* p) {
   if (p->action != PACT_DASH) {
     if (p->ene != 0) {
@@ -12087,7 +12087,7 @@ void Player_UpdateSleeping(Player* p) {
   }
 }
 
-// FLAG030047A4_UNK_12 が立っているときの updateCallback (ただし、 FLAG030047A4_UNK_12 の用途がわからないので、この関数の正確な役割もまだ不明, 不使用かも?)
+// FLAG030047A4_CROSSOVER が立っているときの updateCallback (ただし、 FLAG030047A4_CROSSOVER の用途がわからないので、この関数の正確な役割もまだ不明, 不使用かも?)
 void FUN_08079f1c(Player* p) {
   // clang-format off
   static const PlayerFunc PTR_ARRAY_085abedc[28] = {
@@ -12737,7 +12737,7 @@ void FUN_0807ae6c(Player* p, u32 kind, s32 count) {
   bool32 spawned;
   s32 i;
 
-  if (!(gGameFlags & FLAG030047A4_UNK_12)) {
+  if (!(gGameFlags & FLAG030047A4_CROSSOVER)) {
     return;
   }
   if (p->emitter.unk_3 != 0 && p->emitter.kind != kind) {
@@ -15195,7 +15195,7 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
   if (p->action == PACT_GRABBED || p->hp != 0) {
     return FALSE;
   }
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & FLAG030047A4_CROSSOVER) {
     return TRUE;
   }
   if (!CheckItemOwn(ITEM_JUDGEMENT)) {
