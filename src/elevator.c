@@ -1549,7 +1549,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 
   if (p->usedMask == 0) return 0;
 
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     sound_08240740(SONG_344);
     sound_08240740(SE_ELEV_MECHA_V);
     sound_08240740(SE_ELEV_MECHA_H);

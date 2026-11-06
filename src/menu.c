@@ -1221,7 +1221,7 @@ void MainMenu_UpdateCountdown(MainMenu* p) {
   s32 i;
 
   if (p->unk_a97) {
-    if (p->player == NULL || TEST_FLAGS(gPlayerStates[0], 4)) {
+    if (p->player == NULL || TEST_FLAGS(gPlayerModes[0], 4)) {
       for (i = 0; i < 2; i++) {
         p->unk_aa0[i].flags |= SPRFLAG_HIDDEN;
       }

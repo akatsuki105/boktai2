@@ -247,7 +247,7 @@ void FUN_08022fb8(Boss* p, Vec3* pos) {
   if (p->unk_e4 != 0) {
     u16 id = p->unk_e4;
 
-    if (!TEST_FLAGS(gPlayerStates[0], 4)) {
+    if (!TEST_FLAGS(gPlayerModes[0], 4)) {
       argv[0] = pos->x;
       argv[1] = pos->y;
       argv[2] = pos->z;
@@ -268,7 +268,7 @@ void FUN_08023024(Boss* p, Vec3* pos) {
   if (p->unk_e6 != 0) {
     u16 id = p->unk_e6;
 
-    if (!TEST_FLAGS(gPlayerStates[0], 4)) {
+    if (!TEST_FLAGS(gPlayerModes[0], 4)) {
       argv[0] = pos->x;
       argv[1] = pos->y;
       argv[2] = pos->z;

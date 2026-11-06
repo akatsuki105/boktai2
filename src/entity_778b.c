@@ -72,7 +72,7 @@ typedef struct {
 } Entity778BElem;
 static_assert(sizeof(Entity778BElem) == 32);
 
-// 生成要求を12件まで抱えるシングルトン, ゲームオーバー中と gPlayerStates の FLAG03002BC0_UNK_2 が立っている間は止まる
+// 生成要求を12件まで抱えるシングルトン, ゲームオーバー中と gPlayerModes の PMODE_DEAD が立っている間は止まる
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_10
   Entity778BElem elems[12];  // 0x018
@@ -581,7 +581,7 @@ NON_MATCH Enemy* FUN_080e1100(Vec3* pos, Vec3* size, u32* id) {
 Player* FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx) {
   Player* player = gPlayerPtr[idx];
 
-  if (player != NULL && !TEST_FLAGS(gPlayerStates[idx], 8) && TEST_FLAGS(player->flag20, PFLAG20_UNK_14)) {
+  if (player != NULL && !TEST_FLAGS(gPlayerModes[idx], 8) && TEST_FLAGS(player->flag20, PFLAG20_UNK_14)) {
     if (pos->x - size->x <= player->mover.pos.x && pos->x + size->x >= player->mover.pos.x) {
       if (pos->z - size->z <= player->mover.pos.z && pos->z + size->z >= player->mover.pos.z) {
         return player;
@@ -673,7 +673,7 @@ Entity778BElem* Entity778B_AllocElem(Entity778B* p) {
 s32 Entity778B_Update(Entity778B* p) {
   Entity778BElem* elems = p->elems;
 
-  if (p->usedMask != 0 && !TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (p->usedMask != 0 && !TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Entity778BElem* elem = elems;
     s32 i;
 

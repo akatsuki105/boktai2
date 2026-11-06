@@ -3511,7 +3511,7 @@ void FUN_080ca088(Jormungandr* p) {
   static void (*const PTR_ARRAY_085ad130[1])(Jormungandr*) = {
       FUN_080ca034,
   };  // 0x085AD130
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_080c9fd4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_080c9fd4(p)) {
     PTR_ARRAY_085ad130[p->base.subState1](p);
   }
 }

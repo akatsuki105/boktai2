@@ -2138,7 +2138,7 @@ s32 Coffin_Update(Coffin* p) {
 
   p->unk_406 = 0;
 
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Coffin_UpdateRope(p);
     return 0;
   }

@@ -1332,7 +1332,7 @@ NON_MATCH void FUN_08038878(Durathror* p) {
   DurathrorElem* elem;
   s32 i;
 
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return;
   }
   p->unk_174 = 0;
@@ -2013,7 +2013,7 @@ void FUN_0803a058(Durathror* p) { PTR_ARRAY_085aae88[p->base.subState2](p); }
 void FUN_0803a074(Durathror* p) { PTR_ARRAY_085aae98[p->base.subState2](p); }
 
 void FUN_0803a090(Durathror* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_080395a4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_080395a4(p)) {
     PTR_ARRAY_085aaeb4[p->base.subState1](p);
   }
 }
@@ -2532,7 +2532,7 @@ NON_MATCH void FUN_0803b628(Boss* boss, s32 timer) {
 
 void FUN_0803b7c4(Durathror* p) {
   p->base.subStateDone = FALSE;
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Boss_UpdateState(&p->base);
   }
 }

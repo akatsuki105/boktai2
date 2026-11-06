@@ -1261,9 +1261,9 @@ void FUN_08025584(Duneyrr* p) { PTR_ARRAY_085aab2c[p->base.subState2](p); }
 void FUN_080255a0(Duneyrr* p) { PTR_ARRAY_085aab34[p->base.subState2](p); }
 
 void FUN_080255bc(Duneyrr* p) {
-  u32 mask = FLAG03002BC0_UNK_2;
+  u32 mask = PMODE_DEAD;
 
-  if (!(gPlayerStates[0] & mask) && !FUN_08024be4(p)) {
+  if (!(gPlayerModes[0] & mask) && !FUN_08024be4(p)) {
     PTR_ARRAY_085aab48[p->base.subState1](p);
   }
 }
@@ -2129,8 +2129,8 @@ void FUN_08027588(Duneyrr* p) {
   u32 mask;
 
   p->base.subStateDone = 0;
-  mask = FLAG03002BC0_UNK_2;
-  if (!(gPlayerStates[0] & mask)) {
+  mask = PMODE_DEAD;
+  if (!(gPlayerModes[0] & mask)) {
     Boss_UpdateState(&p->base);
   }
 }

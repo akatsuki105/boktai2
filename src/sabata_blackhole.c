@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "player.h"
 #include "sound.h"
 #include "sprite_aux.h"
 
@@ -215,7 +216,7 @@ NAKED void FUN_0808509c(BlackHole* p) { INCFUNC("asm/func/FUN_0808509c.inc"); }
 s32 BlackHole_Update(BlackHole* p) {
   u16 scale;
 
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     FUN_08084b5c(p);
     FUN_0808509c(p);
     p->updateCallback(p);

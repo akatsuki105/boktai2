@@ -425,7 +425,7 @@ void FUN_080f06ac(Enemy* p) {}
 
 // 毎フレームの更新, 今のゾーンにいなければ活動を止め, 止まっていれば復帰を待つ
 bool32 FUN_080f06b0(Enemy* p) {
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return FALSE;
   }
 
@@ -1543,7 +1543,7 @@ void FUN_080f34a0(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[2] を回す
 void FUN_080f34ec(Enemy* p) {
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->subState2;
@@ -1554,7 +1554,7 @@ void FUN_080f34ec(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[4] を回す
 void FUN_080f3574(Enemy* p) {
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->subState2;
@@ -1565,7 +1565,7 @@ void FUN_080f3574(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[3] を回す
 void FUN_080f35fc(Enemy* p) {
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->subState2;

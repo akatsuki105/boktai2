@@ -715,7 +715,7 @@ bool8 Mimic_FindOpeningPlayer(Mimic* p) {
   for (i = 0; i < 4; i++) {
     Player* player = gPlayerPtr[i];
 
-    if (player != NULL && !TEST_FLAGS(gPlayerStates[i], FLAG03002BC0_UNK_3)) {
+    if (player != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3)) {
       Vec3 d;
 
       Vec3_Diff(&d, &player->mover.pos, &(p->e).mover.pos);
@@ -737,7 +737,7 @@ bool8 Mimic_TryRouteToPlayer(Mimic* p) {
       return FALSE;
     }
     idx = m->unk_4 < 4 ? m->unk_4 : -1;
-    if (idx < 0 || TEST_FLAGS(gPlayerStates[idx], FLAG03002BC0_UNK_3)) {
+    if (idx < 0 || TEST_FLAGS(gPlayerModes[idx], PMODE_UNK_3)) {
       return FALSE;
     }
   } else if ((p->e).playerMover == NULL) {
@@ -894,7 +894,7 @@ NON_MATCH static bool8 Mimic_IsPlayerLost(Mimic* p) {
 #ifdef NONMATCHING_C
   Mover* m = (p->e).playerMover;
 
-  if (m != NULL && (m->unk_4 >= 4 || (!TEST_FLAGS(gPlayerPtr[m->unk_4]->flag20, PFLAG20_INVISIBLE) && !TEST_FLAGS(gPlayerStates[m->unk_4], FLAG03002BC0_UNK_3)))) {
+  if (m != NULL && (m->unk_4 >= 4 || (!TEST_FLAGS(gPlayerPtr[m->unk_4]->flag20, PFLAG20_INVISIBLE) && !TEST_FLAGS(gPlayerModes[m->unk_4], PMODE_UNK_3)))) {
     return FALSE;
   }
   return TRUE;

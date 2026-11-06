@@ -4,6 +4,7 @@
 #include "hitbox.h"
 #include "inline.h"
 #include "map_inline.h"
+#include "player.h"
 #include "random.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
@@ -296,7 +297,7 @@ Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags
   if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return NULL;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return NULL;
   }
   elem = Entity081f1770_AllocElem(p);
@@ -337,7 +338,7 @@ s32 Entity081f1770_Update(Entity081f1770* p) {
   if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return 0;
   }
   for (i = 0; i < 20; i++) {

@@ -80,7 +80,7 @@ void TimeMC_UpdateIdle(TimeMC* p) {
     } else {
       p->rise = 24;
     }
-    if (TEST_FLAGS(gPlayerStates[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && gPlayerPtr[0]->formRequest == 0 && p->readyTimer > 9) {
+    if (TEST_FLAGS(gPlayerModes[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && gPlayerPtr[0]->formRequest == 0 && p->readyTimer > 9) {
       p->highlight = 8;
       FUN_080a6e88(TRUE);
       Player_MoveTo(gPlayerPtr[0], &p->pos, 0, 4);

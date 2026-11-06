@@ -2821,7 +2821,7 @@ NON_MATCH void FUN_081ffdb0(Dvalinn* p) {
 }
 
 s32 Dvalinn_Update(Dvalinn* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     FUN_08022e20(&p->base);
     FUN_081ffd9c(p);
     FUN_081fc86c(p);

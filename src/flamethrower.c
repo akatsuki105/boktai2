@@ -5,6 +5,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
 #include "sound.h"
 #include "sprite.h"
 #include "sprite_aux.h"
@@ -120,7 +121,7 @@ s32 Entity081eaf6c_Update(Entity081eaf6c* p) {
   if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return 0;
   }
 
@@ -243,7 +244,7 @@ NON_MATCH Flamethrower* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 
   if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return NULL;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return NULL;
   }
   if (gEntity081eaf6c == NULL) {

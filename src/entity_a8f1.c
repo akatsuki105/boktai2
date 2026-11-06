@@ -378,7 +378,7 @@ void EntityA8F1_UpdateIdle(EntityA8F1* p) {
   near = EntityA8F1_IsPlayerNear(p);
   if (near) {
     if (p->unk_369 == 0) {
-      if (TEST_FLAGS(gPlayerStates[0], PMODE_ACTIVE) && gPlayerPtr[0]->action != 0x18 && gPlayerPtr[0]->action != 0x19 && (gInput[0].pressed & A_BUTTON)) {
+      if (TEST_FLAGS(gPlayerModes[0], PMODE_ACTIVE) && gPlayerPtr[0]->action != 0x18 && gPlayerPtr[0]->action != 0x19 && (gInput[0].pressed & A_BUTTON)) {
         PlaySound_082406e0(SE_SOLAR_STAND_DENY);
       }
     } else {
@@ -394,7 +394,7 @@ void EntityA8F1_UpdateIdle(EntityA8F1* p) {
       } else {
         p->unk_368 = 24;
       }
-      if (TEST_FLAGS(gPlayerStates[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && !gPlayerPtr[0]->formRequest && p->unk_36a > 9) {
+      if (TEST_FLAGS(gPlayerModes[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && !gPlayerPtr[0]->formRequest && p->unk_36a > 9) {
         p->unk_1c6 = 8;
         Player_MoveTo(gPlayerPtr[0], &p->pos, 0, 4);
         EntityA8F1_SetUpdateCallback(p, FUN_080a3004);

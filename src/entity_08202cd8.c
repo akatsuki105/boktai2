@@ -809,8 +809,8 @@ s32 Entity08202cd8_Update(Entity08202cd8* p) {
   u32 mask;
 
   p->unk_6da = 0;
-  mask = FLAG03002BC0_UNK_2;
-  if (!(gPlayerStates[0] & mask)) {
+  mask = PMODE_DEAD;
+  if (!(gPlayerModes[0] & mask)) {
     FUN_08200b8c(p);
     FUN_082028b8(p);
     FUN_08202910(p);

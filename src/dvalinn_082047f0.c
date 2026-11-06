@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite_animation.h"
@@ -314,7 +315,7 @@ void Entity082047f0_Update(Entity082047f0* p) {
   Entity082047f0Elem* elem;
   s32 i;
 
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return;
   }
   if (!(p->flags & 1)) {

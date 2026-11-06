@@ -782,7 +782,7 @@ void CrossoverBattle_StateSendResult(CrossoverBattle* p) {
     CrossoverBattle_Send(p, 4, &data, 1);
     CrossoverBattle_SetMCState(p, 5);
     Sound_FadeOutBGM(4);
-    if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       Player_Lock(gPlayerPtr[0], -1);
     }
   }

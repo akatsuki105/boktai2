@@ -96,7 +96,7 @@ COMMON_DATA u16 gWindStrength = 0;                      // 0x03002BAC, Player_In
 COMMON_DATA u8 u8_03002bae[2] = {};                     // todo
 COMMON_DATA u16 gSavedMagicEnchanted = 0;               // 0x03002BB0, Player.magic.enchanted の退避, Player_SaveState が写し Player_RefreshMagicInfo が戻す, Player_GetEquippedMagic がサバタのとき 0 に戻す
 COMMON_DATA u8 u8_03002bb2[14] = {};                    // todo
-COMMON_DATA u32 gPlayerStates[4] = {};                  // 0x03002BC0, Playerごとのビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
+COMMON_DATA PlayerMode gPlayerModes[4] = {};            // 0x03002BC0, Playerごとの Player.mode の写し
 COMMON_DATA u16 gSunMagicUsed = 0;                      // 0x03002BD0, Cmd_898D が 0 に戻す
 COMMON_DATA u8 u8_03002bd2[14] = {};                    // todo
 COMMON_DATA Player* gPlayerPtr[4] = {};                 // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
@@ -12216,7 +12216,7 @@ NON_MATCH void UNUSED FUN_0807a270(Player* p) {
   for (i = 0; i < 4; i++) {
     gPlayerPtr[i] = NULL;
     gPlayerMoverIDs[i] = 0;
-    gPlayerStates[i] = 0;
+    gPlayerModes[i] = 0;
   }
 
   gGoodCondID = 0;
@@ -15266,7 +15266,7 @@ NON_MATCH void Player_SaveState(Player* p) {
   for (i = 0; i < 3; i++) {
     gBadCondTimer[i] = p->badCondTimer[i];
   }
-  gPlayerStates[p->mover.unk_4] = p->mode;
+  gPlayerModes[p->mover.unk_4] = p->mode;
   gSavedMagicEnchanted = p->magic.enchanted;
 #else
   INCFUNC("asm/func/Player_SaveState.inc");

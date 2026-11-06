@@ -185,9 +185,9 @@ s32 FUN_080093ec(Entity83B2* p, s32 n) {
 s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   FUN_080091d0(data);
   if (p->player != NULL) {
-    u32 mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
-    u32 flags = gPlayerStates[0];
-    if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
+    u32 mask = PMODE_DEAD | PMODE_LOCKED;
+    u32 flags = gPlayerModes[0];
+    if (!(flags & mask) && (flags & PMODE_ACTIVE)) {
       s32 dx = data->pos.x - p->pos.x;
       s32 dz = data->pos.z - p->pos.z;
       u32 dist2 = dx * dx + dz * dz;
@@ -226,9 +226,9 @@ s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* data, s32 idx) {
 
   FUN_080091d0(data);
   if (p->player != NULL) {
-    mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
-    flags = gPlayerStates[0];
-    if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
+    mask = PMODE_DEAD | PMODE_LOCKED;
+    flags = gPlayerModes[0];
+    if (!(flags & mask) && (flags & PMODE_ACTIVE)) {
       dx = data->pos.x - p->pos.x;
       dz = data->pos.z - p->pos.z;
       dist2 = dx * dx + dz * dz;
@@ -281,9 +281,9 @@ s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* data, s32 idx) {
 
   FUN_080091d0(data);
   if (p->player != NULL) {
-    mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
-    flags = gPlayerStates[0];
-    if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
+    mask = PMODE_DEAD | PMODE_LOCKED;
+    flags = gPlayerModes[0];
+    if (!(flags & mask) && (flags & PMODE_ACTIVE)) {
       dx = data->pos.x - p->pos.x;
       dz = data->pos.z - p->pos.z;
       dist2 = dx * dx + dz * dz;

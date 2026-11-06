@@ -394,7 +394,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
         if (idx < 0) {
           return FALSE;
         }
-        if (gPlayerStates[idx] & 8) {
+        if (gPlayerModes[idx] & 8) {
           return FALSE;
         }
       }

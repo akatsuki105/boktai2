@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "player.h"
 #include "random.h"
 #include "sprite_aux.h"
 #include "vec3.h"
@@ -368,7 +369,7 @@ s32 Entity081f53a8_Update(Entity081f53a8* p) {
   if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return 0;
   }
   for (i = 0; i < 8; i++) {

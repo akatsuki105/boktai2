@@ -107,7 +107,7 @@ NON_MATCH s32 MapItem_ExecScript(MapItem* item, u16 scriptID, s32 param_3) {
     return -1;
   }
   owner = item->owner;
-  if (owner == -1 || (gPlayerStates[owner] & (FLAG03002BC0_UNK_3 | FLAG03002BC0_UNK_2))) {
+  if (owner == -1 || (gPlayerModes[owner] & (PMODE_UNK_3 | PMODE_DEAD))) {
     return -1;
   }
   if (item->kind == 1) {
@@ -219,7 +219,7 @@ NON_MATCH s32 MapItem_TryAutoPickup(MapItemManager* p, MapItem* item) {
   for (i = 0; i < 4; i++) {
     Player* player = p->players[i];
 
-    if (player != NULL && !TEST_FLAGS(gPlayerStates[i], FLAG03002BC0_UNK_3 | FLAG03002BC0_UNK_2)) {
+    if (player != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3 | PMODE_DEAD)) {
       Vec3* pos = item->pos;
       s32 dy = vp.y - p->playerScreen[i].y;
       bool32 near;

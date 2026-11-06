@@ -855,7 +855,7 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
     }
   }
   if (!boss->isDemo) {
-    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (!p->unk_81f) {
         p->unk_81f = TRUE;
         p->unk_820 = Sqrt(boss->playerDistSq[0]) >> 5;
@@ -1310,7 +1310,7 @@ void FUN_0803e5fc(ShadeManCrossover* p) { PTR_ARRAY_085aaf6c[p->base.subState2](
 void FUN_0803e618(ShadeManCrossover* p) { PTR_ARRAY_085aafa0[p->base.subState2](p); }
 
 void FUN_0803e634(ShadeManCrossover* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_0803d844(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_0803d844(p)) {
     PTR_ARRAY_085aafa8[p->base.subState1](p);
   }
 }
@@ -1977,7 +1977,7 @@ void FUN_080400a4(Boss* boss, s32 timer) {
 }
 
 void FUN_08040184(ShadeManCrossover* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     p->base.subStateDone = FALSE;
     Boss_UpdateState(&p->base);
   }

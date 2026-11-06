@@ -388,7 +388,7 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_EVENT)) == GAMEFLAG_EVENT) {
     return;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return;
   }
 

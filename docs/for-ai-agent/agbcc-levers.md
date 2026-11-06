@@ -399,7 +399,7 @@ Four positions, cheapest first:
   `include/global.h` includes `macro.h`, so every file that includes
   `global.h` already has them — no extra `#include` is needed.
   Reach for them before inventing a flag accessor or a mask local. Examples:
-  `Entity5CCC_AddEneCharge` (`TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)`),
+  `Entity5CCC_AddEneCharge` (`TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)`),
   `Player_ApplyDarkbug` (`TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)`), the
   `SET_FLAGS(p->flags, …)` calls in `src/title.c`. `TEST_FLAGS` yields the masked
   value, not a 0/1; where a 0/1 argument is needed the replacement used

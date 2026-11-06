@@ -1907,7 +1907,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     }
   }
   if (!boss->isDemo) {
-    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerModes[0] & PMODE_DEAD)) {
       if (!p->unk_880) {
         p->unk_880 = TRUE;
         p->unk_884 = 0;
@@ -3257,7 +3257,7 @@ void FUN_0802e488(Ringo* p) {
   static void (*const PTR_ARRAY_085aad20[1])(Ringo*) = {
       FUN_0802e434,
   };  // 0x085AAD20
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_0802c2d4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_0802c2d4(p)) {
     PTR_ARRAY_085aad20[p->base.subState1](p);
   }
 }
@@ -3680,11 +3680,11 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
   if ((u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
     p->unk_874 = 0;
   }
-  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) && !(gPlayerStates[0] & FLAG03002BC0_UNK_2) && p->unk_874 > 0 && p->phaseTimer <= 3) {
+  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) && !(gPlayerModes[0] & PMODE_DEAD) && p->unk_874 > 0 && p->phaseTimer <= 3) {
     p->sprites[0].animCmdIdx = 2;
     p->phaseTimer++;
   }
-  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && ((gPlayerStates[0] & FLAG03002BC0_UNK_2) || p->unk_874 == 0 || p->phaseTimer > 3)) {
+  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && ((gPlayerModes[0] & PMODE_DEAD) || p->unk_874 == 0 || p->phaseTimer > 3)) {
     boss->subStateDone = TRUE;
   }
 #else
@@ -4537,7 +4537,7 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
     }
     case 4: {
       if (++p->phaseTimer > 4) {
-        if ((gPlayerStates[0] & FLAG03002BC0_UNK_2) || (u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
+        if ((gPlayerModes[0] & PMODE_DEAD) || (u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
           p->unk_874 = 0;
         }
         if (p->unk_874 <= 0) {
@@ -4696,7 +4696,7 @@ NON_MATCH void FUN_08032180(Boss* boss, s32 timer) {
         }
         PlaySound_0824078c(SE_DAMAGE);
       }
-      if (++p->phaseTimer > 79 || (gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+      if (++p->phaseTimer > 79 || (gPlayerModes[0] & PMODE_DEAD)) {
         p->phase++;
         p->phaseTimer = 0;
         Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 57, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
@@ -4921,7 +4921,7 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
     p->sprites[1].pltt = p->sprites[0].pltt;
     FUN_08029c74(p);
     p->numPlayers = 1;
-    if (p->scriptID && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+    if (p->scriptID && !(gPlayerModes[0] & PMODE_DEAD)) {
       VM_ExecByID(p->scriptID, NULL);
     }
     FUN_08015a90(&mover->pos, 3, 2, 0x3000, 0x40, 8, 0x100, 0x100);
@@ -4946,7 +4946,7 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
   }
   if (timer == 30) {
     Boss_SetState(boss, FUN_0802e520, 1);
-    if (p->scriptID2 && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+    if (p->scriptID2 && !(gPlayerModes[0] & PMODE_DEAD)) {
       VM_ExecByID(p->scriptID2, NULL);
     }
   }
@@ -6065,8 +6065,8 @@ void FUN_08035a3c(Ringo* p) {
   u32 mask;
 
   p->base.subStateDone = FALSE;
-  mask = FLAG03002BC0_UNK_2;
-  if (!(gPlayerStates[0] & mask)) {
+  mask = PMODE_DEAD;
+  if (!(gPlayerModes[0] & mask)) {
     Boss_UpdateState(&p->base);
   }
 }

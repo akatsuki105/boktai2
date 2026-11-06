@@ -1172,7 +1172,7 @@ void FUN_0821d760(ShadeMan* p) { PTR_ARRAY_085affec[p->base.subState2](p); }
 void FUN_0821d77c(ShadeMan* p) { PTR_ARRAY_085afff4[p->base.subState2](p); }
 
 void FUN_0821d798(ShadeMan* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     PTR_ARRAY_085b0010[p->base.subState1](p);
   }
 }
@@ -2984,7 +2984,7 @@ NON_MATCH void FUN_08221450(ShadeMan* p) {
   ShadeMan_UpdateAfterimages(p);
   p->flag38c &= ~0xFF000000;
   if (!boss->isDemo) {
-    if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (boss->subState0 == 2 || TEST_FLAGS(boss->flags, BOSSFLAG_HIDDEN)) {
         if (p->unk_bc3 == 1) {
           p->unk_bc3 = 0;

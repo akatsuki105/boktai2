@@ -72,11 +72,12 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_SPECIALDEATH 31  // キャラ固有のゲームオーバー(ジャンゴ: ウルフイベント, サバタ: 運搬中の黒ジャンゴのHPが0になった)
 #define PACT_UNK_32 32        //
 
-// Player.mode, 毎フレーム gPlayerStates[idx] にも写される
+// Player.mode, 毎フレーム gPlayerModes[idx] にも写される
 typedef u32 PlayerMode;
 #define PMODE_ACTIVE (1 << 0)  // 0x1, 通常更新中, Player_Unlock が入れる
 #define PMODE_LOCKED (1 << 1)  // 0x2, 操作できない状態, Player_EnterLockedState が入れる
 #define PMODE_DEAD (1 << 2)    // 0x4, HP0
+#define PMODE_UNK_3 (1 << 3)   // 0x8, 用途不明, 立っているとミミックの標的やマップアイテムの取得対象から外れる
 
 // Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを Player_PostUpdateHuman がその場で反映する
 typedef u16 PlayerFlag35A;
@@ -505,10 +506,11 @@ static_assert(sizeof(Player) == 2756);
 
 extern u16 gPlayerCount;
 extern Player* gPlayerPtr[4];
-extern u16 gGoodCondID;         // 0x03002B60
-extern u16 gConfusedDir;        // 0x03002B64
-extern u16 gPlayerMoverIDs[4];  // 0x03002B68, 多分プレイヤーの moverID
-extern u16 gGoodCondTimer;      // 0x03002B8C, Player.goodCondTimer の退避, 他Entityからの参照用
+extern u16 gGoodCondID;             // 0x03002B60
+extern u16 gConfusedDir;            // 0x03002B64
+extern u16 gPlayerMoverIDs[4];      // 0x03002B68, 多分プレイヤーの moverID
+extern u16 gGoodCondTimer;          // 0x03002B8C, Player.goodCondTimer の退避, 他Entityからの参照用
+extern PlayerMode gPlayerModes[4];  // 0x03002BC0, プレイヤーごとの Player.mode の写し (see PlayerMode)
 extern u16 gWindAngle;
 extern u16 gRisingSunCount;  // 0x03002BF0
 
