@@ -42,20 +42,12 @@ void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
 void Entity7C62_UpdateActivated(Entity7C62* p);
 void Entity7C62_UpdateDone(Entity7C62* p);
 
-// 人型のプレイヤーが pos から 96 以内にいれば TRUE を返す
+// 人型のプレイヤーが pos から 0.375 タイル以内にいれば TRUE を返す
 bool32 Entity7C62_IsPlayerNear(Entity7C62* p) {
   if (gStat->playerKind != PLAYER_BAT && gStat->playerKind != PLAYER_MOUSE && gStat->playerKind != PLAYER_SLEEPING && gPlayerPtr[0]->formRequest == 0) {
-    s32 dx = gPlayerPtr[0]->mover.pos.x - p->pos.x;
-    s32 dz;
-
-    if (dx < 0) {
-      dx = -dx;
-    }
-    dz = gPlayerPtr[0]->mover.pos.z - p->pos.z;
-    if (dz < 0) {
-      dz = -dz;
-    }
-    if (dx <= 96 && dz <= 96 && dx * dx + dz * dz <= 96 * 96) {
+    s32 dx = abs(gPlayerPtr[0]->mover.pos.x - p->pos.x);
+    s32 dz = abs(gPlayerPtr[0]->mover.pos.z - p->pos.z);
+    if (dx <= Q8(0.375) && dz <= Q8(0.375) && dx * dx + dz * dz <= Q8(0.375) * Q8(0.375)) {
       return TRUE;
     }
   }
@@ -172,14 +164,10 @@ s32 Entity7C62_Init(Entity7C62* p, u32 id, u32 param_3) {
 
   p->id = id;
   if (VM_SeekToNamedArg('p')) {
-    p->pos.x = VM_GetValue();
-    p->pos.y = VM_GetValue();
-    p->pos.z = VM_GetValue();
+    VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
     p->pos.y = TileHeightAt(&p->pos);
   } else {
-    p->pos.x = 0;
-    p->pos.y = 0;
-    p->pos.z = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   }
 
   if (VM_SeekToNamedArg('s')) {

@@ -1788,17 +1788,9 @@ NON_MATCH bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
       }
     }
     {
-      s32 vx = elem->vel.x;
-      s32 vz = elem->vel.z;
-      s32 speed;
-
-      if (vx < 0) {
-        vx = -vx;
-      }
-      if (vz < 0) {
-        vz = -vz;
-      }
-      speed = vz;
+      s32 vx = abs(elem->vel.x);
+      s32 vz = abs(elem->vel.z);
+      s32 speed = vz;
       if (speed < vx) {
         speed = vx;
       }
