@@ -46,11 +46,8 @@ s32 FUN_08240b98(Vec3* param_1, s8 param_2);
 s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
 void FUN_080e7b6c(Enemy* p);
-void FUN_080e6794(Enemy* p, s32 priority);
 void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void FUN_080ec5b4(u16 a, u16 b);
-void FUN_080f54e4(Enemy* p, s32 param_2);
-bool8 FUN_080e4b3c(Enemy* p);
 void Enemy_SnapToFloor(Enemy* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 IsInPuddle(WorldPos* pos);
@@ -100,13 +97,6 @@ static inline Vec3* Enemy_GetSpritePos(Enemy* p) {
     return &((AuxSprite*)p->sprite)->pos;
   }
   return &p->sprite->s.pos;
-}
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (p->flags5 & bit) {
-    return TRUE;
-  }
-  return FALSE;
 }
 
 // 小さい敵 (クロロホルルン, バット, クロウ, ビー) かどうかを判定 (ただし、小さいことではなく別の共通点で判定している可能性もあるので、その場合はリネームする)

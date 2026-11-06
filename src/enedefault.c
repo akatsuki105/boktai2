@@ -20,23 +20,18 @@
 // 原典のファイル名は enedefault.c, 根拠: FUN_080f00ec / FUN_080f0430 が、抜き取られた assert の引数として文字列 "enedefault.c" (0x08251F80) と行番号を積む
 
 void FUN_080f897c(Enemy* p);
-void FUN_080e6794(Enemy* p, s32 priority);
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 void FUN_080e81dc(Enemy* p, s32 param_2);
 void FUN_080f22e8(Enemy* p);
 void FUN_080f230c(Enemy* p);
 void FUN_080f2330(Enemy* p);
 void FUN_080f229c(Enemy* p);
-Mover* EnemyTargetManager_FindOwnerByID(u16 id);
 s32 FUN_080e191c(Enemy* p);
 s32 FUN_080e1f48(Enemy* p);
 s32 FUN_080e35b4(Enemy* p);
 bool32 FUN_080eafdc(Enemy* p);
 bool32 FUN_080eb168(Enemy* p);
-EnemyTarget* EnemyTargetManager_Claim(Enemy* p, s32 kindMask);
 s32 FUN_080f8abc(Enemy* p);
-bool8 FUN_080e5ed4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_enedefault_c_08251f80[] = "enedefault.c";
 
@@ -177,7 +172,6 @@ static inline void Enemy_SetSpritePriority(Enemy* p, u8 priority) {
   }
 }
 
-void PlayEnemyDeathCry(Enemy* p);
 void FUN_080e7b6c(Enemy* p);
 void FUN_080f8ae0(Enemy* p);
 
@@ -224,7 +218,6 @@ bool8 FUN_080eb2a0(Enemy* p);
 void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void FUN_080e6408(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 param_6);
 void FUN_080e9178(Enemy* p);
-void FUN_080e64e4(Enemy* p);
 void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3);
 
 // FUN_080f2644 / FUN_080f2864 が添字として引く, 用途は未解析
@@ -3002,7 +2995,7 @@ bool32 FUN_080f8400(Enemy* p) {
 // 近くで音がしたら音のした場所へ向かわせる, 初めて気付いたときは感情アイコンを出して状態9へ移し TRUE
 // 残差は368/380命令, 入口の条件の塊を bool8 を返す inline, 一歩動く部分を Enemy_StepToward 形の inline にするとここまで寄る
 // 原典は FUN_08240dc8 の結果を u8 (lsrs) で持って FUN_080e8f20 に渡すときに s8 へ戻し, レジスタの割当も全体に1つずつずれる
-NON_MATCH bool32 FUN_080f84d4(Enemy* p) {
+NON_MATCH bool8 FUN_080f84d4(Enemy* p) {
 #ifdef NONMATCHING_C
   s8 idx;
   bool8 noticed;

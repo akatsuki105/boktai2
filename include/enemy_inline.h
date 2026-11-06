@@ -54,4 +54,11 @@ static inline void Enemy_UpdateWalkAnimSpeed(Enemy* p) {
   }
 }
 
+static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
+  if (p->flags5 & bit) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
 #endif  // __INCLUDE_ENEMY_INLINE_H__

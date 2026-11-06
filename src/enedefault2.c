@@ -58,7 +58,7 @@ NAKED bool8 FUN_080fa7a4(Enemy* p) { INCFUNC("asm/func/FUN_080fa7a4.inc"); }
 
 NAKED s32 FUN_080fa958(Vec3* pos) { INCFUNC("asm/func/FUN_080fa958.inc"); }
 
-bool32 FUN_080faa98(Enemy* p) {
+bool8 FUN_080faa98(Enemy* p) {
   s32 idx = FUN_080fa958(&p->mover.pos);
   if (idx < 0) {
     p->unk_5c4(p);

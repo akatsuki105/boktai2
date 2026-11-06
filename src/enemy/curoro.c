@@ -42,34 +42,8 @@ static_assert(sizeof(Curoro) == 1712);
 extern const char s_curorocom_c_08252078[];  // "curorocom.c"
 
 void FUN_080efe38(Enemy* p, s32 param_2);
-void FUN_080ec6fc(Enemy* enemy);
 void FUN_0807a904(Player* p, u32 flag);
-void PlayEnemyDeathCry(Enemy* p);
-void FUN_080e37e8(Enemy* p, void* arg, u8 spriteKind);
-void FUN_080e48e8(Enemy* p, s32 hp, s32 param_3, s32 param_4);
-void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6);
-void Enemy_Init_080e5dd4(Enemy* p);
-s32 Enemy_CountByKind(u32 kind);
-void Enemy_DispatchMsg(Enemy* p, u16* msg);
-void FUN_080f44f4(Enemy* p);
-void FUN_080f410c(Enemy* p);
-s32 FUN_080f62ac(void);
 bool32 FUN_080f62b0(Enemy* p);
-bool8 FUN_080f0430(Enemy* p);
-void FUN_080e73c8(Enemy* p);
-void Enemy_080eff14(Enemy* enemy, s32 param_2);
-void FUN_080e72b0(Enemy* p, s32 timer);
-void FUN_080f47c8(Enemy* p);
-void FUN_080f54e4(Enemy* p, s32 param_2);
-bool32 FUN_080f84d4(Enemy* p);
-void FUN_080f624c(Enemy* p);
-void FUN_080f56ec(Enemy* p);
-void FUN_080f5b34(Enemy* p);
-void FUN_080f5fac(Enemy* p, s32 timer);
-bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value);
-void FUN_080e64e4(Enemy* p);
-void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b);
-void FUN_080e6658(Enemy* p);
 void Player_StartFormEffect(Player* p, u32 kind);
 void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip);
 void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p);
@@ -114,13 +88,6 @@ void FUN_0813d1d0(Curoro* p);
 void FUN_0813d274(Curoro* p);
 void FUN_0813d3f4(Curoro* p);
 s32 FUN_0813d404(Curoro* p);
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (p->flags5 & bit) {
-    return TRUE;
-  }
-  return FALSE;
-}
 
 static inline bool8 IsLinkPlay(void) {
   if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;

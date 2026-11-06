@@ -39,39 +39,9 @@ static_assert(sizeof(Boku) == 1708);
 
 void FUN_080e499c(Enemy* p);
 void FUN_080e64b4(Enemy* p, s32 kind);
-void PlayEnemyDeathCry(Enemy* p);
-void FUN_080e6658(Enemy* p);
-void FUN_080e37e8(Enemy* p, void* arg, u8 spriteKind);
-void FUN_080e48e8(Enemy* p, s32 hp, s32 param_3, s32 param_4);
-void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6);
-void Enemy_Init_080e5dd4(Enemy* p);
-s32 Enemy_CountByKind(u32 kind);
-void Enemy_DispatchMsg(Enemy* p, u16* msg);
-void FUN_080f44f4(Enemy* p);
-void FUN_080f410c(Enemy* p);
-s32 FUN_080f62ac(void);
 bool32 FUN_080f62b0(Enemy* p);
-bool8 FUN_080f0430(Enemy* p);
-void FUN_080e73c8(Enemy* p);
-void Enemy_080eff14(Enemy* enemy, s32 param_2);
-void FUN_080e72b0(Enemy* p, s32 timer);
-void FUN_080f47c8(Enemy* p);
-void FUN_080f54e4(Enemy* p, s32 param_2);
-bool32 FUN_080f84d4(Enemy* p);
-void FUN_080f624c(Enemy* p);
-void FUN_080f56ec(Enemy* p);
-void FUN_080f5b34(Enemy* p);
-void FUN_080f5fac(Enemy* p, s32 timer);
-bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value);
-void FUN_080e64e4(Enemy* p);
-void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b);
-void Enemy_SetAngleToward(Enemy* p, s16 x, s16 z);
-void FUN_080e6794(Enemy* p, s32 priority);
-bool8 FUN_080e5ed4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
-void FUN_080ec6fc(Enemy* enemy);
 void FUN_080e7b6c(Enemy* p);
 void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 groundTime, s32 speed, s32 unk_9);
 bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
@@ -143,13 +113,6 @@ static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
 
 static inline bool8 IsLinkPlay(void) {
   if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (p->flags5 & bit) {
-    return TRUE;
-  }
   return FALSE;
 }
 

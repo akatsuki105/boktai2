@@ -3,6 +3,7 @@
 #include "emote.h"
 #include "enemy.h"
 #include "enemy_inline.h"
+#include "enemy_target.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
@@ -31,44 +32,15 @@ typedef struct {
 } Mimic;
 static_assert(sizeof(Mimic) == 1684);
 
-void FUN_0814830c(Mimic* p);
-void FUN_080ec6fc(Enemy* enemy);
 void FUN_081486d8(Mimic* p);
-u32 FUN_08148750(s32 angle);
-bool8 Mimic_IsPlayerLost(Mimic* p);
 void FUN_08147030(Mimic* p);
 void FUN_081473ac(Mimic* p);
 void FUN_081489f0(Mimic* p);
 void FUN_08147530(Mimic* p, s32 param_2);
-void FUN_080e37e8(Enemy* p, void* arg, u8 spriteKind);
-void FUN_080e48e8(Enemy* p, s32 hp, s32 param_3, s32 param_4);
-void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6);
-void Enemy_Init_080e5dd4(Enemy* p);
-s32 Enemy_CountByKind(u32 kind);
-void Enemy_DispatchMsg(Enemy* p, u16* msg);
-void FUN_080f44f4(Enemy* p);
-void FUN_080f410c(Enemy* p);
-s32 FUN_080f62ac(void);
-bool8 FUN_080f0430(Enemy* p);
-void FUN_080e73c8(Enemy* p);
-void Enemy_080eff14(Enemy* enemy, s32 param_2);
-void FUN_080e72b0(Enemy* p, s32 timer);
-void FUN_080f47c8(Enemy* p);
-void FUN_080f54e4(Enemy* p, s32 param_2);
-bool32 FUN_080f84d4(Enemy* p);
-void FUN_080f624c(Enemy* p);
-void FUN_080f56ec(Enemy* p);
-void FUN_080f5b34(Enemy* p);
-void FUN_080f5fac(Enemy* p, s32 timer);
-bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value);
-Mover* EnemyTargetManager_FindOwnerByID(u16 id);
-void FUN_080e6658(Enemy* p);
-void FUN_080e64e4(Enemy* p);
-void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b);
-void FUN_080e6794(Enemy* p, s32 priority);
-bool8 FUN_080faa98(Enemy* p);
-bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3);
+
+static void FUN_0814830c(Mimic* p);
+static bool8 Mimic_IsPlayerLost(Mimic* p);
+static u32 FUN_08148750(s32 angle);
 
 static inline bool8 IsLinkPlay(void) {
   if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
@@ -86,13 +58,6 @@ static inline bool8 Enemy_TryRouteTo(Enemy* p, NavAgent* agent, WorldPos* pos, W
     return TRUE;
   }
   Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
-  return FALSE;
-}
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (p->flags5 & bit) {
-    return TRUE;
-  }
   return FALSE;
 }
 
@@ -711,7 +676,7 @@ void Mimic_InitAnims(Mimic* p) {
   Enemy_SetAnimEntry(&p->e, 10, 4, 0);
 }
 
-void FUN_0814830c(Mimic* p) {
+static void FUN_0814830c(Mimic* p) {
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7) && Enemy_GetUnk24e(&p->e) == 0 && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5)) {
     (p->e).playerMover = NULL;
     (p->e).animSpeedDiv = 1;
@@ -837,7 +802,7 @@ NON_MATCH void FUN_081486d8(Mimic* p) {
 #endif
 }
 
-u32 FUN_08148750(s32 angle) {
+static u32 FUN_08148750(s32 angle) {
   switch (((angle + 16) & 0xFF) >> 6) {
     case 0:
     case 2: {
@@ -925,7 +890,7 @@ NON_MATCH void FUN_081488bc(Mimic* p) {
 }
 
 // 残差は PFLAG20_INVISIBLE の定数で, 原典は gPlayerPtr を読んでから作るがこちらは先に作る (33/33命令), Tier A は試済 (条件の向き, || と && の組み方), 未: プレイヤー判定の inline
-NON_MATCH bool8 Mimic_IsPlayerLost(Mimic* p) {
+NON_MATCH static bool8 Mimic_IsPlayerLost(Mimic* p) {
 #ifdef NONMATCHING_C
   Mover* m = (p->e).playerMover;
 

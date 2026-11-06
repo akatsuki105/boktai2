@@ -343,58 +343,58 @@ NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
 }
 
 // 201/198 命令, 下書き段階
-NON_MATCH void Enemy_080eff14(Enemy* enemy, s32 param_2) {
+NON_MATCH void Enemy_080eff14(Enemy* p, s32 param_2) {
 #ifdef NONMATCHING_C
   u8* count;
 
-  if (enemy->stateBegun) {
-    enemy->stateBegun = FALSE;
-    Enemy_PlayAnim(enemy, 0);
-    enemy->flags3 |= 0x400;
-    enemy->animSpeedDiv = 2;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    Enemy_PlayAnim(p, 0);
+    p->flags3 |= 0x400;
+    p->animSpeedDiv = 2;
   }
 
-  count = &enemy->unk_542;
+  count = &p->unk_542;
   if ((s8)*count <= 0) {
     *count = 0xFF;
     if (param_2 > 30) {
-      enemy->stateBegun = TRUE;
-      enemy->subStateDone = FALSE;
-      enemy->state = enemy->unk_54f;
-      enemy->handlerState = enemy->unk_548;
-      enemy->stateTimer = 0;
-      enemy->subState0 = enemy->unk_54c;
-      enemy->subState1 = enemy->unk_54d;
-      enemy->subState2 = enemy->unk_54e;
-      enemy->subStateTimer = 0;
-      enemy->subStateBegun = TRUE;
-      enemy->flags3 &= ~0x400;
+      p->stateBegun = TRUE;
+      p->subStateDone = FALSE;
+      p->state = p->unk_54f;
+      p->handlerState = p->unk_548;
+      p->stateTimer = 0;
+      p->subState0 = p->unk_54c;
+      p->subState1 = p->unk_54d;
+      p->subState2 = p->unk_54e;
+      p->subStateTimer = 0;
+      p->subStateBegun = TRUE;
+      p->flags3 &= ~0x400;
     }
   } else if (param_2 > 60) {
-    enemy->subState0 = 3;
-    enemy->subState1 = 1;
-    enemy->subState2 = 0;
-    enemy->subStateTimer = 0;
-    enemy->subStateBegun = TRUE;
-    enemy->stateBegun = TRUE;
-    enemy->subStateDone = FALSE;
-    enemy->state = 2;
-    enemy->handlerState = enemy->unk_590;
-    enemy->stateTimer = 0;
+    p->subState0 = 3;
+    p->subState1 = 1;
+    p->subState2 = 0;
+    p->subStateTimer = 0;
+    p->subStateBegun = TRUE;
+    p->stateBegun = TRUE;
+    p->subStateDone = FALSE;
+    p->state = 2;
+    p->handlerState = p->unk_590;
+    p->stateTimer = 0;
     if (*count == 1) {
-      enemy->unk_1dc = ((enemy->unk_541 >> 5) + 3) & 7;
+      p->unk_1dc = ((p->unk_541 >> 5) + 3) & 7;
     } else {
       s32 angle;
       s32 i;
 
       for (i = 0; i < 4; i++) {
         angle = (Random() & 3) * 64;
-        if (angle != enemy->mover.angle) {
+        if (angle != p->mover.angle) {
           break;
         }
-        angle = enemy->mover.angle;
+        angle = p->mover.angle;
       }
-      enemy->unk_1dc = ((angle >> 5) + 3) & 7;
+      p->unk_1dc = ((angle >> 5) + 3) & 7;
     }
     (*count)--;
   }

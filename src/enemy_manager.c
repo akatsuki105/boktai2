@@ -2,6 +2,7 @@
 
 #include "emote.h"
 #include "enemy.h"
+#include "enemy_inline.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
@@ -28,8 +29,6 @@ void FUN_080ce544(u32 param_1, u32 param_2);
 bool8 FUN_0817e83c(Enemy* p);
 bool8 FUN_080eec74(EnemyManager* p, Enemy* enemy);
 void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate);
-void FUN_080e64e4(Enemy* p);
-void FUN_080f54e4(Enemy* p);
 Entity* Entity080db520_Create(void);
 Entity* SpiderVenom_Create(void);
 Entity* EmoteManager_Create(void);
@@ -60,11 +59,6 @@ static inline void Enemy_RequestSubState(Enemy* p, u8 state0, u8 state1, u8 stat
 
 COMMON_DATA EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
 COMMON_DATA EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (TEST_FLAGS(p->flags5, bit)) return TRUE;
-  return FALSE;
-}
 
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
@@ -1986,7 +1980,7 @@ NON_MATCH void Cmd_1E97(void) {
               void* handler = p->unk_5d8;
 
               if (handler == NULL) {
-                handler = FUN_080f54e4;
+                handler = (void*)FUN_080f54e4;
               }
               Enemy_RequestState(p, handler, 22);
               Enemy_RequestSubState(p, 3, 0, 0);
