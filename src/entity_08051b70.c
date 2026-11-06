@@ -6,45 +6,43 @@
 #include "sprite.h"
 #include "vec3.h"
 
-// クロスオーバー対戦関連
-// 画面下に4色のオジャマバットの数を並べ、取得・送信・受信・ブロックを演出するエンティティ
-
-// オジャマバット1体, AuxSprite 2枚 (本体と影) を抱えて state ごとに動く
+// オジャマバット1体, 色ごとの数の表示 (counterSprite) と本体 (batSprite) を抱えて state ごとに動く
+// elems[0..3] は画面下の置き場, elems[4..7] は飛んでいく演出用
 typedef struct {
-  u8 state;           // 0x00, PTR_ARRAY_085ab6d4 の添字
-  bool8 entered;      // 0x01, state に入った最初のフレームだけ立つ
-  u8 slot;            // 0x02, 自分の添字 & 3, sprite2 のポーズ番号
-  u8 count;           // 0x03, 0..10, sprite1 のポーズ番号, 0 なら両方隠す
-  u8 shakeTimer;      // 0x04, 8 から毎フレーム減り, 0 でない間 sprite2 を乱数で揺らす
-  u8 unk_05;          // 0x05
-  s16 wobble;         // 0x06, 移動中に x と y へ足す揺れの振幅, 符号は乱数で決まる
-  u32 timer;          // 0x08, state に入ってからのフレーム数
-  Vec3 from;          // 0x0C, 移動の始点
-  Vec3 to;            // 0x14, 移動の終点
-  Vec3 vel;           // 0x1C, 毎フレーム sprite2.pos に足す
-  AuxSprite sprite1;  // 0x24, gfx2 を使う
-  AuxSprite sprite2;  // 0x50, gfx1 を使う, poseIdx は添字 & 3
+  u8 state;                 // 0x00, sEntity08051b70ElemStateFuncs の添字
+  bool8 entered;            // 0x01, state に入った最初のフレームだけ立つ
+  u8 color;                 // 0x02, 0: 赤, 1: 青, 2: 黄, 3: 緑, 添字 & 3, batSprite のポーズ番号
+  u8 count;                 // 0x03, 0..10, counterSprite のポーズ番号, 0 なら両方隠す
+  u8 shakeTimer;            // 0x04, 8 から毎フレーム減り, 0 でない間 batSprite を乱数で揺らす
+  u8 unk_05;                // 0x05
+  s16 wobble;               // 0x06, 移動中に x と y へ足す揺れの振幅, 符号は乱数で決まる
+  u32 timer;                // 0x08, state に入ってからのフレーム数
+  Vec3 from;                // 0x0C, 移動の始点
+  Vec3 to;                  // 0x14, 移動の終点
+  Vec3 vel;                 // 0x1C, 逸れていくときに毎フレーム batSprite.pos に足す
+  AuxSprite counterSprite;  // 0x24, counterGfx を使う
+  AuxSprite batSprite;      // 0x50, batGfx を使う
 } Entity08051b70Elem;
 static_assert(sizeof(Entity08051b70Elem) == 124);
 
-// オジャマバットを8体出す通信画面のシングルトン
+// 画面下に4色のオジャマバットの数を並べ, 取得・送信・受信・ブロックを演出するエンティティ, シングルトン
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_11
   u32 timer;                    // 0x018, state に入ってからのフレーム数
-  u8 state;                     // 0x01C, PTR_ARRAY_085ab6f0 の添字
+  u8 state;                     // 0x01C, sEntity08051b70StateFuncs の添字
   bool8 entered;                // 0x01D, state に入った最初のフレームだけ立つ
-  u16 unk_1e;                   // 0x01E, bit0 と bit1 で次の state を選ぶ
-  s8 unk_20[4];                 // 0x020, elems[4..7].count の元, 0..10 に切り詰めて使う
-  s8 unk_24[4];                 // 0x024
-  s8 unk_28[4];                 // 0x028, unk_24 を写してから unk_24 を 0 にする
+  u16 blockFlags;               // 0x01E, bit0: 自分がブロッキング, bit1: 相手がブロッキング
+  s8 myOjama[4];                // 0x020, 自分が送るオジャマバットの色ごとの数
+  s8 rivalOjama[4];             // 0x024, 相手から届いたオジャマバットの色ごとの数
+  s8 blockedOjama[4];           // 0x028, ブロッキングで送り返した rivalOjama の写し
   u8 nextIdx;                   // 0x02C, 次に飛ばす elems[4 + nextIdx], 8 フレームごとに進む
-  u8 shakeTimer;                // 0x02D, 0 でない間 sprite.pos を乱数で揺らしながら減る
+  u8 shakeTimer;                // 0x02D, 0 でない間 banner.pos を乱数で揺らしながら減る
   u8 unk_2e[2];                 // 0x02E
   void (*onFinish)(void);       // 0x030, 演出の最後に呼ぶ
-  AuxSpriteGfx gfx1;            // 0x034, SPRITE_OJAMA_BAT
-  AuxSpriteGfx gfx2;            // 0x050, SPRITE_OJAMA_BAT_CTR
+  AuxSpriteGfx batGfx;          // 0x034, SPRITE_OJAMA_BAT
+  AuxSpriteGfx counterGfx;      // 0x050, SPRITE_OJAMA_BAT_CTR
   MainSpriteGfx mainGfx;        // 0x06C, SPRITE_UI_LINK
-  MainSprite sprite;            // 0x08C
+  MainSprite banner;            // 0x08C, LINK_BLOCKING か LINK_DOUBLE_BANG
   Entity08051b70Elem elems[8];  // 0x0EC
 } Entity08051b70;
 static_assert(sizeof(Entity08051b70) == 1228);
@@ -54,50 +52,50 @@ IWRAM_DATA Entity08051b70* gEntity08051b70 = NULL;  // 0x03000118
 bool32 FUN_0804e59c(void);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
-void FUN_08050f80(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
-void FUN_08050fa0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
-void FUN_080510e0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
-void FUN_080511b0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
-void FUN_0805128c(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
-void FUN_0805136c(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
-void FUN_080514f0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateHidden(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateFlyToStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateFlyOut(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateFlyIn(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateDeflect(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
+void Entity08051b70Elem_StateShow(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx);
 
-void (*const PTR_ARRAY_085ab6d4[7])(Entity08051b70*, Entity08051b70Elem*, s32) = {
-    FUN_08050f80,
-    FUN_08050fa0,
-    FUN_080510e0,
-    FUN_080511b0,
-    FUN_0805128c,
-    FUN_0805136c,
-    FUN_080514f0,
+void (*const sEntity08051b70ElemStateFuncs[7])(Entity08051b70*, Entity08051b70Elem*, s32) = {
+    Entity08051b70Elem_StateHidden,
+    Entity08051b70Elem_StateStock,
+    Entity08051b70Elem_StateFlyToStock,
+    Entity08051b70Elem_StateFlyOut,
+    Entity08051b70Elem_StateFlyIn,
+    Entity08051b70Elem_StateDeflect,
+    Entity08051b70Elem_StateShow,
 };  // 0x085AB6D4
 
-void FUN_08051640(Entity08051b70*);
-void FUN_08051658(Entity08051b70*);
+void Entity08051b70_StateHidden(Entity08051b70*);
+void Entity08051b70_StateSend(Entity08051b70*);
 void Entity08051b70_StateReceive(Entity08051b70*);
-void FUN_08051710(Entity08051b70*);
-void FUN_08051830(Entity08051b70*);
-void FUN_08051898(Entity08051b70*);
-void FUN_08051950(Entity08051b70*);
+void Entity08051b70_StateBlock(Entity08051b70*);
+void Entity08051b70_StateRivalBlock(Entity08051b70*);
+void Entity08051b70_StateReturn(Entity08051b70*);
+void Entity08051b70_StateResult(Entity08051b70*);
 
-void (*const PTR_ARRAY_085ab6f0[7])(Entity08051b70*) = {
-    FUN_08051640,
-    FUN_08051658,
+void (*const sEntity08051b70StateFuncs[7])(Entity08051b70*) = {
+    Entity08051b70_StateHidden,
+    Entity08051b70_StateSend,
     Entity08051b70_StateReceive,
-    FUN_08051710,
-    FUN_08051830,
-    FUN_08051898,
-    FUN_08051950,
+    Entity08051b70_StateBlock,
+    Entity08051b70_StateRivalBlock,
+    Entity08051b70_StateReturn,
+    Entity08051b70_StateResult,
 };  // 0x085AB6F0
 
-void FUN_08050e9c(Entity08051b70* p, s32 param_2) {
-  if (p->unk_1e & 1) {
-    p->unk_1e &= ~1;
+void Entity08051b70_NextBlockStep(Entity08051b70* p, s32 param_2) {
+  if (p->blockFlags & 1) {
+    p->blockFlags &= ~1;
     p->state = 3;
     p->entered = TRUE;
     p->timer = 0;
-  } else if (p->unk_1e & 2) {
-    p->unk_1e &= ~2;
+  } else if (p->blockFlags & 2) {
+    p->blockFlags &= ~2;
     p->state = 4;
     p->entered = TRUE;
     p->timer = 0;
@@ -124,46 +122,46 @@ void Entity08051b70Elem_SetRandomWobble(Entity08051b70Elem* elem, s32 base, u32 
 }
 
 // 残差は t * 4 の lsls と gSineTable のプール読みの順序だけ (27/27), 原典は添字を先に作る, Tier A-B (POLAR_Z / SIN * amp, d の型) は試済
-NON_MATCH void FUN_08050f44(Vec3* pos, u32 t, s32 amp) {
+NON_MATCH void Entity08051b70_ApplyWobble(Vec3* pos, u32 t, s32 amp) {
 #ifdef NONMATCHING_C
   s32 d = FixToInt(12, SIN(t * 4) * amp);
 
   pos->x += d;
   pos->y += d;
 #else
-  INCFUNC("asm/func/FUN_08050f44.inc");
+  INCFUNC("asm/func/Entity08051b70_ApplyWobble.inc");
 #endif
 }
 
-void FUN_08050f80(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+void Entity08051b70Elem_StateHidden(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
   if (elem->entered) {
     elem->entered = FALSE;
-    AuxSprite_Hide(&elem->sprite1);
-    AuxSprite_Hide(&elem->sprite2);
+    AuxSprite_Hide(&elem->counterSprite);
+    AuxSprite_Hide(&elem->batSprite);
   }
 }
 
-NAKED void FUN_08050fa0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_08050fa0.inc"); }
+NAKED void Entity08051b70Elem_StateStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08051b70Elem_StateStock.inc"); }
 
-void FUN_080510e0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
-  AuxSprite* sprite1 = &elem->sprite1;
-  AuxSprite* sprite2 = &elem->sprite2;
+void Entity08051b70Elem_StateFlyToStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+  AuxSprite* counterSprite = &elem->counterSprite;
+  AuxSprite* batSprite = &elem->batSprite;
 
   if (elem->entered) {
     Vec3* to;
 
     elem->entered = FALSE;
-    sprite1->poseIdx = elem->count;
-    sprite2->poseIdx = elem->slot;
-    AuxSprite_Show(&elem->sprite1);
-    AuxSprite_Show(&elem->sprite2);
+    counterSprite->poseIdx = elem->count;
+    batSprite->poseIdx = elem->color;
+    AuxSprite_Show(&elem->counterSprite);
+    AuxSprite_Show(&elem->batSprite);
     to = &elem->to;
     VEC3_SET(*to, (idx & 3) * 24 + 80, 144, 0);
     Entity08051b70Elem_SetRandomWobble(elem, 32, 15);
   }
-  LerpVec3(&sprite2->pos, &elem->from, &elem->to, elem->timer, 5);
-  FUN_08050f44(&sprite2->pos, elem->timer, elem->wobble);
-  sprite1->pos = sprite2->pos;
+  LerpVec3(&batSprite->pos, &elem->from, &elem->to, elem->timer, 5);
+  Entity08051b70_ApplyWobble(&batSprite->pos, elem->timer, elem->wobble);
+  counterSprite->pos = batSprite->pos;
   if (elem->timer >= 32) {
     p->elems[idx & 3].count += elem->count;
     p->elems[idx & 3].shakeTimer = 8;
@@ -175,19 +173,19 @@ void FUN_080510e0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
   elem->timer++;
 }
 
-void FUN_080511b0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
-  AuxSprite* sprite1 = &elem->sprite1;
-  AuxSprite* sprite2 = &elem->sprite2;
+void Entity08051b70Elem_StateFlyOut(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+  AuxSprite* counterSprite = &elem->counterSprite;
+  AuxSprite* batSprite = &elem->batSprite;
 
   if (elem->entered) {
     Vec3* v;
     s16 x;
 
     elem->entered = FALSE;
-    sprite1->poseIdx = elem->count;
-    sprite2->poseIdx = elem->slot;
-    AuxSprite_Show(&elem->sprite1);
-    AuxSprite_Show(&elem->sprite2);
+    counterSprite->poseIdx = elem->count;
+    batSprite->poseIdx = elem->color;
+    AuxSprite_Show(&elem->counterSprite);
+    AuxSprite_Show(&elem->batSprite);
     v = &elem->from;
     x = (idx & 3) * 24;
     VEC3_SET(*v, x + 80, 144, 0);
@@ -196,9 +194,9 @@ void FUN_080511b0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
     Entity08051b70Elem_SetRandomWobble(elem, 32, 15);
     p->elems[idx & 3].count = 0;
   }
-  LerpVec3(&sprite2->pos, &elem->from, &elem->to, elem->timer, 5);
-  FUN_08050f44(&sprite2->pos, elem->timer, elem->wobble);
-  sprite1->pos = sprite2->pos;
+  LerpVec3(&batSprite->pos, &elem->from, &elem->to, elem->timer, 5);
+  Entity08051b70_ApplyWobble(&batSprite->pos, elem->timer, elem->wobble);
+  counterSprite->pos = batSprite->pos;
   if (elem->timer >= 32) {
     elem->state = 0;
     elem->entered = TRUE;
@@ -207,21 +205,21 @@ void FUN_080511b0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
   elem->timer++;
 }
 
-// 残差は entered を落とす 0 と from/to を指すポインタの r2/r3 入れ替えだけ (109/109), Tier A-C (Vec3 ポインタの使い回し, inline setter, sprite1/2 の宣言順) は試済
-NON_MATCH void FUN_0805128c(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+// 残差は entered を落とす 0 と from/to を指すポインタの r2/r3 入れ替えだけ (109/109), Tier A-C (Vec3 ポインタの使い回し, inline setter, counterSprite/2 の宣言順) は試済
+NON_MATCH void Entity08051b70Elem_StateFlyIn(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
 #ifdef NONMATCHING_C
-  AuxSprite* sprite2 = &elem->sprite2;
-  AuxSprite* sprite1 = &elem->sprite1;
+  AuxSprite* batSprite = &elem->batSprite;
+  AuxSprite* counterSprite = &elem->counterSprite;
 
   if (elem->entered) {
     Vec3* v;
     s16 x;
 
     elem->entered = FALSE;
-    sprite1->poseIdx = elem->count;
-    sprite2->poseIdx = elem->slot;
-    AuxSprite_Show(&elem->sprite1);
-    AuxSprite_Show(&elem->sprite2);
+    counterSprite->poseIdx = elem->count;
+    batSprite->poseIdx = elem->color;
+    AuxSprite_Show(&elem->counterSprite);
+    AuxSprite_Show(&elem->batSprite);
     v = &elem->from;
     x = (idx & 3) * 24;
     VEC3_SET(*v, x + 272, 32, 0);
@@ -229,9 +227,9 @@ NON_MATCH void FUN_0805128c(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx
     VEC3_SET(*v, x + 80, 144, 0);
     Entity08051b70Elem_SetRandomWobble(elem, 32, 15);
   }
-  LerpVec3(&sprite2->pos, &elem->from, &elem->to, elem->timer, 5);
-  FUN_08050f44(&sprite2->pos, elem->timer, elem->wobble);
-  sprite1->pos = sprite2->pos;
+  LerpVec3(&batSprite->pos, &elem->from, &elem->to, elem->timer, 5);
+  Entity08051b70_ApplyWobble(&batSprite->pos, elem->timer, elem->wobble);
+  counterSprite->pos = batSprite->pos;
   if (elem->timer >= 32) {
     elem->state = 0;
     elem->entered = TRUE;
@@ -242,19 +240,19 @@ NON_MATCH void FUN_0805128c(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx
   }
   elem->timer++;
 #else
-  INCFUNC("asm/func/FUN_0805128c.inc");
+  INCFUNC("asm/func/Entity08051b70Elem_StateFlyIn.inc");
 #endif
 }
 
-NAKED void FUN_0805136c(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805136c.inc"); }
+NAKED void Entity08051b70Elem_StateDeflect(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08051b70Elem_StateDeflect.inc"); }
 
-void FUN_080514f0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+void Entity08051b70Elem_StateShow(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
   if (elem->entered) {
     elem->entered = FALSE;
-    AuxSprite_SetPoseIdx(&elem->sprite1, elem->count);
-    AuxSprite_SetPoseIdx(&elem->sprite2, elem->slot);
-    AuxSprite_Show(&elem->sprite1);
-    AuxSprite_Show(&elem->sprite2);
+    AuxSprite_SetPoseIdx(&elem->counterSprite, elem->count);
+    AuxSprite_SetPoseIdx(&elem->batSprite, elem->color);
+    AuxSprite_Show(&elem->counterSprite);
+    AuxSprite_Show(&elem->batSprite);
   }
   if (elem->timer >= 32) {
     elem->state = 0;
@@ -265,16 +263,16 @@ void FUN_080514f0(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
 }
 
 void Entity08051b70Elem_Init(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
-  u32 slot = idx & 3;
+  u32 color = idx & 3;
 
-  elem->slot = slot;
+  elem->color = color;
   elem->count = 0;
-  AuxSprite_Add(&elem->sprite1, &p->gfx2, SPRFLAG_UNK_16 | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
-  AuxSprite_SetPoseIdx(&elem->sprite1, 0);
-  elem->sprite1.priority = 0;
-  AuxSprite_Add(&elem->sprite2, &p->gfx1, SPRFLAG_UNK_16 | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
-  AuxSprite_SetPoseIdx(&elem->sprite2, slot);
-  elem->sprite2.priority = 0;
+  AuxSprite_Add(&elem->counterSprite, &p->counterGfx, SPRFLAG_UNK_16 | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
+  AuxSprite_SetPoseIdx(&elem->counterSprite, 0);
+  elem->counterSprite.priority = 0;
+  AuxSprite_Add(&elem->batSprite, &p->batGfx, SPRFLAG_UNK_16 | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
+  AuxSprite_SetPoseIdx(&elem->batSprite, color);
+  elem->batSprite.priority = 0;
   if (idx < 4) {
     elem->state = 1;
     elem->entered = TRUE;
@@ -287,8 +285,8 @@ void Entity08051b70Elem_Init(Entity08051b70* p, Entity08051b70Elem* elem, s32 id
 }
 
 void Entity08051b70Elem_Destroy(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
-  AuxSprite_Remove(&elem->sprite1);
-  AuxSprite_Remove(&elem->sprite2);
+  AuxSprite_Remove(&elem->counterSprite);
+  AuxSprite_Remove(&elem->batSprite);
 }
 
 void Entity08051b70_LaunchNext(Entity08051b70* p, u32 state) {
@@ -310,19 +308,19 @@ void Entity08051b70_HideAllElems(Entity08051b70* p) {
 
   for (i = 0; i < 8; i++, elem++) {
     elem->count = 0;
-    AuxSprite_Hide(&elem->sprite1);
-    AuxSprite_Hide(&elem->sprite2);
+    AuxSprite_Hide(&elem->counterSprite);
+    AuxSprite_Hide(&elem->batSprite);
   }
 }
 
-void FUN_08051640(Entity08051b70* p) {
+void Entity08051b70_StateHidden(Entity08051b70* p) {
   if (p->entered) {
     p->entered = FALSE;
     Entity08051b70_HideAllElems(p);
   }
 }
 
-void FUN_08051658(Entity08051b70* p) {
+void Entity08051b70_StateSend(Entity08051b70* p) {
   if (p->entered) {
     p->entered = FALSE;
     p->nextIdx = 0;
@@ -339,7 +337,7 @@ void FUN_08051658(Entity08051b70* p) {
   p->timer++;
 }
 
-// 残差: 原典は p->unk_24 の番地と定数 3 をループ内で毎回作り, elem を r3 に写してから count を書く (r7 を使わない), 案: 0..10 に収める inline (elem, slot, n / counts 配列) は試済で変化なし
+// 残差: 原典は p->rivalOjama の番地と定数 3 をループ内で毎回作り, elem を r3 に写してから count を書く (r7 を使わない), 案: 0..10 に収める inline (elem, color, n / counts 配列) は試済で変化なし
 NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
 #ifdef NONMATCHING_C
   if (p->entered) {
@@ -350,15 +348,15 @@ NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
     p->nextIdx = 0;
     elem = p->elems;
     for (i = 0; i < 8; i++, elem++) {
-      u32 slot = i & 3;
+      u32 color = i & 3;
 
       if (i < 4) {
-        elem->slot = slot;
+        elem->color = color;
         elem->count = 0;
       } else {
-        s32 n = p->unk_24[slot];
+        s32 n = p->rivalOjama[color];
 
-        elem->slot = slot;
+        elem->color = color;
         if (n > 10) {
           n = 10;
         } else if (n < 0) {
@@ -370,7 +368,7 @@ NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
   }
   Entity08051b70_LaunchNext(p, 4);
   if (p->timer >= 80) {
-    FUN_08050e9c(p, 0);
+    Entity08051b70_NextBlockStep(p, 0);
   }
   p->timer++;
 #else
@@ -378,40 +376,40 @@ NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
 #endif
 }
 
-NAKED void FUN_08051710(Entity08051b70* p) { INCFUNC("asm/func/FUN_08051710.inc"); }
+NAKED void Entity08051b70_StateBlock(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateBlock.inc"); }
 
-void FUN_08051830(Entity08051b70* p) {
+void Entity08051b70_StateRivalBlock(Entity08051b70* p) {
   if (p->entered) {
     p->entered = FALSE;
     p->nextIdx = 0;
-    MainSprite_SetPose(&p->sprite, &p->mainGfx, 50, 0);
-    MainSprite_Show(&p->sprite);
+    MainSprite_SetPose(&p->banner, &p->mainGfx, LINK_DOUBLE_BANG, 0);
+    MainSprite_Show(&p->banner);
     p->shakeTimer = 8;
     PlaySound_082406e0(SONG_492);
   }
   if (p->timer >= 80) {
-    MainSprite_Hide(&p->sprite);
-    FUN_08050e9c(p, 1);
+    MainSprite_Hide(&p->banner);
+    Entity08051b70_NextBlockStep(p, 1);
   }
   p->timer++;
 }
 
-NAKED void FUN_08051898(Entity08051b70* p) { INCFUNC("asm/func/FUN_08051898.inc"); }
+NAKED void Entity08051b70_StateReturn(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateReturn.inc"); }
 
-NAKED void FUN_08051950(Entity08051b70* p) { INCFUNC("asm/func/FUN_08051950.inc"); }
+NAKED void Entity08051b70_StateResult(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateResult.inc"); }
 
 s32 Entity08051b70_Update(Entity08051b70* p) {
   if (FUN_0804e59c() == FALSE) {
     Entity08051b70Elem* elem;
     s32 i;
 
-    PTR_ARRAY_085ab6f0[p->state](p);
+    sEntity08051b70StateFuncs[p->state](p);
     elem = p->elems;
     for (i = 0; i < 8; i++, elem++) {
-      PTR_ARRAY_085ab6d4[elem->state](p, elem, i);
+      sEntity08051b70ElemStateFuncs[elem->state](p, elem, i);
     }
     if (p->shakeTimer != 0) {
-      Vec3* pos = &p->sprite.pos;
+      Vec3* pos = &p->banner.pos;
 
       p->shakeTimer--;
       pos->x = 0;
@@ -434,7 +432,7 @@ s32 Entity08051b70_Destroy(Entity08051b70* p) {
   for (i = 0; i < 8; i++, elem++) {
     Entity08051b70Elem_Destroy(p, elem, i);
   }
-  MainSprite_Remove(&p->sprite);
+  MainSprite_Remove(&p->banner);
   gEntity08051b70 = NULL;
   return 0;
 }
@@ -452,12 +450,12 @@ s32 Entity08051b70_Init(Entity08051b70* p) {
   }
   p->mainGfx = *f;
   OpenMainSpriteFile(&p->mainGfx, f);
-  if (!Video_GetAuxSprite(&p->gfx1, SPRITE_OJAMA_BAT) || !Video_GetAuxSprite(&p->gfx2, SPRITE_OJAMA_BAT_CTR)) {
+  if (!Video_GetAuxSprite(&p->batGfx, SPRITE_OJAMA_BAT) || !Video_GetAuxSprite(&p->counterGfx, SPRITE_OJAMA_BAT_CTR)) {
     return -1;
   }
 
   VEC3_SET(pos, 0, 64, 0);
-  MainSprite_Add(&p->sprite, &p->mainGfx, 49, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
+  MainSprite_Add(&p->banner, &p->mainGfx, LINK_BLOCKING, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
   p->state = 0;
   p->entered = TRUE;
   p->timer = 0;
@@ -481,8 +479,8 @@ Entity08051b70* Entity08051b70_Create(u32 id, u32 unused) {
   return p;
 }
 
-NAKED s32 FUN_08051bb0(void (*onFinish)(void), s8* counts) { INCFUNC("asm/func/FUN_08051bb0.inc"); }
+NAKED s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) { INCFUNC("asm/func/Entity08051b70_StartSend.inc"); }
 
-NAKED s32 FUN_08051c50(void (*onFinish)(void), s8* counts0, s8* counts1, s8* out) { INCFUNC("asm/func/FUN_08051c50.inc"); }
+NAKED s32 Entity08051b70_StartExchange(void (*onFinish)(void), s8* counts0, s8* counts1, s8* out) { INCFUNC("asm/func/Entity08051b70_StartExchange.inc"); }
 
-NAKED s32 FUN_08051d18(Vec3* pos, s32 idx, s32 count) { INCFUNC("asm/func/FUN_08051d18.inc"); }
+NAKED s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 idx, s32 count) { INCFUNC("asm/func/Entity08051b70_SpawnCollected.inc"); }

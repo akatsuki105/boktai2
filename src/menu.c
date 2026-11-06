@@ -2097,7 +2097,7 @@ void FUN_0808cf64(MainMenu* p) {
 
   if (gGameFlags & FLAG030047A4_UNK_12) {
     VEC3_SET(pos, 0, 0, 0);
-    MainSprite_Add(&p->unk_a34, &p->gfx.link, 71, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_UNK_16, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->unk_a34, &p->gfx.link, LINK_BLOCK_OFF, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_UNK_16, 0, PLAYMODE_PAUSE, 60, &pos);
   } else {
     VEC3_SET(pos, 8, 24, 0);
     MainSprite_Add(&p->unk_a34, &p->gfx.icons, 104, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_UNK_16, 0, PLAYMODE_PAUSE, 60, &pos);
@@ -2674,9 +2674,9 @@ void FUN_0808e008(MainMenu* p) {
     } else if (gInput[0].pressed & SELECT_BUTTON) {
       p->unk_9f9 = CrossoverBattle_ToggleBlocking();
       if (p->unk_9f9) {
-        MainSprite_SetPose(&p->unk_a34, &p->gfx.link, 70, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->unk_a34, &p->gfx.link, LINK_BLOCK_ON, PLAYMODE_LOOP);
       } else {
-        MainSprite_SetPose(&p->unk_a34, &p->gfx.link, 71, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->unk_a34, &p->gfx.link, LINK_BLOCK_OFF, PLAYMODE_LOOP);
       }
     }
   }
@@ -2802,7 +2802,7 @@ void FUN_0808e420(void) {
         p->unk_a34.flags |= SPRFLAG_HIDDEN;
       } else {
         p->unk_a34.flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->unk_a34, &p->gfx.link, 71, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->unk_a34, &p->gfx.link, LINK_BLOCK_OFF, PLAYMODE_LOOP);
       }
     }
     p->player->ene = p->player->maxEne;

@@ -68,7 +68,7 @@ _080512FA:
 	movs r0, #6
 	ldrsh r2, [r5, r0]
 	adds r0, r4, #0
-	bl FUN_08050f44
+	bl Entity08051b70_ApplyWobble
 	ldr r0, [r6, #0x1c]
 	ldr r1, [r6, #0x20]
 	str r0, [r7, #0x1c]

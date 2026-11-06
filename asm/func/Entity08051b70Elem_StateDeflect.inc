@@ -148,7 +148,7 @@ _08051478:
 	movs r3, #6
 	ldrsh r2, [r6, r3]
 	adds r0, r4, #0
-	bl FUN_08050f44
+	bl Entity08051b70_ApplyWobble
 	b _080514C2
 _080514A2:
 	adds r1, r7, #0

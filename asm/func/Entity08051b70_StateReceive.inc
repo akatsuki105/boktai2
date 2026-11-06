@@ -53,7 +53,7 @@ _080516EE:
 	bls _08051704
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_08050e9c
+	bl Entity08051b70_NextBlockStep
 _08051704:
 	ldr r0, [r4, #0x18]
 	adds r0, #1

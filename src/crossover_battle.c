@@ -99,7 +99,7 @@ void FUN_0804e5e8(void);          // src/entity_0804e2c0.c
 s32 CrossoverMC_SetState(struct CrossoverMC* p, u32 state);
 void CrossoverMC_RequestExit(struct CrossoverMC* p);
 void Entity08052ffc_Spawn(void* p, u32 idx, u32 mode, Vec3* pos);
-s32 FUN_08051d18(Vec3* pos, s32 idx, s32 count);
+s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 idx, s32 count);
 void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 s32 MainMenu_SetHudMode(s32 mode);
@@ -109,8 +109,8 @@ void FUN_0803cc70(void);
 bool32 FUN_0804e59c(void);
 void MosaicFader_Stop(void);
 void Player_Lock(Player* p, s32 val);
-s32 FUN_08051c50(void (*onFinish)(void), u8* counts0, u8* counts1, u8* out);
-s32 FUN_08051bb0(void (*onFinish)(void), u8* counts);
+s32 Entity08051b70_StartExchange(void (*onFinish)(void), u8* counts0, u8* counts1, u8* out);
+s32 Entity08051b70_StartSend(void (*onFinish)(void), u8* counts);
 void FUN_0808e420(void);
 void FUN_0808e4f4(void);
 s32 FUN_0804e458(void);
@@ -591,7 +591,7 @@ void CrossoverBattle_StateInterval(CrossoverBattle* p) {
     CrossoverBattle_DealMagic(p);
     p->startPressed = 0;
     FUN_0808e420();
-    FUN_08051bb0(CrossoverBattle_OnScreenDone, p->sides[0].ojama);
+    Entity08051b70_StartSend(CrossoverBattle_OnScreenDone, p->sides[0].ojama);
     p->screenDone = 0;
     p->startDelay = 8;
     CrossoverBattle_SetMCState(p, 2);
@@ -656,7 +656,7 @@ void CrossoverBattle_StateOjamaAnim(CrossoverBattle* p) {
     if (result != 0) {
       p->ojamaAnimActive = 1;
       p->screenDone = 0;
-      if (FUN_08051c50(CrossoverBattle_OnScreenDone, p->sides[0].ojama, p->sides[1].ojama, p->incomingOjama)) {
+      if (Entity08051b70_StartExchange(CrossoverBattle_OnScreenDone, p->sides[0].ojama, p->sides[1].ojama, p->incomingOjama)) {
         p->screenDone = 1;
       }
     } else {
@@ -1160,7 +1160,7 @@ void CrossoverBattle_AddOjama(Vec3* pos, u32 kind) {
   if (sum > 9) {
     return;
   }
-  FUN_08051d18(pos, kind, 1);
+  Entity08051b70_SpawnCollected(pos, kind, 1);
   counts[kind]++;
   CrossoverBattle_AddPoint(2, 1);
   PlaySound_082406e0(SONG_885);
