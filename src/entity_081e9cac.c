@@ -276,17 +276,17 @@ Entity081e9cacElem* Entity081e9cac_AllocElem(Entity081e9cac* p) {
 void Entity081e9cac_GetAnimVariant(s32 angle, u8* variant, AuxAnimPlayFlags* flags) {
   angle = ((angle >> 5) + 3) & 7;
   switch (angle) {
-    case 5: {
+    case FACE_DOWN_LEFT: {
       *variant = 3;
       *flags = ANIM_PLAY_XFLIP;
       break;
     }
-    case 6: {
+    case FACE_LEFT: {
       *variant = 2;
       *flags = ANIM_PLAY_XFLIP;
       break;
     }
-    case 7: {
+    case FACE_UP_LEFT: {
       *variant = 1;
       *flags = ANIM_PLAY_XFLIP;
       break;

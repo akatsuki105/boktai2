@@ -276,7 +276,7 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
     if (a->flags & HBFLAG_ANGLE) {
-      p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->knockbackDir = ANGLE_TO_DIR8(a->angle + 0x10);
     } else {
       s32 dx = a->center.x - b->center.x;
       s32 dz = a->center.z - b->center.z;
@@ -284,7 +284,7 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
       if (dx == 0 && dz == 0) {
         p->knockbackDir = p->facing;
       } else {
-        p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+        p->knockbackDir = (ANGLE_TO_DIR8(((u16)ArcTan2_8(dx, dz) + 0x10)) + 4) & 7;
       }
     }
 
@@ -4018,7 +4018,6 @@ NON_MATCH void Player_UpdateLookAround(Player* p) {
       p->facing = ((((angle + 0x10) & 0xFF) >> 5) + 3) & 7;
       if (p->kind == PLAYER_BAT) {
         s32 quad = ((((angle + 0x20) & 0xFF) >> 6) + 1) & 3;
-
         if (quad > 1) {
           p->animIDOffset = 3 - quad;
           p->xflip = TRUE;

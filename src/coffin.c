@@ -2023,7 +2023,7 @@ void FUN_08089410(Coffin* p) {
     s32 dx = p->mover.pos.x - p->unk_3bc.x;
     s32 dz = p->mover.pos.z - p->unk_3bc.z;
     if (dx != 0 || dz != 0) {
-      p->facing = p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->facing = p->unk_404 = ANGLE_TO_DIR8(ArcTan2_8(dx, dz) + 0x10);
     }
     p->unk_33a = 1;
   } else if (p->unk_402 < 30) {
@@ -2065,7 +2065,7 @@ void FUN_080895d0(Coffin* p) {
     s32 dx = p->mover.pos.x - p->unk_3bc.x;
     s32 dz = p->mover.pos.z - p->unk_3bc.z;
     if (dx != 0 || dz != 0) {
-      p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->unk_404 = ANGLE_TO_DIR8(ArcTan2_8(dx, dz) + 0x10);
       p->facing = (p->unk_404 + 4) & 7;
     }
   } else if (p->unk_402 < 30) {

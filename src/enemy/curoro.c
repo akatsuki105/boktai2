@@ -1152,8 +1152,7 @@ void FUN_0813c938(Curoro* p) {
 }
 
 void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip) {
-  s32 dir = ((((angle + 16) & 0xFF) >> 5) + 3) & 7;
-
+  s32 dir = ANGLE_TO_DIR8(angle + 0x10);
   if (dir > 4) {
     *variant = 8 - dir;
     *xflip = TRUE;

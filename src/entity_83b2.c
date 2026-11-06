@@ -191,7 +191,7 @@ s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
       s32 dx = data->pos.x - p->pos.x;
       s32 dz = data->pos.z - p->pos.z;
       u32 dist2 = dx * dx + dz * dz;
-      s32 dir = (((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      s32 dir = ANGLE_TO_DIR8(((u16)ArcTan2_8(dx, dz) + 0x10));
       if (dist2 < data->unk_10) {
         s32 a, b, c;
         if (data->unk_2 != 0) {

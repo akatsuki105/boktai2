@@ -191,7 +191,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
     if (a->flags & HBFLAG_ANGLE) {
-      p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->knockbackDir = ANGLE_TO_DIR8(a->angle + 0x10);
     } else {
       s32 dx = a->center.x - b->center.x;
       s32 dz = a->center.z - b->center.z;
@@ -199,7 +199,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
       if (dx == 0 && dz == 0) {
         p->knockbackDir = p->facing;
       } else {
-        p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+        p->knockbackDir = (ANGLE_TO_DIR8(((u16)ArcTan2_8(dx, dz) + 0x10)) + 4) & 7;
       }
     }
 
