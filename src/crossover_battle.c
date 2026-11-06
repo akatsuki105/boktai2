@@ -89,7 +89,6 @@ void FUN_0804e5e8(void);          // src/entity_0804e2c0.c
 s32 CrossoverMC_SetState(struct CrossoverMC* p, u32 state);
 void CrossoverMC_RequestExit(struct CrossoverMC* p);
 void Entity08052ffc_Spawn(void* p, u32 idx, u32 mode, Vec3* pos);
-s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 idx, s32 count);
 void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 s32 MainMenu_SetHudMode(s32 mode);

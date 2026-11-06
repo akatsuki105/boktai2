@@ -16,5 +16,6 @@ static_assert(sizeof(CrossoverBattleSide) == 12);
 
 s32 Entity08051b70_StartSend(void (*onFinish)(void), CrossoverBattleSide* mine);
 s32 Entity08051b70_StartExchange(void (*onFinish)(void), CrossoverBattleSide* mine, CrossoverBattleSide* rival, u8* incoming);
+s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 color, s32 count);
 
 #endif  // __INCLUDE_CROSSOVER_H__

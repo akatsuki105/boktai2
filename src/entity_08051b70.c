@@ -1,3 +1,4 @@
+#include "camera_inline.h"
 #include "crossover.h"
 #include "entity.h"
 #include "file.h"
@@ -591,4 +592,23 @@ s32 Entity08051b70_StartExchange(void (*onFinish)(void), CrossoverBattleSide* mi
   return 0;
 }
 
-NAKED s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 idx, s32 count) { INCFUNC("asm/func/Entity08051b70_SpawnCollected.inc"); }
+// 拾ったオジャマバットを pos の画面位置から置き場へ飛ばす, 飛んでいる途中の同じ色は先に置き場へ足す
+s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 color, s32 count) {
+  Entity08051b70* p = gEntity08051b70;
+  Entity08051b70Elem* elem;
+
+  if (p == NULL) {
+    return -1;
+  }
+  elem = &p->elems[color + 4];
+  if (elem->count != 0) {
+    p->elems[color].count += elem->count;
+    elem->count = 0;
+  }
+  Entity08051b70Elem_SetColorCount(elem, color, count);
+  elem->state = 2;
+  elem->entered = TRUE;
+  elem->timer = 0;
+  WorldToScreen(&elem->from, pos);
+  return 0;
+}
