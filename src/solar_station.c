@@ -21,7 +21,7 @@ typedef struct {
   Player* player;          // 0x258, _Init が gPlayerPtr[0] を入れる, NULL なら _Init が失敗する
   u16 id;                  // 0x25C, _Create / _Init の第2引数, Hitbox_Init の第2引数にもなる
   u8 state;                // 0x25E, _Update の分岐, 0 なら SolarStation_UpdateIdle, 1 なら SolarStation_UpdateInUse
-  u8 flashTimer;           // 0x25F, SolarStation_UpdateFlash のパレット切り替えの経過フレーム, PFLAG20_UNK_6 が落ちると 4 から数え下ろす
+  u8 flashTimer;           // 0x25F, SolarStation_UpdateFlash のパレット切り替えの経過フレーム, PFLAG20_REFUELING が落ちると 4 から数え下ろす
   u8 playerNear;           // 0x260, 1P が同じ高さで半タイル以内にいて操作できる状態なら 1
   bool8 forceShowDigits;   // 0x261, FUN_0809f30c がスクリプトのレコードから立て直す, SolarStation_UpdateDigits は playerNear と2バイトまとめて読んでどちらかが立っていれば残高を出す
   u16 unk_262;             // 0x262, _Init が sprite.flags bit2 のとき 7、そうでなければ 1 を入れる
@@ -76,7 +76,7 @@ NON_MATCH void SolarStation_UpdateIdle(SolarStation* p) {
 // 1P が太陽スタンドを使っている間 (PACT_UNK_8) は貯金から ENE を1ずつ移し, 離れたらパレットを戻して state 0 に戻る
 void SolarStation_UpdateInUse(SolarStation* p) {
   if (p->player->action == PACT_UNK_8) {
-    if (TEST_FLAGS(p->player->flag20, PFLAG20_UNK_6)) {
+    if (TEST_FLAGS(p->player->flag20, PFLAG20_REFUELING)) {
       if (gStat->solarStand > 0 && p->player->ene < p->player->maxEne) {
         gStat->solarStand--;
         p->player->ene++;
@@ -89,9 +89,9 @@ void SolarStation_UpdateInUse(SolarStation* p) {
   p->playerNear = 1;
 }
 
-// 1P の PFLAG20_UNK_6 が立っている間はパレットを2フレームごとに切り替えて光らせ, 落ちたら数フレームかけて元のパレットに戻す
+// 1P の PFLAG20_REFUELING が立っている間はパレットを2フレームごとに切り替えて光らせ, 落ちたら数フレームかけて元のパレットに戻す
 void SolarStation_UpdateFlash(SolarStation* p) {
-  if (Player_TestFlag20(p->player, PFLAG20_UNK_6)) {
+  if (Player_TestFlag20(p->player, PFLAG20_REFUELING)) {
     switch ((p->flashTimer >> 1) & 3) {
       case 1: {
         Video_SetAuxSpritePltt(&p->gfx, 319);

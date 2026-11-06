@@ -61,7 +61,7 @@ NON_MATCH void Entity081e9cacElem_OnHit(HitboxData* a, HitboxData* b, Entity081e
     if (b->ignoreMask & 0xF) {
       s32 hit;
 
-      if (!(((Player*)b->owner)->flag20 & PFLAG20_UNK_3)) {
+      if (!(((Player*)b->owner)->flag20 & PFLAG20_WALL_COVER)) {
         hit = TRUE;
       } else {
         s32 d = FixToInt(6, (elem->angle + 0x20) & 0xFF) - FixToInt(6, (b->angle + 0x20) & 0xFF);

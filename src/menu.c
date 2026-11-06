@@ -817,7 +817,7 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
     bodyTile = 0x53;
     emptyTile = 0x4B;
     endTile = 0x4C;
-    if (Player_TestFlag20(p->player, PFLAG20_QC | PFLAG20_UNK_6)) {
+    if (Player_TestFlag20(p->player, PFLAG20_QC | PFLAG20_REFUELING)) {
       if (!((++p->eneBlinkTimer >> 2) & 1)) {
         color = 0x7FFF;
       }

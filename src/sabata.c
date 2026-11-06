@@ -117,7 +117,7 @@ void AllySabata_SetAction(Player* p, u8 action, u8 state) {
 
 // 毎フレームの行動開始前の初期化, フラグと影のオフセットを戻す
 void FUN_08080e34(Player* p) {
-  p->flag20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_BUSY;
   if (KAAMOS(p->isSabata) == 0 && FUN_0809e138(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
@@ -912,7 +912,7 @@ void FUN_08082154(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_UNK_7 | PFLAG20_QC);
+      Player_SetFlag20(p, PFLAG20_PALM_UP | PFLAG20_QC);
       if (p->unk_404 <= 4) {
         p->unk_404++;
         if (p->unk_404 == 5) {
@@ -946,7 +946,7 @@ void FUN_08082154(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       AllySabata_PlayAnim(p, 470, Q6(1));
       p->shadowOffset.z = 0x1E;
       if (!(p->input->down & A_BUTTON)) {

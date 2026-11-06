@@ -322,7 +322,7 @@ NON_MATCH void FUN_081d5d70(BeeNest* p, BeeNestFragment* frag) {
     frag->sprite.pos.z = (-POLAR_Z(frag->unk_124, frag->sprite.rotation) + POLAR_X(frag->unk_128, frag->sprite.rotation)) + frag->basePos.z;
   }
 
-  if ((frag->unk_154 & 1) && FUN_081d6cb0(frag) && !(gPlayerPtr[0]->flag20 & PFLAG20_UNK_3) && !(gGoodCondTimer != 0 && gGoodCondID == 0) && gPlayerPtr[0]->kind != PLAYER_BAT && frag->unk_12c != frag->unk_130 && frag->unk_11c == 0) {
+  if ((frag->unk_154 & 1) && FUN_081d6cb0(frag) && !(gPlayerPtr[0]->flag20 & PFLAG20_WALL_COVER) && !(gGoodCondTimer != 0 && gGoodCondID == 0) && gPlayerPtr[0]->kind != PLAYER_BAT && frag->unk_12c != frag->unk_130 && frag->unk_11c == 0) {
     frag->unk_11c = 4;
     frag->hp--;
     if (frag->hp > 0) {

@@ -205,7 +205,7 @@ static void Player_SetAction(Player* p, u32 action, u32 state) {
 
 // 行動を始める前のフラグ初期化, 日光と武器効果を見て flag20 を組み立て直し各種タイマを 0 に戻す
 void Player_BeginAction(Player* p) {
-  p->flag20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_BUSY;
   if (KAAMOS(p->isSabata) == 0 && FUN_0809e138(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
@@ -4179,7 +4179,7 @@ void FUN_08066f7c(Player* p) {
     p->facing = FUN_08066f18(p);
     Player_SetAnimFacing(p);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
 }
 
@@ -4328,7 +4328,7 @@ NON_MATCH void FUN_080670fc(Player* p, u32 val) {
 // 歩き始めるときの初期化, 移動速度とアニメを設定する
 void FUN_080672b0(Player* p) {
   p->action = PACT_WALK;
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   p->facing = FUN_08067068(p);
   if (p->useForcedDelta == 0) {
     s32 val = CalcMoveSpeed(p);
@@ -4452,7 +4452,7 @@ NON_MATCH void FUN_08067510(Player* p) {
       s32 left;
       s32 right;
 
-      Player_SetFlag20(p, PFLAG20_UNK_3);
+      Player_SetFlag20(p, PFLAG20_WALL_COVER);
       p->unk_3bc = 1;
       dir = (s16)p->facingHistory[0];
       left = (p->actionDir + 7) & 7;
@@ -4510,7 +4510,7 @@ NON_MATCH void FUN_08067510(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_UNK_3);
+      Player_SetFlag20(p, PFLAG20_WALL_COVER);
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 5), Q6(1))) {
         Vec3 effectPos = p->mover.pos;
         Vec3 doorPos = p->mover.pos;
@@ -4651,7 +4651,7 @@ void Player_UpdateSolarCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           if (p->kind == PLAYER_DARK_DJANGO) {
@@ -4677,7 +4677,7 @@ void Player_UpdateSolarCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -4753,7 +4753,7 @@ void Player_UpdateDarkCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           PlaySound_082406e0(NOISE_DARK_CHARGE);
@@ -4784,7 +4784,7 @@ void Player_UpdateDarkCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -4882,7 +4882,7 @@ void Player_UpdateSolarStand(Player* p) {
         PlaySound_082406e0(SE_SOLAR_STAND_DENY);
         Player_SetAction(p, PACT_UNK_8, 3);
       } else {
-        Player_SetFlag20(p, PFLAG20_UNK_6);
+        Player_SetFlag20(p, PFLAG20_REFUELING);
       }
       break;
     }
@@ -5116,7 +5116,7 @@ void Player_UpdatePullCoffin(Player* p) {
   if (p->action != PACT_PULL_COFFIN) {
     Player_SetAction(p, PACT_PULL_COFFIN, 0);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if ((s16)p->facingHistory[0] < 0 || p->lookAroundOffset.val != 0) {
     s32 angle;
 
@@ -5217,7 +5217,7 @@ void FUN_080695ec(Player* p) {
 }
 
 void FUN_0806961c(Player* p) {
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->emitter.unk_3 == 0) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
@@ -6556,7 +6556,7 @@ void FUN_0806c2dc(Player* p) {
   if (p->action != PACT_IDLE) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
 
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 0, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -6571,7 +6571,7 @@ NON_MATCH void Player_UpdateBatWalk(Player* p) {
     Player_SetAction(p, PACT_WALK, 0);
     p->unk_383[2] = 0;
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->unk_383[2] == 0) {
     s32 dir = FUN_08067068(p);
     s32 r;
@@ -6653,7 +6653,7 @@ void FUN_0806c868(Player* p) {
   if (p->unk_382 >= 60) {
     p->unk_382 -= 60;
   } else {
-    p->flag20 &= ~PFLAG20_UNK_0;
+    p->flag20 &= ~PFLAG20_BUSY;
     p->unk_382 = 0;
   }
 
@@ -6741,7 +6741,7 @@ void Player_UndoChangeBat(Player* p) {
 
 // マウスの待機 (PACT_IDLE), マウスのアニメを向きに合わせて1コマ進める
 void FUN_0806ceb0(Player* p) {
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->action != PACT_IDLE) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
@@ -6772,7 +6772,7 @@ void Player_UpdateMouseWalk(Player* p) {
     p->unk_383[3] = 0;
     Player_SetAction(p, PACT_WALK, 0);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   p->facing = FUN_08067068(p);
   Player_SetMoveDelta(p, FUN_0806cfd4(p));
   Player_SetAnimFacing(p);
@@ -6830,7 +6830,7 @@ void FUN_0806d420(Player* p) {
     Player_SetAction(p, PACT_UNK_19, 0);
     PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
 
   anim = &p->beastAnim;
   AuxAnim_SetAnim(anim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
@@ -7007,7 +7007,7 @@ void MagicSleeping_Update(Player* p) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
 
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->coffin == COFFIN_SILVER) {
     p->flag20 |= PFLAG20_INVISIBLE;
   }
@@ -10878,7 +10878,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5 && p->kind == PLAYER_SOLAR_DJANGO) {
           PlaySound_082406e0(VO_TAIYO_R);
@@ -10918,7 +10918,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -11008,7 +11008,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           PlaySound_082406e0(NOISE_DARK_CHARGE);
@@ -11055,7 +11055,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -11461,7 +11461,7 @@ static const PlayerFunc sDjangoActionFuncs[33] = {
 void Player_UpdateDjango(Player* p) {
   s32 action;
 
-  Player_SetFlag20(p, PFLAG20_UNK_14);
+  Player_SetFlag20(p, PFLAG20_UPDATED);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -11585,7 +11585,7 @@ static const PlayerFunc sSabataActionFuncs[32] = {
 void Player_UpdateSabata(Player* p) {
   s32 action;
 
-  Player_SetFlag20(p, PFLAG20_UNK_14);
+  Player_SetFlag20(p, PFLAG20_UPDATED);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -11927,7 +11927,7 @@ void Player_UpdateMouse(Player* p) {
   };  // 0x085ABE1C
   // clang-format on
 
-  Player_SetFlag20(p, PFLAG20_UNK_14 | PFLAG20_SNEAKING | PFLAG20_UNK_18);
+  Player_SetFlag20(p, PFLAG20_UPDATED | PFLAG20_SNEAKING | PFLAG20_UNK_18);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -12050,7 +12050,7 @@ void Player_UpdateSleeping(Player* p) {
   };  // 0x085ABE88
   // clang-format on
 
-  Player_SetFlag20(p, PFLAG20_UNK_14 | PFLAG20_UNK_18);
+  Player_SetFlag20(p, PFLAG20_UPDATED | PFLAG20_UNK_18);
   p->unk_4bc = 0;
   p->unk_4c0 = 0;
   if (p->unk_38a != 0) {
@@ -12124,7 +12124,7 @@ void FUN_08079f1c(Player* p) {
 
   s32 action;
 
-  Player_SetFlag20(p, PFLAG20_UNK_14);
+  Player_SetFlag20(p, PFLAG20_UPDATED);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {

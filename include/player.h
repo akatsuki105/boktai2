@@ -18,24 +18,24 @@
 #include "weapon.h"
 
 typedef u32 PlayerFlag20;            // Player.flag20
-#define PFLAG20_UNK_0 (1 << 0)       // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
+#define PFLAG20_BUSY (1 << 0)        // 0x00000001, 行動中, Player_BeginAction が毎回これだけ立てた状態から始め, 待機・歩きなどの行動だけが落とす, 立っていると START/SELECT やクイックチェンジが効かない
 #define PFLAG20_UNK_1 (1 << 1)       // 0x00000002
 #define PFLAG20_UNK_2 (1 << 2)       // 0x00000004, 壁張り付き (PACT_WALL) の始めに立つ
-#define PFLAG20_UNK_3 (1 << 3)       // 0x00000008
+#define PFLAG20_WALL_COVER (1 << 3)  // 0x00000008, 壁に張り付いている間 (PACT_WALL の state 1・2) 立つ
 #define PFLAG20_SUNBATHING (1 << 4)  // 0x00000010, プレイヤーに日光が当たっているか
 #define PFLAG20_QC (1 << 5)          // 0x00000020, プレイヤーが急速チャージ中, つまり (ジャンゴなら) 太陽チャージ中 && ENEがまだ最大でない && 太陽が当たっている状態, (サバタなら) 暗黒チャージ中 && ENEがまだ最大でない && 太陽が当たっていない状態
-#define PFLAG20_UNK_6 (1 << 6)       // 0x00000040, 太陽スタンドで PACT_UNK_8 中に立っていると SolarStation_UpdateInUse が貯金から ENE を1ずつ移す
-#define PFLAG20_UNK_7 (1 << 7)       // 0x00000080
+#define PFLAG20_REFUELING (1 << 6)   // 0x00000040, 太陽スタンドから ENE を受け取っている間 (PACT_UNK_8) 立つ, SolarStation_UpdateInUse が貯金から ENE を1ずつ移す
+#define PFLAG20_PALM_UP (1 << 7)     // 0x00000080, 太陽チャージ (サバタは暗黒チャージ) で手をかざしている間立つ, 実際にチャージが効いているときは PFLAG20_QC も立つ
 #define PFLAG20_UNK_8 (1 << 8)       // 0x00000100
 #define PFLAG20_UNK_9 (1 << 9)       // 0x00000200, emitter (kind 1) がダメージを与えている間 Player_UpdateDamage が立てる
-#define PFLAG20_UNK_12 (1 << 12)     // 0x00001000
+#define PFLAG20_UNK_12 (1 << 12)     // 0x00001000, 掴まれたとき (Player_EnterGrabbed) や本体と食らい判定を消す特殊状態で立つ, 立っていると敵の索敵 (FUN_080e4444) がプレイヤーを無視する
 #define PFLAG20_UNK_13 (1 << 13)     // 0x00002000
-#define PFLAG20_UNK_14 (1 << 14)     // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
+#define PFLAG20_UPDATED (1 << 14)    // 0x00004000, このフレームに更新処理が走った, Player_UpdateDjango などフォーム別の更新関数が先頭で立てる
 #define PFLAG20_UNK_15 (1 << 15)     // 0x00008000, 立っていると Player_SetupKnockback が被弾方向を facing ではなく knockbackDir に書く
 #define PFLAG20_SNEAKING (1 << 16)   // 0x00010000, スニーク状態(スカルスーツ装備, Cマウス形態 など), 処理的には、 "敵の視界が半分になる"
 #define PFLAG20_INVISIBLE (1 << 17)  // 0x00020000, 敵から見えない状態
-#define PFLAG20_UNK_18 (1 << 18)     // 0x00040000, Player_UpdateDjango が mode が 2 か 4 のとき立てる
-#define PFLAG20_UNK_19 (1 << 19)     // 0x00080000
+#define PFLAG20_UNK_18 (1 << 18)     // 0x00040000, mode が LOCKED / DEAD のとき, バット・マウス・スリーピング形態, 縮小中に立つ, 立っているとリンゴとシェードマンの掴み系の処理が対象から外す
+#define PFLAG20_UNK_19 (1 << 19)     // 0x00080000, エンチャントした武器の攻撃判定が出ている間と弾が飛んでいる間に立つ, Entity080db520 はこれか日光があると姿を見せる
 
 // Player.action, sDjangoActionFuncs (サバタは sSabataActionFuncs) の添字, 2つの表は同じ番号に同じ種類の行動が並ぶ
 #define PACT_IDLE 0           // 立ち止まっている, FUN_08066f7c

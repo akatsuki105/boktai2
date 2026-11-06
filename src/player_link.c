@@ -211,7 +211,7 @@ bool32 FUN_0809ebf4(Player* p);
 
 // 日光に当たっているかを引き直し, 影のずれと多段ヒット制限を戻す
 void FUN_080cc370(Player* p) {
-  p->flag20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_BUSY;
   if (FUN_0809ebf4(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
@@ -915,7 +915,7 @@ void FUN_080d0738(Player* p) {
     p->facing = FUN_080d06d4(p);
     PlayerLink_SetAnimFacing(p);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
 }
 
@@ -1118,7 +1118,7 @@ NAKED void FUN_080d55d8(Player* p) { INCFUNC("asm/func/FUN_080d55d8.inc"); }
 
 // マウスの待機 (PACT_IDLE), マウスのアニメを向きに合わせて1コマ進める
 void FUN_080d57e4(Player* p) {
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->action != PACT_IDLE) {
     PlayerLink_SetAction(p, PACT_IDLE, 0);
   }

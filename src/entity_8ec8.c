@@ -70,7 +70,7 @@ NON_MATCH bool8 Entity8EC8_IsStartHeld(void) {
 #ifdef NONMATCHING_C
   Player* p = gPlayerPtr[0];
 
-  if ((gInput[0].down & START_BUTTON) && p != NULL && p->mode == PMODE_ACTIVE && !(p->flag20 & PFLAG20_UNK_0)) {
+  if ((gInput[0].down & START_BUTTON) && p != NULL && p->mode == PMODE_ACTIVE && !(p->flag20 & PFLAG20_BUSY)) {
     return TRUE;
   }
   return FALSE;
@@ -84,7 +84,7 @@ NON_MATCH bool8 Entity8EC8_IsSelectHeld(void) {
 #ifdef NONMATCHING_C
   Player* p = gPlayerPtr[0];
 
-  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->mode == PMODE_ACTIVE && !(p->flag20 & PFLAG20_UNK_0)) {
+  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->mode == PMODE_ACTIVE && !(p->flag20 & PFLAG20_BUSY)) {
     return TRUE;
   }
   return FALSE;

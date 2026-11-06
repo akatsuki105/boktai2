@@ -581,7 +581,7 @@ NON_MATCH Enemy* FUN_080e1100(Vec3* pos, Vec3* size, u32* id) {
 Player* FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx) {
   Player* player = gPlayerPtr[idx];
 
-  if (player != NULL && !TEST_FLAGS(gPlayerModes[idx], 8) && TEST_FLAGS(player->flag20, PFLAG20_UNK_14)) {
+  if (player != NULL && !TEST_FLAGS(gPlayerModes[idx], 8) && TEST_FLAGS(player->flag20, PFLAG20_UPDATED)) {
     if (pos->x - size->x <= player->mover.pos.x && pos->x + size->x >= player->mover.pos.x) {
       if (pos->z - size->z <= player->mover.pos.z && pos->z + size->z >= player->mover.pos.z) {
         return player;
