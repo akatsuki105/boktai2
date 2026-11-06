@@ -147,14 +147,14 @@ void EntityD53D_UpdateState3(EntityD53D* p) {
   p->timer++;
 }
 
-void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
-    EntityD53D_UpdateState0,
-    EntityD53D_UpdateState1,
-    EntityD53D_UpdateState2,
-    EntityD53D_UpdateState3,
-};  // 0x085AB664
-
 s32 EntityD53D_Update(EntityD53D* p) {
+  static void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
+      EntityD53D_UpdateState0,
+      EntityD53D_UpdateState1,
+      EntityD53D_UpdateState2,
+      EntityD53D_UpdateState3,
+  };  // 0x085AB664
+
   if (p->state == 0) {
     s32 status = FUN_0804e59c();
 

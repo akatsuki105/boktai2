@@ -81,16 +81,6 @@ typedef struct {
 } EntityAF33;
 static_assert(sizeof(EntityAF33) == 444);
 
-// クロスオーバーポイントの今の値
-static inline s32 GetCrossoverPoint(void) { return gSystemSaveData->crossoverPoint; }
-
-// state を切り替え, 次の更新で初期化させる
-static inline void EntityAF33_SetState(EntityAF33* p, u8 state) {
-  p->state = state;
-  p->stateBegun = TRUE;
-  p->stateTimer = 0;
-}
-
 IWRAM_DATA EntityAF33* gEntityAF33 = NULL;  // 0x030000F0
 IWRAM_DATA u8 u8_030000f4[4] = {};
 IWRAM_DATA u8 gCrossoverPlayerNames[2][16] = {};  // 0x030000F8, 通信対戦の待合画面で決まった双方のプレイヤー名
@@ -146,6 +136,16 @@ void FUN_0804f82c(EntityAF33Msg* msg);
 void FUN_0804f8ec(EntityAF33Slot* slot);
 void FUN_0804f950(void);
 void FUN_0804f970(void);
+
+// クロスオーバーポイントの今の値
+static inline s32 GetCrossoverPoint(void) { return gSystemSaveData->crossoverPoint; }
+
+// state を切り替え, 次の更新で初期化させる
+static inline void EntityAF33_SetState(EntityAF33* p, u8 state) {
+  p->state = state;
+  p->stateBegun = TRUE;
+  p->stateTimer = 0;
+}
 
 EntityAF33* FUN_0804f820(void) { return gEntityAF33; }
 
