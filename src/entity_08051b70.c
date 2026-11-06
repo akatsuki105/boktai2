@@ -351,32 +351,20 @@ void Entity08051b70_StateSend(Entity08051b70* p) {
   p->timer++;
 }
 
-// 残差: 原典は p->rivalOjama の番地と定数 3 をループ内で毎回作り, elem を r3 に写してから count を書く (r7 を使わない), 案: 0..10 に収める inline (elem, color, n / counts 配列) は試済で変化なし
-NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
-#ifdef NONMATCHING_C
+// 相手から届いたオジャマバットを右上から順に置き場へ飛び込ませる
+void Entity08051b70_StateReceive(Entity08051b70* p) {
   if (p->entered) {
-    Entity08051b70Elem* elem;
     s32 i;
 
     p->entered = FALSE;
     p->nextIdx = 0;
-    elem = p->elems;
-    for (i = 0; i < 8; i++, elem++) {
+    for (i = 0; i < 8; i++) {
       u32 color = i & 3;
 
       if (i < 4) {
-        elem->color = color;
-        elem->count = 0;
+        Entity08051b70Elem_SetColorCount(&p->elems[i], color, 0);
       } else {
-        s32 n = p->rivalOjama[color];
-
-        elem->color = color;
-        if (n > 10) {
-          n = 10;
-        } else if (n < 0) {
-          n = 0;
-        }
-        elem->count = n;
+        Entity08051b70Elem_SetColorCount(&p->elems[i], color, p->rivalOjama[color]);
       }
     }
   }
@@ -385,9 +373,6 @@ NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
     Entity08051b70_NextBlockStep(p, 0);
   }
   p->timer++;
-#else
-  INCFUNC("asm/func/Entity08051b70_StateReceive.inc");
-#endif
 }
 
 NAKED void Entity08051b70_StateBlock(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateBlock.inc"); }
