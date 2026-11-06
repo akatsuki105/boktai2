@@ -137,16 +137,13 @@ void Entity08051b70Elem_SetRandomWobble(Entity08051b70Elem* elem, s32 base, u32 
   }
 }
 
-// 残差は t * 4 の lsls と gSineTable のプール読みの順序だけ (27/27), 原典は添字を先に作る, Tier A-B (POLAR_Z / SIN * amp, d の型) は試済
-NON_MATCH void Entity08051b70_ApplyWobble(Vec3* pos, u32 t, s32 amp) {
-#ifdef NONMATCHING_C
-  s32 d = FixToInt(12, SIN(t * 4) * amp);
+// t に合わせて sin で揺らし, pos の x と y に同じだけ足す
+void Entity08051b70_ApplyWobble(Vec3* pos, u32 t, s32 amp) {
+  u32 angle = t * 4;
+  s32 d = FixToInt(12, SIN(angle) * amp);
 
   pos->x += d;
   pos->y += d;
-#else
-  INCFUNC("asm/func/Entity08051b70_ApplyWobble.inc");
-#endif
 }
 
 void Entity08051b70Elem_StateHidden(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
