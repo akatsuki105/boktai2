@@ -20,7 +20,7 @@
 	b _081F0A8A
 _081F0916:
 	mov r0, r8
-	bl FUN_081f08dc
+	bl Entity081f0b90_TryAllocElem
 	adds r7, r0, #0
 	cmp r7, #0
 	bne _081F0924

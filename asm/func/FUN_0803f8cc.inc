@@ -377,7 +377,7 @@ _0803FB9A:
 	ldrsh r1, [r1, r7]
 	str r1, [sp, #8]
 	add r1, sp, #0xc
-	bl FUN_0805e79c
+	bl Entity0805e67c_SpawnSwarm
 	movs r0, #0xea
 	bl PlaySound_0824078c
 	movs r0, #0

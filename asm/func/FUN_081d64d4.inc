@@ -67,7 +67,7 @@ _081D653A:
 	ldrb r3, [r3]
 	mov r4, r8
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r4, sp, #0xc
 	mov r0, r8
 	str r0, [sp, #8]

@@ -147,7 +147,7 @@ _080D37CA:
 	movs r1, #0xe6
 	movs r2, #0xb4
 	movs r3, #0
-	bl Entity08080be8_Create
+	bl Bullet_Create
 	b _080D3AD8
 _080D37F6:
 	adds r0, r5, #0

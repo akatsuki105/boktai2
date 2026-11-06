@@ -1,16 +1,5 @@
 #include "global.h"
 
-const ALIGNED(4) char s_eneinline_h_08251f68[] = "eneinline.h";
-const ALIGNED(4) char s_eneinline_h_08251f74[] = "eneinline.h";
-const ALIGNED(4) char s_enedefault_c_08251f80[] = "enedefault.c";
-const ALIGNED(4) char s_eneinline_h_08251f90[] = "eneinline.h";
-const ALIGNED(4) char s_eneinline_h_08251f9c[] = "eneinline.h";
-const ALIGNED(4) char gString_08251fa8[] = "../system/eneinline.h";
-const ALIGNED(4) char s_bokucom_c_08251fc0[] = "bokucom.c";
-const ALIGNED(4) char s_eneinline_08251fcc[] = "../system/eneinline.h";
-const ALIGNED(4) char s_skeletoncom_08251fe4[] = "skeletoncom.c";
-const ALIGNED(4) char s_eneinline_08251ff4[] = "../system/eneinline.h";
-const ALIGNED(4) char s_golemcom_c_0825200c[] = "golemcom.c";
 const ALIGNED(4) char s_eneinline_08252018[] = "../system/eneinline.h";
 const ALIGNED(4) char s_eneinline_08252030[] = "../system/eneinline.h";
 const ALIGNED(4) char s_eneinline_08252048[] = "../system/eneinline.h";

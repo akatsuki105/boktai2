@@ -1,9 +1,9 @@
 #include "enemy.h"
 
 #include "collision_map.h"
-#include "constants/miscs.h"
 #include "eff_082473e0.h"
 #include "emote.h"
+#include "enemy_inline.h"
 #include "enemy_manager.h"
 #include "enemy_target.h"
 #include "entity.h"
@@ -47,7 +47,7 @@ s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
 void FUN_080e7b6c(Enemy* p);
 void FUN_080e6794(Enemy* p, s32 priority);
-void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void FUN_080ec5b4(u16 a, u16 b);
 void FUN_080f54e4(Enemy* p, s32 param_2);
 bool8 FUN_080e4b3c(Enemy* p);
@@ -64,27 +64,10 @@ void FUN_080f0b3c(Enemy* p);
 bool8 FUN_080e7078(Enemy* p);
 s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 
-static inline void Enemy_EnterState(Enemy* p, void* handlerState, s32 state) {
-  p->stateBegun = TRUE;
-  p->subStateDone = 0;
-  p->state = state;
-  p->handlerState = handlerState;
-  p->stateTimer = 0;
-}
-
 static inline void Enemy_SetSubStates(Enemy* p, u8 subState0, u8 subState1, u8 subState2) {
   p->subState0 = subState0;
   p->subState1 = subState1;
   p->subState2 = subState2;
-}
-
-// 下位状態を指定の組に戻して経過フレームを0に巻き戻す, subStateBegun は巻き戻した印
-static inline void Enemy_ResetState(Enemy* p, u8 subState0, u8 subState1, u8 subState2) {
-  p->subState0 = subState0;
-  p->subState1 = subState1;
-  p->subState2 = subState2;
-  p->subStateTimer = 0;
-  p->subStateBegun = 1;
 }
 
 static inline bool8 AuxSprite_TestFlags(AuxSprite* sprite, SpriteFlags bits) {
@@ -296,9 +279,9 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
       Vec3_Diff(&d, &tilePos, &p->mover.pos);
       p->angle = ArcTan2_8(d.x, d.z) >> 5;
       p->unk_4a0 = 0x20;
-      p->hitbox.damage = p->hp;
+      p->hurtbox.damage = p->hp;
       p->unk_48a = p->hp;
-      p->hitbox.knockbackPower = 40;
+      p->hurtbox.knockbackPower = 40;
       p->weaponExpMask = 0x40;
       p->unk_48c = 1;
       SET_FLAGS(p->flags, ENEFLAG_UNK_13);
@@ -349,23 +332,23 @@ NAKED s32 FUN_080e1f48(Enemy* p) { INCFUNC("asm/func/FUN_080e1f48.inc"); }
 // 試済: flags4 の落とし方を Enemy_ClearFlags4 / CLEAR_FLAGS にする (変化なし)
 NON_MATCH s32 FUN_080e35b4(Enemy* p) {
 #ifdef NONMATCHING_C
-  p->unk_1d4 = 0;
+  p->hitTargetID = 0;
   if (Enemy_IsDead(p)) {
     return 1;
   }
 
   if (Enemy_TestFlag5(p, ENEFLAG5_UNK_11)) {
-    p->hitbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
   } else if (p->kind == ENEK_AX || p->kind == ENEK_GHOST) {
     p->flags4 &= ~ENEFLAG4_UNK_14;
   } else if (p->state == ES_UNK_21 || p->state == ES_UNK_22 || TEST_FLAGS(p->flags3, ENEFLAG3_UNK_15)) {
-    p->hitbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
   } else if (!Enemy_TestFlag4(p, ENEFLAG4_UNK_14)) {
-    p->hitbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
   } else {
-    p->hitbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
     if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (FUN_080e7078(p) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
       if (!(p->atkHitbox.flags & HBFLAG_HIDDEN)) {
@@ -373,7 +356,7 @@ NON_MATCH s32 FUN_080e35b4(Enemy* p) {
         Hitbox_Register(&p->atkHitbox);
       }
     }
-    Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
+    Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 
   if (!IsSmallEnemy(p)) {
@@ -413,22 +396,22 @@ void EnemyAuxSprite_LoadAnim(EnemyAuxSpriteData* p, FileID animID) {
   AuxAnim_SetAnim(&p->anim, p->animFile, 0, 0, 0);
 }
 
-// 自前の Hitbox を固定フラグで組んで登録する
-void FUN_080e3834(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
-  Hitbox_Init(&p->hitbox, p->mover.id, (HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, HIM_4, halfSize, offset);
-  Hitbox_SetPowerAndAttributes(&p->hitbox, p->power, p->attrs, p->weakness);
-  Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
-  Hitbox_SetHandler(&p->hitbox, handler, owner);
-  Hitbox_Register(&p->hitbox);
+// 自前の食らい判定を固定フラグで組んで登録する
+void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
+  Hitbox_Init(&p->hurtbox, p->mover.id, (HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, HIM_4, halfSize, offset);
+  Hitbox_SetPowerAndAttributes(&p->hurtbox, p->power, p->attrs, p->weakness);
+  Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
+  Hitbox_SetHandler(&p->hurtbox, handler, owner);
+  Hitbox_Register(&p->hurtbox);
 }
 
-// 自前の Hitbox をフラグ指定で組んで登録する
-void Enemy_RegisterOwnHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags) {
-  Hitbox_Init(&p->hitbox, p->mover.id, (u16)flags, 0, HIM_4, halfSize, offset);
-  Hitbox_SetPowerAndAttributes(&p->hitbox, p->power, p->attrs, p->weakness);
-  Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
-  Hitbox_SetHandler(&p->hitbox, handler, owner);
-  Hitbox_Register(&p->hitbox);
+// 自前の食らい判定をフラグ指定で組んで登録する
+void Enemy_RegisterHurtboxWithFlags(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags) {
+  Hitbox_Init(&p->hurtbox, p->mover.id, (u16)flags, 0, HIM_4, halfSize, offset);
+  Hitbox_SetPowerAndAttributes(&p->hurtbox, p->power, p->attrs, p->weakness);
+  Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
+  Hitbox_SetHandler(&p->hurtbox, handler, owner);
+  Hitbox_Register(&p->hurtbox);
 }
 
 // 敵の攻撃力と属性を載せた Hitbox を組んで登録する
@@ -863,7 +846,7 @@ void Enemy_RunStateHandler(Enemy* p) {
 }
 
 void FUN_080e499c(Enemy* p) {
-  p->hitbox.damage = 0;
+  p->hurtbox.damage = 0;
   p->unk_48a = 0;
   p->unk_48c = 0;
 }
@@ -871,7 +854,7 @@ void FUN_080e499c(Enemy* p) {
 // 敵を活動停止させる, 種族が特定の10種なら破棄対象の印も立てる
 void FUN_080e49c4(Enemy* p) {
   Enemy_SetFlag(p, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
-  p->hitbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
   FUN_080eeee0(p);
   if (Enemy_GetFlag2(p, ENEFLAG2_UNK_11)) {
     if (Enemy_IsDisposable(p)) {
@@ -1143,7 +1126,7 @@ void PlayEnemyEmoteCry(u8 emoteVariant, u8 enemyKind, u8 enemyVariant) {
           break;
         }
         case 2: {
-          PlaySound_082406e0(SE_QUESTION);
+          PlaySound_082406e0(SE_ENEMY_QUESTION);
           break;
         }
       }
@@ -1174,15 +1157,15 @@ void PlayEnemyEmoteCry(u8 emoteVariant, u8 enemyKind, u8 enemyVariant) {
       switch (emoteVariant) {
         case 0:
         case 3: {
-          PlaySound_082406e0(SE_DETECT);
+          PlaySound_082406e0(SE_ENEMY_DETECT);
           break;
         }
         case 1: {
-          PlaySound_082406e0(SE_ALERT);
+          PlaySound_082406e0(SE_ENEMY_ALERT);
           break;
         }
         case 2: {
-          PlaySound_082406e0(SE_QUESTION);
+          PlaySound_082406e0(SE_ENEMY_QUESTION);
           break;
         }
       }
@@ -1192,15 +1175,15 @@ void PlayEnemyEmoteCry(u8 emoteVariant, u8 enemyKind, u8 enemyVariant) {
       switch (emoteVariant) {
         case 0:
         case 3: {
-          PlaySound_082406e0(SE_DETECT);
+          PlaySound_082406e0(SE_ENEMY_DETECT);
           break;
         }
         case 1: {
-          PlaySound_082406e0(SE_ALERT);
+          PlaySound_082406e0(SE_ENEMY_ALERT);
           break;
         }
         case 2: {
-          PlaySound_082406e0(SE_QUESTION);
+          PlaySound_082406e0(SE_ENEMY_QUESTION);
           break;
         }
       }
@@ -1573,7 +1556,7 @@ NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
     default: {
       if (Enemy_TestFlag(p, ENEFLAG_UNK_0)) {
         FUN_080ee738(p);
-        p->hitbox.invincibleTime = 0;
+        p->hurtbox.invincibleTime = 0;
       }
       break;
     }
@@ -1605,7 +1588,7 @@ void FUN_080e5b2c(Enemy* p, s32 pathIdx, s32 nodeIdx, s32 angle) {
     p->unk_21e = 0;
     p->unk_202 = 0;
   }
-  p->hitbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
   Enemy_SetSpriteFlags(p, SPRFLAG_AFFINE);
   Enemy_ClearSpriteFlags(p, SPRFLAG_HIDDEN);
   Enemy_ResetState(p, 3, 0, 0);
@@ -2045,7 +2028,7 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
       Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
       if (damage > 0) {
         p->heightAboveFloor = 0;
-        p->hitbox.damage = p->hp;
+        p->hurtbox.damage = p->hp;
         p->unk_48a = p->hp;
         p->hp = 0;
         SET_FLAGS(p->flags3, ENEFLAG3_UNK_3);
@@ -2081,10 +2064,10 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
         if (show) {
           Vec3 v;
 
-          FUN_0809c344(p->mover.id, p->hp, p->maxHp, p->unk_25a, 0);
+          HUD_ShowEnemyGauge(p->mover.id, p->hp, p->maxHp, p->unk_25a, 0);
           CpuFill32(0, &v, sizeof(v));
           if (p->unk_48a != 0 || !(p->weaponExpMask & 0x4000)) {
-            CreateDamageNumber(&p->hitbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
+            CreateDamageNumber(&p->hurtbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
           }
         }
         if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
@@ -2101,13 +2084,13 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
           EmitSmoke(&p->mover.pos, (Random() & 3) + 1, &size, 0xC4, 4, 20, 2, 1);
           EmitSmoke(&p->mover.pos, (Random() & 3) + 1, &size, 0xF0, 4, 20, 2, 1);
           if (p->kind == ENEK_BOKU || p->kind == ENEK_MUMMY || p->kind == ENEK_SKELETON || p->kind == ENEK_SKELETON_A || p->kind == ENEK_SKELETON_F || p->kind == ENEK_DARKROOT) {
-            PlaySound_082406e0(SONG_229);
+            PlaySound_082406e0(SE_UNDEAD_EXORCISM);
           }
         }
       } else {
-        p->hitbox.damage = FixToInt(1, p->hp);
-        p->unk_48a = p->hitbox.damage;
-        p->hp -= p->hitbox.damage;
+        p->hurtbox.damage = FixToInt(1, p->hp);
+        p->unk_48a = p->hurtbox.damage;
+        p->hp -= p->hurtbox.damage;
         show = TRUE;
         if (IsLinkPlay() && !(p->unk_4a0 & 0x20) && p->unk_4a0 != 0) {
           switch (gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1) {
@@ -2132,10 +2115,10 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
         if (show) {
           Vec3 v;
 
-          FUN_0809c344(p->mover.id, p->hp, p->maxHp, p->unk_25a, 0);
+          HUD_ShowEnemyGauge(p->mover.id, p->hp, p->maxHp, p->unk_25a, 0);
           CpuFill32(0, &v, sizeof(v));
           if (p->unk_48a != 0 || !(p->weaponExpMask & 0x4000)) {
-            CreateDamageNumber(&p->hitbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
+            CreateDamageNumber(&p->hurtbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
           }
         }
       }
@@ -2564,7 +2547,7 @@ void Enemy_PlayVoice(Enemy* p) {
         case 1:
         case 3:
         case 5: {
-          PlaySound_082406e0(SONG_397);
+          PlaySound_082406e0(CRY_GOLEM_397);
           break;
         }
       }
@@ -2675,7 +2658,7 @@ void FUN_080e81dc(Enemy* p, s32 param_2) {
         case 1:
         case 3:
         case 5: {
-          PlaySound_082406e0(SONG_393);
+          PlaySound_082406e0(SE_GOLEM_ROLL);
           break;
         }
       }
@@ -2787,7 +2770,7 @@ void PlayEnemyDeathCry(Enemy* p) {
       break;
     }
     case ENEK_SLIME: {
-      PlaySound_082406e0(CRY_SLIME_DEATH);
+      PlaySound_082406e0(SE_SLIME_DEATH);
       break;
     }
     case ENEK_BEE: {
@@ -2796,7 +2779,7 @@ void PlayEnemyDeathCry(Enemy* p) {
     }
     case ENEK_GHOST: {
       if (Enemy_TestFlag3(p, ENEFLAG3_UNK_14)) {
-        PlaySound_082406e0(SONG_542);
+        PlaySound_082406e0(SE_GHOST_542);
       } else {
         PlaySound_082406e0(CRY_GHOST_DEATH);
       }

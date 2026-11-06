@@ -98,7 +98,7 @@ _080ACBA2:
 	cmp r5, #0
 	bge _080ACBA2
 	adds r0, r7, #0
-	bl FUN_080aca60
+	bl EntityB6FF_InitElems
 	ldr r0, _080ACBCC @ =0x00003969
 	adds r1, r7, #0
 	movs r2, #0

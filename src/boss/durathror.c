@@ -1,3 +1,5 @@
+#include "boss/durathror.h"
+
 #include "boss.h"
 #include "cwolf_target.h"
 #include "entity.h"
@@ -15,9 +17,9 @@
 #include "vm.h"
 
 // ドゥラスロールは残りHPによって行動パターンが3種類ある
-// 1. つぼみ形態(第1形態)
-// 2. 花形態(第2形態)
-// 3. 本体(第3形態)
+// 1. つぼみ形態(第1形態), 攻撃: 暗黒の根召喚, つぼみから棘を飛ばす
+// 2. 花形態(第2形態), 攻撃: 5つのつぼみ召喚(本体がどれか1つにいて、それ以外のつぼみに攻撃すると花粉とポイズンビーが出てくる)
+// 3. 本体(第3形態), 攻撃: 大棘, 棘鉄球
 
 // Durathror の 0x648 から6個並ぶ要素, Durathror_DestroyElems が 0x124 刻みで回す
 typedef struct {
@@ -297,15 +299,14 @@ void (*const durathror_085aaecc[24])(Boss*, s32) = {
 
 void FUN_080390f8(Durathror*);
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
-s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 void FUN_081a4e88(void);
 s32 FUN_08060220(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
-void FUN_0800e594(u32 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, s32 param_7, s32 param_8, Vec3* pos);
+s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed, s32 hp, s32 power, s32 knockback, Vec3* pos);
 void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 DurathrorImpale_Spawn(struct DurathrorImpale* p, s32 power, u32 duration, Vec3* pos);
 s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
-s32 FUN_0805d80c(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos);
+s32 Entity0805d79c_Spawn(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos);
 struct Entity0805d79c* Entity0805d79c_Create(void);
 struct DurathrorImpale* DurathrorImpale_Create(void);
 struct Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt);
@@ -520,6 +521,7 @@ void FUN_08036e4c(Durathror* p, Vec3* pos) {
   }
 }
 
+// 第3形態 の 棘鉄球
 void FUN_08036ec4(Durathror* p) {
   Mover* mover = &p->base.mover;
   Vec3 pos;
@@ -532,7 +534,7 @@ void FUN_08036ec4(Durathror* p) {
     pos.y = (_Random(table) & 7) * 256 + Q8(15.625);
     pos.z = Mod(_Random(table), 5) * 256 + Q8(2.5);
     if (abs(mover->pos.x - pos.x) >= Q8(1) || abs(mover->pos.z - pos.z) >= Q8(1)) {
-      FUN_0800e594(0, 2, 2, 60, 48, 32, p->unk_19a, p->unk_19c, &pos);
+      FallingObject_Spawn(0, 2, 2, 60, 48, 32, p->unk_19a, p->unk_19c, &pos);  // 棘鉄球
     }
     pos.x += Q8(1);
   }
@@ -919,7 +921,7 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
 
         Vec3_SetPolar(&ofs, angle, 64);
         Vec3_Sum(&pos, &ofs, &base);
-        FUN_0805d80c(p->entity0805d79c, p->unk_19e, angle, 20, &pos);
+        Entity0805d79c_Spawn(p->entity0805d79c, p->unk_19e, angle, 20, &pos);
       }
       if (p->unk_ddc == 0 && p->unk_dde == 0) {
         PlaySound_0824078c(SE_378);
@@ -1288,7 +1290,7 @@ NON_MATCH void FUN_080385f8(Durathror* p, DurathrorElem* elem, s32 idx) {
       FUN_0803781c(p);
       p->unk_160 = 1;
       p->unk_161 = 0;
-      PlaySound_0824078c(SONG_377);
+      PlaySound_0824078c(SE_PETAL_SCATTER);
       PlaySound_0824078c(SE_BEE_DEATH);
     } else {
       FUN_0803767c(p, elem);

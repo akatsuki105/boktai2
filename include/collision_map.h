@@ -38,7 +38,7 @@ typedef u16 TileAttr;             // CollisionMapTile.attr
 #define TATTR_UNK_5 (1 << 5)      // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
 #define TATTR_FALLDEATH (1 << 6)  // 0x0040, 地下水路で水に落ちたり、落下死する場所にいくとセットされた
 #define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: ツルツルすべる氷の床, MPF_HOT: 溶岩, MPF_UNK_13: ??? (おそらく前作のギミックの名残？)
-#define TATTR_UNK_8 (1 << 8)      // 0x0100, ???
+#define TATTR_FRAGILE (1 << 8)    // 0x0100, ダイナマイトで壊せる傷んだ壁?
 #define TATTR_WALLISH (1 << 10)   // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
 #define TATTR_UNK_11 (1 << 11)    // 0x0800
 #define TATTR_UNK_12 (1 << 12)    // 0x1000
@@ -82,7 +82,7 @@ typedef struct {
   s16 y2;       // 0x06, pos.z と比べる範囲の終端, この値は範囲に含まない
   u8 z1;        // 0x08, Z coordinate: 1 tile = 16 units
   u8 z2;        // 0x09, 高さの終端, 範囲判定には使われず Cmd_GetZoneBounds などが取り出すだけ
-  ZoneID16 id;  // 0x0A, スクリプトが特定のゾーンに処理をアタッチする際に使うID
+  ZoneID16 id;  // 0x0A
 } Zone;
 static_assert(sizeof(Zone) == 12);
 

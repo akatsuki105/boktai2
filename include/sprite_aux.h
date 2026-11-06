@@ -17,7 +17,7 @@ typedef struct {
   u8 ph;                    // 0x05, pixel height
   s8 px;                    // 0x06, offset pixel x
   s8 py;                    // 0x07, offset pixel y
-  u32 spritesOffset;        // 0x08, poses[] の先頭から SpriteAux の最初のスプライトまでのバイトオフセット, つまり poses[spritesOffset>>3]
+  u32 spritesOffset;        // 0x08, poses[] の先頭から SpriteAux の最初のスプライトまでのバイトオフセット, つまり poses[spritesOffset/12]
 } AuxSpriteEntry;
 static_assert(sizeof(AuxSpriteEntry) == 12);
 

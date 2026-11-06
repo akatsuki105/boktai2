@@ -336,7 +336,7 @@ _0802952C:
 	str r7, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r3, #2
-	bl FUN_0805b7d4
+	bl Entity0805b790_Spawn
 	ldrb r0, [r5]
 	lsls r0, r0, #2
 	adds r0, r4, r0
@@ -354,7 +354,7 @@ _0802952C:
 	str r7, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r3, #2
-	bl FUN_0805b7d4
+	bl Entity0805b790_Spawn
 	ldrb r0, [r5]
 	lsls r0, r0, #2
 	adds r4, r4, r0
@@ -374,7 +374,7 @@ _0802952C:
 	add r1, sp, #0x10
 	movs r3, #2
 _080295BA:
-	bl FUN_0805b7d4
+	bl Entity0805b790_Spawn
 	movs r0, #0xcd
 	bl PlaySound_0824078c
 	b _0802960C

@@ -227,7 +227,7 @@ _080ED256:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r5, sp, #0xc
 	str r4, [sp, #8]
 	add r0, sp, #8

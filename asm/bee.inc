@@ -3058,7 +3058,7 @@ FUN_0816800c: @ 0x0816800C
 	str r6, [sp]
 	adds r0, r6, #0
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	movs r2, #0x20

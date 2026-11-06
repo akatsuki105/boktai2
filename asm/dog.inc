@@ -1553,7 +1553,7 @@ FUN_0814ab28: @ 0x0814AB28
 	str r5, [sp]
 	adds r0, r5, #0
 	add r1, sp, #0xc
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x1c]
 	ands r0, r4
 	orrs r0, r6
@@ -3261,7 +3261,7 @@ _0814B820:
 	mov r0, ip
 	movs r2, #0x3c
 	movs r3, #3
-	bl FUN_081ee090
+	bl Entity081ee2a0_SpawnEx
 	add sp, #0xc
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -8253,7 +8253,7 @@ _0814DE5A:
 	adds r0, #8
 	ldrb r1, [r4, #5]
 	movs r2, #0
-	bl FUN_081f1498
+	bl Entity081f1770_Spawn
 	ldr r0, _0814DEA4 @ =0x000003A5
 	bl PlaySound_082406e0
 _0814DE78:

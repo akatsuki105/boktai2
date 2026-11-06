@@ -1,0 +1,57 @@
+#ifndef __INCLUDE_ENEMY_INLINE_H__
+#define __INCLUDE_ENEMY_INLINE_H__
+
+#include "enemy.h"
+#include "gba/gba.h"
+#include "types.h"
+
+static inline void Enemy_ResetState(Enemy* p, u8 subState0, u8 subState1, u8 subState2) {
+  p->subState0 = subState0;
+  p->subState1 = subState1;
+  p->subState2 = subState2;
+  p->subStateTimer = 0, p->subStateBegun = 1;
+}
+
+// 状態ハンドラを差し替えて入場フラグを立てる
+static inline void Enemy_EnterState(Enemy* p, void* handler, s32 state) {
+  p->stateBegun = TRUE;
+  p->subStateDone = 0;
+  p->state = state;
+  p->handlerState = handler;
+  p->stateTimer = 0;
+}
+
+// 状態に入った最初の呼び出しだけ TRUE, 入場フラグを下ろす
+static inline bool8 Enemy_ConsumeStateBegun(Enemy* p) {
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 下位状態を巻き戻した直後の呼び出しだけ TRUE, 巻き戻しの印を下ろす
+static inline bool8 Enemy_ConsumeSubStateBegun(Enemy* p) {
+  if (p->subStateBegun) {
+    p->subStateBegun = 0;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 歩きアニメの速さを 64 / animSpeedDiv にする, 怯みなどの印が立っていれば等速に戻す
+static inline void Enemy_UpdateWalkAnimSpeed(Enemy* p) {
+  if (Enemy_TestFlag3(p, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+    p->animSpeedDiv = 1;
+  } else if (p->animSpeedDiv == 0) {
+    p->animSpeedDiv = 1;
+  }
+
+  if (p->spriteKind == 0) {
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)p->sprite)->anim, Div(64, p->animSpeedDiv));
+  } else {
+    MainSprite_SetAnimSpeed(&p->sprite->s, (u16)Div(64, p->animSpeedDiv));
+  }
+}
+
+#endif  // __INCLUDE_ENEMY_INLINE_H__

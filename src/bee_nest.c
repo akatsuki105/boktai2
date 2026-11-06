@@ -34,10 +34,10 @@ typedef struct BeeNestFragment {
   u8 unk_13d;                // 0x13D, '.b', 全体のマス数
   u16 groundY;               // 0x13E, 足元のタイルの高さ, 落下がここに届くと state 4 へ移る
   s16 hp;                    // 0x140, '.A=100', 0 以下になると state 4 (または 3) へ移る
-  s16 maxHp;                 // 0x142, hp の初期値, FUN_0809c344 へ渡す
+  s16 maxHp;                 // 0x142, hp の初期値, HUD_ShowEnemyGauge へ渡す
   u8 unk_144[2];             // 0x144
   u8 unk_146;                // 0x146, '.A' の3番目
-  u8 unk_147;                // 0x147, FUN_0809c344 の第4引数
+  u8 unk_147;                // 0x147, HUD_ShowEnemyGauge の第4引数
   u16 state;                 // 0x148, PTR_ARRAY_085ae104 の添字
   s16 idx;                   // 0x14A, fragments の中での自分の添字, FUN_081d5864 が入れる
   u16 flags;                 // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
@@ -72,7 +72,7 @@ static inline bool8 BeeNest_IsActive(u32* mask, s32 i) {
 
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 
-void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 void FUN_081d5f54(BeeNestFragment* frag);
 bool8 FUN_081d6cb0(BeeNestFragment* frag);
@@ -85,7 +85,7 @@ void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttribu
 void FUN_081d6444(BeeNestFragment* frag);
 void FUN_081d65e8(BeeNestFragment* frag);
 void FUN_081d6bc0(BeeNestFragment* frag);
-void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void FUN_081d6764(BeeNestFragment* frag);
 void FUN_081d6ae8(BeeNestFragment* frag, s32 n);
 void FUN_081d6c24(BeeNestFragment* frag);
@@ -438,7 +438,7 @@ NON_MATCH void FUN_081d60c8(BeeNest* p, BeeNestFragment* frag) {
       frag->state = 4;
       frag->unk_156 = 1;
       for (i = 0; i < 8; i++) {
-        FUN_081ee584(&frag->sprite.pos, 8, 0x10, 4, 12, 0x12, i * 32, 8, 0x40, 1, 1, 0);
+        Entity081ee7a8_SpawnDefaultNow(&frag->sprite.pos, 8, 0x10, 4, 12, 0x12, i * 32, 8, 0x40, 1, 1, 0);
       }
     }
   }
@@ -586,7 +586,7 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag)
     frag->hp = 0;
   }
 
-  FUN_0809c344(frag->unk_150, frag->hp, frag->maxHp, frag->unk_147, 0);
+  HUD_ShowEnemyGauge(frag->unk_150, frag->hp, frag->maxHp, frag->unk_147, 0);
   CpuFill32(0, &v, sizeof(v));
   CreateDamageNumber(b, dealt, 0, &frag->sprite.pos, &v, 1);
   frag->unk_153 = 3;

@@ -65,7 +65,7 @@ bool32 IsWeaponRegistered(slot32_t n);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void GetWeaponData(slot32_t n, WeaponData* data);
 void FUN_08094d1c(u8* param_1, s8* param_2);
-void FUN_08094d48(unknown* w, u8* pc);
+void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
 void FUN_080b649c(Warehouse* p);
 s32 Warehouse_FindRegisteredSlot(Warehouse* p, s32 n);
@@ -627,7 +627,7 @@ void FUN_080b69b8(Warehouse* p) {
     MessageWindow_Start(p->unk_13f8);
     MessageWindow_SetRect(2, 16, 28, 2);
     FUN_08094d1c((u8*)&w, (s8*)&p->unk_1404);
-    FUN_08094d48(&w, p->unk_13f8);
+    MainMenu_SetWeaponMarquee(&w, p->unk_13f8);
   }
 }
 

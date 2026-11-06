@@ -5689,7 +5689,7 @@ _081A9284:
 _081A9286:
 	cmp r0, #0
 	beq _081A9296
-	bl FUN_081f746c
+	bl Entity081f73ec_RequestDive
 	movs r0, #0xf7
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
@@ -9722,7 +9722,7 @@ FUN_081ab06c: @ 0x081AB06C
 	str r4, [sp]
 	adds r0, r4, #0
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r5
 	movs r2, #0x20
@@ -13398,7 +13398,7 @@ _081ACC3C:
 	mov r0, ip
 	movs r2, #0x1e
 	movs r3, #3
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	add sp, #8
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -13491,7 +13491,7 @@ _081ACCF4:
 	mov r0, ip
 	movs r2, #0x3c
 	movs r3, #3
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	add sp, #8
 	pop {r4, r5, r6, r7}
 	pop {r0}

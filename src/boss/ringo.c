@@ -1,3 +1,5 @@
+#include "boss/ringo.h"
+
 #include "boss.h"
 #include "camera.h"
 #include "camera_inline.h"
@@ -16,8 +18,25 @@
 #include "video.h"
 #include "vm.h"
 
-// 紅のリンゴ, ダーイン (グラフィックが同じ2つのボスが両方ともこの構造体を使うと考えられる)
-// リンゴ (人名)
+// 紅のリンゴ, 黒のダーイン (グラフィックが同じ2つのボスが両方ともこの構造体を使う)
+// 以降は、 リンゴ と ダーイン と呼ぶ
+
+// リンゴ (魔物図鑑での名称は "ヴァンパイア")
+// 攻撃は
+//  - 切り裂き: こっちに突進して攻撃する
+//  - ヴァンパイアソード: 小さいソードを自身の周りに召喚してこちらに飛ばす
+//  - 吸血: こっちに突進して吸血攻撃
+//  - エネルギー弾: こっちにソル属性のエネルギー弾を飛ばす (1発のみ or 3発のワイドショット の2パターン)
+
+// ダーイン
+// HPが半分以下になると行動パターンが変わる (それぞれ第1形態と第2形態と呼称)
+// 攻撃は
+//  - 切り裂き: リンゴと同じ
+//  - ヴァンパイアソード: リンゴと同じ
+//  - クロロホルルン+: プレイヤー か 共闘サバタ を追尾するエネルギー弾 (技名に クロロホルルン が付くがエネミーのクロロホルルンとは関係ない)
+//  - 影の腕: 地中から影の手が生えてきて、プレイヤーを掴もうとする
+//  - ダークブラスト: (第2形態から) 大量のダーク属性のエネルギー弾を放つ技 (追尾性能とかはない)
+
 typedef struct {
   Boss base;                              // 0x000
   u8 unk_158[0x15C - 0x158];              // 0x158
@@ -169,7 +188,7 @@ typedef struct {
   u16 unk_b04;                            // 0xB04
   u16 unk_b06;                            // 0xB06
   ParticleShadow ptclShadow;              // 0xB08
-  AuxSpriteGfx auxGfx[2];                 // 0xB48, SPRITE_3668
+  AuxSpriteGfx auxGfx[2];                 // 0xB48, SPRITE_DAINN_EBALL
   bool8 auxActive[16];                    // 0xB80, auxSprites の各枠が使用中か
   AuxSprite auxSprites[16];               // 0xB90
   AuxAnimState auxAnims[16];              // 0xE50, auxSprites と同じ添字
@@ -192,9 +211,12 @@ typedef struct {
 } Ringo;
 static_assert(sizeof(Ringo) == 4188);
 
-void FUN_0805d5d4(struct Entity0805d364* p);
+struct Entity0805b068;
+s32 FUN_0805b1a0(struct Entity0805b068* p);
+
+void Entity0805d364_StartReturn(struct Entity0805d364* p);
 s32 FUN_0805b0b0(struct Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
-void FUN_0805d3a8(struct Entity0805d364* p, Vec3* from, Vec3* to, s32 param_4, s32 param_5);
+s32 Entity0805d364_Start(struct Entity0805d364* p, Vec3* from, Vec3* to, s32 speed, s32 param_5);
 bool32 FUN_0809df78(Vec3* pos);
 void FUN_080846f8(void);
 void FUN_08084734(Vec3* out);
@@ -202,19 +224,18 @@ bool32 FUN_08084710(void);
 void FUN_0823b880(s32 n);
 struct Entity0805a31c* Entity0805a31c_Create(u32 attackID);
 struct Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2);
-struct Entity0805d364* Entity0805d364_Create(u32 count);
-struct Entity0805b790* Entity0805b790_Create(u32 kind);
+struct Entity0805d364* Entity0805d364_Create(u32 targetCount);
+struct Entity0805b790* Entity0805b790_Create(bool32 isDark);
 s32 FUN_08035a64(Ringo* p);
-void FUN_0805b1a0(unknown* p);
 void FUN_080846c8(void);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
-s32 FUN_0805b7d4(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, u32 param_7, u32 param_8);
+s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockbackPower);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
 void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 FUN_0805a360(struct Entity0805a31c* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
 s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs);
-s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
+s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
 static inline void Ringo_StartPlttFade(Ringo* p, s32 mode, u32 plttID) {
@@ -739,7 +760,7 @@ NON_MATCH void FUN_08028a04(Ringo* p) {
     pos.x = ofs.x + (Random() & 0x7F) - 0x40;
     pos.y = ofs.y;
     pos.z = ofs.z + (Random() & 0x7F) - 0x40;
-    FUN_080dc0a0(&mover->pos, &pos, NULL, NULL, 1, 1);
+    SpawnBloodEx(&mover->pos, &pos, NULL, NULL, 1, 1);
   }
 #else
   INCFUNC("asm/func/FUN_08028a04.inc");
@@ -978,19 +999,19 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
   EmitSmoke(&smokePos, (Random() & 1) + 2, &size, angle + (Random() & 0x1F) - 0x10, (Random() & 3) + 4, (Random() & 1) + 1, 2, 1);
   switch (kind) {
     case 0: {
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 0, p->unk_8da, 32, p->unk_8b4, 10);
+      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 0, p->unk_8da, 32, p->unk_8b4, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
     case 1: {
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 1, mover->angle, 24, p->unk_8b6, 10);
+      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 1, mover->angle, 24, p->unk_8b6, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
     case 2: {
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da - 0x20, 24, p->unk_8b8, 10);
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da, 24, p->unk_8b8, 10);
-      FUN_0805b7d4(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da + 0x20, 24, p->unk_8b8, 10);
+      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da - 0x20, 24, p->unk_8b8, 10);
+      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da, 24, p->unk_8b8, 10);
+      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da + 0x20, 24, p->unk_8b8, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
@@ -1049,7 +1070,7 @@ void FUN_08029840(void) {
   Ringo* p = Boss_Get(BOSS_RINGO);
 
   if (p != NULL && p->entity0805d364 != NULL) {
-    FUN_0805d5d4(p->entity0805d364);
+    Entity0805d364_StartReturn(p->entity0805d364);
   }
 }
 
@@ -1212,7 +1233,7 @@ void Ringo_InitAuxSprites(Ringo* p) {
   s32 i;
 
   for (i = 0; i < 2; i++) {
-    Video_GetAuxSprite(&p->auxGfx[i], SPRITE_3668);
+    Video_GetAuxSprite(&p->auxGfx[i], SPRITE_DAINN_EBALL);
   }
   Video_SetAuxSpritePltt(&p->auxGfx[0], 196);
   Video_SetAuxSpritePltt(&p->auxGfx[1], 200);
@@ -2680,7 +2701,7 @@ void FUN_0802d4bc(Ringo* p) {
       Vec3_CopyOffsetY(&from, &mover->pos, 200);
       Map_PickPathNode(&to, &mover->pos, 0, 1, 0x100, NULL, NULL);
       if (p->entity0805d364 != NULL) {
-        FUN_0805d3a8(p->entity0805d364, &from, &to, 10, 10);
+        Entity0805d364_Start(p->entity0805d364, &from, &to, 10, 10);
       }
       Boss_SetSubState2(boss, 28);
       p->unk_893 = FALSE;
@@ -4793,7 +4814,7 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
         Vec3_SetPolar(&pos, angle, 256);
         Vec3_Add(&pos, &boss->mover.pos);
         pos.y += 0xA4;
-        FUN_0805b7d4(p->entity0805b790, &pos, boss->playerPos[p->targetPlayer], 0, angle, 20, p->unk_8ca, 50);
+        Entity0805b790_Spawn(p->entity0805b790, &pos, boss->playerPos[p->targetPlayer], 0, angle, 20, p->unk_8ca, 50);
       }
       break;
     }

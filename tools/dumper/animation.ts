@@ -14,8 +14,8 @@ const indent = "  ";
 const ID = 0x5130;
 
 const macros = `
-.macro animation variant_count, cmd_idx, cmd_count
-  .byte \\variant_count, \\cmd_count
+.macro animation cmd_idx, cmd_count, variant_count
+  .byte (\\variant_count << 4), \\cmd_count
   .2byte 4 + (ANIM_COUNT << 2) + (\\cmd_idx << 1)
 .endm
 
@@ -35,7 +35,7 @@ const stringifyFile = (rom: DataView, hdr: MFT.FSEntry, dir: MFT.Directory, idx:
   const f = ANIM.Parse(data);
 
   const fileID = dir.ids[idx];
-  console.log(`Animation_${gba.toHex16(fileID)}: @ 0x${gba.toHex32(start)}, index: ${idx}`);
+  console.log(`Animation_${gba.toHex16(fileID)}: @ 0x${gba.toHex32(start)}, index: ${idx}, id: 0x${gba.toHex16(fileID)}`);
   console.log(ANIM.Stringify(f, indent) + "\n");
 };
 

@@ -32,7 +32,7 @@ typedef struct TimeMC {
 static_assert(sizeof(TimeMC) == 204);
 
 void FUN_080a6e88(bool32 stopSound);
-void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
+void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
 void TimeMC_UpdateActivated(TimeMC* p);
 void TimeMC_UpdateDone(TimeMC* p);
 
@@ -83,7 +83,7 @@ void TimeMC_UpdateIdle(TimeMC* p) {
     if (TEST_FLAGS(gPlayerStates[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && gPlayerPtr[0]->formRequest == 0 && p->readyTimer > 9) {
       p->highlight = 8;
       FUN_080a6e88(TRUE);
-      FUN_0807ba94(gPlayerPtr[0], &p->pos, 0, 4);
+      Player_MoveTo(gPlayerPtr[0], &p->pos, 0, 4);
       TimeMC_SetUpdateCallback(p, TimeMC_UpdateActivated);
     }
   } else {

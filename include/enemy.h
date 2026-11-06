@@ -4,6 +4,7 @@
 #include "collision_map.h"
 #include "cwolf_target.h"
 #include "eff_082473e0.h"
+#include "file.h"
 #include "gba/gba.h"
 #include "hitbox.h"
 #include "mover.h"
@@ -44,12 +45,15 @@ typedef u32 EnemyFlags;
 #define ENEFLAG_UNK_6 (1 << 6)    // 0x00000040, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_7 (1 << 7)    // 0x00000080, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_8 (1 << 8)    // 0x00000100, FUN_080f46a4 がまとめて落とす
+#define ENEFLAG_UNK_9 (1 << 9)    // 0x00000200, Mimic_Init が立てる
 #define ENEFLAG_UNK_10 (1 << 10)  // 0x00000400, FUN_080f54e4 が状態23へ移すときに立てる
 #define ENEFLAG_UNK_12 (1 << 12)  // 0x00001000, FUN_080ed068 / FUN_080edebc が立てる
 #define ENEFLAG_UNK_13 (1 << 13)  // 0x00002000, Cmd_1E97 が立てる
 #define ENEFLAG_UNK_14 (1 << 14)  // 0x00004000, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_16 (1 << 16)  // 0x00010000, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_17 (1 << 17)  // 0x00020000, Cmd_1E97 が立てる
+#define ENEFLAG_UNK_18 (1 << 18)  // 0x00040000, '.u' が 0 以外なら Mimic_Init が立てる
+#define ENEFLAG_UNK_19 (1 << 19)  // 0x00080000, '.u' が 2 なら Mimic_Init が UNK_18 と一緒に立てる
 #define ENEFLAG_UNK_22 (1 << 22)  // 0x00400000, FUN_080f2364 が立っているときだけ経路を進める
 #define ENEFLAG_UNK_20 (1 << 20)  // 0x00100000, FUN_080f0a0c が UNK_24 と揃って立っているときだけ相手を取りに行く
 #define ENEFLAG_UNK_21 (1 << 21)  // 0x00200000, FUN_080e5b2c が立っているときだけ ENEFLAG2_UNK_24 などを落とす
@@ -63,12 +67,16 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_0 (1 << 0)    // 0x00000001, FUN_080f56ec が立っていればエモートを 2 番にして落とす
 #define ENEFLAG2_UNK_1 (1 << 1)    // 0x00000002, FUN_080f6c74 が状態29へ入るときに落とす
 #define ENEFLAG2_UNK_2 (1 << 2)    // 0x00000004, 立っていると FUN_080f84d4 が反応しない
+#define ENEFLAG2_UNK_3 (1 << 3)    // 0x00000008, Mimic_Init が立てる
 #define ENEFLAG2_UNK_4 (1 << 4)    // 0x00000010, FUN_080f47c8 が立っているときだけ状態14へ遷移する
 #define ENEFLAG2_UNK_5 (1 << 5)    // 0x00000020, FUN_080f2864 が下位状態の終わりで立て, 経路ノードを進めるときに落とす
 #define ENEFLAG2_UNK_9 (1 << 9)    // 0x00000200, Enemy_SetEmote が FUN_080d9cec に 0/1 で渡す
+#define ENEFLAG2_UNK_10 (1 << 10)  // 0x00000400, Curoro_Init が立てる
 #define ENEFLAG2_UNK_6 (1 << 6)    // 0x00000040, FUN_080f5c0c が落とす
 #define ENEFLAG2_UNK_8 (1 << 8)    // 0x00000100, FUN_080f5c0c が落とす
 #define ENEFLAG2_UNK_11 (1 << 11)  // 0x00000800, FUN_080e49c4 が立っているときだけ ENEFLAG4_UNK_12 へ進む
+#define ENEFLAG2_UNK_12 (1 << 12)  // 0x00001000, 立っている間は Boku が経路ノードの待ちを終えても歩き出さない
+#define ENEFLAG2_UNK_13 (1 << 13)  // 0x00002000, flags5 の UNK_2 が立っていると Mimic_Init が状態を初期化する代わりに立てる
 #define ENEFLAG2_UNK_14 (1 << 14)  // 0x00004000, FUN_080f6868 が落とす
 #define ENEFLAG2_UNK_15 (1 << 15)  // 0x00008000, 立っていると FUN_080f00ec が見つかった回数を数えない
 #define ENEFLAG2_UNK_16 (1 << 16)  // 0x00010000, FUN_080e191c がアニメの頭で IsInPuddle を呼んで落とす
@@ -121,6 +129,8 @@ typedef u16 EnemyFlags4;
 
 // Enemy.flags5 (0x474)
 typedef u16 EnemyFlags5;
+#define ENEFLAG5_UNK_1 (1 << 1)    // 0x0002, 立っていると食らい判定のハンドラが攻撃者を常にプレイヤー1として覚える (ミミックの Mimic_OnHurt)
+#define ENEFLAG5_UNK_2 (1 << 2)    // 0x0004, 立っていると Mimic_Init が状態を初期化しない
 #define ENEFLAG5_UNK_3 (1 << 3)    // 0x0008, 立っていると FUN_080e4444 が経路の島を確かめずにプレイヤーを見つけたことにする
 #define ENEFLAG5_UNK_5 (1 << 5)    // 0x0020, 立っていると Enemy_SnapToFloor が mover.pos.y を床に合わせない
 #define ENEFLAG5_UNK_6 (1 << 6)    // 0x0040, 立っていると FUN_080f6c74 が当たり判定の向きを外す
@@ -170,6 +180,11 @@ typedef u32 EnemyFlags6;
 #define ES_UNK_30 30
 #define ES_UNK_31 31      // FUN_080f46a4
 #define ES_BLOWN_AWAY 32  // unk_5ec, 吹き飛ばしの通知で入る
+#define ES_UNK_33 33
+#define ES_UNK_34 34  // ミミックの FUN_08147030
+#define ES_UNK_35 35  // ミミックの FUN_081473ac
+#define ES_UNK_36 36  // ミミックの FUN_08147530
+#define ES_UNK_37 37  // ミミックの FUN_08147428
 
 struct Enemy;
 struct EnemyTarget;
@@ -194,7 +209,7 @@ typedef struct Enemy {
   MoverTile moverTile;              // 0x08C, ENEFLAG_UNK_13 が立っていて ENEFLAG5_UNK_5 が無いとき FUN_080e191c が mover.tile に繋ぐ
   PathWalker pathWalker;            // 0x09C, 経路追従の状態, mover.path がここを指す, 根拠: FUN_080ee2c8 が Map_InitPathWalker(&pathWalker, ...) のあと mover.path に代入する
   ZoneEventSource zoneSource;       // 0x0A8, FUN_080e191c が毎フレーム Map_UpdateZoneEvents に渡す
-  HitboxData hitbox;                // 0x0D8, Enemy_RegisterHitbox ほかが組んで登録する
+  HitboxData hurtbox;               // 0x0D8, 食らい判定, Enemy_RegisterHurtbox / Enemy_RegisterHurtboxWithFlags が組んで登録する
   HitboxData atkHitbox;             // 0x128, Enemy_InitAtkHitbox が atkPower ほかの攻撃パラメータを載せて組む攻撃判定
   EnemyFlags flags;                 // 0x178, bit0/1=活動停止判定, bit3=FUN_080ec92c が毎フレーム1体だけに立てる
   EnemyFlags2 flags2;               // 0x17C, bit21=FUN_080edebc がパレット転送の向きとして反転させる
@@ -225,7 +240,7 @@ typedef struct Enemy {
   u16 unk_1ca;                      // 0x1CA, FUN_080e4b3c が 4 の倍数のときだけ速さを半分にする
   void* unk_1cc;                    // 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される
   s32 exp;                          // 0x1D0, 倒されたとき AddPlayerExp に渡す量
-  s32 unk_1d4;                      // 0x1D4, FUN_080fadd4 が MsgPacket.unk_4 を書く
+  s32 hitTargetID;                  // 0x1D4, 自分の攻撃判定が当たった相手 (HIM_0〜3) の HitboxData.id, 毎フレーム 0 に戻り, 正なら EnemyTargetManager_FindOwnerByID で playerMover をその相手にする
   Mover* playerMover;               // 0x1D8, FUN_080faa98 が gPlayerPtr[n]->mover を書く
   u8 unk_1dc;                       // 0x1DC
   u8 angle;                         // 0x1DD, 8bit の向き, gSineTable の索引
@@ -262,10 +277,10 @@ typedef struct Enemy {
   u8 unk_251;                       // 0x251
   u8 unk_252;                       // 0x252, '.r[1]'
   u8 unk_253;                       // 0x253
-  u16 maxHp;                        // 0x254, hp の初期値, FUN_0809c344 へ渡す
+  u16 maxHp;                        // 0x254, hp の初期値, HUD_ShowEnemyGauge へ渡す
   u16 unk_256;                      // 0x256, FUN_080e4384 が引数座標のタイル索引と突き合わせる
   u16 prevTileIdx;                  // 0x258, 前のフレームの unk_256
-  u16 unk_25a;                      // 0x25A, FUN_0809c344 の第4引数
+  u16 unk_25a;                      // 0x25A, HUD_ShowEnemyGauge の第4引数
   u8 prevPathNode;                  // 0x25C, 直前にいた経路ノード番号, FUN_080e7204 が次のノードを選ぶときに避ける
   u8 spriteKind;                    // 0x25D, 0 なら sprite を AuxSprite 系、非0なら MainSprite 系として扱う
   u16 unk_25e;                      // 0x25E, FUN_080f0320 が追う相手の足元のタイル索引を書く
@@ -305,7 +320,7 @@ typedef struct Enemy {
   u16 variant;                      // 0x480, 敵の変種(kind が ビー系 なら variant で ビー,ポイズンビー,キラービー を決める)
   u16 animSpeedDiv;                 // 0x482, 歩きアニメの速さの割る数, 速さは 64 / animSpeedDiv, 0 なら 1 に直される
   s32 subStateTimer;                // 0x484, handlerTables を切り替えるときに 0 でクリアされる
-  u8 unk_488[0x48A - 0x488];        // 0x488
+  u16 unk_488;                      // 0x488
   u16 unk_48a;                      // 0x48A, FUN_080e499c が 0 を書く
   u8 unk_48c;                       // 0x48C, FUN_080e499c が 0 を書く
   u8 unk_48d;                       // 0x48D
@@ -383,15 +398,17 @@ typedef struct Enemy {
   void* unk_5d0;                    // 0x5D0, 状態17のハンドラ
   void* unk_5d4;                    // 0x5D4, 状態21のハンドラ, FUN_080e6978 が handlerState へ写す
   void* unk_5d8;                    // 0x5D8, 状態22のハンドラ, NULL なら FUN_080f54e4
-  u8 unk_5dc[0x5E8 - 0x5DC];        // 0x5DC
+  void* unk_5dc;                    // 0x5DC
+  void* unk_5e0;                    // 0x5E0
+  void* unk_5e4;                    // 0x5E4
   void* unk_5e8;                    // 0x5E8, 状態25のハンドラ, FUN_080f2ec0 が攻撃対象に近づいたとき handlerState へ写す
   void* unk_5ec;                    // 0x5EC, 状態32のハンドラ, FUN_080f48ac が吹き飛ばしの通知で handlerState へ写す
   EnemyHandler unk_5f0;             // 0x5F0, fn(p), FUN_080e72b0 がアニメの再生し直しの合図で呼ぶ
   u8 unk_5f4[0x5F8 - 0x5F4];        // 0x5F4
   EnemyHandler unk_5f8;             // 0x5F8, fn(p), FUN_080ee738 が呼ぶ
-  u8 unk_5fc[0x600 - 0x5FC];        // 0x5FC
+  void* unk_5fc;                    // 0x5FC
   void* unk_600;                    // 0x600, EnemyBat_Init がアドレスを取る, 呼び出しは未発見
-  u8 unk_604[0x608 - 0x604];        // 0x604
+  void* unk_604;                    // 0x604
   bool8 (*unk_608)(struct Enemy*);  // 0x608, FUN_080f22c4 ほか19関数が使う
   void* unk_60c;                    // 0x60C, 関数ポインタ表, Enemy_DispatchMsg が fn = unk_60c[arg[0]] を fn(p, arg) で呼ぶ
   u8 unk_610[0x614 - 0x610];        // 0x610
@@ -452,7 +469,11 @@ bool8 Enemy_IsPosInRect(Enemy* p, WorldPos* pos, u32 rx, u32 rz);
 bool8 Enemy_IsDead(Enemy* p);  // NULL / 破棄待ち / 数えない敵 / hp が 0 以下なら TRUE
 bool32 Enemy_Init_080ec640(Enemy* p);
 Enemy* FindEnemyById(u32 id);
+void EnemyAuxSprite_LoadAnim(EnemyAuxSpriteData* p, FileID animID);
 void Enemy_PlayAnim(Enemy* p, s32 animIdx);
+void Enemy_SetAnimEntry(Enemy* p, s32 idx, s32 anim, s32 val3);
+void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner);
+void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner);
 void Enemy_TargetNearestPlayer(Enemy* p, Vec3* pos);
 void Enemy_ClearPendingState(Enemy* p, const char* filename, s32 val);
 s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant);
@@ -463,6 +484,11 @@ void FUN_080ec848(u8 enemyKind, void* payload, u16 moverID);    // 種族(ENEK_x
 void FUN_080e5610(u8 enemyKind, u8 dir, s32* outX, s32* outY);  // 種族ごとの表から, 向きに応じて Enemy_SetEmote が使う2つの値を引く
 void FUN_080e81dc(Enemy* p, s32 param_2);
 void FUN_080e6204(Enemy* p);
+bool8 FUN_080f0320(Enemy* p);
+bool8 FUN_080f6e64(Enemy* p);
+bool8 FUN_080f64f0(Enemy* p);
+void FUN_080e6750(Enemy* p);
+void Enemy_InitHandlerTables(Enemy* p);
 
 // Enemy全体で利用される共通ハンドラ
 void FUN_080e6624(Enemy* p, u16* msg);

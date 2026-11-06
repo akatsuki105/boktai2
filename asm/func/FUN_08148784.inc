@@ -51,12 +51,12 @@ _081487E2:
 	cmp r0, #0
 	beq _08148800
 	adds r0, r4, #0
-	bl FUN_081484b8
+	bl Mimic_FindOpeningPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08148828
 	adds r0, r4, #0
-	bl FUN_081489a0
+	bl Mimic_IsPlayerLost
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08148850
@@ -78,7 +78,7 @@ _08148814:
 	cmp r1, r0
 	bgt _081488AE
 	adds r0, r4, #0
-	bl FUN_081484b8
+	bl Mimic_FindOpeningPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08148850

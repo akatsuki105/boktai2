@@ -150,7 +150,7 @@ _081D61C8:
 	movs r1, #8
 	movs r2, #0x10
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 	adds r4, #1
 	cmp r4, #7
 	ble _081D61C8

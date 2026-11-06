@@ -94,7 +94,7 @@ _081CFDE8:
 	movs r1, #8
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [sp, #0x20]
@@ -144,7 +144,7 @@ _081CFDE8:
 	movs r1, #8
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [sp, #0x20]
@@ -194,7 +194,7 @@ _081CFDE8:
 	movs r1, #8
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [sp, #0x20]
@@ -244,7 +244,7 @@ _081CFDE8:
 	movs r1, #8
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [sp, #0x20]
@@ -282,7 +282,7 @@ _081CFDE8:
 	movs r1, #8
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [sp, #0x20]
@@ -321,7 +321,7 @@ _081CFDE8:
 	movs r1, #8
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee584
+	bl Entity081ee7a8_SpawnDefaultNow
 _081D0046:
 	add sp, #0x28
 	pop {r3, r4, r5}

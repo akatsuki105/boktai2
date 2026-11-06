@@ -558,7 +558,7 @@ void FUN_080540d4(BlackPanther* p, BlackPantherElem* elem) {
     BlackPantherElem_PlayAnim(p, elem, 5, 2, 0, 4);
   }
   if (elem->stateTimer == 30) {
-    PlaySound_082406e0(SONG_801);
+    PlaySound_082406e0(SE_MEOW_801);
   }
   if (SpriteHolder_IsAnimEnded(&elem->sprite) && p->endScriptID != 0) {
     VM_ExecByID(p->endScriptID, NULL);
@@ -583,7 +583,7 @@ void FUN_08054170(BlackPanther* p, BlackPantherElem* elem) {
     } else {
       BlackPantherElem_PlayAnim(p, elem, 9, 2, 0, 4);
     }
-    PlaySound_082406e0(SONG_799);
+    PlaySound_082406e0(SE_MEOW_799);
   }
   elem->stateTimer++;
 }

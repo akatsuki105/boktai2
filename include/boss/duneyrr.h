@@ -24,31 +24,33 @@ typedef struct {
   AuxSpriteGfx gfx;       // 0x018, SPRITE_DUNEYRR_AUX
   AuxSprite sprite;       // 0x034
   AuxAnimState anim;      // 0x060
-  HitboxData hurtbox;     // 0x070, ハンドラは Entity08059a1cElem_OnHurt
+  HitboxData hurtbox;     // 0x070, ハンドラは DuneyrrPowderBall_OnHurt
   HitboxData hitbox;      // 0x0C0
   ParticleShadow shadow;  // 0x110
-} Entity08059a1cElem;
-static_assert(sizeof(Entity08059a1cElem) == 336);
+} DuneyrrPowderBall;
+static_assert(sizeof(DuneyrrPowderBall) == 336);
 
-// Duneyrr関係
-typedef struct Entity08059a1c {
-  Entity e;                     // 0x000, ENTITY_UNK_8
-  AuxAnimFile* anim;            // 0x018, ANIM_31F4
-  u32 activeMask;               // 0x01C, bit i が立っていれば elems[i] が使用中
-  u32 frameCount;               // 0x020
-  u16 power;                    // 0x024, 各部品の hitbox の power
-  u16 knockbackPower;           // 0x026
-  u16 invincibleTime;           // 0x028, 各部品の hitbox の invincibleTime
-  u16 dustPower;                // 0x02A, FUN_0805965c が DustManager_Emit に渡す鱗粉の power
-  s32 circlingCount;            // 0x02C, state 1 (center の周りを回る) の部品の数
-  u8 unk_30[0x34 - 0x30];       // 0x030
-  Vec3 center;                  // 0x034
-  Entity08059a1cElem elems[8];  // 0x03C
-  struct Player* player;        // 0xABC
-} Entity08059a1c;
-static_assert(sizeof(Entity08059a1c) == 2752);
+// ドゥネイルの攻撃"鱗粉玉" (Phosphorous Powder Ball)
+// プレイヤーに対して飛ばしたり、ステージ中央の燭台の周りに複数出して燭台の周りをグルグル回らせたりする
+// 地形にぶつかると、粉エフェクトを出して消える
+typedef struct DuneyrrPowderBallManager {
+  Entity e;                    // 0x000, ENTITY_UNK_8
+  AuxAnimFile* anim;           // 0x018, ANIM_31F4
+  u32 activeMask;              // 0x01C, bit i が立っていれば balls[i] が使用中
+  u32 frameCount;              // 0x020
+  u16 power;                   // 0x024, 各部品の hitbox の power
+  u16 knockbackPower;          // 0x026
+  u16 invincibleTime;          // 0x028, 各部品の hitbox の invincibleTime
+  u16 dustPower;               // 0x02A, FUN_0805965c が DustManager_Emit に渡す鱗粉の power
+  s32 circlingCount;           // 0x02C, state 1 (center の周りを回る) の部品の数
+  u8 unk_30[0x34 - 0x30];      // 0x030
+  Vec3 center;                 // 0x034
+  DuneyrrPowderBall balls[8];  // 0x03C
+  struct Player* player;       // 0xABC
+} DuneyrrPowderBallManager;
+static_assert(sizeof(DuneyrrPowderBallManager) == 2752);
 
-Entity08059a1c* Entity08059a1c_Create(s32 power, s32 knockbackPower, s32 param_3, s32 param_4);
-s32 Entity08059a1c_AddElem(Entity08059a1c* p, u32 angle, u32 param_3);
+DuneyrrPowderBallManager* DuneyrrPowderBallManager_Create(s32 power, s32 knockbackPower, s32 param_3, s32 param_4);
+s32 DuneyrrPowderBallManager_AddBall(DuneyrrPowderBallManager* p, u32 angle, u32 param_3);
 
 #endif  // __INCLUDE_BOSS_DUNEYRR_H__

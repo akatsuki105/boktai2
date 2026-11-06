@@ -11,7 +11,7 @@ typedef void(Entity080c0fa0Func)(struct Entity080c0fa0* p);
 typedef struct Entity080c0fa0 {
   Entity e;                            // 0x00, ENTITY_UNK_10
   AuxSprite sprite;                    // 0x18, delay が 0 でない間は隠す
-  AuxSpriteGfx gfx;                    // 0x44, SPRITE_210E
+  AuxSpriteGfx gfx;                    // 0x44, SPRITE_EBALL_210E
   Vec3 pos;                            // 0x60, '.p'
   u8 unk_68[2];                        // 0x68, まだ未解析
   u16 poseIdx;                         // 0x6A, '.E', sprite.poseIdx の初期値
@@ -101,7 +101,7 @@ s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, s32 poseI
   AuxSpriteGfx* gfx = &p->gfx;
   s32 angle;
 
-  Video_GetAuxSprite(gfx, SPRITE_210E);
+  Video_GetAuxSprite(gfx, SPRITE_EBALL_210E);
   AuxSprite_Add(sprite, gfx, 0);
   p->pos = *pos;
   sprite->pos = *pos;

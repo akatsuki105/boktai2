@@ -130,7 +130,7 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
   `bl` whatever the surrounding shape, while the target keeps two. Every spelling
   tried (if/else, early-out, a `ret` local, a local for the argument) merged it,
   so this residual is one instruction that no source-level change reaches
-  (`FUN_0807a6cc`).
+  (`CalcAttackWithEquippedArmor`).
 - **Aggregates.** Several scalars that always travel together may have been one
   struct. A local aggregate has different lifetime and addressing rules than
   independent locals, so restoring it changes codegen as well as readability.
@@ -408,7 +408,7 @@ Four positions, cheapest first:
   This is the same mechanism as the flag macros, and it still applies to
   non-flag helpers. Two paired field writes that always travel together go in
   one: `SetSubState(p, n)` (`p->unk_1a = n; p->unk_6c = 0;`) in
-  `src/entity_ef6f.c` closed `FUN_0801f130`. (`src/entity_ef6f.c` also keeps its
+  `src/forge_ef6f.c` closed `FUN_0801f130`. (`src/forge_ef6f.c` also keeps its
   own `HideBG(u32 bits)`, which is the pre-macro spelling of `CLEAR_FLAGS`.)
 - **So the converse is a lever too.** If the target loads the memory operand
   *first* and only then materializes the constant, the original did **not**
@@ -460,7 +460,7 @@ Moving `HideBG` (`gStagedDISPCNT &= ~bits;`) from `src/bg.c` into `include/video
 so a third file could call it changed the register allocation of
 `GameOverManager_StateShowLogo` in `src/gameover.c`, which neither calls it nor
 mentions `gStagedDISPCNT`. Merely being declared in an included header is enough.
-Define the helper per translation unit instead (`src/entity_ef6f.c` keeps its
+Define the helper per translation unit instead (`src/forge_ef6f.c` keeps its
 own copy of `HideBG` for this reason, and `src/entity_5ccc.c` keeps its own
 `TileHeightAt` after moving `src/collision_map.c`'s into `include/collision_map.h`
 perturbed `FUN_0807a270` in `src/player.c`). For flag operations this does not

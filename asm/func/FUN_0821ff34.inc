@@ -241,7 +241,7 @@ _08220100:
 	movs r1, #8
 	str r1, [sp, #8]
 	add r1, sp, #0xc
-	bl FUN_0805e6bc
+	bl Entity0805e67c_Spawn
 	movs r0, #0xf6
 	lsls r0, r0, #2
 	adds r1, r5, r0

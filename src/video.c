@@ -8,6 +8,7 @@
 #include "global.h"
 #include "particle.h"
 #include "sprite.h"
+#include "trig.h"
 
 // フレームの描画/反映の入口, 描画リスト, AuxSprite, スプライト資源の読み込み, OBJ タイルの確保と OAM の組み立て
 // BG (タイルマップ) 側は src/bg.c, 表示レジスタの退避/復帰と直書きは src/video_reg.c にある
@@ -26,6 +27,7 @@ extern OamData gOAMBuffer[128];
 extern u16 gOAMPrioCounts[4];
 extern s32 gOAMCount;
 extern s32 gStagedOAMCount;
+extern OamData gStagedOAMBuffer[128];
 
 extern bool32 gDispcntLocked;
 extern bool32 gVBlankDone;
@@ -35,6 +37,9 @@ extern u16 gObjPlttLen;
 
 extern u8 gOAMHeightTable[16];
 extern u8 gOAMWidthTable[16];
+extern u8 gOAMTileCounts[16];
+extern u32 gOAMShapeSizeAttrTable[16];
+extern u8 gObjMosaicEnabled;
 
 extern u16 gMainSpriteTileCount;
 extern u16 gObjTileRequestCount;
@@ -83,6 +88,8 @@ void Font_FlushGlyphTiles(void);
 void FUN_0822eef4(void);
 void Video_ApplyMosaic(void);
 void CommitPalette(void);
+s32 Video_AllocObjTiles(void* tiles, s32 tileCount);
+
 typedef Entity VideoCommit;  // Entity と同じサイズ, 他のEntityにある Create, Init, Destroy 関数 はなく Update (VideoCommit_Update) のみ
 
 // VBlank を待って、この 1 フレーム分の OAM・パレット・タイル・レジスタをまとめてハードへ反映する
@@ -322,11 +329,276 @@ void AuxSprite_SetGfxPtr(AuxSprite* p, AuxSpriteGfx* gfx) {
   }
 }
 
-NAKED void AuxSprite_DrawInternal(AuxSprite* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/AuxSprite_DrawInternal.inc"); }
+// 残差は後半の OAM 書き込みループのレジスタ割り当てだけまで詰められた (以下の工夫を全部入れた形で 628 命令中 20 hunk, 下の C は inline を展開した素直な形), 原典は p+0x10 を基底に offsetX(+6)/offsetY(+7)/plttOffset(+3) を読んでおり 0x10 からの 8 バイトは部分構造体らしい, s8* info = &p->poseIdx 経由で読むと p がスタックに落ちて一致に近づく, gfx->poses を代入してから poseIdx を足す 2 段の形, subsprite はループ前に別変数へ写してから sub++, 後半ループは i を使い回す, アフィン添字は return gObjAffineCount++ の inline, OAM 書き込みは (attr01, attr2) を u32 で受ける inline にすると attr2 の計算位置まで揃う
+NON_MATCH void AuxSprite_DrawInternal(AuxSprite* p, s32 x, s32 y, s32 z) {
+#ifdef NONMATCHING_C
+  u32 attrs[32];
+  s32 tileOffs[32];
+  s32 i;
+  s32 sin, cos;
+  u32 attr01;
+  s32 count;
+  AuxSpriteGfx* gfx;
+  s32 tileOff, tileCount;
+  s32 left, top;
+  s32 baseX, baseY;
+  u8 priority;
+  AuxSpritePose* pose;
+  AuxSubsprite* subs;
+  AuxSubsprite* sub;
+
+  z = FixToInt(1, z);
+  if (z < -128) {
+    z = -128;
+  } else if (z > 127) {
+    z = 127;
+  }
+
+  attr01 = 0;
+  if (((gObjMosaicEnabled & 1) && p->priority && !(p->flags & SPRFLAG_UNK_16)) || (p->flags & SPRFLAG_UNK_11)) {
+    attr01 |= 0x1000;
+  }
+  if (p->flags & SPRFLAG_UNK_8) {
+    attr01 |= 0x800;
+  }
+  if (gObjBlendEnabled && (p->flags & SPRFLAG_UNK_14)) {
+    attr01 |= 0x400;
+  }
+  attr01 |= p->oamAttr;
+
+  if (!(p->flags & SPRFLAG_AFFINE)) {
+    if (p->flags & SPRFLAG_XFLIP) {
+      attr01 |= 0x10000000;
+    }
+    if (p->flags & SPRFLAG_YFLIP) {
+      attr01 |= 0x20000000;
+    }
+    sin = 0;
+    cos = 0;
+  } else {
+    s32 sx = p->scaleX;
+    s32 sy = p->scaleY;
+    s32 idx;
+
+    if (p->flags & SPRFLAG_XFLIP) {
+      sx = -sx;
+    }
+    if (p->flags & SPRFLAG_YFLIP) {
+      sy = -sy;
+    }
+    if ((sx < 0 ? -sx : sx) > 60 || (sy < 0 ? -sy : sy) > 60 || p->rotation != 0) {
+      attr01 |= 0x300;
+    } else {
+      attr01 |= 0x100;
+    }
+    if (gObjAffineCount > 31) {
+      idx = 0;
+    } else {
+      gObjAffineParams[gObjAffineCount].angle = p->rotation;
+      gObjAffineParams[gObjAffineCount].scaleX = sx;
+      gObjAffineParams[gObjAffineCount].scaleY = sy;
+      idx = gObjAffineCount++;
+    }
+    attr01 |= idx << 25;
+    sin = SIN(-p->rotation);
+    cos = COS(-p->rotation);
+  }
+
+  gfx = p->gfx;
+  pose = &gfx->poses[p->poseIdx];
+  subs = (AuxSubsprite*)((u8*)gAuxSubsprites + pose->subspriteOffset);
+  if (p->flags & SPRFLAG_XFLIP) {
+    baseX = x - p->offsetX;
+  } else {
+    baseX = x + p->offsetX;
+  }
+  if (p->flags & SPRFLAG_YFLIP) {
+    baseY = y - p->offsetY;
+  } else {
+    baseY = y + p->offsetY;
+  }
+  priority = p->priority;
+  count = 0;
+  tileOff = 0;
+  tileCount = 0;
+  sub = subs;
+
+  for (i = 0; i < pose->subspriteCount; i++, sub++) {
+    u8 shape = sub->shape;
+    s32 w, h;
+
+    tileOff += tileCount;
+    w = gOAMWidthTable[shape];
+    h = gOAMHeightTable[shape];
+    tileCount = gOAMTileCounts[shape];
+    if (!(p->flags & SPRFLAG_AFFINE)) {
+      s32 right, bottom;
+
+      if (p->flags & SPRFLAG_XFLIP) {
+        right = -sub->x;
+        left = right - w;
+      } else {
+        left = sub->x;
+        right = left + w;
+      }
+      if (p->flags & SPRFLAG_YFLIP) {
+        bottom = -sub->y;
+        top = bottom - h;
+      } else {
+        top = sub->y;
+        bottom = top + h;
+      }
+      left += baseX;
+      top += baseY;
+      if (left > 240 || top > 180 || right + baseX < 0 || bottom + baseY < 0) {
+        continue;
+      }
+    } else {
+      s32 hw = w >> 1;
+      s32 hh = h >> 1;
+      s32 dx = FixToInt(6, (sub->x + hw) * p->scaleX);
+      s32 dy = FixToInt(6, (sub->y + hh) * p->scaleY);
+
+      if (p->flags & SPRFLAG_XFLIP) {
+        dx = -dx;
+      }
+      if (p->flags & SPRFLAG_YFLIP) {
+        dy = -dy;
+      }
+      left = FixToInt(12, dx * cos - dy * sin) - hw;
+      top = FixToInt(12, dx * sin + dy * cos) - hh;
+      if ((attr01 & 0x300) == 0x300) {
+        left -= hw;
+        top -= hh;
+        w *= 2;
+        h *= 2;
+      }
+      left += baseX;
+      top += baseY;
+      if (left + w < 0 || left > 240 || top + h < 0 || top > 180) {
+        continue;
+      }
+    }
+    attrs[count] = ((left & 0x1FF) << 16) | (top & 0xFF) | attr01 | gOAMShapeSizeAttrTable[shape];
+    tileOffs[count] = tileOff;
+    count++;
+  }
+
+  if (count > 0) {
+    s32 tileIdx = Video_AllocObjTiles(gAuxSpriteTiles + pose->tileOffset, pose->tileCount);
+    u32 attr2 = (priority << 10) | (AllocBlendPlttSlot(gfx->plttID + p->plttOffset, gfx->pltt) << 12);
+
+    if (p->flags & SPRFLAG_OAM_DIRECT) {
+      for (i = 0; i < count; i++) {
+        s32 n = gOAMCount;
+
+        if (n < 128) {
+          OamData* oam = &gOAMBuffer[n];
+
+          *(u32*)oam = attrs[i];
+          *((u16*)oam + 2) = (tileIdx + tileOffs[i]) | attr2;
+          gOAMCount = n + 1;
+          gOamDirty |= 1;
+        }
+      }
+    } else {
+      for (i = 0; i < count; i++) {
+        s32 n = gStagedOAMCount;
+
+        if (n < 128) {
+          OamData* oam = &gStagedOAMBuffer[n];
+
+          *(u32*)oam = attrs[i];
+          *((u16*)oam + 2) = (tileIdx + tileOffs[i]) | attr2;
+          oam->affineParam = ((z + 0x80) & 0xFF) << 8;
+          gStagedOAMCount = n + 1;
+          gOAMPrioCounts[priority]++;
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/AuxSprite_DrawInternal.inc");
+#endif
+}
 
 // 汎用の AuxSprite 描画パス (ほとんどの場面で使われる)
 // 描画リストの AuxSprite を全部描くメインのパス, AuxSprite.scaleX/scaleY が入っているものは当たり判定の矩形も同じ倍率で縮めてから画面外判定する
-NAKED void AuxSprite_DrawList(void) { INCFUNC("asm/func/AuxSprite_DrawList.inc"); }
+// 通常の AuxSprite 描画パス, 画面外のものは除いて AuxSprite_DrawInternal に渡す, アフィンのものは拡縮後の大きさで判定する
+// 残差: 229 対 228 命令, AuxSprite_DrawListGameover の形にアフィンの判定を足したもの, 原典は z をスタックに逃がし p を r5 に置く割当と, アフィンの px/py を gfx を先に読んで求める順が違う
+NON_MATCH void AuxSprite_DrawList(void) {
+#ifdef NONMATCHING_C
+  SpriteFlags skipMask = (gFrameCounter & 1) ? (SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD) : (SPRFLAG_HIDDEN | SPRFLAG_BLINK_EVEN);
+  AuxSprite* p;
+  Vec3 screen;
+
+  for (p = gAuxSpriteLists[gSpriteListIdx]; p != NULL; p = p->next) {
+    SpriteFlags flags = p->flags;
+    AuxSpriteGfx* gfx;
+    s32 x, y, z;
+
+    if (flags & skipMask) {
+      continue;
+    }
+
+    gfx = p->gfx;
+    if (!(flags & SPRFLAG_SCREEN_COORD)) {
+      WorldToScreen(&screen, &p->pos);
+      x = screen.x;
+      y = screen.y;
+      z = screen.z;
+    } else {
+      x = p->pos.x;
+      y = p->pos.y;
+      z = p->pos.z;
+    }
+
+    if (!(p->flags & SPRFLAG_NO_CLIP)) {
+      s32 left, top, w, h;
+
+      if (p->flags & SPRFLAG_AFFINE) {
+        s32 px = (gfx->px * p->scaleX) >> 6;
+        s32 py = (gfx->py * p->scaleY) >> 6;
+
+        w = (p->scaleX * gfx->pw) >> 6;
+        h = (p->scaleY * gfx->ph) >> 6;
+        if (p->flags & SPRFLAG_XFLIP) {
+          left = x + px - w;
+        } else {
+          left = x - px;
+        }
+        if (p->flags & SPRFLAG_YFLIP) {
+          top = y + py - h;
+        } else {
+          top = y - py;
+        }
+      } else {
+        if (p->flags & SPRFLAG_XFLIP) {
+          left = x + gfx->px - gfx->pw;
+          w = gfx->pw;
+        } else {
+          left = x - gfx->px;
+          w = gfx->pw;
+        }
+        if (p->flags & SPRFLAG_YFLIP) {
+          top = y + gfx->py - gfx->ph;
+          h = gfx->ph;
+        } else {
+          top = y - gfx->py;
+          h = gfx->ph;
+        }
+      }
+      if (left > 240 || top > 180 || left + w < 0 || top + h < 0) {
+        continue;
+      }
+    }
+
+    AuxSprite_DrawInternal(p, x, y, z);
+  }
+#else
+  INCFUNC("asm/func/AuxSprite_DrawList.inc");
+#endif
+}
 
 // 描画リストの AuxSprite を順に描く, 点滅で消える回と画面外のものは落とす
 // MainSprite_DrawListScreen / Particle_DrawListScreen と同じ組で Video_SetDrawPasses に差し替えられる側 ('v' 引数を渡す VM スクリプトがないので実際には動かない)
@@ -693,4 +965,79 @@ void Video_ResetFrameState(u32 clearOam) {
 
 // gStagedOAMBuffer のスプライトを優先度順に gOAMBuffer へ並べ替え、続く領域に OAM のアフィン行列を組んで gOamDirty を立てる
 // 優先度ごとのバケットは attr3 の上位バイトを鍵、下位バイトを次要素の添字とした連結リストで、スタック上の 256 バイトが各バケットの先頭を持つ
-NAKED void Video_BuildOAM(void) { INCFUNC("asm/func/Video_BuildOAM.inc"); }
+// 残差: 185 対 187 命令, 形とスタック配置は一致, 原典は gOAMBuffer をループの前から sb に置き, 詰め直しのループのレジスタ割当も違う
+NON_MATCH void Video_BuildOAM(void) {
+#ifdef NONMATCHING_C
+  u8 heads[256];
+  OamData* src;
+  OamData* dst;
+  ObjAffineParams* aff;
+  s32 count;
+  s32 depth;
+  s32 i;
+
+  CpuFastFill(-1, heads, sizeof(heads));
+  src = gStagedOAMBuffer;
+  for (i = 0; i < gStagedOAMCount; i++, src++) {
+    u16 key = src->affineParam;
+
+    src->affineParam = heads[key >> 8] | key;
+    heads[key >> 8] = i;
+  }
+  {
+    s32 slots[4];
+
+    count = gOAMCount;
+    for (i = 0; i < 4; i++) {
+      slots[i] = count;
+      count += gOAMPrioCounts[i];
+    }
+    count = gOAMCount;
+    for (depth = 255; depth >= 0 && count < 128;) {
+      u8 idx = heads[depth--];
+
+      while (idx != 0xFF) {
+        OamData* entry = &gStagedOAMBuffer[idx];
+        s32* slot = &slots[entry->priority];
+
+        if (*slot < 128) {
+          gOAMBuffer[*slot] = *entry;
+          count++;
+          (*slot)++;
+        }
+        idx = entry->affineParam;
+      }
+    }
+  }
+  for (dst = &gOAMBuffer[count]; count < 128; count++, dst++) {
+    *(u32*)dst = 0x200;
+  }
+  dst = gOAMBuffer;
+  aff = gObjAffineParams;
+  if (gObjAffineCount > 31) {
+    gObjAffineCount = 32;
+  }
+  for (i = 0; i < gObjAffineCount; i++, dst += 4, aff++) {
+    s32 s = SIN(aff->angle) * 4;
+    s32 c = COS(aff->angle) * 4;
+
+    if (aff->scaleX == 0) {
+      dst[0].affineParam = 0;
+      dst[1].affineParam = 0;
+    } else {
+      dst[0].affineParam = Div(c, aff->scaleX);
+      dst[1].affineParam = Div(-s, aff->scaleX);
+    }
+    if (aff->scaleY == 0) {
+      dst[2].affineParam = 0;
+      dst[3].affineParam = 0;
+    } else {
+      dst[2].affineParam = Div(s, aff->scaleY);
+      dst[3].affineParam = Div(c, aff->scaleY);
+    }
+  }
+  gOamDirty |= 1;
+#else
+  INCFUNC("asm/func/Video_BuildOAM.inc");
+#endif
+}

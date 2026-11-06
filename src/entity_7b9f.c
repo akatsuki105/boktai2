@@ -1,4 +1,3 @@
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -44,7 +43,7 @@ static inline bool8 Entity7B9F_IsActive(u32* mask, s32 i) {
   return FALSE;
 }
 
-void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 void nop_081d8368(Entity7B9FElem* e);
 void nop_081d88a4(void);
@@ -144,7 +143,7 @@ void FUN_081d8560(Entity7B9FElem* e) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    FUN_081ee584(&e->sprite.pos, 8, 0x10, 4, 0xC, 0x12, i * 32, 8, 0x40, 1, 0, 0x200);
+    Entity081ee7a8_SpawnDefaultNow(&e->sprite.pos, 8, 0x10, 4, 0xC, 0x12, i * 32, 8, 0x40, 1, 0, 0x200);
   }
 }
 

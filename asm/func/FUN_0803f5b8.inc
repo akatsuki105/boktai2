@@ -246,7 +246,7 @@ _0803F740:
 	str r1, [sp, #8]
 	add r1, sp, #0xc
 	mov r3, ip
-	bl FUN_0805e6bc
+	bl Entity0805e67c_Spawn
 	mov r1, sl
 	ldr r0, [r1]
 	adds r0, #1
@@ -277,7 +277,7 @@ _0803F740:
 	str r1, [sp, #8]
 	add r1, sp, #0xc
 	mov r3, ip
-	bl FUN_0805e6bc
+	bl Entity0805e67c_Spawn
 	mov r1, sl
 	ldr r0, [r1]
 	adds r0, #1
@@ -310,7 +310,7 @@ _0803F740:
 	ldrsh r1, [r5, r4]
 	str r1, [sp, #8]
 	add r1, sp, #0xc
-	bl FUN_0805e6bc
+	bl Entity0805e67c_Spawn
 	movs r0, #0xea
 	bl PlaySound_0824078c
 _0803F822:

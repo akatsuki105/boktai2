@@ -391,7 +391,7 @@ _081ED9CC:
 	mov r1, sl
 	ldrb r2, [r1]
 	add r1, sp, #0xc
-	bl FUN_081ed650
+	bl Entity081edcc4_CanReach
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081EDA3C

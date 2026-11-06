@@ -307,7 +307,14 @@ NON_MATCH s32 Video_LoadTileSetParts(s32 bg, TileSetFile* f, s32 count, u16* ids
 #endif
 }
 
-// BG のタイルマップバッファの (x, y) にエントリ (タイル番号, 反転, パレット) を書く
+/**
+ * @brief BG のタイルマップバッファの (x, y) にエントリ (タイル番号, 反転, パレット) を書く
+ * @param x8 GBAタイル単位の X 座標
+ * @param y8 GBAタイル単位の Y 座標
+ * @param tileidx GBAタイル番号
+ * @param flip 反転フラグ, bit0: xflip, bit1: yflip
+ * @param pltt パレット番号 (0..15)
+ */
 void Video_SetBGTile(s32 bg, u32 x8, u32 y8, u32 tileidx, u32 flip, u32 pltt) {
   BgState* s = &gBgStates[bg];
 

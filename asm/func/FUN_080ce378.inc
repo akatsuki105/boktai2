@@ -32,7 +32,7 @@
 	adds r0, r5, r2
 	movs r2, #0
 	bl ParticleShadow_Init
-	bl Entity080dc44c_Create
+	bl BloodEmitter_Create
 	adds r0, r5, #0
 	bl FUN_080cdc10
 	adds r0, r5, #0

@@ -16,9 +16,9 @@
 	movs r2, #0
 	bl FUN_080e37e8
 	adds r0, r7, #0
-	bl FUN_080ffc2c
+	bl Boku_InitAnims
 	adds r0, r7, #0
-	bl FUN_08100164
+	bl Boku_InitDelayedScript
 	ldr r2, _08101D94 @ =0x0000025D
 	adds r0, r7, r2
 	ldrb r0, [r0]
@@ -1377,7 +1377,7 @@ _08102834:
 	ldr r1, [sp, #0x4c]
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ffa44
+	bl Boku_InitHitboxes
 	ldr r2, [sp, #0x24]
 	movs r3, #0xd0
 	lsls r3, r3, #3
@@ -2028,7 +2028,7 @@ _08102D2E:
 	str r0, [r1]
 	ldr r2, _08102DC8 @ =0x0000061C
 	adds r1, r7, r2
-	ldr r0, _08102DCC @ =FUN_08101c1c
+	ldr r0, _08102DCC @ =EnemyBoku_Update
 	str r0, [r1]
 	movs r3, #0xc4
 	lsls r3, r3, #3
@@ -2046,7 +2046,7 @@ _08102D2E:
 _08102DC0: .4byte 0x0000057C
 _08102DC4: .4byte Enemy_DispatchMsg
 _08102DC8: .4byte 0x0000061C
-_08102DCC: .4byte FUN_08101c1c
+_08102DCC: .4byte EnemyBoku_Update
 _08102DD0: .4byte EnemyBoku_Destroy
 _08102DD4:
 	movs r0, #1

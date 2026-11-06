@@ -233,7 +233,7 @@ _080DD6B4:
 	movs r1, #8
 	movs r2, #0x10
 	movs r3, #4
-	bl FUN_081ee4ec
+	bl Entity081ee7a8_SpawnDefault
 	adds r5, #1
 	cmp r5, #7
 	ble _080DD6B4

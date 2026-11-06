@@ -66,10 +66,10 @@
 #define BGM_RINNE 61      // BGM:"生と死の輪廻"
 #define BGM_MATEKI 62     // BGM:"魔笛"
 #define SONG_63 63
-#define BGM_BLACK_DAINN 64  // BGM:"黒きダーイン"
-#define BGM_WEDGE 65        // BGM:"くさび"
-#define BGM_RAIN 66         // BGM:"雨", 不穏な時のBGM
-#define SONG_67 67
+#define BGM_BLACK_DAINN 64         // BGM:"黒きダーイン"
+#define BGM_WEDGE 65               // BGM:"くさび"
+#define BGM_RAIN 66                // BGM:"雨", 不穏な時のBGM
+#define BGM_MATEKI_ALT 67          // BGM:"魔笛" の player 12 バージョン
 #define BGM_WHAT 68                // BGM:"ん？", クロを見つけたときのBGM
 #define BGM_SANSHIMAI 69           // BGM:"三姉妹"
 #define BGM_SMITH 70               // BGM:"鋼鉄のスミス"
@@ -134,9 +134,9 @@
 #define SONG_129 129
 #define SONG_130 130
 #define NOISE_WIND_STRONG 131  // NOISE_WIND より強めの風の音, 使用箇所はまだ不明
-#define SE_CHIME 132           // 夕方の時計塔の鐘の音
-#define SONG_133 133
-#define SONG_134 134
+#define SE_CHIME_1 132         // 時計塔の鐘の音
+#define SE_CHIME_2 133         // 時計塔の鐘の音(エコー用)
+#define SE_CHIME_3 134         // 時計塔の鐘の音(エコー用)
 #define SONG_135 135
 #define SONG_136 136
 #define SONG_137 137
@@ -177,7 +177,7 @@
 #define SONG_172 172
 #define BGM_SHADEMAN 173  // BGM:"シェードマン"
 #define SONG_174 174
-#define SONG_175 175
+#define BGM_MMBN5 175    // ロックマンエグゼ5のメインテーマのアレンジ版
 #define BGM_WIN 176      // BGM:"勝ち！"
 #define BGM_LOSE 177     // BGM:"負け！"
 #define BGM_BBB 178      // BGM:"道具屋キッド"
@@ -231,18 +231,18 @@
 #define SE_METAL_226 226      // 金属のSE (棺桶に閉じ込めた時?)
 #define SE_DUNGEON_TITLE_CLOSE 227
 #define CRY_CURORO_DEATH 228
-#define SONG_229 229
-#define SE_DAMAGE 230  // プレイヤーがダメージ食らった時の音
+#define SE_UNDEAD_EXORCISM 229  // アンデッドの消失音(ザフッって感じのSE)
+#define SE_DAMAGE 230           // プレイヤーがダメージ食らった時の音
 #define VO_DJANGO_DEATH 231
 #define CRY_BAT_DEATH 232
 #define SONG_233 233
 #define SONG_234 234
-#define SONG_235 235
-#define SONG_236 236
-#define SONG_237 237
-#define SONG_238 238
-#define CRY_BOKU_DETECT 239  // MGSでいう敵に物音を聞かれた時
-#define CRY_BOKU_ALERT 240   // 見つかった時
+#define SE_WALL_KNOCK_FRAGILE 235  // 壁叩きSE(ダイナマイトで壊せる傷んだ壁)
+#define SE_WALL_KNOCK 236          // 壁叩きSE(通常)
+#define CRY_BOKU_STUN 237          // ボク系の敵が気絶(麻痺などで頭に星が出ている状態)になったときの鳴き声
+#define CRY_BOKU_STUN_RECOVER 238  // ボク系の敵が気絶から回復した時の鳴き声
+#define CRY_BOKU_DETECT 239        // MGSでいう敵に物音を聞かれた時
+#define CRY_BOKU_ALERT 240         // 見つかった時
 #define CRY_BOKU_QUESTION 241
 #define SONG_242 242
 #define SONG_243 243
@@ -256,8 +256,8 @@
 #define SE_GENERATOR_ENABLED 251   // パイルドライバーのジェネレータが有効になった時
 #define SE_GENERATOR_DISABLED 252  // パイルドライバーのジェネレータが無効になった時
 #define CRY_MUMMY_DAMAGED 253
-#define SE_UNK_254 254
-#define CRY_MUMMY_255 255  // マミーのボイス
+#define CRY_MUMMY_STUN 254  // マミーが気絶(麻痺などで頭に星が出ている状態)になった時の鳴き声(起きる時は無音で起きるのでサウンドは存在しない)
+#define CRY_MUMMY_255 255   // マミーのボイス
 #define CRY_MUMMY_DEATH 256
 #define CRY_MUMMY_ATK 257  // マミーの攻撃時のボイス (飛びかかり, 爆弾吐き両方)
 #define CRY_MUMMY_DETECT 258
@@ -268,20 +268,20 @@
 #define SE_TEXT_SHOW 263  // 会話中Aボタンで次のテキストを表示する時, 選択肢が表示された時になる (テキストを読みとばさないための音), 会話の開始時には鳴らない(ただし会話の最初のテキストが選択肢なら鳴る)
 #define SONG_264 264
 #define SONG_265 265
-#define SE_MENU_PAGE 266       // メニューでLRボタンでページを切り替えた時のSE
-#define SE_QUICK_CHANGE 267    // クイックチェンジ(マップ上のHUDとスタートメニューの装備ページでセレクト押した状態　で装備を変更する時の音)
-#define SE_SIDEBAR_TOGGLE 268  // スタートメニューで、"START"ボタンを押した時(左から、ページ一覧のサイドバーが現れたり消えたりする時の音)
-#define SE_HEAL 269            // 回復アイテムで回復した時の音
-#define SE_TRASH 270           // アイテムを捨てた時の音
-#define SE_OPEN_TREASURE 271   // 宝箱開けた時の音
-#define SE_PICKUP 272          // 袋アイテム取得時の音
-#define SE_EQUIP 273           // メニューでの武器と防具装備時の音
-#define SE_UNK_274 274         // バット？
-#define CRY_SPIDER_DEATH 275   // スパイダー以外にも、サンドウォームとサーペントの死亡音にも使われる
-#define SE_UNK_276 276
-#define SE_UNK_277 277  // レイス？
-#define SE_UNK_278 278
-#define SE_UNK_279 279
+#define SE_MENU_PAGE 266              // メニューでLRボタンでページを切り替えた時のSE
+#define SE_QUICK_CHANGE 267           // クイックチェンジ(マップ上のHUDとスタートメニューの装備ページでセレクト押した状態　で装備を変更する時の音)
+#define SE_SIDEBAR_TOGGLE 268         // スタートメニューで、"START"ボタンを押した時(左から、ページ一覧のサイドバーが現れたり消えたりする時の音)
+#define SE_HEAL 269                   // 回復アイテムで回復した時の音
+#define SE_TRASH 270                  // アイテムを捨てた時の音
+#define SE_OPEN_TREASURE 271          // 宝箱開けた時の音
+#define SE_PICKUP 272                 // 袋アイテム取得時の音
+#define SE_EQUIP 273                  // メニューでの武器と防具装備時の音
+#define SE_UNK_274 274                // バット？
+#define CRY_SPIDER_DEATH 275          // スパイダー以外にも、サンドウォームとサーペントの死亡音にも使われる
+#define CRY_SPIDER_ATK 276            // ポイズンスパイダーが毒液を吐く時の音
+#define SE_SPIDER_WEB_HIT 277         // スパイダーの設置した巣にプレイヤーが触れた時の音
+#define SE_SPIDER_WEB_STRUGGLE_0 278  // プレイヤーがスパイダーの巣から出ようともがく音その1
+#define SE_SPIDER_WEB_STRUGGLE_1 279  // プレイヤーがスパイダーの巣から出ようともがく音その2
 #define SE_OPEN_MENU 280
 #define SE_CLOSE_MENU 281
 #define SE_UNK_282 282
@@ -314,11 +314,11 @@
 #define SONG_309 309
 #define SONG_310 310
 #define SONG_311 311
-#define SE_CONFUSE 312   // 多分、"悪いキノコ"を食べて混乱したときのSE
-#define SE_ALERT 313     // CRY_XXXX_ALERT の汎用SE
-#define SE_DETECT 314    // CRY_XXXX_DETECT の汎用SE
-#define SE_QUESTION 315  // CRY_XXXX_QUESTION の汎用SE
-#define SONG_316 316
+#define SE_CONFUSE 312         // 多分、"悪いキノコ"を食べて混乱したときのSE
+#define SE_ENEMY_ALERT 313     // CRY_XXXX_ALERT の汎用SE
+#define SE_ENEMY_DETECT 314    // CRY_XXXX_DETECT の汎用SE
+#define SE_ENEMY_QUESTION 315  // CRY_XXXX_QUESTION の汎用SE
+#define SE_ENEMY_STUN 316      // 敵の気絶時の鳴き声(CRY_BOKU_STUN などの専用SEを持たない場合の汎用音)
 #define SONG_317 317
 #define SE_ENEMY_DAMAGED 318  // 敵がダメージ受けた時のSE
 #define SONG_319 319
@@ -332,7 +332,7 @@
 #define SONG_327 327
 #define SONG_328 328
 #define SONG_329 329
-#define SONG_330 330
+#define SE_330 330  // 壊れる様な音?
 #define SONG_331 331
 #define SONG_332 332
 #define SONG_333 333
@@ -359,7 +359,7 @@
 #define SE_FSTEP_PUDDLE_0 354  // 水溜まりの足音
 #define SE_FSTEP_PUDDLE_1 355
 #define SONG_356 356
-#define SONG_357 357
+#define SE_M_SUN_BURST 357  // 魔法"ライジングサン","ブラックサン"で打ち上げた玉が弾けた時の爆発音
 #define SONG_358 358
 #define SE_LINK_359 359  // ピキーンみたいなSE(通信対戦のSE)
 #define SONG_360 360
@@ -379,7 +379,7 @@
 #define SONG_374 374
 #define SE_375 375
 #define SONG_376 376
-#define SONG_377 377
+#define SE_PETAL_SCATTER 377  // ドゥラスロールの花びらが舞い散る時のバサバサ
 #define SE_378 378
 #define SE_379 379
 #define SE_380 380
@@ -395,11 +395,11 @@
 #define CRY_GOLEM_ALERT 390   // 見つかった時
 #define CRY_GOLEM_391 391     // ゴーレムっぽい
 #define SONG_392 392
-#define SONG_393 393
+#define SE_GOLEM_ROLL 393  // ゴーレムが丸まって転がってるときのSE
 #define SONG_394 394
 #define SONG_395 395
 #define SONG_396 396
-#define SONG_397 397
+#define CRY_GOLEM_397 397
 #define SONG_398 398
 #define SONG_399 399
 #define SONG_400 400
@@ -413,7 +413,7 @@
 #define SE_CIRCLE_IN 408   // 魔方陣の有効範囲に入ったときのSE
 #define SE_CIRCLE_OUT 409  // 魔方陣から離れたときのSE
 #define SE_DRUMROLL 410    // ◀︎ NNN ▶︎ のようなドラムロールUIのカーソル移動音 (縦版もある)
-#define SONG_411 411
+#define SE_411 411
 #define SONG_412 412
 #define SONG_413 413
 #define SONG_414 414
@@ -426,16 +426,16 @@
 #define SONG_421 421
 #define SONG_422 422
 #define SONG_423 423
-#define SONG_424 424
+#define SE_FLAMETHROWER_424 424  // 火が噴き出す時のSE
 #define SONG_425 425
-#define SONG_426 426
+#define SE_M_HEALING_GROW 426  // ヒーリングで植物が大きくなる時のSE
 #define SE_WOOD_DOOR_427 427
 #define SONG_428 428
-#define SONG_429 429
+#define SE_FALL_SURPRISE 429  // プレイヤーが落下するときのびっくりSE (SE_ENEMY_ALERT とすこし違うだけ)
 #define SONG_430 430
 #define SONG_431 431
 #define SONG_432 432
-#define SONG_433 433
+#define SE_CHARA_SUPRISE 433  // "!"(白), プレイヤーやNPC, ボスが使用 (NPC は雨が降ってきた時とか)
 #define SONG_434 434
 #define SONG_435 435
 #define SONG_436 436
@@ -495,7 +495,7 @@
 #define SE_COFFIN_OPEN 490   // 棺桶を開けた時の音(スリーピング終了時)
 #define SE_COFFIN_CLOSE 491  // 棺桶を閉めた時の音(スリーピング開始時)
 #define SONG_492 492
-#define SONG_493 493
+#define SE_CHARA_QUESTION 493  // キャラが "?" を出すときの音
 #define SONG_494 494
 #define SONG_495 495
 #define SE_MMBN_496 496  // プラグインの音？
@@ -513,12 +513,12 @@
 #define SONG_508 508
 #define SONG_509 509
 #define SONG_510 510
-#define SE_511 511  // 金属の枷のような音
+#define SE_SPIKEBALL 511  // 鉄球(SPRITE_SPIKEBALL)が落ちてきたときのSE
 #define SONG_512 512
 #define SONG_513 513
-#define SONG_514 514
+#define SE_GUN_SPREAD 514  // スプレッド攻撃時の照射SE
 #define SONG_515 515
-#define SONG_516 516
+#define SE_SABATA_SPIN 516  // 暗黒独楽(回転しながらスプレッド攻撃)のときのブンブン回るSE
 #define SONG_517 517
 #define SONG_518 518
 #define SONG_519 519
@@ -544,7 +544,7 @@
 #define SE_539 539        // 属性ブロック？
 #define SE_COUNTDOWN 540  // カウントダウンHUDのカウント音
 #define SONG_541 541
-#define SONG_542 542  // CRY_GHOST_DEATH の代わりに使われることがある
+#define SE_GHOST_542 542  // CRY_GHOST_DEATH の代わりに使われることがある
 #define SONG_543 543
 #define SONG_544 544
 #define SONG_545 545
@@ -571,7 +571,7 @@
 #define SONG_566 566
 #define SONG_567 567
 #define SONG_568 568
-#define SONG_569 569
+#define NOISE_DARK_CHARGE 569  // 暗黒チャージ中のSE (NOISE_SOLAR_CHARGE のサバタ版)
 #define SONG_570 570
 #define SONG_571 571
 #define SONG_572 572
@@ -607,7 +607,7 @@
 #define SONG_602 602
 #define SE_FSTEP_F_0 603  // 女性キャラの足音 (SE_FSTEP_F_1 と交互に鳴らす)
 #define SE_FSTEP_F_1 604  // 女性キャラの足音 (SE_FSTEP_F_0 と交互に鳴らす)
-#define SONG_605 605
+#define SE_605 605        // ブラックホールのSE?
 #define SONG_606 606
 #define SONG_607 607
 #define SONG_608 608
@@ -684,7 +684,7 @@
 #define SONG_679 679
 #define SONG_680 680
 #define SONG_681 681
-#define SONG_682 682
+#define SE_COFFIN_RATTLE 682  // 棺桶がカタカタ震えるSE
 #define SONG_683 683
 #define SONG_684 684
 #define SONG_685 685
@@ -801,11 +801,11 @@
 #define SONG_796 796
 #define SONG_797 797
 #define SONG_798 798
-#define SONG_799 799
-#define SONG_800 800
-#define SONG_801 801
-#define SONG_802 802
-#define SONG_803 803
+#define SE_MEOW_799 799  // 猫の鳴き声
+#define SE_MEOW_800 800  // 猫の鳴き声
+#define SE_MEOW_801 801  // 猫の鳴き声
+#define SE_MEOW_802 802  // 猫の鳴き声
+#define SE_MEOW_803 803  // 猫の鳴き声
 #define SONG_804 804
 #define SONG_805 805
 #define SONG_806 806
@@ -838,7 +838,7 @@
 #define SONG_833 833
 #define SONG_834 834
 #define SONG_835 835
-#define SONG_836 836
+#define SE_M_ZEROSHIFT 836  // 魔法"ゼロシフト"のSE
 #define SONG_837 837
 #define SE_838 838
 #define SONG_839 839
@@ -916,22 +916,22 @@
 #define SE_SPEAR_ATK_R 911   // 赤ジャンゴでの槍攻撃SE
 #define SE_HAMMER_ATK_R 912  // 赤ジャンゴでの槌攻撃SE
 #define SONG_913 913
-#define SE_M_DASH 914     // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
-#define SE_M_ENCHANT 915  // エンチャントをONにした時のSE
-#define SONG_916 916
-#define SONG_917 917
-#define SONG_918 918
-#define SE_M_HEALING 919   // 魔法"ヒーリング"を使った時の魔法音(ボイスの方ではない)
-#define SE_M_FREEZE 920    // 魔法"フリーズ"を使った時の魔法音
-#define SE_M_DYNAMITE 921  // 魔法"ダイナマイト"を発動した時のSE (ダイナマイトの爆発は SE_EXPLOSION)
-#define SONG_922 922
-#define SE_TRANSFORM 923  // トランス使用時のSE
-#define SONG_924 924
-#define SONG_925 925
-#define SE_CHANGE_WOLF 926
-#define SONG_927 927
-#define SE_CHANGE_BAT 928
-#define SE_CHANGE_MOUSE 929
+#define SE_M_DASH 914              // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
+#define SE_M_ENCHANT 915           // エンチャントをONにした時のSE
+#define SE_FORGE_STRIKE_GREAT 916  // 太陽鍛治で叩いた時に "GREAT"
+#define SE_FORGE_STRIKE_GOOD 917   // 太陽鍛治で叩いた時に "GOOD"
+#define SE_FORGE_STRIKE_BAD 918    // 太陽鍛治で叩いた時に "BAD"
+#define SE_M_HEALING 919           // 魔法"ヒーリング"を使った時の魔法音(ボイスの方ではない)
+#define SE_M_FREEZE 920            // 魔法"フリーズ"を使った時の魔法音
+#define SE_M_DYNAMITE 921          // 魔法"ダイナマイト"を発動した時のSE (ダイナマイトの爆発は SE_EXPLOSION)
+#define SE_M_CHANGE 922            // 魔法"Cマウス","Cバット"発動,解除時のSE
+#define SE_M_TRANS 923             // 魔法"トランス"使用時のSE
+#define SE_M_RISINGSUN 924         // 魔法"ライジングサン"のSE
+#define SE_M_BLACKSUN 925          // 魔法"ブラックサン"のSE
+#define SE_M_CWOLF 926             // 魔法"Cウルフ"発動時のSE(狼の鳴き声)
+#define SE_M_CWOLF_BITE 927        // 魔法"Cウルフ"で噛みついた時のSE
+#define SE_M_CBAT 928              // 魔法"Cバット"発動時に、 SE_M_CHANGE と一緒に鳴るSE (コウモリの羽ばたきSE)
+#define SE_M_CMOUSE 929            // 魔法"Cマウス"発動時に、 SE_M_CHANGE と一緒に鳴るSE (ネズミの鳴き声)
 #define CRY_DOG_DEATH 930
 #define CRY_DOG_DETECT 931
 #define CRY_DOG_ALERT 932
@@ -961,10 +961,10 @@
 #define SONG_956 956
 #define SONG_957 957
 #define SONG_958 958
-#define SONG_959 959
-#define CRY_SLIME_DEATH 960
-#define SONG_961 961
-#define SONG_962 962
+#define SE_SLIME_DAMAGED 959
+#define SE_SLIME_DEATH 960
+#define SE_SLIME_ATK 961      // スライムが飛びかかる時のSE
+#define SE_SLIME_FISSION 962  // スライムが分裂したときのSE
 #define SONG_963 963
 #define SONG_964 964
 #define CRY_BEE_DEATH 965

@@ -17,7 +17,6 @@ COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
 COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
-s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
 s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 struct Elevator* Elevator_FindAtPos(Vec3* pos);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
@@ -124,7 +123,7 @@ NON_MATCH void FUN_080856f4(Coffin* p) {
 
   if (t >= 0x60) {
     if (t == 0x60) {
-      PlaySound_082406e0(SONG_682);
+      PlaySound_082406e0(SE_COFFIN_RATTLE);
     }
     p->unk_31e = (Random() & 1) * 11 - 5;
     p->unk_322 = -p->unk_31e;

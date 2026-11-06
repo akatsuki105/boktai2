@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "malloc.h"
+#include "map_inline.h"
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
@@ -10,17 +11,17 @@
 
 // サボテン1つ (破壊可能, 触れるとダメージ)
 typedef struct {
-  u16 id;                        // 0x00, '.n', hitbox の id になる
-  s16 hp;                        // 0x02, '.l=100', Cactus_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
+  u16 id;                        // 0x00, '.n', hurtbox の id になる
+  s16 hp;                        // 0x02, '.l=100', Cactus_OnHurt が HitboxData.damage の分だけ減らし 0 以下で破壊される
   ZoneID32 zoneID;               // 0x04, '.m' が 0 以外のときだけ GetZoneAt(pos) の戻り値が入る,負なら生成を中止する,書くだけで読み手はいない
   u16 scriptId;                  // 0x08, '.b', 破壊時に VM_ExecByID へ渡してから 0 に戻す
-  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hitbox.flags に HBFLAG_HIDDEN が立つ
+  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hurtbox.flags に HBFLAG_HIDDEN が立つ
   u8 unk_0b;                     // 0x0B, padding?
   s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の VM_ExecByID の argv[4..7] になる
-  Vec3 pos;                      // 0x14, HazardManager_Spawn の第1引数のコピー
+  Vec3 pos;                      // 0x14, SpawnCactus の第1引数のコピー
   Vec3 min;                      // 0x1C, pos - (0xA4, 0x80, 0xA4)
   Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると CactusManager.hitbox が攻撃側として登録される
-  HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHit で owner はこの Cactus
+  HitboxData hurtbox;            // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHurt で owner はこの Cactus
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
   AuxSprite sprite;              // 0x8C
   AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
@@ -41,10 +42,17 @@ static_assert(sizeof(CactusManager) == 116);
 
 COMMON_DATA CactusManager* gCactusManager = NULL;  // 0x03002B34
 
-s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+static inline bool8 IsInBox(Vec3* pos, Vec3* min, Vec3* max) {
+  if (pos->x >= min->x && pos->x <= max->x && pos->y >= min->y && pos->y <= max->y && pos->z >= min->z && pos->z <= max->z) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+s32 FUN_08014da0(s32 count, s32 kind, Vec3* pos, s32 speed, s32 lifetimeBase, s32 lifetimeRand, s32 speedBase, s32 speedRand, s32 angleBase, s32 angleRand, s32 velYBase, s32 velYRand);
 
 // 被弾時に呼ばれる,hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
-void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
+void Cactus_OnHurt(HitboxData* a, HitboxData* b, Cactus* owner) {
   Cactus* p = owner;  // これを入れないと一致しない, でも不自然なので後で自然な書き方に直せるか試す
   Hitbox_ApplyDamage(a, b);
   if (b->damage != 0) {
@@ -53,7 +61,7 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
       p->hp = 0;
     } else {
       p->damageTimer = 10;
-      Video_SetAuxSpritePltt(&p->gfx, 306);
+      Video_SetAuxSpritePltt(&p->gfx, OBP_WHITE_306);
       if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) PlaySound_082406e0(SE_ENEMY_DAMAGED);
     }
     b->damage = 0;
@@ -61,93 +69,90 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
 }
 
 // Cactus 1個を当たり判定・描画・地形の各リストから外し、スロットを空きに戻す
-s32 Cactus_Remove(CactusManager* p, Cactus* hazard, u32 idx) {
-  Hitbox_Unregister(&hazard->hitbox);
-  AuxSprite_Remove(&hazard->sprite);
-  Map_RemoveTileOverride(&hazard->tileOverride);
+s32 Cactus_Remove(CactusManager* p, Cactus* cactus, u32 idx) {
+  Hitbox_Unregister(&cactus->hurtbox);
+  AuxSprite_Remove(&cactus->sprite);
+  Map_RemoveTileOverride(&cactus->tileOverride);
   p->activeMask &= ~(1 << idx);
 }
 
 // 破壊音を鳴らし、破片のパーティクルを2種類まき散らす
 void Cactus_EmitBreakEffect(Cactus* p) {
-  PlaySound_082406e0(SONG_330);
+  PlaySound_082406e0(SE_330);
   FUN_08014da0(3, 3, &p->pos, 0x3C, 0x1E, 0x10, 8, 8, 0, 0x100, 0x18, 0x10);
   FUN_08014da0(8, 7, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
 }
 
 // hp が尽きた Cactus を片付け、生きているものは点滅を進めつつ、プレイヤーが範囲に入った最初の1個に攻撃判定を置く
-// 範囲判定を bool8 を返す static inline に出すと 0/1 の作り置きは出て命令数も揃う (174/174) が, 原典はループ外に HBFLAG_HIDDEN の 4 を持ち ~4 をその場で作るのに対しこちらは逆になる
-NON_MATCH s32 CactusManager_Update(CactusManager* p) {
-#ifdef NONMATCHING_C
-  Cactus* hazard;
-  s32 slot;
-  Player* player;
-  Vec3* playerPos;
-  bool32 registered;
+s32 CactusManager_Update(CactusManager* p) {
+  Player* player = gPlayerPtr[0];
+  Vec3* playerPos = NULL;
+  bool32 attacked;
+  Cactus* cactus;
   s32 i;
-  u32 argv[8];
-  ScriptArgs sa;
 
-  player = gPlayerPtr[0];
-  playerPos = NULL;
   if (player != NULL) {
     playerPos = &player->mover.pos;
   }
-  registered = FALSE;
-  hazard = p->list;
-  for (i = 0; i < p->count; i++, hazard++) {
-    if (p->activeMask & (1 << i)) {
-      if (hazard->hp <= 0) {
-        if (hazard->scriptId != 0) {
-          argv[0] = hazard->id;
-          argv[1] = hazard->pos.x;
-          argv[2] = hazard->pos.y;
-          argv[3] = hazard->pos.z;
-          argv[4] = hazard->scriptArgs[0];
-          argv[5] = hazard->scriptArgs[1];
-          argv[6] = hazard->scriptArgs[2];
-          argv[7] = hazard->scriptArgs[3];
-          sa.argc = 8;
-          sa.argv = argv;
-          VM_ExecByID(hazard->scriptId, &sa);
-          hazard->scriptId = 0;
-        }
-        Cactus_EmitBreakEffect(hazard);
-        Cactus_Remove(p, hazard, i);
-      } else {
-        if (hazard->damageTimer != 0) {
-          Hitbox_SetFlags(&hazard->hitbox, HBFLAG_HIDDEN);
-          if (--hazard->damageTimer == 0) {
-            Video_SetAuxSpritePltt(&hazard->gfx, 283);
-          }
-        } else {
-          Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_HIDDEN);
-        }
-        if (playerPos != NULL && !registered) {
-          if (playerPos->x >= hazard->min.x && playerPos->x <= hazard->max.x && playerPos->y >= hazard->min.y && playerPos->y <= hazard->max.y && playerPos->z >= hazard->min.z && playerPos->z <= hazard->max.z) {
-            Hitbox_SetPos(&p->hitbox, &hazard->pos, 0);
-            Hitbox_Register(&p->hitbox);
-            registered = TRUE;
-          }
-        }
+
+  attacked = FALSE;
+  cactus = p->list;
+  for (i = 0; i < p->count; i++, cactus++) {
+    if (!(p->activeMask & (1 << i))) {
+      continue;
+    }
+
+    if (cactus->hp <= 0) {
+      if (cactus->scriptId != 0) {
+        u32 argv[8];
+        ScriptArgs args;
+
+        argv[0] = cactus->id;
+        argv[1] = cactus->pos.x;
+        argv[2] = cactus->pos.y;
+        argv[3] = cactus->pos.z;
+        argv[4] = cactus->scriptArgs[0];
+        argv[5] = cactus->scriptArgs[1];
+        argv[6] = cactus->scriptArgs[2];
+        argv[7] = cactus->scriptArgs[3];
+        args.argc = 8;
+        args.argv = argv;
+        VM_ExecByID(cactus->scriptId, &args);
+        cactus->scriptId = 0;
       }
+      Cactus_EmitBreakEffect(cactus);
+      Cactus_Remove(p, cactus, i);
+      continue;
+    }
+
+    if (cactus->damageTimer != 0) {
+      cactus->hurtbox.flags |= HBFLAG_HIDDEN;
+      if (--cactus->damageTimer == 0) {
+        Video_SetAuxSpritePltt(&cactus->gfx, 283);
+      }
+    } else {
+      Hitbox_ClearFlags(&cactus->hurtbox, HBFLAG_HIDDEN);
+    }
+
+    if (playerPos != NULL && !attacked && IsInBox(playerPos, &cactus->min, &cactus->max)) {
+      Hitbox_SetPos(&p->hitbox, &cactus->pos, 0);
+      Hitbox_Register(&p->hitbox);
+      attacked = TRUE;
     }
   }
+
   return 0;
-#else
-  INCFUNC("asm/func/CactusManager_Update.inc");
-#endif
 }
 
 s32 CactusManager_Destroy(CactusManager* p) {
-  Cactus* hazard;
+  Cactus* cactus;
   s32 i;
 
   if (p->list != NULL) {
-    hazard = p->list;
-    for (i = 0; i < p->count; i++, hazard++) {
+    cactus = p->list;
+    for (i = 0; i < p->count; i++, cactus++) {
       if (p->activeMask & (1 << i)) {
-        Cactus_Remove(p, hazard, i);
+        Cactus_Remove(p, cactus, i);
       }
     }
     Free(p->list);
@@ -157,7 +162,7 @@ s32 CactusManager_Destroy(CactusManager* p) {
   return 0;
 }
 
-// プレイヤーへの攻撃判定を1個だけ用意し、Hazard の配列を確保する
+// プレイヤーへの攻撃判定を1個だけ用意し、 Cactus の配列を確保する
 s32 CactusManager_Init(CactusManager* p) {
   HitboxData* hitbox;
   Cactus* list;
@@ -218,21 +223,23 @@ s32 CactusManager_FindFreeSlot(CactusManager* p) {
 }
 
 // 空きスロットに Cactus を1個置く,当たり判定・地形の高さ・スプライトを用意して使用中にする
-NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireArea, s32 scriptId, s32* args) {
+// 残差は r4/r5 の入れ替えのみ (248/247), 原典は &offset をポインタ群と一緒にループ前で r4 に作るため cactus が r5 に回る
+// Vec3* ofs = &offset をポインタ群に足すと r4/r5 は揃うが p が退避されて悪化, 宣言順でスタック位置は一致済み
+NON_MATCH s32 SpawnCactus(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireArea, s32 scriptId, s32* args) {
 #ifdef NONMATCHING_C
   CactusManager* p = gCactusManager;
-  Cactus* hazard;
-  HitboxData* hitbox;
-  AuxSpriteGfx* gfx;
-  Vec3* hazardPos;
+  s32 slot;
+  Cactus* cactus;
+  Vec3* cactusPos;
+  HitboxData* hurtbox;
   Vec3* min;
   Vec3* max;
   MapTileOverride* tileOverride;
-  CollisionMapTile* tile;
+  AuxSpriteGfx* gfx;
   MapTileOverride* ov;
-  s32 slot;
-  s32 bx, bz, idx;
-  s32 h;
+  CollisionMapTile* tile;
+  s32 idx;
+  s32 height;
   s32 i;
   Vec3 size, offset;
 
@@ -243,72 +250,103 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 re
   if (slot < 0) {
     return -1;
   }
-  hazard = &p->list[slot];
-  hazard->id = id;
-  hazard->hp = hp;
-  if (requireArea != 0) {
-    hazard->zoneID = GetZoneAt(pos);
-  } else {
-    hazard->zoneID = 0;
-  }
-  if (hazard->zoneID < 0) {
+
+  cactus = &p->list[slot];
+  cactus->id = id;
+  cactus->hp = hp;
+  cactus->zoneID = requireArea != 0 ? GetZoneAt(pos) : 0;
+  if (cactus->zoneID < 0) {
     return -1;
   }
-  hazard->scriptId = scriptId;
-  hazardPos = &hazard->pos;
-  hitbox = &hazard->hitbox;
-  min = &hazard->min;
-  max = &hazard->max;
-  tileOverride = &hazard->tileOverride;
-  gfx = &hazard->gfx;
+  cactus->scriptId = scriptId;
+
+  cactusPos = &cactus->pos;
+  hurtbox = &cactus->hurtbox;
+  min = &cactus->min;
+  max = &cactus->max;
+  tileOverride = &cactus->tileOverride;
+  gfx = &cactus->gfx;
+
   for (i = 0; i < 4; i++) {
-    hazard->scriptArgs[i] = args[i];
+    cactus->scriptArgs[i] = args[i];
   }
-  hazard->pos = *pos;
-  size.x = 0x82, size.y = Q8(0.5), size.z = 0x82;
-  offset.x = 0, offset.y = Q8(0.5), offset.z = 0;
-  Hitbox_Init(hitbox, hazard->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  Hitbox_SetPos(hitbox, hazardPos, 0);
-  Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
-  Hitbox_SetHandler(hitbox, Cactus_OnHit, hazard);
-  Hitbox_Register(hitbox);
-  hazard->min.x = -0xA4;
-  hazard->min.y = -Q8(0.5);
-  hazard->min.z = -0xA4;
-  hazard->min.x += hazard->pos.x;
-  min->y += hazardPos->y;
-  min->z += hazardPos->z;
-  hazard->max.x = 0xA4;
-  hazard->max.y = Q8(0.5);
-  hazard->max.z = 0xA4;
-  hazard->max.x += hazard->pos.x;
-  max->y += hazardPos->y;
-  max->z += hazardPos->z;
-  bx = hazard->pos.x >> 8;
-  bz = hazardPos->z >> 8;
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
+  cactus->pos = *pos;
+
+  VEC3_SET(size, 0x82, Q8(0.5), 0x82);
+  VEC3_SET(offset, 0, Q8(0.5), 0);
+  Hitbox_Init(hurtbox, cactus->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_SetPos(hurtbox, cactusPos, 0);
+  Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
+  Hitbox_SetHandler(hurtbox, Cactus_OnHurt, cactus);
+  Hitbox_Register(hurtbox);
+
+  VEC3_SET(cactus->min, -0xA4, -Q8(0.5), -0xA4);
+  cactus->min.x += cactus->pos.x;
+  min->y += cactusPos->y;
+  min->z += cactusPos->z;
+  VEC3_SET(cactus->max, 0xA4, Q8(0.5), 0xA4);
+  cactus->max.x += cactus->pos.x;
+  max->y += cactusPos->y;
+  max->z += cactusPos->z;
+
+  // 足元のタイルを1段高くして通れなくする
+  idx = GetCollisionTileIdx(cactusPos);
   ov = Map_FindTileOverride(idx, 1);
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-  h = tile->heightStairs & 0xF;
-  if (h < 0xF) {
-    h++;
+  tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+  height = tile->heightStairs & 0xF;
+  if (height < 15) {
+    height++;
   }
-  Map_AddTileOverride(tileOverride, idx, STAIRS_NONE, h, 0xFF, TATTR_WALL);
+  Map_AddTileOverride(tileOverride, idx, STAIRS_NONE, height, 0xFF, TATTR_WALL);
+
   if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
     return -1;
   }
-  AuxSprite_Add(&hazard->sprite, gfx, 0);
-  hazard->sprite.poseIdx = poseIdx;
-  hazard->sprite.pos = hazard->pos;
+  AuxSprite_Add(&cactus->sprite, gfx, 0);
+  cactus->sprite.poseIdx = poseIdx;
+  cactus->sprite.pos = cactus->pos;
   p->activeMask |= 1 << slot;
 #else
-  INCFUNC("asm/func/HazardManager_Spawn.inc");
+  INCFUNC("asm/func/SpawnCactus.inc");
 #endif
 }
 
 // 0x2306
-NAKED s32 HazardManager_SpawnScripted(void) { INCFUNC("asm/func/HazardManager_SpawnScripted.inc"); }
+// 残差1命令 (119/118), '.a' 読み込みループの終了判定を原典は &args[3] とのポインタ比較で行うが, こちらは i を数え下げのカウンタとして残す
+// 空なら pc をそのまま 0 として使う形でループ本体は一致, u32 i や ポインタで回す形は試済
+NON_MATCH s32 Cmd_SpawnCactus(void) {
+#ifdef NONMATCHING_C
+  s32 id = VM_GetNamedArgValue('n', 0);
+  s32 hp = VM_GetNamedArgValue('l', 100);
+  s32 poseIdx = VM_GetNamedArgValue('t', 1);
+  s32 requireArea = VM_GetNamedArgValue('m', 0);
+  s32 scriptId = VM_GetNamedArgValue('b', 0);
+  s32 args[4];
+  Vec3 pos;
+  s32 i;
+
+  if (VM_SeekToNamedArg('a')) {
+    for (i = 0; i < 4; i++) {
+      u8* pc = VM_GetPC();
+
+      args[i] = pc != NULL ? VM_GetValue() : (u32)pc;
+    }
+  } else {
+    for (i = 0; i < 4; i++) {
+      args[i] = 0;
+    }
+  }
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    VEC3_SET(pos, 0, 0, 0);
+  }
+  pos.x = (pos.x & ~0xFF) | 0x80;
+  pos.z = (pos.z & ~0xFF) | 0x80;
+  return SpawnCactus(&pos, id, hp, poseIdx, requireArea, scriptId, args);
+#else
+  INCFUNC("asm/func/Cmd_SpawnCactus.inc");
+#endif
+}

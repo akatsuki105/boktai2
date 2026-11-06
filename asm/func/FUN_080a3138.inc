@@ -21,7 +21,7 @@
 	adds r0, r4, r0
 	adds r1, r4, #0
 	adds r1, #0x98
-	bl FUN_080a2678
+	bl EntityA8F1Ptcl_SpawnRise
 _080A316A:
 	ldr r0, _080A31D0 @ =0x00000382
 	adds r1, r4, r0

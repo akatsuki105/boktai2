@@ -14,9 +14,9 @@ typedef struct {
   u8 index;            // 0x00, 0〜3, 親のビットマスクの位置とアニメ番号 index+2 を兼ねる
   u8 state;            // 0x01, 0 消灯, 1 点灯
   bool8 stateEntered;  // 0x02, state を変えた直後だけ立つ
-  u8 hideTimer;        // 0x03, 0 でない間 hitbox を隠し, 0 になったら戻す
+  u8 hideTimer;        // 0x03, 0 でない間 hurtbox を隠し, 0 になったら戻す
   s32 timer;           // 0x04, state を変えるたびに 0 に戻る
-  HitboxData hitbox;   // 0x08, flags 0x4001, ignoreMask 0x10, 半径は index 1,2 が {0x18, 0x100, 0x60} で他が {0x60, 0x100, 0x18}
+  HitboxData hurtbox;  // 0x08, flags 0x4001, ignoreMask 0x10, 半径は index 1,2 が {0x18, 0x100, 0x60} で他が {0x60, 0x100, 0x18}
   MainSprite sprite;   // 0x58
 } Entity5DA5Elem;
 static_assert(sizeof(Entity5DA5Elem) == 184);
@@ -69,7 +69,7 @@ bool32 Entity5DA5Elem_ConsumeStateEntered(Entity5DA5Elem* p) {
 }
 
 // 炎で点け, 氷で消す
-void Entity5DA5Elem_OnHit(HitboxData* a, HitboxData* b, Entity5DA5Elem* owner) {
+void Entity5DA5Elem_OnHurt(HitboxData* a, HitboxData* b, Entity5DA5Elem* owner) {
   Entity5DA5* p = gEntity5DA5;
 
   if (p == NULL) {
@@ -90,11 +90,11 @@ void Entity5DA5Elem_OnHit(HitboxData* a, HitboxData* b, Entity5DA5Elem* owner) {
   }
 }
 
-// 原典は sprite のポインタから 0x50 引いて hitbox を作り同じレジスタを使い回す, 退避レジスタが 1 本少ない (6 hunk)
+// 原典は sprite のポインタから 0x50 引いて hurtbox を作り同じレジスタを使い回す, 退避レジスタが 1 本少ない (6 hunk)
 NON_MATCH s32 Entity5DA5Elem_Init(Entity5DA5* p, Entity5DA5Elem* elem, s32 index) {
 #ifdef NONMATCHING_C
   MainSprite* sprite;
-  HitboxData* hitbox;
+  HitboxData* hurtbox;
   Vec3 halfSize, offset;
 
   elem->index = index;
@@ -103,18 +103,18 @@ NON_MATCH s32 Entity5DA5Elem_Init(Entity5DA5* p, Entity5DA5Elem* elem, s32 index
   sprite = &elem->sprite;
   MainSprite_Add(sprite, &p->gfx, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 2, PLAYMODE_PAUSE, 60, &p->screenPos);
   MainSprite_SetAnim(sprite, &p->gfx, index + 2, PLAYMODE_LOOP, 0);
-  hitbox = hitbox;
+  hurtbox = hurtbox;
   if (index == 1 || index == 2) {
     VEC3_SET(halfSize, Q8(0.094), Q8(1), Q8(0.375));
   } else {
     VEC3_SET(halfSize, Q8(0.375), Q8(1), Q8(0.094));
   }
   VEC3_SET(offset, (s16_ARRAY_085aa690[index] >> 1) - 16, Q8(1), s16_ARRAY_085aa698[index] >> 1);
-  hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetHandler(hitbox, Entity5DA5Elem_OnHit, elem);
-  Hitbox_SetPos(hitbox, &p->pos, 0);
-  Hitbox_Register(hitbox);
+  hurtbox = &elem->hurtbox;
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_SetHandler(hurtbox, Entity5DA5Elem_OnHurt, elem);
+  Hitbox_SetPos(hurtbox, &p->pos, 0);
+  Hitbox_Register(hurtbox);
   return 0;
 #else
   INCFUNC("asm/func/Entity5DA5Elem_Init.inc");
@@ -201,12 +201,12 @@ s32 Entity5DA5_Update(Entity5DA5* p) {
   elem = p->elems;
   for (i = 0; i < 4; i++, elem++) {
     PTR_ARRAY_085aa6a0[elem->state](p, elem);
-    Hitbox_SetPos(&elem->hitbox, &p->pos, 0);
+    Hitbox_SetPos(&elem->hurtbox, &p->pos, 0);
     if (elem->hideTimer) {
       if (--elem->hideTimer == 0) {
-        elem->hitbox.flags &= ~HBFLAG_HIDDEN;
+        elem->hurtbox.flags &= ~HBFLAG_HIDDEN;
       } else {
-        elem->hitbox.flags |= HBFLAG_HIDDEN;
+        elem->hurtbox.flags |= HBFLAG_HIDDEN;
       }
     }
     elem->timer++;
@@ -256,7 +256,7 @@ s32 Entity5DA5_Destroy(Entity5DA5* p) {
 
   elem = &p->elems[0];
   for (i = 0; i < 4; i++, elem++) {
-    Hitbox_Unregister(&elem->hitbox);
+    Hitbox_Unregister(&elem->hurtbox);
     MainSprite_Remove(&elem->sprite);
   }
   gEntity5DA5 = NULL;

@@ -87,7 +87,7 @@ typedef struct Forge {
   s32 unk_b4;                             // 0x00B4
   u16 unk_b8;                             // 0x00B8, '.c'
   u16 unk_ba;                             // 0x00BA, '.e'
-  char statText[4];                       // 0x00BC, FUN_08094c6c が武器の補正値を "+12" / "SP" の形で書く
+  char statText[4];                       // 0x00BC, WeaponData_FormatSuffix が武器の補正値を "+12" / "SP" の形で書く
   u8 unk_c0[4];                           // 0x00C0, まだ未解析
   StrikeRating ratings[5];                // 0x00C4, sprites2[8..12] の表示状態, 鍛治の一叩きの結果を表示するためのポップアップ
   MainSpriteGfx gfx0;                     // 0x00D8, SPRITE_UI_MISC
@@ -132,7 +132,6 @@ void Forge_SubCool(Forge* p);
 void Forge_UpdateAward(Forge* p);
 void GetWeaponData(slot32_t n, WeaponData* data);
 void Video_DrawBGNumber(s32 bg, s32 x, s32 y, u32 n, u32 baseTile, s32 digits, u32 pltt);
-void Video_SetBGTile(s32 bg, u32 x8, u32 y8, u32 tileidx, u32 flip, u32 pltt);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
 void FUN_0801d71c(Forge* p);
@@ -148,7 +147,7 @@ bool32 AddWeapon(WeaponData* data);
 const WeaponData* FUN_0823d414(s32 idx);
 void Player_Lock(Player* p, s32 val);
 void FUN_08094d1c(u8* param_1, s8* param_2);
-void FUN_08094d48(unknown* w, u8* pc);
+void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
@@ -603,7 +602,7 @@ void Forge_ShowWeaponInfo(Forge* p, char* text) {
   if (w->data.id != 0) {
     s32 pose;
 
-    FUN_08094d48(w, p->unk_1308);
+    MainMenu_SetWeaponMarquee(w, p->unk_1308);
     pose = GetWeaponWearPose(&w->data);
     MainSprite_Show(&p->iconSprite);
     MainSprite_SetPose(&p->iconSprite, &p->iconGfx, pose, PLAYMODE_PAUSE);
@@ -642,18 +641,18 @@ void Forge_RunResultScript(Forge* p) {
   VM_ExecByID(p->unk_ba, &sa);
 }
 
-void FUN_0801c0d8(bool32 param_1, s32 kind) {
+void PlayForgeStrikeSE(u32 _, s32 kind) {
   switch (kind) {
     case 0: {
-      PlaySound_082406e0(SONG_916);
+      PlaySound_082406e0(SE_FORGE_STRIKE_GREAT);
       break;
     }
     case 1: {
-      PlaySound_082406e0(SONG_917);
+      PlaySound_082406e0(SE_FORGE_STRIKE_GOOD);
       break;
     }
     case 2: {
-      PlaySound_082406e0(SONG_918);
+      PlaySound_082406e0(SE_FORGE_STRIKE_BAD);
       break;
     }
   }

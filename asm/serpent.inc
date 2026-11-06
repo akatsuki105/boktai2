@@ -11970,7 +11970,7 @@ _0818E4B8:
 	ldrh r3, [r1]
 	movs r1, #0
 	str r1, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	bl FUN_080df478
 	b _0818E504
 	.align 2, 0
@@ -11990,7 +11990,7 @@ _0818E4EC:
 	ldrh r3, [r1]
 	str r4, [sp]
 	adds r1, r6, #0
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 _0818E504:
 	ldr r6, _0818E520 @ =0x00000ED8
 	adds r0, r7, r6
@@ -15875,7 +15875,7 @@ FUN_081901a4: @ 0x081901A4
 	str r4, [sp]
 	adds r0, r4, #0
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r6
 	movs r2, #0x52
@@ -18894,7 +18894,7 @@ _0819181E:
 	movs r1, #0xc
 	movs r2, #8
 	movs r3, #6
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 	ldr r2, _081918F0 @ =0x00000674
 	adds r4, r4, r2
 	ldr r0, [r4]
@@ -21325,7 +21325,7 @@ _08192B2C:
 	movs r1, #0xc
 	movs r2, #8
 	movs r3, #6
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 	b _08192BD4
 	.align 2, 0
 _08192B70: .4byte 0x0000F422
@@ -21377,7 +21377,7 @@ _08192B94:
 	movs r1, #0xc
 	movs r2, #8
 	movs r3, #6
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 _08192BD4:
 	adds r1, r4, #0
 	ldr r0, [sp, #0x38]

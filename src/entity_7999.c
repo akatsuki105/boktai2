@@ -65,7 +65,7 @@ void FUN_081da218(Entity7999* p);
 void FUN_081da814(Entity7999* p);
 void FUN_081da69c(Entity7999* p);
 void FUN_081da468(Entity7999* p);
-s32 FUN_0809c08c(s32 mode);
+void MainMenu_SetHudMode(s32 mode);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
 void FUN_080e1238(s32 x, s32 y, s32 width, s32 height, u32 value, s32 bgIdx);
 
@@ -732,7 +732,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
         }
         p->unk_286 = next;
         if (prev != next) {
-          PlaySound_082406e0(220);
+          PlaySound_082406e0(SE_CURSOR_MOVE);
         }
         break;
       }
@@ -745,7 +745,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
         }
         p->unk_287 = next;
         if (prev != next) {
-          PlaySound_082406e0(220);
+          PlaySound_082406e0(SE_CURSOR_MOVE);
         }
         break;
       }
@@ -758,7 +758,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
         }
         p->unk_288 = next;
         if (prev != next) {
-          PlaySound_082406e0(220);
+          PlaySound_082406e0(SE_CURSOR_MOVE);
         }
         FUN_081da814(p);
         break;
@@ -779,7 +779,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
         }
         p->unk_286 = next;
         if (prev != next) {
-          PlaySound_082406e0(220);
+          PlaySound_082406e0(SE_CURSOR_MOVE);
         }
         break;
       }
@@ -791,7 +791,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
         }
         p->unk_287 = next;
         if (prev != next) {
-          PlaySound_082406e0(220);
+          PlaySound_082406e0(SE_CURSOR_MOVE);
         }
         break;
       }
@@ -803,7 +803,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
         }
         p->unk_288 = next;
         if (prev != next) {
-          PlaySound_082406e0(220);
+          PlaySound_082406e0(SE_CURSOR_MOVE);
         }
         FUN_081da814(p);
         break;
@@ -828,7 +828,7 @@ NON_MATCH void FUN_081da930(Entity7999* p) {
   if (p->unk_29d != cursor) {
     p->unk_29d = cursor;
     FUN_081da468(p);
-    PlaySound_082406e0(220);
+    PlaySound_082406e0(SE_CURSOR_MOVE);
   }
   FUN_081da64c(p);
   FUN_081da14c(p);
@@ -885,7 +885,7 @@ s32 Entity7999_Init(Entity7999* p) {
   if (VM_GetNamedArgValue('f', 0)) {
     FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
   }
-  FUN_0809c08c(7);
+  MainMenu_SetHudMode(7);
   data = gEntity9A9F->unk_15c;
   if (gEntity9A9F == NULL) {
     data = NULL;

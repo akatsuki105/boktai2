@@ -857,7 +857,7 @@ Script_0x001C() {
 
 // 0x08D14FD7
 Script_0x001D() {
-	EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_MAP_CODENAME));
+	EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_AREA_CODENAME));
 	EntityCreate(0xD562, (u16)54626);
 	EntityCreate(0x3D0C, (u16)15628);
 	BIT(scratch + 0x14, 0) = 0;
@@ -931,7 +931,7 @@ Script_0x0020() {
 	Script_0x01D0();
 	v1 = { Script_0x01CF(); };
 	v2 = { Script_0x0199(); };
-	EntityCreate(0xCC28, (u16)52264, .i = StringRef(STR_STARTMENU_ITEMS), .w = StringRef(STR_STARTMENU_WEAPONS), .a = StringRef(STR_STARTMENU_ARMORS), .m = StringRef(STR_STARTMENU_MAGICS), .A = StringRef(STR_STARTMENU_MAP), .l = StringRef(STR_053B), .E = StringRef(STR_STARTMENU_MISC), .e = StringRef(EXP_TABLE), .d = (u24)466, .V = v1, .R = (u24)373, .D = (u24)8347, .p = v2);
+	EntityCreate(0xCC28, (u16)52264, .i = StringRef(STR_STARTMENU_ITEMS), .w = StringRef(STR_STARTMENU_WEAPONS), .a = StringRef(STR_STARTMENU_ARMORS), .m = StringRef(STR_STARTMENU_MAGICS), .A = StringRef(STR_AREA_NAME), .l = StringRef(STR_053B), .E = StringRef(STR_STARTMENU_MISC), .e = StringRef(EXP_TABLE), .d = (u24)466, .V = v1, .R = (u24)373, .D = (u24)8347, .p = v2);
 }
 
 // 0x08D15291
@@ -6875,7 +6875,7 @@ Script_0x0175() {
 }
 
 // 0x08D20242
-Script_0x0176() {
+Script_Riremito() {
 	Script_0x007E(1);
 	SubroutineCall(0xC6AA, .m = 7);
 	Script_0x00D1(5, 2, (u8)64);
@@ -6937,7 +6937,7 @@ Script_0x0176() {
 }
 
 // 0x08D2039A
-Script_0x0177() {
+Script_MapRetry() {
 	Script_0x007E(1);
 	Script_0x020B();
 	Script_0x016E();
@@ -42853,7 +42853,7 @@ Script_0x0A94() {
 Script_0x0A95() {
 	Script_0x001D(4);
 	if ({ Script_0x00C3(); } == 0) {
-		EntityCreate(0xA288, (u16)19942, .t = 4, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_STARTMENU_MAP), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .e = (u24)2896);
+		EntityCreate(0xA288, (u16)19942, .t = 4, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_AREA_NAME), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .e = (u24)2896);
 	}
 }
 
@@ -62753,13 +62753,13 @@ Script_0x0F43() {
 // 0x08D9500A
 Script_0x0F44() {
 	Script_0x00D3(4, 0, 16, 65535, 0, 0);
-	EntityCreate(0xA288, (u16)19942, .t = 0, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_STARTMENU_MAP), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3902);
+	EntityCreate(0xA288, (u16)19942, .t = 0, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_AREA_NAME), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3902);
 }
 
 // 0x08D95085
 Script_0x0F45() {
 	Script_0x00D3(4, 0, 16, 65535, 0, 0);
-	EntityCreate(0xA288, (u16)19942, .t = 1, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_STARTMENU_MAP), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3903);
+	EntityCreate(0xA288, (u16)19942, .t = 1, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_AREA_NAME), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3903);
 }
 
 // 0x08D95100
@@ -62804,13 +62804,13 @@ Script_0x0F4B() {
 // 0x08D951F5
 Script_0x0F4C() {
 	Script_0x00D3(4, 0, 16, 65535, 0, 0);
-	EntityCreate(0xA288, (u16)19942, .t = 3, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_STARTMENU_MAP), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3903);
+	EntityCreate(0xA288, (u16)19942, .t = 3, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_AREA_NAME), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3903);
 }
 
 // 0x08D95270
 Script_0x0F4D() {
 	Script_0x00D3(4, 0, 16, 65535, 0, 0);
-	EntityCreate(0xA288, (u16)19942, .t = 2, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_STARTMENU_MAP), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3903);
+	EntityCreate(0xA288, (u16)19942, .t = 2, .s = StringRef(STR_19BA), .a = StringRef(STR_18BD), .I = StringRef(BIN_19BD), .b = StringRef(STR_19BE), .g = StringRef(STR_1A1C), .p = StringRef(STR_1A24), .S = StringRef(STR_1A25), .P = StringRef(STR_1A67), .N = StringRef(STR_1A68), .H = StringRef(STR_1A6A), .K = StringRef(STR_1ABF), .T = StringRef(STR_1B14), .A = StringRef(STR_AREA_NAME), .X = StringRef(STR_1B24), .E = (u24)3918, .f = (u24)3905, .l = (u24)3906, .e = (u24)3903);
 	BIT(world + 0x4C, 5) = 0;
 }
 
@@ -62874,7 +62874,7 @@ Script_0x0F50() {
 			EntityCreate(0x4AE5, (u16)12667, .f = 0, .c = 0, .m = 0, .p = (u16)50310);
 			EntityCreate(0x6273, (u16)25203);
 			EntityCreate(0x0E37, (u16)3639, .r = [1, 3, 28, 6]);
-			EntityCreate(0xCC28, (u16)52264, .i = StringRef(STR_STARTMENU_ITEMS), .w = StringRef(STR_STARTMENU_WEAPONS), .a = StringRef(STR_STARTMENU_ARMORS), .m = StringRef(STR_STARTMENU_MAGICS), .A = StringRef(STR_STARTMENU_MAP), .l = StringRef(STR_053B), .E = StringRef(STR_STARTMENU_MISC), .e = StringRef(EXP_TABLE));
+			EntityCreate(0xCC28, (u16)52264, .i = StringRef(STR_STARTMENU_ITEMS), .w = StringRef(STR_STARTMENU_WEAPONS), .a = StringRef(STR_STARTMENU_ARMORS), .m = StringRef(STR_STARTMENU_MAGICS), .A = StringRef(STR_AREA_NAME), .l = StringRef(STR_053B), .E = StringRef(STR_STARTMENU_MISC), .e = StringRef(EXP_TABLE));
 			Script_0x007E(0);
 			if (*((u8 *)(world + 0xF)) > 0) {
 				if (*((u8 *)(world + 0xE)) == 1 || *((u8 *)(world + 0xE)) == 2 || *((u8 *)(world + 0xE)) == 3 || *((u8 *)(world + 0xE)) == 4 || *((u8 *)(world + 0xE)) == 9 || *((u8 *)(world + 0xE)) == 12) {
@@ -64899,7 +64899,7 @@ Script_0x0FF7() {
 	Script_0x001F();
 	EntityCreate(0x6978, (u16)18679);
 	EntityCreate(0x4AE5, (u16)19173, .f = 0, .c = 0, .m = 0, .p = [(u16)9915, (u16)48, (u16)48]);
-	EntityCreate(0xCC28, (u16)52264, .i = StringRef(STR_STARTMENU_ITEMS), .w = StringRef(STR_STARTMENU_WEAPONS), .a = StringRef(STR_STARTMENU_ARMORS), .m = StringRef(STR_STARTMENU_MAGICS), .A = StringRef(STR_STARTMENU_MAP), .l = StringRef(STR_053B), .E = StringRef(STR_STARTMENU_MISC), .e = StringRef(EXP_TABLE), .d = (u24)466, .R = (u24)373);
+	EntityCreate(0xCC28, (u16)52264, .i = StringRef(STR_STARTMENU_ITEMS), .w = StringRef(STR_STARTMENU_WEAPONS), .a = StringRef(STR_STARTMENU_ARMORS), .m = StringRef(STR_STARTMENU_MAGICS), .A = StringRef(STR_AREA_NAME), .l = StringRef(STR_053B), .E = StringRef(STR_STARTMENU_MISC), .e = StringRef(EXP_TABLE), .d = (u24)466, .R = (u24)373);
 }
 
 // 0x08D98D52
@@ -68502,7 +68502,7 @@ Script_0x1076() {
 		case 0: {
 			*((u8 *)(scratch + 0x2F)) = *((u8 *)(scratch + 0x2F)) + 1;
 			Script_0x001E(1);
-			EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_MAP_CODENAME));
+			EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_AREA_CODENAME));
 			EntityCreate(0xD562, (u16)54626);
 			EntityCreate(0x3D0C, (u16)15628);
 			BIT(world + 0xC, 5) = 1;
@@ -68540,7 +68540,7 @@ Script_0x1077() {
 	switch (*((u8 *)(scratch + 0x2F))) {
 		case 0: {
 			*((u8 *)(scratch + 0x2F)) = *((u8 *)(scratch + 0x2F)) + 1;
-			EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_MAP_CODENAME));
+			EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_AREA_CODENAME));
 			EntityCreate(0xD562, (u16)54626);
 			EntityCreate(0x3D0C, (u16)15628);
 			Script_0x001E(1);
@@ -68641,7 +68641,7 @@ Script_0x1078() {
 	switch (*((u8 *)(scratch + 0x2F))) {
 		case 0: {
 			*((u8 *)(scratch + 0x2F)) = *((u8 *)(scratch + 0x2F)) + 1;
-			EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_MAP_CODENAME));
+			EntityCreate(0x1B77, (u16)7031, .s = StringRef(STR_AREA_CODENAME));
 			EntityCreate(0xD562, (u16)54626);
 			EntityCreate(0x3D0C, (u16)15628);
 			Script_0x001E(1);

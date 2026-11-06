@@ -2,6 +2,7 @@
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "random.h"
 #include "sound.h"
 #include "sprite.h"
 #include "vm.h"
@@ -11,9 +12,10 @@ typedef struct {
   Vec3 offset;    // 0x28, Player + offset が base.pos になる
   u16 unk_30;     // 0x30
   u16 unk_32;     // 0x32
-  u8 unk_34[0x38 - 0x34];
-  u16 unk_38;  // 0x38
-  u16 unk_3a;  // 0x3A
+  u16 unk_34;     // 0x34
+  u16 unk_36;     // 0x36
+  u16 unk_38;     // 0x38
+  u16 unk_3a;     // 0x3A
 } LevelUpParticle;
 static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUpEffect
 
@@ -76,7 +78,26 @@ bool32 IsWeaponLevelChanged(LevelUpper* p) {
   return FALSE;
 }
 
-NAKED void FUN_080a8250(LevelUpParticle* p) { INCFUNC("asm/func/FUN_080a8250.inc"); }
+// 粒子をプレイヤーの周りのランダムな位置に出し直す
+void FUN_080a8250(LevelUpParticle* p) {
+  u16* table;
+  Player* player;
+
+  p->base.flags &= ~SPRFLAG_HIDDEN;
+  table = gRandomTable;
+  p->offset.x = ((_Random(table) >> 3) & 0x7F) - 63;
+  p->offset.y = ((_Random(table) >> 3) & 0x3F) + 64;
+  p->offset.z = ((_Random(table) >> 3) & 0x7F) - 63;
+  player = gPlayerPtr[0];
+  p->base.pos.x = player->mover.pos.x + p->offset.x;
+  p->base.pos.y = player->mover.pos.y + p->offset.y;
+  p->base.pos.z = player->mover.pos.z + p->offset.z;
+  p->unk_30 = 0;
+  p->unk_32 = (_Random(table) & 7) + 12;
+  p->unk_34 = 0;
+  p->unk_3a = 0;
+  p->unk_38 = 1;
+}
 
 // 粒子をプレイヤーの位置に追従させながら上昇させ、4 フレームごとに見た目を切り替える, 16 フレームで消える
 void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
@@ -125,7 +146,83 @@ void LevelUpper_EmitWeaponLevelUpEffect(LevelUpper* p) {
   p->unk_60 = 2;
 }
 
-NAKED void FUN_080a841c(LevelUpper* p) { INCFUNC("asm/func/FUN_080a841c.inc"); }
+// レベルアップ (unk_60 = 1) と武器レベルアップ (unk_60 = 2) の演出をプレイヤーの頭上で進める
+// 残差: 213 対 220 命令, 原典は timer < 5 の上昇処理を unk_60 の分岐ごとに持ち, 揺らしと +400 の末尾だけを共有する
+NON_MATCH void FUN_080a841c(LevelUpper* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_62 == 0) {
+    return;
+  }
+  if (p->unk_60 == 1) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+      if (p->ptcls[i].unk_38 != 0) {
+        LevelUpper_UpdateParticle(&p->ptcls[i], p->group2);
+      }
+    }
+    if (p->unk_64 < 64 && (p->unk_64 & 3) == 0) {
+      FUN_080a8250(&p->ptcls[(p->unk_64 >> 2) & 7]);
+    }
+    p->unk_64++;
+    p->sprite.pos = gPlayerPtr[0]->mover.pos;
+    if (p->unk_64 > 119) {
+      if (p->unk_64 < 123) {
+        p->sprite.pos.y += 400;
+        p->sprite.poseIdx = 1;
+        return;
+      }
+      if (p->unk_64 < 126) {
+        p->sprite.pos.y += 400;
+        p->sprite.poseIdx = 2;
+        return;
+      }
+      p->sprite.flags |= SPRFLAG_HIDDEN;
+      p->unk_62 = 0;
+      p->unk_60 = 0;
+      return;
+    }
+    p->sprite.poseIdx = 0;
+  } else if (p->unk_60 == 2) {
+    p->unk_64++;
+    p->sprite.pos = gPlayerPtr[0]->mover.pos;
+    if (p->unk_64 > 119) {
+      if (p->unk_64 < 123) {
+        p->sprite.pos.y += 400;
+        p->sprite.poseIdx = 4;
+        return;
+      }
+      if (p->unk_64 < 126) {
+        p->sprite.pos.y += 400;
+        p->sprite.poseIdx = 2;
+        return;
+      }
+      p->sprite.flags |= SPRFLAG_HIDDEN;
+      p->unk_62 = 0;
+      p->unk_60 = 0;
+      return;
+    }
+    p->sprite.poseIdx = 3;
+  } else {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+    p->unk_62 = 0;
+    p->unk_60 = 0;
+    return;
+  }
+  if (p->unk_64 < 5) {
+    p->sprite.pos.y = p->sprite.pos.y + 250 + p->unk_64 * 30;
+  } else {
+    if (p->unk_64 < 20) {
+      p->sprite.pos.x += -15 + (Random() & 31);
+      p->sprite.pos.y += -15 + (Random() & 31);
+      p->sprite.pos.z += -15 + (Random() & 31);
+    }
+    p->sprite.pos.y += 400;
+  }
+#else
+  INCFUNC("asm/func/FUN_080a841c.inc");
+#endif
+}
 
 s32 LevelUpper_Update(LevelUpper* p) {
   s32 i, j;

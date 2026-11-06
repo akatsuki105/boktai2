@@ -272,8 +272,8 @@ NON_MATCH void FUN_080cc43c(Player* p) {
 
   if (p->inputIdx == idx) {
     if (p->kind == PLAYER_SABATA) {
-      sound_08240740(SONG_569);
-      sound_08240740(SONG_514);
+      sound_08240740(NOISE_DARK_CHARGE);
+      sound_08240740(SE_GUN_SPREAD);
       sound_08240740(SONG_870);
     } else {
       sound_08240740(NOISE_SOLAR_CHARGE);

@@ -25,7 +25,7 @@ bool32 FUN_0809e138(Player* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 FUN_080298dc(void);
 extern u16 gRisingSunCount;
-void* Entity080abd14_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
+void* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 WorldPos* FUN_080230c4(void);
 void FUN_08084734(WorldPos* out);
 s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
@@ -139,8 +139,8 @@ void FUN_08080ee8(Player* p) {
   if (p->kind != PLAYER_SABATA) {
     sound_08240740(NOISE_SOLAR_CHARGE);
   } else {
-    sound_08240740(SONG_569);
-    sound_08240740(SONG_514);
+    sound_08240740(NOISE_DARK_CHARGE);
+    sound_08240740(SE_GUN_SPREAD);
     sound_08240740(SONG_870);
   }
 }
@@ -1242,7 +1242,7 @@ NON_MATCH void FUN_08082bdc(Player* p) {
 #endif
 }
 
-// サバタの行動9, 真横を向いて Entity080abd14 を出し、終わったら行動0 に戻る
+// サバタの行動9, 真横を向いて RisingSunEffect を出し、終わったら行動0 に戻る
 // 残差1命令 (256/257) でこちらが短い: state 2 の stateTimer の 16bit 切り詰めを, 原典は 0xFFFF をレジスタに置いて ands するが, こちらは lsls/lsrs で済ませる
 NON_MATCH void FUN_08082dac(Player* p) {
 #ifdef NONMATCHING_C
@@ -1279,15 +1279,15 @@ NON_MATCH void FUN_08082dac(Player* p) {
       }
 
       AllySabata_SetAction(p, PACT_SUN_MAGIC, 1);
-      p->plttID_95e = 290;
+      p->plttID_95e = OBP_ELEMENT(1);
       p->plttFlashTimer = 2;
       PlaySound_082406e0(SONG_878);
-      Entity080abd14_Create(p, &p->mover.pos, &p->pos_930, 1, p->unk_3ba);
+      RisingSunEffect_Create(p, &p->mover.pos, &p->pos_930, 1, p->unk_3ba);
       p->unk_477 = 0x3C;
       break;
     }
     case 1: {
-      p->plttID_95e = 290;
+      p->plttID_95e = OBP_ELEMENT(1);
       p->plttFlashTimer += 3;
       if (p->plttFlashTimer > 32) {
         p->plttFlashTimer = 32;
@@ -1684,7 +1684,7 @@ NON_MATCH void FUN_080835d8(Player* p) {
         FUN_080dbcec(&p->mover.pos, &ofs, &size, 1, 2, 4);
       }
       if (!(p->stateTimer & 15)) {
-        PlaySound_082406e0(SONG_516);
+        PlaySound_082406e0(SE_SABATA_SPIN);
       }
       if (++p->stateTimer >= (p->unk_403 + 1) << 5) {
         sound_08240740(SONG_870);
@@ -1855,7 +1855,7 @@ void FUN_08084078(Player* p) {
   }
 }
 
-// PMODE_ACTIVE なら行動関数表から今の行動を呼び, PMODE_LOCKED なら fn_498 を呼ぶ
+// PMODE_ACTIVE なら行動関数表から今の行動を呼び, PMODE_LOCKED なら lockedUpdate を呼ぶ
 void AllySabata_UpdateActions(Player* p) {
   static const PlayerFunc sAllySabataActionFuncs[29] = {
       [PACT_IDLE] = FUN_08081f80,
@@ -1889,7 +1889,7 @@ void AllySabata_UpdateActions(Player* p) {
     }
     case PMODE_LOCKED: {
       AllySabata_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
-      p->fn_498(p);
+      p->lockedUpdate(p);
       FUN_08084078(p);
       break;
     }

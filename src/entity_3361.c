@@ -46,7 +46,7 @@ void Entity3361_PollMessages(Entity3361* p) {
     MsgQueue_BeginWait(mq, msg);
     if (msg->cmd == 6) {
       p->updateCallback = Entity3361_UpdateShrink;
-      PlaySound_082406e0(SONG_605);
+      PlaySound_082406e0(SE_605);
     }
   }
 }

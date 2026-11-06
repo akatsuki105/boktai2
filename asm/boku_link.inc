@@ -1632,7 +1632,7 @@ _081AF14A:
 	subs r0, #0x32
 	str r0, [sp, #0x10]
 	add r0, sp, #0x14
-	bl FUN_081f3110
+	bl Entity081f3324_Spawn
 	movs r0, #0xd6
 	bl PlaySound_082406e0
 _081AF1A4:
@@ -9936,7 +9936,7 @@ FUN_081b3204: @ 0x081B3204
 	mov r0, r8
 	str r0, [sp]
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	orrs r0, r5

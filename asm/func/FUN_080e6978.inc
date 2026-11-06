@@ -450,7 +450,7 @@ _080E6CEE:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r5, sp, #0x14
 	str r4, [sp, #0x10]
 	add r0, sp, #0x10
@@ -838,7 +838,7 @@ _080E6FFA:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r5, sp, #0x24
 	str r4, [sp, #0x10]
 	add r0, sp, #0x10

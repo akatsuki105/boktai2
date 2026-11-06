@@ -39,10 +39,10 @@ _080A6232:
 _080A6238:
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_080a6048
+	bl EntityCF58_InitSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_080a6110
+	bl EntityCF58_InitState
 	ldr r1, _080A6254 @ =0x0300014C
 	str r4, [r1]
 	pop {r4, r5}

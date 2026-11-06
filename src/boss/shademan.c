@@ -298,13 +298,13 @@ void (*const PTR_ARRAY_085b0028[22])(ShadeMan*) = {
 void FUN_0821c918(ShadeMan*);
 void ShadeMan_SetMotion(ShadeMan* p, u32 next, bool8 force);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
-s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
+s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 void FUN_0823b880(s32 n);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
-void FUN_0805e6bc(struct Entity0805e67c* p, Vec3* pos, s32 angle, s32 speed, s32 power, s32 param_6, s32 param_7);
+s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
 void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
-void FUN_0805e940(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 count);
+s32 Entity0805e67c_SpawnSwarmN(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime, s32 count);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 void FUN_0823b980(s32 n, Vec3* pos);
 void FUN_08221938(ShadeMan* p);
@@ -1244,7 +1244,7 @@ NON_MATCH void FUN_0821d900(ShadeMan* p) {
 
     ofs.x += (Random() & 0x7F) - 0x40;
     ofs.z += (Random() & 0x7F) - 0x40;
-    FUN_080dc0a0(pos, &ofs, NULL, NULL, 1, 1);
+    SpawnBloodEx(pos, &ofs, NULL, NULL, 1, 1);
   }
 #else
   INCFUNC("asm/func/FUN_0821d900.inc");
@@ -2299,7 +2299,7 @@ NON_MATCH void FUN_0821ff34(ShadeMan* p) {
               break;
             }
           }
-          FUN_0805e6bc(p->entity0805e67c, &v, angle, speed, p->unk_3d2, 30, 8);
+          Entity0805e67c_Spawn(p->entity0805e67c, &v, angle, speed, p->unk_3d2, 30, 8);
           p->unk_3d8++;
         }
       }
@@ -2381,7 +2381,7 @@ NON_MATCH void FUN_082201ec(ShadeMan* p) {
           Vec3 v = boss->mover.pos;
 
           v.y += 240;
-          FUN_0805e940(p->entity0805e67c, &v, boss->mover.angle, 50, p->unk_3d4, 30, 8, n);
+          Entity0805e67c_SpawnSwarmN(p->entity0805e67c, &v, boss->mover.angle, 50, p->unk_3d4, 30, 8, n);
           PlaySound_082406e0(NOISE_UNK_128 | NOISE_QUAKE);
         }
         if (!(p->flag38c & SMFLAG_UNK_5)) {

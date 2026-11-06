@@ -348,7 +348,7 @@ _080CAFEC:
 	adds r0, #0x1d
 	strb r2, [r0]
 	movs r0, #2
-	bl FUN_0809c08c
+	bl MainMenu_SetHudMode
 	b _080CB0F8
 	.align 2, 0
 _080CB064: .4byte 0x000008F4

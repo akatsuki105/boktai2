@@ -12,28 +12,35 @@ typedef struct {
 static_assert(sizeof(Entity080e01bcSprite) == 92);
 
 typedef struct {
-  Entity080e01bcSprite sprites[2];  // 0x000
-  HitboxData hitbox_b8;             // 0x0B8, FUN_080df880 が Hitbox_Register する
-  HitboxData hitbox_108;            // 0x108
-  u8 unk_158[0x172 - 0x158];        // 0x158, まだ未解析
-  u8 unk_172;                       // 0x172
-  u8 unk_173[0x176 - 0x173];        // 0x173, まだ未解析
-  u8 unk_176;                       // 0x176
-  u8 unk_177[0x1AE - 0x177];        // 0x177, まだ未解析
-  u8 unk_1ae;                       // 0x1AE, 1 なら Cmd_E0E1 が 2 にして unk_1b2 を立てる
-  u8 unk_1af[0x1B2 - 0x1AF];        // 0x1AF, [0] は枠を確保したときに自分の添字を入れる
-  u8 unk_1b2;                       // 0x1B2
-  u8 unk_1b3[0x1B4 - 0x1B3];        // 0x1B3, まだ未解析
+  AuxSprite sprite;                 // 0x000, pos は FUN_080dfeb0 の第1引数の写し
+  AuxAnimState anim;                // 0x02C
+  Entity080e01bcSprite sprites[2];  // 0x03C
+  HitboxData hitbox_f4;             // 0x0F4
+  HitboxData hitbox_144;            // 0x144
+  u8 unk_194[0x19C - 0x194];        // 0x194, まだ未解析
+  u8 unk_19c;                       // 0x19C
+  u8 unk_19d;                       // 0x19D
+  u8 unk_19e;                       // 0x19E
+  u8 unk_19f;                       // 0x19F
+  u16 unk_1a0;                      // 0x1A0
+  u8 unk_1a2[0x1A4 - 0x1A2];        // 0x1A2, まだ未解析
+  AuxAnimFile* animFile;            // 0x1A4, ANIM_8DC7
+  u32 unk_1a8;                      // 0x1A8, 初期値 120
+  u16 unk_1ac;                      // 0x1AC
+  u8 state;                         // 0x1AE, PTR_ARRAY_085ad364 の添字, 1 なら Cmd_E0E1 が 2 にする
+  s8 slotIdx;                       // 0x1AF, unk_38 上の自分のビット番号
+  u16 timer;                        // 0x1B0, stateBegun が立っていると 0 に戻る
+  bool8 stateBegun;                 // 0x1B2
+  u8 unk_1b3;                       // 0x1B3
 } Entity080e01bcElem;
 static_assert(sizeof(Entity080e01bcElem) == 436);
 
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  u8 unk_18[0x1C - 0x18];       // 0x018, _Init が Video_GetAuxSprite の AuxSpriteGfx としてここを渡す (28バイトぶんは pos 以降と重なる)
-  Vec3 pos;                     // 0x01C, elems[0] の2本の Hitbox の位置に渡す
-  u8 unk_24[0x38 - 0x24];       // 0x024, まだ未解析
-  u32 unk_38;                   // 0x038, _Init が 0 を入れる
-  Entity080e01bcElem elems[8];  // 0x03C, 根拠: Cmd_E0E1 が 0x1B4 刻みで8個まわり, 8個で構造体末尾ぴったり
+  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_SHAIAN_SPIN
+  u8 unk_34[0x38 - 0x34];       // 0x034, まだ未解析
+  u32 unk_38;                   // 0x038, elems のどのスロットが使用中かのビットマスク
+  Entity080e01bcElem elems[8];  // 0x03C
 } Entity080e01bc;
 static_assert(sizeof(Entity080e01bc) == 3548);
 
@@ -44,73 +51,74 @@ static inline bool8 Entity080e01bc_IsActive(Entity080e01bc* p, s32 i) {
   return FALSE;
 }
 
-void nop_080dfa20(Entity080e01bc*, s32);
-void FUN_080dfa24(Entity080e01bc*, s32);
-void FUN_080dfbe4(Entity080e01bc*, s32);
-void FUN_080dfde8(Entity080e01bc*, s32);
+void nop_080dfa20(Entity080e01bc*, Entity080e01bcElem*);
+void FUN_080dfa24(Entity080e01bc*, Entity080e01bcElem*);
+void FUN_080dfbe4(Entity080e01bc*, Entity080e01bcElem*);
+void FUN_080dfde8(Entity080e01bc*, Entity080e01bcElem*);
 
-void (*const PTR_ARRAY_085ad364[4])(Entity080e01bc*, s32) = {
+void (*const PTR_ARRAY_085ad364[4])(Entity080e01bc*, Entity080e01bcElem*) = {
     nop_080dfa20,
     FUN_080dfa24,
     FUN_080dfbe4,
     FUN_080dfde8,
 };  // 0x085AD364
 
-NAKED void FUN_080df4c4(unknown* p) { INCFUNC("asm/func/FUN_080df4c4.inc"); }
+NAKED void FUN_080df4c4(Entity080e01bcElem* elem) { INCFUNC("asm/func/FUN_080df4c4.inc"); }
 
-NAKED void FUN_080df540(unknown* p) { INCFUNC("asm/func/FUN_080df540.inc"); }
+NAKED void FUN_080df540(Entity080e01bcElem* elem) { INCFUNC("asm/func/FUN_080df540.inc"); }
 
-void FUN_080df6d4(Entity080e01bc* p) {
+void FUN_080df6d4(Entity080e01bcElem* elem) {
   s32 i;
 
   for (i = 0; i < 2; i++) {
-    if (p->elems[0].sprites[i].timer != 0) {
-      p->elems[0].sprites[i].timer--;
-      if (p->elems[0].sprites[i].timer == 0) {
-        p->elems[0].sprites[i].sprite.flags = (p->elems[0].sprites[i].sprite.flags | SPRFLAG_HIDDEN) & ~SPRFLAG_AFFINE;
+    if (elem->sprites[i].timer != 0) {
+      elem->sprites[i].timer--;
+      if (elem->sprites[i].timer == 0) {
+        elem->sprites[i].sprite.flags |= SPRFLAG_HIDDEN;
+        elem->sprites[i].sprite.flags &= ~SPRFLAG_AFFINE;
       }
     }
   }
 }
 
-void FUN_080df714(Entity080e01bc* p) {
+void FUN_080df714(Entity080e01bcElem* elem) {
   s32 i;
 
   for (i = 0; i < 2; i++) {
-    AuxSprite_Remove(&p->elems[0].sprites[i].sprite);
+    AuxSprite_Remove(&elem->sprites[i].sprite);
   }
 }
 
-void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bc* p) {
+void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bcElem* elem) {
   HitboxData* hb;
 
-  p->elems[0].unk_172 = 2;
-  p->elems[0].unk_176 = 1;
+  elem->state = 2;
+  elem->stateBegun = 1;
 
-  hb = &p->elems[0].hitbox_b8;
+  hb = &elem->hitbox_f4;
   hb->flags |= HBFLAG_HIDDEN;
-  hb = &p->elems[0].hitbox_108;
+  hb = &elem->hitbox_144;
   hb->flags |= HBFLAG_HIDDEN;
 }
 
-void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bc* p) {
+void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bcElem* elem) {
   HitboxData* hb;
 
-  p->elems[0].unk_172 = 2;
-  p->elems[0].unk_176 = 1;
+  elem->state = 2;
+  elem->stateBegun = 1;
 
-  hb = &p->elems[0].hitbox_b8;
+  hb = &elem->hitbox_f4;
   hb->flags |= HBFLAG_HIDDEN;
-  hb = &p->elems[0].hitbox_108;
+  hb = &elem->hitbox_144;
   hb->flags |= HBFLAG_HIDDEN;
 }
 
 NAKED void FUN_080df790(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080df790.inc"); }
 
-void FUN_080df880(Entity080e01bc* p) {
-  Hitbox_SetPos(&p->elems[0].hitbox_b8, &p->pos, 0);
-  Hitbox_SetPos(&p->elems[0].hitbox_108, &p->pos, 0);
-  Hitbox_Register(&p->elems[0].hitbox_b8);
+void FUN_080df880(Entity080e01bcElem* elem) {
+  Hitbox_SetPos(&elem->hitbox_f4, &elem->sprite.pos, 0);
+  Hitbox_SetPos(&elem->hitbox_144, &elem->sprite.pos, 0);
+  Hitbox_Register(&elem->hitbox_f4);
 }
 
 // 空いている枠を1つ確保して返す, 空きが無ければ NULL
@@ -122,22 +130,22 @@ Entity080e01bcElem* FUN_080df8b0(Entity080e01bc* p) {
       Entity080e01bcElem* elem = &p->elems[i];
 
       p->unk_38 |= 1 << i;
-      elem->unk_1af[0] = i;
+      elem->slotIdx = i;
       return elem;
     }
   }
   return NULL;
 }
 
-NAKED void FUN_080df900(unknown* p) { INCFUNC("asm/func/FUN_080df900.inc"); }
+NAKED void FUN_080df900(Entity080e01bcElem* elem) { INCFUNC("asm/func/FUN_080df900.inc"); }
 
-void nop_080dfa20(Entity080e01bc* p, s32 idx) {}
+void nop_080dfa20(Entity080e01bc* p, Entity080e01bcElem* elem) {}
 
-NAKED void FUN_080dfa24(Entity080e01bc* p, s32 idx) { INCFUNC("asm/func/FUN_080dfa24.inc"); }
+NAKED void FUN_080dfa24(Entity080e01bc* p, Entity080e01bcElem* elem) { INCFUNC("asm/func/FUN_080dfa24.inc"); }
 
-NAKED void FUN_080dfbe4(Entity080e01bc* p, s32 idx) { INCFUNC("asm/func/FUN_080dfbe4.inc"); }
+NAKED void FUN_080dfbe4(Entity080e01bc* p, Entity080e01bcElem* elem) { INCFUNC("asm/func/FUN_080dfbe4.inc"); }
 
-NAKED void FUN_080dfde8(Entity080e01bc* p, s32 idx) { INCFUNC("asm/func/FUN_080dfde8.inc"); }
+NAKED void FUN_080dfde8(Entity080e01bc* p, Entity080e01bcElem* elem) { INCFUNC("asm/func/FUN_080dfde8.inc"); }
 
 NAKED void FUN_080dfeb0(unknown* p, unknown* param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_080dfeb0.inc"); }
 
@@ -147,7 +155,7 @@ NAKED s32 Entity080e01bc_Destroy(Entity080e01bc* p) { INCFUNC("asm/func/Entity08
 
 s32 Entity080e01bc_Init(Entity080e01bc* p) {
   p->unk_38 = 0;
-  Video_GetAuxSprite((AuxSpriteGfx*)p->unk_18, SPRITE_EFF_SHAIAN_SPIN);
+  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_SHAIAN_SPIN);
   gEntity080e01bc = p;
   return 0;
 }
@@ -180,13 +188,13 @@ void FUN_080e0214(void) {
   }
 
   for (i = 0; i < 8; i++) {
-    if (p->elems[i].unk_1ae == 1) {
-      p->elems[i].unk_1ae = 3;
+    if (p->elems[i].state == 1) {
+      p->elems[i].state = 3;
     }
   }
 }
 
-// 発動待ちの枠を発動済みにする
+// 0xE0E1, 発動待ちの枠を発動済みにする
 void Cmd_E0E1(void) {
   Entity080e01bc* p = gEntity080e01bc;
   s32 i;
@@ -196,11 +204,12 @@ void Cmd_E0E1(void) {
   }
 
   for (i = 0; i < 8; i++) {
-    if (p->elems[i].unk_1ae == 1) {
-      p->elems[i].unk_1ae = 2;
-      p->elems[i].unk_1b2 = 1;
+    if (p->elems[i].state == 1) {
+      p->elems[i].state = 2;
+      p->elems[i].stateBegun = 1;
     }
   }
 }
 
+// 0x983A
 NAKED void Cmd_983A(void) { INCFUNC("asm/func/Cmd_983A.inc"); }

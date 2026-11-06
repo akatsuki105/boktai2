@@ -318,7 +318,7 @@ NON_MATCH void FUN_081d93b0(Entity8CC7* p, Entity8CC7Elem* e) {
   }
   Vec3_Add(&e->sprite.pos, &e->vel);
   if (e->unk_78 != 0 && e->anim.cmdIdx == 5 && e->anim.tick == 0) {
-    PlaySound_082406e0(246);
+    PlaySound_082406e0(CRY_CROW_WING);
   }
   if (AuxSprite_AdvanceAnim(&e->sprite, &e->anim)) {
     FUN_081d8c80(e->angle, &dir, &flip);

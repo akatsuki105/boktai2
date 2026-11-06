@@ -3526,7 +3526,7 @@ FUN_0819742c: @ 0x0819742C
 	ands r1, r6
 	str r1, [sp]
 	adds r1, r4, #0
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r6, sp, #0xc
 	movs r7, #0
 	str r7, [sp, #8]
@@ -17090,7 +17090,7 @@ FUN_0819ddd8: @ 0x0819DDD8
 	adds r0, r6, #0
 	add r1, sp, #0xc
 	adds r2, r4, #0
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	add r2, sp, #0x1c
 	mov sl, r2
 	add r3, sp, #0x24

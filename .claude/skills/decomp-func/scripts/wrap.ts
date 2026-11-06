@@ -90,8 +90,11 @@ const write = (file: string, lines: string[]) => {
   Deno.writeTextFileSync(file, lines.join("\n"));
   const after = Deno.readTextFileSync(file);
   // 自前のスライスで #else を行頭から落とすのが過去2回の事故原因なので、書いた後に必ず検算する
-  for (const d of ["#ifdef", "#else", "#endif"]) {
-    if (new RegExp(`\\S${d}\\b`).test(after)) die(`${d} が行頭にありません。書き込みを戻してください: ${file}`);
+  // `NON_MATCH #else` のように前に空白を挟んで別の語が付くこともあるので、行頭以外に現れたら止める (// コメント中は除く)
+  for (const line of after.split("\n")) {
+    if (/^\s*\/\//.test(line)) continue;
+    const m = line.match(/#(ifdef|else|endif)\b/);
+    if (m && m.index !== 0) die(`#${m[1]} が行頭にありません。書き込みを戻してください: ${file}: ${line}`);
   }
   const n = (re: RegExp) => (after.match(re) ?? []).length;
   if (n(/^#if(def|ndef)?\b/gm) !== n(/^#endif\b/gm)) die(`#if と #endif の数が合いません: ${file}`);
@@ -131,6 +134,14 @@ const close = (name: string, notes: string[]) => {
   const repo = getRepoRoot();
   const { file, lines, sig } = findDef(repo, name);
   if (/\b(NAKED|NON_MATCH)\b/.test(lines[sig])) die(`${name} はすでに ${lines[sig].includes("NAKED") ? "NAKED" : "NON_MATCH"} です`);
+
+  // 1行で書いた関数 (`void f(...) { ...; }`) は #ifdef を挟めないので、先に シグネチャ / 本体 / } の3行に割る
+  if (findBodyEnd(lines, sig) === sig) {
+    const m = lines[sig].match(/^(\s*)(.*?)\s*\{\s*(.*?)\s*\}\s*$/);
+    if (!m) die(`${name} の1行定義を解釈できません: ${lines[sig]}`);
+    const [, ind, head, body] = m!;
+    lines.splice(sig, 1, `${ind}${head} {`, ...(body ? [`${ind}  ${body}`] : []), `${ind}}`);
+  }
 
   const end = findBodyEnd(lines, sig);
   const inc = incOf(name);

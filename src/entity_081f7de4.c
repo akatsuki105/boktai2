@@ -42,4 +42,24 @@ void (*const PTR_ARRAY_085ae5b4[3])(Entity081f7de4*, Entity081f7de4Elem*) = {
     Entity081f7de4_UpdateState2,
 };  // 0x085AE5B4
 
-INCASM("asm/entity_081f7de4.inc");
+NAKED Entity081f7de4Elem* Entity081f7de4_AllocElem(Entity081f7de4* p) { INCFUNC("asm/func/Entity081f7de4_AllocElem.inc"); }
+
+NAKED void Entity081f7de4_UpdateState0(Entity081f7de4* p, Entity081f7de4Elem* elem) { INCFUNC("asm/func/Entity081f7de4_UpdateState0.inc"); }
+
+NAKED void Entity081f7de4_UpdateState1(Entity081f7de4* p, Entity081f7de4Elem* elem) { INCFUNC("asm/func/Entity081f7de4_UpdateState1.inc"); }
+
+NAKED void Entity081f7de4_UpdateState2(Entity081f7de4* p, Entity081f7de4Elem* elem) { INCFUNC("asm/func/Entity081f7de4_UpdateState2.inc"); }
+
+NAKED void Entity081f7de4_Spawn(Vec3* pos, u32 rotation) { INCFUNC("asm/func/Entity081f7de4_Spawn.inc"); }
+
+NAKED s32 Entity081f7de4_Update(Entity081f7de4* p) { INCFUNC("asm/func/Entity081f7de4_Update.inc"); }
+
+NAKED s32 Entity081f7de4_Destroy(Entity081f7de4* p) { INCFUNC("asm/func/Entity081f7de4_Destroy.inc"); }
+
+NAKED s32 Entity081f7de4_Init(Entity081f7de4* p) { INCFUNC("asm/func/Entity081f7de4_Init.inc"); }
+
+NAKED Entity081f7de4* Entity081f7de4_Create(void) { INCFUNC("asm/func/Entity081f7de4_Create.inc"); }
+
+NAKED void Entity081f7de4_ClearGlobal(void) { INCFUNC("asm/func/Entity081f7de4_ClearGlobal.inc"); }
+
+NAKED void Entity081f7de4_RemoveAll(void) { INCFUNC("asm/func/Entity081f7de4_RemoveAll.inc"); }

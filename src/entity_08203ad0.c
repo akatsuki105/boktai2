@@ -5,13 +5,12 @@
 #include "hitbox.h"
 #include "map_inline.h"
 #include "sprite.h"
-#include "sprite_animation.h"
 
 // 8個で使い回す当たり判定つきエフェクトの枠, FUN_0820372c が ttl == 0 かつ非表示のものを空きとして拾う
 typedef struct {
-  AuxSprite sprite;   // 0x00, AuxSprite_Add / AuxSprite_Remove に渡る
-  AuxAnimState anim;  // 0x2C, AuxAnim_SetAnim の第1引数, _Update がコマを進める
-  HitboxData hitbox;  // 0x3C, FUN_08203690 が Hitbox_Init / Hitbox_SetAttack に渡す
+  AuxSprite sprite;   // 0x00
+  AuxAnimState anim;  // 0x2C
+  HitboxData hitbox;  // 0x3C
   Vec3 pos;           // 0x8C, Hitbox_SetPos の第2引数, FUN_08203770 が引数の Vec3 を写す
   u16 ttl;            // 0x94, 残りフレーム数, _Update が毎フレーム -1 して 0 で FUN_08203860 が解放する, 60未満でフェードに入る
   u8 unk_96[2];       // 0x96, padding?
@@ -20,12 +19,12 @@ static_assert(sizeof(Entity08203ad0Slot) == 152);
 
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx;             // 0x018, Video_GetAuxSprite / Video_SetAuxSpritePltt の第1引数
+  AuxSpriteGfx gfx;             // 0x018, SPRITE_BOKU_ACID_0
   u8 unk_34[4];                 // 0x034, 読み手も書き手も未発見
   u32 unk_38;                   // 0x038, _Init が 0 を入れるだけで読み手が見つからない
   u8 activeCount;               // 0x03C, 使用中の slots の数, FUN_0820372c が 8 未満か見て FUN_08203770 が +1 / FUN_08203860 が -1
   u8 unk_3d[3];                 // 0x03D, padding?
-  Entity08203ad0Slot slots[8];  // 0x040, _Destroy / _Update / FUN_08203a0c が stride 0x98 で8個回す
+  Entity08203ad0Slot slots[8];  // 0x040
 } Entity08203ad0;
 static_assert(sizeof(Entity08203ad0) == 1280);
 
@@ -171,7 +170,7 @@ s32 FUN_08203a0c(Entity08203ad0* p) {
   Entity08203ad0Slot* slot;
   s32 i;
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_A5B3);
+  Video_GetAuxSprite(&p->gfx, SPRITE_BOKU_ACID_0);
   Video_SetAuxSpritePltt(&p->gfx, 566);
   files = GetFile(DIR_ANIMATION, ANIM_1752);
 
@@ -189,7 +188,7 @@ s32 FUN_08203a0c(Entity08203ad0* p) {
 s32 Entity08203ad0_Init(Entity08203ad0* p) {
   p->activeCount = 0;
   p->unk_38 = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_A5B3);
+  Video_GetAuxSprite(&p->gfx, SPRITE_BOKU_ACID_0);
   if (FUN_08203a0c(p) < 0) {
     return -1;
   } else {

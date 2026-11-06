@@ -1,5 +1,3 @@
-#include "constants/sprite.h"
-#include "constants/sprite_animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -40,7 +38,7 @@ static_assert(sizeof(Entity081f9cb8) == 1308);
 static Entity081f9cb8* gEntity081f9cb8;  // 0x03000210
 
 Entity081f9cb8* Entity081f9cb8_Create(void);
-void FUN_081ee07c(Vec3* pos, Vec3* vel, s32 param_3, s32 param_4);
+void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 param_3, s32 param_4);
 struct Entity081f26bcElem* Entity081f26bc_Spawn(
     Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
 
@@ -114,7 +112,7 @@ NON_MATCH void Entity081f9cb8_SpawnWaitEffect(Vec3* pos) {
   speed = (_Random(table) & 63) - 32;
   Vec3_SetPolar(&vel, angle, speed);
   vel.y = (Random() & 15) + 30;
-  FUN_081ee07c(pos, &vel, 30, 3);
+  Entity081ee2a0_SpawnDefault(pos, &vel, 30, 3);
 #else
   INCFUNC("asm/func/Entity081f9cb8_SpawnWaitEffect.inc");
 #endif
@@ -316,3 +314,5 @@ void Entity081f9cb8_CancelAll(void) {
     }
   }
 }
+
+NAKED void FUN_081f9db4(void) { INCFUNC("asm/func/FUN_081f9db4.inc"); }

@@ -132,7 +132,7 @@ _080D3C12:
 	movs r1, #0xc8
 	movs r2, #0xaa
 	movs r3, #8
-	bl Entity08080be8_Create
+	bl Bullet_Create
 	b _080D3F04
 _080D3C3C:
 	adds r0, r5, #0

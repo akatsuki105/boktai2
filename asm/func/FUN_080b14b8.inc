@@ -73,7 +73,7 @@ _080B1536:
 	adds r1, r4, r2
 	movs r2, #0
 	movs r3, #4
-	bl FUN_0807ba94
+	bl Player_MoveTo
 	adds r0, r4, #0
 	movs r1, #5
 	bl PileDriver_SetSubState

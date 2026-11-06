@@ -44,7 +44,7 @@ bool8 FUN_081ea87c(Flamethrower* item) {
     }
 
     if (item->unk_128 == 0 && !(gGameFlags & FLAG030047A4_LINK)) {
-      PlaySound_082406e0(SONG_424);
+      PlaySound_082406e0(SE_FLAMETHROWER_424);
     }
     if (item->unk_128 == 1 && item->unk_130 > 0) {
       MainSprite_SetAnim(&item->sprite, &mgr->gfx, u8_ARRAY_085ae478[item->unk_12a + item->unk_128], PLAYMODE_ONCE_AND_STOP, 0);

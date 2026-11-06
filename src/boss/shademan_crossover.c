@@ -262,9 +262,9 @@ void FUN_08050e50(u32 param_1, u32 param_2);
 void FUN_08050d28(void);
 s32 FUN_08050d40(void);
 void FUN_0823b880(s32 n);
-void FUN_0805e79c(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 param_6, s32 param_7);
+s32 Entity0805e67c_SpawnSwarm(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
 void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
-void FUN_0805e6bc(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 param_6, s32 param_7);
+s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
 s32 FUN_08050e80(void);
 void FUN_08050cb8(Vec3* pos, u32 kind);
 void FUN_0805ef68(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, Vec3* pos);
@@ -1697,9 +1697,9 @@ NON_MATCH void FUN_0803f5b8(Boss* boss, s32 timer) {
         if (p->unk_2b6) {
           power = (p->unk_2c6 * power) >> 6;
         }
-        FUN_0805e6bc(p->entity0805e67c, &pos, mover->angle - ((Random() & 3) + 10), p->unk_2fe + 2, power, p->unk_2fa, p->unk_2fc);
-        FUN_0805e6bc(p->entity0805e67c, &pos, (Random() & 3) + mover->angle, p->unk_2fe, power, p->unk_2fa, p->unk_2fc);
-        FUN_0805e6bc(p->entity0805e67c, &pos, (Random() & 3) + 10 + mover->angle, p->unk_2fe + 2, power, p->unk_2fa, p->unk_2fc);
+        Entity0805e67c_Spawn(p->entity0805e67c, &pos, mover->angle - ((Random() & 3) + 10), p->unk_2fe + 2, power, p->unk_2fa, p->unk_2fc);
+        Entity0805e67c_Spawn(p->entity0805e67c, &pos, (Random() & 3) + mover->angle, p->unk_2fe, power, p->unk_2fa, p->unk_2fc);
+        Entity0805e67c_Spawn(p->entity0805e67c, &pos, (Random() & 3) + 10 + mover->angle, p->unk_2fe + 2, power, p->unk_2fa, p->unk_2fc);
         PlaySound_0824078c(SONG_234);
       }
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
@@ -1794,7 +1794,7 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
         if (p->unk_2b6) {
           power = (p->unk_2c6 * power) >> 6;
         }
-        FUN_0805e79c(p->entity0805e67c, &pos, mover->angle, p->unk_308, power, p->unk_304, p->unk_306);
+        Entity0805e67c_SpawnSwarm(p->entity0805e67c, &pos, mover->angle, p->unk_308, power, p->unk_304, p->unk_306);
         PlaySound_0824078c(SONG_234);
         p->unk_2c1 = 0;
       }

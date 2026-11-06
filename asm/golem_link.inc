@@ -1917,7 +1917,7 @@ FUN_081b9250: @ 0x081B9250
 	mov r0, r8
 	str r0, [sp]
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	orrs r0, r5
@@ -20310,7 +20310,7 @@ _081C2116:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r5, sp, #0xc
 	str r4, [sp, #8]
 	add r0, sp, #8
@@ -20883,7 +20883,7 @@ _081C257E:
 	ldrh r3, [r3]
 	movs r5, #1
 	str r5, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r4, sp, #0xc
 	movs r0, #0
 	str r0, [sp, #8]

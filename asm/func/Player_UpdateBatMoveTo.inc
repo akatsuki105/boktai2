@@ -110,7 +110,7 @@ _08074F64:
 	ldr r0, _08074F88 @ =FUN_08074d90
 	str r0, [r1]
 	adds r0, r6, #0
-	bl FUN_080726b4
+	bl Player_NotifyLockedDone
 	b _08075028
 	.align 2, 0
 _08074F80: .4byte 0x000002E6

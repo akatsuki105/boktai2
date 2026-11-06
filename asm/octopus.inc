@@ -5523,7 +5523,7 @@ FUN_08187070: @ 0x08187070
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	add r1, sp, #8
-	bl Enemy_RegisterOwnHitbox
+	bl Enemy_RegisterHurtboxWithFlags
 	movs r2, #0
 	str r2, [sp, #0x18]
 	add r1, sp, #0x18

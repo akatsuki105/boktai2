@@ -24,7 +24,7 @@ s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
 s32 FUN_081df62c(Entity9A9F* p);
 void EntityCF58_RequestKill(void);
-s32 FUN_0809c08c(s32 mode);
+s32 MainMenu_SetHudMode(s32 mode);
 
 static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
   if (p->state == 0) return TRUE;
@@ -371,7 +371,7 @@ s32 FUN_081df604(Entity9A9F* p) {
 
 s32 FUN_081df62c(Entity9A9F* p) {
   if ((u8)FUN_081dd9d4(p)) {
-    FUN_0809c08c(7);
+    MainMenu_SetHudMode(7);
     p->killRequested = 1;
   }
 }

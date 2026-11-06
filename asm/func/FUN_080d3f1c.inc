@@ -142,7 +142,7 @@ _080D4032:
 	movs r1, #0xe6
 	movs r2, #0xaa
 	movs r3, #0
-	bl Entity08080be8_Create
+	bl Bullet_Create
 	b _080D4462
 _080D405E:
 	adds r0, r5, #0

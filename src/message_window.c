@@ -3,6 +3,8 @@
 #include "file.h"
 #include "font.h"
 #include "global.h"
+#include "input.h"
+#include "sound.h"
 #include "sprite.h"
 #include "text.h"
 #include "video.h"
@@ -16,13 +18,13 @@ typedef struct MessageWindow {
   u8 rectY;                                       // 0x179, '.r[1]'
   u8 rectW;                                       // 0x17A, '.r[2]'
   u8 rectH;                                       // 0x17B, '.r[3]'
-  s16 lineIdx;                                    // 0x17C, '.i', MessageWindow_GetLine(p, lineIdx) が行頭ポインタを返す, 次の行へ進むとき +1
+  u16 lineIdx;                                    // 0x17C, '.i', MessageWindow_GetLine(p, lineIdx) が行頭ポインタを返す, 次の行へ進むとき +1
   bool8 unk_17e;                                  // 0x17E, 0 なら updateCallback = MessageWindow_StateType (1文字ずつ表示), 0 以外なら unk_198 を 0 にして updateCallback = MessageWindow_StateRenderAll
   u8 unk_17f;                                     // 0x17F, 入力待ちのフラグらしい, キー状態の bit1 が入る
   s8 shownFace;                                   // 0x180, 顔スプライトに実際に反映済みの renderer.face, 食い違うと MessageWindow_RefreshFace が貼り直す
   u8 unk_181;                                     // 0x181, MessageWindow_Init が 0 を入れるだけ
   u8 autoAdvance;                                 // 0x182, MessageWindow_EnableAutoAdvance (MessageWindow_SetAutoAdvance) の第1引数
-  s8 unk_183;                                     // 0x183, 3 で初期化され 0 になると unk_17f が 1 になるカウントダウン
+  u8 fastForwardDelay;                            // 0x183, 行を出すと 3 を入れ, 0 になるまで A での早送りを受け付けない
   u16 autoAdvanceDelay;                           // 0x184, MessageWindow_SetAutoAdvance の第2引数, autoAdvanceTimer がこれ以上になると次へ進む
   u16 autoAdvanceTimer;                           // 0x186, 毎フレーム +1
   s32 waitFrames;                                 // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、MessageWindow_Update が毎フレーム renderer.waitFrames で上書きする
@@ -47,10 +49,19 @@ static_assert(sizeof(MessageWindow) == 752);
 
 IWRAM_DATA MessageWindow* gMessageWindow = NULL;  // 0x030000C4
 
+void nop_0822ec58(void);
+void Font_ClearGlyphVram(void);
 char* MessageWindow_GetLine(MessageWindow* p, s32 lineIdx);
 void MessageWindow_StateType(MessageWindow* p);
 void MessageWindow_StateRenderAll(MessageWindow* p);
+void MessageWindow_StateFastForward(MessageWindow* p);
+void MessageWindow_StateWaitInput(MessageWindow* p);
 void MessageWindow_StateIdle(MessageWindow* p);
+
+static inline s32 GetTextSpeed(void) { return gStat->textSpeed; }  // 本体設定のメッセージ速度
+
+// 次のフレームから呼ぶ状態関数を差し替える
+static inline void MessageWindow_SetState(MessageWindow* p, void (*fn)(MessageWindow*)) { p->updateCallback = fn; }
 
 void MessageWindow_ClearGlobal(void) { gMessageWindow = NULL; }
 
@@ -82,46 +93,38 @@ s32 MessageWindow_RefreshFace(MessageWindow* p) {
   p->shownFace = r->face;
 }
 
-NON_MATCH s32 MessageWindow_SetInstant(s32 instant) {
-#ifdef NONMATCHING_C
+s32 MessageWindow_SetInstant(s32 instant) {
   MessageWindow* p = gMessageWindow;
 
   if (p == NULL) return 0;
 
   p->unk_17e = instant;
   if (p->unk_17e == 0) {
-    p->updateCallback = MessageWindow_StateType;
-    p->unk_183 = 3;
+    MessageWindow_SetState(p, MessageWindow_StateType);
+    p->fastForwardDelay = 3;
   } else {
     p->unk_198 = 0;
-    p->updateCallback = MessageWindow_StateRenderAll;
+    MessageWindow_SetState(p, MessageWindow_StateRenderAll);
   }
 
   p->renderer.finished = FALSE;
-  p->renderer.face = -1;
+  TextRenderer_SetFace(&p->renderer, -1);
   MessageWindow_RefreshFace(p);
-#else
-  INCFUNC("asm/func/MessageWindow_SetInstant.inc");
-#endif
 }
 
 s32 MessageWindow_SetInstantScripted(void) { return MessageWindow_SetInstant(VM_GetValue()); }
 
-NON_MATCH s32 MessageWindow_Close(void) {
-#ifdef NONMATCHING_C
+s32 MessageWindow_Close(void) {
   MessageWindow* p = gMessageWindow;
 
   if (p == NULL) return 0;
 
   Font_ReleaseRect(p->rectX, p->rectY, p->rectW, p->rectH);
-  p->updateCallback = MessageWindow_StateIdle;
+  MessageWindow_SetState(p, MessageWindow_StateIdle);
   p->arrow.flags |= SPRFLAG_HIDDEN;
-  p->renderer.face = -1;
+  TextRenderer_SetFace(&p->renderer, -1);
   MainSprite_Hide(&p->face);
   p->pendingLine = -1;
-#else
-  INCFUNC("asm/func/MessageWindow_Close.inc");
-#endif
 }
 
 s32 MessageWindow_CloseScripted(void) { return MessageWindow_Close(); }
@@ -194,7 +197,7 @@ NON_MATCH s32 MessageWindow_ShowLine(s32 line) {
     p->renderer.text = MessageWindow_GetLine(p, p->lineIdx);
     if (p->unk_17e == 0) {
       p->updateCallback = MessageWindow_StateType;
-      p->unk_183 = 3;
+      p->fastForwardDelay = 3;
     } else {
       p->unk_198 = 0;
       p->updateCallback = MessageWindow_StateRenderAll;
@@ -353,7 +356,61 @@ s32 MessageWindow_SetBgPltt(s32 fileID) {
 // 0x8F41
 s32 MessageWindow_SetBgPlttScripted(void) { return MessageWindow_SetBgPltt(VM_GetValue()); }
 
-NAKED s32 MessageWindow_ConfigureScripted(void) { INCFUNC("asm/func/MessageWindow_ConfigureScripted.inc"); }
+// 0xDD91, 開いているメッセージウィンドウを名前付き引数で設定し直す, '.s' 文字列表, '.r' 矩形, '.c' パレット, '.i' 行, '.m' 文字送り音, '.w' 速度, '.d' オート送り, '.p' スクリプトID の並び, '.a' 早送りの解除
+s32 MessageWindow_ConfigureScripted(void) {
+  MessageWindow* p = gMessageWindow;
+  TextRenderer* r;
+
+  if (p == NULL) {
+    return -1;
+  }
+  r = &p->renderer;
+  if (VM_SeekToNamedArg('s')) {
+    p->scriptPc = VM_GetPC_Proxy();
+    if (p->scriptPc == NULL) {
+      return -1;
+    }
+    MessageWindow_Start(p->scriptPc);
+  }
+  if (VM_SeekToNamedArg('r')) {
+    s32 x = VM_GetValue();
+    s32 y = VM_GetValue();
+    s32 w = VM_GetValue();
+
+    MessageWindow_SetRect(x, y, w, VM_GetValue());
+  }
+  if (MessageWindow_LoadBgPltt(p, VM_GetNamedArgValue('c', p->bgPlttFileID)) < 0) {
+    return -1;
+  }
+  MessageWindow_UploadBgPltt(p);
+  p->lineIdx = VM_GetNamedArgValue('i', p->lineIdx);
+  r->charSoundIdx = VM_GetNamedArgValue('m', r->charSoundIdx);
+  r->speed = VM_GetNamedArgValue('w', GetTextSpeed());
+  if (VM_SeekToNamedArg('d')) {
+    p->autoAdvance = VM_GetValue();
+    p->autoAdvanceDelay = VM_GetValue();
+    p->unk_194 = 1;
+  } else {
+    p->autoAdvance = 0;
+    p->autoAdvanceDelay = 0;
+    p->unk_194 = 0;
+  }
+  p->autoAdvanceTimer = 0;
+  if (VM_SeekToNamedArg('p')) {
+    r->scriptIdCount = 0;
+    while (VM_GetPC() != NULL) {
+      r->scriptIds[r->scriptIdCount] = VM_GetValue();
+      r->scriptIdCount++;
+    }
+  }
+  if (VM_SeekToNamedArg('a')) {
+    if (VM_GetValue() != 0) {
+      p->unk_17f = 0;
+    }
+  } else {
+    p->unk_17f = 0;
+  }
+}
 
 s32 MessageWindow_SetWait(s32 frames) {
   if (gMessageWindow == NULL) {
@@ -377,41 +434,151 @@ s32 FUN_08047fbc(void) {
 // スクリプトの文字列表の lineIdx 行目を引く
 char* MessageWindow_GetLine(MessageWindow* p, s32 lineIdx) { return GetStringByID(VM_ParseStringRef(p->scriptPc) + lineIdx); }
 
-NAKED void MessageWindow_StateWaitInput(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_StateWaitInput.inc"); }
+// 行末で入力 (オート送りなら時間) を待ち, 次の行へ進んだら文字送りを再開する
+void MessageWindow_StateWaitInput(MessageWindow* p) {
+  TextRenderer* r = &p->renderer;
+  s32 advance = 0;
 
-NAKED void MessageWindow_StateFastForward(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_StateFastForward.inc"); }
+  if (p->autoAdvance) {
+    if (p->autoAdvanceTimer++ >= p->autoAdvanceDelay) {
+      p->autoAdvanceTimer = 0;
+      advance = 2;
+    }
+  } else if (p->waitTimer >= p->waitFrames) {
+    p->waitFrames = 0;
+    p->waitTimer = 0;
+    if (gInput[0].down & B_BUTTON) {
+      p->unk_17f = 1;
+      advance = 1;
+    }
+    if (gInput[0].pressed & A_BUTTON) {
+      advance = 1;
+    }
+    p->arrow.flags &= ~SPRFLAG_HIDDEN;
+  } else {
+    p->unk_17f = 0;
+    p->arrow.flags |= SPRFLAG_HIDDEN;
+    p->waitTimer++;
+  }
 
-NAKED void MessageWindow_StateType(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_StateType.inc"); }
+  if ((p->unk_17f || advance) && p->scriptPc != NULL) {
+    p->lineIdx++;
+    if (p->unk_17f) {
+      MessageWindow_SetState(p, MessageWindow_StateFastForward);
+      r->speed = 0;
+      r->frameCounter = 0;
+    } else {
+      MessageWindow_SetState(p, MessageWindow_StateType);
+      p->fastForwardDelay = 3;
+      r->speed = GetTextSpeed();
+    }
+    r->text = MessageWindow_GetLine(p, p->lineIdx);
+    if (advance != 2) {
+      PlaySound_082406e0(SE_TEXT_SHOW);
+    }
+    Font_ReleaseRect(p->rectX, p->rectY, p->rectW, p->rectH);
+    TextRenderer_SetRect(r, p->rectX, p->rectY, p->rectW, p->rectH);
+    TextRenderer_ResetModeStack(&p->renderer);
+    p->arrow.flags |= SPRFLAG_HIDDEN;
+  } else {
+    MainSprite_AdvanceAnim(&p->arrow, &p->arrowGfx);
+  }
+}
+
+// B を押している間の早送り, 1歩ずつ文字を進め, 行末なら入力待ちへ, B を離したら通常の文字送りに戻す
+void MessageWindow_StateFastForward(MessageWindow* p) {
+  TextRenderer* r = &p->renderer;
+
+  if (p->unk_17f) {
+    r->muteCharSound = TRUE;
+  } else {
+    r->muteCharSound = p->unk_194;
+  }
+  if (r->text != NULL) {
+    if (r->mode == 0 && *r->text == '\0') {
+      p->waitTimer = 0;
+      MessageWindow_SetState(p, MessageWindow_StateWaitInput);
+      if (p->autoAdvance == 0 && p->waitFrames == 0) {
+        p->arrow.flags &= ~SPRFLAG_HIDDEN;
+      }
+      return;
+    }
+    r->frameCounter = 0;
+    r->soundEveryChar = TRUE;
+    if (TextRenderer_Advance(r) && r->finished) {
+      MessageWindow_SetState(p, MessageWindow_StateIdle);
+    }
+  }
+  if (p->updateCallback != MessageWindow_StateIdle && p->autoAdvance == 0 && p->unk_17f && !(gInput[0].down & B_BUTTON)) {
+    MessageWindow_SetState(p, MessageWindow_StateType);
+    p->unk_17f = 0;
+  }
+}
+
+// 通常の文字送り, speed フレームごとに1歩進め, 行末なら入力待ちへ, A を押すか B を押し続けると早送りに移る
+void MessageWindow_StateType(MessageWindow* p) {
+  TextRenderer* r = &p->renderer;
+
+  r->muteCharSound = p->unk_194;
+  if (r->text != NULL) {
+    if (r->mode == 0 && *r->text == '\0') {
+      p->waitTimer = 0;
+      MessageWindow_SetState(p, MessageWindow_StateWaitInput);
+      if (p->autoAdvance == 0 && p->waitFrames == 0) {
+        p->arrow.flags &= ~SPRFLAG_HIDDEN;
+      }
+      return;
+    }
+    if (r->frameCounter++ >= r->speed) {
+      r->frameCounter = 0;
+      r->soundEveryChar = FALSE;
+      if (TextRenderer_Advance(r)) {
+        if (r->finished) {
+          MessageWindow_SetState(p, MessageWindow_StateIdle);
+        } else if (r->stopAtTag) {
+          r->frameCounter = r->speed;
+        }
+      }
+    }
+  }
+  if (p->updateCallback != MessageWindow_StateIdle && p->autoAdvance == 0) {
+    if (p->fastForwardDelay != 0) {
+      p->fastForwardDelay--;
+    } else if (gInput[0].pressed & A_BUTTON) {
+      MessageWindow_SetState(p, MessageWindow_StateFastForward);
+      return;
+    }
+    if (gInput[0].down & B_BUTTON) {
+      MessageWindow_SetState(p, MessageWindow_StateFastForward);
+      p->unk_17f = 1;
+    }
+  }
+}
 
 void MessageWindow_StateIdle(MessageWindow* p) { TextRenderer_SetFinished(&p->renderer, FALSE); }
 
 void MessageWindow_StateDone(MessageWindow* p) {}
 
 // 残りの文字を一気に描き切る, 1フレームで最大4歩進め, 行を描き終えたら次の状態へ移す
-// 残差2命令 (43/45): 原典は MessageWindow_StateIdle のプール値を r8 に巻き上げてループ内で使い回すが, こちらは毎回読み直す
-// Tier A-C は試済: 三項演算子は 41 と更に短くなる
-NON_MATCH void MessageWindow_StateRenderAll(MessageWindow* p) {
-#ifdef NONMATCHING_C
+void MessageWindow_StateRenderAll(MessageWindow* p) {
+  TextRenderer* r = &p->renderer;
   s32 i;
 
-  p->renderer.muteCharSound = 1;
+  r->muteCharSound = TRUE;
   for (i = 0; i < 4; i++) {
-    if (p->renderer.text != NULL) {
-      p->renderer.frameCounter = 0;
-      if (TextRenderer_Advance(&p->renderer)) {
+    if (r->text != NULL) {
+      r->frameCounter = 0;
+      if (TextRenderer_Advance(r)) {
         p->unk_198 = 1;
-        if (p->renderer.finished) {
-          p->updateCallback = MessageWindow_StateIdle;
+        if (r->finished) {
+          MessageWindow_SetState(p, MessageWindow_StateIdle);
         } else {
-          p->updateCallback = MessageWindow_StateDone;
+          MessageWindow_SetState(p, MessageWindow_StateDone);
         }
         return;
       }
     }
   }
-#else
-  INCFUNC("asm/func/MessageWindow_StateRenderAll.inc");
-#endif
 }
 
 // 矢印を枠の上下どちらかに置き直し, updateCallback の状態に応じて顔スプライトを貼り直す
@@ -456,7 +623,92 @@ s32 MessageWindow_Destroy(MessageWindow* p) {
   return 0;
 }
 
-NAKED s32 MessageWindow_Init(MessageWindow* p, u32 _) { INCFUNC("asm/func/MessageWindow_Init.inc"); }
+// 生成時の初期化, '.r' 矩形, '.l' 待ちフレーム, '.s' 文字列表, '.c' パレット, '.i' 行, '.p' スクリプトID の並びを読み, 送り矢印と顔のスプライトを作る
+// 残差: 294/298 命令, 原典は状態を StateIdle にした直後に unk_17e を ldrb で読んで捨てる (結果を使わない読み込み) が, こちらは出ない (空の if は試済)
+NON_MATCH s32 MessageWindow_Init(MessageWindow* p, u32 _) {
+#ifdef NONMATCHING_C
+  TextRenderer* r;
+  MainSpriteGfx* f;
+  Vec3 pos;
+
+  gMessageWindow = p;
+  r = &p->renderer;
+  nop_0822ec58();
+  Font_ClearGlyphVram();
+  if (VM_SeekToNamedArg('r')) {
+    p->rectX = VM_GetValue();
+    p->rectY = VM_GetValue();
+    p->rectW = VM_GetValue();
+    p->rectH = VM_GetValue();
+  } else {
+    p->rectX = 0;
+    p->rectY = 0;
+    p->rectW = 0;
+    p->rectH = 0;
+  }
+  p->waitTimer = 0;
+  p->waitFrames = VM_GetNamedArgValue('l', 0);
+  TextRenderer_Init(r, p->rectX, p->rectY, p->rectW, p->rectH);
+  p->unk_17e = 0;
+  if (VM_SeekToNamedArg('s')) {
+    p->scriptPc = VM_GetPC_Proxy();
+    if (p->scriptPc == NULL) {
+      return -1;
+    }
+    r->text = GetStringByID(VM_ParseStringRef(p->scriptPc));
+    if (r->text == NULL) {
+      return -1;
+    }
+  } else {
+    p->scriptPc = NULL;
+    r->text = NULL;
+  }
+  if (MessageWindow_LoadBgPltt(p, VM_GetNamedArgValue('c', BGP_519C)) < 0) {
+    return -1;
+  }
+  MessageWindow_UploadBgPltt(p);
+  r->charSoundIdx = 0;
+  p->unk_181 = 0;
+  p->lineIdx = VM_GetNamedArgValue('i', 0);
+  p->fastForwardDelay = 3;
+  p->unk_17f = 0;
+  p->autoAdvance = 0;
+  p->autoAdvanceDelay = 0;
+  r->scriptIdCount = 0;
+  if (VM_SeekToNamedArg('p')) {
+    while (VM_GetPC() != NULL) {
+      r->scriptIds[r->scriptIdCount] = VM_GetValue();
+      r->scriptIdCount++;
+    }
+  } else {
+    r->scriptIdCount = 0;
+  }
+  p->pendingLine = -1;
+  MessageWindow_SetState(p, MessageWindow_StateIdle);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
+  if (f == NULL) {
+    return -1;
+  }
+  p->arrowGfx = *f;
+  OpenMainSpriteFile(&p->arrowGfx, f);
+  pos.x = 223, pos.y = 143, pos.z = 0;
+  MainSprite_Add(&p->arrow, &p->arrowGfx, 8, SPRFLAG_UNK_13 | SPRFLAG_GAMEOVER | SPRFLAG_NO_CLIP | SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_LOOP, 60, &pos);
+  MainSprite_SetAnim(&p->arrow, &p->arrowGfx, 0, PLAYMODE_LOOP, 0);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  if (f == NULL) {
+    return -1;
+  }
+  p->faceGfx = *f;
+  OpenMainSpriteFile(&p->faceGfx, f);
+  pos.x = 4, pos.y = 64, pos.z = 0;
+  MainSprite_Add(&p->face, &p->faceGfx, 0, SPRFLAG_GAMEOVER | SPRFLAG_NO_CLIP | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  return 0;
+#else
+  INCFUNC("asm/func/MessageWindow_Init.inc");
+#endif
+}
 
 // 0x0E37
 MessageWindow* MessageWindow_Create(u32 id) {

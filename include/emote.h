@@ -19,6 +19,15 @@ typedef enum {
   EMOTE_5 = 5,  // 吹き出し(♪)
 } EmoteKind;
 
+// EMOTE_0 の variant
+// まだ未確定の部分が多すぎるので意味を考慮するのは控える
+typedef enum {
+  EM0_BANG_RED = 0,       // "!"(赤)
+  EM0_BANG_WHITE = 1,     // "!"(白)
+  EM0_BANG_QUESTION = 2,  // "?"
+  EM0_BANG_BLUE = 3,      // "!"(青)
+} Emote0Variant;
+
 typedef struct Emote {
   WorldPos* pos;         // 0x000, 持ち主の座標, ptcls の pos へ8バイトまとめて写される
   Vec3 unk_4[3];         // 0x004, ptcls ごとに1要素, FUN_080d8de0 が乱数で埋める

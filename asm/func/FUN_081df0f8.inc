@@ -123,7 +123,7 @@ _081DF1BC:
 	movs r3, #4
 	bl FUN_0823ce68
 	movs r0, #5
-	bl FUN_0809c08c
+	bl MainMenu_SetHudMode
 	movs r0, #1
 	movs r1, #7
 	movs r2, #0x1c

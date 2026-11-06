@@ -28,7 +28,7 @@
 	bl FUN_08094d1c
 	ldr r1, [r6, #0x24]
 	adds r0, r4, #0
-	bl FUN_08094d48
+	bl MainMenu_SetWeaponMarquee
 	b _0809CF8A
 	.align 2, 0
 _0809CEF4: .4byte 0x00000E2B
@@ -94,7 +94,7 @@ _0809CF28:
 	bl FUN_08094d1c
 	ldr r1, [r6, #0x24]
 	mov r0, sp
-	bl FUN_08094d48
+	bl MainMenu_SetWeaponMarquee
 _0809CF8A:
 	add sp, #0x24
 	pop {r4, r5, r6}

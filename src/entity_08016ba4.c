@@ -2,7 +2,9 @@
 #include "file.h"
 #include "global.h"
 #include "particle.h"
+#include "random.h"
 #include "sprite.h"
+#include "trig.h"
 
 // 1発ぶんの破片, 速度を持って飛びながらアニメを進める
 typedef struct {
@@ -35,11 +37,105 @@ static_assert(sizeof(Entity08016ba4) == 3324);
 
 IWRAM_DATA Entity08016ba4* gEntity08016ba4 = NULL;  // 0x03000064
 
+Entity08016ba4* Entity08016ba4_Create(u32 id, u32 _);
+
 void FUN_080166a0(void) { gEntity08016ba4 = NULL; }
 
-NAKED s32 Entity08016ba4_Spawn(s32 count, Vec3* pos, s32 param_3, s32 param_4, s32 param_5, s32 param_6, u32 param_7, s32 param_8, s32 param_9, s32 param_10) { INCFUNC("asm/func/Entity08016ba4_Spawn.inc"); }
+// 空いている枠を探し, pos から破片を count 個 (最大8) ばらばらの速さと向きで飛ばす
+s32 Entity08016ba4_Spawn(s32 count, Vec3* pos, s32 lifeBase, s32 lifeRand, s32 speedBase, s32 speedRand, s32 angleBase, s32 angleRand, s32 velYBase, s32 velYRand) {
+  s32 i, j;
 
-NAKED s32 Entity08016ba4Burst_Update(Entity08016ba4Burst* b) { INCFUNC("asm/func/Entity08016ba4Burst_Update.inc"); }
+  if (gEntity08016ba4 == NULL && Entity08016ba4_Create(0, 0) == NULL) {
+    return -1;
+  }
+  for (i = 0; i < 6; i++) {
+    Entity08016ba4Burst* b = &gEntity08016ba4->bursts[i];
+
+    if (!b->active) {
+      b->active = TRUE;
+      b->count = count;
+      if (b->count > 8) {
+        b->count = 8;
+      }
+      for (j = 0; j < b->count; j++) {
+        Entity08016ba4Piece* pc = &b->pieces[j];
+        s32 angle;
+
+        pc->active = TRUE;
+        if (lifeRand == 0) {
+          pc->life = lifeBase;
+        } else {
+          pc->life = lifeBase + Mod(Random(), lifeRand);
+        }
+        if (speedRand == 0) {
+          pc->speed = speedBase;
+        } else {
+          pc->speed = speedBase + Mod(Random(), speedRand);
+        }
+        if (angleRand == 0) {
+          angle = angleBase;
+        } else {
+          angle = angleBase + Mod(Random(), angleRand);
+        }
+        pc->vel.x = COS(angle);
+        pc->vel.z = SIN(angle);
+        if (velYRand == 0) {
+          pc->vel.y = velYBase;
+        } else {
+          pc->vel.y = velYBase + Mod(Random(), velYRand);
+        }
+        pc->ptcl.pos = *pos;
+        Particle_AddToDrawList(&pc->ptcl, 0);
+        pc->ptcl.flags &= ~SPRFLAG_HIDDEN;
+        AuxAnim_SetAnim(&pc->anim, gEntity08016ba4->anim, 3, 0, 0);
+      }
+      return 0;
+    }
+  }
+  return -1;
+}
+
+// 破片を動かしてアニメを進め, 寿命が尽きたら隠す, 全部尽きたら枠を空ける
+s32 Entity08016ba4Burst_Update(Entity08016ba4Burst* b) {
+  s32 alive = 0;
+  s32 i;
+
+  for (i = 0; i < b->count; i++) {
+    Entity08016ba4Piece* pc = &b->pieces[i];
+    Particle* ptcl = &pc->ptcl;
+
+    if (pc->life != 0) {
+      alive++;
+      ptcl->pos.x += FixToInt(12, pc->vel.x * pc->speed);
+      ptcl->pos.y += pc->vel.y;
+      ptcl->pos.z += FixToInt(12, pc->vel.z * pc->speed);
+      pc->vel.y -= 2;
+      AuxAnim_SetAnimSpeed(&pc->anim, 16);
+      Particle_AdvanceAnim(ptcl, gEntity08016ba4->group0, &pc->anim);
+      if (pc->life > 8) {
+        if (pc->anim.cmdIdx == 5) {
+          pc->anim.cmdIdx = 0;
+        }
+      } else if (pc->life == 8) {
+        pc->anim.cmdIdx = 0;
+      }
+      pc->life--;
+      if (pc->life == 255) {
+        ptcl->flags |= SPRFLAG_HIDDEN;
+      }
+    } else {
+      ptcl->flags |= SPRFLAG_HIDDEN;
+    }
+  }
+  if (alive == 0) {
+    b->active = FALSE;
+    for (i = 0; i < b->count; i++) {
+      Particle_Remove(&b->pieces[i].ptcl);
+    }
+    b->count = 0;
+  }
+  return 0;
+}
 
 s32 Entity08016ba4_Update(Entity08016ba4* p) {
   s32 i;
@@ -92,7 +188,7 @@ s32 Entity08016ba4_Init(Entity08016ba4* p, u32 id) {
   return 0;
 }
 
-Entity08016ba4* Entity08016ba4_Create(u32 id) {
+Entity08016ba4* Entity08016ba4_Create(u32 id, u32 _) {
   Entity08016ba4* p;
 
   if (gEntity08016ba4 != NULL) {

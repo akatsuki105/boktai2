@@ -56,7 +56,7 @@ static_assert(sizeof(WeaponDexMenu) == 3492);
 static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武器図鑑の各ページのエントリ数
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
-void FUN_08094d48(unknown* w, u8* pc);
+void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 s32 GetWeaponWearPose(WeaponData* w);
 void FUN_08210bb0(WeaponDexMenu* p);
@@ -357,7 +357,7 @@ void WeaponDexMenu_ShowDescription(WeaponDexMenu* p) {
     MessageWindow_ShowLine(p->selected);
     MessageWindow_SetExtendValue(0, p->extValue);
     Marquee_Clear();
-    FUN_08094d48((unknown*)&gWeaponDB[p->selected], p->foundText);
+    MainMenu_SetWeaponMarquee((unknown*)&gWeaponDB[p->selected], p->foundText);
     p->unk_c8a |= 4;
     p->unk_c8a &= ~2;
     pose = GetWeaponWearPose((WeaponData*)&gWeaponDB[p->selected]);

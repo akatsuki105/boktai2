@@ -5,8 +5,8 @@
 .balign 4, 0
 .section .rodata
 
-.macro animation variant_count, cmd_idx, cmd_count
-  .byte \variant_count, \cmd_count
+.macro animation cmd_idx, cmd_count, variant_count
+  .byte (\variant_count << 4), \cmd_count
   .2byte 4 + (ANIM_COUNT << 2) + (\cmd_idx << 1)
 .endm
 
@@ -40,13 +40,13 @@ gAnimDirectory: @ 0x085B0DF0
 
 @ Files
 .balign 4, 0
-Animation_0837: @ 0x085B0F38, index: 0
+Animation_0837: @ 0x085B0F38, index: 0, id: 0x0837
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 14 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 48, 0, 2
-    animation 48, 6, 2
-    animation 16, 12, 2
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 2, 3 @ anim_idx: 0
+    animation 6, 2, 3 @ anim_idx: 1
+    animation 12, 2, 1 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 4
@@ -68,11 +68,11 @@ Animation_0837: @ 0x085B0F38, index: 0
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_0AE9: @ 0x085B0F68, index: 1
+Animation_0AE9: @ 0x085B0F68, index: 1, id: 0x0AE9
   .set ANIM_COUNT, 1
   .2byte ANIM_COUNT, 4 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 2
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 2, 2 @ anim_idx: 0
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 6
@@ -82,12 +82,12 @@ Animation_0AE9: @ 0x085B0F68, index: 1
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1003: @ 0x085B0F7C, index: 2
+Animation_1003: @ 0x085B0F7C, index: 2, id: 0x1003
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 11 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 7
-    animation 16, 7, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 7, 1 @ anim_idx: 0
+    animation 7, 4, 1 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 15
@@ -105,19 +105,19 @@ Animation_1003: @ 0x085B0F7C, index: 2
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_121B: @ 0x085B0FA4, index: 3
+Animation_121B: @ 0x085B0FA4, index: 3, id: 0x121B
   .set ANIM_COUNT, 9
   .2byte ANIM_COUNT, 43 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 8
-    animation 32, 8, 5
-    animation 16, 18, 4
-    animation 16, 22, 1
-    animation 16, 23, 4
-    animation 16, 27, 1
-    animation 16, 28, 6
-    animation 16, 34, 6
-    animation 16, 40, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 8, 1 @ anim_idx: 0
+    animation 8, 5, 2 @ anim_idx: 1
+    animation 18, 4, 1 @ anim_idx: 2
+    animation 22, 1, 1 @ anim_idx: 3
+    animation 23, 4, 1 @ anim_idx: 4
+    animation 27, 1, 1 @ anim_idx: 5
+    animation 28, 6, 1 @ anim_idx: 6
+    animation 34, 6, 1 @ anim_idx: 7
+    animation 40, 3, 1 @ anim_idx: 8
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 5
@@ -174,13 +174,13 @@ Animation_121B: @ 0x085B0FA4, index: 3
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_13F9: @ 0x085B1028, index: 4
+Animation_13F9: @ 0x085B1028, index: 4, id: 0x13F9
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 8 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 64, 0, 1
-    animation 16, 4, 1
-    animation 48, 5, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 4 @ anim_idx: 0
+    animation 4, 1, 1 @ anim_idx: 1
+    animation 5, 1, 3 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -196,12 +196,12 @@ Animation_13F9: @ 0x085B1028, index: 4
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1752: @ 0x085B104C, index: 5
+Animation_1752: @ 0x085B104C, index: 5, id: 0x1752
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 5 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 4, 1 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -213,11 +213,11 @@ Animation_1752: @ 0x085B104C, index: 5
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1C9B: @ 0x085B1068, index: 6
+Animation_1C9B: @ 0x085B1068, index: 6, id: 0x1C9B
   .set ANIM_COUNT, 1
   .2byte ANIM_COUNT, 3 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 3, 0 @ anim_idx: 0
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 5
@@ -226,35 +226,35 @@ Animation_1C9B: @ 0x085B1068, index: 6
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1DC3: @ 0x085B107C, index: 7
+Animation_1DC3: @ 0x085B107C, index: 7, id: 0x1DC3
   .set ANIM_COUNT, 25
   .2byte ANIM_COUNT, 86 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 1
-    animation 16, 2, 1
-    animation 16, 3, 1
-    animation 16, 4, 1
-    animation 16, 5, 1
-    animation 16, 6, 1
-    animation 16, 7, 1
-    animation 16, 8, 1
-    animation 16, 9, 1
-    animation 16, 10, 1
-    animation 16, 11, 1
-    animation 16, 12, 7
-    animation 16, 19, 6
-    animation 16, 25, 5
-    animation 16, 30, 4
-    animation 16, 34, 10
-    animation 16, 44, 14
-    animation 32, 58, 3
-    animation 32, 64, 2
-    animation 16, 68, 4
-    animation 16, 72, 4
-    animation 16, 76, 4
-    animation 16, 80, 3
-    animation 16, 83, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 1, 1 @ anim_idx: 1
+    animation 2, 1, 1 @ anim_idx: 2
+    animation 3, 1, 1 @ anim_idx: 3
+    animation 4, 1, 1 @ anim_idx: 4
+    animation 5, 1, 1 @ anim_idx: 5
+    animation 6, 1, 1 @ anim_idx: 6
+    animation 7, 1, 1 @ anim_idx: 7
+    animation 8, 1, 1 @ anim_idx: 8
+    animation 9, 1, 1 @ anim_idx: 9
+    animation 10, 1, 1 @ anim_idx: 10
+    animation 11, 1, 1 @ anim_idx: 11
+    animation 12, 7, 1 @ anim_idx: 12
+    animation 19, 6, 1 @ anim_idx: 13
+    animation 25, 5, 1 @ anim_idx: 14
+    animation 30, 4, 1 @ anim_idx: 15
+    animation 34, 10, 1 @ anim_idx: 16
+    animation 44, 14, 1 @ anim_idx: 17
+    animation 58, 3, 2 @ anim_idx: 18
+    animation 64, 2, 2 @ anim_idx: 19
+    animation 68, 4, 1 @ anim_idx: 20
+    animation 72, 4, 1 @ anim_idx: 21
+    animation 76, 4, 1 @ anim_idx: 22
+    animation 80, 3, 1 @ anim_idx: 23
+    animation 83, 3, 1 @ anim_idx: 24
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -370,21 +370,21 @@ Animation_1DC3: @ 0x085B107C, index: 7
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1DF8: @ 0x085B1194, index: 8
+Animation_1DF8: @ 0x085B1194, index: 8, id: 0x1DF8
   .set ANIM_COUNT, 11
   .2byte ANIM_COUNT, 112 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 3
-    animation 32, 6, 3
-    animation 32, 12, 1
-    animation 32, 14, 1
-    animation 32, 16, 4
-    animation 32, 24, 3
-    animation 32, 30, 7
-    animation 32, 44, 1
-    animation 32, 46, 20
-    animation 48, 86, 4
-    animation 32, 98, 7
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 3, 2 @ anim_idx: 0
+    animation 6, 3, 2 @ anim_idx: 1
+    animation 12, 1, 2 @ anim_idx: 2
+    animation 14, 1, 2 @ anim_idx: 3
+    animation 16, 4, 2 @ anim_idx: 4
+    animation 24, 3, 2 @ anim_idx: 5
+    animation 30, 7, 2 @ anim_idx: 6
+    animation 44, 1, 2 @ anim_idx: 7
+    animation 46, 20, 2 @ anim_idx: 8
+    animation 86, 4, 3 @ anim_idx: 9
+    animation 98, 7, 2 @ anim_idx: 10
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 3
@@ -512,20 +512,20 @@ Animation_1DF8: @ 0x085B1194, index: 8
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1E38: @ 0x085B12A8, index: 9
+Animation_1E38: @ 0x085B12A8, index: 9, id: 0x1E38
   .set ANIM_COUNT, 10
   .2byte ANIM_COUNT, 73 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 32, 2, 8
-    animation 48, 18, 3
-    animation 32, 27, 2
-    animation 32, 31, 4
-    animation 32, 39, 3
-    animation 32, 45, 4
-    animation 32, 53, 3
-    animation 32, 59, 6
-    animation 32, 71, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 8, 2 @ anim_idx: 1
+    animation 18, 3, 3 @ anim_idx: 2
+    animation 27, 2, 2 @ anim_idx: 3
+    animation 31, 4, 2 @ anim_idx: 4
+    animation 39, 3, 2 @ anim_idx: 5
+    animation 45, 4, 2 @ anim_idx: 6
+    animation 53, 3, 2 @ anim_idx: 7
+    animation 59, 6, 2 @ anim_idx: 8
+    animation 71, 1, 2 @ anim_idx: 9
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -613,16 +613,16 @@ Animation_1E38: @ 0x085B12A8, index: 9
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_1FB8: @ 0x085B136C, index: 10
+Animation_1FB8: @ 0x085B136C, index: 10, id: 0x1FB8
   .set ANIM_COUNT, 6
   .2byte ANIM_COUNT, 24 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 4
-    animation 16, 4, 4
-    animation 16, 8, 4
-    animation 16, 12, 4
-    animation 16, 16, 4
-    animation 16, 20, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 1 @ anim_idx: 0
+    animation 4, 4, 1 @ anim_idx: 1
+    animation 8, 4, 1 @ anim_idx: 2
+    animation 12, 4, 1 @ anim_idx: 3
+    animation 16, 4, 1 @ anim_idx: 4
+    animation 20, 4, 1 @ anim_idx: 5
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 15, 8
@@ -657,11 +657,11 @@ Animation_1FB8: @ 0x085B136C, index: 10
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_27A4: @ 0x085B13BC, index: 11
+Animation_27A4: @ 0x085B13BC, index: 11, id: 0x27A4
   .set ANIM_COUNT, 1
   .2byte ANIM_COUNT, 4 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 0 @ anim_idx: 0
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 4
@@ -671,14 +671,14 @@ Animation_27A4: @ 0x085B13BC, index: 11
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_29FB: @ 0x085B13D0, index: 12
+Animation_29FB: @ 0x085B13D0, index: 12, id: 0x29FB
   .set ANIM_COUNT, 4
   .2byte ANIM_COUNT, 34 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 4
-    animation 32, 20, 5
-    animation 32, 30, 1
-    animation 32, 32, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 5 @ anim_idx: 0
+    animation 20, 5, 2 @ anim_idx: 1
+    animation 30, 1, 2 @ anim_idx: 2
+    animation 32, 1, 2 @ anim_idx: 3
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 12, 12
@@ -721,19 +721,19 @@ Animation_29FB: @ 0x085B13D0, index: 12
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_31F4: @ 0x085B142C, index: 13
+Animation_31F4: @ 0x085B142C, index: 13, id: 0x31F4
   .set ANIM_COUNT, 9
   .2byte ANIM_COUNT, 55 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 32, 2, 4
-    animation 0, 10, 8
-    animation 0, 18, 7
-    animation 0, 25, 4
-    animation 0, 29, 4
-    animation 0, 33, 9
-    animation 0, 42, 4
-    animation 0, 46, 9
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 4, 2 @ anim_idx: 1
+    animation 10, 8, 0 @ anim_idx: 2
+    animation 18, 7, 0 @ anim_idx: 3
+    animation 25, 4, 0 @ anim_idx: 4
+    animation 29, 4, 0 @ anim_idx: 5
+    animation 33, 9, 0 @ anim_idx: 6
+    animation 42, 4, 0 @ anim_idx: 7
+    animation 46, 9, 0 @ anim_idx: 8
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 16, 15
@@ -802,15 +802,15 @@ Animation_31F4: @ 0x085B142C, index: 13
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_3449: @ 0x085B14C8, index: 14
+Animation_3449: @ 0x085B14C8, index: 14, id: 0x3449
   .set ANIM_COUNT, 5
   .2byte ANIM_COUNT, 58 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 9
-    animation 32, 18, 1
-    animation 32, 20, 9
-    animation 32, 38, 1
-    animation 32, 40, 9
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 9, 2 @ anim_idx: 0
+    animation 18, 1, 2 @ anim_idx: 1
+    animation 20, 9, 2 @ anim_idx: 2
+    animation 38, 1, 2 @ anim_idx: 3
+    animation 40, 9, 2 @ anim_idx: 4
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 3
@@ -878,23 +878,23 @@ Animation_3449: @ 0x085B14C8, index: 14
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_38E2: @ 0x085B1558, index: 15
+Animation_38E2: @ 0x085B1558, index: 15, id: 0x38E2
   .set ANIM_COUNT, 13
   .2byte ANIM_COUNT, 79 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 7
-    animation 0, 7, 7
-    animation 0, 14, 4
-    animation 0, 18, 6
-    animation 32, 24, 3
-    animation 32, 30, 4
-    animation 32, 38, 4
-    animation 32, 46, 3
-    animation 32, 52, 3
-    animation 0, 58, 7
-    animation 0, 65, 5
-    animation 0, 70, 6
-    animation 0, 76, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 7, 0 @ anim_idx: 0
+    animation 7, 7, 0 @ anim_idx: 1
+    animation 14, 4, 0 @ anim_idx: 2
+    animation 18, 6, 0 @ anim_idx: 3
+    animation 24, 3, 2 @ anim_idx: 4
+    animation 30, 4, 2 @ anim_idx: 5
+    animation 38, 4, 2 @ anim_idx: 6
+    animation 46, 3, 2 @ anim_idx: 7
+    animation 52, 3, 2 @ anim_idx: 8
+    animation 58, 7, 0 @ anim_idx: 9
+    animation 65, 5, 0 @ anim_idx: 10
+    animation 70, 6, 0 @ anim_idx: 11
+    animation 76, 3, 0 @ anim_idx: 12
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 16, 7
@@ -991,43 +991,43 @@ Animation_38E2: @ 0x085B1558, index: 15
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_3D95: @ 0x085B1634, index: 16
+Animation_3D95: @ 0x085B1634, index: 16, id: 0x3D95
   .set ANIM_COUNT, 33
   .2byte ANIM_COUNT, 116 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 1
-    animation 80, 5, 1
-    animation 80, 10, 1
-    animation 80, 15, 1
-    animation 80, 20, 1
-    animation 80, 25, 1
-    animation 80, 30, 1
-    animation 80, 35, 1
-    animation 16, 40, 3
-    animation 16, 43, 3
-    animation 16, 46, 3
-    animation 16, 49, 3
-    animation 16, 52, 3
-    animation 16, 55, 3
-    animation 16, 58, 3
-    animation 16, 61, 3
-    animation 16, 64, 3
-    animation 16, 67, 3
-    animation 16, 70, 3
-    animation 16, 73, 3
-    animation 16, 76, 3
-    animation 16, 79, 3
-    animation 16, 82, 3
-    animation 16, 85, 3
-    animation 16, 88, 1
-    animation 16, 89, 1
-    animation 16, 90, 1
-    animation 16, 91, 1
-    animation 16, 92, 1
-    animation 16, 93, 1
-    animation 16, 94, 1
-    animation 16, 95, 1
-    animation 80, 96, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 5 @ anim_idx: 0
+    animation 5, 1, 5 @ anim_idx: 1
+    animation 10, 1, 5 @ anim_idx: 2
+    animation 15, 1, 5 @ anim_idx: 3
+    animation 20, 1, 5 @ anim_idx: 4
+    animation 25, 1, 5 @ anim_idx: 5
+    animation 30, 1, 5 @ anim_idx: 6
+    animation 35, 1, 5 @ anim_idx: 7
+    animation 40, 3, 1 @ anim_idx: 8
+    animation 43, 3, 1 @ anim_idx: 9
+    animation 46, 3, 1 @ anim_idx: 10
+    animation 49, 3, 1 @ anim_idx: 11
+    animation 52, 3, 1 @ anim_idx: 12
+    animation 55, 3, 1 @ anim_idx: 13
+    animation 58, 3, 1 @ anim_idx: 14
+    animation 61, 3, 1 @ anim_idx: 15
+    animation 64, 3, 1 @ anim_idx: 16
+    animation 67, 3, 1 @ anim_idx: 17
+    animation 70, 3, 1 @ anim_idx: 18
+    animation 73, 3, 1 @ anim_idx: 19
+    animation 76, 3, 1 @ anim_idx: 20
+    animation 79, 3, 1 @ anim_idx: 21
+    animation 82, 3, 1 @ anim_idx: 22
+    animation 85, 3, 1 @ anim_idx: 23
+    animation 88, 1, 1 @ anim_idx: 24
+    animation 89, 1, 1 @ anim_idx: 25
+    animation 90, 1, 1 @ anim_idx: 26
+    animation 91, 1, 1 @ anim_idx: 27
+    animation 92, 1, 1 @ anim_idx: 28
+    animation 93, 1, 1 @ anim_idx: 29
+    animation 94, 1, 1 @ anim_idx: 30
+    animation 95, 1, 1 @ anim_idx: 31
+    animation 96, 4, 5 @ anim_idx: 32
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 8
@@ -1181,12 +1181,12 @@ Animation_3D95: @ 0x085B1634, index: 16
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_3DC2: @ 0x085B17A8, index: 17
+Animation_3DC2: @ 0x085B17A8, index: 17, id: 0x3DC2
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 5 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 4
-    animation 16, 4, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 1 @ anim_idx: 0
+    animation 4, 1, 1 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 6
@@ -1198,13 +1198,13 @@ Animation_3DC2: @ 0x085B17A8, index: 17
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_3F72: @ 0x085B17C4, index: 18
+Animation_3F72: @ 0x085B17C4, index: 18, id: 0x3F72
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 6 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 1
-    animation 64, 2, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 1, 1 @ anim_idx: 1
+    animation 2, 1, 4 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -1218,14 +1218,14 @@ Animation_3F72: @ 0x085B17C4, index: 18
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_4EC0: @ 0x085B17E4, index: 19
+Animation_4EC0: @ 0x085B17E4, index: 19, id: 0x4EC0
   .set ANIM_COUNT, 4
   .2byte ANIM_COUNT, 38 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 9
-    animation 32, 18, 7
-    animation 16, 32, 3
-    animation 16, 35, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 9, 2 @ anim_idx: 0
+    animation 18, 7, 2 @ anim_idx: 1
+    animation 32, 3, 1 @ anim_idx: 2
+    animation 35, 3, 1 @ anim_idx: 3
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 12, 6
@@ -1272,16 +1272,16 @@ Animation_4EC0: @ 0x085B17E4, index: 19
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_5BB7: @ 0x085B1848, index: 20
+Animation_5BB7: @ 0x085B1848, index: 20, id: 0x5BB7
   .set ANIM_COUNT, 6
   .2byte ANIM_COUNT, 20 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 4
-    animation 32, 8, 1
-    animation 16, 10, 2
-    animation 16, 12, 2
-    animation 16, 14, 3
-    animation 16, 17, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 2 @ anim_idx: 0
+    animation 8, 1, 2 @ anim_idx: 1
+    animation 10, 2, 1 @ anim_idx: 2
+    animation 12, 2, 1 @ anim_idx: 3
+    animation 14, 3, 1 @ anim_idx: 4
+    animation 17, 3, 1 @ anim_idx: 5
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 3
@@ -1312,12 +1312,12 @@ Animation_5BB7: @ 0x085B1848, index: 20
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_5C4D: @ 0x085B1890, index: 21
+Animation_5C4D: @ 0x085B1890, index: 21, id: 0x5C4D
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 4 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 32, 2, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 1, 2 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 15
@@ -1328,14 +1328,14 @@ Animation_5C4D: @ 0x085B1890, index: 21
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_62C7: @ 0x085B18A8, index: 22
+Animation_62C7: @ 0x085B18A8, index: 22, id: 0x62C7
   .set ANIM_COUNT, 4
   .2byte ANIM_COUNT, 38 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 4
-    animation 32, 20, 4
-    animation 32, 28, 4
-    animation 32, 36, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 5 @ anim_idx: 0
+    animation 20, 4, 2 @ anim_idx: 1
+    animation 28, 4, 2 @ anim_idx: 2
+    animation 36, 1, 2 @ anim_idx: 3
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 2
@@ -1382,14 +1382,14 @@ Animation_62C7: @ 0x085B18A8, index: 22
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_6830: @ 0x085B190C, index: 23
+Animation_6830: @ 0x085B190C, index: 23, id: 0x6830
   .set ANIM_COUNT, 4
   .2byte ANIM_COUNT, 12 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 3
-    animation 16, 3, 3
-    animation 16, 6, 3
-    animation 16, 9, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 3, 1 @ anim_idx: 0
+    animation 3, 3, 1 @ anim_idx: 1
+    animation 6, 3, 1 @ anim_idx: 2
+    animation 9, 3, 1 @ anim_idx: 3
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 2
@@ -1410,12 +1410,12 @@ Animation_6830: @ 0x085B190C, index: 23
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_74C9: @ 0x085B193C, index: 24
+Animation_74C9: @ 0x085B193C, index: 24, id: 0x74C9
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 4 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 48, 1, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 1, 3 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 3, 1
@@ -1426,15 +1426,15 @@ Animation_74C9: @ 0x085B193C, index: 24
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_78E1: @ 0x085B1954, index: 25
+Animation_78E1: @ 0x085B1954, index: 25, id: 0x78E1
   .set ANIM_COUNT, 5
   .2byte ANIM_COUNT, 28 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 4
-    animation 0, 4, 6
-    animation 0, 10, 6
-    animation 0, 16, 8
-    animation 0, 24, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 0 @ anim_idx: 0
+    animation 4, 6, 0 @ anim_idx: 1
+    animation 10, 6, 0 @ anim_idx: 2
+    animation 16, 8, 0 @ anim_idx: 3
+    animation 24, 4, 0 @ anim_idx: 4
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 4
@@ -1472,18 +1472,18 @@ Animation_78E1: @ 0x085B1954, index: 25
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_7B03: @ 0x085B19A8, index: 26
+Animation_7B03: @ 0x085B19A8, index: 26, id: 0x7B03
   .set ANIM_COUNT, 8
   .2byte ANIM_COUNT, 73 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 6
-    animation 32, 12, 6
-    animation 80, 24, 1
-    animation 32, 29, 1
-    animation 32, 31, 1
-    animation 32, 33, 13
-    animation 32, 59, 6
-    animation 32, 71, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 6, 2 @ anim_idx: 0
+    animation 12, 6, 2 @ anim_idx: 1
+    animation 24, 1, 5 @ anim_idx: 2
+    animation 29, 1, 2 @ anim_idx: 3
+    animation 31, 1, 2 @ anim_idx: 4
+    animation 33, 13, 2 @ anim_idx: 5
+    animation 59, 6, 2 @ anim_idx: 6
+    animation 71, 1, 2 @ anim_idx: 7
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -1569,13 +1569,13 @@ Animation_7B03: @ 0x085B19A8, index: 26
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_871C: @ 0x085B1A64, index: 27
+Animation_871C: @ 0x085B1A64, index: 27, id: 0x871C
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 12 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 4
-    animation 16, 4, 4
-    animation 16, 8, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 1 @ anim_idx: 0
+    animation 4, 4, 1 @ anim_idx: 1
+    animation 8, 4, 1 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 8, 2
@@ -1595,13 +1595,13 @@ Animation_871C: @ 0x085B1A64, index: 27
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_87EF: @ 0x085B1A90, index: 28
+Animation_87EF: @ 0x085B1A90, index: 28, id: 0x87EF
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 12 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 16, 2, 5
-    animation 16, 7, 5
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 5, 1 @ anim_idx: 1
+    animation 7, 5, 1 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -1621,12 +1621,12 @@ Animation_87EF: @ 0x085B1A90, index: 28
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_8DC7: @ 0x085B1ABC, index: 29
+Animation_8DC7: @ 0x085B1ABC, index: 29, id: 0x8DC7
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 2 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 1, 1 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -1635,15 +1635,15 @@ Animation_8DC7: @ 0x085B1ABC, index: 29
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_931E: @ 0x085B1AD0, index: 30
+Animation_931E: @ 0x085B1AD0, index: 30, id: 0x931E
   .set ANIM_COUNT, 5
   .2byte ANIM_COUNT, 25 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 6
-    animation 16, 6, 6
-    animation 16, 12, 5
-    animation 16, 17, 5
-    animation 16, 22, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 6, 1 @ anim_idx: 0
+    animation 6, 6, 1 @ anim_idx: 1
+    animation 12, 5, 1 @ anim_idx: 2
+    animation 17, 5, 1 @ anim_idx: 3
+    animation 22, 3, 1 @ anim_idx: 4
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 2
@@ -1678,11 +1678,11 @@ Animation_931E: @ 0x085B1AD0, index: 30
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_95D9: @ 0x085B1B20, index: 31
+Animation_95D9: @ 0x085B1B20, index: 31, id: 0x95D9
   .set ANIM_COUNT, 1
   .2byte ANIM_COUNT, 24 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 12
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 12, 2 @ anim_idx: 0
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 3
@@ -1712,17 +1712,17 @@ Animation_95D9: @ 0x085B1B20, index: 31
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_9607: @ 0x085B1B5C, index: 32
+Animation_9607: @ 0x085B1B5C, index: 32, id: 0x9607
   .set ANIM_COUNT, 7
   .2byte ANIM_COUNT, 42 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 6
-    animation 16, 30, 4
-    animation 16, 34, 1
-    animation 16, 35, 1
-    animation 16, 36, 1
-    animation 16, 37, 1
-    animation 16, 38, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 6, 5 @ anim_idx: 0
+    animation 30, 4, 1 @ anim_idx: 1
+    animation 34, 1, 1 @ anim_idx: 2
+    animation 35, 1, 1 @ anim_idx: 3
+    animation 36, 1, 1 @ anim_idx: 4
+    animation 37, 1, 1 @ anim_idx: 5
+    animation 38, 4, 1 @ anim_idx: 6
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 4
@@ -1776,21 +1776,21 @@ Animation_9607: @ 0x085B1B5C, index: 32
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_99DD: @ 0x085B1BD4, index: 33
+Animation_99DD: @ 0x085B1BD4, index: 33, id: 0x99DD
   .set ANIM_COUNT, 11
   .2byte ANIM_COUNT, 46 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 7
-    animation 16, 7, 3
-    animation 16, 10, 3
-    animation 32, 13, 4
-    animation 32, 21, 3
-    animation 16, 27, 5
-    animation 16, 32, 2
-    animation 16, 34, 1
-    animation 32, 35, 1
-    animation 32, 37, 4
-    animation 16, 45, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 7, 1 @ anim_idx: 0
+    animation 7, 3, 1 @ anim_idx: 1
+    animation 10, 3, 1 @ anim_idx: 2
+    animation 13, 4, 2 @ anim_idx: 3
+    animation 21, 3, 2 @ anim_idx: 4
+    animation 27, 5, 1 @ anim_idx: 5
+    animation 32, 2, 1 @ anim_idx: 6
+    animation 34, 1, 1 @ anim_idx: 7
+    animation 35, 1, 2 @ anim_idx: 8
+    animation 37, 4, 2 @ anim_idx: 9
+    animation 45, 1, 1 @ anim_idx: 10
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 10
@@ -1852,17 +1852,17 @@ Animation_99DD: @ 0x085B1BD4, index: 33
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_9AF2: @ 0x085B1C64, index: 34
+Animation_9AF2: @ 0x085B1C64, index: 34, id: 0x9AF2
   .set ANIM_COUNT, 7
   .2byte ANIM_COUNT, 19 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 3
-    animation 16, 4, 3
-    animation 16, 7, 3
-    animation 16, 10, 5
-    animation 16, 15, 3
-    animation 16, 18, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 3, 1 @ anim_idx: 1
+    animation 4, 3, 1 @ anim_idx: 2
+    animation 7, 3, 1 @ anim_idx: 3
+    animation 10, 5, 1 @ anim_idx: 4
+    animation 15, 3, 1 @ anim_idx: 5
+    animation 18, 1, 1 @ anim_idx: 6
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -1893,19 +1893,19 @@ Animation_9AF2: @ 0x085B1C64, index: 34
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_A4B2: @ 0x085B1CB0, index: 35
+Animation_A4B2: @ 0x085B1CB0, index: 35, id: 0xA4B2
   .set ANIM_COUNT, 9
   .2byte ANIM_COUNT, 69 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 32, 2, 8
-    animation 48, 18, 3
-    animation 32, 27, 3
-    animation 32, 33, 4
-    animation 32, 41, 1
-    animation 32, 43, 7
-    animation 32, 57, 3
-    animation 32, 63, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 8, 2 @ anim_idx: 1
+    animation 18, 3, 3 @ anim_idx: 2
+    animation 27, 3, 2 @ anim_idx: 3
+    animation 33, 4, 2 @ anim_idx: 4
+    animation 41, 1, 2 @ anim_idx: 5
+    animation 43, 7, 2 @ anim_idx: 6
+    animation 57, 3, 2 @ anim_idx: 7
+    animation 63, 3, 2 @ anim_idx: 8
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -1988,20 +1988,20 @@ Animation_A4B2: @ 0x085B1CB0, index: 35
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_A929: @ 0x085B1D68, index: 36
+Animation_A929: @ 0x085B1D68, index: 36, id: 0xA929
   .set ANIM_COUNT, 10
   .2byte ANIM_COUNT, 52 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 3
-    animation 32, 3, 8
-    animation 16, 19, 8
-    animation 16, 27, 6
-    animation 16, 33, 6
-    animation 16, 39, 1
-    animation 16, 40, 1
-    animation 48, 41, 1
-    animation 16, 44, 1
-    animation 16, 45, 7
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 3, 1 @ anim_idx: 0
+    animation 3, 8, 2 @ anim_idx: 1
+    animation 19, 8, 1 @ anim_idx: 2
+    animation 27, 6, 1 @ anim_idx: 3
+    animation 33, 6, 1 @ anim_idx: 4
+    animation 39, 1, 1 @ anim_idx: 5
+    animation 40, 1, 1 @ anim_idx: 6
+    animation 41, 1, 3 @ anim_idx: 7
+    animation 44, 1, 1 @ anim_idx: 8
+    animation 45, 7, 1 @ anim_idx: 9
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 10
@@ -2068,14 +2068,14 @@ Animation_A929: @ 0x085B1D68, index: 36
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_AF44: @ 0x085B1E00, index: 37
+Animation_AF44: @ 0x085B1E00, index: 37, id: 0xAF44
   .set ANIM_COUNT, 4
   .2byte ANIM_COUNT, 26 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 1
-    animation 80, 5, 3
-    animation 32, 20, 1
-    animation 32, 22, 2
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 5 @ anim_idx: 0
+    animation 5, 3, 5 @ anim_idx: 1
+    animation 20, 1, 2 @ anim_idx: 2
+    animation 22, 2, 2 @ anim_idx: 3
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 15, 8
@@ -2110,16 +2110,16 @@ Animation_AF44: @ 0x085B1E00, index: 37
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_B6EE: @ 0x085B1E4C, index: 38
+Animation_B6EE: @ 0x085B1E4C, index: 38, id: 0xB6EE
   .set ANIM_COUNT, 6
   .2byte ANIM_COUNT, 36 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 32, 2, 4
-    animation 32, 10, 4
-    animation 32, 18, 4
-    animation 32, 26, 2
-    animation 32, 30, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 4, 2 @ anim_idx: 1
+    animation 10, 4, 2 @ anim_idx: 2
+    animation 18, 4, 2 @ anim_idx: 3
+    animation 26, 2, 2 @ anim_idx: 4
+    animation 30, 3, 2 @ anim_idx: 5
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -2166,13 +2166,13 @@ Animation_B6EE: @ 0x085B1E4C, index: 38
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_B952: @ 0x085B1EB4, index: 39
+Animation_B952: @ 0x085B1EB4, index: 39, id: 0xB952
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 4 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 2
-    animation 16, 3, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 2, 1 @ anim_idx: 1
+    animation 3, 1, 1 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -2184,26 +2184,26 @@ Animation_B952: @ 0x085B1EB4, index: 39
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_C102: @ 0x085B1ED0, index: 40
+Animation_C102: @ 0x085B1ED0, index: 40, id: 0xC102
   .set ANIM_COUNT, 16
   .2byte ANIM_COUNT, 122 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 4
-    animation 80, 20, 1
-    animation 80, 25, 4
-    animation 80, 45, 1
-    animation 80, 50, 1
-    animation 80, 55, 1
-    animation 48, 60, 1
-    animation 16, 63, 1
-    animation 80, 64, 1
-    animation 80, 69, 1
-    animation 80, 74, 1
-    animation 80, 79, 1
-    animation 80, 84, 1
-    animation 80, 89, 3
-    animation 80, 104, 3
-    animation 16, 119, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 5 @ anim_idx: 0
+    animation 20, 1, 5 @ anim_idx: 1
+    animation 25, 4, 5 @ anim_idx: 2
+    animation 45, 1, 5 @ anim_idx: 3
+    animation 50, 1, 5 @ anim_idx: 4
+    animation 55, 1, 5 @ anim_idx: 5
+    animation 60, 1, 3 @ anim_idx: 6
+    animation 63, 1, 1 @ anim_idx: 7
+    animation 64, 1, 5 @ anim_idx: 8
+    animation 69, 1, 5 @ anim_idx: 9
+    animation 74, 1, 5 @ anim_idx: 10
+    animation 79, 1, 5 @ anim_idx: 11
+    animation 84, 1, 5 @ anim_idx: 12
+    animation 89, 3, 5 @ anim_idx: 13
+    animation 104, 3, 5 @ anim_idx: 14
+    animation 119, 3, 1 @ anim_idx: 15
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 13, 6
@@ -2346,12 +2346,12 @@ Animation_C102: @ 0x085B1ED0, index: 40
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_C160: @ 0x085B200C, index: 41
+Animation_C160: @ 0x085B200C, index: 41, id: 0xC160
   .set ANIM_COUNT, 2
   .2byte ANIM_COUNT, 4 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 1
-    animation 0, 1, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 0 @ anim_idx: 0
+    animation 1, 3, 0 @ anim_idx: 1
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -2362,31 +2362,31 @@ Animation_C160: @ 0x085B200C, index: 41
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_C6A0: @ 0x085B2024, index: 42
+Animation_C6A0: @ 0x085B2024, index: 42, id: 0xC6A0
   .set ANIM_COUNT, 21
   .2byte ANIM_COUNT, 83 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 4
-    animation 16, 20, 4
-    animation 16, 24, 4
-    animation 16, 28, 4
-    animation 16, 32, 4
-    animation 16, 36, 4
-    animation 16, 40, 8
-    animation 16, 48, 4
-    animation 16, 52, 4
-    animation 16, 56, 4
-    animation 16, 60, 4
-    animation 16, 64, 2
-    animation 16, 66, 1
-    animation 16, 67, 1
-    animation 32, 68, 1
-    animation 32, 70, 1
-    animation 32, 72, 2
-    animation 32, 76, 1
-    animation 16, 78, 2
-    animation 16, 80, 1
-    animation 32, 81, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 4, 5 @ anim_idx: 0
+    animation 20, 4, 1 @ anim_idx: 1
+    animation 24, 4, 1 @ anim_idx: 2
+    animation 28, 4, 1 @ anim_idx: 3
+    animation 32, 4, 1 @ anim_idx: 4
+    animation 36, 4, 1 @ anim_idx: 5
+    animation 40, 8, 1 @ anim_idx: 6
+    animation 48, 4, 1 @ anim_idx: 7
+    animation 52, 4, 1 @ anim_idx: 8
+    animation 56, 4, 1 @ anim_idx: 9
+    animation 60, 4, 1 @ anim_idx: 10
+    animation 64, 2, 1 @ anim_idx: 11
+    animation 66, 1, 1 @ anim_idx: 12
+    animation 67, 1, 1 @ anim_idx: 13
+    animation 68, 1, 2 @ anim_idx: 14
+    animation 70, 1, 2 @ anim_idx: 15
+    animation 72, 2, 2 @ anim_idx: 16
+    animation 76, 1, 2 @ anim_idx: 17
+    animation 78, 2, 1 @ anim_idx: 18
+    animation 80, 1, 1 @ anim_idx: 19
+    animation 81, 1, 2 @ anim_idx: 20
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 10
@@ -2495,28 +2495,28 @@ Animation_C6A0: @ 0x085B2024, index: 42
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_D1B8: @ 0x085B2128, index: 43
+Animation_D1B8: @ 0x085B2128, index: 43, id: 0xD1B8
   .set ANIM_COUNT, 18
   .2byte ANIM_COUNT, 54 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 6
-    animation 16, 6, 1
-    animation 16, 7, 1
-    animation 16, 8, 8
-    animation 16, 16, 3
-    animation 16, 19, 3
-    animation 16, 22, 3
-    animation 16, 25, 1
-    animation 16, 26, 1
-    animation 16, 27, 2
-    animation 16, 29, 2
-    animation 16, 31, 2
-    animation 16, 33, 3
-    animation 16, 36, 3
-    animation 16, 39, 3
-    animation 16, 42, 4
-    animation 16, 46, 4
-    animation 16, 50, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 6, 1 @ anim_idx: 0
+    animation 6, 1, 1 @ anim_idx: 1
+    animation 7, 1, 1 @ anim_idx: 2
+    animation 8, 8, 1 @ anim_idx: 3
+    animation 16, 3, 1 @ anim_idx: 4
+    animation 19, 3, 1 @ anim_idx: 5
+    animation 22, 3, 1 @ anim_idx: 6
+    animation 25, 1, 1 @ anim_idx: 7
+    animation 26, 1, 1 @ anim_idx: 8
+    animation 27, 2, 1 @ anim_idx: 9
+    animation 29, 2, 1 @ anim_idx: 10
+    animation 31, 2, 1 @ anim_idx: 11
+    animation 33, 3, 1 @ anim_idx: 12
+    animation 36, 3, 1 @ anim_idx: 13
+    animation 39, 3, 1 @ anim_idx: 14
+    animation 42, 4, 1 @ anim_idx: 15
+    animation 46, 4, 1 @ anim_idx: 16
+    animation 50, 4, 1 @ anim_idx: 17
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 6, 6
@@ -2593,19 +2593,19 @@ Animation_D1B8: @ 0x085B2128, index: 43
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_D41F: @ 0x085B21E4, index: 44
+Animation_D41F: @ 0x085B21E4, index: 44, id: 0xD41F
   .set ANIM_COUNT, 9
   .2byte ANIM_COUNT, 15 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 1
-    animation 0, 1, 3
-    animation 0, 4, 2
-    animation 0, 6, 2
-    animation 0, 8, 1
-    animation 0, 9, 1
-    animation 0, 10, 1
-    animation 0, 11, 1
-    animation 0, 12, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 0 @ anim_idx: 0
+    animation 1, 3, 0 @ anim_idx: 1
+    animation 4, 2, 0 @ anim_idx: 2
+    animation 6, 2, 0 @ anim_idx: 3
+    animation 8, 1, 0 @ anim_idx: 4
+    animation 9, 1, 0 @ anim_idx: 5
+    animation 10, 1, 0 @ anim_idx: 6
+    animation 11, 1, 0 @ anim_idx: 7
+    animation 12, 3, 0 @ anim_idx: 8
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -2634,14 +2634,14 @@ Animation_D41F: @ 0x085B21E4, index: 44
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_D6C8: @ 0x085B2230, index: 45
+Animation_D6C8: @ 0x085B2230, index: 45, id: 0xD6C8
   .set ANIM_COUNT, 4
   .2byte ANIM_COUNT, 33 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 80, 0, 2
-    animation 80, 10, 3
-    animation 80, 25, 1
-    animation 16, 30, 3
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 2, 5 @ anim_idx: 0
+    animation 10, 3, 5 @ anim_idx: 1
+    animation 25, 1, 5 @ anim_idx: 2
+    animation 30, 3, 1 @ anim_idx: 3
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 20, 3
@@ -2683,31 +2683,31 @@ Animation_D6C8: @ 0x085B2230, index: 45
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_DA5E: @ 0x085B228C, index: 46
+Animation_DA5E: @ 0x085B228C, index: 46, id: 0xDA5E
   .set ANIM_COUNT, 21
   .2byte ANIM_COUNT, 202 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 48, 2, 4
-    animation 32, 14, 10
-    animation 32, 34, 2
-    animation 32, 38, 2
-    animation 32, 42, 3
-    animation 32, 48, 2
-    animation 32, 52, 11
-    animation 32, 74, 4
-    animation 32, 82, 4
-    animation 32, 90, 2
-    animation 32, 94, 2
-    animation 16, 98, 10
-    animation 16, 108, 10
-    animation 16, 118, 10
-    animation 16, 128, 10
-    animation 16, 138, 10
-    animation 16, 148, 10
-    animation 16, 158, 10
-    animation 16, 168, 10
-    animation 96, 178, 4
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 4, 3 @ anim_idx: 1
+    animation 14, 10, 2 @ anim_idx: 2
+    animation 34, 2, 2 @ anim_idx: 3
+    animation 38, 2, 2 @ anim_idx: 4
+    animation 42, 3, 2 @ anim_idx: 5
+    animation 48, 2, 2 @ anim_idx: 6
+    animation 52, 11, 2 @ anim_idx: 7
+    animation 74, 4, 2 @ anim_idx: 8
+    animation 82, 4, 2 @ anim_idx: 9
+    animation 90, 2, 2 @ anim_idx: 10
+    animation 94, 2, 2 @ anim_idx: 11
+    animation 98, 10, 1 @ anim_idx: 12
+    animation 108, 10, 1 @ anim_idx: 13
+    animation 118, 10, 1 @ anim_idx: 14
+    animation 128, 10, 1 @ anim_idx: 15
+    animation 138, 10, 1 @ anim_idx: 16
+    animation 148, 10, 1 @ anim_idx: 17
+    animation 158, 10, 1 @ anim_idx: 18
+    animation 168, 10, 1 @ anim_idx: 19
+    animation 178, 4, 6 @ anim_idx: 20
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 40, 2
@@ -2935,19 +2935,19 @@ Animation_DA5E: @ 0x085B228C, index: 46
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_DCEB: @ 0x085B247C, index: 47
+Animation_DCEB: @ 0x085B247C, index: 47, id: 0xDCEB
   .set ANIM_COUNT, 9
   .2byte ANIM_COUNT, 36 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 7
-    animation 16, 7, 3
-    animation 16, 10, 3
-    animation 32, 13, 4
-    animation 32, 21, 3
-    animation 16, 27, 5
-    animation 16, 32, 2
-    animation 16, 34, 1
-    animation 16, 35, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 7, 1 @ anim_idx: 0
+    animation 7, 3, 1 @ anim_idx: 1
+    animation 10, 3, 1 @ anim_idx: 2
+    animation 13, 4, 2 @ anim_idx: 3
+    animation 21, 3, 2 @ anim_idx: 4
+    animation 27, 5, 1 @ anim_idx: 5
+    animation 32, 2, 1 @ anim_idx: 6
+    animation 34, 1, 1 @ anim_idx: 7
+    animation 35, 1, 1 @ anim_idx: 8
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 10
@@ -2997,13 +2997,13 @@ Animation_DCEB: @ 0x085B247C, index: 47
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_E677: @ 0x085B24F0, index: 48
+Animation_E677: @ 0x085B24F0, index: 48, id: 0xE677
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 3 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 16, 0, 1
-    animation 16, 1, 1
-    animation 16, 2, 1
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 1 @ anim_idx: 0
+    animation 1, 1, 1 @ anim_idx: 1
+    animation 2, 1, 1 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 1
@@ -3014,13 +3014,13 @@ Animation_E677: @ 0x085B24F0, index: 48
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_F62B: @ 0x085B250C, index: 49
+Animation_F62B: @ 0x085B250C, index: 49, id: 0xF62B
   .set ANIM_COUNT, 3
   .2byte ANIM_COUNT, 26 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 0, 0, 9
-    animation 0, 9, 11
-    animation 0, 20, 6
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 9, 0 @ anim_idx: 0
+    animation 9, 11, 0 @ anim_idx: 1
+    animation 20, 6, 0 @ anim_idx: 2
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 0, 5
@@ -3054,24 +3054,24 @@ Animation_F62B: @ 0x085B250C, index: 49
   .4byte 0 @ terminator?
 
 .balign 4, 0
-Animation_F6E7: @ 0x085B2554, index: 50
+Animation_F6E7: @ 0x085B2554, index: 50, id: 0xF6E7
   .set ANIM_COUNT, 14
   .2byte ANIM_COUNT, 168 @ animation_count, cmd_count
-  @ Animations, variant_count, cmd_idx, cmd_count
-    animation 32, 0, 1
-    animation 32, 2, 27
-    animation 32, 56, 10
-    animation 32, 76, 8
-    animation 32, 92, 8
-    animation 32, 108, 2
-    animation 32, 112, 2
-    animation 32, 116, 4
-    animation 32, 124, 7
-    animation 32, 138, 1
-    animation 32, 140, 3
-    animation 32, 146, 1
-    animation 32, 148, 6
-    animation 64, 160, 2
+  @ Animations, cmd_idx, cmd_count, variant_count
+    animation 0, 1, 2 @ anim_idx: 0
+    animation 2, 27, 2 @ anim_idx: 1
+    animation 56, 10, 2 @ anim_idx: 2
+    animation 76, 8, 2 @ anim_idx: 3
+    animation 92, 8, 2 @ anim_idx: 4
+    animation 108, 2, 2 @ anim_idx: 5
+    animation 112, 2, 2 @ anim_idx: 6
+    animation 116, 4, 2 @ anim_idx: 7
+    animation 124, 7, 2 @ anim_idx: 8
+    animation 138, 1, 2 @ anim_idx: 9
+    animation 140, 3, 2 @ anim_idx: 10
+    animation 146, 1, 2 @ anim_idx: 11
+    animation 148, 6, 2 @ anim_idx: 12
+    animation 160, 2, 4 @ anim_idx: 13
   @ animcmd spriteidx, duration
     @ cmd_idx 0
       animcmd 8, 1

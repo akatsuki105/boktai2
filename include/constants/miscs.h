@@ -4,10 +4,10 @@
 #define FRAME_PER_SECOND 60                        // 1秒のフレーム数
 #define SECOND(n) ((int)((n) * FRAME_PER_SECOND))  // 1秒をフレーム数で表す
 
-#define STAT_VITALITY 0  // カラダ
-#define STAT_SPIRIT 1    // ココロ
-#define STAT_STRENGTH 2  // チカラ
-#define STAT_AGILITY 3   // ハヤサ
+#define STAT_VITALITY 0  // カラダ (HP最大値に影響)
+#define STAT_SPIRIT 1    // ココロ (ENE最大値に影響)
+#define STAT_STRENGTH 2  // チカラ (攻撃力に影響)
+#define STAT_AGILITY 3   // ハヤサ (プレイヤーの移動速度や防御力に影響)
 #define STAT_KINDS 4
 
 // 向き

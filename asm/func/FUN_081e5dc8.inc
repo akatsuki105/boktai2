@@ -78,7 +78,7 @@ _081E5DE0:
 	ldr r2, _081E5F10 @ =0x0000159C
 	adds r5, r7, r2
 	adds r1, r5, #0
-	bl FUN_08094c6c
+	bl WeaponData_FormatSuffix
 	ldr r0, [r4]
 	ldr r2, _081E5F14 @ =0x000015E2
 	adds r1, r7, r2

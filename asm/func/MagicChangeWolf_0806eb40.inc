@@ -551,7 +551,7 @@ _0806EF9E:
 	add r1, sp, #8
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080dc0b8
+	bl SpawnBlood
 	movs r0, #0xd9
 	lsls r0, r0, #2
 	adds r2, r5, r0

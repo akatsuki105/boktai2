@@ -34,24 +34,24 @@
 #define ANIM_8DC7 0x8DC7
 #define ANIM_931E 0x931E
 #define ANIM_95D9 0x95D9
-#define ANIM_CURORO BOKHASH("curoro_anm")      // 0x9607
-#define ANIM_DARKROOT BOKHASH("darkroot_anm")  // 0x99DD
-#define ANIM_MIMIC BOKHASH("mimic_anm")        // 0x9AF2, 宝箱も兼ねる
-#define ANIM_MUMMY BOKHASH("mummy_anm")        // 0xA4B2
-#define ANM_SLIME BOKHASH("slime_anm")         // 0xA929
-#define ANIM_MOUSE BOKHASH("mouse_anm")        // 0xAF44
-#define ANIM_SPIDER BOKHASH("spider_anm")      // 0xB6EE
-#define ANIM_B952 0xB952
-#define ANIM_WORM BOKHASH("worm_anm")  // 0xC102
-#define ANIM_C160 0xC160
-#define ANIM_OTENKO BOKHASH("otenko_anm")  // 0xC6A0
-#define ANIM_D1B8 0xD1B8
-#define ANIM_D41F 0xD41F
-#define ANIM_D6C8 0xD6C8
+#define ANIM_CURORO BOKHASH("curoro_anm")          // 0x9607
+#define ANIM_DARKROOT BOKHASH("darkroot_anm")      // 0x99DD
+#define ANIM_MIMIC BOKHASH("mimic_anm")            // 0x9AF2, 宝箱も兼ねる
+#define ANIM_MUMMY BOKHASH("mummy_anm")            // 0xA4B2
+#define ANM_SLIME BOKHASH("slime_anm")             // 0xA929
+#define ANIM_MOUSE BOKHASH("mouse_anm")            // 0xAF44
+#define ANIM_SPIDER BOKHASH("spider_anm")          // 0xB6EE
+#define ANIM_B952 0xB952                           // 0xB952, BOKHASH("switch_anm")?
+#define ANIM_WORM BOKHASH("worm_anm")              // 0xC102
+#define ANIM_C160 0xC160                           // 0xC160
+#define ANIM_OTENKO BOKHASH("otenko_anm")          // 0xC6A0
+#define ANIM_D1B8 0xD1B8                           // 0xD1B8, PTCL_GROUP_0, BOKHASH("effect00_anm")?
+#define ANIM_D41F 0xD41F                           // 0xD41F, PTCL_GROUP_1
+#define ANIM_D6C8 0xD6C8                           // 0xD6C8
 #define ANIM_COCKATRICE BOKHASH("cockatrice_anm")  // 0xDA5E
 #define ANIM_OCTOPUS BOKHASH("octopus_anm")        // 0xDCEB
-#define ANIM_E677 0xE677
-#define ANIM_F62B 0xF62B
-#define ANIM_DOG BOKHASH("dog_anm")  // 0xF6E7
+#define ANIM_E677 0xE677                           // 0xE677
+#define ANIM_F62B 0xF62B                           // 0xF62B
+#define ANIM_DOG BOKHASH("dog_anm")                // 0xF6E7
 
 #endif  // __INCLUDE_CONSTANTS_SPRITE_ANIMATION_H__

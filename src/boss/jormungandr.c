@@ -1,3 +1,5 @@
+#include "boss/jormungandr.h"
+
 #include "boss.h"
 #include "camera.h"
 #include "entity.h"

@@ -25,7 +25,7 @@ typedef struct {
 } Entity4B15;
 static_assert(sizeof(Entity4B15) == 260);
 
-IWRAM_DATA Entity4B15* gEntity4B15 = NULL;  // 0x03000090
+static Entity4B15* gEntity4B15;  // 0x03000090
 
 static inline void Entity4B15Elem_SetState(Entity4B15Elem* elem, u8 state) {
   elem->state = state;
@@ -59,7 +59,7 @@ void Entity4B15Elem_Init(Entity4B15* p, Entity4B15Elem* elem) {
   ptcl = &elem->ptcl;
   Particle_Add(ptcl, p->group, SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE | SPRFLAG_HIDDEN);
   Particle_SetOffset(ptcl, -4, -4);
-  Particle_SetPose(ptcl, p->group, 0x33);
+  Particle_SetPose(ptcl, p->group, PTCL0_ARROW);
   elem->ptcl.priority = 1;
   VEC3_SET(elem->target, 0, 0, 0);
 }
@@ -149,7 +149,7 @@ void Entity4B15Elem_UpdateFixed(Entity4B15* p, Entity4B15Elem* elem) {
       elem->ptcl.rotation = -0x60 - elem->angle;
     }
   }
-  if (elem->timer > 59) {
+  if (elem->timer >= SECOND(1)) {
     Entity4B15Elem_SetState(elem, 0);
   }
   elem->timer++;
@@ -216,7 +216,7 @@ NON_MATCH void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos) {
     Entity4B15Elem* elem = &gEntity4B15->elems[playerIdx];
 
     elem->target = *pos;
-    Particle_SetPose(&elem->ptcl, gEntity4B15->group, 0x33);
+    Particle_SetPose(&elem->ptcl, gEntity4B15->group, PTCL0_ARROW);
     Entity4B15Elem_SetState(elem, 1);
   }
 #else
@@ -231,7 +231,7 @@ NON_MATCH void Entity4B15_ShowFixedMarker(s32 playerIdx, Vec3* pos) {
     Entity4B15Elem* elem = &gEntity4B15->elems[playerIdx];
 
     elem->target = *pos;
-    Particle_SetPose(&elem->ptcl, gEntity4B15->group, 0x35);
+    Particle_SetPose(&elem->ptcl, gEntity4B15->group, PTCL0_ARROW_RED);
     Entity4B15Elem_SetState(elem, 2);
   }
 #else

@@ -10,7 +10,7 @@
 
 typedef struct Eff082473e0 {
   Entity e;                      // 0x00
-  ParticleGroup* group;          // 0x18, PTCL_GROUP_0
+  ParticleGroup* group0;         // 0x18, PTCL_GROUP_0
   AuxAnimFile* anim;             // 0x1C, ANIM_D1B8
   Eff082473e0Emitter* emitters;  // 0x20, 登録されているエミッタの双方向リストの先頭
 } Eff082473e0;
@@ -132,7 +132,7 @@ void FUN_082469d0(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* pt
 
 // kind 1 の生存中の枠, アニメを進めて5コマ目で頭に戻しつつ unk_4 を数え下げ, 0 になったら消えかけに移す
 void FUN_082469d4(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
-  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group0, &ptcl->anim);
   if (ptcl->anim.cmdIdx == 5) {
     ptcl->anim.cmdIdx = 0;
   }
@@ -148,7 +148,7 @@ void FUN_082469d4(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* pt
 
 // kind 1 の消えかけの枠, アニメを1コマ進め, 一巡したら枠を空ける
 void FUN_08246afc(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
-  if (Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim)) {
+  if (Particle_AdvanceAnim(&ptcl->ptcl, p->group0, &ptcl->anim)) {
     Eff082473e0Particle_Clear(ptcl);
     e->activeCount--;
   }
@@ -158,7 +158,7 @@ void FUN_08246c10(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* pt
 
 // kind 2 の生存中の枠, アニメを進めつつ unk_4 を数え下げ, 0 になったら消えかけに移す
 void FUN_08246c14(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
-  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group0, &ptcl->anim);
   if (ptcl->unk_4 > 0) {
     if (--ptcl->unk_4 == 0) {
       ptcl->state = 2;
@@ -171,7 +171,7 @@ void FUN_08246c14(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* pt
 
 // kind 2 の消えかけの枠, アニメを進めながら unk_1 フレームごとに点滅させ, 間隔が詰まり切ったら枠を空ける
 void FUN_08246d2c(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
-  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group0, &ptcl->anim);
   if (ptcl->unk_2 == ptcl->unk_1) {
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
     if (ptcl->unk_1 != 0) {
@@ -191,7 +191,7 @@ void FUN_08246e5c(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* pt
 
 // kind 3 の生存中の枠, FUN_08246c14 と同じ処理
 void FUN_08246e60(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
-  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group0, &ptcl->anim);
   if (ptcl->unk_4 > 0) {
     if (--ptcl->unk_4 == 0) {
       ptcl->state = 2;
@@ -204,7 +204,7 @@ void FUN_08246e60(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* pt
 
 // kind 3 の消えかけの枠, FUN_08246d2c と同じ処理
 void FUN_08246f78(Eff082473e0* p, Eff082473e0Emitter* e, Eff082473e0Particle* ptcl) {
-  Particle_AdvanceAnim(&ptcl->ptcl, p->group, &ptcl->anim);
+  Particle_AdvanceAnim(&ptcl->ptcl, p->group0, &ptcl->anim);
   if (ptcl->unk_2 == ptcl->unk_1) {
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
     if (ptcl->unk_1 != 0) {
@@ -284,7 +284,7 @@ s32 Eff082473e0_Destroy(Eff082473e0* _) {
 s32 Eff082473e0_Init(Eff082473e0* p, u32 _) {
   sEff082473e0 = p;
   p->emitters = NULL;
-  p->group = GetParticleGroup(PTCL_GROUP_0);
+  p->group0 = GetParticleGroup(PTCL_GROUP_0);
   p->anim = GetFile(DIR_ANIMATION, ANIM_D1B8);
   return 0;
 }
@@ -327,7 +327,7 @@ s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_
     e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
     VEC3_SET(e->ptcls[i].pos, 0, 0, 0);
-    Particle_Add(&e->ptcls[i].ptcl, sEff082473e0->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+    Particle_Add(&e->ptcls[i].ptcl, sEff082473e0->group0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&e->ptcls[i].ptcl, -8, -8);
     e->ptcls[i].ptcl.priority = 2;
     AuxAnim_SetAnim(&e->ptcls[i].anim, sEff082473e0->anim, 0, 0, 0);

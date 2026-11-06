@@ -114,7 +114,7 @@ _08008A58:
 	movs r1, #0
 	movs r3, #0
 	bl Hitbox_Init
-	ldr r1, _08008AE8 @ =Entity5DA5Elem_OnHit
+	ldr r1, _08008AE8 @ =Entity5DA5Elem_OnHurt
 	adds r0, r5, #0
 	mov r2, r8
 	bl Hitbox_SetHandler
@@ -139,4 +139,4 @@ _08008AD8: .4byte 0x0000FFFF
 _08008ADC: .4byte 0x085AA690
 _08008AE0: .4byte 0x085AA698
 _08008AE4: .4byte 0x00004001
-_08008AE8: .4byte Entity5DA5Elem_OnHit
+_08008AE8: .4byte Entity5DA5Elem_OnHurt

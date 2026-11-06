@@ -1,4 +1,3 @@
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"

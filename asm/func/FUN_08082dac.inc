@@ -172,7 +172,7 @@ _08082ED2:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl Entity080abd14_Create
+	bl RisingSunEffect_Create
 	ldr r0, _08082F2C @ =0x00000477
 	adds r1, r4, r0
 	movs r0, #0x3c

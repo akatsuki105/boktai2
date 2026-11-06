@@ -201,7 +201,7 @@ _082020AC:
 	movs r1, #0xc
 	movs r2, #8
 	movs r3, #6
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 _08202112:
 	add sp, #0x4c
 	pop {r3, r4, r5}

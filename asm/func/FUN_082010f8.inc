@@ -331,7 +331,7 @@ _0820132E:
 	movs r1, #0xc
 	movs r2, #8
 	movs r3, #6
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 _08201394:
 	add sp, #0x64
 	pop {r3, r4, r5}

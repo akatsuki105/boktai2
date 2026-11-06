@@ -33,6 +33,8 @@ typedef struct {
 } ParticleSpawnParam;
 static_assert(sizeof(ParticleSpawnParam) == 40);
 
+s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
+
 // --------------------------------------------
 
 #endif  // __INCLUDE_STRUCT_H__

@@ -64,7 +64,7 @@ _080AEB44:
 	str r2, [sp]
 	adds r2, r4, #0
 	movs r3, #0x18
-	bl FUN_0805d80c
+	bl Entity0805d79c_Spawn
 	adds r4, #0x20
 	movs r0, #0xff
 	ands r4, r0

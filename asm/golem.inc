@@ -1914,7 +1914,7 @@ FUN_0811613c: @ 0x0811613C
 	mov r0, r8
 	str r0, [sp]
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	orrs r0, r5

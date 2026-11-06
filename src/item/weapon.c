@@ -200,7 +200,34 @@ void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
   }
 }
 
-NAKED void SortWeapons(slot32_t from) { INCFUNC("asm/func/SortWeapons.inc"); }
+// from から 16 枠の空きを後ろへ詰め, 武器 ID の小さい順に並べ替える
+void SortWeapons(slot32_t from) {
+  s32 count = 0;
+  s32 gap = 0;
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    if (GetWeaponID(from + i) == WEAPON_NONE) {
+      gap++;
+    } else {
+      count++;
+      if (gap > 0) {
+        SwapWeaponSlot(from + i, from + i - gap);
+      }
+    }
+  }
+  if (count > 1) {
+    for (i = 0; i < count - 1; i++) {
+      s32 j;
+
+      for (j = i; j < count; j++) {
+        if (GetWeaponID(from + i) > GetWeaponID(from + j)) {
+          SwapWeaponSlot(from + i, from + j);
+        }
+      }
+    }
+  }
+}
 
 bool32 IsSpecialWeapon(weapon32_t w) {
   if (w >= WEAPON_BROKEN_GUN && w <= WEAPON_ASTRO_HAMMER) {
@@ -210,7 +237,65 @@ bool32 IsSpecialWeapon(weapon32_t w) {
 }
 
 // 0x3757, HashName("武器取得"), '.w' の武器を DB から作って渡す, '.q' で品質, '.o' で特殊効果, '.n' で PS を上書きできる
-NAKED bool32 Cmd_GiveWeapon(void) { INCFUNC("asm/func/Cmd_GiveWeapon.inc"); }
+// 残差: 原典は PS への文字列コピーを '.n' が 0 の場合と '.r' の場合の両方に1つずつ持ち (inline の展開と思われる), 末尾の 0 終端だけを共有する
+NON_MATCH bool32 Cmd_GiveWeapon(void) {
+#ifdef NONMATCHING_C
+  WeaponData data;
+  s32 n;
+
+  if (!VM_SeekToNamedArg('w')) {
+    return FALSE;
+  }
+  data = gWeaponDB[VM_GetValue()];
+  if (VM_SeekToNamedArg('q')) {
+    data.quality = VM_GetValue();
+  }
+  n = 0;
+  if (!IsSpecialWeapon(data.id)) {
+    if (VM_SeekToNamedArg('o')) {
+      n = VM_GetValue();
+    }
+    if (n == 0) {
+      *(u8*)&data.effects[0] = n;
+    }
+  }
+  if (VM_SeekToNamedArg('s')) {
+    s32 i;
+
+    for (i = 1; i < 3; i++) {
+      s32 effect = VM_GetValue();
+
+      if (effect > 0) {
+        *(u8*)&data.effects[i] = effect;
+      }
+    }
+  }
+  if (VM_SeekToNamedArg('n')) {
+    const u8* src = NULL;
+    s32 i;
+
+    n = VM_GetValue();
+    if (n == 0) {
+      src = gStat->name;
+    } else if (VM_SeekToNamedArg('r')) {
+      u8* pc = VM_GetPC_Proxy();
+
+      if (pc != NULL) {
+        src = GetStringByID(VM_ParseStringRef(pc) + n);
+      }
+    }
+    if (src != NULL) {
+      for (i = 0; *src != '\0' && i < 11; i++, src++) {
+        data.PS[i] = *src;
+      }
+      data.PS[i] = '\0';
+    }
+  }
+  return AddWeapon(&data);
+#else
+  INCFUNC("asm/func/Cmd_GiveWeapon.inc");
+#endif
+}
 
 // 0xD916, '.f' の武器を持っているスロットを探して '.t' の武器に差し替える
 // 星のかけら から アストロ武器 を作成するときに使う ('.f'= WEAPON_STAR_PIECE, '.t'= WEAPON_ASTRO_XXX)
@@ -282,7 +367,40 @@ bool32 Cmd_HasWeapon(void) {
 }
 
 // 0x65E2, HashName("武器初期化"), 図鑑と48スロットと登録枠を全部白紙に戻してから, '.n' 個ぶん '.w' の武器を入れ直す
-NAKED void Cmd_ResetWeapons(void) { INCFUNC("asm/func/Cmd_ResetWeapons.inc"); }
+// 武器を全部消して登録も外し, '.n' 個の '.w' の武器を持たせて '.q' の4つを登録する
+void Cmd_ResetWeapons(void) {
+  WeaponData data;
+  s32 n;
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    *(gStat->weaponDex + i) = 0;
+  }
+  for (i = 0; i < 48; i++) {
+    SetWeaponData(i, &gWeaponDB[0]);
+  }
+  for (i = 0; i < 4; i++) {
+    REGISTERED_WEAPON(i) = -1;
+  }
+  gStat->equippedWeaponIdx = 0;
+  n = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
+  if (n > 0) {
+    if (VM_SeekToNamedArg('w')) {
+      for (i = 0; i < n; i++) {
+        data = gWeaponDB[VM_GetValue()];
+        if (!IsSpecialWeapon(data.id)) {
+          *(u8*)data.effects = 0;
+        }
+        AddWeapon(&data);
+      }
+    }
+    if (VM_SeekToNamedArg('q')) {
+      for (i = 0; i < 4; i++) {
+        REGISTERED_WEAPON(i) = VM_GetValue();
+      }
+    }
+  }
+}
 
 // スロット n の武器が剣槍槌銃のどれかの枠に登録されているかを返す
 bool32 IsWeaponRegistered(slot32_t n) {

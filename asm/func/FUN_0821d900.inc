@@ -101,7 +101,7 @@ _0821D972:
 	add r1, sp, #8
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080dc0a0
+	bl SpawnBloodEx
 	subs r7, #1
 	cmp r7, #0
 	bge _0821D972

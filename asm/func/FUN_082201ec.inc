@@ -168,7 +168,7 @@ _082202E2:
 	str r3, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r3, #0x32
-	bl FUN_0805e940
+	bl Entity0805e67c_SpawnSwarmN
 	movs r0, #0xea
 	bl PlaySound_082406e0
 _0822033E:

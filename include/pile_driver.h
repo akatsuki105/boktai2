@@ -11,6 +11,7 @@
 #include "types.h"
 
 struct Generator;
+struct Entity0805b068;  // おそらく、ダーインが出すエネルギー弾(クロロホルルン+ という技名が付いているがエネミーのクロロホルルンとは別物)
 
 struct PileDriver;
 typedef void(PileDriverFunc)(struct PileDriver* p);
@@ -92,7 +93,7 @@ typedef struct PileDriver {
   SoundID16 unk_1340[4];            // 0x1340, PlaySound_082406e0(unk_1340[unk_133f]) で鳴らす
   u8 unk_1348[0x135C - 0x1348];     // 0x1348, まだ未解析
   PileDriverFunc* unk_135c;         // 0x135C, FUN_080af0ac が非NULLのとき unk_135c(p) を呼ぶ
-  unknown* unk_1360;                // 0x1360, 根拠: FUN_080af0c8 が FUN_0805b1a0 に渡す
+  struct Entity0805b068* unk_1360;  // 0x1360, 根拠: FUN_080af0c8 が FUN_0805b1a0 に渡す
   u8 unk_1364[0x1374 - 0x1364];     // 0x1364, まだ未解析
   bool16 unk_1374;                  // 0x1374, Cmd_054A が立て, FUN_080adfa0 が見る
   u8 unk_1376[0x1420 - 0x1376];     // 0x1376, まだ未解析

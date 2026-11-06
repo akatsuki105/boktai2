@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
@@ -25,9 +26,19 @@ static_assert(sizeof(Entity081ea120) == 636);
 
 static Entity081ea120* gEntity081ea120;  // 0x030001B8
 
+static inline bool8 Entity081ea120_IsItemUsed(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void Entity081ea120Item_UpdateState0(Entity081ea120*, Entity081ea120Item*);
 void Entity081ea120Item_UpdateState1(Entity081ea120*, Entity081ea120Item*);
 void Entity081ea120Item_UpdateState2(Entity081ea120*, Entity081ea120Item*);
+Entity081ea120Item* Entity081ea120_AllocItem(Entity081ea120* p);
+s32 Entity081ea120_Update(Entity081ea120* p);
+s32 Entity081ea120_Destroy(Entity081ea120* p);
+void Entity081ea120_LoadAuxSprite(Entity081ea120* p);
+s32 Entity081ea120_Init(Entity081ea120* p, u32 _);
 
 // Entity081ea120_Update が (p, item) で呼ぶ
 void (*const PTR_ARRAY_085ae45c[3])(Entity081ea120*, Entity081ea120Item*) = {
@@ -38,24 +49,130 @@ void (*const PTR_ARRAY_085ae45c[3])(Entity081ea120*, Entity081ea120Item*) = {
 
 const u8 u8_ARRAY_085ae468[4] = {8, 4, 2, 1};  // 0x085AE468, Entity081ea820Elem_UpdateState2 が Mod の除数として引く
 
-NAKED void Entity081ea120Item_UpdateState0(Entity081ea120* p, Entity081ea120Item* item) { INCFUNC("asm/func/Entity081ea120Item_UpdateState0.inc"); }
+void Entity081ea120Item_UpdateState0(Entity081ea120* p, Entity081ea120Item* item) {}
 
-NAKED void Entity081ea120Item_UpdateState1(Entity081ea120* p, Entity081ea120Item* item) { INCFUNC("asm/func/Entity081ea120Item_UpdateState1.inc"); }
+// アニメを進め, 一巡したら片付けの状態に移す
+void Entity081ea120Item_UpdateState1(Entity081ea120* p, Entity081ea120Item* item) {
+  AuxSprite* spr = &p->sprites[item->idx];
 
-NAKED void Entity081ea120Item_UpdateState2(Entity081ea120* p, Entity081ea120Item* item) { INCFUNC("asm/func/Entity081ea120Item_UpdateState2.inc"); }
+  spr->pos = item->pos;
+  spr->flags &= ~SPRFLAG_HIDDEN;
+  if (AuxSprite_AdvanceAnim(spr, &p->anims[item->idx])) {
+    item->state = 2;
+  }
+}
 
-NAKED Entity081ea120Item* Entity081ea120_AllocItem(Entity081ea120* p) { INCFUNC("asm/func/Entity081ea120_AllocItem.inc"); }
+// スプライトを外して枠を返す
+void Entity081ea120Item_UpdateState2(Entity081ea120* p, Entity081ea120Item* item) {
+  AuxSprite_Remove(&p->sprites[item->idx]);
+  item->state = 0;
+  CLEAR_BIT(p->activeMask, item->idx);
+  ClearMemory(item, sizeof(Entity081ea120Item));
+  item->idx = -1;
+}
 
-NAKED s32 Entity081ea120_Spawn(Vec3* pos, s32 count, u32 priority, u32 animIdx, s32 plttID) { INCFUNC("asm/func/Entity081ea120_Spawn.inc"); }
+Entity081ea120Item* Entity081ea120_AllocItem(Entity081ea120* p) {
+  s32 i;
 
-NAKED s32 Entity081ea120_Update(Entity081ea120* p) { INCFUNC("asm/func/Entity081ea120_Update.inc"); }
+  for (i = 0; i < 8; i++) {
+    if (!Entity081ea120_IsItemUsed(&p->activeMask, i)) {
+      Entity081ea120Item* item = &p->items[i];
 
-NAKED s32 Entity081ea120_Destroy(Entity081ea120* p) { INCFUNC("asm/func/Entity081ea120_Destroy.inc"); }
+      item->idx = i;
+      p->activeMask |= 1 << i;
+      return item;
+    }
+  }
+  return NULL;
+}
 
-NAKED void Entity081ea120_LoadAuxSprite(Entity081ea120* p) { INCFUNC("asm/func/Entity081ea120_LoadAuxSprite.inc"); }
+// pos にアニメを count 個出す
+s32 Entity081ea120_Spawn(Vec3* pos, s32 count, u32 priority, u32 animIdx, s32 plttID) {
+  Entity081ea120* p;
+  s32 i;
 
-NAKED s32 Entity081ea120_Init(Entity081ea120* p, u32 _) { INCFUNC("asm/func/Entity081ea120_Init.inc"); }
+  if (pos == NULL) {
+    return -1;
+  }
+  p = gEntity081ea120;
+  if (p == NULL) {
+    return -1;
+  }
+  for (i = 0; i < count; i++) {
+    Entity081ea120Item* item = Entity081ea120_AllocItem(p);
+    AuxSprite* spr;
 
-NAKED Entity081ea120* Entity081ea120_Create(u32 id, u32 param_2) { INCFUNC("asm/func/Entity081ea120_Create.inc"); }
+    if (item == NULL) {
+      return -1;
+    }
+    spr = &p->sprites[item->idx];
+    item->pos = *pos;
+    AuxSprite_Add(spr, &p->gfx, 0);
+    AuxAnim_SetAnim(&p->anims[item->idx], p->animFile, animIdx, 0, 0);
+    Video_SetAuxSpritePltt(spr->gfx, plttID);
+    spr->flags |= SPRFLAG_HIDDEN;
+    spr->priority = priority;
+    item->state = 1;
+  }
+  return 0;
+}
 
-NAKED void Entity081ea120_ClearGlobal(void) { INCFUNC("asm/func/Entity081ea120_ClearGlobal.inc"); }
+s32 Entity081ea120_Update(Entity081ea120* p) {
+  s32 i;
+
+  if (p->activeMask == 0) {
+    return 0;
+  }
+  for (i = 0; i < 8; i++) {
+    if (Entity081ea120_IsItemUsed(&p->activeMask, i)) {
+      Entity081ea120Item* item = &p->items[i];
+
+      PTR_ARRAY_085ae45c[item->state](p, item);
+    }
+  }
+  return 0;
+}
+
+s32 Entity081ea120_Destroy(Entity081ea120* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (Entity081ea120_IsItemUsed(&p->activeMask, i)) {
+      Entity081ea120Item* item = &p->items[i];
+
+      AuxSprite_Remove(&p->sprites[item->idx]);
+    }
+  }
+  gEntity081ea120 = NULL;
+  return 0;
+}
+
+void Entity081ea120_LoadAuxSprite(Entity081ea120* p) {
+  Video_GetAuxSprite(&p->gfx, SPRITE_863A);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_931E);
+}
+
+s32 Entity081ea120_Init(Entity081ea120* p, u32 _) {
+  Entity081ea120_LoadAuxSprite(p);
+  return 0;
+}
+
+Entity081ea120* Entity081ea120_Create(u32 id, u32 param_2) {
+  Entity081ea120* p;
+
+  if (gEntity081ea120 != NULL) {
+    return gEntity081ea120;
+  }
+  p = CreateEntity(ENTITY_UNK_10, sizeof(Entity081ea120));
+  gEntity081ea120 = p;
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity081ea120_Update, Entity081ea120_Destroy);
+    if (Entity081ea120_Init(p, 0) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
+
+void Entity081ea120_ClearGlobal(void) { gEntity081ea120 = NULL; }

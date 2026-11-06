@@ -30,7 +30,7 @@ _081E0B26:
 	b _081E0BB6
 _081E0B2C:
 	movs r0, #7
-	bl FUN_0809c08c
+	bl MainMenu_SetHudMode
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r0, #1

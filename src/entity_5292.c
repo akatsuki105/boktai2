@@ -1,9 +1,7 @@
-#include "constants/sprite.h"
 #include "entity.h"
 #include "global.h"
 #include "random.h"
 #include "sprite_aux.h"
-#include "trig.h"
 #include "vm.h"
 
 typedef struct {

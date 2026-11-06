@@ -13,10 +13,9 @@
 #include "vec3.h"
 #include "vm.h"
 
-u32 EntityA628_IsActive(void);
-
 extern const s16 s16_ARRAY_085ad3cc[4];
-extern const char s_eneinline_h_08251f68[];  // "eneinline.h"
+
+u32 EntityA628_IsActive(void);
 bool32 FUN_080ec5f0(u16 param_1, u16 param_2);
 void FUN_080ec900(u8 kind);
 void FUN_080eca74(EnemyManager* p, Enemy* enemy);
@@ -24,7 +23,7 @@ void FUN_080ee738(Enemy* p);
 void Enemy_ClearStateBegun(Enemy* p);
 void FUN_080e5098(Enemy* p, s32 dx, s32 dz);
 void FUN_080e9178(Enemy* p);
-void FUN_0809c344(u32 id, s32 hp, u32 maxHp, u32 param_4, u32 param_5);
+void HUD_ShowEnemyGauge(u32 id, s32 hp, u32 maxHp, u32 param_4, u32 param_5);
 void FUN_080ce544(u32 param_1, u32 param_2);
 bool8 FUN_0817e83c(Enemy* p);
 bool8 FUN_080eec74(EnemyManager* p, Enemy* enemy);
@@ -39,6 +38,9 @@ Entity* Entity081ea120_Create(u32 param_1, u32 param_2);
 Entity* Entity081ea820_Create(void);
 void FUN_080e49c4(Enemy* p);
 void FUN_080ec5b4(u16 param_1, u16 param_2);
+
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f68[] = "eneinline.h";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f74[] = "eneinline.h";
 
 static inline void Enemy_RequestState(Enemy* p, void* handler, u8 state) {
   p->stateBegun = TRUE;
@@ -647,9 +649,9 @@ NON_MATCH void FUN_080ed0b0(s32 damage) {
       gRandTableIdx = idx;
       dz = (table[idx] & 63) - 16;
     }
-    p->hitbox.damage = damage;
+    p->hurtbox.damage = damage;
     p->unk_48a = damage;
-    p->hp -= p->hitbox.damage;
+    p->hp -= p->hurtbox.damage;
     expMask = &p->weaponExpMask;
     if (!(*expMask & 0x4000)) {
       bool8 show;
@@ -685,10 +687,10 @@ NON_MATCH void FUN_080ed0b0(s32 damage) {
       if (show) {
         Vec3 v;
 
-        FUN_0809c344(p->mover.id, p->hp, p->maxHp, p->unk_25a, 0);
+        HUD_ShowEnemyGauge(p->mover.id, p->hp, p->maxHp, p->unk_25a, 0);
         CpuFill32(0, &v, sizeof(v));
         if (p->unk_48a != 0 || !(*expMask & 0x4000)) {
-          CreateDamageNumber(&p->hitbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
+          CreateDamageNumber(&p->hurtbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
         }
       }
     }
@@ -696,7 +698,7 @@ NON_MATCH void FUN_080ed0b0(s32 damage) {
     flags3 = &p->flags3;
     SET_FLAGS(*flags3, 8);
     p->mover.angle = ArcTan2_8(dx, dz);
-    p->hitbox.invincibleTime = 38;
+    p->hurtbox.invincibleTime = 38;
     p->unk_4be = 0;
     if (p->hp < 1) {
       Enemy_RequestState(p, p->unk_5d0, 17);
@@ -716,7 +718,7 @@ NON_MATCH void FUN_080ed0b0(s32 damage) {
         if (!(*flags5 & 0x80) && !(gGameFlags & 0x4800) && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
           FUN_080ec5b4(gMapInitScriptID, p->mover.id);
         }
-        SET_FLAGS(p->hitbox.flags, 4);
+        SET_FLAGS(p->hurtbox.flags, 4);
       } else {
         FUN_080ce544(p->unk_4a0, *expMask);
       }
@@ -1140,7 +1142,7 @@ NON_MATCH void FUN_080edebc(EnemyManager* p) {
 
         flags = &enemy->flags;
         if (!active && (gStat->mapFlags & 2) && gStat->zoneID == enemy->zoneID && Enemy_IsDead(enemy) == 0 && gStat->sunGauge > 0 && gSunGaugeOverride != 1) {
-          enemy->hitbox.invincibleTime = 0;
+          enemy->hurtbox.invincibleTime = 0;
           enemy->unk_4be = 0;
           Enemy_ClearSpriteFlags(enemy, SPRFLAG_HIDDEN);
           enemy->hp = 0;
@@ -1286,8 +1288,8 @@ void FUN_080ee2c8(Enemy* p) {
   CLEAR_FLAGS(*flags, 0x2008000);
   CLEAR_FLAGS(*flags2, 0x41C0);
   Hitbox_SetPos(&p->atkHitbox, &p->mover.pos, 0);
-  Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
-  p->hitbox.flags &= ~4;
+  Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
+  p->hurtbox.flags &= ~4;
   p->unk_494 = 0;
   p->unk_492 = 0;
   priority = 2;
@@ -1296,7 +1298,7 @@ void FUN_080ee2c8(Enemy* p) {
   } else {
     p->sprite->s.priority = priority;
   }
-  p->hitbox.invincibleTime = 0;
+  p->hurtbox.invincibleTime = 0;
 }
 
 // 敵を初期状態へ戻す
@@ -1381,7 +1383,7 @@ NON_MATCH void FUN_080ee738(Enemy* p) {
   p->unk_192 = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
-  p->unk_1d4 = 0;
+  p->hitTargetID = 0;
   p->playerMover = NULL;
   p->angle = 0;
   p->unk_21c = 0;
@@ -1408,7 +1410,7 @@ NON_MATCH void FUN_080ee738(Enemy* p) {
   p->unk_54f = 0;
   FUN_080eeee0(p);
   p->flags |= 2;
-  p->hitbox.flags |= 4;
+  p->hurtbox.flags |= 4;
   if (p->unk_5f8 != NULL) {
     p->unk_5f8(p);
   }
@@ -1990,7 +1992,7 @@ NON_MATCH void Cmd_1E97(void) {
               Enemy_RequestSubState(p, 3, 0, 0);
               p->flags2 |= 0x20000;
             }
-          } else if ((tile->attr & 0x80) && TEST_FLAGS(gStat->mapFlags, MPF_HOT) && p->hitbox.invincibleTime == 0) {
+          } else if ((tile->attr & 0x80) && TEST_FLAGS(gStat->mapFlags, MPF_HOT) && p->hurtbox.invincibleTime == 0) {
             s32 col = Mod(p->unk_256, gCollisionMap->tiledata->width);
             s32 row = Div(p->unk_256, gCollisionMap->tiledata->width);
 
@@ -2002,9 +2004,9 @@ NON_MATCH void Cmd_1E97(void) {
             Vec3_Diff(&diff, &target, &p->mover.pos);
             p->angle = ArcTan2_8(diff.x, diff.z) >> 5;
             p->unk_4a0 = 32;
-            p->hitbox.damage = p->hp;
+            p->hurtbox.damage = p->hp;
             p->unk_48a = p->hp;
-            p->hitbox.knockbackPower = 40;
+            p->hurtbox.knockbackPower = 40;
             p->weaponExpMask = 64;
             p->unk_48c = 1;
             p->flags |= 0x2000;

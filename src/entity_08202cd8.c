@@ -16,7 +16,7 @@
 void FUN_081fa608(void);
 void FUN_08204d04(Vec3* pos, s32 param_2);
 void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
-void FUN_081ee53c(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
+void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void Entity081ea820_ThrowAt(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
 
 const u16 u16_ARRAY_085ae7b8[8] = {64, 64, 64, 64, 64, 128, 128, 128};  // 0x085AE7B8
@@ -283,7 +283,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     p->unk_6d9 = 1;
   }
   if (Mod(val, 8) == 0) {
-    FUN_081ee53c(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+    Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
   }
 #else
   INCFUNC("asm/func/FUN_082010f8.inc");
@@ -553,7 +553,7 @@ NON_MATCH void FUN_08201f74(Entity08202cd8* p, s32 val) {
 
   if (done < 8) {
     if (Mod(val, 8) == 0) {
-      FUN_081ee53c(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0x237);
+      Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0x237);
     }
   } else {
     p->unk_6d9 = 1;

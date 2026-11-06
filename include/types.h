@@ -36,6 +36,12 @@ typedef s16 slot16_t;
 typedef s32 slot32_t;
 
 // Zone.id in include/collision_map.h
+// 0xA679: HashName("map000")
+// 0xCD22: HashName("ld000"), load
+// 0xCCBB: HashName("ev000"), event?
+// 0x4CA7: HashName("dm000"), demo?
+// 0x4D9C: HashName("sw000"), switch?
+// 0xCC79: HashName("ar000"), area?
 typedef u16 ZoneID16;
 typedef s16 ZoneID16s;
 typedef s32 ZoneID32;

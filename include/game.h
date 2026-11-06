@@ -7,6 +7,8 @@
 
 #define KAAMOS(playerCharacterID) (*(gStat->isKaamos + (playerCharacterID)))  // playerCharacterID:  0: ジャンゴ, 1: サバタ
 #define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))                 // 登録 = 剣槍槌銃 のスロットに登録されている
+#define MAP_ICON_FLAGS(stage) (*(gStat->mapIconFlags + (stage)))              // stageID ごとのマップアイコンの表示フラグ
+#define SOLAR_CHARM(n) (*(gStat->unk_2b0 + (n)))                              // 太陽ゲージ操作の道具の効果, [0]: 晴れ側, [1]: 曇り側
 
 // AttackStyle, GameInfo.style, WeaponKind とは別, ゲームクリア時に、ゲーム中で1番使っていた武器を表示する仕組みがあって、それの識別番号
 #define STYLE_SWORD 0   // 剣
@@ -93,7 +95,7 @@ typedef struct {
   s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 2500を超えると足元から煙エフェクト, 5000を超えると熱中症で気絶(専用イベント)
   s32 thermal;                   // 0x1BC, 30000に到達したらオーバーヒート
   s32 unk_1c0;                   // 0x1C0, ApplyDayRollover が日付をまたいだとき 0 に戻す
-  u32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
+  s32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
   u8 unk_1c8[12];                // 0x1C8
   u32 loan_1d4;                  // 0x1D4
   u32 treeExp;                   // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
@@ -121,13 +123,13 @@ typedef struct {
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin16_t coffin;             // 0x252, 現在フィールドに出ている棺桶のID (貴重品欄にあるときは -1)
   s16 stageID;                   // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
-  s16 unk_256;                   // 0x256, 根拠: Cmd_515D が '.f' の値を入れる
-  u16 unk_258;                   // 0x258, 根拠: Cmd_9817 が '.s' の値を入れる
-  u16 unk_25a;                   // 0x25A, 根拠: Cmd_AA62 が '.f' の値を入れる
+  s16 mapSpot;                   // 0x256, マップページの現在地, MapSpot の添字, Cmd_SetMapSpot が '.f' の値を入れる
+  s16 coffinStageID;             // 0x258, 棺桶のあるステージ, Cmd_SetCoffinStage が '.s' の値を入れる
+  s16 coffinMapSpot;             // 0x25A, 棺桶の場所, MapSpot の添字, Cmd_SetCoffinMapSpot が '.f' の値を入れる
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
-  u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
-  u32 unk_268[16];               // 0x268, stageID で引く, Cmd_A995 が 0 でクリアする
+  u32 worldMapFlags;             // 0x264, ワールドマップに出す目印のフラグ, ビット 6..13 は sWorldMapStages[7..14] のマーカー, それ以降は WorldMapTile.flagBit
+  s32 mapIconFlags[16];          // 0x268, stageID で引く, ビット i が立っていると MapIcon の i 番目を描く, Cmd_ClearMapIconFlags が 0 でクリアする
   s32 darkDjangoAtkCounter;      // 0x2A8
   s32 unk_2ac;                   // 0x2AC, darkDjangoAtkCounter がここに届くとバーサークの準備ができる, 発動のたびに 200 + 0..99 で引き直す
   s16 unk_2b0[2];                // 0x2B0
@@ -136,7 +138,8 @@ typedef struct {
   s32 bossHPMax;                 // 0x2BC, bossHP の最大値, ボス戦ではボスの maxHP
   s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
   s32 isKaamos[2];               // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
-  u8 unk_2d0[8];                 // 0x2D0
+  s32 rainTimer;                 // 0x2D0, 次に雨が降り始めるまでのフレーム数, 雨が止んだときに sRainIntervalBase + 乱数を入れる
+  u8 unk_2d4[4];                 // 0x2D4
   s32 solarFormFrames;           // 0x2D8, 赤ジャンゴのままボタンを押していたフレーム数, s32 の根拠: Player_CountStyleFrames が 0x7FFFFFFE と符号付き比較する
   s32 darkFormFrames;            // 0x2DC, 赤ジャンゴ以外(サバタを除く)でボタンを押していたフレーム数, s32 の根拠は同上
   s32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)

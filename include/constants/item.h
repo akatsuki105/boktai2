@@ -54,10 +54,10 @@
 #define ITEM_DARK_CARD 49           // 暗黒カード
 #define ITEM_PET 50                 // PET
 #define ITEM_SPADE_EMBLEM 51        // スペードの紋章
-#define ITEM_HEART_EMBLEM 52        // ハートの紋章
+#define ITEM_HEART_EMBLEM 52        // ハートの紋章 (素手の攻撃力UP)
 #define ITEM_DIAMOND_EMBLEM 53      // ダイアの紋章
 #define ITEM_CLUB_EMBLEM 54         // クラブの紋章
-#define ITEM_JOKER_EMBLEM 55        // ジョーカーの紋章
+#define ITEM_JOKER_EMBLEM 55        // ジョーカーの紋章 (チャージショットのタメ時間が半分になる)
 #define ITEM_OAK_COFFIN 56          // オークコフィン
 #define ITEM_BRONZE_COFFIN 57       // ブロンズコフィン
 #define ITEM_IRON_COFFIN 58         // アイアンコフィン

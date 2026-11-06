@@ -59,9 +59,9 @@ static_assert(sizeof(ItemShop) == 5440);
 
 void FUN_080baae8(ItemShop* p);
 void GetRegisteredWeaponData(s32 idx, WeaponData* data);
-s32 FUN_0807a6cc(WeaponData* w);
-s32 FUN_0807a5d8(WeaponData* w, const ArmorData* armor);
-s32 FUN_0807a70c(const ArmorData* data);
+s32 CalcAttackWithEquippedArmor(WeaponData* w);
+s32 CalcAttack(WeaponData* w, const ArmorData* armor);
+s32 CalcDefence(const ArmorData* data);
 void FUN_080baf50(ItemShop* p);
 void ItemShop_SwapSelectedItem(ItemShop* p);
 void ItemShop_SwapSelectedArmor(ItemShop* p);
@@ -131,12 +131,12 @@ NON_MATCH void FUN_080ba0f0(ItemShop* p, s32 param_2) {
     data = &gArmorDB[GetInventoryArmor(gStat->armor)];
   }
 
-  base = FUN_0807a70c(data);
+  base = CalcDefence(data);
   if (param_2 < 0) {
     value = base;
     color = 0;
   } else {
-    value = FUN_0807a70c(&gArmorDB[param_2]);
+    value = CalcDefence(&gArmorDB[param_2]);
     color = 0;
     if (value != base) {
       color = 2;
@@ -151,12 +151,12 @@ NON_MATCH void FUN_080ba0f0(ItemShop* p, s32 param_2) {
   }
 
   GetRegisteredWeaponData(gStat->equippedWeaponIdx, &w);
-  base = FUN_0807a6cc(&w);
+  base = CalcAttackWithEquippedArmor(&w);
   if (param_2 < 0) {
     value = base;
     color = 0;
   } else {
-    value = FUN_0807a5d8(&w, &gArmorDB[param_2]);
+    value = CalcAttack(&w, &gArmorDB[param_2]);
     color = 0;
     if (value != base) {
       color = 2;
@@ -570,7 +570,7 @@ NON_MATCH void FUN_080baae8(ItemShop* p) {
     s8* slot = &p->cursor.slot;
 
     if ((u8)*slot == SLOT_SORT) {
-      PlaySound_082406e0(263);
+      PlaySound_082406e0(SE_TEXT_SHOW);
       FUN_080ba07c(p, 3, p->unk_12e4, -1);
       FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
       FUN_080b98c0(&p->pair1, -1, -1);
@@ -624,14 +624,14 @@ void FUN_080bad30(ItemShop* p) {
         break;
       }
       case 4: {
-        PlaySound_082406e0(263);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080ba07c(p, 0, p->unk_12e4, p->items0[(u8)p->cursor.savedSlot - 16]);
         FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
         FUN_080ba054(p, FUN_080baf50, 0);
         break;
       }
       case 5: {
-        PlaySound_082406e0(263);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080ba07c(p, 1, p->unk_12e4, GetNormalItemID((u8)p->cursor.savedSlot));
         FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 0);
         FUN_080ba054(p, FUN_080bb01c, 0);
@@ -1180,7 +1180,7 @@ NON_MATCH void FUN_080bbc60(ItemShop* p) {
     s8* slot = &p->cursor.slot;
 
     if ((u8)*slot == SLOT_SORT) {
-      PlaySound_082406e0(263);
+      PlaySound_082406e0(SE_TEXT_SHOW);
       FUN_080ba07c(p, 3, p->unk_12e4, -1);
       FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
       FUN_080b98c0(&p->pair1, -1, -1);
@@ -1235,14 +1235,14 @@ NON_MATCH void FUN_080bbeec(ItemShop* p) {
         break;
       }
       case 4: {
-        PlaySound_082406e0(263);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080ba07c(p, 0, p->unk_12e8, p->items1[(u8)p->cursor.savedSlot - 16]);
         FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 1);
         FUN_080ba054(p, FUN_080bc11c, 0);
         break;
       }
       case 5: {
-        PlaySound_082406e0(263);
+        PlaySound_082406e0(SE_TEXT_SHOW);
         FUN_080ba07c(p, 1, p->unk_12e8, gStat->armors[(u8)p->cursor.savedSlot]);
         FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 0);
         FUN_080ba054(p, FUN_080bc1ec, 0);
@@ -1628,7 +1628,7 @@ void FUN_080bca7c(ItemShop* p) {
         p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
       }
       if (gInput[0].pressed & (L_BUTTON | R_BUTTON)) {
-        PlaySound_082406e0(266);
+        PlaySound_082406e0(SE_MENU_PAGE);
         if (p->unk_12ed == 0) {
           FUN_080bc350(p);
         } else {

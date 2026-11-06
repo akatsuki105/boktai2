@@ -19,7 +19,7 @@ typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_9
   SmokePtcl ptcls[48];    // 0x018
   AuxAnimFile* animFile;  // 0xCD8, ANIM_D1B8
-  ParticleGroup* group;   // 0xCDC, PTCL_GROUP_0
+  ParticleGroup* group0;  // 0xCDC, PTCL_GROUP_0
   u32 activeCount;        // 0xCE0, active な要素の数, 0 なら _Update は何もしない
 } SmokeEmitter;
 static_assert(sizeof(SmokeEmitter) == 3300);
@@ -45,7 +45,7 @@ s32 SmokeEmitter_Update(SmokeEmitter* p) {
       ptcl->pos.y += e->vel.y;
       ptcl->pos.z += e->vel.z;
 
-      if (Particle_AdvanceAnim(ptcl, p->group, &e->anim)) {
+      if (Particle_AdvanceAnim(ptcl, p->group0, &e->anim)) {
         e->active = FALSE;
         ptcl->flags |= SPRFLAG_HIDDEN;
         p->activeCount--;
@@ -169,8 +169,8 @@ s32 SmokeEmitter_Init(SmokeEmitter* p) {
     return -1;
   }
 
-  p->group = GetParticleGroup(PTCL_GROUP_0);
-  if (p->group == NULL) {
+  p->group0 = GetParticleGroup(PTCL_GROUP_0);
+  if (p->group0 == NULL) {
     return -1;
   }
 
@@ -178,7 +178,7 @@ s32 SmokeEmitter_Init(SmokeEmitter* p) {
     Particle* ptcl = &p->ptcls[i].ptcl;
 
     p->ptcls[i].active = FALSE;
-    Particle_Add(ptcl, p->group, 0);
+    Particle_Add(ptcl, p->group0, 0);
     Particle_SetOffset(ptcl, -8, -10);
     ptcl->offsetZ = 2;
     ptcl->flags |= SPRFLAG_HIDDEN;

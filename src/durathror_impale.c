@@ -31,8 +31,6 @@ typedef struct DurathrorImpale {
 } DurathrorImpale;
 static_assert(sizeof(DurathrorImpale) == 1604);
 
-s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params);
-
 void nop_0805d918(void) {}
 
 void DurathrorImpaleSpike_Init(DurathrorImpale* p, DurathrorImpaleSpike* elem, s32 idx) {

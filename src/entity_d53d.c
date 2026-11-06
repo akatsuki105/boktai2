@@ -1,5 +1,9 @@
+#include "bg_pltt.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
+#include "input.h"
+#include "sound.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
@@ -22,25 +26,52 @@ static_assert(sizeof(EntityD53D) == 48);
 IWRAM_DATA EntityD53D* gEntityD53D = NULL;  // 0x030000E8
 
 void MosaicFader_Stop(void);
-s32 FUN_0809c08c(s32 mode);
+void MainMenu_SetHudMode(s32 mode);
 s32 FUN_0804e59c(void);
+void FUN_0804e5bc(void);
+void FUN_0804e5e8(void);
+void FUN_0804e604(void);
+void* FUN_0804ba3c(void);
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
-EntityD53D* FUN_0804ea10(void) { return gEntityD53D; }
+static inline void EntityD53D_SetState(EntityD53D* p, u8 state) {
+  p->state = state;
+  p->enter = 1;
+  p->timer = 0;
+}
+
+EntityD53D* EntityD53D_Get(void) { return gEntityD53D; }
 
 // テキストパネルとモザイクを片付けて, 描画パスを通常に戻す
-void FUN_0804ea1c(void) {
+void FUN_0804ea1c(EntityD53D* p) {
   TextPanelManager_DestroyAll();
   MosaicFader_Stop();
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON);
   Video_ResetFrameState(1);
   Video_SetDrawPasses(0, nop_0822e738, nop_0822b09c, FUN_0822f584);
-  FUN_0809c08c(7);
+  MainMenu_SetHudMode(7);
   ClearBGTilemapBuffer(0);
 }
 
-NAKED void FUN_0804ea68(EntityD53D* p, s32 param_2) { INCFUNC("asm/func/FUN_0804ea68.inc"); }
+void EntityD53D_LoadBG(EntityD53D* p, s32 param_2) {
+  BgPlttFile* f;
 
-NAKED void FUN_0804ead0(EntityD53D* p, s32 param_2) { INCFUNC("asm/func/FUN_0804ead0.inc"); }
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &param_2);
+  Video_GenerateBGMap(0, 0, 0, 0, 0);
+  f = GetBgPlttFile(BGP_EFDA);
+  CpuCopy16(f->body, gBgPlttBuffer, 256 * sizeof(rgb555));
+}
+
+void EntityD53D_LoadLinkBG(EntityD53D* p, s32 param_2) {
+  BgPlttFile* f;
+
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &param_2);
+  Video_GenerateBGMap(2, 0, 0, 0, 0);
+  f = GetBgPlttFile(BGP_LINK);
+  CpuCopy16(f->body, gBgPlttBuffer, 256 * sizeof(rgb555));
+}
 
 void EntityD53D_UpdateState0(EntityD53D* p) {
   if (p->enter) {
@@ -49,17 +80,78 @@ void EntityD53D_UpdateState0(EntityD53D* p) {
   p->timer++;
 }
 
-NAKED void FUN_0804eb50(EntityD53D* p) { INCFUNC("asm/func/FUN_0804eb50.inc"); }
+void EntityD53D_UpdateState1(EntityD53D* p) {
+  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  if (p->enter) {
+    p->enter = 0;
+    FUN_0804e5bc();
+  }
+  if (p->timer == 4) {
+    s32 id;
 
-NAKED void FUN_0804ebc4(EntityD53D* p) { INCFUNC("asm/func/FUN_0804ebc4.inc"); }
+    Sound_FadeOutBGM(1);
+    FUN_0804ea1c(p);
+    EntityD53D_LoadBG(p, 3);
+    PlaySound_082406e0(SE_NG);
+    id = TextPanel_Create(1, 7, 28, 6);
+    p->windowID = id;
+    if (id >= 0) {
+      TextPanel_SetScript(id, p->msgPc);
+      TextPanel_SetMessage(p->windowID, 0);
+      TextPanel_Start(p->windowID);
+    }
+  }
+  p->timer++;
+}
 
-NAKED void FUN_0804ec58(EntityD53D* p) { INCFUNC("asm/func/FUN_0804ec58.inc"); }
+void EntityD53D_UpdateState2(EntityD53D* p) {
+  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  if (p->enter) {
+    s32 id;
+
+    p->enter = 0;
+    Sound_FadeOutBGM(1);
+    FUN_0804ea1c(p);
+    FUN_0804e5bc();
+    EntityD53D_LoadLinkBG(p, 13);
+    id = TextPanel_Create(1, 14, 28, 6);
+    p->windowID = id;
+    if (id >= 0) {
+      TextPanel_SetScript(id, p->msgPc);
+      TextPanel_SetMessage(p->windowID, 1);
+      TextPanel_Start(p->windowID);
+    }
+    PlaySound_082406e0(SE_NG);
+  }
+  if (p->timer >= 60 && (gInput[0].pressed & (START_BUTTON | B_BUTTON | A_BUTTON))) {
+    EntityD53D_SetState(p, 3);
+  } else {
+    p->timer++;
+  }
+}
+
+void EntityD53D_UpdateState3(EntityD53D* p) {
+  if (p->enter) {
+    p->enter = 0;
+    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    PlaySound_082406e0(SE_CANCEL);
+    FUN_0804e5e8();
+  }
+  if (p->timer == 20) {
+    FUN_0804e604();
+  }
+  if (p->timer >= 20 && FUN_0804ba3c() == NULL && p->scriptID != 0) {
+    Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
+    VM_ExecByID(p->scriptID, NULL);
+  }
+  p->timer++;
+}
 
 void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
     EntityD53D_UpdateState0,
-    FUN_0804eb50,
-    FUN_0804ebc4,
-    FUN_0804ec58,
+    EntityD53D_UpdateState1,
+    EntityD53D_UpdateState2,
+    EntityD53D_UpdateState3,
 };  // 0x085AB664
 
 s32 EntityD53D_Update(EntityD53D* p) {
@@ -109,7 +201,7 @@ s32 EntityD53D_Init(EntityD53D* p) {
 }
 
 EntityD53D* EntityD53D_Create(void) {
-  EntityD53D* p = FUN_0804ea10();
+  EntityD53D* p = EntityD53D_Get();
 
   if (p != NULL) {
     return p;

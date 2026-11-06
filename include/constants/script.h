@@ -8,6 +8,8 @@
 #define Script_StaffRoll Script_0x1040        // スタッフロール
 #define Script_UseKey Script_0x010D           // 鍵を使った
 #define Script_DoorLocked Script_0x010E       // 鍵がかかっている
+#define Script_Riremito Script_0x0176         // 転移の葉によるダンジョンからの脱出
+#define Script_MapRetry Script_0x0177         // 愚者のカード, 暗黒ローンの"やり直し"
 #define Script_MorningDew Script_0x0B66       // 太陽樹の朝露
 #define Script_Valley1 Script_0x0307          // 渓谷 (st00_00)
 #define Script_ArenaRankSelect Script_0x0F69  // 闘技場のランク選択

@@ -26,7 +26,7 @@ _080BA118:
 	ldr r1, _080BA138 @ =0x08DAA7B0
 	adds r0, r0, r1
 _080BA126:
-	bl FUN_0807a70c
+	bl CalcDefence
 	adds r4, r0, #0
 	cmp r7, #0
 	bge _080BA13C
@@ -39,7 +39,7 @@ _080BA13C:
 	lsls r0, r7, #3
 	ldr r1, _080BA1B4 @ =0x08DAA7B0
 	adds r0, r0, r1
-	bl FUN_0807a70c
+	bl CalcDefence
 	movs r6, #0
 	cmp r0, r4
 	beq _080BA154
@@ -87,7 +87,7 @@ _080BA172:
 	mov r1, sp
 	bl GetRegisteredWeaponData
 	mov r0, sp
-	bl FUN_0807a6cc
+	bl CalcAttackWithEquippedArmor
 	adds r5, r0, #0
 	cmp r7, #0
 	bge _080BA1C0
@@ -102,7 +102,7 @@ _080BA1C0:
 	ldr r0, _080BA218 @ =0x08DAA7B0
 	adds r1, r1, r0
 	mov r0, sp
-	bl FUN_0807a5d8
+	bl CalcAttack
 	movs r6, #0
 	cmp r0, r5
 	beq _080BA1DA

@@ -53,7 +53,7 @@ _080BCF58:
 	ldr r1, [sp, #0x3c]
 	bl GetRegisteredWeaponData
 	ldr r0, [sp, #0x3c]
-	bl FUN_0807a6cc
+	bl CalcAttackWithEquippedArmor
 	adds r4, r0, #0
 	ldr r1, [sp, #0x34]
 	cmp r6, r1
@@ -90,7 +90,7 @@ _080BCF88:
 	b _080BD006
 _080BCFAC:
 	ldr r0, [sp, #0x30]
-	bl FUN_0807a6cc
+	bl CalcAttackWithEquippedArmor
 	movs r5, #0
 	cmp r0, r4
 	beq _080BCFC0

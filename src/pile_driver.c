@@ -43,8 +43,10 @@ const FileID FileID_ARRAY_085ad048[6] = {
     TILEMAP_8946,
 };  // 0x085AD048
 
-void FUN_080df478(void);        // src/entity_080df420.c
-void FUN_0805b1a0(unknown* p);  // src/code_08052eb8.s
+void FUN_080df478(void);  // src/entity_080df420.c
+
+s32 FUN_0805b1a0(struct Entity0805b068* p);
+
 void FUN_08086b18(WorldPos* pos);
 
 void FUN_080ada64(PileDriver*);

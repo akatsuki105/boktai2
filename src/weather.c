@@ -1,7 +1,12 @@
+#include "camera.h"
 #include "entity.h"
 #include "global.h"
+#include "map_inline.h"
 #include "particle.h"
+#include "player.h"
 #include "random.h"
+#include "sound.h"
+#include "tilemap.h"
 #include "time.h"
 #include "video.h"
 #include "vm.h"
@@ -61,10 +66,18 @@ static WeatherManager* sWeatherManager;  // 0x03000084
 
 COMMON_DATA s32 gLightningTimer = 0;  // 0x03002B48
 
+extern s32 gGrayscaleTimer;
+s32 Video_AddParticleIntoDrawList(Particle* p, s32 idx);
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
+void WeatherManager_ResetTimer(WeatherManager* p);
+
 void FUN_080026fc(s32 n);
 void WeatherManager_ScrollClouds(WeatherManager* p);
 s32 WeatherManager_UpdateParticles(WeatherManager* p);
-s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 a, s32 b, s32 c);
+s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 count, s32 interval, s32 intervalRand);
+
+// いまの太陽ゲージ
+static inline s32 GetSunGauge(void) { return gStat->sunGauge; }
 
 bool32 WeatherManager_IsActive(void) {
   if (sWeatherManager != NULL) {
@@ -113,7 +126,40 @@ s32 WeatherManager_GetChance(WeatherManager* p) {
   return chance;
 }
 
-NAKED void WeatherManager_ScrollClouds(WeatherManager* p) { INCFUNC("asm/func/WeatherManager_ScrollClouds.inc"); }
+// 雲の BG1 を揺らぎを付けながら斜めに流し, カメラに合わせて BG マップを組む
+void WeatherManager_ScrollClouds(WeatherManager* p) {
+  s32 ofsX = gCameraVpCoords.x + gCameraCoords.tilemapX;
+  s32 ofsY = gCameraVpCoords.y + gCameraCoords.tilemapY;
+
+  if (p->driftTimer == 0) {
+    u16* table = gRandomTable;
+
+    p->driftTimer = (_Random(table) & 127) + 128;
+    p->driftTarget = (_Random(table) & 7) - 1;
+  } else {
+    p->driftTimer--;
+  }
+  if ((p->frameCounter & 15) == 0) {
+    if (p->drift < p->driftTarget) {
+      p->drift++;
+    } else if (p->drift > p->driftTarget) {
+      p->drift--;
+    }
+  }
+  if (p->frameCounter & 1) {
+    p->scrollX[0] += 3 + p->drift;
+    p->scrollY[0] -= 8 + p->drift;
+  } else {
+    p->scrollX[1] += 6 + p->drift;
+    p->scrollY[1] -= 16 + p->drift;
+  }
+  {
+    s32 hofs = (ofsX + p->scrollX[p->layer]) & 0xFF;
+    s32 vofs = (ofsY + p->scrollY[p->layer]) & 0xFF;
+
+    Video_GenerateBGMap(1, Div(ofsX - 128, 8), Div(ofsY - 128, 8) & ~1, hofs, vofs);
+  }
+}
 
 // 雨粒32個ぶんのパーティクルを用意する
 s32 WeatherManager_InitParticles(WeatherManager* p) {
@@ -188,9 +234,94 @@ NON_MATCH s32 WeatherManager_UpdateParticles(WeatherManager* p) {
 #endif
 }
 
-NAKED s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 count, s32 param_3, s32 param_4) { INCFUNC("asm/func/WeatherManager_SpawnParticles.inc"); }
+// プレイヤーの周り ±0x800 のランダムな床の上に雨粒を count 個出し, 次に出すまでの間隔を決める
+// 残差: 313 対 296 命令, 原典は要素のポインタを2本持ち TileHeightAt の展開が短い, 形の詰めは未着手
+NON_MATCH s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 count, s32 interval, s32 intervalRand) {
+#ifdef NONMATCHING_C
+  Player* player = gPlayerPtr[0];
 
-NAKED bool32 FUN_08018118(WeatherManager* p) { INCFUNC("asm/func/FUN_08018118.inc"); }
+  if (p->unk_60 == 0) {
+    s32 n;
+
+    for (n = 0; n < count; n++) {
+      s32 i;
+
+      for (i = 0; i < 32; i++) {
+        WeatherParticle* e = &p->ptcls[i];
+
+        if (!e->active) {
+          e->phase = 0;
+          e->timer = 0;
+          e->posIdx = 0;
+          e->pos[0].x = (Random() & 0xFFF) + player->mover.pos.x - 0x800;
+          e->pos[0].z = (Random() & 0xFFF) + player->mover.pos.z - 0x800;
+          e->pos[0].y = TileHeightAt(&e->pos[0]);
+          e->pos[1].x = (Random() & 0xFFF) + player->mover.pos.x - 0x800;
+          e->pos[1].z = (Random() & 0xFFF) + player->mover.pos.z - 0x800;
+          e->pos[1].y = TileHeightAt(&e->pos[1]);
+          e->ptcl.pos = e->pos[e->posIdx];
+          Particle_SetPose(&e->ptcl, p->group, 30);
+          e->ptcl.priority = 1;
+          e->ptcl.flags &= ~SPRFLAG_HIDDEN;
+          Video_AddParticleIntoDrawList(&e->ptcl, 0);
+          e->active = TRUE;
+          break;
+        }
+      }
+    }
+    p->unk_60 = interval;
+    if (intervalRand != 0) {
+      p->unk_60 += Mod(Random(), intervalRand);
+    }
+  } else {
+    p->unk_60--;
+  }
+#else
+  INCFUNC("asm/func/WeatherManager_SpawnParticles.inc");
+#endif
+}
+
+// 晴れの待機, 太陽ゲージで次の雨を遅らせ, 時間が来たら確率で雨を降らせ始める
+// 残差: 原典は gStat のアドレスを r6 に置き r4-r7 だけで済ませるが, こちらは r8/r9 まで使う, rainTimer に足したあと gStat を読み直す形も違う
+NON_MATCH bool32 FUN_08018118(WeatherManager* p) {
+#ifdef NONMATCHING_C
+  s32 chance;
+  s32 sun;
+
+  if (p->unk_18) {
+    p->unk_18 = 0;
+    CLEAR_FLAGS(gStat->mapFlags, MPF_RAIN);
+    FUN_080026fc(0);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+  }
+  chance = WeatherManager_GetChance(p);
+  sun = gStat->sunGauge;
+  if (!TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER) && p->unk_22 != 0) {
+    if (sun > 0) {
+      gStat->rainTimer += sun >> 2;
+      if (gStat->rainTimer >= sRainIntervalBase) {
+        gStat->rainTimer = sRainIntervalBase;
+      }
+    } else if (gStat->rainTimer == 0) {
+      if ((Random() & 63) >= chance) {
+        gStat->rainTimer = sRainIntervalBase;
+        if (sRainIntervalRand > 0) {
+          gStat->rainTimer += Mod(Random(), sRainIntervalRand);
+        }
+      } else {
+        WeatherManager_SetState(p, 1);
+        return TRUE;
+      }
+    } else {
+      gStat->rainTimer--;
+    }
+  }
+  p->stateTimer++;
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_08018118.inc");
+#endif
+}
 
 // 降り始めの100フレームを待ってから本降りへ移る
 bool32 FUN_08018250(WeatherManager* p) {
@@ -241,9 +372,87 @@ NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
 #endif
 }
 
-NAKED bool32 FUN_08018324(WeatherManager* p) { INCFUNC("asm/func/FUN_08018324.inc"); }
+// 雨の最中, 雷を鳴らしながら雨粒を撒き, 太陽を浴びるか降る時間が尽きたら止ませる
+bool32 FUN_08018324(WeatherManager* p) {
+  if (p->unk_18) {
+    p->unk_18 = 0;
+    if (sRainDuration == 0) {
+      sRainDuration = p->unk_28;
+      if (p->unk_2a != 0) {
+        sRainDuration += Mod(Random(), p->unk_2a);
+      }
+    }
+    p->sunAccum = 0;
+    SET_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    SET_FLAGS(gStat->mapFlags, MPF_RAIN);
+    FUN_080026fc(2);
+  }
+  if (p->timer == 0) {
+    if (!(gGameFlags & FLAG030047A4_GAMEOVER) && gLightningTimer > 0) {
+      gGrayscaleTimer = 5;
+      PlaySound_082406e0(SE_THE_TOWER);
+    }
+    WeatherManager_ResetTimer(p);
+  } else {
+    if (gClock.spanOfTime > TIME_DAYTIME) {
+      if (p->timer == 5) {
+        FUN_0823ce68(0, 2, 31, 31, 31, 0x1FFF, 0);
+      } else if (p->timer == 3) {
+        gLightningTimer = 6;
+      }
+    }
+    p->timer--;
+  }
+  if (p->stateTimer >= 30) {
+    p->sunAccum += GetSunGauge();
+    if (p->sunAccum >= 60 || TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+      sRainDuration = 0;
+      WeatherManager_SetState(p, 4);
+      return TRUE;
+    }
+  }
+  if (sRainDuration <= 0) {
+    WeatherManager_SetState(p, 4);
+    sRainDuration = 0;
+    return TRUE;
+  }
+  sRainDuration--;
+  WeatherManager_SpawnParticles(p, (Random() & 3) + 4, 1, 0);
+  p->layer = 1 - p->layer;
+  p->stateTimer++;
+  return FALSE;
+}
 
-NAKED bool32 FUN_080184ec(WeatherManager* p) { INCFUNC("asm/func/FUN_080184ec.inc"); }
+// 雨の終わり, BG1 を数フレーム点滅させて雨粒を撒き終え, 次に降るまでのフレーム数を決めて待機へ戻る
+bool32 FUN_080184ec(WeatherManager* p) {
+  if (p->unk_18) {
+    p->unk_18 = 0;
+    FUN_080026fc(3);
+    CLEAR_FLAGS(gStat->mapFlags, MPF_RAIN);
+    if (p->unk_58 != 0) {
+      VM_ExecByID(p->unk_58, NULL);
+    }
+  }
+  SET_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+  if (p->stateTimer <= 9 && (p->stateTimer & 1) == 0) {
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+  }
+  if (p->stateTimer <= 7) {
+    WeatherManager_SpawnParticles(p, 3, 10, 10);
+  }
+  if (p->stateTimer > 9) {
+    WeatherManager_SetState(p, 0);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    gStat->rainTimer = sRainIntervalBase;
+    if (sRainIntervalRand > 0) {
+      gStat->rainTimer += Mod(Random(), sRainIntervalRand);
+    }
+    return TRUE;
+  }
+  p->layer = 0;
+  p->stateTimer++;
+  return FALSE;
+}
 
 bool32 (*const gWeatherStateFuncs[5])(WeatherManager*) = {
     FUN_08018118,
@@ -289,7 +498,92 @@ s32 WeatherManager_Destroy(WeatherManager* p) {
   return 0;
 }
 
-NAKED s32 WeatherManager_Init(WeatherManager* p) { INCFUNC("asm/func/WeatherManager_Init.inc"); }
+// 残差: 235 対 239 命令, 'M' と 'P' の比較を agbcc が halfword 1回にまとめてしまう, 乱数と WeatherManager_GetChance の評価順も逆
+NON_MATCH s32 WeatherManager_Init(WeatherManager* p) {
+#ifdef NONMATCHING_C
+  TilemapFile* f;
+  BgMapEntry* tilemap;
+  s32 state;
+
+  sWeatherManager = p;
+  f = GetTilemapFile(TILEMAP_EA77);
+  tilemap = GetTilemapBuffer(1);
+  p->scrollX[0] = 0;
+  p->scrollY[0] = 0;
+  p->scrollX[1] = 0;
+  p->scrollY[1] = 0;
+  p->layer = 0;
+  if (f->magic[0] == 'M' && f->magic[1] == 'P') {
+    s32 index = 0;
+
+    SetBGPrioDirect(1, 1);
+    Video_SetupBGLayout(3, 1, f, 0, 0, 1, &index);
+  } else {
+    Video_SetupBG(1, 1, f, 0, 0, 0, 1, tilemap);
+  }
+  if (VM_SeekToNamedArg('r')) {
+    p->unk_30 = VM_GetValue();
+    p->unk_32 = VM_GetValue();
+  } else {
+    p->unk_30 = 0x40;
+    p->unk_32 = 0x40;
+  }
+  if (VM_SeekToNamedArg('i')) {
+    p->unk_28 = VM_GetValue();
+    p->unk_2a = VM_GetValue();
+  } else {
+    p->unk_28 = 7200;
+    p->unk_2a = 3600;
+  }
+  if (sRainDuration > p->unk_28) {
+    sRainDuration = p->unk_28;
+    if (p->unk_2a != 0) {
+      sRainDuration += Mod(Random(), p->unk_2a);
+    }
+  }
+  if (VM_SeekToNamedArg('c')) {
+    gStat->rainTimer = VM_GetValue();
+  }
+  if (VM_SeekToNamedArg('t')) {
+    p->timerBase = VM_GetValue();
+    p->timerRand = VM_GetValue();
+  } else {
+    p->timerBase = 300;
+    p->timerRand = 300;
+  }
+  WeatherManager_ResetTimer(p);
+  p->unk_22 = VM_GetNamedArgValue('a', 1);
+  gStat->rainTimer += GetSunGauge() >> 2;
+  if (gStat->rainTimer >= sRainIntervalBase) {
+    gStat->rainTimer = sRainIntervalBase;
+  }
+  state = 0;
+  if (gStat->sunGauge == 0) {
+    if (sRainDuration > 0) {
+      if (sRainDuration < 100) {
+        sRainDuration = 100;
+      }
+      state = 3;
+    } else if (gStat->rainTimer == 0 && (Random() & 63) < WeatherManager_GetChance(p)) {
+      state = 3;
+    }
+  }
+  WeatherManager_SetState(p, VM_GetNamedArgValue('m', state));
+  p->unk_54 = VM_GetNamedArgValue('C', 0);
+  p->unk_58 = VM_GetNamedArgValue('O', 0);
+  {
+    u16* table = gRandomTable;
+
+    p->driftTimer = (_Random(table) & 127) + 128;
+    p->drift = (_Random(table) & 7) - 4;
+    p->driftTarget = (_Random(table) & 7) - 4;
+  }
+  WeatherManager_InitParticles(p);
+  return 0;
+#else
+  INCFUNC("asm/func/WeatherManager_Init.inc");
+#endif
+}
 
 WeatherManager* WeatherManager_Create(void) {
   WeatherManager* p;

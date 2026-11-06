@@ -959,7 +959,7 @@ FUN_08103504: @ 0x08103504
 	ldr r3, _08103618 @ =FUN_08108a1c
 	str r5, [sp]
 	adds r0, r5, #0
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x2c]
 	ands r0, r4
 	movs r2, #0x40
@@ -2011,7 +2011,7 @@ _08103E24: .4byte 0x00000546
 _08103E28: .4byte 0x00000744
 _08103E2C: .4byte Enemy_ClearStateBegun
 _08103E30:
-	bl FUN_081f95f4
+	bl Entity081f959c_IsAnyActive
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08103F08
@@ -2284,7 +2284,7 @@ _0810406C: .4byte 0x0000046A
 _08104070: .4byte 0x00000484
 _08104074: .4byte 0x0000046C
 _08104078:
-	bl FUN_081f95f4
+	bl Entity081f959c_IsAnyActive
 	lsls r0, r0, #0x18
 	lsrs r7, r0, #0x18
 	cmp r7, #0
@@ -2662,7 +2662,7 @@ _0810435C:
 	ldrsh r0, [r0, r4]
 	cmp r0, #0
 	bgt _081043FC
-	bl FUN_081f460c
+	bl Entity081f4554_IsFull
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	cmp r5, #0
@@ -10673,7 +10673,7 @@ _081080F6:
 	movs r2, #0x80
 	lsls r2, r2, #5
 	movs r3, #2
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -10693,7 +10693,7 @@ _081080F6:
 	movs r2, #0x80
 	lsls r2, r2, #5
 	movs r3, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -10713,7 +10713,7 @@ _081080F6:
 	movs r2, #0x80
 	lsls r2, r2, #5
 	movs r3, #4
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -10733,7 +10733,7 @@ _081080F6:
 	movs r2, #0x80
 	lsls r2, r2, #5
 	movs r3, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #2
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -10754,7 +10754,7 @@ _081080F6:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #3
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -10775,7 +10775,7 @@ _081080F6:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #4
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -10796,7 +10796,7 @@ _081080F6:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #5
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -10817,7 +10817,7 @@ _081080F6:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	add sp, #0x18
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -10899,7 +10899,7 @@ _081082C6:
 	movs r2, #0xa0
 	lsls r2, r2, #4
 	movs r3, #2
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -10919,7 +10919,7 @@ _081082C6:
 	movs r2, #0x80
 	lsls r2, r2, #2
 	movs r3, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -10939,7 +10939,7 @@ _081082C6:
 	movs r2, #0xc0
 	lsls r2, r2, #3
 	movs r3, #4
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -10959,7 +10959,7 @@ _081082C6:
 	movs r2, #0xe0
 	lsls r2, r2, #4
 	movs r3, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #2
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -10980,7 +10980,7 @@ _081082C6:
 	adds r1, r7, #0
 	movs r2, #0xa0
 	lsls r2, r2, #4
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #3
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -11001,7 +11001,7 @@ _081082C6:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #2
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #4
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -11022,7 +11022,7 @@ _081082C6:
 	adds r1, r7, #0
 	movs r2, #0xc0
 	lsls r2, r2, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #5
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -11043,7 +11043,7 @@ _081082C6:
 	adds r1, r7, #0
 	movs r2, #0xe0
 	lsls r2, r2, #4
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	add sp, #0x18
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -11127,7 +11127,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #2
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -11148,7 +11148,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -11169,7 +11169,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #4
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -11190,7 +11190,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #5
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #2
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -11213,7 +11213,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #3
 	rsbs r3, r3, #0
 	str r6, [sp]
@@ -11234,7 +11234,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #4
 	rsbs r3, r3, #0
 	str r6, [sp]
@@ -11255,7 +11255,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	movs r3, #5
 	rsbs r3, r3, #0
 	str r6, [sp]
@@ -11276,7 +11276,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl FUN_081f9294
+	bl Entity081f959c_Spawn
 	add sp, #0x1c
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -16208,7 +16208,7 @@ _0810AB8C:
 	str r0, [sp, #8]
 	adds r0, r1, #0
 	adds r1, r6, #0
-	bl FUN_081f0098
+	bl Entity081f0298_Spawn
 	movs r0, #0xea
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
@@ -16649,7 +16649,7 @@ _0810AE72:
 	movs r4, #0xf0
 	str r4, [sp, #0x10]
 	str r6, [sp, #0x14]
-	bl FUN_081f51ac
+	bl Entity081f53a8_Spawn
 	ldr r1, _0810AF8C @ =0x0000070C
 	add r1, r8
 	ldrb r0, [r1]
@@ -17155,7 +17155,7 @@ _0810B2DC:
 	str r0, [sp, #0x20]
 	adds r0, r2, #0
 	movs r2, #2
-	bl FUN_081f86b4
+	bl Entity081f8a28_Spawn
 	ldr r0, _0810B384 @ =0x0000070C
 	adds r1, r6, r0
 	ldrb r0, [r1]
@@ -17423,7 +17423,7 @@ _0810B542:
 	adds r0, r4, #0
 	movs r1, #0x14
 	bl Enemy_PlayAnim
-	bl FUN_081f95f4
+	bl Entity081f959c_IsAnyActive
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	cmp r5, #0
@@ -17979,7 +17979,7 @@ _0810B92E:
 	str r2, [sp, #0x18]
 	movs r2, #6
 	movs r3, #6
-	bl FUN_081f42cc
+	bl Entity081f4554_Spawn
 _0810B994:
 	cmp r7, #0x28
 	ble _0810B9C2
@@ -23017,15 +23017,15 @@ _0810E038:
 	ldrh r0, [r0]
 	cmp r0, #2
 	bne _0810E0B8
-	bl FUN_081f5400
-	bl FUN_081f45ac
+	bl Entity081f53a8_VanishAll
+	bl Entity081f4554_VanishAll
 	b _0810E0C0
 	.align 2, 0
 _0810E0B0: .4byte 0xFFFEBE3F
 _0810E0B4: .4byte 0x0000021E
 _0810E0B8:
 	bl Entity081f9cb8_CancelAll
-	bl FUN_081f9628
+	bl Entity081f959c_VanishAll
 _0810E0C0:
 	movs r0, #0xcd
 	lsls r0, r0, #1

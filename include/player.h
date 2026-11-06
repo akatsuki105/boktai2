@@ -45,7 +45,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_WALL 4           // 壁張り付き, 壁沿いに横歩きする状態
 #define PACT_UNK_5 5          // ブロック動かし? (すでに壁とかにあって動かないブロックを押しても4のままだった)
 #define PACT_PULL_COFFIN 6    // 棺桶を引く, 入力が無く止まっているときも含む
-#define PACT_UNK_7 7          // 太陽チャージ, ワープ, 太陽鍛治
+#define PACT_UNK_7 7          // 太陽チャージ, ワープ, 太陽鍛冶
 #define PACT_UNK_8 8          // 太陽スタンド使用中?
 #define PACT_SUN_MAGIC 9      // ライジングサン (サバタはブラックサン)
 #define PACT_TRANSFORM 10     // トランス, MagicTransform_0806b92c
@@ -113,9 +113,9 @@ typedef u32 EquipBuffs;                  // Player.equipBuffs
 #define EBUFF_MEGAPOWER (1 << 20)        // 0x00100000, ロックパワー
 #define EBUFF_GUTSPOWER (1 << 21)        // 0x00200000, ガッツパワー
 #define EBUFF_PROTOPOWER (1 << 22)       // 0x00400000, ブルースパワー
-#define EBUFF_TOADPOWER (1 << 23)        // 0x00800000, トードパワー
-#define EBUFF_HEART (1 << 28)            // 0x10000000, ハートの紋章所持
-#define EBUFF_JOKER (1 << 29)            // 0x20000000, ジョーカーの紋章所持
+#define EBUFF_TOADPOWER (1 << 23)        // 0x00800000, トードパワー (雨を浴びるとエナジー回復)
+#define EBUFF_HEART (1 << 28)            // 0x10000000, ハートの紋章所持 (素手の攻撃力UP)
+#define EBUFF_JOKER (1 << 29)            // 0x20000000, ジョーカーの紋章所持 (チャージショットのタメ時間が半分になる)
 
 // PlayerKind, Player.kind
 #define PLAYER_SOLAR_DJANGO 0  // 赤ジャンゴ (Red Django)
@@ -139,7 +139,7 @@ typedef struct {
   u16 bonus[STAT_KINDS];      // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
   s16 sideBonus[STAT_KINDS];  // 0x10 (Player: 0x274), 赤/黒による符号付き補正 (赤なら+, 黒なら-), [0] が HP, [1] が Ene に効く
 } PlayerArmor;
-static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshDefence が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
+static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshHurtbox が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
 
 typedef struct {
   Particle base;  // 0x00
@@ -238,7 +238,7 @@ typedef struct {
   u8 angle;               // 0xC4, 攻撃の向き (8bit), ((facing + 5) & 7) << 5 で決める
   s8 enchantIdx;          // 0xC5, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
   u8 unk_c6;              // 0xC6
-  u8 charge;              // 0xC7, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
+  u8 charge;              // 0xC7, Bullet が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
 } PlayerWeapon;
 static_assert(sizeof(PlayerWeapon) == 200);
 
@@ -262,7 +262,7 @@ typedef struct Player {
   PlayerArmor armor;                // 0x264
   HitboxAttributes hbattrs;         // 0x27C
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
-  Weapon* unk_288;                  // 0x288, 根拠: FUN_080cf54c が +1 要素目を player_weapon_080ceafc に渡す
+  Weapon* unk_288;                  // 0x288, ここらへんは union の可能性がある (通信時とか)
   struct Input* input;              // 0x28C, &gInput[n]
   DirU16 facingHistory[10];         // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
   rgb555 pltt_2a4[32];              // 0x2A4
@@ -300,7 +300,7 @@ typedef struct Player {
   u16 unk_38a;                      // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
   u16 eneAccum;                     // 0x38C, 棺桶で寝ている間の ENE 回復の端数, 棺桶ごとの寝心地を毎フレーム足して 0x80 ごとに ene を 1 増やす
   bool8 isSabata;                   // 0x38E, 根拠: Player_InitState
-  u8 unk_38f;                       // 0x38F, 雨の中でトードパワーの ENE 回復の間隔を数える (15 で1回復)
+  u8 toadTick;                      // 0x38F, トードパワー時に 雨を浴びているフレームをカウントする (15でENEを1回復)
   ElevatorFlagsU16 elevatorFlags;   // 0x390, see ElevatorFlagsU16, 0 ならどのエレベータにも乗っていない
   u16 elevatorID;                   // 0x392, 乗っているエレベータの id, Player_ClearElevatorFlags が 0 にするので止まっているエレベータに乗っている間は 0
   bool8 originHitPending;           // 0x394, knockbackOrigin から弾かれる被弾が保留中, Player_SetKnockbackOrigin が立て Player_UpdateDamage が FUN_08065cb8 で処理して落とす
@@ -394,20 +394,20 @@ typedef struct Player {
   u8 unk_476;                       // 0x476, 非0なら FUN_08084540 が無敵中の点滅をしない
   u8 unk_477;                       // 0x477
   WorldPos waypoints[4];            // 0x478, 巡回地点, val に着いたときの向きが入る
-  PlayerFunc fn_498;                // 0x498, Player_UpdateDjango
-  Vec3 unk_49c;                     // 0x49C, FUN_0807c88c が引数の座標をそのまま写す
+  PlayerFunc lockedUpdate;          // 0x498, mode == PMODE_LOCKED のときの update
+  Vec3 moveTarget;                  // 0x49C, 操作不能中の移動ルーチンが向かう座標
   u16 knockbackSpeed_4a4;           // 0x4A4, スクリプト (Cmd_7A25 の '.f'=30) が入れる吹き飛びの速さ, 操作不能中の吹き飛び処理が向きの反対へ押し出しながら毎フレーム 3/4 に減らし 0 で止まる
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
   u8 unk_4a7;                       // 0x4A7, FUN_0807c748 の第3引数
   u8 unk_4a8;                       // 0x4A8
-  DirS8 dir_4a9;                    // 0x4A9
-  u8 unk_4aa;                       // 0x4AA, FUN_080726b4
-  u8 unk_4ab;                       // 0x4AB, FUN_08072670 が 1 を書く
+  DirS8 targetDir;                  // 0x4A9, 操作不能中の移動や向き直りを終えたときに向く方向, 負なら向きを変えない
+  u8 doneNotify;                    // 0x4AA, 操作不能中の処理を終えたときに Player_NotifyLockedDone が行う通知, see PlayerDoneNotify
+  bool8 doneWaitPending;            // 0x4AB, 非0ならメッセージの待ちをまだ解いていない
   u8 unk_4ac;                       // 0x4AC
   u8 footHitboxOn;                  // 0x4AD, 0 以外なら FUN_080726ec が footHitboxTimer を数える
   u8 footHitboxTimer;               // 0x4AE, 8 フレームごとに Player_EmitBurnSmoke を呼ぶためのカウンタ
   u8 unk_4af;                       // 0x4AF
-  s32 scriptID_4b0;                 // 0x4B0, FUN_08072650
+  s32 doneScriptID;                 // 0x4B0, '.e', 操作不能中の処理を終えたときに実行するスクリプト
   u8 unk_4b4[0x4BC - 0x4B4];        // 0x4B4
   s16 unk_4bc;                      // 0x4BC, unk_4c0 と対で (乱数 & 0xF) - 7 とその符号反転が入る (FUN_0806e4b4), Player_UpdateSleeping が両方 0 に戻す
   u8 unk_4be[0x4C0 - 0x4BE];        // 0x4BE
@@ -459,10 +459,11 @@ typedef struct Player {
   u16 unk_9bc;                      // 0x9BC
   u16 pad_9be;                      // 0x9BE, padding
   s32 scriptID_9c0;                 // 0x9C0
-  s32 scriptID_9c4;                 // 0x9C4, 0x0089 (Script_0089) を指しているときがあった
+  s32 scriptID_9c4;                 // 0x9C4, 0x0089 (Script_0x0089) を指している
   PlayerWeapon wpn;                 // 0x9C8, 装備中の武器と攻撃判定の一群, 根拠: 武器種ごとの攻撃処理が p + 0x9C8 を基点に読み書きする
   u16 chargeStepTime;               // 0xA90, サバタの攻撃 (PACT_ATTACK) で暗黒銃のチャージが1段上がるまでのフレーム数, 構えたときに 30 を入れる
-  u8 unk_a92[3];                    // 0xA92
+  u16 solarGunTime;                 // 0xA92, 太陽銃を撃ってからチャージ中も数え続けるフレーム数, 15 を超えると黒ジャンゴは日焼けダメージを受けて 0 に戻る
+  u8 unk_a94;                       // 0xA94
   u8 unk_a95;                       // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
   u8 unk_a96[2];                    // 0xA96, padding?
   PlayerFunc attackCB;              // 0xA98, sPlayerAttackUpdates

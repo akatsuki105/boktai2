@@ -18,7 +18,7 @@ typedef struct {
 } SaveSequence;
 static_assert(sizeof(SaveSequence) == 44);
 
-s32 FUN_0809c08c(s32 mode);
+void MainMenu_SetHudMode(s32 mode);
 
 // 60フレーム目にセーブを実行して結果メッセージに差し替え、A 押下か 300 フレームで結果をスクリプトに渡して自滅する
 s32 SaveSequence_Update(SaveSequence* p) {
@@ -40,7 +40,7 @@ s32 SaveSequence_Update(SaveSequence* p) {
     }
   }
   if ((p->result >= 0 && p->timer >= SECOND(2) && (gInput[0].pressed & A_BUTTON)) || p->timer >= SECOND(5)) {
-    FUN_0809c08c(7);
+    MainMenu_SetHudMode(7);
     if (p->scriptID != 0) {
       arg = p->result;
       sa.argc = 1, sa.argv = &arg;
@@ -61,7 +61,7 @@ s32 SaveSequence_Destroy(SaveSequence* p) {
 s32 SaveSequence_Init(SaveSequence* p) {
   s32 err;
 
-  FUN_0809c08c(3);
+  MainMenu_SetHudMode(3);
   p->scriptID = VM_GetNamedArgValue('e', 0);
   p->timer = 0;
   p->result = err = -1;

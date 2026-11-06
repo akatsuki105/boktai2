@@ -11,10 +11,10 @@ extern SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH];  // 0x3004820
 
 // --------------------------------------------
 
-void sound_08240264(SoundID32 id);
-void PlaySound_082406e0(SoundID32 id);
-void PlaySound_0824078c(SoundID32 id);
-void sound_08240740(SoundID32 id);
+void sound_08240264(SoundID32 id);      // id には "include/constants/songs.h" の定数マクロを使うこと
+void PlaySound_082406e0(SoundID32 id);  // id には "include/constants/songs.h" の定数マクロを使うこと
+void PlaySound_0824078c(SoundID32 id);  // id には "include/constants/songs.h" の定数マクロを使うこと
+void sound_08240740(SoundID32 id);      // id には "include/constants/songs.h" の定数マクロを使うこと
 void FUN_082407e0(void);
 void Sound_Resume(void);
 void FUN_082408d0(void);
@@ -30,5 +30,6 @@ void FUN_082404b0(SoundID32 id);
 void FUN_082404fc(u32 speed);
 void FUN_08240568(u32 speed);
 void FUN_082405c0(u32 speed);
+bool32 sound_08240960(SoundID32 id);
 
 #endif  // __INCLUDE_SOUND_H__

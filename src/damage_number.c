@@ -23,12 +23,10 @@ static_assert(sizeof(DamageNumber) == 180);
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_9
   u32 activeMask;         // 0x018, slots 1つにつき1bit
-  ParticleGroup* group;   // 0x01C, PTCL_GROUP_1
+  ParticleGroup* group1;  // 0x01C, PTCL_GROUP_1
   DamageNumber slots[4];  // 0x020
 } DamageNumberManager;
 static_assert(sizeof(DamageNumberManager) == 752);
-
-void Particle_AddToDrawList(Particle* p, SpriteFlags flags);
 
 static DamageNumberManager* sDamageNumberManager;  // 0x03000130
 
@@ -98,7 +96,7 @@ NON_MATCH s32 FUN_0805f774(DamageNumberManager* p, DamageNumber* slot, u32 amoun
     n++;
     amount -= 1000;
   }
-  Particle_SetPose(&slot->digits[3], p->group, base + n);
+  Particle_SetPose(&slot->digits[3], p->group1, base + n);
   if (n > 0) {
     slot->digitCount = 4;
   }
@@ -107,7 +105,7 @@ NON_MATCH s32 FUN_0805f774(DamageNumberManager* p, DamageNumber* slot, u32 amoun
     n++;
     amount -= 100;
   }
-  Particle_SetPose(&slot->digits[2], p->group, base + n);
+  Particle_SetPose(&slot->digits[2], p->group1, base + n);
   if (slot->digitCount == 0 && n > 0) {
     slot->digitCount = 3;
   }
@@ -116,7 +114,7 @@ NON_MATCH s32 FUN_0805f774(DamageNumberManager* p, DamageNumber* slot, u32 amoun
     n++;
     amount -= 10;
   }
-  Particle_SetPose(&slot->digits[1], p->group, base + n);
+  Particle_SetPose(&slot->digits[1], p->group1, base + n);
   if (slot->digitCount == 0 && n > 0) {
     slot->digitCount = 2;
   }
@@ -125,7 +123,7 @@ NON_MATCH s32 FUN_0805f774(DamageNumberManager* p, DamageNumber* slot, u32 amoun
     n++;
     amount--;
   }
-  Particle_SetPose(digit, p->group, base + n);
+  Particle_SetPose(digit, p->group1, base + n);
   if (slot->digitCount == 0) {
     slot->digitCount = 1;
   }
@@ -265,7 +263,7 @@ s32 DamageNumberManager_Init(DamageNumberManager* p) {
   s32 i;
 
   sDamageNumberManager = p;
-  p->group = GetParticleGroup(PTCL_GROUP_1);
+  p->group1 = GetParticleGroup(PTCL_GROUP_1);
   p->activeMask = 0;
   slot = p->slots;
   for (i = 0; i < 4; i++, slot++) {
@@ -273,9 +271,9 @@ s32 DamageNumberManager_Init(DamageNumberManager* p) {
     s32 j;
 
     for (j = 0; j < 4; j++, digit++) {
-      Particle_Setup(digit, p->group, SPRFLAG_UNK_16 | SPRFLAG_SCREEN_COORD);
+      Particle_Setup(digit, p->group1, SPRFLAG_UNK_16 | SPRFLAG_SCREEN_COORD);
       Particle_SetOffset(digit, -4, -4);
-      Particle_SetPose(digit, p->group, PTCL1_NUM_WHITE(0));
+      Particle_SetPose(digit, p->group1, PTCL1_NUM_WHITE(0));
       digit->priority = 1;
     }
     slot->priority = 3;

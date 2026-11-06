@@ -85,7 +85,7 @@ COMMON_DATA u8 u8_03002c84[0x03002C90 - 0x03002C84] = {};  // unused?
 void BlendPlttToColor(rgb555* dst, rgb555* src, rgb555 color, s32 t, s32 shift);
 void Entity082047f0_SetPltt(struct Entity082047f0* p, rgb555* pltt);
 s32 Entity081ea120_Spawn(Vec3* pos, s32 count, u32 param_3, u32 animIdx, u32 plttIdx);
-s32 FUN_081ea524(Mover* from, Mover* target, Vec3* vel, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
+s32 Entity081ea820_Throw(Mover* from, Mover* target, Vec3* vel, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
 s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 struct Entity082047f0* Entity082047f0_Create(Mover* mover);
 Entity* Entity081ea120_Create(s32 param_1, s32 param_2);
@@ -587,7 +587,7 @@ NON_MATCH void FUN_081fb664(Dvalinn* p) {
         if (vel.z < -48) {
           vel.z = -48;
         }
-        FUN_081ea524(&from, target, &vel, p->unk_7f0, 30, 0, 10);
+        Entity081ea820_Throw(&from, target, &vel, p->unk_7f0, 30, 0, 10);
         ns->timer1++;
       }
       if (ns->timer1 > 3) {
@@ -631,7 +631,7 @@ NON_MATCH void FUN_081fb664(Dvalinn* p) {
         if (vel.z < -48) {
           vel.z = -48;
         }
-        FUN_081ea524(&from, target, &vel, p->unk_7f0, 30, 0, 10);
+        Entity081ea820_Throw(&from, target, &vel, p->unk_7f0, 30, 0, 10);
         ns->timer1++;
       }
       if (ns->timer1 > 3) {

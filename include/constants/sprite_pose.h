@@ -124,5 +124,38 @@
 #define UI_MISC_POSE_41 41
 
 // --------------------------------------------
+// SPRITE_PORTRAITS 0..29
+#define PORTRAIT_RDJANGO 0  // 赤ジャンゴ
+#define PORTRAIT_BDJANGO 1  // 黒ジャンゴ
+#define PORTRAIT_OTNK 2
+#define PORTRAIT_SABATA 3
+#define PORTRAIT_SMITH 4
+#define PORTRAIT_RITA 5
+#define PORTRAIT_ZAJI 6
+#define PORTRAIT_SUMIRE 7
+#define PORTRAIT_KURO 8
+#define PORTRAIT_KID 9
+#define PORTRAIT_SHAIAN 10
+#define PORTRAIT_LADY 11
+#define PORTRAIT_COFFIN_SELLER 12
+#define PORTRAIT_ENNIO 13
+#define PORTRAIT_MARCELLO 14
+#define PORTRAIT_HATENA 15  // キャラクター"???" の顔 (PORTRAIT_QUESTION とは関係ない)
+#define PORTRAIT_LUIS 16
+#define PORTRAIT_DAINN 17
+#define PORTRAIT_DUNEYRR 18
+#define PORTRAIT_DVALINN 19
+#define PORTRAIT_DURATHROR 20
+#define PORTRAIT_RINGO_HAT 21
+#define PORTRAIT_RINGO 22
+#define PORTRAIT_RINGO_DAINN 23
+#define PORTRAIT_ROCKMAN 24
+#define PORTRAIT_SHADEMAN 25
+#define PORTRAIT_QUESTION 26         // "?" の文字
+#define PORTRAIT_RDJANGO_ROCKMAN 27  // 赤ジャンゴ+ロックマン
+#define PORTRAIT_BDJANGO_ROCKMAN 28  // 黒ジャンゴ+ロックマン
+#define PORTRAIT_KURO_KEGA 29
+
+// --------------------------------------------
 
 #endif  // __INCLUDE_CONSTANTS_SPRITE_POSE_H__

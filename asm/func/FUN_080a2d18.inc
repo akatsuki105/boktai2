@@ -120,12 +120,12 @@ _080A2DF4:
 	movs r1, #1
 	orrs r0, r1
 	str r0, [r4, #0x50]
-	ldr r1, _080A2E1C @ =FUN_080a2e20
+	ldr r1, _080A2E1C @ =EntityA8F1_UpdateIdle
 	adds r0, r4, #0
-	bl FUN_080a2a14
+	bl EntityA8F1_SetUpdateCallback
 _080A2E14:
 	pop {r4, r5}
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A2E1C: .4byte FUN_080a2e20
+_080A2E1C: .4byte EntityA8F1_UpdateIdle

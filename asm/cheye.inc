@@ -5004,7 +5004,7 @@ _0817DE9C:
 	mov r0, sp
 	mov r1, r8
 	movs r2, #0x14
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	add sp, #0x10
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -5546,7 +5546,7 @@ _0817E296:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r7, sp, #0xc
 	str r4, [sp, #8]
 	add r0, sp, #8
@@ -6944,7 +6944,7 @@ FUN_0817ecdc: @ 0x0817ECDC
 	adds r0, r5, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	movs r1, #0x40
 	add r0, sp, #0xc
 	strh r1, [r0]

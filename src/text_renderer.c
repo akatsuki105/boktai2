@@ -86,7 +86,10 @@ const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ALTER_08251d2
 
 const s16 gCharSounds[2] = {SE_TYPING1, SE_TYPING2};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
-// 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Font_DrawZenkakuChar 側)
+// 0x1F エスケープの次の1バイトと、描く字形番号の組 ({次のバイト, 字形番号} の繰り返し), Text_GetEscapeCharcode が引く
+// 字形番号はどれも半角の字形として描く (TextRenderer_DrawNextChar → Font_DrawHankakuChar)
+// 上位バイトが 0 でないもの (0x8015, 0x8016) は charcode & 0x7FFF を描き、TextRenderer_GetTextWidth では幅を 2 文字分として数える
+// 0x80 以上の字形番号は半角の字形 (128 個) の範囲を超えるが、どう描かれるかは未確認
 // clang-format off
 const u16 gEscapeCharcodes[118] = {
     0x4C, 0x61, 0x68, 0x62, 0x66, 0x60, 0x1,    0x63,   0x3,  0x64,   0x6A,

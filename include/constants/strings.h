@@ -1274,7 +1274,7 @@
 #define STR_EPILOGUE 0x14F0                    // 太陽と月、闇に帰りし時
 #define STR_THE_END 0x14F6                     // 続・ボクらの太陽         終
 #define BIN_14F8 0x14F8                        // Binary_14F8
-#define STR_MAP_CODENAME 0x14F9                // no_area
+#define STR_AREA_CODENAME 0x14F9               // no_area
 #define STR_1603 0x1603                        // コンティニューしますか?
 #define STR_1605 0x1605                        // 暗黒ローンに<WEIGHT><VAR=0>ソル</WEIGHT>払ってコンティニューしますか?
 #define EXP_TABLE 0x1607                       // gExpTable
@@ -1282,7 +1282,7 @@
 #define STR_STARTMENU_WEAPONS 0x170D           //
 #define STR_STARTMENU_ARMORS 0x17B7            // クロスアーマー
 #define STR_STARTMENU_MAGICS 0x1802            // エンチャント・ソル
-#define STR_STARTMENU_MAP 0x1826               // 渓谷
+#define STR_AREA_NAME 0x1826                   // 渓谷
 #define STR_STARTMENU_MISC 0x1880              // <NAME>
 #define BIN_1899 0x1899                        // Binary_1899
 #define BIN_189A 0x189A                        // Binary_189A

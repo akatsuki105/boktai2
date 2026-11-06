@@ -355,7 +355,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
       elem->grabMashBase = gPlayerPtr[0]->mashCount;
       payload = 6;
       FUN_080ec7e8(ENEK_SPIDER, 1, &payload);
-      PlaySound_082406e0(SE_UNK_277);
+      PlaySound_082406e0(SE_SPIDER_WEB_HIT);
       return;
     }
   }
@@ -375,7 +375,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
     if (FUN_08086878() < -1) {
       FUN_0808689c(elem->unk_42);
       elem->unk_40 |= E080DB520_UNK_6;
-      PlaySound_082406e0(SE_UNK_277);
+      PlaySound_082406e0(SE_SPIDER_WEB_HIT);
     }
   }
 #else

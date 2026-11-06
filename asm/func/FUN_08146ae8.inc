@@ -154,7 +154,7 @@ _08146C14: .4byte 0x00000469
 _08146C18: .4byte 0x0000046C
 _08146C1C:
 	adds r0, r5, #0
-	bl FUN_081489a0
+	bl Mimic_IsPlayerLost
 	lsls r0, r0, #0x18
 	lsrs r2, r0, #0x18
 	cmp r2, #0

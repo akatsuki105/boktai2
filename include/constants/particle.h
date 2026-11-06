@@ -10,25 +10,13 @@
 #define PTCL0_3 3
 #define PTCL0_4 4
 #define PTCL0_5 5
-#define PTCL0_6 6
-#define PTCL0_7 7
-#define PTCL0_8 8
-#define PTCL0_9 9
-#define PTCL0_10 10
-#define PTCL0_11 11
-#define PTCL_FIRE(num) (12 + (num))  // 火のエフェクト, 0..7
-#define PTCL0_20 20
-#define PTCL0_21 21
-#define PTCL0_22 22
-#define PTCL0_23 23
-#define PTCL0_24 24
-#define PTCL0_25 25
-#define PTCL0_26 26
-#define PTCL0_27 27
-#define PTCL0_28 28
-#define PTCL0_29 29
-#define PTCL0_30 30
-#define PTCL0_31 31
+#define PTCL0_BAMBOO_SHOOTS(step) (6 + (step))  // 太陽タケノコ(bamboo_shoots.c), step は アニメーションの段階 で 0..3
+#define PTCL0_ICE 10                            // 氷の礫 (魔法"フリーズ", 氷結)
+#define PTCL0_STONE 11                          // 石の礫 (石化)
+#define PTCL_FIRE(step) (12 + (step))           // 火のエフェクト, step: 0..7
+#define PTCL0_SOLARBUG(step) (20 + (step))      // 太陽虫 (SOLARBUG), step: 0..3
+#define PTCL0_MOONBUG(step) (24 + (step))       // 月光虫 (MOONBUG), step: 0..3
+#define PTCL0_DARKBUG(step) (28 + (step))       // 暗黒虫 (DARKBUG), step: 0..3
 #define PTCL0_32 32
 #define PTCL0_33 33
 #define PTCL0_34 34

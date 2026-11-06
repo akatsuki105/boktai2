@@ -1877,7 +1877,7 @@ _081A399E:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r7, sp, #0x24
 	mov r0, r8
 	str r4, [r0]
@@ -4574,7 +4574,7 @@ FUN_081a5060: @ 0x081A5060
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	add r1, sp, #8
-	bl Enemy_RegisterOwnHitbox
+	bl Enemy_RegisterHurtboxWithFlags
 	movs r2, #0
 	str r2, [sp, #0x18]
 	add r1, sp, #0x18

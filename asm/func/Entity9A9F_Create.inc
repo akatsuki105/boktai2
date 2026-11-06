@@ -219,7 +219,7 @@ _081DFE34:
 	cmp r0, #0
 	beq _081DFE28
 	movs r0, #7
-	bl FUN_0809c08c
+	bl MainMenu_SetHudMode
 _081DFE54:
 	pop {r4, r5, r6, r7}
 	pop {r1}

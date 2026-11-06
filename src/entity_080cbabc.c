@@ -8,7 +8,7 @@
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
   AuxSprite sprite;   // 0x18, AuxSprite_Add(&sprite, &gfx, 0), Hitbox_SetPos は &sprite.pos を取る
-  AuxSpriteGfx gfx;   // 0x44, SPRITE_210E
+  AuxSpriteGfx gfx;   // 0x44, SPRITE_EBALL_210E
   HitboxData hitbox;  // 0x60, FUN_080cb94c が Hitbox_Init / _SetAttack / _SetHandler / _SetPos / _Register する
   s16 velX;           // 0xB0, gSineTable[(angle + 0x40) & 0xFF] * speed >> 12 (0方向への丸め)
   u16 unk_b2;         // 0xB2, _Init が 0 を入れる, 読み手が見つかっていない
@@ -35,7 +35,7 @@ s32 Entity080cbabc_Destroy(Entity080cbabc* p) {
 
 // size: 0..3 (0 が 最小, 3: 最大)
 void FUN_080cb8f8(Entity080cbabc* p, WorldPos* pos, s32 size, s32 plttOfs) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_210E);
+  Video_GetAuxSprite(&p->gfx, SPRITE_EBALL_210E);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   AuxSprite_SetPoseIdx(&p->sprite, size);
   Video_SetAuxSpritePltt(&p->gfx, 44 + plttOfs);
@@ -61,8 +61,8 @@ void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 knockback, Hitbox
 NAKED s32 Entity080cbabc_Init(Entity080cbabc* p, WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes) { INCFUNC("asm/func/Entity080cbabc_Init.inc"); }
 
 /**
- * @brief SPRITE_210E (弾) を作る
- * @param size 0..3 (0 が 最小, 3: 最大), SPRITE_210E の poseIdx
+ * @brief SPRITE_EBALL_210E (弾) を作る
+ * @param size 0..3 (0 が 最小, 3: 最大), SPRITE_EBALL_210E の poseIdx
  * @param plttOfs 44 + plttOfs が plttID
  */
 Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes) {

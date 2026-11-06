@@ -22,8 +22,8 @@ typedef struct FreezeEffect {
   Vec3 pos;                                      // 0x18, 根拠: FreezeEffect_Init
   HitboxData hitbox;                             // 0x20, 根拠: FreezeEffect_InitHitbox
   Particle ptcl;                                 // 0x70, 中心の粒子, 根拠: FreezeEffect_InitCenterParticle
-  ParticleGroup* ptclGroup;                      // 0x98, PTCL_GROUP_0
-  ParticleGroup* subPtclGroup;                   // 0x9C, PTCL_GROUP_2
+  ParticleGroup* group0;                         // 0x98, PTCL_GROUP_0
+  ParticleGroup* group2;                         // 0x9C, PTCL_GROUP_2
   FreezeSubParticle subPtcls[8];                 // 0xA0, 根拠: FreezeEffect_InitSubParticles
   u8 spawnIdx;                                   // 0x200, 次に出す subPtcls の添字, 8 で折り返す, 根拠: FreezeEffect_SpawnSubParticle
   u8 spawnTimer;                                 // 0x201, subPtcls を出す間隔のカウンタ, 根拠: FreezeEffect_SpawnSubParticle
@@ -57,7 +57,7 @@ void FreezeEffect_GatherSubParticles(FreezeEffect* p) {
         p->subPtcls[i].base.pos.y = Div(p->subPtcls[i].base.pos.y * n + p->ptcl.pos.y, d);
         p->subPtcls[i].base.pos.z = Div(p->subPtcls[i].base.pos.z * n + p->ptcl.pos.z, d);
         if (p->subPtcls[i].frame == 4) {
-          Particle_SetPose(&p->subPtcls[i].base, p->subPtclGroup, PTCL2_FROST_S);
+          Particle_SetPose(&p->subPtcls[i].base, p->group2, PTCL2_FROST_S);
         }
       }
     }
@@ -203,10 +203,10 @@ void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 para
 void FreezeEffect_InitCenterParticle(FreezeEffect* p) {
   Particle* ptcl = &p->ptcl;
 
-  p->ptclGroup = GetParticleGroup(PTCL_GROUP_0);
-  Particle_Add(ptcl, p->ptclGroup, SPRFLAG_HIDDEN);
+  p->group0 = GetParticleGroup(PTCL_GROUP_0);
+  Particle_Add(ptcl, p->group0, SPRFLAG_HIDDEN);
   Particle_SetOffset(ptcl, -8, -8);
-  Particle_SetPose(ptcl, p->ptclGroup, 10);
+  Particle_SetPose(ptcl, p->group0, PTCL0_ICE);
   ptcl->pos = p->pos;
   ptcl->pos.y += 0xD7;
   ptcl->priority = 1;
@@ -217,12 +217,12 @@ void FreezeEffect_InitCenterParticle(FreezeEffect* p) {
 void FreezeEffect_InitSubParticles(FreezeEffect* p) {
   s32 i;
 
-  p->subPtclGroup = GetParticleGroup(PTCL_GROUP_2);
+  p->group2 = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 8; i++) {
     Particle* ptcl = &p->subPtcls[i].base;
-    Particle_Add(ptcl, p->subPtclGroup, SPRFLAG_HIDDEN);
+    Particle_Add(ptcl, p->group2, SPRFLAG_HIDDEN);
     Particle_SetOffset(ptcl, -4, -4);
-    Particle_SetPose(ptcl, p->subPtclGroup, PTCL2_FROST_L);
+    Particle_SetPose(ptcl, p->group2, PTCL2_FROST_L);
     Particle_SetPltt(ptcl, 1);
     ptcl->priority = 2;
     ptcl->offsetZ = -20;

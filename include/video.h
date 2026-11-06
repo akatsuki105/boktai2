@@ -61,17 +61,22 @@ void MainSprite_DrawListScreen(void);
 void AuxSprite_DrawListGameover(void);
 void Particle_DrawListGameover(void);
 void MainSprite_DrawListGameover(void);
+void AuxSprite_DrawListUnk13(void);
+void Particle_DrawListUnk13(void);
+void FUN_0822f264(void);
 
 void nop_0822e738(void);
 void nop_0822b09c(void);
 void FUN_0822f584(void);
 
 void SetBGPrioDirect(s32 bg, u32 prio);
+void SetBGCharBaseDirect(s32 bg, u32 charbase);
 void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs);
 void Video_FillBGRect(s32 bg, s32 x, s32 y, s32 w, s32 h, u32 tileidx, u32 flip, u32 pltt);
 void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* tilemap, u32 param_4, u32 param_5, s32 count, s32* indices);
 void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap);
 void Video_SetBGLayer(s32 bg, TilemapFile* tilemap, s32 layerIdx);
+void Video_SetBGTile(s32 bg, u32 x8, u32 y8, u32 tileidx, u32 flip, u32 pltt);
 void ClearBGTilemapBuffer(s32 bg);
 void Video_ResetBG(void);
 

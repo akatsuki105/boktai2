@@ -4852,7 +4852,7 @@ FUN_0816cedc: @ 0x0816CEDC
 	str r0, [sp]
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	movs r1, #0x18
 	add r0, sp, #0xc
 	strh r1, [r0]

@@ -15,7 +15,7 @@ typedef u32 WeaponEffect;  // bit0-7: 特殊効果ID(see include/constants/weapo
 // WeaponData から ID+動的に変動しうるデータ を抜粋したもの, セーブ用にサイズを切り詰めたかった？
 typedef struct {
   u8 id;                                           // 0x00, see include/constants/weapon.h
-  s8 quality;                                      // 0x01, 鍛治による "+6", "-3" などの補正, 補正なし(店売りなど) や SP は 0
+  s8 quality;                                      // 0x01, 鍛冶による "+6", "-3" などの補正, 補正なし(店売りなど) や SP は 0
   u16 wear;                                        // 0x02, 武器の損傷度合い(新品は 0), 敵に攻撃を当てたりすると増えていき、 WeaponData.durability を超えると武器が壊れる
   char PS[12];                                     // 0x04, 武器の説明欄に対する追記, e.g. "ジャンゴ作"
   WeaponEffect effects[WEAPON_EFFECT_SLOT_COUNT];  // 0x10, 武器に付与された特殊効果, see include/constants/weapon.h

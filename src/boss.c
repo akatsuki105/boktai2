@@ -304,23 +304,23 @@ WorldPos* FUN_080230c4(void) {
 void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4) {
   switch (kind) {
     case 0: {
-      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, 1, NULL, 0, 0, 100);
-      PlaySound_082406e0(SONG_433);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_WHITE, NULL, 0, 0, 100);
+      PlaySound_082406e0(SE_CHARA_SUPRISE);
       break;
     }
     case 2: {
-      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, 0, NULL, 0, 0, 100);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_RED, NULL, 0, 0, 100);
       PlaySound_082406e0(SONG_492);
       break;
     }
     case 1: {
-      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, 3, NULL, 0, 0, 100);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_BLUE, NULL, 0, 0, 100);
       PlaySound_082406e0(SONG_492);
       break;
     }
     case 3: {
-      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, 2, NULL, 0, 0, 100);
-      PlaySound_082406e0(SONG_493);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_QUESTION, NULL, 0, 0, 100);
+      PlaySound_082406e0(SE_CHARA_QUESTION);
       break;
     }
     case 4: {

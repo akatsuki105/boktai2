@@ -35,6 +35,9 @@ void FUN_08113724(Enemy* p);
 void FUN_08113970(Enemy* p);
 void FUN_08113a44(Enemy* p);
 
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_08251fcc[] = "../system/eneinline.h";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_skeletoncom_08251fe4[] = "skeletoncom.c";
+
 const u16 u16_ARRAY_085ad4e4[8] = {400, 400, 0, 260, 380, 340, 0, 380};  // 0x085AD4E4
 const u16 u16_ARRAY_085ad4f4[8] = {480, 480, 0, 312, 504, 408, 0, 456};  // 0x085AD4F4
 const u16 u16_ARRAY_085ad504[8] = {600, 600, 0, 390, 570, 510, 0, 570};  // 0x085AD504

@@ -1,7 +1,13 @@
+#include "camera.h"
 #include "entity.h"
+#include "entity_9a9f.h"
+#include "file.h"
 #include "global.h"
+#include "player.h"
 #include "solar.h"
 #include "tilemap.h"
+#include "trig.h"
+#include "video.h"
 #include "vm.h"
 
 // BG1 に TILEMAP_0B12 を敷き、 player を中心に angle/dist で回る world 座標へスクロールさせるシングルトン
@@ -24,6 +30,25 @@ static_assert(sizeof(EntityA628) == 56);
 COMMON_DATA EntityA628* gEntityA628 = NULL;  // 0x03002C3C
 
 void EntityA628_ResetOrbit(EntityA628*);
+
+static inline bool32 IsSunRising(void) {
+  u16 override = gSunGaugeOverride;
+  return override == SUN_OVERRIDE_RISING;
+}
+
+static inline s32 GetLocalPlayerIdx(void) {
+  if (gEntity9A9F == NULL) {
+    return -1;
+  }
+  return gEntity9A9F->playerIdx;
+}
+
+static inline u8 GetLinkBGHidden(s32 idx) {
+  if (gEntity9A9F == NULL) {
+    return 0;
+  }
+  return gEntity9A9F->unk_60[idx];
+}
 
 void EntityA628_StartFollowCamera(void) {
   if (gEntityA628 != NULL) {
@@ -58,21 +83,15 @@ void EntityA628_DeactivateScripted(void) {
   }
 }
 
-// 残差1命令, 0/1 の初期値 0 を原典は ldrh の後に作るが gcc はブロック先頭へ巻き上げる
-NON_MATCH u32 EntityA628_IsActive(void) {
-#ifdef NONMATCHING_C
-  bool32 overridden = gSunGaugeOverride == SUN_OVERRIDE_RISING;
-
-  if (overridden) {
+// 回る背景が有効か返す, ライジングサン中は常に偽
+u32 EntityA628_IsActive(void) {
+  if (IsSunRising()) {
     return 0;
   }
   if (gEntityA628 == NULL) {
     return 0;
   }
   return gEntityA628->active;
-#else
-  INCFUNC("asm/func/EntityA628_IsActive.inc");
-#endif
 }
 
 u32 EntityA628_IsActiveScripted(void) { return EntityA628_IsActive(); }
@@ -83,20 +102,182 @@ void EntityA628_ResetOrbit(EntityA628* p) {
   p->blend = 0;
 }
 
-NAKED void EntityA628_UpdateBGVisibility(EntityA628* p) { INCFUNC("asm/func/EntityA628_UpdateBGVisibility.inc"); }
+void EntityA628_UpdateBGVisibility(EntityA628* p) {
+  if (gGameFlags & FLAG030047A4_LINK) {
+    if (GetLinkBGHidden(GetLocalPlayerIdx())) {
+      p->active = FALSE;
+    } else if (!p->active) {
+      EntityA628_ResetOrbit(p);
+      p->active = TRUE;
+    }
+    if (p->active) {
+      SET_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    } else {
+      CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    }
+  } else {
+    if (IsSunRising()) {
+      if (!p->sunOverridden) {
+        p->sunOverridden = TRUE;
+      }
+    } else if (p->sunOverridden) {
+      p->sunOverridden = FALSE;
+      if (p->active) {
+        EntityA628_ResetOrbit(p);
+      }
+    }
+    if (p->active && !p->sunOverridden) {
+      SET_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    } else {
+      CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    }
+  }
+}
 
-NAKED void EntityA628_UpdatePos(EntityA628* p) { INCFUNC("asm/func/EntityA628_UpdatePos.inc"); }
+void EntityA628_UpdatePos(EntityA628* p) {
+  if (p->followCamera) {
+    if (p->blend <= 6) {
+      s32 k, n;
 
-NAKED s32 EntityA628_Update(EntityA628* p) { INCFUNC("asm/func/EntityA628_Update.inc"); }
+      p->blend++;
+      k = 8 - p->blend;
+      n = k + 1;
+      p->pos.x = Div(p->pos.x * k + gCameraCoords.worldPos.x, n);
+      p->pos.y = Div(p->pos.y * k + gCameraCoords.worldPos.y, n);
+      p->pos.z = Div(p->pos.z * k + gCameraCoords.worldPos.z, n);
+    } else {
+      p->blend = 8;
+      p->pos.x = gCameraCoords.worldPos.x;
+      p->pos.y = gCameraCoords.worldPos.y;
+      p->pos.z = gCameraCoords.worldPos.z;
+    }
+  } else if (gPlayerPtr[p->playerIdx]->lookAroundOffset.val != 0) {
+    if (gPlayerPtr[p->playerIdx]->action == PACT_WALL) {
+      p->angle = (gStat->sunAngle + 128) & 0xFF;
+    } else {
+      p->angle = gStat->sunAngle;
+    }
+    if (p->blend <= 6) {
+      s32 k, n;
+
+      p->blend++;
+      k = 8 - p->blend;
+      n = k + 1;
+      p->pos.x = Div(p->pos.x * k + gPlayerPtr[p->playerIdx]->pos_3c0.x, n);
+      p->pos.y = Div(p->pos.y * k + gPlayerPtr[p->playerIdx]->pos_3c0.y, n);
+      p->pos.z = Div(p->pos.z * k + gPlayerPtr[p->playerIdx]->pos_3c0.z, n);
+    } else {
+      p->blend = 8;
+      p->pos.x = gPlayerPtr[p->playerIdx]->pos_3c0.x;
+      p->pos.y = gPlayerPtr[p->playerIdx]->pos_3c0.y;
+      p->pos.z = gPlayerPtr[p->playerIdx]->pos_3c0.z;
+    }
+  } else {
+    s32 diff = Angle_Diff((s16)gStat->sunAngle, p->angle - 256);
+    s32 d = 128 - diff;
+    s32 step;
+
+    if ((d < 0 ? -d : d) <= 16) {
+      if (diff != 128) {
+        if (diff < 128) {
+          step = (d >> 2) + 1;
+          p->angle = (p->angle + step) & 0xFF;
+        } else {
+          p->angle = (p->angle - ((diff - 128) >> 2) + 255) & 0xFF;
+        }
+      }
+      p->dist = (p->dist * 3 - 300) >> 2;
+      if (p->dist < 0) {
+        p->dist = -p->dist;
+        p->angle = gStat->sunAngle;
+      }
+    } else {
+      if (diff != 0) {
+        if (diff < 128) {
+          step = (diff >> 2) + 1;
+          p->angle = (p->angle + step) & 0xFF;
+        } else {
+          step = ((256 - diff) >> 2) + 1;
+          p->angle = (p->angle + 256 - step) & 0xFF;
+        }
+      }
+      if (p->dist < 300) {
+        p->dist = (p->dist * 3 + 300) >> 2;
+      }
+    }
+    if (p->blend > 1) {
+      s32 n;
+
+      p->destPos.x = gPlayerPtr[p->playerIdx]->mover.pos.x + FixToInt(12, COS(p->angle) * p->dist);
+      p->destPos.y = (((0x80 - gPlayerPtr[p->playerIdx]->unk_97a) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
+      p->destPos.z = gPlayerPtr[p->playerIdx]->mover.pos.z + FixToInt(12, SIN(p->angle) * p->dist);
+      p->blend--;
+      n = p->blend + 1;
+      p->pos.x = Div(p->pos.x * p->blend + p->destPos.x, n);
+      p->pos.y = Div(p->pos.y * p->blend + p->destPos.y, n);
+      p->pos.z = Div(p->pos.z * p->blend + p->destPos.z, n);
+    } else {
+      p->blend = 0;
+      p->pos.x = gPlayerPtr[p->playerIdx]->mover.pos.x + FixToInt(12, COS(p->angle) * p->dist);
+      p->pos.y = (((0x80 - gPlayerPtr[p->playerIdx]->unk_97a) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
+      p->pos.z = gPlayerPtr[p->playerIdx]->mover.pos.z + FixToInt(12, SIN(p->angle) * p->dist);
+    }
+  }
+}
+
+s32 EntityA628_Update(EntityA628* p) {
+  EntityA628_UpdateBGVisibility(p);
+  if (p->active) {
+    Vec3 vp;
+    s32 x, y;
+
+    EntityA628_UpdatePos(p);
+    WorldToVp(&vp, &p->pos);
+    x = gCameraVpCoords.x - vp.x + 128;
+    y = gCameraVpCoords.y - vp.y + 128;
+    Video_GenerateBGMap(1, FixToInt(3, x - 128), FixToInt(3, y - 128) & ~1, x - 120, y - 90);
+  }
+  return 0;
+}
 
 s32 EntityA628_Destroy(EntityA628* p) {
   gEntityA628 = NULL;
   return 0;
 }
 
-NAKED void EntityA628_SetupBG(EntityA628* p) { INCFUNC("asm/func/EntityA628_SetupBG.inc"); }
+void EntityA628_SetupBG(EntityA628* p) {
+  s32 idx;
 
-NAKED s32 EntityA628_Init(EntityA628* p, u32 param_2, u32 playerIdx, u32 active) { INCFUNC("asm/func/EntityA628_Init.inc"); }
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_0B12);
+  idx = 0;
+  Video_SetupBGLayout(3, 2, p->tilemap, 0, 0, 1, &idx);
+  SetBGPrioDirect(1, 1);
+  if (IsSunRising()) {
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    p->sunOverridden = TRUE;
+  } else {
+    if (p->active) {
+      SET_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    } else {
+      CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    }
+    p->sunOverridden = FALSE;
+  }
+}
+
+s32 EntityA628_Init(EntityA628* p, u32 param_2, u32 playerIdx, u32 active) {
+  p->unk_1c = param_2;
+  p->playerIdx = playerIdx;
+  p->active = active;
+  EntityA628_SetupBG(p);
+  EntityA628_ResetOrbit(p);
+  p->pos.x = gPlayerPtr[p->playerIdx]->mover.pos.x - FixToInt(12, COS(p->angle) * p->dist);
+  p->pos.y = (((0x80 - gPlayerPtr[p->playerIdx]->unk_97a) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
+  p->pos.z = gPlayerPtr[p->playerIdx]->mover.pos.z - FixToInt(12, SIN(p->angle) * p->dist);
+  EntityA628_Update(p);
+  gEntityA628 = p;
+  return 0;
+}
 
 EntityA628* EntityA628_Create(u32 param_1, u32 playerIdx, u32 active) {
   EntityA628* p = gEntityA628;
@@ -115,4 +296,21 @@ EntityA628* EntityA628_Create(u32 param_1, u32 playerIdx, u32 active) {
 }
 
 // 0xA628
-NAKED s32 Cmd_CreateEntityA628(u32 param_1) { INCFUNC("asm/func/Cmd_CreateEntityA628.inc"); }
+s32 Cmd_CreateEntityA628(u32 param_1) {
+  s32 playerIdx;
+  u32 active;
+
+  if (gGameFlags & FLAG030047A4_LINK) {
+    playerIdx = GetLocalPlayerIdx();
+  } else if (VM_SeekToNamedArg('i')) {
+    playerIdx = VM_GetValue();
+  } else {
+    playerIdx = 0;
+  }
+  if (VM_SeekToNamedArg('m')) {
+    active = VM_GetValue();
+  } else {
+    active = TRUE;
+  }
+  return (s32)EntityA628_Create(param_1, playerIdx, active);
+}

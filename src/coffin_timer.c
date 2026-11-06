@@ -12,7 +12,7 @@ typedef struct {
 } CoffinTimer;
 static_assert(sizeof(CoffinTimer) == 28);
 
-void FUN_0809c3c0(s32 param_1, s32 param_2, s32 param_3);
+void HUD_ShowCoffinGauge(s32 param_1, s32 param_2, s32 param_3);
 
 // ゲージを一定間隔で減らし, 0 になったら PACT_SPECIALDEATH にして、 この Entity を消す
 s32 CoffinTimer_Update(CoffinTimer* p) {
@@ -24,7 +24,7 @@ s32 CoffinTimer_Update(CoffinTimer* p) {
       if (++p->timer >= p->interval) {
         p->timer = 0;
         (*gauge)--;
-        FUN_0809c3c0(gStat->bossHP, gStat->bossHPMax, 1);
+        HUD_ShowCoffinGauge(gStat->bossHP, gStat->bossHPMax, 1);
         if (gStat->bossHP <= 0) {
           empty = TRUE;
         }
@@ -58,7 +58,7 @@ s32 CoffinTimer_Init(CoffinTimer* p, u32 id, u32 _) {
   }
 
   p->timer = 0;
-  FUN_0809c3c0(gStat->bossHP, gStat->bossHPMax, 0);
+  HUD_ShowCoffinGauge(gStat->bossHP, gStat->bossHPMax, 0);
   return 0;
 }
 

@@ -40,7 +40,7 @@ _080DE210:
 	mov r1, sp
 	movs r2, #0xa
 	movs r3, #4
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	adds r7, r4, #0
 	cmp r6, #0
 	beq _080DE22C
@@ -73,7 +73,7 @@ _080DE256:
 	mov r1, sp
 	movs r2, #0xa
 	movs r3, #4
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	cmp r6, #0
 	beq _080DE26C
 	cmp r6, #2
@@ -101,7 +101,7 @@ _080DE28C:
 	mov r1, sp
 	movs r2, #0xa
 	movs r3, #4
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	cmp r6, #0
 	beq _080DE2A2
 	cmp r6, #2
@@ -127,7 +127,7 @@ _080DE2BC:
 	mov r1, sp
 	movs r2, #0xa
 	movs r3, #4
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	cmp r6, #0
 	beq _080DE2D2
 	cmp r6, #2
@@ -155,7 +155,7 @@ _080DE2F0:
 	mov r1, sp
 	movs r2, #0xa
 	movs r3, #4
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	cmp r6, #0
 	beq _080DE306
 	cmp r6, #2
@@ -184,7 +184,7 @@ _080DE32A:
 	mov r1, sp
 	movs r2, #0xa
 	movs r3, #4
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	add sp, #8
 	pop {r4, r5, r6, r7}
 	pop {r0}

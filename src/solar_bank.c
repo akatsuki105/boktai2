@@ -292,7 +292,7 @@ NON_MATCH void solar_bank_080b3f38(SolarBank* p) {
           s32 from;
           s32 to;
 
-          PlaySound_082406e0(893);
+          PlaySound_082406e0(SE_MONEY_TRANSFER);
           from = 10;
           if (p->bank < 10) {
             from = p->bank;
@@ -313,7 +313,7 @@ NON_MATCH void solar_bank_080b3f38(SolarBank* p) {
           p->unk_5e2[2] = 4;
         } else if (p->unk_5e2[0] >= 64) {
           if ((p->unk_5e2[0] & 3) == 0) {
-            PlaySound_082406e0(893);
+            PlaySound_082406e0(SE_MONEY_TRANSFER);
           }
           p->stand++;
           p->bank--;
@@ -322,7 +322,7 @@ NON_MATCH void solar_bank_080b3f38(SolarBank* p) {
           p->unk_5e2[2] = 4;
           p->unk_5e2[0]++;
         } else if ((p->unk_5e2[0]++ & 7) == 0) {
-          PlaySound_082406e0(893);
+          PlaySound_082406e0(SE_MONEY_TRANSFER);
           p->stand++;
           p->bank--;
           solar_bank_080b3a10(p);
@@ -341,7 +341,7 @@ NON_MATCH void solar_bank_080b3f38(SolarBank* p) {
           s32 from;
           s32 to;
 
-          PlaySound_082406e0(893);
+          PlaySound_082406e0(SE_MONEY_TRANSFER);
           from = 10;
           if (p->stand < 10) {
             from = p->stand;
@@ -362,7 +362,7 @@ NON_MATCH void solar_bank_080b3f38(SolarBank* p) {
           p->unk_5e2[2] = 4;
         } else if (p->unk_5e2[0] >= 64) {
           if ((p->unk_5e2[0] & 3) == 0) {
-            PlaySound_082406e0(893);
+            PlaySound_082406e0(SE_MONEY_TRANSFER);
           }
           p->bank++;
           p->stand--;
@@ -371,7 +371,7 @@ NON_MATCH void solar_bank_080b3f38(SolarBank* p) {
           p->unk_5e2[2] = 4;
           p->unk_5e2[0]++;
         } else if ((p->unk_5e2[0]++ & 7) == 0) {
-          PlaySound_082406e0(893);
+          PlaySound_082406e0(SE_MONEY_TRANSFER);
           p->bank++;
           p->stand--;
           solar_bank_080b3a10(p);

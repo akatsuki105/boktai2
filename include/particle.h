@@ -69,6 +69,7 @@ void Particle_Add(Particle* p, ParticleGroup* g, u32 flags);
 void Particle_Setup(Particle* p, ParticleGroup* g, u32 flags);
 void Particle_Remove(Particle* p);
 void Particle_SetPltt(Particle* p, s32 plttID);
+void Particle_AddToDrawList(Particle* p, SpriteFlags flags);
 void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
 
 // poseIdx は "include/constants/particle.h" の定数

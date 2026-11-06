@@ -34,7 +34,7 @@ _0810026C:
 	bl PlaySound_082406e0
 _08100272:
 	adds r0, r7, #0
-	bl FUN_081001dc
+	bl Boku_UpdateDelayedScript
 	movs r0, #0x80
 	lsls r0, r0, #6
 	movs r4, #0xc0

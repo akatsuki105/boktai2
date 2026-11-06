@@ -47,7 +47,7 @@ IWRAM_DATA GameOverManager* gGameOverManager = NULL;  // 0x03000150
 extern bool32 gPlayTimeEnabled;
 
 void FUN_0823a8f4(u32 val);
-s32 FUN_0809c08c(s32 mode);
+s32 MainMenu_SetHudMode(s32 mode);
 void FUN_0807adc0(Player* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
@@ -295,7 +295,7 @@ void GameOverManager_StartScripted(void) {
     return;
   }
   GameOverManager_AddSprites(p);
-  FUN_0809c08c(7);
+  MainMenu_SetHudMode(7);
   p->state = 1;
   if (!VM_SeekToNamedArg('f')) {
     return;
@@ -312,7 +312,7 @@ void GameOverManager_StateWaitFlag(GameOverManager* p) {
     return;
   }
   GameOverManager_AddSprites(p);
-  FUN_0809c08c(7);
+  MainMenu_SetHudMode(7);
   if (gPlayerPtr[0]->action >= PACT_FALLDEATH && gPlayerPtr[0]->action <= PACT_DROWNING) {
     p->costIdx = 1;
   } else {
@@ -341,7 +341,7 @@ void GameOverManager_StateOpenMenu(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 6) {
     p->menu.flags &= ~SPRFLAG_HIDDEN;
-    FUN_0809c08c(3);
+    MainMenu_SetHudMode(3);
     MessageWindow_SetRect(1, 13, 28, 4);
     MessageWindow_SetInstant(1);
     MessageWindow_Start(p->script);
@@ -372,7 +372,7 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
   if (choice == 0) {
     p->menu.flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_0809c08c(7);
+    MainMenu_SetHudMode(7);
     FUN_0807adc0(gPlayerPtr[0]);
     Sound_FadeOutBGM(2);
     p->timer = 0;
@@ -388,7 +388,7 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
       p->letters[i].sprite.flags |= SPRFLAG_HIDDEN;
     }
     MessageWindow_Close();
-    FUN_0809c08c(7);
+    MainMenu_SetHudMode(7);
     if (p->scriptId != 0) {
       u32 argv[1];
       ScriptArgs args;

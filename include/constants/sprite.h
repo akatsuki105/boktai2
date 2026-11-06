@@ -53,9 +53,8 @@
 #define SPRITE_DEBRIS_0334 0x0334              // C42Dの破片の小さいやつ?
 #define SPRITE_EFF_1C1B 0x1C1B                 // エフェクト群(煙、蜘蛛の巣,影)
 #define SPRITE_KOMAINU 0xF680                  // 大聖堂の狛犬
-#define SPRITE_EXPLOSION 0x8639                // ExplosionManager が使う爆発
 #define SPRITE_BOMB 0xE74B                     // 丸い爆弾, ポイズンスパイダーの毒液, ダイナマイト
-#define SPRITE_DOOR_IRON 0x7AD2                // ドア(鉄格子)
+#define SPRITE_DOOR_IRON 0x7AD2                // 扉(鉄格子)
 #define SPRITE_SLIME BOKHASH("slime")          // 0xB96C, スライム
 #define SPRITE_DOOR_LOCKED 0x7AD3              // 鍵のかかった青い扉
 #define SPRITE_DOOR_7AEE 0x7AEE                // 扉, どこの扉か忘れた
@@ -64,9 +63,10 @@
 #define SPRITE_MELEE_SHOCKWAVE 0x8F5D          // 近接攻撃の衝撃波(黒ジャンゴの追加の衝撃波のエフェクト, 武器自体は SPRITE_DJANGO_SABATA が担う), あと太陽鍛治の水桶も一緒に入っている
 #define SPRITE_OTENKO_00 BOKHASH("otenko_00")  // 0x97D3, おてんこさま
 #define SPRITE_OTENKO_01 BOKHASH("otenko_01")  // 0x97D4, おてんこさま
-#define SPRITE_EFF_F422 0xF422                 // エフェクト
+#define SPRITE_EFF_F422 0xF422                 // 複数の種類のエフェクトをまとめたエフェクト群? (サーペントの泡, リッチ+の火の玉 など中ボス系のエフェクトをまとめている?)
 #define SPRITE_B306 0xB306                     // 紋章ブロック(炎氷地風)
-#define SPRITE_A5B3 0xA5B3                     // 大聖堂の水晶?
+#define SPRITE_BOKU_ACID_0 0xA5B3              // 0xA5B3, グール系が出すホルルン液(着弾前)
+#define SPRITE_BOKU_ACID_1 0xA5B4              // 0xA5B4, グール系が出すホルルン液(着弾後)
 #define SPRITE_SPEAKER 0x5AFD                  // シェードマンがクラッシュノイズのときに出すスピーカー
 #define SPRITE_5AFE 0x5AFE                     // 輪っかのエフェクト(シェードマン関連?)
 #define SPRITE_D4EE 0xD4EE                     // マミー
@@ -91,7 +91,6 @@
 #define SPRITE_76DB 0x76DB                     // 黒塗り
 #define SPRITE_COIN 0x2712                     // コイン
 #define SPRITE_5DC0 0x5DC0                     // なんかの物体
-#define SPRITE_6AF6 0x6AF6                     // キッドの店の内装
 #define SPRITE_4AAE 0x4AAE                     // おっさん
 #define SPRITE_9FF5 0x9FF5                     // エフェクト群
 #define SPRITE_A606 0xA606                     // 黒塗り
@@ -100,6 +99,7 @@
 #define SPRITE_EMOTION_ICONS_0 0x363C          // "!"
 #define SPRITE_EMOTION_ICONS_1 0x363D          // EmoteManager が SPRITE_EMOTION_ICONS_0 と一緒に読む
 #define SPRITE_1FBD 0x1FBD                     // なんかの壁
+#define SPRITE_6AF6 0x6AF6                     // キッドの店の内装
 #define SPRITE_SAMURAI_ARMOR 0x6AF7            // キッドの店の内装(武者鎧)
 #define SPRITE_1B59 0x1B59                     // 扉(鉄格子)
 #define SPRITE_7E82 0x7E82                     // ひまわり
@@ -124,13 +124,13 @@
 #define SPRITE_CDAB 0xCDAB                     // チェンジ・マウスで渡れる木片
 #define SPRITE_D962 0xD962                     // タレット封印の扉(地下水路の入り口), 螺旋の塔の入り口, etc
 #define SPRITE_B044 0xB044                     // 絨毯
-#define SPRITE_3668 0x3668                     // なんかのエフェクト群
+#define SPRITE_DAINN_EBALL 0x3668              // ダーインが放つエネルギー弾 (クロロホルルン+)
 #define SPRITE_OJAMA_BAT 0x18A8                // オジャマバット
 #define SPRITE_OJAMA_BAT_CTR 0x18A9            // オジャマバットのカウンター (オジャマバットがいくつあるかを示す)
-#define SPRITE_2769 0x2769                     // 接触スイッチ(+電球?)
+#define SPRITE_2769 0x2769                     // 接触スイッチ(+電球?), BOKHASH("switch_00")?
 #define SPRITE_5B78 0x5B78                     // 天窓の光
 #define SPRITE_16F5 0x16F5                     // 紋章ブロック
-#define SPRITE_848F 0x848F                     // なんかのトゲ飛ばし？
+#define SPRITE_DURATH_SPIKE 0x848F             // ドゥラスロール(第1形態)の飛ばす棘
 #define SPRITE_8490 0x8490                     // 砂に潜るエフェクト?
 #define SPRITE_EF69 0xEF69                     // 暗黒の根
 #define SPRITE_5BA7 0x5BA7                     // 天窓の光
@@ -145,7 +145,12 @@
 #define SPRITE_9DFF 0x9DFF                     // 黒塗り
 #define SPRITE_TIME_MCIRCLE 0xA152             // タイム魔方陣
 #define SPRITE_17C7 0x17C7                     // 重量スイッチ
-#define SPRITE_210E 0x210E                     // 弾に見えるが、エフェクトかもしれない
+#define SPRITE_17C8 0x17C8                     // 重量スイッチ
+#define SPRITE_17C9 0x17C9                     // 重量スイッチ
+#define SPRITE_17CA 0x17CA                     // 重量スイッチ
+#define SPRITE_17CB 0x17CB                     // 重量スイッチ
+#define SPRITE_B0BC 0xB0BC                     // 重量スイッチ
+#define SPRITE_EBALL_210E 0x210E               // エネルギー弾, 銃の弾やライジングサンで打ち上げる玉として使う
 #define SPRITE_1FE0 0x1FE0                     // 黒塗り
 #define SPRITE_2C1A 0x2C1A                     // 岩の角みたいな何か
 #define SPRITE_SWORD_AX 0x5291                 // ソード(敵)、アックス(敵)
@@ -155,8 +160,7 @@
 #define SPRITE_47DE 0x47DE                     // ボク
 #define SPRITE_TREADMILL 0xC046                // 暗黒発電機(人が走ることで発電するベルドコンベア)
 #define SPRITE_2097 0x2097                     // 四則演算ブロック
-#define SPRITE_17C8 0x17C8                     // 重量スイッチ
-#define SPRITE_BB68 0xBB68                     // レバースイッチ
+#define SPRITE_LEVER_SWITCH 0xBB68             // レバースイッチ
 #define SPRITE_EED8 0xEED8                     // 砂漠の水汲み場
 #define SPRITE_505C 0x505C                     // 料理
 #define SPRITE_SOLAR_STATION 0xA47C            // 太陽スタンド
@@ -175,7 +179,6 @@
 #define SPRITE_DC38 0xDC38                     // 黒塗り
 #define SPRITE_8393 0x8393                     // 黒塗り
 #define SPRITE_SOLAR_BAMBOO 0x066A             // 太陽ダケ
-#define SPRITE_17C9 0x17C9                     // 重量スイッチ
 #define SPRITE_DB6C 0xDB6C                     // 壁?
 #define SPRITE_D0A3 0xD0A3                     // カンテラ
 #define SPRITE_BEE_NEST_BROKEN 0x9385          // 壊れた蜂の巣
@@ -188,7 +191,6 @@
 #define SPRITE_C039 0xC039                     // パイルドライバーの方陣の中心
 #define SPRITE_9803 0x9803                     // 黒塗り
 #define SPRITE_D56D 0xD56D                     // ??
-#define SPRITE_17CA 0x17CA                     // 重量スイッチ
 #define SPRITE_SPOTLIGHT 0x3640                // 天窓の光(汎用?, 魔方陣などのエフェクトもこれかも？)
 #define SPRITE_9B09 0x9B09                     // 黒塗り
 #define SPRITE_D454 0xD454                     // 黒塗り
@@ -199,7 +201,7 @@
 #define SPRITE_35C7 0x35C7                     // 黒塗り
 #define SPRITE_3B53 0x3B53                     // 黒塗り
 #define SPRITE_PINPAD 0x3C13                   // "時の家"の暗証番号設定端末
-#define SPRITE_9D3F 0x9D3F                     // "オフセット"(=offset), "20・20"(=32x32) というデバッグ用の文字列がある
+#define SPRITE_ROCK_9D3F 0x9D3F                // 岩石, "オフセット"(=offset), "20・20"(=32x32) というデバッグ用の文字列がある
 #define SPRITE_7C99 0x7C99                     // 各属性のエンブレム(パズルの床に使うデカール?)
 #define SPRITE_LIFT_IRON 0xB019                // 昇降床(金属)
 #define SPRITE_LIFT_ROCK0 0xDA09               // 移動床(岩), 変異域の溶岩のところや地下水路で使用
@@ -215,7 +217,6 @@
 #define SPRITE_GENERATOR 0xC038                // パイルドライバーのジェネレータ
 #define SPRITE_1D78 0x1D78                     // 天窓の光と、あと砂っぽい地面?
 #define SPRITE_6154 0x6154                     // トーチ?
-#define SPRITE_17CB 0x17CB                     // 重量スイッチ
 #define SPRITE_BE6D 0xBE6D                     // 黒塗り
 #define SPRITE_CC88 0xCC88                     // 散った花びらのように見えるなにか
 #define SPRITE_96B5 0x96B5                     // 砂漠の(3つの石版のことが書いてある)石碑
@@ -235,11 +236,12 @@
 #define SPRITE_5B54 0x5B54                     // ダイナマイトで壊せる壁
 #define SPRITE_CACTUS 0x04B3                   // サボテン(攻撃で破壊できる小物オブジェ)
 #define SPRITE_4FDA 0x4FDA                     // ??
+#define SPRITE_8638 0x8638                     // "リッチ+"?, 火炎弾, マグマの間欠泉
+#define SPRITE_EXPLOSION 0x8639                // 爆発 (ライジングサンが弾ける時もこれ)
 #define SPRITE_863A 0x863A                     // 燃える(爆発?)エフェクト
-#define SPRITE_8638 0x8638                     // ??
 #define SPRITE_DUNEYRR_AUX 0x61F9              // ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は別), ドゥラスロールのものも含む
 #define SPRITE_2058 0x2058                     // 武器屋(シャイアンの店)の内装?
-#define SPRITE_DOOR_WOOD 0x7ACD                // ドア(木)
+#define SPRITE_DOOR_WOOD 0x7ACD                // 扉(木)
 #define SPRITE_DVALIN_2E78 0x2E78              // ドヴァリン
 #define SPRITE_2E79 0x2E79                     // ドヴァリン
 #define SPRITE_2E7A 0x2E7A                     // ドヴァリン
@@ -258,7 +260,6 @@
 #define SPRITE_SHAIAN_AX 0x39A3                // シャイアンが投げる斧
 #define SPRITE_LVUP_INDICATOR 0x1C1D           // レベルアップのインジケータ
 #define SPRITE_GAMEOVER BOKHASH("over")        // 0x654B, "GAMEOVER"
-#define SPRITE_B0BC 0xB0BC                     // 重量スイッチ
 #define SPRITE_SPIKEBALL 0x24BA                // 棘鉄球
 #define SPRITE_PITFALL_A945 0xA945             // 落とし穴
 #define SPRITE_70EE 0x70EE                     // 落とし穴
@@ -267,7 +268,7 @@
 #define SPRITE_DF0E 0xDF0E                     // 暗黒樹の蔓
 #define SPRITE_1E15 0x1E15                     // 暗黒樹の芽
 #define SPRITE_0DDE 0x0DDE                     // ??
-#define SPRITE_84B4 0x84B4                     // 火炎放射?
+#define SPRITE_FIRE_BREATH 0x84B4              // ヘルハウンドのファイヤーブレス
 #define SPRITE_96C1 0x96C1                     // 火炎放射?
 #define SPRITE_96C2 0x96C2                     // 炎のエフェクト?
 #define SPRITE_0D44 0x0D44                     // 黒塗り

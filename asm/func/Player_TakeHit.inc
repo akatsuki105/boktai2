@@ -453,7 +453,7 @@ _0807E71A:
 	add r1, sp, #4
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080dc0b8
+	bl SpawnBlood
 _0807E73A:
 	mov r4, r8
 	cmp r4, #0

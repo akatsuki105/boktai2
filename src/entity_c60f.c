@@ -94,7 +94,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
       } else {
         FUN_08015c90(2, 0, 0, 64, &p->pos);
         p->unk_105 = 3;
-        PlaySound_082406e0(348);
+        PlaySound_082406e0(SONG_348);
       }
     } else if (p->unk_109 == 1) {
       if (p->unk_105 != 0) {
@@ -102,7 +102,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
       } else {
         FUN_08015c90(2, 2, 0, 64, &p->pos);
         p->unk_105 = 2;
-        PlaySound_082406e0(348);
+        PlaySound_082406e0(SONG_348);
       }
     }
     if (EntityC60FItem_HasFlag(p, 4)) {
@@ -345,7 +345,7 @@ NON_MATCH void FUN_081d785c(EntityC60FItem* p) {
       FUN_08015c90(1, 0, 0, 64, &pos);
     }
     if (Mod(p->timer, 7) == 0 && (s8)m->unk_a4 < 0) {
-      PlaySound_082406e0(348);
+      PlaySound_082406e0(SONG_348);
       m->unk_a4 = 1;
     }
     p->timer++;

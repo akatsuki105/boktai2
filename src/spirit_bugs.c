@@ -18,8 +18,8 @@ typedef struct {
   u16 unk_6;          // 0x06, 状態遷移用の第2カウンタ (点滅回数など), 生成時は u32_ARRAY_085aa700[kind], 根拠: FUN_0800b7a0
   Vec3 vel;           // 0x08, 毎フレーム ptcl.pos に加算される, 根拠: FUN_0800b068
   Vec3 target;        // 0x10, 向かう先, 生成時は ptcl.pos のコピー, 根拠: SpawnSpiritBugs / ArcTan2_8 の入力
-  AuxAnimState anim;  // 0x18, 根拠: AuxAnim_SetAnim に渡される
-  Particle ptcl;      // 0x28, 根拠: Particle_Setup / Particle_Remove に渡される
+  AuxAnimState anim;  // 0x18
+  Particle ptcl;      // 0x28
 } SpiritBug;
 static_assert(sizeof(SpiritBug) == 80);
 
@@ -31,7 +31,7 @@ typedef struct {
   u8 amount;          // 0x03, sSpiritBugHandler[kind](Player*, s32) の第2引数, 根拠: FUN_0800b068
   u8 soundDelay;      // 0x04, 0 になった瞬間に gSoundIDs_085aa724[kind] を鳴らす, 根拠: Entity0800a89c_Update
   u8 unk_5;           // 0x05, 読み手も書き手も未発見, padding?
-  u16 timer;          // 0x06, 生成時 40, 0 になるまでプレイヤーに回収されない, 根拠: SpawnSpiritBugs / FUN_0800b068
+  u16 timer;          // 0x06, 生成時 40, 0 になるまでプレイヤーに回収されない
   SpiritBug bugs[4];  // 0x08
 } SpiritBugSwarm;
 static_assert(sizeof(SpiritBugSwarm) == 328);
@@ -41,7 +41,7 @@ typedef struct {
   Entity e;                  // 0x0, ENTITY_UNK_8
   bool32 isSabata;           // 0x18
   u32 frameCounter;          // 0x1C, 下位ビットで虫の更新を間引く
-  ParticleGroup* group0;     // 0x20, PTCL_GROUP_0
+  ParticleGroup* group0;     // 0x20, PTCL_GROUP_0 (PTCL0_SOLARBUG, PTCL0_MOONBUG, PTCL0_DARKBUG)
   AuxAnimFile* anim;         // 0x24
   SpiritBugSwarm swarms[6];  // 0x28, 根拠: Entity0800a89c_Init / _Destroy が stride 0x148 で6回まわす
   Player* player;            // 0x7D8, 根拠: 0x0800a860

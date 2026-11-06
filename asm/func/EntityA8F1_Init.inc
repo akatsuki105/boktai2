@@ -374,7 +374,7 @@ _080A3882:
 	cmp r1, #2
 	ble _080A3882
 	adds r0, r7, #0
-	bl FUN_080a3568
+	bl EntityA8F1_InitPtcls
 	ldr r0, [sp, #0x14]
 	ldr r1, [sp]
 	movs r2, #0xa
@@ -461,7 +461,7 @@ _080A3964:
 	movs r0, #7
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080a2804
+	bl EntityA8F1_UpdateSubSprites
 	movs r3, #0xe3
 	lsls r3, r3, #1
 	adds r1, r7, r3
@@ -484,7 +484,7 @@ _080A3964:
 	strb r6, [r0]
 	ldr r1, _080A3A20 @ =FUN_080a31dc
 	adds r0, r7, #0
-	bl FUN_080a2a14
+	bl EntityA8F1_SetUpdateCallback
 	movs r4, #0
 	movs r0, #0x77
 	bl VM_SeekToNamedArg
@@ -545,15 +545,15 @@ _080A3A24:
 	ldr r1, _080A3A7C @ =FUN_080a2d18
 _080A3A70:
 	adds r0, r7, #0
-	bl FUN_080a2a14
+	bl EntityA8F1_SetUpdateCallback
 	b _080A3A88
 	.align 2, 0
 _080A3A78: .4byte 0x0000036A
 _080A3A7C: .4byte FUN_080a2d18
 _080A3A80:
-	ldr r1, _080A3A9C @ =FUN_080a2e20
+	ldr r1, _080A3A9C @ =EntityA8F1_UpdateIdle
 	adds r0, r7, #0
-	bl FUN_080a2a14
+	bl EntityA8F1_SetUpdateCallback
 _080A3A88:
 	movs r0, #0
 	add sp, #0x18
@@ -565,4 +565,4 @@ _080A3A88:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A3A9C: .4byte FUN_080a2e20
+_080A3A9C: .4byte EntityA8F1_UpdateIdle

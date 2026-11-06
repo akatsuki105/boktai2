@@ -171,7 +171,7 @@ _08218FBE:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r4, r0, #0
-	bl FUN_0808fc14
+	bl GetCurrentMapNameLine
 	adds r4, r4, r0
 	adds r0, r4, #0
 	bl GetStringByID

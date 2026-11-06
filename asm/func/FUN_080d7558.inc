@@ -338,7 +338,7 @@ _080D77DA:
 	add r1, sp, #4
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080dc0b8
+	bl SpawnBlood
 _080D77FA:
 	ldrh r6, [r7, #0x3e]
 	mov r0, r8

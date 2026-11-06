@@ -27,83 +27,83 @@ typedef struct {
 static_assert(sizeof(DuneyrrElem) == 108);
 
 typedef struct Duneyrr {
-  Boss base;                       // 0x000
-  u16 height;                      // 0x158, base.mover.pos.y はこれに 0x100 を足した値
-  s16 spriteOffsetY;               // 0x15A, sprite.pos.y を base.mover.pos.y からずらす量
-  u8 unk_15c[0x15E - 0x15C];       // 0x15C
-  u16 unk_15e;                     // 0x15E
-  u16 unk_160;                     // 0x160
-  u16 unk_162;                     // 0x162
-  u8 quadrant;                     // 0x164, 部屋を x=0x680, z=0x780 で4分割した区画
-  u8 playerQuadrant;               // 0x165, プレイヤーのいる区画
-  u8 hurtAngle;                    // 0x166, 攻撃してきた相手の方向
-  u8 unk_167;                      // 0x167
-  u16 elemsActive;                 // 0x168, elems のスプライトを出している間 1
-  u16 unk_16a;                     // 0x16A
-  u16 invincibleTimer;             // 0x16C, 0 でない間は hurtbox を隠す
-  u8 unk_16e;                      // 0x16E
-  u8 unk_16f;                      // 0x16F
-  u8 unk_170;                      // 0x170, 0..3, 部屋のどの壁沿いに進むか
-  u8 unk_171;                      // 0x171
-  u8 unk_172;                      // 0x172
-  u8 unk_173;                      // 0x173, 1 か 2 のとき FUN_08024b70 が次の下位状態を決める
-  u16 unk_174;                     // 0x174
-  u8 unk_176[0x178 - 0x176];       // 0x176
-  Vec3 shakeOrigin;                // 0x178, 揺れる前の base.mover.pos
-  s32 jumpSpeed;                   // 0x180, jumpFrom から jumpTo へ跳ぶ速さ
-  s32 jumpDuration;                // 0x184, jumpFrom から jumpTo へ跳ぶのにかかるフレーム数
-  Vec3 jumpFrom;                   // 0x188, FUN_08023530 を呼んだときの base.mover.pos
-  Vec3 jumpTo;                     // 0x190, jumpFrom から unk_167 の向きに進んだ先を壁沿いに寄せた位置
-  HitboxData hitbox;               // 0x198
-  HitboxData hurtbox;              // 0x1E8, ハンドラは Duneyrr_OnHurt
-  MainSpriteGfx gfx;               // 0x238, SPRITE_DUNEYRR
-  MainSprite sprite;               // 0x258
-  DuneyrrElem elems[5];            // 0x2B8
-  AuxShadow shadow;                // 0x4D4
-  s16 damage;                      // 0x540, 最後に受けたダメージ
-  s16 unk_542;                     // 0x542, '.j[0]=150'
-  s16 unk_544;                     // 0x544, ダメージを受けるたびに減り, 0 以下になると怯む
-  s16 unk_546;                     // 0x546, '.j[1]=50', ダメージを受けたとき unk_544 から余分に引く
-  s16 flashTimer;                  // 0x548, 0 になったらパレットを 0x223 に戻す
-  u8 shakeAmp;                     // 0x54A, sprite.pos をランダムに揺らす幅, 毎フレーム減る
-  u8 unk_54b;                      // 0x54B
-  u8 unk_54c;                      // 0x54C
-  u8 unk_54d;                      // 0x54D
-  u8 unk_54e;                      // 0x54E
-  u8 unk_54f;                      // 0x54F
-  u8 unk_550;                      // 0x550
-  u8 unk_551;                      // 0x551
-  u8 unk_552;                      // 0x552
-  u8 unk_553;                      // 0x553, 下位状態 10 に入るたびに増える, hurtboxPower の次の '.j[2]=3' と比べる
-  u8 unk_554;                      // 0x554, lowHP のときに増える, 8 回に1回は下位状態 8 を選ぶ
-  u8 unk_555[0x55A - 0x555];       // 0x555
-  u16 stateDuration;               // 0x55A, 状態を続ける最短フレーム数
-  u16 moveSpeed;                   // 0x55C
-  u32 arriveDistSq;                // 0x560, base.targetDistSq がこれ以下になったら止まる
-  u32 unk_564;                     // 0x564, 毎フレーム +1
-  u8 unk_568[4];                   // 0x568, Entity5DA5 の4つ分, 0 になったときに Entity5DA5_SetState する残りフレーム
-  Entity08059a1c* entity08059a1c;  // 0x56C
-  rgb555 pltt[16][16];             // 0x570, gObjPlttData の同じ16色を16回写す
-  Vec3 homePos;                    // 0x770
-  u16 hurtboxPower;                // 0x778, '.s[1]=10'
-  u16 hurtboxPower2;               // 0x77A, '.s[2]=0'
-  u16 unk_77c;                     // 0x77C, '.j[2]=3', unk_553 がこれ以上になったら下位状態 7 を選ぶ
-  s16 hitboxPower;                 // 0x77E, '.a[0]=35'
-  s16 hitboxKnockback;             // 0x780, '.a[1]=50'
-  s16 hitboxUnk44;                 // 0x782, '.a[2]=60'
-  s16 hitboxPower2;                // 0x784, '.a[3]=50'
-  s16 hitboxKnockback2;            // 0x786, '.a[4]=240'
-  s16 hitboxUnk44_2;               // 0x788, '.a[5]=60'
-  s16 dustPower;                   // 0x78A, '.a[6]=13', DustManager_Emit に渡す鱗粉の power
-  s16 unk_78c;                     // 0x78C, '.a[7]=35', Entity08059a1c_Create の power
-  s16 unk_78e;                     // 0x78E, '.e[0]=30'
-  s16 unk_790;                     // 0x790, '.e[1]=0'
-  s16 unk_792;                     // 0x792, '.e[2]=28'
-  u16 unk_794;                     // 0x794, '.e[3]=1'
-  u16 unk_796;                     // 0x796
-  u32 unk_798;                     // 0x798, '.e[4]=0'
-  s32 weaponExp;                   // 0x79C, '.K'
-  u8 unk_7a0[1956 - 0x7A0];        // 0x7A0
+  Boss base;                              // 0x000
+  u16 height;                             // 0x158, base.mover.pos.y はこれに 0x100 を足した値
+  s16 spriteOffsetY;                      // 0x15A, sprite.pos.y を base.mover.pos.y からずらす量
+  u8 unk_15c[0x15E - 0x15C];              // 0x15C
+  u16 unk_15e;                            // 0x15E
+  u16 unk_160;                            // 0x160
+  u16 unk_162;                            // 0x162
+  u8 quadrant;                            // 0x164, 部屋を x=0x680, z=0x780 で4分割した区画
+  u8 playerQuadrant;                      // 0x165, プレイヤーのいる区画
+  u8 hurtAngle;                           // 0x166, 攻撃してきた相手の方向
+  u8 unk_167;                             // 0x167
+  u16 elemsActive;                        // 0x168, elems のスプライトを出している間 1
+  u16 unk_16a;                            // 0x16A
+  u16 invincibleTimer;                    // 0x16C, 0 でない間は hurtbox を隠す
+  u8 unk_16e;                             // 0x16E
+  u8 unk_16f;                             // 0x16F
+  u8 unk_170;                             // 0x170, 0..3, 部屋のどの壁沿いに進むか
+  u8 unk_171;                             // 0x171
+  u8 unk_172;                             // 0x172
+  u8 unk_173;                             // 0x173, 1 か 2 のとき FUN_08024b70 が次の下位状態を決める
+  u16 unk_174;                            // 0x174
+  u8 unk_176[0x178 - 0x176];              // 0x176
+  Vec3 shakeOrigin;                       // 0x178, 揺れる前の base.mover.pos
+  s32 jumpSpeed;                          // 0x180, jumpFrom から jumpTo へ跳ぶ速さ
+  s32 jumpDuration;                       // 0x184, jumpFrom から jumpTo へ跳ぶのにかかるフレーム数
+  Vec3 jumpFrom;                          // 0x188, FUN_08023530 を呼んだときの base.mover.pos
+  Vec3 jumpTo;                            // 0x190, jumpFrom から unk_167 の向きに進んだ先を壁沿いに寄せた位置
+  HitboxData hitbox;                      // 0x198
+  HitboxData hurtbox;                     // 0x1E8, ハンドラは Duneyrr_OnHurt
+  MainSpriteGfx gfx;                      // 0x238, SPRITE_DUNEYRR
+  MainSprite sprite;                      // 0x258
+  DuneyrrElem elems[5];                   // 0x2B8
+  AuxShadow shadow;                       // 0x4D4
+  s16 damage;                             // 0x540, 最後に受けたダメージ
+  s16 unk_542;                            // 0x542, '.j[0]=150'
+  s16 unk_544;                            // 0x544, ダメージを受けるたびに減り, 0 以下になると怯む
+  s16 unk_546;                            // 0x546, '.j[1]=50', ダメージを受けたとき unk_544 から余分に引く
+  s16 flashTimer;                         // 0x548, 0 になったらパレットを 0x223 に戻す
+  u8 shakeAmp;                            // 0x54A, sprite.pos をランダムに揺らす幅, 毎フレーム減る
+  u8 unk_54b;                             // 0x54B
+  u8 unk_54c;                             // 0x54C
+  u8 unk_54d;                             // 0x54D
+  u8 unk_54e;                             // 0x54E
+  u8 unk_54f;                             // 0x54F
+  u8 unk_550;                             // 0x550
+  u8 unk_551;                             // 0x551
+  u8 unk_552;                             // 0x552
+  u8 unk_553;                             // 0x553, 下位状態 10 に入るたびに増える, hurtboxPower の次の '.j[2]=3' と比べる
+  u8 unk_554;                             // 0x554, lowHP のときに増える, 8 回に1回は下位状態 8 を選ぶ
+  u8 unk_555[0x55A - 0x555];              // 0x555
+  u16 stateDuration;                      // 0x55A, 状態を続ける最短フレーム数
+  u16 moveSpeed;                          // 0x55C
+  u32 arriveDistSq;                       // 0x560, base.targetDistSq がこれ以下になったら止まる
+  u32 unk_564;                            // 0x564, 毎フレーム +1
+  u8 unk_568[4];                          // 0x568, Entity5DA5 の4つ分, 0 になったときに Entity5DA5_SetState する残りフレーム
+  DuneyrrPowderBallManager* powderBalls;  // 0x56C, "鱗粉玉"
+  rgb555 pltt[16][16];                    // 0x570, gObjPlttData の同じ16色を16回写す
+  Vec3 homePos;                           // 0x770
+  u16 hurtboxPower;                       // 0x778, '.s[1]=10'
+  u16 hurtboxPower2;                      // 0x77A, '.s[2]=0'
+  u16 unk_77c;                            // 0x77C, '.j[2]=3', unk_553 がこれ以上になったら下位状態 7 を選ぶ
+  s16 hitboxPower;                        // 0x77E, '.a[0]=35'
+  s16 hitboxKnockback;                    // 0x780, '.a[1]=50'
+  s16 hitboxUnk44;                        // 0x782, '.a[2]=60'
+  s16 hitboxPower2;                       // 0x784, '.a[3]=50'
+  s16 hitboxKnockback2;                   // 0x786, '.a[4]=240'
+  s16 hitboxUnk44_2;                      // 0x788, '.a[5]=60'
+  s16 dustPower;                          // 0x78A, '.a[6]=13', DustManager_Emit に渡す鱗粉の power
+  s16 unk_78c;                            // 0x78C, '.a[7]=35', DuneyrrPowderBallManager_Create の power
+  s16 unk_78e;                            // 0x78E, '.e[0]=30'
+  s16 unk_790;                            // 0x790, '.e[1]=0'
+  s16 unk_792;                            // 0x792, '.e[2]=28'
+  u16 unk_794;                            // 0x794, '.e[3]=1'
+  u16 unk_796;                            // 0x796
+  u32 unk_798;                            // 0x798, '.e[4]=0'
+  s32 weaponExp;                          // 0x79C, '.K'
+  u8 unk_7a0[1956 - 0x7A0];               // 0x7A0
 } Duneyrr;
 static_assert(sizeof(Duneyrr) == 1956);
 
@@ -346,7 +346,7 @@ s32 Duneyrr_GetQuadrant(Vec3* pos) {
   }
 }
 
-// 残差は dir と表の先頭アドレスを作る順番 (265/266): 原典は表のアドレスを先に載せる, 極座標の部分は entity_08059a1c.c の Vec3_SetPolar と同じ形の static inline にすれば揃う
+// 残差は dir と表の先頭アドレスを作る順番 (265/266): 原典は表のアドレスを先に載せる, 極座標の部分は duneyrr_powder_ball.c の Vec3_SetPolar と同じ形の static inline にすれば揃う
 NON_MATCH void FUN_08023530(Duneyrr* p) {
 #ifdef NONMATCHING_C
   Mover* mover = &p->base.mover;
@@ -1369,7 +1369,7 @@ NON_MATCH void FUN_08025830(Boss* boss, s32 timer) {
 #endif
 }
 
-// 1 回目で打ち切り (397/366), 揺れと鱗粉の位置は entity_08059a1c.c の Vec3_Sum / Vec3_SetPolar と同じ形の static inline にすると命令数は揃う (366/366), 残りは p と boss のレジスタ
+// 1 回目で打ち切り (397/366), 揺れと鱗粉の位置は duneyrr_powder_ball.c の Vec3_Sum / Vec3_SetPolar と同じ形の static inline にすると命令数は揃う (366/366), 残りは p と boss のレジスタ
 NON_MATCH void FUN_08025948(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Duneyrr* p = (Duneyrr*)boss;
@@ -1602,8 +1602,8 @@ void FUN_080261b4(Boss* boss, s32 timer) {
     if (p->unk_16e == 0) {
       u32 angle = Random() & 0x7F;
 
-      if (p->entity08059a1c != NULL) {
-        Entity08059a1c_AddElem(p->entity08059a1c, angle, 16);
+      if (p->powderBalls != NULL) {
+        DuneyrrPowderBallManager_AddBall(p->powderBalls, angle, 16);
       }
       p->unk_16e = 24;
     } else {
@@ -2347,8 +2347,8 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
     p->unk_77c = 3;
   }
   p->unk_544 = p->unk_542;
-  p->entity08059a1c = Entity08059a1c_Create(p->unk_78c, 30, 15, p->dustPower);
-  if (p->entity08059a1c == NULL) {
+  p->powderBalls = DuneyrrPowderBallManager_Create(p->unk_78c, 30, 15, p->dustPower);
+  if (p->powderBalls == NULL) {
     return -1;
   }
   if (Entity08058ffc_Create(p->unk_792, p->unk_794, p->unk_798) == NULL) {

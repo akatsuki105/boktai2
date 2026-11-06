@@ -17,7 +17,7 @@ typedef struct Entity080c1abc {
   Entity e;                            // 0x000, ENTITY_UNK_8
   u32 unk_18;                          // 0x018, Init の第2引数
   AuxSprite sprite;                    // 0x01C
-  AuxSpriteGfx gfx;                    // 0x048, SPRITE_210E, パレット 46
+  AuxSpriteGfx gfx;                    // 0x048, SPRITE_EBALL_210E, パレット 46
   u16 velX;                            // 0x064, 毎フレーム sprite.pos.x に加算される
   u8 unk_66[2];                        // 0x066, まだ未解析
   u16 velZ;                            // 0x068, 毎フレーム sprite.pos.z に加算される
@@ -89,7 +89,7 @@ void Entity080c1abc_InitSprite(Entity080c1abc* p) {
   AuxSpriteGfx* gfx = &p->gfx;
   AuxSprite* spr;
 
-  Video_GetAuxSprite(gfx, SPRITE_210E);
+  Video_GetAuxSprite(gfx, SPRITE_EBALL_210E);
   spr = &p->sprite;
   AuxSprite_Add(spr, gfx, SPRFLAG_HIDDEN);
   spr->poseIdx = 0;

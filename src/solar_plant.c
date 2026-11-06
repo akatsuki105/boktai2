@@ -104,7 +104,7 @@ void FUN_080a4670(Entity1E98Elem* elem) {
 void FUN_080a46b0(Entity1E98Elem* elem) {
   elem->spr.priority = 2;
   if (elem->timer == 0) {
-    PlaySound_082406e0(SONG_426);
+    PlaySound_082406e0(SE_M_HEALING_GROW);
   }
 
   elem->timer++;
@@ -149,7 +149,7 @@ void FUN_080a472c(Entity1E98Elem* elem) {
 NON_MATCH void FUN_080a47d0(Entity1E98Elem* elem) {
 #ifdef NONMATCHING_C
   if (elem->timer == 0) {
-    PlaySound_082406e0(SONG_426);
+    PlaySound_082406e0(SE_M_HEALING_GROW);
   }
 
   elem->timer++;

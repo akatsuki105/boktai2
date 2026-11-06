@@ -110,8 +110,8 @@ const Vec3 gElevatorRange2 = {Q8(0.383), Q8(0.125), Q8(0.383)};  // 0x085AE0E0, 
 
 bool32 FUN_08086978(u32 mask);
 Elevator* Elevator_FindByID(s32 id);
-void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
-void FUN_081ee53c(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
+void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void Elevator_CarryPlayer(Elevator* e);
 void Elevator_CarryCoffin(Elevator* e);
 void Elevator_PlayArrivalSound(Elevator* e);
@@ -280,13 +280,13 @@ void Elevator_EmitMoveEffect(Elevator* e) {
         pos.x = e->mover.pos.x + off[0].x;
         pos.y = e->mover.pos.y + off[0].y;
         pos.z = e->mover.pos.z + off[0].z;
-        FUN_081ee584(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
+        Entity081ee7a8_SpawnDefaultNow(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
         e->unk_ca = 1;
       } else {
         pos.x = e->mover.pos.x + off[1].x;
         pos.y = e->mover.pos.y + off[1].y;
         pos.z = e->mover.pos.z + off[1].z;
-        FUN_081ee584(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
+        Entity081ee7a8_SpawnDefaultNow(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200);
         e->unk_ca = 0;
       }
       break;
@@ -296,13 +296,13 @@ void Elevator_EmitMoveEffect(Elevator* e) {
         pos.x = e->mover.pos.x + off[0].x;
         pos.y = e->mover.pos.y + off[0].y;
         pos.z = e->mover.pos.z + off[0].z;
-        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+        Entity081ee7a8_SpawnEx(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
         e->unk_ca = 1;
       } else {
         pos.x = e->mover.pos.x + off[1].x;
         pos.y = e->mover.pos.y + off[1].y;
         pos.z = e->mover.pos.z + off[1].z;
-        FUN_081ee53c(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+        Entity081ee7a8_SpawnEx(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
         e->unk_ca = 0;
       }
       break;

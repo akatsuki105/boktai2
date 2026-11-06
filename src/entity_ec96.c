@@ -38,7 +38,7 @@ NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
       if ((s16)(p->hp -= b->damage) < 0) {
         p->broken = TRUE;
         p->timer = 0;
-        PlaySound_082406e0(SONG_330);
+        PlaySound_082406e0(SE_330);
       } else {
         p->damageTimer = 10;
         Video_SetAuxSpritePltt(&p->gfx, 306);

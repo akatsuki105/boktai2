@@ -11,9 +11,10 @@ typedef u8 AuxAnimPlayFlags;
 #define ANIM_PLAY_REVERSE (1 << 2)  // bit2: 逆再生
 
 typedef struct {
-  u8 variantCount;  // 0x00
-  u8 cmdCount;      // 0x01
-  u16 cmdOffset;    // 0x02, この AuxAnim を持つ 　AuxAnimFile の先頭から、 最初のコマンドへのバイトオフセット
+  u8 unk_0 : 4;         // 0x00.0-3, ROM では常に 0
+  u8 variantCount : 4;  // 0x00.4-7, variant 数, 0 でも variant 0 のコマは並んでいる
+  u8 cmdCount;          // 0x01, このアニメーションのコマンド数, 総コマンド数は max(1, variantCount)*cmdCount
+  u16 cmdOffset;        // 0x02, この AuxAnim を持つ 　AuxAnimFile の先頭から、 最初のコマンドへのバイトオフセット
 } AuxAnim;
 
 // bit0-3: duration
@@ -46,8 +47,10 @@ typedef struct {
 } AuxAnimState;
 static_assert(sizeof(AuxAnimState) == 16);
 
-// アニメーションの再生を開始する, 同じ animIdx で呼んでも再開はしない (src/sprite_anim_aux.c)
+// アニメーションの再生を開始する, 同じ animIdx で呼んでも再開はしない
+// variant は、同じアニメ番号に用意された別バージョンのコマンド列で、 cmds + (variant * cmdCount)
 bool32 AuxAnim_SetAnim(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags);
+
 void AuxAnim_SetAnimSpeed(AuxAnimState* p, u16 speed);
 bool32 AuxAnim_RestartAnim(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags);
 

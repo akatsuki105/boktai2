@@ -49,7 +49,7 @@ typedef struct {
   SpriteShape shape;   // 0x01
   s16 x;               // 0x02
   s16 y;               // 0x04
-  u16 tileNum : 12;    // 0x06.0-11, GBAのタイルIDは 10bitなので、 bit10-11　が本当にタイル番号かは要検証
+  u16 tileNum : 12;    // 0x06.0-11, タイル番号
   u16 paletteNum : 4;  // 0x06.12-15
 } MainSubsprite;
 static_assert(sizeof(MainSubsprite) == 8);

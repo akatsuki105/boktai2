@@ -287,7 +287,7 @@ _080D7B00:
 	ldrh r2, [r2]
 	str r3, [sp]
 	movs r3, #0xa
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 _080D7B26:
 	movs r1, #0xd9
 	lsls r1, r1, #2

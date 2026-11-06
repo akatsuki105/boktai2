@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "preview_stage.h"
 #include "sound.h"
 #include "sprite.h"
@@ -537,7 +538,145 @@ void FUN_0820d21c(EnemyDexMenu* p) {
   ClearBGTilemapBuffer(0);
 }
 
-NAKED void FUN_0820d250(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d250.inc"); }
+// 選んだエントリの名前を出し, unk_27 のタブに応じて説明, 分類, 落とすアイテムなどの欄を埋める
+// 残差: 389 対 369 命令, 原典は欄ごとの SetScript/SetRect/SetMessage/Start の並びを末尾で共有して短くなっている, inline 化などは未試行
+NON_MATCH void FUN_0820d250(EnemyDexMenu* p) {
+#ifdef NONMATCHING_C
+  bool32 seen = FUN_0820d00c(p->entryIdx);
+
+  FUN_0820d21c(p);
+  TextPanel_SetScript(p->panels[0], p->scriptN);
+  TextPanel_SetRect(p->panels[0], 8, 3, 20, 2);
+  if (FUN_0820d00c(p->entryIdx)) {
+    TextPanel_SetMessage(p->panels[0], p->entryIdx);
+  } else {
+    TextPanel_SetMessage(p->panels[0], 57);
+  }
+  TextPanel_Start(p->panels[0]);
+  switch (p->unk_27) {
+    case 0: {
+      if (seen) {
+        s32 category = EnemyDex_GetCategoryOfEntry(p->entryIdx);
+
+        TextPanel_SetScript(p->panels[1], p->scriptT_upper);
+        TextPanel_SetRect(p->panels[1], 1, 16, 30, 4);
+        TextPanel_SetMessage(p->panels[1], category);
+        TextPanel_Start(p->panels[1]);
+      }
+      break;
+    }
+    case 1: {
+      if (seen) {
+        TextPanel_SetScript(p->panels[2], p->scriptA);
+        TextPanel_SetRect(p->panels[2], 1, 16, 30, 4);
+        TextPanel_SetMessage(p->panels[2], p->unk_1114[p->entryIdx]);
+        TextPanel_Start(p->panels[2]);
+      }
+      break;
+    }
+    case 2: {
+      if (seen) {
+        p->flags = (p->flags & ~EDEXFLAG_UNK_0) | EDEXFLAG_UNK_3;
+      } else {
+        p->flags &= ~EDEXFLAG_UNK_0;
+        Marquee_Clear();
+      }
+      break;
+    }
+    case 3: {
+      EnemyDexEntry* entry;
+
+      if (!seen) {
+        break;
+      }
+      entry = &p->entries[p->entryIdx];
+      TextPanel_SetScript(p->panels[6], p->scriptP);
+      TextPanel_SetRect(p->panels[6], 1, 16, 6, 2);
+      TextPanel_SetMessage(p->panels[6], 0);
+      TextPanel_Start(p->panels[6]);
+      if (entry->unk_1 == 0xFF) {
+        TextPanel_SetScript(p->panels[4], p->scriptS);
+        TextPanel_SetRect(p->panels[4], 6, 16, 20, 2);
+        TextPanel_SetMessage(p->panels[4], 0);
+        TextPanel_Start(p->panels[4]);
+      } else if (!FUN_0820d04c(p->entryIdx, 0)) {
+        TextPanel_SetScript(p->panels[4], p->scriptN);
+        TextPanel_SetRect(p->panels[4], 6, 16, 20, 2);
+        TextPanel_SetMessage(p->panels[4], 57);
+        TextPanel_Start(p->panels[4]);
+      } else if (entry->unk_1 != 0xFF) {
+        switch (entry->unk_0) {
+          case 0: {
+            TextPanel_SetScript(p->panels[4], p->scriptI);
+            TextPanel_SetRect(p->panels[4], 6, 16, 20, 2);
+            TextPanel_SetMessage(p->panels[4], entry->unk_1);
+            TextPanel_Start(p->panels[4]);
+            break;
+          }
+          case 1: {
+            TextPanel_SetScript(p->panels[4], p->scriptW);
+            TextPanel_SetRect(p->panels[4], 6, 16, 20, 2);
+            TextPanel_SetMessage(p->panels[4], entry->unk_1);
+            FUN_0804a40c(p->panels[4], 0, (char*)&p->unk_49);
+            TextPanel_Start(p->panels[4]);
+            break;
+          }
+          case 2: {
+            TextPanel_SetScript(p->panels[4], p->scriptA_upper);
+            TextPanel_SetRect(p->panels[4], 6, 16, 20, 2);
+            TextPanel_SetMessage(p->panels[4], entry->unk_1);
+            TextPanel_Start(p->panels[4]);
+            break;
+          }
+        }
+      }
+      TextPanel_SetScript(p->panels[7], p->scriptP);
+      TextPanel_SetRect(p->panels[7], 1, 18, 6, 2);
+      TextPanel_SetMessage(p->panels[7], 1);
+      TextPanel_Start(p->panels[7]);
+      if (entry->unk_3 == 0xFF) {
+        TextPanel_SetScript(p->panels[5], p->scriptS);
+        TextPanel_SetRect(p->panels[5], 6, 18, 30, 2);
+        TextPanel_SetMessage(p->panels[5], 0);
+        TextPanel_Start(p->panels[5]);
+      } else if (!FUN_0820d04c(p->entryIdx, 1)) {
+        TextPanel_SetScript(p->panels[5], p->scriptN);
+        TextPanel_SetRect(p->panels[5], 6, 18, 30, 2);
+        TextPanel_SetMessage(p->panels[5], 57);
+        TextPanel_Start(p->panels[5]);
+      } else if (entry->unk_3 != 0xFF) {
+        switch (entry->unk_2) {
+          case 0: {
+            TextPanel_SetScript(p->panels[5], p->scriptI);
+            TextPanel_SetRect(p->panels[5], 6, 18, 30, 2);
+            TextPanel_SetMessage(p->panels[5], entry->unk_3);
+            TextPanel_Start(p->panels[5]);
+            break;
+          }
+          case 1: {
+            TextPanel_SetScript(p->panels[5], p->scriptW);
+            TextPanel_SetRect(p->panels[5], 6, 18, 30, 2);
+            TextPanel_SetMessage(p->panels[5], entry->unk_3);
+            FUN_0804a40c(p->panels[5], 0, (char*)&p->unk_49);
+            TextPanel_Start(p->panels[5]);
+            break;
+          }
+          case 2: {
+            TextPanel_SetScript(p->panels[5], p->scriptA_upper);
+            TextPanel_SetRect(p->panels[5], 6, 18, 30, 2);
+            TextPanel_SetMessage(p->panels[5], entry->unk_3);
+            TextPanel_Start(p->panels[5]);
+            break;
+          }
+        }
+      }
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0820d250.inc");
+#endif
+}
 
 // メッセージ表示の開始と終了を flags の状態に応じて進める
 void FUN_0820d5f8(EnemyDexMenu* p) {
@@ -586,13 +725,119 @@ void FUN_0820d690(EnemyDexMenu* p) {
   p->unk_1104 = v;
 }
 
+void FUN_0820fe98(PreviewStage* p, u32 modelID);
+
 // 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
 static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
 
 // 同上, EnemyDexMenu+0x36C から3枚
 static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
 
-NAKED s32 FUN_0820d6e4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d6e4.inc"); }
+// 図鑑画面の UI スプライトを全部登録し, カーソルの2枚に専用のパレットを持たせる
+// 残差: 450 対 454 命令, 原典は各スプライトのアドレスと &p->gfx をスタックへ逃がして使い回す割当, 形はほぼ一致
+NON_MATCH s32 FUN_0820d6e4(EnemyDexMenu* p) {
+#ifdef NONMATCHING_C
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_GALLERY);
+  Vec3 pos;
+  rgb555* src;
+  s32 i;
+
+  p->gfx = *f;
+  OpenMainSpriteFile(&p->gfx, f);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  for (i = 0; i < 7; i++) {
+    s32 j;
+
+    for (j = 0; j < 2; j++) {
+      MainSprite_Add(&p->sprites_84c[i][j], &p->gfx, 0, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+    }
+    MainSprite_Add(&p->sprites_5ac[i], &p->gfx, 10, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  }
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  for (i = 0; i < 2; i++) {
+    MainSprite_Add(&p->sprites_d8c[i], &p->gfx, 0, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+    MainSprite_Add(&p->sprites_d8c[2 + i], &p->gfx, 0, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  }
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_d8c[7], &p->gfx, 34, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  MainSprite_Add(&p->sprites_d8c[8], &p->gfx, 35, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  for (i = 0; i < 2; i++) {
+    pos.x = 32 + i * 96;
+    pos.y = 0;
+    pos.z = 0;
+    pos.val = 0;
+    MainSprite_Add(&p->sprites_d8c[4 + i], &p->gfx, 13, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+    p->sprites_d8c[4 + i].flags |= SPRFLAG_HIDDEN;
+  }
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_d8c[6], &p->gfx, 14, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  p->sprites_d8c[6].flags |= SPRFLAG_HIDDEN;
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_48c[0], &p->gfx, 15, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_48c[1], &p->gfx, 16, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_6c[2], &p->gfx, 24, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  for (i = 0; i < 5; i++) {
+    MainSprite_Add(&p->sprites_18c[i], &p->gfx, sEnemyDexUIPoses1[i], SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  }
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  for (i = 0; i < 3; i++) {
+    MainSprite_Add(&p->sprites_36c[i], &p->gfx, sEnemyDexUIPoses2[i], SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  }
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_48c[2], &p->gfx, 12, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_6c[0], &p->gfx, 22, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  p->sprites_6c[0].pos.y = p->row * 16 + 8;
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  pos.val = 0;
+  MainSprite_Add(&p->sprites_6c[1], &p->gfx, 23, SPRFLAG_SCREEN_COORD, 0, 2, 60, &pos);
+  src = p->sprites_6c[0].pltt;
+  CpuCopy32(src, p->unk_10ec, 16 * sizeof(rgb555));
+  p->sprites_6c[0].pltt = (rgb555*)p->unk_10ec;
+  p->sprites_6c[1].pltt = (rgb555*)p->unk_10ec;
+  return (s32)src;
+#else
+  INCFUNC("asm/func/FUN_0820d6e4.inc");
+#endif
+}
 
 // 図鑑画面の BG とパレットを用意する
 s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) {
@@ -619,7 +864,160 @@ s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) {
   return 0;
 }
 
-NAKED void FUN_0820db9c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820db9c.inc"); }
+// 一覧 (unk_24 = 0) と詳細 (unk_24 = 1) の画面を組み直す
+// 残差: 500 対 529 命令, 初稿, 原典はページの switch を tab/arrow の表引きでなく分岐で持ち, スプライトの flags をポインタ歩きで触る
+NON_MATCH void FUN_0820db9c(EnemyDexMenu* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  if (p->unk_24 == 0) {
+    s32 start;
+    s32 count;
+    s32 tab;
+    s32 arrow;
+    s16 arrowX = 0;
+    s16 arrowY = 0;
+    u32 category;
+
+    p->sprites_6c[0].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites_6c[1].flags |= SPRFLAG_HIDDEN;
+    p->sprites_6c[2].flags |= SPRFLAG_HIDDEN;
+    p->sprites_48c[0].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites_48c[1].flags |= SPRFLAG_HIDDEN;
+    p->sprites_48c[2].flags |= SPRFLAG_HIDDEN;
+    FUN_0820d21c(p);
+    start = EnemyDex_GetPageStart(p->page);
+    count = EnemyDex_GetPageEntryCount(p->page);
+    for (i = 0; i < count; i++) {
+      TextPanel_SetScript(p->panels[i], p->scriptN);
+      TextPanel_SetRect(p->panels[i], 6, 5 + i * 2, 20, 2);
+      if (FUN_0820d00c(start + i)) {
+        TextPanel_SetMessage(p->panels[i], start + i);
+      } else {
+        TextPanel_SetMessage(p->panels[i], 57);
+      }
+      TextPanel_Start(p->panels[i]);
+    }
+    for (i = 0; i < 5; i++) {
+      p->sprites_18c[i].flags |= SPRFLAG_HIDDEN;
+    }
+    for (i = 0; i < 3; i++) {
+      p->sprites_36c[i].flags |= SPRFLAG_HIDDEN;
+    }
+    switch (p->page) {
+      case 0:
+      case 1:
+      case 2: {
+        arrow = p->page;
+        tab = 0;
+        arrowX = 112;
+        arrowY = 19;
+        break;
+      }
+      case 3: {
+        tab = 1;
+        arrow = -1;
+        break;
+      }
+      case 4:
+      case 5: {
+        arrow = p->page - 4;
+        tab = 2;
+        arrowX = 96;
+        arrowY = 19;
+        break;
+      }
+      case 6:
+      case 7: {
+        arrow = p->page - 6;
+        tab = 3;
+        arrowX = 128;
+        arrowY = 19;
+        break;
+      }
+      case 8: {
+        tab = 4;
+        arrow = -1;
+        break;
+      }
+      default: {
+        tab = 0;
+        arrow = 1;
+        break;
+      }
+    }
+    p->sprites_18c[tab].flags &= ~SPRFLAG_HIDDEN;
+    if (arrow >= 0) {
+      p->sprites_36c[arrow].flags &= ~SPRFLAG_HIDDEN;
+      p->sprites_36c[arrow].pos.x = arrowX;
+      p->sprites_36c[arrow].pos.y = arrowY;
+    }
+    for (i = 0; i < 7; i++) {
+      s32 j;
+
+      for (j = 0; j < 2; j++) {
+        p->sprites_84c[i][j].flags |= SPRFLAG_HIDDEN;
+      }
+      p->sprites_5ac[i].flags |= SPRFLAG_HIDDEN;
+    }
+    count = EnemyDex_GetPageEntryCount(p->page);
+    start = EnemyDex_GetPageStart(p->page);
+    for (i = 0; i < count; i++) {
+      MainSprite_SetNumber(&p->sprites_84c[i][0], &p->gfx, start + 1 + i, 2, 0, 24, i * 16 + 40, 8, 0);
+      p->sprites_5ac[i].flags &= ~SPRFLAG_HIDDEN;
+      p->sprites_5ac[i].pos.x = 40;
+      p->sprites_5ac[i].pos.y = i * 16 + 40;
+    }
+    for (i = 0; i < 2; i++) {
+      p->sprites_d8c[i].flags |= SPRFLAG_HIDDEN;
+      p->sprites_d8c[2 + i].flags |= SPRFLAG_HIDDEN;
+    }
+    category = EnemyDex_GetCategoryOfEntry(p->entryIdx);
+    MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(category), 2, 0, 152, 19, 8, 0);
+    MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, EnemyDex_GetCategoryEntryCount(category), 2, 0, 176, 19, 8, 0);
+    FUN_0820fea8(p->sub);
+    FUN_0820d138(p);
+  } else if (p->unk_24 == 1) {
+    p->sprites_6c[0].flags |= SPRFLAG_HIDDEN;
+    p->sprites_6c[1].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites_6c[2].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites_48c[0].flags |= SPRFLAG_HIDDEN;
+    p->sprites_48c[1].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites_48c[2].flags &= ~SPRFLAG_HIDDEN;
+    FUN_0820d21c(p);
+    for (i = 0; i < 5; i++) {
+      p->sprites_18c[i].flags |= SPRFLAG_HIDDEN;
+    }
+    for (i = 0; i < 3; i++) {
+      p->sprites_36c[i].flags |= SPRFLAG_HIDDEN;
+    }
+    FUN_0820d250(p);
+    for (i = 0; i < 7; i++) {
+      s32 j;
+
+      for (j = 0; j < 2; j++) {
+        p->sprites_84c[i][j].flags |= SPRFLAG_HIDDEN;
+      }
+      p->sprites_5ac[i].flags |= SPRFLAG_HIDDEN;
+    }
+    MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->entryIdx + 1, 2, 0, 40, 24, 8, 0);
+    for (i = 0; i < 2; i++) {
+      p->sprites_d8c[i].flags |= SPRFLAG_HIDDEN;
+      p->sprites_d8c[2 + i].flags |= SPRFLAG_HIDDEN;
+    }
+    FUN_0820fe98(p->sub, p->entryIdx);
+    if (FUN_0820d00c(p->entryIdx)) {
+      FUN_0820feb0(p->sub);
+    } else {
+      FUN_0820fea8(p->sub);
+    }
+    FUN_0820d188(p);
+    FUN_0820d138(p);
+  }
+#else
+  INCFUNC("asm/func/FUN_0820db9c.inc");
+#endif
+}
 
 void FUN_0820e080(EnemyDexMenu* p, u8 param_2) {
   p->unk_24 = param_2;
@@ -628,7 +1026,258 @@ void FUN_0820e080(EnemyDexMenu* p, u8 param_2) {
   FUN_0820db9c(p);
 }
 
-NAKED s32 EnemyDexMenu_Update(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_Update.inc"); }
+// 残差: 720 対 725 命令, p が r7 でなく r9 に入りページ切り替え時の各スプライト配列の基底アドレスの退避が足りない, 一覧の描き直し (FUN_0820d21c から分類の数字まで) を static inline に括ると基底アドレスが全部ブロック先頭に揃い 723 命令になるので, FUN_0820db9c と共有の inline だった可能性が高い
+NON_MATCH s32 EnemyDexMenu_Update(EnemyDexMenu* p) {
+#ifdef NONMATCHING_C
+  bool32 cursorMoved = FALSE;
+  bool32 pageChanged = FALSE;
+
+  switch (p->unk_24) {
+    case 0: {
+      if (gInput[0].pressed & L_BUTTON) {
+        p->page = (p->page == 0) ? 8 : p->page - 1;
+        PlaySound_082406e0(SE_MENU_PAGE);
+        pageChanged = TRUE;
+      } else if (gInput[0].pressed & R_BUTTON) {
+        if (p->page < 8) {
+          p->page++;
+        } else {
+          p->page = 0;
+        }
+        PlaySound_082406e0(SE_MENU_PAGE);
+        pageChanged = TRUE;
+      }
+      if (pageChanged) {
+        s32 i;
+        s32 start;
+        s32 count;
+        s32 tab;
+        s32 arrow;
+        s16 arrowX;
+        s16 arrowY;
+        u32 category;
+
+        p->entryIdx = EnemyDex_GetPageStart(p->page);
+        p->row = 0;
+        cursorMoved = TRUE;
+        FUN_0820d21c(p);
+        start = EnemyDex_GetPageStart(p->page);
+        count = EnemyDex_GetPageEntryCount(p->page);
+        for (i = 0; i < count; i++) {
+          TextPanel_SetScript(p->panels[i], p->scriptN);
+          TextPanel_SetRect(p->panels[i], 6, 5 + i * 2, 20, 2);
+          if (FUN_0820d00c(start + i)) {
+            TextPanel_SetMessage(p->panels[i], start + i);
+          } else {
+            TextPanel_SetMessage(p->panels[i], 57);
+          }
+          TextPanel_Start(p->panels[i]);
+        }
+        EnemyDexMenu_HideCursorSprites(p);
+        arrowX = 0;
+        arrowY = 0;
+        switch (p->page) {
+          case 0: {
+            tab = 0;
+            arrow = 0;
+            arrowX = 112;
+            arrowY = 19;
+            break;
+          }
+          case 1: {
+            tab = 0;
+            arrow = 1;
+            arrowX = 112;
+            arrowY = 19;
+            break;
+          }
+          case 2: {
+            tab = 0;
+            arrow = 2;
+            arrowX = 112;
+            arrowY = 19;
+            break;
+          }
+          case 3: {
+            tab = 1;
+            arrow = -1;
+            break;
+          }
+          case 4: {
+            tab = 2;
+            arrow = 0;
+            arrowX = 96;
+            arrowY = 19;
+            break;
+          }
+          case 5: {
+            tab = 2;
+            arrow = 1;
+            arrowX = 96;
+            arrowY = 19;
+            break;
+          }
+          case 6: {
+            tab = 3;
+            arrow = 0;
+            arrowX = 128;
+            arrowY = 19;
+            break;
+          }
+          case 7: {
+            tab = 3;
+            arrow = 1;
+            arrowX = 128;
+            arrowY = 19;
+            break;
+          }
+          case 8: {
+            tab = 4;
+            arrow = -1;
+            break;
+          }
+          default: {
+            tab = 0;
+            arrow = 1;
+            break;
+          }
+        }
+        p->sprites_18c[tab].flags &= ~SPRFLAG_HIDDEN;
+        if (arrow >= 0) {
+          p->sprites_36c[arrow].flags &= ~SPRFLAG_HIDDEN;
+          p->sprites_36c[arrow].pos.x = arrowX;
+          p->sprites_36c[arrow].pos.y = arrowY;
+        }
+        EnemyDexMenu_HidePageSprites(p);
+        count = EnemyDex_GetPageEntryCount(p->page);
+        start = EnemyDex_GetPageStart(p->page);
+        for (i = 0; i < count; i++) {
+          MainSprite_SetNumber(&p->sprites_84c[i][0], &p->gfx, start + 1 + i, 2, 0, 24, i * 16 + 40, 8, 0);
+          p->sprites_5ac[i].flags &= ~SPRFLAG_HIDDEN;
+          p->sprites_5ac[i].pos.x = 40;
+          p->sprites_5ac[i].pos.y = i * 16 + 40;
+        }
+        for (i = 0; i < 2; i++) {
+          p->sprites_d8c[i].flags |= SPRFLAG_HIDDEN;
+          p->sprites_d8c[2 + i].flags |= SPRFLAG_HIDDEN;
+        }
+        category = EnemyDex_GetCategoryOfEntry(p->entryIdx);
+        MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(category), 2, 0, 152, 19, 8, 0);
+        MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, EnemyDex_GetCategoryEntryCount(category), 2, 0, 176, 19, 8, 0);
+        FUN_0820d188(p);
+      }
+
+      if ((gInput[0].pressed & DPAD_UP) && p->entryIdx != 0) {
+        if (p->row != 0) {
+          p->entryIdx--;
+          p->row--;
+        } else {
+          p->row = EnemyDex_GetPageEntryCount(p->page) - 1;
+          p->entryIdx = p->row + EnemyDex_GetPageStart(p->page);
+        }
+        PlaySound_082406e0(SE_CURSOR_MOVE);
+        cursorMoved = TRUE;
+      } else if ((gInput[0].pressed & DPAD_DOWN) && p->entryIdx < 56) {
+        if (p->row < EnemyDex_GetPageEntryCount(p->page) - 1) {
+          p->entryIdx++;
+          p->row++;
+        } else {
+          p->entryIdx = EnemyDex_GetPageStart(p->page);
+          p->row = 0;
+        }
+        PlaySound_082406e0(SE_CURSOR_MOVE);
+        cursorMoved = TRUE;
+      }
+      if (cursorMoved) {
+        p->sprites_6c[0].pos.y = p->row * 16 + 8;
+      }
+
+      if (gInput[0].pressed & A_BUTTON) {
+        FUN_0820e080(p, 1);
+        FUN_0820d188(p);
+        PlaySound_082406e0(SE_SELECT);
+      }
+      if (gInput[0].pressed & B_BUTTON) {
+        if (p->unk_1258 != 0) {
+          VM_ExecByID(p->unk_1258, NULL);
+        }
+        PlaySound_082406e0(SE_CLOSE_MENU);
+        p->unk_24 = 2;
+      }
+      break;
+    }
+    case 1: {
+      if (gInput[0].pressed & DPAD_UP) {
+        p->unk_27 = (p->unk_27 == 0) ? 3 : p->unk_27 - 1;
+        PlaySound_082406e0(SE_CURSOR_MOVE);
+        cursorMoved = TRUE;
+      } else if (gInput[0].pressed & DPAD_DOWN) {
+        if (p->unk_27 < 3) {
+          p->unk_27++;
+        } else {
+          p->unk_27 = 0;
+        }
+        PlaySound_082406e0(SE_CURSOR_MOVE);
+        cursorMoved = TRUE;
+      }
+      if (cursorMoved) {
+        p->sprites_6c[1].pos.y = p->unk_27 << 4;
+        FUN_0820d250(p);
+      }
+
+      if (gInput[0].pressed & R_BUTTON) {
+        p->entryIdx = (p->entryIdx < 56) ? p->entryIdx + 1 : 0;
+        PlaySound_082406e0(SE_MENU_PAGE);
+        pageChanged = TRUE;
+      } else if (gInput[0].pressed & L_BUTTON) {
+        if (p->entryIdx != 0) {
+          p->entryIdx--;
+        } else {
+          p->entryIdx = 56;
+        }
+        PlaySound_082406e0(SE_MENU_PAGE);
+        pageChanged = TRUE;
+      }
+      if (pageChanged) {
+        FUN_0820d250(p);
+        EnemyDexMenu_HidePageSprites(p);
+        MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->entryIdx + 1, 2, 0, 40, 24, 8, 0);
+        if (FUN_0820d00c(p->entryIdx)) {
+          FUN_0820feb0(p->sub);
+          FUN_0820fe98(p->sub, p->entryIdx);
+        } else {
+          FUN_0820fea8(p->sub);
+        }
+        FUN_0820d188(p);
+      }
+
+      if (!p->unk_114d[0]) {
+        if (gInput[0].pressed & B_BUTTON) {
+          p->flags |= EDEXFLAG_UNK_0;
+          EnemyDexMenu_SetPageFromEntry(p);
+          p->sprites_6c[0].pos.y = p->row * 16 + 8;
+          p->unk_114d[0] = 1;
+        }
+      } else {
+        FUN_0820e080(p, 0);
+        FUN_0820d188(p);
+        PlaySound_082406e0(SE_CANCEL);
+      }
+      break;
+    }
+    case 2: {
+      return 0;
+    }
+  }
+  FUN_0820d188(p);
+  FUN_0820d690(p);
+  FUN_0820d5f8(p);
+  p->unk_20++;
+  return 0;
+#else
+  INCFUNC("asm/func/EnemyDexMenu_Update.inc");
+#endif
+}
 
 void FUN_0820e75c(MainSprite* spr) {
   if (spr->active) {

@@ -689,7 +689,7 @@ _080FB98A:
 	subs r0, #0x32
 	str r0, [sp, #0x10]
 	add r0, sp, #0x14
-	bl FUN_081f3110
+	bl Entity081f3324_Spawn
 	movs r0, #0xd6
 	bl PlaySound_082406e0
 _080FB9E4:

@@ -4716,7 +4716,7 @@ FUN_081300f4: @ 0x081300F4
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	add r1, sp, #8
-	bl Enemy_RegisterOwnHitbox
+	bl Enemy_RegisterHurtboxWithFlags
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	movs r2, #0x40

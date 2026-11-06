@@ -445,6 +445,6 @@ Entity08051b70* Entity08051b70_Create(u32 id, u32 unused) {
 
 NAKED s32 FUN_08051bb0(void (*onFinish)(void), s8* counts) { INCFUNC("asm/func/FUN_08051bb0.inc"); }
 
-NAKED s32 FUN_08051c50(void (*onFinish)(void), s8* counts0, s8* counts1) { INCFUNC("asm/func/FUN_08051c50.inc"); }
+NAKED s32 FUN_08051c50(void (*onFinish)(void), s8* counts0, s8* counts1, s8* out) { INCFUNC("asm/func/FUN_08051c50.inc"); }
 
 NAKED s32 FUN_08051d18(Vec3* pos, s32 idx, s32 count) { INCFUNC("asm/func/FUN_08051d18.inc"); }

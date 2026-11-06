@@ -31,7 +31,7 @@ export const Parse = (data: Uint8Array): File => {
     animationCount: raw.animationCount,
     cmdCount: raw.cmdCount,
     animations: raw.animations.map((a: number) => ({
-      variantCount: a & 0xFF,
+      variantCount: (a & 0xFF) >> 4,
       cmdCount: (a >> 8) & 0xFF,
       cmdIdx: (((a >> 16) & 0xFFFF) - offsetTo1stCmd) >> 1,
     })),
@@ -43,10 +43,11 @@ export const Stringify = (file: File, indent: string = "  "): string => {
   const lines: string[] = [];
   lines.push(indent + ".set ANIM_COUNT, " + file.animationCount);
   lines.push(indent + `.2byte ANIM_COUNT, ${file.cmdCount} @ animation_count, cmd_count`);
-  lines.push(indent + `@ Animations, variant_count, cmd_idx, cmd_count`);
+  lines.push(indent + `@ Animations, cmd_idx, cmd_count, variant_count`);
   const startIdx: Set<number> = new Set();
-  for (const anim of file.animations) {
-    lines.push(indent + indent + `animation ${anim.variantCount}, ${anim.cmdIdx}, ${anim.cmdCount}`);
+  for (let i = 0; i < file.animations.length; i++) {
+    const anim = file.animations[i];
+    lines.push(indent + indent + `animation ${anim.cmdIdx}, ${anim.cmdCount}, ${anim.variantCount} @ anim_idx: ${i}`);
     startIdx.add(anim.cmdIdx);
   }
   lines.push(indent + `@ animcmd spriteidx, duration`);

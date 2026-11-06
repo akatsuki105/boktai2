@@ -17,7 +17,7 @@ _080AC9AE:
 	adds r0, r1, #0
 	adds r0, #0x40
 	adds r0, r7, r0
-	bl FUN_080ac738
+	bl EntityB6FFElem_Update
 _080AC9C8:
 	adds r6, #1
 	cmp r6, #0x17
@@ -50,7 +50,7 @@ _080AC9E0:
 	ldrh r2, [r5]
 	adds r1, r3, #0
 	str r3, [sp]
-	bl FUN_080ac874
+	bl EntityB6FFElem_Spawn
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]

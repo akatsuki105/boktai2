@@ -48,7 +48,7 @@ _08147080:
 	lsls r1, r1, #1
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_0814856c
+	bl Mimic_TryRouteToPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081470B2
@@ -60,7 +60,7 @@ _0814709E:
 	lsls r2, r2, #1
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl FUN_08148638
+	bl Mimic_TryRouteHome
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081470B2

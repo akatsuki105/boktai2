@@ -1,6 +1,5 @@
 #include "emote.h"
 
-#include "constants/songs.h"
 #include "enemy.h"
 #include "entity.h"
 #include "file.h"
@@ -94,7 +93,7 @@ void Emote_PlayEnemySound(Emote* p) {
     switch (enemy->kind) {
       case ENEK_BOKU:
       case ENEK_28: {
-        se = SONG_238;
+        se = CRY_BOKU_STUN_RECOVER;
         break;
       }
       case ENEK_MUMMY: {

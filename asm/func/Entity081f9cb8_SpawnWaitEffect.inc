@@ -80,7 +80,7 @@ _081F97DC:
 	mov r0, ip
 	movs r2, #0x1e
 	movs r3, #3
-	bl FUN_081ee07c
+	bl Entity081ee2a0_SpawnDefault
 	add sp, #8
 	pop {r4, r5, r6, r7}
 	pop {r0}

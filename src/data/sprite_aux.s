@@ -293,9 +293,9 @@ Entries:
 Tiles:
   .incbin "data/sprite_aux/emblem_block_0.4bpp"       @ 0x08A23510, SpriteID: 0xB306, PlttID: 2, 紋章ブロック(炎氷地風)
   .incbin "data/sprite_aux/komainu.4bpp"              @ 0x08A24910, SpriteID: 0xF680, PlttID: 6, 大聖堂の狛犬
-  .incbin "data/sprite_aux/A5B3.4bpp"                 @ 0x08A25190, SpriteID: 0xA5B3, PlttID: 0, 大聖堂の水晶?
-  .incbin "data/sprite_aux/ghoul_liquid.4bpp"         @ 0x08A25210, SpriteID: 0xA5B4, PlttID: 1, グール系が出すホルルン液
-  .incbin "data/sprite_aux/speaker.4bpp"                 @ 0x08A25A10, SpriteID: 0x5AFD, PlttID: 7, シェードマンがクラッシュノイズのときに出すスピーカー
+  .incbin "data/sprite_aux/boku_acid_0.4bpp"          @ 0x08A25190, SpriteID: 0xA5B3, PlttID: 1, グール系が出すホルルン液(着弾前)
+  .incbin "data/sprite_aux/boku_acid_1.4bpp"          @ 0x08A25210, SpriteID: 0xA5B4, PlttID: 1, グール系が出すホルルン液(着弾後)
+  .incbin "data/sprite_aux/speaker.4bpp"              @ 0x08A25A10, SpriteID: 0x5AFD, PlttID: 7, シェードマンがクラッシュノイズのときに出すスピーカー
   .incbin "data/sprite_aux/5AFE.4bpp"                 @ 0x08A25E90, SpriteID: 0x5AFE, PlttID: 7, 輪っかのエフェクト(シェードマン関連?)
   .incbin "data/sprite_aux/mummy_0.4bpp"              @ 0x08A26B10, SpriteID: 0x48DE, PlttID: 23, マミー
   .incbin "data/sprite_aux/mummy_1.4bpp"              @ 0x08A29710, SpriteID: 0xD4EE, PlttID: 23, マミー
@@ -377,14 +377,14 @@ Tiles:
   .incbin "data/sprite_aux/CDAB.4bpp"                 @ 0x08A6A5B0, SpriteID: 0xCDAB, PlttID: 187, チェンジ・マウスで渡れる木片
   .incbin "data/sprite_aux/dungeon_door.4bpp"         @ 0x08A6A8B0, SpriteID: 0xD962, PlttID: 188, タレット封印の扉(地下水路の入り口), 螺旋の塔の入り口, etc
   .incbin "data/sprite_aux/B044.4bpp"                 @ 0x08A6C8B0, SpriteID: 0xB044, PlttID: 42, 絨毯
-  .incbin "data/sprite_aux/3668.4bpp"                 @ 0x08A6CBB0, SpriteID: 0x3668, PlttID: 195, なんかのエフェクト群
+  .incbin "data/sprite_aux/3668.4bpp"                 @ 0x08A6CBB0, SpriteID: 0x3668, PlttID: 195, ダーインのエネルギー弾
   .incbin "data/sprite_aux/ojama_bat.4bpp"            @ 0x08A6D7D0, SpriteID: 0x18A8, PlttID: 207, オジャマバット
   .incbin "data/sprite_aux/ojama_bat_counter.4bpp"    @ 0x08A6D9D0, SpriteID: 0x18A9, PlttID: 207, オジャマバットのカウンター?
   .incbin "data/sprite_aux/contact_switch.4bpp"       @ 0x08A6DC90, SpriteID: 0x2769, PlttID: 208, 接触スイッチ(+電球?)
   .incbin "data/sprite_aux/5B78.4bpp"                 @ 0x08A6DF30, SpriteID: 0x5B78, PlttID: 213, 天窓の光
   .incbin "data/sprite_aux/16F5.4bpp"                 @ 0x08A6E3B0, SpriteID: 0x16F5, PlttID: 97, 紋章ブロック
   .incbin "data/sprite_aux/F422.4bpp"                 @ 0x08A6F7B0, SpriteID: 0xF422, PlttID: 216, 砂のエフェクト?
-  .incbin "data/sprite_aux/848F.4bpp"                 @ 0x08A72470, SpriteID: 0x848F, PlttID: 216, なんかのトゲ飛ばし？
+  .incbin "data/sprite_aux/848F.4bpp"                 @ 0x08A72470, SpriteID: 0x848F, PlttID: 216, ドゥラスロール(第1形態)の飛ばす棘
   .incbin "data/sprite_aux/8490.4bpp"                 @ 0x08A72AF0, SpriteID: 0x8490, PlttID: 216, 砂に潜るエフェクト?
   .incbin "data/sprite_aux/D638.4bpp"                 @ 0x08A743B0, SpriteID: 0xD638, PlttID: 220, 暗黒の根
   .incbin "data/sprite_aux/EF69.4bpp"                 @ 0x08A7D5F0, SpriteID: 0xEF69, PlttID: 220, 暗黒の根

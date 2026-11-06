@@ -21,6 +21,9 @@ void FUN_0811fab8(Enemy* p);
 void FUN_0811fbd0(Enemy* p);
 void FUN_0812019c(Enemy* p);
 
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_08251ff4[] = "../system/eneinline.h";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_golemcom_c_0825200c[] = "golemcom.c";
+
 const u16 u16_ARRAY_085ad5f8[8] = {300, 306, 0, 360, 300, 306, 0, 360};  // 0x085AD5F8
 const u16 u16_ARRAY_085ad608[2] = {0, 4};                                // 0x085AD608
 

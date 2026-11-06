@@ -118,7 +118,7 @@ _080BD10C:
 	bl FUN_08094d1c
 	ldr r1, [r4]
 	mov r0, sp
-	bl FUN_08094d48
+	bl MainMenu_SetWeaponMarquee
 _080BD162:
 	adds r0, r6, #0
 	mov r1, sp

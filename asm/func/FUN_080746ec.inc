@@ -120,9 +120,9 @@ _080747CA:
 	movs r2, #0x40
 	bl Player_PlayAnim
 	adds r0, r6, #0
-	bl FUN_08072620
+	bl Player_ReturnToLockedIdle
 	adds r0, r6, #0
-	bl FUN_080726b4
+	bl Player_NotifyLockedDone
 	b _0807497E
 	.align 2, 0
 _080747F0: .4byte 0x000002E6

@@ -7844,7 +7844,7 @@ _08174254:
 _08174256:
 	cmp r0, #0
 	beq _08174266
-	bl FUN_081f746c
+	bl Entity081f73ec_RequestDive
 	movs r0, #0xf7
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
@@ -9020,7 +9020,7 @@ _08174B1A:
 	ands r0, r1
 	strh r0, [r4]
 _08174BCC:
-	bl FUN_081f7444
+	bl Entity081f73ec_IsIdle
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08174C0C
@@ -9244,7 +9244,7 @@ _08174D42:
 	adds r4, r7, r5
 	ldrh r4, [r4]
 	str r4, [sp, #0x20]
-	bl FUN_081f7248
+	bl Entity081f73ec_Spawn
 	movs r0, #0x41
 	rsbs r0, r0, #0
 	ldr r2, [sp, #0x34]
@@ -9277,7 +9277,7 @@ _08174DCE:
 	bgt _08174DE0
 	b _081750D0
 _08174DE0:
-	bl FUN_081f7444
+	bl Entity081f73ec_IsIdle
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08174DEC
@@ -10565,7 +10565,7 @@ _08175800:
 	ldrh r3, [r1]
 	movs r1, #0
 	str r1, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	b _08175848
 	.align 2, 0
 _0817581C: .4byte 0x0000046D
@@ -10584,7 +10584,7 @@ _08175830:
 	ldrh r3, [r1]
 	str r5, [sp]
 	adds r1, r6, #0
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 _08175848:
 	movs r6, #0x8b
 	lsls r6, r6, #1
@@ -12367,7 +12367,7 @@ _08176548:
 	movs r1, #4
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 	b _081765DC
 	.align 2, 0
 _08176594: .4byte 0x0000F422
@@ -12403,7 +12403,7 @@ _0817659C:
 	movs r1, #4
 	movs r2, #8
 	movs r3, #4
-	bl FUN_081ee53c
+	bl Entity081ee7a8_SpawnEx
 _081765DC:
 	adds r4, #1
 	cmp r4, r6
@@ -12486,7 +12486,7 @@ _0817661E:
 	strh r0, [r3, #2]
 	mov r0, sp
 	movs r1, #0xc
-	bl FUN_081f7740
+	bl Entity081f7974_Spawn
 	ldr r0, [r5, #8]
 	ldr r1, [r5, #0xc]
 	str r0, [r4]
@@ -15900,7 +15900,7 @@ FUN_08177fd4: @ 0x08177FD4
 	str r4, [sp]
 	adds r0, r4, #0
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r5
 	movs r2, #0x52
@@ -19421,7 +19421,7 @@ _08179AAE:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldr r6, [r0]
-	bl FUN_081f7444
+	bl Entity081f73ec_IsIdle
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08179AC2
@@ -19509,7 +19509,7 @@ _08179AEE:
 	adds r4, r5, r7
 	ldrh r4, [r4]
 	str r4, [sp, #0x20]
-	bl FUN_081f7248
+	bl Entity081f73ec_Spawn
 	b _08179BE8
 	.align 2, 0
 _08179B70: .4byte 0x0000021D
@@ -19566,7 +19566,7 @@ _08179B84:
 	adds r4, r5, r7
 	ldrh r4, [r4]
 	str r4, [sp, #0x20]
-	bl FUN_081f7248
+	bl Entity081f73ec_Spawn
 _08179BE8:
 	movs r0, #1
 	b _08179BF2

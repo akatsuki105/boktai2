@@ -316,7 +316,7 @@ _080F70B2:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r5, sp, #0xc
 	str r4, [sp, #8]
 	add r0, sp, #8
@@ -1669,7 +1669,7 @@ _080F7B92:
 	movs r5, #1
 	lsrs r4, r4, #1
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r4, sp, #0x14
 	movs r0, #0
 	str r0, [sp, #8]

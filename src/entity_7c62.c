@@ -38,7 +38,7 @@ typedef struct Entity7C62 {
 static_assert(sizeof(Entity7C62) == 276);
 
 void FUN_080a6e88(bool32 stopSound);
-void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
+void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
 void Entity7C62_UpdateActivated(Entity7C62* p);
 void Entity7C62_UpdateDone(Entity7C62* p);
 
@@ -91,7 +91,7 @@ void Entity7C62_UpdateIdle(Entity7C62* p) {
     if (TEST_FLAGS(gPlayerStates[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && p->readyTimer > 9) {
       p->highlight = 8;
       FUN_080a6e88(TRUE);
-      FUN_0807ba94(gPlayerPtr[0], &p->pos, 0, 4);
+      Player_MoveTo(gPlayerPtr[0], &p->pos, 0, 4);
       Entity7C62_SetUpdateCallback(p, Entity7C62_UpdateActivated);
     }
   } else {

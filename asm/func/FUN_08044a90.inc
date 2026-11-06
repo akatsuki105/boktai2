@@ -319,7 +319,7 @@ _08044B64:
 	bl FUN_0801e00c
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_0801c0d8
+	bl PlayForgeStrikeSE
 	ldr r0, _08044D68 @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #2

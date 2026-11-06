@@ -12,8 +12,8 @@
 #include "sound.h"
 #include "sprite.h"
 
-#define TYPE_JUSTICE 0  // 正義のカード
-#define TYPE_TOWER 1    // 塔のカード
+#define TYPE_JUSTICE 0  // 正義のカード (演出: 鉄球, 対象: 敵のみ)
+#define TYPE_TOWER 1    // 塔のカード (演出: パーティクル, 対象: 自分も含む全て)
 
 // 演出で飛ばす粒子1個ぶんの枠, 8個を使い回す
 typedef struct Entity080aace8Particle {
@@ -37,15 +37,15 @@ typedef struct Entity080aace8 {
   Vec3 screen;                                     // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   u8 unk_8c[8];                                    // 0x08C
   HitboxData hitbox;                               // 0x094
-  AuxSprite auxSprites[2];                         // 0x0E4, 根拠: _Destroy の stride 0x2C × 2
+  AuxSprite auxSprites[2];                         // 0x0E4
   AuxSpriteGfx gfx;                                // 0x13C, SPRITE_SPIKEBALL
   u16 unk_158;                                     // 0x158, 次に使う auxSprites の添字 (0 と 1 を交互)
   u8 unk_15a[2];                                   // 0x15A, auxSprites[i] の演出段階 (0: 停止, 1: 落下, 2: 跳ね)
   u16 unk_15c[2];                                  // 0x15C, auxSprites[i] の着地する y
   u16 unk_160[2];                                  // 0x160, 段階ごとの経過フレーム数
-  Entity080aace8Particle ptcls[8];                 // 0x164, 根拠: _Destroy の stride 0x3C × 8
+  Entity080aace8Particle ptcls[8];                 // 0x164
   u8 unk_344[4];                                   // 0x344
-  u16 kind;                                        // 0x348, 0: 正義のカード(演出: 鉄球, 対象: 敵のみ), 1: 塔のカード(演出: パーティクル, 対象: 自分も含む全て)
+  u16 kind;                                        // 0x348, 0: TYPE_JUSTICE, 1: TYPE_TOWER
   u16 unk_34a;                                     // 0x34A, 消えるまでの経過フレーム数
   void (*updateCallback)(struct Entity080aace8*);  // 0x34C
 } Entity080aace8;
@@ -213,7 +213,7 @@ NON_MATCH void FUN_080aa4e8(Entity080aace8* p) {
             p->unk_160[i] = 0;
           }
         } else {
-          PlaySound_082406e0(SE_511);
+          PlaySound_082406e0(SE_SPIKEBALL);
           spr->pos.y = p->unk_15c[i];
           p->unk_15a[i] = 2;
           p->unk_160[i] = 0;

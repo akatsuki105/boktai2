@@ -207,7 +207,7 @@ _0813E816:
 	ldrh r3, [r3]
 	movs r4, #0
 	str r4, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r6, sp, #0xc
 	str r4, [sp, #8]
 	add r0, sp, #8
@@ -4098,7 +4098,7 @@ FUN_08140580: @ 0x08140580
 	mov r0, r8
 	str r0, [sp]
 	add r1, sp, #8
-	bl FUN_080e3834
+	bl Enemy_RegisterHurtbox
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	orrs r0, r5
@@ -5274,7 +5274,7 @@ _08140E80:
 	add r1, sp, #4
 	movs r2, #0x28
 	movs r3, #2
-	bl FUN_081f9f4c
+	bl Entity081fa164_SpawnEx
 _08140E94:
 	add sp, #0xc
 	pop {r3}

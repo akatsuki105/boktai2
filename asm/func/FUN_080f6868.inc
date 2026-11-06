@@ -204,7 +204,7 @@ _080F69DA:
 	ldrh r3, [r3]
 	movs r6, #1
 	str r6, [sp]
-	bl FUN_0809c344
+	bl HUD_ShowEnemyGauge
 	add r5, sp, #0xc
 	movs r0, #0
 	str r0, [sp, #8]

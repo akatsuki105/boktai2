@@ -59,9 +59,9 @@ void GetRegisteredWeaponData(s32 idx, WeaponData* data);
 void SetWeaponData(slot32_t n, const WeaponData* data);
 void GetWeaponData(slot32_t n, WeaponData* data);
 bool32 IsWeaponRegistered(slot32_t n);
-s32 FUN_0807a6cc(WeaponData* w);
+s32 CalcAttackWithEquippedArmor(WeaponData* w);
 void FUN_08094d1c(u8* param_1, s8* param_2);
-void FUN_08094d48(unknown* w, u8* pc);
+void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
@@ -180,7 +180,7 @@ NON_MATCH void FUN_080bcf04(WeaponShop* p, WeaponData* data) {
     s32 cur;
 
     GetRegisteredWeaponData(i, &w);
-    cur = FUN_0807a6cc(&w);
+    cur = CalcAttackWithEquippedArmor(&w);
 
     if (i != col) {
       SplitDecimal3(cur, digits);
@@ -188,7 +188,7 @@ NON_MATCH void FUN_080bcf04(WeaponShop* p, WeaponData* data) {
         MainSprite_SetPose(&p->sprites[i * 3 + 40 + j], &p->gfx0, digits[j], PLAYMODE_LOOP);
       }
     } else {
-      s32 v = FUN_0807a6cc(data);
+      s32 v = CalcAttackWithEquippedArmor(data);
       s32 ofs = 0;
 
       if (v != cur) {
@@ -248,7 +248,7 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
     MessageWindow_Start(p->unk_1644);
     MessageWindow_SetRect(2, 16, 28, 2);
     FUN_08094d1c((u8*)&w, (s8*)p->unk_164c);
-    FUN_08094d48(&w, p->unk_1644);
+    MainMenu_SetWeaponMarquee(&w, p->unk_1644);
   }
 
   FUN_080bcf04(p, &w);
