@@ -1,3 +1,4 @@
+#include "crossover.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -533,7 +534,7 @@ Entity08051b70* Entity08051b70_Create(u32 id, u32 unused) {
 }
 
 // 自分のオジャマバットの数を受け取り, 置き場から右上へ送り出す演出を始める
-s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) {
+s32 Entity08051b70_StartSend(void (*onFinish)(void), CrossoverBattleSide* mine) {
   Entity08051b70* p = gEntity08051b70;
   s32 i;
 
@@ -543,7 +544,7 @@ s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) {
   p->onFinish = onFinish;
   p->blockFlags = 0;
   for (i = 0; i < 4; i++) {
-    p->myOjama[i] = counts[i];
+    p->myOjama[i] = mine->ojama[i];
     p->rivalOjama[i] = 0;
     p->blockedOjama[i] = 0;
   }
@@ -558,6 +559,36 @@ s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) {
   return 0;
 }
 
-NAKED s32 Entity08051b70_StartExchange(void (*onFinish)(void), s8* counts0, s8* counts1, s8* out) { INCFUNC("asm/func/Entity08051b70_StartExchange.inc"); }
+// 双方のオジャマバットの数とブロッキングを受け取り, 相手のバットが飛び込んでくる演出を始める, incoming は読まない
+s32 Entity08051b70_StartExchange(void (*onFinish)(void), CrossoverBattleSide* mine, CrossoverBattleSide* rival, u8* incoming) {
+  Entity08051b70* p = gEntity08051b70;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+  p->onFinish = onFinish;
+  p->blockFlags = 0;
+  if (mine->blocking) {
+    p->blockFlags = 1;
+  }
+  if (rival->blocking) {
+    p->blockFlags |= 2;
+  }
+  for (i = 0; i < 4; i++) {
+    p->myOjama[i] = mine->ojama[i];
+    p->rivalOjama[i] = rival->ojama[i];
+    p->blockedOjama[i] = 0;
+  }
+  for (i = 4; i < 8; i++) {
+    u32 color = i & 3;
+
+    Entity08051b70Elem_SetColorCount(&p->elems[i], color, p->myOjama[color]);
+  }
+  p->state = 2;
+  p->entered = TRUE;
+  p->timer = 0;
+  return 0;
+}
 
 NAKED s32 Entity08051b70_SpawnCollected(Vec3* pos, s32 idx, s32 count) { INCFUNC("asm/func/Entity08051b70_SpawnCollected.inc"); }

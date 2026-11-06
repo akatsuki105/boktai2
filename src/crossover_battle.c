@@ -1,5 +1,6 @@
 #include "bg_pltt.h"
 #include "boss.h"
+#include "crossover.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -13,17 +14,6 @@
 #include "text.h"
 #include "video.h"
 #include "vm.h"
-
-// 対戦する片側の状況, 自分の分は相手へ送り, 相手の分は届いた通信で埋まる
-typedef struct {
-  u8 ojama[4];     // 0x00, 赤/青/黄/緑のオジャマバットの数, 1色5匹・合計10匹まで
-  u8 playerHP;     // 0x04, プレイヤーの体力の割合 (%), 初期値 100
-  u8 bossHP;       // 0x05, シェードマンの体力の割合 (%), 初期値 100
-  bool8 blocking;  // 0x06, インターバル画面で SELECT を押してブロッキングを選んだ
-  u8 outcome;      // 0x07, ラウンドの決着, 0: なし, 1: シェードマン撃破, 2: プレイヤー死亡
-  u32 clearTime;   // 0x08, 決着までにかかったフレーム数
-} CrossoverBattleSide;
-static_assert(sizeof(CrossoverBattleSide) == 12);
 
 // 通信で送受信する1件, data の中身は kind で決まる
 typedef struct {
@@ -109,8 +99,6 @@ void FUN_0803cc70(void);
 bool32 FUN_0804e59c(void);
 void MosaicFader_Stop(void);
 void Player_Lock(Player* p, s32 val);
-s32 Entity08051b70_StartExchange(void (*onFinish)(void), u8* counts0, u8* counts1, u8* out);
-s32 Entity08051b70_StartSend(void (*onFinish)(void), u8* counts);
 void FUN_0808e420(void);
 void FUN_0808e4f4(void);
 s32 FUN_0804e458(void);
@@ -591,7 +579,7 @@ void CrossoverBattle_StateInterval(CrossoverBattle* p) {
     CrossoverBattle_DealMagic(p);
     p->startPressed = 0;
     FUN_0808e420();
-    Entity08051b70_StartSend(CrossoverBattle_OnScreenDone, p->sides[0].ojama);
+    Entity08051b70_StartSend(CrossoverBattle_OnScreenDone, &p->sides[0]);
     p->screenDone = 0;
     p->startDelay = 8;
     CrossoverBattle_SetMCState(p, 2);
@@ -656,7 +644,7 @@ void CrossoverBattle_StateOjamaAnim(CrossoverBattle* p) {
     if (result != 0) {
       p->ojamaAnimActive = 1;
       p->screenDone = 0;
-      if (Entity08051b70_StartExchange(CrossoverBattle_OnScreenDone, p->sides[0].ojama, p->sides[1].ojama, p->incomingOjama)) {
+      if (Entity08051b70_StartExchange(CrossoverBattle_OnScreenDone, &p->sides[0], &p->sides[1], p->incomingOjama)) {
         p->screenDone = 1;
       }
     } else {
