@@ -74,7 +74,7 @@ void (*const PTR_ARRAY_085ab6d4[7])(Entity08051b70*, Entity08051b70Elem*, s32) =
 
 void FUN_08051640(Entity08051b70*);
 void FUN_08051658(Entity08051b70*);
-void FUN_0805169c(Entity08051b70*);
+void Entity08051b70_StateReceive(Entity08051b70*);
 void FUN_08051710(Entity08051b70*);
 void FUN_08051830(Entity08051b70*);
 void FUN_08051898(Entity08051b70*);
@@ -83,7 +83,7 @@ void FUN_08051950(Entity08051b70*);
 void (*const PTR_ARRAY_085ab6f0[7])(Entity08051b70*) = {
     FUN_08051640,
     FUN_08051658,
-    FUN_0805169c,
+    Entity08051b70_StateReceive,
     FUN_08051710,
     FUN_08051830,
     FUN_08051898,
@@ -339,7 +339,44 @@ void FUN_08051658(Entity08051b70* p) {
   p->timer++;
 }
 
-NAKED void FUN_0805169c(Entity08051b70* p) { INCFUNC("asm/func/FUN_0805169c.inc"); }
+// 残差: 原典は p->unk_24 の番地と定数 3 をループ内で毎回作り, elem を r3 に写してから count を書く (r7 を使わない), 案: 0..10 に収める inline (elem, slot, n / counts 配列) は試済で変化なし
+NON_MATCH void Entity08051b70_StateReceive(Entity08051b70* p) {
+#ifdef NONMATCHING_C
+  if (p->entered) {
+    Entity08051b70Elem* elem;
+    s32 i;
+
+    p->entered = FALSE;
+    p->nextIdx = 0;
+    elem = p->elems;
+    for (i = 0; i < 8; i++, elem++) {
+      u32 slot = i & 3;
+
+      if (i < 4) {
+        elem->slot = slot;
+        elem->count = 0;
+      } else {
+        s32 n = p->unk_24[slot];
+
+        elem->slot = slot;
+        if (n > 10) {
+          n = 10;
+        } else if (n < 0) {
+          n = 0;
+        }
+        elem->count = n;
+      }
+    }
+  }
+  Entity08051b70_LaunchNext(p, 4);
+  if (p->timer >= 80) {
+    FUN_08050e9c(p, 0);
+  }
+  p->timer++;
+#else
+  INCFUNC("asm/func/Entity08051b70_StateReceive.inc");
+#endif
+}
 
 NAKED void FUN_08051710(Entity08051b70* p) { INCFUNC("asm/func/FUN_08051710.inc"); }
 
