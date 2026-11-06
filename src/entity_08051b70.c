@@ -49,6 +49,20 @@ static_assert(sizeof(Entity08051b70) == 1228);
 
 IWRAM_DATA Entity08051b70* gEntity08051b70 = NULL;  // 0x03000118
 
+// 色と数を入れる, 数は表示できる 0..10 に収める
+static inline void Entity08051b70Elem_SetColorCount(Entity08051b70Elem* elem, u32 color, s32 n) {
+  elem->color = color;
+  if (n > 10) {
+    n = 10;
+  } else if (n < 0) {
+    n = 0;
+  }
+  elem->count = n;
+}
+
+// 右上の出入口のうち idx の列を移動の始点にする
+static inline void Entity08051b70Elem_SetFromTopRight(Entity08051b70Elem* elem, s32 idx) { VEC3_SET(elem->from, (idx & 3) * 24 + 272, 32, 0); }
+
 bool32 FUN_0804e59c(void);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
@@ -394,7 +408,35 @@ void Entity08051b70_StateRivalBlock(Entity08051b70* p) {
   p->timer++;
 }
 
-NAKED void Entity08051b70_StateReturn(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateReturn.inc"); }
+// 相手にブロックされた自分のオジャマバットが右上から置き場へ戻ってくる
+void Entity08051b70_StateReturn(Entity08051b70* p) {
+  if (p->entered) {
+    s32 i;
+
+    p->entered = FALSE;
+    p->nextIdx = 0;
+    for (i = 0; i < 8; i++) {
+      u32 color = i & 3;
+
+      if (i < 4) {
+        Entity08051b70Elem_SetColorCount(&p->elems[i], color, p->rivalOjama[color]);
+      } else {
+        Entity08051b70Elem_SetColorCount(&p->elems[i], color, p->myOjama[color]);
+        Entity08051b70Elem_SetFromTopRight(&p->elems[i], color);
+      }
+    }
+  }
+  Entity08051b70_LaunchNext(p, 2);
+  if (p->timer >= 90) {
+    if (p->onFinish != NULL) {
+      p->onFinish();
+    }
+    p->state = 0;
+    p->entered = TRUE;
+    p->timer = 0;
+  }
+  p->timer++;
+}
 
 // 残差: 原典は elems の番地を +0xEC で持ち, count だけ r3 に写した elem で書く, 定数 3 もループ内で作る (59 対 59 命令)
 // 試済: elem++ / &p->elems[i], color ローカル, 0..10 に収める inline (count のみ / color と count), StateReceive と同じ壁
