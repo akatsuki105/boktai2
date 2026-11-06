@@ -43,7 +43,7 @@ bool8 FUN_081ea87c(Flamethrower* item) {
       return FALSE;
     }
 
-    if (item->unk_128 == 0 && !(gGameFlags & FLAG030047A4_LINK)) {
+    if (item->unk_128 == 0 && !(gGameFlags & GAMEFLAG_LINK)) {
       PlaySound_082406e0(SE_FLAMETHROWER_424);
     }
     if (item->unk_128 == 1 && item->unk_130 > 0) {
@@ -117,7 +117,7 @@ s32 Entity081eaf6c_Update(Entity081eaf6c* p) {
   if (p->activeMask == 0) {
     return 0;
   }
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
@@ -240,7 +240,7 @@ NON_MATCH Flamethrower* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 
   Mover* mover;
   const Vec3* v;
 
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return NULL;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {

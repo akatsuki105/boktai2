@@ -73,7 +73,7 @@ NON_MATCH void Entity081eeb28Elem_UpdateState1(Entity081eeb28* p, Entity081eeb28
   if (elem->spawned) {
     elem->spawned = 0;
   }
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     if (gEntity9A9F != NULL && gEntity9A9F->playerIdx >= 0) {
       Player* pl = gPlayerPtr[gEntity9A9F->playerIdx];
 

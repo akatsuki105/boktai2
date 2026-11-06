@@ -296,7 +296,7 @@ NON_MATCH bool32 FUN_08018118(WeatherManager* p) {
   }
   chance = WeatherManager_GetChance(p);
   sun = gStat->sunGauge;
-  if (!TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER) && p->unk_22 != 0) {
+  if (!TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER) && p->unk_22 != 0) {
     if (sun > 0) {
       gStat->rainTimer += sun >> 2;
       if (gStat->rainTimer >= sRainIntervalBase) {
@@ -388,7 +388,7 @@ bool32 FUN_08018324(WeatherManager* p) {
     FUN_080026fc(2);
   }
   if (p->timer == 0) {
-    if (!(gGameFlags & FLAG030047A4_GAMEOVER) && gLightningTimer > 0) {
+    if (!(gGameFlags & GAMEFLAG_GAMEOVER) && gLightningTimer > 0) {
       gGrayscaleTimer = 5;
       PlaySound_082406e0(SE_THE_TOWER);
     }
@@ -405,7 +405,7 @@ bool32 FUN_08018324(WeatherManager* p) {
   }
   if (p->stateTimer >= 30) {
     p->sunAccum += GetSunGauge();
-    if (p->sunAccum >= 60 || TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+    if (p->sunAccum >= 60 || TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
       sRainDuration = 0;
       WeatherManager_SetState(p, 4);
       return TRUE;

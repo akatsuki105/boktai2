@@ -183,7 +183,7 @@ NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 
 // 0xF04A, ゲームオーバー状態を解除して BGM を止める
 void GameOver_CancelScripted(void) {
-  gGameFlags &= ~FLAG030047A4_GAMEOVER;
+  gGameFlags &= ~GAMEFLAG_GAMEOVER;
   sound_08240740(BGM_GAMEOVER);
   FUN_0823a8f4(0);
 }
@@ -308,7 +308,7 @@ void GameOverManager_StartScripted(void) {
 
 // state 0, ゲームオーバーのフラグが立つまで何もせず待つ
 void GameOverManager_StateWaitFlag(GameOverManager* p) {
-  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) {
+  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER)) {
     return;
   }
   GameOverManager_AddSprites(p);
@@ -427,7 +427,7 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
 void GameOverManager_StateFinish(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 8) {
-    gGameFlags &= ~FLAG030047A4_GAMEOVER;
+    gGameFlags &= ~GAMEFLAG_GAMEOVER;
     gPlayTimeEnabled = FALSE;
     FUN_0823a8f4(p->cursor);
     KillEntity((Entity*)p);

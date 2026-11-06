@@ -61,15 +61,15 @@ extern u32 gPlayerStates[4];         // 0x03002BC0, プレイヤーごとのフ�
 
 // --------------------------------------------
 
-#define FLAG030047A4_UNK_0 (1 << 0)       // 0x1, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
-#define FLAG030047A4_UNK_8 (1 << 8)       // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
-#define FLAG030047A4_UNK_9 (1 << 9)       // 0x200, 用途はまだ不明 (マップ切り替え時, 会話中にセット)
-#define FLAG030047A4_GAMEOVER (1 << 10)   // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
-#define FLAG030047A4_LINK (1 << 11)       // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)
-#define FLAG030047A4_CROSSOVER (1 << 12)  // 0x1000, クロスオーバーバトル中にセットされる? (mGBAがワイヤレスアダプタのエミュレーションをサポートしてないため検証が面倒で未確認)
-#define FLAG030047A4_UNK_14 (1 << 14)     // 0x4000, FUN_080f8bb8 が LINK と一緒に見る
-extern u32 gDebugGameFlags;               // 0x030047A0, gGameFlags と OR されて使用される, デバッグ時に強制的にフラグをセットするためのものと予想
-extern u32 gGameFlags;                    // 0x030047A4
+#define GAMEFLAG_UNK_0 (1 << 0)       // 0x1, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
+#define GAMEFLAG_UNK_8 (1 << 8)       // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
+#define GAMEFLAG_UNK_9 (1 << 9)       // 0x200, 用途はまだ不明 (マップ切り替え時, 会話中にセット)
+#define GAMEFLAG_GAMEOVER (1 << 10)   // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
+#define GAMEFLAG_LINK (1 << 11)       // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)
+#define GAMEFLAG_CROSSOVER (1 << 12)  // 0x1000, クロスオーバーバトル中にセットされる? (mGBAがワイヤレスアダプタのエミュレーションをサポートしてないため検証が面倒で未確認)
+#define GAMEFLAG_UNK_14 (1 << 14)     // 0x4000, FUN_080f8bb8 が LINK と一緒に見る
+extern u32 gDebugGameFlags;           // 0x030047A0, gGameFlags と OR されて使用される, デバッグ時に強制的にフラグをセットするためのものと予想
+extern u32 gGameFlags;                // 0x030047A4
 
 // --------------------------------------------
 

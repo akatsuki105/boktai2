@@ -311,12 +311,12 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
               bool32 dim;
 
               if (node->kindMask == ETGT_1) {
-                if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+                if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) {
                   dim = FUN_080f8e84(&m, 1, 0x10000);
                 } else {
                   dim = FUN_080f8e84(&m, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
                 }
-              } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+              } else if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
                 dim = !(gStat->mapFlags & MPF_BRIGHT);
               } else {
                 dimKnown = FALSE;
@@ -384,7 +384,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
         return FALSE;
       }
       owner = node->owner;
-      if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+      if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) {
         s32 idx;
 
         if (owner == NULL) {
@@ -432,12 +432,12 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
             bool32 dim;
 
             if (node->kindMask == ETGT_1) {
-              if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+              if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) {
                 dim = FUN_080f8e84(node->owner, 1, 0x10000);
               } else {
                 dim = FUN_080f8e84(node->owner, 1, 0x10000) || !(gStat->mapFlags & MPF_BRIGHT);
               }
-            } else if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+            } else if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
               dim = !(gStat->mapFlags & MPF_BRIGHT);
             } else {
               dimKnown = FALSE;

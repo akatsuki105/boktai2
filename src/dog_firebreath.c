@@ -293,7 +293,7 @@ Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags
       return NULL;
     }
   }
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return NULL;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
@@ -334,7 +334,7 @@ s32 Entity081f1770_Update(Entity081f1770* p) {
   if (p->usedMask == 0) {
     return 0;
   }
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {

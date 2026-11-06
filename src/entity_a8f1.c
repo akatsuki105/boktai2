@@ -370,7 +370,7 @@ NON_MATCH void FUN_080a2d18(EntityA8F1* p) {
 void EntityA8F1_UpdateIdle(EntityA8F1* p) {
   s32 near;
 
-  if (!(gGameFlags & FLAG030047A4_UNK_9)) {
+  if (!(gGameFlags & GAMEFLAG_UNK_9)) {
     if (p->unk_36a < 10) {
       p->unk_36a++;
     }

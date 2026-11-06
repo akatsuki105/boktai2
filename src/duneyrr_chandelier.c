@@ -194,7 +194,7 @@ s32 Entity5DA5_Update(Entity5DA5* p) {
   Entity5DA5Elem* elem;
   s32 i;
 
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     Entity5DA5_SetState(-1, 0, 1);
   }
   WorldToScreen(&p->screenPos, &p->pos);

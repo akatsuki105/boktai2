@@ -445,7 +445,7 @@ s32 Entity081e9cac_Update(Entity081e9cac* p) {
   s32 i;
 
   memcpy(funcs, PTR_ARRAY_082523e8, sizeof(funcs));
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) || p->activeMask == 0) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) || p->activeMask == 0) {
     return 0;
   }
   for (i = 0; i < 12; i++) {

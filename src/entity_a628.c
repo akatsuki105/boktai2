@@ -103,7 +103,7 @@ void EntityA628_ResetOrbit(EntityA628* p) {
 }
 
 void EntityA628_UpdateBGVisibility(EntityA628* p) {
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     if (GetLinkBGHidden(GetLocalPlayerIdx())) {
       p->active = FALSE;
     } else if (!p->active) {
@@ -300,7 +300,7 @@ s32 Cmd_CreateEntityA628(u32 param_1) {
   s32 playerIdx;
   u32 active;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     playerIdx = GetLocalPlayerIdx();
   } else if (VM_SeekToNamedArg('i')) {
     playerIdx = VM_GetValue();

@@ -392,7 +392,7 @@ void FallingObject_UpdateBounceType1(FallingObject* p) {
   if (p->stateBegun) {
     p->stateBegun = FALSE;
     FallingObject_RemoveShadow(p);
-    if (!(gGameFlags & FLAG030047A4_LINK)) {
+    if (!(gGameFlags & GAMEFLAG_LINK)) {
       VEC3_SET(vel, -15, 8, -15);
       VEC3_SET(velRange, 30, 22, 30);
       FUN_08014730(8, 3, &p->pos, &vel, &velRange, 60, 60);
@@ -433,7 +433,7 @@ void FallingObject_UpdateBounceType2(FallingObject* p) {
 
   if (p->stateBegun) {
     p->stateBegun = FALSE;
-    if (!(gGameFlags & FLAG030047A4_LINK)) {
+    if (!(gGameFlags & GAMEFLAG_LINK)) {
       VEC3_SET(vel, -15, 8, -15);
       VEC3_SET(velRange, 30, 22, 30);
       FUN_08014730(8, 3, &p->pos, &vel, &velRange, 60, 60);

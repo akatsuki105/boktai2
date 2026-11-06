@@ -849,7 +849,7 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
   }
   *map = endTile | 0xD000;
 
-  if (!(gGameFlags & FLAG030047A4_CROSSOVER) && param_2 == 0) {
+  if (!(gGameFlags & GAMEFLAG_CROSSOVER) && param_2 == 0) {
     if (Player_TestEquipBuff(p->player, EBUFF_ASTRO)) {
       s32 digits[4];
       s32 n;
@@ -1200,7 +1200,7 @@ void MainMenu_UpdateCondIcon(MainMenu* p) {
 
 // カウントダウン HUD の表示が切り替わったときにカウント音を鳴らし, 今の値を覚えておく
 void FUN_0808b11c(MainMenu* p, s32 param_2, u32 param_3) {
-  if (gGameFlags & FLAG030047A4_CROSSOVER) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     if (param_2 == 0 && param_3 - 1 < 3 && param_3 != p->unk_a9b) {
       PlaySound_082406e0(SE_COUNTDOWN);
     }
@@ -2095,7 +2095,7 @@ void FUN_0808cf50(MainMenu* p) { MainSprite_Remove(&p->unk_a34); }
 void FUN_0808cf64(MainMenu* p) {
   Vec3 pos;
 
-  if (gGameFlags & FLAG030047A4_CROSSOVER) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     VEC3_SET(pos, 0, 0, 0);
     MainSprite_Add(&p->unk_a34, &p->gfx.link, LINK_BLOCK_OFF, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_UNK_16, 0, PLAYMODE_PAUSE, 60, &pos);
   } else {
@@ -2329,7 +2329,7 @@ NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
       } else {
         bool32 isGunSlot = FALSE;
 
-        if (gGameFlags & FLAG030047A4_CROSSOVER) {
+        if (gGameFlags & GAMEFLAG_CROSSOVER) {
           if (!gunAdded) {
             isGunSlot = TRUE;
           }
@@ -2375,7 +2375,7 @@ NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
     } while (n < 4);
   }
 
-  if (!(gGameFlags & FLAG030047A4_CROSSOVER) && p->qc.weaponIdx < 0) {
+  if (!(gGameFlags & GAMEFLAG_CROSSOVER) && p->qc.weaponIdx < 0) {
     s32 idx = 0;
 
     gStat->equippedWeaponIdx = 3;
@@ -2494,7 +2494,7 @@ s32 MainMenu_QC_CanOpen(MainMenu* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_UNK_9 | FLAG030047A4_UNK_0)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_UNK_9 | GAMEFLAG_UNK_0)) {
       return TRUE;
     }
   }
@@ -2596,7 +2596,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
     MainMenu_BuildQCMagicSlots(p);
     MainMenu_RefreshQCWeaponIcons(p);
     MainMenu_RefreshQCMagicIcons(p);
-    if (gGameFlags & FLAG030047A4_CROSSOVER) {
+    if (gGameFlags & GAMEFLAG_CROSSOVER) {
       MainMenu_HideQCIcons(p);
     } else {
       MainMenu_QC_ShowSelectedOnly(p);
@@ -9951,7 +9951,7 @@ s32 FUN_0809b348(MainMenu* p) {
   if (gInput[0].pressed & START_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_UNK_9 | FLAG030047A4_UNK_0)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_UNK_9 | GAMEFLAG_UNK_0)) {
       return TRUE;
     }
   }
@@ -10311,7 +10311,7 @@ void MainMenu_SetHudMode(s32 mode) {
     ClearBGTilemapBuffer(0);
   } else {
     if (p->hudMode <= 2) {
-      if (!(gGameFlags & FLAG030047A4_CROSSOVER)) {
+      if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
         MainMenu_QC_ShowSelectedOnly(p);
       }
       Video_SetBGLayer(0, p->tm_18, 0);
@@ -10459,7 +10459,7 @@ void FUN_0809c464(void) {
       MainMenu_BuildQCWeaponSlots(gMainMenu);
       MainMenu_RefreshQCWeaponIcons(gMainMenu);
 
-      if (gGameFlags & FLAG030047A4_CROSSOVER) {
+      if (gGameFlags & GAMEFLAG_CROSSOVER) {
         if (gMainMenu->hudMode == 0) {
           MainMenu_UpdateHud(gMainMenu);
         }
@@ -10491,7 +10491,7 @@ void HUD_StartCountdown(u16* remainingTime) {
   if (p != NULL) {
     p->unk_a9c = remainingTime;
     p->unk_a97 = 1;
-    if (gGameFlags & FLAG030047A4_LINK) {
+    if (gGameFlags & GAMEFLAG_LINK) {
       p->unk_a98 = 1;
     }
   }
@@ -10780,7 +10780,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   p->textPanelID_4014 = TextPanel_Create(6, 4, 10, 2);
   p->textPanelID = TextPanel_Create(4, 6, 22, 6);
   MainMenu1P_SetupBg(p);
-  if (gGameFlags & FLAG030047A4_CROSSOVER) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     MainMenu_UpdateHud(p);
     MainMenu_SetUpdateCallback(p, FUN_0808e400);
   } else {
@@ -10815,7 +10815,7 @@ MainMenu* MainMenu1P_Create(u32 id, u32 _) {
 
 // 0xCC28
 MainMenu* MainMenu_Create(u32 id, u32 _) {
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return MainMenuLink_Create(id, _);
   }
   return MainMenu1P_Create(id, _);

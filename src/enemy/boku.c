@@ -112,7 +112,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
 
 static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
+  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
   return FALSE;
 }
 
@@ -327,7 +327,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
       spr->s.rotation = 0;
       self->unk_65c &= ~4;
     }
-    if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+    if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
       self->unk_660 = p->e.playerMover->pos;
     } else if (p->e.playerMover != NULL) {
       s32 idx = p->e.playerMover->unk_4 < 4 ? p->e.playerMover->unk_4 : -1;
@@ -350,7 +350,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
       d = -d;
     }
     if (d < 32) {
-      if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+      if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
         self->unk_668 = p->e.playerMover->pos;
       } else if (p->e.playerMover != NULL) {
         s32 idx = p->e.playerMover->unk_4 < 4 ? p->e.playerMover->unk_4 : -1;

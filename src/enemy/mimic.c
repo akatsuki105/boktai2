@@ -43,7 +43,7 @@ static bool8 Mimic_IsPlayerLost(Mimic* p);
 static u32 FUN_08148750(s32 angle);
 
 static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
+  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
   return FALSE;
 }
 

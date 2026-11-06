@@ -226,7 +226,7 @@ NON_MATCH s32 BambooShootManager_Init(BambooShootManager* p, u32 _) {
   sBambooShootManager = p;
   if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
     visible = TRUE;
-  } else if (gGameFlags & FLAG030047A4_LINK) {
+  } else if (gGameFlags & GAMEFLAG_LINK) {
     visible = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
   } else if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
     visible = TRUE;

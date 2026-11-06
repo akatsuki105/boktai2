@@ -41,7 +41,7 @@ NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); 
 
 // 通信中でない通常の判定のとき、9〜12フレームごとに1回だけ効果音を鳴らす
 void FUN_080dd6f4(AttackBox* box) {
-  if (!(gGameFlags & FLAG030047A4_LINK) && box->unk_60 == 0) {
+  if (!(gGameFlags & GAMEFLAG_LINK) && box->unk_60 == 0) {
     if (Mod(box->timer, 9 + (Random() & 3)) == 0) {
       PlaySound_082406e0(SONG_825);
     }

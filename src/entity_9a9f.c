@@ -587,7 +587,7 @@ s32 Entity9A9F_Destroy(Entity9A9F* p) {
   Sio_Disconnect();
   Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
   gUseLinkInput = FALSE;
-  gGameFlags &= ~FLAG030047A4_LINK;
+  gGameFlags &= ~GAMEFLAG_LINK;
   gEntity9A9F = NULL;
   return 0;
 }

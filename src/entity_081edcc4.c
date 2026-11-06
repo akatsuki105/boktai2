@@ -161,7 +161,7 @@ NON_MATCH bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
       return FALSE;
     }
     // 進めないときは同じ高さで通れるタイルが続く横の向きへ曲がる, 通信中は向きと直交する2方向のうち先に見つかった方
-    if (gGameFlags & FLAG030047A4_LINK) {
+    if (gGameFlags & GAMEFLAG_LINK) {
       s32 cur = elem->tileIdx;
 
       switch (((angle + 0x20) >> 6) & 3) {

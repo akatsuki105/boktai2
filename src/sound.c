@@ -257,7 +257,7 @@ void sound_08240740(SoundID32 id) {
 
 // GAMEOVER 中でなければサウンドを鳴らす
 void PlaySound_0824078c(SoundID32 id) {
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) return;
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER)) return;
   PlaySound_082406e0(id);
 }
 

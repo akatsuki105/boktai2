@@ -94,7 +94,7 @@ Flamethrower* FUN_081ead54(Entity778BElem* elem, u32 id, s32 unk_12, s32 unk_18,
 
 // 通信中以外は太陽ゲージが満たないぶんだけ減らす
 static inline s32 Entity778B_ScaleBySun(s32 value) {
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return value;
   }
   return Div(value * (10 - gStat->sunGauge), 10);
@@ -673,7 +673,7 @@ Entity778BElem* Entity778B_AllocElem(Entity778B* p) {
 s32 Entity778B_Update(Entity778B* p) {
   Entity778BElem* elems = p->elems;
 
-  if (p->usedMask != 0 && !TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (p->usedMask != 0 && !TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
     Entity778BElem* elem = elems;
     s32 i;
 
@@ -720,7 +720,7 @@ NON_MATCH void Entity778B_AddElemScripted(void) {
 #ifdef NONMATCHING_C
   Entity778BElem* elem;
 
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) || gEntity778B == NULL) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || gEntity778B == NULL) {
     return;
   }
   elem = Entity778B_AllocElem(gEntity778B);

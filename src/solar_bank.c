@@ -52,7 +52,7 @@ NON_MATCH void Cmd_CalcInterestRate(void) {
   s32 amount;
   s32 i;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return;
   }
 

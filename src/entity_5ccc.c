@@ -377,7 +377,7 @@ NON_MATCH void Cmd_815C(void) {
 void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   s32 heal;
 
-  if (gGameFlags & FLAG030047A4_UNK_8) {
+  if (gGameFlags & GAMEFLAG_UNK_8) {
     p->idleTimer = 0;
   } else if (gInput[0].down != 0) {
     p->idleTimer = 0;
@@ -385,7 +385,7 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
     p->idleTimer++;
   }
 
-  if ((gGameFlags & (FLAG030047A4_UNK_8 | FLAG030047A4_UNK_9)) == FLAG030047A4_UNK_9) {
+  if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_UNK_9)) == GAMEFLAG_UNK_9) {
     return;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
@@ -586,7 +586,7 @@ s32 Entity0809eb24_Destroy(Entity5CCC* p) {
 }
 
 bool32 FUN_0809eacc(void) {
-  if (gGameFlags & FLAG030047A4_UNK_8) {
+  if (gGameFlags & GAMEFLAG_UNK_8) {
     return FALSE;
   }
   if (Time_GetMoonPhase() == 4) {  // 満月
@@ -785,7 +785,7 @@ Entity5CCC* Cmd_5CCC(u32 id, u32 _) {
   if (gEntity5CCC != NULL) {
     return gEntity5CCC;
   }
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return Entity0809eeb4_Create(id, _);
   } else {
     return Entity0809eb24_Create(id, _);

@@ -34,7 +34,7 @@ static bool32 DungeonMarker_IsPlayerNear(DungeonMarker* p) {
 
 // 会話中とマップ切り替え中は隠す
 s32 DungeonMarker_Update(DungeonMarker* p) {
-  if (!(gGameFlags & FLAG030047A4_UNK_9) && DungeonMarker_IsPlayerNear(p)) {
+  if (!(gGameFlags & GAMEFLAG_UNK_9) && DungeonMarker_IsPlayerNear(p)) {
     p->sprite.flags &= ~SPRFLAG_HIDDEN;
   } else {
     p->sprite.flags |= SPRFLAG_HIDDEN;
@@ -106,7 +106,7 @@ s32 DungeonMarker_Init(DungeonMarker* p) {
   pos.z = offset.z + p->pos.z;
   MainSprite_Add(&p->sprite, &gfx, poseIdx, 0, prio, PLAYMODE_PAUSE, 60, &pos);
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_UNK_9) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
   } else if (DungeonMarker_IsPlayerNear(p)) {
     p->sprite.flags &= ~SPRFLAG_HIDDEN;

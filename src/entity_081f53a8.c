@@ -365,7 +365,7 @@ void (*const PTR_ARRAY_085ae578[4])(Entity081f53a8*, Entity081f53a8Elem*) = {
 s32 Entity081f53a8_Update(Entity081f53a8* p) {
   s32 i;
 
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {

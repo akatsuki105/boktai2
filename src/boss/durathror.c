@@ -1683,7 +1683,7 @@ NON_MATCH void FUN_08039280(Durathror* p) {
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_17)) {
     bool32 seen;  // 千里眼の実、 Cバットだと、どのつぼみに本物がいるか見える
 
-    if (gGameFlags & FLAG030047A4_LINK) {
+    if (gGameFlags & GAMEFLAG_LINK) {
       Player* player = gPlayerPtr[0];
 
       seen = player != NULL && player->goodCondTimer != 0 && player->goodCondID == GOOD_SEE;

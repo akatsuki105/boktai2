@@ -2947,7 +2947,7 @@ void FUN_080c7c20(Boss* boss, s32 timer) {
     gPlayerPtr[0]->state = 5;
     gPlayerPtr[0]->stateTimer = 0;
     gPlayerPtr[0]->hp = 0;
-    gGameFlags |= FLAG030047A4_GAMEOVER;
+    gGameFlags |= GAMEFLAG_GAMEOVER;
   }
 }
 

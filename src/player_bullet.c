@@ -151,7 +151,7 @@ void Bullet_OnHit(HitboxData* a, HitboxData* b, Bullet* p) { Bullet_SetState(p, 
 
 // 発射時に ENE を払う
 void Bullet_PayENE(Bullet* p) {
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     s32 cost = p->eneCost;
 
     if (gEntity9A9F != NULL) {
@@ -168,7 +168,7 @@ s32 Bullet_GetDamage(Bullet* p) {
   if (p->unk_cd != 0) {
     return 8;
   }
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     dmg = FUN_080d1b04(p->player);
   } else {
     dmg = FUN_0806f900(p->player);

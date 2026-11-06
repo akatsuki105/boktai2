@@ -87,7 +87,7 @@ void DynamiteEffect_StateGather(DynamiteEffect* p) {
 void DynamiteEffect_StateFuse(DynamiteEffect* p) {
   s32 sun;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     sun = Entity9A9F_GetUnk60(p->owner->inputIdx);
   } else {
     sun = gStat->sunGauge;
@@ -136,7 +136,7 @@ void DynamiteEffect_StateFuse(DynamiteEffect* p) {
 
     if (p->mode != 0) {
       power = 125;
-    } else if (gGameFlags & FLAG030047A4_LINK) {
+    } else if (gGameFlags & GAMEFLAG_LINK) {
       power = p->owner->stats[STAT_SPIRIT] * 3 + sun * 10;
     } else {
       power = Div(p->owner->stats[STAT_SPIRIT], 10) * sun;
@@ -259,7 +259,7 @@ s32 DynamiteEffect_Init(DynamiteEffect* p, Player* owner, Vec3* pos, s32 mode) {
   p->owner->dynamiteCount++;
   if (p->mode != 0) {
     p->fuseTimer = SECOND(2);
-  } else if (gGameFlags & FLAG030047A4_LINK) {
+  } else if (gGameFlags & GAMEFLAG_LINK) {
     p->fuseTimer = SECOND(1.5);
   } else {
     p->fuseTimer = SECOND(3);

@@ -90,7 +90,7 @@ void FUN_0813d3f4(Curoro* p);
 s32 FUN_0813d404(Curoro* p);
 
 static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
+  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
   return FALSE;
 }
 
