@@ -532,10 +532,8 @@ Entity08051b70* Entity08051b70_Create(u32 id, u32 unused) {
   return p;
 }
 
-// 残差: 2つ目のループの前で myOjama の番地を写す mov r5, ip の位置だけ (75 対 75 命令)
-// 試済: elem ローカル, color ローカル, 0..10 に収める inline, *(p->myOjama + (i & 3))
-NON_MATCH s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) {
-#ifdef NONMATCHING_C
+// 自分のオジャマバットの数を受け取り, 置き場から右上へ送り出す演出を始める
+s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) {
   Entity08051b70* p = gEntity08051b70;
   s32 i;
 
@@ -550,23 +548,14 @@ NON_MATCH s32 Entity08051b70_StartSend(void (*onFinish)(void), s8* counts) {
     p->blockedOjama[i] = 0;
   }
   for (i = 4; i < 8; i++) {
-    s32 n = p->myOjama[i & 3];
+    u32 color = i & 3;
 
-    p->elems[i].color = i & 3;
-    if (n > 10) {
-      n = 10;
-    } else if (n < 0) {
-      n = 0;
-    }
-    p->elems[i].count = n;
+    Entity08051b70Elem_SetColorCount(&p->elems[i], color, p->myOjama[color]);
   }
   p->state = 1;
   p->entered = TRUE;
   p->timer = 0;
   return 0;
-#else
-  INCFUNC("asm/func/Entity08051b70_StartSend.inc");
-#endif
 }
 
 NAKED s32 Entity08051b70_StartExchange(void (*onFinish)(void), s8* counts0, s8* counts1, s8* out) { INCFUNC("asm/func/Entity08051b70_StartExchange.inc"); }
