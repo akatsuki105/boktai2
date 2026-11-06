@@ -396,7 +396,48 @@ void Entity08051b70_StateRivalBlock(Entity08051b70* p) {
 
 NAKED void Entity08051b70_StateReturn(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateReturn.inc"); }
 
-NAKED void Entity08051b70_StateResult(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateResult.inc"); }
+// 残差: 原典は elems の番地を +0xEC で持ち, count だけ r3 に写した elem で書く, 定数 3 もループ内で作る (59 対 59 命令)
+// 試済: elem++ / &p->elems[i], color ローカル, 0..10 に収める inline (count のみ / color と count), StateReceive と同じ壁
+NON_MATCH void Entity08051b70_StateResult(Entity08051b70* p) {
+#ifdef NONMATCHING_C
+  if (p->entered) {
+    s32 i;
+
+    p->entered = FALSE;
+    p->nextIdx = 0;
+    for (i = 0; i < 8; i++) {
+      Entity08051b70Elem* elem = &p->elems[i];
+      u32 color = i & 3;
+
+      if (i < 4) {
+        s32 n = p->rivalOjama[color];
+
+        elem->color = color;
+        if (n > 10) {
+          n = 10;
+        } else if (n < 0) {
+          n = 0;
+        }
+        elem->count = n;
+      } else {
+        elem->color = color;
+        elem->count = 0;
+      }
+    }
+  }
+  if (p->timer >= 90) {
+    if (p->onFinish != NULL) {
+      p->onFinish();
+    }
+    p->state = 0;
+    p->entered = TRUE;
+    p->timer = 0;
+  }
+  p->timer++;
+#else
+  INCFUNC("asm/func/Entity08051b70_StateResult.inc");
+#endif
+}
 
 s32 Entity08051b70_Update(Entity08051b70* p) {
   if (FUN_0804e59c() == FALSE) {
