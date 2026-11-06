@@ -157,7 +157,48 @@ void Entity08051b70Elem_StateHidden(Entity08051b70* p, Entity08051b70Elem* elem,
   }
 }
 
-NAKED void Entity08051b70Elem_StateStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08051b70Elem_StateStock.inc"); }
+// 置き場で数を出し, shakeTimer の間は揺らす, 0 匹なら隠す
+// 残差: 置き場へ置いて揺らす塊が2回あり inline らしい, inline (VEC3_SET は &elem->batSprite.pos, 揺らしは AuxSprite* bat 経由) で 158 対 153 命令まで, 揺らしの x/y を ldrh で読み乱数を先に引く形が未解決
+// 試済: 揺らしを AuxSprite* 引数の別 inline, 乱数を先に書く式, bat ローカルだけ
+NON_MATCH void Entity08051b70Elem_StateStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
+#ifdef NONMATCHING_C
+  if (elem->entered) {
+    elem->entered = FALSE;
+    elem->shakeTimer = 0;
+    VEC3_SET(elem->batSprite.pos, (idx & 3) * 24 + 80, 144, 0);
+    if (elem->shakeTimer != 0) {
+      u16* table = gRandomTable;
+
+      elem->batSprite.pos.x += (_Random(table) & 3) - 1;
+      elem->batSprite.pos.y += (_Random(table) & 3) - 1;
+    }
+    elem->counterSprite.pos = elem->batSprite.pos;
+  }
+  if (elem->count != 0) {
+    elem->counterSprite.poseIdx = elem->count;
+    elem->batSprite.poseIdx = elem->color;
+    AuxSprite_Show(&elem->counterSprite);
+    AuxSprite_Show(&elem->batSprite);
+    if (elem->shakeTimer != 0) {
+      elem->shakeTimer--;
+      VEC3_SET(elem->batSprite.pos, (idx & 3) * 24 + 80, 144, 0);
+      if (elem->shakeTimer != 0) {
+        u16* table = gRandomTable;
+
+        elem->batSprite.pos.x += (_Random(table) & 3) - 1;
+        elem->batSprite.pos.y += (_Random(table) & 3) - 1;
+      }
+      elem->counterSprite.pos = elem->batSprite.pos;
+    }
+  } else {
+    AuxSprite_Hide(&elem->counterSprite);
+    AuxSprite_Hide(&elem->batSprite);
+  }
+  elem->timer++;
+#else
+  INCFUNC("asm/func/Entity08051b70Elem_StateStock.inc");
+#endif
+}
 
 void Entity08051b70Elem_StateFlyToStock(Entity08051b70* p, Entity08051b70Elem* elem, s32 idx) {
   AuxSprite* counterSprite = &elem->counterSprite;
