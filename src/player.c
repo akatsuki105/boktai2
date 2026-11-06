@@ -32,13 +32,6 @@ typedef enum {
   PDONE_END_WAIT = 2     // doneWaitPending ならメッセージの待ちを解く
 } PlayerDoneNotify;
 
-extern u16 gChangeWolfBiting;
-extern u16 gSunMagicUsed;
-extern u16 gSavedMagicEnchanted;
-extern u16 gWindPushThreshold;
-extern u16 gWindStrength;
-extern u16 gRisingSunCount;
-
 struct DynamiteEffect* DynamiteEffect_Create(Player* owner, Vec3* pos, s32 mode);
 struct TransEffect* TransEffect_Create(Player* player, u32 param_2, Vec3* pos, u32 param_4, u32 param_5);
 struct RisingSunEffect* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);

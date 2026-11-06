@@ -510,6 +510,7 @@ extern u16 gConfusedDir;        // 0x03002B64
 extern u16 gPlayerMoverIDs[4];  // 0x03002B68, 多分プレイヤーの moverID
 extern u16 gGoodCondTimer;      // 0x03002B8C, Player.goodCondTimer の退避, 他Entityからの参照用
 extern u16 gWindAngle;
+extern u16 gRisingSunCount;  // 0x03002BF0
 
 void FUN_0807a524(Vec3* pos);
 void Player_AddENE(Player* p, s32 amount);

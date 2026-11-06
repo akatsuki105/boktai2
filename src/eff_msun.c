@@ -87,8 +87,6 @@ typedef struct RisingSunEffect {
 } RisingSunEffect;
 static_assert(sizeof(RisingSunEffect) == 1136);
 
-extern u16 gRisingSunCount;
-
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void RisingSunEffectSprite_FadeOut(RisingSunEffectSprite* s);
 

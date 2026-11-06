@@ -308,8 +308,6 @@ static inline void Ringo_ResetSubStates(Ringo* p, u32 duration) {
   p->stateDuration = duration;
 }
 
-extern u16 gRisingSunCount;
-
 const s8 s8_ARRAY_085aabbc[10][2] = {
     {9, -4},
     {9, -7},

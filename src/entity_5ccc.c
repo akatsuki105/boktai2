@@ -57,8 +57,6 @@ static_assert(sizeof(Entity5CCC) == 2740);
 
 IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
 
-extern u16 gRisingSunCount;
-
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
   return FALSE;

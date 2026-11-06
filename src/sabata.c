@@ -24,7 +24,6 @@ void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p);
 bool32 FUN_0809e138(Player* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 FUN_080298dc(void);
-extern u16 gRisingSunCount;
 void* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 WorldPos* FUN_080230c4(void);
 void FUN_08084734(WorldPos* out);
