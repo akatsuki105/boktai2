@@ -475,9 +475,9 @@ through the compiler at all, so turning one into C shifts every later
 function's `.LC` numbers by however many constants it uses.
 
 Seen on `FUN_0807a270` (`src/player.c`), which stores 0 to seven `u16` globals
-through seven hoisted address registers. With `FUN_08079f1c` just before it left
+through seven hoisted address registers. With `Player_UpdateCrossoverDjango` just before it left
 `NAKED`, its constants are `.LC86`-`.LC101` and the seven addresses go to r5, r6,
-r7, ip, r8, r9, sl in source order, matching the ROM. With `FUN_08079f1c` in C
+r7, ip, r8, r9, sl in source order, matching the ROM. With `Player_UpdateCrossoverDjango` in C
 (its own stream identical to the target, 360/360), they become `.LC91`-`.LC106`;
 in the `-dG` dump the pseudos for `.LC100`-`.LC106` are created first (76-82), so
 the last two globals take r5/r6 and the ROM no longer matches. Reordering the

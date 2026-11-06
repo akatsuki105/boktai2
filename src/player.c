@@ -62,7 +62,7 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
 void BuildWeaponData(Weapon* w, WeaponData* data);
 s32 CalcAttackWithEquippedArmor(WeaponData* w);
 void Player_UpdateMegaBusterAttack(Player* p);
-void FUN_08079f1c(Player* p);
+void Player_UpdateCrossoverDjango(Player* p);
 void Camera_LookAt(Vec3* pos);
 bool8 MapItemManager_TryOpen(Mover* mover);
 Vec3* Elevator_GetPosByID(s32 id);
@@ -2770,13 +2770,8 @@ void Player_EquipArmor(Player* p, const ArmorData* a) {
 }
 
 void CheckHeartJokerEmblem(Player* p) {
-  if (CheckItemOwn(ITEM_HEART_EMBLEM)) {
-    Player_SetEquipBuff(p, EBUFF_HEART);
-  }
-
-  if (CheckItemOwn(ITEM_JOKER_EMBLEM)) {
-    Player_SetEquipBuff(p, EBUFF_JOKER);
-  }
+  if (CheckItemOwn(ITEM_HEART_EMBLEM)) Player_SetEquipBuff(p, EBUFF_HEART);
+  if (CheckItemOwn(ITEM_JOKER_EMBLEM)) Player_SetEquipBuff(p, EBUFF_JOKER);
 }
 
 static s32 GetMagicCost(magic32_t id) {
@@ -2801,7 +2796,7 @@ static s32 GetMagicCost(magic32_t id) {
       [MAGIC_WOLF] = 10,
   };  // 0x085ABACC
 
-  static const u16 sMagicUnkVal[MAGIC_NUM] = {
+  static const u16 sMagicCostsOnCrossOver[MAGIC_NUM] = {
       [MAGIC_SOL] = 10,
       [MAGIC_DARK] = 0,
       [MAGIC_FLAME] = 5,
@@ -2820,10 +2815,10 @@ static s32 GetMagicCost(magic32_t id) {
       [MAGIC_BAT] = 0,
       [MAGIC_RAT] = 0,
       [MAGIC_WOLF] = 0,
-  };  // 0x085ABAF0, いつ使うかわからん
+  };  // 0x085ABAF0
 
   if (gGameFlags & GAMEFLAG_CROSSOVER) {
-    return sMagicUnkVal[id];
+    return sMagicCostsOnCrossOver[id];
   } else {
     return sMagicCosts[id];
   }
@@ -3288,7 +3283,7 @@ s32 Player_InitState(Player* p) {
     for (i = 0; i < 3; i++) {
       gBadCondTimer[i] = 0;
     }
-    p->updateCallback = FUN_08079f1c;
+    p->updateCallback = Player_UpdateCrossoverDjango;
   } else {
     p->updateCallback = sPlayerUpdates[p->kind];
   }
@@ -5705,9 +5700,7 @@ void Player_UpdateDeath(Player* p) {
       PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
-    if (gGameFlags & GAMEFLAG_CROSSOVER) {
-      CrossoverBattle_NotifyPlayerDead();
-    }
+    if (gGameFlags & GAMEFLAG_CROSSOVER) CrossoverBattle_NotifyPlayerDead();
   }
 
   switch (p->state) {
@@ -11419,46 +11412,45 @@ void Player_PostUpdateHuman(Player* p) {
   }
 }
 
-// clang-format off
-static const PlayerFunc sDjangoActionFuncs[33] = {
-    [PACT_IDLE] = FUN_08066f7c,
-    [PACT_WALK] = FUN_080672b0,
-    [PACT_DASH] = MagicDash_Update,
-    [PACT_ATTACK] = FUN_080695ec,
-    [PACT_WALL] = FUN_08067510,
-    [PACT_UNK_5] = FUN_08067de8,
-    [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-    [PACT_UNK_7] = Player_UpdateSolarCharge,
-    [PACT_UNK_8] = Player_UpdateSolarStand,
-    [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
-    [PACT_TRANSFORM] = MagicTransform_0806b92c,
-    [PACT_CWOLF] = MagicChangeWolf_0806eb40,
-    [PACT_CBAT] = MagicChangeBat_0806bc74,
-    [PACT_CMOUSE] = MagicChangeMouse_0806bf18,
-    [PACT_SLEEPING] = MagicSleeping_0806c124,
-    [PACT_FREEZE] = MagicFreeze_08069710,
-    [PACT_HEALING] = MagicHealing_08069928,
-    [PACT_DYNAMITE] = MagicDynamite_08069b18,
-    [PACT_UNK_18] = FUN_08069c8c,
-    [PACT_UNK_19] = FUN_0806961c,
-    [PACT_UNK_20] = FUN_08069648,
-    [PACT_GRABBED] = FUN_0806a050,
-    [PACT_UNK_22] = Player_UpdateFall,
-    [PACT_UNK_23] = FUN_08069f60,
-    [PACT_DAMAGED] = Player_UpdateHurt,
-    [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-    [PACT_UNK_26] = Player_UpdateDeath,
-    [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
-    [PACT_FALLDEATH] = Player_UpdateFallDeath,
-    [PACT_DROWNING] = FUN_0806adc8,
-    [PACT_UNK_30] = FUN_0806af70,
-    [PACT_SPECIALDEATH] = FUN_0806f1ec,
-    [PACT_UNK_32] = FUN_0806b06c,
-};  // 0x085ABCAC
-// clang-format on
-
 // プレイヤーの毎フレーム更新本体, unk_1c の状態ごとに行動関数を呼び, 通常状態では段差を登れるかも見る
 void Player_UpdateDjango(Player* p) {
+  // clang-format off
+  static const PlayerFunc sDjangoActionFuncs[33] = {
+      [PACT_IDLE] = FUN_08066f7c,
+      [PACT_WALK] = FUN_080672b0,
+      [PACT_DASH] = MagicDash_Update,
+      [PACT_ATTACK] = FUN_080695ec,
+      [PACT_WALL] = FUN_08067510,
+      [PACT_UNK_5] = FUN_08067de8,
+      [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
+      [PACT_UNK_7] = Player_UpdateSolarCharge,
+      [PACT_UNK_8] = Player_UpdateSolarStand,
+      [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
+      [PACT_TRANSFORM] = MagicTransform_0806b92c,
+      [PACT_CWOLF] = MagicChangeWolf_0806eb40,
+      [PACT_CBAT] = MagicChangeBat_0806bc74,
+      [PACT_CMOUSE] = MagicChangeMouse_0806bf18,
+      [PACT_SLEEPING] = MagicSleeping_0806c124,
+      [PACT_FREEZE] = MagicFreeze_08069710,
+      [PACT_HEALING] = MagicHealing_08069928,
+      [PACT_DYNAMITE] = MagicDynamite_08069b18,
+      [PACT_UNK_18] = FUN_08069c8c,
+      [PACT_UNK_19] = FUN_0806961c,
+      [PACT_UNK_20] = FUN_08069648,
+      [PACT_GRABBED] = FUN_0806a050,
+      [PACT_UNK_22] = Player_UpdateFall,
+      [PACT_UNK_23] = FUN_08069f60,
+      [PACT_DAMAGED] = Player_UpdateHurt,
+      [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
+      [PACT_UNK_26] = Player_UpdateDeath,
+      [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
+      [PACT_FALLDEATH] = Player_UpdateFallDeath,
+      [PACT_DROWNING] = FUN_0806adc8,
+      [PACT_UNK_30] = FUN_0806af70,
+      [PACT_SPECIALDEATH] = FUN_0806f1ec,
+      [PACT_UNK_32] = FUN_0806b06c,
+  };  // 0x085ABCAC
+  // clang-format on
   s32 action;
 
   Player_SetFlag20(p, PFLAG20_UPDATED);
@@ -12087,10 +12079,10 @@ void Player_UpdateSleeping(Player* p) {
   }
 }
 
-// GAMEFLAG_CROSSOVER が立っているときの updateCallback (ただし、 GAMEFLAG_CROSSOVER の用途がわからないので、この関数の正確な役割もまだ不明, 不使用かも?)
-void FUN_08079f1c(Player* p) {
+// GAMEFLAG_CROSSOVER が立っているときの updateCallback
+void Player_UpdateCrossoverDjango(Player* p) {
   // clang-format off
-  static const PlayerFunc PTR_ARRAY_085abedc[28] = {
+  static const PlayerFunc sCrossoverDjangoActionFuncs[28] = {
       [PACT_IDLE] = FUN_08066f7c,
       [PACT_WALK] = FUN_080672b0,
       [PACT_DASH] = FUN_0806f284,
@@ -12139,7 +12131,7 @@ void FUN_08079f1c(Player* p) {
       FUN_080784fc(p);
       action = FUN_080788d0(p);
       FUN_08066d7c(p, action);
-      PTR_ARRAY_085abedc[action](p);
+      sCrossoverDjangoActionFuncs[action](p);
 
       if (p->useForcedDelta != 0) {
         p->mover.delta = p->forcedDelta;
@@ -12193,7 +12185,7 @@ void FUN_08079f1c(Player* p) {
       } else {
         action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
       }
-      PTR_ARRAY_085abedc[action](p);
+      sCrossoverDjangoActionFuncs[action](p);
       Player_PostUpdateHuman(p);
       break;
     }
