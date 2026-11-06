@@ -377,7 +377,57 @@ void Entity08051b70_StateReceive(Entity08051b70* p) {
   p->timer++;
 }
 
-NAKED void Entity08051b70_StateBlock(Entity08051b70* p) { INCFUNC("asm/func/Entity08051b70_StateBlock.inc"); }
+// 自分のブロッキング, 届いたオジャマバットを置き場から右上へ送り返し BLOCKING を出す
+// 残差: 最初のループで 0 の定数2つをループ外へ出して r9/ip に持つぶん, &p->mainGfx がスタックへ逃げ sp が 4 バイト多い (141 対 138 命令)
+// 試済: i を関数スコープで共有, 前半の枝を SetColorCount でなく直接代入
+NON_MATCH void Entity08051b70_StateBlock(Entity08051b70* p) {
+#ifdef NONMATCHING_C
+  if (p->entered) {
+    s32 i;
+
+    p->entered = FALSE;
+    p->nextIdx = 0;
+    for (i = 0; i < 8; i++) {
+      u32 color = i & 3;
+
+      if (i < 4) {
+        p->blockedOjama[color] = p->rivalOjama[color];
+        p->rivalOjama[color] = 0;
+        Entity08051b70Elem_SetColorCount(&p->elems[i], color, 0);
+      } else {
+        Entity08051b70Elem_SetColorCount(&p->elems[i], color, p->blockedOjama[color]);
+        if (p->elems[i].count != 0) {
+          p->elems[i].state = 3;
+          p->elems[i].entered = TRUE;
+          p->elems[i].timer = 0;
+        }
+      }
+    }
+    MainSprite_SetPose(&p->banner, &p->mainGfx, LINK_BLOCKING, 0);
+    MainSprite_Show(&p->banner);
+    p->shakeTimer = 8;
+    PlaySound_082406e0(SONG_883);
+  }
+  if (p->timer == 40) {
+    s32 sum = 0;
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+      sum += p->blockedOjama[i];
+    }
+    if (sum == 0) {
+      PlaySound_082406e0(SE_NG);
+    }
+  }
+  if (p->timer >= 80) {
+    MainSprite_Hide(&p->banner);
+    Entity08051b70_NextBlockStep(p, 0);
+  }
+  p->timer++;
+#else
+  INCFUNC("asm/func/Entity08051b70_StateBlock.inc");
+#endif
+}
 
 void Entity08051b70_StateRivalBlock(Entity08051b70* p) {
   if (p->entered) {
