@@ -2494,7 +2494,7 @@ s32 MainMenu_QC_CanOpen(MainMenu* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_UNK_9 | GAMEFLAG_UNK_0)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
       return TRUE;
     }
   }
@@ -9951,7 +9951,7 @@ s32 FUN_0809b348(MainMenu* p) {
   if (gInput[0].pressed & START_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_UNK_9 | GAMEFLAG_UNK_0)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
       return TRUE;
     }
   }

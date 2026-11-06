@@ -283,7 +283,7 @@ void FUN_0807fdac(DjangoBerserk* p) {
   p->sprite.flags |= SPRFLAG_HIDDEN;
   if (p->timer == 0) {
     EnableEntityFlags(ENTITY_DISABLE_2);
-    gGameFlags &= ~GAMEFLAG_UNK_0;
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
   if (++p->timer <= 5) {
     Hitbox_Register(&p->hitbox);
@@ -382,7 +382,7 @@ s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) {
   FUN_0807fed0(p);
   FUN_0807ff78(p);
   DjangoBerserk_SetState(p, FUN_0807f94c);
-  gGameFlags |= GAMEFLAG_UNK_0;
+  gGameFlags |= GAMEFLAG_NO_PAUSE;
   p->hpTarget = p->player->hp >> 1;
   if (p->hpTarget == 0) {
     p->hpTarget = 1;

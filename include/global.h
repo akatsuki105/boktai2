@@ -61,9 +61,9 @@ extern u32 gPlayerStates[4];         // 0x03002BC0, プレイヤーごとのフ�
 
 // --------------------------------------------
 
-#define GAMEFLAG_UNK_0 (1 << 0)       // 0x1, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
+#define GAMEFLAG_NO_PAUSE (1 << 0)    // 0x1, 暴走やジャッジメント等の演出中にセット, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
 #define GAMEFLAG_UNK_8 (1 << 8)       // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
-#define GAMEFLAG_UNK_9 (1 << 9)       // 0x200, 用途はまだ不明 (マップ切り替え時, 会話中にセット)
+#define GAMEFLAG_EVENT (1 << 9)       // 0x200, イベント中にセット (Script_0x007E/007F が立てて落とす), 会話中・マップ切り替え時も立つ
 #define GAMEFLAG_GAMEOVER (1 << 10)   // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
 #define GAMEFLAG_LINK (1 << 11)       // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)
 #define GAMEFLAG_CROSSOVER (1 << 12)  // 0x1000, クロスオーバーバトル中にセットされる? (mGBAがワイヤレスアダプタのエミュレーションをサポートしてないため検証が面倒で未確認)

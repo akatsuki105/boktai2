@@ -134,7 +134,7 @@ void FUN_0823a9f4(void) {
 }
 
 void FUN_0823aa10(void) {
-  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_UNK_0)) {
+  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_NO_PAUSE)) {
     FUN_082407e0();
     SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_1);
   }
@@ -226,8 +226,8 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
         if (p->unk_1c < 1) {
           nop_0823aa70();
           FUN_0823aa74();
-          if (gGameFlags & GAMEFLAG_UNK_9) {
-            gGameFlags &= ~GAMEFLAG_UNK_9;
+          if (gGameFlags & GAMEFLAG_EVENT) {
+            gGameFlags &= ~GAMEFLAG_EVENT;
             if (gEntityDisableFlags & ENTITY_DISABLE_3) {
               CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_3);
             }

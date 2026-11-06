@@ -69,7 +69,7 @@ void Entity7C62_SetUpdateCallback(Entity7C62* p, Entity7C62Func* fn) {
 
 // プレイヤーが近いと浮き上がって光り, A ボタンでプレイヤーを pos へ飛ばす
 void Entity7C62_UpdateIdle(Entity7C62* p) {
-  if (!(gGameFlags & GAMEFLAG_UNK_9)) {
+  if (!(gGameFlags & GAMEFLAG_EVENT)) {
     if (p->readyTimer < 10) {
       p->readyTimer++;
     }

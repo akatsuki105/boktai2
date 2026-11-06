@@ -385,7 +385,7 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
     p->idleTimer++;
   }
 
-  if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_UNK_9)) == GAMEFLAG_UNK_9) {
+  if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_EVENT)) == GAMEFLAG_EVENT) {
     return;
   }
   if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {

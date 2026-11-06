@@ -122,7 +122,7 @@ void FUN_080aa23c(Entity080aace8* p) {
   if (p->unk_34a <= 5) {
     Hitbox_Register(&p->hitbox);
   } else if (p->unk_34a == 6) {
-    gGameFlags &= ~GAMEFLAG_UNK_0;
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
 
   p->unk_34a++;
@@ -274,7 +274,7 @@ NON_MATCH void FUN_080aa658(Entity080aace8* p) {
   if (p->unk_34a <= 5) {
     Hitbox_Register(&p->hitbox);
   } else if (p->unk_34a == 6) {
-    gGameFlags &= ~GAMEFLAG_UNK_0;
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
 
   p->unk_34a++;
@@ -480,7 +480,7 @@ s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
   }
 
   p->player->hurtbox.invincibleTime = 0;
-  gGameFlags |= GAMEFLAG_UNK_0;
+  gGameFlags |= GAMEFLAG_NO_PAUSE;
   SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
   if (p->kind == TYPE_JUSTICE) {
     FUN_080aa9d0(p);

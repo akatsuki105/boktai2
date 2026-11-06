@@ -151,7 +151,7 @@ void Judgement_UpdateFinish(Judgement* p) {
   if (p->timer > 59) {
     Sound_Resume();
     CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
-    gGameFlags &= ~GAMEFLAG_UNK_0;
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
     KillEntity((Entity*)p);
   }
 }
@@ -302,7 +302,7 @@ s32 Judgement_Init(Judgement* p, Player* player) {
   Judgement_InitParticles(p);
   p->updateCallback = Judgement_UpdateAppear;
   p->timer = 0;
-  gGameFlags |= GAMEFLAG_UNK_0;
+  gGameFlags |= GAMEFLAG_NO_PAUSE;
   return 0;
 }
 

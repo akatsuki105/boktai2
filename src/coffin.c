@@ -1130,7 +1130,7 @@ void FUN_08087494(Coffin* p) {
 }
 
 void FUN_080874cc(Coffin* p) {
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1297,7 +1297,7 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
   s32 range;
   u16* table;
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1330,7 +1330,7 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
 }
 
 void FUN_08087bac(Coffin* p) {
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
   if (p->canSelfMove == 0) {
@@ -1358,7 +1358,7 @@ void Coffin_UpdateState0(Coffin* p) {
   p->unk_32a = 0;
   FUN_08086024(p, 0);
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1470,7 +1470,7 @@ void Coffin_UpdateState1(Coffin* p) {
     FUN_08086024(p, 0);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1553,7 +1553,7 @@ void Coffin_UpdateState3(Coffin* p) {
     Coffin_SetState(p, 3);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1605,7 +1605,7 @@ NON_MATCH void Coffin_UpdateState4(Coffin* p) {
     Coffin_SetState(p, 4);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1662,7 +1662,7 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
     Coffin_SetState(p, 2);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1802,7 +1802,7 @@ void Coffin_UpdateState5(Coffin* p) {
     Coffin_SetState(p, 5);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1876,7 +1876,7 @@ void Coffin_UpdateState6(Coffin* p) {
     Coffin_SetState(p, 6);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -2046,7 +2046,7 @@ void Coffin_UpdateState15(Coffin* p) {
   p->unk_32a = 1;
   FUN_08086024(p, 0);
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -2098,7 +2098,7 @@ void Coffin_UpdateState16(Coffin* p) {
     FUN_08086024(p, 0);
   }
 
-  if (gGameFlags & GAMEFLAG_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 

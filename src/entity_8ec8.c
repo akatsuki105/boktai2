@@ -103,7 +103,7 @@ NON_MATCH s32 Entity8EC8_Update(Entity8EC8* p) {
   Entity8EC8_HandleMessages(p);
   p->stateTimer++;
   if (!p->disabled) {
-    if (gGameFlags & (GAMEFLAG_UNK_9 | GAMEFLAG_GAMEOVER)) {
+    if (gGameFlags & (GAMEFLAG_EVENT | GAMEFLAG_GAMEOVER)) {
       if (p->state != 0) {
         p->state = 0;
       } else {
