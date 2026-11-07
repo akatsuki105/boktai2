@@ -113,6 +113,7 @@ static inline void Hitbox_SetFlags(HitboxData* hitbox, HitboxFlags flags) { hitb
 static inline void Hitbox_ClearFlags(HitboxData* hitbox, HitboxFlags flags) { hitbox->flags &= ~flags; }
 static inline HitboxFlags Hitbox_TestFlags(HitboxData* hitbox, HitboxFlags flags) { return hitbox->flags & flags; }
 static inline void Hitbox_Hide(HitboxData* hitbox) { hitbox->flags |= HBFLAG_HIDDEN; }
+static inline void Hitbox_SetHalfSize(HitboxData* hitbox, Vec3* halfSize) { hitbox->halfSize = *halfSize; }
 // 攻撃判定に使うと weakness は攻撃元の種別マスクなので, mask も HBATTR_* ではなくそのビットで指定する
 static inline bool32 Hitbox_HasWeakness(HitboxData* hitbox, u32 mask) { return hitbox->weakness & mask; }
 static inline u32 Hitbox_TestAttr(HitboxData* hitbox, HitboxAttributes mask) { return (hitbox->attributes & mask); }

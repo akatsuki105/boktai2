@@ -282,8 +282,6 @@ static inline void Hitbox_AddAttributes(HitboxData* hitbox, HitboxAttributes att
 
 static inline void Hitbox_RemoveAttributes(HitboxData* hitbox, HitboxAttributes attrs) { hitbox->attributes &= ~attrs; }
 
-static inline void Hitbox_SetHalfSize(HitboxData* hitbox, Vec3* halfSize) { hitbox->halfSize = *halfSize; }
-
 // 残差はオフセットの定数を作るレジスタの割り当てだけ (原典は r6 を足して4本使う), 2つの表に分けて命令数までは揃った
 NON_MATCH void FUN_08023388(Duneyrr* p) {
 #ifdef NONMATCHING_C

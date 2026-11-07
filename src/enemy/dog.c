@@ -285,7 +285,62 @@ void Dog_InitHitboxes(Dog* p) {
   Hitbox_SetFlags(&self->unk_658, HBFLAG_ANGLE);
 }
 
-NAKED void FUN_0814ac10(Dog* p) { INCFUNC("asm/func/FUN_0814ac10.inc"); }
+// 向きに合わせて攻撃判定と食らい判定の大きさを置き直し, 2つ目の攻撃判定を前方へ出す
+void FUN_0814ac10(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+  WorldPos pos;
+  Vec3 big;
+  Vec3 size;
+  s32 angle;
+
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  pos = (p->e).mover.pos;
+  angle = FixToInt(6, ((p->e).mover.angle + 0x20) & 0xFF) << 6;
+  if (Dog_TestUnk6a8(q, 2)) {
+    pos.x += POLAR_X(512, angle);
+    pos.z += POLAR_Z(512, angle);
+  } else {
+    pos.x += POLAR_X(128, angle);
+    pos.z += POLAR_Z(128, angle);
+  }
+  Hitbox_SetPos(&q->unk_658, &pos, 0);
+  q->unk_658.angle = angle;
+  pos = (p->e).mover.pos;
+  switch (FixToInt(6, angle)) {
+    case 0:
+    case 2: {
+      if (Dog_TestUnk6a8(q, 2)) {
+        big.x = 240;
+        big.z = 128;
+      }
+      size.x = 120;
+      size.z = 64;
+      break;
+    }
+    case 1:
+    case 3: {
+      if (Dog_TestUnk6a8(q, 2)) {
+        big.x = 128;
+        big.z = 240;
+      }
+      size.x = 64;
+      size.z = 120;
+      break;
+    }
+  }
+  size.y = 100;
+  Hitbox_SetHalfSize(&(p->e).atkHitbox, &size);
+  Hitbox_SetPos(&(p->e).atkHitbox, &pos, 0);
+  Hitbox_SetHalfSize(&(p->e).hurtbox, &size);
+  Hitbox_SetPos(&(p->e).hurtbox, &pos, 0);
+  if (Dog_TestUnk6a8(q, 2)) {
+    Hitbox_SetHalfSize(&q->unk_658, &big);
+  } else {
+    Hitbox_SetHalfSize(&q->unk_658, &size);
+  }
+}
 
 void FUN_0814ae80(Dog* p) {
   Dog* q = (p->e).unk_1cc;
@@ -406,7 +461,7 @@ bool8 FUN_0814b3e0(Dog* p) {
   return FALSE;
 }
 
-// 追いかけるか逃げるかを決める, 近すぎるか回り込めなければ向きを反転して副状態17へ, 遠ければプレイヤーへの経路を引いて状態26へ, どちらでもなければ状態42へ
+// 次の動きを決める, 近いときは向きを反転して副状態17へ, unk_6bc より遠ければプレイヤーへの経路を引いて状態26へ, どちらでもなければ状態42へ
 // 273/274命令, 残差は unk_6b8 のオフセットを 0x6D7 の定数から subs で作るか (こちら), movs/lsls で作り直すか (原典) だけ, 副状態3つの比較は *(u32*)&subState0 & 0xFFFFFF を直接書くと揃う (inline 経由だとアドレスが r8 に持ち越される), 試済: 比較の向きを逆に (順が入れ替わる)
 NON_MATCH void enemy_dog_0814b500(Dog* p) {
 #ifdef NONMATCHING_C
