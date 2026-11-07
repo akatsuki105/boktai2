@@ -39,6 +39,7 @@ static_assert(sizeof(Dog) == 1808);
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
+void FUN_0814ca30(Dog* p, s32 timer);
 void FUN_0814df40(Dog* p);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
@@ -235,7 +236,20 @@ NAKED void FUN_0814c2d4(Dog* p) { INCFUNC("asm/func/FUN_0814c2d4.inc"); }
 
 void FUN_0814c970(Dog* p) {}
 
-NAKED void FUN_0814c974(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814c974.inc"); }
+void FUN_0814c974(Dog* p, s32 timer) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 6);
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    }
+  }
+  if (Mod(timer, 60) == 0) {
+    Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
+  }
+  if ((p->e).nodeWait <= 0 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
+    Enemy_EnterState(&p->e, FUN_0814ca30, ES_UNK_6);
+  }
+}
 
 void FUN_0814ca30(Dog* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
