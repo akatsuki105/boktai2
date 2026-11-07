@@ -48,6 +48,7 @@ void FUN_08163604(Slime* p, s32 arg);
 void FUN_081636d4(Slime* p);
 void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
+void FUN_081647c8(Slime* p);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
@@ -503,7 +504,37 @@ void FUN_081645a4(Slime* p) {
   }
 }
 
-NAKED void FUN_081645fc(Slime* p) { INCFUNC("asm/func/FUN_081645fc.inc"); }
+// 分裂のスクリプト (.s[0]) を位置や向き, 体力を引数にして呼び, 自身は止まる
+void FUN_081645fc(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+
+  if (q->unk_688 != 0) {
+    u32 argv[10];
+    Vec3 v;
+    ScriptArgs sa;
+
+    argv[0] = (p->e).mover.pos.x;
+    argv[1] = (p->e).mover.pos.y;
+    argv[2] = (p->e).mover.pos.z;
+    argv[3] = (p->e).hp;
+    Vec3_SetPolar(&v, (p->e).angle, 12);
+    argv[4] = v.x;
+    argv[5] = 24;
+    argv[6] = v.z;
+    argv[7] = (p->e).variant;
+    argv[8] = q->unk_68a;
+    argv[9] = (p->e).maxHp;
+    sa.argc = 10;
+    sa.argv = argv;
+    VM_ExecByID(q->unk_688, &sa);
+    FUN_081647c8(p);
+    q->unk_688 = 0;
+    SET_FLAGS(q->unk_68e, 8);
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 0, 2);
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+  }
+}
 
 // ブラックスライムだけ, 当てたときの属性を乱数で引火か氷結に決める
 u32 Slime_PickHitAttributes(Slime* p) {
