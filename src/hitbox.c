@@ -128,7 +128,7 @@ void UNUSED Hitbox_SetPosAndOffset(HitboxData* p, Vec3* pos, Vec3* offset, u32 u
   p->unk_8 = unk_8;
 }
 
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockback) {
+void Hitbox_SetPower(HitboxData* p, s32 power, s32 knockback) {
   p->power = power;
   p->knockbackPower = knockback;
 }

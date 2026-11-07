@@ -122,7 +122,7 @@ void Hitbox_Register(HitboxData* p);
 void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset);
 void Hitbox_SetPos(HitboxData* p, Vec3* pos, u32 unk_8);
 // weakness には攻撃元の種別マスク (see HitboxData.weakness) を渡す
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockback);
+void Hitbox_SetPower(HitboxData* p, s32 power, s32 knockback);
 void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockback, s32 weakness, HitboxAttributes attrs, s32 invincibleTime);
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness);
 void Hitbox_SetHandler(HitboxData* p, void* handler, void* owner);
