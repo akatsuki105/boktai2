@@ -1587,7 +1587,7 @@ _0813E0FC:
 	movs r3, #0xbf
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _0813E314 @ =enemy_curoro_0813c7ac
+	ldr r0, _0813E314 @ =Curoro_OnReset
 	str r0, [r1]
 	ldr r4, _0813E318 @ =0x000005FC
 	adds r0, r7, r4
@@ -1684,7 +1684,7 @@ _0813E304: .4byte FUN_080f624c
 _0813E308: .4byte FUN_080f56ec
 _0813E30C: .4byte FUN_080f5b34
 _0813E310: .4byte FUN_080f5fac
-_0813E314: .4byte enemy_curoro_0813c7ac
+_0813E314: .4byte Curoro_OnReset
 _0813E318: .4byte 0x000005FC
 _0813E31C: .4byte 0x000005AC
 _0813E320: .4byte FUN_0813ccf0

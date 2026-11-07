@@ -1579,7 +1579,7 @@ _08149958:
 	movs r3, #0xbf
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _08149B48 @ =FUN_08147a38
+	ldr r0, _08149B48 @ =Mimic_OnReset
 	str r0, [r1]
 	ldr r4, _08149B4C @ =0x000005AC
 	adds r1, r7, r4
@@ -1660,7 +1660,7 @@ _08149B38: .4byte FUN_080f624c
 _08149B3C: .4byte FUN_080f56ec
 _08149B40: .4byte FUN_080f5b34
 _08149B44: .4byte FUN_080f5fac
-_08149B48: .4byte FUN_08147a38
+_08149B48: .4byte Mimic_OnReset
 _08149B4C: .4byte 0x000005AC
 _08149B50: .4byte FUN_081488bc
 _08149B54: .4byte FUN_08148784

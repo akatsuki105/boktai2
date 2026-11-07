@@ -1405,8 +1405,8 @@ NON_MATCH void FUN_080ee738(Enemy* p) {
   FUN_080eeee0(p);
   p->flags |= 2;
   p->hurtbox.flags |= 4;
-  if (p->unk_5f8 != NULL) {
-    p->unk_5f8(p);
+  if (p->onReset != NULL) {
+    p->onReset(p);
   }
   FUN_080eeee0(p);
   p->emote = Emote_Remove(p->emote, 1, p->mover.id);

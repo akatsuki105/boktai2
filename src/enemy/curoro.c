@@ -70,7 +70,7 @@ void Curoro_PickRandomPathNode(Curoro* p);
 void Curoro_StartCurve(Curoro* p, Vec3* pos);
 bool8 Curoro_StepCurve(Curoro* p);
 void FUN_0813c738(Curoro* p);
-void enemy_curoro_0813c7ac(Curoro* p);
+void Curoro_OnReset(Curoro* p);
 void FUN_0813c938(Curoro* p);
 void FUN_0813c9c4(Curoro* p, Vec3* pos);
 void FUN_0813ca64(Curoro* p);
@@ -1115,8 +1115,8 @@ void FUN_0813c738(Curoro* p) {
   Enemy_SetAnimEntry(&p->e, 10, 6, 0);
 }
 
-// 残差2命令 (182/183), boku.c の FUN_080ffad8 と同じく原典は sprite を r0 に読んでから r5 へ写す, ほかに Enemy_ClearPendingState の第1引数の位置, aux を引数に直接書く形と送りを包む inline は試済
-NON_MATCH void enemy_curoro_0813c7ac(Curoro* p) {
+// 残差2命令 (182/183), boku.c の Boku_OnReset と同じく原典は sprite を r0 に読んでから r5 へ写す, ほかに Enemy_ClearPendingState の第1引数の位置, aux を引数に直接書く形と送りを包む inline は試済
+NON_MATCH void Curoro_OnReset(Curoro* p) {
 #ifdef NONMATCHING_C
   Curoro* q = (p->e).unk_1cc;
   EnemyAuxSpriteData* aux;
@@ -1137,7 +1137,7 @@ NON_MATCH void enemy_curoro_0813c7ac(Curoro* p) {
   aux = (EnemyAuxSpriteData*)(p->e).sprite;
   AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
 #else
-  INCFUNC("asm/func/enemy_curoro_0813c7ac.inc");
+  INCFUNC("asm/func/Curoro_OnReset.inc");
 #endif
 }
 
@@ -1713,7 +1713,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).unk_60c = (void*)gEnemyDefaultMsgHandlers;
   (p->e).unk_5f0 = FUN_080e73c8;
   (p->e).unk_5e4 = NULL;
-  (p->e).unk_5f8 = NULL;
+  (p->e).onReset = NULL;
   (p->e).unk_5fc = NULL;
   (p->e).unk_600 = NULL;
   (p->e).unk_614 = NULL;
@@ -1733,7 +1733,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;
   (p->e).unk_543 = 40;
-  (p->e).unk_5f8 = (EnemyHandler)enemy_curoro_0813c7ac;
+  (p->e).onReset = (EnemyHandler)Curoro_OnReset;
   (p->e).unk_5fc = NULL;
   (p->e).unk_5ac = (EnemyHandler)FUN_0813ccf0;
   (p->e).unk_5b0 = NULL;

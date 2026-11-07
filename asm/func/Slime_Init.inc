@@ -1687,7 +1687,7 @@ _081662E8:
 	movs r2, #0xbf
 	lsls r2, r2, #3
 	adds r1, r7, r2
-	ldr r0, _081664D8 @ =slime_08163f54
+	ldr r0, _081664D8 @ =Slime_OnReset
 	str r0, [r1]
 	ldr r3, _081664DC @ =0x000005FC
 	adds r1, r7, r3
@@ -1773,7 +1773,7 @@ _081664C8: .4byte FUN_080f624c
 _081664CC: .4byte FUN_080f56ec
 _081664D0: .4byte FUN_080f5b34
 _081664D4: .4byte FUN_080f5fac
-_081664D8: .4byte slime_08163f54
+_081664D8: .4byte Slime_OnReset
 _081664DC: .4byte 0x000005FC
 _081664E0: .4byte FUN_0816406c
 _081664E4: .4byte 0x000005AC

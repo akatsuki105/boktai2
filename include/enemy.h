@@ -405,7 +405,7 @@ typedef struct Enemy {
   void* unk_5ec;                    // 0x5EC, 状態32のハンドラ, FUN_080f48ac が吹き飛ばしの通知で handlerState へ写す
   EnemyHandler unk_5f0;             // 0x5F0, fn(p), FUN_080e72b0 がアニメの再生し直しの合図で呼ぶ
   u8 unk_5f4[0x5F8 - 0x5F4];        // 0x5F4
-  EnemyHandler unk_5f8;             // 0x5F8, fn(p), FUN_080ee738 が呼ぶ
+  EnemyHandler onReset;             // 0x5F8, fn(p), FUN_080ee738 が呼ぶ
   void* unk_5fc;                    // 0x5FC
   void* unk_600;                    // 0x600, EnemyBat_Init がアドレスを取る, 呼び出しは未発見
   void* unk_604;                    // 0x604

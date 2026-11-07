@@ -1521,7 +1521,7 @@ _08102834:
 	movs r5, #0xbf
 	lsls r5, r5, #3
 	adds r1, r7, r5
-	ldr r0, _08102A70 @ =FUN_080ffad8
+	ldr r0, _08102A70 @ =Boku_OnReset
 	str r0, [r1]
 	ldr r6, _08102A74 @ =0x000005FC
 	adds r1, r7, r6
@@ -1615,7 +1615,7 @@ _08102A60: .4byte FUN_080f624c
 _08102A64: .4byte FUN_080f56ec
 _08102A68: .4byte FUN_080f5b34
 _08102A6C: .4byte FUN_080f5fac
-_08102A70: .4byte FUN_080ffad8
+_08102A70: .4byte Boku_OnReset
 _08102A74: .4byte 0x000005FC
 _08102A78: .4byte FUN_080ffc28
 _08102A7C: .4byte 0x000005AC

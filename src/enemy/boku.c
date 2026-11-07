@@ -49,7 +49,7 @@ bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 void FUN_080ff67c(Boku* p);
 void FUN_080ffda8(Boku* p);
 void FUN_080fc28c(Boku* p);
-void FUN_080ffad8(Boku* p);
+void Boku_OnReset(Boku* p);
 void FUN_080fc174(Boku* p, s32 param_2);
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f90[] = "eneinline.h";
@@ -773,7 +773,7 @@ void FUN_080fc28c(Boku* p) {
     PlaySound_082406e0(NOISE_UNK_128 | NOISE_HEARTBEAT);
   }
   if ((p->e).animForceRestart) {
-    FUN_080ffad8(p);
+    Boku_OnReset(p);
     Enemy_RestoreInitialState(&p->e);
   }
 }
@@ -2017,7 +2017,7 @@ void Boku_InitHitboxes(Boku* p) {
 // 状態を初期化して待機アニメ 0 に戻し, 1コマ進める
 // 残差1命令 (152/153), 原典は p->sprite を r0 に読んでから r5 へ移すが, こちらは r5 へ直接読む, 手動送りは AuxSprite_AdvanceAnim で一致
 // aux のローカル化, 引数に直接書く形, 敵用の送り inline を挟む形は試済
-NON_MATCH void FUN_080ffad8(Boku* p) {
+NON_MATCH void Boku_OnReset(Boku* p) {
 #ifdef NONMATCHING_C
   Boku* q = (p->e).unk_1cc;
   EnemyAuxSpriteData* aux;
@@ -2035,7 +2035,7 @@ NON_MATCH void FUN_080ffad8(Boku* p) {
   aux = (EnemyAuxSpriteData*)(p->e).sprite;
   AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
 #else
-  INCFUNC("asm/func/FUN_080ffad8.inc");
+  INCFUNC("asm/func/Boku_OnReset.inc");
 #endif
 }
 
@@ -3040,7 +3040,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_60c = (void*)gEnemyDefaultMsgHandlers;
   (p->e).unk_5f0 = FUN_080e73c8;
   (p->e).unk_5e4 = NULL;
-  (p->e).unk_5f8 = NULL;
+  (p->e).onReset = NULL;
   (p->e).unk_5fc = NULL;
   (p->e).unk_600 = NULL;
   (p->e).unk_614 = NULL;
@@ -3062,7 +3062,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_543 = 40;
   Map_InitNavAgent(&p->navAgent, &(p->e).mover.pos);
   FUN_080e6204(&p->e);
-  (p->e).unk_5f8 = (EnemyHandler)FUN_080ffad8;
+  (p->e).onReset = (EnemyHandler)Boku_OnReset;
   (p->e).unk_5fc = FUN_080ffc28;
   (p->e).unk_5ac = (EnemyHandler)FUN_080ff6e8;
   (p->e).unk_5b0 = (EnemyHandler)FUN_080ff7c0;
