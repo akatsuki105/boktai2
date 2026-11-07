@@ -59,7 +59,37 @@ void FUN_0809ce90(Entity1B24* p, void* fn) {
   p->unk_f72 = 0;
 }
 
-NAKED void FUN_0809cea8(Entity1B24* p) { INCFUNC("asm/func/FUN_0809cea8.inc"); }
+// カーソルが指す武器の見た目と説明を出す, 空欄なら消す
+void FUN_0809cea8(Entity1B24* p) {
+  WeaponData w;
+
+  if (p->record[0x40] == 2) {
+    if ((u8)p->cursor.slot == 0) {
+      MessageWindow_SetInstant(1);
+      MessageWindow_Start(p->unk_24);
+      MessageWindow_SetRect(2, 16, 28, 2);
+      FUN_08094d1c((u8*)&p->weaponData, p->unk_f78);
+      MainMenu_SetWeaponMarquee(&p->weaponData, p->unk_24);
+    } else {
+      p->sprites[17].flags |= SPRFLAG_HIDDEN;
+      MessageWindow_Close();
+      Marquee_Clear();
+    }
+  } else if (GetWeaponID((u8)p->cursor.slot) == WEAPON_NONE) {
+    p->sprites[17].flags |= SPRFLAG_HIDDEN;
+    MessageWindow_Close();
+    Marquee_Clear();
+  } else {
+    GetWeaponData((u8)p->cursor.slot, &w);
+    p->sprites[17].flags &= ~SPRFLAG_HIDDEN;
+    MainSprite_SetPose(&p->sprites[17], &p->gfx[1], GetWeaponWearPose(&w), 1);
+    MessageWindow_SetInstant(1);
+    MessageWindow_Start(p->unk_24);
+    MessageWindow_SetRect(2, 16, 28, 2);
+    FUN_08094d1c((u8*)&w, p->unk_f78);
+    MainMenu_SetWeaponMarquee(&w, p->unk_24);
+  }
+}
 
 // そのスロットの武器が一覧に並べられるものかを返す
 bool32 FUN_0809cf98(s32 slot) {
