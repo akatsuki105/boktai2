@@ -127,7 +127,9 @@ typedef struct Actor {
   u32 unk_1f8;                // 0x1F8
   u32 unk_1fc;                // 0x1FC
   u32 unk_200;                // 0x200
-  u8 unk_204[0x20E - 0x204];  // 0x204, まだ未解析
+  s32 walkSpeed;              // 0x204, work.walk.target へ歩くときの1フレームの移動量
+  u32 arriveDistSq;           // 0x208, target までの距離の2乗がこれ以下なら着いたとみなす
+  u8 unk_20c[2];              // 0x20C, まだ未解析
   u16 pathDelay;              // 0x20E, 経路の今のノードの待ちフレーム数 (PathNode.delay の下位12bit)
   u8 unk_210[2];              // 0x210, まだ未解析
   u8 footStep;                // 0x212, 0 以外なら FUN_080414fc が足音を鳴らす
