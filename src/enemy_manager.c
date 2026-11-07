@@ -41,6 +41,9 @@ void DefeatedEnemyLog_Add(u16 param_1, u16 param_2);
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f68[] = "eneinline.h";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f74[] = "eneinline.h";
 
+COMMON_DATA EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
+COMMON_DATA EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
+
 // 状態を切り替えて新しい状態を最初から始めさせる
 static inline void Enemy_RequestState(Enemy* p, void* handler, u8 state) {
   p->stateBegun = TRUE;
@@ -57,22 +60,6 @@ static inline void Enemy_RequestSubState(Enemy* p, u8 state0, u8 state1, u8 stat
   p->subState2 = state2;
   p->subStateTimer = 0;
   p->subStateBegun = TRUE;
-}
-
-COMMON_DATA EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
-COMMON_DATA EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
-
-// 番兵ノードを1つ確保してリストを空の状態にする
-void EnemyManager_InitList(EnemyManager* p) {
-  EnemyListNode* node;
-
-  p->list = Malloc(8);
-  ClearMemory(p->list, 8);
-  node = p->list;
-  node->next = NULL;
-  node->enemy = NULL;
-  gEnemyListHead = node;
-  p->cursor = node;
 }
 
 static inline bool8 EnemyManager_TestFlag(EnemyManager* p, EnemyManagerFlags bit) {
@@ -105,8 +92,21 @@ static inline bool8 TestMapFlag(u32 mapflag) {
   return FALSE;
 }
 
+// 番兵ノードを1つ確保してリストを空の状態にする
+void EnemyManager_InitList(EnemyManager* p) {
+  EnemyListNode* node;
+
+  p->list = Malloc(8);
+  ClearMemory(p->list, 8);
+  node = p->list;
+  node->next = NULL;
+  node->enemy = NULL;
+  gEnemyListHead = node;
+  p->cursor = node;
+}
+
 // 敵を生存リストへ登録する
-bool32 Enemy_Register(Enemy* p) {
+bool8 Enemy_Register(Enemy* p) {
   EnemyManager* mgr = GetEnemyManager();
   EnemyListNode* head;
   EnemyListNode* node;
@@ -916,7 +916,7 @@ void Cmd_286B(void) {
 }
 
 // 経路ノード周辺にプレイヤーがいるかを返す
-bool32 Enemy_IsPlayerNearSpawn(Enemy* p, Vec3* pos) {
+bool8 Enemy_IsPlayerNearSpawn(Enemy* p, Vec3* pos) {
   Vec3 node;
   Vec3 diff;
   Vec3 closest;
@@ -1232,7 +1232,7 @@ void Enemy_DestroyAll(void) {
 // 43/50 命令, ENEFLAG_UNK_0 の判定も bool8 inline を通している
 NON_MATCH void Enemy_RespawnDead(void) {
 #ifdef NONMATCHING_C
-  if ((gGameFlags & 0x4800) && gEnemyListHead != NULL) {
+  if ((gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) && gEnemyListHead != NULL) {
     EnemyListNode* node = gEnemyListHead;
     Enemy* p = node->enemy;
 

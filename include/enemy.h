@@ -467,7 +467,7 @@ void Enemy_SetAnimFacing(Enemy* p, u8* variant, AuxAnimPlayFlags* flags);
 void Enemy_ClearStateBegun(Enemy* p);
 bool8 Enemy_IsPosInRect(Enemy* p, WorldPos* pos, u32 rx, u32 rz);
 bool8 Enemy_IsDead(Enemy* p);  // NULL / 破棄待ち / 数えない敵 / hp が 0 以下なら TRUE
-bool32 Enemy_Register(Enemy* p);
+bool8 Enemy_Register(Enemy* p);
 Enemy* FindEnemyById(u32 id);
 void EnemyAuxSprite_LoadAnim(EnemyAuxSpriteData* p, FileID animID);
 void Enemy_PlayAnim(Enemy* p, s32 animIdx);
