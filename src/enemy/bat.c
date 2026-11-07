@@ -291,7 +291,24 @@ NAKED void FUN_08140b30(EnemyBat* p) { INCFUNC("asm/func/FUN_08140b30.inc"); }
 
 NAKED void FUN_08140c14(EnemyBat* p) { INCFUNC("asm/func/FUN_08140c14.inc"); }
 
-NAKED bool8 FUN_08140cd4(EnemyBat* p) { INCFUNC("asm/func/FUN_08140cd4.inc"); }
+// 的を探してよい番を使い切り, 高さが近いプレイヤーが索敵範囲に入っていれば攻撃の要求を立てる
+bool8 FUN_08140cd4(EnemyBat* p) {
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
+    s32 dy;
+
+    (p->e).flags &= ~ENEFLAG_UNK_3;
+    dy = abs((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y);
+    if (dy <= 512 && (p->e).unk_1e4 < (p->e).range0Sq) {
+      goto found;
+    }
+  }
+  return FALSE;
+
+found:
+  SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+  return TRUE;
+}
 
 NAKED void FUN_08140d48(EnemyBat* p) { INCFUNC("asm/func/FUN_08140d48.inc"); }
 
