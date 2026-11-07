@@ -4,6 +4,7 @@
 #include "global.h"
 #include "input.h"
 #include "link.h"
+#include "random.h"
 #include "sound.h"
 #include "text.h"
 #include "video.h"
@@ -28,6 +29,30 @@ s32 MainMenu_SetHudMode(s32 mode);
 
 static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
   if (p->state == 0) return TRUE;
+  return FALSE;
+}
+
+// idx 番のプレイヤーから受け取ったキー, 範囲外なら 0xFFFF (データなし)
+static inline u16 Entity9A9F_GetRecvKey(Entity9A9F* p, s32 idx) {
+  if (idx < 0) {
+    return 0xFFFF;
+  }
+  return p->unk_44[idx];
+}
+
+// 受信できたキーの数が参加人数と一致するか
+static inline bool32 Entity9A9F_AllKeysReceived(Entity9A9F* p) {
+  s32 count = 0;
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (Entity9A9F_GetRecvKey(p, i) != 0xFFFF) {
+      count++;
+    }
+  }
+  if (count == p->recordCount) {
+    return TRUE;
+  }
   return FALSE;
 }
 
@@ -570,7 +595,24 @@ bool32 FUN_081df98c(void) {
   return FALSE;
 }
 
-NAKED void FUN_081df9ac(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df9ac.inc"); }
+// pos と val を引数に unk_2e4 のスクリプトを実行する
+void FUN_081df9ac(Vec3* pos, s32 val) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p != NULL) {
+    u32 argv[6];
+    ScriptArgs args;
+
+    argv[0] = pos->x;
+    argv[1] = pos->y;
+    argv[2] = pos->z;
+    argv[3] = 0;
+    argv[4] = val;
+    argv[5] = 0;
+    args.argc = 6, args.argv = argv;
+    VM_ExecByID(p->unk_2e4, &args);
+  }
+}
 
 s32 FUN_081dfa04(void) {
   if (gEntity9A9F == NULL) {

@@ -12,7 +12,10 @@ typedef struct {
 static_assert(sizeof(Entity9A9FRecordBody) == 36);
 
 typedef struct Entity9A9FRecord {
-  u8 unk_00[0x16];            // 0x00
+  char name[16];              // 0x00, プレイヤー名, FUN_081de02c が gStat->name を写す
+  u16 randSeed;               // 0x10, records[0] のものを FUN_081dded4 が gRandTableIdx に入れる
+  u16 unk_12;                 // 0x12, FUN_081de02c が 100 を入れる
+  u16 controlUp;              // 0x14, gStat->controlUp の写し
   u8 unk_16;                  // 0x16, records[0] のものはスクリプトの第2引数 (unk_38) に写される
   u8 unk_17;                  // 0x17
   u32 unk_18;                 // 0x18, Entity08F4 の FUN_081daf44 が 3 未満なら選択肢を1つ増やす
@@ -31,7 +34,7 @@ typedef struct Entity9A9F {
   u8 state;                                    // 0x01C
   u8 unk_1d;                                   // 0x01D, FUN_081dfa98 が state < 6 のときだけ見る
   u8 killRequested;                            // 0x01E, 立つと FUN_081dfa98 が KillEntity する
-  s8 retryTimer;                               // 0x01F, unk_4c == -3 の間だけ数える, -1 は無効、14 を超えると FUN_081ddbdc へ
+  u8 retryTimer;                               // 0x01F, unk_4c == -3 の間だけ数える, 0xFF で止まる, 14 を超えると FUN_081ddbdc へ
   u8 prevState;                                // 0x020, FUN_081ddbdc が state を退避する, Create は 3 を入れる
   u8 unk_21;                                   // 0x021
   u8 unk_22;                                   // 0x022, Entity9A9F_SetState が状態遷移のたびに 1 を入れる
@@ -97,7 +100,7 @@ typedef struct Entity9A9F {
   s16 unk_2de;                                 // 0x2DE, '.R=0'
   s16 unk_2e0;                                 // 0x2E0, '.v=0'
   s16 unk_2e2;                                 // 0x2E2, '.r=0'
-  s16 unk_2e4;                                 // 0x2E4, '.b=0'
+  u16 unk_2e4;                                 // 0x2E4, '.b=0', FUN_081df9ac が VM_ExecByID で実行するスクリプト ID
   s16 exitScriptID;                            // 0x2E6, '.E=0', 終了時に VM_ExecByID で実行する, 0 ならソフトリセット
   s16 unk_2e8;                                 // 0x2E8, '.Y=0'
   s16 unk_2ea;                                 // 0x2EA, '.U=0'
