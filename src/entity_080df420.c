@@ -1,13 +1,17 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "player.h"
 #include "sprite_aux.h"
 #include "video.h"
 
 // 1発ぶんのエフェクト
 typedef struct {
   AuxSprite sprite;        // 0x00
-  u8 unk_2c[0xF3 - 0x2C];  // 0x2C, まだ未解析
+  u8 unk_2c[0x3C - 0x2C];  // 0x2C, まだ未解析
+  HitboxData hitbox;       // 0x3C, 攻撃判定
+  HitboxData hurtbox;      // 0x8C, 食らい判定
+  u8 unk_dc[0xF3 - 0xDC];  // 0xDC, まだ未解析
   u8 unk_f3;               // 0xF3, FUN_080df478 が 1 を入れる
   u16 flags;               // 0xF4, FUN_080de344 が bit2 を立てる
   u8 state;                // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
@@ -53,11 +57,25 @@ void (*const PTR_ARRAY_085ad35c[2])(unknown*, unknown*) = {
     FUN_080defd0,
 };  // 0x085AD35C
 
-NAKED s32 FUN_080de174(unknown* param_1) { INCFUNC("asm/func/FUN_080de174.inc"); }
+Entity080df420Elem* FUN_080de174(Entity080df420* p) {
+  s32 i;
+
+  for (i = 0; i < 24; i++) {
+    if (!Entity080df420_IsUsed(p, i)) {
+      Entity080df420Elem* elem = &p->elems[i];
+
+      p->usedMask |= 1 << i;
+      p->count++;
+      elem->index = i;
+      return elem;
+    }
+  }
+  return NULL;
+}
 
 NAKED void FUN_080de1cc(Entity080df420Elem* elem, s32 angle) { INCFUNC("asm/func/FUN_080de1cc.inc"); }
 
-NAKED void FUN_080de344(unknown* param_1) { INCFUNC("asm/func/FUN_080de344.inc"); }
+NAKED void FUN_080de344(Entity080df420* p) { INCFUNC("asm/func/FUN_080de344.inc"); }
 
 NAKED void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de3b4.inc"); }
 
