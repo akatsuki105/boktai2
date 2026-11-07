@@ -54,7 +54,15 @@ void (*const PTR_ARRAY_085ad858[7])(Crow*, u16*) = {
     FUN_08144160,
 };  // 0x085AD858
 
-NAKED void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func/Crow_OnHit.inc"); }
+// 当たった相手が HIM_0 だけを無視する判定のときだけ攻撃対象として覚える
+void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) {
+  if (b->ignoreMask == HIM_0 && Enemy_IsDead(&p->e) == 0) {
+    if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
+      (p->e).hitTargetID = b->id;
+      Enemy_ClearFlag2(&p->e, ENEFLAG2_UNK_24);
+    }
+  }
+}
 
 NAKED void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func/Crow_OnHurt.inc"); }
 
