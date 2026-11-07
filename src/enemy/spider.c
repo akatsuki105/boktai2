@@ -267,7 +267,23 @@ void Spider_InitAnims(Spider* p) {
   Enemy_SetAnimEntry(&p->e, 14, 1, 0);
 }
 
-NAKED void FUN_081302f8(Spider* p, u16* msg) { INCFUNC("asm/func/FUN_081302f8.inc"); }
+// プレイヤーと同じ島にいればプレイヤーを追いかける状態へ移る
+void FUN_081302f8(Spider* p, u16* msg) {
+  if (Enemy_IsDead(&p->e) == 0 && gPlayerPtr[0] != NULL) {
+    if (Map_IsPosInAgentIsland((p->e).navAgent, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos)) {
+      *(p->e).unk_4a8 = (p->e).mover.pos;
+      (p->e).unk_4a8->val = 0;
+      (p->e).playerMover = &gPlayerPtr[0]->mover;
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &(p->e).playerMover->pos);
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_4 | ENEFLAG_UNK_14);
+      (p->e).animSpeedDiv = 3;
+      ((Spider*)(p->e).unk_1cc)->unk_660 |= 2;
+      ((Spider*)(p->e).unk_1cc)->unk_65c = 0;
+    }
+  }
+}
 
 void FUN_08130460(Spider* p) {
   if (Enemy_IsDead(&p->e) == 0 && gPlayerPtr[0]->unk_3ff < 0) {

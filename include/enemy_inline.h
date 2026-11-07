@@ -78,6 +78,25 @@ static inline bool8 Enemy_TryRouteTo(Enemy* p, NavAgent* agent, WorldPos* pos, W
   return FALSE;
 }
 
+// Enemy_TryRouteTo と同じ判定, 島の外と経路なしで経路追従の印を落とす出口が2つに分かれる形
+static inline bool8 Enemy_TryRouteToEx(Enemy* p, NavAgent* agent, WorldPos* pos, WorldPos* dst) {
+  s32 result;
+
+  if (!Map_IsPosInAgentIsland(agent, pos, dst)) {
+    Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
+    return FALSE;
+  }
+  result = Map_TryFindNavRoute(agent, pos, dst);
+  if (result != 0) {
+    if (result != 2) {
+      ClearMemory(&p->mover.delta, 8);
+    }
+    return TRUE;
+  }
+  Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
+  return FALSE;
+}
+
 // 追いかけを始める印を立てる
 static inline void Enemy_BeginChase(Enemy* p) {
   if (p->kind != ENEK_SPIDER) {
