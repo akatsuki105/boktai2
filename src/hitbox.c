@@ -218,7 +218,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
 #endif
 }
 
-// Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
+// Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (EnemyBat_OnHurt)
 // 131/148 命令, Hitbox_ApplyDamage と同じ形では分岐の並びが合わない
 NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
 #ifdef NONMATCHING_C

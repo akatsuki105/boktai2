@@ -20,7 +20,7 @@
 	movs r0, #0x12
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0814089c
+	bl EnemyBat_InitAnims
 	ldr r3, _08141620 @ =0x0000025D
 	adds r0, r7, r3
 	ldrb r0, [r0]
@@ -1527,7 +1527,7 @@ _081421E2:
 	strh r1, [r0, #0x3a]
 _081421EC:
 	adds r0, r7, #0
-	bl FUN_08140580
+	bl EnemyBat_InitHitboxes
 	movs r3, #0x90
 	lsls r3, r3, #3
 	adds r0, r7, r3
@@ -1755,7 +1755,7 @@ _08142332:
 	movs r3, #0xbf
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _081424B0 @ =FUN_08140028
+	ldr r0, _081424B0 @ =EnemyBat_OnReset
 	str r0, [r1]
 	ldr r4, _081424B4 @ =0x000005FC
 	adds r0, r7, r4
@@ -1838,7 +1838,7 @@ _081424A0: .4byte FUN_080f5b34
 _081424A4: .4byte FUN_080f5fac
 _081424A8: .4byte 0x0000060C
 _081424AC: .4byte 0x085AD80C
-_081424B0: .4byte FUN_08140028
+_081424B0: .4byte EnemyBat_OnReset
 _081424B4: .4byte 0x000005FC
 _081424B8: .4byte 0x000005AC
 _081424BC: .4byte FUN_08140d48
@@ -2276,7 +2276,7 @@ _081427B0:
 	str r0, [r1]
 	ldr r6, _08142830 @ =0x0000061C
 	adds r1, r7, r6
-	ldr r0, _08142834 @ =FUN_08141490
+	ldr r0, _08142834 @ =EnemyBat_Update
 	str r0, [r1]
 	movs r0, #0xc4
 	lsls r0, r0, #3
@@ -2294,7 +2294,7 @@ _081427B0:
 _08142828: .4byte 0x0000057C
 _0814282C: .4byte Enemy_DispatchMsg
 _08142830: .4byte 0x0000061C
-_08142834: .4byte FUN_08141490
+_08142834: .4byte EnemyBat_Update
 _08142838: .4byte EnemyBat_Destroy
 _0814283C:
 	movs r0, #1

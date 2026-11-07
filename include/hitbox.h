@@ -85,7 +85,7 @@ typedef struct HitboxData {
   u16 power;                    // 0x3C (Player: 0x1A8), Hitbox_ApplyDamage の基礎ダメージ = a->power - b->power (1未満なら1), 攻撃側では攻撃力、守備側では防御力
 
   // 0x3E, そのヒットで与えるダメージ, Hitbox_ApplyDamage が b->damage に計算結果を書き、被弾側の fn が読んで体力から引く (Breakable_OnHurt, FUN_08013288 など), 0 になることはなく、最低 1 に切り上げられる
-  // 攻撃側でも使われる: ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で a->damage (Player.wpn.hitbox.damage) に値が加算され、Player_UpdateWeaponWear がこれを武器の耐久ダメージ (Weapon.wear) として吸い上げる
+  // 攻撃側でも使われる: ジャンゴがバットに攻撃を当てると呼ばれる EnemyBat_OnHurt の 0x0813EFFC で a->damage (Player.wpn.hitbox.damage) に値が加算され、Player_UpdateWeaponWear がこれを武器の耐久ダメージ (Weapon.wear) として吸い上げる
   u16 damage;
 
   u16 knockbackPower;  // 0x40, Hitbox_SetAttack の第3引数, 当たると Player_SetupKnockback が相手に写し (200 で頭打ち), 食らい側はこれを振幅に後ろへ動いて毎回 3/4 倍に減らす
@@ -95,14 +95,14 @@ typedef struct HitboxData {
   u8 angle;
 
   HitboxHitResult8 hitResult;  // 0x43, see HBRESULT_*
-  u16 invincibleTime;          // 0x44, 攻撃側では当てた相手に与える無敵時間, 食らい側では残りの無敵時間 (毎フレーム減り,0でない間は食らわない), 被弾時に Player_TakeHit / FUN_0813e944 が a から b へそのままコピーする
+  u16 invincibleTime;          // 0x44, 攻撃側では当てた相手に与える無敵時間, 食らい側では残りの無敵時間 (毎フレーム減り,0でない間は食らわない), 被弾時に Player_TakeHit / EnemyBat_OnHurt が a から b へそのままコピーする
   HitboxHitState8 hitState;    // 0x46, 多段ヒット管理, see HBHITSTATE_*
   u8 unk_47;                   // 0x47, Hitbox_Init が 1 にする, 読み手が見つかっていない
 
-  // 0x48, e.g. dark_django_0806f990(ジャンゴ), FUN_0813e944(バット)
+  // 0x48, e.g. dark_django_0806f990(ジャンゴ), EnemyBat_OnHurt(バット)
   // Overlap時に呼ばれるが、ダメージ計算などの汎用処理もここでやるのか、追加のカスタム処理のためのコールバックなのかは不明
   // a: 攻撃側, b: 被攻撃側, owner: このHitboxの持ち主 (a->owner or b->owner のどちらか)
-  // 例え、ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 では a は Player.Hitbox, b は EnemyBat.Hitbox, owner は EnemyBat
+  // 例え、ジャンゴがバットに攻撃を当てると呼ばれる EnemyBat_OnHurt では a は Player.Hitbox, b は EnemyBat.Hitbox, owner は EnemyBat
   void (*fn)(struct HitboxData* a, struct HitboxData* b, void* owner);
 
   void* owner;  // 0x4C, このHitboxの持ち主

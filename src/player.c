@@ -2545,7 +2545,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
 }
 
 // 攻撃で与えたダメージの分だけ武器を損傷させる, 限界を超えたら品質か特殊効果を1つ失う
-// ダメージはジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で wpn.hitbox.damage に加算される (他の敵も同様と思われる)
+// ダメージはジャンゴがバットに攻撃を当てると呼ばれる EnemyBat_OnHurt の 0x0813EFFC で wpn.hitbox.damage に加算される (他の敵も同様と思われる)
 void Player_UpdateWeaponWear(Player* p) {
   s32 wear = Hitbox_GetDamage(&p->wpn.hitbox);
 
