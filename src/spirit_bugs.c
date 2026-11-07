@@ -413,7 +413,72 @@ NON_MATCH void FUN_0800b068(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bug
 #endif
 }
 
-NAKED void FUN_0800b404(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) { INCFUNC("asm/func/FUN_0800b404.inc"); }
+// 暗黒虫の state 1, 目標の周りを旋回しながら漂い, 画面上で box の枠に入ったら回収して効果を与える, unk_6 が尽きたら state 2 でプレイヤーへ向かう
+// 下書き (427/427命令): 残差は FUN_0800be38 / FUN_0800b068 と同じく旋回で angle へ書く2か所 (原典は &bug->angle のレジスタ経由) と乱数テーブルのレジスタだけ
+NON_MATCH void FUN_0800b404(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
+#ifdef NONMATCHING_C
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Vec3* target = &bug->target;
+  Particle* ptcl = &bug->ptcl;
+  u8* angle = &bug->angle;
+
+  if ((bugIdx & 1) == frameBit) {
+    s32 diff = ArcTan2_8(target->x - ptcl->pos.x, target->z - ptcl->pos.z) - bug->angle;
+
+    if (bug->turnTimer < 0) {
+      *angle = bug->angle + (abs(diff) <= 4 ? diff : 4);
+      if (++bug->turnTimer == 0) {
+        bug->turnTimer = (Random() & 0x3F) + 0x40;
+      }
+    } else {
+      *angle = bug->angle - (abs(diff) <= 4 ? diff : 4);
+      if (--bug->turnTimer == 0) {
+        bug->turnTimer = -(Random() & 0x3F) - 0x40;
+      }
+    }
+    bug->vel.x = (COS(*angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(*angle) * bug->speed) >> 12;
+  } else if (swarm->timer == 0) {
+    Vec3 vp;
+
+    WorldToVp(&vp, &ptcl->pos);
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && box->posMin.x <= vp.x && box->posMax.x >= vp.x && box->posMin.y <= vp.y && box->posMax.y >= vp.y) {
+      bug->state = 4;
+      AuxAnim_SetAnim(&bug->anim, p->anim, sBugsCollectedAnimIdx[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+      if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+        PlaySound_0824078c(gSpiritBugsSoundIDs[swarm->kind]);
+        sSpiritBugHandler[swarm->kind](p->player, swarm->amount);
+      }
+      return;
+    }
+  }
+
+  ptcl->pos.x += bug->vel.x;
+  {
+    s32 dy = box->pos.y - ptcl->pos.y;
+
+    if (dy > 16) {
+      ptcl->pos.y += 16;
+    } else if (dy < -16) {
+      ptcl->pos.y -= 16;
+    } else {
+      ptcl->pos.y = box->pos.y;
+    }
+  }
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (bug->unk_6 == 0) {
+    bug->state = 2;
+    bug->speed = 15;
+    bug->unk_6 = 10;
+    bug->timer = (Random() & 0x1F) + 60;
+  } else {
+    bug->unk_6--;
+  }
+#else
+  INCFUNC("asm/func/FUN_0800b404.inc");
+#endif
+}
 
 // 太陽虫と月光虫の state 2, 手をかざしているプレイヤーへ吸い寄せられ, 近づいたら回収して効果を与える, かざすのをやめたら state 1 へ戻る
 void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
