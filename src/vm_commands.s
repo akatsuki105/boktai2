@@ -499,7 +499,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC1F2, Enemy_Sleep
 	.4byte 0xC233, Cmd_C233
 	.4byte 0xC347, Cmd_C347
-	.4byte 0xC3BC, EnemySlime_Create @ HashName("スライム")
+	.4byte 0xC3BC, Slime_Create @ HashName("スライム")
 	.4byte 0xC419, Entity081d0e20_Create
 	.4byte 0xC438, DungeonMarker_Create
 	.4byte 0xC46E, Cmd_C46E
