@@ -58,7 +58,10 @@ void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem
 
 NAKED void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_InitHitbox.inc"); }
 
-NAKED void Entity081f8a28_UpdateHitbox(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateHitbox.inc"); }
+void Entity081f8a28_UpdateHitbox(Entity081f8a28Elem* elem) {
+  Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+  Hitbox_Register(&elem->hitbox);
+}
 
 Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) {
   s32 i;
