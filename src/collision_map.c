@@ -130,7 +130,7 @@ void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
 // from から to へ 4タイル以内で真っ直ぐ行ける向きを 8bit の角度で返す, 無ければ -1
 // 残差7命令: 原典は & 3 と & 0xFF をループ内で実際に計算し、配列先頭と定数2つを高位レジスタ (r8/r9/sl) に抱えている
 // こちらは dir が 0..3 と分かるので agbcc が両方のマスクを畳んでしまう, マスクが残る書き方が未発見
-NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to) {
+NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to, s32 unused) {
 #ifdef NONMATCHING_C
   s32 angle = 0xC0;
   s32 dir;

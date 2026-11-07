@@ -2,9 +2,14 @@
 #include "global.h"
 #include "hitbox.h"
 #include "malloc.h"
+#include "map_inline.h"
 #include "mover.h"
+#include "player.h"
 #include "sound.h"
 #include "sprite.h"
+#include "sprite_pltt.h"
+#include "trig.h"
+#include "vec3.h"
 #include "vm.h"
 
 // EntityC9BC が count 個まとめて管理する要素
@@ -20,14 +25,20 @@ typedef struct {
   u32 unk_24;                    // 0x24, 被弾させた側の HitboxData.attributes
   u16 unk_28;                    // 0x28, bit0 が立っていると FUN_0800cb7c が FUN_08002a58 を飛ばす
   u16 unk_2a;                    // 0x2A, 状態関数がビットを立てる, 退避時に 0 に戻る
-  u8 unk_2c[0x34 - 0x2C];        // 0x2C, まだ未解析
+  u16 zone;                      // 0x2C, '.m' が 0 以外なら置いた位置の GetZoneAt
+  u16 plttIdx;                   // 0x2E, 120..124, unk_02 のビットで選ぶ
+  s8 slideTiles;                 // 0x30, 風で押されて滑る残りタイル数, 弱点 bit1 なら 2 マス
+  u8 slideAngle;                 // 0x31, 滑る向き (8bit 角度)
+  s16 groundY;                   // 0x32, 落下先の高さ (<< 8)
   s16 unk_34;                    // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
   s16 unk_36;                    // 0x36, unk_34 の上限 (bobOffset を足した値)
   u16 unk_38;                    // 0x38, FUN_0800cd70 が 0 に戻す
-  u8 unk_3a[0x40 - 0x3A];        // 0x3A, まだ未解析
+  u16 shakeTimer;                // 0x3A, 0 以外の間は毎フレーム減らしながら揺らす
+  u16 shakePower;                // 0x3C, 揺れ幅, shakeTimer の写し
+  s16 hp;                        // 0x3E, '.l=1', 地属性で被弾するたび減り 0 以下で砕ける
   u8 unk_40;                     // 0x40, 0 以外の間は被弾を受け付けない, FUN_0800cbd0 が 10 を入れる
   u8 unk_41;                     // 0x41, FUN_0800cd70 が 10 を入れる
-  u8 unk_42[2];                  // 0x42, padding?
+  u16 unk_42;                    // 0x42, '.F=-1', 炎属性で被弾すると unk_38 に写される
   bool8 releaseReq;              // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
   u8 unk_45;                     // 0x45, state の退避先
   u8 unk_46;                     // 0x46, unk_02 の退避先
@@ -66,6 +77,21 @@ static_assert(sizeof(EntityC9BC) == 120);
 COMMON_DATA EntityC9BC* gEntityC9BC = NULL;  // 0x03002B38
 
 void EntityD9AE_SpawnDust(Vec3* pos, s32 param_2);
+void Entity99CA_CreateAt(Vec3* pos, s32 radius, s32 lifetime, s32 count, s32 kind);
+
+// unk_02 のビットから要素のパレット番号を選ぶ
+static inline u16 EntityC9BCElem_GetPlttIdx(EntityC9BCElem* elem) {
+  if (elem->unk_02 == 0) {
+    return 120;
+  }
+  if (elem->unk_02 & 8) {
+    return 123;
+  }
+  if (elem->unk_02 & 4) {
+    return 124;
+  }
+  return (elem->unk_02 & 1) ? 121 : 122;
+}
 
 EntityC9BC* GetEntityC9BC(void) { return gEntityC9BC; }
 
@@ -124,11 +150,34 @@ NON_MATCH s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
 #endif
 }
 
-NAKED s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cdb4.inc"); }
+// 地属性で被弾したら hp を減らして揺らし, 尽きたら砕ける state 6 へ移る
+s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) {
+  elem->hp--;
+  elem->shakeTimer = 10;
+  if (elem->hp <= 0) {
+    elem->hp = 0;
+    if (elem->state <= 1) {
+      elem->unk_02 |= 8;
+      elem->state = 6;
+      elem->timer = 0;
+      elem->unk_01 = 1;
+      elem->unk_41 = 10;
+      Video_SetAuxSpritePltt(&elem->gfx, 306);
+      PlaySound_082406e0(SONG_532);
+      return 1;
+    }
+  } else {
+    elem->unk_41 = 10;
+    Video_SetAuxSpritePltt(&elem->gfx, 306);
+    PlaySound_082406e0(SONG_535);
+  }
+
+  return 0;
+}
 
 NAKED s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800ce24.inc"); }
 
-NAKED s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/FUN_0800cf30.inc"); }
+NAKED s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) { INCFUNC("asm/func/FUN_0800cf30.inc"); }
 
 NAKED void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState0.inc"); }
 
