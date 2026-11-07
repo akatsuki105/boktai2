@@ -9,6 +9,7 @@
 #include "mover.h"
 #include "msgbus.h"
 #include "player.h"
+#include "random.h"
 #include "shadow.h"
 #include "sound.h"
 #include "sprite.h"
@@ -31,6 +32,11 @@ bool32 FUN_08018a08(void);
 WorldPos* Coffin_GetPos(void);
 bool32 FUN_0823d5f0(void);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
+s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 lifeBase, s32 lifeRandMask);
+bool32 FUN_0801dfe4(void);
+s32 FUN_0801e00c(void);
+void PlayForgeStrikeSE(u32 _, s32 kind);
+void FUN_0807c7c8(Player* p, s32 mode);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
 // clang-format off
@@ -2744,7 +2750,75 @@ void FUN_08044a54(ActorManager* p, Actor* actor, s32 _) {
   actor->fn(actor);
 }
 
-NAKED void FUN_08044a90(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08044a90.inc"); }
+// スミスに槌を打たせる, 打ち始めに掛け声を鳴らし, 3 フレーム目に火花を散らして打撃音を鳴らす
+// 下書き (356/344命令): 原典は actor を r10, work を r7 に置く (こちらは逆), pos.x への加算は *dst = *src; dst->x += 200; と &pos を先に取る形なら strh になり 351 命令
+NON_MATCH void FUN_08044a90(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  ActorSmithWork* work = &actor->work.smith;
+
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 8, 2, 0, 4);
+    actor->work.smith.step = 0;
+    work->timer = 0;
+    if (work->voiceWait == 0) {
+      s32 r = (u8)Random();
+
+      if (r <= 84) {
+        PlaySound_082406e0(VO_SMITH_FORGE1);
+      } else if (r <= 169) {
+        PlaySound_082406e0(VO_SMITH_FORGE2);
+      } else {
+        PlaySound_082406e0(VO_SMITH_FORGE3);
+      }
+      work->voiceWait = (Random() & 1) + 1;
+    } else {
+      work->voiceWait--;
+    }
+  }
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+
+  if (work->step == 0 && work->timer == 3) {
+    Vec3 pos;
+
+    pos = actor->mover.pos;
+    pos.x += 200;
+    Entity080146e0_SpawnAtAngle(4, 38, &pos, 0, Random() & 0x3F, 12, 10, 5, 8, 8, 5);
+    Entity080146e0_SpawnAtAngle(4, 38, &pos, 64, Random() & 0x3F, 12, 10, 5, 8, 8, 5);
+    Entity080146e0_SpawnAtAngle(4, 38, &pos, 128, Random() & 0x3F, 12, 10, 5, 8, 8, 5);
+    Entity080146e0_SpawnAtAngle(4, 38, &pos, 192, Random() & 0x3F, 12, 10, 5, 8, 8, 5);
+    Entity080146e0_SpawnAtAngle(2, 38, &pos, 0, Random() & 0x3F, 10, 4, 4, 4, 14, 4);
+    Entity080146e0_SpawnAtAngle(2, 38, &pos, 64, Random() & 0x3F, 10, 4, 4, 4, 14, 4);
+    Entity080146e0_SpawnAtAngle(2, 38, &pos, 128, Random() & 0x3F, 10, 4, 4, 4, 14, 4);
+    Entity080146e0_SpawnAtAngle(2, 38, &pos, 192, Random() & 0x3F, 10, 4, 4, 4, 14, 4);
+    PlayForgeStrikeSE(FUN_0801dfe4(), FUN_0801e00c());
+    FUN_0807c7c8(gPlayerPtr[0], 2);
+  }
+  work->timer++;
+  if (SpriteHolder_IsAnimEnded(&actor->sprite)) {
+    switch (work->step) {
+      case 0: {
+        FUN_08041480(actor, 6, 2, 0, 4);
+        break;
+      }
+      case 1: {
+        actor->unk_07 = 1;
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+    work->step++;
+    work->timer = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_08044a90.inc");
+#endif
+}
 
 void FUN_08044d9c(ActorManager* p, Actor* actor, s32 _) {
   if (actor->unk_09) {

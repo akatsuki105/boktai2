@@ -68,6 +68,13 @@ typedef struct {
   u32 unk_1c;    // 0x1C
 } ActorKuroWork;
 
+// スミスが槌を打つときの Actor.work
+typedef struct {
+  u16 step;      // 0x00, アニメが終わるたびに進む, 0 で打ち, 1 で終える
+  u16 timer;     // 0x02, step の中の経過フレーム, step 0 の 3 フレーム目に火花を出す
+  u8 voiceWait;  // 0x04, 0 のときだけ掛け声を鳴らし, 1 か 2 に戻す
+} ActorSmithWork;
+
 // メッセージで歩かせる Actor の Actor.work
 typedef struct {
   u8 unk_00[0x20];   // 0x00
@@ -83,6 +90,7 @@ typedef union {
   ActorRitaWork rita;      // リタ (SPRITE_RITA)
   ActorKuroWork kuro;      // クロ (SPRITE_KURO)
   ActorWalkWork walk;      // FUN_080441d8 などがメッセージで歩かせるとき
+  ActorSmithWork smith;    // FUN_08044a90 が槌を打たせるとき
   u8 raw[60];
 } ActorWork;
 
