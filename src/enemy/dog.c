@@ -220,7 +220,7 @@ NON_MATCH void Dog_OnReset(Dog* p) {
 
 void FUN_0814a8c8(Dog* p) { CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_1); }
 
-// 走りのアニメの頭のコマで足音の間隔を返し, バリアント2なら足が着くコマで後ろへ土煙を出す
+// アニメのコマの頭でコマ番号と追いかけ中かに応じた値を返し, バリアント2なら決まったコマで後ろへ土煙を出す
 // 221/221命令, 残差は末尾の表引きで高位レジスタから写す一時レジスタの番号 (r0/r3 と原典 r3/r4) だけ, 加算は Vec3_Sum の b 側が先に読まれるので引数の向きを合わせてある, 試済: 早期 return の形
 NON_MATCH s32 FUN_0814a8dc(Dog* p) {
 #ifdef NONMATCHING_C

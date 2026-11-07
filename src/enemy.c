@@ -89,34 +89,6 @@ static inline bool8 IsSmallEnemy(Enemy* p) {
   return FALSE;
 }
 
-// スプライトの座標を pos にする, spriteKind で AuxSprite か MainSprite かが変わる
-static inline void Enemy_SetSpritePos(Enemy* p, WorldPos* pos) {
-  if (p->spriteKind == 0) {
-    ((AuxSprite*)p->sprite)->pos = *pos;
-  } else {
-    p->sprite->s.pos = *pos;
-  }
-}
-
-// 索引 idx のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline u32 TileHeightAtIndex(s32 idx, WorldPos* pos) {
-  CollisionMapTile* tile = TileAtIndex(idx);
-  s32 stairs = tile->heightStairs >> 4;
-  u32 height = (tile->heightStairs & 0xF) << 8;
-
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= pos->z & 0xFF;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= pos->x & 0xFF;
-      break;
-    }
-  }
-  return height;
-}
-
 // 索引 idx のタイルの中心の座標を pos に入れる, y はタイルの高さ
 static inline void TilePosAtIndex(WorldPos* pos, s32 idx) {
   s32 x = Mod(idx, gCollisionMap->tiledata->width);

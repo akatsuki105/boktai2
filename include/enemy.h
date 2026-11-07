@@ -449,6 +449,15 @@ static inline void Enemy_ClearSpriteFlags(Enemy* p, SpriteFlags bits) {
   }
 }
 
+// スプライトの座標を pos にする, spriteKind で AuxSprite か MainSprite かが変わる
+static inline void Enemy_SetSpritePos(Enemy* p, WorldPos* pos) {
+  if (p->spriteKind == 0) {
+    ((AuxSprite*)p->sprite)->pos = *pos;
+  } else {
+    p->sprite->s.pos = *pos;
+  }
+}
+
 static inline bool8 Enemy_TestSpriteFlags(Enemy* p, SpriteFlags bits) {
   if (p->spriteKind == 0) {
     return AuxSprite_TestFlags((AuxSprite*)p->sprite, bits);

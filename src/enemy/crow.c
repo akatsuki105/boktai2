@@ -26,16 +26,23 @@ typedef struct {
   u8 unk_65c;                 // 0x65C, 羽ばたきアニメを流した回数
   u8 unk_65d[3];              // 0x65D
   u8 unk_660;                 // 0x660, プレイヤーへ直進するときの速さ
-  u8 unk_661[3];              // 0x661
+  u8 unk_661;                 // 0x661
+  u8 unk_662[2];              // 0x662
   u32 unk_664;                // 0x664, unk_1e4 がこれ以上ならプレイヤーへの直進を続ける
-  u8 unk_668[0x670 - 0x668];  // 0x668
+  u8 unk_668;                 // 0x668
+  u8 unk_669[3];              // 0x669
+  u16 homeTileIdx;            // 0x66C, homePos のタイル索引
+  u8 unk_66e[2];              // 0x66E
   u8 unk_670;                 // 0x670
   u8 unk_671;                 // 0x671, 鳴くたびに 40 ずつ増える
-  u8 unk_672[0x6A0 - 0x672];  // 0x672
+  u8 unk_672;                 // 0x672
+  u8 unk_673;                 // 0x673
+  u8 unk_674[0x6A0 - 0x674];  // 0x674
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
-  u8 unk_6b8[1728 - 0x6B8];   // 0x6B8
+  WorldPos homePos;           // 0x6B8, 復帰したときに戻る位置
+  u8 unk_6c0[1728 - 0x6C0];   // 0x6C0
 } Crow;
 static_assert(sizeof(Crow) == 1728);
 
@@ -381,7 +388,30 @@ void FUN_08144160(Crow* p, u16* msg) {
   }
 }
 
-NAKED void Crow_OnReset(Crow* p) { INCFUNC("asm/func/Crow_OnReset.inc"); }
+// 復帰時に作業値を消して homePos へ戻し, 床の高さを取り直して待機アニメを流して1コマ送る
+void Crow_OnReset(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+  EnemyAuxSpriteData* aux;
+
+  q->unk_65c = 0;
+  q->unk_672 = 0;
+  q->unk_673 = 0;
+  q->unk_661 = 0;
+  q->unk_668 = 0;
+  q->unk_658 = 0;
+  (p->e).mover.pos = q->homePos;
+  (p->e).unk_256 = q->homeTileIdx;
+  (p->e).floorY = TileHeightAtIndex((p->e).unk_256, &q->homePos);
+  (p->e).heightAboveFloor = (p->e).mover.pos.y;
+  (p->e).mover.pos.y = (p->e).floorY;
+  Enemy_SetSpritePos(&p->e, &(p->e).mover.pos);
+  Vec3_Clear(&q->curveStart);
+  Vec3_Clear(&q->curveEnd);
+  Vec3_Clear(&q->unk_6b0);
+  Enemy_PlayAnim(&p->e, 0);
+  aux = (EnemyAuxSpriteData*)(p->e).sprite;
+  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+}
 
 // 高さの更新, 状態34ではタイルの上 320 まで sin で上昇し, 飛んでいる間は床から 320 の高さを保ち, 状態1/2では羽ばたきのコマに合わせて絵を上下させる
 void FUN_08144414(Crow* p) {

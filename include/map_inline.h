@@ -29,6 +29,25 @@ static inline CollisionMapTile* TileAtIndex(s32 idx) {
   return &gCollisionMap->tiledata->tiles[idx];
 }
 
+// 索引 idx のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
+static inline u32 TileHeightAtIndex(s32 idx, WorldPos* pos) {
+  CollisionMapTile* tile = TileAtIndex(idx);
+  s32 stairs = tile->heightStairs >> 4;
+  u32 height = (tile->heightStairs & 0xF) << 8;
+
+  switch (stairs) {
+    case STAIRS_VERTICAL: {
+      height -= pos->z & 0xFF;
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      height -= pos->x & 0xFF;
+      break;
+    }
+  }
+  return height;
+}
+
 #define GetTileAt(pos)                                               \
   ({                                                                 \
     s32 idx = GetCollisionTileIdx(pos);                              \
