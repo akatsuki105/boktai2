@@ -122,7 +122,7 @@ NAKED void Crow_OnReset(Crow* p) { INCFUNC("asm/func/Crow_OnReset.inc"); }
 
 NAKED void FUN_08144414(Crow* p) { INCFUNC("asm/func/FUN_08144414.inc"); }
 
-void FUN_08144608(Crow* p) {
+void Crow_PickRandomPathNode(Crow* p) {
   PathWalker* walker = &(p->e).pathWalker;
   u8 idx = Mod(Random(), walker->path->nodeCount);
 

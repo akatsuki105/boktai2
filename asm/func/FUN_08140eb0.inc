@@ -55,7 +55,7 @@ _08140ECE:
 	strb r5, [r4]
 _08140F1C:
 	adds r0, r6, #0
-	bl FUN_081404c0
+	bl EnemyBat_UpdateCurveBend
 	movs r1, #0xb1
 	lsls r1, r1, #3
 	adds r0, r6, r1

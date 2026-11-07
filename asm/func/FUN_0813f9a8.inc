@@ -62,7 +62,7 @@ _0813FA14:
 	bl _call_via_r1
 	adds r6, r0, #0
 	adds r0, r5, #0
-	bl FUN_081404c0
+	bl EnemyBat_UpdateCurveBend
 	ldr r3, _0813FA74 @ =0x000004A4
 	adds r0, r5, r3
 	ldr r1, [r0]

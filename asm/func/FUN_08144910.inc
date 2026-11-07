@@ -29,7 +29,7 @@ _08144934:
 _08144944: .4byte 0x0000024E
 _08144948:
 	adds r0, r5, #0
-	bl FUN_08144608
+	bl Crow_PickRandomPathNode
 	mov r6, sp
 	adds r0, r5, #0
 	adds r0, #0x9c

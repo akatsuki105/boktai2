@@ -183,7 +183,7 @@ _08141240: .4byte 0x0000066C
 _08141244: .4byte 0x03002BE0
 _08141248:
 	adds r0, r6, #0
-	bl FUN_081404c0
+	bl EnemyBat_UpdateCurveBend
 	movs r1, #0xb1
 	lsls r1, r1, #3
 	adds r0, r6, r1

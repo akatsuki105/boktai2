@@ -136,7 +136,7 @@ NAKED void FUN_08140278(EnemyBat* p, u16* msg) { INCFUNC("asm/func/FUN_08140278.
 
 NAKED void FUN_0814031c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814031c.inc"); }
 
-void FUN_081404c0(EnemyBat* p) {
+void EnemyBat_UpdateCurveBend(EnemyBat* p) {
   EnemyBat* q = (p->e).unk_1cc;
 
   if (q->curveBend > 320) {
