@@ -87,11 +87,6 @@ static inline s32 Enemy_TileHeight(u32 tileIdx, WorldPos* pos) {
   return height;
 }
 
-static inline bool8 TestMapFlag(u32 mapflag) {
-  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
-  return FALSE;
-}
-
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
   EnemyListNode* node;

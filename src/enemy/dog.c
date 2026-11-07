@@ -823,7 +823,18 @@ NON_MATCH void Dog_OnStealHit(HitboxData* a, HitboxData* b, Dog* p) {
 #endif
 }
 
-NAKED void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/Dog_OnHurt.inc"); }
+// 食らい判定, HBFLAG_UNK_11 の攻撃は受けない
+// 759/770命令, 本体は Crow_OnHurt と共通の Enemy_HandleHurt, 原典は a を r8 / b を r7 に置く (こちらは逆), ノックバックの種別判定で TRUE 側ブロックが属性検査より前に来る配置と p->angle の格納先を分岐ごとに計算する形が合わない
+NON_MATCH void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p) {
+#ifdef NONMATCHING_C
+  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+    return;
+  }
+  Enemy_HandleHurt(a, b, &p->e);
+#else
+  INCFUNC("asm/func/Dog_OnHurt.inc");
+#endif
+}
 
 void FUN_0814c28c(Dog* p) {
   Enemy_ConsumeStateBegun(&p->e);

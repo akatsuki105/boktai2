@@ -107,11 +107,6 @@ static inline bool8 Enemy_StepToward(Enemy* p, WorldPos* dst) {
   return FALSE;
 }
 
-static inline bool8 TestMapFlag(u32 mapflag) {
-  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
-  return FALSE;
-}
-
 static inline bool8 Enemy_TestUnk48c(Enemy* p) {
   if (p->unk_48c & 4) {
     return TRUE;
