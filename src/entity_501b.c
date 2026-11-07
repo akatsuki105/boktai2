@@ -50,7 +50,7 @@ void Entity501B_StateSaveDone(Entity501B* p);
 void Entity501B_StateSaveFailed(Entity501B* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_081df940(void);
-bool32 Save_WriteExtraToNextSlot(void);
+bool8 Save_WriteExtraToNextSlot(void);
 void FUN_081df924(void);
 void FUN_081e0544(Entity501B* p);
 void FUN_081e084c(Entity501B* p);
@@ -314,7 +314,26 @@ void Entity501B_LoadScore(Entity501B* p) {
 
 NAKED void FUN_081e03d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e03d8.inc"); }
 
-NAKED void FUN_081e04a8(Entity501B* p) { INCFUNC("asm/func/FUN_081e04a8.inc"); }
+// 案内を出して 60 フレーム後にセーブを書き, 成否に応じた状態へ移る
+void FUN_081e04a8(Entity501B* p) {
+  if (p->entered) {
+    TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
+    TextPanel_SetMessage(p->textPanels[0], 6);
+    TextPanel_Start(p->textPanels[0]);
+    p->stateTimer = 0;
+    p->entered = FALSE;
+  }
+  if (p->stateTimer == 60) {
+    if (!Save_WriteExtraToNextSlot()) {
+      Entity501B_SetState(p, Entity501B_StateSaveFailed, 8);
+    } else {
+      FUN_081df924();
+      Entity501B_SetState(p, FUN_081e0544, 5);
+    }
+  } else {
+    p->stateTimer++;
+  }
+}
 
 // セッションが状態 24 になったらセーブへ移る
 void FUN_081e0544(Entity501B* p) {
