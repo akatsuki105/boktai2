@@ -130,4 +130,46 @@ Entity0805d79cElem* Entity0805d79c_AllocElem(Entity0805d79c* p, s32* outIdx) {
   return NULL;
 }
 
-NAKED s32 Entity0805d79c_Spawn(Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos) { INCFUNC("asm/func/Entity0805d79c_Spawn.inc"); }
+// pos から angle の向きへ speed で棘を1発飛ばす, 空きが無ければ -1
+// 127/128命令, 原典は p を r6 / speed を r7 に置き (こちらは逆), 反転の印を r4, &sprite を r1 に作ってから r2 へ写す, 試済: 反転と表示を AuxSprite の inline に, ポーズを AuxSprite_SetPoseIdx に, flip を u32 に
+NON_MATCH s32 Entity0805d79c_Spawn(Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos) {
+#ifdef NONMATCHING_C
+  Entity0805d79cElem* elem;
+  HitboxData* hitbox;
+  AuxSprite* spr;
+  s32 idx;
+  u8 dir;
+  bool8 flip;
+
+  elem = Entity0805d79c_AllocElem(p, &idx);
+  if (elem == NULL) {
+    return -1;
+  }
+  hitbox = &elem->hitbox;
+  elem->timer = 0;
+  Vec3_SetPolar(&elem->vel, angle, speed);
+  elem->sprite.pos = *pos;
+  dir = ((angle + 0x60) & 0xFF) >> 4;
+  if (dir > 8) {
+    dir = 16 - dir;
+    flip = TRUE;
+  } else {
+    flip = FALSE;
+  }
+  spr = &elem->sprite;
+  spr->poseIdx = dir + 4;
+  if (flip) {
+    elem->sprite.flags |= SPRFLAG_XFLIP;
+  } else {
+    elem->sprite.flags &= ~SPRFLAG_XFLIP;
+  }
+  elem->sprite.flags &= ~SPRFLAG_HIDDEN;
+  Video_AddAuxSpriteIntoDrawList(spr, 0);
+  Hitbox_SetAttack(hitbox, power, 20, 0, 0, 20);
+  Hitbox_SetPos(hitbox, pos, 0);
+  p->activeMask |= 1 << idx;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity0805d79c_Spawn.inc");
+#endif
+}
