@@ -310,7 +310,65 @@ NON_MATCH void FUN_080de820(Entity080df420* p, Entity080df420Elem* elem) {
 #endif
 }
 
-NAKED void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080debbc.inc"); }
+// 分裂した小さな弾, 上下に揺れながら vel で飛び, 地形の無いところに出たら乱数の向きへ跳ね返り, 寿命が尽きたら消滅へ移る
+// 501/479命令, 1回目の下書き (呼び出し列は一致), FUN_080de820 と同じくループの外へ出すアドレスと乱数表の置き場所が違う
+NON_MATCH void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) {
+#ifdef NONMATCHING_C
+  WorldPos next;
+  s32 idx;
+  CollisionMapTile* tile;
+  s32 height;
+
+  if (elem->unk_f3) {
+    elem->basePos = elem->sprite.pos;
+    elem->sprite.flags &= ~SPRFLAG_AFFINE;
+    elem->unk_f3 = 0;
+  }
+  Vec3_Sum(&next, &elem->vel, &elem->sprite.pos);
+  idx = GetCollisionTileIdx(&next);
+  tile = TileAtIndex(idx);
+  height = TileHeightAtIndex(idx, &next);
+  if (height <= 0) {
+    s32 angle = ArcTan2_8(elem->vel.x, elem->vel.z);
+    u16* table = gRandomTable;
+    s32 a = angle + (_Random(table) & 31) + 63;
+    s32 speed = (_Random(table) & 15) + 8;
+
+    Vec3_SetPolar(&elem->vel, a, speed);
+    if (elem->flags & 1) {
+      s32 i;
+
+      angle = ArcTan2_8(elem->vel.x, elem->vel.z);
+      for (i = 0; i < 6; i++) {
+        Vec3 vel;
+
+        table = gRandomTable;
+        a = (_Random(table) & 0xFF) + angle;
+        speed = (_Random(table) & 1) + 4;
+        Vec3_SetPolar(&vel, a, speed);
+        FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+      }
+      elem->state = 3;
+      elem->unk_f3 = 1;
+    }
+  } else {
+    elem->sprite.pos = next;
+  }
+  elem->sprite.pos.y = elem->basePos.y + POLAR_Z(10, elem->bobAngle);
+  elem->basePos.y = gPlayerPtr[0]->mover.pos.y + 220 < elem->basePos.y ? elem->basePos.y - 4 : gPlayerPtr[0]->mover.pos.y + 220;
+  elem->bobAngle += 4;
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  FUN_080de7a0(elem);
+  if (elem->unk_f0 == 0) {
+    elem->state = 3;
+    elem->unk_f3 = 1;
+  } else {
+    elem->unk_f0--;
+  }
+#else
+  INCFUNC("asm/func/FUN_080debbc.inc");
+#endif
+}
 
 // 消滅のアニメを流し, 流し終えたら片付ける
 void FUN_080defd0(Entity080df420* p, Entity080df420Elem* elem) {
