@@ -150,7 +150,18 @@ void Entity501B_RemoveSprites(Entity501B* p) {
 
 NAKED void Entity501B_SetNumber(Entity501B* p, s32 row, s32 value) { INCFUNC("asm/func/Entity501B_SetNumber.inc"); }
 
-NAKED void Entity501B_SpinNumber(Entity501B* p, s32 row) { INCFUNC("asm/func/Entity501B_SpinNumber.inc"); }
+// 経過時間と乱数からでたらめな数を作って row 段に出す
+void Entity501B_SpinNumber(Entity501B* p, s32 row) {
+  s32 v = p->stateTimer * p->stateTimer >> 2;
+
+  v += (Random2() % 8) * 10;
+  v += (Random2() % 8) * 100;
+  v += (Random2() % 8) * 1000;
+  if (v > 9999) {
+    v = 9999;
+  }
+  Entity501B_SetNumber(p, row, v);
+}
 
 // 1フレームおきにカウントアップの音を鳴らし, 待ちが残っていれば上段の数字を回す
 void FUN_081e02ac(Entity501B* p) {
