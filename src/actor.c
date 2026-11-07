@@ -1013,7 +1013,28 @@ void FUN_08043688(ActorManager* p, Actor* actor) {
   actor->timer++;
 }
 
-NAKED void FUN_080436c4(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_080436c4.inc"); }
+// 待ちが解除されたら unk_05 を 2 にしてメッセージの待ちを終える, プレイヤーが近づいたら今の state を覚えて state 10 へ
+// 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, プレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる (FUN_08043cf4 と同じ)
+NON_MATCH void FUN_080436c4(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 2;
+    MsgQueue_EndWait(&actor->mq, 1);
+  }
+
+  if (p->playerPos != NULL && abs(p->playerPos->x - actor->mover.pos.x) < actor->nearRange && abs(p->playerPos->y - actor->mover.pos.y) <= 0xFF && abs(p->playerPos->z - actor->mover.pos.z) < actor->nearRange) {
+    actor->unk_227 = actor->state;
+    Actor_SetState(actor, 10);
+    actor->unk_08 = 1;
+    return;
+  }
+  actor->timer++;
+#else
+  INCFUNC("asm/func/FUN_080436c4.inc");
+#endif
+}
 
 NAKED void FUN_08043774(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043774.inc"); }
 
