@@ -59,6 +59,9 @@ void FUN_08140dd0(EnemyBat* p);
 void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_08140904(EnemyBat* p);
 void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos);
+void EnemyBat_UpdateCurveBend(EnemyBat* p);
+u8 EnemyBat_StepCurve(EnemyBat* p);
+void EnemyBat_PickRandomPathNode(EnemyBat* p);
 void FUN_08140c14(EnemyBat* p);
 void FUN_0813f9a8(EnemyBat*);
 void FUN_0813fbf8(EnemyBat*);
@@ -339,7 +342,34 @@ void EnemyBat_StateDying(EnemyBat* p, s32 timer) {
   }
 }
 
-NAKED void FUN_0813f9a8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f9a8.inc"); }
+// 曲線に沿って経路の目的地へ飛び, 曲線の終点に着いたら勢いを残して乱数の経路ノードへ次の曲線を引く
+void FUN_0813f9a8(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+  s32 speed;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    Vec3_Clear(&q->unk_6b0);
+    q->curveBendDir = 1;
+  }
+  speed = (p->e).unk_588(&p->e);
+  EnemyBat_UpdateCurveBend(p);
+  if (Enemy_StepToDest(&p->e, speed) && EnemyBat_StepCurve(p)) {
+    WorldPos pos;
+    WorldPos* dst;
+    PathWalker* walker;
+
+    Vec3_SetPolar(&q->unk_6b0, (p->e).mover.angle, speed);
+    EnemyBat_PickRandomPathNode(p);
+    dst = &pos;
+    walker = &(p->e).pathWalker;
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+    EnemyBat_BeginCurveMove(p, &pos);
+  }
+  (p->e).subStateTimer++;
+}
 
 void FUN_0813fbf8(EnemyBat* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
