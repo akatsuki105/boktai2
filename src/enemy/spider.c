@@ -121,7 +121,131 @@ void FUN_0812ea90(Spider* p) {
   Enemy_PlayAnim(&p->e, 0);
 }
 
-NAKED void FUN_0812eab4(Spider* p) { INCFUNC("asm/func/FUN_0812eab4.inc"); }
+// 振り向く状態, 入ったときに4方向へ揃えて振り向きのアニメを流し, unk_1dc の向きへ 64 ずつ回す
+// 325/351命令の下書き, 振り向きのアニメは Enemy_PlayAnim の展開 (anim 5, 向き 0/1, 逆再生の有無) で, (p, anim, variant, f) を取る inline にすると書きやすいが一致しない, 原典は &mover を r7 に写して角度を読み書きする, 試済: Mover* のローカル
+NON_MATCH void FUN_0812eab4(Spider* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    u32 dir;
+    u32 target;
+    s32 d;
+
+    (p->e).mover.angle = Angle_FromDir4(Angle_ToDir4((p->e).mover.angle));
+    dir = Angle_ToDir4((p->e).mover.angle);
+    target = (p->e).unk_1dc >> 1;
+    d = target - dir;
+    if (dir == target || abs(d) != 2) {
+      (p->e).subStateDone = 1;
+      Enemy_PlayAnim(&p->e, 0);
+    } else {
+      switch (dir) {
+        case 0: {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSpriteData* s;
+
+            (p->e).playingAnim = 5;
+            s = (EnemyAuxSpriteData*)(p->e).sprite;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 5, 0, 0);
+          } else {
+            MainSprite* s = &(p->e).sprite->s;
+
+            if ((p->e).playingAnim == 5 && !(p->e).animForceRestart && !(s->flags & SPRFLAG_XFLIP)) {
+              break;
+            }
+            (p->e).playingAnim = 5;
+            MainSprite_SetAnim(s, &(p->e).sprite->gfx, 5, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+          }
+          (p->e).animForceRestart = FALSE;
+          break;
+        }
+        case 1: {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSpriteData* s;
+
+            (p->e).playingAnim = 5;
+            s = (EnemyAuxSpriteData*)(p->e).sprite;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 5, 1, 0);
+          } else {
+            MainSprite* s = &(p->e).sprite->s;
+
+            if ((p->e).playingAnim == 6 && !(p->e).animForceRestart && !(s->flags & SPRFLAG_XFLIP)) {
+              break;
+            }
+            (p->e).playingAnim = 6;
+            MainSprite_SetAnim(s, &(p->e).sprite->gfx, 6, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+          }
+          (p->e).animForceRestart = FALSE;
+          break;
+        }
+        case 2: {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSpriteData* s;
+
+            (p->e).playingAnim = 5;
+            s = (EnemyAuxSpriteData*)(p->e).sprite;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 5, 0, ANIM_PLAY_REVERSE);
+          } else {
+            MainSprite* s = &(p->e).sprite->s;
+
+            (p->e).playingAnim = 5;
+            MainSprite_SetAnim(s, &(p->e).sprite->gfx, 5, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+          }
+          (p->e).animForceRestart = FALSE;
+          break;
+        }
+        case 3: {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSpriteData* s;
+
+            (p->e).playingAnim = 5;
+            s = (EnemyAuxSpriteData*)(p->e).sprite;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 5, 1, ANIM_PLAY_REVERSE);
+          } else {
+            MainSprite* s = &(p->e).sprite->s;
+
+            (p->e).playingAnim = 6;
+            MainSprite_SetAnim(s, &(p->e).sprite->gfx, 6, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+          }
+          (p->e).animForceRestart = FALSE;
+          break;
+        }
+      }
+    }
+  }
+  if (((EnemyAuxSpriteData*)(p->e).sprite)->anim.tick == 0) {
+    u32 goal = Angle_FromDir8((p->e).unk_1dc);
+    u8 a = (p->e).mover.angle;
+    s32 d = a - goal;
+
+    if (abs(d) <= 64) {
+      (p->e).mover.angle = goal;
+    }
+    if (a < goal) {
+      if (abs(d) <= 128) {
+        (p->e).mover.angle = a + 64;
+      } else {
+        (p->e).mover.angle = a - 64;
+      }
+    } else if (a > goal) {
+      if (abs(d) <= 128) {
+        (p->e).mover.angle = a - 64;
+      } else {
+        (p->e).mover.angle = a + 64;
+      }
+    }
+  }
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_0812eab4.inc");
+#endif
+}
 
 // 残差は143/144命令, p が r6 に乗る (原典は r7), 保留状態の格納は unk_5a4 を先に読み 5 を ip に置く, inline で引数を先に評価させると読む順は揃うが割り当ては変わらない
 NON_MATCH void FUN_0812edf8(Spider* p) {
