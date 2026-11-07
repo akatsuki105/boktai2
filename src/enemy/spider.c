@@ -114,7 +114,36 @@ void FUN_0812ea90(Spider* p) {
 
 NAKED void FUN_0812eab4(Spider* p) { INCFUNC("asm/func/FUN_0812eab4.inc"); }
 
-NAKED void FUN_0812edf8(Spider* p) { INCFUNC("asm/func/FUN_0812edf8.inc"); }
+// 残差は143/144命令, p が r6 に乗る (原典は r7), 保留状態の格納は unk_5a4 を先に読み 5 を ip に置く, inline で引数を先に評価させると読む順は揃うが割り当ては変わらない
+NON_MATCH void FUN_0812edf8(Spider* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 0);
+    AuxShadow_Show(&(p->e).auxShadow);
+    SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
+    Hitbox_SetFlags(&(p->e).atkHitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+  }
+  if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
+    if (!(p->e).unk_44c) {
+      AuxShadow_Remove(&(p->e).auxShadow);
+      (p->e).unk_44c = 1;
+    }
+    CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
+    Hitbox_ClearFlags(&(p->e).atkHitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+    (p->e).pendingDelay = 20;
+    (p->e).pendingHandler = (p->e).unk_5a4;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 5;
+    Enemy_EnterState(&p->e, FUN_080e68d8, ES_UNK_14);
+    Enemy_ResetState(&p->e, 3, 1, 0);
+  }
+#else
+  INCFUNC("asm/func/FUN_0812edf8.inc");
+#endif
+}
 
 NAKED void FUN_0812ef50(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812ef50.inc"); }
 
