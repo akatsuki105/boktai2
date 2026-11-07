@@ -51,6 +51,24 @@ static inline bool8 Dog_TestUnk6a8(Dog* p, u32 bit) {
 
 static inline void Dog_ClearUnk6a8(Dog* p, u32 bit) { p->unk_6a8 &= ~bit; }
 
+static inline bool8 Dog_TryRouteTo(Enemy* p, NavAgent* agent, WorldPos* pos, WorldPos* dst) {
+  s32 result;
+
+  if (!Map_IsPosInAgentIsland(agent, pos, dst)) {
+    Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
+    return FALSE;
+  }
+  result = Map_TryFindNavRoute(agent, pos, dst);
+  if (result != 0) {
+    if (result != 2) {
+      ClearMemory(&p->mover.delta, 8);
+    }
+    return TRUE;
+  }
+  Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
+  return FALSE;
+}
+
 static inline AuxAnimState* Enemy_GetAuxAnim(Enemy* p) { return &((EnemyAuxSpriteData*)p->sprite)->anim; }
 
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
@@ -448,7 +466,23 @@ NAKED void FUN_0814e248(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e248.inc"
 
 void FUN_0814e420(Dog* p) {}
 
-NAKED void FUN_0814e424(Dog* p) { INCFUNC("asm/func/FUN_0814e424.inc"); }
+void FUN_0814e424(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    return;
+  }
+  Enemy_PlayAnim(&p->e, 11);
+  if (FUN_0814b3a0(p)) {
+    Enemy_PlayAnim(&p->e, 0);
+    if (!Dog_TryRouteTo(&p->e, (p->e).navAgent, &(p->e).mover.pos, &(p->e).playerMover->pos)) {
+      ((EnemyHandler)(p->e).unk_5c4)(&p->e);
+    } else {
+      Dog_ClearUnk6a8(q, 4);
+      Enemy_ResetState(&p->e, 0, 0, 17);
+    }
+  }
+}
 
 NAKED void FUN_0814e530(Dog* p) { INCFUNC("asm/func/FUN_0814e530.inc"); }
 
