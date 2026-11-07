@@ -2,6 +2,8 @@
 #include "global.h"
 #include "hitbox.h"
 #include "sprite_aux.h"
+#include "vec3.h"
+#include "video.h"
 
 // ドゥラスロール(第1形態)の飛ばす棘
 
@@ -26,7 +28,21 @@ static_assert(sizeof(Entity0805d79c) == 4408);
 // 当たったら寿命を尽きさせて消す
 void Entity0805d79c_OnHit(HitboxData* a, HitboxData* b, Entity0805d79cElem* elem) { elem->timer = 60; }
 
-NAKED void Entity0805d79c_InitElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) { INCFUNC("asm/func/Entity0805d79c_InitElem.inc"); }
+void Entity0805d79c_InitElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) {
+  HitboxData* hitbox;
+  Vec3 halfSize;
+  Vec3 offset;
+
+  elem->timer = 0;
+  Vec3_Clear(&elem->vel);
+  AuxSprite_Setup(&elem->sprite, &p->gfx, 1);
+  hitbox = &elem->hitbox;
+  VEC3_SET(halfSize, 8, 32, 8);
+  VEC3_SET(offset, 0, 0, 0);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetHandler(hitbox, Entity0805d79c_OnHit, elem);
+  Hitbox_SetAttack(hitbox, 10, 20, 0, 0, 20);
+}
 
 void Entity0805d79c_ReleaseElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) {
   elem->sprite.flags |= SPRFLAG_HIDDEN;
