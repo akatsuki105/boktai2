@@ -88,7 +88,16 @@ NAKED void FUN_08144414(Crow* p) { INCFUNC("asm/func/FUN_08144414.inc"); }
 
 NAKED void FUN_08144608(Crow* p) { INCFUNC("asm/func/FUN_08144608.inc"); }
 
-NAKED void Crow_InitHitboxes(Crow* p) { INCFUNC("asm/func/Crow_InitHitboxes.inc"); }
+void Crow_InitHitboxes(Crow* p) {
+  Vec3 hurtSize, hurtOffset, hitSize, hitOffset;
+
+  VEC3_SET(hurtSize, 42, 96, 42);
+  VEC3_SET(hurtOffset, 0, 0, 0);
+  Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, Crow_OnHurt, p);
+  VEC3_SET(hitSize, 16, 84, 16);
+  VEC3_SET(hitOffset, 0, 0, 0);
+  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Crow_OnHit, 0, p);
+}
 
 NAKED s32 FUN_081446fc(Crow* p) { INCFUNC("asm/func/FUN_081446fc.inc"); }
 
