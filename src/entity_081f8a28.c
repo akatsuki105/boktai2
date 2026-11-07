@@ -20,7 +20,7 @@ typedef struct {
   u16 speed;              // 0x10C, 6フレームごとに accel ずつ maxSpeed まで上がる
   u16 maxSpeed;           // 0x10E
   u8 accel;               // 0x110, state 2 に入ると 1, 加速するたびに +4
-  s8 shadowId;            // 0x111, 0 のときだけ片付けで影を外す, 外したら -1
+  u8 shadowId;            // 0x111, AuxShadow_Init の戻り値, 0 のときだけ片付けで影を外す, 外したら 0xFF
   s16 growTime;           // 0x112, state 1 の残りフレーム数 (初期値 15), この間 sprite.scaleX/Y を 64 へ近づける
   AuxAnimFile* animFile;  // 0x114, ANIM_121B
   s32 lifetime;           // 0x118, state 2 の残りフレーム数 (初期値 120), 60 未満になると追尾をやめて落ち始める
@@ -113,7 +113,21 @@ s32 Entity081f8a28_Update(Entity081f8a28* p) {
   return 0;
 }
 
-NAKED s32 Entity081f8a28_Destroy(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Destroy.inc"); }
+s32 Entity081f8a28_Destroy(Entity081f8a28* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (Entity081f8a28_IsElemUsed(p, i)) {
+      if (p->elems[i].shadowId == 0) {
+        AuxShadow_Remove(&p->elems[i].shadow);
+        p->elems[i].shadowId = 0xFF;
+      }
+      AuxSprite_Remove(&p->elems[i].sprite);
+    }
+  }
+  gEntity081f8a28 = NULL;
+  return 0;
+}
 
 s32 Entity081f8a28_Init(Entity081f8a28* p) {
   p->usedMask = 0;
