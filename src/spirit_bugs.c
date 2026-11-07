@@ -277,7 +277,7 @@ s32 Entity0800a89c_Init(SpiritBugsManager* p, u32 id) {
   return 0;
 }
 
-SpiritBugsManager* Entity0800a89c_Create(u32 id) {
+SpiritBugsManager* Entity0800a89c_Create(u32 id, u32 _) {
   SpiritBugsManager* p = CreateEntity(ENTITY_UNK_8, sizeof(SpiritBugsManager));
 
   if (p != NULL) {
@@ -291,7 +291,94 @@ SpiritBugsManager* Entity0800a89c_Create(u32 id) {
 }
 
 // kind = SpiritBugKind (bit4 以降は別の意味?), amount = 効果量 (sSpiritBugHandler の 第2引数)
-NAKED s32 SpawnSpiritBugs(u32 count, s32 kind, s32 amount, Vec3* pos, Vec3* spread, s32 lifetime, s32 lifetimeRand) { INCFUNC("asm/func/SpawnSpiritBugs.inc"); }
+// 空いている群れに count 匹の精霊虫を pos の周り (spread の範囲) に出す, kind の上位4bit が立っていれば出現音を鳴らさない
+// 下書き (462/434命令): 流れは一致, 原典は乱数インデックスのアドレスを r7 に置いて kind を r4 のまま持ち, こちらは高位レジスタとスタックに逃がすぶん mov と再読み込みが増える
+NON_MATCH s32 SpawnSpiritBugs(s32 count, s32 kind, s32 amount, Vec3* pos, Vec3* spread, s32 lifetime, s32 lifetimeRand) {
+#ifdef NONMATCHING_C
+  SpiritBugsManager* p = sSpiritBugsManager;
+  bool8 silent;
+  u32 blink;
+  s32 i;
+
+  if (p == NULL) {
+    p = Entity0800a89c_Create(0xFC73, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  if (gPlayerPtr[0] == NULL) {
+    return 0;
+  }
+
+  silent = (kind & 0xF0) != 0;
+  kind &= 0xF;
+  if (count > 4) {
+    count = 4;
+  }
+  if (lifetimeRand == 0) {
+    lifetimeRand = 1;
+  }
+  blink = u32_ARRAY_085aa700[kind];
+
+  for (i = 0; i < 6; i++) {
+    SpiritBugSwarm* swarm = &p->swarms[i];
+
+    if (!swarm->active) {
+      s32 phase = 0;
+      s32 j;
+
+      swarm->kind = kind;
+      swarm->amount = amount;
+      swarm->aliveCount = count;
+      swarm->soundDelay = silent ? 0 : 14;
+      for (j = 0; j < count; j++) {
+        SpiritBug* bug = &swarm->bugs[j];
+
+        bug->state = 1;
+        bug->timer = lifetime + Mod(Random(), lifetimeRand);
+        bug->unk_6 = blink;
+        bug->speed = (Random() & 3) + 4;
+        bug->angle = Random();
+        bug->turnTimer = Random() | 0x80;
+        bug->ptcl.flags &= ~SPRFLAG_HIDDEN;
+        bug->ptcl.pos.x = pos->x;
+        if (spread->x != 0) {
+          bug->ptcl.pos.x += Mod(Random(), spread->x);
+        }
+        bug->ptcl.pos.y = pos->y;
+        if (spread->y != 0) {
+          bug->ptcl.pos.y += Mod(Random(), spread->y);
+        }
+        bug->ptcl.pos.z = pos->z;
+        if (spread->z != 0) {
+          bug->ptcl.pos.z += Mod(Random(), spread->z);
+        }
+        AuxAnim_SetAnim(&bug->anim, p->anim, sBugsAnimIdx[p->isSabata * 6 + kind * 2], 0, 0);
+        bug->anim.cmdIdx = phase;
+        if (++phase > 2) {
+          phase = 0;
+        }
+        bug->vel.x = 0;
+        bug->vel.y = 0;
+        bug->vel.z = 0;
+        bug->target = bug->ptcl.pos;
+        Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+        Particle_AddToDrawList(&bug->ptcl, 0);
+      }
+      for (; j < 4; j++) {
+        swarm->bugs[j].ptcl.flags |= SPRFLAG_HIDDEN;
+        Particle_AddToDrawList(&swarm->bugs[j].ptcl, 0);
+      }
+      swarm->timer = 40;
+      swarm->active = TRUE;
+      break;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/SpawnSpiritBugs.inc");
+#endif
+}
 
 // kind = SpiritBugKind, amount = 効果量 (sSpiritBugHandler の 第2引数)
 NAKED s32 SpawnSpiritBugsAt(u32 count, s32 kind, s32 amount, Vec3* pos, Vec3* perBugPos, s32 lifetime, s32 lifetimeRand) { INCFUNC("asm/func/SpawnSpiritBugsAt.inc"); }
