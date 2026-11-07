@@ -156,7 +156,7 @@ Entity081f8a28* Entity081f8a28_Create(void) {
 void Entity081f8a28_ClearGlobal(void) { gEntity081f8a28 = NULL; }
 
 // 飛んでいる弾をすべて爆発させる
-void FUN_081f8a80(void) {
+void Entity081f8a28_ExplodeAll(void) {
   Entity081f8a28* p = gEntity081f8a28;
 
   if (p != NULL) {
