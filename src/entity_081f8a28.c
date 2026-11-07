@@ -45,13 +45,31 @@ static_assert(sizeof(Entity081f8a28) == 2396);
 
 static Entity081f8a28* gEntity081f8a28;  // 0x03000208
 
+static inline bool8 Entity081f8a28_IsElemUsed(Entity081f8a28* p, s32 i) {
+  if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 NAKED void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_OnHit.inc"); }
 
 NAKED void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_InitHitbox.inc"); }
 
 NAKED void Entity081f8a28_UpdateHitbox(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateHitbox.inc"); }
 
-NAKED Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_AllocElem.inc"); }
+Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (!Entity081f8a28_IsElemUsed(p, i)) {
+      Entity081f8a28Elem* elem = &p->elems[i];
+
+      p->usedMask |= 1 << i;
+      elem->slotIdx = i;
+      return elem;
+    }
+  }
+  return NULL;
+}
 
 NAKED void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_TurnToTarget.inc"); }
 
