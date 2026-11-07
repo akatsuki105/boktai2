@@ -2,7 +2,9 @@
 #include "global.h"
 #include "malloc.h"
 
-// バット, ヴァンパイアバット (プレイヤーが変身するCバット(PLAYER_BAT)などと混同しない様に Bat ではなく EnemyBat)
+// バット(ENEID_BAT), ヴァンパイアバット(ENEID_VBAT)
+// ヴァンパイアバット は 吸血攻撃をしてくる
+// プレイヤーが変身するCバット(PLAYER_BAT)などと混同しない様に構造体名は Bat ではなく EnemyBat にした
 typedef struct {
   Enemy e;
   u8 unk_654[1728 - sizeof(Enemy)];
