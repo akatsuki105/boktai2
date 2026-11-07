@@ -29,7 +29,7 @@ typedef struct {
   u32 unk_6a8;                // 0x6A8, bit0 は待ちが明けたときに立てる
   u32 unk_6ac;                // 0x6AC, unk_1e4 がこれ未満なら副状態 (0,2,0) へ
   u32 unk_6b0;                // 0x6B0, unk_1e4 がこれ未満でほぼ正面なら副状態 (0,2,1) へ
-  u8 unk_6b4[4];              // 0x6B4
+  u32 unk_6b4;                // 0x6B4, プレイヤーとの距離の2乗がこれ未満なら飛びかかりに入る
   u32 unk_6b8;                // 0x6B8, unk_1e4 と比べる距離の閾値, unk_6bc と対
   u32 unk_6bc;                // 0x6BC, unk_1e4 がこれを超えると副状態 19 へ移る
   u16 unk_6c0;                // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
@@ -77,6 +77,7 @@ struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlag
 void FUN_0814ca30(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
 void FUN_0814e1b0(Dog* p);
+void FUN_0814e1fc(Dog* p);
 void FUN_0814caa0(Dog* p);
 bool8 FUN_0814b3a0(Dog* p);
 void enemy_dog_0814a320(Dog* p);
@@ -1326,7 +1327,63 @@ void FUN_08150660(Dog* p) {
 
 void FUN_0815077c(Dog* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad8e8; }
 
-NAKED void FUN_08150790(Dog* p) { INCFUNC("asm/func/FUN_08150790.inc"); }
+// 吠えながら待つ副状態, 吠えるコマの終わりにプレイヤーが近ければ驚いて飛びかかりの副状態16へ, アニメが終わったら追いかけか状態1へ戻る
+// 2回目の下書き, 原典は &mover.pos を r8 に写し, 距離の2乗をコマの判定より先に作る, 状態の格納やタイル高さの塊の割り当てがまだずれる
+NON_MATCH void FUN_08150790(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+  AuxAnimState* anim;
+  WorldPos* pos;
+  Vec3 d;
+  u32 distSq;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_0814e1fc, ES_UNK_39);
+  }
+  if ((p->e).unk_608(&p->e)) {
+    return;
+  }
+  if (FUN_080f0a0c(&p->e)) {
+    return;
+  }
+  pos = &(p->e).mover.pos;
+  Vec3_Delta(&d, pos, &gPlayerPtr[0]->mover.pos);
+  distSq = d.x * d.x + d.z * d.z;
+  anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  if ((anim->cmdIdx == 6 || anim->cmdIdx == 12 || anim->cmdIdx == 19 || anim->cmdIdx == 25) && anim->tick == anim->wait - 1 && distSq < q->unk_6b4) {
+    Enemy_SetEmote(&p->e, 0, 1, (p->e).kind);
+    Enemy_ResetState(&p->e, 0, 0, 16);
+    q->unk_708 = gPlayerPtr[0]->mover.pos;
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      (p->e).unk_24e += 300;
+      if ((p->e).unk_24e > (p->e).unk_24c) {
+        (p->e).unk_24e = (p->e).unk_24c;
+      }
+    }
+    return;
+  }
+  if ((p->e).subStateDone) {
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      Enemy_ResetState(&p->e, 0, 0, 12);
+      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    } else {
+      d.x = (p->e).pathWalker.node->x;
+      d.z = (p->e).pathWalker.node->y;
+      d.y = TileHeightAt(&d);
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 2);
+      if (!Enemy_TryRouteToEx(&p->e, (p->e).navAgent, pos, &d)) {
+        (p->e).unk_5c4(&p->e);
+      }
+    }
+  } else {
+    (p->e).subStateTimer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_08150790.inc");
+#endif
+}
 
 // 飛びかかる前の位置へ向かう副状態, 着いたら追いかけ中なら状態26へ, そうでなければ経路の今のノードへ戻って状態1へ
 void FUN_08150b18(Dog* p) {
