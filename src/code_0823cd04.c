@@ -326,7 +326,25 @@ void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_
   Entity6978_SetRequest(request, 5, args);
 }
 
-NAKED s32 Cmd_0CD4(void) { INCFUNC("asm/func/Cmd_0CD4.inc"); }
+// 0x0CD4, (x, z) のタイルの足元の高さをスクリプトの変数へ書き出して返す
+// 残差: 命令列はほぼ一致, 原典は pos を sp+0, desc を sp+8 に置いて desc のアドレスを r5 に持つが, こちらは逆の並びになり pos のアクセスが1命令ずつ増える
+NON_MATCH s32 Cmd_0CD4(void) {
+#ifdef NONMATCHING_C
+  WorldPos pos;
+  u8 desc[8];
+  s32 height;
+
+  pos.x = VM_GetValue();
+  pos.y = 0;
+  pos.z = VM_GetValue();
+  height = TileHeightAt(&pos);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, height);
+  return height;
+#else
+  INCFUNC("asm/func/Cmd_0CD4.inc");
+#endif
+}
 
 // 0xA39F, (x, z) のタイルの階段の種類をスクリプトの変数へ書き出して返す
 // 残差: 命令列はほぼ一致, 原典は pos を sp+0, desc を sp+8 に置いて desc のアドレスを r5 に持つが, こちらは逆の並びになり pos のアクセスが1命令ずつ増える
