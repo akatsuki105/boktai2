@@ -802,7 +802,49 @@ NON_MATCH void Slime_ShootDroplets(Slime* p) {
 #endif
 }
 
-NAKED void FUN_08164da8(Slime* p) { INCFUNC("asm/func/FUN_08164da8.inc"); }
+// 攻撃判定つきの飛沫を3つ, 乱数の向きと速さで周りへ撃つ
+// 373/380命令, Slime_ShootDroplets と同じ形で, プレイヤーとの差を Vec3_Delta で作るが使わない (原典のまま), 残差は p を r9, pos を r8 に置く割り当て, 試済: pos を Delta の前に取る (悪化)
+NON_MATCH void FUN_08164da8(Slime* p) {
+#ifdef NONMATCHING_C
+  u32 attrs = Slime_PickHitAttributes(p);
+  u16* table = gRandomTable;
+  u32 r = _Random(table) & 15;
+  Vec3 vel;
+  WorldPos* pos;
+  u32 a;
+  s32 speed;
+
+  Vec3_Delta(&vel, &(p->e).mover.pos, &(p->e).playerMover->pos);
+  a = (u8)_Random(table);
+  speed = _Random(table) & 7;
+  Vec3_SetPolar(&vel, a + r, speed + 12);
+  vel.y = 48;
+  pos = &(p->e).mover.pos;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
+  {
+    u16* table = gRandomTable;
+    u32 r = _Random(table) & 15;
+    u32 a = (u8)_Random(table);
+    s32 speed = _Random(table) & 7;
+
+    Vec3_SetPolar(&vel, a + r, speed + 12);
+  }
+  vel.y = 37;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
+  {
+    u16* table = gRandomTable;
+    u32 r = _Random(table) & 15;
+    u32 a = (u8)_Random(table);
+    s32 speed = _Random(table) & 7;
+
+    Vec3_SetPolar(&vel, a + r, speed + 6);
+  }
+  vel.y = 32;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
+#else
+  INCFUNC("asm/func/FUN_08164da8.inc");
+#endif
+}
 
 void Slime_PlayFissionSound(Slime* p) {
   Slime* q = (p->e).unk_1cc;
