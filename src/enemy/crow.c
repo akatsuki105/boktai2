@@ -171,7 +171,18 @@ void Crow_InitAnims(Crow* p) {
   Enemy_SetAnimEntry(&p->e, 10, 3, 0);
 }
 
-NAKED void FUN_081447cc(Crow* p) { INCFUNC("asm/func/FUN_081447cc.inc"); }
+// 残差は q と flags2 のアドレスの r1/r2 入れ替えのみ, 試済: q のローカル有無, Enemy_SetFlag2
+NON_MATCH void FUN_081447cc(Crow* p) {
+#ifdef NONMATCHING_C
+  Crow* q = (p->e).unk_1cc;
+
+  Enemy_SetFlag2(&p->e, ENEFLAG2_UNK_20);
+  q->unk_658 &= ~1;
+  (p->e).atkHitbox.flags &= ~HBFLAG_HIDDEN;
+#else
+  INCFUNC("asm/func/FUN_081447cc.inc");
+#endif
+}
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
 void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
