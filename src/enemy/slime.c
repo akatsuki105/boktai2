@@ -235,7 +235,21 @@ void FUN_08163604(Slime* p, s32 arg) {
 
 NAKED void FUN_081636d4(Slime* p) { INCFUNC("asm/func/FUN_081636d4.inc"); }
 
-NAKED void FUN_08163848(Slime* p) { INCFUNC("asm/func/FUN_08163848.inc"); }
+void FUN_08163848(Slime* p) {
+  AuxSprite* aux = (AuxSprite*)(p->e).sprite;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    aux->scaleX = 64;
+    aux->scaleY = 64;
+    aux->flags &= ~SPRFLAG_AFFINE;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).animSpeedDiv = 1;
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 0, 2);
+  }
+}
 
 NAKED void FUN_0816390c(Slime* p, s32 arg) { INCFUNC("asm/func/FUN_0816390c.inc"); }
 
