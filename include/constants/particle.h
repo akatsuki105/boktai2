@@ -59,7 +59,7 @@
 #define PTCL1_13 13
 #define PTCL1_14 14
 #define PTCL1_15 15
-#define PTCL1_16 16
+#define PTCL1_CONFUSE 16  // 混乱(BAD_CONFUSE)したときにプレイヤーの頭上に出るエフェクト
 #define PTCL1_17 17
 #define PTCL1_18 18
 #define PTCL1_19 19

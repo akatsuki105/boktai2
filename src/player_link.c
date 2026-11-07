@@ -554,7 +554,7 @@ void FUN_080ce330(Player* p) {
   Eff082473e0Emitter_Destroy(&p->emitter);
   ParticleShadow_Remove(&p->shadow);
   Particle_Remove(&p->ptcl_64c.ptcl);
-  Particle_Remove(&p->ptcl_67c.ptcl);
+  Particle_Remove(&p->spurl.ptcl);
   FUN_080cd078(p);
   FUN_080cd528(p);
   FUN_080cce5c(p);

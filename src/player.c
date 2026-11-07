@@ -605,20 +605,20 @@ NON_MATCH void Player_UpdateConfusePtcl(Player* p) {
 #ifdef NONMATCHING_C
   s32 angle;
 
-  if (p->ptcl_67c.active) {
+  if (p->spurl.active) {
     if (p->mode != PMODE_ACTIVE || p->badCondTimer[BAD_CONFUSE] == 0) {
-      p->ptcl_67c.ptcl.flags |= SPRFLAG_HIDDEN;
-      p->ptcl_67c.active = FALSE;
+      p->spurl.ptcl.flags |= SPRFLAG_HIDDEN;
+      p->spurl.active = FALSE;
       return;
     }
 
-    angle = (p->ptcl_67c.timer * 5) & 0xFF;
+    angle = (p->spurl.timer * 5) & 0xFF;
 
-    p->ptcl_67c.ptcl.pos.x = p->mover.pos.x + POLAR_X(Q8(0.22), angle);
-    p->ptcl_67c.ptcl.pos.y = POLAR_Z(Q8(0.274), angle) + Q8(1.37) + p->mover.pos.y;
-    p->ptcl_67c.ptcl.pos.z = p->mover.pos.z - POLAR_X(Q8(0.22), angle);
+    p->spurl.ptcl.pos.x = p->mover.pos.x + POLAR_X(Q8(0.22), angle);
+    p->spurl.ptcl.pos.y = POLAR_Z(Q8(0.274), angle) + Q8(1.37) + p->mover.pos.y;
+    p->spurl.ptcl.pos.z = p->mover.pos.z - POLAR_X(Q8(0.22), angle);
 
-    p->ptcl_67c.timer++;
+    p->spurl.timer++;
     return;
   }
 
@@ -626,13 +626,13 @@ NON_MATCH void Player_UpdateConfusePtcl(Player* p) {
     return;
   }
 
-  p->ptcl_67c.ptcl.pos = p->mover.pos;
-  p->ptcl_67c.ptcl.pos.x += Q8(0.22);
-  p->ptcl_67c.ptcl.pos.y += Q8(1.37);
-  p->ptcl_67c.ptcl.flags &= ~SPRFLAG_HIDDEN;
-  Particle_SetPose(&p->ptcl_67c.ptcl, p->ptcl_67c.group1, PTCL1_16);
-  p->ptcl_67c.timer = 0;
-  p->ptcl_67c.active = TRUE;
+  p->spurl.ptcl.pos = p->mover.pos;
+  p->spurl.ptcl.pos.x += Q8(0.22);
+  p->spurl.ptcl.pos.y += Q8(1.37);
+  p->spurl.ptcl.flags &= ~SPRFLAG_HIDDEN;
+  Particle_SetPose(&p->spurl.ptcl, p->spurl.group1, PTCL1_CONFUSE);
+  p->spurl.timer = 0;
+  p->spurl.active = TRUE;
 #else
   INCFUNC("asm/func/Player_UpdateConfusePtcl.inc");
 #endif
@@ -643,16 +643,16 @@ void FUN_0806161c(Player* p) {
   ParticleGroup* group = GetParticleGroup(PTCL_GROUP_1);
   Particle* ptcl;
 
-  p->ptcl_67c.group1 = group;
-  ptcl = &p->ptcl_67c.ptcl;
+  p->spurl.group1 = group;
+  ptcl = &p->spurl.ptcl;
   Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  Particle_SetPose(ptcl, p->ptcl_67c.group1, PTCL1_16);
+  Particle_SetPose(ptcl, p->spurl.group1, PTCL1_CONFUSE);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
-  p->ptcl_67c.active = 0;
-  p->ptcl_67c.timer = 0;
+  p->spurl.active = 0;
+  p->spurl.timer = 0;
 }
 
 // 衝撃波のアニメーションを1フレーム進める, 終端まで行くと finished を立てて消す
@@ -1937,8 +1937,8 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
     if (p->goodCondID == GOOD_MINI) {
       if (p->unk_97a <= 0x3F) {
         if (p->unk_97a == 0) {
-          PlaySound_082406e0(SONG_494);
-          p->unk_3f1 = 1;
+          PlaySound_082406e0(SE_PLAYER_SHRINK);
+          p->isMiniHuman = TRUE;
         }
         p->unk_97a++;
       }
@@ -1949,9 +1949,9 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       p->human.scaleY = scale;
       p->flag20 |= (PFLAG20_SNEAKING | PFLAG20_UNK_18);
     } else if (p->unk_97a != 0) {
-      if (p->unk_3f1 != 0) {
-        PlaySound_082406e0(SONG_822);
-        p->unk_3f1 = 0;
+      if (p->isMiniHuman) {
+        PlaySound_082406e0(SE_PLAYER_SHRINK_END);
+        p->isMiniHuman = FALSE;
       }
 
       p->unk_97a--;
@@ -1978,9 +1978,9 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
     }
   } else {
     if (p->unk_97a != 0) {
-      if (p->unk_3f1 != 0) {
-        PlaySound_082406e0(SONG_822);
-        p->unk_3f1 = 0;
+      if (p->isMiniHuman) {
+        PlaySound_082406e0(SE_PLAYER_SHRINK_END);
+        p->isMiniHuman = FALSE;
       }
 
       p->unk_97a--;
@@ -2053,7 +2053,7 @@ void Player_DestroyEffects(Player* p) {
   Eff082473e0Emitter_Destroy(&p->emitter);
   ParticleShadow_Remove(&p->shadow);
   Particle_Remove(&p->ptcl_64c.ptcl);
-  Particle_Remove(&p->ptcl_67c.ptcl);
+  Particle_Remove(&p->spurl.ptcl);
   FUN_08061db4(p);
   FUN_08062258(p);
   FUN_08061b98(p);
@@ -2074,7 +2074,7 @@ void Player_InitEffects(Player* p) {
 
   if (HasGoodCond(p, GOOD_MINI)) {
     p->unk_97a = 0x40;
-    p->unk_3f1 = 1;
+    p->isMiniHuman = TRUE;
   }
 
   Player_ResetPltt(p);

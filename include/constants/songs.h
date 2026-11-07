@@ -496,7 +496,7 @@
 #define SE_COFFIN_CLOSE 491  // 棺桶を閉めた時の音(スリーピング開始時)
 #define SONG_492 492
 #define SE_CHARA_QUESTION 493  // キャラが "?" を出すときの音
-#define SONG_494 494
+#define SE_PLAYER_SHRINK 494   // "赤いキノコ"で体が縮むときのSE
 #define SONG_495 495
 #define SE_MMBN_496 496  // プラグインの音？
 #define SONG_497 497
@@ -824,7 +824,7 @@
 #define SONG_819 819
 #define SONG_820 820
 #define SONG_821 821
-#define SONG_822 822
+#define SE_PLAYER_SHRINK_END 822  //赤いキノコで小さくなった状態から元の大きさに戻るときのSE, SE_PLAYER_SHRINK の反対版
 #define SONG_823 823
 #define SONG_824 824
 #define SONG_825 825

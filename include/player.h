@@ -341,7 +341,7 @@ typedef struct Player {
   u16 unk_3ec;                      // 0x3EC, 0 以外だと FUN_0807ad60 が上書きを断る
   u8 unk_3ee[0x3F0 - 0x3EE];        // 0x3EE
   u8 unk_3f0;                       // 0x3F0, FUN_0807bdc8 が unk_4a6 と同じ値を書く
-  u8 unk_3f1;                       // 0x3F1
+  bool8 isMiniHuman;                // 0x3F1, ITEM_RED_MUSHROOM で体が縮んでいるか
   u8 unk_3f2;                       // 0x3F2, 目的地が遠い間 0..5 で増減し, 5 で姿を消して 1 以上で点滅する
   u8 unk_3f3[0x3F6 - 0x3F3];        // 0x3F3
   u16 floatHeight;                  // 0x3F6, human の表示高さに足す浮き上がり量
@@ -419,7 +419,7 @@ typedef struct Player {
   Vec3 shadowOffset;                // 0x604, shadowPos を作るときに mover.pos に足す分, Player_BeginAction が 0 に戻す
   ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, Elevator_UpdatePlayerRiding がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
-  PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
+  PlayerParticleGroup1 spurl;       // 0x67C, 混乱(BAD_CONFUSE)したときにプレイヤーの頭上に PTCL1_CONFUSE を出すための Emitter
   PlayerShockwave meleeShockwave;   // 0x6AC
   PlayerParticleState718 ptcl_718;  // 0x718, 根拠: Player_InitPtcl718
   PlayerParticleState858 ptcl_858;  // 0x858, 根拠: Player_InitPtcl858
