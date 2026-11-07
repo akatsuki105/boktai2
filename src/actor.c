@@ -658,7 +658,6 @@ NAKED void FUN_080417dc(Mover* mover) { INCFUNC("asm/func/FUN_080417dc.inc"); }
 
 NAKED void FUN_08041918(ActorManager* p) { INCFUNC("asm/func/FUN_08041918.inc"); }
 
-// 0xDDD0
 NAKED s32 Cmd_DDD0(void) { INCFUNC("asm/func/Cmd_DDD0.inc"); }
 
 // 0x5517
@@ -1301,7 +1300,25 @@ void FUN_0804473c(ActorManager* p, Actor* actor, s32 elapsed) {
 
 NAKED void FUN_0804478c(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_0804478c.inc"); }
 
-NAKED void FUN_080448c8(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_080448c8.inc"); }
+// mover の向きを unk_1b に合わせて向きのアニメを出し, 合ったら終える
+void FUN_080448c8(ActorManager* p, Actor* actor, s32 elapsed) {
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 2, 1, 0, 4);
+  }
+  if ((u8)actor->fn(actor) != 1) {
+    u8 angle = actor->unk_1b;
+
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+    FUN_08041480(actor, 2, 2, 0, 0);
+    if (actor->mover.angle == actor->unk_1b) {
+      actor->unk_07 = 1;
+    }
+  }
+}
 
 void FUN_0804494c(ActorManager* p, Actor* actor, s32 elapsed) {
   if (actor->unk_09) {

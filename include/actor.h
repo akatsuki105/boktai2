@@ -131,7 +131,14 @@ typedef struct Actor {
   u8 unk_218[0x226 - 0x218];  // 0x218, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
-  u8 unk_228[0x244 - 0x228];  // 0x228, まだ未解析
+  u8 unk_228[0x231 - 0x228];  // 0x228, まだ未解析
+  u8 startHour;               // 0x231, FUN_08043da8 が見る時間帯の始まり (時)
+  u8 startMinute;             // 0x232, 同じく (分)
+  u8 endHour;                 // 0x233, 時間帯の終わり (時)
+  u8 endMinute;               // 0x234, 同じく (分)
+  u8 unk_235;                 // 0x235, まだ未解析
+  u16 waitFrames;             // 0x236, 0 以外の間 FUN_08043da8 が減らすだけで時間帯を見ない
+  u8 unk_238[0x244 - 0x238];  // 0x238, まだ未解析
   union {
     ParticleShadow ptcl;              // shadowKind == 1
     AuxShadow aux;                    // shadowKind == 2
@@ -185,20 +192,20 @@ static inline void Actor_SetOnDestroy(Actor* actor, ActorCb* cb) { actor->onDest
 // Actor は14種あり, 種別ごとに state テーブルと per-state 更新テーブルを1組ずつ持つ (PTR_ARRAY_085ae83c 以降の28本)
 // 毎フレーム更新するのが hour/minute と playerPos/player なので, 時刻とプレイヤー位置で Actor の挙動が変わる
 typedef struct ActorManager {
-  Entity e;                 // 0x000, ENTITY_UNK_9
-  u32 frameCount;           // 0x018, _Update が毎フレーム +1
-  Actor* head;              // 0x01C, リストの先頭, 解放は FUN_0804114c
-  bool8 minuteChanged;      // 0x020, prevMinute != minute
-  u8 prevMinute;            // 0x021, 1フレーム前の minute
-  u8 hour;                  // 0x022, Time_GetHour
-  u8 minute;                // 0x023, Time_GetMinute
-  s8 unk_24;                // 0x024, FUN_08018a08 の戻り値
-  u8 unk_25[3];             // 0x025, padding?
-  s32 unk_28;               // 0x028, _Update が毎フレーム 1 - x で 0/1 を往復させる, unk_2c の添字
-  u32 unk_2c[2];            // 0x02C, _Update が unk_28 の側だけ 0 にする
-  u8 unk_34[0x434 - 0x34];  // 0x034, まだ未解析, C/I/U/D のどれからも触らない
-  WorldPos* playerPos;      // 0x434, gPlayerPtr[0] があれば &gPlayerPtr[0]->mover.pos
-  Player* player;           // 0x438, &gPlayerPtr[0], 毎フレーム更新
+  Entity e;              // 0x000, ENTITY_UNK_9
+  u32 frameCount;        // 0x018, _Update が毎フレーム +1
+  Actor* head;           // 0x01C, リストの先頭, 解放は FUN_0804114c
+  bool8 minuteChanged;   // 0x020, prevMinute != minute
+  u8 prevMinute;         // 0x021, 1フレーム前の minute
+  u8 hour;               // 0x022, Time_GetHour
+  u8 minute;             // 0x023, Time_GetMinute
+  s8 unk_24;             // 0x024, FUN_08018a08 の戻り値
+  u8 unk_25[3];          // 0x025, padding?
+  s32 unk_28;            // 0x028, _Update が毎フレーム 1 - x で 0/1 を往復させる, unk_2c の添字
+  u32 unk_2c[2];         // 0x02C, _Update が unk_28 の側だけ 0 にする
+  u8 msgBufs[2][8][64];  // 0x034, Cmd_DDD0 が MsgPacket を組み立てる場所, [unk_28][unk_2c[unk_28]]
+  WorldPos* playerPos;   // 0x434, gPlayerPtr[0] があれば &gPlayerPtr[0]->mover.pos
+  Player* player;        // 0x438, &gPlayerPtr[0], 毎フレーム更新
 } ActorManager;
 static_assert(sizeof(ActorManager) == 1084);
 
