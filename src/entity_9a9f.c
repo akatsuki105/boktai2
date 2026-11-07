@@ -1576,7 +1576,66 @@ void FUN_081dfa20(s32 kind, s32* strength, s32* vitality, s32* spirit, s32* agil
   }
 }
 
-NAKED s32 FUN_081dfa98(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dfa98.inc"); }
+// 通信を1フレーム進めて状態の updateCallback を呼ぶ, 受信が -3 の間は Entity を止めて数え, 終わる要求があれば消してスクリプトかソフトリセットへ
+s32 FUN_081dfa98(Entity9A9F* p) {
+  bool32_030001ac = 0;
+  if (p->state > 4) {
+    gSoftResetInhibit = TRUE;
+  }
+  bool32_030001ac = 1;
+  if (p->state > 2) {
+    p->unk_4c = Sio_GetRecvData(p->unk_44);
+    bool32_030001ac = 2;
+    p->unk_48 = Sio_SetSendData(p->unk_42);
+    bool32_030001ac = 3;
+    if (p->state > 5) {
+      if (gEntity9A9F != NULL && gEntity9A9F->playerIdx == 0 && p->state != 22 && p->state != 24) {
+        Sio_StartTransferIfIdle();
+      }
+    } else if (p->unk_1d == 0 && p->state != 22 && p->state != 24) {
+      Sio_StartTransferIfIdle();
+    }
+    bool32_030001ac = 4;
+  }
+  bool32_030001ac = 5;
+  if (p->state > 4 && p->state != 22 && p->state != 24 && p->state != 25) {
+    bool32_030001ac = 6;
+    if (p->unk_4c == -3) {
+      SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_0);
+      bool32_030001ac = 8;
+      if (p->retryTimer < 0xFF) {
+        p->retryTimer++;
+        if (p->state > 4 && p->retryTimer > 14 && !gMapChanging) {
+          FUN_081ddbdc(p);
+        }
+      }
+      bool32_030001ac = 9;
+      return 0;
+    }
+    CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_0);
+    p->retryTimer = 0;
+    bool32_030001ac = 10;
+  }
+  bool32_030001ac = 12;
+  p->updateCallback(p);
+  p->stateTimer++;
+  bool32_030001ac = 14;
+  if (p->killRequested) {
+    KillEntity(&p->e);
+    if (p->state == 0) {
+      bool32_030001ac = 15;
+      SoftReset_0823a928();
+    } else if (p->exitScriptID != 0) {
+      bool32_030001ac = 16;
+      VM_ExecByID(p->exitScriptID, NULL);
+    } else {
+      bool32_030001ac = 17;
+      SoftReset_0823a928();
+    }
+  }
+  bool32_030001ac = 18;
+  return 0;
+}
 
 s32 Entity9A9F_Destroy(Entity9A9F* p) {
   Sio_Disconnect();
