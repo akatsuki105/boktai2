@@ -121,7 +121,17 @@ void FUN_0812f1b8(Spider* p) {}
 
 NAKED void FUN_0812f1bc(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f1bc.inc"); }
 
-NAKED void FUN_0812f358(Spider* p) { INCFUNC("asm/func/FUN_0812f358.inc"); }
+void FUN_0812f358(Spider* p) {
+  if ((p->e).stateBegun) {
+    (p->e).stateBegun = FALSE;
+  }
+  Enemy_PlayAnim(&p->e, 1);
+  if ((p->e).unk_24e == 0) {
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+    Enemy_ResetState(&p->e, 0, 0, 7);
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+  }
+}
 
 NAKED void FUN_0812f3f8(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f3f8.inc"); }
 
