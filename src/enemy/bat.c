@@ -320,7 +320,19 @@ NAKED void FUN_08140a48(EnemyBat* p) { INCFUNC("asm/func/FUN_08140a48.inc"); }
 
 NAKED void FUN_08140b30(EnemyBat* p) { INCFUNC("asm/func/FUN_08140b30.inc"); }
 
-NAKED void FUN_08140c14(EnemyBat* p) { INCFUNC("asm/func/FUN_08140c14.inc"); }
+void FUN_08140c14(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  q->unk_666 = 0;
+  Vec3_Clear(&(p->e).jumpVel);
+  CLEAR_FLAGS(q->unk_658, 7);
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+  SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+  Enemy_ResetState(&p->e, 0, 2, 0);
+  ParticleShadow_Show(&(p->e).shadow);
+  EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+}
 
 // 的を探してよい番を使い切り, 高さが近いプレイヤーが索敵範囲に入っていれば攻撃の要求を立てる
 bool8 FUN_08140cd4(EnemyBat* p) {
