@@ -98,7 +98,24 @@ Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) {
 
 NAKED void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_TurnToTarget.inc"); }
 
-NAKED void Entity081f8a28_SpawnTrail(Vec3* pos) { INCFUNC("asm/func/Entity081f8a28_SpawnTrail.inc"); }
+// pos の周りにランダムな向きで火の粉を1つ飛ばす
+// 79/78命令, Entity081f959c_SpawnTrail と同じ壁 (原典は乱数表のアドレスを gRandTableIdx より先に r4 に置き, 0xFF を ldrb の直前に作る), 試済: 3つとも _Random(table), angle を u8 にする (77/78), 宣言と代入を分ける
+NON_MATCH void Entity081f8a28_SpawnTrail(Vec3* pos) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  u16* table = gRandomTable;
+  u32 angle;
+  s32 speed;
+
+  angle = _Random(table) & 0xFF;
+  speed = (_Random(table) & 31) - 16;
+  Vec3_SetPolar(&vel, angle, speed);
+  vel.y = (Random() & 63) - 48;
+  Entity081ee2a0_SpawnDefault(pos, &vel, 60, 3);
+#else
+  INCFUNC("asm/func/Entity081f8a28_SpawnTrail.inc");
+#endif
+}
 
 void Entity081f8a28_UpdateIdle(Entity081f8a28* p, Entity081f8a28Elem* elem) {}
 
