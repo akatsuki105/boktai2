@@ -95,7 +95,21 @@ NAKED void FUN_080defd0(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_08
 
 NAKED void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9) { INCFUNC("asm/func/FUN_080df148.inc"); }
 
-NAKED s32 Entity080df420_Update(Entity080df420* p) { INCFUNC("asm/func/Entity080df420_Update.inc"); }
+s32 Entity080df420_Update(Entity080df420* p) {
+  Entity080df420Elem* elems = p->elems;
+  s32 i;
+
+  if (p->usedMask != 0 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+    FUN_080de344(p);
+    for (i = 0; i < 24; i++) {
+      if (Entity080df420_IsUsed(p, i)) {
+        sEntity080df420Updates[elems[i].state](p, &elems[i]);
+      }
+    }
+    p->frame++;
+  }
+  return 0;
+}
 
 s32 Entity080df420_Destroy(Entity080df420* p) {
   s32 i;
