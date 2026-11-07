@@ -794,7 +794,39 @@ s32 FUN_08140ea0(EnemyBat* p) {
 
 s32 FUN_08140eac(EnemyBat* p) { return 1; }
 
-NAKED void FUN_08140eb0(EnemyBat* p) { INCFUNC("asm/func/FUN_08140eb0.inc"); }
+// プレイヤーへの曲線に沿って飛び, 曲線の終点に着いたらプレイヤーの近くの乱数の位置へ次の曲線を引く
+// 229/229命令, 残差は乱数の表と ldrsh のゼロ添字に使う一時レジスタ番号 (r1/r2 と原典 r2/r3) だけ, 試済: 乱数の受けの型, pos の初期化子, table ローカル
+NON_MATCH void FUN_08140eb0(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  s32 speed;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    EnemyBat* q = (p->e).unk_1cc;
+
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    Vec3_Clear(&q->unk_6b0);
+    q->curveBendDir = 1;
+  }
+  EnemyBat_UpdateCurveBend(p);
+  speed = (p->e).unk_588(&p->e);
+  if (Enemy_StepToDest(&p->e, speed)) {
+    if (EnemyBat_StepCurve(p)) {
+      WorldPos pos;
+      u8 r = Random();
+
+      pos = gPlayerPtr[0]->mover.pos;
+      pos.x += FixToInt(4, SIN(r));
+      pos.z += FixToInt(4, COS(r));
+      EnemyBat_BeginCurveMove(p, &pos);
+      CLEAR_FLAGS(((EnemyBat*)(p->e).unk_1cc)->unk_658, 8);
+    }
+  } else {
+    (p->e).subStateTimer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_08140eb0.inc");
+#endif
+}
 
 NAKED void FUN_081410cc(EnemyBat* p) { INCFUNC("asm/func/FUN_081410cc.inc"); }
 
