@@ -137,11 +137,13 @@ typedef struct Actor {
   u8 footStep;                // 0x212, 0 以外なら FUN_080414fc が足音を鳴らす
   bool8 pathArrived;          // 0x213, FUN_080428b8 で経路の今のノードに着いたら立つ
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
-  u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
+  u8 unk_215;                 // 0x215, FUN_08043bcc が unk_216 のとき unk_1b に写す向き
+  u8 unk_216;                 // 0x216, 0 以外なら FUN_08043bcc が離れたとき state 3 へ
   u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
   u8 unk_218[0x21C - 0x218];  // 0x218, まだ未解析
   s32 nearRange;              // 0x21C, プレイヤーがこの距離 (x, z) まで近づいたら反応する
-  u8 unk_220[0x226 - 0x220];  // 0x220, まだ未解析
+  s32 unk_220;                // 0x220, FUN_08043bcc の近さの判定に使う距離
+  u8 unk_224[2];              // 0x224, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
   u8 unk_228[0x231 - 0x228];  // 0x228, まだ未解析

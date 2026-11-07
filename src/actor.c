@@ -1297,7 +1297,34 @@ NON_MATCH void FUN_08043960(ActorManager* p, Actor* actor) {
 
 NAKED void FUN_08043a24(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043a24.inc"); }
 
-NAKED void FUN_08043bcc(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043bcc.inc"); }
+// プレイヤーが unk_220 の外へ離れたら, unk_216 なら向き unk_215 で state 3 へ, そうでなければ覚えておいた state へ戻る
+// 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こしてから比べる (FUN_08043cf4 と同じ形)
+NON_MATCH void FUN_08043bcc(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 9;
+  }
+
+  if (p->player == NULL || p->playerPos == NULL) {
+    return;
+  }
+  if (abs(p->playerPos->x - actor->mover.pos.x) < actor->unk_220 && abs(p->playerPos->y - actor->mover.pos.y) <= 0xFF && abs(p->playerPos->z - actor->mover.pos.z) < actor->unk_220) {
+    actor->timer++;
+    return;
+  }
+  if (actor->unk_216) {
+    actor->unk_1b = actor->unk_215;
+    Actor_SetState(actor, 3);
+  } else {
+    Actor_SetState(actor, actor->unk_227);
+  }
+  actor->unk_08 = 1;
+#else
+  INCFUNC("asm/func/FUN_08043bcc.inc");
+#endif
+}
 
 // 待ちが解除されたら unk_05 を 10 にして, unk_07 が立っていたら state 12 へ進む
 void FUN_08043c94(ActorManager* p, Actor* actor) {
