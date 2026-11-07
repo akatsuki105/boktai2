@@ -4,14 +4,14 @@
 	ldr r6, [r0]
 	cmp r6, #0
 	bne _081D8AB0
-	bl Entity8CC7_Create
+	bl DoveManager_Create
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _081D8AB0
 	b _081D8C78
 _081D8AB0:
 	adds r0, r6, #0
-	bl Entity8CC7_AllocElem
+	bl DoveManager_AllocDove
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _081D8ABE

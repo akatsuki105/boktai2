@@ -362,7 +362,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8B67, Cmd_8B67
 	.4byte 0x8B8E, Entity8B8E_Create
 	.4byte 0x8C35, EnemyBombGolem_Create @ HashName("通信ゴーレム")
-	.4byte 0x8CC7, Cmd_8CC7
+	.4byte 0x8CC7, Cmd_SpawnDove
 	.4byte 0x8CFE, Cmd_8CFE
 	.4byte 0x8D2D, WeaponDexMenu_Create @ HashName("武器図鑑")
 	.4byte 0x8D5C, Entity8D5C_Create
