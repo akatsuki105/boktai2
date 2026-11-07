@@ -249,7 +249,11 @@ const ActorFootStepSound sActorFootStepSounds[21] = {
     {id : SPRITE_MEGAMAN,              idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
 };  // 0x085AB2B8
 
-const SoundID16 sFootStepSEs[6] = {SE_FSTEP_M_0, SE_FSTEP_M_1, SE_FSTEP_F_0, SE_FSTEP_F_1, SE_FSTEP_F_0, SE_FSTEP_F_1};  // 0x085AB360
+const SoundID16 sFootStepSEs[3][2] = {
+    {SE_FSTEP_M_0, SE_FSTEP_M_1},
+    {SE_FSTEP_F_0, SE_FSTEP_F_1},
+    {SE_FSTEP_F_0, SE_FSTEP_F_1},
+};  // 0x085AB360
 
 // id と idx の組に対応するデータを表から探す
 const ActorAnim* ActorManager_FindSpriteData(SpriteID32 id, s32 idx) {
@@ -596,7 +600,38 @@ s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, 
 
 NAKED s32 FUN_08041480(Actor* actor, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_08041480.inc"); }
 
-NAKED void FUN_080414fc(Actor* actor, s32 param_2) { INCFUNC("asm/func/FUN_080414fc.inc"); }
+// アニメのコマが足音のフレームに来たら足音を鳴らす, animIdx 1 と 3 が歩きのアニメ
+// 残差: 命令の並びは一致, 原典は fs を r2, &stepFrames[i] を r3, frame を r1 に置くがこちらは別のレジスタになる
+NON_MATCH void FUN_080414fc(Actor* actor, s32 animIdx) {
+#ifdef NONMATCHING_C
+  u32 frame;
+  s32 i;
+
+  if (actor->footStep == 0) {
+    return;
+  }
+  if (animIdx == 1) {
+    i = 0;
+  } else if (animIdx == 3) {
+    i = 2;
+  } else {
+    return;
+  }
+
+  if (SpriteHolder_GetAdvancedCmdIdx(&actor->sprite, &frame)) {
+    const ActorFootStepSound* fs = actor->unk_2bc;
+    const s8* steps = &fs->stepFrames[i];
+
+    if (steps[0] == frame) {
+      PlaySound_082406e0(sFootStepSEs[fs->soundSet][0]);
+    } else if (steps[1] == frame) {
+      PlaySound_082406e0(sFootStepSEs[fs->soundSet][1]);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080414fc.inc");
+#endif
+}
 
 // 2点が x/z は range 未満, y は 0xFF 以内に収まっているかを返す
 bool32 UNUSED FUN_0804157c(Vec3* a, Vec3* b, s32 range) {

@@ -34,7 +34,7 @@ static_assert(sizeof(ActorAnim) == 4);
 typedef struct ActorFootStepSound {
   SpriteID16 id;     // 0x0, NPCのスプライトIDばっかり
   u8 idx;            // 0x2, 1つのグラフィックにn人分のグラフィックデータが入っているときにどのキャラクターかを示すインデックス?
-  u8 soundSet;       // 0x3, sFootStepSEs のペア番号, [soundSet*2] と [soundSet*2+1] が鳴る
+  u8 soundSet;       // 0x3, sFootStepSEs[soundSet] の2つの音を鳴らす
   s8 stepFrames[4];  // 0x4, 足音を鳴らすアニメフレーム, [0][1] がアニメ添字1用, [2][3] が添字3用, -1 なら鳴らさない
 } ActorFootStepSound;
 
