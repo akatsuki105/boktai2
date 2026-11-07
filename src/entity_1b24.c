@@ -37,7 +37,7 @@ typedef struct Entity1B24 {
 static_assert(sizeof(Entity1B24) == 3984);
 
 bool32 FUN_081dfa04(void);
-void FUN_081dfa20(u32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
+void FUN_081dfa20(s32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
 void GetWeaponData(slot32_t n, WeaponData* data);
 void FUN_08094d1c(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);

@@ -350,8 +350,14 @@ s32 FUN_081debd4(Entity9A9F* p) {
   }
 }
 
-// 推測: u8[8][2]
-const u8 u8_ARRAY_085ae3f4[16] = {0x10, 0x0E, 0x18, 0x15, 0x20, 0x1C, 0x32, 0x1E, 0x0A, 0x28, 0x5A, 0x3C, 0x3C, 0x3C, 0x00, 0x00};  // 0x085AE3F4
+// 推測: u8[3][2]
+const u8 u8_ARRAY_085ae3f4[6] = {0x10, 0x0E, 0x18, 0x15, 0x20, 0x1C};  // 0x085AE3F4
+
+// 通信対戦のステータス (力, 体力, 精神, 素早さ) の基本値
+const u8 sLinkStatBase[4] = {50, 30, 10, 40};  // 0x085AE3FA
+
+// 種類ごとに上がる能力の値, 並びは sLinkStatBase と同じ
+const u8 sLinkStatBoost[6] = {90, 60, 60, 60};  // 0x085AE3FE, 末尾2要素は 0
 
 NAKED s32 FUN_081dec1c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dec1c.inc"); }
 
@@ -644,7 +650,35 @@ s32 FUN_081dfa04(void) {
   return gEntity9A9F->state;
 }
 
-NAKED void FUN_081dfa20(u32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility) { INCFUNC("asm/func/FUN_081dfa20.inc"); }
+// 通信対戦のステータス (力, 体力, 精神, 素早さ) を基本値で埋め, kind の能力だけ上げた値にする
+void FUN_081dfa20(s32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility) {
+  if (gEntity9A9F == NULL) {
+    return;
+  }
+
+  *strength = sLinkStatBase[0];
+  *vitality = sLinkStatBase[1];
+  *spirit = sLinkStatBase[2];
+  *agility = sLinkStatBase[3];
+  switch (kind) {
+    case 2: {
+      *strength = sLinkStatBoost[0];
+      break;
+    }
+    case 0: {
+      *vitality = sLinkStatBoost[1];
+      break;
+    }
+    case 1: {
+      *spirit = sLinkStatBoost[2];
+      break;
+    }
+    case 3: {
+      *agility = sLinkStatBoost[3];
+      break;
+    }
+  }
+}
 
 NAKED s32 FUN_081dfa98(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dfa98.inc"); }
 

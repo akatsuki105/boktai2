@@ -707,7 +707,7 @@ Entity9A9FRecord* FUN_080cef30(Player* p) {
 
 NAKED s32 FUN_080cef5c(Player* p) { INCFUNC("asm/func/FUN_080cef5c.inc"); }
 
-void FUN_081dfa20(u32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
+void FUN_081dfa20(s32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
 
 // 通信相手の記録からステータス4種を引き直す
 void FUN_080cefcc(Player* p) {
