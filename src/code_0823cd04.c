@@ -411,7 +411,19 @@ u32 Cmd_3E93(void) { return gSystemSaveData->unk_0a; }
 const WeaponData* FUN_0823d414(s32 idx) { return &gWeaponDB[idx]; }
 
 // 0x7806
-NAKED void Cmd_7806(void) { INCFUNC("asm/func/Cmd_7806.inc"); }
+void Cmd_7806(void) {
+  s32 tilemapID = VM_GetNamedArgValue('b', 0);
+  s32 bgIndices[1];
+  s32 plttID;
+
+  bgIndices[0] = VM_GetNamedArgValue('i', 0);
+  plttID = VM_GetNamedArgValue('p', 0);
+  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, tilemapID), 0, 0, 1, bgIndices);
+  Video_GenerateBGMap(0, 0, 0, 0, 0);
+  if (plttID != 0) {
+    CpuCopy16(&GetBgPlttFile(plttID)->body[208], &gBgPlttBuffer[208], 96);
+  }
+}
 
 void FUN_0823d4ac(void) {
   if (gSentinel02020400 != 0x516B92EE) {
