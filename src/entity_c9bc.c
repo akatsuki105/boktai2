@@ -133,7 +133,25 @@ NON_MATCH void FUN_0800cbd0(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) 
 
 void nop_0800cc04(void) {}
 
-NAKED s32 FUN_0800cc08(EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cc08.inc"); }
+// slideAngle の向きの隣のタイルが, 階段でなく今より低く TATTR_UNK_3 も無ければ 1 を返す
+// 残差: 命令の並びはほぼ一致しレジスタ割当が違う, 原典は r6 まで使い & 3 の定数を gCollisionMap の読み込みより前に積む
+NON_MATCH s32 FUN_0800cc08(EntityC9BCElem* elem) {
+#ifdef NONMATCHING_C
+  CollisionMapTile* self = &elem->tileOverride.tile;
+  s32 dir = Angle_ToDir4(elem->slideAngle);
+  s32 step = gCollisionMap->neighborOffsets[dir];
+  s32 idx = GetCollisionTileIdx(&elem->obj.pos) + step;
+  CollisionMapTile* tile = TileAtIndex(idx);
+
+  if (tile != NULL && (tile->heightStairs >> 4) == 0 && (tile->heightStairs & 0xF) < (self->heightStairs & 0xF) && !(tile->attr & TATTR_UNK_3)) {
+    return 1;
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0800cc08.inc");
+#endif
+}
 
 // 炎属性で被弾したら炎の状態にする, state 1 なら state 3 へ移る
 s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
