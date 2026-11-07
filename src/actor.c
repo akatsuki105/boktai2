@@ -12,6 +12,7 @@
 #include "sprite.h"
 #include "time.h"
 #include "trig.h"
+#include "vec3.h"
 #include "vm.h"
 
 COMMON_DATA ActorManager* gActorManager = NULL;  // 0x03002B50
@@ -700,7 +701,40 @@ bool32 UNUSED FUN_0804157c(Vec3* a, Vec3* b, s32 range) {
 
 NAKED void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_080415cc.inc"); }
 
-NAKED void FUN_080417dc(Mover* mover) { INCFUNC("asm/func/FUN_080417dc.inc"); }
+// flags 0x1000 の Actor に mover が近すぎたら, その Actor から半径 100 の位置まで押し戻す (イベント中は何もしない)
+// 下書き (149/147命令): 呼び出しの並びは一致, ループの入り口の判定の置き方とレジスタ割当が違う
+NON_MATCH void FUN_080417dc(Mover* mover) {
+#ifdef NONMATCHING_C
+  ActorManager* p = gActorManager;
+  Actor* actor;
+
+  if (p == NULL || (gGameFlags & GAMEFLAG_EVENT)) {
+    return;
+  }
+
+  for (actor = p->head; actor != NULL; actor = actor->next) {
+    if (actor->flags & ACTORFLAG_UNK_12) {
+      s32 dx = mover->pos.x - actor->mover.pos.x;
+      s32 dz = mover->pos.z - actor->mover.pos.z;
+
+      if (dx * dx + dz * dz <= 9999) {
+        Vec3 pos;
+
+        Vec3_SetPolar(&pos, ArcTan2_8(dx, dz), 100);
+        Vec3_Add(&pos, &actor->mover.pos);
+        mover->delta.x = pos.x - mover->pos.x;
+        mover->delta.y = pos.y - mover->pos.y;
+        mover->delta.z = pos.z - mover->pos.z;
+        if (mover->tile != NULL) {
+          Map_MoveBoxAlongWalls(mover->tile, &mover->pos, &mover->delta, mover->sizeX, mover->sizeZ, mover->unk_4);
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080417dc.inc");
+#endif
+}
 
 NAKED void FUN_08041918(ActorManager* p) { INCFUNC("asm/func/FUN_08041918.inc"); }
 
