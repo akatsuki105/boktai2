@@ -150,7 +150,18 @@ void Crow_InitAnims(Crow* p) {
 
 NAKED void FUN_081447cc(Crow* p) { INCFUNC("asm/func/FUN_081447cc.inc"); }
 
-NAKED void FUN_0814480c(u16 angle, s32* outX, s32* outY) { INCFUNC("asm/func/FUN_0814480c.inc"); }
+// 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
+void FUN_0814480c(u16 angle, s32* outDir, s32* outFlip) {
+  s32 dir = Angle_ToDir8(angle);
+
+  if (dir > 4) {
+    *outDir = 8 - dir;
+    *outFlip = 1;
+  } else {
+    *outDir = dir;
+    *outFlip = 0;
+  }
+}
 
 NAKED void FUN_0814483c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814483c.inc"); }
 
