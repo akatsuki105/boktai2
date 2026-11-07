@@ -339,7 +339,25 @@ void FUN_08140a48(EnemyBat* p) {
   }
 }
 
-NAKED void FUN_08140b30(EnemyBat* p) { INCFUNC("asm/func/FUN_08140b30.inc"); }
+// 残差は sp のコピー (mov rN, sp) の位置2か所のみ, Curoro_BounceOffWall と同じ, 試済: Vec3_Sum の引数順, dst/cur のポインタ, 直書き
+NON_MATCH void FUN_08140b30(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  WorldPos pos;
+  WorldPos* cur = &(p->e).mover.pos;
+  s32 height;
+
+  Vec3_Sum(&pos, &(p->e).jumpVel, cur);
+  height = TileHeightAt(&pos);
+  if ((p->e).floorY < height) {
+    (p->e).jumpVel.x *= -1;
+    (p->e).jumpVel.z *= -1;
+    (p->e).mover.delta.x = 0;
+    (p->e).mover.delta.z = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_08140b30.inc");
+#endif
+}
 
 void FUN_08140c14(EnemyBat* p) {
   EnemyBat* q = (p->e).unk_1cc;
