@@ -62,7 +62,7 @@ _0813F0DC:
 	cmp r0, #0xb
 	bls _0813F0EE
 	adds r0, r4, #0
-	bl FUN_08140dd0
+	bl EnemyBat_SpawnTrail
 _0813F0EE:
 	ldr r2, _0813F110 @ =0x0000066B
 	adds r0, r5, r2

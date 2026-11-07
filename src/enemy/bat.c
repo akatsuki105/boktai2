@@ -58,7 +58,7 @@ static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
 }
 
 struct Entity081fa164Elem* Entity081fa164_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
-void FUN_08140dd0(EnemyBat* p);
+void EnemyBat_SpawnTrail(EnemyBat* p);
 void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_08140904(EnemyBat* p);
 void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos);
@@ -206,7 +206,7 @@ NON_MATCH void EnemyBat_HoldPlayer(EnemyBat* p) {
     (p->e).atkHitbox.flags &= ~HBFLAG_HIDDEN;
   }
   if ((p->e).variant > 11) {
-    FUN_08140dd0(p);
+    EnemyBat_SpawnTrail(p);
   }
   {
     s32 base = q->mashBase;
@@ -253,7 +253,7 @@ void FUN_0813f1f0(EnemyBat* p) {
     Enemy_PlayAnim(&p->e, 1);
     q->unk_661 = (p->e).mover.angle;
   } else {
-    FUN_08140dd0(p);
+    EnemyBat_SpawnTrail(p);
     if (q->unk_661 != (p->e).mover.angle) {
       Enemy_PlayAnim(&p->e, 1);
       q->unk_661 = (p->e).mover.angle;
@@ -887,7 +887,7 @@ void FUN_08140d48(EnemyBat* p) {
 
 // 6フレームごとに, 向きの反対側の 64 度の範囲へ粒を1つ飛ばす
 // 残差は95/94命令, 角度の -32 が乱数側に畳まれ, table が r6 でなく ip に載る, 試済: base を s32 で計算, base + r - 32, r + (base - 32)
-NON_MATCH void FUN_08140dd0(EnemyBat* p) {
+NON_MATCH void EnemyBat_SpawnTrail(EnemyBat* p) {
 #ifdef NONMATCHING_C
   if (Mod((p->e).unk_1ca, 6) == 0) {
     Vec3 vel;
@@ -901,7 +901,7 @@ NON_MATCH void FUN_08140dd0(EnemyBat* p) {
     Entity081fa164_SpawnEx(&(p->e).mover.pos, &vel, 40, 2, 1);
   }
 #else
-  INCFUNC("asm/func/FUN_08140dd0.inc");
+  INCFUNC("asm/func/EnemyBat_SpawnTrail.inc");
 #endif
 }
 

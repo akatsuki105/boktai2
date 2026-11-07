@@ -1538,7 +1538,7 @@ _08102834:
 	str r0, [r1]
 	ldr r3, _08102A88 @ =0x0000058C
 	adds r1, r7, r3
-	ldr r0, _08102A8C @ =FUN_08100228
+	ldr r0, _08102A8C @ =Boku_OnDamaged
 	str r0, [r1]
 	movs r1, #0xb8
 	lsls r1, r1, #0x11
@@ -1622,7 +1622,7 @@ _08102A7C: .4byte 0x000005AC
 _08102A80: .4byte FUN_080ff6e8
 _08102A84: .4byte FUN_080ff7c0
 _08102A88: .4byte 0x0000058C
-_08102A8C: .4byte FUN_08100228
+_08102A8C: .4byte Boku_OnDamaged
 _08102A90: .4byte 0x000001DF
 _08102A94:
 	movs r0, #0

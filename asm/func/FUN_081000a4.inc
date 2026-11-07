@@ -71,7 +71,7 @@
 	movs r3, #0
 	bl Mover_SetPath
 	adds r0, r4, #0
-	bl FUN_080ffda8
+	bl Boku_RouteAwayFromPlayer
 	ldrh r0, [r5]
 	ands r6, r0
 	strh r6, [r5]

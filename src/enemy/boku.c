@@ -43,7 +43,7 @@ void FUN_080e7b6c(Enemy* p);
 void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 groundTime, s32 speed, s32 unk_9);
 
 void FUN_080ff67c(Boku* p);
-void FUN_080ffda8(Boku* p);
+void Boku_RouteAwayFromPlayer(Boku* p);
 void FUN_080fc28c(Boku* p);
 void Boku_OnReset(Boku* p);
 void FUN_080fc174(Boku* p, s32 param_2);
@@ -1414,7 +1414,7 @@ NON_MATCH void FUN_080fe1bc(Boku* p) {
       if ((p->e).unk_1e4 > 0xFFFF) {
         Enemy_PlayAnim(&p->e, 0);
       }
-      FUN_080ffda8(p);
+      Boku_RouteAwayFromPlayer(p);
       CLEAR_FLAGS(q->unk_65c, 2);
       Enemy_ResetState(&p->e, 0, 0, 15);
     } else {
@@ -2091,7 +2091,7 @@ void Boku_PickRandomPathNode(Boku* p) {
 }
 
 // 257/332命令, 原典はフレーム 0x14 で向きのベクトルや経路の塊をスタックに置く, 1回目の下書きで切り上げ
-NON_MATCH void FUN_080ffda8(Boku* p) {
+NON_MATCH void Boku_RouteAwayFromPlayer(Boku* p) {
 #ifdef NONMATCHING_C
   Mover* target = (p->e).playerMover;
   u8 angle = ArcTan2_8(target->pos.x - (p->e).mover.pos.x, target->pos.z - (p->e).mover.pos.z);
@@ -2145,7 +2145,7 @@ NON_MATCH void FUN_080ffda8(Boku* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080ffda8.inc");
+  INCFUNC("asm/func/Boku_RouteAwayFromPlayer.inc");
 #endif
 }
 
@@ -2160,7 +2160,7 @@ NON_MATCH void FUN_081000a4(Boku* p) {
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
   Enemy_ResetState(&p->e, 0, 0, 15);
   Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_4b4[(p->e).unk_4b6 ^ 1], 0, 0);
-  FUN_080ffda8(p);
+  Boku_RouteAwayFromPlayer(p);
   q->unk_65c &= ~2;
 #else
   INCFUNC("asm/func/FUN_081000a4.inc");
@@ -2206,7 +2206,7 @@ void Boku_UpdateDelayedScript(Boku* p) {
 
 // デカすぎて複数の関数を1つの関数として間違って扱っている可能性がある
 // 2556/2565命令の下書き, プレイヤーへ向かう部分は Boku_StateDamaged と同じ形を3回展開, 原典は &flags3 をスタックに置き状態フィールドのアドレスも作り置く (フレーム 0x100, こちらは 0xC4)
-NON_MATCH bool8 FUN_08100228(Boku* p) {
+NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
 #ifdef NONMATCHING_C
   Boku* q = (p->e).unk_1cc;
   s32 tile;
@@ -2709,7 +2709,7 @@ NON_MATCH bool8 FUN_08100228(Boku* p) {
     return FALSE;
   }
 #else
-  INCFUNC("asm/func/FUN_08100228.inc");
+  INCFUNC("asm/func/Boku_OnDamaged.inc");
 #endif
 }
 
@@ -3057,7 +3057,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_5fc = FUN_080ffc28;
   (p->e).unk_5ac = (EnemyHandler)FUN_080ff6e8;
   (p->e).unk_5b0 = (EnemyHandler)FUN_080ff7c0;
-  (p->e).unk_58c = (void*)FUN_08100228;
+  (p->e).unk_58c = (void*)Boku_OnDamaged;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22 | ENEFLAG_UNK_24);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_27);
   (p->e).hurtbox.flags &= ~HBFLAG_UNK_0;

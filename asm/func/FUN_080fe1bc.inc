@@ -49,7 +49,7 @@ _080FE202:
 	bl Enemy_PlayAnim
 _080FE21C:
 	adds r0, r4, #0
-	bl FUN_080ffda8
+	bl Boku_RouteAwayFromPlayer
 	movs r1, #3
 	rsbs r1, r1, #0
 	ldrh r0, [r5]
