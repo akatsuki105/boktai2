@@ -2227,5 +2227,66 @@ s32 FUN_080450a8(ActorManager* p, Actor* actor) {
 
 s32 FUN_080450b4(ActorManager* p, Actor* actor) { return MsgQueue_Unregister(&actor->mq); }
 
-// 0x0E7C
-NAKED void Cmd_0E7C(void) { INCFUNC("asm/func/Cmd_0E7C.inc"); }
+// 0x0E7C, '.n' / '.k' / '.p' / '.d' からスミス (マルチェロ) の Actor を1体作り, メッセージで動く state 0 から始める
+void Cmd_0E7C(void) {
+  ActorManager* p = gActorManager;
+  u32 id;
+  u32 kind;
+  WorldPos pos;
+  u32 angle;
+  SpriteID32 spriteID;
+  SpriteFlags flags;
+  Actor* actor;
+
+  if (p == NULL) {
+    return;
+  }
+
+  id = VM_GetNamedArgValue('n', 0);
+  kind = VM_GetNamedArgValue('k', 0);
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(pos, 0, 0, 0);
+  }
+  angle = VM_GetNamedArgValue('d', 0);
+  spriteID = SPRITE_SMITH_MARCELLO;
+  flags = 0;
+
+  actor = Actor_Alloc(id, kind);
+  if (actor == NULL) {
+    return;
+  }
+  if (FUN_08040f0c(actor, id, &pos, angle) < 0) {
+    return;
+  }
+  if (FUN_08040f48(actor, 2, spriteID, 0, flags) < 0) {
+    return;
+  }
+
+  FUN_08040fc0(actor, actor->sprite.pos, 2, 7, 32);
+  MsgQueue_Register(&actor->mq, id, 5);
+  actor->mover.angle = angle;
+  actor->unk_1a = Angle_ToDir8(angle);
+  actor->unk_19 = Angle_ToDir4(angle);
+  Actor_SetFn(actor, FUN_08044ee0);
+  Actor_SetCb(actor, 0, FUN_08045088);
+  Actor_SetCb(actor, 1, FUN_08044730);
+  Actor_SetCb(actor, 2, FUN_08044f1c);
+  Actor_SetCb(actor, 3, FUN_080450a8);
+  Actor_SetOnDestroy(actor, FUN_080450b4);
+  Actor_StartState(actor, 0);
+  Actor_SetUpdate(actor, FUN_0804473c, 1);
+  actor->unk_2b8 = ActorManager_FindSpriteData(spriteID, 0);
+  actor->unk_2bc = FUN_08040dc0(spriteID, 0);
+  if (VM_SeekToNamedArg('b')) {
+    actor->unk_1e8 = VM_GetValue();
+    actor->unk_1e9 = VM_GetValue();
+    actor->unk_1ea = VM_GetValue();
+  } else {
+    actor->unk_1e8 = 0;
+    actor->unk_1e9 = 1;
+    actor->unk_1ea = 0;
+  }
+  ActorManager_LinkActor(p, actor);
+}
