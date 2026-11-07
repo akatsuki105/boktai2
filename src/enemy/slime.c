@@ -276,7 +276,30 @@ s32 Slime_GetMoveSpeed(Slime* p) {
 
 NAKED void FUN_08164120(Slime* p, u32 arg) { INCFUNC("asm/func/FUN_08164120.inc"); }
 
-NAKED bool8 FUN_08164388(Slime* p) { INCFUNC("asm/func/FUN_08164388.inc"); }
+bool8 FUN_08164388(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+
+  (p->e).animSpeedDiv = 1;
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
+    s32 dy = abs((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y);
+
+    if (dy <= 512 && (p->e).unk_1e4 <= (p->e).range0Sq) {
+      goto found;
+    }
+  }
+  return FALSE;
+
+found:
+  if ((p->e).hp < (p->e).unk_546 || Slime_TestUnk68e(q, 8)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+    (p->e).animSpeedDiv = 2;
+    q->unk_658++;
+  } else {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_8);
+  }
+  return TRUE;
+}
 
 void FUN_0816446c(Slime* p) {
   Slime* q = (p->e).unk_1cc;
