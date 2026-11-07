@@ -29,34 +29,34 @@
 #define ITEM_ANTIDOTE 24            // 毒消し
 #define ITEM_ELIXIR 25              // 万能薬
 #define ITEM_SUNBLOCK 26            // 日焼け止め
-#define ITEM_MR_RAINNOT 27          // テルテルボーズ
-#define ITEM_TONNIAR_RM 28          // ズーボルテルテ
-#define ITEM_SUNNY_CLOG 29          // おてんきゲタ
+#define ITEM_MR_RAINNOT 27          // テルテルボーズ (太陽ゲージが2より小さくならない)
+#define ITEM_TONNIAR_RM 28          // ズーボルテルテ (太陽ゲージが1より大きくならない)
+#define ITEM_SUNNY_CLOG 29          // おてんきゲタ (ITEM_MR_RAINNOT か ITEM_TONNIAR_RM のどちらかの効果が発動する)
 #define ITEM_WARP_LEAF 30           // 転移の葉, ダンジョンの外にワープ
 #define ITEM_THE_FOOL 31            // 愚者のカード, エリアの初めからやり直す
-#define ITEM_THE_HIGH_PRIESTESS 32  // 女教皇のカード
-#define ITEM_THE_EMPRESS 33         // 女帝のカード
-#define ITEM_THE_EMPEROR 34         // 皇帝のカード
-#define ITEM_THE_LOVER 35           // 恋人のカード
-#define ITEM_THE_CHARIOT 36         // 戦車のカード
-#define ITEM_STRENGTH 37            // 力のカード
-#define ITEM_WOF 38                 // 運命の輪のカード
+#define ITEM_THE_HIGH_PRIESTESS 32  // 女教皇のカード, 使うと STAT_SPIRIT が +1
+#define ITEM_THE_EMPRESS 33         // 女帝のカード, 使うと STAT_VITALITY が +1
+#define ITEM_THE_EMPEROR 34         // 皇帝のカード, 30秒間、全属性への耐性を得る
+#define ITEM_THE_LOVER 35           // 恋人のカード, ENE全回復 (特殊演出付き)
+#define ITEM_THE_CHARIOT 36         // 戦車のカード, 使うと STAT_AGILITY が +1
+#define ITEM_STRENGTH 37            // 力のカード, 使うと STAT_STRENGTH が +1
+#define ITEM_WOF 38                 // 運命の輪のカード, 使うと ランダムなステータスを +2
 #define ITEM_JUSTICE 39             // 正義のカード (画面の敵全体にダメージ)
-#define ITEM_THE_HANGED_MAN 40      // 吊るされた男のカード
-#define ITEM_DEATH 41               // 死神のカード
-#define ITEM_TEMPERANCE 42          // 節制のカード
+#define ITEM_THE_HANGED_MAN 40      // 吊るされた男のカード (HP と ENE を入れ替える)
+#define ITEM_DEATH 41               // 死神のカード (ENEが全回復するが HPが0 になる)
+#define ITEM_TEMPERANCE 42          // 節制のカード (武器の耐久が回復する)
 #define ITEM_THE_DEVIL 43           // 悪魔のカード, 暗黒虫を召喚
 #define ITEM_THE_TOWER 44           // 塔のカード (画面のプレイヤー含む全てのキャラに プレイヤーのレベルx8 のダメージ)
-#define ITEM_THE_STAR 45            // 星のカード
+#define ITEM_THE_STAR 45            // 星のカード (アイテムの腐敗をリセット)
 #define ITEM_THE_MOON 46            // 月のカード, 月光虫を召喚
 #define ITEM_THE_SUN 47             // 太陽のカード, 太陽虫を召喚
 #define ITEM_JUDGEMENT 48           // 審判のカード, 所持しているとライフが0になったときに全回復して復活 (もちろんこのアイテムは消費される)
 #define ITEM_DARK_CARD 49           // 暗黒カード
 #define ITEM_PET 50                 // PET
-#define ITEM_SPADE_EMBLEM 51        // スペードの紋章
+#define ITEM_SPADE_EMBLEM 51        // スペードの紋章 (Sランク剣解放)
 #define ITEM_HEART_EMBLEM 52        // ハートの紋章 (素手の攻撃力UP)
-#define ITEM_DIAMOND_EMBLEM 53      // ダイアの紋章
-#define ITEM_CLUB_EMBLEM 54         // クラブの紋章
+#define ITEM_DIAMOND_EMBLEM 53      // ダイアの紋章 (Sランク槍解放)
+#define ITEM_CLUB_EMBLEM 54         // クラブの紋章 (Sランク槌解放)
 #define ITEM_JOKER_EMBLEM 55        // ジョーカーの紋章 (チャージショットのタメ時間が半分になる)
 #define ITEM_OAK_COFFIN 56          // オークコフィン
 #define ITEM_BRONZE_COFFIN 57       // ブロンズコフィン
@@ -68,7 +68,7 @@
 #define ITEM_IRON_MAIDEN 63         // アイアンメイデン
 #define ITEM_WAREHOUSE_KEY 64       // 倉庫のカギ
 #define ITEM_CIRCLE_KEY 65          // ○のカギ
-#define ITEM_TRIANGLE_KEY 66        //  △のカギ
+#define ITEM_TRIANGLE_KEY 66        // △のカギ
 #define ITEM_SQUARE_KEY 67          // □のカギ
 #define ITEM_RED_CRYSTAL 68         // 赤の水晶
 #define ITEM_BLUE_CRYSTAL 69        // 青の水晶
