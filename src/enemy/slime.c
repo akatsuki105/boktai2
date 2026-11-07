@@ -126,7 +126,17 @@ void FUN_08162e74(Slime* p) {
   }
 }
 
-NAKED void FUN_08162efc(Slime* p) { INCFUNC("asm/func/FUN_08162efc.inc"); }
+void FUN_08162efc(Slime* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimNoFacing(&p->e, 18);
+    (p->e).animSpeedDiv = 1;
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, 64);
+  }
+  if ((p->e).animForceRestart) {
+    Enemy_ResetState(&p->e, 0, 0, 0);
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+  }
+}
 
 NAKED void FUN_08162fa8(Slime* p) { INCFUNC("asm/func/FUN_08162fa8.inc"); }
 
