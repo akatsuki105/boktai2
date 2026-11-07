@@ -13,7 +13,7 @@ typedef struct {
   HitboxData hurtbox;      // 0x8C, 食らい判定
   u8 unk_dc[0xF3 - 0xDC];  // 0xDC, まだ未解析
   u8 unk_f3;               // 0xF3, FUN_080df478 が 1 を入れる
-  u16 flags;               // 0xF4, FUN_080de344 が bit2 を立てる
+  s16 flags;               // 0xF4, FUN_080de344 が bit2 を立てる
   u8 state;                // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
   u8 index;                // 0xF7, FUN_080de174 が確保したスロット番号を入れる
   u16 timer;               // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
@@ -103,7 +103,23 @@ NAKED void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) 
 
 NAKED void FUN_080de6b0(Entity080df420Elem* elem, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080de6b0.inc"); }
 
-NAKED void FUN_080de7a0(Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de7a0.inc"); }
+// 攻撃判定を出す印が立っていれば判定を表に出して登録し, 立っていなければ隠す
+void FUN_080de7a0(Entity080df420Elem* elem) {
+  if (elem->hurtbox.invincibleTime != 0) {
+    elem->hurtbox.invincibleTime--;
+  }
+  if (!(elem->flags & 4)) {
+    Hitbox_Hide(&elem->hitbox);
+    Hitbox_Hide(&elem->hurtbox);
+  } else {
+    elem->flags &= ~4;
+    Hitbox_ClearFlags(&elem->hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&elem->hurtbox, HBFLAG_HIDDEN);
+    Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+    Hitbox_SetPos(&elem->hurtbox, &elem->sprite.pos, 0);
+    Hitbox_Register(&elem->hitbox);
+  }
+}
 
 void nop_080de81c(Entity080df420* p, Entity080df420Elem* elem) {}
 
