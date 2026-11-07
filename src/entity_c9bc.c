@@ -128,7 +128,36 @@ void nop_0800cc04(void) {}
 
 NAKED s32 FUN_0800cc08(EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cc08.inc"); }
 
-NAKED s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800ccd0.inc"); }
+// 炎属性で被弾したら炎の状態にする, state 1 なら state 3 へ移る
+s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
+  if (elem->state == 1) {
+    if (elem->unk_02 == 0) {
+      PlaySound_082406e0(SE_537);
+    }
+    elem->unk_02 |= 1;
+    CLEAR_FLAGS(elem->unk_02, 2);
+    elem->unk_38 = elem->unk_42;
+    elem->state = 3;
+    elem->timer = 0;
+    elem->unk_01 = 1;
+    elem->unk_41 = 10;
+    Video_SetAuxSpritePltt(&elem->gfx, 306);
+    return 1;
+  }
+
+  if (!TEST_FLAGS(elem->unk_02, 1)) {
+    if (elem->unk_02 == 0) {
+      PlaySound_082406e0(SE_537);
+    }
+    elem->unk_02 |= 1;
+    CLEAR_FLAGS(elem->unk_02, 2);
+    elem->unk_38 = elem->unk_42;
+    elem->unk_41 = 10;
+    Video_SetAuxSpritePltt(&elem->gfx, 306);
+  }
+
+  return 0;
+}
 
 // 残差1命令 (31/32): 原典は定数 2 を state 用と unk_02 のビット用に別々に積むが, agbcc は1本に畳む
 NON_MATCH s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
