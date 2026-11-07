@@ -7,12 +7,17 @@
 // バンデットは攻撃時にプレイヤーからアイテムを奪う, ヘルハウンドはファイヤーブレスを吐く
 typedef struct {
   Enemy e;
-  u8 unk_654[1808 - sizeof(Enemy)];
+  u8 unk_654[4];             // 0x654
+  HitboxData unk_658;        // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
+  u8 unk_6a8[1808 - 0x6A8];  // 0x6A8
 } Dog;
 static_assert(sizeof(Dog) == 1808);
 
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
+void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
+void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
+void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814fba4(Dog*);
 void FUN_0814fc7c(Dog*);
 void FUN_08150534(Dog*);
@@ -91,7 +96,21 @@ NAKED s32 FUN_0814a8dc(Dog* p) { INCFUNC("asm/func/FUN_0814a8dc.inc"); }
 
 NAKED void FUN_0814aad4(Dog* p) { INCFUNC("asm/func/FUN_0814aad4.inc"); }
 
-NAKED void Dog_InitHitboxes(Dog* p) { INCFUNC("asm/func/Dog_InitHitboxes.inc"); }
+void Dog_InitHitboxes(Dog* p) {
+  Dog* self = (p->e).unk_1cc;
+  Vec3 hurtSize, hurtOffset, hitSize, hitOffset, hit2Size, hit2Offset;
+
+  VEC3_SET(hurtSize, 64, 128, 64);
+  VEC3_SET(hurtOffset, 0, 128, 0);
+  Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, Dog_OnHurt, p);
+  VEC3_SET(hitSize, 64, 120, 64);
+  VEC3_SET(hitOffset, 0, 128, 0);
+  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Dog_OnHit, 0, p);
+  VEC3_SET(hit2Size, 0, 120, 0);
+  VEC3_SET(hit2Offset, 0, 128, 0);
+  Enemy_InitHitboxWithAtk(&p->e, &self->unk_658, &hit2Size, &hit2Offset, FUN_0814b89c, 1, p);
+  Hitbox_SetFlags(&self->unk_658, HBFLAG_ANGLE);
+}
 
 NAKED void FUN_0814ac10(Dog* p) { INCFUNC("asm/func/FUN_0814ac10.inc"); }
 
