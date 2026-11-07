@@ -519,7 +519,44 @@ void (*const sC9BCElemUpdates[7])(EntityC9BC*, EntityC9BCElem*, u32) = {
     EntityC9BCElem_UpdateState6,
 };  // 0x085AA774
 
-NAKED s32 EntityC9BC_Update(EntityC9BC* p) { INCFUNC("asm/func/EntityC9BC_Update.inc"); }
+s32 EntityC9BC_Update(EntityC9BC* p) {
+  EntityC9BCElem* elem;
+  u32 i;
+
+  p->bobOffset = FixToInt(12, SIN(p->bobAngle) * 16);
+  p->bobAngle += 2;
+
+  elem = p->elems;
+  for (i = 0; i < p->count; i++, elem++) {
+    if (elem->active) {
+      EntityC9BCElem_SaveState(p, elem, i);
+      sC9BCElemUpdates[elem->state](p, elem, i);
+      FUN_0800d480(p, elem, i);
+      if (elem->releaseReq) {
+        FUN_0800cb7c(p, elem);
+        elem->releaseReq = FALSE;
+      }
+    }
+  }
+
+  BlendPltt(p->plttBufA, p->plttBase, p->plttBlendA, p->fadeLevel, 5);
+  BlendPltt(p->plttBufB, p->plttBase, p->plttBlendB, p->fadeLevel, 5);
+  if (p->fadeDir == 0) {
+    p->fadeLevel++;
+    if (p->fadeLevel > 31) {
+      p->fadeLevel = 32;
+      p->fadeDir = 1;
+    }
+  } else {
+    p->fadeLevel--;
+    if (p->fadeLevel <= 0) {
+      p->fadeLevel = 0;
+      p->fadeDir = 0;
+    }
+  }
+
+  return 0;
+}
 
 s32 EntityC9BC_Destroy(EntityC9BC* p) {
   EntityC9BCElem* elem = p->elems;
