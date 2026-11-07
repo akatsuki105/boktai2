@@ -680,7 +680,31 @@ NAKED void FUN_08043108(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("a
 
 NAKED void FUN_08043360(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08043360.inc"); }
 
-NAKED s32 FUN_080434ac(Actor* actor, PathNode* node) { INCFUNC("asm/func/FUN_080434ac.inc"); }
+// 経路のノードを読む: 待ちフレーム数を入れ, 方向転換ノードで向きが違えば 8, 2 番のノードなら 9, それ以外は 7 を返す
+// 残差: 原典は delay の上位4bit を lsl/lsr で, command の上位4bit で分岐する所を符号つきの比較木で取り出す, PathNode の delay / command が4bitのビットフィールドだった形に見える
+NON_MATCH s32 FUN_080434ac(Actor* actor, PathNode* node) {
+#ifdef NONMATCHING_C
+  s32 kind = node->command >> 4;
+  u16 delay = node->delay;
+
+  actor->pathDelay = delay & 0xFFF;
+  switch (kind) {
+    case 1: {
+      actor->pathDir = delay >> 12;
+      if ((((((actor->mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7) != actor->pathDir) {
+        return 8;
+      }
+      break;
+    }
+    case 2: {
+      return 9;
+    }
+  }
+  return 7;
+#else
+  INCFUNC("asm/func/FUN_080434ac.inc");
+#endif
+}
 
 // 経路の今のノードが Q8(0.16) 以内にあるときだけ FUN_080434ac へ進む
 s32 FUN_08043510(Actor* actor) {
