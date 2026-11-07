@@ -382,7 +382,19 @@ s32 FUN_08040f48(Actor* actor, s32 spriteType, SpriteID32 spriteID, u32 animFile
   }
 }
 
-NAKED s32 FUN_08040fc0(Actor* actor, Vec3* pos, u32 kind, u32 poseIdx, s32 size) { INCFUNC("asm/func/FUN_08040fc0.inc"); }
+// 影を用意して表示する, kind 1 なら ParticleShadow, 2 なら大きさ size の AuxShadow
+s32 FUN_08040fc0(Actor* actor, Vec3* pos, u32 kind, u32 poseIdx, s32 size) {
+  actor->shadowKind = kind;
+  if (actor->shadowKind == 1) {
+    ParticleShadow_Init(&actor->shadow.ptcl, pos, 1);
+    ParticleShadow_Show(&actor->shadow.ptcl);
+  } else if (actor->shadowKind == 2) {
+    AuxShadow_Init(&actor->shadow.aux, pos, size, size, size, size, 2000, 400, 2, 4, 1);
+    AuxShadow_SetSprite(&actor->shadow.aux, SPRITE_EFF_1C1B, poseIdx);
+    AuxShadow_Show(&actor->shadow.aux);
+  }
+  return 0;
+}
 
 // 影を描画リストから外す
 s32 Actor_RemoveShadow(Actor* actor) {
