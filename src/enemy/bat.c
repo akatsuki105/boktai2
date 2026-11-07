@@ -93,7 +93,7 @@ NAKED void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC(
 
 // プレイヤーに取り付いて一定間隔で攻撃し, 連打で振りほどかれたら終わる
 // 104/109 命令, 連打数の差分が Curoro_HoldPlayer と同じ残差 (base - 256 を作ってから引く形にならない) を持ち, 定数オフセットのレジスタも違う
-NON_MATCH void FUN_0813f06c(EnemyBat* p) {
+NON_MATCH void EnemyBat_HoldPlayer(EnemyBat* p) {
 #ifdef NONMATCHING_C
   EnemyBat* q = (p->e).unk_1cc;
 
@@ -127,7 +127,7 @@ NON_MATCH void FUN_0813f06c(EnemyBat* p) {
     (p->e).animForceRestart = FALSE;
   }
 #else
-  INCFUNC("asm/func/FUN_0813f06c.inc");
+  INCFUNC("asm/func/EnemyBat_HoldPlayer.inc");
 #endif
 }
 

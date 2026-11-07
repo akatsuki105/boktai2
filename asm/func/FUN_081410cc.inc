@@ -23,7 +23,7 @@ _081410F2:
 	bne _081410F8
 	b _0814120A
 _081410F8:
-	ldr r2, _08141170 @ =FUN_0813f06c
+	ldr r2, _08141170 @ =EnemyBat_HoldPlayer
 	movs r1, #0x23
 	ldr r3, _08141174 @ =0x0000046D
 	adds r0, r6, r3
@@ -83,7 +83,7 @@ _081410F8:
 	asrs r0, r0, #3
 	b _0814119E
 	.align 2, 0
-_08141170: .4byte FUN_0813f06c
+_08141170: .4byte EnemyBat_HoldPlayer
 _08141174: .4byte 0x0000046D
 _08141178: .4byte 0x05000002
 _0814117C: .4byte 0x00000667
