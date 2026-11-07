@@ -1537,7 +1537,74 @@ NON_MATCH void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) {
 #endif
 }
 
-NAKED void FUN_08043108(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08043108.inc"); }
+// 経路の最初のノードへナビメッシュで歩かせ, 近づいたら終える, MainSprite の足を出すコマでだけ 24/48 進む
+void FUN_08043108(ActorManager* p, Actor* actor, s32 elapsed) {
+  Mover* mover = &actor->mover;
+  NavAgent* nav = &actor->navAgent;
+  PathWalker* walker = &actor->pathWalker;
+  SpriteHolder* sprite = &actor->sprite;
+
+  if (actor->unk_09) {
+    Vec3 start;
+    Vec3* pos;
+    Vec3* wp;
+    s32 angle;
+
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    actor->unk_1ec = 0;
+    pos = &actor->mover.pos;
+    Map_InitNavAgent(nav, pos);
+    Map_InitPathWalker(walker, actor->pathIdx, actor->pathParam, actor->pathNodeIdx);
+    Map_ReadPathNodePos(&start, actor->pathWalker.node, 0);
+    Map_TryFindNavRoute(nav, pos, &start);
+    wp = &nav->waypoint;
+    angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, wp->z - pos->z);
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+    FUN_08041480(actor, 1, 1, 0, 4);
+  }
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+
+  {
+    Vec3* pos = &actor->mover.pos;
+    Vec3* dest = &nav->dest;
+    u32 frame;
+    s32 dx = nav->dest.x - mover->pos.x;
+    s32 dz = dest->z - pos->z;
+
+    if (dx * dx + dz * dz <= 2499) {
+      mover->pos.x = actor->navAgent.waypoint.x;
+      mover->pos.z = actor->navAgent.waypoint.z;
+      actor->unk_07 = 1;
+    } else if (sprite->kind == 2) {
+      MainSprite* main = &sprite->u.main.sprite;
+
+      if (main->animEvents & 4) {
+        s32 speed;
+        Vec3 step;
+        s32 angle;
+        Vec3* wp = &nav->waypoint;
+
+        angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, wp->z - pos->z);
+        actor->mover.angle = angle;
+        actor->unk_1a = Angle_ToDir8(angle);
+        actor->unk_19 = Angle_ToDir4(angle);
+        speed = (main->animCmdIdx & 1) ? 24 : 48;
+        Vec3_SetPolar(&step, mover->angle, speed);
+        mover->pos.x += step.x;
+        mover->pos.z += step.z;
+      }
+    }
+  }
+  Map_StepNavPath(nav, &actor->mover.pos);
+  FUN_080414fc(actor, 1);
+  FUN_08041480(actor, 1, 1, 0, 1);
+}
 
 // work.walk.target へ walkSpeed ずつ歩かせ, 距離の2乗が arriveDistSq 以下になったら着いて終える, 歩くあいだ足音を鳴らす
 // 下書き (161/158命令): 流れは一致 (FUN_0804478c と同じ形), 原典は pos / target のアドレスを比較の前に高位レジスタへ移し, actor を r5 に置く
