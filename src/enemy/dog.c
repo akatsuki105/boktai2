@@ -575,7 +575,25 @@ void FUN_08150534(Dog* p) {
   }
 }
 
-NAKED void FUN_08150660(Dog* p) { INCFUNC("asm/func/FUN_08150660.inc"); }
+void FUN_08150660(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Dog_ClearUnk6a8(q, 8);
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    Enemy_EnterState(&p->e, FUN_0814dd38, ES_UNK_36);
+    Dog_SetUnk6a8((p->e).unk_1cc, 2);
+    Hitbox_SetAttack(&q->unk_658, (p->e).atkPower[2], (p->e).atkUnk40[2], 0, (p->e).atkAttrs[2], (p->e).atkInvincibleTime[2]);
+    q->unk_6d7 = 0;
+  }
+  if ((p->e).subStateDone) {
+    q->unk_6ca = q->unk_6ce;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    enemy_dog_0814b500(p);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 void FUN_0815077c(Dog* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad8e8; }
 
