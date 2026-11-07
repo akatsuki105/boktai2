@@ -71,7 +71,7 @@ NAKED void Dog_InitAnims(Dog* p) { INCFUNC("asm/func/Dog_InitAnims.inc"); }
 
 NAKED void Dog_OnReset(Dog* p) { INCFUNC("asm/func/Dog_OnReset.inc"); }
 
-NAKED void FUN_0814a8c8(Dog* p) { INCFUNC("asm/func/FUN_0814a8c8.inc"); }
+void FUN_0814a8c8(Dog* p) { CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_1); }
 
 NAKED s32 FUN_0814a8dc(Dog* p) { INCFUNC("asm/func/FUN_0814a8dc.inc"); }
 
