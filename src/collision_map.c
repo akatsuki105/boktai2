@@ -19,16 +19,6 @@ s32 FUN_0823a88c(u8* pc, ScriptArgs* args);                      // src/entity_0
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/entity_0823acbc.c
 extern u32 gNextMapEventID;                                      // src/iwram2.c
 
-// 索引 idx のタイルを返す, 上書きがあればそちらを返す
-static inline CollisionMapTile* TileAtIndex(s32 idx) {
-  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
-
-  if (ov != NULL) {
-    return &ov->tile;
-  }
-  return &gCollisionMap->tiledata->tiles[idx];
-}
-
 // gCollisionMap を確保してレジストリに登録し, 空の状態にする
 void Map_InitCollisionMap(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));

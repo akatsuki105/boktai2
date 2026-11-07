@@ -566,7 +566,32 @@ s32 FUN_08144cc4(Crow* p) {
   return 1;
 }
 
-NAKED void FUN_08144cd0(Crow* p) { INCFUNC("asm/func/FUN_08144cd0.inc"); }
+// 足元が壁や落下死のタイルでなければ, 4 フレームごとに半分になる速さで上へ飛び上がり, 止まったら副状態 (0,2,1) へ移る
+void FUN_08144cd0(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_081432ec, ES_UNK_37);
+    q->unk_6b0.y = 30;
+  }
+  if (TEST_FLAGS(TileAtIndex((p->e).unk_256)->attr, TATTR_WALL | TATTR_FALLDEATH)) {
+    if ((p->e).subStateTimer > 20) {
+      Enemy_ResetState(&p->e, 0, 0, 4);
+      return;
+    }
+  } else {
+    Enemy_UpdateWalkAnimSpeed(&p->e);
+    (p->e).heightAboveFloor += q->unk_6b0.y;
+    if (Mod((p->e).subStateTimer, 4) == 0) {
+      q->unk_6b0.y = FixToInt(1, q->unk_6b0.y);
+    }
+    if (q->unk_6b0.y <= 0) {
+      Enemy_ResetState(&p->e, 0, 2, 1);
+      return;
+    }
+  }
+  (p->e).subStateTimer++;
+}
 
 NAKED void FUN_08144ec8(Crow* p) { INCFUNC("asm/func/FUN_08144ec8.inc"); }
 

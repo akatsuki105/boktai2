@@ -19,6 +19,16 @@ static inline s32 GetCollisionTileIdx(WorldPos* pos) {
   return idx;
 }
 
+// 索引 idx のタイルを返す, 上書きがあればそちらを返す
+static inline CollisionMapTile* TileAtIndex(s32 idx) {
+  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+
+  if (ov != NULL) {
+    return &ov->tile;
+  }
+  return &gCollisionMap->tiledata->tiles[idx];
+}
+
 #define GetTileAt(pos)                                               \
   ({                                                                 \
     s32 idx = GetCollisionTileIdx(pos);                              \

@@ -98,16 +98,6 @@ static inline void Enemy_SetSpritePos(Enemy* p, WorldPos* pos) {
   }
 }
 
-// 索引 idx のタイルを返す, 上書きがあればそちらを返す
-static inline CollisionMapTile* TileAtIndex(s32 idx) {
-  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
-
-  if (ov != NULL) {
-    return &ov->tile;
-  }
-  return &gCollisionMap->tiledata->tiles[idx];
-}
-
 // 索引 idx のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
 static inline u32 TileHeightAtIndex(s32 idx, WorldPos* pos) {
   CollisionMapTile* tile = TileAtIndex(idx);
