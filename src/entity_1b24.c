@@ -1,5 +1,6 @@
 #include "bg_pltt.h"
 #include "entity.h"
+#include "entity_9a9f.h"
 #include "global.h"
 #include "sound.h"
 #include "sprite.h"
@@ -35,10 +36,22 @@ typedef struct Entity1B24 {
 static_assert(sizeof(Entity1B24) == 3984);
 
 bool32 FUN_081dfa04(void);
+void FUN_081dfa20(u32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
+void GetWeaponData(slot32_t n, WeaponData* data);
 void FUN_080b9a0c(unknown* p);
 bool32 FUN_080b9adc(unknown* p);
 void ShopCursor_PlaceSprite(unknown* p, unknown* q);
 void ShopCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
+
+// gEntity9A9F の記録を返す, セッションが無ければ NULL
+static inline u8* Entity9A9F_GetRecord(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return NULL;
+  }
+  return p->unk_15c;
+}
 
 // 状態関数を差し替える
 void FUN_0809ce90(Entity1B24* p, void* fn) {
@@ -194,7 +207,37 @@ void FUN_0809dde0(Entity1B24* p) {
   }
 }
 
-NAKED s32 Entity1B24_Init(Entity1B24* p) { INCFUNC("asm/func/Entity1B24_Init.inc"); }
+s32 Entity1B24_Init(Entity1B24* p) {
+  s32 vitality;
+  s32 spirit;
+  s32 agility;
+
+  p->record = Entity9A9F_GetRecord();
+  if (p->record == NULL) {
+    return -1;
+  }
+
+  if (p->record[0x40] == 2) {
+    p->slot = 0;
+    p->weaponData = gWeaponDB[WEAPON_GUN_DEL_HELL];
+  } else {
+    p->slot = p->record[0x17];
+    if (p->slot >= 0) {
+      GetWeaponData(p->slot, &p->weaponData);
+    }
+  }
+
+  FUN_081dfa20(p->record[0x41], &p->unk_f80, &vitality, &spirit, &agility);
+  FUN_0809dde0(p);
+  FUN_0809d878(p);
+  FUN_0809d934(p);
+  FUN_0809dd34(p);
+  FUN_0809dd68(p);
+  FUN_0809dd88(p);
+  p->unk_f74 = 30;
+  FUN_0809ce90(p, FUN_0809d3d0);
+  return 0;
+}
 
 // 0x1B24
 Entity1B24* Entity1B24_Create(u32 subroutineID) {
