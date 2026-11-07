@@ -366,7 +366,25 @@ NON_MATCH s32 Cmd_A39F(void) {
 #endif
 }
 
-NAKED s32 Cmd_4B41(void) { INCFUNC("asm/func/Cmd_4B41.inc"); }
+// 0x4B41, (x, z) のタイルの attr をスクリプトの変数へ書き出して返す
+// 残差: 命令列はほぼ一致, 原典は pos を sp+0, desc を sp+8 に置いて desc のアドレスを r5 に持つが, こちらは逆の並びになり pos のアクセスが1命令ずつ増える
+NON_MATCH s32 Cmd_4B41(void) {
+#ifdef NONMATCHING_C
+  WorldPos pos;
+  u8 desc[8];
+  TileAttr attr;
+
+  pos.x = VM_GetValue();
+  pos.y = 0;
+  pos.z = VM_GetValue();
+  attr = GetTileAttrAt(&pos);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, attr);
+  return attr;
+#else
+  INCFUNC("asm/func/Cmd_4B41.inc");
+#endif
+}
 
 NAKED s32 Cmd_AB41(void) { INCFUNC("asm/func/Cmd_AB41.inc"); }
 
