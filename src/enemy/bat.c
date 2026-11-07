@@ -168,7 +168,26 @@ NON_MATCH void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) {
 #endif
 }
 
-NAKED void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnHurt.inc"); }
+// 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にして, 速く動く印を落とす
+// 803/808命令, Crow_OnHurt と同じ残差 (ノックバックの種別判定の配置, p->angle の格納先の計算位置, 末尾の乱数の読み順)
+NON_MATCH void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) {
+#ifdef NONMATCHING_C
+  s32 knockback;
+
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+    return;
+  }
+  Enemy_HandleHurt(a, b, &p->e);
+  knockback = b->knockbackPower - (Random() & 15);
+  b->knockbackPower = knockback < 20 ? 20 : knockback;
+  ((EnemyBat*)(p->e).unk_1cc)->unk_658 &= ~8;
+#else
+  INCFUNC("asm/func/EnemyBat_OnHurt.inc");
+#endif
+}
 
 // プレイヤーに取り付いて一定間隔で攻撃し, 連打で振りほどかれたら終わる
 // 104/109 命令, 連打数の差分が Curoro_HoldPlayer と同じ残差 (base - 256 を作ってから引く形にならない) を持ち, 定数オフセットのレジスタも違う
