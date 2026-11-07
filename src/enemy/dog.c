@@ -234,7 +234,18 @@ void FUN_0814c970(Dog* p) {}
 
 NAKED void FUN_0814c974(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814c974.inc"); }
 
-NAKED void FUN_0814ca30(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814ca30.inc"); }
+void FUN_0814ca30(Dog* p, s32 timer) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 7);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+  }
+  if (timer == 40) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
+  }
+  if ((p->e).animForceRestart && timer > 120) {
+    (p->e).subStateDone = 1;
+  }
+}
 
 NAKED void FUN_0814caa0(Dog* p) { INCFUNC("asm/func/FUN_0814caa0.inc"); }
 
