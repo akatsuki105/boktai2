@@ -258,7 +258,20 @@ void FUN_08130460(Spider* p) {
   }
 }
 
-NAKED bool8 FUN_081304a8(Spider* p, s32 rangeX, s32 rangeZ) { INCFUNC("asm/func/FUN_081304a8.inc"); }
+// 棺桶が x 方向 rangeX, z 方向 rangeZ 以内にいれば TRUE を返す
+bool8 Spider_IsCoffinInRange(Spider* p, s32 rangeX, s32 rangeZ) {
+  WorldPos* coffin = Coffin_GetPos();
+
+  if (coffin != NULL) {
+    Vec3 d;
+
+    Vec3_Diff(&d, coffin, &(p->e).mover.pos);
+    if (abs(d.x) <= rangeX && abs(d.z) <= rangeZ) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
 
 // 棺桶への経路を引けたら棺桶を狙って歩き出す
 // 残差1命令, ドッグの FUN_0814e424 と同じ「失敗の出口を2つ持つ経路 inline」にすると定数 4 (unk_660 の bit と animSpeedDiv) が1本のレジスタにまとめられる所だけ違う

@@ -82,7 +82,7 @@ _0812FE4E:
 	adds r0, r7, #0
 	movs r1, #0x40
 	movs r2, #0x40
-	bl FUN_081304a8
+	bl Spider_IsCoffinInRange
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0812FEE8
