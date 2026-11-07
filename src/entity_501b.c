@@ -50,6 +50,10 @@ void Entity501B_StateSaveDone(Entity501B* p);
 void Entity501B_StateSaveFailed(Entity501B* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_081df940(void);
+bool32 Save_WriteExtraToNextSlot(void);
+void FUN_081df924(void);
+void FUN_081e0544(Entity501B* p);
+void FUN_081e084c(Entity501B* p);
 
 // セッションの状態を返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetState(void) {
@@ -59,6 +63,34 @@ static inline s32 Entity9A9F_GetState(void) {
     return -1;
   }
   return p->state;
+}
+
+// 自分が何番目の参加者かを返す, セッションが無ければ -1
+static inline s32 Entity9A9F_GetPlayerIdx(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
+}
+
+static inline s32 Entity9A9F_GetUnk138(s32 idx) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return 0;
+  }
+  return p->unk_138[idx];
+}
+
+static inline s32 Entity9A9F_GetUnk144(s32 idx) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return 0;
+  }
+  return p->unk_144[idx];
 }
 
 // 状態関数を差し替えて, 切り替え直後の1フレームだけ立つフラグを付ける
@@ -197,7 +229,36 @@ void Entity501B_RemoveSprites(Entity501B* p) {
   }
 }
 
-NAKED void Entity501B_SetNumber(Entity501B* p, s32 row, s32 value) { INCFUNC("asm/func/Entity501B_SetNumber.inc"); }
+// value を4桁に分解して row 段のスプライトに並べる
+void Entity501B_SetNumber(Entity501B* p, s32 row, s32 value) {
+  s32 n = row * 4;
+  s32 d;
+
+  d = 0;
+  while (value > 999) {
+    d++;
+    value -= 1000;
+  }
+  MainSprite_LoadPose(&p->digits[n + 3], &p->gfx, d);
+  d = 0;
+  while (value > 99) {
+    d++;
+    value -= 100;
+  }
+  MainSprite_LoadPose(&p->digits[n + 2], &p->gfx, d);
+  d = 0;
+  while (value > 9) {
+    d++;
+    value -= 10;
+  }
+  MainSprite_LoadPose(&p->digits[n + 1], &p->gfx, d);
+  d = 0;
+  while (value > 0) {
+    d++;
+    value -= 1;
+  }
+  MainSprite_LoadPose(&p->digits[n], &p->gfx, d);
+}
 
 // 経過時間と乱数からでたらめな数を作って row 段に出す
 void Entity501B_SpinNumber(Entity501B* p, s32 row) {
