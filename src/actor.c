@@ -1002,7 +1002,26 @@ void FUN_08043cc4(ActorManager* p, Actor* actor) {
 
 NAKED void FUN_08043cf4(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043cf4.inc"); }
 
-NAKED void FUN_08043da8(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043da8.inc"); }
+// startHour:startMinute から endHour:endMinute の間に入ったら state 15 へ, waitFrames の間は時刻を見ない
+void FUN_08043da8(ActorManager* p, Actor* actor) {
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 1;
+    MsgQueue_EndWait(&actor->mq, 1);
+  }
+
+  if (actor->waitFrames == 0) {
+    if (p->unk_24 == 0 && ((p->hour == actor->startHour && p->minute >= actor->startMinute) || (p->hour > actor->startHour && p->hour < actor->endHour) || (p->hour == actor->endHour && p->minute < actor->endMinute))) {
+      Actor_SetState(actor, 15);
+      actor->unk_08 = 1;
+      return;
+    }
+  } else {
+    actor->waitFrames--;
+  }
+  actor->timer++;
+}
 
 NAKED void FUN_08043e54(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043e54.inc"); }
 

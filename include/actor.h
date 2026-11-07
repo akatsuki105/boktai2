@@ -199,7 +199,7 @@ typedef struct ActorManager {
   u8 prevMinute;         // 0x021, 1フレーム前の minute
   u8 hour;               // 0x022, Time_GetHour
   u8 minute;             // 0x023, Time_GetMinute
-  s8 unk_24;             // 0x024, FUN_08018a08 の戻り値
+  u8 unk_24;             // 0x024, FUN_08018a08 の戻り値, 0 以外の間 FUN_08043da8 は時間帯を見ない
   u8 unk_25[3];          // 0x025, padding?
   s32 unk_28;            // 0x028, _Update が毎フレーム 1 - x で 0/1 を往復させる, unk_2c の添字
   u32 unk_2c[2];         // 0x02C, _Update が unk_28 の側だけ 0 にする
