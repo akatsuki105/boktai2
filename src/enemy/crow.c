@@ -54,7 +54,11 @@ NAKED void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func
 
 NAKED void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func/Crow_OnHurt.inc"); }
 
-NAKED void FUN_08142fd8(Crow* p) { INCFUNC("asm/func/FUN_08142fd8.inc"); }
+void FUN_08142fd8(Crow* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnim(&p->e, 1);
+  FUN_08144b70(p);
+}
 
 NAKED void FUN_08143004(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143004.inc"); }
 
