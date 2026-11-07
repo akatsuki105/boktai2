@@ -3,6 +3,7 @@
 #include "global.h"
 #include "malloc.h"
 #include "player.h"
+#include "sound.h"
 
 // クロウ(ENEID_CROW), ガーゴイル(ENEID_GARGOYLE)
 typedef struct {
@@ -136,7 +137,14 @@ NAKED void FUN_08144910(Crow* p) { INCFUNC("asm/func/FUN_08144910.inc"); }
 
 NAKED void FUN_081449f8(Crow* p) { INCFUNC("asm/func/FUN_081449f8.inc"); }
 
-NAKED void FUN_08144b70(Crow* p) { INCFUNC("asm/func/FUN_08144b70.inc"); }
+// 羽ばたきアニメの決まったコマで羽音を鳴らす
+void FUN_08144b70(Crow* p) {
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (anim->cmdIdx == 5 && anim->tick == 0) {
+    PlaySound_082406e0(CRY_CROW_WING);
+  }
+}
 
 NAKED bool8 FUN_08144b90(Crow* p) { INCFUNC("asm/func/FUN_08144b90.inc"); }
 

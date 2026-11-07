@@ -2,6 +2,7 @@
 #include "enemy_inline.h"
 #include "global.h"
 #include "malloc.h"
+#include "sound.h"
 
 // スパイダー(ENEID_SPIDER), ポイズンスパイダー(ENEID_PSPIDER)
 // 見えない蜘蛛の巣を仕掛けて、プレイヤーがそれに触れると身動きが取れなくなる

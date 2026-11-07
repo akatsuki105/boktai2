@@ -2,6 +2,7 @@
 #include "enemy_inline.h"
 #include "global.h"
 #include "malloc.h"
+#include "sound.h"
 
 // バンデット(ENEID_BANDIT), ヘルハウンド(ENEID_HELLHOUND), グレイブキーパー(ENEID_GRAVEKEEPER)
 // 共通の特徴として におい でサーチする (処理の上でどうしているのかはまだ不明)
