@@ -81,7 +81,13 @@ NAKED void Entity501B_InitSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_
 
 NAKED void Entity501B_InitSpritePos(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSpritePos.inc"); }
 
-NAKED void Entity501B_HideSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_HideSprites.inc"); }
+void Entity501B_HideSprites(Entity501B* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    p->digits[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 void Entity501B_RemoveSprites(Entity501B* p) {
   s32 i;
