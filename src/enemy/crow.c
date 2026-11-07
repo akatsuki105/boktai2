@@ -227,7 +227,22 @@ void Crow_PlayWingSound(Crow* p) {
   }
 }
 
-NAKED bool8 FUN_08144b90(Crow* p) { INCFUNC("asm/func/FUN_08144b90.inc"); }
+// 巡回中に高さが近いプレイヤーが索敵範囲に入ったら攻撃の要求を立てる, goto 以外の if の組み方 (入れ子, 早期 return) では TRUE の枝が後ろに来ない
+bool8 FUN_08144b90(Crow* p) {
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
+    s32 dy = abs((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y);
+
+    if (dy <= 512 && (p->e).unk_1e4 < (p->e).range0Sq) {
+      goto found;
+    }
+  }
+  return FALSE;
+
+found:
+  SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+  return TRUE;
+}
 
 NAKED void FUN_08144bfc(Crow* p) { INCFUNC("asm/func/FUN_08144bfc.inc"); }
 
