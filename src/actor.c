@@ -1767,8 +1767,81 @@ s32 FUN_080442f4(ActorManager* p, Actor* actor) {
 
 s32 FUN_08044300(ActorManager* p, Actor* actor) { return MsgQueue_Unregister(&actor->mq); }
 
-// 0x920F, Unused?
-NAKED void Cmd_920F(void) { INCFUNC("asm/func/Cmd_920F.inc"); }
+// 0x920F, '.n' / '.k' / '.p' / '.d' / '.o' / '.t' / '.m' / '.c' から Actor を1体作り, state 0 から始める (使われていない?)
+// 残差1命令: 原典は '.c' の値を Actor_SetPltt へ u16 に切り詰めずに渡す (呼び出し時に u16 の原型が見えていなかった形), こちらは lsls/lsrs が付く
+NON_MATCH void Cmd_920F(void) {
+#ifdef NONMATCHING_C
+  s32 spriteType;
+  ActorManager* p = gActorManager;
+  u32 id;
+  u32 kind;
+  WorldPos pos;
+  u32 angle;
+  SpriteID32 spriteID;
+  SpriteFlags flags;
+  s32 plttID;
+  Actor* actor;
+
+  if (p == NULL) {
+    return;
+  }
+
+  id = VM_GetNamedArgValue('n', 0);
+  kind = VM_GetNamedArgValue('k', 0);
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(pos, 0, 0, 0);
+  }
+  angle = VM_GetNamedArgValue('d', 0);
+  spriteType = VM_GetNamedArgValue('o', 2);
+  spriteID = VM_GetNamedArgValue('t', SPRITE_DJANGO_SABATA);
+  flags = VM_GetNamedArgValue('m', 0);
+  plttID = VM_GetNamedArgValue('c', -1);
+
+  actor = Actor_Alloc(id, kind);
+  if (actor == NULL) {
+    return;
+  }
+  if (FUN_08040f0c(actor, id, &pos, angle) < 0) {
+    return;
+  }
+  if (FUN_08040f48(actor, spriteType, spriteID, flags, 0) < 0) {
+    return;
+  }
+  if (plttID >= 0) {
+    Actor_SetPltt(actor, plttID);
+  }
+
+  FUN_08040fc0(actor, actor->sprite.pos, 1, 0, 64);
+  MsgQueue_Register(&actor->mq, id, 5);
+  actor->mover.angle = angle;
+  actor->unk_1a = Angle_ToDir8(angle);
+  actor->unk_19 = Angle_ToDir4(angle);
+  Actor_SetFn(actor, FUN_08044168);
+  Actor_SetCb(actor, 0, FUN_080442d4);
+  Actor_SetCb(actor, 1, FUN_0804415c);
+  Actor_SetCb(actor, 2, FUN_080441a4);
+  Actor_SetCb(actor, 3, FUN_080442f4);
+  Actor_SetOnDestroy(actor, FUN_08044300);
+  Actor_StartState(actor, 0);
+  Actor_SetUpdate(actor, FUN_080421bc, 2);
+  actor->unk_2b8 = ActorManager_FindSpriteData(spriteID, 0);
+  actor->unk_2bc = FUN_08040dc0(spriteID, 0);
+  if (VM_SeekToNamedArg('b')) {
+    actor->unk_1e8 = VM_GetValue();
+    actor->unk_1e9 = VM_GetValue();
+    actor->unk_1ea = VM_GetValue();
+  } else {
+    actor->unk_1e8 = 0;
+    actor->unk_1e9 = 1;
+    actor->unk_1ea = 0;
+  }
+  ActorManager_LinkActor(p, actor);
+#else
+  INCFUNC("asm/func/Cmd_920F.inc");
+#endif
+}
 
 void FUN_0804454c(ActorManager* p, Actor* actor) {
   if (actor->unk_08 != 0) {
