@@ -207,7 +207,17 @@ NAKED bool8 FUN_08130d34(Spider* p) { INCFUNC("asm/func/FUN_08130d34.inc"); }
 
 NAKED void FUN_08130eec(Spider* p) { INCFUNC("asm/func/FUN_08130eec.inc"); }
 
-NAKED void FUN_0813101c(Spider* p) { INCFUNC("asm/func/FUN_0813101c.inc"); }
+void FUN_0813101c(Spider* p) {
+  PathWalker* walker = &(p->e).pathWalker;
+  u8 idx = Mod(Random(), walker->path->nodeCount);
+
+  if (idx == walker->nodeIdx) {
+    idx = Mod(idx + 1, walker->path->nodeCount);
+  }
+  walker->nodeIdx = idx;
+  walker->waitTimer = 0;
+  walker->node = Map_GetPathNodes(walker->path) + walker->nodeIdx;
+}
 
 // 歩きアニメのコマが変わる瞬間だけ移動の速さを返す
 s32 Spider_GetMoveSpeed(Spider* p) {
