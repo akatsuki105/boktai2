@@ -125,7 +125,7 @@ NAKED void FUN_08165178(Slime* p) { INCFUNC("asm/func/FUN_08165178.inc"); }
 
 NAKED bool8 FUN_081651dc(Slime* p) { INCFUNC("asm/func/FUN_081651dc.inc"); }
 
-NAKED s32 FUN_08165460(Slime* p) { INCFUNC("asm/func/FUN_08165460.inc"); }
+s32 FUN_08165460(Slime* p) { return 1; }
 
 NAKED s32 FUN_08165464(Slime* p) { INCFUNC("asm/func/FUN_08165464.inc"); }
 
