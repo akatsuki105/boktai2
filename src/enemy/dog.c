@@ -136,7 +136,14 @@ NAKED void FUN_0814b78c(Dog* p) { INCFUNC("asm/func/FUN_0814b78c.inc"); }
 
 NAKED void FUN_0814b7a4(Vec3* pos) { INCFUNC("asm/func/FUN_0814b7a4.inc"); }
 
-NAKED void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/Dog_OnHit.inc"); }
+void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) {
+  if (Enemy_IsDead(&p->e) == 0) {
+    if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
+      (p->e).hitTargetID = b->id;
+      Enemy_ClearFlag2(&p->e, ENEFLAG2_UNK_24);
+    }
+  }
+}
 
 NAKED void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/FUN_0814b89c.inc"); }
 
