@@ -78,6 +78,8 @@ const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800,
 
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
+bool8 FUN_0814b3a0(Dog* p);
+void enemy_dog_0814a320(Dog* p);
 void enemy_dog_0814b500(Dog* p);
 void FUN_0814deb0(Dog* p);
 void FUN_0814dd38(Dog* p, s32 timer);
@@ -133,7 +135,31 @@ void (*const PTR_ARRAY_085ad8f0[20])(Dog*) = {
 };  // 0x085AD8F0
 // clang-format on
 
-NAKED void enemy_dog_08149f6c(Dog* p) { INCFUNC("asm/func/enemy_dog_08149f6c.inc"); }
+// 134/133 命令, オフセット定数の作り方 (前の定数から足し引きするか作り直すか) とストアの並びが違う, 試済: 枝の向き
+NON_MATCH void enemy_dog_08149f6c(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+
+  q->unk_6c0 = q->unk_6c2;
+  if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_26)) {
+    Dog_ClearUnk6a8(q, 4 | 8);
+    Enemy_ResetState(&p->e, 0, 1, 0);
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+  } else {
+    Enemy_BeginChase(&p->e);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8) || !FUN_0814b3a0(p)) {
+      if (!Dog_TestUnk6a8(q, 8)) {
+        enemy_dog_0814b500(p);
+      }
+      return;
+    }
+    enemy_dog_0814a320(p);
+  }
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+#else
+  INCFUNC("asm/func/enemy_dog_08149f6c.inc");
+#endif
+}
 
 NAKED void FUN_0814a098(Dog* p) { INCFUNC("asm/func/FUN_0814a098.inc"); }
 
