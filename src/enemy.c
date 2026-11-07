@@ -3291,7 +3291,7 @@ void DefeatedEnemyLog_Add(u16 a, u16 b) {
 }
 
 // 撃破記録に無く空きもあれば TRUE, MPF_UNK_2 のマップで敵を出してよいかの判定に使う
-bool32 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2) {
+bool8 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2) {
   if (DefeatedEnemyLog_Find(param_1, param_2) == 0 && DefeatedEnemyLog_FindFree() != 0) {
     return TRUE;
   }

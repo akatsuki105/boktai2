@@ -17,7 +17,7 @@
 extern const s16 s16_ARRAY_085ad3cc[4];
 
 u32 EntityA628_IsActive(void);
-bool32 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2);
+bool8 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2);
 void FUN_080ec900(u8 kind);
 void EnemyManager_SetupSharedEntities(EnemyManager* p, Enemy* enemy);
 void Enemy_Reset(Enemy* p);
@@ -115,7 +115,7 @@ bool8 Enemy_Register(Enemy* p) {
     return FALSE;
   }
   head = gEnemyListHead;
-  if (TestMapFlag(4) && !(u8)DefeatedEnemyLog_CanAdd(gMapInitScriptID, p->mover.id)) {
+  if (TestMapFlag(4) && !DefeatedEnemyLog_CanAdd(gMapInitScriptID, p->mover.id)) {
     return FALSE;
   }
   if ((u16)mgr->enemyCount >= 20) {
@@ -1081,7 +1081,7 @@ bool32 Cmd_6790(void) {
 }
 
 // 指定した種族で flags に mask のビットが立っている敵が1体でもいるかを返す
-NON_MATCH bool32 Enemy_HasKindWithFlags(u32 kind, u32 mask) {
+NON_MATCH bool8 Enemy_HasKindWithFlags(u32 kind, u32 mask) {
 #ifdef NONMATCHING_C
   Enemy* p;
 
@@ -1098,7 +1098,7 @@ NON_MATCH bool32 Enemy_HasKindWithFlags(u32 kind, u32 mask) {
 
 // 指定した種族と variant で flags に mask のビットが立っている敵が1体でもいるかを返す
 // 40/40 命令, return TRUE のブロックがループの前に出ない, Enemy_HasKindWithFlags と同じ
-NON_MATCH bool32 Enemy_HasKindVariantWithFlags(u32 kind, u32 variant, u32 mask) {
+NON_MATCH bool8 Enemy_HasKindVariantWithFlags(u32 kind, u32 variant, u32 mask) {
 #ifdef NONMATCHING_C
   Enemy* p = GetFirstEnemy();
 
@@ -1667,21 +1667,21 @@ NON_MATCH bool8 EnemyManager_StepPaletteFade(EnemyManager* p, Enemy* enemy) {
 }
 
 // 37/47 命令, 判定を bool 変数に受ける形が未解決
-NON_MATCH bool32 FUN_080eee70(void) {
+NON_MATCH bool8 FUN_080eee70(void) {
 #ifdef NONMATCHING_C
   if (gEnemyManager != NULL && (gEnemyManager->flags & 0x2000)) {
     if (gGameFlags & 0x4800) {
       if (Enemy_CountByKind(11) != 0) {
-        return 0;
+        return FALSE;
       }
     } else {
       if (Enemy_CountByKind(11) != 0 || Enemy_CountByKind(23) != 0 || Enemy_CountByKind(27) != 0) {
-        return 0;
+        return FALSE;
       }
     }
   }
 
-  return 1;
+  return TRUE;
 #else
   INCFUNC("asm/func/FUN_080eee70.inc");
 #endif
