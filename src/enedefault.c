@@ -172,7 +172,6 @@ static inline void Enemy_SetSpritePriority(Enemy* p, u8 priority) {
   }
 }
 
-void FUN_080e7b6c(Enemy* p);
 void FUN_080f8ae0(Enemy* p);
 
 // ENEFLAG_UNK_21 が立っていればそれに付随する印と値を片付け, ENEFLAG_UNK_4 / UNK_7 も落とす

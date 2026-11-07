@@ -542,6 +542,7 @@ bool8 Enemy_MoveAlongNav(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 
 bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
 bool8 FUN_080faa98(Enemy* p);
 void FUN_080e64e4(Enemy* p);
+void FUN_080e7b6c(Enemy* p);
 void Enemy_PlayAnimNoFacingFlags(Enemy* p, s32 param_2, u32 param_3);
 void Enemy_InitHpAndState(Enemy* p, s32 hp, s32 param_3, s32 param_4);
 void FUN_080f5b34(Enemy* p);

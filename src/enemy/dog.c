@@ -1572,7 +1572,157 @@ void FUN_08150b18(Dog* p) {
   }
 }
 
-NAKED void FUN_08150de8(Dog* p) { INCFUNC("asm/func/FUN_08150de8.inc"); }
+// 1P を見失ったあと 20 フレーム待ってから, 1P のいるタイルへ向かえるならそちらへ一歩動き, 同じタイルなら状態26か状態1へ移り, 向きを乱数で変える状態27を予約する
+// 779/779命令, 待ちフレーム (20) 以外は enedefault.c の FUN_080f12c4 と同じ命令列で残差も同じ (原典は状態や下位状態のフィールドのアドレスをスタックに持ち越す, フレーム 0x70)
+NON_MATCH void FUN_08150de8(Dog* p) {
+#ifdef NONMATCHING_C
+  s32 tile;
+  s32 idx;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+  }
+  if ((p->e).unk_608(&p->e)) {
+    return;
+  }
+  if (FUN_080f0a0c(&p->e)) {
+    return;
+  }
+  if ((p->e).subStateTimer <= 20) {
+    (p->e).subStateTimer++;
+    return;
+  }
+
+  (p->e).unk_222 &= ~(ENEMY222_UNK_1 | ENEMY222_UNK_2);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  (p->e).pendingDelay = (p->e).unk_543;
+  (p->e).pendingHandler = (p->e).unk_5b8;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 12;
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  {
+    Vec3* dst = (p->e).unk_4a8;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+
+  if (IsLinkPlay()) {
+    Mover* m = (p->e).playerMover;
+
+    idx = -1;
+    if (m != NULL && m->unk_4 <= 3) {
+      idx = m->unk_4;
+    }
+    if (m == NULL || idx < 0) {
+      (p->e).unk_5c4(&p->e);
+      return;
+    }
+    tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+  } else {
+    tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+    idx = 0;
+  }
+
+  if (tile != (p->e).unk_256 && !(gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+    WorldPos tilePos;
+    bool8 moved = FALSE;
+
+    {
+      s32 x = Mod(tile, gCollisionMap->tiledata->width);
+      s32 z = Div(tile, gCollisionMap->tiledata->width);
+      MapTileOverride* ov;
+
+      tilePos.x = (x << 8) + 0x80;
+      ov = Map_FindTileOverride(tile, 1);
+      tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+      tilePos.z = (z << 8) + 0x80;
+    }
+    {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          moved = TRUE;
+        }
+      }
+      if (!moved) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (!moved) {
+      (p->e).unk_5c4(&p->e);
+    }
+    return;
+  }
+
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+    return;
+  }
+  (p->e).unk_222 &= ~ENEMY222_UNK_2;
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+    Enemy_ResetState(&p->e, 0, 0, 12);
+  } else {
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    Enemy_ResetState(&p->e, 0, 0, 5);
+    {
+      Vec3* dst = (p->e).unk_4a8;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
+    (p->e).unk_4a8->val = 0;
+  }
+
+  {
+    u8 angle = (p->e).mover.angle;
+
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+      s32 i;
+      u32 a;
+
+      for (i = 0; i <= 3; i++) {
+        a = (Random() & 3) << 6;
+        if (a != angle) {
+          break;
+        }
+      }
+      if (i > 3) {
+        a = angle;
+      }
+      (p->e).unk_540 = a;
+      (p->e).unk_548 = (p->e).handlerState;
+      (p->e).unk_54f = (p->e).state;
+      (p->e).unk_54c = (p->e).subState0;
+      (p->e).unk_54d = (p->e).subState1;
+      (p->e).unk_54e = (p->e).subState2;
+      (p->e).unk_541 = angle;
+      Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      (p->e).unk_542 = 6;
+    }
+  }
+  FUN_080e7b6c(&p->e);
+  (p->e).animSpeedDiv = 2;
+#else
+  INCFUNC("asm/func/FUN_08150de8.inc");
+#endif
+}
 
 // 経路に沿って歩き, 経路の終わりに着いたら副状態 (3,1,0) へ, 通過点が変わって曲がれたら副状態18へ移る
 void FUN_081514f0(Dog* p) {
