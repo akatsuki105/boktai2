@@ -105,7 +105,7 @@ _081CFAD0:
 	movs r2, #0xaf
 	lsls r2, r2, #3
 	adds r0, r1, r2
-	ldr r3, _081CFB90 @ =FUN_080f54e4
+	ldr r3, _081CFB90 @ =Enemy_StateFallDeath
 	str r3, [r0]
 	movs r2, #0xe4
 	lsls r2, r2, #1
@@ -181,7 +181,7 @@ _081CFB5C:
 	.align 2, 0
 _081CFB88: .4byte 0x00000553
 _081CFB8C: .4byte 0x0000046D
-_081CFB90: .4byte FUN_080f54e4
+_081CFB90: .4byte Enemy_StateFallDeath
 _081CFB94: .4byte 0x00000469
 _081CFB98: .4byte 0x030047A4
 _081CFB9C:

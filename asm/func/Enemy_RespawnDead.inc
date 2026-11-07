@@ -41,12 +41,12 @@ _080EE282:
 	beq _080EE2B4
 	adds r0, r4, #0
 	ldr r1, _080EE2C4 @ =0x085AD3CC
-	bl FUN_080edb4c
+	bl Enemy_IsPlayerNearSpawn
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EE2B4
 	adds r0, r4, #0
-	bl FUN_080ee738
+	bl Enemy_Reset
 _080EE2B4:
 	ldr r4, [r5, #4]
 	cmp r4, #0

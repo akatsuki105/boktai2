@@ -20,7 +20,7 @@ _0816392E:
 	beq _08163956
 	adds r0, r5, #0
 	movs r1, #0xa
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	adds r0, r5, #0
 	bl PlayEnemyDeathCry
 	adds r0, r5, #0

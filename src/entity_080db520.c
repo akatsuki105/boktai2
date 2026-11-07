@@ -354,7 +354,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
       elem->hurtbox.flags |= HBFLAG_HIDDEN;
       elem->grabMashBase = gPlayerPtr[0]->mashCount;
       payload = 6;
-      FUN_080ec7e8(ENEK_SPIDER, 1, &payload);
+      Enemy_SendMsgByKindVariant(ENEK_SPIDER, 1, &payload);
       PlaySound_082406e0(SE_SPIDER_WEB_HIT);
       return;
     }

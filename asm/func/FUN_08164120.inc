@@ -124,7 +124,7 @@ _08164206:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08164220
@@ -150,7 +150,7 @@ _08164236:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081642C4
@@ -175,7 +175,7 @@ _08164268:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08164282
@@ -201,7 +201,7 @@ _08164298:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081642D2

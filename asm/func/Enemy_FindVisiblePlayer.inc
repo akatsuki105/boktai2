@@ -93,7 +93,7 @@ _080E44F2:
 	adds r4, #0x2c
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_080e4384
+	bl Enemy_IsPosAheadOnSameTile
 	lsls r0, r0, #0x18
 	str r4, [sp, #0x18]
 	cmp r0, #0

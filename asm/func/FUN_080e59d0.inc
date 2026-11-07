@@ -37,7 +37,7 @@ _080E59F4:
 	b _080E5B14
 _080E5A18:
 	adds r0, r4, #0
-	bl FUN_080ee738
+	bl Enemy_Reset
 	movs r3, #0x8e
 	lsls r3, r3, #1
 	adds r0, r4, r3
@@ -59,7 +59,7 @@ _080E5A2A:
 	ands r1, r0
 	str r1, [r2]
 	adds r0, r4, #0
-	bl FUN_080ee2c8
+	bl Enemy_ResetToSpawn
 	movs r1, #3
 	movs r2, #0x8d
 	lsls r2, r2, #3
@@ -119,7 +119,7 @@ _080E5AA4:
 	ands r0, r1
 	str r0, [r2]
 	adds r0, r4, #0
-	bl FUN_080ee538
+	bl Enemy_ResetInPlace
 	movs r1, #3
 	movs r2, #0x8d
 	lsls r2, r2, #3

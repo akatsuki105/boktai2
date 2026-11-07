@@ -123,7 +123,7 @@ _080F32C0:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080F32D6
@@ -239,7 +239,7 @@ _080F33A0:
 	adds r1, r1, r0
 	str r1, [r4, #8]
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	b _080F33DA
 	.align 2, 0
 _080F33C0: .4byte 0x030046B8

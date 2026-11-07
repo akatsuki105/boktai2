@@ -66,7 +66,7 @@ _081633CE:
 	strh r1, [r0]
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	movs r6, #0xc0
 	lsls r6, r6, #1
 	adds r2, r5, r6

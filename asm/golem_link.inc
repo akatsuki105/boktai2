@@ -770,7 +770,7 @@ _081B89A8:
 	adds r7, #3
 	adds r0, r5, r7
 	strb r2, [r0]
-	ldr r3, _081B8A7C @ =FUN_080e6794
+	ldr r3, _081B8A7C @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	adds r7, #1
 	adds r0, r5, r7
@@ -857,7 +857,7 @@ _081B89A8:
 	.align 2, 0
 _081B8A74: .4byte 0x00000469
 _081B8A78: .4byte 0x0000046A
-_081B8A7C: .4byte FUN_080e6794
+_081B8A7C: .4byte Enemy_WaitPendingState
 _081B8A80: .4byte 0x0000046B
 _081B8A84: .4byte 0x00000482
 _081B8A88: .4byte 0x00000222
@@ -1505,7 +1505,7 @@ FUN_081b8eec: @ 0x081B8EEC
 	adds r4, r4, r2
 	strh r5, [r4]
 	adds r0, r6, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	adds r0, r6, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -4684,7 +4684,7 @@ _081BA606:
 	adds r0, r6, r1
 	strb r5, [r0]
 	adds r0, r6, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 _081BA792:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -5328,7 +5328,7 @@ _081BAC74:
 	strb r0, [r1]
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_080e81dc
+	bl PlayGolemSound
 _081BAC90:
 	add sp, #0xc
 	pop {r3, r4, r5}
@@ -6795,7 +6795,7 @@ _081BB7EE:
 	beq _081BB7FA
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080e81dc
+	bl PlayGolemSound
 _081BB7FA:
 	adds r0, r7, #0
 	movs r1, #0x10
@@ -7063,7 +7063,7 @@ _081BB972:
 	bl FUN_08014730
 	adds r0, r7, #0
 	movs r1, #5
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	ldr r2, [sp, #0x2c]
 	movs r3, #0xcd
 	lsls r3, r3, #3
@@ -8271,7 +8271,7 @@ _081BC340:
 	mov sl, r0
 	movs r1, #1
 	strb r1, [r0]
-	ldr r1, _081BC43C @ =FUN_080e6794
+	ldr r1, _081BC43C @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r2, _081BC440 @ =0x0000046D
 	adds r3, r7, r2
@@ -8361,7 +8361,7 @@ _081BC42C: .4byte 0x00000469
 _081BC430: .4byte 0x0000046A
 _081BC434: .4byte 0x00000484
 _081BC438: .4byte 0x0000046C
-_081BC43C: .4byte FUN_080e6794
+_081BC43C: .4byte Enemy_WaitPendingState
 _081BC440: .4byte 0x0000046D
 _081BC444: .4byte 0x00000553
 _081BC448: .4byte 0x030046A8
@@ -11438,7 +11438,7 @@ _081BDBA2:
 	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	movs r5, #0xbc
 	lsls r5, r5, #1
 	adds r2, r7, r5
@@ -11458,7 +11458,7 @@ _081BDBA2:
 	strh r4, [r0]
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	adds r2, r7, #0
 	adds r2, #0xde
 	ldrh r1, [r2]
@@ -11467,7 +11467,7 @@ _081BDBA2:
 	strh r0, [r2]
 _081BDC18:
 	adds r0, r7, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	ldr r1, _081BDCC0 @ =0x0000046E
 	adds r0, r7, r1
 	ldrb r0, [r0]
@@ -11906,7 +11906,7 @@ _081BDF62:
 	movs r2, #0
 	bl Enemy_SetEmote
 	adds r0, r5, #0
-	bl FUN_080e6750
+	bl Enemy_RunScript
 	ldr r2, _081BE000 @ =0x000001DF
 	adds r0, r5, r2
 	ldrb r0, [r0]
@@ -12034,7 +12034,7 @@ _081BE070:
 	adds r3, r3, r7
 	mov ip, r3
 	strb r1, [r3]
-	ldr r2, _081BE194 @ =FUN_080e6794
+	ldr r2, _081BE194 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r4, _081BE198 @ =0x0000046D
 	adds r4, r4, r7
@@ -12146,7 +12146,7 @@ _081BE184: .4byte 0x00000484
 _081BE188: .4byte 0x000001DF
 _081BE18C: .4byte 0x00000469
 _081BE190: .4byte 0x0000046A
-_081BE194: .4byte FUN_080e6794
+_081BE194: .4byte Enemy_WaitPendingState
 _081BE198: .4byte 0x0000046D
 _081BE19C: .4byte 0x0000046B
 _081BE1A0: .4byte 0x00000553
@@ -13598,7 +13598,7 @@ _081BECA6:
 	bne _081BECC6
 	ldr r0, [sp, #0x18]
 	movs r1, #4
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	strb r4, [r5]
 _081BECC6:
 	ldr r0, [sp, #0x18]
@@ -14620,7 +14620,7 @@ _081BF4B0:
 	adds r6, r4, r5
 	movs r0, #1
 	strb r0, [r6]
-	ldr r2, _081BF5E4 @ =FUN_080e6794
+	ldr r2, _081BF5E4 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	subs r3, #0x17
 	adds r4, r4, r3
@@ -14740,7 +14740,7 @@ _081BF5D4: .4byte 0x00000469
 _081BF5D8: .4byte 0x0000046A
 _081BF5DC: .4byte 0x00000484
 _081BF5E0: .4byte 0x0000046C
-_081BF5E4: .4byte FUN_080e6794
+_081BF5E4: .4byte Enemy_WaitPendingState
 _081BF5E8: .4byte 0x0000046B
 _081BF5EC: .4byte 0xFFFFFEFF
 _081BF5F0: .4byte 0x00000551
@@ -16002,7 +16002,7 @@ _081BFF60:
 	adds r0, r0, r7
 	mov sb, r0
 	strb r1, [r0]
-	ldr r2, _081C0060 @ =FUN_080e6794
+	ldr r2, _081C0060 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r4, _081C0064 @ =0x0000046D
 	adds r4, r7, r4
@@ -16102,7 +16102,7 @@ _081C0050: .4byte 0x0000046B
 _081C0054: .4byte 0x00000469
 _081C0058: .4byte 0x0000046A
 _081C005C: .4byte 0x00000484
-_081C0060: .4byte FUN_080e6794
+_081C0060: .4byte Enemy_WaitPendingState
 _081C0064: .4byte 0x0000046D
 _081C0068: .4byte 0x00000553
 _081C006C: .4byte 0x000004A4
@@ -18228,7 +18228,7 @@ _081C10DA:
 	adds r0, r7, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
-	ldr r3, _081C116C @ =FUN_080e6794
+	ldr r3, _081C116C @ =Enemy_WaitPendingState
 	movs r2, #0xe
 	ldr r5, _081C1160 @ =0x0000046D
 	adds r5, r5, r7
@@ -18294,7 +18294,7 @@ _081C115C: .4byte FUN_081ba904
 _081C1160: .4byte 0x0000046D
 _081C1164: .4byte 0x0000046B
 _081C1168: .4byte 0x00000553
-_081C116C: .4byte FUN_080e6794
+_081C116C: .4byte Enemy_WaitPendingState
 _081C1170: .4byte 0x00000554
 _081C1174: .4byte 0x00000551
 _081C1178:
@@ -19518,7 +19518,7 @@ _081C1AAC:
 	adds r7, #3
 	adds r0, r6, r7
 	strb r3, [r0]
-	ldr r2, _081C1B4C @ =FUN_080e6794
+	ldr r2, _081C1B4C @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	adds r7, #1
 	adds r0, r6, r7
@@ -19565,7 +19565,7 @@ _081C1B40:
 	bx r0
 	.align 2, 0
 _081C1B48: .4byte 0x0000046A
-_081C1B4C: .4byte FUN_080e6794
+_081C1B4C: .4byte Enemy_WaitPendingState
 _081C1B50: .4byte 0x0000046B
 _081C1B54: .4byte 0x00000551
 _081C1B58: .4byte 0x00000552
@@ -19741,7 +19741,7 @@ _081C1C7E:
 	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	movs r3, #0xbc
 	lsls r3, r3, #1
 	adds r2, r5, r3
@@ -19761,7 +19761,7 @@ _081C1C7E:
 	strh r4, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	adds r2, r5, #0
 	adds r2, #0xde
 	ldrh r1, [r2]
@@ -19770,7 +19770,7 @@ _081C1C7E:
 	strh r0, [r2]
 _081C1CF4:
 	adds r0, r5, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	ldr r1, _081C1D9C @ =0x0000046E
 	adds r0, r5, r1
 	ldrb r0, [r0]
@@ -20014,7 +20014,7 @@ _081C1EA4:
 	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	strh r5, [r4]
 	b _081C2360
 	.align 2, 0
@@ -20081,7 +20081,7 @@ _081C1F64:
 	movs r1, #1
 	str r2, [sp, #0x14]
 	str r3, [sp, #0x18]
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	strh r4, [r5]
 	movs r0, #1
 	lsls r0, r6
@@ -20113,7 +20113,7 @@ _081C1FA4:
 	bne _081C1FEC
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	ldr r1, _081C1FE0 @ =0x00000462
 	adds r0, r7, r1
 	strh r4, [r0]
@@ -20509,7 +20509,7 @@ _081C22C8:
 _081C22CC:
 	strh r0, [r2]
 	adds r0, r7, #0
-	bl FUN_080e9178
+	bl Enemy_AddKillCount
 _081C22D4:
 	movs r2, #0xe8
 	lsls r2, r2, #1
@@ -20568,7 +20568,7 @@ _081C2326:
 	ldr r0, _081C2368 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 _081C2346:
 	adds r2, r7, #0
 	adds r2, #0xde
@@ -20741,7 +20741,7 @@ _081C243A:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0xa
-	bl FUN_080e6408
+	bl Enemy_ScatterParticles
 	movs r6, #0x8c
 	lsls r6, r6, #3
 	adds r2, r7, r6
@@ -21032,7 +21032,7 @@ _081C26C0:
 	strh r0, [r1]
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	ldr r3, _081C2748 @ =0x000004BE
 	adds r0, r7, r3
 	strh r4, [r0]
@@ -21085,7 +21085,7 @@ _081C274C: .4byte 0x00000464
 _081C2750:
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	movs r2, #0x10
 	mov sb, r2
 	movs r3, #0xc0
@@ -22322,7 +22322,7 @@ _081C3118: .4byte 0xFEFFFFFF
 _081C311C:
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	movs r4, #0xec
 	lsls r4, r4, #1
 	adds r0, r7, r4
@@ -25585,7 +25585,7 @@ _081C4A90: .4byte 0x0000062C
 	thumb_func_start FUN_081c4a94
 FUN_081c4a94: @ 0x081C4A94
 	push {lr}
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -25695,7 +25695,7 @@ _081C4B62:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -25719,7 +25719,7 @@ EnemyBombGolem_Init: @ 0x081C4B80
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _081C4C0C @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #3
@@ -26719,7 +26719,7 @@ _081C53D4:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r6, [sp, #0x90]
 	lsrs r2, r6, #0x10
 	ldr r0, [sp, #0x98]
@@ -26817,7 +26817,7 @@ _081C549E:
 	beq _081C54AE
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _081C54D8 @ =FUN_080f48ac
+	ldr r2, _081C54D8 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _081C54AE:
@@ -26841,7 +26841,7 @@ _081C54BA:
 	bl Mover_SetCollision
 	b _081C54E8
 	.align 2, 0
-_081C54D8: .4byte FUN_080f48ac
+_081C54D8: .4byte Enemy_OnCWolfMessage
 _081C54DC:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x198]
@@ -27133,10 +27133,10 @@ _081C562C:
 	ldr r3, _081C5858 @ =FUN_081bdb78
 	ldr r5, [sp, #0x158]
 	str r3, [r5]
-	ldr r1, _081C585C @ =FUN_080f47c8
+	ldr r1, _081C585C @ =Enemy_StateBlownAway
 	ldr r6, [sp, #0x164]
 	str r1, [r6]
-	ldr r1, _081C5860 @ =FUN_080f54e4
+	ldr r1, _081C5860 @ =Enemy_StateFallDeath
 	ldr r2, [sp, #0x150]
 	str r1, [r2]
 	ldr r3, [sp, #0x128]
@@ -27144,7 +27144,7 @@ _081C562C:
 	ldr r1, _081C5864 @ =FUN_080f6e64
 	ldr r5, [sp, #0x190]
 	str r1, [r5]
-	ldr r1, _081C5868 @ =FUN_080f64f0
+	ldr r1, _081C5868 @ =Enemy_OnDamaged
 	ldr r6, [sp, #0x10c]
 	str r1, [r6]
 	ldr r1, _081C586C @ =FUN_080f84d4
@@ -27170,7 +27170,7 @@ _081C562C:
 	ldr r1, [sp, #0x18c]
 	bl Map_InitNavAgent
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r6, #0xbf
 	lsls r6, r6, #3
 	adds r1, r7, r6
@@ -27218,7 +27218,7 @@ _081C562C:
 	orrs r0, r1
 	str r0, [r3]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -27263,10 +27263,10 @@ _081C584C: .4byte FUN_080f0320
 _081C5850: .4byte Enemy_080eff14
 _081C5854: .4byte FUN_080e72b0
 _081C5858: .4byte FUN_081bdb78
-_081C585C: .4byte FUN_080f47c8
-_081C5860: .4byte FUN_080f54e4
+_081C585C: .4byte Enemy_StateBlownAway
+_081C5860: .4byte Enemy_StateFallDeath
 _081C5864: .4byte FUN_080f6e64
-_081C5868: .4byte FUN_080f64f0
+_081C5868: .4byte Enemy_OnDamaged
 _081C586C: .4byte FUN_080f84d4
 _081C5870: .4byte FUN_080f624c
 _081C5874: .4byte FUN_080f56ec
@@ -27453,7 +27453,7 @@ _081C59DE:
 _081C59E2:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _081C59EA:
 	adds r0, r7, #0
 	movs r1, #0
@@ -27737,7 +27737,7 @@ _081C5B3A:
 	ldr r0, _081C5C44 @ =EnemyBombGolem_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081C5C48

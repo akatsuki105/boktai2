@@ -1322,7 +1322,7 @@ _081535D0:
 	adds r0, r4, #0
 	movs r1, #0xa
 	movs r2, #4
-	bl FUN_080ef968
+	bl Enemy_PlayAnimFlags
 	ldr r2, _08153604 @ =FUN_0815361c
 	movs r1, #0xd
 	movs r0, #1
@@ -1614,7 +1614,7 @@ _08153692:
 	adds r0, r6, r1
 	strb r5, [r0]
 	adds r0, r6, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 _0815381E:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -2228,7 +2228,7 @@ _08153CD0:
 	adds r3, #2
 	adds r0, r7, r3
 	strb r2, [r0]
-	ldr r0, _08153D84 @ =FUN_080e6794
+	ldr r0, _08153D84 @ =Enemy_WaitPendingState
 	mov ip, r0
 	movs r1, #0xe
 	adds r3, #1
@@ -2293,7 +2293,7 @@ _08153D7A:
 	bx r0
 	.align 2, 0
 _08153D80: .4byte 0x00000469
-_08153D84: .4byte FUN_080e6794
+_08153D84: .4byte Enemy_WaitPendingState
 _08153D88: .4byte 0x0000046B
 _08153D8C: .4byte 0x00000482
 _08153D90: .4byte 0x00000551
@@ -3796,7 +3796,7 @@ _081548F4:
 	adds r1, r7, r2
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	ldr r0, _081549B0 @ =0x000001D3
 	bl PlaySound_082406e0
 	movs r3, #0xc0
@@ -3915,7 +3915,7 @@ _081549EA:
 	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	adds r0, r6, #0
 	bl PlayEnemyDeathCry
 	adds r2, r6, #0
@@ -3933,9 +3933,9 @@ _081549EA:
 	str r0, [r2]
 _08154A4A:
 	adds r0, r6, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	adds r0, r6, #0
-	bl FUN_080e4b3c
+	bl Enemy_UpdateJump
 	adds r0, r6, #0
 	bl Enemy_SnapToFloor
 	cmp r5, #0x22
@@ -4170,9 +4170,9 @@ FUN_08154c30: @ 0x08154C30
 	sub sp, #0x2c
 	adds r6, r0, #0
 	adds r4, r1, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	adds r0, r6, #0
-	bl FUN_080e4b3c
+	bl Enemy_UpdateJump
 	adds r0, r6, #0
 	bl Enemy_SnapToFloor
 	cmp r4, #0x2a
@@ -8142,7 +8142,7 @@ _08156B42:
 	bne _08156B48
 	b _08156E9A
 _08156B48:
-	ldr r2, _08156BD0 @ =FUN_080e6794
+	ldr r2, _08156BD0 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	ldr r6, _08156BD4 @ =0x0000046D
 	adds r0, r7, r6
@@ -8210,7 +8210,7 @@ _08156B48:
 	strb r3, [r0]
 	b _08156E9A
 	.align 2, 0
-_08156BD0: .4byte FUN_080e6794
+_08156BD0: .4byte Enemy_WaitPendingState
 _08156BD4: .4byte 0x0000046D
 _08156BD8: .4byte 0x00000553
 _08156BDC: .4byte 0x00000551
@@ -8259,7 +8259,7 @@ _08156C20:
 	ldr r0, [r4]
 	ands r0, r1
 	str r0, [r4]
-	ldr r2, _08156CB4 @ =FUN_080e6794
+	ldr r2, _08156CB4 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	ldr r6, _08156CB8 @ =0x0000046D
 	adds r0, r7, r6
@@ -8322,7 +8322,7 @@ _08156C20:
 	mov r1, sb
 	b _08156E98
 	.align 2, 0
-_08156CB4: .4byte FUN_080e6794
+_08156CB4: .4byte Enemy_WaitPendingState
 _08156CB8: .4byte 0x0000046D
 _08156CBC: .4byte 0x00000553
 _08156CC0: .4byte FUN_081562dc
@@ -8503,7 +8503,7 @@ _08156DFC:
 	ldr r0, [r1]
 	orrs r0, r2
 	str r0, [r1]
-	ldr r2, _08156EAC @ =FUN_080e6794
+	ldr r2, _08156EAC @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	ldr r3, _08156EB0 @ =0x0000046D
 	adds r0, r7, r3
@@ -8575,7 +8575,7 @@ _08156E9A:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08156EAC: .4byte FUN_080e6794
+_08156EAC: .4byte Enemy_WaitPendingState
 _08156EB0: .4byte 0x0000046D
 _08156EB4: .4byte 0x00000553
 _08156EB8: .4byte 0x00000551
@@ -8719,7 +8719,7 @@ _08156FC0: @ jump table
 _08156FE0:
 	adds r0, r6, #0
 	movs r1, #0x16
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _08156FEA:
 	adds r0, r6, #0
@@ -8740,17 +8740,17 @@ _08156FFC:
 _08157002:
 	adds r0, r6, #0
 	movs r1, #0x13
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _0815700C:
 	adds r0, r6, #0
 	movs r1, #0x14
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _08157016:
 	adds r0, r6, #0
 	movs r1, #0x15
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _08157020:
 	cmp r2, #7
@@ -8774,12 +8774,12 @@ _08157034: @ jump table
 _08157054:
 	adds r0, r6, #0
 	movs r1, #0x18
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _0815705E:
 	adds r0, r6, #0
 	movs r1, #0x17
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _08157068:
 	adds r0, r6, #0
@@ -8798,17 +8798,17 @@ _0815707A:
 	movs r1, #0x13
 _0815707E:
 	movs r2, #1
-	bl FUN_080efb60
+	bl Enemy_PlayAnimNoFacingFlags
 	b _08157098
 _08157086:
 	adds r0, r6, #0
 	movs r1, #0x1a
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	b _08157098
 _08157090:
 	adds r0, r6, #0
 	movs r1, #0x19
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 _08157098:
 	mov r1, r8
 	ldrh r0, [r1, #8]
@@ -9376,7 +9376,7 @@ _081574D2:
 	movs r2, #0
 	bl Enemy_SetEmote
 	adds r0, r5, #0
-	bl FUN_080e6750
+	bl Enemy_RunScript
 	ldr r2, _08157570 @ =0x000001DF
 	adds r0, r5, r2
 	ldrb r0, [r0]
@@ -9504,7 +9504,7 @@ _081575E0:
 	adds r3, r3, r7
 	mov ip, r3
 	strb r0, [r3]
-	ldr r1, _08157704 @ =FUN_080e6794
+	ldr r1, _08157704 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r4, _08157708 @ =0x0000046D
 	adds r4, r4, r7
@@ -9616,7 +9616,7 @@ _081576F4: .4byte 0x00000484
 _081576F8: .4byte 0x000001DF
 _081576FC: .4byte 0x00000469
 _08157700: .4byte 0x0000046A
-_08157704: .4byte FUN_080e6794
+_08157704: .4byte Enemy_WaitPendingState
 _08157708: .4byte 0x0000046D
 _0815770C: .4byte 0x0000046B
 _08157710: .4byte 0x00000553
@@ -11100,7 +11100,7 @@ _08158244:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081582FC
@@ -11132,7 +11132,7 @@ _08158244:
 	movs r4, #1
 	strb r4, [r0]
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r0, #0xbc
 	lsls r0, r0, #1
 	adds r2, r5, r0
@@ -11486,7 +11486,7 @@ _0815855C:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081585A4
@@ -11627,7 +11627,7 @@ _08158676:
 	ldr r0, [r6, #0x24]
 	bl Map_AdvancePathWalker
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r0, [r6, #0x24]
 	ldr r0, [r0, #8]
 	ldrb r0, [r0, #6]
@@ -11900,7 +11900,7 @@ _081588A0:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081588F8
@@ -12476,7 +12476,7 @@ _08158D28:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08158D70
@@ -12749,7 +12749,7 @@ _08158F38:
 	ands r0, r1
 	movs r4, #0
 	strh r0, [r3]
-	ldr r1, _08159064 @ =FUN_080e6794
+	ldr r1, _08159064 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r5, _08159048 @ =0x0000046D
 	adds r5, r7, r5
@@ -12884,7 +12884,7 @@ _08159054: .4byte 0xFEFFFFFF
 _08159058: .4byte 0xFFFFFDFF
 _0815905C: .4byte 0x00000484
 _08159060: .4byte 0x00000222
-_08159064: .4byte FUN_080e6794
+_08159064: .4byte Enemy_WaitPendingState
 _08159068: .4byte 0x00000554
 _0815906C: .4byte 0x00000551
 _08159070: .4byte 0x00000552
@@ -14547,7 +14547,7 @@ _08159CDA:
 	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	movs r7, #0xc1
 	lsls r7, r7, #1
 	adds r2, r6, r7
@@ -15938,7 +15938,7 @@ _0815A7D6:
 	adds r1, r5, #0
 	mov r2, sb
 	mov r3, r8
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815A7F0
@@ -16010,7 +16010,7 @@ _0815A86E:
 	adds r1, r5, #0
 	mov r2, sb
 	mov r3, r8
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815A882
@@ -16084,7 +16084,7 @@ _0815A90C:
 	adds r1, r5, #0
 	mov r2, sb
 	mov r3, r8
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815A926
@@ -16156,7 +16156,7 @@ _0815A9A6:
 	adds r1, r5, #0
 	mov r2, sb
 	mov r3, r8
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815AA04
@@ -16607,7 +16607,7 @@ _0815AD32:
 	adds r1, r5, #0
 	mov r2, sl
 	mov r3, sb
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815AD4C
@@ -16683,7 +16683,7 @@ _0815ADD2:
 	adds r1, r5, #0
 	mov r2, sl
 	mov r3, sb
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815ADE6
@@ -16761,7 +16761,7 @@ _0815AE78:
 	adds r1, r5, #0
 	mov r2, sl
 	mov r3, sb
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815AE92
@@ -16837,7 +16837,7 @@ _0815AF1A:
 	adds r1, r5, #0
 	mov r2, sl
 	mov r3, sb
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815AF78
@@ -19730,7 +19730,7 @@ _0815C594:
 	adds r6, #4
 	adds r0, r7, r6
 	strb r2, [r0]
-	ldr r3, _0815C62C @ =FUN_080e6794
+	ldr r3, _0815C62C @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	subs r4, #0x17
 	adds r0, r7, r4
@@ -19783,7 +19783,7 @@ _0815C616:
 _0815C620: .4byte 0x00000469
 _0815C624: .4byte 0x0000046A
 _0815C628: .4byte 0x00000484
-_0815C62C: .4byte FUN_080e6794
+_0815C62C: .4byte Enemy_WaitPendingState
 _0815C630: .4byte 0x00000553
 _0815C634: .4byte 0x00000551
 _0815C638: .4byte 0x00000552
@@ -19962,7 +19962,7 @@ _0815C7A8:
 	adds r0, r6, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
-	ldr r3, _0815C84C @ =FUN_080e6794
+	ldr r3, _0815C84C @ =Enemy_WaitPendingState
 	movs r2, #0xe
 	ldr r0, _0815C850 @ =0x0000046D
 	adds r1, r6, r0
@@ -20043,7 +20043,7 @@ _0815C846:
 	movs r4, #0
 	b _0815C876
 	.align 2, 0
-_0815C84C: .4byte FUN_080e6794
+_0815C84C: .4byte Enemy_WaitPendingState
 _0815C850: .4byte 0x0000046D
 _0815C854: .4byte 0x0000046B
 _0815C858: .4byte 0x00000553
@@ -20528,7 +20528,7 @@ _0815CBFE:
 	cmp r0, #0
 	ble _0815CCEC
 	adds r0, r5, #0
-	bl FUN_080f00ec
+	bl Enemy_Alert
 	ldr r0, _0815CC80 @ =0x00000222
 	adds r2, r5, r0
 	movs r0, #3
@@ -20890,7 +20890,7 @@ _0815CE78:
 	adds r0, r6, r3
 	mov r5, ip
 	strb r5, [r0]
-	ldr r3, _0815CF64 @ =FUN_080e6794
+	ldr r3, _0815CF64 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	subs r2, #0xe4
 	adds r0, r6, r2
@@ -20963,7 +20963,7 @@ _0815CF52:
 _0815CF58: .4byte 0x00000482
 _0815CF5C: .4byte 0x00000551
 _0815CF60: .4byte 0x00000552
-_0815CF64: .4byte FUN_080e6794
+_0815CF64: .4byte Enemy_WaitPendingState
 _0815CF68: .4byte 0x0000046B
 _0815CF6C: .4byte 0x00000469
 _0815CF70: .4byte 0x0000046A
@@ -21520,7 +21520,7 @@ _0815D388:
 	adds r1, r4, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815D3A2
@@ -21549,7 +21549,7 @@ _0815D3BE:
 	adds r1, r4, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815D45C
@@ -21579,7 +21579,7 @@ _0815D3FA:
 	adds r1, r4, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815D414
@@ -21608,7 +21608,7 @@ _0815D430:
 	adds r1, r4, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0815D470
@@ -21829,7 +21829,7 @@ _0815D5F4: .4byte 0xFFFFFDFF
 _0815D5F8: .4byte 0x0000025E
 _0815D5FC:
 	mov r0, r8
-	bl FUN_080f00ec
+	bl Enemy_Alert
 _0815D602:
 	movs r0, #0x80
 	movs r2, #0xc1
@@ -22907,7 +22907,7 @@ _0815DE2C:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DE24
@@ -22936,7 +22936,7 @@ _0815DE6A:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DE5A
@@ -22964,7 +22964,7 @@ _0815DEA0:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DE98
@@ -22994,7 +22994,7 @@ _0815DED8:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DEC8
@@ -23078,7 +23078,7 @@ _0815DF70:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DF68
@@ -23107,7 +23107,7 @@ _0815DFAE:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DF9E
@@ -23135,7 +23135,7 @@ _0815DFE4:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815DFDC
@@ -23165,7 +23165,7 @@ _0815E01C:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E00C
@@ -23250,7 +23250,7 @@ _0815E0B4:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E0AC
@@ -23279,7 +23279,7 @@ _0815E0F2:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E0E2
@@ -23307,7 +23307,7 @@ _0815E128:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E120
@@ -23337,7 +23337,7 @@ _0815E160:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E150
@@ -23415,7 +23415,7 @@ _0815E1EC:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E1E4
@@ -23444,7 +23444,7 @@ _0815E22A:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E21A
@@ -23472,7 +23472,7 @@ _0815E260:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E258
@@ -23502,7 +23502,7 @@ _0815E298:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0815E288
@@ -24432,7 +24432,7 @@ _0815E9A0:
 FUN_0815e9a8: @ 0x0815E9A8
 	push {r4, r5, r6, r7, lr}
 	adds r4, r0, #0
-	ldr r1, _0815EA48 @ =FUN_080e6794
+	ldr r1, _0815EA48 @ =Enemy_WaitPendingState
 	movs r2, #0
 	ldr r3, _0815EA4C @ =0x0000046D
 	adds r0, r4, r3
@@ -24470,7 +24470,7 @@ FUN_0815e9a8: @ 0x0815E9A8
 	adds r0, r4, r7
 	strb r5, [r0]
 	adds r0, r4, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r1, #0x95
 	lsls r1, r1, #3
 	adds r0, r4, r1
@@ -24509,7 +24509,7 @@ FUN_0815e9a8: @ 0x0815E9A8
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0815EA48: .4byte FUN_080e6794
+_0815EA48: .4byte Enemy_WaitPendingState
 _0815EA4C: .4byte 0x0000046D
 _0815EA50: .4byte 0x0000046B
 _0815EA54: .4byte 0x00000469
@@ -24594,7 +24594,7 @@ FUN_0815ea60: @ 0x0815EA60
 	adds r4, r4, r0
 	str r5, [r4]
 	adds r0, r6, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	adds r0, r6, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -26041,7 +26041,7 @@ _0815F5F4:
 	adds r0, r6, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
-	ldr r3, _0815F69C @ =FUN_080e6794
+	ldr r3, _0815F69C @ =Enemy_WaitPendingState
 	movs r2, #0xe
 	ldr r7, _0815F6A0 @ =0x0000046D
 	adds r1, r6, r7
@@ -26124,7 +26124,7 @@ _0815F698:
 	movs r4, #0
 	b _0815F6C2
 	.align 2, 0
-_0815F69C: .4byte FUN_080e6794
+_0815F69C: .4byte Enemy_WaitPendingState
 _0815F6A0: .4byte 0x0000046D
 _0815F6A4: .4byte 0x0000046B
 _0815F6A8: .4byte 0x00000551
@@ -27955,7 +27955,7 @@ _08160524: .4byte 0x0000062C
 	thumb_func_start FUN_08160528
 FUN_08160528: @ 0x08160528
 	push {lr}
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -28069,7 +28069,7 @@ _081605FE:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -28127,7 +28127,7 @@ EnemyCockatrice_Init: @ 0x0816061C
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	adds r0, r7, #0
 	bl FUN_081598a4
 	ldr r4, _081606FC @ =0x0000025D
@@ -29128,7 +29128,7 @@ _08160EC4:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r6, [sp, #0xd4]
 	lsrs r2, r6, #0x10
 	ldr r0, [sp, #0xe4]
@@ -29226,7 +29226,7 @@ _08160F8E:
 	beq _08160F9E
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _08160FC8 @ =FUN_080f48ac
+	ldr r2, _08160FC8 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _08160F9E:
@@ -29250,7 +29250,7 @@ _08160FAA:
 	bl Mover_SetCollision
 	b _08160FD8
 	.align 2, 0
-_08160FC8: .4byte FUN_080f48ac
+_08160FC8: .4byte Enemy_OnCWolfMessage
 _08160FCC:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x34]
@@ -29630,10 +29630,10 @@ _081611EC:
 	str r5, [r1]
 	ldr r2, [sp, #0x168]
 	str r4, [r2]
-	ldr r1, _08161410 @ =FUN_080f47c8
+	ldr r1, _08161410 @ =Enemy_StateBlownAway
 	ldr r3, [sp, #0x174]
 	str r1, [r3]
-	ldr r1, _08161414 @ =FUN_080f54e4
+	ldr r1, _08161414 @ =Enemy_StateFallDeath
 	ldr r6, [sp, #0x160]
 	str r1, [r6]
 	ldr r1, [sp, #0x128]
@@ -29641,7 +29641,7 @@ _081611EC:
 	ldr r1, _08161418 @ =FUN_080f6e64
 	ldr r2, [sp, #0x19c]
 	str r1, [r2]
-	ldr r1, _0816141C @ =FUN_080f64f0
+	ldr r1, _0816141C @ =Enemy_OnDamaged
 	ldr r3, [sp, #0x100]
 	str r1, [r3]
 	ldr r1, _08161420 @ =FUN_080f84d4
@@ -29671,7 +29671,7 @@ _081611EC:
 	ldr r1, [sp, #0x30]
 	bl Map_InitNavAgent
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r3, #0xbe
 	lsls r3, r3, #3
 	adds r1, r7, r3
@@ -29766,10 +29766,10 @@ _08161400: .4byte FUN_080e73c8
 _08161404: .4byte FUN_080f0320
 _08161408: .4byte Enemy_080eff14
 _0816140C: .4byte FUN_080e72b0
-_08161410: .4byte FUN_080f47c8
-_08161414: .4byte FUN_080f54e4
+_08161410: .4byte Enemy_StateBlownAway
+_08161414: .4byte Enemy_StateFallDeath
 _08161418: .4byte FUN_080f6e64
-_0816141C: .4byte FUN_080f64f0
+_0816141C: .4byte Enemy_OnDamaged
 _08161420: .4byte FUN_080f84d4
 _08161424: .4byte FUN_080f624c
 _08161428: .4byte FUN_080f56ec
@@ -29872,7 +29872,7 @@ _081614F2:
 	adds r1, r3, r4
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -30068,7 +30068,7 @@ _08161682:
 _08161686:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _0816168E:
 	adds r0, r7, #0
 	movs r1, #0
@@ -30325,7 +30325,7 @@ _081617DE:
 	ldr r0, _081618A8 @ =EnemyCockatrice_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081618AC
@@ -30487,7 +30487,7 @@ _081619B2:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081619CC
@@ -30511,7 +30511,7 @@ _081619DE:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08161A68
@@ -30536,7 +30536,7 @@ _08161A10:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08161A2A
@@ -30560,7 +30560,7 @@ _08161A3C:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08161A7C
@@ -30847,7 +30847,7 @@ _08161C12:
 	subs r6, #2
 	adds r0, r5, r6
 	strb r4, [r0]
-	ldr r4, _08161D08 @ =FUN_080e6794
+	ldr r4, _08161D08 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	subs r3, #0xe4
 	adds r0, r5, r3
@@ -30919,7 +30919,7 @@ _08161CF8: .4byte 0x0000B007
 _08161CFC: .4byte 0x000006DC
 _08161D00: .4byte 0x000001DF
 _08161D04: .4byte 0x00000551
-_08161D08: .4byte FUN_080e6794
+_08161D08: .4byte Enemy_WaitPendingState
 _08161D0C: .4byte 0x00000469
 _08161D10: .4byte 0x0000046C
 _08161D14: .4byte 0x030046A8

@@ -1576,7 +1576,7 @@ _0813F286:
 	adds r0, r4, #0
 	movs r1, #0xf
 	movs r2, #0
-	bl FUN_080efc44
+	bl Enemy_PlayAnimWithVariant
 _0813F294:
 	ldr r0, _0813F2A4 @ =0x0000046E
 	adds r1, r4, r0
@@ -1611,7 +1611,7 @@ _0813F2C6:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #0
-	bl FUN_080efc44
+	bl Enemy_PlayAnimWithVariant
 _0813F2D4:
 	ldr r1, _0813F2F8 @ =0x0000046E
 	adds r0, r4, r1
@@ -6058,7 +6058,7 @@ FUN_08141490: @ 0x08141490
 	ldr r1, [r1]
 	adds r1, #0x24
 	str r1, [r2]
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1

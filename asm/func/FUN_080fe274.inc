@@ -50,7 +50,7 @@ _080FE2A6:
 	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	ldr r1, [sp, #0x48]
 	ldr r0, [r1]
 	movs r1, #2
@@ -96,7 +96,7 @@ _080FE310:
 	strh r0, [r2]
 _080FE33E:
 	adds r0, r7, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	adds r0, r6, #0
 	movs r1, #0xc
 	bl Mod

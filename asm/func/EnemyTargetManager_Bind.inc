@@ -83,7 +83,7 @@ _080F8F60:
 	str r1, [sp, #0x68]
 	adds r0, r7, #0
 	ldr r1, [sp, #0x7c]
-	bl FUN_080e4384
+	bl Enemy_IsPosAheadOnSameTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080F8FD0
@@ -863,7 +863,7 @@ _080F9500:
 	adds r2, r2, r0
 	str r2, [sp, #0x74]
 	adds r0, r7, #0
-	bl FUN_080e4384
+	bl Enemy_IsPosAheadOnSameTile
 	lsls r0, r0, #0x18
 	str r4, [sp, #0x80]
 	cmp r0, #0

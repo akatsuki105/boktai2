@@ -106,7 +106,7 @@ _080E57BC:
 	adds r0, r7, #0
 	movs r1, #0
 	add r2, sp, #0x1c
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	mov r1, r8
 	cmp r1, #0
 	bne _080E5808
@@ -205,7 +205,7 @@ _080E58AE:
 	adds r0, r7, #0
 	movs r1, #1
 	add r2, sp, #0x1c
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	movs r1, #0x80
 	lsls r1, r1, #2
 	movs r4, #0xbe
@@ -255,7 +255,7 @@ _080E5918:
 	adds r0, r7, #0
 	movs r1, #2
 	add r2, sp, #0x1c
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	adds r1, r5, #0
 	adds r1, #8
 	ldrh r2, [r5]
@@ -294,7 +294,7 @@ _080E5944:
 	adds r0, r7, #0
 	movs r1, #3
 	add r2, sp, #0x1c
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	mov r4, r8
 	cmp r4, #0
 	bne _080E5986

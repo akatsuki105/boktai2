@@ -28,7 +28,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_PALM_UP (1 << 7)     // 0x00000080, 太陽チャージ (サバタは暗黒チャージ) で手をかざしている間立つ, 実際にチャージが効いているときは PFLAG20_QC も立つ
 #define PFLAG20_UNK_8 (1 << 8)       // 0x00000100
 #define PFLAG20_UNK_9 (1 << 9)       // 0x00000200, emitter (kind 1) がダメージを与えている間 Player_UpdateDamage が立てる
-#define PFLAG20_UNK_12 (1 << 12)     // 0x00001000, 掴まれたとき (Player_EnterGrabbed) や本体と食らい判定を消す特殊状態で立つ, 立っていると敵の索敵 (FUN_080e4444) がプレイヤーを無視する
+#define PFLAG20_UNK_12 (1 << 12)     // 0x00001000, 掴まれたとき (Player_EnterGrabbed) や本体と食らい判定を消す特殊状態で立つ, 立っていると敵の索敵 (Enemy_FindVisiblePlayer) がプレイヤーを無視する
 #define PFLAG20_UNK_13 (1 << 13)     // 0x00002000
 #define PFLAG20_UPDATED (1 << 14)    // 0x00004000, このフレームに更新処理が走った, Player_UpdateDjango などフォーム別の更新関数が先頭で立てる
 #define PFLAG20_UNK_15 (1 << 15)     // 0x00008000, 立っていると Player_SetupKnockback が被弾方向を facing ではなく knockbackDir に書く

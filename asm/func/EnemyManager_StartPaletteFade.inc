@@ -41,7 +41,7 @@ _080EEB5A:
 	add r7, r8
 _080EEB5C:
 	adds r0, r3, #0
-	bl FUN_080ed020
+	bl Enemy_GetFirstAlive
 	ldr r0, _080EEBAC @ =0x03003584
 	lsls r1, r4, #5
 	ldr r0, [r0]

@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #0x10
 	adds r7, r0, #0
-	bl FUN_080ee2c8
+	bl Enemy_ResetToSpawn
 	movs r0, #3
 	movs r1, #0x8d
 	lsls r1, r1, #3
@@ -232,7 +232,7 @@
 	adds r0, r7, r1
 	strb r5, [r0]
 	adds r0, r7, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 	movs r1, #2
 	ldr r2, [sp, #8]
 	ldr r0, [r2]
@@ -254,7 +254,7 @@
 	bl _call_via_r1
 _080EE93E:
 	adds r0, r7, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 	ldr r6, _080EE9D0 @ =0x00000454
 	adds r4, r7, r6
 	ldr r0, [r4]

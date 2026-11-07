@@ -3,7 +3,7 @@
 	mov r6, sb
 	mov r5, r8
 	push {r5, r6, r7}
-	bl FUN_080ec968
+	bl Enemy_CountActive
 	adds r1, r0, #0
 	cmp r1, #0
 	ble _080ECA64

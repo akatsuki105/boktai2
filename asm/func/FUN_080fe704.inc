@@ -53,7 +53,7 @@ _080FE72A:
 	movs r2, #0
 	bl Enemy_SetEmote
 	adds r0, r5, #0
-	bl FUN_080e6750
+	bl Enemy_RunScript
 	ldr r2, _080FE7D4 @ =0x000001DF
 	adds r0, r5, r2
 	ldrb r0, [r0]

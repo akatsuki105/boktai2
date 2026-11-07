@@ -428,7 +428,7 @@ _080E8DE2:
 	str r0, [sp, #0x1c]
 	mov r0, sp
 	movs r1, #4
-	bl FUN_080e8aa0
+	bl SortPairsByKey
 	add r7, sp, #4
 _080E8E50:
 	ldr r4, [r7]

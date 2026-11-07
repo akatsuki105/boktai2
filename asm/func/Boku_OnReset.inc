@@ -39,7 +39,7 @@
 	movs r2, #0x93
 	bl Enemy_ClearPendingState
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	adds r0, r5, #0
 	movs r1, #0
 	bl Enemy_PlayAnim

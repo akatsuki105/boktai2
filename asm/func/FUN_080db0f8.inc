@@ -97,7 +97,7 @@ _080DB17C:
 	movs r0, #2
 	movs r1, #1
 	mov r2, sp
-	bl FUN_080ec7e8
+	bl Enemy_SendMsgByKindVariant
 	ldr r0, _080DB25C @ =0x00000115
 	bl PlaySound_082406e0
 	movs r0, #1

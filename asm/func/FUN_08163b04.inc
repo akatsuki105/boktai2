@@ -26,7 +26,7 @@ _08163B2A:
 	ldrb r0, [r0]
 	strb r0, [r4, #5]
 	adds r0, r4, #0
-	bl FUN_080e6750
+	bl Enemy_RunScript
 	ldr r2, _08163B88 @ =0x000001DF
 	adds r0, r4, r2
 	ldrb r0, [r0]

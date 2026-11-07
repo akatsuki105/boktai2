@@ -120,7 +120,7 @@ _080F57FC:
 _080F5804:
 	adds r0, r7, #0
 	movs r1, #2
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	b _080F582A
 _080F580E:
 	movs r0, #0xe7

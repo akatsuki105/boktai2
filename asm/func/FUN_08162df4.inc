@@ -26,7 +26,7 @@ _08162E12:
 	bl AuxAnim_SetAnimSpeed
 	adds r0, r4, #0
 	movs r1, #0x10
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 _08162E30:
 	ldr r0, _08162E50 @ =0x030046B8
 	ldr r1, [r0]

@@ -37,7 +37,7 @@ _0813AAEE:
 _0813AB0C:
 	adds r0, r5, #0
 	movs r1, #0xf
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	movs r2, #0xe4
 	lsls r2, r2, #1
 	adds r0, r5, r2

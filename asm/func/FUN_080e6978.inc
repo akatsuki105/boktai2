@@ -309,7 +309,7 @@ _080E6B8A:
 	bl Enemy_SetEmote
 	adds r0, r7, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	movs r1, #0xba
 	lsls r1, r1, #3
 	adds r0, r7, r1
@@ -511,7 +511,7 @@ _080E6D76:
 	ldr r0, _080E6F1C @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 _080E6D92:
 	ldr r3, _080E6F20 @ =0x000001DF
 	adds r0, r7, r3

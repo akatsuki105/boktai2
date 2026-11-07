@@ -42,7 +42,7 @@ _080F3D4A:
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080efc44
+	bl Enemy_PlayAnimWithVariant
 	adds r2, r7, #0
 	adds r2, #0xde
 	ldrh r1, [r2]
@@ -420,7 +420,7 @@ _080F404C:
 	adds r3, #2
 	adds r0, r7, r3
 	strb r2, [r0]
-	ldr r0, _080F40F8 @ =FUN_080e6794
+	ldr r0, _080F40F8 @ =Enemy_WaitPendingState
 	mov ip, r0
 	movs r1, #0xe
 	adds r3, #1
@@ -481,7 +481,7 @@ _080F40E8:
 	bx r0
 	.align 2, 0
 _080F40F4: .4byte 0x00000469
-_080F40F8: .4byte FUN_080e6794
+_080F40F8: .4byte Enemy_WaitPendingState
 _080F40FC: .4byte 0x0000046B
 _080F4100: .4byte 0x00000482
 _080F4104: .4byte 0x00000551

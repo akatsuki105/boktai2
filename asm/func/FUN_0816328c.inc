@@ -18,7 +18,7 @@ _081632AA:
 	beq _081632C0
 	adds r0, r5, #0
 	movs r1, #0xe
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40

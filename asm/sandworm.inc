@@ -2184,7 +2184,7 @@ _081714FA:
 	adds r0, r6, r1
 	strb r5, [r0]
 	adds r0, r6, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 _08171686:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -4207,7 +4207,7 @@ _081725AE:
 	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	movs r1, #0xbc
 	lsls r1, r1, #1
 	adds r2, r6, r1
@@ -4399,7 +4399,7 @@ _08172764:
 _08172768:
 	strh r0, [r3]
 	adds r0, r6, #0
-	bl FUN_080e9178
+	bl Enemy_AddKillCount
 	movs r1, #0xe8
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -4443,7 +4443,7 @@ _081727AE:
 	ldr r0, _08172830 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r6]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 _081727CE:
 	movs r7, #0xc9
 	lsls r7, r7, #1
@@ -20598,7 +20598,7 @@ _0817A3E6:
 	bne _0817A3F4
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 	b _0817A4A4
 _0817A3F4:
 	adds r0, r4, #0
@@ -20624,7 +20624,7 @@ _0817A3F4:
 	bl _call_via_r1
 _0817A426:
 	adds r0, r4, #0
-	bl FUN_080eafdc
+	bl Enemy_ProcessRequests
 	adds r0, r4, #0
 	bl FUN_080e1f48
 	movs r0, #0xb0
@@ -20637,11 +20637,11 @@ _0817A426:
 	ldr r1, [r1]
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e35b4
+	bl Enemy_UpdateHitboxes
 	adds r0, r4, #0
-	bl FUN_080e191c
+	bl Enemy_UpdateMovement
 	adds r0, r4, #0
-	bl FUN_080eb168
+	bl Enemy_ShakeSprite
 	adds r0, r4, #0
 	bl FUN_080f06ac
 	movs r0, #1
@@ -20676,7 +20676,7 @@ _0817A492:
 	beq _0817A49E
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080f0914
+	bl Enemy_Resume
 _0817A49E:
 	adds r0, r4, #0
 	bl FUN_080f06ac
@@ -20810,7 +20810,7 @@ _0817A596:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -20834,7 +20834,7 @@ EnemySandWorm_Init: @ 0x0817A5B4
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _0817A640 @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #0x19
@@ -21842,7 +21842,7 @@ _0817AE20:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r1, [sp, #0xb0]
 	lsrs r2, r1, #0x10
 	ldr r4, [sp, #0xbc]
@@ -21940,7 +21940,7 @@ _0817AEEA:
 	beq _0817AEFA
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _0817AF24 @ =FUN_080f48ac
+	ldr r2, _0817AF24 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x34]
 	bl CWolfTargetManager_Register
 _0817AEFA:
@@ -21964,7 +21964,7 @@ _0817AF06:
 	bl Mover_SetCollision
 	b _0817AF34
 	.align 2, 0
-_0817AF24: .4byte FUN_080f48ac
+_0817AF24: .4byte Enemy_OnCWolfMessage
 _0817AF28:
 	ldr r0, [sp, #0x34]
 	ldr r1, [sp, #0x3c]
@@ -22410,10 +22410,10 @@ _0817B1C0:
 	ldr r0, _0817B414 @ =FUN_08172384
 	ldr r1, [sp, #0x178]
 	str r0, [r1]
-	ldr r0, _0817B418 @ =FUN_080f47c8
+	ldr r0, _0817B418 @ =Enemy_StateBlownAway
 	ldr r2, [sp, #0x184]
 	str r0, [r2]
-	ldr r0, _0817B41C @ =FUN_080f54e4
+	ldr r0, _0817B41C @ =Enemy_StateFallDeath
 	ldr r3, [sp, #0x170]
 	str r0, [r3]
 	ldr r4, [sp, #0x12c]
@@ -22421,7 +22421,7 @@ _0817B1C0:
 	ldr r0, _0817B420 @ =FUN_080f6e64
 	ldr r6, [sp, #0x1ac]
 	str r0, [r6]
-	ldr r0, _0817B424 @ =FUN_080f64f0
+	ldr r0, _0817B424 @ =Enemy_OnDamaged
 	ldr r1, [sp, #0x110]
 	str r0, [r1]
 	ldr r0, _0817B428 @ =FUN_080f84d4
@@ -22493,7 +22493,7 @@ _0817B1C0:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r6, #0xaa
 	lsls r6, r6, #2
 	adds r4, r7, r6
@@ -22571,10 +22571,10 @@ _0817B408: .4byte FUN_080f0320
 _0817B40C: .4byte Enemy_080eff14
 _0817B410: .4byte FUN_080e72b0
 _0817B414: .4byte FUN_08172384
-_0817B418: .4byte FUN_080f47c8
-_0817B41C: .4byte FUN_080f54e4
+_0817B418: .4byte Enemy_StateBlownAway
+_0817B41C: .4byte Enemy_StateFallDeath
 _0817B420: .4byte FUN_080f6e64
-_0817B424: .4byte FUN_080f64f0
+_0817B424: .4byte Enemy_OnDamaged
 _0817B428: .4byte FUN_080f84d4
 _0817B42C: .4byte FUN_080f624c
 _0817B430: .4byte FUN_080f56ec
@@ -22758,7 +22758,7 @@ _0817B59E:
 _0817B5A2:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _0817B5AA:
 	adds r0, r7, #0
 	movs r1, #0
@@ -23037,7 +23037,7 @@ _0817B6FA:
 	ldr r0, _0817B7F8 @ =EnemySandWorm_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0817B7FC

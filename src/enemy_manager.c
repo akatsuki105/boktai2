@@ -17,30 +17,31 @@
 extern const s16 s16_ARRAY_085ad3cc[4];
 
 u32 EntityA628_IsActive(void);
-bool32 FUN_080ec5f0(u16 param_1, u16 param_2);
+bool32 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2);
 void FUN_080ec900(u8 kind);
-void FUN_080eca74(EnemyManager* p, Enemy* enemy);
-void FUN_080ee738(Enemy* p);
+void EnemyManager_SetupSharedEntities(EnemyManager* p, Enemy* enemy);
+void Enemy_Reset(Enemy* p);
 void Enemy_ClearStateBegun(Enemy* p);
 void FUN_080e5098(Enemy* p, s32 dx, s32 dz);
-void FUN_080e9178(Enemy* p);
+void Enemy_AddKillCount(Enemy* p);
 void HUD_ShowEnemyGauge(u32 id, s32 hp, u32 maxHp, u32 param_4, u32 param_5);
 void FUN_080ce544(u32 param_1, u32 param_2);
 bool8 FUN_0817e83c(Enemy* p);
-bool8 FUN_080eec74(EnemyManager* p, Enemy* enemy);
-void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate);
+bool8 EnemyManager_StepPaletteFade(EnemyManager* p, Enemy* enemy);
+void EnemyManager_StartPaletteFade(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate);
 Entity* Entity080db520_Create(void);
 Entity* SpiderVenom_Create(void);
 Entity* EmoteManager_Create(void);
 void Entity080dbe54_Create(u32 param_1, u32 param_2);
 Entity* Entity081ea120_Create(u32 param_1, u32 param_2);
 Entity* Entity081ea820_Create(void);
-void FUN_080e49c4(Enemy* p);
-void FUN_080ec5b4(u16 param_1, u16 param_2);
+void Enemy_Deactivate(Enemy* p);
+void DefeatedEnemyLog_Add(u16 param_1, u16 param_2);
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f68[] = "eneinline.h";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f74[] = "eneinline.h";
 
+// 状態を切り替えて新しい状態を最初から始めさせる
 static inline void Enemy_RequestState(Enemy* p, void* handler, u8 state) {
   p->stateBegun = TRUE;
   p->subStateDone = FALSE;
@@ -49,6 +50,7 @@ static inline void Enemy_RequestState(Enemy* p, void* handler, u8 state) {
   p->stateTimer = 0;
 }
 
+// 下位状態を切り替えて最初から始めさせる
 static inline void Enemy_RequestSubState(Enemy* p, u8 state0, u8 state1, u8 state2) {
   p->subState0 = state0;
   p->subState1 = state1;
@@ -104,7 +106,7 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 }
 
 // 敵を生存リストへ登録する
-bool32 Enemy_Init_080ec640(Enemy* p) {
+bool32 Enemy_Register(Enemy* p) {
   EnemyManager* mgr = GetEnemyManager();
   EnemyListNode* head;
   EnemyListNode* node;
@@ -113,7 +115,7 @@ bool32 Enemy_Init_080ec640(Enemy* p) {
     return FALSE;
   }
   head = gEnemyListHead;
-  if (TestMapFlag(4) && !(u8)FUN_080ec5f0(gMapInitScriptID, p->mover.id)) {
+  if (TestMapFlag(4) && !(u8)DefeatedEnemyLog_CanAdd(gMapInitScriptID, p->mover.id)) {
     return FALSE;
   }
   if ((u16)mgr->enemyCount >= 20) {
@@ -132,13 +134,13 @@ bool32 Enemy_Init_080ec640(Enemy* p) {
   if (!TEST_FLAGS(p->flags2, 0x2000000)) {
     FUN_08002a48(&p->mover);
   }
-  FUN_080eca74(mgr, p);
+  EnemyManager_SetupSharedEntities(mgr, p);
   mgr->enemyCount++;
   return TRUE;
 }
 
 // リストから指定した敵のノードを外して解放する
-NON_MATCH void FUN_080ec6fc(Enemy* enemy) {
+NON_MATCH void Enemy_Unregister(Enemy* enemy) {
 #ifdef NONMATCHING_C
   EnemyManager* mgr;
   EnemyListNode* node;
@@ -174,12 +176,12 @@ NON_MATCH void FUN_080ec6fc(Enemy* enemy) {
   mgr->cursor = next;
   mgr->enemyCount--;
 #else
-  INCFUNC("asm/func/FUN_080ec6fc.inc");
+  INCFUNC("asm/func/Enemy_Unregister.inc");
 #endif
 }
 
-// 全ての敵へメッセージを配送する
-void FUN_080ec758(u8 kind, void* payload) {
+// kind が ENEK_0 (全体宛て) のときだけ全ての敵へメッセージを配送する
+void Enemy_BroadcastMsg(u8 kind, void* payload) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p;
 
@@ -195,7 +197,7 @@ void FUN_080ec758(u8 kind, void* payload) {
 }
 
 // 指定した種族の敵へメッセージを配送する
-void FUN_080ec79c(u8 enemyKind, void* payload) {
+void Enemy_SendMsgByKind(u8 enemyKind, void* payload) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p;
 
@@ -210,8 +212,9 @@ void FUN_080ec79c(u8 enemyKind, void* payload) {
   }
 }
 
+// 指定した種族と variant の敵へメッセージを配送する
 // 41/41 命令, p->handlerMsg のオフセットを p->variant の計算から流用してしまう
-NON_MATCH void FUN_080ec7e8(u8 kind, u8 variant, void* payload) {
+NON_MATCH void Enemy_SendMsgByKindVariant(u8 kind, u8 variant, void* payload) {
 #ifdef NONMATCHING_C
   EnemyListNode* node = gEnemyListHead;
 
@@ -226,12 +229,12 @@ NON_MATCH void FUN_080ec7e8(u8 kind, u8 variant, void* payload) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080ec7e8.inc");
+  INCFUNC("asm/func/Enemy_SendMsgByKindVariant.inc");
 #endif
 }
 
 // 種族(ENEK_xxx) と mover.id で敵を1体だけ特定してメッセージを配送する
-void FUN_080ec848(u8 enemyKind, void* payload, u16 moverID) {
+void Enemy_SendMsgById(u8 enemyKind, void* payload, u16 moverID) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p;
 
@@ -247,7 +250,8 @@ void FUN_080ec848(u8 enemyKind, void* payload, u16 moverID) {
   }
 }
 
-void FUN_080ec8a4(EnemyManager* p) {
+// スクリプトが登録したメッセージを宛先 (全体/種族/個体) ごとに敵へ配送する
+void EnemyManager_DispatchScriptMsgs(EnemyManager* p) {
   s32 count = FUN_08230f94(p->msgRecordID, &p->msgRecords);
   ScriptRecord* record = p->msgRecords;
 
@@ -256,15 +260,15 @@ void FUN_080ec8a4(EnemyManager* p) {
 
     switch (values[0]) {
       case 1: {
-        FUN_080ec758(values[1], &values[2]);
+        Enemy_BroadcastMsg(values[1], &values[2]);
         break;
       }
       case 2: {
-        FUN_080ec79c(values[1], &values[2]);
+        Enemy_SendMsgByKind(values[1], &values[2]);
         break;
       }
       case 3: {
-        FUN_080ec848(values[1], &values[3], values[2]);
+        Enemy_SendMsgById(values[1], &values[3], values[2]);
         break;
       }
     }
@@ -272,14 +276,15 @@ void FUN_080ec8a4(EnemyManager* p) {
   }
 }
 
+// 聴覚で索敵する種族 (マミー/サンドウォーム) が登録されたら MPF_UNK_0 を立てる
 void FUN_080ec900(u8 kind) {
   if ((kind == ENEK_MUMMY) || (kind == ENEK_SANDWORM)) {  // どちらも視覚ではなく聴覚で索敵する
     SET_FLAGS(gStat->mapFlags, MPF_UNK_0);
   }
 }
 
-// 巡回カーソルを1つ進め、通りかかった敵に flags の bit3 を立てる
-void FUN_080ec92c(EnemyManager* p) {
+// 1フレームおきに巡回カーソルを1体進め, その敵に的を探してよい印 (ENEFLAG_UNK_3) を立てる
+void EnemyManager_AdvanceCursor(EnemyManager* p) {
   EnemyListNode* cursor;
   EnemyListNode* next;
 
@@ -296,7 +301,7 @@ void FUN_080ec92c(EnemyManager* p) {
 }
 
 // 活動中の敵の数を数える
-s32 FUN_080ec968(void) {
+s32 Enemy_CountActive(void) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p = node->enemy;
   s32 count = 0;
@@ -321,7 +326,7 @@ s32 FUN_080ec968(void) {
 // 87/87 命令, ループの外へ出す定数が 3 でなく 0x4000 になる
 NON_MATCH void FUN_080ec9b0(EnemyManager* p) {
 #ifdef NONMATCHING_C
-  s32 count = FUN_080ec968();
+  s32 count = Enemy_CountActive();
 
   if (count > 0) {
     EnemyListNode* node = gEnemyListHead;
@@ -368,7 +373,8 @@ NON_MATCH void FUN_080ec9b0(EnemyManager* p) {
 #endif
 }
 
-void FUN_080eca74(EnemyManager* p, Enemy* enemy) {
+// 種族が使う共有エンティティを必要なら生成して敵に持たせる
+void EnemyManager_SetupSharedEntities(EnemyManager* p, Enemy* enemy) {
   if (enemy->kind == 2) {
     if (!EnemyManager_TestFlag(p, 8)) {
       Entity* e = Entity080db520_Create();
@@ -508,7 +514,7 @@ NON_MATCH void FUN_080ecbe8(Enemy* p, s32 param_2) {
 }
 
 // 生きている敵の数を数える
-s32 FUN_080ecf18(void) {
+s32 Enemy_CountAlive(void) {
   EnemyListNode* node;
   Enemy* enemy;
   s32 count;
@@ -548,8 +554,9 @@ s32 Enemy_CountByKind(u32 kind) {
   return count;
 }
 
+// 指定した種族と variant の生きている敵の数を数える
 // 46/46 命令, variant の読み出しで add r7, #0x63 にならない
-NON_MATCH s32 FUN_080ecfbc(u32 kind, u32 variant) {
+NON_MATCH s32 Enemy_CountByKindVariant(u32 kind, u32 variant) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
   Enemy* p;
@@ -569,12 +576,12 @@ NON_MATCH s32 FUN_080ecfbc(u32 kind, u32 variant) {
 
   return count;
 #else
-  INCFUNC("asm/func/FUN_080ecfbc.inc");
+  INCFUNC("asm/func/Enemy_CountByKindVariant.inc");
 #endif
 }
 
 // 生きている敵を先頭から1体返す
-Enemy* FUN_080ed020(u32 _) {
+Enemy* Enemy_GetFirstAlive(u32 _) {
   EnemyListNode* node;
   Enemy* enemy;
 
@@ -591,7 +598,8 @@ Enemy* FUN_080ed020(u32 _) {
   return NULL;
 }
 
-void FUN_080ed068(void) {
+// 生きている敵をすべて倒す
+void Enemy_KillAll(void) {
   EnemyListNode* node;
   Enemy* enemy;
 
@@ -610,8 +618,9 @@ void FUN_080ed068(void) {
   }
 }
 
+// 生きている敵すべてに damage を与え, 倒した敵の討伐数と経験値を加算する
 // 480/508 命令, ループの出口の形と表示判定の分岐が未解決, 下書き段階
-NON_MATCH void FUN_080ed0b0(s32 damage) {
+NON_MATCH void Enemy_DamageAll(s32 damage) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
   Enemy* p;
@@ -704,13 +713,13 @@ NON_MATCH void FUN_080ed0b0(s32 damage) {
           if ((p->kind != 14 || p->variant != 1) && p->kind != 5 && p->kind != 7 && p->kind != 6) {
             gStat->unk_948[0] = gStat->unk_948[0] < 9999 ? gStat->unk_948[0] + 1 : 9999;
             gStat->totalEnemyKillCount = gStat->totalEnemyKillCount < 9999 ? gStat->totalEnemyKillCount + 1 : 9999;
-            FUN_080e9178(p);
+            Enemy_AddKillCount(p);
           }
           AddPlayerExp(p->exp);
           Player_AddWeaponExp(*expMask, p->weaponExp);
         }
         if (!(*flags5 & 0x80) && !(gGameFlags & 0x4800) && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-          FUN_080ec5b4(gMapInitScriptID, p->mover.id);
+          DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
         }
         SET_FLAGS(p->hurtbox.flags, 4);
       } else {
@@ -724,10 +733,11 @@ NON_MATCH void FUN_080ed0b0(s32 damage) {
     SET_FLAGS(*flags, 0x2000);
   }
 #else
-  INCFUNC("asm/func/FUN_080ed0b0.inc");
+  INCFUNC("asm/func/Enemy_DamageAll.inc");
 #endif
 }
 
+// '.k' の種族 (0 なら全種族) の敵をすべて倒す
 // 195/196 命令, 一時レジスタに r3 まで使う割当が違う
 NON_MATCH void Cmd_C12A(void) {
 #ifdef NONMATCHING_C
@@ -753,9 +763,9 @@ NON_MATCH void Cmd_C12A(void) {
           Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
           Enemy_RequestState(p, Enemy_ClearStateBegun, 16);
           Enemy_RequestSubState(p, 3, 0, 0);
-          FUN_080e49c4(p);
+          Enemy_Deactivate(p);
           if (!(gGameFlags & 0x4800) && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-            FUN_080ec5b4(gMapInitScriptID, p->mover.id);
+            DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
           }
         }
       } else if (Enemy_IsDead(p) == 0 && (kind == 0 || kind == p->kind)) {
@@ -906,7 +916,7 @@ void Cmd_286B(void) {
 }
 
 // 経路ノード周辺にプレイヤーがいるかを返す
-bool32 FUN_080edb4c(Enemy* p, Vec3* pos) {
+bool32 Enemy_IsPlayerNearSpawn(Enemy* p, Vec3* pos) {
   Vec3 node;
   Vec3 diff;
   Vec3 closest;
@@ -941,6 +951,7 @@ bool32 FUN_080edb4c(Enemy* p, Vec3* pos) {
   return FALSE;
 }
 
+// pos に一番近いマミー/ゴーレム/ボクを返す, 状態21の敵は除く
 // 59/74 命令, sp を使う距離計算の形が違う
 NON_MATCH Enemy* FUN_080edc40(Vec3* pos) {
 #ifdef NONMATCHING_C
@@ -974,9 +985,9 @@ NON_MATCH Enemy* FUN_080edc40(Vec3* pos) {
 #endif
 }
 
-// id の敵を見つけた後ろから, ENEFLAG_UNK_0 が落ちている最初の敵を返す
+// id の敵より後ろで活動停止していない最初の敵を返す, id が 0 なら先頭から
 // 残差1命令, 定数 1 の movs がループ入口の前に出るか中に出るかだけ違う (命令列は 31 対 31)
-NON_MATCH Enemy* FUN_080edce8(u32 id) {
+NON_MATCH Enemy* Enemy_GetNextActive(u32 id) {
 #ifdef NONMATCHING_C
   EnemyListNode* node = gEnemyListHead;
   Enemy* p = node->enemy;
@@ -993,10 +1004,11 @@ NON_MATCH Enemy* FUN_080edce8(u32 id) {
   }
   return NULL;
 #else
-  INCFUNC("asm/func/FUN_080edce8.inc");
+  INCFUNC("asm/func/Enemy_GetNextActive.inc");
 #endif
 }
 
+// id の敵より後ろで活動停止していないボク/マミー/ゴーレム/スケルトン系/コカトリス/犬の最初の敵を返す
 // 48/50 命令, id を r3 に残す形と kind の比較の並びが未解決
 NON_MATCH Enemy* FUN_080edd2c(u32 id) {
 #ifdef NONMATCHING_C
@@ -1058,6 +1070,7 @@ bool32 Cmd_E019(void) {
   return alive;
 }
 
+// スクリプトが指定した敵が存在するかを返す
 bool32 Cmd_6790(void) {
   u32 id = VM_GetValue();
 
@@ -1068,23 +1081,24 @@ bool32 Cmd_6790(void) {
 }
 
 // 指定した種族で flags に mask のビットが立っている敵が1体でもいるかを返す
-NON_MATCH bool32 FUN_080ede14(u32 kind, u32 mask) {
+NON_MATCH bool32 Enemy_HasKindWithFlags(u32 kind, u32 mask) {
 #ifdef NONMATCHING_C
   Enemy* p;
 
-  for (p = GetFirstEnemy(); p != NULL; p = FUN_080edce8(p->mover.id)) {
+  for (p = GetFirstEnemy(); p != NULL; p = Enemy_GetNextActive(p->mover.id)) {
     if ((p->kind == kind) && (Enemy_IsDead(p) == 0) && ((p->flags & mask) != 0)) {
       return TRUE;
     }
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080ede14.inc");
+  INCFUNC("asm/func/Enemy_HasKindWithFlags.inc");
 #endif
 }
 
-// 40/40 命令, return TRUE のブロックがループの前に出ない, FUN_080ede14 と同じ
-NON_MATCH bool32 FUN_080ede60(u32 kind, u32 variant, u32 mask) {
+// 指定した種族と variant で flags に mask のビットが立っている敵が1体でもいるかを返す
+// 40/40 命令, return TRUE のブロックがループの前に出ない, Enemy_HasKindWithFlags と同じ
+NON_MATCH bool32 Enemy_HasKindVariantWithFlags(u32 kind, u32 variant, u32 mask) {
 #ifdef NONMATCHING_C
   Enemy* p = GetFirstEnemy();
 
@@ -1092,17 +1106,18 @@ NON_MATCH bool32 FUN_080ede60(u32 kind, u32 variant, u32 mask) {
     if (p->kind == kind && p->variant == variant && Enemy_IsDead(p) == 0 && (p->flags & mask) != 0) {
       return TRUE;
     }
-    p = FUN_080edce8(p->mover.id);
+    p = Enemy_GetNextActive(p->mover.id);
   }
 
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080ede60.inc");
+  INCFUNC("asm/func/Enemy_HasKindVariantWithFlags.inc");
 #endif
 }
 
+// 敵を毎フレーム更新し, 破棄待ちの敵を破棄して, 屋外で日光が当たれば敵を倒し, 種族ごとのパレット遷移を進める
 // 364/368 命令, レジスタ割当とループの出口の形が違う
-NON_MATCH void FUN_080edebc(EnemyManager* p) {
+NON_MATCH void EnemyManager_UpdateEnemies(EnemyManager* p) {
 #ifdef NONMATCHING_C
   EnemyListNode* node = gEnemyListHead;
 
@@ -1160,7 +1175,7 @@ NON_MATCH void FUN_080edebc(EnemyManager* p) {
                 enemy->sprite->s.plttID = enemy->unk_478;
               }
             }
-            if (FUN_080eec74(p, enemy)) {
+            if (EnemyManager_StepPaletteFade(p, enemy)) {
               if (p->flags & 0x20000) {
                 u32 plttID;
 
@@ -1176,10 +1191,10 @@ NON_MATCH void FUN_080edebc(EnemyManager* p) {
                 EnemyFlags2* flags2 = &enemy->flags2;
 
                 if (*flags2 & 0x200000) {
-                  FUN_080eeb14(enemy->unk_478, enemy->unk_47a + enemy->variant, 0, *kind, 0);
+                  EnemyManager_StartPaletteFade(enemy->unk_478, enemy->unk_47a + enemy->variant, 0, *kind, 0);
                   *flags2 &= ~0x200000;
                 } else {
-                  FUN_080eeb14(enemy->unk_47a + enemy->variant, enemy->unk_478, 0, *kind, 0);
+                  EnemyManager_StartPaletteFade(enemy->unk_47a + enemy->variant, enemy->unk_478, 0, *kind, 0);
                   *flags2 |= 0x200000;
                 }
               }
@@ -1193,12 +1208,12 @@ NON_MATCH void FUN_080edebc(EnemyManager* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080edebc.inc");
+  INCFUNC("asm/func/EnemyManager_UpdateEnemies.inc");
 #endif
 }
 
 // 生存中の敵をすべて破棄する
-void FUN_080ee218(void) {
+void Enemy_DestroyAll(void) {
   EnemyListNode* node = gEnemyListHead;
   Enemy* p;
   void* arg;
@@ -1213,8 +1228,9 @@ void FUN_080ee218(void) {
   }
 }
 
+// 通信プレイ中, 倒れた敵を近くにプレイヤーがいなければ初期状態へ戻して復活させる
 // 43/50 命令, ENEFLAG_UNK_0 の判定も bool8 inline を通している
-NON_MATCH void FUN_080ee254(void) {
+NON_MATCH void Enemy_RespawnDead(void) {
 #ifdef NONMATCHING_C
   if ((gGameFlags & 0x4800) && gEnemyListHead != NULL) {
     EnemyListNode* node = gEnemyListHead;
@@ -1222,19 +1238,19 @@ NON_MATCH void FUN_080ee254(void) {
 
     while (p != NULL) {
       node = node->next;
-      if (p->hp <= 0 && (p->flags & ENEFLAG_UNK_0) && !FUN_080edb4c(p, (Vec3*)s16_ARRAY_085ad3cc)) {
-        FUN_080ee738(p);
+      if (p->hp <= 0 && (p->flags & ENEFLAG_UNK_0) && !Enemy_IsPlayerNearSpawn(p, (Vec3*)s16_ARRAY_085ad3cc)) {
+        Enemy_Reset(p);
       }
       p = node->enemy;
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080ee254.inc");
+  INCFUNC("asm/func/Enemy_RespawnDead.inc");
 #endif
 }
 
-// 敵を初期状態へ戻す
-void FUN_080ee2c8(Enemy* p) {
+// 敵を初期位置の経路ノードへ戻して見た目と当たり判定を初期化する, 経路を使わない種族は位置を動かさない
+void Enemy_ResetToSpawn(Enemy* p) {
   u32 plttID;
   u8* spriteKind;
   u8 kind;
@@ -1295,8 +1311,8 @@ void FUN_080ee2c8(Enemy* p) {
   p->hurtbox.invincibleTime = 0;
 }
 
-// 敵を初期状態へ戻す
-void FUN_080ee538(Enemy* p) {
+// 位置は動かさずに経路と見た目を初期化する
+void Enemy_ResetInPlace(Enemy* p) {
   u32 plttID;
   u8* spriteKind;
   u8 kind;
@@ -1349,10 +1365,11 @@ void FUN_080ee538(Enemy* p) {
   }
 }
 
+// 敵を出現時の状態へ戻し, 種族ごとの onReset を呼ぶ
 // 268/277 命令, 状態フィールドのアドレスを保持して使い回す形が inline では作れない
-NON_MATCH void FUN_080ee738(Enemy* p) {
+NON_MATCH void Enemy_Reset(Enemy* p) {
 #ifdef NONMATCHING_C
-  FUN_080ee2c8(p);
+  Enemy_ResetToSpawn(p);
   Enemy_RequestSubState(p, 3, 0, 0);
   Enemy_RequestState(p, Enemy_ClearStateBegun, 16);
   p->flags = p->unk_55c;
@@ -1402,22 +1419,23 @@ NON_MATCH void FUN_080ee738(Enemy* p) {
   p->unk_54d = 0;
   p->unk_54e = 0;
   p->unk_54f = 0;
-  FUN_080eeee0(p);
+  EnemyManager_TryEndPaletteFade(p);
   p->flags |= 2;
   p->hurtbox.flags |= 4;
   if (p->onReset != NULL) {
     p->onReset(p);
   }
-  FUN_080eeee0(p);
+  EnemyManager_TryEndPaletteFade(p);
   p->emote = Emote_Remove(p->emote, 1, p->mover.id);
   p->emote = Emote_RemovePtcl(p->emote, 3, p->mover.id);
   FUN_080ecbe4();
 #else
-  INCFUNC("asm/func/FUN_080ee738.inc");
+  INCFUNC("asm/func/Enemy_Reset.inc");
 #endif
 }
 
-void FUN_080ee9d4(EnemyManager* p) {
+// 15フレームごとに, 回る背景が無効なら部屋を明るい扱いにする
+void EnemyManager_UpdateBrightFlag(EnemyManager* p) {
   if (Mod(p->frameCounter, 15) == 0) {
     if (EntityA628_IsActive() == 0) {
       SET_FLAGS(gStat->mapFlags, MPF_BRIGHT);
@@ -1428,19 +1446,19 @@ void FUN_080ee9d4(EnemyManager* p) {
 }
 
 s32 EnemyManager_Update(EnemyManager* p) {
-  FUN_080ee254();
-  FUN_080ec8a4(p);
-  FUN_080ec92c(p);
+  Enemy_RespawnDead();
+  EnemyManager_DispatchScriptMsgs(p);
+  EnemyManager_AdvanceCursor(p);
   FUN_080ec9b0(p);
-  FUN_080edebc(p);
-  FUN_080ee9d4(p);
+  EnemyManager_UpdateEnemies(p);
+  EnemyManager_UpdateBrightFlag(p);
   CLEAR_FLAGS(p->flags, EMFLAG_UNK_14 | EMFLAG_UNK_15 | EMFLAG_UNK_16);
   p->frameCounter++;
   return 0;
 }
 
 s32 EnemyManager_Destroy(EnemyManager* p) {
-  FUN_080ee218();
+  Enemy_DestroyAll();
   Free(gEnemyListHead);
   gEnemyManager = NULL;
   return 0;
@@ -1471,10 +1489,11 @@ EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) {
   return gEnemyManager;
 }
 
-void FUN_080eeb08(void) { gEnemyManager = NULL; }
+void EnemyManager_ClearGlobal(void) { gEnemyManager = NULL; }
 
+// ミミック/ゴースト/シャイアンのパレット遷移を plttSrc から plttDst へ向けて始める
 // レジスタ割当とループ外へ出すアドレスの組が違う, 下書き段階
-NON_MATCH void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate) {
+NON_MATCH void EnemyManager_StartPaletteFade(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate) {
 #ifdef NONMATCHING_C
   EnemyManager* manager = gEnemyManager;
   EnemyPaletteFade* fade;
@@ -1505,7 +1524,7 @@ NON_MATCH void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immed
     }
   }
 
-  FUN_080ed020(kind);
+  Enemy_GetFirstAlive(kind);
   pltt = gObjPlttData;
   fade->plttID = plttDst;
   dst = &pltt[plttDst * 16];
@@ -1541,12 +1560,13 @@ NON_MATCH void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immed
     manager->flags |= 0x20000;
   }
 #else
-  INCFUNC("asm/func/FUN_080eeb14.inc");
+  INCFUNC("asm/func/EnemyManager_StartPaletteFade.inc");
 #endif
 }
 
+// パレット遷移を1段進めて敵のスプライトへ繋ぐ, 遷移が終わったら TRUE を返す
 // ループ内のアドレスの持ち方とレジスタ割当が違う
-NON_MATCH bool8 FUN_080eec74(EnemyManager* p, Enemy* enemy) {
+NON_MATCH bool8 EnemyManager_StepPaletteFade(EnemyManager* p, Enemy* enemy) {
 #ifdef NONMATCHING_C
   EnemyPaletteFade* fade;
   bool8 skip;
@@ -1642,7 +1662,7 @@ NON_MATCH bool8 FUN_080eec74(EnemyManager* p, Enemy* enemy) {
   }
   return TRUE;
 #else
-  INCFUNC("asm/func/FUN_080eec74.inc");
+  INCFUNC("asm/func/EnemyManager_StepPaletteFade.inc");
 #endif
 }
 
@@ -1667,8 +1687,9 @@ NON_MATCH bool32 FUN_080eee70(void) {
 #endif
 }
 
-// 45/58 命令, FUN_080ede14 の結果の受け方と判定の並びが未解決
-NON_MATCH void FUN_080eeee0(Enemy* p) {
+// パレット遷移を使う敵が残っていなければパレット遷移を終える
+// 45/58 命令, Enemy_HasKindWithFlags の結果の受け方と判定の並びが未解決
+NON_MATCH void EnemyManager_TryEndPaletteFade(Enemy* p) {
 #ifdef NONMATCHING_C
   EnemyManager* manager = gEnemyManager;
 
@@ -1678,25 +1699,26 @@ NON_MATCH void FUN_080eeee0(Enemy* p) {
     if (gGameFlags & 0x4800) {
       count = Enemy_CountByKind(11);
     } else {
-      if (FUN_080ede14(11, 0x20000)) {
+      if (Enemy_HasKindWithFlags(11, 0x20000)) {
         return;
       }
-      if (FUN_080ede14(23, 0x20000)) {
+      if (Enemy_HasKindWithFlags(23, 0x20000)) {
         return;
       }
-      count = FUN_080ede14(27, 0x20000);
+      count = Enemy_HasKindWithFlags(27, 0x20000);
     }
     if (count == 0) {
       manager->flags &= ~0x22000;
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080eeee0.inc");
+  INCFUNC("asm/func/EnemyManager_TryEndPaletteFade.inc");
 #endif
 }
 
+// パレット遷移中なら敵のスプライトを遷移中のパレットへ繋ぐ
 // 57/58 命令, spriteKind が 0 以外の枝で p->sprite の持ち方が違う
-NON_MATCH void FUN_080eef6c(Enemy* p) {
+NON_MATCH void Enemy_ApplyPaletteFade(Enemy* p) {
 #ifdef NONMATCHING_C
   EnemyPaletteFade* fade;
 
@@ -1734,11 +1756,11 @@ NON_MATCH void FUN_080eef6c(Enemy* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080eef6c.inc");
+  INCFUNC("asm/func/Enemy_ApplyPaletteFade.inc");
 #endif
 }
 
-// '.n' の敵に '.r' の2値を入れる
+// '.n' の敵の初期位置の経路と経路ノードを '.r' で差し替える
 void Cmd_B3D7(void) {
   u32 id = VM_GetNamedArgValue('n', 0);
 
@@ -1782,6 +1804,7 @@ void Cmd_C7DC(void) {
   p->mover.pos.y = p->floorY;
 }
 
+// '.N' の敵の索敵範囲/攻撃/HP などの能力値をスクリプトの値で上書きする, 負の値の項目は変えない
 // 392/393 命令, p とループ変数のレジスタ割当が違う
 NON_MATCH void Cmd_F200(void) {
 #ifdef NONMATCHING_C
@@ -1929,6 +1952,7 @@ void Cmd_E1C6(void) {
   }
 }
 
+// EnemyManager.flags に '.s' のビットを立てる
 void Cmd_9311(void) {
   EnemyManager* p = gEnemyManager;
 
@@ -1937,6 +1961,7 @@ void Cmd_9311(void) {
   }
 }
 
+// EnemyManager.flags から '.s' のビットを落とす
 void Cmd_0740(void) {
   EnemyManager* p = gEnemyManager;
 
@@ -1980,7 +2005,7 @@ NON_MATCH void Cmd_1E97(void) {
               void* handler = p->unk_5d8;
 
               if (handler == NULL) {
-                handler = (void*)FUN_080f54e4;
+                handler = (void*)Enemy_StateFallDeath;
               }
               Enemy_RequestState(p, handler, 22);
               Enemy_RequestSubState(p, 3, 0, 0);

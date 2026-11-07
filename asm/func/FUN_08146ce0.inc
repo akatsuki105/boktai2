@@ -146,7 +146,7 @@ _08146D9E:
 	adds r3, #3
 	adds r0, r7, r3
 	strb r4, [r0]
-	ldr r2, _08146E88 @ =FUN_080e6794
+	ldr r2, _08146E88 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	adds r5, #3
 	adds r0, r7, r5
@@ -199,7 +199,7 @@ _08146E78: .4byte 0x00000484
 _08146E7C: .4byte 0xFFFFFEFF
 _08146E80: .4byte 0x00000469
 _08146E84: .4byte 0x0000046A
-_08146E88: .4byte FUN_080e6794
+_08146E88: .4byte Enemy_WaitPendingState
 _08146E8C: .4byte 0x00000553
 _08146E90: .4byte 0x00000684
 _08146E94:

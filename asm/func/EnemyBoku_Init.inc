@@ -14,7 +14,7 @@
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	adds r0, r7, #0
 	bl Boku_InitAnims
 	adds r0, r7, #0
@@ -1013,7 +1013,7 @@ _0810255C:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r6, [sp, #0x90]
 	lsrs r2, r6, #0x10
 	ldr r0, [sp, #0x9c]
@@ -1111,7 +1111,7 @@ _08102626:
 	beq _08102636
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _08102660 @ =FUN_080f48ac
+	ldr r2, _08102660 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x2c]
 	bl CWolfTargetManager_Register
 _08102636:
@@ -1135,7 +1135,7 @@ _08102642:
 	bl Mover_SetCollision
 	b _08102670
 	.align 2, 0
-_08102660: .4byte FUN_080f48ac
+_08102660: .4byte Enemy_OnCWolfMessage
 _08102664:
 	ldr r0, [sp, #0x2c]
 	ldr r1, [sp, #0x1a0]
@@ -1480,10 +1480,10 @@ _08102834:
 	ldr r3, _08102A48 @ =FUN_080fc4ec
 	ldr r5, [sp, #0x15c]
 	str r3, [r5]
-	ldr r1, _08102A4C @ =FUN_080f47c8
+	ldr r1, _08102A4C @ =Enemy_StateBlownAway
 	ldr r6, [sp, #0x168]
 	str r1, [r6]
-	ldr r1, _08102A50 @ =FUN_080f54e4
+	ldr r1, _08102A50 @ =Enemy_StateFallDeath
 	ldr r2, [sp, #0x154]
 	str r1, [r2]
 	ldr r3, [sp, #0x12c]
@@ -1491,7 +1491,7 @@ _08102834:
 	ldr r1, _08102A54 @ =FUN_080f6e64
 	ldr r5, [sp, #0x198]
 	str r1, [r5]
-	ldr r1, _08102A58 @ =FUN_080f64f0
+	ldr r1, _08102A58 @ =Enemy_OnDamaged
 	ldr r6, [sp, #0x110]
 	str r1, [r6]
 	ldr r1, _08102A5C @ =FUN_080f84d4
@@ -1517,7 +1517,7 @@ _08102834:
 	ldr r1, [sp, #0x194]
 	bl Map_InitNavAgent
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r5, #0xbf
 	lsls r5, r5, #3
 	adds r1, r7, r5
@@ -1563,7 +1563,7 @@ _08102834:
 	movs r2, #4
 	strb r2, [r0]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -1606,10 +1606,10 @@ _08102A3C: .4byte FUN_080f0320
 _08102A40: .4byte Enemy_080eff14
 _08102A44: .4byte FUN_080e72b0
 _08102A48: .4byte FUN_080fc4ec
-_08102A4C: .4byte FUN_080f47c8
-_08102A50: .4byte FUN_080f54e4
+_08102A4C: .4byte Enemy_StateBlownAway
+_08102A50: .4byte Enemy_StateFallDeath
 _08102A54: .4byte FUN_080f6e64
-_08102A58: .4byte FUN_080f64f0
+_08102A58: .4byte Enemy_OnDamaged
 _08102A5C: .4byte FUN_080f84d4
 _08102A60: .4byte FUN_080f624c
 _08102A64: .4byte FUN_080f56ec
@@ -1796,7 +1796,7 @@ _08102BD2:
 _08102BD6:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _08102BDE:
 	adds r0, r7, #0
 	movs r1, #0
@@ -2036,7 +2036,7 @@ _08102D2E:
 	ldr r0, _08102DD0 @ =EnemyBoku_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08102DD4

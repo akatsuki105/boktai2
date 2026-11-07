@@ -10,7 +10,7 @@
 _08162D06:
 	adds r0, r2, #0
 	movs r1, #1
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	pop {r0}
 	bx r0
 	.align 2, 0

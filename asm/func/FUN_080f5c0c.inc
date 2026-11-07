@@ -132,7 +132,7 @@ _080F5CD2:
 	movs r1, #3
 	movs r2, #2
 	movs r3, #0xa
-	bl FUN_080e6408
+	bl Enemy_ScatterParticles
 	movs r1, #0x80
 	lsls r1, r1, #0x12
 	ldr r0, [r4]

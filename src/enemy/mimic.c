@@ -217,7 +217,7 @@ NON_MATCH void FUN_08146ce0(Mimic* p) {
     SET_FLAGS(q->unk_690, 1);
     Enemy_SetEmote(&p->e, 0, 2, (p->e).kind);
     Enemy_ResetState(&p->e, 3, 1, 0);
-    Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
     agent = (p->e).navAgent;
     pos = &(p->e).mover.pos;
     if (!Map_IsPosInAgentIsland(agent, pos, &q->homePos) || (route = Map_TryFindNavRoute(agent, pos, &q->homePos)) == 0) {
@@ -227,18 +227,18 @@ NON_MATCH void FUN_08146ce0(Mimic* p) {
     }
     if (!Enemy_IsPosInRect(&p->e, &q->homePos, 32, 32)) {
       CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_6 | ENEFLAG_UNK_7);
-      (p->e).unk_554 = 30;
-      (p->e).unk_558 = (p->e).unk_5a0;
-      (p->e).unk_550 = 0;
-      (p->e).unk_551 = 0;
-      (p->e).unk_552 = 2;
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).unk_5a0;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 2;
     } else {
       CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_6 | ENEFLAG_UNK_7);
-      (p->e).unk_554 = 30;
-      (p->e).unk_558 = (p->e).unk_5a4;
-      (p->e).unk_550 = 0;
-      (p->e).unk_551 = 0;
-      (p->e).unk_552 = 0;
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).unk_5a4;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 0;
       CLEAR_FLAGS(q->unk_690, 1);
     }
     (p->e).animSpeedDiv = 1;
@@ -278,7 +278,7 @@ s32 FUN_08146fc0(Mimic* p) {
 
 void FUN_08146fcc(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efb60(&p->e, 16, FUN_08148750((p->e).mover.angle));
+    Enemy_PlayAnimNoFacingFlags(&p->e, 16, FUN_08148750((p->e).mover.angle));
     (p->e).atkHitbox.flags &= ~HBFLAG_HIDDEN;
   }
   if ((p->e).animForceRestart) {
@@ -291,9 +291,9 @@ NAKED void FUN_08147030(Mimic* p) { INCFUNC("asm/func/FUN_08147030.inc"); }
 void FUN_081473ac(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     if (Mimic_IsPlayerLost(p)) {
-      FUN_080efb60(&p->e, 15, FUN_08148750((p->e).mover.angle));
+      Enemy_PlayAnimNoFacingFlags(&p->e, 15, FUN_08148750((p->e).mover.angle));
     } else {
-      FUN_080efb60(&p->e, 16, FUN_08148750((p->e).mover.angle));
+      Enemy_PlayAnimNoFacingFlags(&p->e, 16, FUN_08148750((p->e).mover.angle));
     }
     ParticleShadow_Hide(&(p->e).shadow);
   }
@@ -304,7 +304,7 @@ void FUN_081473ac(Mimic* p) {
 
 void FUN_08147428(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efb60(&p->e, 0, FUN_08148750((p->e).mover.angle));
+    Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
     (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
   }
   if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
@@ -316,14 +316,14 @@ void FUN_08147428(Mimic* p) {
 
 void FUN_081474e8(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efb60(&p->e, 0, FUN_08148750((p->e).mover.angle));
+    Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
     (p->e).atkHitbox.flags |= HBFLAG_HIDDEN;
   }
 }
 
 void FUN_08147530(Mimic* p, s32 param_2) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efb60(&p->e, 0, FUN_08148750((p->e).mover.angle));
+    Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
     (p->e).atkHitbox.flags |= HBFLAG_HIDDEN;
   }
   if (param_2 == 160) {
@@ -337,7 +337,7 @@ void FUN_08147530(Mimic* p, s32 param_2) {
 NON_MATCH void FUN_081475b8(Mimic* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efb60(&p->e, 10, FUN_08148750((p->e).mover.angle));
+    Enemy_PlayAnimNoFacingFlags(&p->e, 10, FUN_08148750((p->e).mover.angle));
   }
   ((EnemyAuxSpriteData*)(p->e).sprite)->anim.tick = 0;
 
@@ -400,7 +400,7 @@ NON_MATCH void FUN_081477dc(Mimic* p) {
   s32 dx, dz;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efb60(&p->e, 3, FUN_08148750((p->e).mover.angle));
+    Enemy_PlayAnimNoFacingFlags(&p->e, 3, FUN_08148750((p->e).mover.angle));
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
   }
 
@@ -463,7 +463,7 @@ NON_MATCH void Mimic_OnReset(Mimic* p) {
     q->homePos = (p->e).mover.pos;
     q->homeTileIdx = GetCollisionTileIdx(&(p->e).mover.pos);
   }
-  FUN_080efb60(&p->e, 0, FUN_08148750((p->e).mover.angle));
+  Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
   aux = (EnemyAuxSpriteData*)(p->e).sprite;
   AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
 #else
@@ -790,7 +790,7 @@ NON_MATCH void FUN_081486d8(Mimic* p) {
 #ifdef NONMATCHING_C
   (p->e).mover.angle = (p->e).unk_1fc;
   Enemy_SetEmote(&p->e, 0, 0, (p->e).kind);
-  FUN_080e6750(&p->e);
+  Enemy_RunScript(&p->e);
   if ((p->e).kind != ENEK_SPIDER) {
     SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
   }
@@ -969,7 +969,7 @@ s32 FUN_08148c7c(Mimic* p) {
   return 1;
 }
 
-bool32 Mimic_Update(Mimic* p) { return FUN_080f06b0(&p->e); }
+bool32 Mimic_Update(Mimic* p) { return Enemy_Update(&p->e); }
 
 s32 Mimic_Destroy(Mimic* p) {
   if ((p->e).spriteKind == 0) {
@@ -997,7 +997,7 @@ s32 Mimic_Destroy(Mimic* p) {
   }
   Mover_Unlink(&(p->e).mover);
   Hitbox_Unregister(&(p->e).hurtbox);
-  FUN_080ec6fc(&p->e);
+  Enemy_Unregister(&p->e);
   return 0;
 }
 
@@ -1014,7 +1014,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   s32 i;
   u8 kind;
 
-  FUN_080e37e8(&p->e, p, 0);
+  Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
   (p->e).kind = ENEK_MIMIC;
   Mimic_InitAnims(p);
   if ((p->e).spriteKind == 0) {
@@ -1128,7 +1128,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     (p->e).attrs = VM_GetPC() != NULL ? VM_GetValue() : 0;
     (p->e).weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
   }
-  FUN_080e48e8(&p->e, (p->e).maxHp, hpParam3, hpParam4);
+  Enemy_InitHpAndState(&p->e, (p->e).maxHp, hpParam3, hpParam4);
   Enemy_SetRanges(&p->e, 0, range0, range2, range1, range3);
   if (VM_SeekToNamedArg('X')) {
     (p->e).exp = VM_GetPC() != NULL ? VM_GetValue() : 0;
@@ -1144,7 +1144,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
-    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, FUN_080f48ac);
+    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? (AuxSprite*)(p->e).sprite : NULL);
   if ((p->e).kind == ENEK_DOG) {
@@ -1232,11 +1232,11 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   (p->e).unk_5bc = Enemy_080eff14;
   (p->e).unk_5e8 = FUN_080e72b0;
   (p->e).unk_5e0 = NULL;
-  (p->e).unk_5ec = FUN_080f47c8;
-  (p->e).unk_5d8 = FUN_080f54e4;
+  (p->e).unk_5ec = Enemy_StateBlownAway;
+  (p->e).unk_5d8 = Enemy_StateFallDeath;
   (p->e).unk_5a8 = NULL;
   (p->e).unk_624 = FUN_080f6e64;
-  (p->e).unk_58c = FUN_080f64f0;
+  (p->e).unk_58c = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).unk_5b8 = FUN_080f624c;
   (p->e).unk_594 = FUN_080f56ec;
@@ -1252,7 +1252,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_9 | ENEFLAG_UNK_22);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_3);
   SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_6);
-  Enemy_Init_080e5dd4(&p->e);
+  Enemy_InitShadowAndEmitter(&p->e);
 
   (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
   if (VM_SeekToNamedArg('G')) {
@@ -1290,7 +1290,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
-    FUN_080f07d0(&p->e, NULL);
+    Enemy_Suspend(&p->e, NULL);
   }
   Enemy_PlayAnim(&p->e, 0);
   if ((p->e).spriteKind == 0) {
@@ -1334,7 +1334,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   (p->e).handlerUpdate = (EnemyHandler)Mimic_Update;
   (p->e).handlerDestroy = (EnemyHandler)Mimic_Destroy;
   (p->e).unk_478 = 652;
-  if (!Enemy_Init_080ec640(&p->e)) {
+  if (!Enemy_Register(&p->e)) {
     return -1;
   }
   return 0;

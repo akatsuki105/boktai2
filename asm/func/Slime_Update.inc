@@ -6,7 +6,7 @@
 	ldr r1, [r1]
 	adds r1, #0x24
 	str r1, [r2]
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1

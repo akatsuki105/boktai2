@@ -4094,7 +4094,7 @@ NON_MATCH void Player_UpdateCameraLookAt(Player* p) {
 void FUN_08066e84(Player* _) {
   u16 payload = 6;
 
-  FUN_080ec79c(ENEK_CURORO, &payload);
+  Enemy_SendMsgByKind(ENEK_CURORO, &payload);
 }
 
 void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, bool32 fragileWall, SoundID32 soundID) {

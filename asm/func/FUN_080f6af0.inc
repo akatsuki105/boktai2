@@ -75,7 +75,7 @@
 	bl FUN_080f897c
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_080e81dc
+	bl PlayGolemSound
 	movs r0, #1
 	b _080F6BA2
 	.align 2, 0

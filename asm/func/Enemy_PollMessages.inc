@@ -422,7 +422,7 @@ _080F3A8A:
 	ldrb r0, [r2]
 _080F3A8C:
 	ldrh r2, [r7]
-	bl FUN_080ec848
+	bl Enemy_SendMsgById
 	b _080F3C9A
 	.align 2, 0
 _080F3A94: .4byte 0x000001DF
@@ -503,7 +503,7 @@ _080F3B20:
 	add r2, sp, #0x20
 	add r3, sp, #0x24
 	movs r1, #1
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	adds r1, r7, #0
 	adds r1, #8
 	ldrh r2, [r7]
@@ -552,7 +552,7 @@ _080F3B80:
 	add r2, sp, #0x20
 	add r3, sp, #0x24
 	movs r1, #3
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	adds r1, r7, #0
 	adds r1, #8
 	ldrh r2, [r7]
@@ -582,7 +582,7 @@ _080F3BE0:
 	add r2, sp, #0x20
 	add r3, sp, #0x24
 	movs r1, #1
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	ldr r2, _080F3C14 @ =0x00000454
 	adds r4, r7, r2
 	ldr r0, [r4]
@@ -608,7 +608,7 @@ _080F3C18:
 	add r2, sp, #0x20
 	add r3, sp, #0x24
 	movs r1, #1
-	bl FUN_080e5610
+	bl GetEnemyEmoteOffset
 	ldr r5, _080F3C4C @ =0x00000454
 	adds r4, r7, r5
 	ldr r0, [r4]

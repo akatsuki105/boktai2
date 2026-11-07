@@ -297,7 +297,7 @@ _080EE0FE:
 	mov r0, sl
 	adds r1, r5, #0
 	str r3, [sp, #4]
-	bl FUN_080eec74
+	bl EnemyManager_StepPaletteFade
 	lsls r0, r0, #0x18
 	ldr r3, [sp, #4]
 	cmp r0, #0
@@ -386,7 +386,7 @@ _080EE188:
 	ldrb r3, [r3]
 	str r7, [sp]
 	movs r2, #0
-	bl FUN_080eeb14
+	bl EnemyManager_StartPaletteFade
 	ldr r1, _080EE1CC @ =0xFFDFFFFF
 	ldr r0, [r6]
 	ands r0, r1
@@ -409,7 +409,7 @@ _080EE1D0:
 	ldrb r3, [r3]
 	str r4, [sp]
 	movs r2, #0
-	bl FUN_080eeb14
+	bl EnemyManager_StartPaletteFade
 	ldr r0, [r6]
 	mov r3, r8
 	orrs r0, r3

@@ -14,7 +14,7 @@
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	adds r0, r7, #0
 	bl FUN_081a4ea0
 	ldr r2, _081A5618 @ =0x0000025D
@@ -995,7 +995,7 @@ _081A5DC0:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r1, [sp, #0x94]
 	lsrs r2, r1, #0x10
 	ldr r4, [sp, #0x9c]
@@ -1093,7 +1093,7 @@ _081A5E8A:
 	beq _081A5E9A
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _081A5EC4 @ =FUN_080f48ac
+	ldr r2, _081A5EC4 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _081A5E9A:
@@ -1117,7 +1117,7 @@ _081A5EA6:
 	bl Mover_SetCollision
 	b _081A5ED4
 	.align 2, 0
-_081A5EC4: .4byte FUN_080f48ac
+_081A5EC4: .4byte Enemy_OnCWolfMessage
 _081A5EC8:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x38]
@@ -1463,10 +1463,10 @@ _081A60C0:
 	str r0, [r4]
 	ldr r5, [sp, #0x160]
 	str r1, [r5]
-	ldr r0, _081A628C @ =FUN_080f47c8
+	ldr r0, _081A628C @ =Enemy_StateBlownAway
 	ldr r6, [sp, #0x16c]
 	str r0, [r6]
-	ldr r0, _081A6290 @ =FUN_080f54e4
+	ldr r0, _081A6290 @ =Enemy_StateFallDeath
 	ldr r2, [sp, #0x158]
 	str r0, [r2]
 	ldr r3, [sp, #0x130]
@@ -1474,7 +1474,7 @@ _081A60C0:
 	ldr r0, _081A6294 @ =FUN_080f6e64
 	ldr r4, [sp, #0x194]
 	str r0, [r4]
-	ldr r0, _081A6298 @ =FUN_080f64f0
+	ldr r0, _081A6298 @ =Enemy_OnDamaged
 	ldr r5, [sp, #0x114]
 	str r0, [r5]
 	ldr r0, _081A629C @ =FUN_080f84d4
@@ -1518,7 +1518,7 @@ _081A60C0:
 	movs r0, #0x18
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r1, #0x80
 	lsls r1, r1, #2
 	ldr r2, [sp, #0x6c]
@@ -1581,10 +1581,10 @@ _081A627C: .4byte FUN_080e73c8
 _081A6280: .4byte FUN_080f0320
 _081A6284: .4byte Enemy_080eff14
 _081A6288: .4byte FUN_080e72b0
-_081A628C: .4byte FUN_080f47c8
-_081A6290: .4byte FUN_080f54e4
+_081A628C: .4byte Enemy_StateBlownAway
+_081A6290: .4byte Enemy_StateFallDeath
 _081A6294: .4byte FUN_080f6e64
-_081A6298: .4byte FUN_080f64f0
+_081A6298: .4byte Enemy_OnDamaged
 _081A629C: .4byte FUN_080f84d4
 _081A62A0: .4byte FUN_080f624c
 _081A62A4: .4byte FUN_080f56ec
@@ -1766,7 +1766,7 @@ _081A63FA:
 _081A63FE:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _081A6406:
 	adds r0, r7, #0
 	movs r1, #0
@@ -2075,7 +2075,7 @@ _081A65EC:
 	ldr r0, _081A6694 @ =EnemyRootOfDarkness_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081A6698

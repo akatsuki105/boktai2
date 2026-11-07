@@ -105,7 +105,7 @@ void Emote_PlayEnemySound(Emote* p) {
       }
       case ENEK_GOLEM:
       case ENEK_30: {
-        FUN_080e81dc(enemy, 3);
+        PlayGolemSound(enemy, 3);
         p->unk_2e |= 1;
         return;
       }

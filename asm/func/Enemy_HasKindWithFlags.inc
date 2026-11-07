@@ -26,7 +26,7 @@ _080EDE24:
 	bne _080EDE20
 _080EDE48:
 	ldrh r0, [r4]
-	bl FUN_080edce8
+	bl Enemy_GetNextActive
 _080EDE4E:
 	adds r4, r0, #0
 	cmp r4, #0

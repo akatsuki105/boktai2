@@ -31,7 +31,7 @@ void Entity081fa164_ClearGlobal(void);
 void FUN_081eafb0(void);
 void Entity081d0e20_ClearGlobal(void);
 void FUN_081d1738(void);
-void FUN_080eeb08(void);
+void EnemyManager_ClearGlobal(void);
 void EmoteManager_Clear(void);
 void FUN_080dbea4(void);
 void BloodEmitter_ClearGlobal(void);
@@ -89,7 +89,7 @@ static inline bool8 Entity778B_IsActive(u32* mask, s32 i) {
 
 void Entity081eaf6c_Create(void);
 void Entity778B_ClearGlobal(void);
-Enemy* FUN_080edce8(u32 id);
+Enemy* Enemy_GetNextActive(u32 id);
 Flamethrower* FUN_081ead54(Entity778BElem* elem, u32 id, s32 unk_12, s32 unk_18, s32 unk_19, s32 param_6, s32 x, s32 y, s32 z, s32 unk_10, s32 unk_16);
 
 // 通信中以外は太陽ゲージが満たないぶんだけ減らす
@@ -480,7 +480,7 @@ void FUN_080e0fbc(void) {
   FUN_081eafb0();
   Entity081d0e20_ClearGlobal();
   FUN_081d1738();
-  FUN_080eeb08();
+  EnemyManager_ClearGlobal();
   EmoteManager_Clear();
   FUN_080dbea4();
   BloodEmitter_ClearGlobal();
@@ -530,7 +530,7 @@ Enemy* FUN_080e1080(Vec3* pos, Vec3* size, u32* id) {
   Enemy* p;
 
   do {
-    p = FUN_080edce8(*id);
+    p = Enemy_GetNextActive(*id);
     if (p == NULL) {
       return NULL;
     }
@@ -554,7 +554,7 @@ NON_MATCH Enemy* FUN_080e1100(Vec3* pos, Vec3* size, u32* id) {
   Enemy* p;
 
   do {
-    p = FUN_080edce8(*id);
+    p = Enemy_GetNextActive(*id);
     if (p == NULL) {
       return NULL;
     }

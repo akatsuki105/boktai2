@@ -2908,7 +2908,7 @@ _0812F270:
 	adds r0, r5, #0
 	bl FUN_08130eec
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r4, _0812F34C @ =0x000001DF
 	adds r0, r5, r4
 	ldrb r0, [r0]
@@ -3241,7 +3241,7 @@ _0812F520:
 	adds r0, r5, #0
 	bl FUN_08130eec
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r4, _0812F5E8 @ =0x000001DF
 	adds r0, r5, r4
 	ldrb r0, [r0]
@@ -3711,7 +3711,7 @@ _0812F938:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0812F9C4
@@ -3758,7 +3758,7 @@ _0812F938:
 	adds r0, r5, #0
 	bl FUN_08130eec
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	b _0812F9DE
 	.align 2, 0
 _0812F9B0: .4byte 0x000004A4
@@ -3931,7 +3931,7 @@ _0812FAF0:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0812FBA8
@@ -4375,7 +4375,7 @@ _0812FE4E:
 	adds r0, r7, #0
 	bl FUN_0813101c
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r0, _0812FED4 @ =0x0000065E
 	add r0, r8
 	strh r5, [r0]
@@ -4438,7 +4438,7 @@ _0812FEFC:
 	adds r0, r7, #0
 	bl FUN_0813101c
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r1, #0x90
 	lsls r1, r1, #3
 	adds r0, r7, r1
@@ -4776,7 +4776,7 @@ FUN_08130190: @ 0x08130190
 	adds r1, r1, r0
 	strh r2, [r1]
 	adds r0, r4, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	adds r0, r4, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -5480,7 +5480,7 @@ _08130706:
 	cmp r5, #0
 	bne _08130768
 	adds r0, r4, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r1, #7
 	movs r3, #0x8d
 	lsls r3, r3, #3
@@ -5701,7 +5701,7 @@ _081308BA:
 	strh r0, [r1]
 _081308C6:
 	adds r0, r4, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r1, _081308D8 @ =0x0000065C
 	add r1, r8
 	movs r0, #0
@@ -5792,7 +5792,7 @@ _08130974:
 	cmp r5, #0
 	bne _08130986
 	adds r0, r4, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r0, _081309A0 @ =0x0000065C
 	add r0, r8
 	strh r5, [r0]
@@ -5916,7 +5916,7 @@ FUN_081309f0: @ 0x081309F0
 	adds r0, r5, #0
 	bl FUN_08130eec
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r6, _08130AB0 @ =0x000001DF
 	adds r0, r5, r6
 	ldrb r0, [r0]
@@ -6177,7 +6177,7 @@ _08130BE6:
 	adds r0, r5, #0
 	bl FUN_08130eec
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r6, _08130CB8 @ =0x000001DF
 	adds r0, r5, r6
 	ldrb r0, [r0]
@@ -6448,7 +6448,7 @@ _08130E2C:
 	adds r0, r5, #0
 	bl FUN_08130eec
 	adds r0, r5, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r6, _08130EE0 @ =0x000001DF
 	adds r0, r5, r6
 	ldrb r0, [r0]
@@ -6756,7 +6756,7 @@ _081310E8: .4byte 0x0000062C
 	thumb_func_start FUN_081310ec
 FUN_081310ec: @ 0x081310EC
 	push {lr}
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -6800,7 +6800,7 @@ _08131136:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4}
 	pop {r1}
@@ -6827,7 +6827,7 @@ EnemySpider_Init: @ 0x0813115C
 	strh r3, [r0]
 	adds r0, r7, #0
 	adds r1, r7, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r4, _081311EC @ =0x000001DF
 	adds r0, r7, r4
 	movs r5, #2
@@ -7830,7 +7830,7 @@ _081319BC:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r6, [sp, #0xb4]
 	lsrs r2, r6, #0x10
 	ldr r0, [sp, #0xc0]
@@ -7928,7 +7928,7 @@ _08131A86:
 	beq _08131A96
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _08131AC0 @ =FUN_080f48ac
+	ldr r2, _08131AC0 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x38]
 	bl CWolfTargetManager_Register
 _08131A96:
@@ -7952,7 +7952,7 @@ _08131AA2:
 	bl Mover_SetCollision
 	b _08131AD0
 	.align 2, 0
-_08131AC0: .4byte FUN_080f48ac
+_08131AC0: .4byte Enemy_OnCWolfMessage
 _08131AC4:
 	ldr r0, [sp, #0x38]
 	ldr r1, [sp, #0x48]
@@ -8243,10 +8243,10 @@ _08131C3C:
 	str r1, [r2]
 	ldr r3, [sp, #0x17c]
 	str r4, [r3]
-	ldr r1, _08131DE8 @ =FUN_080f47c8
+	ldr r1, _08131DE8 @ =Enemy_StateBlownAway
 	ldr r5, [sp, #0x188]
 	str r1, [r5]
-	ldr r1, _08131DEC @ =FUN_080f54e4
+	ldr r1, _08131DEC @ =Enemy_StateFallDeath
 	ldr r6, [sp, #0x174]
 	str r1, [r6]
 	ldr r1, [sp, #0x14c]
@@ -8254,7 +8254,7 @@ _08131C3C:
 	ldr r1, _08131DF0 @ =FUN_080f6e64
 	ldr r2, [sp, #0x1b0]
 	str r1, [r2]
-	ldr r1, _08131DF4 @ =FUN_080f64f0
+	ldr r1, _08131DF4 @ =Enemy_OnDamaged
 	ldr r3, [sp, #0x130]
 	str r1, [r3]
 	ldr r1, _08131DF8 @ =FUN_080f84d4
@@ -8280,7 +8280,7 @@ _08131C3C:
 	ldr r1, [sp, #0x44]
 	bl Map_InitNavAgent
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	ldr r3, _08131E0C @ =0x0000060C
 	adds r1, r7, r3
 	ldr r0, _08131E10 @ =0x085AD710
@@ -8334,10 +8334,10 @@ _08131DD8: .4byte FUN_080e73c8
 _08131DDC: .4byte FUN_080f0320
 _08131DE0: .4byte Enemy_080eff14
 _08131DE4: .4byte FUN_080e72b0
-_08131DE8: .4byte FUN_080f47c8
-_08131DEC: .4byte FUN_080f54e4
+_08131DE8: .4byte Enemy_StateBlownAway
+_08131DEC: .4byte Enemy_StateFallDeath
 _08131DF0: .4byte FUN_080f6e64
-_08131DF4: .4byte FUN_080f64f0
+_08131DF4: .4byte Enemy_OnDamaged
 _08131DF8: .4byte FUN_080f84d4
 _08131DFC: .4byte FUN_080f624c
 _08131E00: .4byte FUN_080f56ec
@@ -8555,7 +8555,7 @@ _08131FA2:
 _08131FA6:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _08131FAE:
 	adds r0, r7, #0
 	movs r1, #0
@@ -8930,7 +8930,7 @@ _0813221A:
 	ldr r0, _081322C8 @ =FUN_081310f8
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081322CC

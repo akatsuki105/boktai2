@@ -1865,7 +1865,7 @@ _08132F96:
 	adds r0, r6, r1
 	strb r5, [r0]
 	adds r0, r6, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 _08133122:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -4108,7 +4108,7 @@ _081341D2:
 	bl Enemy_SetEmote
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	adds r0, r6, #0
 	bl PlayEnemyDeathCry
 	movs r7, #0xbc
@@ -14120,7 +14120,7 @@ FUN_08138e1c: @ 0x08138E1C
 	ldr r1, [r1]
 	adds r1, #0x24
 	str r1, [r2]
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -14235,7 +14235,7 @@ _08138F06:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -14260,7 +14260,7 @@ EnemyCentipede_Init: @ 0x08138F24
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _08138FB0 @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #9
@@ -15267,7 +15267,7 @@ _08139790:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r1, [sp, #0xd0]
 	lsrs r2, r1, #0x10
 	ldr r4, [sp, #0xdc]
@@ -15365,7 +15365,7 @@ _0813985A:
 	beq _0813986A
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _08139894 @ =FUN_080f48ac
+	ldr r2, _08139894 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _0813986A:
@@ -15389,7 +15389,7 @@ _08139876:
 	bl Mover_SetCollision
 	b _081398A4
 	.align 2, 0
-_08139894: .4byte FUN_080f48ac
+_08139894: .4byte Enemy_OnCWolfMessage
 _08139898:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x5c]
@@ -15841,10 +15841,10 @@ _08139B3C:
 	ldr r0, _08139D3C @ =FUN_08133ed4
 	ldr r1, [sp, #0x198]
 	str r0, [r1]
-	ldr r0, _08139D40 @ =FUN_080f47c8
+	ldr r0, _08139D40 @ =Enemy_StateBlownAway
 	ldr r3, [sp, #0x1a4]
 	str r0, [r3]
-	ldr r0, _08139D44 @ =FUN_080f54e4
+	ldr r0, _08139D44 @ =Enemy_StateFallDeath
 	ldr r4, [sp, #0x190]
 	str r0, [r4]
 	ldr r5, [sp, #0x160]
@@ -15852,7 +15852,7 @@ _08139B3C:
 	ldr r0, _08139D48 @ =FUN_080f6e64
 	ldr r6, [sp, #0x50]
 	str r0, [r6]
-	ldr r0, _08139D4C @ =FUN_080f64f0
+	ldr r0, _08139D4C @ =Enemy_OnDamaged
 	ldr r1, [sp, #0x130]
 	str r0, [r1]
 	ldr r0, _08139D50 @ =FUN_080f84d4
@@ -15921,7 +15921,7 @@ _08139B3C:
 	orrs r0, r1
 	strh r0, [r3]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -15964,10 +15964,10 @@ _08139D30: .4byte FUN_080f0320
 _08139D34: .4byte Enemy_080eff14
 _08139D38: .4byte FUN_080e72b0
 _08139D3C: .4byte FUN_08133ed4
-_08139D40: .4byte FUN_080f47c8
-_08139D44: .4byte FUN_080f54e4
+_08139D40: .4byte Enemy_StateBlownAway
+_08139D44: .4byte Enemy_StateFallDeath
 _08139D48: .4byte FUN_080f6e64
-_08139D4C: .4byte FUN_080f64f0
+_08139D4C: .4byte Enemy_OnDamaged
 _08139D50: .4byte FUN_080f84d4
 _08139D54: .4byte FUN_080f624c
 _08139D58: .4byte FUN_080f56ec
@@ -16145,7 +16145,7 @@ _08139EAE:
 _08139EB2:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _08139EBA:
 	adds r0, r7, #0
 	movs r1, #0
@@ -16426,7 +16426,7 @@ _0813A00A:
 	ldr r0, _0813A110 @ =EnemyCentipede_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0813A114

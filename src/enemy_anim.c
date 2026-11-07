@@ -54,8 +54,9 @@ NON_MATCH void Enemy_PlayAnim(Enemy* p, s32 animIdx) {
 #endif
 }
 
+// 向きに合わせて animTable[idx] のアニメを再生する, 引数の再生フラグを足す
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080ef968(Enemy* p, s32 val1, u32 val2) {
+NON_MATCH void Enemy_PlayAnimFlags(Enemy* p, s32 val1, u32 val2) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -99,12 +100,13 @@ NON_MATCH void FUN_080ef968(Enemy* p, s32 val1, u32 val2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080ef968.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimFlags.inc");
 #endif
 }
 
+// 向きは左右反転だけに反映して animTable[idx] のアニメを再生する, 引数の再生フラグを足す
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) {
+NON_MATCH void Enemy_PlayAnimFlipOnlyFlags(Enemy* p, s32 val1, u32 val2) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -148,12 +150,13 @@ NON_MATCH void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efa6c.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimFlipOnlyFlags.inc");
 #endif
 }
 
+// 向きを反映せずに animTable[idx] のアニメを引数の再生フラグで再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3) {
+NON_MATCH void Enemy_PlayAnimNoFacingFlags(Enemy* p, s32 param_2, u32 param_3) {
 #ifdef NONMATCHING_C
   s32 anim;
   s32 f;
@@ -194,12 +197,13 @@ NON_MATCH void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efb60.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimNoFacingFlags.inc");
 #endif
 }
 
+// 左右反転は向きから, 差分は variant で指定して animTable[idx] のアニメを再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3) {
+NON_MATCH void Enemy_PlayAnimWithVariant(Enemy* p, s32 param_2, s32 param_3) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -243,12 +247,13 @@ NON_MATCH void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efc44.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimWithVariant.inc");
 #endif
 }
 
+// 向きは左右反転だけに反映して animTable[idx] のアニメを再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efd44(Enemy* p, s32 param_2) {
+NON_MATCH void Enemy_PlayAnimFlipOnly(Enemy* p, s32 param_2) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -292,12 +297,13 @@ NON_MATCH void FUN_080efd44(Enemy* p, s32 param_2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efd44.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimFlipOnly.inc");
 #endif
 }
 
+// 向きを反映せずに animTable[idx] のアニメを再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
+NON_MATCH void Enemy_PlayAnimNoFacing(Enemy* p, s32 param_2) {
 #ifdef NONMATCHING_C
   s32 anim;
   s32 f;
@@ -338,7 +344,7 @@ NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efe38.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimNoFacing.inc");
 #endif
 }
 

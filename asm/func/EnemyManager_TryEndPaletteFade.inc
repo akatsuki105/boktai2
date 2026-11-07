@@ -42,19 +42,19 @@ _080EEF2A:
 	lsls r5, r5, #0xa
 	movs r0, #0xb
 	adds r1, r5, #0
-	bl FUN_080ede14
+	bl Enemy_HasKindWithFlags
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EEF60
 	movs r0, #0x17
 	adds r1, r5, #0
-	bl FUN_080ede14
+	bl Enemy_HasKindWithFlags
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EEF60
 	movs r0, #0x1b
 	adds r1, r5, #0
-	bl FUN_080ede14
+	bl Enemy_HasKindWithFlags
 	lsls r0, r0, #0x18
 _080EEF54:
 	cmp r0, #0

@@ -51,8 +51,8 @@ void FUN_081302f8(Spider*, u16*);
 
 void (*const PTR_ARRAY_085ad710[7])(Spider*, u16*) = {
     (void*)FUN_080f09a4,
-    (void*)FUN_080f07d0,
-    (void*)FUN_080f0914,
+    (void*)Enemy_Suspend,
+    (void*)Enemy_Resume,
     (void*)FUN_080f0868,
     (void*)FUN_080e6624,
     (void*)FUN_080e664c,

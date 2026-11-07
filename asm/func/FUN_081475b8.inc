@@ -22,7 +22,7 @@ _081475D6:
 	adds r2, r0, #0
 	adds r0, r4, #0
 	movs r1, #0xa
-	bl FUN_080efb60
+	bl Enemy_PlayAnimNoFacingFlags
 _081475EA:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x48

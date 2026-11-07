@@ -453,7 +453,7 @@ _080ED440:
 _080ED444:
 	strh r0, [r2]
 	adds r0, r7, #0
-	bl FUN_080e9178
+	bl Enemy_AddKillCount
 _080ED44C:
 	movs r2, #0xe8
 	lsls r2, r2, #1
@@ -510,7 +510,7 @@ _080ED49A:
 	ldr r0, _080ED4C8 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 _080ED4BA:
 	adds r2, r7, #0
 	adds r2, #0xde

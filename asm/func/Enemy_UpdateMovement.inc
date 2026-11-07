@@ -200,7 +200,7 @@ _080E1A86:
 	b _080E1F2C
 _080E1A94:
 	adds r0, r5, #0
-	bl FUN_080e4b3c
+	bl Enemy_UpdateJump
 	movs r2, #0x80
 	lsls r2, r2, #6
 	movs r4, #0xbc

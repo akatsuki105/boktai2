@@ -37,14 +37,14 @@ typedef struct {
 } Boku;
 static_assert(sizeof(Boku) == 1708);
 
-void FUN_080e499c(Enemy* p);
-void FUN_080e64b4(Enemy* p, s32 kind);
+void Enemy_ClearDamage(Enemy* p);
+void Enemy_FadeParticles(Enemy* p, s32 kind);
 bool32 FUN_080f62b0(Enemy* p);
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
 void FUN_080e7b6c(Enemy* p);
 void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 groundTime, s32 speed, s32 unk_9);
-bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
+bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 
 void FUN_080ff67c(Boku* p);
 void FUN_080ffda8(Boku* p);
@@ -106,7 +106,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->unk_54d = 0;
   p->unk_54e = 0;
   p->unk_54f = 0;
-  FUN_080eeee0(p);
+  EnemyManager_TryEndPaletteFade(p);
 }
 
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
@@ -389,7 +389,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 0: {
           idx = tileIdx + 1;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx++;
@@ -400,7 +400,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 1: {
           idx = tileIdx + gCollisionMap->tiledata->width;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx += gCollisionMap->tiledata->width;
@@ -411,7 +411,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 2: {
           idx = tileIdx - 1;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx--;
@@ -422,7 +422,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 3: {
           idx = tileIdx - gCollisionMap->tiledata->width;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx -= gCollisionMap->tiledata->width;
@@ -856,12 +856,12 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
 
     Enemy_PlayAnim(&p->e, 0);
     Enemy_ResetState(&p->e, 3, 1, 0);
-    Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
-    (p->e).unk_554 = 30;
-    (p->e).unk_558 = (p->e).unk_5b8;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 12;
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).unk_5b8;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
     {
       Vec3* dst = (p->e).unk_4a8;
       PathWalker* walker = &(p->e).pathWalker;
@@ -984,12 +984,12 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
 
   Enemy_PlayAnim(&p->e, 0);
   Enemy_ResetState(&p->e, 3, 1, 0);
-  Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
-  (p->e).unk_554 = 60;
-  (p->e).unk_558 = (p->e).unk_5a0;
-  (p->e).unk_550 = 0;
-  (p->e).unk_551 = 0;
-  (p->e).unk_552 = 7;
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  (p->e).pendingDelay = 60;
+  (p->e).pendingHandler = (p->e).unk_5a0;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 7;
   (p->e).animSpeedDiv = 1;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
@@ -1447,7 +1447,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     Enemy_SetEmote(&p->e, 0, 0x7F, 0);
     Enemy_SetEmote(&p->e, 1, 0x7F, 0);
     Enemy_SetEmote(&p->e, 3, 0x7F, 0);
-    FUN_080e64b4(&p->e, 4);
+    Enemy_FadeParticles(&p->e, 4);
     sprite->flags |= SPRFLAG_AFFINE;
     PlayEnemyDeathCry(&p->e);
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
@@ -1459,7 +1459,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     (p->e).unk_202 = 0;
     (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
   }
-  FUN_080e499c(&p->e);
+  Enemy_ClearDamage(&p->e);
   if (Mod(param_2, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
     Vec3 size;
 
@@ -1534,7 +1534,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
 #endif
 }
 
-// 97/99命令, 原典は FUN_080e6750 の後に kind のアドレスを作り直す, 1回目の下書きで切り上げ
+// 97/99命令, 原典は Enemy_RunScript の後に kind のアドレスを作り直す, 1回目の下書きで切り上げ
 NON_MATCH void FUN_080fe704(Boku* p) {
 #ifdef NONMATCHING_C
   Boku* q = (p->e).unk_1cc;
@@ -1543,7 +1543,7 @@ NON_MATCH void FUN_080fe704(Boku* p) {
     Enemy_EnterState(&p->e, FUN_080f3cdc, ES_UNK_10);
     (p->e).mover.angle = (p->e).unk_1fc;
     Enemy_SetEmote(&p->e, 0, 0, (p->e).kind);
-    FUN_080e6750(&p->e);
+    Enemy_RunScript(&p->e);
     if ((p->e).kind != ENEK_SPIDER) {
       SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
     }
@@ -1583,24 +1583,24 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
 
   Enemy_SetEmote(&p->e, 0, 2, (p->e).kind);
   Enemy_ResetState(&p->e, 3, 1, 0);
-  Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
     bool8 moved;
 
     if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_4)) {
-      (p->e).unk_554 = 30;
-      (p->e).unk_558 = (p->e).unk_5a0;
-      (p->e).unk_550 = 0;
-      (p->e).unk_551 = 0;
-      (p->e).unk_552 = 2;
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).unk_5a0;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 2;
       (p->e).animSpeedDiv = 1;
       return;
     }
-    (p->e).unk_554 = 30;
-    (p->e).unk_558 = (p->e).unk_5a0;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 7;
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).unk_5a0;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
     {
       Vec3* dst = (p->e).unk_4a8;
       PathWalker* walker = &(p->e).pathWalker;
@@ -1638,11 +1638,11 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
     return;
   }
 
-  (p->e).unk_554 = 30;
-  (p->e).unk_558 = (p->e).unk_5b8;
-  (p->e).unk_550 = 0;
-  (p->e).unk_551 = 0;
-  (p->e).unk_552 = 12;
+  (p->e).pendingDelay = 30;
+  (p->e).pendingHandler = (p->e).unk_5b8;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 12;
   {
     Vec3* dst = (p->e).unk_4a8;
     PathWalker* walker = &(p->e).pathWalker;
@@ -1794,7 +1794,7 @@ void FUN_080ff06c(Boku* p) {
   (p->e).animSpeedDiv = 6;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (!Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
-    if (FUN_080e5ed4(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 3, 0, 0);
       SET_FLAGS(q->unk_65c, 2);
       return;
@@ -1888,12 +1888,12 @@ NON_MATCH void FUN_080ff470(Boku* p) {
     CLEAR_FLAGS(*flags3, ENEFLAG3_UNK_8);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
     Enemy_PlayAnim(&p->e, 0);
-    (p->e).unk_554 = q->unk_67e;
-    (p->e).unk_558 = (p->e).unk_5b8;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 12;
-    Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+    (p->e).pendingDelay = q->unk_67e;
+    (p->e).pendingHandler = (p->e).unk_5b8;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
     Enemy_ResetState(&p->e, 3, 0, 0);
     agent = (p->e).navAgent;
     pos = &(p->e).mover.pos;
@@ -1950,22 +1950,22 @@ NON_MATCH void FUN_080ff7c0(Boku* p) {
     return;
   }
   Enemy_ResetState(&p->e, 3, 1, 0);
-  Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
     (p->e).animSpeedDiv = 2;
-    (p->e).unk_554 = 60;
-    (p->e).unk_558 = (p->e).unk_5a0;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 7;
+    (p->e).pendingDelay = 60;
+    (p->e).pendingHandler = (p->e).unk_5a0;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
   } else {
     (p->e).animSpeedDiv = 2;
-    (p->e).unk_554 = 30;
-    (p->e).unk_558 = (p->e).unk_5b8;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 12;
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).unk_5b8;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
     SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
       (p->e).unk_24e += 300;
@@ -2030,7 +2030,7 @@ NON_MATCH void Boku_OnReset(Boku* p) {
   ClearMemory(&q->unk_668, sizeof(Vec3));
   ClearMemory(&q->unk_660, sizeof(Vec3));
   Enemy_ClearPendingState(&p->e, s_bokucom_c_08251fc0, 147);
-  FUN_080e6204(&p->e);
+  Enemy_StepTowardPathNode(&p->e);
   Enemy_PlayAnim(&p->e, 0);
   aux = (EnemyAuxSpriteData*)(p->e).sprite;
   AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
@@ -2732,12 +2732,12 @@ NON_MATCH bool32 FUN_081019e0(Boku* p) {
       CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
       Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
       Enemy_PlayAnim(&p->e, 0);
-      (p->e).unk_554 = 30;
-      (p->e).unk_558 = (p->e).unk_5b8;
-      (p->e).unk_550 = 0;
-      (p->e).unk_551 = 0;
-      (p->e).unk_552 = 12;
-      Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).unk_5b8;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 12;
+      Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
       Enemy_ResetState(&p->e, 3, 1, 0);
       Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
       {
@@ -2786,9 +2786,9 @@ bool32 FUN_08101bc0(Boku* p) {
   return TRUE;
 }
 
-// FUN_080edebc から呼ばれる
+// EnemyManager_UpdateEnemies から呼ばれる
 s32 EnemyBoku_Update(Boku* p) {
-  FUN_080f06b0(&p->e);
+  Enemy_Update(&p->e);
   return 0;
 }
 
@@ -2818,7 +2818,7 @@ s32 EnemyBoku_Destroy(Boku* p) {
   }
   Mover_Unlink(&(p->e).mover);
   Hitbox_Unregister(&(p->e).hurtbox);
-  FUN_080ec6fc(&p->e);
+  Enemy_Unregister(&p->e);
   return 0;
 }
 
@@ -2834,7 +2834,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   s32 i;
   u8 kind;
 
-  FUN_080e37e8(&p->e, p, 0);
+  Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
   Boku_InitAnims(p);
   Boku_InitDelayedScript(p);
   if ((p->e).spriteKind == 0) {
@@ -2948,7 +2948,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     (p->e).attrs = VM_GetPC() != NULL ? VM_GetValue() : 0;
     (p->e).weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
   }
-  FUN_080e48e8(&p->e, (p->e).maxHp, hpParam3, hpParam4);
+  Enemy_InitHpAndState(&p->e, (p->e).maxHp, hpParam3, hpParam4);
   Enemy_SetRanges(&p->e, 0, range0, range2, range1, range3);
   if (VM_SeekToNamedArg('X')) {
     (p->e).exp = VM_GetPC() != NULL ? VM_GetValue() : 0;
@@ -2964,7 +2964,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
-    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, FUN_080f48ac);
+    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? (AuxSprite*)(p->e).sprite : NULL);
   if ((p->e).kind == ENEK_DOG) {
@@ -3048,11 +3048,11 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_5bc = Enemy_080eff14;
   (p->e).unk_5e8 = FUN_080e72b0;
   (p->e).unk_5e0 = FUN_080fc4ec;
-  (p->e).unk_5ec = FUN_080f47c8;
-  (p->e).unk_5d8 = FUN_080f54e4;
+  (p->e).unk_5ec = Enemy_StateBlownAway;
+  (p->e).unk_5d8 = Enemy_StateFallDeath;
   (p->e).unk_5a8 = NULL;
   (p->e).unk_624 = FUN_080f6e64;
-  (p->e).unk_58c = FUN_080f64f0;
+  (p->e).unk_58c = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).unk_5b8 = FUN_080f624c;
   (p->e).unk_594 = FUN_080f56ec;
@@ -3061,7 +3061,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_5b4 = NULL;
   (p->e).unk_543 = 40;
   Map_InitNavAgent(&p->navAgent, &(p->e).mover.pos);
-  FUN_080e6204(&p->e);
+  Enemy_StepTowardPathNode(&p->e);
   (p->e).onReset = (EnemyHandler)Boku_OnReset;
   (p->e).unk_5fc = FUN_080ffc28;
   (p->e).unk_5ac = (EnemyHandler)FUN_080ff6e8;
@@ -3071,7 +3071,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_27);
   (p->e).hurtbox.flags &= ~HBFLAG_UNK_0;
   (p->e).kind = ENEK_BOKU;
-  Enemy_Init_080e5dd4(&p->e);
+  Enemy_InitShadowAndEmitter(&p->e);
 
   (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
   if (VM_SeekToNamedArg('G')) {
@@ -3109,7 +3109,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
-    FUN_080f07d0(&p->e, NULL);
+    Enemy_Suspend(&p->e, NULL);
   }
   Enemy_PlayAnim(&p->e, 0);
   if ((p->e).spriteKind == 0) {
@@ -3142,7 +3142,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).handlerMsg = (EnemyMsgHandler)Enemy_DispatchMsg;
   (p->e).handlerUpdate = (EnemyHandler)EnemyBoku_Update;
   (p->e).handlerDestroy = (EnemyHandler)EnemyBoku_Destroy;
-  if (!Enemy_Init_080ec640(&p->e)) {
+  if (!Enemy_Register(&p->e)) {
     return -1;
   }
   return 0;

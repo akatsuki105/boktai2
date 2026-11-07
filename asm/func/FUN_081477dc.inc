@@ -22,7 +22,7 @@ _081477FA:
 	adds r2, r0, #0
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_080efb60
+	bl Enemy_PlayAnimNoFacingFlags
 	movs r0, #0x10
 	movs r1, #0xc1
 	lsls r1, r1, #1

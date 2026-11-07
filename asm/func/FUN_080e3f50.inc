@@ -296,7 +296,7 @@ _080E413C:
 	ands r0, r5
 	ldr r1, [sp, #0x34]
 	mov r2, sl
-	bl FUN_080e3afc
+	bl CanStepUpToNeighborTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080E41F8
@@ -330,7 +330,7 @@ _080E413C:
 	adds r2, r3, #0
 	adds r2, #8
 	adds r0, r4, #0
-	bl FUN_080e3afc
+	bl CanStepUpToNeighborTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080E41F8
@@ -495,7 +495,7 @@ _080E42D0:
 	adds r2, r0, #0
 	adds r2, #8
 	adds r0, r4, #0
-	bl FUN_080e3afc
+	bl CanStepUpToNeighborTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080E4340

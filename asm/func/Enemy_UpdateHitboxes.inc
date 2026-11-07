@@ -158,7 +158,7 @@ _080E36C8:
 	cmp r0, #0
 	bne _080E3706
 	adds r0, r5, #0
-	bl FUN_080e7078
+	bl Enemy_HasTargetNearby
 	lsls r0, r0, #0x18
 	adds r6, r5, #0
 	adds r6, #8
@@ -262,7 +262,7 @@ _080E37AA:
 	ldr r0, [r6]
 	cmp r0, #0
 	beq _080E37D2
-	bl FUN_080f8d20
+	bl EnemyTargetManager_IsRegistered
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0

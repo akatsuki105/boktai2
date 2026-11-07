@@ -41,7 +41,7 @@ static_assert(sizeof(Curoro) == 1712);
 
 extern const char s_curorocom_c_08252078[];  // "curorocom.c"
 
-void FUN_080efe38(Enemy* p, s32 param_2);
+void Enemy_PlayAnimNoFacing(Enemy* p, s32 param_2);
 void FUN_0807a904(Player* p, u32 flag);
 bool32 FUN_080f62b0(Enemy* p);
 void Player_StartFormEffect(Player* p, u32 kind);
@@ -363,7 +363,7 @@ NON_MATCH void Curoro_HoldPlayer(Curoro* p) {
     q->mashBase = gPlayerPtr[0]->mashCount;
     q->formGauge = 0;
   }
-  FUN_080efe38(&p->e, 15);
+  Enemy_PlayAnimNoFacing(&p->e, 15);
   if (Mod((p->e).stateTimer, q->biteInterval) == 0) {
     if ((p->e).variant == 0) {
       Player_TakeInstantHit(gPlayerPtr[0], (p->e).atkPower[0], (p->e).atkUnk40[0], 0, 0, (p->e).atkAttrs[0]);
@@ -452,7 +452,7 @@ NON_MATCH void FUN_0813ac34(Curoro* p) {
 
 void FUN_0813ad34(Curoro* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efe38(&p->e, 16);
+    Enemy_PlayAnimNoFacing(&p->e, 16);
   }
 }
 
@@ -716,7 +716,7 @@ NON_MATCH void FUN_0813b358(Curoro* p) {
 
 void FUN_0813b640(Curoro* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    FUN_080efe38(&p->e, 10);
+    Enemy_PlayAnimNoFacing(&p->e, 10);
     PlayEnemyDeathCry(&p->e);
     CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_6 | ENEFLAG_UNK_7 | ENEFLAG_UNK_8 | ENEFLAG_UNK_14 | ENEFLAG_UNK_16);
     (p->e).unk_21e = 0;
@@ -853,7 +853,7 @@ void FUN_0813be38(Curoro* p) {
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
-    FUN_080efe38(&p->e, 17);
+    Enemy_PlayAnimNoFacing(&p->e, 17);
     SET_FLAGS(q->unk_658, 1);
     Hitbox_ClearFlags(&(p->e).atkHitbox, HBFLAG_HIDDEN);
     Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
@@ -1430,7 +1430,7 @@ s32 FUN_0813d404(Curoro* p) {
 
 bool32 Curoro_Update(Curoro* p) {
   (p->e).playerMover = &gPlayerPtr[0]->mover;
-  FUN_080f06b0(&p->e);
+  Enemy_Update(&p->e);
   return FALSE;
 }
 
@@ -1460,15 +1460,15 @@ s32 Curoro_Destroy(Curoro* p) {
   }
   Mover_Unlink(&(p->e).mover);
   Hitbox_Unregister(&(p->e).hurtbox);
-  FUN_080ec6fc(&p->e);
+  Enemy_Unregister(&p->e);
   return 0;
 }
 
 // メッセージ表
 void (*const PTR_ARRAY_085ad7b4[7])(Curoro*, u16*) = {
     (void*)FUN_080f09a4,
-    (void*)FUN_080f07d0,
-    (void*)FUN_080f0914,
+    (void*)Enemy_Suspend,
+    (void*)Enemy_Resume,
     (void*)FUN_080f0868,
     (void*)FUN_080e6624,
     (void*)FUN_080e664c,
@@ -1488,7 +1488,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   s32 i;
   u8 kind;
 
-  FUN_080e37e8(&p->e, p, 0);
+  Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
   (p->e).kind = ENEK_CURORO;
   FUN_0813c738(p);
   if ((p->e).spriteKind == 0) {
@@ -1602,7 +1602,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     (p->e).attrs = VM_GetPC() != NULL ? VM_GetValue() : 0;
     (p->e).weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
   }
-  FUN_080e48e8(&p->e, (p->e).maxHp, hpParam3, hpParam4);
+  Enemy_InitHpAndState(&p->e, (p->e).maxHp, hpParam3, hpParam4);
   Enemy_SetRanges(&p->e, 0, range0, range2, range1, range3);
   if (VM_SeekToNamedArg('X')) {
     (p->e).exp = VM_GetPC() != NULL ? VM_GetValue() : 0;
@@ -1618,7 +1618,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
-    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, FUN_080f48ac);
+    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? (AuxSprite*)(p->e).sprite : NULL);
   if ((p->e).kind == ENEK_DOG) {
@@ -1721,11 +1721,11 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).unk_5bc = Enemy_080eff14;
   (p->e).unk_5e8 = FUN_080e72b0;
   (p->e).unk_5e0 = NULL;
-  (p->e).unk_5ec = FUN_080f47c8;
-  (p->e).unk_5d8 = FUN_080f54e4;
+  (p->e).unk_5ec = Enemy_StateBlownAway;
+  (p->e).unk_5d8 = Enemy_StateFallDeath;
   (p->e).unk_5a8 = NULL;
   (p->e).unk_624 = FUN_080f6e64;
-  (p->e).unk_58c = FUN_080f64f0;
+  (p->e).unk_58c = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).unk_5b8 = FUN_080f624c;
   (p->e).unk_594 = FUN_080f56ec;
@@ -1745,7 +1745,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   if ((p->e).variant != 0) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_3);
   }
-  Enemy_Init_080e5dd4(&p->e);
+  Enemy_InitShadowAndEmitter(&p->e);
 
   (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
   if (VM_SeekToNamedArg('G')) {
@@ -1783,7 +1783,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
-    FUN_080f07d0(&p->e, NULL);
+    Enemy_Suspend(&p->e, NULL);
   }
   Enemy_PlayAnim(&p->e, 0);
   if ((p->e).spriteKind == 0) {
@@ -1817,7 +1817,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).handlerMsg = (EnemyMsgHandler)Enemy_DispatchMsg;
   (p->e).handlerUpdate = (EnemyHandler)Curoro_Update;
   (p->e).handlerDestroy = (EnemyHandler)Curoro_Destroy;
-  if (!Enemy_Init_080ec640(&p->e)) {
+  if (!Enemy_Register(&p->e)) {
     return -1;
   }
   return 0;

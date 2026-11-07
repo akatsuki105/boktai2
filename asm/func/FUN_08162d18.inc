@@ -18,7 +18,7 @@ _08162D36:
 	beq _08162D54
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	ldr r0, _08162D9C @ =0x00000482
 	adds r1, r5, r0
 	movs r0, #1

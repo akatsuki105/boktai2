@@ -77,7 +77,7 @@ _08147AC8:
 	adds r2, r0, #0
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080efb60
+	bl Enemy_PlayAnimNoFacingFlags
 	ldr r0, [r4, #0x44]
 	adds r5, r0, #0
 	adds r4, r5, #0

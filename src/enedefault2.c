@@ -7,7 +7,7 @@
 // enedefault.c と同様にいろんなエネミーから呼ばれる関数群
 
 s32 FUN_08240b98(u32 param_1, s8 param_2);
-void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3);
+void Enemy_FindReachablePosNear(unknown* param_1, u32 param_2, u32 param_3);
 
 s32 UNUSED FUN_080f9bf8(unknown* p, s32 val) { return val; }
 
@@ -39,7 +39,7 @@ s32 FUN_080fa354(unknown* param_1, u32 param_2, s8 param_3) {
   s32 ret = FUN_08240b98(param_2, param_3);
 
   if (ret == 0xB546) {
-    FUN_080e8ae4(param_1, param_2, param_2);
+    Enemy_FindReachablePosNear(param_1, param_2, param_2);
   }
   return ret;
 }

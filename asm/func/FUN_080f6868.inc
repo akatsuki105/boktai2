@@ -65,7 +65,7 @@ _080F689E:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0xa
-	bl FUN_080e6408
+	bl Enemy_ScatterParticles
 	movs r3, #0x8c
 	lsls r3, r3, #3
 	adds r2, r4, r3

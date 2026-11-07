@@ -165,15 +165,15 @@ Done so far:
 | Parent | Absorbed |
 |---|---|
 | `FUN_080f6e64` | `FUN_080f79e8`, `FUN_080f83ec`, `FUN_080f83ee` |
-| `FUN_080f48ac` | `FUN_080f5104`, `FUN_080f51e0` |
-| `FUN_080e9178` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
+| `Enemy_OnCWolfMessage` | `FUN_080f5104`, `FUN_080f51e0` |
+| `Enemy_AddKillCount` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
 
 `FUN_080eafb4` needed the repository-side fix: every label inside its `.inc`
-was already local, so its contents were appended to `asm/func/FUN_080e9178.inc`
+was already local, so its contents were appended to `asm/func/Enemy_AddKillCount.inc`
 behind a new `_080EAFB4:` label, the one `bl FUN_080eafb4` became
 `bl _080EAFB4`, and the `NAKED` stub was dropped from `src/enemy.c`.
 
-`FUN_080e9178` ends in a jump-table dispatch
+`Enemy_AddKillCount` ends in a jump-table dispatch
 (`(*(code *)PTR_ARRAY_080e91a0[enemyID])()`), so Ghidra also registered each
 table target as its own function. Those (`080E920C`, `080E9350`, `080EA2D8`,
 `080EA6B8`) are reached by an indirect jump, not a `bl`, and the repository

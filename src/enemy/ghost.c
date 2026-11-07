@@ -48,8 +48,8 @@ void (*const PTR_ARRAY_085adaac[6])(Enemy*) = {
 // メッセージ表
 void (*const PTR_ARRAY_085adac4[8])(Enemy*, u16*) = {
     (void*)FUN_080f09a4,
-    (void*)FUN_080f07d0,
-    (void*)FUN_080f0914,
+    (void*)Enemy_Suspend,
+    (void*)Enemy_Resume,
     (void*)FUN_080f0868,
     FUN_080e6624,
     FUN_080e664c,

@@ -33,7 +33,7 @@ _080EDE72:
 	bne _080EDE6E
 _080EDEA2:
 	ldrh r0, [r4]
-	bl FUN_080edce8
+	bl Enemy_GetNextActive
 _080EDEA8:
 	adds r4, r0, #0
 	cmp r4, #0

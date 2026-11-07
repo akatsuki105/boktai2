@@ -59,7 +59,7 @@ extern u32 u32_ARRAY_0203f400[256];
 #define GAMEFLAG_GAMEOVER (1 << 10)   // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
 #define GAMEFLAG_LINK (1 << 11)       // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)
 #define GAMEFLAG_CROSSOVER (1 << 12)  // 0x1000, クロスオーバーバトル中にセットされる? (mGBAがワイヤレスアダプタのエミュレーションをサポートしてないため検証が面倒で未確認)
-#define GAMEFLAG_UNK_14 (1 << 14)     // 0x4000, FUN_080f8bb8 が LINK と一緒に見る
+#define GAMEFLAG_UNK_14 (1 << 14)     // 0x4000, Mover_ShowTrackingMarker が LINK と一緒に見る
 extern u32 gDebugGameFlags;           // 0x030047A0, gGameFlags と OR されて使用される, デバッグ時に強制的にフラグをセットするためのものと予想
 extern u32 gGameFlags;                // 0x030047A4
 

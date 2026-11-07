@@ -62,7 +62,7 @@ _080F4800:
 	adds r1, #2
 	adds r0, r5, r1
 	strb r3, [r0]
-	ldr r4, _080F48A4 @ =FUN_080e6794
+	ldr r4, _080F48A4 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	subs r6, #0xe4
 	adds r0, r5, r6
@@ -109,5 +109,5 @@ _080F4896:
 	.align 2, 0
 _080F489C: .4byte FUN_080f3cdc
 _080F48A0: .4byte 0x00000554
-_080F48A4: .4byte FUN_080e6794
+_080F48A4: .4byte Enemy_WaitPendingState
 _080F48A8: .4byte 0x00000469
