@@ -109,7 +109,9 @@ typedef struct Actor {
   u8 unk_1a4[0x1E8 - 0x1A4];  // 0x1A4, まだ未解析
   u8 unk_1e8;                 // 0x1E8, FUN_08042868 が FUN_08041480 の第2引数に渡す
   u8 unk_1e9;                 // 0x1E9, 同じく第3引数
-  u8 unk_1ea[0x1EE - 0x1EA];  // 0x1EA, まだ未解析
+  u8 unk_1ea[2];              // 0x1EA, まだ未解析
+  u8 unk_1ec;                 // 0x1EC, FUN_08042cf0 が初回に 1 を入れる
+  u8 unk_1ed;                 // 0x1ED, まだ未解析
   u8 unk_1ee;                 // 0x1EE, 根拠: Actor_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
   s8 unk_1ef;                 // 0x1EF
   u16 unk_1f0;                // 0x1F0
@@ -118,11 +120,14 @@ typedef struct Actor {
   u32 unk_1f8;                // 0x1F8
   u32 unk_1fc;                // 0x1FC
   u32 unk_200;                // 0x200
-  u8 unk_204[0x214 - 0x204];  // 0x204, まだ未解析
+  u8 unk_204[0x20E - 0x204];  // 0x204, まだ未解析
+  u16 pathDelay;              // 0x20E, 経路の今のノードの待ちフレーム数 (PathNode.delay の下位12bit)
+  u8 unk_210[0x214 - 0x210];  // 0x210, まだ未解析
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
   u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
   u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
-  u8 unk_218[0x227 - 0x218];  // 0x218, まだ未解析
+  u8 unk_218[0x226 - 0x218];  // 0x218, まだ未解析
+  u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
   u8 unk_228[0x244 - 0x228];  // 0x228, まだ未解析
   union {
@@ -207,7 +212,7 @@ s32 Actor_HideShadow(Actor* actor);
 Actor* ActorManager_FindActorByMoverID(ActorManager* p, u32 id);
 s32 FUN_08040fc0(Actor* actor, Vec3* pos, s8 param_3, u32 param_4, s8 param_5);
 s32 FUN_08041e10(ActorManager* p, Actor* actor);
-s32 FUN_0804135c(Actor* actor, s32 param_2, u16 param_3, s8 param_4, u8 param_5, u16 param_6);
+s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 s32 FUN_08040f0c(Actor* actor, u32 id, Vec3* pos, u32 angle);
 s32 FUN_080412fc(ActorManager* p, Actor* actor);
 s32 FUN_08043510(Actor* actor);

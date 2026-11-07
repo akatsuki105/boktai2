@@ -467,7 +467,7 @@ void FUN_080412f8(void) {}
 
 NAKED s32 FUN_080412fc(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_080412fc.inc"); }
 
-NAKED s32 FUN_0804135c(Actor* actor, s32 param_2, u16 param_3, s8 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_0804135c.inc"); }
+NAKED s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_0804135c.inc"); }
 
 // unk_19 から再生の引数2つを作ってアニメを設定する
 // 残差1命令 (34 対 33), 原典は b を r3 (第4引数レジスタ) に直接置くが, こちらは r4 に取るので呼び出し直前に移し替える
@@ -490,7 +490,7 @@ NON_MATCH s32 FUN_080413b8(Actor* actor, u32 pose, u32 param_3, s32 param_4, u32
 #endif
 }
 
-NAKED s32 FUN_080413fc(Actor* actor, s32 param_2, u16 param_3, s8 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_080413fc.inc"); }
+NAKED s32 FUN_080413fc(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080413fc.inc"); }
 
 s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return SpriteHolder_SetAnim(&actor->sprite, pose, 0, 0, param_3, param_5, param_6); }
 
@@ -529,8 +529,33 @@ NAKED s32 Cmd_DDD0(void) { INCFUNC("asm/func/Cmd_DDD0.inc"); }
 // 0x5517
 NAKED s32 Cmd_5517(void) { INCFUNC("asm/func/Cmd_5517.inc"); }
 
-// 0x43D6
-NAKED s32 Cmd_43D6(void) { INCFUNC("asm/func/Cmd_43D6.inc"); }
+// 0x43D6, '.n' の Actor を '.i' が 0 なら state 1, 1 なら state 0 から始め直す, 原典は最後の return を書き忘れている
+s32 Cmd_43D6(void) {
+  ActorManager* p = gActorManager;
+  Actor* actor;
+  s32 mode;
+
+  if (p == NULL) {
+    return -1;
+  }
+  actor = ActorManager_FindActorByMoverID(p, VM_GetNamedArgValue('n', 0));
+  if (actor == NULL) {
+    return -1;
+  }
+
+  actor->unk_217 = 0;
+  mode = VM_GetNamedArgValue('i', 0);
+  switch (mode) {
+    case 0: {
+      Actor_StartState(actor, 1);
+      break;
+    }
+    case 1: {
+      Actor_StartState(actor, 0);
+      break;
+    }
+  }
+}
 
 // '.n' の Mover ID の Actor の unk_227 が 13〜15 かどうか
 bool32 Cmd_6688(void) {
