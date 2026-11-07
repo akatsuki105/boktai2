@@ -102,7 +102,22 @@ void FUN_0813f180(EnemyBat* p) {
   }
 }
 
-NAKED void FUN_0813f1f0(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f1f0.inc"); }
+void FUN_0813f1f0(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 1);
+    q->unk_661 = (p->e).mover.angle;
+  } else {
+    FUN_08140dd0(p);
+    if (q->unk_661 != (p->e).mover.angle) {
+      Enemy_PlayAnim(&p->e, 1);
+      q->unk_661 = (p->e).mover.angle;
+    } else {
+      (p->e).animForceRestart = FALSE;
+    }
+  }
+}
 
 void FUN_0813f268(EnemyBat* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
