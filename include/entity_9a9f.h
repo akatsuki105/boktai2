@@ -45,7 +45,8 @@ typedef struct Entity9A9F {
   u8 unk_29;                                   // 0x029, 根拠: FUN_081df908 が 1 を入れる
   u8 unk_2a;                                   // 0x02A, 根拠: FUN_081df924 が 1 を入れる
   u8 unk_2b;                                   // 0x02B, 根拠: FUN_081df940 が 1 を入れる
-  u8 unk_2c[0x30 - 0x2C];                      // 0x02C
+  u8 unk_2c[2];                                // 0x02C
+  u16 retryFrames;                             // 0x02E, 接続待ちのフレーム数, 30 に達すると切断して state 2 からやり直す
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
   u16 unk_32;                                  // 0x032, 同上
   u32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
@@ -61,10 +62,11 @@ typedef struct Entity9A9F {
   u8 unk_51;                                   // 0x051, Create が 1 を入れる
   u8 unk_52;                                   // 0x052, Create が 0 を入れる
   u8 unk_53;                                   // 0x053, Create が 0 を入れる
-  u8 unk_54[12];                               // 0x054
-  u8 unk_60[4];                                // 0x060, EntityA628_UpdateBGVisibility が unk_60[playerIdx] を読む, 長さは人数からの推定
-  u8 unk_64[2];                                // 0x064
-  u16 unk_66;                                  // 0x066, FUN_0809eb6c: Div(n * unk_66, 0x8C)
+  u8 unk_54[4];                                // 0x054
+  u8 lux[2][4];                                // 0x058, 各プレイヤーの太陽センサーの値, [unk_51] が今の側
+  u8 unk_60[4];                                // 0x060, lux を Taiyo_LxToGauge で直したゲージ, EntityA628_UpdateBGVisibility が unk_60[playerIdx] を読む
+  u16 luxSum;                                  // 0x064, lux の合計
+  u16 luxAverage;                              // 0x066, lux の平均, FUN_0809eb6c: Div(n * luxAverage, 0x8C)
   u8 unk_68[4];                                // 0x068, Create が 4要素を 0 にする
   u16 unk_6c[4];                               // 0x06C, Create が 4要素を 0xFFFF にする, unk_44 がここを指す
   u8 unk_74[0x78 - 0x74];                      // 0x074

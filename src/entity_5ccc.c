@@ -75,7 +75,7 @@ static inline u16 Entity9A9F_GetUnk66(void) {
   if (gEntity9A9F == NULL) {
     return 0;
   }
-  return gEntity9A9F->unk_66;
+  return gEntity9A9F->luxAverage;
 }
 
 // 光柱のパレットを設定する (既にそのパレットなら何もしない)

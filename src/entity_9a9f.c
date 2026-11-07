@@ -26,6 +26,9 @@ void FUN_081df568(Entity9A9F* p);
 s32 FUN_081df62c(Entity9A9F* p);
 void EntityCF58_RequestKill(void);
 s32 MainMenu_SetHudMode(s32 mode);
+s32 Taiyo_LxToGauge(s32 lx);
+void FUN_08238c24(void);
+s32 FUN_081de2dc(Entity9A9F* p);
 
 static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
   if (p->state == 0) return TRUE;
@@ -38,6 +41,24 @@ static inline u16 Entity9A9F_GetRecvKey(Entity9A9F* p, s32 idx) {
     return 0xFFFF;
   }
   return p->unk_44[idx];
+}
+
+// データを運ぶキーか (bit10..13 が 0b0010)
+static inline bool8 Entity9A9F_IsDataKey(u16 key) {
+  if ((key & 0x3C00) == 0x800) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// idx 番のプレイヤーの今の太陽センサーの値, セッションが無ければ 0
+static inline u8 Entity9A9F_GetLux(s32 idx) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return 0;
+  }
+  return p->lux[p->unk_51][idx];
 }
 
 // 受信できたキーの数が参加人数と一致するか
@@ -129,7 +150,7 @@ NON_MATCH s32 FUN_081ddb14(Entity9A9F* p, u8* buf, s32 limit) {
 #endif
 }
 
-NAKED s32 FUN_081ddb5c(Entity9A9F* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_081ddb5c.inc"); }
+NAKED s32 FUN_081ddb5c(Entity9A9F* p, u8* buf, s32 idx, s32 count) { INCFUNC("asm/func/FUN_081ddb5c.inc"); }
 
 void FUN_081ddbdc(Entity9A9F* p) {
   p->recordCount = 0;
@@ -298,7 +319,37 @@ NON_MATCH s32 FUN_081de214(Entity9A9F* p) {
 #endif
 }
 
-NAKED s32 FUN_081de250(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de250.inc"); }
+// 接続を試み, つながれば state 3 へ, 30回失敗したら切断して state 2 からやり直す, 原典は最後の return を書き忘れている
+s32 FUN_081de250(Entity9A9F* p) {
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_08238c24();
+    for (i = 0; i < 4; i++) {
+      if (p->unk_68[i] != 0) {
+        p->unk_68[i] = 1;
+      }
+    }
+    p->retryFrames = 0;
+  }
+
+  if (p->stateTimer > 2) {
+    s32 id = Sio_Connect();
+
+    if (id >= 0) {
+      p->unk_1d = id;
+      Entity9A9F_SetState(p, 3, FUN_081de2dc);
+      return 0;
+    }
+    if (++p->retryFrames >= 30) {
+      Entity9A9F_SetState(p, 2, FUN_081de250);
+      Sio_Disconnect();
+      for (i = 0; i < 4; i++) {
+        p->unk_68[i] = 0;
+      }
+    }
+  }
+}
 
 NAKED s32 FUN_081de2dc(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de2dc.inc"); }
 
