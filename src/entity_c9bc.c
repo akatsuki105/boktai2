@@ -5,6 +5,7 @@
 #include "map_inline.h"
 #include "mover.h"
 #include "player.h"
+#include "random.h"
 #include "sound.h"
 #include "sprite.h"
 #include "sprite_pltt.h"
@@ -19,7 +20,8 @@ typedef struct {
   u8 unk_02;                     // 0x02, unk_46 に退避される
   u8 state;                      // 0x03, sC9BCElemUpdates の添字
   u32 timer;                     // 0x04, state を変えるたびに 0 に戻る
-  u8 unk_08[0x1C - 0x08];        // 0x08, まだ未解析
+  u32 scriptID;                  // 0x08, 0 以外なら unk_02 が変わったとき VM_ExecByID で実行する
+  u32 scriptArgs[4];             // 0x0C, スクリプトの argv[4..7]
   u32 unk_1c;                    // 0x1C, FUN_0800cbd0 が被弾時に 1 を入れる
   u32 unk_20;                    // 0x20, 被弾させた側の HitboxData.weakness
   u32 unk_24;                    // 0x24, 被弾させた側の HitboxData.attributes
@@ -32,13 +34,13 @@ typedef struct {
   s16 groundY;                   // 0x32, 落下先の高さ (<< 8)
   s16 unk_34;                    // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
   s16 unk_36;                    // 0x36, unk_34 の上限 (bobOffset を足した値)
-  u16 unk_38;                    // 0x38, FUN_0800cd70 が 0 に戻す
+  s16 burnTimer;                 // 0x38, 炎の状態の残りフレーム, 0 になると炎の状態が消える, FUN_0800cd70 が 0 に戻す
   u16 shakeTimer;                // 0x3A, 0 以外の間は毎フレーム減らしながら揺らす
   u16 shakePower;                // 0x3C, 揺れ幅, shakeTimer の写し
   s16 hp;                        // 0x3E, '.l=1', 地属性で被弾するたび減り 0 以下で砕ける
   u8 unk_40;                     // 0x40, 0 以外の間は被弾を受け付けない, FUN_0800cbd0 が 10 を入れる
-  u8 unk_41;                     // 0x41, FUN_0800cd70 が 10 を入れる
-  u16 unk_42;                    // 0x42, '.F=-1', 炎属性で被弾すると unk_38 に写される
+  u8 flashTimer;                 // 0x41, 被弾で 10 を入れ白く光らせる, 0 になるとパレットを plttIdx に戻す
+  s16 burnTime;                  // 0x42, '.F=-1', 炎属性で被弾すると burnTimer に写される, 負なら炎が消えない
   bool8 releaseReq;              // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
   u8 unk_45;                     // 0x45, state の退避先
   u8 unk_46;                     // 0x46, unk_02 の退避先
@@ -51,7 +53,7 @@ typedef struct {
   MapTileOverride tileOverride;  // 0x11C
   HitboxData hurtbox;            // 0x12C
   HitboxData hitbox;             // 0x17C
-  u8 unk_1cc[0x1FC - 0x1CC];     // 0x1CC, まだ未解析
+  ZoneEventSource zoneSource;    // 0x1CC
 } EntityC9BCElem;
 static_assert(sizeof(EntityC9BCElem) == 508);
 
@@ -98,6 +100,16 @@ static inline u16 EntityC9BCElem_GetPlttIdx(EntityC9BCElem* elem) {
     return 124;
   }
   return TEST_FLAGS(elem->unk_02, 1) ? 121 : 122;
+}
+
+// 要素のパレットを plttIdx に戻す, 121 / 122 は点滅用のバッファを使う
+static inline void EntityC9BCElem_ApplyPltt(EntityC9BC* p, EntityC9BCElem* elem) {
+  Video_SetAuxSpritePltt(&elem->gfx, elem->plttIdx);
+  if (elem->plttIdx == 121) {
+    elem->gfx.pltt = p->plttBufA;
+  } else if (elem->plttIdx == 122) {
+    elem->gfx.pltt = p->plttBufB;
+  }
 }
 
 EntityC9BC* GetEntityC9BC(void) { return gEntityC9BC; }
@@ -189,11 +201,11 @@ s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
     }
     elem->unk_02 |= 1;
     CLEAR_FLAGS(elem->unk_02, 2);
-    elem->unk_38 = elem->unk_42;
+    elem->burnTimer = elem->burnTime;
     elem->state = 3;
     elem->timer = 0;
     elem->unk_01 = 1;
-    elem->unk_41 = 10;
+    elem->flashTimer = 10;
     Video_SetAuxSpritePltt(&elem->gfx, 306);
     return 1;
   }
@@ -204,8 +216,8 @@ s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
     }
     elem->unk_02 |= 1;
     CLEAR_FLAGS(elem->unk_02, 2);
-    elem->unk_38 = elem->unk_42;
-    elem->unk_41 = 10;
+    elem->burnTimer = elem->burnTime;
+    elem->flashTimer = 10;
     Video_SetAuxSpritePltt(&elem->gfx, 306);
   }
 
@@ -218,8 +230,8 @@ s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
     EntityC9BCElem_SetState(elem, 2);
     elem->unk_02 |= 2;
     CLEAR_FLAGS(elem->unk_02, 1);
-    elem->unk_38 = 0;
-    elem->unk_41 = 10;
+    elem->burnTimer = 0;
+    elem->flashTimer = 10;
     Video_SetAuxSpritePltt(&elem->gfx, 306);
     return 1;
   }
@@ -238,13 +250,13 @@ s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) {
       elem->state = 6;
       elem->timer = 0;
       elem->unk_01 = 1;
-      elem->unk_41 = 10;
+      elem->flashTimer = 10;
       Video_SetAuxSpritePltt(&elem->gfx, 306);
       PlaySound_082406e0(SONG_532);
       return 1;
     }
   } else {
-    elem->unk_41 = 10;
+    elem->flashTimer = 10;
     Video_SetAuxSpritePltt(&elem->gfx, 306);
     PlaySound_082406e0(SONG_535);
   }
@@ -269,7 +281,7 @@ NON_MATCH s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) {
       }
       if (FUN_0800cc08(elem)) {
         SET_FLAGS(elem->unk_02, 4);
-        elem->unk_41 = 10;
+        elem->flashTimer = 10;
         Video_SetAuxSpritePltt(&elem->gfx, 306);
         EntityC9BCElem_SetState(elem, 4);
         if (elem->slideTiles == 2) {
@@ -507,7 +519,136 @@ void EntityC9BCElem_SaveState(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
   elem->unk_46 = elem->unk_02;
 }
 
-NAKED void FUN_0800d480(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/FUN_0800d480.inc"); }
+// 要素の毎フレームの共通処理: 移動とゾーンイベント, 炎の残り時間, スプライトと当たり判定の更新, パレットの戻し, unk_02 が変わったらスクリプトを呼ぶ
+// 下書き (503/501命令): 原典は obj を sl に置き size をスタックに置くが, こちらは逆になる, ほかにパレット番号を選ぶ所の unk_02 の読み直しと定数 -2 の作り方が違う
+NON_MATCH void FUN_0800d480(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+#ifdef NONMATCHING_C
+  Mover* obj = &elem->obj;
+  MapTileOverride* self = &elem->tileOverride;
+  AuxSprite* spr;
+  HitboxData* hb;
+  u32 argv[8];
+  Vec3 ofs;
+  Vec3 size;
+  ScriptArgs args;
+
+  GetTileAt(&elem->obj.pos);
+  Mover_ApplyMove(&elem->obj);
+  if (elem->unk_28 & 2) {
+    Map_UpdateZoneEvents(&elem->zoneSource);
+  } else if (elem->state == 1) {
+    elem->obj.flags &= ~2;
+    Map_UpdateZoneEvents(&elem->zoneSource);
+  } else {
+    elem->obj.flags |= 2;
+  }
+
+  if (elem->unk_02 & 1) {
+    if (p->fadeLevel > 15) {
+      elem->unk_2a |= 0x20;
+    }
+    if (elem->burnTimer > 0 && elem->burnTime >= 0) {
+      if (--elem->burnTimer == 0) {
+        CLEAR_FLAGS(elem->unk_02, 1);
+        elem->plttIdx = EntityC9BCElem_GetPlttIdx(elem);
+      }
+    }
+  }
+
+  spr = &elem->spr_a8;
+  if (elem->unk_2a & 0xC) {
+    spr->flags |= SPRFLAG_HIDDEN;
+  } else {
+    spr->flags &= ~SPRFLAG_HIDDEN;
+    elem->spr_a8.pos = obj->pos;
+    spr->pos.y += elem->unk_34;
+    if (elem->unk_2a & 1) {
+      elem->unk_34 = p->bobOffset + elem->unk_36;
+    }
+  }
+
+  spr = &elem->spr_f0;
+  if (elem->unk_2a & 4) {
+    spr->flags |= SPRFLAG_HIDDEN;
+  } else {
+    u16 tileIdx;
+    MapTileOverride* ov;
+    CollisionMapTile* tile;
+
+    spr->flags &= ~SPRFLAG_HIDDEN;
+    elem->spr_f0.pos = obj->pos;
+    tileIdx = self->tileIdx;
+    ov = Map_FindTileOverride(tileIdx, 3);
+    tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
+    spr->pos.y = (tile->heightStairs & 0xF) << 8;
+  }
+
+  if (elem->shakeTimer != 0) {
+    elem->shakePower = --elem->shakeTimer;
+    elem->unk_2a |= 2;
+  }
+  if (elem->unk_2a & 2) {
+    Vec3_SetPolar(&ofs, Random(), elem->shakePower);
+    Vec3_Add(&elem->spr_a8.pos, &ofs);
+    Vec3_Add(&elem->spr_f0.pos, &ofs);
+  }
+
+  hb = &elem->hurtbox;
+  if (elem->unk_2a & 0x10) {
+    SET_FLAGS(hb->flags, HBFLAG_HIDDEN);
+  } else {
+    Hitbox_SetPos(hb, &elem->obj.pos, 0);
+    if (elem->unk_40 != 0) {
+      elem->unk_40--;
+      SET_FLAGS(hb->flags, HBFLAG_HIDDEN);
+    } else {
+      CLEAR_FLAGS(hb->flags, HBFLAG_HIDDEN);
+    }
+  }
+
+  hb = &elem->hitbox;
+  if (elem->unk_2a & 0x20) {
+    if (!(elem->timer & 1)) {
+      size.x = 0x90, size.y = 0x80, size.z = 0x40;
+    } else {
+      size.x = 0x40, size.y = 0x80, size.z = 0x90;
+    }
+    hb->halfSize = size;
+    Hitbox_SetPos(hb, &elem->obj.pos, 0);
+    Hitbox_Register(hb);
+  }
+
+  if (elem->unk_45 != elem->state && elem->state != 0) {
+    CLEAR_FLAGS(self->tile.attr, TATTR_UNK_9);
+  }
+
+  if (elem->flashTimer != 0) {
+    if (--elem->flashTimer == 0) {
+      EntityC9BCElem_ApplyPltt(p, elem);
+    }
+  } else {
+    EntityC9BCElem_ApplyPltt(p, elem);
+  }
+
+  if (elem->unk_02 != elem->unk_46 && elem->scriptID != 0) {
+    s32 i;
+
+    argv[0] = obj->id;
+    argv[1] = elem->unk_02;
+    argv[2] = elem->unk_02 & ~elem->unk_46;
+    argv[3] = elem->unk_46 & ~elem->unk_02;
+    for (i = 0; i < 4; i++) {
+      argv[4 + i] = elem->scriptArgs[i];
+    }
+    args.argc = 8, args.argv = argv;
+    VM_ExecByID(elem->scriptID, &args);
+  }
+
+  elem->timer++;
+#else
+  INCFUNC("asm/func/FUN_0800d480.inc");
+#endif
+}
 
 void (*const sC9BCElemUpdates[7])(EntityC9BC*, EntityC9BCElem*, u32) = {
     EntityC9BCElem_UpdateState0,
