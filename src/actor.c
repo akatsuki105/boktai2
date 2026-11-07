@@ -886,7 +886,113 @@ bool32 Cmd_6688(void) {
   return FALSE;
 }
 
-NAKED s32 FUN_08041e10(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08041e10.inc"); }
+// スクリプトの名前付き引数から Actor の共通の設定 (経路, 時間帯, アニメ, 近さの範囲, 歩く速さなど) を読む
+s32 FUN_08041e10(ActorManager* p, Actor* actor) {
+  s32 speed;
+
+  if (VM_GetNamedArgValue('C', 1)) {
+    FUN_080410cc(actor);
+  }
+  actor->unk_215 = actor->mover.angle;
+  actor->unk_216 = VM_GetNamedArgValue('C', 1);
+
+  if (VM_SeekToNamedArg('r')) {
+    actor->pathIdx = VM_GetValue();
+    actor->pathParam = VM_GetValue();
+    actor->pathNodeIdx = VM_GetValue();
+    Mover_SetPath(&actor->mover, &actor->pathWalker, actor->pathIdx, actor->pathParam, actor->pathNodeIdx);
+    Map_ReadPathNodePos(&actor->mover.pos, actor->pathWalker.node, actor->pathNodeIdx);
+  } else {
+    actor->pathIdx = -1;
+  }
+
+  if (VM_SeekToNamedArg('h')) {
+    actor->unk_1ed = 1;
+    actor->navTarget.x = VM_GetValue();
+    actor->navTarget.y = VM_GetValue();
+    actor->navTarget.z = VM_GetValue();
+  } else {
+    actor->unk_1ed = 0;
+    actor->navTarget = actor->mover.pos;
+  }
+
+  if (VM_SeekToNamedArg('T')) {
+    actor->unk_230 = 1;
+    actor->startHour = VM_GetValue();
+    actor->startMinute = VM_GetValue();
+    actor->endHour = VM_GetValue();
+    actor->endMinute = VM_GetValue();
+  } else {
+    actor->unk_230 = 0;
+    actor->startHour = 9;
+    actor->startMinute = 0;
+    actor->endHour = 21;
+    actor->endMinute = 0;
+  }
+
+  if (VM_SeekToNamedArg('b')) {
+    actor->unk_1e8 = VM_GetValue();
+    actor->unk_1e9 = VM_GetValue();
+    actor->unk_1ea = VM_GetValue();
+  } else {
+    actor->unk_1e8 = 0;
+    actor->unk_1e9 = 1;
+    actor->unk_1ea = 0;
+  }
+
+  if (VM_SeekToNamedArg('w')) {
+    actor->unk_228 = VM_GetValue();
+    actor->nearRange = VM_GetValue();
+    actor->unk_220 = VM_GetValue();
+  } else {
+    actor->unk_228 = 256;
+    actor->nearRange = 256;
+    actor->unk_220 = 512;
+  }
+
+  if (VM_SeekToNamedArg('H')) {
+    actor->unk_238 = VM_GetValue();
+    actor->unk_239 = VM_GetValue();
+    actor->unk_23a = 4;
+    actor->unk_23b = 0xFF;
+  } else {
+    actor->unk_238 = 6;
+    actor->unk_239 = 6;
+    actor->unk_23a = 4;
+    actor->unk_23b = 0xFF;
+  }
+  actor->unk_23a = VM_GetNamedArgValue('B', 4);
+  actor->work.walk.unk_20 = VM_GetNamedArgValue('t', 0);
+
+  if (VM_SeekToNamedArg('s')) {
+    s32 a = VM_GetValue();
+    s32 b = VM_GetValue();
+
+    actor->pathSpeed = a;
+    actor->unk_1f2 = b;
+    actor->unk_1f4 = a;
+    actor->unk_1f8 = b;
+    actor->unk_1fc = a * a;
+    actor->unk_200 = b * b;
+  } else {
+    s32 a = 80;
+    s32 b = 96;
+
+    actor->pathSpeed = a;
+    actor->unk_1f2 = b;
+    actor->unk_1f4 = a;
+    actor->unk_1f8 = b;
+    actor->unk_1fc = a * a;
+    actor->unk_200 = b * b;
+  }
+
+  speed = VM_GetNamedArgValue('M', 10);
+  actor->walkSpeed = speed;
+  actor->arriveDistSq = speed * speed;
+  actor->unk_0b = VM_GetNamedArgValue('u', 1);
+  actor->footStep = VM_GetNamedArgValue('F', 1);
+  return 0;
+}
 
 void FUN_08042178(ActorManager* p, Actor* actor, s32 elapsed) {
   if (actor->unk_09 != 0) {

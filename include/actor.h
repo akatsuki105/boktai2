@@ -125,11 +125,11 @@ typedef struct Actor {
   u8 unk_1ee;                 // 0x1EE, 根拠: Actor_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
   s8 pathIdx;                 // 0x1EF, Cmd_5517 の '.r' の1つ目, 負なら経路なし
   u16 pathSpeed;              // 0x1F0, 経路を歩く速さ, Map_GetStepToPathNode に渡す
-  u16 unk_1f2;                // 0x1F2
-  u32 unk_1f4;                // 0x1F4
-  u32 unk_1f8;                // 0x1F8
-  u32 unk_1fc;                // 0x1FC
-  u32 unk_200;                // 0x200
+  u16 unk_1f2;                // 0x1F2, FUN_08041e10 の '.s' の2つ目 (既定 96)
+  u32 unk_1f4;                // 0x1F4, pathSpeed の写し
+  u32 unk_1f8;                // 0x1F8, unk_1f2 の写し
+  u32 unk_1fc;                // 0x1FC, pathSpeed の2乗
+  u32 unk_200;                // 0x200, unk_1f2 の2乗
   s32 walkSpeed;              // 0x204, work.walk.target へ歩くときの1フレームの移動量
   u32 arriveDistSq;           // 0x208, target までの距離の2乗がこれ以下なら着いたとみなす
   u16 pathParam;              // 0x20C, Cmd_5517 の '.r' の2つ目, Mover_SetPath の第4引数
@@ -148,7 +148,8 @@ typedef struct Actor {
   u8 unk_225;                 // 0x225, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
-  u8 unk_228[0x230 - 0x228];  // 0x228, まだ未解析
+  u32 unk_228;                // 0x228, FUN_08041e10 の '.w' の1つ目 (既定 256)
+  u8 unk_22c[4];              // 0x22C, まだ未解析
   u8 unk_230;                 // 0x230, 0 以外なら FUN_08043a24 が分の切り替わりで時間帯の終わりを見る
   u8 startHour;               // 0x231, FUN_08043da8 が見る時間帯の始まり (時)
   u8 startMinute;             // 0x232, 同じく (分)
