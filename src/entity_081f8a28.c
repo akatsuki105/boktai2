@@ -99,7 +99,19 @@ void (*const PTR_ARRAY_085ae5c0[4])(Entity081f8a28*, Entity081f8a28Elem*) = {
     Entity081f8a28_UpdateExplode,
 };  // 0x085AE5C0
 
-NAKED s32 Entity081f8a28_Update(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Update.inc"); }
+s32 Entity081f8a28_Update(Entity081f8a28* p) {
+  Entity081f8a28Elem* elems = p->elems;
+  s32 i;
+
+  if (p->usedMask != 0) {
+    for (i = 0; i < 8; i++) {
+      if (Entity081f8a28_IsElemUsed(p, i)) {
+        PTR_ARRAY_085ae5c0[elems[i].state](p, &elems[i]);
+      }
+    }
+  }
+  return 0;
+}
 
 NAKED s32 Entity081f8a28_Destroy(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Destroy.inc"); }
 
