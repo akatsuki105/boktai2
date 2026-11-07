@@ -792,7 +792,39 @@ void FUN_080421bc(ActorManager* p, Actor* actor, s32 elapsed) {
 
 NAKED void FUN_08042200(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042200.inc"); }
 
-NAKED void FUN_0804234c(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_0804234c.inc"); }
+// mover の向きを unk_1b へ 1フレーム 8 ずつ近づけ, 合ったら終える
+// 残差: 原典は新しい向きを s8 に正規化してから格納し, その値を u16 にして Angle_ToDir8/4 に渡すが, こちらは u8 のまま格納して s8→u16 を1回のシフトで作る (Mover.angle が s8 だった形かもしれない)
+NON_MATCH void FUN_0804234c(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 2, 1, 0, 4);
+  }
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) != 1) {
+    s8 angle = actor->mover.angle;
+    s8 diff = actor->unk_1b - angle;
+
+    if (diff > 8) {
+      angle += 8;
+    } else if (diff < -8) {
+      angle -= 8;
+    } else {
+      angle += diff;
+    }
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+    FUN_08041480(actor, 2, 1, 0, 1);
+    if (actor->mover.angle == actor->unk_1b) {
+      actor->unk_07 = 1;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0804234c.inc");
+#endif
+}
 
 NAKED void FUN_08042414(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042414.inc"); }
 
