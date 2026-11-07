@@ -119,7 +119,14 @@ NAKED void FUN_081e04a8(Entity501B* p) { INCFUNC("asm/func/FUN_081e04a8.inc"); }
 
 NAKED void FUN_081e0544(Entity501B* p) { INCFUNC("asm/func/FUN_081e0544.inc"); }
 
-NAKED void FUN_081e0588(Entity501B* p) { INCFUNC("asm/func/FUN_081e0588.inc"); }
+// セーブの書き込みを試し, 結果に応じた状態へ移る
+void FUN_081e0588(Entity501B* p) {
+  if (Save_SwitchSlot()) {
+    Entity501B_SetState(p, Entity501B_StateSaveDone, 7);
+  } else {
+    Entity501B_SetState(p, Entity501B_StateSaveFailed, 8);
+  }
+}
 
 NAKED void Entity501B_StateSaveDone(Entity501B* p) { INCFUNC("asm/func/Entity501B_StateSaveDone.inc"); }
 
