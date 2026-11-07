@@ -124,7 +124,10 @@ NAKED void FUN_08140d48(EnemyBat* p) { INCFUNC("asm/func/FUN_08140d48.inc"); }
 
 NAKED void FUN_08140dd0(EnemyBat* p) { INCFUNC("asm/func/FUN_08140dd0.inc"); }
 
-NAKED s32 FUN_08140ea0(EnemyBat* p) { INCFUNC("asm/func/FUN_08140ea0.inc"); }
+s32 FUN_08140ea0(EnemyBat* p) {
+  FUN_0814031c(p);
+  return 1;
+}
 
 s32 FUN_08140eac(EnemyBat* p) { return 1; }
 
