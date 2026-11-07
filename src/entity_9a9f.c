@@ -258,7 +258,26 @@ void FUN_081de090(Entity9A9F* p) {
   p->spanOfTime = Time_GetSpanOfTime();
 }
 
-NAKED void FUN_081de0dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de0dc.inc"); }
+// 残差: 原典は unk_118 を &unk_118[4] から下へ動くポインタと別の数え役で埋めるが, こちらは添字のまま [base + i] で書く
+NON_MATCH void FUN_081de0dc(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 4; i >= 0; i--) {
+    p->unk_118[i] = 4;
+  }
+  for (i = 0; i < 4; i++) {
+    p->unk_120[i] = 0;
+    p->unk_128[i] = 0;
+    p->unk_130[i] = 0;
+    p->unk_138[i] = 0;
+    p->unk_144[i] = 0;
+  }
+  p->unk_140 = 0;
+#else
+  INCFUNC("asm/func/FUN_081de0dc.inc");
+#endif
+}
 
 NAKED s32 FUN_081de130(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de130.inc"); }
 
