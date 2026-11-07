@@ -13,7 +13,7 @@
 	cmp r0, #3
 	bne _08165200
 	adds r0, r6, #0
-	bl FUN_08164a48
+	bl Slime_ShootDroplets
 _08165200:
 	movs r3, #0xc0
 	lsls r3, r3, #1

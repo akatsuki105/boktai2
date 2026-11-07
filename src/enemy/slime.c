@@ -49,7 +49,7 @@ void FUN_081636d4(Slime* p);
 void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
 void Slime_SpawnDroplets(Slime* p);
-void FUN_08164a48(Slime* p);
+void Slime_ShootDroplets(Slime* p);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
 void Slime_PickWalkDest(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
@@ -764,7 +764,7 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
 
 // プレイヤーの方へ攻撃判定つきの飛沫を3つ, 少しずつ向きと速さを散らして撃つ
 // 361/365命令, 乱数は1つ目の塊だけ頭の table を使い, 2つ目以降は塊ごとに table を取り直すと命令列はほぼ揃う, 残差は pos と定数 7 の割り当て (原典は2つ目の Spawn の前で pos を r8 から r9 へ写し, 7 を r8 に置いて & 7 と anim 番号に使い回す), 試済: pos を直接渡す
-NON_MATCH void FUN_08164a48(Slime* p) {
+NON_MATCH void Slime_ShootDroplets(Slime* p) {
 #ifdef NONMATCHING_C
   u32 attrs = Slime_PickHitAttributes(p);
   u16* table = gRandomTable;
@@ -798,7 +798,7 @@ NON_MATCH void FUN_08164a48(Slime* p) {
   vel.y = 32;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
 #else
-  INCFUNC("asm/func/FUN_08164a48.inc");
+  INCFUNC("asm/func/Slime_ShootDroplets.inc");
 #endif
 }
 
@@ -837,7 +837,7 @@ NON_MATCH bool8 FUN_081651dc(Slime* p) {
 
   PlaySound_082406e0(SE_SLIME_DAMAGED);
   if ((p->e).variant == 3) {
-    FUN_08164a48(p);
+    Slime_ShootDroplets(p);
   }
   Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_5);
   q->unk_658 += 80;
