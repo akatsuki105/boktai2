@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
+#include "input.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -30,8 +31,8 @@ typedef struct Entity1B24 {
   u32 unk_f74;                                 // 0xF74, _Init が 0x1E を入れる
   s8 unk_f78[8];                               // 0xF78
   s32 unk_f80;                                 // 0xF80
-  void* unk_f84;                               // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
-  void* unk_f88;                               // 0xF88, 同上
+  u32 cancelScriptID;                          // 0xF84, '.p', B で抜けるとき VM_ExecByID で実行する, 0 なら何もしない
+  u32 confirmScriptID;                         // 0xF88, '.n', START で決めたとき VM_ExecByID で実行する, 0 なら何もしない
   void (*updateCallback)(struct Entity1B24*);  // 0xF8C
 } Entity1B24;
 static_assert(sizeof(Entity1B24) == 3984);
@@ -42,6 +43,9 @@ void GetWeaponData(slot32_t n, WeaponData* data);
 void FUN_08094d1c(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
+void FUN_081df8d4(void);
+void FUN_081df95c(s32 val);
+void FUN_0809d7a4(Entity1B24* p);
 
 // gEntity9A9F の記録を返す, セッションが無ければ NULL
 static inline Entity9A9FRecord* Entity9A9F_GetRecord(void) {
@@ -51,6 +55,52 @@ static inline Entity9A9FRecord* Entity9A9F_GetRecord(void) {
     return NULL;
   }
   return &p->self;
+}
+
+// gEntity9A9F の unk_54[2] が 1 か
+static inline bool8 Entity9A9F_IsUnk56Set(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p != NULL && p->unk_54[2] == 1) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 交換に出す武器を自分の記録へ写す
+static inline void Entity9A9F_SetTradeWeapon(WeaponData* w, s8 slot) {
+  Entity9A9FRecord* rec = Entity9A9F_GetRecord();
+
+  if (rec != NULL) {
+    s32 i;
+
+    rec->body.id = w->id;
+    rec->body.kind = w->kind;
+    rec->body.rank = w->rank;
+    rec->body.lv = w->lv;
+    rec->body.atk = w->atk;
+    rec->body.durability = w->durability;
+    rec->body.wear = w->wear;
+    rec->body.quality = w->quality;
+    rec->body.price = w->price;
+    for (i = 0; i < 12; i++) {
+      rec->body.PS[i] = w->PS[i];
+    }
+    {
+      u8* dst = rec->body.effects[0];
+      u8* src = (u8*)w->effects;
+
+      for (i = 0; i < 3; i++) {
+        dst[0] = src[0];
+        dst[1] = src[1];
+        dst[2] = src[2];
+        dst[3] = src[3];
+        dst += 4;
+        src += 4;
+      }
+    }
+    rec->unk_17 = slot;
+  }
 }
 
 // 状態関数を差し替える
@@ -260,7 +310,83 @@ void FUN_0809d300(Entity1B24* p) {
   p->sprites[35].flags &= ~SPRFLAG_HIDDEN;
 }
 
-NAKED void FUN_0809d3d0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d3d0.inc"); }
+// 一覧で武器を選ぶ, A でカーソルの武器を交換に出す欄へ飛ばし, B でやめて, START で決めて記録に写してから終える
+// 下書き (441/422命令): 流れと記録への写し方 (3か所の展開) は一致, 原典は B の経路で p->slot の比較に使った値をそのまま写し, actor を r6, sprites[18] を r5 に置く
+NON_MATCH void FUN_0809d3d0(Entity1B24* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  MainSprite_AdvanceAnim(&p->sprites[18], &p->gfx[0]);
+  if (p->unk_f74 != 0) {
+    p->unk_f74--;
+    return;
+  }
+
+  if (gInput[0].pressed & A_BUTTON) {
+    if (p->record->unk_40[0] == 2 || !FUN_0809cf98((u8)p->cursor.slot) || (u8)p->cursor.slot == p->slot) {
+      goto beep;
+    }
+    p->slot = p->cursor.slot;
+    GetWeaponData(p->slot, &p->weaponData);
+    FUN_0809d270(p);
+    FUN_0809ce90(p, FUN_0809d7a4);
+  } else if (gInput[0].pressed & B_BUTTON) {
+    PlaySound_082406e0(SE_CANCEL);
+    if (p->record->unk_40[0] != 2 && p->slot >= 0) {
+      Entity9A9F_SetTradeWeapon(&p->weaponData, p->slot);
+    }
+    FUN_0809d230(p);
+    for (i = 0; i < 36; i++) {
+      p->sprites[i].flags |= SPRFLAG_HIDDEN;
+    }
+    if (p->cancelScriptID != 0) {
+      VM_ExecByID(p->cancelScriptID, NULL);
+    }
+    KillEntity((Entity*)p);
+  } else if (gInput[0].pressed & START_BUTTON) {
+    if (p->slot < 0) {
+    beep:
+      PlaySound_082406e0(SE_NG);
+      return;
+    }
+    PlaySound_082406e0(SE_SELECT);
+    if (p->record->unk_40[0] == 2) {
+      Entity9A9F_SetTradeWeapon(&p->weaponData, p->record->unk_17);
+    } else {
+      Entity9A9F_SetTradeWeapon(&p->weaponData, p->slot);
+    }
+    if (Entity9A9F_IsUnk56Set()) {
+      FUN_081df8d4();
+      FUN_0809d230(p);
+      Marquee_CloseGlobal();
+      ClearBGTilemapBuffer(0);
+      ClearBGTilemapBuffer(1);
+      ClearBGTilemapBuffer(2);
+      ClearBGTilemapBuffer(3);
+    } else {
+      FUN_081df95c(3);
+      FUN_0809d230(p);
+      ClearBGTilemapBuffer(0);
+      ClearBGTilemapBuffer(1);
+      ClearBGTilemapBuffer(2);
+      ClearBGTilemapBuffer(3);
+      if (p->confirmScriptID != 0) {
+        VM_ExecByID(p->confirmScriptID, NULL);
+      }
+    }
+    for (i = 0; i < 36; i++) {
+      p->sprites[i].flags |= SPRFLAG_HIDDEN;
+    }
+    KillEntity((Entity*)p);
+  } else if (ShopCursor_Move(&p->cursor)) {
+    FUN_0809cea8(p);
+    FUN_0809d00c(p);
+    ShopCursor_PlaceSprite(&p->cursor, &p->sprites[18]);
+  }
+#else
+  INCFUNC("asm/func/FUN_0809d3d0.inc");
+#endif
+}
 
 void FUN_0809d7a4(Entity1B24* p) {
   if (FUN_080b9adc(&p->flying)) {
@@ -345,14 +471,14 @@ void FUN_0809dd68(Entity1B24* p) {
 
 void FUN_0809dd88(Entity1B24* p) {
   if (VM_SeekToNamedArg('p')) {
-    p->unk_f84 = (void*)VM_GetValue();
+    p->cancelScriptID = VM_GetValue();
   } else {
-    p->unk_f84 = NULL;
+    p->cancelScriptID = 0;
   }
   if (VM_SeekToNamedArg('n')) {
-    p->unk_f88 = (void*)VM_GetValue();
+    p->confirmScriptID = VM_GetValue();
   } else {
-    p->unk_f88 = NULL;
+    p->confirmScriptID = 0;
   }
 }
 

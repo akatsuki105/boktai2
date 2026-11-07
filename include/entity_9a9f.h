@@ -5,9 +5,19 @@
 #include "types.h"
 
 // 通信セッション1回分の相手の記録, Entity08F4 が unk_18 < 3 の要素だけを数える
-// レコードから抜き出して Entity9A9F.bodies[] に写す36バイト, 中身は未解析
+// レコードに載せる交換用の武器, 並びは WeaponData と同じで特殊効果だけバイト列で持つ, Entity9A9F.bodies[] に写される
 typedef struct {
-  u8 unk_0[36];  // 0x00
+  u8 id;             // 0x00
+  u8 kind;           // 0x01
+  u8 rank;           // 0x02
+  u8 lv;             // 0x03
+  u8 atk;            // 0x04
+  u8 durability;     // 0x05
+  u16 wear;          // 0x06
+  s16 quality;       // 0x08
+  u16 price;         // 0x0A
+  char PS[12];       // 0x0C
+  u8 effects[3][4];  // 0x18, WeaponData.effects をバイトごとに写したもの
 } Entity9A9FRecordBody;
 static_assert(sizeof(Entity9A9FRecordBody) == 36);
 
