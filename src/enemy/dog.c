@@ -867,7 +867,37 @@ NAKED void FUN_08150b18(Dog* p) { INCFUNC("asm/func/FUN_08150b18.inc"); }
 
 NAKED void FUN_08150de8(Dog* p) { INCFUNC("asm/func/FUN_08150de8.inc"); }
 
-NAKED void FUN_081514f0(Dog* p) { INCFUNC("asm/func/FUN_081514f0.inc"); }
+// 経路に沿って歩き, 経路の終わりに着いたら副状態 (3,1,0) へ, 通過点が変わって曲がれたら副状態18へ移る
+void FUN_081514f0(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+  s32 speed;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_0814e530, ES_UNK_41);
+    Dog_SetUnk6a8(q, 8);
+  }
+  speed = (p->e).unk_588(&p->e);
+  (p->e).animSpeedDiv = 2;
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if (!Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
+    if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      Dog_SetUnk6a8(q, 4);
+      return;
+    }
+  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    Enemy_ResetState(&p->e, 0, 0, 18);
+  }
+  if (FUN_0814b3a0(p)) {
+    if ((p->e).unk_608(&p->e)) {
+      return;
+    }
+    if (FUN_080f0a0c(&p->e)) {
+      return;
+    }
+  }
+  (p->e).subStateTimer++;
+}
 
 void FUN_081516d8(Dog* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
