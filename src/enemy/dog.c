@@ -116,7 +116,16 @@ void FUN_0814a8c8(Dog* p) { CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_1); }
 
 NAKED s32 FUN_0814a8dc(Dog* p) { INCFUNC("asm/func/FUN_0814a8dc.inc"); }
 
-NAKED void FUN_0814aad4(Dog* p) { INCFUNC("asm/func/FUN_0814aad4.inc"); }
+void FUN_0814aad4(Dog* p) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_9)) {
+    Enemy_SetAnimEntry(&p->e, 1, 4, 0);
+  } else {
+    Enemy_SetAnimEntry(&p->e, 1, 3, 0);
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_9)) {
+    (p->e).animSpeedDiv = 2;
+  }
+}
 
 void Dog_InitHitboxes(Dog* p) {
   Dog* self = (p->e).unk_1cc;
