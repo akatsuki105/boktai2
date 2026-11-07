@@ -161,7 +161,24 @@ void FUN_081dde98(Entity9A9F* p) {
   }
 }
 
-NAKED void FUN_081dded4(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dded4.inc"); }
+void FUN_081dded4(Entity9A9F* p) {
+  s32 i;
+
+  p->unk_32 = p->unk_30;
+  p->stateTimer = 0;
+  FUN_081ddc04(p);
+  for (i = 0; i < 4; i++) {
+    p->unk_120[i] = 0;
+    p->unk_128[i] = 0;
+    p->unk_130[i] = 0;
+    gLinkKeyInput[i] = 0x3FF;
+  }
+  p->unk_140 = 0;
+  p->unk_52 = 0;
+  p->unk_53 = 0;
+  FUN_081dde98(p);
+  gRandTableIdx = p->records[0].randSeed & 0x3FF;
+}
 
 // recordCount と unk_38 / unk_3a を引数にして scriptID_2dc のスクリプトを起動する
 void FUN_081ddf44(Entity9A9F* p) {
