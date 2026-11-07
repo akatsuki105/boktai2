@@ -48,7 +48,6 @@ void FUN_080867a0(void);
 void FUN_080e7b6c(Enemy* p);
 void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
-void Enemy_SnapToFloor(Enemy* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 IsInPuddle(WorldPos* pos);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);

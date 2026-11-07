@@ -680,7 +680,50 @@ void FUN_0814e530(Dog* p) {
 
 NAKED void FUN_0814e680(Dog* p) { INCFUNC("asm/func/FUN_0814e680.inc"); }
 
-NAKED void FUN_0814e8ec(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e8ec.inc"); }
+// 跳ねながら点滅して消え, 消えきったら倒されたスクリプトを呼び図鑑に載せて止まる
+void FUN_0814e8ec(Dog* p, s32 timer) {
+  Enemy_ClearDamage(&p->e);
+  Enemy_UpdateJump(&p->e);
+  Enemy_SnapToFloor(&p->e);
+  if (Sprite_UpdateVanishBlink(&((AuxSprite*)(p->e).sprite)->flags, timer, 10, 30)) {
+    s32 idx;
+
+    (p->e).subStateDone = 1;
+    FUN_0814afc8(p);
+    if ((p->e).unk_19a != 0) {
+      u32 argv[8];
+      ScriptArgs sa;
+
+      argv[0] = (p->e).mover.pos.x;
+      argv[1] = (p->e).mover.pos.y;
+      argv[2] = (p->e).mover.pos.z;
+      argv[3] = (p->e).unk_19c;
+      argv[4] = (p->e).unk_1a0;
+      argv[5] = (p->e).unk_1a4;
+      argv[6] = (p->e).unk_4a0;
+      argv[7] = (p->e).mover.id;
+      sa.argc = 8;
+      sa.argv = argv;
+      VM_ExecByID((p->e).unk_19a, &sa);
+    }
+    idx = EnemyDex_GetEntryIdx((p->e).kind, (p->e).variant);
+    if (idx < 32) {
+      gStat->enemyDexSeen[0] |= 1 << idx;
+    } else {
+      gStat->enemyDexSeen[1] |= 1 << (idx - 32);
+    }
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_14)) {
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+      Enemy_ResetState(&p->e, 1, 0, 2);
+    }
+    ParticleShadow_Hide(&(p->e).shadow);
+    Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
+  } else if (Enemy_TestSpriteFlags(&p->e, SPRFLAG_HIDDEN)) {
+    ParticleShadow_Hide(&(p->e).shadow);
+  } else {
+    ParticleShadow_Show(&(p->e).shadow);
+  }
+}
 
 NAKED bool8 FUN_0814eacc(Dog* p) { INCFUNC("asm/func/FUN_0814eacc.inc"); }
 

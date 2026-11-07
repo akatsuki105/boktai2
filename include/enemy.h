@@ -538,6 +538,8 @@ void Enemy_InitHpAndState(Enemy* p, s32 hp, s32 param_3, s32 param_4);
 void FUN_080f5b34(Enemy* p);
 void Enemy_SetOwnerAndSpriteKind(Enemy* p, void* arg, u8 spriteKind);
 bool8 Enemy_UpdateJump(Enemy* p);
+void Enemy_SnapToFloor(Enemy* p);
+void Enemy_ClearDamage(Enemy* p);
 void Enemy_StateBlownAway(Enemy* p);
 void Enemy_WaitPendingState(Enemy* p, s32 timer);
 bool8 FUN_080f84d4(Enemy* p);
