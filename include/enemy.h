@@ -50,6 +50,7 @@ typedef u32 EnemyFlags;
 #define ENEFLAG_UNK_12 (1 << 12)  // 0x00001000, Enemy_KillAll / EnemyManager_UpdateEnemies が立てる
 #define ENEFLAG_UNK_13 (1 << 13)  // 0x00002000, Cmd_1E97 が立てる
 #define ENEFLAG_UNK_14 (1 << 14)  // 0x00004000, FUN_080f46a4 がまとめて落とす
+#define ENEFLAG_UNK_15 (1 << 15)  // 0x00008000, Enemy_DamageAll が被弾色のパレットに差し替えたときに立てる
 #define ENEFLAG_UNK_16 (1 << 16)  // 0x00010000, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_17 (1 << 17)  // 0x00020000, Cmd_1E97 が立てる
 #define ENEFLAG_UNK_18 (1 << 18)  // 0x00040000, '.u' が 0 以外なら Mimic_Init が立てる
@@ -73,6 +74,7 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_9 (1 << 9)    // 0x00000200, Enemy_SetEmote が FUN_080d9cec に 0/1 で渡す
 #define ENEFLAG2_UNK_10 (1 << 10)  // 0x00000400, Curoro_Init が立てる
 #define ENEFLAG2_UNK_6 (1 << 6)    // 0x00000040, FUN_080f5c0c が落とす
+#define ENEFLAG2_UNK_7 (1 << 7)    // 0x00000080, Enemy_ResetToSpawn / Enemy_ResetInPlace がまとめて落とす
 #define ENEFLAG2_UNK_8 (1 << 8)    // 0x00000100, FUN_080f5c0c が落とす
 #define ENEFLAG2_UNK_11 (1 << 11)  // 0x00000800, Enemy_Deactivate が立っているときだけ ENEFLAG4_UNK_12 へ進む
 #define ENEFLAG2_UNK_12 (1 << 12)  // 0x00001000, 立っている間は Boku が経路ノードの待ちを終えても歩き出さない
