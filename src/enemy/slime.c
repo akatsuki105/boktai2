@@ -86,7 +86,30 @@ void FUN_08162cf4(Slime* p) {
 
 NAKED void FUN_08162d18(Slime* p) { INCFUNC("asm/func/FUN_08162d18.inc"); }
 
-NAKED void FUN_08162df4(Slime* p) { INCFUNC("asm/func/FUN_08162df4.inc"); }
+// 残差は Random の展開で gRandTableIdx のアドレスと新しい添字のレジスタが入れ替わるのみ, 試済: u8/s32 の受け, & 0xFF, フラグの OR を1か所にまとめる形, 宣言順
+NON_MATCH void FUN_08162df4(Slime* p) {
+#ifdef NONMATCHING_C
+  EnemyFlags4 bits;
+  s32 r;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    (p->e).animSpeedDiv = 1;
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, 64);
+    Enemy_PlayAnimNoFacing(&p->e, 16);
+  }
+  r = (u8)Random();
+  if (r < 8) {
+    bits = ENEFLAG4_UNK_4;
+  } else if (r < 14) {
+    bits = ENEFLAG4_UNK_5;
+  } else {
+    return;
+  }
+  SET_FLAGS((p->e).flags4, bits);
+#else
+  INCFUNC("asm/func/FUN_08162df4.inc");
+#endif
+}
 
 NAKED void FUN_08162e74(Slime* p) { INCFUNC("asm/func/FUN_08162e74.inc"); }
 
