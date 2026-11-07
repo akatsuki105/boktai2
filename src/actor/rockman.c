@@ -145,7 +145,7 @@ void Cmd_56AD(void) {
       break;
     }
     case 2: {
-      if (actor->unk_1ef >= 0) {
+      if (actor->pathIdx >= 0) {
         Actor_StartState(actor, FUN_08043510(actor));
         Actor_SetUpdate(actor, FUN_080421bc, 2);
       } else {

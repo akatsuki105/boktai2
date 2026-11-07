@@ -69,7 +69,9 @@ typedef struct {
 
 // メッセージで歩かせる Actor の Actor.work
 typedef struct {
-  u8 unk_00[0x34];  // 0x00
+  u8 unk_00[0x20];  // 0x00
+  u32 unk_20;       // 0x20, Cmd_5517 の '.t'
+  u8 unk_24[0x10];  // 0x24
   WorldPos target;  // 0x34, cmd 3 のメッセージの args[0..2], ここへ向かって歩く
 } ActorWalkWork;
 
@@ -116,11 +118,11 @@ typedef struct Actor {
   u8 unk_1a4[0x1E8 - 0x1A4];  // 0x1A4, まだ未解析
   u8 unk_1e8;                 // 0x1E8, FUN_08042868 が FUN_08041480 の第2引数に渡す
   u8 unk_1e9;                 // 0x1E9, 同じく第3引数
-  u8 unk_1ea[2];              // 0x1EA, まだ未解析
+  u16 unk_1ea;                // 0x1EA, Cmd_5517 の '.b' の3つ目
   u8 unk_1ec;                 // 0x1EC, FUN_08042cf0 が初回に 1 を入れる
   u8 unk_1ed;                 // 0x1ED, まだ未解析
   u8 unk_1ee;                 // 0x1EE, 根拠: Actor_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
-  s8 unk_1ef;                 // 0x1EF
+  s8 pathIdx;                 // 0x1EF, Cmd_5517 の '.r' の1つ目, 負なら経路なし
   u16 unk_1f0;                // 0x1F0
   u16 unk_1f2;                // 0x1F2
   u32 unk_1f4;                // 0x1F4
@@ -129,9 +131,9 @@ typedef struct Actor {
   u32 unk_200;                // 0x200
   s32 walkSpeed;              // 0x204, work.walk.target へ歩くときの1フレームの移動量
   u32 arriveDistSq;           // 0x208, target までの距離の2乗がこれ以下なら着いたとみなす
-  u8 unk_20c[2];              // 0x20C, まだ未解析
+  u16 pathParam;              // 0x20C, Cmd_5517 の '.r' の2つ目, Mover_SetPath の第4引数
   u16 pathDelay;              // 0x20E, 経路の今のノードの待ちフレーム数 (PathNode.delay の下位12bit)
-  u8 unk_210[2];              // 0x210, まだ未解析
+  u16 pathNodeIdx;            // 0x210, Cmd_5517 の '.r' の3つ目, 最初に向かうノード番号
   u8 footStep;                // 0x212, 0 以外なら FUN_080414fc が足音を鳴らす
   u8 unk_213;                 // 0x213, まだ未解析
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
@@ -149,7 +151,11 @@ typedef struct Actor {
   u8 endMinute;               // 0x234, 同じく (分)
   u8 unk_235;                 // 0x235, まだ未解析
   u16 waitFrames;             // 0x236, 0 以外の間 FUN_08043da8 が減らすだけで時間帯を見ない
-  u8 unk_238[0x244 - 0x238];  // 0x238, まだ未解析
+  u8 unk_238;                 // 0x238, Cmd_5517 の '.H' の1つ目
+  u8 unk_239;                 // 0x239, Cmd_5517 の '.H' の2つ目
+  u8 unk_23a;                 // 0x23A, まだ未解析
+  u8 unk_23b;                 // 0x23B, Cmd_5517 が '.H' のとき 0xFF にする
+  u8 unk_23c[0x244 - 0x23C];  // 0x23C, まだ未解析
   union {
     ParticleShadow ptcl;              // shadowKind == 1
     AuxShadow aux;                    // shadowKind == 2

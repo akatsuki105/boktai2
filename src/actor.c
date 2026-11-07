@@ -23,6 +23,7 @@ void FUN_080417dc(Mover* mover);
 void FUN_08041918(ActorManager* p);
 s32 FUN_080411a0(ActorManager* p, Actor* actor);
 void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4);
+void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 bool32 FUN_08018a08(void);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
@@ -774,8 +775,65 @@ s32 Cmd_DDD0(void) {
   return 0;
 }
 
-// 0x5517
-NAKED s32 Cmd_5517(void) { INCFUNC("asm/func/Cmd_5517.inc"); }
+// 0x5517, '.n' の Actor に向き '.d', 経路 '.r', アニメ '.b' などを設定し, 経路があればその最初のノードの state から始め直す
+// 残差: 命令列は一致, 最後の Actor_StartState で原典は state を r0, 0 を r1 に置くが, こちらは state を r1 へ写して入れ替わる
+NON_MATCH s32 Cmd_5517(void) {
+#ifdef NONMATCHING_C
+  ActorManager* p = gActorManager;
+  Actor* actor;
+  u32 state;
+
+  if (p == NULL) {
+    return -1;
+  }
+  actor = ActorManager_FindActorByMoverID(p, VM_GetNamedArgValue('n', 0));
+  if (actor == NULL) {
+    return -1;
+  }
+
+  if (VM_SeekToNamedArg('d')) {
+    s32 angle = VM_GetValue();
+
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+  }
+  if (VM_SeekToNamedArg('r')) {
+    actor->pathIdx = VM_GetValue();
+    actor->pathParam = VM_GetValue();
+    actor->pathNodeIdx = VM_GetValue();
+    Mover_SetPath(&actor->mover, &actor->pathWalker, actor->pathIdx, actor->pathParam, actor->pathNodeIdx);
+    Map_ReadPathNodePos(&actor->mover.pos, actor->pathWalker.node, actor->pathNodeIdx);
+  }
+  if (VM_SeekToNamedArg('b')) {
+    actor->unk_1e8 = VM_GetValue();
+    actor->unk_1e9 = VM_GetValue();
+    actor->unk_1ea = VM_GetValue();
+  }
+  if (VM_SeekToNamedArg('t')) {
+    actor->work.walk.unk_20 = VM_GetValue();
+  }
+  if (VM_SeekToNamedArg('H')) {
+    actor->unk_238 = VM_GetValue();
+    actor->unk_239 = VM_GetValue();
+    actor->unk_23b = 0xFF;
+  }
+  if (VM_SeekToNamedArg('u')) {
+    actor->unk_0b = VM_GetValue();
+  }
+
+  if (actor->pathIdx >= 0) {
+    state = FUN_08043510(actor);
+  } else {
+    state = 6;
+  }
+  Actor_StartState(actor, state);
+  actor->unk_217 = 1;
+  return 0;
+#else
+  INCFUNC("asm/func/Cmd_5517.inc");
+#endif
+}
 
 // 0x43D6, '.n' の Actor を '.i' が 0 なら state 1, 1 なら state 0 から始め直す, 原典は最後の return を書き忘れている
 s32 Cmd_43D6(void) {
