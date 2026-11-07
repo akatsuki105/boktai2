@@ -248,7 +248,7 @@
 #define SONG_243 243
 #define SONG_244 244
 #define SONG_245 245
-#define CRY_CROW_WING 246  // クロウ系の敵が羽ばたく音
+#define CRY_CROW_WING 246  // クロウ系の敵が羽ばたく音, また太陽樹の根元にいる鳥の飛び立つ音でも使用
 #define CRY_CROW_ATK 247   // クロウ系の敵が攻撃する時の鳴き声
 #define CRY_CROW_DEATH 248
 #define SONG_249 249
@@ -388,8 +388,8 @@
 #define SONG_383 383
 #define SONG_384 384
 #define SONG_385 385
-#define SONG_386 386
-#define SE_GAIN_KEY 387  // 鍵を入手した時のSE
+#define SE_WARP_LEAF 386  // 転移の葉を使用した時のSE
+#define SE_GAIN_KEY 387   // 鍵を入手した時のSE
 #define SONG_388 388
 #define CRY_GOLEM_DETECT 389  // ゴーレムが怪しんだ時
 #define CRY_GOLEM_ALERT 390   // 見つかった時

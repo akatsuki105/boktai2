@@ -11,6 +11,9 @@
 #include "vec3.h"
 #include "vm.h"
 
+// 太陽樹の下に群がってる白い鳥 (クロウと見た目が同じだけで敵ではない)
+
+// 鳥1羽
 typedef struct {
   AuxSprite sprite;       // 0x00
   AuxAnimState anim;      // 0x2C
@@ -103,7 +106,7 @@ NON_MATCH void Cmd_8CC7(void) {
   }
   Video_GetAuxSprite(&e->gfx, SPRITE_CROW);
   AuxSprite_Add(&e->sprite, &e->gfx, 0);
-  Video_SetAuxSpritePltt(e->sprite.gfx, 0x14F);
+  Video_SetAuxSpritePltt(e->sprite.gfx, 335);
   e->state = 1;
   e->unk_74 = TRUE;
   if (VM_SeekToNamedArg('p')) {
@@ -116,9 +119,9 @@ NON_MATCH void Cmd_8CC7(void) {
     e->size.y = VM_GetValue();
     e->size.z = VM_GetValue();
   } else {
-    e->size.x = 256;
-    e->size.y = 256;
-    e->size.z = 256;
+    e->size.x = Q8(1);
+    e->size.y = Q8(1);
+    e->size.z = Q8(1);
   }
   e->sprite.priority = 2;
   e->flags = 0;

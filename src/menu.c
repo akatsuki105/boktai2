@@ -5910,7 +5910,7 @@ NON_MATCH void MainMenu_UseItem(MainMenu* p) {
     case IET_WARP: {
       PlaySound_082406e0(SE_HEAL);
       if (id == ITEM_WARP_LEAF) {
-        PlaySound_082406e0(SONG_386);
+        PlaySound_082406e0(SE_WARP_LEAF);
       }
       MainMenu_ApplyItemEffect(p, p->cursor.savedSlot);
       MainMenu_ReturnToItemPage(p);
