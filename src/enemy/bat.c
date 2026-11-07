@@ -52,6 +52,7 @@ static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
 
 struct Entity081fa164Elem* Entity081fa164_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 void FUN_08140dd0(EnemyBat* p);
+void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_08140c14(EnemyBat* p);
 void FUN_0813f9a8(EnemyBat*);
 void FUN_0813fbf8(EnemyBat*);
@@ -187,7 +188,51 @@ void FUN_0813f2fc(EnemyBat* p) {
   Enemy_PlayAnim(&p->e, 0);
 }
 
-NAKED void FUN_0813f320(EnemyBat* p, s32 timer) { INCFUNC("asm/func/FUN_0813f320.inc"); }
+// 向きに合わせて animTable[11] のアニメを流し, 30 フレーム未満は flags4 の印を立て, 60 フレームで副状態を終える
+// Enemy_PlayAnim の展開, 再生部分を (p, u32 anim, variant, f) を取る static inline にして変化なしで return する形にすると残差は MainSprite_SetAnim をまたいで定数 4 を r8 に置く点だけ (Enemy_PlayAnim と同じ壁), 試済: 反転フラグの直接操作
+NON_MATCH void FUN_0813f320(EnemyBat* p, s32 timer) {
+#ifdef NONMATCHING_C
+  s32 dir;
+  s32 flip;
+  u32 anim;
+
+  if ((p->e).stateBegun) {
+    (p->e).stateBegun = FALSE;
+  }
+  EnemyBat_GetDirAndFlip((p->e).mover.angle, &dir, &flip);
+  anim = (p->e).animTable[11].anim;
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSpriteData* s;
+
+    (p->e).playingAnim = anim;
+    s = (EnemyAuxSpriteData*)(p->e).sprite;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, dir, flip);
+    (p->e).animForceRestart = FALSE;
+  } else {
+    MainSprite* s = &(p->e).sprite->s;
+    s32 a = anim + dir;
+
+    if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flip == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      (p->e).playingAnim = a;
+      MainSprite_SetAnim(s, &(p->e).sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, (flip & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
+      if (flip & ANIM_PLAY_XFLIP) {
+        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
+      } else {
+        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
+      }
+      (p->e).animForceRestart = FALSE;
+    }
+  }
+  if (timer < 30) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
+  }
+  if (timer > 59) {
+    (p->e).subStateDone = TRUE;
+  }
+#else
+  INCFUNC("asm/func/FUN_0813f320.inc");
+#endif
+}
 
 NAKED void FUN_0813f44c(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f44c.inc"); }
 
