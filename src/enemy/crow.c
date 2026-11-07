@@ -8,7 +8,10 @@
 // クロウ(ENEID_CROW), ガーゴイル(ENEID_GARGOYLE)
 typedef struct {
   Enemy e;
-  u8 unk_654[1728 - sizeof(Enemy)];
+  u8 unk_654[0x6A0 - 0x654];  // 0x654
+  WorldPos curveStart;        // 0x6A0, 曲線の始点
+  Vec3 curveEnd;              // 0x6A8, 曲線の終点
+  u8 unk_6b0[1728 - 0x6B0];   // 0x6B0
 } Crow;
 static_assert(sizeof(Crow) == 1728);
 

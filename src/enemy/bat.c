@@ -10,11 +10,14 @@
 // プレイヤーが変身するCバット(PLAYER_BAT)などと混同しない様に構造体名は Bat ではなく EnemyBat にした
 typedef struct {
   Enemy e;
-  u8 unk_654[4];             // 0x654
-  u32 unk_658;               // 0x658, bit3 が立っていると移動が速くなる
-  u8 unk_65c[8];             // 0x65C
-  u16 unk_664;               // 0x664, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
-  u8 unk_666[1728 - 0x666];  // 0x666
+  u8 unk_654[4];              // 0x654
+  u32 unk_658;                // 0x658, bit3 が立っていると移動が速くなる
+  u8 unk_65c[8];              // 0x65C
+  u16 curveT;                 // 0x664, curveStart から curveEnd への曲線の進み具合, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
+  u8 unk_666[0x6A0 - 0x666];  // 0x666
+  WorldPos curveStart;        // 0x6A0, 曲線の始点
+  Vec3 curveEnd;              // 0x6A8, 曲線の終点
+  u8 unk_6b0[1728 - 0x6B0];   // 0x6B0
 } EnemyBat;
 static_assert(sizeof(EnemyBat) == 1728);
 
@@ -119,10 +122,10 @@ void EnemyBat_InitHitboxes(EnemyBat* p) {
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, EnemyBat_OnHit, 0, p);
 }
 
-// unk_664 が大きいほど速く, unk_658 の bit3 が立っていればさらに速い
+// curveT が大きいほど速く, unk_658 の bit3 が立っていればさらに速い
 s32 EnemyBat_GetMoveSpeed(EnemyBat* p) {
   EnemyBat* q = (p->e).unk_1cc;
-  s32 v = FixToInt(7, q->unk_664);
+  s32 v = FixToInt(7, q->curveT);
   s32 i;
 
   if (v < 0) {
