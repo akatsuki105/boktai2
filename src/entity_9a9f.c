@@ -540,7 +540,45 @@ NON_MATCH s32 FUN_081de960(Entity9A9F* p) {
 
 NAKED s32 FUN_081de9d8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de9d8.inc"); }
 
-NAKED s32 FUN_081deaf4(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081deaf4.inc"); }
+// 全員から種別 0x2000 のキーが届いたら state 11 へ, 原典は最後の return を書き忘れている
+// 残差: 原典は種別の定数 0x2000 をループ内で毎回作るが, こちらはループ外へ出して r12 に置く (FUN_081df568 と同じ)
+NON_MATCH s32 FUN_081deaf4(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 n;
+  s32 i;
+
+  gUseLinkInput = TRUE;
+  if ((u8)FUN_081dd9d4(p)) {
+    Sound_FadeOutBGM(1);
+  }
+  if (p->stateTimer == 1) {
+    SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  count = 0;
+  n = p->recordCount;
+  for (i = 0; i < n; i++) {
+    if (Entity9A9F_IsKeyKind(Entity9A9F_GetRecvKey(p, i), 0x2000)) {
+      count++;
+    }
+  }
+  if (count == n) {
+    Entity9A9F_SetState(p, 11, FUN_081debd4);
+    return 0;
+  }
+  if (p->stateTimer >= 10) {
+    p->unk_42 = 0x2000;
+    CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  }
+#else
+  INCFUNC("asm/func/FUN_081deaf4.inc");
+#endif
+}
 
 void FUN_081debc0(Entity9A9F* p) { Entity9A9F_SetState(p, 12, FUN_081dec1c); }
 
