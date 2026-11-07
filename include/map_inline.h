@@ -48,6 +48,16 @@ static inline u32 TileHeightAtIndex(s32 idx, WorldPos* pos) {
   return height;
 }
 
+// 索引 idx のタイルの中心の座標を pos に入れる, y はタイルの高さ
+static inline void TilePosAtIndex(WorldPos* pos, s32 idx) {
+  s32 x = Mod(idx, gCollisionMap->tiledata->width);
+  s32 z = Div(idx, gCollisionMap->tiledata->width);
+
+  pos->x = (x << 8) + 0x80;
+  pos->y = (TileAtIndex(idx)->heightStairs & 0xF) << 8;
+  pos->z = (z << 8) + 0x80;
+}
+
 #define GetTileAt(pos)                                               \
   ({                                                                 \
     s32 idx = GetCollisionTileIdx(pos);                              \

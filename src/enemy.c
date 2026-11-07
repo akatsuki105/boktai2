@@ -89,16 +89,6 @@ static inline bool8 IsSmallEnemy(Enemy* p) {
   return FALSE;
 }
 
-// 索引 idx のタイルの中心の座標を pos に入れる, y はタイルの高さ
-static inline void TilePosAtIndex(WorldPos* pos, s32 idx) {
-  s32 x = Mod(idx, gCollisionMap->tiledata->width);
-  s32 z = Div(idx, gCollisionMap->tiledata->width);
-
-  pos->x = (x << 8) + 0x80;
-  pos->y = (TileAtIndex(idx)->heightStairs & 0xF) << 8;
-  pos->z = (z << 8) + 0x80;
-}
-
 // dst への経路を引き直す, 引けなければ経路追従の印 (ENEFLAG3_UNK_9) を落として FALSE
 static inline bool8 Enemy_StepToward(Enemy* p, WorldPos* dst) {
   NavAgent* agent = p->navAgent;

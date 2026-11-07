@@ -50,6 +50,7 @@ void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
 void FUN_081647c8(Slime* p);
 void FUN_08164a48(Slime* p);
+bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 void FUN_08164120(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
@@ -547,7 +548,84 @@ s32 Slime_GetMoveSpeed(Slime* p) {
   return 0;
 }
 
-NAKED void FUN_08164120(Slime* p, u32 arg) { INCFUNC("asm/func/FUN_08164120.inc"); }
+// 乱数の向きから 90 度ずつ回して, 2 タイル先まで歩けるタイルが見つかった向きの行き先を経路の目的地にする, 向きは arg に戻す
+// 268/279命令, 原典は p と回数と &unk_256 / &mover.pos をスタック (sp+8..0x18) に退避してループで読み直す (フレーム 0x1c), こちらは p を r9 に置く, 試済: &unk_256 と &mover.pos のポインタのローカル (273命令), Boku の FUN_080fb4d0 と同じ探索の形
+NON_MATCH void FUN_08164120(Slime* p, u32 arg) {
+#ifdef NONMATCHING_C
+  u32 target;
+  s32 i;
+  WorldPos pos;
+
+  (p->e).mover.angle = Random();
+  for (i = 0; i < 4; i++) {
+    u32 tileIdx = (p->e).unk_256;
+    s32 height = TileHeightAtIndex(tileIdx, &(p->e).mover.pos);
+    s32 fromStairs = TileAtIndex(tileIdx)->heightStairs >> 4;
+    s32 idx;
+    s32 n;
+
+    switch ((((p->e).mover.angle + 0x20) >> 6) & 3) {
+      case 0: {
+        idx = tileIdx + 1;
+        for (n = 0; n < 2; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx++;
+        }
+        target = idx - 1;
+        break;
+      }
+      case 1: {
+        idx = tileIdx + gCollisionMap->tiledata->width;
+        for (n = 0; n < 2; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx += gCollisionMap->tiledata->width;
+        }
+        target = idx - gCollisionMap->tiledata->width;
+        break;
+      }
+      case 2: {
+        idx = tileIdx - 1;
+        for (n = 0; n < 2; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx--;
+        }
+        target = idx + 1;
+        break;
+      }
+      case 3: {
+        idx = tileIdx - gCollisionMap->tiledata->width;
+        for (n = 0; n < 2; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx -= gCollisionMap->tiledata->width;
+        }
+        target = idx + gCollisionMap->tiledata->width;
+        break;
+      }
+      default: {
+        target = (p->e).unk_256;
+        break;
+      }
+    }
+    if (target != (p->e).unk_256) {
+      break;
+    }
+    (p->e).mover.angle += 64;
+  }
+  (p->e).mover.angle = arg;
+  TilePosAtIndex(&pos, target);
+  (p->e).navAgent->dest = pos;
+#else
+  INCFUNC("asm/func/FUN_08164120.inc");
+#endif
+}
 
 bool8 FUN_08164388(Slime* p) {
   Slime* q = (p->e).unk_1cc;
