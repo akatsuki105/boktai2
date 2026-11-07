@@ -1,3 +1,4 @@
+#include "coffin.h"
 #include "cwolf_target.h"
 #include "eff_082473e0.h"
 #include "emote.h"
@@ -25,7 +26,8 @@ typedef struct {
   Enemy e;
   u8 unk_654[0x660 - 0x654];  // 0x654
   u16 unk_660;                // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
-  u8 unk_662[1680 - 0x662];   // 0x662
+  s16 unk_662;                // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
+  u8 unk_664[1680 - 0x664];   // 0x664
 } Spider;
 static_assert(sizeof(Spider) == 1680);
 

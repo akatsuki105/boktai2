@@ -212,7 +212,14 @@ NAKED bool8 FUN_08164388(Slime* p) { INCFUNC("asm/func/FUN_08164388.inc"); }
 
 NAKED void FUN_0816446c(Slime* p) { INCFUNC("asm/func/FUN_0816446c.inc"); }
 
-NAKED void FUN_08164520(Slime* p) { INCFUNC("asm/func/FUN_08164520.inc"); }
+void FUN_08164520(Slime* p) {
+  u8 state = (p->e).state;
+
+  if (state != ES_UNK_37 && state != ES_UNK_33 && state != ES_UNK_34 && state != ES_UNK_35) {
+    Enemy_EnterState(&p->e, FUN_08162e74, ES_UNK_37);
+    Enemy_ResetState(&p->e, 0, 0, 15);
+  }
+}
 
 void FUN_081645a4(Slime* p) {
   if (VM_SeekToNamedArg('s')) {
