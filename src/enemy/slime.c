@@ -48,6 +48,7 @@ void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
 void FUN_08162fa8(Slime* p);
+void FUN_081630dc(Slime* p);
 u32 Slime_PickHitAttributes(Slime* p);
 void FUN_08163b04(Slime*);
 void FUN_08163bbc(Slime*);
@@ -157,7 +158,43 @@ void FUN_08162efc(Slime* p) {
   }
 }
 
-NAKED void FUN_08162fa8(Slime* p) { INCFUNC("asm/func/FUN_08162fa8.inc"); }
+// 状態に入った最初だけ animTable[15] のアニメを流し, アニメの速さを乱数で決める, アニメが終わったら FUN_081630dc へ移る
+// 再生部分を (Enemy* p, u32 anim) を取る static inline にし, 変化がなければ return, 最後に animForceRestart = FALSE とすると残差は MainSprite_SetAnim の第5引数 4 を作る位置だけ (122/122命令), anim を u8 にすると anim と spriteKind のレジスタが入れ替わる
+NON_MATCH void FUN_08162fa8(Slime* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    u8 anim = (p->e).animTable[15].anim;
+
+    if ((p->e).spriteKind == 0) {
+      EnemyAuxSpriteData* s;
+
+      (p->e).playingAnim = anim;
+      s = (EnemyAuxSpriteData*)(p->e).sprite;
+      AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, 0);
+      (p->e).animForceRestart = FALSE;
+    } else {
+      MainSprite* s = &(p->e).sprite->s;
+
+      if ((p->e).playingAnim != anim || (p->e).animForceRestart || (s->flags & SPRFLAG_XFLIP)) {
+        (p->e).playingAnim = anim;
+        MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, anim, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        s->flags &= ~SPRFLAG_XFLIP;
+        (p->e).animForceRestart = FALSE;
+      }
+    }
+    (p->e).animSpeedDiv = Random() & 63;
+    if ((p->e).animSpeedDiv == 0) {
+      (p->e).animSpeedDiv = 1;
+    }
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, (p->e).animSpeedDiv);
+  }
+  if ((p->e).animForceRestart) {
+    Enemy_EnterState(&p->e, FUN_081630dc, ES_UNK_34);
+  }
+#else
+  INCFUNC("asm/func/FUN_08162fa8.inc");
+#endif
+}
 
 // 101/102 命令, 原典は anim に variant を足したものを同じレジスタで使い回す, 試済: anim/a の型 (u8/u16), 足し込みを anim 自身にする形, aux 側の代入順
 NON_MATCH void FUN_081630dc(Slime* p) {
