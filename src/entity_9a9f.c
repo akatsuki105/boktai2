@@ -150,7 +150,26 @@ NON_MATCH s32 FUN_081ddb14(Entity9A9F* p, u8* buf, s32 limit) {
 #endif
 }
 
-NAKED s32 FUN_081ddb5c(Entity9A9F* p, u8* buf, s32 idx, s32 count) { INCFUNC("asm/func/FUN_081ddb5c.inc"); }
+// idx 番のプレイヤーから届いたキーを順番どおりなら buf に積む, count 個そろっていれば 1
+s32 FUN_081ddb5c(Entity9A9F* p, u8* buf, s32 idx, s32 count) {
+  u8* dst;
+  u16 key;
+
+  if (p->unk_80[idx] >= count) {
+    return 1;
+  }
+
+  dst = buf + p->unk_80[idx];
+  key = Entity9A9F_GetRecvKey(p, idx);
+  if (Entity9A9F_IsDataKey(key) && ((key & 0x300) >> 8) == (p->unk_80[idx] & 3)) {
+    *dst = key;
+    p->unk_80[idx]++;
+    if (p->unk_80[idx] >= count) {
+      return 1;
+    }
+  }
+  return 0;
+}
 
 void FUN_081ddbdc(Entity9A9F* p) {
   p->recordCount = 0;
