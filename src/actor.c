@@ -1281,7 +1281,71 @@ void FUN_08042414(ActorManager* p, Actor* actor, s32 elapsed) {
   FUN_08041480(actor, 0, 2, 0, 0);
 }
 
-NAKED void FUN_08042638(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042638.inc"); }
+// FUN_08042414 の逆, 縦を伸ばしながら横を狭めて上へ消えていく, 終わったら unk_07 を立てる
+void FUN_08042638(ActorManager* p, Actor* actor, s32 elapsed) {
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    SpriteHolder_SetFlags(&actor->sprite, SPRFLAG_AFFINE);
+    SpriteHolder_SetAffine(&actor->sprite, 64, 64, 0);
+    if (actor->kind == 14) {
+      PlaySound_082406e0(SE_WARP_START);
+    } else {
+      PlaySound_082406e0(SE_WARP_807);
+    }
+  }
+
+  {
+    s32 scaleY = 64;
+    s32 offsetY = 0;
+    s32 height;
+
+    switch (actor->unk_18) {
+      case 0: {
+        s32 scaleX = 64 - elapsed * 4;
+
+        if (elapsed > 8) {
+          scaleY = elapsed * 8;
+          offsetY = (elapsed - 8) * 20;
+        }
+        if (elapsed > 14) {
+          actor->unk_18 = 1;
+        }
+        height = (GetTileAt(actor->sprite.pos)->heightStairs & 0xF) << 8;
+        actor->sprite.pos->y = height + offsetY;
+        SpriteHolder_SetAffine(&actor->sprite, scaleX, scaleY, 0);
+        break;
+      }
+      case 1: {
+        offsetY = elapsed * 200 + 160;
+        height = (GetTileAt(actor->sprite.pos)->heightStairs & 0xF) << 8;
+        actor->sprite.pos->y = height + offsetY;
+        if (elapsed > 7) {
+          SET_FLAGS(actor->flags, ACTORFLAG_UNK_8);
+          actor->unk_18++;
+        }
+        break;
+      }
+      case 2: {
+        actor->unk_07 = 1;
+        SET_FLAGS(actor->flags, ACTORFLAG_UNK_8);
+        SpriteHolder_ClearFlags(&actor->sprite, SPRFLAG_AFFINE);
+        break;
+      }
+    }
+  }
+  {
+    u8 angle = actor->unk_1b;
+
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+  }
+  if (actor->kind != 3) {
+    FUN_08041480(actor, 0, 2, 0, 0);
+  }
+  actor->fn(actor);
+}
 
 void FUN_08042868(ActorManager* p, Actor* actor, s32 elapsed) {
   if (actor->unk_09 != 0) {
