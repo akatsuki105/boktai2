@@ -141,7 +141,10 @@ NAKED void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/fun
 
 NAKED void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/Dog_OnHurt.inc"); }
 
-NAKED void FUN_0814c28c(Dog* p) { INCFUNC("asm/func/FUN_0814c28c.inc"); }
+void FUN_0814c28c(Dog* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnim(&p->e, 1);
+}
 
 NAKED void FUN_0814c2b0(Dog* p) { INCFUNC("asm/func/FUN_0814c2b0.inc"); }
 
