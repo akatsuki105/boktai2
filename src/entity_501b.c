@@ -28,7 +28,7 @@ typedef struct Entity501B {
   u8 unk_3b8[2];                               // 0x3B8, まだ未解析
   u16 timer;                                   // 0x3BA, 90 から毎フレーム減り, 0 で次の状態へ, ボタンで 1 に飛ばせる
   u16 score;                                   // 0x3BC, gEntity9A9F->unk_138[playerIdx] (9999 で頭打ち), 精算で減っていく
-  s16 step;                                    // 0x3BE, 1フレームに score から gStat->field_0x912 へ移す量, 初期 2, ボタンで <<3
+  u16 step;                                    // 0x3BE, 1フレームに score から gStat->linkBattlePoint へ移す量, 初期 2, ボタンで <<3
   s32 unk_3c0;                                 // 0x3C0, gEntity9A9F->unk_144[playerIdx] (±9999 で頭打ち)
   Tilemaps* tilemap0;                          // 0x3C4, TILEMAP_CD91 を BG2 に敷く
   Tilemaps* tilemap1;                          // 0x3C8, TILEMAP_A413 を BG0 に敷く
@@ -103,6 +103,8 @@ static inline bool8 Entity501B_TestFlags(Entity501B* p, u32 bits) {
   if (p->flags & bits) return TRUE;
   return FALSE;
 }
+
+static inline void Entity501B_SetFlags(Entity501B* p, u32 bits) { p->flags |= bits; }
 
 // 状態関数を差し替えて, 切り替え直後の1フレームだけ立つフラグを付ける
 static inline void Entity501B_SetState(Entity501B* p, void* fn, u8 phase) {
@@ -461,7 +463,59 @@ void FUN_081e06d8(Entity501B* p) {
   }
 }
 
-NAKED void FUN_081e084c(Entity501B* p) { INCFUNC("asm/func/FUN_081e084c.inc"); }
+// 稼いだ点を1フレームに step ずつ対戦ポイントへ移し, ボタンで step を8倍にする, 移し終えたらボタンで次の状態へ移る
+void FUN_081e084c(Entity501B* p) {
+  if (p->entered) {
+    p->step = 2;
+    p->stateTimer = 0;
+    p->entered = FALSE;
+  }
+  if (p->stateTimer > 60) {
+    if (p->score != 0) {
+      s32 rest = p->score - p->step;
+
+      if (rest < 0) {
+        rest += p->step;
+        gStat->linkBattlePoint += rest;
+        p->score -= rest;
+      } else {
+        gStat->linkBattlePoint += p->step;
+        p->score -= p->step;
+      }
+      if (gStat->linkBattlePoint < 0) {
+        gStat->linkBattlePoint = 0;
+      }
+      if (gStat->linkBattlePoint > 9999) {
+        gStat->linkBattlePoint = 9999;
+      }
+      if (Mod(p->stateTimer, 2) == 0) {
+        PlaySound_082406e0(SE_COUNT_UP);
+      }
+    } else if (gInput[0].pressed & (A_BUTTON | B_BUTTON | SELECT_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON)) {
+      Entity9A9F* q = gEntity9A9F;
+      u8* unk = q->unk_2cc;
+
+      if (q == NULL) {
+        unk = NULL;
+      }
+
+      PlaySound_082406e0(SE_SELECT);
+      if (unk == NULL || *unk == 1) {
+        Entity501B_SetState(p, FUN_081e03d8, 3);
+      } else {
+        Entity501B_SetState(p, FUN_081e06d8, 2);
+      }
+      return;
+    }
+    if (!Entity501B_TestFlags(p, 1) && (gInput[0].pressed & (A_BUTTON | B_BUTTON | SELECT_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON))) {
+      p->step <<= 3;
+      Entity501B_SetFlags(p, 1);
+    }
+  }
+  Entity501B_SetNumber(p, 0, p->score);
+  Entity501B_SetNumber(p, 1, gStat->linkBattlePoint);
+  p->stateTimer++;
+}
 
 // 待ちの間は上段の数字を回し, ボタンで待ちを飛ばし, 待ちが切れたら次の状態へ移る
 void FUN_081e0a18(Entity501B* p) {
