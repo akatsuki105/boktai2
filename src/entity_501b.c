@@ -81,7 +81,7 @@ NAKED void Entity501B_DrawBgNumber(s32 value, s32 divisor, s32 x, s32 y) { INCFU
 
 NAKED void Entity501B_InitAuxSprite(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitAuxSprite.inc"); }
 
-NAKED void Entity501B_RemoveAuxSprite(Entity501B* p) { INCFUNC("asm/func/Entity501B_RemoveAuxSprite.inc"); }
+void Entity501B_RemoveAuxSprite(Entity501B* p) { AuxSprite_Remove(&p->solarStandSpr); }
 
 NAKED void Entity501B_InitSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSprites.inc"); }
 
