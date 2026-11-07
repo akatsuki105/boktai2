@@ -113,7 +113,10 @@ NAKED void FUN_08130068(Spider* p) { INCFUNC("asm/func/FUN_08130068.inc"); }
 
 NAKED void FUN_081300a8(Spider* p) { INCFUNC("asm/func/FUN_081300a8.inc"); }
 
-NAKED void FUN_081300d0(Spider* p) { INCFUNC("asm/func/FUN_081300d0.inc"); }
+void FUN_081300d0(Spider* p) {
+  (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad6bc;
+  (p->e).handlerTables[6] = (void*)PTR_ARRAY_085ad700;
+}
 
 NAKED void Spider_InitHitboxes(Spider* p) { INCFUNC("asm/func/Spider_InitHitboxes.inc"); }
 
