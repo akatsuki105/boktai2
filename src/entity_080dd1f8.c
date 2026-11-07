@@ -36,8 +36,8 @@ IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 
 const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
 
-static inline bool8 Entity080dd1f8_IsElemUsed(Entity080dd1f8* p, s32 i) {
-  if (TEST_FLAGS(p->activeMask, 1 << i)) return TRUE;
+static inline bool8 Entity080dd1f8_IsElemUsed(u32* mask, s32 i) {
+  if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
   return FALSE;
 }
 
@@ -84,7 +84,7 @@ s32 Entity080dd1f8_Update(Entity080dd1f8* p) {
 
   if (p->activeMask != 0 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     for (i = 0; i < 12; i++) {
-      if (Entity080dd1f8_IsElemUsed(p, i)) {
+      if (Entity080dd1f8_IsElemUsed(&p->activeMask, i)) {
         PTR_ARRAY_085ad33c[elems[i].unk_12e](p, &elems[i]);
       }
     }
@@ -92,7 +92,20 @@ s32 Entity080dd1f8_Update(Entity080dd1f8* p) {
   return 0;
 }
 
-NAKED s32 Entity080dd1f8_Destroy(Entity080dd1f8* p) { INCFUNC("asm/func/Entity080dd1f8_Destroy.inc"); }
+s32 Entity080dd1f8_Destroy(Entity080dd1f8* p) {
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    if (Entity080dd1f8_IsElemUsed(&p->activeMask, i)) {
+      Entity080dd1f8Elem* elem = &p->elems[i];
+
+      AuxSprite_Remove(&elem->spr);
+      ParticleShadow_Remove(&elem->shadow);
+    }
+  }
+  gEntity080dd1f8 = NULL;
+  return 0;
+}
 
 s32 Entity080dd1f8_Init(Entity080dd1f8* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_BOMB);
