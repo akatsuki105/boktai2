@@ -122,7 +122,19 @@ void Slime_InitAnims(Slime* p) {
 
 const u16 u16_ARRAY_085ada08[6] = {0, 16, 32, 20, 12, 0};  // 0x085ADA08
 
-NAKED s32 FUN_081640e4(Slime* p) { INCFUNC("asm/func/FUN_081640e4.inc"); }
+// 歩きアニメのコマが変わる瞬間だけ移動の速さを返す
+s32 FUN_081640e4(Slime* p) {
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (anim->tick == 0) {
+    s32 i;
+
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
+    i = Mod(anim->cmdIdx, 6);
+    return u16_ARRAY_085ada08[i];
+  }
+  return 0;
+}
 
 NAKED void FUN_08164120(Slime* p, u32 arg) { INCFUNC("asm/func/FUN_08164120.inc"); }
 
