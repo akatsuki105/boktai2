@@ -120,7 +120,27 @@ Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) {
 
 NAKED void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) { INCFUNC("asm/func/FUN_080dc7bc.inc"); }
 
-NAKED void FUN_080dcdd8(Entity080dd1f8* p, Entity080dd1f8Elem* elem) { INCFUNC("asm/func/FUN_080dcdd8.inc"); }
+// 爆発の印が立っていれば爆発と効果音を出し, 自分を片付ける
+// 79/79命令, activeMask を落とすところで原典は gEntity080dd1f8 を読み &unk_12f を作って添字を読んでから +0xF68 する (こちらは &activeMask を先に作る), 試済: CLEAR_BIT, グローバルのローカル写し, a = a & ~b の形
+NON_MATCH void FUN_080dcdd8(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->unk_130) {
+    Explosion_Create(&elem->spr.pos, 32, elem->unk_136, elem->unk_138, 0);
+    FUN_08240cf0(elem->spr.pos.x, elem->spr.pos.z, 0x400, 0, 1, elem->unk_13c);
+    elem->unk_130 = FALSE;
+  }
+  gEntity080dd1f8->activeMask &= ~(1 << elem->unk_12f);
+  elem->unk_12e = 0;
+  AuxSprite_Remove(&elem->spr);
+  ParticleShadow_Remove(&elem->shadow);
+  Hitbox_Unregister(&elem->hurtbox);
+  elem->unk_12f = -1;
+  elem->unk_12c = 0;
+  elem->unk_132 = 0;
+#else
+  INCFUNC("asm/func/FUN_080dcdd8.inc");
+#endif
+}
 
 NAKED s32 FUN_080dce8c(Entity080dd1f8* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080dce8c.inc"); }
 
