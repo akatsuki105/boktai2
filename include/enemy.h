@@ -289,7 +289,7 @@ typedef struct Enemy {
   void* unk_260;                    // 0x260, EnemyManager_SetupSharedEntities が EnemyManager.sharedEntity の値を書き込む
   void* unk_264;                    // 0x264, 同上 (kind==ENEK_OCTOPUS のとき)
   ParticleShadow shadow;            // 0x268
-  u8 unk_2a8[0x314 - 0x2A8];        // 0x2A8
+  AuxShadow auxShadow;              // 0x2A8, スパイダーなど ParticleShadow の代わりに使う影
   Eff082473e0Emitter emitter;       // 0x314, 根拠: Enemy_FadeParticles が Eff082473e0Emitter_FadeParticle に渡す (sizeof 312 で 0x44B まで)
   u8 unk_44c;                       // 0x44C
   u8 unk_44d;                       // 0x44D, 0 以外だと Enemy_FadeParticles がパーティクルを消さない

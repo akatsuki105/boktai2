@@ -228,7 +228,22 @@ s32 Spider_Update(Spider* p) {
   return 0;
 }
 
-NAKED s32 Spider_Destroy(Spider* p) { INCFUNC("asm/func/Spider_Destroy.inc"); }
+s32 Spider_Destroy(Spider* p) {
+  if ((p->e).spriteKind == 0) {
+    AuxSprite_Remove((AuxSprite*)(p->e).sprite);
+  } else {
+    MainSprite_Remove(&(p->e).sprite->s);
+  }
+  Free((p->e).sprite);
+  if (!(p->e).unk_44c) {
+    AuxShadow_Remove(&(p->e).auxShadow);
+  }
+  FUN_08002a58(&(p->e).mover);
+  Mover_Unlink(&(p->e).mover);
+  Hitbox_Unregister(&(p->e).hurtbox);
+  Enemy_Unregister(&p->e);
+  return 0;
+}
 
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Spider_Init(Spider* p) { INCFUNC("asm/func/Spider_Init.inc"); }
