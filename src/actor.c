@@ -1561,7 +1561,74 @@ NON_MATCH void FUN_080436c4(ActorManager* p, Actor* actor) {
 #endif
 }
 
-NAKED void FUN_08043774(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043774.inc"); }
+// 経路のノードで待つ: 16 フレームごとに棺桶や雨や時間帯を見て state 12 / 13 へ, プレイヤーが近づいたら state 10, 待ち時間が切れたら次のノードへ進む
+// 下書き (219/223命令): 流れは一致 (FUN_08043a24 と同じ形), 距離の判定と state の設定ブロックの共有のしかたが違う
+NON_MATCH void FUN_08043774(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  PathWalker* walker = &actor->pathWalker;
+
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 2;
+  }
+
+  if ((actor->timer & 0xF) == 0) {
+    if (actor->unk_1ed != 0) {
+      Vec3* coffinPos = Coffin_GetPos();
+      bool32 near = FALSE;
+
+      if (coffinPos != NULL) {
+        s32 dx = actor->mover.pos.x - coffinPos->x;
+        s32 dz = actor->mover.pos.z - coffinPos->z;
+
+        if (dx * dx + dz * dz <= 159999) {
+          near = TRUE;
+        }
+      }
+      if (near) {
+        actor->waitFrames = 1800;
+        Actor_SetState(actor, 12);
+        actor->unk_08 = 1;
+        return;
+      }
+      if (actor->unk_1ed != 0 && p->raining) {
+        actor->waitFrames = 300;
+        Actor_SetState(actor, 12);
+        actor->unk_08 = 1;
+        return;
+      }
+    }
+    if (actor->unk_230 != 0 && p->minuteChanged) {
+      if ((p->hour == actor->endHour && p->minute >= actor->endMinute) || (p->hour - 1 == actor->endHour && p->minute <= actor->endMinute)) {
+        Actor_SetState(actor, 13);
+        actor->unk_08 = 1;
+        return;
+      }
+    }
+  }
+
+  if (p->playerPos != NULL && abs(p->playerPos->x - actor->mover.pos.x) < actor->nearRange && abs(p->playerPos->y - actor->mover.pos.y) <= 0xFF && abs(p->playerPos->z - actor->mover.pos.z) < actor->nearRange) {
+    actor->unk_227 = actor->state;
+    Actor_SetState(actor, 10);
+    actor->unk_08 = 1;
+    return;
+  }
+
+  if (actor->pathIdx >= 0) {
+    if (actor->pathDelay == 0) {
+      Map_AdvancePathWalker(walker);
+      Actor_SetState(actor, FUN_08043510(actor));
+      actor->unk_08 = 1;
+    } else {
+      actor->pathDelay--;
+    }
+  }
+  actor->timer++;
+#else
+  INCFUNC("asm/func/FUN_08043774.inc");
+#endif
+}
 
 // 経路の向き pathDir を向き, プレイヤーが近づいたら今の state を覚えて state 10 へ, unk_07 が立ったら state 7 へ
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, プレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる (FUN_08043cf4 と同じ)
