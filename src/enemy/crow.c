@@ -185,7 +185,21 @@ NAKED void FUN_081436b4(Crow* p) { INCFUNC("asm/func/FUN_081436b4.inc"); }
 
 NAKED void FUN_081439d8(Crow* p) { INCFUNC("asm/func/FUN_081439d8.inc"); }
 
-NAKED void FUN_08143dd4(Crow* p) { INCFUNC("asm/func/FUN_08143dd4.inc"); }
+void FUN_08143dd4(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+    q->unk_671 = (Random() & 127) + 20;
+  }
+  if (!Crow_TestUnk658(q, 4) && !(p->e).unk_608(&p->e)) {
+    if ((p->e).subStateTimer > q->unk_671 && (p->e).animForceRestart) {
+      Enemy_ResetState(&p->e, 0, 0, 2);
+    } else {
+      (p->e).subStateTimer++;
+    }
+  }
+}
 
 void FUN_08143ef8(Crow* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
