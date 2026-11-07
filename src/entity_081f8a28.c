@@ -96,7 +96,38 @@ Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) {
   return NULL;
 }
 
-NAKED void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_TurnToTarget.inc"); }
+// homingDelay が明けたら homingTime の間 target へ turnSpeed ずつ向きを変える, ほぼ向いたら追尾をやめる
+// 95/97命令, こちらは &target の 0x100 を r6 に残して後の d += 256 に使い回す (原典はそれぞれ作り直す), 試済: 早期 return の形, abs を三項演算子に
+NON_MATCH void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->homingDelay != 0) {
+    elem->homingDelay--;
+  } else if (elem->homingTime != 0) {
+    Vec3 diff;
+    s32 d;
+
+    Vec3_Delta(&diff, &elem->sprite.pos, &elem->target);
+    d = ArcTan2_8(diff.x, diff.z) - elem->angle;
+    if (d > 128) {
+      d -= 256;
+    } else if (d < -128) {
+      d += 256;
+    }
+    if (abs(d) > 18) {
+      if (d > 0) {
+        elem->angle += elem->turnSpeed;
+      } else {
+        elem->angle -= elem->turnSpeed;
+      }
+      elem->homingTime--;
+    } else {
+      elem->homingTime = 0;
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity081f8a28_TurnToTarget.inc");
+#endif
+}
 
 // pos の周りにランダムな向きで火の粉を1つ飛ばす
 // 79/78命令, Entity081f959c_SpawnTrail と同じ壁 (原典は乱数表のアドレスを gRandTableIdx より先に r4 に置き, 0xFF を ldrb の直前に作る), 試済: 3つとも _Random(table), angle を u8 にする (77/78), 宣言と代入を分ける
