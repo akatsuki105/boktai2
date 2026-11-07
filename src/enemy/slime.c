@@ -51,7 +51,6 @@ void FUN_08164da8(Slime* p);
 void Slime_SpawnDroplets(Slime* p);
 void FUN_08164a48(Slime* p);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
-bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 void Slime_PickWalkDest(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);

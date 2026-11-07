@@ -519,7 +519,94 @@ void FUN_0814afc8(Dog* p) {
   }
 }
 
-NAKED bool8 FUN_0814b090(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814b090.inc"); }
+// angle から 90 度ずつ回して隣のタイルへ歩ける向きを探し, そのタイルへの経路を引けたら unk_6d7 を数えて TRUE, 向きは angle に戻す
+// 332/344命令, Slime_PickWalkDest と同じタイル探索の割り当ての壁 (原典はフレーム 0x20 で &unk_256 / &mover.pos / 回数などをスタックに置く), 試済: ポインタのローカルと do-while (336命令)
+NON_MATCH bool8 Dog_PickWalkDest(Dog* p, u32 angle) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+  u32 target;
+  s32 i;
+  WorldPos pos;
+
+  for (i = 0; i < 4; i++) {
+    u32 tileIdx = (p->e).unk_256;
+    s32 height = TileHeightAtIndex(tileIdx, &(p->e).mover.pos);
+    s32 fromStairs = TileAtIndex(tileIdx)->heightStairs >> 4;
+    s32 idx;
+    s32 n;
+
+    switch ((((p->e).mover.angle + 0x20) >> 6) & 3) {
+      case 0: {
+        idx = tileIdx + 1;
+        for (n = 0; n < 1; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx++;
+        }
+        target = idx - 1;
+        break;
+      }
+      case 1: {
+        idx = tileIdx + gCollisionMap->tiledata->width;
+        for (n = 0; n < 1; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx += gCollisionMap->tiledata->width;
+        }
+        target = idx - gCollisionMap->tiledata->width;
+        break;
+      }
+      case 2: {
+        idx = tileIdx - 1;
+        for (n = 0; n < 1; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx--;
+        }
+        target = idx + 1;
+        break;
+      }
+      case 3: {
+        idx = tileIdx - gCollisionMap->tiledata->width;
+        for (n = 0; n < 1; n++) {
+          if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+            break;
+          }
+          idx -= gCollisionMap->tiledata->width;
+        }
+        target = idx + gCollisionMap->tiledata->width;
+        break;
+      }
+      default: {
+        target = (p->e).unk_256;
+        break;
+      }
+    }
+    if (target != (p->e).unk_256) {
+      break;
+    }
+    if (q->unk_6d6) {
+      (p->e).mover.angle += 64;
+    } else {
+      (p->e).mover.angle -= 64;
+    }
+  }
+  q->unk_6d6 = (u8)Random() < 128;
+  (p->e).mover.angle = angle;
+  TilePosAtIndex(&pos, target);
+  if (Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &pos)) {
+    q->unk_6d7++;
+    return TRUE;
+  }
+  (p->e).unk_5c4(&p->e);
+  return FALSE;
+#else
+  INCFUNC("asm/func/Dog_PickWalkDest.inc");
+#endif
+}
 
 // 残差1命令, 原典は 0x6C8 のオフセットに 2 を足して 0x6CA を作るがこちらはプールから読む, 試済: 2つを u16[2] にする形
 NON_MATCH bool8 FUN_0814b3a0(Dog* p) {
@@ -578,7 +665,7 @@ NON_MATCH void enemy_dog_0814b500(Dog* p) {
       u8 angle = (p->e).mover.angle;
 
       (p->e).mover.angle = (p->e).unk_1fc + 128;
-      if (FUN_0814b090(p, angle)) {
+      if (Dog_PickWalkDest(p, angle)) {
         Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
         Enemy_ResetState(&p->e, 0, 0, 17);
       }
@@ -959,7 +1046,7 @@ void FUN_0814e530(Dog* p) {
     } else {
       Dog_ClearUnk6a8(q, 4);
       if (q->unk_6d7 < 4) {
-        if (FUN_0814b090(p, (p->e).mover.angle)) {
+        if (Dog_PickWalkDest(p, (p->e).mover.angle)) {
           Enemy_ResetState(&p->e, 0, 0, 17);
         }
       } else {

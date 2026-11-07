@@ -42,7 +42,6 @@ bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
 void FUN_080e7b6c(Enemy* p);
 void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 groundTime, s32 speed, s32 unk_9);
-bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 
 void FUN_080ff67c(Boku* p);
 void FUN_080ffda8(Boku* p);

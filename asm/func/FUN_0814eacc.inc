@@ -1175,7 +1175,7 @@ _0814F3D6:
 	movs r0, #0x5a
 	strb r0, [r2]
 	adds r0, r7, #0
-	bl FUN_0814b090
+	bl Dog_PickWalkDest
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0814F40C

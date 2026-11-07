@@ -550,6 +550,7 @@ bool8 Enemy_UpdateJump(Enemy* p);
 void Enemy_SnapToFloor(Enemy* p);
 void Enemy_ClearDamage(Enemy* p);
 void Enemy_FadeParticles(Enemy* p, s32 count);
+bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 void Enemy_StateBlownAway(Enemy* p);
 void Enemy_WaitPendingState(Enemy* p, s32 timer);
 bool8 FUN_080f84d4(Enemy* p);
