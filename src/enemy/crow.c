@@ -256,7 +256,7 @@ void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   }
 }
 
-void FUN_0814483c(Crow* p, Vec3* pos) {
+void Crow_BeginCurveMove(Crow* p, Vec3* pos) {
   Crow* q = (p->e).unk_1cc;
   Vec3 diff;
 

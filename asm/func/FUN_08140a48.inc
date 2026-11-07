@@ -111,7 +111,7 @@ _08140B18:
 	strh r1, [r6, #2]
 	adds r0, r5, #0
 	mov r1, sp
-	bl FUN_08140970
+	bl EnemyBat_BeginCurveMove
 	adds r0, r5, #0
 	bl FUN_08140a10
 _08140B28:

@@ -75,7 +75,7 @@
 	ldr r1, [r0]
 	adds r1, #0x2c
 	adds r0, r5, #0
-	bl FUN_08140970
+	bl EnemyBat_BeginCurveMove
 	add sp, #4
 	pop {r4, r5, r6}
 	pop {r0}

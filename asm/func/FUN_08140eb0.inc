@@ -241,7 +241,7 @@ _0814107E:
 	str r0, [r3, #4]
 	adds r0, r6, #0
 	adds r1, r3, #0
-	bl FUN_08140970
+	bl EnemyBat_BeginCurveMove
 	movs r2, #0xe6
 	lsls r2, r2, #1
 	adds r0, r6, r2

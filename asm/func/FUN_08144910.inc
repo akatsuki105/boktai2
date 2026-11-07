@@ -111,7 +111,7 @@ _081449E0:
 	strh r1, [r6, #2]
 	adds r0, r5, #0
 	mov r1, sp
-	bl FUN_0814483c
+	bl Crow_BeginCurveMove
 	adds r0, r5, #0
 	bl FUN_081448d8
 _081449F0:

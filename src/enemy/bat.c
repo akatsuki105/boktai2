@@ -278,7 +278,7 @@ void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   }
 }
 
-void FUN_08140970(EnemyBat* p, Vec3* pos) {
+void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos) {
   EnemyBat* q = (p->e).unk_1cc;
   Vec3 diff;
 

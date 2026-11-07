@@ -292,7 +292,7 @@ _0813FBD8:
 	strh r1, [r6, #2]
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08140970
+	bl EnemyBat_BeginCurveMove
 _0813FBE2:
 	ldr r3, _0813FBF4 @ =0x00000484
 	adds r1, r5, r3

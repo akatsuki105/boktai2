@@ -168,7 +168,7 @@ _08141220:
 	ldr r1, [r0]
 	adds r1, #0x2c
 	adds r0, r6, #0
-	bl FUN_08140970
+	bl EnemyBat_BeginCurveMove
 	movs r2, #8
 	movs r3, #0xcb
 	lsls r3, r3, #3
