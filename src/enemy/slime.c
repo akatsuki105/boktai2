@@ -37,6 +37,8 @@ typedef struct {
 } Slime;
 static_assert(sizeof(Slime) == 1680);
 
+extern const char s_slimecom_c_08252120[];  // "slimecom.c"
+
 static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
   if (p->unk_68e & bit) return TRUE;
   return FALSE;
@@ -357,7 +359,23 @@ void Slime_InitHitboxes(Slime* p) {
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Slime_OnHit, 0, p);
 }
 
-NAKED void Slime_OnReset(Slime* p) { INCFUNC("asm/func/Slime_OnReset.inc"); }
+// 復帰時に作業値と予約していた状態を消し, 待機アニメを流して1コマ送る
+// 残差1命令 (128/129), 原典は p->sprite を r0 に読んでから r5 へ移す (Boku_OnReset / Mimic_OnReset と同じ壁), 試済: sprite を受ける inline, Enemy* を受ける inline, sprite と anim のローカル, anim を先に取る形
+NON_MATCH void Slime_OnReset(Slime* p) {
+#ifdef NONMATCHING_C
+  Slime* q = (p->e).unk_1cc;
+  EnemyAuxSpriteData* aux;
+
+  q->unk_68e = 0;
+  q->unk_658 = 0;
+  Enemy_ClearPendingState(&p->e, s_slimecom_c_08252120, 69);
+  Enemy_PlayAnim(&p->e, 0);
+  aux = (EnemyAuxSpriteData*)(p->e).sprite;
+  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+#else
+  INCFUNC("asm/func/Slime_OnReset.inc");
+#endif
+}
 
 void FUN_0816406c(Slime* p) {}
 
