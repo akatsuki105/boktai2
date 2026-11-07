@@ -207,7 +207,14 @@ NAKED void FUN_0814deb0(Dog* p) { INCFUNC("asm/func/FUN_0814deb0.inc"); }
 
 NAKED void FUN_0814df40(Dog* p) { INCFUNC("asm/func/FUN_0814df40.inc"); }
 
-NAKED void FUN_0814e1b0(Dog* p) { INCFUNC("asm/func/FUN_0814e1b0.inc"); }
+void FUN_0814e1b0(Dog* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 16);
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+  }
+}
 
 NAKED void FUN_0814e1fc(Dog* p) { INCFUNC("asm/func/FUN_0814e1fc.inc"); }
 
