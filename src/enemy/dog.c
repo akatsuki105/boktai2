@@ -73,6 +73,7 @@ struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlag
 void FUN_0814ca30(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
 void FUN_0814e1b0(Dog* p);
+void FUN_0814caa0(Dog* p);
 bool8 FUN_0814b3a0(Dog* p);
 void enemy_dog_0814a320(Dog* p);
 void enemy_dog_0814b500(Dog* p);
@@ -1155,7 +1156,46 @@ void FUN_0815077c(Dog* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad8e8;
 
 NAKED void FUN_08150790(Dog* p) { INCFUNC("asm/func/FUN_08150790.inc"); }
 
-NAKED void FUN_08150b18(Dog* p) { INCFUNC("asm/func/FUN_08150b18.inc"); }
+// 飛びかかる前の位置へ向かう副状態, 着いたら追いかけ中なら状態26へ, そうでなければ経路の今のノードへ戻って状態1へ
+void FUN_08150b18(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_0814caa0, ES_UNK_10);
+  }
+  if ((p->e).unk_608(&p->e)) {
+    return;
+  }
+  if (FUN_080f0a0c(&p->e)) {
+    return;
+  }
+  if ((p->e).subStateDone) {
+    if (!Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &q->unk_708)) {
+      (p->e).unk_5c4(&p->e);
+      return;
+    }
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      Enemy_ResetState(&p->e, 0, 0, 12);
+      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    } else {
+      WorldPos* dst = (p->e).unk_4a8;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+      (p->e).unk_4a8->val = 0;
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      (p->e).animSpeedDiv = 2;
+    }
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 NAKED void FUN_08150de8(Dog* p) { INCFUNC("asm/func/FUN_08150de8.inc"); }
 
