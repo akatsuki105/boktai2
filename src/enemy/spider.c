@@ -118,7 +118,10 @@ NAKED void FUN_0812fdb8(Spider* p) { INCFUNC("asm/func/FUN_0812fdb8.inc"); }
 
 NAKED void FUN_08130068(Spider* p) { INCFUNC("asm/func/FUN_08130068.inc"); }
 
-NAKED void FUN_081300a8(Spider* p) { INCFUNC("asm/func/FUN_081300a8.inc"); }
+void FUN_081300a8(Spider* p) {
+  Enemy_ConsumeSubStateBegun(&p->e);
+  (p->e).subStateTimer++;
+}
 
 void FUN_081300d0(Spider* p) {
   (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad6bc;
