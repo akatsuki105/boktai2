@@ -51,14 +51,6 @@ static inline bool8 Entity9A9F_IsDataKey(u16 key) {
   return FALSE;
 }
 
-// idx 番のプレイヤーの今の太陽センサーの値, セッションが無ければ 0
-static inline u8 Entity9A9F_GetLux(s32 idx) {
-  if (gEntity9A9F == NULL) {
-    return 0;
-  }
-  return gEntity9A9F->lux[gEntity9A9F->unk_51][idx];
-}
-
 // 受信できたキーの数が参加人数と一致するか
 static inline bool8 Entity9A9F_AllKeysReceived(Entity9A9F* p) {
   s32 count = 0;
@@ -115,7 +107,29 @@ void FUN_081dda10(Entity9A9F* p) {
   }
 }
 
-NAKED void FUN_081dda38(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dda38.inc"); }
+// 全員の太陽センサーの値をゲージに直して unk_60 に入れ, 平均を luxAverage に入れる
+// 残差: 命令列は一致, gEntity9A9F の値を原典は r1 に読み添字を r0 で組むが, こちらは逆のレジスタになる (読み出しを NULL なら 0 の static inline にしても同じ)
+NON_MATCH void FUN_081dda38(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  p->luxSum = 0;
+  for (i = 0; i < p->recordCount; i++) {
+    Entity9A9F* e = gEntity9A9F;
+    s32 lux = (e != NULL) ? e->lux[e->unk_51][i] : 0;
+
+    p->unk_60[i] = Taiyo_LxToGauge(lux);
+    p->luxSum += lux;
+  }
+  if (p->recordCount == 0) {
+    p->luxAverage = 0;
+  } else {
+    p->luxAverage = Div(p->luxSum, p->recordCount);
+  }
+#else
+  INCFUNC("asm/func/FUN_081dda38.inc");
+#endif
+}
 
 // 自分の受信番号が正しく, 再試行が続いておらず, 全員分のキーが届いていれば 0, そうでなければ -1
 s32 FUN_081ddab4(Entity9A9F* p) {
