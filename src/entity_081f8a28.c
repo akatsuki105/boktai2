@@ -75,7 +75,7 @@ NAKED void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) { INCFUNC("asm/
 
 NAKED void Entity081f8a28_SpawnTrail(Vec3* pos) { INCFUNC("asm/func/Entity081f8a28_SpawnTrail.inc"); }
 
-NAKED void Entity081f8a28_UpdateIdle(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateIdle.inc"); }
+void Entity081f8a28_UpdateIdle(Entity081f8a28* p, Entity081f8a28Elem* elem) {}
 
 NAKED void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateAppear.inc"); }
 
