@@ -16,7 +16,7 @@ typedef struct {
   u16 flags;               // 0xF4, FUN_080de344 が bit2 を立てる
   u8 state;                // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
   u8 index;                // 0xF7, FUN_080de174 が確保したスロット番号を入れる
-  s16 timer;               // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
+  u16 timer;               // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
   u8 unk_fa[2];            // 0xFA, まだ未解析, padding?
 } Entity080df420Elem;
 static_assert(sizeof(Entity080df420Elem) == 252);
@@ -27,7 +27,7 @@ typedef struct {
   u8 unk_34[4];                  // 0x34, まだ未解析
   u32 usedMask;                  // 0x38, elems のどのスロットが使用中か, FUN_080de174 が立てる
   s16 frame;                     // 0x3C, _Update が毎フレーム 1 足す
-  s16 count;                     // 0x3E, FUN_080de174 が確保のたびに 1 足す
+  u16 count;                     // 0x3E, FUN_080de174 が確保のたびに 1 足す
   Entity080df420Elem elems[24];  // 0x40
 } Entity080df420;
 static_assert(sizeof(Entity080df420) == 6112);
@@ -75,7 +75,27 @@ Entity080df420Elem* FUN_080de174(Entity080df420* p) {
 
 NAKED void FUN_080de1cc(Entity080df420Elem* elem, s32 angle) { INCFUNC("asm/func/FUN_080de1cc.inc"); }
 
-NAKED void FUN_080de344(Entity080df420* p) { INCFUNC("asm/func/FUN_080de344.inc"); }
+// 待ちが切れた枠を1フレームに6つまで選んで攻撃判定を出させる
+void FUN_080de344(Entity080df420* p) {
+  Entity080df420Elem* elems = p->elems;
+
+  if (p->count != 0) {
+    s32 n = 0;
+    s32 i;
+
+    for (i = 0; i < 24; i++) {
+      if (Entity080df420_IsUsed(p, i)) {
+        if (elems[i].timer != 0) {
+          elems[i].timer--;
+        } else if (n <= 5) {
+          elems[i].timer = 3;
+          elems[i].flags |= 4;
+          n++;
+        }
+      }
+    }
+  }
+}
 
 NAKED void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de3b4.inc"); }
 
