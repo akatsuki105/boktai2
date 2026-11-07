@@ -270,7 +270,7 @@ _08130CC4:
 	adds r0, r5, r1
 	movs r1, #1
 	strb r1, [r0]
-	ldr r4, _08130D2C @ =FUN_0812f1bc
+	ldr r4, _08130D2C @ =Spider_SpitVenom
 	movs r3, #3
 	subs r6, #0x17
 	adds r0, r5, r6
@@ -303,5 +303,5 @@ _08130D12:
 	.align 2, 0
 _08130D24: .4byte 0x00000469
 _08130D28: .4byte 0x0000046C
-_08130D2C: .4byte FUN_0812f1bc
+_08130D2C: .4byte Spider_SpitVenom
 _08130D30: .4byte 0x0000046B

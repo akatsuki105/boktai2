@@ -24,12 +24,13 @@
 // ポイズンスパイダーは毒液も吐く
 typedef struct {
   Enemy e;
-  u8 unk_654[0x65C - 0x654];  // 0x654
-  u16 unk_65c;                // 0x65C
-  u16 unk_65e;                // 0x65E
-  u16 unk_660;                // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
-  u16 unk_662;                // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
-  u8 unk_664[1680 - 0x664];   // 0x664
+  u8 unk_654[4];             // 0x654
+  Mover* venomTarget;        // 0x658, 毒液を吐く状態に入ったときの playerMover, SpiderVenom_Spawn の狙い先
+  u16 unk_65c;               // 0x65C
+  u16 unk_65e;               // 0x65E
+  u16 unk_660;               // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
+  u16 unk_662;               // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
+  u8 unk_664[1680 - 0x664];  // 0x664
 } Spider;
 static_assert(sizeof(Spider) == 1680);
 
@@ -41,6 +42,7 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
 void FUN_080e8614(Enemy* p);
 void FUN_080e68d8(Enemy* p, s32 timer);
 void FUN_08130eec(Spider* p);
+void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime);
 void Spider_PickRandomPathNode(Spider* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
@@ -153,7 +155,37 @@ void FUN_0812f1b4(Spider* p) {}
 
 void FUN_0812f1b8(Spider* p) {}
 
-NAKED void FUN_0812f1bc(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f1bc.inc"); }
+// 毒液を吐く状態, アニメの4コマ目で狙い先へ毒液を飛ばし, 終わったら経路を引き直して追いかけに戻る
+void Spider_SpitVenom(Spider* p, s32 timer) {
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  Spider* q = (p->e).unk_1cc;
+  Mover* mover = &(p->e).mover;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    Enemy_PlayAnim(&p->e, 5);
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_14);
+    q->venomTarget = (p->e).playerMover;
+  }
+  if (anim->cmdIdx == 3 && anim->tick == 0) {
+    PlaySound_082406e0(CRY_SPIDER_ATK);
+    if (q->venomTarget != NULL) {
+      SpiderVenom_Spawn((p->e).unk_260, mover, q->venomTarget, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkInvincibleTime[1]);
+    }
+  }
+  if ((p->e).animForceRestart && timer > 60) {
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    Enemy_ResetState(&p->e, 0, 0, 12);
+    Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+    FUN_08130eec(p);
+    Enemy_StepTowardPathNode(&p->e);
+    if ((p->e).kind != ENEK_SPIDER) {
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    }
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+    (p->e).unk_24e = (p->e).unk_24c;
+  }
+}
 
 void FUN_0812f358(Spider* p) {
   if ((p->e).stateBegun) {
