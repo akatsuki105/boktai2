@@ -145,4 +145,14 @@ NAKED s32 Crow_Destroy(Crow* p) { INCFUNC("asm/func/Crow_Destroy.inc"); }
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Crow_Init(Crow* p) { INCFUNC("asm/func/Crow_Init.inc"); }
 
-NAKED void Crow_Create(void) { INCFUNC("asm/func/Crow_Create.inc"); }
+void Crow_Create(void) {
+  Crow* p = Malloc(sizeof(Crow));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(Crow));
+    if (Crow_Init(p) < 0) {
+      Crow_Destroy(p);
+      Free(p);
+    }
+  }
+}
