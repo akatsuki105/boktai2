@@ -139,7 +139,7 @@ NAKED void FUN_0814e1fc(Dog* p) { INCFUNC("asm/func/FUN_0814e1fc.inc"); }
 
 NAKED void FUN_0814e248(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e248.inc"); }
 
-NAKED void FUN_0814e420(Dog* p) { INCFUNC("asm/func/FUN_0814e420.inc"); }
+void FUN_0814e420(Dog* p) {}
 
 NAKED void FUN_0814e424(Dog* p) { INCFUNC("asm/func/FUN_0814e424.inc"); }
 
