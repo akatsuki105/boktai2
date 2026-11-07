@@ -39,7 +39,8 @@ typedef struct {
   u8 mashBase;                // 0x66B, 掴んだときの Player.mashCount
   u8 unk_66c[2];              // 0x66C
   u16 unk_66e;                // 0x66E, 前のフレームの floorY
-  u8 unk_670[0x6A0 - 0x670];  // 0x670
+  u8 unk_670;                 // 0x670, 弾かれて逃げる向き, 乱数で決める
+  u8 unk_671[0x6A0 - 0x671];  // 0x671
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
@@ -349,7 +350,33 @@ void FUN_0813fd24(EnemyBat* p) {
   }
 }
 
-NAKED void FUN_0813fe34(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fe34.inc"); }
+// 乱数の向きへ弾かれて滑り, 止まったらプレイヤーへの曲線移動を始める
+void FUN_0813fe34(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    Vec3_Clear(&q->unk_6b0);
+    q->unk_670 = Random();
+    (p->e).jumpVel.x = FixToInt(7, SIN(q->unk_670));
+    (p->e).jumpVel.z = FixToInt(7, COS(q->unk_670));
+  }
+  if ((p->e).subStateTimer < 6) {
+    (p->e).jumpVel.x = FixToInt(7, SIN(q->unk_670));
+    (p->e).jumpVel.z = FixToInt(7, COS(q->unk_670));
+  }
+  {
+    Vec3* vel = &(p->e).jumpVel;
+
+    if (vel->x * vel->x + vel->z * vel->z == 0) {
+      FUN_08140904(p);
+      Vec3_Clear(vel);
+      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      Enemy_ResetState(&p->e, 0, 2, 0);
+    }
+  }
+  (p->e).subStateTimer++;
+}
 
 void FUN_08140014(EnemyBat* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad7d0; }
 
