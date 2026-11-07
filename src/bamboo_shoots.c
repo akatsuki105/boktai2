@@ -58,23 +58,6 @@ static inline void BambooShoot_SetState(BambooShoot* shoot, u8 state) {
   shoot->stateEntered = TRUE;
 }
 
-// 太陽タケノコが最初から見える状況か (夜, 千里眼の実の効果中, 雷の光っている間, バット)
-static inline bool32 BambooShoot_IsRevealed(void) {
-  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
-    return TRUE;
-  }
-  if (gGameFlags & GAMEFLAG_LINK) {
-    if (gPlayerPtr[0] == NULL) {
-      return FALSE;
-    }
-    return gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
-  }
-  if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
-    return TRUE;
-  }
-  return gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
-}
-
 void FUN_08009b04(void) { sBambooShootManager = NULL; }
 
 // 空いている枠を返す, 無ければ NULL
@@ -215,16 +198,65 @@ void FUN_08009e54(BambooShootManager* p, BambooShoot* shoot) {
   }
 }
 
-static void (*const PTR_ARRAY_085aa6b8[6])(BambooShootManager*, BambooShoot*) = {
-    FUN_08009c28,
-    FUN_08009e28,
-    FUN_08009e54,
-    FUN_08009c44,
-    FUN_08009e28,
-    FUN_08009e54,
+static void (*const PTR_ARRAY_085aa6b8[2][3])(BambooShootManager*, BambooShoot*) = {
+    {FUN_08009c28, FUN_08009e28, FUN_08009e54},
+    {FUN_08009c44, FUN_08009e28, FUN_08009e54},
 };  // 0x085AA6B8
 
-NAKED s32 BambooShootManager_Update(BambooShootManager* p) { INCFUNC("asm/func/BambooShootManager_Update.inc"); }
+// 見える状況 (夜, 千里眼の実, 雷の光, バット) が切り替わったら state 0 の太陽タケノコを入り直させ, 各枠の状態関数を回す
+// 残差は見える判定の所だけ: 原典は千里眼の判定を 0/1 に起こし, プレイヤー NULL の FALSE を別ブロックに置いてから比べ直す (BambooShootManager_Init と同じ形), 述語を static inline にしても畳まれる
+NON_MATCH s32 BambooShootManager_Update(BambooShootManager* p) {
+#ifdef NONMATCHING_C
+  bool8 visible = FALSE;
+  bool32 revealed;
+  s32 i;
+
+  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
+    revealed = TRUE;
+  } else if (gGameFlags & GAMEFLAG_LINK) {
+    revealed = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
+  } else if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
+    revealed = TRUE;
+  } else {
+    revealed = gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
+  }
+
+  if (revealed) {
+    visible = TRUE;
+    if (!p->visible) {
+      for (i = 0; i < 16; i++) {
+        if (p->shoots[i].state == 0) {
+          BambooShoot_SetState(&p->shoots[i], 0);
+        }
+      }
+    }
+  } else if (p->visible == TRUE) {
+    for (i = 0; i < 16; i++) {
+      if (p->shoots[i].state == 0) {
+        BambooShoot_SetState(&p->shoots[i], 0);
+      }
+    }
+  }
+  p->visible = visible;
+
+  for (i = 0; i < 16; i++) {
+    BambooShoot* e = &p->shoots[i];
+
+    if (e->active) {
+      if (e->unk_06) {
+        FUN_08009c08(p, e);
+      } else {
+        e->unk_08 = FALSE;
+        PTR_ARRAY_085aa6b8[visible][e->state](p, e);
+      }
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/BambooShootManager_Update.inc");
+#endif
+}
 
 s32 BambooShootManager_Destroy(BambooShootManager* p) {
   s32 i;
