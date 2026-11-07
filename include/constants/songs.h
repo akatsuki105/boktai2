@@ -939,12 +939,12 @@
 #define SONG_934 934
 #define SONG_935 935
 #define SONG_936 936
-#define SONG_937 937
+#define SE_SKELETON_ATK 937  // スケルトンの攻撃SE (腕を振る音)
 #define SONG_938 938
 #define SONG_939 939
-#define CRY_SKELETON_DEATH 940  // 正確には鳴き声でなく、骨が崩れ落ちるSE
-#define SONG_941 941
-#define SONG_942 942
+#define CRY_SKELETON_DEATH 940    // 正確には鳴き声でなく、骨が崩れ落ちるSE
+#define SE_SKELTON_NOT_DEATH 941  // スケルトンをエンチャントついていない武器で倒した時の髑髏が落ちる音
+#define SE_SKELETON_REVIVE 942    // スケルトンが復活したときのSE
 #define CRY_LICH_DEATH 943
 #define SONG_944 944
 #define SONG_945 945
@@ -968,10 +968,10 @@
 #define SONG_963 963
 #define SONG_964 964
 #define CRY_BEE_DEATH 965
-#define SONG_966 966
-#define SONG_967 967
-#define SE_BEE_968 968  // 蜂のモスキート音
-#define SONG_969 969
+#define SE_BEENEST_CRASH 966  // 蜂の巣が落ちて砕けたSE
+#define SE_BEE_967 967        // 蜂の巣からポイズンビーが出てくる時のモスキート音
+#define SE_BEE_968 968        // 蜂のモスキート音
+#define SE_BEE_969 969        // 蜂の巣が揺れた時になる蜂の羽ばたき音
 #define CRY_GHOST_DEATH 970
 #define SONG_971 971
 #define SONG_972 972

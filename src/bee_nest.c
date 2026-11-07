@@ -326,7 +326,7 @@ NON_MATCH void FUN_081d5d70(BeeNest* p, BeeNestFragment* frag) {
     frag->unk_11c = 4;
     frag->hp--;
     if (frag->hp > 0) {
-      PlaySound_082406e0(SONG_969);
+      PlaySound_082406e0(SE_BEE_969);
     } else {
       frag->state = 3;
       frag->unk_156 = 1;
@@ -453,14 +453,14 @@ NON_MATCH void FUN_081d6200(BeeNest* p, BeeNestFragment* frag) {
   if (frag->unk_156) {
     FUN_081d6764(frag);
     if (frag->unk_13d - frag->unk_13c >= 0) {
-      PlaySound_082406e0(SONG_967);
+      PlaySound_082406e0(SE_BEE_967);
     }
     FUN_081d6ae8(frag, frag->unk_13d - frag->unk_13c);
     if (frag->shadowId != -1) {
       AuxShadow_Remove(&frag->shadow);
       frag->shadowId = -1;
     }
-    PlaySound_082406e0(SONG_966);
+    PlaySound_082406e0(SE_BEENEST_CRASH);
     frag->unk_156 = 0;
   } else {
     frag->sprite.flags |= SPRFLAG_HIDDEN;
@@ -738,7 +738,7 @@ NON_MATCH void FUN_081d6c24(BeeNestFragment* frag) {
     if (frag->unk_130 < frag->unk_134) {
       FUN_081d6ae8(frag, 2);
       FUN_081d5820(frag, 1);
-      PlaySound_082406e0(SONG_967);
+      PlaySound_082406e0(SE_BEE_967);
     }
   }
 #else
