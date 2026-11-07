@@ -119,7 +119,10 @@ s32 FUN_08144cb8(Crow* p) {
   return 1;
 }
 
-NAKED s32 FUN_08144cc4(Crow* p) { INCFUNC("asm/func/FUN_08144cc4.inc"); }
+s32 FUN_08144cc4(Crow* p) {
+  FUN_081449f8(p);
+  return 1;
+}
 
 NAKED void FUN_08144cd0(Crow* p) { INCFUNC("asm/func/FUN_08144cd0.inc"); }
 
