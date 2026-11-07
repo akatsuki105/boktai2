@@ -142,7 +142,7 @@ _081411DA:
 	adds r1, r3, #0
 	bl EnemyBat_StartCurve
 	adds r0, r6, #0
-	bl FUN_081406b8
+	bl EnemyBat_StepCurve
 	movs r3, #0xcb
 	lsls r3, r3, #3
 	adds r2, r7, r3
@@ -285,7 +285,7 @@ _08141306:
 	cmp r0, #0
 	beq _081413BE
 	adds r0, r6, #0
-	bl FUN_081406b8
+	bl EnemyBat_StepCurve
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081413BE
@@ -368,7 +368,7 @@ _0814139E:
 	adds r1, r3, #0
 	bl EnemyBat_StartCurve
 	adds r0, r6, #0
-	bl FUN_081406b8
+	bl EnemyBat_StepCurve
 _081413BE:
 	movs r2, #0xf2
 	lsls r2, r2, #1

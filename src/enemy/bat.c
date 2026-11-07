@@ -535,7 +535,72 @@ void EnemyBat_StartCurve(EnemyBat* p, Vec3* pos) {
   q->curveT = 0;
 }
 
-NAKED u8 FUN_081406b8(EnemyBat* p) { INCFUNC("asm/func/FUN_081406b8.inc"); }
+// curveStart から curveEnd への曲線上の curveT の位置を経路の目的地に置き, curveT を乱数ぶん進める, 終点に着いたら TRUE
+// 220/223命令, Curoro_StepCurve と同じ壁 (原典はフレーム 0x34 で start/end/d/v を置き k などを退避, こちらは 0x28)
+NON_MATCH u8 EnemyBat_StepCurve(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  EnemyBat* q = (p->e).unk_1cc;
+  WorldPos start, end;
+  Vec3 d, v;
+  Vec3* dest;
+  s32 t, k, t2, t3, n;
+
+  start = q->curveStart;
+  start.y = 0;
+  end = q->curveEnd;
+  end.y = 0;
+  t = q->curveT;
+  k = q->curveBend;
+  dest = &(p->e).navAgent->dest;
+  Vec3_Diff(&d, &end, &start);
+  Vec3_Clear(&v);
+  t2 = t * t;
+  if (t2 >= 0) {
+    t2 >>= 10;
+  } else {
+    t2 = -(-t2 >> 10);
+  }
+  t3 = t2 * t;
+  if (t3 >= 0) {
+    t3 >>= 10;
+  } else {
+    t3 = -(-t3 >> 10);
+  }
+  k *= t3 - 2 * t2 + t;
+  n = v.x * (2 * t3 - 3 * t2 + 1) + d.x * (3 * t2 - 2 * t3) + k;
+  if (n >= 0) {
+    n >>= 10;
+  } else {
+    n = -(-n >> 10);
+  }
+  dest->x = start.x + n;
+  n = v.y * (2 * t3 - 3 * t2 + 1) + d.y * (3 * t2 - 2 * t3) + k;
+  if (n >= 0) {
+    n >>= 10;
+  } else {
+    n = -(-n >> 10);
+  }
+  dest->y = start.y + n;
+  n = v.z * (2 * t3 - 3 * t2 + 1) + d.z * (3 * t2 - 2 * t3) + k;
+  if (n >= 0) {
+    n >>= 10;
+  } else {
+    n = -(-n >> 10);
+  }
+  dest->z = start.z + n;
+  if (q->curveT < 1024) {
+    q->curveT += (u8)Random() + 256;
+    if (q->curveT > 1024) {
+      q->curveT = 1024;
+    }
+    return FALSE;
+  }
+  q->curveT = 0;
+  return TRUE;
+#else
+  INCFUNC("asm/func/EnemyBat_StepCurve.inc");
+#endif
+}
 
 void EnemyBat_InitAnims(EnemyBat* p) {
   Enemy_SetAnimEntry(&p->e, 0, 0, 0);
@@ -579,7 +644,7 @@ void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos) {
   Vec3 diff;
 
   EnemyBat_StartCurve(p, pos);
-  FUN_081406b8(p);
+  EnemyBat_StepCurve(p);
   Enemy_ResetState(&p->e, 0, 0, 1);
   Vec3_Diff(&diff, pos, &(p->e).mover.pos);
   (p->e).unk_1dc = ArcTan2_8(diff.x, diff.z);

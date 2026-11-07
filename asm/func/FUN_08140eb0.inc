@@ -160,7 +160,7 @@ _08140FE6:
 	cmp r0, #0
 	beq _081410B4
 	adds r0, r6, #0
-	bl FUN_081406b8
+	bl EnemyBat_StepCurve
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081410BE
