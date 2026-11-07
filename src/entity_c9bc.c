@@ -794,4 +794,146 @@ EntityC9BCElem* EntityC9BC_FindElemById(EntityC9BC* p, u32 id) {
 }
 
 // 0xA062
-NAKED s32 Cmd_A062(void) { INCFUNC("asm/func/Cmd_A062.inc"); }
+// 空いている要素に属性キューブを1つ置く, EntityC9BC が無い, 空きが無い, '.n' の id が使用中ならどれも -1
+// 下書き (633/615命令): 呼び出しの並びは一致, 'R' の読み込みループを原典はポインタ比較で回し, こちらは逆向きのカウンタになる, 要素のフィールドのアドレスの退避先も違う
+NON_MATCH s32 Cmd_A062(void) {
+#ifdef NONMATCHING_C
+  EntityC9BC* p = GetEntityC9BC();
+  EntityC9BCElem* elem;
+  u32 id;
+  u8 state;
+  WorldPos pos;
+  Vec3 halfSize;
+  Vec3 offset;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+  elem = EntityC9BC_FindFreeElem(p);
+  if (elem == NULL) {
+    return -1;
+  }
+  id = VM_GetNamedArgValue('n', 0);
+  if (EntityC9BC_FindElemById(p, id) != NULL) {
+    return -1;
+  }
+
+  elem->unk_02 = VM_GetNamedArgValue('a', 0);
+  if (elem->unk_02 == 0 || TEST_FLAGS(elem->unk_02, 1)) {
+    state = 0;
+  } else if (TEST_FLAGS(elem->unk_02, 2)) {
+    state = 1;
+  } else {
+    state = TEST_FLAGS(elem->unk_02, 4) ? 0 : 6;
+  }
+  EntityC9BCElem_SetState(elem, state);
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+  pos.x = (pos.x & ~0xFF) | 0x80;
+  pos.z = (pos.z & ~0xFF) | 0x80;
+  pos.y = TileHeightAt(&pos);
+
+  elem->scriptID = VM_GetNamedArgValue('P', 0);
+  if (VM_SeekToNamedArg('R')) {
+    for (i = 0; i < 4; i++) {
+      elem->scriptArgs[i] = VM_GetPC() ? VM_GetValue() : 0;
+    }
+  } else {
+    for (i = 0; i < 4; i++) {
+      elem->scriptArgs[i] = 0;
+    }
+  }
+
+  elem->unk_1c = 0;
+  elem->unk_20 = 0;
+  elem->unk_24 = 0;
+  elem->unk_28 = VM_GetNamedArgValue('f', 0);
+  elem->unk_2a = 0;
+  elem->zone = VM_GetNamedArgValue('m', 0) ? GetZoneAt(&pos) : 0;
+  elem->plttIdx = EntityC9BCElem_GetPlttIdx(elem);
+  elem->burnTime = VM_GetNamedArgValue('F', -1);
+  if (TEST_FLAGS(elem->unk_02, 1)) {
+    elem->burnTimer = elem->burnTime;
+  } else {
+    elem->burnTimer = 0;
+  }
+  elem->shakeTimer = 0;
+  elem->slideTiles = 0;
+  elem->slideAngle = 0;
+  elem->groundY = pos.y;
+  elem->unk_36 = 40;
+  if (elem->state == 1 || elem->state == 3) {
+    elem->unk_34 = 0;
+  } else {
+    elem->unk_34 = 40;
+  }
+  elem->hp = VM_GetNamedArgValue('l', 1);
+  elem->unk_40 = 0;
+  elem->flashTimer = 0;
+
+  Video_GetAuxSprite(&elem->gfx, SPRITE_BCA8);
+  EntityC9BCElem_ApplyPltt(p, elem);
+  AuxSprite_Add(&elem->spr_a8, &elem->gfx, 0);
+  elem->spr_a8.poseIdx = 0;
+  elem->spr_a8.pos = pos;
+  elem->spr_a8.pos.y += elem->unk_34;
+  Video_GetAuxSprite(&elem->gfx2, SPRITE_BCA8);
+  AuxSprite_Add(&elem->spr_f0, &elem->gfx2, SPRFLAG_BLINK_ODD);
+  elem->spr_f0.poseIdx = 1;
+  elem->spr_f0.pos = pos;
+
+  {
+    s32 idx = GetCollisionTileIdx(&pos);
+    s32 height = TileAtIndex(idx)->heightStairs & 0xF;
+
+    if (height < 15) {
+      height++;
+    }
+    Map_AddTileOverride(&elem->tileOverride, idx, 0, height, 0xFF, TATTR_UNK_0 | TATTR_UNK_3);
+  }
+  elem->tileOverride.flags |= 2;
+
+  Mover_Init(&elem->obj, id, &pos, 0, 7, elem);
+  Mover_SetAuxSprite(&elem->obj, &elem->spr_a8);
+  if (elem->state != 1) {
+    elem->obj.flags |= 2;
+  }
+  elem->zoneSource.id = elem->obj.id;
+  elem->zoneSource.pos = &elem->obj.pos;
+
+  halfSize.x = 0x82, halfSize.y = 0x80, halfSize.z = 0x82;
+  offset.x = 0, offset.y = 0x80, offset.z = 0;
+  Hitbox_Init(&elem->hurtbox, elem->obj.id, HBFLAG_HURTBOX | HBFLAG_UNK_6 | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_SetPos(&elem->hurtbox, &elem->obj.pos, 0);
+  Hitbox_SetHandler(&elem->hurtbox, FUN_0800cbd0, elem);
+  Hitbox_Register(&elem->hurtbox);
+
+  halfSize.x = 0x90, halfSize.y = 0x80, halfSize.z = 0x90;
+  Hitbox_Init(&elem->hitbox, elem->obj.id, HBFLAG_HITBOX | HBFLAG_UNK_11 | HBFLAG_UNK_0, 0, HIM_0, &halfSize, &offset);
+  Hitbox_SetPos(&elem->hitbox, &elem->obj.pos, 0);
+  Hitbox_SetHandler(&elem->hitbox, nop_0800cc04, elem);
+  Hitbox_SetPower(&elem->hitbox, 50, 0);
+  elem->hitbox.weakness = 0x10100;
+  elem->hitbox.attributes = HBATTR_FLAME;
+
+  if (!TEST_FLAGS(elem->unk_28, 1)) {
+    if (FUN_08002a48(&elem->obj) < 0) {
+      elem->unk_28 |= 1;
+    }
+  }
+
+  elem->active = TRUE;
+  return 0;
+#else
+  INCFUNC("asm/func/Cmd_A062.inc");
+#endif
+}
