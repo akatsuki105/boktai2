@@ -43,6 +43,7 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
 }
 
 void FUN_08163604(Slime* p, s32 arg);
+void FUN_08162df4(Slime* p);
 void FUN_08162efc(Slime* p);
 void FUN_08162fa8(Slime* p);
 u32 Slime_PickHitAttributes(Slime* p);
@@ -91,7 +92,20 @@ void FUN_08162cf4(Slime* p) {
   Enemy_PlayAnimNoFacing(&p->e, 1);
 }
 
-NAKED void FUN_08162d18(Slime* p) { INCFUNC("asm/func/FUN_08162d18.inc"); }
+void FUN_08162d18(Slime* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimNoFacing(&p->e, 1);
+    (p->e).animSpeedDiv = 1;
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, 64);
+  }
+  if ((p->e).animForceRestart) {
+    if ((Random() & 31) < 24) {
+      Enemy_EnterState(&p->e, FUN_08162df4, ES_UNK_0);
+    } else {
+      Enemy_EnterState(&p->e, FUN_08162d18, ES_UNK_40);
+    }
+  }
+}
 
 // 残差は Random の展開で gRandTableIdx のアドレスと新しい添字のレジスタが入れ替わるのみ, 試済: u8/s32 の受け, & 0xFF, フラグの OR を1か所にまとめる形, 宣言順
 NON_MATCH void FUN_08162df4(Slime* p) {
