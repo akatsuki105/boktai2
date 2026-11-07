@@ -407,7 +407,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x9C3F, Entity8AF6_ShowScripted
 	.4byte 0x9DFE, Cmd_9DFE
 	.4byte 0x9E8B, Cmd_GetSolarBankBalance
-	.4byte 0x9E8D, EnemyCrow_Create @ HashName("クロウ")
+	.4byte 0x9E8D, Crow_Create @ HashName("クロウ")
 	.4byte 0x9EC0, Entity6978_SetRequestScripted
 	.4byte 0x9FB7, Cmd_9FB7
 	.4byte 0x9FFD, Cmd_9FFD

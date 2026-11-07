@@ -46,4 +46,90 @@ void (*const PTR_ARRAY_085ad858[7])(Crow*, u16*) = {
     FUN_08144160,
 };  // 0x085AD858
 
-INCASM("asm/crow.inc");
+NAKED void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func/Crow_OnHit.inc"); }
+
+NAKED void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func/Crow_OnHurt.inc"); }
+
+NAKED void FUN_08142fd8(Crow* p) { INCFUNC("asm/func/FUN_08142fd8.inc"); }
+
+NAKED void FUN_08143004(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143004.inc"); }
+
+NAKED void FUN_08143094(Crow* p) { INCFUNC("asm/func/FUN_08143094.inc"); }
+
+NAKED void FUN_0814312c(Crow* p) { INCFUNC("asm/func/FUN_0814312c.inc"); }
+
+NAKED void FUN_081431e0(Crow* p) { INCFUNC("asm/func/FUN_081431e0.inc"); }
+
+NAKED void FUN_081432ec(Crow* p) { INCFUNC("asm/func/FUN_081432ec.inc"); }
+
+NAKED void FUN_08143310(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143310.inc"); }
+
+NAKED void FUN_081434e0(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_081434e0.inc"); }
+
+NAKED void FUN_081436b4(Crow* p) { INCFUNC("asm/func/FUN_081436b4.inc"); }
+
+NAKED void FUN_081439d8(Crow* p) { INCFUNC("asm/func/FUN_081439d8.inc"); }
+
+NAKED void FUN_08143dd4(Crow* p) { INCFUNC("asm/func/FUN_08143dd4.inc"); }
+
+NAKED void FUN_08143ef8(Crow* p) { INCFUNC("asm/func/FUN_08143ef8.inc"); }
+
+NAKED void FUN_08143fac(Crow* p) { INCFUNC("asm/func/FUN_08143fac.inc"); }
+
+NAKED void FUN_0814414c(Crow* p) { INCFUNC("asm/func/FUN_0814414c.inc"); }
+
+NAKED void FUN_08144160(Crow* p, u16* msg) { INCFUNC("asm/func/FUN_08144160.inc"); }
+
+NAKED void Crow_OnReset(Crow* p) { INCFUNC("asm/func/Crow_OnReset.inc"); }
+
+NAKED void FUN_08144414(Crow* p) { INCFUNC("asm/func/FUN_08144414.inc"); }
+
+NAKED void FUN_08144608(Crow* p) { INCFUNC("asm/func/FUN_08144608.inc"); }
+
+NAKED void Crow_InitHitboxes(Crow* p) { INCFUNC("asm/func/Crow_InitHitboxes.inc"); }
+
+NAKED s32 FUN_081446fc(Crow* p) { INCFUNC("asm/func/FUN_081446fc.inc"); }
+
+NAKED void FUN_0814472c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814472c.inc"); }
+
+NAKED void Crow_InitAnims(Crow* p) { INCFUNC("asm/func/Crow_InitAnims.inc"); }
+
+NAKED void FUN_081447cc(Crow* p) { INCFUNC("asm/func/FUN_081447cc.inc"); }
+
+NAKED void FUN_0814480c(u16 angle, s32* outX, s32* outY) { INCFUNC("asm/func/FUN_0814480c.inc"); }
+
+NAKED void FUN_0814483c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814483c.inc"); }
+
+NAKED void FUN_081448d8(Crow* p) { INCFUNC("asm/func/FUN_081448d8.inc"); }
+
+NAKED void FUN_08144910(Crow* p) { INCFUNC("asm/func/FUN_08144910.inc"); }
+
+NAKED void FUN_081449f8(Crow* p) { INCFUNC("asm/func/FUN_081449f8.inc"); }
+
+NAKED void FUN_08144b70(Crow* p) { INCFUNC("asm/func/FUN_08144b70.inc"); }
+
+NAKED bool8 FUN_08144b90(Crow* p) { INCFUNC("asm/func/FUN_08144b90.inc"); }
+
+NAKED void FUN_08144bfc(Crow* p) { INCFUNC("asm/func/FUN_08144bfc.inc"); }
+
+NAKED s32 FUN_08144cb8(Crow* p) { INCFUNC("asm/func/FUN_08144cb8.inc"); }
+
+NAKED s32 FUN_08144cc4(Crow* p) { INCFUNC("asm/func/FUN_08144cc4.inc"); }
+
+NAKED void FUN_08144cd0(Crow* p) { INCFUNC("asm/func/FUN_08144cd0.inc"); }
+
+NAKED void FUN_08144ec8(Crow* p) { INCFUNC("asm/func/FUN_08144ec8.inc"); }
+
+NAKED void FUN_081452cc(Crow* p) { INCFUNC("asm/func/FUN_081452cc.inc"); }
+
+NAKED void FUN_08145424(Crow* p) { INCFUNC("asm/func/FUN_08145424.inc"); }
+
+NAKED s32 FUN_08145438(Crow* p) { INCFUNC("asm/func/FUN_08145438.inc"); }
+
+NAKED s32 Crow_Update(Crow* p) { INCFUNC("asm/func/Crow_Update.inc"); }
+
+NAKED s32 Crow_Destroy(Crow* p) { INCFUNC("asm/func/Crow_Destroy.inc"); }
+
+NAKED s32 Crow_Init(Crow* p) { INCFUNC("asm/func/Crow_Init.inc"); }
+
+NAKED void Crow_Create(void) { INCFUNC("asm/func/Crow_Create.inc"); }
