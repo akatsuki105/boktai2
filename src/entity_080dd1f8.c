@@ -145,7 +145,31 @@ Entity080dd1f8* Entity080dd1f8_Create(void) {
 
 void FUN_080dd244(void) { gEntity080dd1f8 = NULL; }
 
-NAKED s32 FUN_080dd250(Vec3* pos) { INCFUNC("asm/func/FUN_080dd250.inc"); }
+// pos から 320 未満の距離にある生きた爆弾を探し, 見つかればその向きを返す, 無ければ -1
+s32 FUN_080dd250(Vec3* pos) {
+  Entity080dd1f8* p = gEntity080dd1f8;
+  Entity080dd1f8Elem* elems;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+  elems = p->elems;
+  if (p->activeMask == 0) {
+    return -1;
+  }
+  for (i = 0; i < 12; i++) {
+    if (Entity080dd1f8_IsElemUsed(&p->activeMask, i) && elems[i].unk_12f >= 0 && elems[i].unk_132 != 0 && elems[i].unk_12e != 2) {
+      Vec3 diff;
+
+      Vec3_Delta(&diff, pos, &elems[i].spr.pos);
+      if (diff.x * diff.x + diff.z * diff.z < 0x19000) {
+        return ArcTan2_8(diff.x, diff.z);
+      }
+    }
+  }
+  return -1;
+}
 
 // elem が生きていて片付け待ちでもないかを返す
 s32 FUN_080dd324(void* p) {
