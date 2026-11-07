@@ -40,6 +40,7 @@ s32 FUN_081de7e8(Entity9A9F* p);
 u32 CalcCRC16(u8* data, u32 len);
 s32 FUN_081ddb14(Entity9A9F* p, u8* buf, s32 limit);
 void FUN_081dc694(void);
+s32 FUN_081deaf4(Entity9A9F* p);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
 
@@ -633,7 +634,42 @@ NON_MATCH s32 FUN_081de960(Entity9A9F* p) {
 #endif
 }
 
-NAKED s32 FUN_081de9d8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de9d8.inc"); }
+// 親機がルールを送り, 全員が受け取ったら乱数の種とルールを反映して state 10 へ, 原典は最後の return を書き忘れている
+s32 FUN_081de9d8(Entity9A9F* p) {
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_081dd9f0(p);
+    if (Entity9A9F_GetPlayerIdx() == 0) {
+      p->rulesOut.crc = CalcCRC16(p->rulesOut.values, 6);
+    }
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (Entity9A9F_GetPlayerIdx() == 0) {
+    FUN_081ddb14(p, (u8*)&p->rulesOut, sizeof(Entity9A9FRules));
+  }
+  if ((u8)FUN_081ddb5c(p, (u8*)&p->rules, 0, sizeof(Entity9A9FRules)) == 1) {
+    CalcCRC16(p->rules.values, 6);
+    Entity9A9F_SetState(p, 10, FUN_081deaf4);
+    Marquee_CloseGlobal();
+    ClearBGTilemapBuffer(0);
+    FUN_081ddf84(p);
+    gRandTableIdx = p->records[0].randSeed & 0x3FF;
+    p->unk_38 = p->rules.values[2];
+    if (p->unk_38 > 2) {
+      p->unk_38 = Mod(Random(), 3);
+    }
+    FUN_081ddf44(p);
+    for (i = 0; i < 4; i++) {
+      gLinkKeyInput[i] = 0x3FF;
+    }
+    return 0;
+  }
+}
 
 // 全員から種別 0x2000 のキーが届いたら state 11 へ, 原典は最後の return を書き忘れている
 // 残差: 原典は種別の定数 0x2000 をループ内で毎回作るが, こちらはループ外へ出して r12 に置く (FUN_081df568 と同じ)
