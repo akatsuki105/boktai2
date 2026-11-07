@@ -10,9 +10,18 @@
 // プレイヤーが変身するCバット(PLAYER_BAT)などと混同しない様に構造体名は Bat ではなく EnemyBat にした
 typedef struct {
   Enemy e;
-  u8 unk_654[1728 - sizeof(Enemy)];
+  u8 unk_654[4];             // 0x654
+  u32 unk_658;               // 0x658, bit3 が立っていると移動が速くなる
+  u8 unk_65c[8];             // 0x65C
+  u16 unk_664;               // 0x664, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
+  u8 unk_666[1728 - 0x666];  // 0x666
 } EnemyBat;
 static_assert(sizeof(EnemyBat) == 1728);
+
+static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
+  if (p->unk_658 & bit) return TRUE;
+  return FALSE;
+}
 
 void FUN_0813f9a8(EnemyBat*);
 void FUN_0813fbf8(EnemyBat*);
@@ -110,7 +119,24 @@ void EnemyBat_InitHitboxes(EnemyBat* p) {
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, EnemyBat_OnHit, 0, p);
 }
 
-NAKED s32 FUN_08140614(EnemyBat* p) { INCFUNC("asm/func/FUN_08140614.inc"); }
+// unk_664 が大きいほど速く, unk_658 の bit3 が立っていればさらに速い
+s32 EnemyBat_GetMoveSpeed(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+  s32 v = FixToInt(7, q->unk_664);
+  s32 i;
+
+  if (v < 0) {
+    v = -v;
+  }
+  i = v;
+  if (i > 7) {
+    i = 7;
+  }
+  if (EnemyBat_TestUnk658(q, 8)) {
+    return u32_ARRAY_085ad7e4[i] + 6;
+  }
+  return u32_ARRAY_085ad7e4[i];
+}
 
 NAKED void FUN_08140680(EnemyBat* p, Vec3* pos) { INCFUNC("asm/func/FUN_08140680.inc"); }
 

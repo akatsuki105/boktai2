@@ -1542,7 +1542,7 @@ _081421EC:
 	adds r5, r5, r0
 	ldr r1, _08142288 @ =FUN_0814145c
 	str r1, [sp, #0x1a4]
-	ldr r2, _0814228C @ =FUN_08140614
+	ldr r2, _0814228C @ =EnemyBat_GetMoveSpeed
 	mov r8, r2
 	movs r2, #0
 	ldr r3, _08142290 @ =FUN_0813f180
@@ -1603,7 +1603,7 @@ _081421EC:
 	.align 2, 0
 _08142284: .4byte 0x00000674
 _08142288: .4byte FUN_0814145c
-_0814228C: .4byte FUN_08140614
+_0814228C: .4byte EnemyBat_GetMoveSpeed
 _08142290: .4byte FUN_0813f180
 _08142294: .4byte FUN_0813f2fc
 _08142298: .4byte FUN_0813f5fc
@@ -1621,7 +1621,7 @@ _081422B0:
 	adds r5, r2, r6
 	ldr r0, _08142444 @ =FUN_0814145c
 	str r0, [sp, #0x1a8]
-	ldr r1, _08142448 @ =FUN_08140614
+	ldr r1, _08142448 @ =EnemyBat_GetMoveSpeed
 	mov r8, r1
 	movs r2, #0
 	ldr r3, _0814244C @ =FUN_0813f1f0
@@ -1812,7 +1812,7 @@ _08142430:
 	.align 2, 0
 _08142440: .4byte 0x00000674
 _08142444: .4byte FUN_0814145c
-_08142448: .4byte FUN_08140614
+_08142448: .4byte EnemyBat_GetMoveSpeed
 _0814244C: .4byte FUN_0813f1f0
 _08142450: .4byte FUN_0813f2fc
 _08142454: .4byte FUN_0813f5fc
