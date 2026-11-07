@@ -25,7 +25,9 @@ typedef struct {
   Enemy e;
   u8 unk_654[4];              // 0x654
   u32 unk_658;                // 0x658, bit3 が立っていると移動が速くなる
-  u8 unk_65c[8];              // 0x65C
+  u8 unk_65c[5];              // 0x65C
+  u8 unk_661;                 // 0x661, 歩きアニメを流し直すかを決めるための前のフレームの mover.angle
+  u8 unk_662[2];              // 0x662
   u16 curveT;                 // 0x664, curveStart から curveEnd への曲線の進み具合, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
   u8 unk_666;                 // 0x666
   s8 curveBendDir;            // 0x667, curveBend を増やす向き, 1 か -1
@@ -42,6 +44,7 @@ static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
   return FALSE;
 }
 
+void FUN_08140dd0(EnemyBat* p);
 void FUN_0813f9a8(EnemyBat*);
 void FUN_0813fbf8(EnemyBat*);
 void FUN_0813fc9c(EnemyBat*);
@@ -84,7 +87,20 @@ NAKED void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC(
 
 NAKED void FUN_0813f06c(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f06c.inc"); }
 
-NAKED void FUN_0813f180(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f180.inc"); }
+// 向きが変わったときだけ歩きアニメを流し直す
+void FUN_0813f180(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 1);
+    q->unk_661 = (p->e).mover.angle;
+  } else if (q->unk_661 != (p->e).mover.angle) {
+    Enemy_PlayAnim(&p->e, 1);
+    q->unk_661 = (p->e).mover.angle;
+  } else {
+    (p->e).animForceRestart = FALSE;
+  }
+}
 
 NAKED void FUN_0813f1f0(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f1f0.inc"); }
 
