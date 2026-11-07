@@ -109,7 +109,36 @@ void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) {
   }
 }
 
-NAKED void Spider_OnHurt(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/func/Spider_OnHurt.inc"); }
+// 食らい判定, ACTOR 以外の攻撃は高さの差の半分だけずらした攻撃位置が自分の xz の箱に入るときだけ攻撃側の fn を呼んでから受ける
+// 1503/1505命令, 原典は a を sb / b を r8 に置く (こちらは逆), 残りは Crow_OnHurt と同じ共通処理の残差
+NON_MATCH void Spider_OnHurt(HitboxData* a, HitboxData* b, Spider* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  if (Hitbox_TestFlags(a, HBFLAG_ACTOR)) {
+    Enemy_HandleHurt(a, b, &p->e);
+  } else {
+    Vec3 v;
+    s32 dy = (a->pos.y - b->pos.y) >> 1;
+
+    v.x = a->pos.x - dy;
+    v.z = a->pos.z - dy;
+    if (b->pos.x + b->halfSize.x <= v.x || b->pos.x - b->halfSize.x >= v.x) {
+      return;
+    }
+    if (b->pos.z + b->halfSize.z <= v.z || b->pos.z - b->halfSize.z >= v.z) {
+      return;
+    }
+    if (a->fn != NULL) {
+      a->fn(a, b, a->owner);
+    }
+    Enemy_HandleHurt(a, b, &p->e);
+  }
+#else
+  INCFUNC("asm/func/Spider_OnHurt.inc");
+#endif
+}
 
 void FUN_0812ea6c(Spider* p) {
   Enemy_ConsumeStateBegun(&p->e);
