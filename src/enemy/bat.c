@@ -44,7 +44,8 @@ typedef struct {
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
-  u8 unk_6b8[1728 - 0x6B8];   // 0x6B8
+  WorldPos homePos;           // 0x6B8, 復帰したときに戻る位置
+  u8 unk_6c0[1728 - 0x6C0];   // 0x6C0
 } EnemyBat;
 static_assert(sizeof(EnemyBat) == 1728);
 
@@ -407,7 +408,32 @@ void FUN_0813fe34(EnemyBat* p) {
 
 void FUN_08140014(EnemyBat* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad7d0; }
 
-NAKED void EnemyBat_OnReset(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnReset.inc"); }
+// 復帰時に作業値を消して homePos へ戻し, 床の高さを取り直して待機アニメを流して1コマ送る
+void EnemyBat_OnReset(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+  EnemyAuxSpriteData* aux;
+
+  q->unk_65f = 0;
+  q->curveT = 0;
+  q->unk_666 = 0;
+  q->curveBendDir = 1;
+  q->curveBend = 0;
+  q->mashCount = 0;
+  q->mashBase = 0;
+  q->unk_658 = 0;
+  (p->e).mover.pos = q->homePos;
+  (p->e).unk_256 = GetCollisionTileIdx(&q->homePos);
+  (p->e).floorY = TileHeightAtIndex((p->e).unk_256, &q->homePos);
+  (p->e).heightAboveFloor = (p->e).mover.pos.y - (p->e).floorY;
+  (p->e).mover.pos.y = (p->e).floorY;
+  Enemy_SetSpritePos(&p->e, &(p->e).mover.pos);
+  Vec3_Clear(&q->curveStart);
+  Vec3_Clear(&q->curveEnd);
+  Vec3_Clear(&q->unk_6b0);
+  Enemy_PlayAnim(&p->e, 0);
+  aux = (EnemyAuxSpriteData*)(p->e).sprite;
+  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+}
 
 void FUN_08140278(EnemyBat* p, u16* msg) {
   if (!Enemy_IsDead(&p->e) && gPlayerPtr[0] != NULL) {
