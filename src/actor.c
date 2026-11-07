@@ -465,7 +465,26 @@ void FUN_080412f4(void) {}
 
 void FUN_080412f8(void) {}
 
-NAKED s32 FUN_080412fc(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_080412fc.inc"); }
+// ゾーンイベントを更新し, flags の 0x100 なら姿と影を, 0x200 なら影だけを隠す
+// 残差: 原典は 0x100 が立っている側 (SpriteHolder_SetFlags) を先に置き, 影を隠す呼び出しを共有する並びになる
+NON_MATCH s32 FUN_080412fc(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  actor->zoneEvent.id = actor->mover.id;
+  actor->zoneEvent.pos = &actor->mover.pos;
+  Map_UpdateZoneEvents(&actor->zoneEvent);
+  if (TEST_FLAGS(actor->flags, ACTORFLAG_UNK_8)) {
+    SpriteHolder_SetFlags(&actor->sprite, 1);
+  } else {
+    SpriteHolder_ClearFlags(&actor->sprite, 1);
+    if (!TEST_FLAGS(actor->flags, 0x200)) {
+      return Actor_ShowShadow(actor);
+    }
+  }
+  return Actor_HideShadow(actor);
+#else
+  INCFUNC("asm/func/FUN_080412fc.inc");
+#endif
+}
 
 // unk_19 から左右反転と向きの番号を作ってアニメを設定する
 s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
