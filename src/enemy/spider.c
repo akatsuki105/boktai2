@@ -176,7 +176,7 @@ NAKED void FUN_08130eec(Spider* p) { INCFUNC("asm/func/FUN_08130eec.inc"); }
 NAKED void FUN_0813101c(Spider* p) { INCFUNC("asm/func/FUN_0813101c.inc"); }
 
 // 歩きアニメのコマが変わる瞬間だけ移動の速さを返す
-s32 FUN_0813107c(Spider* p) {
+s32 Spider_GetMoveSpeed(Spider* p) {
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
 
   if (anim->tick == 0) {

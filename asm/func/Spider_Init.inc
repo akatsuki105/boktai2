@@ -1339,7 +1339,7 @@ _08131C3C:
 	mov r8, r1
 	ldr r4, _08131D9C @ =FUN_081310b8
 	mov sb, r4
-	ldr r5, _08131DA0 @ =FUN_0813107c
+	ldr r5, _08131DA0 @ =Spider_GetMoveSpeed
 	mov sl, r5
 	ldr r6, _08131DA4 @ =FUN_0812eab4
 	mov ip, r6
@@ -1504,7 +1504,7 @@ _08131C3C:
 	.align 2, 0
 _08131D98: .4byte 0x00000664
 _08131D9C: .4byte FUN_081310b8
-_08131DA0: .4byte FUN_0813107c
+_08131DA0: .4byte Spider_GetMoveSpeed
 _08131DA4: .4byte FUN_0812eab4
 _08131DA8: .4byte FUN_0812f3f8
 _08131DAC: .4byte FUN_080f62b0

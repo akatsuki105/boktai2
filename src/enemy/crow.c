@@ -12,7 +12,7 @@ typedef struct {
 } Crow;
 static_assert(sizeof(Crow) == 1728);
 
-void FUN_08144b70(Crow* p);
+void Crow_PlayWingSound(Crow* p);
 void FUN_081436b4(Crow*);
 void FUN_081439d8(Crow*);
 void FUN_08143dd4(Crow*);
@@ -58,7 +58,7 @@ NAKED void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/fun
 void FUN_08142fd8(Crow* p) {
   Enemy_ConsumeStateBegun(&p->e);
   Enemy_PlayAnim(&p->e, 1);
-  FUN_08144b70(p);
+  Crow_PlayWingSound(p);
 }
 
 NAKED void FUN_08143004(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143004.inc"); }
@@ -110,7 +110,7 @@ void Crow_InitHitboxes(Crow* p) {
 }
 
 // 状態に入ってからの時間が経つほど移動を速くする
-s32 FUN_081446fc(Crow* p) {
+s32 Crow_GetMoveSpeed(Crow* p) {
   s32 t = (p->e).subStateTimer;
   s32 i;
 
@@ -152,8 +152,7 @@ NAKED void FUN_08144910(Crow* p) { INCFUNC("asm/func/FUN_08144910.inc"); }
 
 NAKED void FUN_081449f8(Crow* p) { INCFUNC("asm/func/FUN_081449f8.inc"); }
 
-// 羽ばたきアニメの決まったコマで羽音を鳴らす
-void FUN_08144b70(Crow* p) {
+void Crow_PlayWingSound(Crow* p) {
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
 
   if (anim->cmdIdx == 5 && anim->tick == 0) {

@@ -1562,7 +1562,7 @@ _081662E8:
 	adds r3, r4, r5
 	movs r2, #0
 	ldr r4, _08166474 @ =FUN_08165508
-	ldr r5, _08166478 @ =FUN_081640e4
+	ldr r5, _08166478 @ =Slime_GetMoveSpeed
 	ldr r6, _0816647C @ =FUN_08162df4
 	mov r8, r6
 	ldr r0, _08166480 @ =FUN_08163360
@@ -1749,7 +1749,7 @@ _08166462:
 	.align 2, 0
 _08166470: .4byte 0x00000664
 _08166474: .4byte FUN_08165508
-_08166478: .4byte FUN_081640e4
+_08166478: .4byte Slime_GetMoveSpeed
 _0816647C: .4byte FUN_08162df4
 _08166480: .4byte FUN_08163360
 _08166484: .4byte FUN_0816390c

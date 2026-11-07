@@ -123,7 +123,7 @@ void Slime_InitAnims(Slime* p) {
 const u16 u16_ARRAY_085ada08[6] = {0, 16, 32, 20, 12, 0};  // 0x085ADA08
 
 // 歩きアニメのコマが変わる瞬間だけ移動の速さを返す
-s32 FUN_081640e4(Slime* p) {
+s32 Slime_GetMoveSpeed(Slime* p) {
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
 
   if (anim->tick == 0) {

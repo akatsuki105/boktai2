@@ -1562,7 +1562,7 @@ _08146214:
 	adds r5, r3, r6
 	ldr r0, _081463AC @ =FUN_08145438
 	str r0, [sp, #0x1a0]
-	ldr r1, _081463B0 @ =FUN_081446fc
+	ldr r1, _081463B0 @ =Crow_GetMoveSpeed
 	mov r8, r1
 	ldr r2, _081463B4 @ =FUN_0814312c
 	mov sb, r2
@@ -1752,7 +1752,7 @@ _0814639A:
 	.align 2, 0
 _081463A8: .4byte 0x00000674
 _081463AC: .4byte FUN_08145438
-_081463B0: .4byte FUN_081446fc
+_081463B0: .4byte Crow_GetMoveSpeed
 _081463B4: .4byte FUN_0814312c
 _081463B8: .4byte FUN_08142fd8
 _081463BC: .4byte FUN_08143004

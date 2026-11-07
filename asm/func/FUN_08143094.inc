@@ -34,7 +34,7 @@ _081430CE:
 	cmp r0, #0
 	beq _081430DE
 	adds r0, r4, #0
-	bl FUN_08144b70
+	bl Crow_PlayWingSound
 _081430DE:
 	ldr r1, _081430FC @ =0x0000046E
 	adds r0, r4, r1
