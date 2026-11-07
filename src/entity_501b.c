@@ -67,7 +67,13 @@ NAKED void Entity501B_InitBg(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitB
 
 NAKED void Entity501B_InitTextPanels(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitTextPanels.inc"); }
 
-NAKED void Entity501B_HideTextPanels(Entity501B* p) { INCFUNC("asm/func/Entity501B_HideTextPanels.inc"); }
+void Entity501B_HideTextPanels(Entity501B* p) {
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    TextPanel_Hide(p->textPanels[i]);
+  }
+}
 
 NAKED BgMapEntry* Entity501B_GetBgMapAddr(s32 bg, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_GetBgMapAddr.inc"); }
 
