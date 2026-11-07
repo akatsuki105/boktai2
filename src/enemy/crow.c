@@ -24,7 +24,11 @@ typedef struct {
   u8 unk_654[0x658 - 0x654];  // 0x654
   u32 unk_658;                // 0x658
   u8 unk_65c;                 // 0x65C, 羽ばたきアニメを流した回数
-  u8 unk_65d[0x671 - 0x65D];  // 0x65D
+  u8 unk_65d[3];              // 0x65D
+  u8 unk_660;                 // 0x660, プレイヤーへ直進するときの速さ
+  u8 unk_661[3];              // 0x661
+  u32 unk_664;                // 0x664, unk_1e4 がこれ以上ならプレイヤーへの直進を続ける
+  u8 unk_668[0x671 - 0x668];  // 0x668
   u8 unk_671;                 // 0x671, 鳴くたびに 40 ずつ増える
   u8 unk_672[0x6A0 - 0x672];  // 0x672
   WorldPos curveStart;        // 0x6A0, 曲線の始点
@@ -255,7 +259,41 @@ void FUN_08143ef8(Crow* p) {
   }
 }
 
-NAKED void FUN_08143fac(Crow* p) { INCFUNC("asm/func/FUN_08143fac.inc"); }
+// 向いている向きとプレイヤーのいる向きの差 (0〜128) を返す
+static inline s32 Crow_GetAngleDiffToPlayer(Crow* p) {
+  Vec3 diff;
+  s32 d;
+
+  Vec3_Delta(&diff, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos);
+  d = ArcTan2_8(diff.x, diff.z) - (p->e).mover.angle;
+  if (d > 128) {
+    d -= 256;
+  } else if (d < -128) {
+    d += 256;
+  }
+  return abs(d);
+}
+
+// 向いている向きへ一定の速さで飛ぶ, 一定時間が過ぎてからプレイヤーに近づきすぎたか前方 90 度から外れたら副状態1へ戻る
+void FUN_08143fac(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+  s32 limit;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    ((EnemyAuxSpriteData*)(p->e).sprite)->sprite.flags &= ~SPRFLAG_AFFINE;
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+  }
+  limit = (p->e).variant == 1 ? 24 : 40;
+  if ((p->e).subStateTimer > limit && (q->unk_664 > (p->e).unk_1e4 || Crow_GetAngleDiffToPlayer(p) > 64)) {
+    Enemy_ResetState(&p->e, 0, 0, 1);
+  } else {
+    Vec3 v;
+
+    Vec3_SetPolar(&v, (p->e).mover.angle, q->unk_660);
+    (p->e).mover.delta = v;
+    (p->e).subStateTimer++;
+  }
+}
 
 void FUN_0814414c(Crow* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad828; }
 
