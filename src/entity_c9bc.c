@@ -27,7 +27,7 @@ typedef struct {
   u16 unk_2a;                    // 0x2A, 状態関数がビットを立てる, 退避時に 0 に戻る
   u16 zone;                      // 0x2C, '.m' が 0 以外なら置いた位置の GetZoneAt
   u16 plttIdx;                   // 0x2E, 120..124, unk_02 のビットで選ぶ
-  s8 slideTiles;                 // 0x30, 風で押されて滑る残りタイル数, 弱点 bit1 なら 2 マス
+  s8 slideTiles;                 // 0x30, 風で押されて滑る残りタイル数, 槍で当てたなら 2 マス
   u8 slideAngle;                 // 0x31, 滑る向き (8bit 角度)
   s16 groundY;                   // 0x32, 落下先の高さ (<< 8)
   s16 unk_34;                    // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
@@ -91,16 +91,44 @@ static inline u16 EntityC9BCElem_GetPlttIdx(EntityC9BCElem* elem) {
   if (elem->unk_02 == 0) {
     return 120;
   }
-  if (elem->unk_02 & 8) {
+  if (TEST_FLAGS(elem->unk_02, 8)) {
     return 123;
   }
-  if (elem->unk_02 & 4) {
+  if (TEST_FLAGS(elem->unk_02, 4)) {
     return 124;
   }
-  return (elem->unk_02 & 1) ? 121 : 122;
+  return TEST_FLAGS(elem->unk_02, 1) ? 121 : 122;
 }
 
 EntityC9BC* GetEntityC9BC(void) { return gEntityC9BC; }
+
+s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem);
+s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem);
+s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem);
+s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem);
+
+// 被弾していたら属性ごとの処理を回してパレットを選び直す, どれかが state を変えたら 1 を返す
+static inline s32 EntityC9BCElem_HandleHit(EntityC9BC* p, EntityC9BCElem* elem) {
+  s32 handled = 0;
+
+  if (elem->unk_1c) {
+    elem->unk_1c = 0;
+    if (elem->unk_24 & HBATTR_FLAME) {
+      handled = FUN_0800ccd0(p, elem);
+    }
+    if (!handled && (elem->unk_24 & HBATTR_FROST)) {
+      handled = FUN_0800cd70(p, elem);
+    }
+    if (!handled && (elem->unk_24 & HBATTR_EARTH)) {
+      handled = FUN_0800cdb4(p, elem);
+    }
+    if (!handled && (elem->unk_24 & HBATTR_CLOUD)) {
+      handled = FUN_0800ce24(p, elem);
+    }
+    elem->plttIdx = EntityC9BCElem_GetPlttIdx(elem);
+  }
+  return handled;
+}
 
 // 枠を片付けて空きに戻す
 void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
@@ -224,7 +252,46 @@ s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) {
   return 0;
 }
 
-NAKED s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800ce24.inc"); }
+// 風属性で被弾したら, プレイヤーから見て向こう側へ滑らせる, 滑れなければ揺らすだけ
+// 残差: 命令列は一致, 原典は state 用の 4 と timer 用の 0 を r5/r4 に置き, フラグの 4 を積み直す
+NON_MATCH s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->state == 0) {
+    MapTileOverride* self = &elem->tileOverride;
+    s32 angle = Map_FindDirToTile(GetCollisionTileIdx(&gPlayerPtr[0]->mover.pos), self->tileIdx, 2);
+
+    if (angle >= 0) {
+      elem->slideAngle = angle;
+      if (elem->unk_20 & (1 << WK_SPEAR)) {
+        elem->slideTiles = 2;
+      } else {
+        elem->slideTiles = 1;
+      }
+      if (FUN_0800cc08(elem)) {
+        SET_FLAGS(elem->unk_02, 4);
+        elem->unk_41 = 10;
+        Video_SetAuxSpritePltt(&elem->gfx, 306);
+        EntityC9BCElem_SetState(elem, 4);
+        if (elem->slideTiles == 2) {
+          PlaySound_082406e0(SONG_534);
+        } else {
+          PlaySound_082406e0(SONG_533);
+        }
+        return 1;
+      }
+    }
+    elem->shakeTimer = 10;
+    PlaySound_082406e0(SONG_535);
+  } else if (elem->state == 1) {
+    elem->shakeTimer = 10;
+    PlaySound_082406e0(SONG_535);
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0800ce24.inc");
+#endif
+}
 
 // 足元のタイルより 1 段以上浮いていたら, そこへ落ちる state 5 へ移る
 // 残差: 原典は足元タイルが浮いていない側 (return 0) を成功側より前に置く, 戻り値ブロックの並びが再現できない
