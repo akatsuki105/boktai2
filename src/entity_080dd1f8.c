@@ -146,7 +146,7 @@ Entity080dd1f8Elem* Entity080dd1f8_AllocElem(Entity080dd1f8* p) {
 
 // state 1, 目標の近くまで来るか 8 フレーム経つと落ち始め, 地面で弾みながら転がり, 導火線が尽きたら爆発へ移る
 // 698/714命令, 2回目の下書き (呼び出し列は一致), 原典は &spr.pos をスタック (sp+0x24) に置き vel を r4 から触る, pos / vel をポインタのローカルにすると 16 命令少なくなり, 直接アクセスだと 727 命令
-NON_MATCH void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
+NON_MATCH void Entity080dd1f8Elem_StateRoll(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
 #ifdef NONMATCHING_C
   AuxSprite* spr = &elem->spr;
   Vec3* pos;
@@ -268,7 +268,7 @@ skip:
     elem->unk_132--;
   }
 #else
-  INCFUNC("asm/func/FUN_080dc7bc.inc");
+  INCFUNC("asm/func/Entity080dd1f8Elem_StateRoll.inc");
 #endif
 }
 
@@ -342,7 +342,7 @@ Entity080dd1f8Elem* Entity080dd1f8_Spawn(Vec3* pos, Vec3* vel, Vec3* unk_124, s3
 
 void (*const PTR_ARRAY_085ad33c[3])(Entity080dd1f8*, Entity080dd1f8Elem*) = {
     FUN_080dc4a4,
-    FUN_080dc7bc,
+    Entity080dd1f8Elem_StateRoll,
     Entity080dd1f8Elem_StateExplode,
 };  // 0x085AD33C
 
