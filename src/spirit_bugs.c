@@ -3,9 +3,11 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "inline.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"
+#include "sound.h"
 #include "sprite_aux.h"
 
 // 精霊虫1匹, state で sSwarmUpdates[kind * 5 + state] のハンドラに分岐する, 根拠: Entity0800a89c_UpdateSwarm
@@ -47,6 +49,15 @@ typedef struct {
   Player* player;            // 0x7D8, 根拠: 0x0800a860
 } SpiritBugsManager;
 static_assert(sizeof(SpiritBugsManager) == 2012);
+
+// Entity0800a89c_Update が群れごとに組んで虫のハンドラに渡す回収判定の枠, min/max は視点座標
+typedef struct {
+  WorldPos pos;    // 0x00, 暗黒虫はプレイヤーの位置, それ以外はプレイヤーの横上 (向きで左右が変わる)
+  Vec3 posMin;     // 0x08, pos の視点座標から (5, 5) 引いた点
+  Vec3 posMax;     // 0x10, pos の視点座標に (5, 5) 足した点
+  Vec3 playerMin;  // 0x18, プレイヤーの視点座標から (8, 20) 引いた点
+  Vec3 playerMax;  // 0x20, プレイヤーの視点座標に (8, 20) 足した点
+} SpiritBugScreenBox;
 
 static SpiritBugsManager* sSpiritBugsManager;  // 0x03000044
 
@@ -156,7 +167,68 @@ s32 Entity0800a89c_UpdateSwarm(SpiritBugsManager* p, SpiritBugSwarm* swarm, void
   }
 }
 
-NAKED s32 Entity0800a89c_Update(SpiritBugsManager* p) { INCFUNC("asm/func/Entity0800a89c_Update.inc"); }
+// 群れごとに回収判定の枠を組んでハンドラを回し, 出現音の遅延と回収待ちのタイマーを進める
+// 下書き (277/279命令): 原典は群れを2本の誘導変数で回す (呼び出しに &p->swarms[i], 読み書きに swarm を使うと 278 命令で形が揃う), 残りは p と swarm のレジスタの入れ替わり
+NON_MATCH s32 Entity0800a89c_Update(SpiritBugsManager* p) {
+#ifdef NONMATCHING_C
+  WorldPos playerPos;
+  Vec3 playerVp;
+  SpiritBugSwarm* swarm;
+  s32 i;
+
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT) && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_UNK_8)) {
+    return 0;
+  }
+
+  playerPos.x = p->player->mover.pos.x;
+  playerPos.y = p->player->mover.pos.y + 0x80;
+  playerPos.z = p->player->mover.pos.z;
+  WorldToVp(&playerVp, &playerPos);
+
+  for (i = 0, swarm = p->swarms; i < 6; i++, swarm++) {
+    if (swarm->active) {
+      SpiritBugScreenBox box;
+
+      if (swarm->kind == DARKBUG) {
+        box.pos.x = playerPos.x;
+        box.pos.y = playerPos.y;
+        box.pos.z = playerPos.z;
+      } else if (p->player->facing == 0) {
+        box.pos.x = p->player->mover.pos.x + 24;
+        box.pos.y = 350 + p->player->mover.pos.y;
+        box.pos.z = p->player->mover.pos.z - 24;
+      } else {
+        box.pos.x = p->player->mover.pos.x - 32;
+        box.pos.y = 320 + p->player->mover.pos.y;
+        box.pos.z = p->player->mover.pos.z + 32;
+      }
+      WorldToVp(&box.posMin, &box.pos);
+      box.posMax = box.posMin;
+      box.posMin.x -= 5;
+      box.posMin.y -= 5;
+      box.posMax.x += 5;
+      box.posMax.y += 5;
+      box.playerMin = playerVp;
+      box.playerMax = playerVp;
+      box.playerMin.x -= 8;
+      box.playerMin.y -= 20;
+      box.playerMax.x += 8;
+      box.playerMax.y += 20;
+      Entity0800a89c_UpdateSwarm(p, swarm, &box);
+      if (swarm->soundDelay != 0 && --swarm->soundDelay == 0) {
+        PlaySound_0824078c(gSoundIDs_085aa724[swarm->kind]);
+      }
+      if (swarm->timer != 0) {
+        swarm->timer--;
+      }
+    }
+  }
+  p->frameCounter++;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity0800a89c_Update.inc");
+#endif
+}
 
 s32 Entity0800a89c_Destroy(SpiritBugsManager* p) {
   s32 i, j;
