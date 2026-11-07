@@ -45,6 +45,8 @@ s32 FUN_081df014(Entity9A9F* p);
 s32 FUN_081df23c(Entity9A9F* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MosaicFader_Stop(void);
+extern u32 gMapChanging;
+s32 FUN_081df398(Entity9A9F* p);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
 
@@ -82,6 +84,57 @@ static inline s32 Entity9A9F_GetPlayerIdx(void) {
 // キーの種別 (bit10..13) が kind か
 static inline bool8 Entity9A9F_IsKeyKind(u16 key, u16 kind) {
   if ((key & 0x3C00) == kind) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 次に送るキーを決める
+static inline void Entity9A9F_SetSendKey(Entity9A9F* p, u16 key) { p->unk_42 = key; }
+
+// キーの種別 (bit10..13) が 0x0400 か
+static inline bool8 Entity9A9F_IsKey0400(u16 key) {
+  if ((key & 0x3C00) == 0x0400) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x1000 か
+static inline bool8 Entity9A9F_IsKey1000(u16 key) {
+  if ((key & 0x3C00) == 0x1000) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x1800 か
+static inline bool8 Entity9A9F_IsKey1800(u16 key) {
+  if ((key & 0x3C00) == 0x1800) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x1C00 か
+static inline bool8 Entity9A9F_IsKey1C00(u16 key) {
+  if ((key & 0x3C00) == 0x1C00) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x2000 か
+static inline bool8 Entity9A9F_IsKey2000(u16 key) {
+  if ((key & 0x3C00) == 0x2000) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x2C00 か
+static inline bool8 Entity9A9F_IsKey2C00(u16 key) {
+  if ((key & 0x3C00) == 0x2C00) {
     return TRUE;
   }
   return FALSE;
@@ -575,9 +628,7 @@ s32 FUN_081de7e8(Entity9A9F* p) {
 }
 
 // 親機の選択を待つ: キー 0x1C00 なら state 9 (ルールの受け渡し), キー 0x400 なら state 4 へ戻る, 親機は unk_23 に応じてキーを送る
-// 残差: 原典はキー種別の比較定数を比較の直前に作り, 後の unk_42 への同じ値でも作り直すが, こちらは先に作って使い回す (IsDataKey のように定数を中に持つ inline なら直る見込み)
-NON_MATCH s32 FUN_081de844(Entity9A9F* p) {
-#ifdef NONMATCHING_C
+s32 FUN_081de844(Entity9A9F* p) {
   if ((u8)FUN_081dd9d4(p)) {
     FUN_081dc694();
     VM_ExecByID(p->unk_2ea, NULL);
@@ -590,26 +641,23 @@ NON_MATCH s32 FUN_081de844(Entity9A9F* p) {
     return -1;
   }
 
-  if (Entity9A9F_IsKeyKind(p->unk_44[0], 0x1C00)) {
+  if (Entity9A9F_IsKey1C00(p->unk_44[0])) {
     Entity9A9F_SetState(p, 9, FUN_081de9d8);
-  } else if (Entity9A9F_IsKeyKind(p->unk_44[0], 0x400)) {
+  } else if (Entity9A9F_IsKey0400(p->unk_44[0])) {
     Entity9A9F_SetState(p, 4, FUN_081de360);
     if (Entity9A9F_GetPlayerIdx() == 0) {
       Sound_FadeOutBGM(1);
     }
   } else if (Entity9A9F_GetPlayerIdx() == 0 && p->unk_23 != 0) {
     if (p->unk_23 == 1) {
-      p->unk_42 = 0x1C00;
+      Entity9A9F_SetSendKey(p, 0x1C00);
     } else if (p->unk_23 == 2) {
-      p->unk_42 = 0x400;
+      Entity9A9F_SetSendKey(p, 0x400);
       VM_ExecByID(p->unk_2e8, NULL);
     }
     p->unk_23 = 0;
   }
   return 0;
-#else
-  INCFUNC("asm/func/FUN_081de844.inc");
-#endif
 }
 
 // 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (Mover_ShowTrackingMarker / FUN_080fc174 と同じ), static inline (if/else で return) は試済

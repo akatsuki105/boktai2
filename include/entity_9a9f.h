@@ -105,7 +105,7 @@ typedef struct Entity9A9F {
   u16 unk_2e0;                                 // 0x2E0, '.v=0', FUN_081df460 が 0 以外なら VM_ExecByID で実行するスクリプト ID
   u16 unk_2e2;                                 // 0x2E2, '.r=0', FUN_081df014 が VM_ExecByID で実行するスクリプト ID
   u16 unk_2e4;                                 // 0x2E4, '.b=0', FUN_081df9ac が VM_ExecByID で実行するスクリプト ID
-  s16 exitScriptID;                            // 0x2E6, '.E=0', 終了時に VM_ExecByID で実行する, 0 ならソフトリセット
+  u16 exitScriptID;                            // 0x2E6, '.E=0', 終了時に VM_ExecByID で実行する, 0 ならソフトリセット
   u16 unk_2e8;                                 // 0x2E8, '.Y=0', FUN_081de844 が VM_ExecByID で実行するスクリプト ID
   u16 unk_2ea;                                 // 0x2EA, '.U=0', FUN_081de844 が VM_ExecByID で実行するスクリプト ID
   u8* unk_2ec;                                 // 0x2EC, '.s' の後の VM_GetPC_Proxy()
