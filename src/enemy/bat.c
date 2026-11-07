@@ -152,7 +152,16 @@ NAKED void FUN_0813f7d4(EnemyBat* p, s32 timer) { INCFUNC("asm/func/FUN_0813f7d4
 
 NAKED void FUN_0813f9a8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f9a8.inc"); }
 
-NAKED void FUN_0813fbf8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fbf8.inc"); }
+void FUN_0813fbf8(EnemyBat* p) {
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    (p->e).mover.angle = (p->e).unk_1fc;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    Enemy_ResetState(&p->e, 0, 2, 0);
+  } else {
+    Enemy_ResetState(&p->e, 0, 0, 2);
+  }
+}
 
 void FUN_0813fc9c(EnemyBat* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
