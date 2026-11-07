@@ -212,7 +212,7 @@ void ActorManager_LinkActor(ActorManager* p, Actor* actor);  //  Actor をリス
 s32 FUN_08040df4(ActorManager* p, Actor* actor, SpriteID32 id, s32 idx);
 s32 Actor_HideShadow(Actor* actor);
 Actor* ActorManager_FindActorByMoverID(ActorManager* p, u32 id);
-s32 FUN_08040fc0(Actor* actor, Vec3* pos, u8 kind, u32 poseIdx, s32 size);
+s32 FUN_08040fc0(Actor* actor, Vec3* pos, u32 kind, u32 poseIdx, s32 size);
 s32 FUN_08041e10(ActorManager* p, Actor* actor);
 s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 s32 FUN_08040f0c(Actor* actor, u32 id, Vec3* pos, u32 angle);

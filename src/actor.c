@@ -7,6 +7,7 @@
 #include "msgbus.h"
 #include "player.h"
 #include "shadow.h"
+#include "sound.h"
 #include "sprite.h"
 #include "vm.h"
 
@@ -354,9 +355,34 @@ s32 FUN_08040f0c(Actor* actor, u32 id, Vec3* pos, u32 angle) {
   SET_FLAGS(mover->flags, MOVER_FLAG_2);
 }
 
-NAKED s32 FUN_08040f48(Actor* actor, s32 spriteType, SpriteID32 spriteID, u32 animFileID, SpriteFlags flags) { INCFUNC("asm/func/FUN_08040f48.inc"); }
+// spriteType 2 なら MainSprite, それ以外は AuxSprite を用意して mover に結び付け, そのパレットを覚える
+s32 FUN_08040f48(Actor* actor, s32 spriteType, SpriteID32 spriteID, u32 animFileID, SpriteFlags flags) {
+  SpriteHolder* sprite = &actor->sprite;
+  s32 ret;
 
-NAKED s32 FUN_08040fc0(Actor* actor, Vec3* pos, u8 kind, u32 poseIdx, s32 size) { INCFUNC("asm/func/FUN_08040fc0.inc"); }
+  if (spriteType == 2) {
+    MainSprite* main;
+
+    ret = SpriteHolder_InitMain(sprite, spriteID, flags, &actor->mover.pos);
+    main = &actor->sprite.u.main.sprite;
+    actor->plttID = main->plttID;
+    Mover_SetMainSprite(&actor->mover, main);
+  } else {
+    AuxSpriteGfx* gfx;
+
+    ret = SpriteHolder_InitAux(sprite, spriteID, animFileID, flags, &actor->mover.pos);
+    gfx = &actor->sprite.u.aux.gfx;
+    actor->plttID = gfx->plttID;
+    Mover_SetAuxSprite(&actor->mover, &actor->sprite.u.aux.sprite);
+  }
+  actor->curPlttID = actor->plttID;
+  SpriteHolder_SetPriority(sprite, 2);
+  if (ret < 0) {
+    return -1;
+  }
+}
+
+NAKED s32 FUN_08040fc0(Actor* actor, Vec3* pos, u32 kind, u32 poseIdx, s32 size) { INCFUNC("asm/func/FUN_08040fc0.inc"); }
 
 // 影を描画リストから外す
 s32 Actor_RemoveShadow(Actor* actor) {
