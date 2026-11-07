@@ -1577,7 +1577,7 @@ void FUN_081dfa20(s32 kind, s32* strength, s32* vitality, s32* spirit, s32* agil
 }
 
 // 通信を1フレーム進めて状態の updateCallback を呼ぶ, 受信が -3 の間は Entity を止めて数え, 終わる要求があれば消してスクリプトかソフトリセットへ
-s32 FUN_081dfa98(Entity9A9F* p) {
+s32 Entity9A9F_Update(Entity9A9F* p) {
   bool32_030001ac = 0;
   if (p->state > 4) {
     gSoftResetInhibit = TRUE;
@@ -1732,6 +1732,6 @@ NON_MATCH Entity9A9F* Entity9A9F_Create(void) {
 
 void FUN_081dfe5c(void) {
   if (gEntity9A9F != NULL) {
-    FUN_081dfa98(gEntity9A9F);
+    Entity9A9F_Update(gEntity9A9F);
   }
 }

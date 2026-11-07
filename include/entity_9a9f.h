@@ -41,8 +41,8 @@ typedef struct Entity9A9F {
   s16 playerIdx;                               // 0x018, gPlayerPtr の添字 (-1 は該当なし), 根拠: Entity9A9F_Create が 0xFFFF で初期化し、Camera_StepMove が負を弾いて gPlayerPtr[playerIdx] を引く
   u16 recordCount;                             // 0x01A, FUN_081ddbdc が 0 に戻す, Entity08F4 が records[] をこの数だけ走査する
   u8 state;                                    // 0x01C
-  u8 unk_1d;                                   // 0x01D, FUN_081dfa98 が state < 6 のときだけ見る
-  u8 killRequested;                            // 0x01E, 立つと FUN_081dfa98 が KillEntity する
+  u8 unk_1d;                                   // 0x01D, Entity9A9F_Update が state < 6 のときだけ見る
+  u8 killRequested;                            // 0x01E, 立つと Entity9A9F_Update が KillEntity する
   u8 retryTimer;                               // 0x01F, unk_4c == -3 の間だけ数える, 0xFF で止まる, 14 を超えると FUN_081ddbdc へ
   u8 prevState;                                // 0x020, FUN_081ddbdc が state を退避する, Create は 3 を入れる
   u8 unk_21;                                   // 0x021
@@ -60,13 +60,13 @@ typedef struct Entity9A9F {
   u16 retryFrames;                             // 0x02E, 接続待ちのフレーム数, 30 に達すると切断して state 2 からやり直す
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
   s16 unk_32;                                  // 0x032, 同上, 対戦の残りフレーム, FUN_081dec1c が sLinkTimeLimits から入れて毎フレーム減らす
-  u32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
+  u32 stateTimer;                              // 0x034, Entity9A9F_Update が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
   u16 unk_38;                                  // 0x038, FUN_081ddf44 がスクリプトの第2引数として渡す
   u16 unk_3a;                                  // 0x03A, 同じく第3引数
   s32 unk_3c;                                  // 0x03C, '.L=5000'
   u8 unk_40[2];                                // 0x040
-  u16 unk_42;                                  // 0x042, FUN_081dfa98 が Sio_SetSendData に渡す
-  u16* unk_44;                                 // 0x044, Create が unk_6c を指す, FUN_081dfa98 が Sio_GetRecvData に渡す
+  u16 unk_42;                                  // 0x042, Entity9A9F_Update が Sio_SetSendData に渡す
+  u16* unk_44;                                 // 0x044, Create が unk_6c を指す, Entity9A9F_Update が Sio_GetRecvData に渡す
   s32 unk_48;                                  // 0x048, Create は -1, Sio_SetSendData の戻り値
   s32 unk_4c;                                  // 0x04C, Create は -1, Sio_GetRecvData の戻り値, -3 を再試行の合図にする
   u8 unk_50;                                   // 0x050, Create が 0 を入れる
