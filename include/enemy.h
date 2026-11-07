@@ -475,6 +475,7 @@ void EnemyAuxSprite_LoadAnim(EnemyAuxSpriteData* p, FileID animID);
 void Enemy_PlayAnim(Enemy* p, s32 animIdx);
 void Enemy_SetAnimEntry(Enemy* p, s32 idx, s32 anim, s32 val3);
 void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner);
+void Enemy_RegisterHurtboxWithFlags(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags);
 void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner);
 void Enemy_TargetNearestPlayer(Enemy* p, Vec3* pos);
 void Enemy_ClearPendingState(Enemy* p, const char* filename, s32 val);

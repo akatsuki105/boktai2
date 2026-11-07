@@ -118,7 +118,16 @@ void FUN_081300d0(Spider* p) {
   (p->e).handlerTables[6] = (void*)PTR_ARRAY_085ad700;
 }
 
-NAKED void Spider_InitHitboxes(Spider* p) { INCFUNC("asm/func/Spider_InitHitboxes.inc"); }
+void Spider_InitHitboxes(Spider* p) {
+  Vec3 hurtSize, hurtOffset, hitSize, hitOffset;
+
+  VEC3_SET(hurtSize, 128, 128, 128);
+  VEC3_SET(hurtOffset, 0, 128, 0);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_1 | HBFLAG_UNK_0);
+  VEC3_SET(hitSize, 64, 100, 64);
+  VEC3_SET(hitOffset, 0, 128, 0);
+  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Spider_OnHit, 0, p);
+}
 
 NAKED void Spider_OnReset(Spider* p) { INCFUNC("asm/func/Spider_OnReset.inc"); }
 
