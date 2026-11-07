@@ -1080,11 +1080,11 @@ s32 FUN_08041e10(ActorManager* p, Actor* actor) {
   }
 
   if (VM_SeekToNamedArg('w')) {
-    actor->unk_228 = VM_GetValue();
+    actor->talkRange = VM_GetValue();
     actor->nearRange = VM_GetValue();
     actor->unk_220 = VM_GetValue();
   } else {
-    actor->unk_228 = 256;
+    actor->talkRange = 256;
     actor->nearRange = 256;
     actor->unk_220 = 512;
   }
@@ -1412,7 +1412,72 @@ NON_MATCH void FUN_080428b8(ActorManager* p, Actor* actor, s32 elapsed) {
 #endif
 }
 
-NAKED void FUN_08042a48(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042a48.inc"); }
+// プレイヤーの方へ 1フレーム 8 ずつ向き, 話しかけられない状態のプレイヤーには吹き出しを出す, 近くで向かい合ったら ACTORFLAG_TALKABLE を立てる
+// 下書き (283/316命令): 原典は向きの更新を分岐ごとに持ち (inline の展開に見える), 距離の判定とプレイヤーの状態の判定を 0/1 に起こしてから比べる
+NON_MATCH void FUN_08042a48(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  Vec3* pos = &actor->mover.pos;
+  s32 playerAngle;
+
+  if (p->playerPos != NULL) {
+    s8 diff = ArcTan2_8(p->playerPos->x - pos->x, p->playerPos->z - pos->z) - actor->mover.angle;
+    u16 angle;
+
+    if (diff > 8) {
+      angle = actor->mover.angle + 8;
+    } else if (diff < -8) {
+      angle = actor->mover.angle - 8;
+    } else {
+      angle = actor->mover.angle + diff;
+    }
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+    playerAngle = p->player->mover.angle;
+  } else {
+    playerAngle = 0;
+  }
+
+  if (actor->unk_09) {
+    Player* player;
+
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 0, 1, 0, 4);
+    actor->unk_1ec = 1;
+    actor->unk_225 = actor->mover.angle;
+    player = p->player;
+    if (player != NULL) {
+      if ((u8)(player->kind - PLAYER_BAT) > PLAYER_SLEEPING - PLAYER_BAT && !player->formRequest && !(player->goodCondTimer != 0 && (u16)(player->goodCondID - GOOD_MINI) <= GOOD_INVISIBLE - GOOD_MINI) && (player->action <= PACT_WALK || player->action == PACT_UNK_7)) {
+      } else if (!(gGameFlags & GAMEFLAG_EVENT) && actor->unk_0b) {
+        if ((p->player->action == PACT_PULL_COFFIN && Coffin_GetPos() != NULL) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+          FUN_080415cc(actor, 0, 0, 0);
+        } else {
+          FUN_080415cc(actor, 3, 0, 0);
+        }
+      }
+    }
+  } else {
+    FUN_08041480(actor, 0, 1, 0, 1);
+  }
+
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+  if (abs(p->playerPos->x - pos->x) < actor->talkRange && abs(p->playerPos->y - pos->y) <= 0xFF && abs(p->playerPos->z - pos->z) < actor->talkRange) {
+    s8 toPlayer = ArcTan2_8(pos->x - p->playerPos->x, pos->z - p->playerPos->z);
+    s8 facing = playerAngle - toPlayer;
+    s8 back = playerAngle - (actor->mover.angle + 0x80);
+
+    if (abs(facing) <= 63 && abs(back) <= 31) {
+      SET_FLAGS(actor->flags, ACTORFLAG_TALKABLE);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_08042a48.inc");
+#endif
+}
 
 void FUN_08042cf0(ActorManager* p, Actor* actor, s32 elapsed) {
   if (actor->unk_09) {

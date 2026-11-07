@@ -19,8 +19,9 @@ typedef void(ActorUpdate)(struct ActorManager*, struct Actor*, s32);
 
 // Actor.flags (0x00E)
 typedef u16 ActorFlags;
-#define ACTORFLAG_UNK_8 (1 << 8)    // 0x0100, FUN_08042178 が立てる
-#define ACTORFLAG_UNK_12 (1 << 12)  // 0x1000, FUN_080421bc が立てる
+#define ACTORFLAG_UNK_8 (1 << 8)      // 0x0100, FUN_08042178 が立てる
+#define ACTORFLAG_TALKABLE (1 << 11)  // 0x0800, 向かい合って近くにいると立つ, FUN_08041918 が話し相手の候補にする
+#define ACTORFLAG_UNK_12 (1 << 12)    // 0x1000, FUN_080421bc が立てる
 
 // FUN_08041480 が第2引数を添字にして1件引き, SpriteHolder_SetAnim に渡すアニメを決める
 typedef struct {
@@ -148,7 +149,7 @@ typedef struct Actor {
   u8 unk_225;                 // 0x225, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
-  u32 unk_228;                // 0x228, FUN_08041e10 の '.w' の1つ目 (既定 256)
+  s32 talkRange;              // 0x228, FUN_08041e10 の '.w' の1つ目 (既定 256), この距離 (x, z) の内で向かい合うと ACTORFLAG_TALKABLE が立つ
   u8 unk_22c[4];              // 0x22C, まだ未解析
   u8 unk_230;                 // 0x230, 0 以外なら FUN_08043a24 が分の切り替わりで時間帯の終わりを見る
   u8 startHour;               // 0x231, FUN_08043da8 が見る時間帯の始まり (時)
