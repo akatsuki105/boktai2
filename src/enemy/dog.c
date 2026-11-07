@@ -470,7 +470,29 @@ NON_MATCH void FUN_0814caa0(Dog* p) {
 #endif
 }
 
-NAKED void FUN_0814cb8c(Dog* p) { INCFUNC("asm/func/FUN_0814cb8c.inc"); }
+// アニメが終わったら, 追いかけ中なら経路の通過点へ向き直って状態26へ, そうでなければ止まる
+void FUN_0814cb8c(Dog* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 11);
+    (p->e).animForceRestart = FALSE;
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = TRUE;
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
+      Enemy_PlayAnim(&p->e, 0);
+      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+      (p->e).animSpeedDiv = 2;
+    } else {
+      Enemy_PlayAnim(&p->e, 0);
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    }
+  }
+}
 
 NAKED void FUN_0814ccfc(Dog* p) { INCFUNC("asm/func/FUN_0814ccfc.inc"); }
 
