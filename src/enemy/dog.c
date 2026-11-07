@@ -232,7 +232,19 @@ NAKED void FUN_081517a8(Dog* p) { INCFUNC("asm/func/FUN_081517a8.inc"); }
 
 void FUN_081518ac(Dog* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad8f0; }
 
-NAKED s32 FUN_081518c0(Dog* p) { INCFUNC("asm/func/FUN_081518c0.inc"); }
+s32 FUN_081518c0(Dog* p) {
+  Dog* self = p;
+
+  FUN_081504f8(p);
+  if ((p->e).unk_4be == 0) {
+    u32 idx = (p->e).subState0;
+    EnemyHandler* table = (p->e).handlerTables[0];
+    table[idx](&p->e);
+    Enemy_RunStateHandler(&p->e);
+  }
+  FUN_08150510(self);
+  return 1;
+}
 
 s32 Dog_Update(Dog* p) {
   Enemy_Update(&p->e);
