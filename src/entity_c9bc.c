@@ -79,6 +79,13 @@ COMMON_DATA EntityC9BC* gEntityC9BC = NULL;  // 0x03002B38
 void EntityD9AE_SpawnDust(Vec3* pos, s32 param_2);
 void Entity99CA_CreateAt(Vec3* pos, s32 radius, s32 lifetime, s32 count, s32 kind);
 
+// state を切り替えて timer を 0 に戻す
+static inline void EntityC9BCElem_SetState(EntityC9BCElem* elem, u8 state) {
+  elem->state = state;
+  elem->timer = 0;
+  elem->unk_01 = 1;
+}
+
 // unk_02 のビットから要素のパレット番号を選ぶ
 static inline u16 EntityC9BCElem_GetPlttIdx(EntityC9BCElem* elem) {
   if (elem->unk_02 == 0) {
@@ -159,14 +166,12 @@ s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
   return 0;
 }
 
-// 残差1命令 (31/32): 原典は定数 2 を state 用と unk_02 のビット用に別々に積むが, agbcc は1本に畳む
-NON_MATCH s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
-#ifdef NONMATCHING_C
+// 氷属性で被弾したら, state 0 のとき凍らせて沈む state 2 へ移る
+s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
   if (elem->state == 0) {
-    elem->state = 2;
-    elem->timer = 0;
-    elem->unk_01 = 1;
-    elem->unk_02 = (elem->unk_02 | 2) & ~1;
+    EntityC9BCElem_SetState(elem, 2);
+    elem->unk_02 |= 2;
+    CLEAR_FLAGS(elem->unk_02, 1);
     elem->unk_38 = 0;
     elem->unk_41 = 10;
     Video_SetAuxSpritePltt(&elem->gfx, 306);
@@ -174,9 +179,6 @@ NON_MATCH s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
   }
 
   return 0;
-#else
-  INCFUNC("asm/func/FUN_0800cd70.inc");
-#endif
 }
 
 // 地属性で被弾したら hp を減らして揺らし, 尽きたら砕ける state 6 へ移る
