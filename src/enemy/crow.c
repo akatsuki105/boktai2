@@ -400,7 +400,42 @@ void FUN_08144910(Crow* p) {
   }
 }
 
-NAKED void FUN_081449f8(Crow* p) { INCFUNC("asm/func/FUN_081449f8.inc"); }
+// 状態36の間, 次のフレームの位置のタイルが足元より高ければ壁として速さを止め, 床より低くなるなら縦の速さだけ止める
+// 172/172命令まで寄せた形は Vec3_Sum(&next, &jumpVel, &pos) と Vec3_Sum(&next, &delta, &next) (引数の向きが不自然), それでも q が r6 (原典 r7) で, &pos の作り置きが jumpVel より後になる, 試済: 各成分を pos/vel ポインタで直書き (180命令)
+NON_MATCH void FUN_081449f8(Crow* p) {
+#ifdef NONMATCHING_C
+  Crow* q = (p->e).unk_1cc;
+
+  CLEAR_FLAGS(q->unk_658, 2);
+  if ((p->e).state == ES_UNK_36) {
+    WorldPos next;
+    s32 height;
+
+    Vec3_Sum(&next, &(p->e).mover.pos, &(p->e).jumpVel);
+    Vec3_Add(&next, &(p->e).mover.delta);
+    height = TileHeightAt(&next);
+    if ((p->e).heightAboveFloor + (p->e).floorY < height) {
+      (p->e).jumpVel.x = 0;
+      (p->e).jumpVel.y = 0;
+      (p->e).jumpVel.z = 0;
+      q->unk_6b0.x = 0;
+      q->unk_6b0.y = 0;
+      q->unk_6b0.z = 0;
+      (p->e).mover.delta.x = 0;
+      (p->e).mover.delta.z = 0;
+      (p->e).mover.delta.y = 0;
+      q->unk_658 |= 2;
+    }
+    if (next.y < height) {
+      (p->e).jumpVel.y = 0;
+      (p->e).mover.delta.y = 0;
+      q->unk_6b0.y = 0;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081449f8.inc");
+#endif
+}
 
 void Crow_PlayWingSound(Crow* p) {
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;

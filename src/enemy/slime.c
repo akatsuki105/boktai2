@@ -286,7 +286,7 @@ void FUN_08163604(Slime* p, s32 arg) {
   }
 }
 
-// 向いている方へ跳ね, 上りは縦に伸ばし下りは縮めて戻す, 着地したら2つに分裂して状態43へ移る
+// 向いている方へ跳ね, 上りは縦に伸ばし下りは縮めて戻す, ENEFLAG2_UNK_4 が立つと分裂して状態43へ移る
 void FUN_081636d4(Slime* p) {
   AuxSprite* sprite = &((EnemyAuxSpriteData*)(p->e).sprite)->sprite;
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
