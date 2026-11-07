@@ -10,6 +10,7 @@
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
+#include "vec3.h"
 #include "video.h"
 
 // 通信対戦のスコア精算画面, 稼いだ点を1フレームずつ所持スコアへ移していく
@@ -113,7 +114,25 @@ BgMapEntry* Entity501B_GetBgMapAddr(s32 bg, s32 x, s32 y) {
 
 NAKED void Entity501B_DrawBgNumber(s32 value, s32 divisor, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_DrawBgNumber.inc"); }
 
-NAKED void Entity501B_InitAuxSprite(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitAuxSprite.inc"); }
+// 太陽スタンドのスプライトを隠した状態で置く
+// 44/44命令, 原典は &solarStandSpr を Video_GetAuxSprite の後に作って r4 に置く (こちらは先に作って r5), p と gfx のレジスタも逆, 次に試すなら spr の代入を Video_GetAuxSprite の後へ
+NON_MATCH void Entity501B_InitAuxSprite(Entity501B* p) {
+#ifdef NONMATCHING_C
+  AuxSpriteGfx* gfx = &p->solarStandGfx;
+  AuxSprite* spr = &p->solarStandSpr;
+
+  Video_GetAuxSprite(gfx, SPRITE_SOLAR_STATION);
+  AuxSprite_Add(spr, gfx, 0);
+  AuxSprite_SetPoseIdx(spr, 0);
+  AuxSprite_SetFlags(spr, SPRFLAG_HIDDEN | 0x10);
+  p->solarStandSpr.priority = 0;
+  Vec3_Clear(&p->solarStandSpr.pos);
+  p->solarStandSpr.pos.x = 121;
+  p->solarStandSpr.pos.y = 64;
+#else
+  INCFUNC("asm/func/Entity501B_InitAuxSprite.inc");
+#endif
+}
 
 void Entity501B_RemoveAuxSprite(Entity501B* p) { AuxSprite_Remove(&p->solarStandSpr); }
 
