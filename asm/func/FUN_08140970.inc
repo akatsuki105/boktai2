@@ -11,7 +11,7 @@
 	mov r8, r0
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_08140680
+	bl EnemyBat_StartCurve
 	adds r0, r4, #0
 	bl FUN_081406b8
 	movs r1, #1

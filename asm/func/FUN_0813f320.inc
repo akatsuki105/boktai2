@@ -16,7 +16,7 @@ _0813F33C:
 	ldrb r0, [r5, #5]
 	add r2, sp, #8
 	add r1, sp, #4
-	bl FUN_08140940
+	bl EnemyBat_GetDirAndFlip
 	ldr r1, _0813F380 @ =0x000004EC
 	adds r0, r5, r1
 	ldrb r2, [r0]

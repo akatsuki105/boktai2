@@ -11,7 +11,7 @@
 	mov r8, r0
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0814472c
+	bl Crow_SetCurve
 	movs r1, #1
 	movs r2, #0x8d
 	lsls r2, r2, #3

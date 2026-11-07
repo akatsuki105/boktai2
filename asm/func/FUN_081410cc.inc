@@ -140,7 +140,7 @@ _081411DA:
 	str r0, [r3, #4]
 	adds r0, r6, #0
 	adds r1, r3, #0
-	bl FUN_08140680
+	bl EnemyBat_StartCurve
 	adds r0, r6, #0
 	bl FUN_081406b8
 	movs r3, #0xcb
@@ -366,7 +366,7 @@ _0814139E:
 	str r1, [r3, #4]
 	adds r0, r6, #0
 	adds r1, r3, #0
-	bl FUN_08140680
+	bl EnemyBat_StartCurve
 	adds r0, r6, #0
 	bl FUN_081406b8
 _081413BE:

@@ -141,7 +141,7 @@ s32 EnemyBat_GetMoveSpeed(EnemyBat* p) {
   return u32_ARRAY_085ad7e4[i];
 }
 
-void FUN_08140680(EnemyBat* p, Vec3* pos) {
+void EnemyBat_StartCurve(EnemyBat* p, Vec3* pos) {
   EnemyBat* q = (p->e).unk_1cc;
 
   q->curveStart = (p->e).mover.pos;
@@ -165,7 +165,7 @@ void EnemyBat_InitAnims(EnemyBat* p) {
 NAKED void FUN_08140904(EnemyBat* p) { INCFUNC("asm/func/FUN_08140904.inc"); }
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
-void FUN_08140940(u16 angle, s32* outDir, s32* outFlip) {
+void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   s32 dir = Angle_ToDir8(angle);
 
   if (dir > 4) {

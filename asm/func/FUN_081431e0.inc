@@ -23,7 +23,7 @@ _08143206:
 	ldrb r0, [r2, #5]
 	add r2, sp, #8
 	add r1, sp, #4
-	bl FUN_0814480c
+	bl Crow_GetDirAndFlip
 	movs r1, #0x99
 	lsls r1, r1, #3
 	adds r0, r5, r1

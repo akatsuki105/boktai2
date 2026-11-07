@@ -129,7 +129,7 @@ s32 Crow_GetMoveSpeed(Crow* p) {
   return u32_ARRAY_085ad83c[i];
 }
 
-void FUN_0814472c(Crow* p, Vec3* pos) {
+void Crow_SetCurve(Crow* p, Vec3* pos) {
   Crow* q = (p->e).unk_1cc;
 
   q->curveStart = (p->e).mover.pos;
@@ -151,7 +151,7 @@ void Crow_InitAnims(Crow* p) {
 NAKED void FUN_081447cc(Crow* p) { INCFUNC("asm/func/FUN_081447cc.inc"); }
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
-void FUN_0814480c(u16 angle, s32* outDir, s32* outFlip) {
+void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   s32 dir = Angle_ToDir8(angle);
 
   if (dir > 4) {
