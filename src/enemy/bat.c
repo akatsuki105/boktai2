@@ -141,7 +141,13 @@ s32 EnemyBat_GetMoveSpeed(EnemyBat* p) {
   return u32_ARRAY_085ad7e4[i];
 }
 
-NAKED void FUN_08140680(EnemyBat* p, Vec3* pos) { INCFUNC("asm/func/FUN_08140680.inc"); }
+void FUN_08140680(EnemyBat* p, Vec3* pos) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  q->curveStart = (p->e).mover.pos;
+  q->curveEnd = *pos;
+  q->curveT = 0;
+}
 
 NAKED u8 FUN_081406b8(EnemyBat* p) { INCFUNC("asm/func/FUN_081406b8.inc"); }
 
