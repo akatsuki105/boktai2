@@ -383,7 +383,74 @@ void FUN_08144160(Crow* p, u16* msg) {
 
 NAKED void Crow_OnReset(Crow* p) { INCFUNC("asm/func/Crow_OnReset.inc"); }
 
-NAKED void FUN_08144414(Crow* p) { INCFUNC("asm/func/FUN_08144414.inc"); }
+// 高さの更新, 状態34ではタイルの上 320 まで sin で上昇し, 飛んでいる間は床から 320 の高さを保ち, 状態1/2では羽ばたきのコマに合わせて絵を上下させる
+void FUN_08144414(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+  s32 d;
+  s32 y;
+
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  if ((p->e).state == ES_UNK_0 || (p->e).state == ES_UNK_36 || (p->e).state == ES_UNK_37) {
+    (p->e).mover.pos.y = (p->e).heightAboveFloor;
+    return;
+  }
+  if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_20)) {
+    (p->e).mover.pos.y = (p->e).heightAboveFloor;
+    return;
+  }
+  if ((p->e).state == ES_UNK_34) {
+    s32 floor = (GetTileAt(&(p->e).mover.pos)->heightStairs & 0xF) << 8;
+
+    if ((p->e).heightAboveFloor < floor + 320) {
+      (p->e).heightAboveFloor += FixToInt(12, SIN(q->unk_670) * 8);
+      if (q->unk_670 < 64) {
+        q->unk_670++;
+      }
+    }
+    (p->e).mover.pos.y = (p->e).heightAboveFloor;
+    return;
+  }
+  d = (p->e).floorY;
+  y = (p->e).mover.pos.y - 320;
+  d -= y;
+  if (abs(d) > 16) {
+    if (d < 0) {
+      (p->e).heightAboveFloor -= 2;
+    } else {
+      (p->e).heightAboveFloor += 2;
+    }
+  }
+  (p->e).mover.pos.y = (p->e).heightAboveFloor;
+  if ((u8)((p->e).state - 1) <= 1) {
+    AuxSprite* sprite = &((EnemyAuxSpriteData*)(p->e).sprite)->sprite;
+    AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+    switch (anim->cmdIdx) {
+      case 0: {
+        sprite->pos.y += 24;
+        break;
+      }
+      case 1: {
+        sprite->pos.y += 24 + anim->tick * 4;
+        break;
+      }
+      case 2: {
+        sprite->pos.y += 62 - anim->tick * 12;
+        break;
+      }
+      case 3: {
+        sprite->pos.y += 2 - anim->tick * 8;
+        break;
+      }
+      case 4: {
+        sprite->pos.y += -22 + anim->tick * 7;
+        break;
+      }
+    }
+  }
+}
 
 void Crow_PickRandomPathNode(Crow* p) {
   PathWalker* walker = &(p->e).pathWalker;
