@@ -104,7 +104,19 @@ NAKED void Entity501B_InitAuxSprite(Entity501B* p) { INCFUNC("asm/func/Entity501
 
 void Entity501B_RemoveAuxSprite(Entity501B* p) { AuxSprite_Remove(&p->solarStandSpr); }
 
-NAKED void Entity501B_InitSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSprites.inc"); }
+// 数字のスプライトを8枚並べる
+void Entity501B_InitSprites(Entity501B* p) {
+  s32 i;
+
+  p->file = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  OpenMainSpriteFile(&p->gfx, p->file);
+  for (i = 0; i < 8; i++) {
+    p->poses[i] = 0;
+    if (MainSprite_Add(&p->digits[i], &p->gfx, p->poses[i], 16, 0, 0, 0, 0)) {
+      break;
+    }
+  }
+}
 
 // 上段と下段に4桁ずつ右から左へ並べる
 void Entity501B_InitSpritePos(Entity501B* p) {
