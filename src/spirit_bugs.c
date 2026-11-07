@@ -381,7 +381,82 @@ NON_MATCH s32 SpawnSpiritBugs(s32 count, s32 kind, s32 amount, Vec3* pos, Vec3* 
 }
 
 // kind = SpiritBugKind, amount = 効果量 (sSpiritBugHandler の 第2引数)
-NAKED s32 SpawnSpiritBugsAt(u32 count, s32 kind, s32 amount, Vec3* pos, Vec3* perBugPos, s32 lifetime, s32 lifetimeRand) { INCFUNC("asm/func/SpawnSpiritBugsAt.inc"); }
+// SpawnSpiritBugs の位置指定版, perBugPos があれば j 匹目を perBugPos[j] に, なければ全部 pos に出す
+// 下書き (374/358命令): SpawnSpiritBugs と同じく流れは一致, 原典は kind を r4 のまま持って kind * 4 をスタックに置き, soundDelay は if / else の2つのストアで書く
+NON_MATCH s32 SpawnSpiritBugsAt(s32 count, s32 kind, s32 amount, Vec3* pos, Vec3* perBugPos, s32 lifetime, s32 lifetimeRand) {
+#ifdef NONMATCHING_C
+  SpiritBugsManager* p = sSpiritBugsManager;
+  bool8 silent;
+  u32 blink;
+  s32 i;
+
+  if (p == NULL) {
+    p = Entity0800a89c_Create(0xFC73, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  silent = (kind & 0xF0) != 0;
+  kind &= 0xF;
+  if (count > 4) {
+    count = 4;
+  }
+  if (lifetimeRand == 0) {
+    lifetimeRand = 1;
+  }
+  blink = u32_ARRAY_085aa700[kind];
+
+  for (i = 0; i < 6; i++) {
+    SpiritBugSwarm* swarm = &p->swarms[i];
+
+    if (!swarm->active) {
+      s32 phase = 0;
+      s32 j;
+
+      swarm->kind = kind;
+      swarm->amount = amount;
+      swarm->aliveCount = count;
+      swarm->soundDelay = silent ? 0 : 14;
+      for (j = 0; j < count; j++) {
+        SpiritBug* bug = &swarm->bugs[j];
+        Vec3* src = perBugPos != NULL ? &perBugPos[j] : pos;
+
+        bug->state = 1;
+        bug->timer = lifetime + Mod(Random(), lifetimeRand);
+        bug->unk_6 = blink;
+        bug->speed = (Random() & 3) + 4;
+        bug->angle = Random();
+        bug->turnTimer = Random() | 0x80;
+        bug->ptcl.flags &= ~SPRFLAG_HIDDEN;
+        bug->ptcl.pos.x = src->x;
+        bug->ptcl.pos.y = src->y;
+        bug->ptcl.pos.z = src->z;
+        AuxAnim_SetAnim(&bug->anim, p->anim, sBugsAnimIdx[p->isSabata * 6 + kind * 2], 0, 0);
+        bug->anim.cmdIdx = phase;
+        if (++phase > 2) {
+          phase = 0;
+        }
+        bug->vel.x = 0;
+        bug->vel.y = 0;
+        bug->vel.z = 0;
+        bug->target = bug->ptcl.pos;
+        Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+        Particle_AddToDrawList(&bug->ptcl, 0);
+      }
+      for (; j < 4; j++) {
+        swarm->bugs[j].ptcl.flags |= SPRFLAG_HIDDEN;
+        Particle_AddToDrawList(&swarm->bugs[j].ptcl, 0);
+      }
+      swarm->timer = 40;
+      swarm->active = TRUE;
+      break;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/SpawnSpiritBugsAt.inc");
+#endif
+}
 
 // 出ている精霊虫の総数を数える
 u32 Entity0800a89c_CountBugs(void) {
