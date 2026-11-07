@@ -47,7 +47,7 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
 void FUN_08163604(Slime* p, s32 arg);
 void FUN_081636d4(Slime* p);
 void FUN_08163848(Slime* p);
-void FUN_08164da8(Slime* p);
+void Slime_ScatterDroplets(Slime* p);
 void Slime_SpawnDroplets(Slime* p);
 void Slime_ShootDroplets(Slime* p);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
@@ -354,8 +354,8 @@ void FUN_081636d4(Slime* p) {
   }
   if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
     Enemy_EnterState(&p->e, FUN_08163848, ES_UNK_43);
-    FUN_08164da8(p);
-    FUN_08164da8(p);
+    Slime_ScatterDroplets(p);
+    Slime_ScatterDroplets(p);
     PlaySound_082406e0(SE_SLIME_FISSION);
   }
 }
@@ -804,7 +804,7 @@ NON_MATCH void Slime_ShootDroplets(Slime* p) {
 
 // 攻撃判定つきの飛沫を3つ, 乱数の向きと速さで周りへ撃つ
 // 373/380命令, Slime_ShootDroplets と同じ形で, プレイヤーとの差を Vec3_Delta で作るが使わない (原典のまま), 残差は p を r9, pos を r8 に置く割り当て, 試済: pos を Delta の前に取る (悪化)
-NON_MATCH void FUN_08164da8(Slime* p) {
+NON_MATCH void Slime_ScatterDroplets(Slime* p) {
 #ifdef NONMATCHING_C
   u32 attrs = Slime_PickHitAttributes(p);
   u16* table = gRandomTable;
@@ -842,7 +842,7 @@ NON_MATCH void FUN_08164da8(Slime* p) {
   vel.y = 32;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
 #else
-  INCFUNC("asm/func/FUN_08164da8.inc");
+  INCFUNC("asm/func/Slime_ScatterDroplets.inc");
 #endif
 }
 
