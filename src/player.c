@@ -565,13 +565,13 @@ NON_MATCH void Player_UpdatePtcl64c(Player* p) {
 }
 
 // 0x64C のパーティクルを pos に出す, big なら別のパレットを使う
-void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 big) {
+void Player_ShowPtcl64c(Player* p, Vec3* pos, bool32 isFragileWallKnock) {
   Particle* ptcl = &p->ptcl_64c.ptcl;
 
-  if (big) {
-    p->ptcl_64c.poseIdx = PTCL1_72;
+  if (isFragileWallKnock) {
+    p->ptcl_64c.poseIdx = PTCL1_FRAGILE_KNOCK_S;
   } else {
-    p->ptcl_64c.poseIdx = PTCL1_4;
+    p->ptcl_64c.poseIdx = PTCL1_NOISE_S;
   }
 
   Particle_SetPose(ptcl, p->ptcl_64c.group1, p->ptcl_64c.poseIdx);
@@ -590,7 +590,7 @@ void FUN_08061458(Player* p) {
   ptcl = &p->ptcl_64c.ptcl;
   Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  Particle_SetPose(ptcl, p->ptcl_64c.group1, PTCL1_4);
+  Particle_SetPose(ptcl, p->ptcl_64c.group1, PTCL1_NOISE_S);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
@@ -4097,10 +4097,10 @@ void FUN_08066e84(Player* _) {
   FUN_080ec79c(ENEK_CURORO, &payload);
 }
 
-void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, s32 param_6, SoundID32 soundID) {
+void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, bool32 fragileWall, SoundID32 soundID) {
   FUN_08240cf0(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
   if (pos2 != NULL) {
-    Player_ShowPtcl64c(p, pos2, param_6);
+    Player_ShowPtcl64c(p, pos2, fragileWall);
   }
   if (soundID != 0) {
     PlaySound_082406e0(soundID);

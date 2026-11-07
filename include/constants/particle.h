@@ -47,8 +47,8 @@
 #define PTCL1_1 1
 #define PTCL1_2 2
 #define PTCL1_3 3
-#define PTCL1_4 4
-#define PTCL1_5 5
+#define PTCL1_NOISE_S 4  // 物音を表す漫符(小), 壁叩き, 鳴り床の上を歩いたときなど、 物音を出したときに表示
+#define PTCL1_NOISE_L 5  // 物音を表す漫符(大)
 #define PTCL1_6 6
 #define PTCL1_7 7
 #define PTCL1_8 8
@@ -79,8 +79,8 @@
 #define PTCL1_NUM_GREEN(num) (42 + (num))      // 0..9, 内側緑, 外側黒
 #define PTCL1_NUM_WHITE_INV(num) (52 + (num))  // 0..9, 内側黒, 外側白
 #define PTCL1_NUM_GREEN_INV(num) (62 + (num))  // 0..9, 内側黒, 外側緑
-#define PTCL1_72 72                            // 不明(大)
-#define PTCL1_73 73                            // 不明(小)
+#define PTCL1_FRAGILE_KNOCK_S 72               // 傷んだ壁の壁叩き(小), 多分それ以外の用途はなかったはず
+#define PTCL1_FRAGILE_KNOCK_L 73               // 傷んだ壁の壁叩き(大)
 
 // PTCL_GROUP_2 (8x8px), エレメントのパーティクル
 #define PTCL2_0 0         // 不明A(大)
