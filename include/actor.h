@@ -69,10 +69,10 @@ typedef struct {
 
 // メッセージで歩かせる Actor の Actor.work
 typedef struct {
-  u8 unk_00[0x20];  // 0x00
-  u32 unk_20;       // 0x20, Cmd_5517 の '.t'
-  u8 unk_24[0x10];  // 0x24
-  WorldPos target;  // 0x34, cmd 3 のメッセージの args[0..2], ここへ向かって歩く
+  u8 unk_00[0x20];   // 0x00
+  u32 talkScriptID;  // 0x20, '.t', 話しかけたとき FUN_08041918 が VM_ExecByID で実行する
+  u32 talkArgs[4];   // 0x24, 話しかけたときのスクリプトの argv[4..7]
+  WorldPos target;   // 0x34, cmd 3 のメッセージの args[0..2], ここへ向かって歩く
 } ActorWalkWork;
 
 // Actor の 0x020 からの領域, Actor の種類ごとに使い方が違う (FUN_08208990 は +8 をワードで使う)

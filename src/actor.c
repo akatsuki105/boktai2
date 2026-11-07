@@ -3,6 +3,7 @@
 #include "emote.h"
 #include "entity.h"
 #include "global.h"
+#include "input.h"
 #include "malloc.h"
 #include "map_inline.h"
 #include "mover.h"
@@ -28,6 +29,7 @@ void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
 bool32 FUN_08018a08(void);
 WorldPos* Coffin_GetPos(void);
+bool32 FUN_0823d5f0(void);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
@@ -799,7 +801,85 @@ NON_MATCH void FUN_080417dc(Mover* mover) {
 #endif
 }
 
-NAKED void FUN_08041918(ActorManager* p) { INCFUNC("asm/func/FUN_08041918.inc"); }
+// プレイヤーが話しかけられる状態なら一番近い話し相手 (flags 0x800 で talkScriptID を持つ Actor) に吹き出しを出し, A ボタンでそのスクリプトを実行する
+// 下書き (233/247命令): 流れは一致, 原典はプレイヤーの状態の判定を FUN_0823d5f0 と同じ形の inline で 0/1 に起こし, 話し相手の探し方のレジスタ割当も違う
+NON_MATCH void FUN_08041918(ActorManager* p) {
+#ifdef NONMATCHING_C
+  bool32 pressed = gInput[0].pressed & A_BUTTON;
+  s32 form;
+  Actor* nearest = NULL;
+  Actor* actor;
+
+  if (p->player != NULL && (u8)(p->player->kind - PLAYER_BAT) > PLAYER_SLEEPING - PLAYER_BAT && !p->player->formRequest && !(p->player->goodCondTimer != 0 && (u16)(p->player->goodCondID - GOOD_MINI) <= GOOD_INVISIBLE - GOOD_MINI) &&
+      (p->player->action <= PACT_WALK || p->player->action == PACT_UNK_7)) {
+    if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+      form = 0;
+    } else if (p->player->kind == PLAYER_DARK_DJANGO) {
+      form = 1;
+    } else if (p->player->kind == PLAYER_SABATA) {
+      form = 2;
+    } else {
+      form = 3;
+    }
+  } else {
+    form = 3;
+  }
+
+  if (FUN_0823d5f0()) {
+    s32 minDist = 1000000;
+
+    for (actor = p->head; actor != NULL; actor = actor->next) {
+      if ((actor->flags & 0x800) && actor->work.walk.talkScriptID != 0) {
+        s32 dx = p->playerPos->x - actor->mover.pos.x;
+        s32 dz = p->playerPos->z - actor->mover.pos.z;
+        s32 dist = dx * dx + dz * dz;
+
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = actor;
+        }
+      }
+    }
+  }
+
+  if (nearest != NULL && !pressed) {
+    for (actor = p->head; actor != NULL; actor = actor->next) {
+      if (actor == nearest) {
+        if (!nearest->unk_0a) {
+          FUN_080415cc(nearest, (&nearest->unk_238)[form], 180, 180);
+          nearest->unk_0a = 1;
+        }
+      } else if (actor->unk_0a) {
+        FUN_080415cc(actor, 8, 180, 180);
+        actor->unk_0a = 0;
+      }
+    }
+  } else {
+    for (actor = p->head; actor != NULL; actor = actor->next) {
+      if (actor->unk_0a) {
+        FUN_080415cc(actor, 8, 180, 180);
+        actor->unk_0a = 0;
+      }
+    }
+  }
+
+  if (nearest != NULL && pressed) {
+    u32 argv[8];
+    s32 i;
+
+    argv[0] = nearest->mover.id;
+    argv[1] = nearest->mover.pos.x;
+    argv[2] = nearest->mover.pos.y;
+    argv[3] = nearest->mover.pos.z;
+    for (i = 0; i < 4; i++) {
+      argv[4 + i] = nearest->work.walk.talkArgs[i];
+    }
+    VM_ExecByID(nearest->work.walk.talkScriptID, NULL);
+  }
+#else
+  INCFUNC("asm/func/FUN_08041918.inc");
+#endif
+}
 
 // 0xDDD0, '.n' / '.k' / '.f' / '.a' / '.p' からメッセージを1件組み立てて送る
 s32 Cmd_DDD0(void) {
@@ -873,7 +953,7 @@ NON_MATCH s32 Cmd_5517(void) {
     actor->unk_1ea = VM_GetValue();
   }
   if (VM_SeekToNamedArg('t')) {
-    actor->work.walk.unk_20 = VM_GetValue();
+    actor->work.walk.talkScriptID = VM_GetValue();
   }
   if (VM_SeekToNamedArg('H')) {
     actor->unk_238 = VM_GetValue();
@@ -1021,7 +1101,7 @@ s32 FUN_08041e10(ActorManager* p, Actor* actor) {
     actor->unk_23b = 0xFF;
   }
   actor->unk_23a = VM_GetNamedArgValue('B', 4);
-  actor->work.walk.unk_20 = VM_GetNamedArgValue('t', 0);
+  actor->work.walk.talkScriptID = VM_GetNamedArgValue('t', 0);
 
   if (VM_SeekToNamedArg('s')) {
     s32 a = VM_GetValue();
