@@ -297,7 +297,28 @@ void FUN_0814ca30(Dog* p, s32 timer) {
   }
 }
 
-NAKED void FUN_0814caa0(Dog* p) { INCFUNC("asm/func/FUN_0814caa0.inc"); }
+// 97/94 命令, 原典は flags3 のアドレスを1本のレジスタに持って2回の判定に使い, animSpeedDiv のアドレスは枝ごとに作る, 試済: inline の TEST_FLAGS 版, flags3 のポインタ, 判定を展開した形
+NON_MATCH void FUN_0814caa0(Dog* p) {
+#ifdef NONMATCHING_C
+  u16 saved;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 11);
+    (p->e).animForceRestart = FALSE;
+  }
+  saved = (p->e).animSpeedDiv;
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    (p->e).animSpeedDiv = 3;
+  }
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  (p->e).animSpeedDiv = saved;
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_0814caa0.inc");
+#endif
+}
 
 NAKED void FUN_0814cb8c(Dog* p) { INCFUNC("asm/func/FUN_0814cb8c.inc"); }
 
