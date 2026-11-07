@@ -128,7 +128,9 @@ typedef struct Actor {
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
   u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
   u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
-  u8 unk_218[0x226 - 0x218];  // 0x218, まだ未解析
+  u8 unk_218[0x21C - 0x218];  // 0x218, まだ未解析
+  s32 nearRange;              // 0x21C, プレイヤーがこの距離 (x, z) まで近づいたら反応する
+  u8 unk_220[0x226 - 0x220];  // 0x220, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
   u8 unk_228[0x231 - 0x228];  // 0x228, まだ未解析
@@ -199,7 +201,7 @@ typedef struct ActorManager {
   u8 prevMinute;         // 0x021, 1フレーム前の minute
   u8 hour;               // 0x022, Time_GetHour
   u8 minute;             // 0x023, Time_GetMinute
-  u8 unk_24;             // 0x024, FUN_08018a08 の戻り値, 0 以外の間 FUN_08043da8 は時間帯を見ない
+  bool8 raining;         // 0x024, FUN_08018a08 (雨が降っているか), 降っている間 FUN_08043da8 は時間帯を見ない
   u8 unk_25[3];          // 0x025, padding?
   s32 unk_28;            // 0x028, _Update が毎フレーム 1 - x で 0/1 を往復させる, unk_2c の添字
   u32 unk_2c[2];         // 0x02C, _Update が unk_28 の側だけ 0 にする

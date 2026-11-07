@@ -9,9 +9,46 @@
 #include "shadow.h"
 #include "sound.h"
 #include "sprite.h"
+#include "time.h"
 #include "vm.h"
 
 COMMON_DATA ActorManager* gActorManager = NULL;  // 0x03002B50
+
+s32 FUN_080413b8(Actor* actor, u32 pose, u32 param_3, s32 param_4, u32 param_5, u32 param_6);
+s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
+void FUN_080417dc(Mover* mover);
+void FUN_08041918(ActorManager* p);
+s32 FUN_080411a0(ActorManager* p, Actor* actor);
+bool32 FUN_08018a08(void);
+
+// b が a から x と z で range 未満, y で 256 未満の距離にあるか (FUN_0804157c と同じ判定)
+static inline bool32 Actor_IsNear(Vec3* a, Vec3* b, s32 range) {
+  s32 dx, dy, dz;
+
+  dx = abs(b->x - a->x);
+  if (dx >= range) {
+    return FALSE;
+  }
+  dy = abs(b->y - a->y);
+  if (dy > 0xFF) {
+    return FALSE;
+  }
+  dz = abs(b->z - a->z);
+  if (dz >= range) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+// プレイヤーが nearRange の内側にいるか
+static inline bool32 Actor_IsPlayerNear(ActorManager* p, Actor* actor) {
+  WorldPos* pos = p->playerPos;
+
+  if (pos != NULL && Actor_IsNear(&actor->mover.pos, pos, actor->nearRange)) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
 // clang-format off
@@ -598,7 +635,22 @@ s32 FUN_080413fc(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, 
 
 s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return SpriteHolder_SetAnim(&actor->sprite, pose, 0, 0, param_3, param_5, param_6); }
 
-NAKED s32 FUN_08041480(Actor* actor, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_08041480.inc"); }
+// アニメ表の idx 番を引き, 向きの方式 (dirMode) に応じたアニメ設定関数を呼ぶ
+s32 FUN_08041480(Actor* actor, s32 idx, s32 param_3, s32 param_4, s32 param_5) {
+  const ActorAnim* anim = &actor->unk_2b8[idx];
+  s32 ret;
+
+  if (anim->dirMode == 1) {
+    ret = FUN_080413b8(actor, anim->pose, param_3, anim->unk_1, param_4, param_5);
+  } else if (anim->dirMode == 2) {
+    ret = FUN_0804135c(actor, anim->pose, param_3, anim->unk_1, param_4, param_5);
+  } else if (anim->dirMode == 3) {
+    ret = FUN_080413fc(actor, anim->pose, param_3, anim->unk_1, param_4, param_5);
+  } else {
+    ret = FUN_08041460(actor, anim->pose, param_3, anim->unk_1, param_4, param_5);
+  }
+  return ret;
+}
 
 // アニメのコマが足音のフレームに来たら足音を鳴らす, animIdx 1 と 3 が歩きのアニメ
 // 残差: 命令の並びは一致, 原典は fs を r2, &stepFrames[i] を r3, frame を r1 に置くがこちらは別のレジスタになる
@@ -1012,7 +1064,7 @@ void FUN_08043da8(ActorManager* p, Actor* actor) {
   }
 
   if (actor->waitFrames == 0) {
-    if (p->unk_24 == 0 && ((p->hour == actor->startHour && p->minute >= actor->startMinute) || (p->hour > actor->startHour && p->hour < actor->endHour) || (p->hour == actor->endHour && p->minute < actor->endMinute))) {
+    if (!p->raining && ((p->hour == actor->startHour && p->minute >= actor->startMinute) || (p->hour > actor->startHour && p->hour < actor->endHour) || (p->hour == actor->endHour && p->minute < actor->endMinute))) {
       Actor_SetState(actor, 15);
       actor->unk_08 = 1;
       return;
