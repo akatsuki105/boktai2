@@ -26,6 +26,7 @@ void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
 bool32 FUN_08018a08(void);
+WorldPos* Coffin_GetPos(void);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
 // clang-format off
@@ -1295,7 +1296,65 @@ NON_MATCH void FUN_08043960(ActorManager* p, Actor* actor) {
 #endif
 }
 
-NAKED void FUN_08043a24(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043a24.inc"); }
+// 16 フレームごとに, 棺桶が近いか雨なら state 12 へ, 時間帯の終わりに来たら state 13 へ, プレイヤーが近づいたら state 10, unk_07 で state 7 へ
+// 下書き (199/196命令): 流れは一致, プレイヤーとの距離の判定は FUN_08043cf4 と同じ残差, state 12 / 13 の設定ブロックの共有のしかたも違う
+NON_MATCH void FUN_08043a24(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 8;
+  }
+
+  if ((actor->timer & 0xF) == 0) {
+    if (actor->unk_1ed != 0) {
+      Vec3* coffinPos = Coffin_GetPos();
+      bool32 near = FALSE;
+
+      if (coffinPos != NULL) {
+        s32 dx = actor->mover.pos.x - coffinPos->x;
+        s32 dz = actor->mover.pos.z - coffinPos->z;
+
+        if (dx * dx + dz * dz <= 159999) {
+          near = TRUE;
+        }
+      }
+      if (near) {
+        actor->waitFrames = 1800;
+        Actor_SetState(actor, 12);
+        actor->unk_08 = 1;
+        return;
+      }
+      if (actor->unk_1ed != 0 && p->raining) {
+        actor->waitFrames = 300;
+        Actor_SetState(actor, 12);
+        actor->unk_08 = 1;
+        return;
+      }
+    }
+    if (actor->unk_230 != 0 && p->minuteChanged) {
+      if ((p->hour == actor->endHour && p->minute >= actor->endMinute) || (p->hour - 1 == actor->endHour && p->minute <= actor->endMinute)) {
+        Actor_SetState(actor, 13);
+        actor->unk_08 = 1;
+        return;
+      }
+    }
+  }
+
+  if (p->playerPos != NULL && abs(p->playerPos->x - actor->mover.pos.x) < actor->nearRange && abs(p->playerPos->y - actor->mover.pos.y) <= 0xFF && abs(p->playerPos->z - actor->mover.pos.z) < actor->nearRange) {
+    actor->unk_227 = actor->state;
+    Actor_SetState(actor, 10);
+    actor->unk_08 = 1;
+  } else if (actor->unk_07) {
+    Actor_SetState(actor, 7);
+    actor->unk_08 = 1;
+  } else {
+    actor->timer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_08043a24.inc");
+#endif
+}
 
 // プレイヤーが unk_220 の外へ離れたら, unk_216 なら向き unk_215 で state 3 へ, そうでなければ覚えておいた state へ戻る
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こしてから比べる (FUN_08043cf4 と同じ形)

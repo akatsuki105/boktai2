@@ -120,7 +120,7 @@ typedef struct Actor {
   u8 unk_1e9;                 // 0x1E9, 同じく第3引数
   u16 unk_1ea;                // 0x1EA, Cmd_5517 の '.b' の3つ目
   u8 unk_1ec;                 // 0x1EC, FUN_08042cf0 が初回に 1 を入れる
-  u8 unk_1ed;                 // 0x1ED, まだ未解析
+  s8 unk_1ed;                 // 0x1ED, 0 以外なら FUN_08043a24 が棺桶の近さと雨を見る
   u8 unk_1ee;                 // 0x1EE, 根拠: Actor_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
   s8 pathIdx;                 // 0x1EF, Cmd_5517 の '.r' の1つ目, 負なら経路なし
   u16 pathSpeed;              // 0x1F0, 経路を歩く速さ, Map_GetStepToPathNode に渡す
@@ -146,7 +146,8 @@ typedef struct Actor {
   u8 unk_224[2];              // 0x224, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
-  u8 unk_228[0x231 - 0x228];  // 0x228, まだ未解析
+  u8 unk_228[0x230 - 0x228];  // 0x228, まだ未解析
+  u8 unk_230;                 // 0x230, 0 以外なら FUN_08043a24 が分の切り替わりで時間帯の終わりを見る
   u8 startHour;               // 0x231, FUN_08043da8 が見る時間帯の始まり (時)
   u8 startMinute;             // 0x232, 同じく (分)
   u8 endHour;                 // 0x233, 時間帯の終わり (時)
