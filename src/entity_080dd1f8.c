@@ -16,7 +16,7 @@ typedef struct {
   HitboxData hurtbox;         // 0x08C, 食らい判定, FUN_080dc614 で炎と氷に反応する
   ParticleShadow shadow;      // 0x0DC, _Destroy が ParticleShadow_Remove に渡す
   Vec3 vel;                   // 0x11C, 弾かれると FUN_080dc4a8 が書き換える
-  u8 unk_124[0x12C - 0x124];  // 0x124
+  Vec3 unk_124;               // 0x124, FUN_080dce8c の第3引数
   u16 unk_12c;                // 0x12C, 爆発で片付けるときに 0
   u8 unk_12e;                 // 0x12E, PTR_ARRAY_085ad33c の添字, 2 だと FUN_080dd324 が 0 を返す
   s8 unk_12f;                 // 0x12F, activeMask 上の自分のビット番号, 空きは -1, 負だと FUN_080dd324 が 0 を返す
@@ -26,7 +26,8 @@ typedef struct {
   u8 unk_134[2];              // 0x134
   u16 unk_136;                // 0x136, Explosion_Create の power
   u16 unk_138;                // 0x138, Explosion_Create の knockback
-  u8 unk_13a[2];              // 0x13A
+  u8 unk_13a;                 // 0x13A
+  u8 unk_13b;                 // 0x13B, 生成時に 1
   u16 unk_13c;                // 0x13C, 攻撃判定と食らい判定の id, FUN_08240cf0 の第6引数
   u16 unk_13e;                // 0x13E, unk_132 の戻し先の値
   u8 unk_140[0x144 - 0x140];  // 0x140
@@ -47,6 +48,7 @@ IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 struct Explosion* Explosion_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, s32 plttOffset);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem);
+Entity080dd1f8* Entity080dd1f8_Create(void);
 
 const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
 
@@ -163,7 +165,51 @@ NON_MATCH void FUN_080dcdd8(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
 #endif
 }
 
-NAKED s32 FUN_080dce8c(Entity080dd1f8* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080dce8c.inc"); }
+// 爆弾を1つ置く, ゲームオーバー中や 1P が倒れているときと空きが無いときは NULL
+Entity080dd1f8Elem* FUN_080dce8c(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power, s32 knockback, s32 timer, s32 id) {
+  Entity080dd1f8* p = gEntity080dd1f8;
+  Entity080dd1f8Elem* elem;
+  AuxSprite* spr;
+
+  if (p == NULL) {
+    p = Entity080dd1f8_Create();
+    if (p == NULL) {
+      return NULL;
+    }
+  }
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
+    return NULL;
+  }
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+    return NULL;
+  }
+  elem = FUN_080dc764(p);
+  if (elem == NULL) {
+    return NULL;
+  }
+  elem->unk_12e = 1;
+  elem->unk_12c = 0;
+  elem->unk_124 = *unk_124;
+  elem->unk_130 = TRUE;
+  elem->vel = *vel;
+  elem->unk_136 = power;
+  elem->unk_138 = knockback;
+  elem->unk_13e = timer;
+  elem->unk_132 = timer;
+  elem->unk_131 = 30;
+  elem->unk_13c = id;
+  elem->unk_13b = 1;
+  spr = &elem->spr;
+  elem->spr.pos = *pos;
+  AuxSprite_Add(spr, &p->gfx, 0);
+  AuxAnim_SetAnim(&elem->anim, p->anim, 1, 0, 0);
+  AuxSprite_AdvanceAnim(spr, &elem->anim);
+  spr->flags |= SPRFLAG_HIDDEN;
+  spr->priority = 1;
+  ParticleShadow_Init(&elem->shadow, &spr->pos, 0);
+  FUN_080dc650(elem, 0, 0);
+  return elem;
+}
 
 void (*const PTR_ARRAY_085ad33c[3])(Entity080dd1f8*, Entity080dd1f8Elem*) = {
     FUN_080dc4a4,
