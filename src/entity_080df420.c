@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
@@ -12,21 +13,21 @@
 
 // 1発ぶんのエフェクト
 typedef struct {
-  AuxSprite sprite;        // 0x00
-  AuxAnimState anim;       // 0x2C
-  HitboxData hitbox;       // 0x3C, 攻撃判定
-  HitboxData hurtbox;      // 0x8C, 食らい判定
-  Vec3 vel;                // 0xDC, 1フレームに進む量
-  u8 unk_e4[0xEC - 0xE4];  // 0xE4, まだ未解析
-  AuxAnimFile* animFile;   // 0xEC
-  u16 unk_f0;              // 0xF0, FUN_080df148 の第4引数として子へ渡す
-  u8 unk_f2;               // 0xF2
-  u8 unk_f3;               // 0xF3, FUN_080df478 が 1 を入れる
-  s16 flags;               // 0xF4, FUN_080de344 が bit2 を立てる
-  u8 state;                // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
-  s8 index;                // 0xF7, FUN_080de174 が確保したスロット番号を入れる
-  u16 timer;               // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
-  u8 unk_fa[2];            // 0xFA, まだ未解析, padding?
+  AuxSprite sprite;       // 0x00
+  AuxAnimState anim;      // 0x2C
+  HitboxData hitbox;      // 0x3C, 攻撃判定
+  HitboxData hurtbox;     // 0x8C, 食らい判定
+  Vec3 vel;               // 0xDC, 1フレームに進む量
+  WorldPos basePos;       // 0xE4, 状態 1 に入ったときの位置, y は 1P より 220 上を目指して下がる
+  AuxAnimFile* animFile;  // 0xEC
+  u16 unk_f0;             // 0xF0, FUN_080df148 の第4引数として子へ渡す
+  u8 bobAngle;            // 0xF2, 上下に揺れる位相, 毎フレーム +4
+  u8 unk_f3;              // 0xF3, FUN_080df478 が 1 を入れる
+  s16 flags;              // 0xF4, FUN_080de344 が bit2 を立てる
+  u8 state;               // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
+  s8 index;               // 0xF7, FUN_080de174 が確保したスロット番号を入れる
+  u16 timer;              // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
+  u8 unk_fa[2];           // 0xFA, まだ未解析, padding?
 } Entity080df420Elem;
 static_assert(sizeof(Entity080df420Elem) == 252);
 
@@ -256,7 +257,58 @@ void FUN_080de7a0(Entity080df420Elem* elem) {
 
 void nop_080de81c(Entity080df420* p, Entity080df420Elem* elem) {}
 
-NAKED void FUN_080de820(Entity080df420* p, Entity080df420Elem* param_2) { INCFUNC("asm/func/FUN_080de820.inc"); }
+// state 1, 上下に揺れながら vel で飛び, 地形の無いところに出たら跳ね返って分裂する弾なら散らばり, アニメが一巡したら state 2 へ移る
+// 442/429命令, 1回目の下書き (呼び出し列は一致), 残差は散らばる弾のループの外へ出すアドレスと乱数表の置き場所, こちらは bobAngle などのアドレスを分岐の前に作ってしまう
+NON_MATCH void FUN_080de820(Entity080df420* p, Entity080df420Elem* elem) {
+#ifdef NONMATCHING_C
+  WorldPos next;
+  s32 idx;
+  CollisionMapTile* tile;
+  s32 height;
+
+  if (elem->unk_f3) {
+    elem->basePos = elem->sprite.pos;
+    elem->unk_f3 = 0;
+  }
+  Vec3_Sum(&next, &elem->vel, &elem->sprite.pos);
+  idx = GetCollisionTileIdx(&next);
+  tile = TileAtIndex(idx);
+  height = TileHeightAtIndex(idx, &next);
+  if (height <= 0) {
+    elem->vel.x = -elem->vel.x;
+    elem->vel.z = -elem->vel.z;
+    if (elem->flags & 1) {
+      s32 angle = ArcTan2_8(elem->vel.x, elem->vel.z);
+      s32 i;
+
+      for (i = 0; i < 6; i++) {
+        Vec3 vel;
+        u16* table = gRandomTable;
+        s32 a = angle + (_Random(table) & 0xFF);
+        s32 speed = (_Random(table) & 7) + 5;
+
+        Vec3_SetPolar(&vel, a, speed);
+        FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+      }
+      elem->state = 3;
+      elem->unk_f3 = 1;
+    }
+  } else {
+    elem->sprite.pos = next;
+  }
+  elem->sprite.pos.y = elem->basePos.y + POLAR_Z(10, elem->bobAngle);
+  elem->basePos.y = gPlayerPtr[0]->mover.pos.y + 220 < elem->basePos.y ? elem->basePos.y - 4 : gPlayerPtr[0]->mover.pos.y + 220;
+  elem->bobAngle += 4;
+  FUN_080de7a0(elem);
+  if (AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim)) {
+    AuxAnim_SetAnim(&elem->anim, elem->animFile, 2, 0, 0);
+    elem->state = 2;
+    elem->unk_f3 = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_080de820.inc");
+#endif
+}
 
 NAKED void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080debbc.inc"); }
 
