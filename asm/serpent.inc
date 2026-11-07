@@ -3440,7 +3440,7 @@ _0818A15A:
 	mov r0, r8
 	add r1, sp, #0x3c
 	movs r2, #4
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	ldr r5, _0818A1E8 @ =0x0203B400
 	ldr r4, _0818A1EC @ =0x030046B8
 	ldr r0, [r4]
@@ -3538,7 +3538,7 @@ _0818A226:
 	adds r0, r2, #0
 	add r1, sp, #0x3c
 	movs r2, #4
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	movs r0, #0x10
 	b _0818A40A
 _0818A260:
@@ -3641,7 +3641,7 @@ _0818A2F8:
 	add r1, sp, #0x3c
 	movs r2, #4
 	movs r3, #0x3c
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	movs r0, #0x10
 	movs r1, #0xc1
 	lsls r1, r1, #1
@@ -3750,7 +3750,7 @@ _0818A3D4:
 	str r1, [sp, #0x10]
 	add r1, sp, #0x3c
 	movs r2, #8
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	movs r0, #0x20
 _0818A40A:
 	movs r1, #0xc1

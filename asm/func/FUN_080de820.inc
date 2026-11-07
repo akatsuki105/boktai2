@@ -261,7 +261,7 @@ _080DE9F6:
 	ldr r0, [sp, #0x30]
 	ldr r1, [sp, #0x44]
 	movs r2, #4
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	subs r7, #1
 	cmp r7, #0
 	bge _080DE968
@@ -328,7 +328,7 @@ _080DEA90:
 	adds r0, #4
 	strb r0, [r2]
 	adds r0, r5, #0
-	bl FUN_080de7a0
+	bl Entity080df420Elem_UpdateHitboxes
 	adds r4, r5, #0
 	adds r4, #0x2c
 	ldrh r0, [r4, #8]

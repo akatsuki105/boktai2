@@ -293,7 +293,7 @@ _080AEDCC:
 	movs r2, #4
 _080AEDEE:
 	movs r3, #0x96
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	b _080AEE04
 	.align 2, 0
 _080AEDF8: .4byte 0x0000134E

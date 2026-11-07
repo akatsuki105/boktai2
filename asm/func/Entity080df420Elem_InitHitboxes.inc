@@ -51,7 +51,7 @@
 	adds r2, r7, #0
 	movs r3, #0
 	bl Hitbox_SetAttack
-	ldr r1, _080DE794 @ =FUN_080de3b4
+	ldr r1, _080DE794 @ =Entity080df420Elem_OnHit
 	adds r0, r4, #0
 	adds r2, r6, #0
 	bl Hitbox_SetHandler
@@ -82,7 +82,7 @@
 	mov r1, r8
 	movs r2, #0
 	bl Hitbox_SetPos
-	ldr r1, _080DE79C @ =FUN_080de52c
+	ldr r1, _080DE79C @ =Entity080df420Elem_OnHurt
 	adds r0, r4, #0
 	adds r2, r6, #0
 	bl Hitbox_SetHandler
@@ -100,6 +100,6 @@
 _080DE788: .4byte 0xFFFF0000
 _080DE78C: .4byte 0x0000FFFF
 _080DE790: .4byte 0x00002401
-_080DE794: .4byte FUN_080de3b4
+_080DE794: .4byte Entity080df420Elem_OnHit
 _080DE798: .4byte 0x00004001
-_080DE79C: .4byte FUN_080de52c
+_080DE79C: .4byte Entity080df420Elem_OnHurt

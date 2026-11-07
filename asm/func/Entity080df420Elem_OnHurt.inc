@@ -3,15 +3,33 @@
 	mov r6, sb
 	mov r5, r8
 	push {r5, r6, r7}
-	sub sp, #0x30
+	sub sp, #0x44
+	adds r3, r0, #0
 	adds r4, r2, #0
+	adds r1, #0x44
+	ldrh r0, [r1]
+	cmp r0, #0
+	beq _080DE546
+	b _080DE69A
+_080DE546:
 	adds r0, r4, #0
 	adds r0, #0xf4
 	ldrh r1, [r0]
 	movs r0, #1
 	ands r0, r1
+	adds r3, #0x42
+	str r3, [sp, #0x3c]
+	adds r1, r4, #0
+	adds r1, #0x3c
+	str r1, [sp, #0x38]
+	adds r2, #0x8c
+	str r2, [sp, #0x40]
+	adds r1, #0xba
+	str r1, [sp, #0x2c]
+	adds r2, #0x67
+	str r2, [sp, #0x28]
 	cmp r0, #0
-	beq _080DE4BE
+	beq _080DE656
 	adds r0, r4, #0
 	adds r0, #0xdc
 	movs r1, #0
@@ -30,35 +48,35 @@
 	str r1, [sp, #0x24]
 	adds r2, r4, #0
 	adds r2, #0x78
-	str r2, [sp, #0x28]
+	str r2, [sp, #0x30]
 	adds r0, #0x60
-	str r0, [sp, #0x2c]
+	str r0, [sp, #0x34]
 	movs r1, #0x80
 	adds r1, r1, r4
 	mov sl, r1
-	ldr r2, _080DE44C @ =0x030046B8
+	ldr r2, _080DE5E4 @ =0x030046B8
 	mov sb, r2
 	movs r7, #0xff
 	add r5, sp, #0x14
 	movs r0, #5
 	mov r8, r0
 	movs r6, #5
-_080DE410:
+_080DE5AA:
 	mov r1, sb
 	ldr r0, [r1]
 	adds r0, #1
-	ldr r1, _080DE450 @ =0x000003FF
+	ldr r1, _080DE5E8 @ =0x000003FF
 	ands r0, r1
 	mov r2, sb
 	str r0, [r2]
 	lsls r0, r0, #1
-	ldr r1, _080DE454 @ =0x0203B400
+	ldr r1, _080DE5EC @ =0x0203B400
 	adds r0, r0, r1
 	ldrh r0, [r0]
 	ands r0, r7
 	ldr r1, [sp, #0x1c]
 	adds r2, r1, r0
-	ldr r1, _080DE458 @ =gSineTable
+	ldr r1, _080DE5F0 @ =gSineTable
 	adds r0, r2, #0
 	adds r0, #0x40
 	ands r0, r7
@@ -70,25 +88,25 @@ _080DE410:
 	muls r1, r0, r1
 	adds r0, r1, #0
 	cmp r0, #0
-	blt _080DE45C
+	blt _080DE5F4
 	asrs r1, r0, #0xc
-	b _080DE462
+	b _080DE5FA
 	.align 2, 0
-_080DE44C: .4byte 0x030046B8
-_080DE450: .4byte 0x000003FF
-_080DE454: .4byte 0x0203B400
-_080DE458: .4byte gSineTable
-_080DE45C:
+_080DE5E4: .4byte 0x030046B8
+_080DE5E8: .4byte 0x000003FF
+_080DE5EC: .4byte 0x0203B400
+_080DE5F0: .4byte gSineTable
+_080DE5F4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
 	rsbs r1, r0, #0
-_080DE462:
+_080DE5FA:
 	movs r0, #0
 	strh r1, [r5]
 	strh r0, [r5, #2]
 	ands r2, r7
 	lsls r0, r2, #1
-	ldr r2, _080DE484 @ =gSineTable
+	ldr r2, _080DE61C @ =gSineTable
 	adds r0, r0, r2
 	movs r1, #0
 	ldrsh r0, [r0, r1]
@@ -96,25 +114,25 @@ _080DE462:
 	muls r2, r0, r2
 	adds r0, r2, #0
 	cmp r0, #0
-	blt _080DE488
+	blt _080DE620
 	asrs r0, r0, #0xc
-	b _080DE48E
+	b _080DE626
 	.align 2, 0
-_080DE484: .4byte gSineTable
-_080DE488:
+_080DE61C: .4byte gSineTable
+_080DE620:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
 	rsbs r0, r0, #0
-_080DE48E:
+_080DE626:
 	strh r0, [r5, #4]
 	ldr r0, [sp, #0x24]
 	ldrh r3, [r0]
 	movs r0, #0xc
 	str r0, [sp]
-	ldr r1, [sp, #0x28]
+	ldr r1, [sp, #0x30]
 	ldrh r0, [r1]
 	str r0, [sp, #4]
-	ldr r2, [sp, #0x2c]
+	ldr r2, [sp, #0x34]
 	ldrh r0, [r2]
 	str r0, [sp, #8]
 	ldr r0, [r4, #0x74]
@@ -125,21 +143,13 @@ _080DE48E:
 	ldr r0, [sp, #0x20]
 	add r1, sp, #0x14
 	movs r2, #4
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	subs r6, #1
 	cmp r6, #0
-	bge _080DE410
-_080DE4BE:
-	adds r0, r4, #0
-	adds r0, #0xdc
-	movs r2, #0
-	ldrsh r0, [r0, r2]
-	adds r1, r4, #0
-	adds r1, #0xe0
-	movs r2, #0
-	ldrsh r1, [r1, r2]
-	bl ArcTan2_8
-	adds r1, r0, #0
+	bge _080DE5AA
+_080DE656:
+	ldr r2, [sp, #0x3c]
+	ldrb r1, [r2]
 	adds r0, r4, #0
 	bl FUN_080de1cc
 	movs r1, #0x1c
@@ -151,26 +161,26 @@ _080DE4BE:
 	movs r2, #0
 	movs r3, #0
 	bl FUN_08240cc4
-	adds r2, r4, #0
-	adds r2, #0x3c
-	ldrh r0, [r2, #6]
-	movs r1, #4
+	ldr r0, [sp, #0x38]
+	ldrh r1, [r0, #6]
+	movs r0, #4
+	orrs r1, r0
+	ldr r2, [sp, #0x38]
+	strh r1, [r2, #6]
+	ldr r2, [sp, #0x40]
+	ldrh r1, [r2, #6]
 	orrs r0, r1
 	strh r0, [r2, #6]
-	adds r2, #0x50
-	ldrh r0, [r2, #6]
-	orrs r1, r0
-	strh r1, [r2, #6]
-	ldr r0, _080DE528 @ =0x000003DF
+	ldr r0, _080DE6AC @ =0x000003DF
 	bl PlaySound_082406e0
-	adds r1, r4, #0
-	adds r1, #0xf6
 	movs r0, #3
+	ldr r1, [sp, #0x2c]
 	strb r0, [r1]
-	subs r1, #3
 	movs r0, #1
-	strb r0, [r1]
-	add sp, #0x30
+	ldr r2, [sp, #0x28]
+	strb r0, [r2]
+_080DE69A:
+	add sp, #0x44
 	pop {r3, r4, r5}
 	mov r8, r3
 	mov sb, r4
@@ -179,4 +189,4 @@ _080DE4BE:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080DE528: .4byte 0x000003DF
+_080DE6AC: .4byte 0x000003DF

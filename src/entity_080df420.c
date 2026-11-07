@@ -20,12 +20,12 @@ typedef struct {
   Vec3 vel;               // 0xDC, 1フレームに進む量
   WorldPos basePos;       // 0xE4, 状態 1 に入ったときの位置, y は 1P より 220 上を目指して下がる
   AuxAnimFile* animFile;  // 0xEC
-  u16 unk_f0;             // 0xF0, FUN_080df148 の第4引数として子へ渡す
+  u16 unk_f0;             // 0xF0, Entity080df420_Spawn の第4引数として子へ渡す
   u8 bobAngle;            // 0xF2, 上下に揺れる位相, 毎フレーム +4
   u8 unk_f3;              // 0xF3, FUN_080df478 が 1 を入れる
   s16 flags;              // 0xF4, FUN_080de344 が bit2 を立てる
   u8 state;               // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
-  s8 index;               // 0xF7, FUN_080de174 が確保したスロット番号を入れる
+  s8 index;               // 0xF7, Entity080df420_AllocElem が確保したスロット番号を入れる
   u16 timer;              // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
   u8 unk_fa[2];           // 0xFA, まだ未解析, padding?
 } Entity080df420Elem;
@@ -35,9 +35,9 @@ typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_10
   AuxSpriteGfx gfx;              // 0x18, SPRITE_EFF_F422
   u8 unk_34[4];                  // 0x34, まだ未解析
-  u32 usedMask;                  // 0x38, elems のどのスロットが使用中か, FUN_080de174 が立てる
+  u32 usedMask;                  // 0x38, elems のどのスロットが使用中か, Entity080df420_AllocElem が立てる
   s16 frame;                     // 0x3C, _Update が毎フレーム 1 足す
-  u16 count;                     // 0x3E, FUN_080de174 が確保のたびに 1 足す
+  u16 count;                     // 0x3E, Entity080df420_AllocElem が確保のたびに 1 足す
   Entity080df420Elem elems[24];  // 0x40
 } Entity080df420;
 static_assert(sizeof(Entity080df420) == 6112);
@@ -60,20 +60,20 @@ void (*const sEntity080df420Updates[2])(Entity080df420*, Entity080df420Elem*) = 
 };  // 0x085AD354
 
 void FUN_080debbc(Entity080df420*, Entity080df420Elem*);
-void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
-void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
+void Entity080df420Elem_OnHit(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
+void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
 void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5);
 Entity080df420* Entity080df420_Create(void);
-void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime);
-void FUN_080defd0(Entity080df420*, Entity080df420Elem*);
+void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime);
+void Entity080df420Elem_StateVanish(Entity080df420*, Entity080df420Elem*);
 
 void (*const PTR_ARRAY_085ad35c[2])(Entity080df420*, Entity080df420Elem*) = {
     FUN_080debbc,
-    FUN_080defd0,
+    Entity080df420Elem_StateVanish,
 };  // 0x085AD35C
 
-Entity080df420Elem* FUN_080de174(Entity080df420* p) {
+Entity080df420Elem* Entity080df420_AllocElem(Entity080df420* p) {
   s32 i;
 
   for (i = 0; i < 24; i++) {
@@ -156,7 +156,7 @@ void FUN_080de344(Entity080df420* p) {
 
 // 攻撃判定が当たったら, 分裂する弾なら6つの小さな弾を散らし, 火の粉と効果音を出して消滅へ移る
 // 167/167命令, ループ外へ出す定数の順だけが違う (原典は &gRandTableIdx を半径 5 より先に sb へ置く), 試済: 角度を先にローカルへ
-NON_MATCH void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
+NON_MATCH void Entity080df420Elem_OnHit(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
 #ifdef NONMATCHING_C
   if (elem->flags & 1) {
     s32 angle = ArcTan2_8(elem->vel.x, elem->vel.z);
@@ -166,7 +166,7 @@ NON_MATCH void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* el
       Vec3 vel;
 
       Vec3_SetPolar(&vel, angle + (Random() & 0xFF), 5);
-      FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+      Entity080df420_Spawn(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
     }
   }
   FUN_080de1cc(elem, ArcTan2_8(elem->vel.x, elem->vel.z));
@@ -177,13 +177,13 @@ NON_MATCH void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* el
   elem->state = 3;
   elem->unk_f3 = 1;
 #else
-  INCFUNC("asm/func/FUN_080de3b4.inc");
+  INCFUNC("asm/func/Entity080df420Elem_OnHit.inc");
 #endif
 }
 
 // 攻撃を食らったら, 分裂する弾なら6つの小さな弾を散らし, 火の粉と効果音を出して消滅へ移る
-// 175/175命令, FUN_080de3b4 と同じループ外の定数の順に加え, スタックに置くポインタの並びが違う
-NON_MATCH void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
+// 175/175命令, Entity080df420Elem_OnHit と同じループ外の定数の順に加え, スタックに置くポインタの並びが違う
+NON_MATCH void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
 #ifdef NONMATCHING_C
   if (b->invincibleTime != 0) {
     return;
@@ -196,7 +196,7 @@ NON_MATCH void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* el
       Vec3 vel;
 
       Vec3_SetPolar(&vel, angle + (Random() & 0xFF), 5);
-      FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+      Entity080df420_Spawn(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
     }
   }
   FUN_080de1cc(elem, a->angle);
@@ -207,13 +207,13 @@ NON_MATCH void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* el
   elem->state = 3;
   elem->unk_f3 = 1;
 #else
-  INCFUNC("asm/func/FUN_080de52c.inc");
+  INCFUNC("asm/func/Entity080df420Elem_OnHurt.inc");
 #endif
 }
 
 // 攻撃判定と食らい判定を作る
 // 96/98命令, 引数を受けるレジスタだけが違う (原典は elem を r6, power を sl, knockback を r7, attrs を r8 に置く), 試済: ローカルの宣言順, 2つ目の判定を hitbox++ で作る
-NON_MATCH void FUN_080de6b0(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) {
+NON_MATCH void Entity080df420Elem_InitHitboxes(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) {
 #ifdef NONMATCHING_C
   HitboxData* hitbox;
   Vec3 halfSize;
@@ -224,21 +224,21 @@ NON_MATCH void FUN_080de6b0(Entity080df420Elem* elem, s32 power, s32 knockback, 
   hitbox = &elem->hitbox;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, invincibleTime);
-  Hitbox_SetHandler(hitbox, FUN_080de3b4, elem);
+  Hitbox_SetHandler(hitbox, Entity080df420Elem_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
   hitbox = &elem->hurtbox;
   Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, defPower, defAttrs, defWeakness);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_080de52c, elem);
+  Hitbox_SetHandler(hitbox, Entity080df420Elem_OnHurt, elem);
   Hitbox_Register(hitbox);
 #else
-  INCFUNC("asm/func/FUN_080de6b0.inc");
+  INCFUNC("asm/func/Entity080df420Elem_InitHitboxes.inc");
 #endif
 }
 
 // 攻撃判定を出す印が立っていれば判定を表に出して登録し, 立っていなければ隠す
-void FUN_080de7a0(Entity080df420Elem* elem) {
+void Entity080df420Elem_UpdateHitboxes(Entity080df420Elem* elem) {
   if (elem->hurtbox.invincibleTime != 0) {
     elem->hurtbox.invincibleTime--;
   }
@@ -288,7 +288,7 @@ NON_MATCH void FUN_080de820(Entity080df420* p, Entity080df420Elem* elem) {
         s32 speed = (_Random(table) & 7) + 5;
 
         Vec3_SetPolar(&vel, a, speed);
-        FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+        Entity080df420_Spawn(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
       }
       elem->state = 3;
       elem->unk_f3 = 1;
@@ -299,7 +299,7 @@ NON_MATCH void FUN_080de820(Entity080df420* p, Entity080df420Elem* elem) {
   elem->sprite.pos.y = elem->basePos.y + POLAR_Z(10, elem->bobAngle);
   elem->basePos.y = gPlayerPtr[0]->mover.pos.y + 220 < elem->basePos.y ? elem->basePos.y - 4 : gPlayerPtr[0]->mover.pos.y + 220;
   elem->bobAngle += 4;
-  FUN_080de7a0(elem);
+  Entity080df420Elem_UpdateHitboxes(elem);
   if (AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim)) {
     AuxAnim_SetAnim(&elem->anim, elem->animFile, 2, 0, 0);
     elem->state = 2;
@@ -346,7 +346,7 @@ NON_MATCH void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) {
         a = (_Random(table) & 0xFF) + angle;
         speed = (_Random(table) & 1) + 4;
         Vec3_SetPolar(&vel, a, speed);
-        FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+        Entity080df420_Spawn(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
       }
       elem->state = 3;
       elem->unk_f3 = 1;
@@ -358,7 +358,7 @@ NON_MATCH void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) {
   elem->basePos.y = gPlayerPtr[0]->mover.pos.y + 220 < elem->basePos.y ? elem->basePos.y - 4 : gPlayerPtr[0]->mover.pos.y + 220;
   elem->bobAngle += 4;
   AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
-  FUN_080de7a0(elem);
+  Entity080df420Elem_UpdateHitboxes(elem);
   if (elem->unk_f0 == 0) {
     elem->state = 3;
     elem->unk_f3 = 1;
@@ -371,7 +371,7 @@ NON_MATCH void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) {
 }
 
 // 消滅のアニメを流し, 流し終えたら片付ける
-void FUN_080defd0(Entity080df420* p, Entity080df420Elem* elem) {
+void Entity080df420Elem_StateVanish(Entity080df420* p, Entity080df420Elem* elem) {
   if (elem->unk_f3) {
     if (elem->flags & 1) {
       AuxAnim_SetAnim(&elem->anim, elem->animFile, 3, 0, 0);
@@ -391,7 +391,7 @@ void FUN_080defd0(Entity080df420* p, Entity080df420Elem* elem) {
 }
 
 // 弾を1発出す, kind が 8 なら分裂する弾, 4 なら分裂しない弾
-void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime) {
+void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime) {
   Entity080df420* p = gEntity080df420;
   Entity080df420Elem* elem;
   AuxSprite* spr;
@@ -402,7 +402,7 @@ void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincible
       return;
     }
   }
-  elem = FUN_080de174(p);
+  elem = Entity080df420_AllocElem(p);
   if (elem == NULL) {
     return;
   }
@@ -426,7 +426,7 @@ void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincible
   AuxAnim_SetAnim(&elem->anim, elem->animFile, kind, 0, 0);
   AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
   spr->priority = 1;
-  FUN_080de6b0(elem, power, knockback, attrs, atkInvincibleTime, 0, 0, 0);
+  Entity080df420Elem_InitHitboxes(elem, power, knockback, attrs, atkInvincibleTime, 0, 0, 0);
   elem->hurtbox.invincibleTime = invincibleTime;
 }
 
