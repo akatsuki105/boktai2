@@ -50,6 +50,7 @@ void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
 void FUN_081647c8(Slime* p);
 void FUN_08164a48(Slime* p);
+s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
 bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
 void FUN_08164120(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
@@ -722,7 +723,45 @@ u32 Slime_PickHitAttributes(Slime* p) {
   return (u8)Random() < 180 ? HBATTR_HYOKETU | HBATTR_FROST : HBATTR_INKA | HBATTR_FLAME;
 }
 
-NAKED void FUN_081647c8(Slime* p) { INCFUNC("asm/func/FUN_081647c8.inc"); }
+// 分裂の飛沫を3つ, 乱数の向きと速さで飛ばす
+// 270/269命令, 乱数の取り方 (ブロックで table を取る形) は揃う, 残差は p と pos の割り当てが入れ替わる (原典 p=r8, pos=r6) こと, 試済: 宣言順, pos を直接渡す形, 飛沫1つ分の inline (274命令)
+NON_MATCH void FUN_081647c8(Slime* p) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  WorldPos* pos;
+
+  {
+    u16* table = gRandomTable;
+    u32 angle = _Random(table) & 0xFF;
+    s32 speed = (_Random(table) & 15) + 6;
+
+    Vec3_SetPolar(&vel, angle, speed);
+  }
+  vel.y = 48;
+  pos = &(p->e).mover.pos;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0x200, 0, (p->e).unk_47a + (p->e).variant, 0, 0, 0, 0, 0, 0);
+  {
+    u16* table = gRandomTable;
+    u32 angle = _Random(table) & 0xFF;
+    s32 speed = (_Random(table) & 15) + 6;
+
+    Vec3_SetPolar(&vel, angle, speed);
+  }
+  vel.y = 37;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).unk_47a + (p->e).variant, 0, 0, 0, 0, 0, 0);
+  {
+    u16* table = gRandomTable;
+    u32 angle = _Random(table) & 0xFF;
+    s32 speed = (_Random(table) & 15) + 6;
+
+    Vec3_SetPolar(&vel, angle, speed);
+  }
+  vel.y = 32;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).unk_47a + (p->e).variant, 1, 0, 0, 0, 0, 0);
+#else
+  INCFUNC("asm/func/FUN_081647c8.inc");
+#endif
+}
 
 NAKED void FUN_08164a48(Slime* p) { INCFUNC("asm/func/FUN_08164a48.inc"); }
 
