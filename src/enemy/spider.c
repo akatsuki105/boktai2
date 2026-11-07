@@ -200,7 +200,37 @@ void FUN_0812f358(Spider* p) {
   }
 }
 
-NAKED void FUN_0812f3f8(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f3f8.inc"); }
+// 被弾して後ろへ滑る状態, 滑り終えたら経路を引き直して追いかけに戻る
+void FUN_0812f3f8(Spider* p, s32 timer) {
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    CLEAR_FLAGS(((Spider*)(p->e).unk_1cc)->unk_660, 2 | 4);
+    Enemy_PlayAnim(&p->e, 3);
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    PlaySound_082406e0(SE_UNK_274);
+  }
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
+  Enemy_SetFlag(&p->e, ENEFLAG_UNK_13);
+  if (timer < 18 && anim->cmdIdx == 1) {
+    anim->tick = 0;
+  }
+  if (Enemy_StepSlide(&p->e)) {
+    (p->e).subStateDone = 1;
+    Enemy_ResetState(&p->e, 0, 0, 12);
+    Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+    FUN_08130eec(p);
+    Enemy_StepTowardPathNode(&p->e);
+    if ((p->e).kind != ENEK_SPIDER) {
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    }
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+    (p->e).unk_24e = (p->e).unk_24c;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    (p->e).mover.angle = (p->e).unk_1fc;
+    Enemy_SetFlag(&p->e, ENEFLAG_UNK_4);
+  }
+}
 
 // 倒されたときの状態, 粒子を散らしながら点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
 // 230/228命令, 原典は ENEFLAG_UNK_15 の検査で作った flags のアドレスを r6 へ写して ENEFLAG_UNK_10 の検査まで持ち越す, 試済: 検査を if で包む形, フラグの直接演算, flags のポインタのローカル (226命令で割り当て以外は揃う)
