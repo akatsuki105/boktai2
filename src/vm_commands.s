@@ -347,7 +347,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8602, Entity2D2B_SetLitDurationScripted
 	.4byte 0x86F3, Cmd_SetShadowMode
 	.4byte 0x877F, Cmd_877F
-	.4byte 0x87E4, EnemySpider_Create @ HashName("スパイダー")
+	.4byte 0x87E4, Spider_Create @ HashName("スパイダー")
 	.4byte 0x87FE, MorningDew_Create
 	.4byte 0x883A, Cmd_883A
 	.4byte 0x8894, Cmd_8894

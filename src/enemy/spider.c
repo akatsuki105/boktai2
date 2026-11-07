@@ -59,4 +59,90 @@ void (*const PTR_ARRAY_085ad710[7])(Spider*, u16*) = {
     FUN_081302f8,
 };  // 0x085AD710
 
-INCASM("asm/spider.inc");
+NAKED void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/func/Spider_OnHit.inc"); }
+
+NAKED void Spider_OnHurt(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/func/Spider_OnHurt.inc"); }
+
+NAKED void FUN_0812ea6c(Spider* p) { INCFUNC("asm/func/FUN_0812ea6c.inc"); }
+
+NAKED void FUN_0812ea90(Spider* p) { INCFUNC("asm/func/FUN_0812ea90.inc"); }
+
+NAKED void FUN_0812eab4(Spider* p) { INCFUNC("asm/func/FUN_0812eab4.inc"); }
+
+NAKED void FUN_0812edf8(Spider* p) { INCFUNC("asm/func/FUN_0812edf8.inc"); }
+
+NAKED void FUN_0812ef50(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812ef50.inc"); }
+
+NAKED void FUN_0812f1b4(Spider* p) { INCFUNC("asm/func/FUN_0812f1b4.inc"); }
+
+NAKED void FUN_0812f1b8(Spider* p) { INCFUNC("asm/func/FUN_0812f1b8.inc"); }
+
+NAKED void FUN_0812f1bc(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f1bc.inc"); }
+
+NAKED void FUN_0812f358(Spider* p) { INCFUNC("asm/func/FUN_0812f358.inc"); }
+
+NAKED void FUN_0812f3f8(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f3f8.inc"); }
+
+NAKED void FUN_0812f5f4(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f5f4.inc"); }
+
+NAKED s32 FUN_0812f818(Spider* p) { INCFUNC("asm/func/FUN_0812f818.inc"); }
+
+NAKED void FUN_0812f83c(Spider* p) { INCFUNC("asm/func/FUN_0812f83c.inc"); }
+
+NAKED void FUN_0812f840(Spider* p) { INCFUNC("asm/func/FUN_0812f840.inc"); }
+
+NAKED void FUN_0812f9ec(Spider* p) { INCFUNC("asm/func/FUN_0812f9ec.inc"); }
+
+NAKED void FUN_0812fbec(Spider* p) { INCFUNC("asm/func/FUN_0812fbec.inc"); }
+
+NAKED void FUN_0812fcd8(Spider* p) { INCFUNC("asm/func/FUN_0812fcd8.inc"); }
+
+NAKED void FUN_0812fdb8(Spider* p) { INCFUNC("asm/func/FUN_0812fdb8.inc"); }
+
+NAKED void FUN_08130068(Spider* p) { INCFUNC("asm/func/FUN_08130068.inc"); }
+
+NAKED void FUN_081300a8(Spider* p) { INCFUNC("asm/func/FUN_081300a8.inc"); }
+
+NAKED void FUN_081300d0(Spider* p) { INCFUNC("asm/func/FUN_081300d0.inc"); }
+
+NAKED void Spider_InitHitboxes(Spider* p) { INCFUNC("asm/func/Spider_InitHitboxes.inc"); }
+
+NAKED void Spider_OnReset(Spider* p) { INCFUNC("asm/func/Spider_OnReset.inc"); }
+
+NAKED void Spider_InitAnims(Spider* p) { INCFUNC("asm/func/Spider_InitAnims.inc"); }
+
+NAKED void FUN_081302f8(Spider* p, u16* msg) { INCFUNC("asm/func/FUN_081302f8.inc"); }
+
+NAKED void FUN_08130460(Spider* p) { INCFUNC("asm/func/FUN_08130460.inc"); }
+
+NAKED bool8 FUN_081304a8(Spider* p, s32 rangeX, s32 rangeZ) { INCFUNC("asm/func/FUN_081304a8.inc"); }
+
+NAKED bool8 FUN_08130508(Spider* p) { INCFUNC("asm/func/FUN_08130508.inc"); }
+
+NAKED void FUN_08130610(Spider* p) { INCFUNC("asm/func/FUN_08130610.inc"); }
+
+NAKED void FUN_0813069c(Spider* p) { INCFUNC("asm/func/FUN_0813069c.inc"); }
+
+NAKED void FUN_081307b0(Spider* p) { INCFUNC("asm/func/FUN_081307b0.inc"); }
+
+NAKED bool8 FUN_081309f0(Spider* p) { INCFUNC("asm/func/FUN_081309f0.inc"); }
+
+NAKED bool8 FUN_08130ac4(Spider* p) { INCFUNC("asm/func/FUN_08130ac4.inc"); }
+
+NAKED bool8 FUN_08130d34(Spider* p) { INCFUNC("asm/func/FUN_08130d34.inc"); }
+
+NAKED void FUN_08130eec(Spider* p) { INCFUNC("asm/func/FUN_08130eec.inc"); }
+
+NAKED void FUN_0813101c(Spider* p) { INCFUNC("asm/func/FUN_0813101c.inc"); }
+
+NAKED s32 FUN_0813107c(Spider* p) { INCFUNC("asm/func/FUN_0813107c.inc"); }
+
+NAKED s32 FUN_081310b8(Spider* p) { INCFUNC("asm/func/FUN_081310b8.inc"); }
+
+NAKED s32 Spider_Update(Spider* p) { INCFUNC("asm/func/Spider_Update.inc"); }
+
+NAKED s32 Spider_Destroy(Spider* p) { INCFUNC("asm/func/Spider_Destroy.inc"); }
+
+NAKED s32 Spider_Init(Spider* p) { INCFUNC("asm/func/Spider_Init.inc"); }
+
+NAKED void Spider_Create(void) { INCFUNC("asm/func/Spider_Create.inc"); }
