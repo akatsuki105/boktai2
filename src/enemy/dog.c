@@ -216,7 +216,14 @@ void FUN_0814e1b0(Dog* p) {
   }
 }
 
-NAKED void FUN_0814e1fc(Dog* p) { INCFUNC("asm/func/FUN_0814e1fc.inc"); }
+void FUN_0814e1fc(Dog* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 14);
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+  }
+}
 
 NAKED void FUN_0814e248(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e248.inc"); }
 
