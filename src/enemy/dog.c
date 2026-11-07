@@ -161,7 +161,28 @@ NAKED void FUN_0814afc8(Dog* p) { INCFUNC("asm/func/FUN_0814afc8.inc"); }
 
 NAKED bool8 FUN_0814b090(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814b090.inc"); }
 
-NAKED bool8 FUN_0814b3a0(Dog* p) { INCFUNC("asm/func/FUN_0814b3a0.inc"); }
+// 残差1命令, 原典は 0x6C8 のオフセットに 2 を足して 0x6CA を作るがこちらはプールから読む, 試済: 2つを u16[2] にする形
+NON_MATCH bool8 FUN_0814b3a0(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+
+  if ((p->e).variant <= 1 || (p->e).variant == 4) {
+    if (q->unk_6c8 == 0) {
+      return TRUE;
+    }
+  } else {
+    if (q->unk_6c8 == 0) {
+      return TRUE;
+    }
+    if (q->unk_6ca == 0) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_0814b3a0.inc");
+#endif
+}
 
 NAKED bool8 FUN_0814b3e0(Dog* p) { INCFUNC("asm/func/FUN_0814b3e0.inc"); }
 
