@@ -50,6 +50,9 @@ void (*const sEntity080df420Updates[2])(Entity080df420*, Entity080df420Elem*) = 
 };  // 0x085AD354
 
 void FUN_080debbc(unknown*, unknown*);
+void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
+void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
+void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
 void FUN_080defd0(unknown*, unknown*);
 
 void (*const PTR_ARRAY_085ad35c[2])(unknown*, unknown*) = {
@@ -73,7 +76,48 @@ Entity080df420Elem* FUN_080de174(Entity080df420* p) {
   return NULL;
 }
 
-NAKED void FUN_080de1cc(Entity080df420Elem* elem, s32 angle) { INCFUNC("asm/func/FUN_080de1cc.inc"); }
+// angle に直交する面に沿って6方向へ火の粉を飛ばす
+void FUN_080de1cc(Entity080df420Elem* elem, s32 angle) {
+  Vec3 vel;
+  s32 dir = ((angle + 32) & 0xFF) >> 6;
+
+  if (dir == 0 || dir == 2) {
+    VEC3_SET(vel, 0, 0, -30);
+  } else {
+    VEC3_SET(vel, -30, 0, 0);
+  }
+  Entity081ee2a0_SpawnDefault(&elem->sprite.pos, &vel, 10, 4);
+  if (dir == 0 || dir == 2) {
+    VEC3_SET(vel, 0, 15, -15);
+  } else {
+    VEC3_SET(vel, -15, 15, 0);
+  }
+  Entity081ee2a0_SpawnDefault(&elem->sprite.pos, &vel, 10, 4);
+  if (dir == 0 || dir == 2) {
+    VEC3_SET(vel, 0, 15, 15);
+  } else {
+    VEC3_SET(vel, 15, 15, 0);
+  }
+  Entity081ee2a0_SpawnDefault(&elem->sprite.pos, &vel, 10, 4);
+  if (dir == 0 || dir == 2) {
+    VEC3_SET(vel, 0, 0, 30);
+  } else {
+    VEC3_SET(vel, 30, 0, 0);
+  }
+  Entity081ee2a0_SpawnDefault(&elem->sprite.pos, &vel, 10, 4);
+  if (dir == 0 || dir == 2) {
+    VEC3_SET(vel, 0, -15, -15);
+  } else {
+    VEC3_SET(vel, -15, -15, 0);
+  }
+  Entity081ee2a0_SpawnDefault(&elem->sprite.pos, &vel, 10, 4);
+  if (dir == 0 || dir == 2) {
+    VEC3_SET(vel, 0, -15, 15);
+  } else {
+    VEC3_SET(vel, 15, -15, 0);
+  }
+  Entity081ee2a0_SpawnDefault(&elem->sprite.pos, &vel, 10, 4);
+}
 
 // 待ちが切れた枠を1フレームに6つまで選んで攻撃判定を出させる
 void FUN_080de344(Entity080df420* p) {
@@ -101,7 +145,7 @@ NAKED void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) 
 
 NAKED void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de52c.inc"); }
 
-NAKED void FUN_080de6b0(Entity080df420Elem* elem, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080de6b0.inc"); }
+NAKED void FUN_080de6b0(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) { INCFUNC("asm/func/FUN_080de6b0.inc"); }
 
 // 攻撃判定を出す印が立っていれば判定を表に出して登録し, 立っていなければ隠す
 void FUN_080de7a0(Entity080df420Elem* elem) {
