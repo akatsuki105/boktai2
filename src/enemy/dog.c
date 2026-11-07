@@ -581,7 +581,56 @@ void FUN_0814e1fc(Dog* p) {
   }
 }
 
-NAKED void FUN_0814e248(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e248.inc"); }
+// 見回す状態, 残り回数 unk_542 が尽きるまで 20 フレームごとに向きを変え, 尽きたら退避していた状態へ戻る
+// 193/198命令, Enemy_080eff14 と同形, 原典は *count |= 0xFF 用の ldrb を検査の前に読み, 乱数ループの前に mover.angle を r4 に読んで比較用に r3 へ写し, 回数切れのとき angle = 元の向き を残す (こちらは同値と見抜かれて消える), 試済: 型の組み合わせ, for + 後判定 (213命令)
+NON_MATCH void FUN_0814e248(Dog* p, s32 timer) {
+#ifdef NONMATCHING_C
+  u8* count;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 0);
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_10);
+    (p->e).animSpeedDiv = 2;
+  }
+  count = &(p->e).unk_542;
+  if ((s8)*count > 0) {
+    if (timer > 20) {
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+      if ((s8)*count == 1) {
+        (p->e).unk_1dc = (((p->e).unk_541 >> 5) + 3) & 7;
+      } else {
+        u8 cur = (p->e).mover.angle;
+        s32 angle;
+        s32 i;
+
+        i = 0;
+        while (TRUE) {
+          angle = (Random() & 3) << 6;
+          if (angle != cur) {
+            break;
+          }
+          if (++i > 3) {
+            angle = cur;
+            break;
+          }
+        }
+        (p->e).unk_1dc = ((angle >> 5) + 3) & 7;
+      }
+      (p->e).unk_542--;
+    }
+  } else {
+    *count |= 0xFF;
+    if (timer > 6) {
+      Enemy_EnterState(&p->e, (p->e).unk_548, (p->e).unk_54f);
+      Enemy_ResetState(&p->e, (p->e).unk_54c, (p->e).unk_54d, (p->e).unk_54e);
+      CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_10);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0814e248.inc");
+#endif
+}
 
 void FUN_0814e420(Dog* p) {}
 

@@ -419,7 +419,7 @@ void FUN_08163b04(Slime* p) {
 
 void FUN_08163bac(Slime* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad9c4; }
 
-// 経路の目的地へ歩き, 着いたら FUN_08164120 で次の動きを決める
+// 経路の目的地へ向かって歩く
 void FUN_08163bbc(Slime* p) {
   s32 speed;
 
