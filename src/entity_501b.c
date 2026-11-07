@@ -4,6 +4,8 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "link.h"
+#include "random.h"
 #include "sound.h"
 #include "sprite.h"
 #include "text.h"
@@ -45,6 +47,8 @@ s32 FUN_081dfa04(void);
 void FUN_081e0588(Entity501B* p);
 void Entity501B_StateSaveDone(Entity501B* p);
 void Entity501B_StateSaveFailed(Entity501B* p);
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
+void FUN_081df940(void);
 
 // セッションの状態を返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetState(void) {
@@ -65,7 +69,18 @@ static inline void Entity501B_SetState(Entity501B* p, void* fn, u8 phase) {
 
 NAKED void Entity501B_InitBg(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitBg.inc"); }
 
-NAKED void Entity501B_InitTextPanels(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitTextPanels.inc"); }
+// 上下2枚のテキストパネルを作ってメッセージを流し始める
+void Entity501B_InitTextPanels(Entity501B* p) {
+  s32 i;
+
+  p->textPanels[0] = TextPanel_Create(2, 5, 26, 2);
+  p->textPanels[1] = TextPanel_Create(2, 12, 26, 2);
+  for (i = 0; i < 2; i++) {
+    TextPanel_SetScript(p->textPanels[i], p->unk_3d4);
+    TextPanel_SetMessage(p->textPanels[i], i);
+    TextPanel_Start(p->textPanels[i]);
+  }
+}
 
 void Entity501B_HideTextPanels(Entity501B* p) {
   s32 i;
