@@ -162,7 +162,26 @@ NAKED void FUN_08162fa8(Slime* p) { INCFUNC("asm/func/FUN_08162fa8.inc"); }
 NON_MATCH void FUN_081630dc(Slime* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    Enemy_PlayAnimPlain(&p->e, 15, 1);
+    u8 anim = (p->e).animTable[15].anim;
+
+    if ((p->e).spriteKind == 0) {
+      EnemyAuxSpriteData* s;
+
+      (p->e).playingAnim = anim;
+      s = (EnemyAuxSpriteData*)(p->e).sprite;
+      AuxAnim_SetAnim(&s->anim, s->animFile, anim, 1, 0);
+      (p->e).animForceRestart = FALSE;
+    } else {
+      MainSprite* s = &(p->e).sprite->s;
+      u16 a = anim + 1;
+
+      if ((p->e).playingAnim != a || (p->e).animForceRestart || (s->flags & SPRFLAG_XFLIP)) {
+        (p->e).playingAnim = a;
+        MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        s->flags &= ~SPRFLAG_XFLIP;
+        (p->e).animForceRestart = FALSE;
+      }
+    }
   }
   if ((p->e).animForceRestart) {
     Enemy_EnterState(&p->e, FUN_081631d8, ES_UNK_35);

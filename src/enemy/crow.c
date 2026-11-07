@@ -144,7 +144,26 @@ void FUN_08143094(Crow* p) {
 NON_MATCH void FUN_0814312c(Crow* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    Enemy_PlayAnimPlain(&p->e, 2, 0);
+    u8 anim = (p->e).animTable[2].anim;
+
+    if ((p->e).spriteKind == 0) {
+      EnemyAuxSpriteData* s;
+
+      (p->e).playingAnim = anim;
+      s = (EnemyAuxSpriteData*)(p->e).sprite;
+      AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, 0);
+      (p->e).animForceRestart = FALSE;
+    } else {
+      MainSprite* s = &(p->e).sprite->s;
+      u16 a = anim + 0;
+
+      if ((p->e).playingAnim != a || (p->e).animForceRestart || (s->flags & SPRFLAG_XFLIP)) {
+        (p->e).playingAnim = a;
+        MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+        s->flags &= ~SPRFLAG_XFLIP;
+        (p->e).animForceRestart = FALSE;
+      }
+    }
   }
 #else
   INCFUNC("asm/func/FUN_0814312c.inc");
