@@ -112,7 +112,6 @@ s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 
 void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos);
 void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower);
 s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 void EntityD9AEElem_BreakEffect0(EntityD9AEElem*);
 

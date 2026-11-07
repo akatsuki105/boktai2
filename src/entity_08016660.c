@@ -47,7 +47,6 @@ static inline void Entity08016660Node_SetFn(Entity08016660Node* p, u32 idx) {
 
 void FUN_08016430(Entity08016660Node*);
 Entity08016660* Entity08016660_Create(u32 id, u32 _);
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower);
 void FUN_08016454(Entity08016660Node*);
 
 void (*const PTR_ARRAY_085aa918[2])(Entity08016660Node*) = {

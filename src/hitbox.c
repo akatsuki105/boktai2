@@ -128,14 +128,14 @@ void UNUSED Hitbox_SetPosAndOffset(HitboxData* p, Vec3* pos, Vec3* offset, u32 u
   p->unk_8 = unk_8;
 }
 
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower) {
+void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockback) {
   p->power = power;
-  p->knockbackPower = knockbackPower;
+  p->knockbackPower = knockback;
 }
 
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 invincibleTime) {
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockback, s32 weakness, HitboxAttributes attrs, s32 invincibleTime) {
   p->power = power;
-  p->knockbackPower = knockbackPower;
+  p->knockbackPower = knockback;
   p->weakness = weakness;
   p->attributes = attrs;
   p->invincibleTime = invincibleTime;
