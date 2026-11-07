@@ -23,7 +23,13 @@ typedef struct Entity0805d79c {
 } Entity0805d79c;
 static_assert(sizeof(Entity0805d79c) == 4408);
 
-NAKED void Entity0805d79c_OnHit(HitboxData* a, HitboxData* b, Entity0805d79cElem* elem) { INCFUNC("asm/func/Entity0805d79c_OnHit.inc"); }
+static inline bool8 Entity0805d79c_IsElemUsed(Entity0805d79c* p, s32 i) {
+  if (TEST_FLAGS(p->activeMask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
+// 当たったら寿命を尽きさせて消す
+void Entity0805d79c_OnHit(HitboxData* a, HitboxData* b, Entity0805d79cElem* elem) { elem->timer = 60; }
 
 NAKED void Entity0805d79c_InitElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) { INCFUNC("asm/func/Entity0805d79c_InitElem.inc"); }
 
