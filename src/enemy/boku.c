@@ -778,7 +778,7 @@ void FUN_080fc28c(Boku* p) {
   }
 }
 
-// 残差1命令, 最後の tick = 0 を原典は sprite + 0x48 を作ってから [+0xE] で書く (mimic.c の FUN_081475b8 と同じ), anim の取り直しは試済
+// 残差1命令, 最後の tick = 0 を原典は sprite + 0x48 を作ってから [+0xE] で書く (mimic.c の Mimic_StateDying と同じ), anim の取り直しは試済
 NON_MATCH void FUN_080fc4ec(Boku* p) {
 #ifdef NONMATCHING_C
   AuxAnimState* anim;
@@ -1436,7 +1436,7 @@ NON_MATCH void FUN_080fe1bc(Boku* p) {
 }
 
 // 514/514命令, 残差は最初の EmitSmoke の乱数の位置と, 原典のフレームが 4 バイト大きい (0x50) ことだけ
-NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
+NON_MATCH void Boku_StateDying(Boku* p, s32 param_2) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite = (AuxSprite*)(p->e).sprite;
   AuxAnimState* anim = &((EnemyAuxSpriteData*)sprite)->anim;
@@ -1530,7 +1530,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     ParticleShadow_Hide(&(p->e).shadow);
   }
 #else
-  INCFUNC("asm/func/FUN_080fe274.inc");
+  INCFUNC("asm/func/Boku_StateDying.inc");
 #endif
 }
 
@@ -3029,7 +3029,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_5c0 = FUN_080fc0b8;
   (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
   (p->e).unk_5cc = FUN_080fd08c;
-  (p->e).unk_5d0 = FUN_080fe274;
+  (p->e).unk_5d0 = Boku_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;
   (p->e).unk_5c8 = FUN_080fc548;

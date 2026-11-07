@@ -1501,7 +1501,7 @@ _0813E0FC:
 	ldr r6, _0813E2C8 @ =FUN_0813b358
 	ldr r0, [sp, #0x138]
 	str r6, [r0]
-	ldr r1, _0813E2CC @ =FUN_0813b640
+	ldr r1, _0813E2CC @ =Curoro_StateDying
 	ldr r3, [sp, #0x13c]
 	str r1, [r3]
 	ldr r0, _0813E2D0 @ =FUN_080f44f4
@@ -1666,7 +1666,7 @@ _0813E2BC: .4byte FUN_0813ad64
 _0813E2C0: .4byte FUN_080f62b0
 _0813E2C4: .4byte FUN_080f62ac
 _0813E2C8: .4byte FUN_0813b358
-_0813E2CC: .4byte FUN_0813b640
+_0813E2CC: .4byte Curoro_StateDying
 _0813E2D0: .4byte FUN_080f44f4
 _0813E2D4: .4byte FUN_080f410c
 _0813E2D8: .4byte FUN_080f0430

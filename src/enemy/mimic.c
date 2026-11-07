@@ -320,7 +320,7 @@ void FUN_08147530(Mimic* p, s32 param_2) {
 }
 
 // 245/240命令, 原典は anim を (sprite + 0x48) で作って tick を [+0xE] で書く, stateTimer のアドレスを r5 に持つ, 消滅判定の後の並びも違う, 1回目の下書きで切り上げ
-NON_MATCH void FUN_081475b8(Mimic* p) {
+NON_MATCH void Mimic_StateDying(Mimic* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacingFlags(&p->e, 10, FUN_08148750((p->e).mover.angle));
@@ -376,7 +376,7 @@ NON_MATCH void FUN_081475b8(Mimic* p) {
     ParticleShadow_Show(&(p->e).shadow);
   }
 #else
-  INCFUNC("asm/func/FUN_081475b8.inc");
+  INCFUNC("asm/func/Mimic_StateDying.inc");
 #endif
 }
 
@@ -1199,7 +1199,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   (p->e).unk_5c0 = NULL;
   (p->e).unk_5c4 = (EnemyHandler)FUN_081489ec;
   (p->e).unk_5cc = FUN_081477dc;
-  (p->e).unk_5d0 = FUN_081475b8;
+  (p->e).unk_5d0 = Mimic_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;
   (p->e).unk_5c8 = NULL;

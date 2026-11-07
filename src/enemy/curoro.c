@@ -55,7 +55,7 @@ void FUN_0813ae6c(Curoro* p);
 void FUN_0813b100(Curoro* p, s32 param_2);
 void FUN_0813b22c(Curoro* p, s32 param_2);
 void FUN_0813b358(Curoro* p);
-void FUN_0813b640(Curoro* p);
+void Curoro_StateDying(Curoro* p);
 void FUN_0813b824(Curoro* p);
 void FUN_0813bb04(Curoro* p);
 void FUN_0813bc50(Curoro* p);
@@ -713,7 +713,7 @@ NON_MATCH void FUN_0813b358(Curoro* p) {
 #endif
 }
 
-void FUN_0813b640(Curoro* p) {
+void Curoro_StateDying(Curoro* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacing(&p->e, 10);
     PlayEnemyDeathCry(&p->e);
@@ -1701,7 +1701,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).unk_5c0 = NULL;
   (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
   (p->e).unk_5cc = FUN_0813b358;
-  (p->e).unk_5d0 = FUN_0813b640;
+  (p->e).unk_5d0 = Curoro_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;
   (p->e).unk_5c8 = NULL;

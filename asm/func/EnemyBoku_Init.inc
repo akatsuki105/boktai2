@@ -1428,7 +1428,7 @@ _08102834:
 	str r3, [r1]
 	ldr r2, [sp, #0x148]
 	str r5, [r2]
-	ldr r3, _08102A1C @ =FUN_080fe274
+	ldr r3, _08102A1C @ =Boku_StateDying
 	ldr r5, [sp, #0x14c]
 	str r3, [r5]
 	ldr r1, _08102A20 @ =FUN_080f44f4
@@ -1594,7 +1594,7 @@ _08102A0C: .4byte FUN_080f62ac
 _08102A10: .4byte FUN_080fba28
 _08102A14: .4byte FUN_080fba40
 _08102A18: .4byte FUN_080fc0b8
-_08102A1C: .4byte FUN_080fe274
+_08102A1C: .4byte Boku_StateDying
 _08102A20: .4byte FUN_080f44f4
 _08102A24: .4byte FUN_080f410c
 _08102A28: .4byte FUN_080fc548

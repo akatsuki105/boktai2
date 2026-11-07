@@ -1457,7 +1457,7 @@ _08149958:
 	mov sb, r0
 	ldr r1, _08149AF4 @ =FUN_081477dc
 	mov sl, r1
-	ldr r6, _08149AF8 @ =FUN_081475b8
+	ldr r6, _08149AF8 @ =Mimic_StateDying
 	mov ip, r6
 	ldr r0, _08149AFC @ =FUN_081489ec
 	str r0, [sp, #0x1a0]
@@ -1640,7 +1640,7 @@ _08149AE8: .4byte FUN_08148c7c
 _08149AEC: .4byte FUN_08146fcc
 _08149AF0: .4byte FUN_081474e8
 _08149AF4: .4byte FUN_081477dc
-_08149AF8: .4byte FUN_081475b8
+_08149AF8: .4byte Mimic_StateDying
 _08149AFC: .4byte FUN_081489ec
 _08149B00: .4byte FUN_080f62ac
 _08149B04: .4byte FUN_080f44f4
