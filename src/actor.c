@@ -10,6 +10,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "time.h"
+#include "trig.h"
 #include "vm.h"
 
 COMMON_DATA ActorManager* gActorManager = NULL;  // 0x03002B50
@@ -1361,7 +1362,32 @@ s32 FUN_080441a4(ActorManager* p, Actor* actor) {
   return 0;
 }
 
-NAKED void FUN_080441d8(Actor* actor) { INCFUNC("asm/func/FUN_080441d8.inc"); }
+// 届いたメッセージで向き (cmd 2) か歩き先 (cmd 3) を決めて state を始め直す
+// 下書き (109/118命令): メッセージ取り出しのループの残差 (Camera_PollMessages / EntityA8F1_HandleMessages と同じ形), 原典は mq と gMsgBus を条件式で毎回読み直す
+NON_MATCH void FUN_080441d8(Actor* actor) {
+#ifdef NONMATCHING_C
+  MsgQueue* mq = &actor->mq;
+  s32 i;
+
+  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+
+    if (msg->cmd == 2) {
+      actor->unk_1b = Angle_FromDir8(msg->args[0]);
+      Actor_StartState(actor, 2);
+    } else if (msg->cmd == 3) {
+      actor->work.walk.target.x = msg->args[0];
+      actor->work.walk.target.y = msg->args[1];
+      actor->work.walk.target.z = msg->args[2];
+      actor->unk_1b = ArcTan2_8(actor->work.walk.target.x - actor->mover.pos.x, actor->work.walk.target.z - actor->mover.pos.z);
+      Actor_StartState(actor, 1);
+    }
+    MsgQueue_BeginWait(mq, msg);
+  }
+#else
+  INCFUNC("asm/func/FUN_080441d8.inc");
+#endif
+}
 
 s32 FUN_080442d4(ActorManager* p, Actor* actor) {
   FUN_080441d8(actor);

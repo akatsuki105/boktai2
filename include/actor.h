@@ -67,12 +67,19 @@ typedef struct {
   u32 unk_1c;    // 0x1C
 } ActorKuroWork;
 
+// メッセージで歩かせる Actor の Actor.work
+typedef struct {
+  u8 unk_00[0x34];  // 0x00
+  WorldPos target;  // 0x34, cmd 3 のメッセージの args[0..2], ここへ向かって歩く
+} ActorWalkWork;
+
 // Actor の 0x020 からの領域, Actor の種類ごとに使い方が違う (FUN_08208990 は +8 をワードで使う)
 typedef union {
   u16 unk_00;              // FUN_08044a54 系が 0 を入れる
   ActorOtenkoWork otenko;  // おてんこ (SPRITE_OTENKO_00)
   ActorRitaWork rita;      // リタ (SPRITE_RITA)
   ActorKuroWork kuro;      // クロ (SPRITE_KURO)
+  ActorWalkWork walk;      // FUN_080441d8 などがメッセージで歩かせるとき
   u8 raw[60];
 } ActorWork;
 
