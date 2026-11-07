@@ -701,7 +701,49 @@ s32 FUN_081df3f0(Entity9A9F* p) {
   }
 }
 
-NAKED s32 FUN_081df460(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df460.inc"); }
+// 全員から種別 0x1000 の 1 番のキーが届いたら state 22 へ, unk_29 が立っていれば 60 フレーム待ってからキー 0x1001 を送る, 原典は最後の return を書き忘れている
+// 残差: 原典はキー種別の比較定数を比較の直前に毎回作り, ループ外へ出さない (キーがビットフィールドで定数が combine で後から生まれる形かもしれない), 加えて count と i のレジスタが入れ替わる
+NON_MATCH s32 FUN_081df460(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 n;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    if (p->unk_2e0 != 0) {
+      VM_ExecByID(p->unk_2e0, NULL);
+    }
+    p->unk_27 = 0;
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  count = 0;
+  n = p->recordCount;
+  for (i = 0; i < n; i++) {
+    u16 key = Entity9A9F_GetRecvKey(p, i);
+
+    if (Entity9A9F_IsKeyKind(key, 0x1000) && (key & 0x3F) == 1) {
+      count++;
+    }
+  }
+  if (count == n) {
+    Entity9A9F_SetState(p, 22, FUN_081df540);
+  }
+
+  if (p->unk_29 != 0) {
+    if (p->unk_27 >= 60) {
+      p->unk_42 = 0x1001;
+    } else {
+      p->unk_27++;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081df460.inc");
+#endif
+}
 
 s32 FUN_081df540(Entity9A9F* p) {
   FUN_081dd9d4(p);
