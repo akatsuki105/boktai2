@@ -153,7 +153,52 @@ NON_MATCH void enemy_dog_08149f6c(Dog* p) {
 #endif
 }
 
-NAKED void FUN_0814a098(Dog* p) { INCFUNC("asm/func/FUN_0814a098.inc"); }
+// 気付いて待つ状態へ移り, 追いかけ中なら 20 フレーム後に状態26へ, そうでなければ 60 フレーム後に状態1へ戻る予約をして, 経路の今のノードへの経路を引き直す
+// 269/277命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み, 副状態2の定数を r8 に置き, 0 は前の r7 を使い回す), 経路は二出口の Enemy_TryRouteToEx で揃う, 試済: 保留状態を (p, delay, handler, s0, s1, s2) の inline にする (悪化)
+NON_MATCH void FUN_0814a098(Dog* p) {
+#ifdef NONMATCHING_C
+  WorldPos* dst;
+
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    return;
+  }
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    (p->e).animSpeedDiv = 2;
+    (p->e).pendingDelay = 20;
+    (p->e).pendingHandler = (p->e).unk_5b8;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      (p->e).unk_24e += 300;
+      if ((p->e).unk_24e > (p->e).unk_24c) {
+        (p->e).unk_24e = (p->e).unk_24c;
+      }
+    }
+    SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+  } else {
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    (p->e).animSpeedDiv = 2;
+    (p->e).pendingDelay = 60;
+    (p->e).pendingHandler = (p->e).unk_5a0;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
+  }
+  dst = (p->e).unk_4a8;
+  dst->x = (p->e).pathWalker.node->x;
+  dst->z = (p->e).pathWalker.node->y;
+  dst->y = TileHeightAt(dst);
+  (p->e).unk_4a8->val = 0;
+  if (!Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &(p->e).playerMover->pos)) {
+    (p->e).unk_5c4(&p->e);
+  }
+#else
+  INCFUNC("asm/func/FUN_0814a098.inc");
+#endif
+}
 
 NAKED void enemy_dog_0814a320(Dog* p) { INCFUNC("asm/func/enemy_dog_0814a320.inc"); }
 
