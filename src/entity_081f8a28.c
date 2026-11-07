@@ -115,7 +115,12 @@ s32 Entity081f8a28_Update(Entity081f8a28* p) {
 
 NAKED s32 Entity081f8a28_Destroy(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Destroy.inc"); }
 
-NAKED s32 Entity081f8a28_Init(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Init.inc"); }
+s32 Entity081f8a28_Init(Entity081f8a28* p) {
+  p->usedMask = 0;
+  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
+  gEntity081f8a28 = p;
+  return 0;
+}
 
 NAKED Entity081f8a28* Entity081f8a28_Create(void) { INCFUNC("asm/func/Entity081f8a28_Create.inc"); }
 
