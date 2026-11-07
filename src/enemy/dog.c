@@ -25,7 +25,11 @@ typedef struct {
   Enemy e;
   u8 unk_654[4];              // 0x654
   HitboxData unk_658;         // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
-  u8 unk_6a8[0x6C6 - 0x6A8];  // 0x6A8
+  u32 unk_6a8;                // 0x6A8, bit0 は待ちが明けたときに立てる
+  u8 unk_6ac[0x6C0 - 0x6AC];  // 0x6AC
+  u16 unk_6c0;                // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
+  u16 unk_6c2;                // 0x6C2
+  u16 unk_6c4;                // 0x6C4, ENEFLAG3_UNK_7 のときの unk_6c2
   u16 unk_6c6;                // 0x6C6, 0 になるまで毎フレーム減る
   u16 unk_6c8;                // 0x6C8, 0 になるまで毎フレーム減る
   u16 unk_6ca;                // 0x6CA, 0 になるまで毎フレーム減る
@@ -39,6 +43,13 @@ typedef struct {
   Vec3 unk_708;               // 0x708, 飛びかかる直前のプレイヤーの位置
 } Dog;
 static_assert(sizeof(Dog) == 1808);
+
+static inline bool8 Dog_TestUnk6a8(Dog* p, u32 bit) {
+  if (p->unk_6a8 & bit) return TRUE;
+  return FALSE;
+}
+
+static inline void Dog_ClearUnk6a8(Dog* p, u32 bit) { p->unk_6a8 &= ~bit; }
 
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
@@ -172,7 +183,27 @@ void FUN_0814aeb0(Dog* p) {
   }
 }
 
-NAKED void FUN_0814aed0(Dog* p) { INCFUNC("asm/func/FUN_0814aed0.inc"); }
+void FUN_0814aed0(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (!Enemy_IsDead(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_14 | ENEFLAG3_UNK_15) &&
+      !TEST_FLAGS((p->e).flags, ENEFLAG_UNK_4) && (p->e).state < 2) {
+    if (q->unk_6c0 != 0) {
+      q->unk_6c0--;
+    } else {
+      if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+        q->unk_6c0 = q->unk_6c4;
+      } else {
+        q->unk_6c0 = q->unk_6c2;
+      }
+      SET_FLAGS(q->unk_6a8, 1);
+      if (Dog_TestUnk6a8((p->e).unk_1cc, 1)) {
+        Enemy_ResetState(&p->e, 0, 0, 15);
+        Dog_ClearUnk6a8((p->e).unk_1cc, 1);
+      }
+    }
+  }
+}
 
 // 倒されたときのスクリプトを, 位置や種族などを引数にして呼ぶ
 void FUN_0814afc8(Dog* p) {
