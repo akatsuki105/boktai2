@@ -11953,7 +11953,7 @@ _08127774:
 	str r0, [sp, #8]
 	add r0, sp, #0x14
 	add r1, sp, #0xc
-	bl FUN_080dce8c
+	bl Entity080dd1f8_Spawn
 	mov r1, sb
 	lsls r0, r1, #3
 	movs r1, #0xa

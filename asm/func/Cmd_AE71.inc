@@ -176,7 +176,7 @@ _080DD49A:
 	adds r1, r7, #0
 	adds r2, r4, #0
 	mov r3, sl
-	bl FUN_080dce8c
+	bl Entity080dd1f8_Spawn
 	movs r1, #0x96
 	lsls r1, r1, #1
 	adds r0, r0, r1

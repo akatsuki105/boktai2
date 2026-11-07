@@ -12,15 +12,15 @@
 typedef struct {
   AuxSprite spr;              // 0x000, _Destroy が AuxSprite_Remove に渡す
   AuxAnimState anim;          // 0x02C
-  HitboxData hitbox;          // 0x03C, 攻撃判定, 当たると FUN_080dc4a8 で弾かれる
-  HitboxData hurtbox;         // 0x08C, 食らい判定, FUN_080dc614 で炎と氷に反応する
+  HitboxData hitbox;          // 0x03C, 攻撃判定, 当たると Entity080dd1f8Elem_OnHit で弾かれる
+  HitboxData hurtbox;         // 0x08C, 食らい判定, Entity080dd1f8Elem_OnHurt で炎と氷に反応する
   ParticleShadow shadow;      // 0x0DC, _Destroy が ParticleShadow_Remove に渡す
-  Vec3 vel;                   // 0x11C, 弾かれると FUN_080dc4a8 が書き換える
-  Vec3 unk_124;               // 0x124, FUN_080dce8c の第3引数
+  Vec3 vel;                   // 0x11C, 弾かれると Entity080dd1f8Elem_OnHit が書き換える
+  Vec3 unk_124;               // 0x124, Entity080dd1f8_Spawn の第3引数
   u16 unk_12c;                // 0x12C, 爆発で片付けるときに 0
   u8 unk_12e;                 // 0x12E, PTR_ARRAY_085ad33c の添字, 2 だと FUN_080dd324 が 0 を返す
   s8 unk_12f;                 // 0x12F, activeMask 上の自分のビット番号, 空きは -1, 負だと FUN_080dd324 が 0 を返す
-  bool8 unk_130;              // 0x130, 立っていると FUN_080dcdd8 が爆発を出してから片付ける
+  bool8 unk_130;              // 0x130, 立っていると Entity080dd1f8Elem_StateExplode が爆発を出してから片付ける
   u8 unk_131;                 // 0x131, 弾かれると 12
   u16 unk_132;                // 0x132, 0 だと FUN_080dd324 が 0 を返す, 0x59 を超えていると unk_13e に戻される
   u8 unk_134[2];              // 0x134
@@ -47,7 +47,7 @@ IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 
 struct Explosion* Explosion_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, s32 plttOffset);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
-void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem);
+void Entity080dd1f8Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem);
 Entity080dd1f8* Entity080dd1f8_Create(void);
 
 const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
@@ -60,7 +60,7 @@ static inline bool8 Entity080dd1f8_IsElemUsed(u32* mask, s32 i) {
 void FUN_080dc4a4(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {}
 
 // 攻撃判定が当たったら当てた相手から離れる向きへ弾かれる, 相手より上なら跳ね上がり, そうでなければ横へ押される
-void FUN_080dc4a8(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
+void Entity080dd1f8Elem_OnHit(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
   Vec3 diff;
   Vec3 v;
   s32 angle;
@@ -89,7 +89,7 @@ void FUN_080dc4a8(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
 // 判定の属性でタイマーを止めるか初期値に戻すかを決める
 // 残差2命令 (28 対 30), 原典は elem を r12 に逃がして第2分岐で add r1, ip を使うが, こちらは r3 に置けてしまう (leaf なので r4-r7 は使えない)
 // && / 条件の反転 / u16* ローカルは試済
-NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
+NON_MATCH void Entity080dd1f8Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
 #ifdef NONMATCHING_C
   if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
     elem->unk_132 = 0;
@@ -99,12 +99,12 @@ NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* el
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080dc614.inc");
+  INCFUNC("asm/func/Entity080dd1f8Elem_OnHurt.inc");
 #endif
 }
 
 // 攻撃判定と食らい判定を作る
-void FUN_080dc650(Entity080dd1f8Elem* elem, u16 power, u16 knockback) {
+void Entity080dd1f8Elem_InitHitboxes(Entity080dd1f8Elem* elem, u16 power, u16 knockback) {
   HitboxData* hitbox;
   HitboxData* hurtbox;
   Vec3 halfSize;
@@ -116,17 +116,17 @@ void FUN_080dc650(Entity080dd1f8Elem* elem, u16 power, u16 knockback) {
   Hitbox_Init(hitbox, elem->unk_13c, HBFLAG_HITBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, (s16)power, (s16)knockback, 0, 0, 0);
   Hitbox_SetPos(hitbox, &elem->spr.pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_080dc4a8, elem);
+  Hitbox_SetHandler(hitbox, Entity080dd1f8Elem_OnHit, elem);
   VEC3_SET(halfSize, 64, 128, 64);
   VEC3_SET(offset, 0, 128, 0);
   hurtbox = &elem->hurtbox;
   Hitbox_Init(hurtbox, elem->unk_13c, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &elem->spr.pos, 0);
-  Hitbox_SetHandler(hurtbox, FUN_080dc614, elem);
+  Hitbox_SetHandler(hurtbox, Entity080dd1f8Elem_OnHurt, elem);
   Hitbox_Register(hurtbox);
 }
 
-Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) {
+Entity080dd1f8Elem* Entity080dd1f8_AllocElem(Entity080dd1f8* p) {
   s32 i;
 
   for (i = 0; i < 12; i++) {
@@ -145,7 +145,7 @@ NAKED void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) { INCFUNC("
 
 // 爆発の印が立っていれば爆発と効果音を出し, 自分を片付ける
 // 79/79命令, activeMask を落とすところで原典は gEntity080dd1f8 を読み &unk_12f を作って添字を読んでから +0xF68 する (こちらは &activeMask を先に作る), 試済: CLEAR_BIT, グローバルのローカル写し, a = a & ~b の形
-NON_MATCH void FUN_080dcdd8(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
+NON_MATCH void Entity080dd1f8Elem_StateExplode(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
 #ifdef NONMATCHING_C
   if (elem->unk_130) {
     Explosion_Create(&elem->spr.pos, 32, elem->unk_136, elem->unk_138, 0);
@@ -161,12 +161,12 @@ NON_MATCH void FUN_080dcdd8(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
   elem->unk_12c = 0;
   elem->unk_132 = 0;
 #else
-  INCFUNC("asm/func/FUN_080dcdd8.inc");
+  INCFUNC("asm/func/Entity080dd1f8Elem_StateExplode.inc");
 #endif
 }
 
 // 爆弾を1つ置く, ゲームオーバー中や 1P が倒れているときと空きが無いときは NULL
-Entity080dd1f8Elem* FUN_080dce8c(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power, s32 knockback, s32 timer, s32 id) {
+Entity080dd1f8Elem* Entity080dd1f8_Spawn(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power, s32 knockback, s32 timer, s32 id) {
   Entity080dd1f8* p = gEntity080dd1f8;
   Entity080dd1f8Elem* elem;
   AuxSprite* spr;
@@ -183,7 +183,7 @@ Entity080dd1f8Elem* FUN_080dce8c(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power,
   if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return NULL;
   }
-  elem = FUN_080dc764(p);
+  elem = Entity080dd1f8_AllocElem(p);
   if (elem == NULL) {
     return NULL;
   }
@@ -207,14 +207,14 @@ Entity080dd1f8Elem* FUN_080dce8c(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power,
   spr->flags |= SPRFLAG_HIDDEN;
   spr->priority = 1;
   ParticleShadow_Init(&elem->shadow, &spr->pos, 0);
-  FUN_080dc650(elem, 0, 0);
+  Entity080dd1f8Elem_InitHitboxes(elem, 0, 0);
   return elem;
 }
 
 void (*const PTR_ARRAY_085ad33c[3])(Entity080dd1f8*, Entity080dd1f8Elem*) = {
     FUN_080dc4a4,
     FUN_080dc7bc,
-    FUN_080dcdd8,
+    Entity080dd1f8Elem_StateExplode,
 };  // 0x085AD33C
 
 s32 Entity080dd1f8_Update(Entity080dd1f8* p) {
