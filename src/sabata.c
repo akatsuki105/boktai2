@@ -916,7 +916,7 @@ void FUN_08082154(Player* p) {
       if (p->unk_404 <= 4) {
         p->unk_404++;
         if (p->unk_404 == 5) {
-          PlaySound_082406e0(VO_TAIYO_R);
+          PlaySound_082406e0(VO_RDJANGO_TAIYO);
         }
       }
 

@@ -286,7 +286,7 @@ static inline void Ringo_UpdateUnk88c(Ringo* p) {
     } else {
       Boss_SetSubState2(&p->base, 3);
       p->unk_88c++;
-      PlaySound_0824078c(SONG_784);
+      PlaySound_0824078c(VO_DAINN_LAUGH3);
     }
   } else if (p->unk_88c > 2) {
     Ringo_SetUnk169(p, 5);

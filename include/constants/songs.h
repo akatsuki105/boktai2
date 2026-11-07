@@ -298,7 +298,7 @@
 #define SE_RUNNING_FOOTSTEPS 293  // 足音一回でなく複数回まとめて
 #define SE_UNK_294 294
 #define SE_UNK_295 295
-#define VO_TAIYO_R 296  // 赤ジャンゴの太陽チャージ
+#define VO_RDJANGO_TAIYO 296  // 赤ジャンゴの太陽チャージ
 #define SE_UNK_297 297
 #define SE_UNK_298 298       // 焼ける様な音
 #define SE_TITLE_CURSOR 299  // ゲームタイトルで < XXX > を切り替える時のSE
@@ -640,8 +640,8 @@
 #define SONG_635 635
 #define SONG_636 636
 #define SE_GETA_THROW 637  // おてんきゲタを投げたときの音(転がるSEも含める)
-#define SONG_638 638
-#define SONG_639 639
+#define SE_MR_RAINNOT 638  // テルテルボーズ使用, おてんきゲタの表引いた時のSE
+#define SE_TONNIAR_RM 639  // ズーボルテルテ使用, おてんきゲタの裏引いた時のSE
 #define SONG_640 640
 #define SE_TRANSITION_641 641  // トランジションSE, ドヴァリン戦開始時で使用を確認
 #define SONG_642 642
@@ -769,48 +769,48 @@
 #define VO_TAIYO_764 764                // 黒ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
 #define VO_TAIYO_765 765                // ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
 #define VO_TAIYO_766 766                // ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
-#define SONG_767 767
-#define SONG_768 768
-#define SONG_769 769
-#define VO_DARK_DJANGO_UGH_770 770
-#define VO_BERSERK 771          // 黒ジャンゴが暴走した時のボイス
-#define VO_DJANGO_SCREAM 772    // 悲鳴, 落下死やドヴァリン戦前のイベントで水に引き込まれた時
-#define VO_DJANGO_PITFALL 773   // 驚いたような声(落とし穴に落ちた時など)
-#define VO_DJANGO_MAGIC 774     // ヒーリングやトランスを使った時のｵｵｫｫ!みたいな声
-#define VO_BOKURANO 775         // ﾎﾞｸﾗﾉ…! (ドゥラスロール浄化イベントで使用)
-#define VO_TAIYO_B 776          // 黒ジャンゴの太陽チャージ (VO_TAIYO_R の対)
-#define VO_DJANGO_ASUMO 777     // 明日もまた陽はのぼる
-#define VO_DAINN_JYAMADAYO 778  // ｼﾞｬﾏﾀﾞﾖ!
-#define VO_DAINN_779 779        // ﾊｧｯ!
-#define VO_DAINN_780 780        // ｲｸﾖｰ!!
-#define VO_DAINN_DAMAGE 781     // ダーインがダメージを受けた時のボイス
-#define VO_DAINN_LAUGH1 782     // ﾊﾊﾊﾊ(高笑い)
-#define VO_DAINN_LAUGH2 783     // ﾊﾊﾊﾊ...(渇いた感じの笑い)
-#define SONG_784 784
+#define VO_TAIYO_767 767                //
+#define VO_TAIYO_R_ECHO 768             // めっちゃエコーする VO_RDJANGO_TAIYO
+#define VO_DJANGO_UGH_769 769           // ｳｯというボイス
+#define VO_DARK_DJANGO_UGH_770 770      // 黒ジャンゴが暴走条件を満たした時のｳｯというボイス
+#define VO_BERSERK 771                  // 黒ジャンゴが暴走した時のボイス
+#define VO_DJANGO_SCREAM 772            // 悲鳴, 落下死やドヴァリン戦前のイベントで水に引き込まれた時
+#define VO_DJANGO_PITFALL 773           // 驚いたような声(落とし穴に落ちた時など)
+#define VO_DJANGO_MAGIC 774             // ヒーリングやトランスを使った時のｵｵｫｫ!みたいな声
+#define VO_BOKURANO 775                 // ﾎﾞｸﾗﾉ…! (ドゥラスロール浄化イベントで使用)
+#define VO_BDJANGO_TAIYO 776            // 黒ジャンゴの太陽チャージ (VO_RDJANGO_TAIYO の対)
+#define VO_DJANGO_ASUMO 777             // 明日もまた陽はのぼる
+#define VO_DAINN_JYAMADAYO 778          // ｼﾞｬﾏﾀﾞﾖ!
+#define VO_DAINN_779 779                // ﾊｧｯ!
+#define VO_DAINN_780 780                // ｲｸﾖｰ!!
+#define VO_DAINN_DAMAGE 781             // ダーインがダメージを受けた時のボイス
+#define VO_DAINN_LAUGH1 782             // ﾊﾊﾊﾊ(高笑い)
+#define VO_DAINN_LAUGH2 783             // ﾊﾊﾊﾊ...(渇いた感じの笑い)
+#define VO_DAINN_LAUGH3 784             // VO_DAINN_LAUGH1 のちょっと短め版
 #define VO_DAINN_DEATH 785
 #define SONG_786 786
 #define VO_DAINN_787 787  // ｳﾜｯ!!
 #define SONG_788 788
 #define SONG_789 789
-#define VO_RITA_ITSUTAI 790  // いつも心に太陽を！
-#define VO_RITA_WELCOME 791  // 店に入った時の ｲﾗｯｼｬｲﾏｾｰ!
-#define SONG_792 792
-#define VO_RITA_ORAORA 793  // リタのオラオララッシュ
-#define SONG_794 794
+#define VO_RITA_ITSUTAI 790         // いつも心に太陽を！
+#define VO_RITA_WELCOME 791         // 店に入った時の ｲﾗｯｼｬｲﾏｾｰ!
+#define VO_RITA_ORAORA_SKELTON 792  // VO_RITA_ORAORA に スケルトンが砕ける音 も含まれる版
+#define VO_RITA_ORAORA 793          // リタのオラオララッシュ
+#define VO_RITA_ORAORA_794 794      // VO_RITA_ORAORA に 何かが倒れる音も含まれる版
 #define SONG_795 795
 #define SONG_796 796
 #define SONG_797 797
-#define SONG_798 798
-#define SE_MEOW_799 799  // 猫の鳴き声
-#define SE_MEOW_800 800  // 猫の鳴き声
-#define SE_MEOW_801 801  // 猫の鳴き声
-#define SE_MEOW_802 802  // 猫の鳴き声
-#define SE_MEOW_803 803  // 猫の鳴き声
+#define VO_TAIYO_ALL 798  // いろんな人の声が合わさった太陽
+#define SE_MEOW_799 799   // 猫の鳴き声
+#define SE_MEOW_800 800   // 猫の鳴き声
+#define SE_MEOW_801 801   // 猫の鳴き声
+#define SE_MEOW_802 802   // 猫の鳴き声
+#define SE_MEOW_803 803   // 猫の鳴き声
 #define SONG_804 804
 #define SONG_805 805
 #define SONG_806 806
-#define SONG_807 807
-#define SE_808 808
+#define SE_WARP_807 807  // 転移系のSE (暗黒転移用?)
+#define SE_WARP_808 808  // 転移系のSE (ボス系の敵用? ボス系の敵の登場シーンとか?)
 #define SONG_809 809
 #define SONG_810 810
 #define SONG_811 811

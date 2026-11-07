@@ -240,7 +240,7 @@ const u16 u16_ARRAY_085ad0d8[3] = {341, 345, 349};  // 0x085AD0D8
 
 const u16 u16_ARRAY_085ad0de[14] = {0, 2, 5, 9, 13, 17, 21, 24, 27, 29, 31, 33, 35, 37};  // 0x085AD0DE
 
-const SoundID16 u16_ARRAY_085ad0fa[3] = {VO_TAIYO_763, VO_TAIYO_765, SONG_767};  // 0x085AD0FA
+const SoundID16 u16_ARRAY_085ad0fa[3] = {VO_TAIYO_763, VO_TAIYO_765, VO_TAIYO_767};  // 0x085AD0FA
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ect_08251e04[] = "ect";
 

@@ -2074,7 +2074,7 @@ NON_MATCH void FUN_0802730c(Boss* boss, s32 timer) {
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
     p->height = 0x100;
     p->spriteOffsetY = 0;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->damage = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW);
@@ -2107,7 +2107,7 @@ NON_MATCH void FUN_08027454(Boss* boss, s32 timer) {
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
     p->height = 0x100;
     p->spriteOffsetY = 0;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->damage = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW);

@@ -4650,9 +4650,9 @@ void Player_UpdateSolarCharge(Player* p) {
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           if (p->kind == PLAYER_DARK_DJANGO) {
-            PlaySound_082406e0(VO_TAIYO_B);
+            PlaySound_082406e0(VO_BDJANGO_TAIYO);
           } else {
-            PlaySound_082406e0(VO_TAIYO_R);
+            PlaySound_082406e0(VO_RDJANGO_TAIYO);
           }
         }
       }
@@ -4938,7 +4938,7 @@ void MagicRisingSun_08068944(Player* p) {
       }
 
       if (p->magicFired) {
-        PlaySound_082406e0(VO_TAIYO_R);
+        PlaySound_082406e0(VO_RDJANGO_TAIYO);
         p->plttID_95e = OBP_ELEMENT(0);
         p->plttFlashTimer = 2;
         RisingSunEffect_Create(p, &p->mover.pos, &p->pos_930, 0, p->unk_3ba);
@@ -5963,7 +5963,7 @@ void FUN_0806adc8(Player* p) {
   }
 }
 
-// PACT_UNK_30 の行動, 声を出して 0x2E のアニメを4コマごとに効果音付きで流し, 終わって15フレーム後に FUN_08060e90(p, 1) を呼ぶ
+// PACT_UNK_30 の行動, 声を出して 46 のアニメを4コマごとに効果音付きで流し, 終わって15フレーム後に FUN_08060e90(p, 1) を呼ぶ
 void FUN_0806af70(Player* p) {
   switch (p->state) {
     case 0: {
@@ -5972,7 +5972,7 @@ void FUN_0806af70(Player* p) {
         if (p->kind == PLAYER_SABATA) {
           PlaySound_082406e0(SONG_750);
         } else {
-          PlaySound_082406e0(SONG_769);
+          PlaySound_082406e0(VO_DJANGO_UGH_769);
         }
       }
       if (++p->stateTimer > 5) {
@@ -9355,7 +9355,7 @@ void Player_UpdateWarp(Player* p) {
     }
     case 2: {
       if (p->kind == PLAYER_SABATA && p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_807);
+        PlaySound_082406e0(SE_WARP_807);
       }
       p->shadowOffset.z = 30;
       p->human.flags |= SPRFLAG_AFFINE;
@@ -9425,7 +9425,7 @@ void Player_UpdateWarp(Player* p) {
     }
     case 7: {
       if (p->kind == PLAYER_SABATA && p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_807);
+        PlaySound_082406e0(SE_WARP_807);
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
       p->human.flags |= SPRFLAG_AFFINE;
@@ -10874,7 +10874,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5 && p->kind == PLAYER_SOLAR_DJANGO) {
-          PlaySound_082406e0(VO_TAIYO_R);
+          PlaySound_082406e0(VO_RDJANGO_TAIYO);
         }
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 9), Q6(1));

@@ -2460,7 +2460,7 @@ void FUN_0803b42c(Boss* boss, s32 timer) {
     Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
     boss->targetPos = mover->pos;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2482,7 +2482,7 @@ void FUN_0803b52c(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     boss->targetPos = mover->pos;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);

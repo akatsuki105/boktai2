@@ -5526,9 +5526,9 @@ void FUN_08093264(MainMenu* p) {
     MainMenu_ApplyItemEffect(p, p->cursor.savedSlot);
     p->sprites[46].flags |= SPRFLAG_HIDDEN;
     if (p->helperChara != 0) {
-      PlaySound_082406e0(SONG_639);
+      PlaySound_082406e0(SE_TONNIAR_RM);
     } else {
-      PlaySound_082406e0(SONG_638);
+      PlaySound_082406e0(SE_MR_RAINNOT);
     }
   }
   if (p->helperChara != 0) {
