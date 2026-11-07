@@ -6,6 +6,7 @@
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
+#include "sprite_pltt.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
@@ -55,6 +56,16 @@ static inline Entity9A9FRecord* Entity9A9F_GetRecord(void) {
     return NULL;
   }
   return &p->self;
+}
+
+// 自分のプレイヤー番号を返す, セッションが無ければ -1
+static inline s32 Entity9A9F_GetPlayerIdx(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
 }
 
 // gEntity9A9F の unk_54[2] が 1 か
@@ -311,7 +322,7 @@ void FUN_0809d300(Entity1B24* p) {
 }
 
 // 一覧で武器を選ぶ, A でカーソルの武器を交換に出す欄へ飛ばし, B でやめて, START で決めて記録に写してから終える
-// 下書き (441/422命令): 流れと記録への写し方 (3か所の展開) は一致, 原典は B の経路で p->slot の比較に使った値をそのまま写し, actor を r6, sprites[18] を r5 に置く
+// 下書き (441/422命令): 流れと記録への写し方 (3か所の展開) は一致, 原典は B の経路で p->slot の比較に使った値をそのまま写し, p を r6, sprites[18] を r5 に置く
 NON_MATCH void FUN_0809d3d0(Entity1B24* p) {
 #ifdef NONMATCHING_C
   s32 i;
@@ -455,7 +466,152 @@ void FUN_0809d878(Entity1B24* p) {
   CpuCopy32(p->pltt, gBgPlttBuffer, 96);
 }
 
-NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
+// 4つのスプライトファイルを開き, 一覧の16枠と枠外の表示部品, 武器種ごとの数字欄, プレイヤーの顔を並べる
+// 下書き (443/442命令): 流れは一致, 残差は gfx[0..3] のアドレスを退避するスタックの位置 (原典は gfx[2], gfx[3] が下) と最後の MainSprite_Add の pose のレジスタだけ
+NON_MATCH void FUN_0809d934(Entity1B24* p) {
+#ifdef NONMATCHING_C
+  MainSpriteGfxFile* f;
+  Vec3 pos;
+  s32 i;
+  s32 j;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[0] = *f;
+  OpenMainSpriteFile(&p->gfx[0], f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[1] = *f;
+  OpenMainSpriteFile(&p->gfx[1], f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[2] = *f;
+  OpenMainSpriteFile(&p->gfx[2], f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[3] = *f;
+  OpenMainSpriteFile(&p->gfx[3], f);
+
+  for (i = 0; i < 16; i++) {
+    s32 pose;
+
+    if (p->record->unk_40[0] == 2) {
+      SpriteFlags flags;
+
+      if (i == 0) {
+        pose = 60;
+        flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;
+      } else {
+        pose = 0;
+        flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN;
+      }
+      FUN_0809d240(&pos.x, i);
+      MainSprite_Add(&p->sprites[i], &p->gfx[1], pose, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+    } else {
+      SpriteFlags flags;
+
+      pose = GetWeaponID(i);
+      flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;
+      if (pose == WEAPON_NONE) {
+        flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN;
+      }
+      FUN_0809d240(&pos.x, i);
+      MainSprite_Add(&p->sprites[i], &p->gfx[1], pose, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+      if (FUN_0809cf98(i)) {
+        FUN_080b95bc(&p->sprites[i], 0x2DF);
+      } else {
+        FUN_080b95bc(&p->sprites[i], 0x2E0);
+      }
+    }
+  }
+
+  FUN_0809d240(&pos.x, 16);
+  MainSprite_Add(&p->sprites[16], &p->gfx[1], 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[19], &p->gfx[0], 64, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  MainSprite_Add(&p->sprites[18], &p->gfx[0], 57, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[18], &p->gfx[0], 0, PLAYMODE_LOOP, 0);
+  MainSprite_Add(&p->sprites[20], &p->gfx[0], 65, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+
+  for (i = 0; i < 4; i++) {
+    SpriteFlags flags;
+
+    pos.x = (i & 1) * 48 + 32;
+    pos.y = (i >> 1) * 8 + 32;
+    pos.z = 0;
+    flags = ((p->weaponKindMask >> i) & 1) ? SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT : SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN;
+    for (j = 0; j < 3; j++) {
+      MainSprite_Add(&p->sprites[22 + i * 3 + j], &p->gfx[0], 0, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+      pos.x += 8;
+    }
+  }
+
+  pos.x = 0;
+  pos.y = 128;
+  MainSprite_Add(&p->sprites[17], &p->gfx[1], 207, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  MainSprite_Add(&p->sprites[34], &p->gfx[0], 147, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  MainSprite_Add(&p->sprites[35], &p->gfx[2], 21, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  if (p->slot < 0) {
+    p->sprites[35].flags |= SPRFLAG_HIDDEN;
+  }
+
+  {
+    u16 pose;
+    s32 pltt;
+
+    switch (p->record->unk_40[0]) {
+      case 1: {
+        pose = 363;
+        pltt = 38;
+        break;
+      }
+      case 2: {
+        pose = 761;
+        pltt = 39;
+        break;
+      }
+      case 0:
+      default: {
+        pose = 4;
+        pltt = 29;
+        break;
+      }
+    }
+    if (Entity9A9F_IsUnk56Set()) {
+      s32 idx = Entity9A9F_GetPlayerIdx();
+
+      pltt = idx + 34;
+      if (idx < 0) {
+        pltt = 34;
+      }
+    }
+    pos.x = 36;
+    pos.y = 112;
+    MainSprite_Add(&p->sprites[21], &p->gfx[3], pose, SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    p->sprites[21].plttID = pltt;
+    p->sprites[21].pltt = &gObjPlttData[p->sprites[21].plttID * 16];
+  }
+  FUN_080b99a0(&p->flying.pair);
+  FUN_0809d300(p);
+  FUN_0809d00c(p);
+#else
+  INCFUNC("asm/func/FUN_0809d934.inc");
+#endif
+}
 
 void FUN_0809dd34(Entity1B24* p) {
   ShopCursor_Init(&p->cursor, 0, 0, 0, 30);
