@@ -87,7 +87,7 @@ NAKED void FUN_0812f5f4(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f5f4.i
 
 NAKED s32 FUN_0812f818(Spider* p) { INCFUNC("asm/func/FUN_0812f818.inc"); }
 
-NAKED void FUN_0812f83c(Spider* p) { INCFUNC("asm/func/FUN_0812f83c.inc"); }
+void FUN_0812f83c(Spider* p) {}
 
 NAKED void FUN_0812f840(Spider* p) { INCFUNC("asm/func/FUN_0812f840.inc"); }
 
