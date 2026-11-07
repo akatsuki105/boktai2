@@ -132,7 +132,11 @@ NAKED s32 FUN_08165464(Slime* p) { INCFUNC("asm/func/FUN_08165464.inc"); }
 
 NAKED s32 FUN_08165508(Slime* p) { INCFUNC("asm/func/FUN_08165508.inc"); }
 
-NAKED s32 Slime_Update(Slime* p) { INCFUNC("asm/func/Slime_Update.inc"); }
+s32 Slime_Update(Slime* p) {
+  (p->e).playerMover = &gPlayerPtr[0]->mover;
+  Enemy_Update(&p->e);
+  return 0;
+}
 
 NAKED s32 Slime_Destroy(Slime* p) { INCFUNC("asm/func/Slime_Destroy.inc"); }
 
