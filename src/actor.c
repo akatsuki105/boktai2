@@ -528,7 +528,31 @@ NON_MATCH s32 FUN_080413b8(Actor* actor, u32 pose, u32 param_3, s32 param_4, u32
 #endif
 }
 
-NAKED s32 FUN_080413fc(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080413fc.inc"); }
+// unk_1a (8方向) から左右反転と向きの番号を作ってアニメを設定する, 種類が 1 でなければ unk_1a に param_4 を掛ける
+s32 FUN_080413fc(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
+  u32 a;
+  u32 b;
+
+  if (actor->sprite.kind == 1) {
+    if (actor->unk_1a > 4) {
+      a = 8 - actor->unk_1a;
+      b = 1;
+    } else {
+      a = actor->unk_1a;
+      b = 0;
+    }
+  } else {
+    if (actor->unk_1a > 4) {
+      a = 8 - actor->unk_1a;
+      b = 1;
+    } else {
+      a = actor->unk_1a;
+      b = 0;
+    }
+    actor->unk_1a *= param_4;
+  }
+  return SpriteHolder_SetAnim(&actor->sprite, pose, a, b, param_3, param_5, param_6);
+}
 
 s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return SpriteHolder_SetAnim(&actor->sprite, pose, 0, 0, param_3, param_5, param_6); }
 
