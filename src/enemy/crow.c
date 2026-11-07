@@ -94,7 +94,17 @@ NAKED s32 FUN_081446fc(Crow* p) { INCFUNC("asm/func/FUN_081446fc.inc"); }
 
 NAKED void FUN_0814472c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814472c.inc"); }
 
-NAKED void Crow_InitAnims(Crow* p) { INCFUNC("asm/func/Crow_InitAnims.inc"); }
+void Crow_InitAnims(Crow* p) {
+  Enemy_SetAnimEntry(&p->e, 0, 4, 0);
+  Enemy_SetAnimEntry(&p->e, 1, 0, 0);
+  Enemy_SetAnimEntry(&p->e, 2, 2, 0);
+  Enemy_SetAnimEntry(&p->e, 3, 3, 0);
+  Enemy_SetAnimEntry(&p->e, 15, 1, 0);
+  Enemy_SetAnimEntry(&p->e, 16, 6, 0);
+  Enemy_SetAnimEntry(&p->e, 17, 7, 0);
+  Enemy_SetAnimEntry(&p->e, 18, 5, 0);
+  Enemy_SetAnimEntry(&p->e, 10, 3, 0);
+}
 
 NAKED void FUN_081447cc(Crow* p) { INCFUNC("asm/func/FUN_081447cc.inc"); }
 
