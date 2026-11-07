@@ -181,7 +181,18 @@ void FUN_08140014(EnemyBat* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085a
 
 NAKED void EnemyBat_OnReset(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnReset.inc"); }
 
-NAKED void FUN_08140278(EnemyBat* p, u16* msg) { INCFUNC("asm/func/FUN_08140278.inc"); }
+void FUN_08140278(EnemyBat* p, u16* msg) {
+  if (!Enemy_IsDead(&p->e) && gPlayerPtr[0] != NULL) {
+    EnemyBat* q = (p->e).unk_1cc;
+
+    if (EnemyBat_TestUnk658(q, 2)) {
+      CLEAR_FLAGS(q->unk_658, 2);
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+      Enemy_ResetState(&p->e, 0, 0, 3);
+    }
+  }
+}
 
 NAKED void FUN_0814031c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814031c.inc"); }
 
