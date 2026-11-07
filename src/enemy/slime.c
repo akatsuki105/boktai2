@@ -50,6 +50,7 @@ void FUN_08163848(Slime* p);
 void Slime_ScatterDroplets(Slime* p);
 void Slime_SpawnDroplets(Slime* p);
 void Slime_ShootDroplets(Slime* p);
+void FUN_08165178(Slime* p);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
 void Slime_PickWalkDest(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
@@ -96,7 +97,65 @@ void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) {
   }
 }
 
-NAKED void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/func/Slime_OnHurt.inc"); }
+// 食らい判定, HBFLAG_UNK_11 の攻撃では攻撃の中心から見た向きの軸へ 192 押し出され, 押し出し先の床の高さが違えば倒れる
+// 998/1001命令, 押し出し前の next = pos + delta で原典は &pos を先に作り pos.x を先に読む, 残りは Crow_OnHurt と同じ共通処理の残差
+NON_MATCH void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+    Slime* self = p;
+    Vec3 next;
+    Vec3 push;
+    WorldPos tile;
+    Vec3 diff;
+    WorldPos dst;
+    s32 idx;
+
+    Vec3_Sum(&next, &(p->e).mover.delta, &(p->e).mover.pos);
+    Vec3_Delta(&push, &next, &a->center);
+    TilePosAtIndex(&tile, (self->e).unk_256);
+    Vec3_Delta(&diff, &a->center, &tile);
+    switch (FixToInt(6, ArcTan2_8(diff.x, diff.z) + 32)) {
+      case 0: {
+        push.x += 192;
+        push.z = 0;
+        break;
+      }
+      case 1: {
+        push.x = 0;
+        push.z += 192;
+        break;
+      }
+      case 2: {
+        push.x -= 192;
+        push.z = 0;
+        break;
+      }
+      case 3: {
+        push.x = 0;
+        push.z -= 192;
+        break;
+      }
+    }
+    Vec3_Sum(&dst, &push, &(self->e).mover.pos);
+    idx = GetCollisionTileIdx(&dst);
+    if ((self->e).floorY != ((TileAtIndex(idx)->heightStairs & 0xF) << 8)) {
+      FUN_08165178(self);
+      return;
+    }
+    (self->e).mover.pos.x += push.x;
+    (self->e).mover.pos.z += push.z;
+    (self->e).mover.delta.x = 0;
+    (self->e).mover.delta.z = 0;
+    return;
+  }
+  Enemy_HandleHurt(a, b, &p->e);
+#else
+  INCFUNC("asm/func/Slime_OnHurt.inc");
+#endif
+}
 
 void FUN_08162cf4(Slime* p) {
   Enemy_ConsumeStateBegun(&p->e);
