@@ -29,7 +29,8 @@ typedef struct {
   u8 unk_672[0x6A0 - 0x672];  // 0x672
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
-  u8 unk_6b0[1728 - 0x6B0];   // 0x6B0
+  Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
+  u8 unk_6b8[1728 - 0x6B8];   // 0x6B8
 } Crow;
 static_assert(sizeof(Crow) == 1728);
 
@@ -255,7 +256,16 @@ void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   }
 }
 
-NAKED void FUN_0814483c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814483c.inc"); }
+void FUN_0814483c(Crow* p, Vec3* pos) {
+  Crow* q = (p->e).unk_1cc;
+  Vec3 diff;
+
+  Crow_SetCurve(p, pos);
+  Enemy_ResetState(&p->e, 0, 0, 1);
+  Vec3_Diff(&diff, pos, &(p->e).mover.pos);
+  (p->e).unk_1dc = ArcTan2_8(diff.x, diff.z);
+  Vec3_Clear(&q->unk_6b0);
+}
 
 void FUN_081448d8(Crow* p) {
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);

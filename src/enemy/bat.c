@@ -35,7 +35,8 @@ typedef struct {
   u8 unk_66a[0x6A0 - 0x66A];  // 0x66A
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
-  u8 unk_6b0[1728 - 0x6B0];   // 0x6B0
+  Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
+  u8 unk_6b8[1728 - 0x6B8];   // 0x6B8
 } EnemyBat;
 static_assert(sizeof(EnemyBat) == 1728);
 

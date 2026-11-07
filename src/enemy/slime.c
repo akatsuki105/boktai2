@@ -40,6 +40,7 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
   return FALSE;
 }
 
+void FUN_08162efc(Slime* p);
 void FUN_08162fa8(Slime* p);
 u32 Slime_PickHitAttributes(Slime* p);
 void FUN_08163b04(Slime*);
