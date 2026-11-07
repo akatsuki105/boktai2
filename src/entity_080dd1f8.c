@@ -2,8 +2,11 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "player.h"
 #include "shadow.h"
 #include "sprite.h"
+#include "trig.h"
+#include "vec3.h"
 
 typedef struct {
   AuxSprite spr;              // 0x000, _Destroy が AuxSprite_Remove に渡す
@@ -33,6 +36,11 @@ IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 
 const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
 
+static inline bool8 Entity080dd1f8_IsElemUsed(Entity080dd1f8* p, s32 i) {
+  if (TEST_FLAGS(p->activeMask, 1 << i)) return TRUE;
+  return FALSE;
+}
+
 void FUN_080dc4a4(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {}
 
 NAKED void FUN_080dc4a8(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dc4a8.inc"); }
@@ -56,7 +64,7 @@ NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* el
 
 NAKED void FUN_080dc650(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dc650.inc"); }
 
-NAKED s32 FUN_080dc764(Entity080dd1f8* p) { INCFUNC("asm/func/FUN_080dc764.inc"); }
+NAKED Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) { INCFUNC("asm/func/FUN_080dc764.inc"); }
 
 NAKED void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) { INCFUNC("asm/func/FUN_080dc7bc.inc"); }
 
@@ -70,7 +78,19 @@ void (*const PTR_ARRAY_085ad33c[3])(Entity080dd1f8*, Entity080dd1f8Elem*) = {
     FUN_080dcdd8,
 };  // 0x085AD33C
 
-NAKED s32 Entity080dd1f8_Update(Entity080dd1f8* p) { INCFUNC("asm/func/Entity080dd1f8_Update.inc"); }
+s32 Entity080dd1f8_Update(Entity080dd1f8* p) {
+  Entity080dd1f8Elem* elems = p->elems;
+  s32 i;
+
+  if (p->activeMask != 0 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+    for (i = 0; i < 12; i++) {
+      if (Entity080dd1f8_IsElemUsed(p, i)) {
+        PTR_ARRAY_085ad33c[elems[i].unk_12e](p, &elems[i]);
+      }
+    }
+  }
+  return 0;
+}
 
 NAKED s32 Entity080dd1f8_Destroy(Entity080dd1f8* p) { INCFUNC("asm/func/Entity080dd1f8_Destroy.inc"); }
 
@@ -99,7 +119,7 @@ Entity080dd1f8* Entity080dd1f8_Create(void) {
 
 void FUN_080dd244(void) { gEntity080dd1f8 = NULL; }
 
-NAKED s32 FUN_080dd250(Entity080dd1f8* p) { INCFUNC("asm/func/FUN_080dd250.inc"); }
+NAKED s32 FUN_080dd250(Vec3* pos) { INCFUNC("asm/func/FUN_080dd250.inc"); }
 
 // elem が生きていて片付け待ちでもないかを返す
 s32 FUN_080dd324(void* p) {
