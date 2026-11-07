@@ -210,7 +210,21 @@ void Slime_PlayFissionSound(Slime* p) {
   }
 }
 
-NAKED void FUN_08165178(Slime* p) { INCFUNC("asm/func/FUN_08165178.inc"); }
+// 自分の残り HP ぶんのダメージを受けさせて倒す
+void FUN_08165178(Slime* p) {
+  u16 hp;
+
+  (p->e).angle = 0;
+  (p->e).unk_4a0 = 1;
+  hp = (p->e).hp;
+  (p->e).hurtbox.damage = hp;
+  (p->e).unk_48a = hp;
+  (p->e).hurtbox.knockbackPower = 40;
+  (p->e).weaponExpMask = 0;
+  (p->e).flags6 = 0;
+  (p->e).unk_48c = 1;
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+}
 
 NAKED bool8 FUN_081651dc(Slime* p) { INCFUNC("asm/func/FUN_081651dc.inc"); }
 
