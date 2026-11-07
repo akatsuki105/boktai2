@@ -2,6 +2,9 @@
 #include "global.h"
 #include "malloc.h"
 
+// バンデット(ENEID_BANDIT), ヘルハウンド(ENEID_HELLHOUND), グレイブキーパー(ENEID_GRAVEKEEPER)
+// 共通の特徴として におい でサーチする (処理の上でどうしているのかはまだ不明)
+// バンデットは攻撃時にプレイヤーからアイテムを奪う, ヘルハウンドはファイヤーブレスを吐く
 typedef struct {
   Enemy e;
   u8 unk_654[1808 - sizeof(Enemy)];
@@ -184,6 +187,7 @@ NAKED s32 Dog_Update(Dog* p) { INCFUNC("asm/func/Dog_Update.inc"); }
 
 NAKED s32 Dog_Destroy(Dog* p) { INCFUNC("asm/func/Dog_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Dog_Init(Dog* p) { INCFUNC("asm/func/Dog_Init.inc"); }
 
 NAKED void Dog_Create(void) { INCFUNC("asm/func/Dog_Create.inc"); }

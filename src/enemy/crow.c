@@ -2,6 +2,7 @@
 #include "global.h"
 #include "malloc.h"
 
+// クロウ(ENEID_CROW), ガーゴイル(ENEID_GARGOYLE)
 typedef struct {
   Enemy e;
   u8 unk_654[1728 - sizeof(Enemy)];
@@ -130,6 +131,7 @@ NAKED s32 Crow_Update(Crow* p) { INCFUNC("asm/func/Crow_Update.inc"); }
 
 NAKED s32 Crow_Destroy(Crow* p) { INCFUNC("asm/func/Crow_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Crow_Init(Crow* p) { INCFUNC("asm/func/Crow_Init.inc"); }
 
 NAKED void Crow_Create(void) { INCFUNC("asm/func/Crow_Create.inc"); }

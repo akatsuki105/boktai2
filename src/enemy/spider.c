@@ -143,6 +143,7 @@ NAKED s32 Spider_Update(Spider* p) { INCFUNC("asm/func/Spider_Update.inc"); }
 
 NAKED s32 Spider_Destroy(Spider* p) { INCFUNC("asm/func/Spider_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Spider_Init(Spider* p) { INCFUNC("asm/func/Spider_Init.inc"); }
 
 NAKED void Spider_Create(void) { INCFUNC("asm/func/Spider_Create.inc"); }
