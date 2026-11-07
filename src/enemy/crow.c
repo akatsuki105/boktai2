@@ -48,6 +48,7 @@ void FUN_08143fac(Crow*);
 void FUN_08144cd0(Crow*);
 void FUN_08144ec8(Crow*);
 void FUN_081452cc(Crow*);
+void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 
 void (*const PTR_ARRAY_085ad828[5])(Crow*) = {
     FUN_08143dd4,
@@ -170,7 +171,48 @@ NON_MATCH void FUN_0814312c(Crow* p) {
 #endif
 }
 
-NAKED void FUN_081431e0(Crow* p) { INCFUNC("asm/func/FUN_081431e0.inc"); }
+// 状態に入った最初だけ, 向きから8方向の番号と左右反転を決めて animTable[2] のアニメを流す
+// Enemy_PlayAnim の展開, 再生部分を (p, anim, variant, f) を取る inline にして Enemy* e = &p->e で angle を読むと残差は MainSprite_SetAnim をまたいで定数 4 を r8 に置く点だけになる (Enemy_PlayAnim と同じ壁)
+NON_MATCH void FUN_081431e0(Crow* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    s32 dir;
+    s32 flip;
+    u8 anim;
+
+    Crow_GetDirAndFlip((p->e).mover.angle, &dir, &flip);
+    anim = (p->e).animTable[2].anim;
+    if ((p->e).spriteKind == 0) {
+      EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+
+      (p->e).playingAnim = anim;
+      AuxAnim_SetAnim(&s->anim, s->animFile, anim, dir, flip);
+    } else {
+      MainSprite* s = &(p->e).sprite->s;
+      s32 a = anim + dir;
+
+      if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
+        if (flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
+          return;
+        }
+        if (flip == 0 && !(s->flags & SPRFLAG_XFLIP)) {
+          return;
+        }
+      }
+      (p->e).playingAnim = a;
+      MainSprite_SetAnim(s, &(p->e).sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, (flip & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
+      if (flip & ANIM_PLAY_XFLIP) {
+        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
+      } else {
+        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
+      }
+    }
+    (p->e).animForceRestart = FALSE;
+  }
+#else
+  INCFUNC("asm/func/FUN_081431e0.inc");
+#endif
+}
 
 void FUN_081432ec(Crow* p) {
   Enemy_ConsumeStateBegun(&p->e);
