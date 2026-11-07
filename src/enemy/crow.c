@@ -321,7 +321,52 @@ void Crow_StateDying(Crow* p, s32 timer) {
   }
 }
 
-NAKED void FUN_081436b4(Crow* p) { INCFUNC("asm/func/FUN_081436b4.inc"); }
+// homePos のタイルの中で乱数の向きへ小さく跳ね, 着地したら副状態 (0,0,0) へ戻る
+// 339/336命令, 原典は q を sl, 床の高さを r10 に置き &subStateBegun をスタックに退避する, こちらは q を r9 に置いて状態の格納の一時レジスタ番号もずれる, 試済: 宣言と代入を分ける (悪化)
+NON_MATCH void FUN_081436b4(Crow* p) {
+#ifdef NONMATCHING_C
+  Crow* q = (p->e).unk_1cc;
+  s32 floor = TileHeightAtIndex((p->e).unk_256, &(p->e).mover.pos);
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    WorldPos home;
+    u8 angle;
+    s32 speed;
+
+    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+    TilePosAtIndex(&home, q->homeTileIdx);
+    angle = Random();
+    (p->e).mover.angle = angle;
+    Vec3_Clear(&q->unk_6b0);
+    speed = (Random() & 7) + 1;
+    Vec3_SetPolar(&q->unk_6b0, angle, speed);
+    q->unk_6b0.y = 14;
+  }
+  if (!(p->e).unk_608(&p->e)) {
+    WorldPos next;
+
+    Vec3_Sum(&next, &(p->e).mover.pos, &q->unk_6b0);
+    if (q->homeTileIdx != GetCollisionTileIdx(&next)) {
+      q->unk_6b0.x = 0;
+      q->unk_6b0.z = 0;
+    }
+    (p->e).mover.delta.x += q->unk_6b0.x;
+    (p->e).mover.delta.z += q->unk_6b0.z;
+    (p->e).heightAboveFloor += q->unk_6b0.y;
+    q->unk_6b0.y -= 2;
+    if ((p->e).heightAboveFloor > floor) {
+      (p->e).subStateTimer++;
+    } else {
+      (p->e).mover.pos.y = floor;
+      (p->e).heightAboveFloor = floor;
+      Vec3_Clear(&q->unk_6b0);
+      Enemy_ResetState(&p->e, 0, 0, 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081436b4.inc");
+#endif
+}
 
 NAKED void FUN_081439d8(Crow* p) { INCFUNC("asm/func/FUN_081439d8.inc"); }
 
