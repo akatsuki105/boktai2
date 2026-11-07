@@ -140,7 +140,16 @@ void FUN_08143094(Crow* p) {
   }
 }
 
-NAKED void FUN_0814312c(Crow* p) { INCFUNC("asm/func/FUN_0814312c.inc"); }
+// 77/75 命令, 向きを使わないアニメ再生の展開で anim と差分を足した値を別のレジスタに持つ, FUN_081630dc と同じ形
+NON_MATCH void FUN_0814312c(Crow* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimPlain(&p->e, 2, 0);
+  }
+#else
+  INCFUNC("asm/func/FUN_0814312c.inc");
+#endif
+}
 
 NAKED void FUN_081431e0(Crow* p) { INCFUNC("asm/func/FUN_081431e0.inc"); }
 
