@@ -67,23 +67,6 @@ static inline void Enemy_SetSubStates(Enemy* p, u8 subState0, u8 subState1, u8 s
   p->subState2 = subState2;
 }
 
-static inline bool8 AuxSprite_TestFlags(AuxSprite* sprite, SpriteFlags bits) {
-  if (sprite->flags & bits) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 MainSprite_TestFlags(MainSprite* sprite, SpriteFlags bits) {
-  if (sprite->flags & bits) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 Enemy_TestSpriteFlags(Enemy* p, SpriteFlags bits) {
-  if (p->spriteKind == 0) {
-    return AuxSprite_TestFlags((AuxSprite*)p->sprite, bits);
-  }
-  return MainSprite_TestFlags(&p->sprite->s, bits);
-}
-
 static inline bool8 Enemy_TestFlag4(Enemy* p, EnemyFlags4 bit) {
   if (p->flags4 & bit) {
     return TRUE;

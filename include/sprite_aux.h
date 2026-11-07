@@ -125,6 +125,10 @@ void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx);
 
 static inline void AuxSprite_SetFlags(AuxSprite* spr, SpriteFlags bits) { spr->flags |= bits; }
 static inline void AuxSprite_ClearFlags(AuxSprite* spr, SpriteFlags bits) { spr->flags &= ~bits; }
+static inline bool8 AuxSprite_TestFlags(AuxSprite* sprite, SpriteFlags bits) {
+  if (sprite->flags & bits) return TRUE;
+  return FALSE;
+}
 static inline void AuxSprite_Show(AuxSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
 static inline void AuxSprite_Hide(AuxSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
 static inline void AuxSprite_SetPoseIdx(AuxSprite* spr, s32 val) { spr->poseIdx = val; }

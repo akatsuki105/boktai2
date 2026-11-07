@@ -54,23 +54,6 @@ static inline bool8 Mimic_TestUnk690(Mimic* p, u16 bit) {
   return FALSE;
 }
 
-static inline bool8 AuxSprite_TestFlags(AuxSprite* sprite, SpriteFlags bits) {
-  if (sprite->flags & bits) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 MainSprite_TestFlags(MainSprite* sprite, SpriteFlags bits) {
-  if (sprite->flags & bits) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 Enemy_TestSpriteFlags(Enemy* p, SpriteFlags bits) {
-  if (p->spriteKind == 0) {
-    return AuxSprite_TestFlags((AuxSprite*)p->sprite, bits);
-  }
-  return MainSprite_TestFlags(&p->sprite->s, bits);
-}
-
 static inline u16 Enemy_GetUnk24e(Enemy* p) { return p->unk_24e; }
 
 void FUN_081467bc(Mimic* p) {

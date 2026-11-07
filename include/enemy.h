@@ -449,6 +449,13 @@ static inline void Enemy_ClearSpriteFlags(Enemy* p, SpriteFlags bits) {
   }
 }
 
+static inline bool8 Enemy_TestSpriteFlags(Enemy* p, SpriteFlags bits) {
+  if (p->spriteKind == 0) {
+    return AuxSprite_TestFlags((AuxSprite*)p->sprite, bits);
+  }
+  return MainSprite_TestFlags(&p->sprite->s, bits);
+}
+
 static inline void Enemy_SetFlag(Enemy* p, EnemyFlags bit) { p->flags |= bit; }
 static inline void Enemy_ClearFlag(Enemy* p, EnemyFlags bit) { p->flags &= ~bit; }
 static inline void Enemy_SetFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 |= bit; }
