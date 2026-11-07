@@ -24,7 +24,9 @@
 // ENEID_SLIME_Y: 状態異常なし, ENEID_SLIME_G: 毒, ENEID_SLIME_P: 石化, ENEID_SLIME_B: 引火or氷結
 typedef struct {
   Enemy e;
-  u8 unk_654[0x688 - 0x654];  // 0x654
+  u8 unk_654[0x65C - 0x654];  // 0x654
+  u16 unk_65c;                // 0x65C, 前のフレームの floorY
+  u8 unk_65e[0x688 - 0x65E];  // 0x65E
   u16 unk_688;                // 0x688, '.s[0]'
   u16 unk_68a;                // 0x68A, '.s[1]'
   u8 unk_68c[2];              // 0x68C
@@ -276,7 +278,19 @@ NAKED bool8 FUN_081651dc(Slime* p) { INCFUNC("asm/func/FUN_081651dc.inc"); }
 
 s32 FUN_08165460(Slime* p) { return 1; }
 
-NAKED s32 FUN_08165464(Slime* p) { INCFUNC("asm/func/FUN_08165464.inc"); }
+// 高い所から落ちた先が上書きタイルなら倒れる
+s32 FUN_08165464(Slime* p) {
+  Slime* self = p;
+
+  if ((p->e).floorY - p->unk_65c > 511) {
+    if (Map_FindTileOverride(GetCollisionTileIdx(&(p->e).mover.pos), 1) != NULL) {
+      FUN_08165178(self);
+      (self->e).floorY = p->unk_65c;
+    }
+  }
+  p->unk_65c = (self->e).floorY;
+  return 1;
+}
 
 s32 FUN_08165508(Slime* p) {
   Slime* self = p;
