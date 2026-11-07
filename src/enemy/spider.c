@@ -27,7 +27,7 @@ typedef struct {
   u8 unk_654[4];             // 0x654
   Mover* venomTarget;        // 0x658, 毒液を吐く状態に入ったときの playerMover, SpiderVenom_Spawn の狙い先
   s16 unk_65c;               // 0x65C
-  u16 unk_65e;               // 0x65E
+  s16 unk_65e;               // 0x65E
   u16 unk_660;               // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
   u16 unk_662;               // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
   u8 unk_664[1680 - 0x664];  // 0x664
@@ -45,6 +45,7 @@ void FUN_08130eec(Spider* p);
 void FUN_081307b0(Spider* p);
 void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
+s32 FUN_080db290(void* p, Mover* mover);
 void Spider_PickRandomPathNode(Spider* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
@@ -151,7 +152,49 @@ NON_MATCH void FUN_0812edf8(Spider* p) {
 #endif
 }
 
-NAKED void FUN_0812ef50(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812ef50.inc"); }
+// 巣で待つ状態, 待ち時間が過ぎたら, 巣に獲物が掛かっているか 1/4 の確率で状態 (unk_5a0, 副状態7) へ, そうでなければ (unk_5a4, 副状態5) へ 60 フレーム後に移る
+// 242/251命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み副状態の定数を r8 に置く), 加えて原典は &mover を r8 に写して FUN_080db290 に渡し, variant や乱数の 0 をそのまま格納の 0 に使う, 試済: 保留状態の inline, Mover* / Enemy* のローカル
+NON_MATCH void FUN_0812ef50(Spider* p, s32 timer) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+  Mover* mover = &(p->e).mover;
+
+  if ((p->e).stateBegun) {
+    (p->e).stateBegun = FALSE;
+  }
+  Enemy_PlayAnim(&p->e, 14);
+  if (timer > q->unk_65e) {
+    CLEAR_FLAGS(q->unk_660, 4);
+    if ((p->e).variant == 0 && FUN_080db290((p->e).unk_260, mover) >= 0) {
+      (p->e).pendingDelay = 60;
+      (p->e).pendingHandler = (p->e).unk_5a0;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 7;
+      Enemy_EnterState(&p->e, FUN_080e68d8, ES_UNK_14);
+      Enemy_ResetState(&p->e, 3, 1, 0);
+    } else if (((Random() >> 3) & 3) == 0) {
+      (p->e).pendingDelay = 60;
+      (p->e).pendingHandler = (p->e).unk_5a0;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 7;
+      Enemy_EnterState(&p->e, FUN_080e68d8, ES_UNK_14);
+      Enemy_ResetState(&p->e, 3, 1, 0);
+    } else {
+      (p->e).pendingDelay = 60;
+      (p->e).pendingHandler = (p->e).unk_5a4;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 5;
+      Enemy_EnterState(&p->e, FUN_080e68d8, ES_UNK_14);
+      Enemy_ResetState(&p->e, 3, 1, 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0812ef50.inc");
+#endif
+}
 
 void FUN_0812f1b4(Spider* p) {}
 
