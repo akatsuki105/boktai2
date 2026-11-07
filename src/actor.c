@@ -1304,7 +1304,66 @@ void FUN_08042cf0(ActorManager* p, Actor* actor, s32 elapsed) {
   }
 }
 
-NAKED void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042d50.inc"); }
+// navTarget へナビメッシュで歩かせ, 目的地に近づいたら終える, MainSprite のコマが進むたびに 32/64 (それ以外は 16) 進む
+// 下書き (222/223命令): 命令列はほぼ一致, 残差はレジスタ割当 (定数オフセットの一時レジスタと pos の置き場所)
+NON_MATCH void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  Mover* mover = &actor->mover;
+  NavAgent* nav = &actor->navAgent;
+  SpriteHolder* sprite = &actor->sprite;
+
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 3, 1, 0, 4);
+    actor->unk_1ec = 1;
+    Map_InitNavAgent(nav, &actor->mover.pos);
+    Map_TryFindNavRoute(nav, &actor->mover.pos, &actor->navTarget);
+    actor->unk_224 = 0;
+    FUN_080415cc(actor, 0, 0, 0);
+  }
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+
+  {
+    Vec3* pos = &actor->mover.pos;
+    Vec3* dest = &nav->dest;
+    u32 frame;
+    s32 dx = nav->dest.x - mover->pos.x;
+    s32 dz = dest->z - pos->z;
+
+    if (dx * dx + dz * dz <= 4355) {
+      mover->pos.x = nav->waypoint.x;
+      mover->pos.z = nav->waypoint.z;
+      actor->unk_07 = 1;
+    } else if (SpriteHolder_GetAdvancedCmdIdx(sprite, &frame)) {
+      s32 speed;
+      Vec3 step;
+      s32 angle;
+
+      if (sprite->kind == 2) {
+        speed = (frame & 1) ? 32 : 64;
+      } else {
+        speed = 16;
+      }
+      angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, nav->waypoint.z - pos->z);
+      actor->mover.angle = angle;
+      actor->unk_1a = Angle_ToDir8(angle);
+      actor->unk_19 = Angle_ToDir4(angle);
+      Vec3_SetPolar(&step, mover->angle, speed);
+      mover->pos.x += step.x;
+      mover->pos.z += step.z;
+    }
+  }
+  Map_StepNavPath(nav, &actor->mover.pos);
+  FUN_080414fc(actor, 3);
+  FUN_08041480(actor, 3, 1, 0, 1);
+#else
+  INCFUNC("asm/func/FUN_08042d50.inc");
+#endif
+}
 
 // navTarget へナビメッシュで歩かせ, 目的地に近づいたら終える, MainSprite の足を出すコマでだけ 48 進む
 // 下書き (197/218命令): 呼び出しの並びは一致, 目的地までの距離と1歩の組み立てが違う
