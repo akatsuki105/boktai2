@@ -2491,11 +2491,11 @@ void MainMenu_QC_Close(MainMenu* p) {
 }
 
 // SELECT が押されていて, プレイヤーが操作できる状態で, '.q' で許されていればクイックチェンジを開ける
-s32 MainMenu_QC_CanOpen(MainMenu* p) {
+static bool32 MainMenu_QC_CanOpen(MainMenu* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & PFLAG20_BUSY) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
       return TRUE;
     }
   }
@@ -2505,7 +2505,7 @@ s32 MainMenu_QC_CanOpen(MainMenu* p) {
 
 // 開ける状態ならクイックチェンジを開く, 開いたら TRUE
 bool32 MainMenu_QC_TryOpen(MainMenu* p) {
-  if (MainMenu_QC_CanOpen(p) != 0) {
+  if (MainMenu_QC_CanOpen(p)) {
     FUN_0808d908(p);
     return TRUE;
   }
