@@ -26,7 +26,8 @@ typedef struct {
   u8 unk_654[4];              // 0x654
   HitboxData unk_658;         // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
   u32 unk_6a8;                // 0x6A8, bit0 は待ちが明けたときに立てる
-  u8 unk_6ac[0x6C0 - 0x6AC];  // 0x6AC
+  u8 unk_6ac[0x6BC - 0x6AC];  // 0x6AC
+  u32 unk_6bc;                // 0x6BC, unk_1e4 がこれを超えると副状態 19 へ移る
   u16 unk_6c0;                // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
   u16 unk_6c2;                // 0x6C2
   u16 unk_6c4;                // 0x6C4, ENEFLAG3_UNK_7 のときの unk_6c2
@@ -598,7 +599,31 @@ void FUN_0814e424(Dog* p) {
   }
 }
 
-NAKED void FUN_0814e530(Dog* p) { INCFUNC("asm/func/FUN_0814e530.inc"); }
+void FUN_0814e530(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    return;
+  }
+  if (Dog_TestUnk6a8(q, 4)) {
+    if ((p->e).unk_1e4 > q->unk_6bc) {
+      Enemy_ResetState(&p->e, 0, 0, 19);
+      (p->e).unk_1dc = (FixToInt(5, (p->e).unk_1fc) + 3) & 7;
+    } else {
+      Dog_ClearUnk6a8(q, 4);
+      if (q->unk_6d7 < 4) {
+        if (FUN_0814b090(p, (p->e).mover.angle)) {
+          Enemy_ResetState(&p->e, 0, 0, 17);
+        }
+      } else {
+        Enemy_ResetState(&p->e, 0, 0, 19);
+        (p->e).unk_1dc = (FixToInt(5, (p->e).unk_1fc) + 3) & 7;
+      }
+    }
+  } else {
+    Enemy_PlayAnim(&p->e, 1);
+  }
+}
 
 NAKED void FUN_0814e680(Dog* p) { INCFUNC("asm/func/FUN_0814e680.inc"); }
 
