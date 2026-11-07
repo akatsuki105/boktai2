@@ -78,7 +78,7 @@ NAKED void FUN_08143ef8(Crow* p) { INCFUNC("asm/func/FUN_08143ef8.inc"); }
 
 NAKED void FUN_08143fac(Crow* p) { INCFUNC("asm/func/FUN_08143fac.inc"); }
 
-NAKED void FUN_0814414c(Crow* p) { INCFUNC("asm/func/FUN_0814414c.inc"); }
+void FUN_0814414c(Crow* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad828; }
 
 NAKED void FUN_08144160(Crow* p, u16* msg) { INCFUNC("asm/func/FUN_08144160.inc"); }
 
