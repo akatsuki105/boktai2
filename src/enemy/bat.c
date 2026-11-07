@@ -50,6 +50,7 @@ static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
   return FALSE;
 }
 
+struct Entity081fa164Elem* Entity081fa164_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 void FUN_08140dd0(EnemyBat* p);
 void FUN_08140c14(EnemyBat* p);
 void FUN_0813f9a8(EnemyBat*);
@@ -458,7 +459,25 @@ void FUN_08140d48(EnemyBat* p) {
   }
 }
 
-NAKED void FUN_08140dd0(EnemyBat* p) { INCFUNC("asm/func/FUN_08140dd0.inc"); }
+// 6フレームごとに, 向きの反対側の 64 度の範囲へ粒を1つ飛ばす
+// 残差は95/94命令, 角度の -32 が乱数側に畳まれ, table が r6 でなく ip に載る, 試済: base を s32 で計算, base + r - 32, r + (base - 32)
+NON_MATCH void FUN_08140dd0(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  if (Mod((p->e).unk_1ca, 6) == 0) {
+    Vec3 vel;
+    u32 quad = (u32)(((p->e).mover.angle + 0x20) & 0xFF) >> 6;
+    s8 base = (quad + 2) << 6;
+    u16* table = gRandomTable;
+    u8 angle = base - 32 + (_Random(table) & 63);
+    s32 speed = (_Random(table) & 7) + 1;
+
+    Vec3_SetPolar(&vel, angle, speed);
+    Entity081fa164_SpawnEx(&(p->e).mover.pos, &vel, 40, 2, 1);
+  }
+#else
+  INCFUNC("asm/func/FUN_08140dd0.inc");
+#endif
+}
 
 s32 FUN_08140ea0(EnemyBat* p) {
   FUN_0814031c(p);
