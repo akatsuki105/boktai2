@@ -50,7 +50,11 @@ static inline bool8 Entity081f8a28_IsElemUsed(Entity081f8a28* p, s32 i) {
   return FALSE;
 }
 
-NAKED void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_OnHit.inc"); }
+// 当たったら爆発へ移る
+void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem) {
+  elem->state = 3;
+  elem->stateBegun = TRUE;
+}
 
 NAKED void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_InitHitbox.inc"); }
 
