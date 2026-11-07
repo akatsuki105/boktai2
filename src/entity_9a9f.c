@@ -498,7 +498,49 @@ s32 FUN_081de2dc(Entity9A9F* p) {
 
 NAKED s32 FUN_081de360(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de360.inc"); }
 
-NAKED s32 FUN_081de6f0(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de6f0.inc"); }
+// 自分の記録を送り全員の記録を受け取る, 親機は全部そろったらキー 0x1800 を送り, それが届いたら state 6 へ, 原典は最後の return を書き忘れている
+// 残差: 原典はキー種別の比較定数 0x1800 を比較の直前に作り, 後の unk_42 = 0x1800 でも作り直すが, こちらは先に作って使い回す
+NON_MATCH s32 FUN_081de6f0(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_081dd9f0(p);
+    FUN_081de02c(p);
+    FUN_081ddc04(p);
+    p->self.crc = CalcCRC16((u8*)&p->self, 0x46);
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (Entity9A9F_IsKeyKind(p->unk_44[0], 0x1800)) {
+    FUN_081dde98(p);
+    Entity9A9F_SetState(p, 6, FUN_081de7e8);
+    return 0;
+  }
+
+  FUN_081ddb14(p, (u8*)&p->self, sizeof(Entity9A9FRecord));
+  count = 0;
+  for (i = 0; i < p->recordCount; i++) {
+    if ((u8)FUN_081ddb5c(p, (u8*)&p->records[i], i, sizeof(Entity9A9FRecord)) == 1) {
+      CalcCRC16((u8*)&p->records[i], 0x46);
+      count++;
+    }
+  }
+  if (count == p->recordCount && p->unk_1d == 0) {
+    p->unk_42 = 0x1800;
+  }
+  if (p->stateTimer > 3600) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+#else
+  INCFUNC("asm/func/FUN_081de6f0.inc");
+#endif
+}
 
 s32 FUN_081de7e8(Entity9A9F* p) {
   if (FUN_081ddab4(p) < 0) {
