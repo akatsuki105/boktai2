@@ -1071,7 +1071,32 @@ void FUN_08043da8(ActorManager* p, Actor* actor) {
   actor->timer++;
 }
 
-NAKED void FUN_08043e54(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043e54.inc"); }
+// プレイヤーが近づいたら今の state を覚えて state 10 へ
+// 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, さらにプレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる, inline 2段にしても早期の FALSE が外側へ畳まれる
+NON_MATCH void FUN_08043e54(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 13;
+  }
+
+  if (p->playerPos != NULL && abs(p->playerPos->x - actor->mover.pos.x) < actor->nearRange && abs(p->playerPos->y - actor->mover.pos.y) <= 0xFF && abs(p->playerPos->z - actor->mover.pos.z) < actor->nearRange) {
+    actor->unk_227 = actor->state;
+    Actor_SetState(actor, 10);
+    actor->unk_08 = 1;
+    return;
+  }
+
+  if (actor->unk_07) {
+    Actor_SetState(actor, FUN_08043510(actor));
+    actor->unk_08 = 1;
+  }
+  actor->timer++;
+#else
+  INCFUNC("asm/func/FUN_08043e54.inc");
+#endif
+}
 
 s32 ActorManager_Update(ActorManager* p) {
   Actor* actor;
