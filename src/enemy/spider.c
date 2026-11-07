@@ -38,6 +38,7 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
 
 void FUN_080e8614(Enemy* p);
 void FUN_08130eec(Spider* p);
+void Spider_PickRandomPathNode(Spider* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
 void FUN_0812f9ec(Spider*);
@@ -319,7 +320,37 @@ NAKED bool8 FUN_08130ac4(Spider* p) { INCFUNC("asm/func/FUN_08130ac4.inc"); }
 
 NAKED bool8 FUN_08130d34(Spider* p) { INCFUNC("asm/func/FUN_08130d34.inc"); }
 
-NAKED void FUN_08130eec(Spider* p) { INCFUNC("asm/func/FUN_08130eec.inc"); }
+// プレイヤーと反対側にある道順のノードを選び, 見つからなければでたらめに選ぶ
+// 下書き段階, 100/144 命令, 原典は 0x10 バイトのスタックに向きのベクトルなどを置いている
+NON_MATCH void FUN_08130eec(Spider* p) {
+#ifdef NONMATCHING_C
+  Mover* m = (p->e).playerMover;
+  u8 angle = ArcTan2_8(m->pos.x - (p->e).mover.pos.x, m->pos.z - (p->e).mover.pos.z);
+  s16 cs = gSineTable[(angle + 0x40) & 0xFF];
+  s16 sn = gSineTable[angle];
+  PathNode* node = Map_GetPathNodes((p->e).pathWalker.path);
+  s32 i;
+
+  for (i = 0; i < (p->e).pathWalker.path->nodeCount; i++) {
+    s16 dx = (u32)(cs * 160) >> 16;
+    s16 dz = (u32)(sn * 160) >> 16;
+
+    if ((s16)(node->x - (p->e).mover.pos.x) * dx + dz * (s16)(node->y - (p->e).mover.pos.z) < 0) {
+      if (*(s32*)node != *(s32*)(p->e).pathWalker.node) {
+        (p->e).pathWalker.nodeIdx = i;
+        (p->e).pathWalker.waitTimer = 0;
+        (p->e).pathWalker.node = node;
+        return;
+      }
+    } else {
+      node++;
+    }
+  }
+  Spider_PickRandomPathNode(p);
+#else
+  INCFUNC("asm/func/FUN_08130eec.inc");
+#endif
+}
 
 void Spider_PickRandomPathNode(Spider* p) {
   PathWalker* walker = &(p->e).pathWalker;
