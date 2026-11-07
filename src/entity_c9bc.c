@@ -177,7 +177,32 @@ s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) {
 
 NAKED s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800ce24.inc"); }
 
-NAKED s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) { INCFUNC("asm/func/FUN_0800cf30.inc"); }
+// 足元のタイルより 1 段以上浮いていたら, そこへ落ちる state 5 へ移る
+// 残差: 原典は足元タイルが浮いていない側 (return 0) を成功側より前に置く, 戻り値ブロックの並びが再現できない
+NON_MATCH s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) {
+#ifdef NONMATCHING_C
+  if (idx < 0 || (idx & 1) == (elem->timer & 1)) {
+    Mover* obj = &elem->obj;
+    MapTileOverride* self = &elem->tileOverride;
+    u16 tileIdx = self->tileIdx;
+    MapTileOverride* ov = Map_FindTileOverride(tileIdx, 3);
+    CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
+    s32 height = (tile->heightStairs & 0xF) << 8;
+
+    if (obj->pos.y - height > 0xFF) {
+      elem->groundY = height;
+      elem->state = 5;
+      elem->timer = 0;
+      elem->unk_01 = 1;
+      return 1;
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0800cf30.inc");
+#endif
+}
 
 NAKED void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState0.inc"); }
 
