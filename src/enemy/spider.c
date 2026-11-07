@@ -31,6 +31,11 @@ typedef struct {
 } Spider;
 static_assert(sizeof(Spider) == 1680);
 
+static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
+  if (p->unk_660 & bit) return TRUE;
+  return FALSE;
+}
+
 void FUN_080e8614(Enemy* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
@@ -195,7 +200,24 @@ NAKED bool8 FUN_081304a8(Spider* p, s32 rangeX, s32 rangeZ) { INCFUNC("asm/func/
 
 NAKED bool8 FUN_08130508(Spider* p) { INCFUNC("asm/func/FUN_08130508.inc"); }
 
-NAKED void FUN_08130610(Spider* p) { INCFUNC("asm/func/FUN_08130610.inc"); }
+// 棺桶が空いて止まっている間, 300 フレームごとに棺桶を狙いに行く
+void FUN_08130610(Spider* p) {
+  if ((p->e).variant != 1) {
+    Spider* q = (p->e).unk_1cc;
+
+    if (FUN_08086878() != -1 || !Coffin_IsIdle()) {
+      q->unk_662 = 300;
+      CLEAR_FLAGS(q->unk_660, 4);
+    } else if (q->unk_662 != 0) {
+      q->unk_662--;
+    } else {
+      q->unk_662 = 300;
+      if (!Spider_TestUnk660(q, 4)) {
+        FUN_08130508(p);
+      }
+    }
+  }
+}
 
 NAKED void FUN_0813069c(Spider* p) { INCFUNC("asm/func/FUN_0813069c.inc"); }
 
