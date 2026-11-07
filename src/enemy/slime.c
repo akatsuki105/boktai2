@@ -41,8 +41,6 @@ void (*const PTR_ARRAY_085ad9c8[16])(Slime*) = {
     FUN_08163e10,
 };  // 0x085AD9C8
 
-const u16 u16_ARRAY_085ada08[6] = {0, 16, 32, 20, 12, 0};  // 0x085ADA08
-
 NAKED void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/func/Slime_OnHit.inc"); }
 
 NAKED void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/func/Slime_OnHurt.inc"); }
@@ -97,6 +95,8 @@ NAKED void FUN_0816406c(Slime* p) { INCFUNC("asm/func/FUN_0816406c.inc"); }
 
 NAKED void Slime_InitAnims(Slime* p) { INCFUNC("asm/func/Slime_InitAnims.inc"); }
 
+const u16 u16_ARRAY_085ada08[6] = {0, 16, 32, 20, 12, 0};  // 0x085ADA08
+
 NAKED s32 FUN_081640e4(Slime* p) { INCFUNC("asm/func/FUN_081640e4.inc"); }
 
 NAKED void FUN_08164120(Slime* p, u32 arg) { INCFUNC("asm/func/FUN_08164120.inc"); }
@@ -135,6 +135,7 @@ NAKED s32 Slime_Update(Slime* p) { INCFUNC("asm/func/Slime_Update.inc"); }
 
 NAKED s32 Slime_Destroy(Slime* p) { INCFUNC("asm/func/Slime_Destroy.inc"); }
 
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Slime_Init(Slime* p) { INCFUNC("asm/func/Slime_Init.inc"); }
 
 NAKED void Slime_Create(void) { INCFUNC("asm/func/Slime_Create.inc"); }
