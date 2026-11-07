@@ -91,7 +91,19 @@ void Entity501B_RemoveAuxSprite(Entity501B* p) { AuxSprite_Remove(&p->solarStand
 
 NAKED void Entity501B_InitSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSprites.inc"); }
 
-NAKED void Entity501B_InitSpritePos(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitSpritePos.inc"); }
+// 上段と下段に4桁ずつ右から左へ並べる
+void Entity501B_InitSpritePos(Entity501B* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    p->digits[i].pos.x = 128 - i * 8;
+    p->digits[i].pos.y = 64;
+  }
+  for (i = 0; i < 4; i++) {
+    p->digits[i + 4].pos.x = 128 - i * 8;
+    p->digits[i + 4].pos.y = 120;
+  }
+}
 
 void Entity501B_HideSprites(Entity501B* p) {
   s32 i;
