@@ -123,7 +123,15 @@ void FUN_081e02ac(Entity501B* p) {
   }
 }
 
-NAKED void FUN_081e02ec(Entity501B* p) { INCFUNC("asm/func/FUN_081e02ec.inc"); }
+// 待ちを減らし, 切れたら上段に score を出して効果音を鳴らす
+void FUN_081e02ec(Entity501B* p) {
+  if (p->timer != 0) {
+    if (--p->timer == 0) {
+      Entity501B_SetNumber(p, 0, p->score);
+      PlaySound_082406e0(SE_LINK_359);
+    }
+  }
+}
 
 NAKED void Entity501B_LoadScore(Entity501B* p) { INCFUNC("asm/func/Entity501B_LoadScore.inc"); }
 
