@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "player.h"
 #include "shadow.h"
 #include "sound.h"
@@ -11,27 +12,28 @@
 #include "vm.h"
 
 typedef struct {
-  AuxSprite spr;              // 0x000, _Destroy が AuxSprite_Remove に渡す
-  AuxAnimState anim;          // 0x02C
-  HitboxData hitbox;          // 0x03C, 攻撃判定, 当たると Entity080dd1f8Elem_OnHit で弾かれる
-  HitboxData hurtbox;         // 0x08C, 食らい判定, Entity080dd1f8Elem_OnHurt で炎と氷に反応する
-  ParticleShadow shadow;      // 0x0DC, _Destroy が ParticleShadow_Remove に渡す
-  Vec3 vel;                   // 0x11C, 弾かれると Entity080dd1f8Elem_OnHit が書き換える
-  Vec3 unk_124;               // 0x124, Entity080dd1f8_Spawn の第3引数
-  u16 unk_12c;                // 0x12C, 爆発で片付けるときに 0
-  u8 unk_12e;                 // 0x12E, PTR_ARRAY_085ad33c の添字, 2 だと FUN_080dd324 が 0 を返す
-  s8 unk_12f;                 // 0x12F, activeMask 上の自分のビット番号, 空きは -1, 負だと FUN_080dd324 が 0 を返す
-  bool8 unk_130;              // 0x130, 立っていると Entity080dd1f8Elem_StateExplode が爆発を出してから片付ける
-  u8 unk_131;                 // 0x131, 弾かれると 12
-  u16 unk_132;                // 0x132, 0 だと FUN_080dd324 が 0 を返す, 0x59 を超えていると unk_13e に戻される
-  u8 unk_134[2];              // 0x134
-  u16 unk_136;                // 0x136, Explosion_Create の power
-  u16 unk_138;                // 0x138, Explosion_Create の knockback
-  u8 unk_13a;                 // 0x13A
-  u8 unk_13b;                 // 0x13B, 生成時に 1
-  u16 unk_13c;                // 0x13C, 攻撃判定と食らい判定の id, FUN_08240cf0 の第6引数
-  u16 unk_13e;                // 0x13E, unk_132 の戻し先の値
-  u8 unk_140[0x144 - 0x140];  // 0x140
+  AuxSprite spr;          // 0x000, _Destroy が AuxSprite_Remove に渡す
+  AuxAnimState anim;      // 0x02C
+  HitboxData hitbox;      // 0x03C, 攻撃判定, 当たると Entity080dd1f8Elem_OnHit で弾かれる
+  HitboxData hurtbox;     // 0x08C, 食らい判定, Entity080dd1f8Elem_OnHurt で炎と氷に反応する
+  ParticleShadow shadow;  // 0x0DC, _Destroy が ParticleShadow_Remove に渡す
+  Vec3 vel;               // 0x11C, 弾かれると Entity080dd1f8Elem_OnHit が書き換える
+  Vec3 unk_124;           // 0x124, Entity080dd1f8_Spawn の第3引数
+  u16 unk_12c;            // 0x12C, 爆発で片付けるときに 0
+  u8 unk_12e;             // 0x12E, PTR_ARRAY_085ad33c の添字, 2 だと FUN_080dd324 が 0 を返す
+  s8 unk_12f;             // 0x12F, activeMask 上の自分のビット番号, 空きは -1, 負だと FUN_080dd324 が 0 を返す
+  bool8 unk_130;          // 0x130, 状態に入った最初のフレームだけ立つ, 爆発の状態では立っていると爆発を出す
+  u8 unk_131;             // 0x131, 弾かれると 12
+  u16 unk_132;            // 0x132, 0 だと FUN_080dd324 が 0 を返す, 0x59 を超えていると unk_13e に戻される
+  u16 unk_134;            // 0x134, 今いるタイルの索引
+  u16 unk_136;            // 0x136, Explosion_Create の power
+  u16 unk_138;            // 0x138, Explosion_Create の knockback
+  u8 unk_13a;             // 0x13A, 0 になると点滅のアニメを切り替える
+  u8 unk_13b;             // 0x13B, 流しているアニメ番号 (1 か 2)
+  u16 unk_13c;            // 0x13C, 攻撃判定と食らい判定の id, FUN_08240cf0 の第6引数
+  u16 unk_13e;            // 0x13E, unk_132 の戻し先の値
+  u16 unk_140;            // 0x140, 状態に入ってからのフレーム数
+  u8 unk_142[2];          // 0x142
 } Entity080dd1f8Elem;
 static_assert(sizeof(Entity080dd1f8Elem) == 324);
 
@@ -142,7 +144,133 @@ Entity080dd1f8Elem* Entity080dd1f8_AllocElem(Entity080dd1f8* p) {
   return NULL;
 }
 
-NAKED void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) { INCFUNC("asm/func/FUN_080dc7bc.inc"); }
+// state 1, 目標の近くまで来るか 8 フレーム経つと落ち始め, 地面で弾みながら転がり, 導火線が尽きたら爆発へ移る
+// 698/714命令, 2回目の下書き (呼び出し列は一致), 原典は &spr.pos をスタック (sp+0x24) に置き vel を r4 から触る, pos / vel をポインタのローカルにすると 16 命令少なくなり, 直接アクセスだと 727 命令
+NON_MATCH void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {
+#ifdef NONMATCHING_C
+  AuxSprite* spr = &elem->spr;
+  Vec3* pos;
+  Vec3* vel;
+  u32 tile;
+  s32 height;
+
+  if (elem->unk_130) {
+    elem->spr.flags &= ~SPRFLAG_HIDDEN;
+    elem->unk_140 = 0;
+    elem->unk_130 = FALSE;
+  }
+  pos = &elem->spr.pos;
+  elem->unk_134 = GetCollisionTileIdx(pos);
+  if (elem->unk_12c & 1) {
+    if (spr->pos.y > TileHeightAtIndex(elem->unk_134, &spr->pos)) {
+      elem->vel.y -= 4;
+    }
+  } else {
+    Vec3 d;
+
+    Vec3_Delta(&d, &spr->pos, &elem->unk_124);
+    if (d.x * d.x + d.z * d.z < 0x40000 || elem->unk_140 > 8) {
+      elem->unk_12c |= 1;
+      elem->vel.y -= 4;
+    }
+  }
+  tile = elem->unk_134;
+  vel = &elem->vel;
+  ArcTan2_8(vel->x, vel->z);
+  height = TileHeightAtIndex(tile, pos);
+  if (vel->x + vel->z + vel->y != 0) {
+    WorldPos next;
+    u32 nextTile;
+    s32 nextHeight;
+    TileAttr attr;
+
+    if (pos->y <= height) {
+      vel->x = Div(vel->x * 6, 10);
+      vel->y = -Div(vel->y * 4, 10);
+      vel->z = Div(vel->z * 6, 10);
+      if (abs(vel->x + vel->z + vel->y) <= 2) {
+        vel->x = 0;
+        vel->y = 0;
+        vel->z = 0;
+      } else {
+        PlaySound_082406e0(358);
+      }
+      pos->y = height;
+    }
+    Vec3_Sum(&next, pos, vel);
+    nextTile = GetCollisionTileIdx(&next);
+    nextHeight = TileHeightAtIndex(nextTile, &next);
+    attr = TileAtIndex(nextTile)->attr;
+    if (tile != nextTile && (height < nextHeight || (TileAtIndex(nextTile)->attr & 3))) {
+      vel->x = -Div(vel->x * 5, 10);
+      vel->z = -Div(vel->z * 5, 10);
+      PlaySound_082406e0(358);
+    }
+    if ((nextHeight <= 0 || (attr & 0x40)) && (s16)(vel->y + pos->y) <= nextHeight) {
+      gEntity080dd1f8->activeMask &= ~(1 << elem->unk_12f);
+      elem->unk_12e = 0;
+      AuxSprite_Remove(&elem->spr);
+      ParticleShadow_Remove(&elem->shadow);
+      Hitbox_Unregister(&elem->hurtbox);
+      elem->unk_12f = -1;
+      elem->unk_12c = 0;
+      elem->unk_132 = 0;
+    } else {
+      pos->x += vel->x;
+      pos->y += vel->y;
+      pos->z += vel->z;
+    }
+  }
+  Hitbox_SetPos(&elem->hurtbox, &spr->pos, 0);
+  if (elem->unk_131 == 0) {
+    Hitbox_SetPos(&elem->hitbox, &spr->pos, 0);
+    Hitbox_Register(&elem->hitbox);
+  } else {
+    elem->unk_131--;
+  }
+  if (elem->unk_13a == 0) {
+    s32 k;
+
+    if (elem->unk_132 < 30) {
+      k = 3;
+    } else if (elem->unk_132 < 50) {
+      k = 2;
+    } else if (elem->unk_132 <= 89) {
+      k = 1;
+    } else {
+      goto skip;
+    }
+    {
+      u16 tick = elem->anim.tick;
+      u16 cmdIdx = elem->anim.cmdIdx;
+
+      if (elem->unk_13b == 1) {
+        AuxAnim_SetAnim(&elem->anim, p->anim, 2, 0, 0);
+        elem->unk_13b = 2;
+      } else {
+        AuxAnim_SetAnim(&elem->anim, p->anim, 1, 0, 0);
+        elem->unk_13b = 1;
+      }
+      elem->anim.tick = tick;
+      elem->anim.cmdIdx = cmdIdx;
+      elem->unk_13a = u8_ARRAY_085ad338[k];
+    }
+  } else {
+    elem->unk_13a--;
+  }
+skip:
+  AuxSprite_AdvanceAnim(spr, &elem->anim);
+  elem->unk_140++;
+  if (elem->unk_132 == 0) {
+    elem->unk_12e = 2;
+    elem->unk_130 = TRUE;
+  } else {
+    elem->unk_132--;
+  }
+#else
+  INCFUNC("asm/func/FUN_080dc7bc.inc");
+#endif
+}
 
 // 爆発の印が立っていれば爆発と効果音を出し, 自分を片付ける
 // 79/79命令, activeMask を落とすところで原典は gEntity080dd1f8 を読み &unk_12f を作って添字を読んでから +0xF68 する (こちらは &activeMask を先に作る), 試済: CLEAR_BIT, グローバルのローカル写し, a = a & ~b の形
