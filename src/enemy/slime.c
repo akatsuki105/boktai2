@@ -78,7 +78,7 @@ NAKED void FUN_0816390c(Slime* p, s32 arg) { INCFUNC("asm/func/FUN_0816390c.inc"
 
 NAKED void FUN_08163b04(Slime* p) { INCFUNC("asm/func/FUN_08163b04.inc"); }
 
-NAKED void FUN_08163bac(Slime* p) { INCFUNC("asm/func/FUN_08163bac.inc"); }
+void FUN_08163bac(Slime* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad9c4; }
 
 NAKED void FUN_08163bbc(Slime* p) { INCFUNC("asm/func/FUN_08163bbc.inc"); }
 
