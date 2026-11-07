@@ -22,7 +22,7 @@ typedef struct Entity501B {
   AuxSprite solarStandSpr;                     // 0x370
   AuxSpriteGfx solarStandGfx;                  // 0x39C, SPRITE_SOLAR_STATION
   u8 unk_3b8[2];                               // 0x3B8, まだ未解析
-  s16 timer;                                   // 0x3BA, 90 から毎フレーム減り, 0 で次の状態へ, ボタンで 1 に飛ばせる
+  u16 timer;                                   // 0x3BA, 90 から毎フレーム減り, 0 で次の状態へ, ボタンで 1 に飛ばせる
   u16 score;                                   // 0x3BC, gEntity9A9F->unk_138[playerIdx] (9999 で頭打ち), 精算で減っていく
   s16 step;                                    // 0x3BE, 1フレームに score から gStat->field_0x912 へ移す量, 初期 2, ボタンで <<3
   s32 unk_3c0;                                 // 0x3C0, gEntity9A9F->unk_144[playerIdx] (±9999 で頭打ち)
@@ -75,7 +75,13 @@ void Entity501B_HideTextPanels(Entity501B* p) {
   }
 }
 
-NAKED BgMapEntry* Entity501B_GetBgMapAddr(s32 bg, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_GetBgMapAddr.inc"); }
+// BG のタイルマップから (x, y) のエントリのアドレスを得る
+BgMapEntry* Entity501B_GetBgMapAddr(s32 bg, s32 x, s32 y) {
+  BgState* state = &gBgStates[bg];
+  BgMapEntry* tilemap = state->tilemap;
+
+  return tilemap + (x & 31) + (y & 31) * 32;
+}
 
 NAKED void Entity501B_DrawBgNumber(s32 value, s32 divisor, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_DrawBgNumber.inc"); }
 
