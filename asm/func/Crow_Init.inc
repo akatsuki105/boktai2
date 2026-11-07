@@ -1606,7 +1606,7 @@ _08146214:
 	ldr r6, _081463C8 @ =FUN_08143310
 	ldr r0, [sp, #0x148]
 	str r6, [r0]
-	ldr r1, _081463CC @ =FUN_081434e0
+	ldr r1, _081463CC @ =Crow_StateDying
 	ldr r3, [sp, #0x14c]
 	str r1, [r3]
 	ldr r0, _081463D0 @ =FUN_080f44f4
@@ -1759,7 +1759,7 @@ _081463BC: .4byte FUN_08143004
 _081463C0: .4byte FUN_080f62b0
 _081463C4: .4byte FUN_080f62ac
 _081463C8: .4byte FUN_08143310
-_081463CC: .4byte FUN_081434e0
+_081463CC: .4byte Crow_StateDying
 _081463D0: .4byte FUN_080f44f4
 _081463D4: .4byte FUN_080f410c
 _081463D8: .4byte FUN_080f0430
