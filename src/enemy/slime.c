@@ -94,7 +94,17 @@ NAKED void Slime_OnReset(Slime* p) { INCFUNC("asm/func/Slime_OnReset.inc"); }
 
 void FUN_0816406c(Slime* p) {}
 
-NAKED void Slime_InitAnims(Slime* p) { INCFUNC("asm/func/Slime_InitAnims.inc"); }
+void Slime_InitAnims(Slime* p) {
+  Enemy_SetAnimEntry(&p->e, 0, 0, 0);
+  Enemy_SetAnimEntry(&p->e, 14, 2, 0);
+  Enemy_SetAnimEntry(&p->e, 15, 1, 0);
+  Enemy_SetAnimEntry(&p->e, 1, 3, 0);
+  Enemy_SetAnimEntry(&p->e, 3, 4, 0);
+  Enemy_SetAnimEntry(&p->e, 10, 5, 0);
+  Enemy_SetAnimEntry(&p->e, 16, 8, 0);
+  Enemy_SetAnimEntry(&p->e, 17, 9, 0);
+  Enemy_SetAnimEntry(&p->e, 18, 9, 4);
+}
 
 const u16 u16_ARRAY_085ada08[6] = {0, 16, 32, 20, 12, 0};  // 0x085ADA08
 
