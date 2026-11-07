@@ -1713,7 +1713,7 @@ _081662E8:
 	str r0, [r1]
 	subs r2, #0x44
 	adds r1, r7, r2
-	ldr r0, _081664FC @ =FUN_08165130
+	ldr r0, _081664FC @ =Slime_PlayFissionSound
 	str r0, [r1]
 	movs r1, #8
 	ldr r3, [sp, #0x188]
@@ -1782,7 +1782,7 @@ _081664EC: .4byte FUN_08164520
 _081664F0: .4byte 0x0000058C
 _081664F4: .4byte FUN_081651dc
 _081664F8: .4byte FUN_08164388
-_081664FC: .4byte FUN_08165130
+_081664FC: .4byte Slime_PlayFissionSound
 _08166500:
 	movs r0, #0
 _08166502:
