@@ -1,6 +1,7 @@
 #include "enemy.h"
 #include "global.h"
 #include "malloc.h"
+#include "player.h"
 
 // スライム系
 // イエロースライム(ENEID_SLIME_Y), グリーンスライム(ENEID_SLIME_G), パープルスライム(ENEID_SLIME_P), ブラックスライム(ENEID_SLIME_B)

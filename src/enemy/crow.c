@@ -1,6 +1,7 @@
 #include "enemy.h"
 #include "global.h"
 #include "malloc.h"
+#include "player.h"
 
 // クロウ(ENEID_CROW), ガーゴイル(ENEID_GARGOYLE)
 typedef struct {
@@ -127,7 +128,11 @@ NAKED void FUN_08145424(Crow* p) { INCFUNC("asm/func/FUN_08145424.inc"); }
 
 NAKED s32 FUN_08145438(Crow* p) { INCFUNC("asm/func/FUN_08145438.inc"); }
 
-NAKED s32 Crow_Update(Crow* p) { INCFUNC("asm/func/Crow_Update.inc"); }
+s32 Crow_Update(Crow* p) {
+  (p->e).playerMover = &gPlayerPtr[0]->mover;
+  Enemy_Update(&p->e);
+  return 0;
+}
 
 NAKED s32 Crow_Destroy(Crow* p) { INCFUNC("asm/func/Crow_Destroy.inc"); }
 

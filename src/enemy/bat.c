@@ -1,6 +1,7 @@
 #include "enemy.h"
 #include "global.h"
 #include "malloc.h"
+#include "player.h"
 
 // バット(ENEID_BAT), ヴァンパイアバット(ENEID_VBAT)
 // ヴァンパイアバット は 吸血攻撃をしてくる
