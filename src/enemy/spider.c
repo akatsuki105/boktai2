@@ -23,7 +23,9 @@
 // ポイズンスパイダーは毒液も吐く
 typedef struct {
   Enemy e;
-  u8 unk_654[1680 - sizeof(Enemy)];
+  u8 unk_654[0x660 - 0x654];  // 0x654
+  u16 unk_660;                // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
+  u8 unk_662[1680 - 0x662];   // 0x662
 } Spider;
 static_assert(sizeof(Spider) == 1680);
 
@@ -179,7 +181,13 @@ void Spider_InitAnims(Spider* p) {
 
 NAKED void FUN_081302f8(Spider* p, u16* msg) { INCFUNC("asm/func/FUN_081302f8.inc"); }
 
-NAKED void FUN_08130460(Spider* p) { INCFUNC("asm/func/FUN_08130460.inc"); }
+void FUN_08130460(Spider* p) {
+  if (Enemy_IsDead(&p->e) == 0 && gPlayerPtr[0]->unk_3ff < 0) {
+    Spider* q = (p->e).unk_1cc;
+
+    CLEAR_FLAGS(q->unk_660, 2);
+  }
+}
 
 NAKED bool8 FUN_081304a8(Spider* p, s32 rangeX, s32 rangeZ) { INCFUNC("asm/func/FUN_081304a8.inc"); }
 

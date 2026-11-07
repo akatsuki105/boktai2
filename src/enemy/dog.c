@@ -161,7 +161,7 @@ NAKED void FUN_0814afc8(Dog* p) { INCFUNC("asm/func/FUN_0814afc8.inc"); }
 
 NAKED bool8 FUN_0814b090(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814b090.inc"); }
 
-NAKED u8 FUN_0814b3a0(Dog* p) { INCFUNC("asm/func/FUN_0814b3a0.inc"); }
+NAKED bool8 FUN_0814b3a0(Dog* p) { INCFUNC("asm/func/FUN_0814b3a0.inc"); }
 
 NAKED bool8 FUN_0814b3e0(Dog* p) { INCFUNC("asm/func/FUN_0814b3e0.inc"); }
 
