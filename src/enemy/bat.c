@@ -164,7 +164,18 @@ void EnemyBat_InitAnims(EnemyBat* p) {
 
 NAKED void FUN_08140904(EnemyBat* p) { INCFUNC("asm/func/FUN_08140904.inc"); }
 
-NAKED void FUN_08140940(u16 angle, s32* outX, s32* outY) { INCFUNC("asm/func/FUN_08140940.inc"); }
+// 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
+void FUN_08140940(u16 angle, s32* outDir, s32* outFlip) {
+  s32 dir = Angle_ToDir8(angle);
+
+  if (dir > 4) {
+    *outDir = 8 - dir;
+    *outFlip = 1;
+  } else {
+    *outDir = dir;
+    *outFlip = 0;
+  }
+}
 
 NAKED void FUN_08140970(EnemyBat* p, Vec3* pos) { INCFUNC("asm/func/FUN_08140970.inc"); }
 
