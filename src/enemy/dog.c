@@ -133,7 +133,30 @@ NAKED void FUN_0814a098(Dog* p) { INCFUNC("asm/func/FUN_0814a098.inc"); }
 
 NAKED void enemy_dog_0814a320(Dog* p) { INCFUNC("asm/func/enemy_dog_0814a320.inc"); }
 
-NAKED bool8 FUN_0814a5e0(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814a5e0.inc"); }
+// angle の方向が視野の外ならそちらへ振り向く状態に入る
+bool8 FUN_0814a5e0(Dog* p, u32 angle) {
+  s32 diff = angle - (p->e).mover.angle;
+
+  if (diff > 128) {
+    diff -= 256;
+  } else if (diff < -128) {
+    diff += 256;
+  }
+  if (diff < 0) {
+    diff = -diff;
+  }
+  if (diff < (p->e).unk_1fd || (p->e).state == ES_UNK_2) {
+    return FALSE;
+  }
+  Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    Enemy_ResetState(&p->e, 0, 0, 13);
+  } else {
+    Enemy_ResetState(&p->e, 0, 0, 6);
+  }
+  (p->e).unk_1dc = Angle_ToDir8(angle);
+  return TRUE;
+}
 
 void Dog_InitAnims(Dog* p) {
   Enemy_SetAnimEntry(&p->e, 0, 0, 0);
