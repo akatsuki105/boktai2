@@ -664,7 +664,26 @@ s32 FUN_081df7e8(s32 idx) {
   return 0;
 }
 
-NAKED s32 Cmd_33C4(void) { INCFUNC("asm/func/Cmd_33C4.inc"); }
+s32 Cmd_33C4(void) {
+  WorldPos pos;
+  s32 val;
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+  val = VM_GetNamedArgValue('t', 4);
+  if (VM_GetNamedArgValue('m', 0) != 0) {
+    return FUN_081df64c(&pos, val);
+  } else {
+    return FUN_081df698(&pos, val);
+  }
+}
 
 // state が 0 以外のときだけ unk_24 を書き換えて BGM をフェードアウトする
 void FUN_081df8a0(s32 val) {
