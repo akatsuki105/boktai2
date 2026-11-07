@@ -64,8 +64,8 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_UNK_23 23        // 落下からの着地
 #define PACT_DAMAGED 24       // ダメージ時
 #define PACT_BLOWN_AWAY 25    // 吹っ飛ばされて仰向けに倒れる (e.g. オクトパスの拘束から投げ飛ばされるとき)
-#define PACT_UNK_26 26        //
-#define PACT_UNK_27 27        //
+#define PACT_UNK_26 26        // 死亡(うつ伏せ)
+#define PACT_UNK_27 27        // 死亡(仰向け)
 #define PACT_FALLDEATH 28     // 落下死
 #define PACT_DROWNING 29      // 溺死 (水フィールドでの落下死)
 #define PACT_UNK_30 30        //
