@@ -53,7 +53,31 @@ void FUN_0823cd04(void) {
 char* GetPlayerName(void) { return gStat->name; }
 
 // 0x0272
-NAKED void Cmd_SetPlayerName(void) { INCFUNC("asm/func/Cmd_SetPlayerName.inc"); }
+void Cmd_SetPlayerName(void) {
+  char* name = GetPlayerName();
+
+  CpuFill32(0, name, 16);
+  if (VM_SeekToNamedArg('n')) {
+    char* str = VM_GetValueAtSafe_Proxy(VM_GetPC());
+
+    if (str != NULL) {
+      s32 i;
+
+      for (i = 0; str[i] != '\0' && i < 16; i++) {
+        name[i] = str[i];
+      }
+    }
+  } else {
+    name[0] = 0x80;
+    name[1] = 0xA2;
+    name[2] = 0x80;
+    name[3] = 0x98;
+    name[4] = 0x80;
+    name[5] = 0x91;
+    name[6] = 0x80;
+    name[7] = 0x9F;
+  }
+}
 
 // key でソート済みの {u16 key; u16 value;} のテーブルを二分探索して value を返す, 見つからなければ 0
 // 4バイト1組 {key, value} の表を二分探索して value を返す, 見つからなければ 0
