@@ -264,7 +264,33 @@ s32 EntityC9BC_Destroy(EntityC9BC* p) {
   return 0;
 }
 
-NAKED s32 EntityC9BC_Init(EntityC9BC* p, u32 _) { INCFUNC("asm/func/EntityC9BC_Init.inc"); }
+s32 EntityC9BC_Init(EntityC9BC* p, u32 _) {
+  EntityC9BCElem* elem;
+  u32 i;
+
+  gEntityC9BC = p;
+  p->unk_18 = 0;
+  p->elems = Malloc(p->count * sizeof(EntityC9BCElem));
+  if (p->elems == NULL) {
+    return -1;
+  }
+
+  ClearMemory(p->elems, p->count * sizeof(EntityC9BCElem));
+  p->fadeDir = 0;
+  p->fadeLevel = 0;
+  p->plttBase = &gObjPlttData[120 * 16];
+  p->plttBlendA = &gObjPlttData[121 * 16];
+  p->plttBlendB = &gObjPlttData[122 * 16];
+  CpuCopy32(p->plttBase, p->plttBufA, sizeof(p->plttBufA));
+  CpuCopy32(p->plttBase, p->plttBufB, sizeof(p->plttBufB));
+
+  elem = p->elems;
+  for (i = 0; i < p->count; i++, elem++) {
+    elem->active = FALSE;
+  }
+
+  return 0;
+}
 
 // 0xC9BC
 EntityC9BC* EntityC9BC_Create(u32 val) {
