@@ -607,7 +607,7 @@ _0800DFD4:
 	ldr r1, [sp, #0x4c]
 	movs r2, #0
 	bl Hitbox_SetPos
-	ldr r1, _0800E0E0 @ =FUN_0800cbd0
+	ldr r1, _0800E0E0 @ =EntityC9BCElem_OnHurt
 	adds r0, r6, #0
 	adds r2, r5, #0
 	bl Hitbox_SetHandler
@@ -681,7 +681,7 @@ _0800E0D0: .4byte 0x030046A4
 _0800E0D4: .4byte 0xFFFF0000
 _0800E0D8: .4byte 0x0000FFFF
 _0800E0DC: .4byte 0x00004041
-_0800E0E0: .4byte FUN_0800cbd0
+_0800E0E0: .4byte EntityC9BCElem_OnHurt
 _0800E0E4: .4byte 0x00002801
 _0800E0E8: .4byte nop_0800cc04
 _0800E0EC: .4byte 0x00010100

@@ -15,17 +15,17 @@
 
 // EntityC9BC が count 個まとめて管理する要素
 typedef struct {
-  bool8 active;                  // 0x00, 0 以外なら使用中, FUN_0800cb7c で 0 に戻る
+  bool8 active;                  // 0x00, 0 以外なら使用中, EntityC9BCElem_Remove で 0 に戻る
   u8 unk_01;                     // 0x01
   u8 unk_02;                     // 0x02, unk_46 に退避される
   u8 state;                      // 0x03, sC9BCElemUpdates の添字
   u32 timer;                     // 0x04, state を変えるたびに 0 に戻る
   u32 scriptID;                  // 0x08, 0 以外なら unk_02 が変わったとき VM_ExecByID で実行する
   u32 scriptArgs[4];             // 0x0C, スクリプトの argv[4..7]
-  u32 unk_1c;                    // 0x1C, FUN_0800cbd0 が被弾時に 1 を入れる
+  u32 unk_1c;                    // 0x1C, EntityC9BCElem_OnHurt が被弾時に 1 を入れる
   u32 unk_20;                    // 0x20, 被弾させた側の HitboxData.weakness
   u32 unk_24;                    // 0x24, 被弾させた側の HitboxData.attributes
-  u16 unk_28;                    // 0x28, bit0 が立っていると FUN_0800cb7c が FUN_08002a58 を飛ばす
+  u16 unk_28;                    // 0x28, bit0 が立っていると EntityC9BCElem_Remove が FUN_08002a58 を飛ばす
   u16 unk_2a;                    // 0x2A, 状態関数がビットを立てる, 退避時に 0 に戻る
   u16 zone;                      // 0x2C, '.m' が 0 以外なら置いた位置の GetZoneAt
   u16 plttIdx;                   // 0x2E, 120..124, unk_02 のビットで選ぶ
@@ -34,14 +34,14 @@ typedef struct {
   s16 groundY;                   // 0x32, 落下先の高さ (<< 8)
   s16 unk_34;                    // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
   s16 unk_36;                    // 0x36, unk_34 の上限 (bobOffset を足した値)
-  s16 burnTimer;                 // 0x38, 炎の状態の残りフレーム, 0 になると炎の状態が消える, FUN_0800cd70 が 0 に戻す
+  s16 burnTimer;                 // 0x38, 炎の状態の残りフレーム, 0 になると炎の状態が消える, EntityC9BCElem_OnFrost が 0 に戻す
   u16 shakeTimer;                // 0x3A, 0 以外の間は毎フレーム減らしながら揺らす
   u16 shakePower;                // 0x3C, 揺れ幅, shakeTimer の写し
   s16 hp;                        // 0x3E, '.l=1', 地属性で被弾するたび減り 0 以下で砕ける
-  u8 unk_40;                     // 0x40, 0 以外の間は被弾を受け付けない, FUN_0800cbd0 が 10 を入れる
+  u8 unk_40;                     // 0x40, 0 以外の間は被弾を受け付けない, EntityC9BCElem_OnHurt が 10 を入れる
   u8 flashTimer;                 // 0x41, 被弾で 10 を入れ白く光らせる, 0 になるとパレットを plttIdx に戻す
   s16 burnTime;                  // 0x42, '.F=-1', 炎属性で被弾すると burnTimer に写される, 負なら炎が消えない
-  bool8 releaseReq;              // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
+  bool8 releaseReq;              // 0x44, 0 以外なら EntityC9BC_Update が EntityC9BCElem_Remove で解放する
   u8 unk_45;                     // 0x45, state の退避先
   u8 unk_46;                     // 0x46, unk_02 の退避先
   u8 unk_47;                     // 0x47
@@ -114,10 +114,10 @@ static inline void EntityC9BCElem_ApplyPltt(EntityC9BC* p, EntityC9BCElem* elem)
 
 EntityC9BC* GetEntityC9BC(void) { return gEntityC9BC; }
 
-s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem);
-s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem);
-s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem);
-s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem);
+s32 EntityC9BCElem_OnFlame(EntityC9BC* p, EntityC9BCElem* elem);
+s32 EntityC9BCElem_OnFrost(EntityC9BC* p, EntityC9BCElem* elem);
+s32 EntityC9BCElem_OnEarth(EntityC9BC* p, EntityC9BCElem* elem);
+s32 EntityC9BCElem_OnCloud(EntityC9BC* p, EntityC9BCElem* elem);
 
 // 被弾していたら属性ごとの処理を回してパレットを選び直す, どれかが state を変えたら 1 を返す
 static inline s32 EntityC9BCElem_HandleHit(EntityC9BC* p, EntityC9BCElem* elem) {
@@ -126,16 +126,16 @@ static inline s32 EntityC9BCElem_HandleHit(EntityC9BC* p, EntityC9BCElem* elem) 
   if (elem->unk_1c) {
     elem->unk_1c = 0;
     if (elem->unk_24 & HBATTR_FLAME) {
-      handled = FUN_0800ccd0(p, elem);
+      handled = EntityC9BCElem_OnFlame(p, elem);
     }
     if (!handled && (elem->unk_24 & HBATTR_FROST)) {
-      handled = FUN_0800cd70(p, elem);
+      handled = EntityC9BCElem_OnFrost(p, elem);
     }
     if (!handled && (elem->unk_24 & HBATTR_EARTH)) {
-      handled = FUN_0800cdb4(p, elem);
+      handled = EntityC9BCElem_OnEarth(p, elem);
     }
     if (!handled && (elem->unk_24 & HBATTR_CLOUD)) {
-      handled = FUN_0800ce24(p, elem);
+      handled = EntityC9BCElem_OnCloud(p, elem);
     }
     elem->plttIdx = EntityC9BCElem_GetPlttIdx(elem);
   }
@@ -143,7 +143,7 @@ static inline s32 EntityC9BCElem_HandleHit(EntityC9BC* p, EntityC9BCElem* elem) 
 }
 
 // 枠を片付けて空きに戻す
-void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
+void EntityC9BCElem_Remove(EntityC9BC* p, EntityC9BCElem* elem) {
   if (elem->active) {
     AuxSprite_Remove(&elem->spr_a8);
     AuxSprite_Remove(&elem->spr_f0);
@@ -158,7 +158,7 @@ void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
 }
 
 // 残差0命令 (26/26), レジスタ名だけ違う: 原典は weakness をスクラッチ (r1) に置くが, こちらは r4 に載る
-NON_MATCH void FUN_0800cbd0(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) {
+NON_MATCH void EntityC9BCElem_OnHurt(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) {
 #ifdef NONMATCHING_C
   if (a->id != b->id && (a->weakness & ((1 << WK_SWORD) | (1 << WK_SPEAR) | (1 << WK_HAMMER))) && elem->unk_40 == 0) {
     elem->unk_1c = 1;
@@ -167,7 +167,7 @@ NON_MATCH void FUN_0800cbd0(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) 
     elem->unk_40 = 10;
   }
 #else
-  INCFUNC("asm/func/FUN_0800cbd0.inc");
+  INCFUNC("asm/func/EntityC9BCElem_OnHurt.inc");
 #endif
 }
 
@@ -175,7 +175,7 @@ void nop_0800cc04(void) {}
 
 // slideAngle の向きの隣のタイルが, 階段でなく今より低く TATTR_UNK_3 も無ければ 1 を返す
 // 残差: 命令の並びはほぼ一致しレジスタ割当が違う, 原典は r6 まで使い & 3 の定数を gCollisionMap の読み込みより前に積む
-NON_MATCH s32 FUN_0800cc08(EntityC9BCElem* elem) {
+NON_MATCH s32 EntityC9BCElem_CanSlide(EntityC9BCElem* elem) {
 #ifdef NONMATCHING_C
   CollisionMapTile* self = &elem->tileOverride.tile;
   s32 dir = Angle_ToDir4(elem->slideAngle);
@@ -189,12 +189,12 @@ NON_MATCH s32 FUN_0800cc08(EntityC9BCElem* elem) {
 
   return 0;
 #else
-  INCFUNC("asm/func/FUN_0800cc08.inc");
+  INCFUNC("asm/func/EntityC9BCElem_CanSlide.inc");
 #endif
 }
 
 // 炎属性で被弾したら炎の状態にする, state 1 なら state 3 へ移る
-s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
+s32 EntityC9BCElem_OnFlame(EntityC9BC* p, EntityC9BCElem* elem) {
   if (elem->state == 1) {
     if (elem->unk_02 == 0) {
       PlaySound_082406e0(SE_537);
@@ -225,7 +225,7 @@ s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) {
 }
 
 // 氷属性で被弾したら, state 0 のとき凍らせて沈む state 2 へ移る
-s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
+s32 EntityC9BCElem_OnFrost(EntityC9BC* p, EntityC9BCElem* elem) {
   if (elem->state == 0) {
     EntityC9BCElem_SetState(elem, 2);
     elem->unk_02 |= 2;
@@ -240,7 +240,7 @@ s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
 }
 
 // 地属性で被弾したら hp を減らして揺らし, 尽きたら砕ける state 6 へ移る
-s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) {
+s32 EntityC9BCElem_OnEarth(EntityC9BC* p, EntityC9BCElem* elem) {
   elem->hp--;
   elem->shakeTimer = 10;
   if (elem->hp <= 0) {
@@ -266,7 +266,7 @@ s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) {
 
 // 風属性で被弾したら, プレイヤーから見て向こう側へ滑らせる, 滑れなければ揺らすだけ
 // 残差: 命令列は一致, 原典は state 用の 4 と timer 用の 0 を r5/r4 に置き, フラグの 4 を積み直す
-NON_MATCH s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) {
+NON_MATCH s32 EntityC9BCElem_OnCloud(EntityC9BC* p, EntityC9BCElem* elem) {
 #ifdef NONMATCHING_C
   if (elem->state == 0) {
     MapTileOverride* self = &elem->tileOverride;
@@ -279,7 +279,7 @@ NON_MATCH s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) {
       } else {
         elem->slideTiles = 1;
       }
-      if (FUN_0800cc08(elem)) {
+      if (EntityC9BCElem_CanSlide(elem)) {
         SET_FLAGS(elem->unk_02, 4);
         elem->flashTimer = 10;
         Video_SetAuxSpritePltt(&elem->gfx, 306);
@@ -301,13 +301,13 @@ NON_MATCH s32 FUN_0800ce24(EntityC9BC* p, EntityC9BCElem* elem) {
 
   return 0;
 #else
-  INCFUNC("asm/func/FUN_0800ce24.inc");
+  INCFUNC("asm/func/EntityC9BCElem_OnCloud.inc");
 #endif
 }
 
 // 足元のタイルより 1 段以上浮いていたら, そこへ落ちる state 5 へ移る
 // 残差: 原典は足元タイルが浮いていない側 (return 0) を成功側より前に置く, 戻り値ブロックの並びが再現できない
-NON_MATCH s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) {
+NON_MATCH s32 EntityC9BCElem_TryFall(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) {
 #ifdef NONMATCHING_C
   if (idx < 0 || (idx & 1) == (elem->timer & 1)) {
     Mover* obj = &elem->obj;
@@ -328,7 +328,7 @@ NON_MATCH s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) {
 
   return 0;
 #else
-  INCFUNC("asm/func/FUN_0800cf30.inc");
+  INCFUNC("asm/func/EntityC9BCElem_TryFall.inc");
 #endif
 }
 
@@ -345,7 +345,7 @@ NON_MATCH void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, 
 
   elem->unk_2a |= 1;
   if (!EntityC9BCElem_HandleHit(p, elem)) {
-    FUN_0800cf30(p, elem, idx);
+    EntityC9BCElem_TryFall(p, elem, idx);
   }
 #else
   INCFUNC("asm/func/EntityC9BCElem_UpdateState0.inc");
@@ -361,7 +361,7 @@ NON_MATCH void EntityC9BCElem_UpdateState1(EntityC9BC* p, EntityC9BCElem* elem, 
   }
 
   if (!EntityC9BCElem_HandleHit(p, elem)) {
-    FUN_0800cf30(p, elem, idx);
+    EntityC9BCElem_TryFall(p, elem, idx);
   }
 #else
   INCFUNC("asm/func/EntityC9BCElem_UpdateState1.inc");
@@ -426,12 +426,12 @@ NON_MATCH void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, 
     if (--elem->slideTiles <= 0) {
       EntityC9BCElem_SetState(elem, 0);
       CLEAR_FLAGS(elem->unk_02, 4);
-    } else if (FUN_0800cc08(elem)) {
+    } else if (EntityC9BCElem_CanSlide(elem)) {
       EntityC9BCElem_SetState(elem, 4);
     } else {
       elem->slideTiles = 0;
       CLEAR_FLAGS(elem->unk_02, 4);
-      if (!FUN_0800cf30(p, elem, -1)) {
+      if (!EntityC9BCElem_TryFall(p, elem, -1)) {
         EntityC9BCElem_SetState(elem, 0);
       }
     }
@@ -521,7 +521,7 @@ void EntityC9BCElem_SaveState(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
 
 // 要素の毎フレームの共通処理: 移動とゾーンイベント, 炎の残り時間, スプライトと当たり判定の更新, パレットの戻し, unk_02 が変わったらスクリプトを呼ぶ
 // 下書き (503/501命令): 原典は obj を sl に置き size をスタックに置くが, こちらは逆になる, ほかにパレット番号を選ぶ所の unk_02 の読み直しと定数 -2 の作り方が違う
-NON_MATCH void FUN_0800d480(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+NON_MATCH void EntityC9BCElem_UpdateCommon(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
 #ifdef NONMATCHING_C
   Mover* obj = &elem->obj;
   MapTileOverride* self = &elem->tileOverride;
@@ -646,7 +646,7 @@ NON_MATCH void FUN_0800d480(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
 
   elem->timer++;
 #else
-  INCFUNC("asm/func/FUN_0800d480.inc");
+  INCFUNC("asm/func/EntityC9BCElem_UpdateCommon.inc");
 #endif
 }
 
@@ -672,9 +672,9 @@ s32 EntityC9BC_Update(EntityC9BC* p) {
     if (elem->active) {
       EntityC9BCElem_SaveState(p, elem, i);
       sC9BCElemUpdates[elem->state](p, elem, i);
-      FUN_0800d480(p, elem, i);
+      EntityC9BCElem_UpdateCommon(p, elem, i);
       if (elem->releaseReq) {
-        FUN_0800cb7c(p, elem);
+        EntityC9BCElem_Remove(p, elem);
         elem->releaseReq = FALSE;
       }
     }
@@ -704,7 +704,7 @@ s32 EntityC9BC_Destroy(EntityC9BC* p) {
   u32 i;
 
   for (i = 0; i < p->count; i++, elem++) {
-    FUN_0800cb7c(p, elem);
+    EntityC9BCElem_Remove(p, elem);
   }
 
   if (p->elems != NULL) {
@@ -914,7 +914,7 @@ NON_MATCH s32 Cmd_A062(void) {
   offset.x = 0, offset.y = 0x80, offset.z = 0;
   Hitbox_Init(&elem->hurtbox, elem->obj.id, HBFLAG_HURTBOX | HBFLAG_UNK_6 | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(&elem->hurtbox, &elem->obj.pos, 0);
-  Hitbox_SetHandler(&elem->hurtbox, FUN_0800cbd0, elem);
+  Hitbox_SetHandler(&elem->hurtbox, EntityC9BCElem_OnHurt, elem);
   Hitbox_Register(&elem->hurtbox);
 
   halfSize.x = 0x90, halfSize.y = 0x80, halfSize.z = 0x90;
