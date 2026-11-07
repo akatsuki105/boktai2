@@ -86,7 +86,7 @@ NAKED void FUN_08163d94(Slime* p) { INCFUNC("asm/func/FUN_08163d94.inc"); }
 
 NAKED void FUN_08163e10(Slime* p) { INCFUNC("asm/func/FUN_08163e10.inc"); }
 
-NAKED void FUN_08163eac(Slime* p) { INCFUNC("asm/func/FUN_08163eac.inc"); }
+void FUN_08163eac(Slime* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad9c8; }
 
 NAKED void Slime_InitHitboxes(Slime* p) { INCFUNC("asm/func/Slime_InitHitboxes.inc"); }
 
