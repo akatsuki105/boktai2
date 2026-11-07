@@ -160,6 +160,27 @@ each piece are preserved. Same guards and the same
 retype-references-before-deleting order as `MergeSplitTail.java`, and it does
 not save either.
 
+**Which script to use.** `MergeSplitTail.java` only fits a tail that has free
+space after it: it aborts with `end の直後が <next> の中` when the next real
+function starts right after `end`. An epilogue that sits directly in front of
+the next function is the common shape inside a bulk blob, so use
+`MergeContinuation.java` there — it needs no `end`, because it takes the fake
+function's own body. Use `MergeSplitTail.java` only when the fake body is
+shorter than what the parent is missing and the range has to be stated
+explicitly.
+
+Check the parent again after a merge. Ghidra often split the chunk into
+several pieces, and absorbing the first one can leave a new
+`FUN_<addr>` behind it (`FUN_081504d4` left `FUN_081504d8`). Query
+`get_function_by_address` for an address near the end of the chunk, and pass
+anything still found there to `MergeContinuation.java` as well.
+
+**Still inside a bulk blob:** when the chunk has not been extracted yet, the
+repository-side fix happens in the blob itself. Replace the two lines
+`thumb_func_start FUN_<child>` / `FUN_<child>: @ 0x...` with a local label
+`_<ADDR>:`, and rewrite each `bl FUN_<child>` to `bl _<ADDR>`. The chunk then
+travels with its parent when `todo-to-naked` extracts the parent.
+
 Done so far:
 
 | Parent | Absorbed |
@@ -167,6 +188,14 @@ Done so far:
 | `FUN_080f6e64` | `FUN_080f79e8`, `FUN_080f83ec`, `FUN_080f83ee` |
 | `Enemy_OnCWolfMessage` | `FUN_080f5104`, `FUN_080f51e0` |
 | `Enemy_AddKillCount` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
+| `FUN_0814fc7c` | `FUN_081504d4`, `FUN_081504d8` |
+| `FUN_0814ccfc` | `FUN_0814dd18`, `FUN_0814dd28` |
+| `FUN_0814eacc` | `FUN_0814f410`, `FUN_0814fb76` |
+
+The three dog entries were found while emptying `asm/dog.inc` and fixed in the
+blob as described above. `FUN_081504d4` is the case where
+`MergeSplitTail.java` refused: its epilogue ends right where `FUN_081504e8`
+begins.
 
 `FUN_080eafb4` needed the repository-side fix: every label inside its `.inc`
 was already local, so its contents were appended to `asm/func/Enemy_AddKillCount.inc`
