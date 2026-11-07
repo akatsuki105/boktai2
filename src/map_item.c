@@ -801,7 +801,7 @@ NON_MATCH s32 FUN_08007310(WorldPos* pos, s32 category, s32 itemID, s32 xflip, s
   if (appear) {
     item->update = MapItem_UpdateAppear;
     if (!(gGameFlags & GAMEFLAG_LINK)) {
-      PlaySound_082406e0(SONG_623);
+      PlaySound_082406e0(SE_TREASURE_APPEAR);
     }
   } else {
     item->update = MapItem_UpdateIdle;

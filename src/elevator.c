@@ -161,7 +161,7 @@ void FUN_081d21d8(Elevator* e) {
   if (!(e->unk_d6 & 4)) {
     switch (e->variant) {
       case 0: {
-        PlaySound_082406e0(SONG_344);
+        PlaySound_082406e0(SE_ELEV_IRON_V);
         break;
       }
       case 1:
@@ -171,7 +171,7 @@ void FUN_081d21d8(Elevator* e) {
       }
       case 3: {
         if (e->unk_d6 & 0x20) {
-          PlaySound_082406e0(SONG_344);
+          PlaySound_082406e0(SE_ELEV_IRON_V);
         } else {
           PlaySound_082406e0(SE_ELEV_MECHA_V);
         }
@@ -416,12 +416,12 @@ void Elevator_UpdateState2(Elevator* e) {
       e->state = STATE_V_STOP;
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
-        sound_08240740(SONG_344);
+        sound_08240740(SE_ELEV_IRON_V);
         sound_08240740(SE_ELEV_MECHA_V);
         sound_08240740(SE_ELEV_MECHA_H);
         sound_08240740(SE_ELEV_LAVA);
         sound_08240740(SE_ELEV_WATER);
-        PlaySound_082406e0(SONG_345);
+        PlaySound_082406e0(SE_ELEV_END_V);
       }
     }
   } else {
@@ -439,12 +439,12 @@ void Elevator_UpdateState2(Elevator* e) {
       e->state = STATE_V_STOP;
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
-        sound_08240740(SONG_344);
+        sound_08240740(SE_ELEV_IRON_V);
         sound_08240740(SE_ELEV_MECHA_V);
         sound_08240740(SE_ELEV_MECHA_H);
         sound_08240740(SE_ELEV_LAVA);
         sound_08240740(SE_ELEV_WATER);
-        PlaySound_082406e0(SONG_345);
+        PlaySound_082406e0(SE_ELEV_END_V);
       }
     }
   }
@@ -1550,7 +1550,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
   if (p->usedMask == 0) return 0;
 
   if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
-    sound_08240740(SONG_344);
+    sound_08240740(SE_ELEV_IRON_V);
     sound_08240740(SE_ELEV_MECHA_V);
     sound_08240740(SE_ELEV_MECHA_H);
     sound_08240740(SE_ELEV_LAVA);
@@ -1588,7 +1588,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 s32 ElevatorManager_Destroy(ElevatorManager* p) {
   s32 i;
 
-  sound_08240740(SONG_344);
+  sound_08240740(SE_ELEV_IRON_V);
   sound_08240740(SE_ELEV_MECHA_V);
   sound_08240740(SE_ELEV_MECHA_H);
   sound_08240740(SE_ELEV_LAVA);

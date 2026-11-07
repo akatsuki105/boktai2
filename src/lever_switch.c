@@ -176,7 +176,7 @@ NON_MATCH void Cmd_F04B(unknown* p) {
 void FUN_081d11b8(Entity081d16ecItem* item) {
   Entity081d16ec* p = gEntity081d16ec;
 
-  PlaySound_082406e0(SONG_332);
+  PlaySound_082406e0(SE_LEVER_TOGGLE);
   if (item->state == 2) {
     if (item->anim.flags & ANIM_PLAY_REVERSE) {
       item->anim.flags &= ~ANIM_PLAY_REVERSE;
@@ -366,7 +366,7 @@ NON_MATCH void FUN_081d17c8(HitboxData* a, HitboxData* b, Entity081d16ecItem* it
 #ifdef NONMATCHING_C
   if (FUN_081d0e94(item, E081D16EC_FLAG_4) || (item->unk_ba == 1 && !(a->weakness & (1 << WK_HAMMER))) || (item->unk_ba == 0 && !(a->weakness & ((1 << WK_SWORD) | (1 << WK_SPEAR) | (1 << WK_HAMMER) | (1 << WK_GUN))))) {
     if (item->unk_c7 == 0) {
-      PlaySound_082406e0(SONG_333);
+      PlaySound_082406e0(SE_LEVER_NO_TOGGLE);
     }
     item->unk_c7 = 10;
     return;

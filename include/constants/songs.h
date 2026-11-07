@@ -221,7 +221,7 @@
 #define NOISE_SOLAR_CHARGE 216  // 太陽エネルギーチャージSE(無限ループ)
 #define SONG_217 217
 #define SONG_218 218
-#define SONG_219 219
+#define SE_WALL_SLIDE 219   // 壁に張り付きながら横移動するときのSE
 #define SE_CURSOR_MOVE 220  // カーソルの汎用SE (インベントリでカーソル移動, 選択肢でのカーソル移動など)
 #define SE_SELECT 221       // メニュー画面でアイテムとかを選んだ時の音
 #define SE_CANCEL 222       // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
@@ -334,20 +334,20 @@
 #define SONG_329 329
 #define SE_330 330  // 壊れる様な音?
 #define SONG_331 331
-#define SONG_332 332
-#define SONG_333 333
+#define SE_LEVER_TOGGLE 332     // レバースイッチがトグルした時のSE
+#define SE_LEVER_NO_TOGGLE 333  // レバースイッチを叩いて動作しなかった時のSE, すでにレバースイッチが作動済みだったり、 錆びたレバースイッチをハンマー以外で叩いた場合などに鳴る音
 #define SONG_334 334
 #define SONG_335 335
 #define SONG_336 336
-#define SE_THUD 337  // 移動床が端についたときのSE(昇降床は別), 他の用途でも使われてそう
+#define SE_THUD 337  // 移動床が端についたときのSE(昇降床は SE_ELEV_END_V), 他の用途でも使われてそう
 #define SONG_338 338
 #define SONG_339 339
 #define SONG_340 340
 #define SONG_341 341
 #define SONG_342 342
 #define SONG_343 343
-#define SONG_344 344
-#define SONG_345 345
+#define SE_ELEV_IRON_V 344  // SE_ELEV_MECHA_V の SPRITE_LIFT_IRON 版
+#define SE_ELEV_END_V 345   // 昇降床が端についたときのSE (移動床は SE_THUD)
 #define SONG_346 346
 #define SONG_347 347
 #define SONG_348 348
@@ -569,7 +569,7 @@
 #define CRY_JORMY_EVENT_DEATH 564     // ヨルムンガンド戦の後のイベントで太陽チャージを終えた後のヨルムンガンドの断末魔
 #define SONG_565 565
 #define SONG_566 566
-#define SONG_567 567
+#define SE_ALARM_PANEL 567  // 太陽警報機の作動音
 #define SONG_568 568
 #define NOISE_DARK_CHARGE 569  // 暗黒チャージ中のSE (NOISE_SOLAR_CHARGE のサバタ版)
 #define SONG_570 570
@@ -587,20 +587,20 @@
 #define VO_BDJANGO_MAD 582  // 黒ジャンゴの暴走条件を満たした時のうめき声
 #define VO_DURATHROR_583 583
 #define SONG_584 584
-#define SONG_585 585
+#define VO_DAINN_585 585
 #define SONG_586 586
 #define VO_DUNEYRR_LAUGH 587
-#define SONG_588 588
-#define SONG_589 589
+#define VO_DJANGO_588 588  // ジャンゴの悲鳴
+#define VO_DURATHROR_LAUGH_589 589
 #define VO_DVALINN_LAUGH 590
-#define SONG_591 591
+#define VO_DAINN_LAUGH_591 591
 #define SONG_592 592
 #define SONG_593 593
 #define VO_DUNEYRR_PURIFY 594
-#define SONG_595 595
+#define VO_DJANGO_595 595        // ジャンゴの悲鳴
 #define VO_DURATHROR_PURIFY 596  // 浄化時 (ボス戦時は VO_DURATHROR_DEATH を使用?)
 #define VO_DVALINN_PURIFY 597    // ドヴァリンを浄化したとき
-#define SONG_598 598
+#define VO_DAINN_598 598         // ダーインを浄化したとき?
 #define SONG_599 599
 #define SONG_600 600
 #define SONG_601 601
@@ -625,7 +625,7 @@
 #define SONG_620 620
 #define SE_WOOD_DOOR_621 621
 #define SONG_622 622
-#define SONG_623 623
+#define SE_TREASURE_APPEAR 623  // 宝箱が出現した時のドスンというSE
 #define SONG_624 624
 #define CRY_MIMIC_ALERT 625  // CRY_MIMIC_DETECT も兼ねる
 #define CRY_MIMIC_QUESTION 626

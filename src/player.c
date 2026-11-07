@@ -4500,7 +4500,7 @@ NON_MATCH void FUN_08067510(Player* p) {
       }
       Player_PlayAnim(p, animIdx, Q6(1));
       if (p->animID == Player_GetAnimIdx(p->kind, 4) && p->human.animCmdIdx == 0 && p->human.animCmdTimer == 1) {
-        PlaySound_082406e0(SONG_219);
+        PlaySound_082406e0(SE_WALL_SLIDE);
       }
       break;
     }
@@ -9463,7 +9463,7 @@ void FUN_08073574(Player* p) {
         PlaySound_082406e0(SE_COVER);
       }
       if (p->stateTimer == 8) {
-        PlaySound_082406e0(SONG_219);
+        PlaySound_082406e0(SE_WALL_SLIDE);
       }
       p->stateTimer++;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 48), Q6(1))) {
@@ -9690,7 +9690,7 @@ void Player_UpdateLockedBlownAway(Player* p) {
     }
     case 4: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_219);
+        PlaySound_082406e0(SE_WALL_SLIDE);
         p->stateTimer++;
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 45), Q6(1))) {
