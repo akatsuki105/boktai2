@@ -310,7 +310,13 @@ found:
   return TRUE;
 }
 
-NAKED void FUN_08140d48(EnemyBat* p) { INCFUNC("asm/func/FUN_08140d48.inc"); }
+void FUN_08140d48(EnemyBat* p) {
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+  if (!Enemy_TestFlag3(&p->e, ENEFLAG3_UNK_8) && EnemyBat_TestUnk658((p->e).unk_1cc, 2)) {
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    Enemy_ResetState(&p->e, 0, 0, 3);
+  }
+}
 
 NAKED void FUN_08140dd0(EnemyBat* p) { INCFUNC("asm/func/FUN_08140dd0.inc"); }
 
