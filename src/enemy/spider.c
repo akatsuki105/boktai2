@@ -37,6 +37,7 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
 }
 
 void FUN_080e8614(Enemy* p);
+void FUN_08130eec(Spider* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
 void FUN_0812f9ec(Spider*);
@@ -233,7 +234,22 @@ NAKED void FUN_0813069c(Spider* p) { INCFUNC("asm/func/FUN_0813069c.inc"); }
 
 NAKED void FUN_081307b0(Spider* p) { INCFUNC("asm/func/FUN_081307b0.inc"); }
 
-NAKED bool8 FUN_081309f0(Spider* p) { INCFUNC("asm/func/FUN_081309f0.inc"); }
+bool8 FUN_081309f0(Spider* p) {
+  if ((p->e).hitTargetID > 0) {
+    (p->e).playerMover = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
+    Enemy_ResetState(&p->e, 0, 0, 12);
+    Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+    FUN_08130eec(p);
+    Enemy_StepTowardPathNode(&p->e);
+    if ((p->e).kind != ENEK_SPIDER) {
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    }
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+    (p->e).unk_24e = (p->e).unk_24c;
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED bool8 FUN_08130ac4(Spider* p) { INCFUNC("asm/func/FUN_08130ac4.inc"); }
 
