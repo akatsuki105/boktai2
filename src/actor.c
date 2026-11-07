@@ -24,6 +24,7 @@ void FUN_08041918(ActorManager* p);
 s32 FUN_080411a0(ActorManager* p, Actor* actor);
 void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
+bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
 bool32 FUN_08018a08(void);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
@@ -986,7 +987,60 @@ void FUN_08042868(ActorManager* p, Actor* actor, s32 elapsed) {
   actor->fn(actor);
 }
 
-NAKED void FUN_080428b8(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_080428b8.inc"); }
+// 経路の今のノードへ pathSpeed で歩かせ, 着いたらアニメの区切りを待って終える, MainSprite のときは足を出すコマでだけ進む
+// 下書き (165/184命令): 呼び出しの並びは一致, 着いたかの判定と MainSprite のコマの判定の組み立てが違う
+NON_MATCH void FUN_080428b8(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  Mover* mover = &actor->mover;
+  PathWalker* walker = &actor->pathWalker;
+  WorldPos* pos = &actor->mover.pos;
+  SpriteHolder* sprite = &actor->sprite;
+
+  if (actor->unk_09) {
+    u16 angle;
+
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    angle = actor->mover.angle = ArcTan2_8(walker->node->x - pos->x, walker->node->y - pos->z);
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+    FUN_08041480(actor, 1, 1, 0, 4);
+    actor->unk_1ec = 0;
+    actor->pathArrived = FALSE;
+  }
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+
+  if (!actor->pathArrived) {
+    if (sprite->kind == 2) {
+      MainSprite* ms = &sprite->u.main.sprite;
+
+      if (ms->animEvents & 4) {
+        u16 speed = (ms->animCmdIdx & 1) ? actor->pathSpeed >> 1 : actor->pathSpeed;
+
+        actor->pathArrived = Map_GetStepToPathNode(walker, &mover->pos, &mover->delta, &mover->angle, speed, speed, speed);
+      }
+    } else {
+      actor->pathArrived = Map_GetStepToPathNode(walker, pos, &actor->mover.delta, &actor->mover.angle, actor->pathSpeed, actor->pathSpeed, actor->pathSpeed);
+    }
+  }
+  if (actor->pathArrived) {
+    if (sprite->kind == 2) {
+      if (sprite->kind & sprite->u.main.sprite.animEvents) {
+        actor->unk_07 = 1;
+      }
+    } else if (SpriteHolder_IsAnimEnded(sprite)) {
+      actor->unk_07 = 1;
+    }
+  }
+  FUN_080414fc(actor, 1);
+  FUN_08041480(actor, 1, 1, 0, 1);
+#else
+  INCFUNC("asm/func/FUN_080428b8.inc");
+#endif
+}
 
 NAKED void FUN_08042a48(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042a48.inc"); }
 

@@ -8,7 +8,7 @@
 COMMON_DATA Actor* gOtenkoActor = NULL;  // 0x03002C90, Cmd_BB34 が作ったおてんこの Actor, 破棄時に NULL
 
 static inline void Actor_SetUnk1F0(Actor* actor, s32 a, s32 b) {
-  actor->unk_1f0 = a;
+  actor->pathSpeed = a;
   actor->unk_1f2 = b;
   actor->unk_1f4 = a;
   actor->unk_1f8 = b;

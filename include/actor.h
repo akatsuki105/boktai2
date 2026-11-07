@@ -123,7 +123,7 @@ typedef struct Actor {
   u8 unk_1ed;                 // 0x1ED, まだ未解析
   u8 unk_1ee;                 // 0x1EE, 根拠: Actor_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
   s8 pathIdx;                 // 0x1EF, Cmd_5517 の '.r' の1つ目, 負なら経路なし
-  u16 unk_1f0;                // 0x1F0
+  u16 pathSpeed;              // 0x1F0, 経路を歩く速さ, Map_GetStepToPathNode に渡す
   u16 unk_1f2;                // 0x1F2
   u32 unk_1f4;                // 0x1F4
   u32 unk_1f8;                // 0x1F8
@@ -135,7 +135,7 @@ typedef struct Actor {
   u16 pathDelay;              // 0x20E, 経路の今のノードの待ちフレーム数 (PathNode.delay の下位12bit)
   u16 pathNodeIdx;            // 0x210, Cmd_5517 の '.r' の3つ目, 最初に向かうノード番号
   u8 footStep;                // 0x212, 0 以外なら FUN_080414fc が足音を鳴らす
-  u8 unk_213;                 // 0x213, まだ未解析
+  bool8 pathArrived;          // 0x213, FUN_080428b8 で経路の今のノードに着いたら立つ
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
   u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
   u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
