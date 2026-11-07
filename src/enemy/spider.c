@@ -233,7 +233,7 @@ void FUN_0812f3f8(Spider* p, s32 timer) {
 }
 
 // 倒されたときの状態, 粒子を散らしながら点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
-// 230/228命令, 原典は ENEFLAG_UNK_15 の検査で作った flags のアドレスを r6 へ写して ENEFLAG_UNK_10 の検査まで持ち越す, 試済: 検査を if で包む形, フラグの直接演算, flags のポインタのローカル (226命令で割り当て以外は揃う)
+// 227/228命令, flags の検査を Enemy_TestFlag にするとアドレスの持ち越しは揃う, 残差は入場時の乱数とフィールド格納のアドレス用の一時レジスタ番号 (r1/r3/r6 と原典 r3/r6/r0), 試済: Random() & 0xFF, 片方だけ TEST_FLAGS
 NON_MATCH void Spider_StateDying(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -243,7 +243,7 @@ NON_MATCH void Spider_StateDying(Spider* p, s32 timer) {
     (p->e).unk_452 = Random();
     (p->e).unk_453 = 1;
   }
-  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_15)) {
+  if (Enemy_TestFlag(&p->e, ENEFLAG_UNK_15)) {
     return;
   }
   if (Sprite_UpdateVanishBlink(&((AuxSprite*)(p->e).sprite)->flags, timer, 10, 30)) {
@@ -272,7 +272,7 @@ NON_MATCH void Spider_StateDying(Spider* p, s32 timer) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
+    if (!Enemy_TestFlag(&p->e, ENEFLAG_UNK_10)) {
       FUN_080e6658(&p->e);
     }
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
