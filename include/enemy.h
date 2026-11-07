@@ -188,6 +188,9 @@ typedef u32 EnemyFlags6;
 #define ES_UNK_36 36  // ミミックの FUN_08147530
 #define ES_UNK_37 37  // ミミックの FUN_08147428
 #define ES_UNK_38 38  // スライムの FUN_08162efc
+#define ES_UNK_39 39
+#define ES_UNK_40 40
+#define ES_UNK_41 41  // スライムの FUN_08163604
 
 struct Enemy;
 struct EnemyTarget;

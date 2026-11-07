@@ -24,7 +24,9 @@
 // ENEID_SLIME_Y: 状態異常なし, ENEID_SLIME_G: 毒, ENEID_SLIME_P: 石化, ENEID_SLIME_B: 引火or氷結
 typedef struct {
   Enemy e;
-  u8 unk_654[0x65C - 0x654];  // 0x654
+  u8 unk_654[0x658 - 0x654];  // 0x654
+  u16 unk_658;                // 0x658, unk_65a 以上になると ES_UNK_41 へ移る
+  u16 unk_65a;                // 0x65A
   u16 unk_65c;                // 0x65C, 前のフレームの floorY
   u8 unk_65e[0x688 - 0x65E];  // 0x65E
   u16 unk_688;                // 0x688, '.s[0]'
@@ -40,6 +42,7 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
   return FALSE;
 }
 
+void FUN_08163604(Slime* p, s32 arg);
 void FUN_08162efc(Slime* p);
 void FUN_08162fa8(Slime* p);
 u32 Slime_PickHitAttributes(Slime* p);
@@ -261,7 +264,16 @@ NAKED void FUN_08164120(Slime* p, u32 arg) { INCFUNC("asm/func/FUN_08164120.inc"
 
 NAKED bool8 FUN_08164388(Slime* p) { INCFUNC("asm/func/FUN_08164388.inc"); }
 
-NAKED void FUN_0816446c(Slime* p) { INCFUNC("asm/func/FUN_0816446c.inc"); }
+void FUN_0816446c(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+  (p->e).navAgent->dest = gPlayerPtr[0]->mover.pos;
+  if (q->unk_658 >= q->unk_65a) {
+    Enemy_EnterState(&p->e, FUN_08163604, ES_UNK_41);
+    Enemy_ResetState(&p->e, 3, 0, 0);
+  }
+}
 
 void FUN_08164520(Slime* p) {
   u8 state = (p->e).state;
