@@ -467,7 +467,26 @@ void FUN_080412f8(void) {}
 
 NAKED s32 FUN_080412fc(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_080412fc.inc"); }
 
-NAKED s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_0804135c.inc"); }
+// unk_19 から左右反転と向きの番号を作ってアニメを設定する
+s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
+  SpriteHolder* sprite = &actor->sprite;
+  u32 a;
+  u32 b;
+
+  if (sprite->kind == 1) {
+    if (actor->unk_19 > 1) {
+      a = 3 - actor->unk_19;
+      b = 1;
+    } else {
+      a = actor->unk_19;
+      b = 0;
+    }
+  } else {
+    a = ((u8)(actor->unk_19 - 1) <= 1) ? param_4 : 0;
+    b = actor->unk_19 > 1;
+  }
+  return SpriteHolder_SetAnim(sprite, pose, a, b, param_3, param_5, param_6);
+}
 
 // unk_19 から再生の引数2つを作ってアニメを設定する
 // 残差1命令 (34 対 33), 原典は b を r3 (第4引数レジスタ) に直接置くが, こちらは r4 に取るので呼び出し直前に移し替える
