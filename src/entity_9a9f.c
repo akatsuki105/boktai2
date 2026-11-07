@@ -621,7 +621,34 @@ s32 FUN_081df540(Entity9A9F* p) {
   }
 }
 
-NAKED s32 FUN_081df568(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df568.inc"); }
+// 全員から種別 0x1000 の 2 番のキーが届いたら state 24 へ, 受信番号が不正か 180 フレーム経ったら切断する, 原典は最後の return を書き忘れている
+// 残差: 原典は種別の定数 0x1000 をループ内で毎回作り, count を r6, i を r5 に置くが, こちらは定数をループ外へ出す
+NON_MATCH s32 FUN_081df568(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 i;
+
+  FUN_081dd9d4(p);
+  count = 0;
+  for (i = 0; i < p->recordCount; i++) {
+    u16 key = Entity9A9F_GetRecvKey(p, i);
+
+    if (Entity9A9F_IsKeyKind(key, 0x1000) && (key & 0x3F) == 2) {
+      count++;
+    }
+  }
+
+  if (count == p->recordCount) {
+    Entity9A9F_SetState(p, 24, FUN_081df604);
+  } else if (p->unk_4c == -2 || p->unk_4c == -1 || p->stateTimer >= 180) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+  p->unk_42 = 0x1002;
+#else
+  INCFUNC("asm/func/FUN_081df568.inc");
+#endif
+}
 
 s32 FUN_081df604(Entity9A9F* p) {
   FUN_081dd9d4(p);
