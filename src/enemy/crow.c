@@ -32,6 +32,11 @@ typedef struct {
 } Crow;
 static_assert(sizeof(Crow) == 1728);
 
+static inline bool8 Crow_TestUnk658(Crow* p, u32 bit) {
+  if (p->unk_658 & bit) return TRUE;
+  return FALSE;
+}
+
 void Crow_PlayWingSound(Crow* p);
 void FUN_081436b4(Crow*);
 void FUN_081439d8(Crow*);
@@ -89,7 +94,20 @@ void FUN_08142fd8(Crow* p) {
   Crow_PlayWingSound(p);
 }
 
-NAKED void FUN_08143004(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143004.inc"); }
+void FUN_08143004(Crow* p, s32 timer) {
+  Crow* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 0);
+  } else if (!Crow_TestUnk658(q, 4)) {
+    if (Mod(timer, 90) == 0) {
+      Enemy_PlayAnim(&p->e, 16);
+      q->unk_671 += 40;
+    } else if ((p->e).animForceRestart) {
+      Enemy_PlayAnim(&p->e, 0);
+    }
+  }
+}
 
 NAKED void FUN_08143094(Crow* p) { INCFUNC("asm/func/FUN_08143094.inc"); }
 
