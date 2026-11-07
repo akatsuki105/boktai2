@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "player.h"
@@ -23,7 +24,7 @@ typedef struct {
   u8 unk_f3;               // 0xF3, FUN_080df478 が 1 を入れる
   s16 flags;               // 0xF4, FUN_080de344 が bit2 を立てる
   u8 state;                // 0xF6, _Update が 0x085AD354 の関数表の添字として引く
-  u8 index;                // 0xF7, FUN_080de174 が確保したスロット番号を入れる
+  s8 index;                // 0xF7, FUN_080de174 が確保したスロット番号を入れる
   u16 timer;               // 0xF8, FUN_080de344 が毎フレーム減らし, 0 になると 3 に戻す
   u8 unk_fa[2];            // 0xFA, まだ未解析, padding?
 } Entity080df420Elem;
@@ -57,15 +58,16 @@ void (*const sEntity080df420Updates[2])(Entity080df420*, Entity080df420Elem*) = 
     FUN_080de820,
 };  // 0x085AD354
 
-void FUN_080debbc(unknown*, unknown*);
+void FUN_080debbc(Entity080df420*, Entity080df420Elem*);
 void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
 void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
 void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5);
-void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9);
-void FUN_080defd0(unknown*, unknown*);
+Entity080df420* Entity080df420_Create(void);
+void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime);
+void FUN_080defd0(Entity080df420*, Entity080df420Elem*);
 
-void (*const PTR_ARRAY_085ad35c[2])(unknown*, unknown*) = {
+void (*const PTR_ARRAY_085ad35c[2])(Entity080df420*, Entity080df420Elem*) = {
     FUN_080debbc,
     FUN_080defd0,
 };  // 0x085AD35C
@@ -256,11 +258,29 @@ void nop_080de81c(Entity080df420* p, Entity080df420Elem* elem) {}
 
 NAKED void FUN_080de820(Entity080df420* p, Entity080df420Elem* param_2) { INCFUNC("asm/func/FUN_080de820.inc"); }
 
-NAKED void FUN_080debbc(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_080debbc.inc"); }
+NAKED void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080debbc.inc"); }
 
-NAKED void FUN_080defd0(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_080defd0.inc"); }
+// 消滅のアニメを流し, 流し終えたら片付ける
+void FUN_080defd0(Entity080df420* p, Entity080df420Elem* elem) {
+  if (elem->unk_f3) {
+    if (elem->flags & 1) {
+      AuxAnim_SetAnim(&elem->anim, elem->animFile, 3, 0, 0);
+    } else {
+      AuxAnim_SetAnim(&elem->anim, elem->animFile, 5, 0, 0);
+    }
+    Hitbox_Unregister(&elem->hurtbox);
+    elem->unk_f3 = 0;
+  }
+  if (AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim)) {
+    AuxSprite_Remove(&elem->sprite);
+    CLEAR_BIT(p->usedMask, elem->index);
+    p->count--;
+    elem->index = -1;
+    elem->state = 0;
+  }
+}
 
-NAKED void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9) { INCFUNC("asm/func/FUN_080df148.inc"); }
+NAKED void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime) { INCFUNC("asm/func/FUN_080df148.inc"); }
 
 s32 Entity080df420_Update(Entity080df420* p) {
   Entity080df420Elem* elems = p->elems;
