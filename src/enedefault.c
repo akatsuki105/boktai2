@@ -204,7 +204,6 @@ void Enemy_ResetToSpawn(Enemy* p);
 bool8 Enemy_PollMessages(Enemy* p);
 void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
 void FUN_080e5098(Enemy* p, s32 param_2, s32 param_3);
-void Enemy_FadeParticles(Enemy* p, s32 count);
 void FUN_080f5c0c(Enemy* p);
 void Enemy_StateDefeated(Enemy* p);
 bool8 FUN_080fa7a4(Enemy* p);

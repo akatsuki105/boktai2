@@ -62,6 +62,7 @@ const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800,
 struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
+void FUN_0814e8ec(Dog* p, s32 timer);
 bool8 FUN_0814b3a0(Dog* p);
 void enemy_dog_0814a320(Dog* p);
 void enemy_dog_0814b500(Dog* p);
@@ -678,7 +679,64 @@ void FUN_0814e530(Dog* p) {
   }
 }
 
-NAKED void FUN_0814e680(Dog* p) { INCFUNC("asm/func/FUN_0814e680.inc"); }
+// 倒されて跳ね飛ぶ状態, 着地のアニメが終わったら, 落下死なら倒されたスクリプトを呼んで消え, そうでなければ点滅して消える状態38へ移る
+void FUN_0814e680(Dog* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 10);
+    (p->e).animForceRestart = FALSE;
+    Enemy_SetEmote(&p->e, 0, 127, 0);
+    Enemy_SetEmote(&p->e, 1, 127, 0);
+    Enemy_SetEmote(&p->e, 3, 127, 0);
+    Enemy_FadeParticles(&p->e, 4);
+    PlayEnemyDeathCry(&p->e);
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_6 | ENEFLAG_UNK_7 | ENEFLAG_UNK_8 | ENEFLAG_UNK_14 | ENEFLAG_UNK_16);
+    (p->e).unk_21e = 0;
+    (p->e).unk_220 = 0;
+    (p->e).unk_202 = 0;
+    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+  }
+  Enemy_ClearDamage(&p->e);
+  Enemy_UpdateJump(&p->e);
+  Enemy_SnapToFloor(&p->e);
+  if ((p->e).animForceRestart) {
+    if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
+      s32 idx;
+
+      (p->e).subStateDone = 1;
+      FUN_0814afc8(p);
+      if ((p->e).unk_19a != 0) {
+        u32 argv[8];
+        ScriptArgs sa;
+
+        argv[0] = (p->e).mover.pos.x;
+        argv[1] = (p->e).mover.pos.y;
+        argv[2] = (p->e).mover.pos.z;
+        argv[3] = (p->e).unk_19c;
+        argv[4] = (p->e).unk_1a0;
+        argv[5] = (p->e).unk_1a4;
+        argv[6] = (p->e).unk_4a0;
+        argv[7] = (p->e).mover.id;
+        sa.argc = 8;
+        sa.argv = argv;
+        VM_ExecByID((p->e).unk_19a, &sa);
+      }
+      idx = EnemyDex_GetEntryIdx((p->e).kind, (p->e).variant);
+      if (idx < 32) {
+        gStat->enemyDexSeen[0] |= 1 << idx;
+      } else {
+        gStat->enemyDexSeen[1] |= 1 << (idx - 32);
+      }
+      if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_14)) {
+        Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+        Enemy_ResetState(&p->e, 1, 0, 2);
+      }
+      ParticleShadow_Hide(&(p->e).shadow);
+      Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
+    } else {
+      Enemy_EnterState(&p->e, FUN_0814e8ec, ES_UNK_38);
+    }
+  }
+}
 
 // 跳ねながら点滅して消え, 消えきったら倒されたスクリプトを呼び図鑑に載せて止まる
 void FUN_0814e8ec(Dog* p, s32 timer) {

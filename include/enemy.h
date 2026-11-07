@@ -540,6 +540,7 @@ void Enemy_SetOwnerAndSpriteKind(Enemy* p, void* arg, u8 spriteKind);
 bool8 Enemy_UpdateJump(Enemy* p);
 void Enemy_SnapToFloor(Enemy* p);
 void Enemy_ClearDamage(Enemy* p);
+void Enemy_FadeParticles(Enemy* p, s32 count);
 void Enemy_StateBlownAway(Enemy* p);
 void Enemy_WaitPendingState(Enemy* p, s32 timer);
 bool8 FUN_080f84d4(Enemy* p);
