@@ -178,7 +178,35 @@ NON_MATCH void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* el
 #endif
 }
 
-NAKED void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de52c.inc"); }
+// 攻撃を食らったら, 分裂する弾なら6つの小さな弾を散らし, 火の粉と効果音を出して消滅へ移る
+// 175/175命令, FUN_080de3b4 と同じループ外の定数の順に加え, スタックに置くポインタの並びが違う
+NON_MATCH void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
+#ifdef NONMATCHING_C
+  if (b->invincibleTime != 0) {
+    return;
+  }
+  if (elem->flags & 1) {
+    s32 angle = ArcTan2_8(elem->vel.x, elem->vel.z);
+    s32 i;
+
+    for (i = 0; i < 6; i++) {
+      Vec3 vel;
+
+      Vec3_SetPolar(&vel, angle + (Random() & 0xFF), 5);
+      FUN_080df148(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockbackPower, elem->hitbox.attributes, elem->hitbox.invincibleTime);
+    }
+  }
+  FUN_080de1cc(elem, a->angle);
+  FUN_08240cc4(elem->sprite.pos.x, elem->sprite.pos.z, 0, 0, 0x80);
+  Hitbox_Hide(&elem->hitbox);
+  Hitbox_Hide(&elem->hurtbox);
+  PlaySound_082406e0(991);
+  elem->state = 3;
+  elem->unk_f3 = 1;
+#else
+  INCFUNC("asm/func/FUN_080de52c.inc");
+#endif
+}
 
 // 攻撃判定と食らい判定を作る
 // 96/98命令, 引数を受けるレジスタだけが違う (原典は elem を r6, power を sl, knockback を r7, attrs を r8 に置く), 試済: ローカルの宣言順, 2つ目の判定を hitbox++ で作る
