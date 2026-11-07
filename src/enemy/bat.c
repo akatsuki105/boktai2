@@ -136,7 +136,11 @@ NAKED void FUN_08141448(EnemyBat* p) { INCFUNC("asm/func/FUN_08141448.inc"); }
 
 NAKED s32 FUN_0814145c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814145c.inc"); }
 
-NAKED s32 EnemyBat_Update(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Update.inc"); }
+s32 EnemyBat_Update(EnemyBat* p) {
+  (p->e).playerMover = &gPlayerPtr[0]->mover;
+  Enemy_Update(&p->e);
+  return 0;
+}
 
 NAKED s32 EnemyBat_Destroy(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Destroy.inc"); }
 
