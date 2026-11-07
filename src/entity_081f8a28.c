@@ -100,7 +100,7 @@ NAKED s32 Entity081f8a28_Init(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8
 
 NAKED Entity081f8a28* Entity081f8a28_Create(void) { INCFUNC("asm/func/Entity081f8a28_Create.inc"); }
 
-NAKED void Entity081f8a28_ClearGlobal(void) { INCFUNC("asm/func/Entity081f8a28_ClearGlobal.inc"); }
+void Entity081f8a28_ClearGlobal(void) { gEntity081f8a28 = NULL; }
 
 NAKED void FUN_081f8a80(void) { INCFUNC("asm/func/FUN_081f8a80.inc"); }
 
