@@ -450,7 +450,40 @@ s32 Entity501B_Destroy(Entity501B* p) {
   return 1;
 }
 
-NAKED s32 Entity501B_Init(Entity501B* p) { INCFUNC("asm/func/Entity501B_Init.inc"); }
+// 88/88命令, 定数オフセットや 0 を受ける一時レジスタ番号だけが違う (原典は r3 を使う箇所で r2/r1 になる), 試済: '.s'/'.e' の判定を && でまとめる
+NON_MATCH s32 Entity501B_Init(Entity501B* p) {
+#ifdef NONMATCHING_C
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_3d4 = VM_GetPC_Proxy();
+    if (p->unk_3d4 == NULL) {
+      return -1;
+    }
+  }
+  if (VM_SeekToNamedArg('e')) {
+    p->unk_3d8 = VM_GetPC_Proxy();
+    if (p->unk_3d8 == NULL) {
+      return -1;
+    }
+  }
+  MainMenu_SetHudMode(7);
+  ClearBGTilemapBuffer(0);
+  ClearBGTilemapBuffer(1);
+  ClearBGTilemapBuffer(2);
+  ClearBGTilemapBuffer(3);
+  Entity501B_InitBg(p);
+  Entity501B_InitTextPanels(p);
+  Entity501B_InitSprites(p);
+  Entity501B_InitSpritePos(p);
+  Entity501B_SetNumber(p, 1, gStat->linkBattlePoint);
+  Entity501B_InitAuxSprite(p);
+  Entity501B_LoadScore(p);
+  Entity501B_SetState(p, FUN_081e0a18, 0);
+  FUN_0823ce68(2, 1, 4, 4, 4, 0xFFFF, 0);
+  return 1;
+#else
+  INCFUNC("asm/func/Entity501B_Init.inc");
+#endif
+}
 
 Entity501B* Entity501B_Create(void) {
   Entity501B* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity501B));
