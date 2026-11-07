@@ -320,7 +320,25 @@ NON_MATCH s32 FUN_0800cf30(EntityC9BC* p, EntityC9BCElem* elem, s32 idx) {
 #endif
 }
 
-NAKED void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState0.inc"); }
+// 止まっている間は被弾した属性ごとの処理を回し, 何も起きなければ足元が抜けていないか見る
+// 残差1命令: パレット番号を選ぶ所で, 原典は unk_02 == 0 の判定の後に unk_02 を読み直すが, こちらは同じレジスタを使い回す
+NON_MATCH void EntityC9BCElem_UpdateState0(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+#ifdef NONMATCHING_C
+  MapTileOverride* self = &elem->tileOverride;
+
+  if (elem->unk_01) {
+    elem->unk_01 = 0;
+    SET_FLAGS(self->tile.attr, TATTR_UNK_9);
+  }
+
+  elem->unk_2a |= 1;
+  if (!EntityC9BCElem_HandleHit(p, elem)) {
+    FUN_0800cf30(p, elem, idx);
+  }
+#else
+  INCFUNC("asm/func/EntityC9BCElem_UpdateState0.inc");
+#endif
+}
 
 NAKED void EntityC9BCElem_UpdateState1(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState1.inc"); }
 
