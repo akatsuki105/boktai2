@@ -307,8 +307,8 @@
 #define SE_DENY_302 302  // ENE満タンのときに太陽スタンドを使おうとしたときとかのビープ音
 #define SE_UNK_303 303
 #define SE_UNK_304 304
-#define SONG_305 305
-#define SONG_306 306
+#define SE_OVERHEAT_1 305    // オーバーヒートSE(その1)
+#define SE_OVERHEAT_2 306    // オーバーヒートSE(その2)
 #define SE_SOLIDIFY 307      // 氷結や石化時などで使う凍りつく音
 #define SE_END_SOLIDIFY 308  // プレイヤーの氷結や石化時が溶けたときの砕ける様なSE
 #define SONG_309 309

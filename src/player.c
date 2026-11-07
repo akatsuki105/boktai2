@@ -13388,12 +13388,12 @@ void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807be58(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807be58(Player* p, DirS32 dir, s32 floatHeight, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
-  p->floatHeight = param_3;
+  p->floatHeight = floatHeight;
   Player_SetAction(p, PACT_LANDING, 0);
   if (p->kind == PLAYER_MOUSE) {
     p->lockedUpdate = Player_UpdateMouseLand;

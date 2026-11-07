@@ -613,11 +613,12 @@ void FUN_0808a3c4(MainMenu* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, 
   CpuCopy32(pltt, &gBgPlttBuffer[13 * 16], 48 * sizeof(rgb555));
 }
 
-static BgMapEntry* MainMenu_GetBgMapAddr(s32 bg, u32 x, u32 y) {
+// x8, y8 は GBAタイル単位
+static BgMapEntry* MainMenu_GetBgMapAddr(s32 bg, u32 x8, u32 y8) {
   BgState* s = &gBgStates[bg];
   BgMapEntry* map = s->tilemap;
 
-  return map + (x & 31) + (y & 31) * 32;
+  return map + (x8 & 31) + (y8 & 31) * 32;
 }
 
 // 数字 param_1 の BG タイル番号, param_2 は書体 (0: 0x11〜, 1: 0x91〜, それ以外: 0x31〜)
@@ -882,8 +883,8 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
 void FUN_0808a9a0(void) {}
 
 // HUD の太陽ゲージを描く, 熱中症が溜まると点滅し, カーモス状態ならその表示も出す
-// 残差: 240/240 命令, 引数の割り当てだけが違い, 原典は param_2 を r7, param_3/param_4 を r8/r9 に置くが, こちらは param_3/param_4 が r7/r8 で param_2 が r9 になる (ゲージ部分の static inline 化は悪化)
-NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) {
+// 残差: 240/240 命令, 引数の割り当てだけが違い, 原典は param_2 を r7, x8/y8 を r8/r9 に置くが, こちらは x8/y8 が r7/r8 で param_2 が r9 になる (ゲージ部分の static inline 化は悪化)
+NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 x8, s32 y8) {
 #ifdef NONMATCHING_C
   BgMapEntry* map;
   bool32 hidden;
@@ -898,7 +899,7 @@ NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 param_3, s32 
       hidden = TRUE;
     }
     if ((p->heatBlinkTimer & 0x3F) == 2) {
-      PlaySound_082406e0(306);
+      PlaySound_082406e0(SE_OVERHEAT_2);
     }
     p->heatBlinkTimer++;
   } else if (gStat->heatstroke > 0) {
@@ -908,14 +909,14 @@ NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 param_3, s32 
       hidden = TRUE;
     }
     if ((p->heatBlinkTimer & 0x3F) == 2) {
-      PlaySound_082406e0(305);
+      PlaySound_082406e0(SE_OVERHEAT_1);
     }
     p->heatBlinkTimer++;
   } else {
     hidden = FALSE;
     p->heatBlinkTimer = 0;
   }
-  map = MainMenu_GetBgMapAddr(0, param_3, param_4);
+  map = MainMenu_GetBgMapAddr(0, x8, y8);
   if (hidden) {
     for (i = 0; i < 12; i++) {
       *map++ = (i + 3) | 0xD000;
