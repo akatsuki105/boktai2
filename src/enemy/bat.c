@@ -102,7 +102,16 @@ NAKED void FUN_08140680(EnemyBat* p, Vec3* pos) { INCFUNC("asm/func/FUN_08140680
 
 NAKED u8 FUN_081406b8(EnemyBat* p) { INCFUNC("asm/func/FUN_081406b8.inc"); }
 
-NAKED void EnemyBat_InitAnims(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_InitAnims.inc"); }
+void EnemyBat_InitAnims(EnemyBat* p) {
+  Enemy_SetAnimEntry(&p->e, 0, 0, 0);
+  Enemy_SetAnimEntry(&p->e, 1, 0, 0);
+  Enemy_SetAnimEntry(&p->e, 3, 1, 0);
+  Enemy_SetAnimEntry(&p->e, 15, 2, 0);
+  Enemy_SetAnimEntry(&p->e, 16, 3, 0);
+  Enemy_SetAnimEntry(&p->e, 17, 4, 0);
+  Enemy_SetAnimEntry(&p->e, 18, 5, 0);
+  Enemy_SetAnimEntry(&p->e, 10, 1, 0);
+}
 
 NAKED void FUN_08140904(EnemyBat* p) { INCFUNC("asm/func/FUN_08140904.inc"); }
 
