@@ -131,7 +131,16 @@ NAKED void FUN_081e084c(Entity501B* p) { INCFUNC("asm/func/FUN_081e084c.inc"); }
 
 NAKED void FUN_081e0a18(Entity501B* p) { INCFUNC("asm/func/FUN_081e0a18.inc"); }
 
-NAKED s32 Entity501B_Update(Entity501B* p) { INCFUNC("asm/func/Entity501B_Update.inc"); }
+s32 Entity501B_Update(Entity501B* p) {
+  if (!FUN_081dfa04()) {
+    KillEntity((Entity*)p);
+    return -1;
+  }
+  if (p->updateCallback != NULL) {
+    p->updateCallback(p);
+  }
+  return 1;
+}
 
 s32 Entity501B_Destroy(Entity501B* p) {
   Entity501B_HideTextPanels(p);
