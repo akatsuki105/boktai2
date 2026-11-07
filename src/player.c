@@ -5463,7 +5463,7 @@ void FUN_08069c8c(Player* p) {
   }
 }
 
-// 人型の落下 (PACT_UNK_22), カメラを上に向けて落下アニメを当て, 6フレーム後に沈み始めて途中で声を上げ, 30 フレームで消える
+// 人型の落下 (PACT_FALL), カメラを上に向けて落下アニメを当て, 6フレーム後に沈み始めて途中で声を上げ, 30 フレームで消える
 void Player_UpdateFall(Player* p) {
   Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
   switch (p->state) {
@@ -5480,13 +5480,13 @@ void Player_UpdateFall(Player* p) {
       PlaySound_082406e0(SE_FALL_SURPRISE);
       PLAYER_SET_ANIM_4DIR(p, p->facing);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
-      Player_SetAction(p, PACT_UNK_22, 1);
+      Player_SetAction(p, PACT_FALL, 1);
       p->floatHeight = 0;
       break;
     }
     case 1: {
       if (++p->stateTimer > 5) {
-        Player_SetAction(p, PACT_UNK_22, 2);
+        Player_SetAction(p, PACT_FALL, 2);
         p->floatHeight = 0;
         p->beast.priority = 1;
         PlaySound_082406e0(SE_FALL_430);
@@ -5504,7 +5504,7 @@ void Player_UpdateFall(Player* p) {
         }
       }
       if (++p->stateTimer > 29) {
-        Player_SetAction(p, PACT_UNK_22, 3);
+        Player_SetAction(p, PACT_FALL, 3);
       }
       break;
     }
@@ -5516,7 +5516,7 @@ void Player_UpdateFall(Player* p) {
   }
 }
 
-// PACT_UNK_23 の行動, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したら着地アニメを経て PACT_IDLE に戻る
+// PACT_LANDING の行動, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したら着地アニメを経て PACT_IDLE に戻る
 void FUN_08069f60(Player* p) {
   Player_SetFlag35a(p, 8);
   switch (p->state) {
@@ -5529,7 +5529,7 @@ void FUN_08069f60(Player* p) {
       if ((u16)p->heightAboveTile <= 30) {
         p->heightAboveTile = 0;
         PlaySound_082406e0(SE_LANDING);
-        Player_SetAction(p, PACT_UNK_23, 1);
+        Player_SetAction(p, PACT_LANDING, 1);
       } else {
         p->heightAboveTile -= 30;
       }
@@ -6859,7 +6859,7 @@ NON_MATCH void FUN_0806d5b0(Player* p) {
 #endif
 }
 
-// マウスの PACT_UNK_23, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したらアニメ 3 を一巡させて PACT_IDLE に戻る
+// マウスの PACT_LANDING, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したらアニメ 3 を一巡させて PACT_IDLE に戻る
 void FUN_0806d74c(Player* p) {
   Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
   switch (p->state) {
@@ -9583,7 +9583,7 @@ void FUN_080738b4(Player* p) {
       } else {
         p->floatHeight = 0;
         PlaySound_082406e0(SE_LANDING);
-        Player_SetAction(p, PACT_UNK_23, 1);
+        Player_SetAction(p, PACT_LANDING, 1);
       }
       break;
     }
@@ -10475,7 +10475,7 @@ void Player_UpdateMouseMoveTo(Player* p) {
   }
 }
 
-// マウスの落下 (PACT_UNK_22), カメラを上に向けてアニメ 2 を1コマ当て, 6フレーム後に沈み始めて 30 フレームで消える
+// マウスの落下 (PACT_FALL), カメラを上に向けてアニメ 2 を1コマ当て, 6フレーム後に沈み始めて 30 フレームで消える
 void Player_UpdateMouseFall(Player* p) {
   switch (p->state) {
     case 0: {
@@ -10496,7 +10496,7 @@ void Player_UpdateMouseFall(Player* p) {
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       PlaySound_082406e0(SE_FALL_SURPRISE);
-      Player_SetAction(p, PACT_UNK_22, 1);
+      Player_SetAction(p, PACT_FALL, 1);
       p->floatHeight = 0;
       break;
     }
@@ -10506,7 +10506,7 @@ void Player_UpdateMouseFall(Player* p) {
         p->floatHeight = 0;
         p->beast.priority = 1;
         PlaySound_082406e0(SE_FALL_430);
-        Player_SetAction(p, PACT_UNK_22, 2);
+        Player_SetAction(p, PACT_FALL, 2);
       }
       break;
     }
@@ -10515,7 +10515,7 @@ void Player_UpdateMouseFall(Player* p) {
       p->floatHeight -= 60;
       if (++p->stateTimer > 29) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
-        Player_SetAction(p, PACT_UNK_22, 3);
+        Player_SetAction(p, PACT_FALL, 3);
         Player_NotifyLockedDone(p);
       }
       break;
@@ -10527,7 +10527,7 @@ void Player_UpdateMouseFall(Player* p) {
   }
 }
 
-// 操作不能中に lockedUpdate から回すマウスの着地 (PACT_UNK_23), state 0 は floatHeight を 30 ずつ下げてアニメ 2 を進め, 着地したら state 1 でアニメ 3 を一巡させて lockedUpdate を FUN_08075df8 に戻す
+// 操作不能中に lockedUpdate から回すマウスの着地 (PACT_LANDING), state 0 は floatHeight を 30 ずつ下げてアニメ 2 を進め, 着地したら state 1 でアニメ 3 を一巡させて lockedUpdate を FUN_08075df8 に戻す
 void Player_UpdateMouseLand(Player* p) {
   switch (p->state) {
     case 0: {
@@ -10542,7 +10542,7 @@ void Player_UpdateMouseLand(Player* p) {
       } else {
         p->floatHeight = 0;
         PlaySound_082406e0(SE_LANDING);
-        Player_SetAction(p, PACT_UNK_23, 1);
+        Player_SetAction(p, PACT_LANDING, 1);
       }
       break;
     }
@@ -11438,8 +11438,8 @@ void Player_UpdateDjango(Player* p) {
       [PACT_UNK_19] = FUN_0806961c,
       [PACT_UNK_20] = FUN_08069648,
       [PACT_GRABBED] = FUN_0806a050,
-      [PACT_UNK_22] = Player_UpdateFall,
-      [PACT_UNK_23] = FUN_08069f60,
+      [PACT_FALL] = Player_UpdateFall,
+      [PACT_LANDING] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
       [PACT_DEATH_PRONE] = Player_UpdateDeath,
@@ -11562,8 +11562,8 @@ void Player_UpdateSabata(Player* p) {
       [PACT_UNK_19] = FUN_0806961c,
       [PACT_UNK_20] = FUN_08069648,
       [PACT_GRABBED] = FUN_0806a050,
-      [PACT_UNK_22] = Player_UpdateFall,
-      [PACT_UNK_23] = FUN_08069f60,
+      [PACT_FALL] = Player_UpdateFall,
+      [PACT_LANDING] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
       [PACT_DEATH_PRONE] = Player_UpdateDeath,
@@ -11837,7 +11837,7 @@ void Player_UpdateBat(Player* p) {
 
 // --------------------------------------------
 
-// マウス時の次の行動を入力から決める, Player_GetBatAction の別版, A で何も開けられなければ PACT_WALL に, PACT_UNK_23 / PACT_WALL / PACT_CMOUSE 中も行動を据え置く
+// マウス時の次の行動を入力から決める, Player_GetBatAction の別版, A で何も開けられなければ PACT_WALL に, PACT_LANDING / PACT_WALL / PACT_CMOUSE 中も行動を据え置く
 s32 Player_GetMouseAction(Player* p) {
   u32 action;
   if (p->action != PACT_UNK_20 && p->unk_3ff >= 0) {
@@ -11852,7 +11852,7 @@ s32 Player_GetMouseAction(Player* p) {
   }
   if (p->hurtbox.knockbackPower != 0) {
     action = PACT_DAMAGED;
-  } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_UNK_23 && action != PACT_WALL && action != PACT_CMOUSE) {
+  } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_LANDING && action != PACT_WALL && action != PACT_CMOUSE) {
     struct Input* input = p->input;
     if (input->pressed & A_BUTTON) {
       if (MapItemManager_TryOpen(&p->mover)) {
@@ -11914,7 +11914,7 @@ void Player_UpdateMouse(Player* p) {
       [PACT_CMOUSE] = Player_UndoChangeMouse,
       [PACT_UNK_19] = FUN_0806d420,
       [PACT_UNK_20] = FUN_0806d5b0,
-      [PACT_UNK_23] = FUN_0806d74c,
+      [PACT_LANDING] = FUN_0806d74c,
       [PACT_DAMAGED] = Player_UpdateMouseHurt,
   };  // 0x085ABE1C
   // clang-format on
@@ -12105,8 +12105,8 @@ void Player_UpdateCrossoverDjango(Player* p) {
       [PACT_UNK_19] = FUN_0806961c,
       [PACT_UNK_20] = FUN_08069648,
       [PACT_GRABBED] = FUN_0806a050,
-      [PACT_UNK_22] = Player_UpdateFall,
-      [PACT_UNK_23] = FUN_08069f60,
+      [PACT_FALL] = Player_UpdateFall,
+      [PACT_LANDING] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
       [PACT_DEATH_PRONE] = Player_UpdateDeath,
@@ -12240,7 +12240,7 @@ void FUN_0807a334(Player* p) {
     p->formRequest = TRUE;
     p->formRequestKind = PLAYER_DARK_DJANGO;
   }
-  Player_SetAction(p, PACT_UNK_23, 0);
+  Player_SetAction(p, PACT_LANDING, 0);
   p->floatHeight = 0;
 
   p->heightAboveTile = p->mover.pos.y - TileHeightAt(&p->mover.pos);
@@ -13376,7 +13376,7 @@ void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   p->unk_4a6 = param_3;
   p->unk_3f0 = param_3;
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_22, 0);
+  Player_SetAction(p, PACT_FALL, 0);
   if (p->kind == PLAYER_MOUSE) {
     p->lockedUpdate = Player_UpdateMouseFall;
   } else {
@@ -13394,7 +13394,7 @@ void FUN_0807be58(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   p->floatHeight = param_3;
-  Player_SetAction(p, PACT_UNK_23, 0);
+  Player_SetAction(p, PACT_LANDING, 0);
   if (p->kind == PLAYER_MOUSE) {
     p->lockedUpdate = Player_UpdateMouseLand;
   } else {

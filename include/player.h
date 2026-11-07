@@ -60,8 +60,8 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_UNK_19 19        // 石化時
 #define PACT_UNK_20 20        //
 #define PACT_GRABBED 21       // 敵に掴まれて拘束されている (オクトパス, リンゴ, シェードマン, ヨルムンガンド), Player_EnterGrabbed が入れる
-#define PACT_UNK_22 22        // 落とし穴によるエリア単位での落下?
-#define PACT_UNK_23 23        // 落下からの着地
+#define PACT_FALL 22          // 落とし穴で下のエリアに落下
+#define PACT_LANDING 23       // 落下からの着地 (PACT_FALL の後, ダメージも受けないし,死亡もしない)
 #define PACT_DAMAGED 24       // ダメージ時
 #define PACT_BLOWN_AWAY 25    // 吹っ飛ばされて仰向けに倒れる (e.g. オクトパスの拘束から投げ飛ばされるとき)
 #define PACT_DEATH_PRONE 26   // 死亡(うつ伏せ), 1番よく使われる死亡状態
