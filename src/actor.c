@@ -951,7 +951,38 @@ NAKED void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("a
 
 NAKED void FUN_08043108(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08043108.inc"); }
 
-NAKED void FUN_08043360(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08043360.inc"); }
+// work.walk.target へ walkSpeed ずつ歩かせ, 距離の2乗が arriveDistSq 以下になったら着いて終える, 歩くあいだ足音を鳴らす
+// 下書き (161/158命令): 流れは一致 (FUN_0804478c と同じ形), 原典は pos / target のアドレスを比較の前に高位レジスタへ移し, actor を r5 に置く
+NON_MATCH void FUN_08043360(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 3, 1, 0, 4);
+  }
+  if ((u8)actor->fn(actor) != 1) {
+    WorldPos* pos = &actor->mover.pos;
+    WorldPos* target = &actor->work.walk.target;
+    s32 dx = target->x - pos->x;
+    s32 dz = target->z - pos->z;
+
+    if (dx * dx + dz * dz <= actor->arriveDistSq) {
+      actor->mover.pos = actor->work.walk.target;
+      actor->unk_07 = 1;
+    } else {
+      Vec3_SetPolar(&actor->mover.delta, actor->mover.angle, actor->walkSpeed);
+      actor->unk_1b = ArcTan2_8(target->x - pos->x, target->z - pos->z);
+      actor->mover.angle = actor->unk_1b;
+      actor->unk_1a = Angle_ToDir8(actor->unk_1b);
+      actor->unk_19 = Angle_ToDir4(actor->unk_1b);
+      FUN_08041480(actor, 3, 1, 0, 1);
+    }
+    FUN_080414fc(actor, 3);
+  }
+#else
+  INCFUNC("asm/func/FUN_08043360.inc");
+#endif
+}
 
 // 経路のノードを読む: 待ちフレーム数を入れ, 方向転換ノードで向きが違えば 8, 2 番のノードなら 9, それ以外は 7 を返す
 // 残差: 原典は delay の上位4bit を lsl/lsr で, command の上位4bit で分岐する所を符号つきの比較木で取り出す, PathNode の delay / command が4bitのビットフィールドだった形に見える
