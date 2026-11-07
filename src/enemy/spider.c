@@ -122,7 +122,14 @@ NAKED void Spider_InitHitboxes(Spider* p) { INCFUNC("asm/func/Spider_InitHitboxe
 
 NAKED void Spider_OnReset(Spider* p) { INCFUNC("asm/func/Spider_OnReset.inc"); }
 
-NAKED void Spider_InitAnims(Spider* p) { INCFUNC("asm/func/Spider_InitAnims.inc"); }
+void Spider_InitAnims(Spider* p) {
+  Enemy_SetAnimEntry(&p->e, 0, 0, 0);
+  Enemy_SetAnimEntry(&p->e, 1, 3, 0);
+  Enemy_SetAnimEntry(&p->e, 2, 5, 0);
+  Enemy_SetAnimEntry(&p->e, 3, 4, 0);
+  Enemy_SetAnimEntry(&p->e, 5, 2, 0);
+  Enemy_SetAnimEntry(&p->e, 14, 1, 0);
+}
 
 NAKED void FUN_081302f8(Spider* p, u16* msg) { INCFUNC("asm/func/FUN_081302f8.inc"); }
 
