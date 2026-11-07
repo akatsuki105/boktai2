@@ -51,6 +51,8 @@ static inline bool8 Dog_TestUnk6a8(Dog* p, u32 bit) {
 
 static inline void Dog_ClearUnk6a8(Dog* p, u32 bit) { p->unk_6a8 &= ~bit; }
 
+static inline AuxAnimState* Enemy_GetAuxAnim(Enemy* p) { return &((EnemyAuxSpriteData*)p->sprite)->anim; }
+
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
@@ -357,7 +359,41 @@ NAKED void FUN_0814cb8c(Dog* p) { INCFUNC("asm/func/FUN_0814cb8c.inc"); }
 
 NAKED void FUN_0814ccfc(Dog* p) { INCFUNC("asm/func/FUN_0814ccfc.inc"); }
 
-NAKED void FUN_0814dd38(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814dd38.inc"); }
+// 火を吐く前に, 口の前あたりに4フレームおきに火の粉を散らす
+void FUN_0814dd38(Dog* p, s32 timer) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 17);
+  }
+  Enemy_GetAuxAnim(&p->e)->cmdIdx = 0;
+  Enemy_GetAuxAnim(&p->e)->tick = 0;
+  if (Mod(timer, 4) == 0) {
+    s32 dir = (((p->e).mover.angle + 0x20) & 0xFF) >> 6;
+    Vec3 pos = (p->e).mover.pos;
+
+    switch (dir) {
+      case 0: {
+        pos.x += 128;
+        break;
+      }
+      case 1: {
+        pos.z += 128;
+        break;
+      }
+      case 2: {
+        pos.x -= 160;
+        break;
+      }
+      case 3: {
+        pos.z -= 128;
+        break;
+      }
+    }
+    FUN_0814b7a4(&pos);
+  }
+  if (timer > 30) {
+    Enemy_EnterState(&p->e, FUN_0814de34, ES_UNK_37);
+  }
+}
 
 // 火を吐く, 決まったフレームの間だけ2つ目の攻撃判定を出す
 void FUN_0814de34(Dog* p, s32 timer) {
