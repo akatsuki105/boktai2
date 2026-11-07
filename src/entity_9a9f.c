@@ -932,7 +932,49 @@ NON_MATCH s32 FUN_081df0f8(Entity9A9F* p) {
 #endif
 }
 
-NAKED s32 FUN_081df23c(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df23c.inc"); }
+// 対戦後に自分の記録を作り直して全員と交換する, 親機は全部そろったらキー 0x1800 を送り, それが届いたら state 19 へ, 原典は最後の return を書き忘れている
+// 残差: 命令列は一致, Random() の表のアドレスを原典は gRandTableIdx の番地を置いていた r2 に読むが, こちらは r1 に読む
+NON_MATCH s32 FUN_081df23c(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_081dd9f0(p);
+    FUN_081de02c(p);
+    FUN_081ddc04(p);
+    if (Entity9A9F_GetPlayerIdx() == 0) {
+      p->self.randSeed = gClock.second * 15 + gClock.frame;
+      p->self.unk_16 = (p->rules.values[2] > 2) ? Mod(Random(), 3) : p->rules.values[2];
+    }
+    p->self.crc = CalcCRC16((u8*)&p->self, 0x46);
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (Entity9A9F_IsKey1800(p->unk_44[0])) {
+    FUN_081dde98(p);
+    Entity9A9F_SetState(p, 19, FUN_081df398);
+    return 0;
+  }
+
+  FUN_081ddb14(p, (u8*)&p->self, sizeof(Entity9A9FRecord));
+  count = 0;
+  for (i = 0; i < p->recordCount; i++) {
+    if ((u8)FUN_081ddb5c(p, (u8*)&p->records[i], i, sizeof(Entity9A9FRecord)) == 1) {
+      CalcCRC16((u8*)&p->records[i], 0x46);
+      count++;
+    }
+  }
+  if (count == p->recordCount && Entity9A9F_GetPlayerIdx() == 0) {
+    Entity9A9F_SetSendKey(p, 0x1800);
+  }
+#else
+  INCFUNC("asm/func/FUN_081df23c.inc");
+#endif
+}
 
 // 待機が明けたら画面を消してスクリプトを流し, state 10 へ進む
 s32 FUN_081df398(Entity9A9F* p) {
