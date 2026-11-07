@@ -344,16 +344,14 @@ void FUN_08163848(Slime* p) {
 }
 
 // 倒されたときの状態, 点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
-// 218/216命令, Spider_StateDying と同じ壁 (ENEFLAG_UNK_15 の検査で作った flags のアドレスを持ち越す形が出ない)
-NON_MATCH void Slime_StateDying(Slime* p, s32 arg) {
-#ifdef NONMATCHING_C
+void Slime_StateDying(Slime* p, s32 arg) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacing(&p->e, 10);
     PlayEnemyDeathCry(&p->e);
     FUN_081647c8(p);
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5);
   }
-  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_15)) {
+  if (Enemy_TestFlag(&p->e, ENEFLAG_UNK_15)) {
     return;
   }
   if (Sprite_UpdateVanishBlink(&((AuxSprite*)(p->e).sprite)->flags, arg, 10, 30)) {
@@ -382,20 +380,18 @@ NON_MATCH void Slime_StateDying(Slime* p, s32 arg) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
+    if (!Enemy_TestFlag(&p->e, ENEFLAG_UNK_10)) {
       FUN_080e6658(&p->e);
     }
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
+    return;
   }
   if (Enemy_TestSpriteFlags(&p->e, SPRFLAG_HIDDEN)) {
     ParticleShadow_Hide(&(p->e).shadow);
   } else {
     ParticleShadow_Show(&(p->e).shadow);
   }
-#else
-  INCFUNC("asm/func/Slime_StateDying.inc");
-#endif
 }
 
 void FUN_08163b04(Slime* p) {
