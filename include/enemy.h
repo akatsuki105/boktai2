@@ -497,6 +497,7 @@ void Enemy_SendMsgByKind(u8 enemyKind, void* payload);             // 指定し�
 void Enemy_SendMsgById(u8 enemyKind, void* payload, u16 moverID);  // 種族(ENEK_xxx) と mover.id で敵を1体だけ特定してメッセージを配送する
 void GetEnemyEmoteOffset(u8 enemyKind, u8 emote, s32* outX, s32* outY);
 void PlayGolemSound(Enemy* p, s32 param_2);
+void Enemy_Alert(Enemy* p);
 bool8 FUN_080f0a0c(Enemy* p);
 void Enemy_StepTowardPathNode(Enemy* p);
 bool8 FUN_080f0320(Enemy* p);

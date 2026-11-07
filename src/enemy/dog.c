@@ -312,7 +312,27 @@ NON_MATCH bool8 FUN_0814b3a0(Dog* p) {
 #endif
 }
 
-NAKED bool8 FUN_0814b3e0(Dog* p) { INCFUNC("asm/func/FUN_0814b3e0.inc"); }
+// 攻撃が当たった相手に気付いて追いかけ始める
+bool8 FUN_0814b3e0(Dog* p) {
+  if ((p->e).hitTargetID > 0) {
+    Vec3 diff;
+
+    Enemy_Alert(&p->e);
+    CLEAR_FLAGS((p->e).unk_222, ENEMY222_UNK_1);
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+    (p->e).playerMover = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
+    (p->e).unk_25e = GetCollisionTileIdx(&(p->e).playerMover->pos);
+    Vec3_Delta(&diff, &(p->e).mover.pos, &(p->e).playerMover->pos);
+    (p->e).mover.angle = ArcTan2_8(diff.x, diff.z);
+    Dog_ClearUnk6a8((p->e).unk_1cc, 4 | 8);
+    return TRUE;
+  }
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+  }
+  return FALSE;
+}
 
 NAKED void enemy_dog_0814b500(Dog* p) { INCFUNC("asm/func/enemy_dog_0814b500.inc"); }
 
