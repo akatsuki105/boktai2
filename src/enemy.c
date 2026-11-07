@@ -112,11 +112,6 @@ static inline bool8 TestMapFlag(u32 mapflag) {
   return FALSE;
 }
 
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
-  return FALSE;
-}
-
 static inline bool8 Enemy_TestUnk48c(Enemy* p) {
   if (p->unk_48c & 4) {
     return TRUE;

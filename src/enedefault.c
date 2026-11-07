@@ -192,11 +192,6 @@ static inline bool8 IsCurrentZone(u32 zoneID) {
   return FALSE;
 }
 
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
-  return FALSE;
-}
-
 void Enemy_Reset(Enemy* p);
 void Enemy_Deactivate(Enemy* p);
 void Enemy_Reactivate(Enemy* p);

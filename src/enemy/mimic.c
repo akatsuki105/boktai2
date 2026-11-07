@@ -42,11 +42,6 @@ static void FUN_0814830c(Mimic* p);
 static bool8 Mimic_IsPlayerLost(Mimic* p);
 static u32 FUN_08148750(s32 angle);
 
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
-  return FALSE;
-}
-
 static inline bool8 Mimic_TestUnk690(Mimic* p, u16 bit) {
   if (TEST_FLAGS(p->unk_690, bit)) {
     return TRUE;

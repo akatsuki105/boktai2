@@ -88,11 +88,6 @@ void FUN_0813d274(Curoro* p);
 void FUN_0813d3f4(Curoro* p);
 s32 FUN_0813d404(Curoro* p);
 
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
-  return FALSE;
-}
-
 static inline bool32 IsPlayerMini(void) {
   u16 timer = gGoodCondTimer;
 

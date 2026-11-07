@@ -26,7 +26,8 @@ typedef struct {
   u8 unk_654[4];              // 0x654
   HitboxData unk_658;         // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
   u32 unk_6a8;                // 0x6A8, bit0 は待ちが明けたときに立てる
-  u8 unk_6ac[0x6BC - 0x6AC];  // 0x6AC
+  u8 unk_6ac[0x6B8 - 0x6AC];  // 0x6AC
+  u32 unk_6b8;                // 0x6B8, unk_1e4 と比べる距離の閾値, unk_6bc と対
   u32 unk_6bc;                // 0x6BC, unk_1e4 がこれを超えると副状態 19 へ移る
   u16 unk_6c0;                // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
   u16 unk_6c2;                // 0x6C2
@@ -61,6 +62,8 @@ const u16 u16_ARRAY_085ad8c0[2][8] = {
     {450, 480,  480, 540, 450, 459, 459, 540},
     {800, 1280, 560, 360, 300, 306, 306, 360}
 };  // 0x085AD8C0
+
+extern const char s_dogcom_c_082520e4[];  // "dogcom.c"
 
 struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
@@ -403,7 +406,53 @@ bool8 FUN_0814b3e0(Dog* p) {
   return FALSE;
 }
 
-NAKED void enemy_dog_0814b500(Dog* p) { INCFUNC("asm/func/enemy_dog_0814b500.inc"); }
+// 追いかけるか逃げるかを決める, 近すぎるか回り込めなければ向きを反転して副状態17へ, 遠ければプレイヤーへの経路を引いて状態26へ, どちらでもなければ状態42へ
+// 273/274命令, 残差は unk_6b8 のオフセットを 0x6D7 の定数から subs で作るか (こちら), movs/lsls で作り直すか (原典) だけ, 副状態3つの比較は *(u32*)&subState0 & 0xFFFFFF を直接書くと揃う (inline 経由だとアドレスが r8 に持ち越される), 試済: 比較の向きを逆に (順が入れ替わる)
+NON_MATCH void enemy_dog_0814b500(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+
+  Enemy_ClearPendingState(&p->e, s_dogcom_c_082520e4, 656);
+  if (q->unk_6d7 <= 3) {
+    if (((p->e).unk_1e4 < q->unk_6b8 || !FUN_0814b3a0(p)) && q->unk_6d7 <= 3) {
+      u8 angle = (p->e).mover.angle;
+
+      (p->e).mover.angle = (p->e).unk_1fc + 128;
+      if (FUN_0814b090(p, angle)) {
+        Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+        Enemy_ResetState(&p->e, 0, 0, 17);
+      }
+      return;
+    }
+    if ((p->e).unk_1e4 > q->unk_6bc) {
+      if ((p->e).state == ES_UNK_26) {
+        return;
+      }
+      if ((*(u32*)&(p->e).subState0 & 0xFFFFFF) == ENEMY_SUBSTATE(0, 0, 12)) {
+        return;
+      }
+      if (IsLinkPlay()) {
+        if (!FUN_080faa98(&p->e)) {
+          return;
+        }
+      } else {
+        (p->e).playerMover = &gPlayerPtr[0]->mover;
+      }
+      if (!Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &(p->e).playerMover->pos)) {
+        (p->e).unk_5c4(&p->e);
+        return;
+      }
+      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+      return;
+    }
+  }
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, FUN_0814e424, ES_UNK_42);
+#else
+  INCFUNC("asm/func/enemy_dog_0814b500.inc");
+#endif
+}
 
 void FUN_0814b78c(Dog* p) {
   if (p->unk_6d8 != 0) {

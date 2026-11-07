@@ -109,11 +109,6 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
 
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
 
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
-  return FALSE;
-}
-
 void Boku_OnHit(HitboxData* a, HitboxData* b, Boku* p) {
   if (Enemy_IsDead(&p->e) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {

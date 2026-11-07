@@ -139,6 +139,15 @@ static inline bool8 Enemy_StepToDest(Enemy* p, s32 speed) {
   return FALSE;
 }
 
+// subState0/1/2 の3つを1語に並べた値, 原典は *(u32*)&subState0 & 0xFFFFFF をこれと比べる
+#define ENEMY_SUBSTATE(s0, s1, s2) ((s0) | ((s1) << 8) | ((s2) << 16))
+
+// 通信プレイ中なら TRUE
+static inline bool8 IsLinkPlay(void) {
+  if (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) return TRUE;
+  return FALSE;
+}
+
 // 追いかけを始める印を立てる
 static inline void Enemy_BeginChase(Enemy* p) {
   if (p->kind != ENEK_SPIDER) {
