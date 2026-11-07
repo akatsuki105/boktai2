@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "enemy_inline.h"
 #include "global.h"
 #include "malloc.h"
 

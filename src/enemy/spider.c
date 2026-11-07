@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "enemy_inline.h"
 #include "global.h"
 #include "malloc.h"
 
@@ -67,7 +68,10 @@ NAKED void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/
 
 NAKED void Spider_OnHurt(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/func/Spider_OnHurt.inc"); }
 
-NAKED void FUN_0812ea6c(Spider* p) { INCFUNC("asm/func/FUN_0812ea6c.inc"); }
+void FUN_0812ea6c(Spider* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnim(&p->e, 1);
+}
 
 NAKED void FUN_0812ea90(Spider* p) { INCFUNC("asm/func/FUN_0812ea90.inc"); }
 
