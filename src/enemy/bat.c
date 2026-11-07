@@ -30,14 +30,16 @@ typedef struct {
   u8 unk_65f;                 // 0x65F
   u8 escapeMash;              // 0x660, 振りほどくのに要る連打数
   u8 unk_661;                 // 0x661, 歩きアニメを流し直すかを決めるための前のフレームの mover.angle
-  u8 unk_662[2];              // 0x662
+  s16 unk_662;                // 0x662
   u16 curveT;                 // 0x664, curveStart から curveEnd への曲線の進み具合, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
   u8 unk_666;                 // 0x666
   s8 curveBendDir;            // 0x667, curveBend を増やす向き, 1 か -1
   s16 curveBend;              // 0x668, 曲線のふくらみ, -320〜320 を往復する
   u8 mashCount;               // 0x66A, 掴んでからの連打数
   u8 mashBase;                // 0x66B, 掴んだときの Player.mashCount
-  u8 unk_66c[0x6A0 - 0x66C];  // 0x66C
+  u8 unk_66c[2];              // 0x66C
+  u16 unk_66e;                // 0x66E, 前のフレームの floorY
+  u8 unk_670[0x6A0 - 0x670];  // 0x670
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
@@ -298,7 +300,55 @@ void FUN_08140278(EnemyBat* p, u16* msg) {
   }
 }
 
-NAKED void FUN_0814031c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814031c.inc"); }
+// 床から 260 ほどの高さを保って浮き, sin で上下に揺らす, 床の段差ぶんは高さを補う
+void EnemyBat_UpdateHover(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_IsDead(&p->e) == 0) {
+    if (EnemyBat_TestUnk658(q, 2)) {
+      (p->e).mover.pos.y = q->unk_662 + (p->e).heightAboveFloor;
+    } else {
+      s32 d;
+      s32 y;
+
+      if ((p->e).heightAboveFloor <= 259) {
+        if (EnemyBat_TestUnk658(q, 1)) {
+          (p->e).mover.pos.y = (p->e).floorY;
+          return;
+        }
+        (p->e).heightAboveFloor += FixToInt(9, SIN(q->unk_666));
+        if (q->unk_666 < 64) {
+          q->unk_666++;
+        }
+      }
+      d = (p->e).floorY;
+      y = (p->e).mover.pos.y - 260;
+      d -= y;
+      if (abs(d) > 16) {
+        if (d < 0) {
+          (p->e).heightAboveFloor -= 2;
+        } else {
+          (p->e).heightAboveFloor += 2;
+        }
+      }
+      if ((p->e).floorY != q->unk_66e) {
+        (p->e).heightAboveFloor -= (p->e).floorY - q->unk_66e;
+      }
+      (p->e).mover.pos.y = (p->e).floorY + (p->e).heightAboveFloor;
+      {
+        AuxSprite* sprite = &((EnemyAuxSpriteData*)(p->e).sprite)->sprite;
+
+        sprite->pos.y -= FixToInt(5, SIN(q->unk_666));
+      }
+      if (q->unk_666 > 64) {
+        q->unk_666 = 0;
+      } else {
+        q->unk_666 += 8;
+      }
+      q->unk_66e = (p->e).floorY;
+    }
+  }
+}
 
 void EnemyBat_UpdateCurveBend(EnemyBat* p) {
   EnemyBat* q = (p->e).unk_1cc;
@@ -525,7 +575,7 @@ NON_MATCH void FUN_08140dd0(EnemyBat* p) {
 }
 
 s32 FUN_08140ea0(EnemyBat* p) {
-  FUN_0814031c(p);
+  EnemyBat_UpdateHover(p);
   return 1;
 }
 
