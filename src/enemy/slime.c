@@ -43,6 +43,7 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
 }
 
 void FUN_08163604(Slime* p, s32 arg);
+void FUN_081636d4(Slime* p);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
@@ -211,7 +212,26 @@ void FUN_0816335c(Slime* p) {}
 
 NAKED void FUN_08163360(Slime* p) { INCFUNC("asm/func/FUN_08163360.inc"); }
 
-NAKED void FUN_08163604(Slime* p, s32 arg) { INCFUNC("asm/func/FUN_08163604.inc"); }
+void FUN_08163604(Slime* p, s32 arg) {
+  Slime* q = (p->e).unk_1cc;
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    q->unk_658 = 0;
+    (p->e).animSpeedDiv = 1;
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, 64);
+    Enemy_PlayAnimNoFacing(&p->e, 1);
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+  }
+  anim->cmdIdx = 0;
+  anim->tick = 5;
+  if (Mod(arg, 4) == 0) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
+  }
+  if (arg > 30) {
+    Enemy_EnterState(&p->e, FUN_081636d4, ES_UNK_42);
+  }
+}
 
 NAKED void FUN_081636d4(Slime* p) { INCFUNC("asm/func/FUN_081636d4.inc"); }
 
