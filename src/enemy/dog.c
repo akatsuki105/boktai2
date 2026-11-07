@@ -123,7 +123,16 @@ void Dog_InitHitboxes(Dog* p) {
 
 NAKED void FUN_0814ac10(Dog* p) { INCFUNC("asm/func/FUN_0814ac10.inc"); }
 
-NAKED void FUN_0814ae80(Dog* p) { INCFUNC("asm/func/FUN_0814ae80.inc"); }
+void FUN_0814ae80(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (q->unk_6c8 != 0) {
+    q->unk_6c8--;
+  }
+  if (q->unk_6ca != 0) {
+    q->unk_6ca--;
+  }
+}
 
 NAKED void FUN_0814aeb0(Dog* p) { INCFUNC("asm/func/FUN_0814aeb0.inc"); }
 
