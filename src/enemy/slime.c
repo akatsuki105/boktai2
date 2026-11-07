@@ -188,7 +188,19 @@ s32 FUN_08165460(Slime* p) { return 1; }
 
 NAKED s32 FUN_08165464(Slime* p) { INCFUNC("asm/func/FUN_08165464.inc"); }
 
-NAKED s32 FUN_08165508(Slime* p) { INCFUNC("asm/func/FUN_08165508.inc"); }
+s32 FUN_08165508(Slime* p) {
+  Slime* self = p;
+
+  FUN_08165460(p);
+  if ((p->e).unk_4be == 0) {
+    u32 idx = (p->e).subState0;
+    EnemyHandler* table = (p->e).handlerTables[0];
+    table[idx](&p->e);
+    Enemy_RunStateHandler(&p->e);
+  }
+  FUN_08165464(self);
+  return 1;
+}
 
 s32 Slime_Update(Slime* p) {
   (p->e).playerMover = &gPlayerPtr[0]->mover;
