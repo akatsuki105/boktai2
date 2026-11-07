@@ -44,6 +44,7 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
 
 void FUN_08163604(Slime* p, s32 arg);
 void FUN_08162df4(Slime* p);
+void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
 void FUN_08162fa8(Slime* p);
 u32 Slime_PickHitAttributes(Slime* p);
@@ -157,7 +158,19 @@ void FUN_08162efc(Slime* p) {
 
 NAKED void FUN_08162fa8(Slime* p) { INCFUNC("asm/func/FUN_08162fa8.inc"); }
 
-NAKED void FUN_081630dc(Slime* p) { INCFUNC("asm/func/FUN_081630dc.inc"); }
+// 101/102 命令, 原典は anim に variant を足したものを同じレジスタで使い回す, 試済: anim/a の型 (u8/u16), 足し込みを anim 自身にする形, aux 側の代入順
+NON_MATCH void FUN_081630dc(Slime* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimPlain(&p->e, 15, 1);
+  }
+  if ((p->e).animForceRestart) {
+    Enemy_EnterState(&p->e, FUN_081631d8, ES_UNK_35);
+  }
+#else
+  INCFUNC("asm/func/FUN_081630dc.inc");
+#endif
+}
 
 // 64〜127 フレーム待ってから次の状態へ移る
 void FUN_081631d8(Slime* p) {

@@ -63,6 +63,30 @@ static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
   return FALSE;
 }
 
+// 向きを使わず, 左右反転も解いて animTable[idx] のアニメを差分 variant で流す
+static inline void Enemy_PlayAnimPlain(Enemy* p, s32 idx, s32 variant) {
+  u8 anim = p->animTable[idx].anim;
+
+  if (p->spriteKind == 0) {
+    EnemyAuxSpriteData* s;
+
+    p->playingAnim = anim;
+    s = (EnemyAuxSpriteData*)p->sprite;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, 0);
+  } else {
+    MainSprite* s = &p->sprite->s;
+    u16 a = anim + variant;
+
+    if (p->playingAnim == a && !p->animForceRestart && !(s->flags & SPRFLAG_XFLIP)) {
+      return;
+    }
+    p->playingAnim = a;
+    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+    s->flags &= ~SPRFLAG_XFLIP;
+  }
+  p->animForceRestart = FALSE;
+}
+
 // 追いかけを始める印を立てる
 static inline void Enemy_BeginChase(Enemy* p) {
   if (p->kind != ENEK_SPIDER) {
