@@ -15,7 +15,7 @@
 // gEntity9A9F の記録から相手の武器を読み、36枚のスプライトで並べる
 typedef struct Entity1B24 {
   Entity e;                                    // 0x000, ENTITY_UNK_8
-  u8* record;                                  // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
+  Entity9A9FRecord* record;                    // 0x018, &gEntity9A9F->self, セッションが無ければ NULL で _Init は失敗する
   Tilemaps* tilemap;                           // 0x01C, TILEMAP_CD91, BG2 に敷く
   rgb555* pltt;                                // 0x020, GetBgPlttFile("bg_link_col_arr")
   void* unk_24;                                // 0x024, ワードとして読まれるが用途不明
@@ -23,9 +23,9 @@ typedef struct Entity1B24 {
   MainSprite sprites[36];                      // 0x0A8, Entity1B24_Destroy がまとめて外す
   ShopCursor cursor;                           // 0xE28
   ShopFlyingPair flying;                       // 0xE58, 選んだ武器を飛ばす表示部品
-  WeaponData weaponData;                       // 0xF4C, record[0x40] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ GetWeaponData(slot, &weaponData)
-  s8 slot;                                     // 0xF70, record[0x17], 負なら武器を読まない
-  u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
+  WeaponData weaponData;                       // 0xF4C, record->unk_40[0] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ GetWeaponData(slot, &weaponData)
+  s8 slot;                                     // 0xF70, record->unk_17, 負なら武器を読まない
+  u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record->unk_40[0] が 2 なら 0xF
   u16 unk_f72;                                 // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
   u32 unk_f74;                                 // 0xF74, _Init が 0x1E を入れる
   s8 unk_f78[8];                               // 0xF78
@@ -44,13 +44,13 @@ void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
 
 // gEntity9A9F の記録を返す, セッションが無ければ NULL
-static inline u8* Entity9A9F_GetRecord(void) {
+static inline Entity9A9FRecord* Entity9A9F_GetRecord(void) {
   Entity9A9F* p = gEntity9A9F;
 
   if (p == NULL) {
     return NULL;
   }
-  return p->unk_15c;
+  return &p->self;
 }
 
 // 状態関数を差し替える
@@ -63,7 +63,7 @@ void FUN_0809ce90(Entity1B24* p, void* fn) {
 void FUN_0809cea8(Entity1B24* p) {
   WeaponData w;
 
-  if (p->record[0x40] == 2) {
+  if (p->record->unk_40[0] == 2) {
     if ((u8)p->cursor.slot == 0) {
       MessageWindow_SetInstant(1);
       MessageWindow_Start(p->unk_24);
@@ -136,7 +136,7 @@ void FUN_0809d00c(Entity1B24* p) {
     }
   }
 
-  if (p->record[0x40] == 2) {
+  if (p->record->unk_40[0] == 2) {
     values[3] = FUN_0809cfc0(p, &p->weaponData);
     digits[0] = Div(values[3], 100);
     rem = values[3] - digits[0] * 100;
@@ -249,7 +249,7 @@ void FUN_0809d300(Entity1B24* p) {
   }
 
   p->sprites[16].flags &= ~SPRFLAG_HIDDEN;
-  if (p->record[0x40] == 2) {
+  if (p->record->unk_40[0] == 2) {
     MainSprite_SetPose(&p->sprites[16], &p->gfx[1], WEAPON_GUN_DEL_HELL, 1);
   } else {
     MainSprite_SetPose(&p->sprites[16], &p->gfx[1], GetWeaponID(p->slot), 1);
@@ -358,7 +358,7 @@ void FUN_0809dd88(Entity1B24* p) {
 
 // 相手が持っている武器の種別ビットを集める
 void FUN_0809dde0(Entity1B24* p) {
-  if (p->record[0x40] == 2) {
+  if (p->record->unk_40[0] == 2) {
     p->weaponKindMask = 0xF;
   } else {
     s32 i;
@@ -390,17 +390,17 @@ s32 Entity1B24_Init(Entity1B24* p) {
     return -1;
   }
 
-  if (p->record[0x40] == 2) {
+  if (p->record->unk_40[0] == 2) {
     p->slot = 0;
     p->weaponData = gWeaponDB[WEAPON_GUN_DEL_HELL];
   } else {
-    p->slot = p->record[0x17];
+    p->slot = p->record->unk_17;
     if (p->slot >= 0) {
       GetWeaponData(p->slot, &p->weaponData);
     }
   }
 
-  FUN_081dfa20(p->record[0x41], &p->unk_f80, &vitality, &spirit, &agility);
+  FUN_081dfa20(p->record->unk_40[1], &p->unk_f80, &vitality, &spirit, &agility);
   FUN_0809dde0(p);
   FUN_0809d878(p);
   FUN_0809d934(p);

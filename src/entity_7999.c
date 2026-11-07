@@ -33,7 +33,7 @@ typedef struct Entity7999 {
   s32 windowID2;                               // 0x280, TextPanel_Create(16, 12, 12, 2)
   u8 unk_284;                                  // 0x284, _Init が 0 を入れる
   u8 unk_285;                                  // 0x285, 読み手も書き手も見つかっていない
-  u8 unk_286;                                  // 0x286, gEntity9A9F->unk_15c + 0x40 の写し, 0/1/2 で分岐する種別
+  u8 unk_286;                                  // 0x286, gEntity9A9F->self.unk_40[0] の写し, 0/1/2 で分岐する種別
   u8 unk_287;                                  // 0x287, 同 +0x41 の写し
   u8 unk_288;                                  // 0x288, 同 +0x42 の写し
   u8 unk_289;                                  // 0x289
@@ -88,36 +88,36 @@ const s32 s32_ARRAY_085ae16c[3][6] = {
     {0, 0, 0, 32, 0,   64},
 };  // 0x085AE16C
 
-// gEntity9A9F->unk_15c の NULL 判定の形が未解決, Tier A の途中
+// gEntity9A9F->self の NULL 判定の形が未解決, Tier A の途中
 NON_MATCH s32 FUN_081d9da4(Entity7999* p) {
 #ifdef NONMATCHING_C
   Entity9A9F* e = gEntity9A9F;
   u8* out;
   const u32* table;
 
-  if (e == NULL || e->unk_15c == NULL) {
+  if (e == NULL || &e->self == NULL) {
     return -1;
   }
-  out = e->unk_19c;
+  out = e->self.unk_40;
   out[0] = p->unk_286;
-  e->unk_19c[1] = p->unk_287;
+  e->self.unk_40[1] = p->unk_287;
   switch (out[0]) {
     case 0: {
-      e->unk_19c[2] = p->magicIDs[p->unk_288];
+      e->self.unk_40[2] = p->magicIDs[p->unk_288];
       break;
     }
     case 1: {
       table = u32_ARRAY_085ae160;
-      e->unk_19c[2] = table[p->unk_288];
+      e->self.unk_40[2] = table[p->unk_288];
       break;
     }
     case 2: {
       table = u32_ARRAY_085ae160 + 2;
-      e->unk_19c[2] = table[p->unk_288];
+      e->self.unk_40[2] = table[p->unk_288];
       break;
     }
     default: {
-      e->unk_19c[2] = p->magicIDs[0];
+      e->self.unk_40[2] = p->magicIDs[0];
       break;
     }
   }
@@ -858,7 +858,7 @@ s32 Entity7999_Destroy(Entity7999* p) {
 }
 
 s32 Entity7999_Init(Entity7999* p) {
-  u8* data;
+  Entity9A9FRecord* data;
   void (*update)(Entity7999*);
 
   if (VM_SeekToNamedArg('s')) {
@@ -886,13 +886,13 @@ s32 Entity7999_Init(Entity7999* p) {
     FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
   }
   MainMenu_SetHudMode(7);
-  data = gEntity9A9F->unk_15c;
+  data = &gEntity9A9F->self;
   if (gEntity9A9F == NULL) {
     data = NULL;
   }
-  p->unk_286 = data[0x40];
-  p->unk_287 = data[0x41];
-  p->unk_288 = data[0x42];
+  p->unk_286 = data->unk_40[0];
+  p->unk_287 = data->unk_40[1];
+  p->unk_288 = data->unk_40[2];
   FUN_081d9e50(p);
   FUN_081da814(p);
   FUN_081da074(p);

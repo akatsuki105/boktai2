@@ -7,6 +7,7 @@
 #include "random.h"
 #include "sound.h"
 #include "text.h"
+#include "time.h"
 #include "video.h"
 #include "vm.h"
 
@@ -298,16 +299,29 @@ s32 FUN_081de004(Entity9A9F* p) {
   return 0;
 }
 
-NAKED void FUN_081de02c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de02c.inc"); }
+// 自分の記録に名前, 乱数の種, 操作設定, 太陽スタンドを書く, 乱数の種は親機 (unk_1d == 0) だけが時計から作る
+void FUN_081de02c(Entity9A9F* p) {
+  Entity9A9FRecord* rec = &p->self;
+  char* name = gStat->name;
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    rec->name[i] = name[i];
+  }
+  rec->randSeed = (p->unk_1d == 0) ? gClock.second * 15 + gClock.frame : 0;
+  rec->unk_12 = 100;
+  rec->controlUp = gStat->controlUp;
+  rec->unk_18 = gStat->solarStand;
+}
 
 void FUN_081de090(Entity9A9F* p) {
   FUN_081de02c(p);
   p->unk_2c4 = 0;
   p->unk_2c5 = 0;
   p->unk_2c6 = 0;
-  ClearMemory(p->unk_19c, 4);
-  p->unk_173 = 0xFF;
-  p->spanOfTime = Time_GetSpanOfTime();
+  ClearMemory(p->self.unk_40, 4);
+  p->self.unk_17 = 0xFF;
+  p->self.unk_44 = Time_GetSpanOfTime();
 }
 
 // 残差: 原典は unk_118 を &unk_118[4] から下へ動くポインタと別の数え役で埋めるが, こちらは添字のまま [base + i] で書く

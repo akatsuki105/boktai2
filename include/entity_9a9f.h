@@ -17,11 +17,11 @@ typedef struct Entity9A9FRecord {
   u16 unk_12;                 // 0x12, FUN_081de02c が 100 を入れる
   u16 controlUp;              // 0x14, gStat->controlUp の写し
   u8 unk_16;                  // 0x16, records[0] のものはスクリプトの第2引数 (unk_38) に写される
-  u8 unk_17;                  // 0x17
+  u8 unk_17;                  // 0x17, 交換に出す武器のスロット, FUN_081de090 が 0xFF を入れる
   u32 unk_18;                 // 0x18, Entity08F4 の FUN_081daf44 が 3 未満なら選択肢を1つ増やす
   Entity9A9FRecordBody body;  // 0x1C, FUN_081dde98 が bodies[i] へまるごと写す
-  u8 unk_40[4];               // 0x40
-  u8 unk_44;                  // 0x44, FUN_080cc618 が 0/4/5 のどれかかを見る
+  u8 unk_40[4];               // 0x40, [0] が 2 なら武器は GUN_DEL_HELL 固定, [1] は通信対戦のステータスの種類, FUN_081de090 が ClearMemory で 0 にする
+  u8 unk_44;                  // 0x44, Time_GetSpanOfTime の値, FUN_080cc618 が 0/4/5 (夜) のどれかかを見る
   u8 unk_45[72 - 0x45];       // 0x45
 } Entity9A9FRecord;
 static_assert(sizeof(Entity9A9FRecord) == 72);
@@ -83,12 +83,7 @@ typedef struct Entity9A9F {
   u32 unk_140;                                 // 0x140, FUN_081de0dc が 0 にする
   s32 unk_144[4];                              // 0x144, 同上
   s16 unk_154[4];                              // 0x154, '.e' があればそこから、無ければ {2, 1, -1, -2}
-  u8 unk_15c[23];                              // 0x15C
-  u8 unk_173;                                  // 0x173, FUN_081de090 が 0xFF を入れる
-  u8 unk_174[40];                              // 0x174
-  u8 unk_19c[4];                               // 0x19C, FUN_081de090 が ClearMemory で 0 にする
-  s8 spanOfTime;                               // 0x1A0
-  u8 unk_1a1[3];                               // 0x1A1
+  Entity9A9FRecord self;                       // 0x15C, 自分の記録, 相手に送る
   Entity9A9FRecord records[4];                 // 0x1A4, Entity08F4 が 0x48 刻みで走査する, 4個で 0x2C4 の手前まで埋まる
   u8 unk_2c4;                                  // 0x2C4, FUN_081de090 が 0 にする
   u8 unk_2c5;                                  // 0x2C5, 同上
