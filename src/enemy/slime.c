@@ -46,12 +46,12 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
 }
 
 void FUN_08163604(Slime* p, s32 arg);
-void FUN_081636d4(Slime* p);
+void Slime_StateJumpAttack(Slime* p);
 void FUN_08163848(Slime* p);
 void Slime_ScatterDroplets(Slime* p);
 void Slime_SpawnDroplets(Slime* p);
 void Slime_ShootDroplets(Slime* p);
-void FUN_08165178(Slime* p);
+void Slime_TakeFatalDamage(Slime* p);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
 void Slime_PickWalkDest(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
@@ -143,7 +143,7 @@ NON_MATCH void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) {
     Vec3_Sum(&dst, &push, &(self->e).mover.pos);
     idx = GetCollisionTileIdx(&dst);
     if ((self->e).floorY != ((TileAtIndex(idx)->heightStairs & 0xF) << 8)) {
-      FUN_08165178(self);
+      Slime_TakeFatalDamage(self);
       return;
     }
     (self->e).mover.pos.x += push.x;
@@ -377,12 +377,12 @@ void FUN_08163604(Slime* p, s32 arg) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
   }
   if (arg > 30) {
-    Enemy_EnterState(&p->e, FUN_081636d4, ES_UNK_42);
+    Enemy_EnterState(&p->e, Slime_StateJumpAttack, ES_UNK_42);
   }
 }
 
 // 向いている方へ跳ね, 上りは縦に伸ばし下りは縮めて戻す, ENEFLAG2_UNK_4 が立つと分裂して状態43へ移る
-void FUN_081636d4(Slime* p) {
+void Slime_StateJumpAttack(Slime* p) {
   AuxSprite* sprite = &((EnemyAuxSpriteData*)(p->e).sprite)->sprite;
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
 
@@ -732,7 +732,7 @@ void FUN_08164520(Slime* p) {
   }
 }
 
-void FUN_081645a4(Slime* p) {
+void Slime_ReadNamedArgs(Slime* p) {
   if (VM_SeekToNamedArg('s')) {
     p->unk_688 = VM_GetPC() != NULL ? VM_GetValue() : 0;
     p->unk_68a = VM_GetPC() != NULL ? VM_GetValue() : 0;
@@ -743,7 +743,7 @@ void FUN_081645a4(Slime* p) {
 }
 
 // 分裂のスクリプト (.s[0]) を位置や向き, 体力を引数にして呼び, 自身は止まる
-void FUN_081645fc(Slime* p) {
+void Slime_Split(Slime* p) {
   Slime* q = (p->e).unk_1cc;
 
   if (q->unk_688 != 0) {
@@ -916,7 +916,7 @@ void Slime_PlayFissionSound(Slime* p) {
 }
 
 // 自分の残り HP ぶんのダメージを受けさせて倒す
-void FUN_08165178(Slime* p) {
+void Slime_TakeFatalDamage(Slime* p) {
   u16 hp;
 
   (p->e).angle = 0;
@@ -933,7 +933,7 @@ void FUN_08165178(Slime* p) {
 
 // 被弾したときの処理, 分裂の判定をし, ダメージ状態か, 体力が 1/4 を切っていれば止まり, そうでなければ待機へ戻す
 // 258/258命令まで寄る形は, 最初の flags3 の書き換えを Enemy_ClearFlag3, ENEFLAG3_UNK_8 の検査を flags3 & bit をそのまま返す inline にしたとき (flags3 のアドレスを r5 に持ち越す形が出る), 残差は乱数の表などプールのアドレスを受ける一時レジスタ番号だけ
-NON_MATCH bool8 FUN_081651dc(Slime* p) {
+NON_MATCH bool8 Slime_OnDamaged(Slime* p) {
 #ifdef NONMATCHING_C
   Slime* q = (p->e).unk_1cc;
 
@@ -945,9 +945,9 @@ NON_MATCH bool8 FUN_081651dc(Slime* p) {
   q->unk_658 += 80;
   if (q->unk_688 != 0) {
     if ((p->e).hp < (p->e).unk_546) {
-      FUN_081645fc(p);
+      Slime_Split(p);
     } else if ((u8)Random() <= 24) {
-      FUN_081645fc(p);
+      Slime_Split(p);
     }
   }
   if ((p->e).flags6 & ENEFLAG6_UNK_18) {
@@ -971,7 +971,7 @@ NON_MATCH bool8 FUN_081651dc(Slime* p) {
   }
   return TRUE;
 #else
-  INCFUNC("asm/func/FUN_081651dc.inc");
+  INCFUNC("asm/func/Slime_OnDamaged.inc");
 #endif
 }
 
@@ -983,7 +983,7 @@ s32 FUN_08165464(Slime* p) {
 
   if ((p->e).floorY - p->unk_65c > 511) {
     if (Map_FindTileOverride(GetCollisionTileIdx(&(p->e).mover.pos), 1) != NULL) {
-      FUN_08165178(self);
+      Slime_TakeFatalDamage(self);
       (self->e).floorY = p->unk_65c;
     }
   }
@@ -1241,7 +1241,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
   if ((u16)height != 0) {
     p->unk_68e |= 0x10;
   }
-  FUN_081645a4(p);
+  Slime_ReadNamedArgs(p);
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).unk_47a = 147;
   (p->e).unk_47c = 306;
@@ -1309,7 +1309,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
   (p->e).unk_5fc = (void*)FUN_0816406c;
   (p->e).unk_5ac = (EnemyHandler)FUN_0816446c;
   (p->e).unk_5b0 = (EnemyHandler)FUN_08164520;
-  (p->e).unk_58c = (void*)FUN_081651dc;
+  (p->e).unk_58c = (void*)Slime_OnDamaged;
   (p->e).unk_608 = (void*)FUN_08164388;
   (p->e).unk_5b4 = (EnemyHandler)Slime_PlayFissionSound;
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_3);

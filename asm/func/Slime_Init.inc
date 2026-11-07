@@ -1478,7 +1478,7 @@ _08166208:
 	strh r0, [r6]
 _08166244:
 	adds r0, r7, #0
-	bl FUN_081645a4
+	bl Slime_ReadNamedArgs
 	movs r4, #0x93
 	movs r5, #0x99
 	lsls r5, r5, #1
@@ -1704,7 +1704,7 @@ _081662E8:
 	str r0, [r1]
 	ldr r6, _081664F0 @ =0x0000058C
 	adds r1, r7, r6
-	ldr r0, _081664F4 @ =FUN_081651dc
+	ldr r0, _081664F4 @ =Slime_OnDamaged
 	str r0, [r1]
 	movs r0, #0xc1
 	lsls r0, r0, #3
@@ -1780,7 +1780,7 @@ _081664E4: .4byte 0x000005AC
 _081664E8: .4byte FUN_0816446c
 _081664EC: .4byte FUN_08164520
 _081664F0: .4byte 0x0000058C
-_081664F4: .4byte FUN_081651dc
+_081664F4: .4byte Slime_OnDamaged
 _081664F8: .4byte FUN_08164388
 _081664FC: .4byte Slime_PlayFissionSound
 _08166500:

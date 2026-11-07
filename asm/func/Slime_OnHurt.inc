@@ -262,7 +262,7 @@ _08162618:
 	cmp r6, r0
 	beq _08162630
 	mov r0, r8
-	bl FUN_08165178
+	bl Slime_TakeFatalDamage
 	b _08162CE0
 	.align 2, 0
 _0816262C: .4byte 0x030046A4

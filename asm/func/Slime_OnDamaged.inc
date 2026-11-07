@@ -47,7 +47,7 @@ _08165200:
 	cmp r1, r0
 	bge _08165250
 	adds r0, r6, #0
-	bl FUN_081645fc
+	bl Slime_Split
 	b _0816526E
 	.align 2, 0
 _08165248: .4byte 0x000003BF
@@ -66,7 +66,7 @@ _08165250:
 	cmp r0, #0x18
 	bgt _0816526E
 	adds r0, r6, #0
-	bl FUN_081645fc
+	bl Slime_Split
 _0816526E:
 	ldr r1, _081652EC @ =0x0000049C
 	adds r0, r6, r1
