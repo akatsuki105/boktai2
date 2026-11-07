@@ -33,11 +33,13 @@ typedef struct {
   u16 unk_6c6;                // 0x6C6, 0 になるまで毎フレーム減る
   u16 unk_6c8;                // 0x6C8, 0 になるまで毎フレーム減る
   u16 unk_6ca;                // 0x6CA, 0 になるまで毎フレーム減る
-  u8 unk_6cc[0x6D0 - 0x6CC];  // 0x6CC
+  u16 unk_6cc;                // 0x6CC, unk_6c8 に入れ直す値
+  u16 unk_6ce;                // 0x6CE, unk_6ca に入れ直す値
   s16 unk_6d0;                // 0x6D0, 負なら unk_6d2/unk_6d4 は無効
   s16 unk_6d2;                // 0x6D2
   s16 unk_6d4;                // 0x6D4
-  u8 unk_6d6[0x6D8 - 0x6D6];  // 0x6D6
+  u8 unk_6d6;                 // 0x6D6
+  u8 unk_6d7;                 // 0x6D7
   u8 unk_6d8;                 // 0x6D8, 0 になるまで毎フレーム減る
   u8 unk_6d9[0x708 - 0x6D9];  // 0x6D9
   Vec3 unk_708;               // 0x708, 飛びかかる直前のプレイヤーの位置
@@ -50,6 +52,7 @@ static inline bool8 Dog_TestUnk6a8(Dog* p, u32 bit) {
 }
 
 static inline void Dog_ClearUnk6a8(Dog* p, u32 bit) { p->unk_6a8 &= ~bit; }
+static inline void Dog_SetUnk6a8(Dog* p, u32 bit) { p->unk_6a8 |= bit; }
 
 static inline bool8 Dog_TryRouteTo(Enemy* p, NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   s32 result;
@@ -75,6 +78,9 @@ const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800,
 
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
+void enemy_dog_0814b500(Dog* p);
+void FUN_0814deb0(Dog* p);
+void FUN_0814dd38(Dog* p, s32 timer);
 void FUN_0814de34(Dog* p, s32 timer);
 void FUN_0814e424(Dog* p);
 void FUN_0814df40(Dog* p);
@@ -548,7 +554,26 @@ s32 FUN_08150510(Dog* p) {
   return 1;
 }
 
-NAKED void FUN_08150534(Dog* p) { INCFUNC("asm/func/FUN_08150534.inc"); }
+void FUN_08150534(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Dog_ClearUnk6a8(q, 8);
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    Enemy_EnterState(&p->e, FUN_0814deb0, ES_UNK_33);
+    Dog_ClearUnk6a8((p->e).unk_1cc, 2);
+    Hitbox_SetAttack(&q->unk_658, (p->e).atkPower[1], (p->e).atkUnk40[1], 0, (p->e).atkAttrs[1], (p->e).atkInvincibleTime[1]);
+    q->unk_6d7 = 0;
+    q->unk_6c8 = q->unk_6cc;
+  }
+  if ((p->e).subStateDone) {
+    q->unk_6c8 = q->unk_6cc;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    enemy_dog_0814b500(p);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 NAKED void FUN_08150660(Dog* p) { INCFUNC("asm/func/FUN_08150660.inc"); }
 
