@@ -213,7 +213,29 @@ s32 FUN_0812f818(Spider* p) {
 
 void FUN_0812f83c(Spider* p) {}
 
-NAKED void FUN_0812f840(Spider* p) { INCFUNC("asm/func/FUN_0812f840.inc"); }
+// 経路に沿って歩き, 通過点が変わって曲がれたら副状態13へ, 経路の終わりに着いたら経路を引き直して状態1へ戻る
+void FUN_0812f840(Spider* p) {
+  s32 speed;
+
+  if ((p->e).subStateBegun) {
+    (p->e).subStateBegun = 0;
+  }
+  speed = (p->e).unk_588(&p->e);
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if (Map_ConsumeNavWaypointChanged((p->e).navAgent) && FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    Enemy_ResetState(&p->e, 0, 0, 13);
+    return;
+  }
+  if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    Enemy_ResetState(&p->e, 0, 0, 12);
+    Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_1);
+    FUN_08130eec(p);
+    Enemy_StepTowardPathNode(&p->e);
+  } else {
+    (p->e).subStateTimer++;
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+  }
+}
 
 NAKED void FUN_0812f9ec(Spider* p) { INCFUNC("asm/func/FUN_0812f9ec.inc"); }
 
