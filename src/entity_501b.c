@@ -12,6 +12,7 @@
 #include "tilemap.h"
 #include "vec3.h"
 #include "video.h"
+#include "vm.h"
 
 // 通信対戦のスコア精算画面, 稼いだ点を1フレームずつ所持スコアへ移していく
 typedef struct Entity501B {
@@ -50,10 +51,13 @@ void Entity501B_StateSaveDone(Entity501B* p);
 void Entity501B_StateSaveFailed(Entity501B* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_081df940(void);
+void FUN_081df908(void);
+s32 MainMenu_SetHudMode(s32 mode);
 bool8 Save_WriteExtraToNextSlot(void);
 void FUN_081df924(void);
 void FUN_081e0544(Entity501B* p);
 void FUN_081e084c(Entity501B* p);
+void FUN_081e04a8(Entity501B* p);
 
 // セッションの状態を返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetState(void) {
@@ -312,7 +316,27 @@ void Entity501B_LoadScore(Entity501B* p) {
   p->timer = 90;
 }
 
-NAKED void FUN_081e03d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e03d8.inc"); }
+// 精算を終えて画面を片付け, 案内を出してセッションの状態 22 を待ち, 来たらセーブへ移る
+void FUN_081e03d8(Entity501B* p) {
+  if (p->entered) {
+    Entity501B_HideSprites(p);
+    p->solarStandSpr.flags |= SPRFLAG_HIDDEN;
+    ClearBGTilemapBuffer(0);
+    ClearBGTilemapBuffer(3);
+    Video_SetBGLayer(0, (TilemapFile*)p->tilemap1, 3);
+    Video_GenerateBGMap(0, 0, 0, 0, 0);
+    TextPanel_Hide(p->textPanels[0]);
+    TextPanel_SetRect(p->textPanels[0], 1, 7, 28, 6);
+    TextPanel_SetScript(p->textPanels[0], p->unk_3d4);
+    TextPanel_SetMessage(p->textPanels[0], 6);
+    TextPanel_Start(p->textPanels[0]);
+    FUN_081df908();
+    p->entered = FALSE;
+  }
+  if (Entity9A9F_GetState() == 22) {
+    Entity501B_SetState(p, FUN_081e04a8, 4);
+  }
+}
 
 // 案内を出して 60 フレーム後にセーブを書き, 成否に応じた状態へ移る
 void FUN_081e04a8(Entity501B* p) {

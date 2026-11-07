@@ -163,7 +163,7 @@ typedef struct {
   u8 name[16];                   // 0x3C0, JP: 5文字, EN: 9文字
   Weapon weapons[16 + 16 + 16];  // 0x3D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   s16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
-  u16 linkBattlePoint;           // 0x912, 対戦ポイント
+  s16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
   s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数
   u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
