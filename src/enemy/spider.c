@@ -1067,7 +1067,7 @@ s32 Spider_Destroy(Spider* p) {
 
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
-// 1707/1865命令, Crow_Init の下書きを Spider 向けに直したもの (呼び出し列は一致), 原典は Enemy のフィールドのアドレスをスタックに作り置く (敵共通の初期化 inline)
+// 1709/1865命令, Crow_Init の下書きを Spider 向けに直したもの (呼び出し列は一致), 原典は Enemy のフィールドのアドレスをスタックに作り置く (敵共通の初期化 inline)
 NON_MATCH s32 Spider_Init(Spider* p) {
 #ifdef NONMATCHING_C
   Vec3 pos;
