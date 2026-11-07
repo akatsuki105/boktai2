@@ -49,7 +49,7 @@ typedef struct Entity9A9F {
   u8 unk_22;                                   // 0x022, Entity9A9F_SetState が状態遷移のたびに 1 を入れる
   u8 unk_23;                                   // 0x023, 根拠: FUN_081df95c が書く
   s8 unk_24;                                   // 0x024, 根拠: FUN_081df8a0 が引数の値を入れる, FUN_081df014 が -1 にして, 0 以上ならキー 0x2C00 | unk_24 を送る
-  u8 unk_25;                                   // 0x025, 根拠: FUN_081df8d4 が 1 を入れる
+  s8 unk_25;                                   // 0x025, 根拠: FUN_081df8d4 が 1 を入れる, FUN_081df0f8 が立っていれば確認のメッセージを出す
   u8 unk_26;                                   // 0x026
   u8 unk_27;                                   // 0x027, FUN_081df460 が unk_29 の間数え, 60 を超えるとキー 0x1001 を送る
   u8 unk_28;                                   // 0x028
@@ -101,7 +101,7 @@ typedef struct Entity9A9F {
   void (*updateCallback)(struct Entity9A9F*);  // 0x2D4
   s32 windowID;                                // 0x2D8, TextPanel_Create の戻り値
   u16 scriptID_2dc;                            // 0x2DC, '.l=0', FUN_081ddf44 が VM_ExecByID へ渡す
-  s16 unk_2de;                                 // 0x2DE, '.R=0'
+  u16 unk_2de;                                 // 0x2DE, '.R=0', FUN_081df0f8 が 0 以外なら VM_ExecByID で実行するスクリプト ID
   u16 unk_2e0;                                 // 0x2E0, '.v=0', FUN_081df460 が 0 以外なら VM_ExecByID で実行するスクリプト ID
   u16 unk_2e2;                                 // 0x2E2, '.r=0', FUN_081df014 が VM_ExecByID で実行するスクリプト ID
   u16 unk_2e4;                                 // 0x2E4, '.b=0', FUN_081df9ac が VM_ExecByID で実行するスクリプト ID

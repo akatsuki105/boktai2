@@ -41,6 +41,10 @@ u32 CalcCRC16(u8* data, u32 len);
 s32 FUN_081ddb14(Entity9A9F* p, u8* buf, s32 limit);
 void FUN_081dc694(void);
 s32 FUN_081deaf4(Entity9A9F* p);
+s32 FUN_081df014(Entity9A9F* p);
+s32 FUN_081df23c(Entity9A9F* p);
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
+void MosaicFader_Stop(void);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
 
@@ -737,7 +741,51 @@ const u8 sLinkStatBoost[6] = {90, 60, 60, 60};  // 0x085AE3FE, 末尾2要素は 
 
 NAKED s32 FUN_081dec1c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dec1c.inc"); }
 
-NAKED s32 FUN_081deef8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081deef8.inc"); }
+// 対戦開始: 参加回数を数え, 全員から種別 0x1000 の 0 番のキーが届いたら得点を計算して state 14 へ, 原典は最後の return を書き忘れている
+// 残差: 原典は linkBattleCount の2つ目の式で gStat を読み直し, キー種別の定数をループ内で作る (FUN_081df568 と同じ), p は r5 に置く
+NON_MATCH s32 FUN_081deef8(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 n;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    Sound_StopAll();
+    EntityCF58_CreateWithCallback(1, 0, NULL, p);
+    SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+    MosaicFader_Stop();
+    gUseLinkInput = FALSE;
+    gStat->linkBattleCount = (gStat->linkBattleCount < 0) ? 0 : gStat->linkBattleCount;
+    gStat->linkBattleCount = (gStat->linkBattleCount + 1 > 9999) ? 9999 : gStat->linkBattleCount + 1;
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  count = 0;
+  n = p->recordCount;
+  for (i = 0; i < n; i++) {
+    u16 key = Entity9A9F_GetRecvKey(p, i);
+
+    if (Entity9A9F_IsKeyKind(key, 0x1000) && (key & 0x3F) == 0) {
+      count++;
+    }
+  }
+  if (count == n) {
+    Entity9A9F_SetState(p, 14, FUN_081df014);
+    p->unk_21 = 0;
+    FUN_081ddc3c(p);
+    FUN_081ddcfc(p);
+    return 0;
+  }
+  if (p->stateTimer >= 90) {
+    p->unk_42 = 0x1000;
+  }
+#else
+  INCFUNC("asm/func/FUN_081deef8.inc");
+#endif
+}
 
 // 全員から種別 0x2C00 のキーがそろったら, 全員が 0 以外なら state 17, そうでなければ state 20 へ, そろうまでは自分の選択 unk_24 を送る
 // 残差: 原典はキー種別の比較定数を比較の直前に毎回作り, ループ外へ出さない (キーがビットフィールドで定数が combine で後から生まれる形かもしれない), 加えて count と i のレジスタが入れ替わる
