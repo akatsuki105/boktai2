@@ -62,6 +62,32 @@ static inline void Dog_SetUnk6a8(Dog* p, u32 bit) { p->unk_6a8 |= bit; }
 
 static inline AuxAnimState* Enemy_GetAuxAnim(Enemy* p) { return &((EnemyAuxSpriteData*)p->sprite)->anim; }
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flip の向きで流し, 同じものが流れていれば何もしない
+static inline void Dog_PlayTurnAnim(Dog* p, u32 anim, u32 variant, u32 flip) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSpriteData* s;
+
+    (p->e).playingAnim = anim;
+    s = (EnemyAuxSpriteData*)(p->e).sprite;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flip);
+  } else {
+    MainSprite* s = &(p->e).sprite->s;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flip == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, anim, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+    if (flip == ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
 const u16 u16_ARRAY_085ad8c0[2][8] = {
     {450, 480,  480, 540, 450, 459, 459, 540},
     {800, 1280, 560, 360, 300, 306, 306, 360}
@@ -846,7 +872,116 @@ void FUN_0814c2b0(Dog* p) {
   Enemy_PlayAnim(&p->e, 0);
 }
 
-NAKED void FUN_0814c2d4(Dog* p) { INCFUNC("asm/func/FUN_0814c2d4.inc"); }
+// 経路ノードの向きへ振り向く, 回る向きの振り向きアニメを流して tick ごとに 32 ずつ回し, アニメが終わったら向きが合っていれば止まり合っていなければ状態2へ戻す
+// 713/718命令, 原典は p を r5 と r8 に二重に持ち経路と ±32 の回転を r8 から触る, MainSprite_SetAnim の第5引数 4 を作る位置が早い (Enemy_PlayAnim と同じ壁), 振り向きアニメは Dog_PlayTurnAnim (同じものが流れていれば return する形) で再生の塊の共有まで揃う
+NON_MATCH void FUN_0814c2d4(Dog* p) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    s32 dir;
+    u32 target;
+
+    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+    dir = (((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
+      target = (p->e).mover.path->node->delay >> 12;
+      (p->e).unk_1dc = target;
+    } else {
+      target = (p->e).unk_1dc;
+    }
+    if (dir == FixToInt(1, target)) {
+      (p->e).subStateDone = 1;
+      if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
+        Enemy_PlayAnim(&p->e, 0);
+        Enemy_ResetState(&p->e, 3, 1, 0);
+        Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+        return;
+      }
+      Enemy_PlayAnim(&p->e, 0);
+      return;
+    }
+    switch (dir) {
+      case 0: {
+        if (target - 2 < 4) {
+          Dog_PlayTurnAnim(p, 13, 1, 0);
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          Dog_PlayTurnAnim(p, 13, 0, ANIM_PLAY_XFLIP);
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+      case 1: {
+        if (target - 4 < 4) {
+          Dog_PlayTurnAnim(p, 13, 2, 0);
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          Dog_PlayTurnAnim(p, 13, 3, 0);
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+      case 2: {
+        if (target - 1 > 4) {
+          Dog_PlayTurnAnim(p, 13, 3, ANIM_PLAY_XFLIP);
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          Dog_PlayTurnAnim(p, 13, 2, ANIM_PLAY_XFLIP);
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+      case 3: {
+        if (target < 4) {
+          Dog_PlayTurnAnim(p, 13, 0, 0);
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          Dog_PlayTurnAnim(p, 13, 1, ANIM_PLAY_XFLIP);
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+    }
+    (p->e).animForceRestart = FALSE;
+  }
+  if (Enemy_GetAuxAnim(&p->e)->tick == 1) {
+    if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
+      (p->e).mover.angle += 32;
+    } else {
+      (p->e).mover.angle -= 32;
+    }
+  }
+  {
+    u16 speedDiv = (p->e).animSpeedDiv;
+
+    if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7)) {
+      (p->e).animSpeedDiv = 3;
+    }
+    Enemy_UpdateWalkAnimSpeed(&p->e);
+    (p->e).animSpeedDiv = speedDiv;
+  }
+  if ((p->e).animForceRestart) {
+    s32 dir = (((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+    s32 d = (p->e).unk_1dc - dir;
+
+    if (d < 0) {
+      d = -d;
+    }
+    if (d <= 0) {
+      (p->e).subStateDone = 1;
+      (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+      Enemy_PlayAnim(&p->e, 0);
+      if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
+        Enemy_ResetState(&p->e, 3, 1, 0);
+        Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+      }
+    } else {
+      Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0814c2d4.inc");
+#endif
+}
 
 void FUN_0814c970(Dog* p) {}
 
