@@ -87,7 +87,7 @@ void FUN_0814de34(Dog* p, s32 timer);
 void FUN_0814e424(Dog* p);
 void Dog_StatePounce(Dog* p);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
-void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
+void Dog_OnStealHit(HitboxData* a, HitboxData* b, Dog* p);
 void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814fba4(Dog*);
 void FUN_0814fc7c(Dog*);
@@ -390,7 +390,7 @@ void Dog_InitHitboxes(Dog* p) {
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Dog_OnHit, 0, p);
   VEC3_SET(hit2Size, 0, 120, 0);
   VEC3_SET(hit2Offset, 0, 128, 0);
-  Enemy_InitHitboxWithAtk(&p->e, &self->unk_658, &hit2Size, &hit2Offset, FUN_0814b89c, 1, p);
+  Enemy_InitHitboxWithAtk(&p->e, &self->unk_658, &hit2Size, &hit2Offset, Dog_OnStealHit, 1, p);
   Hitbox_SetFlags(&self->unk_658, HBFLAG_ANGLE);
 }
 
@@ -741,7 +741,7 @@ void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) {
 
 // 2つ目の攻撃判定が当たったとき, 押し出す向きを決め, プレイヤーから食べ物を盗めたら回復ぶんをダメージの欄に入れて追いかけに戻る
 // 304/359命令の1回目の下書き, 原典はフレーム 0x28 で p を r9, &mover.pos を r7 に写し, 盗んだあとの処理が長い (inline の展開が多いらしい), 1回目の下書きで切り上げ
-NON_MATCH void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) {
+NON_MATCH void Dog_OnStealHit(HitboxData* a, HitboxData* b, Dog* p) {
 #ifdef NONMATCHING_C
   Dog* q = (p->e).unk_1cc;
 
@@ -818,7 +818,7 @@ NON_MATCH void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0814b89c.inc");
+  INCFUNC("asm/func/Dog_OnStealHit.inc");
 #endif
 }
 
