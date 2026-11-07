@@ -118,7 +118,25 @@ void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) {
   }
 }
 
-NAKED void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) { INCFUNC("asm/func/Crow_OnHurt.inc"); }
+// 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にする
+// 791/796命令, ノックバックの種別判定で TRUE 側ブロックが属性検査より前に来る配置と p->angle の格納先を分岐ごとに計算する形が合わない, 末尾は原典が乱数を先に読む (knockback に Random() を入れてから引くと揃うが不自然なので採らず)
+NON_MATCH void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) {
+#ifdef NONMATCHING_C
+  s32 knockback;
+
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+    return;
+  }
+  Enemy_HandleHurt(a, b, &p->e);
+  knockback = b->knockbackPower - (Random() & 15);
+  b->knockbackPower = knockback < 20 ? 20 : knockback;
+#else
+  INCFUNC("asm/func/Crow_OnHurt.inc");
+#endif
+}
 
 void FUN_08142fd8(Crow* p) {
   Enemy_ConsumeStateBegun(&p->e);
