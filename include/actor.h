@@ -156,7 +156,7 @@ typedef struct Actor {
   const ActorAnim* unk_2b8;           // 0x2B8, このキャラのアニメ表の先頭, FUN_08041480 がここから1件引く
   const ActorFootStepSound* unk_2bc;  // 0x2BC, id と idx で引いた sActorFootStepSounds の行
   u8 unk_2c0[0x2C8 - 0x2C0];          // 0x2C0, まだ未解析
-  u16 unk_2c8;                        // 0x2C8, FUN_080411d8 が unk_2ca を複写する
+  s16 unk_2c8;                        // 0x2C8, FUN_080411d8 が毎フレーム減らし, 3 以下になると unk_2ca を複写し直すか FUN_080415cc を呼ぶ
   u16 unk_2ca;                        // 0x2CA, FUN_080415cc が書き、FUN_080411d8 が unk_2c8 へ移す
   ActorUpdate* unk_2cc;               // 0x2CC, 根拠: FUN_080441a4 が (p, actor, unk_10) で呼ぶ
   ActorCb* cbs[4];                    // 0x2D0, FUN_080411a0 が 0 以外のものを順に呼ぶ

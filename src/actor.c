@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
+#include "map_inline.h"
 #include "mover.h"
 #include "msgbus.h"
 #include "player.h"
@@ -20,6 +21,7 @@ s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, 
 void FUN_080417dc(Mover* mover);
 void FUN_08041918(ActorManager* p);
 s32 FUN_080411a0(ActorManager* p, Actor* actor);
+void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4);
 bool32 FUN_08018a08(void);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
@@ -510,7 +512,27 @@ s32 FUN_080411a0(ActorManager* p, Actor* actor) {
   return 0;
 }
 
-NAKED s32 FUN_080411d8(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_080411d8.inc"); }
+// mover を動かして足元の高さに合わせ, スプライトの位置とアニメを進める, unk_2c8 の待ちが切れたら unk_0a に応じて FUN_080415cc を呼ぶ, 原典は最後の return を書き忘れている
+s32 FUN_080411d8(ActorManager* p, Actor* actor) {
+  Mover* mover = &actor->mover;
+  SpriteHolder* sprite = &actor->sprite;
+
+  Mover_ApplyMove(mover);
+  if (!TEST_FLAGS(actor->flags, 0x400)) {
+    mover->pos.y = TileHeightAt(&actor->mover.pos);
+  }
+  SpriteHolder_SetPos(sprite, &mover->pos);
+  SpriteHolder_AdvanceAnim(sprite);
+  if (actor->unk_2c8 > 0 && --actor->unk_2c8 <= 3) {
+    if (actor->unk_0a && !(gGameFlags & GAMEFLAG_EVENT)) {
+      actor->unk_2c8 = actor->unk_2ca;
+    } else {
+      actor->unk_2c8 = 0;
+      FUN_080415cc(actor, 8, 180, 180);
+      actor->unk_0a = 0;
+    }
+  }
+}
 
 void FUN_080412f4(void) {}
 
