@@ -658,7 +658,41 @@ NAKED void FUN_080417dc(Mover* mover) { INCFUNC("asm/func/FUN_080417dc.inc"); }
 
 NAKED void FUN_08041918(ActorManager* p) { INCFUNC("asm/func/FUN_08041918.inc"); }
 
-NAKED s32 Cmd_DDD0(void) { INCFUNC("asm/func/Cmd_DDD0.inc"); }
+// 0xDDD0, '.n' / '.k' / '.f' / '.a' / '.p' からメッセージを1件組み立てて送る
+s32 Cmd_DDD0(void) {
+  ActorManager* p = gActorManager;
+  MsgPacket* msg;
+  s32 bank;
+  u32 count;
+
+  if (p == NULL) {
+    return -1;
+  }
+  bank = p->unk_28;
+  count = p->unk_2c[bank];
+  if (p->unk_2c[count] > 7) {
+    return -1;
+  }
+
+  msg = (MsgPacket*)p->msgBufs[bank][count];
+  msg->targetID = VM_GetNamedArgValue('n', 0);
+  msg->targetClass = VM_GetNamedArgValue('k', 0);
+  msg->waitFlag = FALSE;
+  msg->unk_4 = VM_GetNamedArgValue('f', 0);
+  msg->cmd = VM_GetNamedArgValue('a', 0);
+  msg->argc = 0;
+  if (VM_SeekToNamedArg('p')) {
+    while (VM_GetPC() != NULL) {
+      msg->args[msg->argc++] = VM_GetValue();
+      if (msg->argc >= 8) {
+        break;
+      }
+    }
+  }
+  MsgPacket_Send(msg);
+  p->unk_2c[p->unk_28]++;
+  return 0;
+}
 
 // 0x5517
 NAKED s32 Cmd_5517(void) { INCFUNC("asm/func/Cmd_5517.inc"); }
