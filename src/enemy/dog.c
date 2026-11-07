@@ -55,6 +55,8 @@ const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800,
 
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
+void FUN_0814de34(Dog* p, s32 timer);
+void FUN_0814e424(Dog* p);
 void FUN_0814df40(Dog* p);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
@@ -480,7 +482,19 @@ void FUN_081516d8(Dog* p) {
   }
 }
 
-NAKED void FUN_081517a8(Dog* p) { INCFUNC("asm/func/FUN_081517a8.inc"); }
+void FUN_081517a8(Dog* p) {
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+  }
+  if (!FUN_0814b3a0(p) || (!(p->e).unk_608(&p->e) && !FUN_080f0a0c(&p->e))) {
+    if ((p->e).subStateDone) {
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      Enemy_EnterState(&p->e, FUN_0814e424, ES_UNK_42);
+    } else {
+      (p->e).subStateTimer++;
+    }
+  }
+}
 
 void FUN_081518ac(Dog* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad8f0; }
 
