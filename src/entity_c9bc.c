@@ -393,7 +393,42 @@ void EntityC9BCElem_UpdateState3(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
   }
 }
 
-NAKED void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState4.inc"); }
+// slideAngle の向きへ 16 フレームで 1 マス滑らせ, slideTiles を使い切るか進めなくなったら止める
+// 残差: elem と &delta のレジスタが r4/r5 で入れ替わる, 加えてパレット番号を選ぶ所で原典は unk_02 を読み直す
+NON_MATCH void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+#ifdef NONMATCHING_C
+  Vec3 delta;
+  Mover* obj = &elem->obj;
+
+  if (elem->unk_01) {
+    elem->unk_01 = 0;
+  }
+
+  elem->unk_2a |= 0x10;
+  Vec3_SetPolar(&delta, elem->slideAngle, 16);
+  Vec3_Add(&obj->pos, &delta);
+  elem->tileOverride.tileIdx = GetCollisionTileIdx(&obj->pos);
+  if (elem->timer >= 16) {
+    obj->pos.x = (obj->pos.x & ~0xFF) + 0x80;
+    obj->pos.z = (obj->pos.z & ~0xFF) + 0x80;
+    if (--elem->slideTiles <= 0) {
+      EntityC9BCElem_SetState(elem, 0);
+      CLEAR_FLAGS(elem->unk_02, 4);
+    } else if (FUN_0800cc08(elem)) {
+      EntityC9BCElem_SetState(elem, 4);
+    } else {
+      elem->slideTiles = 0;
+      CLEAR_FLAGS(elem->unk_02, 4);
+      if (!FUN_0800cf30(p, elem, -1)) {
+        EntityC9BCElem_SetState(elem, 0);
+      }
+    }
+    elem->plttIdx = EntityC9BCElem_GetPlttIdx(elem);
+  }
+#else
+  INCFUNC("asm/func/EntityC9BCElem_UpdateState4.inc");
+#endif
+}
 
 // groundY まで毎フレーム 16 ずつ落とし, 着地したらタイルの高さを積み直す
 // 残差2命令: 原典は unk_02 & 2 を32bitのまま 0 と比べ else 側の timer にその 0 を流用するが, こちらは u8 に切り詰める lsls/lsrs が付く
