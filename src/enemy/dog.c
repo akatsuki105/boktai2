@@ -874,7 +874,7 @@ void FUN_0814c2b0(Dog* p) {
 
 // 経路ノードの向きへ振り向く, 回る向きの振り向きアニメを流して tick ごとに 32 ずつ回し, アニメが終わったら向きが合っていれば止まり合っていなければ状態2へ戻す
 // 713/718命令, 原典は p を r5 と r8 に二重に持ち経路と ±32 の回転を r8 から触る, MainSprite_SetAnim の第5引数 4 を作る位置が早い (Enemy_PlayAnim と同じ壁), 振り向きアニメは Dog_PlayTurnAnim (同じものが流れていれば return する形) で再生の塊の共有まで揃う
-NON_MATCH void FUN_0814c2d4(Dog* p) {
+NON_MATCH void Dog_StateTurn(Dog* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
     s32 dir;
@@ -979,7 +979,7 @@ NON_MATCH void FUN_0814c2d4(Dog* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0814c2d4.inc");
+  INCFUNC("asm/func/Dog_StateTurn.inc");
 #endif
 }
 

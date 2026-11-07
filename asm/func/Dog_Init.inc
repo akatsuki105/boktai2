@@ -1439,7 +1439,7 @@ _081525A0:
 	mov r8, r5
 	ldr r6, _08152764 @ =FUN_0814a8dc
 	mov sb, r6
-	ldr r1, _08152768 @ =FUN_0814c2d4
+	ldr r1, _08152768 @ =Dog_StateTurn
 	mov sl, r1
 	ldr r2, _0815276C @ =FUN_0814c28c
 	mov ip, r2
@@ -1645,7 +1645,7 @@ _0815274E:
 _0815275C: .4byte 0x000006DC
 _08152760: .4byte FUN_081518c0
 _08152764: .4byte FUN_0814a8dc
-_08152768: .4byte FUN_0814c2d4
+_08152768: .4byte Dog_StateTurn
 _0815276C: .4byte FUN_0814c28c
 _08152770: .4byte Dog_StateDamaged
 _08152774: .4byte Dog_StateDying
