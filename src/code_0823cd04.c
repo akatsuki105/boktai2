@@ -1,4 +1,7 @@
+#include "bg_pltt.h"
+#include "file.h"
 #include "global.h"
+#include "player.h"
 #include "save.h"
 #include "sprite_common.h"
 #include "time.h"
@@ -32,6 +35,9 @@ COMMON_DATA u32 u32_030047c0 = 0;              // 0x030047C0, FUN_0823ACBC と F
 COMMON_DATA u32 u32_030047c4 = 0;              // 0x030047C4, Entity0823acbc_Update が 0 を書くほかは一括クリアのみ, 読み手は未発見
 
 bool8 Save_ReadSystemData(void);
+void MapPltt_PushCommand(s32 val, s32 count, u32* args);
+void Entity6978_SetRequest(u32 request, s32 count, u32* args);
+void* VM_GetValueAtSafe_Proxy(u8* addr);
 
 static inline void SystemSave_SetUnk09(u32 val) { gSystemSaveData->unk_09 = val; }
 
@@ -257,7 +263,43 @@ void FUN_0823ce3c(u16* param_1, u16* param_2) {
   *param_2 = u8_ARRAY_08dbd798[gClock.spanOfTime][1];
 }
 
-NAKED void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_0823ce68.inc"); }
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7) {
+  u32 args[5];
+  s32 cmd;
+  s32 request;
+
+  switch (param_1) {
+    case 0: {
+      cmd = 2;
+      request = 1;
+      break;
+    }
+    case 2: {
+      cmd = 4;
+      request = 3;
+      break;
+    }
+    case 3: {
+      cmd = 5;
+      request = 4;
+      break;
+    }
+    case 1:
+    default: {
+      cmd = 3;
+      request = 2;
+      break;
+    }
+  }
+  args[0] = param_2;
+  args[1] = param_3;
+  args[2] = param_4;
+  args[3] = param_5;
+  args[4] = param_6;
+  MapPltt_PushCommand(cmd, 5, args);
+  args[4] = param_7;
+  Entity6978_SetRequest(request, 5, args);
+}
 
 // 0x0CD4
 NAKED s32 Cmd_0CD4(void) { INCFUNC("asm/func/Cmd_0CD4.inc"); }
