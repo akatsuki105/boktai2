@@ -57,9 +57,13 @@ static inline void Dog_SetUnk6a8(Dog* p, u32 bit) { p->unk_6a8 |= bit; }
 
 static inline AuxAnimState* Enemy_GetAuxAnim(Enemy* p) { return &((EnemyAuxSpriteData*)p->sprite)->anim; }
 
-const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
+const u16 u16_ARRAY_085ad8c0[2][8] = {
+    {450, 480,  480, 540, 450, 459, 459, 540},
+    {800, 1280, 560, 360, 300, 306, 306, 360}
+};  // 0x085AD8C0
 
 struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
@@ -216,7 +220,40 @@ NON_MATCH void Dog_OnReset(Dog* p) {
 
 void FUN_0814a8c8(Dog* p) { CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_1); }
 
-NAKED s32 FUN_0814a8dc(Dog* p) { INCFUNC("asm/func/FUN_0814a8dc.inc"); }
+// 走りのアニメの頭のコマで足音の間隔を返し, バリアント2なら足が着くコマで後ろへ土煙を出す
+// 221/221命令, 残差は末尾の表引きで高位レジスタから写す一時レジスタの番号 (r0/r3 と原典 r3/r4) だけ, 加算は Vec3_Sum の b 側が先に読まれるので引数の向きを合わせてある, 試済: 早期 return の形
+NON_MATCH s32 FUN_0814a8dc(Dog* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (anim->tick == 0) {
+    bool32 run = Enemy_TestFlag3(&p->e, ENEFLAG3_UNK_7);
+
+    Enemy_SetFlag2(&p->e, ENEFLAG2_UNK_16);
+    if ((p->e).variant == 2 && (anim->cmdIdx == 7 || anim->cmdIdx == 5 || anim->cmdIdx == 1)) {
+      Vec3 pos;
+      Vec3 off;
+      Vec3 vel;
+      s32 life;
+      u16* table = gRandomTable;
+
+      pos.x = (_Random(table) & 63) - 48;
+      pos.z = (_Random(table) & 63) - 48;
+      Vec3_Sum(&pos, &(p->e).mover.pos, &pos);
+      Vec3_SetPolar(&off, ((p->e).mover.angle + 128) & 0xFF, 80);
+      Vec3_Sum(&pos, &off, &pos);
+      pos.y = (p->e).mover.pos.y;
+      Vec3_Clear(&vel);
+      life = (Random() & 63) + 20;
+      Entity081f26bc_Spawn(&pos, &vel, 0x1C1A, ANIM_D1B8, 3, 0, 0x31, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
+    }
+    return u16_ARRAY_085ad8c0[run][anim->cmdIdx & 7];
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0814a8dc.inc");
+#endif
+}
 
 void FUN_0814aad4(Dog* p) {
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_9)) {
