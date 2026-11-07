@@ -227,7 +227,7 @@ void Crow_PlayWingSound(Crow* p) {
   }
 }
 
-// 巡回中に高さが近いプレイヤーが索敵範囲に入ったら攻撃の要求を立てる, goto 以外の if の組み方 (入れ子, 早期 return) では TRUE の枝が後ろに来ない
+// 的を探してよい番で, 高さが近いプレイヤーが索敵範囲に入っていれば攻撃の要求を立てる
 bool8 FUN_08144b90(Crow* p) {
   if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
     s32 dy = abs((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y);

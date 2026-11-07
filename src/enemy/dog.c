@@ -37,6 +37,7 @@ static_assert(sizeof(Dog) == 1808);
 
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
+struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
 void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p);
@@ -255,7 +256,22 @@ NAKED void FUN_0814ccfc(Dog* p) { INCFUNC("asm/func/FUN_0814ccfc.inc"); }
 
 NAKED void FUN_0814dd38(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814dd38.inc"); }
 
-NAKED void FUN_0814de34(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814de34.inc"); }
+// 火を吐く, 決まったフレームの間だけ2つ目の攻撃判定を出す
+void FUN_0814de34(Dog* p, s32 timer) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 17);
+    Entity081f1770_Spawn(&(p->e).mover.pos, (p->e).mover.angle, 0);
+    PlaySound_082406e0(SONG_933);
+  }
+  if (timer >= 13 && timer <= 23) {
+    Hitbox_Register(&q->unk_658);
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+  }
+}
 
 NAKED void FUN_0814deb0(Dog* p) { INCFUNC("asm/func/FUN_0814deb0.inc"); }
 
