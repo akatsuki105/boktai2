@@ -11,6 +11,7 @@ typedef struct {
 } Spider;
 static_assert(sizeof(Spider) == 1680);
 
+void FUN_080e8614(Enemy* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
 void FUN_0812f9ec(Spider*);
@@ -18,6 +19,9 @@ void FUN_0812fbec(Spider*);
 void FUN_0812fcd8(Spider*);
 void FUN_0812fdb8(Spider*);
 void FUN_08130068(Spider*);
+void FUN_08130460(Spider*);
+void FUN_08130610(Spider*);
+void FUN_0813069c(Spider*);
 
 void (*const PTR_ARRAY_085ad6bc[17])(Spider*) = {
     (void*)FUN_080f2644,
@@ -85,7 +89,13 @@ NAKED void FUN_0812f3f8(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f3f8.i
 
 NAKED void FUN_0812f5f4(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f5f4.inc"); }
 
-NAKED s32 FUN_0812f818(Spider* p) { INCFUNC("asm/func/FUN_0812f818.inc"); }
+s32 FUN_0812f818(Spider* p) {
+  FUN_08130460(p);
+  FUN_08130610(p);
+  FUN_0813069c(p);
+  FUN_080e8614(&p->e);
+  return 1;
+}
 
 void FUN_0812f83c(Spider* p) {}
 
