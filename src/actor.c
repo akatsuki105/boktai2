@@ -21,35 +21,6 @@ void FUN_08041918(ActorManager* p);
 s32 FUN_080411a0(ActorManager* p, Actor* actor);
 bool32 FUN_08018a08(void);
 
-// b が a から x と z で range 未満, y で 256 未満の距離にあるか (FUN_0804157c と同じ判定)
-static inline bool32 Actor_IsNear(Vec3* a, Vec3* b, s32 range) {
-  s32 dx, dy, dz;
-
-  dx = abs(b->x - a->x);
-  if (dx >= range) {
-    return FALSE;
-  }
-  dy = abs(b->y - a->y);
-  if (dy > 0xFF) {
-    return FALSE;
-  }
-  dz = abs(b->z - a->z);
-  if (dz >= range) {
-    return FALSE;
-  }
-  return TRUE;
-}
-
-// プレイヤーが nearRange の内側にいるか
-static inline bool32 Actor_IsPlayerNear(ActorManager* p, Actor* actor) {
-  WorldPos* pos = p->playerPos;
-
-  if (pos != NULL && Actor_IsNear(&actor->mover.pos, pos, actor->nearRange)) {
-    return TRUE;
-  }
-  return FALSE;
-}
-
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
 // clang-format off
 const ActorAnim sActorAnims[135] = {
@@ -1052,7 +1023,32 @@ void FUN_08043cc4(ActorManager* p, Actor* actor) {
   actor->timer++;
 }
 
-NAKED void FUN_08043cf4(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043cf4.inc"); }
+// プレイヤーが近づいたら今の state を覚えて state 10 へ
+// 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, さらにプレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる, inline 2段にしても早期の FALSE が外側へ畳まれる
+NON_MATCH void FUN_08043cf4(ActorManager* p, Actor* actor) {
+#ifdef NONMATCHING_C
+  if (actor->unk_08) {
+    actor->unk_08 = 0;
+    actor->unk_07 = 0;
+    actor->unk_05 = 12;
+  }
+
+  if (p->playerPos != NULL && abs(p->playerPos->x - actor->mover.pos.x) < actor->nearRange && abs(p->playerPos->y - actor->mover.pos.y) <= 0xFF && abs(p->playerPos->z - actor->mover.pos.z) < actor->nearRange) {
+    actor->unk_227 = actor->state;
+    Actor_SetState(actor, 10);
+    actor->unk_08 = 1;
+    return;
+  }
+
+  if (actor->unk_07) {
+    Actor_SetState(actor, 14);
+    actor->unk_08 = 1;
+  }
+  actor->timer++;
+#else
+  INCFUNC("asm/func/FUN_08043cf4.inc");
+#endif
+}
 
 // startHour:startMinute から endHour:endMinute の間に入ったら state 15 へ, waitFrames の間は時刻を見ない
 void FUN_08043da8(ActorManager* p, Actor* actor) {
