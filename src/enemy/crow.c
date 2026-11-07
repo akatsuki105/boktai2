@@ -74,7 +74,7 @@ void FUN_08143dd4(Crow*);
 void FUN_08143ef8(Crow*);
 void FUN_08143fac(Crow*);
 void FUN_08144cd0(Crow*);
-void FUN_08144ec8(Crow*);
+void Crow_SwoopAtPlayer(Crow*);
 void FUN_081452cc(Crow*);
 void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_081447cc(Crow* p);
@@ -91,7 +91,7 @@ const u32 u32_ARRAY_085ad83c[4] = {4, 6, 8, 10};  // 0x085AD83C
 
 void (*const PTR_ARRAY_085ad84c[3])(Crow*) = {
     FUN_08144cd0,
-    FUN_08144ec8,
+    Crow_SwoopAtPlayer,
     FUN_081452cc,
 };  // 0x085AD84C
 
@@ -765,7 +765,7 @@ void FUN_08144cd0(Crow* p) {
 
 // プレイヤーへ急降下する副状態, 入ったときに着くまでのフレーム数から落ちる速さを決め, 着いたら勢いを残して副状態 (0,2,2) へ移る
 // 433/438命令, 1回目の下書き, 原典は q を r7 に置き, 入場の速さの割り算の比べ方や Vec3_SetPolar の展開の並びがまだ違う
-NON_MATCH void FUN_08144ec8(Crow* p) {
+NON_MATCH void Crow_SwoopAtPlayer(Crow* p) {
 #ifdef NONMATCHING_C
   Crow* q = (p->e).unk_1cc;
 
@@ -808,7 +808,7 @@ NON_MATCH void FUN_08144ec8(Crow* p) {
     (p->e).subStateTimer++;
   }
 #else
-  INCFUNC("asm/func/FUN_08144ec8.inc");
+  INCFUNC("asm/func/Crow_SwoopAtPlayer.inc");
 #endif
 }
 
