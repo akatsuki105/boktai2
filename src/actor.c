@@ -1077,7 +1077,42 @@ void FUN_08043da8(ActorManager* p, Actor* actor) {
 
 NAKED void FUN_08043e54(ActorManager* p, Actor* actor) { INCFUNC("asm/func/FUN_08043e54.inc"); }
 
-NAKED s32 ActorManager_Update(ActorManager* p) { INCFUNC("asm/func/ActorManager_Update.inc"); }
+s32 ActorManager_Update(ActorManager* p) {
+  Actor* actor;
+  Player* player = gPlayerPtr[0];
+
+  p->player = player;
+  if (player != NULL) {
+    p->playerPos = &player->mover.pos;
+  } else {
+    p->playerPos = NULL;
+  }
+  p->raining = FUN_08018a08();
+  p->hour = Time_GetHour();
+  p->minute = Time_GetMinute();
+  if (p->prevMinute != p->minute) {
+    p->minuteChanged = TRUE;
+  } else {
+    p->minuteChanged = FALSE;
+  }
+  p->prevMinute = p->minute;
+  p->unk_28 = 1 - p->unk_28;
+  p->unk_2c[p->unk_28] = 0;
+
+  actor = p->head;
+  while (actor != NULL) {
+    Actor* next = actor->next;
+
+    FUN_080411a0(p, actor);
+    actor = next;
+  }
+  FUN_08041918(p);
+  if (p->player != NULL) {
+    FUN_080417dc(&p->player->mover);
+  }
+  p->frameCount++;
+  return 0;
+}
 
 s32 ActorManager_Destroy(ActorManager* p) {
   Actor* actor = p->head;
