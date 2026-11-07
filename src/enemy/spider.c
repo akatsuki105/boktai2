@@ -546,7 +546,52 @@ NON_MATCH void FUN_0813069c(Spider* p) {
 #endif
 }
 
-NAKED void FUN_081307b0(Spider* p) { INCFUNC("asm/func/FUN_081307b0.inc"); }
+// 30 フレームごとに, 前方の乱数の向きと距離の点を unk_20c に選んで経路を引き, 次に選ぶまでの待ちを unk_65c に入れる
+// 231/241命令, 原典は乱数の表・gRandTableIdx のアドレス・0x3FF を関数の頭から callee-saved (sl/r7/r6) に置いて3つ目の乱数まで持ち越し, p をスタック (sp+8) に退避して経路 inline の pos に使う, こちらは定数を毎回プールから読む (乱数の割り当ての壁)
+NON_MATCH void FUN_081307b0(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+  u16* table = gRandomTable;
+  s32 dist = (_Random(table) & 0x3FF) + 256;
+  s32 spread = (_Random(table) & 0x7F) - 63;
+  u8 angle = spread + (p->e).mover.angle;
+
+  if (Mod((p->e).subStateTimer, 30) == 0) {
+    WorldPos pos;
+
+    if (q->unk_65c > 0) {
+      q->unk_65c--;
+      return;
+    }
+    pos.x = ((COS(angle) * dist) >> 14) + (p->e).mover.pos.x;
+    pos.y = (p->e).mover.pos.y;
+    pos.z = ((SIN(angle) * dist) >> 14) + (p->e).mover.pos.z;
+    if (!Map_IsPosInAgentIsland((p->e).navAgent, &(p->e).mover.pos, &pos)) {
+      if (!Spider_TestUnk660(q, 0x10)) {
+        (p->e).animSpeedDiv = 1;
+      }
+      Enemy_StepTowardPathNode(&p->e);
+      q->unk_65c = 0;
+      return;
+    }
+    (p->e).unk_20c = pos;
+    (p->e).animSpeedDiv = (_Random(table) & 3) == 0 ? 4 : 1;
+    if (!Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &(p->e).unk_20c)) {
+      Enemy_StepTowardPathNode(&p->e);
+      q->unk_65c = 0;
+    }
+    if (Spider_TestUnk660(q, 8)) {
+      q->unk_65c = 60;
+      return;
+    }
+    q->unk_65c = 120;
+  } else if (q->unk_65c > 0) {
+    q->unk_65c--;
+  }
+#else
+  INCFUNC("asm/func/FUN_081307b0.inc");
+#endif
+}
 
 bool8 FUN_081309f0(Spider* p) {
   if ((p->e).hitTargetID > 0) {
