@@ -67,7 +67,20 @@ static inline void Entity501B_SetState(Entity501B* p, void* fn, u8 phase) {
   p->phase = phase;
 }
 
-NAKED void Entity501B_InitBg(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitBg.inc"); }
+// BG2 と BG0 にタイルマップを敷き, 背景パレットを作業用バッファへ流す
+void Entity501B_InitBg(Entity501B* p) {
+  s32 bgIndices[1];
+
+  p->tilemap0 = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap1 = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  bgIndices[0] = 10;
+  Video_SetupBGLayout(2, 0, p->tilemap0, 0, 0, 1, bgIndices);
+  bgIndices[0] = 12;
+  Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
+  Video_GenerateBGMap(3, 0, 0, 0, 0);
+  p->bgPltt = GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body;
+  CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
+}
 
 // 上下2枚のテキストパネルを作ってメッセージを流し始める
 void Entity501B_InitTextPanels(Entity501B* p) {
