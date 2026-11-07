@@ -25,14 +25,19 @@ typedef struct {
   Enemy e;
   u8 unk_654[4];              // 0x654
   u32 unk_658;                // 0x658, bit3 が立っていると移動が速くなる
-  u8 unk_65c[5];              // 0x65C
+  u8 unk_65c[2];              // 0x65C
+  u8 biteInterval;            // 0x65E, 掴んでいる間に攻撃判定を出すフレーム間隔
+  u8 unk_65f;                 // 0x65F
+  u8 escapeMash;              // 0x660, 振りほどくのに要る連打数
   u8 unk_661;                 // 0x661, 歩きアニメを流し直すかを決めるための前のフレームの mover.angle
   u8 unk_662[2];              // 0x662
   u16 curveT;                 // 0x664, curveStart から curveEnd への曲線の進み具合, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
   u8 unk_666;                 // 0x666
   s8 curveBendDir;            // 0x667, curveBend を増やす向き, 1 か -1
   s16 curveBend;              // 0x668, 曲線のふくらみ, -320〜320 を往復する
-  u8 unk_66a[0x6A0 - 0x66A];  // 0x66A
+  u8 mashCount;               // 0x66A, 掴んでからの連打数
+  u8 mashBase;                // 0x66B, 掴んだときの Player.mashCount
+  u8 unk_66c[0x6A0 - 0x66C];  // 0x66C
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
@@ -86,7 +91,45 @@ NAKED void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC("
 
 NAKED void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnHurt.inc"); }
 
-NAKED void FUN_0813f06c(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f06c.inc"); }
+// プレイヤーに取り付いて一定間隔で攻撃し, 連打で振りほどかれたら終わる
+// 104/109 命令, 連打数の差分が Curoro_HoldPlayer と同じ残差 (base - 256 を作ってから引く形にならない) を持ち, 定数オフセットのレジスタも違う
+NON_MATCH void FUN_0813f06c(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    q->mashBase = gPlayerPtr[0]->mashCount;
+    Enemy_PlayAnim(&p->e, 1);
+    q->unk_661 = (p->e).mover.angle;
+  }
+  if (Mod((p->e).stateTimer, q->biteInterval) == 0) {
+    (p->e).atkHitbox.flags &= ~HBFLAG_HIDDEN;
+  }
+  if ((p->e).variant > 11) {
+    FUN_08140dd0(p);
+  }
+  {
+    s32 base = q->mashBase;
+    s32 count = gPlayerPtr[0]->mashCount;
+
+    if (count < base) {
+      q->mashCount = count - (base - 256);
+    } else {
+      q->mashCount = count - base;
+    }
+  }
+  if (q->mashCount > q->escapeMash) {
+    (p->e).subStateDone = 1;
+  } else if (q->unk_661 != (p->e).mover.angle) {
+    Enemy_PlayAnim(&p->e, 1);
+    q->unk_661 = (p->e).mover.angle;
+  } else {
+    (p->e).animForceRestart = FALSE;
+  }
+#else
+  INCFUNC("asm/func/FUN_0813f06c.inc");
+#endif
+}
 
 // 向きが変わったときだけ歩きアニメを流し直す
 void FUN_0813f180(EnemyBat* p) {
