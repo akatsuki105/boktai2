@@ -113,7 +113,7 @@ SECTIONS {
       src/bee_nest.o(iwram_data);
       src/entity_c60f.o(iwram_data);
       src/entity_7b9f.o(iwram_data);
-      src/entity_8cc7.o(.bss);
+      src/dove.o(.bss);
       src/link_battle_lobby.o(.bss);
       src/entity_9a9f.o(iwram_data);
       src/link_battle_coin.o(iwram_data);
@@ -472,7 +472,7 @@ SECTIONS {
 			src/bee_nest.o (.text);
 			src/entity_c60f.o (.text);
 			src/entity_7b9f.o (.text);
-			src/entity_8cc7.o (.text);
+			src/dove.o (.text);
 			src/link_connect.o (.text);
 			src/entity_7999.o (.text);
 			src/link_battle_rule.o (.text);
@@ -815,7 +815,7 @@ SECTIONS {
     src/elevator.o (.rodata);
     src/bee_nest.o (.rodata);
     src/entity_c60f.o (.rodata);
-    src/entity_8cc7.o (.rodata);
+    src/dove.o (.rodata);
     src/entity_7999.o (.rodata);
     src/link_battle_rule.o (.rodata);
     src/link_battle_lobby.o (.rodata);
