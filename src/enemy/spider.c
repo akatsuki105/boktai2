@@ -177,7 +177,16 @@ NAKED void FUN_0813101c(Spider* p) { INCFUNC("asm/func/FUN_0813101c.inc"); }
 
 NAKED s32 FUN_0813107c(Spider* p) { INCFUNC("asm/func/FUN_0813107c.inc"); }
 
-NAKED s32 FUN_081310b8(Spider* p) { INCFUNC("asm/func/FUN_081310b8.inc"); }
+s32 FUN_081310b8(Spider* p) {
+  FUN_0812f818(p);
+  {
+    u32 idx = (p->e).subState0;
+    EnemyHandler* table = (p->e).handlerTables[0];
+    table[idx](&p->e);
+  }
+  Enemy_RunStateHandler(&p->e);
+  return 1;
+}
 
 s32 Spider_Update(Spider* p) {
   Enemy_Update(&p->e);
