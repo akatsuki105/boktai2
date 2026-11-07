@@ -206,7 +206,19 @@ void FUN_081631d8(Slime* p) {
   }
 }
 
-NAKED void FUN_0816328c(Slime* p) { INCFUNC("asm/func/FUN_0816328c.inc"); }
+void FUN_0816328c(Slime* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimNoFacing(&p->e, 14);
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, 64);
+  }
+  if ((p->e).animForceRestart) {
+    if ((Random() & 31) < 24) {
+      Enemy_EnterState(&p->e, FUN_08162df4, ES_UNK_0);
+    } else {
+      Enemy_EnterState(&p->e, FUN_08162d18, ES_UNK_40);
+    }
+  }
+}
 
 void FUN_0816335c(Slime* p) {}
 
