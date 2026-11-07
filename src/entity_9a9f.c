@@ -4,6 +4,7 @@
 #include "global.h"
 #include "input.h"
 #include "link.h"
+#include "malloc.h"
 #include "random.h"
 #include "sound.h"
 #include "text.h"
@@ -47,6 +48,9 @@ void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_
 void MosaicFader_Stop(void);
 extern u32 gMapChanging;
 extern const s8 sLinkRankBonus[5][4];
+extern bool32 gRtcReadInhibit;
+void FUN_08238b04(void);
+s32 FUN_081de214(Entity9A9F* p);
 s32 FUN_081df398(Entity9A9F* p);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
@@ -1461,7 +1465,88 @@ s32 Entity9A9F_Destroy(Entity9A9F* p) {
 }
 
 // 0x9A9F
-NAKED Entity9A9F* Entity9A9F_Create(void) { INCFUNC("asm/func/Entity9A9F_Create.inc"); }
+// 通信セッションを作る, 既にあればそれを返す, 原典は最後の return を書き忘れている
+// 残差: 原典は unk_6c を -1 のレジスタと ldrh/orrs/strh で埋め, '.s' の NULL で返す 0 のブロックを1つ目の取得の直後に置く
+NON_MATCH Entity9A9F* Entity9A9F_Create(void) {
+#ifdef NONMATCHING_C
+  Entity9A9F* p;
+  s32 i;
+
+  if (gEntity9A9F != NULL) {
+    return gEntity9A9F;
+  }
+
+  gEntity9A9F = Malloc(sizeof(Entity9A9F));
+  if (gEntity9A9F == NULL) {
+    return NULL;
+  }
+  p = gEntity9A9F;
+  ClearMemory(p, sizeof(Entity9A9F));
+  SetEntityRoutine(p, NULL, Entity9A9F_Destroy);
+  p->e.kind = ENTITY_UNK_1;
+  p->e.unk_16 = 1;
+  p->e.id = 0;
+  AddEntity(&p->e);
+  gRtcReadInhibit = TRUE;
+  FUN_08238b04();
+  p->playerIdx = -1;
+  p->killRequested = 0;
+  p->unk_44 = p->unk_6c;
+  p->unk_48 = -1;
+  p->unk_4c = -1;
+  p->unk_50 = 0;
+  p->unk_51 = 1;
+  p->unk_52 = 0;
+  p->unk_53 = 0;
+  for (i = 0; i < 4; i++) {
+    p->unk_6c[i] |= 0xFFFF;
+    p->unk_68[i] = 0;
+  }
+  FUN_081de0dc(p);
+  FUN_081de090(p);
+  Entity9A9F_SetState(p, 1, FUN_081de214);
+  p->prevState = 3;
+  p->unk_2ea = VM_GetNamedArgValue('U', 0);
+  p->unk_2e8 = VM_GetNamedArgValue('Y', 0);
+  p->scriptID_2dc = VM_GetNamedArgValue('l', 0);
+  p->unk_2e2 = VM_GetNamedArgValue('r', 0);
+  p->unk_2de = VM_GetNamedArgValue('R', 0);
+  p->unk_2e0 = VM_GetNamedArgValue('v', 0);
+  p->exitScriptID = VM_GetNamedArgValue('E', 0);
+  p->unk_2e4 = VM_GetNamedArgValue('b', 0);
+  p->unk_30 = 7200;
+  p->unk_32 = 7200;
+  p->unk_3c = VM_GetNamedArgValue('L', 5000);
+  if (VM_SeekToNamedArg('e')) {
+    for (i = 0; i < 4; i++) {
+      p->unk_154[i] = VM_GetValue();
+    }
+  } else {
+    p->unk_154[0] = 2;
+    p->unk_154[1] = 1;
+    p->unk_154[2] = -1;
+    p->unk_154[3] = -2;
+  }
+
+  if (!VM_SeekToNamedArg('s')) {
+    return NULL;
+  }
+  p->unk_2ec = VM_GetPC_Proxy();
+  if (p->unk_2ec == NULL) {
+    return NULL;
+  }
+  if (!VM_SeekToNamedArg('S')) {
+    return NULL;
+  }
+  p->unk_2f0 = VM_GetPC_Proxy();
+  if (p->unk_2f0 == NULL) {
+    return NULL;
+  }
+  MainMenu_SetHudMode(7);
+#else
+  INCFUNC("asm/func/Entity9A9F_Create.inc");
+#endif
+}
 
 void FUN_081dfe5c(void) {
   if (gEntity9A9F != NULL) {
