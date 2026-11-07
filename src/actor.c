@@ -1618,7 +1618,37 @@ void FUN_0804473c(ActorManager* p, Actor* actor, s32 elapsed) {
   }
 }
 
-NAKED void FUN_0804478c(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_0804478c.inc"); }
+// work.walk.target へ 1フレーム 5 ずつ歩かせ, 着いたら終える
+// 下書き (149/151命令): 呼び出しの並びは一致, 着いたときの判定と速度の組み立ての順が違う
+NON_MATCH void FUN_0804478c(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 1, 1, 0, 4);
+  }
+  if ((u8)actor->fn(actor) != 1) {
+    WorldPos* pos = &actor->mover.pos;
+    WorldPos* target = &actor->work.walk.target;
+    s32 dx = target->x - pos->x;
+    s32 dz = target->z - pos->z;
+
+    if (dx * dx + dz * dz <= 100) {
+      actor->mover.pos = actor->work.walk.target;
+      actor->unk_07 = 1;
+    } else {
+      Vec3_SetPolar(&actor->mover.delta, actor->mover.angle, 5);
+      actor->unk_1b = ArcTan2_8(target->x - pos->x, target->z - pos->z);
+      actor->mover.angle = actor->unk_1b;
+      actor->unk_1a = Angle_ToDir8(actor->unk_1b);
+      actor->unk_19 = Angle_ToDir4(actor->unk_1b);
+      FUN_08041480(actor, 1, 1, 0, 5);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0804478c.inc");
+#endif
+}
 
 // mover の向きを unk_1b に合わせて向きのアニメを出し, 合ったら終える
 void FUN_080448c8(ActorManager* p, Actor* actor, s32 elapsed) {
