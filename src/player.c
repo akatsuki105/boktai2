@@ -542,60 +542,60 @@ void Player_EmitBurnSmoke(Player* p) {
   EmitSmoke(&pos, 1, &size, 0, 0, Q8(0.05), 2, 2);
 }
 
-// 0x64C のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
+// 物音の漫符のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
 // 残差1命令 (42/43): 原典は `adds r4, r0, #1` と加算先を別レジスタにするが, こちらは `adds r1, #1` で上書きする
 // u8 の一時変数に取る形だと切り捨てが strb の前に出てしまい逆に遠ざかる, Tier A/B と C のローカル化は試済
-NON_MATCH void Player_UpdatePtcl64c(Player* p) {
+NON_MATCH void Player_UpdateNoisePtcl(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->ptcl_64c.active == 0) {
+  if (p->noise.active == 0) {
     return;
   }
 
-  p->ptcl_64c.timer++;
-  if (p->ptcl_64c.timer > 5) {
-    p->ptcl_64c.ptcl.flags |= SPRFLAG_HIDDEN;
-    p->ptcl_64c.active = 0;
+  p->noise.timer++;
+  if (p->noise.timer > 5) {
+    p->noise.ptcl.flags |= SPRFLAG_HIDDEN;
+    p->noise.active = 0;
     return;
   }
 
-  Particle_SetPose(&p->ptcl_64c.ptcl, p->ptcl_64c.group1, (p->ptcl_64c.timer >> 2) + p->ptcl_64c.poseIdx);
+  Particle_SetPose(&p->noise.ptcl, p->noise.group1, (p->noise.timer >> 2) + p->noise.poseIdx);
 #else
-  INCFUNC("asm/func/Player_UpdatePtcl64c.inc");
+  INCFUNC("asm/func/Player_UpdateNoisePtcl.inc");
 #endif
 }
 
-// 0x64C のパーティクルを pos に出す, big なら別のパレットを使う
-void Player_ShowPtcl64c(Player* p, Vec3* pos, bool32 isFragileWallKnock) {
-  Particle* ptcl = &p->ptcl_64c.ptcl;
+// 物音の漫符のパーティクルを pos に出す, 傷んだ壁を叩いたときは専用の漫符にする
+void Player_ShowNoisePtcl(Player* p, Vec3* pos, bool32 isFragileWallKnock) {
+  Particle* ptcl = &p->noise.ptcl;
 
   if (isFragileWallKnock) {
-    p->ptcl_64c.poseIdx = PTCL1_FRAGILE_KNOCK_S;
+    p->noise.poseIdx = PTCL1_FRAGILE_KNOCK_S;
   } else {
-    p->ptcl_64c.poseIdx = PTCL1_NOISE_S;
+    p->noise.poseIdx = PTCL1_NOISE_S;
   }
 
-  Particle_SetPose(ptcl, p->ptcl_64c.group1, p->ptcl_64c.poseIdx);
+  Particle_SetPose(ptcl, p->noise.group1, p->noise.poseIdx);
   ptcl->pos = *pos;
   ptcl->flags &= ~SPRFLAG_HIDDEN;
-  p->ptcl_64c.active = TRUE;
-  p->ptcl_64c.timer = 0;
+  p->noise.active = TRUE;
+  p->noise.timer = 0;
 }
 
-// 0x64C のパーティクルを確保して隠した状態で初期化する
-void FUN_08061458(Player* p) {
+// 物音の漫符のパーティクルを確保して隠した状態で初期化する
+void Player_InitNoisePtcl(Player* p) {
   ParticleGroup* group = GetParticleGroup(PTCL_GROUP_1);
   Particle* ptcl;
 
-  p->ptcl_64c.group1 = group;
-  ptcl = &p->ptcl_64c.ptcl;
+  p->noise.group1 = group;
+  ptcl = &p->noise.ptcl;
   Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  Particle_SetPose(ptcl, p->ptcl_64c.group1, PTCL1_NOISE_S);
+  Particle_SetPose(ptcl, p->noise.group1, PTCL1_NOISE_S);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
-  p->ptcl_64c.active = 0;
-  p->ptcl_64c.timer = 0;
+  p->noise.active = 0;
+  p->noise.timer = 0;
 }
 
 // 混乱時に、周囲を回るパーティクルを1つ出し続ける
@@ -2030,7 +2030,7 @@ void Player_UpdatePoseAndShadow(Player* p) {
     Player_UpdatePltt(p, pose);
   }
 
-  Player_UpdatePtcl64c(p);
+  Player_UpdateNoisePtcl(p);
   Player_UpdateConfusePtcl(p);
   Player_UpdatePtcl718(p);
   Player_UpdatePtcl858(p);
@@ -2052,7 +2052,7 @@ void Player_UpdatePoseAndShadow(Player* p) {
 void Player_DestroyEffects(Player* p) {
   Eff082473e0Emitter_Destroy(&p->emitter);
   ParticleShadow_Remove(&p->shadow);
-  Particle_Remove(&p->ptcl_64c.ptcl);
+  Particle_Remove(&p->noise.ptcl);
   Particle_Remove(&p->spurl.ptcl);
   FUN_08061db4(p);
   FUN_08062258(p);
@@ -2078,7 +2078,7 @@ void Player_InitEffects(Player* p) {
   }
 
   Player_ResetPltt(p);
-  FUN_08061458(p);
+  Player_InitNoisePtcl(p);
   FUN_0806161c(p);
   Player_InitPtcl718(p);
   Player_InitPtcl858(p);
@@ -4100,7 +4100,7 @@ void FUN_08066e84(Player* _) {
 void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, bool32 fragileWall, SoundID32 soundID) {
   FUN_08240cf0(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
   if (pos2 != NULL) {
-    Player_ShowPtcl64c(p, pos2, fragileWall);
+    Player_ShowNoisePtcl(p, pos2, fragileWall);
   }
   if (soundID != 0) {
     PlaySound_082406e0(soundID);

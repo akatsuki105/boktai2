@@ -418,7 +418,7 @@ typedef struct Player {
   Vec3 shadowPos;                   // 0x5FC, mover.pos に下の3つを足した値, 根拠: Player_UpdatePoseAndShadow
   Vec3 shadowOffset;                // 0x604, shadowPos を作るときに mover.pos に足す分, Player_BeginAction が 0 に戻す
   ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, Elevator_UpdatePlayerRiding がエレベータ搭乗中に flags の bit0 を立てる
-  PlayerParticleGroup1 ptcl_64c;    // 0x64C, 物音を表す漫符(小/大)のパーティクル
+  PlayerParticleGroup1 noise;       // 0x64C, 物音を表す漫符(小/大)のパーティクル
   PlayerParticleGroup1 spurl;       // 0x67C, 混乱(BAD_CONFUSE)したときにプレイヤーの頭上に PTCL1_CONFUSE を出すための Emitter
   PlayerShockwave meleeShockwave;   // 0x6AC
   PlayerParticleState718 ptcl_718;  // 0x718, 根拠: Player_InitPtcl718
