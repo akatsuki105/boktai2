@@ -1,6 +1,7 @@
 #include "bg_pltt.h"
 #include "file.h"
 #include "global.h"
+#include "map_inline.h"
 #include "player.h"
 #include "save.h"
 #include "sprite_common.h"
@@ -325,16 +326,30 @@ void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_
   Entity6978_SetRequest(request, 5, args);
 }
 
-// 0x0CD4
 NAKED s32 Cmd_0CD4(void) { INCFUNC("asm/func/Cmd_0CD4.inc"); }
 
-// 0xA39F
-NAKED s32 Cmd_A39F(void) { INCFUNC("asm/func/Cmd_A39F.inc"); }
+// 0xA39F, (x, z) のタイルの階段の種類をスクリプトの変数へ書き出して返す
+// 残差: 命令列はほぼ一致, 原典は pos を sp+0, desc を sp+8 に置いて desc のアドレスを r5 に持つが, こちらは逆の並びになり pos のアクセスが1命令ずつ増える
+NON_MATCH s32 Cmd_A39F(void) {
+#ifdef NONMATCHING_C
+  WorldPos pos;
+  u8 desc[8];
+  s32 stairs;
 
-// 0x4B41
+  pos.x = VM_GetValue();
+  pos.y = 0;
+  pos.z = VM_GetValue();
+  stairs = GetTileAt(&pos)->heightStairs >> 4;
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, stairs);
+  return stairs;
+#else
+  INCFUNC("asm/func/Cmd_A39F.inc");
+#endif
+}
+
 NAKED s32 Cmd_4B41(void) { INCFUNC("asm/func/Cmd_4B41.inc"); }
 
-// 0xAB41
 NAKED s32 Cmd_AB41(void) { INCFUNC("asm/func/Cmd_AB41.inc"); }
 
 // 0xEDE2, HashName("BG非表示"), 指定した BG を隠す
