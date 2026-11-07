@@ -23,6 +23,7 @@ void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg
 s32 FUN_081de250(Entity9A9F*);
 s32 FUN_081de9d8(Entity9A9F*);
 s32 FUN_081de360(Entity9A9F*);
+s32 FUN_081de6f0(Entity9A9F*);
 s32 FUN_081de844(Entity9A9F*);
 s32 FUN_081de960(Entity9A9F*);
 s32 FUN_081df568(Entity9A9F* p);
@@ -114,6 +115,14 @@ static inline bool8 Entity9A9F_IsKey0400(u16 key) {
 // キーの種別 (bit10..13) が 0x1000 か
 static inline bool8 Entity9A9F_IsKey1000(u16 key) {
   if ((key & 0x3C00) == 0x1000) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x1400 か
+static inline bool8 Entity9A9F_IsKey1400(u16 key) {
+  if ((key & 0x3C00) == 0x1400) {
     return TRUE;
   }
   return FALSE;
@@ -675,7 +684,163 @@ s32 FUN_081de2dc(Entity9A9F* p) {
   return 0;
 }
 
-NAKED s32 FUN_081de360(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de360.inc"); }
+// ロビー, 全員の準備完了 (0x0400 | 0x3E か 0x1400) がそろって親機が START を押したら state 5 へ, 受信が途絶えたら state 2 からやり直す
+// 下書き (421/416命令): 流れは一致, 原典は unk_74 を消すループを &unk_74[3] から下へ動くポインタと &unk_74[0] の比較で回し (FUN_081de0dc と同じ形), &unk_23 を経路ごとに r6 へ作る
+NON_MATCH s32 FUN_081de360(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  u16 recv[4];
+  s32 i;
+
+  Sio_PeekRecvData(recv);
+  if ((u8)FUN_081dd9d4(p)) {
+    p->retryFrames = 0;
+    p->unk_28 = 0;
+    p->unk_2c[1] = 40;
+    if (gEntity9A9F != NULL) {
+      gEntity9A9F->unk_2c[0] = 0;
+    }
+    for (i = 3; i >= 0; i--) {
+      p->unk_74[i] = 0;
+    }
+  }
+
+  if (p->unk_4c < 0) {
+    if (++p->retryFrames >= 60) {
+    restart:
+      Entity9A9F_SetState(p, 2, FUN_081de250);
+      Sio_Disconnect();
+      return 0;
+    }
+    if (p->unk_4c != -3) {
+      for (i = 3; i >= 0; i--) {
+        p->unk_74[i] = 0;
+      }
+      for (i = 0; i < 4; i++) {
+        if (recv[i] == 0xFFFF) {
+          if (p->unk_78[i] < 0xFF) {
+            p->unk_78[i]++;
+          }
+          if (p->unk_78[i] > 119) {
+            p->unk_68[i] = 0;
+          }
+        } else {
+          p->unk_78[i] = 0;
+          p->unk_68[i] = 1;
+        }
+      }
+    } else if (p->unk_1d == 0 && (gInput[0].pressed & START_BUTTON)) {
+      p->unk_28 = 1;
+    }
+  } else {
+    s32 readyCount;
+    bool32 allReady;
+    bool32 waiting;
+
+    for (i = 0; i < 4; i++) {
+      if (recv[i] == 0xFFFF) {
+        if (p->unk_78[i] < 0xFF) {
+          p->unk_78[i]++;
+        }
+        if (p->unk_78[i] > 119) {
+          p->unk_68[i] = 0;
+        }
+      } else {
+        p->unk_78[i] = 0;
+        p->unk_68[i] = 1;
+      }
+    }
+    p->retryFrames = 0;
+    if (recv[p->unk_4c] == 0xFFFF) {
+      goto restart;
+    }
+    p->playerIdx = p->unk_4c;
+    p->recordCount = 0;
+    readyCount = 0;
+    allReady = TRUE;
+    waiting = FALSE;
+    for (i = 0; i < 4; i++) {
+      u16 key = Entity9A9F_GetRecvKey(p, i);
+
+      if (key != 0xFFFF && ((Entity9A9F_IsKey0400(key) && (key & 0xFF) == 0x3E) || Entity9A9F_IsKey1400(key))) {
+        readyCount++;
+        if (p->unk_74[i] < 0xFF) {
+          p->unk_74[i]++;
+        }
+        if (p->unk_74[i] > 89) {
+          p->unk_68[i] = 2;
+          if (allReady) {
+            p->recordCount++;
+          }
+        } else {
+          allReady = FALSE;
+          p->unk_68[i] = 1;
+        }
+      } else {
+        if (key == 0xFFFF) {
+          p->unk_68[i] = 0;
+        } else {
+          waiting = TRUE;
+          p->unk_68[i] = 1;
+        }
+        allReady = FALSE;
+        p->unk_74[i] = 0;
+        if (gEntity9A9F != NULL) {
+          gEntity9A9F->unk_2c[0] = 0;
+        }
+      }
+    }
+    if (waiting) {
+      for (i = 0; i < 4; i++) {
+        if (recv[i] != 0xFFFF) {
+          p->unk_68[i] = 1;
+        }
+        p->unk_74[i] = 0;
+      }
+    }
+    if (Entity9A9F_IsKey1400(p->unk_44[0])) {
+      if (gEntity9A9F != NULL) {
+        gEntity9A9F->unk_2c[0] = 1;
+      }
+      if (p->unk_2c[1] != 0) {
+        p->unk_2c[1]--;
+        if (p->recordCount > 1 && p->recordCount == readyCount && !waiting) {
+          if (p->unk_1d == 0) {
+            p->unk_68[0] = 3;
+          }
+          goto check;
+        }
+      } else if (p->recordCount > 1 && p->recordCount == readyCount && !waiting) {
+        Entity9A9F_SetState(p, 5, FUN_081de6f0);
+        FUN_081dd9f0(p);
+        PlaySound_082406e0(SE_SELECT);
+        return 0;
+      }
+    } else {
+      p->unk_2c[1] = 40;
+      if (p->unk_1d == 0 && p->recordCount > 1 && p->recordCount == readyCount && !waiting) {
+        if ((gInput[0].pressed & START_BUTTON) || p->unk_28) {
+          Entity9A9F_SetSendKey(p, 0x1400);
+          p->unk_28 = 0;
+          if (gEntity9A9F != NULL) {
+            gEntity9A9F->unk_2c[0] = 1;
+          }
+        }
+        p->unk_68[0] = 3;
+        goto check;
+      }
+    }
+    Entity9A9F_SetSendKey(p, 0x043E);
+  }
+check:
+  if (p->unk_23 == 2) {
+    FUN_08238c24();
+    Entity9A9F_SetState(p, 1, FUN_081de214);
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_081de360.inc");
+#endif
+}
 
 // 自分の記録を送り全員の記録を受け取る, 親機は全部そろったらキー 0x1800 を送り, それが届いたら state 6 へ, 原典は最後の return を書き忘れている
 s32 FUN_081de6f0(Entity9A9F* p) {
