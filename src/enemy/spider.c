@@ -2,6 +2,7 @@
 #include "enemy_inline.h"
 #include "global.h"
 #include "malloc.h"
+#include "random.h"
 #include "sound.h"
 
 // スパイダー(ENEID_SPIDER), ポイズンスパイダー(ENEID_PSPIDER)

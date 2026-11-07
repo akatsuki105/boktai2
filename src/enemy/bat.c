@@ -3,6 +3,7 @@
 #include "global.h"
 #include "malloc.h"
 #include "player.h"
+#include "random.h"
 #include "sound.h"
 
 // バット(ENEID_BAT), ヴァンパイアバット(ENEID_VBAT)

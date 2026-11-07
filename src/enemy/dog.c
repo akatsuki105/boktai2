@@ -2,6 +2,7 @@
 #include "enemy_inline.h"
 #include "global.h"
 #include "malloc.h"
+#include "random.h"
 #include "sound.h"
 
 // バンデット(ENEID_BANDIT), ヘルハウンド(ENEID_HELLHOUND), グレイブキーパー(ENEID_GRAVEKEEPER)

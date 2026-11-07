@@ -3,6 +3,7 @@
 #include "global.h"
 #include "malloc.h"
 #include "player.h"
+#include "random.h"
 #include "sound.h"
 
 // スライム系
@@ -148,7 +149,13 @@ NAKED void FUN_081645a4(Slime* p) { INCFUNC("asm/func/FUN_081645a4.inc"); }
 
 NAKED void FUN_081645fc(Slime* p) { INCFUNC("asm/func/FUN_081645fc.inc"); }
 
-NAKED u32 FUN_08164780(Slime* p) { INCFUNC("asm/func/FUN_08164780.inc"); }
+// ブラックスライムだけ, 当てたときの属性を乱数で引火か氷結に決める
+u32 FUN_08164780(Slime* p) {
+  if ((p->e).variant != 3) {
+    return 0;
+  }
+  return (u8)Random() < 180 ? HBATTR_HYOKETU | HBATTR_FROST : HBATTR_INKA | HBATTR_FLAME;
+}
 
 NAKED void FUN_081647c8(Slime* p) { INCFUNC("asm/func/FUN_081647c8.inc"); }
 
