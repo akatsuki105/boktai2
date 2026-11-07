@@ -203,4 +203,14 @@ NAKED s32 Dog_Destroy(Dog* p) { INCFUNC("asm/func/Dog_Destroy.inc"); }
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Dog_Init(Dog* p) { INCFUNC("asm/func/Dog_Init.inc"); }
 
-NAKED void Dog_Create(void) { INCFUNC("asm/func/Dog_Create.inc"); }
+void Dog_Create(void) {
+  Dog* p = Malloc(sizeof(Dog));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(Dog));
+    if (Dog_Init(p) < 0) {
+      Dog_Destroy(p);
+      Free(p);
+    }
+  }
+}
