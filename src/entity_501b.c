@@ -151,4 +151,15 @@ s32 Entity501B_Destroy(Entity501B* p) {
 
 NAKED s32 Entity501B_Init(Entity501B* p) { INCFUNC("asm/func/Entity501B_Init.inc"); }
 
-NAKED Entity501B* Entity501B_Create(void) { INCFUNC("asm/func/Entity501B_Create.inc"); }
+Entity501B* Entity501B_Create(void) {
+  Entity501B* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity501B));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity501B_Update, Entity501B_Destroy);
+    if (Entity501B_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
