@@ -7,6 +7,7 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "inventory.h"
 #include "malloc.h"
 #include "map_inline.h"
 #include "msgbus.h"
@@ -45,7 +46,8 @@ typedef struct {
   u8 unk_6d6;                 // 0x6D6
   u8 unk_6d7;                 // 0x6D7
   u8 unk_6d8;                 // 0x6D8, 0 になるまで毎フレーム減る
-  u8 unk_6d9[0x708 - 0x6D9];  // 0x6D9
+  u8 unk_6d9;                 // 0x6D9, 盗んだ食べ物で回復する割合 (maxHp の %)
+  u8 unk_6da[0x708 - 0x6DA];  // 0x6DA
   Vec3 unk_708;               // 0x708, 飛びかかる直前のプレイヤーの位置
 } Dog;
 static_assert(sizeof(Dog) == 1808);
@@ -68,6 +70,8 @@ const u16 u16_ARRAY_085ad8c0[2][8] = {
 extern const char s_dogcom_c_082520e4[];  // "dogcom.c"
 
 struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
+bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot);
+s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
 void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
@@ -735,7 +739,88 @@ void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) {
   }
 }
 
-NAKED void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/FUN_0814b89c.inc"); }
+// 2つ目の攻撃判定が当たったとき, 押し出す向きを決め, プレイヤーから食べ物を盗めたら回復ぶんをダメージの欄に入れて追いかけに戻る
+// 304/359命令の1回目の下書き, 原典はフレーム 0x28 で p を r9, &mover.pos を r7 に写し, 盗んだあとの処理が長い (inline の展開が多いらしい), 1回目の下書きで切り上げ
+NON_MATCH void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+
+  if (!Enemy_IsDead(&p->e)) {
+    s16 x = a->center.x;
+    s16 z = a->center.z;
+
+    switch ((((p->e).mover.angle + 0x20) & 0xFF) >> 6) {
+      case 0: {
+        x -= 256;
+        break;
+      }
+      case 1: {
+        z -= 256;
+        break;
+      }
+      case 2: {
+        x += 256;
+        break;
+      }
+      case 3: {
+        z += 256;
+        break;
+      }
+    }
+    a->angle = ArcTan2_8(b->center.x - x, b->center.z - z);
+    Enemy_SetHitTarget(&p->e, b);
+    if (!IsLinkPlay() && b->ignoreMask == HIM_0 && q->unk_6d0 < 0 && ((p->e).variant == 0 || (p->e).variant == 4)) {
+      WorldPos pos = gPlayerPtr[0]->mover.pos;
+
+      pos.y += 200;
+      if (PickItemToSteal(&q->unk_6d0, &q->unk_6d2, &q->unk_6d4)) {
+        if (ItemIconPopupManager_AddIcon(0, q->unk_6d2, 3, 0, &pos, &(p->e).mover.pos, 24, (u32)p) < 0) {
+          q->unk_6d0 = -1;
+        } else {
+          RemoveItem(q->unk_6d0);
+          switch (q->unk_6d2) {
+            case 8:
+            case 11:
+            case 14:
+            case 17: {
+              s32 heal = Div((p->e).maxHp * q->unk_6d9, 100);
+
+              if ((p->e).hp - heal <= 0) {
+                heal = (u16)(p->e).hp;
+              }
+              (p->e).unk_48a = heal;
+              q->unk_6d0 = -1;
+              (p->e).playerMover = &gPlayerPtr[0]->mover;
+              (p->e).unk_4a0 = 1;
+              (p->e).weaponExpMask = 0;
+              (p->e).flags6 = 0;
+              (p->e).weaponExpMask = 0;
+              (p->e).flags6 = 0;
+              (p->e).hurtbox.damage = (p->e).unk_48a;
+              (p->e).hurtbox.knockbackPower = 1;
+              (p->e).hurtbox.invincibleTime = 30;
+              (p->e).unk_48c = 1;
+              if ((p->e).flags5 & ENEFLAG5_UNK_1) {
+                (p->e).playerMover = &gPlayerPtr[0]->mover;
+              }
+              if ((p->e).playerMover != NULL) {
+                s32 dx = (p->e).playerMover->pos.x - (p->e).mover.pos.x;
+                s32 dz = (p->e).playerMover->pos.z - (p->e).mover.pos.z;
+
+                (p->e).unk_1fc = ArcTan2_8(dx, dz);
+                (p->e).unk_1e4 = dx * dx + dz * dz;
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0814b89c.inc");
+#endif
+}
 
 NAKED void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/Dog_OnHurt.inc"); }
 
