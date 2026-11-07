@@ -145,7 +145,31 @@ NAKED void FUN_080de3b4(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) 
 
 NAKED void FUN_080de52c(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de52c.inc"); }
 
-NAKED void FUN_080de6b0(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) { INCFUNC("asm/func/FUN_080de6b0.inc"); }
+// 攻撃判定と食らい判定を作る
+// 96/98命令, 引数を受けるレジスタだけが違う (原典は elem を r6, power を sl, knockback を r7, attrs を r8 に置く), 試済: ローカルの宣言順, 2つ目の判定を hitbox++ で作る
+NON_MATCH void FUN_080de6b0(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) {
+#ifdef NONMATCHING_C
+  HitboxData* hitbox;
+  Vec3 halfSize;
+  Vec3 offset;
+
+  VEC3_SET(halfSize, 32, 64, 32);
+  VEC3_SET(offset, 0, 0, 0);
+  hitbox = &elem->hitbox;
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, invincibleTime);
+  Hitbox_SetHandler(hitbox, FUN_080de3b4, elem);
+  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
+  hitbox = &elem->hurtbox;
+  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetPowerAndAttributes(hitbox, defPower, defAttrs, defWeakness);
+  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
+  Hitbox_SetHandler(hitbox, FUN_080de52c, elem);
+  Hitbox_Register(hitbox);
+#else
+  INCFUNC("asm/func/FUN_080de6b0.inc");
+#endif
+}
 
 // 攻撃判定を出す印が立っていれば判定を表に出して登録し, 立っていなければ隠す
 void FUN_080de7a0(Entity080df420Elem* elem) {
