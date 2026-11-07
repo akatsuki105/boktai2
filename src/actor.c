@@ -1759,7 +1759,65 @@ s32 FUN_08044f1c(ActorManager* p, Actor* actor) {
   return 0;
 }
 
-NAKED void FUN_08044f50(Actor* actor) { INCFUNC("asm/func/FUN_08044f50.inc"); }
+// 届いたメッセージで state を決める: cmd 1 は向き, cmd 2 は歩き先, cmd 3..9 はその番号の state
+// 下書き (127/126命令): メッセージ取り出しのループの残差 (Camera_PollMessages と同じ形)
+NON_MATCH void FUN_08044f50(Actor* actor) {
+#ifdef NONMATCHING_C
+  MsgQueue* mq = &actor->mq;
+  s32 i;
+
+  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+
+    MsgQueue_BeginWait(mq, msg);
+    switch (msg->cmd) {
+      case 1: {
+        actor->unk_1b = Angle_FromDir8(msg->args[0]);
+        Actor_StartState(actor, 2);
+        break;
+      }
+      case 2: {
+        actor->work.walk.target.x = msg->args[0];
+        actor->work.walk.target.y = msg->args[1];
+        actor->work.walk.target.z = msg->args[2];
+        actor->unk_1b = ArcTan2_8(actor->work.walk.target.x - actor->mover.pos.x, actor->work.walk.target.z - actor->mover.pos.z);
+        Actor_StartState(actor, 1);
+        break;
+      }
+      case 3: {
+        Actor_StartState(actor, 3);
+        break;
+      }
+      case 4: {
+        Actor_StartState(actor, 4);
+        break;
+      }
+      case 5: {
+        Actor_StartState(actor, 5);
+        break;
+      }
+      case 6: {
+        Actor_StartState(actor, 6);
+        break;
+      }
+      case 7: {
+        Actor_StartState(actor, 7);
+        break;
+      }
+      case 8: {
+        Actor_StartState(actor, 8);
+        break;
+      }
+      case 9: {
+        Actor_StartState(actor, 9);
+        break;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_08044f50.inc");
+#endif
+}
 
 s32 FUN_08045088(ActorManager* p, Actor* actor) {
   FUN_08044f50(actor);
