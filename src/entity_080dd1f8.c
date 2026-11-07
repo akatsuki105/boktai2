@@ -64,7 +64,20 @@ NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* el
 
 NAKED void FUN_080dc650(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dc650.inc"); }
 
-NAKED Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) { INCFUNC("asm/func/FUN_080dc764.inc"); }
+Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) {
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    if (!Entity080dd1f8_IsElemUsed(&p->activeMask, i)) {
+      Entity080dd1f8Elem* elem = &p->elems[i];
+
+      p->activeMask |= 1 << i;
+      elem->unk_12f = i;
+      return elem;
+    }
+  }
+  return NULL;
+}
 
 NAKED void FUN_080dc7bc(Entity080dd1f8* p, Entity080dd1f8Elem* elem) { INCFUNC("asm/func/FUN_080dc7bc.inc"); }
 
