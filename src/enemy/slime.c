@@ -24,7 +24,10 @@
 // ENEID_SLIME_Y: 状態異常なし, ENEID_SLIME_G: 毒, ENEID_SLIME_P: 石化, ENEID_SLIME_B: 引火or氷結
 typedef struct {
   Enemy e;
-  u8 unk_654[0x68E - 0x654];  // 0x654
+  u8 unk_654[0x688 - 0x654];  // 0x654
+  u16 unk_688;                // 0x688, '.s[0]'
+  u16 unk_68a;                // 0x68A, '.s[1]'
+  u8 unk_68c[2];              // 0x68C
   u16 unk_68e;                // 0x68E, bit4 が立っていれば分裂の SE を鳴らして落とす
   u8 unk_690[1680 - 0x690];   // 0x690
 } Slime;
@@ -172,7 +175,15 @@ NAKED void FUN_0816446c(Slime* p) { INCFUNC("asm/func/FUN_0816446c.inc"); }
 
 NAKED void FUN_08164520(Slime* p) { INCFUNC("asm/func/FUN_08164520.inc"); }
 
-NAKED void FUN_081645a4(Slime* p) { INCFUNC("asm/func/FUN_081645a4.inc"); }
+void FUN_081645a4(Slime* p) {
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_688 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    p->unk_68a = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  } else {
+    p->unk_688 = 0;
+    p->unk_68a = 0;
+  }
+}
 
 NAKED void FUN_081645fc(Slime* p) { INCFUNC("asm/func/FUN_081645fc.inc"); }
 
