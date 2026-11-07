@@ -139,7 +139,10 @@ NAKED s32 FUN_0813107c(Spider* p) { INCFUNC("asm/func/FUN_0813107c.inc"); }
 
 NAKED s32 FUN_081310b8(Spider* p) { INCFUNC("asm/func/FUN_081310b8.inc"); }
 
-NAKED s32 Spider_Update(Spider* p) { INCFUNC("asm/func/Spider_Update.inc"); }
+s32 Spider_Update(Spider* p) {
+  Enemy_Update(&p->e);
+  return 0;
+}
 
 NAKED s32 Spider_Destroy(Spider* p) { INCFUNC("asm/func/Spider_Destroy.inc"); }
 
