@@ -174,7 +174,28 @@ u16* FUN_0809d858(s32 bg, s32 x, s32 y) {
 
 const char s_bg_link_col_arr_08251d6c[] = "bg_link_col_arr";
 
-NAKED void FUN_0809d878(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d878.inc"); }
+// BG2 にタイルマップを敷き, 相手が持っていない武器種の欄を塗りつぶして, 背景パレットを作業用バッファへ流す
+void FUN_0809d878(Entity1B24* p) {
+  s32 bgIndices[1];
+  s32 i;
+
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  bgIndices[0] = 6;
+  Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, bgIndices);
+  Video_GenerateBGMap(3, 0, 0, 0, 0);
+  for (i = 0; i < 4; i++) {
+    if (!((p->weaponKindMask >> i) & 1)) {
+      u16* cell = FUN_0809d858(3, (i & 1) * 6 + 2, (i >> 1) + 4);
+      s32 j;
+
+      for (j = 0; j < 2; j++) {
+        *cell++ = 1;
+      }
+    }
+  }
+  p->pltt = GetBgPlttFile(HashName(s_bg_link_col_arr_08251d6c))->body;
+  CpuCopy32(p->pltt, gBgPlttBuffer, 96);
+}
 
 NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
 
