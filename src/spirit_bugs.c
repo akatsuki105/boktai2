@@ -346,7 +346,72 @@ NON_MATCH void Entity0800a89c_PurifyDarkBugs(void) {
 // state 0 (空きスロット) のハンドラ, 何もしない
 void FUN_0800b064(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {}
 
-NAKED void FUN_0800b068(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) { INCFUNC("asm/func/FUN_0800b068.inc"); }
+// 太陽虫と月光虫の state 1, 目標の周りを旋回しながら漂い, 画面上でプレイヤーの枠に入ったら回収して効果を与える, 手をかざされたら state 2 へ
+// 下書き (432/432命令): 残差は FUN_0800be38 と同じく旋回で angle へ書く2か所 (原典は &bug->angle のレジスタ経由, こちらは bug+2) と乱数テーブルのレジスタだけ
+NON_MATCH void FUN_0800b068(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
+#ifdef NONMATCHING_C
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Vec3* target = &bug->target;
+  Particle* ptcl = &bug->ptcl;
+  u8* angle = &bug->angle;
+
+  if ((bugIdx & 1) == frameBit) {
+    s32 diff = ArcTan2_8(target->x - ptcl->pos.x, target->z - ptcl->pos.z) - bug->angle;
+
+    if (bug->turnTimer < 0) {
+      *angle = bug->angle + (abs(diff) <= 4 ? diff : 4);
+      if (++bug->turnTimer == 0) {
+        bug->turnTimer = (Random() & 0x3F) + 0x40;
+      }
+    } else {
+      *angle = bug->angle - (abs(diff) <= 4 ? diff : 4);
+      if (--bug->turnTimer == 0) {
+        bug->turnTimer = -(Random() & 0x3F) - 0x40;
+      }
+    }
+    bug->vel.x = (COS(*angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(*angle) * bug->speed) >> 12;
+  } else if (swarm->timer == 0) {
+    Vec3 vp;
+
+    WorldToVp(&vp, &ptcl->pos);
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && box->playerMin.x <= vp.x && box->playerMax.x >= vp.x && box->playerMin.y <= vp.y && box->playerMax.y >= vp.y) {
+      bug->state = 4;
+      AuxAnim_SetAnim(&bug->anim, p->anim, sBugsCollectedAnimIdx[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+      if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+        PlaySound_0824078c(gSpiritBugsSoundIDs[swarm->kind]);
+        sSpiritBugHandler[swarm->kind](p->player, swarm->amount);
+      }
+      return;
+    }
+  }
+
+  ptcl->pos.x += bug->vel.x;
+  {
+    s32 dy = box->pos.y - ptcl->pos.y;
+
+    if (dy > 16) {
+      ptcl->pos.y += 16;
+    } else if (dy < -16) {
+      ptcl->pos.y -= 16;
+    } else {
+      ptcl->pos.y = box->pos.y;
+    }
+  }
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (swarm->timer == 0 && Player_TestFlag20(p->player, PFLAG20_PALM_UP)) {
+    bug->state = 2;
+    bug->speed = 18;
+  }
+  if (--bug->timer == 0) {
+    bug->state = 3;
+    bug->unk_6 = 10;
+  }
+#else
+  INCFUNC("asm/func/FUN_0800b068.inc");
+#endif
+}
 
 NAKED void FUN_0800b404(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) { INCFUNC("asm/func/FUN_0800b404.inc"); }
 
@@ -403,7 +468,7 @@ void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 f
 }
 
 // 暗黒虫の state 2, プレイヤーへ向かって飛び, 近づいたら回収して効果を与える, 寿命が切れたら state 3 へ
-// 下書き (296/296命令): 命令列は一致, 残差は swarm / box / 定数 4 の高位レジスタ (r8/r9/r10) の割り当ての入れ替わりだけ
+// 下書き (294/296命令): 原典は box を sl に置くが, こちらは引数のスタックから毎回読む, 先頭で SpiritBugScreenBox* のローカルに写すと 296 命令になり swarm / box / 定数 4 の高位レジスタの割り当てだけが入れ替わる (同形の FUN_0800b7a0 は一致)
 NON_MATCH void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
 #ifdef NONMATCHING_C
   SpiritBug* bug = &swarm->bugs[bugIdx];
