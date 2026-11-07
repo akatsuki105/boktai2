@@ -49,6 +49,7 @@ void FUN_081636d4(Slime* p);
 void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
 void FUN_081647c8(Slime* p);
+void FUN_08164a48(Slime* p);
 void FUN_08164120(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
@@ -674,7 +675,49 @@ void FUN_08165178(Slime* p) {
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
 }
 
-NAKED bool8 FUN_081651dc(Slime* p) { INCFUNC("asm/func/FUN_081651dc.inc"); }
+// 被弾したときの処理, 分裂の判定をし, ダメージ状態か, 体力が 1/4 を切っていれば止まり, そうでなければ待機へ戻す
+// 258/258命令まで寄る形は, 最初の flags3 の書き換えを Enemy_ClearFlag3, ENEFLAG3_UNK_8 の検査を flags3 & bit をそのまま返す inline にしたとき (flags3 のアドレスを r5 に持ち越す形が出る), 残差は乱数の表などプールのアドレスを受ける一時レジスタ番号だけ
+NON_MATCH bool8 FUN_081651dc(Slime* p) {
+#ifdef NONMATCHING_C
+  Slime* q = (p->e).unk_1cc;
+
+  PlaySound_082406e0(SE_SLIME_DAMAGED);
+  if ((p->e).variant == 3) {
+    FUN_08164a48(p);
+  }
+  Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_5);
+  q->unk_658 += 80;
+  if (q->unk_688 != 0) {
+    if ((p->e).hp < (p->e).unk_546) {
+      FUN_081645fc(p);
+    } else if ((u8)Random() <= 24) {
+      FUN_081645fc(p);
+    }
+  }
+  if ((p->e).flags6 & ENEFLAG6_UNK_18) {
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+    Enemy_EnterState(&p->e, (p->e).unk_5cc, ES_DAMAGED);
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    return TRUE;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    return FALSE;
+  }
+  (p->e).unk_544 = 300;
+  (p->e).unk_4a8->val = 0;
+  if ((p->e).hp < (p->e).unk_546 || Slime_TestUnk68e(q, 8)) {
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 0, 2);
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+  } else if ((p->e).subState0 != 0 || (p->e).subState1 != 0 || (p->e).subState2 != 0) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+    Enemy_ResetState(&p->e, 0, 0, 0);
+  }
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_081651dc.inc");
+#endif
+}
 
 s32 FUN_08165460(Slime* p) { return 1; }
 

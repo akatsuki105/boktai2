@@ -152,7 +152,7 @@ NON_MATCH void FUN_0812edf8(Spider* p) {
 #endif
 }
 
-// 巣で待つ状態, 待ち時間が過ぎたら, 巣に獲物が掛かっているか 1/4 の確率で状態 (unk_5a0, 副状態7) へ, そうでなければ (unk_5a4, 副状態5) へ 60 フレーム後に移る
+// 待つ状態, unk_65e フレーム過ぎたら, バリアント0で FUN_080db290 が枠を返すか 1/4 の確率で状態 (unk_5a0, 副状態7) へ, そうでなければ (unk_5a4, 副状態5) へ 60 フレーム後に移る
 // 242/251命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み副状態の定数を r8 に置く), 加えて原典は &mover を r8 に写して FUN_080db290 に渡し, variant や乱数の 0 をそのまま格納の 0 に使う, 試済: 保留状態の inline, Mover* / Enemy* のローカル
 NON_MATCH void FUN_0812ef50(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
