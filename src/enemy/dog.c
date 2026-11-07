@@ -183,7 +183,10 @@ NAKED void FUN_081518ac(Dog* p) { INCFUNC("asm/func/FUN_081518ac.inc"); }
 
 NAKED s32 FUN_081518c0(Dog* p) { INCFUNC("asm/func/FUN_081518c0.inc"); }
 
-NAKED s32 Dog_Update(Dog* p) { INCFUNC("asm/func/Dog_Update.inc"); }
+s32 Dog_Update(Dog* p) {
+  Enemy_Update(&p->e);
+  return 0;
+}
 
 NAKED s32 Dog_Destroy(Dog* p) { INCFUNC("asm/func/Dog_Destroy.inc"); }
 
