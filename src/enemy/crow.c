@@ -293,7 +293,28 @@ void FUN_081448d8(Crow* p) {
   (p->e).unk_24e = 0;
 }
 
-NAKED void FUN_08144910(Crow* p) { INCFUNC("asm/func/FUN_08144910.inc"); }
+void FUN_08144910(Crow* p) {
+  if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    (p->e).unk_24e = 0;
+    return;
+  }
+  if ((p->e).unk_24e != 0) {
+    (p->e).unk_24e--;
+    return;
+  }
+  Crow_PickRandomPathNode(p);
+  {
+    WorldPos pos;
+    WorldPos* dst = &pos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+    Crow_BeginCurveMove(p, &pos);
+    FUN_081448d8(p);
+  }
+}
 
 NAKED void FUN_081449f8(Crow* p) { INCFUNC("asm/func/FUN_081449f8.inc"); }
 
