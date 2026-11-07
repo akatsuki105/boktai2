@@ -247,7 +247,47 @@ void EntityC9BCElem_UpdateState3(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
 
 NAKED void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState4.inc"); }
 
-NAKED void EntityC9BCElem_UpdateState5(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState5.inc"); }
+// groundY まで毎フレーム 16 ずつ落とし, 着地したらタイルの高さを積み直す
+// 残差2命令: 原典は unk_02 & 2 を32bitのまま 0 と比べ else 側の timer にその 0 を流用するが, こちらは u8 に切り詰める lsls/lsrs が付く
+NON_MATCH void EntityC9BCElem_UpdateState5(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+#ifdef NONMATCHING_C
+  MapTileOverride* ov = &elem->tileOverride;
+  Mover* obj = &elem->obj;
+  s16 groundY;
+
+  if (elem->unk_01) {
+    elem->unk_01 = 0;
+  }
+
+  elem->unk_2a |= 0x10;
+  obj->pos.y -= 16;
+  groundY = elem->groundY;
+  if (obj->pos.y < groundY) {
+    s32 height;
+
+    obj->pos.y = groundY;
+    height = ((groundY >> 8) & 0xF) + 1;
+    if (height > 15) {
+      height = 15;
+    }
+    ov->tile.heightStairs = (ov->tile.heightStairs & 0xF0) | height;
+    if (elem->unk_02 & 2) {
+      elem->state = 1;
+      elem->timer = 0;
+      elem->unk_01 = 1;
+      EntityD9AE_SpawnDust(&elem->obj.pos, 0x80);
+      PlaySound_082406e0(SE_BLOCK_COLLISION);
+    } else {
+      elem->state = 0;
+      elem->timer = 0;
+      elem->unk_01 = 1;
+      PlaySound_082406e0(SE_539);
+    }
+  }
+#else
+  INCFUNC("asm/func/EntityC9BCElem_UpdateState5.inc");
+#endif
+}
 
 // 砕けて破片を散らし, 点滅させてから 32 フレームで解放を求める
 void EntityC9BCElem_UpdateState6(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
