@@ -818,7 +818,7 @@ static u32 FUN_08148750(s32 angle) {
 void FUN_08148780(void) {}
 
 // 残差は最後のブロックの r2/r3 の入れ替わりだけ (143/143命令), 原典は &flags を r2, &flags4 を r3 に置く, Tier C 試済 (flags のポインタのローカル, playerMover のローカル, Enemy_TestFlag / Enemy_SetFlag)
-NON_MATCH bool32 FUN_08148784(Mimic* p) {
+NON_MATCH bool8 FUN_08148784(Mimic* p) {
 #ifdef NONMATCHING_C
   if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
     return FALSE;

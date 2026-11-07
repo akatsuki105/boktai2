@@ -2215,7 +2215,7 @@ void Boku_UpdateDelayedScript(Boku* p) {
 
 // デカすぎて複数の関数を1つの関数として間違って扱っている可能性がある
 // 2556/2565命令の下書き, プレイヤーへ向かう部分は FUN_080fd08c と同じ形を3回展開, 原典は &flags3 をスタックに置き状態フィールドのアドレスも作り置く (フレーム 0x100, こちらは 0xC4)
-NON_MATCH bool32 FUN_08100228(Boku* p) {
+NON_MATCH bool8 FUN_08100228(Boku* p) {
 #ifdef NONMATCHING_C
   Boku* q = (p->e).unk_1cc;
   s32 tile;

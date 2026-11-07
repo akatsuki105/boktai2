@@ -2977,7 +2977,7 @@ void FUN_080f6e34(Enemy* p) {
 NAKED bool8 FUN_080f6e64(Enemy* p) { INCFUNC("asm/func/FUN_080f6e64.inc"); }
 
 // 種族ごとの効果音を鳴らしてから状態18へ移す
-bool32 FUN_080f8400(Enemy* p) {
+bool8 FUN_080f8400(Enemy* p) {
   Enemy_ClearFlag3(p, ENEFLAG3_UNK_8);
   switch (p->kind) {
     case ENEK_BAT: {

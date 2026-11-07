@@ -76,7 +76,7 @@ void FUN_0813c9c4(Curoro* p, Vec3* pos);
 void FUN_0813ca64(Curoro* p);
 void FUN_0813ca9c(Curoro* p);
 void Curoro_BounceOffWall(Curoro* p);
-bool32 FUN_0813cc7c(Curoro* p);
+bool8 FUN_0813cc7c(Curoro* p);
 void FUN_0813ccf0(Curoro* p);
 void Curoro_ReleasePlayer(Curoro* p);
 s32 FUN_0813cdf8(Curoro* p);
@@ -1224,7 +1224,7 @@ NON_MATCH void Curoro_BounceOffWall(Curoro* p) {
 #endif
 }
 
-bool32 FUN_0813cc7c(Curoro* p) {
+bool8 FUN_0813cc7c(Curoro* p) {
   s32 dy;
 
   if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {

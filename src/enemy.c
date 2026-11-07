@@ -3194,7 +3194,7 @@ NAKED bool8 FUN_080eb2a0(Enemy* p) { INCFUNC("asm/func/FUN_080eb2a0.inc"); }
 // 道具欄をランダムな位置から16スロット分走査して, 持っている道具を1つ選ぶ (チョコまみれは除く)
 // 残差は62/62命令でブロック配置のみ, 原典は見つかった側のブロックをループの外 (return FALSE の後ろ) に置く
 // Tier A-C 試済 (for/while(TRUE), break+i==16, s16 ローカル経由)
-NON_MATCH bool32 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot) {
+NON_MATCH bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot) {
 #ifdef NONMATCHING_C
   s16 slot;
   s16 i;
