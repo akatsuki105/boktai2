@@ -94,7 +94,16 @@ NAKED void FUN_081404c0(EnemyBat* p) { INCFUNC("asm/func/FUN_081404c0.inc"); }
 
 NAKED void FUN_08140520(EnemyBat* p) { INCFUNC("asm/func/FUN_08140520.inc"); }
 
-NAKED void EnemyBat_InitHitboxes(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_InitHitboxes.inc"); }
+void EnemyBat_InitHitboxes(EnemyBat* p) {
+  Vec3 hurtSize, hurtOffset, hitSize, hitOffset;
+
+  VEC3_SET(hurtSize, 32, 82, 32);
+  VEC3_SET(hurtOffset, 0, 0, 0);
+  Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, EnemyBat_OnHurt, p);
+  VEC3_SET(hitSize, 32, 42, 32);
+  VEC3_SET(hitOffset, 0, 0, 0);
+  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, EnemyBat_OnHit, 0, p);
+}
 
 NAKED s32 FUN_08140614(EnemyBat* p) { INCFUNC("asm/func/FUN_08140614.inc"); }
 
