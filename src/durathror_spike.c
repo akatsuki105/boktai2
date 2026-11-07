@@ -63,6 +63,19 @@ Entity0805d79c* Entity0805d79c_Create(void) {
   return p;
 }
 
-NAKED Entity0805d79cElem* Entity0805d79c_AllocElem(Entity0805d79c* p, s32* outIdx) { INCFUNC("asm/func/Entity0805d79c_AllocElem.inc"); }
+// 空いている棘を探して返し, その添字を outIdx に入れる, 空きが無ければ NULL を返して outIdx は 0
+Entity0805d79cElem* Entity0805d79c_AllocElem(Entity0805d79c* p, s32* outIdx) {
+  Entity0805d79cElem* elem = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, elem++) {
+    if (!(p->activeMask & (1 << i))) {
+      *outIdx = i;
+      return elem;
+    }
+  }
+  *outIdx = 0;
+  return NULL;
+}
 
 NAKED s32 Entity0805d79c_Spawn(Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos) { INCFUNC("asm/func/Entity0805d79c_Spawn.inc"); }
