@@ -178,7 +178,15 @@ NAKED void FUN_08164a48(Slime* p) { INCFUNC("asm/func/FUN_08164a48.inc"); }
 
 NAKED void FUN_08164da8(Slime* p) { INCFUNC("asm/func/FUN_08164da8.inc"); }
 
-NAKED void FUN_08165130(Slime* p) { INCFUNC("asm/func/FUN_08165130.inc"); }
+// 分裂の印が立っていれば分裂の SE を鳴らして印を落とす
+void FUN_08165130(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+
+  if (Slime_TestUnk68e(q, 0x10)) {
+    PlaySound_082406e0(SE_SLIME_FISSION);
+    CLEAR_FLAGS(q->unk_68e, 0x10);
+  }
+}
 
 NAKED void FUN_08165178(Slime* p) { INCFUNC("asm/func/FUN_08165178.inc"); }
 
