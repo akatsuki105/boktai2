@@ -229,7 +229,28 @@ void FUN_08130460(Spider* p) {
 
 NAKED bool8 FUN_081304a8(Spider* p, s32 rangeX, s32 rangeZ) { INCFUNC("asm/func/FUN_081304a8.inc"); }
 
-NAKED bool8 FUN_08130508(Spider* p) { INCFUNC("asm/func/FUN_08130508.inc"); }
+// 棺桶への経路を引けたら棺桶を狙って歩き出す
+// 112/116 命令, 原典は経路を引けなかった2つの入り口で flags3 のアドレスを別々に作ってから合流する, 試済: 早期 return, 結果を変数に受ける形, inline を || の形にする (ミミックが崩れる)
+NON_MATCH bool8 FUN_08130508(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+
+  if (!Enemy_IsDead(&p->e)) {
+    WorldPos* dst = Coffin_GetPos();
+
+    if (dst != NULL && Enemy_TryRouteTo(&p->e, (p->e).navAgent, &(p->e).mover.pos, dst)) {
+      SET_FLAGS(q->unk_660, 4);
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      (p->e).animSpeedDiv = 4;
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_08130508.inc");
+#endif
+}
 
 // 棺桶が空いて止まっている間, 300 フレームごとに棺桶を狙いに行く
 void FUN_08130610(Spider* p) {
