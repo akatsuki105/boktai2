@@ -293,7 +293,24 @@ void FUN_081e02ec(Entity501B* p) {
   }
 }
 
-NAKED void Entity501B_LoadScore(Entity501B* p) { INCFUNC("asm/func/Entity501B_LoadScore.inc"); }
+// 自分の稼いだ点と増減をセッションから取り込み, 9999 で頭打ちにする
+void Entity501B_LoadScore(Entity501B* p) {
+  p->score = Entity9A9F_GetUnk138(Entity9A9F_GetPlayerIdx());
+  if (p->score > 9999) {
+    p->score = 9999;
+  }
+  if (p->score <= 0) {
+    p->score = 0;
+  }
+  p->unk_3c0 = Entity9A9F_GetUnk144(Entity9A9F_GetPlayerIdx());
+  if (p->unk_3c0 > 9999) {
+    p->unk_3c0 = 9999;
+  }
+  if (p->unk_3c0 < -9999) {
+    p->unk_3c0 = -9999;
+  }
+  p->timer = 90;
+}
 
 NAKED void FUN_081e03d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e03d8.inc"); }
 
