@@ -8,6 +8,7 @@
 #include "sprite.h"
 #include "trig.h"
 #include "vec3.h"
+#include "vm.h"
 
 typedef struct {
   AuxSprite spr;              // 0x000, _Destroy が AuxSprite_Remove に渡す
@@ -316,4 +317,34 @@ s32 FUN_080dd324(void* p) {
   return 1;
 }
 
-NAKED void Cmd_AE71(void) { INCFUNC("asm/func/Cmd_AE71.inc"); }
+// スクリプトから爆弾を1つ置く, '.p' が位置, '.a' が威力とノックバック, '.v' が速度, '.l' が爆発までの時間, '.n' が判定の id
+void Cmd_AE71(void) {
+  Vec3 pos;
+  Vec3 vel;
+  Vec3 zero;
+  s32 knockback = 0;
+  s32 power = 0;
+  s32 timer;
+  s32 id;
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    pos.y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    pos.z = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  if (VM_SeekToNamedArg('a')) {
+    power = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    knockback = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  if (VM_SeekToNamedArg('v')) {
+    vel.x = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    vel.y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    vel.z = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  } else {
+    VEC3_SET(vel, 0, 0, 0);
+  }
+  timer = VM_GetNamedArgValue('l', 0);
+  id = VM_GetNamedArgValue('n', 0);
+  Vec3_Clear(&zero);
+  Entity080dd1f8_Spawn(&pos, &vel, &zero, power, knockback, timer, id)->unk_12c |= 1;
+}
