@@ -188,7 +188,18 @@ void EnemyBat_InitAnims(EnemyBat* p) {
   Enemy_SetAnimEntry(&p->e, 10, 1, 0);
 }
 
-NAKED void FUN_08140904(EnemyBat* p) { INCFUNC("asm/func/FUN_08140904.inc"); }
+// 残差は q と flags2 のアドレスの r1/r2 入れ替えのみ, 試済: q のローカル有無, Enemy_SetFlag2
+NON_MATCH void FUN_08140904(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  EnemyBat* q = (p->e).unk_1cc;
+
+  Enemy_SetFlag2(&p->e, ENEFLAG2_UNK_20);
+  q->unk_658 &= ~7;
+  Hitbox_ClearFlags(&(p->e).atkHitbox, HBFLAG_HIDDEN);
+#else
+  INCFUNC("asm/func/FUN_08140904.inc");
+#endif
+}
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
 void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
