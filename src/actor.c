@@ -27,6 +27,7 @@ void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
 bool32 FUN_08018a08(void);
 WorldPos* Coffin_GetPos(void);
+void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 
 // キャラクターごとのアニメ表, 区切りは sActorSprites の data が指す位置
 // clang-format off
@@ -1060,7 +1061,54 @@ void FUN_08042cf0(ActorManager* p, Actor* actor, s32 elapsed) {
 
 NAKED void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042d50.inc"); }
 
-NAKED void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042f34.inc"); }
+// navTarget へナビメッシュで歩かせ, 目的地に近づいたら終える, MainSprite の足を出すコマでだけ 48 進む
+// 下書き (197/218命令): 呼び出しの並びは一致, 目的地までの距離と1歩の組み立てが違う
+NON_MATCH void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) {
+#ifdef NONMATCHING_C
+  Mover* mover = &actor->mover;
+  NavAgent* nav = &actor->navAgent;
+  SpriteHolder* sprite = &actor->sprite;
+
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 1, 1, 0, 4);
+    actor->unk_1ec = 0;
+    Map_InitNavAgent(nav, &actor->mover.pos);
+    Map_TryFindNavRoute(nav, &actor->mover.pos, &actor->navTarget);
+    actor->unk_224 = 1;
+  }
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+
+  {
+    s32 dx = nav->dest.x - mover->pos.x;
+    s32 dz = nav->dest.z - mover->pos.z;
+
+    if (dx * dx + dz * dz <= 2499) {
+      mover->pos.x = nav->waypoint.x;
+      mover->pos.z = nav->waypoint.z;
+      actor->unk_07 = 1;
+    } else if (sprite->kind == 2 && (sprite->u.main.sprite.animEvents & 4)) {
+      Vec3 step;
+      u16 angle = mover->angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, nav->waypoint.z - mover->pos.z);
+
+      actor->unk_1a = Angle_ToDir8(angle);
+      actor->unk_19 = Angle_ToDir4(angle);
+      Vec3_SetPolar(&step, mover->angle, 48);
+      mover->pos.x += step.x;
+      mover->pos.z += step.z;
+    }
+  }
+  Map_StepNavPath(nav, &actor->mover.pos);
+  FUN_080414fc(actor, 1);
+  FUN_08041480(actor, 1, 1, 0, 1);
+#else
+  INCFUNC("asm/func/FUN_08042f34.inc");
+#endif
+}
 
 NAKED void FUN_08043108(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08043108.inc"); }
 

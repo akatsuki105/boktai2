@@ -115,7 +115,8 @@ typedef struct Actor {
   SpriteHolder sprite;        // 0x0D0, 0x08055XXX のスプライト API に渡す
   MsgQueue mq;                // 0x164
   PathWalker pathWalker;      // 0x198, Mover_SetPath に渡す
-  u8 unk_1a4[0x1E8 - 0x1A4];  // 0x1A4, まだ未解析
+  NavAgent navAgent;          // 0x1A4, FUN_08042f34 がナビメッシュで歩かせる
+  u8 unk_1c8[0x1E8 - 0x1C8];  // 0x1C8, まだ未解析
   u8 unk_1e8;                 // 0x1E8, FUN_08042868 が FUN_08041480 の第2引数に渡す
   u8 unk_1e9;                 // 0x1E9, 同じく第3引数
   u16 unk_1ea;                // 0x1EA, Cmd_5517 の '.b' の3つ目
@@ -143,7 +144,8 @@ typedef struct Actor {
   u8 unk_218[0x21C - 0x218];  // 0x218, まだ未解析
   s32 nearRange;              // 0x21C, プレイヤーがこの距離 (x, z) まで近づいたら反応する
   s32 unk_220;                // 0x220, FUN_08043bcc の近さの判定に使う距離
-  u8 unk_224[2];              // 0x224, まだ未解析
+  u8 unk_224;                 // 0x224, FUN_08042f34 が経路を引いたら 1 にする
+  u8 unk_225;                 // 0x225, まだ未解析
   u8 pathDir;                 // 0x226, 経路の方向転換ノードの向き (8方向, PathNode.delay の上位4bit)
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
   u8 unk_228[0x230 - 0x228];  // 0x228, まだ未解析
@@ -158,7 +160,7 @@ typedef struct Actor {
   u8 unk_239;                 // 0x239, Cmd_5517 の '.H' の2つ目
   u8 unk_23a;                 // 0x23A, まだ未解析
   u8 unk_23b;                 // 0x23B, Cmd_5517 が '.H' のとき 0xFF にする
-  u8 unk_23c[0x244 - 0x23C];  // 0x23C, まだ未解析
+  WorldPos navTarget;         // 0x23C, FUN_08042f34 がナビメッシュで向かう目的地
   union {
     ParticleShadow ptcl;              // shadowKind == 1
     AuxShadow aux;                    // shadowKind == 2
