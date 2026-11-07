@@ -278,7 +278,17 @@ void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   }
 }
 
-NAKED void FUN_08140970(EnemyBat* p, Vec3* pos) { INCFUNC("asm/func/FUN_08140970.inc"); }
+void FUN_08140970(EnemyBat* p, Vec3* pos) {
+  EnemyBat* q = (p->e).unk_1cc;
+  Vec3 diff;
+
+  EnemyBat_StartCurve(p, pos);
+  FUN_081406b8(p);
+  Enemy_ResetState(&p->e, 0, 0, 1);
+  Vec3_Diff(&diff, pos, &(p->e).mover.pos);
+  (p->e).unk_1dc = ArcTan2_8(diff.x, diff.z);
+  Vec3_Clear(&q->unk_6b0);
+}
 
 void FUN_08140a10(EnemyBat* p) {
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
