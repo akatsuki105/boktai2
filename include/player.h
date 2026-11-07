@@ -64,8 +64,8 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_UNK_23 23        // 落下からの着地
 #define PACT_DAMAGED 24       // ダメージ時
 #define PACT_BLOWN_AWAY 25    // 吹っ飛ばされて仰向けに倒れる (e.g. オクトパスの拘束から投げ飛ばされるとき)
-#define PACT_UNK_26 26        // 死亡(うつ伏せ)
-#define PACT_UNK_27 27        // 死亡(仰向け)
+#define PACT_DEATH_PRONE 26   // 死亡(うつ伏せ), 1番よく使われる死亡状態
+#define PACT_DEATH_SUPINE 27  // 死亡(仰向け)
 #define PACT_FALLDEATH 28     // 落下死
 #define PACT_DROWNING 29      // 溺死 (水フィールドでの落下死)
 #define PACT_UNK_30 30        //
@@ -324,7 +324,7 @@ typedef struct Player {
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
   u8 unk_3d0;                       // 0x3D0
   u8 unk_3d1;                       // 0x3D1
-  bool8 blownAway;                  // 0x3D2, 今の被弾が吹き飛ばされるものか, Player_SetupKnockback が攻撃側の HBATTR_18 を見て立て, 被弾の行動を PACT_DAMAGED/26 でなく PACT_BLOWN_AWAY/PACT_UNK_27 にする
+  bool8 blownAway;                  // 0x3D2, 今の被弾が吹き飛ばされるものか, Player_SetupKnockback が攻撃側の HBATTR_18 を見て立て, 被弾の行動を PACT_DAMAGED/26 でなく PACT_BLOWN_AWAY/PACT_DEATH_SUPINE にする
   u8 unk_3d3;                       // 0x3D3
   u16 knockbackTimer;               // 0x3D4, 吹き飛ばされている間のカウンタ, 0x55 を超えた偶数フレームに効果音を鳴らす
   SoundID16 hurtSound;              // 0x3D6, 被弾の行動 (PACT_DAMAGED) に入るときに一度だけ鳴らす音, 吹き飛ばしなしは SONG_NONE, 通常は SE_DAMAGE, 引火と knockbackOrigin からの弾きは SE_IGNITE, 氷結は SE_SOLIDIFY

@@ -2943,7 +2943,7 @@ void FUN_080c7c20(Boss* boss, s32 timer) {
   }
   if (timer == 190) {
     Player_EnterDeadState(gPlayerPtr[0]);
-    gPlayerPtr[0]->action = PACT_UNK_26;
+    gPlayerPtr[0]->action = PACT_DEATH_PRONE;
     gPlayerPtr[0]->state = 5;
     gPlayerPtr[0]->stateTimer = 0;
     gPlayerPtr[0]->hp = 0;

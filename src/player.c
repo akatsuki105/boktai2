@@ -5687,13 +5687,13 @@ void Player_UpdateBlownAway(Player* p) {
   }
 }
 
-// 倒れて死ぬ (PACT_UNK_26), 吹き飛びが収まるまで後ろへ流され, 倒れるアニメのあとゲームオーバーへ移って点滅しながら消える
+// 倒れて死ぬ (PACT_DEATH_PRONE), ノックバックが収まるまで後ろへ流され, 倒れるアニメのあとゲームオーバーへ移って点滅しながら消える
 void Player_UpdateDeath(Player* p) {
-  if (p->action != PACT_UNK_26) {
+  if (p->action != PACT_DEATH_PRONE) {
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
     p->knockbackTimer = 0;
     PLAYER_SET_ANIM_4DIR(p, p->facing);
-    Player_SetAction(p, PACT_UNK_26, 0);
+    Player_SetAction(p, PACT_DEATH_PRONE, 0);
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
     } else {
@@ -5711,7 +5711,7 @@ void Player_UpdateDeath(Player* p) {
       p->mover.delta.z = FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
       p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
       if (p->hurtbox.knockbackPower == 0) {
-        Player_SetAction(p, PACT_UNK_26, 1);
+        Player_SetAction(p, PACT_DEATH_PRONE, 1);
       }
       break;
     }
@@ -5721,9 +5721,9 @@ void Player_UpdateDeath(Player* p) {
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 46), Q6(1))) {
         if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
-          Player_SetAction(p, PACT_UNK_26, 2);
+          Player_SetAction(p, PACT_DEATH_PRONE, 2);
         } else {
-          Player_SetAction(p, PACT_UNK_26, 3);
+          Player_SetAction(p, PACT_DEATH_PRONE, 3);
         }
       }
       break;
@@ -5731,7 +5731,7 @@ void Player_UpdateDeath(Player* p) {
     case 2: {
       if (++p->stateTimer > 15) {
         gGameFlags |= GAMEFLAG_GAMEOVER;
-        Player_SetAction(p, PACT_UNK_26, 3);
+        Player_SetAction(p, PACT_DEATH_PRONE, 3);
       }
       break;
     }
@@ -5746,7 +5746,7 @@ void Player_UpdateDeath(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 55) {
-        Player_SetAction(p, PACT_UNK_26, 5);
+        Player_SetAction(p, PACT_DEATH_PRONE, 5);
       }
       break;
     }
@@ -5757,10 +5757,10 @@ void Player_UpdateDeath(Player* p) {
   }
 }
 
-// 吹き飛ばされて死ぬ (PACT_UNK_27), 宙に浮いて後ろへ飛び, 着地して倒れたあとゲームオーバーへ移って点滅しながら消える
+// 吹き飛ばされて死ぬ (PACT_DEATH_SUPINE), 宙に浮いて後ろへ飛び, 着地して倒れたあとゲームオーバーへ移って点滅しながら消える
 void Player_UpdateBlownAwayDeath(Player* p) {
-  if (p->action != PACT_UNK_27) {
-    Player_SetAction(p, PACT_UNK_27, 0);
+  if (p->action != PACT_DEATH_SUPINE) {
+    Player_SetAction(p, PACT_DEATH_SUPINE, 0);
     PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
@@ -5777,7 +5777,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
     case 0: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
       if (++p->stateTimer > 3) {
-        Player_SetAction(p, PACT_UNK_27, 1);
+        Player_SetAction(p, PACT_DEATH_SUPINE, 1);
         p->floatHeight = 300;
       }
       break;
@@ -5796,7 +5796,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
         p->floatHeight = 0;
       }
       if (p->hurtbox.knockbackPower < 20) {
-        Player_SetAction(p, PACT_UNK_27, 2);
+        Player_SetAction(p, PACT_DEATH_SUPINE, 2);
         p->floatHeight = 0;
         PlaySound_082406e0(SONG_680);
       }
@@ -5810,9 +5810,9 @@ void Player_UpdateBlownAwayDeath(Player* p) {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 44), Q6(1))) {
         p->hurtbox.knockbackPower = 0;
         if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
-          Player_SetAction(p, PACT_UNK_27, 3);
+          Player_SetAction(p, PACT_DEATH_SUPINE, 3);
         } else {
-          Player_SetAction(p, PACT_UNK_27, 4);
+          Player_SetAction(p, PACT_DEATH_SUPINE, 4);
         }
       }
       break;
@@ -5820,7 +5820,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
     case 3: {
       if (++p->stateTimer > 19) {
         gGameFlags |= GAMEFLAG_GAMEOVER;
-        Player_SetAction(p, PACT_UNK_27, 4);
+        Player_SetAction(p, PACT_DEATH_SUPINE, 4);
       }
       break;
     }
@@ -5835,7 +5835,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 55) {
-        Player_SetAction(p, PACT_UNK_27, 6);
+        Player_SetAction(p, PACT_DEATH_SUPINE, 6);
       }
       break;
     }
@@ -11442,8 +11442,8 @@ void Player_UpdateDjango(Player* p) {
       [PACT_UNK_23] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-      [PACT_UNK_26] = Player_UpdateDeath,
-      [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
+      [PACT_DEATH_PRONE] = Player_UpdateDeath,
+      [PACT_DEATH_SUPINE] = Player_UpdateBlownAwayDeath,
       [PACT_FALLDEATH] = Player_UpdateFallDeath,
       [PACT_DROWNING] = FUN_0806adc8,
       [PACT_UNK_30] = FUN_0806af70,
@@ -11528,7 +11528,7 @@ void Player_UpdateDjango(Player* p) {
       if (p->action >= PACT_FALLDEATH && p->action <= PACT_SPECIALDEATH) {
         action = p->action;
       } else {
-        action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
+        action = (p->blownAway != 0) ? PACT_DEATH_SUPINE : PACT_DEATH_PRONE;
       }
       sDjangoActionFuncs[action](p);
       Player_PostUpdateHuman(p);
@@ -11566,8 +11566,8 @@ void Player_UpdateSabata(Player* p) {
       [PACT_UNK_23] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-      [PACT_UNK_26] = Player_UpdateDeath,
-      [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
+      [PACT_DEATH_PRONE] = Player_UpdateDeath,
+      [PACT_DEATH_SUPINE] = Player_UpdateBlownAwayDeath,
       [PACT_FALLDEATH] = Player_UpdateFallDeath,
       [PACT_DROWNING] = FUN_0806adc8,
       [PACT_UNK_30] = FUN_0806af70,
@@ -11644,7 +11644,7 @@ void Player_UpdateSabata(Player* p) {
       if (p->action >= PACT_FALLDEATH && p->action <= PACT_SPECIALDEATH) {
         action = p->action;
       } else {
-        action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
+        action = (p->blownAway != 0) ? PACT_DEATH_SUPINE : PACT_DEATH_PRONE;
       }
       sSabataActionFuncs[action](p);
       Player_PostUpdateHuman(p);
@@ -12109,8 +12109,8 @@ void Player_UpdateCrossoverDjango(Player* p) {
       [PACT_UNK_23] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-      [PACT_UNK_26] = Player_UpdateDeath,
-      [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
+      [PACT_DEATH_PRONE] = Player_UpdateDeath,
+      [PACT_DEATH_SUPINE] = Player_UpdateBlownAwayDeath,
   };  // 0x085ABEDC
   // clang-format on
 
@@ -12183,7 +12183,7 @@ void Player_UpdateCrossoverDjango(Player* p) {
       if (p->action >= PACT_FALLDEATH && p->action <= PACT_UNK_30) {
         action = p->action;
       } else {
-        action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
+        action = (p->blownAway != 0) ? PACT_DEATH_SUPINE : PACT_DEATH_PRONE;
       }
       sCrossoverDjangoActionFuncs[action](p);
       Player_PostUpdateHuman(p);
@@ -12698,13 +12698,13 @@ bool32 FUN_0807ad60(Player* p, s32 param_2) {
 // 残差2命令: 原典は 0x1A と 0x1F の Player_SetAction(p, X, 4) の末尾を cross-jump で共有するが、こちらは別々に出る
 NON_MATCH void FUN_0807adc0(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->action == PACT_UNK_26) {
+  if (p->action == PACT_DEATH_PRONE) {
     if (p->state == 3) {
-      Player_SetAction(p, PACT_UNK_26, 4);
+      Player_SetAction(p, PACT_DEATH_PRONE, 4);
     }
-  } else if (p->action == PACT_UNK_27) {
+  } else if (p->action == PACT_DEATH_SUPINE) {
     if (p->state == 4) {
-      Player_SetAction(p, PACT_UNK_27, 5);
+      Player_SetAction(p, PACT_DEATH_SUPINE, 5);
     }
   } else if (p->action == PACT_SPECIALDEATH) {
     if (p->kind == PLAYER_SABATA) {
