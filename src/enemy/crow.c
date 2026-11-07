@@ -168,7 +168,17 @@ NAKED void FUN_081452cc(Crow* p) { INCFUNC("asm/func/FUN_081452cc.inc"); }
 
 void FUN_08145424(Crow* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad84c; }
 
-NAKED s32 FUN_08145438(Crow* p) { INCFUNC("asm/func/FUN_08145438.inc"); }
+s32 FUN_08145438(Crow* p) {
+  FUN_08144cb8(p);
+  {
+    u32 idx = (p->e).subState0;
+    EnemyHandler* table = (p->e).handlerTables[0];
+    table[idx](&p->e);
+  }
+  Enemy_RunStateHandler(&p->e);
+  FUN_08144cc4(p);
+  return 1;
+}
 
 s32 Crow_Update(Crow* p) {
   (p->e).playerMover = &gPlayerPtr[0]->mover;
