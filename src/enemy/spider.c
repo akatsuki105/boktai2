@@ -175,7 +175,16 @@ NAKED void FUN_08130eec(Spider* p) { INCFUNC("asm/func/FUN_08130eec.inc"); }
 
 NAKED void FUN_0813101c(Spider* p) { INCFUNC("asm/func/FUN_0813101c.inc"); }
 
-NAKED s32 FUN_0813107c(Spider* p) { INCFUNC("asm/func/FUN_0813107c.inc"); }
+// 歩きアニメのコマが変わる瞬間だけ移動の速さを返す
+s32 FUN_0813107c(Spider* p) {
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (anim->tick == 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
+    return u16_ARRAY_085ad70c[anim->cmdIdx & 1];
+  }
+  return 0;
+}
 
 s32 FUN_081310b8(Spider* p) {
   FUN_0812f818(p);
