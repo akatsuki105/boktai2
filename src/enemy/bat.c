@@ -135,7 +135,7 @@ NAKED void FUN_0814031c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814031c.inc"); }
 
 NAKED void FUN_081404c0(EnemyBat* p) { INCFUNC("asm/func/FUN_081404c0.inc"); }
 
-void FUN_08140520(EnemyBat* p) {
+void EnemyBat_PickRandomPathNode(EnemyBat* p) {
   PathWalker* walker = &(p->e).pathWalker;
   u8 idx = Mod(Random(), walker->path->nodeCount);
 

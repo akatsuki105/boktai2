@@ -133,7 +133,7 @@ _08130FF2:
 	cmp r0, #0
 	bne _08131000
 	adds r0, r5, #0
-	bl FUN_0813101c
+	bl Spider_PickRandomPathNode
 	b _0813100C
 _08131000:
 	movs r0, #0

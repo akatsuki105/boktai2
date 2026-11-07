@@ -29,7 +29,7 @@ _08140A6C:
 _08140A7C: .4byte 0x0000024E
 _08140A80:
 	adds r0, r5, #0
-	bl FUN_08140520
+	bl EnemyBat_PickRandomPathNode
 	mov r6, sp
 	adds r0, r5, #0
 	adds r0, #0x9c

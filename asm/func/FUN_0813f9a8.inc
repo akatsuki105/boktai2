@@ -211,7 +211,7 @@ _0813FB3A:
 _0813FB40:
 	strh r0, [r3, #4]
 	adds r0, r5, #0
-	bl FUN_08140520
+	bl EnemyBat_PickRandomPathNode
 	add r6, sp, #4
 	adds r0, r5, #0
 	adds r0, #0x9c

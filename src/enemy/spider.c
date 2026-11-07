@@ -207,7 +207,7 @@ NAKED bool8 FUN_08130d34(Spider* p) { INCFUNC("asm/func/FUN_08130d34.inc"); }
 
 NAKED void FUN_08130eec(Spider* p) { INCFUNC("asm/func/FUN_08130eec.inc"); }
 
-void FUN_0813101c(Spider* p) {
+void Spider_PickRandomPathNode(Spider* p) {
   PathWalker* walker = &(p->e).pathWalker;
   u8 idx = Mod(Random(), walker->path->nodeCount);
 

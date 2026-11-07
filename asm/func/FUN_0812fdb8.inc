@@ -94,7 +94,7 @@ _0812FE4E:
 	movs r0, #1
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0813101c
+	bl Spider_PickRandomPathNode
 	adds r0, r7, #0
 	bl Enemy_StepTowardPathNode
 	ldr r0, _0812FED4 @ =0x0000065E
@@ -157,7 +157,7 @@ _0812FEF0:
 	b _08130058
 _0812FEFC:
 	adds r0, r7, #0
-	bl FUN_0813101c
+	bl Spider_PickRandomPathNode
 	adds r0, r7, #0
 	bl Enemy_StepTowardPathNode
 	movs r1, #0x90
