@@ -16,7 +16,7 @@ IWRAM_DATA u32 bool32_030001ac = FALSE;      // 0x030001AC
 
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
-void FUN_081df460(Entity9A9F*);
+s32 FUN_081df460(Entity9A9F*);
 void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);
 s32 FUN_081de250(Entity9A9F*);
 s32 FUN_081de9d8(Entity9A9F*);
@@ -33,6 +33,12 @@ s32 FUN_081de2dc(Entity9A9F* p);
 s32 FUN_081df604(Entity9A9F* p);
 s32 FUN_081debd4(Entity9A9F* p);
 s32 FUN_081df720(s32 n);
+s32 FUN_081df0f8(Entity9A9F* p);
+s32 FUN_081df3f0(Entity9A9F* p);
+s32 FUN_081df540(Entity9A9F* p);
+s32 FUN_081de7e8(Entity9A9F* p);
+u32 CalcCRC16(u8* data, u32 len);
+s32 FUN_081ddb14(Entity9A9F* p, u8* buf, s32 limit);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
 
@@ -608,7 +614,52 @@ NAKED s32 FUN_081dec1c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dec1c.inc"); }
 
 NAKED s32 FUN_081deef8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081deef8.inc"); }
 
-NAKED s32 FUN_081df014(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df014.inc"); }
+// 全員から種別 0x2C00 のキーがそろったら, 全員が 0 以外なら state 17, そうでなければ state 20 へ, そろうまでは自分の選択 unk_24 を送る
+// 残差: 原典はキー種別の比較定数を比較の直前に毎回作り, ループ外へ出さない (キーがビットフィールドで定数が combine で後から生まれる形かもしれない), 加えて count と i のレジスタが入れ替わる
+NON_MATCH s32 FUN_081df014(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 yes;
+  s32 n;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    VM_ExecByID(p->unk_2e2, NULL);
+    p->unk_24 = -1;
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  count = 0;
+  yes = 0;
+  n = p->recordCount;
+  for (i = 0; i < n; i++) {
+    u16 key = Entity9A9F_GetRecvKey(p, i);
+
+    if (Entity9A9F_IsKeyKind(key, 0x2C00)) {
+      if (key & 0x3F) {
+        yes++;
+      }
+      count++;
+    }
+  }
+
+  if (count == n) {
+    if (count == yes) {
+      Entity9A9F_SetState(p, 17, FUN_081df0f8);
+    } else {
+      Entity9A9F_SetState(p, 20, FUN_081df3f0);
+    }
+  } else if (p->unk_24 >= 0) {
+    p->unk_42 = (0x2C00 | p->unk_24) & 0x3FFF;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_081df014.inc");
+#endif
+}
 
 NAKED s32 FUN_081df0f8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df0f8.inc"); }
 
@@ -650,7 +701,7 @@ s32 FUN_081df3f0(Entity9A9F* p) {
   }
 }
 
-NAKED void FUN_081df460(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df460.inc"); }
+NAKED s32 FUN_081df460(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df460.inc"); }
 
 s32 FUN_081df540(Entity9A9F* p) {
   FUN_081dd9d4(p);
