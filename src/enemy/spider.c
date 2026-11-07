@@ -230,7 +230,7 @@ void FUN_08130460(Spider* p) {
 NAKED bool8 FUN_081304a8(Spider* p, s32 rangeX, s32 rangeZ) { INCFUNC("asm/func/FUN_081304a8.inc"); }
 
 // 棺桶への経路を引けたら棺桶を狙って歩き出す
-// 112/116 命令, 原典は経路を引けなかった2つの入り口で flags3 のアドレスを別々に作ってから合流する, 試済: 早期 return, 結果を変数に受ける形, inline を || の形にする (ミミックが崩れる)
+// 残差1命令, ドッグの FUN_0814e424 と同じ「失敗の出口を2つ持つ経路 inline」にすると定数 4 (unk_660 の bit と animSpeedDiv) が1本のレジスタにまとめられる所だけ違う
 NON_MATCH bool8 FUN_08130508(Spider* p) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).unk_1cc;
