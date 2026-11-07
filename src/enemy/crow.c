@@ -24,7 +24,8 @@ typedef struct {
   u8 unk_654[0x658 - 0x654];  // 0x654
   u32 unk_658;                // 0x658
   u8 unk_65c;                 // 0x65C, 羽ばたきアニメを流した回数
-  u8 unk_65d[3];              // 0x65D
+  u8 unk_65d;                 // 0x65D, 急降下の速さ
+  u8 unk_65e[2];              // 0x65E
   u8 unk_660;                 // 0x660, プレイヤーへ直進するときの速さ
   u8 unk_661;                 // 0x661
   u8 unk_662[2];              // 0x662
@@ -762,7 +763,54 @@ void FUN_08144cd0(Crow* p) {
   (p->e).subStateTimer++;
 }
 
-NAKED void FUN_08144ec8(Crow* p) { INCFUNC("asm/func/FUN_08144ec8.inc"); }
+// プレイヤーへ急降下する副状態, 入ったときに着くまでのフレーム数から落ちる速さを決め, 着いたら勢いを残して副状態 (0,2,2) へ移る
+// 433/438命令, 1回目の下書き, 原典は q を r7 に置き, 入場の速さの割り算の比べ方や Vec3_SetPolar の展開の並びがまだ違う
+NON_MATCH void FUN_08144ec8(Crow* p) {
+#ifdef NONMATCHING_C
+  Crow* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Vec3 d;
+
+    Enemy_EnterState(&p->e, FUN_081431e0, ES_UNK_36);
+    (p->e).navAgent->dest = gPlayerPtr[0]->mover.pos;
+    Vec3_Clear(&q->unk_6b0);
+    Vec3_Delta(&d, &(p->e).mover.pos, &(p->e).navAgent->dest);
+    (p->e).mover.angle = ArcTan2_8(d.x, d.z);
+    Vec3_SetPolar(&q->unk_6b0, (p->e).mover.angle, q->unk_65d);
+    if (q->unk_6b0.x != 0) {
+      q->unk_6b0.x = Div(d.x, q->unk_6b0.x);
+    }
+    if (q->unk_6b0.z != 0) {
+      q->unk_6b0.z = Div(d.z, q->unk_6b0.z);
+    }
+    if (q->unk_6b0.x > q->unk_6b0.z) {
+      if (q->unk_6b0.x != 0) {
+        q->unk_6b0.y = Div(d.y - 32, q->unk_6b0.x);
+      }
+    } else if (q->unk_6b0.z != 0) {
+      q->unk_6b0.y = Div(d.y - 32, q->unk_6b0.z);
+    }
+    PlaySound_082406e0(CRY_CROW_ATK);
+    q->unk_670 = 0;
+  }
+  (p->e).unk_608(&p->e);
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  (p->e).heightAboveFloor += q->unk_6b0.y;
+  if (Mod((p->e).subStateTimer, 6) == 0) {
+    q->unk_6b0.y = FixToInt(1, q->unk_6b0.y);
+  }
+  if (Enemy_StepToDest(&p->e, q->unk_65d) || Crow_TestUnk658(q, 2)) {
+    (p->e).jumpVel.x = POLAR_X(q->unk_65d * 2, (p->e).mover.angle);
+    (p->e).jumpVel.z = POLAR_Z(q->unk_65d * 2, (p->e).mover.angle);
+    Enemy_ResetState(&p->e, 0, 2, 2);
+  } else {
+    (p->e).subStateTimer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_08144ec8.inc");
+#endif
+}
 
 void FUN_081452cc(Crow* p) {
   s32 d;
