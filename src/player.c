@@ -9962,10 +9962,10 @@ void FUN_080744bc(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), 64);
       timer = &p->stateTimer;
       if (*timer == 6) {
-        PlaySound_082406e0(SONG_631);
+        PlaySound_082406e0(SE_ROCKBUSTER_CHARGING);
       }
       if (++*timer >= 60) {
-        PlaySound_082406e0(SONG_632);
+        PlaySound_082406e0(SE_ROCKBUSTER_CHARGED);
         Player_SetAction(p, 3, 3);
       }
       break;
@@ -10079,7 +10079,7 @@ NON_MATCH void FUN_080746ec(Player* p) {
 }
 
 void FUN_08074994(Player* p) {
-  p->plttID_95e = 295;
+  p->plttID_95e = OBP_ELEMENT(6);
   p->plttFlashTimer = 24;
 }
 

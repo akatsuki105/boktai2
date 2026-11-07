@@ -632,9 +632,9 @@
 #define SE_627 627  // 何も聞こえない,無音?
 #define SONG_628 628
 #define SONG_629 629
-#define SE_SHOP_SELL 630  // 店でアイテムを売った時のSE
-#define SONG_631 631
-#define SONG_632 632
+#define SE_SHOP_SELL 630            // 店でアイテムを売った時のSE
+#define SE_ROCKBUSTER_CHARGING 631  // ロックバスターのチャージ音
+#define SE_ROCKBUSTER_CHARGED 632   // ロックバスターのチャージ完了音
 #define SONG_633 633
 #define SONG_634 634
 #define SONG_635 635
