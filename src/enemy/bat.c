@@ -160,7 +160,16 @@ NAKED void FUN_081410cc(EnemyBat* p) { INCFUNC("asm/func/FUN_081410cc.inc"); }
 
 void FUN_08141448(EnemyBat* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad804; }
 
-NAKED s32 FUN_0814145c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814145c.inc"); }
+s32 FUN_0814145c(EnemyBat* p) {
+  FUN_08140ea0(p);
+  {
+    u32 idx = (p->e).subState0;
+    EnemyHandler* table = (p->e).handlerTables[0];
+    table[idx](&p->e);
+  }
+  Enemy_RunStateHandler(&p->e);
+  return 1;
+}
 
 s32 EnemyBat_Update(EnemyBat* p) {
   (p->e).playerMover = &gPlayerPtr[0]->mover;
