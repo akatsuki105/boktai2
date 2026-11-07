@@ -110,7 +110,34 @@ void FUN_08143004(Crow* p, s32 timer) {
   }
 }
 
-NAKED void FUN_08143094(Crow* p) { INCFUNC("asm/func/FUN_08143094.inc"); }
+// 羽ばたきアニメを4回流し, 5回目で終わりの合図を出す
+void FUN_08143094(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 17);
+    q->unk_65c = 0;
+  }
+  if (q->unk_65c != 0) {
+    Crow_PlayWingSound(p);
+  }
+  if ((p->e).animForceRestart) {
+    switch (q->unk_65c) {
+      case 0:
+      case 1:
+      case 2:
+      case 3: {
+        Enemy_PlayAnim(&p->e, 15);
+        break;
+      }
+      case 5: {
+        (p->e).subStateDone = 1;
+        return;
+      }
+    }
+    q->unk_65c++;
+  }
+}
 
 NAKED void FUN_0814312c(Crow* p) { INCFUNC("asm/func/FUN_0814312c.inc"); }
 
