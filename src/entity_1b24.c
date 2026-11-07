@@ -156,7 +156,26 @@ void FUN_0809d270(Entity1B24* p) {
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
-NAKED void FUN_0809d300(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d300.inc"); }
+// 交換に出す自分の武器 (slot) の欄を描き直す, 選んでいなければ消す
+void FUN_0809d300(Entity1B24* p) {
+  if (p->slot < 0) {
+    p->sprites[16].flags |= SPRFLAG_HIDDEN;
+    p->sprites[20].flags |= SPRFLAG_HIDDEN;
+    p->sprites[19].flags |= SPRFLAG_HIDDEN;
+    return;
+  }
+
+  p->sprites[16].flags &= ~SPRFLAG_HIDDEN;
+  if (p->record[0x40] == 2) {
+    MainSprite_SetPose(&p->sprites[16], &p->gfx[1], WEAPON_GUN_DEL_HELL, 1);
+  } else {
+    MainSprite_SetPose(&p->sprites[16], &p->gfx[1], GetWeaponID(p->slot), 1);
+  }
+  p->sprites[20].flags &= ~SPRFLAG_HIDDEN;
+  FUN_0809d240(&p->sprites[20].pos.x, p->slot);
+  p->sprites[19].flags &= ~SPRFLAG_HIDDEN;
+  p->sprites[35].flags &= ~SPRFLAG_HIDDEN;
+}
 
 NAKED void FUN_0809d3d0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d3d0.inc"); }
 
