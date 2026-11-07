@@ -43,6 +43,8 @@ extern u32 u32_030047b0;                          // 0x030047B0
 extern u32 u32_030047bc;                          // 0x030047BC
 extern u32 u32_030047c4;                          // 0x030047C4
 extern u32 u32_03004860;                          // 0x03004860
+extern u32 u32_0300479c;                          // 0x0300479C
+extern u32 u32_030047c0;                          // 0x030047C0
 
 void VM_CountSubroutine(void);
 u32 FUN_082321e0(u8* pc);
@@ -54,6 +56,9 @@ bool8 Save_ReadSystemData(void);
 void entity_08230ca4(s32 r0);
 void RestoreGameState(void);
 void Time_UpdateSunTimers(void);
+s32 FUN_0823b130(void);
+void FUN_082324b0(void);
+void FUN_0823d280(void);
 
 void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
 
@@ -266,7 +271,44 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
 
 s32 Entity0823acbc_Destroy(Entity0823acbc* _) {}
 
-NAKED void FUN_0823acbc(void) { INCFUNC("asm/func/FUN_0823acbc.inc"); }
+// 起動時の初期化: VM とゲームの状態を空にして乱数表を作り, 常駐のエンティティを登録する
+// 残差: 原典は &gMapChangeFlags を 6つ目の 0 書き込みの前に積んでおき, textSpeed の 2 を gStat より先に作る (textSpeed を static inline の setter 経由にすると後者だけ消える)
+NON_MATCH void FUN_0823acbc(void) {
+#ifdef NONMATCHING_C
+  VM_CountSubroutine();
+  FUN_0823aa84();
+  FUN_0823b130();
+  FUN_082324b0();
+  gGameFlags = 0;
+  gDebugGameFlags = 0;
+  u32_0300479c = 0;
+  u32_030047c0 = 0;
+  u32_0300478c = 0;
+  u32_030047c4 = 0;
+  gSoftResetInhibit = FALSE;
+  u32_030047b0 = 0;
+  u32_03004790 = 0;
+  u32_030047bc = 0;
+  u32_03004794 = 0;
+  gMapChanging = 0;
+  gPlayTimeEnabled = FALSE;
+  gStat->mapFlags = 0;
+  gMapChangeFlags = 0;
+  u32_03004860 = 0;
+  FUN_0823d280();
+  CreateRandomTable();
+  gStat->textSpeed = 2;
+  SetEntityRoutine(&gEntity0823acbc, Entity0823acbc_Update, Entity0823acbc_Destroy);
+  gEntity0823acbc.e.kind = ENTITY_UNK_1;
+  gEntity0823acbc.e.unk_16 = 1;
+  gEntity0823acbc.e.id = 0;
+  AddEntity(&gEntity0823acbc.e);
+  gEntity0823acbc.unk_18 = 0;
+  gEntity0823acbc.unk_1c = 0;
+#else
+  INCFUNC("asm/func/FUN_0823acbc.inc");
+#endif
+}
 
 s32 Cmd_5C9E(void) {
   u8* pc = VM_GetPC();
