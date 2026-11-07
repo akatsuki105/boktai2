@@ -63,7 +63,10 @@ NAKED void FUN_0813f268(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f268.inc"); }
 
 NAKED void FUN_0813f2a8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f2a8.inc"); }
 
-NAKED void FUN_0813f2fc(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f2fc.inc"); }
+void FUN_0813f2fc(EnemyBat* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnim(&p->e, 0);
+}
 
 NAKED void FUN_0813f320(EnemyBat* p, s32 timer) { INCFUNC("asm/func/FUN_0813f320.inc"); }
 
