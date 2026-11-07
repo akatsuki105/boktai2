@@ -1412,7 +1412,210 @@ void FUN_0814fba4(Dog* p) {
   }
 }
 
-NAKED void FUN_0814fc7c(Dog* p) { INCFUNC("asm/func/FUN_0814fc7c.inc"); }
+// 1P を見失ったあと 60 フレーム待ってから, 1P のいるタイルへ向かえるならそちらへ一歩動き, 同じタイルなら状態26か状態1へ移り, 向きを乱数で変える状態27を予約する
+// 938/926命令, boku.c の FUN_080fe7f4 をそのまま当てた下書き (スタック配置以外は同じ命令列), 原典は状態フィールドのアドレスをスタックに作り置く (フレーム 0x5C, こちらは 0x30)
+NON_MATCH void FUN_0814fc7c(Dog* p) {
+#ifdef NONMATCHING_C
+  s32 tile;
+  s32 idx;
+
+  if ((p->e).subStateBegun) {
+    (p->e).subStateBegun = 0;
+  }
+  if ((p->e).unk_608(&p->e)) {
+    return;
+  }
+  if (FUN_080f0a0c(&p->e)) {
+    return;
+  }
+  if ((p->e).subStateTimer <= 60) {
+    (p->e).subStateTimer++;
+    return;
+  }
+
+  Enemy_SetEmote(&p->e, 0, 2, (p->e).kind);
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    bool8 moved;
+
+    if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_4)) {
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).unk_5a0;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 2;
+      (p->e).animSpeedDiv = 1;
+      return;
+    }
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).unk_5a0;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
+    {
+      Vec3* dst = (p->e).unk_4a8;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      Vec3* dst = (p->e).unk_4a8;
+
+      moved = FALSE;
+      if (Map_IsPosInAgentIsland(agent, pos, dst)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, dst);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          moved = TRUE;
+        }
+      }
+      if (!moved) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (!moved) {
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
+      Enemy_ResetState(&p->e, 3, 0, 0);
+    } else {
+      (p->e).unk_4a8->val = 1;
+    }
+    return;
+  }
+
+  (p->e).pendingDelay = 30;
+  (p->e).pendingHandler = (p->e).unk_5b8;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 12;
+  {
+    Vec3* dst = (p->e).unk_4a8;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+
+  if (IsLinkPlay()) {
+    Mover* m = (p->e).playerMover;
+
+    idx = -1;
+    if (m != NULL && m->unk_4 <= 3) {
+      idx = m->unk_4;
+    }
+    if (m == NULL || idx < 0) {
+      (p->e).unk_5c4(&p->e);
+      return;
+    }
+    tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+  } else {
+    tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+    idx = 0;
+  }
+
+  // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+  if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+    u8 angle;
+
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+      return;
+    }
+    (p->e).unk_222 &= ~ENEMY222_UNK_2;
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+    } else {
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 5);
+      {
+        Vec3* dst = (p->e).unk_4a8;
+        PathWalker* walker = &(p->e).pathWalker;
+
+        dst->x = walker->node->x;
+        dst->z = walker->node->y;
+        dst->y = TileHeightAt(dst);
+      }
+      (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
+      (p->e).unk_4a8->val = 0;
+    }
+    angle = (p->e).mover.angle;
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+      s32 i;
+      u32 a;
+
+      for (i = 0; i < 4; i++) {
+        a = (Random() & 3) << 6;
+        if (a != angle) {
+          break;
+        }
+      }
+      if (i >= 4) {
+        a = angle;
+      }
+      (p->e).unk_540 = a;
+      (p->e).unk_548 = (p->e).handlerState;
+      (p->e).unk_54f = (p->e).state;
+      (p->e).unk_54c = (p->e).subState0;
+      (p->e).unk_54d = (p->e).subState1;
+      (p->e).unk_54e = (p->e).subState2;
+      (p->e).unk_541 = angle;
+      Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      (p->e).unk_542 = 6;
+    }
+    FUN_080e7b6c(&p->e);
+    (p->e).animSpeedDiv = 2;
+    return;
+  }
+
+  {
+    WorldPos tilePos;
+    bool8 moved = FALSE;
+
+    {
+      s32 x = Mod(tile, gCollisionMap->tiledata->width);
+      s32 z = Div(tile, gCollisionMap->tiledata->width);
+      MapTileOverride* ov;
+
+      tilePos.x = (x << 8) + 0x80;
+      ov = Map_FindTileOverride(tile, 1);
+      tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+      tilePos.z = (z << 8) + 0x80;
+    }
+    {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          moved = TRUE;
+        }
+      }
+      if (!moved) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (!moved) {
+      (p->e).unk_5c4(&p->e);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0814fc7c.inc");
+#endif
+}
 
 void FUN_081504e8(Dog* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad8e0; }
 
