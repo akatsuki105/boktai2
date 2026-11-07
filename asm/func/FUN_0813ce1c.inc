@@ -130,7 +130,7 @@ _0813CF18:
 	bl MainSprite_SetAnimSpeed
 _0813CF30:
 	adds r0, r6, #0
-	bl FUN_0813c38c
+	bl Curoro_SwingCurveBend
 	ldr r1, _0813CF70 @ =0x000004A4
 	adds r0, r6, r1
 	ldr r1, [r0]

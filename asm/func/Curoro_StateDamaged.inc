@@ -276,7 +276,7 @@ _0813B554:
 	ldr r1, [r0]
 	adds r1, #0x2c
 	adds r0, r5, #0
-	bl FUN_0813c9c4
+	bl Curoro_BeginCurveTo
 	movs r1, #2
 	movs r4, #0x8d
 	lsls r4, r4, #3

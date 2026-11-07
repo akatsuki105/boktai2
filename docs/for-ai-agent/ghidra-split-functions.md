@@ -190,7 +190,7 @@ Done so far:
 | `Enemy_AddKillCount` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
 | `FUN_0814fc7c` | `FUN_081504d4`, `FUN_081504d8` |
 | `Dog_StateDamaged` | `FUN_0814dd18`, `FUN_0814dd28` |
-| `FUN_0814eacc` | `FUN_0814f410`, `FUN_0814fb76` |
+| `Dog_OnDamaged` | `FUN_0814f410`, `FUN_0814fb76` |
 
 The three dog entries were found while emptying `asm/dog.inc` and fixed in the
 blob as described above. `FUN_081504d4` is the case where

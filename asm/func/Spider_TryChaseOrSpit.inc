@@ -212,7 +212,7 @@ _08130BE6:
 	adds r0, r5, r3
 	strh r1, [r0]
 	adds r0, r5, #0
-	bl FUN_08130eec
+	bl Spider_PickPathNodeAwayFromPlayer
 	adds r0, r5, #0
 	bl Enemy_StepTowardPathNode
 	ldr r6, _08130CB8 @ =0x000001DF

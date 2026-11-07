@@ -1499,7 +1499,7 @@ _08131C3C:
 	movs r4, #0xc1
 	lsls r4, r4, #3
 	adds r1, r7, r4
-	ldr r0, _08131E20 @ =FUN_08130d34
+	ldr r0, _08131E20 @ =Spider_TryStartChase
 	b _08131E2C
 	.align 2, 0
 _08131D98: .4byte 0x00000664
@@ -1536,12 +1536,12 @@ _08131E10: .4byte 0x085AD710
 _08131E14: .4byte Spider_OnReset
 _08131E18: .4byte 0x000005AC
 _08131E1C: .4byte FUN_0812f358
-_08131E20: .4byte FUN_08130d34
+_08131E20: .4byte Spider_TryStartChase
 _08131E24:
 	movs r5, #0xc1
 	lsls r5, r5, #3
 	adds r1, r7, r5
-	ldr r0, _08131E70 @ =FUN_08130ac4
+	ldr r0, _08131E70 @ =Spider_TryChaseOrSpit
 _08131E2C:
 	str r0, [r1]
 	movs r1, #0xa0
@@ -1575,7 +1575,7 @@ _08131E62:
 	bl VM_GetValue
 	b _08131E76
 	.align 2, 0
-_08131E70: .4byte FUN_08130ac4
+_08131E70: .4byte Spider_TryChaseOrSpit
 _08131E74:
 	movs r0, #0
 _08131E76:

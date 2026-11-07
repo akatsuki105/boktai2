@@ -63,14 +63,14 @@ void FUN_0813bf78(Curoro* p);
 void FUN_0813c138(Curoro* p);
 void FUN_0813c14c(Curoro* p, u16* msg);
 void Curoro_UpdateHover(Curoro* p);
-void FUN_0813c38c(Curoro* p);
+void Curoro_SwingCurveBend(Curoro* p);
 void Curoro_PickRandomPathNode(Curoro* p);
 void Curoro_StartCurve(Curoro* p, Vec3* pos);
 bool8 Curoro_StepCurve(Curoro* p);
-void FUN_0813c738(Curoro* p);
+void Curoro_InitAnims(Curoro* p);
 void Curoro_OnReset(Curoro* p);
 void FUN_0813c938(Curoro* p);
-void FUN_0813c9c4(Curoro* p, Vec3* pos);
+void Curoro_BeginCurveTo(Curoro* p, Vec3* pos);
 void FUN_0813ca64(Curoro* p);
 void FUN_0813ca9c(Curoro* p);
 void Curoro_BounceOffWall(Curoro* p);
@@ -612,7 +612,7 @@ void FUN_0813b22c(Curoro* p, s32 param_2) {
     if ((p->e).unk_24e != 0) {
       SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
       (p->e).unk_24e = (p->e).unk_24c;
-      FUN_0813c9c4(p, &gPlayerPtr[0]->mover.pos);
+      Curoro_BeginCurveTo(p, &gPlayerPtr[0]->mover.pos);
       Enemy_ResetState(&p->e, 0, 2, 1);
     } else {
       Enemy_EnterState(&p->e, FUN_0813b100, ES_UNK_10);
@@ -666,7 +666,7 @@ NON_MATCH void Curoro_StateDamaged(Curoro* p) {
       if ((p->e).unk_24e != 0) {
         SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
         (p->e).unk_24e = (p->e).unk_24c;
-        FUN_0813c9c4(p, &gPlayerPtr[0]->mover.pos);
+        Curoro_BeginCurveTo(p, &gPlayerPtr[0]->mover.pos);
         Enemy_ResetState(&p->e, 0, 2, 1);
         FUN_0813c938(p);
       } else {
@@ -750,7 +750,7 @@ void FUN_0813b824(Curoro* p) {
   }
   speed = (p->e).unk_588(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
-  FUN_0813c38c(p);
+  Curoro_SwingCurveBend(p);
   if (Enemy_StepToDest(&p->e, speed) && Curoro_StepCurve(p)) {
     WorldPos pos;
     WorldPos* dst;
@@ -763,7 +763,7 @@ void FUN_0813b824(Curoro* p) {
     dst->x = walker->node->x;
     dst->z = walker->node->y;
     dst->y = TileHeightAt(dst);
-    FUN_0813c9c4(p, &pos);
+    Curoro_BeginCurveTo(p, &pos);
   }
   (p->e).subStateTimer++;
 }
@@ -950,7 +950,7 @@ void Curoro_UpdateHover(Curoro* p) {
   }
 }
 
-void FUN_0813c38c(Curoro* p) {
+void Curoro_SwingCurveBend(Curoro* p) {
   Curoro* q = (p->e).unk_1cc;
 
   if (q->curveBend > 320) {
@@ -1078,7 +1078,7 @@ NON_MATCH bool8 Curoro_StepCurve(Curoro* p) {
 #endif
 }
 
-void FUN_0813c738(Curoro* p) {
+void Curoro_InitAnims(Curoro* p) {
   Enemy_SetAnimEntry(&p->e, 0, 0, 0);
   Enemy_SetAnimEntry(&p->e, 1, 0, 0);
   Enemy_SetAnimEntry(&p->e, 2, 0, 0);
@@ -1137,7 +1137,7 @@ void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip) {
   }
 }
 
-void FUN_0813c9c4(Curoro* p, Vec3* pos) {
+void Curoro_BeginCurveTo(Curoro* p, Vec3* pos) {
   Curoro* q = (p->e).unk_1cc;
   Vec3 d;
 
@@ -1173,7 +1173,7 @@ void FUN_0813ca9c(Curoro* p) {
     dst->x = walker->node->x;
     dst->z = walker->node->y;
     dst->y = TileHeightAt(dst);
-    FUN_0813c9c4(p, &pos);
+    Curoro_BeginCurveTo(p, &pos);
     FUN_0813ca64(p);
   }
 }
@@ -1266,7 +1266,7 @@ NON_MATCH void FUN_0813ce1c(Curoro* p) {
   (p->e).unk_608(&p->e);
   speed = (p->e).unk_588(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
-  FUN_0813c38c(p);
+  Curoro_SwingCurveBend(p);
   {
     NavAgent* agent = (p->e).navAgent;
     s16 dx = agent->dest.x - (p->e).mover.pos.x;
@@ -1347,7 +1347,7 @@ void FUN_0813d1d0(Curoro* p) {
     (p->e).unk_24e = (p->e).unk_24c;
   }
   if ((p->e).subStateDone) {
-    FUN_0813c9c4(p, &gPlayerPtr[0]->mover.pos);
+    Curoro_BeginCurveTo(p, &gPlayerPtr[0]->mover.pos);
   } else {
     (p->e).subStateTimer++;
   }
@@ -1465,7 +1465,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
 
   Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
   (p->e).kind = ENEK_CURORO;
-  FUN_0813c738(p);
+  Curoro_InitAnims(p);
   if ((p->e).spriteKind == 0) {
     EnemyAuxSpriteData* aux;
     u8 k;

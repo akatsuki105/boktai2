@@ -43,10 +43,10 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
 
 void FUN_080e8614(Enemy* p);
 void FUN_080e68d8(Enemy* p, s32 timer);
-void FUN_08130eec(Spider* p);
-void FUN_081307b0(Spider* p);
+void Spider_PickPathNodeAwayFromPlayer(Spider* p);
+void Spider_PickWanderDest(Spider* p);
 bool8 Spider_IsCoffinInRange(Spider* p, s32 rangeX, s32 rangeZ);
-bool8 FUN_08130508(Spider* p);
+bool8 Spider_TryRouteToCoffin(Spider* p);
 void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 s32 FUN_080db290(void* p, Mover* mover);
@@ -311,7 +311,7 @@ NON_MATCH void FUN_0812edf8(Spider* p) {
 
 // 待つ状態, unk_65e フレーム過ぎたら, バリアント0で FUN_080db290 が枠を返すか 1/4 の確率で状態 (unk_5a0, 副状態7) へ, そうでなければ (unk_5a4, 副状態5) へ 60 フレーム後に移る
 // 242/251命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み副状態の定数を r8 に置く), 加えて原典は &mover を r8 に写して FUN_080db290 に渡し, variant や乱数の 0 をそのまま格納の 0 に使う, 試済: 保留状態の inline, Mover* / Enemy* のローカル
-NON_MATCH void FUN_0812ef50(Spider* p, s32 timer) {
+NON_MATCH void Spider_StateWait(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).unk_1cc;
   Mover* mover = &(p->e).mover;
@@ -349,7 +349,7 @@ NON_MATCH void FUN_0812ef50(Spider* p, s32 timer) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0812ef50.inc");
+  INCFUNC("asm/func/Spider_StateWait.inc");
 #endif
 }
 
@@ -379,7 +379,7 @@ void Spider_SpitVenom(Spider* p, s32 timer) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
     Enemy_ResetState(&p->e, 0, 0, 12);
     Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
-    FUN_08130eec(p);
+    Spider_PickPathNodeAwayFromPlayer(p);
     Enemy_StepTowardPathNode(&p->e);
     if ((p->e).kind != ENEK_SPIDER) {
       SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
@@ -420,7 +420,7 @@ void Spider_StateDamaged(Spider* p, s32 timer) {
     (p->e).subStateDone = 1;
     Enemy_ResetState(&p->e, 0, 0, 12);
     Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
-    FUN_08130eec(p);
+    Spider_PickPathNodeAwayFromPlayer(p);
     Enemy_StepTowardPathNode(&p->e);
     if ((p->e).kind != ENEK_SPIDER) {
       SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
@@ -516,7 +516,7 @@ void FUN_0812f840(Spider* p) {
   if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
     Enemy_ResetState(&p->e, 0, 0, 12);
     Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_1);
-    FUN_08130eec(p);
+    Spider_PickPathNodeAwayFromPlayer(p);
     Enemy_StepTowardPathNode(&p->e);
   } else {
     (p->e).subStateTimer++;
@@ -538,7 +538,7 @@ void FUN_0812f9ec(Spider* p) {
   speed = (p->e).unk_588(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (!Enemy_TestFlag(&p->e, ENEFLAG_UNK_14) && !Spider_TestUnk660((p->e).unk_1cc, 4)) {
-    FUN_081307b0(p);
+    Spider_PickWanderDest(p);
   }
   if (!Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
     if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
@@ -580,7 +580,7 @@ void FUN_0812fcd8(Spider* p) {
   }
 }
 
-// 経路ノードで待つ副状態, 棺桶を狙っているならその判定をし, 60 フレーム過ぎたら次のノードへ向かって, 歩くか待つ状態 (FUN_0812ef50) に入るかを乱数で選ぶ
+// 経路ノードで待つ副状態, 棺桶を狙っているならその判定をし, 60 フレーム過ぎたら次のノードへ向かって, 歩くか待つ状態 (Spider_StateWait) に入るかを乱数で選ぶ
 // 281/286命令, 原典は巣を張る塊と歩く塊を1つずつ持ち, バリアントごとの乱数の判定からそれぞれへ飛ぶ (歩く側は & 7 の 7 を subState2 に使い回す), こちらは三項演算子の条件で塊の入口の共有のされ方が違う, 試済: バリアントごとに塊を2つずつ書く (320命令)
 NON_MATCH void FUN_0812fdb8(Spider* p) {
 #ifdef NONMATCHING_C
@@ -600,9 +600,9 @@ NON_MATCH void FUN_0812fdb8(Spider* p) {
       Enemy_StepTowardPathNode(&p->e);
       q->unk_65e = 0;
       Enemy_ResetState(&p->e, 0, 0, 15);
-      Enemy_EnterState(&p->e, FUN_0812ef50, ES_UNK_33);
+      Enemy_EnterState(&p->e, Spider_StateWait, ES_UNK_33);
     } else {
-      FUN_08130508(p);
+      Spider_TryRouteToCoffin(p);
     }
     return;
   }
@@ -611,7 +611,7 @@ NON_MATCH void FUN_0812fdb8(Spider* p) {
     Enemy_StepTowardPathNode(&p->e);
     if ((p->e).variant == 0 ? (Random() & 3) != 0 : (Random() & 7) == 0) {
       Enemy_ResetState(&p->e, 0, 0, 15);
-      Enemy_EnterState(&p->e, FUN_0812ef50, ES_UNK_33);
+      Enemy_EnterState(&p->e, Spider_StateWait, ES_UNK_33);
       q->unk_65e = (Random() & 127) + 60;
     } else {
       Enemy_ResetState(&p->e, 0, 0, 7);
@@ -724,7 +724,7 @@ bool8 Spider_IsCoffinInRange(Spider* p, s32 rangeX, s32 rangeZ) {
 
 // 棺桶への経路を引けたら棺桶を狙って歩き出す
 // 残差1命令, ドッグの FUN_0814e424 と同じ「失敗の出口を2つ持つ経路 inline」にすると定数 4 (unk_660 の bit と animSpeedDiv) が1本のレジスタにまとめられる所だけ違う
-NON_MATCH bool8 FUN_08130508(Spider* p) {
+NON_MATCH bool8 Spider_TryRouteToCoffin(Spider* p) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).unk_1cc;
 
@@ -741,7 +741,7 @@ NON_MATCH bool8 FUN_08130508(Spider* p) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_08130508.inc");
+  INCFUNC("asm/func/Spider_TryRouteToCoffin.inc");
 #endif
 }
 
@@ -758,7 +758,7 @@ void FUN_08130610(Spider* p) {
     } else {
       q->unk_662 = 300;
       if (!Spider_TestUnk660(q, 4)) {
-        FUN_08130508(p);
+        Spider_TryRouteToCoffin(p);
       }
     }
   }
@@ -791,7 +791,7 @@ NON_MATCH void FUN_0813069c(Spider* p) {
 
 // 30 フレームごとに, 前方の乱数の向きと距離の点を unk_20c に選んで経路を引き, 次に選ぶまでの待ちを unk_65c に入れる
 // 231/241命令, 原典は乱数の表・gRandTableIdx のアドレス・0x3FF を関数の頭から callee-saved (sl/r7/r6) に置いて3つ目の乱数まで持ち越し, p をスタック (sp+8) に退避して経路 inline の pos に使う, こちらは定数を毎回プールから読む (乱数の割り当ての壁)
-NON_MATCH void FUN_081307b0(Spider* p) {
+NON_MATCH void Spider_PickWanderDest(Spider* p) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).unk_1cc;
   u16* table = gRandomTable;
@@ -832,7 +832,7 @@ NON_MATCH void FUN_081307b0(Spider* p) {
     q->unk_65c--;
   }
 #else
-  INCFUNC("asm/func/FUN_081307b0.inc");
+  INCFUNC("asm/func/Spider_PickWanderDest.inc");
 #endif
 }
 
@@ -841,7 +841,7 @@ bool8 FUN_081309f0(Spider* p) {
     (p->e).playerMover = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
     Enemy_ResetState(&p->e, 0, 0, 12);
     Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
-    FUN_08130eec(p);
+    Spider_PickPathNodeAwayFromPlayer(p);
     Enemy_StepTowardPathNode(&p->e);
     if ((p->e).kind != ENEK_SPIDER) {
       SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
@@ -855,7 +855,7 @@ bool8 FUN_081309f0(Spider* p) {
 
 // プレイヤーが同じ高さで近く, 前方 45 度以内に見えていれば, 近ければ追いかけ, 遠ければ毒液を吐く状態に入って TRUE を返す
 // 277/275命令, 原典は p の写しを sl に置き (フレーム 8), こちらはスタックに退避する (フレーム 0xc), 失敗は早期 return, 不可視の検査は Player_TestFlag20 で揃う, 試済: Mover* のローカル, distSq の符号
-NON_MATCH bool8 FUN_08130ac4(Spider* p) {
+NON_MATCH bool8 Spider_TryChaseOrSpit(Spider* p) {
 #ifdef NONMATCHING_C
   Spider* self = p;
   Player* player;
@@ -905,7 +905,7 @@ NON_MATCH bool8 FUN_08130ac4(Spider* p) {
   if ((s32)distSq < 0x4000) {
     Enemy_ResetState(&p->e, 0, 0, 12);
     Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
-    FUN_08130eec(p);
+    Spider_PickPathNodeAwayFromPlayer(p);
     Enemy_StepTowardPathNode(&p->e);
     if ((p->e).kind != ENEK_SPIDER) {
       SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
@@ -918,13 +918,13 @@ NON_MATCH bool8 FUN_08130ac4(Spider* p) {
   }
   return TRUE;
 #else
-  INCFUNC("asm/func/FUN_08130ac4.inc");
+  INCFUNC("asm/func/Spider_TryChaseOrSpit.inc");
 #endif
 }
 
 // プレイヤーが見えていて前方 45 度以内にいれば追いかけを始めて TRUE を返す
 // 196/194命令, 原典は flags3 のアドレスを検査のときに r7 へ写して末尾の SET_FLAGS まで持ち越し, p が r5 に乗る, 試済: 条件の入れ子, 角度差の inline, Enemy_BeginChase, flags3 の直接演算
-NON_MATCH bool8 FUN_08130d34(Spider* p) {
+NON_MATCH bool8 Spider_TryStartChase(Spider* p) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).unk_1cc;
   Mover* mover = &(p->e).mover;
@@ -964,7 +964,7 @@ NON_MATCH bool8 FUN_08130d34(Spider* p) {
   (p->e).playerMover = &gPlayerPtr[0]->mover;
   Enemy_ResetState(&p->e, 0, 0, 12);
   Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
-  FUN_08130eec(p);
+  Spider_PickPathNodeAwayFromPlayer(p);
   Enemy_StepTowardPathNode(&p->e);
   if ((p->e).kind != ENEK_SPIDER) {
     SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
@@ -973,13 +973,13 @@ NON_MATCH bool8 FUN_08130d34(Spider* p) {
   (p->e).unk_24e = (p->e).unk_24c;
   return TRUE;
 #else
-  INCFUNC("asm/func/FUN_08130d34.inc");
+  INCFUNC("asm/func/Spider_TryStartChase.inc");
 #endif
 }
 
 // プレイヤーと反対側にある道順のノードを選び, 見つからなければでたらめに選ぶ
 // 下書き段階, 100/144 命令, 原典は 0x10 バイトのスタックに向きのベクトルなどを置いている
-NON_MATCH void FUN_08130eec(Spider* p) {
+NON_MATCH void Spider_PickPathNodeAwayFromPlayer(Spider* p) {
 #ifdef NONMATCHING_C
   Mover* m = (p->e).playerMover;
   u8 angle = ArcTan2_8(m->pos.x - (p->e).mover.pos.x, m->pos.z - (p->e).mover.pos.z);
@@ -1005,7 +1005,7 @@ NON_MATCH void FUN_08130eec(Spider* p) {
   }
   Spider_PickRandomPathNode(p);
 #else
-  INCFUNC("asm/func/FUN_08130eec.inc");
+  INCFUNC("asm/func/Spider_PickPathNodeAwayFromPlayer.inc");
 #endif
 }
 
@@ -1307,7 +1307,7 @@ NON_MATCH s32 Spider_Init(Spider* p) {
   (p->e).unk_5ac = NULL;
   (p->e).unk_5b0 = NULL;
   (p->e).unk_5b8 = FUN_0812f358;
-  (p->e).unk_608 = (p->e).variant == 0 ? (void*)FUN_08130d34 : (void*)FUN_08130ac4;
+  (p->e).unk_608 = (p->e).variant == 0 ? (void*)Spider_TryStartChase : (void*)Spider_TryChaseOrSpit;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_22);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_3);
 

@@ -1591,15 +1591,15 @@ _081525A0:
 	str r0, [r1]
 	ldr r6, _081527F0 @ =0x0000058C
 	adds r1, r7, r6
-	ldr r0, _081527F4 @ =FUN_0814eacc
+	ldr r0, _081527F4 @ =Dog_OnDamaged
 	str r0, [r1]
 	ldr r0, _081527F8 @ =0x000005BC
 	adds r1, r7, r0
-	ldr r0, _081527FC @ =FUN_0814e248
+	ldr r0, _081527FC @ =Dog_StateLookAround
 	str r0, [r1]
 	adds r2, #0x1c
 	adds r1, r7, r2
-	ldr r0, _08152800 @ =FUN_0814b3e0
+	ldr r0, _08152800 @ =Dog_NoticeAttacker
 	str r0, [r1]
 	movs r3, #0xde
 	lsls r3, r3, #1
@@ -1680,10 +1680,10 @@ _081527E4: .4byte 0x000005AC
 _081527E8: .4byte enemy_dog_08149f6c
 _081527EC: .4byte FUN_0814a098
 _081527F0: .4byte 0x0000058C
-_081527F4: .4byte FUN_0814eacc
+_081527F4: .4byte Dog_OnDamaged
 _081527F8: .4byte 0x000005BC
-_081527FC: .4byte FUN_0814e248
-_08152800: .4byte FUN_0814b3e0
+_081527FC: .4byte Dog_StateLookAround
+_08152800: .4byte Dog_NoticeAttacker
 _08152804: .4byte 0x00000543
 _08152808:
 	movs r0, #0

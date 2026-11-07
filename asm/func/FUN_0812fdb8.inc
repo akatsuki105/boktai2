@@ -117,7 +117,7 @@ _0812FE4E:
 	adds r2, #3
 	adds r0, r7, r2
 	strb r6, [r0]
-	ldr r2, _0812FEE0 @ =FUN_0812ef50
+	ldr r2, _0812FEE0 @ =Spider_StateWait
 	movs r1, #0x21
 	adds r3, #3
 	adds r0, r7, r3
@@ -142,11 +142,11 @@ _0812FED0: .4byte 0x00000482
 _0812FED4: .4byte 0x0000065E
 _0812FED8: .4byte 0x00000469
 _0812FEDC: .4byte 0x00000484
-_0812FEE0: .4byte FUN_0812ef50
+_0812FEE0: .4byte Spider_StateWait
 _0812FEE4: .4byte 0x00000553
 _0812FEE8:
 	adds r0, r7, #0
-	bl FUN_08130508
+	bl Spider_TryRouteToCoffin
 	b _0813005C
 _0812FEF0:
 	ldr r3, _0812FF40 @ =0x00000484
@@ -231,7 +231,7 @@ _0812FF82:
 	adds r0, r7, r1
 	movs r1, #1
 	strb r1, [r0]
-	ldr r2, _0812FFF4 @ =FUN_0812ef50
+	ldr r2, _0812FFF4 @ =Spider_StateWait
 	mov sb, r2
 	movs r2, #0x21
 	subs r3, #0x17
@@ -272,7 +272,7 @@ _0812FFE4: .4byte 0x030046B8
 _0812FFE8: .4byte 0x000003FF
 _0812FFEC: .4byte 0x0203B400
 _0812FFF0: .4byte 0x0000046C
-_0812FFF4: .4byte FUN_0812ef50
+_0812FFF4: .4byte Spider_StateWait
 _0812FFF8: .4byte 0x0000046B
 _0812FFFC: .4byte 0x0000065E
 _08130000:

@@ -111,8 +111,8 @@ bool8 FUN_0814b3a0(Dog* p);
 void enemy_dog_0814a320(Dog* p);
 void enemy_dog_0814b500(Dog* p);
 void FUN_0814deb0(Dog* p);
-void FUN_0814dd38(Dog* p, s32 timer);
-void FUN_0814de34(Dog* p, s32 timer);
+void Dog_StateFireBreathWindup(Dog* p, s32 timer);
+void Dog_StateFireBreath(Dog* p, s32 timer);
 void FUN_0814e424(Dog* p);
 void Dog_StatePounce(Dog* p);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
@@ -296,7 +296,7 @@ NON_MATCH void enemy_dog_0814a320(Dog* p) {
 }
 
 // angle の方向が視野の外ならそちらへ振り向く状態に入る
-bool8 FUN_0814a5e0(Dog* p, u32 angle) {
+bool8 Dog_TryTurnToward(Dog* p, u32 angle) {
   s32 diff = angle - (p->e).mover.angle;
 
   if (diff > 128) {
@@ -522,7 +522,7 @@ void FUN_0814aed0(Dog* p) {
 }
 
 // 倒されたときのスクリプトを, 位置や種族などを引数にして呼ぶ
-void FUN_0814afc8(Dog* p) {
+void Dog_RunDefeatScript(Dog* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_19)) {
     Dog* q = (p->e).unk_1cc;
 
@@ -665,7 +665,7 @@ NON_MATCH bool8 FUN_0814b3a0(Dog* p) {
 }
 
 // 攻撃が当たった相手に気付いて追いかけ始める
-bool8 FUN_0814b3e0(Dog* p) {
+bool8 Dog_NoticeAttacker(Dog* p) {
   if ((p->e).hitTargetID > 0) {
     Vec3 diff;
 
@@ -742,7 +742,7 @@ void FUN_0814b78c(Dog* p) {
 
 // pos の周りにランダムな向きと速さで粒を1つ飛ばす
 // 残差は79/78命令, gRandTableIdx のアドレスがレジスタに載らず毎回読み直す割当の差, Entity081f9cb8_SpawnWaitEffect と同じ壁, 試済: 全部 Random(), 前半だけブロックで table, 3つとも table
-NON_MATCH void FUN_0814b7a4(Vec3* pos) {
+NON_MATCH void Dog_SpawnSpark(Vec3* pos) {
 #ifdef NONMATCHING_C
   Vec3 vel;
   u32 angle;
@@ -755,7 +755,7 @@ NON_MATCH void FUN_0814b7a4(Vec3* pos) {
   vel.y = (Random() & 63) - 48;
   Entity081ee2a0_SpawnEx(pos, &vel, 60, 3, 3);
 #else
-  INCFUNC("asm/func/FUN_0814b7a4.inc");
+  INCFUNC("asm/func/Dog_SpawnSpark.inc");
 #endif
 }
 
@@ -1390,7 +1390,7 @@ NON_MATCH void Dog_StateDamaged(Dog* p) {
 }
 
 // 火を吐く前に, 口の前あたりに4フレームおきに火の粉を散らす
-void FUN_0814dd38(Dog* p, s32 timer) {
+void Dog_StateFireBreathWindup(Dog* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 17);
   }
@@ -1418,15 +1418,15 @@ void FUN_0814dd38(Dog* p, s32 timer) {
         break;
       }
     }
-    FUN_0814b7a4(&pos);
+    Dog_SpawnSpark(&pos);
   }
   if (timer > 30) {
-    Enemy_EnterState(&p->e, FUN_0814de34, ES_UNK_37);
+    Enemy_EnterState(&p->e, Dog_StateFireBreath, ES_UNK_37);
   }
 }
 
 // 火を吐く, 決まったフレームの間だけ2つ目の攻撃判定を出す
-void FUN_0814de34(Dog* p, s32 timer) {
+void Dog_StateFireBreath(Dog* p, s32 timer) {
   Dog* q = (p->e).unk_1cc;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -1523,7 +1523,7 @@ void FUN_0814e1fc(Dog* p) {
 
 // 見回す状態, 残り回数 unk_542 が尽きるまで 20 フレームごとに向きを変え, 尽きたら退避していた状態へ戻る
 // 193/198命令, Enemy_080eff14 と同形, 原典は *count |= 0xFF 用の ldrb を検査の前に読み, 乱数ループの前に mover.angle を r4 に読んで比較用に r3 へ写し, 回数切れのとき angle = 元の向き を残す (こちらは同値と見抜かれて消える), 試済: 型の組み合わせ, for + 後判定 (213命令)
-NON_MATCH void FUN_0814e248(Dog* p, s32 timer) {
+NON_MATCH void Dog_StateLookAround(Dog* p, s32 timer) {
 #ifdef NONMATCHING_C
   u8* count;
 
@@ -1568,7 +1568,7 @@ NON_MATCH void FUN_0814e248(Dog* p, s32 timer) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0814e248.inc");
+  INCFUNC("asm/func/Dog_StateLookAround.inc");
 #endif
 }
 
@@ -1642,7 +1642,7 @@ void Dog_StateDying(Dog* p) {
       s32 idx;
 
       (p->e).subStateDone = 1;
-      FUN_0814afc8(p);
+      Dog_RunDefeatScript(p);
       if ((p->e).unk_19a != 0) {
         u32 argv[8];
         ScriptArgs sa;
@@ -1686,7 +1686,7 @@ void FUN_0814e8ec(Dog* p, s32 timer) {
     s32 idx;
 
     (p->e).subStateDone = 1;
-    FUN_0814afc8(p);
+    Dog_RunDefeatScript(p);
     if ((p->e).unk_19a != 0) {
       u32 argv[8];
       ScriptArgs sa;
@@ -1724,7 +1724,7 @@ void FUN_0814e8ec(Dog* p, s32 timer) {
 
 // 被弾したときの処理, 追跡中は FUN_0814b3a0 が通ればプレイヤーへ向かって状態26へ, 通らなければ攻撃者と逆の向きへ歩き先を選ぶ, 追跡中でなければプレイヤーへ向かって状態1へ戻す
 // 1830/1839命令, 1回目の下書き, プレイヤーへ向かう部分は Dog_StateDamaged と同じ形, 原典は状態フィールドのアドレスをスタックに作り置く (フレーム 0xBC)
-NON_MATCH bool8 FUN_0814eacc(Dog* p) {
+NON_MATCH bool8 Dog_OnDamaged(Dog* p) {
 #ifdef NONMATCHING_C
   Dog* q = (p->e).unk_1cc;
   s32 tile;
@@ -2081,7 +2081,7 @@ NON_MATCH bool8 FUN_0814eacc(Dog* p) {
   (p->e).animSpeedDiv = 4;
   return TRUE;
 #else
-  INCFUNC("asm/func/FUN_0814eacc.inc");
+  INCFUNC("asm/func/Dog_OnDamaged.inc");
 #endif
 }
 
@@ -2348,7 +2348,7 @@ void FUN_08150660(Dog* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Dog_ClearUnk6a8(q, 8);
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
-    Enemy_EnterState(&p->e, FUN_0814dd38, ES_UNK_36);
+    Enemy_EnterState(&p->e, Dog_StateFireBreathWindup, ES_UNK_36);
     Dog_SetUnk6a8((p->e).unk_1cc, 2);
     Hitbox_SetAttack(&q->unk_658, (p->e).atkPower[2], (p->e).atkUnk40[2], 0, (p->e).atkAttrs[2], (p->e).atkInvincibleTime[2]);
     q->unk_6d7 = 0;
@@ -2978,9 +2978,9 @@ NON_MATCH s32 Dog_Init(Dog* p) {
   (p->e).unk_5fc = (void*)FUN_0814a8c8;
   (p->e).unk_5ac = (EnemyHandler)enemy_dog_08149f6c;
   (p->e).unk_5b0 = (EnemyHandler)FUN_0814a098;
-  (p->e).unk_58c = (void*)FUN_0814eacc;
-  (p->e).unk_5bc = FUN_0814e248;
-  (p->e).unk_618 = (void*)FUN_0814b3e0;
+  (p->e).unk_58c = (void*)Dog_OnDamaged;
+  (p->e).unk_5bc = Dog_StateLookAround;
+  (p->e).unk_618 = (void*)Dog_NoticeAttacker;
   (p->e).unk_1bc = 0;
   (p->e).unk_543 = 20;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22 | ENEFLAG_UNK_24);

@@ -20,7 +20,7 @@
 	movs r0, #0x11
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0813c738
+	bl Curoro_InitAnims
 	ldr r3, _0813D5D0 @ =0x0000025D
 	adds r0, r7, r3
 	ldrb r0, [r0]
