@@ -38,7 +38,7 @@ typedef struct {
   s16 curveBend;              // 0x668, 曲線のふくらみ, -320〜320 を往復する
   u8 mashCount;               // 0x66A, 掴んでからの連打数
   u8 mashBase;                // 0x66B, 掴んだときの Player.mashCount
-  u8 unk_66c[2];              // 0x66C
+  u16 unk_66c;                // 0x66C, 0 でなければ毎フレーム減り, 0 になったらプレイヤーへの曲線移動を始める
   u16 unk_66e;                // 0x66E, 前のフレームの floorY
   u8 unk_670;                 // 0x670, 弾かれて逃げる向き, 乱数で決める
   u8 unk_671[0x6A0 - 0x671];  // 0x671
@@ -925,7 +925,64 @@ NON_MATCH void FUN_08140eb0(EnemyBat* p) {
 #endif
 }
 
-NAKED void FUN_081410cc(EnemyBat* p) { INCFUNC("asm/func/FUN_081410cc.inc"); }
+// プレイヤーを掴んで周りを曲線で飛び回る副状態, 離れすぎたら少し待ってから曲線移動をやり直す
+// 366/366命令, 残差は FUN_08140eb0 と同じく乱数の表と ldrsh のゼロ添字の一時レジスタ番号 (r1/r3 と原典 r3/r1) だけ, 待ちの間は曲線移動を飛ばし, 離れすぎたら return する形で構造は揃う, 試済: SIN の添字のマスクを外す
+NON_MATCH void FUN_081410cc(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  EnemyBat* q = (p->e).unk_1cc;
+  s32 speed;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    WorldPos pos;
+    u8 r;
+
+    Enemy_EnterState(&p->e, EnemyBat_HoldPlayer, ES_UNK_35);
+    Vec3_Clear(&q->unk_6b0);
+    q->curveBendDir = 1;
+    q->unk_66c = 0;
+    r = Random();
+    pos = gPlayerPtr[0]->mover.pos;
+    pos.x += FixToInt(3, SIN(r));
+    pos.z += FixToInt(3, COS(r));
+    EnemyBat_StartCurve(p, &pos);
+    EnemyBat_StepCurve(p);
+    CLEAR_FLAGS(q->unk_658, 8);
+  }
+  if (q->unk_66c != 0) {
+    if (--q->unk_66c == 0) {
+      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      SET_FLAGS(q->unk_658, 8);
+    }
+  } else {
+    EnemyBat_UpdateCurveBend(p);
+    speed = (p->e).unk_588(&p->e);
+    if (Enemy_StepToDest(&p->e, speed) && EnemyBat_StepCurve(p)) {
+      WorldPos pos;
+      u8 r;
+
+      r = Random();
+      pos = gPlayerPtr[0]->mover.pos;
+      pos.x += FixToInt(3, SIN(r));
+      pos.z += FixToInt(3, COS(r));
+      EnemyBat_StartCurve(p, &pos);
+      EnemyBat_StepCurve(p);
+    }
+    if ((p->e).unk_1e4 > 65000) {
+      FUN_08140904(p);
+      (p->e).mover.angle = (p->e).unk_1fc;
+      q->unk_66c = 30;
+      return;
+    }
+  }
+  if ((p->e).subStateDone) {
+    Enemy_ResetState(&p->e, 0, 0, 4);
+  } else {
+    (p->e).subStateTimer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_081410cc.inc");
+#endif
+}
 
 void FUN_08141448(EnemyBat* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad804; }
 
