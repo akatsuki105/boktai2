@@ -762,7 +762,45 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
 #endif
 }
 
-NAKED void FUN_08164a48(Slime* p) { INCFUNC("asm/func/FUN_08164a48.inc"); }
+// プレイヤーの方へ攻撃判定つきの飛沫を3つ, 少しずつ向きと速さを散らして撃つ
+// 361/365命令, 乱数は1つ目の塊だけ頭の table を使い, 2つ目以降は塊ごとに table を取り直すと命令列はほぼ揃う, 残差は pos と定数 7 の割り当て (原典は2つ目の Spawn の前で pos を r8 から r9 へ写し, 7 を r8 に置いて & 7 と anim 番号に使い回す), 試済: pos を直接渡す
+NON_MATCH void FUN_08164a48(Slime* p) {
+#ifdef NONMATCHING_C
+  u32 attrs = Slime_PickHitAttributes(p);
+  u16* table = gRandomTable;
+  u32 r = _Random(table) & 15;
+  Vec3 vel;
+  WorldPos* pos;
+  s32 angle;
+
+  Vec3_Delta(&vel, &(p->e).mover.pos, &(p->e).playerMover->pos);
+  angle = ArcTan2_8(vel.x, vel.z);
+  Vec3_SetPolar(&vel, angle + r, (_Random(table) & 7) + 6);
+  vel.y = 48;
+  pos = &(p->e).mover.pos;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
+  {
+    u16* table = gRandomTable;
+    u32 r = _Random(table) & 15;
+    s32 speed = _Random(table) & 7;
+
+    Vec3_SetPolar(&vel, angle + r, speed + 6);
+  }
+  vel.y = 37;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
+  {
+    u16* table = gRandomTable;
+    u32 r = _Random(table) & 15;
+    s32 speed = _Random(table) & 7;
+
+    Vec3_SetPolar(&vel, angle + r, speed + 6);
+  }
+  vel.y = 32;
+  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).unk_47a + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkUnk40[1], (p->e).atkAttrs[1] | attrs, (p->e).atkInvincibleTime[1]);
+#else
+  INCFUNC("asm/func/FUN_08164a48.inc");
+#endif
+}
 
 NAKED void FUN_08164da8(Slime* p) { INCFUNC("asm/func/FUN_08164da8.inc"); }
 
