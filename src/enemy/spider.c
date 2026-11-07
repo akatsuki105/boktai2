@@ -43,6 +43,8 @@ void FUN_080e8614(Enemy* p);
 void FUN_080e68d8(Enemy* p, s32 timer);
 void FUN_08130eec(Spider* p);
 void FUN_081307b0(Spider* p);
+bool8 Spider_IsCoffinInRange(Spider* p, s32 rangeX, s32 rangeZ);
+bool8 FUN_08130508(Spider* p);
 void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 s32 FUN_080db290(void* p, Mover* mover);
@@ -423,7 +425,50 @@ void FUN_0812fcd8(Spider* p) {
   }
 }
 
-NAKED void FUN_0812fdb8(Spider* p) { INCFUNC("asm/func/FUN_0812fdb8.inc"); }
+// 経路ノードで待つ副状態, 棺桶を狙っているならその判定をし, 60 フレーム過ぎたら次のノードへ向かって, 歩くか巣を張って待つかを乱数で選ぶ
+// 281/286命令, 原典は巣を張る塊と歩く塊を1つずつ持ち, バリアントごとの乱数の判定からそれぞれへ飛ぶ (歩く側は & 7 の 7 を subState2 に使い回す), こちらは三項演算子の条件で塊の入口の共有のされ方が違う, 試済: バリアントごとに塊を2つずつ書く (320命令)
+NON_MATCH void FUN_0812fdb8(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+    (p->e).animSpeedDiv = 1;
+  }
+  if ((p->e).unk_608(&p->e)) {
+    return;
+  }
+  if (Spider_TestUnk660(q, 4)) {
+    if (Spider_IsCoffinInRange(p, 64, 64)) {
+      (p->e).animSpeedDiv = 1;
+      Spider_PickRandomPathNode(p);
+      Enemy_StepTowardPathNode(&p->e);
+      q->unk_65e = 0;
+      Enemy_ResetState(&p->e, 0, 0, 15);
+      Enemy_EnterState(&p->e, FUN_0812ef50, ES_UNK_33);
+    } else {
+      FUN_08130508(p);
+    }
+    return;
+  }
+  if ((p->e).subStateTimer > 60) {
+    Spider_PickRandomPathNode(p);
+    Enemy_StepTowardPathNode(&p->e);
+    if ((p->e).variant == 0 ? (Random() & 3) != 0 : (Random() & 7) == 0) {
+      Enemy_ResetState(&p->e, 0, 0, 15);
+      Enemy_EnterState(&p->e, FUN_0812ef50, ES_UNK_33);
+      q->unk_65e = (Random() & 127) + 60;
+    } else {
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    }
+  } else {
+    (p->e).subStateTimer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0812fdb8.inc");
+#endif
+}
 
 void FUN_08130068(Spider* p) {
   Enemy_ConsumeSubStateBegun(&p->e);
