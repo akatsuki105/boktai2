@@ -280,7 +280,45 @@ void FUN_080defd0(Entity080df420* p, Entity080df420Elem* elem) {
   }
 }
 
-NAKED void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime) { INCFUNC("asm/func/FUN_080df148.inc"); }
+// 弾を1発出す, kind が 8 なら分裂する弾, 4 なら分裂しない弾
+void FUN_080df148(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 invincibleTime, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkInvincibleTime) {
+  Entity080df420* p = gEntity080df420;
+  Entity080df420Elem* elem;
+  AuxSprite* spr;
+
+  if (p == NULL) {
+    p = Entity080df420_Create();
+    if (p == NULL) {
+      return;
+    }
+  }
+  elem = FUN_080de174(p);
+  if (elem == NULL) {
+    return;
+  }
+  elem->unk_f0 = unk_f0;
+  elem->flags = 0;
+  elem->timer = 0;
+  elem->vel = *vel;
+  elem->unk_f3 = 1;
+  if (kind == 8) {
+    elem->state = 1;
+    elem->flags |= 1;
+  } else if (kind == 4) {
+    elem->state = 2;
+    elem->flags |= 2;
+  }
+  spr = &elem->sprite;
+  elem->sprite.pos = *pos;
+  elem->animFile = GetFile(DIR_ANIMATION, ANIM_121B);
+  AuxSprite_Add(&elem->sprite, &p->gfx, 0);
+  Video_SetAuxSpritePltt(elem->sprite.gfx, 0xDA);
+  AuxAnim_SetAnim(&elem->anim, elem->animFile, kind, 0, 0);
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  spr->priority = 1;
+  FUN_080de6b0(elem, power, knockback, attrs, atkInvincibleTime, 0, 0, 0);
+  elem->hurtbox.invincibleTime = invincibleTime;
+}
 
 s32 Entity080df420_Update(Entity080df420* p) {
   Entity080df420Elem* elems = p->elems;
