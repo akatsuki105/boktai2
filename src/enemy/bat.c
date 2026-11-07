@@ -136,7 +136,18 @@ NAKED void FUN_08140278(EnemyBat* p, u16* msg) { INCFUNC("asm/func/FUN_08140278.
 
 NAKED void FUN_0814031c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814031c.inc"); }
 
-NAKED void FUN_081404c0(EnemyBat* p) { INCFUNC("asm/func/FUN_081404c0.inc"); }
+void FUN_081404c0(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (q->curveBend > 320) {
+    q->curveBendDir = -1;
+    q->curveBend = 320;
+  } else if (q->curveBend < -320) {
+    q->curveBendDir = 1;
+    q->curveBend = -320;
+  }
+  q->curveBend += q->curveBendDir * 12;
+}
 
 void EnemyBat_PickRandomPathNode(EnemyBat* p) {
   PathWalker* walker = &(p->e).pathWalker;
