@@ -29,7 +29,11 @@ typedef struct {
   u16 unk_6c6;                // 0x6C6, 0 になるまで毎フレーム減る
   u16 unk_6c8;                // 0x6C8, 0 になるまで毎フレーム減る
   u16 unk_6ca;                // 0x6CA, 0 になるまで毎フレーム減る
-  u8 unk_6cc[0x6D8 - 0x6CC];  // 0x6CC
+  u8 unk_6cc[0x6D0 - 0x6CC];  // 0x6CC
+  s16 unk_6d0;                // 0x6D0, 負なら unk_6d2/unk_6d4 は無効
+  s16 unk_6d2;                // 0x6D2
+  s16 unk_6d4;                // 0x6D4
+  u8 unk_6d6[0x6D8 - 0x6D6];  // 0x6D6
   u8 unk_6d8;                 // 0x6D8, 0 になるまで毎フレーム減る
   u8 unk_6d9[0x708 - 0x6D9];  // 0x6D9
   Vec3 unk_708;               // 0x708, 飛びかかる直前のプレイヤーの位置
@@ -170,7 +174,36 @@ void FUN_0814aeb0(Dog* p) {
 
 NAKED void FUN_0814aed0(Dog* p) { INCFUNC("asm/func/FUN_0814aed0.inc"); }
 
-NAKED void FUN_0814afc8(Dog* p) { INCFUNC("asm/func/FUN_0814afc8.inc"); }
+// 倒されたときのスクリプトを, 位置や種族などを引数にして呼ぶ
+void FUN_0814afc8(Dog* p) {
+  if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_19)) {
+    Dog* q = (p->e).unk_1cc;
+
+    if ((p->e).unk_198 != 0) {
+      u32 argv[10];
+      ScriptArgs sa;
+
+      argv[0] = (p->e).mover.pos.x;
+      argv[1] = (p->e).mover.pos.y;
+      argv[2] = (p->e).mover.pos.z;
+      argv[3] = (p->e).unk_19c;
+      argv[4] = (p->e).unk_1a0;
+      argv[5] = (p->e).unk_1a4;
+      if (q->unk_6d0 < 0) {
+        argv[6] = -1;
+        argv[7] = -1;
+      } else {
+        argv[6] = q->unk_6d2;
+        argv[7] = q->unk_6d4;
+      }
+      argv[8] = (p->e).kind;
+      argv[9] = (p->e).variant;
+      sa.argc = 10;
+      sa.argv = argv;
+      VM_ExecByID((p->e).unk_198, &sa);
+    }
+  }
+}
 
 NAKED bool8 FUN_0814b090(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814b090.inc"); }
 
