@@ -25,7 +25,7 @@ typedef struct {
   u32 unk_658;                // 0x658
   u8 unk_65c;                 // 0x65C, 羽ばたきアニメを流した回数
   u8 unk_65d;                 // 0x65D, 急降下の速さ
-  u8 unk_65e[2];              // 0x65E
+  u16 unk_65e;                // 0x65E
   u8 unk_660;                 // 0x660, プレイヤーへ直進するときの速さ
   u8 unk_661;                 // 0x661
   u8 unk_662[2];              // 0x662
@@ -369,7 +369,132 @@ NON_MATCH void FUN_081436b4(Crow* p) {
 #endif
 }
 
-NAKED void FUN_081439d8(Crow* p) { INCFUNC("asm/func/FUN_081439d8.inc"); }
+// 前進しながら旋回する, unk_65e フレームを過ぎたらプレイヤーへ向き直って副状態 (0,2,0) へ, それまでは近ければプレイヤーから横へ逸れ遠ければプレイヤーへ向く
+void FUN_081439d8(Crow* p) {
+  Crow* q = (p->e).unk_1cc;
+  Vec3 diff;
+  s32 target;
+  s32 speed;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    ((EnemyAuxSpriteData*)(p->e).sprite)->sprite.flags |= SPRFLAG_AFFINE;
+    Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+  }
+  if (q->unk_65e < (p->e).subStateTimer) {
+    s32 d;
+    s32 dist;
+
+    Vec3_Delta(&diff, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos);
+    target = ArcTan2_8(diff.x, diff.z);
+    d = target - (p->e).mover.angle;
+    if (d > 128) {
+      d -= 256;
+    } else if (d < -128) {
+      d += 256;
+    }
+    dist = abs(d);
+    if (dist < 12) {
+      q->unk_668 = 0;
+      ((EnemyAuxSpriteData*)(p->e).sprite)->sprite.flags &= ~SPRFLAG_AFFINE;
+      Enemy_ResetState(&p->e, 0, 2, 0);
+      return;
+    }
+    speed = FixToInt(2, dist);
+    speed = speed > 0 ? speed : 4;
+    if (speed > 8) {
+      speed = 8;
+    }
+    if (q->unk_668 > 20) {
+      q->unk_668 = 0;
+      q->unk_661 = 0;
+      Enemy_ResetState(&p->e, 0, 0, 4);
+      return;
+    }
+    q->unk_668++;
+    q->unk_661 = 0;
+  } else {
+    if ((p->e).unk_1e4 < 32000) {
+      Enemy_ResetState(&p->e, 0, 0, 4);
+      return;
+    }
+    if (q->unk_664 > (p->e).unk_1e4) {
+      s32 d;
+      s32 dist;
+
+      Vec3_Delta(&diff, &gPlayerPtr[0]->mover.pos, &(p->e).mover.pos);
+      target = ArcTan2_8(diff.x, diff.z);
+      d = ((target + 64) & 0xFF) - (p->e).mover.angle;
+      if (d > 128) {
+        d -= 256;
+      } else if (d < -128) {
+        d += 256;
+      }
+      dist = abs(d);
+      if (dist < 64) {
+        target += 64;
+      } else {
+        target += 192;
+      }
+      target &= 0xFF;
+      speed = Div(q->unk_660, 8);
+      if (speed <= 0) {
+        speed = 2;
+      }
+    } else {
+      s32 d;
+      s32 dist;
+
+      Vec3_Delta(&diff, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos);
+      target = ArcTan2_8(diff.x, diff.z);
+      d = target - (p->e).mover.angle;
+      if (d > 128) {
+        d -= 256;
+      } else if (d < -128) {
+        d += 256;
+      }
+      dist = abs(d);
+      if (dist < 32) {
+        Enemy_ResetState(&p->e, 0, 0, 4);
+        return;
+      }
+      speed = FixToInt(3, dist);
+      speed = speed > 0 ? speed : 2;
+    }
+    if (speed > 6) {
+      speed = 6;
+    }
+  }
+  {
+    Vec3 v;
+
+    Vec3_SetPolar(&v, (p->e).mover.angle, q->unk_660);
+    (p->e).mover.delta = v;
+    if (q->unk_661 == 0) {
+      s32 d = target - (p->e).mover.angle;
+
+      if (d > 128) {
+        d -= 256;
+      } else if (d < -128) {
+        d += 256;
+      }
+      if (d > 0) {
+        (p->e).mover.angle += speed;
+      } else {
+        (p->e).mover.angle -= speed;
+      }
+      ((EnemyAuxSpriteData*)(p->e).sprite)->sprite.rotation = 159 - (p->e).mover.angle;
+      if ((p->e).variant == 0) {
+        q->unk_661 = 4;
+      } else {
+        q->unk_661 = 2;
+      }
+    }
+    if (q->unk_661 != 0) {
+      q->unk_661--;
+    }
+  }
+  (p->e).subStateTimer++;
+}
 
 void FUN_08143dd4(Crow* p) {
   Crow* q = (p->e).unk_1cc;
