@@ -48,11 +48,11 @@ void FUN_08163604(Slime* p, s32 arg);
 void FUN_081636d4(Slime* p);
 void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
-void FUN_081647c8(Slime* p);
+void Slime_SpawnDroplets(Slime* p);
 void FUN_08164a48(Slime* p);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
 bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
-void FUN_08164120(Slime* p, u32 arg);
+void Slime_PickWalkDest(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
@@ -269,7 +269,7 @@ void FUN_0816328c(Slime* p) {
 void FUN_0816335c(Slime* p) {}
 
 // 被弾して後ろへ滑る状態, 滑る間はアニメを止め, 滑り終えてアニメも終わったら, 体力が 1/4 を切っていれば止まり, そうでなければ待機へ戻る
-void FUN_08163360(Slime* p) {
+void Slime_StateDamaged(Slime* p) {
   Slime* q = (p->e).unk_1cc;
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
 
@@ -382,7 +382,7 @@ void Slime_StateDying(Slime* p, s32 arg) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacing(&p->e, 10);
     PlayEnemyDeathCry(&p->e);
-    FUN_081647c8(p);
+    Slime_SpawnDroplets(p);
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5);
   }
   if (Enemy_TestFlag(&p->e, ENEFLAG_UNK_15)) {
@@ -455,7 +455,7 @@ void FUN_08163bbc(Slime* p) {
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
-    FUN_08164120(p, (p->e).mover.angle);
+    Slime_PickWalkDest(p, (p->e).mover.angle);
     (p->e).animSpeedDiv = 1;
     return;
   }
@@ -463,7 +463,7 @@ void FUN_08163bbc(Slime* p) {
   speed = (p->e).unk_588(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (Enemy_StepToDest(&p->e, speed)) {
-    FUN_08164120(p, (p->e).mover.angle);
+    Slime_PickWalkDest(p, (p->e).mover.angle);
   }
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
   (p->e).subStateTimer++;
@@ -551,7 +551,7 @@ s32 Slime_GetMoveSpeed(Slime* p) {
 
 // 乱数の向きから 90 度ずつ回して, 2 タイル先まで歩けるタイルが見つかった向きの行き先を経路の目的地にする, 向きは arg に戻す
 // 268/279命令, 原典は p と回数と &unk_256 / &mover.pos をスタック (sp+8..0x18) に退避してループで読み直す (フレーム 0x1c), こちらは p を r9 に置く, 試済: &unk_256 と &mover.pos のポインタのローカル (273命令), Boku の FUN_080fb4d0 と同じ探索の形
-NON_MATCH void FUN_08164120(Slime* p, u32 arg) {
+NON_MATCH void Slime_PickWalkDest(Slime* p, u32 arg) {
 #ifdef NONMATCHING_C
   u32 target;
   s32 i;
@@ -624,7 +624,7 @@ NON_MATCH void FUN_08164120(Slime* p, u32 arg) {
   TilePosAtIndex(&pos, target);
   (p->e).navAgent->dest = pos;
 #else
-  INCFUNC("asm/func/FUN_08164120.inc");
+  INCFUNC("asm/func/Slime_PickWalkDest.inc");
 #endif
 }
 
@@ -706,7 +706,7 @@ void FUN_081645fc(Slime* p) {
     sa.argc = 10;
     sa.argv = argv;
     VM_ExecByID(q->unk_688, &sa);
-    FUN_081647c8(p);
+    Slime_SpawnDroplets(p);
     q->unk_688 = 0;
     SET_FLAGS(q->unk_68e, 8);
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -725,7 +725,7 @@ u32 Slime_PickHitAttributes(Slime* p) {
 
 // 分裂の飛沫を3つ, 乱数の向きと速さで飛ばす
 // 270/269命令, 乱数の取り方 (ブロックで table を取る形) は揃う, 残差は p と pos の割り当てが入れ替わる (原典 p=r8, pos=r6) こと, 試済: 宣言順, pos を直接渡す形, 飛沫1つ分の inline (274命令)
-NON_MATCH void FUN_081647c8(Slime* p) {
+NON_MATCH void Slime_SpawnDroplets(Slime* p) {
 #ifdef NONMATCHING_C
   Vec3 vel;
   WorldPos* pos;
@@ -759,7 +759,7 @@ NON_MATCH void FUN_081647c8(Slime* p) {
   vel.y = 32;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).unk_47a + (p->e).variant, 1, 0, 0, 0, 0, 0);
 #else
-  INCFUNC("asm/func/FUN_081647c8.inc");
+  INCFUNC("asm/func/Slime_SpawnDroplets.inc");
 #endif
 }
 

@@ -247,7 +247,7 @@ void FUN_0812f358(Spider* p) {
 }
 
 // 被弾して後ろへ滑る状態, 滑り終えたら経路を引き直して追いかけに戻る
-void FUN_0812f3f8(Spider* p, s32 timer) {
+void Spider_StateDamaged(Spider* p, s32 timer) {
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {

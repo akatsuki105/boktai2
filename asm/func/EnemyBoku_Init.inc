@@ -1391,7 +1391,7 @@ _08102834:
 	mov sl, r1
 	ldr r2, _08102A00 @ =FUN_080fba64
 	mov ip, r2
-	ldr r5, _08102A04 @ =FUN_080fd08c
+	ldr r5, _08102A04 @ =Boku_StateDamaged
 	ldr r3, _08102A08 @ =FUN_080f62b0
 	ldr r6, _08102A0C @ =FUN_080f62ac
 	str r6, [sp, #0x1ac]
@@ -1588,7 +1588,7 @@ _081029F4: .4byte 0x000006A4
 _081029F8: .4byte FUN_08101bc0
 _081029FC: .4byte FUN_080ffcd0
 _08102A00: .4byte FUN_080fba64
-_08102A04: .4byte FUN_080fd08c
+_08102A04: .4byte Boku_StateDamaged
 _08102A08: .4byte FUN_080f62b0
 _08102A0C: .4byte FUN_080f62ac
 _08102A10: .4byte FUN_080fba28

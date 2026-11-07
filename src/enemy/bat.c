@@ -334,7 +334,7 @@ void FUN_0813f44c(EnemyBat* p) {
 }
 
 // 被弾して後ろへ滑る状態, 滑り終えたら, 1度目は副状態3へ, 2度目からはプレイヤーへの曲線移動へ移る
-void FUN_0813f5fc(EnemyBat* p) {
+void EnemyBat_StateDamaged(EnemyBat* p) {
   EnemyBat* q = (p->e).unk_1cc;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {

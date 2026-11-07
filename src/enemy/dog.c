@@ -81,7 +81,7 @@ void FUN_0814deb0(Dog* p);
 void FUN_0814dd38(Dog* p, s32 timer);
 void FUN_0814de34(Dog* p, s32 timer);
 void FUN_0814e424(Dog* p);
-void FUN_0814df40(Dog* p);
+void Dog_StatePounce(Dog* p);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
 void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p);
@@ -391,7 +391,7 @@ void Dog_InitHitboxes(Dog* p) {
 }
 
 // 向きに合わせて攻撃判定と食らい判定の大きさを置き直し, 2つ目の攻撃判定を前方へ出す
-void FUN_0814ac10(Dog* p) {
+void Dog_UpdateHitboxes(Dog* p) {
   Dog* q = (p->e).unk_1cc;
   WorldPos pos;
   Vec3 big;
@@ -741,7 +741,7 @@ void FUN_0814cb8c(Dog* p) {
   }
 }
 
-NAKED void FUN_0814ccfc(Dog* p) { INCFUNC("asm/func/FUN_0814ccfc.inc"); }
+NAKED void Dog_StateDamaged(Dog* p) { INCFUNC("asm/func/Dog_StateDamaged.inc"); }
 
 // 火を吐く前に, 口の前あたりに4フレームおきに火の粉を散らす
 void FUN_0814dd38(Dog* p, s32 timer) {
@@ -804,13 +804,13 @@ void FUN_0814deb0(Dog* p) {
     q->unk_708 = (p->e).playerMover->pos;
   }
   if ((p->e).animForceRestart) {
-    Enemy_EnterState(&p->e, FUN_0814df40, ES_UNK_34);
+    Enemy_EnterState(&p->e, Dog_StatePounce, ES_UNK_34);
   }
 }
 
 // 飛びかかる状態, 入ったときに覚えたプレイヤーの位置が前方 16 度以内なら真っ直ぐ, そうでなければ左右 16 度へ跳び, 着地したら状態35へ移る
 // 命令数は揃い残差は左右に跳ぶ2つの塊の並び順だけ, 角度は u8 に詰めて Vec3_SetPolar に渡すと SIN 側の & 0xFF が消えて揃う, q は塊の中で取り直す, 未試行: u8 キャストのまま d <= 0 の塊を先に書く順
-NON_MATCH void FUN_0814df40(Dog* p) {
+NON_MATCH void Dog_StatePounce(Dog* p) {
 #ifdef NONMATCHING_C
   Dog* q = (p->e).unk_1cc;
 
@@ -853,7 +853,7 @@ NON_MATCH void FUN_0814df40(Dog* p) {
     Enemy_EnterState(&p->e, FUN_0814e1b0, ES_UNK_35);
   }
 #else
-  INCFUNC("asm/func/FUN_0814df40.inc");
+  INCFUNC("asm/func/Dog_StatePounce.inc");
 #endif
 }
 
@@ -1104,7 +1104,7 @@ s32 FUN_081504f8(Dog* p) {
 }
 
 s32 FUN_08150510(Dog* p) {
-  FUN_0814ac10(p);
+  Dog_UpdateHitboxes(p);
   FUN_0814ae80(p);
   FUN_0814aeb0(p);
   FUN_0814b78c(p);

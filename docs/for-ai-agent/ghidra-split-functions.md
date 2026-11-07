@@ -90,7 +90,7 @@ without saving is always a way back.
 | Fake function | Parent | Body added |
 |---|---|---|
 | `FUN_080ff048` | `FUN_080fe7f4` | `[080FF048, 080FF05B]` |
-| `FUN_080fe198` | `FUN_080fd08c` | `[080FE198, 080FE1A7]` |
+| `FUN_080fe198` | `Boku_StateDamaged` | `[080FE198, 080FE1A7]` |
 | `FUN_080f9a24` | `EnemyTargetManager_Bind` | `[080F9A24, 080F9A35]` |
 
 `FUN_080ff048` also needed a repository-side fix, because the extraction had
@@ -189,7 +189,7 @@ Done so far:
 | `Enemy_OnCWolfMessage` | `FUN_080f5104`, `FUN_080f51e0` |
 | `Enemy_AddKillCount` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
 | `FUN_0814fc7c` | `FUN_081504d4`, `FUN_081504d8` |
-| `FUN_0814ccfc` | `FUN_0814dd18`, `FUN_0814dd28` |
+| `Dog_StateDamaged` | `FUN_0814dd18`, `FUN_0814dd28` |
 | `FUN_0814eacc` | `FUN_0814f410`, `FUN_0814fb76` |
 
 The three dog entries were found while emptying `asm/dog.inc` and fixed in the

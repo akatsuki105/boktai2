@@ -1443,7 +1443,7 @@ _081525A0:
 	mov sl, r1
 	ldr r2, _0815276C @ =FUN_0814c28c
 	mov ip, r2
-	ldr r4, _08152770 @ =FUN_0814ccfc
+	ldr r4, _08152770 @ =Dog_StateDamaged
 	ldr r5, _08152774 @ =Dog_StateDying
 	ldr r3, _08152778 @ =FUN_080f62b0
 	ldr r6, _0815277C @ =FUN_080f62ac
@@ -1647,7 +1647,7 @@ _08152760: .4byte FUN_081518c0
 _08152764: .4byte FUN_0814a8dc
 _08152768: .4byte FUN_0814c2d4
 _0815276C: .4byte FUN_0814c28c
-_08152770: .4byte FUN_0814ccfc
+_08152770: .4byte Dog_StateDamaged
 _08152774: .4byte Dog_StateDying
 _08152778: .4byte FUN_080f62b0
 _0815277C: .4byte FUN_080f62ac

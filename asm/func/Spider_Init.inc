@@ -1344,7 +1344,7 @@ _08131C3C:
 	ldr r6, _08131DA4 @ =FUN_0812eab4
 	mov ip, r6
 	movs r4, #0
-	ldr r5, _08131DA8 @ =FUN_0812f3f8
+	ldr r5, _08131DA8 @ =Spider_StateDamaged
 	ldr r3, _08131DAC @ =FUN_080f62b0
 	ldr r1, _08131DB0 @ =FUN_080f62ac
 	str r1, [sp, #0x1b4]
@@ -1506,7 +1506,7 @@ _08131D98: .4byte 0x00000664
 _08131D9C: .4byte FUN_081310b8
 _08131DA0: .4byte Spider_GetMoveSpeed
 _08131DA4: .4byte FUN_0812eab4
-_08131DA8: .4byte FUN_0812f3f8
+_08131DA8: .4byte Spider_StateDamaged
 _08131DAC: .4byte FUN_080f62b0
 _08131DB0: .4byte FUN_080f62ac
 _08131DB4: .4byte FUN_0812ea6c

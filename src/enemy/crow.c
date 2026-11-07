@@ -248,7 +248,7 @@ void FUN_081432ec(Crow* p) {
 }
 
 // 被弾して後ろへ滑る状態, 滑り終えて 30 フレーム過ぎたら少し無敵を足して止まる
-void FUN_08143310(Crow* p, s32 timer) {
+void Crow_StateDamaged(Crow* p, s32 timer) {
   Crow* q = (p->e).unk_1cc;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -414,7 +414,7 @@ void Crow_OnReset(Crow* p) {
 }
 
 // 高さの更新, 状態34ではタイルの上 320 まで sin で上昇し, 飛んでいる間は床から 320 の高さを保ち, 状態1/2では羽ばたきのコマに合わせて絵を上下させる
-void FUN_08144414(Crow* p) {
+void Crow_UpdateHover(Crow* p) {
   Crow* q = (p->e).unk_1cc;
   s32 d;
   s32 y;
@@ -681,7 +681,7 @@ void FUN_08144bfc(Crow* p) {
 }
 
 s32 FUN_08144cb8(Crow* p) {
-  FUN_08144414(p);
+  Crow_UpdateHover(p);
   return 1;
 }
 

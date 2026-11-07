@@ -1565,7 +1565,7 @@ _081662E8:
 	ldr r5, _08166478 @ =Slime_GetMoveSpeed
 	ldr r6, _0816647C @ =FUN_08162df4
 	mov r8, r6
-	ldr r0, _08166480 @ =FUN_08163360
+	ldr r0, _08166480 @ =Slime_StateDamaged
 	mov sb, r0
 	ldr r1, _08166484 @ =Slime_StateDying
 	mov sl, r1
@@ -1751,7 +1751,7 @@ _08166470: .4byte 0x00000664
 _08166474: .4byte FUN_08165508
 _08166478: .4byte Slime_GetMoveSpeed
 _0816647C: .4byte FUN_08162df4
-_08166480: .4byte FUN_08163360
+_08166480: .4byte Slime_StateDamaged
 _08166484: .4byte Slime_StateDying
 _08166488: .4byte FUN_080f62ac
 _0816648C: .4byte FUN_08162cf4

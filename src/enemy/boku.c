@@ -1026,7 +1026,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
 }
 
 // 1893/1886命令の下書き, プレイヤーへ向かう部分は FUN_080fe7f4 と同じ形を2回展開, 原典は &flags を sb に持ち越し状態フィールドのアドレスをスタックに作り置く (フレーム 0xD0, こちらは 0xAC)
-NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
+NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
 #ifdef NONMATCHING_C
   AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
   s32 dx;
@@ -1402,7 +1402,7 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080fd08c.inc");
+  INCFUNC("asm/func/Boku_StateDamaged.inc");
 #endif
 }
 
@@ -2207,7 +2207,7 @@ void Boku_UpdateDelayedScript(Boku* p) {
 }
 
 // デカすぎて複数の関数を1つの関数として間違って扱っている可能性がある
-// 2556/2565命令の下書き, プレイヤーへ向かう部分は FUN_080fd08c と同じ形を3回展開, 原典は &flags3 をスタックに置き状態フィールドのアドレスも作り置く (フレーム 0x100, こちらは 0xC4)
+// 2556/2565命令の下書き, プレイヤーへ向かう部分は Boku_StateDamaged と同じ形を3回展開, 原典は &flags3 をスタックに置き状態フィールドのアドレスも作り置く (フレーム 0x100, こちらは 0xC4)
 NON_MATCH bool8 FUN_08100228(Boku* p) {
 #ifdef NONMATCHING_C
   Boku* q = (p->e).unk_1cc;
@@ -3021,7 +3021,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   (p->e).unk_5a4 = FUN_080fba40;
   (p->e).unk_5c0 = FUN_080fc0b8;
   (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
-  (p->e).unk_5cc = FUN_080fd08c;
+  (p->e).unk_5cc = Boku_StateDamaged;
   (p->e).unk_5d0 = Boku_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;

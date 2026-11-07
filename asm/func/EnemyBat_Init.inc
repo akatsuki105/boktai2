@@ -1549,7 +1549,7 @@ _081421EC:
 	mov sb, r3
 	ldr r6, _08142294 @ =FUN_0813f2fc
 	mov sl, r6
-	ldr r0, _08142298 @ =FUN_0813f5fc
+	ldr r0, _08142298 @ =EnemyBat_StateDamaged
 	mov ip, r0
 	ldr r3, _0814229C @ =FUN_080f62b0
 	ldr r1, _081422A0 @ =FUN_080f62ac
@@ -1606,7 +1606,7 @@ _08142288: .4byte FUN_0814145c
 _0814228C: .4byte EnemyBat_GetMoveSpeed
 _08142290: .4byte FUN_0813f180
 _08142294: .4byte FUN_0813f2fc
-_08142298: .4byte FUN_0813f5fc
+_08142298: .4byte EnemyBat_StateDamaged
 _0814229C: .4byte FUN_080f62b0
 _081422A0: .4byte FUN_080f62ac
 _081422A4: .4byte EnemyBat_StateDying
@@ -1628,7 +1628,7 @@ _081422B0:
 	mov sb, r3
 	ldr r6, _08142450 @ =FUN_0813f2fc
 	mov sl, r6
-	ldr r0, _08142454 @ =FUN_0813f5fc
+	ldr r0, _08142454 @ =EnemyBat_StateDamaged
 	mov ip, r0
 	ldr r3, _08142458 @ =FUN_080f62b0
 	ldr r1, _0814245C @ =FUN_080f62ac
@@ -1815,7 +1815,7 @@ _08142444: .4byte FUN_0814145c
 _08142448: .4byte EnemyBat_GetMoveSpeed
 _0814244C: .4byte FUN_0813f1f0
 _08142450: .4byte FUN_0813f2fc
-_08142454: .4byte FUN_0813f5fc
+_08142454: .4byte EnemyBat_StateDamaged
 _08142458: .4byte FUN_080f62b0
 _0814245C: .4byte FUN_080f62ac
 _08142460: .4byte EnemyBat_StateDying

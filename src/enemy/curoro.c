@@ -54,7 +54,7 @@ void FUN_0813ad64(Curoro* p);
 void FUN_0813ae6c(Curoro* p);
 void FUN_0813b100(Curoro* p, s32 param_2);
 void FUN_0813b22c(Curoro* p, s32 param_2);
-void FUN_0813b358(Curoro* p);
+void Curoro_StateDamaged(Curoro* p);
 void Curoro_StateDying(Curoro* p);
 void FUN_0813b824(Curoro* p);
 void FUN_0813bb04(Curoro* p);
@@ -625,7 +625,7 @@ void FUN_0813b22c(Curoro* p, s32 param_2) {
 }
 
 // 320/327命令, 止まったかの判定の後ろで原典は値を u16 に詰めて r8 に持ち越し, 状態遷移の格納の並びも違う, 2回目の下書きで切り上げ
-NON_MATCH void FUN_0813b358(Curoro* p) {
+NON_MATCH void Curoro_StateDamaged(Curoro* p) {
 #ifdef NONMATCHING_C
   Curoro* q = (p->e).unk_1cc;
   s32 dx, dz;
@@ -686,7 +686,7 @@ NON_MATCH void FUN_0813b358(Curoro* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0813b358.inc");
+  INCFUNC("asm/func/Curoro_StateDamaged.inc");
 #endif
 }
 
@@ -1677,7 +1677,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).unk_5a4 = FUN_0813ad64;
   (p->e).unk_5c0 = NULL;
   (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
-  (p->e).unk_5cc = FUN_0813b358;
+  (p->e).unk_5cc = Curoro_StateDamaged;
   (p->e).unk_5d0 = Curoro_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;

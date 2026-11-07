@@ -359,7 +359,7 @@ NON_MATCH void Mimic_StateDying(Mimic* p) {
 }
 
 // 255/273命令, 原典はフレーム 8 バイトで unk_20c / unk_214 のアドレスや差分をスタックとレジスタに持ち越す, 1回目の下書きで切り上げ
-NON_MATCH void FUN_081477dc(Mimic* p) {
+NON_MATCH void Mimic_StateDamaged(Mimic* p) {
 #ifdef NONMATCHING_C
   s32 dx, dz;
 
@@ -411,7 +411,7 @@ NON_MATCH void FUN_081477dc(Mimic* p) {
   }
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
 #else
-  INCFUNC("asm/func/FUN_081477dc.inc");
+  INCFUNC("asm/func/Mimic_StateDamaged.inc");
 #endif
 }
 
@@ -1176,7 +1176,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   (p->e).unk_5a4 = FUN_081474e8;
   (p->e).unk_5c0 = NULL;
   (p->e).unk_5c4 = (EnemyHandler)FUN_081489ec;
-  (p->e).unk_5cc = FUN_081477dc;
+  (p->e).unk_5cc = Mimic_StateDamaged;
   (p->e).unk_5d0 = Mimic_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;

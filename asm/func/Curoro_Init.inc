@@ -1498,7 +1498,7 @@ _0813E0FC:
 	str r2, [r4]
 	ldr r5, [sp, #0x130]
 	str r3, [r5]
-	ldr r6, _0813E2C8 @ =FUN_0813b358
+	ldr r6, _0813E2C8 @ =Curoro_StateDamaged
 	ldr r0, [sp, #0x138]
 	str r6, [r0]
 	ldr r1, _0813E2CC @ =Curoro_StateDying
@@ -1665,7 +1665,7 @@ _0813E2B8: .4byte FUN_0813ac34
 _0813E2BC: .4byte FUN_0813ad64
 _0813E2C0: .4byte FUN_080f62b0
 _0813E2C4: .4byte FUN_080f62ac
-_0813E2C8: .4byte FUN_0813b358
+_0813E2C8: .4byte Curoro_StateDamaged
 _0813E2CC: .4byte Curoro_StateDying
 _0813E2D0: .4byte FUN_080f44f4
 _0813E2D4: .4byte FUN_080f410c
