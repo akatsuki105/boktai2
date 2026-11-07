@@ -155,7 +155,7 @@ NAKED void FUN_0814fba4(Dog* p) { INCFUNC("asm/func/FUN_0814fba4.inc"); }
 
 NAKED void FUN_0814fc7c(Dog* p) { INCFUNC("asm/func/FUN_0814fc7c.inc"); }
 
-NAKED void FUN_081504e8(Dog* p) { INCFUNC("asm/func/FUN_081504e8.inc"); }
+void FUN_081504e8(Dog* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad8e0; }
 
 s32 FUN_081504f8(Dog* p) {
   FUN_0814aad4(p);
