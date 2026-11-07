@@ -76,6 +76,7 @@ static inline AuxAnimState* Enemy_GetAuxAnim(Enemy* p) { return &((EnemyAuxSprit
 
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
+struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
 bool8 FUN_0814b3a0(Dog* p);
@@ -368,7 +369,24 @@ void FUN_0814b78c(Dog* p) {
   }
 }
 
-NAKED void FUN_0814b7a4(Vec3* pos) { INCFUNC("asm/func/FUN_0814b7a4.inc"); }
+// pos の周りにランダムな向きと速さで粒を1つ飛ばす
+// 残差は79/78命令, gRandTableIdx のアドレスがレジスタに載らず毎回読み直す割当の差, Entity081f9cb8_SpawnWaitEffect と同じ壁, 試済: 全部 Random(), 前半だけブロックで table, 3つとも table
+NON_MATCH void FUN_0814b7a4(Vec3* pos) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  u32 angle;
+  s32 speed;
+  u16* table = gRandomTable;
+
+  angle = _Random(table) & 0xFF;
+  speed = _Random(table) & 31;
+  Vec3_SetPolar(&vel, angle, speed);
+  vel.y = (Random() & 63) - 48;
+  Entity081ee2a0_SpawnEx(pos, &vel, 60, 3, 3);
+#else
+  INCFUNC("asm/func/FUN_0814b7a4.inc");
+#endif
+}
 
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) {
   if (Enemy_IsDead(&p->e) == 0) {
