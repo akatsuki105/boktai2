@@ -204,7 +204,7 @@ NAKED void FUN_0812f3f8(Spider* p, s32 timer) { INCFUNC("asm/func/FUN_0812f3f8.i
 
 // 倒されたときの状態, 粒子を散らしながら点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
 // 230/228命令, 原典は ENEFLAG_UNK_15 の検査で作った flags のアドレスを r6 へ写して ENEFLAG_UNK_10 の検査まで持ち越す, 試済: 検査を if で包む形, フラグの直接演算, flags のポインタのローカル (226命令で割り当て以外は揃う)
-NON_MATCH void FUN_0812f5f4(Spider* p, s32 timer) {
+NON_MATCH void Spider_StateDying(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 3);
@@ -254,7 +254,7 @@ NON_MATCH void FUN_0812f5f4(Spider* p, s32 timer) {
     ParticleShadow_Show(&(p->e).shadow);
   }
 #else
-  INCFUNC("asm/func/FUN_0812f5f4.inc");
+  INCFUNC("asm/func/Spider_StateDying.inc");
 #endif
 }
 

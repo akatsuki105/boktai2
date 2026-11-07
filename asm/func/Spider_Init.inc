@@ -1381,7 +1381,7 @@ _08131C3C:
 	str r3, [r1]
 	ldr r2, [sp, #0x168]
 	str r5, [r2]
-	ldr r3, _08131DC0 @ =FUN_0812f5f4
+	ldr r3, _08131DC0 @ =Spider_StateDying
 	ldr r5, [sp, #0x16c]
 	str r3, [r5]
 	ldr r1, _08131DC4 @ =FUN_080f44f4
@@ -1512,7 +1512,7 @@ _08131DB0: .4byte FUN_080f62ac
 _08131DB4: .4byte FUN_0812ea6c
 _08131DB8: .4byte FUN_0812ea90
 _08131DBC: .4byte FUN_0812f1b4
-_08131DC0: .4byte FUN_0812f5f4
+_08131DC0: .4byte Spider_StateDying
 _08131DC4: .4byte FUN_080f44f4
 _08131DC8: .4byte FUN_080f410c
 _08131DCC: .4byte FUN_0812f1b8
