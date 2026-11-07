@@ -162,7 +162,16 @@ void FUN_08163d94(Slime* p) {
   (p->e).subStateTimer++;
 }
 
-NAKED void FUN_08163e10(Slime* p) { INCFUNC("asm/func/FUN_08163e10.inc"); }
+void FUN_08163e10(Slime* p) {
+  if ((p->e).subStateBegun) {
+    (p->e).subStateBegun = 0;
+  }
+  if (!(p->e).unk_608(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_08162efc, ES_UNK_38);
+    Enemy_ResetState(&p->e, 3, 1, 0);
+  }
+  (p->e).subStateTimer++;
+}
 
 void FUN_08163eac(Slime* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad9c8; }
 
