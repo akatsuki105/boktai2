@@ -154,7 +154,11 @@ NAKED bool8 FUN_0814b3e0(Dog* p) { INCFUNC("asm/func/FUN_0814b3e0.inc"); }
 
 NAKED void enemy_dog_0814b500(Dog* p) { INCFUNC("asm/func/enemy_dog_0814b500.inc"); }
 
-NAKED void FUN_0814b78c(Dog* p) { INCFUNC("asm/func/FUN_0814b78c.inc"); }
+void FUN_0814b78c(Dog* p) {
+  if (p->unk_6d8 != 0) {
+    p->unk_6d8--;
+  }
+}
 
 NAKED void FUN_0814b7a4(Vec3* pos) { INCFUNC("asm/func/FUN_0814b7a4.inc"); }
 
