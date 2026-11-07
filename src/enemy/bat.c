@@ -73,7 +73,12 @@ NAKED void FUN_0813f180(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f180.inc"); }
 
 NAKED void FUN_0813f1f0(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f1f0.inc"); }
 
-NAKED void FUN_0813f268(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f268.inc"); }
+void FUN_0813f268(EnemyBat* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimWithVariant(&p->e, 15, 0);
+  }
+  (p->e).animForceRestart = FALSE;
+}
 
 NAKED void FUN_0813f2a8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f2a8.inc"); }
 

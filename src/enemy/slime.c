@@ -12,9 +12,16 @@
 // ENEID_SLIME_Y: 状態異常なし, ENEID_SLIME_G: 毒, ENEID_SLIME_P: 石化, ENEID_SLIME_B: 引火or氷結
 typedef struct {
   Enemy e;
-  u8 unk_654[1680 - sizeof(Enemy)];
+  u8 unk_654[0x68E - 0x654];  // 0x654
+  u16 unk_68e;                // 0x68E, bit4 が立っていれば分裂の SE を鳴らして落とす
+  u8 unk_690[1680 - 0x690];   // 0x690
 } Slime;
 static_assert(sizeof(Slime) == 1680);
+
+static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
+  if (p->unk_68e & bit) return TRUE;
+  return FALSE;
+}
 
 u32 Slime_PickHitAttributes(Slime* p);
 void FUN_08163b04(Slime*);
