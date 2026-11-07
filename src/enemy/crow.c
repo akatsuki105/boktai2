@@ -244,7 +244,35 @@ s32 Crow_Update(Crow* p) {
   return 0;
 }
 
-NAKED s32 Crow_Destroy(Crow* p) { INCFUNC("asm/func/Crow_Destroy.inc"); }
+s32 Crow_Destroy(Crow* p) {
+  if ((p->e).spriteKind == 0) {
+    AuxSprite_Remove((AuxSprite*)(p->e).sprite);
+  } else {
+    MainSprite_Remove(&(p->e).sprite->s);
+  }
+  Free((p->e).sprite);
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_8)) {
+    MsgQueue_Unregister(&(p->e).mq);
+  }
+  if (!(p->e).unk_44c) {
+    ParticleShadow_Remove(&(p->e).shadow);
+    (p->e).unk_44c = 1;
+  }
+  if (!(p->e).unk_44d) {
+    Eff082473e0Emitter_Destroy(&(p->e).emitter);
+    (p->e).unk_44d = 1;
+  }
+  if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
+    FUN_08002a58(&(p->e).mover);
+  }
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+    CWolfTargetManager_Unregister(&(p->e).cwolfNode);
+  }
+  Mover_Unlink(&(p->e).mover);
+  Hitbox_Unregister(&(p->e).hurtbox);
+  Enemy_Unregister(&p->e);
+  return 0;
+}
 
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Crow_Init(Crow* p) { INCFUNC("asm/func/Crow_Init.inc"); }
