@@ -316,7 +316,28 @@ void FUN_08140a10(EnemyBat* p) {
   (p->e).unk_24e = 0;
 }
 
-NAKED void FUN_08140a48(EnemyBat* p) { INCFUNC("asm/func/FUN_08140a48.inc"); }
+void FUN_08140a48(EnemyBat* p) {
+  if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    (p->e).unk_24e = 0;
+    return;
+  }
+  if ((p->e).unk_24e != 0) {
+    (p->e).unk_24e--;
+    return;
+  }
+  EnemyBat_PickRandomPathNode(p);
+  {
+    WorldPos pos;
+    WorldPos* dst = &pos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+    EnemyBat_BeginCurveMove(p, &pos);
+    FUN_08140a10(p);
+  }
+}
 
 NAKED void FUN_08140b30(EnemyBat* p) { INCFUNC("asm/func/FUN_08140b30.inc"); }
 
