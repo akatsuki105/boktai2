@@ -158,7 +158,24 @@ NAKED void FUN_08163848(Slime* p) { INCFUNC("asm/func/FUN_08163848.inc"); }
 
 NAKED void FUN_0816390c(Slime* p, s32 arg) { INCFUNC("asm/func/FUN_0816390c.inc"); }
 
-NAKED void FUN_08163b04(Slime* p) { INCFUNC("asm/func/FUN_08163b04.inc"); }
+void FUN_08163b04(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    (p->e).mover.angle = (p->e).unk_1fc;
+    Enemy_RunScript(&p->e);
+    if ((p->e).kind != ENEK_SPIDER) {
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    }
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+    (p->e).unk_24e = (p->e).unk_24c;
+  }
+  if ((p->e).subStateDone) {
+    SET_FLAGS(q->unk_68e, 4);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 void FUN_08163bac(Slime* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad9c4; }
 
