@@ -196,7 +196,22 @@ void FUN_081e0588(Entity501B* p) {
 
 NAKED void Entity501B_StateSaveDone(Entity501B* p) { INCFUNC("asm/func/Entity501B_StateSaveDone.inc"); }
 
-NAKED void Entity501B_StateSaveFailed(Entity501B* p) { INCFUNC("asm/func/Entity501B_StateSaveFailed.inc"); }
+// セーブに失敗したと伝え, 60 フレーム後からボタンでソフトリセットする
+void Entity501B_StateSaveFailed(Entity501B* p) {
+  if (p->entered) {
+    Sio_Disconnect();
+    TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
+    TextPanel_SetMessage(p->textPanels[0], 5);
+    PlaySound_082406e0(402);
+    p->stateTimer = 0;
+    p->entered = FALSE;
+  }
+  if (p->stateTimer < 60) {
+    p->stateTimer++;
+  } else if (gInput[0].pressed & (A_BUTTON | B_BUTTON | SELECT_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON)) {
+    SoftReset_0823a928();
+  }
+}
 
 NAKED void FUN_081e06d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e06d8.inc"); }
 
