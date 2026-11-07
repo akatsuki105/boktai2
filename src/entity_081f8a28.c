@@ -119,7 +119,34 @@ NON_MATCH void Entity081f8a28_SpawnTrail(Vec3* pos) {
 
 void Entity081f8a28_UpdateIdle(Entity081f8a28* p, Entity081f8a28Elem* elem) {}
 
-NAKED void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateAppear.inc"); }
+// state 1, 15 フレームかけて拡大しながら現れ, 終わったら飛行へ移る
+void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* elem) {
+  if (elem->stateBegun) {
+    elem->sprite.flags &= ~SPRFLAG_HIDDEN;
+    elem->sprite.flags |= SPRFLAG_AFFINE;
+    elem->growTime = 15;
+    elem->timer = 0;
+    elem->stateBegun = FALSE;
+    elem->sprite.scaleX = 1;
+    elem->sprite.scaleY = 1;
+  }
+  if (Mod(elem->timer, 8) == 0) {
+    Entity081f8a28_SpawnTrail(&elem->sprite.pos);
+  }
+  if (elem->growTime > 0) {
+    elem->sprite.scaleX += Div(64 - elem->sprite.scaleX, elem->growTime);
+    elem->sprite.scaleY += Div(64 - elem->sprite.scaleY, elem->growTime);
+    elem->growTime--;
+  }
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  if (elem->growTime <= 0) {
+    elem->state = 2;
+    elem->sprite.flags &= ~SPRFLAG_AFFINE;
+    elem->stateBegun = TRUE;
+  } else {
+    elem->timer++;
+  }
+}
 
 NAKED void Entity081f8a28_UpdateFly(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateFly.inc"); }
 
