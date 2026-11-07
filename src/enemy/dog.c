@@ -207,7 +207,28 @@ void Dog_InitAnims(Dog* p) {
   Enemy_SetAnimEntry(&p->e, 10, 12, 0);
 }
 
-NAKED void Dog_OnReset(Dog* p) { INCFUNC("asm/func/Dog_OnReset.inc"); }
+// 復帰時に作業値を消して経路の次のノードへ向き直り, 待機アニメを流して1コマ送る
+// 残差1命令, 原典は p->sprite を r0 に読んでから r5 へ移す (Slime_OnReset / Boku_OnReset / Mimic_OnReset と同じ壁)
+NON_MATCH void Dog_OnReset(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+  EnemyAuxSpriteData* aux;
+
+  q->unk_6a8 = 0;
+  q->unk_6c0 = 0;
+  q->unk_6d0 = -1;
+  q->unk_6d4 = 0;
+  q->unk_6d6 = 0;
+  q->unk_6d7 = 0;
+  ClearMemory(&q->unk_708, sizeof(Vec3));
+  Enemy_StepTowardPathNode(&p->e);
+  Enemy_PlayAnim(&p->e, 0);
+  aux = (EnemyAuxSpriteData*)(p->e).sprite;
+  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+#else
+  INCFUNC("asm/func/Dog_OnReset.inc");
+#endif
+}
 
 void FUN_0814a8c8(Dog* p) { CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_1); }
 
