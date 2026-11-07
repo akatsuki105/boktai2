@@ -390,7 +390,23 @@ NAKED void FUN_081e06d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e06d8.inc"); }
 
 NAKED void FUN_081e084c(Entity501B* p) { INCFUNC("asm/func/FUN_081e084c.inc"); }
 
-NAKED void FUN_081e0a18(Entity501B* p) { INCFUNC("asm/func/FUN_081e0a18.inc"); }
+// 待ちの間は上段の数字を回し, ボタンで待ちを飛ばし, 待ちが切れたら次の状態へ移る
+void FUN_081e0a18(Entity501B* p) {
+  if (p->entered) {
+    p->stateTimer = 0;
+    p->entered = FALSE;
+  }
+  if (p->timer == 0) {
+    Entity501B_SetState(p, FUN_081e084c, 1);
+  } else {
+    if (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON)) {
+      p->timer = 1;
+    }
+    FUN_081e02ac(p);
+    FUN_081e02ec(p);
+    p->stateTimer++;
+  }
+}
 
 s32 Entity501B_Update(Entity501B* p) {
   if (!FUN_081dfa04()) {
