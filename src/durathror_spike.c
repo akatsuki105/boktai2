@@ -50,7 +50,29 @@ void Entity0805d79c_ReleaseElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32
   p->activeMask &= ~(1 << idx);
 }
 
-NAKED s32 Entity0805d79c_Update(Entity0805d79c* p) { INCFUNC("asm/func/Entity0805d79c_Update.inc"); }
+// 使用中の棘を進めて攻撃判定を出し, 60 フレーム経ったら消す
+s32 Entity0805d79c_Update(Entity0805d79c* p) {
+  Entity0805d79cElem* elem = p->elems;
+  Entity0805d79cElem* e = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, elem++, e++) {
+    if (p->activeMask & (1 << i)) {
+      HitboxData* hitbox = &e->hitbox;
+      Vec3* pos = &e->sprite.pos;
+
+      Vec3_Sum(&elem->sprite.pos, &elem->sprite.pos, &elem->vel);
+      Hitbox_SetPos(hitbox, pos, 0);
+      Hitbox_Register(hitbox);
+      if (elem->timer >= 60) {
+        Entity0805d79c_ReleaseElem(p, e, i);
+      } else {
+        elem->timer++;
+      }
+    }
+  }
+  return 0;
+}
 
 s32 Entity0805d79c_Destroy(Entity0805d79c* p) {
   Entity0805d79cElem* elem = p->elems;
