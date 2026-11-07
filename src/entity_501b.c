@@ -113,7 +113,15 @@ NAKED void Entity501B_SetNumber(Entity501B* p, s32 row, s32 value) { INCFUNC("as
 
 NAKED void Entity501B_SpinNumber(Entity501B* p, s32 row) { INCFUNC("asm/func/Entity501B_SpinNumber.inc"); }
 
-NAKED void FUN_081e02ac(Entity501B* p) { INCFUNC("asm/func/FUN_081e02ac.inc"); }
+// 1フレームおきにカウントアップの音を鳴らし, 待ちが残っていれば上段の数字を回す
+void FUN_081e02ac(Entity501B* p) {
+  if (Mod(p->stateTimer, 2) == 0) {
+    PlaySound_082406e0(SE_COUNT_UP);
+  }
+  if (p->timer != 0) {
+    Entity501B_SpinNumber(p, 0);
+  }
+}
 
 NAKED void FUN_081e02ec(Entity501B* p) { INCFUNC("asm/func/FUN_081e02ec.inc"); }
 
