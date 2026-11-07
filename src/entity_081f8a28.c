@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "player.h"
 #include "random.h"
 #include "shadow.h"
@@ -181,7 +182,57 @@ void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* elem) {
   }
 }
 
-NAKED void Entity081f8a28_UpdateFly(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateFly.inc"); }
+// state 2, 目標へ曲がりながら加速して飛び, 地形にぶつかるか寿命が尽きたら爆発へ移る
+void Entity081f8a28_UpdateFly(Entity081f8a28* p, Entity081f8a28Elem* elem) {
+  Vec3 v;
+  s32 distSq;
+  s32 height;
+
+  if (elem->stateBegun) {
+    elem->timer = 0;
+    elem->accel = 1;
+    AuxShadow_Show(&elem->shadow);
+    elem->stateBegun = FALSE;
+  }
+  elem->sprite.rotation = -elem->angle;
+  Vec3_Delta(&v, &elem->sprite.pos, &elem->target);
+  distSq = v.x * v.x + v.z * v.z;
+  Entity081f8a28_TurnToTarget(elem);
+  elem->vel.x = POLAR_X(elem->speed, elem->angle);
+  elem->vel.z = POLAR_Z(elem->speed, elem->angle);
+  Vec3_Sum(&v, &elem->sprite.pos, &elem->vel);
+  height = (TileAtIndex(GetCollisionTileIdx(&v))->heightStairs & 0xF) << 8;
+  if (height >= elem->sprite.pos.y || height == 0) {
+    elem->state = 3;
+    elem->stateBegun = TRUE;
+    return;
+  }
+  Vec3_Sum(&elem->sprite.pos, &elem->vel, &elem->sprite.pos);
+  if (Mod(elem->timer, 6) == 0) {
+    if (elem->speed < elem->maxSpeed) {
+      elem->speed += elem->accel;
+      elem->accel += 4;
+    } else {
+      elem->speed = elem->maxSpeed;
+    }
+  }
+  if (elem->lifetime < 60 || (elem->timer > 40 && distSq < 0x40000)) {
+    elem->vel.y -= 3;
+    elem->homingTime = 0;
+  }
+  if (Mod(elem->timer, 8) == 0) {
+    Entity081f8a28_SpawnTrail(&elem->sprite.pos);
+  }
+  Entity081f8a28_UpdateHitbox(elem);
+  elem->timer++;
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  if (elem->lifetime > 0) {
+    elem->lifetime--;
+  } else {
+    elem->state = 3;
+    elem->stateBegun = TRUE;
+  }
+}
 
 // 爆発の攻撃判定を出して自分を片付ける
 void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) {
