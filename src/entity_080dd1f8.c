@@ -4,20 +4,30 @@
 #include "hitbox.h"
 #include "player.h"
 #include "shadow.h"
+#include "sound.h"
 #include "sprite.h"
 #include "trig.h"
 #include "vec3.h"
 
 typedef struct {
   AuxSprite spr;              // 0x000, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0xB0];            // 0x02C
+  AuxAnimState anim;          // 0x02C
+  HitboxData hitbox;          // 0x03C, 攻撃判定, 当たると FUN_080dc4a8 で弾かれる
+  HitboxData hurtbox;         // 0x08C, 食らい判定, FUN_080dc614 で炎と氷に反応する
   ParticleShadow shadow;      // 0x0DC, _Destroy が ParticleShadow_Remove に渡す
-  u8 unk_11c[0x12E - 0x11C];  // 0x11C
-  u8 unk_12e;                 // 0x12E, 2 だと FUN_080dd324 が 0 を返す
-  s8 unk_12f;                 // 0x12F, 負だと FUN_080dd324 が 0 を返す
-  u8 unk_130[2];              // 0x130
+  Vec3 vel;                   // 0x11C, 弾かれると FUN_080dc4a8 が書き換える
+  u8 unk_124[0x12C - 0x124];  // 0x124
+  u16 unk_12c;                // 0x12C, 爆発で片付けるときに 0
+  u8 unk_12e;                 // 0x12E, PTR_ARRAY_085ad33c の添字, 2 だと FUN_080dd324 が 0 を返す
+  s8 unk_12f;                 // 0x12F, activeMask 上の自分のビット番号, 空きは -1, 負だと FUN_080dd324 が 0 を返す
+  bool8 unk_130;              // 0x130, 立っていると FUN_080dcdd8 が爆発を出してから片付ける
+  u8 unk_131;                 // 0x131, 弾かれると 12
   u16 unk_132;                // 0x132, 0 だと FUN_080dd324 が 0 を返す, 0x59 を超えていると unk_13e に戻される
-  u8 unk_134[0x13E - 0x134];  // 0x134
+  u8 unk_134[2];              // 0x134
+  u16 unk_136;                // 0x136, Explosion_Create の power
+  u16 unk_138;                // 0x138, Explosion_Create の knockback
+  u8 unk_13a[2];              // 0x13A
+  u16 unk_13c;                // 0x13C, 攻撃判定と食らい判定の id, FUN_08240cf0 の第6引数
   u16 unk_13e;                // 0x13E, unk_132 の戻し先の値
   u8 unk_140[0x144 - 0x140];  // 0x140
 } Entity080dd1f8Elem;
@@ -34,6 +44,10 @@ static_assert(sizeof(Entity080dd1f8) == 3948);
 
 IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 
+struct Explosion* Explosion_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, s32 plttOffset);
+void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
+void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem);
+
 const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
 
 static inline bool8 Entity080dd1f8_IsElemUsed(u32* mask, s32 i) {
@@ -43,7 +57,32 @@ static inline bool8 Entity080dd1f8_IsElemUsed(u32* mask, s32 i) {
 
 void FUN_080dc4a4(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {}
 
-NAKED void FUN_080dc4a8(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dc4a8.inc"); }
+// 攻撃判定が当たったら当てた相手から離れる向きへ弾かれる, 相手より上なら跳ね上がり, そうでなければ横へ押される
+void FUN_080dc4a8(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
+  Vec3 diff;
+  Vec3 v;
+  s32 angle;
+
+  Vec3_Delta(&diff, &b->pos, &a->pos);
+  angle = ArcTan2_8(diff.x, diff.z);
+  angle = ((angle + 16) & 0xFF) >> 5 << 5;
+  if (diff.y > 0) {
+    Vec3_SetPolar(&v, angle, 4);
+    v.y = -4;
+    elem->vel.x = v.x;
+    elem->vel.y = v.y;
+    elem->vel.z = v.z;
+  } else {
+    Vec3_SetPolar(&v, angle, 18);
+    v.y = 32;
+    elem->vel.x += v.x;
+    elem->vel.y += v.y;
+    elem->vel.z += v.z;
+  }
+  elem->spr.pos.y++;
+  elem->unk_131 = 12;
+  PlaySound_082406e0(358);
+}
 
 // 判定の属性でタイマーを止めるか初期値に戻すかを決める
 // 残差2命令 (28 対 30), 原典は elem を r12 に逃がして第2分岐で add r1, ip を使うが, こちらは r3 に置けてしまう (leaf なので r4-r7 は使えない)
@@ -62,7 +101,7 @@ NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* el
 #endif
 }
 
-NAKED void FUN_080dc650(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dc650.inc"); }
+NAKED void FUN_080dc650(Entity080dd1f8Elem* elem, u16 power, u16 knockback) { INCFUNC("asm/func/FUN_080dc650.inc"); }
 
 Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) {
   s32 i;
