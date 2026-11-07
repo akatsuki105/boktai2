@@ -1489,9 +1489,7 @@ NON_MATCH void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) {
 }
 
 // navTarget へナビメッシュで歩かせ, 目的地に近づいたら終える, MainSprite の足を出すコマでだけ 48 進む
-// 下書き (197/218命令): 呼び出しの並びは一致, 目的地までの距離と1歩の組み立てが違う
-NON_MATCH void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) {
-#ifdef NONMATCHING_C
+void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) {
   Mover* mover = &actor->mover;
   NavAgent* nav = &actor->navAgent;
   SpriteHolder* sprite = &actor->sprite;
@@ -1511,30 +1509,36 @@ NON_MATCH void FUN_08042f34(ActorManager* p, Actor* actor, s32 elapsed) {
   }
 
   {
+    Vec3* pos = &actor->mover.pos;
+    Vec3* dest = &nav->dest;
     s32 dx = nav->dest.x - mover->pos.x;
-    s32 dz = nav->dest.z - mover->pos.z;
+    s32 dz = dest->z - pos->z;
 
     if (dx * dx + dz * dz <= 2499) {
-      mover->pos.x = nav->waypoint.x;
-      mover->pos.z = nav->waypoint.z;
+      mover->pos.x = actor->navAgent.waypoint.x;
+      mover->pos.z = actor->navAgent.waypoint.z;
       actor->unk_07 = 1;
-    } else if (sprite->kind == 2 && (sprite->u.main.sprite.animEvents & 4)) {
-      Vec3 step;
-      u16 angle = mover->angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, nav->waypoint.z - mover->pos.z);
+    } else if (sprite->kind == 2) {
+      MainSprite* main = &sprite->u.main.sprite;
 
-      actor->unk_1a = Angle_ToDir8(angle);
-      actor->unk_19 = Angle_ToDir4(angle);
-      Vec3_SetPolar(&step, mover->angle, 48);
-      mover->pos.x += step.x;
-      mover->pos.z += step.z;
+      if (main->animEvents & 4) {
+        Vec3 step;
+        s32 angle;
+        Vec3* wp = &nav->waypoint;
+
+        angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, wp->z - pos->z);
+        actor->mover.angle = angle;
+        actor->unk_1a = Angle_ToDir8(angle);
+        actor->unk_19 = Angle_ToDir4(angle);
+        Vec3_SetPolar(&step, mover->angle, 48);
+        mover->pos.x += step.x;
+        mover->pos.z += step.z;
+      }
     }
   }
   Map_StepNavPath(nav, &actor->mover.pos);
   FUN_080414fc(actor, 1);
   FUN_08041480(actor, 1, 1, 0, 1);
-#else
-  INCFUNC("asm/func/FUN_08042f34.inc");
-#endif
 }
 
 // 経路の最初のノードへナビメッシュで歩かせ, 近づいたら終える, MainSprite の足を出すコマでだけ 24/48 進む
