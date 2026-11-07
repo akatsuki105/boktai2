@@ -1,8 +1,14 @@
 #include "bg_pltt.h"
 #include "entity.h"
+#include "entity_9a9f.h"
+#include "file.h"
 #include "global.h"
+#include "input.h"
+#include "sound.h"
 #include "sprite.h"
+#include "text.h"
 #include "tilemap.h"
+#include "video.h"
 
 // 通信対戦のスコア精算画面, 稼いだ点を1フレームずつ所持スコアへ移していく
 typedef struct Entity501B {
@@ -34,6 +40,29 @@ typedef struct Entity501B {
 } Entity501B;
 static_assert(sizeof(Entity501B) == 1004);
 
+u8 Save_SwitchSlot(void);
+s32 FUN_081dfa04(void);
+void FUN_081e0588(Entity501B* p);
+void Entity501B_StateSaveDone(Entity501B* p);
+void Entity501B_StateSaveFailed(Entity501B* p);
+
+// セッションの状態を返す, セッションが無ければ -1
+static inline s32 Entity9A9F_GetState(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->state;
+}
+
+// 状態関数を差し替えて, 切り替え直後の1フレームだけ立つフラグを付ける
+static inline void Entity501B_SetState(Entity501B* p, void* fn, u8 phase) {
+  p->updateCallback = fn;
+  p->entered = TRUE;
+  p->phase = phase;
+}
+
 NAKED void Entity501B_InitBg(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitBg.inc"); }
 
 NAKED void Entity501B_InitTextPanels(Entity501B* p) { INCFUNC("asm/func/Entity501B_InitTextPanels.inc"); }
@@ -54,7 +83,13 @@ NAKED void Entity501B_InitSpritePos(Entity501B* p) { INCFUNC("asm/func/Entity501
 
 NAKED void Entity501B_HideSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_HideSprites.inc"); }
 
-NAKED void Entity501B_RemoveSprites(Entity501B* p) { INCFUNC("asm/func/Entity501B_RemoveSprites.inc"); }
+void Entity501B_RemoveSprites(Entity501B* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    MainSprite_Remove(&p->digits[i]);
+  }
+}
 
 NAKED void Entity501B_SetNumber(Entity501B* p, s32 row, s32 value) { INCFUNC("asm/func/Entity501B_SetNumber.inc"); }
 
