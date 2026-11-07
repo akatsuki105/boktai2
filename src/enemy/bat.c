@@ -135,7 +135,7 @@ NAKED void FUN_08140eb0(EnemyBat* p) { INCFUNC("asm/func/FUN_08140eb0.inc"); }
 
 NAKED void FUN_081410cc(EnemyBat* p) { INCFUNC("asm/func/FUN_081410cc.inc"); }
 
-NAKED void FUN_08141448(EnemyBat* p) { INCFUNC("asm/func/FUN_08141448.inc"); }
+void FUN_08141448(EnemyBat* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad804; }
 
 NAKED s32 FUN_0814145c(EnemyBat* p) { INCFUNC("asm/func/FUN_0814145c.inc"); }
 
