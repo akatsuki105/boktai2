@@ -152,7 +152,18 @@ NAKED void FUN_0812f840(Spider* p) { INCFUNC("asm/func/FUN_0812f840.inc"); }
 
 NAKED void FUN_0812f9ec(Spider* p) { INCFUNC("asm/func/FUN_0812f9ec.inc"); }
 
-NAKED void FUN_0812fbec(Spider* p) { INCFUNC("asm/func/FUN_0812fbec.inc"); }
+void FUN_0812fbec(Spider* p) {
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+  } else if (!(p->e).unk_608(&p->e)) {
+    if ((p->e).subStateDone) {
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    } else {
+      (p->e).subStateTimer++;
+    }
+  }
+}
 
 void FUN_0812fcd8(Spider* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
