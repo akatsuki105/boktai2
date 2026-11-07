@@ -640,7 +640,18 @@ NAKED void FUN_080428b8(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("a
 
 NAKED void FUN_08042a48(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042a48.inc"); }
 
-NAKED void FUN_08042cf0(ActorManager* p, Actor* actor, s32 param_3) { INCFUNC("asm/func/FUN_08042cf0.inc"); }
+void FUN_08042cf0(ActorManager* p, Actor* actor, s32 elapsed) {
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 0, 1, 0, 4);
+    actor->unk_1ec = 1;
+  }
+  SET_FLAGS(actor->flags, ACTORFLAG_UNK_12);
+  if ((u8)actor->fn(actor) != 1 && elapsed > 7) {
+    actor->unk_07 = 1;
+  }
+}
 
 NAKED void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042d50.inc"); }
 
