@@ -46,7 +46,7 @@ typedef u32 EnemyFlags;
 #define ENEFLAG_UNK_7 (1 << 7)    // 0x00000080, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_8 (1 << 8)    // 0x00000100, FUN_080f46a4 がまとめて落とす
 #define ENEFLAG_UNK_9 (1 << 9)    // 0x00000200, Mimic_Init が立てる
-#define ENEFLAG_UNK_10 (1 << 10)  // 0x00000400, Enemy_StateFallDeath が状態23へ移すときに立てる
+#define ENEFLAG_UNK_10 (1 << 10)  // 0x00000400, Enemy_StateFallDeath が ES_DEFEATED へ移すときに立てる
 #define ENEFLAG_UNK_12 (1 << 12)  // 0x00001000, Enemy_KillAll / EnemyManager_UpdateEnemies が立てる
 #define ENEFLAG_UNK_13 (1 << 13)  // 0x00002000, Cmd_1E97 が立てる
 #define ENEFLAG_UNK_14 (1 << 14)  // 0x00004000, FUN_080f46a4 がまとめて落とす
@@ -65,10 +65,10 @@ typedef u32 EnemyFlags;
 // Enemy.flags2 (0x17C)
 typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_0 (1 << 0)    // 0x00000001, FUN_080f56ec が立っていればエモートを 2 番にして落とす
-#define ENEFLAG2_UNK_1 (1 << 1)    // 0x00000002, FUN_080f6c74 が状態29へ入るときに落とす
+#define ENEFLAG2_UNK_1 (1 << 1)    // 0x00000002, FUN_080f6c74 が ES_UNK_29 へ入るときに落とす
 #define ENEFLAG2_UNK_2 (1 << 2)    // 0x00000004, 立っていると FUN_080f84d4 が反応しない
 #define ENEFLAG2_UNK_3 (1 << 3)    // 0x00000008, Mimic_Init が立てる
-#define ENEFLAG2_UNK_4 (1 << 4)    // 0x00000010, Enemy_StateBlownAway が立っているときだけ状態14へ遷移する
+#define ENEFLAG2_UNK_4 (1 << 4)    // 0x00000010, Enemy_StateBlownAway が立っているときだけ ES_UNK_14 へ遷移する
 #define ENEFLAG2_UNK_5 (1 << 5)    // 0x00000020, FUN_080f2864 が下位状態の終わりで立て, 経路ノードを進めるときに落とす
 #define ENEFLAG2_UNK_9 (1 << 9)    // 0x00000200, Enemy_SetEmote が FUN_080d9cec に 0/1 で渡す
 #define ENEFLAG2_UNK_10 (1 << 10)  // 0x00000400, Curoro_Init が立てる
@@ -81,7 +81,7 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_15 (1 << 15)  // 0x00008000, 立っていると Enemy_Alert が見つかった回数を数えない
 #define ENEFLAG2_UNK_16 (1 << 16)  // 0x00010000, Enemy_UpdateMovement がアニメの頭で IsInPuddle を呼んで落とす
 #define ENEFLAG2_UNK_17 (1 << 17)  // 0x00020000, Enemy_CountAlive / Enemy_GetFirstAlive が「数えない敵」の判定に使う
-#define ENEFLAG2_UNK_18 (1 << 18)  // 0x00040000, FUN_080e6978 が状態21へ入るときに立てる
+#define ENEFLAG2_UNK_18 (1 << 18)  // 0x00040000, FUN_080e6978 が ES_UNK_21 へ入るときに立てる
 #define ENEFLAG2_UNK_19 (1 << 19)  // 0x00080000, FUN_080f44f4 が立てる
 #define ENEFLAG2_UNK_20 (1 << 20)  // 0x00100000, 立っていると Enemy_UpdateJump が落下させず水平に滑らせる
 #define ENEFLAG2_UNK_21 (1 << 21)  // 0x00200000, EnemyManager_UpdateEnemies がパレット転送の向きとして反転させる
@@ -89,7 +89,7 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_24 (1 << 24)  // 0x01000000, Cmd_1E97 が落とす
 #define ENEFLAG2_UNK_25 (1 << 25)  // 0x02000000, Enemy_Register が見る
 #define ENEFLAG2_UNK_26 (1 << 26)  // 0x04000000, Cmd_E1C6 が '.f' で立て下げする
-#define ENEFLAG2_UNK_27 (1 << 27)  // 0x08000000, FUN_080f6c74 が立っているときだけ状態29へ移す
+#define ENEFLAG2_UNK_27 (1 << 27)  // 0x08000000, FUN_080f6c74 が立っているときだけ ES_UNK_29 へ移す
 
 // Enemy.flags3 (0x180)
 typedef u16 EnemyFlags3;
@@ -348,7 +348,7 @@ typedef struct Enemy {
   u8 unk_541;                       // 0x541, FUN_080f0e78 が unk_1dc から作る向き
   u8 unk_542;                       // 0x542, Enemy_Alert が 0xFF を書く
   u8 unk_543;                       // 0x543
-  u16 unk_544;                      // 0x544, 0 でなければ FUN_080f0430 が状態16へ移らない
+  u16 unk_544;                      // 0x544, 0 でなければ FUN_080f0430 が ES_INACTIVE へ移らない
   u16 unk_546;                      // 0x546, maxHp の 1/4, Cmd_F200 が書く
   void* unk_548;                    // 0x548, FUN_080f0e78 が退避する handlerState
   u8 unk_54c;                       // 0x54C, 同じく subState0
@@ -359,7 +359,7 @@ typedef struct Enemy {
   u8 pendingSubState1;              // 0x551, 同じく subState1 へ
   u8 pendingSubState2;              // 0x552, 同じく subState2 へ
   u8 state;                         // 0x553, 状態番号, handlerState と同時に書き換えられる, see ES_*
-  s32 pendingDelay;                 // 0x554, 状態14で予約した状態へ移るまでの待ちフレーム数, Enemy_WaitPendingState が状態の経過フレームと比べる
+  s32 pendingDelay;                 // 0x554, ES_UNK_14 で予約した状態へ移るまでの待ちフレーム数, Enemy_WaitPendingState が状態の経過フレームと比べる
   void* pendingHandler;             // 0x558, 待ちが明けたとき handlerState へ写される
   u32 unk_55c;                      // 0x55C, flags の初期値, Enemy_Reset が flags へそのままコピーする
   u32 unk_560;                      // 0x560, flags2 の初期値, 同じく flags2 へコピーされる
@@ -376,33 +376,33 @@ typedef struct Enemy {
   void* handlerState;               // 0x578, 状態ハンドラ, Thumb のコードアドレスが入る
   EnemyMsgHandler handlerMsg;       // 0x57C, Enemy_BroadcastMsg/080ec79c/080ec848 が (enemy, payload) で呼ぶ
   EnemyHandler unk_580;             // 0x580, Enemy_Update が (unk_1cc) で毎フレーム呼ぶ
-  void* unk_584;                    // 0x584, 状態12のハンドラ, FUN_080f0868 が handlerState へ写す
+  void* unk_584;                    // 0x584, ES_UNK_12 のハンドラ, FUN_080f0868 が handlerState へ写す
   s32 (*unk_588)(struct Enemy*);    // 0x588, fn(p), FUN_080f1ef8 が移動の速さとして使う
   bool8 (*unk_58c)(struct Enemy*);  // 0x58C, fn(p), FUN_080f6604 が hp が残っているときに呼んで結果を返す
   void* unk_590;                    // 0x590, 状態ハンドラの控え, FUN_080f2074 が handlerState へ写す
   void* unk_594;                    // 0x594, Enemy_Sleep が非NULLのときだけ動く
-  void* unk_598;                    // 0x598, 状態8のハンドラ, FUN_080f56ec が止まったときに handlerState へ写す
+  void* unk_598;                    // 0x598, ES_UNK_8 のハンドラ, FUN_080f56ec が止まったときに handlerState へ写す
   void* unk_59c;                    // 0x59C, 状態ハンドラの控え, FUN_080f5b34 が handlerState へ写す
-  void* unk_5a0;                    // 0x5A0, 状態1のハンドラ, FUN_080f1ef8 が入場時に handlerState へ写す
+  void* unk_5a0;                    // 0x5A0, ES_UNK_1 のハンドラ, FUN_080f1ef8 が入場時に handlerState へ写す
   void* unk_5a4;                    // 0x5A4, 状態ハンドラの控え, FUN_080f1e78 が handlerState へ写す
-  void* unk_5a8;                    // 0x5A8, 状態19のハンドラ, FUN_080f2d04 が handlerState へ写す
+  void* unk_5a8;                    // 0x5A8, ES_UNK_19 のハンドラ, FUN_080f2d04 が handlerState へ写す
   EnemyHandler unk_5ac;             // 0x5AC, fn(p), Enemy_ProcessRequests が ENEFLAG4_UNK_7 のときに呼ぶ
   EnemyHandler unk_5b0;             // 0x5B0, fn(p), Enemy_ProcessRequests が ENEFLAG4_UNK_8 のときに呼ぶ
   EnemyHandler unk_5b4;             // 0x5B4, fn(p), Enemy_UpdateJump が着地したときに呼ぶ
-  void* unk_5b8;                    // 0x5B8, 状態26のハンドラ, FUN_080f11d0 が handlerState へ写す
-  void* unk_5bc;                    // 0x5BC, 状態27のハンドラ, FUN_080f0e78 が handlerState へ写す
+  void* unk_5b8;                    // 0x5B8, ES_UNK_26 のハンドラ, FUN_080f11d0 が handlerState へ写す
+  void* unk_5bc;                    // 0x5BC, ES_UNK_27 のハンドラ, FUN_080f0e78 が handlerState へ写す
   void* unk_5c0;                    // 0x5C0, 既定の状態ハンドラ, Cmd_7659 が handlerState へコピーする
   EnemyHandler unk_5c4;             // 0x5C4, fn(p), FUN_080faa98 が座標の検索に失敗したときだけ呼ぶ
-  void* unk_5c8;                    // 0x5C8, 状態9のハンドラ, FUN_080f84d4 が handlerState へ写す
-  void* unk_5cc;                    // 0x5CC, 状態18のハンドラ, Enemy_OnDamaged / FUN_080f8400 が handlerState へ写す
-  void* unk_5d0;                    // 0x5D0, 状態17のハンドラ
-  void* unk_5d4;                    // 0x5D4, 状態21のハンドラ, FUN_080e6978 が handlerState へ写す
-  void* unk_5d8;                    // 0x5D8, 状態22のハンドラ, NULL なら Enemy_StateFallDeath
+  void* unk_5c8;                    // 0x5C8, ES_UNK_9 のハンドラ, FUN_080f84d4 が handlerState へ写す
+  void* unk_5cc;                    // 0x5CC, ES_DAMAGED のハンドラ, Enemy_OnDamaged / FUN_080f8400 が handlerState へ写す
+  void* unk_5d0;                    // 0x5D0, ES_DYING のハンドラ
+  void* unk_5d4;                    // 0x5D4, ES_UNK_21 のハンドラ, FUN_080e6978 が handlerState へ写す
+  void* unk_5d8;                    // 0x5D8, ES_UNK_22 のハンドラ, NULL なら Enemy_StateFallDeath
   void* unk_5dc;                    // 0x5DC
   void* unk_5e0;                    // 0x5E0
   void* unk_5e4;                    // 0x5E4
-  void* unk_5e8;                    // 0x5E8, 状態25のハンドラ, FUN_080f2ec0 が攻撃対象に近づいたとき handlerState へ写す
-  void* unk_5ec;                    // 0x5EC, 状態32のハンドラ, Enemy_OnCWolfMessage が吹き飛ばしの通知で handlerState へ写す
+  void* unk_5e8;                    // 0x5E8, ES_ATTACK のハンドラ, FUN_080f2ec0 が攻撃対象に近づいたとき handlerState へ写す
+  void* unk_5ec;                    // 0x5EC, ES_BLOWN_AWAY のハンドラ, Enemy_OnCWolfMessage が吹き飛ばしの通知で handlerState へ写す
   EnemyHandler unk_5f0;             // 0x5F0, fn(p), FUN_080e72b0 がアニメの再生し直しの合図で呼ぶ
   u8 unk_5f4[0x5F8 - 0x5F4];        // 0x5F4
   EnemyHandler onReset;             // 0x5F8, fn(p), Enemy_Reset が呼ぶ
