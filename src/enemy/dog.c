@@ -134,7 +134,13 @@ void FUN_0814ae80(Dog* p) {
   }
 }
 
-NAKED void FUN_0814aeb0(Dog* p) { INCFUNC("asm/func/FUN_0814aeb0.inc"); }
+void FUN_0814aeb0(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (q->unk_6c6 != 0) {
+    q->unk_6c6--;
+  }
+}
 
 NAKED void FUN_0814aed0(Dog* p) { INCFUNC("asm/func/FUN_0814aed0.inc"); }
 
