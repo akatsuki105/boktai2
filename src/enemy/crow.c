@@ -165,7 +165,17 @@ NAKED void FUN_08143fac(Crow* p) { INCFUNC("asm/func/FUN_08143fac.inc"); }
 
 void FUN_0814414c(Crow* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad828; }
 
-NAKED void FUN_08144160(Crow* p, u16* msg) { INCFUNC("asm/func/FUN_08144160.inc"); }
+void FUN_08144160(Crow* p, u16* msg) {
+  if (!Enemy_IsDead(&p->e) && gPlayerPtr[0] != NULL) {
+    Crow* q = (p->e).unk_1cc;
+
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 0, 3);
+    CLEAR_FLAGS(q->unk_658, 4);
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+  }
+}
 
 NAKED void Crow_OnReset(Crow* p) { INCFUNC("asm/func/Crow_OnReset.inc"); }
 
