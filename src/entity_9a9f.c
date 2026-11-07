@@ -23,13 +23,18 @@ s32 FUN_081de9d8(Entity9A9F*);
 s32 FUN_081de360(Entity9A9F*);
 s32 FUN_081de844(Entity9A9F*);
 s32 FUN_081de960(Entity9A9F*);
-void FUN_081df568(Entity9A9F* p);
+s32 FUN_081df568(Entity9A9F* p);
 s32 FUN_081df62c(Entity9A9F* p);
 void EntityCF58_RequestKill(void);
 s32 MainMenu_SetHudMode(s32 mode);
 s32 Taiyo_LxToGauge(s32 lx);
 void FUN_08238c24(void);
 s32 FUN_081de2dc(Entity9A9F* p);
+s32 FUN_081df604(Entity9A9F* p);
+s32 FUN_081debd4(Entity9A9F* p);
+s32 FUN_081df720(s32 n);
+extern bool32 gSoftResetInhibit;
+bool8 MessageWindow_IsOpen(void);
 
 static inline bool8 Entity9A9F_IsIdle(Entity9A9F* p) {
   if (p->state == 0) return TRUE;
@@ -47,6 +52,14 @@ static inline u16 Entity9A9F_GetRecvKey(Entity9A9F* p, s32 idx) {
 // データを運ぶキーか (bit10..13 が 0b0010)
 static inline bool8 Entity9A9F_IsDataKey(u16 key) {
   if ((key & 0x3C00) == 0x800) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が kind か
+static inline bool8 Entity9A9F_IsKeyKind(u16 key, u16 kind) {
+  if ((key & 0x3C00) == kind) {
     return TRUE;
   }
   return FALSE;
@@ -345,7 +358,35 @@ NON_MATCH void FUN_081de0dc(Entity9A9F* p) {
 #endif
 }
 
-NAKED s32 FUN_081de130(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de130.inc"); }
+// 切断を知らせる画面を出し, メッセージ窓が開いたら終了のメッセージを流す
+s32 FUN_081de130(Entity9A9F* p) {
+  if ((u8)FUN_081dd9d4(p)) {
+    gUseLinkInput = FALSE;
+    SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+    p->unk_54[1] = 0;
+    p->unk_42 = 0x4000;
+    p->windowID = TextPanel_Create(1, 7, 28, 6);
+    Sound_FadeOutBGM(1);
+    Marquee_CloseGlobal();
+    ClearBGTilemapBuffer(0);
+  }
+
+  if (p->unk_54[1] == 0 && MessageWindow_IsOpen()) {
+    p->unk_54[1] = 1;
+    MainMenu_SetHudMode(5);
+    TextPanel_SetScript(p->windowID, p->unk_2ec);
+    TextPanel_SetMessage(p->windowID, 2);
+    TextPanel_Start(p->windowID);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
+    Video_ResetFrameState(1);
+  }
+
+  Video_SetDrawPasses(0, nop_0822e738, nop_0822b09c, FUN_0822f584);
+  if (p->stateTimer < 30) {
+    gSoftResetInhibit = TRUE;
+  }
+  return 0;
+}
 
 // 残差は最後の 0 代入のレジスタのみ (原典 r0 / こちら r1), 命令列は 25 対 25 で一致
 // 値を返す宣言 + return 無しで FUN_081dd9d4 の戻り値が r0 を塞ぐ形までは再現できたが、末尾の 0 共有が合わない
@@ -550,7 +591,7 @@ s32 FUN_081df540(Entity9A9F* p) {
   }
 }
 
-NAKED void FUN_081df568(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df568.inc"); }
+NAKED s32 FUN_081df568(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df568.inc"); }
 
 s32 FUN_081df604(Entity9A9F* p) {
   FUN_081dd9d4(p);
