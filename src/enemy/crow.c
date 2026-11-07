@@ -129,7 +129,12 @@ s32 Crow_GetMoveSpeed(Crow* p) {
   return u32_ARRAY_085ad83c[i];
 }
 
-NAKED void FUN_0814472c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814472c.inc"); }
+void FUN_0814472c(Crow* p, Vec3* pos) {
+  Crow* q = (p->e).unk_1cc;
+
+  q->curveStart = (p->e).mover.pos;
+  q->curveEnd = *pos;
+}
 
 void Crow_InitAnims(Crow* p) {
   Enemy_SetAnimEntry(&p->e, 0, 4, 0);
