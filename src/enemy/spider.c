@@ -26,7 +26,7 @@ typedef struct {
   Enemy e;
   u8 unk_654[4];             // 0x654
   Mover* venomTarget;        // 0x658, 毒液を吐く状態に入ったときの playerMover, SpiderVenom_Spawn の狙い先
-  u16 unk_65c;               // 0x65C
+  s16 unk_65c;               // 0x65C
   u16 unk_65e;               // 0x65E
   u16 unk_660;               // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
   u16 unk_662;               // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
@@ -42,6 +42,7 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
 void FUN_080e8614(Enemy* p);
 void FUN_080e68d8(Enemy* p, s32 timer);
 void FUN_08130eec(Spider* p);
+void FUN_081307b0(Spider* p);
 void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 void Spider_PickRandomPathNode(Spider* p);
@@ -323,7 +324,37 @@ void FUN_0812f840(Spider* p) {
   }
 }
 
-NAKED void FUN_0812f9ec(Spider* p) { INCFUNC("asm/func/FUN_0812f9ec.inc"); }
+// 経路に沿って歩き, 経路の終わりに着いたら副状態5へ, 通過点が変わって曲がれたら副状態6へ移る
+void FUN_0812f9ec(Spider* p) {
+  Spider* q = (p->e).unk_1cc;
+  s32 speed;
+
+  if ((p->e).subStateBegun) {
+    (p->e).subStateBegun = 0;
+  }
+  if ((p->e).unk_608(&p->e)) {
+    return;
+  }
+  speed = (p->e).unk_588(&p->e);
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if (!Enemy_TestFlag(&p->e, ENEFLAG_UNK_14) && !Spider_TestUnk660((p->e).unk_1cc, 4)) {
+    FUN_081307b0(p);
+  }
+  if (!Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
+    if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
+      Enemy_ResetState(&p->e, 0, 0, 5);
+      Enemy_ClearFlag(&p->e, ENEFLAG_UNK_14);
+      CLEAR_FLAGS(((Spider*)(p->e).unk_1cc)->unk_660, 2);
+      return;
+    }
+  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    Enemy_ResetState(&p->e, 0, 0, 6);
+  }
+  if (!Enemy_TestFlag(&p->e, ENEFLAG_UNK_14) && q->unk_65c > 0) {
+    Enemy_SetFlag(&p->e, ENEFLAG_UNK_13);
+  }
+  (p->e).subStateTimer++;
+}
 
 void FUN_0812fbec(Spider* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
