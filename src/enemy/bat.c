@@ -41,7 +41,9 @@ typedef struct {
   u16 unk_66c;                // 0x66C, 0 でなければ毎フレーム減り, 0 になったらプレイヤーへの曲線移動を始める
   u16 unk_66e;                // 0x66E, 前のフレームの floorY
   u8 unk_670;                 // 0x670, 弾かれて逃げる向き, 乱数で決める
-  u8 unk_671[0x6A0 - 0x671];  // 0x671
+  u8 unk_671[0x674 - 0x671];  // 0x671
+  NavAgent navAgent;          // 0x674, Enemy.navAgent が指す
+  Vec3 unk_698;               // 0x698, Enemy.unk_4a8 が指す
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
@@ -1053,7 +1055,375 @@ s32 EnemyBat_Destroy(EnemyBat* p) {
 }
 
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
-NAKED s32 EnemyBat_Init(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Init.inc"); }
+// Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
+// 1813/1982命令, Crow_Init の下書きを Bat 向けに直したもの (呼び出し列は一致), 原典はハンドラ表の代入の塊を variant で2つに展開し, Enemy のフィールドのアドレスをスタックに作り置く (敵共通の初期化 inline)
+NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  s32 id;
+  s32 range0, range1, range2;
+  u32 range3;
+  s32 hpParam3, hpParam4;
+  bool32 onPath;
+  s32 i;
+  u8 kind;
+
+  p->unk_658 = 0;
+  Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
+  (p->e).kind = ENEK_BAT;
+  EnemyBat_InitAnims(p);
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSpriteData* aux;
+    u8 k;
+
+    (p->e).sprite = Malloc(sizeof(EnemyAuxSpriteData));
+    ClearMemory((p->e).sprite, sizeof(EnemyAuxSpriteData));
+    aux = (EnemyAuxSpriteData*)(p->e).sprite;
+    Video_GetAuxSprite(&aux->gfx, SPRITE_BAT);
+    AuxSprite_Add(&aux->sprite, &aux->gfx, 0);
+    EnemyAuxSprite_LoadAnim(aux, ANIM_BAT);
+    k = (p->e).kind;
+    if (k == ENEK_CURORO || k == ENEK_GHOST) {
+      aux->sprite.priority = 1;
+    }
+    (p->e).facing = 0;
+  } else {
+    EnemySpriteData* spr;
+    MainSpriteGfxFile* f;
+    Vec3 origin;
+
+    (p->e).sprite = Malloc(sizeof(EnemySpriteData));
+    ClearMemory((p->e).sprite, sizeof(EnemySpriteData));
+    spr = (p->e).sprite;
+    Vec3_Clear(&origin);
+    f = GetFile(DIR_MAIN_SPRITE, SPRITE_BAT);
+    spr->gfx = *f;
+    OpenMainSpriteFile(&spr->gfx, f);
+    MainSprite_Add(&spr->s, &spr->gfx, 0, 0, 2, 2, 60, &origin);
+    (p->e).playingAnim = 0xFF;
+  }
+
+  (p->e).flags = 0;
+  (p->e).flags2 = 0;
+  (p->e).unk_46f = 0;
+  (p->e).unk_1bc = 8;
+  (p->e).flags5 = VM_GetNamedArgValue('M', 0);
+  Vec3_Clear(&pos);
+  (p->e).unk_4b6 = 0;
+  if (!VM_SeekToNamedArg('r')) {
+    (p->e).unk_250 = 0;
+    (p->e).unk_251 = 0;
+    (p->e).unk_252 = 0;
+    (p->e).prevPathNode = 0;
+    (p->e).unk_4b4[(p->e).unk_4b6] = 0;
+    (p->e).unk_4b4[(p->e).unk_4b6 ^ 1] = 0;
+    onPath = FALSE;
+  } else {
+    u8 sel;
+
+    (p->e).unk_250 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_251 = 0;
+    (p->e).unk_252 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).prevPathNode = (p->e).unk_252;
+    (p->e).unk_4b4[(p->e).unk_4b6] = (p->e).unk_250;
+    sel = (p->e).unk_4b6;
+    (p->e).unk_4b4[sel ^ 1] = VM_GetPC() != NULL ? VM_GetValue() : (p->e).unk_250;
+    Map_GetPathNodePos(&pos, (p->e).unk_250, (p->e).unk_252);
+    (p->e).unk_256 = GetCollisionTileIdx(&pos);
+    pos.y = TileHeightAt(&pos);
+    (p->e).floorY = pos.y;
+    onPath = TRUE;
+  }
+
+  id = VM_GetNamedArgValue('N', 0);
+  if (!VM_SeekToNamedArg('e')) {
+    range0 = 48;
+    range3 = 64;
+  } else {
+    range0 = VM_GetPC() != NULL ? VM_GetValue() : 48;
+    range3 = VM_GetPC() != NULL ? (u8)VM_GetValue() : 64;
+  }
+  if (!VM_SeekToNamedArg('n')) {
+    range1 = 0;
+    (p->e).unk_1fe = 0;
+  } else {
+    range1 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_1fe = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  range2 = range0;
+
+  if (VM_SeekToNamedArg('a')) {
+    for (i = 0; i < 4; i++) {
+      (p->e).atkPower[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
+      (p->e).atkUnk40[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
+      (p->e).atkAttrs[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
+      (p->e).atkInvincibleTime[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    }
+  }
+  if (!VM_SeekToNamedArg('l')) {
+    hpParam3 = 0;
+    hpParam4 = 0;
+    (p->e).unk_24c = 0;
+  } else {
+    hpParam3 = VM_GetPC() != NULL ? VM_GetValue() : 300;
+    hpParam4 = VM_GetPC() != NULL ? VM_GetValue() : 300;
+    (p->e).unk_24c = VM_GetPC() != NULL ? VM_GetValue() : 300;
+  }
+  if (VM_GetNamedArgValue('b', 0) != 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_9);
+  }
+  (p->e).scriptID = VM_GetNamedArgValue('F', 0);
+  (p->e).unk_194 = VM_GetNamedArgValue('R', 0);
+  if (VM_SeekToNamedArg('A')) {
+    (p->e).maxHp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_546 = (p->e).maxHp >> 1;
+    (p->e).power = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_187 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_188 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).attrs = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  Enemy_InitHpAndState(&p->e, (p->e).maxHp, hpParam3, hpParam4);
+  Enemy_SetRanges(&p->e, 0, range0, range2, range1, range3);
+  if (VM_SeekToNamedArg('X')) {
+    (p->e).exp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).weaponExp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  (p->e).unk_25a = VM_GetNamedArgValue('K', 2);
+  if (VM_GetNamedArgValue('H', 0) != 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_11);
+  }
+  if (VM_GetNamedArgValue('L', 0) != 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
+  }
+
+  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
+  }
+  Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? (AuxSprite*)(p->e).sprite : NULL);
+  if ((p->e).kind == ENEK_DOG) {
+    Mover_SetCollision(&(p->e).mover, &(p->e).moverTile, 60, 60);
+  } else {
+    Mover_SetCollision(&(p->e).mover, &(p->e).moverTile, 64, 64);
+  }
+  kind = (p->e).kind;
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+    Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
+  }
+  if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
+    (p->e).unk_1e8 = Div((p->e).range0Sq * 7, 10);
+  } else {
+    (p->e).unk_1e8 = (p->e).range0Sq;
+  }
+  (p->e).zoneSource.id = (p->e).mover.id;
+  (p->e).zoneSource.pos = &(p->e).mover.pos;
+  if (onPath) {
+    (p->e).mover.angle = ((((p->e).pathWalker.node->delay >> 12 & 7) + 5) & 7) << 5;
+  }
+  if (!VM_SeekToNamedArg('g')) {
+    p->biteInterval = 60;
+    p->escapeMash = 3;
+  } else {
+    p->biteInterval = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    p->escapeMash = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  (p->e).mover.angle = VM_GetNamedArgValue('E', 0) != 0 ? 64 : 0;
+  if (VM_SeekToNamedArg('p')) {
+    (p->e).mover.pos.x = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).mover.pos.y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).mover.pos.z = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    p->homePos = (p->e).mover.pos;
+    if ((p->e).mover.angle == 0) {
+      p->homePos.x += 0x80;
+    } else {
+      p->homePos.z += 0x80;
+    }
+    (p->e).unk_256 = GetCollisionTileIdx(&p->homePos);
+    (p->e).floorY = TileHeightAt(&p->homePos);
+    (p->e).heightAboveFloor = (p->e).mover.pos.y - (p->e).floorY;
+    p->unk_65c = (p->e).heightAboveFloor;
+    (p->e).mover.pos.y = (p->e).floorY;
+    p->unk_662 = (p->e).floorY;
+    p->unk_66e = (p->e).floorY;
+  }
+  (p->e).variant = VM_GetNamedArgValue('C', 0);
+  (p->e).unk_47a = 610;
+  (p->e).unk_47c = 306;
+  (p->e).unk_47e = (p->e).variant + 612;
+  if ((p->e).spriteKind == 0) {
+    Video_SetAuxSpritePltt(&((EnemyAuxSpriteData*)(p->e).sprite)->gfx, (p->e).unk_47a + (p->e).variant);
+  } else {
+    (p->e).sprite->s.pltt = &gObjPlttData[((p->e).unk_47a + (p->e).variant) * 16];
+  }
+  if ((p->e).spriteKind == 1) {
+    s16 n;
+
+    if ((p->e).kind >= ENEK_SKELETON && (p->e).kind <= ENEK_LICH) {
+      n = Enemy_CountByKind(ENEK_SKELETON) + 1 + Enemy_CountByKind(ENEK_SKELETON_F) + Enemy_CountByKind(ENEK_SKELETON_A) + Enemy_CountByKind(ENEK_LICH);
+    } else {
+      n = Enemy_CountByKind((p->e).kind) + 1;
+    }
+    (p->e).sprite->s.plttID = n + 220;
+  }
+
+  EnemyBat_InitHitboxes(p);
+  if ((p->e).variant < 12) {
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+    (p->e).navAgent = &p->navAgent;
+    (p->e).unk_4a8 = &p->unk_698;
+    (p->e).unk_580 = (EnemyHandler)FUN_0814145c;
+    (p->e).unk_588 = (void*)EnemyBat_GetMoveSpeed;
+    (p->e).unk_590 = NULL;
+    (p->e).unk_5a0 = FUN_0813f180;
+    (p->e).unk_5a4 = FUN_0813f2fc;
+    (p->e).unk_5c0 = NULL;
+    (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
+    (p->e).unk_5cc = EnemyBat_StateDamaged;
+    (p->e).unk_5d0 = EnemyBat_StateDying;
+    (p->e).unk_5d4 = FUN_080f44f4;
+    (p->e).unk_5dc = FUN_080f410c;
+    (p->e).unk_5c8 = NULL;
+    (p->e).unk_584 = NULL;
+  } else {
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+    (p->e).navAgent = &p->navAgent;
+    (p->e).unk_4a8 = &p->unk_698;
+    (p->e).unk_580 = (EnemyHandler)FUN_0814145c;
+    (p->e).unk_588 = (void*)EnemyBat_GetMoveSpeed;
+    (p->e).unk_590 = NULL;
+    (p->e).unk_5a0 = FUN_0813f1f0;
+    (p->e).unk_5a4 = FUN_0813f2fc;
+    (p->e).unk_5c0 = NULL;
+    (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
+    (p->e).unk_5cc = EnemyBat_StateDamaged;
+    (p->e).unk_5d0 = EnemyBat_StateDying;
+    (p->e).unk_5d4 = FUN_080f44f4;
+    (p->e).unk_5dc = FUN_080f410c;
+    (p->e).unk_5c8 = NULL;
+    (p->e).unk_584 = NULL;
+  }
+  (p->e).unk_604 = FUN_080f62ac;
+  (p->e).unk_608 = FUN_080f0430;
+  (p->e).unk_21d = 1;
+  (p->e).unk_60c = (void*)gEnemyDefaultMsgHandlers;
+  (p->e).unk_5f0 = FUN_080e73c8;
+  (p->e).unk_5e4 = NULL;
+  (p->e).onReset = NULL;
+  (p->e).unk_5fc = NULL;
+  (p->e).unk_600 = NULL;
+  (p->e).unk_614 = NULL;
+  (p->e).unk_618 = FUN_080f0320;
+  (p->e).unk_5bc = Enemy_080eff14;
+  (p->e).unk_5e8 = FUN_080e72b0;
+  (p->e).unk_5e0 = NULL;
+  (p->e).unk_5ec = Enemy_StateBlownAway;
+  (p->e).unk_5d8 = Enemy_StateFallDeath;
+  (p->e).unk_5a8 = NULL;
+  (p->e).unk_624 = FUN_080f6e64;
+  (p->e).unk_58c = Enemy_OnDamaged;
+  (p->e).unk_628 = (void*)FUN_080f84d4;
+  (p->e).unk_5b8 = FUN_080f624c;
+  (p->e).unk_594 = FUN_080f56ec;
+  (p->e).unk_598 = FUN_080f5b34;
+  (p->e).unk_59c = FUN_080f5fac;
+  (p->e).unk_5b4 = NULL;
+  (p->e).unk_543 = 40;
+  (p->e).unk_60c = (void*)PTR_ARRAY_085ad80c;
+  (p->e).onReset = (EnemyHandler)EnemyBat_OnReset;
+  (p->e).unk_5fc = NULL;
+  (p->e).unk_5ac = (EnemyHandler)FUN_08140d48;
+  (p->e).unk_5b0 = NULL;
+  (p->e).unk_608 = (void*)FUN_08140cd4;
+  (p->e).unk_58c = (void*)FUN_080f8400;
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_3 | ENEFLAG2_UNK_10 | ENEFLAG2_UNK_20 | ENEFLAG2_UNK_25);
+  SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_5 | ENEFLAG5_UNK_6);
+  Enemy_InitShadowAndEmitter(&p->e);
+
+  (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
+  if (VM_SeekToNamedArg('G')) {
+    u32* arg = &(p->e).unk_19c;
+
+    for (i = 0; i < 5; i++) {
+      *arg++ = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    }
+  }
+  (p->e).unk_19a = VM_GetNamedArgValue('D', 0);
+  {
+    s32 u = VM_GetNamedArgValue('u', 0);
+
+    (p->e).unk_496[0] = 0x21;
+    (p->e).unk_496[1] = 0;
+    if (u != 0) {
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_18);
+      if (u == 2) {
+        SET_FLAGS((p->e).flags, ENEFLAG_UNK_18 | ENEFLAG_UNK_19);
+      }
+    }
+  }
+  if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_2)) {
+    Enemy_ResetState(&p->e, 0, 0, 0);
+    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+  } else {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_13);
+  }
+  if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_1)) {
+    (p->e).zoneID = GetZoneAt(&(p->e).mover.pos);
+  } else {
+    (p->e).zoneID = gStat->zoneID;
+  }
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
+    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+  }
+  if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
+    Enemy_Suspend(&p->e, NULL);
+  }
+  Enemy_PlayAnim(&p->e, 0);
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSpriteData* aux = (EnemyAuxSpriteData*)(p->e).sprite;
+
+    AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+  } else {
+    MainSprite_AdvanceAnim(&(p->e).sprite->s, &(p->e).sprite->gfx);
+  }
+  (p->e).hitTargetID = 0;
+  kind = (p->e).kind;
+  if (!IsLinkPlay() && (kind == ENEK_BOKU || kind == ENEK_SKELETON || kind == ENEK_SKELETON_A || kind == ENEK_SKELETON_F || kind == ENEK_DOG || kind == ENEK_BEE || kind == ENEK_GHOST)) {
+    MsgQueue_Register(&(p->e).mq, (p->e).mover.id, 3);
+    SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_8);
+  }
+  Enemy_InitHandlerTables(&p->e);
+  FUN_08140014(p);
+  FUN_08141448(p);
+  (p->e).unk_1bc = 2;
+  ((EnemyAuxSpriteData*)(p->e).sprite)->sprite.priority = 1;
+  if (VM_GetNamedArgValue('T', 0) == 0) {
+    FUN_08140c14(p);
+  } else {
+    p->unk_658 |= 2;
+    ParticleShadow_Hide(&(p->e).shadow);
+  }
+  (p->e).unk_572 = (p->e).flags5;
+  (p->e).unk_570 = (p->e).heightAboveFloor;
+  (p->e).unk_55c = (p->e).flags;
+  (p->e).unk_560 = (p->e).flags2;
+  (p->e).unk_564 = (p->e).mover.angle;
+  (p->e).unk_565 = (p->e).subState0;
+  (p->e).unk_566 = (p->e).subState1;
+  (p->e).unk_567 = (p->e).subState2;
+  (p->e).unk_568 = (p->e).handlerState;
+  (p->e).unk_56c = (p->e).state;
+  (p->e).handlerMsg = (EnemyMsgHandler)Enemy_DispatchMsg;
+  (p->e).handlerUpdate = (EnemyHandler)EnemyBat_Update;
+  (p->e).handlerDestroy = (EnemyHandler)EnemyBat_Destroy;
+  if (!Enemy_Register(&p->e)) {
+    return -1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/EnemyBat_Init.inc");
+#endif
+}
 
 void EnemyBat_Create(void) {
   EnemyBat* p = Malloc(sizeof(EnemyBat));
