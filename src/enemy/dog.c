@@ -70,6 +70,7 @@ void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 ani
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
+void FUN_0814e1b0(Dog* p);
 bool8 FUN_0814b3a0(Dog* p);
 void enemy_dog_0814a320(Dog* p);
 void enemy_dog_0814b500(Dog* p);
@@ -153,7 +154,7 @@ NON_MATCH void enemy_dog_08149f6c(Dog* p) {
 #endif
 }
 
-// 気付いて待つ状態へ移り, 追いかけ中なら 20 フレーム後に状態26へ, そうでなければ 60 フレーム後に状態1へ戻る予約をして, 経路の今のノードへの経路を引き直す
+// 気付いて待つ状態へ移り, 追いかけ中なら 20 フレーム後に状態26へ, そうでなければ 60 フレーム後に状態1へ戻る予約をし, unk_4a8 に経路の今のノードを入れてプレイヤーへの経路を引き直す
 // 269/277命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み, 副状態2の定数を r8 に置き, 0 は前の r7 を使い回す), 経路は二出口の Enemy_TryRouteToEx で揃う, 試済: 保留状態を (p, delay, handler, s0, s1, s2) の inline にする (悪化)
 NON_MATCH void FUN_0814a098(Dog* p) {
 #ifdef NONMATCHING_C
@@ -748,7 +749,54 @@ void FUN_0814deb0(Dog* p) {
   }
 }
 
-NAKED void FUN_0814df40(Dog* p) { INCFUNC("asm/func/FUN_0814df40.inc"); }
+// 飛びかかる状態, 入ったときに覚えたプレイヤーの位置が前方 16 度以内なら真っ直ぐ, そうでなければ左右 16 度へ跳び, 着地したら状態35へ移る
+// 命令数は揃い残差は左右に跳ぶ2つの塊の並び順だけ, 角度は u8 に詰めて Vec3_SetPolar に渡すと SIN 側の & 0xFF が消えて揃う, q は塊の中で取り直す, 未試行: u8 キャストのまま d <= 0 の塊を先に書く順
+NON_MATCH void FUN_0814df40(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Vec3 v;
+    s32 target;
+    s32 face;
+    s32 d;
+
+    q = (p->e).unk_1cc;
+    Vec3_Delta(&v, &(p->e).mover.pos, &q->unk_708);
+    target = ArcTan2_8(v.x, v.z);
+    face = ((((p->e).mover.angle + 0x20) & 0xFF) >> 6) * 64;
+    d = target - face;
+    if (d > 128) {
+      d -= 256;
+    } else if (d < -128) {
+      d += 256;
+    }
+    if (abs(d) < 16) {
+      Vec3_SetPolar(&v, target, 24);
+    } else if (d > 0) {
+      Vec3_SetPolar(&v, (u8)(face + 16), 24);
+    } else {
+      Vec3_SetPolar(&v, (u8)(face - 17), 24);
+    }
+    (p->e).jumpVel.x = v.x;
+    (p->e).jumpVel.y = 32;
+    (p->e).jumpVel.z = v.z;
+    PlaySound_082406e0(CRY_DOG_ALERT);
+  }
+  Hitbox_Register(&q->unk_658);
+  if ((p->e).mover.tile->unk_0[0] & 1) {
+    (p->e).jumpVel.x = FixToInt(1, (p->e).jumpVel.x);
+    (p->e).jumpVel.z = FixToInt(1, (p->e).jumpVel.z);
+  }
+  Enemy_PlayAnim(&p->e, 5);
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+  if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
+    Enemy_EnterState(&p->e, FUN_0814e1b0, ES_UNK_35);
+  }
+#else
+  INCFUNC("asm/func/FUN_0814df40.inc");
+#endif
+}
 
 void FUN_0814e1b0(Dog* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
