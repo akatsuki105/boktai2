@@ -80,7 +80,15 @@ void FUN_0813f268(EnemyBat* p) {
   (p->e).animForceRestart = FALSE;
 }
 
-NAKED void FUN_0813f2a8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f2a8.inc"); }
+void FUN_0813f2a8(EnemyBat* p) {
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimWithVariant(&p->e, 17, 0);
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+    ParticleShadow_Show(&(p->e).shadow);
+  }
+}
 
 void FUN_0813f2fc(EnemyBat* p) {
   Enemy_ConsumeStateBegun(&p->e);
