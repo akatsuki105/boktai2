@@ -1,10 +1,22 @@
+#include "cwolf_target.h"
+#include "eff_082473e0.h"
+#include "emote.h"
 #include "enemy.h"
 #include "enemy_inline.h"
+#include "enemy_target.h"
+#include "file.h"
 #include "global.h"
+#include "input.h"
 #include "malloc.h"
+#include "map_inline.h"
+#include "msgbus.h"
 #include "player.h"
 #include "random.h"
+#include "shadow.h"
 #include "sound.h"
+#include "sprite.h"
+#include "vec3.h"
+#include "vm.h"
 
 // バット(ENEID_BAT), ヴァンパイアバット(ENEID_VBAT)
 // ヴァンパイアバット は 吸血攻撃をしてくる
