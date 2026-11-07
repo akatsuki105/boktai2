@@ -179,7 +179,11 @@ void FUN_08140940(u16 angle, s32* outDir, s32* outFlip) {
 
 NAKED void FUN_08140970(EnemyBat* p, Vec3* pos) { INCFUNC("asm/func/FUN_08140970.inc"); }
 
-NAKED void FUN_08140a10(EnemyBat* p) { INCFUNC("asm/func/FUN_08140a10.inc"); }
+void FUN_08140a10(EnemyBat* p) {
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+  CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+  (p->e).unk_24e = 0;
+}
 
 NAKED void FUN_08140a48(EnemyBat* p) { INCFUNC("asm/func/FUN_08140a48.inc"); }
 
