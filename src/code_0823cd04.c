@@ -554,7 +554,38 @@ s32 Cmd_A285(void) {
   return best;
 }
 
-NAKED bool32 FUN_0823d5f0(void) { INCFUNC("asm/func/FUN_0823d5f0.inc"); }
+// プレイヤーが通常の操作を受け付ける状態か (イベント中でなく, 変身中や特殊なステータス中でなく, 立ち止まり / 歩き / 太陽チャージ中)
+// 残差: 原典は最後の action の判定を 0/1 の値に起こしてから比べ直し, オフセットの定数を r1 に積んで 0x446 から 0x442 を subs で作る
+NON_MATCH bool32 FUN_0823d5f0(void) {
+#ifdef NONMATCHING_C
+  Player* player = gPlayerPtr[0];
+
+  if (player == NULL) {
+    return FALSE;
+  }
+  if (gGameFlags & GAMEFLAG_EVENT) {
+    return FALSE;
+  }
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_ACTIVE)) {
+    return FALSE;
+  }
+  if ((u8)(player->kind - PLAYER_BAT) <= PLAYER_SLEEPING - PLAYER_BAT) {
+    return FALSE;
+  }
+  if (player->formRequest) {
+    return FALSE;
+  }
+  if (player->goodCondTimer != 0 && (u16)(player->goodCondID - GOOD_MINI) <= GOOD_INVISIBLE - GOOD_MINI) {
+    return FALSE;
+  }
+  if (player->action <= PACT_WALK || player->action == PACT_UNK_7) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_0823d5f0.inc");
+#endif
+}
 
 // 0xDAA4
 u32 Cmd_GetPrefecture(void) { return gSystemSaveData->prefecture; }
