@@ -58,6 +58,8 @@ void FUN_081df924(void);
 void FUN_081e0544(Entity501B* p);
 void FUN_081e084c(Entity501B* p);
 void FUN_081e04a8(Entity501B* p);
+void FUN_081e03d8(Entity501B* p);
+void FUN_081e06d8(Entity501B* p);
 
 // セッションの状態を返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetState(void) {
@@ -95,6 +97,11 @@ static inline s32 Entity9A9F_GetUnk144(s32 idx) {
     return 0;
   }
   return p->unk_144[idx];
+}
+
+static inline bool8 Entity501B_TestFlags(Entity501B* p, u32 bits) {
+  if (p->flags & bits) return TRUE;
+  return FALSE;
 }
 
 // 状態関数を差し替えて, 切り替え直後の1フレームだけ立つフラグを付ける
@@ -410,7 +417,49 @@ void Entity501B_StateSaveFailed(Entity501B* p) {
   }
 }
 
-NAKED void FUN_081e06d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e06d8.inc"); }
+// 太陽スタンドの増減を精算して結果の案内を出し, 10 フレーム後からボタンで次の状態へ移る
+void FUN_081e06d8(Entity501B* p) {
+  if (p->entered) {
+    s32* stand;
+    s32 v;
+
+    Entity501B_HideTextPanels(p);
+    Entity501B_HideSprites(p);
+    ClearBGTilemapBuffer(0);
+    ClearBGTilemapBuffer(3);
+    Video_GenerateBGMap(0, 0, 0, 0, 0);
+    stand = &gStat->solarStand;
+    v = *stand + p->unk_3c0;
+    if (v > 9999) {
+      v = 9999;
+    }
+    *stand = v;
+    if (gStat->solarStand < 0) {
+      gStat->solarStand = 0;
+    }
+    p->solarStandSpr.flags &= ~SPRFLAG_HIDDEN;
+    Entity501B_DrawBgNumber(gStat->solarStand, 1000, 13, 2);
+    TextPanel_SetRect(p->textPanels[0], 1, 11, 28, 8);
+    TextPanel_SetScript(p->textPanels[0], p->unk_3d4);
+    if (p->unk_3c0 == 0) {
+      TextPanel_SetMessage(p->textPanels[0], 4);
+    } else if (p->unk_3c0 > 0) {
+      TextPanel_SetMessage(p->textPanels[0], 2);
+    } else {
+      TextPanel_SetMessage(p->textPanels[0], 3);
+    }
+    FUN_0804a3e4(p->textPanels[0], 0, abs(p->unk_3c0));
+    TextPanel_Start(p->textPanels[0]);
+    p->stateTimer = 0;
+    p->entered = FALSE;
+  }
+  if (p->stateTimer < 10) {
+    p->stateTimer++;
+  } else if (gInput[0].pressed & (A_BUTTON | B_BUTTON | SELECT_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON)) {
+    PlaySound_082406e0(SE_SELECT);
+    Entity501B_SetState(p, FUN_081e03d8, 3);
+  }
+}
 
 NAKED void FUN_081e084c(Entity501B* p) { INCFUNC("asm/func/FUN_081e084c.inc"); }
 
