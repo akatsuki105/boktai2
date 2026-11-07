@@ -342,7 +342,60 @@ void FUN_08163848(Slime* p) {
   }
 }
 
-NAKED void FUN_0816390c(Slime* p, s32 arg) { INCFUNC("asm/func/FUN_0816390c.inc"); }
+// 倒されたときの状態, 点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
+// 218/216命令, Spider_StateDying と同じ壁 (ENEFLAG_UNK_15 の検査で作った flags のアドレスを持ち越す形が出ない)
+NON_MATCH void Slime_StateDying(Slime* p, s32 arg) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnimNoFacing(&p->e, 10);
+    PlayEnemyDeathCry(&p->e);
+    FUN_081647c8(p);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5);
+  }
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_15)) {
+    return;
+  }
+  if (Sprite_UpdateVanishBlink(&((AuxSprite*)(p->e).sprite)->flags, arg, 10, 30)) {
+    s32 idx;
+
+    (p->e).subStateDone = 1;
+    if ((p->e).unk_19a != 0) {
+      u32 argv[8];
+      ScriptArgs sa;
+
+      argv[0] = (p->e).mover.pos.x;
+      argv[1] = (p->e).mover.pos.y;
+      argv[2] = (p->e).mover.pos.z;
+      argv[3] = (p->e).unk_19c;
+      argv[4] = (p->e).unk_1a0;
+      argv[5] = (p->e).unk_1a4;
+      argv[6] = (p->e).unk_4a0;
+      argv[7] = (p->e).mover.id;
+      sa.argc = 8;
+      sa.argv = argv;
+      VM_ExecByID((p->e).unk_19a, &sa);
+    }
+    idx = EnemyDex_GetEntryIdx((p->e).kind, (p->e).variant);
+    if (idx < 32) {
+      gStat->enemyDexSeen[0] |= 1 << idx;
+    } else {
+      gStat->enemyDexSeen[1] |= 1 << (idx - 32);
+    }
+    if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
+      FUN_080e6658(&p->e);
+    }
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 1, 0, 2);
+  }
+  if (Enemy_TestSpriteFlags(&p->e, SPRFLAG_HIDDEN)) {
+    ParticleShadow_Hide(&(p->e).shadow);
+  } else {
+    ParticleShadow_Show(&(p->e).shadow);
+  }
+#else
+  INCFUNC("asm/func/Slime_StateDying.inc");
+#endif
+}
 
 void FUN_08163b04(Slime* p) {
   Slime* q = (p->e).unk_1cc;
