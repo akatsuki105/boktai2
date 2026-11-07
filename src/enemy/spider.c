@@ -271,7 +271,30 @@ void FUN_08130610(Spider* p) {
   }
 }
 
-NAKED void FUN_0813069c(Spider* p) { INCFUNC("asm/func/FUN_0813069c.inc"); }
+// 日が当たっている間は巡回をやめて棺桶へ向かい, 日が陰ったら元の速さに戻す
+// 121/121 命令, 原典は unk_660 のアドレスを別レジスタに写し, 日向の枝で bit3 の判定を 0/1 に作り直してから分岐する, 試済: 判定の inline, TestMapFlag の inline (5 命令増える)
+NON_MATCH void FUN_0813069c(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+
+  if (!Enemy_IsDead(&p->e) && Spider_TestUnk660(q, 0x10)) {
+    if (TEST_FLAGS(gStat->mapFlags, MPF_BRIGHT)) {
+      if (!Spider_TestUnk660(q, 8)) {
+        Enemy_StepTowardPathNode(&p->e);
+        Enemy_ResetState(&p->e, 0, 0, 7);
+        Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+        q->unk_660 |= 8;
+      }
+      (p->e).animSpeedDiv = 5;
+    } else if (Spider_TestUnk660(q, 8)) {
+      q->unk_660 &= ~8;
+      (p->e).animSpeedDiv = 1;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0813069c.inc");
+#endif
+}
 
 NAKED void FUN_081307b0(Spider* p) { INCFUNC("asm/func/FUN_081307b0.inc"); }
 
