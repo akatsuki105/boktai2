@@ -106,7 +106,22 @@ NAKED void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* el
 
 NAKED void Entity081f8a28_UpdateFly(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateFly.inc"); }
 
-NAKED void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateExplode.inc"); }
+// 爆発の攻撃判定を出して自分を片付ける
+void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) {
+  if (elem->stateBegun) {
+    SpawnAttackBox(&elem->sprite.pos, 2, 0, 128, 64, 40, 16);
+    elem->timer = 0;
+    if (elem->shadowId == 0) {
+      AuxShadow_Remove(&elem->shadow);
+      elem->shadowId = 0xFF;
+    }
+    AuxSprite_Remove(&elem->sprite);
+    CLEAR_BIT(p->usedMask, elem->slotIdx);
+    elem->slotIdx = -1;
+    elem->state = 0;
+    elem->stateBegun = FALSE;
+  }
+}
 
 NAKED void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_Spawn.inc"); }
 
