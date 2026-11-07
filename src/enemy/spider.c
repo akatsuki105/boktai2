@@ -653,7 +653,74 @@ bool8 FUN_081309f0(Spider* p) {
   return FALSE;
 }
 
-NAKED bool8 FUN_08130ac4(Spider* p) { INCFUNC("asm/func/FUN_08130ac4.inc"); }
+// プレイヤーが同じ高さで近く, 前方 45 度以内に見えていれば, 近ければ追いかけ, 遠ければ毒液を吐く状態に入って TRUE を返す
+// 277/275命令, 原典は p の写しを sl に置き (フレーム 8), こちらはスタックに退避する (フレーム 0xc), 失敗は早期 return, 不可視の検査は Player_TestFlag20 で揃う, 試済: Mover* のローカル, distSq の符号
+NON_MATCH bool8 FUN_08130ac4(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* self = p;
+  Player* player;
+  Vec3 d;
+  u32 distSq;
+  u8 angle;
+  s32 a;
+
+  if (!Spider_TestUnk660((p->e).unk_1cc, 2)) {
+    if (FUN_081309f0(p)) {
+      return TRUE;
+    }
+    if (Player_TestFlag20(gPlayerPtr[0], PFLAG20_INVISIBLE)) {
+      return FALSE;
+    }
+  } else if (FUN_081309f0(p)) {
+    return TRUE;
+  }
+  if (gPlayerPtr[0] == NULL) {
+    return FALSE;
+  }
+  player = gPlayerPtr[0];
+  Vec3_Delta(&d, &(p->e).mover.pos, &player->mover.pos);
+  if (abs(d.y) > 255) {
+    return FALSE;
+  }
+  distSq = d.x * d.x + d.z * d.z;
+  ArcTan2_8(d.x, d.z);
+  if (distSq >= (p->e).range0Sq * 2) {
+    return FALSE;
+  }
+  angle = (p->e).mover.angle;
+  Vec3_Delta(&d, &(p->e).mover.pos, &player->mover.pos);
+  a = ArcTan2_8(d.x, d.z) - angle;
+  if (a > 128) {
+    a -= 256;
+  } else if (a < -128) {
+    a += 256;
+  }
+  if (abs(a) > 32) {
+    return FALSE;
+  }
+  if (!(u8)Map_HasLineOfSight(&self->e.mover.pos, &player->mover.pos, 5, 0x100)) {
+    return FALSE;
+  }
+  (p->e).playerMover = &player->mover;
+  if ((s32)distSq < 0x4000) {
+    Enemy_ResetState(&p->e, 0, 0, 12);
+    Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+    FUN_08130eec(p);
+    Enemy_StepTowardPathNode(&p->e);
+    if ((p->e).kind != ENEK_SPIDER) {
+      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    }
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+    (p->e).unk_24e = (p->e).unk_24c;
+  } else {
+    Enemy_ResetState(&p->e, 0, 0, 16);
+    Enemy_EnterState(&p->e, Spider_SpitVenom, ES_UNK_3);
+  }
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_08130ac4.inc");
+#endif
+}
 
 // プレイヤーが見えていて前方 45 度以内にいれば追いかけを始めて TRUE を返す
 // 196/194命令, 原典は flags3 のアドレスを検査のときに r7 へ写して末尾の SET_FLAGS まで持ち越し, p が r5 に乗る, 試済: 条件の入れ子, 角度差の inline, Enemy_BeginChase, flags3 の直接演算
