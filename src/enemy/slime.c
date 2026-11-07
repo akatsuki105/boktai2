@@ -46,6 +46,8 @@ static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
 
 void FUN_08163604(Slime* p, s32 arg);
 void FUN_081636d4(Slime* p);
+void FUN_08163848(Slime* p);
+void FUN_08164da8(Slime* p);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
@@ -284,7 +286,44 @@ void FUN_08163604(Slime* p, s32 arg) {
   }
 }
 
-NAKED void FUN_081636d4(Slime* p) { INCFUNC("asm/func/FUN_081636d4.inc"); }
+// 向いている方へ跳ね, 上りは縦に伸ばし下りは縮めて戻す, 着地したら2つに分裂して状態43へ移る
+void FUN_081636d4(Slime* p) {
+  AuxSprite* sprite = &((EnemyAuxSpriteData*)(p->e).sprite)->sprite;
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    (p->e).animSpeedDiv = 2;
+    AuxAnim_SetAnimSpeed(&((EnemyAuxSpriteData*)(p->e).sprite)->anim, 64);
+    Vec3_SetPolar(&(p->e).jumpVel, (p->e).unk_1fc, 18);
+    (p->e).jumpVel.y = 40;
+    sprite->flags |= SPRFLAG_AFFINE;
+    sprite->scaleX = 64;
+    sprite->scaleY = 64;
+    PlaySound_082406e0(SE_SLIME_ATK);
+    (p->e).unk_1bc = 0;
+  }
+  if (anim->cmdIdx == 3) {
+    anim->tick = 0;
+  }
+  if ((p->e).jumpVel.y > 0) {
+    if (sprite->scaleY < 127) {
+      sprite->scaleY++;
+    }
+  } else {
+    if (sprite->scaleY > 64) {
+      sprite->scaleY -= 2;
+    }
+    if (sprite->scaleY < 64) {
+      sprite->scaleY = 64;
+    }
+  }
+  if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
+    Enemy_EnterState(&p->e, FUN_08163848, ES_UNK_43);
+    FUN_08164da8(p);
+    FUN_08164da8(p);
+    PlaySound_082406e0(SE_SLIME_FISSION);
+  }
+}
 
 void FUN_08163848(Slime* p) {
   AuxSprite* aux = (AuxSprite*)(p->e).sprite;
