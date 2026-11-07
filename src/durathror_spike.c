@@ -33,7 +33,11 @@ void Entity0805d79c_OnHit(HitboxData* a, HitboxData* b, Entity0805d79cElem* elem
 
 NAKED void Entity0805d79c_InitElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) { INCFUNC("asm/func/Entity0805d79c_InitElem.inc"); }
 
-NAKED void Entity0805d79c_ReleaseElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) { INCFUNC("asm/func/Entity0805d79c_ReleaseElem.inc"); }
+void Entity0805d79c_ReleaseElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) {
+  elem->sprite.flags |= SPRFLAG_HIDDEN;
+  AuxSprite_Remove(&elem->sprite);
+  p->activeMask &= ~(1 << idx);
+}
 
 NAKED s32 Entity0805d79c_Update(Entity0805d79c* p) { INCFUNC("asm/func/Entity0805d79c_Update.inc"); }
 
