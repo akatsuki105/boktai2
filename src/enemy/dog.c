@@ -146,7 +146,10 @@ void FUN_0814c28c(Dog* p) {
   Enemy_PlayAnim(&p->e, 1);
 }
 
-NAKED void FUN_0814c2b0(Dog* p) { INCFUNC("asm/func/FUN_0814c2b0.inc"); }
+void FUN_0814c2b0(Dog* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnim(&p->e, 0);
+}
 
 NAKED void FUN_0814c2d4(Dog* p) { INCFUNC("asm/func/FUN_0814c2d4.inc"); }
 
