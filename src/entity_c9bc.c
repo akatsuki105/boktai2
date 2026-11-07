@@ -224,7 +224,33 @@ NAKED void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 
 
 NAKED void EntityC9BCElem_UpdateState5(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState5.inc"); }
 
-NAKED void EntityC9BCElem_UpdateState6(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState6.inc"); }
+// 砕けて破片を散らし, 点滅させてから 32 フレームで解放を求める
+void EntityC9BCElem_UpdateState6(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+  if (elem->unk_01) {
+    Vec3 pos;
+    Vec3* v;
+
+    elem->unk_01 = 0;
+    v = &pos;
+    *v = elem->obj.pos;
+    v->x += 0x40;
+    v->z += 0x40;
+    Entity99CA_CreateAt(v, 144, 40, 8, 7);
+  }
+
+  elem->unk_2a |= 0x10;
+  if (elem->timer < 16) {
+    if ((elem->timer & 7) == 4) {
+      elem->unk_2a |= 0xC;
+    }
+  } else if ((elem->timer & 3) == 2) {
+    elem->unk_2a |= 0xC;
+  }
+
+  if (elem->timer >= 32) {
+    elem->releaseReq = TRUE;
+  }
+}
 
 // 要素の state と unk_02 を退避して unk_2a を空にする
 void EntityC9BCElem_SaveState(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
