@@ -1396,7 +1396,33 @@ void FUN_08044d9c(ActorManager* p, Actor* actor, s32 _) {
   actor->fn(actor);
 }
 
-NAKED void FUN_08044dd8(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08044dd8.inc"); }
+void FUN_08044dd8(ActorManager* p, Actor* actor, s32 elapsed) {
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 7, 2, 0, 4);
+    actor->work.unk_00 = 0;
+  }
+  if ((u8)actor->fn(actor) != 1 && SpriteHolder_IsAnimEnded(&actor->sprite)) {
+    switch (actor->work.unk_00) {
+      case 0: {
+        FUN_08041480(actor, 6, 2, 0, 4);
+        actor->work.unk_00++;
+        break;
+      }
+      case 1: {
+        FUN_08041480(actor, 5, 2, 0, 4);
+        actor->work.unk_00++;
+        break;
+      }
+      case 2: {
+        actor->unk_07 = 1;
+        actor->work.unk_00++;
+        break;
+      }
+    }
+  }
+}
 
 void FUN_08044e6c(ActorManager* p, Actor* actor, s32 elapsed) {
   if (actor->unk_09) {
