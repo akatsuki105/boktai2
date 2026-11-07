@@ -41,7 +41,7 @@ static inline u16 Entity9A9F_GetRecvKey(Entity9A9F* p, s32 idx) {
 }
 
 // 受信できたキーの数が参加人数と一致するか
-static inline bool32 Entity9A9F_AllKeysReceived(Entity9A9F* p) {
+static inline bool8 Entity9A9F_AllKeysReceived(Entity9A9F* p) {
   s32 count = 0;
   s32 i;
 
@@ -98,7 +98,13 @@ void FUN_081dda10(Entity9A9F* p) {
 
 NAKED void FUN_081dda38(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dda38.inc"); }
 
-NAKED s32 FUN_081ddab4(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddab4.inc"); }
+// 自分の受信番号が正しく, 再試行が続いておらず, 全員分のキーが届いていれば 0, そうでなければ -1
+s32 FUN_081ddab4(Entity9A9F* p) {
+  if (p->unk_4c < 0 || p->unk_4c != p->playerIdx || p->retryTimer > 14 || !Entity9A9F_AllKeysReceived(p)) {
+    return -1;
+  }
+  return 0;
+}
 
 // buf から1バイトずつ送信データを組む, limit に届いたら 1
 // 残差はレジスタ割当だけ (36 対 36), 原典は &unk_7e を r12 に逃がして limit を r2 に残すが, こちらは limit を r5 に写して &unk_7e を低レジスタに置く
