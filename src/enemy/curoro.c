@@ -42,7 +42,6 @@ static_assert(sizeof(Curoro) == 1712);
 extern const char s_curorocom_c_08252078[];  // "curorocom.c"
 
 void FUN_0807a904(Player* p, u32 flag);
-bool32 FUN_080f62b0(Enemy* p);
 void Player_StartFormEffect(Player* p, u32 kind);
 void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip);
 void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p);

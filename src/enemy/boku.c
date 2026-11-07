@@ -37,7 +37,6 @@ typedef struct {
 } Boku;
 static_assert(sizeof(Boku) == 1708);
 
-bool32 FUN_080f62b0(Enemy* p);
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
 void FUN_080e7b6c(Enemy* p);
