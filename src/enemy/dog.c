@@ -163,7 +163,13 @@ s32 FUN_081504f8(Dog* p) {
   return 1;
 }
 
-NAKED s32 FUN_08150510(Dog* p) { INCFUNC("asm/func/FUN_08150510.inc"); }
+s32 FUN_08150510(Dog* p) {
+  FUN_0814ac10(p);
+  FUN_0814ae80(p);
+  FUN_0814aeb0(p);
+  FUN_0814b78c(p);
+  return 1;
+}
 
 NAKED void FUN_08150534(Dog* p) { INCFUNC("asm/func/FUN_08150534.inc"); }
 
