@@ -65,7 +65,14 @@ void (*const PTR_ARRAY_085ad710[7])(Spider*, u16*) = {
     FUN_081302f8,
 };  // 0x085AD710
 
-NAKED void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/func/Spider_OnHit.inc"); }
+void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) {
+  if (Enemy_IsDead(&p->e) == 0) {
+    if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
+      (p->e).hitTargetID = b->id;
+      Enemy_ClearFlag2(&p->e, ENEFLAG2_UNK_24);
+    }
+  }
+}
 
 NAKED void Spider_OnHurt(HitboxData* a, HitboxData* b, Spider* p) { INCFUNC("asm/func/Spider_OnHurt.inc"); }
 
