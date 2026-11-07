@@ -340,7 +340,7 @@ void FUN_08140a48(EnemyBat* p) {
 }
 
 // 残差は sp のコピー (mov rN, sp) の位置2か所のみ, Curoro_BounceOffWall と同じ, 試済: Vec3_Sum の引数順, dst/cur のポインタ, 直書き
-NON_MATCH void FUN_08140b30(EnemyBat* p) {
+NON_MATCH void EnemyBat_BounceOffWall(EnemyBat* p) {
 #ifdef NONMATCHING_C
   WorldPos pos;
   WorldPos* cur = &(p->e).mover.pos;
@@ -355,7 +355,7 @@ NON_MATCH void FUN_08140b30(EnemyBat* p) {
     (p->e).mover.delta.z = 0;
   }
 #else
-  INCFUNC("asm/func/FUN_08140b30.inc");
+  INCFUNC("asm/func/EnemyBat_BounceOffWall.inc");
 #endif
 }
 
