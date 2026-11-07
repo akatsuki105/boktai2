@@ -635,7 +635,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xF41A, EntityF41A_Create
 	.4byte 0xF5EB, CreatePlayer @ HashName("プレイヤー")
 	.4byte 0xF661, Entity3117_HideScripted
-	.4byte 0xF836, EnemyDog_Create @ HashName("ドッグ")
+	.4byte 0xF836, Dog_Create @ HashName("ドッグ")
 	.4byte 0xF8BE, EnemyBat_Create @ HashName("バット")
 	.4byte 0xF982, Cmd_F982
 	.4byte 0xF993, Cmd_F993

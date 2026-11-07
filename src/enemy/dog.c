@@ -56,4 +56,134 @@ void (*const PTR_ARRAY_085ad8f0[20])(Dog*) = {
 };  // 0x085AD8F0
 // clang-format on
 
-INCASM("asm/dog.inc");
+NAKED void enemy_dog_08149f6c(Dog* p) { INCFUNC("asm/func/enemy_dog_08149f6c.inc"); }
+
+NAKED void FUN_0814a098(Dog* p) { INCFUNC("asm/func/FUN_0814a098.inc"); }
+
+NAKED void enemy_dog_0814a320(Dog* p) { INCFUNC("asm/func/enemy_dog_0814a320.inc"); }
+
+NAKED bool8 FUN_0814a5e0(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814a5e0.inc"); }
+
+NAKED void Dog_InitAnims(Dog* p) { INCFUNC("asm/func/Dog_InitAnims.inc"); }
+
+NAKED void Dog_OnReset(Dog* p) { INCFUNC("asm/func/Dog_OnReset.inc"); }
+
+NAKED void FUN_0814a8c8(Dog* p) { INCFUNC("asm/func/FUN_0814a8c8.inc"); }
+
+NAKED s32 FUN_0814a8dc(Dog* p) { INCFUNC("asm/func/FUN_0814a8dc.inc"); }
+
+NAKED void FUN_0814aad4(Dog* p) { INCFUNC("asm/func/FUN_0814aad4.inc"); }
+
+NAKED void Dog_InitHitboxes(Dog* p) { INCFUNC("asm/func/Dog_InitHitboxes.inc"); }
+
+NAKED void FUN_0814ac10(Dog* p) { INCFUNC("asm/func/FUN_0814ac10.inc"); }
+
+NAKED void FUN_0814ae80(Dog* p) { INCFUNC("asm/func/FUN_0814ae80.inc"); }
+
+NAKED void FUN_0814aeb0(Dog* p) { INCFUNC("asm/func/FUN_0814aeb0.inc"); }
+
+NAKED void FUN_0814aed0(Dog* p) { INCFUNC("asm/func/FUN_0814aed0.inc"); }
+
+NAKED void FUN_0814afc8(Dog* p) { INCFUNC("asm/func/FUN_0814afc8.inc"); }
+
+NAKED bool8 FUN_0814b090(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814b090.inc"); }
+
+NAKED u8 FUN_0814b3a0(Dog* p) { INCFUNC("asm/func/FUN_0814b3a0.inc"); }
+
+NAKED bool8 FUN_0814b3e0(Dog* p) { INCFUNC("asm/func/FUN_0814b3e0.inc"); }
+
+NAKED void enemy_dog_0814b500(Dog* p) { INCFUNC("asm/func/enemy_dog_0814b500.inc"); }
+
+NAKED void FUN_0814b78c(Dog* p) { INCFUNC("asm/func/FUN_0814b78c.inc"); }
+
+NAKED void FUN_0814b7a4(Vec3* pos) { INCFUNC("asm/func/FUN_0814b7a4.inc"); }
+
+NAKED void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/Dog_OnHit.inc"); }
+
+NAKED void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/FUN_0814b89c.inc"); }
+
+NAKED void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p) { INCFUNC("asm/func/Dog_OnHurt.inc"); }
+
+NAKED void FUN_0814c28c(Dog* p) { INCFUNC("asm/func/FUN_0814c28c.inc"); }
+
+NAKED void FUN_0814c2b0(Dog* p) { INCFUNC("asm/func/FUN_0814c2b0.inc"); }
+
+NAKED void FUN_0814c2d4(Dog* p) { INCFUNC("asm/func/FUN_0814c2d4.inc"); }
+
+NAKED void FUN_0814c970(Dog* p) { INCFUNC("asm/func/FUN_0814c970.inc"); }
+
+NAKED void FUN_0814c974(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814c974.inc"); }
+
+NAKED void FUN_0814ca30(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814ca30.inc"); }
+
+NAKED void FUN_0814caa0(Dog* p) { INCFUNC("asm/func/FUN_0814caa0.inc"); }
+
+NAKED void FUN_0814cb8c(Dog* p) { INCFUNC("asm/func/FUN_0814cb8c.inc"); }
+
+NAKED void FUN_0814ccfc(Dog* p) { INCFUNC("asm/func/FUN_0814ccfc.inc"); }
+
+NAKED void FUN_0814dd38(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814dd38.inc"); }
+
+NAKED void FUN_0814de34(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814de34.inc"); }
+
+NAKED void FUN_0814deb0(Dog* p) { INCFUNC("asm/func/FUN_0814deb0.inc"); }
+
+NAKED void FUN_0814df40(Dog* p) { INCFUNC("asm/func/FUN_0814df40.inc"); }
+
+NAKED void FUN_0814e1b0(Dog* p) { INCFUNC("asm/func/FUN_0814e1b0.inc"); }
+
+NAKED void FUN_0814e1fc(Dog* p) { INCFUNC("asm/func/FUN_0814e1fc.inc"); }
+
+NAKED void FUN_0814e248(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e248.inc"); }
+
+NAKED void FUN_0814e420(Dog* p) { INCFUNC("asm/func/FUN_0814e420.inc"); }
+
+NAKED void FUN_0814e424(Dog* p) { INCFUNC("asm/func/FUN_0814e424.inc"); }
+
+NAKED void FUN_0814e530(Dog* p) { INCFUNC("asm/func/FUN_0814e530.inc"); }
+
+NAKED void FUN_0814e680(Dog* p) { INCFUNC("asm/func/FUN_0814e680.inc"); }
+
+NAKED void FUN_0814e8ec(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e8ec.inc"); }
+
+NAKED bool8 FUN_0814eacc(Dog* p) { INCFUNC("asm/func/FUN_0814eacc.inc"); }
+
+NAKED void FUN_0814fba4(Dog* p) { INCFUNC("asm/func/FUN_0814fba4.inc"); }
+
+NAKED void FUN_0814fc7c(Dog* p) { INCFUNC("asm/func/FUN_0814fc7c.inc"); }
+
+NAKED void FUN_081504e8(Dog* p) { INCFUNC("asm/func/FUN_081504e8.inc"); }
+
+NAKED s32 FUN_081504f8(Dog* p) { INCFUNC("asm/func/FUN_081504f8.inc"); }
+
+NAKED s32 FUN_08150510(Dog* p) { INCFUNC("asm/func/FUN_08150510.inc"); }
+
+NAKED void FUN_08150534(Dog* p) { INCFUNC("asm/func/FUN_08150534.inc"); }
+
+NAKED void FUN_08150660(Dog* p) { INCFUNC("asm/func/FUN_08150660.inc"); }
+
+NAKED void FUN_0815077c(Dog* p) { INCFUNC("asm/func/FUN_0815077c.inc"); }
+
+NAKED void FUN_08150790(Dog* p) { INCFUNC("asm/func/FUN_08150790.inc"); }
+
+NAKED void FUN_08150b18(Dog* p) { INCFUNC("asm/func/FUN_08150b18.inc"); }
+
+NAKED void FUN_08150de8(Dog* p) { INCFUNC("asm/func/FUN_08150de8.inc"); }
+
+NAKED void FUN_081514f0(Dog* p) { INCFUNC("asm/func/FUN_081514f0.inc"); }
+
+NAKED void FUN_081516d8(Dog* p) { INCFUNC("asm/func/FUN_081516d8.inc"); }
+
+NAKED void FUN_081517a8(Dog* p) { INCFUNC("asm/func/FUN_081517a8.inc"); }
+
+NAKED void FUN_081518ac(Dog* p) { INCFUNC("asm/func/FUN_081518ac.inc"); }
+
+NAKED s32 FUN_081518c0(Dog* p) { INCFUNC("asm/func/FUN_081518c0.inc"); }
+
+NAKED s32 Dog_Update(Dog* p) { INCFUNC("asm/func/Dog_Update.inc"); }
+
+NAKED s32 Dog_Destroy(Dog* p) { INCFUNC("asm/func/Dog_Destroy.inc"); }
+
+NAKED s32 Dog_Init(Dog* p) { INCFUNC("asm/func/Dog_Init.inc"); }
+
+NAKED void Dog_Create(void) { INCFUNC("asm/func/Dog_Create.inc"); }
