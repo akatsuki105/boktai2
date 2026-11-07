@@ -13,17 +13,17 @@
 
 // 太陽タケノコ1つ
 typedef struct {
-  u8 unk_00[2];        // 0x00, まだ未解析
-  u8 unk_02;           // 0x02, FUN_08009e28 が 2 を入れる
+  u16 id;              // 0x00, '.n'
+  u8 state;            // 0x02, PTR_ARRAY_085aa6b8[visible * 3 + state] で状態関数を選ぶ
   u8 kind;             // 0x03, 精霊虫の種類, see SpiritBugKind
   u8 count;            // 0x04, この太陽タケノコから出す精霊虫の数
   bool8 active;        // 0x05, 0 の枠を FUN_08009b10 が空きとして返す
   u8 unk_06;           // 0x06, FUN_08009e54 がアニメが一巡したら 1 にする
-  bool8 unk_07;        // 0x07, FUN_08009c28 が読んで落とす目印
+  bool8 stateEntered;  // 0x07, state を変えたときに立ち, 状態関数が最初のフレームで落とす
   bool8 unk_08;        // 0x08, FUN_08009c44 / FUN_08009e54 がアニメが一巡したフレームだけ TRUE にする
   u8 unk_09;           // 0x09, まだ未解析, padding?
-  u16 unk_0a;          // 0x0A, FUN_08009e28 が毎フレーム +1 して 30 を超えたら 0 に戻す
-  u16 unk_0c;          // 0x0C, unk_0a がこれを超えたら粒子を出し直す, 120..247 の乱数
+  u16 timer;           // 0x0A, state を変えるたびに 0 に戻る, FUN_08009e28 が毎フレーム +1 して 30 を超えたら state 2 へ
+  u16 unk_0c;          // 0x0C, timer がこれを超えたら粒子を出し直す, 120..247 の乱数
   u16 amount;          // 0x0E, この太陽タケノコから出す精霊虫の効果量
   u16 lifetime;        // 0x10, SpawnSpiritBugs の lifetime
   u16 lifetimeRand;    // 0x12, SpawnSpiritBugs の lifetimeRand
@@ -51,6 +51,30 @@ static BambooShootManager* sBambooShootManager;  // 0x03000040
 
 extern s32 gLightningTimer;
 
+// state を切り替えて timer を 0 に戻す
+static inline void BambooShoot_SetState(BambooShoot* shoot, u8 state) {
+  shoot->state = state;
+  shoot->timer = 0;
+  shoot->stateEntered = TRUE;
+}
+
+// 太陽タケノコが最初から見える状況か (夜, 千里眼の実の効果中, 雷の光っている間, バット)
+static inline bool32 BambooShoot_IsRevealed(void) {
+  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
+    return TRUE;
+  }
+  if (gGameFlags & GAMEFLAG_LINK) {
+    if (gPlayerPtr[0] == NULL) {
+      return FALSE;
+    }
+    return gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
+  }
+  if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
+    return TRUE;
+  }
+  return gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
+}
+
 void FUN_08009b04(void) { sBambooShootManager = NULL; }
 
 // 空いている枠を返す, 無ければ NULL
@@ -72,9 +96,9 @@ BambooShoot* FUN_08009b10(BambooShootManager* p) {
 void BambooShoot_OnHurt(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
   if (!Hitbox_TestAttr(a, HBATTR_14) && !Hitbox_HasWeakness(a, 0x40 | 0x80 | 0x100)) {
     b->hitResult = HBRESULT_NORMAL;
-    shoot->unk_02 = 1;
-    shoot->unk_0a = 0;
-    shoot->unk_07 = TRUE;
+    shoot->state = 1;
+    shoot->timer = 0;
+    shoot->stateEntered = TRUE;
     shoot->hurtbox.flags |= HBFLAG_HIDDEN;
   }
 }
@@ -101,8 +125,8 @@ s32 FUN_08009c08(BambooShootManager* p, BambooShoot* shoot) {
 }
 
 void FUN_08009c28(BambooShootManager* p, BambooShoot* shoot) {
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
     shoot->ptcl.flags |= SPRFLAG_HIDDEN;
   }
 }
@@ -112,8 +136,8 @@ void FUN_08009c28(BambooShootManager* p, BambooShoot* shoot) {
 // 出し直しの inline 化, 比較の向き, 120 + 乱数の順, ptcl のローカル化は試済
 NON_MATCH void FUN_08009c44(BambooShootManager* p, BambooShoot* shoot) {
 #ifdef NONMATCHING_C
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
     Particle_SetOffset(&shoot->ptcl, -4, -4);
     Particle_SetPose(&shoot->ptcl, p->group1, 0);
     AuxAnim_SetAnim(&shoot->anim, p->anim_28, 8, 0, 0);
@@ -121,8 +145,8 @@ NON_MATCH void FUN_08009c44(BambooShootManager* p, BambooShoot* shoot) {
     shoot->unk_0c = (Random() & 0x7F) + 120;
   }
   if (shoot->ptcl.flags & SPRFLAG_HIDDEN) {
-    if (shoot->unk_0a++ > shoot->unk_0c) {
-      shoot->unk_0a = 0;
+    if (shoot->timer++ > shoot->unk_0c) {
+      shoot->timer = 0;
       shoot->unk_0c = (Random() & 0x7F) + 120;
       Particle_SetOffset(&shoot->ptcl, -4, -4);
       Particle_SetPose(&shoot->ptcl, p->group1, 0);
@@ -143,14 +167,14 @@ NON_MATCH void FUN_08009c44(BambooShootManager* p, BambooShoot* shoot) {
 // 残差は定数 0 と 2 のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致)
 NON_MATCH void FUN_08009e28(BambooShootManager* p, BambooShoot* shoot) {
 #ifdef NONMATCHING_C
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
   }
 
-  if (shoot->unk_0a++ > 30) {
-    shoot->unk_02 = 2;
-    shoot->unk_0a = 0;
-    shoot->unk_07 = TRUE;
+  if (shoot->timer++ > 30) {
+    shoot->state = 2;
+    shoot->timer = 0;
+    shoot->stateEntered = TRUE;
   }
 #else
   INCFUNC("asm/func/FUN_08009e28.inc");
@@ -159,8 +183,8 @@ NON_MATCH void FUN_08009e28(BambooShootManager* p, BambooShoot* shoot) {
 
 // 出現時に粒子とアニメを用意し, コマに合わせて上下させつつ4コマ目で太陽虫を撒き, アニメが一巡したら隠す
 void FUN_08009e54(BambooShootManager* p, BambooShoot* shoot) {
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
     shoot->ptcl.flags &= ~SPRFLAG_HIDDEN;
     Particle_SetOffset(&shoot->ptcl, -8, -8);
     Particle_SetPose(&shoot->ptcl, p->group0, 0);
@@ -256,8 +280,55 @@ BambooShootManager* BambooShootManager_Create(u32 _, u32 unused) {
   return p;
 }
 
-// 0x0866
-NAKED s32 Cmd_0866(void) { INCFUNC("asm/func/Cmd_0866.inc"); }
+// 0x0866, 空き枠に太陽タケノコを1つ置く, 管理エンティティが無ければ作る
+s32 Cmd_0866(void) {
+  BambooShootManager* p = sBambooShootManager;
+  BambooShoot* shoot;
+  WorldPos pos;
+
+  if (p == NULL) {
+    p = BambooShootManager_Create(0, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  shoot = FUN_08009b10(p);
+  if (shoot == NULL) {
+    return -1;
+  }
+
+  ClearMemory(shoot, sizeof(BambooShoot));
+  shoot->id = VM_GetNamedArgValue('n', 0);
+  shoot->kind = VM_GetNamedArgValue('t', 0);
+  shoot->count = VM_GetNamedArgValue('b', 0);
+  shoot->unk_08 = FALSE;
+  BambooShoot_SetState(shoot, 0);
+  shoot->unk_0c = 0;
+  shoot->unk_06 = 0;
+  BambooShoot_Init(p, shoot);
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+  Hitbox_SetPos(&shoot->hurtbox, &pos, 0);
+  shoot->ptcl.pos = pos;
+  shoot->ptcl.pos.y += 230;
+  if (VM_SeekToNamedArg('s')) {
+    shoot->amount = VM_GetValue();
+    shoot->lifetime = VM_GetValue();
+    shoot->lifetimeRand = VM_GetValue();
+  } else {
+    shoot->amount = 50;
+    shoot->lifetime = 600;
+    shoot->lifetimeRand = 100;
+  }
+  return 0;
+}
 
 // 0x78EE, 使用中の枠の数を数えてスクリプト変数へ書き出す (使われてなさそう)
 u32 Cmd_78EE(void) {
