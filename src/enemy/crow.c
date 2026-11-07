@@ -322,7 +322,16 @@ found:
   return TRUE;
 }
 
-NAKED void FUN_08144bfc(Crow* p) { INCFUNC("asm/func/FUN_08144bfc.inc"); }
+void FUN_08144bfc(Crow* p) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    (p->e).unk_24e = (p->e).unk_24c;
+  } else if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_26)) {
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 0, 3);
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+  }
+}
 
 s32 FUN_08144cb8(Crow* p) {
   FUN_08144414(p);
