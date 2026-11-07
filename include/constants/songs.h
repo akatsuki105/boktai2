@@ -290,14 +290,14 @@
 #define SE_POP_SPIRIT_BUGS 285  // 太陽タケノコから 月光虫 or 太陽虫 が出てきた時の音
 #define SE_INFO 286
 #define SE_UNK_287 287
-#define VO_OTENKO_OTNK 288   // おてんこ！
-#define CRY_MUMMY_BURN 289   // ｱﾁ!
-#define SE_BAMBOO_SHOOT 290  // 太陽タケノコが出た時のSE
-#define SE_UNK_291 291
+#define VO_OTENKO_OTNK 288    // おてんこ！
+#define CRY_MUMMY_BURN 289    // ｱﾁ!
+#define SE_BAMBOO_SHOOT 290   // 太陽タケノコが出た時のSE
+#define SE_GAIN_VALUABLE 291  // 貴重品を取得した時のSE
 #define SE_SOLAR_STAND_DENY 292
 #define SE_RUNNING_FOOTSTEPS 293  // 足音一回でなく複数回まとめて
 #define SE_UNK_294 294
-#define SE_UNK_295 295
+#define SE_UNK_295 295        // パイルドライバーのジェネレータに関係するSE
 #define VO_RDJANGO_TAIYO 296  // 赤ジャンゴの太陽チャージ
 #define SE_UNK_297 297
 #define SE_UNK_298 298       // 焼ける様な音
@@ -389,7 +389,7 @@
 #define SONG_384 384
 #define SONG_385 385
 #define SONG_386 386
-#define SONG_387 387
+#define SE_GAIN_KEY 387  // 鍵を入手した時のSE
 #define SONG_388 388
 #define CRY_GOLEM_DETECT 389  // ゴーレムが怪しんだ時
 #define CRY_GOLEM_ALERT 390   // 見つかった時

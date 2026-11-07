@@ -6,13 +6,6 @@
 #include "vm.h"
 #include "weapon.h"
 
-// ItemCategory16, ItemCategory32
-#define ITEM_CATEGORY_USABLE 0  // 消費アイテム, 貴重品 (名前は後でもっといいものにする)
-#define ITEM_CATEGORY_WEAPON 1
-#define ITEM_CATEGORY_ARMOR 2
-#define ITEM_CATEGORY_UNK3 3
-#define ITEM_CATEGORY_UNK4 4
-
 #define ITEM(slot) (*(gStat->items + slot))           // gStat->items[slot]
 #define VALUABLES(slot) (*(gStat->valuables + slot))  // gStat->valuables[slot]
 #define ROTCOUNT(slot) (*(gStat->rotTimer + slot))    // gStat->rotTimer[slot]
@@ -312,7 +305,7 @@ bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
       break;
     }
 
-    case ITEM_CATEGORY_UNK3:
+    case ITEM_CATEGORY_MAGIC:
     case ITEM_CATEGORY_UNK4: {
       if (gStat->playerKind != PLAYER_SABATA) {
         return TRUE;

@@ -8,6 +8,7 @@ typedef s16 item16_t;
 typedef s32 item32_t;
 
 // see "include/constants/item.h", item/weapon/armor を区別するものなので、 item.h にあるのは適切ではないけど、ここに置いておく
+typedef u8 ItemCategory8;
 typedef s16 ItemCategory16;
 typedef s32 ItemCategory32;
 

@@ -89,7 +89,7 @@ void FUN_08006ba0(MapItemManager* p, MapItem* item);
 bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID);
 
 extern s32 gLightningTimer;
-s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
+s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
 
 IWRAM_DATA MapItemManager* gMapItemManager = NULL;  // 0x0300002C
 

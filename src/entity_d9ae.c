@@ -93,8 +93,6 @@ s32 Cmd_5C0B(void);
 s32 Cmd_0E76(void);
 void EntityD9AEElem_SpawnMoveDust(EntityD9AEElem* elem);
 s32 EntityD9AEElem_TryMove(EntityD9AEElem* elem, s32 tileIdx, s32 dir);
-s32 EntityD9AE_PushAt(Vec3* pos, s32 dir);
-s32 EntityD9AE_PushAtDir8(Vec3* pos, u32 dir);
 void EntityD9AEElem_UpdateIdle(EntityD9AEElem* elem);
 void EntityD9AEElem_UpdateMove(EntityD9AEElem* elem);
 void EntityD9AEElem_UpdateFall(EntityD9AEElem* elem);
