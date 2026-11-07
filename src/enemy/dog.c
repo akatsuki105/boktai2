@@ -26,7 +26,9 @@ typedef struct {
   u8 unk_654[4];              // 0x654
   HitboxData unk_658;         // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
   u32 unk_6a8;                // 0x6A8, bit0 は待ちが明けたときに立てる
-  u8 unk_6ac[0x6B8 - 0x6AC];  // 0x6AC
+  u32 unk_6ac;                // 0x6AC, unk_1e4 がこれ未満なら副状態 (0,2,0) へ
+  u32 unk_6b0;                // 0x6B0, unk_1e4 がこれ未満でほぼ正面なら副状態 (0,2,1) へ
+  u8 unk_6b4[4];              // 0x6B4
   u32 unk_6b8;                // 0x6B8, unk_1e4 と比べる距離の閾値, unk_6bc と対
   u32 unk_6bc;                // 0x6BC, unk_1e4 がこれを超えると副状態 19 へ移る
   u16 unk_6c0;                // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
@@ -201,7 +203,63 @@ NON_MATCH void FUN_0814a098(Dog* p) {
 #endif
 }
 
-NAKED void enemy_dog_0814a320(Dog* p) { INCFUNC("asm/func/enemy_dog_0814a320.inc"); }
+// プレイヤーが前方にいて近ければ攻撃の副状態へ移り, そうでなければ次の動きを決める
+// 300/301命令, 原典は flags3 の検査の 0x100 を unk_1cc のオフセット 0x1CC から subs で作るが, こちらは 0x100 を r7 に置いて角度の折り返しの +256 と使い回す, 末尾の enemy_dog_0814b500 の呼び出しは3か所に書くと揃う, 試済: 検査を TEST_FLAGS / & / Enemy_TestFlag3
+NON_MATCH void enemy_dog_0814a320(Dog* p) {
+#ifdef NONMATCHING_C
+  Dog* q = (p->e).unk_1cc;
+
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    return;
+  }
+  if ((p->e).unk_1e4 < (p->e).unk_1e8) {
+    Vec3 diff;
+    s32 d;
+    s32 ad;
+
+    Vec3_Delta(&diff, &(p->e).mover.pos, &(p->e).playerMover->pos);
+    d = ArcTan2_8(diff.x, diff.z) - (p->e).mover.angle;
+    if (d > 128) {
+      d -= 256;
+    } else if (d < -128) {
+      d += 256;
+    }
+    ad = abs(d);
+    if (ad <= 23) {
+      if ((p->e).variant <= 1 || (p->e).variant == 4) {
+        if ((p->e).unk_1e4 < q->unk_6ac && q->unk_6c8 == 0) {
+          Enemy_ResetState(&p->e, 0, 2, 0);
+          Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+          Enemy_ClearPendingState(&p->e, s_dogcom_c_082520e4, 111);
+          return;
+        }
+      } else {
+        if ((p->e).unk_1e4 < q->unk_6ac && q->unk_6c8 == 0) {
+          Enemy_ResetState(&p->e, 0, 2, 0);
+          Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+          Enemy_ClearPendingState(&p->e, s_dogcom_c_082520e4, 124);
+          return;
+        }
+        if ((p->e).unk_1e4 < q->unk_6b0 && ad <= 5 && q->unk_6ca == 0) {
+          Enemy_ResetState(&p->e, 0, 2, 1);
+          Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+          Enemy_ClearPendingState(&p->e, s_dogcom_c_082520e4, 129);
+          return;
+        }
+      }
+      if (!Dog_TestUnk6a8(q, 8)) {
+        enemy_dog_0814b500(p);
+      }
+    } else if (!Dog_TestUnk6a8(q, 8)) {
+      enemy_dog_0814b500(p);
+    }
+  } else if (!Dog_TestUnk6a8(q, 8)) {
+    enemy_dog_0814b500(p);
+  }
+#else
+  INCFUNC("asm/func/enemy_dog_0814a320.inc");
+#endif
+}
 
 // angle の方向が視野の外ならそちらへ振り向く状態に入る
 bool8 FUN_0814a5e0(Dog* p, u32 angle) {
