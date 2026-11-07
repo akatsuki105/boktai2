@@ -4,6 +4,7 @@
 #include "constants/enemy.h"
 #include "enemy.h"
 #include "gba/gba.h"
+#include "global.h"
 #include "macro.h"
 #include "types.h"
 
@@ -60,6 +61,20 @@ static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
   if (p->flags5 & bit) {
     return TRUE;
   }
+  return FALSE;
+}
+
+// dst への経路を引けたら TRUE, 島の外か経路が無ければ経路追従の印を落として FALSE
+static inline bool8 Enemy_TryRouteTo(Enemy* p, NavAgent* agent, WorldPos* pos, WorldPos* dst) {
+  s32 result;
+
+  if (Map_IsPosInAgentIsland(agent, pos, dst) && (result = Map_TryFindNavRoute(agent, pos, dst)) != 0) {
+    if (result != 2) {
+      ClearMemory(&p->mover.delta, 8);
+    }
+    return TRUE;
+  }
+  Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
   return FALSE;
 }
 
