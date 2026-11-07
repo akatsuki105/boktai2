@@ -194,7 +194,23 @@ void FUN_081e0588(Entity501B* p) {
   }
 }
 
-NAKED void Entity501B_StateSaveDone(Entity501B* p) { INCFUNC("asm/func/Entity501B_StateSaveDone.inc"); }
+// セーブできたと伝え, 120 フレームで画面を閉じ始め, 140 フレームを過ぎたらセッションを終える
+void Entity501B_StateSaveDone(Entity501B* p) {
+  if (p->entered) {
+    TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
+    TextPanel_SetMessage(p->textPanels[0], 7);
+    PlaySound_082406e0(686);
+    p->stateTimer = 0;
+    p->entered = FALSE;
+  }
+  if (p->stateTimer == 120) {
+    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+  } else if (p->stateTimer > 140) {
+    FUN_081df940();
+    return;
+  }
+  p->stateTimer++;
+}
 
 // セーブに失敗したと伝え, 60 フレーム後からボタンでソフトリセットする
 void Entity501B_StateSaveFailed(Entity501B* p) {
