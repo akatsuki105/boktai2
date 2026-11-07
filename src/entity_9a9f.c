@@ -834,7 +834,60 @@ NON_MATCH s32 FUN_081df014(Entity9A9F* p) {
 #endif
 }
 
-NAKED s32 FUN_081df0f8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df0f8.inc"); }
+// 全員から 0x10A5 のキーが届いたら state 18 へ, unk_25 が立っていれば最初の1回だけ確認のメッセージを出し, 0x10A5 を送り続ける
+// 残差: 原典は FUN_081ddab4 の戻り値を r1 に写してから比べ, キー種別の定数をループ内で作る (FUN_081df568 と同じ), count と i のレジスタも違う
+NON_MATCH s32 FUN_081df0f8(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 count;
+  s32 n;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    p->unk_25 = 0;
+    p->unk_26 = 0;
+    if (gEntity9A9F != NULL) {
+      gEntity9A9F->unk_54[2] = 1;
+    }
+    if (p->unk_2de != 0) {
+      VM_ExecByID(p->unk_2de, NULL);
+    }
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  count = 0;
+  n = p->recordCount;
+  for (i = 0; i < n; i++) {
+    u16 key = Entity9A9F_GetRecvKey(p, i);
+
+    if (Entity9A9F_IsKeyKind(key, 0x1000) && (key & 0xFF) == 0xA5) {
+      count++;
+    }
+  }
+  if (count == n) {
+    Entity9A9F_SetState(p, 18, FUN_081df23c);
+    return 0;
+  }
+
+  if (p->unk_25 != 0) {
+    if (p->unk_26 == 0) {
+      FUN_0823ce68(0, 1, 4, 4, 4, 0xFFFF, 0);
+      MainMenu_SetHudMode(5);
+      p->windowID = TextPanel_Create(1, 7, 28, 6);
+      TextPanel_SetScript(p->windowID, p->unk_2f0);
+      TextPanel_SetMessage(p->windowID, 9);
+      TextPanel_Start(p->windowID);
+      p->unk_26 = 1;
+    }
+    p->unk_42 = 0x10A5;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_081df0f8.inc");
+#endif
+}
 
 NAKED s32 FUN_081df23c(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df23c.inc"); }
 
