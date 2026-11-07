@@ -101,7 +101,28 @@ NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* el
 #endif
 }
 
-NAKED void FUN_080dc650(Entity080dd1f8Elem* elem, u16 power, u16 knockback) { INCFUNC("asm/func/FUN_080dc650.inc"); }
+// 攻撃判定と食らい判定を作る
+void FUN_080dc650(Entity080dd1f8Elem* elem, u16 power, u16 knockback) {
+  HitboxData* hitbox;
+  HitboxData* hurtbox;
+  Vec3 halfSize;
+  Vec3 offset;
+
+  VEC3_SET(halfSize, 32, 32, 32);
+  VEC3_SET(offset, 0, 32, 0);
+  hitbox = &elem->hitbox;
+  Hitbox_Init(hitbox, elem->unk_13c, HBFLAG_HITBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, (s16)power, (s16)knockback, 0, 0, 0);
+  Hitbox_SetPos(hitbox, &elem->spr.pos, 0);
+  Hitbox_SetHandler(hitbox, FUN_080dc4a8, elem);
+  VEC3_SET(halfSize, 64, 128, 64);
+  VEC3_SET(offset, 0, 128, 0);
+  hurtbox = &elem->hurtbox;
+  Hitbox_Init(hurtbox, elem->unk_13c, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetPos(hurtbox, &elem->spr.pos, 0);
+  Hitbox_SetHandler(hurtbox, FUN_080dc614, elem);
+  Hitbox_Register(hurtbox);
+}
 
 Entity080dd1f8Elem* FUN_080dc764(Entity080dd1f8* p) {
   s32 i;
