@@ -1,8 +1,10 @@
 #ifndef __INCLUDE_ENEMY_INLINE_H__
 #define __INCLUDE_ENEMY_INLINE_H__
 
+#include "constants/enemy.h"
 #include "enemy.h"
 #include "gba/gba.h"
+#include "macro.h"
 #include "types.h"
 
 static inline void Enemy_ResetState(Enemy* p, u8 subState0, u8 subState1, u8 subState2) {
@@ -59,6 +61,15 @@ static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
     return TRUE;
   }
   return FALSE;
+}
+
+// 追いかけを始める印を立てる
+static inline void Enemy_BeginChase(Enemy* p) {
+  if (p->kind != ENEK_SPIDER) {
+    SET_FLAGS(p->unk_222, ENEMY222_UNK_2);
+  }
+  SET_FLAGS(p->flags3, ENEFLAG3_UNK_7);
+  p->unk_24e = p->unk_24c;
 }
 
 // 当たった相手を攻撃対象として覚える

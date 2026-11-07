@@ -368,7 +368,20 @@ NAKED void FUN_0814e8ec(Dog* p, s32 timer) { INCFUNC("asm/func/FUN_0814e8ec.inc"
 
 NAKED bool8 FUN_0814eacc(Dog* p) { INCFUNC("asm/func/FUN_0814eacc.inc"); }
 
-NAKED void FUN_0814fba4(Dog* p) { INCFUNC("asm/func/FUN_0814fba4.inc"); }
+void FUN_0814fba4(Dog* p) {
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_0814caa0, ES_UNK_10);
+    (p->e).mover.angle = (p->e).unk_1fc;
+    Enemy_SetEmote(&p->e, 0, 0, (p->e).kind);
+    Enemy_RunScript(&p->e);
+    Enemy_BeginChase(&p->e);
+  }
+  if ((p->e).subStateDone) {
+    enemy_dog_0814a320(p);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 NAKED void FUN_0814fc7c(Dog* p) { INCFUNC("asm/func/FUN_0814fc7c.inc"); }
 
