@@ -59,5 +59,6 @@ s32 AuxShadow_SetSprite(AuxShadow* shadow, SpriteID32 id, s32 poseIdx);
 void AuxShadow_SetScaleParams(AuxShadow* shadow, s32 scale, s32 farScale, s32 baseScale, s32 unk_57, s32 farHeight, s32 nearHeight, s32 farShift, s32 nearShift);
 void AuxShadow_Show(AuxShadow* shadow);
 void AuxShadow_Hide(AuxShadow* shadow);
+s32 AuxShadow_SetAffine(AuxShadow* shadow, u32 enable);
 
 #endif  // __INCLUDE_SHADOW_H__

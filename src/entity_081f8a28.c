@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "player.h"
@@ -50,6 +51,7 @@ static Entity081f8a28* gEntity081f8a28;  // 0x03000208
 
 s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s32 invincibleTime, s32 ignoreMask);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
+Entity081f8a28* Entity081f8a28_Create(void);
 
 static inline bool8 Entity081f8a28_IsElemUsed(Entity081f8a28* p, s32 i) {
   if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
@@ -62,7 +64,7 @@ void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem
   elem->stateBegun = TRUE;
 }
 
-void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 unk_6, s32 unk_7, s32 unk_8) {
   HitboxData* hitbox;
   Vec3 halfSize;
   Vec3 offset;
@@ -198,7 +200,52 @@ void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) {
   }
 }
 
-NAKED void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_Spawn.inc"); }
+void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+  Entity081f8a28* p = gEntity081f8a28;
+  Entity081f8a28Elem* elem;
+  AuxSprite* sprite;
+  AuxShadow* shadow;
+
+  if (p == NULL) {
+    p = Entity081f8a28_Create();
+    if (p == NULL) {
+      return;
+    }
+  }
+  elem = Entity081f8a28_AllocElem(p);
+  if (elem == NULL) {
+    return;
+  }
+  elem->state = 1;
+  elem->lifetime = 120;
+  elem->unk_11c = 0;
+  elem->unk_108 = angle;
+  elem->target = *target;
+  elem->angle = angle;
+  elem->homingTime = homingTime;
+  elem->turnSpeed = turnSpeed;
+  elem->homingDelay = homingDelay;
+  elem->speed = speed;
+  elem->maxSpeed = maxSpeed;
+  elem->stateBegun = TRUE;
+  Vec3_Clear(&elem->vel);
+  elem->vel.y = velY;
+  sprite = &elem->sprite;
+  elem->sprite.pos = *pos;
+  elem->animFile = GetFile(DIR_ANIMATION, ANIM_121B);
+  AuxSprite_Add(sprite, &p->gfx, 0);
+  AuxAnim_SetAnim(&elem->anim, elem->animFile, 7, 0, 0);
+  Video_SetAuxSpritePltt(sprite->gfx, 0xD9);
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  sprite->priority = 2;
+  AuxSprite_Show(sprite);
+  Entity081f8a28_InitHitbox(elem, power, knockbackPower, attrs, invincibleTime, 0, 0, 0);
+  shadow = &elem->shadow;
+  elem->shadowId = AuxShadow_Init(shadow, &elem->sprite.pos, 64, 64, 64, 100, 0, 0, 5, 1, 0);
+  AuxShadow_SetSprite(shadow, SPRITE_EFF_1C1B, 6);
+  AuxShadow_SetAffine(shadow, 0);
+  AuxShadow_Hide(shadow);
+}
 
 void (*const PTR_ARRAY_085ae5c0[4])(Entity081f8a28*, Entity081f8a28Elem*) = {
     Entity081f8a28_UpdateIdle,
