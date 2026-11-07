@@ -56,10 +56,10 @@ s32 MainMenu_SetHudMode(s32 mode);
 bool8 Save_WriteExtraToNextSlot(void);
 void FUN_081df924(void);
 void FUN_081e0544(Entity501B* p);
-void FUN_081e084c(Entity501B* p);
-void FUN_081e04a8(Entity501B* p);
+void Entity501B_StateTransfer(Entity501B* p);
+void Entity501B_StateSave(Entity501B* p);
 void FUN_081e03d8(Entity501B* p);
-void FUN_081e06d8(Entity501B* p);
+void Entity501B_StateSolarStand(Entity501B* p);
 
 // セッションの状態を返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetState(void) {
@@ -343,12 +343,12 @@ void FUN_081e03d8(Entity501B* p) {
     p->entered = FALSE;
   }
   if (Entity9A9F_GetState() == 22) {
-    Entity501B_SetState(p, FUN_081e04a8, 4);
+    Entity501B_SetState(p, Entity501B_StateSave, 4);
   }
 }
 
 // 案内を出して 60 フレーム後にセーブを書き, 成否に応じた状態へ移る
-void FUN_081e04a8(Entity501B* p) {
+void Entity501B_StateSave(Entity501B* p) {
   if (p->entered) {
     TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
     TextPanel_SetMessage(p->textPanels[0], 6);
@@ -420,7 +420,7 @@ void Entity501B_StateSaveFailed(Entity501B* p) {
 }
 
 // 太陽スタンドの増減を精算して結果の案内を出し, 10 フレーム後からボタンで次の状態へ移る
-void FUN_081e06d8(Entity501B* p) {
+void Entity501B_StateSolarStand(Entity501B* p) {
   if (p->entered) {
     s32* stand;
     s32 v;
@@ -464,7 +464,7 @@ void FUN_081e06d8(Entity501B* p) {
 }
 
 // 稼いだ点を1フレームに step ずつ対戦ポイントへ移し, ボタンで step を8倍にする, 移し終えたらボタンで次の状態へ移る
-void FUN_081e084c(Entity501B* p) {
+void Entity501B_StateTransfer(Entity501B* p) {
   if (p->entered) {
     p->step = 2;
     p->stateTimer = 0;
@@ -503,7 +503,7 @@ void FUN_081e084c(Entity501B* p) {
       if (unk == NULL || *unk == 1) {
         Entity501B_SetState(p, FUN_081e03d8, 3);
       } else {
-        Entity501B_SetState(p, FUN_081e06d8, 2);
+        Entity501B_SetState(p, Entity501B_StateSolarStand, 2);
       }
       return;
     }
@@ -518,13 +518,13 @@ void FUN_081e084c(Entity501B* p) {
 }
 
 // 待ちの間は上段の数字を回し, ボタンで待ちを飛ばし, 待ちが切れたら次の状態へ移る
-void FUN_081e0a18(Entity501B* p) {
+void Entity501B_StateSpin(Entity501B* p) {
   if (p->entered) {
     p->stateTimer = 0;
     p->entered = FALSE;
   }
   if (p->timer == 0) {
-    Entity501B_SetState(p, FUN_081e084c, 1);
+    Entity501B_SetState(p, Entity501B_StateTransfer, 1);
   } else {
     if (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON)) {
       p->timer = 1;
@@ -580,7 +580,7 @@ NON_MATCH s32 Entity501B_Init(Entity501B* p) {
   Entity501B_SetNumber(p, 1, gStat->linkBattlePoint);
   Entity501B_InitAuxSprite(p);
   Entity501B_LoadScore(p);
-  Entity501B_SetState(p, FUN_081e0a18, 0);
+  Entity501B_SetState(p, Entity501B_StateSpin, 0);
   FUN_0823ce68(2, 1, 4, 4, 4, 0xFFFF, 0);
   return 1;
 #else
