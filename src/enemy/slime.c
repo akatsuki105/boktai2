@@ -91,7 +91,7 @@ NAKED void Slime_InitHitboxes(Slime* p) { INCFUNC("asm/func/Slime_InitHitboxes.i
 
 NAKED void Slime_OnReset(Slime* p) { INCFUNC("asm/func/Slime_OnReset.inc"); }
 
-NAKED void FUN_0816406c(Slime* p) { INCFUNC("asm/func/FUN_0816406c.inc"); }
+void FUN_0816406c(Slime* p) {}
 
 NAKED void Slime_InitAnims(Slime* p) { INCFUNC("asm/func/Slime_InitAnims.inc"); }
 
