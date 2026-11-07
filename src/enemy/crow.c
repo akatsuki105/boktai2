@@ -410,7 +410,28 @@ NAKED void FUN_08144cd0(Crow* p) { INCFUNC("asm/func/FUN_08144cd0.inc"); }
 
 NAKED void FUN_08144ec8(Crow* p) { INCFUNC("asm/func/FUN_08144ec8.inc"); }
 
-NAKED void FUN_081452cc(Crow* p) { INCFUNC("asm/func/FUN_081452cc.inc"); }
+void FUN_081452cc(Crow* p) {
+  s32 d;
+  s32 y;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    (p->e).mover.angle += 128;
+  }
+  (p->e).unk_608(&p->e);
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  d = (p->e).floorY;
+  y = (p->e).mover.pos.y - 320;
+  d -= y;
+  if (d < 0) {
+    d = -d;
+  }
+  if (d <= 16 && (p->e).subStateTimer > 80) {
+    Enemy_ResetState(&p->e, 0, 0, 1);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 void FUN_08145424(Crow* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad84c; }
 

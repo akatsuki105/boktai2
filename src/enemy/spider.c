@@ -37,6 +37,7 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
 }
 
 void FUN_080e8614(Enemy* p);
+void FUN_080e68d8(Enemy* p, s32 timer);
 void FUN_08130eec(Spider* p);
 void Spider_PickRandomPathNode(Spider* p);
 void FUN_0812f83c(Spider*);
