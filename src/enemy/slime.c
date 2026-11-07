@@ -29,7 +29,7 @@ typedef struct {
   u8 unk_65e[0x688 - 0x65E];  // 0x65E
   u16 unk_688;                // 0x688, '.s[0]'
   u16 unk_68a;                // 0x68A, '.s[1]'
-  s16 unk_68c;                // 0x68C, 待ち時間, 64〜127 から数え下ろす
+  u16 unk_68c;                // 0x68C, 待ち時間, 64〜127 から数え下ろす
   u16 unk_68e;                // 0x68E, bit4 が立っていれば分裂の SE を鳴らして落とす
   u8 unk_690[1680 - 0x690];   // 0x690
 } Slime;
@@ -142,7 +142,19 @@ NAKED void FUN_08162fa8(Slime* p) { INCFUNC("asm/func/FUN_08162fa8.inc"); }
 
 NAKED void FUN_081630dc(Slime* p) { INCFUNC("asm/func/FUN_081630dc.inc"); }
 
-NAKED void FUN_081631d8(Slime* p) { INCFUNC("asm/func/FUN_081631d8.inc"); }
+// 64〜127 フレーム待ってから次の状態へ移る
+void FUN_081631d8(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    q->unk_68c = (Random() & 63) + 64;
+  }
+  if (q->unk_68c != 0) {
+    q->unk_68c--;
+  } else if ((p->e).animForceRestart) {
+    Enemy_EnterState(&p->e, FUN_08162fa8, ES_UNK_33);
+  }
+}
 
 NAKED void FUN_0816328c(Slime* p) { INCFUNC("asm/func/FUN_0816328c.inc"); }
 
