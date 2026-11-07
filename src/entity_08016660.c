@@ -8,6 +8,8 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
+// 水しぶき(大), マグマか水のどちらで使うものかはまだ不明
+
 // リストに繋がれるノード, prev/next 以外はまだ未解析で全体の大きさも未確定
 typedef struct Entity08016660Node {
   u8 unk_00;                        // 0x00, まだ未解析
@@ -22,8 +24,8 @@ typedef struct Entity08016660Node {
   Vec3 pos;                         // 0x0C, ヒットボックスの位置
   s16 floorY;                       // 0x14, pos の足元の高さ
   s16 hp;                           // 0x16, 被弾のたびにダメージを引く, 0 止まり
-  HitboxData* hitbox;               // 0x18, 非NULL なら解放時に Hitbox_Unregister して Free する
-  HitboxData* hitbox2;              // 0x1C, 非NULL なら解放時に Free する, 毎フレーム Hitbox_Register する
+  HitboxData* hurtbox;              // 0x18, 非NULL なら解放時に Hitbox_Unregister して Free する
+  HitboxData* hitbox;               // 0x1C, 非NULL なら解放時に Free する, 毎フレーム Hitbox_Register する
   AuxSpriteGfx gfx;                 // 0x20, SPRITE_863A
   AuxSprite sprite;                 // 0x3C, 解放時に AuxSprite_Remove する
   AuxAnimState anim;                // 0x68
@@ -33,8 +35,8 @@ typedef struct Entity08016660Node {
 
 typedef struct {
   Entity e;                  // ENTITY_UNK_8
-  AuxAnimFile* anim;         // 0x18, 根拠: Entity08016660_Init
-  Entity08016660Node* list;  // 0x1C, FUN_08016094 が先頭挿入する双方向リスト
+  AuxAnimFile* anim;         // 0x18, ANIM_931E
+  Entity08016660Node* list;  // 0x1C
 } Entity08016660;
 static_assert(sizeof(Entity08016660) == 32);
 
@@ -110,13 +112,13 @@ s32 FUN_080160cc(Entity08016660Node* node) {
     FUN_080160b0(gEntity08016660, node);
   }
 
-  if (node->hitbox != NULL) {
-    Hitbox_Unregister(node->hitbox);
-    Free(node->hitbox);
+  if (node->hurtbox != NULL) {
+    Hitbox_Unregister(node->hurtbox);
+    Free(node->hurtbox);
   }
 
-  if (node->hitbox2 != NULL) {
-    Free(node->hitbox2);
+  if (node->hitbox != NULL) {
+    Free(node->hitbox);
   }
 
   Free(node);
@@ -125,7 +127,7 @@ s32 FUN_080160cc(Entity08016660Node* node) {
 // 残差は最後の初期化で 0 を入れる定数の持ち方だけ (258/259), 原典は fnIdx / timer に r6 の 0 を使い, unk_05 / prev / next には改めて movs r0, #0 を作る
 // Entity08016660_Create は2引数で呼んでいたので宣言を (u32 id, u32 _) にした, ヒットボックスは flags bit0 が立っている側を then にすると分岐の並びが合う
 // 燃えるエフェクトのノードを作って pos に置き, flags bit0 なら食らい判定と攻撃判定も付けてリストに繋ぐ
-NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos) {
+NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 hp, Vec3* pos) {
 #ifdef NONMATCHING_C
   Entity08016660Node* node;
   Vec3 size, offset;
@@ -143,7 +145,23 @@ NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos) {
   node->unk_08 = val3;
   node->pos = *pos;
   node->floorY = TileHeightAt(&node->pos);
-  node->hp = val4;
+  node->hp = hp;
+
+  if (node->flags & 1) {
+    node->hurtbox = Malloc(sizeof(HitboxData));
+    if (node->hurtbox == NULL) {
+      return -1;
+    }
+    ClearMemory(node->hurtbox, sizeof(HitboxData));
+    size.x = 90, size.y = 128, size.z = 90;
+    offset.x = 0, offset.y = 128, offset.z = 0;
+    Hitbox_Init(node->hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+    Hitbox_SetHandler(node->hurtbox, FUN_0801606c, node);
+    Hitbox_Register(node->hurtbox);
+    Hitbox_SetPos(node->hurtbox, &node->pos, 0);
+  } else {
+    node->hurtbox = NULL;
+  }
 
   if (node->flags & 1) {
     node->hitbox = Malloc(sizeof(HitboxData));
@@ -151,31 +169,15 @@ NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos) {
       return -1;
     }
     ClearMemory(node->hitbox, sizeof(HitboxData));
-    size.x = 90, size.y = 128, size.z = 90;
-    offset.x = 0, offset.y = 128, offset.z = 0;
-    Hitbox_Init(node->hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-    Hitbox_SetHandler(node->hitbox, FUN_0801606c, node);
+    size.x = Q8(0.391), size.y = Q8(0.47), size.z = Q8(0.391);
+    offset.x = 0, offset.y = 0, offset.z = 0;
+    Hitbox_Init(node->hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+    Hitbox_SetHandler(node->hitbox, nop_08016090, node);
+    Hitbox_SetPower(node->hitbox, 50, 20);
     Hitbox_Register(node->hitbox);
     Hitbox_SetPos(node->hitbox, &node->pos, 0);
   } else {
     node->hitbox = NULL;
-  }
-
-  if (node->flags & 1) {
-    node->hitbox2 = Malloc(sizeof(HitboxData));
-    if (node->hitbox2 == NULL) {
-      return -1;
-    }
-    ClearMemory(node->hitbox2, sizeof(HitboxData));
-    size.x = 100, size.y = 120, size.z = 100;
-    offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(node->hitbox2, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-    Hitbox_SetHandler(node->hitbox2, nop_08016090, node);
-    Hitbox_SetPower(node->hitbox2, 50, 20);
-    Hitbox_Register(node->hitbox2);
-    Hitbox_SetPos(node->hitbox2, &node->pos, 0);
-  } else {
-    node->hitbox2 = NULL;
   }
 
   if (!Video_GetAuxSprite(&node->gfx, SPRITE_863A)) {
@@ -184,7 +186,7 @@ NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos) {
   AuxSprite_Add(&node->sprite, &node->gfx, SPRFLAG_HIDDEN);
   node->sprite.priority = 2;
   AuxAnim_SetAnim(&node->anim, gEntity08016660->anim, 1, 0, 0);
-  Video_SetAuxSpritePltt(&node->gfx, node->unk_00 + 275);
+  Video_SetAuxSpritePltt(&node->gfx, 275 + node->unk_00);
   if (node->unk_08 == 0) {
     Entity08016660Node_SetFn(node, 1);
   } else {
@@ -238,12 +240,12 @@ void FUN_08016454(Entity08016660Node* p) {
   if (p->hp <= 0 || p->unk_04) {
     p->unk_05 = TRUE;
   } else {
+    if (p->hurtbox != NULL) {
+      Hitbox_SetPos(p->hurtbox, &p->pos, 0);
+    }
     if (p->hitbox != NULL) {
       Hitbox_SetPos(p->hitbox, &p->pos, 0);
-    }
-    if (p->hitbox2 != NULL) {
-      Hitbox_SetPos(p->hitbox2, &p->pos, 0);
-      Hitbox_Register(p->hitbox2);
+      Hitbox_Register(p->hitbox);
     }
     p->timer++;
   }
