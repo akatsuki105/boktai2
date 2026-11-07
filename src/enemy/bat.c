@@ -82,7 +82,7 @@ NAKED void FUN_0813fd24(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fd24.inc"); }
 
 NAKED void FUN_0813fe34(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fe34.inc"); }
 
-NAKED void FUN_08140014(EnemyBat* p) { INCFUNC("asm/func/FUN_08140014.inc"); }
+void FUN_08140014(EnemyBat* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad7d0; }
 
 NAKED void EnemyBat_OnReset(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnReset.inc"); }
 
