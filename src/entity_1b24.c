@@ -116,7 +116,90 @@ s32 FUN_0809cfc0(Entity1B24* p, WeaponData* w) {
   return 0;
 }
 
-NAKED void FUN_0809d00c(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d00c.inc"); }
+// 武器種ごとの能力値の欄を描き直す, カーソルの武器の値は自分の武器と比べた大小で色を変える
+void FUN_0809d00c(Entity1B24* p) {
+  WeaponData w;
+  s32 values[4];
+  s32 digits[3];
+  s32 i;
+  s32 j;
+  s32 col;
+  s32 cursorCol;
+  s32 val;
+  s32 rem;
+  s32 ofs;
+
+  for (i = 0; i < 4; i++) {
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[22 + i * 3 + j], &p->gfx[0], 0, 1);
+      values[i] = 0;
+    }
+  }
+
+  if (p->record[0x40] == 2) {
+    values[3] = FUN_0809cfc0(p, &p->weaponData);
+    digits[0] = Div(values[3], 100);
+    rem = values[3] - digits[0] * 100;
+    digits[1] = Div(rem, 10);
+    digits[2] = rem - digits[1] * 10;
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[31 + j], &p->gfx[0], digits[j], 1);
+    }
+    return;
+  }
+
+  col = -1;
+  if (p->slot >= 0) {
+    GetWeaponData(p->slot, &w);
+    if (w.kind == WK_SWORD) {
+      col = 0;
+    } else if (w.kind == WK_SPEAR) {
+      col = 1;
+    } else if (w.kind == WK_HAMMER) {
+      col = 2;
+    } else {
+      col = 3;
+    }
+    values[col] = FUN_0809cfc0(p, &w);
+    digits[0] = Div(values[col], 100);
+    rem = values[col] - digits[0] * 100;
+    digits[1] = Div(rem, 10);
+    digits[2] = rem - digits[1] * 10;
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[22 + col * 3 + j], &p->gfx[0], digits[j], 1);
+    }
+  }
+
+  if (FUN_0809cf98((u8)p->cursor.slot)) {
+    GetWeaponData((u8)p->cursor.slot, &w);
+    if (w.kind == WK_SWORD) {
+      cursorCol = 0;
+    } else if (w.kind == WK_SPEAR) {
+      cursorCol = 1;
+    } else if (w.kind == WK_HAMMER) {
+      cursorCol = 2;
+    } else {
+      cursorCol = 3;
+    }
+    val = FUN_0809cfc0(p, &w);
+    if (col < 0) {
+      ofs = 10;
+    } else if (val > values[col]) {
+      ofs = 10;
+    } else if (val < values[col]) {
+      ofs = 20;
+    } else {
+      ofs = 0;
+    }
+    digits[0] = Div(val, 100);
+    rem = val - digits[0] * 100;
+    digits[1] = Div(rem, 10);
+    digits[2] = rem - digits[1] * 10;
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[22 + cursorCol * 3 + j], &p->gfx[0], digits[j] + ofs, 1);
+    }
+  }
+}
 
 void FUN_0809d230(Entity1B24* p) {
   MessageWindow_Close();
