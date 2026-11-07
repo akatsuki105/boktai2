@@ -265,7 +265,38 @@ void FUN_0816328c(Slime* p) {
 
 void FUN_0816335c(Slime* p) {}
 
-NAKED void FUN_08163360(Slime* p) { INCFUNC("asm/func/FUN_08163360.inc"); }
+// 被弾して後ろへ滑る状態, 滑る間はアニメを止め, 滑り終えてアニメも終わったら, 体力が 1/4 を切っていれば止まり, そうでなければ待機へ戻る
+void FUN_08163360(Slime* p) {
+  Slime* q = (p->e).unk_1cc;
+  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    (p->e).jumpVel.x = FixToInt(2, (p->e).jumpVel.x);
+    (p->e).jumpVel.z = FixToInt(2, (p->e).jumpVel.z);
+    Enemy_PlayAnimNoFacing(&p->e, 3);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    (p->e).animForceRestart = FALSE;
+  }
+  Enemy_SetFlag(&p->e, ENEFLAG_UNK_13);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
+  if (!Enemy_StepSlide(&p->e)) {
+    anim->tick = 0;
+    return;
+  }
+  if ((p->e).animForceRestart) {
+    (p->e).subStateDone = 1;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    Enemy_ClearFlag(&p->e, ENEFLAG_UNK_7);
+    if ((p->e).hp < (p->e).unk_546 || Slime_TestUnk68e(q, 8)) {
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+      Enemy_ResetState(&p->e, 0, 0, 2);
+      CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+    } else {
+      Enemy_EnterState(&p->e, FUN_08162df4, ES_UNK_0);
+      Enemy_ResetState(&p->e, 0, 0, 0);
+    }
+  }
+}
 
 void FUN_08163604(Slime* p, s32 arg) {
   Slime* q = (p->e).unk_1cc;
