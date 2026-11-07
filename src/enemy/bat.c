@@ -25,7 +25,7 @@ typedef struct {
   Enemy e;
   u8 unk_654[4];              // 0x654
   u32 unk_658;                // 0x658, bit3 が立っていると移動が速くなる
-  u8 unk_65c[2];              // 0x65C
+  u16 unk_65c;                // 0x65C, 飛び上がるときに目指す高さ
   u8 biteInterval;            // 0x65E, 掴んでいる間に攻撃判定を出すフレーム間隔
   u8 unk_65f;                 // 0x65F
   u8 escapeMash;              // 0x660, 振りほどくのに要る連打数
@@ -51,6 +51,7 @@ static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
 }
 
 void FUN_08140dd0(EnemyBat* p);
+void FUN_08140c14(EnemyBat* p);
 void FUN_0813f9a8(EnemyBat*);
 void FUN_0813fbf8(EnemyBat*);
 void FUN_0813fc9c(EnemyBat*);
@@ -216,7 +217,21 @@ void FUN_0813fc9c(EnemyBat* p) {
   }
 }
 
-NAKED void FUN_0813fd24(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fd24.inc"); }
+void FUN_0813fd24(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_0813f2a8, ES_UNK_34);
+    CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+    Vec3_SetPolar(&(p->e).jumpVel, (p->e).mover.angle, 4);
+    (p->e).jumpVel.y = 10;
+  }
+  if ((p->e).subStateDone && (p->e).heightAboveFloor < q->unk_65c - 20) {
+    FUN_08140c14(p);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
 
 NAKED void FUN_0813fe34(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fe34.inc"); }
 
