@@ -109,7 +109,22 @@ void Crow_InitHitboxes(Crow* p) {
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Crow_OnHit, 0, p);
 }
 
-NAKED s32 FUN_081446fc(Crow* p) { INCFUNC("asm/func/FUN_081446fc.inc"); }
+// 状態に入ってからの時間が経つほど移動を速くする
+s32 FUN_081446fc(Crow* p) {
+  s32 t = (p->e).subStateTimer;
+  s32 i;
+
+  if (t < 30) {
+    i = 0;
+  } else if (t < 50) {
+    i = 1;
+  } else if (t < 70) {
+    i = 2;
+  } else {
+    i = 3;
+  }
+  return u32_ARRAY_085ad83c[i];
+}
 
 NAKED void FUN_0814472c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814472c.inc"); }
 
