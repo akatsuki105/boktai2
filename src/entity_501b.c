@@ -133,7 +133,12 @@ NAKED void FUN_081e0a18(Entity501B* p) { INCFUNC("asm/func/FUN_081e0a18.inc"); }
 
 NAKED s32 Entity501B_Update(Entity501B* p) { INCFUNC("asm/func/Entity501B_Update.inc"); }
 
-NAKED s32 Entity501B_Destroy(Entity501B* p) { INCFUNC("asm/func/Entity501B_Destroy.inc"); }
+s32 Entity501B_Destroy(Entity501B* p) {
+  Entity501B_HideTextPanels(p);
+  Entity501B_RemoveSprites(p);
+  Entity501B_RemoveAuxSprite(p);
+  return 1;
+}
 
 NAKED s32 Entity501B_Init(Entity501B* p) { INCFUNC("asm/func/Entity501B_Init.inc"); }
 
