@@ -143,4 +143,14 @@ NAKED s32 Slime_Destroy(Slime* p) { INCFUNC("asm/func/Slime_Destroy.inc"); }
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている
 NAKED s32 Slime_Init(Slime* p) { INCFUNC("asm/func/Slime_Init.inc"); }
 
-NAKED void Slime_Create(void) { INCFUNC("asm/func/Slime_Create.inc"); }
+void Slime_Create(void) {
+  Slime* p = Malloc(sizeof(Slime));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(Slime));
+    if (Slime_Init(p) < 0) {
+      Slime_Destroy(p);
+      Free(p);
+    }
+  }
+}
