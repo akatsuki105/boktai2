@@ -217,7 +217,37 @@ void FUN_081ddc04(Entity9A9F* p) {
   }
 }
 
-NAKED void FUN_081ddc3c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddc3c.inc"); }
+// 各プレイヤーのこの回の得点を unk_130 に, 累計を unk_138 に入れる (0..9999), 参加していない枠は 0xFFFF
+// 残差は末尾のループだけ: 原典は参加していない枠を ldrh/orrs/strh で 0xFFFF にするが, こちらは定数の strh に畳まれる
+NON_MATCH void FUN_081ddc3c(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < p->recordCount; i++) {
+    s32 total;
+
+    p->unk_130[i] = FUN_081df720(i) * 16 + p->unk_120[i] * 9 - p->unk_128[i] * 4;
+    if (p->unk_130[i] < 0) {
+      p->unk_130[i] = 0;
+    }
+    if (p->unk_130[i] > 9999) {
+      p->unk_130[i] = 9999;
+    }
+    total = p->unk_138[i] + p->unk_130[i];
+    if (total > 9999) {
+      p->unk_138[i] = 9999;
+    } else {
+      p->unk_138[i] = total;
+    }
+  }
+  for (; i < 4; i++) {
+    p->unk_130[i] |= 0xFFFF;
+    p->unk_138[i] |= 0xFFFF;
+  }
+#else
+  INCFUNC("asm/func/FUN_081ddc3c.inc");
+#endif
+}
 
 NAKED void FUN_081ddcfc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddcfc.inc"); }
 
