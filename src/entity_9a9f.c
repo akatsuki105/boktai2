@@ -53,12 +53,10 @@ static inline bool8 Entity9A9F_IsDataKey(u16 key) {
 
 // idx 番のプレイヤーの今の太陽センサーの値, セッションが無ければ 0
 static inline u8 Entity9A9F_GetLux(s32 idx) {
-  Entity9A9F* p = gEntity9A9F;
-
-  if (p == NULL) {
+  if (gEntity9A9F == NULL) {
     return 0;
   }
-  return p->lux[p->unk_51][idx];
+  return gEntity9A9F->lux[gEntity9A9F->unk_51][idx];
 }
 
 // 受信できたキーの数が参加人数と一致するか
@@ -370,7 +368,28 @@ s32 FUN_081de250(Entity9A9F* p) {
   }
 }
 
-NAKED s32 FUN_081de2dc(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de2dc.inc"); }
+// 自分の番号へのデータが届いたら state 4 へ, 30 フレーム届かなければ切断して state 2 からやり直す
+s32 FUN_081de2dc(Entity9A9F* p) {
+  u16 recv[4];
+  s32 result;
+  s32 i;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    p->retryFrames = 0;
+  }
+
+  result = Sio_PeekRecvData(recv);
+  if (p->unk_4c >= 0 && result >= 0 && recv[p->unk_4c] != 0xFFFF) {
+    Entity9A9F_SetState(p, 4, FUN_081de360);
+  } else if (++p->retryFrames >= 30) {
+    Entity9A9F_SetState(p, 2, FUN_081de250);
+    Sio_Disconnect();
+    for (i = 0; i < 4; i++) {
+      p->unk_68[i] = 0;
+    }
+  }
+  return 0;
+}
 
 NAKED s32 FUN_081de360(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de360.inc"); }
 
@@ -645,7 +664,7 @@ s32 FUN_081df7e8(s32 idx) {
   return 0;
 }
 
-NAKED void Cmd_33C4(void) { INCFUNC("asm/func/Cmd_33C4.inc"); }
+NAKED s32 Cmd_33C4(void) { INCFUNC("asm/func/Cmd_33C4.inc"); }
 
 // state が 0 以外のときだけ unk_24 を書き換えて BGM をフェードアウトする
 void FUN_081df8a0(s32 val) {
