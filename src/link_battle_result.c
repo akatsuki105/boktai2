@@ -335,7 +335,16 @@ void FUN_081dd0b8(LinkBattleResult* p) {
 }
 
 // 推測: 先頭4要素は u16 = {100, 100, 40, 1}, 構造体かも?
-const u8 u8_ARRAY_085ae3cc[28] = {0x64, 0x00, 0x64, 0x00, 0x28, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0xC0, 0x00, 0x00, 0x30, 0x10, 0xC0, 0x00, 0x30, 0x10, 0xF0, 0xD0};  // 0x085AE3CC
+const u16 u16_ARRAY_085ae3cc[4] = {100, 100, 40, 1};  // 0x085AE3CC
+
+// 通信対戦の順位ごとの得点補正, [参加人数][順位] (64 で 1 倍), FUN_081ddcfc が使う
+const s8 sLinkRankBonus[5][4] = {
+    {0,  0,   0,   0  },
+    {0,  0,   0,   0  },
+    {64, -64, 0,   0  },
+    {48, 16,  -64, 0  },
+    {48, 16,  -16, -48},
+};  // 0x085AE3D4
 
 NAKED void FUN_081dd124(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dd124.inc"); }
 

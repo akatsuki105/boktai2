@@ -46,6 +46,7 @@ s32 FUN_081df23c(Entity9A9F* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MosaicFader_Stop(void);
 extern u32 gMapChanging;
+extern const s8 sLinkRankBonus[5][4];
 s32 FUN_081df398(Entity9A9F* p);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
@@ -324,7 +325,80 @@ NON_MATCH void FUN_081ddc3c(Entity9A9F* p) {
 #endif
 }
 
-NAKED void FUN_081ddcfc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddcfc.inc"); }
+// 今回の得点 unk_130 の高い順に順位を付け, 順位と人数で決まる点 (同順位は頭割り) を累計 unk_144 に足す
+// 下書き (201/200命令): 流れは一致, レジスタ割当が違いスタックが 4 バイト多い
+NON_MATCH void FUN_081ddcfc(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  s32 order[4];
+  s32 scores[4];
+  s32 rankCount[4];
+  s32 ranks[4];
+  s32 n;
+  s32 i;
+  s32 j;
+  s32 rank;
+
+  for (i = 0; i < p->recordCount; i++) {
+    order[i] = i;
+    scores[i] = p->unk_130[i];
+  }
+  n = p->recordCount;
+  for (; i < 4; i++) {
+    order[i] = -1;
+    scores[i] = -1;
+  }
+
+  for (i = 0; i < 3; i++) {
+    for (j = 3; j > i; j--) {
+      if (scores[j - 1] < scores[j]) {
+        s32 tmp = scores[j];
+
+        scores[j] = scores[j - 1];
+        scores[j - 1] = tmp;
+        tmp = order[j];
+        order[j] = order[j - 1];
+        order[j - 1] = tmp;
+      }
+    }
+  }
+
+  for (i = 0; i < 4; i++) {
+    rankCount[i] = 0;
+  }
+  rank = 0;
+  rankCount[0] = 1;
+  ranks[0] = 0;
+  for (i = 1; i < n; i++) {
+    if (scores[i] < scores[i - 1]) {
+      rank = i;
+    }
+    ranks[i] = rank;
+    rankCount[rank]++;
+  }
+
+  for (i = 0; i < p->recordCount; i++) {
+    s32 who = order[i];
+    s32 rk = ranks[i];
+    s32 points = p->unk_154[rk];
+    s32 bonus = FixToInt(6, Div(p->unk_140 * sLinkRankBonus[n][rk], 20));
+
+    if (bonus > 0) {
+      if (bonus > 60) {
+        bonus = 60;
+      }
+    } else if (bonus < -60) {
+      bonus = -60;
+    }
+    points += bonus;
+    if (rankCount[rk] > 1) {
+      points = Div(points, rankCount[rk]);
+    }
+    p->unk_144[who] += points;
+  }
+#else
+  INCFUNC("asm/func/FUN_081ddcfc.inc");
+#endif
+}
 
 // 各レコードの36バイトを bodies[] へ写す
 void FUN_081dde98(Entity9A9F* p) {
