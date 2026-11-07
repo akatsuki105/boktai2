@@ -16,6 +16,7 @@ typedef struct {
 } Slime;
 static_assert(sizeof(Slime) == 1680);
 
+u32 FUN_08164780(Slime* p);
 void FUN_08163b04(Slime*);
 void FUN_08163bbc(Slime*);
 void FUN_08163d94(Slime*);
@@ -45,7 +46,14 @@ void (*const PTR_ARRAY_085ad9c8[16])(Slime*) = {
     FUN_08163e10,
 };  // 0x085AD9C8
 
-NAKED void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/func/Slime_OnHit.inc"); }
+void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) {
+  if (Enemy_IsDead(&p->e) == 0 && b->ignoreMask == HIM_0) {
+    Enemy_SetHitTarget(&p->e, b);
+    if ((p->e).variant == 3) {
+      a->attributes = FUN_08164780(p);
+    }
+  }
+}
 
 NAKED void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/func/Slime_OnHurt.inc"); }
 

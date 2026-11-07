@@ -61,4 +61,14 @@ static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
   return FALSE;
 }
 
+// 当たった相手を攻撃対象として覚える
+static inline void Enemy_SetHitTarget(Enemy* p, HitboxData* b) {
+  if (Enemy_IsDead(p) == 0) {
+    if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
+      p->hitTargetID = b->id;
+      Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
+    }
+  }
+}
+
 #endif  // __INCLUDE_ENEMY_INLINE_H__
