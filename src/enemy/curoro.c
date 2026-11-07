@@ -99,8 +99,6 @@ static inline bool32 IsPlayerMini(void) {
   return timer != 0 && gGoodCondID == GOOD_MINI;
 }
 
-static inline void Hitbox_Hide(HitboxData* hitbox) { hitbox->flags |= HBFLAG_HIDDEN; }
-
 static inline bool8 Curoro_TestUnk658(Curoro* p, u32 bit) {
   if (p->unk_658 & bit) {
     return TRUE;

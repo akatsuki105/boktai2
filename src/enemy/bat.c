@@ -262,7 +262,34 @@ void FUN_0813f44c(EnemyBat* p) {
   }
 }
 
-NAKED void FUN_0813f5fc(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f5fc.inc"); }
+// 被弾して後ろへ滑る状態, 滑り終えたら, 1度目は副状態3へ, 2度目からはプレイヤーへの曲線移動へ移る
+void FUN_0813f5fc(EnemyBat* p) {
+  EnemyBat* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    Enemy_PlayAnim(&p->e, 3);
+    Hitbox_Hide(&(p->e).atkHitbox);
+  }
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+  if (Enemy_StepSlide(&p->e)) {
+    (p->e).subStateDone = 1;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+    q->unk_666 = 0;
+    if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_26)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      Enemy_ResetState(&p->e, 0, 2, 0);
+      FUN_08140904(p);
+    } else {
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+      Enemy_ResetState(&p->e, 0, 0, 3);
+      FUN_08140904(p);
+    }
+  }
+}
 
 // 倒されたときの状態, 点滅しながら消えたら倒されたスクリプトを呼び図鑑に載せて止まる
 void EnemyBat_StateDying(EnemyBat* p, s32 timer) {
