@@ -5,6 +5,7 @@
 #include "input.h"
 #include "link.h"
 #include "malloc.h"
+#include "player.h"
 #include "random.h"
 #include "sound.h"
 #include "text.h"
@@ -48,6 +49,11 @@ void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_
 void MosaicFader_Stop(void);
 extern u32 gMapChanging;
 extern const s8 sLinkRankBonus[5][4];
+void HUD_StartCountdown(u16* remainingTime);
+void HUD_RemoveCountdown(void);
+void Entity4B15_ShowFixedMarker(s32 playerIdx, Vec3* pos);
+extern const u16 sLinkTimeLimits[3];
+s32 FUN_081deef8(Entity9A9F* p);
 extern bool32 gRtcReadInhibit;
 void FUN_08238b04(void);
 s32 FUN_081de214(Entity9A9F* p);
@@ -143,6 +149,32 @@ static inline bool8 Entity9A9F_IsKey2C00(u16 key) {
     return TRUE;
   }
   return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x0C00 か
+static inline bool8 Entity9A9F_IsKey0C00(u16 key) {
+  if ((key & 0x3C00) == 0x0C00) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// キーの種別 (bit10..13) が 0x2800 か
+static inline bool8 Entity9A9F_IsKey2800(u16 key) {
+  if ((key & 0x3C00) == 0x2800) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 参加人数, セッションが無ければ -1
+static inline s32 Entity9A9F_GetRecordCount(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->recordCount;
 }
 
 // 受信できたキーの数が参加人数と一致するか
@@ -851,8 +883,8 @@ s32 FUN_081debd4(Entity9A9F* p) {
   }
 }
 
-// 推測: u8[3][2]
-const u8 u8_ARRAY_085ae3f4[6] = {0x10, 0x0E, 0x18, 0x15, 0x20, 0x1C};  // 0x085AE3F4
+// 通信対戦の制限時間 (フレーム), rules.values[1] で選ぶ
+const u16 sLinkTimeLimits[3] = {3600, 5400, 7200};  // 0x085AE3F4
 
 // 通信対戦のステータス (力, 体力, 精神, 素早さ) の基本値
 const u8 sLinkStatBase[4] = {50, 30, 10, 40};  // 0x085AE3FA
@@ -860,7 +892,98 @@ const u8 sLinkStatBase[4] = {50, 30, 10, 40};  // 0x085AE3FA
 // 種類ごとに上がる能力の値, 並びは sLinkStatBase と同じ
 const u8 sLinkStatBoost[6] = {90, 60, 60, 60};  // 0x085AE3FE, 末尾2要素は 0
 
-NAKED s32 FUN_081dec1c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dec1c.inc"); }
+// 対戦中: 全員のキー入力を受け取って gLinkKeyInput に入れ, 太陽センサーの値を 1 bit ずつ集め, 時間切れか決着のキーで state 13 へ
+// 下書き (326/318命令): 呼び出しの並びは一致, レジスタ割当と送るキーの組み立て (bit 演算の順) が違う
+NON_MATCH s32 FUN_081dec1c(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  u16 keys;
+  s32 flags;
+  s32 i;
+  s32 bit;
+
+  gUseLinkInput = TRUE;
+  if ((u8)FUN_081dd9d4(p)) {
+    p->unk_32 = sLinkTimeLimits[p->rules.values[1]];
+    p->unk_54[0] = gStat->lx;
+    HUD_StartCountdown((u16*)&p->unk_32);
+    for (i = 0; i < Entity9A9F_GetRecordCount(); i++) {
+      if (gPlayerPtr[i] != NULL) {
+        Player_Unlock(gPlayerPtr[i]);
+      }
+    }
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  keys = REG_KEYINPUT & ~(SELECT_BUTTON | START_BUTTON);
+  flags = 0;
+  for (i = 0; i < p->recordCount; i++) {
+    u16 key = Entity9A9F_GetRecvKey(p, i);
+
+    if (Entity9A9F_IsKey0C00(key)) {
+      gLinkKeyInput[i] = (key & 0x3FF) | SELECT_BUTTON | START_BUTTON;
+      p->lux[p->unk_50][i] |= ((key >> 2) & 1) << p->unk_52;
+      if (i == 0) {
+        flags = 1;
+        if (key & 8) {
+          flags = 3;
+        }
+      }
+    } else {
+      if (key == 0xFFFF) {
+        FUN_081ddbdc(p);
+        return -1;
+      }
+      if (i == p->playerIdx && Entity9A9F_IsKey2800(key)) {
+        Entity9A9F_SetState(p, 13, FUN_081deef8);
+        return 0;
+      }
+    }
+  }
+
+  if (flags & 1) {
+    p->unk_52++;
+  }
+  if (flags & 2) {
+    FUN_081dda10(p);
+    FUN_081dda38(p);
+    p->unk_52 = 0;
+    p->unk_54[0] = gStat->lx;
+    for (i = 0; i < p->recordCount; i++) {
+      p->lux[p->unk_50][i] = 0;
+    }
+  }
+
+  if (p->unk_32 == 1800 || p->unk_32 == 900) {
+    for (i = 0; i < p->recordCount; i++) {
+      if (FUN_081df720(i) > 2) {
+        Entity4B15_ShowFixedMarker(i, &gPlayerPtr[i]->mover.pos);
+      }
+    }
+  }
+
+  if (p->unk_32 <= 0) {
+    HUD_RemoveCountdown();
+    Entity9A9F_SetSendKey(p, 0x2800);
+    Entity9A9F_SetState(p, 13, FUN_081deef8);
+    return 0;
+  }
+
+  if (Entity9A9F_GetPlayerIdx() == 0 && p->unk_53 == 7) {
+    keys |= START_BUTTON;
+  }
+  bit = (gEntity9A9F != NULL) ? (gEntity9A9F->unk_54[0] >> gEntity9A9F->unk_53) & 1 : 0;
+  keys |= bit << 2;
+  p->unk_53 = (p->unk_53 + 1) & 7;
+  Entity9A9F_SetSendKey(p, (0xC00 | keys) & 0x3FFF);
+  p->unk_32--;
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_081dec1c.inc");
+#endif
+}
 
 // 対戦開始: 参加回数を数え, 全員から種別 0x1000 の 0 番のキーが届いたら得点を計算して state 14 へ, 原典は最後の return を書き忘れている
 // 残差: 原典は linkBattleCount の2つ目の式で gStat を読み直し, キー種別の定数をループ内で作る (FUN_081df568 と同じ), p は r5 に置く

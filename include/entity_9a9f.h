@@ -59,7 +59,7 @@ typedef struct Entity9A9F {
   u8 unk_2c[2];                                // 0x02C
   u16 retryFrames;                             // 0x02E, 接続待ちのフレーム数, 30 に達すると切断して state 2 からやり直す
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
-  u16 unk_32;                                  // 0x032, 同上
+  s16 unk_32;                                  // 0x032, 同上, 対戦の残りフレーム, FUN_081dec1c が sLinkTimeLimits から入れて毎フレーム減らす
   u32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
   u16 unk_38;                                  // 0x038, FUN_081ddf44 がスクリプトの第2引数として渡す
   u16 unk_3a;                                  // 0x03A, 同じく第3引数
