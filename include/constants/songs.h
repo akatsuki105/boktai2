@@ -284,9 +284,9 @@
 #define SE_SPIDER_WEB_STRUGGLE_1 279  // プレイヤーがスパイダーの巣から出ようともがく音その2
 #define SE_OPEN_MENU 280
 #define SE_CLOSE_MENU 281
-#define SE_UNK_282 282
-#define SE_SPIRIT_BUGS_283 283  // 太陽虫とかを吸収した音？
-#define SE_SPIRIT_BUGS_284 284
+#define SE_SPIRIT_BUGS_282 282
+#define SE_TOUCH_MOONBUG 283    // 月光虫を吸収した音
+#define SE_TOUCH_SOLARBUG 284   // 太陽虫を吸収した音
 #define SE_POP_SPIRIT_BUGS 285  // 太陽タケノコから 月光虫 or 太陽虫 が出てきた時の音
 #define SE_INFO 286
 #define SE_UNK_287 287
@@ -659,9 +659,9 @@
 #define SE_FSTEP_STAIRS_1 654  // 階段の登り降り時の足音 (SE_FSTEP_STAIRS_0 と交互に鳴らす)
 #define SONG_655 655
 #define SONG_656 656
-#define SONG_657 657
-#define SONG_658 658
-#define SONG_659 659
+#define SE_SPIRIT_BUGS_657 657
+#define SE_SPIRIT_BUGS_658 658
+#define SE_SPIRIT_BUGS_659 659
 #define SE_ANS_WRONG 660  // 不正解SE?
 #define SONG_661 661
 #define SE_ANS_CORRECT 662  // 正解SE

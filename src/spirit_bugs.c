@@ -68,15 +68,15 @@ void (*const sSpiritBugHandler[3])(Player*, s32) = {
 };  // 0x085AA70C
 
 const SoundID32 gSpiritBugsSoundIDs[3] = {
-    SE_SPIRIT_BUGS_284,
-    SE_SPIRIT_BUGS_283,
-    SE_UNK_282,
+    [SOLARBUG] = SE_TOUCH_SOLARBUG,
+    [MOONBUG] = SE_TOUCH_MOONBUG,
+    [DARKBUG] = SE_SPIRIT_BUGS_282,
 };  // 0x085AA718
 
 const SoundID32 gSoundIDs_085aa724[3] = {
-    SONG_659,
-    SONG_658,
-    SONG_657,
+    [SOLARBUG] = SE_SPIRIT_BUGS_659,
+    [MOONBUG] = SE_SPIRIT_BUGS_658,
+    [DARKBUG] = SE_SPIRIT_BUGS_657,
 };  // 0x085AA724
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
