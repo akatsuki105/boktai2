@@ -97,6 +97,31 @@ static inline bool8 Enemy_TryRouteToEx(Enemy* p, NavAgent* agent, WorldPos* pos,
   return FALSE;
 }
 
+// unk_214 を unk_20c へ残りの 1/4 ずつ (1 フレーム最大 200) 寄せて mover.delta にも足す, 寄せきったら TRUE
+static inline bool8 Enemy_StepSlide(Enemy* p) {
+  s32 dx = FixToInt(2, p->unk_20c.x - p->unk_214.x);
+  s32 dz = FixToInt(2, p->unk_20c.z - p->unk_214.z);
+
+  if (dx > 200) {
+    dx = 200;
+  } else if (dx < -200) {
+    dx = -200;
+  }
+  if (dz > 200) {
+    dz = 200;
+  } else if (dz < -200) {
+    dz = -200;
+  }
+  p->mover.delta.x += dx;
+  p->mover.delta.z += dz;
+  p->unk_214.x += dx;
+  p->unk_214.z += dz;
+  if (dx == 0 && dz == 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
 // 追いかけを始める印を立てる
 static inline void Enemy_BeginChase(Enemy* p) {
   if (p->kind != ENEK_SPIDER) {

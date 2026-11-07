@@ -43,6 +43,21 @@ static inline bool8 Crow_TestUnk658(Crow* p, u32 bit) {
   return FALSE;
 }
 
+// 向いている向きとプレイヤーのいる向きの差 (0〜128) を返す
+static inline s32 Crow_GetAngleDiffToPlayer(Crow* p) {
+  Vec3 diff;
+  s32 d;
+
+  Vec3_Delta(&diff, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos);
+  d = ArcTan2_8(diff.x, diff.z) - (p->e).mover.angle;
+  if (d > 128) {
+    d -= 256;
+  } else if (d < -128) {
+    d += 256;
+  }
+  return abs(d);
+}
+
 void Crow_PlayWingSound(Crow* p);
 void FUN_081436b4(Crow*);
 void FUN_081439d8(Crow*);
@@ -257,21 +272,6 @@ void FUN_08143ef8(Crow* p) {
   } else {
     (p->e).subStateTimer++;
   }
-}
-
-// 向いている向きとプレイヤーのいる向きの差 (0〜128) を返す
-static inline s32 Crow_GetAngleDiffToPlayer(Crow* p) {
-  Vec3 diff;
-  s32 d;
-
-  Vec3_Delta(&diff, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos);
-  d = ArcTan2_8(diff.x, diff.z) - (p->e).mover.angle;
-  if (d > 128) {
-    d -= 256;
-  } else if (d < -128) {
-    d += 256;
-  }
-  return abs(d);
 }
 
 // 向いている向きへ一定の速さで飛ぶ, 一定時間が過ぎてからプレイヤーに近づきすぎたか前方 90 度から外れたら副状態1へ戻る

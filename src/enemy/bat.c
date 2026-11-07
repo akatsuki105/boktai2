@@ -55,6 +55,8 @@ static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
 struct Entity081fa164Elem* Entity081fa164_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 void FUN_08140dd0(EnemyBat* p);
 void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
+void FUN_08140904(EnemyBat* p);
+void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos);
 void FUN_08140c14(EnemyBat* p);
 void FUN_0813f9a8(EnemyBat*);
 void FUN_0813fbf8(EnemyBat*);
@@ -236,7 +238,28 @@ NON_MATCH void FUN_0813f320(EnemyBat* p, s32 timer) {
 #endif
 }
 
-NAKED void FUN_0813f44c(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f44c.inc"); }
+// unk_20c へ滑り終えたら, 追いかけ中ならプレイヤーへの曲線移動へ, そうでなければ向き直って状態10へ移る
+void FUN_0813f44c(EnemyBat* p) {
+  if ((p->e).stateBegun) {
+    (p->e).stateBegun = FALSE;
+  }
+  SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+  if (Enemy_StepSlide(&p->e)) {
+    FUN_08140904(p);
+    if ((p->e).unk_24e != 0) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+      (p->e).unk_24e = (p->e).unk_24c;
+      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      Enemy_ResetState(&p->e, 0, 2, 0);
+    } else {
+      Enemy_EnterState(&p->e, FUN_0813f320, ES_UNK_10);
+      Enemy_ResetState(&p->e, 0, 1, 1);
+      (p->e).mover.angle = (p->e).unk_1fc;
+      (p->e).animSpeedDiv = 1;
+    }
+  }
+}
 
 NAKED void FUN_0813f5fc(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f5fc.inc"); }
 
