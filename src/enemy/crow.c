@@ -63,7 +63,10 @@ NAKED void FUN_0814312c(Crow* p) { INCFUNC("asm/func/FUN_0814312c.inc"); }
 
 NAKED void FUN_081431e0(Crow* p) { INCFUNC("asm/func/FUN_081431e0.inc"); }
 
-NAKED void FUN_081432ec(Crow* p) { INCFUNC("asm/func/FUN_081432ec.inc"); }
+void FUN_081432ec(Crow* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnim(&p->e, 15);
+}
 
 NAKED void FUN_08143310(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143310.inc"); }
 
