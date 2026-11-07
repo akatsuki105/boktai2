@@ -28,7 +28,8 @@ typedef struct {
   u8 unk_660;                 // 0x660, プレイヤーへ直進するときの速さ
   u8 unk_661[3];              // 0x661
   u32 unk_664;                // 0x664, unk_1e4 がこれ以上ならプレイヤーへの直進を続ける
-  u8 unk_668[0x671 - 0x668];  // 0x668
+  u8 unk_668[0x670 - 0x668];  // 0x668
+  u8 unk_670;                 // 0x670
   u8 unk_671;                 // 0x671, 鳴くたびに 40 ずつ増える
   u8 unk_672[0x6A0 - 0x672];  // 0x672
   WorldPos curveStart;        // 0x6A0, 曲線の始点
@@ -68,6 +69,7 @@ void FUN_08144cd0(Crow*);
 void FUN_08144ec8(Crow*);
 void FUN_081452cc(Crow*);
 void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
+void FUN_081447cc(Crow* p);
 
 void (*const PTR_ARRAY_085ad828[5])(Crow*) = {
     FUN_08143dd4,
@@ -238,7 +240,32 @@ void FUN_081432ec(Crow* p) {
   Enemy_PlayAnim(&p->e, 15);
 }
 
-NAKED void FUN_08143310(Crow* p, s32 timer) { INCFUNC("asm/func/FUN_08143310.inc"); }
+// 被弾して後ろへ滑る状態, 滑り終えて 30 フレーム過ぎたら少し無敵を足して止まる
+void FUN_08143310(Crow* p, s32 timer) {
+  Crow* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    Enemy_PlayAnim(&p->e, 3);
+  }
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
+  if (timer < 20) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
+  }
+  if (Enemy_StepSlide(&p->e) && timer > 30) {
+    (p->e).hurtbox.invincibleTime += 10;
+    (p->e).subStateDone = 1;
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+    q->unk_670 = 0;
+    FUN_081447cc(p);
+    (p->e).mover.angle = (p->e).unk_1fc;
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 0, 1);
+    (p->e).mover.angle = (p->e).unk_1fc;
+    (p->e).animSpeedDiv = 1;
+  }
+}
 
 // 倒されたときの状態, 点滅しながら消えたら倒されたスクリプトを呼び図鑑に載せて止まる
 void Crow_StateDying(Crow* p, s32 timer) {
