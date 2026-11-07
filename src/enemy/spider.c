@@ -24,7 +24,9 @@
 // ポイズンスパイダーは毒液も吐く
 typedef struct {
   Enemy e;
-  u8 unk_654[0x660 - 0x654];  // 0x654
+  u8 unk_654[0x65C - 0x654];  // 0x654
+  u16 unk_65c;                // 0x65C
+  u16 unk_65e;                // 0x65E
   u16 unk_660;                // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
   u16 unk_662;                // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
   u8 unk_664[1680 - 0x664];   // 0x664
@@ -237,7 +239,24 @@ void Spider_InitHitboxes(Spider* p) {
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Spider_OnHit, 0, p);
 }
 
-NAKED void Spider_OnReset(Spider* p) { INCFUNC("asm/func/Spider_OnReset.inc"); }
+// 復帰時に作業値を消して経路の次のノードへ向き直り, 待機アニメを流して1コマ送る
+// 残差1命令, 原典は p->sprite を r0 に読んでから r5 へ移す (Slime_OnReset / Boku_OnReset / Mimic_OnReset と同じ壁)
+NON_MATCH void Spider_OnReset(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+  EnemyAuxSpriteData* aux;
+
+  q->unk_65c = 0;
+  q->unk_65e = 0;
+  q->unk_660 = 0;
+  Enemy_StepTowardPathNode(&p->e);
+  Enemy_PlayAnim(&p->e, 0);
+  aux = (EnemyAuxSpriteData*)(p->e).sprite;
+  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+#else
+  INCFUNC("asm/func/Spider_OnReset.inc");
+#endif
+}
 
 void Spider_InitAnims(Spider* p) {
   Enemy_SetAnimEntry(&p->e, 0, 0, 0);
