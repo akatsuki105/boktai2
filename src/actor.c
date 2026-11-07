@@ -1,5 +1,6 @@
 #include "actor.h"
 
+#include "emote.h"
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
@@ -22,7 +23,7 @@ s32 FUN_08041460(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, 
 void FUN_080417dc(Mover* mover);
 void FUN_08041918(ActorManager* p);
 s32 FUN_080411a0(ActorManager* p, Actor* actor);
-void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4);
+void FUN_080415cc(Actor* actor, s32 kind, s32 timer, s32 duration);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
 bool32 FUN_08018a08(void);
@@ -703,7 +704,65 @@ bool32 UNUSED FUN_0804157c(Vec3* a, Vec3* b, s32 range) {
   return TRUE;
 }
 
-NAKED void FUN_080415cc(Actor* actor, s32 param_2, u16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_080415cc.inc"); }
+// 頭上に吹き出しを出す, kind 0..3 は記号と効果音, 4 / 5 は時間つき, 6 / 7 はそのほか, 8 は今の吹き出しを閉じる
+void FUN_080415cc(Actor* actor, s32 kind, s32 timer, s32 duration) {
+  switch (kind) {
+    case 0: {
+      actor->emoteKind = 0;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 0, 1, NULL, 0, 0, 100);
+      PlaySound_082406e0(SE_CHARA_SUPRISE);
+      break;
+    }
+    case 2: {
+      actor->emoteKind = 0;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 0, 0, NULL, 0, 0, 100);
+      PlaySound_082406e0(SONG_492);
+      break;
+    }
+    case 1: {
+      actor->emoteKind = 0;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 0, 3, NULL, 0, 0, 100);
+      PlaySound_082406e0(SONG_492);
+      break;
+    }
+    case 3: {
+      actor->emoteKind = 0;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 0, 2, NULL, 0, 0, 100);
+      PlaySound_082406e0(SE_CHARA_QUESTION);
+      break;
+    }
+    case 4: {
+      actor->emoteKind = 1;
+      actor->unk_2c8 = timer;
+      actor->unk_2ca = duration;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 1, 0, (u16*)&actor->unk_2c8, actor->unk_2ca, 0, 100);
+      break;
+    }
+    case 5: {
+      actor->emoteKind = 3;
+      actor->unk_2c8 = timer;
+      actor->unk_2ca = duration;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 3, 0, (u16*)&actor->unk_2c8, actor->unk_2ca, 0, 100);
+      break;
+    }
+    case 6: {
+      actor->emoteKind = 5;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 5, 0, NULL, 0, 0, 100);
+      break;
+    }
+    case 7: {
+      actor->emoteKind = 4;
+      actor->emote = Emote_Show(actor->emote, &actor->mover, 4, 0, NULL, 0, 0, 100);
+      break;
+    }
+    case 8: {
+      if (actor->emote != NULL) {
+        actor->emote = Emote_Show(actor->emote, &actor->mover, actor->emoteKind, 0x7F, NULL, 0, 0, 100);
+      }
+      break;
+    }
+  }
+}
 
 // flags 0x1000 の Actor に mover が近すぎたら, その Actor から半径 100 の位置まで押し戻す (イベント中は何もしない)
 // 下書き (149/147命令): 呼び出しの並びは一致, ループの入り口の判定の置き方とレジスタ割当が違う
