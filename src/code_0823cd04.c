@@ -396,8 +396,24 @@ void Cmd_81C4(void) {
   VM_StoreMemoryRef(desc, 0, gSystemSaveData->frameCounter);
 }
 
-// 0x4CCD
-NAKED void Cmd_4CCD(void) { INCFUNC("asm/func/Cmd_4CCD.inc"); }
+// 0x4CCD, プレイ時間の時と分をスクリプトの変数へ書き出す (先頭は 0)
+void Cmd_4CCD(void) {
+  u8 desc[8];
+  s32 t;
+  s32 min;
+
+  t = Div(gSystemSaveData->frameCounter, 60);
+  Mod(t, 60);
+  t = Div(t, 60);
+  min = Mod(t, 60);
+  t = Div(t, 60);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, 0);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, t);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, min);
+}
 
 // 0xAE4E
 void Cmd_AE4E(void) { SystemSave_SetUnk09(1); }
