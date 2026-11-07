@@ -49,6 +49,7 @@ void FUN_081636d4(Slime* p);
 void FUN_08163848(Slime* p);
 void FUN_08164da8(Slime* p);
 void FUN_081647c8(Slime* p);
+void FUN_08164120(Slime* p, u32 arg);
 void FUN_08162df4(Slime* p);
 void FUN_081631d8(Slime* p);
 void FUN_08162efc(Slime* p);
@@ -418,7 +419,25 @@ void FUN_08163b04(Slime* p) {
 
 void FUN_08163bac(Slime* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad9c4; }
 
-NAKED void FUN_08163bbc(Slime* p) { INCFUNC("asm/func/FUN_08163bbc.inc"); }
+// 経路の目的地へ歩き, 着いたら FUN_08164120 で次の動きを決める
+void FUN_08163bbc(Slime* p) {
+  s32 speed;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+    FUN_08164120(p, (p->e).mover.angle);
+    (p->e).animSpeedDiv = 1;
+    return;
+  }
+  (p->e).unk_608(&p->e);
+  speed = (p->e).unk_588(&p->e);
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if (Enemy_StepToDest(&p->e, speed)) {
+    FUN_08164120(p, (p->e).mover.angle);
+  }
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+  (p->e).subStateTimer++;
+}
 
 void FUN_08163d94(Slime* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {

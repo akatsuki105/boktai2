@@ -122,6 +122,23 @@ static inline bool8 Enemy_StepSlide(Enemy* p) {
   return FALSE;
 }
 
+// 経路の目的地 navAgent->dest の 32 以内に着いていれば TRUE, まだなら目的地を向いて speed ぶん進む
+static inline bool8 Enemy_StepToDest(Enemy* p, s32 speed) {
+  NavAgent* agent = p->navAgent;
+  s16 dx = agent->dest.x - p->mover.pos.x;
+  s16 dz = agent->dest.z - p->mover.pos.z;
+
+  if ((dx < 0 ? -dx : dx) <= 32 && (dz < 0 ? -dz : dz) <= 32) {
+    return TRUE;
+  }
+  if (dx != 0 || dz != 0) {
+    p->mover.angle = ArcTan2_8(dx, dz);
+    p->mover.delta.x += POLAR_X(speed, p->mover.angle);
+    p->mover.delta.z += POLAR_Z(speed, p->mover.angle);
+  }
+  return FALSE;
+}
+
 // 追いかけを始める印を立てる
 static inline void Enemy_BeginChase(Enemy* p) {
   if (p->kind != ENEK_SPIDER) {

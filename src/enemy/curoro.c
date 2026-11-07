@@ -101,22 +101,6 @@ static inline bool32 IsPlayerMini(void) {
 
 static inline void Hitbox_Hide(HitboxData* hitbox) { hitbox->flags |= HBFLAG_HIDDEN; }
 
-static inline bool8 Curoro_StepToDest(Curoro* p, s32 speed) {
-  NavAgent* agent = (p->e).navAgent;
-  s16 dx = agent->dest.x - (p->e).mover.pos.x;
-  s16 dz = agent->dest.z - (p->e).mover.pos.z;
-
-  if ((dx < 0 ? -dx : dx) <= 32 && (dz < 0 ? -dz : dz) <= 32) {
-    return TRUE;
-  }
-  if (dx != 0 || dz != 0) {
-    (p->e).mover.angle = ArcTan2_8(dx, dz);
-    (p->e).mover.delta.x += POLAR_X(speed, (p->e).mover.angle);
-    (p->e).mover.delta.z += POLAR_Z(speed, (p->e).mover.angle);
-  }
-  return FALSE;
-}
-
 static inline bool8 Curoro_TestUnk658(Curoro* p, u32 bit) {
   if (p->unk_658 & bit) {
     return TRUE;
@@ -775,7 +759,7 @@ void FUN_0813b824(Curoro* p) {
   speed = (p->e).unk_588(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
   FUN_0813c38c(p);
-  if (Curoro_StepToDest(p, speed) && Curoro_StepCurve(p)) {
+  if (Enemy_StepToDest(&p->e, speed) && Curoro_StepCurve(p)) {
     WorldPos pos;
     WorldPos* dst;
     PathWalker* walker;
