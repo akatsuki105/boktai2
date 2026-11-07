@@ -122,7 +122,9 @@ typedef struct Actor {
   u32 unk_200;                // 0x200
   u8 unk_204[0x20E - 0x204];  // 0x204, まだ未解析
   u16 pathDelay;              // 0x20E, 経路の今のノードの待ちフレーム数 (PathNode.delay の下位12bit)
-  u8 unk_210[0x214 - 0x210];  // 0x210, まだ未解析
+  u8 unk_210[2];              // 0x210, まだ未解析
+  u8 footStep;                // 0x212, 0 以外なら FUN_080414fc が足音を鳴らす
+  u8 unk_213;                 // 0x213, まだ未解析
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
   u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
   u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
@@ -210,7 +212,7 @@ void ActorManager_LinkActor(ActorManager* p, Actor* actor);  //  Actor をリス
 s32 FUN_08040df4(ActorManager* p, Actor* actor, SpriteID32 id, s32 idx);
 s32 Actor_HideShadow(Actor* actor);
 Actor* ActorManager_FindActorByMoverID(ActorManager* p, u32 id);
-s32 FUN_08040fc0(Actor* actor, Vec3* pos, s8 param_3, u32 param_4, s8 param_5);
+s32 FUN_08040fc0(Actor* actor, Vec3* pos, u8 kind, u32 poseIdx, s32 size);
 s32 FUN_08041e10(ActorManager* p, Actor* actor);
 s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 s32 FUN_08040f0c(Actor* actor, u32 id, Vec3* pos, u32 angle);

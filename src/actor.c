@@ -356,7 +356,7 @@ s32 FUN_08040f0c(Actor* actor, u32 id, Vec3* pos, u32 angle) {
 
 NAKED s32 FUN_08040f48(Actor* actor, s32 spriteType, SpriteID32 spriteID, u32 animFileID, SpriteFlags flags) { INCFUNC("asm/func/FUN_08040f48.inc"); }
 
-NAKED s32 FUN_08040fc0(Actor* actor, Vec3* pos, s8 param_3, u32 param_4, s8 param_5) { INCFUNC("asm/func/FUN_08040fc0.inc"); }
+NAKED s32 FUN_08040fc0(Actor* actor, Vec3* pos, u8 kind, u32 poseIdx, s32 size) { INCFUNC("asm/func/FUN_08040fc0.inc"); }
 
 // 影を描画リストから外す
 s32 Actor_RemoveShadow(Actor* actor) {
@@ -1230,7 +1230,30 @@ NAKED void FUN_0804478c(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("a
 
 NAKED void FUN_080448c8(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_080448c8.inc"); }
 
-NAKED void FUN_0804494c(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_0804494c.inc"); }
+void FUN_0804494c(ActorManager* p, Actor* actor, s32 elapsed) {
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    FUN_08041480(actor, 4, 2, 0, 4);
+    actor->work.unk_00 = 0;
+  }
+  if ((u8)actor->fn(actor) != 1 && SpriteHolder_IsAnimEnded(&actor->sprite)) {
+    switch (actor->work.unk_00) {
+      case 0: {
+        FUN_08041480(actor, 5, 2, 0, 4);
+        break;
+      }
+      case 1: {
+        actor->unk_07 = 1;
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+    actor->work.unk_00++;
+  }
+}
 
 NAKED void FUN_080449c0(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_080449c0.inc"); }
 
