@@ -679,8 +679,8 @@ void FUN_0814e530(Dog* p) {
   }
 }
 
-// 倒されて跳ね飛ぶ状態, 着地のアニメが終わったら, 落下死なら倒されたスクリプトを呼んで消え, そうでなければ点滅して消える状態38へ移る
-void FUN_0814e680(Dog* p) {
+// 倒されて跳ね飛ぶ状態, アニメが終わったら, 落下死なら倒されたスクリプトを呼んで消え, そうでなければ点滅して消える状態38へ移る
+void Dog_StateDying(Dog* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 10);
     (p->e).animForceRestart = FALSE;
