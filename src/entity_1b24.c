@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
+#include "shop.h"
 #include "sound.h"
 #include "sprite.h"
 #include "text.h"
@@ -20,14 +21,14 @@ typedef struct Entity1B24 {
   void* unk_24;                                // 0x024, ワードとして読まれるが用途不明
   MainSpriteGfx gfx[4];                        // 0x028
   MainSprite sprites[36];                      // 0x0A8, Entity1B24_Destroy がまとめて外す
-  u8 unk_e28[48];                              // 0xE28
-  u8 unk_e58[244];                             // 0xE58, _Init が FUN_080b99a0(&unk_e58), _Destroy が FUN_080b9a0c(&unk_e58) に渡す
+  ShopCursor cursor;                           // 0xE28
+  ShopFlyingPair flying;                       // 0xE58, 選んだ武器を飛ばす表示部品
   WeaponData weaponData;                       // 0xF4C, record[0x40] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ GetWeaponData(slot, &weaponData)
   s8 slot;                                     // 0xF70, record[0x17], 負なら武器を読まない
   u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
   u16 unk_f72;                                 // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
   u32 unk_f74;                                 // 0xF74, _Init が 0x1E を入れる
-  u8 unk_f78[8];                               // 0xF78
+  s8 unk_f78[8];                               // 0xF78
   s32 unk_f80;                                 // 0xF80
   void* unk_f84;                               // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
   void* unk_f88;                               // 0xF88, 同上
@@ -38,10 +39,9 @@ static_assert(sizeof(Entity1B24) == 3984);
 bool32 FUN_081dfa04(void);
 void FUN_081dfa20(u32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
 void GetWeaponData(slot32_t n, WeaponData* data);
-void FUN_080b9a0c(unknown* p);
-bool32 FUN_080b9adc(unknown* p);
-void ShopCursor_PlaceSprite(unknown* p, unknown* q);
-void ShopCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
+void FUN_08094d1c(u8* param_1, s8* param_2);
+void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
+s32 GetWeaponWearPose(WeaponData* w);
 
 // gEntity9A9F の記録を返す, セッションが無ければ NULL
 static inline u8* Entity9A9F_GetRecord(void) {
@@ -94,7 +94,7 @@ void FUN_0809d230(Entity1B24* p) {
 }
 
 // 一覧の n 番目のセルの画面座標を求める
-void FUN_0809d240(u16* pos, s32 n) {
+void FUN_0809d240(s16* pos, s32 n) {
   if (n <= 15) {
     pos[0] = (n & 3) * 24 + 144;
     pos[1] = (n >> 2) * 24 + 32;
@@ -104,14 +104,34 @@ void FUN_0809d240(u16* pos, s32 n) {
   }
 }
 
-NAKED void FUN_0809d270(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d270.inc"); }
+// カーソルの武器を一覧の外の枠へ飛ばすアニメを仕込む
+void FUN_0809d270(Entity1B24* p) {
+  WorldPos from[2];
+  WorldPos to[2];
+  s32 unk1[2];
+  s32 anims[2];
+  s32 strIDs[2];
+
+  unk1[0] = 1;
+  anims[0] = GetWeaponID((u8)p->cursor.slot);
+  strIDs[0] = 0x2DF;
+  FUN_0809d240(&from[0].x, p->slot);
+  FUN_0809d240(&to[0].x, 16);
+  unk1[1] = 0;
+  anims[1] = 0;
+  strIDs[1] = 0x2DF;
+  VEC3_SET(from[1], 0, 0, 0);
+  VEC3_SET(to[1], 0, 0, 0);
+  FUN_080b9a28(&p->flying, unk1, from, to, anims, strIDs, 12);
+  PlaySound_082406e0(SE_SWAP_SLOT);
+}
 
 NAKED void FUN_0809d300(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d300.inc"); }
 
 NAKED void FUN_0809d3d0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d3d0.inc"); }
 
 void FUN_0809d7a4(Entity1B24* p) {
-  if (FUN_080b9adc(p->unk_e58)) {
+  if (FUN_080b9adc(&p->flying)) {
     PlaySound_082406e0(SE_EQUIP);
     FUN_0809d300(p);
     FUN_0809d00c(p);
@@ -140,7 +160,7 @@ s32 Entity1B24_Destroy(Entity1B24* p) {
   for (i = 0; i < 36; i++) {
     MainSprite_Remove(&p->sprites[i]);
   }
-  FUN_080b9a0c(p->unk_e58);
+  FUN_080b9a0c(&p->flying.pair);
   return 0;
 }
 
@@ -159,8 +179,8 @@ NAKED void FUN_0809d878(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d878.inc"); }
 NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
 
 void FUN_0809dd34(Entity1B24* p) {
-  ShopCursor_Init(p->unk_e28, 0, 0, 0, 30);
-  ShopCursor_PlaceSprite(p->unk_e28, &p->sprites[18]);
+  ShopCursor_Init(&p->cursor, 0, 0, 0, 30);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[18]);
 }
 
 void FUN_0809dd68(Entity1B24* p) {
