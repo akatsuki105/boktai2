@@ -386,7 +386,40 @@ NON_MATCH s32 Cmd_4B41(void) {
 #endif
 }
 
-NAKED s32 Cmd_AB41(void) { INCFUNC("asm/func/Cmd_AB41.inc"); }
+// 0xAB41, タイル索引の中心の座標 (y は足元の高さ) をスクリプトの変数3つへ書き出す, 範囲外なら全部 0
+// 残差: 命令列はほぼ一致, 原典は pos を sp+0, desc を sp+8 に置いて desc のアドレスを r5 に持つが, こちらは逆の並びになり pos のアクセスが1命令ずつ増える
+NON_MATCH s32 Cmd_AB41(void) {
+#ifdef NONMATCHING_C
+  WorldPos pos;
+  u8 desc[8];
+  s32 idx = VM_GetValue();
+  CollisionMapTileData* td = gCollisionMap->tiledata;
+
+  if (td == NULL) {
+    return 0;
+  }
+
+  if (idx >= td->width * td->height) {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  } else {
+    pos.x = (Mod(idx, td->width) << 8) + 0x80;
+    pos.z = (Div(idx, td->width) << 8) + 0x80;
+    pos.y = TileHeightAtIndex(idx, &pos);
+  }
+
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, pos.x);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, pos.y);
+  VM_GetMemoryRef(desc);
+  VM_StoreMemoryRef(desc, 0, pos.z);
+  return 0;
+#else
+  INCFUNC("asm/func/Cmd_AB41.inc");
+#endif
+}
 
 // 0xEDE2, HashName("BG非表示"), 指定した BG を隠す
 void Cmd_HideBG(void) {
