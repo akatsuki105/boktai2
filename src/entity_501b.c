@@ -112,7 +112,24 @@ BgMapEntry* Entity501B_GetBgMapAddr(s32 bg, s32 x, s32 y) {
   return tilemap + (x & 31) + (y & 31) * 32;
 }
 
-NAKED void Entity501B_DrawBgNumber(s32 value, s32 divisor, s32 x, s32 y) { INCFUNC("asm/func/Entity501B_DrawBgNumber.inc"); }
+// value を divisor の桁から1の位まで BG0 の (x, y) から右へ数字タイルで描く
+// 32/34命令, 原典は d + 0x91 を u16 に切り詰めてから 0xF000 を OR し, 0xF000 も一度別レジスタへ写す, 試済: 0x91 をローカルに (ループ外に出るのは揃う), u16 引数の inline に通す (37)
+NON_MATCH void Entity501B_DrawBgNumber(s32 value, s32 divisor, s32 x, s32 y) {
+#ifdef NONMATCHING_C
+  u16 tile = 0x91;
+  BgMapEntry* map = Entity501B_GetBgMapAddr(0, x, y);
+
+  while (divisor > 0) {
+    s32 d = Div(value, divisor);
+
+    *map++ = (u16)(d + tile) | 0xF000;
+    value -= d * divisor;
+    divisor = Div(divisor, 10);
+  }
+#else
+  INCFUNC("asm/func/Entity501B_DrawBgNumber.inc");
+#endif
+}
 
 // 太陽スタンドのスプライトを隠した状態で置く
 // 44/44命令, 原典は &solarStandSpr を Video_GetAuxSprite の後に作って r4 に置く (こちらは先に作って r5), p と gfx のレジスタも逆, 次に試すなら spr の代入を Video_GetAuxSprite の後へ
