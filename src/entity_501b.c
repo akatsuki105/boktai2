@@ -117,7 +117,12 @@ NAKED void FUN_081e03d8(Entity501B* p) { INCFUNC("asm/func/FUN_081e03d8.inc"); }
 
 NAKED void FUN_081e04a8(Entity501B* p) { INCFUNC("asm/func/FUN_081e04a8.inc"); }
 
-NAKED void FUN_081e0544(Entity501B* p) { INCFUNC("asm/func/FUN_081e0544.inc"); }
+// セッションが状態 24 になったらセーブへ移る
+void FUN_081e0544(Entity501B* p) {
+  if (Entity9A9F_GetState() == 24) {
+    Entity501B_SetState(p, FUN_081e0588, 6);
+  }
+}
 
 // セーブの書き込みを試し, 結果に応じた状態へ移る
 void FUN_081e0588(Entity501B* p) {
