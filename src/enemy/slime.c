@@ -88,7 +88,16 @@ NAKED void FUN_08163e10(Slime* p) { INCFUNC("asm/func/FUN_08163e10.inc"); }
 
 void FUN_08163eac(Slime* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad9c8; }
 
-NAKED void Slime_InitHitboxes(Slime* p) { INCFUNC("asm/func/Slime_InitHitboxes.inc"); }
+void Slime_InitHitboxes(Slime* p) {
+  Vec3 hurtSize, hurtOffset, hitSize, hitOffset;
+
+  VEC3_SET(hurtSize, 64, 128, 64);
+  VEC3_SET(hurtOffset, 0, 128, 0);
+  Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, Slime_OnHurt, p);
+  VEC3_SET(hitSize, 64, 100, 64);
+  VEC3_SET(hitOffset, 0, 128, 0);
+  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Slime_OnHit, 0, p);
+}
 
 NAKED void Slime_OnReset(Slime* p) { INCFUNC("asm/func/Slime_OnReset.inc"); }
 
