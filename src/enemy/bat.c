@@ -4,6 +4,7 @@
 #include "enemy.h"
 #include "enemy_inline.h"
 #include "enemy_target.h"
+#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
@@ -60,6 +61,7 @@ void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_08140904(EnemyBat* p);
 void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos);
 void EnemyBat_UpdateCurveBend(EnemyBat* p);
+void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 u8 EnemyBat_StepCurve(EnemyBat* p);
 void EnemyBat_PickRandomPathNode(EnemyBat* p);
 void FUN_08140c14(EnemyBat* p);
@@ -99,7 +101,72 @@ void (*const PTR_ARRAY_085ad80c[7])(EnemyBat*, u16*) = {
     FUN_08140278,
 };  // 0x085AD80C
 
-NAKED void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnHit.inc"); }
+// 当てたときの処理, 回復するバリアントなら与えたダメージぶん体力を戻してゲージと数字を出し, 攻撃判定を外して離れる副状態へ移る
+// 286/290命令, 表示判定は原典では bool を返す inline (通信中なら gEntity9A9F の playerIdx で unk_4a0 を見て case ごとに 0 を返す形) で, playerIdx は solar.c の Entity9A9F_GetPlayerIdx の形にすると -1 の作り方まで揃う, 残差は case ごとの 0 を返す塊が原典では畳まれず unk_4a0 を読み直す点と, CpuFill32 の v のアドレスを r6 に置く点
+NON_MATCH void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) {
+#ifdef NONMATCHING_C
+  if (b->ignoreMask != HIM_0) {
+    return;
+  }
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  Enemy_SetHitTarget(&p->e, b);
+  Hitbox_ApplyDamage(a, b);
+  if (((p->e).variant == 1 || (u16)((p->e).variant - 12) <= 3) && b->damage != 0) {
+    if ((p->e).hp + b->damage > (p->e).maxHp) {
+      (p->e).hurtbox.damage = (p->e).maxHp - (p->e).hp;
+      (p->e).hp = (p->e).maxHp;
+    } else {
+      (p->e).hurtbox.damage = b->damage;
+      (p->e).hp += b->damage;
+    }
+    (p->e).unk_48a = (p->e).hurtbox.damage;
+    if ((p->e).unk_48a != 0) {
+      bool8 show = TRUE;
+
+      if (IsLinkPlay() && !((p->e).unk_4a0 & 0x20) && (p->e).unk_4a0 != 0) {
+        switch (gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1) {
+          case 0: {
+            show = (p->e).unk_4a0 == 1;
+            break;
+          }
+          case 1: {
+            show = (p->e).unk_4a0 == 2;
+            break;
+          }
+          case 2: {
+            show = (p->e).unk_4a0 == 4;
+            break;
+          }
+          case 3: {
+            show = (p->e).unk_4a0 == 8;
+            break;
+          }
+        }
+      }
+      if (show) {
+        Vec3 v;
+
+        HUD_ShowEnemyGauge((p->e).mover.id, (p->e).hp, (p->e).maxHp, (p->e).unk_25a, 0);
+        CpuFill32(0, &v, sizeof(v));
+        if ((p->e).unk_48a != 0 || !((p->e).weaponExpMask & 0x4000)) {
+          CreateDamageNumber(&(p->e).hurtbox, (p->e).unk_48a, 1, &(p->e).mover.pos, &v, 1);
+        }
+      }
+    }
+  }
+  (p->e).atkHitbox.flags |= HBFLAG_HIDDEN;
+  ((EnemyBat*)(p->e).unk_1cc)->unk_658 &= ~8;
+  if (!EnemyBat_TestUnk658((p->e).unk_1cc, 4)) {
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 0, 2, 1);
+    ((EnemyBat*)(p->e).unk_1cc)->unk_658 |= 4;
+  }
+#else
+  INCFUNC("asm/func/EnemyBat_OnHit.inc");
+#endif
+}
 
 NAKED void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) { INCFUNC("asm/func/EnemyBat_OnHurt.inc"); }
 
