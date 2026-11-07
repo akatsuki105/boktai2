@@ -2729,7 +2729,7 @@ void FUN_0808e1b8(MainMenu* p) {
   FUN_0808e0e0(p, 23, 4, CrossoverBattle_GetRivalBossHP());
 }
 
-// BG0 の (9, 0x11) から2行ぶん 12 タイルを 0xD000 で埋める
+// BG0 の (9, 17) から2行ぶん 12 タイルを 0xD000 で埋める
 void FUN_0808e1f4(MainMenu* p) {
   BgMapEntry* e;
   s32 x, y;
@@ -2762,21 +2762,21 @@ void MainMenu_UpdateHud(MainMenu* p) {
   }
   if (!p->player->magic.availableForm) {
     if (p->qc.magicBlinkTimer == 0) {
-      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, 200, PLAYMODE_LOOP);
+      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, ICON_MAGIC_UA, PLAYMODE_LOOP);
     } else if (p->qc.magicBlinkTimer == 30) {
-      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, (s8)p->qc.magics[p->qc.magicIdx].id + 182, PLAYMODE_LOOP);
+      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, ICON_MAGIC((s8)p->qc.magics[p->qc.magicIdx].id), PLAYMODE_LOOP);
     }
     if (++p->qc.magicBlinkTimer > 59) {
       p->qc.magicBlinkTimer = 0;
     }
   } else if (p->player->magic.enchanted) {
     if (++p->stateTimer & 1) {
-      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, (s8)p->qc.magics[p->qc.magicIdx].id + 182, PLAYMODE_LOOP);
+      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, ICON_MAGIC((s8)p->qc.magics[p->qc.magicIdx].id), PLAYMODE_LOOP);
     } else {
-      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, 201, PLAYMODE_LOOP);
+      MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, ICON_NONE, PLAYMODE_LOOP);
     }
   } else {
-    MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, (s8)p->qc.magics[p->qc.magicIdx].id + 182, PLAYMODE_LOOP);
+    MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, ICON_MAGIC((s8)p->qc.magics[p->qc.magicIdx].id), PLAYMODE_LOOP);
   }
 }
 
