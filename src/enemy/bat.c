@@ -153,7 +153,15 @@ NAKED void FUN_0813f9a8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813f9a8.inc"); }
 
 NAKED void FUN_0813fbf8(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fbf8.inc"); }
 
-NAKED void FUN_0813fc9c(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fc9c.inc"); }
+void FUN_0813fc9c(EnemyBat* p) {
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, FUN_0813f268, ES_UNK_33);
+    ParticleShadow_Hide(&(p->e).shadow);
+  }
+  if (!(p->e).unk_608(&p->e)) {
+    (p->e).subStateTimer++;
+  }
+}
 
 NAKED void FUN_0813fd24(EnemyBat* p) { INCFUNC("asm/func/FUN_0813fd24.inc"); }
 
