@@ -43,6 +43,7 @@ void FUN_080e8614(Enemy* p);
 void FUN_080e68d8(Enemy* p, s32 timer);
 void FUN_08130eec(Spider* p);
 void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime);
+s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 void Spider_PickRandomPathNode(Spider* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
@@ -450,7 +451,60 @@ bool8 FUN_081309f0(Spider* p) {
 
 NAKED bool8 FUN_08130ac4(Spider* p) { INCFUNC("asm/func/FUN_08130ac4.inc"); }
 
-NAKED bool8 FUN_08130d34(Spider* p) { INCFUNC("asm/func/FUN_08130d34.inc"); }
+// プレイヤーが見えていて前方 45 度以内にいれば追いかけを始めて TRUE を返す
+// 196/194命令, 原典は flags3 のアドレスを検査のときに r7 へ写して末尾の SET_FLAGS まで持ち越し, p が r5 に乗る, 試済: 条件の入れ子, 角度差の inline, Enemy_BeginChase, flags3 の直接演算
+NON_MATCH bool8 FUN_08130d34(Spider* p) {
+#ifdef NONMATCHING_C
+  Spider* q = (p->e).unk_1cc;
+  Mover* mover = &(p->e).mover;
+  u8 angle;
+  Vec3 diff;
+  s32 d;
+
+  if (Spider_TestUnk660(q, 4)) {
+    return FALSE;
+  }
+  if (FUN_081309f0(p)) {
+    return TRUE;
+  }
+  if (gPlayerPtr[0]->flag20 & PFLAG20_INVISIBLE) {
+    return FALSE;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    return FALSE;
+  }
+  if ((p->e).unk_1e4 > (p->e).range0Sq) {
+    return FALSE;
+  }
+  angle = (p->e).mover.angle;
+  Vec3_Delta(&diff, &(p->e).mover.pos, &gPlayerPtr[0]->mover.pos);
+  d = ArcTan2_8(diff.x, diff.z) - angle;
+  if (d > 128) {
+    d -= 256;
+  } else if (d < -128) {
+    d += 256;
+  }
+  if (abs(d) > 32) {
+    return FALSE;
+  }
+  if (!(u8)Map_HasLineOfSight(&mover->pos, &gPlayerPtr[0]->mover.pos, 5, 0x100)) {
+    return FALSE;
+  }
+  (p->e).playerMover = &gPlayerPtr[0]->mover;
+  Enemy_ResetState(&p->e, 0, 0, 12);
+  Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+  FUN_08130eec(p);
+  Enemy_StepTowardPathNode(&p->e);
+  if ((p->e).kind != ENEK_SPIDER) {
+    SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+  }
+  SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
+  (p->e).unk_24e = (p->e).unk_24c;
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_08130d34.inc");
+#endif
+}
 
 // プレイヤーと反対側にある道順のノードを選び, 見つからなければでたらめに選ぶ
 // 下書き段階, 100/144 命令, 原典は 0x10 バイトのスタックに向きのベクトルなどを置いている
