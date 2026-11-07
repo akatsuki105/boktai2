@@ -27,6 +27,14 @@ typedef struct Entity9A9FRecord {
 } Entity9A9FRecord;
 static_assert(sizeof(Entity9A9FRecord) == 72);
 
+// 通信対戦のルール (3項目の選択値) と CRC, 親機が送って全員が受け取る
+typedef struct {
+  u8 values[3];  // 0x00, Entity08F4 の3行の選択値, FUN_081ddf84 が sEntity9A9FLimits[i] 以上なら 0 に戻す
+  u8 unk_3[3];   // 0x03
+  u16 crc;       // 0x06, CalcCRC16(values, 6)
+} Entity9A9FRules;
+static_assert(sizeof(Entity9A9FRules) == 8);
+
 // 通信プレイのセッション管理, state と updateCallback の組を Entity9A9F_SetState で進める状態機械
 typedef struct Entity9A9F {
   Entity e;                                    // 0x000, ENTITY_UNK_1
@@ -88,12 +96,8 @@ typedef struct Entity9A9F {
   s16 unk_154[4];                              // 0x154, '.e' があればそこから、無ければ {2, 1, -1, -2}
   Entity9A9FRecord self;                       // 0x15C, 自分の記録, 相手に送る
   Entity9A9FRecord records[4];                 // 0x1A4, Entity08F4 が 0x48 刻みで走査する, 4個で 0x2C4 の手前まで埋まる
-  u8 unk_2c4;                                  // 0x2C4, FUN_081de090 が 0 にする
-  u8 unk_2c5;                                  // 0x2C5, 同上
-  u8 unk_2c6;                                  // 0x2C6, 同上
-  u8 unk_2c7[0x2CC - 0x2C7];                   // 0x2C7
-  u8 unk_2cc[3];                               // 0x2CC, 根拠: FUN_081ddf84 が sEntity9A9FLimits[i] 以上なら 0 に戻す
-  u8 unk_2cf[0x2D4 - 0x2CF];                   // 0x2CF
+  Entity9A9FRules rulesOut;                    // 0x2C4, 親機が送るルール, FUN_081dae74 が Entity08F4 の選択値を写す
+  Entity9A9FRules rules;                       // 0x2CC, 受け取ったルール
   void (*updateCallback)(struct Entity9A9F*);  // 0x2D4
   s32 windowID;                                // 0x2D8, TextPanel_Create の戻り値
   u16 scriptID_2dc;                            // 0x2DC, '.l=0', FUN_081ddf44 が VM_ExecByID へ渡す
@@ -102,8 +106,8 @@ typedef struct Entity9A9F {
   u16 unk_2e2;                                 // 0x2E2, '.r=0', FUN_081df014 が VM_ExecByID で実行するスクリプト ID
   u16 unk_2e4;                                 // 0x2E4, '.b=0', FUN_081df9ac が VM_ExecByID で実行するスクリプト ID
   s16 exitScriptID;                            // 0x2E6, '.E=0', 終了時に VM_ExecByID で実行する, 0 ならソフトリセット
-  s16 unk_2e8;                                 // 0x2E8, '.Y=0'
-  s16 unk_2ea;                                 // 0x2EA, '.U=0'
+  u16 unk_2e8;                                 // 0x2E8, '.Y=0', FUN_081de844 が VM_ExecByID で実行するスクリプト ID
+  u16 unk_2ea;                                 // 0x2EA, '.U=0', FUN_081de844 が VM_ExecByID で実行するスクリプト ID
   u8* unk_2ec;                                 // 0x2EC, '.s' の後の VM_GetPC_Proxy()
   u8* unk_2f0;                                 // 0x2F0, '.S' の後の VM_GetPC_Proxy()
 } Entity9A9F;

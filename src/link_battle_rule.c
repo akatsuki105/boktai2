@@ -52,7 +52,7 @@ s32 FUN_081dae74(Entity08F4* p) {
   Entity9A9F* q = gEntity9A9F;
   u8* dst;
 
-  if (q == NULL || (dst = &q->unk_2c4) == NULL) {
+  if (q == NULL || (dst = q->rulesOut.values) == NULL) {
     return -1;
   }
 

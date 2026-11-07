@@ -39,6 +39,7 @@ s32 FUN_081df540(Entity9A9F* p);
 s32 FUN_081de7e8(Entity9A9F* p);
 u32 CalcCRC16(u8* data, u32 len);
 s32 FUN_081ddb14(Entity9A9F* p, u8* buf, s32 limit);
+void FUN_081dc694(void);
 extern bool32 gSoftResetInhibit;
 bool8 MessageWindow_IsOpen(void);
 
@@ -61,6 +62,16 @@ static inline bool8 Entity9A9F_IsDataKey(u16 key) {
     return TRUE;
   }
   return FALSE;
+}
+
+// 自分のプレイヤー番号, セッションが無ければ -1
+static inline s32 Entity9A9F_GetPlayerIdx(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
 }
 
 // キーの種別 (bit10..13) が kind か
@@ -303,14 +314,14 @@ void FUN_081ddf44(Entity9A9F* p) {
   }
 }
 
-// 上限に達している unk_2cc を 0 に戻す
+// 上限に達しているルールの値を 0 に戻す
 void FUN_081ddf84(Entity9A9F* p) {
   static const s32 sEntity9A9FLimits[3] = {2, 3, 4};  // 0x085AE3E8
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    if (p->unk_2cc[i] >= sEntity9A9FLimits[i]) {
-      p->unk_2cc[i] = 0;
+    if (p->rules.values[i] >= sEntity9A9FLimits[i]) {
+      p->rules.values[i] = 0;
     }
   }
 }
@@ -365,9 +376,9 @@ void FUN_081de02c(Entity9A9F* p) {
 
 void FUN_081de090(Entity9A9F* p) {
   FUN_081de02c(p);
-  p->unk_2c4 = 0;
-  p->unk_2c5 = 0;
-  p->unk_2c6 = 0;
+  p->rulesOut.values[0] = 0;
+  p->rulesOut.values[1] = 0;
+  p->rulesOut.values[2] = 0;
   ClearMemory(p->self.unk_40, 4);
   p->self.unk_17 = 0xFF;
   p->self.unk_44 = Time_GetSpanOfTime();
@@ -558,7 +569,43 @@ s32 FUN_081de7e8(Entity9A9F* p) {
   return 0;
 }
 
-NAKED s32 FUN_081de844(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de844.inc"); }
+// 親機の選択を待つ: キー 0x1C00 なら state 9 (ルールの受け渡し), キー 0x400 なら state 4 へ戻る, 親機は unk_23 に応じてキーを送る
+// 残差: 原典はキー種別の比較定数を比較の直前に作り, 後の unk_42 への同じ値でも作り直すが, こちらは先に作って使い回す (IsDataKey のように定数を中に持つ inline なら直る見込み)
+NON_MATCH s32 FUN_081de844(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_081dc694();
+    VM_ExecByID(p->unk_2ea, NULL);
+    if (Entity9A9F_GetPlayerIdx() == 0) {
+      sound_08240264(0xA8);
+    }
+  }
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (Entity9A9F_IsKeyKind(p->unk_44[0], 0x1C00)) {
+    Entity9A9F_SetState(p, 9, FUN_081de9d8);
+  } else if (Entity9A9F_IsKeyKind(p->unk_44[0], 0x400)) {
+    Entity9A9F_SetState(p, 4, FUN_081de360);
+    if (Entity9A9F_GetPlayerIdx() == 0) {
+      Sound_FadeOutBGM(1);
+    }
+  } else if (Entity9A9F_GetPlayerIdx() == 0 && p->unk_23 != 0) {
+    if (p->unk_23 == 1) {
+      p->unk_42 = 0x1C00;
+    } else if (p->unk_23 == 2) {
+      p->unk_42 = 0x400;
+      VM_ExecByID(p->unk_2e8, NULL);
+    }
+    p->unk_23 = 0;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_081de844.inc");
+#endif
+}
 
 // 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (Mover_ShowTrackingMarker / FUN_080fc174 と同じ), static inline (if/else で return) は試済
 // ステータス比較を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 比べる定数を原典はマスクの後で作るのに対しこちらは先に作る (52/52)

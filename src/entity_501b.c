@@ -493,7 +493,7 @@ void Entity501B_StateTransfer(Entity501B* p) {
       }
     } else if (gInput[0].pressed & (A_BUTTON | B_BUTTON | SELECT_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON)) {
       Entity9A9F* q = gEntity9A9F;
-      u8* unk = q->unk_2cc;
+      u8* unk = q->rules.values;
 
       if (q == NULL) {
         unk = NULL;
