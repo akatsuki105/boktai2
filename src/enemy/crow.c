@@ -23,7 +23,8 @@ typedef struct {
   Enemy e;
   u8 unk_654[0x658 - 0x654];  // 0x654
   u32 unk_658;                // 0x658
-  u8 unk_65c[0x671 - 0x65C];  // 0x65C
+  u8 unk_65c;                 // 0x65C, 羽ばたきアニメを流した回数
+  u8 unk_65d[0x671 - 0x65D];  // 0x65D
   u8 unk_671;                 // 0x671, 鳴くたびに 40 ずつ増える
   u8 unk_672[0x6A0 - 0x672];  // 0x672
   WorldPos curveStart;        // 0x6A0, 曲線の始点

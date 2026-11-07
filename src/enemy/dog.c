@@ -31,13 +31,15 @@ typedef struct {
   u16 unk_6ca;                // 0x6CA, 0 になるまで毎フレーム減る
   u8 unk_6cc[0x6D8 - 0x6CC];  // 0x6CC
   u8 unk_6d8;                 // 0x6D8, 0 になるまで毎フレーム減る
-  u8 unk_6d9[1808 - 0x6D9];   // 0x6D9
+  u8 unk_6d9[0x708 - 0x6D9];  // 0x6D9
+  Vec3 unk_708;               // 0x708, 飛びかかる直前のプレイヤーの位置
 } Dog;
 static_assert(sizeof(Dog) == 1808);
 
 const u16 u16_ARRAY_085ad8c0[16] = {450, 480, 480, 540, 450, 459, 459, 540, 800, 1280, 560, 360, 300, 306, 306, 360};  // 0x085AD8C0
 
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
+void FUN_0814df40(Dog* p);
 void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
 void FUN_0814b89c(HitboxData* a, HitboxData* b, Dog* p);
 void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p);
@@ -273,7 +275,17 @@ void FUN_0814de34(Dog* p, s32 timer) {
   }
 }
 
-NAKED void FUN_0814deb0(Dog* p) { INCFUNC("asm/func/FUN_0814deb0.inc"); }
+void FUN_0814deb0(Dog* p) {
+  Dog* q = (p->e).unk_1cc;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 15);
+    q->unk_708 = (p->e).playerMover->pos;
+  }
+  if ((p->e).animForceRestart) {
+    Enemy_EnterState(&p->e, FUN_0814df40, ES_UNK_34);
+  }
+}
 
 NAKED void FUN_0814df40(Dog* p) { INCFUNC("asm/func/FUN_0814df40.inc"); }
 
