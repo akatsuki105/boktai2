@@ -165,7 +165,11 @@ void FUN_0814480c(u16 angle, s32* outDir, s32* outFlip) {
 
 NAKED void FUN_0814483c(Crow* p, Vec3* pos) { INCFUNC("asm/func/FUN_0814483c.inc"); }
 
-NAKED void FUN_081448d8(Crow* p) { INCFUNC("asm/func/FUN_081448d8.inc"); }
+void FUN_081448d8(Crow* p) {
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+  CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_26);
+  (p->e).unk_24e = 0;
+}
 
 NAKED void FUN_08144910(Crow* p) { INCFUNC("asm/func/FUN_08144910.inc"); }
 
