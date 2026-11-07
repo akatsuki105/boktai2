@@ -426,7 +426,34 @@ bool32 FUN_0823d4c8(void) {
   return FALSE;
 }
 
-NAKED s32 UpdateSolDarkSide(void) { INCFUNC("asm/func/UpdateSolDarkSide.inc"); }
+// 赤と黒のフォームで過ごしたフレーム数の比から side を決めて返す
+s32 UpdateSolDarkSide(void) {
+  s32 total;
+  s32 ratio;
+  s32 side;
+
+  if (gStat->solarFormFrames == 0) {
+    gStat->solarFormFrames = 1;
+  }
+  if (gStat->darkFormFrames == 0) {
+    gStat->darkFormFrames = 1;
+  }
+  total = gStat->darkFormFrames + gStat->solarFormFrames;
+  if (total == 0) {
+    total = 1;
+  }
+  ratio = Div(gStat->solarFormFrames << 7, total);
+  if (ratio > 70) {
+    side = 0;
+  } else if (ratio > 58) {
+    side = 2;
+  } else {
+    side = 1;
+  }
+
+  gStat->side = side;
+  return side;
+}
 
 NAKED s32 UpdateWeaponStyle(void) { INCFUNC("asm/func/UpdateWeaponStyle.inc"); }
 
