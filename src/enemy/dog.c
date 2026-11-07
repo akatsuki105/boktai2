@@ -67,7 +67,21 @@ NAKED void enemy_dog_0814a320(Dog* p) { INCFUNC("asm/func/enemy_dog_0814a320.inc
 
 NAKED bool8 FUN_0814a5e0(Dog* p, u32 angle) { INCFUNC("asm/func/FUN_0814a5e0.inc"); }
 
-NAKED void Dog_InitAnims(Dog* p) { INCFUNC("asm/func/Dog_InitAnims.inc"); }
+void Dog_InitAnims(Dog* p) {
+  Enemy_SetAnimEntry(&p->e, 0, 0, 0);
+  Enemy_SetAnimEntry(&p->e, 14, 1, 0);
+  Enemy_SetAnimEntry(&p->e, 11, 2, 0);
+  Enemy_SetAnimEntry(&p->e, 1, 3, 0);
+  Enemy_SetAnimEntry(&p->e, 2, 13, 0);
+  Enemy_SetAnimEntry(&p->e, 15, 5, 0);
+  Enemy_SetAnimEntry(&p->e, 5, 6, 0);
+  Enemy_SetAnimEntry(&p->e, 16, 7, 0);
+  Enemy_SetAnimEntry(&p->e, 17, 8, 0);
+  Enemy_SetAnimEntry(&p->e, 3, 9, 0);
+  Enemy_SetAnimEntry(&p->e, 6, 10, 0);
+  Enemy_SetAnimEntry(&p->e, 7, 11, 0);
+  Enemy_SetAnimEntry(&p->e, 10, 12, 0);
+}
 
 NAKED void Dog_OnReset(Dog* p) { INCFUNC("asm/func/Dog_OnReset.inc"); }
 
