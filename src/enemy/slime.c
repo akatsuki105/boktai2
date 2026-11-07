@@ -16,7 +16,7 @@ typedef struct {
 } Slime;
 static_assert(sizeof(Slime) == 1680);
 
-u32 FUN_08164780(Slime* p);
+u32 Slime_PickHitAttributes(Slime* p);
 void FUN_08163b04(Slime*);
 void FUN_08163bbc(Slime*);
 void FUN_08163d94(Slime*);
@@ -50,7 +50,7 @@ void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) {
   if (Enemy_IsDead(&p->e) == 0 && b->ignoreMask == HIM_0) {
     Enemy_SetHitTarget(&p->e, b);
     if ((p->e).variant == 3) {
-      a->attributes = FUN_08164780(p);
+      a->attributes = Slime_PickHitAttributes(p);
     }
   }
 }
@@ -158,7 +158,7 @@ NAKED void FUN_081645a4(Slime* p) { INCFUNC("asm/func/FUN_081645a4.inc"); }
 NAKED void FUN_081645fc(Slime* p) { INCFUNC("asm/func/FUN_081645fc.inc"); }
 
 // ブラックスライムだけ, 当てたときの属性を乱数で引火か氷結に決める
-u32 FUN_08164780(Slime* p) {
+u32 Slime_PickHitAttributes(Slime* p) {
   if ((p->e).variant != 3) {
     return 0;
   }

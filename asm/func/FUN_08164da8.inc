@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #0x38
 	mov sb, r0
-	bl FUN_08164780
+	bl Slime_PickHitAttributes
 	str r0, [sp, #0x34]
 	ldr r0, _08164E4C @ =0x0203B400
 	mov ip, r0

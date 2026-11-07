@@ -10,9 +10,15 @@
 // バンデットは攻撃時にプレイヤーからアイテムを奪う, ヘルハウンドはファイヤーブレスを吐く
 typedef struct {
   Enemy e;
-  u8 unk_654[4];             // 0x654
-  HitboxData unk_658;        // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
-  u8 unk_6a8[1808 - 0x6A8];  // 0x6A8
+  u8 unk_654[4];              // 0x654
+  HitboxData unk_658;         // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
+  u8 unk_6a8[0x6C6 - 0x6A8];  // 0x6A8
+  u16 unk_6c6;                // 0x6C6, 0 になるまで毎フレーム減る
+  u16 unk_6c8;                // 0x6C8, 0 になるまで毎フレーム減る
+  u16 unk_6ca;                // 0x6CA, 0 になるまで毎フレーム減る
+  u8 unk_6cc[0x6D8 - 0x6CC];  // 0x6CC
+  u8 unk_6d8;                 // 0x6D8, 0 になるまで毎フレーム減る
+  u8 unk_6d9[1808 - 0x6D9];   // 0x6D9
 } Dog;
 static_assert(sizeof(Dog) == 1808);
 
