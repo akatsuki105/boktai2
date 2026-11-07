@@ -47,7 +47,10 @@ NAKED void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/fu
 
 NAKED void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) { INCFUNC("asm/func/Slime_OnHurt.inc"); }
 
-NAKED void FUN_08162cf4(Slime* p) { INCFUNC("asm/func/FUN_08162cf4.inc"); }
+void FUN_08162cf4(Slime* p) {
+  Enemy_ConsumeStateBegun(&p->e);
+  Enemy_PlayAnimNoFacing(&p->e, 1);
+}
 
 NAKED void FUN_08162d18(Slime* p) { INCFUNC("asm/func/FUN_08162d18.inc"); }
 

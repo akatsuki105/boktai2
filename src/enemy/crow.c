@@ -11,6 +11,7 @@ typedef struct {
 } Crow;
 static_assert(sizeof(Crow) == 1728);
 
+void FUN_08144b70(Crow* p);
 void FUN_081436b4(Crow*);
 void FUN_081439d8(Crow*);
 void FUN_08143dd4(Crow*);

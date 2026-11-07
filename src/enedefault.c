@@ -218,7 +218,6 @@ bool8 FUN_080eb2a0(Enemy* p);
 void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void Enemy_ScatterParticles(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 param_6);
 void Enemy_AddKillCount(Enemy* p);
-void Enemy_PlayAnimWithVariant(Enemy* p, s32 param_2, s32 param_3);
 
 // FUN_080f2644 / FUN_080f2864 が添字として引く, 用途は未解析
 const u8 u8_ARRAY_085ad468[5] = {0, 1, 2, 3, 4};  // 0x085AD468
