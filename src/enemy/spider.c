@@ -123,7 +123,7 @@ void FUN_0812ea90(Spider* p) {
 
 // 振り向く状態, 入ったときに4方向へ揃えて振り向きのアニメを流し, unk_1dc の向きへ 64 ずつ回す
 // 325/351命令の下書き, 振り向きのアニメは Enemy_PlayAnim の展開 (anim 5, 向き 0/1, 逆再生の有無) で, (p, anim, variant, f) を取る inline にすると書きやすいが一致しない, 原典は &mover を r7 に写して角度を読み書きする, 試済: Mover* のローカル
-NON_MATCH void FUN_0812eab4(Spider* p) {
+NON_MATCH void Spider_StateTurn(Spider* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
     u32 dir;
@@ -243,7 +243,7 @@ NON_MATCH void FUN_0812eab4(Spider* p) {
     (p->e).subStateDone = 1;
   }
 #else
-  INCFUNC("asm/func/FUN_0812eab4.inc");
+  INCFUNC("asm/func/Spider_StateTurn.inc");
 #endif
 }
 
