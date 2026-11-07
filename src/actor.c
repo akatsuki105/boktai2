@@ -1220,7 +1220,66 @@ NON_MATCH void FUN_0804234c(ActorManager* p, Actor* actor, s32 elapsed) {
 #endif
 }
 
-NAKED void FUN_08042414(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042414.inc"); }
+// 細長い姿で上から落とし, 着地したら横に広げながら縦を縮めて元の大きさに戻す, 終わったら unk_07 を立てる
+void FUN_08042414(ActorManager* p, Actor* actor, s32 elapsed) {
+  if (actor->unk_09) {
+    actor->unk_09 = 0;
+    actor->unk_07 = 0;
+    SpriteHolder_SetFlags(&actor->sprite, SPRFLAG_AFFINE);
+    SpriteHolder_SetAffine(&actor->sprite, 64, 64, 0);
+    PlaySound_082406e0(SONG_513);
+  }
+  if ((u8)actor->fn(actor) == 1) {
+    return;
+  }
+
+  {
+    s32 scaleY = 64;
+    s32 offsetY = 0;
+    s32 height;
+
+    switch (actor->unk_18) {
+      case 0: {
+        offsetY = (8 - elapsed) * 200 + 160;
+        height = (GetTileAt(actor->sprite.pos)->heightStairs & 0xF) << 8;
+        actor->sprite.pos->y = height + offsetY;
+        if (elapsed > 7) {
+          actor->unk_18++;
+        }
+        SpriteHolder_SetAffine(&actor->sprite, 1, 128, 0);
+        break;
+      }
+      case 1: {
+        s32 scaleX = 64 - (15 - elapsed) * 4;
+
+        if (elapsed > 8) {
+          scaleY = (24 - elapsed) * 8;
+          offsetY = (15 - elapsed) * 20;
+        }
+        if (elapsed > 14) {
+          actor->unk_18 = 2;
+        }
+        height = (GetTileAt(actor->sprite.pos)->heightStairs & 0xF) << 8;
+        actor->sprite.pos->y = height + offsetY;
+        SpriteHolder_SetAffine(&actor->sprite, scaleX, scaleY, 0);
+        break;
+      }
+      case 2: {
+        SpriteHolder_ClearFlags(&actor->sprite, SPRFLAG_AFFINE);
+        actor->unk_07 = 1;
+        break;
+      }
+    }
+  }
+  {
+    u8 angle = actor->unk_1b;
+
+    actor->mover.angle = angle;
+    actor->unk_1a = Angle_ToDir8(angle);
+    actor->unk_19 = Angle_ToDir4(angle);
+  }
+  FUN_08041480(actor, 0, 2, 0, 0);
+}
 
 NAKED void FUN_08042638(ActorManager* p, Actor* actor, s32 elapsed) { INCFUNC("asm/func/FUN_08042638.inc"); }
 
