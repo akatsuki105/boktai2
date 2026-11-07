@@ -122,7 +122,17 @@ NAKED void Crow_OnReset(Crow* p) { INCFUNC("asm/func/Crow_OnReset.inc"); }
 
 NAKED void FUN_08144414(Crow* p) { INCFUNC("asm/func/FUN_08144414.inc"); }
 
-NAKED void FUN_08144608(Crow* p) { INCFUNC("asm/func/FUN_08144608.inc"); }
+void FUN_08144608(Crow* p) {
+  PathWalker* walker = &(p->e).pathWalker;
+  u8 idx = Mod(Random(), walker->path->nodeCount);
+
+  if (idx == walker->nodeIdx) {
+    idx = Mod(idx + 1, walker->path->nodeCount);
+  }
+  walker->nodeIdx = idx;
+  walker->waitTimer = 0;
+  walker->node = Map_GetPathNodes(walker->path) + walker->nodeIdx;
+}
 
 void Crow_InitHitboxes(Crow* p) {
   Vec3 hurtSize, hurtOffset, hitSize, hitOffset;

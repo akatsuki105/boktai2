@@ -27,7 +27,10 @@ typedef struct {
   u32 unk_658;                // 0x658, bit3 が立っていると移動が速くなる
   u8 unk_65c[8];              // 0x65C
   u16 curveT;                 // 0x664, curveStart から curveEnd への曲線の進み具合, 128 ごとに移動の速さの段階が1つ上がる (7 段階まで)
-  u8 unk_666[0x6A0 - 0x666];  // 0x666
+  u8 unk_666;                 // 0x666
+  s8 curveBendDir;            // 0x667, curveBend を増やす向き, 1 か -1
+  s16 curveBend;              // 0x668, 曲線のふくらみ, -320〜320 を往復する
+  u8 unk_66a[0x6A0 - 0x66A];  // 0x66A
   WorldPos curveStart;        // 0x6A0, 曲線の始点
   Vec3 curveEnd;              // 0x6A8, 曲線の終点
   u8 unk_6b0[1728 - 0x6B0];   // 0x6B0
