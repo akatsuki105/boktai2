@@ -9,7 +9,7 @@
 _080E1110:
 	mov r1, r8
 	ldr r0, [r1]
-	bl FUN_080edce8
+	bl Enemy_GetNextActive
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080E119A

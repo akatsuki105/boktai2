@@ -468,7 +468,7 @@ _080D42CA:
 	adds r0, r6, #0
 	add r1, sp, #0x20
 	movs r3, #1
-	bl FUN_080dbcec
+	bl DustManager_Spawn
 _080D4310:
 	ldr r0, _080D4368 @ =0x00000A8A
 	adds r4, r5, r0

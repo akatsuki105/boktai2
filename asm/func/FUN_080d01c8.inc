@@ -12,7 +12,7 @@ _080D01DA:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldrh r0, [r0]
-	bl FUN_080cfc78
+	bl PlayerLink_IsOnIce
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080D0200
@@ -144,7 +144,7 @@ _080D02E2:
 	lsls r4, r4, #1
 	adds r0, r5, r4
 	ldrh r0, [r0]
-	bl FUN_080cfc78
+	bl PlayerLink_IsOnIce
 	cmp r0, #0
 	beq _080D038E
 	movs r1, #0xdf

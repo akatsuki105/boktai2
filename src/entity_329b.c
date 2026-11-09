@@ -51,7 +51,6 @@ const u16 u16_ARRAY_085aa810[6] = {0x80, 0x2, 0x50, 0x60, 0x20, 0x40};  // 0x085
 
 extern u16 gStagedDISPCNT;
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_080100f4(Entity329B* p);
 void FUN_0801019c(Entity329B* p);
 void FUN_08010230(Entity329B* p);
@@ -231,7 +230,7 @@ void Entity329B_Redraw(Entity329B* p) {
 // START か A が押されたら画面を閉じる演出を始めて TRUE を返す
 bool32 Entity329B_HandleSkipInput(Entity329B* p) {
   if ((gInput[0].pressed & START_BUTTON) || (gInput[0].pressed & A_BUTTON)) {
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
     Entity329B_SetState(p, Entity329B_UpdateFadeOut);
     return TRUE;
   }

@@ -18,29 +18,28 @@
 #define STYLE_FIST 4    // 拳 (WeaponKind だと 3)
 #define STYLE_NONE 5    // なし
 
-// gStat->mapFlags, FUN_0823acbc がマップ読み込み時に 0 で初期化する
-// 立てているのは weather.c の MPF_RAIN だけで, 溶岩の状態 (MPF_COLD / MPF_HOT / MPF_UNK_13) をセットするコードはROM中に存在しない
+// gStat->mapFlags, GameSystem_Boot がマップ読み込み時に 0 で初期化する
 // 例:
 //  8番街(夜): 0x0027
 //  変異域氷:  0x002C (MPF_UNK_2, MPF_COLD, MPF_BRIGHT)
 //  変異域炎:  0x0034 (MPF_UNK_2, MPF_HOT, MPF_BRIGHT)
-//  地下水路(ワープ先):  0x2024 (MPF_UNK_2, MPF_BRIGHT, MPF_UNK_13)
-#define MPF_UNK_0 (1 << 0)    // 0x1, 未検証
-#define MPF_OUTDOOR (1 << 1)  // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
-#define MPF_UNK_2 (1 << 2)    // 0x4, いろんなマップでセット
-#define MPF_COLD (1 << 3)     // 0x8,　 変異域の氷エリアでセットされていた
-#define MPF_HOT (1 << 4)      // 0x10, 　変異域の炎エリアでセットされていた
-#define MPF_BRIGHT (1 << 5)   // 0x20, 部屋が明るいかどうか (大抵のマップではセットされている, 暗黒街の暗い部屋では最初セットされておらず、明かりをつけるとセットされる)
-#define MPF_UNK_6 (1 << 6)    // 0x40
-#define MPF_UNK_7 (1 << 7)    // 0x80
-#define MPF_UNK_8 (1 << 8)    // 0x100
-#define MPF_UNK_9 (1 << 9)    // 0x200
-#define MPF_UNK_10 (1 << 10)  // 0x400
-#define MPF_RAIN (1 << 11)    // 0x800, 今いるマップが雨のときにセット
-#define MPF_DESERT (1 << 12)  // 0x1000, 砂漠エリア(おいしい水を持っていない場合に、HPが徐々に減っていく)
-#define MPF_UNK_13 (1 << 13)  // 0x2000
-#define MPF_UNK_14 (1 << 14)  // 0x4000, サバタ操作中?
-#define MPF_UNK_15 (1 << 15)  // 0x8000
+//  地下水路(ワープ先):  0x2024 (MPF_UNK_2, MPF_BRIGHT, MPF_WATERFRONT)
+#define MPF_UNK_0 (1 << 0)        // 0x1, 未検証
+#define MPF_OUTDOOR (1 << 1)      // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
+#define MPF_UNK_2 (1 << 2)        // 0x4, いろんなマップでセット
+#define MPF_COLD (1 << 3)         // 0x8,　 変異域の氷エリアでセットされていた
+#define MPF_HOT (1 << 4)          // 0x10, 　変異域の炎エリアでセットされていた
+#define MPF_BRIGHT (1 << 5)       // 0x20, 部屋が明るいかどうか (大抵のマップではセットされている, 暗黒街の暗い部屋では最初セットされておらず、明かりをつけるとセットされる)
+#define MPF_UNK_6 (1 << 6)        // 0x40
+#define MPF_UNK_7 (1 << 7)        // 0x80
+#define MPF_UNK_8 (1 << 8)        // 0x100
+#define MPF_UNK_9 (1 << 9)        // 0x200
+#define MPF_UNK_10 (1 << 10)      // 0x400
+#define MPF_RAIN (1 << 11)        // 0x800, 今いるマップが雨のときにセット
+#define MPF_DESERT (1 << 12)      // 0x1000, 砂漠エリア(おいしい水を持っていない場合に、HPが徐々に減っていく)
+#define MPF_WATERFRONT (1 << 13)  // 0x2000, 水辺エリア (落下死の演出などが変わる)
+#define MPF_UNK_14 (1 << 14)      // 0x4000, サバタ操作中?
+#define MPF_UNK_15 (1 << 15)      // 0x8000
 
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
 typedef struct {
@@ -130,10 +129,10 @@ typedef struct {
   u32 unlockedMap;               // 0x260
   u32 worldMapFlags;             // 0x264, ワールドマップに出す目印のフラグ, ビット 6..13 は sWorldMapStages[7..14] のマーカー, それ以降は WorldMapTile.flagBit
   s32 mapIconFlags[16];          // 0x268, stageID で引く, ビット i が立っていると MapIcon の i 番目を描く, Cmd_ClearMapIconFlags が 0 でクリアする
-  s32 darkDjangoAtkCounter;      // 0x2A8
-  s32 unk_2ac;                   // 0x2AC, darkDjangoAtkCounter がここに届くとバーサークの準備ができる, 発動のたびに 200 + 0..99 で引き直す
+  s32 berserkCounter;            // 0x2A8
+  s32 berserkThresh;             // 0x2AC, berserkCounter がここに届くと黒ジャンゴ暴走の準備ができる, 発動のたびに 200 + 0..99 で引き直す
   s16 unk_2b0[2];                // 0x2B0
-  s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
+  s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: GameSystem_Update が 0x7FFFFFFF と符号付き比較する
   s32 bossHP;                    // 0x2B8, 画面右上のゲージの値, ボスのHPゲージ, 黒ジャンゴ運搬の残りHP(実質的な残り時間) として使用, 雑魚敵のHPでは使わない
   s32 bossHPMax;                 // 0x2BC, bossHP の最大値, ボス戦ではボスの maxHP
   s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
@@ -147,8 +146,8 @@ typedef struct {
   u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
   u16 style;                     // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle
   u16 forge;                     // 0x2FC, 0..127, 用途まだ不明
-  s16 unk_2fe[5];                // 0x2FE, 好感度?
-  u16 unk_308[64];               // 0x308, u16 3つで1件の表が20件 ([0] と [1] で引く, [1] が 0 なら空き), 末尾8バイトは未解析
+  s16 friendship[5];             // 0x2FE, 好感度, 0: ザジ, 1: リタ, 2: スミレ, 3: サバタ, 4: レディ
+  u16 defeatedEnemyLog[64];      // 0x308, 倒した敵の記録 (マップのスクリプト ID, Mover ID, 再出現までの残り回数), u16 3つで1件の表が20件 ([0] と [1] で引く, [1] が 0 なら空き), 末尾8バイトは未解析
   u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ(bitがクリアされている場合、魔物図鑑でエントリが ???? になる), 全部そろうと [0] = 0xFFFFFFFF, [1] = 0x01FFFFFF
   u32 enemyDexDrop[4];           // 0x390, 魔物図鑑のドロップアイテム発見フラグ, 1体につき2bit (bit0: 通常ドロップ, bit1: レアドロップ)
   u32 armorDex[2];               // 0x3A0
@@ -163,7 +162,7 @@ typedef struct {
   u8 name[16];                   // 0x3C0, JP: 5文字, EN: 9文字
   Weapon weapons[16 + 16 + 16];  // 0x3D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   s16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
-  u16 linkBattlePoint;           // 0x912, 対戦ポイント
+  s16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
   s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数
   u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明

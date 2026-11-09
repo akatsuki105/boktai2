@@ -1,0 +1,338 @@
+#include "coffin.h"
+#include "collision_map.h"
+#include "entity.h"
+#include "global.h"
+#include "map_inline.h"
+#include "particle.h"
+#include "random.h"
+#include "sound.h"
+#include "sprite_aux.h"
+#include "vm.h"
+
+typedef struct {
+  Particle ptcl;  // 0x00
+  Vec3 vel;       // 0x28, 毎フレーム ptcl.pos に足す
+  bool16 active;  // 0x30, 0 でない枠だけ更新する
+  u16 timer;      // 0x32, 16 フレームで消える
+} SolarBarrierPtcl;
+static_assert(sizeof(SolarBarrierPtcl) == 52);
+
+// 太陽結界(この上に置いたイモータルが入った棺桶は逃げ出さない)
+typedef struct SolarBarrier {
+  Entity e;                                      // 0x000, ENTITY_UNK_9
+  AuxSprite sprite;                              // 0x018, flags に SPRFLAG_BLINK_ODD が立つ, pos より y が 0x1E 高い (立体的に見せるため)
+  AuxSpriteGfx gfx;                              // 0x044, SPRITE_MAGIC_SQUARE, パレット 99
+  AuxSprite sprite2;                             // 0x060, flags に SPRFLAG_BLINK_EVEN が立つ
+  AuxSpriteGfx gfx2;                             // 0x08C, SPRITE_MAGIC_SQUARE, パレット 97
+  bool16 coffinInside;                           // 0x0A8, 棺桶が結界の内側にいるか, 変わったときだけスクリプトと効果音を流す
+  u16 stateTimer;                                // 0x0AA, Init が 0 を書く
+  Vec3 pos;                                      // 0x0AC, '.p', y はタイルの attr から計算し直す
+  void (*updateCallback)(struct SolarBarrier*);  // 0x0B4, '.m' があるかで切り替える
+  ParticleGroup* group;                          // 0x0B8, PTCL_GROUP_2
+  u8 unk_bc;                                     // 0x0BC
+  u8 nextPtcl;                                   // 0x0BD, 次に起こす ptcls の枠, 0..7 を巡回する
+  u16 ptclTimer;                                 // 0x0BE, 毎フレーム数え, 状態ごとに決まった間隔でパーティクルを1つ出す
+  SolarBarrierPtcl ptcls[8];                     // 0x0C0
+  u32 scriptIn;                                  // 0x260, '.i', 棺桶が太陽結界に入った時に呼ばれるスクリプトID
+  u32 scriptOut;                                 // 0x264, '.o', 棺桶が太陽結界から出た時に呼ばれるスクリプトID
+} SolarBarrier;
+static_assert(sizeof(SolarBarrier) == 616);
+
+// 1枠を1フレーム進める, 16フレームで消える
+// 残差1命令 (37/38) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
+NON_MATCH void SolarBarrierPtcl_Update(SolarBarrierPtcl* elem, ParticleGroup* g) {
+#ifdef NONMATCHING_C
+  elem->timer++;
+  if (elem->timer > 15) {
+    elem->ptcl.flags |= SPRFLAG_HIDDEN;
+    elem->active = FALSE;
+  } else {
+    elem->ptcl.pos.x += elem->vel.x;
+    elem->ptcl.pos.y += elem->vel.y;
+    elem->ptcl.pos.z += elem->vel.z;
+    Particle_SetPose(&elem->ptcl, g, ((elem->timer >> 2) & 1) + 2);
+  }
+#else
+  INCFUNC("asm/func/SolarBarrierPtcl_Update.inc");
+#endif
+}
+
+// 空いている枠を1つ起こして結界の内側に散らす
+// 残差5命令 (102/107) でこちらが短い: 原典は &nextPtcl や定数 0xFF を高位レジスタに巻き上げて回すが, こちらは低位レジスタで足りる
+NON_MATCH void SolarBarrier_SpawnPtcl(SolarBarrier* p, ParticleGroup* g) {
+#ifdef NONMATCHING_C
+  SolarBarrierPtcl* q = &p->ptcls[p->nextPtcl];
+  s32 idx;
+
+  Particle_SetPose(&q->ptcl, g, 2);
+  q->ptcl.flags &= ~SPRFLAG_HIDDEN;
+
+  idx = (gRandTableIdx + 1) & 0x3FF;
+  q->ptcl.pos.x = ((*(gRandomTable + idx) >> 4) & 0xFF) + p->pos.x - 0x7F;
+  idx = (idx + 1) & 0x3FF;
+  q->ptcl.pos.y = (*(gRandomTable + idx) & 0x3F) + p->pos.y;
+  idx = (idx + 1) & 0x3FF;
+  q->ptcl.pos.z = ((*(gRandomTable + idx) >> 4) & 0xFF) + p->pos.z - 0x7F;
+  q->vel.x = 0;
+  idx = (idx + 1) & 0x3FF;
+  gRandTableIdx = idx;
+  q->vel.y = (*(gRandomTable + idx) & 0xF) + 0x10;
+  q->vel.z = 0;
+  q->timer = 0;
+  q->active = TRUE;
+
+  p->nextPtcl++;
+  if (p->nextPtcl > 7) {
+    p->nextPtcl = 0;
+  }
+#else
+  INCFUNC("asm/func/SolarBarrier_SpawnPtcl.inc");
+#endif
+}
+
+// 棺桶が結界の内側にいるかどうか
+static bool32 IsCoffinInside(SolarBarrier* p) {
+  WorldPos* pos = Coffin_GetPos();
+  u16 dx, dz;
+
+  if (pos == NULL) {
+    return FALSE;
+  }
+
+  dx = abs(pos->x - p->pos.x);
+  dz = abs(pos->z - p->pos.z);
+  if (dx >= Q8(0.5) || dz >= Q8(0.5)) {
+    return FALSE;
+  }
+
+  if (dx * dx + dz * dz < (Q8(0.5) * Q8(0.5))) {
+    return TRUE;
+  }
+
+  // 原典は円の外のとき return を書き忘れている
+}
+
+// 結界の内側に棺桶が入ったかどうかを見て、入った/出たタイミングでスクリプトを実行する
+// 残差7命令 (81/88) でこちらが短い: 原典は ptclTimer の 16bit 切り詰め (0xFFFF のレジスタ AND) が & 7 / & 3 と畳まれずに残る
+// Tier A-B 試済: (u16) の明示キャスト, ローカルへの代入 (どちらも畳まれたまま)
+NON_MATCH void SolarBarrier_UpdateIdle(SolarBarrier* p) {
+#ifdef NONMATCHING_C
+  if (!p->coffinInside) {
+    if (IsCoffinInside(p) && gCoffin->state == 1) {
+      p->coffinInside = TRUE;
+      if (p->scriptIn != 0) {
+        VM_ExecByID(p->scriptIn, NULL);
+      }
+      Coffin_SetInsideSolarBarrier(TRUE);
+      PlaySound_082406e0(SE_CIRCLE_IN);
+    }
+
+    p->ptclTimer++;
+    if ((p->ptclTimer & 7) == 0) {
+      SolarBarrier_SpawnPtcl(p, p->group);
+    }
+  } else {
+    if (!IsCoffinInside(p)) {
+      if (p->scriptOut != 0) {
+        VM_ExecByID(p->scriptOut, NULL);
+      }
+      Coffin_SetInsideSolarBarrier(FALSE);
+      p->coffinInside = FALSE;
+      PlaySound_082406e0(SE_CIRCLE_OUT);
+    }
+
+    p->ptclTimer++;
+    if ((p->ptclTimer & 3) == 0) {
+      SolarBarrier_SpawnPtcl(p, p->group);
+    }
+  }
+#else
+  INCFUNC("asm/func/SolarBarrier_UpdateIdle.inc");
+#endif
+}
+
+// 結界が出きったあと, 15フレームかけて浮かせてから SolarBarrier_UpdateIdle に移る
+// 残差3命令 (50/53) でこちらが短い: 原典は stateTimer の加算結果を別レジスタに作って 16bit 切り詰めと *2 の両方で使い回すが, こちらは加算を破壊的に行う
+NON_MATCH void SolarBarrier_UpdateLift(SolarBarrier* p) {
+#ifdef NONMATCHING_C
+  p->sprite.flags &= ~SPRFLAG_HIDDEN;
+  p->stateTimer++;
+  if (p->stateTimer > 14) {
+    p->sprite.pos.y = p->pos.y + Q8(0.12);
+    p->stateTimer = 0;
+    p->updateCallback = SolarBarrier_UpdateIdle;
+  } else {
+    p->sprite.pos.y = p->stateTimer * 2 + p->pos.y;
+  }
+
+  p->ptclTimer++;
+  if ((p->ptclTimer & 1) == 0) {
+    SolarBarrier_SpawnPtcl(p, p->group);
+  }
+#else
+  INCFUNC("asm/func/SolarBarrier_UpdateLift.inc");
+#endif
+}
+
+// 結界が立ち上がる演出, 64フレームかけて sprite2 を拡大回転させてから SolarBarrier_UpdateLift に移る
+void SolarBarrier_UpdateSpinIn(SolarBarrier* p) {
+  p->sprite.flags |= SPRFLAG_HIDDEN;
+  p->sprite2.flags &= ~SPRFLAG_HIDDEN;
+  p->stateTimer++;
+  if (p->stateTimer > 0x3F) {
+    p->sprite2.flags &= ~SPRFLAG_AFFINE;
+    p->sprite2.scaleX = Q6(1);
+    p->sprite2.scaleY = Q6(1);
+    p->stateTimer = 0;
+    p->updateCallback = SolarBarrier_UpdateLift;
+    PlaySound_082406e0(SONG_815);
+  } else {
+    p->sprite2.flags |= SPRFLAG_AFFINE;
+    p->sprite2.scaleX = p->stateTimer;
+    p->sprite2.scaleY = p->stateTimer;
+    p->sprite2.rotation = (u8)p->stateTimer * 4;
+  }
+}
+
+// 有効な枠だけパーティクルを進めてから updateCallback を呼ぶ
+s32 SolarBarrier_Update(SolarBarrier* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (p->ptcls[i].active) {
+      SolarBarrierPtcl_Update(&p->ptcls[i], p->group);
+    }
+  }
+
+  p->updateCallback(p);
+  return 0;
+}
+
+s32 SolarBarrier_Destroy(SolarBarrier* p) {
+  s32 i;
+
+  AuxSprite_Remove(&p->sprite);
+  AuxSprite_Remove(&p->sprite2);
+  for (i = 0; i < 8; i++) {
+    Particle_Remove((Particle*)&p->ptcls[i]);
+  }
+  return 0;
+}
+
+// 8枠ぶんのパーティクルを用意して全部隠しておく
+void SolarBarrier_InitPtcls(SolarBarrier* p) {
+  s32 i;
+
+  p->group = GetParticleGroup(PTCL_GROUP_2);
+  for (i = 0; i < 8; i++) {
+    Particle* ptcl = &p->ptcls[i].ptcl;
+
+    Particle_Add(ptcl, p->group, 0);
+    Particle_SetOffset(ptcl, -4, -4);
+    Particle_SetPose(ptcl, p->group, 2);
+    Particle_SetPltt(ptcl, 1);
+    ptcl->priority = 1;
+    ptcl->offsetZ = 0x14;
+    ptcl->flags |= SPRFLAG_HIDDEN;
+    p->ptcls[i].active = FALSE;
+  }
+
+  p->nextPtcl = 0;
+  p->ptclTimer = 0;
+}
+
+// 残差2命令 (251/249): p のレジスタだけ違う (原典は r7, こちらは r8) ので p 経由のロードに mov が2回余計に要る
+NON_MATCH s32 SolarBarrier_Init(SolarBarrier* p, u32 id, u32 _) {
+#ifdef NONMATCHING_C
+  AuxSpriteGfx* gfx;
+  AuxSprite* spr;
+
+  if (VM_SeekToNamedArg('p')) {
+    p->pos.x = VM_GetValue();
+    p->pos.y = VM_GetValue();
+    p->pos.z = VM_GetValue();
+    p->pos.y = TileHeightAt(&p->pos);
+  } else {
+    p->pos.x = 0;
+    p->pos.y = 0;
+    p->pos.z = 0;
+  }
+
+  gfx = &p->gfx;
+  Video_GetAuxSprite(gfx, SPRITE_MAGIC_SQUARE);
+  spr = &p->sprite;
+  AuxSprite_Add(spr, gfx, 0);
+  spr->poseIdx = 6;
+  Video_SetAuxSpritePltt(gfx, 99);
+  p->sprite.flags |= SPRFLAG_BLINK_ODD;
+  p->sprite.priority = 3;
+  p->sprite.pos = p->pos;
+  p->sprite.pos.y += Q8(0.12);
+
+  gfx = &p->gfx2;
+  Video_GetAuxSprite(gfx, SPRITE_MAGIC_SQUARE);
+  spr = &p->sprite2;
+  AuxSprite_Add(spr, gfx, 0);
+  spr->poseIdx = 6;
+  Video_SetAuxSpritePltt(gfx, 97);
+  p->sprite2.flags |= SPRFLAG_BLINK_EVEN;
+  p->sprite2.priority = 3;
+  p->sprite2.pos = p->pos;
+
+  SolarBarrier_InitPtcls(p);
+
+  if (VM_SeekToNamedArg('m') && VM_GetValue()) {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+    p->sprite2.flags |= SPRFLAG_HIDDEN;
+    p->updateCallback = SolarBarrier_UpdateSpinIn;
+    PlaySound_082406e0(SONG_350);
+  } else {
+    p->updateCallback = SolarBarrier_UpdateIdle;
+  }
+
+  p->stateTimer = 0;
+  if (IsCoffinInside(p)) {
+    p->coffinInside = TRUE;
+  } else {
+    p->coffinInside = FALSE;
+  }
+
+  if (VM_SeekToNamedArg('i')) {
+    p->scriptIn = VM_GetValue();
+  } else {
+    p->scriptIn = 0;
+  }
+
+  if (VM_SeekToNamedArg('o')) {
+    p->scriptOut = VM_GetValue();
+  } else {
+    p->scriptOut = 0;
+  }
+
+  if (IsCoffinInside(p)) {
+    p->coffinInside = TRUE;
+    Coffin_SetInsideSolarBarrier(TRUE);
+  } else {
+    p->coffinInside = FALSE;
+    Coffin_SetInsideSolarBarrier(FALSE);
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/SolarBarrier_Init.inc");
+#endif
+}
+
+// 0xF156, HashName("太陽結界")
+SolarBarrier* SolarBarrier_Create(u32 id, u32 unused) {
+  SolarBarrier* p = CreateEntity(ENTITY_UNK_9, sizeof(SolarBarrier));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, SolarBarrier_Update, SolarBarrier_Destroy);
+    if (SolarBarrier_Init(p, id, unused) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

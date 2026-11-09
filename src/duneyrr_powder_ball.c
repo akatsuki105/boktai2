@@ -11,12 +11,12 @@
 
 #define SCALES_BALL 7  // ドゥネイルの"鱗粉玉"(見た目はエネルギーボール)
 
-s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
-void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
+s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
+void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 
-static inline void EmitParticles_08059a1c(WorldPos* pos, u8 angle) { FUN_08015c28(pos, angle, 0x20, 2, 5, 0x3000, 0x20, 10, 10, 0xF8); }
+static inline void EmitParticles_08059a1c(WorldPos* pos, u8 angle) { Entity08015584_SpawnHorizontal(pos, angle, 0x20, 2, 5, 0x3000, Q6(0.5), 10, 10, 0xF8); }
 
 // 状態を入れ替えて経過フレームを0に戻す
 static inline void DuneyrrPowderBall_SetState(DuneyrrPowderBall* elem, u8 state) {
@@ -27,7 +27,7 @@ static inline void DuneyrrPowderBall_SetState(DuneyrrPowderBall* elem, u8 state)
 
 void FUN_080592fc(HitboxData* a, HitboxData* b, DuneyrrPowderBall* elem) {}
 
-void DuneyrrPowderBall_InitHitbox(DuneyrrPowderBall* elem, s32 power, s32 knockback, s32 invincibleTime) {
+void DuneyrrPowderBall_InitHitbox(DuneyrrPowderBall* elem, s32 power, s32 knockback, s32 iframes) {
   HitboxData* hitbox = &elem->hitbox;
   Vec3 halfSize, offset;
 
@@ -35,7 +35,7 @@ void DuneyrrPowderBall_InitHitbox(DuneyrrPowderBall* elem, s32 power, s32 knockb
   VEC3_SET(offset, 0, Q8(0.125), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, FUN_080592fc, elem);
-  Hitbox_SetAttack(hitbox, power, knockback, 0, 0, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, 0, iframes);
 }
 
 void DuneyrrPowderBall_OnHurt(HitboxData* a, HitboxData* b, DuneyrrPowderBall* elem) {
@@ -73,7 +73,7 @@ s32 DuneyrrPowderBallManager_InitBall(DuneyrrPowderBallManager* p, DuneyrrPowder
   elem->sprite.priority = 2;
   pos = &elem->sprite.pos;
   Vec3_Clear(pos);
-  DuneyrrPowderBall_InitHitbox(elem, p->power, p->knockbackPower, p->invincibleTime);
+  DuneyrrPowderBall_InitHitbox(elem, p->power, p->knockback, p->iframes);
   DuneyrrPowderBall_InitHurtbox(elem);
   ParticleShadow_Init(&elem->shadow, pos, 0);
   ParticleShadow_Hide(&elem->shadow);
@@ -165,7 +165,7 @@ s32 FUN_0805965c(DuneyrrPowderBallManager* p, DuneyrrPowderBall* elem, s32 idx) 
       HitboxData* hurtbox = &elem->hurtbox;
       hurtbox->flags |= HBFLAG_HIDDEN;
     }
-    DustManager_Emit(3, 0, 0x100, 2, 2, 30, p->dustPower, 0, &sprite->pos);
+    SporeManager_Emit(3, 0, 0x100, 2, 2, 30, p->sporePower, 0, &sprite->pos);
   }
   return 0;
 }
@@ -217,15 +217,15 @@ s32 DuneyrrPowderBallManager_Destroy(DuneyrrPowderBallManager* p) {
   return 0;
 }
 
-s32 DuneyrrPowderBallManager_Init(DuneyrrPowderBallManager* p, s32 power, s32 knockbackPower, s32 param_4, s32 param_5) {
+s32 DuneyrrPowderBallManager_Init(DuneyrrPowderBallManager* p, s32 power, s32 knockback, s32 param_4, s32 param_5) {
   DuneyrrPowderBall* elem;
   s32 i;
 
   p->anim = GetFile(DIR_ANIMATION, ANIM_31F4);
   p->power = power;
-  p->knockbackPower = knockbackPower;
-  p->invincibleTime = param_4;
-  p->dustPower = param_5;
+  p->knockback = knockback;
+  p->iframes = param_4;
+  p->sporePower = param_5;
   elem = p->balls;
   for (i = 0; i < 8; i++, elem++) {
     DuneyrrPowderBallManager_InitBall(p, elem, i);
@@ -236,12 +236,12 @@ s32 DuneyrrPowderBallManager_Init(DuneyrrPowderBallManager* p, s32 power, s32 kn
   p->player = GetPlayer(0);
 }
 
-DuneyrrPowderBallManager* DuneyrrPowderBallManager_Create(s32 power, s32 knockbackPower, s32 param_3, s32 param_4) {
+DuneyrrPowderBallManager* DuneyrrPowderBallManager_Create(s32 power, s32 knockback, s32 param_3, s32 param_4) {
   DuneyrrPowderBallManager* p = CreateEntity(ENTITY_UNK_8, sizeof(DuneyrrPowderBallManager));
 
   if (p != NULL) {
     SetEntityRoutine(p, DuneyrrPowderBallManager_Update, DuneyrrPowderBallManager_Destroy);
-    if (DuneyrrPowderBallManager_Init(p, power, knockbackPower, param_3, param_4) < 0) {
+    if (DuneyrrPowderBallManager_Init(p, power, knockback, param_3, param_4) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

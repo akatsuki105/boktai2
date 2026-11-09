@@ -16,7 +16,7 @@ typedef struct Entity080acd4c {
   Entity e;                     // 0x000, ENTITY_UNK_10
   Entity080acd4cElem elems[8];  // 0x018
   u16 nextSlot;                 // 0x198, 次に使う枠の添字
-  u8 unk_19a[2];                // 0x19A, 詰め物
+  u8 unk_19a[2];                // 0x19A, padding
 } Entity080acd4c;
 static_assert(sizeof(Entity080acd4c) == 412);
 

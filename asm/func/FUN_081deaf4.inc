@@ -21,12 +21,12 @@ _081DEB10:
 	str r0, [r1]
 _081DEB20:
 	adds r0, r4, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _081DEB40
 	adds r0, r4, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DEBB4
@@ -78,7 +78,7 @@ _081DEB82:
 	ldr r2, _081DEB94 @ =FUN_081debd4
 	adds r0, r4, #0
 	movs r1, #0xb
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	movs r0, #0
 	b _081DEBB4
 	.align 2, 0

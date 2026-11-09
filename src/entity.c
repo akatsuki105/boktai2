@@ -6,20 +6,20 @@
 extern u16 gEntityCount;
 
 const EntityList gDefaultEntityManager[ENTITY_KINDS] = {
-    [ENTITY_SYSTEM] = {.head = NULL, .disableFlags = 0x0                                                                        },
-    [ENTITY_UNK_1] = {.head = NULL, .disableFlags = 0x0                                                                        },
-    [ENTITY_UNK_2] = {.head = NULL, .disableFlags = 0x0                                                                        },
-    [ENTITY_UNK_3] = {.head = NULL, .disableFlags = 0x0                                                                        },
-    [ENTITY_UNK_4] = {.head = NULL, .disableFlags = ENTITY_DISABLE_0                                                           },
-    [ENTITY_UNK_5] = {.head = NULL, .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2)                   },
-    [ENTITY_PLAYER] = {.head = NULL, .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2)                   },
-    [ENTITY_CAMERA] = {.head = NULL, .disableFlags = ENTITY_DISABLE_0                                                           },
-    [ENTITY_UNK_8] = {.head = NULL, .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2 | ENTITY_DISABLE_3)},
-    [ENTITY_UNK_9] = {.head = NULL, .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2)                   },
-    [ENTITY_UNK_10] = {.head = NULL, .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2 | ENTITY_DISABLE_3)},
-    [ENTITY_UNK_11] = {.head = NULL, .disableFlags = ENTITY_DISABLE_0                                                           },
-    [ENTITY_UNK_12] = {.head = NULL, .disableFlags = 0x0                                                                        },
-    [ENTITY_UNK_13] = {.head = NULL, .disableFlags = 0x0                                                                        },
+    [ENTITY_SYSTEM] = {.head = NULL, .suspendMask = 0x0                                                               },
+    [ENTITY_UNK_1] = {.head = NULL, .suspendMask = 0x0                                                               },
+    [ENTITY_UNK_2] = {.head = NULL, .suspendMask = 0x0                                                               },
+    [ENTITY_UNK_3] = {.head = NULL, .suspendMask = 0x0                                                               },
+    [ENTITY_UNK_4] = {.head = NULL, .suspendMask = SUSPEND_LINK_WAIT                                                 },
+    [ENTITY_UNK_5] = {.head = NULL, .suspendMask = (SUSPEND_LINK_WAIT | SUSPEND_PAUSE | SUSPEND_MENU)                },
+    [ENTITY_PLAYER] = {.head = NULL, .suspendMask = (SUSPEND_LINK_WAIT | SUSPEND_PAUSE | SUSPEND_MENU)                },
+    [ENTITY_CAMERA] = {.head = NULL, .suspendMask = SUSPEND_LINK_WAIT                                                 },
+    [ENTITY_UNK_8] = {.head = NULL, .suspendMask = (SUSPEND_LINK_WAIT | SUSPEND_PAUSE | SUSPEND_MENU | SUSPEND_EVENT)},
+    [ENTITY_UNK_9] = {.head = NULL, .suspendMask = (SUSPEND_LINK_WAIT | SUSPEND_PAUSE | SUSPEND_MENU)                },
+    [ENTITY_UNK_10] = {.head = NULL, .suspendMask = (SUSPEND_LINK_WAIT | SUSPEND_PAUSE | SUSPEND_MENU | SUSPEND_EVENT)},
+    [ENTITY_UNK_11] = {.head = NULL, .suspendMask = SUSPEND_LINK_WAIT                                                 },
+    [ENTITY_UNK_12] = {.head = NULL, .suspendMask = 0x0                                                               },
+    [ENTITY_UNK_13] = {.head = NULL, .suspendMask = 0x0                                                               },
 };  // 0x085B0158
 
 // 0x08230b44
@@ -78,7 +78,7 @@ void UpdateAllEntities(void) {
   s32 i;
   EntityList* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
-    if (!(gEntityDisableFlags & h->disableFlags)) {
+    if (!(gSuspendFlags & h->suspendMask)) {
       Entity* p;
       Entity* list = h->head;
       while (p = list, p != NULL) {

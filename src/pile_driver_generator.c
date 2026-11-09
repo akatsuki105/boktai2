@@ -1,4 +1,4 @@
-#include "eff_082473e0.h"
+#include "eff_elemcond.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -10,6 +10,18 @@
 #include "sprite_aux.h"
 #include "trig.h"
 
+// Generator.state
+enum {
+  STATE_0 = 0,
+  STATE_1 = 1,
+  STATE_2 = 2,
+  TURN_ON = 3,
+  STATE_4 = 4,
+  TURN_OFF = 5,
+  STATE_6 = 6,
+  STATE_7 = 7,
+};
+
 static void (*const sGeneratorUpdates[8])(Generator*);
 
 // 状態番号と更新関数を入れ替える, 状態3と5に入るときは効果音を鳴らす
@@ -17,9 +29,9 @@ void Generator_SetState(Generator* p, s32 state) {
   p->state = state;
   p->stateTimer = 0;
   p->updateCallback = sGeneratorUpdates[p->state];
-  if (p->state == 3) {
+  if (p->state == TURN_ON) {
     PlaySound_082406e0(SE_GENERATOR_ENABLED);
-  } else if (p->state == 5) {
+  } else if (p->state == TURN_OFF) {
     PlaySound_082406e0(SE_GENERATOR_DISABLED);
   }
 }
@@ -40,7 +52,7 @@ void Generator_PushPlayer(Generator* p) {
   s32 dx = gPlayerPtr[0]->mover.pos.x - p->pos.x;
   s32 dz = gPlayerPtr[0]->mover.pos.z - p->pos.z;
 
-  if (abs(dx) < 0x80 && abs(dz) < 0x80 && dx * dx + dz * dz < 0x4000) {
+  if (abs(dx) < Q8(0.5) && abs(dz) < Q8(0.5) && dx * dx + dz * dz < (Q8(0.5) * Q8(0.5))) {
     s32 angle = ArcTan2_8(dx, dz);
 
     gPlayerPtr[0]->mover.pos.x = (COS(angle) * 130 >> 12) + p->pos.x;
@@ -49,7 +61,7 @@ void Generator_PushPlayer(Generator* p) {
 }
 
 // 攻撃属性を持つ判定を受けたらダメージを溜め、上限に届いたら state 3 へ進む
-NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
+NON_MATCH void Generator_OnHurt(HitboxData* a, HitboxData* b, Generator* p) {
 #ifdef NONMATCHING_C
   if (Hitbox_TestAttr(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
     s32 power = a->power - b->power;
@@ -68,7 +80,7 @@ NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080b29a4.inc");
+  INCFUNC("asm/func/Generator_OnHurt.inc");
 #endif
 }
 
@@ -193,7 +205,7 @@ void FUN_080b32e0(Generator* p) {
   }
   if (p->unk_f2 == 0) {
     if (p->stateTimer == 0) {
-      Eff082473e0Emitter_Reset(&p->eff_100);
+      ElementalCondEmitter_Reset(&p->condEmitter);
     }
     p->stateTimer++;
     if (p->stateTimer > 15) {
@@ -209,21 +221,21 @@ void FUN_080b32e0(Generator* p) {
     p->plttID = p->unk_f0;
     p->unk_f2--;
     if (p->unk_f2 < p->unk_f4) {
-      Eff082473e0Emitter_FadeParticle(&p->eff_100);
+      ElementalCondEmitter_FadeParticle(&p->condEmitter);
       p->unk_f4 -= 250;
     }
   }
 }
 
 static void (*const sGeneratorUpdates[8])(Generator*) = {
-    FUN_080b2a14,
-    FUN_080b2a18,
-    FUN_080b2b68,
-    FUN_080b2c70,
-    FUN_080b2dec,
-    FUN_080b2f0c,
-    FUN_080b31b4,
-    FUN_080b32e0,
+    [STATE_0] = FUN_080b2a14,
+    [STATE_1] = FUN_080b2a18,
+    [STATE_2] = FUN_080b2b68,
+    [TURN_ON] = FUN_080b2c70,
+    [STATE_4] = FUN_080b2dec,
+    [TURN_OFF] = FUN_080b2f0c,
+    [STATE_6] = FUN_080b31b4,
+    [STATE_7] = FUN_080b32e0,
 };  // 0x085AD0B8
 
 // 被弾フラグが立っていれば点滅を強め、収まったら元のパレットに戻していく
@@ -272,7 +284,7 @@ s32 Generator_Update(Generator* p) {
 s32 Generator_Destroy(Generator* p) {
   AuxSprite_Remove(&p->sprite);
   Hitbox_Unregister(&p->hurtbox);
-  Eff082473e0Emitter_Destroy(&p->eff_100);
+  ElementalCondEmitter_Destroy(&p->condEmitter);
   return 0;
 }
 
@@ -282,10 +294,10 @@ void Generator_InitHurtbox(Generator* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.391), Q8(0.782), Q8(0.391));
   VEC3_SET(offset, 0, Q8(0.782), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, 0, 0);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
-  Hitbox_SetHandler(hurtbox, FUN_080b29a4, p);
+  Hitbox_SetHandler(hurtbox, Generator_OnHurt, p);
 }
 
 // ジェネレーターを初期化する, スプライトと食らい判定を作り, 指定の state に合わせてアニメとパレットの初期状態を整える
@@ -341,7 +353,7 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
   Video_SetAuxSpritePltt(&p->gfx, p->plttID);
   p->unk_da = 0;
   p->unk_ec = 0;
-  Eff082473e0Emitter_Init(&p->eff_100, &p->sprite.pos, 0, 0, 0);
+  ElementalCondEmitter_Init(&p->condEmitter, &p->sprite.pos, ELEMCOND_NONE, 0, 0);
   p->unk_ea = 0;
   return 0;
 #else

@@ -112,7 +112,7 @@ _080EF678:
 	ldr r2, [r0]
 	cmp r2, #0
 	bne _080EF686
-	ldr r2, _080EF6E8 @ =FUN_080f54e4
+	ldr r2, _080EF6E8 @ =Enemy_StateFallDeath
 _080EF686:
 	ldr r0, _080EF6EC @ =0x0000046D
 	adds r1, r5, r0

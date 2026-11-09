@@ -12,7 +12,7 @@
 // SpriteHolder の kind == 1 のときの中身
 typedef struct {
   AuxSpriteGfx gfx;       // 0x00, SpriteHolder_InitAux が Video_GetAuxSprite で作る
-  AuxSprite sprite;       // 0x1C
+  AuxSprite spr;          // 0x1C
   AuxAnimState anim;      // 0x48, SpriteHolder_SetAnim が AuxAnim_SetAnim に渡す
   AuxAnimFile* animFile;  // 0x58, 0 ならアニメーションなし
 } SpriteHolderAux;
@@ -20,7 +20,7 @@ typedef struct {
 // SpriteHolder の kind == 2 のときの中身
 typedef struct {
   MainSpriteGfx gfx;  // 0x00, SpriteHolder_InitMain が OpenMainSpriteFile で作る
-  MainSprite sprite;  // 0x20, MainSprite は自身にアニメーションを持つので animFile はいらない
+  MainSprite spr;     // 0x20, MainSprite は自身にアニメーションを持つので animFile はいらない
 } SpriteHolderMain;
 
 // SpriteHolder_InitAux / SpriteHolder_InitMain が作るスプライトの器, kind で AuxSprite と MainSprite を使い分ける
@@ -36,8 +36,8 @@ typedef struct {
     SpriteHolderAux aux;
     SpriteHolderMain main;
   } u;                 // 0x0C
-  Vec3* pos;           // 0x8C, 使っている方の sprite.pos を指す
-  SpriteFlags* flags;  // 0x90, 使っている方の sprite.flags を指す
+  Vec3* pos;           // 0x8C, 使っている方の spr.pos を指す
+  SpriteFlags* flags;  // 0x90, 使っている方の spr.flags を指す
 } SpriteHolder;
 static_assert(sizeof(SpriteHolder) == 148);  // 根拠: 0x08055e54
 

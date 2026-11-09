@@ -491,7 +491,7 @@ _080F722A:
 	ldr r0, _080F7248 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r6]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 	b _080F72A0
 	.align 2, 0
 _080F7248: .4byte 0x03002B28
@@ -2620,7 +2620,7 @@ _080F8340:
 	strb r2, [r0]
 _080F8364:
 	adds r0, r6, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	movs r1, #0x40
 	ldr r2, _080F838C @ =0x00000474
 	adds r0, r6, r2

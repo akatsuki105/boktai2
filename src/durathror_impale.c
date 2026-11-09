@@ -168,7 +168,7 @@ s32 DurathrorImpale_Init(DurathrorImpale* p) {
   param = &p->ptcl;
   param->kind = 7;
   param->flags = 0x3000;
-  param->animSpeed = 64;
+  param->animSpeed = Q6(1);
   param->speedY = 0;
   param->speedYRand = 0;
   param->speedXZ = 3;
@@ -179,12 +179,12 @@ s32 DurathrorImpale_Init(DurathrorImpale* p) {
   param->angleXZRand = 256;
   param->decayStartY = 512;
   param->decayStartYRand = 0;
-  param->unk_1c = 0;
-  param->unk_1e = 0;
+  param->decayY = 0;
+  param->decayYRand = 0;
   param->decayStartXZ = 512;
   param->decayStartXZRand = 0;
-  param->unk_24 = 0;
-  param->unk_26 = 0;
+  param->decayXZ = 0;
+  param->decayXZRand = 0;
 
   elem = p->spikes;
   for (i = 0; i < 8; i++, elem++) {

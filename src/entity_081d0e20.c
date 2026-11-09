@@ -146,10 +146,10 @@ void FUN_081d006c(Entity081d0e20Elem* p) {
     switch (p->unk_b0) {
       case 0:
       case 1: {
-        if (gGameFlags & FLAG030047A4_LINK) {
+        if (gGameFlags & GAMEFLAG_LINK) {
           PlaySound_082406e0(SE_WOOD_DOOR_621);
         } else {
-          PlaySound_082406e0(SE_WOOD_DOOR_427);
+          PlaySound_082406e0(SE_OPEN_427);
         }
         break;
       }

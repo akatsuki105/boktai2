@@ -110,7 +110,7 @@ NON_MATCH void Entity5292_InitElems(Entity5292* p) {
     elem->sprite.pos.y = elem->y >> 4;
     elem->animTimer = _Random(table) & 15;
     elem->sprite.poseIdx = elem->animTimer >> 2;
-    Video_SetAuxSpritePltt(gfx, p->plttOffset + 0x1D3);
+    Video_SetAuxSpritePltt(gfx, p->plttOffset + 467);
     offset = ((Random() >> 3) & 31) - 15;
     if (offset > 0) {
       elem->sprite.flags |= SPRFLAG_XFLIP;

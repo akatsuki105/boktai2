@@ -16,40 +16,38 @@ typedef struct {
 } WeaponIconSprites;
 
 typedef struct {
-  Entity e;                     // 0x000, ENTITY_UNK_8
-  Tilemaps* tilemap;            // 0x018, TILEMAP_4F8F
-  rgb555* pltt;                 // 0x01C, BGP_A41A
-  u32 frameCounter;             // 0x020
-  u8 page;                      // 0x024, 0: 剣, 1: 槍, 2: ハンマー, 3: 銃
-  weapon8_t selected;           // 0x025, カーソル位置の武器, 未登録でも ID が入る
-  u8 cursorX;                   // 0x026, 0..4
-  u8 cursorY;                   // 0x027, 0..3
-  MainSpriteGfx gfx;            // 0x028, SPRITE_UI_GALLERY
-  MainSprite pageTitle;         // 0x048, ページ見出し, pose は page + 25
-  MainSprite cursor;            // 0x0A8
-  MainSprite countSprites[5];   // 0x108, "登録数 / 総数"
-  MainSprite completeMarks[2];  // 0x2E8, ページが全部埋まったら出す
-  MainSprite spr_3a8;           // 0x3A8
-  MainSprite spr_408;           // 0x408
-  WeaponIconSprites icons;      // 0x468, SPRITE_INVENTORY_ICONS
-  MainSprite selectedIcon;      // 0xC08, カーソル位置の武器のアイコン
-  rgb555 cursorPltt[16];        // 0xC68, cursor のパレットの複製, [12] を明滅させる
-  u16 cursorBlinkTimer;         // 0xC88, 0..49 を回る
-  u8 unk_c8a;                   // 0xC8A
-  u8 unk_c8b;                   // 0xC8B
-  AuxSprite spr_c8c;            // 0xC8C, preview の足元に置く
-  AuxSpriteGfx gfx_cb8;         // 0xCB8, SPRITE_EFF_1C1B
-  SpriteHolder preview;         // 0xCD4, SPRITE_DJANGO_SABATA
-  rgb555 previewPltt[16];       // 0xD68, preview のパレットの複製, 5/6/13 番を差し替える
-  u8 previewStep;               // 0xD88, プレビューの演技の段
-  u8 previewTimer;              // 0xD89, 今の段に入ってからのフレーム数
-  bool8 previewReset;           // 0xD8A, 立っていたらプレビューを最初の段からやり直す
-  u8 unk_d8b;                   // 0xD8B
-  u8* foundText;                // 0xD8C, '.w', 登録済みの武器の説明, 武器 ID の行を出す
-  u8* unknownText;              // 0xD90, '.u', 未登録の武器の代わりに出す文
-  u32 closeScriptID;            // 0xD94, '.e', 図鑑を閉じる時に実行するスクリプト, 0 なら無し
-  bool32 closed;                // 0xD98
-  char extValue[8];             // 0xD9C, メッセージ窓の埋め込み値 0 番
+  Entity e;                       // 0x000, ENTITY_UNK_8
+  Tilemaps* tilemap;              // 0x018, TILEMAP_4F8F
+  rgb555* pltt;                   // 0x01C, BGP_A41A
+  u32 frameCounter;               // 0x020
+  u8 page;                        // 0x024, 0: 剣, 1: 槍, 2: ハンマー, 3: 銃
+  weapon8_t selected;             // 0x025, カーソル位置の武器, 未登録でも ID が入る
+  u8 cursorX;                     // 0x026, 0..4
+  u8 cursorY;                     // 0x027, 0..3
+  MainSpriteGfx gfx;              // 0x028, SPRITE_UI_GALLERY
+  MainSprite pageTitle;           // 0x048, ページ見出し, pose は page + 25
+  MainSprite cursor;              // 0x0A8
+  MainSprite countSprites[5];     // 0x108, "登録数 / 総数"
+  MainSprite completeMarks[2];    // 0x2E8, ページが全部埋まったら出す
+  MainSprite pageArrowL;          // 0x3A8, L のページ送りの矢印
+  MainSprite pageArrowR;          // 0x408, R のページ送りの矢印
+  WeaponIconSprites icons;        // 0x468, SPRITE_INVENTORY_ICONS
+  MainSprite selectedIcon;        // 0xC08, カーソル位置の武器のアイコン
+  rgb555 cursorPltt[16];          // 0xC68, cursor のパレットの複製, [12] を明滅させる
+  u16 cursorBlinkTimer;           // 0xC88, 0..49 を回る
+  u8 unk_c8a;                     // 0xC8A
+  AuxSprite previewShadow;        // 0xC8C, preview の足元に置く影
+  AuxSpriteGfx previewShadowGfx;  // 0xCB8, SPRITE_EFF_1C1B
+  SpriteHolder preview;           // 0xCD4, SPRITE_DJANGO_SABATA
+  rgb555 previewPltt[16];         // 0xD68, preview のパレットの複製, 5/6/13 番を差し替える
+  u8 previewStep;                 // 0xD88, プレビューの演技の段
+  u8 previewTimer;                // 0xD89, 今の段に入ってからのフレーム数
+  bool8 previewReset;             // 0xD8A, 立っていたらプレビューを最初の段からやり直す
+  u8* foundText;                  // 0xD8C, '.w', 登録済みの武器の説明, 武器 ID の行を出す
+  u8* unknownText;                // 0xD90, '.u', 未登録の武器の代わりに出す文
+  u32 closeScriptID;              // 0xD94, '.e', 図鑑を閉じる時に実行するスクリプト, 0 なら無し
+  bool32 closed;                  // 0xD98
+  char extValue[8];               // 0xD9C, メッセージ窓の埋め込み値 0 番
 } WeaponDexMenu;
 static_assert(sizeof(WeaponDexMenu) == 3492);
 
@@ -57,13 +55,12 @@ static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武�
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 s32 GetWeaponWearPose(WeaponData* w);
-void FUN_08210bb0(WeaponDexMenu* p);
+void WeaponDexMenu_RefreshIcons(WeaponDexMenu* p);
 
 s32 WeaponDexMenu_GetPageEntryCount(s32 page) { return sWeaponDexItemCounts[page]; }
 
-s32 FUN_0820fee8(s32 n) { return n; }
+s32 WeaponDexMenu_GetIconPose(s32 n) { return n; }
 
 // そのページの先頭に並ぶ武器のID
 weapon32_t WeaponDexMenu_GetPage1stEntry(s32 page) {
@@ -129,7 +126,7 @@ void WeaponDexMenu_SetPreviewColors(WeaponDexMenu* p, s32 kind) {
   p->previewPltt[5] = *src++;
   p->previewPltt[6] = *src++;
   p->previewPltt[13] = *src++;
-  sprite = &p->preview.u.main.sprite;
+  sprite = &p->preview.u.main.spr;
   sprite->pltt = p->previewPltt;
 }
 
@@ -374,7 +371,7 @@ void WeaponDexMenu_ShowDescription(WeaponDexMenu* p) {
 }
 
 // "登録数 / 総数" を描画
-void FUN_08210610(WeaponDexMenu* p) {
+void WeaponDexMenu_DrawCount(WeaponDexMenu* p) {
   MainSprite_SetNumber(&p->countSprites[0], &p->gfx, WeaponDexMenu_CountFoundInPage(p->page), 2, 0, 32, 96, 8, 0);  // 登録数
   p->countSprites[2].pos.x = 48;
   p->countSprites[2].pos.y = 96;
@@ -382,14 +379,14 @@ void FUN_08210610(WeaponDexMenu* p) {
   MainSprite_SetNumber(&p->countSprites[3], &p->gfx, WeaponDexMenu_GetPageEntryCount(p->page), 2, 0, 56, 96, 8, 0);  // 総数
 }
 
-void FUN_082106a4(WeaponDexMenu* p) {
+void WeaponDexMenu_PlaceCursor(WeaponDexMenu* p) {
   MainSprite* cursor = &p->cursor;
   cursor->pos.x = p->cursorX * 24;
   cursor->pos.y = p->cursorY * 24;
 }
 
 // 50フレーム周期でカーソルの明るさを進める
-void FUN_082106c8(WeaponDexMenu* p) {
+void WeaponDexMenu_BlinkCursor(WeaponDexMenu* p) {
   u16 level;
 
   if (p->cursorBlinkTimer <= 9) {
@@ -413,7 +410,7 @@ void FUN_082106c8(WeaponDexMenu* p) {
 }
 
 // ページ見出しを差し替え、そのページが埋まっていれば追加の2枚を出す
-void FUN_08210718(WeaponDexMenu* p) {
+void WeaponDexMenu_UpdatePageTitle(WeaponDexMenu* p) {
   s32 i;
 
   MainSprite_SetPose(&p->pageTitle, &p->gfx, p->page + 25, PLAYMODE_PAUSE);
@@ -429,8 +426,10 @@ void FUN_08210718(WeaponDexMenu* p) {
 }
 
 // UI, 武器アイコン20枠, プレビューの主人公と影
-// 351/356命令, 原典の Vec3 pos/pos2 は最初のストアから strh 4本 (こちらは &pos が出る前の DImode 疑似レジスタで 32bit ストアに畳まれる), 行ループの y = i*24+24 も原典は強度削減されない
-// 試済: Vec3* 経由の書き込み (strh にはなるが p が r10 に出てフレーム 0x34), Vec3 pos[2], (i+1)*24, Vec3_Set 系 inline
+// 378/356命令, 武器アイコンの初期ポーズ 29 は原典のままの値 (cursor と同じ番号で, 後で WeaponDexMenu_RefreshIcons が上書きする)
+// アイコンを icons[i * 5 + j] で引くと前半 (pos の初期化の 4 命令を除く) は一致するが, 行ループは原典が y = i * 24 + 24 を強度削減せず i を数え上げる形にならない
+// 原典の Vec3 pos/pos2 は最初のストアから strh 4本 (こちらは &pos が出る前の DImode 疑似レジスタで 32bit ストアに畳まれる)
+// 試済: Vec3 pos[2] (strh にはなるが 362命令), 行の y を外のループで ++i * 24 (350命令, 46ハンク), y を s16, Vec3* 経由の書き込み, Vec3_Set 系 inline
 NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
 #ifdef NONMATCHING_C
   MainSpriteGfxFile* f;
@@ -459,22 +458,21 @@ NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
   p->completeMarks[1].flags |= SPRFLAG_HIDDEN;
 
   pos.x = 0, pos.y = 0, pos.z = 0;
-  MainSprite_Add(&p->spr_3a8, &p->gfx, 34, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
-  MainSprite_Add(&p->spr_408, &p->gfx, 35, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
+  MainSprite_Add(&p->pageArrowL, &p->gfx, 34, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
+  MainSprite_Add(&p->pageArrowR, &p->gfx, 35, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
   p->icons.gfx = *f;
   OpenMainSpriteFile(&p->icons.gfx, f);
-  icon = p->icons.icons;
   for (i = 0; i < 4; i++) {
     for (j = 0; j < 5; j++) {
       pos.x = j * 24 + 112, pos.y = i * 24 + 24, pos.z = 0, pos.val = 0;
+      icon = &p->icons.icons[i * 5 + j];
       MainSprite_Add(icon, &p->icons.gfx, 29, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
       icon->flags |= SPRFLAG_HIDDEN;
-      icon++;
     }
   }
-  FUN_08210bb0(p);
+  WeaponDexMenu_RefreshIcons(p);
 
   pos2.x = 0, pos2.y = 128, pos2.z = 0;
   MainSprite_Add(&p->selectedIcon, &p->icons.gfx, 29, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos2);
@@ -483,25 +481,25 @@ NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
   for (i = 0; i < 5; i++) {
     MainSprite_Add(&p->countSprites[i], &p->gfx, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
   }
-  FUN_08210610(p);
+  WeaponDexMenu_DrawCount(p);
 
   pos.x = 54, pos.y = 72, pos.z = 0;
   if (SpriteHolder_InitMain(&p->preview, SPRITE_DJANGO_SABATA, SPRFLAG_SCREEN_COORD, &pos) < 0) {
     return -1;
   }
   SpriteHolder_SetPriority(&p->preview, 3);
-  CpuCopy32(p->preview.u.main.sprite.pltt, p->previewPltt, sizeof(p->previewPltt));
-  p->preview.u.main.sprite.pltt = p->previewPltt;
+  CpuCopy32(p->preview.u.main.spr.pltt, p->previewPltt, sizeof(p->previewPltt));
+  p->preview.u.main.spr.pltt = p->previewPltt;
 
-  Video_GetAuxSprite(&p->gfx_cb8, SPRITE_EFF_1C1B);
-  AuxSprite_Add(&p->spr_c8c, &p->gfx_cb8, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD | SPRFLAG_BLINK_ODD);
-  AuxSprite_SetPoseIdx(&p->spr_c8c, 5);
-  p->spr_c8c.priority = 3;
-  p->spr_c8c.pos.x = p->preview.pos->x;
-  p->spr_c8c.pos.y = p->preview.pos->y;
-  p->spr_c8c.pos.z = p->preview.pos->z;
-  p->spr_c8c.scaleX = 64;
-  p->spr_c8c.scaleY = 64;
+  Video_GetAuxSprite(&p->previewShadowGfx, SPRITE_EFF_1C1B);
+  AuxSprite_Add(&p->previewShadow, &p->previewShadowGfx, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD | SPRFLAG_BLINK_ODD);
+  AuxSprite_SetPoseIdx(&p->previewShadow, 5);
+  p->previewShadow.priority = 3;
+  p->previewShadow.pos.x = p->preview.pos->x;
+  p->previewShadow.pos.y = p->preview.pos->y;
+  p->previewShadow.pos.z = p->preview.pos->z;
+  p->previewShadow.scaleX = 64;
+  p->previewShadow.scaleY = 64;
 #else
   INCFUNC("asm/func/WeaponDexMenu_InitSprites.inc");
 #endif
@@ -546,7 +544,7 @@ void WeaponDexMenu_SetupPageBG(WeaponDexMenu* p) {
 }
 
 // ページ内の武器アイコンを並べ、未登録の枠と余った枠は隠す
-void FUN_08210bb0(WeaponDexMenu* p) {
+void WeaponDexMenu_RefreshIcons(WeaponDexMenu* p) {
   s32 count = WeaponDexMenu_GetPageEntryCount(p->page);
   MainSprite* icon = p->icons.icons;
   weapon32_t first = WeaponDexMenu_GetPage1stEntry(p->page);
@@ -554,7 +552,7 @@ void FUN_08210bb0(WeaponDexMenu* p) {
 
   for (i = 0; i < count; icon++, i++) {
     if (IsWeaponAlreadyFound(first + i)) {
-      MainSprite_SetPose(icon, &p->icons.gfx, FUN_0820fee8(first + i), PLAYMODE_PAUSE);
+      MainSprite_SetPose(icon, &p->icons.gfx, WeaponDexMenu_GetIconPose(first + i), PLAYMODE_PAUSE);
       icon->flags &= ~SPRFLAG_HIDDEN;
     } else {
       icon->flags |= SPRFLAG_HIDDEN;
@@ -566,7 +564,7 @@ void FUN_08210bb0(WeaponDexMenu* p) {
 }
 
 // 図鑑のページがある番号なら本体とカーソルを表示する
-void FUN_08210c3c(WeaponDexMenu* p) {
+void WeaponDexMenu_ShowTitleAndCursor(WeaponDexMenu* p) {
   switch (p->page) {
     case 0: {
       p->pageTitle.flags &= ~SPRFLAG_HIDDEN;
@@ -592,10 +590,10 @@ void FUN_08210c3c(WeaponDexMenu* p) {
 }
 
 // ページを切り替えてアイコンとカーソルを並べ直す
-void FUN_08210c70(WeaponDexMenu* p, u32 page) {
+void WeaponDexMenu_SetPage(WeaponDexMenu* p, u32 page) {
   p->page = page;
   WeaponDexMenu_SetupPageBG(p);
-  FUN_08210c3c(p);
+  WeaponDexMenu_ShowTitleAndCursor(p);
 }
 
 // 十字キーでカーソル, L/R でページを動かし, B で図鑑を閉じる
@@ -655,14 +653,14 @@ s32 WeaponDexMenu_Update(WeaponDexMenu* p) {
     p->selected = WeaponDexMenu_GetPage1stEntry(p->page) + p->cursorX + p->cursorY * 5;
   }
   if (pageChanged) {
-    FUN_08210718(p);
+    WeaponDexMenu_UpdatePageTitle(p);
     WeaponDexMenu_SetupPageBG(p);
-    FUN_08210bb0(p);
-    FUN_08210610(p);
+    WeaponDexMenu_RefreshIcons(p);
+    WeaponDexMenu_DrawCount(p);
     p->previewReset = 1;
   }
   if (moved) {
-    FUN_082106a4(p);
+    WeaponDexMenu_PlaceCursor(p);
     WeaponDexMenu_ShowDescription(p);
   }
 
@@ -675,7 +673,7 @@ s32 WeaponDexMenu_Update(WeaponDexMenu* p) {
   }
 
   WeaponDexMenu_UpdatePreview(p);
-  FUN_082106c8(p);
+  WeaponDexMenu_BlinkCursor(p);
   p->frameCounter++;
   return 0;
 }
@@ -694,9 +692,9 @@ s32 WeaponDexMenu_Destroy(WeaponDexMenu* p) {
   for (i = 0; i < 2; i++) {
     MainSprite_Remove(&p->completeMarks[i]);
   }
-  AuxSprite_Remove(&p->spr_c8c);
-  MainSprite_Remove(&p->spr_3a8);
-  MainSprite_Remove(&p->spr_408);
+  AuxSprite_Remove(&p->previewShadow);
+  MainSprite_Remove(&p->pageArrowL);
+  MainSprite_Remove(&p->pageArrowR);
   SpriteHolder_Remove(&p->preview);
   MainSprite_Remove(&p->selectedIcon);
   SetBGPrioDirect(0, 0);
@@ -714,18 +712,18 @@ s32 WeaponDexMenu_Init(WeaponDexMenu* p, u32 _) {
   p->previewTimer = 0;
   p->previewReset = 0;
   p->cursorBlinkTimer = 0;
-  FUN_08210c70(p, 0);
+  WeaponDexMenu_SetPage(p, 0);
   p->closed = FALSE;
   p->unk_c8a = 0;
   WeaponDexMenu_InitSprites(p);
-  FUN_08210718(p);
+  WeaponDexMenu_UpdatePageTitle(p);
 
   if (!VM_SeekToNamedArg('u') || (p->unknownText = VM_GetPC_Proxy()) == NULL || !VM_SeekToNamedArg('w') || (p->foundText = VM_GetPC_Proxy()) == NULL) {
     return -1;
   }
   p->closeScriptID = VM_GetNamedArgValue('e', 0);
 
-  FUN_0823ce68(0, 4, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(0, 4, 4, 4, 4, 0xFFFF, 0);
   PlaySound_082406e0(SE_OPEN_MENU);
   Marquee_Clear();
   FUN_08049f5c();
@@ -749,7 +747,7 @@ WeaponDexMenu* WeaponDexMenu_Create(u32 id) {
   return p;
 }
 
-void FUN_082110a4(WeaponDexMenu* p) {
+void WeaponDexMenu_NextPreviewStep(WeaponDexMenu* p) {
   p->previewTimer = 0;
   p->previewStep++;
 }

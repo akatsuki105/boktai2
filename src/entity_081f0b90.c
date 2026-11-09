@@ -52,7 +52,7 @@ s32 Entity081f0b90_Update(Entity081f0b90* p);
 s32 Entity081f0b90_Destroy(Entity081f0b90* p);
 s32 Entity081f0b90_Init(Entity081f0b90* p);
 Entity081f0b90Elem* Entity081f0b90_TryAllocElem(Entity081f0b90* p);
-void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime);
+void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
 
 void (*const PTR_ARRAY_085ae518[4])(Entity081f0b90*, Entity081f0b90Elem*) = {
     Entity081f0b90Elem_UpdateState0,
@@ -69,7 +69,7 @@ void Entity081f0b90Elem_ExecScript(Entity081f0b90Elem* elem) {
 
 void Entity081f0b90Elem_OnHit(HitboxData* a, HitboxData* b, Entity081f0b90Elem* elem) {}
 
-void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
   HitboxData* hitbox;
   Vec3 halfSize;
   Vec3 offset;
@@ -78,7 +78,7 @@ void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knoc
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0, attrs, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f0b90Elem_OnHit, elem);
 }
 
@@ -223,7 +223,7 @@ Entity081f0b90Elem* Entity081f0b90_TryAllocElem(Entity081f0b90* p) {
 }
 
 // 205/205命令, spr->pos.y に i * 32 を足すとき原典は pos.y を r2 に読むが, こちらは r1
-NON_MATCH void Entity081f0b90_Spawn(Vec3* pos, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 _, u32 scriptID) {
+NON_MATCH void Entity081f0b90_Spawn(Vec3* pos, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 _, u32 scriptID) {
 #ifdef NONMATCHING_C
   Entity081f0b90* p = gEntity081f0b90;
   Entity081f0b90Elem* elem;
@@ -268,11 +268,11 @@ NON_MATCH void Entity081f0b90_Spawn(Vec3* pos, s32 power, s32 knockbackPower, Hi
 
     AuxAnim_SetAnim(&elem->anims[i], p->animFile, 15, 0, 0);
     elem->anims[i].cmdIdx = Random() & 3;
-    Video_SetAuxSpritePltt(spr->gfx, 0xFA);
+    Video_SetAuxSpritePltt(spr->gfx, 250);
     spr->pos = vp;
     spr->pos.y += i * 32;
   }
-  Entity081f0b90Elem_InitHitbox(elem, power, knockbackPower, attrs, invincibleTime);
+  Entity081f0b90Elem_InitHitbox(elem, power, knockback, attrs, iframes);
 #else
   INCFUNC("asm/func/Entity081f0b90_Spawn.inc");
 #endif

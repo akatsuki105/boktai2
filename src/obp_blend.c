@@ -16,7 +16,7 @@ typedef struct {
 static_assert(sizeof(ObjPlttBlend) == 48);
 
 // OBJ パレットの補間スロットを最大6件持ち、時刻帯に応じて2枚の間を混ぜて毎フレーム OBJ パレットスロットに載せるシングルトン
-// BG 側の BgPlttBlender と対になる, 混ぜ先の2枚は FUN_0823ce10 が gClock.spanOfTime から選ぶ
+// BG 側の BgPlttBlender と対になる, 混ぜ先の2枚は GetTimeOfDayPlttPair が gClock.spanOfTime から選ぶ
 typedef struct {
   Entity e;               // 0x00, ENTITY_UNK_12
   u16 unk_18;             // 0x18, ObjPlttBlender_Init の第2引数をそのまま保存, 読み手が見つかっていない
@@ -34,7 +34,7 @@ static_assert(sizeof(ObjPlttBlender) == 328);
 extern s32 gObjPlttSlotCursor;
 extern s32 gObjPlttSlotReserved;
 extern s32 gObjPlttSlotCount;
-s32 FUN_0823ce10(u16* a, u16* b);
+s32 GetTimeOfDayPlttPair(u16* from, u16* to);
 u32 FUN_0823cdf8(SpriteID16 id);
 
 // 1スロットぶん, srcs[srcFrom] と srcs[srcTo] を blend の割合で混ぜて pltt に書く
@@ -77,7 +77,7 @@ s32 ObjPlttBlender_Update(ObjPlttBlender* p) {
   s32 i;
 
   if (p->spanOfTime != gClock.spanOfTime) {
-    FUN_0823ce10(&p->srcFrom, &p->srcTo);
+    GetTimeOfDayPlttPair(&p->srcFrom, &p->srcTo);
     p->blend = 0;
   }
 
@@ -143,7 +143,7 @@ s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
     }
   }
 
-  FUN_0823ce10(&p->srcFrom, &p->srcTo);
+  GetTimeOfDayPlttPair(&p->srcFrom, &p->srcTo);
   p->blend = 0x40;
   p->unk_24 = gClock.unk_0f;
   p->spanOfTime = gClock.spanOfTime;

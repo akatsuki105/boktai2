@@ -31,24 +31,6 @@ static inline bool8 Entity081ea120_IsItemUsed(u32* mask, s32 i) {
   return FALSE;
 }
 
-void Entity081ea120Item_UpdateState0(Entity081ea120*, Entity081ea120Item*);
-void Entity081ea120Item_UpdateState1(Entity081ea120*, Entity081ea120Item*);
-void Entity081ea120Item_UpdateState2(Entity081ea120*, Entity081ea120Item*);
-Entity081ea120Item* Entity081ea120_AllocItem(Entity081ea120* p);
-s32 Entity081ea120_Update(Entity081ea120* p);
-s32 Entity081ea120_Destroy(Entity081ea120* p);
-void Entity081ea120_LoadAuxSprite(Entity081ea120* p);
-s32 Entity081ea120_Init(Entity081ea120* p, u32 _);
-
-// Entity081ea120_Update が (p, item) で呼ぶ
-void (*const PTR_ARRAY_085ae45c[3])(Entity081ea120*, Entity081ea120Item*) = {
-    Entity081ea120Item_UpdateState0,
-    Entity081ea120Item_UpdateState1,
-    Entity081ea120Item_UpdateState2,
-};  // 0x085AE45C
-
-const u8 u8_ARRAY_085ae468[4] = {8, 4, 2, 1};  // 0x085AE468, Entity081ea820Elem_UpdateState2 が Mod の除数として引く
-
 void Entity081ea120Item_UpdateState0(Entity081ea120* p, Entity081ea120Item* item) {}
 
 // アニメを進め, 一巡したら片付けの状態に移す
@@ -118,6 +100,12 @@ s32 Entity081ea120_Spawn(Vec3* pos, s32 count, u32 priority, u32 animIdx, s32 pl
 }
 
 s32 Entity081ea120_Update(Entity081ea120* p) {
+  static void (*const PTR_ARRAY_085ae45c[3])(Entity081ea120*, Entity081ea120Item*) = {
+      Entity081ea120Item_UpdateState0,
+      Entity081ea120Item_UpdateState1,
+      Entity081ea120Item_UpdateState2,
+  };  // 0x085AE45C
+
   s32 i;
 
   if (p->activeMask == 0) {

@@ -89,7 +89,7 @@ void FUN_08006ba0(MapItemManager* p, MapItem* item);
 bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID);
 
 extern s32 gLightningTimer;
-s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
+s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
 
 IWRAM_DATA MapItemManager* gMapItemManager = NULL;  // 0x0300002C
 
@@ -107,7 +107,7 @@ NON_MATCH s32 MapItem_ExecScript(MapItem* item, u16 scriptID, s32 param_3) {
     return -1;
   }
   owner = item->owner;
-  if (owner == -1 || (gPlayerStates[owner] & (FLAG03002BC0_UNK_3 | FLAG03002BC0_UNK_2))) {
+  if (owner == -1 || (gPlayerModes[owner] & (PMODE_UNK_3 | PMODE_DEAD))) {
     return -1;
   }
   if (item->kind == 1) {
@@ -219,7 +219,7 @@ NON_MATCH s32 MapItem_TryAutoPickup(MapItemManager* p, MapItem* item) {
   for (i = 0; i < 4; i++) {
     Player* player = p->players[i];
 
-    if (player != NULL && !TEST_FLAGS(gPlayerStates[i], FLAG03002BC0_UNK_3 | FLAG03002BC0_UNK_2)) {
+    if (player != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3 | PMODE_DEAD)) {
       Vec3* pos = item->pos;
       s32 dy = vp.y - p->playerScreen[i].y;
       bool32 near;
@@ -233,15 +233,15 @@ NON_MATCH s32 MapItem_TryAutoPickup(MapItemManager* p, MapItem* item) {
         Vec3 iconPos = *pos;
 
         iconPos.y += 0x80;
-        if ((gGameFlags & FLAG030047A4_LINK) || CheckEmptySlotExist(item->category, item->itemID)) {
+        if ((gGameFlags & GAMEFLAG_LINK) || CheckEmptySlotExist(item->category, item->itemID)) {
           item->owner = i;
           if (item->category < 4) {
             ItemIconPopupManager_AddIcon(item->category, item->itemID, 0, i, &iconPos, &iconPos, 24, (u32)item);
           }
-          if (!(gGameFlags & FLAG030047A4_LINK)) {
+          if (!(gGameFlags & GAMEFLAG_LINK)) {
             PlaySound_0824078c(SE_PICKUP);
           }
-          MapItem_ExecScript(item, item->scriptOnPickup, (gGameFlags & FLAG030047A4_LINK) || CheckEmptySlotExist(item->category, item->itemID) == TRUE);
+          MapItem_ExecScript(item, item->scriptOnPickup, (gGameFlags & GAMEFLAG_LINK) || CheckEmptySlotExist(item->category, item->itemID) == TRUE);
           item->flags |= 1;
           break;
         }
@@ -301,7 +301,7 @@ NON_MATCH bool8 MapItemManager_TryOpen(Mover* mover) {
         item->stateTimer = 0;
         item->unk_9 = 0;
         AuxAnim_SetAnim(item->anim, p->anim, 5, 0, 0);
-        MapItem_ExecScript(item, item->scriptOnOpen, (gGameFlags & FLAG030047A4_LINK) || CheckEmptySlotExist(item->category, item->itemID) == TRUE);
+        MapItem_ExecScript(item, item->scriptOnOpen, (gGameFlags & GAMEFLAG_LINK) || CheckEmptySlotExist(item->category, item->itemID) == TRUE);
         return TRUE;
       }
     }
@@ -420,7 +420,7 @@ void MapItem_UpdateOpen(MapItemManager* p, MapItem* item) {
     Vec3 pos = *item->pos;
 
     pos.y += 0x80;
-    if (!(gGameFlags & FLAG030047A4_LINK) && !CheckEmptySlotExist(item->category, item->itemID)) {
+    if (!(gGameFlags & GAMEFLAG_LINK) && !CheckEmptySlotExist(item->category, item->itemID)) {
       if (item->category < 4) {
         ItemIconPopupManager_AddIcon(item->category, item->itemID, 1, item->owner, &pos, &pos, 24, (u32)item);
       }
@@ -445,7 +445,7 @@ void MapItem_UpdateGive(MapItemManager* p, MapItem* item) {
     item->sprite->flags |= SPRFLAG_XFLIP;
   }
   if (item->stateTimer == 8) {
-    if (!(gGameFlags & FLAG030047A4_LINK)) {
+    if (!(gGameFlags & GAMEFLAG_LINK)) {
       PlaySound_0824078c(SE_PICKUP);
     }
     MapItem_ExecScript(item, item->scriptOnPickup, CheckEmptySlotExist(item->category, item->itemID) == TRUE);
@@ -538,7 +538,7 @@ NON_MATCH s32 MapItemManager_Update(MapItemManager* p) {
         } else {
           bool32 unseen;
 
-          if (gGameFlags & FLAG030047A4_LINK) {
+          if (gGameFlags & GAMEFLAG_LINK) {
             unseen = !(gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE);
           } else if (gStat->playerKind != 2) {
             unseen = !(gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE);
@@ -800,8 +800,8 @@ NON_MATCH s32 FUN_08007310(WorldPos* pos, s32 category, s32 itemID, s32 xflip, s
   item->anim = NULL;
   if (appear) {
     item->update = MapItem_UpdateAppear;
-    if (!(gGameFlags & FLAG030047A4_LINK)) {
-      PlaySound_082406e0(SONG_623);
+    if (!(gGameFlags & GAMEFLAG_LINK)) {
+      PlaySound_082406e0(SE_TREASURE_APPEAR);
     }
   } else {
     item->update = MapItem_UpdateIdle;
@@ -872,7 +872,7 @@ NON_MATCH s32 FUN_08007310(WorldPos* pos, s32 category, s32 itemID, s32 xflip, s
   hiddenBlink = 0;
   if (item->unk_9 != 0) {
     item->sprite->flags |= SPRFLAG_HIDDEN;
-    if (gGameFlags & FLAG030047A4_LINK) {
+    if (gGameFlags & GAMEFLAG_LINK) {
       bool32 see = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
       if (!see) {
         hiddenBlink = 1;

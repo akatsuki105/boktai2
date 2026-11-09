@@ -32,6 +32,8 @@ bool32 EnemyTargetManager_Add(EnemyTarget* node, Mover* owner, s32 kindMask);
 void EnemyTargetManager_Remove(EnemyTarget* t);
 void EnemyTargetManager_Release(EnemyTarget* t);
 EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask);
-bool8 FUN_080f8d20(EnemyTarget* t);
+Mover* EnemyTargetManager_FindOwnerByID(u16 id);
+bool8 EnemyTargetManager_IsRegistered(EnemyTarget* t);
+EnemyTarget* EnemyTargetManager_Claim(struct Enemy* p, s32 kindMask);
 
 #endif  // __INCLUDE_ENEMY_TARGET_H__

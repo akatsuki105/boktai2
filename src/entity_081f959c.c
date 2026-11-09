@@ -58,7 +58,7 @@ void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
 
 void Entity081f959c_OnHit(HitboxData* a, HitboxData* b, Entity081f959cElem* elem) {}
 
-void Entity081f959c_InitHitbox(Entity081f959cElem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 unk_6, s32 unk_7, s32 unk_8) {
+void Entity081f959c_InitHitbox(Entity081f959cElem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
   Vec3 size;
   Vec3 offset;
   HitboxData* hitbox;
@@ -67,7 +67,7 @@ void Entity081f959c_InitHitbox(Entity081f959cElem* elem, s32 power, s32 knockbac
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0, attrs, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f959c_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
 }
@@ -212,7 +212,7 @@ void Entity081f959c_UpdateVanish(Entity081f959c* p, Entity081f959cElem* elem) {
 }
 
 // pos を中心に radius の円周上を回る火の玉を1つ出す
-void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
   Entity081f959c* p = gEntity081f959c;
   Entity081f959cElem* elem;
   AuxSprite* sprite;
@@ -245,11 +245,11 @@ void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 
   elem->animFile = GetFile(DIR_ANIMATION, ANIM_121B);
   AuxSprite_Add(sprite, &p->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, elem->animFile, 7, 0, 0);
-  Video_SetAuxSpritePltt(sprite->gfx, 0xD9);
+  Video_SetAuxSpritePltt(sprite->gfx, 217);
   AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
   sprite->priority = 2;
   AuxSprite_Show(sprite);
-  Entity081f959c_InitHitbox(elem, power, knockbackPower, attrs, invincibleTime, 0, 0, 0);
+  Entity081f959c_InitHitbox(elem, power, knockback, attrs, iframes, 0, 0, 0);
 }
 
 void (*const PTR_ARRAY_085ae5d0[4])(Entity081f959c*, Entity081f959cElem*) = {

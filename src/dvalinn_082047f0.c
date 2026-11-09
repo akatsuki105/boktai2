@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite_animation.h"
@@ -37,7 +38,7 @@ typedef struct Entity082047f0 {
 } Entity082047f0;
 static_assert(sizeof(Entity082047f0) == 204);
 
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 // mover の向きを 4 方向に丸めて, その左右に elems を置く
 void Entity082047f0_UpdateElemPos(Entity082047f0* p) {
@@ -314,7 +315,7 @@ void Entity082047f0_Update(Entity082047f0* p) {
   Entity082047f0Elem* elem;
   s32 i;
 
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return;
   }
   if (!(p->flags & 1)) {

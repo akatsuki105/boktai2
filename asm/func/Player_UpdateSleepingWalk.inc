@@ -256,7 +256,7 @@ _0806E35C:
 	lsls r0, r0, #1
 	add r0, r8
 	ldrh r0, [r0]
-	bl Player_IsOnRock
+	bl Player_IsOnSoundFloor
 	cmp r0, #0
 	beq _0806E39C
 	ldrh r1, [r7]

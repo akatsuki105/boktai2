@@ -9,14 +9,16 @@
 #include "sprite_aux.h"
 #include "vec3.h"
 
+// 不使用?
+
 typedef struct {
-  Mover mover;        // 0x00, id は idx + 0x309
+  Mover mover;        // 0x00, id は 0x0309 + idx
   AuxSprite sprite;   // 0x44, mover の sprite に結びつけるが AuxSprite_Add されない
   Vec3 pos;           // 0x70, 毎フレーム vel を足してタイルの高さに合わせる
   Vec3 vel;           // 0x78
   HitboxData hitbox;  // 0x80
   s16 count;          // 0xD0, 動くたびに 1 減り, 0 になると状態 2 で片付く
-  u8 kind;            // 0xD2, 2 なら hitbox の属性が変わり, 移動のたびに周りへ FUN_081eec74 を8個出す
+  u8 kind;            // 0xD2, 2 なら hitbox の属性が変わり, 移動のたびに周りへ Entity081eee80_Spawn を8個出す
   u8 unk_d3;          // 0xD3
   u16 tileIdx;        // 0xD4, pos のタイル番号
   s8 idx;             // 0xD6, elems の添字, 空きは -1
@@ -35,30 +37,17 @@ static_assert(sizeof(Entity081edcc4) == 468);
 
 static Entity081edcc4* gEntity081edcc4;  // 0x030001C8
 
+s32 FUN_081eb178(Vec3* pos, u32 prio, u32 param_3);
+s32 Entity081eee80_Spawn(Vec3* pos, s32 priority, s32 delay, s32 angle, s32 speed, s32 animShift, s32 plttOffset);
+Entity081edcc4* Entity081edcc4_Create(void);
+
 static inline bool8 Entity081edcc4_IsElemUsed(u32* mask, s32 i) {
   if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
   return FALSE;
 }
 
-void Entity081edcc4Elem_UpdateState0(Entity081edcc4*, Entity081edcc4Elem*);
-void Entity081edcc4Elem_UpdateState1(Entity081edcc4*, Entity081edcc4Elem*);
-void Entity081edcc4Elem_UpdateState2(Entity081edcc4*, Entity081edcc4Elem*);
-s32 FUN_081eb178(Vec3* pos, u32 prio, u32 param_3);
-void FUN_081eec74(Vec3* pos, s32 param_2, s32 param_3, s32 angle, s32 param_5, s32 param_6, s32 param_7);
-Entity081edcc4* Entity081edcc4_Create(void);
-Entity081edcc4Elem* Entity081edcc4_AllocElem(Entity081edcc4* p);
-s32 Entity081edcc4_Update(Entity081edcc4* p);
-s32 Entity081edcc4_Destroy(Entity081edcc4* p);
-s32 Entity081edcc4_Init(Entity081edcc4* p);
-
-void (*const PTR_ARRAY_085ae4bc[3])(Entity081edcc4*, Entity081edcc4Elem*) = {
-    Entity081edcc4Elem_UpdateState0,
-    Entity081edcc4Elem_UpdateState1,
-    Entity081edcc4Elem_UpdateState2,
-};  // 0x085AE4BC
-
 // 4011/4145命令の下書き, 進めないときに曲がる向きを探す走査を8回展開して書いた, 原典は elem をスタックに置き走査ごとに幅や添字を別のレジスタとスタックに持つ
-NON_MATCH bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
+NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
 #ifdef NONMATCHING_C
   s32 newDir;
   bool8 canMove;
@@ -161,7 +150,7 @@ NON_MATCH bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
       return FALSE;
     }
     // 進めないときは同じ高さで通れるタイルが続く横の向きへ曲がる, 通信中は向きと直交する2方向のうち先に見つかった方
-    if (gGameFlags & FLAG030047A4_LINK) {
+    if (gGameFlags & GAMEFLAG_LINK) {
       s32 cur = elem->tileIdx;
 
       switch (((angle + 0x20) >> 6) & 3) {
@@ -1788,17 +1777,9 @@ NON_MATCH bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
       }
     }
     {
-      s32 vx = elem->vel.x;
-      s32 vz = elem->vel.z;
-      s32 speed;
-
-      if (vx < 0) {
-        vx = -vx;
-      }
-      if (vz < 0) {
-        vz = -vz;
-      }
-      speed = vz;
+      s32 vx = abs(elem->vel.x);
+      s32 vz = abs(elem->vel.z);
+      s32 speed = vz;
       if (speed < vx) {
         speed = vx;
       }
@@ -1928,10 +1909,10 @@ NON_MATCH bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 tileIdx) {
 #endif
 }
 
-void Entity081edcc4Elem_OnHit(HitboxData* a, HitboxData* b, Entity081edcc4Elem* elem) {}
+static void Entity081edcc4Elem_OnHit(HitboxData* a, HitboxData* b, Entity081edcc4Elem* elem) {}
 
 // from と to が離れていれば中間点に FUN_081eb178 で置けるかを確かめる
-bool8 Entity081edcc4_CanReach(Vec3* from, Vec3* to, u32 param_3) {
+static bool8 Entity081edcc4_CanReach(Vec3* from, Vec3* to, u32 param_3) {
   Vec3 d;
 
   Vec3_Delta(&d, from, to);
@@ -1948,10 +1929,10 @@ blocked:
   return FALSE;
 }
 
-void Entity081edcc4Elem_UpdateState0(Entity081edcc4* p, Entity081edcc4Elem* elem) {}
+static void Entity081edcc4Elem_UpdateState0(Entity081edcc4* p, Entity081edcc4Elem* elem) {}
 
 // 417/386命令の下書き, 移動前のタイル番号で高さを引く部分と pos の各成分を指すポインタの持ち方が原典と違う
-NON_MATCH void Entity081edcc4Elem_UpdateState1(Entity081edcc4* p, Entity081edcc4Elem* elem) {
+NON_MATCH static void Entity081edcc4Elem_UpdateState1(Entity081edcc4* p, Entity081edcc4Elem* elem) {
 #ifdef NONMATCHING_C
   s32 angle;
   Vec3 spot;
@@ -2016,11 +1997,11 @@ NON_MATCH void Entity081edcc4Elem_UpdateState1(Entity081edcc4* p, Entity081edcc4
   }
   if (elem->kind == 2) {
     for (i = 0; i < 4; i++) {
-      FUN_081eec74(&spot, 1, 0, i << 6, 0x54, 1, 0);
+      Entity081eee80_Spawn(&spot, 1, 0, i << 6, 0x54, 1, 0);
     }
     for (i = 0; i < 2; i++) {
-      FUN_081eec74(&spot, 1, 8, i << 6, 0x22, 1, 0);
-      FUN_081eec74(&spot, 1, 14, i << 6, 0x40, 1, 0);
+      Entity081eee80_Spawn(&spot, 1, 8, i << 6, 0x22, 1, 0);
+      Entity081eee80_Spawn(&spot, 1, 14, i << 6, 0x40, 1, 0);
     }
     elem->timer = 8;
   } else {
@@ -2043,7 +2024,7 @@ NON_MATCH void Entity081edcc4Elem_UpdateState1(Entity081edcc4* p, Entity081edcc4
 #endif
 }
 
-void Entity081edcc4Elem_UpdateState2(Entity081edcc4* p, Entity081edcc4Elem* elem) {
+static void Entity081edcc4Elem_UpdateState2(Entity081edcc4* p, Entity081edcc4Elem* elem) {
   elem->state = 0;
   CLEAR_BIT(p->activeMask, elem->idx);
   FUN_08002a58(&elem->mover);
@@ -2068,7 +2049,7 @@ Entity081edcc4Elem* Entity081edcc4_AllocElem(Entity081edcc4* p) {
 }
 
 // 152/152命令, Hitbox_Init の flags 0x2001 を原典はスタック引数を積んだ後に読むが, こちらは先に読む
-NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s32 power, s32 knockbackPower, s32 invincibleTime) {
+NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s32 power, s32 knockback, s32 iframes) {
 #ifdef NONMATCHING_C
   Entity081edcc4* p;
   Entity081edcc4Elem* elem;
@@ -2101,15 +2082,15 @@ NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s3
   VEC3_SET(offset, 0, 64, 0);
   if (elem->kind == 2) {
     Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, power, knockbackPower, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, invincibleTime);
+    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);
   } else {
     Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, power, knockbackPower, 0x10, 0, invincibleTime);
+    Hitbox_SetAttack(hitbox, power, knockback, 0x10, 0, iframes);
   }
   hitbox->id = elem->mover.id;
   Hitbox_SetPos(hitbox, &elem->pos, 0);
   Hitbox_SetHandler(hitbox, Entity081edcc4Elem_OnHit, elem);
-  Mover_Init(&elem->mover, elem->idx + 0x309, &elem->pos, 0, 7, elem);
+  Mover_Init(&elem->mover, 0x0309 + elem->idx, &elem->pos, 0, 7, elem);
   Mover_SetAuxSprite(&elem->mover, &elem->sprite);
   FUN_08002a48(&elem->mover);
   return 0;
@@ -2118,7 +2099,13 @@ NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s3
 #endif
 }
 
-s32 Entity081edcc4_Update(Entity081edcc4* p) {
+static s32 Entity081edcc4_Update(Entity081edcc4* p) {
+  static void (*const PTR_ARRAY_085ae4bc[3])(Entity081edcc4*, Entity081edcc4Elem*) = {
+      Entity081edcc4Elem_UpdateState0,
+      Entity081edcc4Elem_UpdateState1,
+      Entity081edcc4Elem_UpdateState2,
+  };  // 0x085AE4BC
+
   s32 i;
 
   if (p->activeMask == 0) {
@@ -2134,12 +2121,12 @@ s32 Entity081edcc4_Update(Entity081edcc4* p) {
   return 0;
 }
 
-s32 Entity081edcc4_Destroy(Entity081edcc4* p) {
+static s32 Entity081edcc4_Destroy(Entity081edcc4* p) {
   gEntity081edcc4 = NULL;
   return 0;
 }
 
-s32 Entity081edcc4_Init(Entity081edcc4* p) {
+static s32 Entity081edcc4_Init(Entity081edcc4* p) {
   gEntity081edcc4 = p;
   return 0;
 }

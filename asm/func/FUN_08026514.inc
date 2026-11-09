@@ -35,7 +35,7 @@
 	adds r0, r7, #0
 	movs r3, #0
 	bl Boss_PlayAnim
-	bl Entity08058ffc_GetActiveCount
+	bl LarvaManager_GetActiveCount
 	movs r1, #6
 	cmp r0, #6
 	ble _0802656C
@@ -139,7 +139,7 @@ _080265AA:
 	movs r0, #1
 	movs r1, #5
 	movs r3, #0x40
-	bl FUN_08015ce0
+	bl Entity08015584_SpawnSprayEx
 _08026632:
 	mov r0, r8
 	adds r0, #0xc0

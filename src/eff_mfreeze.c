@@ -1,4 +1,5 @@
 #include "collision_map.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -103,8 +104,6 @@ void FreezeEffect_StateGather(FreezeEffect* p) {
   }
 }
 
-void FUN_08014730(s32 param_1, s32 param_2, Vec3* pos, Vec3* spread, Vec3* speed, s32 param_6, s32 param_7);
-
 // 消える状態: 中心の粒子が床より上にあれば氷の破片を散らしてから消える
 NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
 #ifdef NONMATCHING_C
@@ -162,7 +161,7 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
       r = table[gRandTableIdx];
       spread.z = (r & 0xF) - 7;
       speed.x = 5, speed.y = 10, speed.z = 5;
-      FUN_08014730(4, 2, &p->ptcl.pos, &spread, &speed, 60, 60);
+      ScatterEffect_Spawn(4, SCATTER_ICE, &p->ptcl.pos, &spread, &speed, 60, 60);
     }
     KillEntity((Entity*)p);
   }

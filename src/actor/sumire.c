@@ -154,7 +154,7 @@ void Cmd_B189(void) {
     }
     case 2: {
       actor->unk_217 = 1;
-      if (actor->unk_1ef >= 0) {
+      if (actor->pathIdx >= 0) {
         Actor_StartState(actor, FUN_08043510(actor));
         Actor_SetUpdate(actor, FUN_080421bc, 2);
       } else {

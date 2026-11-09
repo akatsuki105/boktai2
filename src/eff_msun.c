@@ -61,7 +61,7 @@ static_assert(sizeof(RisingSunEffectOrb) == 160);
 // パレットを白から元の色へ戻しながら出し, 消えるときは点滅させるスプライト
 typedef struct {
   AuxSprite spr;                   // 0x00
-  AuxSpriteGfx gfx;                // 0x2C, SPRITE_MAGIC_CIRCLE
+  AuxSpriteGfx gfx;                // 0x2C, SPRITE_MAGIC_SQUARE
   rgb555* srcPltt;                 // 0x48, 元の色
   rgb555 pltt[16];                 // 0x4C, srcPltt を白へ寄せた色, gfx.pltt がここを指す
   bool8 active;                    // 0x6C
@@ -87,9 +87,6 @@ typedef struct RisingSunEffect {
 } RisingSunEffect;
 static_assert(sizeof(RisingSunEffect) == 1136);
 
-extern u16 gRisingSunCount;
-
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void RisingSunEffectSprite_FadeOut(RisingSunEffectSprite* s);
 
 static inline void Solar_SetOverride(u16 kind, u16 frames) {
@@ -404,7 +401,7 @@ NON_MATCH void RisingSunEffect_InitGlow(RisingSunEffect* p, WorldPos* pos) {
     plttID = 98;
   }
   gfx = &s->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_MAGIC_CIRCLE);
+  Video_GetAuxSprite(gfx, SPRITE_MAGIC_SQUARE);
   AuxSprite_Add(&s->spr, gfx, 0);
   s->spr.poseIdx = poseIdx;
   s->spr.priority = 3;
@@ -448,7 +445,7 @@ void RisingSunEffectOrb_UpdateFall(RisingSunEffectOrb* orb) {
     orb->active = FALSE;
   } else {
     PlaySound_082406e0(SE_M_SUN_BURST);
-    FUN_0823ce68(0, 4, orb->flashColor[0], orb->flashColor[1], orb->flashColor[2], 0x1FFF, 0);
+    StartBgObjPlttFade(0, 4, orb->flashColor[0], orb->flashColor[1], orb->flashColor[2], 0x1FFF, 0);
     RisingSunEffect_ApplySun(orb->parent);
     orb->burst = TRUE;
     orb->spr.flags |= SPRFLAG_HIDDEN;

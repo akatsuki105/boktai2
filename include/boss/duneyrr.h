@@ -39,9 +39,9 @@ typedef struct DuneyrrPowderBallManager {
   u32 activeMask;              // 0x01C, bit i が立っていれば balls[i] が使用中
   u32 frameCount;              // 0x020
   u16 power;                   // 0x024, 各部品の hitbox の power
-  u16 knockbackPower;          // 0x026
-  u16 invincibleTime;          // 0x028, 各部品の hitbox の invincibleTime
-  u16 dustPower;               // 0x02A, FUN_0805965c が DustManager_Emit に渡す鱗粉の power
+  u16 knockback;               // 0x026, 各部品の hitbox の knockback
+  u16 iframes;                 // 0x028, 各部品の hitbox の iframes
+  u16 sporePower;              // 0x02A, FUN_0805965c が SporeManager_Emit に渡す鱗粉の power
   s32 circlingCount;           // 0x02C, state 1 (center の周りを回る) の部品の数
   u8 unk_30[0x34 - 0x30];      // 0x030
   Vec3 center;                 // 0x034
@@ -50,7 +50,7 @@ typedef struct DuneyrrPowderBallManager {
 } DuneyrrPowderBallManager;
 static_assert(sizeof(DuneyrrPowderBallManager) == 2752);
 
-DuneyrrPowderBallManager* DuneyrrPowderBallManager_Create(s32 power, s32 knockbackPower, s32 param_3, s32 param_4);
+DuneyrrPowderBallManager* DuneyrrPowderBallManager_Create(s32 power, s32 knockback, s32 param_3, s32 param_4);
 s32 DuneyrrPowderBallManager_AddBall(DuneyrrPowderBallManager* p, u32 angle, u32 param_3);
 
 #endif  // __INCLUDE_BOSS_DUNEYRR_H__

@@ -181,7 +181,7 @@ _081D7974:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x40
-	bl FUN_08015c90
+	bl Entity08015584_SpawnSpray
 _081D79BA:
 	ldrh r0, [r4]
 	movs r1, #0xa
@@ -204,7 +204,7 @@ _081D79BA:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x40
-	bl FUN_08015c90
+	bl Entity08015584_SpawnSpray
 _081D79EA:
 	ldrh r0, [r4]
 	movs r1, #0x10
@@ -226,7 +226,7 @@ _081D79EA:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x40
-	bl FUN_08015c90
+	bl Entity08015584_SpawnSpray
 _081D7A18:
 	ldrh r0, [r4]
 	movs r1, #7

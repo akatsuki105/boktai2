@@ -472,7 +472,7 @@ _080F44B6:
 	ldr r0, _080F44F0 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 _080F44D6:
 	movs r3, #0x9a
 	lsls r3, r3, #2

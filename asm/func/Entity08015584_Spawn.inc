@@ -562,7 +562,7 @@ _08015A38:
 	str r0, [r3, #0x1c]
 	str r1, [r3, #0x20]
 	ldrh r0, [r6, #2]
-	bl FUN_080155c8
+	bl Entity08015584_GetPriority
 	mov r1, r8
 	strb r0, [r1, #7]
 	ldrh r1, [r6, #6]

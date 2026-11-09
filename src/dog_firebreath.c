@@ -4,6 +4,7 @@
 #include "hitbox.h"
 #include "inline.h"
 #include "map_inline.h"
+#include "player.h"
 #include "random.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
@@ -56,7 +57,7 @@ static inline void Entity081f1770_GetAnimVariant(u8 angle, u8* variant, u8* xfli
 }
 
 s32 Entity081f1770_Update(Entity081f1770* p);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
 s32 Entity081f1770_Destroy(Entity081f1770* p);
 s32 Entity081f1770_Init(Entity081f1770* p);
 Entity081f1770* Entity081f1770_Create(void);
@@ -171,7 +172,7 @@ NON_MATCH bool8 Entity081f1770_IsPathBlocked(Entity081f1770Elem* elem, Vec3* pos
       }
       pos->y = (prevHeight << 8) + (u8)Random();
       life = (Random() & 63) + 30;
-      Entity081f26bc_Spawn(pos, &vel, 0x1C1A, ANIM_D1B8, 3, 0, 0x31, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
+      Entity081f26bc_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 0x31, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
       return TRUE;
     }
   }
@@ -227,7 +228,7 @@ NON_MATCH void Entity081f1770_SpawnDebris(Entity081f1770Elem* elem, s32 count) {
 
           pos.y = toHeight << 8;
           life = (Random() & 63) + 20;
-          Entity081f26bc_Spawn(&pos, &vel, 0x1C1A, ANIM_D1B8, 3, 0, 0x31, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
+          Entity081f26bc_Spawn(&pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 0x31, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
         }
       }
     }
@@ -293,10 +294,10 @@ Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags
       return NULL;
     }
   }
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return NULL;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return NULL;
   }
   elem = Entity081f1770_AllocElem(p);
@@ -312,7 +313,7 @@ Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags
   Entity081f1770_GetAnimVariant(angle, &variant, &xflip);
   AuxSprite_Add(sprite, &p->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, p->animFile, 1, variant, xflip);
-  Video_SetAuxSpritePltt(sprite->gfx, 0x1F8);
+  Video_SetAuxSpritePltt(sprite->gfx, 504);
   AuxSprite_AdvanceAnim(sprite, &elem->anim);
   AuxSprite_Hide(sprite);
   sprite->priority = 1;
@@ -334,10 +335,10 @@ s32 Entity081f1770_Update(Entity081f1770* p) {
   if (p->usedMask == 0) {
     return 0;
   }
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return 0;
   }
   for (i = 0; i < 20; i++) {

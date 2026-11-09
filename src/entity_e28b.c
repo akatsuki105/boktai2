@@ -84,7 +84,7 @@ void FUN_080029cc(EntityE28B* p, u16 id) {
 
 // 種別付きで Mover の id を slots の末尾に積む, 満杯か未生成なら -1
 // 残差4命令, 原典は store ごとに (p + 0x2C) / (p + 0x2E) を作ってから添字を足すが
-// agbcc は (p + 添字*4) に畳んでメンバのオフセットを strh の即値に入れる (FUN_0808cacc と同じ加算順の問題)
+// agbcc は (p + 添字*4) に畳んでメンバのオフセットを strh の即値に入れる (MainMenu1P_RemoveParticles と同じ加算順の問題)
 NON_MATCH s32 FUN_08002a00(s32 kind, s32 id) {
 #ifdef NONMATCHING_C
   EntityE28B* p = Registry_Find(0x7BE3);

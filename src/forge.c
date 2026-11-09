@@ -1,5 +1,6 @@
 #include "bg_pltt.h"
 #include "camera.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "global.h"
 #include "input.h"
@@ -133,7 +134,7 @@ void Forge_UpdateAward(Forge* p);
 void GetWeaponData(slot32_t n, WeaponData* data);
 void Video_DrawBGNumber(s32 bg, s32 x, s32 y, u32 n, u32 baseTile, s32 digits, u32 pltt);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
-void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
+void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
 void FUN_0801d71c(Forge* p);
 void Forge_UpdateSmithing(Forge* p);
 void FUN_0801d788(Forge* p);
@@ -141,15 +142,13 @@ void FUN_0807c7c8(Player* p, s32 mode);
 void Entity99CA_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
 void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID);
-s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 param_10, s32 param_11);
 void RemoveWeapon(slot32_t n);
 bool32 AddWeapon(WeaponData* data);
-const WeaponData* FUN_0823d414(s32 idx);
+const WeaponData* ReadWeaponDB(s32 idx);
 void Player_Lock(Player* p, s32 val);
-void FUN_08094d1c(u8* param_1, s8* param_2);
+void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 // 武器スキルと素材の組み合わせからRランクの武器ができるかを判定する
 static inline bool8 RollRareWeapon(Forge* p, ForgeWeapon* e) {
@@ -192,7 +191,7 @@ void Forge_ClearPtr(void) { gForge = NULL; }
 // パレット番号を 735 番からの並びとして OBJ パレットの先頭を返す
 rgb555* Forge_GetObjPltt(s32 plttID) { return &gObjPlttData[(plttID + 735) * 16]; }
 
-void FUN_0801b688(Forge* p, ForgeWeapon* elem) { MainSprite_SetPose(&elem->sprite, &p->iconGfx, elem->data.id, PLAYMODE_PAUSE); }
+void FUN_0801b688(Forge* p, ForgeWeapon* elem) { MainSprite_SetPose(&elem->sprite, &p->iconGfx, ICON_WEAPON(elem->data.id), PLAYMODE_PAUSE); }
 
 // 武器スキルレベルを 6..15 の表示用の値に直す
 s32 Forge_GetSkillQuality(s32 idx) {
@@ -208,7 +207,7 @@ s32 Forge_GetSkillQuality(s32 idx) {
 }
 
 const WeaponData* Forge_FindWeapon(s32 kind, s32 lv) {
-  const WeaponData* best = &gWeaponDB[1];
+  const WeaponData* best = &gWeaponDB[WEAPON_GRADIUS];
   s32 bestLv = 0;
   bool32 found = FALSE;
   s32 i;
@@ -396,25 +395,25 @@ unknown* Forge_UpgradeSpear(Forge* p) {
 
   if (p->unk_a0 == 0 || (u32)p->unk_b0 > 9) {
     p->unk_98 = 0;
-    return (unknown*)&gWeaponDB[24];
+    return (unknown*)&gWeaponDB[WEAPON_STAFF];
   }
 
-  if (((a->data.id == 36 && b->data.id == 37) || (b->data.id == 36 && a->data.id == 37)) && p->unk_60 > 9) {
+  if (((a->data.id == WEAPON_WHITE_QUEEN && b->data.id == WEAPON_BLACK_QUEEN) || (b->data.id == WEAPON_WHITE_QUEEN && a->data.id == WEAPON_BLACK_QUEEN)) && p->unk_60 > 9) {
     p->unk_98 = 200;
-    return (unknown*)&gWeaponDB[38];
+    return (unknown*)&gWeaponDB[WEAPON_GUNGNIR];
   } else if (RollRareWeapon(p, e)) {
     switch (e->data.rank) {
       case 1: {
         p->unk_98 = 80;
-        return (unknown*)&gWeaponDB[29];
+        return (unknown*)&gWeaponDB[WEAPON_RUNE_GLAIVE];
       }
       case 2: {
         p->unk_98 = 120;
-        return (unknown*)&gWeaponDB[34];
+        return (unknown*)&gWeaponDB[WEAPON_RUNE_SPEAR];
       }
       case 3: {
         p->unk_98 = 160;
-        return (unknown*)&gWeaponDB[37];
+        return (unknown*)&gWeaponDB[WEAPON_BLACK_QUEEN];
       }
     }
   }
@@ -429,25 +428,25 @@ unknown* Forge_UpgradeHammer(Forge* p) {
 
   if (p->unk_a0 == 0 || (u32)p->unk_b0 > 9) {
     p->unk_98 = 0;
-    return (unknown*)&gWeaponDB[43];
+    return (unknown*)&gWeaponDB[WEAPON_POUNDER];
   }
 
-  if (((a->data.id == 55 && b->data.id == 56) || (b->data.id == 55 && a->data.id == 56)) && p->unk_60 > 9) {
+  if (((a->data.id == WEAPON_DAYBREAK && b->data.id == WEAPON_TWILIGHT) || (b->data.id == WEAPON_DAYBREAK && a->data.id == WEAPON_TWILIGHT)) && p->unk_60 > 9) {
     p->unk_98 = 200;
-    return (unknown*)&gWeaponDB[57];
+    return (unknown*)&gWeaponDB[WEAPON_MJOLLNIR];
   } else if (RollRareWeapon(p, e)) {
     switch (e->data.rank) {
       case 1: {
         p->unk_98 = 80;
-        return (unknown*)&gWeaponDB[48];
+        return (unknown*)&gWeaponDB[WEAPON_HEAVY_MACE];
       }
       case 2: {
         p->unk_98 = 120;
-        return (unknown*)&gWeaponDB[53];
+        return (unknown*)&gWeaponDB[WEAPON_HEAVY_AXE];
       }
       case 3: {
         p->unk_98 = 160;
-        return (unknown*)&gWeaponDB[56];
+        return (unknown*)&gWeaponDB[WEAPON_TWILIGHT];
       }
     }
   }
@@ -502,7 +501,7 @@ NON_MATCH void Forge_Finish(Forge* p) {
     if (rate < Mod(Random(), 100)) {
       *(u8*)&data->effects[0] = 0;
     } else {
-      const WeaponData* base = FUN_0823d414(data->id);
+      const WeaponData* base = ReadWeaponDB(data->id);
 
       if ((base->effects[0] & 0xFF) == 0) {
         *(u8*)&data->effects[0] = 0;
@@ -598,8 +597,8 @@ void Forge_ShowWeaponInfo(Forge* p, char* text) {
   ForgeWeapon* w = &p->weapons[p->cursor];
 
   MessageWindow_Start(p->unk_1308);
-  FUN_08094d1c((u8*)w, (s8*)p->statText);
-  if (w->data.id != 0) {
+  WeaponData_ShowNameInWindow((u8*)w, (s8*)p->statText);
+  if (w->data.id != WEAPON_NONE) {
     s32 pose;
 
     MainMenu_SetWeaponMarquee(w, p->unk_1308);
@@ -816,7 +815,7 @@ NON_MATCH s32 Forge_ShowWeapons(Forge* p) {
     } else {
       e->sprite.plttID = 736;
       e->sprite.pltt = Forge_GetObjPltt(1);
-      if (e->data.id != 0) {
+      if (e->data.id != WEAPON_NONE) {
         e->sprite.flags &= ~SPRFLAG_HIDDEN;
       }
     }
@@ -934,11 +933,11 @@ s32 Forge_DrawStats(Forge* p) {
   FUN_080b9400(p->unk_95);
   FUN_080b94cc(p->unk_95);
   Video_DrawBGNumber(0, 4, 9, Forge_ClampTo99(gStat->lv), 33, 2, 15);
-  Video_DrawBGNumber(0, 3, 11, Forge_ClampTo99(GetWeaponSkillLevel(0)), 33, 2, 15);
-  Video_DrawBGNumber(0, 8, 11, Forge_ClampTo99(GetWeaponSkillLevel(1)), 33, 2, 15);
-  Video_DrawBGNumber(0, 3, 12, Forge_ClampTo99(GetWeaponSkillLevel(2)), 33, 2, 15);
-  Video_DrawBGNumber(0, 8, 12, Forge_ClampTo99(GetWeaponSkillLevel(3)), 33, 2, 15);
-  Video_DrawBGNumber(0, 3, 13, Forge_ClampTo99(GetWeaponSkillLevel(4)), 33, 2, 15);
+  Video_DrawBGNumber(0, 3, 11, Forge_ClampTo99(GetWeaponSkillLevel(WK_SWORD)), 33, 2, 15);
+  Video_DrawBGNumber(0, 8, 11, Forge_ClampTo99(GetWeaponSkillLevel(WK_SPEAR)), 33, 2, 15);
+  Video_DrawBGNumber(0, 3, 12, Forge_ClampTo99(GetWeaponSkillLevel(WK_HAMMER)), 33, 2, 15);
+  Video_DrawBGNumber(0, 8, 12, Forge_ClampTo99(GetWeaponSkillLevel(WK_OTHERS)), 33, 2, 15);
+  Video_DrawBGNumber(0, 3, 13, Forge_ClampTo99(GetWeaponSkillLevel(WK_GUN)), 33, 2, 15);
   FUN_0801c40c(p);
 }
 
@@ -954,7 +953,7 @@ NON_MATCH s32 Forge_OpenList(Forge* p) {
   for (i = 0; i < 16; i++) {
     s32 id = GetWeaponID(i);
 
-    if (id >= 1 && id <= 57) {
+    if (id >= WEAPON_GRADIUS && id <= WEAPON_MJOLLNIR) {
       s32 kind = GetWeaponKind(i);
 
       if (kind <= WK_HAMMER) {
@@ -1142,7 +1141,7 @@ NON_MATCH void Forge_UpdateConfirm(Forge* p) {
     sprite->pos.y = 40;
     differ = FALSE;
     if (m0->data.kind != m1->data.kind) {
-      MainSprite_SetPose(sprite, &p->iconGfx, 66, PLAYMODE_PAUSE);
+      MainSprite_SetPose(sprite, &p->iconGfx, ICON_QUESTION1, PLAYMODE_PAUSE);
       differ = TRUE;
     }
     failed = !p->unk_3b;
@@ -1201,7 +1200,7 @@ NON_MATCH void Forge_UpdateConfirm(Forge* p) {
 
 void FUN_0801cec0(Forge* p) {
   if (Forge_TakeFnChanged(p)) {
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
   }
 
   if (p->fnTimer == 20) {
@@ -1231,7 +1230,7 @@ void Forge_UpdateCannotForge(Forge* p) {
     a = &p->weapons[16];
     b = &p->weapons[17];
     if (a->data.kind != b->data.kind) {
-      MainSprite_SetPose(sprite, &p->iconGfx, 66, PLAYMODE_PAUSE);
+      MainSprite_SetPose(sprite, &p->iconGfx, ICON_QUESTION1, PLAYMODE_PAUSE);
     }
     MainSprite_Show(sprite);
     sprite->pos.x = 104;
@@ -1582,7 +1581,7 @@ s32 FUN_0801d6a0(Forge* p) {
 
 void FUN_0801d6c0(Forge* p) {
   if (Forge_TakeFnChanged(p)) {
-    FUN_0823ce68(1, 5, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(1, 5, 4, 4, 4, 0xFFFF, 0);
   }
 
   if (p->fnTimer > 31) {
@@ -1599,7 +1598,7 @@ void FUN_0801d71c(Forge* p) {
   if (Forge_TakeFnChanged(p)) {
     Forge_SetupBg(p, 1);
     Forge_SetupHUD(p);
-    FUN_0823ce68(0, 5, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(0, 5, 4, 4, 4, 0xFFFF, 0);
     FUN_0807c7c8(gPlayerPtr[0], 0);
   }
 
@@ -1878,7 +1877,7 @@ void Forge_UpdateFinish(Forge* p) {
   Camera_MoveTo(&p->pos);
   if (p->fnTimer - 30 < 70 && (p->fnTimer & 3) == 0) {
     Vec3_CopyOffsetX(&gPlayerPtr[0]->mover.pos, &pos, 200);
-    FUN_08015c90(2, 0, 0x2000, Q6(1), &pos);
+    Entity08015584_SpawnSpray(2, 0, 0x2000, Q6(1), &pos);
     PlaySound_082406e0(SONG_453);
   }
 
@@ -1938,17 +1937,17 @@ NON_MATCH void Forge_UpdateAward(Forge* p) {
     id = p->result.data.id;
     if (id != WEAPON_DULL_BLADE && id != WEAPON_STAFF && id != WEAPON_POUNDER) {
       if (id == WEAPON_GRAM || id == WEAPON_GUNGNIR || id == WEAPON_MJOLLNIR) {
-        FUN_0823ce68(0, 3, 31, 31, 31, 0xFFF, 0);
+        StartBgObjPlttFade(0, 3, 31, 31, 31, 0xFFF, 0);
         angle = 0;
         for (i = 0; i < 3; i++) {
-          Entity080146e0_SpawnAtAngle(4, 536, &pos3, angle, 88, 8, 8, 8, 1, 12, 8);
+          ScatterEffect_SpawnAtAngle(4, SCATTER_SOL_S | SCATTER_PRIORITY(1), &pos3, angle, 88, 8, 8, 8, 1, 12, 8);
           angle += 88;
         }
       } else {
-        FUN_0823ce68(0, 3, 31, 23, 7, 0xFFF, 0);
+        StartBgObjPlttFade(0, 3, 31, 23, 7, 0xFFF, 0);
         angle = 0;
         for (i = 0; i < 3; i++) {
-          Entity080146e0_SpawnAtAngle(4, 536, &pos3, angle, 88, 8, 8, 8, 1, 12, 8);
+          ScatterEffect_SpawnAtAngle(4, SCATTER_SOL_S | SCATTER_PRIORITY(1), &pos3, angle, 88, 8, 8, 8, 1, 12, 8);
           angle += 88;
         }
       }

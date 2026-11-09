@@ -124,7 +124,7 @@ _0808C92C:
 	movs r1, #1
 	strb r1, [r6]
 	strb r0, [r6, #1]
-	ldr r0, _0808C958 @ =FUN_0808c710
+	ldr r0, _0808C958 @ =MainMenu_UpdateBurstParticle
 	str r0, [r4, #0x3c]
 	adds r6, #0x40
 	adds r4, #0x40
@@ -141,4 +141,4 @@ _0808C92C:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0808C958: .4byte FUN_0808c710
+_0808C958: .4byte MainMenu_UpdateBurstParticle

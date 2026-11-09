@@ -350,7 +350,7 @@ s32 BlackPantherElem_SetAnimMode3(BlackPantherElem* elem, s32 pose, s32 param_3,
   u32 xflip;
 
   if (elem->sprite.kind == 1) {
-    if (elem->dir8 > 4) {
+    if (IS_8DIR_LEFT(elem->dir8)) {
       variant = 8 - elem->dir8;
       xflip = TRUE;
     } else {
@@ -359,8 +359,7 @@ s32 BlackPantherElem_SetAnimMode3(BlackPantherElem* elem, s32 pose, s32 param_3,
     }
   } else {
     u32 dir;
-
-    if (elem->dir8 > 4) {
+    if (IS_8DIR_LEFT(elem->dir8)) {
       dir = elem->dir8;
       variant = 8 - dir;
       xflip = TRUE;

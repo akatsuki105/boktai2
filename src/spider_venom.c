@@ -46,7 +46,7 @@ const u8 u8_ARRAY_085ae44c[4] = {8, 4, 2, 1};  // 0x085AE44C, SpiderVenomShot_Bl
 
 void nop_081e85bc(void) {}
 
-void SpiderVenomShot_InitHitbox(SpiderVenomShot* elem, s32 power, s32 knockbackPower, s32 invincibleTime) {
+void SpiderVenomShot_InitHitbox(SpiderVenomShot* elem, s32 power, s32 knockback, s32 iframes) {
   Vec3 size, offset;
   HitboxData* hitbox;
 
@@ -54,7 +54,7 @@ void SpiderVenomShot_InitHitbox(SpiderVenomShot* elem, s32 power, s32 knockbackP
   VEC3_SET(offset, 0, Q8(0.5), 0);
   hitbox = &elem->hitbox;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0, HBATTR_POISON | HBATTR_EARTH, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, HBATTR_POISON | HBATTR_EARTH, iframes);
   Hitbox_SetHandler(hitbox, nop_081e85bc, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
 }
@@ -180,7 +180,7 @@ NON_MATCH s32 SpiderVenom_AngleToXFlip(s32 angle) {
 #endif
 }
 
-void SpiderVenom_Spawn(SpiderVenom* p, Mover* mover, Mover* target, s32 power, s32 knockbackPower, s32 invincibleTime) {
+void SpiderVenom_Spawn(SpiderVenom* p, Mover* mover, Mover* target, s32 power, s32 knockback, s32 iframes) {
   SpiderVenomShot* elem;
   AuxSprite* sprite;
 
@@ -195,7 +195,7 @@ void SpiderVenom_Spawn(SpiderVenom* p, Mover* mover, Mover* target, s32 power, s
   elem->ownerPos = &mover->pos;
   elem->state = 1;
   elem->flags = 0;
-  SpiderVenomShot_InitHitbox(elem, power, knockbackPower, invincibleTime);
+  SpiderVenomShot_InitHitbox(elem, power, knockback, iframes);
   sprite = &elem->sprite;
   AuxSprite_Add(sprite, &p->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, p->animFile, 0, 0, SpiderVenom_AngleToXFlip(mover->angle));

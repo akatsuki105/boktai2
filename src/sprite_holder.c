@@ -25,14 +25,14 @@ s32 SpriteHolder_SetAnim(SpriteHolder* p, u32 pose, u32 variant, u32 xflip, u32 
     p->variant = variant;
     p->xflip = xflip;
     p->animID = pose + p->variant;
-    MainSprite_SetAnim(&main->sprite, &main->gfx, p->animID, playMode, mainFlags);
+    MainSprite_SetAnim(&main->spr, &main->gfx, p->animID, playMode, mainFlags);
     if (!(mainFlags & MAIN_ANIM_KEEP_FRAME)) {
       p->animEnded = FALSE;
     }
     if (p->xflip) {
-      main->sprite.flags |= SPRFLAG_XFLIP;
+      main->spr.flags |= SPRFLAG_XFLIP;
     } else {
-      main->sprite.flags &= ~SPRFLAG_XFLIP;
+      main->spr.flags &= ~SPRFLAG_XFLIP;
     }
   }
   return 0;
@@ -45,11 +45,11 @@ s32 SpriteHolder_AdvanceAnim(SpriteHolder* p) {
   }
   if (p->kind == 1) {
     if (p->u.aux.animFile != NULL) {
-      p->animEnded = AuxSprite_AdvanceAnim(&p->u.aux.sprite, &p->u.aux.anim);
+      p->animEnded = AuxSprite_AdvanceAnim(&p->u.aux.spr, &p->u.aux.anim);
     }
   } else {
     SpriteHolderMain* main = &p->u.main;
-    p->animEnded = MainSprite_AdvanceAnim(&main->sprite, &main->gfx);
+    p->animEnded = MainSprite_AdvanceAnim(&main->spr, &main->gfx);
   }
   return p->animEnded;
 }
@@ -59,7 +59,7 @@ s32 SpriteHolder_IsAnimEnded(SpriteHolder* p) {
     return p->animEnded;
   }
   {
-    MainSprite* sprite = &p->u.main.sprite;
+    MainSprite* sprite = &p->u.main.spr;
     if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
       return TRUE;
     }
@@ -70,7 +70,7 @@ s32 SpriteHolder_IsAnimEnded(SpriteHolder* p) {
 // コマが進んだフレームだけ, 今のコマ番号を out に入れて TRUE を返す
 s32 SpriteHolder_GetAdvancedCmdIdx(SpriteHolder* p, u32* out) {
   if (p->kind == 2) {
-    MainSprite* sprite = &p->u.main.sprite;
+    MainSprite* sprite = &p->u.main.spr;
     if (sprite->animEvents & MAIN_ANIM_EVENT_ADVANCED) {
       *out = sprite->animCmdIdx;
       return TRUE;
@@ -90,9 +90,9 @@ s32 SpriteHolder_Remove(SpriteHolder* p) {
     return -1;
   }
   if (p->kind == 1) {
-    AuxSprite_Remove(&p->u.aux.sprite);
+    AuxSprite_Remove(&p->u.aux.spr);
   } else {
-    MainSprite_Remove(&p->u.main.sprite);
+    MainSprite_Remove(&p->u.main.spr);
   }
   p->kind = 0;
   return 0;
@@ -118,10 +118,10 @@ s32 SpriteHolder_InitAux(SpriteHolder* p, SpriteID32 id, u32 animFileID, SpriteF
   } else {
     aux->animFile = NULL;
   }
-  AuxSprite_Add(&aux->sprite, &aux->gfx, flags);
-  aux->sprite.pos = *pos;
-  p->pos = &aux->sprite.pos;
-  p->flags = &aux->sprite.flags;
+  AuxSprite_Add(&aux->spr, &aux->gfx, flags);
+  aux->spr.pos = *pos;
+  p->pos = &aux->spr.pos;
+  p->flags = &aux->spr.flags;
   return 0;
 }
 
@@ -141,9 +141,9 @@ s32 SpriteHolder_InitMain(SpriteHolder* p, SpriteID32 id, SpriteFlags flags, Vec
   }
   main->gfx = *f;
   OpenMainSpriteFile(&main->gfx, f);
-  MainSprite_Add(&main->sprite, &main->gfx, 0, flags, 1, PLAYMODE_PAUSE, 60, pos);
-  p->pos = &main->sprite.pos;
-  p->flags = &main->sprite.flags;
+  MainSprite_Add(&main->spr, &main->gfx, 0, flags, 1, PLAYMODE_PAUSE, 60, pos);
+  p->pos = &main->spr.pos;
+  p->flags = &main->spr.flags;
 }
 
 s32 SpriteHolder_SetPos(SpriteHolder* p, Vec3* pos) {
@@ -181,10 +181,10 @@ s32 SpriteHolder_SetPriority(SpriteHolder* p, u32 priority) {
     return -1;
   }
   if (p->kind == 1) {
-    AuxSprite* sprite = &p->u.aux.sprite;
+    AuxSprite* sprite = &p->u.aux.spr;
     sprite->priority = priority;
   } else {
-    MainSprite* sprite = &p->u.main.sprite;
+    MainSprite* sprite = &p->u.main.spr;
     sprite->priority = priority;
   }
   return 0;
@@ -195,12 +195,12 @@ s32 SpriteHolder_SetAffine(SpriteHolder* p, u32 scaleX, u32 scaleY, u32 rotation
     return -1;
   }
   if (p->kind == 1) {
-    AuxSprite* sprite = &p->u.aux.sprite;
+    AuxSprite* sprite = &p->u.aux.spr;
     sprite->scaleX = scaleX;
     sprite->scaleY = scaleY;
     sprite->rotation = rotation;
   } else {
-    MainSprite* sprite = &p->u.main.sprite;
+    MainSprite* sprite = &p->u.main.spr;
     sprite->scaleX = scaleX;
     sprite->scaleY = scaleY;
     sprite->rotation = rotation;
@@ -215,7 +215,7 @@ s32 SpriteHolder_SetPlttID(SpriteHolder* p, u32 plttID) {
   if (p->kind == 1) {
     Video_SetAuxSpritePltt(&p->u.aux.gfx, plttID);
   } else {
-    MainSprite_SetPlttID(&p->u.main.sprite, plttID);
+    MainSprite_SetPlttID(&p->u.main.spr, plttID);
   }
   return 0;
 }

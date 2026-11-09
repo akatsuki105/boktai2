@@ -22,12 +22,12 @@ NON_MATCH void Enemy_PlayAnim(Enemy* p, s32 animIdx) {
   anim = p->animTable[animIdx].anim;
   f = flags | p->animTable[animIdx].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim + variant;
 
     if (p->playingAnim == a && p->animForceRestart == 0) {
@@ -40,7 +40,7 @@ NON_MATCH void Enemy_PlayAnim(Enemy* p, s32 animIdx) {
     }
 
     p->playingAnim = a;
-    MainSprite_SetAnim(s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, (f & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
+    MainSprite_SetAnim(s, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (f & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
     if (f & ANIM_PLAY_XFLIP) {
       MainSprite_SetFlags(s, SPRFLAG_XFLIP);
     } else {
@@ -54,8 +54,9 @@ NON_MATCH void Enemy_PlayAnim(Enemy* p, s32 animIdx) {
 #endif
 }
 
+// 向きに合わせて animTable[idx] のアニメを再生する, 引数の再生フラグを足す
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080ef968(Enemy* p, s32 val1, u32 val2) {
+NON_MATCH void Enemy_PlayAnimFlags(Enemy* p, s32 val1, u32 val2) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -66,12 +67,12 @@ NON_MATCH void FUN_080ef968(Enemy* p, s32 val1, u32 val2) {
   anim = p->animTable[val1].anim;
   f = flags | val2 | p->animTable[val1].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim + variant;
     s32 mode;
 
@@ -89,7 +90,7 @@ NON_MATCH void FUN_080ef968(Enemy* p, s32 val1, u32 val2) {
     if (f & ANIM_PLAY_REVERSE) {
       mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
     }
-    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
+    MainSprite_SetAnim(&p->s->main.spr, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
     if (f & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
@@ -99,12 +100,13 @@ NON_MATCH void FUN_080ef968(Enemy* p, s32 val1, u32 val2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080ef968.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimFlags.inc");
 #endif
 }
 
+// 向きは左右反転だけに反映して animTable[idx] のアニメを再生する, 引数の再生フラグを足す
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) {
+NON_MATCH void Enemy_PlayAnimFlipOnlyFlags(Enemy* p, s32 val1, u32 val2) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -115,12 +117,12 @@ NON_MATCH void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) {
   anim = p->animTable[val1].anim;
   f = flags | val2 | p->animTable[val1].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim;
     s32 mode;
 
@@ -138,7 +140,7 @@ NON_MATCH void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) {
     if (f & ANIM_PLAY_REVERSE) {
       mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
     }
-    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
+    MainSprite_SetAnim(&p->s->main.spr, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
     if (f & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
@@ -148,12 +150,13 @@ NON_MATCH void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efa6c.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimFlipOnlyFlags.inc");
 #endif
 }
 
+// 向きを反映せずに animTable[idx] のアニメを引数の再生フラグで再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3) {
+NON_MATCH void Enemy_PlayAnimNoFacingFlags(Enemy* p, s32 param_2, u32 param_3) {
 #ifdef NONMATCHING_C
   s32 anim;
   s32 f;
@@ -161,12 +164,12 @@ NON_MATCH void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3) {
   anim = p->animTable[param_2].anim;
   f = param_3 | p->animTable[param_2].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim;
     s32 mode;
 
@@ -184,7 +187,7 @@ NON_MATCH void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3) {
     if (f & ANIM_PLAY_REVERSE) {
       mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
     }
-    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
+    MainSprite_SetAnim(&p->s->main.spr, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
     if (f & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
@@ -194,12 +197,13 @@ NON_MATCH void FUN_080efb60(Enemy* p, s32 param_2, u32 param_3) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efb60.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimNoFacingFlags.inc");
 #endif
 }
 
+// 左右反転は向きから, 差分は variant で指定して animTable[idx] のアニメを再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3) {
+NON_MATCH void Enemy_PlayAnimWithVariant(Enemy* p, s32 param_2, s32 param_3) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -210,12 +214,12 @@ NON_MATCH void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3) {
   anim = p->animTable[param_2].anim;
   f = flags | p->animTable[param_2].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, param_3, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim + param_3;
     s32 mode;
 
@@ -233,7 +237,7 @@ NON_MATCH void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3) {
     if (f & ANIM_PLAY_REVERSE) {
       mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
     }
-    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
+    MainSprite_SetAnim(&p->s->main.spr, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
     if (f & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
@@ -243,12 +247,13 @@ NON_MATCH void FUN_080efc44(Enemy* p, s32 param_2, s32 param_3) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efc44.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimWithVariant.inc");
 #endif
 }
 
+// 向きは左右反転だけに反映して animTable[idx] のアニメを再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efd44(Enemy* p, s32 param_2) {
+NON_MATCH void Enemy_PlayAnimFlipOnly(Enemy* p, s32 param_2) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
@@ -259,12 +264,12 @@ NON_MATCH void FUN_080efd44(Enemy* p, s32 param_2) {
   anim = p->animTable[param_2].anim;
   f = flags | p->animTable[param_2].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim;
     s32 mode;
 
@@ -282,7 +287,7 @@ NON_MATCH void FUN_080efd44(Enemy* p, s32 param_2) {
     if (f & ANIM_PLAY_REVERSE) {
       mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
     }
-    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
+    MainSprite_SetAnim(&p->s->main.spr, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
     if (f & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
@@ -292,12 +297,13 @@ NON_MATCH void FUN_080efd44(Enemy* p, s32 param_2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efd44.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimFlipOnly.inc");
 #endif
 }
 
+// 向きを反映せずに animTable[idx] のアニメを再生する
 // Enemy_PlayAnim と同じ下書き, animTable の読み順と r8 の持ち方が残差
-NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
+NON_MATCH void Enemy_PlayAnimNoFacing(Enemy* p, s32 param_2) {
 #ifdef NONMATCHING_C
   s32 anim;
   s32 f;
@@ -305,12 +311,12 @@ NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
   anim = p->animTable[param_2].anim;
   f = p->animTable[param_2].unk_1;
   if (p->spriteKind == 0) {
-    EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)p->sprite;
+    EnemyAuxSprite* s = &p->s->aux;
 
     p->playingAnim = anim;
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, f);
   } else {
-    MainSprite* s = &p->sprite->s;
+    MainSprite* s = &p->s->main.spr;
     s32 a = anim;
     s32 mode;
 
@@ -328,7 +334,7 @@ NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
     if (f & ANIM_PLAY_REVERSE) {
       mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
     }
-    MainSprite_SetAnim(&p->sprite->s, &p->sprite->gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
+    MainSprite_SetAnim(&p->s->main.spr, &p->s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
     if (f & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
@@ -338,63 +344,63 @@ NON_MATCH void FUN_080efe38(Enemy* p, s32 param_2) {
 
   p->animForceRestart = 0;
 #else
-  INCFUNC("asm/func/FUN_080efe38.inc");
+  INCFUNC("asm/func/Enemy_PlayAnimNoFacing.inc");
 #endif
 }
 
 // 201/198 命令, 下書き段階
-NON_MATCH void Enemy_080eff14(Enemy* enemy, s32 param_2) {
+NON_MATCH void Enemy_080eff14(Enemy* p, s32 param_2) {
 #ifdef NONMATCHING_C
   u8* count;
 
-  if (enemy->stateBegun) {
-    enemy->stateBegun = FALSE;
-    Enemy_PlayAnim(enemy, 0);
-    enemy->flags3 |= 0x400;
-    enemy->animSpeedDiv = 2;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    Enemy_PlayAnim(p, 0);
+    p->flags3 |= 0x400;
+    p->animSpeedDiv = 2;
   }
 
-  count = &enemy->unk_542;
+  count = &p->unk_542;
   if ((s8)*count <= 0) {
     *count = 0xFF;
     if (param_2 > 30) {
-      enemy->stateBegun = TRUE;
-      enemy->subStateDone = FALSE;
-      enemy->state = enemy->unk_54f;
-      enemy->handlerState = enemy->unk_548;
-      enemy->stateTimer = 0;
-      enemy->subState0 = enemy->unk_54c;
-      enemy->subState1 = enemy->unk_54d;
-      enemy->subState2 = enemy->unk_54e;
-      enemy->subStateTimer = 0;
-      enemy->subStateBegun = TRUE;
-      enemy->flags3 &= ~0x400;
+      p->stateBegun = TRUE;
+      p->subStateDone = FALSE;
+      p->state = p->savedState;
+      p->handlerState = p->savedHandlerState;
+      p->stateTimer = 0;
+      p->subState0 = p->savedSubState0;
+      p->subState1 = p->savedSubState1;
+      p->subState2 = p->savedSubState2;
+      p->subStateTimer = 0;
+      p->subStateBegun = TRUE;
+      p->flags3 &= ~0x400;
     }
   } else if (param_2 > 60) {
-    enemy->subState0 = 3;
-    enemy->subState1 = 1;
-    enemy->subState2 = 0;
-    enemy->subStateTimer = 0;
-    enemy->subStateBegun = TRUE;
-    enemy->stateBegun = TRUE;
-    enemy->subStateDone = FALSE;
-    enemy->state = 2;
-    enemy->handlerState = enemy->unk_590;
-    enemy->stateTimer = 0;
+    p->subState0 = 3;
+    p->subState1 = 1;
+    p->subState2 = 0;
+    p->subStateTimer = 0;
+    p->subStateBegun = TRUE;
+    p->stateBegun = TRUE;
+    p->subStateDone = FALSE;
+    p->state = 2;
+    p->handlerState = p->handlerTurn;
+    p->stateTimer = 0;
     if (*count == 1) {
-      enemy->unk_1dc = ((enemy->unk_541 >> 5) + 3) & 7;
+      p->unk_1dc = ((p->lookBaseAngle >> 5) + 3) & 7;
     } else {
       s32 angle;
       s32 i;
 
       for (i = 0; i < 4; i++) {
         angle = (Random() & 3) * 64;
-        if (angle != enemy->mover.angle) {
+        if (angle != p->mover.angle) {
           break;
         }
-        angle = enemy->mover.angle;
+        angle = p->mover.angle;
       }
-      enemy->unk_1dc = ((angle >> 5) + 3) & 7;
+      p->unk_1dc = ((angle >> 5) + 3) & 7;
     }
     (*count)--;
   }

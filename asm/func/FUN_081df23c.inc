@@ -5,11 +5,11 @@
 	cmp r0, #0
 	beq _081DF2C0
 	adds r0, r5, #0
-	bl FUN_081dd9f0
+	bl LinkSession_ResetDataTransfer
 	adds r0, r5, #0
-	bl FUN_081de02c
+	bl LinkSession_InitSelfRecord
 	adds r0, r5, #0
-	bl FUN_081ddc04
+	bl LinkSession_ResetCoins
 	ldr r0, _081DF2D8 @ =0x03002C68
 	ldr r0, [r0]
 	cmp r0, #0
@@ -62,11 +62,11 @@ _081DF2AC:
 	strh r0, [r1]
 _081DF2C0:
 	adds r0, r5, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	cmp r0, #0
 	bge _081DF2F0
 	adds r0, r5, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DF38C
@@ -95,11 +95,11 @@ _081DF308:
 	cmp r0, #0
 	beq _081DF324
 	adds r0, r5, #0
-	bl FUN_081dde98
+	bl LinkSession_CopyTradeWeapons
 	ldr r2, _081DF320 @ =FUN_081df398
 	adds r0, r5, #0
 	movs r1, #0x13
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	movs r0, #0
 	b _081DF38C
 	.align 2, 0
@@ -110,7 +110,7 @@ _081DF324:
 	adds r1, r5, r0
 	adds r0, r5, #0
 	movs r2, #0x48
-	bl FUN_081ddb14
+	bl LinkSession_SendData
 	movs r7, #0
 	movs r6, #0
 	ldrh r1, [r5, #0x1a]
@@ -124,7 +124,7 @@ _081DF342:
 	adds r1, r4, #0
 	adds r2, r6, #0
 	movs r3, #0x48
-	bl FUN_081ddb5c
+	bl LinkSession_RecvData
 	adds r1, r0, #0
 	lsls r1, r1, #0x18
 	lsrs r1, r1, #0x18

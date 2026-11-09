@@ -32,28 +32,28 @@
 // EnemyKind (Enemy.kind)
 // 同じ kind に属するものはグラフィックが全く同じで Enemy.variant で色が変わる
 #define ENEK_0 0           // ???, エネミーにデータを送るときのブロードキャスト用IDとして利用している
-#define ENEK_MUMMY 1       // マミー系
+#define ENEK_MUMMY 1       // マミー系, 聴覚のみで敵を感知, フレイム属性の攻撃を食らうと引火して暴れ回る
 #define ENEK_SPIDER 2      // スパイダー系
-#define ENEK_GOLEM 3       // ゴーレム系
+#define ENEK_GOLEM 3       // ゴーレム系, 転がって攻撃するが、壁やゴーレム同士で激突するとダメージを受け気絶する
 #define ENEK_BOKU 4        // ボク系
-#define ENEK_SKELETON 5    // スケルトン系
+#define ENEK_SKELETON 5    // スケルトン系, エンチャント攻撃でとどめを刺さないと復活してしまう
 #define ENEK_SKELETON_F 6  // スケルトンフェンサー, スケルトンの一種だがグラフィックが違うので別のkind
 #define ENEK_SKELETON_A 7  // スケルトンアーチャー, スケルトンの一種だがグラフィックが違うので別のkind
 #define ENEK_LICH 8        // リッチ系
 #define ENEK_CENTIPEDE 9   // センチピード
-#define ENEK_COCKA 10      // コカトリス系
+#define ENEK_COCKA 10      // コカトリス系, 石化光線を放つ
 #define ENEK_MIMIC 11      // ミミック
 #define ENEK_SWORD 12      // ソード系
 #define ENEK_AX 13         // アックス系
 #define ENEK_OCTOPUS 14    // オクトパス
 #define ENEK_15 15         // ???
 #define ENEK_16 16         // ???
-#define ENEK_CURORO 17     // クロロホルルン系
+#define ENEK_CURORO 17     // クロロホルルン系, ジャンゴにまとわりついて攻撃する, レバガチャで振りほどける
 #define ENEK_BAT 18        // バット系
 #define ENEK_CROW 19       // クロウ系
 #define ENEK_BEE 20        // ビー系
-#define ENEK_DOG 21        // 犬系
-#define ENEK_SLIME 22      // スライム系
+#define ENEK_DOG 21        // 犬系, においでサーチする
+#define ENEK_SLIME 22      // スライム系, HPが半分以下になると分裂する, 触れるとダメージに加えて種類に応じた状態異常をプレイヤーに与える
 #define ENEK_GHOST 23      // ゴースト系
 #define ENEK_DARKROOT 24   // 暗黒の根
 #define ENEK_SANDWORM 25   // サンドウォーム
@@ -122,5 +122,82 @@
 #define ENEID_DAINN 54        // No.55 ダーイン
 #define ENEID_JORMUNGANDR 55  // No.56 ヨルムンガンド
 #define ENEID_SHADEMAN 56     // No.57 シェードマン
+
+// --------------------------------------------
+// Enemy.variant 用の定義 (variant が複数あるもののみ定義)
+
+// ENEK_MUMMY, Mummy.e.variant
+#define EV_MUMMY 0    // ENEID_MUMMY, マミー
+#define EV_GAST 1     // ENEID_GAST, ガスト, 死亡時に爆発する
+#define EV_MUMMY_P 2  // ENEID_MUMMY_P, マミー+
+
+// ENEK_SPIDER, Spider.e.variant
+#define EV_SPIDER 0   // ENEID_SPIDER, スパイダー
+#define EV_PSPIDER 1  // ENEID_PSPIDER, ポイズンスパイダー, 毒液を吐く
+
+// ENEK_GOLEM, Golem.e.variant
+#define EV_GOLEM_C 0  // ENEID_GOLEM_C, クレイゴーレム
+#define EV_GOLEM_S 1  // ENEID_GOLEM_S, ストーンゴーレム
+#define EV_GOLEM_2 2  // ???
+#define EV_GOLEM_P 3  // ENEID_GOLEM_P, ゴーレム+
+#define EV_GOLEM_4 4  // ???
+#define EV_GOLEM_5 5  // ???, 通信対戦用のゴーレム? (golem_link.c)
+
+// ENEK_BOKU, Boku.e.variant
+#define EV_BOKU_0 0   // ???
+#define EV_GHOUL 1    // ENEID_GHOUL, グール
+#define EV_ZOMBIE 2   // ENEID_ZOMBIE, ゾンビ
+#define EV_GHOUL_P 3  // ENEID_GHOUL_P, グール+
+
+// ENEK_SKELETON, ENEK_LICH, Skeleton.e.variant
+#define EV_SKELETON 0    // ENEID_SKELETON, スケルトン
+#define EV_LICH 2        // ENEID_LICH, リッチ
+#define EV_SKELETON_P 5  // ENEID_SKELETON_P, スケルトン+
+#define EV_LICH_P 8      // ENEID_LICH_P, リッチ+
+
+// ENEK_COCKA, Cockatrice.e.variant
+#define EV_COCKA 0    // ENEID_COCKA, コカトリス
+#define EV_COCKA_P 1  // ENEID_COCKA_P, コカトリス+
+
+// ENEK_SWORD, ENEK_AX, EnemyAx.e.variant
+#define EV_WEAPON 0    // ENEID_SWORD: ソード, ENEID_AX: アックス
+#define EV_WEAPON_P 1  // ENEID_SWORD_P: ソード+, ENEID_AX_P: アックス+
+
+// ENEK_CURORO, Curoro.e.variant
+#define EV_CURORO 0    // ENEID_CURORO, クロロホルルン
+#define EV_CURORO_F 1  // ENEID_CURORO_F, モエルルン, まとわりついたときに引火の状態異常を与える
+#define EV_CURORO_I 2  // ENEID_CURORO_I, ヒエルルン, まとわりついたときに氷結の状態異常を与える
+
+// ENEK_BAT, EnemyBat.e.variant
+#define EV_BAT 0   // ENEID_BAT, バット
+#define EV_VBAT 1  // ENEID_VBAT, ヴァンパイアバット, 吸血攻撃をしてくる
+
+// ENEK_CROW, Crow.e.variant
+#define EV_CROW 0      // ENEID_CROW, クロウ
+#define EV_GARGOYLE 1  // ENEID_GARGOYLE, ガーゴイル
+
+// ENEK_BEE, Bee.e.variant
+#define EV_BEE 0   // ENEID_BEE, ビー
+#define EV_KBEE 1  // ENEID_KBEE, キラービー
+#define EV_PBEE 2  // ENEID_PBEE, ポイズンビー, 毒の状態異常も引き起こす
+
+// ENEK_DOG, Dog.e.variant
+#define EV_BANDIT 0       // ENEID_BANDIT, バンデット, プレイヤーからアイテムを奪う
+#define EV_GRAVEKEEPER 1  // ENEID_GRAVEKEEPER, グレイブキーパー
+#define EV_HELLHOUND 2    // ENEID_HELLHOUND, ヘルハウンド, ファイヤーブレスを吐く
+#define EV_DOG_3 3        // ???
+#define EV_BANDIT_P 4     // ENEID_BANDIT_P, バンデット+
+
+// ENEK_SLIME, Slime.e.variant
+#define EV_SLIME_Y 0  // ENEID_SLIME_Y, イエロースライム
+#define EV_SLIME_G 1  // ENEID_SLIME_G, グリーンスライム
+#define EV_SLIME_P 2  // ENEID_SLIME_P, パープルスライム
+#define EV_SLIME_B 3  // ENEID_SLIME_B, ブラックスライム
+
+// ENEK_GHOST, Ghost.e.variant
+#define EV_GHOST 0   // ENEID_GHOST, ゴースト
+#define EV_WRAITH 1  // ENEID_WRAITH, レイス
+
+// --------------------------------------------
 
 #endif  // __INCLUDE_CONSTANTS_ENEMY_H__

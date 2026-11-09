@@ -231,7 +231,7 @@ void Cmd_3ED0(void) {
 }
 
 void PlaySound_082406e0(SoundID32 id) {
-  if (!(gEntityDisableFlags & (ENTITY_DISABLE_2 | ENTITY_DISABLE_1))) gSoundIDs[gSongTable[id].ms] = id;
+  if (!(gSuspendFlags & (SUSPEND_MENU | SUSPEND_PAUSE))) gSoundIDs[gSongTable[id].ms] = id;
   m4aSongNumStart(id);
 }
 
@@ -247,7 +247,7 @@ void sound_08240728(void) {
 
 // サウンドを停止し、そのプレイヤーの再生中 ID として記録されていれば記録も消す
 void sound_08240740(SoundID32 id) {
-  if (gEntityDisableFlags & (ENTITY_DISABLE_2 | ENTITY_DISABLE_1)) {
+  if (gSuspendFlags & (SUSPEND_MENU | SUSPEND_PAUSE)) {
     m4aSongNumStop(id);
   } else if (id == gSoundIDs[gSongTable[id].ms]) {
     gSoundIDs[gSongTable[id].ms] = 0;
@@ -257,7 +257,7 @@ void sound_08240740(SoundID32 id) {
 
 // GAMEOVER 中でなければサウンドを鳴らす
 void PlaySound_0824078c(SoundID32 id) {
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) return;
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER)) return;
   PlaySound_082406e0(id);
 }
 

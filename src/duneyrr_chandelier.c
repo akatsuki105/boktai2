@@ -45,7 +45,7 @@ static_assert(sizeof(Entity5DA5) == 940);
 
 static Entity5DA5* gEntity5DA5;  // 0x03000038
 
-void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
+void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 
 // 要素ごとのロウソクの位置の x と z のずれ
 void BgMapScroller_PushCmd(s32 bgIdx, s32 kind, s32 argc, u32* argv);
@@ -165,7 +165,7 @@ NON_MATCH void Entity5DA5Elem_UpdateUnlit(Entity5DA5* p, Entity5DA5Elem* elem) {
     pos.x = s16_ARRAY_085aa690[elem->index] + p->pos.x;
     pos.y = p->pos.y + 0x100;
     pos.z = s16_ARRAY_085aa698[elem->index] + p->pos.z;
-    FUN_08015ce0(1, 2, 0x2001, 0x40, 0, 0, 0, 0, 4, 2, &pos);
+    Entity08015584_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
   }
 #else
   INCFUNC("asm/func/Entity5DA5Elem_UpdateUnlit.inc");
@@ -194,7 +194,7 @@ s32 Entity5DA5_Update(Entity5DA5* p) {
   Entity5DA5Elem* elem;
   s32 i;
 
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     Entity5DA5_SetState(-1, 0, 1);
   }
   WorldToScreen(&p->screenPos, &p->pos);

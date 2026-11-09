@@ -1,9 +1,9 @@
 #include "camera.h"
 
 #include "collision_map.h"
-#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
+#include "link_session.h"
 #include "mover.h"
 #include "msgbus.h"
 #include "player.h"
@@ -272,7 +272,7 @@ void FUN_0823b980(s32 n, Vec3* pos) {
 
 // 画面の揺れ幅を n まで引き上げる, 通信中は揺らさない
 void Camera_Shake(s32 n) {
-  if (gCamera != NULL && !(gGameFlags & FLAG030047A4_LINK)) {
+  if (gCamera != NULL && !(gGameFlags & GAMEFLAG_LINK)) {
     if (n > gCamera->shakeAmplitude) {
       gCamera->shakeAmplitude = n;
     }
@@ -396,7 +396,7 @@ void FUN_0823bce4(Vec3* pos, s32* enabled) {
 // Tier A-C は試済: 早期 return 形, shakeTimer 経由の 0 判定 (これで命令数は一致した)
 NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 #ifdef NONMATCHING_C
-  if (gCamera != NULL && (gGameFlags & FLAG030047A4_LINK) == 0) {
+  if (gCamera != NULL && (gGameFlags & GAMEFLAG_LINK) == 0) {
     if (frames == 0 && stopOnEnd == 1) {
       gCamera->shakeActive = FALSE;
       gCamera->shakeStopOnEnd = FALSE;
@@ -655,9 +655,9 @@ void Camera_SetBoundsType2Scripted(void) {
 void Camera_StepMove(Camera* cam) {
   switch (cam->moveMode) {
     case FOLLOW_PLAYER: {
-      if (gGameFlags & FLAG030047A4_LINK) {
-        if (gEntity9A9F != NULL) {
-          s32 idx = gEntity9A9F->playerIdx;
+      if (gGameFlags & GAMEFLAG_LINK) {
+        if (gLinkSession != NULL) {
+          s32 idx = gLinkSession->playerIdx;
 
           if (idx >= 0 && gPlayerPtr[idx] != NULL) {
             cam->pos.x = gPlayerPtr[idx]->mover.pos.x;
@@ -834,11 +834,11 @@ NON_MATCH void* Camera_StepShake(Camera* cam) {
 }
 
 s32 Camera_Update(Camera* cam) {
-  if (!(gGameFlags & FLAG030047A4_LINK)) {
+  if (!(gGameFlags & GAMEFLAG_LINK)) {
     Camera_PollMessages(cam);
   }
 
-  if (!(gEntityDisableFlags & ENTITY_DISABLE_2)) {
+  if (!(gSuspendFlags & SUSPEND_MENU)) {
     Camera_StepMove(cam);
     if (!cam->lookEnabled) {
       VEC3_SET(gCameraCoords.worldPos, cam->pos.x, cam->pos.y, cam->pos.z);
@@ -853,7 +853,7 @@ s32 Camera_Update(Camera* cam) {
 }
 
 s32 Camera_Destroy(Camera* cam) {
-  if (!(gGameFlags & FLAG030047A4_LINK)) {
+  if (!(gGameFlags & GAMEFLAG_LINK)) {
     MsgQueue_Unregister(&cam->mq);
   }
   gCamera = NULL;
@@ -879,7 +879,7 @@ s32 Camera_Init(Camera* cam, u32 id) {
   cam->shakeOffsetZ = 0;
   cam->scriptID = 0;
   WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
-  if (!(gGameFlags & FLAG030047A4_LINK)) {
+  if (!(gGameFlags & GAMEFLAG_LINK)) {
     MsgQueue_Register(&cam->mq, cam->id, CLS_CAMERA);
   }
   gCamera = cam;

@@ -84,7 +84,7 @@
 	add r0, sp, #0x10
 	movs r1, #5
 	movs r3, #0x40
-	bl FUN_08015d3c
+	bl Entity08015584_SpawnSprayOne
 	ldr r0, [r6]
 	adds r0, #1
 	ands r0, r5
@@ -173,7 +173,7 @@ _08023CBA:
 	adds r0, r4, #0
 	movs r1, #5
 	movs r3, #0x40
-	bl FUN_08015d3c
+	bl Entity08015584_SpawnSprayOne
 	ldr r0, [r6]
 	adds r0, #1
 	ands r0, r5

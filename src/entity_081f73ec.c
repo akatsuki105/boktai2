@@ -107,7 +107,7 @@ NAKED void Entity081f73ec_OnHit(HitboxData* a, HitboxData* b, Entity081f73ecElem
 
 NAKED void Entity081f73ec_OnHurt(HitboxData* a, HitboxData* b, Entity081f73ecSegment* seg) { INCFUNC("asm/func/Entity081f73ec_OnHurt.inc"); }
 
-NAKED void Entity081f73ec_InitHitbox(Entity081f73ecElem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, u32 defense, HitboxAttributes hurtAttrs, u32 weakness) { INCFUNC("asm/func/Entity081f73ec_InitHitbox.inc"); }
+NAKED void Entity081f73ec_InitHitbox(Entity081f73ecElem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, u32 defense, HitboxAttributes hurtAttrs, u32 weakness) { INCFUNC("asm/func/Entity081f73ec_InitHitbox.inc"); }
 
 NAKED void FUN_081f6170(Entity081f73ecElem* elem) { INCFUNC("asm/func/FUN_081f6170.inc"); }
 
@@ -143,9 +143,7 @@ NAKED Entity081f73ecElem* Entity081f73ec_AllocElem_Internal(Entity081f73ec* p) {
 
 NAKED Entity081f73ecElem* Entity081f73ec_AllocElem(Entity081f73ec* p) { INCFUNC("asm/func/Entity081f73ec_AllocElem.inc"); }
 
-NAKED void Entity081f73ec_Spawn(Vec3* pos, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 moveTime, s32 unk_6, s32 unk_7, s32 emergeDelay, s32 pattern, u32 defense, HitboxAttributes hurtAttrs, u32 weakness) {
-  INCFUNC("asm/func/Entity081f73ec_Spawn.inc");
-}
+NAKED void Entity081f73ec_Spawn(Vec3* pos, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 moveTime, s32 unk_6, s32 unk_7, s32 emergeDelay, s32 pattern, u32 defense, HitboxAttributes hurtAttrs, u32 weakness) { INCFUNC("asm/func/Entity081f73ec_Spawn.inc"); }
 
 NAKED s32 Entity081f73ec_Update(Entity081f73ec* p) { INCFUNC("asm/func/Entity081f73ec_Update.inc"); }
 

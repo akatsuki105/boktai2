@@ -46,10 +46,9 @@ IWRAM_DATA GameOverManager* gGameOverManager = NULL;  // 0x03000150
 
 extern bool32 gPlayTimeEnabled;
 
-void FUN_0823a8f4(u32 val);
+void GameSystem_HandleGameOverChoice(u32 val);
 s32 MainMenu_SetHudMode(s32 mode);
 void FUN_0807adc0(Player* p);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 // animState 0, BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
 void GameOverManager_AnimStart(GameOverManager* p) {
@@ -183,9 +182,9 @@ NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 
 // 0xF04A, ゲームオーバー状態を解除して BGM を止める
 void GameOver_CancelScripted(void) {
-  gGameFlags &= ~FLAG030047A4_GAMEOVER;
+  gGameFlags &= ~GAMEFLAG_GAMEOVER;
   sound_08240740(BGM_GAMEOVER);
-  FUN_0823a8f4(0);
+  GameSystem_HandleGameOverChoice(0);
 }
 
 // ロゴの拡大縮小の段階ごとの処理, animState が添字
@@ -303,12 +302,12 @@ void GameOverManager_StartScripted(void) {
   if (VM_GetValue() == 0) {
     return;
   }
-  FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
+  StartBgObjPlttFade(3, 5, 4, 4, 4, 0x1FFF, 2);
 }
 
 // state 0, ゲームオーバーのフラグが立つまで何もせず待つ
 void GameOverManager_StateWaitFlag(GameOverManager* p) {
-  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER)) {
+  if (!TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER)) {
     return;
   }
   GameOverManager_AddSprites(p);
@@ -316,7 +315,7 @@ void GameOverManager_StateWaitFlag(GameOverManager* p) {
   if (gPlayerPtr[0]->action >= PACT_FALLDEATH && gPlayerPtr[0]->action <= PACT_DROWNING) {
     p->costIdx = 1;
   } else {
-    FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
+    StartBgObjPlttFade(3, 5, 4, 4, 4, 0x1FFF, 2);
   }
   p->state = 1;
 }
@@ -427,9 +426,9 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
 void GameOverManager_StateFinish(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 8) {
-    gGameFlags &= ~FLAG030047A4_GAMEOVER;
+    gGameFlags &= ~GAMEFLAG_GAMEOVER;
     gPlayTimeEnabled = FALSE;
-    FUN_0823a8f4(p->cursor);
+    GameSystem_HandleGameOverChoice(p->cursor);
     KillEntity((Entity*)p);
   }
 }

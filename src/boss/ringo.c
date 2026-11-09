@@ -18,7 +18,7 @@
 #include "video.h"
 #include "vm.h"
 
-// 紅のリンゴ, 黒のダーイン (グラフィックが同じ2つのボスが両方ともこの構造体を使う)
+// 紅のリンゴ(BOSS_RINGO), 黒のダーイン(BOSS_DAINN) (グラフィックが同じ2つのボスが両方ともこの構造体を使う)
 // 以降は、 リンゴ と ダーイン と呼ぶ
 
 // リンゴ (魔物図鑑での名称は "ヴァンパイア")
@@ -38,176 +38,176 @@
 //  - ダークブラスト: (第2形態から) 大量のダーク属性のエネルギー弾を放つ技 (追尾性能とかはない)
 
 typedef struct {
-  Boss base;                              // 0x000
-  u8 unk_158[0x15C - 0x158];              // 0x158
-  u16 phaseTimer;                         // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
-  u16 phase;                              // 0x15E, 状態の中の段階, 状態関数が switch で振り分けて進める
-  s16 spriteOffsetY;                      // 0x160, sprites[0].pos.y = mover.pos.y + spriteOffsetY
-  s16 hoverHeight;                        // 0x162, Ringo_UpdateHover が 62 まで増やして sin の揺れを足し spriteOffsetY にする
-  s16 unk_164;                            // 0x164
-  u8 hitBySol;                            // 0x166, Ringo_OnHurt が HBATTR_SOL の攻撃で立てる
-  u8 unk_167;                             // 0x167
-  u8 unk_168;                             // 0x168
-  u8 unk_169;                             // 0x169
-  u8 unk_16a;                             // 0x16A
-  u8 numPlayers;                          // 0x16B, '.P=2', base.players / playerPos を埋める数
-  u8 unk_16c;                             // 0x16C, 3..6 の乱数
-  u8 unk_16d;                             // 0x16D
-  u8 unk_16e;                             // 0x16E, 乱数
-  u8 unk_16f;                             // 0x16F, 0 になったら unk_16e / unk_16c を引き直す
-  u8 unk_170;                             // 0x170
-  u8 unk_171;                             // 0x171
-  u8 unk_172;                             // 0x172
-  s8 grabbedPlayer;                       // 0x173, base.players の添字
-  s8 unk_174;                             // 0x174
-  u8 unk_175;                             // 0x175
-  u8 unk_176;                             // 0x176
-  u8 unk_177;                             // 0x177
-  u8 unk_178;                             // 0x178, hurtbox2 に当たったとき BOSSFLAG_UNK_19 が立っていれば 1
-  u8 hurtAngle;                           // 0x179, Ringo_OnHurt が攻撃の向きを入れる
-  u8 unk_17a;                             // 0x17A
-  u8 unk_17b;                             // 0x17B
-  u16 unk_17c;                            // 0x17C
-  u16 unk_17e;                            // 0x17E
-  s16 damage;                             // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
-  s16 unk_182;                            // 0x182, FUN_08029864 が足す
-  u16 unk_184;                            // 0x184, FUN_080298b8 が足す
-  u16 unk_186;                            // 0x186
-  u16 unk_188;                            // 0x188
-  u8 unk_18a;                             // 0x18A
-  u8 unk_18b;                             // 0x18B
-  u16 unk_18c;                            // 0x18C
-  u8 unk_18e[0x194 - 0x18E];              // 0x18E
-  HitboxData hitbox;                      // 0x194
-  HitboxData hurtbox;                     // 0x1E4, ハンドラは Ringo_OnHurt
-  HitboxData hitbox2;                     // 0x234
-  HitboxData hurtbox2;                    // 0x284, ハンドラ FUN_0802802c はダメージを 0 にする
-  MainSpriteGfx gfx;                      // 0x2D4, SPRITE_RINGO
-  MainSprite sprites[2];                  // 0x2F4
-  AuxShadow shadow;                       // 0x3B4
-  rgb555 pltt[16][16];                    // 0x420, gObjPlttData の同じ16色を16回写す
-  rgb555 pltt_620[2][16];                 // 0x620
-  rgb555 pltt_660[14][16];                // 0x660, BlendPltt で色を混ぜる先
-  u32 unk_820;                            // 0x820, '.S=0'
-  u32 unk_824;                            // 0x824, '.R=0'
-  s32 unk_828;                            // 0x828, 24.8 固定小数点
-  s32 unk_82c;                            // 0x82C, unk_828 の補間の終点
-  s32 unk_830;                            // 0x830, unk_828 の補間の始点
-  s32 unk_834;                            // 0x834, 24.8 固定小数点
-  s32 unk_838;                            // 0x838, unk_834 の補間の終点
-  s32 unk_83c;                            // 0x83C, unk_834 の補間の始点
-  u16 unk_840;                            // 0x840, 補間の経過フレーム数
-  u16 unk_842;                            // 0x842, 補間のフレーム数
-  Vec3 unk_844;                           // 0x844
-  Vec3 unk_84c;                           // 0x84C
-  Vec3 unk_854;                           // 0x854
-  Vec3 unk_85c;                           // 0x85C
-  u32 unk_864;                            // 0x864
-  Vec3 unk_868;                           // 0x868
-  u16 unk_870;                            // 0x870
-  u8 unk_872;                             // 0x872
-  u8 unk_873;                             // 0x873
-  s16 unk_874;                            // 0x874
-  u8 unk_876;                             // 0x876
-  u8 unk_877;                             // 0x877
-  s16 plttFade;                           // 0x878, BlendPltt の混ぜ具合
-  u16 plttFadeTo;                         // 0x87A, フェード先のパレット番号
-  s8 plttFadeMode;                        // 0x87C, パレットフェードの種類, -1 で止まる
-  u8 unk_87d;                             // 0x87D
-  bool8 unk_87e;                          // 0x87E, 0x313 / 0x33D の効果音を鳴らしたら立つ
-  u8 unk_87f;                             // 0x87F
-  bool8 unk_880;                          // 0x880
-  u8 unk_881[0x884 - 0x881];              // 0x881
-  u16 unk_884;                            // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
-  u16 unk_886;                            // 0x886
-  u16 unk_888;                            // 0x888
-  u16 unk_88a;                            // 0x88A
-  u16 unk_88c;                            // 0x88C
-  u8 unk_88e[0x891 - 0x88E];              // 0x88E
-  u8 unk_891;                             // 0x891
-  u8 unk_892;                             // 0x892
-  u8 unk_893;                             // 0x893
-  u16 unk_894;                            // 0x894
-  u16 unk_896;                            // 0x896
-  u8 unk_898;                             // 0x898
-  u8 targetPlayer;                        // 0x899, 狙うプレイヤーの添字 (0/1), playerAngle / playerPos を引く
-  u8 unk_89a[0x89C - 0x89A];              // 0x89A
-  u16 stateDuration;                      // 0x89C, 状態を続ける最短フレーム数
-  u8 unk_89e[0x8A0 - 0x89E];              // 0x89E
-  u16 hurtboxPower;                       // 0x8A0, '.s[1]=999'
-  u16 hurtboxPower2;                      // 0x8A2, '.s[2]=10'
-  u16 hurtboxPower3;                      // 0x8A4, '.s[3]=100'
-  u8 unk_8a6[0x8A8 - 0x8A6];              // 0x8A6
-  s16 hitboxPower;                        // 0x8A8, '.a[0]=25'
-  s16 hitboxKnockback;                    // 0x8AA, '.a[1]=50'
-  s16 hitboxUnk44;                        // 0x8AC, '.a[2]=60'
-  s16 hitbox2Power;                       // 0x8AE, '.a[3]=50'
-  s16 hitbox2Knockback;                   // 0x8B0, '.a[4]=50'
-  s16 hitbox2Unk44;                       // 0x8B2, '.a[5]=60'
-  u16 unk_8b4;                            // 0x8B4, '.g[0]=70'
-  u16 unk_8b6;                            // 0x8B6, '.g[1]=80'
-  u16 unk_8b8;                            // 0x8B8, '.g[2]=65'
-  u16 unk_8ba;                            // 0x8BA, '.U[0]=40'
-  u16 unk_8bc;                            // 0x8BC, '.U[1]=80'
-  u16 unk_8be;                            // 0x8BE, '.U[2]=50'
-  u16 unk_8c0;                            // 0x8C0, '.U[3]=30'
-  u16 unk_8c2;                            // 0x8C2
-  u16 unk_8c4;                            // 0x8C4, '.a[6]=8'
-  u16 unk_8c6;                            // 0x8C6, '.a[7]=16'
-  u16 unk_8c8;                            // 0x8C8, '.a[8]=10'
-  u16 unk_8ca;                            // 0x8CA, '.a[9]=50'
-  u8 unk_8cc;                             // 0x8CC
-  u8 unk_8cd;                             // 0x8CD
-  u16 unk_8ce;                            // 0x8CE
-  u16 unk_8d0;                            // 0x8D0
-  u16 unk_8d2;                            // 0x8D2, '.s[4]=300'
-  u16 unk_8d4;                            // 0x8D4
-  u16 unk_8d6;                            // 0x8D6, '.s[5]=600'
-  s16 unk_8d8;                            // 0x8D8
-  u8 unk_8da;                             // 0x8DA
-  u8 unk_8db;                             // 0x8DB
-  u8 unk_8dc;                             // 0x8DC
-  u8 unk_8dd;                             // 0x8DD
-  u8 unk_8de[0x8E0 - 0x8DE];              // 0x8DE
-  s32 weaponExp;                          // 0x8E0, '.K'
-  u16 unk_8e4;                            // 0x8E4
-  u16 unk_8e6;                            // 0x8E6
-  u16 unk_8e8[3];                         // 0x8E8, sprites_8f4 ごとの残りフレーム, 0 になったら隠す
-  u16 unk_8ee[3];                         // 0x8EE, sprites_8f4 ごと, 1 なら unk_868 へ寄せる
-  MainSprite sprites_8f4[3];              // 0x8F4
-  s16 unk_a14;                            // 0xA14, 前のフレームの unk_a16
-  s16 unk_a16;                            // 0xA16, sprites[0].animCmdIdx の控え
-  Vec3 unk_a18;                           // 0xA18
-  MainSpriteGfx gfx_a20;                  // 0xA20, SPRITE_DJANGO_SABATA
-  MainSprite sprite_a40;                  // 0xA40
-  MainSprite sprite_aa0;                  // 0xAA0
-  u8 unk_b00;                             // 0xB00
-  u8 unk_b01;                             // 0xB01
-  u8 unk_b02;                             // 0xB02
-  s8 unk_b03;                             // 0xB03
-  u16 unk_b04;                            // 0xB04
-  u16 unk_b06;                            // 0xB06
-  ParticleShadow ptclShadow;              // 0xB08
-  AuxSpriteGfx auxGfx[2];                 // 0xB48, SPRITE_DAINN_EBALL
-  bool8 auxActive[16];                    // 0xB80, auxSprites の各枠が使用中か
-  AuxSprite auxSprites[16];               // 0xB90
-  AuxAnimState auxAnims[16];              // 0xE50, auxSprites と同じ添字
-  Vec3 auxOffsets[16];                    // 0xF50, auxSprites の画面上の位置のずれ
-  AuxAnimFile* auxAnimFile;               // 0xFD0, ANIM_78E1
-  u8 unk_fd4;                             // 0xFD4
-  u8 unk_fd5;                             // 0xFD5
-  u8 unk_fd6;                             // 0xFD6
-  u8 unk_fd7;                             // 0xFD7
-  Vec3 unk_fd8;                           // 0xFD8, sprite_fe0 の位置
-  MainSprite sprite_fe0;                  // 0xFE0
-  u16 scriptID;                           // 0x1040, '.d[0]=0'
-  u16 scriptID2;                          // 0x1042, '.d[1]=0'
-  u32 unk_1044;                           // 0x1044
-  u32 unk_1048;                           // 0x1048
-  struct Entity0805a31c* entity0805a31c;  // 0x104C
-  struct Entity0805b068* entity0805b068;  // 0x1050
-  struct Entity0805b790* entity0805b790;  // 0x1054
-  struct Entity0805d364* entity0805d364;  // 0x1058
+  Boss base;                                  // 0x000
+  u8 unk_158[0x15C - 0x158];                  // 0x158
+  u16 phaseTimer;                             // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
+  u16 phase;                                  // 0x15E, 状態の中の段階, 状態関数が switch で振り分けて進める
+  s16 spriteOffsetY;                          // 0x160, sprites[0].pos.y = mover.pos.y + spriteOffsetY
+  s16 hoverHeight;                            // 0x162, Ringo_UpdateHover が 62 まで増やして sin の揺れを足し spriteOffsetY にする
+  s16 unk_164;                                // 0x164
+  u8 hitBySol;                                // 0x166, Ringo_OnHurt が HBATTR_SOL の攻撃で立てる
+  u8 unk_167;                                 // 0x167
+  u8 unk_168;                                 // 0x168
+  u8 unk_169;                                 // 0x169
+  u8 unk_16a;                                 // 0x16A
+  u8 numPlayers;                              // 0x16B, '.P=2', base.players / playerPos を埋める数
+  u8 unk_16c;                                 // 0x16C, 3..6 の乱数
+  u8 unk_16d;                                 // 0x16D
+  u8 unk_16e;                                 // 0x16E, 乱数
+  u8 unk_16f;                                 // 0x16F, 0 になったら unk_16e / unk_16c を引き直す
+  u8 unk_170;                                 // 0x170
+  u8 unk_171;                                 // 0x171
+  u8 unk_172;                                 // 0x172
+  s8 grabbedPlayer;                           // 0x173, base.players の添字
+  s8 unk_174;                                 // 0x174
+  u8 unk_175;                                 // 0x175
+  u8 unk_176;                                 // 0x176
+  u8 unk_177;                                 // 0x177
+  u8 unk_178;                                 // 0x178, hurtbox2 に当たったとき BOSSFLAG_UNK_19 が立っていれば 1
+  u8 hurtAngle;                               // 0x179, Ringo_OnHurt が攻撃の向きを入れる
+  u8 unk_17a;                                 // 0x17A
+  u8 unk_17b;                                 // 0x17B
+  u16 unk_17c;                                // 0x17C
+  u16 unk_17e;                                // 0x17E
+  s16 damage;                                 // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
+  s16 unk_182;                                // 0x182, FUN_08029864 が足す
+  u16 unk_184;                                // 0x184, FUN_080298b8 が足す
+  u16 unk_186;                                // 0x186
+  u16 unk_188;                                // 0x188
+  u8 unk_18a;                                 // 0x18A
+  u8 unk_18b;                                 // 0x18B
+  u16 unk_18c;                                // 0x18C
+  u8 unk_18e[0x194 - 0x18E];                  // 0x18E
+  HitboxData hitbox;                          // 0x194
+  HitboxData hurtbox;                         // 0x1E4, ハンドラは Ringo_OnHurt
+  HitboxData hitbox2;                         // 0x234
+  HitboxData hurtbox2;                        // 0x284, ハンドラ FUN_0802802c はダメージを 0 にする
+  MainSpriteGfx gfx;                          // 0x2D4, SPRITE_RINGO
+  MainSprite sprites[2];                      // 0x2F4
+  AuxShadow shadow;                           // 0x3B4
+  rgb555 pltt[16][16];                        // 0x420, gObjPlttData の同じ16色を16回写す
+  rgb555 pltt_620[2][16];                     // 0x620
+  rgb555 pltt_660[14][16];                    // 0x660, BlendPltt で色を混ぜる先
+  u32 unk_820;                                // 0x820, '.S=0'
+  u32 unk_824;                                // 0x824, '.R=0'
+  s32 unk_828;                                // 0x828, 24.8 固定小数点
+  s32 unk_82c;                                // 0x82C, unk_828 の補間の終点
+  s32 unk_830;                                // 0x830, unk_828 の補間の始点
+  s32 unk_834;                                // 0x834, 24.8 固定小数点
+  s32 unk_838;                                // 0x838, unk_834 の補間の終点
+  s32 unk_83c;                                // 0x83C, unk_834 の補間の始点
+  u16 unk_840;                                // 0x840, 補間の経過フレーム数
+  u16 unk_842;                                // 0x842, 補間のフレーム数
+  Vec3 unk_844;                               // 0x844
+  Vec3 unk_84c;                               // 0x84C
+  Vec3 unk_854;                               // 0x854
+  Vec3 unk_85c;                               // 0x85C
+  u32 unk_864;                                // 0x864
+  Vec3 unk_868;                               // 0x868
+  u16 unk_870;                                // 0x870
+  u8 unk_872;                                 // 0x872
+  u8 unk_873;                                 // 0x873
+  s16 unk_874;                                // 0x874
+  u8 unk_876;                                 // 0x876
+  u8 unk_877;                                 // 0x877
+  s16 plttFade;                               // 0x878, BlendPltt の混ぜ具合
+  u16 plttFadeTo;                             // 0x87A, フェード先のパレット番号
+  s8 plttFadeMode;                            // 0x87C, パレットフェードの種類, -1 で止まる
+  u8 unk_87d;                                 // 0x87D
+  bool8 unk_87e;                              // 0x87E, 0x313 / 0x33D の効果音を鳴らしたら立つ
+  u8 unk_87f;                                 // 0x87F
+  bool8 unk_880;                              // 0x880
+  u8 unk_881[0x884 - 0x881];                  // 0x881
+  u16 unk_884;                                // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
+  u16 unk_886;                                // 0x886
+  u16 unk_888;                                // 0x888
+  u16 unk_88a;                                // 0x88A
+  u16 unk_88c;                                // 0x88C
+  u8 unk_88e[0x891 - 0x88E];                  // 0x88E
+  u8 unk_891;                                 // 0x891
+  u8 unk_892;                                 // 0x892
+  u8 unk_893;                                 // 0x893
+  u16 unk_894;                                // 0x894
+  u16 unk_896;                                // 0x896
+  u8 unk_898;                                 // 0x898
+  u8 targetPlayer;                            // 0x899, 狙うプレイヤーの添字 (0/1), playerAngle / playerPos を引く
+  u8 unk_89a[0x89C - 0x89A];                  // 0x89A
+  u16 stateDuration;                          // 0x89C, 状態を続ける最短フレーム数
+  u8 unk_89e[0x8A0 - 0x89E];                  // 0x89E
+  u16 hurtboxPower;                           // 0x8A0, '.s[1]=999'
+  u16 hurtboxPower2;                          // 0x8A2, '.s[2]=10'
+  u16 hurtboxPower3;                          // 0x8A4, '.s[3]=100'
+  u8 unk_8a6[0x8A8 - 0x8A6];                  // 0x8A6
+  s16 hitboxPower;                            // 0x8A8, '.a[0]=25'
+  s16 hitboxKnockback;                        // 0x8AA, '.a[1]=50'
+  s16 hitboxUnk44;                            // 0x8AC, '.a[2]=60'
+  s16 hitbox2Power;                           // 0x8AE, '.a[3]=50'
+  s16 hitbox2Knockback;                       // 0x8B0, '.a[4]=50'
+  s16 hitbox2Unk44;                           // 0x8B2, '.a[5]=60'
+  u16 unk_8b4;                                // 0x8B4, '.g[0]=70'
+  u16 unk_8b6;                                // 0x8B6, '.g[1]=80'
+  u16 unk_8b8;                                // 0x8B8, '.g[2]=65'
+  u16 unk_8ba;                                // 0x8BA, '.U[0]=40'
+  u16 unk_8bc;                                // 0x8BC, '.U[1]=80'
+  u16 unk_8be;                                // 0x8BE, '.U[2]=50'
+  u16 unk_8c0;                                // 0x8C0, '.U[3]=30'
+  u16 unk_8c2;                                // 0x8C2
+  u16 unk_8c4;                                // 0x8C4, '.a[6]=8'
+  u16 unk_8c6;                                // 0x8C6, '.a[7]=16'
+  u16 unk_8c8;                                // 0x8C8, '.a[8]=10'
+  u16 unk_8ca;                                // 0x8CA, '.a[9]=50'
+  u8 unk_8cc;                                 // 0x8CC
+  u8 unk_8cd;                                 // 0x8CD
+  u16 unk_8ce;                                // 0x8CE
+  u16 unk_8d0;                                // 0x8D0
+  u16 unk_8d2;                                // 0x8D2, '.s[4]=300'
+  u16 unk_8d4;                                // 0x8D4
+  u16 unk_8d6;                                // 0x8D6, '.s[5]=600'
+  s16 unk_8d8;                                // 0x8D8
+  u8 unk_8da;                                 // 0x8DA
+  u8 unk_8db;                                 // 0x8DB
+  u8 unk_8dc;                                 // 0x8DC
+  u8 unk_8dd;                                 // 0x8DD
+  u8 unk_8de[0x8E0 - 0x8DE];                  // 0x8DE
+  s32 weaponExp;                              // 0x8E0, '.K'
+  u16 unk_8e4;                                // 0x8E4
+  u16 unk_8e6;                                // 0x8E6
+  u16 unk_8e8[3];                             // 0x8E8, sprites_8f4 ごとの残りフレーム, 0 になったら隠す
+  u16 unk_8ee[3];                             // 0x8EE, sprites_8f4 ごと, 1 なら unk_868 へ寄せる
+  MainSprite sprites_8f4[3];                  // 0x8F4
+  s16 unk_a14;                                // 0xA14, 前のフレームの unk_a16
+  s16 unk_a16;                                // 0xA16, sprites[0].animCmdIdx の控え
+  Vec3 unk_a18;                               // 0xA18
+  MainSpriteGfx gfx_a20;                      // 0xA20, SPRITE_DJANGO_SABATA
+  MainSprite sprite_a40;                      // 0xA40
+  MainSprite sprite_aa0;                      // 0xAA0
+  u8 unk_b00;                                 // 0xB00
+  u8 unk_b01;                                 // 0xB01
+  u8 unk_b02;                                 // 0xB02
+  s8 unk_b03;                                 // 0xB03
+  u16 unk_b04;                                // 0xB04
+  u16 unk_b06;                                // 0xB06
+  ParticleShadow ptclShadow;                  // 0xB08
+  AuxSpriteGfx auxGfx[2];                     // 0xB48, SPRITE_DAINN_EBALL
+  bool8 auxActive[16];                        // 0xB80, auxSprites の各枠が使用中か
+  AuxSprite auxSprites[16];                   // 0xB90
+  AuxAnimState auxAnims[16];                  // 0xE50, auxSprites と同じ添字
+  Vec3 auxOffsets[16];                        // 0xF50, auxSprites の画面上の位置のずれ
+  AuxAnimFile* auxAnimFile;                   // 0xFD0, ANIM_78E1
+  u8 unk_fd4;                                 // 0xFD4
+  u8 unk_fd5;                                 // 0xFD5
+  u8 unk_fd6;                                 // 0xFD6
+  u8 unk_fd7;                                 // 0xFD7
+  Vec3 unk_fd8;                               // 0xFD8, sprite_fe0 の位置
+  MainSprite sprite_fe0;                      // 0xFE0
+  u16 scriptID;                               // 0x1040, '.d[0]=0'
+  u16 scriptID2;                              // 0x1042, '.d[1]=0'
+  u32 unk_1044;                               // 0x1044
+  u32 unk_1048;                               // 0x1048
+  struct VampireSwordManager* vampireSwords;  // 0x104C
+  struct Entity0805b068* entity0805b068;      // 0x1050
+  struct Entity0805b790* entity0805b790;      // 0x1054
+  struct Entity0805d364* entity0805d364;      // 0x1058
 } Ringo;
 static_assert(sizeof(Ringo) == 4188);
 
@@ -222,19 +222,19 @@ void FUN_080846f8(void);
 void FUN_08084734(Vec3* out);
 bool32 FUN_08084710(void);
 void FUN_0823b880(s32 n);
-struct Entity0805a31c* Entity0805a31c_Create(u32 attackID);
+struct VampireSwordManager* VampireSwordManager_Create(u32 attackID);
 struct Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2);
 struct Entity0805d364* Entity0805d364_Create(u32 targetCount);
 struct Entity0805b790* Entity0805b790_Create(bool32 isDark);
 s32 FUN_08035a64(Ringo* p);
 void FUN_080846c8(void);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
-s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockbackPower);
+s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
-void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
-s32 FUN_0805a360(struct Entity0805a31c* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
+void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
+s32 VampireSwordManager_Spawn(struct VampireSwordManager* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
-s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
 s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
@@ -286,7 +286,7 @@ static inline void Ringo_UpdateUnk88c(Ringo* p) {
     } else {
       Boss_SetSubState2(&p->base, 3);
       p->unk_88c++;
-      PlaySound_0824078c(SONG_784);
+      PlaySound_0824078c(VO_DAINN_LAUGH3);
     }
   } else if (p->unk_88c > 2) {
     Ringo_SetUnk169(p, 5);
@@ -307,8 +307,6 @@ static inline void Ringo_ResetSubStates(Ringo* p, u32 duration) {
   Boss_SetSubStates(&p->base, 0, 0, 0);
   p->stateDuration = duration;
 }
-
-extern u16 gRisingSunCount;
 
 const s8 s8_ARRAY_085aabbc[10][2] = {
     {9, -4},
@@ -882,7 +880,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
   Vec3 pos2;
   s32 i;
 
-  if (p->entity0805a31c == NULL) {
+  if (p->vampireSwords == NULL) {
     return;
   }
   if (p->unk_174 < 0) {
@@ -905,7 +903,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
       Vec3_Add(&pos, p->base.playerPos[idx]);
       pos.y = mover->pos.y + 0xA4;
       ArcTan2_8(p->base.playerPos[idx]->x - pos.x, p->base.playerPos[idx]->z - pos.z);
-      FUN_0805a360(p->entity0805a31c, &pos, 0, p->base.playerPos[idx], 15, delay);
+      VampireSwordManager_Spawn(p->vampireSwords, &pos, 0, p->base.playerPos[idx], 15, delay);
       angle += 0x55;
       delay += 64;
     }
@@ -918,7 +916,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
       Vec3_SetPolar(&pos2, angle, 256);
       Vec3_Add(&pos2, &mover->pos);
       pos2.y += 0xA4;
-      FUN_0805a360(p->entity0805a31c, &pos2, 1, p->base.playerPos[idx], 12, delay);
+      VampireSwordManager_Spawn(p->vampireSwords, &pos2, 1, p->base.playerPos[idx], 12, delay);
       delay += 24;
       angle += 16;
     }
@@ -1120,7 +1118,7 @@ NON_MATCH void FUN_0802991c(Ringo* p) {
   pos.x = pos.x - 0x80 + (u8)_Random(table);
   pos.y = pos.y + (_Random(table) & 0x3F);
   pos.z = pos.z - 0x80 + (u8)_Random(table);
-  FUN_08015d3c(&pos, 2, 0x3000, 0x40, 12, 4, 0, 3);
+  Entity08015584_SpawnSprayOne(&pos, 2, 0x3000, Q6(1), 12, 4, 0, 3);
 #else
   INCFUNC("asm/func/FUN_0802991c.inc");
 #endif
@@ -1241,7 +1239,7 @@ void Ringo_InitAuxSprites(Ringo* p) {
   for (i = 0, sprite = p->auxSprites; i < 16; i++, sprite++) {
     AuxSprite_Add(sprite, &p->auxGfx[0], SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     AuxAnim_SetAnim(&p->auxAnims[i], p->auxAnimFile, 2, 0, 0);
-    AuxAnim_SetAnimSpeed(&p->auxAnims[i], 32);
+    AuxAnim_SetAnimSpeed(&p->auxAnims[i], Q6(0.5));
     sprite->priority = 1;
     Vec3_Clear(&sprite->pos);
   }
@@ -1332,7 +1330,7 @@ NON_MATCH void Ringo_AddAuxSprite(Ringo* p, s32 kind, s32 idx, s32 param_4, s32 
         AuxSprite_SetGfx(sprite, &p->auxGfx[1]);
         AuxAnim_SetAnim(&p->auxAnims[i], p->auxAnimFile, 2, 0, 0);
       }
-      AuxAnim_SetAnimSpeed(&p->auxAnims[i], 32);
+      AuxAnim_SetAnimSpeed(&p->auxAnims[i], Q6(0.5));
       sprite->flags &= ~SPRFLAG_HIDDEN;
       p->auxActive[i] = TRUE;
       return;
@@ -1438,7 +1436,7 @@ void FUN_0802a538(Ringo* p) {
 NON_MATCH void Ringo_PollMessages(Ringo* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  MsgQueue* queue = &boss->msgQueue;
+  MsgQueue* queue = &boss->mq;
   s32 i;
 
   for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
@@ -1462,7 +1460,7 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
         p->sprites[0].pos.x = boss->mover.pos.x;
         p->sprites[0].pos.y = p->spriteOffsetY + boss->mover.pos.y;
         p->sprites[0].pos.z = boss->mover.pos.z;
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 3: {
@@ -1497,7 +1495,7 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
       }
       case 9: {
         Boss_ShowEmote(boss, msg->args[0], 180, 180);
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 11: {
@@ -1598,7 +1596,7 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
       }
       case 32: {
         p->unk_18b = msg->args[0];
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 30: {
@@ -1618,7 +1616,7 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
         } else {
           Ringo_StartPlttFade(p, 5, 206);
         }
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
     }
@@ -1909,7 +1907,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     }
   }
   if (!boss->isDemo) {
-    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerModes[0] & PMODE_DEAD)) {
       if (!p->unk_880) {
         p->unk_880 = TRUE;
         p->unk_884 = 0;
@@ -2894,7 +2892,7 @@ void FUN_0802db3c(Ringo* p) {
 void FUN_0802db74(Ringo* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 36);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -2902,7 +2900,7 @@ void FUN_0802db74(Ringo* p) {
 void FUN_0802dbb8(Ringo* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 37);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -2913,7 +2911,7 @@ void FUN_0802dbfc(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2925,7 +2923,7 @@ void FUN_0802dc5c(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2937,7 +2935,7 @@ void FUN_0802dcbc(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 2);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2949,7 +2947,7 @@ void FUN_0802dd24(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2961,7 +2959,7 @@ void FUN_0802dd84(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 0);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2970,7 +2968,7 @@ void FUN_0802dd84(Ringo* p) {
 void FUN_0802dde8(Ringo* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 43);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -2987,7 +2985,7 @@ void FUN_0802de2c(Ringo* p) {
   }
   if (boss->subStateDone) {
     Boss_SetSubState2(boss, 1);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   } else {
     boss->subStateTimer++;
   }
@@ -2999,7 +2997,7 @@ void FUN_0802dea4(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3011,7 +3009,7 @@ void FUN_0802df04(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3022,7 +3020,7 @@ void FUN_0802df64(Ringo* p) {
     Boss_RequestState(&p->base, 48);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3033,7 +3031,7 @@ void FUN_0802dfb4(Ringo* p) {
     Boss_RequestState(&p->base, 49);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3044,7 +3042,7 @@ void FUN_0802e004(Ringo* p) {
     Boss_RequestState(&p->base, 50);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3055,7 +3053,7 @@ void FUN_0802e054(Ringo* p) {
     Boss_RequestState(&p->base, 51);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3064,7 +3062,7 @@ void FUN_0802e054(Ringo* p) {
 void FUN_0802e0a4(Ringo* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 52);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -3074,7 +3072,7 @@ void FUN_0802e0e8(Ringo* p) {
     Boss_RequestState(&p->base, 53);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3088,7 +3086,7 @@ void FUN_0802e138(Ringo* p) {
     p->grabbedPlayer = 0;
   }
   if (boss->subStateDone) {
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   } else {
     boss->subStateTimer++;
   }
@@ -3103,7 +3101,7 @@ void FUN_0802e198(Ringo* p) {
   }
   if (boss->subStateDone) {
     Boss_SetSubState2(boss, 2);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   } else {
     boss->subStateTimer++;
   }
@@ -3115,7 +3113,7 @@ void FUN_0802e210(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 0);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3127,7 +3125,7 @@ void FUN_0802e274(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 0);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3139,7 +3137,7 @@ void FUN_0802e2d8(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 2);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3148,7 +3146,7 @@ void FUN_0802e2d8(Ringo* p) {
 void FUN_0802e340(Ringo* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 59);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -3159,7 +3157,7 @@ void FUN_0802e384(Ringo* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3170,7 +3168,7 @@ void FUN_0802e3e4(Ringo* p) {
     Boss_RequestState(&p->base, 61);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -3259,7 +3257,7 @@ void FUN_0802e488(Ringo* p) {
   static void (*const PTR_ARRAY_085aad20[1])(Ringo*) = {
       FUN_0802e434,
   };  // 0x085AAD20
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_0802c2d4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_0802c2d4(p)) {
     PTR_ARRAY_085aad20[p->base.subState1](p);
   }
 }
@@ -3682,11 +3680,11 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
   if ((u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
     p->unk_874 = 0;
   }
-  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) && !(gPlayerStates[0] & FLAG03002BC0_UNK_2) && p->unk_874 > 0 && p->phaseTimer <= 3) {
+  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_WILL_END) && !(gPlayerModes[0] & PMODE_DEAD) && p->unk_874 > 0 && p->phaseTimer <= 3) {
     p->sprites[0].animCmdIdx = 2;
     p->phaseTimer++;
   }
-  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && ((gPlayerStates[0] & FLAG03002BC0_UNK_2) || p->unk_874 == 0 || p->phaseTimer > 3)) {
+  if ((p->sprites[0].animEvents & MAIN_ANIM_EVENT_ENDED) && ((gPlayerModes[0] & PMODE_DEAD) || p->unk_874 == 0 || p->phaseTimer > 3)) {
     boss->subStateDone = TRUE;
   }
 #else
@@ -4539,7 +4537,7 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
     }
     case 4: {
       if (++p->phaseTimer > 4) {
-        if ((gPlayerStates[0] & FLAG03002BC0_UNK_2) || (u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
+        if ((gPlayerModes[0] & PMODE_DEAD) || (u8)(boss->players[p->grabbedPlayer]->mashCount - (p->unk_876 - 0x100)) > 15) {
           p->unk_874 = 0;
         }
         if (p->unk_874 <= 0) {
@@ -4698,7 +4696,7 @@ NON_MATCH void FUN_08032180(Boss* boss, s32 timer) {
         }
         PlaySound_0824078c(SE_DAMAGE);
       }
-      if (++p->phaseTimer > 79 || (gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+      if (++p->phaseTimer > 79 || (gPlayerModes[0] & PMODE_DEAD)) {
         p->phase++;
         p->phaseTimer = 0;
         Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 57, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
@@ -4923,11 +4921,11 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
     p->sprites[1].pltt = p->sprites[0].pltt;
     FUN_08029c74(p);
     p->numPlayers = 1;
-    if (p->scriptID && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+    if (p->scriptID && !(gPlayerModes[0] & PMODE_DEAD)) {
       VM_ExecByID(p->scriptID, NULL);
     }
-    FUN_08015a90(&mover->pos, 3, 2, 0x3000, 0x40, 8, 0x100, 0x100);
-    FUN_08015a90(&mover->pos, 5, 2, 0x3000, 0x40, 10, 0x100, 0x100);
+    Entity08015584_SpawnRadial(&mover->pos, 3, 2, 0x3000, Q6(1), 8, 0x100, 0x100);
+    Entity08015584_SpawnRadial(&mover->pos, 5, 2, 0x3000, Q6(1), 10, 0x100, 0x100);
   }
   if (p->hoverHeight > 3) {
     p->hoverHeight -= 4;
@@ -4948,7 +4946,7 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
   }
   if (timer == 30) {
     Boss_SetState(boss, FUN_0802e520, 1);
-    if (p->scriptID2 && !(gPlayerStates[0] & FLAG03002BC0_UNK_2)) {
+    if (p->scriptID2 && !(gPlayerModes[0] & PMODE_DEAD)) {
       VM_ExecByID(p->scriptID2, NULL);
     }
   }
@@ -6067,8 +6065,8 @@ void FUN_08035a3c(Ringo* p) {
   u32 mask;
 
   p->base.subStateDone = FALSE;
-  mask = FLAG03002BC0_UNK_2;
-  if (!(gPlayerStates[0] & mask)) {
+  mask = PMODE_DEAD;
+  if (!(gPlayerModes[0] & mask)) {
     Boss_UpdateState(&p->base);
   }
 }
@@ -6474,12 +6472,12 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   boss->mover.unk_30.y = 400;
   boss->mover.unk_30.z = 0;
   if (boss->isDemo) {
-    p->entity0805a31c = NULL;
+    p->vampireSwords = NULL;
     p->entity0805b068 = NULL;
     p->entity0805d364 = NULL;
   } else {
-    p->entity0805a31c = Entity0805a31c_Create(p->unk_8ba);
-    if (p->entity0805a31c == NULL) {
+    p->vampireSwords = VampireSwordManager_Create(p->unk_8ba);
+    if (p->vampireSwords == NULL) {
       return -1;
     }
     p->entity0805b068 = Entity0805b068_Create(p->unk_8bc, p->unk_8c0);

@@ -110,7 +110,7 @@ _080238E6:
 	add r0, sp, #0x10
 	movs r1, #5
 	movs r3, #0x40
-	bl FUN_08015d3c
+	bl Entity08015584_SpawnSprayOne
 _08023988:
 	ldrh r0, [r7, #2]
 	cmp r0, #0xa

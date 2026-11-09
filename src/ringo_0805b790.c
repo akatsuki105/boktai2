@@ -65,4 +65,4 @@ NAKED s32 Entity0805b790_Init(Entity0805b790* p, bool32 isDark) { INCFUNC("asm/f
 
 NAKED Entity0805b790* Entity0805b790_Create(bool32 isDark) { INCFUNC("asm/func/Entity0805b790_Create.inc"); }
 
-NAKED s32 Entity0805b790_Spawn(Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockbackPower) { INCFUNC("asm/func/Entity0805b790_Spawn.inc"); }
+NAKED s32 Entity0805b790_Spawn(Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback) { INCFUNC("asm/func/Entity0805b790_Spawn.inc"); }

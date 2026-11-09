@@ -8,6 +8,9 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
+// チェンジ魔方陣?
+// チェンジ魔方陣は、螺旋の塔(ジャンゴとサバタを切り替えながら進むダンジョン)で操作キャラを切り替えるために使う魔方陣で、太陽の塔(ジャンゴ側) と 暗黒の塔(サバタ側) に配置されている
+
 struct Entity7C62;
 
 typedef void(Entity7C62Func)(struct Entity7C62* p);
@@ -21,10 +24,10 @@ typedef struct Entity7C62 {
   u8 unk_1c[4];                    // 0x01C, 触られていない
   Mover mover;                     // 0x020
   AuxSprite sprite;                // 0x064, flags に 0x200 が立つ, rise が 0 の間は隠す
-  AuxSpriteGfx gfx;                // 0x090, SPRITE_MAGIC_CIRCLE
+  AuxSpriteGfx gfx;                // 0x090, SPRITE_MAGIC_SQUARE
   Vec3 pos;                        // 0x0AC, '.p', y はタイルの attr から計算し直す, 起動するとプレイヤーをここへ移す
   AuxSprite sprite2;               // 0x0B4, flags に BLINK_EVEN が立つ2枚目
-  AuxSpriteGfx gfx2;               // 0x0E0, SPRITE_MAGIC_CIRCLE
+  AuxSpriteGfx gfx2;               // 0x0E0, SPRITE_MAGIC_SQUARE
   u16 plttID;                      // 0x0FC, 106
   u16 highlight;                   // 0x0FE, 近いと 8 まで増え離れると減る
   u16 rise;                        // 0x100, 近いと 2 ずつ 0x18 まで増え離れると減る, 0 のときは sprite を隠す
@@ -38,24 +41,15 @@ typedef struct Entity7C62 {
 static_assert(sizeof(Entity7C62) == 276);
 
 void FUN_080a6e88(bool32 stopSound);
-void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
 void Entity7C62_UpdateActivated(Entity7C62* p);
 void Entity7C62_UpdateDone(Entity7C62* p);
 
-// 人型のプレイヤーが pos から 96 以内にいれば TRUE を返す
+// 人型のプレイヤーが pos から 0.375 タイル以内にいれば TRUE を返す
 bool32 Entity7C62_IsPlayerNear(Entity7C62* p) {
   if (gStat->playerKind != PLAYER_BAT && gStat->playerKind != PLAYER_MOUSE && gStat->playerKind != PLAYER_SLEEPING && gPlayerPtr[0]->formRequest == 0) {
-    s32 dx = gPlayerPtr[0]->mover.pos.x - p->pos.x;
-    s32 dz;
-
-    if (dx < 0) {
-      dx = -dx;
-    }
-    dz = gPlayerPtr[0]->mover.pos.z - p->pos.z;
-    if (dz < 0) {
-      dz = -dz;
-    }
-    if (dx <= 96 && dz <= 96 && dx * dx + dz * dz <= 96 * 96) {
+    s32 dx = abs(gPlayerPtr[0]->mover.pos.x - p->pos.x);
+    s32 dz = abs(gPlayerPtr[0]->mover.pos.z - p->pos.z);
+    if (dx <= Q8(0.375) && dz <= Q8(0.375) && dx * dx + dz * dz <= Q8(0.375) * Q8(0.375)) {
       return TRUE;
     }
   }
@@ -69,7 +63,7 @@ void Entity7C62_SetUpdateCallback(Entity7C62* p, Entity7C62Func* fn) {
 
 // プレイヤーが近いと浮き上がって光り, A ボタンでプレイヤーを pos へ飛ばす
 void Entity7C62_UpdateIdle(Entity7C62* p) {
-  if (!(gGameFlags & FLAG030047A4_UNK_9)) {
+  if (!(gGameFlags & GAMEFLAG_EVENT)) {
     if (p->readyTimer < 10) {
       p->readyTimer++;
     }
@@ -88,7 +82,7 @@ void Entity7C62_UpdateIdle(Entity7C62* p) {
     } else {
       p->rise = 24;
     }
-    if (TEST_FLAGS(gPlayerStates[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && p->readyTimer > 9) {
+    if (TEST_FLAGS(gPlayerModes[0], PMODE_ACTIVE) && (gInput[0].pressed & A_BUTTON) && p->readyTimer > 9) {
       p->highlight = 8;
       FUN_080a6e88(TRUE);
       Player_MoveTo(gPlayerPtr[0], &p->pos, 0, 4);
@@ -172,14 +166,10 @@ s32 Entity7C62_Init(Entity7C62* p, u32 id, u32 param_3) {
 
   p->id = id;
   if (VM_SeekToNamedArg('p')) {
-    p->pos.x = VM_GetValue();
-    p->pos.y = VM_GetValue();
-    p->pos.z = VM_GetValue();
+    VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
     p->pos.y = TileHeightAt(&p->pos);
   } else {
-    p->pos.x = 0;
-    p->pos.y = 0;
-    p->pos.z = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   }
 
   if (VM_SeekToNamedArg('s')) {
@@ -209,7 +199,7 @@ s32 Entity7C62_Init(Entity7C62* p, u32 id, u32 param_3) {
   }
 
   p->plttID = 106;
-  Video_GetAuxSprite(&p->gfx, SPRITE_MAGIC_CIRCLE);
+  Video_GetAuxSprite(&p->gfx, SPRITE_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   AuxSprite_SetPoseIdx(&p->sprite, 7);
   Video_SetAuxSpritePltt(&p->gfx, p->plttID);
@@ -217,7 +207,7 @@ s32 Entity7C62_Init(Entity7C62* p, u32 id, u32 param_3) {
   p->sprite.priority = 3;
   p->sprite.pos = p->pos;
 
-  Video_GetAuxSprite(&p->gfx2, SPRITE_MAGIC_CIRCLE);
+  Video_GetAuxSprite(&p->gfx2, SPRITE_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
   AuxSprite_SetPoseIdx(&p->sprite2, 7);
   Video_SetAuxSpritePltt(&p->gfx2, p->plttID);
@@ -229,6 +219,7 @@ s32 Entity7C62_Init(Entity7C62* p, u32 id, u32 param_3) {
   return 0;
 }
 
+// 0x7C62
 Entity7C62* Entity7C62_Create(u32 id, u32 param_2) {
   Entity7C62* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity7C62));
 

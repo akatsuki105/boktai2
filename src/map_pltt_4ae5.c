@@ -355,8 +355,8 @@ void MapPltt_StepCrossfade(Entity4AE5* p) {
   p->unk_20 = 1;
 }
 
-// 暗→明のフェード: 進捗に応じて明るさを 0 に近づけ、終わったら次の処理へ移る
-void MapPltt_FadeIn(Entity4AE5* p) {
+// 明→暗のフェード: 進捗に応じて明るさを 0 (フェード色一色) に近づけ、終わったら次の処理へ移る
+void MapPltt_FadeOut(Entity4AE5* p) {
   gBgBrightness = 0x40 - ((p->fadeTimer << 6) >> p->fadeShift);
   if ((p->fadeTimer = p->fadeTimer + 1) >= (1 << p->fadeShift)) {
     gBgBrightness = 0;
@@ -368,8 +368,8 @@ void MapPltt_FadeIn(Entity4AE5* p) {
   }
 }
 
-// 明→暗のフェード: 進捗に応じて明るさを 0x40 に近づけ、終わったら暗転状態で止める
-void MapPltt_FadeOut(Entity4AE5* p) {
+// 暗→明のフェード: 進捗に応じて明るさを 0x40 (元のパレット) に近づけ、終わったら止める
+void MapPltt_FadeIn(Entity4AE5* p) {
   rgb555* pltt;
 
   gBgBrightness = (p->fadeTimer << 6) >> p->fadeShift;
@@ -382,7 +382,7 @@ void MapPltt_FadeOut(Entity4AE5* p) {
   }
 }
 
-s32 FUN_0823ce10(u16* a, u16* b);
+s32 GetTimeOfDayPlttPair(u16* from, u16* to);
 
 // スクリプトから指定されたPLTTファイルを登録し、時間帯に応じた2枚を読み直す
 NON_MATCH void MapPltt_SetFile(s32 idx, FileID plttFileID, u32 kw_f) {
@@ -393,7 +393,7 @@ NON_MATCH void MapPltt_SetFile(s32 idx, FileID plttFileID, u32 kw_f) {
     if (kw_f & 1) {
       if (p->flags & MAPPLTT_TIMEOFDAY) {
         u16 id0, id1;
-        FUN_0823ce10(&id0, &id1);
+        GetTimeOfDayPlttPair(&id0, &id1);
         p->srcPltt1 = GetBgPlttFile(p->bgpIDs[id0])->body;
         p->srcPltt2 = GetBgPlttFile(p->bgpIDs[id1])->body;
         if (id0 == 2 || id1 == 2) {
@@ -466,10 +466,10 @@ void Cmd_62BC(void) {
 static void (*const sMapPlttStates[7])(Entity4AE5*) = {
     NULL,
     MapPltt_StepCrossfade,
-    MapPltt_FadeOut,
     MapPltt_FadeIn,
     MapPltt_FadeOut,
     MapPltt_FadeIn,
+    MapPltt_FadeOut,
     NULL,
 };  // 0x085aa634
 
@@ -543,7 +543,7 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
   p->cmdCount = 0;
   if (p->flags & MAPPLTT_TIMEOFDAY) {
     if (p->spanOfTime != gClock.spanOfTime) {
-      FUN_0823ce10(&id0, &id1);
+      GetTimeOfDayPlttPair(&id0, &id1);
       p->timeBlendLevel = 0;
       p->unk_648 = 0;
       p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
@@ -627,7 +627,7 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 id) {
   p->unk_64e = 0;
   p->timeBlendLevel = 0;
   if (p->flags & MAPPLTT_TIMEOFDAY) {
-    FUN_0823ce10(&id0, &id1);
+    GetTimeOfDayPlttPair(&id0, &id1);
     p->timeBlendLevel = 0x40;
     p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
     p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;

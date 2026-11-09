@@ -122,7 +122,7 @@ _080F5CD2:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl Eff082473e0Emitter_Reset
+	bl ElementalCondEmitter_Reset
 	movs r0, #0x14
 	str r0, [sp]
 	movs r0, #0xe1
@@ -132,7 +132,7 @@ _080F5CD2:
 	movs r1, #3
 	movs r2, #2
 	movs r3, #0xa
-	bl FUN_080e6408
+	bl Enemy_ScatterParticles
 	movs r1, #0x80
 	lsls r1, r1, #0x12
 	ldr r0, [r4]
@@ -306,7 +306,7 @@ _080F5DC6:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r3, sp, #0xc
-	bl Eff082473e0Emitter_BurstParticle
+	bl ElementalCondEmitter_BurstParticle
 	movs r0, #0x20
 	movs r1, #0xc1
 	lsls r1, r1, #1

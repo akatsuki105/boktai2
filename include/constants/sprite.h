@@ -65,13 +65,13 @@
 #define SPRITE_OTENKO_01 BOKHASH("otenko_01")  // 0x97D4, おてんこさま
 #define SPRITE_EFF_F422 0xF422                 // 複数の種類のエフェクトをまとめたエフェクト群? (サーペントの泡, リッチ+の火の玉 など中ボス系のエフェクトをまとめている?)
 #define SPRITE_B306 0xB306                     // 紋章ブロック(炎氷地風)
-#define SPRITE_BOKU_ACID_0 0xA5B3              // 0xA5B3, グール系が出すホルルン液(着弾前)
-#define SPRITE_BOKU_ACID_1 0xA5B4              // 0xA5B4, グール系が出すホルルン液(着弾後)
+#define SPRITE_ACID_0 0xA5B3                   // 0xA5B3, 溶解液 (ホルルン液, ドヴァリンの墨玉)
+#define SPRITE_ACID_1 0xA5B4                   // 0xA5B4, 溶解液 (ホルルン液, ドヴァリンの墨玉)
 #define SPRITE_SPEAKER 0x5AFD                  // シェードマンがクラッシュノイズのときに出すスピーカー
 #define SPRITE_5AFE 0x5AFE                     // 輪っかのエフェクト(シェードマン関連?)
 #define SPRITE_D4EE 0xD4EE                     // マミー
 #define SPRITE_924B 0x924B                     // マミー
-#define SPRITE_2C12 0x2C12                     // 鳴り床(上を歩くと音が鳴る床)
+#define SPRITE_GRATING 0x2C12                  // 鳴り床(上を歩くと音が鳴る床)
 #define SPRITE_A20C 0xA20C                     // キラキラエフェクト?
 #define SPRITE_9D2D 0x9D2D                     // 壁?
 #define SPRITE_048A 0x048A                     // 柱?
@@ -95,7 +95,7 @@
 #define SPRITE_9FF5 0x9FF5                     // エフェクト群
 #define SPRITE_A606 0xA606                     // 黒塗り
 #define SPRITE_LILYPAD 0xD166                  // ハスの葉
-#define SPRITE_MAGIC_CIRCLE 0x0BA8             // 魔法陣
+#define SPRITE_MAGIC_SQUARE 0x0BA8             // 魔法陣
 #define SPRITE_EMOTION_ICONS_0 0x363C          // "!"
 #define SPRITE_EMOTION_ICONS_1 0x363D          // EmoteManager が SPRITE_EMOTION_ICONS_0 と一緒に読む
 #define SPRITE_1FBD 0x1FBD                     // なんかの壁
@@ -143,7 +143,7 @@
 #define SPRITE_2817 0x2817                     // 大聖堂の水晶?
 #define SPRITE_EFD8 0xEFD8                     // 0..9の数字とまだ何も数字が書かれていないパネルの絵
 #define SPRITE_9DFF 0x9DFF                     // 黒塗り
-#define SPRITE_TIME_MCIRCLE 0xA152             // タイム魔方陣
+#define SPRITE_TIME_MAGIC_SQUARE 0xA152        // タイム魔方陣
 #define SPRITE_17C7 0x17C7                     // 重量スイッチ
 #define SPRITE_17C8 0x17C8                     // 重量スイッチ
 #define SPRITE_17C9 0x17C9                     // 重量スイッチ
@@ -154,7 +154,7 @@
 #define SPRITE_1FE0 0x1FE0                     // 黒塗り
 #define SPRITE_2C1A 0x2C1A                     // 岩の角みたいな何か
 #define SPRITE_SWORD_AX 0x5291                 // ソード(敵)、アックス(敵)
-#define SPRITE_5292 0x5292                     // スレイブソード, リンゴ(ダーイン)の出す剣
+#define SPRITE_SLAVE_SWORD_AX 0x5292           // スレイブソード, リンゴ(ダーイン)の出す剣
 #define SPRITE_BOKU 0x9247                     // ボク(今作では グール)
 #define SPRITE_D4EA 0xD4EA                     // ボク
 #define SPRITE_47DE 0x47DE                     // ボク
@@ -251,7 +251,7 @@
 #define SPRITE_CUBE_ROCK_DEBRIS_L 0xA894       // 岩ブロックの破片(大)
 #define SPRITE_CUBE_ROCK_DEBRIS_S 0xA895       // 岩ブロックの破片(小)
 #define SPRITE_7AC6 0x7AC6                     // 黒塗り
-#define SPRITE_CUBE_ICE 0x84EE                 // 氷ブロック
+#define SPRITE_CUBE_ICE 0x84EE                 // 氷ブロック, 1番小さいやつはドヴァリンやオクトパスの投げる岩としても使う
 #define SPRITE_494E 0x494E                     // 遺跡ステージ前半の柱
 #define SPRITE_7BE2 0x7BE2                     // 黒塗り
 #define SPRITE_2EC0 0x2EC0                     // 遺跡ステージの4人の燭台の床パネル?

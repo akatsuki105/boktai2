@@ -22,7 +22,6 @@ typedef struct {
 static_assert(sizeof(MainSpriteTileRequest) == 8);
 
 extern u32 gMainSpriteTileRequestCount;  // 0x030035A4
-extern u32 gFrameCounter;
 extern OamData gOAMBuffer[128];
 extern u16 gOAMPrioCounts[4];
 extern s32 gOAMCount;

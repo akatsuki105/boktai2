@@ -168,7 +168,7 @@ s32 CactusManager_Init(CactusManager* p) {
   Cactus* list;
   s32 power;
   s32 knockback;
-  s32 invincibleTime;
+  s32 iframes;
   Vec3 halfSize, offset;
 
   gCactusManager = p;
@@ -176,13 +176,13 @@ s32 CactusManager_Init(CactusManager* p) {
   p->activeMask = 0;
   power = VM_GetNamedArgValue('p', 5);
   knockback = VM_GetNamedArgValue('f', 10);
-  invincibleTime = VM_GetNamedArgValue('i', 10);
+  iframes = VM_GetNamedArgValue('i', 10);
   hitbox = &p->hitbox;
   VEC3_SET(halfSize, Q8(0.641), Q8(0.5), Q8(0.641));
   VEC3_SET(offset, 0, Q8(0.5), 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, NULL, p);
-  Hitbox_SetAttack(hitbox, power, knockback, 0, 0, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, 0, iframes);
   list = Malloc(p->count * sizeof(Cactus));
   p->list = list;
   if (list == NULL) {

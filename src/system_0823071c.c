@@ -41,7 +41,7 @@ NON_MATCH void InitSystemManager(void) {
   gSystemManager.unk_16 = TRUE;
   gSystemManager.id = 0;
   AddEntity(&gSystemManager);
-  gEntityDisableFlags = 0;
+  gSuspendFlags = 0;
   gEntityCount = 1;
   gUseLinkInput = FALSE;
   for (i = 3; i >= 0; i--) {
@@ -71,7 +71,7 @@ void ReadKeyInput(void) {
       gInput[i].pressed = keys;
       gInput[i].released = prev;
     }
-  } else if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
+  } else if (!(gSuspendFlags & SUSPEND_LINK_WAIT)) {
     for (i = 0; i < 5; i++) {
       if (gLinkKeyInput[i] == 0xFFFF) {
         keys = 0;

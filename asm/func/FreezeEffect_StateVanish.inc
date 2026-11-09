@@ -175,7 +175,7 @@ _080A7E84:
 	movs r0, #4
 	movs r1, #2
 	add r3, sp, #0xc
-	bl FUN_08014730
+	bl ScatterEffect_Spawn
 _080A7F24:
 	adds r0, r7, #0
 	bl KillEntity

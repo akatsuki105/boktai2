@@ -1,8 +1,12 @@
 #include "bg_pltt.h"
 #include "entity.h"
 #include "global.h"
+#include "input.h"
+#include "link_session.h"
+#include "shop.h"
 #include "sound.h"
 #include "sprite.h"
+#include "sprite_pltt.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
@@ -10,35 +14,101 @@
 #include "weapon.h"
 
 // 通信販売(相手と武器の売り買いをする, 実質的なアイテム交換機能) or 通信対戦の武器選択 の画面?
-// gEntity9A9F の記録から相手の武器を読み、36枚のスプライトで並べる
+// gLinkSession の記録から相手の武器を読み、36枚のスプライトで並べる
 typedef struct Entity1B24 {
   Entity e;                                    // 0x000, ENTITY_UNK_8
-  u8* record;                                  // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
+  LinkPlayerRecord* record;                    // 0x018, &gLinkSession->self, セッションが無ければ NULL で _Init は失敗する
   Tilemaps* tilemap;                           // 0x01C, TILEMAP_CD91, BG2 に敷く
   rgb555* pltt;                                // 0x020, GetBgPlttFile("bg_link_col_arr")
   void* unk_24;                                // 0x024, ワードとして読まれるが用途不明
   MainSpriteGfx gfx[4];                        // 0x028
   MainSprite sprites[36];                      // 0x0A8, Entity1B24_Destroy がまとめて外す
-  u8 unk_e28[48];                              // 0xE28
-  u8 unk_e58[244];                             // 0xE58, _Init が FUN_080b99a0(&unk_e58), _Destroy が FUN_080b9a0c(&unk_e58) に渡す
-  WeaponData weaponData;                       // 0xF4C, record[0x40] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ GetWeaponData(slot, &weaponData)
-  s8 slot;                                     // 0xF70, record[0x17], 負なら武器を読まない
-  u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
+  ShopCursor cursor;                           // 0xE28
+  ShopFlyingPair flying;                       // 0xE58, 選んだ武器を飛ばす表示部品
+  WeaponData weaponData;                       // 0xF4C, record->unk_40[0] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ GetWeaponData(slot, &weaponData)
+  s8 slot;                                     // 0xF70, record->tradeSlot, 負なら武器を読まない
+  u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record->unk_40[0] が 2 なら 0xF
   u16 unk_f72;                                 // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
   u32 unk_f74;                                 // 0xF74, _Init が 0x1E を入れる
-  u8 unk_f78[8];                               // 0xF78
+  s8 unk_f78[8];                               // 0xF78
   s32 unk_f80;                                 // 0xF80
-  void* unk_f84;                               // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
-  void* unk_f88;                               // 0xF88, 同上
+  u32 cancelScriptID;                          // 0xF84, '.p', B で抜けるとき VM_ExecByID で実行する, 0 なら何もしない
+  u32 confirmScriptID;                         // 0xF88, '.n', START で決めたとき VM_ExecByID で実行する, 0 なら何もしない
   void (*updateCallback)(struct Entity1B24*);  // 0xF8C
 } Entity1B24;
 static_assert(sizeof(Entity1B24) == 3984);
 
-bool32 FUN_081dfa04(void);
-void FUN_080b9a0c(unknown* p);
-bool32 FUN_080b9adc(unknown* p);
-void ShopCursor_PlaceSprite(unknown* p, unknown* q);
-void ShopCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
+void GetWeaponData(slot32_t n, WeaponData* data);
+void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
+void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
+s32 GetWeaponWearPose(WeaponData* w);
+void FUN_0809d7a4(Entity1B24* p);
+
+// gLinkSession の記録を返す, セッションが無ければ NULL
+static inline LinkPlayerRecord* LinkSession_GetRecord(void) {
+  LinkSession* p = gLinkSession;
+
+  if (p == NULL) {
+    return NULL;
+  }
+  return &p->self;
+}
+
+// 自分のプレイヤー番号を返す, セッションが無ければ -1
+static inline s32 LinkSession_GetPlayerIdx(void) {
+  LinkSession* p = gLinkSession;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
+}
+
+// gLinkSession の unk_54[2] が 1 か
+static inline bool8 LinkSession_IsUnk56Set(void) {
+  LinkSession* p = gLinkSession;
+
+  if (p != NULL && p->unk_54[2] == 1) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 交換に出す武器を自分の記録へ写す
+static inline void LinkSession_SetTradeWeapon(WeaponData* w, s8 slot) {
+  LinkPlayerRecord* rec = LinkSession_GetRecord();
+
+  if (rec != NULL) {
+    s32 i;
+
+    rec->body.id = w->id;
+    rec->body.kind = w->kind;
+    rec->body.rank = w->rank;
+    rec->body.lv = w->lv;
+    rec->body.atk = w->atk;
+    rec->body.durability = w->durability;
+    rec->body.wear = w->wear;
+    rec->body.quality = w->quality;
+    rec->body.price = w->price;
+    for (i = 0; i < 12; i++) {
+      rec->body.PS[i] = w->PS[i];
+    }
+    {
+      u8* dst = rec->body.effects[0];
+      u8* src = (u8*)w->effects;
+
+      for (i = 0; i < 3; i++) {
+        dst[0] = src[0];
+        dst[1] = src[1];
+        dst[2] = src[2];
+        dst[3] = src[3];
+        dst += 4;
+        src += 4;
+      }
+    }
+    rec->tradeSlot = slot;
+  }
+}
 
 // 状態関数を差し替える
 void FUN_0809ce90(Entity1B24* p, void* fn) {
@@ -46,7 +116,37 @@ void FUN_0809ce90(Entity1B24* p, void* fn) {
   p->unk_f72 = 0;
 }
 
-NAKED void FUN_0809cea8(Entity1B24* p) { INCFUNC("asm/func/FUN_0809cea8.inc"); }
+// カーソルが指す武器の見た目と説明を出す, 空欄なら消す
+void FUN_0809cea8(Entity1B24* p) {
+  WeaponData w;
+
+  if (p->record->unk_40[0] == 2) {
+    if ((u8)p->cursor.slot == 0) {
+      MessageWindow_SetInstant(1);
+      MessageWindow_Start(p->unk_24);
+      MessageWindow_SetRect(2, 16, 28, 2);
+      WeaponData_ShowNameInWindow((u8*)&p->weaponData, p->unk_f78);
+      MainMenu_SetWeaponMarquee(&p->weaponData, p->unk_24);
+    } else {
+      p->sprites[17].flags |= SPRFLAG_HIDDEN;
+      MessageWindow_Close();
+      Marquee_Clear();
+    }
+  } else if (GetWeaponID((u8)p->cursor.slot) == WEAPON_NONE) {
+    p->sprites[17].flags |= SPRFLAG_HIDDEN;
+    MessageWindow_Close();
+    Marquee_Clear();
+  } else {
+    GetWeaponData((u8)p->cursor.slot, &w);
+    p->sprites[17].flags &= ~SPRFLAG_HIDDEN;
+    MainSprite_SetPose(&p->sprites[17], &p->gfx[1], GetWeaponWearPose(&w), 1);
+    MessageWindow_SetInstant(1);
+    MessageWindow_Start(p->unk_24);
+    MessageWindow_SetRect(2, 16, 28, 2);
+    WeaponData_ShowNameInWindow((u8*)&w, p->unk_f78);
+    MainMenu_SetWeaponMarquee(&w, p->unk_24);
+  }
+}
 
 // そのスロットの武器が一覧に並べられるものかを返す
 bool32 FUN_0809cf98(s32 slot) {
@@ -73,7 +173,90 @@ s32 FUN_0809cfc0(Entity1B24* p, WeaponData* w) {
   return 0;
 }
 
-NAKED void FUN_0809d00c(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d00c.inc"); }
+// 武器種ごとの能力値の欄を描き直す, カーソルの武器の値は自分の武器と比べた大小で色を変える
+void FUN_0809d00c(Entity1B24* p) {
+  WeaponData w;
+  s32 values[4];
+  s32 digits[3];
+  s32 i;
+  s32 j;
+  s32 col;
+  s32 cursorCol;
+  s32 val;
+  s32 rem;
+  s32 ofs;
+
+  for (i = 0; i < 4; i++) {
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[22 + i * 3 + j], &p->gfx[0], 0, 1);
+      values[i] = 0;
+    }
+  }
+
+  if (p->record->unk_40[0] == 2) {
+    values[3] = FUN_0809cfc0(p, &p->weaponData);
+    digits[0] = Div(values[3], 100);
+    rem = values[3] - digits[0] * 100;
+    digits[1] = Div(rem, 10);
+    digits[2] = rem - digits[1] * 10;
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[31 + j], &p->gfx[0], digits[j], 1);
+    }
+    return;
+  }
+
+  col = -1;
+  if (p->slot >= 0) {
+    GetWeaponData(p->slot, &w);
+    if (w.kind == WK_SWORD) {
+      col = 0;
+    } else if (w.kind == WK_SPEAR) {
+      col = 1;
+    } else if (w.kind == WK_HAMMER) {
+      col = 2;
+    } else {
+      col = 3;
+    }
+    values[col] = FUN_0809cfc0(p, &w);
+    digits[0] = Div(values[col], 100);
+    rem = values[col] - digits[0] * 100;
+    digits[1] = Div(rem, 10);
+    digits[2] = rem - digits[1] * 10;
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[22 + col * 3 + j], &p->gfx[0], digits[j], 1);
+    }
+  }
+
+  if (FUN_0809cf98((u8)p->cursor.slot)) {
+    GetWeaponData((u8)p->cursor.slot, &w);
+    if (w.kind == WK_SWORD) {
+      cursorCol = 0;
+    } else if (w.kind == WK_SPEAR) {
+      cursorCol = 1;
+    } else if (w.kind == WK_HAMMER) {
+      cursorCol = 2;
+    } else {
+      cursorCol = 3;
+    }
+    val = FUN_0809cfc0(p, &w);
+    if (col < 0) {
+      ofs = 10;
+    } else if (val > values[col]) {
+      ofs = 10;
+    } else if (val < values[col]) {
+      ofs = 20;
+    } else {
+      ofs = 0;
+    }
+    digits[0] = Div(val, 100);
+    rem = val - digits[0] * 100;
+    digits[1] = Div(rem, 10);
+    digits[2] = rem - digits[1] * 10;
+    for (j = 0; j < 3; j++) {
+      MainSprite_SetPose(&p->sprites[22 + cursorCol * 3 + j], &p->gfx[0], digits[j] + ofs, 1);
+    }
+  }
+}
 
 void FUN_0809d230(Entity1B24* p) {
   MessageWindow_Close();
@@ -81,7 +264,7 @@ void FUN_0809d230(Entity1B24* p) {
 }
 
 // 一覧の n 番目のセルの画面座標を求める
-void FUN_0809d240(u16* pos, s32 n) {
+void FUN_0809d240(s16* pos, s32 n) {
   if (n <= 15) {
     pos[0] = (n & 3) * 24 + 144;
     pos[1] = (n >> 2) * 24 + 32;
@@ -91,14 +274,129 @@ void FUN_0809d240(u16* pos, s32 n) {
   }
 }
 
-NAKED void FUN_0809d270(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d270.inc"); }
+// カーソルの武器を一覧の外の枠へ飛ばすアニメを仕込む
+void FUN_0809d270(Entity1B24* p) {
+  WorldPos from[2];
+  WorldPos to[2];
+  s32 unk1[2];
+  s32 anims[2];
+  s32 strIDs[2];
 
-NAKED void FUN_0809d300(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d300.inc"); }
+  unk1[0] = 1;
+  anims[0] = ICON_WEAPON(GetWeaponID((u8)p->cursor.slot));
+  strIDs[0] = 0x2DF;
+  FUN_0809d240(&from[0].x, p->slot);
+  FUN_0809d240(&to[0].x, 16);
+  unk1[1] = 0;
+  anims[1] = 0;
+  strIDs[1] = 0x2DF;
+  VEC3_SET(from[1], 0, 0, 0);
+  VEC3_SET(to[1], 0, 0, 0);
+  FUN_080b9a28(&p->flying, unk1, from, to, anims, strIDs, 12);
+  PlaySound_082406e0(SE_SWAP_SLOT);
+}
 
-NAKED void FUN_0809d3d0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d3d0.inc"); }
+// 交換に出す自分の武器 (slot) の欄を描き直す, 選んでいなければ消す
+void FUN_0809d300(Entity1B24* p) {
+  if (p->slot < 0) {
+    p->sprites[16].flags |= SPRFLAG_HIDDEN;
+    p->sprites[20].flags |= SPRFLAG_HIDDEN;
+    p->sprites[19].flags |= SPRFLAG_HIDDEN;
+    return;
+  }
+
+  p->sprites[16].flags &= ~SPRFLAG_HIDDEN;
+  if (p->record->unk_40[0] == 2) {
+    MainSprite_SetPose(&p->sprites[16], &p->gfx[1], ICON_WEAPON(WEAPON_GUN_DEL_HELL), 1);
+  } else {
+    MainSprite_SetPose(&p->sprites[16], &p->gfx[1], ICON_WEAPON(GetWeaponID(p->slot)), 1);
+  }
+  p->sprites[20].flags &= ~SPRFLAG_HIDDEN;
+  FUN_0809d240(&p->sprites[20].pos.x, p->slot);
+  p->sprites[19].flags &= ~SPRFLAG_HIDDEN;
+  p->sprites[35].flags &= ~SPRFLAG_HIDDEN;
+}
+
+// 一覧で武器を選ぶ, A でカーソルの武器を交換に出す欄へ飛ばし, B でやめて, START で決めて記録に写してから終える
+// 下書き (441/422命令): 流れと記録への写し方 (3か所の展開) は一致, 原典は B の経路で p->slot の比較に使った値をそのまま写し, p を r6, sprites[18] を r5 に置く
+NON_MATCH void FUN_0809d3d0(Entity1B24* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  MainSprite_AdvanceAnim(&p->sprites[18], &p->gfx[0]);
+  if (p->unk_f74 != 0) {
+    p->unk_f74--;
+    return;
+  }
+
+  if (gInput[0].pressed & A_BUTTON) {
+    if (p->record->unk_40[0] == 2 || !FUN_0809cf98((u8)p->cursor.slot) || (u8)p->cursor.slot == p->slot) {
+      goto beep;
+    }
+    p->slot = p->cursor.slot;
+    GetWeaponData(p->slot, &p->weaponData);
+    FUN_0809d270(p);
+    FUN_0809ce90(p, FUN_0809d7a4);
+  } else if (gInput[0].pressed & B_BUTTON) {
+    PlaySound_082406e0(SE_CANCEL);
+    if (p->record->unk_40[0] != 2 && p->slot >= 0) {
+      LinkSession_SetTradeWeapon(&p->weaponData, p->slot);
+    }
+    FUN_0809d230(p);
+    for (i = 0; i < 36; i++) {
+      p->sprites[i].flags |= SPRFLAG_HIDDEN;
+    }
+    if (p->cancelScriptID != 0) {
+      VM_ExecByID(p->cancelScriptID, NULL);
+    }
+    KillEntity((Entity*)p);
+  } else if (gInput[0].pressed & START_BUTTON) {
+    if (p->slot < 0) {
+    beep:
+      PlaySound_082406e0(SE_NG);
+      return;
+    }
+    PlaySound_082406e0(SE_SELECT);
+    if (p->record->unk_40[0] == 2) {
+      LinkSession_SetTradeWeapon(&p->weaponData, p->record->tradeSlot);
+    } else {
+      LinkSession_SetTradeWeapon(&p->weaponData, p->slot);
+    }
+    if (LinkSession_IsUnk56Set()) {
+      FUN_081df8d4();
+      FUN_0809d230(p);
+      Marquee_CloseGlobal();
+      ClearBGTilemapBuffer(0);
+      ClearBGTilemapBuffer(1);
+      ClearBGTilemapBuffer(2);
+      ClearBGTilemapBuffer(3);
+    } else {
+      FUN_081df95c(3);
+      FUN_0809d230(p);
+      ClearBGTilemapBuffer(0);
+      ClearBGTilemapBuffer(1);
+      ClearBGTilemapBuffer(2);
+      ClearBGTilemapBuffer(3);
+      if (p->confirmScriptID != 0) {
+        VM_ExecByID(p->confirmScriptID, NULL);
+      }
+    }
+    for (i = 0; i < 36; i++) {
+      p->sprites[i].flags |= SPRFLAG_HIDDEN;
+    }
+    KillEntity((Entity*)p);
+  } else if (ShopCursor_Move(&p->cursor)) {
+    FUN_0809cea8(p);
+    FUN_0809d00c(p);
+    ShopCursor_PlaceSprite(&p->cursor, &p->sprites[18]);
+  }
+#else
+  INCFUNC("asm/func/FUN_0809d3d0.inc");
+#endif
+}
 
 void FUN_0809d7a4(Entity1B24* p) {
-  if (FUN_080b9adc(p->unk_e58)) {
+  if (FUN_080b9adc(&p->flying)) {
     PlaySound_082406e0(SE_EQUIP);
     FUN_0809d300(p);
     FUN_0809d00c(p);
@@ -127,7 +425,7 @@ s32 Entity1B24_Destroy(Entity1B24* p) {
   for (i = 0; i < 36; i++) {
     MainSprite_Remove(&p->sprites[i]);
   }
-  FUN_080b9a0c(p->unk_e58);
+  FUN_080b9a0c(&p->flying.pair);
   return 0;
 }
 
@@ -139,15 +437,182 @@ u16* FUN_0809d858(s32 bg, s32 x, s32 y) {
   return tilemap + (x & 31) + (y & 31) * 32;
 }
 
-const char s_bg_link_col_arr_08251d6c[] = "bg_link_col_arr";
+const STRING_DATA char gString_08251d44[] = "../../skoba/enemy/system/eneinline.h";  // 0x08251D44
+const STRING_DATA char s_bg_link_col_arr_08251d6c[] = "bg_link_col_arr";
 
-NAKED void FUN_0809d878(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d878.inc"); }
+// BG2 にタイルマップを敷き, 相手が持っていない武器種の欄を塗りつぶして, 背景パレットを作業用バッファへ流す
+void FUN_0809d878(Entity1B24* p) {
+  s32 bgIndices[1];
+  s32 i;
 
-NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  bgIndices[0] = 6;
+  Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, bgIndices);
+  Video_GenerateBGMap(3, 0, 0, 0, 0);
+  for (i = 0; i < 4; i++) {
+    if (!((p->weaponKindMask >> i) & 1)) {
+      u16* cell = FUN_0809d858(3, (i & 1) * 6 + 2, (i >> 1) + 4);
+      s32 j;
+
+      for (j = 0; j < 2; j++) {
+        *cell++ = 1;
+      }
+    }
+  }
+  p->pltt = GetBgPlttFile(HashName(s_bg_link_col_arr_08251d6c))->body;
+  CpuCopy32(p->pltt, gBgPlttBuffer, 96);
+}
+
+// 4つのスプライトファイルを開き, 一覧の16枠と枠外の表示部品, 武器種ごとの数字欄, プレイヤーの顔を並べる
+// 下書き (443/442命令): 流れは一致, 残差は gfx[0..3] のアドレスを退避するスタックの位置 (原典は gfx[2], gfx[3] が下) と最後の MainSprite_Add の pose のレジスタだけ
+NON_MATCH void FUN_0809d934(Entity1B24* p) {
+#ifdef NONMATCHING_C
+  MainSpriteGfxFile* f;
+  Vec3 pos;
+  s32 i;
+  s32 j;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[0] = *f;
+  OpenMainSpriteFile(&p->gfx[0], f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[1] = *f;
+  OpenMainSpriteFile(&p->gfx[1], f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[2] = *f;
+  OpenMainSpriteFile(&p->gfx[2], f);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[3] = *f;
+  OpenMainSpriteFile(&p->gfx[3], f);
+
+  for (i = 0; i < 16; i++) {
+    s32 pose;
+
+    if (p->record->unk_40[0] == 2) {
+      SpriteFlags flags;
+
+      if (i == 0) {
+        pose = ICON_WEAPON(WEAPON_GUN_DEL_HELL);
+        flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;
+      } else {
+        pose = 0;
+        flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN;
+      }
+      FUN_0809d240(&pos.x, i);
+      MainSprite_Add(&p->sprites[i], &p->gfx[1], pose, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+    } else {
+      SpriteFlags flags;
+
+      pose = ICON_WEAPON(GetWeaponID(i));
+      flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;
+      if (pose == ICON_WEAPON(WEAPON_NONE)) {
+        flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN;
+      }
+      FUN_0809d240(&pos.x, i);
+      MainSprite_Add(&p->sprites[i], &p->gfx[1], pose, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+      if (FUN_0809cf98(i)) {
+        FUN_080b95bc(&p->sprites[i], 0x2DF);
+      } else {
+        FUN_080b95bc(&p->sprites[i], 0x2E0);
+      }
+    }
+  }
+
+  FUN_0809d240(&pos.x, 16);
+  MainSprite_Add(&p->sprites[16], &p->gfx[1], 0, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[19], &p->gfx[0], 64, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  pos.z = 0;
+  MainSprite_Add(&p->sprites[18], &p->gfx[0], 57, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[18], &p->gfx[0], 0, PLAYMODE_LOOP, 0);
+  MainSprite_Add(&p->sprites[20], &p->gfx[0], 65, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
+
+  for (i = 0; i < 4; i++) {
+    SpriteFlags flags;
+
+    pos.x = (i & 1) * 48 + 32;
+    pos.y = (i >> 1) * 8 + 32;
+    pos.z = 0;
+    flags = ((p->weaponKindMask >> i) & 1) ? SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT : SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_HIDDEN;
+    for (j = 0; j < 3; j++) {
+      MainSprite_Add(&p->sprites[22 + i * 3 + j], &p->gfx[0], 0, flags, 0, PLAYMODE_PAUSE, 60, &pos);
+      pos.x += 8;
+    }
+  }
+
+  pos.x = 0;
+  pos.y = 128;
+  MainSprite_Add(&p->sprites[17], &p->gfx[1], ICON_TIMER_NONE, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  MainSprite_Add(&p->sprites[34], &p->gfx[0], 147, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  pos.x = 0;
+  pos.y = 0;
+  MainSprite_Add(&p->sprites[35], &p->gfx[2], 21, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+  if (p->slot < 0) {
+    p->sprites[35].flags |= SPRFLAG_HIDDEN;
+  }
+
+  {
+    u16 pose;
+    s32 pltt;
+
+    switch (p->record->unk_40[0]) {
+      case 1: {
+        pose = 363;
+        pltt = 38;
+        break;
+      }
+      case 2: {
+        pose = 761;
+        pltt = 39;
+        break;
+      }
+      case 0:
+      default: {
+        pose = 4;
+        pltt = 29;
+        break;
+      }
+    }
+    if (LinkSession_IsUnk56Set()) {
+      s32 idx = LinkSession_GetPlayerIdx();
+
+      pltt = idx + 34;
+      if (idx < 0) {
+        pltt = 34;
+      }
+    }
+    pos.x = 36;
+    pos.y = 112;
+    MainSprite_Add(&p->sprites[21], &p->gfx[3], pose, SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    p->sprites[21].plttID = pltt;
+    p->sprites[21].pltt = &gObjPlttData[p->sprites[21].plttID * 16];
+  }
+  FUN_080b99a0(&p->flying.pair);
+  FUN_0809d300(p);
+  FUN_0809d00c(p);
+#else
+  INCFUNC("asm/func/FUN_0809d934.inc");
+#endif
+}
 
 void FUN_0809dd34(Entity1B24* p) {
-  ShopCursor_Init(p->unk_e28, 0, 0, 0, 30);
-  ShopCursor_PlaceSprite(p->unk_e28, &p->sprites[18]);
+  ShopCursor_Init(&p->cursor, 0, 0, 0, 30);
+  ShopCursor_PlaceSprite(&p->cursor, &p->sprites[18]);
 }
 
 void FUN_0809dd68(Entity1B24* p) {
@@ -159,20 +624,20 @@ void FUN_0809dd68(Entity1B24* p) {
 
 void FUN_0809dd88(Entity1B24* p) {
   if (VM_SeekToNamedArg('p')) {
-    p->unk_f84 = (void*)VM_GetValue();
+    p->cancelScriptID = VM_GetValue();
   } else {
-    p->unk_f84 = NULL;
+    p->cancelScriptID = 0;
   }
   if (VM_SeekToNamedArg('n')) {
-    p->unk_f88 = (void*)VM_GetValue();
+    p->confirmScriptID = VM_GetValue();
   } else {
-    p->unk_f88 = NULL;
+    p->confirmScriptID = 0;
   }
 }
 
 // 相手が持っている武器の種別ビットを集める
 void FUN_0809dde0(Entity1B24* p) {
-  if (p->record[0x40] == 2) {
+  if (p->record->unk_40[0] == 2) {
     p->weaponKindMask = 0xF;
   } else {
     s32 i;
@@ -194,7 +659,37 @@ void FUN_0809dde0(Entity1B24* p) {
   }
 }
 
-NAKED s32 Entity1B24_Init(Entity1B24* p) { INCFUNC("asm/func/Entity1B24_Init.inc"); }
+s32 Entity1B24_Init(Entity1B24* p) {
+  s32 vitality;
+  s32 spirit;
+  s32 agility;
+
+  p->record = LinkSession_GetRecord();
+  if (p->record == NULL) {
+    return -1;
+  }
+
+  if (p->record->unk_40[0] == 2) {
+    p->slot = 0;
+    p->weaponData = gWeaponDB[WEAPON_GUN_DEL_HELL];
+  } else {
+    p->slot = p->record->tradeSlot;
+    if (p->slot >= 0) {
+      GetWeaponData(p->slot, &p->weaponData);
+    }
+  }
+
+  FUN_081dfa20(p->record->unk_40[1], &p->unk_f80, &vitality, &spirit, &agility);
+  FUN_0809dde0(p);
+  FUN_0809d878(p);
+  FUN_0809d934(p);
+  FUN_0809dd34(p);
+  FUN_0809dd68(p);
+  FUN_0809dd88(p);
+  p->unk_f74 = 30;
+  FUN_0809ce90(p, FUN_0809d3d0);
+  return 0;
+}
 
 // 0x1B24
 Entity1B24* Entity1B24_Create(u32 subroutineID) {

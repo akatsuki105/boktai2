@@ -38,7 +38,7 @@ _080D5412:
 	adds r0, r5, #0
 	adds r0, #0x2c
 	ldr r1, [r5, #0x18]
-	bl FUN_081df64c
+	bl LinkSession_ReleaseAllCoins
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D5454 @ =0x000001AD
 	bl Sound_PlayForPlayer

@@ -2,6 +2,7 @@
 
 #include "boss.h"
 #include "camera.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -240,11 +241,9 @@ const u16 u16_ARRAY_085ad0d8[3] = {341, 345, 349};  // 0x085AD0D8
 
 const u16 u16_ARRAY_085ad0de[14] = {0, 2, 5, 9, 13, 17, 21, 24, 27, 29, 31, 33, 35, 37};  // 0x085AD0DE
 
-const SoundID16 u16_ARRAY_085ad0fa[3] = {VO_TAIYO_763, VO_TAIYO_765, SONG_767};  // 0x085AD0FA
+const SoundID16 u16_ARRAY_085ad0fa[3] = {VO_TAIYO_763, VO_TAIYO_765, VO_TAIYO_767};  // 0x085AD0FA
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ect_08251e04[] = "ect";
-
-s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 lifeBase, s32 lifeRandMask);
 
 void FUN_080c5458(JormungandrLeg*);
 void FUN_080c5e8c(Jormungandr*, s32);
@@ -277,8 +276,6 @@ void FUN_080c8644(Jormungandr*, s32);
 void FUN_080c87c8(Jormungandr*, s32);
 void FUN_080c8848(Jormungandr*, s32);
 void FUN_080c8aa8(Jormungandr*, s32);
-s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
-s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs);
 s32 CreateHomingLaser(struct HomingLaserManager* p, Vec3* pos, Vec3* target, u32 angle, u32 speed, u32 kind);
 
 void FUN_080c2680(JormungandrSegment* part, void (*fn)(JormungandrSegment*)) {
@@ -1019,20 +1016,20 @@ NON_MATCH void FUN_080c3b80(Jormungandr* p) {
 void FUN_080c3bf0(Jormungandr* p) {
   if (p->flashTimers[0]) {
     if (--p->flashTimers[0] == 0) {
-      p->sprites[0].holder.u.main.sprite.plttID = 0x155;
-      p->sprites[0].holder.u.main.sprite.pltt = p->pltt;
+      p->sprites[0].holder.u.main.spr.plttID = 0x155;
+      p->sprites[0].holder.u.main.spr.pltt = p->pltt;
     } else {
-      p->sprites[0].holder.u.main.sprite.plttID = 0x132;
-      p->sprites[0].holder.u.main.sprite.pltt = &gObjPlttData[0x132 * 16];
+      p->sprites[0].holder.u.main.spr.plttID = 0x132;
+      p->sprites[0].holder.u.main.spr.pltt = &gObjPlttData[0x132 * 16];
     }
   }
   if (p->flashTimers[1]) {
     if (--p->flashTimers[1] == 0) {
-      p->sprites[5].holder.u.main.sprite.plttID = 0x155;
-      p->sprites[5].holder.u.main.sprite.pltt = p->pltt;
+      p->sprites[5].holder.u.main.spr.plttID = 0x155;
+      p->sprites[5].holder.u.main.spr.pltt = p->pltt;
     } else {
-      p->sprites[5].holder.u.main.sprite.plttID = 0x132;
-      p->sprites[5].holder.u.main.sprite.pltt = &gObjPlttData[0x132 * 16];
+      p->sprites[5].holder.u.main.spr.plttID = 0x132;
+      p->sprites[5].holder.u.main.spr.pltt = &gObjPlttData[0x132 * 16];
     }
   }
   if (p->flashTimers[2]) {
@@ -1077,14 +1074,14 @@ NON_MATCH void FUN_080c3db4(Jormungandr* p, Vec3* base, Vec3* ofs, s32 angle) {
   Vec3_Add(&pos, ofs);
   count = (Random() & 3) + 2;
   speed = (Random() & 3) + 8;
-  Entity080146e0_SpawnAtAngle(count, 0x109, &pos, angle, 8, speed, 4, 10, 8, 5, 10);
+  ScatterEffect_SpawnAtAngle(count, SCATTER_KIND_9 | SCATTER_PRIORITY(0), &pos, angle, 8, speed, 4, 10, 8, 5, 10);
   angle = (angle + (Random() & 7)) & 0xFF;
   speed = (Random() & 7) + 6;
-  Entity080146e0_SpawnAtAngle(3, 0x109, &pos, angle, 8, speed, 4, 14, 4, 6, 10);
+  ScatterEffect_SpawnAtAngle(3, SCATTER_KIND_9 | SCATTER_PRIORITY(0), &pos, angle, 8, speed, 4, 14, 4, 6, 10);
   angle = (angle + (Random() & 0xF)) & 0xFF;
   count = (Random() & 3) + 1;
   speed = (Random() & 7) + 4;
-  Entity080146e0_SpawnAtAngle(count, 0x109, &pos, angle, 8, speed, 2, 6, 3, 5, 10);
+  ScatterEffect_SpawnAtAngle(count, SCATTER_KIND_9 | SCATTER_PRIORITY(0), &pos, angle, 8, speed, 2, 6, 3, 5, 10);
 #else
   INCFUNC("asm/func/FUN_080c3db4.inc");
 #endif
@@ -1220,7 +1217,7 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
 #ifdef NONMATCHING_C
   s32 side;
 
-  if (b->invincibleTime != 0) {
+  if (b->iframes != 0) {
     return;
   }
   if (TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_18)) {
@@ -1257,7 +1254,7 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
       a->damage = p->damageBonus + a->damage;
       p->lastWeakness = a->weakness;
     }
-    b->invincibleTime = 20;
+    b->iframes = 20;
   } else if (side == 2) {
     if (p->sideDamage[0] >= 120) {
       return;
@@ -1282,14 +1279,14 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
       a->damage = p->damageBonus + a->damage;
       p->lastWeakness = a->weakness;
     }
-    b->invincibleTime = 20;
+    b->iframes = 20;
   } else {
     return;
   }
   if (Hitbox_TestAttr(a, HBATTR_18)) {
-    p->hurtKnockback = a->knockbackPower;
+    p->hurtKnockback = a->knockback;
   } else {
-    p->hurtKnockback = a->knockbackPower >> 1;
+    p->hurtKnockback = a->knockback >> 1;
   }
   p->hurtAngle = a->angle;
 #else
@@ -1314,7 +1311,7 @@ void Jormungandr_InitHurtbox(Jormungandr* p, u32 power) {
 // lastWeakness のアドレスを damageBonus の定数 +4 で作る形が出ない (1 hunk)
 NON_MATCH void Jormungandr_OnHurt2(HitboxData* a, HitboxData* b, Jormungandr* p) {
 #ifdef NONMATCHING_C
-  if (b->invincibleTime == 0 && !TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_19)) {
+  if (b->iframes == 0 && !TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_19)) {
     if (!p->invincible) {
       Hitbox_ApplyDamage(a, b);
       p->damageTaken[3] += b->damage;
@@ -1329,7 +1326,7 @@ NON_MATCH void Jormungandr_OnHurt2(HitboxData* a, HitboxData* b, Jormungandr* p)
       a->damage = p->damageBonus + a->damage;
       p->lastWeakness = a->weakness;
     }
-    b->invincibleTime = 15;
+    b->iframes = 15;
   }
 #else
   INCFUNC("asm/func/Jormungandr_OnHurt2.inc");
@@ -1353,11 +1350,11 @@ void Jormungandr_InitHurtbox2(Jormungandr* p, u32 power) {
 // lastWeakness のアドレスを damageBonus の定数 +4 で作る形が出ない (1 hunk)
 NON_MATCH void Jormungandr_OnHurt3(HitboxData* a, HitboxData* b, Jormungandr* p) {
 #ifdef NONMATCHING_C
-  if (b->invincibleTime == 0) {
+  if (b->iframes == 0) {
     Hitbox_ApplyDamage(a, b);
     p->damageTaken[2] += b->damage;
     p->hitMask |= 4;
-    b->invincibleTime = 15;
+    b->iframes = 15;
     p->flashTimers[1] = 8;
     p->coreHits++;
     FUN_080c3d14(p);
@@ -1664,7 +1661,7 @@ NON_MATCH void FUN_080c5124(Jormungandr* p) {
     }
     FUN_080c5058(&p->sprites[i], isMain, pose, variant, priority, TRUE);
     if (isMain) {
-      p->sprites[i].holder.u.main.sprite.pltt = p->pltt;
+      p->sprites[i].holder.u.main.spr.pltt = p->pltt;
     } else {
       p->sprites[i].holder.u.aux.gfx.pltt = p->pltt;
     }
@@ -1693,7 +1690,7 @@ NON_MATCH void FUN_080c5124(Jormungandr* p) {
       }
     }
     FUN_080c5058(&p->sprites[i + 7], TRUE, pose, 0, 2, TRUE);
-    p->sprites[i + 7].holder.u.main.sprite.pltt = p->pltt;
+    p->sprites[i + 7].holder.u.main.spr.pltt = p->pltt;
   }
   p->pos_2f8.x = 0x500;
   p->pos_2f8.y = 0x180;
@@ -2054,7 +2051,7 @@ void FUN_080c5c04(Jormungandr* p, s32 timer) {
   }
   SET_FLAGS(p->base.flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_UNK_17 | BOSSFLAG_UNK_19 | BOSSFLAG_HITBOX2);
   if (timer == 10) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
 }
 
@@ -2104,7 +2101,7 @@ NON_MATCH void FUN_080c5c58(Jormungandr* p, s32 timer) {
     FUN_080c2680(&p->segSet.segments[1], FUN_080c2824);
   }
   if (timer == 40) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
 #else
   INCFUNC("asm/func/FUN_080c5c58.inc");
@@ -2142,7 +2139,7 @@ void FUN_080c5e8c(Jormungandr* p, s32 timer) {
   Jormungandr_EasePos(p);
   if (timer >= 10) {
     Boss_SetState(&p->base, FUN_080c5fd8, 48);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
 }
 
@@ -2239,7 +2236,7 @@ NON_MATCH void FUN_080c62cc(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
     PlaySound_082406e0(SE_JORMY_BITE2);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 4, 0, 0, PLAYMODE_ONCE_AND_STOP, 0, MAIN_ANIM_FORCE_POSE);
   }
@@ -2311,7 +2308,7 @@ void FUN_080c6414(Boss* boss, s32 timer) {
     p->pos.y -= 0x20;
   }
   if (timer == 120) {
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   }
 }
 
@@ -2943,11 +2940,11 @@ void FUN_080c7c20(Boss* boss, s32 timer) {
   }
   if (timer == 190) {
     Player_EnterDeadState(gPlayerPtr[0]);
-    gPlayerPtr[0]->action = PACT_UNK_26;
+    gPlayerPtr[0]->action = PACT_DEATH_PRONE;
     gPlayerPtr[0]->state = 5;
     gPlayerPtr[0]->stateTimer = 0;
     gPlayerPtr[0]->hp = 0;
-    gGameFlags |= FLAG030047A4_GAMEOVER;
+    gGameFlags |= GAMEFLAG_GAMEOVER;
   }
 }
 
@@ -3511,7 +3508,7 @@ void FUN_080ca088(Jormungandr* p) {
   static void (*const PTR_ARRAY_085ad130[1])(Jormungandr*) = {
       FUN_080ca034,
   };  // 0x085AD130
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_080c9fd4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_080c9fd4(p)) {
     PTR_ARRAY_085ad130[p->base.subState1](p);
   }
 }

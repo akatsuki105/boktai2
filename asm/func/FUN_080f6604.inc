@@ -221,7 +221,7 @@ _080F67B8:
 _080F67BC:
 	strh r0, [r2]
 	adds r0, r5, #0
-	bl FUN_080e9178
+	bl Enemy_AddKillCount
 _080F67C4:
 	movs r2, #0xe8
 	lsls r2, r2, #1
@@ -280,7 +280,7 @@ _080F6816:
 	ldr r0, _080F6848 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r5]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 _080F6836:
 	adds r2, r5, #0
 	adds r2, #0xde

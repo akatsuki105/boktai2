@@ -1,7 +1,7 @@
 #ifndef __INCLUDE_ENTITY_CBB0_H__
 #define __INCLUDE_ENTITY_CBB0_H__
 
-#include "eff_082473e0.h"
+#include "eff_elemcond.h"
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
@@ -149,7 +149,7 @@ typedef struct Generator {
   u8 unk_f6[3];                               // 0x0F6
   u8 unk_f9;                                  // 0x0F9, 0 まで減らすだけのカウンタ
   u8 unk_fa[6];                               // 0x0FA
-  Eff082473e0Emitter eff_100;                 // 0x100
+  ElementalCondEmitter condEmitter;           // 0x100
   void (*updateCallback)(struct Generator*);  // 0x238
 } Generator;
 static_assert(sizeof(Generator) == 572);

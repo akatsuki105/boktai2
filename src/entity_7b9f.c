@@ -1,3 +1,4 @@
+#include "eff_scatter.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -47,7 +48,6 @@ void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 param_2, s32 param_3, s32 par
 
 void nop_081d8368(Entity7B9FElem* e);
 void nop_081d88a4(void);
-s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* accel, s32 param_6, s32 param_7);
 void FUN_081d836c(Entity7B9FElem* e);
 void FUN_081d85a8(Entity7B9FElem* e);
 Entity7B9F* Entity7B9F_Create(void);
@@ -97,7 +97,7 @@ NON_MATCH void FUN_081d8298(Entity7B9FElem* e) {
   accel.y = (_Random(table) & 7) + 3;
   accel.x = 24;
   accel.z = 24;
-  FUN_08014730((_Random(table) & 3) + 3, 2, &e->sprite.pos, &vel, &accel, 60, 63);
+  ScatterEffect_Spawn((_Random(table) & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &accel, 60, 63);
 #else
   INCFUNC("asm/func/FUN_081d8298.inc");
 #endif
@@ -119,7 +119,7 @@ NON_MATCH void FUN_081d836c(Entity7B9FElem* e) {
     *speedY = 0;
     *state = 0;
     e->stateTimer = 0;
-    AuxAnim_SetAnimSpeed(&e->anim, 32);
+    AuxAnim_SetAnimSpeed(&e->anim, Q6(0.5));
   }
   AuxSprite_AdvanceAnim(&e->sprite, &e->anim);
   e->sprite.pos.y -= *speedY;
@@ -143,7 +143,7 @@ void FUN_081d8560(Entity7B9FElem* e) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    Entity081ee7a8_SpawnDefaultNow(&e->sprite.pos, 8, 0x10, 4, 0xC, 0x12, i * 32, 8, 0x40, 1, 0, 0x200);
+    Entity081ee7a8_SpawnDefaultNow(&e->sprite.pos, 8, 0x10, 4, 0xC, 0x12, i * 32, 8, Q6(1), 1, 0, 0x200);
   }
 }
 
@@ -158,7 +158,7 @@ void FUN_081d85a8(Entity7B9FElem* e) {
       e->stateTimer = 0;
       anim = &e->anim;
       AuxAnim_SetAnim(anim, p->animFile, 6, 1, ANIM_PLAY_XFLIP);
-      AuxAnim_SetAnimSpeed(anim, 32);
+      AuxAnim_SetAnimSpeed(anim, Q6(0.5));
     }
     e->speedY = Div(e->speedY << 3, 10);
     e->sprite.pos.y += e->speedY;
@@ -184,7 +184,7 @@ void FUN_081d8714(Entity7B9FElem* e, s32 param_2) {
     AuxSprite_Add(&e->sprite, gfx, 0);
     p->animFile = GetFile(DIR_ANIMATION, 0x1E38);
     AuxAnim_SetAnim(&e->anim, p->animFile, 8, 1, ANIM_PLAY_XFLIP);
-    Video_SetAuxSpritePltt(gfx, param_2 + 0x201);
+    Video_SetAuxSpritePltt(gfx, param_2 + 513);
   }
 }
 

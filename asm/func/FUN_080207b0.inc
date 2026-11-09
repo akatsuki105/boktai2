@@ -414,7 +414,7 @@ _08020AD4:
 	str r0, [r7, #0x60]
 	str r0, [r7, #0x64]
 	movs r1, #0
-	bl Entity080dbe54_Create
+	bl DustManager_Create
 	add sp, #0xc
 	pop {r3, r4, r5}
 	mov r8, r3

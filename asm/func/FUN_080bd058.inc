@@ -115,7 +115,7 @@ _080BD10C:
 	ldr r3, _080BD17C @ =0x0000164C
 	adds r1, r6, r3
 	mov r0, sp
-	bl FUN_08094d1c
+	bl WeaponData_ShowNameInWindow
 	ldr r1, [r4]
 	mov r0, sp
 	bl MainMenu_SetWeaponMarquee

@@ -11,7 +11,7 @@
 #define TILEMAP_08AB 0x08AB
 #define TILEMAP_08AE 0x08AE
 #define TILEMAP_0ABB 0x0ABB
-#define TILEMAP_0B12 0x0B12
+#define TILEMAP_BLIND 0x0B12  // 暗い部屋のフィルター用タイルマップ
 #define TILEMAP_0B30 0x0B30
 #define TILEMAP_0C1F 0x0C1F
 #define TILEMAP_0C21 0x0C21

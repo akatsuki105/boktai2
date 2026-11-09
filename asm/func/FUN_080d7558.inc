@@ -107,7 +107,7 @@ _080D761C:
 	adds r0, r4, #0
 	adds r0, #0x2c
 	ldr r1, [r4, #0x18]
-	bl FUN_081df698
+	bl LinkSession_ReleaseCoin
 _080D7630:
 	ldrh r0, [r6]
 	movs r1, #0
@@ -195,7 +195,7 @@ _080D76A8:
 _080D76D2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	b _080D773C
 	.align 2, 0
 _080D76DC: .4byte 0x00000442
@@ -226,7 +226,7 @@ _080D76EC:
 _080D7714:
 	adds r0, r4, #0
 	movs r1, #2
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	b _080D773C
 	.align 2, 0
 _080D7720: .4byte 0x000003D2

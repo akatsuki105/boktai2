@@ -1,18 +1,20 @@
 #include "enemy.h"
 
 #include "collision_map.h"
-#include "eff_082473e0.h"
+#include "dust.h"
+#include "eff_elemcond.h"
+#include "eff_scatter.h"
 #include "emote.h"
 #include "enemy_inline.h"
 #include "enemy_manager.h"
 #include "enemy_target.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "inventory.h"
 #include "item.h"
+#include "link_session.h"
 #include "map_inline.h"
 #include "player.h"
 #include "random.h"
@@ -21,7 +23,7 @@
 #include "video.h"
 #include "vm.h"
 
-// 原典のファイル名は enemy.c, 根拠: FUN_080e6794 / FUN_080e6834 / FUN_080e68d8 が、抜き取られた assert の引数として文字列 "enemy.c" (0x08251F60) と行番号をレジスタに積んでから Enemy_ClearPendingState を呼ぶ
+// 原典のファイル名は enemy.c, 根拠: Enemy_WaitPendingState / FUN_080e6834 / FUN_080e68d8 が、抜き取られた assert の引数として文字列 "enemy.c" (0x08251F60) と行番号をレジスタに積んでから Enemy_ClearPendingState を呼ぶ
 // 引数の個数と void/値返しはアセンブリから機械的に出したもの, 型は第1引数が Enemy だと言えるものだけ Enemy*, 残りは未解析の unknown*
 
 const s16 s16_ARRAY_085ad3c4[4] = {8, 4, 2};  // 0x085AD3C4
@@ -46,45 +48,20 @@ s32 FUN_08240b98(Vec3* param_1, s8 param_2);
 s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
 void FUN_080e7b6c(Enemy* p);
-void FUN_080e6794(Enemy* p, s32 priority);
 void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
-void FUN_080ec5b4(u16 a, u16 b);
-void FUN_080f54e4(Enemy* p, s32 param_2);
-bool8 FUN_080e4b3c(Enemy* p);
-void Enemy_SnapToFloor(Enemy* p);
+void DefeatedEnemyLog_Add(u16 a, u16 b);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 IsInPuddle(WorldPos* pos);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
-s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 lifeBase, s32 lifeRandMask);
-void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
-void FUN_080ee2c8(Enemy* p);
-void FUN_080ee538(Enemy* p);
-void FUN_080ee738(Enemy* p);
+void Enemy_ResetToSpawn(Enemy* p);
+void Enemy_ResetInPlace(Enemy* p);
+void Enemy_Reset(Enemy* p);
 void FUN_080f0b3c(Enemy* p);
-bool8 FUN_080e7078(Enemy* p);
-s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 
 static inline void Enemy_SetSubStates(Enemy* p, u8 subState0, u8 subState1, u8 subState2) {
   p->subState0 = subState0;
   p->subState1 = subState1;
   p->subState2 = subState2;
-}
-
-static inline bool8 AuxSprite_TestFlags(AuxSprite* sprite, SpriteFlags bits) {
-  if (sprite->flags & bits) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 MainSprite_TestFlags(MainSprite* sprite, SpriteFlags bits) {
-  if (sprite->flags & bits) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 Enemy_TestSpriteFlags(Enemy* p, SpriteFlags bits) {
-  if (p->spriteKind == 0) {
-    return AuxSprite_TestFlags((AuxSprite*)p->sprite, bits);
-  }
-  return MainSprite_TestFlags(&p->sprite->s, bits);
 }
 
 static inline bool8 Enemy_TestFlag4(Enemy* p, EnemyFlags4 bit) {
@@ -97,16 +74,9 @@ static inline bool8 Enemy_TestFlag4(Enemy* p, EnemyFlags4 bit) {
 // スプライトの座標を指す, spriteKind で AuxSprite か MainSprite かが変わる
 static inline Vec3* Enemy_GetSpritePos(Enemy* p) {
   if (p->spriteKind == 0) {
-    return &((AuxSprite*)p->sprite)->pos;
+    return &p->s->aux.spr.pos;
   }
-  return &p->sprite->s.pos;
-}
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (p->flags5 & bit) {
-    return TRUE;
-  }
-  return FALSE;
+  return &p->s->main.spr.pos;
 }
 
 // 小さい敵 (クロロホルルン, バット, クロウ, ビー) かどうかを判定 (ただし、小さいことではなく別の共通点で判定している可能性もあるので、その場合はリネームする)
@@ -117,55 +87,7 @@ static inline bool8 IsSmallEnemy(Enemy* p) {
   return FALSE;
 }
 
-// スプライトの座標を pos にする, spriteKind で AuxSprite か MainSprite かが変わる
-static inline void Enemy_SetSpritePos(Enemy* p, WorldPos* pos) {
-  if (p->spriteKind == 0) {
-    ((AuxSprite*)p->sprite)->pos = *pos;
-  } else {
-    p->sprite->s.pos = *pos;
-  }
-}
-
-// 索引 idx のタイルを返す, 上書きがあればそちらを返す
-static inline CollisionMapTile* TileAtIndex(s32 idx) {
-  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
-
-  if (ov != NULL) {
-    return &ov->tile;
-  }
-  return &gCollisionMap->tiledata->tiles[idx];
-}
-
-// 索引 idx のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline u32 TileHeightAtIndex(s32 idx, WorldPos* pos) {
-  CollisionMapTile* tile = TileAtIndex(idx);
-  s32 stairs = tile->heightStairs >> 4;
-  u32 height = (tile->heightStairs & 0xF) << 8;
-
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= pos->z & 0xFF;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= pos->x & 0xFF;
-      break;
-    }
-  }
-  return height;
-}
-
-// 索引 idx のタイルの中心の座標を pos に入れる, y はタイルの高さ
-static inline void TilePosAtIndex(WorldPos* pos, s32 idx) {
-  s32 x = Mod(idx, gCollisionMap->tiledata->width);
-  s32 z = Div(idx, gCollisionMap->tiledata->width);
-
-  pos->x = (x << 8) + 0x80;
-  pos->y = (TileAtIndex(idx)->heightStairs & 0xF) << 8;
-  pos->z = (z << 8) + 0x80;
-}
-
-// 経路の今のノードへ向かって一歩動けるか調べ, 動けなければ経路を外れたことにする
+// dst への経路を引き直す, 引けなければ経路追従の印 (ENEFLAG3_UNK_9) を落として FALSE
 static inline bool8 Enemy_StepToward(Enemy* p, WorldPos* dst) {
   NavAgent* agent = p->navAgent;
 
@@ -180,16 +102,6 @@ static inline bool8 Enemy_StepToward(Enemy* p, WorldPos* dst) {
     }
   }
   Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
-  return FALSE;
-}
-
-static inline bool8 TestMapFlag(u32 mapflag) {
-  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
   return FALSE;
 }
 
@@ -211,10 +123,10 @@ static inline bool8 Enemy_IsDisposable(Enemy* p) {
   return FALSE;
 }
 
-// 敵の毎フレームの共通処理, アニメを1コマ進め, 生きていれば移動と床合わせをして, 新しく踏んだタイルが氷なら状態22へ, 凍った溶岩ならダメージを控え, 経路を進めてゾーンイベントを更新する
+// 毎フレームの移動の共通処理, アニメを進めて動かし床に合わせ, 落下死のタイルなら状態22へ, 暑いマップの溶岩なら即死のダメージを入れ, 経路とゾーンイベントを進める
 // 700/702命令, AuxAnim の手動送りは AuxSprite_AdvanceAnim で揃った, 残差は &p->flags4 / &p->flags / &p->kind / &p->mover.pos を原典が分岐の両側でレジスタやスタックに作って持ち越す (PRE らしい) 点とフレーム 0x20 (こちらは 0x18)
-// 試済: flags4 の立て方を |= 直書きにする, delta と prevPos の条件を1つの if にまとめる (どちらも悪化), FUN_080e35b4 も同じ &p->flags4 の持ち越しで止まっている
-NON_MATCH s32 FUN_080e191c(Enemy* p) {
+// 試済: flags4 の立て方を |= 直書きにする, delta と prevPos の条件を1つの if にまとめる (どちらも悪化), Enemy_UpdateHitboxes も同じ &p->flags4 の持ち越しで止まっている
+NON_MATCH s32 Enemy_UpdateMovement(Enemy* p) {
 #ifdef NONMATCHING_C
   p->unk_46f = 1;
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_0)) {
@@ -223,12 +135,12 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
 
   if (p->animForceRestart != 1) {
     if (p->spriteKind == 0) {
-      EnemyAuxSpriteData* aux = (EnemyAuxSpriteData*)p->sprite;
+      EnemyAuxSprite* aux = &p->s->aux;
 
-      p->animForceRestart = AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+      p->animForceRestart = AuxSprite_AdvanceAnim(&aux->spr, &aux->anim);
     } else {
-      MainSprite* s = &p->sprite->s;
-      bool32 done = MainSprite_AdvanceAnim(s, &p->sprite->gfx);
+      MainSprite* s = &p->s->main.spr;
+      bool32 done = MainSprite_AdvanceAnim(s, &p->s->main.gfx);
 
       if ((s->animEvents & MAIN_ANIM_EVENT_WILL_END) || done) {
         p->animForceRestart = 1;
@@ -239,9 +151,9 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   if (Enemy_IsDead(p)) {
     return 1;
   }
-  FUN_080e4b3c(p);
+  Enemy_UpdateJump(p);
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_13) && !Enemy_TestFlag5(p, ENEFLAG5_UNK_5)) {
-    p->mover.tile = &p->moverTile;
+    p->mover.tile = &p->tile;
   } else {
     p->mover.tile = NULL;
   }
@@ -253,19 +165,19 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   if (Enemy_TestFlag4(p, ENEFLAG4_UNK_13)) {
     Mover_ApplyMove(&p->mover);
   }
-  p->prevTileIdx = p->unk_256;
-  p->unk_256 = GetCollisionTileIdx(&p->mover.pos);
+  p->prevTileIdx = p->tileIdx;
+  p->tileIdx = GetCollisionTileIdx(&p->mover.pos);
   Enemy_SnapToFloor(p);
 
-  if (Enemy_TestFlag4(p, ENEFLAG4_UNK_13) && p->unk_256 != p->prevTileIdx && !IsSmallEnemy(p) && p->kind != ENEK_SERPENT) {
-    TileAttr attr = TileAtIndex(p->unk_256)->attr;
+  if (Enemy_TestFlag4(p, ENEFLAG4_UNK_13) && p->tileIdx != p->prevTileIdx && !IsSmallEnemy(p) && p->kind != ENEK_SERPENT) {
+    TileAttr attr = TileAtIndex(p->tileIdx)->attr;
 
     if ((attr & TATTR_FALLDEATH) && p->mover.pos.y + p->heightAboveFloor <= p->floorY) {
       if (!Enemy_IsDead(p)) {
         void* handler = p->unk_5d8;
 
         if (handler == NULL) {
-          handler = FUN_080f54e4;
+          handler = Enemy_StateFallDeath;
         }
         Enemy_EnterState(p, handler, ES_UNK_22);
         Enemy_ResetState(p, 3, 0, 0);
@@ -275,13 +187,13 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
       WorldPos tilePos;
       Vec3 d;
 
-      TilePosAtIndex(&tilePos, p->unk_256);
+      TilePosAtIndex(&tilePos, p->tileIdx);
       Vec3_Diff(&d, &tilePos, &p->mover.pos);
       p->angle = ArcTan2_8(d.x, d.z) >> 5;
       p->unk_4a0 = 0x20;
       p->hurtbox.damage = p->hp;
       p->unk_48a = p->hp;
-      p->hurtbox.knockbackPower = 40;
+      p->hurtbox.knockback = 40;
       p->weaponExpMask = 0x40;
       p->unk_48c = 1;
       SET_FLAGS(p->flags, ENEFLAG_UNK_13);
@@ -292,9 +204,9 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
         SET_FLAGS(p->flags2, ENEFLAG2_UNK_16);
       }
       if (p->spriteKind == 0) {
-        tick = ((EnemyAuxSpriteData*)p->sprite)->anim.tick;
+        tick = p->s->aux.anim.tick;
       } else {
-        tick = p->sprite->s.animCmdTimer;
+        tick = p->s->main.spr.animCmdTimer;
       }
       if (tick == 0 && TEST_FLAGS(p->flags2, ENEFLAG2_UNK_16)) {
         IsInPuddle(&p->mover.pos);
@@ -304,7 +216,7 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   }
 
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_22)) {
-    TileAttr attr = TileAtIndex(p->unk_256)->attr;
+    TileAttr attr = TileAtIndex(p->tileIdx)->attr;
 
     if ((attr & (TATTR_UNK_0 | TATTR_WALL)) != (TATTR_UNK_0 | TATTR_WALL) && !(attr & (TATTR_FALLDEATH | TATTR_WALLISH))) {
       Map_StepNavPath(p->navAgent, &p->mover.pos);
@@ -321,16 +233,16 @@ NON_MATCH s32 FUN_080e191c(Enemy* p) {
   CLEAR_FLAGS(p->flags4, ENEFLAG4_UNK_13);
   return 1;
 #else
-  INCFUNC("asm/func/FUN_080e191c.inc");
+  INCFUNC("asm/func/Enemy_UpdateMovement.inc");
 #endif
 }
 
 NAKED s32 FUN_080e1f48(Enemy* p) { INCFUNC("asm/func/FUN_080e1f48.inc"); }
 
-// 毎フレームの当たり判定の出し入れ, 攻撃判定の登録, 点滅や攻撃対象の後始末をする
+// 毎フレームの当たり判定の出し入れと攻撃判定の登録, 揺れの残り時間を進め, 消えた攻撃対象を手放す
 // 残差は218/248命令, 原典は同じ処理 (判定を隠して ENEFLAG4_UNK_14 を落とす) を分岐ごとに別々に持ち, &p->flags4 を r7, &p->kind を r9 に置いて後半まで持ち越すが, こちらは同じ処理が1つに畳まれる
 // 試済: flags4 の落とし方を Enemy_ClearFlags4 / CLEAR_FLAGS にする (変化なし)
-NON_MATCH s32 FUN_080e35b4(Enemy* p) {
+NON_MATCH s32 Enemy_UpdateHitboxes(Enemy* p) {
 #ifdef NONMATCHING_C
   p->hitTargetID = 0;
   if (Enemy_IsDead(p)) {
@@ -350,10 +262,10 @@ NON_MATCH s32 FUN_080e35b4(Enemy* p) {
   } else {
     p->hurtbox.flags &= ~HBFLAG_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
-    if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (FUN_080e7078(p) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
-      if (!(p->atkHitbox.flags & HBFLAG_HIDDEN)) {
-        Hitbox_SetPos(&p->atkHitbox, &p->mover.pos, 0);
-        Hitbox_Register(&p->atkHitbox);
+    if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(p) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
+      if (!(p->hitbox.flags & HBFLAG_HIDDEN)) {
+        Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
+        Hitbox_Register(&p->hitbox);
       }
     }
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
@@ -373,25 +285,25 @@ NON_MATCH s32 FUN_080e35b4(Enemy* p) {
         p->unk_48d--;
       }
     }
-    if (p->target != NULL && !FUN_080f8d20(p->target)) {
+    if (p->target != NULL && !EnemyTargetManager_IsRegistered(p->target)) {
       p->unk_5f0(p);
       p->target = NULL;
     }
   }
   return 1;
 #else
-  INCFUNC("asm/func/FUN_080e35b4.inc");
+  INCFUNC("asm/func/Enemy_UpdateHitboxes.inc");
 #endif
 }
 
-// 状態ハンドラに渡す引数と、スプライトの種類を差し替える
-void FUN_080e37e8(Enemy* p, void* arg, u8 spriteKind) {
-  p->unk_1cc = arg;
+// 種族ごとの本体 (更新/破棄ハンドラの引数) とスプライトの種類を設定する
+void Enemy_SetOwnerAndSpriteKind(Enemy* p, void* arg, u8 spriteKind) {
+  p->owner = arg;
   p->spriteKind = spriteKind;
 }
 
 // AuxSprite 系のエネミーにアニメーションファイルを読み込ませて先頭から再生する
-void EnemyAuxSprite_LoadAnim(EnemyAuxSpriteData* p, FileID animID) {
+void EnemyAuxSprite_LoadAnim(EnemyAuxSprite* p, FileID animID) {
   p->animFile = GetFile(DIR_ANIMATION, animID);
   AuxAnim_SetAnim(&p->anim, p->animFile, 0, 0, 0);
 }
@@ -427,18 +339,18 @@ void Enemy_RegisterHitbox(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* of
 void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner) {
   HitboxFlags32 flags = HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0;
 
-  Hitbox_Init(&p->atkHitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
-  Hitbox_SetAttack(&p->atkHitbox, p->atkPower[idx], p->atkUnk40[idx], 0, p->atkAttrs[idx], p->atkInvincibleTime[idx]);
-  Hitbox_SetPos(&p->atkHitbox, &p->mover.pos, 0);
-  Hitbox_SetHandler(&p->atkHitbox, handler, owner);
+  Hitbox_Init(&p->hitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
+  Hitbox_SetAttack(&p->hitbox, p->atkPower[idx], p->atkKnockback[idx], 0, p->atkAttrs[idx], p->atkIframes[idx]);
+  Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
+  Hitbox_SetHandler(&p->hitbox, handler, owner);
 }
 
 // index 番目の攻撃データを載せた Hitbox を組む (登録はしない)
-void FUN_080e3a14(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner) {
+void Enemy_InitHitboxWithAtk(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner) {
   HitboxFlags32 flags = HBFLAG_HITBOX | HBFLAG_UNK_0;
 
   Hitbox_Init(hitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
-  Hitbox_SetAttack(hitbox, p->atkPower[index], p->atkUnk40[index], 0, p->atkAttrs[index], p->atkInvincibleTime[index]);
+  Hitbox_SetAttack(hitbox, p->atkPower[index], p->atkKnockback[index], 0, p->atkAttrs[index], p->atkIframes[index]);
   Hitbox_SetPos(hitbox, &p->mover.pos, 0);
   Hitbox_SetHandler(hitbox, handler, owner);
 }
@@ -456,7 +368,7 @@ void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 par
 }
 
 // pos の足元の索引 idx から dir の向きに隣のタイルへ, pos の高さ + 0xFF 以下で上がれるか
-bool8 FUN_080e3afc(s32 dir, s32 idx, Vec3* pos) {
+bool8 CanStepUpToNeighborTile(s32 dir, s32 idx, Vec3* pos) {
   Vec3 next;
   u32 limit = pos->y + 0xFF;
 
@@ -584,7 +496,7 @@ bool8 FUN_080e3ed8(Vec3* a, Vec3* b, s32 kind, s32 expected) {
 NON_MATCH s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst) {
 #ifdef NONMATCHING_C
   s32 dstIdx = GetCollisionTileIdx(dst);
-  s32 h0 = TileHeightAtIndex(p->unk_256, pos);
+  s32 h0 = TileHeightAtIndex(p->tileIdx, pos);
   s32 h1 = TileHeightAtIndex(dstIdx, dst);
   s32 result = 0;
   Vec3 delta;
@@ -607,17 +519,17 @@ NON_MATCH s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst) {
       }
       result = 1;
     }
-    TilePosAtIndex(&a, p->unk_256);
+    TilePosAtIndex(&a, p->tileIdx);
     TilePosAtIndex(&b, dstIdx);
     a.y = h0;
     b.y = h1;
     Vec3_Diff(&d, &a, &b);
-    if (!FUN_080e3afc(((ArcTan2_8(d.x, d.z) + 0x20) >> 6) & 3, dstIdx, &b)) {
+    if (!CanStepUpToNeighborTile(((ArcTan2_8(d.x, d.z) + 0x20) >> 6) & 3, dstIdx, &b)) {
       return -1;
     }
     Vec3_Diff(&d, &b, &a);
     dir = ((ArcTan2_8(d.x, d.z) + 0x20) >> 6) & 3;
-    if (!FUN_080e3afc(dir, p->unk_256, &p->mover.pos)) {
+    if (!CanStepUpToNeighborTile(dir, p->tileIdx, &p->mover.pos)) {
       return -1;
     }
     if (FUN_080e3ed8(&a, &b, dir, dstIdx)) {
@@ -628,16 +540,16 @@ NON_MATCH s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst) {
     if (dh > 0x17F) {
       return -1;
     }
-    TilePosAtIndex(&a, p->unk_256);
+    TilePosAtIndex(&a, p->tileIdx);
     TilePosAtIndex(&b, dstIdx);
     a.y = h0;
     b.y = h1;
     Vec3_Diff(&d, &b, &a);
     dir = ((ArcTan2_8(d.x, d.z) + 0x20) >> 6) & 3;
-    if (!FUN_080e3afc(dir, p->unk_256, &p->mover.pos)) {
+    if (!CanStepUpToNeighborTile(dir, p->tileIdx, &p->mover.pos)) {
       return -1;
     }
-    if (FUN_080e3ed8(&b, &a, (dir + 2) & 3, p->unk_256)) {
+    if (FUN_080e3ed8(&b, &a, (dir + 2) & 3, p->tileIdx)) {
       return -1;
     }
     if (dh > 0xFF) {
@@ -653,14 +565,14 @@ NON_MATCH s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst) {
 #endif
 }
 
-// pos が unk_256 のタイルの上にあり, かつ自分の向きから ±0x30 以内の方角にいるか
-bool8 FUN_080e4384(Enemy* p, Vec3* pos) {
+// pos が tileIdx のタイルの上にあり, かつ自分の向きから ±0x30 以内の方角にいるか
+bool8 Enemy_IsPosAheadOnSameTile(Enemy* p, Vec3* pos) {
   Vec3 d;
   s32 idx = GetCollisionTileIdx(pos);
   s32 angle;
   s32 diff;
 
-  if (p->unk_256 != idx) {
+  if (p->tileIdx != idx) {
     return FALSE;
   }
 
@@ -681,7 +593,7 @@ bool8 FUN_080e4384(Enemy* p, Vec3* pos) {
 // 1P が見える範囲 (向きの差が unk_1fd 以内で range0Sq 以内, 隣のタイルか段差を越えて見通せる) にいれば playerMover に入れて 1P の Mover を返す
 // 床の判定を bool8 を返す static inline (属性は TileAttr を返す inline 経由), 隣接の4方向を (cur, dir, tile, height) の inline で書くと 521/518 命令
 // 残差は隣接4方向の後半が原典では1か所に飛び込んで共有される (こちらは別々), found / near の割当, 見つけたときの後始末がこちらは else 側と共有される点
-NON_MATCH Mover* FUN_080e4444(Enemy* p) {
+NON_MATCH Mover* Enemy_FindVisiblePlayer(Enemy* p) {
 #ifdef NONMATCHING_C
   Mover* found = NULL;
   Player* pl = gPlayerPtr[0];
@@ -719,7 +631,7 @@ NON_MATCH Mover* FUN_080e4444(Enemy* p) {
   } else if (diff < -0x80) {
     diff += 0x100;
   }
-  if (FUN_080e4384(p, &pl->mover.pos)) {
+  if (Enemy_IsPosAheadOnSameTile(p, &pl->mover.pos)) {
     p->unk_1f8 = 1;
     p->playerMover = &pl->mover;
     return &pl->mover;
@@ -749,7 +661,7 @@ NON_MATCH Mover* FUN_080e4444(Enemy* p) {
   }
 
   tile = pl->mover.tile->tileIdx[1];
-  cur = p->unk_256;
+  cur = p->tileIdx;
   height = (s8)(p->mover.pos.y >> 8);
   adjacent = FALSE;
   if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
@@ -803,7 +715,7 @@ NON_MATCH Mover* FUN_080e4444(Enemy* p) {
     return found;
   }
 #else
-  INCFUNC("asm/func/FUN_080e4444.inc");
+  INCFUNC("asm/func/Enemy_FindVisiblePlayer.inc");
 #endif
 }
 
@@ -815,20 +727,20 @@ void Enemy_ClearStateBegun(Enemy* p) {
 }
 
 // HP と状態を初期化して入場フラグだけ立てたハンドラに差し替える
-void FUN_080e48e8(Enemy* p, s32 hp, s32 param_3, s32 param_4) {
+void Enemy_InitHpAndState(Enemy* p, s32 hp, s32 param_3, s32 param_4) {
   p->flags3 = 0;
   p->handlerState = Enemy_ClearStateBegun;
   p->stateBegun = TRUE;
   p->subStateDone = 0;
   p->hp = hp;
-  p->unk_192 = 0;
+  p->sleepTimer = 0;
 
   if (param_4 <= 0) {
     param_4 = param_3;
   }
 
   p->unk_18e = param_3;
-  p->unk_190 = param_4;
+  p->sleepTime = param_4;
   p->unk_21c = 0;
   p->emote = NULL;
   p->zoneID = 0;
@@ -845,17 +757,18 @@ void Enemy_RunStateHandler(Enemy* p) {
   }
 }
 
-void FUN_080e499c(Enemy* p) {
+// 受けたダメージの記録を消す
+void Enemy_ClearDamage(Enemy* p) {
   p->hurtbox.damage = 0;
   p->unk_48a = 0;
   p->unk_48c = 0;
 }
 
 // 敵を活動停止させる, 種族が特定の10種なら破棄対象の印も立てる
-void FUN_080e49c4(Enemy* p) {
+void Enemy_Deactivate(Enemy* p) {
   Enemy_SetFlag(p, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  FUN_080eeee0(p);
+  EnemyManager_TryEndPaletteFade(p);
   if (Enemy_GetFlag2(p, ENEFLAG2_UNK_11)) {
     if (Enemy_IsDisposable(p)) {
       Enemy_SetFlag4(p, ENEFLAG4_UNK_12);
@@ -863,14 +776,14 @@ void FUN_080e49c4(Enemy* p) {
   }
 }
 
-// 姿を見せて「数えない敵」の印を落とす
-void FUN_080e4a68(Enemy* p) {
+// 活動停止を解いて姿を見せる, 当たり判定は戻さない
+void Enemy_Reactivate(Enemy* p) {
   Enemy_ClearFlag(p, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
   Enemy_ClearSpriteFlags(p, SPRFLAG_HIDDEN);
 }
 
 // a から b へ向かう速度ベクトルと向きを出す, 両軸の距離がどちらも範囲内なら TRUE
-bool32 FUN_080e4aac(Vec3* a, Vec3* b, Vec3* out, u8* outAngle, u32 rangeX, u32 rangeZ, s32 speed) {
+bool32 CalcVelocityToward(Vec3* a, Vec3* b, Vec3* out, u8* outAngle, u32 rangeX, u32 rangeZ, s32 speed) {
   s16 dx = b->x - a->x;
   s16 dz = b->z - a->z;
   u8 angle = ArcTan2_8(dx, dz);
@@ -894,7 +807,7 @@ bool32 FUN_080e4aac(Vec3* a, Vec3* b, Vec3* out, u8* outAngle, u32 rangeX, u32 r
 // 跳ねている間の更新, 重力で落として着地したら跳ね返りを弱め, 止まったら TRUE
 // 残差は341/341命令で並びだけ, 原典は落下側の TileAtIndex の上書きが無いときの塊を ENEFLAG2_UNK_20 側の後ろへ置く
 // 速さの2乗の和を Vec3* を受ける inline, 2つの CpuFill32 を Vec3* を受ける inline にすると (一時変数のスタックを共有して 0x14 になる), flags2 を Enemy_GetFlag2 / Enemy_SetFlag2 にすると残りはこの並びだけになる
-NON_MATCH bool8 FUN_080e4b3c(Enemy* p) {
+NON_MATCH bool8 Enemy_UpdateJump(Enemy* p) {
 #ifdef NONMATCHING_C
   if (p->jumpVel.x * p->jumpVel.x + p->jumpVel.y * p->jumpVel.y + p->jumpVel.z * p->jumpVel.z == 0 && p->heightAboveFloor == 0) {
     CLEAR_FLAGS(p->flags2, ENEFLAG2_UNK_4);
@@ -912,7 +825,7 @@ NON_MATCH bool8 FUN_080e4b3c(Enemy* p) {
     p->heightAboveFloor += p->jumpVel.y;
     p->mover.delta.x += p->jumpVel.x;
     p->mover.delta.z += p->jumpVel.z;
-    height = TileHeightAtIndex(p->unk_256, &p->mover.pos);
+    height = TileHeightAtIndex(p->tileIdx, &p->mover.pos);
     y = p->heightAboveFloor + height;
     if (y <= height) {
       Vec3 range;
@@ -927,7 +840,7 @@ NON_MATCH bool8 FUN_080e4b3c(Enemy* p) {
         p->jumpVel.z = Div(p->jumpVel.z * 5, 10);
       }
       if (p->kind != ENEK_CURORO && p->kind != ENEK_GHOST && p->kind != ENEK_CROW && p->kind != ENEK_BAT && p->kind != ENEK_SANDWORM && p->kind != ENEK_OCTOPUS && p->kind != ENEK_SERPENT && p->kind != ENEK_AX && p->kind != ENEK_31) {
-        FUN_080dbcec(&p->mover.pos, &p->jumpVel, &range, 6, 2, 4);
+        DustManager_Spawn(&p->mover.pos, &p->jumpVel, &range, 6, 2, 4);
       }
       if (p->unk_5b4 != NULL) {
         p->unk_5b4(p);
@@ -950,14 +863,14 @@ NON_MATCH bool8 FUN_080e4b3c(Enemy* p) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080e4b3c.inc");
+  INCFUNC("asm/func/Enemy_UpdateJump.inc");
 #endif
 }
 
 // 床の高さ floorY を取り直し, ENEFLAG5_UNK_5 が無ければ mover.pos.y を床 + heightAboveFloor にしてスプライトの座標へ写す
 void Enemy_SnapToFloor(Enemy* p) {
   if (p->kind == ENEK_SLIME) {
-    u32 height = TileHeightAtIndex(p->unk_256, &p->mover.pos);
+    u32 height = TileHeightAtIndex(p->tileIdx, &p->mover.pos);
 
     if (p->floorY != height) {
       p->heightAboveFloor -= height - p->floorY;
@@ -966,7 +879,7 @@ void Enemy_SnapToFloor(Enemy* p) {
   } else if (!Enemy_TestFlag3(p, ENEFLAG3_UNK_14) && IsSmallEnemy(p)) {
     p->floorY = gPlayerPtr[0]->mover.pos.y;
   } else {
-    p->floorY = TileHeightAtIndex(p->unk_256, &p->mover.pos);
+    p->floorY = TileHeightAtIndex(p->tileIdx, &p->mover.pos);
   }
 
   if (!Enemy_TestFlag5(p, ENEFLAG5_UNK_5)) {
@@ -974,19 +887,19 @@ void Enemy_SnapToFloor(Enemy* p) {
     p->mover.pos.y += p->heightAboveFloor;
   }
   if (p->spriteKind == 0) {
-    ((AuxSprite*)p->sprite)->pos = p->mover.pos;
+    p->s->aux.spr.pos = p->mover.pos;
   } else {
-    p->sprite->s.pos = p->mover.pos;
+    p->s->main.spr.pos = p->mover.pos;
   }
 }
 
 // 床に着いたら縦の速さを半分にして跳ねさせる, 十分小さくなったら止めて 1 を返す
-s32 UNUSED FUN_080e4f90(Enemy* p, Vec3* vel) {
+s32 UNUSED Enemy_BounceOnFloor(Enemy* p, Vec3* vel) {
   Mover* mover = &p->mover;
 
   p->mover.delta.x = vel->x;
   p->mover.delta.z = vel->z;
-  if (p->mover.pos.y <= TileHeightAtIndex(p->unk_256, &p->mover.pos)) {
+  if (p->mover.pos.y <= TileHeightAtIndex(p->tileIdx, &p->mover.pos)) {
     Vec3 dir, size;
     vel->y = Div(abs(vel->y) * 5, 10);
     if (vel->y <= 3) {
@@ -996,7 +909,7 @@ s32 UNUSED FUN_080e4f90(Enemy* p, Vec3* vel) {
 
     dir.x = -mover->delta.x, dir.y = 0, dir.z = -mover->delta.z;
     VEC3_SET(size, Q8(0.321), 0, Q8(0.321));
-    FUN_080dbcec(&mover->pos, &dir, &size, 12, 3, 4);
+    DustManager_Spawn(&mover->pos, &dir, &size, 12, 3, 4);
     Enemy_SetFlag2(p, ENEFLAG2_UNK_4);
   }
   return 0;
@@ -1013,7 +926,7 @@ void FUN_080e5098(Enemy* p, s32 dx, s32 dz) {
   p->unk_214 = p->mover.pos;
 }
 
-// 種族 enemyKind の鳴き声のうち type (0..3) 番目を鳴らす
+// 感情アイコン「!」「?」の種類 emoteVariant に合わせて種族の鳴き声を鳴らす
 void PlayEnemyEmoteCry(u8 emoteVariant, u8 enemyKind, u8 enemyVariant) {
   switch (enemyKind) {
     case ENEK_BOKU:
@@ -1192,14 +1105,16 @@ void PlayEnemyEmoteCry(u8 emoteVariant, u8 enemyKind, u8 enemyVariant) {
   }
 }
 
+// 感情アイコンが「!」「?」(EMOTE_0) のときだけ種族の鳴き声を鳴らす
 void FUN_080e5388(u8 emoteType, u8 emoteVariant, u8 enemyKind, u8 enemyVariant) {
   if (emoteType == 0) {
     PlayEnemyEmoteCry(emoteVariant, enemyKind, enemyVariant);
   }
 }
 
-void FUN_080e53a8(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// ボクの感情アイコンの種類ごとの表示オフセット
+void GetBokuEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 400, *outY = 320;
       break;
@@ -1219,8 +1134,9 @@ void FUN_080e53a8(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e53ec(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// マミーの感情アイコンの種類ごとの表示オフセット
+void GetMummyEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 470, *outY = 390;
       break;
@@ -1240,8 +1156,9 @@ void FUN_080e53ec(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e5438(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// スケルトン系とリッチの感情アイコンの種類ごとの表示オフセット
+void GetSkeletonEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 400, *outY = 320;
       break;
@@ -1261,8 +1178,9 @@ void FUN_080e5438(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e547c(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// シャイアンの感情アイコンの種類ごとの表示オフセット
+void GetShaianEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 400, *outY = 320;
       break;
@@ -1282,8 +1200,9 @@ void FUN_080e547c(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e54c8(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// ゴーレムの感情アイコンの種類ごとの表示オフセット
+void GetGolemEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 360, *outY = 280;
       break;
@@ -1303,8 +1222,9 @@ void FUN_080e54c8(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e5508(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// コカトリスの感情アイコンの種類ごとの表示オフセット
+void GetCockaEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 390, *outY = 310;
       break;
@@ -1324,8 +1244,9 @@ void FUN_080e5508(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e554c(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// 犬の感情アイコンの種類ごとの表示オフセット
+void GetDogEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 390, *outY = 310;
       break;
@@ -1345,8 +1266,9 @@ void FUN_080e554c(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e5590(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// ミミックの感情アイコンの種類ごとの表示オフセット
+void GetMimicEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 250, *outY = 200;
       break;
@@ -1366,8 +1288,9 @@ void FUN_080e5590(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-void FUN_080e55d0(u8 dir, s32* outX, s32* outY) {
-  switch (dir) {
+// ゴーストの感情アイコンの種類ごとの表示オフセット
+void GetGhostEmoteOffset(u8 emote, s32* outX, s32* outY) {
+  switch (emote) {
     case 0: {
       *outX = 190, *outY = 120;
       break;
@@ -1387,54 +1310,53 @@ void FUN_080e55d0(u8 dir, s32* outX, s32* outY) {
   }
 }
 
-// 種族ごとの表から, 向きに応じて Enemy_SetEmote が使う2つの値を引く
-void FUN_080e5610(u8 enemyKind, u8 dir, s32* outX, s32* outY) {
+// 感情アイコンの種類ごとの表示オフセットを種族ごとの表から引く
+void GetEnemyEmoteOffset(u8 enemyKind, u8 emote, s32* outX, s32* outY) {
   switch (enemyKind) {
     case ENEK_BOKU:
     case ENEK_28: {
-      FUN_080e53a8(dir, outX, outY);
+      GetBokuEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_MUMMY: {
-      FUN_080e53ec(dir, outX, outY);
+      GetMummyEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_GOLEM:
     case ENEK_30: {
-      FUN_080e54c8(dir, outX, outY);
+      GetGolemEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_COCKA: {
-      FUN_080e5508(dir, outX, outY);
+      GetCockaEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_MIMIC: {
-      FUN_080e5590(dir, outX, outY);
+      GetMimicEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_SKELETON:
     case ENEK_SKELETON_F:
     case ENEK_SKELETON_A:
     case ENEK_LICH: {
-      FUN_080e5438(dir, outX, outY);
+      GetSkeletonEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_DOG: {
-      FUN_080e554c(dir, outX, outY);
+      GetDogEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_GHOST: {
-      FUN_080e55d0(dir, outX, outY);
+      GetGhostEmoteOffset(emote, outX, outY);
       break;
     }
     case ENEK_SHAIAN: {
-      FUN_080e547c(dir, outX, outY);
+      GetShaianEmoteOffset(emote, outX, outY);
       break;
     }
   }
 }
 
-// 感情表現 (0-3) を出し直す, 第3引数が 0x7F なら消す
 // 感情アイコン emote を種類 variant で出す (0x7F なら消す), 位置は種族 kind ごとの表から引く
 // 残差は299/296命令でレジスタ割当のずれ, 原典は emote を r6 のまま使い (こちらは r10 に退避), &p->emote を r6, variant を r8, kind を r7 に置く
 // ENEFLAG2_UNK_9 の 0/1 は Enemy_GetFlag2(p, X) != 0 で rsbs/lsrs の形に揃う, 試済: case 1 の FUN_080e5388 の第1引数を 1 / emote, case 3 の既定値を三項演算子 / if
@@ -1471,7 +1393,7 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
       p->emote = Emote_Remove(p->emote, 0, p->mover.id);
       p->emote = Emote_Remove(p->emote, 1, p->mover.id);
       p->emote = Emote_Remove(p->emote, 2, p->mover.id);
-      FUN_080e5610(kind, 0, &x, &y);
+      GetEnemyEmoteOffset(kind, 0, &x, &y);
       if (variant == 0 && TEST_FLAGS(p->flags2, ENEFLAG2_UNK_15)) {
         variant = 3;
       }
@@ -1492,13 +1414,13 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
       if (!Emote_IsInactive(p->emote)) {
         break;
       }
-      FUN_080e5610(kind, 1, &x, &y);
-      p->emote = FUN_080d9cec(variant, &p->mover.pos, p->mover.id, x, y, kind, &p->unk_192, p->unk_190, Enemy_GetFlag2(p, ENEFLAG2_UNK_9) != 0, p, &p->mover);
+      GetEnemyEmoteOffset(kind, 1, &x, &y);
+      p->emote = FUN_080d9cec(variant, &p->mover.pos, p->mover.id, x, y, kind, &p->sleepTimer, p->sleepTime, Enemy_GetFlag2(p, ENEFLAG2_UNK_9) != 0, p, &p->mover);
       FUN_080e5388(emote, variant, kind, p->variant);
       break;
     }
     case 2: {
-      FUN_080e5610(kind, 2, &x, &y);
+      GetEnemyEmoteOffset(kind, 2, &x, &y);
       p->emote = FUN_080d9f5c(1, &p->mover.pos, p->mover.id, y, kind, &p->mover);
       break;
     }
@@ -1507,8 +1429,8 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
       p->emote = Emote_Remove(p->emote, 1, p->mover.id);
       p->emote = Emote_Remove(p->emote, 2, p->mover.id);
       p->emote = Emote_RemovePtcl(p->emote, 3, p->mover.id);
-      FUN_080e5610(kind, 3, &x, &y);
-      p->emote = FUN_080da6c4(7, &p->mover.pos, p->mover.id, y, kind, &p->unk_192, p->unk_190, variant ? variant : 3, &p->mover, p);
+      GetEnemyEmoteOffset(kind, 3, &x, &y);
+      p->emote = FUN_080da6c4(7, &p->mover.pos, p->mover.id, y, kind, &p->sleepTimer, p->sleepTime, variant ? variant : 3, &p->mover, p);
       break;
     }
   }
@@ -1518,9 +1440,9 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
 }
 
 // pathWalker を初期化する
-void FUN_080e59c4(Enemy* p, u32 pathIdx, u32 param_3, u32 nodeIdx) { Map_InitPathWalker(&p->pathWalker, pathIdx, param_3, nodeIdx); }
+void Enemy_InitPathWalker(Enemy* p, u32 pathIdx, u32 param_3, u32 nodeIdx) { Map_InitPathWalker(&p->pathWalker, pathIdx, param_3, nodeIdx); }
 
-// msg[0] が 0 なら活動停止から復帰, 1 なら復帰しつつ FUN_080ee538, それ以外は停止中なら FUN_080ee738, 1回だけ受け付ける
+// msg[0] が 0 なら活動停止から復帰, 1 なら復帰しつつ Enemy_ResetInPlace, それ以外は停止中なら Enemy_Reset, 1回だけ受け付ける
 // 残差は157/157命令のレジスタ順列だけ, 原典は p を r4, 0x800 を r5, 0 を r6, msg[0] を r7, flags3 の検査結果を r8 に置くが, こちらは1つずつずれる
 // 試済: Enemy_TestFlag3 / 素の & / Enemy_SetFlag3 / msg[0] や検査結果のローカル / if-else の連鎖, いずれも同じか悪化
 NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
@@ -1534,7 +1456,7 @@ NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
     case 0: {
       if (Enemy_TestFlag(p, ENEFLAG_UNK_0)) {
         CLEAR_FLAGS(p->flags, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
-        FUN_080ee2c8(p);
+        Enemy_ResetToSpawn(p);
         Enemy_SetSubStates(p, 3, 0, 0);
         p->subStateTimer = 0;
         p->subStateBegun = 1;
@@ -1545,7 +1467,7 @@ NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
     case 1: {
       if (!Enemy_IsDead(p)) {
         CLEAR_FLAGS(p->flags, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
-        FUN_080ee538(p);
+        Enemy_ResetInPlace(p);
         Enemy_SetSubStates(p, 3, 0, 0);
         p->subStateTimer = 0;
         p->subStateBegun = 1;
@@ -1555,8 +1477,8 @@ NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
     }
     default: {
       if (Enemy_TestFlag(p, ENEFLAG_UNK_0)) {
-        FUN_080ee738(p);
-        p->hurtbox.invincibleTime = 0;
+        Enemy_Reset(p);
+        p->hurtbox.iframes = 0;
       }
       break;
     }
@@ -1567,7 +1489,7 @@ NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
 }
 
 // 活動停止中なら, 経路 pathIdx のノード nodeIdx に向き angle で置き直して状態12で活動を再開させる
-void FUN_080e5b2c(Enemy* p, s32 pathIdx, s32 nodeIdx, s32 angle) {
+void Enemy_ReactivateAtPathNode(Enemy* p, s32 pathIdx, s32 nodeIdx, s32 angle) {
   Mover* mover = &p->mover;
 
   if (!TEST_FLAGS(p->flags, ENEFLAG_UNK_0)) {
@@ -1577,8 +1499,8 @@ void FUN_080e5b2c(Enemy* p, s32 pathIdx, s32 nodeIdx, s32 angle) {
   p->flags &= ~(ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
   p->prevPathNode = p->unk_252;
   Map_GetPathNodePos(&p->mover.pos, pathIdx, nodeIdx);
-  p->unk_256 = GetCollisionTileIdx(&p->mover.pos);
-  mover->pos.y = TileHeightAtIndex(p->unk_256, &p->mover.pos);
+  p->tileIdx = GetCollisionTileIdx(&p->mover.pos);
+  mover->pos.y = TileHeightAtIndex(p->tileIdx, &p->mover.pos);
   Enemy_SetSpritePos(p, &mover->pos);
   mover->angle = angle;
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_21)) {
@@ -1628,22 +1550,22 @@ s16 VectorLength(s16 dx, s16 dz) {
 }
 
 // 種族によって影とパーティクルを持たせるかどうかを決める
-void Enemy_Init_080e5dd4(Enemy* p) {
+void Enemy_InitShadowAndEmitter(Enemy* p) {
   if (p->kind == ENEK_CURORO || p->kind == ENEK_GHOST || p->kind == ENEK_CENTIPEDE || p->kind == ENEK_SANDWORM || p->kind == ENEK_SERPENT || p->kind == ENEK_OCTOPUS || p->kind == ENEK_SHAIAN || p->kind == ENEK_DARKROOT || p->kind == ENEK_31) {
-    p->unk_44c = 1;
+    p->shadowRemoved = 1;
   } else {
-    p->unk_44c = ParticleShadow_Init(&p->shadow, &p->mover.pos, 0);
+    p->shadowRemoved = ParticleShadow_Init(&p->shadow, &p->mover.pos, 0);
   }
 
   if (p->kind == ENEK_BOKU || p->kind == ENEK_28 || p->kind == ENEK_SKELETON || p->kind == ENEK_SKELETON_F || p->kind == ENEK_SKELETON_A || p->kind == ENEK_MUMMY || p->kind == ENEK_GOLEM || p->kind == ENEK_30 || p->kind == ENEK_COCKA) {
-    Eff082473e0Emitter_Init(&p->emitter, &p->mover.pos, 0, 0, 0);
-    p->unk_44d = 0;
+    ElementalCondEmitter_Init(&p->emitter, &p->mover.pos, ELEMCOND_NONE, 0, 0);
+    p->emitterRemoved = 0;
   } else {
-    p->unk_44d = 1;
+    p->emitterRemoved = 1;
   }
 }
 
-// pos が自分の位置を中心とした rx × rz の矩形に入っているか
+// pos が自分から XZ それぞれ rx, rz 以内にいるか
 bool8 Enemy_IsPosInRect(Enemy* p, WorldPos* pos, u32 rx, u32 rz) {
   s16 dx = pos->x - p->mover.pos.x;
   s16 dz = pos->z - p->mover.pos.z;
@@ -1655,7 +1577,7 @@ bool8 Enemy_IsPosInRect(Enemy* p, WorldPos* pos, u32 rx, u32 rz) {
 }
 
 // 経路の目標に着いていれば TRUE, まだなら次の通過点 (waypoint) の方を向いて speed ぶんの移動量を足す
-bool8 FUN_080e5ed4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed) {
+bool8 Enemy_MoveAlongNav(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed) {
   s32 dx = agent->waypoint.x - p->mover.pos.x;
   s32 dz = agent->waypoint.z - p->mover.pos.z;
 
@@ -1779,7 +1701,7 @@ void FUN_080e6148(NavAgent* agent, Enemy* p, Vec3* dst) {
 }
 
 // 経路の今のノードの XZ に, 自分の高さを合わせた点へ一歩動く
-void FUN_080e6204(Enemy* p) {
+void Enemy_StepTowardPathNode(Enemy* p) {
   WorldPos dst;
   WorldPos* d = &dst;
   PathWalker* walker = &p->pathWalker;
@@ -1801,8 +1723,8 @@ void Enemy_SetAngleToward(Enemy* p, s16 x, s16 z) {
   p->mover.angle = ArcTan2_8(dx, dz);
 }
 
-// 残り n に応じた間隔でスプライトを点滅させる, 60 を超えていれば点滅をやめて TRUE
-bool32 UNUSED FUN_080e6330(Enemy* p, s32 n) {
+// 経過 n が増えるほど点滅の間隔を広げ, 60 を過ぎたら表示に戻して TRUE
+bool32 UNUSED Enemy_UpdateBlink(Enemy* p, s32 n) {
   s32 idx = 0;
 
   if (n <= 30) {
@@ -1825,7 +1747,7 @@ bool32 UNUSED FUN_080e6330(Enemy* p, s32 n) {
 }
 
 // 散らばり位置を乱数で振りながらパーティクルを count 個撒く
-void FUN_080e6408(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 param_6) {
+void Enemy_ScatterParticles(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 param_6) {
   Vec3 spread;
   s32 i;
 
@@ -1835,24 +1757,24 @@ void FUN_080e6408(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 par
     u16* table = gRandomTable;
     spread.x = Mod(_Random(table) >> 4, rangeX) - (rangeX >> 1);
     spread.y = -Mod(_Random(table) >> 3, rangeY) - 6;
-    FUN_082467d0(&p->emitter, kind, param_6, &spread);
+    ElementalCondEmitter_AddParticle(&p->emitter, kind, param_6, &spread);
   }
 }
 
 // パーティクルを count 個フェードさせる
-void FUN_080e64b4(Enemy* p, s32 count) {
+void Enemy_FadeParticles(Enemy* p, s32 count) {
   s32 i;
 
-  if (p->unk_44d == 0) {
+  if (p->emitterRemoved == 0) {
     for (i = 0; i < count; i++) {
-      Eff082473e0Emitter_FadeParticle(&p->emitter);
+      ElementalCondEmitter_FadeParticle(&p->emitter);
     }
   }
 }
 
 // ENEFLAG3_UNK_13 が立っていればエミッタの位置から粒子を3回まとめて吹き出させる
 // 残差は145/147命令, 原典は p を r8 に置き &p->emitter と &p->emitter.pos をループの外でスタックに退避するが, こちらは p を r5 に置いて毎回組み立てる
-// 試済: Eff082473e0Emitter* のローカル (142, 片方だけ退避), Vec3_CopyOffsetY (132), Vec3 を関数の先頭で宣言 (変化なし)
+// 試済: ElementalCondEmitter* のローカル (142, 片方だけ退避), Vec3_CopyOffsetY (132), Vec3 を関数の先頭で宣言 (変化なし)
 NON_MATCH void FUN_080e64e4(Enemy* p) {
 #ifdef NONMATCHING_C
   if (Enemy_TestFlag3(p, ENEFLAG3_UNK_13)) {
@@ -1870,9 +1792,9 @@ NON_MATCH void FUN_080e64e4(Enemy* p) {
       pos.x = p->emitter.pos->x;
       pos.y = p->emitter.pos->y + Q8(0.5);
       pos.z = p->emitter.pos->z;
-      Eff082473e0Emitter_BurstParticle(&p->emitter, 3, &pos, &vel, &velRange, 40, 40);
+      ElementalCondEmitter_BurstParticle(&p->emitter, 3, &pos, &vel, &velRange, 40, 40);
     }
-    p->unk_192 = 0;
+    p->sleepTimer = 0;
     p->unk_4be = 0;
   }
 #else
@@ -1883,7 +1805,7 @@ NON_MATCH void FUN_080e64e4(Enemy* p) {
 // 生きている敵なら param_2[1..3] で pathWalker を初期化する
 void FUN_080e6624(Enemy* p, u16* param_2) {
   if (p->hp > 0) {
-    FUN_080e59c4(p, param_2[1], param_2[2], param_2[3]);
+    Enemy_InitPathWalker(p, param_2[1], param_2[2], param_2[3]);
   }
 }
 
@@ -1899,14 +1821,14 @@ void FUN_080e6658(Enemy* p) {
   if (TEST_FLAGS(p->flags2, ENEFLAG2_UNK_19)) {
     return;
   }
-  attr = TileAtIndex(p->unk_256)->attr;
+  attr = TileAtIndex(p->tileIdx)->attr;
   if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) {
     return;
   }
   if (p->floorY - p->mover.pos.y > Q8(1)) {
     return;
   }
-  if (Map_FindTileOverride(p->unk_256, 1) != NULL) {
+  if (Map_FindTileOverride(p->tileIdx, 1) != NULL) {
     return;
   }
   if (p->unk_198 == 0) {
@@ -1928,7 +1850,7 @@ void FUN_080e6658(Enemy* p) {
 }
 
 // scriptID が入っていればスクリプトを実行する
-void FUN_080e6750(Enemy* p) {
+void Enemy_RunScript(Enemy* p) {
   if (p->scriptID != 0) {
     VM_ExecByID(p->scriptID, NULL);
   }
@@ -1940,41 +1862,41 @@ void FUN_080e6750(Enemy* p) {
  * @param val 使われていないデバッグ用の引数, 呼び出し元のファイルの行番号?
  */
 void Enemy_ClearPendingState(Enemy* p, const char* filename, s32 val) {
-  p->unk_550 = 0;
-  p->unk_551 = 0;
-  p->unk_552 = 0;
-  p->unk_554 = 0;
-  p->unk_558 = NULL;
+  p->pendingSubState0 = 0;
+  p->pendingSubState1 = 0;
+  p->pendingSubState2 = 0;
+  p->pendingDelay = 0;
+  p->pendingHandler = NULL;
 }
 
-// 優先度が足りていれば状態14へ遷移させる
-void FUN_080e6794(Enemy* p, s32 priority) {
-  if (p->unk_554 <= priority) {
-    Enemy_EnterState(p, p->unk_558, ES_UNK_14);
-    Enemy_SetSubStates(p, p->unk_550, p->unk_551, p->unk_552);
+// 状態14のハンドラ, pendingDelay フレーム待ってから予約していた状態 (pendingHandler と副状態) へ移る
+void Enemy_WaitPendingState(Enemy* p, s32 timer) {
+  if (p->pendingDelay <= timer) {
+    Enemy_EnterState(p, p->pendingHandler, ES_UNK_14);
+    Enemy_SetSubStates(p, p->pendingSubState0, p->pendingSubState1, p->pendingSubState2);
     p->subStateTimer = 0;
     p->subStateBegun = 1;
     Enemy_ClearPendingState(p, s_enemy_c_08251f60, 2306);
   }
 }
 
-// 優先度が足りていれば状態14へ遷移させる, アニメは頭から再生し直させる
-void FUN_080e6834(Enemy* p, s32 priority) {
+// 状態14のハンドラ, pendingDelay フレーム待ってから予約していた状態へ移る, 待つ間はアニメ終了の合図を落とし続ける
+void FUN_080e6834(Enemy* p, s32 timer) {
   p->animForceRestart = FALSE;
-  if (p->unk_554 <= priority) {
-    Enemy_EnterState(p, p->unk_558, ES_UNK_14);
-    Enemy_SetSubStates(p, p->unk_550, p->unk_551, p->unk_552);
+  if (p->pendingDelay <= timer) {
+    Enemy_EnterState(p, p->pendingHandler, ES_UNK_14);
+    Enemy_SetSubStates(p, p->pendingSubState0, p->pendingSubState1, p->pendingSubState2);
     p->subStateTimer = 0;
     p->subStateBegun = 1;
     Enemy_ClearPendingState(p, s_enemy_c_08251f60, 2322);
   }
 }
 
-// 優先度が足りていれば状態14へ遷移させる
-void FUN_080e68d8(Enemy* p, s32 priority) {
-  if (p->unk_554 <= priority) {
-    Enemy_EnterState(p, p->unk_558, ES_UNK_14);
-    Enemy_SetSubStates(p, p->unk_550, p->unk_551, p->unk_552);
+// 状態14のハンドラ, pendingDelay フレーム待ってから予約していた状態 (pendingHandler と副状態) へ移る
+void FUN_080e68d8(Enemy* p, s32 timer) {
+  if (p->pendingDelay <= timer) {
+    Enemy_EnterState(p, p->pendingHandler, ES_UNK_14);
+    Enemy_SetSubStates(p, p->pendingSubState0, p->pendingSubState1, p->pendingSubState2);
     p->subStateTimer = 0;
     p->subStateBegun = 1;
     Enemy_ClearPendingState(p, s_enemy_c_08251f60, 2337);
@@ -2005,7 +1927,7 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
       CLEAR_FLAGS(p->flags, ENEFLAG_UNK_22);
       p->animSpeedDiv = 1;
       p->unk_222 = 0;
-      p->unk_24e = 0;
+      p->chaseTimer = 0;
       CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9);
       CLEAR_FLAGS(p->flags, ENEFLAG_UNK_26 | ENEFLAG_UNK_27);
       if (TEST_FLAGS(p->flags, ENEFLAG_UNK_21)) {
@@ -2037,12 +1959,12 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
         Enemy_SetEmote(p, 0, 0x7F, 0);
         Enemy_SetEmote(p, 1, 0x7F, 0);
         Enemy_SetEmote(p, 3, 0x7F, 0);
-        FUN_080e64b4(p, 4);
-        Enemy_EnterState(p, p->unk_5d0, ES_DYING);
+        Enemy_FadeParticles(p, 4);
+        Enemy_EnterState(p, p->handlerDying, ES_DYING);
         Enemy_ResetState(p, 3, 0, 0);
         show = TRUE;
         if (IsLinkPlay() && !(p->unk_4a0 & 0x20) && p->unk_4a0 != 0) {
-          switch (gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1) {
+          switch (gLinkSession != NULL ? gLinkSession->playerIdx : -1) {
             case 0: {
               show = p->unk_4a0 == 1;
               break;
@@ -2071,7 +1993,7 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
           }
         }
         if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-          FUN_080ec5b4(gMapInitScriptID, p->mover.id);
+          DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
         }
         if (p->kind == ENEK_BOKU || p->kind == ENEK_MUMMY) {
           Vec3 size;
@@ -2093,7 +2015,7 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
         p->hp -= p->hurtbox.damage;
         show = TRUE;
         if (IsLinkPlay() && !(p->unk_4a0 & 0x20) && p->unk_4a0 != 0) {
-          switch (gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1) {
+          switch (gLinkSession != NULL ? gLinkSession->playerIdx : -1) {
             case 0: {
               show = p->unk_4a0 == 1;
               break;
@@ -2131,7 +2053,7 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
 }
 
 // プレイヤーか kindMask 4 の標的が XZ 両軸とも 1ブロック以内にいるか
-bool8 FUN_080e7078(Enemy* p) {
+bool8 Enemy_HasTargetNearby(Enemy* p) {
   Vec3 d;
   EnemyTarget* t;
   s32 i;
@@ -2199,7 +2121,7 @@ void Enemy_TargetNearestPlayer(Enemy* p, Vec3* pos) {
 
 // 今いるノードと直前のノードを避けて, 次の経路ノードを乱数で選ぶ (4回外したら順送り)
 // 残差は78/78命令で gRandomTable のプール定数の位置のみ, 原典は添字のスケールを先に出してから gRandomTable を読む
-NON_MATCH void FUN_080e7204(Enemy* p) {
+NON_MATCH void Enemy_PickNextPathNode(Enemy* p) {
 #ifdef NONMATCHING_C
   u8 cur = p->pathWalker.nodeIdx;
   s32 next;
@@ -2226,7 +2148,7 @@ NON_MATCH void FUN_080e7204(Enemy* p) {
   p->pathWalker.node = Map_GetPathNodes(p->pathWalker.path);
   p->pathWalker.node += p->pathWalker.nodeIdx;
 #else
-  INCFUNC("asm/func/FUN_080e7204.inc");
+  INCFUNC("asm/func/Enemy_PickNextPathNode.inc");
 #endif
 }
 
@@ -2272,10 +2194,10 @@ NON_MATCH void FUN_080e72b0(Enemy* p, s32 timer) {
         Enemy_SetFlag4(p, ENEFLAG4_UNK_5);
       }
       if (p->spriteKind == 0) {
-        AuxAnimState* anim = &((EnemyAuxSpriteData*)p->sprite)->anim;
+        AuxAnimState* anim = &p->s->aux.anim;
         anim->tick = 0;
       } else {
-        p->sprite->s.animCmdTimer = 0;
+        p->s->main.spr.animCmdTimer = 0;
       }
     }
     if (p->animForceRestart) {
@@ -2302,7 +2224,7 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
   }
   p->animSpeedDiv = 1;
   Enemy_PlayAnim(p, 0);
-  Enemy_EnterState(p, FUN_080e6794, ES_UNK_14);
+  Enemy_EnterState(p, Enemy_WaitPendingState, ES_UNK_14);
   Enemy_ResetState(p, 3, 1, 0);
 
   if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_7)) {
@@ -2310,7 +2232,7 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
     s32 idx;
 
     {
-      Vec3* dst = p->unk_4a8;
+      Vec3* dst = p->pathNodePos;
       PathWalker* walker = &p->pathWalker;
 
       dst->x = walker->node->x;
@@ -2325,7 +2247,7 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
         idx = m->unk_4;
       }
       if (m == NULL || idx < 0) {
-        p->unk_5c4(p);
+        p->onRouteFailed(p);
         return;
       }
       tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
@@ -2334,7 +2256,7 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
       idx = 0;
     }
 
-    if (tile == p->unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+    if (tile == p->tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
       u8 angle;
 
       if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_10)) {
@@ -2342,21 +2264,21 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
       }
       p->unk_222 &= ~ENEMY222_UNK_2;
       if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_7)) {
-        Enemy_EnterState(p, p->unk_5b8, ES_UNK_26);
+        Enemy_EnterState(p, p->handlerChase, ES_UNK_26);
         Enemy_ResetState(p, 0, 0, 12);
       } else {
-        Enemy_EnterState(p, p->unk_5a0, ES_UNK_1);
+        Enemy_EnterState(p, p->handlerMove, ES_UNK_1);
         Enemy_ResetState(p, 0, 0, 5);
         {
-          Vec3* dst = p->unk_4a8;
+          Vec3* dst = p->pathNodePos;
           PathWalker* walker = &p->pathWalker;
 
           dst->x = walker->node->x;
           dst->z = walker->node->y;
           dst->y = TileHeightAt(dst);
         }
-        p->unk_4a8->y = TileHeightAt(p->unk_4a8);
-        p->unk_4a8->val = 0;
+        p->pathNodePos->y = TileHeightAt(p->pathNodePos);
+        p->pathNodePos->val = 0;
       }
       angle = p->mover.angle;
       if (!TEST_FLAGS(p->flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS(p->unk_222, ENEMY222_UNK_2)) {
@@ -2366,14 +2288,14 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
         while (TRUE) {
           a = (Random() & 3) << 6;
           if (a != angle || ++i > 3) {
-            p->unk_540 = a;
-            p->unk_548 = p->handlerState;
-            p->unk_54f = p->state;
-            p->unk_54c = p->subState0;
-            p->unk_54d = p->subState1;
-            p->unk_54e = p->subState2;
-            p->unk_541 = angle;
-            Enemy_EnterState(p, p->unk_5bc, ES_UNK_27);
+            p->lookAngle = a;
+            p->savedHandlerState = p->handlerState;
+            p->savedState = p->state;
+            p->savedSubState0 = p->subState0;
+            p->savedSubState1 = p->subState1;
+            p->savedSubState2 = p->subState2;
+            p->lookBaseAngle = angle;
+            Enemy_EnterState(p, p->handlerLookAround, ES_UNK_27);
             Enemy_ResetState(p, 3, 1, 0);
             p->unk_542 = 6;
             break;
@@ -2388,25 +2310,25 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
 
       TilePosAtIndex(&tilePos, tile);
       if (!Enemy_StepToward(p, &tilePos)) {
-        p->unk_5c4(p);
+        p->onRouteFailed(p);
         return;
       }
     }
-    p->unk_554 = 60;
-    p->unk_558 = p->unk_5b8;
-    p->unk_550 = 0;
-    p->unk_551 = 0;
-    p->unk_552 = 12;
+    p->pendingDelay = 60;
+    p->pendingHandler = p->handlerChase;
+    p->pendingSubState0 = 0;
+    p->pendingSubState1 = 0;
+    p->pendingSubState2 = 12;
     p->unk_222 &= ~ENEMY222_UNK_2;
     return;
   }
 
-  p->unk_4a8->val = 1;
+  p->pathNodePos->val = 1;
   moved = FALSE;
   {
     NavAgent* agent = p->navAgent;
     WorldPos* pos = &p->mover.pos;
-    Vec3* dst = p->unk_4a8;
+    Vec3* dst = p->pathNodePos;
 
     if (Map_IsPosInAgentIsland(agent, pos, dst)) {
       s32 result = Map_TryFindNavRoute(agent, pos, dst);
@@ -2423,14 +2345,14 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
     }
   }
   if (!moved) {
-    p->unk_5c4(p);
+    p->onRouteFailed(p);
     return;
   }
-  p->unk_554 = 60;
-  p->unk_558 = p->unk_5a0;
-  p->unk_550 = 0;
-  p->unk_551 = 0;
-  p->unk_552 = 7;
+  p->pendingDelay = 60;
+  p->pendingHandler = p->handlerMove;
+  p->pendingSubState0 = 0;
+  p->pendingSubState1 = 0;
+  p->pendingSubState2 = 7;
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_21)) {
     Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_9);
@@ -2454,7 +2376,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
   WorldPos dst;
 
   do {
-    s32 start = p->unk_256;
+    s32 start = p->tileIdx;
     u32 height = TileAtIndex(start)->heightStairs & 0xF;
     s32 size = gCollisionMap->tiledata->width * gCollisionMap->tiledata->height;
     s32 cur;
@@ -2505,7 +2427,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
     }
     dir = (dir + 1) & 3;
     i++;
-  } while (idx == p->unk_256 && i < 4);
+  } while (idx == p->tileIdx && i < 4);
   TilePosAtIndex(&dst, idx);
   if (Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, &dst)) {
     s32 result = Map_TryFindNavRoute(p->navAgent, &p->mover.pos, &dst);
@@ -2567,7 +2489,7 @@ void Enemy_PlayVoice(Enemy* p) {
 // 索引 fromIdx のタイル (高さ fromHeight, 階段 fromStairs) から隣の idx のタイルへ歩いて移れるか
 // 残差は191/189命令, 原典は gCollisionMap のアドレスを使うたびにプールから読み直すが, こちらは2つ目の TileAtIndex の分岐から r9 に持ち越して Mod / Div / 縦の隣接判定で使い回し, 高さ (r8) と &pos (r10) の割当がずれる
 // 末尾は「着地できなければ FALSE を共有」の形が原典に近い, 試済: pos を Vec3* で触る / Mod・Div を pos への代入式に直接書く / 高さのタイル引きを三項演算子で展開, いずれも悪化
-NON_MATCH bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs) {
+NON_MATCH bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs) {
 #ifdef NONMATCHING_C
   Vec3 pos;
   s32 stairs = TileAtIndex(idx)->heightStairs >> 4;
@@ -2606,12 +2528,12 @@ NON_MATCH bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStair
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080e8038.inc");
+  INCFUNC("asm/func/CanWalkToAdjacentTile.inc");
 #endif
 }
 
-// param_2 の番号ごとの効果音を, variant が 0/1/3/5 のときだけ鳴らす
-void FUN_080e81dc(Enemy* p, s32 param_2) {
+// ゴーレムの音を番号で選んで鳴らす, variant 0/1/3/5 のときだけ
+void PlayGolemSound(Enemy* p, s32 param_2) {
   switch (param_2) {
     case 2: {
       switch (p->variant) {
@@ -2703,7 +2625,7 @@ void FUN_080e81dc(Enemy* p, s32 param_2) {
   }
 }
 
-// 種族ごとの音を鳴らす, ENEFLAG2_UNK_22 が立っていれば今回は鳴らさずに落とすだけ
+// 種族ごとの断末魔を鳴らす, ENEFLAG2_UNK_22 なら今回だけ鳴らさない
 void PlayEnemyDeathCry(Enemy* p) {
   if (TEST_FLAGS(p->flags2, ENEFLAG2_UNK_22)) {
     p->flags2 &= ~ENEFLAG2_UNK_22;
@@ -2722,7 +2644,7 @@ void PlayEnemyDeathCry(Enemy* p) {
     }
     case ENEK_GOLEM:
     case ENEK_30: {
-      FUN_080e81dc(p, 0);
+      PlayGolemSound(p, 0);
       break;
     }
     case ENEK_OCTOPUS: {
@@ -2797,8 +2719,8 @@ void PlayEnemyDeathCry(Enemy* p) {
   }
 }
 
-// 種族ごとの音を鳴らす, ENEFLAG2_UNK_22 が立っていれば今回は鳴らさずに落とすだけ
-void FUN_080e850c(Enemy* p) {
+// 種族ごとの被弾の声を鳴らす, ENEFLAG2_UNK_22 なら今回だけ鳴らさない
+void PlayEnemyDamageCry(Enemy* p) {
   if (TEST_FLAGS(p->flags2, ENEFLAG2_UNK_22)) {
     p->flags2 &= ~ENEFLAG2_UNK_22;
     return;
@@ -2819,7 +2741,7 @@ void FUN_080e850c(Enemy* p) {
     }
     case ENEK_GOLEM:
     case ENEK_30: {
-      FUN_080e81dc(p, 1);
+      PlayGolemSound(p, 1);
       break;
     }
     case ENEK_COCKA:
@@ -2867,17 +2789,17 @@ NON_MATCH void FUN_080e8614(Enemy* p) {
         Random();
         pos = p->mover.pos;
         pos.y += offset.y;
-        Entity080146e0_SpawnAtAngle((Random() & 3) + 2, 9, &pos, angle, 8, (Random() & 3) + 6, 4, 10, 8, 5, 10);
-        Entity080146e0_SpawnAtAngle(3, 9, &pos, (angle + (Random() & 7)) & 0xFF, 8, (Random() & 7) + 6, 4, 14, 4, 6, 10);
-        Entity080146e0_SpawnAtAngle((Random() & 3) + 1, 9, &pos, (angle + (Random() & 0xF)) & 0xFF, 8, (Random() & 7) + 4, 2, 6, 3, 5, 10);
+        ScatterEffect_SpawnAtAngle((Random() & 3) + 2, SCATTER_KIND_9, &pos, angle, 8, (Random() & 3) + 6, 4, 10, 8, 5, 10);
+        ScatterEffect_SpawnAtAngle(3, SCATTER_KIND_9, &pos, (angle + (Random() & 7)) & 0xFF, 8, (Random() & 7) + 6, 4, 14, 4, 6, 10);
+        ScatterEffect_SpawnAtAngle((Random() & 3) + 1, SCATTER_KIND_9, &pos, (angle + (Random() & 0xF)) & 0xFF, 8, (Random() & 7) + 4, 2, 6, 3, 5, 10);
       } else {
         Random();
         Random();
         pos = p->mover.pos;
         pos.y += offset.y;
-        Entity080146e0_SpawnAtAngle((Random() & 3) + 2, 10, &pos, angle, 8, (Random() & 3) + 6, 4, 10, 8, 5, 10);
-        Entity080146e0_SpawnAtAngle(3, 10, &pos, (angle + (Random() & 7)) & 0xFF, 8, (Random() & 7) + 6, 4, 14, 4, 6, 10);
-        Entity080146e0_SpawnAtAngle((Random() & 3) + 1, 10, &pos, (angle + (Random() & 0xF)) & 0xFF, 8, (Random() & 7) + 4, 2, 6, 3, 5, 10);
+        ScatterEffect_SpawnAtAngle((Random() & 3) + 2, SCATTER_KIND_10, &pos, angle, 8, (Random() & 3) + 6, 4, 10, 8, 5, 10);
+        ScatterEffect_SpawnAtAngle(3, SCATTER_KIND_10, &pos, (angle + (Random() & 7)) & 0xFF, 8, (Random() & 7) + 6, 4, 14, 4, 6, 10);
+        ScatterEffect_SpawnAtAngle((Random() & 3) + 1, SCATTER_KIND_10, &pos, (angle + (Random() & 0xF)) & 0xFF, 8, (Random() & 7) + 4, 2, 6, 3, 5, 10);
       }
       break;
     }
@@ -2887,9 +2809,9 @@ NON_MATCH void FUN_080e8614(Enemy* p) {
       Random();
       pos = p->mover.pos;
       pos.y += offset.y;
-      Entity080146e0_SpawnAtAngle((Random() & 3) + 2, 11, &pos, angle, 8, (Random() & 3) + 6, 4, 10, 8, 5, 10);
-      Entity080146e0_SpawnAtAngle(3, 11, &pos, (angle + (Random() & 7)) & 0xFF, 8, (Random() & 7) + 6, 4, 14, 4, 6, 10);
-      Entity080146e0_SpawnAtAngle((Random() & 3) + 1, 11, &pos, (angle + (Random() & 0xF)) & 0xFF, 8, (Random() & 7) + 4, 2, 6, 3, 5, 10);
+      ScatterEffect_SpawnAtAngle((Random() & 3) + 2, SCATTER_KIND_11, &pos, angle, 8, (Random() & 3) + 6, 4, 10, 8, 5, 10);
+      ScatterEffect_SpawnAtAngle(3, SCATTER_KIND_11, &pos, (angle + (Random() & 7)) & 0xFF, 8, (Random() & 7) + 6, 4, 14, 4, 6, 10);
+      ScatterEffect_SpawnAtAngle((Random() & 3) + 1, SCATTER_KIND_11, &pos, (angle + (Random() & 0xF)) & 0xFF, 8, (Random() & 7) + 4, 2, 6, 3, 5, 10);
       break;
     }
   }
@@ -2912,7 +2834,7 @@ bool8 Enemy_IsDead(Enemy* p) {
 // 8バイト2語の要素を先頭ワードの昇順に並べ替える (バブルソート)
 // 残差は31/33命令, 原典は count-1 を引数レジスタ上で潰してから番兵チェック後に退避するが agbcc は別レジスタに作る
 // Tier A-B 試済: count-1 を2回書く (34命令) / ローカル n に退避 / count-- 文
-NON_MATCH void FUN_080e8aa0(s32* p, s32 count) {
+NON_MATCH void SortPairsByKey(s32* p, s32 count) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 j;
@@ -2935,14 +2857,14 @@ NON_MATCH void FUN_080e8aa0(s32* p, s32 count) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080e8aa0.inc");
+  INCFUNC("asm/func/SortPairsByKey.inc");
 #endif
 }
 
 // target のタイルへ経路で行けるならそこを, 行けなければ4近傍のタイルの中心を近い順に調べて最初に行ける点を out に入れる, どれも駄目なら (30000, 0, 30000)
 // 属性の判定を TileAttr を返す static inline (TileAtIndex(idx)->attr) にすると ands の向きが揃って 487/491 命令
 // 残差は idx をスタックに置く (原典) かレジスタに置くかの割当と, 原典が TilePosAtIndex の pos 引数を毎回 r10 から r9 へ写す点
-NON_MATCH void FUN_080e8ae4(Enemy* p, Vec3* out, Vec3* target) {
+NON_MATCH void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
 #ifdef NONMATCHING_C
   s32 cands[4][2];
   Vec3 pos;
@@ -2971,7 +2893,7 @@ NON_MATCH void FUN_080e8ae4(Enemy* p, Vec3* out, Vec3* target) {
   Vec3_Diff(&d, &pos, &p->mover.pos);
   cands[3][0] = d.x * d.x + d.z * d.z;
   cands[3][1] = idx - gCollisionMap->tiledata->width;
-  FUN_080e8aa0(cands[0], 4);
+  SortPairsByKey(cands[0], 4);
 
   for (i = 0; i < 4; i++) {
     if (!(TileAtIndex(cands[i][1])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL))) {
@@ -2984,7 +2906,7 @@ NON_MATCH void FUN_080e8ae4(Enemy* p, Vec3* out, Vec3* target) {
   }
   out->x = 30000, out->y = 0, out->z = 30000;
 #else
-  INCFUNC("asm/func/FUN_080e8ae4.inc");
+  INCFUNC("asm/func/Enemy_FindReachablePosNear.inc");
 #endif
 }
 
@@ -2992,12 +2914,12 @@ void FUN_080e8f20(Enemy* p, s32 param_2) {
   p->unk_21e = FUN_08240b98(&p->unk_204, param_2);
 
   if (p->unk_21e == 0xB546) {
-    FUN_080e8ae4(p, &p->unk_204, &p->unk_204);
+    Enemy_FindReachablePosNear(p, &p->unk_204, &p->unk_204);
   }
 }
 
 // 進む向きの 32 先のタイルが今の高さより高いか, 止まっていれば 0, 呼び出し元は見つかっていない
-s32 FUN_080e8f5c(Enemy* p) {
+s32 Enemy_IsBlockedAhead(Enemy* p) {
   Vec3 ofs;
   Vec3 next;
   CollisionMapTile* tile;
@@ -3109,10 +3031,11 @@ static s32 UNUSED Enemy_GetFamily(Enemy* p) {
   return 0;
 }
 
-NAKED void FUN_080e9178(Enemy* p) { INCFUNC("asm/func/FUN_080e9178.inc"); }
+// 倒した敵を種族ごとと系統 (ビースト/シング/ファントム/アンデッド/イモータル) ごとの撃破数に 9999 まで数える
+NAKED void Enemy_AddKillCount(Enemy* p) { INCFUNC("asm/func/Enemy_AddKillCount.inc"); }
 
 // flags4 に溜まった要求を優先順に1つ処理して, 処理した印を落とす, 何か処理したら TRUE
-bool32 FUN_080eafdc(Enemy* p) {
+bool32 Enemy_ProcessRequests(Enemy* p) {
   if (Enemy_IsDead(p)) {
     return FALSE;
   }
@@ -3127,8 +3050,8 @@ bool32 FUN_080eafdc(Enemy* p) {
     }
     if (Enemy_TestFlag4(p, ENEFLAG4_UNK_1)) {
       Enemy_ResetState(p, 3, 0, 0);
-      Enemy_EnterState(p, p->unk_594, ES_SLEEP);
-      p->unk_192 = p->unk_18e;
+      Enemy_EnterState(p, p->handlerSleep, ES_SLEEP);
+      p->sleepTimer = p->unk_18e;
       Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
       return TRUE;
     }
@@ -3144,8 +3067,8 @@ bool32 FUN_080eafdc(Enemy* p) {
   }
 
   if (Enemy_TestFlag4(p, ENEFLAG4_UNK_7)) {
-    if (p->unk_5ac != NULL) {
-      p->unk_5ac(p);
+    if (p->onAttackRequest != NULL) {
+      p->onAttackRequest(p);
     }
     Enemy_ClearFlags4(p, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8);
     return TRUE;
@@ -3161,7 +3084,7 @@ bool32 FUN_080eafdc(Enemy* p) {
 }
 
 // ENEFLAG4_UNK_4 / UNK_5 が立っていればスプライトの座標を乱数で ±5 / ±8 ずらして, その印を落とす
-bool32 FUN_080eb168(Enemy* p) {
+bool32 Enemy_ShakeSprite(Enemy* p) {
   if (Enemy_IsDead(p)) {
     return FALSE;
   }
@@ -3193,7 +3116,7 @@ NAKED bool8 FUN_080eb2a0(Enemy* p) { INCFUNC("asm/func/FUN_080eb2a0.inc"); }
 // 道具欄をランダムな位置から16スロット分走査して, 持っている道具を1つ選ぶ (チョコまみれは除く)
 // 残差は62/62命令でブロック配置のみ, 原典は見つかった側のブロックをループの外 (return FALSE の後ろ) に置く
 // Tier A-C 試済 (for/while(TRUE), break+i==16, s16 ローカル経由)
-NON_MATCH bool32 FUN_080ec438(s16* outSlot, s16* outItem, s16* outRot) {
+NON_MATCH bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot) {
 #ifdef NONMATCHING_C
   s16 slot;
   s16 i;
@@ -3212,7 +3135,7 @@ NON_MATCH bool32 FUN_080ec438(s16* outSlot, s16* outItem, s16* outRot) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080ec438.inc");
+  INCFUNC("asm/func/PickItemToSteal.inc");
 #endif
 }
 
@@ -3220,15 +3143,15 @@ void nop_080ec4c8(void) {}
 
 void nop_080ec4cc(void) {}
 
-// 0x300F, gStat->unk_308 を丸ごと 0 にする
-void Cmd_300F(void) { ClearMemory(gStat->unk_308, sizeof(gStat->unk_308)); }
+// 撃破記録の表を空にする
+void Cmd_300F(void) { ClearMemory(gStat->defeatedEnemyLog, sizeof(gStat->defeatedEnemyLog)); }
 
 // 0x308 の表の空き (3語目の [1] が 0) を先頭から探す, 無ければ NULL
-u16* FUN_080ec4ec(void) {
+u16* DefeatedEnemyLog_FindFree(void) {
   u16* r;
   s32 i;
 
-  for (i = 0, r = gStat->unk_308; i < 20; r += 3, i++) {
+  for (i = 0, r = gStat->defeatedEnemyLog; i < 20; r += 3, i++) {
     if (r[1] == 0) {
       return r;
     }
@@ -3237,11 +3160,11 @@ u16* FUN_080ec4ec(void) {
 }
 
 // 0x308 の表から先頭2語が (a, b) の行を探す, 無ければ NULL
-u16* FUN_080ec518(u32 a, u32 b) {
+u16* DefeatedEnemyLog_Find(u32 a, u32 b) {
   u16* t;
   s32 i;
 
-  for (i = 0, t = gStat->unk_308; i < 20; i++) {
+  for (i = 0, t = gStat->defeatedEnemyLog; i < 20; i++) {
     if (t[i * 3] == a && t[i * 3 + 1] == b) {
       return &t[i * 3];
     }
@@ -3249,7 +3172,7 @@ u16* FUN_080ec518(u32 a, u32 b) {
   return NULL;
 }
 
-// mapFlags の MPF_UNK_2 が立っている間, unk_308 の表の使用中の件ごとに [2] を減らし, 尽きた件を空きにする
+// MPF_UNK_2 のマップで撃破記録の残り回数を減らし, 尽きた件を消して再出現できるようにする
 void Cmd_A2E4(void) {
   s32 i;
 
@@ -3257,7 +3180,7 @@ void Cmd_A2E4(void) {
     return;
   }
   for (i = 0; i < 20; i++) {
-    u16* entry = &gStat->unk_308[i * 3];
+    u16* entry = &gStat->defeatedEnemyLog[i * 3];
 
     if (entry[1] != 0 && --entry[2] == 0) {
       entry[1] = 0;
@@ -3265,16 +3188,16 @@ void Cmd_A2E4(void) {
   }
 }
 
-// 0x308 の表に (a, b) を登録する, 既にあるか空きが無ければ何もしない
-void FUN_080ec5b4(u16 a, u16 b) {
-  u16* r = FUN_080ec518(a, b);
+// 倒した敵 (マップのスクリプト ID, Mover ID) を撃破記録に載せ, 再出現までの残り回数を入れる
+void DefeatedEnemyLog_Add(u16 a, u16 b) {
+  u16* r = DefeatedEnemyLog_Find(a, b);
   EnemyManager* m;
 
   if (r != NULL) {
     return;
   }
 
-  r = FUN_080ec4ec();
+  r = DefeatedEnemyLog_FindFree();
   if (r == NULL) {
     return;
   }
@@ -3289,8 +3212,9 @@ void FUN_080ec5b4(u16 a, u16 b) {
   r[2] = m->unk_30;
 }
 
-bool32 FUN_080ec5f0(u16 param_1, u16 param_2) {
-  if (FUN_080ec518(param_1, param_2) == 0 && FUN_080ec4ec() != 0) {
+// 撃破記録に無く空きもあれば TRUE, MPF_UNK_2 のマップで敵を出してよいかの判定に使う
+bool8 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2) {
+  if (DefeatedEnemyLog_Find(param_1, param_2) == 0 && DefeatedEnemyLog_FindFree() != 0) {
     return TRUE;
   }
 

@@ -17,7 +17,8 @@
 #include "vec3.h"
 #include "vm.h"
 
-// ドヴァリン, ボス戦前の人型のイベント時もこれ使う
+// ドヴァリン(BOSS_DVALINN), 巨大なクラーケンのようなボス
+// 攻撃: 腕, 岩, 体当たり, バブルブレス, ダークブレス, 墨玉
 typedef struct Dvalinn {
   Boss base;                                 // 0x000
   u8 unk_158;                                // 0x158
@@ -85,21 +86,21 @@ COMMON_DATA u8 u8_03002c84[0x03002C90 - 0x03002C84] = {};  // unused?
 void BlendPlttToColor(rgb555* dst, rgb555* src, rgb555 color, s32 t, s32 shift);
 void Entity082047f0_SetPltt(struct Entity082047f0* p, rgb555* pltt);
 s32 Entity081ea120_Spawn(Vec3* pos, s32 count, u32 param_3, u32 animIdx, u32 plttIdx);
-s32 Entity081ea820_Throw(Mover* from, Mover* target, Vec3* vel, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
-s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
+s32 Octorok_Throw(Mover* from, Mover* target, Vec3* vel, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
+s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 struct Entity082047f0* Entity082047f0_Create(Mover* mover);
 Entity* Entity081ea120_Create(s32 param_1, s32 param_2);
 void Entity082047f0_SetFlags(struct Entity082047f0* p, u32 flags);
 void Entity082047f0_ClearFlags(struct Entity082047f0* p, u32 flags);
 void Entity082047f0_SetMode(struct Entity082047f0* p, u32 mode);
-void FUN_0820361c(Vec3* pos, Vec3* target, u32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14);
+s32 InkBallShot_SpawnHoming(Vec3* pos, Vec3* target, u32 speed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl);
 void Entity082047f0_RequestEnd(struct Entity082047f0* p);
-void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9);
-void FUN_08204d04(Vec3* pos, u32 param_2);
+void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9);
+void Entity08204cb8_Spawn(Vec3* pos, u32 param_2);
 struct Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
+    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
-extern const u32 u32_082526a4[7];
+const __attribute__((section(".rodata.faraddr"))) u32 u32_082526a4[7] = {8, 9, 10, 11, 12, 5, 12};
 
 const u16 u16_ARRAY_085ae5fc[8] = {1536, 1536, 1536, 2304, 2304, 2304, 2304, 1536};  // 0x085AE5FC
 
@@ -278,7 +279,7 @@ void FUN_081fad7c(Dvalinn* p, s32 radius) {
   angle = Random();
   pos.x += POLAR_Z(radius, angle);
   pos.z += POLAR_X(radius, angle);
-  FUN_08204d04(&pos, 1);
+  Entity08204cb8_Spawn(&pos, 1);
 }
 
 // 残差は CpuFill32 の 0 を書く位置と p の写し方, 原典は Vec3* と 3 つの値を受ける inline で p を作る形 (FUN_081fc890 と同じ, 139/140 まで寄る)
@@ -333,7 +334,7 @@ NON_MATCH void FUN_081fafd4(void) {
     }
     pos.y = (GetTileAt(&pos)->heightStairs & 0xF) << 8;
     if ((u8)Random() < 128) {
-      FUN_08204d04(&pos, 1);
+      Entity08204cb8_Spawn(&pos, 1);
     } else {
       Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
@@ -349,7 +350,7 @@ NON_MATCH void FUN_081fafd4(void) {
     }
     pos.y = (GetTileAt(&pos)->heightStairs & 0xF) << 8;
     if ((u8)Random() < 128) {
-      FUN_08204d04(&pos, 1);
+      Entity08204cb8_Spawn(&pos, 1);
     } else {
       Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
@@ -587,7 +588,7 @@ NON_MATCH void FUN_081fb664(Dvalinn* p) {
         if (vel.z < -48) {
           vel.z = -48;
         }
-        Entity081ea820_Throw(&from, target, &vel, p->unk_7f0, 30, 0, 10);
+        Octorok_Throw(&from, target, &vel, p->unk_7f0, 30, 0, 10);
         ns->timer1++;
       }
       if (ns->timer1 > 3) {
@@ -631,7 +632,7 @@ NON_MATCH void FUN_081fb664(Dvalinn* p) {
         if (vel.z < -48) {
           vel.z = -48;
         }
-        Entity081ea820_Throw(&from, target, &vel, p->unk_7f0, 30, 0, 10);
+        Octorok_Throw(&from, target, &vel, p->unk_7f0, 30, 0, 10);
         ns->timer1++;
       }
       if (ns->timer1 > 3) {
@@ -1118,7 +1119,7 @@ void FUN_081fc658(Dvalinn* p) {
     Boss_RequestState(&p->base, 14);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
 }
 
@@ -1127,7 +1128,7 @@ void FUN_081fc69c(Dvalinn* p) {
     Boss_RequestState(&p->base, 15);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
 }
 
@@ -1136,7 +1137,7 @@ void FUN_081fc6e0(Dvalinn* p) {
     Boss_RequestState(&p->base, 17);
   }
   if (p->base.subStateDone) {
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
 }
 
@@ -1150,7 +1151,7 @@ void FUN_081fc724(Dvalinn* p) {
   MainSprite_Hide(&p->sprites[1]);
   AuxSprite_Hide(&p->auxSprite);
   if (boss->subStateDone) {
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   }
 }
 
@@ -1165,7 +1166,7 @@ void FUN_081fc790(Dvalinn* p) {
   MainSprite_Hide(&p->sprites[1]);
   AuxSprite_Hide(&p->auxSprite);
   if (boss->subStateDone) {
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   }
 }
 
@@ -1505,7 +1506,7 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
           break;
         }
         case 1: {
-          FUN_0820361c(&boss->mover.pos, &p->unk_820[ns->timer0], p->unk_7f6, p->unk_7ec, 15, 2, 10, 3000, 18, p->unk_7ee, 5, 2, 10, 600);
+          InkBallShot_SpawnHoming(&boss->mover.pos, &p->unk_820[ns->timer0], p->unk_7f6, p->unk_7ec, 15, 2, 10, 3000, 18, p->unk_7ee, 5, 2, 10, 600);
           PlaySound_082406e0(SONG_440);
           ns->timer0++;
           NestedState_Advance1(ns);
@@ -1659,9 +1660,9 @@ NON_MATCH void FUN_081fd7fc(Dvalinn* p, s32 timer) {
         spawn.z -= 32;
         Vec3_Add(&spawn, pos);
         if (rnd < 128) {
-          FUN_080df148(&spawn, &vel, 4, 300, 10, p->unk_7e8, 5, 8, 10);
+          Entity080df420_Spawn(&spawn, &vel, 4, 300, 10, p->unk_7e8, 5, 8, 10);
         } else {
-          FUN_080df148(&spawn, &vel, 8, 300, 10, p->unk_7e8, 5, 8, 10);
+          Entity080df420_Spawn(&spawn, &vel, 8, 300, 10, p->unk_7e8, 5, 8, 10);
         }
         ns->timer0++;
       }
@@ -1819,7 +1820,7 @@ NON_MATCH void FUN_081fdd18(Dvalinn* p, s32 timer) {
         pos.z += Trig_Fix12ToInt(COS(rnd) * 64);
         bossPos = &boss->mover.pos;
         Vec3_Add(&pos, bossPos);
-        DustManager_Emit(1, ArcTan2_8(gPlayerPtr[0]->mover.pos.x - bossPos->x, gPlayerPtr[0]->mover.pos.z - bossPos->z), 0, 16, 8, 32, p->unk_7ea, 2, &pos);
+        SporeManager_Emit(1, ArcTan2_8(gPlayerPtr[0]->mover.pos.x - bossPos->x, gPlayerPtr[0]->mover.pos.z - bossPos->z), 0, 16, 8, 32, p->unk_7ea, 2, &pos);
       }
       Boss_AdvanceAnim(boss, &p->sprites[0], &p->gfx);
       if (++ns->timer0 > 60) {
@@ -2649,7 +2650,7 @@ NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
 NON_MATCH void Dvalinn_PollMessages(Dvalinn* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  MsgQueue* queue = &boss->msgQueue;
+  MsgQueue* queue = &boss->mq;
   s32 i;
 
   for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
@@ -2668,7 +2669,7 @@ NON_MATCH void Dvalinn_PollMessages(Dvalinn* p) {
         p->sprites[0].pos.x = boss->mover.pos.x;
         p->sprites[0].pos.y = boss->mover.pos.y;
         p->sprites[0].pos.z = boss->mover.pos.z;
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 10: {
@@ -2821,7 +2822,7 @@ NON_MATCH void FUN_081ffdb0(Dvalinn* p) {
 }
 
 s32 Dvalinn_Update(Dvalinn* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     FUN_08022e20(&p->base);
     FUN_081ffd9c(p);
     FUN_081fc86c(p);

@@ -14,13 +14,13 @@
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _0813D5CC @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #0x11
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0813c738
+	bl Curoro_InitAnims
 	ldr r3, _0813D5D0 @ =0x0000025D
 	adds r0, r7, r3
 	ldrb r0, [r0]
@@ -1000,7 +1000,7 @@ _0813DD78:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r1, [sp, #0x84]
 	lsrs r2, r1, #0x10
 	ldr r4, [sp, #0x8c]
@@ -1098,7 +1098,7 @@ _0813DE42:
 	beq _0813DE52
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _0813DE7C @ =FUN_080f48ac
+	ldr r2, _0813DE7C @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _0813DE52:
@@ -1122,7 +1122,7 @@ _0813DE5E:
 	bl Mover_SetCollision
 	b _0813DE8C
 	.align 2, 0
-_0813DE7C: .4byte FUN_080f48ac
+_0813DE7C: .4byte Enemy_OnCWolfMessage
 _0813DE80:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x18c]
@@ -1498,10 +1498,10 @@ _0813E0FC:
 	str r2, [r4]
 	ldr r5, [sp, #0x130]
 	str r3, [r5]
-	ldr r6, _0813E2C8 @ =FUN_0813b358
+	ldr r6, _0813E2C8 @ =Curoro_StateDamaged
 	ldr r0, [sp, #0x138]
 	str r6, [r0]
-	ldr r1, _0813E2CC @ =FUN_0813b640
+	ldr r1, _0813E2CC @ =Curoro_StateDying
 	ldr r3, [sp, #0x13c]
 	str r1, [r3]
 	ldr r0, _0813E2D0 @ =FUN_080f44f4
@@ -1550,10 +1550,10 @@ _0813E0FC:
 	str r0, [r5]
 	ldr r6, [sp, #0x14c]
 	str r2, [r6]
-	ldr r0, _0813E2F0 @ =FUN_080f47c8
+	ldr r0, _0813E2F0 @ =Enemy_StateBlownAway
 	ldr r1, [sp, #0x158]
 	str r0, [r1]
-	ldr r0, _0813E2F4 @ =FUN_080f54e4
+	ldr r0, _0813E2F4 @ =Enemy_StateFallDeath
 	ldr r3, [sp, #0x144]
 	str r0, [r3]
 	ldr r4, [sp, #0x11c]
@@ -1561,7 +1561,7 @@ _0813E0FC:
 	ldr r0, _0813E2F8 @ =FUN_080f6e64
 	ldr r5, [sp, #0x180]
 	str r0, [r5]
-	ldr r0, _0813E2FC @ =FUN_080f64f0
+	ldr r0, _0813E2FC @ =Enemy_OnDamaged
 	ldr r6, [sp, #0xf0]
 	str r0, [r6]
 	ldr r0, _0813E300 @ =FUN_080f84d4
@@ -1587,7 +1587,7 @@ _0813E0FC:
 	movs r3, #0xbf
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _0813E314 @ =enemy_curoro_0813c7ac
+	ldr r0, _0813E314 @ =Curoro_OnReset
 	str r0, [r1]
 	ldr r4, _0813E318 @ =0x000005FC
 	adds r0, r7, r4
@@ -1636,7 +1636,7 @@ _0813E0FC:
 	str r1, [r5]
 _0813E274:
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -1665,8 +1665,8 @@ _0813E2B8: .4byte FUN_0813ac34
 _0813E2BC: .4byte FUN_0813ad64
 _0813E2C0: .4byte FUN_080f62b0
 _0813E2C4: .4byte FUN_080f62ac
-_0813E2C8: .4byte FUN_0813b358
-_0813E2CC: .4byte FUN_0813b640
+_0813E2C8: .4byte Curoro_StateDamaged
+_0813E2CC: .4byte Curoro_StateDying
 _0813E2D0: .4byte FUN_080f44f4
 _0813E2D4: .4byte FUN_080f410c
 _0813E2D8: .4byte FUN_080f0430
@@ -1675,16 +1675,16 @@ _0813E2E0: .4byte FUN_080e73c8
 _0813E2E4: .4byte FUN_080f0320
 _0813E2E8: .4byte Enemy_080eff14
 _0813E2EC: .4byte FUN_080e72b0
-_0813E2F0: .4byte FUN_080f47c8
-_0813E2F4: .4byte FUN_080f54e4
+_0813E2F0: .4byte Enemy_StateBlownAway
+_0813E2F4: .4byte Enemy_StateFallDeath
 _0813E2F8: .4byte FUN_080f6e64
-_0813E2FC: .4byte FUN_080f64f0
+_0813E2FC: .4byte Enemy_OnDamaged
 _0813E300: .4byte FUN_080f84d4
 _0813E304: .4byte FUN_080f624c
 _0813E308: .4byte FUN_080f56ec
 _0813E30C: .4byte FUN_080f5b34
 _0813E310: .4byte FUN_080f5fac
-_0813E314: .4byte enemy_curoro_0813c7ac
+_0813E314: .4byte Curoro_OnReset
 _0813E318: .4byte 0x000005FC
 _0813E31C: .4byte 0x000005AC
 _0813E320: .4byte FUN_0813ccf0
@@ -1864,7 +1864,7 @@ _0813E46E:
 _0813E472:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _0813E47A:
 	adds r0, r7, #0
 	movs r1, #0
@@ -2109,7 +2109,7 @@ _0813E5CA:
 	ldr r0, _0813E674 @ =Curoro_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0813E678

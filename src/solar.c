@@ -2,10 +2,10 @@
 #include "solar.h"
 
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
 #include "item.h"
+#include "link_session.h"
 #include "player.h"
 #include "save.h"
 #include "solar_sensor.h"
@@ -47,8 +47,8 @@ const u8 u8_ARRAY_08dbd798[6][2] = {
 };  // 0x08DBD798
 
 // 自分が何番目の参加者かを返す, セッションが無ければ -1
-static inline s32 Entity9A9F_GetPlayerIdx(void) {
-  Entity9A9F* p = gEntity9A9F;
+static inline s32 LinkSession_GetPlayerIdx(void) {
+  LinkSession* p = gLinkSession;
 
   if (p == NULL) {
     return -1;
@@ -155,7 +155,7 @@ static s32 GetSunGaugeMinLx(s32 sunGauge) {
 // 生の lx に環境要因を掛ける, ライジングサン、天候、屋内判定でここが最終的な明るさを決める
 NON_MATCH s32 ApplyLxModifiers(s32 lx) {
 #ifdef NONMATCHING_C
-  if ((gGameFlags & FLAG030047A4_LINK) == 0) {
+  if ((gGameFlags & GAMEFLAG_LINK) == 0) {
     s32 slv;
 
     if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->equipBuffs & EBUFF_AET_SUNLIGHT)) {
@@ -263,8 +263,8 @@ NON_MATCH void UpdateOverheat(Taiyo* _ UNUSED) {
 // 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める
 NON_MATCH void ApplySunlightGain(Taiyo* p) {
 #ifdef NONMATCHING_C
-  if (gPlayerPtr[0] != NULL && (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_12)) == 0) {
-    if ((gGameFlags & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->mode != PMODE_LOCKED) {
+  if (gPlayerPtr[0] != NULL && (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_CROSSOVER)) == 0) {
+    if ((gGameFlags & GAMEFLAG_EVENT) == 0 && gPlayerPtr[0]->mode != PMODE_LOCKED) {
       if (gInput[0].down == 0) {
         if (p->idleTimer < 900) {
           p->idleTimer++;
@@ -380,8 +380,8 @@ NON_MATCH u32 UpdateDebugLx(Taiyo* p) {
 #ifdef NONMATCHING_C
   Keys16 down;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
-    s32 idx = Entity9A9F_GetPlayerIdx();
+  if (gGameFlags & GAMEFLAG_LINK) {
+    s32 idx = LinkSession_GetPlayerIdx();
 
     down = gInput[idx].down;
   } else {

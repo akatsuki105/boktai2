@@ -5,6 +5,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
 #include "sound.h"
 #include "sprite.h"
 #include "sprite_aux.h"
@@ -43,7 +44,7 @@ bool8 FUN_081ea87c(Flamethrower* item) {
       return FALSE;
     }
 
-    if (item->unk_128 == 0 && !(gGameFlags & FLAG030047A4_LINK)) {
+    if (item->unk_128 == 0 && !(gGameFlags & GAMEFLAG_LINK)) {
       PlaySound_082406e0(SE_FLAMETHROWER_424);
     }
     if (item->unk_128 == 1 && item->unk_130 > 0) {
@@ -117,10 +118,10 @@ s32 Entity081eaf6c_Update(Entity081eaf6c* p) {
   if (p->activeMask == 0) {
     return 0;
   }
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return 0;
   }
 
@@ -162,7 +163,7 @@ const Vec3 vec3_ARRAY_085ae498[3] = {
 
 // 火炎の当たり判定を作る, a が 0 なら vec3_ARRAY_085ae498[b] をそのまま, それ以外は x と z を入れ替えて半サイズにする
 // 残差は a != 0 側の halfSize の x/y を原典は1語にまとめて書くのに, こちらは2回の読み書きになること (116/111命令)
-NON_MATCH void FUN_081eabd0(Flamethrower* item, s32 a, s32 b, s32 power, s32 knockback, s32 invincibleTime) {
+NON_MATCH void FUN_081eabd0(Flamethrower* item, s32 a, s32 b, s32 power, s32 knockback, s32 iframes) {
 #ifdef NONMATCHING_C
   Vec3 halfSize;
   Vec3 offset;
@@ -212,7 +213,7 @@ NON_MATCH void FUN_081eabd0(Flamethrower* item, s32 a, s32 b, s32 power, s32 kno
   }
 
   Hitbox_Init(&item->hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, HIM_5, &halfSize, &offset);
-  Hitbox_SetAttack(&item->hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_FLAME, invincibleTime);  // 0x40 は武器以外の攻撃
+  Hitbox_SetAttack(&item->hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_FLAME, iframes);  // 0x40 は武器以外の攻撃
   Hitbox_SetPos(&item->hitbox, &item->hitboxPos, 0);
   Hitbox_SetHandler(&item->hitbox, FUN_081eabcc, item);
   item->hitbox.angle = angle;
@@ -234,16 +235,16 @@ void FUN_081eace8(Flamethrower* item, s32 a, s32 b, s32 c) {
 
 // 空きスロットに火炎を1つ出す, flags の bit0 が立っていれば Mover を伸びる向きへずらして登録する
 // 残差は各 case で v の定数ロードが pos の読み込みより先に出る順序だけ (176/176命令)
-NON_MATCH Flamethrower* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 b, s32 c, s32 power, s32 knockback, s32 invincibleTime, s32 unk_130, u32 flags) {
+NON_MATCH Flamethrower* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 b, s32 c, s32 power, s32 knockback, s32 iframes, s32 unk_130, u32 flags) {
 #ifdef NONMATCHING_C
   Flamethrower* item;
   Mover* mover;
   const Vec3* v;
 
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return NULL;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return NULL;
   }
   if (gEntity081eaf6c == NULL) {
@@ -305,7 +306,7 @@ NON_MATCH Flamethrower* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 
     FUN_08002a48(mover);
   }
 
-  FUN_081eabd0(item, a, b, power, knockback, invincibleTime);
+  FUN_081eabd0(item, a, b, power, knockback, iframes);
   FUN_081eace8(item, a, b, c);
   return item;
 #else

@@ -23,12 +23,12 @@ typedef u8 EntityKind;
 #define ENTITY_UNK_13 13
 #define ENTITY_KINDS 14
 
-// EntityList.disableFlags
-typedef u32 EntityDisableFlags;    // セットされるとき
-#define ENTITY_DISABLE_0 (1 << 0)  //
-#define ENTITY_DISABLE_1 (1 << 1)  //
-#define ENTITY_DISABLE_2 (1 << 2)  // クイックチェンジ, スタートメニュー中 (ショップなどではセットされない)
-#define ENTITY_DISABLE_3 (1 << 3)  // 会話中
+// gSuspendFlags / EntityList.suspendMask, ゲームの進行を一時的に止めている原因, 原因がなくなれば再開する
+typedef u32 SuspendFlags;
+#define SUSPEND_LINK_WAIT (1 << 0)  // 0x1, 通信相手の応答待ち, 受信できない間は HUD の更新や通信のキー入力の取り込みも止まる
+#define SUSPEND_PAUSE (1 << 1)      // 0x2, ポーズ中, BGM も止める
+#define SUSPEND_MENU (1 << 2)       // 0x4, クイックチェンジ, スタートメニュー中 (ショップなどではセットされない)
+#define SUSPEND_EVENT (1 << 3)      // 0x8, イベント中, GAMEFLAG_EVENT と一緒に立ち BGM も止める
 
 // Entity.unk_12
 #define E_FLAG_DELETE (1 << 0)  // 1 にすると Entity を削除する
@@ -55,14 +55,14 @@ static_assert(sizeof(Entity) == 24);
 // --------------------------------------------
 
 typedef struct {
-  Entity* head;                     // 0x00
-  EntityDisableFlags disableFlags;  // 0x04, (EntityList.disableFlags & gEntityDisableFlags) != 0 のときはEntityListのEntityを更新しない
+  Entity* head;              // 0x00
+  SuspendFlags suspendMask;  // 0x04, このリストを止める原因, gSuspendFlags と重なるビットがあればリストの Entity を更新しない
 } EntityList;
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 extern EntityList gEntityManager[ENTITY_KINDS];
-extern EntityDisableFlags gEntityDisableFlags;  // 0x030044BC
+extern SuspendFlags gSuspendFlags;  // 0x030044BC
 
 // --------------------------------------------
 

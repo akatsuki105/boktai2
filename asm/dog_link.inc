@@ -194,7 +194,7 @@ _081C5DE0:
 	adds r7, #3
 	adds r0, r5, r7
 	strb r2, [r0]
-	ldr r3, _081C5EB4 @ =FUN_080e6794
+	ldr r3, _081C5EB4 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	adds r7, #1
 	adds r0, r5, r7
@@ -281,7 +281,7 @@ _081C5E9C:
 	.align 2, 0
 _081C5EAC: .4byte 0x00000469
 _081C5EB0: .4byte 0x0000046A
-_081C5EB4: .4byte FUN_080e6794
+_081C5EB4: .4byte Enemy_WaitPendingState
 _081C5EB8: .4byte 0x0000046B
 _081C5EBC: .4byte 0x00000482
 _081C5EC0: .4byte 0x00000551
@@ -1077,7 +1077,7 @@ FUN_081c64b4: @ 0x081C64B4
 	movs r1, #8
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	adds r0, r4, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
@@ -1603,7 +1603,7 @@ FUN_081c6850: @ 0x081C6850
 	str r5, [sp, #8]
 	adds r0, r5, #0
 	mov r1, sb
-	bl FUN_080e3a14
+	bl Enemy_InitHitboxWithAtk
 	movs r0, #0x80
 	lsls r0, r0, #1
 	mov r2, sb
@@ -2359,7 +2359,7 @@ _081C6E86:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081C6EA0
@@ -2383,7 +2383,7 @@ _081C6EB2:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081C6F3C
@@ -2408,7 +2408,7 @@ _081C6EE4:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081C6EFE
@@ -2432,7 +2432,7 @@ _081C6F10:
 	adds r1, r4, #0
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081C6F4A
@@ -2703,7 +2703,7 @@ FUN_081c7108: @ 0x081C7108
 	cmp r0, #0
 	ble _081C7204
 	adds r0, r5, #0
-	bl FUN_080f00ec
+	bl Enemy_Alert
 	ldr r1, _081C7184 @ =0x00000222
 	adds r2, r5, r1
 	movs r0, #3
@@ -3511,7 +3511,7 @@ _081C7722:
 	add r2, r8
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_080ec438
+	bl PickItemToSteal
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081C7758
@@ -9368,7 +9368,7 @@ _081CA3C6:
 	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	adds r0, r5, #0
 	bl PlayEnemyDeathCry
 	movs r6, #0xbc
@@ -9396,9 +9396,9 @@ _081CA3C6:
 	strh r0, [r2]
 _081CA43A:
 	adds r0, r5, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	adds r0, r5, #0
-	bl FUN_080e4b3c
+	bl Enemy_UpdateJump
 	adds r0, r5, #0
 	bl Enemy_SnapToFloor
 	ldr r1, _081CA500 @ =0x0000046E
@@ -9628,9 +9628,9 @@ FUN_081ca614: @ 0x081CA614
 	sub sp, #0x28
 	adds r5, r0, #0
 	adds r4, r1, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	adds r0, r5, #0
-	bl FUN_080e4b3c
+	bl Enemy_UpdateJump
 	adds r0, r5, #0
 	bl Enemy_SnapToFloor
 	ldr r0, [r5, #0x44]
@@ -9912,7 +9912,7 @@ _081CA812:
 	movs r2, #0
 	bl Enemy_SetEmote
 	adds r0, r5, #0
-	bl FUN_080e6750
+	bl Enemy_RunScript
 	ldr r2, _081CA8B0 @ =0x000001DF
 	adds r0, r5, r2
 	ldrb r0, [r0]
@@ -10040,7 +10040,7 @@ _081CA920:
 	adds r3, r3, r7
 	mov ip, r3
 	strb r0, [r3]
-	ldr r1, _081CAA44 @ =FUN_080e6794
+	ldr r1, _081CAA44 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r4, _081CAA48 @ =0x0000046D
 	adds r4, r4, r7
@@ -10152,7 +10152,7 @@ _081CAA34: .4byte 0x00000484
 _081CAA38: .4byte 0x000001DF
 _081CAA3C: .4byte 0x00000469
 _081CAA40: .4byte 0x0000046A
-_081CAA44: .4byte FUN_080e6794
+_081CAA44: .4byte Enemy_WaitPendingState
 _081CAA48: .4byte 0x0000046D
 _081CAA4C: .4byte 0x0000046B
 _081CAA50: .4byte 0x00000553
@@ -12369,7 +12369,7 @@ _081CBB42:
 	movs r4, #0
 	ldr r2, [sp, #8]
 	strh r0, [r2]
-	ldr r1, _081CBC70 @ =FUN_080e6794
+	ldr r1, _081CBC70 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r3, _081CBC58 @ =0x0000046D
 	adds r3, r7, r3
@@ -12504,7 +12504,7 @@ _081CBC60: .4byte 0x00000553
 _081CBC64: .4byte 0xFFFFFDFF
 _081CBC68: .4byte 0x00000484
 _081CBC6C: .4byte 0x00000222
-_081CBC70: .4byte FUN_080e6794
+_081CBC70: .4byte Enemy_WaitPendingState
 _081CBC74: .4byte 0x00000543
 _081CBC78: .4byte 0x00000554
 _081CBC7C: .4byte 0x00000551
@@ -13324,7 +13324,7 @@ _081CC2A8:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5ed4
+	bl Enemy_MoveAlongNav
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081CC342
@@ -17958,7 +17958,7 @@ _081CE69C: .4byte 0x0000062C
 	thumb_func_start FUN_081ce6a0
 FUN_081ce6a0: @ 0x081CE6A0
 	push {lr}
-	bl FUN_080f06b0
+	bl Enemy_Update
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -18026,7 +18026,7 @@ _081CE716:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl Eff082473e0Emitter_Destroy
+	bl ElementalCondEmitter_Destroy
 	movs r0, #1
 	strb r0, [r5]
 _081CE72E:
@@ -18068,7 +18068,7 @@ _081CE76E:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -18093,7 +18093,7 @@ EnemyDogLink_Init: @ 0x081CE78C
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _081CE818 @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #0x15
@@ -19083,7 +19083,7 @@ _081CEFCC:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r4, [sp, #0x98]
 	lsrs r2, r4, #0x10
 	ldr r5, [sp, #0xa0]
@@ -19181,7 +19181,7 @@ _081CF096:
 	beq _081CF0A6
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _081CF0D0 @ =FUN_080f48ac
+	ldr r2, _081CF0D0 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _081CF0A6:
@@ -19205,7 +19205,7 @@ _081CF0B2:
 	bl Mover_SetCollision
 	b _081CF0E0
 	.align 2, 0
-_081CF0D0: .4byte FUN_080f48ac
+_081CF0D0: .4byte Enemy_OnCWolfMessage
 _081CF0D4:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x34]
@@ -19591,10 +19591,10 @@ _081CF30C:
 	str r1, [r2]
 	ldr r3, [sp, #0x160]
 	str r4, [r3]
-	ldr r1, _081CF520 @ =FUN_080f47c8
+	ldr r1, _081CF520 @ =Enemy_StateBlownAway
 	ldr r5, [sp, #0x16c]
 	str r1, [r5]
-	ldr r1, _081CF524 @ =FUN_080f54e4
+	ldr r1, _081CF524 @ =Enemy_StateFallDeath
 	ldr r6, [sp, #0x158]
 	str r1, [r6]
 	ldr r1, [sp, #0x130]
@@ -19602,7 +19602,7 @@ _081CF30C:
 	ldr r1, _081CF528 @ =FUN_080f6e64
 	ldr r2, [sp, #0x194]
 	str r1, [r2]
-	ldr r1, _081CF52C @ =FUN_080f64f0
+	ldr r1, _081CF52C @ =Enemy_OnDamaged
 	ldr r3, [sp, #0x114]
 	str r1, [r3]
 	ldr r1, _081CF530 @ =FUN_080f84d4
@@ -19628,7 +19628,7 @@ _081CF30C:
 	ldr r1, [sp, #0x30]
 	bl Map_InitNavAgent
 	adds r0, r7, #0
-	bl FUN_080e6204
+	bl Enemy_StepTowardPathNode
 	movs r3, #0xbf
 	lsls r3, r3, #3
 	adds r1, r7, r3
@@ -19683,7 +19683,7 @@ _081CF30C:
 	orrs r0, r1
 	str r0, [r4]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -19725,10 +19725,10 @@ _081CF510: .4byte FUN_080e73c8
 _081CF514: .4byte FUN_080f0320
 _081CF518: .4byte Enemy_080eff14
 _081CF51C: .4byte FUN_080e72b0
-_081CF520: .4byte FUN_080f47c8
-_081CF524: .4byte FUN_080f54e4
+_081CF520: .4byte Enemy_StateBlownAway
+_081CF524: .4byte Enemy_StateFallDeath
 _081CF528: .4byte FUN_080f6e64
-_081CF52C: .4byte FUN_080f64f0
+_081CF52C: .4byte Enemy_OnDamaged
 _081CF530: .4byte FUN_080f84d4
 _081CF534: .4byte FUN_080f624c
 _081CF538: .4byte FUN_080f56ec
@@ -19916,7 +19916,7 @@ _081CF6A6:
 _081CF6AA:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _081CF6B2:
 	adds r0, r7, #0
 	movs r1, #0
@@ -20195,7 +20195,7 @@ _081CF83A:
 	ldr r0, _081CF8F8 @ =EnemyDogLink_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081CF8FC

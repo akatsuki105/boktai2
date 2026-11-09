@@ -128,7 +128,7 @@
 	str r0, [sp, #8]
 	adds r0, r4, #0
 	add r3, sp, #0xc
-	bl FUN_08014730
+	bl ScatterEffect_Spawn
 _080F894E:
 	add sp, #0x1c
 	pop {r3, r4, r5}

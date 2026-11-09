@@ -34,7 +34,7 @@ _080E7402:
 	adds r0, r7, #0
 	movs r1, #0
 	bl Enemy_PlayAnim
-	ldr r1, _080E74E0 @ =FUN_080e6794
+	ldr r1, _080E74E0 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r5, _080E74E4 @ =0x0000046D
 	adds r5, r7, r5

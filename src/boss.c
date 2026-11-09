@@ -13,7 +13,7 @@
 IWRAM_DATA Boss* gBossList[8] = {};  // 0x030000A0
 
 void FUN_0802326c(Boss* p);
-void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
+void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 
 // hp の割合 (0..128) を作り直す
 static inline void Boss_UpdateHPRatio(Boss* p) {
@@ -55,12 +55,12 @@ s32 Boss_Init(Boss* p, u32 id, BossID bossID, Vec3* pos, u32 angle) {
   VEC3_SET(v, 0, Q8(1), 0);
   FUN_0823b47c(&p->mover, &v);
   Boss_SetAngle(p, angle);
-  MsgQueue_Register(&p->msgQueue, id, CLS_BOSS);
+  MsgQueue_Register(&p->mq, id, CLS_BOSS);
   return 0;
 }
 
 s32 Boss_Destroy(Boss* p) {
-  MsgQueue_Unregister(&p->msgQueue);
+  MsgQueue_Unregister(&p->mq);
   Mover_Unlink(&p->mover);
   Boss_Unregister(p->bossID);
   return 0;
@@ -247,7 +247,7 @@ void FUN_08022fb8(Boss* p, Vec3* pos) {
   if (p->unk_e4 != 0) {
     u16 id = p->unk_e4;
 
-    if (!TEST_FLAGS(gPlayerStates[0], 4)) {
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       argv[0] = pos->x;
       argv[1] = pos->y;
       argv[2] = pos->z;
@@ -268,7 +268,7 @@ void FUN_08023024(Boss* p, Vec3* pos) {
   if (p->unk_e6 != 0) {
     u16 id = p->unk_e6;
 
-    if (!TEST_FLAGS(gPlayerStates[0], 4)) {
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       argv[0] = pos->x;
       argv[1] = pos->y;
       argv[2] = pos->z;
@@ -349,7 +349,7 @@ void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4) {
   }
 }
 
-// ボスの位置から乱数でずらした位置で FUN_08015d3c を呼ぶ (unk_154 が立っている間、4 フレームに1回)
+// ボスの位置から乱数でずらした位置で Entity08015584_SpawnSprayOne を呼ぶ (unk_154 が立っている間、4 フレームに1回)
 // 残差は y の & 0x1F の定数を作る位置だけ (74 対 74), 原典は &pos.y のアドレスを作ってから定数を作る
 // 効いたもの: dx を u32 にする (z の dx - 0x7F が畳まれなくなる), 試済: y を式のまま書く (ldrsh になる), 未: Tier C
 NON_MATCH void FUN_0802326c(Boss* p) {
@@ -363,7 +363,7 @@ NON_MATCH void FUN_0802326c(Boss* p) {
   dy = _Random(table) & 0x1F;
   pos.y = p->mover.pos.y + dy;
   pos.z = p->mover.pos.z - (dx - 0x7F);
-  FUN_08015d3c(&pos, 1, 0, 0x40, 12, 12, 4, 4);
+  Entity08015584_SpawnSprayOne(&pos, 1, 0, Q6(1), 12, 12, 4, 4);
 #else
   INCFUNC("asm/func/FUN_0802326c.inc");
 #endif

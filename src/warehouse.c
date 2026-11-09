@@ -59,12 +59,10 @@ typedef struct Warehouse {
 static_assert(sizeof(Warehouse) == 5276);
 
 s32 Marquee_SetVarValue(s32 idx, s32 value);
-s32 FUN_080b9da0(ShopCursor* p, u8 mask);
 u32 Item_GetRotStageIcon(s32 slot);
 bool32 IsWeaponRegistered(slot32_t n);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void GetWeaponData(slot32_t n, WeaponData* data);
-void FUN_08094d1c(u8* param_1, s8* param_2);
+void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
 void FUN_080b649c(Warehouse* p);
@@ -209,7 +207,7 @@ NON_MATCH void FUN_080b5cac(Warehouse* p) {
 
       if (id >= 0) {
         p->sprites[slot + 3].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, id + 0x68, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
       } else {
         if (p->unk_1412 < 0) {
           p->unk_1412 = slot;
@@ -227,7 +225,7 @@ NON_MATCH void FUN_080b5cac(Warehouse* p) {
 
       if (id >= 0) {
         p->sprites[slot + 3].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, id + 0x68, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
       } else {
         if (p->unk_1413 < 0) {
           p->unk_1413 = slot;
@@ -332,7 +330,7 @@ void FUN_080b601c(Warehouse* p) {
     } else {
       unk1[i] = 0;
     }
-    anims[i] = id + 0x68;
+    anims[i] = ICON_ITEM(id);
     strIDs[i] = 0x2DF;
     Shop_GetSlotPos(&a[i].x, slot);
   }
@@ -355,12 +353,12 @@ void FUN_080b6114(Warehouse* p) {
 
   unk1[0] = 1;
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
-  anims[0] = GetNormalItemID(p->unk_1458[(u8)p->cursor.savedSlot]) + 0x68;
+  anims[0] = ICON_ITEM(GetNormalItemID(p->unk_1458[(u8)p->cursor.savedSlot]));
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, 32);
   unk1[1] = 0;
-  anims[1] = 0x68;
+  anims[1] = ICON_ITEM(ITEM_EARTHLY_NUT);
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
@@ -626,7 +624,7 @@ void FUN_080b69b8(Warehouse* p) {
     MainSprite_SetPose(&p->sprites[39], &p->icons, pose, PLAYMODE_LOOP);
     MessageWindow_Start(p->unk_13f8);
     MessageWindow_SetRect(2, 16, 28, 2);
-    FUN_08094d1c((u8*)&w, (s8*)&p->unk_1404);
+    WeaponData_ShowNameInWindow((u8*)&w, (s8*)&p->unk_1404);
     MainMenu_SetWeaponMarquee(&w, p->unk_13f8);
   }
 }
@@ -647,7 +645,7 @@ NON_MATCH void FUN_080b6a74(Warehouse* p) {
 
       if (id > 0) {
         p->sprites[slot + 3].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, id, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, ICON_WEAPON(id), PLAYMODE_LOOP);
       } else {
         if (p->unk_1412 < 0) {
           p->unk_1412 = slot;
@@ -670,7 +668,7 @@ NON_MATCH void FUN_080b6a74(Warehouse* p) {
 
       if (id > 0) {
         p->sprites[slot + 3].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, id, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, ICON_WEAPON(id), PLAYMODE_LOOP);
       } else {
         if (p->unk_1413 < 0) {
           p->unk_1413 = slot;
@@ -737,7 +735,7 @@ void FUN_080b6ca8(Warehouse* p) {
       unk1[i] = 0;
     }
 
-    anims[i] = id;
+    anims[i] = ICON_WEAPON(id);
     strIDs[i] = 0x2DF;
     Shop_GetSlotPos(&a[i].x, slot);
   }
@@ -760,7 +758,7 @@ void FUN_080b6dc4(Warehouse* p) {
 
   unk1[0] = 1;
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
-  anims[0] = GetWeaponID(p->unk_1458[(u8)p->cursor.savedSlot]);
+  anims[0] = ICON_WEAPON(GetWeaponID(p->unk_1458[(u8)p->cursor.savedSlot]));
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, 32);
@@ -1148,7 +1146,7 @@ void FUN_080b7900(Warehouse* p) {
     Marquee_Clear();
   } else {
     p->sprites[39].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[39], &p->icons, 207, PLAYMODE_LOOP);
+    MainSprite_SetPose(&p->sprites[39], &p->icons, ICON_TIMER_NONE, PLAYMODE_LOOP);
     MessageWindow_Start(p->unk_13fc);
     MessageWindow_SetRect(2, 16, 28, 2);
     Marquee_SetVarValue(0, gArmorDB[armor].defence);
@@ -1175,7 +1173,7 @@ NON_MATCH void FUN_080b79d8(Warehouse* p) {
 
       if (id >= 0) {
         p->sprites[slot + 3].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, id + 0x43, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, ICON_ARMOR(id), PLAYMODE_LOOP);
       } else {
         if (p->unk_1412 < 0) {
           p->unk_1412 = slot;
@@ -1198,7 +1196,7 @@ NON_MATCH void FUN_080b79d8(Warehouse* p) {
 
       if (id >= 0) {
         p->sprites[slot + 3].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, id + 0x43, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[slot + 3], &p->icons, ICON_ARMOR(id), PLAYMODE_LOOP);
       } else {
         if (p->unk_1413 < 0) {
           p->unk_1413 = slot;
@@ -1384,7 +1382,7 @@ void FUN_080b7f20(Warehouse* p) {
       unk1[i] = 0;
     }
 
-    anims[i] = id + 0x43;
+    anims[i] = ICON_ARMOR(id);
     strIDs[i] = 0x2DF;
     Shop_GetSlotPos(&a[i].x, slot);
   }
@@ -1407,12 +1405,12 @@ void FUN_080b8044(Warehouse* p) {
 
   unk1[0] = 1;
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
-  anims[0] = ARMORS(p->unk_1458[(u8)p->cursor.savedSlot]) + 0x43;
+  anims[0] = ICON_ARMOR(ARMORS(p->unk_1458[(u8)p->cursor.savedSlot]));
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, 32);
   unk1[1] = 0;
-  anims[1] = 0x43;
+  anims[1] = ICON_ARMOR(ARMOR_CLOTH_ARMOR);
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
@@ -1769,9 +1767,9 @@ NON_MATCH void FUN_080b8b60(Warehouse* p) {
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[3 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[19 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[19 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   pos.x = 0;
@@ -1935,7 +1933,7 @@ void FUN_080b90dc(Warehouse* p) {
       FUN_080b9030(p);
     } else if (gInput[0].pressed & B_BUTTON) {
       PlaySound_082406e0(SE_CLOSE_MENU);
-      FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+      StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
       Warehouse_SetState(p, FUN_080b9248);
       return;
     }
@@ -1984,7 +1982,7 @@ s32 Warehouse_Init(Warehouse* p) {
   Warehouse_LoadBgPltt(p);
   FUN_080b8b60(p);
   Warehouse_SetupMessageWindow(p);
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   FUN_080b695c(p, 0);
   PlaySound_082406e0(SE_OPEN_MENU);
   Warehouse_SetState(p, FUN_080b8f08);

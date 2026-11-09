@@ -37,8 +37,9 @@ typedef u16 TileAttr;             // CollisionMapTile.attr
 #define TATTR_UNK_4 (1 << 4)      // 0x0010, 未検証
 #define TATTR_UNK_5 (1 << 5)      // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
 #define TATTR_FALLDEATH (1 << 6)  // 0x0040, 地下水路で水に落ちたり、落下死する場所にいくとセットされた
-#define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: ツルツルすべる氷の床, MPF_HOT: 溶岩, MPF_UNK_13: ??? (おそらく前作のギミックの名残？)
+#define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: すべり床, MPF_HOT: 溶岩, MPF_WATERFRONT: ???, それ以外: 鳴り床?
 #define TATTR_FRAGILE (1 << 8)    // 0x0100, ダイナマイトで壊せる傷んだ壁?
+#define TATTR_UNK_9 (1 << 9)      // 0x0200, 未検証, 属性ブロックが止まっている間に立てる
 #define TATTR_WALLISH (1 << 10)   // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
 #define TATTR_UNK_11 (1 << 11)    // 0x0800
 #define TATTR_UNK_12 (1 << 12)    // 0x1000
@@ -262,6 +263,7 @@ void Map_UpdateZoneEvents(ZoneEventSource* src);
 s32 Map_FindNavRoute(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 bool32 Map_ResetCollisionMap(void);
 ZoneID32 GetZoneAt(Vec3* pos);
+s32 Map_FindDirToTile(s32 from, s32 to, s32 unused);
 s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, Vec3* min, Vec3* max);
 s32 Map_IsBehindHigherTile(Vec3* pos, s32 threshold);
 

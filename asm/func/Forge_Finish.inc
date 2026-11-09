@@ -89,7 +89,7 @@ _0801BD6C:
 	cmp r0, r6
 	bgt _0801BDB0
 	ldrb r0, [r5]
-	bl FUN_0823d414
+	bl ReadWeaponDB
 	ldrb r1, [r0, #0x18]
 	cmp r1, #0
 	beq _0801BDAC

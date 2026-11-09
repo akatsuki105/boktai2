@@ -79,8 +79,8 @@ NAKED s32 Entity0805e67c_Init(Entity0805e67c* p) { INCFUNC("asm/func/Entity0805e
 
 NAKED Entity0805e67c* Entity0805e67c_Create(void) { INCFUNC("asm/func/Entity0805e67c_Create.inc"); }
 
-NAKED s32 Entity0805e67c_Spawn(Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime) { INCFUNC("asm/func/Entity0805e67c_Spawn.inc"); }
+NAKED s32 Entity0805e67c_Spawn(Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes) { INCFUNC("asm/func/Entity0805e67c_Spawn.inc"); }
 
-NAKED s32 Entity0805e67c_SpawnSwarm(Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime) { INCFUNC("asm/func/Entity0805e67c_SpawnSwarm.inc"); }
+NAKED s32 Entity0805e67c_SpawnSwarm(Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes) { INCFUNC("asm/func/Entity0805e67c_SpawnSwarm.inc"); }
 
-NAKED s32 Entity0805e67c_SpawnSwarmN(Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime, s32 count) { INCFUNC("asm/func/Entity0805e67c_SpawnSwarmN.inc"); }
+NAKED s32 Entity0805e67c_SpawnSwarmN(Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes, s32 count) { INCFUNC("asm/func/Entity0805e67c_SpawnSwarmN.inc"); }

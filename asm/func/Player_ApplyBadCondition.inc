@@ -25,7 +25,7 @@ _08063590:
 	cmp r0, #3
 	beq _08063610
 	adds r0, r5, #0
-	bl FUN_08063220
+	bl Player_ClearElementalCond
 _080635AA:
 	ldr r1, _080635C8 @ =0x0000043E
 	adds r0, r5, r1

@@ -159,23 +159,23 @@ COMMON_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレット�
 COMMON_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, FUN_0822d248 のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
 
 COMMON_DATA u8 u8_03004492[2] = {};     // todo
-COMMON_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, ApplyBgPlttBlend が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に RGB(4, 4, 4)), ResetPltt
+COMMON_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, ApplyBgPlttBlend が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeIn (明転の完了時に RGB(4, 4, 4)), ResetPltt
 COMMON_DATA u8 u8_03004496[2] = {};     // todo
 
-COMMON_DATA u8 gMosaicTargets = 0;                       // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
-COMMON_DATA u8 u8_03004499[3] = {};                      // todo
-COMMON_DATA u16 gMosaicDirty = 0;                        // 0x0300449C, 1 なら次の Video_ApplyMosaic で I/O に反映して 0 に戻す
-COMMON_DATA u16 u16_0300449e = 0;                        // todo
-COMMON_DATA u32 gHBlankEffectBG = 0;                     // 0x030044A0, HBlankエフェクトの対象BG番号, 根拠: FUN_0822f0d8
-COMMON_DATA void* gHBlankEffectTable = NULL;             // 0x030044A4, スキャンライン毎の値のテーブル, 根拠: FUN_0822eef4
-COMMON_DATA s32 gHBlankEffectKind = 0;                   // 0x030044A8, HBlankエフェクトの種類 (0:BGnHOFS, 1:BGnVOFS, 2:MOSAIC, 3:BLDY), 根拠: FUN_0822f0d8
-COMMON_DATA u32 gObjBlendEnabled = 0;                    // 0x030044AC, 0以外なら flags bit14 のスプライトを半透明にする, 根拠: MainSprite_DrawInternal
-COMMON_DATA u8 gObjMosaicEnabled = 0;                    // 0x030044B0, bit0 が立っているスプライトだけ OAM attr0.12 (mosaic) を立てる, 根拠: MainSprite_DrawInternal / AuxSprite_DrawInternal
-COMMON_DATA u8 u8_030044b1[3] = {};                      // todo
-COMMON_DATA u16 gMosaicSize = 0;                         // 0x030044B4, MOSAIC レジスタに書く値 (bit0-3: BG H, bit4-7: BG V, bit8-11: OBJ H, bit12-15: OBJ V)
-COMMON_DATA u16 u16_030044b6 = 0;                        // todo
-COMMON_DATA u16 u16_030044b8 = 0;                        // 0x030044B8
-COMMON_DATA EntityDisableFlags gEntityDisableFlags = 0;  // 0x030044BC, gEntityDisableFlags & gEntityManager[kind].disableFlags != 0 のときはそのkindのEntityは更新しない, gEntityDisableFlagsの各bitは (1 << kind) ではなさそう
+COMMON_DATA u8 gMosaicTargets = 0;            // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
+COMMON_DATA u8 u8_03004499[3] = {};           // todo
+COMMON_DATA u16 gMosaicDirty = 0;             // 0x0300449C, 1 なら次の Video_ApplyMosaic で I/O に反映して 0 に戻す
+COMMON_DATA u16 u16_0300449e = 0;             // todo
+COMMON_DATA u32 gHBlankEffectBG = 0;          // 0x030044A0, HBlankエフェクトの対象BG番号, 根拠: FUN_0822f0d8
+COMMON_DATA void* gHBlankEffectTable = NULL;  // 0x030044A4, スキャンライン毎の値のテーブル, 根拠: FUN_0822eef4
+COMMON_DATA s32 gHBlankEffectKind = 0;        // 0x030044A8, HBlankエフェクトの種類 (0:BGnHOFS, 1:BGnVOFS, 2:MOSAIC, 3:BLDY), 根拠: FUN_0822f0d8
+COMMON_DATA u32 gObjBlendEnabled = 0;         // 0x030044AC, 0以外なら flags bit14 のスプライトを半透明にする, 根拠: MainSprite_DrawInternal
+COMMON_DATA u8 gObjMosaicEnabled = 0;         // 0x030044B0, bit0 が立っているスプライトだけ OAM attr0.12 (mosaic) を立てる, 根拠: MainSprite_DrawInternal / AuxSprite_DrawInternal
+COMMON_DATA u8 u8_030044b1[3] = {};           // todo
+COMMON_DATA u16 gMosaicSize = 0;              // 0x030044B4, MOSAIC レジスタに書く値 (bit0-3: BG H, bit4-7: BG V, bit8-11: OBJ H, bit12-15: OBJ V)
+COMMON_DATA u16 u16_030044b6 = 0;             // todo
+COMMON_DATA u16 u16_030044b8 = 0;             // 0x030044B8
+COMMON_DATA SuspendFlags gSuspendFlags = 0;   // 0x030044BC, 今ゲームの進行を止めている原因, see SuspendFlags
 COMMON_DATA u16 gEntityCount = 0;
 COMMON_DATA u8 u8_030044c2[0x44D0 - 0x44C2] = {};          // todo
 COMMON_DATA bool32 gUseLinkInput = FALSE;                  // 0x030044D0, TRUE なら ReadKeyInput が通信で受け取ったキー (gLinkKeyInput) から gInput を作る
@@ -186,23 +186,22 @@ COMMON_DATA u8 padding_0300450a[0x4510 - 0x450A] = {};     // padding (Unused)
 COMMON_DATA Keys16 gLinkKeyInput[5] = {};                  // 0x03004510, 通信で受け取った各プレイヤーのキー (KEYINPUT と同じ active low), 0xFFFF はデータなし
 COMMON_DATA u32 gRngValue = 0;                             // 0x0300451C
 COMMON_DATA EntityList gEntityManager[ENTITY_KINDS] = {};  // 0x03004520
-COMMON_DATA s32 gRegistryCount = 0;
-COMMON_DATA u32 gScriptDirectoryBuildTime = 0;  // 0x03004594, ScriptDirectory.buildTime
-COMMON_DATA u8 u8_03004598[8] = {};             // todo
-COMMON_DATA VM gVM = {};                        // 0x030045A0
+COMMON_DATA s32 gRegistryCount = 0;                        // 0x03004590
+COMMON_DATA u32 gScriptDirectoryBuildTime = 0;             // 0x03004594, ScriptDirectory.buildTime
+COMMON_DATA u8 u8_03004598[8] = {};                        // todo
 
+COMMON_DATA VM gVM = {};                   // 0x030045A0
 COMMON_DATA Scratch* gScratch = NULL;      // 0x03004690
 COMMON_DATA World* gWorldBackup = NULL;    // 0x03004694
 COMMON_DATA World* gWorld = NULL;          // 0x03004698
 COMMON_DATA GameInfo* gStatBackup = NULL;  // 0x0300469C
 COMMON_DATA GameInfo* gStat = NULL;        // 0x030046A0
 
-COMMON_DATA struct CollisionMapData* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (Map_InitCollisionMap)
+COMMON_DATA struct CollisionMapData* gCollisionMap = NULL;  // 0x030046A4
 COMMON_DATA s32 gMapBlockW = 0;                             // 0x030046A8
 COMMON_DATA s32 gMapBlockH = 0;                             // 0x030046AC
 COMMON_DATA u32 gNextMapEventID = 0;                        // 0x030046B0, Map_InsertEvent が CollisionMapEvent.id に払い出す連番, 0 は使わない
 
 COMMON_DATA s32 gRandTableIdx2 = 0;  // 0x030046B4, 通信対戦のスコア精算で使用する乱数テーブルのインデックス
 COMMON_DATA s32 gRandTableIdx = 0;   // 0x030046B8
-
 COMMON_DATA u16 gSioParentRecv = 0;  // 0x030046BC, 親が受け取った子のデータ (SIOMULTI1)

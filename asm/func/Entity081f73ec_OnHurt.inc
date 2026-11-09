@@ -48,7 +48,7 @@ _081F5E78:
 	ldrh r0, [r6, #0x3e]
 	strh r0, [r1, #2]
 	movs r0, #0x19
-	bl FUN_080ec79c
+	bl Enemy_SendMsgByKind
 	ldr r2, _081F5EFC @ =0x000006E4
 	add r2, sb
 	ldrh r1, [r2]

@@ -439,7 +439,7 @@ NON_MATCH s32 Entity3117_Update(Entity3117* p) {
   s32 i;
 
   for (i = 0, e = p->entries; i < p->count; i++, e++) {
-    if (gEntityDisableFlags == 0 || e->optionFlags != 0) {
+    if (gSuspendFlags == 0 || e->optionFlags != 0) {
       Entity3117_UpdateEntry(e);
     }
   }

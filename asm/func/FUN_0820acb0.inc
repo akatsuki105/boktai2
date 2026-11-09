@@ -160,7 +160,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -185,7 +185,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x40
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -210,7 +210,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x80
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -235,7 +235,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0xc0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -261,7 +261,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -286,7 +286,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x40
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -311,7 +311,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x80
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0820AFA4 @ =0x000003FF
@@ -336,7 +336,7 @@ _0820ADA0:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0xc0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, _0820AFAC @ =0x00000395
 	bl PlaySound_082406e0
 _0820AF60:

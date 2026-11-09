@@ -4,7 +4,7 @@
 #include "vm_subroutine.h"
 
 void VM_ClearCtrlHandlers(void);
-bool32 FUN_0823a8b0(void);
+bool32 GameSystem_IsMapChangeBlocked(void);
 void FUN_08230eec(ScriptRecord*);
 bool32 Map_HasCheckedZoneEvents(void);
 
@@ -16,9 +16,9 @@ void* VM_Ctrl_Unused_0BB3(void) { return NULL; }
 
 void* VM_Ctrl_LoadMap(void) {
   u16 scriptID = (u16)VM_GetValue();
-  gMapChangeFlags = 0x01;
+  gMapChangeFlags = MAPCHANGE_LOAD;
   if ((!VM_SeekToNamedArg('n')) || ((VM_GetPC() != NULL) && (VM_GetValue() == 0))) {
-    gMapChangeFlags |= 0x10;
+    gMapChangeFlags |= MAPCHANGE_BACKUP;
   }
   SetMapInitScriptID((s16)scriptID);
   gStat->mapInitScriptID = scriptID;
@@ -150,13 +150,13 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
 }
 
 void* VM_Ctrl_Restart(void) {
-  bool32 bVar1 = FUN_0823a8b0();
+  bool32 bVar1 = GameSystem_IsMapChangeBlocked();
   if (!bVar1) {
-    gMapChangeFlags = 0x40;
+    gMapChangeFlags = MAPCHANGE_RESTART;
     if (VM_SeekToNamedArg('s')) {
-      gMapChangeFlags |= 0x10;
+      gMapChangeFlags |= MAPCHANGE_BACKUP;
     } else if (VM_SeekToNamedArg('r')) {
-      gMapChangeFlags |= 0x100;
+      gMapChangeFlags |= MAPCHANGE_RESTORE;
     }
   }
   return NULL;

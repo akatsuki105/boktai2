@@ -181,7 +181,7 @@ _0800223A:
 	adds r5, #2
 	mov r0, sp
 	adds r1, r5, #0
-	bl FUN_0823ce10
+	bl GetTimeOfDayPlttPair
 	movs r2, #0xc8
 	lsls r2, r2, #3
 	adds r0, r6, r2

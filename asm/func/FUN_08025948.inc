@@ -131,7 +131,7 @@ _080259F6:
 	movs r0, #1
 	movs r1, #5
 	movs r3, #0x40
-	bl FUN_08015ce0
+	bl Entity08015584_SpawnSprayEx
 _08025A58:
 	mov r0, r8
 	cmp r0, #0x40
@@ -362,7 +362,7 @@ _08025BFA:
 	movs r0, #1
 	movs r2, #0
 	movs r3, #2
-	bl DustManager_Emit
+	bl SporeManager_Emit
 	ldr r1, _08025C78 @ =0x00000171
 	adds r0, r7, r1
 	strb r4, [r0]

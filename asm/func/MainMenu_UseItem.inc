@@ -51,7 +51,7 @@ _08093FAC:
 	ldr r0, _08093FBC @ =0x0000038A
 	bl PlaySound_082406e0
 	adds r0, r4, #0
-	bl FUN_08092a94
+	bl MainMenu_BeginVitamin
 	b _08094064
 	.align 2, 0
 _08093FBC: .4byte 0x0000038A
@@ -85,7 +85,7 @@ _08093FF4: .4byte 0x08DAA8D8
 _08093FF8:
 	ldrh r1, [r1, #6]
 	adds r0, r4, #0
-	bl FUN_08092c7c
+	bl MainMenu_BeginWeatherDoll
 	b _08094064
 _08094002:
 	ldr r0, _08094014 @ =0x08DAA8D8
@@ -99,7 +99,7 @@ _08094002:
 _08094014: .4byte 0x08DAA8D8
 _08094018:
 	adds r0, r4, #0
-	bl MainMenu_BeginUseItem
+	bl MainMenu_BeginLoverCard
 	b _08094064
 _08094020:
 	ldr r0, _0809403C @ =0x0000010D
@@ -120,7 +120,7 @@ _08094044:
 	ldr r0, _08094054 @ =0x0000038A
 	bl PlaySound_082406e0
 	adds r0, r4, #0
-	bl FUN_08093bb4
+	bl MainMenu_BeginRefresh
 	b _08094064
 	.align 2, 0
 _08094054: .4byte 0x0000038A
@@ -128,7 +128,7 @@ _08094058:
 	ldr r0, _0809406C @ =0x0000038A
 	bl PlaySound_082406e0
 	adds r0, r4, #0
-	bl FUN_08093d38
+	bl MainMenu_BeginRepair
 _08094064:
 	pop {r4, r5}
 	pop {r0}

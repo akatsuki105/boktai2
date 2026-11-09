@@ -1,6 +1,7 @@
 #include "coffin.h"
 
 #include "collision_map.h"
+#include "dust.h"
 #include "emote.h"
 #include "entity.h"
 #include "file.h"
@@ -17,7 +18,6 @@ COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
 COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
-s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 struct Elevator* Elevator_FindAtPos(Vec3* pos);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 void FUN_080dab9c(s32 idx);
@@ -145,7 +145,7 @@ void FUN_08085764(Coffin* p) {
   vel.y = 0;
   vel.z = POLAR_Z(10, angle);
   VEC3_SET(accel, 32, 0, 32);
-  FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+  DustManager_SpawnNoPause(&pos, &vel, &accel, 1, 3, 4);
 }
 
 void FUN_08085880(Coffin* p) {
@@ -159,7 +159,7 @@ void FUN_08085880(Coffin* p) {
   pos.y = p->mover.pos.y;
   pos.z = p->mover.pos.z + (vel.z << 2);
   VEC3_SET(accel, 0, 0, 0);
-  FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+  DustManager_SpawnNoPause(&pos, &vel, &accel, 1, 3, 4);
   if (angle & 1) {
     PlaySound_082406e0(SONG_211);
   }
@@ -178,7 +178,7 @@ void FUN_0808596c(Coffin* p) {
     pos.y = p->mover.pos.y;
     pos.z = p->mover.pos.z + (vel.z << 3);
     VEC3_SET(accel, 0, 0, 0);
-    FUN_080dbd08(&pos, &vel, &accel, 1, 3, 4);
+    DustManager_SpawnNoPause(&pos, &vel, &accel, 1, 3, 4);
   }
 }
 
@@ -280,7 +280,7 @@ void FUN_08085cb0(Coffin* p, s32 coffinID) {
 }
 
 void FUN_08085cec(Coffin* p) {
-  if (p->inSolarCircle || p->unk_406 != 0) {
+  if (p->inSolarBarrier || p->unk_406 != 0) {
     if (p->plttBlend < 64) {
       p->plttBlend++;
     }
@@ -353,7 +353,7 @@ s32 FUN_08085ef8(Coffin* p, s32 animIdx) {
   s32 variant;
   bool32 xflip;
 
-  if (p->facing > 4) {
+  if (IS_8DIR_LEFT(p->facing)) {
     variant = 8 - p->facing;
     xflip = TRUE;
   } else {
@@ -587,9 +587,9 @@ void Cmd_7566(void) {
   }
 }
 
-void Coffin_SetInsideSolarCircle(bool32 n) {
+void Coffin_SetInsideSolarBarrier(bool32 n) {
   if (gCoffin != NULL) {
-    gCoffin->inSolarCircle = n;
+    gCoffin->inSolarBarrier = n;
   }
 }
 
@@ -602,7 +602,7 @@ bool32 FUN_0808672c(void) {
   if (p->unk_394 != 0) {
     return FALSE;
   }
-  if (p->inSolarCircle) {
+  if (p->inSolarBarrier) {
     return FALSE;
   }
   if (p->unk_384 != 0) {
@@ -1069,7 +1069,7 @@ void Coffin_InitHitbox(Coffin* p) {
 void FUN_08087310(Coffin* p) {
   p->ptclParam.kind = 2;
   p->ptclParam.flags = 0;
-  p->ptclParam.animSpeed = 0x40;
+  p->ptclParam.animSpeed = Q6(1);
   p->ptclParam.speedY = 3;
   p->ptclParam.speedYRand = 6;
   p->ptclParam.speedXZ = 2;
@@ -1080,12 +1080,12 @@ void FUN_08087310(Coffin* p) {
   p->ptclParam.angleXZRand = 0xFF;
   p->ptclParam.decayStartY = 0xFF;
   p->ptclParam.decayStartYRand = 0;
-  p->ptclParam.unk_1c = 0xFF;
-  p->ptclParam.unk_1e = 0;
+  p->ptclParam.decayY = 0xFF;
+  p->ptclParam.decayYRand = 0;
   p->ptclParam.decayStartXZ = 0xFF;
   p->ptclParam.decayStartXZRand = 0;
-  p->ptclParam.unk_24 = 0xFF;
-  p->ptclParam.unk_26 = 0;
+  p->ptclParam.decayXZ = 0xFF;
+  p->ptclParam.decayXZRand = 0;
 }
 
 void FUN_080873b4(Coffin* p, s32 delta) {
@@ -1130,7 +1130,7 @@ void FUN_08087494(Coffin* p) {
 }
 
 void FUN_080874cc(Coffin* p) {
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1297,7 +1297,7 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
   s32 range;
   u16* table;
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1330,7 +1330,7 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
 }
 
 void FUN_08087bac(Coffin* p) {
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
   if (p->canSelfMove == 0) {
@@ -1358,7 +1358,7 @@ void Coffin_UpdateState0(Coffin* p) {
   p->unk_32a = 0;
   FUN_08086024(p, 0);
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1366,7 +1366,7 @@ void Coffin_UpdateState0(Coffin* p) {
     FUN_08087a5c(p);
   } else if (p->unk_324 != 0) {
     FUN_080856f4(p);
-  } else if (p->inSolarCircle) {
+  } else if (p->inSolarBarrier) {
     p->unk_390 = p->unk_392;
     p->selfMoveTimer = p->selfMoveTimerInit;
     p->unk_394 = 0;
@@ -1470,7 +1470,7 @@ void Coffin_UpdateState1(Coffin* p) {
     FUN_08086024(p, 0);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1478,7 +1478,7 @@ void Coffin_UpdateState1(Coffin* p) {
     FUN_08087a5c(p);
   } else if (p->unk_324 != 0) {
     FUN_080856f4(p);
-  } else if (p->inSolarCircle) {
+  } else if (p->inSolarBarrier) {
     p->unk_390 = p->unk_392;
     p->selfMoveTimer = p->selfMoveTimerInit;
     p->unk_394 = 0;
@@ -1553,7 +1553,7 @@ void Coffin_UpdateState3(Coffin* p) {
     Coffin_SetState(p, 3);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1605,7 +1605,7 @@ NON_MATCH void Coffin_UpdateState4(Coffin* p) {
     Coffin_SetState(p, 4);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1662,7 +1662,7 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
     Coffin_SetState(p, 2);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1802,7 +1802,7 @@ void Coffin_UpdateState5(Coffin* p) {
     Coffin_SetState(p, 5);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -1876,7 +1876,7 @@ void Coffin_UpdateState6(Coffin* p) {
     Coffin_SetState(p, 6);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -2023,7 +2023,7 @@ void FUN_08089410(Coffin* p) {
     s32 dx = p->mover.pos.x - p->unk_3bc.x;
     s32 dz = p->mover.pos.z - p->unk_3bc.z;
     if (dx != 0 || dz != 0) {
-      p->facing = p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->facing = p->unk_404 = ANGLE_TO_DIR8(ArcTan2_8(dx, dz) + 0x10);
     }
     p->unk_33a = 1;
   } else if (p->unk_402 < 30) {
@@ -2046,7 +2046,7 @@ void Coffin_UpdateState15(Coffin* p) {
   p->unk_32a = 1;
   FUN_08086024(p, 0);
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -2065,7 +2065,7 @@ void FUN_080895d0(Coffin* p) {
     s32 dx = p->mover.pos.x - p->unk_3bc.x;
     s32 dz = p->mover.pos.z - p->unk_3bc.z;
     if (dx != 0 || dz != 0) {
-      p->unk_404 = ((((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->unk_404 = ANGLE_TO_DIR8(ArcTan2_8(dx, dz) + 0x10);
       p->facing = (p->unk_404 + 4) & 7;
     }
   } else if (p->unk_402 < 30) {
@@ -2098,7 +2098,7 @@ void Coffin_UpdateState16(Coffin* p) {
     FUN_08086024(p, 0);
   }
 
-  if (gGameFlags & FLAG030047A4_UNK_9) {
+  if (gGameFlags & GAMEFLAG_EVENT) {
     return;
   }
 
@@ -2138,7 +2138,7 @@ s32 Coffin_Update(Coffin* p) {
 
   p->unk_406 = 0;
 
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Coffin_UpdateRope(p);
     return 0;
   }
@@ -2196,7 +2196,7 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   p->unk_332 = 0;
   p->unk_3a0 = -1;
   p->killRequested = FALSE;
-  p->inSolarCircle = FALSE;
+  p->inSolarBarrier = FALSE;
   gCoffin = p;
   return 0;
 }

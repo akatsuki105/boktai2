@@ -64,7 +64,7 @@ NAKED void Entity081efa9c_StateVanish(Entity081efa9c* p, Entity081efa9cElem* e) 
 
 void FUN_081ef668(void) {}
 
-NAKED void Entity081efa9c_InitHitbox(Entity081efa9cElem* e, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081efa9c_InitHitbox.inc"); }
+NAKED void Entity081efa9c_InitHitbox(Entity081efa9cElem* e, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/Entity081efa9c_InitHitbox.inc"); }
 
 NAKED Entity081efa9cElem* Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15) {
   INCFUNC("asm/func/Entity081efa9c_Spawn.inc");

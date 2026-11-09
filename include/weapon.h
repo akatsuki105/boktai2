@@ -23,7 +23,7 @@ typedef struct {
 static_assert(sizeof(Weapon) == 28);
 
 typedef struct {
-  u8 id;                                           // 0x00, see "include/constants/weapon.h"
+  weapon8_t id;                                    // 0x00, see "include/constants/weapon.h"
   u8 kind;                                         // 0x01, see WeaponKind in "include/constants/weapon.h"
   u8 rank;                                         // 0x02, 武器のランク, [C, B, A, S, R]
   u8 lv;                                           // 0x03

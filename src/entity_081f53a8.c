@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "player.h"
 #include "random.h"
 #include "sprite_aux.h"
 #include "vec3.h"
@@ -102,14 +103,14 @@ void Entity081f53a8_OnHurt(HitboxData* a, HitboxData* b, Entity081f53a8Elem* ele
   }
 }
 
-void Entity081f53a8_InitHitbox(Entity081f53a8Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+void Entity081f53a8_InitHitbox(Entity081f53a8Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
   Vec3 size;
   Vec3 offset;
 
   VEC3_SET(size, 64, 128, 64);
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(&elem->hitbox0, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
-  Hitbox_SetAttack(&elem->hitbox0, power, knockbackPower, 0, attrs, invincibleTime);
+  Hitbox_SetAttack(&elem->hitbox0, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(&elem->hitbox0, Entity081f53a8_OnHit, elem);
   Hitbox_SetPos(&elem->hitbox0, &elem->sprite.pos, 0);
   VEC3_SET(size, 92, 128, 92);
@@ -117,7 +118,7 @@ void Entity081f53a8_InitHitbox(Entity081f53a8Elem* elem, s32 power, s32 knockbac
   Hitbox_SetPowerAndAttributes(&elem->hitbox1, 0, 0, 0);
   Hitbox_SetHandler(&elem->hitbox1, Entity081f53a8_OnHurt, elem);
   Hitbox_SetPos(&elem->hitbox1, &elem->sprite.pos, 0);
-  elem->hitbox1.invincibleTime = 60;
+  elem->hitbox1.iframes = 60;
 }
 
 // 判定2つを今の位置で登録し直し, hitbox1 は unk_44 が残っている間だけ有効にする
@@ -133,8 +134,8 @@ void Entity081f53a8_UpdateHitbox(Entity081f53a8Elem* elem) {
   Hitbox_Register(hitbox0);
   Hitbox_Register(hitbox1);
 
-  if (hitbox1->invincibleTime != 0) {
-    hitbox1->invincibleTime--;
+  if (hitbox1->iframes != 0) {
+    hitbox1->iframes--;
     hitbox1->flags |= HBFLAG_HIDDEN;
   } else {
     Hitbox_ClearFlags(hitbox1, HBFLAG_HIDDEN);
@@ -321,7 +322,7 @@ Entity081f53a8Elem* Entity081f53a8_TryAllocElem(Entity081f53a8* p) {
   return elem;
 }
 
-void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle) {
+void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle) {
   Entity081f53a8* p = gEntity081f53a8;
   Entity081f53a8Elem* elem;
 
@@ -348,11 +349,11 @@ void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback
   Video_GetAuxSprite(&elem->gfx, SPRITE_SKELETON_MISC);
   AuxSprite_Add(&elem->sprite, &elem->gfx, 0);
   AuxAnim_SetAnim(&elem->animState, p->anim, 20, 0, 0);
-  Video_SetAuxSpritePltt(elem->sprite.gfx, 0xFA);
+  Video_SetAuxSpritePltt(elem->sprite.gfx, 250);
   elem->sprite.pos = *pos;
   AuxSprite_Hide(&elem->sprite);
   elem->sprite.priority = 1;
-  Entity081f53a8_InitHitbox(elem, power, knockbackPower, attrs, invincibleTime);
+  Entity081f53a8_InitHitbox(elem, power, knockback, attrs, iframes);
 }
 
 void (*const PTR_ARRAY_085ae578[4])(Entity081f53a8*, Entity081f53a8Elem*) = {
@@ -365,10 +366,10 @@ void (*const PTR_ARRAY_085ae578[4])(Entity081f53a8*, Entity081f53a8Elem*) = {
 s32 Entity081f53a8_Update(Entity081f53a8* p) {
   s32 i;
 
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER)) {
     return 0;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return 0;
   }
   for (i = 0; i < 8; i++) {

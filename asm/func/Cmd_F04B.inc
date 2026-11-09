@@ -9,14 +9,14 @@
 	mov sb, r0
 	cmp r0, #0
 	bne _081D0F86
-	bl Entity081d16ec_Create
+	bl LeverSwitchManager_Create
 	mov sb, r0
 	cmp r0, #0
 	bne _081D0F86
 	b _081D11A6
 _081D0F86:
 	mov r0, sb
-	bl FUN_081d0eac
+	bl LeverSwitchManager_Alloc
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _081D0F94
@@ -101,7 +101,7 @@ _081D0FD8:
 	beq _081D104E
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_081d0e74
+	bl LeverSwitch_SetFlags
 _081D104E:
 	movs r1, #0
 	ldrsh r0, [r7, r1]
@@ -128,7 +128,7 @@ _081D1074:
 _081D107E:
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_081d0e94
+	bl LeverSwitch_TestFlags
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081D10A4
@@ -279,7 +279,7 @@ _081D117C:
 	strb r0, [r4, #7]
 _081D11A0:
 	adds r0, r6, #0
-	bl FUN_081d1924
+	bl LeverSwitch_InitHurtbox
 _081D11A6:
 	add sp, #4
 	pop {r3, r4, r5}

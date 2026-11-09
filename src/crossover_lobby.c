@@ -60,7 +60,6 @@ void FUN_0804e69c(u8* src, u8* dst, s32 count);
 void FUN_0804e5e8(void);
 void FUN_0804e604(void);
 void* FUN_0804ba3c(void);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 static inline void CrossoverLobby_SetState(CrossoverLobby* p, u8 state) {
   p->state = state;
@@ -364,7 +363,7 @@ void CrossoverLobby_StateExit(CrossoverLobby* p) {
     FUN_0804e5e8();
   }
   if (p->stateTimer == 4) {
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
   }
   if (p->stateTimer == 24) {
     FUN_0804e604();
@@ -511,7 +510,7 @@ s32 CrossoverLobby_Init(CrossoverLobby* p) {
   TextPanel_Start(*panel);
 
   SignalStrengthIcon_CreateAt(0, 24);
-  FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 4, 4, 4, 4, 0xFFFF, 0);
   return 0;
 }
 

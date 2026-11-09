@@ -10,6 +10,8 @@
 #define OBP_BDJANGO 38  // 黒ジャンゴのベースカラー
 #define OBP_SABATA 39   // サバタのベースカラー
 
+#define OBP_HINT_PANEL(level) (76 + (level))  // ヒントパネル, 0: 光っている, 1: 中間, 2: 通常
+
 #define OBP_MEGAPOWER 296  // ロックパワー適用時のプレイヤーのベースカラー (OBP_MEGAMAN とは別)
 #define OBP_GUTSPOWER 297  // ガッツパワー
 #define OBP_PROTOPOWER 298
@@ -22,10 +24,13 @@
 
 #define OBP_COFFIN(coffinID) (519 + (coffinID))
 
-#define OBP_WHITE_306 306  // 色0 が RGB(24, 24, 24), それ以外は真っ白
+#define OBP_WHITE_306 306  // 色0 が RGB(24, 24, 24), それ以外は真っ白, 被弾時の白塗り
 
 #define OBP_LEVER_SWITCH 313
 #define OBP_LEVER_SWITCH_RUSTY 314  // 錆びたレバースイッチ
+
+#define OBP_CUBE_ICE 577  // 氷ブロック
+#define OBP_OCTOROK 579   // ドヴァリン、オクトパスの投げる岩
 
 #define OBP_MEGAMAN 695  // ロックマンのベースカラー
 

@@ -162,7 +162,7 @@ _08028FFA:
 	str r2, [sp, #4]
 	add r1, sp, #8
 	movs r2, #0
-	bl FUN_0805a360
+	bl VampireSwordManager_Spawn
 	adds r5, #0x55
 	movs r3, #0x40
 	add sb, r3
@@ -279,7 +279,7 @@ _080290FA:
 	str r2, [sp, #4]
 	adds r1, r4, #0
 	movs r2, #1
-	bl FUN_0805a360
+	bl VampireSwordManager_Spawn
 	movs r3, #0x18
 	add sb, r3
 	adds r5, #0x10

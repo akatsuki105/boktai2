@@ -96,7 +96,7 @@ _080F136C:
 	movs r4, #0
 	ldr r2, [sp, #8]
 	strh r0, [r2]
-	ldr r1, _080F1498 @ =FUN_080e6794
+	ldr r1, _080F1498 @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	ldr r3, _080F1480 @ =0x0000046D
 	adds r3, r7, r3
@@ -231,7 +231,7 @@ _080F1488: .4byte 0x00000553
 _080F148C: .4byte 0xFFFFFDFF
 _080F1490: .4byte 0x00000484
 _080F1494: .4byte 0x00000222
-_080F1498: .4byte FUN_080e6794
+_080F1498: .4byte Enemy_WaitPendingState
 _080F149C: .4byte 0x00000543
 _080F14A0: .4byte 0x00000554
 _080F14A4: .4byte 0x00000551

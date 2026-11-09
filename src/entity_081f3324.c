@@ -29,7 +29,7 @@ static_assert(sizeof(Entity081f3324Elem) == 244);
 // Boku が投げる弾を12個まで同時に動かすシングルトン
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx;              // 0x018, SPRITE_BOKU_ACID_0
+  AuxSpriteGfx gfx;              // 0x018, SPRITE_ACID_0
   AuxAnimFile* anim;             // 0x034, ANIM_1752
   u32 usedMask;                  // 0x038, elems のどのスロットが使用中かのビットマスク
   Entity081f3324Elem elems[12];  // 0x03C
@@ -42,7 +42,7 @@ const u8 u8_ARRAY_085ae548[4] = {8, 4, 2, 1};  // 0x085AE548, 消えるときの
 
 NAKED void Entity081f3324_OnHit(HitboxData* a, HitboxData* b, Entity081f3324Elem* elem) { INCFUNC("asm/func/Entity081f3324_OnHit.inc"); }
 
-NAKED void Entity081f3324_InitHitbox(Entity081f3324Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f3324_InitHitbox.inc"); }
+NAKED void Entity081f3324_InitHitbox(Entity081f3324Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/Entity081f3324_InitHitbox.inc"); }
 
 NAKED void Entity081f3324_UpdateIdle(Entity081f3324* p, Entity081f3324Elem* elem) { INCFUNC("asm/func/Entity081f3324_UpdateIdle.inc"); }
 
@@ -62,7 +62,7 @@ NAKED Entity081f3324Elem* Entity081f3324_AllocElem(Entity081f3324* p) { INCFUNC(
 
 NAKED Entity081f3324Elem* Entity081f3324_TryAllocElem(Entity081f3324* p) { INCFUNC("asm/func/Entity081f3324_TryAllocElem.inc"); }
 
-NAKED void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 groundTime, s32 speed, s32 unk_9) { INCFUNC("asm/func/Entity081f3324_Spawn.inc"); }
+NAKED void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9) { INCFUNC("asm/func/Entity081f3324_Spawn.inc"); }
 
 void (*const PTR_ARRAY_085ae54c[5])(Entity081f3324*, Entity081f3324Elem*) = {
     Entity081f3324_UpdateIdle,

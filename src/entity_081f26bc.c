@@ -58,7 +58,7 @@ NAKED void Entity081f26bc_UpdateHitbox(Entity081f26bcElem* e, Vec3* pos) { INCFU
 
 void FUN_081f1888(void) {}
 
-NAKED void Entity081f26bc_InitHitbox(Entity081f26bcElem* e, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f26bc_InitHitbox.inc"); }
+NAKED void Entity081f26bc_InitHitbox(Entity081f26bcElem* e, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/Entity081f26bc_InitHitbox.inc"); }
 
 void FUN_081f1940(Entity081f26bc* p, Entity081f26bcElem* e) {}
 
@@ -115,7 +115,7 @@ NON_MATCH void Entity081f26bc_StateVanish(Entity081f26bc* p, Entity081f26bcElem*
 NAKED AuxAnimFile* Entity081f26bc_LoadAuxSprite(Entity081f26bcElem* e, SpriteID32 spriteID, u32 animFileID) { INCFUNC("asm/func/Entity081f26bc_LoadAuxSprite.inc"); }
 
 NAKED Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY) {
+    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY) {
   INCFUNC("asm/func/Entity081f26bc_Spawn.inc");
 }
 

@@ -47,12 +47,12 @@ void Barricade_SpawnBurstPtcl(Barricade* p) {
   param.angleXZRand = 0xFF;
   param.decayStartY = 0xFF;
   param.decayStartYRand = 0;
-  param.unk_1c = 0xFF;
-  param.unk_1e = 0;
+  param.decayY = 0xFF;
+  param.decayYRand = 0;
   param.decayStartXZ = 0xFF;
   param.decayStartXZRand = 0;
-  param.unk_24 = 0xFF;
-  param.unk_26 = 0;
+  param.decayXZ = 0xFF;
+  param.decayXZRand = 0;
   for (i = 0; i < 6; i++) {
     pos = p->sprite.pos;
     table = gRandomTable;

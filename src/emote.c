@@ -105,7 +105,7 @@ void Emote_PlayEnemySound(Emote* p) {
       }
       case ENEK_GOLEM:
       case ENEK_30: {
-        FUN_080e81dc(enemy, 3);
+        PlayGolemSound(enemy, 3);
         p->unk_2e |= 1;
         return;
       }
@@ -1283,7 +1283,7 @@ NON_MATCH Emote* FUN_080d9cec(u8 animID, WorldPos* pos, u32 moverID, s32 offsetX
   spr->pos = *pos;
   e->hasSprite = 1;
 
-  if (!(gGameFlags & FLAG030047A4_UNK_8) && param_9 == 1) {
+  if (!(gGameFlags & GAMEFLAG_UNK_8) && param_9 == 1) {
     Vec3 v[3];
 
     Mod(Random(), 3);

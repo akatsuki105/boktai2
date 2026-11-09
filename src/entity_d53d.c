@@ -32,7 +32,6 @@ void FUN_0804e5bc(void);
 void FUN_0804e5e8(void);
 void FUN_0804e604(void);
 void* FUN_0804ba3c(void);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 static inline void EntityD53D_SetState(EntityD53D* p, u8 state) {
   p->state = state;
@@ -81,7 +80,7 @@ void EntityD53D_UpdateState0(EntityD53D* p) {
 }
 
 void EntityD53D_UpdateState1(EntityD53D* p) {
-  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
   if (p->enter) {
     p->enter = 0;
     FUN_0804e5bc();
@@ -105,7 +104,7 @@ void EntityD53D_UpdateState1(EntityD53D* p) {
 }
 
 void EntityD53D_UpdateState2(EntityD53D* p) {
-  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
   if (p->enter) {
     s32 id;
 
@@ -133,7 +132,7 @@ void EntityD53D_UpdateState2(EntityD53D* p) {
 void EntityD53D_UpdateState3(EntityD53D* p) {
   if (p->enter) {
     p->enter = 0;
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
     PlaySound_082406e0(SE_CANCEL);
     FUN_0804e5e8();
   }
@@ -147,14 +146,14 @@ void EntityD53D_UpdateState3(EntityD53D* p) {
   p->timer++;
 }
 
-void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
-    EntityD53D_UpdateState0,
-    EntityD53D_UpdateState1,
-    EntityD53D_UpdateState2,
-    EntityD53D_UpdateState3,
-};  // 0x085AB664
-
 s32 EntityD53D_Update(EntityD53D* p) {
+  static void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
+      EntityD53D_UpdateState0,
+      EntityD53D_UpdateState1,
+      EntityD53D_UpdateState2,
+      EntityD53D_UpdateState3,
+  };  // 0x085AB664
+
   if (p->state == 0) {
     s32 status = FUN_0804e59c();
 

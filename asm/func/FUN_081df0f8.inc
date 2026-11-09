@@ -29,12 +29,12 @@ _081DF124:
 	bl VM_ExecByID
 _081DF134:
 	adds r0, r5, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _081DF154
 	adds r0, r5, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DF22A
@@ -94,7 +94,7 @@ _081DF1A4:
 	ldr r2, _081DF1B8 @ =FUN_081df23c
 	adds r0, r5, #0
 	movs r1, #0x12
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	movs r0, #0
 	b _081DF22A
 	.align 2, 0
@@ -121,7 +121,7 @@ _081DF1BC:
 	movs r1, #1
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	movs r0, #5
 	bl MainMenu_SetHudMode
 	movs r0, #1

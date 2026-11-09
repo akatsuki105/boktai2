@@ -90,7 +90,7 @@ without saving is always a way back.
 | Fake function | Parent | Body added |
 |---|---|---|
 | `FUN_080ff048` | `FUN_080fe7f4` | `[080FF048, 080FF05B]` |
-| `FUN_080fe198` | `FUN_080fd08c` | `[080FE198, 080FE1A7]` |
+| `FUN_080fe198` | `Boku_StateDamaged` | `[080FE198, 080FE1A7]` |
 | `FUN_080f9a24` | `EnemyTargetManager_Bind` | `[080F9A24, 080F9A35]` |
 
 `FUN_080ff048` also needed a repository-side fix, because the extraction had
@@ -160,20 +160,49 @@ each piece are preserved. Same guards and the same
 retype-references-before-deleting order as `MergeSplitTail.java`, and it does
 not save either.
 
+**Which script to use.** `MergeSplitTail.java` only fits a tail that has free
+space after it: it aborts with `end の直後が <next> の中` when the next real
+function starts right after `end`. An epilogue that sits directly in front of
+the next function is the common shape inside a bulk blob, so use
+`MergeContinuation.java` there — it needs no `end`, because it takes the fake
+function's own body. Use `MergeSplitTail.java` only when the fake body is
+shorter than what the parent is missing and the range has to be stated
+explicitly.
+
+Check the parent again after a merge. Ghidra often split the chunk into
+several pieces, and absorbing the first one can leave a new
+`FUN_<addr>` behind it (`FUN_081504d4` left `FUN_081504d8`). Query
+`get_function_by_address` for an address near the end of the chunk, and pass
+anything still found there to `MergeContinuation.java` as well.
+
+**Still inside a bulk blob:** when the chunk has not been extracted yet, the
+repository-side fix happens in the blob itself. Replace the two lines
+`thumb_func_start FUN_<child>` / `FUN_<child>: @ 0x...` with a local label
+`_<ADDR>:`, and rewrite each `bl FUN_<child>` to `bl _<ADDR>`. The chunk then
+travels with its parent when `todo-to-naked` extracts the parent.
+
 Done so far:
 
 | Parent | Absorbed |
 |---|---|
 | `FUN_080f6e64` | `FUN_080f79e8`, `FUN_080f83ec`, `FUN_080f83ee` |
-| `FUN_080f48ac` | `FUN_080f5104`, `FUN_080f51e0` |
-| `FUN_080e9178` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
+| `Enemy_OnCWolfMessage` | `FUN_080f5104`, `FUN_080f51e0` |
+| `Enemy_AddKillCount` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
+| `FUN_0814fc7c` | `FUN_081504d4`, `FUN_081504d8` |
+| `Dog_StateDamaged` | `FUN_0814dd18`, `FUN_0814dd28` |
+| `Dog_OnDamaged` | `FUN_0814f410`, `FUN_0814fb76` |
+
+The three dog entries were found while emptying `asm/dog.inc` and fixed in the
+blob as described above. `FUN_081504d4` is the case where
+`MergeSplitTail.java` refused: its epilogue ends right where `FUN_081504e8`
+begins.
 
 `FUN_080eafb4` needed the repository-side fix: every label inside its `.inc`
-was already local, so its contents were appended to `asm/func/FUN_080e9178.inc`
+was already local, so its contents were appended to `asm/func/Enemy_AddKillCount.inc`
 behind a new `_080EAFB4:` label, the one `bl FUN_080eafb4` became
 `bl _080EAFB4`, and the `NAKED` stub was dropped from `src/enemy.c`.
 
-`FUN_080e9178` ends in a jump-table dispatch
+`Enemy_AddKillCount` ends in a jump-table dispatch
 (`(*(code *)PTR_ARRAY_080e91a0[enemyID])()`), so Ghidra also registered each
 table target as its own function. Those (`080E920C`, `080E9350`, `080EA2D8`,
 `080EA6B8`) are reached by an indirect jump, not a `bl`, and the repository

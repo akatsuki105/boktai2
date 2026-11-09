@@ -76,7 +76,6 @@ void FUN_080bb160(ItemShop* p);
 void FUN_080bc1ec(ItemShop* p);
 void FUN_080bb01c(ItemShop* p);
 s32 Marquee_SetVarValue(s32 idx, s32 value);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_080bbc60(ItemShop* p);
 void FUN_080bc2d8(ItemShop* p);
 s32 FindEmptyArmorSlot(ItemShop* p);
@@ -284,7 +283,7 @@ NON_MATCH void FUN_080ba410(ItemShop* p) {
       s32 id = GetNormalItemID(y * 4 + x);
 
       p->sprites[3 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
-      MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, id + 104, PLAYMODE_LOOP);
+      MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
       FUN_080b95bc(&p->sprites[3 + y * 4 + x], 735);
     }
   }
@@ -297,7 +296,7 @@ NON_MATCH void FUN_080ba410(ItemShop* p) {
         p->sprites[19 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
       } else {
         p->sprites[19 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, id + 104, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
         if ((s16)gStat->solarBank < Item_GetBuyPrice(id)) {
           FUN_080b95bc(&p->sprites[19 + y * 4 + x], 736);
         } else {
@@ -368,7 +367,7 @@ void FUN_080ba624(ItemShop* p) {
       unk1[i] = 0;
     }
 
-    anims[i] = id + 0x68;
+    anims[i] = ICON_ITEM(id);
     strIDs[i] = 0x2DF;
     Shop_GetSlotPos(&a[i].x, slot);
   }
@@ -391,12 +390,12 @@ void FUN_080ba710(ItemShop* p) {
 
   unk1[0] = 1;
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
-  anims[0] = GetNormalItemID((u8)p->cursor.savedSlot) + 0x68;
+  anims[0] = ICON_ITEM(GetNormalItemID((u8)p->cursor.savedSlot));
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
-  anims[1] = 0x68;
+  anims[1] = ICON_ITEM(ITEM_EARTHLY_NUT);
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
@@ -413,12 +412,12 @@ void FUN_080ba7bc(ItemShop* p) {
   s32 strIDs[2];
 
   unk1[0] = 1;
-  anims[0] = p->items0[(u8)p->cursor.savedSlot - 16] + 0x68;
+  anims[0] = ICON_ITEM(p->items0[(u8)p->cursor.savedSlot - 16]);
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
-  anims[1] = 0x68;
+  anims[1] = ICON_ITEM(ITEM_EARTHLY_NUT);
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
@@ -860,7 +859,7 @@ NON_MATCH void FUN_080bb388(ItemShop* p) {
         p->sprites[3 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
       } else {
         p->sprites[3 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, id + 67, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, ICON_ARMOR(id), PLAYMODE_LOOP);
       }
       if (gArmorDB[id].price == 0 || y * 4 + x == gStat->armor) {
         FUN_080b95bc(&p->sprites[3 + y * 4 + x], 736);
@@ -878,7 +877,7 @@ NON_MATCH void FUN_080bb388(ItemShop* p) {
         p->sprites[19 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
       } else {
         p->sprites[19 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, id + 67, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, ICON_ARMOR(id), PLAYMODE_LOOP);
         if ((s16)gStat->solarBank < gArmorDB[id].price) {
           FUN_080b95bc(&p->sprites[19 + y * 4 + x], 736);
         } else {
@@ -955,7 +954,7 @@ void FUN_080bb688(ItemShop* p) {
       unk1[i] = 0;
     }
 
-    anims[i] = id + 0x43;
+    anims[i] = ICON_ARMOR(id);
     strIDs[i] = 0x2DF;
     Shop_GetSlotPos(&a[i].x, slot);
   }
@@ -978,12 +977,12 @@ void FUN_080bb798(ItemShop* p) {
 
   unk1[0] = 1;
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
-  anims[0] = ARMORS((u8)p->cursor.savedSlot) + 0x43;
+  anims[0] = ICON_ARMOR(ARMORS((u8)p->cursor.savedSlot));
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
-  anims[1] = 0x43;
+  anims[1] = ICON_ARMOR(ARMOR_CLOTH_ARMOR);
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
@@ -1000,12 +999,12 @@ void FUN_080bb854(ItemShop* p) {
   s32 strIDs[2];
 
   unk1[0] = 1;
-  anims[0] = p->items1[(u8)p->cursor.savedSlot - 16] + 0x43;
+  anims[0] = ICON_ARMOR(p->items1[(u8)p->cursor.savedSlot - 16]);
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&a[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&b[0].x, (u8)p->cursor.slot);
   unk1[1] = 0;
-  anims[1] = 0x68;
+  anims[1] = ICON_ITEM(ITEM_EARTHLY_NUT);
   strIDs[1] = 0x2DF;
   VEC3_SET(a[1], 0, 0, 0);
   VEC3_SET(b[1], 0, 0, 0);
@@ -1467,24 +1466,24 @@ NON_MATCH void FUN_080bc498(ItemShop* p) {
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[3 + i], icons, 104, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   }
   for (i = 0; i < 12; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[19 + i], icons, 104, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[19 + i], icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   MainSprite_Add(&p->sprites[34], menu, 65, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 0;
   pos.y = 128;
-  MainSprite_Add(&p->sprites[33], icons, 208, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[33], icons, ICON_TIMER_100, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 120;
   pos.y = 104;
-  MainSprite_Add(&p->sprites[32], icons, 203, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[32], icons, ICON_SORT, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 104;
   pos.y = 32;
-  MainSprite_Add(&p->sprites[31], icons, 204, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
+  MainSprite_Add(&p->sprites[31], icons, ICON_SELL, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   FUN_080b95bc(&p->sprites[31], 736);
   MainSprite_Add(&p->sprites[36], menu, 60, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x = 144;
@@ -1636,7 +1635,7 @@ void FUN_080bca7c(ItemShop* p) {
         }
       } else if (gInput[0].pressed & B_BUTTON) {
         PlaySound_082406e0(SE_CLOSE_MENU);
-        FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+        StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
         ItemShop_SetState(p, FUN_080bcbf4);
         return;
       }
@@ -1645,7 +1644,7 @@ void FUN_080bca7c(ItemShop* p) {
       p->sprites[2].flags |= SPRFLAG_HIDDEN;
       if (gInput[0].pressed & B_BUTTON) {
         PlaySound_082406e0(SE_CLOSE_MENU);
-        FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+        StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
         ItemShop_SetState(p, FUN_080bcbf4);
         return;
       }
@@ -1711,7 +1710,7 @@ s32 ItemShop_Init(ItemShop* p, s8 param_2) {
   FUN_080bca20(p);
   p->unk_151b = 0;
   p->unk_151c = 0;
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   FUN_080bb160(p);
   PlaySound_082406e0(SE_OPEN_MENU);
   ItemShop_SetState(p, FUN_080bca50);

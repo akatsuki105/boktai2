@@ -53,7 +53,7 @@ _081DF5C0:
 	ldr r2, _081DF5D4 @ =FUN_081df604
 	adds r0, r4, #0
 	movs r1, #0x18
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	b _081DF5F2
 	.align 2, 0
 _081DF5D4: .4byte FUN_081df604
@@ -67,7 +67,7 @@ _081DF5D8:
 	bls _081DF5F2
 _081DF5E6:
 	adds r0, r4, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DF5FA

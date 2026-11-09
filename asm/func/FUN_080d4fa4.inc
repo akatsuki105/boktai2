@@ -276,7 +276,7 @@ _080D51D0:
 	adds r0, r1, r0
 _080D51DC:
 	ldrh r0, [r0, #2]
-	bl PlayerLink_IsFrozenLava
+	bl PlayerLink_IsInLava
 	cmp r0, #0
 	beq _080D51EC
 	movs r0, #0
@@ -316,7 +316,7 @@ _080D5216:
 	adds r0, r5, #0
 	adds r0, #0x2c
 	ldr r1, [r5, #0x18]
-	bl FUN_081df64c
+	bl LinkSession_ReleaseAllCoins
 	adds r0, r5, #0
 	movs r1, #0x1b
 	movs r2, #2
@@ -455,7 +455,7 @@ _080D5330:
 	adds r0, r1, r0
 _080D533C:
 	ldrh r0, [r0, #2]
-	bl PlayerLink_IsFrozenLava
+	bl PlayerLink_IsInLava
 	cmp r0, #0
 	beq _080D534C
 	movs r0, #0

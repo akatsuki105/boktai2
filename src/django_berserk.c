@@ -46,7 +46,7 @@ typedef struct DjangoBerserk {
 } DjangoBerserk;
 static_assert(sizeof(DjangoBerserk) == 1220);
 
-static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+static inline void ClearSuspendFlags(u32 flags) { gSuspendFlags &= ~flags; }
 
 void FUN_0807f9d8(DjangoBerserk* p);
 void FUN_0807fdac(DjangoBerserk* p);
@@ -154,7 +154,7 @@ void FUN_0807f94c(DjangoBerserk* p) {
   Player* player;
 
   if (p->timer == 0) {
-    SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+    SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
     PlaySound_082406e0(VO_DARK_DJANGO_UGH_770);
     PlaySound_082406e0(SE_506);
   }
@@ -264,7 +264,7 @@ NON_MATCH void FUN_0807f9d8(DjangoBerserk* p) {
 // 暴走の終わり, アニメが終わったらプレイヤーの向きと姿を戻して最後の状態へ移る
 void FUN_0807fd1c(DjangoBerserk* p) {
   if (p->timer == 0) {
-    PlaySound_082406e0(SONG_432);
+    PlaySound_082406e0(SE_LANDING);
     p->timer++;
   }
   gPlayerPtr[0]->human.flags |= SPRFLAG_HIDDEN;
@@ -282,8 +282,8 @@ void FUN_0807fd1c(DjangoBerserk* p) {
 void FUN_0807fdac(DjangoBerserk* p) {
   p->sprite.flags |= SPRFLAG_HIDDEN;
   if (p->timer == 0) {
-    EnableEntityFlags(ENTITY_DISABLE_2);
-    gGameFlags &= ~FLAG030047A4_UNK_0;
+    ClearSuspendFlags(SUSPEND_MENU);
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
   if (++p->timer <= 5) {
     Hitbox_Register(&p->hitbox);
@@ -382,7 +382,7 @@ s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) {
   FUN_0807fed0(p);
   FUN_0807ff78(p);
   DjangoBerserk_SetState(p, FUN_0807f94c);
-  gGameFlags |= FLAG030047A4_UNK_0;
+  gGameFlags |= GAMEFLAG_NO_PAUSE;
   p->hpTarget = p->player->hp >> 1;
   if (p->hpTarget == 0) {
     p->hpTarget = 1;

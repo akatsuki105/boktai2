@@ -258,15 +258,15 @@ void FUN_0807ae6c(struct Player* p, u32 param_2, s32 param_3);
 void FUN_08050e2c(u32 param_1, u32 param_2, Vec3* pos);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
-void FUN_08050e50(u32 param_1, u32 param_2);
-void FUN_08050d28(void);
+void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
+void CrossoverBattle_NotifyBossDefeated(void);
 s32 FUN_08050d40(void);
 void FUN_0823b880(s32 n);
-s32 Entity0805e67c_SpawnSwarm(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
+s32 Entity0805e67c_SpawnSwarm(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes);
 void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
-s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
-s32 FUN_08050e80(void);
-void FUN_08050cb8(Vec3* pos, u32 kind);
+s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes);
+s32 CrossoverBattle_IsFighting(void);
+void CrossoverBattle_AddOjama(Vec3* pos, u32 kind);
 void FUN_0805ef68(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, Vec3* pos);
 
 void FUN_0803cee4(ShadeManCrossover*);
@@ -606,11 +606,11 @@ NON_MATCH void FUN_0803cbb4(s32 kind) {
 
   if (p != NULL) {
     if (kind == 1 || kind == 4) {
-      FUN_0807ae6c(p->base.players[0], 1, Div(kind, 3) + 1);
+      FUN_0807ae6c(p->base.players[0], ELEMCOND_INKA, Div(kind, 3) + 1);
     } else if (kind == 2 || kind == 5) {
-      FUN_0807ae6c(p->base.players[0], 3, Div(kind, 3) + 1);
+      FUN_0807ae6c(p->base.players[0], ELEMCOND_SEKIKA, Div(kind, 3) + 1);
     } else {
-      Player_ApplyBadCondition(p->base.players[0], 2, (Div(kind, 3) * p->unk_311 + p->unk_310) * 60);
+      Player_ApplyBadCondition(p->base.players[0], BAD_CONFUSE, (Div(kind, 3) * p->unk_311 + p->unk_310) * 60);
     }
     FUN_08050e2c(2, 0, &p->base.players[0]->mover.pos);
   }
@@ -855,7 +855,7 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
     }
   }
   if (!boss->isDemo) {
-    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (!p->unk_81f) {
         p->unk_81f = TRUE;
         p->unk_820 = Sqrt(boss->playerDistSq[0]) >> 5;
@@ -1310,7 +1310,7 @@ void FUN_0803e5fc(ShadeManCrossover* p) { PTR_ARRAY_085aaf6c[p->base.subState2](
 void FUN_0803e618(ShadeManCrossover* p) { PTR_ARRAY_085aafa0[p->base.subState2](p); }
 
 void FUN_0803e634(ShadeManCrossover* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_0803d844(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_0803d844(p)) {
     PTR_ARRAY_085aafa8[p->base.subState1](p);
   }
 }
@@ -1700,7 +1700,7 @@ NON_MATCH void FUN_0803f5b8(Boss* boss, s32 timer) {
         Entity0805e67c_Spawn(p->entity0805e67c, &pos, mover->angle - ((Random() & 3) + 10), p->unk_2fe + 2, power, p->unk_2fa, p->unk_2fc);
         Entity0805e67c_Spawn(p->entity0805e67c, &pos, (Random() & 3) + mover->angle, p->unk_2fe, power, p->unk_2fa, p->unk_2fc);
         Entity0805e67c_Spawn(p->entity0805e67c, &pos, (Random() & 3) + 10 + mover->angle, p->unk_2fe + 2, power, p->unk_2fa, p->unk_2fc);
-        PlaySound_0824078c(SONG_234);
+        PlaySound_0824078c(CRY_BAT_234);
       }
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
         p->phase++;
@@ -1795,7 +1795,7 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
           power = (p->unk_2c6 * power) >> 6;
         }
         Entity0805e67c_SpawnSwarm(p->entity0805e67c, &pos, mover->angle, p->unk_308, power, p->unk_304, p->unk_306);
-        PlaySound_0824078c(SONG_234);
+        PlaySound_0824078c(CRY_BAT_234);
         p->unk_2c1 = 0;
       }
       if (sprite->animEvents & MAIN_ANIM_EVENT_ENDED) {
@@ -1877,7 +1877,7 @@ NON_MATCH void FUN_0803fc70(Boss* boss, s32 timer) {
       if (p->phaseTimer > 29) {
         Boss_SetAngle(boss, boss->playerAngle[0]);
         Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_REVERSE | MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnimSpeed(sprite, 0x40);
+        MainSprite_SetAnimSpeed(sprite, Q6(1));
         p->phase++;
         p->phaseTimer = 0;
       }
@@ -1953,8 +1953,8 @@ void FUN_080400a4(Boss* boss, s32 timer) {
     FUN_08022fb8(boss, &p->sprite.pos);
     p->phase = 0;
     p->phaseTimer = 0;
-    FUN_08050e50(0, 1);
-    FUN_08050d28();
+    CrossoverBattle_AddPoint(0, 1);
+    CrossoverBattle_NotifyBossDefeated();
   }
   if (p->unk_162 > 3) {
     p->unk_162 -= 4;
@@ -1977,7 +1977,7 @@ void FUN_080400a4(Boss* boss, s32 timer) {
 }
 
 void FUN_08040184(ShadeManCrossover* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     p->base.subStateDone = FALSE;
     Boss_UpdateState(&p->base);
   }
@@ -2009,7 +2009,7 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
   p->unk_166 = 0;
   p->hurtWeakness = 0;
   p->hurtAttributes = 0;
-  if (!FUN_08050e80()) {
+  if (!CrossoverBattle_IsFighting()) {
     damage = 0;
   }
   if (damage > 0) {
@@ -2018,15 +2018,15 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
     boss->hp -= damage;
     p->unk_2a4 = boss->mover.pos;
     if (unk_166 && (weakness & 7)) {
-      FUN_08050cb8(&p->unk_2a4, 0);
+      CrossoverBattle_AddOjama(&p->unk_2a4, 0);
     }
     if (attributes & 0x7F) {
       if (weakness & 1) {
-        FUN_08050cb8(&p->unk_2a4, 1);
+        CrossoverBattle_AddOjama(&p->unk_2a4, 1);
       } else if (weakness & 2) {
-        FUN_08050cb8(&p->unk_2a4, 2);
+        CrossoverBattle_AddOjama(&p->unk_2a4, 2);
       } else if (weakness & 4) {
-        FUN_08050cb8(&p->unk_2a4, 3);
+        CrossoverBattle_AddOjama(&p->unk_2a4, 3);
       }
     }
     if (attributes & 1) {

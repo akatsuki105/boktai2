@@ -55,20 +55,20 @@ void Explosion_InitSprite(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 p
 }
 
 // 爆発の攻撃判定を 0x100 角で作る
-void Explosion_InitHitbox(Explosion* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+void Explosion_InitHitbox(Explosion* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0x40, attrs, invincibleTime);  // 0x40 は武器以外の攻撃
+  Hitbox_SetAttack(hitbox, power, knockback, 0x40, attrs, iframes);  // 0x40 は武器以外の攻撃
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
-s32 Explosion_Init(Explosion* p, Vec3* pos, s32 ignoreMask, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay) {
+s32 Explosion_Init(Explosion* p, Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 plttOffset, s32 delay) {
   Explosion_InitSprite(&p->sprite, &p->gfx, pos, plttOffset);
-  Explosion_InitHitbox(p, &p->hitbox, ignoreMask, power, knockbackPower, attrs, invincibleTime);
+  Explosion_InitHitbox(p, &p->hitbox, ignoreMask, power, knockback, attrs, iframes);
   Hitbox_SetPos(&p->hitbox, pos, 0);
   p->delay = delay;
   p->timer = 0;
@@ -101,12 +101,12 @@ Explosion* Explosion_CreateDelayed(Vec3* pos, s32 ignoreMask, s32 power, s32 kno
   return p;
 }
 
-Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay) {
+Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 plttOffset, s32 delay) {
   Explosion* p = CreateEntity(ENTITY_UNK_10, sizeof(Explosion));
 
   if (p != NULL) {
     SetEntityRoutine(p, Explosion_Update, Explosion_Destroy);
-    if (Explosion_Init(p, pos, ignoreMask, power, knockback, attrs, invincibleTime, plttOffset, delay) < 0) {
+    if (Explosion_Init(p, pos, ignoreMask, power, knockback, attrs, iframes, plttOffset, delay) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

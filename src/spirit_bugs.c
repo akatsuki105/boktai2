@@ -3,9 +3,11 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "inline.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"
+#include "sound.h"
 #include "sprite_aux.h"
 
 // 精霊虫1匹, state で sSwarmUpdates[kind * 5 + state] のハンドラに分岐する, 根拠: Entity0800a89c_UpdateSwarm
@@ -48,11 +50,21 @@ typedef struct {
 } SpiritBugsManager;
 static_assert(sizeof(SpiritBugsManager) == 2012);
 
+// Entity0800a89c_Update が群れごとに組んで虫のハンドラに渡す回収判定の枠, min/max は視点座標
+typedef struct {
+  WorldPos pos;    // 0x00, 暗黒虫はプレイヤーの位置, それ以外はプレイヤーの横上 (向きで左右が変わる)
+  Vec3 posMin;     // 0x08, pos の視点座標から (5, 5) 引いた点
+  Vec3 posMax;     // 0x10, pos の視点座標に (5, 5) 足した点
+  Vec3 playerMin;  // 0x18, プレイヤーの視点座標から (8, 20) 引いた点
+  Vec3 playerMax;  // 0x20, プレイヤーの視点座標に (8, 20) 足した点
+} SpiritBugScreenBox;
+
 static SpiritBugsManager* sSpiritBugsManager;  // 0x03000044
 
-const u16 sBugsAnimIdx[24] = {
-    4, 0, 5, 0, 6, 0, 6, 0, 5, 0, 4, 0, 9, 0, 10, 0, 11, 0, 11, 0, 10, 0, 9, 0,
-};  // 0x085AA6D0
+const u16 sBugsAnimIdx[12] = {4, 0, 5, 0, 6, 0, 6, 0, 5, 0, 4, 0};  // 0x085AA6D0
+
+// 回収されたときのアニメ番号, 並びは sBugsAnimIdx と同じ
+const u16 sBugsCollectedAnimIdx[12] = {9, 0, 10, 0, 11, 0, 11, 0, 10, 0, 9, 0};  // 0x085AA6E8
 
 const u32 u32_ARRAY_085aa700[3] = {10, 10, 120};  // 0x085AA700
 
@@ -68,15 +80,15 @@ void (*const sSpiritBugHandler[3])(Player*, s32) = {
 };  // 0x085AA70C
 
 const SoundID32 gSpiritBugsSoundIDs[3] = {
-    SE_SPIRIT_BUGS_284,
-    SE_SPIRIT_BUGS_283,
-    SE_UNK_282,
+    [SOLARBUG] = SE_TOUCH_SOLARBUG,
+    [MOONBUG] = SE_TOUCH_MOONBUG,
+    [DARKBUG] = SE_SPIRIT_BUGS_282,
 };  // 0x085AA718
 
 const SoundID32 gSoundIDs_085aa724[3] = {
-    SONG_659,
-    SONG_658,
-    SONG_657,
+    [SOLARBUG] = SE_SPIRIT_BUGS_659,
+    [MOONBUG] = SE_SPIRIT_BUGS_658,
+    [DARKBUG] = SE_SPIRIT_BUGS_657,
 };  // 0x085AA724
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
@@ -112,21 +124,21 @@ s32 Entity0800a89c_ReleaseAll(void) {
 // 0x4631
 s32 Cmd_RemoveAllSpiritBugs(void) { return Entity0800a89c_ReleaseAll(); }
 
-// sSwarmUpdates の中身, frameBit/framePhase は SpiritBugsManager.frameCounter の下位ビットで、 screenBox は Entity0800a89c_Update がスタックに組む回収判定用の枠 (未解析)
+// sSwarmUpdates の中身, frameBit/framePhase は SpiritBugsManager.frameCounter の下位ビットで、 box は Entity0800a89c_Update がスタックに組む回収判定用の枠
 // 表は kind * 5 + SpiritBug.state で引くので、横1行が1つの kind、列が state 0..4 に対応する
 // state 1 が徘徊+回収待ち、2 がプレイヤーへの吸い寄せ、3 が点滅して消滅、4 が回収成立, state 0 は空きスロットで何もしない
-typedef void (*SpiritBugHandler)(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox);
+typedef void (*SpiritBugHandler)(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box);
 
-void FUN_0800b064(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
-void FUN_0800b068(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
-void FUN_0800b7a0(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
-void FUN_0800be38(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
-void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
-void FUN_0800b404(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
-void FUN_0800ba78(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, void*);
+void FUN_0800b064(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
+void FUN_0800b068(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
+void FUN_0800b7a0(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
+void FUN_0800be38(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
+void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
+void FUN_0800b404(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
+void FUN_0800ba78(SpiritBugsManager*, SpiritBugSwarm*, s32, u32, u32, SpiritBugScreenBox*);
 
 // 群れの虫4匹を、虫ごとの state に対応するハンドラに流す
-s32 Entity0800a89c_UpdateSwarm(SpiritBugsManager* p, SpiritBugSwarm* swarm, void* screenBox) {
+s32 Entity0800a89c_UpdateSwarm(SpiritBugsManager* p, SpiritBugSwarm* swarm, SpiritBugScreenBox* box) {
   static const SpiritBugHandler sSwarmUpdates[15] = {
       FUN_0800b064,
       FUN_0800b068,
@@ -151,12 +163,73 @@ s32 Entity0800a89c_UpdateSwarm(SpiritBugsManager* p, SpiritBugSwarm* swarm, void
   s32 i;
 
   for (i = 0, bug = swarm->bugs; i < 4; i++) {
-    sSwarmUpdates[swarm->kind * 5 + bug->state](p, swarm, i, frameBit, framePhase, screenBox);
+    sSwarmUpdates[swarm->kind * 5 + bug->state](p, swarm, i, frameBit, framePhase, box);
     bug++;
   }
 }
 
-NAKED s32 Entity0800a89c_Update(SpiritBugsManager* p) { INCFUNC("asm/func/Entity0800a89c_Update.inc"); }
+// 群れごとに回収判定の枠を組んでハンドラを回し, 出現音の遅延と回収待ちのタイマーを進める
+// 下書き (277/279命令): 原典は群れを2本の誘導変数で回す (呼び出しに &p->swarms[i], 読み書きに swarm を使うと 278 命令で形が揃う), 残りは p と swarm のレジスタの入れ替わり
+NON_MATCH s32 Entity0800a89c_Update(SpiritBugsManager* p) {
+#ifdef NONMATCHING_C
+  WorldPos playerPos;
+  Vec3 playerVp;
+  SpiritBugSwarm* swarm;
+  s32 i;
+
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT) && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_UNK_8)) {
+    return 0;
+  }
+
+  playerPos.x = p->player->mover.pos.x;
+  playerPos.y = p->player->mover.pos.y + 0x80;
+  playerPos.z = p->player->mover.pos.z;
+  WorldToVp(&playerVp, &playerPos);
+
+  for (i = 0, swarm = p->swarms; i < 6; i++, swarm++) {
+    if (swarm->active) {
+      SpiritBugScreenBox box;
+
+      if (swarm->kind == DARKBUG) {
+        box.pos.x = playerPos.x;
+        box.pos.y = playerPos.y;
+        box.pos.z = playerPos.z;
+      } else if (p->player->facing == 0) {
+        box.pos.x = p->player->mover.pos.x + 24;
+        box.pos.y = 350 + p->player->mover.pos.y;
+        box.pos.z = p->player->mover.pos.z - 24;
+      } else {
+        box.pos.x = p->player->mover.pos.x - 32;
+        box.pos.y = 320 + p->player->mover.pos.y;
+        box.pos.z = p->player->mover.pos.z + 32;
+      }
+      WorldToVp(&box.posMin, &box.pos);
+      box.posMax = box.posMin;
+      box.posMin.x -= 5;
+      box.posMin.y -= 5;
+      box.posMax.x += 5;
+      box.posMax.y += 5;
+      box.playerMin = playerVp;
+      box.playerMax = playerVp;
+      box.playerMin.x -= 8;
+      box.playerMin.y -= 20;
+      box.playerMax.x += 8;
+      box.playerMax.y += 20;
+      Entity0800a89c_UpdateSwarm(p, swarm, &box);
+      if (swarm->soundDelay != 0 && --swarm->soundDelay == 0) {
+        PlaySound_0824078c(gSoundIDs_085aa724[swarm->kind]);
+      }
+      if (swarm->timer != 0) {
+        swarm->timer--;
+      }
+    }
+  }
+  p->frameCounter++;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity0800a89c_Update.inc");
+#endif
+}
 
 s32 Entity0800a89c_Destroy(SpiritBugsManager* p) {
   s32 i, j;
@@ -204,7 +277,7 @@ s32 Entity0800a89c_Init(SpiritBugsManager* p, u32 id) {
   return 0;
 }
 
-SpiritBugsManager* Entity0800a89c_Create(u32 id) {
+SpiritBugsManager* Entity0800a89c_Create(u32 id, u32 _) {
   SpiritBugsManager* p = CreateEntity(ENTITY_UNK_8, sizeof(SpiritBugsManager));
 
   if (p != NULL) {
@@ -218,10 +291,172 @@ SpiritBugsManager* Entity0800a89c_Create(u32 id) {
 }
 
 // kind = SpiritBugKind (bit4 以降は別の意味?), amount = 効果量 (sSpiritBugHandler の 第2引数)
-NAKED s32 SpawnSpiritBugs(u32 count, s32 kind, s32 amount, Vec3* pos, Vec3* spread, s32 lifetime, s32 lifetimeRand) { INCFUNC("asm/func/SpawnSpiritBugs.inc"); }
+// 空いている群れに count 匹の精霊虫を pos の周り (spread の範囲) に出す, kind の上位4bit が立っていれば出現音を鳴らさない
+// 下書き (462/434命令): 流れは一致, 原典は乱数インデックスのアドレスを r7 に置いて kind を r4 のまま持ち, こちらは高位レジスタとスタックに逃がすぶん mov と再読み込みが増える
+NON_MATCH s32 SpawnSpiritBugs(s32 count, s32 kind, s32 amount, Vec3* pos, Vec3* spread, s32 lifetime, s32 lifetimeRand) {
+#ifdef NONMATCHING_C
+  SpiritBugsManager* p = sSpiritBugsManager;
+  bool8 silent;
+  u32 blink;
+  s32 i;
+
+  if (p == NULL) {
+    p = Entity0800a89c_Create(0xFC73, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  if (gPlayerPtr[0] == NULL) {
+    return 0;
+  }
+
+  silent = (kind & 0xF0) != 0;
+  kind &= 0xF;
+  if (count > 4) {
+    count = 4;
+  }
+  if (lifetimeRand == 0) {
+    lifetimeRand = 1;
+  }
+  blink = u32_ARRAY_085aa700[kind];
+
+  for (i = 0; i < 6; i++) {
+    SpiritBugSwarm* swarm = &p->swarms[i];
+
+    if (!swarm->active) {
+      s32 phase = 0;
+      s32 j;
+
+      swarm->kind = kind;
+      swarm->amount = amount;
+      swarm->aliveCount = count;
+      swarm->soundDelay = silent ? 0 : 14;
+      for (j = 0; j < count; j++) {
+        SpiritBug* bug = &swarm->bugs[j];
+
+        bug->state = 1;
+        bug->timer = lifetime + Mod(Random(), lifetimeRand);
+        bug->unk_6 = blink;
+        bug->speed = (Random() & 3) + 4;
+        bug->angle = Random();
+        bug->turnTimer = Random() | 0x80;
+        bug->ptcl.flags &= ~SPRFLAG_HIDDEN;
+        bug->ptcl.pos.x = pos->x;
+        if (spread->x != 0) {
+          bug->ptcl.pos.x += Mod(Random(), spread->x);
+        }
+        bug->ptcl.pos.y = pos->y;
+        if (spread->y != 0) {
+          bug->ptcl.pos.y += Mod(Random(), spread->y);
+        }
+        bug->ptcl.pos.z = pos->z;
+        if (spread->z != 0) {
+          bug->ptcl.pos.z += Mod(Random(), spread->z);
+        }
+        AuxAnim_SetAnim(&bug->anim, p->anim, sBugsAnimIdx[p->isSabata * 6 + kind * 2], 0, 0);
+        bug->anim.cmdIdx = phase;
+        if (++phase > 2) {
+          phase = 0;
+        }
+        bug->vel.x = 0;
+        bug->vel.y = 0;
+        bug->vel.z = 0;
+        bug->target = bug->ptcl.pos;
+        Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+        Particle_AddToDrawList(&bug->ptcl, 0);
+      }
+      for (; j < 4; j++) {
+        swarm->bugs[j].ptcl.flags |= SPRFLAG_HIDDEN;
+        Particle_AddToDrawList(&swarm->bugs[j].ptcl, 0);
+      }
+      swarm->timer = 40;
+      swarm->active = TRUE;
+      break;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/SpawnSpiritBugs.inc");
+#endif
+}
 
 // kind = SpiritBugKind, amount = 効果量 (sSpiritBugHandler の 第2引数)
-NAKED s32 SpawnSpiritBugsAt(u32 count, s32 kind, s32 amount, Vec3* pos, Vec3* perBugPos, s32 lifetime, s32 lifetimeRand) { INCFUNC("asm/func/SpawnSpiritBugsAt.inc"); }
+// SpawnSpiritBugs の位置指定版, perBugPos があれば j 匹目を perBugPos[j] に, なければ全部 pos に出す
+// 下書き (374/358命令): SpawnSpiritBugs と同じく流れは一致, 原典は kind を r4 のまま持って kind * 4 をスタックに置き, soundDelay は if / else の2つのストアで書く
+NON_MATCH s32 SpawnSpiritBugsAt(s32 count, s32 kind, s32 amount, Vec3* pos, Vec3* perBugPos, s32 lifetime, s32 lifetimeRand) {
+#ifdef NONMATCHING_C
+  SpiritBugsManager* p = sSpiritBugsManager;
+  bool8 silent;
+  u32 blink;
+  s32 i;
+
+  if (p == NULL) {
+    p = Entity0800a89c_Create(0xFC73, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  silent = (kind & 0xF0) != 0;
+  kind &= 0xF;
+  if (count > 4) {
+    count = 4;
+  }
+  if (lifetimeRand == 0) {
+    lifetimeRand = 1;
+  }
+  blink = u32_ARRAY_085aa700[kind];
+
+  for (i = 0; i < 6; i++) {
+    SpiritBugSwarm* swarm = &p->swarms[i];
+
+    if (!swarm->active) {
+      s32 phase = 0;
+      s32 j;
+
+      swarm->kind = kind;
+      swarm->amount = amount;
+      swarm->aliveCount = count;
+      swarm->soundDelay = silent ? 0 : 14;
+      for (j = 0; j < count; j++) {
+        SpiritBug* bug = &swarm->bugs[j];
+        Vec3* src = perBugPos != NULL ? &perBugPos[j] : pos;
+
+        bug->state = 1;
+        bug->timer = lifetime + Mod(Random(), lifetimeRand);
+        bug->unk_6 = blink;
+        bug->speed = (Random() & 3) + 4;
+        bug->angle = Random();
+        bug->turnTimer = Random() | 0x80;
+        bug->ptcl.flags &= ~SPRFLAG_HIDDEN;
+        bug->ptcl.pos.x = src->x;
+        bug->ptcl.pos.y = src->y;
+        bug->ptcl.pos.z = src->z;
+        AuxAnim_SetAnim(&bug->anim, p->anim, sBugsAnimIdx[p->isSabata * 6 + kind * 2], 0, 0);
+        bug->anim.cmdIdx = phase;
+        if (++phase > 2) {
+          phase = 0;
+        }
+        bug->vel.x = 0;
+        bug->vel.y = 0;
+        bug->vel.z = 0;
+        bug->target = bug->ptcl.pos;
+        Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+        Particle_AddToDrawList(&bug->ptcl, 0);
+      }
+      for (; j < 4; j++) {
+        swarm->bugs[j].ptcl.flags |= SPRFLAG_HIDDEN;
+        Particle_AddToDrawList(&swarm->bugs[j].ptcl, 0);
+      }
+      swarm->timer = 40;
+      swarm->active = TRUE;
+      break;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/SpawnSpiritBugsAt.inc");
+#endif
+}
 
 // 出ている精霊虫の総数を数える
 u32 Entity0800a89c_CountBugs(void) {
@@ -271,18 +506,245 @@ NON_MATCH void Entity0800a89c_PurifyDarkBugs(void) {
 }
 
 // state 0 (空きスロット) のハンドラ, 何もしない
-void FUN_0800b064(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {}
+void FUN_0800b064(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {}
 
-NAKED void FUN_0800b068(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800b068.inc"); }
+// 太陽虫と月光虫の state 1, 目標の周りを旋回しながら漂い, 画面上でプレイヤーの枠に入ったら回収して効果を与える, 手をかざされたら state 2 へ
+// 下書き (432/432命令): 残差は FUN_0800be38 と同じく旋回で angle へ書く2か所 (原典は &bug->angle のレジスタ経由, こちらは bug+2) と乱数テーブルのレジスタだけ
+NON_MATCH void FUN_0800b068(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
+#ifdef NONMATCHING_C
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Vec3* target = &bug->target;
+  Particle* ptcl = &bug->ptcl;
+  u8* angle = &bug->angle;
 
-NAKED void FUN_0800b404(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800b404.inc"); }
+  if ((bugIdx & 1) == frameBit) {
+    s32 diff = ArcTan2_8(target->x - ptcl->pos.x, target->z - ptcl->pos.z) - bug->angle;
 
-NAKED void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800b7a0.inc"); }
+    if (bug->turnTimer < 0) {
+      *angle = bug->angle + (abs(diff) <= 4 ? diff : 4);
+      if (++bug->turnTimer == 0) {
+        bug->turnTimer = (Random() & 0x3F) + 0x40;
+      }
+    } else {
+      *angle = bug->angle - (abs(diff) <= 4 ? diff : 4);
+      if (--bug->turnTimer == 0) {
+        bug->turnTimer = -(Random() & 0x3F) - 0x40;
+      }
+    }
+    bug->vel.x = (COS(*angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(*angle) * bug->speed) >> 12;
+  } else if (swarm->timer == 0) {
+    Vec3 vp;
 
-NAKED void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800ba78.inc"); }
+    WorldToVp(&vp, &ptcl->pos);
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && box->playerMin.x <= vp.x && box->playerMax.x >= vp.x && box->playerMin.y <= vp.y && box->playerMax.y >= vp.y) {
+      bug->state = 4;
+      AuxAnim_SetAnim(&bug->anim, p->anim, sBugsCollectedAnimIdx[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+      if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+        PlaySound_0824078c(gSpiritBugsSoundIDs[swarm->kind]);
+        sSpiritBugHandler[swarm->kind](p->player, swarm->amount);
+      }
+      return;
+    }
+  }
+
+  ptcl->pos.x += bug->vel.x;
+  {
+    s32 dy = box->pos.y - ptcl->pos.y;
+
+    if (dy > 16) {
+      ptcl->pos.y += 16;
+    } else if (dy < -16) {
+      ptcl->pos.y -= 16;
+    } else {
+      ptcl->pos.y = box->pos.y;
+    }
+  }
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (swarm->timer == 0 && Player_TestFlag20(p->player, PFLAG20_PALM_UP)) {
+    bug->state = 2;
+    bug->speed = 18;
+  }
+  if (--bug->timer == 0) {
+    bug->state = 3;
+    bug->unk_6 = 10;
+  }
+#else
+  INCFUNC("asm/func/FUN_0800b068.inc");
+#endif
+}
+
+// 暗黒虫の state 1, 目標の周りを旋回しながら漂い, 画面上で box の枠に入ったら回収して効果を与える, unk_6 が尽きたら state 2 でプレイヤーへ向かう
+// 下書き (427/427命令): 残差は FUN_0800be38 / FUN_0800b068 と同じく旋回で angle へ書く2か所 (原典は &bug->angle のレジスタ経由) と乱数テーブルのレジスタだけ
+NON_MATCH void FUN_0800b404(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
+#ifdef NONMATCHING_C
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Vec3* target = &bug->target;
+  Particle* ptcl = &bug->ptcl;
+  u8* angle = &bug->angle;
+
+  if ((bugIdx & 1) == frameBit) {
+    s32 diff = ArcTan2_8(target->x - ptcl->pos.x, target->z - ptcl->pos.z) - bug->angle;
+
+    if (bug->turnTimer < 0) {
+      *angle = bug->angle + (abs(diff) <= 4 ? diff : 4);
+      if (++bug->turnTimer == 0) {
+        bug->turnTimer = (Random() & 0x3F) + 0x40;
+      }
+    } else {
+      *angle = bug->angle - (abs(diff) <= 4 ? diff : 4);
+      if (--bug->turnTimer == 0) {
+        bug->turnTimer = -(Random() & 0x3F) - 0x40;
+      }
+    }
+    bug->vel.x = (COS(*angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(*angle) * bug->speed) >> 12;
+  } else if (swarm->timer == 0) {
+    Vec3 vp;
+
+    WorldToVp(&vp, &ptcl->pos);
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && box->posMin.x <= vp.x && box->posMax.x >= vp.x && box->posMin.y <= vp.y && box->posMax.y >= vp.y) {
+      bug->state = 4;
+      AuxAnim_SetAnim(&bug->anim, p->anim, sBugsCollectedAnimIdx[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+      if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+        PlaySound_0824078c(gSpiritBugsSoundIDs[swarm->kind]);
+        sSpiritBugHandler[swarm->kind](p->player, swarm->amount);
+      }
+      return;
+    }
+  }
+
+  ptcl->pos.x += bug->vel.x;
+  {
+    s32 dy = box->pos.y - ptcl->pos.y;
+
+    if (dy > 16) {
+      ptcl->pos.y += 16;
+    } else if (dy < -16) {
+      ptcl->pos.y -= 16;
+    } else {
+      ptcl->pos.y = box->pos.y;
+    }
+  }
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (bug->unk_6 == 0) {
+    bug->state = 2;
+    bug->speed = 15;
+    bug->unk_6 = 10;
+    bug->timer = (Random() & 0x1F) + 60;
+  } else {
+    bug->unk_6--;
+  }
+#else
+  INCFUNC("asm/func/FUN_0800b404.inc");
+#endif
+}
+
+// 太陽虫と月光虫の state 2, 手をかざしているプレイヤーへ吸い寄せられ, 近づいたら回収して効果を与える, かざすのをやめたら state 1 へ戻る
+void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Particle* ptcl = &bug->ptcl;
+
+  if ((bugIdx & 1) == frameBit) {
+    s32 dx = box->pos.x - ptcl->pos.x;
+    s32 dy = box->pos.y - ptcl->pos.y + 164;
+    s32 dz = box->pos.z - ptcl->pos.z;
+
+    bug->angle = ArcTan2_8(dx, dz);
+    bug->vel.x = (COS(bug->angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(bug->angle) * bug->speed) >> 12;
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && swarm->timer == 0 && abs(dy) <= 179 && dx * dx + dz * dz <= 399) {
+      bug->state = 4;
+      AuxAnim_SetAnim(&bug->anim, p->anim, sBugsCollectedAnimIdx[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+      if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+        PlaySound_0824078c(gSpiritBugsSoundIDs[swarm->kind]);
+        sSpiritBugHandler[swarm->kind](p->player, swarm->amount);
+      }
+      return;
+    }
+  }
+
+  ptcl->pos.x += bug->vel.x;
+  {
+    s32 dy = box->pos.y - ptcl->pos.y;
+
+    if (dy > 16) {
+      ptcl->pos.y += 16;
+    } else if (dy < -16) {
+      ptcl->pos.y -= 16;
+    } else {
+      ptcl->pos.y = box->pos.y;
+    }
+  }
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (!Player_TestFlag20(p->player, PFLAG20_PALM_UP) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+    u16* table;
+
+    bug->state = 1;
+    table = gRandomTable;
+    bug->speed = (_Random(table) & 3) + 4;
+    bug->angle = _Random(table);
+  }
+  if (--bug->timer == 0) {
+    bug->state = 3;
+    bug->unk_6 = 10;
+  }
+}
+
+// 暗黒虫の state 2, プレイヤーへ向かって飛び, 近づいたら回収して効果を与える, 寿命が切れたら state 3 へ
+// 下書き (294/296命令): 原典は box を sl に置くが, こちらは引数のスタックから毎回読む, 先頭で SpiritBugScreenBox* のローカルに写すと 296 命令になり swarm / box / 定数 4 の高位レジスタの割り当てだけが入れ替わる (同形の FUN_0800b7a0 は一致)
+NON_MATCH void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
+#ifdef NONMATCHING_C
+  SpiritBug* bug = &swarm->bugs[bugIdx];
+  Particle* ptcl = &bug->ptcl;
+
+  if ((bugIdx & 1) == frameBit) {
+    s32 dx = box->pos.x - ptcl->pos.x;
+    s32 dy = box->pos.y - ptcl->pos.y + 0x80;
+    s32 dz = box->pos.z - ptcl->pos.z;
+
+    bug->angle = ArcTan2_8(dx, dz);
+    bug->vel.x = (COS(bug->angle) * bug->speed) >> 12;
+    bug->vel.z = (SIN(bug->angle) * bug->speed) >> 12;
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && swarm->timer == 0 && abs(dy) <= 129 && dx * dx + dz * dz <= 399) {
+      bug->state = 4;
+      AuxAnim_SetAnim(&bug->anim, p->anim, sBugsCollectedAnimIdx[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+      if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+        PlaySound_0824078c(gSpiritBugsSoundIDs[swarm->kind]);
+        sSpiritBugHandler[swarm->kind](p->player, swarm->amount);
+      }
+      return;
+    }
+  }
+
+  ptcl->pos.x += bug->vel.x;
+  {
+    s32 dy = box->pos.y - ptcl->pos.y;
+
+    if (dy > 16) {
+      ptcl->pos.y += 16;
+    } else if (dy < -16) {
+      ptcl->pos.y -= 16;
+    } else {
+      ptcl->pos.y = box->pos.y;
+    }
+  }
+  ptcl->pos.z += bug->vel.z;
+  Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
+  if (--bug->timer == 0) {
+    bug->state = 3;
+    bug->unk_6 = 15;
+  }
+#else
+  INCFUNC("asm/func/FUN_0800ba78.inc");
+#endif
+}
 
 // state 4 (プレイヤーに回収された) のハンドラ, アニメを1コマ進め、一巡したら虫を消す
-void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {
+void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
   SpiritBug* bug = &swarm->bugs[bugIdx];
   Particle* ptcl = &bug->ptcl;
 
@@ -299,7 +761,7 @@ void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swa
 // 目標へ向き直りながら飛び, 点滅しながら unk_6 を減らして 0 になったら消える
 // 残差は旋回時の angle への書き込み2か所 (原典は &bug->angle のレジスタ経由, こちらは bug+2) と乱数テーブルのレジスタのみ (295/295), 手動送りは Particle_AdvanceAnim で一致
 // 旋回部分の inline 化 (if の内外), 差分を bug->angle で取る形, 加算を if/else に分ける形は試済
-NON_MATCH void FUN_0800be38(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {
+NON_MATCH void FUN_0800be38(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
 #ifdef NONMATCHING_C
   SpiritBug* bug = &swarm->bugs[bugIdx];
   Vec3* target = &bug->target;

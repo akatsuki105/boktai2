@@ -1,9 +1,9 @@
 #include "camera.h"
 #include "enemy_target.h"
-#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "link_session.h"
 #include "magic.h"
 #include "player.h"
 #include "sound.h"
@@ -186,14 +186,14 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 
 // facing から animIDOffset と xflip を決める
 void PlayerLink_SetAnimFacing(Player* p) {
-  u8 v = p->facing;
+  u8 dir8 = p->facing;
 
-  if (v > 4) {
-    p->animIDOffset = 8 - v;
-    p->xflip = 1;
+  if (IS_8DIR_LEFT(dir8)) {
+    p->animIDOffset = 8 - dir8;
+    p->xflip = TRUE;
   } else {
-    p->animIDOffset = v;
-    p->xflip = 0;
+    p->animIDOffset = dir8;
+    p->xflip = FALSE;
   }
 }
 
@@ -211,7 +211,7 @@ bool32 FUN_0809ebf4(Player* p);
 
 // 日光に当たっているかを引き直し, 影のずれと多段ヒット制限を戻す
 void FUN_080cc370(Player* p) {
-  p->flag20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_BUSY;
   if (FUN_0809ebf4(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
@@ -228,15 +228,15 @@ s32 FUN_080cc3d4(Player* p, s32 mask) { return p->flag35a & mask; }
 // 通信プレイで自分の番号のときだけ効果音を鳴らす
 // 命令数は一致 (17/17) だが, 原典は -1 を else のブロックの中で作るのに対し agbcc は分岐より前へ巻き上げるので
 // レジスタが1本余分に生き残り push {r4, lr} になる
-// Tier A-C 試済: 三項演算子 / gEntity9A9F をローカルに退避 / 退避しない
+// Tier A-C 試済: 三項演算子 / gLinkSession をローカルに退避 / 退避しない
 NON_MATCH void Sound_PlayForPlayer(s32 playerIdx, SoundID32 id) {
 #ifdef NONMATCHING_C
   s32 self;
 
-  if (gEntity9A9F == NULL) {
+  if (gLinkSession == NULL) {
     self = -1;
   } else {
-    self = gEntity9A9F->playerIdx;
+    self = gLinkSession->playerIdx;
   }
   if (playerIdx == self) {
     PlaySound_082406e0(id);
@@ -252,10 +252,10 @@ NON_MATCH void FUN_080cc410(s32 playerIdx, SoundID32 id) {
 #ifdef NONMATCHING_C
   s32 self;
 
-  if (gEntity9A9F == NULL) {
+  if (gLinkSession == NULL) {
     self = -1;
   } else {
-    self = gEntity9A9F->playerIdx;
+    self = gLinkSession->playerIdx;
   }
   if (playerIdx == self) {
     sound_08240740(id);
@@ -268,7 +268,7 @@ NON_MATCH void FUN_080cc410(s32 playerIdx, SoundID32 id) {
 // 残差1命令 (30/31): FUN_080cfa24 と同じく, 原典は idx = -1 の materialize を else 側に残すが agbcc は先頭へ巻き上げる
 NON_MATCH void FUN_080cc43c(Player* p) {
 #ifdef NONMATCHING_C
-  s32 idx = gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1;
+  s32 idx = gLinkSession != NULL ? gLinkSession->playerIdx : -1;
 
   if (p->inputIdx == idx) {
     if (p->kind == PLAYER_SABATA) {
@@ -291,10 +291,10 @@ NAKED void FUN_080cc4f4(Player* p, s32 param_2, s32 param_3) { INCFUNC("asm/func
 s32 FUN_080cc618(void) {
   s32 v;
 
-  if (gEntity9A9F == NULL) {
+  if (gLinkSession == NULL) {
     v = 0;
   } else {
-    v = gEntity9A9F->records[0].unk_44;
+    v = gLinkSession->records[0].unk_44;
   }
 
   if (v == 4 || v == 5 || v == 0) {
@@ -305,7 +305,6 @@ s32 FUN_080cc618(void) {
 
 NAKED void FUN_080cc648(Player* p) { INCFUNC("asm/func/FUN_080cc648.inc"); }
 
-void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
 
 NAKED void FUN_080cc6b0(Player* p, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_080cc6b0.inc"); }
@@ -505,7 +504,7 @@ NAKED void FUN_080cdc10(Player* p) { INCFUNC("asm/func/FUN_080cdc10.inc"); }
 NAKED void FUN_080cdc6c(Player* p) { INCFUNC("asm/func/FUN_080cdc6c.inc"); }
 
 void FUN_080cdda8(Player* p) {
-  u8 n = p->emitter.unk_3;
+  u8 n = p->emitter.aliveCount;
 
   if (n != 0) {
     s32 i = n;
@@ -551,10 +550,10 @@ void PlayerLink_CountMash(Player* p) {
 NAKED void FUN_080ce28c(Player* p) { INCFUNC("asm/func/FUN_080ce28c.inc"); }
 
 void FUN_080ce330(Player* p) {
-  Eff082473e0Emitter_Destroy(&p->emitter);
+  ElementalCondEmitter_Destroy(&p->emitter);
   ParticleShadow_Remove(&p->shadow);
-  Particle_Remove(&p->ptcl_64c.ptcl);
-  Particle_Remove(&p->ptcl_67c.ptcl);
+  Particle_Remove(&p->noise.ptcl);
+  Particle_Remove(&p->spurl.ptcl);
   FUN_080cd078(p);
   FUN_080cd528(p);
   FUN_080cce5c(p);
@@ -565,8 +564,8 @@ NAKED void FUN_080ce378(Player* p) { INCFUNC("asm/func/FUN_080ce378.inc"); }
 s32 FUN_080ce4d0(Player* p) {
   u32 i = p->inputIdx;
 
-  if (gEntity9A9F != NULL) {
-    return gEntity9A9F->unk_60[i];
+  if (gLinkSession != NULL) {
+    return gLinkSession->luxGauge[i];
   }
   return 0;
 }
@@ -654,10 +653,10 @@ s32 FUN_080ced68(Player* p, s32 param_2) {
   u32 i = p->inputIdx;
   s32 v;
 
-  if (gEntity9A9F == NULL) {
+  if (gLinkSession == NULL) {
     v = 0;
   } else {
-    v = gEntity9A9F->unk_60[i];
+    v = gLinkSession->luxGauge[i];
   }
 
   if (v < param_2) {
@@ -696,18 +695,16 @@ void FUN_080cef14(Player* p) {
   p->inputIdx = val;
 }
 
-Entity9A9FRecord* FUN_080cef30(Player* p) {
+LinkPlayerRecord* FUN_080cef30(Player* p) {
   s32 i = p->inputIdx;
 
-  if (gEntity9A9F == NULL || i < 0) {
+  if (gLinkSession == NULL || i < 0) {
     return NULL;
   }
-  return &gEntity9A9F->records[i];
+  return &gLinkSession->records[i];
 }
 
 NAKED s32 FUN_080cef5c(Player* p) { INCFUNC("asm/func/FUN_080cef5c.inc"); }
-
-void FUN_081dfa20(u32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
 
 // 通信相手の記録からステータス4種を引き直す
 void FUN_080cefcc(Player* p) {
@@ -797,15 +794,15 @@ NAKED void FUN_080cf7f8(Player* p) { INCFUNC("asm/func/FUN_080cf7f8.inc"); }
 
 NAKED void FUN_080cf958(Player* p) { INCFUNC("asm/func/FUN_080cf958.inc"); }
 
-// 残差1命令 (22/23): 原典は gEntity9A9F の NULL 判定を分岐の前後で2回持つが, agbcc は1回に畳む
+// 残差1命令 (22/23): 原典は gLinkSession の NULL 判定を分岐の前後で2回持つが, agbcc は1回に畳む
 NON_MATCH void FUN_080cfa24(Player* p) {
 #ifdef NONMATCHING_C
   s32 idx;
 
-  if (gEntity9A9F == NULL) {
+  if (gLinkSession == NULL) {
     idx = -1;
   } else {
-    idx = gEntity9A9F->playerIdx;
+    idx = gLinkSession->playerIdx;
   }
 
   if (p->inputIdx == idx) {
@@ -839,30 +836,29 @@ NAKED void FUN_080cfaa4(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cfaa4
 
 NAKED void FUN_080cfb20(Player* p) { INCFUNC("asm/func/FUN_080cfb20.inc"); }
 
-// Player_IsOnRock の通信プレイ版
-bool32 PlayerLink_IsLiveLava(u32 attr) {
+// 鳴り床の上にいるか
+bool32 PlayerLink_IsOnSoundFloor(u32 attr) {
   if ((attr & TATTR_SPECIAL) && !TestMapFlag(MPF_HOT | MPF_COLD)) {
     return TRUE;
   }
   return FALSE;
 }
 
-// Player_IsInLava の通信プレイ版
-bool32 PlayerLink_IsFrozenLava(u32 attr) {
+bool32 PlayerLink_IsInLava(u32 attr) {
   if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_HOT)) {
     return TRUE;
   }
   return FALSE;
 }
 
-bool32 FUN_080cfc3c(u32 attr) {
-  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_UNK_13)) {
+static bool32 UNUSED FUN_080cfc3c(u32 attr) {
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_WATERFRONT)) {
     return TRUE;
   }
   return FALSE;
 }
 
-bool32 FUN_080cfc78(u32 attr) {
+bool32 PlayerLink_IsOnIce(u32 attr) {
   if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_COLD)) {
     return TRUE;
   }
@@ -915,7 +911,7 @@ void FUN_080d0738(Player* p) {
     p->facing = FUN_080d06d4(p);
     PlayerLink_SetAnimFacing(p);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
 }
 
@@ -1118,7 +1114,7 @@ NAKED void FUN_080d55d8(Player* p) { INCFUNC("asm/func/FUN_080d55d8.inc"); }
 
 // マウスの待機 (PACT_IDLE), マウスのアニメを向きに合わせて1コマ進める
 void FUN_080d57e4(Player* p) {
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->action != PACT_IDLE) {
     PlayerLink_SetAction(p, PACT_IDLE, 0);
   }
@@ -1129,7 +1125,7 @@ void FUN_080d57e4(Player* p) {
 s32 FUN_080d5908(Player* p) {
   s32 v = 12;
 
-  if (p->emitter.kind == 2 && p->emitter.unk_3 != 0) {
+  if (p->emitter.kind == ELEMCOND_HYOKETU && p->emitter.aliveCount != 0) {
     v = 8;
   }
   if (p->speedPenalty != 0) {

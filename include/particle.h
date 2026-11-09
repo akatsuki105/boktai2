@@ -8,7 +8,7 @@
 
 // Particle Group ID
 #define PTCL_GROUP_0 BOKHASH("eff_eff_00")  // 0x1C1A, ROMにこの文字列があるのでこれは確定
-#define PTCL_GROUP_1 0x1C1C                 // BOKHASH("eff_eff_02") が 一致するが eff_eff_01 がないのは不自然
+#define PTCL_GROUP_1 0x1C1C                 // 0x1C1C, BOKHASH("eff_eff_02") が 一致するが eff_eff_01 がないのは不自然
 #define PTCL_GROUP_2 0x1C1E                 // 0x1C1E, エレメントのパーティクル
 
 typedef u8 ParticleGroupFlags;  // ParticleGroup.flags
@@ -76,6 +76,8 @@ void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
 void Particle_SetPose(Particle* p, ParticleGroup* g, u32 poseIdx);
 
 static inline void Particle_Hide(Particle* p) { p->flags |= SPRFLAG_HIDDEN; }
+static inline void Particle_SetFlags(Particle* p, SpriteFlags flags) { p->flags |= flags; }
+static inline void Particle_ClearFlags(Particle* p, SpriteFlags flags) { p->flags &= ~flags; }
 
 static inline void Particle_SetTile(Particle* ptcl, ParticleGroup* group, u32 poseIdx) { ptcl->tileNum = poseIdx * ((ptcl->spriteWidth >> 3) * (ptcl->spriteHeight >> 3)) + group->tile; }
 

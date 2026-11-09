@@ -142,7 +142,7 @@ _080588AC:
 	movs r0, #3
 	movs r1, #9
 	adds r2, r7, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 _080588F0:
 	mov r0, r8
 	adds r1, r5, #0
@@ -335,7 +335,7 @@ _08058A44:
 	bl AuxSprite_Remove
 	mov r0, r8
 	adds r1, r5, #0
-	bl Entity08058ffc_UnregisterElemHitbox
+	bl Larva_UnregisterHurtbox
 	movs r1, #1
 	mov r0, sb
 	lsls r1, r0

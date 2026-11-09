@@ -494,7 +494,7 @@ _081FDBCE:
 	mov r1, sl
 	movs r2, #8
 _081FDBF2:
-	bl FUN_080df148
+	bl Entity080df420_Spawn
 	mov r1, r8
 	ldr r0, [r1, #4]
 	adds r0, #1

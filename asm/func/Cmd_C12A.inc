@@ -127,7 +127,7 @@ _080ED612:
 	mov r2, sb
 	strb r2, [r0]
 	adds r0, r4, #0
-	bl FUN_080e49c4
+	bl Enemy_Deactivate
 	ldr r0, _080ED68C @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x90
@@ -161,7 +161,7 @@ _080ED692:
 	ldr r0, _080ED6B4 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r4]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 	b _080ED702
 	.align 2, 0
 _080ED6B4: .4byte 0x03002B28

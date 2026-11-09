@@ -347,14 +347,14 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
   d.y = player->mover.pos.y - elem->pos.y;
   d.z = player->mover.pos.z - elem->pos.z;
 
-  if ((d.y < 0 ? -d.y : d.y) <= 31 && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
+  if (abs(d.y) < Q8(0.125) && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
     if (player->unk_3ff < 0) {
       player->unk_3ff = elem->unk_42;
       elem->unk_40 |= E080DB520_UNK_4;
       elem->hurtbox.flags |= HBFLAG_HIDDEN;
       elem->grabMashBase = gPlayerPtr[0]->mashCount;
       payload = 6;
-      FUN_080ec7e8(ENEK_SPIDER, 1, &payload);
+      Enemy_SendMsgByKindVariant(ENEK_SPIDER, 1, &payload);
       PlaySound_082406e0(SE_SPIDER_WEB_HIT);
       return;
     }

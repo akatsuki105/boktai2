@@ -14,7 +14,6 @@ typedef struct {
 static_assert(sizeof(Entity730A) == 88);
 
 void Entity99CA_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MapPltt_PushCommand(s32 val, s32 count, u32* args);
 void Entity6978_SetRequest(s32 val, s32 count, s32* args);
 void RingoDemoAnim_Create(Vec3* pos, MsgQueue* mq);
@@ -54,7 +53,7 @@ NON_MATCH void FUN_08022704(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   if (msg->args[0] == 0) {
     kind = 2;
   }
-  FUN_0823ce68(kind, args[1], args[2], args[3], args[4], flags, args[8]);
+  StartBgObjPlttFade(kind, args[1], args[2], args[3], args[4], flags, args[8]);
 #else
   INCFUNC("asm/func/FUN_08022704.inc");
 #endif

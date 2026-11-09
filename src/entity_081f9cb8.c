@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "particle.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite_animation.h"
@@ -40,7 +41,7 @@ static Entity081f9cb8* gEntity081f9cb8;  // 0x03000210
 Entity081f9cb8* Entity081f9cb8_Create(void);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 param_3, s32 param_4);
 struct Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
+    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 static inline bool8 Entity081f9cb8_IsUsed(Entity081f9cb8* p, s32 i) {
   if (TEST_FLAGS(p->usedMask, 1 << i)) {
@@ -50,21 +51,9 @@ static inline bool8 Entity081f9cb8_IsUsed(Entity081f9cb8* p, s32 i) {
   }
 }
 
-void Entity081f9cb8_UpdateUnused(Entity081f9cb8*, Entity081f9cb8Elem*);
-void Entity081f9cb8_UpdateWait(Entity081f9cb8*, Entity081f9cb8Elem*);
-void Entity081f9cb8_UpdateExplode(Entity081f9cb8*, Entity081f9cb8Elem*);
-void Entity081f9cb8_UpdateRemove(Entity081f9cb8*, Entity081f9cb8Elem*);
-
-void (*const sEntity081f9cb8Updates[4])(Entity081f9cb8*, Entity081f9cb8Elem*) = {
-    Entity081f9cb8_UpdateUnused,
-    Entity081f9cb8_UpdateWait,
-    Entity081f9cb8_UpdateExplode,
-    Entity081f9cb8_UpdateRemove,
-};  // 0x085AE5E0
-
 void Entity081f9cb8_OnHit(void) {}
 
-void Entity081f9cb8_InitHitbox(Entity081f9cb8Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 unk_6, s32 unk_7, s32 unk_8) {
+void Entity081f9cb8_InitHitbox(Entity081f9cb8Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
   Vec3 size;
   Vec3 offset;
   HitboxData* hitbox;
@@ -73,7 +62,7 @@ void Entity081f9cb8_InitHitbox(Entity081f9cb8Elem* elem, s32 power, s32 knockbac
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0, attrs, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f9cb8_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
 }
@@ -137,7 +126,7 @@ NON_MATCH void Entity081f9cb8_SpawnDebris(Vec3* pos) {
     vel.y = (_Random(table) & 31) + 12;
     life = (_Random(table) & 63) + 20;
   }
-  Entity081f26bc_Spawn(pos, &vel, 0x1C1A, ANIM_D1B8, 3, 0, 49, 0, 2, 0, 0, life, 4, 1, 0x200004, 30, 8, 8);
+  Entity081f26bc_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 49, 0, 2, 0, 0, life, 4, 1, 0x200004, 30, 8, 8);
 #else
   INCFUNC("asm/func/Entity081f9cb8_SpawnDebris.inc");
 #endif
@@ -193,7 +182,7 @@ void Entity081f9cb8_UpdateRemove(Entity081f9cb8* p, Entity081f9cb8Elem* elem) {
 }
 
 // delay フレーム後に pos で爆発させる
-void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) {
+void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
   Entity081f9cb8* p = gEntity081f9cb8;
   Entity081f9cb8Elem* elem;
 
@@ -219,13 +208,20 @@ void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockbackPower, H
   elem->animFile = GetFile(DIR_ANIMATION, ANIM_121B);
   AuxSprite_Add(&elem->sprite, &p->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, elem->animFile, 6, 0, 0);
-  Video_SetAuxSpritePltt(elem->sprite.gfx, 0xD9);
+  Video_SetAuxSpritePltt(elem->sprite.gfx, 217);
   elem->sprite.priority = 2;
   AuxSprite_Hide(&elem->sprite);
-  Entity081f9cb8_InitHitbox(elem, power, knockbackPower, attrs, invincibleTime, 0, 0, 0);
+  Entity081f9cb8_InitHitbox(elem, power, knockback, attrs, iframes, 0, 0, 0);
 }
 
 s32 Entity081f9cb8_Update(Entity081f9cb8* p) {
+  static void (*const sEntity081f9cb8Updates[4])(Entity081f9cb8*, Entity081f9cb8Elem*) = {
+      Entity081f9cb8_UpdateUnused,
+      Entity081f9cb8_UpdateWait,
+      Entity081f9cb8_UpdateExplode,
+      Entity081f9cb8_UpdateRemove,
+  };  // 0x085AE5E0
+
   Entity081f9cb8Elem* elems = p->elems;
 
   if (p->usedMask != 0) {

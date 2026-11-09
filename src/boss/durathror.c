@@ -299,12 +299,12 @@ void (*const durathror_085aaecc[24])(Boss*, s32) = {
 
 void FUN_080390f8(Durathror*);
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
-void FUN_081a4e88(void);
+void DarkRoot_WitherAll(void);
 s32 FUN_08060220(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
 s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed, s32 hp, s32 power, s32 knockback, Vec3* pos);
-void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
+void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 DurathrorImpale_Spawn(struct DurathrorImpale* p, s32 power, u32 duration, Vec3* pos);
-s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
+s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 s32 Entity0805d79c_Spawn(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos);
 struct Entity0805d79c* Entity0805d79c_Create(void);
@@ -313,7 +313,7 @@ struct Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt);
 
 extern s32 gLightningTimer;
 void FUN_0803767c(Durathror* p, DurathrorElem* elem);
-void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
+void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 void FUN_0803a104(Durathror*);
 void FUN_0803b7c4(Durathror*);
 void FUN_08039280(Durathror*);
@@ -444,13 +444,13 @@ NON_MATCH void FUN_08036b2c(Durathror* p, s32 count, u32 speedXZ) {
   pos.x = pos.x - Q8(0.25) + (_Random(table) & 0x7F);
   pos.y = pos.y + Q8(0.5) + (_Random(table) & 0x3F);
   pos.z = pos.z - Q8(0.25) + (_Random(table) & 0x7F);
-  FUN_08015c28(&pos, p->unk_158, 16, count, 6, 0x3001, 48, speedXZ, 512, 0);
+  Entity08015584_SpawnHorizontal(&pos, p->unk_158, 16, count, 6, 0x3001, Q6(0.75), speedXZ, 512, 0);
 #else
   INCFUNC("asm/func/FUN_08036b2c.inc");
 #endif
 }
 
-void FUN_08036c1c(Durathror* p) { FUN_08015a90(&p->sprite_280.pos, 6, 7, 0x4001, 64, 4, 512, 0); }
+void FUN_08036c1c(Durathror* p) { Entity08015584_SpawnRadial(&p->sprite_280.pos, 6, 7, 0x4001, Q6(1), 4, 512, 0); }
 
 // 残差は角ごとの定数の持ち方 (183/193), 原典は各 case で 1 と基準座標をレジスタに置き直し, case 1 だけ乱数表を読み直す
 NON_MATCH void FUN_08036c4c(Vec3* pos, s32 corner) {
@@ -574,7 +574,7 @@ s32 FUN_0803712c(Vec3* out) {
   if (boss == NULL || boss->bossID != BOSS_DURATHROR) {
     return FALSE;
   }
-  FUN_08015a90(out, 3, 7, 0x2000, 64, 4, 512, 0);
+  Entity08015584_SpawnRadial(out, 3, 7, 0x2000, Q6(1), 4, 512, 0);
   return TRUE;
 }
 
@@ -853,9 +853,9 @@ void FUN_080378b4(Durathror* p, DurathrorElem* elem, s32 idx) {
   if (elem->timer == 15) {
     MainSprite_Show(sprite);
   } else if (elem->timer == 30) {
-    MainSprite_SetAnimSpeed(sprite, 96);
+    MainSprite_SetAnimSpeed(sprite, Q6(1.5));
   } else if (elem->timer == 45) {
-    MainSprite_SetAnimSpeed(sprite, 128);
+    MainSprite_SetAnimSpeed(sprite, Q6(2));
   }
   if (elem->timer > 95) {
     DurathrorElem_SetState(elem, 3);
@@ -945,7 +945,7 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
   } else {
     if (p->unk_de3 != 0) {
       if (p->unk_ddc == 16) {
-        MainSprite_SetAnimSpeed(sprite, 0x80);
+        MainSprite_SetAnimSpeed(sprite, Q6(2));
       } else if (p->unk_ddc == 22) {
         MainSprite_SetAnim(sprite, &p->gfx, 1, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
       }
@@ -953,9 +953,9 @@ void FUN_08037a48(Durathror* p, DurathrorElem* elem, s32 idx) {
     if (p->unk_de3 <= 1) {
       if (p->unk_ddc == 96) {
         MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnimSpeed(sprite, 0x80);
+        MainSprite_SetAnimSpeed(sprite, Q6(2));
       } else if (p->unk_ddc == 112) {
-        MainSprite_SetAnimSpeed(sprite, 0x40);
+        MainSprite_SetAnimSpeed(sprite, Q6(1));
       }
     }
     if (++p->unk_ddc > 125) {
@@ -979,16 +979,16 @@ void FUN_08037e10(Durathror* p, DurathrorElem* elem, s32 idx) {
 
   if (DurathrorElem_EnterState(elem)) {
     MainSprite_SetAnim(sprite, &p->gfx, 0, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
-    MainSprite_SetAnimSpeed(sprite, 128);
+    MainSprite_SetAnimSpeed(sprite, Q6(2));
     if (!elem->unk_1) {
-      FUN_081a4e88();
+      DarkRoot_WitherAll();
     }
   }
   DurathrorElem_SetFlags(elem, 1);
   if (elem->timer == 45) {
-    MainSprite_SetAnimSpeed(sprite, 64);
+    MainSprite_SetAnimSpeed(sprite, Q6(1));
   } else if (elem->timer == 30) {
-    MainSprite_SetAnimSpeed(sprite, 96);
+    MainSprite_SetAnimSpeed(sprite, Q6(1.5));
   }
   if (elem->timer >= 45 && elem->timer < 60) {
     sprite->pos.y -= 8;
@@ -1068,7 +1068,7 @@ void FUN_08037ee0(Durathror* p, DurathrorElem* elem, s32 idx) {
           Vec3 pos;
 
           Vec3_CopyOffsetY(&pos, &sprite->pos, 0x80);
-          DustManager_Emit(8, 0, 0x100, 8, 6, 40, p->elemHitboxPower, 1, &pos);
+          SporeManager_Emit(8, 0, 0x100, 8, 6, 40, p->elemHitboxPower, 1, &pos);
           PlaySound_0824078c(SE_381);
         }
       }
@@ -1198,7 +1198,7 @@ void bee_08038358(Durathror* p, DurathrorElem* elem, s32 idx) {
           Vec3 pos;
 
           Vec3_CopyOffsetY(&pos, &sprite->pos, 0x80);
-          DustManager_Emit(8, 0, 0x100, 8, 6, 40, p->elemHitboxPower, 1, &pos);
+          SporeManager_Emit(8, 0, 0x100, 8, 6, 40, p->elemHitboxPower, 1, &pos);
           elem->unk_9 = 0;
           PlaySound_0824078c(SE_381);
         }
@@ -1220,7 +1220,7 @@ void bee_08038358(Durathror* p, DurathrorElem* elem, s32 idx) {
             Vec3 pos;
 
             Vec3_CopyOffsetY(&pos, &sprite->pos, 0x80);
-            DustManager_Emit(8, 0, 0x100, 8, 6, 40, p->elemHitboxPower, 1, &pos);
+            SporeManager_Emit(8, 0, 0x100, 8, 6, 40, p->elemHitboxPower, 1, &pos);
             FUN_08036e4c(p, &sprite->pos);
             elem->unk_9 = 0;
             PlaySound_0824078c(SE_BEE_968);
@@ -1332,7 +1332,7 @@ NON_MATCH void FUN_08038878(Durathror* p) {
   DurathrorElem* elem;
   s32 i;
 
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return;
   }
   p->unk_174 = 0;
@@ -1392,12 +1392,12 @@ void FUN_080389b0(Durathror* p) {
   param->angleXZRand = 64;
   param->decayStartY = 512;
   param->decayStartYRand = 0;
-  param->unk_1c = 0;
-  param->unk_1e = 0;
+  param->decayY = 0;
+  param->decayYRand = 0;
   param->decayStartXZ = 512;
   param->decayStartXZRand = 0;
-  param->unk_24 = 0;
-  param->unk_26 = 0;
+  param->decayXZ = 0;
+  param->decayXZRand = 0;
   param = &p->ptclSpawn2;
   param->kind = 7;
   param->flags = 0x3000;
@@ -1412,12 +1412,12 @@ void FUN_080389b0(Durathror* p) {
   param->angleXZRand = 64;
   param->decayStartY = 512;
   param->decayStartYRand = 0;
-  param->unk_1c = 0;
-  param->unk_1e = 0;
+  param->decayY = 0;
+  param->decayYRand = 0;
   param->decayStartXZ = 512;
   param->decayStartXZRand = 0;
-  param->unk_24 = 0;
-  param->unk_26 = 0;
+  param->decayXZ = 0;
+  param->decayXZRand = 0;
   elem = p->elems;
   for (i = 0; i < 6; i++, elem++) {
     Durathror_InitElem(p, elem, 0, 0, p->elemMaxHits, &p->base.mover.pos);
@@ -1541,7 +1541,7 @@ void FUN_08038f00(Durathror* p) {}
 NON_MATCH void Durathror_PollMessages(Durathror* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  MsgQueue* queue = &boss->msgQueue;
+  MsgQueue* queue = &boss->mq;
   s32 i;
 
   for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
@@ -1565,7 +1565,7 @@ NON_MATCH void Durathror_PollMessages(Durathror* p) {
         p->sprite_280.pos.x = boss->mover.pos.x;
         p->sprite_280.pos.y = boss->mover.pos.y;
         p->sprite_280.pos.z = boss->mover.pos.z;
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 10: {
@@ -1588,7 +1588,7 @@ NON_MATCH void Durathror_PollMessages(Durathror* p) {
       }
       case 9: {
         Boss_ShowEmote(boss, msg->args[0], 180, 180);
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 22: {
@@ -1683,7 +1683,7 @@ NON_MATCH void FUN_08039280(Durathror* p) {
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_17)) {
     bool32 seen;  // 千里眼の実、 Cバットだと、どのつぼみに本物がいるか見える
 
-    if (gGameFlags & FLAG030047A4_LINK) {
+    if (gGameFlags & GAMEFLAG_LINK) {
       Player* player = gPlayerPtr[0];
 
       seen = player != NULL && player->goodCondTimer != 0 && player->goodCondID == GOOD_SEE;
@@ -1945,7 +1945,7 @@ void FUN_08039df4(Durathror* p) {
 void FUN_08039e2c(Durathror* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 18);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -1953,7 +1953,7 @@ void FUN_08039e2c(Durathror* p) {
 void FUN_08039e70(Durathror* p) {
   if (Boss_EnterSubState(&p->base)) {
     Boss_RequestState(&p->base, 19);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   }
   p->base.subStateTimer++;
 }
@@ -1964,7 +1964,7 @@ void FUN_08039eb4(Durathror* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -1976,7 +1976,7 @@ void FUN_08039f14(Durathror* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 1);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -1988,7 +1988,7 @@ void FUN_08039f74(Durathror* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 0);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2000,7 +2000,7 @@ void FUN_08039fd8(Durathror* p) {
   }
   if (p->base.subStateDone) {
     Boss_SetSubState2(&p->base, 0);
-    MsgQueue_EndWait(&p->base.msgQueue, 1);
+    MsgQueue_EndWait(&p->base.mq, 1);
   } else {
     p->base.subStateTimer++;
   }
@@ -2013,7 +2013,7 @@ void FUN_0803a058(Durathror* p) { PTR_ARRAY_085aae88[p->base.subState2](p); }
 void FUN_0803a074(Durathror* p) { PTR_ARRAY_085aae98[p->base.subState2](p); }
 
 void FUN_0803a090(Durathror* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) && !FUN_080395a4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_080395a4(p)) {
     PTR_ARRAY_085aaeb4[p->base.subState1](p);
   }
 }
@@ -2460,7 +2460,7 @@ void FUN_0803b42c(Boss* boss, s32 timer) {
     Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
     boss->targetPos = mover->pos;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2482,7 +2482,7 @@ void FUN_0803b52c(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     Boss_PlayAnimFacing(boss, &p->sprite_280, &p->gfx, 25, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
     boss->targetPos = mover->pos;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->unk_15c = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW | BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX);
@@ -2532,7 +2532,7 @@ NON_MATCH void FUN_0803b628(Boss* boss, s32 timer) {
 
 void FUN_0803b7c4(Durathror* p) {
   p->base.subStateDone = FALSE;
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Boss_UpdateState(&p->base);
   }
 }

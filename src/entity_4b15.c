@@ -1,7 +1,7 @@
 #include "camera_inline.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "global.h"
+#include "link_session.h"
 #include "particle.h"
 #include "trig.h"
 
@@ -34,10 +34,10 @@ static inline void Entity4B15Elem_SetState(Entity4B15Elem* elem, u8 state) {
 }
 
 static inline s32 Entity4B15_GetLocalPlayerIdx(void) {
-  if (gEntity9A9F == NULL) {
+  if (gLinkSession == NULL) {
     return -1;
   }
-  return gEntity9A9F->playerIdx;
+  return gLinkSession->playerIdx;
 }
 
 // 状態に入った最初の呼び出しだけ TRUE, 入場フラグを下ろす

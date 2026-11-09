@@ -1,9 +1,9 @@
 #include "bg_pltt.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "link_session.h"
 #include "magic.h"
 #include "sound.h"
 #include "sprite.h"
@@ -33,7 +33,7 @@ typedef struct Entity7999 {
   s32 windowID2;                               // 0x280, TextPanel_Create(16, 12, 12, 2)
   u8 unk_284;                                  // 0x284, _Init が 0 を入れる
   u8 unk_285;                                  // 0x285, 読み手も書き手も見つかっていない
-  u8 unk_286;                                  // 0x286, gEntity9A9F->unk_15c + 0x40 の写し, 0/1/2 で分岐する種別
+  u8 unk_286;                                  // 0x286, gLinkSession->self.unk_40[0] の写し, 0/1/2 で分岐する種別
   u8 unk_287;                                  // 0x287, 同 +0x41 の写し
   u8 unk_288;                                  // 0x288, 同 +0x42 の写し
   u8 unk_289;                                  // 0x289
@@ -54,9 +54,6 @@ typedef struct Entity7999 {
 } Entity7999;
 static_assert(sizeof(Entity7999) == 676);
 
-void FUN_081df974(void);
-bool32 FUN_081dfa04(void);
-
 static void Entity7999_HidePanels(Entity7999* p);
 static void Entity7999_HideSprites(Entity7999* p);
 void FUN_081da0c4(Entity7999* p);
@@ -66,11 +63,10 @@ void FUN_081da814(Entity7999* p);
 void FUN_081da69c(Entity7999* p);
 void FUN_081da468(Entity7999* p);
 void MainMenu_SetHudMode(s32 mode);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7);
 void FUN_080e1238(s32 x, s32 y, s32 width, s32 height, u32 value, s32 bgIdx);
 
 static inline bool8 Entity7999_IsUnk56Set(void) {
-  if (gEntity9A9F != NULL && gEntity9A9F->unk_54[2] == 1) {
+  if (gLinkSession != NULL && gLinkSession->unk_54[2] == 1) {
     return TRUE;
   }
   return FALSE;
@@ -88,36 +84,36 @@ const s32 s32_ARRAY_085ae16c[3][6] = {
     {0, 0, 0, 32, 0,   64},
 };  // 0x085AE16C
 
-// gEntity9A9F->unk_15c の NULL 判定の形が未解決, Tier A の途中
+// gLinkSession->self の NULL 判定の形が未解決, Tier A の途中
 NON_MATCH s32 FUN_081d9da4(Entity7999* p) {
 #ifdef NONMATCHING_C
-  Entity9A9F* e = gEntity9A9F;
+  LinkSession* e = gLinkSession;
   u8* out;
   const u32* table;
 
-  if (e == NULL || e->unk_15c == NULL) {
+  if (e == NULL || &e->self == NULL) {
     return -1;
   }
-  out = e->unk_19c;
+  out = e->self.unk_40;
   out[0] = p->unk_286;
-  e->unk_19c[1] = p->unk_287;
+  e->self.unk_40[1] = p->unk_287;
   switch (out[0]) {
     case 0: {
-      e->unk_19c[2] = p->magicIDs[p->unk_288];
+      e->self.unk_40[2] = p->magicIDs[p->unk_288];
       break;
     }
     case 1: {
       table = u32_ARRAY_085ae160;
-      e->unk_19c[2] = table[p->unk_288];
+      e->self.unk_40[2] = table[p->unk_288];
       break;
     }
     case 2: {
       table = u32_ARRAY_085ae160 + 2;
-      e->unk_19c[2] = table[p->unk_288];
+      e->self.unk_40[2] = table[p->unk_288];
       break;
     }
     default: {
-      e->unk_19c[2] = p->magicIDs[0];
+      e->self.unk_40[2] = p->magicIDs[0];
       break;
     }
   }
@@ -192,7 +188,7 @@ void FUN_081d9f3c(Entity7999* p) {
   ClearBGTilemapBuffer(2);
   ClearBGTilemapBuffer(3);
   Entity7999_HideSprites(p);
-  FUN_081df974();
+  LinkSession_RequestKill();
   if (p->unk_2a2 != 0) {
     VM_ExecByID(p->unk_2a2, NULL);
     KillEntity((Entity*)p);
@@ -388,27 +384,27 @@ void Entity7999_InitSprites(Entity7999* p) {
 
     switch (i) {
       case 0: {
-        poseIdx = 0x33;
+        poseIdx = 51;
         gfx = &p->gfxLink;
         break;
       }
       case 1: {
-        poseIdx = 0x34;
+        poseIdx = 52;
         gfx = &p->gfxLink;
         break;
       }
       case 2: {
-        poseIdx = 0x35;
+        poseIdx = 53;
         gfx = &p->gfxLink;
         break;
       }
       case 3: {
-        poseIdx = 0xB6;
+        poseIdx = ICON_MAGIC(MAGIC_SOL);
         gfx = &p->gfxIcon;
         break;
       }
       case 4: {
-        poseIdx = 0x15;
+        poseIdx = 21;
         gfx = &p->gfxLink;
         break;
       }
@@ -609,7 +605,7 @@ void FUN_081da814(Entity7999* p) {
       break;
     }
   }
-  id += 0xB6;
+  id = ICON_MAGIC(id);
   MainSprite_LoadPose(&p->sprites[3], &p->gfxIcon, id);
 }
 
@@ -628,7 +624,7 @@ void FUN_081da890(Entity7999* p) {
 
 void FUN_081da8d4(Entity7999* p) {
   if (p->unk_29c) {
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
     p->state_29e = 0;
     p->unk_29c = FALSE;
   }
@@ -858,7 +854,7 @@ s32 Entity7999_Destroy(Entity7999* p) {
 }
 
 s32 Entity7999_Init(Entity7999* p) {
-  u8* data;
+  LinkPlayerRecord* data;
   void (*update)(Entity7999*);
 
   if (VM_SeekToNamedArg('s')) {
@@ -883,16 +879,16 @@ s32 Entity7999_Init(Entity7999* p) {
   p->unk_29c = TRUE;
   p->unk_284 = 0;
   if (VM_GetNamedArgValue('f', 0)) {
-    FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(2, 4, 4, 4, 4, 0xFFFF, 0);
   }
   MainMenu_SetHudMode(7);
-  data = gEntity9A9F->unk_15c;
-  if (gEntity9A9F == NULL) {
+  data = &gLinkSession->self;
+  if (gLinkSession == NULL) {
     data = NULL;
   }
-  p->unk_286 = data[0x40];
-  p->unk_287 = data[0x41];
-  p->unk_288 = data[0x42];
+  p->unk_286 = data->unk_40[0];
+  p->unk_287 = data->unk_40[1];
+  p->unk_288 = data->unk_40[2];
   FUN_081d9e50(p);
   FUN_081da814(p);
   FUN_081da074(p);

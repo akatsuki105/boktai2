@@ -972,7 +972,7 @@ _080EB9FC:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EB9F4
@@ -1001,7 +1001,7 @@ _080EBA3A:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBA2A
@@ -1029,7 +1029,7 @@ _080EBA70:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBA68
@@ -1059,7 +1059,7 @@ _080EBAA8:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBA98
@@ -1143,7 +1143,7 @@ _080EBB40:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBB38
@@ -1172,7 +1172,7 @@ _080EBB7E:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBB6E
@@ -1200,7 +1200,7 @@ _080EBBB4:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBBAC
@@ -1230,7 +1230,7 @@ _080EBBEC:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBBDC
@@ -1315,7 +1315,7 @@ _080EBC84:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBC7C
@@ -1344,7 +1344,7 @@ _080EBCC2:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBCB2
@@ -1372,7 +1372,7 @@ _080EBCF8:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBCF0
@@ -1402,7 +1402,7 @@ _080EBD30:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r4, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBD20
@@ -1480,7 +1480,7 @@ _080EBDBC:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBDB4
@@ -1509,7 +1509,7 @@ _080EBDFA:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBDEA
@@ -1537,7 +1537,7 @@ _080EBE30:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBE28
@@ -1567,7 +1567,7 @@ _080EBE68:
 	adds r1, r5, #0
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080e8038
+	bl CanWalkToAdjacentTile
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EBE58

@@ -72,8 +72,6 @@ typedef struct {
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-
 static inline void EnemyDexMenu_HidePageSprites(EnemyDexMenu* p) {
   s32 i;
   s32 j;
@@ -169,20 +167,20 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
   switch (kind) {
     case ENEK_MUMMY: {
       switch (variant) {
-        case 0:
+        case EV_MUMMY:
           return ENEID_MUMMY;
-        case 1:
+        case EV_GAST:
           return ENEID_GAST;
-        case 2:
+        case EV_MUMMY_P:
           return ENEID_MUMMY_P;
       }
       break;
     }
     case ENEK_SPIDER: {
       switch (variant) {
-        case 0:
+        case EV_SPIDER:
           return ENEID_SPIDER;
-        case 1:
+        case EV_PSPIDER:
           return ENEID_PSPIDER;
         case 2:
           return ENEID_SPIDER;
@@ -191,31 +189,31 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_GOLEM: {
       switch (variant) {
-        case 0:
+        case EV_GOLEM_C:
           return ENEID_GOLEM_C;
-        case 1:
+        case EV_GOLEM_S:
           return ENEID_GOLEM_S;
-        case 3:
+        case EV_GOLEM_P:
           return ENEID_GOLEM_P;
       }
       break;
     }
     case ENEK_BOKU: {
       switch (variant) {
-        case 1:
+        case EV_GHOUL:
           return ENEID_GHOUL;
-        case 2:
+        case EV_ZOMBIE:
           return ENEID_ZOMBIE;
-        case 3:
+        case EV_GHOUL_P:
           return ENEID_GHOUL_P;
       }
       break;
     }
     case ENEK_SKELETON: {
       switch (variant) {
-        case 0:
+        case EV_SKELETON:
           return ENEID_SKELETON;
-        case 5:
+        case EV_SKELETON_P:
           return ENEID_SKELETON_P;
       }
       break;
@@ -228,9 +226,9 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_LICH: {
       switch (variant) {
-        case 2:
+        case EV_LICH:
           return ENEID_LICH;
-        case 8:
+        case EV_LICH_P:
           return ENEID_LICH_P;
       }
       break;
@@ -240,9 +238,9 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_COCKA: {
       switch (variant) {
-        case 0:
+        case EV_COCKA:
           return ENEID_COCKA;
-        case 1:
+        case EV_COCKA_P:
           return ENEID_COCKA_P;
       }
       break;
@@ -252,18 +250,18 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_SWORD: {
       switch (variant) {
-        case 0:
+        case EV_WEAPON:
           return ENEID_SWORD;
-        case 1:
+        case EV_WEAPON_P:
           return ENEID_SWORD_P;
       }
       break;
     }
     case ENEK_AX: {
       switch (variant) {
-        case 0:
+        case EV_WEAPON:
           return ENEID_AX;
-        case 1:
+        case EV_WEAPON_P:
           return ENEID_AX_P;
       }
       break;
@@ -273,20 +271,20 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_CURORO: {
       switch (variant) {
-        case 0:
+        case EV_CURORO:
           return ENEID_CURORO;
-        case 1:
+        case EV_CURORO_F:
           return ENEID_CURORO_F;
-        case 2:
+        case EV_CURORO_I:
           return ENEID_CURORO_I;
       }
       break;
     }
     case ENEK_BAT: {
       switch (variant) {
-        case 0:
+        case EV_BAT:
           return ENEID_BAT;
-        case 1:
+        case EV_VBAT:
           return ENEID_VBAT;
         case 2:
           return ENEID_BAT;
@@ -295,9 +293,9 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_CROW: {
       switch (variant) {
-        case 0:
+        case EV_CROW:
           return ENEID_CROW;
-        case 1:
+        case EV_GARGOYLE:
           return ENEID_GARGOYLE;
         case 2:
           return ENEID_CROW;
@@ -306,46 +304,46 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
     }
     case ENEK_BEE: {
       switch (variant) {
-        case 0:
+        case EV_BEE:
           return ENEID_BEE;
-        case 1:
+        case EV_KBEE:
           return ENEID_KBEE;
-        case 2:
+        case EV_PBEE:
           return ENEID_PBEE;
       }
       break;
     }
     case ENEK_DOG: {
       switch (variant) {
-        case 0:
+        case EV_BANDIT:
           return ENEID_BANDIT;
-        case 1:
+        case EV_GRAVEKEEPER:
           return ENEID_GRAVEKEEPER;
-        case 2:
+        case EV_HELLHOUND:
           return ENEID_HELLHOUND;
-        case 4:
+        case EV_BANDIT_P:
           return ENEID_BANDIT_P;
       }
       break;
     }
     case ENEK_SLIME: {
       switch (variant) {
-        case 0:
+        case EV_SLIME_Y:
           return ENEID_SLIME_Y;
-        case 1:
+        case EV_SLIME_G:
           return ENEID_SLIME_G;
-        case 2:
+        case EV_SLIME_P:
           return ENEID_SLIME_P;
-        case 3:
+        case EV_SLIME_B:
           return ENEID_SLIME_B;
       }
       break;
     }
     case ENEK_GHOST: {
       switch (variant) {
-        case 0:
+        case EV_GHOST:
           return ENEID_GHOST;
-        case 1:
+        case EV_WRAITH:
           return ENEID_WRAITH;
       }
       break;
@@ -1403,7 +1401,7 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
   FUN_0820fea8(p->sub);
   FUN_0820d6e4(p);
   FUN_0820e080(p, 0);
-  FUN_0823ce68(0, 4, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(0, 4, 4, 4, 4, 0xFFFF, 0);
   PlaySound_082406e0(SE_OPEN_MENU);
   return 0;
 }

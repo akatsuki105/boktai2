@@ -82,7 +82,7 @@
 	adds r0, r4, #0
 	mov r2, sl
 	add r3, sp, #0xc
-	bl FUN_08014730
+	bl ScatterEffect_Spawn
 	add sp, #0x1c
 	pop {r3, r4, r5}
 	mov r8, r3

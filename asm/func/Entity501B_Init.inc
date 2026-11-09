@@ -60,7 +60,7 @@ _081E0B2C:
 	bl Entity501B_InitAuxSprite
 	adds r0, r4, #0
 	bl Entity501B_LoadScore
-	ldr r1, _081E0BC8 @ =FUN_081e0a18
+	ldr r1, _081E0BC8 @ =Entity501B_StateSpin
 	movs r2, #0
 	movs r3, #0xf4
 	lsls r3, r3, #2
@@ -83,7 +83,7 @@ _081E0B2C:
 	movs r1, #1
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	movs r0, #1
 _081E0BB6:
 	add sp, #0xc
@@ -93,6 +93,6 @@ _081E0BB6:
 	.align 2, 0
 _081E0BC0: .4byte 0x030046A0
 _081E0BC4: .4byte 0x00000912
-_081E0BC8: .4byte FUN_081e0a18
+_081E0BC8: .4byte Entity501B_StateSpin
 _081E0BCC: .4byte 0x000003E9
 _081E0BD0: .4byte 0x0000FFFF

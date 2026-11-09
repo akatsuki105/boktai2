@@ -104,7 +104,7 @@ _08101A58:
 	adds r0, r6, r3
 	mov r4, ip
 	strb r4, [r0]
-	ldr r3, _08101B50 @ =FUN_080e6794
+	ldr r3, _08101B50 @ =Enemy_WaitPendingState
 	movs r1, #0xe
 	subs r2, #0xe4
 	adds r0, r6, r2
@@ -178,7 +178,7 @@ _08101A58:
 _08101B44: .4byte 0x000004A4
 _08101B48: .4byte 0x00000551
 _08101B4C: .4byte 0x00000552
-_08101B50: .4byte FUN_080e6794
+_08101B50: .4byte Enemy_WaitPendingState
 _08101B54: .4byte 0x0000046B
 _08101B58: .4byte 0x00000469
 _08101B5C: .4byte 0x0000046C

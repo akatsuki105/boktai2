@@ -1,6 +1,6 @@
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "global.h"
+#include "link_session.h"
 #include "particle.h"
 #include "player.h"
 #include "vec3.h"
@@ -73,9 +73,9 @@ NON_MATCH void Entity081eeb28Elem_UpdateState1(Entity081eeb28* p, Entity081eeb28
   if (elem->spawned) {
     elem->spawned = 0;
   }
-  if (gGameFlags & FLAG030047A4_LINK) {
-    if (gEntity9A9F != NULL && gEntity9A9F->playerIdx >= 0) {
-      Player* pl = gPlayerPtr[gEntity9A9F->playerIdx];
+  if (gGameFlags & GAMEFLAG_LINK) {
+    if (gLinkSession != NULL && gLinkSession->playerIdx >= 0) {
+      Player* pl = gPlayerPtr[gLinkSession->playerIdx];
 
       if (pl != NULL && pl->goodCondTimer != 0 && pl->goodCondID == GOOD_SEE) {
         visible = TRUE;

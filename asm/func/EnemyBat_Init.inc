@@ -14,13 +14,13 @@
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _0814161C @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #0x12
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0814089c
+	bl EnemyBat_InitAnims
 	ldr r3, _08141620 @ =0x0000025D
 	adds r0, r7, r3
 	ldrb r0, [r0]
@@ -1000,7 +1000,7 @@ _08141DC8:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r1, [sp, #0xc0]
 	lsrs r2, r1, #0x10
 	ldr r4, [sp, #0xcc]
@@ -1098,7 +1098,7 @@ _08141E92:
 	beq _08141EA2
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _08141ECC @ =FUN_080f48ac
+	ldr r2, _08141ECC @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x28]
 	bl CWolfTargetManager_Register
 _08141EA2:
@@ -1122,7 +1122,7 @@ _08141EAE:
 	bl Mover_SetCollision
 	b _08141EDC
 	.align 2, 0
-_08141ECC: .4byte FUN_080f48ac
+_08141ECC: .4byte Enemy_OnCWolfMessage
 _08141ED0:
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x30]
@@ -1527,7 +1527,7 @@ _081421E2:
 	strh r1, [r0, #0x3a]
 _081421EC:
 	adds r0, r7, #0
-	bl FUN_08140580
+	bl EnemyBat_InitHitboxes
 	movs r3, #0x90
 	lsls r3, r3, #3
 	adds r0, r7, r3
@@ -1542,14 +1542,14 @@ _081421EC:
 	adds r5, r5, r0
 	ldr r1, _08142288 @ =FUN_0814145c
 	str r1, [sp, #0x1a4]
-	ldr r2, _0814228C @ =FUN_08140614
+	ldr r2, _0814228C @ =EnemyBat_GetMoveSpeed
 	mov r8, r2
 	movs r2, #0
 	ldr r3, _08142290 @ =FUN_0813f180
 	mov sb, r3
 	ldr r6, _08142294 @ =FUN_0813f2fc
 	mov sl, r6
-	ldr r0, _08142298 @ =FUN_0813f5fc
+	ldr r0, _08142298 @ =EnemyBat_StateDamaged
 	mov ip, r0
 	ldr r3, _0814229C @ =FUN_080f62b0
 	ldr r1, _081422A0 @ =FUN_080f62ac
@@ -1585,7 +1585,7 @@ _081421EC:
 	mov r5, ip
 	ldr r6, [sp, #0x128]
 	str r5, [r6]
-	ldr r0, _081422A4 @ =FUN_0813f7d4
+	ldr r0, _081422A4 @ =EnemyBat_StateDying
 	ldr r1, [sp, #0x12c]
 	str r0, [r1]
 	ldr r0, _081422A8 @ =FUN_080f44f4
@@ -1603,13 +1603,13 @@ _081421EC:
 	.align 2, 0
 _08142284: .4byte 0x00000674
 _08142288: .4byte FUN_0814145c
-_0814228C: .4byte FUN_08140614
+_0814228C: .4byte EnemyBat_GetMoveSpeed
 _08142290: .4byte FUN_0813f180
 _08142294: .4byte FUN_0813f2fc
-_08142298: .4byte FUN_0813f5fc
+_08142298: .4byte EnemyBat_StateDamaged
 _0814229C: .4byte FUN_080f62b0
 _081422A0: .4byte FUN_080f62ac
-_081422A4: .4byte FUN_0813f7d4
+_081422A4: .4byte EnemyBat_StateDying
 _081422A8: .4byte FUN_080f44f4
 _081422AC: .4byte FUN_080f410c
 _081422B0:
@@ -1621,14 +1621,14 @@ _081422B0:
 	adds r5, r2, r6
 	ldr r0, _08142444 @ =FUN_0814145c
 	str r0, [sp, #0x1a8]
-	ldr r1, _08142448 @ =FUN_08140614
+	ldr r1, _08142448 @ =EnemyBat_GetMoveSpeed
 	mov r8, r1
 	movs r2, #0
 	ldr r3, _0814244C @ =FUN_0813f1f0
 	mov sb, r3
 	ldr r6, _08142450 @ =FUN_0813f2fc
 	mov sl, r6
-	ldr r0, _08142454 @ =FUN_0813f5fc
+	ldr r0, _08142454 @ =EnemyBat_StateDamaged
 	mov ip, r0
 	ldr r3, _08142458 @ =FUN_080f62b0
 	ldr r1, _0814245C @ =FUN_080f62ac
@@ -1664,7 +1664,7 @@ _081422B0:
 	mov r5, ip
 	ldr r6, [sp, #0x128]
 	str r5, [r6]
-	ldr r0, _08142460 @ =FUN_0813f7d4
+	ldr r0, _08142460 @ =EnemyBat_StateDying
 	ldr r1, [sp, #0x12c]
 	str r0, [r1]
 	ldr r0, _08142464 @ =FUN_080f44f4
@@ -1714,10 +1714,10 @@ _08142332:
 	str r0, [r4]
 	ldr r5, [sp, #0x13c]
 	str r2, [r5]
-	ldr r0, _08142484 @ =FUN_080f47c8
+	ldr r0, _08142484 @ =Enemy_StateBlownAway
 	ldr r6, [sp, #0x14c]
 	str r0, [r6]
-	ldr r0, _08142488 @ =FUN_080f54e4
+	ldr r0, _08142488 @ =Enemy_StateFallDeath
 	ldr r1, [sp, #0x134]
 	str r0, [r1]
 	ldr r3, [sp, #0x108]
@@ -1725,7 +1725,7 @@ _08142332:
 	ldr r0, _0814248C @ =FUN_080f6e64
 	ldr r4, [sp, #0x18c]
 	str r0, [r4]
-	ldr r0, _08142490 @ =FUN_080f64f0
+	ldr r0, _08142490 @ =Enemy_OnDamaged
 	ldr r5, [sp, #0xec]
 	str r0, [r5]
 	ldr r0, _08142494 @ =FUN_080f84d4
@@ -1755,7 +1755,7 @@ _08142332:
 	movs r3, #0xbf
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _081424B0 @ =FUN_08140028
+	ldr r0, _081424B0 @ =EnemyBat_OnReset
 	str r0, [r1]
 	ldr r4, _081424B4 @ =0x000005FC
 	adds r0, r7, r4
@@ -1789,7 +1789,7 @@ _08142332:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0x49
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -1812,13 +1812,13 @@ _08142430:
 	.align 2, 0
 _08142440: .4byte 0x00000674
 _08142444: .4byte FUN_0814145c
-_08142448: .4byte FUN_08140614
+_08142448: .4byte EnemyBat_GetMoveSpeed
 _0814244C: .4byte FUN_0813f1f0
 _08142450: .4byte FUN_0813f2fc
-_08142454: .4byte FUN_0813f5fc
+_08142454: .4byte EnemyBat_StateDamaged
 _08142458: .4byte FUN_080f62b0
 _0814245C: .4byte FUN_080f62ac
-_08142460: .4byte FUN_0813f7d4
+_08142460: .4byte EnemyBat_StateDying
 _08142464: .4byte FUN_080f44f4
 _08142468: .4byte FUN_080f410c
 _0814246C: .4byte FUN_080f0430
@@ -1827,10 +1827,10 @@ _08142474: .4byte FUN_080e73c8
 _08142478: .4byte FUN_080f0320
 _0814247C: .4byte Enemy_080eff14
 _08142480: .4byte FUN_080e72b0
-_08142484: .4byte FUN_080f47c8
-_08142488: .4byte FUN_080f54e4
+_08142484: .4byte Enemy_StateBlownAway
+_08142488: .4byte Enemy_StateFallDeath
 _0814248C: .4byte FUN_080f6e64
-_08142490: .4byte FUN_080f64f0
+_08142490: .4byte Enemy_OnDamaged
 _08142494: .4byte FUN_080f84d4
 _08142498: .4byte FUN_080f624c
 _0814249C: .4byte FUN_080f56ec
@@ -1838,7 +1838,7 @@ _081424A0: .4byte FUN_080f5b34
 _081424A4: .4byte FUN_080f5fac
 _081424A8: .4byte 0x0000060C
 _081424AC: .4byte 0x085AD80C
-_081424B0: .4byte FUN_08140028
+_081424B0: .4byte EnemyBat_OnReset
 _081424B4: .4byte 0x000005FC
 _081424B8: .4byte 0x000005AC
 _081424BC: .4byte FUN_08140d48
@@ -2017,7 +2017,7 @@ _08142606:
 _0814260A:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _08142612:
 	adds r0, r7, #0
 	movs r1, #0
@@ -2276,7 +2276,7 @@ _081427B0:
 	str r0, [r1]
 	ldr r6, _08142830 @ =0x0000061C
 	adds r1, r7, r6
-	ldr r0, _08142834 @ =FUN_08141490
+	ldr r0, _08142834 @ =EnemyBat_Update
 	str r0, [r1]
 	movs r0, #0xc4
 	lsls r0, r0, #3
@@ -2284,7 +2284,7 @@ _081427B0:
 	ldr r0, _08142838 @ =EnemyBat_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0814283C
@@ -2294,7 +2294,7 @@ _081427B0:
 _08142828: .4byte 0x0000057C
 _0814282C: .4byte Enemy_DispatchMsg
 _08142830: .4byte 0x0000061C
-_08142834: .4byte FUN_08141490
+_08142834: .4byte EnemyBat_Update
 _08142838: .4byte EnemyBat_Destroy
 _0814283C:
 	movs r0, #1

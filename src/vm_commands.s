@@ -19,7 +19,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x0447, Cmd_0447
 	.4byte 0x054A, Cmd_054A
 	.4byte 0x058D, Cmd_058D
-	.4byte 0x05A5, EnemyBoku_Create @ HashName("ボク")
+	.4byte 0x05A5, Boku_Create @ HashName("ボク")
 	.4byte 0x05E2, Cmd_05E2
 	.4byte 0x061E, Cmd_061E
 	.4byte 0x0623, ShadeMan_Create @ HashName("シェードマン")
@@ -30,7 +30,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x08F4, Entity08F4_Create
 	.4byte 0x0955, Cmd_0955
 	.4byte 0x09EA, Cmd_09EA
-	.4byte 0x0AC7, EnemyCentipede_Create
+	.4byte 0x0AC7, Centipede_Create
 	.4byte 0x0AD8, Cmd_0AD8 @ HashName("センチピード")?
 	.4byte 0x0B50, Coffin_Create @ HashName("棺桶")
 	.4byte 0x0BCE, Cmd_0BCE
@@ -49,7 +49,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x1320, Cmd_1320
 	.4byte 0x1343, Cmd_1343
 	.4byte 0x138E, Cmd_SoftReset
-	.4byte 0x13AC, EnemySerpent_Create @ HashName("サーペント")
+	.4byte 0x13AC, Serpent_Create @ HashName("サーペント")
 	.4byte 0x1422, Cmd_1422
 	.4byte 0x1488, Cmd_HugeExplosion @ HashName("大爆発")
 	.4byte 0x1500, Cmd_ShowBG @ HashName("BG表示")
@@ -62,7 +62,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x1693, Cmd_1693
 	.4byte 0x172B, Duneyrr_Create
 	.4byte 0x172D, Cmd_172D
-	.4byte 0x1744, EnemyRootOfDarkness_Create @ HashName("暗黒の根")
+	.4byte 0x1744, DarkRoot_Create @ HashName("暗黒の根")
 	.4byte 0x180B, Camera_SetBoundsType2Scripted
 	.4byte 0x1833, Cmd_1833
 	.4byte 0x184B, Camera_ConnectToTilemap
@@ -81,7 +81,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x1EA4, Cmd_FreeDurathrorScriptArg
 	.4byte 0x1ED1, Cmd_1ED1
 	.4byte 0x1F3B, Cmd_1F3B
-	.4byte 0x1F65, Cmd_1F65
+	.4byte 0x1F65, Cmd_SetInteractPointPos
 	.4byte 0x2141, Cmd_2141
 	.4byte 0x2207, Cmd_2207
 	.4byte 0x225B, Cmd_225B
@@ -93,13 +93,13 @@ gCommandList: @ 0x085A9208
 	.4byte 0x2575, Cmd_2575
 	.4byte 0x2593, Cmd_2593
 	.4byte 0x25F3, AlarmPanel_Create @ HashName("太陽警報機")
-	.4byte 0x2740, Cmd_2740
+	.4byte 0x2740, Cmd_EndInteract
 	.4byte 0x274E, Cmd_274E
 	.4byte 0x277A, Entity080ac574_SpawnScripted
 	.4byte 0x286B, Cmd_286B
 	.4byte 0x286F, ActorManager_Create
 	.4byte 0x28CB, CoffinSealEffect_Create
-	.4byte 0x2924, EntityA628_StopFollowCameraScripted
+	.4byte 0x2924, Cmd_StopRoomBlindFollowCamera
 	.4byte 0x29F1, Cmd_29F1
 	.4byte 0x2B06, AllySabata_Create @ HashName("サバタ")
 	.4byte 0x2B68, Cmd_2B68
@@ -113,12 +113,12 @@ gCommandList: @ 0x085A9208
 	.4byte 0x2F51, Cmd_2F51
 	.4byte 0x2FA0, Cmd_2FA0
 	.4byte 0x2FA5, Cmd_2FA5
-	.4byte 0x2FE4, Cmd_2FE4
+	.4byte 0x2FE4, Cmd_GetBackupValue
 	.4byte 0x3004, Cmd_3004
 	.4byte 0x300F, Cmd_300F
 	.4byte 0x3019, RitaShop_Create
 	.4byte 0x305A, Cmd_GetItem @ HashName("アイテム取得")
-	.4byte 0x3062, EntityA628_IsActiveScripted
+	.4byte 0x3062, Cmd_IsRoomDim
 	.4byte 0x30A3, Cmd_30A3
 	.4byte 0x30AD, Map_LoadMapScripted
 	.4byte 0x30CC, Cmd_30CC
@@ -162,7 +162,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3F3B, Cmd_GetCrossoverBattleWins
 	.4byte 0x3F4B, Cmd_UnlockPhoto
 	.4byte 0x3F96, Cmd_3F96
-	.4byte 0x3F99, EnemyOctopus_Create @ HashName("オクトパス")
+	.4byte 0x3F99, Octopus_Create @ HashName("オクトパス")
 	.4byte 0x3FFD, Entity3FFD_Create
 	.4byte 0x4063, Entity4063_Create
 	.4byte 0x409D, Cmd_409D
@@ -223,7 +223,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x54C1, UnlockMap @ HashName("マップ取得")
 	.4byte 0x54DF, Cmd_SetElevatorPltt
 	.4byte 0x5517, Cmd_5517
-	.4byte 0x554B, EntityA628_DeactivateScripted
+	.4byte 0x554B, Cmd_BrightenRoom
 	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, Cmd_55C5
 	.4byte 0x5645, BlackPanther_Create
@@ -238,7 +238,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x5A36, Cmd_5A36
 	.4byte 0x5B01, Cmd_5B01
 	.4byte 0x5C0B, Cmd_5C0B
-	.4byte 0x5C9E, Cmd_5C9E
+	.4byte 0x5C9E, Cmd_BackupState
 	.4byte 0x5CC4, Cmd_5CC4
 	.4byte 0x5CCC, Cmd_5CCC
 	.4byte 0x5D74, Cmd_5D74
@@ -268,7 +268,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x6790, Cmd_6790
 	.4byte 0x680E, Curoro_Create
 	.4byte 0x686E, Cmd_686E
-	.4byte 0x6913, EnemyMummy_Create @ HashName("マミー")
+	.4byte 0x6913, Mummy_Create @ HashName("マミー")
 	.4byte 0x6978, Entity6978_Create
 	.4byte 0x69CD, Cmd_69CD
 	.4byte 0x6AFF, Cmd_6AFF
@@ -278,12 +278,12 @@ gCommandList: @ 0x085A9208
 	.4byte 0x6E7D, Cmd_6E7D
 	.4byte 0x6F85, Cmd_6F85
 	.4byte 0x7017, Cmd_7017
-	.4byte 0x706D, EnemySandWorm_Create @ HashName("サンドウォーム")
+	.4byte 0x706D, Sandworm_Create @ HashName("サンドウォーム")
 	.4byte 0x7117, Cmd_7117
 	.4byte 0x71BA, Entity71BA_Create
 	.4byte 0x71C6, Cmd_ResetItems @ HashName("アイテム初期化")
 	.4byte 0x71E7, MessageChoice_SetTextFromScript
-	.4byte 0x723E, Entity723E_Create
+	.4byte 0x723E, CrossoverResult_Create
 	.4byte 0x727F, MessageWindow_SetInstantScripted
 	.4byte 0x7300, KidShop_Create @ HashName("道具屋")
 	.4byte 0x730A, Entity730A_Create
@@ -339,7 +339,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x82B7, Entity82B7_Create
 	.4byte 0x82C8, Cmd_82C8
 	.4byte 0x8337, Entity3117_AddEntryScripted
-	.4byte 0x83B2, Entity83B2_Create
+	.4byte 0x83B2, InteractPointManager_Create
 	.4byte 0x83E5, GameResult_Create
 	.4byte 0x83E7, Cmd_IsMagicUnlocked
 	.4byte 0x8400, Cmd_8400
@@ -347,9 +347,9 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8602, Entity2D2B_SetLitDurationScripted
 	.4byte 0x86F3, Cmd_SetShadowMode
 	.4byte 0x877F, Cmd_877F
-	.4byte 0x87E4, EnemySpider_Create @ HashName("スパイダー")
+	.4byte 0x87E4, Spider_Create @ HashName("スパイダー")
 	.4byte 0x87FE, MorningDew_Create
-	.4byte 0x883A, Cmd_883A
+	.4byte 0x883A, Cmd_AddInteractPoint
 	.4byte 0x8894, Cmd_8894
 	.4byte 0x88B7, Cmd_88B7
 	.4byte 0x8918, Cmd_8918
@@ -362,11 +362,11 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8B67, Cmd_8B67
 	.4byte 0x8B8E, Entity8B8E_Create
 	.4byte 0x8C35, EnemyBombGolem_Create @ HashName("通信ゴーレム")
-	.4byte 0x8CC7, Cmd_8CC7
+	.4byte 0x8CC7, Cmd_SpawnDove
 	.4byte 0x8CFE, Cmd_8CFE
 	.4byte 0x8D2D, WeaponDexMenu_Create @ HashName("武器図鑑")
 	.4byte 0x8D5C, Entity8D5C_Create
-	.4byte 0x8E9F, EnemyCheyenne_Create @ HashName("シャイアン")
+	.4byte 0x8E9F, Shaian_Create @ HashName("シャイアン")
 	.4byte 0x8EA3, Cmd_8EA3
 	.4byte 0x8EC8, Entity8EC8_Create
 	.4byte 0x8ECD, WeatherManager_Create
@@ -396,18 +396,18 @@ gCommandList: @ 0x085A9208
 	.4byte 0x980B, PlayerLink_Create @ HashName("通信対戦プレイヤー")
 	.4byte 0x9817, Cmd_SetCoffinStage
 	.4byte 0x983A, Cmd_983A
-	.4byte 0x98EC, EnemyGolem_Create @ HashName("ゴーレム")
+	.4byte 0x98EC, Golem_Create @ HashName("ゴーレム")
 	.4byte 0x997B, Entity8AF6_MoveToScripted
 	.4byte 0x99CA, Entity99CA_Create
 	.4byte 0x99F8, Cmd_SetQCEnabled
 	.4byte 0x99FA, Cmd_SetBossFlags
-	.4byte 0x9A9F, Entity9A9F_Create
+	.4byte 0x9A9F, LinkSession_Create
 	.4byte 0x9AC8, Cmd_9AC8
 	.4byte 0x9BC7, Cmd_9BC7
 	.4byte 0x9C3F, Entity8AF6_ShowScripted
 	.4byte 0x9DFE, Cmd_9DFE
 	.4byte 0x9E8B, Cmd_GetSolarBankBalance
-	.4byte 0x9E8D, EnemyCrow_Create @ HashName("クロウ")
+	.4byte 0x9E8D, Crow_Create @ HashName("クロウ")
 	.4byte 0x9EC0, Entity6978_SetRequestScripted
 	.4byte 0x9FB7, Cmd_9FB7
 	.4byte 0x9FFD, Cmd_9FFD
@@ -417,7 +417,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA16F, ElevatorManager_Create
 	.4byte 0xA1D7, Cmd_A1D7
 	.4byte 0xA222, Save_ReadSystemDataOrInit
-	.4byte 0xA285, Cmd_A285
+	.4byte 0xA285, Cmd_GetBestFriend
 	.4byte 0xA288, EntityA288_Create
 	.4byte 0xA2E1, Cmd_Riremito
 	.4byte 0xA2E4, Cmd_A2E4
@@ -427,12 +427,12 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA3B3, Cmd_A3B3
 	.4byte 0xA4FC, Elevator_Create
 	.4byte 0xA61C, Map_SetLoadingZoneIndicatorMode
-	.4byte 0xA628, Cmd_CreateEntityA628
+	.4byte 0xA628, Cmd_CreateRoomBlind
 	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, Cmd_SetEnemyDexDropItemFlag
 	.4byte 0xA7CE, Cmd_A7CE
 	.4byte 0xA864, Cmd_A864
-	.4byte 0xA8F1, EntityA8F1_Create
+	.4byte 0xA8F1, WarpMagicSquare_Create @ HashName("ワープ魔方陣")
 	.4byte 0xA995, Cmd_ClearMapIconFlags
 	.4byte 0xA99F, Cmd_A99F
 	.4byte 0xAA62, Cmd_SetCoffinMapSpot
@@ -442,16 +442,16 @@ gCommandList: @ 0x085A9208
 	.4byte 0xAB4E, EntityAB4E_Create
 	.4byte 0xAB8E, Cmd_AB8E
 	.4byte 0xAB9C, Cmd_AB9C
-	.4byte 0xAC98, EnemyCockatrice_Create @ HashName("コカトリス")
+	.4byte 0xAC98, Cockatrice_Create @ HashName("コカトリス")
 	.4byte 0xACE3, ClockAlarm_Create
-	.4byte 0xAD03, EnemySkeleton_Create @ HashName("スケルトン")
+	.4byte 0xAD03, Skeleton_Create @ HashName("スケルトン")
 	.4byte 0xADB6, Cmd_ADB6
 	.4byte 0xADD2, MessageWindow_EnableAutoAdvance
 	.4byte 0xAE3A, Cmd_AE3A
 	.4byte 0xAE4E, Cmd_AE4E
 	.4byte 0xAE71, Cmd_AE71
 	.4byte 0xAEB2, SunRangeWatcher_Create
-	.4byte 0xAF33, EntityAF33_Create
+	.4byte 0xAF33, CrossoverBattle_Create
 	.4byte 0xAF43, Cmd_AF43
 	.4byte 0xAF8E, Entity4063_Cancel
 	.4byte 0xB005, Cmd_B005
@@ -499,7 +499,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC1F2, Enemy_Sleep
 	.4byte 0xC233, Cmd_C233
 	.4byte 0xC347, Cmd_C347
-	.4byte 0xC3BC, EnemySlime_Create @ HashName("スライム")
+	.4byte 0xC3BC, Slime_Create @ HashName("スライム")
 	.4byte 0xC419, Entity081d0e20_Create
 	.4byte 0xC438, DungeonMarker_Create
 	.4byte 0xC46E, Cmd_C46E
@@ -522,7 +522,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xCB30, Cmd_CB30
 	.4byte 0xCBB0, PileDriver_Create @ HashName("パイルドライバー")
 	.4byte 0xCC28, MainMenu_Create
-	.4byte 0xCCD3, EnemyGhost_Create @ HashName("ゴースト")
+	.4byte 0xCCD3, Ghost_Create @ HashName("ゴースト")
 	.4byte 0xCCD9, Cmd_CCD9
 	.4byte 0xCD57, Cmd_CD57
 	.4byte 0xCE28, Cmd_CE28
@@ -570,7 +570,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xDDCF, Cmd_DDCF
 	.4byte 0xDDD0, Cmd_DDD0
 	.4byte 0xDDEE, Cmd_DDEE
-	.4byte 0xDDF8, EntityA628_StartFollowCameraScripted
+	.4byte 0xDDF8, Cmd_StartRoomBlindFollowCamera
 	.4byte 0xDEA2, Entity3117_StartScaleScripted
 	.4byte 0xDED5, GameOverManager_StartScripted
 	.4byte 0xDF85, Cmd_DF85
@@ -583,7 +583,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xE083, Cmd_UnlockMagic @ HashName("魔法取得")
 	.4byte 0xE0A5, Cmd_E0A5
 	.4byte 0xE0E1, Cmd_E0E1
-	.4byte 0xE131, EnemyBee_Create @ HashName("ビー")
+	.4byte 0xE131, Bee_Create @ HashName("ビー")
 	.4byte 0xE14B, Cmd_E14B
 	.4byte 0xE1C6, Cmd_E1C6
 	.4byte 0xE28B, EntityE28B_Create
@@ -603,21 +603,21 @@ gCommandList: @ 0x085A9208
 	.4byte 0xE9E2, Cmd_E9E2
 	.4byte 0xEA00, Cmd_EA00
 	.4byte 0xEA96, Cmd_EA96
-	.4byte 0xEAAC, Cmd_EAAC
+	.4byte 0xEAAC, Cmd_StopPlayTime
 	.4byte 0xEAAF, Cmd_EAAF
 	.4byte 0xEAB4, Entity8AF6_AddEntryScripted
 	.4byte 0xEB42, Cmd_EB42
 	.4byte 0xEBFF, Entity8AF6_HideScripted
 	.4byte 0xEC1F, Cmd_Assert @ HashName("assert")
 	.4byte 0xEC2A, EnemyManager_Create
-	.4byte 0xEC5B, Cmd_EC5B
+	.4byte 0xEC5B, Cmd_ResumePlayTime
 	.4byte 0xEC96, EntityEC96_Create
 	.4byte 0xED07, BreakableManager_Create
 	.4byte 0xED1F, Cmd_ED1F
 	.4byte 0xED2E, Cmd_IsCrossoverUnlocked
 	.4byte 0xEDE2, Cmd_HideBG @ HashName("BG非表示")
 	.4byte 0xEE18, Cmd_EE18
-	.4byte 0xEF19, EntityA628_ActivateScripted
+	.4byte 0xEF19, Cmd_DimRoom
 	.4byte 0xEF66, EntityEF66_Create
 	.4byte 0xEF6F, EntityEF6F_Create
 	.4byte 0xEFD1, Cmd_EFD1
@@ -626,7 +626,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xF04B, Cmd_F04B
 	.4byte 0xF0CC, Cmd_F0CC
 	.4byte 0xF11C, Cmd_HasWeapon
-	.4byte 0xF156, SolarCircle_Create @ HashName("太陽結界")
+	.4byte 0xF156, SolarBarrier_Create @ HashName("太陽結界")
 	.4byte 0xF1F9, Cmd_CreateBeeNest @ HashName("蜂の巣")
 	.4byte 0xF200, Cmd_F200
 	.4byte 0xF33F, Cmd_F33F
@@ -635,7 +635,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xF41A, EntityF41A_Create
 	.4byte 0xF5EB, CreatePlayer @ HashName("プレイヤー")
 	.4byte 0xF661, Entity3117_HideScripted
-	.4byte 0xF836, EnemyDog_Create @ HashName("ドッグ")
+	.4byte 0xF836, Dog_Create @ HashName("ドッグ")
 	.4byte 0xF8BE, EnemyBat_Create @ HashName("バット")
 	.4byte 0xF982, Cmd_F982
 	.4byte 0xF993, Cmd_F993

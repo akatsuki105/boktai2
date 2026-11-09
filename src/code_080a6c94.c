@@ -5,7 +5,7 @@
 #include "sound.h"
 #include "vm.h"
 
-static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+static inline void ClearSuspendFlags(u32 flags) { gSuspendFlags &= ~flags; }
 
 // 0x7935, スクリプトの配列変数に, 続く引数を先頭から順に書き込む
 s32 Cmd_InitArray(void) {
@@ -91,24 +91,24 @@ s32 Cmd_ReadTable(void) {
   return *(s16*)((u8*)base + (size != 1 ? idx * 4 : idx * 2));
 }
 
-// FLAG030047A4_UNK_9 で停止させ, stopSound なら対象のEntityとBGMも止める
+// GAMEFLAG_EVENT で停止させ, stopSound なら対象のEntityとBGMも止める
 void FUN_080a6e88(bool32 stopSound) {
-  gGameFlags |= FLAG030047A4_UNK_9;
-  if (stopSound && !(gEntityDisableFlags & ENTITY_DISABLE_3)) {
+  gGameFlags |= GAMEFLAG_EVENT;
+  if (stopSound && !(gSuspendFlags & SUSPEND_EVENT)) {
     FUN_08240918();
-    gEntityDisableFlags |= ENTITY_DISABLE_3;
+    gSuspendFlags |= SUSPEND_EVENT;
   }
 }
 
 // 0x6206
 void Cmd_6206(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
 
-// FLAG030047A4_UNK_9 による停止を解除し, 止めていたEntityとBGMを再開する
+// GAMEFLAG_EVENT による停止を解除し, 止めていたEntityとBGMを再開する
 void FUN_080a6edc(void) {
-  gGameFlags &= ~FLAG030047A4_UNK_9;
-  if (gEntityDisableFlags & ENTITY_DISABLE_3) {
+  gGameFlags &= ~GAMEFLAG_EVENT;
+  if (gSuspendFlags & SUSPEND_EVENT) {
     FUN_08240930();
-    EnableEntityFlags(ENTITY_DISABLE_3);
+    ClearSuspendFlags(SUSPEND_EVENT);
   }
 }
 
@@ -117,9 +117,9 @@ void Cmd_6057(void) { FUN_080a6edc(); }
 
 // 0x1320
 bool32 Cmd_1320(void) {
-  if (gGameFlags & FLAG030047A4_UNK_9) return TRUE;
+  if (gGameFlags & GAMEFLAG_EVENT) return TRUE;
   return FALSE;
 }
 
 // 0x15B3
-s32 Cmd_15B3(void) { gGameFlags |= FLAG030047A4_LINK; }
+s32 Cmd_15B3(void) { gGameFlags |= GAMEFLAG_LINK; }

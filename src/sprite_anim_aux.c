@@ -12,7 +12,7 @@ NON_MATCH bool32 AuxAnim_SetAnim(AuxAnimState* p, AuxAnimFile* files, u16 animId
 
   a = &((AuxAnim*)files->body)[animIdx];
   p->cmds = (AuxAnimCmd*)((u8*)files + a->cmdOffset) + variant * a->cmdCount;
-  p->speed = 0x40;
+  p->speed = Q6(1);
   if (p->animIdx != animIdx || p->cmdCount == 0 || ((flags & ANIM_PLAY_REVERSE) && !(p->flags & ANIM_PLAY_REVERSE)) || (!(flags & ANIM_PLAY_REVERSE) && (p->flags & ANIM_PLAY_REVERSE))) {
     p->cmdCount = a->cmdCount;
     idx = (u8)(flags & ANIM_PLAY_REVERSE);

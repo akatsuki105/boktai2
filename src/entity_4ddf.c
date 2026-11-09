@@ -4,10 +4,6 @@
 #include "video.h"
 #include "vm.h"
 
-void FUN_0820fe94(PreviewStage* p, u32 val);
-void FUN_0820fe98(PreviewStage* p, u32 modelID);
-void FUN_0820feb8(PreviewStage* p, s32 x, s32 y);
-
 // スライド1枚ぶん, '.t' が holdTime / fadeInTime / fadeOutTime を、'.c' が x / y / previewID を同じ添字に書き込む
 typedef struct Entity4DDFData {
   s16 holdTime;     // 0x0, 絵を出したまま待つフレーム数, Init で -1 ならリストの終端
@@ -31,6 +27,14 @@ typedef struct Entity4DDF {
   u8 unk_325[3];              // 0x325, 読み手も書き手も見つかっていない, padding?
 } Entity4DDF;
 static_assert(sizeof(Entity4DDF) == 808);
+
+void FUN_0820fe94(PreviewStage* p, u32 val);
+void FUN_0820fe98(PreviewStage* p, u32 modelID);
+void FUN_0820feb8(PreviewStage* p, s32 x, s32 y);
+
+const STRING_DATA char gString_082526c0[] = "../../skoba/enemy/system/eneinline.h";
+const STRING_DATA char gString_082526e8[] = "../../skoba/enemy/system/eneinline.h";
+const STRING_DATA char gString_08252710[] = "../../skoba/enemy/system/eneinline.h";  // 0x08252710
 
 void Entity4DDF_SetStep(Entity4DDF* p, u32 step) {
   p->step = step;

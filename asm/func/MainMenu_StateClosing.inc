@@ -68,7 +68,7 @@ _0809AF20:
 	bhi _0809AF36
 	b _0809B0BC
 _0809AF36:
-	ldr r1, _0809B0D8 @ =FUN_0808cf14
+	ldr r1, _0809B0D8 @ =MainMenu_UpdateField
 	adds r0, r6, #0
 	bl MainMenu_SetUpdateCallback
 	ldr r1, _0809B0DC @ =0x03004494
@@ -274,7 +274,7 @@ _0809B0C8: .4byte 0x00001084
 _0809B0CC: .4byte 0x04000050
 _0809B0D0: .4byte 0x00003B14
 _0809B0D4: .4byte 0x03003E78
-_0809B0D8: .4byte FUN_0808cf14
+_0809B0D8: .4byte MainMenu_UpdateField
 _0809B0DC: .4byte 0x03004494
 _0809B0E0: .4byte 0x00003B1C
 _0809B0E4: .4byte 0x03004454

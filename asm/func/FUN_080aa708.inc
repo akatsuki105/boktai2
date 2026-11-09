@@ -91,7 +91,7 @@ _080AA7A0:
 	movs r1, #5
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 _080AA7CA:
 	ldr r1, _080AA7EC @ =0x0000034A
 	adds r0, r7, r1

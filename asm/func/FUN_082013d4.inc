@@ -321,7 +321,7 @@ _08201656:
 	strh r0, [r3, #4]
 	adds r0, r3, #0
 	movs r1, #0
-	bl FUN_08204d04
+	bl Entity08204cb8_Spawn
 	b _0820179C
 _08201666:
 	ldr r1, [sp, #0x5c]

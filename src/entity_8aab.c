@@ -1,4 +1,5 @@
 #include "camera_inline.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -132,8 +133,7 @@ static_assert(sizeof(Entity8AAB) == 3936);
 IWRAM_DATA Entity8AAB* gEntity8AAB = NULL;  // 0x03000248
 
 void FUN_080a6e88(bool32 stopSound);
-s32 FUN_08015d3c(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8);
-s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 param_10, s32 param_11);
+s32 Entity08015584_SpawnSprayOne(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8);
 void FUN_080a6edc(void);
 void Map_GetZoneMin(u16 id, u16* out);
 Entity8AAB* Entity8AAB_Create(u32 val, u32 _);
@@ -404,7 +404,7 @@ void FUN_08223470(Entity8AAB* p, Entity8AABElem* elem) {
       c = -1;
     }
     if (c == (s16)gStat->sunAngle || a == (s16)gStat->sunAngle || b == (s16)gStat->sunAngle) {
-      if (abs(elem->pos.y - p->player->mover.pos.y) < 120 && (gInput[0].pressed & A_BUTTON) && !(gEntityDisableFlags & ENTITY_DISABLE_2) && p->player->mode != 4) {
+      if (abs(elem->pos.y - p->player->mover.pos.y) < 120 && (gInput[0].pressed & A_BUTTON) && !(gSuspendFlags & SUSPEND_MENU) && p->player->mode != 4) {
         if (elem->unk_a4 != 0) {
           VM_ExecByID(elem->unk_a4, NULL);
         }
@@ -856,7 +856,7 @@ void Cmd_69CD(void) {
   xflip = FALSE;
   dir &= 7;
   p->unk_f24 = dir;
-  if (dir > 4) {
+  if (IS_8DIR_LEFT(dir)) {
     dir = 8 - dir;
     xflip = TRUE;
   }
@@ -1481,7 +1481,7 @@ NON_MATCH void FUN_08226990(Entity8AAB* p) {
         raw = *defaultDir;
         masked = raw & 7;
         dir = masked;
-        if (masked > 4) {
+        if (IS_8DIR_LEFT(masked)) {
           dir = 8 - masked;
           xflip = TRUE;
         }
@@ -1640,18 +1640,18 @@ NON_MATCH void FUN_08227608(Entity8AAB* p) {
       Vec3* pos = &p->sprite.pos;
       s32 i;
 
-      FUN_08015d3c(pos, 1, 512, 48, 8, 8, 8, 4);
-      FUN_08015d3c(pos, 1, 512, 48, 8, 8, 8, 4);
-      FUN_08015d3c(pos, 1, 512, 48, 8, 8, 8, 4);
-      FUN_08015d3c(pos, 1, 512, 48, 8, 8, 8, 4);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 32, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 64, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 96, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 128, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 160, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 192, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 224, 60, 10, 3, 10, 5, 60, 10);
-      Entity080146e0_SpawnAtAngle(1, 3, pos, 256, 60, 10, 3, 10, 5, 60, 10);
+      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 32, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 64, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 96, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 128, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 160, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 192, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 224, 60, 10, 3, 10, 5, 60, 10);
+      ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 256, 60, 10, 3, 10, 5, 60, 10);
       ParticleShadow_Hide(&p->shadow);
       p->sprite.flags |= SPRFLAG_HIDDEN;
       Entity8AAB_RequestState(p, 1, 2);

@@ -75,7 +75,7 @@
 	adds r1, #0xff
 	add r2, sp, #0x1c
 	mov r3, r8
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	mov r1, sl
 	ldr r0, [r1]
 	adds r0, #1
@@ -114,7 +114,7 @@
 	movs r0, #3
 	ldr r1, _080C3F2C @ =0x00000109
 	add r2, sp, #0x1c
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	mov r2, sl
 	ldr r1, [r2]
 	adds r1, #1
@@ -163,7 +163,7 @@
 	adds r1, #0xff
 	add r2, sp, #0x1c
 	mov r3, r8
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	add sp, #0x24
 	pop {r3, r4, r5}
 	mov r8, r3

@@ -96,7 +96,7 @@ _08211B04:
 	movs r1, #4
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	movs r0, #0x8c
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

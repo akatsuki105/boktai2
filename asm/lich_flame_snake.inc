@@ -1934,7 +1934,7 @@ _081A73DA:
 	adds r0, r6, r1
 	strb r5, [r0]
 	adds r0, r6, #0
-	bl FUN_080eeee0
+	bl EnemyManager_TryEndPaletteFade
 _081A7566:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -3395,7 +3395,7 @@ _081A804E:
 	bl Enemy_SetEmote
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	movs r1, #0xbc
 	lsls r1, r1, #1
 	adds r2, r5, r1
@@ -13849,11 +13849,11 @@ _081ACFDA:
 	bne _081ACFE8
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 	b _081AD060
 _081ACFE8:
 	adds r0, r4, #0
-	bl FUN_080eafdc
+	bl Enemy_ProcessRequests
 	adds r0, r4, #0
 	bl FUN_080e1f48
 	movs r0, #0xb0
@@ -13866,11 +13866,11 @@ _081ACFE8:
 	ldr r1, [r1]
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080e35b4
+	bl Enemy_UpdateHitboxes
 	adds r0, r4, #0
-	bl FUN_080e191c
+	bl Enemy_UpdateMovement
 	adds r0, r4, #0
-	bl FUN_080eb168
+	bl Enemy_ShakeSprite
 	adds r0, r4, #0
 	bl FUN_080f06ac
 	movs r0, #1
@@ -13903,7 +13903,7 @@ _081AD04E:
 	beq _081AD05A
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080f0914
+	bl Enemy_Resume
 _081AD05A:
 	adds r0, r4, #0
 	bl FUN_080f06ac
@@ -13991,7 +13991,7 @@ _081AD0F2:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl Eff082473e0Emitter_Destroy
+	bl ElementalCondEmitter_Destroy
 	movs r0, #1
 	strb r0, [r5]
 _081AD10A:
@@ -14033,7 +14033,7 @@ _081AD14A:
 	adds r0, #0xd8
 	bl Hitbox_Unregister
 	adds r0, r4, #0
-	bl FUN_080ec6fc
+	bl Enemy_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -14058,7 +14058,7 @@ EnemyFlameSnake_Init: @ 0x081AD168
 	adds r0, r7, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_080e37e8
+	bl Enemy_SetOwnerAndSpriteKind
 	ldr r2, _081AD1F4 @ =0x000001DF
 	adds r1, r7, r2
 	movs r0, #0x1f
@@ -15093,7 +15093,7 @@ _081ADA10:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	adds r3, r6, #0
-	bl FUN_080e48e8
+	bl Enemy_InitHpAndState
 	ldr r4, [sp, #0x58]
 	lsrs r2, r4, #0x10
 	ldr r5, [sp, #0x68]
@@ -15191,7 +15191,7 @@ _081ADADA:
 	beq _081ADAEA
 	adds r0, r7, #0
 	adds r0, #0x7c
-	ldr r2, _081ADB14 @ =FUN_080f48ac
+	ldr r2, _081ADB14 @ =Enemy_OnCWolfMessage
 	ldr r1, [sp, #0x34]
 	bl CWolfTargetManager_Register
 _081ADAEA:
@@ -15215,7 +15215,7 @@ _081ADAF6:
 	bl Mover_SetCollision
 	b _081ADB24
 	.align 2, 0
-_081ADB14: .4byte FUN_080f48ac
+_081ADB14: .4byte Enemy_OnCWolfMessage
 _081ADB18:
 	ldr r0, [sp, #0x34]
 	ldr r1, [sp, #0x160]
@@ -15660,10 +15660,10 @@ _081ADDB8:
 	ldr r6, _081AE00C @ =FUN_081a8010
 	ldr r0, [sp, #0x120]
 	str r6, [r0]
-	ldr r0, _081AE010 @ =FUN_080f47c8
+	ldr r0, _081AE010 @ =Enemy_StateBlownAway
 	ldr r1, [sp, #0x12c]
 	str r0, [r1]
-	ldr r0, _081AE014 @ =FUN_080f54e4
+	ldr r0, _081AE014 @ =Enemy_StateFallDeath
 	ldr r2, [sp, #0x118]
 	str r0, [r2]
 	ldr r3, [sp, #0xd0]
@@ -15671,7 +15671,7 @@ _081ADDB8:
 	ldr r0, _081AE018 @ =FUN_080f6e64
 	ldr r4, [sp, #0x154]
 	str r0, [r4]
-	ldr r0, _081AE01C @ =FUN_080f64f0
+	ldr r0, _081AE01C @ =Enemy_OnDamaged
 	ldr r6, [sp, #0xb0]
 	str r0, [r6]
 	ldr r0, _081AE020 @ =FUN_080f84d4
@@ -15748,7 +15748,7 @@ _081ADDB8:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl Enemy_Init_080e5dd4
+	bl Enemy_InitShadowAndEmitter
 	movs r0, #0xaa
 	lsls r0, r0, #2
 	adds r4, r7, r0
@@ -15824,10 +15824,10 @@ _081AE000: .4byte FUN_080f0320
 _081AE004: .4byte Enemy_080eff14
 _081AE008: .4byte FUN_080e72b0
 _081AE00C: .4byte FUN_081a8010
-_081AE010: .4byte FUN_080f47c8
-_081AE014: .4byte FUN_080f54e4
+_081AE010: .4byte Enemy_StateBlownAway
+_081AE014: .4byte Enemy_StateFallDeath
 _081AE018: .4byte FUN_080f6e64
-_081AE01C: .4byte FUN_080f64f0
+_081AE01C: .4byte Enemy_OnDamaged
 _081AE020: .4byte FUN_080f84d4
 _081AE024: .4byte FUN_080f624c
 _081AE028: .4byte FUN_080f56ec
@@ -16008,7 +16008,7 @@ _081AE18E:
 _081AE192:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080f07d0
+	bl Enemy_Suspend
 _081AE19A:
 	adds r0, r7, #0
 	movs r1, #0
@@ -16205,7 +16205,7 @@ _081AE2EA:
 	bl FUN_081abb80
 	adds r0, r7, #0
 	bl FUN_081a97a4
-	ldr r2, _081AE43C @ =FUN_080e6794
+	ldr r2, _081AE43C @ =Enemy_WaitPendingState
 	movs r0, #0xe
 	movs r1, #0
 	movs r5, #1
@@ -16333,7 +16333,7 @@ _081AE2EA:
 	ldr r0, _081AE458 @ =FUN_081ad068
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080ec640
+	bl Enemy_Register
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081AE45C
@@ -16342,7 +16342,7 @@ _081AE2EA:
 	.align 2, 0
 _081AE434: .4byte 0x0000D636
 _081AE438: .4byte 0x0000C102
-_081AE43C: .4byte FUN_080e6794
+_081AE43C: .4byte Enemy_WaitPendingState
 _081AE440: .4byte 0x00000472
 _081AE444: .4byte 0xFFFFFE00
 _081AE448: .4byte 0x0000057C

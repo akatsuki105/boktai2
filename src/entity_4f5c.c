@@ -35,21 +35,9 @@ typedef struct {
 } Entity4F5C;
 static_assert(sizeof(Entity4F5C) == 480);
 
-const u16 u16_ARRAY_085aa970[2] = {3, 3};  // 0x085AA970
-
 void Player_RemoveKaamos(Player*);
 
-void nop_0801a170(Entity4F5C*, Entity4F5CElem*);
-void Entity4F5C_ElemFall(Entity4F5C*, Entity4F5CElem*);
-void Entity4F5C_ElemScatter(Entity4F5C*, Entity4F5CElem*);
-
-void (*const PTR_ARRAY_085aa974[3])(Entity4F5C*, Entity4F5CElem*) = {
-    nop_0801a170,
-    Entity4F5C_ElemFall,
-    Entity4F5C_ElemScatter,
-};  // 0x085AA974
-
-const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980
+const u16 u16_ARRAY_085aa970[2] = {3, 3};  // 0x085AA970
 
 void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) {}
 
@@ -168,6 +156,12 @@ NON_MATCH void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) {
 #endif
 }
 
+void (*const PTR_ARRAY_085aa974[3])(Entity4F5C*, Entity4F5CElem*) = {
+    nop_0801a170,
+    Entity4F5C_ElemFall,
+    Entity4F5C_ElemScatter,
+};  // 0x085AA974
+
 // 各要素を state ごとの関数で進め, 全部終わったらスクリプトを呼んで自分を消す
 // 命令数・内容とも一致 (54/54) するが, 原典は i=2 の初期化を PTR_ARRAY_085aa974 のプール読みより後に置くのに対し agbcc は先に置く
 // done / elem の初期化を playerPos の複写より後ろの代入文に分けると, そこまでは原典と揃う
@@ -220,6 +214,8 @@ NON_MATCH s32 Entity4F5C_Destroy(Entity4F5C* p) {
   INCFUNC("asm/func/Entity4F5C_Destroy.inc");
 #endif
 }
+
+const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980
 
 // プレイヤーの頭上に粒子3枚×3組を円状に仕込む
 // 残差4命令 (239/243) でこちらが短い. elem と ptcl のレジスタが入れ替わり, 原典は i=0 に既存の 0 レジスタを使い回すところを agbcc は作り直す

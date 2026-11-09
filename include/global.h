@@ -11,6 +11,8 @@
 //
 #include "game.h"
 
+#define STRING_DATA __attribute__((section(".rodata.string")))
+
 // tools/preproc 用の定義
 #if defined(__APPLE__) || defined(__CYGWIN__) || defined(__INTELLISENSE__)
 #define _(x) {x}   // _("string") is converted to charmap.txt by tools/preproc
@@ -48,37 +50,41 @@
 extern u32 gFrameCounter;
 extern s32 gMapBlockW;
 extern s32 gMapBlockH;
-extern u32 gMapChangeFlags;
 extern u32 u32_ARRAY_0203f400[256];
 
 // --------------------------------------------
 
-#define FLAG03002BC0_UNK_0 (1 << 0)  // 0x1, 用途不明
-#define FLAG03002BC0_UNK_1 (1 << 1)  // 0x2, 用途不明, 用途はまだ不明 (マップ切り替え時, 会話中にセット)
-#define FLAG03002BC0_UNK_2 (1 << 2)  // 0x4, 用途不明, GAMEOVER画面の間セット
-#define FLAG03002BC0_UNK_3 (1 << 3)  // 0x8, 用途不明
-extern u32 gPlayerStates[4];         // 0x03002BC0, プレイヤーごとのフラグ, 手動でセットしてもすぐに上書きされて何も起きない
+#define GAMEFLAG_NO_PAUSE (1 << 0)    // 0x1, 暴走やジャッジメント等の演出中にセット, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
+#define GAMEFLAG_UNK_8 (1 << 8)       // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
+#define GAMEFLAG_EVENT (1 << 9)       // 0x200, イベント中にセット (Script_0x007E/007F が立てて落とす), 会話中・マップ切り替え時も立つ
+#define GAMEFLAG_GAMEOVER (1 << 10)   // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
+#define GAMEFLAG_LINK (1 << 11)       // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)
+#define GAMEFLAG_CROSSOVER (1 << 12)  // 0x1000, クロスオーバーバトル中にセットされる? (mGBAがワイヤレスアダプタのエミュレーションをサポートしてないため検証が面倒で未確認)
+#define GAMEFLAG_UNK_14 (1 << 14)     // 0x4000, Mover_ShowTrackingMarker が LINK と一緒に見る
+extern u32 gDebugGameFlags;           // 0x030047A0, gGameFlags と OR されて使用される, デバッグ時に強制的にフラグをセットするためのものと予想
+extern u32 gGameFlags;                // 0x030047A4
 
 // --------------------------------------------
 
-#define FLAG030047A4_UNK_0 (1 << 0)      // 0x1, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
-#define FLAG030047A4_UNK_8 (1 << 8)      // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
-#define FLAG030047A4_UNK_9 (1 << 9)      // 0x200, 用途はまだ不明 (マップ切り替え時, 会話中にセット)
-#define FLAG030047A4_GAMEOVER (1 << 10)  // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
-#define FLAG030047A4_LINK (1 << 11)      // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)
-#define FLAG030047A4_UNK_12 (1 << 12)    // 0x1000, プレイヤーのENEに関係, 手動でセットしたらENEが10固定になる
-#define FLAG030047A4_UNK_14 (1 << 14)    // 0x4000, FUN_080f8bb8 が LINK と一緒に見る
-extern u32 gDebugGameFlags;              // 0x030047A0, gGameFlags と OR されて使用される, デバッグ時に強制的にフラグをセットするためのものと予想
-extern u32 gGameFlags;                   // 0x030047A4
+// gMapChangeFlags, 0 以外になると GameSystem_Update がマップ切り替えを始め, 終わったら 0 に戻す
+enum {
+  MAPCHANGE_LOAD = 1 << 0,     // 0x001, 別のマップへ移る
+  MAPCHANGE_BACKUP = 1 << 4,   // 0x010, 切り替えの完了時にステータスとワールドを退避する
+  MAPCHANGE_RESTART = 1 << 6,  // 0x040, 今のマップを読み直す
+  MAPCHANGE_RESTORE = 1 << 8,  // 0x100, 切り替えの完了時に退避したゲーム状態に戻す
+};
+extern u32 gMapChangeFlags;  // 0x03004798
 
 // --------------------------------------------
 
 void WaitForVBlank(void);
-s32 SoftReset_0823a928(void);
+s32 GameSystem_SoftReset(void);
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 void CopyMemory(u8* dst, u8* src, s32 bytesize);
 u16 HashName(const char* s);
 void BlendPltt(rgb555* dst, rgb555* src1, rgb555* src2, s32 t, s32 shift);
 s32 EmitSmoke(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority);
+void StartBgObjPlttFade(s32 kind, s32 durationShift, s32 r5, s32 g5, s32 b5, u32 bgRowMask, u32 objSkipMask);
+void FUN_08240cf0(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u16 moverID);
 
 #endif  // __INCLUDE_GLOBAL_H__

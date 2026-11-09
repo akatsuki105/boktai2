@@ -15,7 +15,7 @@
 	ldr r0, [sp, #0x48]
 	movs r1, #1
 	movs r2, #0
-	bl Entity08058ffc_Create
+	bl LarvaManager_Create
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _0805908C

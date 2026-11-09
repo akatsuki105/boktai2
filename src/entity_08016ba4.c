@@ -110,7 +110,7 @@ s32 Entity08016ba4Burst_Update(Entity08016ba4Burst* b) {
       ptcl->pos.y += pc->vel.y;
       ptcl->pos.z += FixToInt(12, pc->vel.z * pc->speed);
       pc->vel.y -= 2;
-      AuxAnim_SetAnimSpeed(&pc->anim, 16);
+      AuxAnim_SetAnimSpeed(&pc->anim, Q6(0.25));
       Particle_AdvanceAnim(ptcl, gEntity08016ba4->group0, &pc->anim);
       if (pc->life > 8) {
         if (pc->anim.cmdIdx == 5) {

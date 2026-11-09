@@ -6,12 +6,12 @@
 #include "video.h"
 
 typedef struct {
-  u8 status;    // 0x0, gEntity9A9F->unk_68[i] の写し,2 未満なら未参加で立ち絵は出ない
+  u8 status;    // 0x0, gLinkSession->connStatus[i] の写し,2 未満なら未参加で立ち絵は出ない
   u8 unk_1[3];  // 0x1, 読み手も書き手も見つかっていない, padding?
 } LinkBattleLobbySlot;
 static_assert(sizeof(LinkBattleLobbySlot) == 4);
 
-// 通信の参加者一覧画面,4人分の枠に UI_LINK のアイコンと DJANGO_SABATA の立ち絵を並べ、gEntity9A9F の進行状況を表示する
+// 通信の参加者一覧画面,4人分の枠に UI_LINK のアイコンと DJANGO_SABATA の立ち絵を並べ、gLinkSession の進行状況を表示する
 typedef struct LinkBattleLobby {
   Entity e;                                         // 0x000, ENTITY_UNK_11
   Tilemaps* tilemap;                                // 0x018, FUN_081db9f4 が TILEMAP_CD91 を入れ、Video_SetupBGLayout / Video_SetBGLayer に渡す
@@ -26,12 +26,12 @@ typedef struct LinkBattleLobby {
   rgb555 pltt[16];                                  // 0x388, FUN_081dba54 が bgPltt+0x40 から複写,FUN_081dba78 が点滅させて gBgPlttBuffer のバンク2へ送る
   u16 blinkTimer;                                   // 0x3A8, FUN_081dba78 が 0..0x31 で回し、選択中の枠の色を決める
   u8 unk_3aa[2];                                    // 0x3AA, 読み手も書き手も見つかっていない
-  LinkBattleLobbySlot slots[4];                     // 0x3AC, 4人分,FUN_081dc38c が毎フレーム gEntity9A9F から埋める
+  LinkBattleLobbySlot slots[4];                     // 0x3AC, 4人分,FUN_081dc38c が毎フレーム gLinkSession から埋める
   void (*updateCallback)(struct LinkBattleLobby*);  // 0x3BC, Init は FUN_081dc38c、キャンセルすると FUN_081dc350
   u8* scriptPc;                                     // 0x3C0, '.s' の後の VM_GetPC_Proxy(), FUN_081dc100 が VM_ParseStringRef に渡す
   u8 unk_3c4[4];                                    // 0x3C4, 読み手も書き手も見つかっていない
   s32 playerIdx;                                    // 0x3C8, FUN_081dc38c が Sio_GetMultiId() を入れる,負なら通信していない
-  u32 recordCount;                                  // 0x3CC, FUN_081dc38c が gEntity9A9F->recordCount を入れる,セッションが無ければ -1
+  u32 recordCount;                                  // 0x3CC, FUN_081dc38c が gLinkSession->recordCount を入れる,セッションが無ければ -1
   u8 unk_3d0;                                       // 0x3D0, Init が 0、B でキャンセルすると 1,読む箇所なし
   s8 shownStringIdx;                                // 0x3D1, 表示済みの文字列番号,同じなら FUN_081dc100 は引き直さない
   u8 shownRecordCount;                              // 0x3D2, recordCount の下位バイトの控え,FUN_081dc100 が変化を見る
@@ -113,4 +113,38 @@ void FUN_081dbc14(LinkBattleLobby* p) {
   p->animID[7] = 0x3D;
 }
 
-INCASM("asm/link_battle_lobby.inc");
+NAKED void FUN_081dbc60(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dbc60.inc"); }
+
+NAKED void FUN_081dbce4(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dbce4.inc"); }
+
+NAKED void FUN_081dbd74(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dbd74.inc"); }
+
+NAKED bool32 FUN_081dbe44(MainSprite* sprite) { INCFUNC("asm/func/FUN_081dbe44.inc"); }
+
+NAKED void LinkBattleLobby_HideSprites(LinkBattleLobby* p) { INCFUNC("asm/func/LinkBattleLobby_HideSprites.inc"); }
+
+NAKED void LinkBattleLobby_RemoveSprites(LinkBattleLobby* p) { INCFUNC("asm/func/LinkBattleLobby_RemoveSprites.inc"); }
+
+NAKED void FUN_081dbea0(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dbea0.inc"); }
+
+NAKED void FUN_081dc100(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dc100.inc"); }
+
+NAKED void FUN_081dc2e0(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dc2e0.inc"); }
+
+NAKED void FUN_081dc32c(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dc32c.inc"); }
+
+NAKED void FUN_081dc350(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dc350.inc"); }
+
+NAKED void FUN_081dc38c(LinkBattleLobby* p) { INCFUNC("asm/func/FUN_081dc38c.inc"); }
+
+NAKED s32 LinkBattleLobby_Update(LinkBattleLobby* p) { INCFUNC("asm/func/LinkBattleLobby_Update.inc"); }
+
+NAKED s32 LinkBattleLobby_Destroy(LinkBattleLobby* p) { INCFUNC("asm/func/LinkBattleLobby_Destroy.inc"); }
+
+NAKED s32 LinkBattleLobby_Init(LinkBattleLobby* p) { INCFUNC("asm/func/LinkBattleLobby_Init.inc"); }
+
+NAKED LinkBattleLobby* LinkBattleLobby_Create(void) { INCFUNC("asm/func/LinkBattleLobby_Create.inc"); }
+
+NAKED void LinkBattleLobby_ClearGlobal(void) { INCFUNC("asm/func/LinkBattleLobby_ClearGlobal.inc"); }
+
+NAKED void LinkBattleLobby_Close(void) { INCFUNC("asm/func/LinkBattleLobby_Close.inc"); }

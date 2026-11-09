@@ -1,9 +1,14 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
+#include "player.h"
+#include "random.h"
 #include "shadow.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
+#include "vec3.h"
 
 // 目標へ向かって曲がりながら飛び, 何かに当たるか寿命が尽きると爆発する弾1発
 typedef struct {
@@ -20,7 +25,7 @@ typedef struct {
   u16 speed;              // 0x10C, 6フレームごとに accel ずつ maxSpeed まで上がる
   u16 maxSpeed;           // 0x10E
   u8 accel;               // 0x110, state 2 に入ると 1, 加速するたびに +4
-  s8 shadowId;            // 0x111, 0 のときだけ片付けで影を外す, 外したら -1
+  u8 shadowId;            // 0x111, AuxShadow_Init の戻り値, 0 のときだけ片付けで影を外す, 外したら 0xFF
   s16 growTime;           // 0x112, state 1 の残りフレーム数 (初期値 15), この間 sprite.scaleX/Y を 64 へ近づける
   AuxAnimFile* animFile;  // 0x114, ANIM_121B
   s32 lifetime;           // 0x118, state 2 の残りフレーム数 (初期値 120), 60 未満になると追尾をやめて落ち始める
@@ -45,27 +50,253 @@ static_assert(sizeof(Entity081f8a28) == 2396);
 
 static Entity081f8a28* gEntity081f8a28;  // 0x03000208
 
-NAKED void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_OnHit.inc"); }
+s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s32 iframes, s32 ignoreMask);
+void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
+Entity081f8a28* Entity081f8a28_Create(void);
 
-NAKED void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_InitHitbox.inc"); }
+static inline bool8 Entity081f8a28_IsElemUsed(Entity081f8a28* p, s32 i) {
+  if (TEST_FLAGS(p->usedMask, 1 << i)) return TRUE;
+  return FALSE;
+}
 
-NAKED void Entity081f8a28_UpdateHitbox(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateHitbox.inc"); }
+// 当たったら爆発へ移る
+void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem) {
+  elem->state = 3;
+  elem->stateBegun = TRUE;
+}
 
-NAKED Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_AllocElem.inc"); }
+void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
+  HitboxData* hitbox;
+  Vec3 halfSize;
+  Vec3 offset;
 
-NAKED void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_TurnToTarget.inc"); }
+  VEC3_SET(halfSize, 64, 128, 64);
+  VEC3_SET(offset, 0, 0, 0);
+  hitbox = &elem->hitbox;
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
+  Hitbox_SetHandler(hitbox, Entity081f8a28_OnHit, elem);
+  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
+}
 
-NAKED void Entity081f8a28_SpawnTrail(Vec3* pos) { INCFUNC("asm/func/Entity081f8a28_SpawnTrail.inc"); }
+void Entity081f8a28_UpdateHitbox(Entity081f8a28Elem* elem) {
+  Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+  Hitbox_Register(&elem->hitbox);
+}
 
-NAKED void Entity081f8a28_UpdateIdle(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateIdle.inc"); }
+Entity081f8a28Elem* Entity081f8a28_AllocElem(Entity081f8a28* p) {
+  s32 i;
 
-NAKED void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateAppear.inc"); }
+  for (i = 0; i < 8; i++) {
+    if (!Entity081f8a28_IsElemUsed(p, i)) {
+      Entity081f8a28Elem* elem = &p->elems[i];
 
-NAKED void Entity081f8a28_UpdateFly(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateFly.inc"); }
+      p->usedMask |= 1 << i;
+      elem->slotIdx = i;
+      return elem;
+    }
+  }
+  return NULL;
+}
 
-NAKED void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) { INCFUNC("asm/func/Entity081f8a28_UpdateExplode.inc"); }
+// homingDelay が明けたら homingTime の間 target へ turnSpeed ずつ向きを変える, ほぼ向いたら追尾をやめる
+// 95/97命令, こちらは &target の 0x100 を r6 に残して後の d += 256 に使い回す (原典はそれぞれ作り直す), 試済: 早期 return の形, abs を三項演算子に
+NON_MATCH void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->homingDelay != 0) {
+    elem->homingDelay--;
+  } else if (elem->homingTime != 0) {
+    Vec3 diff;
+    s32 d;
 
-NAKED void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f8a28_Spawn.inc"); }
+    Vec3_Delta(&diff, &elem->sprite.pos, &elem->target);
+    d = ArcTan2_8(diff.x, diff.z) - elem->angle;
+    if (d > 128) {
+      d -= 256;
+    } else if (d < -128) {
+      d += 256;
+    }
+    if (abs(d) > 18) {
+      if (d > 0) {
+        elem->angle += elem->turnSpeed;
+      } else {
+        elem->angle -= elem->turnSpeed;
+      }
+      elem->homingTime--;
+    } else {
+      elem->homingTime = 0;
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity081f8a28_TurnToTarget.inc");
+#endif
+}
+
+// pos の周りにランダムな向きで火の粉を1つ飛ばす
+// 79/78命令, Entity081f959c_SpawnTrail と同じ壁 (原典は乱数表のアドレスを gRandTableIdx より先に r4 に置き, 0xFF を ldrb の直前に作る), 試済: 3つとも _Random(table), angle を u8 にする (77/78), 宣言と代入を分ける
+NON_MATCH void Entity081f8a28_SpawnTrail(Vec3* pos) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  u16* table = gRandomTable;
+  u32 angle;
+  s32 speed;
+
+  angle = _Random(table) & 0xFF;
+  speed = (_Random(table) & 31) - 16;
+  Vec3_SetPolar(&vel, angle, speed);
+  vel.y = (Random() & 63) - 48;
+  Entity081ee2a0_SpawnDefault(pos, &vel, 60, 3);
+#else
+  INCFUNC("asm/func/Entity081f8a28_SpawnTrail.inc");
+#endif
+}
+
+void Entity081f8a28_UpdateIdle(Entity081f8a28* p, Entity081f8a28Elem* elem) {}
+
+// state 1, 15 フレームかけて拡大しながら現れ, 終わったら飛行へ移る
+void Entity081f8a28_UpdateAppear(Entity081f8a28* p, Entity081f8a28Elem* elem) {
+  if (elem->stateBegun) {
+    elem->sprite.flags &= ~SPRFLAG_HIDDEN;
+    elem->sprite.flags |= SPRFLAG_AFFINE;
+    elem->growTime = 15;
+    elem->timer = 0;
+    elem->stateBegun = FALSE;
+    elem->sprite.scaleX = 1;
+    elem->sprite.scaleY = 1;
+  }
+  if (Mod(elem->timer, 8) == 0) {
+    Entity081f8a28_SpawnTrail(&elem->sprite.pos);
+  }
+  if (elem->growTime > 0) {
+    elem->sprite.scaleX += Div(64 - elem->sprite.scaleX, elem->growTime);
+    elem->sprite.scaleY += Div(64 - elem->sprite.scaleY, elem->growTime);
+    elem->growTime--;
+  }
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  if (elem->growTime <= 0) {
+    elem->state = 2;
+    elem->sprite.flags &= ~SPRFLAG_AFFINE;
+    elem->stateBegun = TRUE;
+  } else {
+    elem->timer++;
+  }
+}
+
+// state 2, 目標へ曲がりながら加速して飛び, 地形にぶつかるか寿命が尽きたら爆発へ移る
+void Entity081f8a28_UpdateFly(Entity081f8a28* p, Entity081f8a28Elem* elem) {
+  Vec3 v;
+  s32 distSq;
+  s32 height;
+
+  if (elem->stateBegun) {
+    elem->timer = 0;
+    elem->accel = 1;
+    AuxShadow_Show(&elem->shadow);
+    elem->stateBegun = FALSE;
+  }
+  elem->sprite.rotation = -elem->angle;
+  Vec3_Delta(&v, &elem->sprite.pos, &elem->target);
+  distSq = v.x * v.x + v.z * v.z;
+  Entity081f8a28_TurnToTarget(elem);
+  elem->vel.x = POLAR_X(elem->speed, elem->angle);
+  elem->vel.z = POLAR_Z(elem->speed, elem->angle);
+  Vec3_Sum(&v, &elem->sprite.pos, &elem->vel);
+  height = (TileAtIndex(GetCollisionTileIdx(&v))->heightStairs & 0xF) << 8;
+  if (height >= elem->sprite.pos.y || height == 0) {
+    elem->state = 3;
+    elem->stateBegun = TRUE;
+    return;
+  }
+  Vec3_Sum(&elem->sprite.pos, &elem->vel, &elem->sprite.pos);
+  if (Mod(elem->timer, 6) == 0) {
+    if (elem->speed < elem->maxSpeed) {
+      elem->speed += elem->accel;
+      elem->accel += 4;
+    } else {
+      elem->speed = elem->maxSpeed;
+    }
+  }
+  if (elem->lifetime < 60 || (elem->timer > 40 && distSq < 0x40000)) {
+    elem->vel.y -= 3;
+    elem->homingTime = 0;
+  }
+  if (Mod(elem->timer, 8) == 0) {
+    Entity081f8a28_SpawnTrail(&elem->sprite.pos);
+  }
+  Entity081f8a28_UpdateHitbox(elem);
+  elem->timer++;
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  if (elem->lifetime > 0) {
+    elem->lifetime--;
+  } else {
+    elem->state = 3;
+    elem->stateBegun = TRUE;
+  }
+}
+
+// 爆発の攻撃判定を出して自分を片付ける
+void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) {
+  if (elem->stateBegun) {
+    SpawnAttackBox(&elem->sprite.pos, 2, 0, 128, 64, 40, 16);
+    elem->timer = 0;
+    if (elem->shadowId == 0) {
+      AuxShadow_Remove(&elem->shadow);
+      elem->shadowId = 0xFF;
+    }
+    AuxSprite_Remove(&elem->sprite);
+    CLEAR_BIT(p->usedMask, elem->slotIdx);
+    elem->slotIdx = -1;
+    elem->state = 0;
+    elem->stateBegun = FALSE;
+  }
+}
+
+void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+  Entity081f8a28* p = gEntity081f8a28;
+  Entity081f8a28Elem* elem;
+  AuxSprite* sprite;
+  AuxShadow* shadow;
+
+  if (p == NULL) {
+    p = Entity081f8a28_Create();
+    if (p == NULL) {
+      return;
+    }
+  }
+  elem = Entity081f8a28_AllocElem(p);
+  if (elem == NULL) {
+    return;
+  }
+  elem->state = 1;
+  elem->lifetime = 120;
+  elem->unk_11c = 0;
+  elem->unk_108 = angle;
+  elem->target = *target;
+  elem->angle = angle;
+  elem->homingTime = homingTime;
+  elem->turnSpeed = turnSpeed;
+  elem->homingDelay = homingDelay;
+  elem->speed = speed;
+  elem->maxSpeed = maxSpeed;
+  elem->stateBegun = TRUE;
+  Vec3_Clear(&elem->vel);
+  elem->vel.y = velY;
+  sprite = &elem->sprite;
+  elem->sprite.pos = *pos;
+  elem->animFile = GetFile(DIR_ANIMATION, ANIM_121B);
+  AuxSprite_Add(sprite, &p->gfx, 0);
+  AuxAnim_SetAnim(&elem->anim, elem->animFile, 7, 0, 0);
+  Video_SetAuxSpritePltt(sprite->gfx, 217);
+  AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
+  sprite->priority = 2;
+  AuxSprite_Show(sprite);
+  Entity081f8a28_InitHitbox(elem, power, knockback, attrs, iframes, 0, 0, 0);
+  shadow = &elem->shadow;
+  elem->shadowId = AuxShadow_Init(shadow, &elem->sprite.pos, 64, 64, 64, 100, 0, 0, 5, 1, 0);
+  AuxShadow_SetSprite(shadow, SPRITE_EFF_1C1B, 6);
+  AuxShadow_SetAffine(shadow, 0);
+  AuxShadow_Hide(shadow);
+}
 
 void (*const PTR_ARRAY_085ae5c0[4])(Entity081f8a28*, Entity081f8a28Elem*) = {
     Entity081f8a28_UpdateIdle,
@@ -74,16 +305,83 @@ void (*const PTR_ARRAY_085ae5c0[4])(Entity081f8a28*, Entity081f8a28Elem*) = {
     Entity081f8a28_UpdateExplode,
 };  // 0x085AE5C0
 
-NAKED s32 Entity081f8a28_Update(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Update.inc"); }
+s32 Entity081f8a28_Update(Entity081f8a28* p) {
+  Entity081f8a28Elem* elems = p->elems;
+  s32 i;
 
-NAKED s32 Entity081f8a28_Destroy(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Destroy.inc"); }
+  if (p->usedMask != 0) {
+    for (i = 0; i < 8; i++) {
+      if (Entity081f8a28_IsElemUsed(p, i)) {
+        PTR_ARRAY_085ae5c0[elems[i].state](p, &elems[i]);
+      }
+    }
+  }
+  return 0;
+}
 
-NAKED s32 Entity081f8a28_Init(Entity081f8a28* p) { INCFUNC("asm/func/Entity081f8a28_Init.inc"); }
+s32 Entity081f8a28_Destroy(Entity081f8a28* p) {
+  s32 i;
 
-NAKED Entity081f8a28* Entity081f8a28_Create(void) { INCFUNC("asm/func/Entity081f8a28_Create.inc"); }
+  for (i = 0; i < 8; i++) {
+    if (Entity081f8a28_IsElemUsed(p, i)) {
+      if (p->elems[i].shadowId == 0) {
+        AuxShadow_Remove(&p->elems[i].shadow);
+        p->elems[i].shadowId = 0xFF;
+      }
+      AuxSprite_Remove(&p->elems[i].sprite);
+    }
+  }
+  gEntity081f8a28 = NULL;
+  return 0;
+}
 
-NAKED void Entity081f8a28_ClearGlobal(void) { INCFUNC("asm/func/Entity081f8a28_ClearGlobal.inc"); }
+s32 Entity081f8a28_Init(Entity081f8a28* p) {
+  p->usedMask = 0;
+  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
+  gEntity081f8a28 = p;
+  return 0;
+}
 
-NAKED void FUN_081f8a80(void) { INCFUNC("asm/func/FUN_081f8a80.inc"); }
+Entity081f8a28* Entity081f8a28_Create(void) {
+  Entity081f8a28* p;
 
-NAKED void FUN_081f8ab4(void) { INCFUNC("asm/func/FUN_081f8ab4.inc"); }
+  if (gEntity081f8a28 != NULL) {
+    return gEntity081f8a28;
+  }
+  p = CreateEntity(ENTITY_UNK_10, sizeof(Entity081f8a28));
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity081f8a28_Update, Entity081f8a28_Destroy);
+    if (Entity081f8a28_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
+
+void Entity081f8a28_ClearGlobal(void) { gEntity081f8a28 = NULL; }
+
+// 飛んでいる弾をすべて爆発させる
+void Entity081f8a28_ExplodeAll(void) {
+  Entity081f8a28* p = gEntity081f8a28;
+
+  if (p != NULL) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+      if (p->elems[i].state == 2) {
+        p->elems[i].state = 3;
+      }
+    }
+  }
+}
+
+// 決まった位置から 1P へ向けて弾を1発撃つ
+void FUN_081f8ab4(void) {
+  Vec3 pos;
+  Vec3 diff;
+
+  VEC3_SET(pos, 0x980, 0x2DC, 0x880);
+  Vec3_Delta(&diff, &pos, &gPlayerPtr[0]->mover.pos);
+  Entity081f8a28_Spawn(&pos, &gPlayerPtr[0]->mover.pos, 20, ArcTan2_8(diff.x, diff.z), 60, 4, 12, 4, 24, 0, 0, 0, 0);
+}

@@ -3,12 +3,14 @@
 #include "global.h"
 #include "vm.h"
 
+// 物音やそれを使った索敵に関係？
+
 typedef struct {
   Vec3 pos;   // 0x00
   s16 size;   // 0x08, 判定の半径, 負なら空き枠
   u16 unk_a;  // 0x0A
-  u16 flags;  // 0x0C, bit2 は今のフレームに積まれた印, 残りは探すときのマスク
-  u16 tag;    // 0x0E, FUN_08240d20 の除外キー
+  u16 flags;  // 0x0C, bit2 は今のフレームに積まれた印(FLAG_2), 残りは探すときのマスク
+  u16 id;     // 0x0E, moverID
 } Entity794CData;
 static_assert(sizeof(Entity794CData) == 16);
 
@@ -19,6 +21,10 @@ typedef struct {
 } Entity794C;
 static_assert(sizeof(Entity794C) == 216);
 
+#define FLAG_0 (1 << 0)
+#define FLAG_2 (1 << 2)  // 今のフレームに積まれた印
+#define FLAG_7 (1 << 7)
+
 static Entity794C* sEntity794C;  // 0x03001700
 
 static inline bool8 TestMapFlag(u32 mapflag) {
@@ -27,7 +33,7 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 }
 
 // 2点が size1 + size2 の正方範囲に収まっているか
-bool32 BoxesOverlap(s32 x1, s32 y1, s32 size1, s32 x2, s32 y2, s32 size2) {
+static bool8 BoxesOverlap(s32 x1, s32 y1, s32 size1, s32 x2, s32 y2, s32 size2) {
   s32 dx = abs(x1 - x2);
   s32 dy = abs(y1 - y2);
   s32 limit = size1 + size2;
@@ -60,8 +66,8 @@ void FUN_08240b44(void) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
-      if (p->data[i].flags & 4) {
-        p->data[i].flags &= ~4;
+      if (p->data[i].flags & FLAG_2) {
+        p->data[i].flags &= ~FLAG_2;
       } else {
         p->data[i].size = -1;
         p->data[i].flags = 0;
@@ -70,20 +76,20 @@ void FUN_08240b44(void) {
   }
 }
 
-u16 FUN_08240b98(Vec3* out, u8 idx) {
+u16 FUN_08240b98(Vec3* out, s8 idx) {
   Entity794C* p = sEntity794C;
-
   if (p == NULL) {
     return 0;
   }
-  out->x = p->data[(s8)idx].pos.x;
+
+  out->x = p->data[idx].pos.x;
   out->y = 0;
-  out->z = p->data[(s8)idx].pos.z;
-  return p->data[(s8)idx].tag;
+  out->z = p->data[idx].pos.z;
+  return p->data[idx].id;
 }
 
 // 原典はプロトタイプなしの K&R 定義 (呼び出し側は s16 のまま渡し, ここで u16 に切り詰める), その形で命令は 97/94, 残差は z が r7 に載らずスタックへ逃げる割当
-NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, u16 param_6) {
+NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u16 moverID) {
 #ifdef NONMATCHING_C
   Entity794C* p = sEntity794C;
   Vec3 pos;
@@ -100,14 +106,14 @@ NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, 
           p->data[i].pos.x = x;
           p->data[i].pos.y = 0;
           p->data[i].pos.z = z;
-          p->data[i].tag = param_6;
-          if (TestMapFlag(0x80)) {
+          p->data[i].id = moverID;
+          if (TestMapFlag(MPF_UNK_7)) {
             p->data[i].size = (s16)param_3 * 2;
           } else {
             p->data[i].size = param_3;
           }
           p->data[i].unk_a = param_4;
-          p->data[i].flags = param_5 | 4;
+          p->data[i].flags = flags | FLAG_2;
           return;
         }
       }
@@ -118,13 +124,13 @@ NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, 
 #endif
 }
 
-void FUN_08240c9c(s16 x, s16 z, s16 param_3, s16 param_4) { FUN_08240bcc(x, z, param_3, param_4, 1, 0); }
+void FUN_08240c9c(s16 x, s16 z, s16 param_3, s16 param_4) { FUN_08240bcc(x, z, param_3, param_4, FLAG_0, 0); }
 
-void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5) { FUN_08240bcc(x, z, param_3, param_4, param_5, 0); }
+void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags) { FUN_08240bcc(x, z, param_3, param_4, flags, 0); }
 
-void FUN_08240cf0(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5, u16 param_6) { FUN_08240bcc(x, z, param_3, param_4, param_5, param_6); }
+void FUN_08240cf0(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u16 moverID) { FUN_08240bcc(x, z, param_3, param_4, flags, moverID); }
 
-s8 FUN_08240d20(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) {
+s8 FUN_08240d20(s32 x, s32 y, s32 size, u8 mask, u16 moverID, s32 start) {
   Entity794C* p = sEntity794C;
   s32 i;
 
@@ -134,11 +140,11 @@ s8 FUN_08240d20(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) {
   for (i = start; i < 8; i++) {
     Entity794CData* data = &p->data[i];
 
-    if (!(data->flags & 4) && (data->tag == 0 || data->tag != param_5)) {
-      if (data->flags & 0x80) {
+    if (!(data->flags & FLAG_2) && (data->id == 0 || data->id != moverID)) {
+      if (data->flags & FLAG_7) {
         return i;
       }
-      if (data->size >= 0 && (data->flags & mask) && (u8)BoxesOverlap(data->pos.x, data->pos.z, data->size, x, y, size)) {
+      if (data->size >= 0 && (data->flags & mask) && BoxesOverlap(data->pos.x, data->pos.z, data->size, x, y, size)) {
         return i;
       }
     }
@@ -146,9 +152,9 @@ s8 FUN_08240d20(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) {
   return -1;
 }
 
-s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 param_5) { return FUN_08240d20(x, y, size, mask, param_5, 0); }
+s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 moverID) { return FUN_08240d20(x, y, size, mask, moverID, 0); }
 
-s8 FUN_08240dec(s32 x, s32 y, s32 size, u8 mask, u16 param_5, s32 start) { return FUN_08240d20(x, y, size, mask, param_5, start); }
+s8 FUN_08240dec(s32 x, s32 y, s32 size, u8 mask, u16 moverID, s32 start) { return FUN_08240d20(x, y, size, mask, moverID, start); }
 
 s32 Entity794C_Update(Entity794C* p) {
   FUN_08240b44();
@@ -221,7 +227,7 @@ s32 FUN_08240f20(Entity794C* p, u32 val) {
   return -free;
 }
 
-// '.a' の値を空き枠に積む
+// 0x1422, '.a' の値を空き枠に積む
 void Cmd_1422(void) {
   Entity794C* p = sEntity794C;
 
@@ -242,7 +248,7 @@ void Cmd_1422(void) {
   }
 }
 
-// '.a' の値が入っている枠を空ける
+// 0xADB6,'.a' の値が入っている枠を空ける
 void Cmd_ADB6(void) {
   Entity794C* p = sEntity794C;
 
@@ -262,7 +268,7 @@ void Cmd_ADB6(void) {
   }
 }
 
-// 枠を全部空ける
+// 0x79EC, 枠を全部空ける
 void Cmd_79EC(void) {
   Entity794C* p = sEntity794C;
   s32 i;

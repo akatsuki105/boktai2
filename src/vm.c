@@ -491,7 +491,7 @@ void* VM_Parse_ScriptDirectory_ScriptEntries(s32* offsets, s32* length) {
  * @param localVarCount スクリプトが必要とするローカル変数の数 (gScriptTable.entries に格納されている)
  */
 u8* VM_LookupByID(u32 scriptID, u32* localVarCount) {
-  // Entity0823acbc_Update で gMapInitScriptID
+  // GameSystem_Update で gMapInitScriptID
   //   0 なら VM_ExecSpecial
   //   0 以外なら VM_ExecByID
   // を呼ぶので、実質的に VM_ExecSpecial が scriptID 0 で、 これらが 1.. に相当するのかもしれない
@@ -704,7 +704,7 @@ s32 VM_Exec(u8* pc, ScriptArgs* args, s32 localVarCount) {
   return 0;
 }
 
-// Entity0823acbc_Update で gMapInitScriptID が 0のときに呼ばれる, ゲームの起動時に1回呼ばれるのは確認
+// GameSystem_Update で gMapInitScriptID が 0のときに呼ばれる, ゲームの起動時に1回呼ばれるのは確認
 // これがVMスクリプトのエントリポイントかも？
 void VM_ExecSpecial(void) {
   u32 length;

@@ -376,7 +376,7 @@ _080D0F42:
 	adds r0, r1, r0
 _080D0F4E:
 	ldrh r0, [r0, #2]
-	bl FUN_080cfc78
+	bl PlayerLink_IsOnIce
 	cmp r0, #0
 	beq _080D0F5A
 	b _080D1144

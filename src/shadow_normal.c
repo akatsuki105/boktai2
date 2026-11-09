@@ -189,7 +189,7 @@ s32 ParticleShadow_Init(ParticleShadow* shadow, Vec3* ownerPos, s32 kind) {
   }
   Particle_Add(&shadow->ptcl, gParticleShadowManager->group0, SPRFLAG_BLINK_ODD);
   Particle_SetOffset(&shadow->ptcl, -8, -8);
-  shadow->ptcl.tileNum = gParticleShadowManager->group0->tile + (shadow->ptcl.spriteWidth >> 3) * (shadow->ptcl.spriteHeight >> 3) * 34;
+  shadow->ptcl.tileNum = gParticleShadowManager->group0->tile + (shadow->ptcl.spriteWidth >> 3) * (shadow->ptcl.spriteHeight >> 3) * PTCL0_SHADOW;
   shadow->ptcl.offsetZ = -4;
   shadow->ptcl.priority = 2;
   ParticleShadowManager_Add(gParticleShadowManager, shadow);

@@ -1,8 +1,12 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "player.h"
 #include "sound.h"
 #include "sprite_aux.h"
+
+// 共闘サバタが、 ヴァンパイア,ダーイン戦で作るブラックホール (プレイヤーはサバタがこれを完成させるまで、サバタを敵の攻撃から守る)
+// 完成したこれに敵を入れることで、敵にダメージが通るようになる
 
 typedef struct BlackHoleElem {
   Particle ptcl;                                       // 0x00
@@ -215,7 +219,7 @@ NAKED void FUN_0808509c(BlackHole* p) { INCFUNC("asm/func/FUN_0808509c.inc"); }
 s32 BlackHole_Update(BlackHole* p) {
   u16 scale;
 
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     FUN_08084b5c(p);
     FUN_0808509c(p);
     p->updateCallback(p);

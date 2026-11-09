@@ -16,8 +16,6 @@
 #include "vec3.h"
 #include "vm.h"
 
-// ドゥネイル
-// 0x2B8 から 5 個並ぶ部品
 typedef struct {
   u16 state;          // 0x00, 0..3, 変わると timer が 0 に戻る
   u16 timer;          // 0x02
@@ -26,6 +24,7 @@ typedef struct {
 } DuneyrrElem;
 static_assert(sizeof(DuneyrrElem) == 108);
 
+// ドゥネイル(BOSS_DUNEYRR)
 typedef struct Duneyrr {
   Boss base;                              // 0x000
   u16 height;                             // 0x158, base.mover.pos.y はこれに 0x100 を足した値
@@ -94,7 +93,7 @@ typedef struct Duneyrr {
   s16 hitboxPower2;                       // 0x784, '.a[3]=50'
   s16 hitboxKnockback2;                   // 0x786, '.a[4]=240'
   s16 hitboxUnk44_2;                      // 0x788, '.a[5]=60'
-  s16 dustPower;                          // 0x78A, '.a[6]=13', DustManager_Emit に渡す鱗粉の power
+  s16 sporePower;                         // 0x78A, '.a[6]=13', SporeManager_Emit に渡す鱗粉の power
   s16 unk_78c;                            // 0x78C, '.a[7]=35', DuneyrrPowderBallManager_Create の power
   s16 unk_78e;                            // 0x78E, '.e[0]=30'
   s16 unk_790;                            // 0x790, '.e[1]=0'
@@ -107,163 +106,25 @@ typedef struct Duneyrr {
 } Duneyrr;
 static_assert(sizeof(Duneyrr) == 1956);
 
-const s16 s16_ARRAY_085aaabc[4] = {0x40, 0x80, 0xC0, 0x20};  // 0x085AAABC
-
-const s16 s16_ARRAY_085aaac4[4] = {0x40, 0x40, 0x60, 0x20};  // 0x085AAAC4
-
-const u8 u8_ARRAY_085aaacc[4][4][2] = {
-    {{0, 2}, {1, 2}, {2, 2}, {3, 2}},
-    {{0, 3}, {1, 2}, {2, 3}, {3, 2}},
-    {{0, 0}, {1, 0}, {2, 0}, {3, 0}},
-    {{0, 3}, {1, 0}, {2, 3}, {3, 0}},
-};  // 0x085AAACC
-
-const u16 u16_ARRAY_085aaaec[5] = {15, 16, 12, 13, 14};  // 0x085AAAEC
-
-const u16 u16_ARRAY_085aaaf6[4][2] = {
-    {0x400, 0x500},
-    {0x900, 0x500},
-    {0x400, 0xA00},
-    {0x900, 0xA00}
-};  // 0x085AAAF6
-
 void FUN_08059248(void);
-s32 Entity08058ffc_GetActiveCount(void);
+s32 LarvaManager_GetActiveCount(void);
 s32 FUN_08059054(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, Vec3* pos);
-s32 DustManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
+s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 s32 FUN_08059210(void);
 s32 FUN_080592a4(void);
-unknown* Entity08058ffc_Create(s32 param_1, s32 param_2, s32 param_3);
-void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
+unknown* LarvaManager_Create(s32 param_1, s32 param_2, s32 param_3);
+void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 s32 Entity5DA5_SetState(s32 index, s32 state, s32 param_3);
-void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
+void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 Entity5DA5_AreAllLit(void);
 
-void Duneyrr_UnregisterHurtbox(Duneyrr*);
-void Duneyrr_RemoveElems(Duneyrr*);
-
-void FUN_08024c38(Duneyrr*);
-void FUN_08024c84(Duneyrr*);
-void FUN_08024cec(Duneyrr*);
-void FUN_08024e58(Duneyrr*);
-void FUN_08024fe4(Duneyrr*);
-void FUN_0802506c(Duneyrr*);
-void FUN_08025170(Duneyrr*);
-void FUN_080251f0(Duneyrr*);
-void FUN_0802523c(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab08[9])(Duneyrr*) = {
-    FUN_08024c38,
-    FUN_08024c84,
-    FUN_08024cec,
-    FUN_08024e58,
-    FUN_08024fe4,
-    FUN_0802506c,
-    FUN_08025170,
-    FUN_080251f0,
-    FUN_0802523c,
-};  // 0x085AAB08
-
-void FUN_0802534c(Duneyrr*);
-void FUN_080253b8(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab2c[2])(Duneyrr*) = {
-    FUN_0802534c,
-    FUN_080253b8,
-};  // 0x085AAB2C
-
-void FUN_080253dc(Duneyrr*);
-void FUN_08025414(Duneyrr*);
-void FUN_08025458(Duneyrr*);
-void FUN_0802549c(Duneyrr*);
-void FUN_08025504(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab34[5])(Duneyrr*) = {
-    FUN_080253dc,
-    FUN_08025414,
-    FUN_08025458,
-    FUN_0802549c,
-    FUN_08025504,
-};  // 0x085AAB34
-
-void FUN_08025568(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab48[1])(Duneyrr*) = {
-    FUN_08025568,
-};  // 0x085AAB48
-
-void FUN_08025584(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab4c[1])(Duneyrr*) = {
-    FUN_08025584,
-};  // 0x085AAB4C
-
-void FUN_080255a0(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab50[1])(Duneyrr*) = {
-    FUN_080255a0,
-};  // 0x085AAB50
-
-void FUN_080255bc(Duneyrr*);
-void FUN_080255f8(Duneyrr*);
-void FUN_08025614(Duneyrr*);
-
-void (*const PTR_ARRAY_085aab54[3])(Duneyrr*) = {
-    FUN_080255bc,
-    FUN_080255f8,
-    FUN_08025614,
-};  // 0x085AAB54
-
-void FUN_08025654(Boss*, s32);
-void FUN_080256c4(Boss*, s32);
-void FUN_08025830(Boss*, s32);
+void FUN_080262c0(Boss*, s32);
 void FUN_08025948(Boss*, s32);
 void FUN_08025c84(Boss*, s32);
-void FUN_08025cf8(Boss*, s32);
 void FUN_08025e10(Boss*, s32);
 void FUN_08025f8c(Boss*, s32);
-void FUN_0802604c(Boss*, s32);
-void FUN_080261b4(Boss*, s32);
-void FUN_080262c0(Boss*, s32);
-void FUN_08026334(Boss*, s32);
-void FUN_08026514(Boss*, s32);
-void FUN_08026738(Boss*, s32);
-void FUN_08026968(Boss*, s32);
 void FUN_08026c50(Boss*, s32);
 void FUN_08027090(Boss*, s32);
-void FUN_08027188(Boss*, s32);
-void FUN_080271e0(Boss*, s32);
-void FUN_08027278(Boss*, s32);
-void FUN_0802730c(Boss*, s32);
-void FUN_08027454(Boss*, s32);
-
-// clang-format off
-void (*const PTR_ARRAY_085aab60[23])(Boss*, s32) = {
-    NULL,
-    FUN_08025654,
-    FUN_080256c4,
-    FUN_08025830,
-    FUN_08025948,
-    FUN_08025c84,
-    FUN_08025cf8,
-    FUN_08025e10,
-    FUN_08025f8c,
-    FUN_0802604c,
-    FUN_080261b4,
-    FUN_080262c0,
-    FUN_08026334,
-    FUN_08026514,
-    FUN_08026738,
-    FUN_08026968,
-    FUN_08026c50,
-    FUN_08027090,
-    FUN_08027188,
-    FUN_080271e0,
-    FUN_08027278,
-    FUN_0802730c,
-    FUN_08027454,
-};  // 0x085AAB60
-// clang-format on
 
 void FUN_08024500(Duneyrr*);
 void FUN_08025630(Duneyrr*);
@@ -282,7 +143,8 @@ static inline void Hitbox_AddAttributes(HitboxData* hitbox, HitboxAttributes att
 
 static inline void Hitbox_RemoveAttributes(HitboxData* hitbox, HitboxAttributes attrs) { hitbox->attributes &= ~attrs; }
 
-static inline void Hitbox_SetHalfSize(HitboxData* hitbox, Vec3* halfSize) { hitbox->halfSize = *halfSize; }
+static const s16 s16_ARRAY_085aaabc[4] = {0x40, 0x80, 0xC0, 0x20};  // 0x085AAABC
+static const s16 s16_ARRAY_085aaac4[4] = {0x40, 0x40, 0x60, 0x20};  // 0x085AAAC4
 
 // 残差はオフセットの定数を作るレジスタの割り当てだけ (原典は r6 を足して4本使う), 2つの表に分けて命令数までは揃った
 NON_MATCH void FUN_08023388(Duneyrr* p) {
@@ -345,6 +207,13 @@ s32 Duneyrr_GetQuadrant(Vec3* pos) {
     return 3;
   }
 }
+
+static const u8 u8_ARRAY_085aaacc[4][4][2] = {
+    {{0, 2}, {1, 2}, {2, 2}, {3, 2}},
+    {{0, 3}, {1, 2}, {2, 3}, {3, 2}},
+    {{0, 0}, {1, 0}, {2, 0}, {3, 0}},
+    {{0, 3}, {1, 0}, {2, 3}, {3, 0}},
+};  // 0x085AAACC
 
 // 残差は dir と表の先頭アドレスを作る順番 (265/266): 原典は表のアドレスを先に載せる, 極座標の部分は duneyrr_powder_ball.c の Vec3_SetPolar と同じ形の static inline にすれば揃う
 NON_MATCH void FUN_08023530(Duneyrr* p) {
@@ -449,6 +318,8 @@ void DuneyrrElem_SetState(DuneyrrElem* p, u32 state) {
 }
 
 void Duneyrr_InitElems(Duneyrr* p) {
+  static const u16 u16_ARRAY_085aaaec[5] = {15, 16, 12, 13, 14};  // 0x085AAAEC
+
   DuneyrrElem* elem = p->elems;
   s32 i;
 
@@ -499,7 +370,7 @@ NON_MATCH void FUN_080238ac(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
     pos.x += (_Random(table) & 0xFF) - 0x80;
     pos.y += (_Random(table) & 0x3F) + 0x80;
     pos.z += (_Random(table) & 0xFF) - 0x80;
-    FUN_08015d3c(&pos, 5, 0x3000, 0x40, 12, 4, elem->timer & 3, 3);
+    Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 3, 3);
   }
   if (elem->timer > 10) {
     DuneyrrElem_SetState(elem, 2);
@@ -530,7 +401,7 @@ NON_MATCH void FUN_080239bc(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
     pos.x = pos.x - 0x80 + (u8)_Random(table);
     pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
     pos.z = pos.z - 0x80 + (u8)_Random(table);
-    FUN_08015d3c(&pos, 5, 0x3000, 0x40, 12, 4, elem->timer & 7, 3);
+    Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 7, 3);
   }
   if (elem->timer < 20 ? (elem->timer & 3) == 0 : (elem->timer & 1) == 0) {
     elem->sprite.flags |= SPRFLAG_HIDDEN;
@@ -590,7 +461,7 @@ NON_MATCH void FUN_08023bd8(Duneyrr* p, s32 param_2) {
       pos.x = pos.x - 0x80 + (u8)_Random(table);
       pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
       pos.z = pos.z - 0x80 + (u8)_Random(table);
-      FUN_08015d3c(&pos, 5, 0x3000, 0x40, 2, 2, 2, 3);
+      Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 2, 2, 2, 3);
       p->unk_16a = (Random() & 3) + 2;
     } else {
       p->unk_16a--;
@@ -603,7 +474,7 @@ NON_MATCH void FUN_08023bd8(Duneyrr* p, s32 param_2) {
       pos.x = pos.x - 0x80 + (u8)_Random(table);
       pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
       pos.z = pos.z - 0x80 + (u8)_Random(table);
-      FUN_08015d3c(&pos, 5, 0x3000, 0x40, 12, 4, 0, 3);
+      Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, 0, 3);
       p->unk_16a = (Random() & 3) + 1;
     } else {
       p->unk_16a--;
@@ -633,6 +504,13 @@ void FUN_08023d7c(Duneyrr* p) {
 
 // 部屋を4分割した区画 quadrant の中心の位置を out に入れる
 void Duneyrr_GetQuadrantPos(Vec3* out, u32 quadrant, u32 y) {
+  static const u16 u16_ARRAY_085aaaf6[4][2] = {
+      {0x400, 0x500},
+      {0x900, 0x500},
+      {0x400, 0xA00},
+      {0x900, 0xA00}
+  };  // 0x085AAAF6
+
   out->x = u16_ARRAY_085aaaf6[quadrant][0];
   out->y = y;
   out->z = u16_ARRAY_085aaaf6[quadrant][1];
@@ -641,7 +519,7 @@ void Duneyrr_GetQuadrantPos(Vec3* out, u32 quadrant, u32 y) {
 // 残差は乱数オフセットの足し方 (231/228): 原典は pos.x - 0x40 を先に作ってから乱数を足すが, こちらは乱数側に -0x40 を畳む, 乱数を u32/s32 のローカルに受けても揃わない
 NON_MATCH void FUN_08023de8(Duneyrr* p) {
 #ifdef NONMATCHING_C
-  if (p->unk_550 != 0 && Entity08058ffc_GetActiveCount() < 12) {
+  if (p->unk_550 != 0 && LarvaManager_GetActiveCount() < 12) {
     Vec3 pos = p->sprite.pos;
 
     pos.z -= 0x80;
@@ -664,12 +542,12 @@ void Duneyrr_SetHurtboxPower(Duneyrr* p, u32 power) {
   hurtbox->power = power;
 }
 
-void Duneyrr_SetHitboxAttack(Duneyrr* p, u32 power, u32 knockbackPower, u32 invincibleTime) {
+void Duneyrr_SetHitboxAttack(Duneyrr* p, u32 power, u32 knockback, u32 iframes) {
   HitboxData* hitbox = &p->hitbox;
 
   hitbox->power = power;
-  hitbox->knockbackPower = knockbackPower;
-  hitbox->invincibleTime = invincibleTime;
+  hitbox->knockback = knockback;
+  hitbox->iframes = iframes;
 }
 
 void Duneyrr_SetHitboxHalfSize(Duneyrr* p, u32 x, u32 y, u32 z) {
@@ -747,7 +625,7 @@ void FUN_08024324(Duneyrr* p) {
 NON_MATCH void Duneyrr_PollMessages(Duneyrr* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  MsgQueue* queue = &boss->msgQueue;
+  MsgQueue* queue = &boss->mq;
   s32 i;
 
   for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
@@ -771,7 +649,7 @@ NON_MATCH void Duneyrr_PollMessages(Duneyrr* p) {
         p->sprite.pos.x = boss->mover.pos.x;
         p->sprite.pos.y = boss->mover.pos.y + p->spriteOffsetY;
         p->sprite.pos.z = boss->mover.pos.z;
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 7: {
@@ -784,7 +662,7 @@ NON_MATCH void Duneyrr_PollMessages(Duneyrr* p) {
       }
       case 9: {
         Boss_ShowEmote(boss, msg->args[0], 180, 180);
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 10: {
@@ -947,7 +825,7 @@ NON_MATCH void FUN_08024834(Duneyrr* p) {
     Boss_SetTarget(boss, pos.x, pos.y, pos.z);
     Boss_SetSubStates(boss, 0, 0, 1);
     if (Boss_GetHPRatio(boss) < 0x60) {
-      p->unk_551 = Entity08058ffc_GetActiveCount() > 5 ? 0 : FUN_08059210() != 0 ? 4 : 6;
+      p->unk_551 = LarvaManager_GetActiveCount() > 5 ? 0 : FUN_08059210() != 0 ? 4 : 6;
     }
   } else if (boss->lowHP) {
     Boss_SetSubState2(boss, (p->unk_554 & 7) == 0 ? 8 : 2);
@@ -1211,7 +1089,7 @@ void FUN_08025414(Duneyrr* p) {
 
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 19);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   }
   boss->subStateTimer++;
 }
@@ -1221,7 +1099,7 @@ void FUN_08025458(Duneyrr* p) {
 
   if (Boss_EnterSubState(boss)) {
     Boss_RequestState(boss, 20);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   }
   boss->subStateTimer++;
 }
@@ -1234,7 +1112,7 @@ void FUN_0802549c(Duneyrr* p) {
   }
   if (boss->subStateDone) {
     Boss_SetSubState2(boss, 2);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   } else {
     boss->subStateTimer++;
   }
@@ -1248,31 +1126,76 @@ void FUN_08025504(Duneyrr* p) {
   }
   if (boss->subStateDone) {
     Boss_SetSubState2(boss, 0);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   } else {
     boss->subStateTimer++;
   }
 }
 
-void FUN_08025568(Duneyrr* p) { PTR_ARRAY_085aab08[p->base.subState2](p); }
+void FUN_08025568(Duneyrr* p) {
+  static void (*const PTR_ARRAY_085aab08[9])(Duneyrr*) = {
+      FUN_08024c38,
+      FUN_08024c84,
+      FUN_08024cec,
+      FUN_08024e58,
+      FUN_08024fe4,
+      FUN_0802506c,
+      FUN_08025170,
+      FUN_080251f0,
+      FUN_0802523c,
+  };  // 0x085AAB08
+  PTR_ARRAY_085aab08[p->base.subState2](p);
+}
 
-void FUN_08025584(Duneyrr* p) { PTR_ARRAY_085aab2c[p->base.subState2](p); }
+void FUN_08025584(Duneyrr* p) {
+  static void (*const PTR_ARRAY_085aab2c[2])(Duneyrr*) = {
+      FUN_0802534c,
+      FUN_080253b8,
+  };  // 0x085AAB2C
+  PTR_ARRAY_085aab2c[p->base.subState2](p);
+}
 
-void FUN_080255a0(Duneyrr* p) { PTR_ARRAY_085aab34[p->base.subState2](p); }
+void FUN_080255a0(Duneyrr* p) {
+  static void (*const PTR_ARRAY_085aab34[5])(Duneyrr*) = {
+      FUN_080253dc,
+      FUN_08025414,
+      FUN_08025458,
+      FUN_0802549c,
+      FUN_08025504,
+  };  // 0x085AAB34
+  PTR_ARRAY_085aab34[p->base.subState2](p);
+}
 
 void FUN_080255bc(Duneyrr* p) {
-  u32 mask = FLAG03002BC0_UNK_2;
+  static void (*const PTR_ARRAY_085aab48[1])(Duneyrr*) = {
+      FUN_08025568,
+  };  // 0x085AAB48
 
-  if (!(gPlayerStates[0] & mask) && !FUN_08024be4(p)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_08024be4(p)) {
     PTR_ARRAY_085aab48[p->base.subState1](p);
   }
 }
 
-void FUN_080255f8(Duneyrr* p) { PTR_ARRAY_085aab4c[p->base.subState1](p); }
+void FUN_080255f8(Duneyrr* p) {
+  static void (*const PTR_ARRAY_085aab4c[1])(Duneyrr*) = {
+      FUN_08025584,
+  };  // 0x085AAB4C
+  PTR_ARRAY_085aab4c[p->base.subState1](p);
+}
 
-void FUN_08025614(Duneyrr* p) { PTR_ARRAY_085aab50[p->base.subState1](p); }
+void FUN_08025614(Duneyrr* p) {
+  static void (*const PTR_ARRAY_085aab50[1])(Duneyrr*) = {
+      FUN_080255a0,
+  };  // 0x085AAB50
+  PTR_ARRAY_085aab50[p->base.subState1](p);
+}
 
 void FUN_08025630(Duneyrr* p) {
+  static void (*const PTR_ARRAY_085aab54[3])(Duneyrr*) = {
+      FUN_080255bc,
+      FUN_080255f8,
+      FUN_08025614,
+  };  // 0x085AAB54
   p->base.unk_9d = 0;
   PTR_ARRAY_085aab54[p->base.subState0](p);
 }
@@ -1391,7 +1314,7 @@ NON_MATCH void FUN_08025948(Boss* boss, s32 timer) {
     Vec3 pos = mover->pos;
 
     pos.x = pos.x - 0x80 + (u8)Random();
-    FUN_08015ce0(1, 5, 0x3001, 0x40, 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
+    Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
   }
   if (timer <= 0x40) {
     Vec3 ofs;
@@ -1418,7 +1341,7 @@ NON_MATCH void FUN_08025948(Boss* boss, s32 timer) {
       } else {
         angle = (Random() & 0xF) + 0x40;
       }
-      DustManager_Emit(1, angle, 0, 2, 0, 0x20, p->dustPower, 0, &pos);
+      SporeManager_Emit(1, angle, 0, 2, 0, 0x20, p->sporePower, 0, &pos);
       p->unk_171 = 0;
     }
   }
@@ -1536,8 +1459,8 @@ void FUN_08025f8c(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     Boss_PlayAnim(boss, &p->sprite, &p->gfx, 5, PLAYMODE_ONCE_AND_STOP, 0);
     pos = &boss->mover.pos;
-    FUN_08015a90(pos, 4, 5, 0x3001, 0x40, 8, 0x100, 0x100);
-    FUN_08015a90(pos, 6, 5, 0x3001, 0x40, 10, 0x100, 0x100);
+    Entity08015584_SpawnRadial(pos, 4, 5, 0x3001, Q6(1), 8, 0x100, 0x100);
+    Entity08015584_SpawnRadial(pos, 6, 5, 0x3001, Q6(1), 10, 0x100, 0x100);
     FUN_080240b4(p);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss) && (p->sprite.animEvents & MAIN_ANIM_EVENT_ENDED)) {
@@ -1661,7 +1584,7 @@ NON_MATCH void FUN_08026334(Boss* boss, s32 timer) {
 
         pos.x = pos.x - 0x80 + (u8)Random();
         pos.y -= 0x40;
-        FUN_08015ce0(1, 5, 0x3001, 0x40, 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
+        Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
       }
     }
     for (i = 0; i < 4; i++) {
@@ -1688,7 +1611,7 @@ NON_MATCH void FUN_08026514(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
-    p->unk_550 = Entity08058ffc_GetActiveCount() > 6 ? 3 : 6;
+    p->unk_550 = LarvaManager_GetActiveCount() > 6 ? 3 : 6;
     p->unk_160 = 0;
   }
   if (boss->damageCallback(boss) || boss->stateRequestCallback(boss)) {
@@ -1700,7 +1623,7 @@ NON_MATCH void FUN_08026514(Boss* boss, s32 timer) {
     pos.x = mover->pos.x + (Random() & 0x1FF) - 0x100;
     pos.y = mover->pos.y;
     pos.z = mover->pos.z + (u8)Random() - 0x80;
-    FUN_08015ce0(1, 5, 0x3001, 0x40, timer & 7, 0x100, 4, 2, -12, 6, &pos);
+    Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), timer & 7, 0x100, 4, 2, -12, 6, &pos);
   }
   if (boss->playerDistSq[0] <= p->arriveDistSq) {
     mover->pos.x = playerPos->x;
@@ -1763,7 +1686,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
 
       pos.x = pos.x - 0x80 + (u8)Random();
       pos.y -= 0x40;
-      FUN_08015ce0(1, 5, 0x3001, 0x40, 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
+      Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
     }
   }
   for (i = 0; i < 4; i++) {
@@ -2074,7 +1997,7 @@ NON_MATCH void FUN_0802730c(Boss* boss, s32 timer) {
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
     p->height = 0x100;
     p->spriteOffsetY = 0;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->damage = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW);
@@ -2107,7 +2030,7 @@ NON_MATCH void FUN_08027454(Boss* boss, s32 timer) {
     AuxShadow_SetScaleParams(&p->shadow, 0x30, 0x30, 0x30, 0x30, 0x1964, 100, 6, 1);
     p->height = 0x100;
     p->spriteOffsetY = 0;
-    PlaySound_0824078c(SE_808);
+    PlaySound_0824078c(SE_WARP_808);
   }
   p->damage = 0;
   SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX | BOSSFLAG_NO_SHADOW);
@@ -2129,13 +2052,41 @@ void FUN_08027588(Duneyrr* p) {
   u32 mask;
 
   p->base.subStateDone = 0;
-  mask = FLAG03002BC0_UNK_2;
-  if (!(gPlayerStates[0] & mask)) {
+  mask = PMODE_DEAD;
+  if (!(gPlayerModes[0] & mask)) {
     Boss_UpdateState(&p->base);
   }
 }
 
 s32 FUN_080275b0(Duneyrr* p) {
+  // clang-format off
+  static void (*const PTR_ARRAY_085aab60[23])(Boss*, s32) = {
+      NULL,
+      FUN_08025654,
+      FUN_080256c4,
+      FUN_08025830,
+      FUN_08025948,
+      FUN_08025c84,
+      FUN_08025cf8,
+      FUN_08025e10,
+      FUN_08025f8c,
+      FUN_0802604c,
+      FUN_080261b4,
+      FUN_080262c0,
+      FUN_08026334,
+      FUN_08026514,
+      FUN_08026738,
+      FUN_08026968,
+      FUN_08026c50,
+      FUN_08027090,
+      FUN_08027188,
+      FUN_080271e0,
+      FUN_08027278,
+      FUN_0802730c,
+      FUN_08027454,
+  };  // 0x085AAB60
+  // clang-format on
+
   if (p->base.state == 0 || p->base.state > 23) {
     return FALSE;
   } else {
@@ -2250,7 +2201,7 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
     p->hitboxPower2 = VM_GetValue();
     p->hitboxKnockback2 = VM_GetValue();
     p->hitboxUnk44_2 = VM_GetValue();
-    p->dustPower = VM_GetValue();
+    p->sporePower = VM_GetValue();
     p->unk_78c = VM_GetValue();
   } else {
     p->hitboxPower = 35;
@@ -2259,7 +2210,7 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
     p->hitboxPower2 = 50;
     p->hitboxKnockback2 = 240;
     p->hitboxUnk44_2 = 60;
-    p->dustPower = 13;
+    p->sporePower = 13;
     p->unk_78c = 35;
   }
   Boss_Init(boss, id, bossID, &pos, angle);
@@ -2347,11 +2298,11 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
     p->unk_77c = 3;
   }
   p->unk_544 = p->unk_542;
-  p->powderBalls = DuneyrrPowderBallManager_Create(p->unk_78c, 30, 15, p->dustPower);
+  p->powderBalls = DuneyrrPowderBallManager_Create(p->unk_78c, 30, 15, p->sporePower);
   if (p->powderBalls == NULL) {
     return -1;
   }
-  if (Entity08058ffc_Create(p->unk_792, p->unk_794, p->unk_798) == NULL) {
+  if (LarvaManager_Create(p->unk_792, p->unk_794, p->unk_798) == NULL) {
     return -1;
   }
   {

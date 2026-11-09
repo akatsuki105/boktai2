@@ -45,8 +45,6 @@ typedef struct CoffinShop {
 } CoffinShop;
 static_assert(sizeof(CoffinShop) == 4336);
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-
 void FUN_080bf058(CoffinShop* p);
 void CoffinShop_HandleSelectInput(CoffinShop* p);
 void FUN_080bf29c(CoffinShop* p);
@@ -190,14 +188,14 @@ void CoffinShop_StartSwapAnim(CoffinShop* p) {
 
   p->sprites[coffinSlot + 1].flags |= SPRFLAG_HIDDEN;
   unk1[0] = 1;
-  anims[0] = heldID + 0x68;
+  anims[0] = ICON_ITEM(heldID);
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&from[0].x, coffinSlot);
   Shop_GetSlotPos(&to[0].x, heldID - 0x28);
 
   p->sprites[(u8)p->cursor.savedSlot + 1].flags |= SPRFLAG_HIDDEN;
   unk1[1] = 1;
-  anims[1] = p->items[(u8)p->cursor.savedSlot - 16] + 0x68;
+  anims[1] = ICON_ITEM(p->items[(u8)p->cursor.savedSlot - 16]);
   strIDs[1] = 0x2DF;
   Shop_GetSlotPos(&from[1].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&to[1].x, (u8)p->cursor.slot);
@@ -530,7 +528,7 @@ void FUN_080bf828(CoffinShop* p) {
 void FUN_080bf854(CoffinShop* p) {
   if (p->unk_ec8 != 0 && (gInput[0].pressed & B_BUTTON)) {
     PlaySound_082406e0(SE_CLOSE_MENU);
-    FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
     CoffinShop_SetState(p, CoffinShop_Close);
   } else {
     p->unk_10ec(p);
@@ -584,7 +582,7 @@ s32 CoffinShop_Init(CoffinShop* p) {
   CoffinShop_ReadScriptID(p);
   p->unk_10e1 = 0;
   p->unk_10e2 = 0;
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   FUN_080bf3a0(p);
   PlaySound_082406e0(SE_OPEN_MENU);
   CoffinShop_SetState(p, FUN_080bf828);

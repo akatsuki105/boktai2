@@ -35,7 +35,7 @@ _08091CFA:
 	bne _08091D06
 	movs r0, #0
 _08091D00:
-	bl FUN_080916bc
+	bl TestItemUseFlag
 	b _08091E22
 _08091D06:
 	cmp r4, #0x1f

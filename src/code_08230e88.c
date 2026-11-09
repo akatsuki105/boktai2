@@ -32,7 +32,7 @@ void ScriptRecord_ResetAll(void) {
 void FUN_08230eb4(void) {
   ScriptRecordBlock* blocks = ScriptRecord_GetBlocks();
 
-  if (gEntityDisableFlags == 0) {
+  if (gSuspendFlags == 0) {
     ScriptRecordBlock* p;
 
     u32_03000740 ^= 1;

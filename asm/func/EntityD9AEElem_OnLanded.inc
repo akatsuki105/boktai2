@@ -115,7 +115,7 @@ _0800335E:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0x40
-	bl FUN_08015ce0
+	bl Entity08015584_SpawnSprayEx
 	b _080033A2
 	.align 2, 0
 _08003394: .4byte 0x00000143

@@ -60,7 +60,7 @@ _081DEC98:
 	blt _081DEC7C
 _081DEC9C:
 	adds r0, r4, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	cmp r0, #0
 	bge _081DECA8
 	b _081DEE98
@@ -204,9 +204,9 @@ _081DEDA0:
 	cmp r7, #0
 	beq _081DEDF8
 	adds r0, r4, #0
-	bl FUN_081dda10
+	bl LinkSession_SwapLuxBuffers
 	adds r0, r4, #0
-	bl FUN_081dda38
+	bl LinkSession_UpdateLuxGauges
 	adds r1, r4, #0
 	adds r1, #0x52
 	movs r0, #0
@@ -258,7 +258,7 @@ _081DEE0C:
 	ldr r6, _081DEE58 @ =0x03002BE0
 _081DEE16:
 	adds r0, r5, #0
-	bl FUN_081df720
+	bl LinkSession_CountCoins
 	cmp r0, #2
 	ble _081DEE2A
 	ldr r1, [r6]
@@ -284,7 +284,7 @@ _081DEE34:
 	ldr r2, _081DEE5C @ =FUN_081deef8
 	adds r0, r4, #0
 	movs r1, #0xd
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	b _081DEEEA
 	.align 2, 0
 _081DEE54: .4byte 0x030046A0
@@ -323,7 +323,7 @@ _081DEE8E:
 	b _081DEEC4
 _081DEE98:
 	adds r0, r4, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DEEEC
@@ -331,7 +331,7 @@ _081DEEA4:
 	ldr r2, _081DEEB0 @ =FUN_081deef8
 	adds r0, r4, #0
 	movs r1, #0xd
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	b _081DEEEA
 	.align 2, 0
 _081DEEB0: .4byte FUN_081deef8

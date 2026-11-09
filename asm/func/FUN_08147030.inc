@@ -411,7 +411,7 @@ _0814734E:
 	adds r2, r0, #0
 	adds r0, r6, #0
 	movs r1, #0xe
-	bl FUN_080efb60
+	bl Enemy_PlayAnimNoFacingFlags
 	movs r0, #0xd9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

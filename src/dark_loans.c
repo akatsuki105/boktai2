@@ -16,11 +16,11 @@
 typedef struct DarkLoans {
   Entity e;                                   // 0x000, ENTITY_UNK_11
   MainSpriteGfx gfx0;                         // 0x018, SPRITE_UI_DARKLOAN
-  MainSpriteGfx gfx1;                         // 0x038
+  MainSpriteGfx gfx1;                         // 0x038, SPRITE_UI_START_MENU
   MainSprite sprites[20];                     // 0x058
   AuxSprite auxSprite;                        // 0x7D8
-  AuxSpriteGfx auxGfx;                        // 0x804
-  TilemapFile* tilemap;                       // 0x820, TILEMAP_C091
+  AuxSpriteGfx auxGfx;                        // 0x804, SPRITE_SOLAR_STATION
+  TilemapFile* tilemap;                       // 0x820, TILEMAP_BANK
   rgb555* pltt;                               // 0x824, BGP_BANK の body[208]
   u8* script;                                 // 0x828, MessageWindow_Start に渡す本文
   u16 unk_82c;                                // 0x82C
@@ -41,7 +41,6 @@ typedef struct DarkLoans {
 } DarkLoans;
 static_assert(sizeof(DarkLoans) == 2128);
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_080b54ec(DarkLoans* p);
 void FUN_080b539c(DarkLoans* p);
 void FUN_080b5528(DarkLoans* p);
@@ -161,7 +160,7 @@ void FUN_080b4b04(DarkLoans* p) {
   p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
   p->sprites[4].flags &= ~SPRFLAG_HIDDEN;
   MessageWindow_ShowLine(0);
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   DarkLoans_SetUpdate(p, FUN_080b4f08);
 }
 
@@ -209,7 +208,7 @@ void FUN_080b4c5c(DarkLoans* p) {
   p->unk_848 = 0;
   p->unk_84a = 0;
   p->auxSprite.flags &= ~SPRFLAG_HIDDEN;
-  Video_SetAuxSpritePltt(&p->auxGfx, 0x143);
+  Video_SetAuxSpritePltt(&p->auxGfx, 323);
   MessageWindow_ShowLine(4);
   p->unk_83a = 0;
   p->unk_83c = 0;
@@ -256,7 +255,7 @@ void FUN_080b4e8c(DarkLoans* p) {
   FUN_080b4abc(p);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetAnim(&p->sprites[0], &p->gfx0, 6, PLAYMODE_ONCE_AND_STOP, 0);
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   MessageWindow_ShowLine(13);
   DarkLoans_SetUpdate(p, FUN_080b5528);
 }
@@ -359,7 +358,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     p->unk_840 = 19;
     blink = FUN_080b4ffc(p->unk_83e);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, p->unk_840 + blink, PLAYMODE_LOOP);
-    Video_SetAuxSpritePltt(&p->auxGfx, blink + 0x143);
+    Video_SetAuxSpritePltt(&p->auxGfx, blink + 323);
     if (++p->unk_83e > 15) {
       p->unk_83e = 0;
     }
@@ -372,7 +371,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     p->unk_840 = 22;
     blink = FUN_080b4ffc(p->unk_83e);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, p->unk_840 + blink, PLAYMODE_LOOP);
-    Video_SetAuxSpritePltt(&p->auxGfx, blink + 0x143);
+    Video_SetAuxSpritePltt(&p->auxGfx, blink + 323);
     if (++p->unk_83e > 15) {
       p->unk_83e = 0;
     }
@@ -380,12 +379,12 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
       p->unk_848 = 1;
     }
   } else if (p->unk_83e == 0) {
-    Video_SetAuxSpritePltt(&p->auxGfx, 0x143);
+    Video_SetAuxSpritePltt(&p->auxGfx, 323);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, 18, PLAYMODE_LOOP);
   } else {
     blink = FUN_080b4ffc(p->unk_83e);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, p->unk_840 + blink, PLAYMODE_LOOP);
-    Video_SetAuxSpritePltt(&p->auxGfx, blink + 0x143);
+    Video_SetAuxSpritePltt(&p->auxGfx, blink + 323);
     if (++p->unk_83e > 15) {
       p->unk_83e = 0;
     }
@@ -432,7 +431,7 @@ void FUN_080b539c(DarkLoans* p) {
       }
       DarkLoans_SetUpdate(p, FUN_080b5434);
     } else {
-      FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+      StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
       DarkLoans_SetUpdate(p, FUN_080b54ec);
     }
   }
@@ -443,7 +442,7 @@ void FUN_080b5434(DarkLoans* p) {
   p->unk_844++;
   if (p->unk_844 > 149) {
     if (gStat->tortureCount == 0) {
-      FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+      StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
       DarkLoans_SetUpdate(p, FUN_080b54ec);
     } else {
       FUN_080b4e04(p);
@@ -454,7 +453,7 @@ void FUN_080b5434(DarkLoans* p) {
 void FUN_080b54a0(DarkLoans* p) {
   p->unk_844++;
   if (p->unk_844 > 0x95) {
-    FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
     DarkLoans_SetUpdate(p, FUN_080b54ec);
   }
 }
@@ -471,7 +470,7 @@ void FUN_080b54ec(DarkLoans* p) {
 void FUN_080b5528(DarkLoans* p) {
   MainSprite_AdvanceAnim(&p->sprites[0], &p->gfx0);
   if (p->unk_844 == 150) {
-    FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
   }
   p->unk_844++;
   if (p->unk_844 > 181) {
@@ -572,7 +571,7 @@ NON_MATCH void DarkLoans_Init_Helper_080b5650(DarkLoans* p) {
   AuxSprite_Add(&p->auxSprite, &p->auxGfx, 0);
   p->auxSprite.priority = 0;
   p->auxSprite.flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;
-  Video_SetAuxSpritePltt(&p->auxGfx, 0x143);
+  Video_SetAuxSpritePltt(&p->auxGfx, 323);
   p->auxSprite.pos.x = 160;
   p->auxSprite.pos.y = 88;
   p->auxSprite.pos.z = 0;

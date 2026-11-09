@@ -10,8 +10,6 @@
 
 // ショップ系の共通関数?
 
-s32 FUN_080b9da0(ShopCursor* p, u8 mask);
-
 // BG のタイルマップ上の (x8, y8) のアドレスを返す
 static BgMapEntry* GetBgMapAddr(s32 bgnum, u32 x8, u32 y8) {
   BgState* bg = &gBgStates[bgnum];

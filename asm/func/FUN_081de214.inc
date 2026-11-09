@@ -18,7 +18,7 @@ _081DE22C:
 	ldr r2, _081DE24C @ =FUN_081de250
 	adds r0, r4, #0
 	movs r1, #2
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	movs r0, #0
 	strb r0, [r5]
 _081DE244:

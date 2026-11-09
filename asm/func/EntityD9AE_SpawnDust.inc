@@ -98,7 +98,7 @@ _080030CC:
 	movs r1, #0
 	add r2, sp, #8
 	movs r3, #1
-	bl FUN_080dbcec
+	bl DustManager_Spawn
 	adds r7, #1
 	cmp r7, #9
 	ble _08003042

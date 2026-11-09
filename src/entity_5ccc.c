@@ -1,8 +1,8 @@
 #include "collision_map.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
+#include "link_session.h"
 #include "map_inline.h"
 #include "player.h"
 #include "solar.h"
@@ -57,27 +57,25 @@ static_assert(sizeof(Entity5CCC) == 2740);
 
 IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
 
-extern u16 gRisingSunCount;
-
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
   return FALSE;
 }
 
 // まだセッションが無ければ 0
-static inline u8 Entity9A9F_GetUnk60(s32 idx) {
-  if (gEntity9A9F == NULL) {
+static inline u8 LinkSession_GetLuxGauge(s32 idx) {
+  if (gLinkSession == NULL) {
     return 0;
   }
-  return gEntity9A9F->unk_60[idx];
+  return gLinkSession->luxGauge[idx];
 }
 
 // まだセッションが無ければ 0
-static inline u16 Entity9A9F_GetUnk66(void) {
-  if (gEntity9A9F == NULL) {
+static inline u16 LinkSession_GetLuxAverage(void) {
+  if (gLinkSession == NULL) {
     return 0;
   }
-  return gEntity9A9F->unk_66;
+  return gLinkSession->luxAverage;
 }
 
 // 光柱のパレットを設定する (既にそのパレットなら何もしない)
@@ -379,7 +377,7 @@ NON_MATCH void Cmd_815C(void) {
 void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   s32 heal;
 
-  if (gGameFlags & FLAG030047A4_UNK_8) {
+  if (gGameFlags & GAMEFLAG_UNK_8) {
     p->idleTimer = 0;
   } else if (gInput[0].down != 0) {
     p->idleTimer = 0;
@@ -387,10 +385,10 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
     p->idleTimer++;
   }
 
-  if ((gGameFlags & (FLAG030047A4_UNK_8 | FLAG030047A4_UNK_9)) == FLAG030047A4_UNK_9) {
+  if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_EVENT)) == GAMEFLAG_EVENT) {
     return;
   }
-  if (TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     return;
   }
 
@@ -588,7 +586,7 @@ s32 Entity0809eb24_Destroy(Entity5CCC* p) {
 }
 
 bool32 FUN_0809eacc(void) {
-  if (gGameFlags & FLAG030047A4_UNK_8) {
+  if (gGameFlags & GAMEFLAG_UNK_8) {
     return FALSE;
   }
   if (Time_GetMoonPhase() == 4) {  // 満月
@@ -620,11 +618,11 @@ Entity5CCC* Entity0809eb24_Create(u32 id, u32 _) {
   return p;
 }
 
-s32 FUN_0809eb6c(s32 param_1) { return Div(param_1 * Entity9A9F_GetUnk66(), 140); }
+s32 FUN_0809eb6c(s32 param_1) { return Div(param_1 * LinkSession_GetLuxAverage(), 140); }
 
 // 屋外か天窓の光の中にいるときだけ param_2 に応じた値を返す
 s32 FUN_0809eb94(Vec3* pos, s32 param_2) {
-  if (Entity9A9F_GetUnk66() == 0) {
+  if (LinkSession_GetLuxAverage() == 0) {
     return 0;
   }
   if (!TestMapFlag(MPF_OUTDOOR) && FUN_0809e05c(pos) < 0) {
@@ -635,7 +633,7 @@ s32 FUN_0809eb94(Vec3* pos, s32 param_2) {
 
 // このプレイヤーが日光を浴びられる状況か (屋外, または天窓の光の中)
 bool32 FUN_0809ebf4(Player* p) {
-  if (Entity9A9F_GetUnk60(p->inputIdx) == 0) {
+  if (LinkSession_GetLuxGauge(p->inputIdx) == 0) {
     return FALSE;
   }
   if (!TestMapFlag(MPF_OUTDOOR) && (gEntity5CCC == NULL || FUN_0809e05c(&p->mover.pos) < 0)) {
@@ -646,7 +644,7 @@ bool32 FUN_0809ebf4(Player* p) {
 
 // 日光 (サバタは日陰) を浴びている量をプレイヤーごとに積み, 120 たまるごとに ENE を1回復させる
 // 残差9命令 (119/110). light の 0/1 は FUN_0809e734 と同じ if/else + TEST_FLAGS で原典どおり rsbs + lsrs #31 になった
-// 残りは i が r3 でなく r5 に乗って p と p+0xAAC に r8/r9 を使う割り当てと, 非サバタ側で unk_60 の値を charges[i] の読みより先に作る順序. GetPlayer / Entity9A9F_GetUnk60 の inline, ローカルを関数スコープに出すのは試済 (119-120)
+// 残りは i が r3 でなく r5 に乗って p と p+0xAAC に r8/r9 を使う割り当てと, 非サバタ側で luxGauge の値を charges[i] の読みより先に作る順序. GetPlayer / LinkSession_GetLuxGauge の inline, ローカルを関数スコープに出すのは試済 (119-120)
 NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
 #ifdef NONMATCHING_C
   s32 i;
@@ -679,9 +677,9 @@ NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
       }
     } else {
       if (chargeSpeed == QUICK_CHARGE) {
-        p->charges[i] += (gEntity9A9F != NULL ? gEntity9A9F->unk_60[i] : 0) * 8;
+        p->charges[i] += (gLinkSession != NULL ? gLinkSession->luxGauge[i] : 0) * 8;
       } else if (chargeSpeed == SUN_NORMAL) {
-        p->charges[i] += gEntity9A9F != NULL ? gEntity9A9F->unk_60[i] : 0;
+        p->charges[i] += gLinkSession != NULL ? gLinkSession->luxGauge[i] : 0;
       }
     }
 
@@ -702,12 +700,12 @@ NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
 void FUN_0809ed54(Entity5CCC* p) {}
 
 // セッション側の許可に合わせて光柱をまとめて見せる/隠す
-// 残差4命令 (89/93). 原典は gEntity9A9F の NULL 判定を2回出す (playerIdx 取得用と unk_60 取得用で別々の static inline を通している形) が, agbcc は1回に畳む
-// ファイル先頭の Entity9A9F_GetUnk66 と同形の inline 2本で再現できるが, 一致しないので入れない
+// 残差4命令 (89/93). 原典は gLinkSession の NULL 判定を2回出す (playerIdx 取得用と luxGauge 取得用で別々の static inline を通している形) が, agbcc は1回に畳む
+// ファイル先頭の LinkSession_GetLuxAverage と同形の inline 2本で再現できるが, 一致しないので入れない
 NON_MATCH void FUN_0809ed58(Entity5CCC* p) {
 #ifdef NONMATCHING_C
-  s32 playerIdx = gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1;
-  u8 allowed = gEntity9A9F != NULL ? gEntity9A9F->unk_60[playerIdx] : 0;
+  s32 playerIdx = gLinkSession != NULL ? gLinkSession->playerIdx : -1;
+  u8 allowed = gLinkSession != NULL ? gLinkSession->luxGauge[playerIdx] : 0;
   s32 i;
 
   if (allowed != 0) {
@@ -787,7 +785,7 @@ Entity5CCC* Cmd_5CCC(u32 id, u32 _) {
   if (gEntity5CCC != NULL) {
     return gEntity5CCC;
   }
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return Entity0809eeb4_Create(id, _);
   } else {
     return Entity0809eb24_Create(id, _);

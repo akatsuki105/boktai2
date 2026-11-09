@@ -51,7 +51,7 @@ typedef struct {
 } EntityC60F;
 static_assert(sizeof(EntityC60F) == 168);
 
-void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
+void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
 
 IWRAM_DATA EntityC60F* gEntityC60F = NULL;  // 0x0300019C
 
@@ -82,7 +82,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
 
   if ((p->unk_109 != 1 && (a->weakness & 0x10)) || EntityC60FItem_HasFlag(p, 2)) {
     b->damage = 0;
-    b->knockbackPower = 0;
+    b->knockback = 0;
     return;
   }
 
@@ -92,7 +92,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
       if (p->unk_105 != 0) {
         p->unk_105--;
       } else {
-        FUN_08015c90(2, 0, 0, 64, &p->pos);
+        Entity08015584_SpawnSpray(2, 0, 0, Q6(1), &p->pos);
         p->unk_105 = 3;
         PlaySound_082406e0(SONG_348);
       }
@@ -100,7 +100,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
       if (p->unk_105 != 0) {
         p->unk_105--;
       } else {
-        FUN_08015c90(2, 2, 0, 64, &p->pos);
+        Entity08015584_SpawnSpray(2, 2, 0, Q6(1), &p->pos);
         p->unk_105 = 2;
         PlaySound_082406e0(SONG_348);
       }
@@ -332,17 +332,17 @@ NON_MATCH void FUN_081d785c(EntityC60FItem* p) {
     if (Mod(p->timer, 6) == 0) {
       pos = p->pos;
       pos.x -= 64;
-      FUN_08015c90(1, 0, 0, 64, &pos);
+      Entity08015584_SpawnSpray(1, 0, 0, Q6(1), &pos);
     }
     if (Mod(p->timer, 10) == 0) {
       pos = p->pos;
       pos.x += 64;
-      FUN_08015c90(1, 0, 0, 64, &pos);
+      Entity08015584_SpawnSpray(1, 0, 0, Q6(1), &pos);
     }
     if (Mod(p->timer, 16) == 0) {
       pos = p->pos;
       pos.z += 32;
-      FUN_08015c90(1, 0, 0, 64, &pos);
+      Entity08015584_SpawnSpray(1, 0, 0, Q6(1), &pos);
     }
     if (Mod(p->timer, 7) == 0 && (s8)m->unk_a4 < 0) {
       PlaySound_082406e0(SONG_348);
@@ -374,13 +374,13 @@ NON_MATCH void FUN_081d7a60(EntityC60FItem* p) {
     AuxSprite_AdvanceAnim(&p->sprite, anim);
     p->timer = 0;
     p->stateEntered = FALSE;
-    FUN_08015c90(1, 2, 0, 64, &p->sprite.pos);
+    Entity08015584_SpawnSpray(1, 2, 0, Q6(1), &p->sprite.pos);
   }
 
   if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
     p->state = 0;
     p->sprite.flags |= SPRFLAG_HIDDEN;
-    FUN_08015c90(3, 2, 0, 64, &p->sprite.pos);
+    Entity08015584_SpawnSpray(3, 2, 0, Q6(1), &p->sprite.pos);
   }
 #else
   INCFUNC("asm/func/FUN_081d7a60.inc");

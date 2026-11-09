@@ -4057,8 +4057,8 @@ NON_MATCH void FUN_082192f4(EntityA288* p) {
           if (p->unk_4c != 0) {
             VM_ExecByID(p->unk_4c, NULL);
           }
-          gEntityDisableFlags = 0;
-          gMapChangeFlags = 0x11;
+          gSuspendFlags = 0;
+          gMapChangeFlags = MAPCHANGE_LOAD | MAPCHANGE_BACKUP;
           SetMapInitScriptID((s16)gStat->mapInitScriptID);
         }
       }

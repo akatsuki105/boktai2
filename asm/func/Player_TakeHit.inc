@@ -170,7 +170,7 @@ _0807E4DC:
 	cmp r0, #0
 	bne _0807E4FE
 	adds r0, r5, #0
-	bl FUN_08063220
+	bl Player_ClearElementalCond
 	movs r2, #1
 	add r8, r2
 _0807E4FE:
@@ -213,7 +213,7 @@ _0807E52E:
 	b _0807E76E
 _0807E546:
 	adds r0, r5, #0
-	bl FUN_08063220
+	bl Player_ClearElementalCond
 	b _0807E76E
 	.align 2, 0
 _0807E550: .4byte 0x000003D6
@@ -281,7 +281,7 @@ _0807E5A8:
 _0807E5D4:
 	adds r0, r5, #0
 	movs r1, #1
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	b _0807E670
 	.align 2, 0
 _0807E5E0: .4byte 0x00000442
@@ -313,7 +313,7 @@ _0807E5F0:
 _0807E61A:
 	adds r0, r5, #0
 	movs r1, #2
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	b _0807E670
 	.align 2, 0
 _0807E624: .4byte 0x000003D2
@@ -332,7 +332,7 @@ _0807E630:
 	strh r0, [r1]
 	adds r0, r5, #0
 	movs r1, #3
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	ldr r1, _0807E65C @ =0x000003D2
 	adds r0, r5, r1
 	strb r4, [r0]
@@ -348,7 +348,7 @@ _0807E660:
 	cmp r1, #0
 	beq _0807E670
 	adds r0, r5, #0
-	bl FUN_08063220
+	bl Player_ClearElementalCond
 _0807E670:
 	movs r1, #0x80
 	lsls r1, r1, #8

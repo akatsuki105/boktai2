@@ -137,7 +137,7 @@ _0807CE32:
 	lsls r2, r2, #4
 	mov r1, ip
 	mov r3, sp
-	bl FUN_082467d0
+	bl ElementalCondEmitter_AddParticle
 	cmp r0, #0
 	blt _0807CE9A
 	ldr r1, _0807CE78 @ =0x000004C5

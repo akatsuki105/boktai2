@@ -38,7 +38,7 @@ static_assert(sizeof(TransEffectParticles) == 488);
 // FUN_080ac090 / FUN_080ac100 / FUN_080ac13c が受け取る一式, パレットを timer に応じて白から元の色へ寄せる
 typedef struct {
   AuxSprite spr;     // 0x00, ->gfx
-  AuxSpriteGfx gfx;  // 0x2C, SPRITE_MAGIC_CIRCLE
+  AuxSpriteGfx gfx;  // 0x2C, SPRITE_MAGIC_SQUARE
   rgb555* srcPltt;   // 0x48, 元のパレット
   rgb555 pltt[16];   // 0x4C, srcPltt を timer / 16 で白と混ぜたもの
   u8 active;         // 0x6C, FUN_080ac13c が timer 0 のとき 0 を書く
@@ -262,7 +262,7 @@ NON_MATCH void FUN_080ac228(TransEffect* p, Vec3* pos) {
       plttID = 98;
     }
   }
-  Video_GetAuxSprite(&s->gfx, SPRITE_MAGIC_CIRCLE);
+  Video_GetAuxSprite(&s->gfx, SPRITE_MAGIC_SQUARE);
   AuxSprite_Add(&s->spr, &s->gfx, 0);
   s->spr.poseIdx = kind;
   s->spr.priority = 3;

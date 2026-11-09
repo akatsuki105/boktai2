@@ -14,16 +14,10 @@
 #include "vec3.h"
 
 void FUN_081fa608(void);
-void FUN_08204d04(Vec3* pos, s32 param_2);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 ofsX, s32 ofsY);
+void Entity08204cb8_Spawn(Vec3* pos, s32 param_2);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
 void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
-void Entity081ea820_ThrowAt(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
-
-const u16 u16_ARRAY_085ae7b8[8] = {64, 64, 64, 64, 64, 128, 128, 128};  // 0x085AE7B8
-
-const u16 u16_ARRAY_085ae7c8[8] = {4096, 4096, 4096, 4096, 4096, 16384, 16384, 16384};  // 0x085AE7C8
-
-const s32 s32_ARRAY_085ae7d8[8] = {-100, -60, -40, -30, -20, 10, 45, 0};  // 0x085AE7D8
+void Octorok_ThrowAt(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
 
 // pos の y を足元のタイルの高さにして返す
 s32 FUN_08200ab4(Vec3* pos) {
@@ -46,7 +40,7 @@ void FUN_08200b5c(Entity08202cd8* p) {
   Mover m;
 
   m.pos = p->sprites[0].pos;
-  Entity081ea820_ThrowAt(&m, q, 10, 30, 0, 10);
+  Octorok_ThrowAt(&m, q, 10, 30, 0, 10);
 }
 
 // 被弾の点滅を戻し、溜まったダメージを両端の中点にまとめて出す
@@ -125,6 +119,9 @@ NON_MATCH void FUN_08200c8c(Entity08202cd8* p) {
   INCFUNC("asm/func/FUN_08200c8c.inc");
 #endif
 }
+
+static const u16 u16_ARRAY_085ae7b8[8] = {64, 64, 64, 64, 64, 128, 128, 128};                  // 0x085AE7B8
+static const u16 u16_ARRAY_085ae7c8[8] = {4096, 4096, 4096, 4096, 4096, 16384, 16384, 16384};  // 0x085AE7C8
 
 // b を a から規定の距離より離れないように引き寄せる
 void FUN_08200d70(AuxSprite* a, AuxSprite* b, s32 idx) {
@@ -283,7 +280,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     p->unk_6d9 = 1;
   }
   if (Mod(val, 8) == 0) {
-    Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+    Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, Q6(0.5), 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
   }
 #else
   INCFUNC("asm/func/FUN_082010f8.inc");
@@ -342,7 +339,7 @@ NON_MATCH void FUN_082013d4(Entity08202cd8* p, s32 val) {
       pos = p->pos;
       pos.x += FixToInt(12, radius * SIN(angle));
       pos.z += FixToInt(12, radius * COS(angle));
-      FUN_08204d04(&pos, 0);
+      Entity08204cb8_Spawn(&pos, 0);
     } else {
       Vec3 vel;
       u8 angle = Random();
@@ -352,9 +349,9 @@ NON_MATCH void FUN_082013d4(Entity08202cd8* p, s32 val) {
       pos.z += FixToInt(12, COS(angle) * 120);
       Vec3_Clear(&vel);
       if (!(p->unk_6dd & 1)) {
-        Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, 0x38E2, 3, SPRFLAG_BLINK_ODD, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, SPRFLAG_BLINK_ODD, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       } else {
-        Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, 0x38E2, 3, SPRFLAG_BLINK_EVEN, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, SPRFLAG_BLINK_EVEN, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       p->unk_6dd++;
     }
@@ -364,6 +361,8 @@ NON_MATCH void FUN_082013d4(Entity08202cd8* p, s32 val) {
   INCFUNC("asm/func/FUN_082013d4.inc");
 #endif
 }
+
+const s32 s32_ARRAY_085ae7d8[8] = {-100, -60, -40, -30, -20, 10, 45, 0};  // 0x085AE7D8
 
 // 下書き1回で止めた (777/878), 原典は switch の後の関節の引き寄せループを2本持ち, 1番の段階を通ったかどうかで同じ中身のどちらかへ分かれる (約 100 命令の差はこれ)
 // 各段階の中身は asm と Ghidra を突き合わせて書いた, Ghidra は case の break を見落として素通りに見せる
@@ -553,7 +552,7 @@ NON_MATCH void FUN_08201f74(Entity08202cd8* p, s32 val) {
 
   if (done < 8) {
     if (Mod(val, 8) == 0) {
-      Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, 32, 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0x237);
+      Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, Q6(0.5), 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0x237);
     }
   } else {
     p->unk_6d9 = 1;
@@ -809,8 +808,8 @@ s32 Entity08202cd8_Update(Entity08202cd8* p) {
   u32 mask;
 
   p->unk_6da = 0;
-  mask = FLAG03002BC0_UNK_2;
-  if (!(gPlayerStates[0] & mask)) {
+  mask = PMODE_DEAD;
+  if (!(gPlayerModes[0] & mask)) {
     FUN_08200b8c(p);
     FUN_082028b8(p);
     FUN_08202910(p);

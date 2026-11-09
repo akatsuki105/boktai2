@@ -75,7 +75,7 @@ _080AF024:
 	str r6, [sp, #0xc]
 	str r4, [sp, #0x10]
 	movs r2, #0xf
-	bl FUN_0805f320
+	bl Entity0805f2dc_Spawn
 	b _080AF0A2
 	.align 2, 0
 _080AF090: .4byte 0x0000134C

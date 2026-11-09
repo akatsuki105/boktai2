@@ -1,4 +1,5 @@
 #include "collision_map.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -69,8 +70,6 @@ static inline bool8 BeeNest_IsActive(u32* mask, s32 i) {
   if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
   return FALSE;
 }
-
-s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 
 void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
@@ -270,9 +269,9 @@ NON_MATCH void Cmd_CreateBeeNest(void) {
 // 無敵時間を数えつつ、点滅用のパレットを選ぶ
 NON_MATCH void FUN_081d5cac(BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
-  if (frag->hurtbox.invincibleTime != 0) {
+  if (frag->hurtbox.iframes != 0) {
     frag->hurtbox.flags |= HBFLAG_HIDDEN;
-    frag->hurtbox.invincibleTime--;
+    frag->hurtbox.iframes--;
   } else {
     frag->hurtbox.flags &= ~HBFLAG_HIDDEN;
   }
@@ -322,11 +321,11 @@ NON_MATCH void FUN_081d5d70(BeeNest* p, BeeNestFragment* frag) {
     frag->sprite.pos.z = (-POLAR_Z(frag->unk_124, frag->sprite.rotation) + POLAR_X(frag->unk_128, frag->sprite.rotation)) + frag->basePos.z;
   }
 
-  if ((frag->unk_154 & 1) && FUN_081d6cb0(frag) && !(gPlayerPtr[0]->flag20 & PFLAG20_UNK_3) && !(gGoodCondTimer != 0 && gGoodCondID == 0) && gPlayerPtr[0]->kind != PLAYER_BAT && frag->unk_12c != frag->unk_130 && frag->unk_11c == 0) {
+  if ((frag->unk_154 & 1) && FUN_081d6cb0(frag) && !(gPlayerPtr[0]->flag20 & PFLAG20_WALL_COVER) && !(gGoodCondTimer != 0 && gGoodCondID == 0) && gPlayerPtr[0]->kind != PLAYER_BAT && frag->unk_12c != frag->unk_130 && frag->unk_11c == 0) {
     frag->unk_11c = 4;
     frag->hp--;
     if (frag->hp > 0) {
-      PlaySound_082406e0(SONG_969);
+      PlaySound_082406e0(SE_BEE_969);
     } else {
       frag->state = 3;
       frag->unk_156 = 1;
@@ -438,7 +437,7 @@ NON_MATCH void FUN_081d60c8(BeeNest* p, BeeNestFragment* frag) {
       frag->state = 4;
       frag->unk_156 = 1;
       for (i = 0; i < 8; i++) {
-        Entity081ee7a8_SpawnDefaultNow(&frag->sprite.pos, 8, 0x10, 4, 12, 0x12, i * 32, 8, 0x40, 1, 1, 0);
+        Entity081ee7a8_SpawnDefaultNow(&frag->sprite.pos, 8, 0x10, 4, 12, 0x12, i * 32, 8, Q6(1), 1, 1, 0);
       }
     }
   }
@@ -453,14 +452,14 @@ NON_MATCH void FUN_081d6200(BeeNest* p, BeeNestFragment* frag) {
   if (frag->unk_156) {
     FUN_081d6764(frag);
     if (frag->unk_13d - frag->unk_13c >= 0) {
-      PlaySound_082406e0(SONG_967);
+      PlaySound_082406e0(SE_BEE_967);
     }
     FUN_081d6ae8(frag, frag->unk_13d - frag->unk_13c);
     if (frag->shadowId != -1) {
       AuxShadow_Remove(&frag->shadow);
       frag->shadowId = -1;
     }
-    PlaySound_082406e0(SONG_966);
+    PlaySound_082406e0(SE_BEENEST_CRASH);
     frag->unk_156 = 0;
   } else {
     frag->sprite.flags |= SPRFLAG_HIDDEN;
@@ -561,19 +560,19 @@ void FUN_081d6444(BeeNestFragment* frag) {
 }
 
 // 被弾ハンドラ, 体力を削って演出を出し, 0 になったら state 4 へ移す
-// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hurtbox.invincibleTime を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
+// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hurtbox.iframes を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
 // dealt は min(unk_140, damage) だが, 原典の形 (差を取ってから符号で分岐) に合わせて if/else で書いた
 NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
   s32 dealt;
   Vec3 v;
 
-  if (frag->hurtbox.invincibleTime != 0) {
+  if (frag->hurtbox.iframes != 0) {
     return;
   }
 
   Hitbox_ApplyDamage(a, b);
-  b->invincibleTime = a->invincibleTime;
+  b->iframes = a->iframes;
   dealt = frag->hp - frag->hurtbox.damage;
   if (dealt >= 0) {
     dealt = frag->hurtbox.damage;
@@ -591,7 +590,7 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag)
   CreateDamageNumber(b, dealt, 0, &frag->sprite.pos, &v, 1);
   frag->unk_153 = 3;
   frag->unk_157 = 10;
-  frag->hurtbox.invincibleTime = 0x18;
+  frag->hurtbox.iframes = 0x18;
   FUN_081d65e8(frag);
   FUN_081d6bc0(frag);
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
@@ -618,7 +617,7 @@ NON_MATCH void FUN_081d65e8(BeeNestFragment* frag) {
   velRange.x = (_Random(table) & 3) + 15;
   velRange.y = (_Random(table) & 7) + 15;
   velRange.z = (_Random(table) & 3) + 15;
-  FUN_08014730((_Random(table) & 3) + 2, 0x11, &frag->sprite.pos, &vel, &velRange, 12, 15);
+  ScatterEffect_Spawn((_Random(table) & 3) + 2, SCATTER_KIND_17, &frag->sprite.pos, &vel, &velRange, 12, 15);
 #else
   INCFUNC("asm/func/FUN_081d65e8.inc");
 #endif
@@ -738,7 +737,7 @@ NON_MATCH void FUN_081d6c24(BeeNestFragment* frag) {
     if (frag->unk_130 < frag->unk_134) {
       FUN_081d6ae8(frag, 2);
       FUN_081d5820(frag, 1);
-      PlaySound_082406e0(SONG_967);
+      PlaySound_082406e0(SE_BEE_967);
     }
   }
 #else

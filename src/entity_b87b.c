@@ -35,7 +35,6 @@ void EntityB87B_InitSprites(EntityB87B* p);
 void EntityB87B_SetupSprites(EntityB87B* p);
 void EntityB87B_InitMessage(EntityB87B* p);
 void EntityB87B_ClearBG0(void);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 void EntityB87B_AdvanceAnims(EntityB87B* p) {
   MainSprite_AdvanceAnim(&p->sprites[1], &p->gfx);
@@ -106,11 +105,11 @@ s32 EntityB87B_Update(EntityB87B* p) {
     }
   } else {
     if (p->step == p->unk_226 && p->unk_228 == (u16)p->finished - 16) {
-      FUN_0823ce68(1, 4, 4, 4, 4, 0xFFFF, 0);
+      StartBgObjPlttFade(1, 4, 4, 4, 4, 0xFFFF, 0);
       p->progress = 0;
       p->unk_22e = 1;
     } else if (p->unk_220 > 16 && (gInput[0].pressed & (START_BUTTON | A_BUTTON))) {
-      FUN_0823ce68(1, 4, 4, 4, 4, 0xFFFF, 0);
+      StartBgObjPlttFade(1, 4, 4, 4, 4, 0xFFFF, 0);
       p->progress = 1;
       p->unk_22e = 1;
     } else if (p->unk_228 >= (u16)p->finished) {
@@ -376,7 +375,7 @@ s32 EntityB87B_Init(EntityB87B* p) {
   EntityB87B_InitSprites(p);
   EntityB87B_SetupSprites(p);
   EntityB87B_InitMessage(p);
-  FUN_0823ce68(0, 4, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(0, 4, 4, 4, 4, 0xFFFF, 0);
 }
 
 // 0xB87B

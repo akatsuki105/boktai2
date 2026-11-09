@@ -353,7 +353,7 @@ _0809523C:
 	adds r1, r5, #0
 	movs r2, #3
 	movs r3, #1
-	bl FUN_0808b97c
+	bl MainMenu_ClearRect
 	mov r3, sb
 	lsls r1, r3, #3
 	ldr r0, _080952E4 @ =0xFFFF0000

@@ -58,7 +58,7 @@ _080D466E:
 	movs r1, #3
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	b _080D46D4
 	.align 2, 0
 _080D46B4: .4byte 0x0000FFFF
@@ -74,7 +74,7 @@ _080D46BC:
 	movs r1, #3
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 _080D46D4:
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D4708 @ =0x000001AD

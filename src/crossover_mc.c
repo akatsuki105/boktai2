@@ -18,8 +18,8 @@ typedef struct CrossoverMC {
 static_assert(sizeof(CrossoverMC) == 448);
 
 bool32 FUN_0804e59c(void);
-s32 FUN_08050de8(void);
-s32 FUN_08050dfc(void);
+s32 CrossoverBattle_GetRound(void);
+s32 CrossoverBattle_IsMaxMode(void);
 
 void CrossoverMC_StateHidden(CrossoverMC* p) {
   if (p->entered) {
@@ -87,7 +87,7 @@ void CrossoverMC_StateRound(CrossoverMC* p) {
     MainSpriteGfx* gfx;
 
     p->entered = FALSE;
-    n = FUN_08050de8();
+    n = CrossoverBattle_GetRound();
     if (n == 1) {
       PlaySound_082406e0(VO_READY);
     }
@@ -104,7 +104,7 @@ void CrossoverMC_StateRound(CrossoverMC* p) {
     spr->pos.x = 16;
     spr = &p->sprites[3];
     MainSprite_SetPose(spr, gfx, LINK_MAX_MODE, 0);
-    if (FUN_08050dfc()) {
+    if (CrossoverBattle_IsMaxMode()) {
       MainSprite_Show(spr);
     } else {
       MainSprite_Hide(spr);

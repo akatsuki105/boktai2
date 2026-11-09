@@ -12,7 +12,7 @@
 	bne _080CDC98
 	ldr r2, _080CDC94 @ =0x000004C4
 	adds r0, r7, r2
-	bl Eff082473e0Emitter_FadeParticle
+	bl ElementalCondEmitter_FadeParticle
 	b _080CDD7A
 	.align 2, 0
 _080CDC90: .4byte 0x000004C5
@@ -129,7 +129,7 @@ _080CDCB6:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r2, sp, #0xc
-	bl Eff082473e0Emitter_BurstParticle
+	bl ElementalCondEmitter_BurstParticle
 _080CDD7A:
 	add sp, #0x24
 	pop {r3, r4, r5}

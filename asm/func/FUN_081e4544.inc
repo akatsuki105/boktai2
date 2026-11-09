@@ -15,7 +15,7 @@
 	ldr r3, _081E45B8 @ =0x0000159C
 	adds r2, r4, r3
 	adds r1, r5, #0
-	bl FUN_08094d30
+	bl WeaponData_ShowNameInPanel
 	ldrb r0, [r5]
 	cmp r0, #0
 	beq _081E45C8

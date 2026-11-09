@@ -18,14 +18,8 @@ typedef struct {
   u16 decayY;         // 0x0A, 8.8 固定小数の倍率, どこでも書き込まれないので常に 0 (decayStartY で止まる)
   u16 decayStartXZ;   // 0x0C
   u16 decayXZ;        // 0x0E, 同上
-  s4_12 dirX;         // 0x10, gSineTable[(angleXZ + 0x40) & 0xFF], ここから unk_16 (含む)　まで、 Vec3 (の s4_12 版) かも
-  s4_12 dirY;         // 0x12, gSineTable[angleY & 0xFF]
-  s4_12 dirZ;         // 0x14, gSineTable[angleXZ & 0xFF]
-  u8 unk_16[2];       // 0x16
-  u16 velX;           // 0x18, dirX * speedXZ >> 12, 毎フレーム sprite.pos.x に加算
-  u16 velY;           // 0x1A, dirY * speedY >> 12, 毎フレーム sprite.pos.y に加算
-  u16 velZ;           // 0x1C, dirZ * speedXZ >> 12, SCREEN_COORD でなければ sprite.pos.z に加算
-  u8 unk_1e[2];       // 0x1E
+  Vec3 dir;           // 0x10, 4.12 固定小数の向き, x = COS(angleXZ), y = SIN(angleY), z = SIN(angleXZ)
+  Vec3 vel;           // 0x18, dir * speed >> 12, 毎フレーム sprite.pos に加算, SCREEN_COORD なら z は足さない
   AuxSpriteGfx gfx;   // 0x20, SPRITE_4384
   AuxSprite sprite;   // 0x3C, ->gfx
   AuxAnimState anim;  // 0x68
@@ -34,90 +28,45 @@ static_assert(sizeof(Entity08015584Elem) == 120);
 
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_9
-  AuxAnimFile* animFiles[2];     // 0x18, id: FileID_ARRAY_085aa914[i]
+  AuxAnimFile* animFiles[2];     // 0x18, id: sEntity08015584AnimFileIDs[i]
   u32 frameCounter;              // 0x20
   Entity08015584Elem elems[32];  // 0x24
 } Entity08015584;
 static_assert(sizeof(Entity08015584) == 3876);
 
-static Entity08015584* gEntity08015584;  // 0x03000060
+static Entity08015584* sEntity08015584;  // 0x03000060
 
-const FileID FileID_ARRAY_085aa914[2] = {ANIM_F62B, ANIM_31F4};  // 0x085AA914
-
-void FUN_08015264(void) { gEntity08015584 = NULL; }
+void Entity08015584_ClearGlobal(void) { sEntity08015584 = NULL; }
 
 // 使用中の粒子を減速させながら動かし, アニメが一巡したら外す
-// 残差2命令 (256/254). 原典は p をスタックへ退避して elem / sprite の歩くポインタ3本だけをレジスタに置くが, agbcc は p を r9 に残してそこから導く
+// 258/254 命令, 原典は elem と sprite の2本だけを歩かせ anim は elem から求めるが, こちらは anim 側もループ外で歩くポインタになる
 NON_MATCH s32 Entity08015584_Update(Entity08015584* p) {
 #ifdef NONMATCHING_C
-  Entity08015584Elem* elem = p->elems;
   s32 i;
 
-  for (i = 31; i >= 0; i--, elem++) {
+  for (i = 0; i < 32; i++) {
+    Entity08015584Elem* elem = &p->elems[i];
+
     if (elem->active) {
       AuxSprite* sprite = &elem->sprite;
-      AuxAnimCmd* cmd;
-      bool32 finished;
 
       if (elem->timer >= elem->decayStartXZ) {
         elem->speedXZ = FixToInt(8, elem->speedXZ * elem->decayXZ);
-        elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
-        elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
+        elem->vel.x = FixToInt(12, elem->dir.x * elem->speedXZ);
+        elem->vel.z = FixToInt(12, elem->dir.z * elem->speedXZ);
       }
       if (elem->timer >= elem->decayStartY) {
         elem->speedY = FixToInt(8, elem->speedY * elem->decayY);
-        elem->velY = FixToInt(12, elem->dirY * elem->speedY);
+        elem->vel.y = FixToInt(12, elem->dir.y * elem->speedY);
       }
 
-      sprite->pos.x += elem->velX;
-      sprite->pos.y += elem->velY;
+      sprite->pos.x += elem->vel.x;
+      sprite->pos.y += elem->vel.y;
       if (!(sprite->flags & SPRFLAG_SCREEN_COORD)) {
-        sprite->pos.z += elem->velZ;
+        sprite->pos.z += elem->vel.z;
       }
 
-      cmd = &elem->anim.cmds[elem->anim.cmdIdx];
-      sprite->poseIdx = *cmd >> 6;
-      if ((elem->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-        sprite->flags |= SPRFLAG_XFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_XFLIP;
-      }
-      if ((elem->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-        sprite->flags |= SPRFLAG_YFLIP;
-      } else {
-        sprite->flags &= ~SPRFLAG_YFLIP;
-      }
-
-      elem->anim.tick++;
-      if (elem->anim.tick < elem->anim.wait) {
-        finished = FALSE;
-      } else {
-        elem->anim.tick = 0;
-        if (elem->anim.flags & ANIM_PLAY_REVERSE) {
-          if (elem->anim.cmdIdx == 0) {
-            elem->anim.cmdIdx = elem->anim.cmdCount - 1;
-            finished = TRUE;
-          } else {
-            elem->anim.cmdIdx--;
-            finished = FALSE;
-          }
-        } else {
-          elem->anim.cmdIdx++;
-          if (elem->anim.cmdIdx < elem->anim.cmdCount) {
-            finished = FALSE;
-          } else {
-            elem->anim.cmdIdx = 0;
-            finished = TRUE;
-          }
-        }
-        elem->anim.duration = elem->anim.cmds[elem->anim.cmdIdx] & 0xF;
-        elem->anim.wait = (elem->anim.duration * elem->anim.speed) >> 6;
-        if (elem->anim.wait == 0) {
-          elem->anim.wait = 1;
-        }
-      }
-
-      if (finished) {
+      if (AuxSprite_AdvanceAnim(sprite, &elem->anim)) {
         elem->active = FALSE;
         AuxSprite_Remove(sprite);
       }
@@ -141,18 +90,23 @@ s32 Entity08015584_Destroy(Entity08015584* p) {
     }
   }
 
-  gEntity08015584 = NULL;
+  sEntity08015584 = NULL;
   return 0;
 }
 
 s32 Entity08015584_Init(Entity08015584* p, u32 _) {
+  static const FileID sEntity08015584AnimFileIDs[2] = {
+      ANIM_F62B,
+      ANIM_31F4,
+  };  // 0x085AA914
+
   Vec3 pos;
   s32 i;
 
-  gEntity08015584 = p;
+  sEntity08015584 = p;
 
   for (i = 0; i < 2; i++) {
-    p->animFiles[i] = GetFile(DIR_ANIMATION, FileID_ARRAY_085aa914[i]);
+    p->animFiles[i] = GetFile(DIR_ANIMATION, sEntity08015584AnimFileIDs[i]);
   }
 
   VEC3_SET(pos, 0, 0, 0);
@@ -162,7 +116,7 @@ s32 Entity08015584_Init(Entity08015584* p, u32 _) {
 
     elem->active = FALSE;
     elem->speedY = 0;
-    elem->dirX = 0, elem->dirY = 0, elem->dirZ = 0;
+    elem->dir.x = 0, elem->dir.y = 0, elem->dir.z = 0;
     if (!Video_GetAuxSprite(&elem->gfx, SPRITE_4384)) {
       return -1;
     }
@@ -188,27 +142,27 @@ Entity08015584* Entity08015584_Create(u32 val, u32 _) {
   return p;
 }
 
-// 残差2命令, 原典は結果を r1 に置いて最後に r0 へ写す (n が r0 = 引数レジスタに残る) が,
-// ローカルの宣言順・引数の使い回し・三項/if の書き換えでは n と結果のレジスタが入れ替わらない
-NON_MATCH u32 FUN_080155c8(s32 flags) {
+// flags の bit12-15 (1〜4) を描画優先度 0〜3 にする, 範囲外は 2
+// 13/13 命令, 原典は & 0xF000 の結果を flags 側の r0 に書くが, こちらはマスク側の r1 に書くので直後の asrs / subs のレジスタがずれる
+NON_MATCH u32 Entity08015584_GetPriority(s32 flags) {
 #ifdef NONMATCHING_C
-  s32 n = ((flags & 0xF000) >> 12) - 1;
+  u32 n = ((flags & 0xF000) >> 12) - 1;
 
-  return (n >= 0 && n <= 3) ? n : 2;
+  n = (n < 4) ? n : 2;
+  return n;
 #else
-  INCFUNC("asm/func/FUN_080155c8.inc");
+  INCFUNC("asm/func/Entity08015584_GetPriority.inc");
 #endif
 }
 
 // params に従って count 個の粒子を空き枠へ仕込む, 枠が足りなければ -1
-// 残差11命令 (531/520). 原典は &gEntity08015584 を r9 に巻き上げ params を低位レジスタに置くが, agbcc は参照のたびにプールから読み直し params を r8 へ追い出す (agbcc-levers.md のキャッシュされたグローバルポインタの項と同種)
-// i / spawned の宣言順を入れ替えるとスタック退避の位置は原典と揃う. ParticleSpawnParam の unk_1c/1e/24/26 はここでも読まれず死んでいる
+// 512/520 命令, 原典は sEntity08015584 の番地をレジスタに巻き上げるが, agbcc は参照のたびにプールから読み直す. ParticleSpawnParam の decayY / decayXZ はここでも読まれない
 NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 spawned;
 
-  if (gEntity08015584 == NULL) {
+  if (sEntity08015584 == NULL) {
     if (Entity08015584_Create(0, 0) == NULL) {
       return -1;
     }
@@ -216,8 +170,7 @@ NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam*
 
   spawned = 0;
   for (i = 0; i < 32; i++) {
-    Entity08015584Elem* elem = &gEntity08015584->elems[i];
-    AuxAnimCmd* cmd;
+    Entity08015584Elem* elem = &sEntity08015584->elems[i];
     s32 angleY;
     s32 angleXZ;
 
@@ -247,70 +200,38 @@ NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam*
       elem->sprite.flags &= ~SPRFLAG_SCREEN_COORD;
     }
 
-    elem->dirX = COS(angleXZ);
-    elem->dirY = SIN(angleY);
-    elem->dirZ = SIN(angleXZ);
-    elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
-    elem->velY = FixToInt(12, elem->dirY * elem->speedY);
-    elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
+    elem->dir.x = COS(angleXZ);
+    elem->dir.y = SIN(angleY);
+    elem->dir.z = SIN(angleXZ);
+    elem->vel.x = FixToInt(12, elem->dir.x * elem->speedXZ);
+    elem->vel.y = FixToInt(12, elem->dir.y * elem->speedY);
+    elem->vel.z = FixToInt(12, elem->dir.z * elem->speedXZ);
 
     if (elem->kind == 5) {
       Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 548);
-      elem->sprite.poseIdx = 0x20;
-      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 6, 0, 0);
+      elem->sprite.poseIdx = 32;
+      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[1], 6, 0, 0);
     } else if (elem->kind == 6) {
       Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 556);
-      elem->sprite.poseIdx = 0x20;
-      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 6, 0, 0);
+      elem->sprite.poseIdx = 32;
+      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[1], 6, 0, 0);
     } else if (elem->kind == 7) {
       Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 555);
-      elem->sprite.poseIdx = 0x2D;
-      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 8, 0, 0);
+      elem->sprite.poseIdx = 45;
+      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[1], 8, 0, 0);
     } else {
       Video_GetAuxSprite(&elem->gfx, SPRITE_4384);
       Video_SetAuxSpritePltt(&elem->gfx, elem->kind + 125);
-      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[0], 0, 0, 0);
+      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[0], 0, 0, 0);
     }
 
-    cmd = &elem->anim.cmds[elem->anim.cmdIdx];
-    elem->sprite.poseIdx = *cmd >> 6;
-    if ((elem->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
-      elem->sprite.flags |= SPRFLAG_XFLIP;
-    } else {
-      elem->sprite.flags &= ~SPRFLAG_XFLIP;
-    }
-    if ((elem->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
-      elem->sprite.flags |= SPRFLAG_YFLIP;
-    } else {
-      elem->sprite.flags &= ~SPRFLAG_YFLIP;
-    }
-
-    elem->anim.tick++;
-    if (elem->anim.tick >= elem->anim.wait) {
-      elem->anim.tick = 0;
-      if (elem->anim.flags & ANIM_PLAY_REVERSE) {
-        if (elem->anim.cmdIdx == 0) {
-          elem->anim.cmdIdx = elem->anim.cmdCount;
-        }
-        elem->anim.cmdIdx--;
-      } else {
-        elem->anim.cmdIdx++;
-        if (elem->anim.cmdIdx >= elem->anim.cmdCount) {
-          elem->anim.cmdIdx = 0;
-        }
-      }
-      elem->anim.duration = elem->anim.cmds[elem->anim.cmdIdx] & 0xF;
-      elem->anim.wait = (elem->anim.duration * elem->anim.speed) >> 6;
-      if (elem->anim.wait == 0) {
-        elem->anim.wait = 1;
-      }
-    }
+    AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
 
     elem->sprite.pos = *pos;
-    elem->sprite.priority = FUN_080155c8(params->flags);
+    elem->sprite.priority = Entity08015584_GetPriority(params->flags);
     AuxAnim_SetAnimSpeed(&elem->anim, params->animSpeed);
     Video_AddAuxSpriteIntoDrawList(&elem->sprite, 0);
 
@@ -327,10 +248,7 @@ NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam*
 }
 
 // count 個を 256 を等分した向きへ1つずつ発生させる
-// 命令数・順序とも一致 (66/66) するが pos / count / step の3つがレジスタ3つ分入れ替わる. 原典は pos を r8, count を r7 に置くが agbcc は逆, 宣言順の入れ替えでは動かない
-// angleYRand を angleY より先に代入すると格納順が原典と揃う
-NON_MATCH void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
-#ifdef NONMATCHING_C
+void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
   ParticleSpawnParam param;
   s32 step;
   s32 i;
@@ -342,32 +260,29 @@ NON_MATCH void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 a
   param.speedYRand = 0;
   param.speedXZ = speedXZ;
   param.speedXZRand = 0;
-  step = Div(0x100, count);
+  step = Div(256, count);
   param.angleYRand = 0;
   param.angleY = 0;
   param.decayStartY = decayStart;
   param.decayStartYRand = 0;
-  param.unk_1c = decay;
-  param.unk_1e = 0;
+  param.decayY = decay;
+  param.decayYRand = 0;
   param.decayStartXZ = decayStart;
   param.decayStartXZRand = 0;
-  param.unk_24 = decay;
-  param.unk_26 = 0;
+  param.decayXZ = decay;
+  param.decayXZRand = 0;
   param.angleXZRand = 10;
   param.angleXZ = 0;
 
-  for (i = count; i > 0; i--) {
+  for (i = 0; i < count; i++) {
     Entity08015584_Spawn(1, pos, &param);
     param.angleXZ += step;
   }
-#else
-  INCFUNC("asm/func/FUN_08015a90.inc");
-#endif
 }
 
 // base を中心に mask でマスクした乱数ぶんずらした位置へ count 個発生させる
-// 残差1命令 (124/125). base/mask は Vec3* ではなく u16* (原典は ldrh で読む) で, それに直すと 135→124 まで寄る. 残るのは count と &spawnPos のレジスタ入れ替えのみ
-NON_MATCH void FUN_08015b18(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+// 125/125 命令, base/mask は Vec3* ではなく u16* (原典は ldrh で読む), 残るのはレジスタ割り当ての入れ替えのみ
+NON_MATCH void Entity08015584_SpawnInBox(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
 #ifdef NONMATCHING_C
   ParticleSpawnParam param;
   Vec3 spawnPos;
@@ -387,25 +302,25 @@ NON_MATCH void FUN_08015b18(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, 
   param.angleXZRand = angleXZRand;
   param.decayStartY = decayStart;
   param.decayStartYRand = 0;
-  param.unk_1c = decay;
-  param.unk_1e = 0;
+  param.decayY = decay;
+  param.decayYRand = 0;
   param.decayStartXZ = decayStart;
   param.decayStartXZRand = 0;
-  param.unk_24 = decay;
-  param.unk_26 = 0;
+  param.decayXZ = decay;
+  param.decayXZRand = 0;
 
-  for (i = count; i > 0; i--) {
+  for (i = 0; i < count; i++) {
     spawnPos.x = (_Random(table) & mask[0]) + base[0];
     spawnPos.y = (_Random(table) & mask[1]) + base[1];
     spawnPos.z = (_Random(table) & mask[2]) + base[2];
     Entity08015584_Spawn(1, &spawnPos, &param);
   }
 #else
-  INCFUNC("asm/func/FUN_08015b18.inc");
+  INCFUNC("asm/func/Entity08015584_SpawnInBox.inc");
 #endif
 }
 
-void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
   ParticleSpawnParam param;
 
   param.kind = kind;
@@ -421,42 +336,42 @@ void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 ki
   param.angleXZRand = angleXZRand;
   param.decayStartY = decayStart;
   param.decayStartYRand = 0;
-  param.unk_1c = decay;
-  param.unk_1e = 0;
+  param.decayY = decay;
+  param.decayYRand = 0;
   param.decayStartXZ = decayStart;
   param.decayStartXZRand = 0;
-  param.unk_24 = decay;
-  param.unk_26 = 0;
+  param.decayXZ = decay;
+  param.decayXZRand = 0;
   Entity08015584_Spawn(count, pos, &param);
 }
 
 // 発生パラメータを決め打ちで組んで count 個ぶん発生させる
-void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
+void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
   ParticleSpawnParam param;
 
   param.kind = kind;
   param.flags = flags;
   param.animSpeed = animSpeed;
-  param.speedY = 0xC;
-  param.speedYRand = 0xC;
+  param.speedY = 12;
+  param.speedYRand = 12;
   param.speedXZ = 4;
   param.speedXZRand = 4;
-  param.angleY = 0x3C;
+  param.angleY = 60;
   param.angleYRand = 8;
   param.angleXZ = 0;
-  param.angleXZRand = 0xFF;
-  param.decayStartY = 0xFF;
+  param.angleXZRand = 255;
+  param.decayStartY = 255;
   param.decayStartYRand = 0;
-  param.unk_1c = 0xFF;
-  param.unk_1e = 0;
-  param.decayStartXZ = 0xFF;
+  param.decayY = 255;
+  param.decayYRand = 0;
+  param.decayStartXZ = 255;
   param.decayStartXZRand = 0;
-  param.unk_24 = 0xFF;
-  param.unk_26 = 0;
+  param.decayXZ = 255;
+  param.decayXZRand = 0;
   Entity08015584_Spawn(count, pos, &param);
 }
 
-void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
+void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
   ParticleSpawnParam param;
 
   param.kind = kind;
@@ -466,22 +381,22 @@ void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u3
   param.speedYRand = speedYRand;
   param.speedXZ = speedXZ;
   param.speedXZRand = speedXZRand;
-  param.angleY = 0x3C;
+  param.angleY = 60;
   param.angleYRand = 8;
   param.angleXZ = angleXZ;
   param.angleXZRand = angleXZRand;
-  param.decayStartY = 0xFF;
+  param.decayStartY = 255;
   param.decayStartYRand = 0;
-  param.unk_1c = 0xFF;
-  param.unk_1e = 0;
-  param.decayStartXZ = 0xFF;
+  param.decayY = 255;
+  param.decayYRand = 0;
+  param.decayStartXZ = 255;
   param.decayStartXZRand = 0;
-  param.unk_24 = 0xFF;
-  param.unk_26 = 0;
+  param.decayXZ = 255;
+  param.decayXZRand = 0;
   Entity08015584_Spawn(count, pos, &param);
 }
 
-void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand) {
+void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand) {
   ParticleSpawnParam param;
 
   param.kind = kind;
@@ -491,22 +406,22 @@ void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY,
   param.speedYRand = speedYRand;
   param.speedXZ = speedXZ;
   param.speedXZRand = speedXZRand;
-  param.angleY = 0x3C;
+  param.angleY = 60;
   param.angleYRand = 8;
   param.angleXZ = 0;
-  param.angleXZRand = 0xFF;
-  param.decayStartY = 0xFF;
+  param.angleXZRand = 255;
+  param.decayStartY = 255;
   param.decayStartYRand = 0;
-  param.unk_1c = 0xFF;
-  param.unk_1e = 0;
-  param.decayStartXZ = 0xFF;
+  param.decayY = 255;
+  param.decayYRand = 0;
+  param.decayStartXZ = 255;
   param.decayStartXZRand = 0;
-  param.unk_24 = 0xFF;
-  param.unk_26 = 0;
+  param.decayXZ = 255;
+  param.decayXZRand = 0;
   Entity08015584_Spawn(1, pos, &param);
 }
 
-void UNUSED FUN_08015d9c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand, u32 angleY, u32 angleYRand) {
+void UNUSED Entity08015584_SpawnSprayOneEx(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand, u32 angleY, u32 angleYRand) {
   ParticleSpawnParam param;
 
   param.kind = kind;
@@ -519,22 +434,22 @@ void UNUSED FUN_08015d9c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 
   param.angleY = angleY;
   param.angleYRand = angleYRand;
   param.angleXZ = 0;
-  param.angleXZRand = 0xFF;
-  param.decayStartY = 0xFF;
+  param.angleXZRand = 255;
+  param.decayStartY = 255;
   param.decayStartYRand = 0;
-  param.unk_1c = 0xFF;
-  param.unk_1e = 0;
-  param.decayStartXZ = 0xFF;
+  param.decayY = 255;
+  param.decayYRand = 0;
+  param.decayStartXZ = 255;
   param.decayStartXZRand = 0;
-  param.unk_24 = 0xFF;
-  param.unk_26 = 0;
+  param.decayXZ = 255;
+  param.decayXZRand = 0;
   Entity08015584_Spawn(1, pos, &param);
 }
 
 // ランダムな向きへ speedXZ * 40 ぶんずらした位置に1個発生させる
 // 命令数・順序とも一致 (108/108) するが &param (sp のコピー) の作り位置が1つ手前にずれる. 原典は乱数テーブルのプール読みの後に作る
 // ずらし量は POLAR_X/POLAR_Z(speedXZ * 40, angleXZ + 0x80), agbcc は (speedXZ*40)*table を speedXZ*(40*table) に再結合する
-NON_MATCH void UNUSED FUN_08015dfc(WorldPos* pos, u32 param_2, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+NON_MATCH void UNUSED Entity08015584_SpawnConverging(WorldPos* pos, u32 _, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
 #ifdef NONMATCHING_C
   ParticleSpawnParam param;
   Vec3 spawnPos;
@@ -552,19 +467,19 @@ NON_MATCH void UNUSED FUN_08015dfc(WorldPos* pos, u32 param_2, u32 kind, u32 fla
   param.angleY = 0;
   param.decayStartY = decayStart;
   param.decayStartYRand = 0;
-  param.unk_1c = decay;
-  param.unk_1e = 0;
+  param.decayY = decay;
+  param.decayYRand = 0;
   param.decayStartXZ = decayStart;
   param.decayStartXZRand = 0;
-  param.unk_24 = decay;
-  param.unk_26 = 0;
+  param.decayXZ = decay;
+  param.decayXZRand = 0;
 
-  spawnPos.x = pos->x + POLAR_X(speedXZ * 40, param.angleXZ + 0x80);
+  spawnPos.x = pos->x + POLAR_X(speedXZ * 40, param.angleXZ + 128);
   spawnPos.y = pos->y;
-  spawnPos.z = pos->z + POLAR_Z(speedXZ * 40, param.angleXZ + 0x80);
+  spawnPos.z = pos->z + POLAR_Z(speedXZ * 40, param.angleXZ + 128);
   Entity08015584_Spawn(1, &spawnPos, &param);
 #else
-  INCFUNC("asm/func/FUN_08015dfc.inc");
+  INCFUNC("asm/func/Entity08015584_SpawnConverging.inc");
 #endif
 }
 
@@ -582,7 +497,7 @@ void Cmd_4383(void) {
 
   param.kind = VM_GetNamedArgValue('t', 0);
   param.flags = VM_GetNamedArgValue('f', 0);
-  param.animSpeed = VM_GetNamedArgValue('a', 0x40);
+  param.animSpeed = VM_GetNamedArgValue('a', Q6(1));
 
   if (VM_SeekToNamedArg('s')) {
     param.speedY = VM_GetValue();
@@ -611,21 +526,21 @@ void Cmd_4383(void) {
   if (VM_SeekToNamedArg('c')) {
     param.decayStartY = VM_GetValue();
     param.decayStartYRand = VM_GetValue();
-    param.unk_1c = VM_GetValue();
-    param.unk_1e = VM_GetValue();
+    param.decayY = VM_GetValue();
+    param.decayYRand = VM_GetValue();
     param.decayStartXZ = VM_GetValue();
     param.decayStartXZRand = VM_GetValue();
-    param.unk_24 = VM_GetValue();
-    param.unk_26 = VM_GetValue();
+    param.decayXZ = VM_GetValue();
+    param.decayXZRand = VM_GetValue();
   } else {
-    param.decayStartY = 0xFF;
+    param.decayStartY = 255;
     param.decayStartYRand = 0;
-    param.unk_1c = 0xFF;
-    param.unk_1e = 0;
-    param.decayStartXZ = 0xFF;
+    param.decayY = 255;
+    param.decayYRand = 0;
+    param.decayStartXZ = 255;
     param.decayStartXZRand = 0;
-    param.unk_24 = 0xFF;
-    param.unk_26 = 0;
+    param.decayXZ = 255;
+    param.decayXZRand = 0;
   }
 
   Entity08015584_Spawn(count, &pos, &param);

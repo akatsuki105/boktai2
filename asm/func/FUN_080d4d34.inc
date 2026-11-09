@@ -208,7 +208,7 @@ _080D4EC0:
 	adds r0, r1, r0
 _080D4ECC:
 	ldrh r0, [r0, #2]
-	bl PlayerLink_IsFrozenLava
+	bl PlayerLink_IsInLava
 	cmp r0, #0
 	beq _080D4EDC
 	movs r0, #0
@@ -245,7 +245,7 @@ _080D4EF8:
 	adds r0, r5, #0
 	adds r0, #0x2c
 	ldr r1, [r5, #0x18]
-	bl FUN_081df64c
+	bl LinkSession_ReleaseAllCoins
 _080D4F1E:
 	movs r2, #0xd6
 	lsls r2, r2, #2

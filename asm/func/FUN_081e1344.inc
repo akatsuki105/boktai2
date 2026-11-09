@@ -95,7 +95,7 @@ _081E13F2:
 	strb r7, [r4]
 	movs r0, #0
 	ldrsb r0, [r4, r0]
-	bl FUN_081df6dc
+	bl LinkSession_AddCoin
 	mov r0, r8
 	adds r1, r4, #0
 	bl FUN_081e12c8

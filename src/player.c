@@ -4,7 +4,8 @@
 #include "camera.h"
 #include "coffin.h"
 #include "cwolf_target.h"
-#include "eff_082473e0.h"
+#include "dust.h"
+#include "eff_elemcond.h"
 #include "emote.h"
 #include "enemy.h"
 #include "enemy_target.h"
@@ -32,26 +33,16 @@ typedef enum {
   PDONE_END_WAIT = 2     // doneWaitPending ならメッセージの待ちを解く
 } PlayerDoneNotify;
 
-extern u16 gChangeWolfBiting;
-extern u16 gSunMagicUsed;
-extern u16 gSavedMagicEnchanted;
-extern u16 gWindPushThreshold;
-extern u16 gWindStrength;
-extern u16 gRisingSunCount;
-
 struct DynamiteEffect* DynamiteEffect_Create(Player* owner, Vec3* pos, s32 mode);
 struct TransEffect* TransEffect_Create(Player* player, u32 param_2, Vec3* pos, u32 param_4, u32 param_5);
 struct RisingSunEffect* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 struct FreezeEffect* FreezeEffect_Create(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 struct HealingEffect* HealingEffect_Create(Player* player, Vec3* pos);
 void Entity080acd4c_Spawn(Vec3* pos);
-void FUN_08050d10(void);
+void CrossoverBattle_NotifyPlayerDead(void);
 s32 FUN_08020358(u32 id);
-s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
-s32 FUN_080dbd08(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 bool32 IsInPuddle(WorldPos* pos);
 void* Entity080c1abc_Create(u32 param_1, u32 param_2, u32 param_3);
-void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, u32 unk_cd);
 void Player_UpdateLockedIdle(Player* p);
 void FUN_080d040c(Player* p);
@@ -69,7 +60,7 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
 void BuildWeaponData(Weapon* w, WeaponData* data);
 s32 CalcAttackWithEquippedArmor(WeaponData* w);
 void Player_UpdateMegaBusterAttack(Player* p);
-void FUN_08079f1c(Player* p);
+void Player_UpdateCrossoverDjango(Player* p);
 void Camera_LookAt(Vec3* pos);
 bool8 MapItemManager_TryOpen(Mover* mover);
 Vec3* Elevator_GetPosByID(s32 id);
@@ -79,7 +70,6 @@ s32 EntityD9AE_PushAtDir8(Vec3* pos, u32 dir);
 s32 FUN_08086958(void);
 void FUN_08086590(Vec3* pos, s32 val);
 s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
 
 COMMON_DATA u16 gGoodCondID = 0;                        // 0x03002B60, 現在の良い状態効果のID (= Player.goodCondID, Player再生成時の退避用, 他のEntityから参照するなどの用途で使用される)
@@ -103,7 +93,7 @@ COMMON_DATA u16 gWindStrength = 0;                      // 0x03002BAC, Player_In
 COMMON_DATA u8 u8_03002bae[2] = {};                     // todo
 COMMON_DATA u16 gSavedMagicEnchanted = 0;               // 0x03002BB0, Player.magic.enchanted の退避, Player_SaveState が写し Player_RefreshMagicInfo が戻す, Player_GetEquippedMagic がサバタのとき 0 に戻す
 COMMON_DATA u8 u8_03002bb2[14] = {};                    // todo
-COMMON_DATA u32 gPlayerStates[4] = {};                  // 0x03002BC0, Playerごとのビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
+COMMON_DATA PlayerMode gPlayerModes[4] = {};            // 0x03002BC0, Playerごとの Player.mode の写し
 COMMON_DATA u16 gSunMagicUsed = 0;                      // 0x03002BD0, Cmd_898D が 0 に戻す
 COMMON_DATA u8 u8_03002bd2[14] = {};                    // todo
 COMMON_DATA Player* gPlayerPtr[4] = {};                 // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
@@ -131,16 +121,16 @@ static inline bool32 HasGoodCond(Player* p, u32 id) {
 }
 
 // 食らい判定の無敵時間を設定する
-static inline void Player_SetInvincibleTime(Player* p, u16 time) { p->hurtbox.invincibleTime = time; }
+static inline void Player_SetIframes(Player* p, u16 time) { p->hurtbox.iframes = time; }
 
 void Player_SetAnimFacing(Player* p) {
-  u8 v = p->facing;
+  u8 dir8 = p->facing;
 
-  if (v > 4) {
-    p->animIDOffset = 8 - v;
+  if (IS_8DIR_LEFT(dir8)) {
+    p->animIDOffset = 8 - dir8;
     p->xflip = TRUE;
   } else {
-    p->animIDOffset = v;
+    p->animIDOffset = dir8;
     p->xflip = FALSE;
   }
 }
@@ -212,7 +202,7 @@ static void Player_SetAction(Player* p, u32 action, u32 state) {
 
 // 行動を始める前のフラグ初期化, 日光と武器効果を見て flag20 を組み立て直し各種タイマを 0 に戻す
 void Player_BeginAction(Player* p) {
-  p->flag20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_BUSY;
   if (KAAMOS(p->isSabata) == 0 && FUN_0809e138(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
@@ -264,9 +254,9 @@ u32 Player_GetDirToAttacker(HitboxData* a, HitboxData* b) {
 
 // 被弾したときの向きと退避処理, 攻撃側 a のダメージを被弾側 b に移してから向きを決める
 void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
-  b->knockbackPower = a->knockbackPower;
-  if (a->knockbackPower > 200) {
-    b->knockbackPower = 200;
+  b->knockback = a->knockback;
+  if (a->knockback > 200) {
+    b->knockback = 200;
   }
 
   if (Hitbox_TestAttr(a, HBATTR_18)) {
@@ -275,15 +265,15 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
     return;
   }
 
-  if (p->action == PACT_UNK_5) {
+  if (p->action == PACT_PUSH) {
     b->flags |= HBFLAG_HIDDEN;
-    b->knockbackPower = 0;
+    b->knockback = 0;
     return;
   }
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
     if (a->flags & HBFLAG_ANGLE) {
-      p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->knockbackDir = ANGLE_TO_DIR8(a->angle + 0x10);
     } else {
       s32 dx = a->center.x - b->center.x;
       s32 dz = a->center.z - b->center.z;
@@ -291,12 +281,12 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
       if (dx == 0 && dz == 0) {
         p->knockbackDir = p->facing;
       } else {
-        p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+        p->knockbackDir = (ANGLE_TO_DIR8(((u16)ArcTan2_8(dx, dz) + 0x10)) + 4) & 7;
       }
     }
 
-    p->knockbackSpeed = b->knockbackPower;
-    b->knockbackPower = 0;
+    p->knockbackSpeed = b->knockback;
+    b->knockback = 0;
     b->flags |= HBFLAG_HIDDEN;
     return;
   }
@@ -416,7 +406,7 @@ static s32 CalcMaxHP(Player* p) {
 static s32 CalcMaxEne(Player* p) {
   s32 val;
   PlayerArmor* armor = &p->armor;
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     return 10;
   }
 
@@ -549,60 +539,60 @@ void Player_EmitBurnSmoke(Player* p) {
   EmitSmoke(&pos, 1, &size, 0, 0, Q8(0.05), 2, 2);
 }
 
-// 0x64C のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
+// 物音の漫符のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
 // 残差1命令 (42/43): 原典は `adds r4, r0, #1` と加算先を別レジスタにするが, こちらは `adds r1, #1` で上書きする
 // u8 の一時変数に取る形だと切り捨てが strb の前に出てしまい逆に遠ざかる, Tier A/B と C のローカル化は試済
-NON_MATCH void Player_UpdatePtcl64c(Player* p) {
+NON_MATCH void Player_UpdateNoisePtcl(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->ptcl_64c.active == 0) {
+  if (p->noise.active == 0) {
     return;
   }
 
-  p->ptcl_64c.timer++;
-  if (p->ptcl_64c.timer > 5) {
-    p->ptcl_64c.ptcl.flags |= SPRFLAG_HIDDEN;
-    p->ptcl_64c.active = 0;
+  p->noise.timer++;
+  if (p->noise.timer > 5) {
+    p->noise.ptcl.flags |= SPRFLAG_HIDDEN;
+    p->noise.active = 0;
     return;
   }
 
-  Particle_SetPose(&p->ptcl_64c.ptcl, p->ptcl_64c.group1, (p->ptcl_64c.timer >> 2) + p->ptcl_64c.poseIdx);
+  Particle_SetPose(&p->noise.ptcl, p->noise.group1, (p->noise.timer >> 2) + p->noise.poseIdx);
 #else
-  INCFUNC("asm/func/Player_UpdatePtcl64c.inc");
+  INCFUNC("asm/func/Player_UpdateNoisePtcl.inc");
 #endif
 }
 
-// 0x64C のパーティクルを pos に出す, big なら別のパレットを使う
-void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 big) {
-  Particle* ptcl = &p->ptcl_64c.ptcl;
+// 物音の漫符のパーティクルを pos に出す, 傷んだ壁を叩いたときは専用の漫符にする
+void Player_ShowNoisePtcl(Player* p, Vec3* pos, bool32 isFragileWallKnock) {
+  Particle* ptcl = &p->noise.ptcl;
 
-  if (big) {
-    p->ptcl_64c.poseIdx = PTCL1_72;
+  if (isFragileWallKnock) {
+    p->noise.poseIdx = PTCL1_FRAGILE_KNOCK_S;
   } else {
-    p->ptcl_64c.poseIdx = PTCL1_4;
+    p->noise.poseIdx = PTCL1_NOISE_S;
   }
 
-  Particle_SetPose(ptcl, p->ptcl_64c.group1, p->ptcl_64c.poseIdx);
+  Particle_SetPose(ptcl, p->noise.group1, p->noise.poseIdx);
   ptcl->pos = *pos;
   ptcl->flags &= ~SPRFLAG_HIDDEN;
-  p->ptcl_64c.active = TRUE;
-  p->ptcl_64c.timer = 0;
+  p->noise.active = TRUE;
+  p->noise.timer = 0;
 }
 
-// 0x64C のパーティクルを確保して隠した状態で初期化する
-void FUN_08061458(Player* p) {
+// 物音の漫符のパーティクルを確保して隠した状態で初期化する
+void Player_InitNoisePtcl(Player* p) {
   ParticleGroup* group = GetParticleGroup(PTCL_GROUP_1);
   Particle* ptcl;
 
-  p->ptcl_64c.group1 = group;
-  ptcl = &p->ptcl_64c.ptcl;
+  p->noise.group1 = group;
+  ptcl = &p->noise.ptcl;
   Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  Particle_SetPose(ptcl, p->ptcl_64c.group1, PTCL1_4);
+  Particle_SetPose(ptcl, p->noise.group1, PTCL1_NOISE_S);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
-  p->ptcl_64c.active = 0;
-  p->ptcl_64c.timer = 0;
+  p->noise.active = 0;
+  p->noise.timer = 0;
 }
 
 // 混乱時に、周囲を回るパーティクルを1つ出し続ける
@@ -612,20 +602,20 @@ NON_MATCH void Player_UpdateConfusePtcl(Player* p) {
 #ifdef NONMATCHING_C
   s32 angle;
 
-  if (p->ptcl_67c.active) {
+  if (p->spurl.active) {
     if (p->mode != PMODE_ACTIVE || p->badCondTimer[BAD_CONFUSE] == 0) {
-      p->ptcl_67c.ptcl.flags |= SPRFLAG_HIDDEN;
-      p->ptcl_67c.active = FALSE;
+      p->spurl.ptcl.flags |= SPRFLAG_HIDDEN;
+      p->spurl.active = FALSE;
       return;
     }
 
-    angle = (p->ptcl_67c.timer * 5) & 0xFF;
+    angle = (p->spurl.timer * 5) & 0xFF;
 
-    p->ptcl_67c.ptcl.pos.x = p->mover.pos.x + POLAR_X(Q8(0.22), angle);
-    p->ptcl_67c.ptcl.pos.y = POLAR_Z(Q8(0.274), angle) + Q8(1.37) + p->mover.pos.y;
-    p->ptcl_67c.ptcl.pos.z = p->mover.pos.z - POLAR_X(Q8(0.22), angle);
+    p->spurl.ptcl.pos.x = p->mover.pos.x + POLAR_X(Q8(0.22), angle);
+    p->spurl.ptcl.pos.y = POLAR_Z(Q8(0.274), angle) + Q8(1.37) + p->mover.pos.y;
+    p->spurl.ptcl.pos.z = p->mover.pos.z - POLAR_X(Q8(0.22), angle);
 
-    p->ptcl_67c.timer++;
+    p->spurl.timer++;
     return;
   }
 
@@ -633,13 +623,13 @@ NON_MATCH void Player_UpdateConfusePtcl(Player* p) {
     return;
   }
 
-  p->ptcl_67c.ptcl.pos = p->mover.pos;
-  p->ptcl_67c.ptcl.pos.x += Q8(0.22);
-  p->ptcl_67c.ptcl.pos.y += Q8(1.37);
-  p->ptcl_67c.ptcl.flags &= ~SPRFLAG_HIDDEN;
-  Particle_SetPose(&p->ptcl_67c.ptcl, p->ptcl_67c.group1, PTCL1_16);
-  p->ptcl_67c.timer = 0;
-  p->ptcl_67c.active = TRUE;
+  p->spurl.ptcl.pos = p->mover.pos;
+  p->spurl.ptcl.pos.x += Q8(0.22);
+  p->spurl.ptcl.pos.y += Q8(1.37);
+  p->spurl.ptcl.flags &= ~SPRFLAG_HIDDEN;
+  Particle_SetPose(&p->spurl.ptcl, p->spurl.group1, PTCL1_CONFUSE);
+  p->spurl.timer = 0;
+  p->spurl.active = TRUE;
 #else
   INCFUNC("asm/func/Player_UpdateConfusePtcl.inc");
 #endif
@@ -650,16 +640,16 @@ void FUN_0806161c(Player* p) {
   ParticleGroup* group = GetParticleGroup(PTCL_GROUP_1);
   Particle* ptcl;
 
-  p->ptcl_67c.group1 = group;
-  ptcl = &p->ptcl_67c.ptcl;
+  p->spurl.group1 = group;
+  ptcl = &p->spurl.ptcl;
   Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  Particle_SetPose(ptcl, p->ptcl_67c.group1, PTCL1_16);
+  Particle_SetPose(ptcl, p->spurl.group1, PTCL1_CONFUSE);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
-  p->ptcl_67c.active = 0;
-  p->ptcl_67c.timer = 0;
+  p->spurl.active = 0;
+  p->spurl.timer = 0;
 }
 
 // 衝撃波のアニメーションを1フレーム進める, 終端まで行くと finished を立てて消す
@@ -1636,10 +1626,10 @@ void Player_ResetPltt(Player* p) {
   Player_UpdatePltt(p, 0);
 }
 
-// 変身エフェクトの粒を弾けさせる, kind 1 なら消えかけさせるだけ
+// 状態異常の粒をひとつ弾けさせて1段階解く, 引火なら消えかけさせるだけ
 // 残差2命令 (134/132): 原典は高位レジスタを r8-r10 の3本使うが, プロトタイプありで呼ぶと2本で足りてしまう
-// Eff082473e0Emitter_BurstParticle の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のレジスタ圧になる)
-NON_MATCH void Player_BurstFormEffect(Player* p) {
+// ElementalCondEmitter_BurstParticle の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のレジスタ圧になる)
+NON_MATCH void Player_BurstElementalCond(Player* p) {
 #ifdef NONMATCHING_C
   Vec3 pos;
   Vec3 vel;
@@ -1648,15 +1638,15 @@ NON_MATCH void Player_BurstFormEffect(Player* p) {
   u16* table;
   u32 idx;
 
-  if (p->emitter.kind == 1) {
-    Eff082473e0Emitter_FadeParticle(&p->emitter);
+  if (p->emitter.kind == ELEMCOND_INKA) {
+    ElementalCondEmitter_FadeParticle(&p->emitter);
     return;
   }
 
-  if (p->emitter.kind == 2) {
-    PlaySound_082406e0(SE_308);
-  } else if (p->emitter.kind == 3) {
-    PlaySound_082406e0(SE_308);
+  if (p->emitter.kind == ELEMCOND_HYOKETU) {
+    PlaySound_082406e0(SE_END_SOLIDIFY);
+  } else if (p->emitter.kind == ELEMCOND_SEKIKA) {
+    PlaySound_082406e0(SE_END_SOLIDIFY);
   }
 
   src = p->emitter.pos;
@@ -1673,54 +1663,55 @@ NON_MATCH void Player_BurstFormEffect(Player* p) {
   vel.z = (table[gRandTableIdx] & 0xF) - 7;
 
   velRange.x = 5, velRange.y = 0xA, velRange.z = 5;
-  Eff082473e0Emitter_BurstParticle(&p->emitter, 3, &pos, &vel, &velRange, 0x28, 0x28);
+  ElementalCondEmitter_BurstParticle(&p->emitter, 3, &pos, &vel, &velRange, 0x28, 0x28);
 #else
-  INCFUNC("asm/func/Player_BurstFormEffect.inc");
+  INCFUNC("asm/func/Player_BurstElementalCond.inc");
 #endif
 }
 
-void FUN_08063220(Player* p) {
-  s32 count = p->emitter.unk_3;
+// かかっている状態異常の粒を全部弾けさせて解く
+void Player_ClearElementalCond(Player* p) {
+  s32 count = p->emitter.aliveCount;
   s32 i;
 
   for (i = 0; i < count; i++) {
-    Player_BurstFormEffect(p);
+    Player_BurstElementalCond(p);
   }
 }
 
 void FUN_08063248(Player* p) {
-  if (p->emitter.kind == 1) {
-    Eff082473e0Emitter_Reset(&p->emitter);
+  if (p->emitter.kind == ELEMCOND_INKA) {
+    ElementalCondEmitter_Reset(&p->emitter);
   } else {
-    s32 count = p->emitter.unk_3;
+    s32 count = p->emitter.aliveCount;
     s32 i;
 
     for (i = 0; i < count; i++) {
-      Player_BurstFormEffect(p);
+      Player_BurstElementalCond(p);
     }
   }
 }
 
-// 変身エフェクトを kind で開始する, 変身の種類ごとに粒のばらけ方と効果音を変える
+// 状態異常 (kind 1: 引火, 2: 氷結, 3: 石化) の粒をひとつ足す, 粒のばらけ方はフォームで変わり, 出せたら種類ごとの効果音を鳴らす
 // 残差3命令 (187/190): 原典は p と kind を r8/r9 に置くが, こちらは r8 だけで足りてしまう
-NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
+NON_MATCH void Player_InflictElementalCond(Player* p, u32 kind) {
 #ifdef NONMATCHING_C
   Vec3 spread;
   u16* table;
   u32 idx;
 
-  if (p->emitter.unk_3 != 0) {
+  if (p->emitter.aliveCount != 0) {
     if (p->emitter.kind != kind) {
-      if (p->emitter.kind == 3) {
+      if (p->emitter.kind == ELEMCOND_SEKIKA) {
         return;
       }
       FUN_08063248(p);
     }
   }
 
-  if (p->emitter.unk_3 == 0) {
+  if (p->emitter.aliveCount == 0) {
     p->mashCountBase = p->mashCount;
-    p->unk_3da = 0;
+    p->inkaTick = 0;
   }
 
   if (p->kind == PLAYER_BAT) {
@@ -1744,20 +1735,19 @@ NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
   }
 
   spread.z = 0;
-  if (FUN_082467d0(&p->emitter, kind, 0xE10, &spread) >= 0) {
-    if (p->emitter.kind == 1) {
+  if (ElementalCondEmitter_AddParticle(&p->emitter, kind, 0xE10, &spread) >= 0) {
+    if (p->emitter.kind == ELEMCOND_INKA) {
       PlaySound_082406e0(SE_IGNITE);
-    } else if (p->emitter.kind == 2) {
+    } else if (p->emitter.kind == ELEMCOND_HYOKETU) {
       p->damage += 10;
       PlaySound_082406e0(SE_SOLIDIFY);
-    } else if (p->emitter.kind == 3) {
+    } else if (p->emitter.kind == ELEMCOND_SEKIKA) {
       PlaySound_082406e0(SE_SOLIDIFY);
     }
-
-    p->badCondTimer[1] = 0;
+    p->badCondTimer[BAD_POISON] = 0;
   }
 #else
-  INCFUNC("asm/func/Player_StartFormEffect.inc");
+  INCFUNC("asm/func/Player_InflictElementalCond.inc");
 #endif
 }
 
@@ -1769,20 +1759,20 @@ u32 Player_ApplyPoseHold(Player* p, u32 n) {
 
   u32 pose = n;
 
-  if (p->emitter.unk_3 != 0) {
+  if (p->emitter.aliveCount != 0) {
     if (p->mode & PMODE_ACTIVE) {
       if (Player_GetMashCount(p) >= u8_ARRAY_085abab4[p->emitter.kind - 1]) {
-        Player_BurstFormEffect(p);
+        Player_BurstElementalCond(p);
         p->mashCountBase = p->mashCount;
       }
     }
 
-    if (p->emitter.unk_3 != 0) {
-      if (p->emitter.kind == 1) {
+    if (p->emitter.aliveCount != 0) {
+      if (p->emitter.kind == ELEMCOND_INKA) {
         pose = 3;
-      } else if (p->emitter.kind == 2) {
+      } else if (p->emitter.kind == ELEMCOND_HYOKETU) {
         pose = 4;
-      } else if (p->emitter.kind == 3) {
+      } else if (p->emitter.kind == ELEMCOND_SEKIKA) {
         pose = 5;
       }
     }
@@ -1817,11 +1807,11 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
       break;
     }
     case BAD_POISON: {
-      if (p->emitter.unk_3 != 0) {
-        if (p->emitter.kind == 3) {
+      if (p->emitter.aliveCount != 0) {
+        if (p->emitter.kind == ELEMCOND_SEKIKA) {
           break;
         }
-        FUN_08063220(p);
+        Player_ClearElementalCond(p);
       }
       if (p->badCondTimer[BAD_POISON] == 0) {
         p->poisonTick = 0;
@@ -1944,8 +1934,8 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
     if (p->goodCondID == GOOD_MINI) {
       if (p->unk_97a <= 0x3F) {
         if (p->unk_97a == 0) {
-          PlaySound_082406e0(SONG_494);
-          p->unk_3f1 = 1;
+          PlaySound_082406e0(SE_PLAYER_SHRINK);
+          p->isMiniHuman = TRUE;
         }
         p->unk_97a++;
       }
@@ -1956,9 +1946,9 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       p->human.scaleY = scale;
       p->flag20 |= (PFLAG20_SNEAKING | PFLAG20_UNK_18);
     } else if (p->unk_97a != 0) {
-      if (p->unk_3f1 != 0) {
-        PlaySound_082406e0(SONG_822);
-        p->unk_3f1 = 0;
+      if (p->isMiniHuman) {
+        PlaySound_082406e0(SE_PLAYER_SHRINK_END);
+        p->isMiniHuman = FALSE;
       }
 
       p->unk_97a--;
@@ -1985,9 +1975,9 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
     }
   } else {
     if (p->unk_97a != 0) {
-      if (p->unk_3f1 != 0) {
-        PlaySound_082406e0(SONG_822);
-        p->unk_3f1 = 0;
+      if (p->isMiniHuman) {
+        PlaySound_082406e0(SE_PLAYER_SHRINK_END);
+        p->isMiniHuman = FALSE;
       }
 
       p->unk_97a--;
@@ -2037,7 +2027,7 @@ void Player_UpdatePoseAndShadow(Player* p) {
     Player_UpdatePltt(p, pose);
   }
 
-  Player_UpdatePtcl64c(p);
+  Player_UpdateNoisePtcl(p);
   Player_UpdateConfusePtcl(p);
   Player_UpdatePtcl718(p);
   Player_UpdatePtcl858(p);
@@ -2057,10 +2047,10 @@ void Player_UpdatePoseAndShadow(Player* p) {
 
 // Player が抱えているエフェクト・影・パーティクル・衝撃波をまとめて片付ける
 void Player_DestroyEffects(Player* p) {
-  Eff082473e0Emitter_Destroy(&p->emitter);
+  ElementalCondEmitter_Destroy(&p->emitter);
   ParticleShadow_Remove(&p->shadow);
-  Particle_Remove(&p->ptcl_64c.ptcl);
-  Particle_Remove(&p->ptcl_67c.ptcl);
+  Particle_Remove(&p->noise.ptcl);
+  Particle_Remove(&p->spurl.ptcl);
   FUN_08061db4(p);
   FUN_08062258(p);
   FUN_08061b98(p);
@@ -2069,9 +2059,9 @@ void Player_DestroyEffects(Player* p) {
 // Player の生成直後にエフェクト・影・パーティクル・モザイクの初期値をまとめて入れる
 void Player_InitEffects(Player* p) {
   if (p->useAuxSprite == 1) {
-    Eff082473e0Emitter_Init(&p->emitter, &p->beast.pos, 0, 0, 1);
+    ElementalCondEmitter_Init(&p->emitter, &p->beast.pos, ELEMCOND_NONE, 0, 1);
   } else {
-    Eff082473e0Emitter_Init(&p->emitter, &p->human.pos, 0, 0, 1);
+    ElementalCondEmitter_Init(&p->emitter, &p->human.pos, ELEMCOND_NONE, 0, 1);
   }
 
   p->shadowPos = p->human.pos;
@@ -2081,11 +2071,11 @@ void Player_InitEffects(Player* p) {
 
   if (HasGoodCond(p, GOOD_MINI)) {
     p->unk_97a = 0x40;
-    p->unk_3f1 = 1;
+    p->isMiniHuman = TRUE;
   }
 
   Player_ResetPltt(p);
-  FUN_08061458(p);
+  Player_InitNoisePtcl(p);
   FUN_0806161c(p);
   Player_InitPtcl718(p);
   Player_InitPtcl858(p);
@@ -2124,7 +2114,7 @@ u32 Player_WeaponEffectStatCond(Player* p) {
     if (p->badCondTimer[i] != 0) return 10;
   }
   if (KAAMOS(p->isSabata) != 0) return 10;
-  if (p->emitter.unk_3 != 0) return 10;
+  if (p->emitter.aliveCount != 0) return 10;
   return 0;
 }
 
@@ -2455,46 +2445,46 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
       VEC3_SET(halfSize, Q8(0.352), Q8(3.125), Q8(0.352));
       VEC3_SET(offset, 0, Q8(-0.1), 0);
       weakness = 1 << WK_SWORD;
-      p->wpn.knockbackPower = 32;
-      p->wpn.atkInvincibleTime = 10;
+      p->wpn.knockback = 32;
+      p->wpn.iframes = 10;
       break;
     }
     case WK_SPEAR: {
       VEC3_SET(halfSize, Q8(0.235), Q8(6.25), Q8(0.235));
       VEC3_SET(offset, 0, 0, 0);
       weakness = 1 << WK_SPEAR;
-      p->wpn.knockbackPower = 64;
-      p->wpn.atkInvincibleTime = 20;
+      p->wpn.knockback = 64;
+      p->wpn.iframes = 20;
       break;
     }
     case WK_HAMMER: {
       VEC3_SET(halfSize, Q8(0.313), Q8(4.375), Q8(0.313));
       VEC3_SET(offset, 0, Q8(0.12), 0);
       weakness = 1 << WK_HAMMER;
-      p->wpn.knockbackPower = 48;
-      p->wpn.atkInvincibleTime = 20;
+      p->wpn.knockback = 48;
+      p->wpn.iframes = 20;
       break;
     }
     case WK_OTHERS: {
       VEC3_SET(halfSize, Q8(0.235), Q8(6.25), Q8(0.235));
       VEC3_SET(offset, 0, Q8(-0.313), 0);
       weakness = 1 << WK_OTHERS;
-      p->wpn.knockbackPower = 1;
-      p->wpn.atkInvincibleTime = 5;
+      p->wpn.knockback = 1;
+      p->wpn.iframes = 5;
       break;
     }
     case WK_GUN: {
       VEC3_SET(halfSize, Q8(0.235), Q8(3.125), Q8(0.235));
       VEC3_SET(offset, 0, Q8(-0.1), 0);
       weakness = 1 << WK_GUN;
-      p->wpn.knockbackPower = 32;
-      p->wpn.atkInvincibleTime = 20;
+      p->wpn.knockback = 32;
+      p->wpn.iframes = 20;
       break;
     }
   }
 
   Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, 1 << p->mover.unk_4, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockbackPower, weakness, 0, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockback, weakness, 0, p->wpn.iframes);
   Hitbox_SetHandler(hitbox, dark_django_0806f990, p);
 #else
   INCFUNC("asm/func/Player_SetWeaponHitbox.inc");
@@ -2552,7 +2542,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
 }
 
 // 攻撃で与えたダメージの分だけ武器を損傷させる, 限界を超えたら品質か特殊効果を1つ失う
-// ダメージはジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で wpn.hitbox.damage に加算される (他の敵も同様と思われる)
+// ダメージはジャンゴがバットに攻撃を当てると呼ばれる EnemyBat_OnHurt の 0x0813EFFC で wpn.hitbox.damage に加算される (他の敵も同様と思われる)
 void Player_UpdateWeaponWear(Player* p) {
   s32 wear = Hitbox_GetDamage(&p->wpn.hitbox);
 
@@ -2777,13 +2767,8 @@ void Player_EquipArmor(Player* p, const ArmorData* a) {
 }
 
 void CheckHeartJokerEmblem(Player* p) {
-  if (CheckItemOwn(ITEM_HEART_EMBLEM)) {
-    Player_SetEquipBuff(p, EBUFF_HEART);
-  }
-
-  if (CheckItemOwn(ITEM_JOKER_EMBLEM)) {
-    Player_SetEquipBuff(p, EBUFF_JOKER);
-  }
+  if (CheckItemOwn(ITEM_HEART_EMBLEM)) Player_SetEquipBuff(p, EBUFF_HEART);
+  if (CheckItemOwn(ITEM_JOKER_EMBLEM)) Player_SetEquipBuff(p, EBUFF_JOKER);
 }
 
 static s32 GetMagicCost(magic32_t id) {
@@ -2808,7 +2793,7 @@ static s32 GetMagicCost(magic32_t id) {
       [MAGIC_WOLF] = 10,
   };  // 0x085ABACC
 
-  static const u16 sMagicUnkVal[MAGIC_NUM] = {
+  static const u16 sMagicCostsOnCrossOver[MAGIC_NUM] = {
       [MAGIC_SOL] = 10,
       [MAGIC_DARK] = 0,
       [MAGIC_FLAME] = 5,
@@ -2827,10 +2812,10 @@ static s32 GetMagicCost(magic32_t id) {
       [MAGIC_BAT] = 0,
       [MAGIC_RAT] = 0,
       [MAGIC_WOLF] = 0,
-  };  // 0x085ABAF0, いつ使うかわからん
+  };  // 0x085ABAF0
 
-  if (gGameFlags & FLAG030047A4_UNK_12) {
-    return sMagicUnkVal[id];
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
+    return sMagicCostsOnCrossOver[id];
   } else {
     return sMagicCosts[id];
   }
@@ -3005,7 +2990,7 @@ bool32 Player_HasEnoughSunGauge(Player* p, s32 sunGauge) {
 
 // 魔法ボタンを押したときに実行する行動番号を返す, 使えないときは今の行動をそのまま返す
 // 残差9命令 (258/249): AuxAnim_RestartAnim の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のコードになる)
-// Player_BurstFormEffect と同じ現象, 宣言を () にしてもプロトタイプありと同じコードになる
+// Player_BurstElementalCond と同じ現象, 宣言を () にしてもプロトタイプありと同じコードになる
 NON_MATCH u32 Player_GetMagicAction(Player* p) {
 #ifdef NONMATCHING_C
   PlayerMagic* m = &p->magic;
@@ -3200,7 +3185,7 @@ s32 Player_GetEquippedMagic(Player* p) {
 void Player_RefreshMagicInfo(Player* p) {
   PlayerMagic* m = &p->magic;
 
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     m->id = MAGIC_NONE;
   } else {
     m->id = Player_GetEquippedMagic(p);
@@ -3289,13 +3274,13 @@ s32 Player_InitState(Player* p) {
 
   Player_RefreshStats(p);
 
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
       gBadCondTimer[i] = 0;
     }
-    p->updateCallback = FUN_08079f1c;
+    p->updateCallback = Player_UpdateCrossoverDjango;
   } else {
     p->updateCallback = sPlayerUpdates[p->kind];
   }
@@ -3345,7 +3330,7 @@ void Player_InitSprite(Player* p) {
       p->facing = FACE_UP;
     }
 
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
 
     p->animID = 0;
     MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, PLAYMODE_LOOP, 0);
@@ -3495,8 +3480,8 @@ void Player_SetupHurtbox(Player* p) {
   Hitbox_Register(hurtbox);
 }
 
-// 岩? (名前は暫定)
-bool32 Player_IsOnRock(u32 attr) {
+// 鳴り床の上にいるか
+bool32 Player_IsOnSoundFloor(u32 attr) {
   if ((attr & TATTR_SPECIAL) && !TestMapFlag(MPF_HOT | MPF_COLD)) {
     return TRUE;
   }
@@ -3511,14 +3496,14 @@ bool32 Player_IsInLava(u32 attr) {
   return FALSE;
 }
 
-bool32 UNUSED FUN_08065b08(u32 attr) {
-  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_UNK_13)) {
+static bool32 UNUSED FUN_08065b08(u32 attr) {
+  if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_WATERFRONT)) {
     return TRUE;
   }
   return FALSE;
 }
 
-// ツルツルすべる氷の上にいるか
+// すべり床(ツルツルすべる氷)の上にいるか
 bool32 Player_IsOnIce(u32 attr) {
   if ((attr & TATTR_SPECIAL) && TestMapFlag(MPF_COLD)) {
     return TRUE;
@@ -3563,12 +3548,12 @@ s32 FUN_08065cb8(Player* p) {
     p->formRequestKind = PLAYER_DARK_DJANGO;
   }
   p->originKnockback = TRUE;
-  p->hurtbox.knockbackPower = 50;
-  Player_SetInvincibleTime(p, 60);
+  p->hurtbox.knockback = 50;
+  Player_SetIframes(p, 60);
   p->blownAway = 0;
   p->floatHeight = 0;
   p->facing = (Angle_ToDir4(ArcTan2_8(p->mover.pos.x - p->knockbackOrigin->x, p->mover.pos.z - p->knockbackOrigin->z)) << 1) + 1;
-  PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
   p->originHitPending = FALSE;
   return 10;
@@ -3595,19 +3580,13 @@ NON_MATCH s32 FUN_08065e24(Player* p) {
   s32 bx, bz;
 
   p->tileKnockback = TRUE;
-  p->hurtbox.knockbackPower = 50;
+  p->hurtbox.knockback = 50;
   p->blownAway = 0;
   p->floatHeight = 0;
   bx = Mod(p->tile.tileIdx[1], gCollisionMap->tiledata->width);
   bz = Div(p->tile.tileIdx[1], gCollisionMap->tiledata->width);
   p->facing = (Angle_ToDir4(ArcTan2_8((bx << 8) - (p->knockbackOrigin->x - 0x80), (bz << 8) - (p->knockbackOrigin->z - 0x80))) << 1) + 1;
-  if (p->facing > 4) {
-    p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = TRUE;
-  } else {
-    p->animIDOffset = p->facing >> 1;
-    p->xflip = FALSE;
-  }
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
   p->tileHitPending = FALSE;
   return 10;
@@ -3725,15 +3704,15 @@ NON_MATCH void FUN_0806623c(Player* p) {
     bool32 onIce = Player_IsOnIce(p->tile.attr[1]);
 
     if (onIce == FALSE) {
-      p->unk_3a5[0] = onIce;
-      p->unk_3a5[1] = 0;
+      p->slip_3a5[0] = 0;
+      p->slip_3a5[1] = 0;
       *flag = 0;
     } else if (p->tile.unk_0[0] & 1) {
       DirU8* dir = &p->dir_3a7;
 
       if (*dir & 1) {
-        p->unk_3a5[0] = 0;
-        p->unk_3a5[1] = 0;
+        p->slip_3a5[0] = 0;
+        p->slip_3a5[1] = 0;
         *flag = 0;
       } else {
         u32 angle;
@@ -3743,12 +3722,12 @@ NON_MATCH void FUN_0806623c(Player* p) {
         p->forcedDelta.x = POLAR_X(10, angle);
         p->forcedDelta.z = POLAR_Z(10, angle);
       }
-    } else if (p->unk_3a5[0] == 0) {
-      if (p->unk_3a5[1] != 0) {
-        PlaySound_082406e0(SONG_821);
-        p->unk_3a5[0] = 1;
+    } else if (p->slip_3a5[0] == 0) {
+      if (p->slip_3a5[1] != 0) {
+        PlaySound_082406e0(SE_PLAYER_SLIP);
+        p->slip_3a5[0] = 1;
       } else {
-        p->unk_3a5[1] = 1;
+        p->slip_3a5[1] = 1;
       }
     }
   } else {
@@ -4025,7 +4004,6 @@ NON_MATCH void Player_UpdateLookAround(Player* p) {
       p->facing = ((((angle + 0x10) & 0xFF) >> 5) + 3) & 7;
       if (p->kind == PLAYER_BAT) {
         s32 quad = ((((angle + 0x20) & 0xFF) >> 6) + 1) & 3;
-
         if (quad > 1) {
           p->animIDOffset = 3 - quad;
           p->xflip = TRUE;
@@ -4113,13 +4091,13 @@ NON_MATCH void Player_UpdateCameraLookAt(Player* p) {
 void FUN_08066e84(Player* _) {
   u16 payload = 6;
 
-  FUN_080ec79c(ENEK_CURORO, &payload);
+  Enemy_SendMsgByKind(ENEK_CURORO, &payload);
 }
 
-void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, s32 param_6, SoundID32 soundID) {
+void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, bool32 fragileWall, SoundID32 soundID) {
   FUN_08240cf0(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
   if (pos2 != NULL) {
-    Player_ShowPtcl64c(p, pos2, param_6);
+    Player_ShowNoisePtcl(p, pos2, fragileWall);
   }
   if (soundID != 0) {
     PlaySound_082406e0(soundID);
@@ -4193,7 +4171,7 @@ void FUN_08066f7c(Player* p) {
     p->facing = FUN_08066f18(p);
     Player_SetAnimFacing(p);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
 }
 
@@ -4221,7 +4199,7 @@ static s32 CalcMoveSpeed(Player* p) {
     }
   }
 
-  if (p->emitter.kind == 2 && p->emitter.unk_3 != 0) {
+  if (p->emitter.kind == ELEMCOND_HYOKETU && p->emitter.aliveCount != 0) {
     val -= 4;
   }
   if (p->speedPenalty != 0) {
@@ -4301,7 +4279,7 @@ NON_MATCH void FUN_080670fc(Player* p, u32 val) {
     return;
   }
 
-  if (Player_IsOnRock(p->tile.attr[1]) && !HasGoodCond(p, GOOD_MINI)) {
+  if (Player_IsOnSoundFloor(p->tile.attr[1]) && !HasGoodCond(p, GOOD_MINI)) {
     if (p->human.animCmdIdx == 0) {
       id = SE_FSTEP_NOISE_1;
     } else {
@@ -4314,9 +4292,9 @@ NON_MATCH void FUN_080670fc(Player* p, u32 val) {
   if (val == 0) {
     if (HasGoodCond(p, GOOD_MINI)) {
       if (p->human.animCmdIdx == 0) {
-        PlaySound_082406e0(SONG_200);
+        PlaySound_082406e0(SE_FSTEP_MINI_1);
       } else {
-        PlaySound_082406e0(SONG_199);
+        PlaySound_082406e0(SE_FSTEP_MINI_0);
       }
     } else if (p->elevatorFlags == 0 && p->tile.stairs[1] != 0) {
       if (p->human.animCmdIdx == 0) {
@@ -4342,7 +4320,7 @@ NON_MATCH void FUN_080670fc(Player* p, u32 val) {
 // 歩き始めるときの初期化, 移動速度とアニメを設定する
 void FUN_080672b0(Player* p) {
   p->action = PACT_WALK;
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   p->facing = FUN_08067068(p);
   if (p->useForcedDelta == 0) {
     s32 val = CalcMoveSpeed(p);
@@ -4454,7 +4432,7 @@ NON_MATCH void FUN_08067510(Player* p) {
       if (p->animID != animIdx) {
         PlaySound_082406e0(SE_COVER);
         p->facing = (p->actionDir + 4) & 7;
-        PLAYER_SET_ANIM_DIR_HALF(p, p->actionDir);
+        PLAYER_SET_ANIM_4DIR(p, p->actionDir);
       }
       if (Player_PlayAnim(p, animIdx, Q6(1))) {
         Player_SetAction(p, PACT_WALL, 1);
@@ -4466,7 +4444,7 @@ NON_MATCH void FUN_08067510(Player* p) {
       s32 left;
       s32 right;
 
-      Player_SetFlag20(p, PFLAG20_UNK_3);
+      Player_SetFlag20(p, PFLAG20_WALL_COVER);
       p->unk_3bc = 1;
       dir = (s16)p->facingHistory[0];
       left = (p->actionDir + 7) & 7;
@@ -4477,7 +4455,7 @@ NON_MATCH void FUN_08067510(Player* p) {
           if (HasGoodCond(p, GOOD_POWER)) {
             Player_SetAction(p, PACT_IDLE, 0);
           } else {
-            Player_SetAction(p, PACT_UNK_5, 0);
+            Player_SetAction(p, PACT_PUSH, 0);
             p->unk_3bc = 0;
           }
         }
@@ -4519,12 +4497,12 @@ NON_MATCH void FUN_08067510(Player* p) {
       }
       Player_PlayAnim(p, animIdx, Q6(1));
       if (p->animID == Player_GetAnimIdx(p->kind, 4) && p->human.animCmdIdx == 0 && p->human.animCmdTimer == 1) {
-        PlaySound_082406e0(SONG_219);
+        PlaySound_082406e0(SE_WALL_SLIDE);
       }
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_UNK_3);
+      Player_SetFlag20(p, PFLAG20_WALL_COVER);
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 5), Q6(1))) {
         Vec3 effectPos = p->mover.pos;
         Vec3 doorPos = p->mover.pos;
@@ -4552,7 +4530,7 @@ NON_MATCH void FUN_08067510(Player* p) {
           FUN_08066e9c(p, &p->mover.pos, 256, 1, &effectPos, 0, SE_WALL_KNOCK);
         }
         if (FUN_08020358(GetCollisionTileIdx(&doorPos))) {
-          PlaySound_082406e0(SONG_388);
+          PlaySound_082406e0(SE_DOOR_LOCKED);
         }
         Player_SetAction(p, PACT_WALL, 1);
       }
@@ -4564,7 +4542,7 @@ NON_MATCH void FUN_08067510(Player* p) {
 #endif
 }
 
-// ブロックを押す (PACT_UNK_5), actionDir へ 64 フレーム押し進め, 押し続けていて先へ進めるならもう一度, ちからの実が効いていれば素立ちに戻る
+// ブロックを押す (PACT_PUSH), actionDir へ 64 フレーム押し進め, 押し続けていて先へ進めるならもう一度, ちからの実が効いていれば素立ちに戻る
 void FUN_08067de8(Player* p) {
   switch (p->state) {
     case 0: {
@@ -4573,7 +4551,7 @@ void FUN_08067de8(Player* p) {
       p->mover.delta.z = POLAR_Z(4, angle);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 6), Q6(1));
       if (++p->stateTimer > 63) {
-        Player_SetAction(p, PACT_UNK_5, 1);
+        Player_SetAction(p, PACT_PUSH, 1);
       }
       break;
     }
@@ -4583,10 +4561,10 @@ void FUN_08067de8(Player* p) {
         if (HasGoodCond(p, GOOD_POWER)) {
           Player_SetAction(p, PACT_IDLE, 0);
         } else {
-          Player_SetAction(p, PACT_UNK_5, 0);
+          Player_SetAction(p, PACT_PUSH, 0);
         }
       } else {
-        Player_SetAction(p, PACT_UNK_5, 2);
+        Player_SetAction(p, PACT_PUSH, 2);
       }
       break;
     }
@@ -4649,7 +4627,7 @@ void Player_UpdateSolarCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_08067f58(p)) {
@@ -4665,13 +4643,13 @@ void Player_UpdateSolarCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           if (p->kind == PLAYER_DARK_DJANGO) {
-            PlaySound_082406e0(VO_TAIYO_B);
+            PlaySound_082406e0(VO_BDJANGO_TAIYO);
           } else {
-            PlaySound_082406e0(VO_TAIYO_R);
+            PlaySound_082406e0(VO_RDJANGO_TAIYO);
           }
         }
       }
@@ -4691,7 +4669,7 @@ void Player_UpdateSolarCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -4751,7 +4729,7 @@ void Player_UpdateDarkCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_080682dc(p)) {
@@ -4767,7 +4745,7 @@ void Player_UpdateDarkCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           PlaySound_082406e0(NOISE_DARK_CHARGE);
@@ -4798,7 +4776,7 @@ void Player_UpdateDarkCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -4823,7 +4801,7 @@ void Player_UpdateDarkCharge(Player* p) {
   }
 }
 
-// 太陽スタンドを使う (PACT_UNK_8), unk_3b0 まで歩いて unk_3b8 を向き, A を押している間スタンドの貯金から ENE を受け取る
+// 太陽スタンドを使う (PACT_REFUELING), unk_3b0 まで歩いて unk_3b8 を向き, A を押している間スタンドの貯金から ENE を受け取る
 void Player_UpdateSolarStand(Player* p) {
   switch (p->state) {
     case 0: {
@@ -4838,17 +4816,16 @@ void Player_UpdateSolarStand(Player* p) {
         p->facing = p->unk_3b8;
         Player_SetAnimFacing(p);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-        if (p->facing > 4) {
+        if (IS_8DIR_LEFT(p->facing)) {
           p->animIDOffset = 0;
           p->xflip = TRUE;
         } else {
           p->animIDOffset = 0;
           p->xflip = FALSE;
         }
-        Player_SetAction(p, PACT_UNK_8, 1);
+        Player_SetAction(p, PACT_REFUELING, 1);
       } else {
         s32 angle = ArcTan2_8(dx, dz);
-
         p->mover.delta.x = POLAR_X(speed, angle);
         p->mover.delta.z = POLAR_Z(speed, angle);
         p->facing = Angle_ToDir8(angle);
@@ -4859,22 +4836,22 @@ void Player_UpdateSolarStand(Player* p) {
     }
     case 1: {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 12), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          Player_SetAction(p, PACT_UNK_8, 4);
+          Player_SetAction(p, PACT_REFUELING, 4);
         } else if (p->kind == PLAYER_SABATA) {
           PlaySound_082406e0(SE_SOLAR_STAND_DENY);
-          Player_SetAction(p, PACT_UNK_8, 3);
+          Player_SetAction(p, PACT_REFUELING, 3);
         } else if (p->ene >= p->maxEne) {
           PlaySound_082406e0(SE_DENY_302);
-          Player_SetAction(p, PACT_UNK_8, 3);
+          Player_SetAction(p, PACT_REFUELING, 3);
         } else if (gStat->solarStand > 0) {
           PlaySound_082406e0(NOISE_SOLAR_CHARGE);
           p->unk_409 = 1;
-          Player_SetAction(p, PACT_UNK_8, 2);
+          Player_SetAction(p, PACT_REFUELING, 2);
         } else {
           PlaySound_082406e0(SE_SOLAR_STAND_DENY);
-          Player_SetAction(p, PACT_UNK_8, 3);
+          Player_SetAction(p, PACT_REFUELING, 3);
         }
       }
       break;
@@ -4884,26 +4861,26 @@ void Player_UpdateSolarStand(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->unk_409 = 0;
-        Player_SetAction(p, PACT_UNK_8, 4);
+        Player_SetAction(p, PACT_REFUELING, 4);
       } else if (p->ene >= p->maxEne) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->unk_409 = 0;
         PlaySound_082406e0(SE_DENY_302);
-        Player_SetAction(p, PACT_UNK_8, 3);
+        Player_SetAction(p, PACT_REFUELING, 3);
       } else if (gStat->solarStand <= 0) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->unk_409 = 0;
         PlaySound_082406e0(SE_SOLAR_STAND_DENY);
-        Player_SetAction(p, PACT_UNK_8, 3);
+        Player_SetAction(p, PACT_REFUELING, 3);
       } else {
-        Player_SetFlag20(p, PFLAG20_UNK_6);
+        Player_SetFlag20(p, PFLAG20_REFUELING);
       }
       break;
     }
     case 3: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 14), Q6(1));
       if (!(p->input->down & A_BUTTON)) {
-        Player_SetAction(p, PACT_UNK_8, 4);
+        Player_SetAction(p, PACT_REFUELING, 4);
       }
       break;
     }
@@ -4957,7 +4934,7 @@ void MagicRisingSun_08068944(Player* p) {
       }
 
       if (p->magicFired) {
-        PlaySound_082406e0(VO_TAIYO_R);
+        PlaySound_082406e0(VO_RDJANGO_TAIYO);
         p->plttID_95e = OBP_ELEMENT(0);
         p->plttFlashTimer = 2;
         RisingSunEffect_Create(p, &p->mover.pos, &p->pos_930, 0, p->unk_3ba);
@@ -4977,7 +4954,7 @@ void MagicRisingSun_08068944(Player* p) {
 
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (p->magicFired && p->unk_3ba == 0) {
           gSunMagicUsed = 1;
         }
@@ -5030,7 +5007,7 @@ s32 Player_CalcCoffinMoveSpeed(Player* p) {
       speed = 6;
     }
   }
-  if (p->emitter.kind == 2 && p->emitter.unk_3 != 0) speed -= 3;
+  if (p->emitter.kind == ELEMCOND_HYOKETU && p->emitter.aliveCount != 0) speed -= 3;
   if (p->speedPenalty != 0) speed -= p->speedPenalty;
 
   if (speed < 2) {
@@ -5130,7 +5107,7 @@ void Player_UpdatePullCoffin(Player* p) {
   if (p->action != PACT_PULL_COFFIN) {
     Player_SetAction(p, PACT_PULL_COFFIN, 0);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if ((s16)p->facingHistory[0] < 0 || p->lookAroundOffset.val != 0) {
     s32 angle;
 
@@ -5158,9 +5135,9 @@ void Player_UpdatePullCoffin(Player* p) {
       if (speed == 8) {
         animSpeed = Q6(1);
       } else if (speed < 8) {
-        animSpeed = (8 - speed) * 8 + 64;
+        animSpeed = (8 - speed) * 8 + Q6(1);
       } else {
-        animSpeed = 64 - (speed - 8) * 4;
+        animSpeed = Q6(1) - (speed - 8) * 4;
       }
       angle = ((p->facing + 1) & 7) << 5;
       cos = COS(angle);
@@ -5192,7 +5169,7 @@ void Player_UpdatePullCoffin(Player* p) {
       } else {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_0);
       }
-    } else if (Player_IsOnRock(p->tile.attr[1]) && !HasGoodCond(p, GOOD_MINI)) {
+    } else if (Player_IsOnSoundFloor(p->tile.attr[1]) && !HasGoodCond(p, GOOD_MINI)) {
       if (p->human.animCmdIdx == 0) {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_NOISE_1);
       } else {
@@ -5223,6 +5200,7 @@ void Player_UpdatePullCoffin(Player* p) {
   }
 }
 
+// PACT_ATTACK
 void FUN_080695ec(Player* p) {
   if (p->action != PACT_ATTACK) {
     Player_SetAction(p, PACT_ATTACK, 0);
@@ -5230,14 +5208,15 @@ void FUN_080695ec(Player* p) {
   p->attackCB(p);
 }
 
+// PACT_UNK_19
 void FUN_0806961c(Player* p) {
-  p->flag20 &= ~PFLAG20_UNK_0;
-  if (p->emitter.unk_3 == 0) {
+  p->flag20 &= ~PFLAG20_BUSY;
+  if (p->emitter.aliveCount == 0) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
 }
 
-// 行動 PACT_UNK_20, 入力方向へ向き直るたびに連打カウンタに応じて効果音を鳴らし, unk_3ff が空けば素立ちに戻る
+// PACT_UNK_20, 入力方向へ向き直るたびに連打カウンタに応じて効果音を鳴らし, unk_3ff が空けば素立ちに戻る
 void FUN_08069648(Player* p) {
   if ((s16)p->facingHistory[0] >= 0 && p->facing != (s16)p->facingHistory[0]) {
     if (p->mashCount & 1) {
@@ -5482,7 +5461,7 @@ void FUN_08069c8c(Player* p) {
   }
 }
 
-// 人型の落下 (PACT_UNK_22), カメラを上に向けて落下アニメを当て, 6フレーム後に沈み始めて途中で声を上げ, 30 フレームで消える
+// 人型の落下 (PACT_FALL), カメラを上に向けて落下アニメを当て, 6フレーム後に沈み始めて途中で声を上げ, 30 フレームで消える
 void Player_UpdateFall(Player* p) {
   Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
   switch (p->state) {
@@ -5492,23 +5471,23 @@ void Player_UpdateFall(Player* p) {
       pos.y += 150;
       Camera_LookAt(&pos);
       if (p->unk_3f0 != 0) {
-        FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 16);
+        StartBgObjPlttFade(3, 3, 4, 4, 4, 0x1FFF, 16);
       } else {
-        FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 1);
+        StartBgObjPlttFade(3, 3, 4, 4, 4, 0x1FFF, 1);
       }
       PlaySound_082406e0(SE_FALL_SURPRISE);
-      PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
-      Player_SetAction(p, PACT_UNK_22, 1);
+      Player_SetAction(p, PACT_FALL, 1);
       p->floatHeight = 0;
       break;
     }
     case 1: {
       if (++p->stateTimer > 5) {
-        Player_SetAction(p, PACT_UNK_22, 2);
+        Player_SetAction(p, PACT_FALL, 2);
         p->floatHeight = 0;
         p->beast.priority = 1;
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
       }
       break;
     }
@@ -5523,7 +5502,7 @@ void Player_UpdateFall(Player* p) {
         }
       }
       if (++p->stateTimer > 29) {
-        Player_SetAction(p, PACT_UNK_22, 3);
+        Player_SetAction(p, PACT_FALL, 3);
       }
       break;
     }
@@ -5535,20 +5514,20 @@ void Player_UpdateFall(Player* p) {
   }
 }
 
-// PACT_UNK_23 の行動, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したら着地アニメを経て PACT_IDLE に戻る
+// PACT_LANDING の行動, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したら着地アニメを経て PACT_IDLE に戻る
 void FUN_08069f60(Player* p) {
   Player_SetFlag35a(p, 8);
   switch (p->state) {
     case 0: {
-      if (p->animID != 0x2C) {
+      if (p->animID != 44) {
         p->facing |= 1;
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
       if ((u16)p->heightAboveTile <= 30) {
         p->heightAboveTile = 0;
-        PlaySound_082406e0(SONG_432);
-        Player_SetAction(p, PACT_UNK_23, 1);
+        PlaySound_082406e0(SE_LANDING);
+        Player_SetAction(p, PACT_LANDING, 1);
       } else {
         p->heightAboveTile -= 30;
       }
@@ -5564,6 +5543,7 @@ void FUN_08069f60(Player* p) {
   }
 }
 
+// PACT_GRABBED
 void FUN_0806a050(Player* p) {
   if (p->unk_3fe != 0) {
     Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HURTBOX | PFLAG35A_NO_TILE);
@@ -5573,11 +5553,11 @@ void FUN_0806a050(Player* p) {
   Player_SetFlag20(p, PFLAG20_UNK_12 | PFLAG20_UNK_8);
 }
 
-// 被弾 (PACT_DAMAGED), 吹き飛びながら knockbackOrigin やタイルから弾かれたときはそちらへ寄せて炎か煙を出し, 止まったら起き上がって PACT_UNK_19 か PACT_IDLE に戻る
+// PACT_DAMAGED, 吹き飛びながら knockbackOrigin やタイルから弾かれたときはそちらへ寄せて炎か煙を出し, 止まったら起き上がって PACT_UNK_19 か PACT_IDLE に戻る
 void Player_UpdateHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
     Player_SetAction(p, PACT_DAMAGED, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
     p->floatHeight = 0;
     if (p->hurtSound != SONG_NONE) {
@@ -5585,7 +5565,7 @@ void Player_UpdateHurt(Player* p) {
       p->hurtSound = SONG_NONE;
     }
   }
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     if (p->originKnockback) {
       s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
       s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
@@ -5615,16 +5595,16 @@ void Player_UpdateHurt(Player* p) {
     } else {
       s32 angle = ((p->facing + 5) & 7) * 32;
 
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
     }
-    Camera_Shake(p->hurtbox.knockbackPower);
-    p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
+    Camera_Shake(p->hurtbox.knockback);
+    p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
   } else {
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->originKnockback = FALSE;
     p->tileKnockback = FALSE;
-    if (p->emitter.kind == 3 && p->emitter.unk_3 != 0) {
+    if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
       Player_SetAction(p, PACT_UNK_19, 0);
     } else if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 42), Q6(1))) {
       Player_SetAnimFacing(p);
@@ -5633,11 +5613,11 @@ void Player_UpdateHurt(Player* p) {
   }
 }
 
-// 吹き飛ばされる被弾 (PACT_BLOWN_AWAY), 宙に浮いて後ろへ飛び, 着地して倒れたあと起き上がって PACT_IDLE に戻る
+// PACT_BLOWN_AWAY, 宙に浮いて後ろへ飛び, 着地して倒れたあと起き上がって PACT_IDLE に戻る
 void Player_UpdateBlownAway(Player* p) {
   if (p->action != PACT_BLOWN_AWAY) {
     Player_SetAction(p, PACT_BLOWN_AWAY, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->hurtSound != SONG_NONE) {
       PlaySound_082406e0(p->hurtSound);
       p->hurtSound = SONG_NONE;
@@ -5660,9 +5640,9 @@ void Player_UpdateBlownAway(Player* p) {
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 43), Q6(1));
       angle = ((p->facing + 5) & 7) << 5;
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
-      p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
       if (p->stateTimer > 3) {
         if (p->floatHeight >= p->stateTimer * 8) {
           p->floatHeight -= p->stateTimer * 8;
@@ -5671,7 +5651,7 @@ void Player_UpdateBlownAway(Player* p) {
         }
       }
       p->stateTimer++;
-      if (p->hurtbox.knockbackPower < 20 && p->floatHeight == 0) {
+      if (p->hurtbox.knockback < 20 && p->floatHeight == 0) {
         p->floatHeight = 0;
         PlaySound_082406e0(SONG_680);
         Player_SetAction(p, PACT_BLOWN_AWAY, 2);
@@ -5681,10 +5661,10 @@ void Player_UpdateBlownAway(Player* p) {
     case 2: {
       s32 angle = ((p->facing + 5) & 7) << 5;
 
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 44), Q6(1))) {
-        p->hurtbox.knockbackPower = 0;
+        p->hurtbox.knockback = 0;
         Player_SetAction(p, PACT_BLOWN_AWAY, 3);
       }
       break;
@@ -5706,33 +5686,31 @@ void Player_UpdateBlownAway(Player* p) {
   }
 }
 
-// 倒れて死ぬ (PACT_UNK_26), 吹き飛びが収まるまで後ろへ流され, 倒れるアニメのあとゲームオーバーへ移って点滅しながら消える
+// 倒れて死ぬ (PACT_DEATH_PRONE), ノックバックが収まるまで後ろへ流され, 倒れるアニメのあとゲームオーバーへ移って点滅しながら消える
 void Player_UpdateDeath(Player* p) {
-  if (p->action != PACT_UNK_26) {
+  if (p->action != PACT_DEATH_PRONE) {
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
     p->knockbackTimer = 0;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
-    Player_SetAction(p, PACT_UNK_26, 0);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
+    Player_SetAction(p, PACT_DEATH_PRONE, 0);
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
     } else {
       PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
-    if (gGameFlags & FLAG030047A4_UNK_12) {
-      FUN_08050d10();
-    }
+    if (gGameFlags & GAMEFLAG_CROSSOVER) CrossoverBattle_NotifyPlayerDead();
   }
 
   switch (p->state) {
     case 0: {
       s32 angle = ((p->facing + 1) & 7) << 5;
 
-      p->mover.delta.x = FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
-      p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
-      if (p->hurtbox.knockbackPower == 0) {
-        Player_SetAction(p, PACT_UNK_26, 1);
+      p->mover.delta.x = FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
+      if (p->hurtbox.knockback == 0) {
+        Player_SetAction(p, PACT_DEATH_PRONE, 1);
       }
       break;
     }
@@ -5741,18 +5719,18 @@ void Player_UpdateDeath(Player* p) {
         PlaySound_082406e0(SONG_209);
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 46), Q6(1))) {
-        if (!(gGameFlags & FLAG030047A4_UNK_12)) {
-          Player_SetAction(p, PACT_UNK_26, 2);
+        if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
+          Player_SetAction(p, PACT_DEATH_PRONE, 2);
         } else {
-          Player_SetAction(p, PACT_UNK_26, 3);
+          Player_SetAction(p, PACT_DEATH_PRONE, 3);
         }
       }
       break;
     }
     case 2: {
       if (++p->stateTimer > 15) {
-        gGameFlags |= FLAG030047A4_GAMEOVER;
-        Player_SetAction(p, PACT_UNK_26, 3);
+        gGameFlags |= GAMEFLAG_GAMEOVER;
+        Player_SetAction(p, PACT_DEATH_PRONE, 3);
       }
       break;
     }
@@ -5767,7 +5745,7 @@ void Player_UpdateDeath(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 55) {
-        Player_SetAction(p, PACT_UNK_26, 5);
+        Player_SetAction(p, PACT_DEATH_PRONE, 5);
       }
       break;
     }
@@ -5778,19 +5756,19 @@ void Player_UpdateDeath(Player* p) {
   }
 }
 
-// 吹き飛ばされて死ぬ (PACT_UNK_27), 宙に浮いて後ろへ飛び, 着地して倒れたあとゲームオーバーへ移って点滅しながら消える
+// 吹き飛ばされて死ぬ (PACT_DEATH_SUPINE), 宙に浮いて後ろへ飛び, 着地して倒れたあとゲームオーバーへ移って点滅しながら消える
 void Player_UpdateBlownAwayDeath(Player* p) {
-  if (p->action != PACT_UNK_27) {
-    Player_SetAction(p, PACT_UNK_27, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+  if (p->action != PACT_DEATH_SUPINE) {
+    Player_SetAction(p, PACT_DEATH_SUPINE, 0);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->kind == PLAYER_SABATA) {
       PlaySound_082406e0(VO_SABATA_DEATH);
     } else {
       PlaySound_082406e0(VO_DJANGO_DEATH);
     }
     PlaySound_082406e0(SE_DAMAGE);
-    if (gGameFlags & FLAG030047A4_UNK_12) {
-      FUN_08050d10();
+    if (gGameFlags & GAMEFLAG_CROSSOVER) {
+      CrossoverBattle_NotifyPlayerDead();
     }
   }
 
@@ -5798,7 +5776,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
     case 0: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
       if (++p->stateTimer > 3) {
-        Player_SetAction(p, PACT_UNK_27, 1);
+        Player_SetAction(p, PACT_DEATH_SUPINE, 1);
         p->floatHeight = 300;
       }
       break;
@@ -5808,16 +5786,16 @@ void Player_UpdateBlownAwayDeath(Player* p) {
 
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 43), Q6(1));
       angle = ((p->facing + 5) & 7) << 5;
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
-      p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
       if (p->floatHeight > 14) {
         p->floatHeight -= 15;
       } else {
         p->floatHeight = 0;
       }
-      if (p->hurtbox.knockbackPower < 20) {
-        Player_SetAction(p, PACT_UNK_27, 2);
+      if (p->hurtbox.knockback < 20) {
+        Player_SetAction(p, PACT_DEATH_SUPINE, 2);
         p->floatHeight = 0;
         PlaySound_082406e0(SONG_680);
       }
@@ -5826,22 +5804,22 @@ void Player_UpdateBlownAwayDeath(Player* p) {
     case 2: {
       s32 angle = ((p->facing + 5) & 7) << 5;
 
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 44), Q6(1))) {
-        p->hurtbox.knockbackPower = 0;
-        if (!(gGameFlags & FLAG030047A4_UNK_12)) {
-          Player_SetAction(p, PACT_UNK_27, 3);
+        p->hurtbox.knockback = 0;
+        if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
+          Player_SetAction(p, PACT_DEATH_SUPINE, 3);
         } else {
-          Player_SetAction(p, PACT_UNK_27, 4);
+          Player_SetAction(p, PACT_DEATH_SUPINE, 4);
         }
       }
       break;
     }
     case 3: {
       if (++p->stateTimer > 19) {
-        gGameFlags |= FLAG030047A4_GAMEOVER;
-        Player_SetAction(p, PACT_UNK_27, 4);
+        gGameFlags |= GAMEFLAG_GAMEOVER;
+        Player_SetAction(p, PACT_DEATH_SUPINE, 4);
       }
       break;
     }
@@ -5856,7 +5834,7 @@ void Player_UpdateBlownAwayDeath(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 55) {
-        Player_SetAction(p, PACT_UNK_27, 6);
+        Player_SetAction(p, PACT_DEATH_SUPINE, 6);
       }
       break;
     }
@@ -5882,7 +5860,7 @@ void Player_UpdateFallDeath(Player* p) {
     }
     case 1: {
       if (++p->stateTimer > 14) {
-        FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
+        StartBgObjPlttFade(3, 5, 4, 4, 4, 0x1FFF, 2);
         p->floatHeight = 0;
         Player_SetAction(p, PACT_FALLDEATH, 2);
       }
@@ -5899,7 +5877,7 @@ void Player_UpdateFallDeath(Player* p) {
       if (++p->stateTimer > 14) {
         Player_SetAction(p, PACT_FALLDEATH, 3);
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_431);
+        PlaySound_082406e0(SE_FALL_431);
       }
       break;
     }
@@ -5919,7 +5897,7 @@ void Player_UpdateFallDeath(Player* p) {
       Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
       if (++p->stateTimer > 59) {
         Player_SetAction(p, PACT_FALLDEATH, 5);
-        gGameFlags |= FLAG030047A4_GAMEOVER;
+        gGameFlags |= GAMEFLAG_GAMEOVER;
       }
       break;
     }
@@ -5946,7 +5924,7 @@ void FUN_0806adc8(Player* p) {
     case 1: {
       if (++p->stateTimer > 14) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         Player_SetAction(p, PACT_DROWNING, 2);
       }
       break;
@@ -5964,7 +5942,7 @@ void FUN_0806adc8(Player* p) {
     case 3: {
       Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
       if (++p->stateTimer > 29) {
-        FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
+        StartBgObjPlttFade(3, 5, 4, 4, 4, 0x1FFF, 2);
         Player_SetAction(p, PACT_DROWNING, 4);
       }
       break;
@@ -5973,7 +5951,7 @@ void FUN_0806adc8(Player* p) {
       Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
       if (++p->stateTimer > 29) {
         Player_SetAction(p, PACT_DROWNING, 5);
-        gGameFlags |= FLAG030047A4_GAMEOVER;
+        gGameFlags |= GAMEFLAG_GAMEOVER;
       }
       break;
     }
@@ -5984,7 +5962,7 @@ void FUN_0806adc8(Player* p) {
   }
 }
 
-// PACT_UNK_30 の行動, 声を出して 0x2E のアニメを4コマごとに効果音付きで流し, 終わって15フレーム後に FUN_08060e90(p, 1) を呼ぶ
+// PACT_HEATSTROKE の行動, 声を出して 46 のアニメを4コマごとに効果音付きで流し, 終わって15フレーム後に FUN_08060e90(p, 1) を呼ぶ
 void FUN_0806af70(Player* p) {
   switch (p->state) {
     case 0: {
@@ -5993,11 +5971,11 @@ void FUN_0806af70(Player* p) {
         if (p->kind == PLAYER_SABATA) {
           PlaySound_082406e0(SONG_750);
         } else {
-          PlaySound_082406e0(SONG_769);
+          PlaySound_082406e0(VO_DJANGO_UGH_769);
         }
       }
       if (++p->stateTimer > 5) {
-        Player_SetAction(p, PACT_UNK_30, 1);
+        Player_SetAction(p, PACT_HEATSTROKE, 1);
       }
       break;
     }
@@ -6006,13 +5984,13 @@ void FUN_0806af70(Player* p) {
         PlaySound_082406e0(SONG_209);
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 46), Q6(1))) {
-        Player_SetAction(p, PACT_UNK_30, 2);
+        Player_SetAction(p, PACT_HEATSTROKE, 2);
       }
       break;
     }
     case 2: {
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_30, 3);
+        Player_SetAction(p, PACT_HEATSTROKE, 3);
         FUN_08060e90(p, 1);
       }
       break;
@@ -6087,7 +6065,7 @@ NON_MATCH void FUN_0806b06c(Player* p) {
       }
       Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       if (++p->stateTimer > 5) {
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         if (p->kind == PLAYER_SABATA) {
           PlaySound_082406e0(SONG_748);
         } else {
@@ -6213,7 +6191,7 @@ void Sabata_BlackSun(Player* p) {
 
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (p->magicFired && p->unk_3ba == 0) {
           gSunMagicUsed = 1;
         }
@@ -6283,7 +6261,7 @@ void FUN_0806b758(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 49), Q6(1));
       if (++p->stateTimer > 15) {
         Player_SetAction(p, PACT_SPECIALDEATH, 3);
-        gGameFlags |= FLAG030047A4_GAMEOVER;
+        gGameFlags |= GAMEFLAG_GAMEOVER;
       }
       break;
     }
@@ -6440,7 +6418,7 @@ void MagicChangeBat_0806bc74(Player* p) {
   if (p->action != PACT_CBAT) {
     Player_SetAction(p, PACT_CBAT, 0);
     p->plttFlashTimer = 0;
-    FUN_08063220(p);
+    Player_ClearElementalCond(p);
     FUN_08066e84(p);
     PlaySound_082406e0(SE_M_CHANGE);
     TransEffect_Create(p, 1, NULL, 32, 56);
@@ -6500,7 +6478,7 @@ void MagicChangeMouse_0806bf18(Player* p) {
   if (p->action != PACT_CMOUSE) {
     Player_SetAction(p, PACT_CMOUSE, 0);
     p->plttFlashTimer = 0;
-    FUN_08063220(p);
+    Player_ClearElementalCond(p);
     FUN_08066e84(p);
     PlaySound_082406e0(SE_M_CHANGE);
     TransEffect_Create(p, 1, NULL, 32, 56);
@@ -6542,7 +6520,7 @@ void MagicSleeping_0806c124(Player* p) {
 
   if (p->action != PACT_SLEEPING) {
     p->coffin = GetPlayerCoffinID();
-    FUN_08063220(p);
+    Player_ClearElementalCond(p);
     FUN_08066e84(p);
     Player_SetAction(p, PACT_SLEEPING, 0);
   }
@@ -6570,7 +6548,7 @@ void FUN_0806c2dc(Player* p) {
   if (p->action != PACT_IDLE) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
 
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 0, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -6585,19 +6563,13 @@ NON_MATCH void Player_UpdateBatWalk(Player* p) {
     Player_SetAction(p, PACT_WALK, 0);
     p->unk_383[2] = 0;
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->unk_383[2] == 0) {
     s32 dir = FUN_08067068(p);
     s32 r;
 
     if (dir & 1) {
-      if (dir > 4) {
-        p->animIDOffset = (8 - dir) >> 1;
-        p->xflip = TRUE;
-      } else {
-        p->animIDOffset = dir >> 1;
-        p->xflip = FALSE;
-      }
+      PLAYER_SET_ANIM_4DIR(p, dir);
       r = Random() & 7;
       if (r < 6) {
         p->facing = dir;
@@ -6628,13 +6600,7 @@ NON_MATCH void Player_UpdateBatWalk(Player* p) {
       } else {
         dir = p->facing;
       }
-      if (dir > 4) {
-        p->animIDOffset = (8 - dir) >> 1;
-        p->xflip = TRUE;
-      } else {
-        p->animIDOffset = dir >> 1;
-        p->xflip = FALSE;
-      }
+      PLAYER_SET_ANIM_4DIR(p, dir);
     }
   } else {
     p->unk_383[2]--;
@@ -6657,13 +6623,7 @@ NON_MATCH void FUN_0806c6d4(Player* p) {
   }
   if ((s16)p->facingHistory[0] >= 0) {
     p->facing = (p->facingHistory[0] & 0xFE) + 1;
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 1, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -6685,7 +6645,7 @@ void FUN_0806c868(Player* p) {
   if (p->unk_382 >= 60) {
     p->unk_382 -= 60;
   } else {
-    p->flag20 &= ~PFLAG20_UNK_0;
+    p->flag20 &= ~PFLAG20_BUSY;
     p->unk_382 = 0;
   }
 
@@ -6694,15 +6654,15 @@ void FUN_0806c868(Player* p) {
 
   AuxSprite_AdvanceAnim(&p->beast, anim);
 
-  if (p->emitter.unk_3 == 0) {
+  if (p->emitter.aliveCount == 0) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
 }
 
-// バットの被弾 (PACT_DAMAGED), アニメ 1 を進めながら knockbackPower の速さで向きの反対へ押し出し毎フレーム 3/4 に減速, 止まったら emitter が kind 3 で残っていれば PACT_UNK_19, そうでなければ PACT_IDLE に戻る
+// バットの被弾 (PACT_DAMAGED), アニメ 1 を進めながら knockback の速さで向きの反対へ押し出し毎フレーム 3/4 に減速, 止まったら emitter が kind 3 で残っていれば PACT_UNK_19, そうでなければ PACT_IDLE に戻る
 void Player_UpdateBatHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->hurtSound != SONG_NONE) {
       PlaySound_082406e0(p->hurtSound);
       p->hurtSound = SONG_NONE;
@@ -6711,13 +6671,13 @@ void Player_UpdateBatHurt(Player* p) {
   }
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 1, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     s32 angle = ((p->facing + 5) & 7) * 32;
 
-    p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-    p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
-    p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
-  } else if (p->emitter.kind == 3 && p->emitter.unk_3 != 0) {
+    p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+    p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+    p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
+  } else if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
     Player_SetAction(p, PACT_UNK_19, 0);
   } else {
     Player_SetAction(p, PACT_IDLE, 0);
@@ -6734,7 +6694,7 @@ void Player_UndoChangeBat(Player* p) {
       p->facing = p->animIDOffset * 2 + 1;
     }
     p->plttFlashTimer = 0;
-    FUN_08063220(p);
+    Player_ClearElementalCond(p);
     FUN_08066e84(p);
     PlaySound_082406e0(SE_M_CHANGE);
     TransEffect_Create(p, 1, NULL, 32, 56);
@@ -6751,7 +6711,7 @@ void Player_UndoChangeBat(Player* p) {
   } else {
     Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_SHOW_OTHER);
     p->human.pos = p->mover.pos;
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
   }
 
   Player_PlayAnim(p, 199, Q6(1));
@@ -6773,7 +6733,7 @@ void Player_UndoChangeBat(Player* p) {
 
 // マウスの待機 (PACT_IDLE), マウスのアニメを向きに合わせて1コマ進める
 void FUN_0806ceb0(Player* p) {
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->action != PACT_IDLE) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
@@ -6785,7 +6745,7 @@ void FUN_0806ceb0(Player* p) {
 s32 FUN_0806cfd4(Player* p) {
   s32 n = 12;
 
-  if (p->emitter.kind == 2 && p->emitter.unk_3 != 0) {
+  if (p->emitter.kind == ELEMCOND_HYOKETU && p->emitter.aliveCount != 0) {
     n = 8;
   }
   if (p->speedPenalty != 0) {
@@ -6804,7 +6764,7 @@ void Player_UpdateMouseWalk(Player* p) {
     p->unk_383[3] = 0;
     Player_SetAction(p, PACT_WALK, 0);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   p->facing = FUN_08067068(p);
   Player_SetMoveDelta(p, FUN_0806cfd4(p));
   Player_SetAnimFacing(p);
@@ -6822,10 +6782,10 @@ void Player_UpdateMouseWalk(Player* p) {
     } else {
       if (p->unk_383[3]) {
         p->unk_383[3] = 0;
-        PlaySound_082406e0(SONG_199);
+        PlaySound_082406e0(SE_FSTEP_MINI_0);
       } else {
         p->unk_383[3] = 1;
-        PlaySound_082406e0(SONG_200);
+        PlaySound_082406e0(SE_FSTEP_MINI_1);
       }
       if (TestMapFlag(MPF_UNK_0)) {
         FUN_08066e9c(p, &p->mover.pos, 1, 2, NULL, 0, SONG_NONE);
@@ -6860,16 +6820,16 @@ void FUN_0806d420(Player* p) {
 
   if (p->action != PACT_UNK_19) {
     Player_SetAction(p, PACT_UNK_19, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
 
   anim = &p->beastAnim;
   AuxAnim_SetAnim(anim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
 
   AuxSprite_AdvanceAnim(&p->beast, anim);
 
-  if (p->emitter.unk_3 == 0) {
+  if (p->emitter.aliveCount == 0) {
     Player_SetAnimFacing(p);
     Player_SetAction(p, PACT_IDLE, 0);
   }
@@ -6885,7 +6845,7 @@ NON_MATCH void FUN_0806d5b0(Player* p) {
   }
   if ((s16)p->facingHistory[0] >= 0) {
     p->facing = (p->facingHistory[0] & 0xFE) + 1;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -6898,18 +6858,18 @@ NON_MATCH void FUN_0806d5b0(Player* p) {
 #endif
 }
 
-// マウスの PACT_UNK_23, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したらアニメ 3 を一巡させて PACT_IDLE に戻る
+// マウスの PACT_LANDING, heightAboveTile を毎フレーム 30 ずつ減らして落下し, 着地したらアニメ 3 を一巡させて PACT_IDLE に戻る
 void FUN_0806d74c(Player* p) {
   Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
   switch (p->state) {
     case 0: {
       p->facing |= 1;
-      PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       if ((u16)p->heightAboveTile <= 30) {
         p->heightAboveTile = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         p->state = 1;
       } else {
         p->heightAboveTile -= 30;
@@ -6930,7 +6890,7 @@ void FUN_0806d74c(Player* p) {
 // マウスの被弾 (PACT_DAMAGED), アニメ 2 を進めながら吹き飛び, knockbackOrigin やタイルから弾かれたときはそちらへ寄せながら炎か煙を出し, 止まったら PACT_UNK_19 か PACT_IDLE に戻る
 void Player_UpdateMouseHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     if (p->hurtSound != SONG_NONE) {
       PlaySound_082406e0(p->hurtSound);
       p->hurtSound = SONG_NONE;
@@ -6939,7 +6899,7 @@ void Player_UpdateMouseHurt(Player* p) {
   }
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     if (p->originKnockback) {
       s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
       s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
@@ -6969,16 +6929,16 @@ void Player_UpdateMouseHurt(Player* p) {
     } else {
       s32 angle = ((p->facing + 5) & 7) * 32;
 
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
     }
-    Camera_Shake(p->hurtbox.knockbackPower);
-    p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
+    Camera_Shake(p->hurtbox.knockback);
+    p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
   } else {
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->originKnockback = FALSE;
     p->tileKnockback = FALSE;
-    if (p->emitter.kind == 3 && p->emitter.unk_3 != 0) {
+    if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
       Player_SetAction(p, PACT_UNK_19, 0);
     } else {
       Player_SetAnimFacing(p);
@@ -6992,7 +6952,7 @@ void Player_UndoChangeMouse(Player* p) {
   if (p->action != PACT_CMOUSE || p->stateTimer == 0) {
     Player_SetAction(p, PACT_CMOUSE, 0);
     p->plttFlashTimer = 0;
-    FUN_08063220(p);
+    Player_ClearElementalCond(p);
     FUN_08066e84(p);
     PlaySound_082406e0(SE_M_CHANGE);
     TransEffect_Create(p, 1, NULL, 32, 56);
@@ -7039,7 +6999,7 @@ void MagicSleeping_Update(Player* p) {
     Player_SetAction(p, PACT_IDLE, 0);
   }
 
-  p->flag20 &= ~PFLAG20_UNK_0;
+  p->flag20 &= ~PFLAG20_BUSY;
   if (p->coffin == COFFIN_SILVER) {
     p->flag20 |= PFLAG20_INVISIBLE;
   }
@@ -7096,7 +7056,7 @@ NON_MATCH void Player_UpdateSleepingWalk(Player* p) {
       } else if (p->beastAnim.cmdIdx == 2) {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_PUDDLE_1);
       }
-    } else if (Player_IsOnRock(p->tile.attr[1])) {
+    } else if (Player_IsOnSoundFloor(p->tile.attr[1])) {
       if (p->beastAnim.cmdIdx == 0) {
         FUN_08066e9c(p, &p->mover.pos, 1, 1, &p->mover.pos, 0, SE_FSTEP_NOISE_1);
       } else if (p->beastAnim.cmdIdx == 2) {
@@ -7266,14 +7226,14 @@ CWolfTargetNode* Player_FindCWolfTarget(Player* p) {
 }
 
 // チェンジウルフ(Cウルフ, 敵の背後をとっているときに使用すると相手に噛みついてライフを吸収する)
-// 残差1命令, p->hurtbox.invincibleTime = 0 で原典は値の 0 を先に作ってからアドレスを組むが, こちらはアドレスが先なので値とアドレスのレジスタが入れ替わる (FUN_08065cb8 で効いた Player_SetInvincibleTime 経由は 0 だと変わらない)
+// 残差1命令, p->hurtbox.iframes = 0 で原典は値の 0 を先に作ってからアドレスを組むが, こちらはアドレスが先なので値とアドレスのレジスタが入れ替わる (FUN_08065cb8 で効いた Player_SetIframes 経由は 0 だと変わらない)
 NON_MATCH void MagicChangeWolf_0806eb40(Player* p) {
 #ifdef NONMATCHING_C
   if (p->action != PACT_CWOLF) {
     gChangeWolfBiteCount = 0;
     gChangeWolfRebite = 0;
     gChangeWolfBiting = 0;
-    p->hurtbox.invincibleTime = 0;
+    p->hurtbox.iframes = 0;
     gCWolfTarget = Player_FindCWolfTarget(p);
     if (gCWolfTarget == NULL) {
       Player_SetAction(p, PACT_CWOLF, 3);
@@ -7465,7 +7425,7 @@ NON_MATCH void MagicChangeWolf_0806eb40(Player* p) {
       p->stateTimer++;
       if (p->stateTimer > 11) {
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_432);
+        PlaySound_082406e0(SE_LANDING);
         Player_SetAction(p, PACT_CWOLF, 5);
       }
       break;
@@ -7511,7 +7471,7 @@ void FUN_0806f1ec(Player* p) {
   }
 }
 
-// FLAG030047A4_UNK_12 のダッシュ, Ene を1消費して16フレーム前へ進む, Ene が無ければ NG 音を鳴らして8フレーム立ち止まる
+// GAMEFLAG_CROSSOVER のダッシュ, Ene を1消費して16フレーム前へ進む, Ene が無ければ NG 音を鳴らして8フレーム立ち止まる
 void FUN_0806f284(Player* p) {
   if (p->action != PACT_DASH) {
     if (p->ene != 0) {
@@ -7785,7 +7745,7 @@ s32 FUN_0806f960(Player* p) {
 }
 
 // ジャンゴの武器の攻撃判定が当たったときのハンドラ, 特効系の追加ダメージを足し, 黒ジャンゴは夜の闇エンチャントで 1.5 倍, 種族持ちの敵に当てるたびにバーサークの攻撃回数を数える
-// 残差は gStat->darkDjangoAtkCounter++ の後 (139/142), 原典は格納のあと gStat とカウンタを読み直して比べるが, agbcc は書いた値と gStat をレジスタに残したまま使う
+// 残差は gStat->berserkCounter++ の後 (139/142), 原典は格納のあと gStat とカウンタを読み直して比べるが, agbcc は書いた値と gStat をレジスタに残したまま使う
 // Tier A-C 試済 (++ / += 1 / 前置 ++ / 代入式), 1.5 倍は (u32) にすると lsrs が揃う, 未: 読み直しの再現
 NON_MATCH void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _) {
 #ifdef NONMATCHING_C
@@ -7822,13 +7782,13 @@ NON_MATCH void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _) {
     return;
   }
 
-  gStat->darkDjangoAtkCounter++;
-  if (gStat->darkDjangoAtkCounter == (gStat->unk_2ac * 3) >> 2) {
+  gStat->berserkCounter++;
+  if (gStat->berserkCounter == (gStat->berserkThresh * 3) >> 2) {
     PlaySound_082406e0(VO_DARK_DJANGO_UGH_770);
     p->plttID_95e = 290;
     p->plttFlashTimer = 64;
     p->unk_448[3] = 64;
-  } else if (gStat->darkDjangoAtkCounter == gStat->unk_2ac >> 1) {
+  } else if (gStat->berserkCounter == gStat->berserkThresh >> 1) {
     PlaySound_082406e0(VO_DARK_DJANGO_UGH_770);
     p->plttID_95e = 290;
     p->plttFlashTimer = 32;
@@ -7845,14 +7805,14 @@ void FUN_0806fad8(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
   HitboxAttributes attrs;
-  u16 invincibleTime;
+  u16 iframes;
 
   p->wpn.basePos = p->mover.pos;
   p->wpn.basePos.y += 230;
   p->wpn.angle = ((p->facing + 5) & 7) << 5;
   power = FUN_0806f900(p);
   attrs = FUN_0806f960(p);
-  invincibleTime = p->wpn.atkInvincibleTime;
+  iframes = p->wpn.iframes;
   if (p->kind == PLAYER_DARK_DJANGO) {
     p->wpn.unk_b8[0] = 12;
     p->wpn.unk_b8[2] = 5;
@@ -7871,7 +7831,7 @@ void FUN_0806fad8(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockbackPower, 1 << WK_SWORD, attrs, invincibleTime);
+  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, 1 << WK_SWORD, attrs, iframes);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -7940,9 +7900,9 @@ void FUN_0806fedc(Player* p) {
   s32 animSpeed;
 
   if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
-    animSpeed = 48;
+    animSpeed = Q6(0.75);
   } else {
-    animSpeed = 64;
+    animSpeed = Q6(1);
   }
 
   switch (p->state) {
@@ -7956,7 +7916,7 @@ void FUN_0806fedc(Player* p) {
     case 1: {
       FUN_0806f780(p);
       FUN_0806f738(p);
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 22), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 22), Q6(1));
       if (!(p->input->down & B_BUTTON)) {
         FUN_0806fad8(p);
         Player_SetAction(p, 3, 4);
@@ -8054,7 +8014,7 @@ void Player_SetupSpearAttack(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
   HitboxAttributes attrs;
-  u16 knockbackPower;
+  u16 knockback;
   s32 r;
 
   p->wpn.basePos = p->mover.pos;
@@ -8068,7 +8028,7 @@ void Player_SetupSpearAttack(Player* p) {
   if (p->kind == PLAYER_DARK_DJANGO) {
     attrs |= HBATTR_18;
   }
-  knockbackPower = wpn->knockbackPower;
+  knockback = wpn->knockback;
   r = FUN_0807012c(&wpn->basePos, wpn->angle, 224);
   if (r != 0) {
     if ((wpn->enchantIdx == 2 || wpn->enchantIdx == 4) && r == 2) {
@@ -8129,7 +8089,7 @@ void Player_SetupSpearAttack(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, knockbackPower, 1 << WK_SPEAR, attrs, wpn->atkInvincibleTime);
+  Hitbox_SetAttack(&wpn->hitbox, power, knockback, 1 << WK_SPEAR, attrs, wpn->iframes);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -8209,9 +8169,9 @@ void FUN_08070844(Player* p) {
   u8 idx;
 
   if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
-    animSpeed = 48;
+    animSpeed = Q6(0.75);
   } else {
-    animSpeed = 64;
+    animSpeed = Q6(1);
   }
 
   switch (p->state) {
@@ -8225,7 +8185,7 @@ void FUN_08070844(Player* p) {
     case 1: {
       FUN_0806f780(p);
       FUN_0806f738(p);
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 25), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 25), Q6(1));
       if (p->stateTimer > 6 && !(p->input->down & B_BUTTON)) {
         Player_SetupSpearAttack(p);
         Player_SetAction(p, 3, 4);
@@ -8317,7 +8277,7 @@ void FUN_08070adc(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockbackPower, 1 << WK_HAMMER, attrs, wpn->atkInvincibleTime);
+  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, 1 << WK_HAMMER, attrs, wpn->iframes);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -8403,9 +8363,9 @@ void FUN_0807106c(Player* p) {
   s32 animSpeed;
 
   if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
-    animSpeed = 48;
+    animSpeed = Q6(0.75);
   } else {
-    animSpeed = 64;
+    animSpeed = Q6(1);
   }
 
   switch (p->state) {
@@ -8467,7 +8427,7 @@ void FUN_08071218(Player* p) {
   p->wpn.angle = ((p->facing + 5) & 7) << 5;
   power = FUN_0806f900(p);
   Video_SetAuxSpritePltt(&p->wpn.gfx, 45);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockbackPower, 1 << WK_OTHERS, 0, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockback, 1 << WK_OTHERS, 0, p->wpn.iframes);
   p->wpn.hitbox.angle = p->wpn.angle;
   p->wpn.gunSpreadAngle = 0;
   p->unk_448[0] = 0;
@@ -8477,7 +8437,7 @@ void FUN_08071218(Player* p) {
 s32 FUN_080712d4(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   if (p->wpn.gunSpreadAngle == 0) {
-    PlaySound_082406e0(SONG_913);
+    PlaySound_082406e0(SE_FIST_ATK);
   }
   if (++p->wpn.gunSpreadAngle <= 5) {
     wpn->atkPos.x = wpn->basePos.x + POLAR_X(100, wpn->angle);
@@ -8494,7 +8454,7 @@ s32 FUN_080712d4(Player* p) {
 void FUN_080713a8(Player* p) {
   switch (p->state) {
     case 0: {
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 32), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 32), Q6(1))) {
         if (p->input->down & B_BUTTON) {
           Player_SetAction(p, 3, 1);
         } else {
@@ -8506,7 +8466,7 @@ void FUN_080713a8(Player* p) {
     }
     case 1: {
       FUN_0806f738(p);
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 33), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 33), Q6(1));
       if (!(p->input->down & B_BUTTON)) {
         FUN_08071218(p);
         Player_SetAction(p, 3, 4);
@@ -8517,7 +8477,7 @@ void FUN_080713a8(Player* p) {
     }
     case 4: {
       p->unk_3d1 = 0;
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 34), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 34), Q6(1));
       if (p->input->pressed & B_BUTTON) {
         p->wpn.unk_ae[0] = 1;
       }
@@ -8528,7 +8488,7 @@ void FUN_080713a8(Player* p) {
     }
     case 5: {
       p->unk_3d1 = 0;
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 33), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 33), Q6(1));
       if (p->input->pressed & B_BUTTON) {
         p->wpn.unk_ae[0] = 1;
       }
@@ -8543,7 +8503,7 @@ void FUN_080713a8(Player* p) {
     }
     case 6: {
       p->unk_3d1 = 0;
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 32), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 32), Q6(1));
       if (++p->stateTimer >= 5) {
         Player_SetAction(p, 0, 0);
       }
@@ -8664,7 +8624,7 @@ void Player_UpdateSolarGunAttack(Player* p) {
 
           VEC3_SET(ofs, 0, 0, 0);
           VEC3_SET(size, 32, 32, 32);
-          FUN_080dbd08(&p->mover.pos, &ofs, &size, 1, 3, 4);
+          DustManager_SpawnNoPause(&p->mover.pos, &ofs, &size, 1, 3, 4);
         }
         angle = ((p->facing + 5) & 7) * 32;
         p->mover.delta.x = -POLAR_X(p->knockbackSpeed, angle);
@@ -8811,7 +8771,7 @@ void Player_UpdateMegaBusterAttack(Player* p) {
 
           VEC3_SET(ofs, 0, 0, 0);
           VEC3_SET(size, 32, 32, 32);
-          FUN_080dbd08(&p->mover.pos, &ofs, &size, 1, 3, 4);
+          DustManager_SpawnNoPause(&p->mover.pos, &ofs, &size, 1, 3, 4);
         }
         angle = ((p->facing + 5) & 7) * 32;
         p->mover.delta.x = -POLAR_X(p->knockbackSpeed, angle);
@@ -8979,7 +8939,7 @@ void Player_UpdateSabataAttack(Player* p) {
 
         VEC3_SET(ofs, 0, 0, 0);
         VEC3_SET(size, 32, 0, 32);
-        FUN_080dbcec(&p->mover.pos, &ofs, &size, 1, 2, 4);
+        DustManager_Spawn(&p->mover.pos, &ofs, &size, 1, 2, 4);
       }
       p->wpn.gunSpreadAngle = (p->wpn.gunSpreadAngle + 16) & 0xFF;
       Player_ShowGunSpread(p, p->wpn.gunSpreadAngle, &p->mover.pos);
@@ -9097,13 +9057,7 @@ void Player_UpdateLockedTurn(Player* p) {
     } else {
       p->facing = (p->facing + 1) & 7;
     }
-    if (p->facing > 4) {
-      p->animIDOffset = 8 - p->facing;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     p->stateTimer = 0;
   } else {
     p->stateTimer++;
@@ -9196,7 +9150,7 @@ void Player_UpdateMoveTo(Player* p) {
     } else {
       p->facing = Angle_ToDir8(angle);
     }
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
     Player_ReturnToLockedIdle(p);
     Player_NotifyLockedDone(p);
@@ -9221,14 +9175,14 @@ void Player_UpdateMoveTo(Player* p) {
     u32 dir = ((((angle + 16) & 0xFF) >> 5) + 3) & 7;
 
     p->facing = dir;
-    PLAYER_SET_ANIM_DIR(p, dir);
+    PLAYER_SET_ANIM_8DIR(p, dir);
   }
   if ((p->human.animCmdIdx & 3) == 0 && p->human.animCmdTimer == 0 && !HasGoodCond(p, GOOD_NINJA)) {
     if (HasGoodCond(p, GOOD_MINI)) {
       if (p->human.animCmdIdx == 0) {
-        PlaySound_082406e0(SONG_200);
+        PlaySound_082406e0(SE_FSTEP_MINI_1);
       } else {
-        PlaySound_082406e0(SONG_199);
+        PlaySound_082406e0(SE_FSTEP_MINI_0);
       }
     } else if (p->elevatorFlags != 0 || p->tile.stairs[1] == 0) {
       if (p->human.animCmdIdx == 0) {
@@ -9262,7 +9216,7 @@ NON_MATCH void FUN_08072d48(Player* p) {
     if (p->targetDir >= 0) {
       p->facing = p->targetDir;
       p->targetDir = -1;
-      PLAYER_SET_ANIM_DIR(p, p->facing);
+      PLAYER_SET_ANIM_8DIR(p, p->facing);
     }
     if (p->unk_4a6) {
       if (p->unk_4a7) {
@@ -9300,7 +9254,7 @@ NON_MATCH void FUN_08072d48(Player* p) {
     moving = TRUE;
     dir = Angle_ToDir8(ArcTan2_8(dx, dz));
     p->facing = dir;
-    PLAYER_SET_ANIM_DIR(p, dir);
+    PLAYER_SET_ANIM_8DIR(p, dir);
     angle = ((p->facing + 1) & 7) << 5;
     cosv = COS(angle);
     sinv = SIN(angle);
@@ -9345,7 +9299,7 @@ void FUN_0807304c(Player* p) {
     case 0: {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (p->unk_4a6) {
           p->state = 1;
         } else {
@@ -9371,7 +9325,7 @@ void FUN_0807304c(Player* p) {
     case 3: {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 11), Q6(1))) {
-        PLAYER_SET_ANIM_DIR(p, p->facing);
+        PLAYER_SET_ANIM_8DIR(p, p->facing);
         Player_ReturnToLockedIdle(p);
         Player_NotifyLockedDone(p);
       }
@@ -9400,7 +9354,7 @@ void Player_UpdateWarp(Player* p) {
     }
     case 2: {
       if (p->kind == PLAYER_SABATA && p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_807);
+        PlaySound_082406e0(SE_WARP_807);
       }
       p->shadowOffset.z = 30;
       p->human.flags |= SPRFLAG_AFFINE;
@@ -9470,7 +9424,7 @@ void Player_UpdateWarp(Player* p) {
     }
     case 7: {
       if (p->kind == PLAYER_SABATA && p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_807);
+        PlaySound_082406e0(SE_WARP_807);
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
       p->human.flags |= SPRFLAG_AFFINE;
@@ -9508,7 +9462,7 @@ void FUN_08073574(Player* p) {
         PlaySound_082406e0(SE_COVER);
       }
       if (p->stateTimer == 8) {
-        PlaySound_082406e0(SONG_219);
+        PlaySound_082406e0(SE_WALL_SLIDE);
       }
       p->stateTimer++;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 48), Q6(1))) {
@@ -9565,19 +9519,13 @@ void FUN_080736b8(Player* p) {
       Camera_LookAt(&pos);
       if (p->unk_3f0 < 2) {
         if (p->unk_3f0 != 0) {
-          FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 16);
+          StartBgObjPlttFade(3, 3, 4, 4, 4, 0x1FFF, 16);
         } else {
-          FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 1);
+          StartBgObjPlttFade(3, 3, 4, 4, 4, 0x1FFF, 1);
         }
       }
-      if (p->facing > 4) {
-        p->animIDOffset = (8 - p->facing) >> 1;
-        p->xflip = TRUE;
-      } else {
-        p->animIDOffset = p->facing >> 1;
-        p->xflip = FALSE;
-      }
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), 64);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
       PlaySound_082406e0(SE_FALL_SURPRISE);
       if (p->kind == PLAYER_SABATA) {
         PlaySound_082406e0(VO_SABATA_PITFALL);
@@ -9593,7 +9541,7 @@ void FUN_080736b8(Player* p) {
       if (++p->stateTimer >= 6) {
         p->floatHeight = 0;
         p->human.priority = 1;
-        PlaySound_082406e0(SONG_430);
+        PlaySound_082406e0(SE_FALL_430);
         Player_SetAction(p, 22, 2);
       }
       break;
@@ -9602,7 +9550,7 @@ void FUN_080736b8(Player* p) {
       u16* height;
 
       Player_SetFlag35a(p, 4);
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
       height = &p->floatHeight;
       *height -= 60;
       if (++p->stateTimer >= 30) {
@@ -9625,7 +9573,7 @@ void FUN_080738b4(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         p->stateTimer++;
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 18), Q6(1));
@@ -9633,14 +9581,14 @@ void FUN_080738b4(Player* p) {
         p->floatHeight -= 30;
       } else {
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_432);
-        Player_SetAction(p, PACT_UNK_23, 1);
+        PlaySound_082406e0(SE_LANDING);
+        Player_SetAction(p, PACT_LANDING, 1);
       }
       break;
     }
     case 1: {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 19), Q6(1))) {
-        PLAYER_SET_ANIM_DIR(p, p->facing);
+        PLAYER_SET_ANIM_8DIR(p, p->facing);
         Player_ReturnToLockedIdle(p);
         Player_NotifyLockedDone(p);
       }
@@ -9655,7 +9603,7 @@ void FUN_080739e0(Player* p) {
     case 0: {
       s32 angle;
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
         PlaySound_082406e0(SE_DAMAGE);
         p->stateTimer++;
@@ -9741,7 +9689,7 @@ void Player_UpdateLockedBlownAway(Player* p) {
     }
     case 4: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(SONG_219);
+        PlaySound_082406e0(SE_WALL_SLIDE);
         p->stateTimer++;
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 45), Q6(1))) {
@@ -9764,7 +9712,7 @@ void FUN_08073e18(Player* p) {
     case 0: {
       s32 angle;
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
         if (p->kind != PLAYER_SABATA) {
           PlaySound_082406e0(VO_DJANGO_DEATH);
@@ -9992,7 +9940,7 @@ void FUN_080744bc(Player* p) {
 
   switch (p->state) {
     case 0: {
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 38), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 38), Q6(1))) {
         PlaySound_082406e0(SE_GUN_AIM);
         Player_SetAction(p, 3, 1);
         Player_NotifyLockedDone(p);
@@ -10000,7 +9948,7 @@ void FUN_080744bc(Player* p) {
       break;
     }
     case 1: {
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), Q6(1));
       if (++p->stateTimer >= 6) {
         Player_SetAction(p, 3, 2);
         Entity080c1abc_Create((u32)p, 32, p->unk_4a7);
@@ -10010,19 +9958,19 @@ void FUN_080744bc(Player* p) {
     case 2: {
       u16* timer;
 
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), Q6(1));
       timer = &p->stateTimer;
       if (*timer == 6) {
-        PlaySound_082406e0(SONG_631);
+        PlaySound_082406e0(SE_ROCKBUSTER_CHARGING);
       }
       if (++*timer >= 60) {
-        PlaySound_082406e0(SONG_632);
+        PlaySound_082406e0(SE_ROCKBUSTER_CHARGED);
         Player_SetAction(p, 3, 3);
       }
       break;
     }
     case 3: {
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), Q6(1));
       if (++p->stateTimer >= 8) {
         Player_SetAction(p, 3, 4);
         Player_NotifyLockedDone(p);
@@ -10030,7 +9978,7 @@ void FUN_080744bc(Player* p) {
       break;
     }
     case 4: {
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), Q6(1));
       break;
     }
     case 5: {
@@ -10040,20 +9988,20 @@ void FUN_080744bc(Player* p) {
         PlaySound_082406e0(SE_ROCKBUSTER_FIRE);
         ++*timer;
       }
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 40), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 40), Q6(1))) {
         Player_SetAction(p, 3, 6);
       }
       break;
     }
     case 6: {
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), Q6(1));
       if (++p->stateTimer >= 15) {
         Player_SetAction(p, 3, 7);
       }
       break;
     }
     case 7: {
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 38), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 38), Q6(1))) {
         Player_ReturnToLockedIdle(p);
         Player_NotifyLockedDone(p);
       }
@@ -10087,8 +10035,8 @@ NON_MATCH void FUN_080746ec(Player* p) {
     } else {
       p->facing = Angle_ToDir8(angle);
     }
-    PLAYER_SET_ANIM_DIR(p, p->facing);
-    Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), 64);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
+    Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
     Player_ReturnToLockedIdle(p);
     Player_NotifyLockedDone(p);
     return;
@@ -10122,15 +10070,15 @@ NON_MATCH void FUN_080746ec(Player* p) {
     }
   }
   p->facing = Angle_ToDir8(angle);
-  PLAYER_SET_ANIM_DIR(p, p->facing);
-  Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 1), 32);
+  PLAYER_SET_ANIM_8DIR(p, p->facing);
+  Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 1), Q6(0.5));
 #else
   INCFUNC("asm/func/FUN_080746ec.inc");
 #endif
 }
 
 void FUN_08074994(Player* p) {
-  p->plttID_95e = 295;
+  p->plttID_95e = OBP_ELEMENT(6);
   p->plttFlashTimer = 24;
 }
 
@@ -10181,7 +10129,7 @@ NON_MATCH void FUN_08074a40(Player* p) {
       } else {
         p->stateTimer++;
       }
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 54), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 54), Q6(1));
       if (p->facing == p->targetDir) {
         if (p->facing == 1) {
           p->state = 1;
@@ -10196,7 +10144,7 @@ NON_MATCH void FUN_08074a40(Player* p) {
     case 1: {
       p->animIDOffset = 0;
       p->xflip = FALSE;
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 52), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 52), Q6(1))) {
         p->state = 2;
       }
       break;
@@ -10204,13 +10152,13 @@ NON_MATCH void FUN_08074a40(Player* p) {
     case 2: {
       p->animIDOffset = 0;
       p->xflip = FALSE;
-      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 53), 64);
+      Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 53), Q6(1));
       break;
     }
     case 3: {
       p->animIDOffset = 0;
       p->xflip = FALSE;
-      if (Player_PlayAnim(p, 0x201, 64)) {
+      if (Player_PlayAnim(p, 0x201, Q6(1))) {
         Player_SetAnimFacing(p);
         p->animIDOffset--;
         p->state = 0;
@@ -10221,7 +10169,7 @@ NON_MATCH void FUN_08074a40(Player* p) {
     case 4: {
       p->animIDOffset = 0;
       p->xflip = TRUE;
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 55), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 55), Q6(1))) {
         p->state = 7;
       }
       break;
@@ -10229,7 +10177,7 @@ NON_MATCH void FUN_08074a40(Player* p) {
     case 5: {
       p->animIDOffset = 0;
       p->xflip = TRUE;
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 56), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 56), Q6(1))) {
         if (++p->unk_4a7 > 1) {
           p->state = 7;
         }
@@ -10239,7 +10187,7 @@ NON_MATCH void FUN_08074a40(Player* p) {
     case 6: {
       p->animIDOffset = 0;
       p->xflip = FALSE;
-      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 55), 64)) {
+      if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 55), Q6(1))) {
         p->state = 7;
       }
       break;
@@ -10306,13 +10254,7 @@ NON_MATCH void Player_UpdateBatMoveTo(Player* p) {
     } else {
       p->facing = (((((angle + 0x10) & 0xFF) >> 5) + 3) & 7) | 1;
     }
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_SetAction(p, PACT_IDLE, 0);
     p->lockedUpdate = FUN_08074d90;
     Player_NotifyLockedDone(p);
@@ -10320,13 +10262,7 @@ NON_MATCH void Player_UpdateBatMoveTo(Player* p) {
     p->mover.delta.x = POLAR_X(9, angle);
     p->mover.delta.z = POLAR_Z(9, angle);
     p->facing = (((((angle + 0x10) & 0xFF) >> 5) + 3) & 7) | 1;
-    if (p->facing > 4) {
-      p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = TRUE;
-    } else {
-      p->animIDOffset = p->facing >> 1;
-      p->xflip = FALSE;
-    }
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
   }
   AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 0, p->animIDOffset, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
@@ -10465,7 +10401,7 @@ void Player_RevertBatToDarkDjango(Player* p) {
   } else {
     Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_SHOW_OTHER);
     p->human.pos = p->mover.pos;
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
   }
 
   Player_PlayAnim(p, 199, Q6(1));
@@ -10509,7 +10445,7 @@ void Player_UpdateMouseMoveTo(Player* p) {
     } else {
       p->facing = Angle_ToDir8(angle);
     }
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animIDOffset, p->xflip);
     AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
     Player_SetAction(p, PACT_IDLE, 0);
@@ -10532,13 +10468,13 @@ void Player_UpdateMouseMoveTo(Player* p) {
       }
     }
     p->facing = Angle_ToDir8(angle);
-    PLAYER_SET_ANIM_DIR(p, p->facing);
+    PLAYER_SET_ANIM_8DIR(p, p->facing);
     AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 1, p->animIDOffset, p->xflip);
     AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
   }
 }
 
-// マウスの落下 (PACT_UNK_22), カメラを上に向けてアニメ 2 を1コマ当て, 6フレーム後に沈み始めて 30 フレームで消える
+// マウスの落下 (PACT_FALL), カメラを上に向けてアニメ 2 を1コマ当て, 6フレーム後に沈み始めて 30 フレームで消える
 void Player_UpdateMouseFall(Player* p) {
   switch (p->state) {
     case 0: {
@@ -10550,16 +10486,16 @@ void Player_UpdateMouseFall(Player* p) {
       Camera_LookAt(&pos);
       if (p->unk_3f0 < 2) {
         if (p->unk_3f0 != 0) {
-          FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 16);
+          StartBgObjPlttFade(3, 3, 4, 4, 4, 0x1FFF, 16);
         } else {
-          FUN_0823ce68(3, 3, 4, 4, 4, 0x1FFF, 1);
+          StartBgObjPlttFade(3, 3, 4, 4, 4, 0x1FFF, 1);
         }
       }
-      PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+      PLAYER_SET_ANIM_4DIR(p, p->facing);
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       PlaySound_082406e0(SE_FALL_SURPRISE);
-      Player_SetAction(p, PACT_UNK_22, 1);
+      Player_SetAction(p, PACT_FALL, 1);
       p->floatHeight = 0;
       break;
     }
@@ -10568,8 +10504,8 @@ void Player_UpdateMouseFall(Player* p) {
       if (++p->stateTimer > 5) {
         p->floatHeight = 0;
         p->beast.priority = 1;
-        PlaySound_082406e0(SONG_430);
-        Player_SetAction(p, PACT_UNK_22, 2);
+        PlaySound_082406e0(SE_FALL_430);
+        Player_SetAction(p, PACT_FALL, 2);
       }
       break;
     }
@@ -10578,7 +10514,7 @@ void Player_UpdateMouseFall(Player* p) {
       p->floatHeight -= 60;
       if (++p->stateTimer > 29) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY);
-        Player_SetAction(p, PACT_UNK_22, 3);
+        Player_SetAction(p, PACT_FALL, 3);
         Player_NotifyLockedDone(p);
       }
       break;
@@ -10590,12 +10526,12 @@ void Player_UpdateMouseFall(Player* p) {
   }
 }
 
-// 操作不能中に lockedUpdate から回すマウスの着地 (PACT_UNK_23), state 0 は floatHeight を 30 ずつ下げてアニメ 2 を進め, 着地したら state 1 でアニメ 3 を一巡させて lockedUpdate を FUN_08075df8 に戻す
+// 操作不能中に lockedUpdate から回すマウスの着地 (PACT_LANDING), state 0 は floatHeight を 30 ずつ下げてアニメ 2 を進め, 着地したら state 1 でアニメ 3 を一巡させて lockedUpdate を FUN_08075df8 に戻す
 void Player_UpdateMouseLand(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+        PLAYER_SET_ANIM_4DIR(p, p->facing);
         p->stateTimer++;
       }
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animIDOffset, p->xflip);
@@ -10604,8 +10540,8 @@ void Player_UpdateMouseLand(Player* p) {
         p->floatHeight -= 30;
       } else {
         p->floatHeight = 0;
-        PlaySound_082406e0(SONG_432);
-        Player_SetAction(p, PACT_UNK_23, 1);
+        PlaySound_082406e0(SE_LANDING);
+        Player_SetAction(p, PACT_LANDING, 1);
       }
       break;
     }
@@ -10918,7 +10854,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
@@ -10934,10 +10870,10 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5 && p->kind == PLAYER_SOLAR_DJANGO) {
-          PlaySound_082406e0(VO_TAIYO_R);
+          PlaySound_082406e0(VO_RDJANGO_TAIYO);
         }
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 9), Q6(1));
@@ -10974,7 +10910,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -11048,7 +10984,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       }
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           Player_SetAction(p, PACT_UNK_7, 4);
         } else if (!Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
@@ -11064,7 +11000,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->unk_404 < 5) {
         if (++p->unk_404 == 5) {
           PlaySound_082406e0(NOISE_DARK_CHARGE);
@@ -11111,7 +11047,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
@@ -11312,7 +11248,7 @@ NON_MATCH s32 FUN_080788d0(Player* p) {
 
   if (p->action != 20 && p->unk_3ff >= 0) {
     p->knockbackTimer = 0;
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->floatHeight = 0;
     Player_SetAction(p, 20, 0);
   }
@@ -11323,7 +11259,7 @@ NON_MATCH s32 FUN_080788d0(Player* p) {
   if (!HasGoodCond(p, GOOD_MINI) && (p->input->pressed & L_BUTTON)) {
     action = Player_GetMagicAction(p);
   }
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     action = p->blownAway ? PACT_BLOWN_AWAY : 24;
     if (gCWolfTarget != NULL && gChangeWolfBiting != 0) {
       if (!(gCWolfTarget->flags & 1)) {
@@ -11475,49 +11411,48 @@ void Player_PostUpdateHuman(Player* p) {
   }
 }
 
-// clang-format off
-static const PlayerFunc sDjangoActionFuncs[33] = {
-    [PACT_IDLE] = FUN_08066f7c,
-    [PACT_WALK] = FUN_080672b0,
-    [PACT_DASH] = MagicDash_Update,
-    [PACT_ATTACK] = FUN_080695ec,
-    [PACT_WALL] = FUN_08067510,
-    [PACT_UNK_5] = FUN_08067de8,
-    [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-    [PACT_UNK_7] = Player_UpdateSolarCharge,
-    [PACT_UNK_8] = Player_UpdateSolarStand,
-    [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
-    [PACT_TRANSFORM] = MagicTransform_0806b92c,
-    [PACT_CWOLF] = MagicChangeWolf_0806eb40,
-    [PACT_CBAT] = MagicChangeBat_0806bc74,
-    [PACT_CMOUSE] = MagicChangeMouse_0806bf18,
-    [PACT_SLEEPING] = MagicSleeping_0806c124,
-    [PACT_FREEZE] = MagicFreeze_08069710,
-    [PACT_HEALING] = MagicHealing_08069928,
-    [PACT_DYNAMITE] = MagicDynamite_08069b18,
-    [PACT_UNK_18] = FUN_08069c8c,
-    [PACT_UNK_19] = FUN_0806961c,
-    [PACT_UNK_20] = FUN_08069648,
-    [PACT_GRABBED] = FUN_0806a050,
-    [PACT_UNK_22] = Player_UpdateFall,
-    [PACT_UNK_23] = FUN_08069f60,
-    [PACT_DAMAGED] = Player_UpdateHurt,
-    [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-    [PACT_UNK_26] = Player_UpdateDeath,
-    [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
-    [PACT_FALLDEATH] = Player_UpdateFallDeath,
-    [PACT_DROWNING] = FUN_0806adc8,
-    [PACT_UNK_30] = FUN_0806af70,
-    [PACT_SPECIALDEATH] = FUN_0806f1ec,
-    [PACT_UNK_32] = FUN_0806b06c,
-};  // 0x085ABCAC
-// clang-format on
-
 // プレイヤーの毎フレーム更新本体, unk_1c の状態ごとに行動関数を呼び, 通常状態では段差を登れるかも見る
 void Player_UpdateDjango(Player* p) {
+  // clang-format off
+  static const PlayerFunc sDjangoActionFuncs[33] = {
+      [PACT_IDLE] = FUN_08066f7c,
+      [PACT_WALK] = FUN_080672b0,
+      [PACT_DASH] = MagicDash_Update,
+      [PACT_ATTACK] = FUN_080695ec,
+      [PACT_WALL] = FUN_08067510,
+      [PACT_PUSH] = FUN_08067de8,
+      [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
+      [PACT_UNK_7] = Player_UpdateSolarCharge,
+      [PACT_REFUELING] = Player_UpdateSolarStand,
+      [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
+      [PACT_TRANSFORM] = MagicTransform_0806b92c,
+      [PACT_CWOLF] = MagicChangeWolf_0806eb40,
+      [PACT_CBAT] = MagicChangeBat_0806bc74,
+      [PACT_CMOUSE] = MagicChangeMouse_0806bf18,
+      [PACT_SLEEPING] = MagicSleeping_0806c124,
+      [PACT_FREEZE] = MagicFreeze_08069710,
+      [PACT_HEALING] = MagicHealing_08069928,
+      [PACT_DYNAMITE] = MagicDynamite_08069b18,
+      [PACT_UNK_18] = FUN_08069c8c,
+      [PACT_UNK_19] = FUN_0806961c,
+      [PACT_UNK_20] = FUN_08069648,
+      [PACT_GRABBED] = FUN_0806a050,
+      [PACT_FALL] = Player_UpdateFall,
+      [PACT_LANDING] = FUN_08069f60,
+      [PACT_DAMAGED] = Player_UpdateHurt,
+      [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
+      [PACT_DEATH_PRONE] = Player_UpdateDeath,
+      [PACT_DEATH_SUPINE] = Player_UpdateBlownAwayDeath,
+      [PACT_FALLDEATH] = Player_UpdateFallDeath,
+      [PACT_DROWNING] = FUN_0806adc8,
+      [PACT_HEATSTROKE] = FUN_0806af70,
+      [PACT_SPECIALDEATH] = FUN_0806f1ec,
+      [PACT_UNK_32] = FUN_0806b06c,
+  };  // 0x085ABCAC
+  // clang-format on
   s32 action;
 
-  Player_SetFlag20(p, PFLAG20_UNK_14);
+  Player_SetFlag20(p, PFLAG20_UPDATED);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -11592,7 +11527,7 @@ void Player_UpdateDjango(Player* p) {
       if (p->action >= PACT_FALLDEATH && p->action <= PACT_SPECIALDEATH) {
         action = p->action;
       } else {
-        action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
+        action = (p->blownAway != 0) ? PACT_DEATH_SUPINE : PACT_DEATH_PRONE;
       }
       sDjangoActionFuncs[action](p);
       Player_PostUpdateHuman(p);
@@ -11609,39 +11544,39 @@ void Player_UpdateDjango(Player* p) {
   }
 }
 
-// clang-format off
-static const PlayerFunc sSabataActionFuncs[32] = {
-    [PACT_IDLE] = FUN_08066f7c,
-    [PACT_WALK] = FUN_080672b0,
-    [PACT_DASH] = Magic_ZeroShift,
-    [PACT_ATTACK] = Player_UpdateSabataAttack,
-    [PACT_WALL] = FUN_08067510,
-    [PACT_UNK_5] = FUN_08067de8,
-    [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-    [PACT_UNK_7] = Player_UpdateDarkCharge,
-    [PACT_UNK_8] = Player_UpdateSolarStand,
-    [PACT_SUN_MAGIC] = Sabata_BlackSun,
-    [PACT_UNK_19] = FUN_0806961c,
-    [PACT_UNK_20] = FUN_08069648,
-    [PACT_GRABBED] = FUN_0806a050,
-    [PACT_UNK_22] = Player_UpdateFall,
-    [PACT_UNK_23] = FUN_08069f60,
-    [PACT_DAMAGED] = Player_UpdateHurt,
-    [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-    [PACT_UNK_26] = Player_UpdateDeath,
-    [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
-    [PACT_FALLDEATH] = Player_UpdateFallDeath,
-    [PACT_DROWNING] = FUN_0806adc8,
-    [PACT_UNK_30] = FUN_0806af70,
-    [PACT_SPECIALDEATH] = FUN_0806b758,
-};  // 0x085ABD30
-// clang-format on
-
 // サバタの毎フレーム更新本体, 状態ごとに行動関数を呼び, 日光を浴びると太陽ゲージの半分だけ焼け, 通常状態では段差を登れるかも見る
 void Player_UpdateSabata(Player* p) {
+  // clang-format off
+  static const PlayerFunc sSabataActionFuncs[32] = {
+      [PACT_IDLE] = FUN_08066f7c,
+      [PACT_WALK] = FUN_080672b0,
+      [PACT_DASH] = Magic_ZeroShift,
+      [PACT_ATTACK] = Player_UpdateSabataAttack,
+      [PACT_WALL] = FUN_08067510,
+      [PACT_PUSH] = FUN_08067de8,
+      [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
+      [PACT_UNK_7] = Player_UpdateDarkCharge,
+      [PACT_REFUELING] = Player_UpdateSolarStand,
+      [PACT_SUN_MAGIC] = Sabata_BlackSun,
+      [PACT_UNK_19] = FUN_0806961c,
+      [PACT_UNK_20] = FUN_08069648,
+      [PACT_GRABBED] = FUN_0806a050,
+      [PACT_FALL] = Player_UpdateFall,
+      [PACT_LANDING] = FUN_08069f60,
+      [PACT_DAMAGED] = Player_UpdateHurt,
+      [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
+      [PACT_DEATH_PRONE] = Player_UpdateDeath,
+      [PACT_DEATH_SUPINE] = Player_UpdateBlownAwayDeath,
+      [PACT_FALLDEATH] = Player_UpdateFallDeath,
+      [PACT_DROWNING] = FUN_0806adc8,
+      [PACT_HEATSTROKE] = FUN_0806af70,
+      [PACT_SPECIALDEATH] = FUN_0806b758,
+  };  // 0x085ABD30
+  // clang-format on
+
   s32 action;
 
-  Player_SetFlag20(p, PFLAG20_UNK_14);
+  Player_SetFlag20(p, PFLAG20_UPDATED);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -11708,7 +11643,7 @@ void Player_UpdateSabata(Player* p) {
       if (p->action >= PACT_FALLDEATH && p->action <= PACT_SPECIALDEATH) {
         action = p->action;
       } else {
-        action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
+        action = (p->blownAway != 0) ? PACT_DEATH_SUPINE : PACT_DEATH_PRONE;
       }
       sSabataActionFuncs[action](p);
       Player_PostUpdateHuman(p);
@@ -11730,7 +11665,7 @@ s32 Player_GetBatAction(Player* p) {
   u32 action;
   if (p->action != PACT_UNK_20 && p->unk_3ff >= 0) {
     p->knockbackTimer = 0;
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->floatHeight = 0;
     Player_SetAction(p, PACT_UNK_20, 0);
   }
@@ -11738,7 +11673,7 @@ s32 Player_GetBatAction(Player* p) {
   if (p->input->pressed & L_BUTTON) {
     action = Player_GetMagicAction(p);
   }
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     action = PACT_DAMAGED;
   } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_CBAT) {
     if ((p->input->pressed & A_BUTTON) && MapItemManager_TryOpen(&p->mover)) {
@@ -11901,12 +11836,12 @@ void Player_UpdateBat(Player* p) {
 
 // --------------------------------------------
 
-// マウス時の次の行動を入力から決める, Player_GetBatAction の別版, A で何も開けられなければ PACT_WALL に, PACT_UNK_23 / PACT_WALL / PACT_CMOUSE 中も行動を据え置く
+// マウス時の次の行動を入力から決める, Player_GetBatAction の別版, A で何も開けられなければ PACT_WALL に, PACT_LANDING / PACT_WALL / PACT_CMOUSE 中も行動を据え置く
 s32 Player_GetMouseAction(Player* p) {
   u32 action;
   if (p->action != PACT_UNK_20 && p->unk_3ff >= 0) {
     p->knockbackTimer = 0;
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->floatHeight = 0;
     Player_SetAction(p, PACT_UNK_20, 0);
   }
@@ -11914,9 +11849,9 @@ s32 Player_GetMouseAction(Player* p) {
   if (p->input->pressed & L_BUTTON) {
     action = Player_GetMagicAction(p);
   }
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     action = PACT_DAMAGED;
-  } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_UNK_23 && action != PACT_WALL && action != PACT_CMOUSE) {
+  } else if (action != PACT_DAMAGED && action != PACT_UNK_20 && action != PACT_UNK_19 && action != PACT_LANDING && action != PACT_WALL && action != PACT_CMOUSE) {
     struct Input* input = p->input;
     if (input->pressed & A_BUTTON) {
       if (MapItemManager_TryOpen(&p->mover)) {
@@ -11978,12 +11913,12 @@ void Player_UpdateMouse(Player* p) {
       [PACT_CMOUSE] = Player_UndoChangeMouse,
       [PACT_UNK_19] = FUN_0806d420,
       [PACT_UNK_20] = FUN_0806d5b0,
-      [PACT_UNK_23] = FUN_0806d74c,
+      [PACT_LANDING] = FUN_0806d74c,
       [PACT_DAMAGED] = Player_UpdateMouseHurt,
   };  // 0x085ABE1C
   // clang-format on
 
-  Player_SetFlag20(p, PFLAG20_UNK_14 | PFLAG20_SNEAKING | PFLAG20_UNK_18);
+  Player_SetFlag20(p, PFLAG20_UPDATED | PFLAG20_SNEAKING | PFLAG20_UNK_18);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -12032,7 +11967,7 @@ s32 Player_GetSleepingAction(Player* p) {
   u32 action;
   if (p->action != PACT_UNK_20 && p->unk_3ff >= 0) {
     p->knockbackTimer = 0;
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->floatHeight = 0;
     Player_SetAction(p, PACT_UNK_20, 0);
   }
@@ -12106,7 +12041,7 @@ void Player_UpdateSleeping(Player* p) {
   };  // 0x085ABE88
   // clang-format on
 
-  Player_SetFlag20(p, PFLAG20_UNK_14 | PFLAG20_UNK_18);
+  Player_SetFlag20(p, PFLAG20_UPDATED | PFLAG20_UNK_18);
   p->unk_4bc = 0;
   p->unk_4c0 = 0;
   if (p->unk_38a != 0) {
@@ -12143,19 +12078,19 @@ void Player_UpdateSleeping(Player* p) {
   }
 }
 
-// FLAG030047A4_UNK_12 が立っているときの updateCallback (ただし、 FLAG030047A4_UNK_12 の用途がわからないので、この関数の正確な役割もまだ不明, 不使用かも?)
-void FUN_08079f1c(Player* p) {
+// GAMEFLAG_CROSSOVER が立っているときの updateCallback
+void Player_UpdateCrossoverDjango(Player* p) {
   // clang-format off
-  static const PlayerFunc PTR_ARRAY_085abedc[28] = {
+  static const PlayerFunc sCrossoverDjangoActionFuncs[28] = {
       [PACT_IDLE] = FUN_08066f7c,
       [PACT_WALK] = FUN_080672b0,
       [PACT_DASH] = FUN_0806f284,
       [PACT_ATTACK] = FUN_080695ec,
       [PACT_WALL] = FUN_08067510,
-      [PACT_UNK_5] = FUN_08067de8,
+      [PACT_PUSH] = FUN_08067de8,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
       [PACT_UNK_7] = Player_UpdateSolarCharge,
-      [PACT_UNK_8] = Player_UpdateSolarStand,
+      [PACT_REFUELING] = Player_UpdateSolarStand,
       [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
       [PACT_TRANSFORM] = MagicTransform_0806b92c,
       [PACT_CWOLF] = MagicChangeWolf_0806eb40,
@@ -12169,18 +12104,18 @@ void FUN_08079f1c(Player* p) {
       [PACT_UNK_19] = FUN_0806961c,
       [PACT_UNK_20] = FUN_08069648,
       [PACT_GRABBED] = FUN_0806a050,
-      [PACT_UNK_22] = Player_UpdateFall,
-      [PACT_UNK_23] = FUN_08069f60,
+      [PACT_FALL] = Player_UpdateFall,
+      [PACT_LANDING] = FUN_08069f60,
       [PACT_DAMAGED] = Player_UpdateHurt,
       [PACT_BLOWN_AWAY] = Player_UpdateBlownAway,
-      [PACT_UNK_26] = Player_UpdateDeath,
-      [PACT_UNK_27] = Player_UpdateBlownAwayDeath,
+      [PACT_DEATH_PRONE] = Player_UpdateDeath,
+      [PACT_DEATH_SUPINE] = Player_UpdateBlownAwayDeath,
   };  // 0x085ABEDC
   // clang-format on
 
   s32 action;
 
-  Player_SetFlag20(p, PFLAG20_UNK_14);
+  Player_SetFlag20(p, PFLAG20_UPDATED);
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
@@ -12195,7 +12130,7 @@ void FUN_08079f1c(Player* p) {
       FUN_080784fc(p);
       action = FUN_080788d0(p);
       FUN_08066d7c(p, action);
-      PTR_ARRAY_085abedc[action](p);
+      sCrossoverDjangoActionFuncs[action](p);
 
       if (p->useForcedDelta != 0) {
         p->mover.delta = p->forcedDelta;
@@ -12244,12 +12179,12 @@ void FUN_08079f1c(Player* p) {
     }
     case PMODE_DEAD: {
       Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
-      if (p->action >= PACT_FALLDEATH && p->action <= PACT_UNK_30) {
+      if (p->action >= PACT_FALLDEATH && p->action <= PACT_HEATSTROKE) {
         action = p->action;
       } else {
-        action = (p->blownAway != 0) ? PACT_UNK_27 : PACT_UNK_26;
+        action = (p->blownAway != 0) ? PACT_DEATH_SUPINE : PACT_DEATH_PRONE;
       }
-      PTR_ARRAY_085abedc[action](p);
+      sCrossoverDjangoActionFuncs[action](p);
       Player_PostUpdateHuman(p);
       break;
     }
@@ -12272,7 +12207,7 @@ NON_MATCH void UNUSED FUN_0807a270(Player* p) {
   for (i = 0; i < 4; i++) {
     gPlayerPtr[i] = NULL;
     gPlayerMoverIDs[i] = 0;
-    gPlayerStates[i] = 0;
+    gPlayerModes[i] = 0;
   }
 
   gGoodCondID = 0;
@@ -12304,22 +12239,22 @@ void FUN_0807a334(Player* p) {
     p->formRequest = TRUE;
     p->formRequestKind = PLAYER_DARK_DJANGO;
   }
-  Player_SetAction(p, PACT_UNK_23, 0);
+  Player_SetAction(p, PACT_LANDING, 0);
   p->floatHeight = 0;
 
   p->heightAboveTile = p->mover.pos.y - TileHeightAt(&p->mover.pos);
 
   dir = p->facing;
-  PLAYER_SET_ANIM_DIR(p, dir);
-  p->hurtbox.knockbackPower = 0;
+  PLAYER_SET_ANIM_8DIR(p, dir);
+  p->hurtbox.knockback = 0;
 }
 
 void FUN_0807a44c(Player* p, s32 dir) {
   Player_SetAction(p, PACT_WALL, 1);
   p->actionDir = dir;
   p->facing = (dir + 4) & 7;
-  PLAYER_SET_ANIM_DIR_HALF(p, p->actionDir);
-  p->hurtbox.knockbackPower = 0;
+  PLAYER_SET_ANIM_4DIR(p, p->actionDir);
+  p->hurtbox.knockback = 0;
 }
 
 // プレイヤーが乗っているタイルの索引を返す, MoverTile の控えがあればそれ、無ければ座標から引く
@@ -12336,7 +12271,7 @@ s32 FUN_0807a4c4(s32 n) {
 void FUN_0807a524(Vec3* pos) {}
 
 void FUN_0807a528(Player* p, Vec3* pos, u16 param_3) {
-  p->action = PACT_UNK_8;
+  p->action = PACT_REFUELING;
   p->stateTimer = 0;
   p->state = 0;
   p->floatHeight = 0;
@@ -12347,7 +12282,7 @@ void FUN_0807a528(Player* p, Vec3* pos, u16 param_3) {
 bool32 FUN_0807a570(Player* p, s32 param_2) {
   bool32 ret;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     FUN_080d040c(p);
     Player_SetAction(p, PACT_FALLDEATH, 0);
     return FALSE;
@@ -12658,10 +12593,10 @@ void Player_EnterGrabbed(Player* p) {
   Player_SetFlag20(p, PFLAG20_UNK_12);
   p->formRequest = FALSE;
   p->animIDOffset = 0;
-  FUN_08063220(p);
+  Player_ClearElementalCond(p);
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->hurtbox.knockbackPower = 0;
-  p->hurtbox.invincibleTime = 0;
+  p->hurtbox.knockback = 0;
+  p->hurtbox.iframes = 0;
   Player_SetAction(p, PACT_GRABBED, 0);
 }
 
@@ -12699,9 +12634,9 @@ s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 x
 }
 
 // PACT_GRABBED (拘束中) なら pos へ移して angle の向きへ吹き飛ばし, power > 0 ならダメージも与える, 拘束中でなければ -1
-// 残差はレジスタ割り当てのみ (103/103), 原典は mode を r2, pos を r5, invincibleTime を r6 に置き, 0x2E8 のオフセットを r7 に残して xflip の格納で subs r7, #1 と使い回す
+// 残差はレジスタ割り当てのみ (103/103), 原典は mode を r2, pos を r5, iframes を r6 に置き, 0x2E8 のオフセットを r7 に残して xflip の格納で subs r7, #1 と使い回す
 // Tier A-C 試済 (条件の入れ子と結果変数, 末尾の if/else, angle の再代入, facing のスコープ), 未: 割り当て順を動かす手
-NON_MATCH s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs) {
+NON_MATCH s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs) {
 #ifdef NONMATCHING_C
   u32 facing;
   s32 ret;
@@ -12712,8 +12647,8 @@ NON_MATCH s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s3
     p->flashPose = flashPose;
     p->flashTimer = 64;
   }
-  if (invincibleTime > 0) {
-    p->hurtbox.invincibleTime = invincibleTime;
+  if (iframes > 0) {
+    p->hurtbox.iframes = iframes;
   }
   p->mover.pos = *pos;
   facing = (((angle + 0xE0) & 0xFF) >> 6) * 2 + 1;
@@ -12725,7 +12660,7 @@ NON_MATCH s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s3
     p->animIDOffset = facing;
     p->xflip = FALSE;
   }
-  p->hurtbox.knockbackPower = knockbackPower;
+  p->hurtbox.knockback = knockback;
   p->blownAway = 1;
   PlaySound_082406e0(SE_DAMAGE);
   if (p->unk_3ec != 0) {
@@ -12762,13 +12697,13 @@ bool32 FUN_0807ad60(Player* p, s32 param_2) {
 // 残差2命令: 原典は 0x1A と 0x1F の Player_SetAction(p, X, 4) の末尾を cross-jump で共有するが、こちらは別々に出る
 NON_MATCH void FUN_0807adc0(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->action == PACT_UNK_26) {
+  if (p->action == PACT_DEATH_PRONE) {
     if (p->state == 3) {
-      Player_SetAction(p, PACT_UNK_26, 4);
+      Player_SetAction(p, PACT_DEATH_PRONE, 4);
     }
-  } else if (p->action == PACT_UNK_27) {
+  } else if (p->action == PACT_DEATH_SUPINE) {
     if (p->state == 4) {
-      Player_SetAction(p, PACT_UNK_27, 5);
+      Player_SetAction(p, PACT_DEATH_SUPINE, 5);
     }
   } else if (p->action == PACT_SPECIALDEATH) {
     if (p->kind == PLAYER_SABATA) {
@@ -12793,18 +12728,18 @@ void FUN_0807ae6c(Player* p, u32 kind, s32 count) {
   bool32 spawned;
   s32 i;
 
-  if (!(gGameFlags & FLAG030047A4_UNK_12)) {
+  if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
     return;
   }
-  if (p->emitter.unk_3 != 0 && p->emitter.kind != kind) {
-    if (p->emitter.kind == 3) {
+  if (p->emitter.aliveCount != 0 && p->emitter.kind != kind) {
+    if (p->emitter.kind == ELEMCOND_SEKIKA) {
       return;
     }
     FUN_08063248(p);
   }
-  if (p->emitter.unk_3 == 0) {
+  if (p->emitter.aliveCount == 0) {
     p->mashCountBase = p->mashCount;
-    p->unk_3da = 0;
+    p->inkaTick = 0;
   }
 
   table = gRandomTable;
@@ -12813,22 +12748,22 @@ void FUN_0807ae6c(Player* p, u32 kind, s32 count) {
   spread.z = 0;
   spawned = FALSE;
   for (i = 0; i < count; i++) {
-    if (FUN_082467d0(&p->emitter, kind, 3600, &spread) >= 0) {
+    if (ElementalCondEmitter_AddParticle(&p->emitter, kind, 3600, &spread) >= 0) {
       spawned = TRUE;
     }
   }
 
   if (spawned) {
-    if (p->emitter.kind == 1) {
+    if (p->emitter.kind == ELEMCOND_INKA) {
       PlaySound_082406e0(SE_IGNITE);
-    } else if (p->emitter.kind == 2) {
+    } else if (p->emitter.kind == ELEMCOND_HYOKETU) {
       p->damage += 10;
       PlaySound_082406e0(SE_SOLIDIFY);
-    } else if (p->emitter.kind == 3) {
+    } else if (p->emitter.kind == ELEMCOND_SEKIKA) {
       PlaySound_082406e0(SE_SOLIDIFY);
-      p->hurtbox.knockbackPower = 10;
-      if (p->hurtbox.invincibleTime == 0) {
-        p->hurtbox.invincibleTime = 1;
+      p->hurtbox.knockback = 10;
+      if (p->hurtbox.iframes == 0) {
+        p->hurtbox.iframes = 1;
       }
       p->blownAway = 0;
     }
@@ -12869,14 +12804,14 @@ void Cmd_E14B(void) {
   }
 }
 
-// 0x7017
+// 0x7017, プレイヤーの向き取得
 s32 Cmd_7017(void) {
   Player* p = GetPlayer(VM_GetPlayerIdx());
 
   if (p == NULL) {
     return gStat->playerFacing;
   }
-  if (p->action == PACT_WALL || p->action == PACT_UNK_5) {
+  if (p->action == PACT_WALL || p->action == PACT_PUSH) {  // 壁に背を向けている場合は背中が向いている方 (壁の方向)
     return (p->actionDir + 4) & 7;
   }
   return p->facing;
@@ -13019,7 +12954,7 @@ void Cmd_2B68(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    FUN_08063220(gPlayerPtr[i]);
+    Player_ClearElementalCond(gPlayerPtr[i]);
   }
 }
 
@@ -13237,9 +13172,9 @@ void Player_EnterLockedState(Player* p) {
     gChangeWolfBiting = 0;
   }
   Player_StopEneChargeSound(p);
-  p->hurtbox.knockbackPower = 0;
+  p->hurtbox.knockback = 0;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->hurtbox.invincibleTime = 0;
+  p->hurtbox.iframes = 0;
   if (p->lookAroundOffset.val != 0) {
     Player_EndLookAround(p);
   }
@@ -13277,7 +13212,7 @@ void Player_Lock(Player* p, s32 val) {
 
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     p->lockedUpdate = FUN_08074d90;
   } else {
     Player_SetAnimFacing(p);
@@ -13440,7 +13375,7 @@ void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   p->unk_4a6 = param_3;
   p->unk_3f0 = param_3;
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_22, 0);
+  Player_SetAction(p, PACT_FALL, 0);
   if (p->kind == PLAYER_MOUSE) {
     p->lockedUpdate = Player_UpdateMouseFall;
   } else {
@@ -13452,13 +13387,13 @@ void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807be58(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807be58(Player* p, DirS32 dir, s32 floatHeight, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
-  p->floatHeight = param_3;
-  Player_SetAction(p, PACT_UNK_23, 0);
+  p->floatHeight = floatHeight;
+  Player_SetAction(p, PACT_LANDING, 0);
   if (p->kind == PLAYER_MOUSE) {
     p->lockedUpdate = Player_UpdateMouseLand;
   } else {
@@ -13614,7 +13549,7 @@ void FUN_0807c36c(Player* p, DirS32 dir, u32 scriptID) {
   Player_EnterLockedState(p);
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
     Player_SetAction(p, PACT_UNK_7, 3);
     p->lockedUpdate = Player_UpdateBatWarp;
   } else {
@@ -13849,8 +13784,8 @@ void FUN_0807ca9c(Player* p, s32 xflip, u32 scriptID) {
   p->lockedUpdate = FUN_080728a8;
 }
 
-void FUN_0807cb14(Player* p, s32 xflip, u32 scriptID) {
-  if (xflip != 0) {
+void FUN_0807cb14(Player* p, bool32 xflip, u32 scriptID) {
+  if (xflip) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
     p->xflip = TRUE;
@@ -13923,8 +13858,8 @@ bool32 FUN_0807cc84(Player* p, u32 scriptID) {
   return TRUE;
 }
 
-// 体にまとわりつく粒子 (emitter) を kind で1個出す, 広がりの乱数はフォームで変わり, 出せたら種類ごとの音を鳴らす (Player_StartFormEffect の後半と同じ)
-// 残差は乱数の添字の組み方と定数 7 を置くレジスタ (153/154), 原典は gRandTableIdx を読んでその場で +1 / & 0x3FF し, 7 を r4 に作って x と y の両方で使い回す, Player_StartFormEffect と同じ書き方で同じ残差
+// 体にまとわりつく粒子 (emitter) を kind で1個出す, 広がりの乱数はフォームで変わり, 出せたら種類ごとの音を鳴らす (Player_InflictElementalCond の後半と同じ)
+// 残差は乱数の添字の組み方と定数 7 を置くレジスタ (153/154), 原典は gRandTableIdx を読んでその場で +1 / & 0x3FF し, 7 を r4 に作って x と y の両方で使い回す, Player_InflictElementalCond と同じ書き方で同じ残差
 // Tier A-C 試済 (_Random(table) を分岐ごと / 関数先頭, Random() 直書き, idx ローカル)
 NON_MATCH void FUN_0807cd24(Player* p, u32 kind) {
 #ifdef NONMATCHING_C
@@ -13952,12 +13887,12 @@ NON_MATCH void FUN_0807cd24(Player* p, u32 kind) {
     spread.y = -(table[gRandTableIdx] & 0x1F);
   }
   spread.z = 0;
-  if (FUN_082467d0(&p->emitter, kind, 3600, &spread) >= 0) {
-    if (p->emitter.kind == 1) {
+  if (ElementalCondEmitter_AddParticle(&p->emitter, kind, 3600, &spread) >= 0) {
+    if (p->emitter.kind == ELEMCOND_INKA) {
       PlaySound_082406e0(SE_IGNITE);
-    } else if (p->emitter.kind == 2) {
+    } else if (p->emitter.kind == ELEMCOND_HYOKETU) {
       PlaySound_082406e0(SE_SOLIDIFY);
-    } else if (p->emitter.kind == 3) {
+    } else if (p->emitter.kind == ELEMCOND_SEKIKA) {
       PlaySound_082406e0(SE_SOLIDIFY);
     }
   }
@@ -13967,7 +13902,7 @@ NON_MATCH void FUN_0807cd24(Player* p, u32 kind) {
 #endif
 }
 
-void FUN_0807ceb8(Player* p) { FUN_08063220(p); }
+void FUN_0807ceb8(Player* p) { Player_ClearElementalCond(p); }
 
 // Boss_ShowEmote と同形
 // kind は EmoteKind ではない
@@ -14862,7 +14797,7 @@ NON_MATCH void Player_HandleMessages(Player* p) {
         break;
       }
       case 38: {
-        FUN_0807cd24(p, 2);
+        FUN_0807cd24(p, ELEMCOND_HYOKETU);
         Player_SetDoneEndWait(p);
         Player_EndDoneWait(p);
         break;
@@ -14994,11 +14929,11 @@ NON_MATCH u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
   } else {
     b->damage = 0;
   }
-  b->invincibleTime = a->invincibleTime;
+  b->iframes = a->iframes;
 
   shift = Player_TestEquipBuff(p, EBUFF_GUTSPOWER) ? -1 : 0;
 
-  if (a->knockbackPower == 0) {
+  if (a->knockback == 0) {
     p->hurtSound = SONG_NONE;
   } else {
     p->hurtSound = SE_DAMAGE;
@@ -15018,8 +14953,8 @@ NON_MATCH u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
     if (p->unk_3ea == 0 && p->unk_3ec != 0) {
       p->unk_3ec = 0;
     }
-    if (p->action == PACT_UNK_19 && !Hitbox_TestAttr(a, HBATTR_14)) {
-      FUN_08063220(p);
+    if (p->action == PACT_UNK_19 && !Hitbox_TestAttr(a, HBATTR_SEKIKA)) {
+      Player_ClearElementalCond(p);
       shift++;
     }
     Player_SetupKnockback(p, a, b);
@@ -15033,7 +14968,7 @@ NON_MATCH u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
     b->damage = 0;
     dmg = 0;
     if (Hitbox_TestAttr(a, HBATTR_18)) {
-      FUN_08063220(p);
+      Player_ClearElementalCond(p);
     }
   } else {
     valid = HasGoodCond(p, GOOD_MINI);
@@ -15043,26 +14978,21 @@ NON_MATCH u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
 
     if (Hitbox_TestAttr(a, HBATTR_INKA)) {
       if (!(b->hitResult & HBRESULT_RESIST)) {
-        if (p->blownAway == 0) {
-          p->hurtSound = SE_IGNITE;
-        }
-        Player_StartFormEffect(p, 1);
+        if (!p->blownAway) p->hurtSound = SE_IGNITE;
+        Player_InflictElementalCond(p, ELEMCOND_INKA);
       }
     } else if (Hitbox_TestAttr(a, HBATTR_HYOKETU)) {
       if (!(b->hitResult & HBRESULT_RESIST)) {
-        if (p->blownAway == 0) {
-          p->hurtSound = SE_SOLIDIFY;
-        }
-        Player_StartFormEffect(p, 2);
+        if (!p->blownAway) p->hurtSound = SE_SOLIDIFY;
+        Player_InflictElementalCond(p, ELEMCOND_HYOKETU);
       }
-    } else if (Hitbox_TestAttr(a, HBATTR_14)) {
+    } else if (Hitbox_TestAttr(a, HBATTR_SEKIKA)) {
       p->hurtSound = SE_SOLIDIFY;
-      Player_StartFormEffect(p, 3);
-      p->blownAway = 0;
+      Player_InflictElementalCond(p, ELEMCOND_SEKIKA);
+      p->blownAway = FALSE;
     } else if (Hitbox_TestAttr(a, HBATTR_18)) {
-      FUN_08063220(p);
+      Player_ClearElementalCond(p);
     }
-
     if (Hitbox_TestAttr(a, HBATTR_POISON) && !Player_TestEquipBuff(p, EBUFF_IMMUNEPOISON)) {
       Player_ApplyBadCondition(p, BAD_POISON, SECOND(30));
     }
@@ -15072,8 +15002,9 @@ NON_MATCH u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
     if (Hitbox_TestAttr(a, HBATTR_17)) {
       Vec3 v;
       u32 angle = ((p->facing + 5) & 7) * 32;
-
-      v.x = POLAR_X(Q8(0.313), angle), v.y = Q8(0.782), v.z = POLAR_Z(Q8(0.313), angle);
+      v.x = POLAR_X(Q8(0.313), angle);
+      v.y = Q8(0.782);
+      v.z = POLAR_Z(Q8(0.313), angle);
       SpawnBlood(&p->mover.pos, &v, 0, 0, 1);
     }
 
@@ -15116,19 +15047,19 @@ void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 }
 
 // プレイヤーにダメージを与える関数 (内部的には即席の Hitbox を用意して自分の食らい判定にぶつける)
-s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockbackPower, s32 angle, s32 invincibleTime, HitboxAttributes attrs) {
+s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockback, s32 angle, s32 iframes, HitboxAttributes attrs) {
   if (p->mode == PMODE_ACTIVE) {
     HitboxData* hurtbox = &p->hurtbox;
-    s32 iframes = hurtbox->invincibleTime;
+    s32 remaining = hurtbox->iframes;
 
-    if (iframes <= 0) {
+    if (remaining <= 0) {
       HitboxData hb;
       hb.flags = HBFLAG_HITBOX;
       hb.power = power;
-      hb.knockbackPower = knockbackPower;
+      hb.knockback = knockback;
       hb.angle = angle;
       hb.attributes = attrs;
-      hb.invincibleTime = invincibleTime;
+      hb.iframes = iframes;
       return Player_TakeHit(p, &hb, hurtbox);
     }
   }
@@ -15144,16 +15075,16 @@ void Player_EnterDeadState(Player* p) {
     p->formRequestKind = PLAYER_DARK_DJANGO;
   }
   p->facing |= 1;
-  PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->mode = PMODE_DEAD;
   p->state = 0;
   p->stateTimer = 0;
-  p->hurtbox.invincibleTime = 0;
+  p->hurtbox.iframes = 0;
   p->magic.enchanted = FALSE;
   gSunMagicUsed = 0;
   gSunGaugeOverride = 0;
   gSunGaugeOverrideTimer = 0;
-  FUN_08063220(p);
+  Player_ClearElementalCond(p);
   p->goodCondID = 0;
   p->goodFrom = 0;
   p->goodCondTimer = 0;
@@ -15166,16 +15097,16 @@ void Player_EnterDeadState(Player* p) {
   }
 }
 
-// 残差9命令 (341/350), 3箇所 (MPF_UNK_13 / MPF_DESERT / EBUFF_BLACKARMOR) で原典はマスクをレジスタに作ってから AND し, 真偽値を 0/1 に materialize してから cmp する
+// 残差9命令 (341/350), 3箇所 (MPF_WATERFRONT / MPF_DESERT / EBUFF_BLACKARMOR) で原典はマスクをレジスタに作ってから AND し, 真偽値を 0/1 に materialize してから cmp する
 // FUN_0806241c と同じ壁で, マスクを引数に取る static inline にするとマスクはレジスタに乗るが 0/1 の materialize は agbcc が畳む
-// 他は PFLAG20_UNK_9 の |= のマスク順と unk_3da のカウンタ順の1命令
+// 他は PFLAG20_INKA の |= のマスク順と inkaTick のカウンタ順の1命令
 // 3箇所の判定を bool8 を返す static inline (TestMapFlag と equipBuffs 用) にすると 0/1 の作り置きは出るが, 他の場所で 356/350 に広がる
 NON_MATCH bool32 Player_UpdateDamage(Player* p) {
 #ifdef NONMATCHING_C
   CollisionMapTile* tile = GetTileAt(&p->mover.pos);
 
-  if ((tile->attr & TATTR_FALLDEATH) && p->elevatorFlags == 0) {
-    if (gStat->mapFlags & MPF_UNK_13) {
+  if ((tile->attr & TATTR_FALLDEATH) && p->elevatorFlags == 0) {  // 落下死タイル属性 & 移動床の上にいない
+    if (gStat->mapFlags & MPF_WATERFRONT) {
       Player_SetAction(p, PACT_DROWNING, 0);
     } else {
       Player_SetAction(p, PACT_FALLDEATH, 0);
@@ -15184,7 +15115,7 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
   }
 
   if (gStat->heatstroke >= 5000) {
-    Player_SetAction(p, PACT_UNK_30, 0);
+    Player_SetAction(p, PACT_HEATSTROKE, 0);
     return TRUE;
   }
 
@@ -15194,23 +15125,22 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
     p->damage += FUN_08065e24(p);
   }
 
-  if (p->hurtbox.invincibleTime == 0) {
-    if (p->badCondTimer[1] != 0) {
+  if (p->hurtbox.iframes == 0) {
+    if (p->badCondTimer[BAD_POISON] != 0) {
       p->poisonTick++;
       if (p->poisonTick >= SECOND(1)) {
         p->damage++;
         p->poisonTick = 0;
       }
     }
-    if (p->emitter.kind == 1 && p->emitter.unk_3 != 0) {
+    if (p->emitter.kind == ELEMCOND_INKA && p->emitter.aliveCount != 0) {
       u16 t;
-
-      p->flag20 |= PFLAG20_UNK_9;
-      p->unk_3da++;
-      t = p->unk_3da;
-      if (t >= Div(60, p->emitter.unk_3)) {
+      p->flag20 |= PFLAG20_INKA;
+      p->inkaTick++;
+      t = p->inkaTick;
+      if (t >= Div(60, p->emitter.aliveCount)) {  // 引火数に応じてダメージ速度が速くなる
         p->damage += 10;
-        p->unk_3da = 0;
+        p->inkaTick = 0;
       }
     }
     if (gStat->mapFlags & MPF_DESERT) {
@@ -15251,7 +15181,7 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
   if (p->action == PACT_GRABBED || p->hp != 0) {
     return FALSE;
   }
-  if (gGameFlags & FLAG030047A4_UNK_12) {
+  if (gGameFlags & GAMEFLAG_CROSSOVER) {
     return TRUE;
   }
   if (!CheckItemOwn(ITEM_JUDGEMENT)) {
@@ -15259,9 +15189,9 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
   }
 
   p->hurtSound = SONG_NONE;
-  if (p->hurtbox.knockbackPower == 0) {
+  if (p->hurtbox.knockback == 0) {
     p->facing |= 1;
-    p->hurtbox.knockbackPower = 1;
+    p->hurtbox.knockback = 1;
   }
   RemoveSpecifiedItem(ITEM_JUDGEMENT);
   Judgement_Create(p);
@@ -15274,16 +15204,16 @@ NON_MATCH bool32 Player_UpdateDamage(Player* p) {
 // 残差なし・レジスタ割当のみ不一致 (p と n の r4/r5 が入れ替わる)
 NON_MATCH void FUN_0807eca8(Player* p) {
 #ifdef NONMATCHING_C
-  s32 n = p->hurtbox.invincibleTime;
+  s32 n = p->hurtbox.iframes;
 
   if (n > 0) {
     Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
-    if (p->hurtbox.knockbackPower == 0 && p->action != PACT_DAMAGED && p->action != PACT_BLOWN_AWAY) {
+    if (p->hurtbox.knockback == 0 && p->action != PACT_DAMAGED && p->action != PACT_BLOWN_AWAY) {
       n--;
       if (n != 0 && ((n >> 2) & 1)) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
-      p->hurtbox.invincibleTime = n;
+      p->hurtbox.iframes = n;
     }
   }
 #else
@@ -15322,7 +15252,7 @@ NON_MATCH void Player_SaveState(Player* p) {
   for (i = 0; i < 3; i++) {
     gBadCondTimer[i] = p->badCondTimer[i];
   }
-  gPlayerStates[p->mover.unk_4] = p->mode;
+  gPlayerModes[p->mover.unk_4] = p->mode;
   gSavedMagicEnchanted = p->magic.enchanted;
 #else
   INCFUNC("asm/func/Player_SaveState.inc");
@@ -15437,11 +15367,11 @@ NON_MATCH void Player_CountStyleFrames(Player* p) {
 NON_MATCH void DarkDjango_UpdateBerserk(Player* p) {
 #ifdef NONMATCHING_C
   if (p->kind == PLAYER_DARK_DJANGO) {
-    if (gStat->darkDjangoAtkCounter >= gStat->unk_2ac) {
+    if (gStat->berserkCounter >= gStat->berserkThresh) {
       if (p->unk_448[2]) {
         if (p->action <= PACT_WALK) {
-          gStat->darkDjangoAtkCounter = 0;
-          gStat->unk_2ac = Mod(Random(), 100) + 200;
+          gStat->berserkCounter = 0;
+          gStat->berserkThresh = Mod(Random(), 100) + 200;
           p->unk_448[2] = 0;
           FUN_08060e90(p, 2);
           DjangoBerserk_Create(p);
@@ -15494,10 +15424,10 @@ static s32 Player_Update(Player* p) {
       p->hp = 1;
     }
     p->damage = 0;
-    p->hurtbox.knockbackPower = 0;
-    n = p->hurtbox.invincibleTime;
+    p->hurtbox.knockback = 0;
+    n = p->hurtbox.iframes;
     if (n > 0) {
-      p->hurtbox.invincibleTime = 0;
+      p->hurtbox.iframes = 0;
     }
   }
 
@@ -15555,7 +15485,7 @@ static s32 Player_Init(Player* p, u32 id, void* _) {
   gPlayerCount++;
   if ((p->mover).unk_4 == 0) {
     Player_SaveState(p);
-    FUN_0809c464();
+    HUD_RebuildQC();
   }
   return 0;
 }

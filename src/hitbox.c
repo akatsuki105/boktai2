@@ -112,7 +112,7 @@ void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 igno
   p->damage = 0;
   p->weakness = 0;
   p->attributes = 0;
-  p->knockbackPower = 0;
+  p->knockback = 0;
   p->fn = NULL;
   p->unk_47 = 1;
 }
@@ -128,17 +128,17 @@ void UNUSED Hitbox_SetPosAndOffset(HitboxData* p, Vec3* pos, Vec3* offset, u32 u
   p->unk_8 = unk_8;
 }
 
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower) {
+void Hitbox_SetPower(HitboxData* p, s32 power, s32 knockback) {
   p->power = power;
-  p->knockbackPower = knockbackPower;
+  p->knockback = knockback;
 }
 
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 invincibleTime) {
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockback, s32 weakness, HitboxAttributes attrs, s32 iframes) {
   p->power = power;
-  p->knockbackPower = knockbackPower;
+  p->knockback = knockback;
   p->weakness = weakness;
   p->attributes = attrs;
-  p->invincibleTime = invincibleTime;
+  p->iframes = iframes;
 }
 
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness) {
@@ -218,7 +218,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
 #endif
 }
 
-// Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
+// Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (EnemyBat_OnHurt)
 // 131/148 命令, Hitbox_ApplyDamage と同じ形では分岐の並びが合わない
 NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
 #ifdef NONMATCHING_C
@@ -404,7 +404,7 @@ NON_MATCH void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, HitboxData
 // 溜まっている攻撃側の Hitbox を targets 側と総当たりし、終わったら attacks リストを空に戻す
 s32 HitboxManager_Update(HitboxManager* p) {
   if (p->attackCount != 0) {
-    if (gEntityDisableFlags != 0) {
+    if (gSuspendFlags != 0) {
       p->attackCount = 0;
       p->attacks->next = NULL;
       p->attacksTail = p->attacks;

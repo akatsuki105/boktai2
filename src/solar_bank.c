@@ -34,8 +34,6 @@ typedef struct SolarBank {
 } SolarBank;
 static_assert(sizeof(SolarBank) == 1524);
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-
 void FUN_080b3c98(SolarBank* p);
 void solar_bank_080b3f38(SolarBank* p);
 void FUN_080b3dd0(SolarBank* p);
@@ -52,7 +50,7 @@ NON_MATCH void Cmd_CalcInterestRate(void) {
   s32 amount;
   s32 i;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return;
   }
 
@@ -170,7 +168,7 @@ void FUN_080b3b74(SolarBank* p) {
   p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
   p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
   MessageWindow_ShowLine(0);
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   SolarBank_SetState(p, FUN_080b3e3c);
 }
 
@@ -432,7 +430,7 @@ void FUN_080b4334(SolarBank* p) {
   MainSprite_AdvanceAnim(p->sprites, p->gfx);
   p->stateTimer++;
   if (p->stateTimer > 149) {
-    FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
     SolarBank_SetState(p, FUN_080b438c);
   }
 }

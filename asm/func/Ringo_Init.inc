@@ -932,7 +932,7 @@ _080366E4:
 	ldr r5, _08036744 @ =0x000008BA
 	adds r0, r7, r5
 	ldrh r0, [r0]
-	bl Entity0805a31c_Create
+	bl VampireSwordManager_Create
 	ldr r6, _08036748 @ =0x0000104C
 	adds r1, r7, r6
 	str r0, [r1]

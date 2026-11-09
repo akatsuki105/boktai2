@@ -86,7 +86,7 @@ _08002478:
 	beq _08002510
 	mov r0, sp
 	adds r1, r5, #0
-	bl FUN_0823ce10
+	bl GetTimeOfDayPlttPair
 	movs r0, #0x40
 	strb r0, [r4]
 	mov r0, sp

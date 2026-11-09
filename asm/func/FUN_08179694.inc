@@ -1,0 +1,113 @@
+	push {r4, r5, lr}
+	sub sp, #8
+	adds r4, r0, #0
+	movs r1, #0xe6
+	lsls r1, r1, #1
+	adds r0, r4, r1
+	ldr r5, [r0]
+	adds r0, r4, #0
+	bl Enemy_IsDead
+	lsls r0, r0, #0x18
+	cmp r0, #0
+	bne _0817976E
+	movs r2, #0x20
+	ldr r3, _081796C4 @ =0x00001008
+	adds r1, r5, r3
+	ldrh r0, [r1]
+	ands r0, r2
+	adds r2, r1, #0
+	cmp r0, #0
+	beq _081796C8
+	movs r0, #1
+	b _081796CA
+	.align 2, 0
+_081796C4: .4byte 0x00001008
+_081796C8:
+	movs r0, #0
+_081796CA:
+	cmp r0, #0
+	bne _0817976E
+	ldr r1, _081796EC @ =0x0000A027
+	movs r5, #0xc0
+	lsls r5, r5, #1
+	adds r0, r4, r5
+	ldrh r0, [r0]
+	ands r0, r1
+	cmp r0, #0
+	bne _0817976E
+	movs r1, #4
+	ldrh r0, [r2]
+	ands r0, r1
+	cmp r0, #0
+	beq _081796F0
+	movs r0, #1
+	b _081796F2
+	.align 2, 0
+_081796EC: .4byte 0x0000A027
+_081796F0:
+	movs r0, #0
+_081796F2:
+	cmp r0, #0
+	beq _08179738
+	movs r1, #0x94
+	lsls r1, r1, #1
+	adds r0, r4, r1
+	ldr r1, _0817972C @ =0xFFFFFEFF
+	ldrh r2, [r0, #6]
+	ands r1, r2
+	strh r1, [r0, #6]
+	ldr r2, _08179730 @ =0x00000226
+	adds r1, r4, r2
+	ldrh r1, [r1]
+	ldr r3, _08179734 @ =0x0000022E
+	adds r2, r4, r3
+	ldrh r2, [r2]
+	movs r5, #0x90
+	lsls r5, r5, #2
+	adds r3, r4, r5
+	ldr r3, [r3]
+	str r3, [sp]
+	subs r5, #0xa
+	adds r3, r4, r5
+	ldrh r3, [r3]
+	str r3, [sp, #4]
+	movs r3, #0
+	bl Hitbox_SetAttack
+	b _0817976E
+	.align 2, 0
+_0817972C: .4byte 0xFFFFFEFF
+_08179730: .4byte 0x00000226
+_08179734: .4byte 0x0000022E
+_08179738:
+	movs r1, #0x94
+	lsls r1, r1, #1
+	adds r0, r4, r1
+	subs r1, #0x28
+	ldrh r2, [r0, #6]
+	orrs r1, r2
+	strh r1, [r0, #6]
+	movs r2, #0x89
+	lsls r2, r2, #2
+	adds r1, r4, r2
+	ldrh r1, [r1]
+	movs r3, #0x8b
+	lsls r3, r3, #2
+	adds r2, r4, r3
+	ldrh r2, [r2]
+	movs r5, #0x8f
+	lsls r5, r5, #2
+	adds r3, r4, r5
+	ldr r3, [r3]
+	str r3, [sp]
+	subs r5, #8
+	adds r3, r4, r5
+	ldrh r3, [r3]
+	str r3, [sp, #4]
+	movs r3, #0
+	bl Hitbox_SetAttack
+_0817976E:
+	add sp, #8
+	pop {r4, r5}
+	pop {r0}
+	bx r0
+	.align 2, 0

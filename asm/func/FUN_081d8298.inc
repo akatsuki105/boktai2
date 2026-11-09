@@ -80,7 +80,7 @@
 	str r1, [sp, #8]
 	movs r1, #2
 	add r3, sp, #0xc
-	bl FUN_08014730
+	bl ScatterEffect_Spawn
 	add sp, #0x1c
 	pop {r3, r4, r5}
 	mov r8, r3

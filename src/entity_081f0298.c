@@ -35,7 +35,7 @@ const u8 u8_ARRAY_085ae508[4] = {8, 4, 2, 1};  // 0x085AE508
 
 NAKED void Entity081f0298_OnHit(HitboxData* a, HitboxData* b, Entity081f0298Elem* elem) { INCFUNC("asm/func/Entity081f0298_OnHit.inc"); }
 
-NAKED void Entity081f0298_InitHitbox(Entity081f0298Elem* elem, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime) { INCFUNC("asm/func/Entity081f0298_InitHitbox.inc"); }
+NAKED void Entity081f0298_InitHitbox(Entity081f0298Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/Entity081f0298_InitHitbox.inc"); }
 
 NAKED void Entity081f0298_UpdateIdle(Entity081f0298* p, Entity081f0298Elem* elem) { INCFUNC("asm/func/Entity081f0298_UpdateIdle.inc"); }
 
@@ -49,7 +49,7 @@ NAKED Entity081f0298Elem* Entity081f0298_AllocElem(Entity081f0298* p) { INCFUNC(
 
 NAKED Entity081f0298Elem* FUN_081f0088(Entity081f0298* p) { INCFUNC("asm/func/FUN_081f0088.inc"); }
 
-NAKED void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 speed) { INCFUNC("asm/func/Entity081f0298_Spawn.inc"); }
+NAKED void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 speed) { INCFUNC("asm/func/Entity081f0298_Spawn.inc"); }
 
 void (*const PTR_ARRAY_085ae50c[3])(Entity081f0298*, Entity081f0298Elem*) = {
     Entity081f0298_UpdateIdle,

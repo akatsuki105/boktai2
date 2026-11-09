@@ -253,7 +253,7 @@ _080C0420:
 	movs r1, #5
 _080C0472:
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	b _080C04AE
 	.align 2, 0
 _080C047C: .4byte 0x0000037E

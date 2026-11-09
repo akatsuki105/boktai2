@@ -144,7 +144,7 @@ _080267EE:
 	movs r0, #1
 	movs r1, #5
 	movs r3, #0x40
-	bl FUN_08015ce0
+	bl Entity08015584_SpawnSprayEx
 _08026860:
 	movs r4, #0
 _08026862:

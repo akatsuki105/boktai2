@@ -165,7 +165,7 @@ _0801DECA:
 	movs r1, #3
 	movs r2, #0x1f
 	movs r3, #0x1f
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	movs r0, #0x58
 	mov r8, r0
 	movs r4, #8
@@ -187,7 +187,7 @@ _0801DEEA:
 	lsls r1, r1, #2
 	mov r2, sb
 	adds r3, r7, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	adds r7, #0x58
 	subs r5, #1
 	cmp r5, #0
@@ -208,7 +208,7 @@ _0801DF28:
 	movs r1, #3
 	movs r2, #0x1f
 	movs r3, #0x17
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	movs r0, #0x58
 	mov r8, r0
 	movs r4, #8
@@ -230,7 +230,7 @@ _0801DF48:
 	lsls r1, r1, #2
 	mov r2, sb
 	adds r3, r7, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	adds r7, #0x58
 	subs r5, #1
 	cmp r5, #0

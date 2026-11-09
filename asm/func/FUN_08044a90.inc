@@ -140,7 +140,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -165,7 +165,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x40
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -190,7 +190,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x80
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -215,7 +215,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0xc0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -241,7 +241,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -265,7 +265,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x40
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -289,7 +289,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0x80
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	ldr r0, [r5]
 	adds r0, #1
 	ldr r1, _08044D60 @ =0x000003FF
@@ -313,7 +313,7 @@ _08044B64:
 	movs r1, #0x26
 	add r2, sp, #0x1c
 	movs r3, #0xc0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 	bl FUN_0801dfe4
 	adds r4, r0, #0
 	bl FUN_0801e00c

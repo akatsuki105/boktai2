@@ -44,12 +44,12 @@ _081DEF52:
 	strh r0, [r1]
 _081DEF54:
 	adds r0, r5, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _081DEF80
 	adds r0, r5, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DF00C
@@ -112,15 +112,15 @@ _081DEFD0:
 	ldr r2, _081DEFF8 @ =FUN_081df014
 	adds r0, r5, #0
 	movs r1, #0xe
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	adds r1, r5, #0
 	adds r1, #0x21
 	movs r0, #0
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_081ddc3c
+	bl LinkSession_CalcScores
 	adds r0, r5, #0
-	bl FUN_081ddcfc
+	bl LinkSession_AddRankPoints
 	movs r0, #0
 	b _081DF00C
 	.align 2, 0

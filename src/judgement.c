@@ -150,8 +150,8 @@ void Judgement_UpdateFinish(Judgement* p) {
   p->timer++;
   if (p->timer > 59) {
     Sound_Resume();
-    CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
-    gGameFlags &= ~FLAG030047A4_UNK_0;
+    CLEAR_FLAGS(gSuspendFlags, SUSPEND_MENU);
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
     KillEntity((Entity*)p);
   }
 }
@@ -227,7 +227,7 @@ void Judgement_UpdateShake(Judgement* p) {
 void Judgement_UpdateAppear(Judgement* p) {
   if (p->timer == 0) {
     FUN_082407e0();
-    SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+    SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
   } else if (p->timer == 1) {
     PlaySound_082406e0(SE_DAMAGE);
     p->icon.flags &= ~SPRFLAG_HIDDEN;
@@ -302,7 +302,7 @@ s32 Judgement_Init(Judgement* p, Player* player) {
   Judgement_InitParticles(p);
   p->updateCallback = Judgement_UpdateAppear;
   p->timer = 0;
-  gGameFlags |= FLAG030047A4_UNK_0;
+  gGameFlags |= GAMEFLAG_NO_PAUSE;
   return 0;
 }
 

@@ -29,8 +29,8 @@ typedef struct {
   u8 phase;                // 0x15A, 上下に揺れる位相 (256 で1周), state 2 は毎フレーム +6, state 3 は 0 から +4 ずつ 128 まで
   s8 shadowId;             // 0x15B, 0 のときだけ片付けで影を外す
   u8 pointIdx;             // 0x15C, curve のいま向かっている点, 12 を超えると曲線を作り直す
-  u8 knockbackPower;       // 0x15D, Entity081f0b90 の攻撃判定に渡す
-  u8 invincibleTime;       // 0x15E, Entity081f0b90 の攻撃判定に渡す
+  u8 knockback;            // 0x15D, Entity081f0b90 の攻撃判定に渡す
+  u8 iframes;              // 0x15E, Entity081f0b90 の攻撃判定に渡す
   u8 unk_15f;              // 0x15F, スケルトンは 20 を渡す, 読み手は未発見
   HitboxAttributes attrs;  // 0x160, Entity081f0b90 の攻撃判定に渡す
   u16 power;               // 0x164, Entity081f0b90 の攻撃判定に渡す
@@ -76,7 +76,7 @@ NAKED Entity081f4554Elem* Entity081f4554_AllocElem(Entity081f4554* p) { INCFUNC(
 
 NAKED Entity081f4554Elem* Entity081f4554_TryAllocElem(Entity081f4554* p) { INCFUNC("asm/func/Entity081f4554_TryAllocElem.inc"); }
 
-NAKED void Entity081f4554_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 unk_9, u32 scriptID, u32 explodeScriptID) { INCFUNC("asm/func/Entity081f4554_Spawn.inc"); }
+NAKED void Entity081f4554_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_9, u32 scriptID, u32 explodeScriptID) { INCFUNC("asm/func/Entity081f4554_Spawn.inc"); }
 
 void (*const PTR_ARRAY_085ae560[6])(Entity081f4554*, Entity081f4554Elem*) = {
     Entity081f4554_UpdateIdle,

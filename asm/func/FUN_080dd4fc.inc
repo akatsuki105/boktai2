@@ -45,7 +45,7 @@ _080DD54A:
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #0
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #5
 	ble _080DD54A
@@ -70,7 +70,7 @@ _080DD57A:
 	movs r1, #1
 	movs r2, #8
 	adds r3, r4, #0
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	movs r0, #0x40
 	str r0, [sp]
 	mov r0, r8
@@ -81,7 +81,7 @@ _080DD57A:
 	movs r1, #1
 	movs r2, #0xe
 	adds r3, r4, #0
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #3
 	ble _080DD57A
@@ -112,7 +112,7 @@ _080DD5BC:
 	str r0, [sp, #8]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #5
 	ble _080DD5BC
@@ -147,7 +147,7 @@ _080DD604:
 	str r0, [sp, #8]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #7
 	ble _080DD604
@@ -194,7 +194,7 @@ _080DD654:
 	str r0, [sp, #8]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #0xf
 	ble _080DD654

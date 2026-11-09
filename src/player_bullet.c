@@ -1,8 +1,8 @@
 #include "collision_map.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "global.h"
 #include "hitbox.h"
+#include "link_session.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"
@@ -151,11 +151,11 @@ void Bullet_OnHit(HitboxData* a, HitboxData* b, Bullet* p) { Bullet_SetState(p, 
 
 // 発射時に ENE を払う
 void Bullet_PayENE(Bullet* p) {
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     s32 cost = p->eneCost;
 
-    if (gEntity9A9F != NULL) {
-      gEntity9A9F->unk_140 += cost;
+    if (gLinkSession != NULL) {
+      gLinkSession->eneSpent += cost;
     }
   }
   Player_ReduceENE(p->player, p->eneCost);
@@ -168,7 +168,7 @@ s32 Bullet_GetDamage(Bullet* p) {
   if (p->unk_cd != 0) {
     return 8;
   }
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     dmg = FUN_080d1b04(p->player);
   } else {
     dmg = FUN_0806f900(p->player);

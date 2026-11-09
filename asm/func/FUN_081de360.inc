@@ -54,7 +54,7 @@ _081DE3C6:
 	ldr r2, _081DE3DC @ =FUN_081de250
 	adds r0, r4, #0
 	movs r1, #2
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	bl Sio_Disconnect
 	b _081DE6D4
 	.align 2, 0
@@ -399,9 +399,9 @@ _081DE628:
 	ldr r2, _081DE650 @ =FUN_081de6f0
 	adds r0, r4, #0
 	movs r1, #5
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	adds r0, r4, #0
-	bl FUN_081dd9f0
+	bl LinkSession_ResetDataTransfer
 	movs r0, #0xdd
 	bl PlaySound_082406e0
 	b _081DE6D4
@@ -473,7 +473,7 @@ _081DE6C0:
 	ldr r2, _081DE6EC @ =FUN_081de214
 	adds r0, r4, #0
 	movs r1, #1
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 _081DE6D4:
 	movs r0, #0
 	add sp, #0x14

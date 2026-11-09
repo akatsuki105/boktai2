@@ -8,10 +8,10 @@
 // デモのメッセージを待ち受けるスプライト1枚, cmd 6 を受けると縮んで消える
 typedef struct Entity3361 {
   Entity e;                                    // 0x00, ENTITY_UNK_10
-  MsgQueue msgQueue;                           // 0x18, targetID は id, 待ち番号 10
+  MsgQueue mq;                                 // 0x18, targetID は id, 待ち番号 10
   AuxSprite sprite;                            // 0x4C
   AuxSpriteGfx gfx;                            // 0x78, SPRITE_BLACKHOLE, 黒い球体エフェクトとして利用?
-  u16 id;                                      // 0x94, msgQueue.targetID, このゲームでは 0xF378 のみ
+  u16 id;                                      // 0x94, mq.targetID, このゲームでは 0xF378 のみ
   u16 scale;                                   // 0x96, sprite.scaleX / scaleY に毎フレーム入る 6.6 固定小数
   u16 scaleStep;                               // 0x98, '.s[1]' (既定 2), _UpdateShrink が scale から毎フレーム引く
   u16 scaleStart;                              // 0x9A, '.s[0]' (既定 0x40), scale の初期値
@@ -36,7 +36,7 @@ void Entity3361_UpdateShrink(Entity3361* p) {
 
 // 溜まったメッセージを受け取り, cmd 6 で縮小開始に切り替える
 void Entity3361_PollMessages(Entity3361* p) {
-  MsgQueue* mq = &p->msgQueue;
+  MsgQueue* mq = &p->mq;
   s32 i;
 
   for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
@@ -70,7 +70,7 @@ NON_MATCH s32 Entity3361_Update(Entity3361* p) {
   }
 
   if (p->killRequested) {
-    MsgQueue_EndWait(&p->msgQueue, 1);
+    MsgQueue_EndWait(&p->mq, 1);
     KillEntity((Entity*)p);
   }
   return 0;
@@ -80,7 +80,7 @@ NON_MATCH s32 Entity3361_Update(Entity3361* p) {
 }
 
 s32 Entity3361_Destroy(Entity3361* p) {
-  MsgQueue_Unregister(&p->msgQueue);
+  MsgQueue_Unregister(&p->mq);
   AuxSprite_Remove(&p->sprite);
   return 0;
 }
@@ -92,7 +92,7 @@ s32 Entity3361_Init(Entity3361* p, u32 id, u32 _) {
   u32 priority;
 
   p->id = id;
-  MsgQueue_Register(&p->msgQueue, p->id, CLS_ETC);
+  MsgQueue_Register(&p->mq, p->id, CLS_ETC);
   if (VM_SeekToNamedArg('p')) {
     VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {

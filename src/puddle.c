@@ -51,7 +51,7 @@ static_assert(sizeof(PuddleManager) == 1980);
 
 static PuddleManager* gPuddleManager;  // 0x03000144
 
-void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos);
+void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -135,7 +135,7 @@ void Puddle_SetState(Puddle* elem, u8 state, void* fn) {
 void Puddle_OnHurt(HitboxData* a, HitboxData* b, void* owner) {
   Puddle* elem = owner;
 
-  if (b->invincibleTime != 0) {
+  if (b->iframes != 0) {
     return;
   }
   if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) {
@@ -148,12 +148,12 @@ void Puddle_OnHurt(HitboxData* a, HitboxData* b, void* owner) {
     } else if (elem->state == 1) {
       Puddle_SetState(elem, 0, FUN_0809f890);
     }
-    b->invincibleTime = 30;
+    b->iframes = 30;
   } else if (Hitbox_TestAttr(a, HBATTR_FROST)) {
     if (elem->state == 0) {
       Puddle_SetState(elem, 1, FUN_0809f840);
     }
-    b->invincibleTime = 30;
+    b->iframes = 30;
   } else if (elem->state == 0) {
     elem->touched = TRUE;
   }
@@ -229,7 +229,7 @@ NON_MATCH void FUN_0809f938(Puddle* elem) {
 
       pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
       pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
-      FUN_08015c90(1, 0, 1, 0x40, &pos);
+      Entity08015584_SpawnSpray(1, 0, 1, Q6(1), &pos);
     }
   } else if (elem->animTimer <= 15) {
     elem->sprite.poseIdx = 7;
@@ -240,7 +240,7 @@ NON_MATCH void FUN_0809f938(Puddle* elem) {
 
       pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
       pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
-      FUN_08015c90(1, 0, 1, 0x40, &pos);
+      Entity08015584_SpawnSpray(1, 0, 1, Q6(1), &pos);
     }
   } else {
     elem->sprite.poseIdx = 8;
@@ -355,8 +355,8 @@ void Puddle_Update(Puddle* elem) {
     elem->updateCallback(elem);
   }
 
-  if (elem->hurtbox.invincibleTime != 0) {
-    elem->hurtbox.invincibleTime--;
+  if (elem->hurtbox.iframes != 0) {
+    elem->hurtbox.iframes--;
   }
 }
 

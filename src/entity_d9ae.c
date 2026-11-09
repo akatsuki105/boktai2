@@ -1,4 +1,6 @@
 #include "collision_map.h"
+#include "dust.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "game.h"
 #include "global.h"
@@ -48,8 +50,8 @@ typedef struct EntityD9AEElem {
   AuxSpriteGfx gfx;                                // 0x070, '.a'
   AuxSprite sprite;                                // 0x08C
   MapTileOverride tile;                            // 0x0B8
-  HitboxData hitbox;                               // 0x0C8
-  HitboxData attackHitbox;                         // 0x118
+  HitboxData hurtbox;                              // 0x0C8
+  HitboxData hitbox;                               // 0x118
   ZoneEventSource zoneEvents;                      // 0x168
   void (*updateCallback)(struct EntityD9AEElem*);  // 0x198
 } EntityD9AEElem;
@@ -75,48 +77,13 @@ IWRAM_DATA EntityD9AE* gEntityD9AE = NULL;  // 0x03000020
 
 const u8 u8_ARRAY_085aa650[8] = {2, 2, 3, 3, 0, 0, 1, 1};  // 0x085AA650
 
-void FUN_08003008(void);
-void EntityD9AE_SpawnDust(Vec3* pos, s16 param_2);
-bool8 EntityD9AEElem_IsSideBlocked(EntityD9AEElem* elem, s32 param_2, s32 param_3);
-void EntityD9AE_PlayHitWallSound(u32 kind);
-bool8 EntityD9AEElem_IsFacingWall(EntityD9AEElem* elem, s32 param_2, s32 param_3);
-bool8 EntityD9AEElem_IsEnclosed(EntityD9AEElem* elem);
-void EntityD9AEElem_OnLanded(EntityD9AEElem* elem);
-void EntityD9AEElem_OnHitWall(EntityD9AEElem* elem);
-void EntityD9AE_PlayPushSound(s32 kind);
-void EntityD9AEElem_OnDamaged(HitboxData* hitbox, HitboxData* b, void* owner);
-void FUN_080035e0(void);
-void EntityD9AEElem_DropUpper(EntityD9AEElem* elem);
-s32 EntityD9AEElem_Release(EntityD9AEElem* elem);
-s32 EntityD9AE_ReleaseAll(void);
-s32 Cmd_5C0B(void);
-s32 Cmd_0E76(void);
-void EntityD9AEElem_SpawnMoveDust(EntityD9AEElem* elem);
-s32 EntityD9AEElem_TryMove(EntityD9AEElem* elem, s32 tileIdx, s32 dir);
-s32 EntityD9AE_PushAt(Vec3* pos, s32 dir);
-s32 EntityD9AE_PushAtDir8(Vec3* pos, u32 dir);
-void EntityD9AEElem_UpdateIdle(EntityD9AEElem* elem);
 void EntityD9AEElem_UpdateMove(EntityD9AEElem* elem);
 void EntityD9AEElem_UpdateFall(EntityD9AEElem* elem);
 void EntityD9AEElem_UpdateBreak(EntityD9AEElem* elem);
-void EntityD9AEElem_UpdateAppear(EntityD9AEElem* elem);
-s32 EntityD9AE_Update(EntityD9AE* p);
-s32 EntityD9AE_Destroy(EntityD9AE* p);
-s32 EntityD9AE_Init(EntityD9AE* p, u32 param_2);
-EntityD9AE* EntityD9AE_Create(u32 param_1);
-EntityD9AEElem* EntityD9AE_FindFreeElem(EntityD9AE* p);
-EntityD9AEElem* EntityD9AE_FindElemByID(EntityD9AE* p, u32 id);
-s32 EntityD9AE_SpawnElem(u32 id, s32 kind, s32 flags, Vec3* pos, s32 file, s32 poseIdx, s32 hp, s32 plttID, s32 flashPlttID, u32 breakScript);
-s32 Cmd_E02A(void);
-s32 Cmd_B76C(void);
 s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
-s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
-void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
+void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos);
-void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower);
-s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
-void EntityD9AEElem_BreakEffect0(EntityD9AEElem*);
+void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 
 // 状態を切り替えてタイマーを戻し, 入場の印を立てる
 static inline void EntityD9AEElem_SetState(EntityD9AEElem* elem, void (*fn)(EntityD9AEElem*), s32 state) {
@@ -125,16 +92,6 @@ static inline void EntityD9AEElem_SetState(EntityD9AEElem* elem, void (*fn)(Enti
   elem->stateEntered = TRUE;
   elem->state = state;
 }
-void EntityD9AEElem_BreakEffect1(EntityD9AEElem*);
-void EntityD9AEElem_BreakEffect2(EntityD9AEElem*);
-
-void (*const sEntityD9AEBreakEffects[5])(EntityD9AEElem*) = {
-    EntityD9AEElem_BreakEffect0,
-    EntityD9AEElem_BreakEffect1,
-    EntityD9AEElem_BreakEffect2,
-    NULL,
-    NULL,
-};  // 0x085AA658
 
 void FUN_08003008(void) { gEntityD9AE = NULL; }
 
@@ -155,7 +112,7 @@ NON_MATCH void EntityD9AE_SpawnDust(Vec3* pos, s16 param_2) {
       at.x = at.x - 128 + (u8)Random();
       at.z = (Random() & 0xF) + param_2 + at.z;
     }
-    FUN_080dbcec(&at, NULL, &size, 1, 3, 4);
+    DustManager_Spawn(&at, NULL, &size, 1, 3, 4);
   }
 #else
   INCFUNC("asm/func/EntityD9AE_SpawnDust.inc");
@@ -302,7 +259,7 @@ NON_MATCH void EntityD9AEElem_OnLanded(EntityD9AEElem* elem) {
   if (!EntityD9AEElem_IsEnclosed(elem)) {
     EntityD9AE_SpawnDust(&elem->mover.pos, 0x90);
   } else {
-    FUN_08015ce0(4, 1, 1, 0x40, 0, 0xFF, 2, 4, 6, 6, &elem->sprite.pos);
+    Entity08015584_SpawnSprayEx(4, 1, 1, Q6(1), 0, 0xFF, 2, 4, 6, 6, &elem->sprite.pos);
   }
 #else
   INCFUNC("asm/func/EntityD9AEElem_OnLanded.inc");
@@ -336,7 +293,7 @@ void EntityD9AEElem_OnHitWall(EntityD9AEElem* elem) {
         break;
       }
     }
-    FUN_08015ce0(2, 1, 1, 0x40, angle, 0x1F, 2, 4, 6, 6, &pos);
+    Entity08015584_SpawnSprayEx(2, 1, 1, Q6(1), angle, 0x1F, 2, 4, 6, 6, &pos);
     EntityD9AE_PlayHitWallSound(elem->kind);
   }
 }
@@ -362,12 +319,12 @@ void EntityD9AE_PlayPushSound(s32 kind) {
   }
 }
 
-void EntityD9AEElem_OnDamaged(HitboxData* hitbox, HitboxData* b, void* owner) {
+void EntityD9AEElem_OnDamaged(HitboxData* hurtbox, HitboxData* b, void* owner) {
   bool8 hit = FALSE;
   EntityD9AEElem* elem = owner;
 
   if (elem->kind == 0) {
-    if (TEST_FLAGS(hitbox->weakness, 7) && TEST_FLAGS(hitbox->attributes, 0x10)) {
+    if (TEST_FLAGS(hurtbox->weakness, 7) && TEST_FLAGS(hurtbox->attributes, 0x10)) {
       elem->hp -= 24;
       elem->hitCooldown = 10;
       elem->flashTimer = 2;
@@ -375,7 +332,7 @@ void EntityD9AEElem_OnDamaged(HitboxData* hitbox, HitboxData* b, void* owner) {
       hit = TRUE;
     }
   } else if (elem->kind == 1) {
-    if (TEST_FLAGS(hitbox->attributes, 4) && TEST_FLAGS(hitbox->weakness, 0x10007) && !(hitbox->weakness & 0x40)) {
+    if (TEST_FLAGS(hurtbox->attributes, 4) && TEST_FLAGS(hurtbox->weakness, 0x10007) && !(hurtbox->weakness & 0x40)) {
       elem->hp -= 24;
       elem->hitCooldown = 10;
       elem->flashTimer = 2;
@@ -383,12 +340,12 @@ void EntityD9AEElem_OnDamaged(HitboxData* hitbox, HitboxData* b, void* owner) {
       if (elem->seCooldown == 0) {
         elem->seCooldown = 10;
         PlaySound_082406e0(SONG_348);
-        FUN_08015d3c(&elem->mover.pos, 0, 0, 0x40, 12, 12, 4, 4);
+        Entity08015584_SpawnSprayOne(&elem->mover.pos, 0, 0, Q6(1), 12, 12, 4, 4);
       }
       hit = TRUE;
     }
   } else if (elem->kind == 2) {
-    if (TEST_FLAGS(hitbox->weakness, 4)) {
+    if (TEST_FLAGS(hurtbox->weakness, 4)) {
       elem->hp -= 24;
       elem->hitCooldown = 10;
       elem->flashTimer = 2;
@@ -406,7 +363,7 @@ void EntityD9AEElem_OnDamaged(HitboxData* hitbox, HitboxData* b, void* owner) {
     elem->hp = 0;
     return;
   }
-  if (!TEST_FLAGS(hitbox->weakness, 4)) {
+  if (!TEST_FLAGS(hurtbox->weakness, 4)) {
     PlaySound_082406e0(SE_ENEMY_DAMAGED);
   }
 }
@@ -446,7 +403,7 @@ NON_MATCH void EntityD9AEElem_DropUpper(EntityD9AEElem* elem) {
 s32 EntityD9AEElem_Release(EntityD9AEElem* elem) {
   AuxSprite_Remove(&elem->sprite);
   Map_RemoveTileOverride(&elem->tile);
-  Hitbox_Unregister(&elem->hitbox);
+  Hitbox_Unregister(&elem->hurtbox);
   if (!(elem->flags & 2)) {
     FUN_08002a58(&elem->mover);
   }
@@ -530,7 +487,7 @@ void EntityD9AEElem_BreakEffect0(EntityD9AEElem* elem) {
   at.z = elem->mover.pos.z;
   VEC3_SET(vel, -15, 8, -15);
   VEC3_SET(velRange, 30, 22, 30);
-  FUN_08014730(8, 3, &at, &vel, &velRange, 60, 60);
+  ScatterEffect_Spawn(8, SCATTER_STONE, &at, &vel, &velRange, 60, 60);
 }
 
 void EntityD9AEElem_BreakEffect1(EntityD9AEElem* elem) {
@@ -543,7 +500,7 @@ void EntityD9AEElem_BreakEffect1(EntityD9AEElem* elem) {
   pos.z = elem->mover.pos.z;
   VEC3_SET(vel, -15, 8, -15);
   VEC3_SET(velRange, 30, 22, 30);
-  FUN_08014730(8, 2, &pos, &vel, &velRange, 60, 60);
+  ScatterEffect_Spawn(8, SCATTER_ICE, &pos, &vel, &velRange, 60, 60);
 }
 
 void EntityD9AEElem_BreakEffect2(EntityD9AEElem* elem) {
@@ -586,7 +543,7 @@ NON_MATCH void EntityD9AEElem_SpawnMoveDust(EntityD9AEElem* elem) {
         break;
       }
     }
-    FUN_080dbcec(&at, NULL, &size, 1, 2, 4);
+    DustManager_Spawn(&at, NULL, &size, 1, 2, 4);
   }
 #else
   INCFUNC("asm/func/EntityD9AEElem_SpawnMoveDust.inc");
@@ -786,8 +743,8 @@ void EntityD9AEElem_UpdateMove(EntityD9AEElem* elem) {
     mover->pos.y -= 256;
   }
   elem->sprite.pos.y = mover->pos.y;
-  Hitbox_SetPos(&elem->attackHitbox, &mover->pos, 0);
-  Hitbox_Register(&elem->attackHitbox);
+  Hitbox_SetPos(&elem->hitbox, &mover->pos, 0);
+  Hitbox_Register(&elem->hitbox);
   if (elem->kind != 1 && !(elem->timer & 3)) {
     EntityD9AEElem_SpawnMoveDust(elem);
   }
@@ -939,7 +896,15 @@ void EntityD9AEElem_UpdateAppear(EntityD9AEElem* elem) {
   }
 }
 
-// 244/264命令, 原典は &hitbox.flags と &hitCooldown をループの外で作って要素ごとに足して回す, 1回目の下書きで切り上げ
+static void (*const sEntityD9AEBreakEffects[5])(EntityD9AEElem*) = {
+    EntityD9AEElem_BreakEffect0,
+    EntityD9AEElem_BreakEffect1,
+    EntityD9AEElem_BreakEffect2,
+    NULL,
+    NULL,
+};  // 0x085AA658
+
+// 244/264命令, 原典は &hurtbox.flags と &hitCooldown をループの外で作って要素ごとに足して回す, 1回目の下書きで切り上げ
 NON_MATCH s32 EntityD9AE_Update(EntityD9AE* p) {
 #ifdef NONMATCHING_C
   EntityD9AEElem* elem = p->elems;
@@ -970,14 +935,14 @@ NON_MATCH s32 EntityD9AE_Update(EntityD9AE* p) {
         }
         if (elem->hitCooldown == 0 && elem->hp > 0) {
           if (elem->zone != 0 && gStat->zoneID != elem->zone) {
-            elem->hitbox.flags |= HBFLAG_HIDDEN;
+            elem->hurtbox.flags |= HBFLAG_HIDDEN;
           } else {
-            elem->hitbox.flags &= ~HBFLAG_HIDDEN;
-            Hitbox_SetPos(&elem->hitbox, &elem->mover.pos, 0);
+            elem->hurtbox.flags &= ~HBFLAG_HIDDEN;
+            Hitbox_SetPos(&elem->hurtbox, &elem->mover.pos, 0);
           }
         } else {
           elem->hitCooldown--;
-          elem->hitbox.flags |= HBFLAG_HIDDEN;
+          elem->hurtbox.flags |= HBFLAG_HIDDEN;
         }
         if (elem->flashTimer != 0 && --elem->flashTimer == 0) {
           Video_SetAuxSpritePltt(&elem->gfx, elem->plttID);
@@ -1040,7 +1005,7 @@ s32 EntityD9AE_Destroy(EntityD9AE* p) {
   return 0;
 }
 
-s32 EntityD9AE_Init(EntityD9AE* p, u32 param_2) {
+s32 EntityD9AE_Init(EntityD9AE* p, u32 id) {
   gEntityD9AE = p;
   if (p->count == 0) {
     p->count = 8;
@@ -1063,7 +1028,8 @@ s32 EntityD9AE_Init(EntityD9AE* p, u32 param_2) {
   return 0;
 }
 
-EntityD9AE* EntityD9AE_Create(u32 param_1) {
+// 0xD9AE
+EntityD9AE* EntityD9AE_Create(u32 id, u32 _) {
   EntityD9AE* p;
 
   if (gEntityD9AE != NULL) {
@@ -1073,7 +1039,7 @@ EntityD9AE* EntityD9AE_Create(u32 param_1) {
   if (p != NULL) {
     SetEntityRoutine(&p->e, EntityD9AE_Update, EntityD9AE_Destroy);
     p->count = VM_GetNamedArgValue('m', 8);
-    if (EntityD9AE_Init(p, param_1) < 0) {
+    if (EntityD9AE_Init(p, id) < 0) {
       KillEntity(&p->e);
       return NULL;
     }
@@ -1117,6 +1083,7 @@ NON_MATCH s32 EntityD9AE_SpawnElem(u32 id, s32 kind, s32 flags, Vec3* pos, s32 f
   Mover* mover;
   AuxSpriteGfx* gfx;
   WorldPos* mpos;
+  HitboxData* hurtbox;
   HitboxData* hitbox;
   s32 tileIdx, height;
   Vec3 size, offset;
@@ -1173,19 +1140,19 @@ NON_MATCH s32 EntityD9AE_SpawnElem(u32 id, s32 kind, s32 flags, Vec3* pos, s32 f
   e->targetY = height << 8;
   VEC3_SET(size, 130, 128, 130);
   VEC3_SET(offset, 0, 128, 0);
-  hitbox = &e->hitbox;
-  Hitbox_Init(hitbox, e->mover.id, HBFLAG_HURTBOX | HBFLAG_UNK_6 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
-  Hitbox_SetPos(hitbox, mpos, 0);
-  Hitbox_SetHandler(hitbox, EntityD9AEElem_OnDamaged, e);
-  Hitbox_Register(hitbox);
+  hurtbox = &e->hurtbox;
+  Hitbox_Init(hurtbox, e->mover.id, HBFLAG_HURTBOX | HBFLAG_UNK_6 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_SetPos(hurtbox, mpos, 0);
+  Hitbox_SetHandler(hurtbox, EntityD9AEElem_OnDamaged, e);
+  Hitbox_Register(hurtbox);
   VEC3_SET(size, 128, 128, 128);
-  hitbox = &e->attackHitbox;
+  hitbox = &e->hitbox;
   Hitbox_Init(hitbox, e->mover.id, HBFLAG_HITBOX | HBFLAG_UNK_11 | HBFLAG_UNK_0, 0, HIM_0, &size, &offset);
   Hitbox_SetPos(hitbox, mpos, 0);
   Hitbox_SetHandler(hitbox, FUN_080035e0, e);
   Hitbox_SetPower(hitbox, 1500, 50);
-  e->attackHitbox.weakness = 0x100;
-  e->attackHitbox.attributes = 0;
+  e->hitbox.weakness = 0x100;
+  e->hitbox.attributes = 0;
   e->hp = hp;
   e->hitCooldown = 0;
   e->phase = 0;

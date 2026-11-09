@@ -60,10 +60,9 @@ void SetWeaponData(slot32_t n, const WeaponData* data);
 void GetWeaponData(slot32_t n, WeaponData* data);
 bool32 IsWeaponRegistered(slot32_t n);
 s32 CalcAttackWithEquippedArmor(WeaponData* w);
-void FUN_08094d1c(u8* param_1, s8* param_2);
+void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 void WeaponShop_ConfirmSort(WeaponShop* p);
 void WeaponShop_HandleActionInput(WeaponShop* p);
@@ -247,7 +246,7 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
     MainSprite_SetPose(&p->sprites[33], &p->icons, GetWeaponWearPose(&w), PLAYMODE_LOOP);
     MessageWindow_Start(p->unk_1644);
     MessageWindow_SetRect(2, 16, 28, 2);
-    FUN_08094d1c((u8*)&w, (s8*)p->unk_164c);
+    WeaponData_ShowNameInWindow((u8*)&w, (s8*)p->unk_164c);
     MainMenu_SetWeaponMarquee(&w, p->unk_1644);
   }
 
@@ -271,7 +270,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
 
       if (id > 0) {
         p->sprites[3 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[3 + i * 4 + j], &p->icons, id, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[3 + i * 4 + j], &p->icons, ICON_WEAPON(id), PLAYMODE_LOOP);
       } else {
         p->sprites[3 + i * 4 + j].flags |= SPRFLAG_HIDDEN;
       }
@@ -292,7 +291,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
 
       if (id > 0) {
         p->sprites[19 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->icons, id, PLAYMODE_LOOP);
+        MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->icons, ICON_WEAPON(id), PLAYMODE_LOOP);
         if (gStat->solarBank < gWeaponDB[id].price) {
           FUN_080b95bc(&p->sprites[19 + i * 4 + j], 0x2E0);
         } else {
@@ -391,7 +390,7 @@ void FUN_080bd47c(WeaponShop* p) {
       unk1[i] = 0;
     }
 
-    anims[i] = id;
+    anims[i] = ICON_WEAPON(id);
     strIDs[i] = 0x2DF;
     Shop_GetSlotPos(&a[i].x, slot);
   }
@@ -413,7 +412,7 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
 
   unk1[0] = 1;
   p->sprites[(u8)p->cursor.savedSlot + 3].flags |= SPRFLAG_HIDDEN;
-  anims[0] = GetWeaponID((u8)p->cursor.savedSlot);
+  anims[0] = ICON_WEAPON(GetWeaponID((u8)p->cursor.savedSlot));
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&from[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&to[0].x, (u8)p->cursor.slot);
@@ -439,7 +438,7 @@ NON_MATCH void FUN_080bd624(WeaponShop* p) {
 
   unk1[0] = 1;
   base = p->unk_1654 * 16 - 16;
-  anims[0] = (s8)p->swords[base + (u8)p->cursor.savedSlot];
+  anims[0] = ICON_WEAPON((s8)p->swords[base + (u8)p->cursor.savedSlot]);
   strIDs[0] = 0x2DF;
   Shop_GetSlotPos(&from[0].x, (u8)p->cursor.savedSlot);
   Shop_GetSlotPos(&to[0].x, (u8)p->cursor.slot);
@@ -873,13 +872,13 @@ NON_MATCH void FUN_080be204(WeaponShop* p) {
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[3 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 12; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[19 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(&p->sprites[19 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_PAUSE, 60, &pos);
   }
 
   for (i = 0; i < 4; i++) {
@@ -1062,7 +1061,7 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & B_BUTTON) {
       PlaySound_082406e0(SE_CLOSE_MENU);
-      FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
+      StartBgObjPlttFade(3, 5, 4, 4, 4, 0xFFFF, 0);
       WeaponShop_SetState(p, WeaponShop_Close);
       return;
     }
@@ -1121,7 +1120,7 @@ s32 WeaponShop_Init(WeaponShop* p) {
   FUN_080be204(p);
   FUN_080be650(p);
   FUN_080be7b4(p);
-  FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
+  StartBgObjPlttFade(2, 5, 4, 4, 4, 0xFFFF, 0);
   p->unk_1654 = 0;
   WeaponShop_OpenList(p);
   p->unk_1658 = 0;

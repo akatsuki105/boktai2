@@ -302,16 +302,16 @@ s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s
 void FUN_0823b880(s32 n);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
-s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime);
+s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes);
 void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
-s32 Entity0805e67c_SpawnSwarmN(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockbackPower, s32 invincibleTime, s32 count);
+s32 Entity0805e67c_SpawnSwarmN(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes, s32 count);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 void FUN_0823b980(s32 n, Vec3* pos);
 void FUN_08221938(ShadeMan* p);
 void ShadeMan_HandleDamage(ShadeMan* p);
 void ShadeMan_PollMessages(ShadeMan* p);
 s32 Map_FindFarthestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
-s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockbackPower, s32 angle, s32 invincibleTime, s32 flashPose, s32 power, HitboxAttributes attrs);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
 void ShadeMan_SetSubState0(ShadeMan* p, u32 subState0, u32 subState1, u32 subState2, u32 duration);
 void FUN_0822129c(ShadeMan*);
 void FUN_0821d800(ShadeMan*);
@@ -1128,7 +1128,7 @@ void FUN_0821d5d8(ShadeMan* p) {
   if (Boss_EnterSubState(boss)) {
     p->angle = Angle_FromDir8((u8)p->stateDuration);
     ShadeMan_SetMotion(p, 16, TRUE);
-    MsgQueue_EndWait(&boss->msgQueue, 1);
+    MsgQueue_EndWait(&boss->mq, 1);
   }
 }
 
@@ -1172,7 +1172,7 @@ void FUN_0821d760(ShadeMan* p) { PTR_ARRAY_085affec[p->base.subState2](p); }
 void FUN_0821d77c(ShadeMan* p) { PTR_ARRAY_085afff4[p->base.subState2](p); }
 
 void FUN_0821d798(ShadeMan* p) {
-  if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     PTR_ARRAY_085b0010[p->base.subState1](p);
   }
 }
@@ -1745,11 +1745,11 @@ NON_MATCH void FUN_0821e738(ShadeMan* p) {
       p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 11, 1, 1, 0, 0);
-        MainSprite_SetAnimSpeed(&p->sprite, 32);
+        MainSprite_SetAnimSpeed(&p->sprite, Q6(0.5));
         PlaySound_082406e0(SE_843);
       }
       if (p->sprite.animCmdIdx == 6) {
-        MainSprite_SetAnimSpeed(&p->sprite, 64);
+        MainSprite_SetAnimSpeed(&p->sprite, Q6(1));
       }
       boss->flags |= BOSSFLAG_NO_HITBOX;
       if (p->sprite.animCmdIdx >= 3 && p->sprite.animCmdIdx <= 6) {
@@ -1855,11 +1855,11 @@ NON_MATCH void FUN_0821ea6c(ShadeMan* p) {
       p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         ShadeMan_PlayAnim(p, 11, 1, 1, 0, 0);
-        MainSprite_SetAnimSpeed(&p->sprite, 32);
+        MainSprite_SetAnimSpeed(&p->sprite, Q6(0.5));
         PlaySound_082406e0(SE_843);
       }
       if (p->sprite.animCmdIdx == 6) {
-        MainSprite_SetAnimSpeed(&p->sprite, 64);
+        MainSprite_SetAnimSpeed(&p->sprite, Q6(1));
       }
       if (p->sprite.animCmdTimer == 1 && p->sprite.animCmdIdx == 7) {
         if (!(p->flag38c & SMFLAG_UNK_5)) {
@@ -2647,7 +2647,7 @@ NON_MATCH void FUN_08220a68(ShadeMan* p) {
         PlaySound_082406e0(SONG_862);
       }
       if (p->sprite.animEvents & 2) {
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         p->phase = 99;
         p->phaseTimer = 0;
         p->flag38c |= SMFLAG_PHASE_ENTERED;
@@ -2677,7 +2677,7 @@ NON_MATCH void FUN_08220b64(ShadeMan* p) {
     case 0: {
       p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animEvents & 2) {
-        MsgQueue_EndWait(&p->base.msgQueue, 1);
+        MsgQueue_EndWait(&p->base.mq, 1);
         ShadeMan_SetMotion(p, 16, TRUE);
       }
       break;
@@ -2712,7 +2712,7 @@ NON_MATCH void FUN_08220bf0(ShadeMan* p) {
     case 0: {
       p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (p->sprite.animEvents & 2) {
-        MsgQueue_EndWait(&p->base.msgQueue, 1);
+        MsgQueue_EndWait(&p->base.mq, 1);
         ShadeMan_SetMotion(p, 16, TRUE);
       }
       break;
@@ -2749,7 +2749,7 @@ NON_MATCH void FUN_08220cc4(ShadeMan* p) {
         PlaySound_082406e0(SONG_863);
       }
       if (p->sprite.animEvents & 2) {
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         p->phase = 1;
         p->phaseTimer = 0;
         p->flag38c |= SMFLAG_PHASE_ENTERED;
@@ -2984,7 +2984,7 @@ NON_MATCH void FUN_08221450(ShadeMan* p) {
   ShadeMan_UpdateAfterimages(p);
   p->flag38c &= ~0xFF000000;
   if (!boss->isDemo) {
-    if (!TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+    if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (boss->subState0 == 2 || TEST_FLAGS(boss->flags, BOSSFLAG_HIDDEN)) {
         if (p->unk_bc3 == 1) {
           p->unk_bc3 = 0;
@@ -3144,7 +3144,7 @@ NON_MATCH void FUN_08221938(ShadeMan* p) {
 NON_MATCH void ShadeMan_PollMessages(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  MsgQueue* queue = &boss->msgQueue;
+  MsgQueue* queue = &boss->mq;
   s32 i;
 
   for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
@@ -3160,7 +3160,7 @@ NON_MATCH void ShadeMan_PollMessages(ShadeMan* p) {
         boss->mover.pos.x = msg->args[0];
         boss->mover.pos.y = msg->args[1];
         boss->mover.pos.z = msg->args[2];
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 2: {
@@ -3182,7 +3182,7 @@ NON_MATCH void ShadeMan_PollMessages(ShadeMan* p) {
       }
       case 36: {
         FUN_0821bd14(p);
-        MsgQueue_EndWait(&boss->msgQueue, 1);
+        MsgQueue_EndWait(&boss->mq, 1);
         break;
       }
       case 37: {

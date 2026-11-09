@@ -1,4 +1,5 @@
 #include "collision_map.h"
+#include "dust.h"
 #include "emote.h"
 #include "enemy_target.h"
 #include "entity.h"
@@ -19,16 +20,15 @@
 // このEntityはリンゴやダーイン戦での共闘NPCとしてのサバタで、プレイヤーとしてのサバタは player.c で扱う
 // またそれ以外のNPCサバタはこれとは別のEntityっぽい 例えば、螺旋の塔のボス戦の入り口で立っているサバタは別扱いだった(戦闘が始まると、このEntityを使う)
 // 通信対戦のサバタはこのEntityを使わない(自キャラでも対戦相手でも)
+// gPlayerPtr[0] がジャンゴ(プレイヤー) で、 サバタは gPlayerPtr[1]
 
 void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p);
 bool32 FUN_0809e138(Player* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 FUN_080298dc(void);
-extern u16 gRisingSunCount;
 void* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 WorldPos* FUN_080230c4(void);
 void FUN_08084734(WorldPos* out);
-s32 FUN_080dbcec(Vec3* pos, Vec3* param_2, Vec3* param_3, u32 param_4, u32 param_5, u32 param_6);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
 struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes);
@@ -40,12 +40,13 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 
 // facing から animIDOffset と xflip を決める
 void AllySabata_SetAnimFacing(Player* p) {
-  u8 v = p->facing;
-  if (v > 4) {
-    p->animIDOffset = 8 - v;
+  u8 dir8 = p->facing;
+
+  if (IS_8DIR_LEFT(dir8)) {
+    p->animIDOffset = 8 - dir8;
     p->xflip = TRUE;
   } else {
-    p->animIDOffset = v;
+    p->animIDOffset = dir8;
     p->xflip = FALSE;
   }
 }
@@ -117,7 +118,7 @@ void AllySabata_SetAction(Player* p, u8 action, u8 state) {
 
 // 毎フレームの行動開始前の初期化, フラグと影のオフセットを戻す
 void FUN_08080e34(Player* p) {
-  p->flag20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_BUSY;
   if (KAAMOS(p->isSabata) == 0 && FUN_0809e138(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
@@ -173,9 +174,9 @@ NON_MATCH s32 FUN_08080f20(HitboxData* a, HitboxData* b) {
 
 // 被弾した向きを決める, PFLAG20_UNK_15 が立っているときは facing でなく unk_3e8 に入れて相手の unk_40 を退避する
 void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
-  b->knockbackPower = a->knockbackPower;
-  if (a->knockbackPower > 200) {
-    b->knockbackPower = 200;
+  b->knockback = a->knockback;
+  if (a->knockback > 200) {
+    b->knockback = 200;
   }
 
   if (Hitbox_TestAttr(a, HBATTR_18)) {
@@ -184,15 +185,15 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
     return;
   }
 
-  if (p->action == PACT_UNK_5) {
+  if (p->action == PACT_PUSH) {
     b->flags |= HBFLAG_HIDDEN;
-    b->knockbackPower = 0;
+    b->knockback = 0;
     return;
   }
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
     if (a->flags & HBFLAG_ANGLE) {
-      p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->knockbackDir = ANGLE_TO_DIR8(a->angle + 0x10);
     } else {
       s32 dx = a->center.x - b->center.x;
       s32 dz = a->center.z - b->center.z;
@@ -200,12 +201,12 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
       if (dx == 0 && dz == 0) {
         p->knockbackDir = p->facing;
       } else {
-        p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+        p->knockbackDir = (ANGLE_TO_DIR8(((u16)ArcTan2_8(dx, dz) + 0x10)) + 4) & 7;
       }
     }
 
-    p->knockbackSpeed = b->knockbackPower;
-    b->knockbackPower = 0;
+    p->knockbackSpeed = b->knockback;
+    b->knockback = 0;
     b->flags |= HBFLAG_HIDDEN;
     return;
   }
@@ -580,7 +581,7 @@ void FUN_08081830(Player* p) {
     p->facing = FACE_UP;
   }
 
-  PLAYER_SET_ANIM_DIR(p, p->facing);
+  PLAYER_SET_ANIM_8DIR(p, p->facing);
 
   p->animID = 0;
   MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, PLAYMODE_LOOP, 0);
@@ -681,7 +682,7 @@ s32 FUN_08081ab0(Player* p, u32 id) {
 }
 
 // サバタの攻撃判定とそのスプライトを作る, 威力は VM の '.a' で上書きできる
-// 残差2命令 (112/110): p->knockbackPower と p->atkInvincibleTime のアドレスを原典は spr (p+0x9C8) から add #0xb4 / add #2 で作るが, こちらは p からプール定数で作る
+// 残差2命令 (112/110): p->knockback と p->atkIframes のアドレスを原典は spr (p+0x9C8) から add #0xb4 / add #2 で作るが, こちらは p からプール定数で作る
 // そのせいで p+0xA7E が CSE で生き残って低位レジスタを1本余計に使い, power と定数 2 が高位レジスタに追い出される
 // Tier A-C 試済: spr / gfx / hitbox のローカル化の有無, ローカルの宣言順, hitbox の代入位置
 NON_MATCH void FUN_08081c04(Player* p) {
@@ -699,8 +700,8 @@ NON_MATCH void FUN_08081c04(Player* p) {
     power = 30;
   }
 
-  p->wpn.knockbackPower = 32;
-  p->wpn.atkInvincibleTime = 20;
+  p->wpn.knockback = 32;
+  p->wpn.iframes = 20;
   Video_GetAuxSprite(&p->wpn.gfx, SPRITE_GUN_SPREAD);
   AuxSprite_Add(spr, &p->wpn.gfx, SPRFLAG_NO_CLIP | SPRFLAG_AFFINE | SPRFLAG_HIDDEN);
   spr->poseIdx = 4;
@@ -713,7 +714,7 @@ NON_MATCH void FUN_08081c04(Player* p) {
   halfSize.x = 170, halfSize.y = 50, halfSize.z = 170;
   offset.x = 0, offset.y = -20, offset.z = 0;
   Hitbox_Init(&p->wpn.hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 1 << WK_GUN, 2, p->wpn.atkInvincibleTime);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 1 << WK_GUN, 2, p->wpn.iframes);
   Hitbox_SetHandler(&p->wpn.hitbox, NULL, p);
 #else
   INCFUNC("asm/func/FUN_08081c04.inc");
@@ -896,7 +897,7 @@ void FUN_08082154(Player* p) {
 
       p->shadowOffset.z = 0xF;
       if (AllySabata_PlayAnim(p, 466, Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
           AllySabata_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_08082124(p)) {
@@ -912,11 +913,11 @@ void FUN_08082154(Player* p) {
       break;
     }
     case 2: {
-      Player_SetFlag20(p, PFLAG20_UNK_7 | PFLAG20_QC);
+      Player_SetFlag20(p, PFLAG20_PALM_UP | PFLAG20_QC);
       if (p->unk_404 <= 4) {
         p->unk_404++;
         if (p->unk_404 == 5) {
-          PlaySound_082406e0(VO_TAIYO_R);
+          PlaySound_082406e0(VO_RDJANGO_TAIYO);
         }
       }
 
@@ -946,7 +947,7 @@ void FUN_08082154(Player* p) {
       break;
     }
     case 3: {
-      Player_SetFlag20(p, PFLAG20_UNK_7);
+      Player_SetFlag20(p, PFLAG20_PALM_UP);
       AllySabata_PlayAnim(p, 470, Q6(1));
       p->shadowOffset.z = 0x1E;
       if (!(p->input->down & A_BUTTON)) {
@@ -986,7 +987,7 @@ void FUN_08082464(Player* p) {
 void FUN_08082498(Player* p) {
   if (p->action != PACT_DAMAGED) {
     AllySabata_SetAction(p, PACT_DAMAGED, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
 
     AllySabata_PlayAnim(p, 446, Q6(1));
     sound_08240740(SONG_870);
@@ -994,7 +995,7 @@ void FUN_08082498(Player* p) {
     return;
   }
 
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     if (p->originKnockback != 0) {
       s32 dx = p->mover.pos.x - p->knockbackOrigin->x;
       s32 dz = p->mover.pos.z - p->knockbackOrigin->z;
@@ -1007,21 +1008,21 @@ void FUN_08082498(Player* p) {
     } else {
       s32 angle = ((p->facing + 5) & 7) * 32;
 
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
     }
 
-    p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
+    p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
     return;
   }
 
-  if (p->emitter.kind == 3 && p->emitter.unk_3 != 0) {
+  if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
     AllySabata_SetAction(p, PACT_UNK_19, 0);
     return;
   }
 
   if (AllySabata_PlayAnim(p, 448, Q6(1))) {
-    p->hurtbox.knockbackPower = 0;
+    p->hurtbox.knockback = 0;
     p->originKnockback = FALSE;
     AllySabata_SetAnimFacing(p);
     AllySabata_SetAction(p, PACT_IDLE, 0);
@@ -1032,7 +1033,7 @@ void FUN_08082498(Player* p) {
 void FUN_08082670(Player* p) {
   if (p->action != PACT_BLOWN_AWAY) {
     AllySabata_SetAction(p, PACT_BLOWN_AWAY, 0);
-    PLAYER_SET_ANIM_DIR_HALF(p, p->facing);
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
 
     sound_08240740(SONG_870);
     PlaySound_082406e0(VO_SABATA_DAMAGE2);
@@ -1056,9 +1057,9 @@ void FUN_08082670(Player* p) {
 
       AllySabata_PlayAnim(p, 452, Q6(1));
       angle = ((p->facing + 5) & 7) * 32;
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
-      p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
       if (p->stateTimer > 3) {
         if (p->floatHeight >= p->stateTimer * 8) {
           p->floatHeight -= p->stateTimer * 8;
@@ -1068,7 +1069,7 @@ void FUN_08082670(Player* p) {
       }
 
       p->stateTimer++;
-      if (p->hurtbox.knockbackPower <= 19 && p->floatHeight == 0) {
+      if (p->hurtbox.knockback <= 19 && p->floatHeight == 0) {
         p->floatHeight = 0;
         PlaySound_082406e0(SE_826);
         AllySabata_SetAction(p, PACT_BLOWN_AWAY, 2);
@@ -1078,10 +1079,10 @@ void FUN_08082670(Player* p) {
     case 2: {
       s32 angle = ((p->facing + 5) & 7) * 32;
 
-      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
-      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
       if (AllySabata_PlayAnim(p, 454, Q6(1))) {
-        p->hurtbox.knockbackPower = 0;
+        p->hurtbox.knockback = 0;
         AllySabata_SetAction(p, PACT_BLOWN_AWAY, 3);
       }
       break;
@@ -1109,11 +1110,11 @@ void FUN_08082670(Player* p) {
   }
 }
 
-// サバタの行動 0x12, 構えて unk_474 フレーム数えてから Emote_Show を呼び直し、アニメが終わったら行動 0 に戻す
+// PACT_UNK_18, 構えて unk_474 フレーム数えてから Emote_Show を呼び直し、アニメが終わったら行動 0 に戻す
 void FUN_08082970(Player* p) {
   if (p->action != PACT_UNK_18) {
     sound_08240740(SONG_870);
-    PlaySound_082406e0(SONG_879);
+    PlaySound_082406e0(VO_SABATA_UGH_879);
     AllySabata_SetAction(p, PACT_UNK_18, 0);
   }
 
@@ -1143,7 +1144,7 @@ void FUN_08082970(Player* p) {
   }
 }
 
-// サバタの行動 0x13, 2フレームに1回 gPlayerPtr[0] の方へ向きを1段ずつ回し、16フレーム経ったら行動 2 に移る
+// PACT_UNK_19, 2フレームに1回 gPlayerPtr[0] の方へ向きを1段ずつ回し、16フレーム経ったら行動 2 に移る
 // 残差2命令 (134/136) でこちらが短い: 定数 7 を r3 に残して向き差の & 7 でも使い回すが, 原典は movs を打ち直す
 // Tier A-C 試済: 向き差の書き方 (dir - facing + 8 / dir - (facing - 8)), facing のローカル化
 NON_MATCH void FUN_08082a94(Player* p) {
@@ -1152,7 +1153,7 @@ NON_MATCH void FUN_08082a94(Player* p) {
     sound_08240740(SONG_870);
     PlaySound_082406e0(SONG_873);
     p->emoteKind = EMOTE_0;
-    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, 3, &p->unk_474, p->unk_472, 300, 380);
+    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_BLUE, &p->unk_474, p->unk_472, 300, 380);
     AllySabata_SetAction(p, PACT_UNK_19, 0);
   }
 
@@ -1281,7 +1282,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
       AllySabata_SetAction(p, PACT_SUN_MAGIC, 1);
       p->plttID_95e = OBP_ELEMENT(1);
       p->plttFlashTimer = 2;
-      PlaySound_082406e0(SONG_878);
+      PlaySound_082406e0(VO_SABATA_ANKOKU_878);
       RisingSunEffect_Create(p, &p->mover.pos, &p->pos_930, 1, p->unk_3ba);
       p->unk_477 = 0x3C;
       break;
@@ -1295,7 +1296,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
 
       p->shadowOffset.z = 0xF;
       if (AllySabata_PlayAnim(p, 466, Q6(1))) {
-        PlaySound_082406e0(SONG_203);
+        PlaySound_082406e0(SE_PALM);
         AllySabata_SetAction(p, PACT_SUN_MAGIC, 2);
       }
       break;
@@ -1334,15 +1335,15 @@ NON_MATCH void FUN_08082dac(Player* p) {
 // Tier A-C 試済: abs() と手書きの符号反転, 差分を一旦ローカルに取る形, idx = 0 の位置
 NON_MATCH void FUN_0808301c(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->action != PACT_UNK_8) {
-    AllySabata_SetAction(p, PACT_UNK_8, 0);
+  if (p->action != PACT_REFUELING) {
+    AllySabata_SetAction(p, PACT_REFUELING, 0);
   }
   p->unk_951 = 9;
 
   switch (p->state) {
     case 0: {
       if (AllySabata_PlayAnim(p, 478, Q6(1))) {
-        AllySabata_SetAction(p, PACT_UNK_8, 1);
+        AllySabata_SetAction(p, PACT_REFUELING, 1);
       }
       break;
     }
@@ -1398,7 +1399,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
         }
 
         if (((p->unk_4a6 + 3) & 3) != idx && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &p->waypoints[idx])) {
-          p->pathEndAction = PACT_UNK_8;
+          p->pathEndAction = PACT_REFUELING;
           p->pathEndFacing = p->waypoints[idx].val;
           p->unk_4a6 = (idx + 1) & 3;
           FUN_08084798(0x1E);
@@ -1423,7 +1424,7 @@ void FUN_080831e0(Player* p, s32 size, s32 plttOfs, HitboxAttributes attrs) {
   pos.x = p->mover.pos.x + POLAR_X(Q8(0.586), angle);
   pos.y = p->mover.pos.y + Q8(0.9);
   pos.z = p->mover.pos.z + POLAR_Z(Q8(0.586), angle);
-  Entity080cbabc_Create(&pos, angle, Q8(0.125), size, plttOfs, p->wpn.atkPower, p->wpn.knockbackPower, attrs, p->wpn.atkInvincibleTime);
+  Entity080cbabc_Create(&pos, angle, Q8(0.125), size, plttOfs, p->wpn.atkPower, p->wpn.knockback, attrs, p->wpn.iframes);
   PlaySound_082406e0(SONG_871);
 }
 
@@ -1512,7 +1513,7 @@ void FUN_080832b8(Player* p) {
       p->stateTimer++;
       if (p->stateTimer > 4) {
         if (Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &p->waypoints[p->unk_4a6])) {
-          p->pathEndAction = PACT_UNK_8;
+          p->pathEndAction = PACT_REFUELING;
           p->pathEndFacing = p->waypoints[p->unk_4a6].val;
           AllySabata_SetAction(p, PACT_DASH, 0);
           p->unk_4a6 = (p->unk_4a6 + 1) & 3;
@@ -1525,7 +1526,7 @@ void FUN_080832b8(Player* p) {
   }
 }
 
-// 同行サバタの PACT_UNK_20, 構えて 1-2 回溜めたあと, 段差を避けて unk_3b0 の辺りをうろつきながら暗黒銃の散弾を撃ち続ける
+// PACT_UNK_20, 構えて 1-2 回溜めたあと, 段差を避けて unk_3b0 の辺りをうろつきながら暗黒銃の散弾を撃ち続ける
 // 残差1命令 (917/916) と段差判定まわり, 原典は unk_3b0 のずらしで x を乱数の後に ldrh で読み, 段差で向きを反転する所に結果を使わない ldrsb と畳まれない blocked = 1 の判定が残る
 // Tier A-C 試済 (乱数の式の書き順 4 通り, _Random(table) と table の取り位置, unk_4a7 は += 254 で一致, 段差判定の Vec3 を分ける)
 NON_MATCH void FUN_080835d8(Player* p) {
@@ -1681,7 +1682,7 @@ NON_MATCH void FUN_080835d8(Player* p) {
 
         VEC3_SET(ofs, 0, 0, 0);
         VEC3_SET(size, 32, 0, 32);
-        FUN_080dbcec(&p->mover.pos, &ofs, &size, 1, 2, 4);
+        DustManager_Spawn(&p->mover.pos, &ofs, &size, 1, 2, 4);
       }
       if (!(p->stateTimer & 15)) {
         PlaySound_082406e0(SE_SABATA_SPIN);
@@ -1721,7 +1722,7 @@ s32 FUN_08083eac(Player* p) {
     p->unk_474 = p->unk_472;
   }
 
-  if (p->hurtbox.knockbackPower != 0) {
+  if (p->hurtbox.knockback != 0) {
     if (p->blownAway != 0) {
       return PACT_BLOWN_AWAY;
     }
@@ -1735,7 +1736,7 @@ s32 FUN_08083eac(Player* p) {
 
   if (gRisingSunCount != 0) {
     p->human.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD | SPRFLAG_BLINK_EVEN);
-    p->hurtbox.knockbackPower = 50;
+    p->hurtbox.knockback = 50;
     p->blownAway = 0;
     p->facing |= 1;
     return PACT_DAMAGED;
@@ -1773,12 +1774,12 @@ s32 FUN_08083eac(Player* p) {
   if (action == PACT_UNK_20) {
     return PACT_UNK_20;
   }
-  if (action == PACT_UNK_8) {
-    return PACT_UNK_8;
+  if (action == PACT_REFUELING) {
+    return PACT_REFUELING;
   }
 
   if (Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &p->waypoints[p->unk_4a6])) {
-    p->pathEndAction = PACT_UNK_8;
+    p->pathEndAction = PACT_REFUELING;
     p->pathEndFacing = p->waypoints[p->unk_4a6].val;
     p->unk_4a6 = (p->unk_4a6 + 1) & 3;
     return PACT_DASH;
@@ -1863,7 +1864,7 @@ void AllySabata_UpdateActions(Player* p) {
       [PACT_DASH] = FUN_08082bdc,
       [PACT_ATTACK] = FUN_080832b8,
       [PACT_UNK_7] = FUN_08082154,
-      [PACT_UNK_8] = FUN_0808301c,
+      [PACT_REFUELING] = FUN_0808301c,
       [PACT_SUN_MAGIC] = FUN_08082dac,
       [PACT_UNK_18] = FUN_08082970,
       [PACT_UNK_19] = FUN_08082a94,
@@ -1913,9 +1914,9 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
     b->hitState &= ~HBHITSTATE_UNK_0;
   }
 
-  b->invincibleTime = a->invincibleTime;
+  b->iframes = a->iframes;
 
-  if (p->action == PACT_UNK_8 && p->state != 0) {
+  if (p->action == PACT_REFUELING && p->state != 0) {
     p->unk_476 = 4;
     if (Hitbox_HasWeakness(a, 0x1000)) {  // 攻撃元の種別マスクの 0x1000, 未解析
       p->namakuraCount++;
@@ -1930,7 +1931,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
         p->blockCount = 0;
         p->facing = FUN_08080f20(a, b);
         p->blownAway = 1;
-        b->knockbackPower = 100;
+        b->knockback = 100;
         return;
       }
     }
@@ -1945,7 +1946,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
     return;
   }
 
-  p->knockbackSpeed = a->knockbackPower;
+  p->knockbackSpeed = a->knockback;
   if (a->flags & HBFLAG_ANGLE) {
     p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
   } else {
@@ -1964,16 +1965,16 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 // Tier A-C 試済: 宣言と代入の分離 / 早期 return 形 / ネスト形 (いずれも割り当てが裏返らない)
 NON_MATCH void FUN_08084540(Player* p) {
 #ifdef NONMATCHING_C
-  s32 v = p->hurtbox.invincibleTime;
+  s32 v = p->hurtbox.iframes;
 
   if (v > 0) {
     AllySabata_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
-    if (p->hurtbox.knockbackPower == 0) {
+    if (p->hurtbox.knockback == 0) {
       v--;
       if (v != 0 && p->unk_476 == 0 && ((v >> 2) & 1) != 0) {
         AllySabata_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
-      p->hurtbox.invincibleTime = v;
+      p->hurtbox.iframes = v;
     }
   }
 #else

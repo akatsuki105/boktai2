@@ -199,7 +199,7 @@ _0801F642:
 	movs r1, #4
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	adds r0, r6, #0
 	movs r1, #0
 	bl FUN_0801e284

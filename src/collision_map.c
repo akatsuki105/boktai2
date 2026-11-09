@@ -15,19 +15,9 @@ IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 void Map_ClearEvent(CollisionMapEvent* ev);
 CollisionMapEvent* Map_FindEventByID(u32 id);
 void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* ev, u16 msg);
-s32 FUN_0823a88c(u8* pc, ScriptArgs* args);                      // src/entity_0823acbc.c
-s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/entity_0823acbc.c
+s32 VM_ExecByPointer_Proxy_0823a88c(u8* pc, ScriptArgs* args);   // src/game_system.c
+s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/game_system.c
 extern u32 gNextMapEventID;                                      // src/iwram2.c
-
-// 索引 idx のタイルを返す, 上書きがあればそちらを返す
-static inline CollisionMapTile* TileAtIndex(s32 idx) {
-  MapTileOverride* ov = Map_FindTileOverride(idx, 1);
-
-  if (ov != NULL) {
-    return &ov->tile;
-  }
-  return &gCollisionMap->tiledata->tiles[idx];
-}
 
 // gCollisionMap を確保してレジストリに登録し, 空の状態にする
 void Map_InitCollisionMap(void) {
@@ -140,7 +130,7 @@ void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
 // from から to へ 4タイル以内で真っ直ぐ行ける向きを 8bit の角度で返す, 無ければ -1
 // 残差7命令: 原典は & 3 と & 0xFF をループ内で実際に計算し、配列先頭と定数2つを高位レジスタ (r8/r9/sl) に抱えている
 // こちらは dir が 0..3 と分かるので agbcc が両方のマスクを畳んでしまう, マスクが残る書き方が未発見
-NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to) {
+NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to, s32 unused) {
 #ifdef NONMATCHING_C
   s32 angle = 0xC0;
   s32 dir;
@@ -1380,7 +1370,7 @@ NON_MATCH void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* e
   if (ev->flags & 0x20) {
     VM_ExecById_Proxy_0823a8a4((u32)ev->scriptPC, &sa);
   } else {
-    FUN_0823a88c(ev->scriptPC, &sa);
+    VM_ExecByPointer_Proxy_0823a88c(ev->scriptPC, &sa);
   }
 #else
   INCFUNC("asm/func/Map_RunZoneEventScript.inc");

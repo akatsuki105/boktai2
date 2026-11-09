@@ -128,6 +128,10 @@ static_assert(sizeof(MainSprite) == 96);
 
 static inline void MainSprite_SetFlags(MainSprite* p, SpriteFlags bits) { p->flags |= bits; }
 static inline void MainSprite_ClearFlags(MainSprite* p, SpriteFlags bits) { p->flags &= ~bits; }
+static inline bool8 MainSprite_TestFlags(MainSprite* sprite, SpriteFlags bits) {
+  if (sprite->flags & bits) return TRUE;
+  return FALSE;
+}
 static inline void MainSprite_Show(MainSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
 static inline void MainSprite_Hide(MainSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
 

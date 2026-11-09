@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "eff_scatter.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -76,8 +77,7 @@ static_assert(sizeof(FallingObjectManager) == 32);
 
 COMMON_DATA FallingObjectManager* gFallingObjectManager = NULL;  // 0x03002B3C
 
-void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
-s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
+void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 s32 Entity08016ba4_Spawn(s32 count, Vec3* pos, s32 lifeBase, s32 lifeRand, s32 speedBase, s32 speedRand, s32 angleBase, s32 angleRand, s32 velYBase, s32 velYRand);
 FallingObjectManager* FallingObjectManager_Create(u32 id, u32 _);
 
@@ -392,10 +392,10 @@ void FallingObject_UpdateBounceType1(FallingObject* p) {
   if (p->stateBegun) {
     p->stateBegun = FALSE;
     FallingObject_RemoveShadow(p);
-    if (!(gGameFlags & FLAG030047A4_LINK)) {
+    if (!(gGameFlags & GAMEFLAG_LINK)) {
       VEC3_SET(vel, -15, 8, -15);
       VEC3_SET(velRange, 30, 22, 30);
-      FUN_08014730(8, 3, &p->pos, &vel, &velRange, 60, 60);
+      ScatterEffect_Spawn(8, SCATTER_STONE, &p->pos, &vel, &velRange, 60, 60);
     }
     p->duration = 30;
   }
@@ -433,10 +433,10 @@ void FallingObject_UpdateBounceType2(FallingObject* p) {
 
   if (p->stateBegun) {
     p->stateBegun = FALSE;
-    if (!(gGameFlags & FLAG030047A4_LINK)) {
+    if (!(gGameFlags & GAMEFLAG_LINK)) {
       VEC3_SET(vel, -15, 8, -15);
       VEC3_SET(velRange, 30, 22, 30);
-      FUN_08014730(8, 3, &p->pos, &vel, &velRange, 60, 60);
+      ScatterEffect_Spawn(8, SCATTER_STONE, &p->pos, &vel, &velRange, 60, 60);
     }
     p->duration = 25;
   }
@@ -498,7 +498,7 @@ s32 FallingObject_SpawnParticles(FallingObject* p) {
   Vec3 pos;
 
   VEC3_SET(pos, p->sprite.pos.x, p->sprite.pos.y, p->sprite.pos.z);
-  FUN_08015d3c(&pos, 2, 0, 64, 8, 4, 0, 0);
+  Entity08015584_SpawnSprayOne(&pos, 2, 0, Q6(1), 8, 4, 0, 0);
 }
 
 void FallingObject_UpdateVanish(FallingObject* p) {

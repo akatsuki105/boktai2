@@ -60,7 +60,7 @@ _08058B16:
 	movs r0, #3
 	movs r1, #9
 	adds r2, r7, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 _08058B66:
 	ldrh r0, [r6, #0x1c]
 	lsls r0, r0, #0x10
@@ -209,7 +209,7 @@ _08058C6A:
 	bl AuxSprite_Remove
 	mov r0, r8
 	adds r1, r4, #0
-	bl Entity08058ffc_UnregisterElemHitbox
+	bl Larva_UnregisterHurtbox
 	movs r1, #1
 	mov r0, sb
 	lsls r1, r0

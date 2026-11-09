@@ -200,7 +200,7 @@ _080AF81A:
 	movs r1, #4
 	movs r2, #0x1f
 	movs r3, #0x1f
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	ldr r0, [r5]
 	movs r1, #4
 	bl FUN_080ad204

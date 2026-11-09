@@ -25,7 +25,7 @@
 	adds r6, #2
 	mov r0, sp
 	adds r1, r6, #0
-	bl FUN_0823ce10
+	bl GetTimeOfDayPlttPair
 	mov r0, sp
 	ldrh r0, [r0]
 	lsls r0, r0, #1

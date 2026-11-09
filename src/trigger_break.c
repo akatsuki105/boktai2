@@ -1,3 +1,4 @@
+#include "eff_scatter.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -42,9 +43,8 @@ typedef struct BreakableManager {
 static_assert(sizeof(BreakableManager) == 32);
 
 void exit(int code);  // libc.a:exit.o
-s32 FUN_08015ce0(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, Vec3* pos);
+s32 Entity08015584_SpawnSprayEx(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, Vec3* pos);
 s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
-s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 lifeBase, s32 lifeRandMask);
 
 static BreakableManager* gBreakableManager;  // 0x03000030
 
@@ -86,7 +86,7 @@ void Breakable_OnHurt(HitboxData* a, HitboxData* b, Breakable* item) {
   angle = a->angle + 0x80;
   pos.x += POLAR_X(32, angle);
   pos.z += POLAR_Z(32, angle);
-  Entity080146e0_SpawnAtAngle(4, 3, &pos, angle, 0xA4, 16, 4, 8, 3, 30, 0xF);
+  ScatterEffect_SpawnAtAngle(4, SCATTER_STONE, &pos, angle, 0xA4, 16, 4, 8, 3, 30, 0xF);
   item->shakeTimer = 10;
 }
 
@@ -126,9 +126,9 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
     pos.x -= 0x80;
     pos.y = pos.y;
     pos.z += 0x80;
-    FUN_08015ce0(4, 1, 0x2000, 0x40, 0, 0x100, 2, 3, 0xC, 6, &pos);
-    FUN_08015ce0(6, 1, 0x2000, 0x40, 0, 0x100, 4, 4, 0xA, 4, &pos);
-    Entity080146e0_SpawnAtAngle(4, 3, &pos, 0, 0x100, 0x10, 4, 0xC, 3, 30, 0xF);
+    Entity08015584_SpawnSprayEx(4, 1, 0x2000, Q6(1), 0, 0x100, 2, 3, 0xC, 6, &pos);
+    Entity08015584_SpawnSprayEx(6, 1, 0x2000, Q6(1), 0, 0x100, 4, 4, 0xA, 4, &pos);
+    ScatterEffect_SpawnAtAngle(4, SCATTER_STONE, &pos, 0, 0x100, 0x10, 4, 0xC, 3, 30, 0xF);
     FUN_08014da0(4, 6, &pos, 0, 0x14, 4, 0xA, 6, 0, 0x100, 0x14, 4);
   } else {
     if (item->flashTimer != 0) {

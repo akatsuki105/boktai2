@@ -264,7 +264,7 @@ _080F618C:
 	adds r3, #2
 	adds r0, r7, r3
 	strb r2, [r0]
-	ldr r0, _080F6238 @ =FUN_080e6794
+	ldr r0, _080F6238 @ =Enemy_WaitPendingState
 	mov ip, r0
 	movs r1, #0xe
 	adds r3, #1
@@ -324,7 +324,7 @@ _080F622C:
 	bx r0
 	.align 2, 0
 _080F6234: .4byte 0x00000469
-_080F6238: .4byte FUN_080e6794
+_080F6238: .4byte Enemy_WaitPendingState
 _080F623C: .4byte 0x0000046B
 _080F6240: .4byte 0x00000482
 _080F6244: .4byte 0x00000551

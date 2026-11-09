@@ -37,7 +37,7 @@ _0813AAEE:
 _0813AB0C:
 	adds r0, r5, #0
 	movs r1, #0xf
-	bl FUN_080efe38
+	bl Enemy_PlayAnimNoFacing
 	movs r2, #0xe4
 	lsls r2, r2, #1
 	adds r0, r5, r2
@@ -97,7 +97,7 @@ _0813AB6C:
 	ldr r0, _0813AB9C @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #1
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	b _0813ABAA
 	.align 2, 0
 _0813AB98: .4byte 0x0000065E
@@ -106,7 +106,7 @@ _0813ABA0:
 	ldr r0, _0813ABD0 @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #2
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 _0813ABAA:
 	ldr r0, _0813ABD4 @ =0x0000065E
 	adds r1, r6, r0

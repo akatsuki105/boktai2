@@ -39,7 +39,7 @@ _080D08FA:
 	lsls r2, r2, #1
 	adds r0, r4, r2
 	ldrh r0, [r0]
-	bl PlayerLink_IsLiveLava
+	bl PlayerLink_IsOnSoundFloor
 	cmp r0, #0
 	beq _080D0960
 	ldrh r0, [r5]

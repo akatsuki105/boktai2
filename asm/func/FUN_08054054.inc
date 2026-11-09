@@ -34,7 +34,7 @@
 	movs r0, #7
 	movs r1, #0x1a
 	movs r3, #0
-	bl Entity080146e0_SpawnAtAngle
+	bl ScatterEffect_SpawnAtAngle
 _080540A2:
 	ldr r0, [r6, #0x28]
 	adds r0, #0x18

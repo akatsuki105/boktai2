@@ -111,7 +111,7 @@ _080D6F74:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldrh r0, [r0]
-	bl FUN_080cfc78
+	bl PlayerLink_IsOnIce
 	cmp r0, #0
 	bne _080D6FB2
 	movs r2, #0xdf

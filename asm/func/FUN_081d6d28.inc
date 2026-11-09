@@ -96,7 +96,7 @@ _081D6DA6:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x40
-	bl FUN_08015c90
+	bl Entity08015584_SpawnSpray
 	movs r0, #3
 	strb r0, [r4]
 	movs r0, #0xae
@@ -128,7 +128,7 @@ _081D6E0C:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x40
-	bl FUN_08015c90
+	bl Entity08015584_SpawnSpray
 	movs r0, #2
 	strb r0, [r4]
 	movs r0, #0xae

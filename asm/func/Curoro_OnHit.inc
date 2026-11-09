@@ -193,12 +193,12 @@ _0813A3C0:
 	bne _0813A3FE
 	ldr r0, [r6]
 	movs r1, #1
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 	b _0813A406
 _0813A3FE:
 	ldr r0, [r6]
 	movs r1, #2
-	bl Player_StartFormEffect
+	bl Player_InflictElementalCond
 _0813A406:
 	pop {r4, r5, r6, r7}
 	pop {r0}

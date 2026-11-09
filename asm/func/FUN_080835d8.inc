@@ -1020,7 +1020,7 @@ _08083D72:
 	movs r3, #4
 	str r3, [sp, #4]
 	movs r3, #1
-	bl FUN_080dbcec
+	bl DustManager_Spawn
 _08083DEE:
 	ldrh r1, [r4]
 	movs r0, #0xf

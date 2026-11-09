@@ -86,7 +86,6 @@ typedef struct {
 } EntityEF6F;
 static_assert(sizeof(EntityEF6F) == 1884);
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void PlayForgeStrikeSE(u32 _, s32 kind);
 
 // unk_1a を次の段へ進め、段ごとの経過フレーム数を測り直す
@@ -826,7 +825,7 @@ void FUN_0801f214(EntityEF6F* p) {
       }
       if (p->unk_6c == 120) {
         SetSubState(p, p->unk_1a + 1);
-        FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+        StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
       }
       break;
     }
@@ -838,7 +837,7 @@ void FUN_0801f214(EntityEF6F* p) {
         CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG2_ON);
         CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG3_ON);
         FUN_0801e708(p);
-        FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
+        StartBgObjPlttFade(2, 4, 4, 4, 4, 0xFFFF, 0);
         FUN_0801e290(p, 1, 0);
         p->sprite.pos.y = 140;
       }
@@ -859,7 +858,7 @@ void FUN_0801f308(EntityEF6F* p) {
 // BGM をフェードアウトさせ、32フレーム後に BG0 を消して unk_90 のスクリプトを起動する
 void FUN_0801f328(EntityEF6F* p) {
   if (FUN_0801e26c(p)) {
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
     Sound_FadeOutBGMTemporarily(5);
   }
   if (p->unk_24 > 31 && p->unk_90 != 0) {
@@ -873,7 +872,7 @@ void FUN_0801f328(EntityEF6F* p) {
 void FUN_0801f38c(EntityEF6F* p) {
   if (FUN_0801e26c(p)) {
     MainSprite_Hide(&p->sprite);
-    FUN_0823ce68(3, 4, 4, 4, 4, 0xFFFF, 0);
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
     Sound_FadeOutBGMTemporarily(5);
   }
   if (p->unk_24 > 31 && p->unk_90 != 0) {

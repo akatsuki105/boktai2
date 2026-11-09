@@ -293,8 +293,8 @@ Entries:
 Tiles:
   .incbin "data/sprite_aux/emblem_block_0.4bpp"       @ 0x08A23510, SpriteID: 0xB306, PlttID: 2, 紋章ブロック(炎氷地風)
   .incbin "data/sprite_aux/komainu.4bpp"              @ 0x08A24910, SpriteID: 0xF680, PlttID: 6, 大聖堂の狛犬
-  .incbin "data/sprite_aux/boku_acid_0.4bpp"          @ 0x08A25190, SpriteID: 0xA5B3, PlttID: 1, グール系が出すホルルン液(着弾前)
-  .incbin "data/sprite_aux/boku_acid_1.4bpp"          @ 0x08A25210, SpriteID: 0xA5B4, PlttID: 1, グール系が出すホルルン液(着弾後)
+  .incbin "data/sprite_aux/acid_0.4bpp"               @ 0x08A25190, SpriteID: 0xA5B3, PlttID: 1, 溶解液(着弾前)
+  .incbin "data/sprite_aux/acid_1.4bpp"               @ 0x08A25210, SpriteID: 0xA5B4, PlttID: 1, 溶解液(着弾後)
   .incbin "data/sprite_aux/speaker.4bpp"              @ 0x08A25A10, SpriteID: 0x5AFD, PlttID: 7, シェードマンがクラッシュノイズのときに出すスピーカー
   .incbin "data/sprite_aux/5AFE.4bpp"                 @ 0x08A25E90, SpriteID: 0x5AFE, PlttID: 7, 輪っかのエフェクト(シェードマン関連?)
   .incbin "data/sprite_aux/mummy_0.4bpp"              @ 0x08A26B10, SpriteID: 0x48DE, PlttID: 23, マミー
@@ -333,7 +333,7 @@ Tiles:
   .incbin "data/sprite_aux/A606.4bpp"                 @ 0x08A41410, SpriteID: 0xA606, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/curoro.4bpp"               @ 0x08A43BD0, SpriteID: 0xD28E, PlttID: 92, クロロホルルン
   .incbin "data/sprite_aux/lilypad.4bpp"              @ 0x08A450D0, SpriteID: 0xD166, PlttID: 95, ハスの葉
-  .incbin "data/sprite_aux/magic_circle.4bpp"         @ 0x08A45810, SpriteID: 0x0BA8, PlttID: 97, 魔方陣
+  .incbin "data/sprite_aux/magic_square.4bpp"         @ 0x08A45810, SpriteID: 0x0BA8, PlttID: 97, 魔方陣
   .incbin "data/sprite_aux/0BA9.4bpp"                 @ 0x08A48A10, SpriteID: 0x0BA9, PlttID: 97, 魔方陣(大)
   .incbin "data/sprite_aux/363C.4bpp"                 @ 0x08A49210, SpriteID: 0x363C, PlttID: 0, "!"
   .incbin "data/sprite_aux/363D.4bpp"                 @ 0x08A49430, SpriteID: 0x363D, PlttID: 0, emotion bubbles
@@ -404,7 +404,7 @@ Tiles:
   .incbin "data/sprite_aux/C42D.4bpp"                 @ 0x08A8C330, SpriteID: 0xC42D, PlttID: 283, なんかの破片?
   .incbin "data/sprite_aux/0334.4bpp"                 @ 0x08A8C530, SpriteID: 0x0334, PlttID: 283, C42Dの破片の小さいやつ?
   .incbin "data/sprite_aux/9DFF.4bpp"                 @ 0x08A8C550, SpriteID: 0x9DFF, PlttID: 83, 黒塗り
-  .incbin "data/sprite_aux/time_magic_circle.4bpp"    @ 0x08A8D150, SpriteID: 0xA152, PlttID: 284, タイム魔方陣
+  .incbin "data/sprite_aux/time_magic_square.4bpp"    @ 0x08A8D150, SpriteID: 0xA152, PlttID: 284, タイム魔方陣
   .incbin "data/sprite_aux/17C7.4bpp"                 @ 0x08A8D5D0, SpriteID: 0x17C7, PlttID: 287, 重量スイッチ
   .incbin "data/sprite_aux/210E.4bpp"                 @ 0x08A8DBD0, SpriteID: 0x210E, PlttID: 44, エフェクト
   .incbin "data/sprite_aux/210F.4bpp"                 @ 0x08A8DDD0, SpriteID: 0x210F, PlttID: 289, エフェクト(火花?)

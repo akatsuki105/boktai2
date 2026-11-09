@@ -162,7 +162,7 @@ _081FB100:
 	bgt _081FB134
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08204d04
+	bl Entity08204cb8_Spawn
 	b _081FB164
 	.align 2, 0
 _081FB12C: .4byte 0x030046A4
@@ -323,7 +323,7 @@ _081FB244:
 	bgt _081FB278
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08204d04
+	bl Entity08204cb8_Spawn
 	b _081FB2A8
 	.align 2, 0
 _081FB270: .4byte 0x030046A4

@@ -500,7 +500,7 @@ _081FE0B4:
 	movs r0, #1
 	movs r2, #0
 	movs r3, #0x10
-	bl DustManager_Emit
+	bl SporeManager_Emit
 _081FE118:
 	movs r4, #0x8f
 	lsls r4, r4, #2

@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "inventory.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
@@ -9,19 +10,19 @@
 
 // アイテムアイコン1枚, ワールド座標を持ちアイソメトリック投影でスプライトに落とす
 typedef struct {
-  u32 unk_00;         // 0x00
-  u8 state;           // 0x04, PTR_ARRAY_085aa92c の添字 (0..6)
-  bool8 justEntered;  // 0x05, state が変わると 1, ハンドラが落として sprite の SPRFLAG_HIDDEN も落とす
-  u8 category;        // 0x06, ItemIconPopupManager_AddIcon の category (0..3), ポーズ番号の基準と入手音を決める
-  u8 kind;            // 0x07, 0/1/3 で次に移る state が変わる
-  item32_t itemID;    // 0x08, IsValuable に渡す
-  u32 stateTimer;     // 0x0C, state に入ってからのフレーム数
-  u16 duration;       // 0x10, stateTimer がここに達すると次の state へ
-  u8 playerIdx;       // 0x12, gPlayerPtr の添字
-  u8 unk_13[5];       // 0x13
-  Vec3 pos;           // 0x18, ワールド座標, ItemIconPopup_ProjectPos が sprite.pos に投影する
-  Vec3* destPos;      // 0x20, kind が 0 以外のとき state 6 で飛んでいく先のワールド座標
-  MainSprite sprite;  // 0x24
+  u32 unk_00;              // 0x00
+  u8 state;                // 0x04, PTR_ARRAY_085aa92c の添字 (0..6)
+  bool8 justEntered;       // 0x05, state が変わると 1, ハンドラが落として sprite の SPRFLAG_HIDDEN も落とす
+  ItemCategory8 category;  // 0x06, ItemIconPopupManager_AddIcon の category (0..3), ポーズ番号の基準と入手音を決める
+  u8 kind;                 // 0x07, 0/1/3 で次に移る state が変わる
+  item32_t itemID;         // 0x08, IsValuable に渡す
+  u32 stateTimer;          // 0x0C, state に入ってからのフレーム数
+  u16 duration;            // 0x10, stateTimer がここに達すると次の state へ
+  u8 playerIdx;            // 0x12, gPlayerPtr の添字
+  u8 unk_13[5];            // 0x13
+  Vec3 pos;                // 0x18, ワールド座標, ItemIconPopup_ProjectPos が sprite.pos に投影する
+  Vec3* destPos;           // 0x20, kind が 0 以外のとき state 6 で飛んでいく先のワールド座標
+  MainSprite sprite;       // 0x24
 } ItemIconPopup;
 static_assert(sizeof(ItemIconPopup) == 132);
 
@@ -239,16 +240,16 @@ void FUN_08017358(ItemIconPopupManager* p, ItemIconPopup* elem, s32 idx) {
   sprite->pos.x += ((Q6(1) - sprite->scaleX) >> 3) - 8;
   sprite->pos.y -= 8;
   if (elem->stateTimer > 15) {
-    if (elem->category == 0) {
-      if (elem->itemID >= 0x40 && elem->itemID <= 0x43) {
-        PlaySound_0824078c(SONG_387);
+    if (elem->category == ITEM_CATEGORY_USABLE) {
+      if (elem->itemID >= ITEM_WAREHOUSE_KEY && elem->itemID <= ITEM_SQUARE_KEY) {
+        PlaySound_0824078c(SE_GAIN_KEY);
       } else if (IsValuable(elem->itemID) == TRUE) {
-        PlaySound_0824078c(SE_UNK_291);
+        PlaySound_0824078c(SE_GAIN_VALUABLE);
       } else {
         PlaySound_0824078c(SE_EQUIP);
       }
-    } else if (elem->category != 3) {
-      PlaySound_0824078c(SE_UNK_291);
+    } else if (elem->category != ITEM_CATEGORY_MAGIC) {
+      PlaySound_0824078c(SE_GAIN_VALUABLE);
     }
     ItemIconPopup_Reset(elem);
     p->usedMask &= ~(1 << idx);
@@ -351,7 +352,7 @@ ItemIconPopupManager* ItemIconPopupManager_GetOrCreate(void) {
 }
 
 // 空き枠にアイテムのアイコンを出す, key が同じ枠が空いていればそれを使い直す, 空きが無ければ -1
-s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key) {
+s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key) {
   ItemIconPopupManager* p = ItemIconPopupManager_GetOrCreate();
   u32 tag = (key & 0xFFFFFF) | (category << 28);
   ItemIconPopup* elem = NULL;
@@ -406,24 +407,24 @@ add:
   elem->category = category;
   elem->itemID = itemID;
   switch (elem->category) {
-    case 0: {
-      poseIdx = itemID + 104;
+    case ITEM_CATEGORY_USABLE: {
+      poseIdx = ICON_ITEM(itemID);
       break;
     }
-    case 1: {
-      poseIdx = itemID;
+    case ITEM_CATEGORY_WEAPON: {
+      poseIdx = ICON_WEAPON(itemID);
       break;
     }
-    case 2: {
-      poseIdx = itemID + 67;
+    case ITEM_CATEGORY_ARMOR: {
+      poseIdx = ICON_ARMOR(itemID);
       break;
     }
-    case 3: {
-      poseIdx = itemID + 182;
+    case ITEM_CATEGORY_MAGIC: {
+      poseIdx = ICON_MAGIC(itemID);
       break;
     }
     default: {
-      poseIdx = 104;
+      poseIdx = ICON_ITEM(ITEM_EARTHLY_NUT);
       break;
     }
   }

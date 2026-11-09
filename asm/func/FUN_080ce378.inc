@@ -10,7 +10,7 @@
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl Eff082473e0Emitter_Init
+	bl ElementalCondEmitter_Init
 	ldr r2, _080CE444 @ =0x000005FC
 	adds r1, r5, r2
 	ldr r2, [r4]

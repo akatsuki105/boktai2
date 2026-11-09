@@ -13,17 +13,17 @@
 
 // 太陽タケノコ1つ
 typedef struct {
-  u8 unk_00[2];        // 0x00, まだ未解析
-  u8 unk_02;           // 0x02, FUN_08009e28 が 2 を入れる
+  u16 id;              // 0x00, '.n'
+  u8 state;            // 0x02, PTR_ARRAY_085aa6b8[visible * 3 + state] で状態関数を選ぶ
   u8 kind;             // 0x03, 精霊虫の種類, see SpiritBugKind
   u8 count;            // 0x04, この太陽タケノコから出す精霊虫の数
   bool8 active;        // 0x05, 0 の枠を FUN_08009b10 が空きとして返す
   u8 unk_06;           // 0x06, FUN_08009e54 がアニメが一巡したら 1 にする
-  bool8 unk_07;        // 0x07, FUN_08009c28 が読んで落とす目印
+  bool8 stateEntered;  // 0x07, state を変えたときに立ち, 状態関数が最初のフレームで落とす
   bool8 unk_08;        // 0x08, FUN_08009c44 / FUN_08009e54 がアニメが一巡したフレームだけ TRUE にする
   u8 unk_09;           // 0x09, まだ未解析, padding?
-  u16 unk_0a;          // 0x0A, FUN_08009e28 が毎フレーム +1 して 30 を超えたら 0 に戻す
-  u16 unk_0c;          // 0x0C, unk_0a がこれを超えたら粒子を出し直す, 120..247 の乱数
+  u16 timer;           // 0x0A, state を変えるたびに 0 に戻る, FUN_08009e28 が毎フレーム +1 して 30 を超えたら state 2 へ
+  u16 unk_0c;          // 0x0C, timer がこれを超えたら粒子を出し直す, 120..247 の乱数
   u16 amount;          // 0x0E, この太陽タケノコから出す精霊虫の効果量
   u16 lifetime;        // 0x10, SpawnSpiritBugs の lifetime
   u16 lifetimeRand;    // 0x12, SpawnSpiritBugs の lifetimeRand
@@ -51,6 +51,13 @@ static BambooShootManager* sBambooShootManager;  // 0x03000040
 
 extern s32 gLightningTimer;
 
+// state を切り替えて timer を 0 に戻す
+static inline void BambooShoot_SetState(BambooShoot* shoot, u8 state) {
+  shoot->state = state;
+  shoot->timer = 0;
+  shoot->stateEntered = TRUE;
+}
+
 void FUN_08009b04(void) { sBambooShootManager = NULL; }
 
 // 空いている枠を返す, 無ければ NULL
@@ -70,11 +77,11 @@ BambooShoot* FUN_08009b10(BambooShootManager* p) {
 }
 
 void BambooShoot_OnHurt(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
-  if (!Hitbox_TestAttr(a, HBATTR_14) && !Hitbox_HasWeakness(a, 0x40 | 0x80 | 0x100)) {
+  if (!Hitbox_TestAttr(a, HBATTR_SEKIKA) && !Hitbox_HasWeakness(a, 0x40 | 0x80 | 0x100)) {
     b->hitResult = HBRESULT_NORMAL;
-    shoot->unk_02 = 1;
-    shoot->unk_0a = 0;
-    shoot->unk_07 = TRUE;
+    shoot->state = 1;
+    shoot->timer = 0;
+    shoot->stateEntered = TRUE;
     shoot->hurtbox.flags |= HBFLAG_HIDDEN;
   }
 }
@@ -101,8 +108,8 @@ s32 FUN_08009c08(BambooShootManager* p, BambooShoot* shoot) {
 }
 
 void FUN_08009c28(BambooShootManager* p, BambooShoot* shoot) {
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
     shoot->ptcl.flags |= SPRFLAG_HIDDEN;
   }
 }
@@ -112,8 +119,8 @@ void FUN_08009c28(BambooShootManager* p, BambooShoot* shoot) {
 // 出し直しの inline 化, 比較の向き, 120 + 乱数の順, ptcl のローカル化は試済
 NON_MATCH void FUN_08009c44(BambooShootManager* p, BambooShoot* shoot) {
 #ifdef NONMATCHING_C
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
     Particle_SetOffset(&shoot->ptcl, -4, -4);
     Particle_SetPose(&shoot->ptcl, p->group1, 0);
     AuxAnim_SetAnim(&shoot->anim, p->anim_28, 8, 0, 0);
@@ -121,8 +128,8 @@ NON_MATCH void FUN_08009c44(BambooShootManager* p, BambooShoot* shoot) {
     shoot->unk_0c = (Random() & 0x7F) + 120;
   }
   if (shoot->ptcl.flags & SPRFLAG_HIDDEN) {
-    if (shoot->unk_0a++ > shoot->unk_0c) {
-      shoot->unk_0a = 0;
+    if (shoot->timer++ > shoot->unk_0c) {
+      shoot->timer = 0;
       shoot->unk_0c = (Random() & 0x7F) + 120;
       Particle_SetOffset(&shoot->ptcl, -4, -4);
       Particle_SetPose(&shoot->ptcl, p->group1, 0);
@@ -143,14 +150,14 @@ NON_MATCH void FUN_08009c44(BambooShootManager* p, BambooShoot* shoot) {
 // 残差は定数 0 と 2 のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致)
 NON_MATCH void FUN_08009e28(BambooShootManager* p, BambooShoot* shoot) {
 #ifdef NONMATCHING_C
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
   }
 
-  if (shoot->unk_0a++ > 30) {
-    shoot->unk_02 = 2;
-    shoot->unk_0a = 0;
-    shoot->unk_07 = TRUE;
+  if (shoot->timer++ > 30) {
+    shoot->state = 2;
+    shoot->timer = 0;
+    shoot->stateEntered = TRUE;
   }
 #else
   INCFUNC("asm/func/FUN_08009e28.inc");
@@ -159,8 +166,8 @@ NON_MATCH void FUN_08009e28(BambooShootManager* p, BambooShoot* shoot) {
 
 // 出現時に粒子とアニメを用意し, コマに合わせて上下させつつ4コマ目で太陽虫を撒き, アニメが一巡したら隠す
 void FUN_08009e54(BambooShootManager* p, BambooShoot* shoot) {
-  if (shoot->unk_07) {
-    shoot->unk_07 = FALSE;
+  if (shoot->stateEntered) {
+    shoot->stateEntered = FALSE;
     shoot->ptcl.flags &= ~SPRFLAG_HIDDEN;
     Particle_SetOffset(&shoot->ptcl, -8, -8);
     Particle_SetPose(&shoot->ptcl, p->group0, 0);
@@ -191,16 +198,65 @@ void FUN_08009e54(BambooShootManager* p, BambooShoot* shoot) {
   }
 }
 
-static void (*const PTR_ARRAY_085aa6b8[6])(BambooShootManager*, BambooShoot*) = {
-    FUN_08009c28,
-    FUN_08009e28,
-    FUN_08009e54,
-    FUN_08009c44,
-    FUN_08009e28,
-    FUN_08009e54,
+static void (*const PTR_ARRAY_085aa6b8[2][3])(BambooShootManager*, BambooShoot*) = {
+    {FUN_08009c28, FUN_08009e28, FUN_08009e54},
+    {FUN_08009c44, FUN_08009e28, FUN_08009e54},
 };  // 0x085AA6B8
 
-NAKED s32 BambooShootManager_Update(BambooShootManager* p) { INCFUNC("asm/func/BambooShootManager_Update.inc"); }
+// 見える状況 (夜, 千里眼の実, 雷の光, バット) が切り替わったら state 0 の太陽タケノコを入り直させ, 各枠の状態関数を回す
+// 残差は見える判定の所だけ: 原典は千里眼の判定を 0/1 に起こし, プレイヤー NULL の FALSE を別ブロックに置いてから比べ直す (BambooShootManager_Init と同じ形), 述語を static inline にしても畳まれる
+NON_MATCH s32 BambooShootManager_Update(BambooShootManager* p) {
+#ifdef NONMATCHING_C
+  bool8 visible = FALSE;
+  bool32 revealed;
+  s32 i;
+
+  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
+    revealed = TRUE;
+  } else if (gGameFlags & GAMEFLAG_LINK) {
+    revealed = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
+  } else if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
+    revealed = TRUE;
+  } else {
+    revealed = gGoodCondTimer != 0 && gGoodCondID == GOOD_SEE;
+  }
+
+  if (revealed) {
+    visible = TRUE;
+    if (!p->visible) {
+      for (i = 0; i < 16; i++) {
+        if (p->shoots[i].state == 0) {
+          BambooShoot_SetState(&p->shoots[i], 0);
+        }
+      }
+    }
+  } else if (p->visible == TRUE) {
+    for (i = 0; i < 16; i++) {
+      if (p->shoots[i].state == 0) {
+        BambooShoot_SetState(&p->shoots[i], 0);
+      }
+    }
+  }
+  p->visible = visible;
+
+  for (i = 0; i < 16; i++) {
+    BambooShoot* e = &p->shoots[i];
+
+    if (e->active) {
+      if (e->unk_06) {
+        FUN_08009c08(p, e);
+      } else {
+        e->unk_08 = FALSE;
+        PTR_ARRAY_085aa6b8[visible][e->state](p, e);
+      }
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/BambooShootManager_Update.inc");
+#endif
+}
 
 s32 BambooShootManager_Destroy(BambooShootManager* p) {
   s32 i;
@@ -226,7 +282,7 @@ NON_MATCH s32 BambooShootManager_Init(BambooShootManager* p, u32 _) {
   sBambooShootManager = p;
   if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
     visible = TRUE;
-  } else if (gGameFlags & FLAG030047A4_LINK) {
+  } else if (gGameFlags & GAMEFLAG_LINK) {
     visible = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
   } else if (gLightningTimer > 0 || gStat->playerKind == PLAYER_BAT) {
     visible = TRUE;
@@ -256,8 +312,55 @@ BambooShootManager* BambooShootManager_Create(u32 _, u32 unused) {
   return p;
 }
 
-// 0x0866
-NAKED s32 Cmd_0866(void) { INCFUNC("asm/func/Cmd_0866.inc"); }
+// 0x0866, 空き枠に太陽タケノコを1つ置く, 管理エンティティが無ければ作る
+s32 Cmd_0866(void) {
+  BambooShootManager* p = sBambooShootManager;
+  BambooShoot* shoot;
+  WorldPos pos;
+
+  if (p == NULL) {
+    p = BambooShootManager_Create(0, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  shoot = FUN_08009b10(p);
+  if (shoot == NULL) {
+    return -1;
+  }
+
+  ClearMemory(shoot, sizeof(BambooShoot));
+  shoot->id = VM_GetNamedArgValue('n', 0);
+  shoot->kind = VM_GetNamedArgValue('t', 0);
+  shoot->count = VM_GetNamedArgValue('b', 0);
+  shoot->unk_08 = FALSE;
+  BambooShoot_SetState(shoot, 0);
+  shoot->unk_0c = 0;
+  shoot->unk_06 = 0;
+  BambooShoot_Init(p, shoot);
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+  Hitbox_SetPos(&shoot->hurtbox, &pos, 0);
+  shoot->ptcl.pos = pos;
+  shoot->ptcl.pos.y += 230;
+  if (VM_SeekToNamedArg('s')) {
+    shoot->amount = VM_GetValue();
+    shoot->lifetime = VM_GetValue();
+    shoot->lifetimeRand = VM_GetValue();
+  } else {
+    shoot->amount = 50;
+    shoot->lifetime = 600;
+    shoot->lifetimeRand = 100;
+  }
+  return 0;
+}
 
 // 0x78EE, 使用中の枠の数を数えてスクリプト変数へ書き出す (使われてなさそう)
 u32 Cmd_78EE(void) {

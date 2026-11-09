@@ -109,7 +109,7 @@ _081E58F8:
 	ldr r1, _081E5A88 @ =0x0000159C
 	adds r2, r7, r1
 	adds r1, r5, #0
-	bl FUN_08094d30
+	bl WeaponData_ShowNameInPanel
 	ldr r0, [r4]
 	bl TextPanel_Start
 	ldr r2, _081E5A8C @ =0x000014AC

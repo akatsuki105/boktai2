@@ -1,4 +1,5 @@
 #include "collision_map.h"
+#include "dust.h"
 #include "enemy.h"
 #include "entity.h"
 #include "flamethrower.h"
@@ -11,11 +12,11 @@
 #include "vm.h"
 
 void Entity081e9cac_ClearGlobal(void);
-void Entity081ea820_ClearGlobal(void);
+void OctorokManager_ClearGlobal(void);
 void Entity081edcc4_ClearGlobal(void);
 void Entity081ee2a0_ClearGlobal(void);
 void Entity081eeb28_ClearGlobal(void);
-void FUN_081eeecc(void);
+void Entity081eee80_ClearGlobal(void);
 void Entity081f0298_ClearGlobal(void);
 void Entity081f0b90_ClearGlobal(void);
 void Entity081f1770_ClearGlobal(void);
@@ -26,14 +27,13 @@ void Entity081f7974_ClearGlobal(void);
 void Entity081f7de4_ClearGlobal(void);
 void Entity081f8a28_ClearGlobal(void);
 void Entity081f959c_ClearGlobal(void);
-void FUN_081dc688(void);
+void LinkBattleLobby_ClearGlobal(void);
 void Entity081fa164_ClearGlobal(void);
 void FUN_081eafb0(void);
 void Entity081d0e20_ClearGlobal(void);
-void FUN_081d1738(void);
-void FUN_080eeb08(void);
+void LeverSwitchManager_ClearGlobal(void);
+void EnemyManager_ClearGlobal(void);
 void EmoteManager_Clear(void);
-void FUN_080dbea4(void);
 void BloodEmitter_ClearGlobal(void);
 void Cmd_300F(void);
 void EnemyTargetManager_ClearGlobal(void);
@@ -55,7 +55,7 @@ void Entity081f9cb8_ClearInstance(void);
 void LinkShopManager_ClearGlobal(void);
 void FUN_081e0c14(void);
 void LinkConnect_ClearGlobal(void);
-void ClearEntity9A9F(void);
+void ClearLinkSession(void);
 
 // スクリプトから積まれた生成要求1件, 生成物が死ぬと Entity778B_Update が同じ設定で作り直す
 typedef struct {
@@ -72,7 +72,7 @@ typedef struct {
 } Entity778BElem;
 static_assert(sizeof(Entity778BElem) == 32);
 
-// 生成要求を12件まで抱えるシングルトン, ゲームオーバー中と gPlayerStates の FLAG03002BC0_UNK_2 が立っている間は止まる
+// 生成要求を12件まで抱えるシングルトン, ゲームオーバー中と gPlayerModes の PMODE_DEAD が立っている間は止まる
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_10
   Entity778BElem elems[12];  // 0x018
@@ -89,12 +89,12 @@ static inline bool8 Entity778B_IsActive(u32* mask, s32 i) {
 
 void Entity081eaf6c_Create(void);
 void Entity778B_ClearGlobal(void);
-Enemy* FUN_080edce8(u32 id);
+Enemy* Enemy_GetNextActive(u32 id);
 Flamethrower* FUN_081ead54(Entity778BElem* elem, u32 id, s32 unk_12, s32 unk_18, s32 unk_19, s32 param_6, s32 x, s32 y, s32 z, s32 unk_10, s32 unk_16);
 
 // 通信中以外は太陽ゲージが満たないぶんだけ減らす
 static inline s32 Entity778B_ScaleBySun(s32 value) {
-  if (gGameFlags & FLAG030047A4_LINK) {
+  if (gGameFlags & GAMEFLAG_LINK) {
     return value;
   }
   return Div(value * (10 - gStat->sunGauge), 10);
@@ -479,15 +479,15 @@ void FUN_080e0fbc(void) {
   Entity778B_ClearGlobal();
   FUN_081eafb0();
   Entity081d0e20_ClearGlobal();
-  FUN_081d1738();
-  FUN_080eeb08();
+  LeverSwitchManager_ClearGlobal();
+  EnemyManager_ClearGlobal();
   EmoteManager_Clear();
-  FUN_080dbea4();
+  DustManager_ClearGlobal();
   BloodEmitter_ClearGlobal();
   Cmd_300F();
   EnemyTargetManager_ClearGlobal();
   Entity081e9cac_ClearGlobal();
-  Entity081ea820_ClearGlobal();
+  OctorokManager_ClearGlobal();
   Entity081edcc4_ClearGlobal();
   FUN_081eb33c();
   FUN_080dd244();
@@ -495,7 +495,7 @@ void FUN_080e0fbc(void) {
   FUN_080db56c();
   FUN_081d21cc();
   Entity081eeb28_ClearGlobal();
-  FUN_081eeecc();
+  Entity081eee80_ClearGlobal();
   FUN_080ddb1c();
   FUN_08241000();
   FUN_081efae8();
@@ -518,11 +518,11 @@ void FUN_080e0fbc(void) {
   Entity081f959c_ClearGlobal();
   Entity081f9cb8_ClearInstance();
   LinkShopManager_ClearGlobal();
-  FUN_081dc688();
+  LinkBattleLobby_ClearGlobal();
   FUN_081e0c14();
   Entity081fa164_ClearGlobal();
   LinkConnect_ClearGlobal();
-  ClearEntity9A9F();
+  ClearLinkSession();
 }
 
 Enemy* FUN_080e1080(Vec3* pos, Vec3* size, u32* id) {
@@ -530,7 +530,7 @@ Enemy* FUN_080e1080(Vec3* pos, Vec3* size, u32* id) {
   Enemy* p;
 
   do {
-    p = FUN_080edce8(*id);
+    p = Enemy_GetNextActive(*id);
     if (p == NULL) {
       return NULL;
     }
@@ -554,7 +554,7 @@ NON_MATCH Enemy* FUN_080e1100(Vec3* pos, Vec3* size, u32* id) {
   Enemy* p;
 
   do {
-    p = FUN_080edce8(*id);
+    p = Enemy_GetNextActive(*id);
     if (p == NULL) {
       return NULL;
     }
@@ -581,7 +581,7 @@ NON_MATCH Enemy* FUN_080e1100(Vec3* pos, Vec3* size, u32* id) {
 Player* FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx) {
   Player* player = gPlayerPtr[idx];
 
-  if (player != NULL && !TEST_FLAGS(gPlayerStates[idx], 8) && TEST_FLAGS(player->flag20, PFLAG20_UNK_14)) {
+  if (player != NULL && !TEST_FLAGS(gPlayerModes[idx], PMODE_UNK_3) && TEST_FLAGS(player->flag20, PFLAG20_UPDATED)) {
     if (pos->x - size->x <= player->mover.pos.x && pos->x + size->x >= player->mover.pos.x) {
       if (pos->z - size->z <= player->mover.pos.z && pos->z + size->z >= player->mover.pos.z) {
         return player;
@@ -673,7 +673,7 @@ Entity778BElem* Entity778B_AllocElem(Entity778B* p) {
 s32 Entity778B_Update(Entity778B* p) {
   Entity778BElem* elems = p->elems;
 
-  if (p->usedMask != 0 && !TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) && !TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
+  if (p->usedMask != 0 && !TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Entity778BElem* elem = elems;
     s32 i;
 
@@ -720,7 +720,7 @@ NON_MATCH void Entity778B_AddElemScripted(void) {
 #ifdef NONMATCHING_C
   Entity778BElem* elem;
 
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) || gEntity778B == NULL) {
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || gEntity778B == NULL) {
     return;
   }
   elem = Entity778B_AllocElem(gEntity778B);

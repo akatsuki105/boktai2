@@ -51,11 +51,9 @@ typedef struct Entity080aace8 {
 } Entity080aace8;
 static_assert(sizeof(Entity080aace8) == 848);
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-
 // 1枠を1フレーム進める, 16フレームで消える
 // 残差1命令 (41/42) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
-// src/solar_circle.c の FUN_080a1e28 が同じ現象
+// src/solar_barrier.c の SolarBarrierPtcl_Update が同じ現象
 NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
 #ifdef NONMATCHING_C
   q->timer++;
@@ -122,7 +120,7 @@ void FUN_080aa23c(Entity080aace8* p) {
   if (p->unk_34a <= 5) {
     Hitbox_Register(&p->hitbox);
   } else if (p->unk_34a == 6) {
-    gGameFlags &= ~FLAG030047A4_UNK_0;
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
 
   p->unk_34a++;
@@ -236,7 +234,7 @@ NON_MATCH void FUN_080aa4e8(Entity080aace8* p) {
 }
 
 // 0x12 フレームごとに波を1回出し、0x7A フレームで片付けて FUN_080aa23c に移る
-// 残差は gEntityDisableFlags のロード位置だけ (60対60), 原典はループの後に読むがこちらは前に読む
+// 残差は gSuspendFlags のロード位置だけ (60対60), 原典はループの後に読むがこちらは前に読む
 NON_MATCH void FUN_080aa5d0(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   if (p->unk_34a == 0 || p->unk_34a == 0x12 || p->unk_34a == 0x24 || p->unk_34a == 0x36 || p->unk_34a == 0x48 || p->unk_34a == 0x5A) {
@@ -252,7 +250,7 @@ NON_MATCH void FUN_080aa5d0(Entity080aace8* p) {
       p->auxSprites[i].flags |= SPRFLAG_HIDDEN;
     }
 
-    gEntityDisableFlags &= ~ENTITY_DISABLE_2;
+    gSuspendFlags &= ~SUSPEND_MENU;
     p->updateCallback = FUN_080aa23c;
     p->unk_34a = 0;
   }
@@ -262,19 +260,19 @@ NON_MATCH void FUN_080aa5d0(Entity080aace8* p) {
 }
 
 // 画面を揺らしつつ 0x30 フレームで消える, 最初の1フレームでフラッシュを入れる
-// 残差2命令 (67/69) でこちらが短い: unk_34a の加算を破壊的に行うぶんと gEntityDisableFlags のロード位置
+// 残差2命令 (67/69) でこちらが短い: unk_34a の加算を破壊的に行うぶんと gSuspendFlags のロード位置
 NON_MATCH void FUN_080aa658(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   if (p->unk_34a == 0) {
-    gEntityDisableFlags &= ~ENTITY_DISABLE_2;
+    gSuspendFlags &= ~SUSPEND_MENU;
     PlaySound_082406e0(SE_THE_TOWER);
-    FUN_0823ce68(2, 4, 0x1F, 0x1F, 0x1F, 0x1FFF, 1);
+    StartBgObjPlttFade(2, 4, 0x1F, 0x1F, 0x1F, 0x1FFF, 1);
   }
 
   if (p->unk_34a <= 5) {
     Hitbox_Register(&p->hitbox);
   } else if (p->unk_34a == 6) {
-    gGameFlags &= ~FLAG030047A4_UNK_0;
+    gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
 
   p->unk_34a++;
@@ -310,7 +308,7 @@ NON_MATCH void FUN_080aa708(Entity080aace8* p) {
   }
 
   if (p->kind == TYPE_TOWER && p->unk_34a == 29) {
-    FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 1);
+    StartBgObjPlttFade(3, 5, 4, 4, 4, 0x1FFF, 1);
   }
 
   if (p->unk_34a > 44) {
@@ -479,9 +477,9 @@ s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
     p->player->beast.flags &= ~SPRFLAG_HIDDEN;
   }
 
-  p->player->hurtbox.invincibleTime = 0;
-  gGameFlags |= FLAG030047A4_UNK_0;
-  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
+  p->player->hurtbox.iframes = 0;
+  gGameFlags |= GAMEFLAG_NO_PAUSE;
+  SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
   if (p->kind == TYPE_JUSTICE) {
     FUN_080aa9d0(p);
   }

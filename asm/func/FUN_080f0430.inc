@@ -173,7 +173,7 @@ _080F0584: .4byte 0xFFFFFDFF
 _080F0588: .4byte 0x0000025E
 _080F058C:
 	adds r0, r4, #0
-	bl FUN_080f00ec
+	bl Enemy_Alert
 _080F0592:
 	movs r0, #0x80
 	movs r3, #0xc1

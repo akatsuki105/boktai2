@@ -223,7 +223,7 @@ _08210900:
 	cmp r1, #3
 	ble _082108EE
 	adds r0, r7, #0
-	bl FUN_08210bb0
+	bl WeaponDexMenu_RefreshIcons
 	movs r4, #0
 	movs r1, #0x80
 	add r0, sp, #0x1c
@@ -274,7 +274,7 @@ _08210990:
 	cmp r6, #0
 	bge _08210990
 	adds r0, r7, #0
-	bl FUN_08210610
+	bl WeaponDexMenu_DrawCount
 	movs r1, #0x36
 	movs r2, #0x48
 	add r0, sp, #0x14

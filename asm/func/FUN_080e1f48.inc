@@ -865,7 +865,7 @@ _080E25A8:
 	ldrb r3, [r2]
 	str r4, [sp]
 	movs r2, #0
-	bl FUN_080eeb14
+	bl EnemyManager_StartPaletteFade
 	mov r1, sb
 	ldr r0, [r1]
 	orrs r0, r5
@@ -904,7 +904,7 @@ _080E2600:
 	movs r2, #1
 	str r2, [sp]
 	movs r2, #0
-	bl FUN_080eeb14
+	bl EnemyManager_StartPaletteFade
 	ldr r1, _080E2758 @ =0xFFFDFFFF
 _080E2638:
 	mov r2, sb
@@ -1078,7 +1078,7 @@ _080E277E:
 	ldr r0, _080E279C @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl FUN_080ec5b4
+	bl DefeatedEnemyLog_Add
 	b _080E287C
 	.align 2, 0
 _080E279C: .4byte 0x03002B28

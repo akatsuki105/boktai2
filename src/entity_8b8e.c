@@ -71,7 +71,6 @@ u8 Save_SwitchSlot(void);                                  // src/savedata.c
 bool8 LinkShopManager_Send(s32* args, s32 kind, u32 tag);  // src/link_shop.c
 void LinkShopManager_SetOwner(void* owner);
 void LinkShopManager_SetCallbacks(void (*onRecv)(s32, unknown*), void (*onFinish)(void), void (*onSendDone)(Entity8B8E*));
-extern u32 gFrameCounter;
 void FUN_081e6388(Entity8B8E* p);
 void FUN_081e4484(Entity8B8E* p);
 void FUN_081e44b4(Entity8B8E* p);

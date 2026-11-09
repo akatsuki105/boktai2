@@ -66,7 +66,7 @@ _082348E4: .4byte 0xFFFF0000
 _082348E8:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823a88c
+	bl VM_ExecByPointer_Proxy_0823a88c
 _082348F0:
 	add sp, #0x40
 	pop {r4, r5}

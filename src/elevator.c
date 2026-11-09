@@ -161,7 +161,7 @@ void FUN_081d21d8(Elevator* e) {
   if (!(e->unk_d6 & 4)) {
     switch (e->variant) {
       case 0: {
-        PlaySound_082406e0(SONG_344);
+        PlaySound_082406e0(SE_ELEV_IRON_V);
         break;
       }
       case 1:
@@ -171,7 +171,7 @@ void FUN_081d21d8(Elevator* e) {
       }
       case 3: {
         if (e->unk_d6 & 0x20) {
-          PlaySound_082406e0(SONG_344);
+          PlaySound_082406e0(SE_ELEV_IRON_V);
         } else {
           PlaySound_082406e0(SE_ELEV_MECHA_V);
         }
@@ -416,12 +416,12 @@ void Elevator_UpdateState2(Elevator* e) {
       e->state = STATE_V_STOP;
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
-        sound_08240740(SONG_344);
+        sound_08240740(SE_ELEV_IRON_V);
         sound_08240740(SE_ELEV_MECHA_V);
         sound_08240740(SE_ELEV_MECHA_H);
         sound_08240740(SE_ELEV_LAVA);
         sound_08240740(SE_ELEV_WATER);
-        PlaySound_082406e0(SONG_345);
+        PlaySound_082406e0(SE_ELEV_END_V);
       }
     }
   } else {
@@ -439,12 +439,12 @@ void Elevator_UpdateState2(Elevator* e) {
       e->state = STATE_V_STOP;
       e->arrived = TRUE;
       if (!(e->unk_d6 & 4)) {
-        sound_08240740(SONG_344);
+        sound_08240740(SE_ELEV_IRON_V);
         sound_08240740(SE_ELEV_MECHA_V);
         sound_08240740(SE_ELEV_MECHA_H);
         sound_08240740(SE_ELEV_LAVA);
         sound_08240740(SE_ELEV_WATER);
-        PlaySound_082406e0(SONG_345);
+        PlaySound_082406e0(SE_ELEV_END_V);
       }
     }
   }
@@ -1385,7 +1385,7 @@ NON_MATCH void Elevator_Create(void) {
       e->checkCoffinOut = Elevator_ClampCoffinOnSpecialTile;
       e->unk_e0 = Elevator_UpdateTileOverride;
       animIdx = 1;
-      Video_SetAuxSpritePltt(&e->gfx, 0x1B8);
+      Video_SetAuxSpritePltt(&e->gfx, 440);
       m = VM_GetNamedArgValue('m', 0);
       if (m != 0) e->unk_d6 = m;
       e->variant = 0;
@@ -1402,15 +1402,15 @@ NON_MATCH void Elevator_Create(void) {
       animIdx = 2;
       switch (e->variant) {
         case 0: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1B9);
+          Video_SetAuxSpritePltt(&e->gfx, 441);
           break;
         }
         case 1: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1BC);
+          Video_SetAuxSpritePltt(&e->gfx, 444);
           break;
         }
         case 2: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1BD);
+          Video_SetAuxSpritePltt(&e->gfx, 445);
           break;
         }
       }
@@ -1427,19 +1427,19 @@ NON_MATCH void Elevator_Create(void) {
       animIdx = 0;
       switch (e->variant) {
         case 0: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1B7);
+          Video_SetAuxSpritePltt(&e->gfx, 439);
           break;
         }
         case 1: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1B9);
+          Video_SetAuxSpritePltt(&e->gfx, 441);
           break;
         }
         case 2: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1BE);
+          Video_SetAuxSpritePltt(&e->gfx, 446);
           break;
         }
         case 3: {
-          Video_SetAuxSpritePltt(&e->gfx, 0x1BD);
+          Video_SetAuxSpritePltt(&e->gfx, 445);
           break;
         }
       }
@@ -1457,7 +1457,7 @@ NON_MATCH void Elevator_Create(void) {
       e->checkCoffinOut = Elevator_ClampCoffinOnSpecialTile;
       e->unk_e0 = Elevator_UpdateTileOverride;
       animIdx = 1;
-      Video_SetAuxSpritePltt(&e->gfx, 0x1BE);
+      Video_SetAuxSpritePltt(&e->gfx, 446);
       m = VM_GetNamedArgValue('m', 0);
       if (m != 0) e->unk_d6 = m;
       e->variant = 0;
@@ -1549,8 +1549,8 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 
   if (p->usedMask == 0) return 0;
 
-  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), FLAG030047A4_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2)) {
-    sound_08240740(SONG_344);
+  if (TEST_FLAGS((gGameFlags | gDebugGameFlags), GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+    sound_08240740(SE_ELEV_IRON_V);
     sound_08240740(SE_ELEV_MECHA_V);
     sound_08240740(SE_ELEV_MECHA_H);
     sound_08240740(SE_ELEV_LAVA);
@@ -1558,7 +1558,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
     return 0;
   }
 
-  if ((gEntityDisableFlags & ENTITY_DISABLE_3)) return 0;
+  if ((gSuspendFlags & SUSPEND_EVENT)) return 0;
 
   for (i = 0; i < 12; i++) {
     if (Elevator_IsSlotUsed(p, i) && elevators[i].state != STATE_DESTROYED) {
@@ -1588,7 +1588,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
 s32 ElevatorManager_Destroy(ElevatorManager* p) {
   s32 i;
 
-  sound_08240740(SONG_344);
+  sound_08240740(SE_ELEV_IRON_V);
   sound_08240740(SE_ELEV_MECHA_V);
   sound_08240740(SE_ELEV_MECHA_H);
   sound_08240740(SE_ELEV_LAVA);

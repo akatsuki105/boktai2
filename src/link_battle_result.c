@@ -1,9 +1,9 @@
 #include "bg_pltt.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "link_session.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
@@ -52,17 +52,14 @@ typedef struct LinkBattleResult {
   u8 unk_855;                                        // 0x855, _Init が 1 を入れる
   u16 unk_856;                                       // 0x856, 偶数フレームごとに効果音を鳴らすためのカウンタ
   u8 unk_858;                                        // 0x858, _Init が 0 を入れる
-  s8 playerCount;                                    // 0x859, gEntity9A9F->recordCount, 符号つきで負なら _Init は失敗する
+  s8 playerCount;                                    // 0x859, gLinkSession->recordCount, 符号つきで負なら _Init は失敗する
   u8 unk_85a[2];                                     // 0x85A
 } LinkBattleResult;
 static_assert(sizeof(LinkBattleResult) == 2140);
 
-s32 FUN_081dfa04(void);
-void FUN_081df8f0(s32 n);
-
 // 通信相手の記録を1件引く, まだセッションが無ければ NULL
-static inline Entity9A9FRecord* Entity9A9F_GetRecord(s32 idx) {
-  Entity9A9F* p = gEntity9A9F;
+static inline LinkPlayerRecord* LinkSession_GetRecord(s32 idx) {
+  LinkSession* p = gLinkSession;
 
   if (p == NULL) {
     return NULL;
@@ -71,8 +68,8 @@ static inline Entity9A9FRecord* Entity9A9F_GetRecord(s32 idx) {
 }
 
 // 自分が何番目の参加者かを返す, セッションが無ければ -1
-static inline s32 Entity9A9F_GetPlayerIdx(void) {
-  Entity9A9F* p = gEntity9A9F;
+static inline s32 LinkSession_GetPlayerIdx(void) {
+  LinkSession* p = gLinkSession;
 
   if (p == NULL) {
     return -1;
@@ -119,7 +116,7 @@ void FUN_081dc788(LinkBattleResult* p) {
 
 // idx 番目のテキストパネルに、その参加者の記録を差し込んで表示する
 void FUN_081dc818(LinkBattleResult* p, s32 idx) {
-  Entity9A9FRecord* rec = Entity9A9F_GetRecord(p->unk_6fc[idx]);
+  LinkPlayerRecord* rec = LinkSession_GetRecord(p->unk_6fc[idx]);
 
   if (rec != NULL) {
     TextPanel_SetScript(p->panelID[idx], p->scriptPc);
@@ -269,7 +266,7 @@ NON_MATCH void FUN_081dcd50(LinkBattleResult* p) {
   p->unk_704 = 0;
   p->fadeTarget = 0;
   p->unk_82a = 0;
-  playerIdx = Entity9A9F_GetPlayerIdx();
+  playerIdx = LinkSession_GetPlayerIdx();
   switch (playerIdx) {
     case 0: {
       slot = &p->plttB[8];
@@ -335,7 +332,16 @@ void FUN_081dd0b8(LinkBattleResult* p) {
 }
 
 // 推測: 先頭4要素は u16 = {100, 100, 40, 1}, 構造体かも?
-const u8 u8_ARRAY_085ae3cc[28] = {0x64, 0x00, 0x64, 0x00, 0x28, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0xC0, 0x00, 0x00, 0x30, 0x10, 0xC0, 0x00, 0x30, 0x10, 0xF0, 0xD0};  // 0x085AE3CC
+const u16 u16_ARRAY_085ae3cc[4] = {100, 100, 40, 1};  // 0x085AE3CC
+
+// 通信対戦の順位ごとの得点補正, [参加人数][順位] (64 で 1 倍), LinkSession_AddRankPoints が使う
+const s8 sLinkRankBonus[5][4] = {
+    {0,  0,   0,   0  },
+    {0,  0,   0,   0  },
+    {64, -64, 0,   0  },
+    {48, 16,  -64, 0  },
+    {48, 16,  -16, -48},
+};  // 0x085AE3D4
 
 NAKED void FUN_081dd124(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dd124.inc"); }
 
@@ -359,7 +365,7 @@ void FUN_081dd1d8(LinkBattleResult* p) {
 
 // 自分の枠がまだ開いていなければ通信参加の回数を1つ増やす
 void FUN_081dd25c(LinkBattleResult* p) {
-  s32 playerIdx = Entity9A9F_GetPlayerIdx();
+  s32 playerIdx = LinkSession_GetPlayerIdx();
   s32 i;
 
   for (i = 0; i < p->playerCount; i++) {
@@ -382,10 +388,10 @@ NON_MATCH void FUN_081dd2dc(LinkBattleResult* p) {
   s32 i;
 
   for (i = 0; i < p->playerCount; i++) {
-    if (gEntity9A9F == NULL) {
+    if (gLinkSession == NULL) {
       p->unk_6f4[i] = 0;
     } else {
-      p->unk_6f4[i] = gEntity9A9F->unk_130[i];
+      p->unk_6f4[i] = gLinkSession->roundScores[i];
     }
   }
   p->unk_6fc[0] = 0;
@@ -403,7 +409,7 @@ NON_MATCH void FUN_081dd2dc(LinkBattleResult* p) {
 // 自分のスロットがまだ未確定なら効果音を鳴らす
 NON_MATCH void FUN_081dd36c(LinkBattleResult* p) {
 #ifdef NONMATCHING_C
-  Entity9A9F* mgr = gEntity9A9F;
+  LinkSession* mgr = gLinkSession;
   s32 playerIdx;
   s8 count;
   s32 i;

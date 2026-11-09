@@ -55,7 +55,7 @@
 	movs r1, #0
 	adds r2, r3, #0
 	movs r3, #5
-	bl FUN_080dbd08
+	bl DustManager_SpawnNoPause
 	b _08020CBC
 	.align 2, 0
 _08020C98: .4byte 0x00000153
@@ -72,7 +72,7 @@ _08020CA4:
 	movs r1, #0
 	add r2, sp, #8
 	movs r3, #5
-	bl FUN_080dbd08
+	bl DustManager_SpawnNoPause
 _08020CBC:
 	adds r0, r4, #0
 	adds r0, #0x80

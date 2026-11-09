@@ -1,5 +1,5 @@
 #include "cwolf_target.h"
-#include "eff_082473e0.h"
+#include "eff_elemcond.h"
 #include "enemy.h"
 #include "enemy_inline.h"
 #include "enemy_manager.h"
@@ -16,6 +16,7 @@
 #include "vec3.h"
 #include "vm.h"
 
+// ENEK_BOKU (EV_GHOUL, EV_ZOMBIE, EV_GHOUL_P)
 typedef struct {
   Enemy e;
   u8 unk_654[0x658 - 0x654];  // 0x654
@@ -33,53 +34,19 @@ typedef struct {
   u16 unk_67c;                // 0x67C
   u16 unk_67e;                // 0x67E, '.P[1]=120'
   NavAgent navAgent;          // 0x680, Enemy.navAgent が指す
-  Vec3 unk_6a4;               // 0x6A4, Enemy.unk_4a8 が指す
+  Vec3 pathNodePos;           // 0x6A4, Enemy.pathNodePos が指す
 } Boku;
 static_assert(sizeof(Boku) == 1708);
 
-void FUN_080e499c(Enemy* p);
-void FUN_080e64b4(Enemy* p, s32 kind);
-void PlayEnemyDeathCry(Enemy* p);
-void FUN_080e6658(Enemy* p);
-void FUN_080e37e8(Enemy* p, void* arg, u8 spriteKind);
-void FUN_080e48e8(Enemy* p, s32 hp, s32 param_3, s32 param_4);
-void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6);
-void Enemy_Init_080e5dd4(Enemy* p);
-s32 Enemy_CountByKind(u32 kind);
-void Enemy_DispatchMsg(Enemy* p, u16* msg);
-void FUN_080f44f4(Enemy* p);
-void FUN_080f410c(Enemy* p);
-s32 FUN_080f62ac(void);
-bool32 FUN_080f62b0(Enemy* p);
-bool8 FUN_080f0430(Enemy* p);
-void FUN_080e73c8(Enemy* p);
-void Enemy_080eff14(Enemy* enemy, s32 param_2);
-void FUN_080e72b0(Enemy* p, s32 timer);
-void FUN_080f47c8(Enemy* p);
-void FUN_080f54e4(Enemy* p, s32 param_2);
-bool32 FUN_080f84d4(Enemy* p);
-void FUN_080f624c(Enemy* p);
-void FUN_080f56ec(Enemy* p);
-void FUN_080f5b34(Enemy* p);
-void FUN_080f5fac(Enemy* p, s32 timer);
-bool32 FUN_080f48ac(Mover* mover, s32 msg, s32 value);
-void FUN_080e64e4(Enemy* p);
-void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b);
-void Enemy_SetAngleToward(Enemy* p, s16 x, s16 z);
-void FUN_080e6794(Enemy* p, s32 priority);
-bool8 FUN_080e5ed4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
-void FUN_080ec6fc(Enemy* enemy);
 void FUN_080e7b6c(Enemy* p);
-void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockbackPower, HitboxAttributes attrs, s32 invincibleTime, s32 groundTime, s32 speed, s32 unk_9);
-bool8 FUN_080e8038(s32 fromIdx, s32 idx, s32 fromHeight, s32 fromStairs);
+void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9);
 
 void FUN_080ff67c(Boku* p);
-void FUN_080ffda8(Boku* p);
+void Boku_RouteAwayFromPlayer(Boku* p);
 void FUN_080fc28c(Boku* p);
-void FUN_080ffad8(Boku* p);
+void Boku_OnReset(Boku* p);
 void FUN_080fc174(Boku* p, s32 param_2);
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f90[] = "eneinline.h";
@@ -89,16 +56,16 @@ const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_bokucom_c_082
 
 // 生成時に退避しておいた状態とフラグに戻し, 一時的な値を全部初期化する
 static inline void Enemy_RestoreInitialState(Enemy* p) {
-  p->flags = p->unk_55c;
-  p->flags2 = p->unk_560;
-  p->mover.angle = p->unk_564;
-  p->subState0 = p->unk_565;
-  p->subState1 = p->unk_566;
-  p->subState2 = p->unk_567;
-  p->handlerState = p->unk_568;
-  p->state = p->unk_56c;
-  p->flags5 = p->unk_572;
-  p->heightAboveFloor = p->unk_570;
+  p->flags = p->initFlags;
+  p->flags2 = p->initFlags2;
+  p->mover.angle = p->initAngle;
+  p->subState0 = p->initSubState0;
+  p->subState1 = p->initSubState1;
+  p->subState2 = p->initSubState2;
+  p->handlerState = p->initHandlerState;
+  p->state = p->initState;
+  p->flags5 = p->initFlags5;
+  p->heightAboveFloor = p->initHeightAboveFloor;
   p->hp = p->maxHp;
   p->flags4 = 0;
   p->unk_222 = 0;
@@ -107,8 +74,8 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->subStateBegun = TRUE;
   p->stateBegun = TRUE;
   p->animForceRestart = FALSE;
-  p->unk_24e = 0;
-  p->unk_192 = 0;
+  p->chaseTimer = 0;
+  p->sleepTimer = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
   p->hitTargetID = 0;
@@ -128,30 +95,18 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->unk_460 = 0;
   p->unk_462 = 0;
   Enemy_ClearPendingState(p, gString_08251fa8, 2434);
-  p->unk_540 = 0;
-  p->unk_541 = 0;
+  p->lookAngle = 0;
+  p->lookBaseAngle = 0;
   p->unk_542 = 0xFF;
-  p->unk_548 = NULL;
-  p->unk_54c = 0;
-  p->unk_54d = 0;
-  p->unk_54e = 0;
-  p->unk_54f = 0;
-  FUN_080eeee0(p);
+  p->savedHandlerState = NULL;
+  p->savedSubState0 = 0;
+  p->savedSubState1 = 0;
+  p->savedSubState2 = 0;
+  p->savedState = 0;
+  EnemyManager_TryEndPaletteFade(p);
 }
 
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
-
-static inline bool8 IsLinkPlay(void) {
-  if (gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) return TRUE;
-  return FALSE;
-}
-
-static inline bool8 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) {
-  if (p->flags5 & bit) {
-    return TRUE;
-  }
-  return FALSE;
-}
 
 void Boku_OnHit(HitboxData* a, HitboxData* b, Boku* p) {
   if (Enemy_IsDead(&p->e) == 0) {
@@ -171,7 +126,7 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if ((p->e).hurtbox.invincibleTime != 0) {
+  if ((p->e).hurtbox.iframes != 0) {
     if ((p->e).unk_48c != 0) {
       b->damage = 0;
       b->hitResult = 0;
@@ -242,15 +197,15 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
           s32 dx = (p->e).playerMover->pos.x - (p->e).mover.pos.x;
           s32 dz = (p->e).playerMover->pos.z - (p->e).mover.pos.z;
 
-          (p->e).unk_1fc = ArcTan2_8(dx, dz);
-          (p->e).unk_1e4 = dx * dx + dz * dz;
+          (p->e).playerAngle = ArcTan2_8(dx, dz);
+          (p->e).playerDistSq = dx * dx + dz * dz;
         }
       }
     }
     if ((p->e).flags3 & ENEFLAG3_UNK_7) {
-      (p->e).unk_24e += 300;
-      if ((p->e).unk_24e > (p->e).unk_24c) {
-        (p->e).unk_24e = (p->e).unk_24c;
+      (p->e).chaseTimer += 300;
+      if ((p->e).chaseTimer > (p->e).chaseTimeMax) {
+        (p->e).chaseTimer = (p->e).chaseTimeMax;
       }
     }
     (p->e).unk_48c = 1;
@@ -262,20 +217,20 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
   } else {
     Hitbox_ApplyDamageAlt(a, b);
   }
-  b->invincibleTime = a->invincibleTime;
+  b->iframes = a->iframes;
   (p->e).unk_48c = b->hitResult;
   if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_18)) {
-    knockback = a->knockbackPower;
+    knockback = a->knockback;
   } else {
-    knockback = a->knockbackPower - (p->e).unk_187;
+    knockback = a->knockback - (p->e).unk_187;
     if ((s32)knockback < 0) {
       knockback = 0;
     }
   }
-  b->knockbackPower = knockback;
+  b->knockback = knockback;
   if ((p->e).flags3 & (ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2)) {
     b->damage <<= 1;
-    b->knockbackPower >>= 1;
+    b->knockback >>= 1;
   }
   if (!(a->flags & HBFLAG_ANGLE)) {
     s16 dx = b->pos.x - a->pos.x;
@@ -323,20 +278,20 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
         s32 dx = (p->e).playerMover->pos.x - (p->e).mover.pos.x;
         s32 dz = (p->e).playerMover->pos.z - (p->e).mover.pos.z;
 
-        (p->e).unk_1fc = ArcTan2_8(dx, dz);
-        (p->e).unk_1e4 = dx * dx + dz * dz;
+        (p->e).playerAngle = ArcTan2_8(dx, dz);
+        (p->e).playerDistSq = dx * dx + dz * dz;
       }
     }
   }
   if ((p->e).unk_48c != 0 && ((p->e).flags3 & ENEFLAG3_UNK_7)) {
-    (p->e).unk_24e += 300;
-    if ((p->e).unk_24e > (p->e).unk_24c) {
-      (p->e).unk_24e = (p->e).unk_24c;
+    (p->e).chaseTimer += 300;
+    if ((p->e).chaseTimer > (p->e).chaseTimeMax) {
+      (p->e).chaseTimer = (p->e).chaseTimeMax;
     }
   }
   if (gStat->mapFlags & MPF_UNK_10) {
     b->damage = 0;
-    b->knockbackPower = 0;
+    b->knockback = 0;
     (p->e).unk_48a = 0;
     (p->e).unk_48c = 1;
   }
@@ -352,19 +307,19 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
 // 568/597命令の下書き, Ghidra の出力から起こしたもの, stateBegun を 0/1 に落としてから見る形 (inline らしい) とタイル探索のループの形が未調整
 NON_MATCH void FUN_080fb4d0(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* self = p->e.unk_1cc;
-  EnemySpriteData* spr = p->e.sprite;
+  Boku* self = p->e.owner;
+  EnemyMainSprite* spr = &p->e.s->main;
 
   if (p->e.stateBegun) {
     p->e.stateBegun = FALSE;
-    p->e.mover.angle = (((p->e.unk_1fc + 0x20) & 0xFF) >> 6) << 6;
+    p->e.mover.angle = (((p->e.playerAngle + 0x20) & 0xFF) >> 6) << 6;
     Enemy_PlayAnim(&p->e, 5);
     if (self->unk_65c & 4) {
-      spr->s.boxLeft = 2;
-      spr->s.rotation = 0;
+      spr->spr.boxLeft = 2;
+      spr->spr.rotation = 0;
       self->unk_65c &= ~4;
     }
-    if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+    if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
       self->unk_660 = p->e.playerMover->pos;
     } else if (p->e.playerMover != NULL) {
       s32 idx = p->e.playerMover->unk_4 < 4 ? p->e.playerMover->unk_4 : -1;
@@ -374,8 +329,8 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
       }
     }
   }
-  if (spr->s.boxLeft == 5 && spr->s.rotation == 0) {
-    s32 d = p->e.unk_1fc - (((p->e.mover.angle + 0x20) & 0xFF) >> 6) * 64;
+  if (spr->spr.boxLeft == 5 && spr->spr.rotation == 0) {
+    s32 d = p->e.playerAngle - (((p->e.mover.angle + 0x20) & 0xFF) >> 6) * 64;
     Vec3 from;
 
     if (d > 128) {
@@ -387,7 +342,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
       d = -d;
     }
     if (d < 32) {
-      if (!(gGameFlags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14))) {
+      if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
         self->unk_668 = p->e.playerMover->pos;
       } else if (p->e.playerMover != NULL) {
         s32 idx = p->e.playerMover->unk_4 < 4 ? p->e.playerMover->unk_4 : -1;
@@ -397,7 +352,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         }
       }
     } else {
-      u32 tileIdx = p->e.unk_256;
+      u32 tileIdx = p->e.tileIdx;
       u32 target;
       s32 height;
       s32 fromStairs;
@@ -426,7 +381,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 0: {
           idx = tileIdx + 1;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx++;
@@ -437,7 +392,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 1: {
           idx = tileIdx + gCollisionMap->tiledata->width;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx += gCollisionMap->tiledata->width;
@@ -448,7 +403,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 2: {
           idx = tileIdx - 1;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx--;
@@ -459,7 +414,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
         case 3: {
           idx = tileIdx - gCollisionMap->tiledata->width;
           for (n = 0; n < 1; n++) {
-            if (!FUN_080e8038(tileIdx, idx, height, fromStairs)) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
               break;
             }
             idx -= gCollisionMap->tiledata->width;
@@ -468,7 +423,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
           break;
         }
         default: {
-          target = p->e.unk_256;
+          target = p->e.tileIdx;
           break;
         }
       }
@@ -506,7 +461,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
     }
     from = p->e.mover.pos;
     from.y += 220;
-    Entity081f3324_Spawn(&from, &self->unk_668, p->e.atkPower[1], p->e.atkUnk40[1], p->e.atkAttrs[1], p->e.atkInvincibleTime[1], self->unk_674, 30, -20);
+    Entity081f3324_Spawn(&from, &self->unk_668, p->e.atkPower[1], p->e.atkKnockback[1], p->e.atkAttrs[1], p->e.atkIframes[1], self->unk_674, 30, -20);
     PlaySound_082406e0(SONG_214);
   }
   if (p->e.animForceRestart) {
@@ -552,7 +507,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
       Enemy_PlayAnim(&p->e, 0);
       if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
-        Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+        Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
       }
       return;
     }
@@ -561,17 +516,17 @@ NON_MATCH void FUN_080fba64(Boku* p) {
       case 0: {
         if (target - 2 < 4) {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, 0);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             if ((p->e).playingAnim != 10 || (p->e).animForceRestart != 0 || (s->flags & SPRFLAG_XFLIP)) {
               (p->e).playingAnim = 10;
-              MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
               s->flags &= ~SPRFLAG_XFLIP;
               (p->e).animForceRestart = 0;
             }
@@ -579,16 +534,16 @@ NON_MATCH void FUN_080fba64(Boku* p) {
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
         } else {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 0, ANIM_PLAY_REVERSE);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             (p->e).playingAnim = 9;
-            MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 9, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 9, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
             s->flags &= ~SPRFLAG_XFLIP;
             (p->e).animForceRestart = 0;
           }
@@ -599,17 +554,17 @@ NON_MATCH void FUN_080fba64(Boku* p) {
       case 1: {
         if (target - 4 < 4) {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 2, 0);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             if ((p->e).playingAnim != 11 || (p->e).animForceRestart != 0 || (s->flags & SPRFLAG_XFLIP)) {
               (p->e).playingAnim = 11;
-              MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 11, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 11, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
               s->flags &= ~SPRFLAG_XFLIP;
               (p->e).animForceRestart = 0;
             }
@@ -617,16 +572,16 @@ NON_MATCH void FUN_080fba64(Boku* p) {
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
         } else {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, ANIM_PLAY_REVERSE);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             (p->e).playingAnim = 10;
-            MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
             s->flags &= ~SPRFLAG_XFLIP;
             (p->e).animForceRestart = 0;
           }
@@ -637,32 +592,32 @@ NON_MATCH void FUN_080fba64(Boku* p) {
       case 2: {
         if (target - 1 < 5) {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 2, ANIM_PLAY_REVERSE);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             (p->e).playingAnim = 11;
-            MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 11, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 11, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
             s->flags &= ~SPRFLAG_XFLIP;
             (p->e).animForceRestart = 0;
           }
           CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
         } else {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, ANIM_PLAY_REVERSE | ANIM_PLAY_XFLIP);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             (p->e).playingAnim = 10;
-            MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
             s->flags |= SPRFLAG_XFLIP;
             (p->e).animForceRestart = 0;
           }
@@ -673,17 +628,17 @@ NON_MATCH void FUN_080fba64(Boku* p) {
       case 3: {
         if (target < 4) {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 0, 0);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             if ((p->e).playingAnim != 9 || (p->e).animForceRestart != 0 || (s->flags & SPRFLAG_XFLIP)) {
               (p->e).playingAnim = 9;
-              MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 9, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 9, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
               s->flags &= ~SPRFLAG_XFLIP;
               (p->e).animForceRestart = 0;
             }
@@ -691,17 +646,17 @@ NON_MATCH void FUN_080fba64(Boku* p) {
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
         } else {
           if ((p->e).spriteKind == 0) {
-            EnemyAuxSpriteData* s = (EnemyAuxSpriteData*)(p->e).sprite;
+            EnemyAuxSprite* s = &(p->e).s->aux;
 
             (p->e).playingAnim = 9;
             AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, ANIM_PLAY_XFLIP);
             (p->e).animForceRestart = 0;
           } else {
-            MainSprite* s = &(p->e).sprite->s;
+            MainSprite* s = &(p->e).s->main.spr;
 
             if ((p->e).playingAnim != 10 || (p->e).animForceRestart != 0 || !(s->flags & SPRFLAG_XFLIP)) {
               (p->e).playingAnim = 10;
-              MainSprite_SetAnim(&(p->e).sprite->s, &(p->e).sprite->gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
               s->flags |= SPRFLAG_XFLIP;
               (p->e).animForceRestart = 0;
             }
@@ -713,7 +668,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
     }
     (p->e).animForceRestart = 0;
   }
-  anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  anim = &(p->e).s->aux.anim;
   if (anim->tick == 0 && (anim->cmdIdx == 1 || anim->cmdIdx == 3)) {
     u32 targetAngle = (((p->e).unk_1dc + 5) & 7) << 5;
     u8 angle = (p->e).mover.angle;
@@ -738,7 +693,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
       d = -d;
     }
     if (d > 0) {
-      Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+      Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
       return;
     }
     (p->e).subStateDone = 1;
@@ -746,7 +701,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
     Enemy_PlayAnim(&p->e, 0);
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
       Enemy_ResetState(&p->e, 3, 1, 0);
-      Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+      Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
     }
   }
 #else
@@ -803,19 +758,19 @@ void FUN_080fc28c(Boku* p) {
     ParticleShadow_Show(&(p->e).shadow);
     Enemy_ClearSpriteFlags(&p->e, SPRFLAG_HIDDEN);
     (p->e).hp = 1;
-    (p->e).hurtbox.invincibleTime = 60;
+    (p->e).hurtbox.iframes = 60;
   }
-  anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  anim = &(p->e).s->aux.anim;
   if (anim->cmdIdx == 3 && anim->tick == 4) {
     PlaySound_082406e0(NOISE_UNK_128 | NOISE_HEARTBEAT);
   }
   if ((p->e).animForceRestart) {
-    FUN_080ffad8(p);
+    Boku_OnReset(p);
     Enemy_RestoreInitialState(&p->e);
   }
 }
 
-// 残差1命令, 最後の tick = 0 を原典は sprite + 0x48 を作ってから [+0xE] で書く (mimic.c の FUN_081475b8 と同じ), anim の取り直しは試済
+// 残差1命令, 最後の tick = 0 を原典は sprite + 0x48 を作ってから [+0xE] で書く (mimic.c の Mimic_StateDying と同じ), anim の取り直しは試済
 NON_MATCH void FUN_080fc4ec(Boku* p) {
 #ifdef NONMATCHING_C
   AuxAnimState* anim;
@@ -823,10 +778,10 @@ NON_MATCH void FUN_080fc4ec(Boku* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 5);
   }
-  anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  anim = &(p->e).s->aux.anim;
   if (anim->cmdIdx == 7 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
     anim->cmdIdx = 2;
-    ((EnemyAuxSpriteData*)(p->e).sprite)->anim.tick = 0;
+    (p->e).s->aux.anim.tick = 0;
   }
 #else
   INCFUNC("asm/func/FUN_080fc4ec.inc");
@@ -844,19 +799,19 @@ void FUN_080fc548(Boku* p, s32 param_2) {
       if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
         Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
         Enemy_PlayAnim(&p->e, 0);
-        Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+        Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
         Enemy_ResetState(&p->e, 0, 0, 12);
         SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
       } else {
         Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
         Enemy_PlayAnim(&p->e, 0);
-        Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+        Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
         Enemy_ResetState(&p->e, 0, 0, 7);
         SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
       }
     }
   } else {
-    AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+    AuxAnimState* anim = &(p->e).s->aux.anim;
 
     if (anim->cmdIdx == 2 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
       anim->tick = 0;
@@ -872,7 +827,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
   }
   SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
   if (param_2 < 18) {
-    AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+    AuxAnimState* anim = &(p->e).s->aux.anim;
     if (anim->cmdIdx == 0 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
       anim->tick = 0;
     }
@@ -883,7 +838,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
   (p->e).subStateDone = 1;
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
     Enemy_ResetState(&p->e, 3, 0, 0);
-    Enemy_EnterState(&p->e, (p->e).unk_594, ES_SLEEP);
+    Enemy_EnterState(&p->e, (p->e).handlerSleep, ES_SLEEP);
     CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
     return;
   }
@@ -893,14 +848,14 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
 
     Enemy_PlayAnim(&p->e, 0);
     Enemy_ResetState(&p->e, 3, 1, 0);
-    Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
-    (p->e).unk_554 = 30;
-    (p->e).unk_558 = (p->e).unk_5b8;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 12;
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -916,7 +871,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
         idx = m->unk_4;
       }
       if (m == NULL || idx < 0) {
-        (p->e).unk_5c4(&p->e);
+        (p->e).onRouteFailed(&p->e);
         return;
       }
       tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
@@ -926,7 +881,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
     }
 
     // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
-    if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+    if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
       u8 angle;
 
       if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
@@ -934,21 +889,21 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
       }
       (p->e).unk_222 &= ~ENEMY222_UNK_2;
       if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-        Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+        Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
         Enemy_ResetState(&p->e, 0, 0, 12);
       } else {
-        Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+        Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
         Enemy_ResetState(&p->e, 0, 0, 5);
         {
-          Vec3* dst = (p->e).unk_4a8;
+          Vec3* dst = (p->e).pathNodePos;
           PathWalker* walker = &(p->e).pathWalker;
 
           dst->x = walker->node->x;
           dst->z = walker->node->y;
           dst->y = TileHeightAt(dst);
         }
-        (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-        (p->e).unk_4a8->val = 0;
+        (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+        (p->e).pathNodePos->val = 0;
       }
       angle = (p->e).mover.angle;
       if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -964,14 +919,14 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
         if (i >= 4) {
           a = angle;
         }
-        (p->e).unk_540 = a;
-        (p->e).unk_548 = (p->e).handlerState;
-        (p->e).unk_54f = (p->e).state;
-        (p->e).unk_54c = (p->e).subState0;
-        (p->e).unk_54d = (p->e).subState1;
-        (p->e).unk_54e = (p->e).subState2;
-        (p->e).unk_541 = angle;
-        Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+        (p->e).lookAngle = a;
+        (p->e).savedHandlerState = (p->e).handlerState;
+        (p->e).savedState = (p->e).state;
+        (p->e).savedSubState0 = (p->e).subState0;
+        (p->e).savedSubState1 = (p->e).subState1;
+        (p->e).savedSubState2 = (p->e).subState2;
+        (p->e).lookBaseAngle = angle;
+        Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
         Enemy_ResetState(&p->e, 3, 1, 0);
         (p->e).unk_542 = 6;
       }
@@ -1013,7 +968,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
         }
       }
       if (!moved) {
-        (p->e).unk_5c4(&p->e);
+        (p->e).onRouteFailed(&p->e);
       }
     }
     return;
@@ -1021,17 +976,17 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
 
   Enemy_PlayAnim(&p->e, 0);
   Enemy_ResetState(&p->e, 3, 1, 0);
-  Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
-  (p->e).unk_554 = 60;
-  (p->e).unk_558 = (p->e).unk_5a0;
-  (p->e).unk_550 = 0;
-  (p->e).unk_551 = 0;
-  (p->e).unk_552 = 7;
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  (p->e).pendingDelay = 60;
+  (p->e).pendingHandler = (p->e).handlerMove;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 7;
   (p->e).animSpeedDiv = 1;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
   {
-    Vec3* dst = (p->e).unk_4a8;
+    Vec3* dst = (p->e).pathNodePos;
     PathWalker* walker = &(p->e).pathWalker;
 
     dst->x = walker->node->x;
@@ -1041,7 +996,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
   {
     NavAgent* agent = (p->e).navAgent;
     WorldPos* pos = &(p->e).mover.pos;
-    Vec3* dst = (p->e).unk_4a8;
+    Vec3* dst = (p->e).pathNodePos;
     bool8 moved = FALSE;
 
     if (Map_IsPosInAgentIsland(agent, pos, dst)) {
@@ -1058,7 +1013,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
       CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
     }
     if (moved) {
-      (p->e).unk_4a8->val = 1;
+      (p->e).pathNodePos->val = 1;
     } else {
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
       Enemy_ResetState(&p->e, 3, 0, 0);
@@ -1070,9 +1025,9 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
 }
 
 // 1893/1886命令の下書き, プレイヤーへ向かう部分は FUN_080fe7f4 と同じ形を2回展開, 原典は &flags を sb に持ち越し状態フィールドのアドレスをスタックに作り置く (フレーム 0xD0, こちらは 0xAC)
-NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
+NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
 #ifdef NONMATCHING_C
-  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  AuxAnimState* anim = &(p->e).s->aux.anim;
   s32 dx;
   s32 dz;
   s32 tile;
@@ -1154,7 +1109,7 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
     SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
     (p->e).playerMover = &gPlayerPtr[0]->mover;
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -1180,28 +1135,28 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
       idx = 0;
     }
     if (haveTile) {
-      if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
         // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
         if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
           u8 angle;
 
           (p->e).unk_222 &= ~ENEMY222_UNK_2;
           if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-            Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
             Enemy_ResetState(&p->e, 0, 0, 12);
           } else {
-            Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
             Enemy_ResetState(&p->e, 0, 0, 5);
             {
-              Vec3* dst = (p->e).unk_4a8;
+              Vec3* dst = (p->e).pathNodePos;
               PathWalker* walker = &(p->e).pathWalker;
 
               dst->x = walker->node->x;
               dst->z = walker->node->y;
               dst->y = TileHeightAt(dst);
             }
-            (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-            (p->e).unk_4a8->val = 0;
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
           }
           angle = (p->e).mover.angle;
           if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -1217,14 +1172,14 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
             if (i >= 4) {
               a = angle;
             }
-            (p->e).unk_540 = a;
-            (p->e).unk_548 = (p->e).handlerState;
-            (p->e).unk_54f = (p->e).state;
-            (p->e).unk_54c = (p->e).subState0;
-            (p->e).unk_54d = (p->e).subState1;
-            (p->e).unk_54e = (p->e).subState2;
-            (p->e).unk_541 = angle;
-            Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
@@ -1268,7 +1223,7 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
       }
     }
     if (!haveTile) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
     // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
     if (!found) {
@@ -1291,17 +1246,17 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
       }
     }
     if (found) {
-      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
       Enemy_ResetState(&p->e, 0, 0, 12);
     } else {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
   } else {
     (p->e).playerMover = &gPlayerPtr[0]->mover;
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
-    (p->e).unk_4a8->val = 0;
+    (p->e).pathNodePos->val = 0;
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -1327,28 +1282,28 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
       idx = 0;
     }
     if (haveTile) {
-      if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
         // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
         if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
           u8 angle;
 
           (p->e).unk_222 &= ~ENEMY222_UNK_2;
           if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-            Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
             Enemy_ResetState(&p->e, 0, 0, 12);
           } else {
-            Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
             Enemy_ResetState(&p->e, 0, 0, 5);
             {
-              Vec3* dst = (p->e).unk_4a8;
+              Vec3* dst = (p->e).pathNodePos;
               PathWalker* walker = &(p->e).pathWalker;
 
               dst->x = walker->node->x;
               dst->z = walker->node->y;
               dst->y = TileHeightAt(dst);
             }
-            (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-            (p->e).unk_4a8->val = 0;
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
           }
           angle = (p->e).mover.angle;
           if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -1364,14 +1319,14 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
             if (i >= 4) {
               a = angle;
             }
-            (p->e).unk_540 = a;
-            (p->e).unk_548 = (p->e).handlerState;
-            (p->e).unk_54f = (p->e).state;
-            (p->e).unk_54c = (p->e).subState0;
-            (p->e).unk_54d = (p->e).subState1;
-            (p->e).unk_54e = (p->e).subState2;
-            (p->e).unk_541 = angle;
-            Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
@@ -1415,7 +1370,7 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
       }
     }
     if (!haveTile) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
     // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
     if (!found) {
@@ -1438,29 +1393,29 @@ NON_MATCH void FUN_080fd08c(Boku* p, s32 param_2) {
       }
     }
     if (found) {
-      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
       Enemy_ResetState(&p->e, 0, 0, 7);
       (p->e).animSpeedDiv = 2;
     } else {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080fd08c.inc");
+  INCFUNC("asm/func/Boku_StateDamaged.inc");
 #endif
 }
 
 // unk_65c の bit1 の判定を bool8 を返す inline にすると 76/75 命令まで寄るが, 原典は &unk_65c を判定の中で作って r5 に持ち越し, q を r1 に置く, 1回目は r4/r5 が逆
 NON_MATCH void FUN_080fe1bc(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (!Enemy_ConsumeStateBegun(&p->e)) {
     if (q->unk_65c & 2) {
-      if ((p->e).unk_1e4 > 0xFFFF) {
+      if ((p->e).playerDistSq > 0xFFFF) {
         Enemy_PlayAnim(&p->e, 0);
       }
-      FUN_080ffda8(p);
+      Boku_RouteAwayFromPlayer(p);
       CLEAR_FLAGS(q->unk_65c, 2);
       Enemy_ResetState(&p->e, 0, 0, 15);
     } else {
@@ -1473,10 +1428,10 @@ NON_MATCH void FUN_080fe1bc(Boku* p) {
 }
 
 // 514/514命令, 残差は最初の EmitSmoke の乱数の位置と, 原典のフレームが 4 バイト大きい (0x50) ことだけ
-NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
+NON_MATCH void Boku_StateDying(Boku* p, s32 param_2) {
 #ifdef NONMATCHING_C
-  AuxSprite* sprite = (AuxSprite*)(p->e).sprite;
-  AuxAnimState* anim = &((EnemyAuxSpriteData*)sprite)->anim;
+  AuxSprite* sprite = &(p->e).s->aux.spr;
+  AuxAnimState* anim = &(p->e).s->aux.anim;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 10);
@@ -1484,7 +1439,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     Enemy_SetEmote(&p->e, 0, 0x7F, 0);
     Enemy_SetEmote(&p->e, 1, 0x7F, 0);
     Enemy_SetEmote(&p->e, 3, 0x7F, 0);
-    FUN_080e64b4(&p->e, 4);
+    Enemy_FadeParticles(&p->e, 4);
     sprite->flags |= SPRFLAG_AFFINE;
     PlayEnemyDeathCry(&p->e);
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
@@ -1496,7 +1451,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     (p->e).unk_202 = 0;
     (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
   }
-  FUN_080e499c(&p->e);
+  Enemy_ClearDamage(&p->e);
   if (Mod(param_2, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
     Vec3 size;
 
@@ -1536,7 +1491,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
         PlaySound_082406e0(SE_UNDEAD_EXORCISM);
       }
     }
-    if ((p->e).unk_19a != 0) {
+    if ((p->e).defeatScriptID != 0) {
       u32 argv[8];
       ScriptArgs sa;
 
@@ -1550,7 +1505,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
       argv[7] = (p->e).mover.id;
       sa.argc = 8;
       sa.argv = argv;
-      VM_ExecByID((p->e).unk_19a, &sa);
+      VM_ExecByID((p->e).defeatScriptID, &sa);
     }
     idx = EnemyDex_GetEntryIdx((p->e).kind, (p->e).variant);
     if (idx < 32) {
@@ -1558,7 +1513,7 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    (p->e).unk_192 = 0;
+    (p->e).sleepTimer = 0;
     sprite->scaleX = Q6(1);
     sprite->scaleY = Q6(1);
     sprite->flags = (sprite->flags & ~SPRFLAG_AFFINE) | SPRFLAG_HIDDEN;
@@ -1567,25 +1522,19 @@ NON_MATCH void FUN_080fe274(Boku* p, s32 param_2) {
     ParticleShadow_Hide(&(p->e).shadow);
   }
 #else
-  INCFUNC("asm/func/FUN_080fe274.inc");
+  INCFUNC("asm/func/Boku_StateDying.inc");
 #endif
 }
 
-// 97/99命令, 原典は FUN_080e6750 の後に kind のアドレスを作り直す, 1回目の下書きで切り上げ
-NON_MATCH void FUN_080fe704(Boku* p) {
-#ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+void FUN_080fe704(Boku* p) {
+  Boku* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, FUN_080f3cdc, ES_UNK_10);
-    (p->e).mover.angle = (p->e).unk_1fc;
+    (p->e).mover.angle = (p->e).playerAngle;
     Enemy_SetEmote(&p->e, 0, 0, (p->e).kind);
-    FUN_080e6750(&p->e);
-    if ((p->e).kind != ENEK_SPIDER) {
-      SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
-    }
-    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
-    (p->e).unk_24e = (p->e).unk_24c;
+    Enemy_RunScript(&p->e);
+    Enemy_BeginChase(&p->e);
   }
   if ((p->e).subStateDone) {
     FUN_080ff67c(p);
@@ -1593,9 +1542,6 @@ NON_MATCH void FUN_080fe704(Boku* p) {
   } else {
     (p->e).subStateTimer++;
   }
-#else
-  INCFUNC("asm/func/FUN_080fe704.inc");
-#endif
 }
 
 // 938/932命令の下書き, enedefault.c の FUN_080f12c4 と同じ形, 原典は状態フィールドのアドレスをスタックに作り置く (フレーム 0x60, こちらは 0x30)
@@ -1607,7 +1553,7 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
   if ((p->e).subStateBegun) {
     (p->e).subStateBegun = 0;
   }
-  if ((p->e).unk_608(&p->e)) {
+  if ((p->e).tryDetectPlayer(&p->e)) {
     return;
   }
   if (FUN_080f0a0c(&p->e)) {
@@ -1620,26 +1566,26 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
 
   Enemy_SetEmote(&p->e, 0, 2, (p->e).kind);
   Enemy_ResetState(&p->e, 3, 1, 0);
-  Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
     bool8 moved;
 
     if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_4)) {
-      (p->e).unk_554 = 30;
-      (p->e).unk_558 = (p->e).unk_5a0;
-      (p->e).unk_550 = 0;
-      (p->e).unk_551 = 0;
-      (p->e).unk_552 = 2;
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).handlerMove;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 2;
       (p->e).animSpeedDiv = 1;
       return;
     }
-    (p->e).unk_554 = 30;
-    (p->e).unk_558 = (p->e).unk_5a0;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 7;
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerMove;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -1649,7 +1595,7 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
     {
       NavAgent* agent = (p->e).navAgent;
       WorldPos* pos = &(p->e).mover.pos;
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
 
       moved = FALSE;
       if (Map_IsPosInAgentIsland(agent, pos, dst)) {
@@ -1670,18 +1616,18 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
       Enemy_ResetState(&p->e, 3, 0, 0);
     } else {
-      (p->e).unk_4a8->val = 1;
+      (p->e).pathNodePos->val = 1;
     }
     return;
   }
 
-  (p->e).unk_554 = 30;
-  (p->e).unk_558 = (p->e).unk_5b8;
-  (p->e).unk_550 = 0;
-  (p->e).unk_551 = 0;
-  (p->e).unk_552 = 12;
+  (p->e).pendingDelay = 30;
+  (p->e).pendingHandler = (p->e).handlerChase;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 12;
   {
-    Vec3* dst = (p->e).unk_4a8;
+    Vec3* dst = (p->e).pathNodePos;
     PathWalker* walker = &(p->e).pathWalker;
 
     dst->x = walker->node->x;
@@ -1697,7 +1643,7 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
       idx = m->unk_4;
     }
     if (m == NULL || idx < 0) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
       return;
     }
     tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
@@ -1707,7 +1653,7 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
   }
 
   // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
-  if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+  if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
     u8 angle;
 
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
@@ -1715,21 +1661,21 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
     }
     (p->e).unk_222 &= ~ENEMY222_UNK_2;
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
       Enemy_ResetState(&p->e, 0, 0, 12);
     } else {
-      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
       Enemy_ResetState(&p->e, 0, 0, 5);
       {
-        Vec3* dst = (p->e).unk_4a8;
+        Vec3* dst = (p->e).pathNodePos;
         PathWalker* walker = &(p->e).pathWalker;
 
         dst->x = walker->node->x;
         dst->z = walker->node->y;
         dst->y = TileHeightAt(dst);
       }
-      (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-      (p->e).unk_4a8->val = 0;
+      (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+      (p->e).pathNodePos->val = 0;
     }
     angle = (p->e).mover.angle;
     if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -1745,14 +1691,14 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
       if (i >= 4) {
         a = angle;
       }
-      (p->e).unk_540 = a;
-      (p->e).unk_548 = (p->e).handlerState;
-      (p->e).unk_54f = (p->e).state;
-      (p->e).unk_54c = (p->e).subState0;
-      (p->e).unk_54d = (p->e).subState1;
-      (p->e).unk_54e = (p->e).subState2;
-      (p->e).unk_541 = angle;
-      Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+      (p->e).lookAngle = a;
+      (p->e).savedHandlerState = (p->e).handlerState;
+      (p->e).savedState = (p->e).state;
+      (p->e).savedSubState0 = (p->e).subState0;
+      (p->e).savedSubState1 = (p->e).subState1;
+      (p->e).savedSubState2 = (p->e).subState2;
+      (p->e).lookBaseAngle = angle;
+      Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
@@ -1794,7 +1740,7 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
       }
     }
     if (!moved) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
   }
 #else
@@ -1811,14 +1757,14 @@ void FUN_080ff05c(Boku* p) {
 }
 
 void FUN_080ff06c(Boku* p) {
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, FUN_080fe1bc, ES_UNK_35);
   }
   if (q->timer_670 == 0) {
-    if ((p->e).unk_608(&p->e)) {
+    if ((p->e).tryDetectPlayer(&p->e)) {
       Boku_ClearUnk65c(q, 1);
       return;
     }
@@ -1827,11 +1773,11 @@ void FUN_080ff06c(Boku* p) {
       return;
     }
   }
-  speed = (p->e).unk_588(&p->e);
+  speed = (p->e).getMoveSpeed(&p->e);
   (p->e).animSpeedDiv = 6;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (!Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
-    if (FUN_080e5ed4(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 3, 0, 0);
       SET_FLAGS(q->unk_65c, 2);
       return;
@@ -1845,13 +1791,13 @@ void FUN_080ff06c(Boku* p) {
 }
 
 void FUN_080ff270(Boku* p) {
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+    Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
   }
   if (q->timer_670 == 0) {
-    if ((p->e).unk_608(&p->e)) {
+    if ((p->e).tryDetectPlayer(&p->e)) {
       Boku_ClearUnk65c(q, 1);
       return;
     }
@@ -1869,12 +1815,12 @@ void FUN_080ff270(Boku* p) {
 
 void FUN_080ff36c(Boku* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    Enemy_EnterState(&p->e, (p->e).unk_590, ES_UNK_2);
+    Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
   }
-  if (!(p->e).unk_608(&p->e) && !FUN_080f0a0c(&p->e)) {
+  if (!(p->e).tryDetectPlayer(&p->e) && !FUN_080f0a0c(&p->e)) {
     if ((p->e).subStateDone) {
       Enemy_ResetState(&p->e, 0, 0, 5);
-      Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+      Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
     } else {
       (p->e).subStateTimer++;
     }
@@ -1906,10 +1852,10 @@ void FUN_080ff45c(Boku* p) {
   (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad490;
 }
 
-// 198/208命令, 原典は経路を引けたかを 0/1 に落としてから unk_5c4 を呼ぶ (経路の inline の戻り値らしい) が, 引けなかったときの &flags3 は外側の r8 を使う, inline にすると r8 の持ち越しが消える
+// 198/208命令, 原典は経路を引けたかを 0/1 に落としてから onRouteFailed を呼ぶ (経路の inline の戻り値らしい) が, 引けなかったときの &flags3 は外側の r8 を使う, inline にすると r8 の持ち越しが消える
 NON_MATCH void FUN_080ff470(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
@@ -1925,12 +1871,12 @@ NON_MATCH void FUN_080ff470(Boku* p) {
     CLEAR_FLAGS(*flags3, ENEFLAG3_UNK_8);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
     Enemy_PlayAnim(&p->e, 0);
-    (p->e).unk_554 = q->unk_67e;
-    (p->e).unk_558 = (p->e).unk_5b8;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 12;
-    Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+    (p->e).pendingDelay = q->unk_67e;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
     Enemy_ResetState(&p->e, 3, 0, 0);
     agent = (p->e).navAgent;
     pos = &(p->e).mover.pos;
@@ -1940,7 +1886,7 @@ NON_MATCH void FUN_080ff470(Boku* p) {
       }
     } else {
       CLEAR_FLAGS(*flags3, ENEFLAG3_UNK_9);
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
   } else {
     (p->e).subStateTimer++;
@@ -1968,7 +1914,7 @@ void FUN_080ff6e8(Boku* p) {
       SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
     }
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_7);
-    (p->e).unk_24e = (p->e).unk_24c;
+    (p->e).chaseTimer = (p->e).chaseTimeMax;
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
       return;
     }
@@ -1987,39 +1933,39 @@ NON_MATCH void FUN_080ff7c0(Boku* p) {
     return;
   }
   Enemy_ResetState(&p->e, 3, 1, 0);
-  Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
     (p->e).animSpeedDiv = 2;
-    (p->e).unk_554 = 60;
-    (p->e).unk_558 = (p->e).unk_5a0;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 7;
+    (p->e).pendingDelay = 60;
+    (p->e).pendingHandler = (p->e).handlerMove;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
   } else {
     (p->e).animSpeedDiv = 2;
-    (p->e).unk_554 = 30;
-    (p->e).unk_558 = (p->e).unk_5b8;
-    (p->e).unk_550 = 0;
-    (p->e).unk_551 = 0;
-    (p->e).unk_552 = 12;
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
     SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-      (p->e).unk_24e += 300;
-      if ((p->e).unk_24e > (p->e).unk_24c) {
-        (p->e).unk_24e = (p->e).unk_24c;
+      (p->e).chaseTimer += 300;
+      if ((p->e).chaseTimer > (p->e).chaseTimeMax) {
+        (p->e).chaseTimer = (p->e).chaseTimeMax;
       }
     }
   }
   {
-    Vec3* dst = (p->e).unk_4a8;
+    Vec3* dst = (p->e).pathNodePos;
     PathWalker* walker = &(p->e).pathWalker;
 
     dst->x = walker->node->x;
     dst->z = walker->node->y;
     dst->y = TileHeightAt(dst);
   }
-  (p->e).unk_4a8->val = 0;
+  (p->e).pathNodePos->val = 0;
   {
     NavAgent* agent = (p->e).navAgent;
     WorldPos* pos = &(p->e).mover.pos;
@@ -2032,7 +1978,7 @@ NON_MATCH void FUN_080ff7c0(Boku* p) {
       }
     } else {
       Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_9);
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
   }
 #else
@@ -2054,25 +2000,25 @@ void Boku_InitHitboxes(Boku* p) {
 // 状態を初期化して待機アニメ 0 に戻し, 1コマ進める
 // 残差1命令 (152/153), 原典は p->sprite を r0 に読んでから r5 へ移すが, こちらは r5 へ直接読む, 手動送りは AuxSprite_AdvanceAnim で一致
 // aux のローカル化, 引数に直接書く形, 敵用の送り inline を挟む形は試済
-NON_MATCH void FUN_080ffad8(Boku* p) {
+NON_MATCH void Boku_OnReset(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
-  EnemyAuxSpriteData* aux;
+  Boku* q = (p->e).owner;
+  EnemyAuxSprite* aux;
 
   q->unk_65e = 0;
   q->unk_65c = 0;
   q->timer_670 = 0;
   q->unk_67c = 0;
-  ClearMemory((p->e).unk_4a8, sizeof(Vec3));
+  ClearMemory((p->e).pathNodePos, sizeof(Vec3));
   ClearMemory(&q->unk_668, sizeof(Vec3));
   ClearMemory(&q->unk_660, sizeof(Vec3));
   Enemy_ClearPendingState(&p->e, s_bokucom_c_08251fc0, 147);
-  FUN_080e6204(&p->e);
+  Enemy_StepTowardPathNode(&p->e);
   Enemy_PlayAnim(&p->e, 0);
-  aux = (EnemyAuxSpriteData*)(p->e).sprite;
-  AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+  aux = &(p->e).s->aux;
+  AuxSprite_AdvanceAnim(&aux->spr, &aux->anim);
 #else
-  INCFUNC("asm/func/FUN_080ffad8.inc");
+  INCFUNC("asm/func/Boku_OnReset.inc");
 #endif
 }
 
@@ -2099,7 +2045,7 @@ const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
 // 37/39命令, 原典は anim のポインタを r3 と r4 の2本に持ち, 10〜13 の側は r4 から cmdIdx を読み直す, 判定順の入れ替えは試済
 NON_MATCH s32 FUN_080ffcd0(Boku* p) {
 #ifdef NONMATCHING_C
-  AuxAnimState* anim = &((EnemyAuxSpriteData*)(p->e).sprite)->anim;
+  AuxAnimState* anim = &(p->e).s->aux.anim;
 
   if (anim->tick == 0) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
@@ -2117,7 +2063,7 @@ NON_MATCH s32 FUN_080ffcd0(Boku* p) {
 }
 
 void FUN_080ffd28(Boku* p) {
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (q->timer_670 != 0) {
     q->timer_670--;
@@ -2137,7 +2083,7 @@ void Boku_PickRandomPathNode(Boku* p) {
 }
 
 // 257/332命令, 原典はフレーム 0x14 で向きのベクトルや経路の塊をスタックに置く, 1回目の下書きで切り上げ
-NON_MATCH void FUN_080ffda8(Boku* p) {
+NON_MATCH void Boku_RouteAwayFromPlayer(Boku* p) {
 #ifdef NONMATCHING_C
   Mover* target = (p->e).playerMover;
   u8 angle = ArcTan2_8(target->pos.x - (p->e).mover.pos.x, target->pos.z - (p->e).mover.pos.z);
@@ -2166,7 +2112,7 @@ NON_MATCH void FUN_080ffda8(Boku* p) {
     Boku_PickRandomPathNode(p);
   }
   {
-    Vec3* dst = (p->e).unk_4a8;
+    Vec3* dst = (p->e).pathNodePos;
     PathWalker* walker = &(p->e).pathWalker;
 
     dst->x = walker->node->x;
@@ -2176,14 +2122,14 @@ NON_MATCH void FUN_080ffda8(Boku* p) {
   {
     NavAgent* agent = (p->e).navAgent;
     WorldPos* pos = &(p->e).mover.pos;
-    WorldPos* dst = (p->e).unk_4a8;
+    WorldPos* dst = (p->e).pathNodePos;
     s32 result;
 
     if (Map_IsPosInAgentIsland(agent, pos, dst) && (result = Map_TryFindNavRoute(agent, pos, dst)) != 0) {
       if (result != 2) {
         ClearMemory(&(p->e).mover.delta, 8);
       }
-      (p->e).unk_4a8->val = 1;
+      (p->e).pathNodePos->val = 1;
     } else {
       Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_9);
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
@@ -2191,14 +2137,14 @@ NON_MATCH void FUN_080ffda8(Boku* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080ffda8.inc");
+  INCFUNC("asm/func/Boku_RouteAwayFromPlayer.inc");
 #endif
 }
 
 // 83/84命令, 原典は ~2 を movs/rsbs の 32bit で作って r6 に持つが, こちらは 16bit の ldr 0xFFFD になる, 型付き引数の inline は試済 (悪化)
 NON_MATCH void FUN_081000a4(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   q->unk_67c = q->unk_67e;
   SET_FLAGS(q->unk_65c, 1);
@@ -2206,7 +2152,7 @@ NON_MATCH void FUN_081000a4(Boku* p) {
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
   Enemy_ResetState(&p->e, 0, 0, 15);
   Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_4b4[(p->e).unk_4b6 ^ 1], 0, 0);
-  FUN_080ffda8(p);
+  Boku_RouteAwayFromPlayer(p);
   q->unk_65c &= ~2;
 #else
   INCFUNC("asm/func/FUN_081000a4.inc");
@@ -2216,7 +2162,7 @@ NON_MATCH void FUN_081000a4(Boku* p) {
 // 44/48命令, 原典は unk_65b = 0 を両方の分岐に複写する, 分岐の向きの入れ替えは試済
 NON_MATCH void Boku_InitDelayedScript(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (VM_SeekToNamedArg('x')) {
     q->scriptID_658 = VM_GetPC() != NULL ? VM_GetValue() : 0;
@@ -2233,7 +2179,7 @@ NON_MATCH void Boku_InitDelayedScript(Boku* p) {
 
 // 予約してあるスクリプトを unk_65a フレーム後に実行する
 void Boku_UpdateDelayedScript(Boku* p) {
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (q->scriptID_658 == 0) {
     return;
@@ -2251,10 +2197,10 @@ void Boku_UpdateDelayedScript(Boku* p) {
 }
 
 // デカすぎて複数の関数を1つの関数として間違って扱っている可能性がある
-// 2556/2565命令の下書き, プレイヤーへ向かう部分は FUN_080fd08c と同じ形を3回展開, 原典は &flags3 をスタックに置き状態フィールドのアドレスも作り置く (フレーム 0x100, こちらは 0xC4)
-NON_MATCH bool32 FUN_08100228(Boku* p) {
+// 2556/2565命令の下書き, プレイヤーへ向かう部分は Boku_StateDamaged と同じ形を3回展開, 原典は &flags3 をスタックに置き状態フィールドのアドレスも作り置く (フレーム 0x100, こちらは 0xC4)
+NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
   s32 tile;
   s32 idx;
   bool8 found;
@@ -2274,10 +2220,10 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13);
     (p->e).unk_544 = 300;
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
-    (p->e).unk_4a8->val = 0;
+    (p->e).pathNodePos->val = 0;
     (p->e).playerMover = &gPlayerPtr[0]->mover;
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -2303,28 +2249,28 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       idx = 0;
     }
     if (haveTile) {
-      if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
         // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
         if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
           u8 angle;
 
           (p->e).unk_222 &= ~ENEMY222_UNK_2;
           if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-            Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
             Enemy_ResetState(&p->e, 0, 0, 12);
           } else {
-            Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
             Enemy_ResetState(&p->e, 0, 0, 5);
             {
-              Vec3* dst = (p->e).unk_4a8;
+              Vec3* dst = (p->e).pathNodePos;
               PathWalker* walker = &(p->e).pathWalker;
 
               dst->x = walker->node->x;
               dst->z = walker->node->y;
               dst->y = TileHeightAt(dst);
             }
-            (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-            (p->e).unk_4a8->val = 0;
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
           }
           angle = (p->e).mover.angle;
           if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -2340,14 +2286,14 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
             if (i >= 4) {
               a = angle;
             }
-            (p->e).unk_540 = a;
-            (p->e).unk_548 = (p->e).handlerState;
-            (p->e).unk_54f = (p->e).state;
-            (p->e).unk_54c = (p->e).subState0;
-            (p->e).unk_54d = (p->e).subState1;
-            (p->e).unk_54e = (p->e).subState2;
-            (p->e).unk_541 = angle;
-            Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
@@ -2391,7 +2337,7 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       }
     }
     if (!haveTile) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
     // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
     if (!found) {
@@ -2414,12 +2360,12 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       }
     }
     if (found) {
-      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
       Enemy_ResetState(&p->e, 0, 0, 7);
       (p->e).animSpeedDiv = 2;
       return TRUE;
     }
-    (p->e).unk_5c4(&p->e);
+    (p->e).onRouteFailed(&p->e);
     return FALSE;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_15)) {
@@ -2427,7 +2373,7 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
     return FALSE;
   }
   if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
-    Enemy_EnterState(&p->e, (p->e).unk_5cc, ES_DAMAGED);
+    Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
     return TRUE;
@@ -2453,7 +2399,7 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_7);
     SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -2479,28 +2425,28 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       idx = 0;
     }
     if (haveTile) {
-      if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
         // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
         if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
           u8 angle;
 
           (p->e).unk_222 &= ~ENEMY222_UNK_2;
           if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-            Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
             Enemy_ResetState(&p->e, 0, 0, 12);
           } else {
-            Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
             Enemy_ResetState(&p->e, 0, 0, 5);
             {
-              Vec3* dst = (p->e).unk_4a8;
+              Vec3* dst = (p->e).pathNodePos;
               PathWalker* walker = &(p->e).pathWalker;
 
               dst->x = walker->node->x;
               dst->z = walker->node->y;
               dst->y = TileHeightAt(dst);
             }
-            (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-            (p->e).unk_4a8->val = 0;
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
           }
           angle = (p->e).mover.angle;
           if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -2516,14 +2462,14 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
             if (i >= 4) {
               a = angle;
             }
-            (p->e).unk_540 = a;
-            (p->e).unk_548 = (p->e).handlerState;
-            (p->e).unk_54f = (p->e).state;
-            (p->e).unk_54c = (p->e).subState0;
-            (p->e).unk_54d = (p->e).subState1;
-            (p->e).unk_54e = (p->e).subState2;
-            (p->e).unk_541 = angle;
-            Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
@@ -2567,7 +2513,7 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       }
     }
     if (!haveTile) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
     // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
     if (!found) {
@@ -2590,11 +2536,11 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       }
     }
     if (found) {
-      Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
       Enemy_ResetState(&p->e, 0, 0, 12);
       return TRUE;
     }
-    (p->e).unk_5c4(&p->e);
+    (p->e).onRouteFailed(&p->e);
     return FALSE;
   } else {
     if ((p->e).unk_48d == 0 && ((p->e).unk_48c & 8)) {
@@ -2607,9 +2553,9 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
     }
     (p->e).playerMover = &gPlayerPtr[0]->mover;
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
-    (p->e).unk_4a8->val = 0;
+    (p->e).pathNodePos->val = 0;
     {
-      Vec3* dst = (p->e).unk_4a8;
+      Vec3* dst = (p->e).pathNodePos;
       PathWalker* walker = &(p->e).pathWalker;
 
       dst->x = walker->node->x;
@@ -2635,28 +2581,28 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       idx = 0;
     }
     if (haveTile) {
-      if (tile == (p->e).unk_256 || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
         // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
         if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
           u8 angle;
 
           (p->e).unk_222 &= ~ENEMY222_UNK_2;
           if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
-            Enemy_EnterState(&p->e, (p->e).unk_5b8, ES_UNK_26);
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
             Enemy_ResetState(&p->e, 0, 0, 12);
           } else {
-            Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
             Enemy_ResetState(&p->e, 0, 0, 5);
             {
-              Vec3* dst = (p->e).unk_4a8;
+              Vec3* dst = (p->e).pathNodePos;
               PathWalker* walker = &(p->e).pathWalker;
 
               dst->x = walker->node->x;
               dst->z = walker->node->y;
               dst->y = TileHeightAt(dst);
             }
-            (p->e).unk_4a8->y = TileHeightAt((p->e).unk_4a8);
-            (p->e).unk_4a8->val = 0;
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
           }
           angle = (p->e).mover.angle;
           if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
@@ -2672,14 +2618,14 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
             if (i >= 4) {
               a = angle;
             }
-            (p->e).unk_540 = a;
-            (p->e).unk_548 = (p->e).handlerState;
-            (p->e).unk_54f = (p->e).state;
-            (p->e).unk_54c = (p->e).subState0;
-            (p->e).unk_54d = (p->e).subState1;
-            (p->e).unk_54e = (p->e).subState2;
-            (p->e).unk_541 = angle;
-            Enemy_EnterState(&p->e, (p->e).unk_5bc, ES_UNK_27);
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
@@ -2723,7 +2669,7 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       }
     }
     if (!haveTile) {
-      (p->e).unk_5c4(&p->e);
+      (p->e).onRouteFailed(&p->e);
     }
     // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
     if (!found) {
@@ -2746,35 +2692,35 @@ NON_MATCH bool32 FUN_08100228(Boku* p) {
       }
     }
     if (found) {
-      Enemy_EnterState(&p->e, (p->e).unk_5a0, ES_UNK_1);
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
       Enemy_ResetState(&p->e, 0, 0, 7);
       (p->e).animSpeedDiv = 3;
       return TRUE;
     }
-    (p->e).unk_5c4(&p->e);
+    (p->e).onRouteFailed(&p->e);
     return FALSE;
   }
 #else
-  INCFUNC("asm/func/FUN_08100228.inc");
+  INCFUNC("asm/func/Boku_OnDamaged.inc");
 #endif
 }
 
 // 183/198命令, 1回目の下書きで切り上げ, 経路を引く塊は mimic.c の Enemy_TryRouteTo と同じ形
 NON_MATCH bool32 FUN_081019e0(Boku* p) {
 #ifdef NONMATCHING_C
-  Boku* q = (p->e).unk_1cc;
+  Boku* q = (p->e).owner;
 
   if (!Enemy_IsDead(&p->e) && (q->unk_65c & 1) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     if (q->unk_67c == 0) {
       CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
       Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
       Enemy_PlayAnim(&p->e, 0);
-      (p->e).unk_554 = 30;
-      (p->e).unk_558 = (p->e).unk_5b8;
-      (p->e).unk_550 = 0;
-      (p->e).unk_551 = 0;
-      (p->e).unk_552 = 12;
-      Enemy_EnterState(&p->e, FUN_080e6794, ES_UNK_14);
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).handlerChase;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 12;
+      Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
       Enemy_ResetState(&p->e, 3, 1, 0);
       Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
       {
@@ -2823,29 +2769,29 @@ bool32 FUN_08101bc0(Boku* p) {
   return TRUE;
 }
 
-// FUN_080edebc から呼ばれる
-s32 EnemyBoku_Update(Boku* p) {
-  FUN_080f06b0(&p->e);
+// EnemyManager_UpdateEnemies から呼ばれる
+s32 Boku_Update(Boku* p) {
+  Enemy_Update(&p->e);
   return 0;
 }
 
-s32 EnemyBoku_Destroy(Boku* p) {
+s32 Boku_Destroy(Boku* p) {
   if ((p->e).spriteKind == 0) {
-    AuxSprite_Remove((AuxSprite*)(p->e).sprite);
+    AuxSprite_Remove(&(p->e).s->aux.spr);
   } else {
-    MainSprite_Remove(&(p->e).sprite->s);
+    MainSprite_Remove(&(p->e).s->main.spr);
   }
-  Free((p->e).sprite);
+  Free((p->e).s);
   if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_8)) {
     MsgQueue_Unregister(&(p->e).mq);
   }
-  if (!(p->e).unk_44c) {
+  if (!(p->e).shadowRemoved) {
     ParticleShadow_Remove(&(p->e).shadow);
-    (p->e).unk_44c = 1;
+    (p->e).shadowRemoved = 1;
   }
-  if (!(p->e).unk_44d) {
-    Eff082473e0Emitter_Destroy(&(p->e).emitter);
-    (p->e).unk_44d = 1;
+  if (!(p->e).emitterRemoved) {
+    ElementalCondEmitter_Destroy(&(p->e).emitter);
+    (p->e).emitterRemoved = 1;
   }
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
@@ -2855,12 +2801,12 @@ s32 EnemyBoku_Destroy(Boku* p) {
   }
   Mover_Unlink(&(p->e).mover);
   Hitbox_Unregister(&(p->e).hurtbox);
-  FUN_080ec6fc(&p->e);
+  Enemy_Unregister(&p->e);
   return 0;
 }
 
 // 1603/1773命令, Mimic_Init と同じ残差 (原典はフレーム 0x1B4 に Enemy のフィールドのアドレスを作り置く, 敵共通の初期化 inline), Curoro_Init の下書きを Boku 向けに直しただけ
-NON_MATCH s32 EnemyBoku_Init(Boku* p) {
+NON_MATCH s32 Boku_Init(Boku* p) {
 #ifdef NONMATCHING_C
   Vec3 pos;
   s32 id;
@@ -2871,37 +2817,37 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   s32 i;
   u8 kind;
 
-  FUN_080e37e8(&p->e, p, 0);
+  Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
   Boku_InitAnims(p);
   Boku_InitDelayedScript(p);
   if ((p->e).spriteKind == 0) {
-    EnemyAuxSpriteData* aux;
+    EnemyAuxSprite* aux;
     u8 k;
 
-    (p->e).sprite = Malloc(sizeof(EnemyAuxSpriteData));
-    ClearMemory((p->e).sprite, sizeof(EnemyAuxSpriteData));
-    aux = (EnemyAuxSpriteData*)(p->e).sprite;
+    (p->e).s = Malloc(sizeof(EnemyAuxSprite));
+    ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
+    aux = &(p->e).s->aux;
     Video_GetAuxSprite(&aux->gfx, SPRITE_BOKU);
-    AuxSprite_Add(&aux->sprite, &aux->gfx, 0);
+    AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_BOKU);
     k = (p->e).kind;
     if (k == ENEK_CURORO || k == ENEK_GHOST) {
-      aux->sprite.priority = 1;
+      aux->spr.priority = 1;
     }
     (p->e).facing = 0;
   } else {
-    EnemySpriteData* spr;
+    EnemyMainSprite* spr;
     MainSpriteGfxFile* f;
     Vec3 origin;
 
-    (p->e).sprite = Malloc(sizeof(EnemySpriteData));
-    ClearMemory((p->e).sprite, sizeof(EnemySpriteData));
-    spr = (p->e).sprite;
+    (p->e).s = Malloc(sizeof(EnemySprite));
+    ClearMemory((p->e).s, sizeof(EnemySprite));
+    spr = &(p->e).s->main;
     Vec3_Clear(&origin);
     f = GetFile(DIR_MAIN_SPRITE, SPRITE_BOKU);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
-    MainSprite_Add(&spr->s, &spr->gfx, 0, 0, 2, 2, 60, &origin);
+    MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
     (p->e).playingAnim = 0xFF;
   }
 
@@ -2931,7 +2877,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     sel = (p->e).unk_4b6;
     (p->e).unk_4b4[sel ^ 1] = VM_GetPC() != NULL ? VM_GetValue() : (p->e).unk_250;
     Map_GetPathNodePos(&pos, (p->e).unk_250, (p->e).unk_252);
-    (p->e).unk_256 = GetCollisionTileIdx(&pos);
+    (p->e).tileIdx = GetCollisionTileIdx(&pos);
     pos.y = TileHeightAt(&pos);
     (p->e).floorY = pos.y;
     onPath = TRUE;
@@ -2957,19 +2903,19 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   if (VM_SeekToNamedArg('a')) {
     for (i = 0; i < 4; i++) {
       (p->e).atkPower[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
-      (p->e).atkUnk40[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
+      (p->e).atkKnockback[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
       (p->e).atkAttrs[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
-      (p->e).atkInvincibleTime[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
+      (p->e).atkIframes[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
     }
   }
   if (!VM_SeekToNamedArg('l')) {
     hpParam3 = 0;
     hpParam4 = 0;
-    (p->e).unk_24c = 0;
+    (p->e).chaseTimeMax = 0;
   } else {
     hpParam3 = VM_GetPC() != NULL ? VM_GetValue() : 300;
     hpParam4 = VM_GetPC() != NULL ? VM_GetValue() : 300;
-    (p->e).unk_24c = VM_GetPC() != NULL ? VM_GetValue() : 300;
+    (p->e).chaseTimeMax = VM_GetPC() != NULL ? VM_GetValue() : 300;
   }
   if (VM_GetNamedArgValue('b', 0) != 0) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_9);
@@ -2985,7 +2931,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     (p->e).attrs = VM_GetPC() != NULL ? VM_GetValue() : 0;
     (p->e).weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
   }
-  FUN_080e48e8(&p->e, (p->e).maxHp, hpParam3, hpParam4);
+  Enemy_InitHpAndState(&p->e, (p->e).maxHp, hpParam3, hpParam4);
   Enemy_SetRanges(&p->e, 0, range0, range2, range1, range3);
   if (VM_SeekToNamedArg('X')) {
     (p->e).exp = VM_GetPC() != NULL ? VM_GetValue() : 0;
@@ -3001,13 +2947,13 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
-    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, FUN_080f48ac);
+    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
-  Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? (AuxSprite*)(p->e).sprite : NULL);
+  Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
   if ((p->e).kind == ENEK_DOG) {
-    Mover_SetCollision(&(p->e).mover, &(p->e).moverTile, 60, 60);
+    Mover_SetCollision(&(p->e).mover, &(p->e).tile, 60, 60);
   } else {
-    Mover_SetCollision(&(p->e).mover, &(p->e).moverTile, 64, 64);
+    Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
   if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
@@ -3033,13 +2979,13 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     p->unk_672 = VM_GetPC() != NULL ? VM_GetValue() : 120;
   }
   (p->e).variant = VM_GetNamedArgValue('C', 0);
-  (p->e).unk_47a = 306;
+  (p->e).plttBase = 306;
   (p->e).unk_47c = 306;
   (p->e).unk_47e = (p->e).variant + 306;
   if ((p->e).spriteKind == 0) {
-    Video_SetAuxSpritePltt(&((EnemyAuxSpriteData*)(p->e).sprite)->gfx, (p->e).unk_47a + (p->e).variant);
+    Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);
   } else {
-    (p->e).sprite->s.pltt = &gObjPlttData[((p->e).unk_47a + (p->e).variant) * 16];
+    (p->e).s->main.spr.pltt = &gObjPlttData[((p->e).plttBase + (p->e).variant) * 16];
   }
   if ((p->e).spriteKind == 1) {
     s16 n;
@@ -3049,66 +2995,66 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     } else {
       n = Enemy_CountByKind((p->e).kind) + 1;
     }
-    (p->e).sprite->s.plttID = n + 220;
+    (p->e).s->main.spr.plttID = n + 220;
   }
 
-  (p->e).unk_476 = (p->e).unk_47a + 4;
-  (p->e).unk_478 = (p->e).unk_47a;
+  (p->e).unk_476 = (p->e).plttBase + 4;
+  (p->e).unk_478 = (p->e).plttBase;
   Boku_InitHitboxes(p);
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
   (p->e).navAgent = &p->navAgent;
-  (p->e).unk_4a8 = &p->unk_6a4;
-  (p->e).unk_580 = (EnemyHandler)FUN_08101bc0;
-  (p->e).unk_588 = (void*)FUN_080ffcd0;
-  (p->e).unk_590 = FUN_080fba64;
-  (p->e).unk_5a0 = FUN_080fba28;
-  (p->e).unk_5a4 = FUN_080fba40;
+  (p->e).pathNodePos = &p->pathNodePos;
+  (p->e).handlerFrame = (EnemyHandler)FUN_08101bc0;
+  (p->e).getMoveSpeed = (void*)FUN_080ffcd0;
+  (p->e).handlerTurn = FUN_080fba64;
+  (p->e).handlerMove = FUN_080fba28;
+  (p->e).handlerWait = FUN_080fba40;
   (p->e).unk_5c0 = FUN_080fc0b8;
-  (p->e).unk_5c4 = (EnemyHandler)FUN_080f62b0;
-  (p->e).unk_5cc = FUN_080fd08c;
-  (p->e).unk_5d0 = FUN_080fe274;
+  (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
+  (p->e).handlerDamaged = Boku_StateDamaged;
+  (p->e).handlerDying = Boku_StateDying;
   (p->e).unk_5d4 = FUN_080f44f4;
   (p->e).unk_5dc = FUN_080f410c;
   (p->e).unk_5c8 = FUN_080fc548;
   (p->e).unk_584 = FUN_080fc1e4;
   (p->e).unk_604 = FUN_080f62ac;
-  (p->e).unk_608 = FUN_080f0430;
+  (p->e).tryDetectPlayer = FUN_080f0430;
   (p->e).unk_21d = 1;
-  (p->e).unk_60c = (void*)gEnemyDefaultMsgHandlers;
+  (p->e).msgHandlers = (void*)gEnemyDefaultMsgHandlers;
   (p->e).unk_5f0 = FUN_080e73c8;
   (p->e).unk_5e4 = NULL;
-  (p->e).unk_5f8 = NULL;
+  (p->e).onReset = NULL;
   (p->e).unk_5fc = NULL;
   (p->e).unk_600 = NULL;
   (p->e).unk_614 = NULL;
   (p->e).unk_618 = FUN_080f0320;
-  (p->e).unk_5bc = Enemy_080eff14;
+  (p->e).handlerLookAround = Enemy_080eff14;
   (p->e).unk_5e8 = FUN_080e72b0;
   (p->e).unk_5e0 = FUN_080fc4ec;
-  (p->e).unk_5ec = FUN_080f47c8;
-  (p->e).unk_5d8 = FUN_080f54e4;
+  (p->e).unk_5ec = Enemy_StateBlownAway;
+  (p->e).unk_5d8 = Enemy_StateFallDeath;
   (p->e).unk_5a8 = NULL;
   (p->e).unk_624 = FUN_080f6e64;
-  (p->e).unk_58c = FUN_080f64f0;
+  (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
-  (p->e).unk_5b8 = FUN_080f624c;
-  (p->e).unk_594 = FUN_080f56ec;
+  (p->e).handlerChase = FUN_080f624c;
+  (p->e).handlerSleep = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;
   (p->e).unk_543 = 40;
   Map_InitNavAgent(&p->navAgent, &(p->e).mover.pos);
-  FUN_080e6204(&p->e);
-  (p->e).unk_5f8 = (EnemyHandler)FUN_080ffad8;
+  Enemy_StepTowardPathNode(&p->e);
+  (p->e).onReset = (EnemyHandler)Boku_OnReset;
   (p->e).unk_5fc = FUN_080ffc28;
-  (p->e).unk_5ac = (EnemyHandler)FUN_080ff6e8;
+  (p->e).onAttackRequest = (EnemyHandler)FUN_080ff6e8;
   (p->e).unk_5b0 = (EnemyHandler)FUN_080ff7c0;
-  (p->e).unk_58c = (void*)FUN_08100228;
+  (p->e).onDamaged = (void*)Boku_OnDamaged;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22 | ENEFLAG_UNK_24);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_27);
   (p->e).hurtbox.flags &= ~HBFLAG_UNK_0;
   (p->e).kind = ENEK_BOKU;
-  Enemy_Init_080e5dd4(&p->e);
+  Enemy_InitShadowAndEmitter(&p->e);
 
   (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
   if (VM_SeekToNamedArg('G')) {
@@ -3118,7 +3064,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
       *arg++ = VM_GetPC() != NULL ? VM_GetValue() : 0;
     }
   }
-  (p->e).unk_19a = VM_GetNamedArgValue('D', 0);
+  (p->e).defeatScriptID = VM_GetNamedArgValue('D', 0);
   {
     s32 u = VM_GetNamedArgValue('u', 0);
 
@@ -3133,7 +3079,7 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_2)) {
     Enemy_ResetState(&p->e, 0, 0, 0);
-    Enemy_EnterState(&p->e, (p->e).unk_5a4, ES_UNK_0);
+    Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
   } else {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_13);
   }
@@ -3146,15 +3092,15 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
     (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
-    FUN_080f07d0(&p->e, NULL);
+    Enemy_Suspend(&p->e, NULL);
   }
   Enemy_PlayAnim(&p->e, 0);
   if ((p->e).spriteKind == 0) {
-    EnemyAuxSpriteData* aux = (EnemyAuxSpriteData*)(p->e).sprite;
+    EnemyAuxSprite* aux = &(p->e).s->aux;
 
-    AuxSprite_AdvanceAnim(&aux->sprite, &aux->anim);
+    AuxSprite_AdvanceAnim(&aux->spr, &aux->anim);
   } else {
-    MainSprite_AdvanceAnim(&(p->e).sprite->s, &(p->e).sprite->gfx);
+    MainSprite_AdvanceAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx);
   }
   (p->e).hitTargetID = 0;
   kind = (p->e).kind;
@@ -3166,34 +3112,34 @@ NON_MATCH s32 EnemyBoku_Init(Boku* p) {
   FUN_080ff45c(p);
   FUN_080ff05c(p);
   FUN_080ff668(p);
-  (p->e).unk_572 = (p->e).flags5;
-  (p->e).unk_570 = (p->e).heightAboveFloor;
-  (p->e).unk_55c = (p->e).flags;
-  (p->e).unk_560 = (p->e).flags2;
-  (p->e).unk_564 = (p->e).mover.angle;
-  (p->e).unk_565 = (p->e).subState0;
-  (p->e).unk_566 = (p->e).subState1;
-  (p->e).unk_567 = (p->e).subState2;
-  (p->e).unk_568 = (p->e).handlerState;
-  (p->e).unk_56c = (p->e).state;
+  (p->e).initFlags5 = (p->e).flags5;
+  (p->e).initHeightAboveFloor = (p->e).heightAboveFloor;
+  (p->e).initFlags = (p->e).flags;
+  (p->e).initFlags2 = (p->e).flags2;
+  (p->e).initAngle = (p->e).mover.angle;
+  (p->e).initSubState0 = (p->e).subState0;
+  (p->e).initSubState1 = (p->e).subState1;
+  (p->e).initSubState2 = (p->e).subState2;
+  (p->e).initHandlerState = (p->e).handlerState;
+  (p->e).initState = (p->e).state;
   (p->e).handlerMsg = (EnemyMsgHandler)Enemy_DispatchMsg;
-  (p->e).handlerUpdate = (EnemyHandler)EnemyBoku_Update;
-  (p->e).handlerDestroy = (EnemyHandler)EnemyBoku_Destroy;
-  if (!Enemy_Init_080ec640(&p->e)) {
+  (p->e).handlerUpdate = (EnemyHandler)Boku_Update;
+  (p->e).handlerDestroy = (EnemyHandler)Boku_Destroy;
+  if (!Enemy_Register(&p->e)) {
     return -1;
   }
   return 0;
 #else
-  INCFUNC("asm/func/EnemyBoku_Init.inc");
+  INCFUNC("asm/func/Boku_Init.inc");
 #endif
 }
 
-void EnemyBoku_Create(void) {
+void Boku_Create(void) {
   Boku* p = Malloc(sizeof(Boku));
   if (p != NULL) {
     ClearMemory(p, sizeof(Boku));
-    if (EnemyBoku_Init(p) < 0) {
-      EnemyBoku_Destroy(p);
+    if (Boku_Init(p) < 0) {
+      Boku_Destroy(p);
       Free(p);
     }
   }

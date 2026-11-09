@@ -1,11 +1,11 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _081DE97A
 	adds r0, r4, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DE9CE
@@ -29,7 +29,7 @@ _081DE992:
 	ldr r2, _081DE9A4 @ =FUN_081de9d8
 	adds r0, r4, #0
 	movs r1, #9
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	movs r0, #0
 	b _081DE9CE
 	.align 2, 0
@@ -53,7 +53,7 @@ _081DE9BE:
 	ldr r2, _081DE9D4 @ =FUN_081de360
 	adds r0, r4, #0
 	movs r1, #4
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	movs r0, #0
 _081DE9CE:
 	pop {r4}

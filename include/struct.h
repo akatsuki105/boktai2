@@ -24,12 +24,12 @@ typedef struct {
   u16 angleXZRand;       // 0x16
   u16 decayStartY;       // 0x18
   u16 decayStartYRand;   // 0x1A
-  u16 unk_1c;            // 0x1C
-  u16 unk_1e;            // 0x1E
+  u16 decayY;            // 0x1C, Elem.decayY に当たる値だが Entity08015584_Spawn は読まない
+  u16 decayYRand;        // 0x1E, decayY に加える乱数の幅, 同上
   u16 decayStartXZ;      // 0x20
   u16 decayStartXZRand;  // 0x22
-  u16 unk_24;            // 0x24
-  u16 unk_26;            // 0x26
+  u16 decayXZ;           // 0x24, Elem.decayXZ に当たる値だが Entity08015584_Spawn は読まない
+  u16 decayXZRand;       // 0x26, decayXZ に加える乱数の幅, 同上
 } ParticleSpawnParam;
 static_assert(sizeof(ParticleSpawnParam) == 40);
 

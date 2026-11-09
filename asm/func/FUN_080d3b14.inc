@@ -302,7 +302,7 @@ _080D3D5A:
 	str r1, [sp, #4]
 	add r1, sp, #0x20
 	movs r3, #1
-	bl FUN_080dbd08
+	bl DustManager_SpawnNoPause
 _080D3DA6:
 	movs r2, #0xba
 	lsls r2, r2, #2

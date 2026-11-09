@@ -91,7 +91,7 @@ _080F6CD8:
 	adds r0, r4, r2
 	strb r3, [r0]
 	adds r0, r4, #0
-	bl FUN_080e499c
+	bl Enemy_ClearDamage
 	movs r0, #0x14
 	rsbs r0, r0, #0
 	mov r3, r8
@@ -127,7 +127,7 @@ _080F6CD8:
 	bl Enemy_SetEmote
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_080e64b4
+	bl Enemy_FadeParticles
 	ldr r1, _080F6DBC @ =0x00000464
 	adds r0, r4, r1
 	strh r5, [r0]

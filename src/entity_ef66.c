@@ -258,7 +258,8 @@ NON_MATCH s32 EntityEF66_Init(EntityEF66* p, u32 id) {
 #endif
 }
 
-EntityEF66* EntityEF66_Create(u32 id) {
+// 0xEF66
+EntityEF66* EntityEF66_Create(u32 id, u32 _) {
   if (gEntityEF66 == NULL) {
     EntityEF66* p = CreateEntity(ENTITY_UNK_9, sizeof(EntityEF66));
 

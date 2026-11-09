@@ -299,6 +299,19 @@ void* DecompTargetFunc(void) {
     pointing at `asm/func/NEW_NAME.inc` because `rename_with_ghidra.sh` moves
     the file too.
 
+    **Before leaving step 7, list what is still unnamed in the code you just
+    wrote**, and go through it name by name:
+
+    ```sh
+    grep -oE '\b(unk_[0-9a-f]+|FUN_[0-9a-f]+|PTR_ARRAY_[0-9a-f]+|u(8|16|32)_ARRAY_[0-9a-f]+)\b' <the function body> | sort -u
+    ```
+
+    That covers the members of the shared base type (`Enemy`, `Boss`, ...) as
+    well as the owner's own struct — the base type is where most of the
+    accesses land, and leaving it alone is the usual way this step gets skipped.
+    Each hit either gets a name now or stays as it is because you cannot give
+    it one sentence of evidence; there is no third option of "later".
+
 8. **Commit and push** — only with `-p`. Without it, stop after step 7 and leave
     the working tree dirty for the user.
 

@@ -93,7 +93,7 @@ _080419CC:
 	mov r8, r6
 _080419D0:
 	movs r5, #0
-	bl FUN_0823d5f0
+	bl Player_CanTalk
 	cmp r0, #0
 	beq _08041A3E
 	ldr r0, _08041A78 @ =0x000F4240

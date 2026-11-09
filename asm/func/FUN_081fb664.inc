@@ -310,7 +310,7 @@ _081FB8BC:
 	add r0, sp, #0xc
 	mov r1, r8
 	adds r2, r7, #0
-	bl Entity081ea820_Throw
+	bl Octorok_Throw
 	ldr r0, [r5, #8]
 	adds r0, #1
 	str r0, [r5, #8]
@@ -538,7 +538,7 @@ _081FBA86:
 	mov r0, r8
 	mov r1, sl
 	adds r2, r7, #0
-	bl Entity081ea820_Throw
+	bl Octorok_Throw
 	ldr r0, [r5, #8]
 	adds r0, #1
 	str r0, [r5, #8]

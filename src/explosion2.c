@@ -41,7 +41,7 @@ NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); 
 
 // 通信中でない通常の判定のとき、9〜12フレームごとに1回だけ効果音を鳴らす
 void FUN_080dd6f4(AttackBox* box) {
-  if (!(gGameFlags & FLAG030047A4_LINK) && box->unk_60 == 0) {
+  if (!(gGameFlags & GAMEFLAG_LINK) && box->unk_60 == 0) {
     if (Mod(box->timer, 9 + (Random() & 3)) == 0) {
       PlaySound_082406e0(SONG_825);
     }
@@ -49,18 +49,16 @@ void FUN_080dd6f4(AttackBox* box) {
 }
 
 // 借りた枠に 0x100 角の判定を作って攻撃値を入れる
-void AttackBox_Setup(AttackBox* box, s32 power, s32 knockback, s32 invincibleTime, s32 ignoreMask) {
+void AttackBox_Setup(AttackBox* box, s32 power, s32 knockback, s32 iframes, s32 ignoreMask) {
   HitboxData* hitbox = &box->hitbox;
-  Vec3 halfSize;
-  Vec3 offset;
-
+  Vec3 halfSize, offset;
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
   if (box->unk_60 == 0) {
-    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, invincibleTime);  // 0x40 は武器以外の攻撃
+    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);  // 0x40 は武器以外の攻撃
   } else {
-    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_18, invincibleTime);
+    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_18, iframes);
   }
 
   hitbox->id = 0x3246;
@@ -113,7 +111,7 @@ AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) {
 }
 
 // 持ち主のいない判定を1つ出す, マネージャが無ければ作る
-s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s32 invincibleTime, s32 ignoreMask) {
+s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s32 iframes, s32 ignoreMask) {
   if (pos != NULL) {
     AttackBoxManager* mgr = gAttackBoxManager;
     AttackBox* box;
@@ -132,7 +130,7 @@ s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s3
       box->timer = 0;
       box->kind = kind;
       box->unk_60 = unk_60;
-      AttackBox_Setup(box, power, knockback, invincibleTime, ignoreMask);
+      AttackBox_Setup(box, power, knockback, iframes, ignoreMask);
     }
   }
 
@@ -146,7 +144,7 @@ void Cmd_HugeExplosion(void) {
   AttackBox* box;
   s32 power;
   s32 knockback;
-  s32 invincibleTime;
+  s32 iframes;
   s32 ignoreMask;
 
   if (mgr == NULL) {
@@ -170,12 +168,12 @@ void Cmd_HugeExplosion(void) {
   if (VM_SeekToNamedArg('P')) {
     power = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
     knockback = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
-    invincibleTime = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
+    iframes = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
     ignoreMask = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
   } else {
     power = 0;
     knockback = 0;
-    invincibleTime = 0;
+    iframes = 0;
     ignoreMask = 0;
   }
 
@@ -183,17 +181,17 @@ void Cmd_HugeExplosion(void) {
   box->state = 1;
   box->timer = 0;
   box->kind = 2;
-  AttackBox_Setup(box, power, knockback, invincibleTime, ignoreMask);
+  AttackBox_Setup(box, power, knockback, iframes, ignoreMask);
 }
-
-void (*const sAttackBoxUpdates[3])(AttackBoxManager*, AttackBox*) = {
-    AttackBox_Idle,
-    AttackBox_Update,
-    AttackBox_Free,
-};  // 0x085AD348
 
 // 使用中の枠について state ごとの更新関数を呼ぶ
 s32 AttackBoxManager_Update(AttackBoxManager* p) {
+  static void (*const sAttackBoxUpdates[3])(AttackBoxManager*, AttackBox*) = {
+      AttackBox_Idle,
+      AttackBox_Update,
+      AttackBox_Free,
+  };  // 0x085AD348
+
   if (p->activeMask != 0) {
     s32 i;
     for (i = 0; i < 5; i++) {

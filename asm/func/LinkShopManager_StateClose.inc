@@ -51,7 +51,7 @@ _081E204E:
 	movs r1, #4
 	movs r2, #4
 	movs r3, #4
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 _081E2072:
 	ldrh r0, [r4]
 	cmp r0, #0xb4

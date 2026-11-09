@@ -15,11 +15,11 @@
 	strb r0, [r1]
 _081DF036:
 	adds r0, r4, #0
-	bl FUN_081ddab4
+	bl LinkSession_CheckRecv
 	cmp r0, #0
 	bge _081DF050
 	adds r0, r4, #0
-	bl FUN_081ddbdc
+	bl LinkSession_Disconnect
 	movs r0, #1
 	rsbs r0, r0, #0
 	b _081DF0F0
@@ -83,7 +83,7 @@ _081DF0A6:
 	ldr r2, _081DF0BC @ =FUN_081df0f8
 	adds r0, r4, #0
 	movs r1, #0x11
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	b _081DF0EE
 	.align 2, 0
 _081DF0BC: .4byte FUN_081df0f8
@@ -91,7 +91,7 @@ _081DF0C0:
 	ldr r2, _081DF0CC @ =FUN_081df3f0
 	adds r0, r4, #0
 	movs r1, #0x14
-	bl Entity9A9F_SetState
+	bl LinkSession_SetState
 	b _081DF0EE
 	.align 2, 0
 _081DF0CC: .4byte FUN_081df3f0

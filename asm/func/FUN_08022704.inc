@@ -48,7 +48,7 @@ _08022744:
 	ldrsh r0, [r4, r5]
 	str r0, [sp, #8]
 	adds r0, r6, #0
-	bl FUN_0823ce68
+	bl StartBgObjPlttFade
 	add sp, #0xc
 	pop {r4, r5, r6, r7}
 	pop {r0}

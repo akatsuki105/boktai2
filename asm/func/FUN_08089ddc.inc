@@ -68,7 +68,7 @@ _08089E22:
 	movs r1, #8
 	movs r2, #1
 	movs r3, #1
-	bl FUN_08015a90
+	bl Entity08015584_SpawnRadial
 	adds r0, r4, #0
 	adds r0, #0x4c
 	ldrh r0, [r0]

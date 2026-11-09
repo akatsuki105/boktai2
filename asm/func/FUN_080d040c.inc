@@ -155,7 +155,7 @@ _080D0548:
 	strb r0, [r5]
 _080D054C:
 	ldr r0, [r4, #0x18]
-	bl FUN_081df7e8
+	bl LinkSession_AddDeath
 	ldr r1, _080D0598 @ =0x0000045A
 	adds r0, r4, r1
 	ldrh r1, [r0]
@@ -168,7 +168,7 @@ _080D054C:
 	cmp r0, #0
 	beq _080D059C
 	movs r0, #0
-	bl FUN_081df7bc
+	bl LinkSession_AddKill
 	b _080D05CA
 	.align 2, 0
 _080D0570: .4byte 0x000002E6
@@ -188,7 +188,7 @@ _080D059C:
 	cmp r0, #0
 	beq _080D05AC
 	movs r0, #1
-	bl FUN_081df7bc
+	bl LinkSession_AddKill
 	b _080D05CA
 _080D05AC:
 	movs r0, #4
@@ -196,7 +196,7 @@ _080D05AC:
 	cmp r0, #0
 	beq _080D05BC
 	movs r0, #2
-	bl FUN_081df7bc
+	bl LinkSession_AddKill
 	b _080D05CA
 _080D05BC:
 	movs r0, #8
@@ -204,7 +204,7 @@ _080D05BC:
 	cmp r0, #0
 	beq _080D05CA
 	movs r0, #3
-	bl FUN_081df7bc
+	bl LinkSession_AddKill
 _080D05CA:
 	ldr r2, _080D05E4 @ =0x0000045A
 	adds r0, r4, r2

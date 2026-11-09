@@ -201,12 +201,12 @@
 #define SONG_196 196
 #define SONG_197 197
 #define SONG_198 198
-#define SONG_199 199
-#define SONG_200 200
-#define SE_FSTEP_M_0 201  // 男性キャラの足音 (SE_FSTEP_M_1 と交互に鳴らす)
-#define SE_FSTEP_M_1 202  // 男性キャラの足音 (SE_FSTEP_M_0 と交互に鳴らす)
-#define SONG_203 203
-#define SONG_204 204
+#define SE_FSTEP_MINI_0 199  // 小人, Cマウス での足音
+#define SE_FSTEP_MINI_1 200
+#define SE_FSTEP_M_0 201        // 男性キャラの足音 (SE_FSTEP_M_1 と交互に鳴らす)
+#define SE_FSTEP_M_1 202        // 男性キャラの足音 (SE_FSTEP_M_0 と交互に鳴らす)
+#define SE_PALM 203             // 手をかざすときのSE (太陽チャージ, 太陽スタンド)
+#define SE_GUN_SPREAD_204 204   // ガンデルソルの照射SE (今作ではガンデルソルの照射アクションがないので、前作のデータが残ってるだけっぽい, ガンデルヘルは SE_GUN_SPREAD を使う)
 #define SE_GUN_FIRE 205         // 太陽銃を撃った時のSE
 #define SE_WOOD_DOOR_OPEN 206   // 木のドアが開く音
 #define SE_WOOD_DOOR_CLOSE 207  // 木のドアが閉まる音
@@ -221,7 +221,7 @@
 #define NOISE_SOLAR_CHARGE 216  // 太陽エネルギーチャージSE(無限ループ)
 #define SONG_217 217
 #define SONG_218 218
-#define SONG_219 219
+#define SE_WALL_SLIDE 219   // 壁に張り付きながら横移動するときのSE
 #define SE_CURSOR_MOVE 220  // カーソルの汎用SE (インベントリでカーソル移動, 選択肢でのカーソル移動など)
 #define SE_SELECT 221       // メニュー画面でアイテムとかを選んだ時の音
 #define SE_CANCEL 222       // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
@@ -235,8 +235,8 @@
 #define SE_DAMAGE 230           // プレイヤーがダメージ食らった時の音
 #define VO_DJANGO_DEATH 231
 #define CRY_BAT_DEATH 232
-#define SONG_233 233
-#define SONG_234 234
+#define CRY_BAT_233 233
+#define CRY_BAT_234 234
 #define SE_WALL_KNOCK_FRAGILE 235  // 壁叩きSE(ダイナマイトで壊せる傷んだ壁)
 #define SE_WALL_KNOCK 236          // 壁叩きSE(通常)
 #define CRY_BOKU_STUN 237          // ボク系の敵が気絶(麻痺などで頭に星が出ている状態)になったときの鳴き声
@@ -248,7 +248,7 @@
 #define SONG_243 243
 #define SONG_244 244
 #define SONG_245 245
-#define CRY_CROW_WING 246  // クロウ系の敵が羽ばたく音
+#define CRY_CROW_WING 246  // クロウ系の敵が羽ばたく音, また太陽樹の根元にいる鳥の飛び立つ音でも使用
 #define CRY_CROW_ATK 247   // クロウ系の敵が攻撃する時の鳴き声
 #define CRY_CROW_DEATH 248
 #define SONG_249 249
@@ -266,8 +266,8 @@
 #define SE_TYPING1 261    // 文字送りSE1 (システムメッセージ用?)
 #define SE_TYPING2 262    // 文字送りSE2 (キャラとの会話用?)
 #define SE_TEXT_SHOW 263  // 会話中Aボタンで次のテキストを表示する時, 選択肢が表示された時になる (テキストを読みとばさないための音), 会話の開始時には鳴らない(ただし会話の最初のテキストが選択肢なら鳴る)
-#define SONG_264 264
-#define SONG_265 265
+#define CRY_BAT_DAMAGED 264
+#define CRY_CROW_DAMAGED 265          // クロウ系のダメージボイス
 #define SE_MENU_PAGE 266              // メニューでLRボタンでページを切り替えた時のSE
 #define SE_QUICK_CHANGE 267           // クイックチェンジ(マップ上のHUDとスタートメニューの装備ページでセレクト押した状態　で装備を変更する時の音)
 #define SE_SIDEBAR_TOGGLE 268         // スタートメニューで、"START"ボタンを押した時(左から、ページ一覧のサイドバーが現れたり消えたりする時の音)
@@ -284,21 +284,21 @@
 #define SE_SPIDER_WEB_STRUGGLE_1 279  // プレイヤーがスパイダーの巣から出ようともがく音その2
 #define SE_OPEN_MENU 280
 #define SE_CLOSE_MENU 281
-#define SE_UNK_282 282
-#define SE_SPIRIT_BUGS_283 283  // 太陽虫とかを吸収した音？
-#define SE_SPIRIT_BUGS_284 284
+#define SE_SPIRIT_BUGS_282 282
+#define SE_TOUCH_MOONBUG 283    // 月光虫を吸収した音
+#define SE_TOUCH_SOLARBUG 284   // 太陽虫を吸収した音
 #define SE_POP_SPIRIT_BUGS 285  // 太陽タケノコから 月光虫 or 太陽虫 が出てきた時の音
 #define SE_INFO 286
 #define SE_UNK_287 287
-#define VO_OTENKO_OTNK 288   // おてんこ！
-#define CRY_MUMMY_BURN 289   // ｱﾁ!
-#define SE_BAMBOO_SHOOT 290  // 太陽タケノコが出た時のSE
-#define SE_UNK_291 291
+#define VO_OTENKO_OTNK 288    // おてんこ！
+#define CRY_MUMMY_BURN 289    // ｱﾁ!
+#define SE_BAMBOO_SHOOT 290   // 太陽タケノコが出た時のSE
+#define SE_GAIN_VALUABLE 291  // 貴重品を取得した時のSE
 #define SE_SOLAR_STAND_DENY 292
 #define SE_RUNNING_FOOTSTEPS 293  // 足音一回でなく複数回まとめて
 #define SE_UNK_294 294
-#define SE_UNK_295 295
-#define VO_TAIYO_R 296  // 赤ジャンゴの太陽チャージ
+#define SE_UNK_295 295        // パイルドライバーのジェネレータに関係するSE
+#define VO_RDJANGO_TAIYO 296  // 赤ジャンゴの太陽チャージ
 #define SE_UNK_297 297
 #define SE_UNK_298 298       // 焼ける様な音
 #define SE_TITLE_CURSOR 299  // ゲームタイトルで < XXX > を切り替える時のSE
@@ -307,10 +307,10 @@
 #define SE_DENY_302 302  // ENE満タンのときに太陽スタンドを使おうとしたときとかのビープ音
 #define SE_UNK_303 303
 #define SE_UNK_304 304
-#define SONG_305 305
-#define SONG_306 306
-#define SE_SOLIDIFY 307  // 氷結や石化時などで使う凍りつく音
-#define SE_308 308
+#define SE_OVERHEAT_1 305    // オーバーヒートSE(その1)
+#define SE_OVERHEAT_2 306    // オーバーヒートSE(その2)
+#define SE_SOLIDIFY 307      // 氷結や石化時などで使う凍りつく音
+#define SE_END_SOLIDIFY 308  // プレイヤーの氷結や石化時が溶けたときの砕ける様なSE
 #define SONG_309 309
 #define SONG_310 310
 #define SONG_311 311
@@ -334,20 +334,20 @@
 #define SONG_329 329
 #define SE_330 330  // 壊れる様な音?
 #define SONG_331 331
-#define SONG_332 332
-#define SONG_333 333
+#define SE_LEVER_TOGGLE 332     // レバースイッチがトグルした時のSE
+#define SE_LEVER_NO_TOGGLE 333  // レバースイッチを叩いて動作しなかった時のSE, すでにレバースイッチが作動済みだったり、 錆びたレバースイッチをハンマー以外で叩いた場合などに鳴る音
 #define SONG_334 334
 #define SONG_335 335
 #define SONG_336 336
-#define SE_THUD 337  // 移動床が端についたときのSE(昇降床は別), 他の用途でも使われてそう
+#define SE_THUD 337  // 移動床が端についたときのSE(昇降床は SE_ELEV_END_V), 他の用途でも使われてそう
 #define SONG_338 338
 #define SONG_339 339
 #define SONG_340 340
 #define SONG_341 341
 #define SONG_342 342
 #define SONG_343 343
-#define SONG_344 344
-#define SONG_345 345
+#define SE_ELEV_IRON_V 344  // SE_ELEV_MECHA_V の SPRITE_LIFT_IRON 版
+#define SE_ELEV_END_V 345   // 昇降床が端についたときのSE (移動床は SE_THUD)
 #define SONG_346 346
 #define SONG_347 347
 #define SONG_348 348
@@ -388,9 +388,9 @@
 #define SONG_383 383
 #define SONG_384 384
 #define SONG_385 385
-#define SONG_386 386
-#define SONG_387 387
-#define SONG_388 388
+#define SE_WARP_LEAF 386      // 転移の葉を使用した時のSE
+#define SE_GAIN_KEY 387       // 鍵を入手した時のSE
+#define SE_DOOR_LOCKED 388    // まだ鍵を持っていない扉でAボタンを押した時のSE
 #define CRY_GOLEM_DETECT 389  // ゴーレムが怪しんだ時
 #define CRY_GOLEM_ALERT 390   // 見つかった時
 #define CRY_GOLEM_391 391     // ゴーレムっぽい
@@ -429,13 +429,13 @@
 #define SE_FLAMETHROWER_424 424  // 火が噴き出す時のSE
 #define SONG_425 425
 #define SE_M_HEALING_GROW 426  // ヒーリングで植物が大きくなる時のSE
-#define SE_WOOD_DOOR_427 427
-#define SONG_428 428
-#define SE_FALL_SURPRISE 429  // プレイヤーが落下するときのびっくりSE (SE_ENEMY_ALERT とすこし違うだけ)
-#define SONG_430 430
-#define SONG_431 431
-#define SONG_432 432
-#define SE_CHARA_SUPRISE 433  // "!"(白), プレイヤーやNPC, ボスが使用 (NPC は雨が降ってきた時とか)
+#define SE_OPEN_427 427        // 軽そうな板が開く様な音, 落とし穴の開く音でも使用
+#define SE_OPEN_428 428        //
+#define SE_FALL_SURPRISE 429   // プレイヤーが落下するときのびっくりSE (SE_ENEMY_ALERT とすこし違うだけ)
+#define SE_FALL_430 430        // 落下SE(ヒュー), こっちの方が音程高め?, 螺旋の塔2Fの下の階に落ちる落とし穴で使用
+#define SE_FALL_431 431        // 落下SE(ヒュー)
+#define SE_LANDING 432         // 着地SE
+#define SE_CHARA_SUPRISE 433   // "!"(白), プレイヤーやNPC, ボスが使用 (NPC は雨が降ってきた時とか)
 #define SONG_434 434
 #define SONG_435 435
 #define SONG_436 436
@@ -496,7 +496,7 @@
 #define SE_COFFIN_CLOSE 491  // 棺桶を閉めた時の音(スリーピング開始時)
 #define SONG_492 492
 #define SE_CHARA_QUESTION 493  // キャラが "?" を出すときの音
-#define SONG_494 494
+#define SE_PLAYER_SHRINK 494   // "赤いキノコ"で体が縮むときのSE
 #define SONG_495 495
 #define SE_MMBN_496 496  // プラグインの音？
 #define SONG_497 497
@@ -516,7 +516,7 @@
 #define SE_SPIKEBALL 511  // 鉄球(SPRITE_SPIKEBALL)が落ちてきたときのSE
 #define SONG_512 512
 #define SONG_513 513
-#define SE_GUN_SPREAD 514  // スプレッド攻撃時の照射SE
+#define SE_GUN_SPREAD 514  // ガンデルヘルスプレッド攻撃時の照射SE
 #define SONG_515 515
 #define SE_SABATA_SPIN 516  // 暗黒独楽(回転しながらスプレッド攻撃)のときのブンブン回るSE
 #define SONG_517 517
@@ -569,7 +569,7 @@
 #define CRY_JORMY_EVENT_DEATH 564     // ヨルムンガンド戦の後のイベントで太陽チャージを終えた後のヨルムンガンドの断末魔
 #define SONG_565 565
 #define SONG_566 566
-#define SONG_567 567
+#define SE_ALARM_PANEL 567  // 太陽警報機の作動音
 #define SONG_568 568
 #define NOISE_DARK_CHARGE 569  // 暗黒チャージ中のSE (NOISE_SOLAR_CHARGE のサバタ版)
 #define SONG_570 570
@@ -587,20 +587,20 @@
 #define VO_BDJANGO_MAD 582  // 黒ジャンゴの暴走条件を満たした時のうめき声
 #define VO_DURATHROR_583 583
 #define SONG_584 584
-#define SONG_585 585
+#define VO_DAINN_585 585
 #define SONG_586 586
 #define VO_DUNEYRR_LAUGH 587
-#define SONG_588 588
-#define SONG_589 589
+#define VO_DJANGO_588 588  // ジャンゴの悲鳴
+#define VO_DURATHROR_LAUGH_589 589
 #define VO_DVALINN_LAUGH 590
-#define SONG_591 591
+#define VO_DAINN_LAUGH_591 591
 #define SONG_592 592
 #define SONG_593 593
 #define VO_DUNEYRR_PURIFY 594
-#define SONG_595 595
+#define VO_DJANGO_595 595        // ジャンゴの悲鳴
 #define VO_DURATHROR_PURIFY 596  // 浄化時 (ボス戦時は VO_DURATHROR_DEATH を使用?)
 #define VO_DVALINN_PURIFY 597    // ドヴァリンを浄化したとき
-#define SONG_598 598
+#define VO_DAINN_598 598         // ダーインを浄化したとき?
 #define SONG_599 599
 #define SONG_600 600
 #define SONG_601 601
@@ -625,23 +625,23 @@
 #define SONG_620 620
 #define SE_WOOD_DOOR_621 621
 #define SONG_622 622
-#define SONG_623 623
+#define SE_TREASURE_APPEAR 623  // 宝箱が出現した時のドスンというSE
 #define SONG_624 624
 #define CRY_MIMIC_ALERT 625  // CRY_MIMIC_DETECT も兼ねる
 #define CRY_MIMIC_QUESTION 626
 #define SE_627 627  // 何も聞こえない,無音?
 #define SONG_628 628
 #define SONG_629 629
-#define SE_SHOP_SELL 630  // 店でアイテムを売った時のSE
-#define SONG_631 631
-#define SONG_632 632
+#define SE_SHOP_SELL 630            // 店でアイテムを売った時のSE
+#define SE_ROCKBUSTER_CHARGING 631  // ロックバスターのチャージ音
+#define SE_ROCKBUSTER_CHARGED 632   // ロックバスターのチャージ完了音
 #define SONG_633 633
 #define SONG_634 634
 #define SONG_635 635
 #define SONG_636 636
 #define SE_GETA_THROW 637  // おてんきゲタを投げたときの音(転がるSEも含める)
-#define SONG_638 638
-#define SONG_639 639
+#define SE_MR_RAINNOT 638  // テルテルボーズ使用, おてんきゲタの表引いた時のSE
+#define SE_TONNIAR_RM 639  // ズーボルテルテ使用, おてんきゲタの裏引いた時のSE
 #define SONG_640 640
 #define SE_TRANSITION_641 641  // トランジションSE, ドヴァリン戦開始時で使用を確認
 #define SONG_642 642
@@ -659,9 +659,9 @@
 #define SE_FSTEP_STAIRS_1 654  // 階段の登り降り時の足音 (SE_FSTEP_STAIRS_0 と交互に鳴らす)
 #define SONG_655 655
 #define SONG_656 656
-#define SONG_657 657
-#define SONG_658 658
-#define SONG_659 659
+#define SE_SPIRIT_BUGS_657 657
+#define SE_SPIRIT_BUGS_658 658
+#define SE_SPIRIT_BUGS_659 659
 #define SE_ANS_WRONG 660  // 不正解SE?
 #define SONG_661 661
 #define SE_ANS_CORRECT 662  // 正解SE
@@ -769,48 +769,48 @@
 #define VO_TAIYO_764 764                // 黒ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
 #define VO_TAIYO_765 765                // ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
 #define VO_TAIYO_766 766                // ジャンゴのﾀｲﾖｰ(音量が異様に小さく、用途不明)
-#define SONG_767 767
-#define SONG_768 768
-#define SONG_769 769
-#define VO_DARK_DJANGO_UGH_770 770
-#define VO_BERSERK 771          // 黒ジャンゴが暴走した時のボイス
-#define VO_DJANGO_SCREAM 772    // 悲鳴, 落下死やドヴァリン戦前のイベントで水に引き込まれた時
-#define VO_DJANGO_PITFALL 773   // 驚いたような声(落とし穴に落ちた時など)
-#define VO_DJANGO_MAGIC 774     // ヒーリングやトランスを使った時のｵｵｫｫ!みたいな声
-#define VO_BOKURANO 775         // ﾎﾞｸﾗﾉ…! (ドゥラスロール浄化イベントで使用)
-#define VO_TAIYO_B 776          // 黒ジャンゴの太陽チャージ (VO_TAIYO_R の対)
-#define VO_DJANGO_ASUMO 777     // 明日もまた陽はのぼる
-#define VO_DAINN_JYAMADAYO 778  // ｼﾞｬﾏﾀﾞﾖ!
-#define VO_DAINN_779 779        // ﾊｧｯ!
-#define VO_DAINN_780 780        // ｲｸﾖｰ!!
-#define VO_DAINN_DAMAGE 781     // ダーインがダメージを受けた時のボイス
-#define VO_DAINN_LAUGH1 782     // ﾊﾊﾊﾊ(高笑い)
-#define VO_DAINN_LAUGH2 783     // ﾊﾊﾊﾊ...(渇いた感じの笑い)
-#define SONG_784 784
+#define VO_TAIYO_767 767                //
+#define VO_TAIYO_R_ECHO 768             // めっちゃエコーする VO_RDJANGO_TAIYO
+#define VO_DJANGO_UGH_769 769           // ｳｯというボイス
+#define VO_DARK_DJANGO_UGH_770 770      // 黒ジャンゴが暴走条件を満たした時のｳｯというボイス
+#define VO_BERSERK 771                  // 黒ジャンゴが暴走した時のボイス
+#define VO_DJANGO_SCREAM 772            // 悲鳴, 落下死やドヴァリン戦前のイベントで水に引き込まれた時
+#define VO_DJANGO_PITFALL 773           // 驚いたような声(落とし穴に落ちた時など)
+#define VO_DJANGO_MAGIC 774             // ヒーリングやトランスを使った時のｵｵｫｫ!みたいな声
+#define VO_BOKURANO 775                 // ﾎﾞｸﾗﾉ…! (ドゥラスロール浄化イベントで使用)
+#define VO_BDJANGO_TAIYO 776            // 黒ジャンゴの太陽チャージ (VO_RDJANGO_TAIYO の対)
+#define VO_DJANGO_ASUMO 777             // 明日もまた陽はのぼる
+#define VO_DAINN_JYAMADAYO 778          // ｼﾞｬﾏﾀﾞﾖ!
+#define VO_DAINN_779 779                // ﾊｧｯ!
+#define VO_DAINN_780 780                // ｲｸﾖｰ!!
+#define VO_DAINN_DAMAGE 781             // ダーインがダメージを受けた時のボイス
+#define VO_DAINN_LAUGH1 782             // ﾊﾊﾊﾊ(高笑い)
+#define VO_DAINN_LAUGH2 783             // ﾊﾊﾊﾊ...(渇いた感じの笑い)
+#define VO_DAINN_LAUGH3 784             // VO_DAINN_LAUGH1 のちょっと短め版
 #define VO_DAINN_DEATH 785
 #define SONG_786 786
 #define VO_DAINN_787 787  // ｳﾜｯ!!
 #define SONG_788 788
 #define SONG_789 789
-#define VO_RITA_ITSUTAI 790  // いつも心に太陽を！
-#define VO_RITA_WELCOME 791  // 店に入った時の ｲﾗｯｼｬｲﾏｾｰ!
-#define SONG_792 792
-#define VO_RITA_ORAORA 793  // リタのオラオララッシュ
-#define SONG_794 794
+#define VO_RITA_ITSUTAI 790         // いつも心に太陽を！
+#define VO_RITA_WELCOME 791         // 店に入った時の ｲﾗｯｼｬｲﾏｾｰ!
+#define VO_RITA_ORAORA_SKELTON 792  // VO_RITA_ORAORA に スケルトンが砕ける音 も含まれる版
+#define VO_RITA_ORAORA 793          // リタのオラオララッシュ
+#define VO_RITA_ORAORA_794 794      // VO_RITA_ORAORA に 何かが倒れる音も含まれる版
 #define SONG_795 795
 #define SONG_796 796
 #define SONG_797 797
-#define SONG_798 798
-#define SE_MEOW_799 799  // 猫の鳴き声
-#define SE_MEOW_800 800  // 猫の鳴き声
-#define SE_MEOW_801 801  // 猫の鳴き声
-#define SE_MEOW_802 802  // 猫の鳴き声
-#define SE_MEOW_803 803  // 猫の鳴き声
+#define VO_TAIYO_ALL 798  // いろんな人の声が合わさった太陽
+#define SE_MEOW_799 799   // 猫の鳴き声
+#define SE_MEOW_800 800   // 猫の鳴き声
+#define SE_MEOW_801 801   // 猫の鳴き声
+#define SE_MEOW_802 802   // 猫の鳴き声
+#define SE_MEOW_803 803   // 猫の鳴き声
 #define SONG_804 804
 #define SONG_805 805
 #define SONG_806 806
-#define SONG_807 807
-#define SE_808 808
+#define SE_WARP_807 807  // 転移系のSE (暗黒転移用?)
+#define SE_WARP_808 808  // 転移系のSE (ボス系の敵用? ボス系の敵の登場シーンとか?)
 #define SONG_809 809
 #define SONG_810 810
 #define SONG_811 811
@@ -823,8 +823,8 @@
 #define SONG_818 818
 #define SONG_819 819
 #define SONG_820 820
-#define SONG_821 821
-#define SONG_822 822
+#define SE_PLAYER_SLIP 821        // すべり床の上を滑るSE
+#define SE_PLAYER_SHRINK_END 822  //赤いキノコで小さくなった状態から元の大きさに戻るときのSE, SE_PLAYER_SHRINK の反対版
 #define SONG_823 823
 #define SONG_824 824
 #define SONG_825 825
@@ -876,13 +876,13 @@
 #define SONG_871 871
 #define SONG_872 872
 #define SONG_873 873
-#define VO_SABATA_DAMAGE1 874  // サバタのダメージボイス?
+#define VO_SABATA_DAMAGE1 874  // ｳｯ, サバタのダメージボイス?
 #define VO_SABATA_DAMAGE2 875
 #define SONG_876 876
 #define SONG_877 877
-#define SONG_878 878
-#define SONG_879 879
-#define SONG_880 880
+#define VO_SABATA_ANKOKU_878 878  // ｱﾝｺｰｸ!
+#define VO_SABATA_UGH_879 879     // ｳｸﾞｩ
+#define VO_SABATA_880 880         // ｳｯ
 #define SONG_881 881
 #define SE_882 882  // ゴングのようなSE
 #define SONG_883 883
@@ -911,11 +911,11 @@
 #define SE_SWAP_SLOT 906  // インベントリのスロットをスワップする時の音
 #define SE_SWORD_ATK_B 907
 #define SE_SWORD_ATK_R 908
-#define SE_SPEAR_ATK_B 909   // 黒ジャンゴでの槍攻撃SE
-#define SE_HAMMER_ATK_B 910  // 黒ジャンゴでの槌攻撃SE
-#define SE_SPEAR_ATK_R 911   // 赤ジャンゴでの槍攻撃SE
-#define SE_HAMMER_ATK_R 912  // 赤ジャンゴでの槌攻撃SE
-#define SONG_913 913
+#define SE_SPEAR_ATK_B 909         // 黒ジャンゴでの槍攻撃SE
+#define SE_HAMMER_ATK_B 910        // 黒ジャンゴでの槌攻撃SE
+#define SE_SPEAR_ATK_R 911         // 赤ジャンゴでの槍攻撃SE
+#define SE_HAMMER_ATK_R 912        // 赤ジャンゴでの槌攻撃SE
+#define SE_FIST_ATK 913            // 素手攻撃のSE
 #define SE_M_DASH 914              // 魔法"ダッシュ"のSE (小刻みな足音をまとめたもの)
 #define SE_M_ENCHANT 915           // エンチャントをONにした時のSE
 #define SE_FORGE_STRIKE_GREAT 916  // 太陽鍛治で叩いた時に "GREAT"
@@ -939,12 +939,12 @@
 #define SONG_934 934
 #define SONG_935 935
 #define SONG_936 936
-#define SONG_937 937
+#define SE_SKELETON_ATK 937  // スケルトンの攻撃SE (腕を振る音)
 #define SONG_938 938
 #define SONG_939 939
-#define CRY_SKELETON_DEATH 940  // 正確には鳴き声でなく、骨が崩れ落ちるSE
-#define SONG_941 941
-#define SONG_942 942
+#define CRY_SKELETON_DEATH 940    // 正確には鳴き声でなく、骨が崩れ落ちるSE
+#define SE_SKELTON_NOT_DEATH 941  // スケルトンをエンチャントついていない武器で倒した時の髑髏が落ちる音
+#define SE_SKELETON_REVIVE 942    // スケルトンが復活したときのSE
 #define CRY_LICH_DEATH 943
 #define SONG_944 944
 #define SONG_945 945
@@ -968,10 +968,10 @@
 #define SONG_963 963
 #define SONG_964 964
 #define CRY_BEE_DEATH 965
-#define SONG_966 966
-#define SONG_967 967
-#define SE_BEE_968 968  // 蜂のモスキート音
-#define SONG_969 969
+#define SE_BEENEST_CRASH 966  // 蜂の巣が落ちて砕けたSE
+#define SE_BEE_967 967        // 蜂の巣からポイズンビーが出てくる時のモスキート音
+#define SE_BEE_968 968        // 蜂のモスキート音
+#define SE_BEE_969 969        // 蜂の巣が揺れた時になる蜂の羽ばたき音
 #define CRY_GHOST_DEATH 970
 #define SONG_971 971
 #define SONG_972 972

@@ -1,8 +1,8 @@
 #include "collision_map.h"
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "game.h"
 #include "global.h"
+#include "link_session.h"
 #include "map_inline.h"
 #include "particle.h"
 #include "player.h"
@@ -37,18 +37,17 @@ typedef struct DynamiteEffect {
 } DynamiteEffect;
 static_assert(sizeof(DynamiteEffect) == 480);
 
-struct Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 invincibleTime, s32 plttOffset, s32 delay);
-void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
+struct Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 plttOffset, s32 delay);
 
 void DynamiteEffect_StateFuse(DynamiteEffect* p);
 void DynamiteEffect_StateSink(DynamiteEffect* p);
 
 // まだセッションが無ければ 0
-static inline u8 Entity9A9F_GetUnk60(s32 idx) {
-  if (gEntity9A9F == NULL) {
+static inline u8 LinkSession_GetLuxGauge(s32 idx) {
+  if (gLinkSession == NULL) {
     return 0;
   }
-  return gEntity9A9F->unk_60[idx];
+  return gLinkSession->luxGauge[idx];
 }
 
 void DynamiteEffect_SetState(DynamiteEffect* p, void* fn) {
@@ -87,8 +86,8 @@ void DynamiteEffect_StateGather(DynamiteEffect* p) {
 void DynamiteEffect_StateFuse(DynamiteEffect* p) {
   s32 sun;
 
-  if (gGameFlags & FLAG030047A4_LINK) {
-    sun = Entity9A9F_GetUnk60(p->owner->inputIdx);
+  if (gGameFlags & GAMEFLAG_LINK) {
+    sun = LinkSession_GetLuxGauge(p->owner->inputIdx);
   } else {
     sun = gStat->sunGauge;
   }
@@ -136,7 +135,7 @@ void DynamiteEffect_StateFuse(DynamiteEffect* p) {
 
     if (p->mode != 0) {
       power = 125;
-    } else if (gGameFlags & FLAG030047A4_LINK) {
+    } else if (gGameFlags & GAMEFLAG_LINK) {
       power = p->owner->stats[STAT_SPIRIT] * 3 + sun * 10;
     } else {
       power = Div(p->owner->stats[STAT_SPIRIT], 10) * sun;
@@ -259,7 +258,7 @@ s32 DynamiteEffect_Init(DynamiteEffect* p, Player* owner, Vec3* pos, s32 mode) {
   p->owner->dynamiteCount++;
   if (p->mode != 0) {
     p->fuseTimer = SECOND(2);
-  } else if (gGameFlags & FLAG030047A4_LINK) {
+  } else if (gGameFlags & GAMEFLAG_LINK) {
     p->fuseTimer = SECOND(1.5);
   } else {
     p->fuseTimer = SECOND(3);

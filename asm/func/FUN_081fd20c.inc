@@ -488,7 +488,7 @@ _081FD584:
 	lsls r4, r4, #2
 	str r4, [sp, #0x24]
 	mov r3, r8
-	bl FUN_0820361c
+	bl InkBallShot_SpawnHoming
 	movs r0, #0xdc
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

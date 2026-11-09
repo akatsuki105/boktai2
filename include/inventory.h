@@ -4,6 +4,13 @@
 #include "gba/gba.h"
 #include "types.h"
 
+// ItemCategory8, ItemCategory16, ItemCategory32
+#define ITEM_CATEGORY_USABLE 0  // 消費アイテム, 貴重品 (名前は後でもっといいものにする)
+#define ITEM_CATEGORY_WEAPON 1
+#define ITEM_CATEGORY_ARMOR 2
+#define ITEM_CATEGORY_MAGIC 3
+#define ITEM_CATEGORY_UNK4 4
+
 void SwapNormalItem(slot32_t slot1, slot32_t slot2);
 void SwapValuable(slot32_t slot1, slot32_t slot2);
 void RemoveItem(slot32_t slot);

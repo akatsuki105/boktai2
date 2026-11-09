@@ -17,9 +17,9 @@ void InitIntrAndVideo(void);
 void Map_InitCollisionMap(void);
 void LoadAuxSpriteFile(AuxSpriteFile* f);
 void FUN_08231bec(void);
-void FUN_0823acbc(void);
+void GameSystem_Boot(void);
 void UpdateAllEntities(void);
-void FUN_0823a870(void);
+void GameSystem_InitSaveDataPtr(void);
 void RandomizeGameStateAddr(void);
 void InitSystemManager(void);
 void InitPltt(void);
@@ -41,7 +41,7 @@ void AgbMain(void) {
   m4aSoundInit();
   InitIntrHandlers();
   IdentifyEeprom(0x40);  // 8192 Byte
-  FUN_0823a870();
+  GameSystem_InitSaveDataPtr();
   RandomizeGameStateAddr();
   InitSystemManager();
   InitIntrAndVideo();
@@ -63,7 +63,7 @@ void AgbMain(void) {
   Sio_Reset();
   Time_SetLocation(0x0023A666, 0x008BC000, 0);
   FUN_08231bec();
-  FUN_0823acbc();
+  GameSystem_Boot();
   while (TRUE) {
     UpdateAllEntities();
   }

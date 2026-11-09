@@ -156,7 +156,7 @@ _0808CA86:
 	mov r1, sl
 	strb r1, [r6]
 	strb r2, [r6, #1]
-	ldr r0, _0808CAC8 @ =FUN_0808c770
+	ldr r0, _0808CAC8 @ =MainMenu_UpdateSparkleParticle
 	str r0, [r4, #0x3c]
 	adds r6, #0x40
 	adds r4, #0x40
@@ -177,4 +177,4 @@ _0808CAB6:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0808CAC8: .4byte FUN_0808c770
+_0808CAC8: .4byte MainMenu_UpdateSparkleParticle

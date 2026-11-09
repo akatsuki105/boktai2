@@ -181,7 +181,7 @@ _08003B40:
 	movs r1, #0
 	add r2, sp, #8
 	movs r3, #1
-	bl FUN_080dbcec
+	bl DustManager_Spawn
 	ldr r3, [sp, #0x1c]
 	subs r3, #1
 	str r3, [sp, #0x1c]

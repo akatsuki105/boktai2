@@ -1,7 +1,7 @@
 #include "entity.h"
-#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
+#include "link_session.h"
 #include "sprite_main.h"
 #include "sprite_pltt.h"
 #include "text.h"
@@ -37,8 +37,6 @@ typedef struct Entity08F4 {
 } Entity08F4;
 static_assert(sizeof(Entity08F4) == 816);
 
-bool32 FUN_081dfa04(void);
-
 const s32 s32_ARRAY_085ae1b4[6] = {0, 0, 0, 32, 0, 64};  // 0x085AE1B4
 
 const s32 s32_ARRAY_085ae1cc[6] = {32, 0, 32, 32, 16, 64};  // 0x085AE1CC
@@ -49,10 +47,10 @@ const u16 u16_ARRAY_085ae1fc[4] = {60, 90, 120, 0};  // 0x085AE1FC
 
 // 3行の選択値を通信セッション側へ写す
 s32 FUN_081dae74(Entity08F4* p) {
-  Entity9A9F* q = gEntity9A9F;
+  LinkSession* q = gLinkSession;
   u8* dst;
 
-  if (q == NULL || (dst = &q->unk_2c4) == NULL) {
+  if (q == NULL || (dst = q->rulesOut.values) == NULL) {
     return -1;
   }
 

@@ -81,6 +81,7 @@ void FUN_080b9fd8(ShopCursor* p);
 void FUN_080b9a28(ShopFlyingPair* p, s32* param_2, WorldPos* pos1, WorldPos* pos2, s32* param_5, s32* param_6, s32 param_7);
 void FUN_080b9724(MainSprite* sprites);
 void FUN_080b9658(MainSpriteGfx* gfx, MainSprite* sprite, Vec3* param_3, s32 param_4, s32 param_5);
+s32 FUN_080b9da0(ShopCursor* p, u8 mask);
 
 #define SHOP_SLOT(p, colX, rowY) ((p)->slots[(rowY) + (colX) * 4])
 

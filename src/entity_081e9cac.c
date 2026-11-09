@@ -39,15 +39,13 @@ typedef struct {
 } Entity081e9cac;
 static_assert(sizeof(Entity081e9cac) == 2988);
 
-IWRAM_DATA Entity081e9cac* gEntity081e9cac = NULL;  // 0x030001B4
-
-extern const void* const PTR_ARRAY_082523e8[4];
+static Entity081e9cac* gEntity081e9cac;  // 0x030001B4
 
 void Entity081e9cac_GetAnimVariant(s32 angle, u8* variant, AuxAnimPlayFlags* flags);
 Entity081e9cac* Entity081e9cac_Create(void);
 bool8 Entity081e9cacElem_CheckFloor(Entity081e9cacElem* elem);
 void Entity081e9cacElem_UpdateHitPos(Entity081e9cacElem* elem);
-Entity081e9cacElem* Entity081e9cac_Spawn(Vec3* pos, Vec3* offset, Vec3* vel, u32 angle, u32 hitboxId, s32 power, s32 knockbackPower, s32 invincibleTime, s32 lifetime);
+Entity081e9cacElem* Entity081e9cac_Spawn(Vec3* pos, Vec3* offset, Vec3* vel, u32 angle, u32 hitboxId, s32 power, s32 knockback, s32 iframes, s32 lifetime);
 
 static inline bool8 Entity081e9cac_IsElemUsed(Entity081e9cac* p, s32 i) {
   if (TEST_FLAGS(p->activeMask, 1 << i)) return TRUE;
@@ -61,7 +59,7 @@ NON_MATCH void Entity081e9cacElem_OnHit(HitboxData* a, HitboxData* b, Entity081e
     if (b->ignoreMask & 0xF) {
       s32 hit;
 
-      if (!(((Player*)b->owner)->flag20 & PFLAG20_UNK_3)) {
+      if (!(((Player*)b->owner)->flag20 & PFLAG20_WALL_COVER)) {
         hit = TRUE;
       } else {
         s32 d = FixToInt(6, (elem->angle + 0x20) & 0xFF) - FixToInt(6, (b->angle + 0x20) & 0xFF);
@@ -91,7 +89,7 @@ NON_MATCH void Entity081e9cacElem_OnHit(HitboxData* a, HitboxData* b, Entity081e
 #endif
 }
 
-void Entity081e9cacElem_InitHitbox(Entity081e9cacElem* elem, s32 power, s32 knockbackPower, s32 invincibleTime) {
+void Entity081e9cacElem_InitHitbox(Entity081e9cacElem* elem, s32 power, s32 knockback, s32 iframes) {
   HitboxData* hitbox = &elem->hitbox;
   Vec3 halfSize;
   Vec3 offset;
@@ -99,7 +97,7 @@ void Entity081e9cacElem_InitHitbox(Entity081e9cacElem* elem, s32 power, s32 knoc
   VEC3_SET(halfSize, 32, 82, 32);
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, elem->hitboxId, HBFLAG_HITBOX | HBFLAG_UNK_9 | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockbackPower, 0x10, HBATTR_14 | HBATTR_CLOUD, invincibleTime);
+  Hitbox_SetAttack(hitbox, power, knockback, 0x10, HBATTR_SEKIKA | HBATTR_CLOUD, iframes);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, Entity081e9cacElem_OnHit, elem);
   hitbox->angle = elem->angle;
@@ -276,17 +274,17 @@ Entity081e9cacElem* Entity081e9cac_AllocElem(Entity081e9cac* p) {
 void Entity081e9cac_GetAnimVariant(s32 angle, u8* variant, AuxAnimPlayFlags* flags) {
   angle = ((angle >> 5) + 3) & 7;
   switch (angle) {
-    case 5: {
+    case FACE_DOWN_LEFT: {
       *variant = 3;
       *flags = ANIM_PLAY_XFLIP;
       break;
     }
-    case 6: {
+    case FACE_LEFT: {
       *variant = 2;
       *flags = ANIM_PLAY_XFLIP;
       break;
     }
-    case 7: {
+    case FACE_UP_LEFT: {
       *variant = 1;
       *flags = ANIM_PLAY_XFLIP;
       break;
@@ -375,15 +373,15 @@ NON_MATCH void Entity081e9cacElem_UpdateHitPos(Entity081e9cacElem* elem) {
 }
 
 // angle の向きに speed で飛ぶ玉を出す
-Entity081e9cacElem* Entity081e9cac_SpawnAtAngle(Vec3* pos, u32 angle, s32 speed, s32 lifetime, s32 power, s32 knockbackPower, s32 invincibleTime) {
+Entity081e9cacElem* Entity081e9cac_SpawnAtAngle(Vec3* pos, u32 angle, s32 speed, s32 lifetime, s32 power, s32 knockback, s32 iframes) {
   Vec3 vel;
 
   Vec3_SetPolar(&vel, angle, speed);
-  return Entity081e9cac_Spawn(pos, NULL, &vel, angle, 0x309, power, knockbackPower, invincibleTime, lifetime);
+  return Entity081e9cac_Spawn(pos, NULL, &vel, angle, 0x309, power, knockback, iframes, lifetime);
 }
 
 // 258/258命令, AuxSprite_AdvanceAnim に渡す sprite の写しが原典は r8, こちらは ip, 試済: spr ローカル, &elem->sprite 直書き, priority の書き方
-NON_MATCH Entity081e9cacElem* Entity081e9cac_Spawn(Vec3* pos, Vec3* offset, Vec3* vel, u32 angle, u32 hitboxId, s32 power, s32 knockbackPower, s32 invincibleTime, s32 lifetime) {
+NON_MATCH Entity081e9cacElem* Entity081e9cac_Spawn(Vec3* pos, Vec3* offset, Vec3* vel, u32 angle, u32 hitboxId, s32 power, s32 knockback, s32 iframes, s32 lifetime) {
 #ifdef NONMATCHING_C
   Entity081e9cac* p;
   Entity081e9cacElem* elem;
@@ -429,7 +427,7 @@ NON_MATCH Entity081e9cacElem* Entity081e9cac_Spawn(Vec3* pos, Vec3* offset, Vec3
   AuxAnim_SetAnim(&elem->anim, p->animFile, 2, variant, flags);
   AuxAnim_RestartAnim(&elem->anim2, p->animFile, 0, variant, flags);
   AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
-  Entity081e9cacElem_InitHitbox(elem, power, knockbackPower, invincibleTime);
+  Entity081e9cacElem_InitHitbox(elem, power, knockback, iframes);
   Entity081e9cacElem_UpdateHitPos(elem);
   elem->state = 1;
   spr->priority = 1;
@@ -440,12 +438,19 @@ NON_MATCH Entity081e9cacElem* Entity081e9cac_Spawn(Vec3* pos, Vec3* offset, Vec3
 #endif
 }
 
+__attribute__((section(".rodata.faraddr"))) void (*const PTR_ARRAY_082523e8[4])(Entity081e9cacElem*) = {
+    Entity081e9cacElem_UpdateState0,
+    Entity081e9cacElem_UpdateState1,
+    Entity081e9cacElem_UpdateState2,
+    Entity081e9cacElem_UpdateState3,
+};  // 0x082523E8
+
 s32 Entity081e9cac_Update(Entity081e9cac* p) {
   void (*funcs[4])(Entity081e9cacElem*);
   s32 i;
 
   memcpy(funcs, PTR_ARRAY_082523e8, sizeof(funcs));
-  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, FLAG030047A4_GAMEOVER) || TEST_FLAGS(gPlayerStates[0], FLAG03002BC0_UNK_2) || p->activeMask == 0) {
+  if (TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_GAMEOVER) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) || p->activeMask == 0) {
     return 0;
   }
   for (i = 0; i < 12; i++) {

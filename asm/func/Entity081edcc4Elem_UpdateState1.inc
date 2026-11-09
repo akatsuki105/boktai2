@@ -337,7 +337,7 @@ _081ED958:
 	add r0, sp, #0xc
 	movs r1, #1
 	movs r2, #0
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #3
 	ble _081ED958
@@ -356,7 +356,7 @@ _081ED97E:
 	movs r1, #1
 	movs r2, #8
 	adds r3, r4, #0
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	movs r0, #0x40
 	str r0, [sp]
 	mov r3, r8
@@ -366,7 +366,7 @@ _081ED97E:
 	movs r1, #1
 	movs r2, #0xe
 	adds r3, r4, #0
-	bl FUN_081eec74
+	bl Entity081eee80_Spawn
 	adds r5, #1
 	cmp r5, #1
 	ble _081ED97E
