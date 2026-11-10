@@ -184,15 +184,15 @@ static inline bool8 TestMapFlag(u32 mapflag) {
   return FALSE;
 }
 
-// facing から animIDOffset と xflip を決める
+// facing から animDir と xflip を決める
 void PlayerLink_SetAnimFacing(Player* p) {
   u8 dir8 = p->facing;
 
   if (IS_8DIR_LEFT(dir8)) {
-    p->animIDOffset = 8 - dir8;
+    p->animDir = 8 - dir8;
     p->xflip = TRUE;
   } else {
-    p->animIDOffset = dir8;
+    p->animDir = dir8;
     p->xflip = FALSE;
   }
 }
@@ -405,24 +405,24 @@ NAKED void FUN_080ccf2c(Player* p) { INCFUNC("asm/func/FUN_080ccf2c.inc"); }
 
 NAKED void FUN_080ccfe4(Player* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_080ccfe4.inc"); }
 
-void FUN_080cd078(Player* p) {
+void PlayerLink_RemoveEnchantPtcls(Player* p) {
   s32 i;
 
   for (i = 0; i < 6; i++) {
-    Particle_Remove(&p->ptcl_718.ptcls[i].base);
+    Particle_Remove(&p->enchantPtcls.ptcls[i].base);
   }
 }
 
-// player.c の Player_InitPtcl718 と同じ内容
-void PlayerLink_InitPtcl718(Player* p) {
-  PlayerParticleState718* st = &p->ptcl_718;
+// player.c の Player_InitEnchantPtcls と同じ内容
+void PlayerLink_InitEnchantPtcls(Player* p) {
+  PlayerEnchantPtcls* st = &p->enchantPtcls;
   s32 i;
 
-  st->group = GetParticleGroup(PTCL_GROUP_2);
+  st->group2 = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 6; i++) {
-    Particle52* ptcl = &st->ptcls[i];
+    EnchantPtcl* ptcl = &st->ptcls[i];
 
-    Particle_Add(&ptcl->base, st->group, SPRFLAG_HIDDEN);
+    Particle_Add(&ptcl->base, st->group2, SPRFLAG_HIDDEN);
     Particle_SetOffset(&ptcl->base, -4, -4);
     Particle_SetPltt(&ptcl->base, 1);
     ptcl->base.priority = 2;
@@ -438,22 +438,22 @@ NAKED void FUN_080cd230(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cd230
 
 NAKED void FUN_080cd3c0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cd3c0.inc"); }
 
-void FUN_080cd528(Player* p) {
+void PlayerLink_RemoveChargePtcls(Player* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    Particle_Remove(&p->ptcl_858.ptcls[i].base);
+    Particle_Remove(&p->chargePtcls.ptcls[i].base);
   }
 }
 
-// player.c の Player_InitPtcl858 と同じ内容
-void PlayerLink_InitPtcl858(Player* p) {
-  PlayerParticleState858* st = &p->ptcl_858;
+// player.c の Player_InitChargePtcls と同じ内容
+void PlayerLink_InitChargePtcls(Player* p) {
+  PlayerChargePtcls* st = &p->chargePtcls;
   s32 i;
 
   st->group2 = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 4; i++) {
-    PlayerPtcl858* ptcl = &st->ptcls[i];
+    ChargePtcl* ptcl = &st->ptcls[i];
 
     Particle_Add(&ptcl->base, st->group2, SPRFLAG_HIDDEN);
     Particle_SetOffset(&ptcl->base, -4, -4);
@@ -461,8 +461,8 @@ void PlayerLink_InitPtcl858(Player* p) {
     ptcl->base.priority = 2;
   }
 
-  st->unk_05 = 0;
-  st->unk_06 = 0;
+  st->next = 0;
+  st->spawnTimer = 0;
 }
 
 NAKED void FUN_080cd5a0(Player* p) { INCFUNC("asm/func/FUN_080cd5a0.inc"); }
@@ -486,11 +486,11 @@ s32 FUN_080cd6ec(Player* p) {
 void FUN_080cd738(Player* p) {
   rgb555* src = &gObjPlttData[40 * 16];
 
-  src += p->unk_950 * 3;
+  src += p->enchantColorIdx * 3;
 
-  p->pltt_2a4[5] = *src++;
-  p->pltt_2a4[6] = src[0];
-  p->pltt_2a4[13] = src[1];
+  p->pltt[5] = *src++;
+  p->pltt[6] = src[0];
+  p->pltt[13] = src[1];
 }
 
 NAKED void FUN_080cd780(Player* p, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080cd780.inc"); }
@@ -554,8 +554,8 @@ void FUN_080ce330(Player* p) {
   ParticleShadow_Remove(&p->shadow);
   Particle_Remove(&p->noise.ptcl);
   Particle_Remove(&p->spurl.ptcl);
-  FUN_080cd078(p);
-  FUN_080cd528(p);
+  PlayerLink_RemoveEnchantPtcls(p);
+  PlayerLink_RemoveChargePtcls(p);
   FUN_080cce5c(p);
 }
 
@@ -774,7 +774,7 @@ void FUN_080cf248(Player* p) {
   p->floatHeight = 0;
 
   anim = &p->beastAnim;
-  AuxAnim_SetAnim(anim, file, animIdx, p->animIDOffset, p->xflip);
+  AuxAnim_SetAnim(anim, file, animIdx, p->animDir, p->xflip);
   AuxSprite_AdvanceAnim(sprite, anim);
 }
 
@@ -820,7 +820,7 @@ s32 FUN_080cfa60(Player* p, s32 param_2) {
     if (param_2 == 0 || param_2 == 3 || param_2 == 6) {
       return 1;
     }
-    if (param_2 == 4 && p->unk_3bc != 0) {
+    if (param_2 == 4 && p->wallSidling != 0) {
       return 1;
     }
     return 0;
@@ -904,7 +904,7 @@ NAKED void FUN_080d05e8(Player* p) { INCFUNC("asm/func/FUN_080d05e8.inc"); }
 
 NAKED s32 FUN_080d06d4(Player* p) { INCFUNC("asm/func/FUN_080d06d4.inc"); }
 
-// player.c の FUN_08066f7c と同じ内容
+// player.c の Player_UpdateIdle と同じ内容
 void FUN_080d0738(Player* p) {
   if (p->action != PACT_IDLE) {
     PlayerLink_SetAction(p, PACT_IDLE, 0);
@@ -996,9 +996,9 @@ s32 FUN_080d19fc(Player* p) {
 void FUN_080d1a44(Player* p) {
   p->wpn.enchantIdx = FUN_080ced00(p);
   if (p->wpn.enchantIdx >= 0) {
-    p->unk_951 = p->wpn.enchantIdx + 1;
+    p->nextEnchantColorIdx = p->wpn.enchantIdx + 1;
   } else {
-    p->unk_951 = 0;
+    p->nextEnchantColorIdx = 0;
   }
 }
 
@@ -1118,7 +1118,7 @@ void FUN_080d57e4(Player* p) {
   if (p->action != PACT_IDLE) {
     PlayerLink_SetAction(p, PACT_IDLE, 0);
   }
-  AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animIDOffset, p->xflip);
+  AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animDir, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
 }
 
@@ -1149,7 +1149,7 @@ NAKED void FUN_080d613c(Player* p) { INCFUNC("asm/func/FUN_080d613c.inc"); }
 
 NAKED void FUN_080d6408(Player* p) { INCFUNC("asm/func/FUN_080d6408.inc"); }
 
-// 入力方向の履歴を1つずらして今フレームの向きを先頭に入れる (FUN_080784fc と同じ)
+// 入力方向の履歴を1つずらして今フレームの向きを先頭に入れる (Player_PushFacingHistory と同じ)
 void FUN_080d6600(Player* p) {
   s32 i;
 
@@ -1211,7 +1211,7 @@ s32 FUN_080d7bac(void) {
 }
 
 void FUN_080d7bc4(Player* p, s32 plttID) {
-  p->plttID_95e = plttID;
+  p->flashPlttID = plttID;
   p->plttFlashTimer = 32;
 }
 

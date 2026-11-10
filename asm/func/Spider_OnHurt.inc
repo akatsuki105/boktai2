@@ -1744,7 +1744,7 @@ _0812EA12:
 	strb r0, [r3]
 _0812EA2A:
 	adds r0, r6, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	mov r5, r8
 	ldrh r0, [r5, #0x3e]
 	strh r0, [r4]

@@ -795,9 +795,7 @@ void Camera_StepLook(Camera* cam) {
 
 // 画面揺れを1フレーム進め、worldPos に揺れのオフセットを足す
 // 画面ゆれを1フレーム分進め, 振幅ぶんの乱数オフセットをカメラ座標に反映する
-// 残差2命令 (131/129): 原典は gRandomTable のアドレスを r8 に巻き上げて 2回の Random() で共有するが, こちらは r8 が &shakeOffsetX に取られてテーブルを毎回ロードしなおす
-NON_MATCH void* Camera_StepShake(Camera* cam) {
-#ifdef NONMATCHING_C
+void* Camera_StepShake(Camera* cam) {
   if (cam->shakeActive) {
     if (cam->shakeTimer != 0) {
       s32 v = Div(cam->shakeTimer * cam->shakeCurrent + cam->shakeTarget, cam->shakeTimer + 1);
@@ -819,8 +817,8 @@ NON_MATCH void* Camera_StepShake(Camera* cam) {
     }
   }
   if (cam->shakeAmplitude != 0) {
-    cam->shakeOffsetX = ModArm(cam->shakeAmplitude, Random()) - (cam->shakeAmplitude >> 1);
-    cam->shakeOffsetZ = ModArm(cam->shakeAmplitude, Random()) - (cam->shakeAmplitude >> 1);
+    cam->shakeOffsetX = ModArm(cam->shakeAmplitude, RandomNext()) - (cam->shakeAmplitude >> 1);
+    cam->shakeOffsetZ = ModArm(cam->shakeAmplitude, RandomNext()) - (cam->shakeAmplitude >> 1);
     gCameraCoords.worldPos.x += cam->shakeOffsetX;
     gCameraCoords.worldPos.z += cam->shakeOffsetZ;
     cam->shakeAmplitude = 0;
@@ -828,9 +826,6 @@ NON_MATCH void* Camera_StepShake(Camera* cam) {
     cam->shakeOffsetX = 0;
     cam->shakeOffsetZ = 0;
   }
-#else
-  INCFUNC("asm/func/Camera_StepShake.inc");
-#endif
 }
 
 s32 Camera_Update(Camera* cam) {

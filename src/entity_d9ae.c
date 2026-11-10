@@ -103,14 +103,14 @@ NON_MATCH void EntityD9AE_SpawnDust(Vec3* pos, s16 param_2) {
 
   VEC3_SET(size, 32, 0, 32);
   for (i = 0; i < 10; i++) {
-    Random();
+    RandomNext();
     at = *pos;
     if (!(i & 1)) {
-      at.x = (Random() & 0xF) + param_2 + at.x;
-      at.z = at.z - 128 + (u8)Random();
+      at.x = (RandomNext() & 0xF) + param_2 + at.x;
+      at.z = at.z - 128 + (u8)RandomNext();
     } else {
-      at.x = at.x - 128 + (u8)Random();
-      at.z = (Random() & 0xF) + param_2 + at.z;
+      at.x = at.x - 128 + (u8)RandomNext();
+      at.z = (RandomNext() & 0xF) + param_2 + at.z;
     }
     DustManager_Spawn(&at, NULL, &size, 1, 3, 4);
   }
@@ -523,23 +523,23 @@ NON_MATCH void EntityD9AEElem_SpawnMoveDust(EntityD9AEElem* elem) {
     at = elem->mover.pos;
     switch (elem->dir) {
       case 0: {
-        at.x = at.x - 128 + (u8)Random();
-        at.z = at.z + 120 + (Random() & 0xF);
+        at.x = at.x - 128 + (u8)RandomNext();
+        at.z = at.z + 120 + (RandomNext() & 0xF);
         break;
       }
       case 1: {
-        at.x = at.x - 120 - (Random() & 0xF);
-        at.z = at.z - 128 + (u8)Random();
+        at.x = at.x - 120 - (RandomNext() & 0xF);
+        at.z = at.z - 128 + (u8)RandomNext();
         break;
       }
       case 2: {
-        at.x = at.x - 128 + (u8)Random();
-        at.z = at.z - 120 - (Random() & 0xF);
+        at.x = at.x - 128 + (u8)RandomNext();
+        at.z = at.z - 120 - (RandomNext() & 0xF);
         break;
       }
       case 3: {
-        at.x = at.x + 120 + (Random() & 0xF);
-        at.z = at.z - 128 + (u8)Random();
+        at.x = at.x + 120 + (RandomNext() & 0xF);
+        at.z = at.z - 128 + (u8)RandomNext();
         break;
       }
     }

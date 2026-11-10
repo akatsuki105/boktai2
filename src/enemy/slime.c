@@ -778,7 +778,7 @@ u32 Slime_PickHitAttributes(Slime* p) {
   if ((p->e).variant != 3) {
     return 0;
   }
-  return (u8)Random() < 180 ? HBATTR_HYOKETU | HBATTR_FROST : HBATTR_INKA | HBATTR_FLAME;
+  return (Random() & 0xFF) < 180 ? HBATTR_HYOKETU | HBATTR_FROST : HBATTR_INKA | HBATTR_FLAME;
 }
 
 // 分裂の飛沫を3つ, 乱数の向きと速さで飛ばす
@@ -789,9 +789,8 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
   WorldPos* pos;
 
   {
-    u16* table = gRandomTable;
-    u32 angle = _Random(table) & 0xFF;
-    s32 speed = (_Random(table) & 15) + 6;
+    u32 angle = RandomNext() & 0xFF;
+    s32 speed = (RandomNext() & 15) + 6;
 
     Vec3_SetPolar(&vel, angle, speed);
   }
@@ -799,18 +798,16 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
   pos = &(p->e).mover.pos;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 0, 0, 0, 0, 0, 0);
   {
-    u16* table = gRandomTable;
-    u32 angle = _Random(table) & 0xFF;
-    s32 speed = (_Random(table) & 15) + 6;
+    u32 angle = RandomNext() & 0xFF;
+    s32 speed = (RandomNext() & 15) + 6;
 
     Vec3_SetPolar(&vel, angle, speed);
   }
   vel.y = 37;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 0, 0, 0, 0, 0, 0);
   {
-    u16* table = gRandomTable;
-    u32 angle = _Random(table) & 0xFF;
-    s32 speed = (_Random(table) & 15) + 6;
+    u32 angle = RandomNext() & 0xFF;
+    s32 speed = (RandomNext() & 15) + 6;
 
     Vec3_SetPolar(&vel, angle, speed);
   }
@@ -826,31 +823,28 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
 NON_MATCH void Slime_ShootDroplets(Slime* p) {
 #ifdef NONMATCHING_C
   u32 attrs = Slime_PickHitAttributes(p);
-  u16* table = gRandomTable;
-  u32 r = _Random(table) & 15;
+  u32 r = RandomNext() & 15;
   Vec3 vel;
   WorldPos* pos;
   s32 angle;
 
   Vec3_Delta(&vel, &(p->e).mover.pos, &(p->e).playerMover->pos);
   angle = ArcTan2_8(vel.x, vel.z);
-  Vec3_SetPolar(&vel, angle + r, (_Random(table) & 7) + 6);
+  Vec3_SetPolar(&vel, angle + r, (RandomNext() & 7) + 6);
   vel.y = 48;
   pos = &(p->e).mover.pos;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
-    u16* table = gRandomTable;
-    u32 r = _Random(table) & 15;
-    s32 speed = _Random(table) & 7;
+    u32 r = RandomNext() & 15;
+    s32 speed = RandomNext() & 7;
 
     Vec3_SetPolar(&vel, angle + r, speed + 6);
   }
   vel.y = 37;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
-    u16* table = gRandomTable;
-    u32 r = _Random(table) & 15;
-    s32 speed = _Random(table) & 7;
+    u32 r = RandomNext() & 15;
+    s32 speed = RandomNext() & 7;
 
     Vec3_SetPolar(&vel, angle + r, speed + 6);
   }
@@ -866,35 +860,32 @@ NON_MATCH void Slime_ShootDroplets(Slime* p) {
 NON_MATCH void Slime_ScatterDroplets(Slime* p) {
 #ifdef NONMATCHING_C
   u32 attrs = Slime_PickHitAttributes(p);
-  u16* table = gRandomTable;
-  u32 r = _Random(table) & 15;
+  u32 r = RandomNext() & 15;
   Vec3 vel;
   WorldPos* pos;
   u32 a;
   s32 speed;
 
   Vec3_Delta(&vel, &(p->e).mover.pos, &(p->e).playerMover->pos);
-  a = (u8)_Random(table);
-  speed = _Random(table) & 7;
+  a = (u8)RandomNext();
+  speed = RandomNext() & 7;
   Vec3_SetPolar(&vel, a + r, speed + 12);
   vel.y = 48;
   pos = &(p->e).mover.pos;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
-    u16* table = gRandomTable;
-    u32 r = _Random(table) & 15;
-    u32 a = (u8)_Random(table);
-    s32 speed = _Random(table) & 7;
+    u32 r = RandomNext() & 15;
+    u32 a = (u8)RandomNext();
+    s32 speed = RandomNext() & 7;
 
     Vec3_SetPolar(&vel, a + r, speed + 12);
   }
   vel.y = 37;
   Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
-    u16* table = gRandomTable;
-    u32 r = _Random(table) & 15;
-    u32 a = (u8)_Random(table);
-    s32 speed = _Random(table) & 7;
+    u32 r = RandomNext() & 15;
+    u32 a = (u8)RandomNext();
+    s32 speed = RandomNext() & 7;
 
     Vec3_SetPolar(&vel, a + r, speed + 6);
   }

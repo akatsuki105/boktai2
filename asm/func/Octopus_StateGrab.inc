@@ -263,7 +263,7 @@ _081851D8:
 	movs r1, #0
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	b _081852D2
 _08185216:
 	lsls r0, r1, #0x10

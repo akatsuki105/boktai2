@@ -29,22 +29,22 @@ static_assert(sizeof(CrossoverOjamaBat) == 124);
 
 // 画面下に4色のオジャマバットの数を並べ, 取得・送信・受信・ブロックを演出するエンティティ, シングルトン
 typedef struct {
-  Entity e;                     // 0x000, ENTITY_UNK_11
-  u32 timer;                    // 0x018, state に入ってからのフレーム数
-  u8 state;                     // 0x01C, sCrossoverOjamaStateFuncs の添字
-  bool8 entered;                // 0x01D, state に入った最初のフレームだけ立つ
-  u16 blockFlags;               // 0x01E, bit0: 自分がブロッキング, bit1: 相手がブロッキング
-  s8 myOjama[4];                // 0x020, 自分が送るオジャマバットの色ごとの数
-  s8 rivalOjama[4];             // 0x024, 相手から届いたオジャマバットの色ごとの数
-  s8 blockedOjama[4];           // 0x028, ブロッキングで送り返した rivalOjama の写し
-  u8 nextIdx;                   // 0x02C, 次に飛ばす elems[4 + nextIdx], 8 フレームごとに進む
-  u8 shakeTimer;                // 0x02D, 0 でない間 banner.pos を乱数で揺らしながら減る
-  u8 unk_2e[2];                 // 0x02E
-  void (*onFinish)(void);       // 0x030, 演出の最後に呼ぶ
-  AuxSpriteGfx batGfx;          // 0x034, SPRITE_OJAMA_BAT
-  AuxSpriteGfx counterGfx;      // 0x050, SPRITE_OJAMA_BAT_CTR
-  MainSpriteGfx mainGfx;        // 0x06C, SPRITE_UI_LINK
-  MainSprite banner;            // 0x08C, LINK_BLOCKING か LINK_DOUBLE_BANG
+  Entity e;                    // 0x000, ENTITY_UNK_11
+  u32 timer;                   // 0x018, state に入ってからのフレーム数
+  u8 state;                    // 0x01C, sCrossoverOjamaStateFuncs の添字
+  bool8 entered;               // 0x01D, state に入った最初のフレームだけ立つ
+  u16 blockFlags;              // 0x01E, bit0: 自分がブロッキング, bit1: 相手がブロッキング
+  s8 myOjama[4];               // 0x020, 自分が送るオジャマバットの色ごとの数
+  s8 rivalOjama[4];            // 0x024, 相手から届いたオジャマバットの色ごとの数
+  s8 blockedOjama[4];          // 0x028, ブロッキングで送り返した rivalOjama の写し
+  u8 nextIdx;                  // 0x02C, 次に飛ばす elems[4 + nextIdx], 8 フレームごとに進む
+  u8 shakeTimer;               // 0x02D, 0 でない間 banner.pos を乱数で揺らしながら減る
+  u8 unk_2e[2];                // 0x02E
+  void (*onFinish)(void);      // 0x030, 演出の最後に呼ぶ
+  AuxSpriteGfx batGfx;         // 0x034, SPRITE_OJAMA_BAT
+  AuxSpriteGfx counterGfx;     // 0x050, SPRITE_OJAMA_BAT_CTR
+  MainSpriteGfx mainGfx;       // 0x06C, SPRITE_UI_LINK
+  MainSprite banner;           // 0x08C, LINK_BLOCKING か LINK_DOUBLE_BANG
   CrossoverOjamaBat elems[8];  // 0x0EC
 } CrossoverOjama;
 static_assert(sizeof(CrossoverOjama) == 1228);
@@ -127,10 +127,9 @@ void CrossoverOjama_NextBlockStep(CrossoverOjama* p, s32 param_2) {
 }
 
 void CrossoverOjamaBat_SetRandomWobble(CrossoverOjamaBat* elem, s32 base, u32 mask) {
-  u16* table = gRandomTable;
-  s32 wobble = base + (_Random(table) & mask);
+  s32 wobble = base + (RandomNext() & mask);
 
-  if ((u8)_Random(table) < 128) {
+  if ((RandomNext() & 0xFF) < 128) {
     elem->wobble = wobble;
   } else {
     elem->wobble = -wobble;
@@ -164,10 +163,8 @@ NON_MATCH void CrossoverOjamaBat_StateStock(CrossoverOjama* p, CrossoverOjamaBat
     elem->shakeTimer = 0;
     VEC3_SET(elem->batSprite.pos, (idx & 3) * 24 + 80, 144, 0);
     if (elem->shakeTimer != 0) {
-      u16* table = gRandomTable;
-
-      elem->batSprite.pos.x += (_Random(table) & 3) - 1;
-      elem->batSprite.pos.y += (_Random(table) & 3) - 1;
+      elem->batSprite.pos.x += (RandomNext() & 3) - 1;
+      elem->batSprite.pos.y += (RandomNext() & 3) - 1;
     }
     elem->counterSprite.pos = elem->batSprite.pos;
   }
@@ -180,10 +177,8 @@ NON_MATCH void CrossoverOjamaBat_StateStock(CrossoverOjama* p, CrossoverOjamaBat
       elem->shakeTimer--;
       VEC3_SET(elem->batSprite.pos, (idx & 3) * 24 + 80, 144, 0);
       if (elem->shakeTimer != 0) {
-        u16* table = gRandomTable;
-
-        elem->batSprite.pos.x += (_Random(table) & 3) - 1;
-        elem->batSprite.pos.y += (_Random(table) & 3) - 1;
+        elem->batSprite.pos.x += (RandomNext() & 3) - 1;
+        elem->batSprite.pos.y += (RandomNext() & 3) - 1;
       }
       elem->counterSprite.pos = elem->batSprite.pos;
     }
@@ -310,7 +305,6 @@ NON_MATCH void CrossoverOjamaBat_StateDeflect(CrossoverOjama* p, CrossoverOjamaB
     Vec3* v;
     s32 x;
     s8 angle;
-    u16* table;
 
     elem->entered = FALSE;
     counterSprite->poseIdx = elem->count;
@@ -323,8 +317,7 @@ NON_MATCH void CrossoverOjamaBat_StateDeflect(CrossoverOjama* p, CrossoverOjamaB
     v = &elem->to;
     VEC3_SET(*v, x + 80, 144, 0);
     CrossoverOjamaBat_SetRandomWobble(elem, 32, 15);
-    table = gRandomTable;
-    angle = (s8)ArcTan2_8(elem->from.x - elem->to.x, elem->from.y - elem->to.y) - 16 + (_Random(table) & 31);
+    angle = (s8)ArcTan2_8(elem->from.x - elem->to.x, elem->from.y - elem->to.y) - 16 + (RandomNext() & 31);
     v = &elem->vel;
     VEC3_SET(*v, POLAR_X(8, angle), POLAR_Z(8, angle), 0);
   }
@@ -604,10 +597,8 @@ s32 CrossoverOjama_Update(CrossoverOjama* p) {
       pos->x = 0;
       pos->y = 64;
       if (p->shakeTimer != 0) {
-        u16* table = gRandomTable;
-
-        pos->x = (_Random(table) & 3) - 2;
-        pos->y = (_Random(table) & 3) + 62;
+        pos->x = (RandomNext() & 3) - 2;
+        pos->y = (RandomNext() & 3) + 62;
       }
     }
   }

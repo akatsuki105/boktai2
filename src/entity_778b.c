@@ -43,9 +43,9 @@ void FUN_080db56c(void);
 void FUN_081d21cc(void);
 void FUN_080ddb1c(void);
 void FUN_08241000(void);
-void FUN_081efae8(void);
+void Entity081efa9c_ClearGlobal(void);
 void FUN_080de168(void);
-void FUN_081f2708(void);
+void Entity081f26bc_ClearGlobal(void);
 void Entity081f53a8_ClearGlobal(void);
 void FUN_081d6438(void);
 void FUN_080df46c(void);
@@ -164,24 +164,13 @@ NON_MATCH s32 FUN_080e05f0(Vec3* pos, Vec3* fallback, s32 tile1, s32 tile2) {
 #ifdef NONMATCHING_C
   if (tile2 == -255) {
     if (tile1 == tile2) {
-      s32 tile = gCollisionMap->tiledata->width * 12 + 10;
-
-      if (tile < 0) {
-        tile = -tile;
-      }
-      Entity778B_SetPosFromTile(fallback, tile);
+      Entity778B_SetPosFromTile(fallback, abs(gCollisionMap->tiledata->width * 12 + 10));
     } else {
-      if (tile1 < 0) {
-        tile1 = -tile1;
-      }
-      Entity778B_SetPosFromTile(pos, tile1);
+      Entity778B_SetPosFromTile(pos, abs(tile1));
       return 1;
     }
   } else {
-    if (tile2 < 0) {
-      tile2 = -tile2;
-    }
-    Entity778B_SetPosFromTile(pos, tile2);
+    Entity778B_SetPosFromTile(pos, abs(tile2));
   }
   return -1;
 #else
@@ -498,12 +487,12 @@ void FUN_080e0fbc(void) {
   Entity081eee80_ClearGlobal();
   FUN_080ddb1c();
   FUN_08241000();
-  FUN_081efae8();
+  Entity081efa9c_ClearGlobal();
   FUN_080de168();
   Entity081f0298_ClearGlobal();
   Entity081f0b90_ClearGlobal();
   Entity081f1770_ClearGlobal();
-  FUN_081f2708();
+  Entity081f26bc_ClearGlobal();
   Entity081f3324_ClearGlobal();
   Entity081f4554_ClearGlobal();
   Entity081f53a8_ClearGlobal();

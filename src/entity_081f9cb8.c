@@ -95,10 +95,9 @@ NON_MATCH void Entity081f9cb8_SpawnWaitEffect(Vec3* pos) {
   Vec3 vel;
   u32 angle;
   s32 speed;
-  u16* table = gRandomTable;
 
-  angle = _Random(table) & 0xFF;
-  speed = (_Random(table) & 63) - 32;
+  angle = Random() & 0xFF;
+  speed = (Random() & 63) - 32;
   Vec3_SetPolar(&vel, angle, speed);
   vel.y = (Random() & 15) + 30;
   Entity081ee2a0_SpawnDefault(pos, &vel, 30, 3);
@@ -114,17 +113,14 @@ NON_MATCH void Entity081f9cb8_SpawnDebris(Vec3* pos) {
   u32 life;
 
   {
-    u16* table = gRandomTable;
-    u32 angle = _Random(table) & 0xFF;
-    s32 speed = (_Random(table) & 15) + 4;
+    u32 angle = Random() & 0xFF;
+    s32 speed = (Random() & 15) + 4;
 
     Vec3_SetPolar(&vel, angle, speed);
   }
   {
-    u16* table = gRandomTable;
-
-    vel.y = (_Random(table) & 31) + 12;
-    life = (_Random(table) & 63) + 20;
+    vel.y = (Random() & 31) + 12;
+    life = (Random() & 63) + 20;
   }
   Entity081f26bc_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 49, 0, 2, 0, 0, life, 4, 1, 0x200004, 30, 8, 8);
 #else
@@ -311,4 +307,10 @@ void Entity081f9cb8_CancelAll(void) {
   }
 }
 
-NAKED void FUN_081f9db4(void) { INCFUNC("asm/func/FUN_081f9db4.inc"); }
+// 決め打ちの座標に 120 フレーム後に爆発する威力 0 の判定を1つ出す, 呼び出し元が無いのでデバッグ用か
+void FUN_081f9db4(void) {
+  Vec3 pos;
+
+  VEC3_SET(pos, 0x980, 0x200, 0x880);
+  Entity081f9cb8_Spawn(&pos, 120, 0, 0, 0, 0);
+}

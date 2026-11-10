@@ -192,10 +192,10 @@ void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
   for (i = 0; i < 4; i++) {
     if (REGISTERED_WEAPON(i) == slot1) {
       REGISTERED_WEAPON(i) = slot2;
-      FUN_08064658(gPlayerPtr[0], w2);
+      Player_SetWeapon(gPlayerPtr[0], w2);
     } else if (REGISTERED_WEAPON(i) == slot2) {
       REGISTERED_WEAPON(i) = slot1;
-      FUN_08064658(gPlayerPtr[0], w1);
+      Player_SetWeapon(gPlayerPtr[0], w1);
     }
   }
 }

@@ -31,7 +31,6 @@ void Barricade_OnHurt(HitboxData* a, HitboxData* b, Barricade* p) {
 void Barricade_SpawnBurstPtcl(Barricade* p) {
   ParticleSpawnParam param;
   WorldPos pos;
-  u16* table;
   s32 i;
 
   param.kind = 2;
@@ -55,10 +54,9 @@ void Barricade_SpawnBurstPtcl(Barricade* p) {
   param.decayXZRand = 0;
   for (i = 0; i < 6; i++) {
     pos = p->sprite.pos;
-    table = gRandomTable;
-    pos.x += Mod(_Random(table), 300) - 150;
-    pos.y += Mod(_Random(table), 300);
-    pos.z += Mod(_Random(table), 300) - 150;
+    pos.x += Mod(RandomNext(), 300) - 150;
+    pos.y += Mod(RandomNext(), 300);
+    pos.z += Mod(RandomNext(), 300) - 150;
     Entity08015584_Spawn(1, &pos, &param);
   }
 }

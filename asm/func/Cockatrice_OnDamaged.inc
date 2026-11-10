@@ -1182,7 +1182,7 @@ _081601B8:
 	strb r0, [r4]
 _08160228:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x6c]
 	strh r0, [r5]

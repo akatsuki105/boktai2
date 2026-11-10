@@ -409,7 +409,7 @@ void Elevator_UpdateState2(Elevator* e) {
       if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
         v = gPlayerPtr[0]->mover.pos;
         v.y = e->mover.pos.y;
-        FUN_0807a91c(gPlayerPtr[0], &v);
+        Player_SetPosAndSave(gPlayerPtr[0], &v);
         SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
         e->moveDelta.y = 0;
       }
@@ -432,7 +432,7 @@ void Elevator_UpdateState2(Elevator* e) {
       if (Player_TestElevatorFlags(gPlayerPtr[0], ELEV_RIDING)) {
         v = gPlayerPtr[0]->mover.pos;
         v.y = e->mover.pos.y;
-        FUN_0807a91c(gPlayerPtr[0], &v);
+        Player_SetPosAndSave(gPlayerPtr[0], &v);
         SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
         e->moveDelta.y = 0;
       }
@@ -552,7 +552,7 @@ void FUN_081d2c10(void) {
   WorldPos pos = gPlayerPtr[0]->mover.pos;
 
   pos.x += 0x80;
-  FUN_0807a91c(gPlayerPtr[0], &pos);
+  Player_SetPosAndSave(gPlayerPtr[0], &pos);
   Coffin_CopyPos(&pos);
   pos.x += 0x80;
   FUN_08086a4c(&pos);
@@ -658,20 +658,17 @@ NON_MATCH void Elevator_UpdateShake(Elevator* e) {
   }
 
   if (!Elevator_TestFlags(e, ELEVATOR_UNK_7)) {
-    u16* table;
-
     if (!Elevator_TestFlags(e, ELEVATOR_SHAKE)) {
       return;
     }
 
-    table = gRandomTable;
-    e->sprite.pos.x += Mod(_Random(table), 12) - 6;
+    e->sprite.pos.x += Mod(RandomNext(), 12) - 6;
     {
-      s32 dy = _Random(table) & 3;
+      s32 dy = RandomNext() & 3;
 
       e->sprite.pos.y += dy;
     }
-    e->sprite.pos.z += Mod(_Random(table), 12) - 6;
+    e->sprite.pos.z += Mod(RandomNext(), 12) - 6;
   }
 
   CLEAR_FLAGS(e->flags, ELEVATOR_SHAKE);
@@ -978,7 +975,7 @@ void Elevator_ClampPlayerToRange(Elevator* e) {
       d.x = e->mover.pos.x + d.x;
       d.y = e->mover.pos.y;
       d.z = e->mover.pos.z + d.z;
-      FUN_0807a91c(gPlayerPtr[i], &d);
+      Player_SetPosAndSave(gPlayerPtr[i], &d);
       SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
     }
   }
@@ -1274,7 +1271,7 @@ void Elevator_CarryPlayer(Elevator* e) {
     v.y = gPlayerPtr[0]->mover.pos.y + e->moveDelta.y;
     v.z = gPlayerPtr[0]->mover.pos.z + e->moveDelta.z;
     Elevator_ClampPlayerPos(&v, &gPlayerPtr[0]->mover.pos, e);
-    FUN_0807a91c(gPlayerPtr[0], &v);
+    Player_SetPosAndSave(gPlayerPtr[0], &v);
   }
 
   CLEAR_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
@@ -1503,7 +1500,7 @@ NON_MATCH void Elevator_Create(void) {
     gPlayerPtr[0]->shadow.flags |= 1;
     Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
     SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
-    FUN_0807a91c(gPlayerPtr[0], &e->mover.pos);
+    Player_SetPosAndSave(gPlayerPtr[0], &e->mover.pos);
     if (riding == 2) {
       FUN_08086a4c(&e->mover.pos);
       Elevator_ClearRidingFlag(p->coffinRidingID, 1);

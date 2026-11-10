@@ -134,7 +134,7 @@ s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, u8 playMo
 
 static inline void _MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
   p->unk_0 = 0;
-  p->unk_12 = 0;
+  p->animId = 0;
   p->animCmdIdx = 0;
   p->animCmdLength = 0;
   p->animFlags = 0;

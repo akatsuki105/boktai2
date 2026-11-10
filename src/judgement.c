@@ -51,10 +51,7 @@ void JudgementParticle_UpdateFalling(JudgementParticle* ptcl) {
 }
 
 // 8 個の粒子を放射状に飛ばして落とす (JudgementParticle_UpdateFalling)
-// 残差 107/109 命令: ループ外へ出す定数の選び方が違う, 原典は &gRandTableIdx と 0x3FF と gSineTable をレジスタに持ち gRandomTable を毎回プールから読む, こちらは gRandomTable を持って &gRandTableIdx を毎回読む
-// Tier A-C は試済 (枠をポインタで受ける, 式の項の順, 乱数をローカルに受ける)
-NON_MATCH void Judgement_SpawnFallingParticles(Judgement* p) {
-#ifdef NONMATCHING_C
+void Judgement_SpawnFallingParticles(Judgement* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
@@ -62,8 +59,8 @@ NON_MATCH void Judgement_SpawnFallingParticles(Judgement* p) {
 
     p->ptcls[i].ptcl.pos.x = 16;
     p->ptcls[i].ptcl.pos.y = 32;
-    angle = i * 32 + ((Random() >> 3) & 15) - 8;
-    speed = ((Random() >> 3) & 3) + 4;
+    angle = i * 32 + ((RandomNext() >> 3) & 15) - 8;
+    speed = ((RandomNext() >> 3) & 3) + 4;
     p->ptcls[i].vel.x = POLAR_X(speed, angle);
     p->ptcls[i].vel.y = POLAR_Z(speed, angle);
     p->ptcls[i].ptcl.flags &= ~SPRFLAG_HIDDEN;
@@ -71,9 +68,6 @@ NON_MATCH void Judgement_SpawnFallingParticles(Judgement* p) {
     p->ptcls[i].timer = 0;
     p->ptcls[i].update = JudgementParticle_UpdateFalling;
   }
-#else
-  INCFUNC("asm/func/Judgement_SpawnFallingParticles.inc");
-#endif
 }
 
 // 16フレームで畳む, その間は2コマのアニメを出しながら vel.y ぶん動かす
@@ -89,16 +83,13 @@ void JudgementParticle_UpdateMoving(JudgementParticle* ptcl) {
 
 // 粒子を乱数の位置に出し, 上向きの速さを付けて動かす (JudgementParticle_UpdateMoving)
 void JudgementParticle_StartMoving(JudgementParticle* ptcl) {
-  u16* table;
-
   ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
   Particle_SetPose(&ptcl->ptcl, ptcl->group, PTCL2_FLAME_L);
-  table = gRandomTable;
-  ptcl->ptcl.pos.x = Mod(_Random(table) >> 3, 16) + 8;
-  ptcl->ptcl.pos.y = Mod(_Random(table) >> 3, 16) + 24;
+  ptcl->ptcl.pos.x = Mod(RandomNext() >> 3, 16) + 8;
+  ptcl->ptcl.pos.y = Mod(RandomNext() >> 3, 16) + 24;
   ptcl->ptcl.pos.z = 0;
   ptcl->vel.x = 0;
-  ptcl->vel.y = -(Mod(_Random(table) >> 3, 2) + 2);
+  ptcl->vel.y = -(Mod(RandomNext() >> 3, 2) + 2);
   ptcl->vel.z = 0;
   ptcl->active = TRUE;
   ptcl->timer = 0;
@@ -117,13 +108,10 @@ void JudgementParticle_UpdateStill(JudgementParticle* ptcl) {
 
 // 粒子を左上の乱数の位置に出し, その場でアニメさせる (JudgementParticle_UpdateStill)
 void JudgementParticle_StartStill(JudgementParticle* ptcl) {
-  u16* table;
-
   ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
   Particle_SetPose(&ptcl->ptcl, ptcl->group, PTCL2_SOL_L);
-  table = gRandomTable;
-  ptcl->ptcl.pos.x = Mod(_Random(table) >> 3, 80) + 24;
-  ptcl->ptcl.pos.y = ((_Random(table) >> 3) & 7) + 8;
+  ptcl->ptcl.pos.x = Mod(RandomNext() >> 3, 80) + 24;
+  ptcl->ptcl.pos.y = ((RandomNext() >> 3) & 7) + 8;
   ptcl->ptcl.pos.z = 0;
   ptcl->active = TRUE;
   ptcl->timer = 0;
@@ -163,7 +151,6 @@ NON_MATCH void Judgement_UpdateHeal(Judgement* p) {
 #ifdef NONMATCHING_C
   bool32 done;
   s32 step;
-  u16* table;
   s32 hp;
 
   if (p->timer == 0) {
@@ -182,9 +169,8 @@ NON_MATCH void Judgement_UpdateHeal(Judgement* p) {
     sound_08240740(SONG_601);
     done = TRUE;
   }
-  table = gRandomTable;
-  p->icon.pos.x = p->iconPos.x + Mod(_Random(table) >> 3, 3) - 1;
-  p->icon.pos.y = p->iconPos.y + Mod(_Random(table) >> 3, 3) - 1;
+  p->icon.pos.x = p->iconPos.x + Mod(RandomNext() >> 3, 3) - 1;
+  p->icon.pos.y = p->iconPos.y + Mod(RandomNext() >> 3, 3) - 1;
   if ((p->frame & 7) == 0) {
     JudgementParticle_StartMoving(&p->ptcls[p->ptclIdx]);
     if (++p->ptclIdx > 7) {
@@ -211,10 +197,9 @@ NON_MATCH void Judgement_UpdateHeal(Judgement* p) {
 void Judgement_UpdateShake(Judgement* p) {
   if (++p->timer <= 7) {
     s32 range = 8 - p->timer;
-    u16* table = gRandomTable;
 
-    p->icon.pos.x = p->iconPos.x + Mod(_Random(table) >> 3, range) - (range >> 1);
-    p->icon.pos.y = p->iconPos.y + Mod(_Random(table) >> 3, range) - (range >> 1);
+    p->icon.pos.x = p->iconPos.x + Mod(RandomNext() >> 3, range) - (range >> 1);
+    p->icon.pos.y = p->iconPos.y + Mod(RandomNext() >> 3, range) - (range >> 1);
   }
   if (p->timer > 29) {
     p->updateCallback = Judgement_UpdateHeal;

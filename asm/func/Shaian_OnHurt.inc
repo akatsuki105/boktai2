@@ -889,7 +889,7 @@ _0817F68A:
 	strb r0, [r5]
 _0817F6A4:
 	adds r0, r6, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	mov r1, sb
 	ldrh r0, [r1, #0x3e]
 	strh r0, [r4]

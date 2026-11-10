@@ -748,7 +748,7 @@ _0815DC08:
 	strb r0, [r1]
 _0815DC78:
 	ldr r0, [sp, #0x10]
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r2, [sp, #0x54]
 	strh r0, [r2]

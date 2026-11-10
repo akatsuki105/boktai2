@@ -154,7 +154,7 @@ _081478F2:
 	cmp r0, #0
 	beq _0814790A
 	adds r0, r5, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08147918

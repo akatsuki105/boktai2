@@ -161,7 +161,7 @@ _0818548A:
 	movs r1, #0
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	b _081856FC
 	.align 2, 0
 _08185514: .4byte 0x085ADBFC

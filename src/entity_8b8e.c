@@ -354,34 +354,26 @@ void FUN_081e4bdc(Entity8B8E* p, u32 slot) {
 
 void FUN_081e4c40(Entity8B8E* p) { Entity8B8E_SetState(p, FUN_081e64cc, 0x1C); }
 
-// 命令数は一致 (30/30) だが, unk_1610 のロードとプール定数の置き場所が1命令ずれる
-NON_MATCH void FUN_081e4c64(Entity8B8E* p, s32 param_2) {
-#ifdef NONMATCHING_C
+// param_2 を種類 10 の通信メッセージとして送り, 失敗したら E8B8E1610_UNK_18 を立てる
+void FUN_081e4c64(Entity8B8E* p, s32 param_2) {
   s32 payload = param_2;
 
-  p->unk_1610 &= ~E8B8E1610_UNK_22;
+  CLEAR_FLAGS(p->unk_1610, E8B8E1610_UNK_22);
   if (!LinkShopManager_Send(&payload, 10, gFrameCounter)) {
-    p->unk_1610 |= E8B8E1610_UNK_18;
+    SET_FLAGS(p->unk_1610, E8B8E1610_UNK_18);
   } else {
-    p->unk_1610 &= ~E8B8E1610_UNK_18;
+    CLEAR_FLAGS(p->unk_1610, E8B8E1610_UNK_18);
   }
-#else
-  INCFUNC("asm/func/FUN_081e4c64.inc");
-#endif
 }
 
-// 命令数は一致 (29/29) だが, unk_1610 のロードとプール定数の置き場所が1命令ずれる (FUN_081e4c64 と同じ)
-NON_MATCH void FUN_081e4cb4(Entity8B8E* p, s32* args, s32 kind) {
-#ifdef NONMATCHING_C
-  p->unk_1610 &= ~E8B8E1610_UNK_22;
+// args を種類 kind の通信メッセージとして送り, 失敗したら E8B8E1610_UNK_19 を立てる
+void FUN_081e4cb4(Entity8B8E* p, s32* args, s32 kind) {
+  CLEAR_FLAGS(p->unk_1610, E8B8E1610_UNK_22);
   if (!LinkShopManager_Send(args, kind, p->sendTag)) {
-    p->unk_1610 |= E8B8E1610_UNK_19;
+    SET_FLAGS(p->unk_1610, E8B8E1610_UNK_19);
   } else {
-    p->unk_1610 &= ~E8B8E1610_UNK_19;
+    CLEAR_FLAGS(p->unk_1610, E8B8E1610_UNK_19);
   }
-#else
-  INCFUNC("asm/func/FUN_081e4cb4.inc");
-#endif
 }
 
 NAKED void FUN_081e4d04(Entity8B8E* p) { INCFUNC("asm/func/FUN_081e4d04.inc"); }

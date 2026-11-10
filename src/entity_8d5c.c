@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "video.h"
 #include "vm.h"
 
@@ -17,6 +18,8 @@ typedef struct {
   s32 lastDir;      // 0x2C, 前のフレームに押していた方向 (-1 上 / 1 下 / 0 なし)
 } Entity8D5C;
 static_assert(sizeof(Entity8D5C) == 48);
+
+bool32 FUN_0823d4c8(void);
 
 // 選択を delta だけ動かして, 選択中の項目の2つの値を読み直す
 void Entity8D5C_MoveSelection(Entity8D5C* p, s32 delta) {
@@ -43,7 +46,44 @@ void Entity8D5C_MoveSelection(Entity8D5C* p, s32 delta) {
   p->curScriptID = scriptID;
 }
 
-NAKED s32 Entity8D5C_Update(Entity8D5C* p) { INCFUNC("asm/func/Entity8D5C_Update.inc"); }
+// 上下キーで選択を動かし (押し続けると繰り返す), B で末尾へ飛び, A を離すと選択中のスクリプトを実行して自分を消す
+s32 Entity8D5C_Update(Entity8D5C* p) {
+  Input* input = &gInput[0];
+
+  u16 keys = input->down;
+
+  if (keys & (DPAD_UP | DPAD_DOWN)) {
+    s32 dir = (keys & DPAD_UP) ? -1 : 1;
+
+    if (p->lastDir == dir) {
+      if (--p->repeatTimer < 0) {
+        Entity8D5C_MoveSelection(p, dir);
+        p->repeatTimer = 4;
+      }
+    } else {
+      Entity8D5C_MoveSelection(p, dir);
+      p->repeatTimer = 20;
+      p->lastDir = dir;
+    }
+  } else {
+    p->lastDir = 0;
+  }
+
+  if (input->pressed & B_BUTTON) {
+    s32 prev;
+
+    do {
+      prev = p->index;
+      Entity8D5C_MoveSelection(p, 1);
+    } while (prev != p->index);
+  }
+  if (input->released & A_BUTTON) {
+    VM_ExecByID(p->curScriptID, NULL);
+    KillEntity((Entity*)p);
+  }
+  FUN_0823d4c8();
+  return 0;
+}
 
 s32 Entity8D5C_Init(Entity8D5C* p) {
   if (!VM_SeekToNamedArg('s')) {

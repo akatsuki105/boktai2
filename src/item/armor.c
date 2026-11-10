@@ -120,18 +120,18 @@ bool32 Cmd_7B7D(void) {
   return FALSE;
 }
 
-NON_MATCH void armor_082433bc(void) {
-#ifdef NONMATCHING_C
+// 0xFEF2, 防具図鑑と所持枠と装備を空にし, .n 個の防具を .a から所持枠に入れ, .e を装備枠にする
+void Cmd_ResetArmors(void) {
   s32 i;
   s32 count;
 
   for (i = 0; i < 2; i++) {
-    gStat->armorDex[i] = 0;
+    ARMOR_DEX(i) = 0;
   }
   for (i = 0; i < 32; i++) {
     RemoveArmorFromInventory(i);
   }
-  gStat->armor = -1;
+  EQUIPPED_ARMOR = ARMOR_NONE;
 
   if (VM_SeekToNamedArg('n')) {
     count = VM_GetValue();
@@ -146,12 +146,9 @@ NON_MATCH void armor_082433bc(void) {
       }
     }
     if (VM_SeekToNamedArg('e')) {
-      gStat->armor = VM_GetValue();
+      EQUIPPED_ARMOR = VM_GetValue();
     }
   }
-#else
-  INCFUNC("asm/func/armor_082433bc.inc");
-#endif
 }
 
 // 収集数を数える, ロックマン系のコラボ装備4つ (33..36) は数に入れない

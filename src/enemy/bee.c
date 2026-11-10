@@ -523,11 +523,9 @@ const u32 sBeeMoveSpeeds[8] = {2, 3, 4, 6, 7, 9, 10, 12};  // 0x085ADA18
 // curveT が大きいほど速く, BEEFLAG_FAST が立っていればさらに速い
 s32 Bee_GetMoveSpeed(Bee* p) {
   Bee* q = (p->e).owner;
-  s32 v = FixToInt(7, q->curveT);
-  s32 i;
+  s32 v = abs(FixToInt(7, q->curveT));
+  s32 i = v;
 
-  v = abs(v);
-  i = v;
   if (i > 7) {
     i = 7;
   }

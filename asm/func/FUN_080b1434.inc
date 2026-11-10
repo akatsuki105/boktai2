@@ -19,7 +19,7 @@
 	movs r1, #0
 	str r1, [sp]
 	movs r3, #0
-	bl FUN_0807bb3c
+	bl Player_LockPullCoffinTo
 	ldr r5, _080B1488 @ =0x00000C16
 	adds r1, r4, r5
 	movs r0, #1

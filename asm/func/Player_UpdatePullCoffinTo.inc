@@ -377,7 +377,7 @@ _08073016:
 	adds r0, r4, #0
 	mov r1, sl
 	mov r2, sb
-	bl FUN_08068e94
+	bl Player_UpdateCoffinTarget
 _08073034:
 	add sp, #4
 	pop {r3, r4, r5}

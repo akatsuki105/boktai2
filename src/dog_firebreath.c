@@ -219,10 +219,7 @@ NON_MATCH void Entity081f1770_SpawnDebris(Entity081f1770Elem* elem, s32 count) {
         ov = Map_FindTileOverride(to, 1);
         tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[to];
         toHeight = tile->heightStairs & 0xF;
-        diff = fromHeight - toHeight;
-        if (diff < 0) {
-          diff = -diff;
-        }
+        diff = abs(fromHeight - toHeight);
         if (diff <= 1) {
           s32 life;
 

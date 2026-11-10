@@ -330,7 +330,7 @@ static inline void Enemy_HandleHurt(HitboxData* a, HitboxData* b, Enemy* p) {
     p->unk_48a = 0;
     p->unk_48c = 1;
   }
-  FUN_080e64e4(p);
+  Enemy_BurstEmitterParticles(p);
   p->unk_48a = b->damage;
   a->damage += p->unk_188;
   SET_FLAGS(p->flags, ENEFLAG_UNK_13);

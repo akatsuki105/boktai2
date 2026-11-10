@@ -66,10 +66,8 @@ s32 Boss_Destroy(Boss* p) {
   return 0;
 }
 
-// 残差1命令 (61/62), 原典は gStat->bossHPMax への書き込みのあと gStat を読み直すが agbcc は値を使い回す (agbcc-levers.md の A cached global pointer that the target reloads per store と同じ)
-// 試済: 間に基本ブロックを挟む, 固定アドレス (*(GameInfo**)0x030046A0) で参照, 未: per-TU フラグ
-NON_MATCH s32 Boss_InitHP(Boss* p, s32 hp, s32 maxHP, s32 hurtboxPower) {
-#ifdef NONMATCHING_C
+// HP と最大 HP と食らい判定の防御力を入れ, HP ゲージ用に gStat にも写す
+s32 Boss_InitHP(Boss* p, s32 hp, s32 maxHP, s32 hurtboxPower) {
   p->maxHP = maxHP;
   p->hp = hp;
   p->hurtboxPower = hurtboxPower;
@@ -77,12 +75,9 @@ NON_MATCH s32 Boss_InitHP(Boss* p, s32 hp, s32 maxHP, s32 hurtboxPower) {
     p->hp = p->maxHP;
   }
   Boss_UpdateHPRatio(p);
-  gStat->bossHPMax = p->maxHP;
-  gStat->bossHP = p->hp;
+  BOSS_HP_MAX = p->maxHP;
+  BOSS_HP = p->hp;
   return 0;
-#else
-  INCFUNC("asm/func/Boss_InitHP.inc");
-#endif
 }
 
 s32 Boss_SetHP(Boss* p, s32 hp) {
@@ -354,13 +349,12 @@ void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4) {
 // 効いたもの: dx を u32 にする (z の dx - 0x7F が畳まれなくなる), 試済: y を式のまま書く (ldrsh になる), 未: Tier C
 NON_MATCH void FUN_0802326c(Boss* p) {
 #ifdef NONMATCHING_C
-  u16* table = gRandomTable;
   Vec3 pos;
-  u32 dx = _Random(table) & 0x7F;
+  u32 dx = RandomNext() & 0x7F;
   u32 dy;
 
   pos.x = p->mover.pos.x + dx;
-  dy = _Random(table) & 0x1F;
+  dy = RandomNext() & 0x1F;
   pos.y = p->mover.pos.y + dy;
   pos.z = p->mover.pos.z - (dx - 0x7F);
   Entity08015584_SpawnSprayOne(&pos, 1, 0, Q6(1), 12, 12, 4, 4);

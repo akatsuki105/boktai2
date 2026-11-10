@@ -895,7 +895,7 @@ _08170CDE:
 	strb r0, [r3]
 _08170CF6:
 	adds r0, r6, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	ldrh r0, [r7, #0x3e]
 	strh r0, [r4]
 	movs r4, #0xc4

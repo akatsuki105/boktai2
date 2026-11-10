@@ -59,13 +59,13 @@ void WarpMagicSquare_UpdateDormant(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateSpinIn(WarpMagicSquare* p);
 void WarpMagicSquare_UpdatePillars(WarpMagicSquare* p);
 bool32 FUN_08086af0(void);
-void FUN_0807b8dc(Player* p);
+void Player_LockHidden(Player* p);
 void FUN_080a6e88(bool32 stopSound);
 void WarpMagicSquare_UpdateDemoParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateSpinOut(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateLit(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDepartPillarsUp(WarpMagicSquare* p);
-void FUN_0807c200(Player* p, DirS32 dir, u32 scriptID);
+void Player_LockWarpOut(Player* p, DirS32 dir, u32 scriptID);
 bool32 FUN_08086ab8(void);
 void FUN_080a6edc(void);
 void WarpMagicSquare_UpdateLightUp(WarpMagicSquare* p);
@@ -74,7 +74,7 @@ void WarpMagicSquare_UpdateDemoPillarsUp(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDemoPillarsDown(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateIdle(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArriveWait(WarpMagicSquare* p);
-void FUN_0807c36c(Player* p, DirS32 dir, u32 scriptID);
+void Player_LockWarpIn(Player* p, DirS32 dir, u32 scriptID);
 void WarpMagicSquare_UpdateDepartParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArriveParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArrivePillarsDown(WarpMagicSquare* p);
@@ -133,17 +133,10 @@ NON_MATCH void WarpMagicSquarePtcl_SpawnRise(WarpMagicSquarePtcl* ptcl, Vec3* po
 }
 
 s32 WarpMagicSquare_IsPlayerNear(WarpMagicSquare* p) {
-  s32 dx = gStat->playerX - p->pos.x;
-  s32 dz;
+  s32 dx = abs(gStat->playerX - p->pos.x);
+  s32 dz = abs(gStat->playerZ - p->pos.z);
 
-  if (dx < 0) {
-    dx = -dx;
-  }
-  dz = gStat->playerZ - p->pos.z;
-  if (dz < 0) {
-    dz = -dz;
-  }
-  if (dx <= 96 && dz <= 96 && dx * dx + dz * dz <= 9216) {
+  if (dx <= Q8(0.375) && dz <= Q8(0.375) && dx * dx + dz * dz <= Q8(0.375) * Q8(0.375)) {
     return TRUE;
   }
   return FALSE;
@@ -153,16 +146,13 @@ s32 WarpMagicSquare_IsSolarCoffinNear(WarpMagicSquare* p) {
   WorldPos* pos = Coffin_GetPos();
 
   if (pos != NULL && gCoffin->coffinID == COFFIN_SOLAR && gCoffin->state < 5) {
-    s32 dy = pos->y - p->pos.y;
+    s32 dy = abs(pos->y - p->pos.y);
 
-    if (dy < 0) {
-      dy = -dy;
-    }
-    if (dy < 256) {
+    if (dy < Q8(1)) {
       s32 dx = pos->x - p->pos.x;
       s32 dz = pos->z - p->pos.z;
 
-      if (dx <= 380 && dz <= 380 && dx * dx + dz * dz <= 144400) {
+      if (dx <= Q8(1.485) && dz <= Q8(1.485) && dx * dx + dz * dz <= Q8(1.485) * Q8(1.485)) {
         return TRUE;
       }
     }
@@ -437,7 +427,7 @@ void WarpMagicSquare_UpdateDepartSink(WarpMagicSquare* p) {
   }
   p->sprite.pos.y = p->pos.y + p->lift;
   if (p->lift == 0 && gPlayerPtr[0]->action == 0) {
-    FUN_0807c200(gPlayerPtr[0], 4, 0);
+    Player_LockWarpOut(gPlayerPtr[0], 4, 0);
     p->withCoffin = 0;
     if (WarpMagicSquare_IsSolarCoffinNear(p) && FUN_08086ab8()) {
       p->withCoffin = 1;
@@ -506,7 +496,7 @@ void WarpMagicSquare_UpdateArriveDelay(WarpMagicSquare* p) {
 
 void WarpMagicSquare_UpdateArriveParticles(WarpMagicSquare* p) {
   if (p->stateTimer == 16) {
-    FUN_0807c36c(gPlayerPtr[0], 4, 0);
+    Player_LockWarpIn(gPlayerPtr[0], 4, 0);
   }
   if (p->stateTimer < 32 && !(p->stateTimer & 3)) {
     WarpMagicSquarePtcl_SpawnFall(&p->ptcls[p->stateTimer >> 2], &p->pos);
@@ -753,8 +743,8 @@ NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
       PlaySound_082406e0(SE_WARP_END);
       p->unk_380 = 1;
       FUN_080a6e88(FALSE);
-      FUN_0807a91c(gPlayerPtr[0], &p->pos);
-      FUN_0807b8dc(gPlayerPtr[0]);
+      Player_SetPosAndSave(gPlayerPtr[0], &p->pos);
+      Player_LockHidden(gPlayerPtr[0]);
       p->sprite.flags &= ~SPRFLAG_HIDDEN;
       Video_SetAuxSpritePltt(&p->gfx, p->plttID + 2);
       p->sprite2.flags |= SPRFLAG_HIDDEN;

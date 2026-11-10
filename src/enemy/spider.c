@@ -40,7 +40,7 @@ static inline bool8 Spider_TestUnk660(Spider* p, u16 bit) {
   return FALSE;
 }
 
-void FUN_080e8614(Enemy* p);
+void Enemy_ScatterKindParticles(Enemy* p);
 void FUN_080e68d8(Enemy* p, s32 timer);
 void Spider_PickPathNodeAwayFromPlayer(Spider* p);
 void Spider_PickWanderDest(Spider* p);
@@ -493,7 +493,7 @@ s32 FUN_0812f818(Spider* p) {
   FUN_08130460(p);
   FUN_08130610(p);
   FUN_0813069c(p);
-  FUN_080e8614(&p->e);
+  Enemy_ScatterKindParticles(&p->e);
   return 1;
 }
 
@@ -508,7 +508,7 @@ void FUN_0812f840(Spider* p) {
   }
   speed = (p->e).getMoveSpeed(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
-  if (Map_ConsumeNavWaypointChanged((p->e).navAgent) && FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+  if (Map_ConsumeNavWaypointChanged((p->e).navAgent) && Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
     Enemy_ResetState(&p->e, 0, 0, 13);
     return;
   }
@@ -546,7 +546,7 @@ void FUN_0812f9ec(Spider* p) {
       CLEAR_FLAGS(((Spider*)(p->e).owner)->unk_660, 2);
       return;
     }
-  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+  } else if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
     Enemy_ResetState(&p->e, 0, 0, 6);
   }
   if (!Enemy_TestFlag(&p->e, ENEFLAG_UNK_14) && q->unk_65c > 0) {
@@ -608,10 +608,10 @@ NON_MATCH void FUN_0812fdb8(Spider* p) {
   if ((p->e).subStateTimer > 60) {
     Spider_PickRandomPathNode(p);
     Enemy_StepTowardPathNode(&p->e);
-    if ((p->e).variant == 0 ? (Random() & 3) != 0 : (Random() & 7) == 0) {
+    if ((p->e).variant == 0 ? (RandomNext() & 3) != 0 : (RandomNext() & 7) == 0) {
       Enemy_ResetState(&p->e, 0, 0, 15);
       Enemy_EnterState(&p->e, Spider_StateWait, ES_UNK_33);
-      q->unk_65e = (Random() & 127) + 60;
+      q->unk_65e = (RandomNext() & 127) + 60;
     } else {
       Enemy_ResetState(&p->e, 0, 0, 7);
       Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
@@ -699,7 +699,7 @@ void FUN_081302f8(Spider* p, u16* msg) {
 }
 
 void FUN_08130460(Spider* p) {
-  if (Enemy_IsDead(&p->e) == 0 && gPlayerPtr[0]->unk_3ff < 0) {
+  if (Enemy_IsDead(&p->e) == 0 && gPlayerPtr[0]->spiderWebIdx < 0) {
     Spider* q = (p->e).owner;
 
     CLEAR_FLAGS(q->unk_660, 2);
@@ -793,9 +793,8 @@ NON_MATCH void FUN_0813069c(Spider* p) {
 NON_MATCH void Spider_PickWanderDest(Spider* p) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).owner;
-  u16* table = gRandomTable;
-  s32 dist = (_Random(table) & 0x3FF) + 256;
-  s32 spread = (_Random(table) & 0x7F) - 63;
+  s32 dist = (RandomNext() & 0x3FF) + 256;
+  s32 spread = (RandomNext() & 0x7F) - 63;
   u8 angle = spread + (p->e).mover.angle;
 
   if (Mod((p->e).subStateTimer, 30) == 0) {
@@ -817,7 +816,7 @@ NON_MATCH void Spider_PickWanderDest(Spider* p) {
       return;
     }
     (p->e).unk_20c = pos;
-    (p->e).animSpeedDiv = (_Random(table) & 3) == 0 ? 4 : 1;
+    (p->e).animSpeedDiv = (RandomNext() & 3) == 0 ? 4 : 1;
     if (!Enemy_TryRouteToEx(&p->e, (p->e).navAgent, &(p->e).mover.pos, &(p->e).unk_20c)) {
       Enemy_StepTowardPathNode(&p->e);
       q->unk_65c = 0;

@@ -21,7 +21,7 @@ static EnemyTargetManager* sEnemyTargetManager;  // 0x03000184
 bool32 FUN_0808672c(void);
 void Mover_ShowTrackingMarker(Mover* owner);
 bool8 Enemy_IsPosAheadOnSameTile(Enemy* p, Vec3* pos);
-s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst);
+s32 Enemy_CheckStepTo(Enemy* p, WorldPos* pos, WorldPos* dst);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 bool32 FUN_080865dc(Vec3* out);
 
@@ -337,7 +337,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
               }
 
               if (dimKnown && distSq <= limit) {
-                s32 step = FUN_080e3f50(enemy, &enemy->mover.pos, &m.pos);
+                s32 step = Enemy_CheckStepTo(enemy, &enemy->mover.pos, &m.pos);
 
                 if (step >= 0) {
                   s32 tile = GetCollisionTileIdx(&m.pos);
@@ -426,10 +426,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
           } else if (diff < -0x80) {
             diff += 0x100;
           }
-          if (diff < 0) {
-            diff = -diff;
-          }
-          if (diff <= enemy->unk_1fd) {
+          if (abs(diff) <= enemy->unk_1fd) {
             s32 limit;
             u32 near;
             bool32 dim;
@@ -458,7 +455,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
             }
 
             if (dimKnown && distSq <= limit) {
-              s32 step = FUN_080e3f50(enemy, &enemy->mover.pos, &node->owner->pos);
+              s32 step = Enemy_CheckStepTo(enemy, &enemy->mover.pos, &node->owner->pos);
 
               if (step >= 0) {
                 s32 tile = GetCollisionTileIdx(&node->owner->pos);

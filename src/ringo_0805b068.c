@@ -94,18 +94,13 @@ s32 FUN_0805a6ec(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
 NAKED void FUN_0805a728(Entity0805b068Elem* elem) { INCFUNC("asm/func/FUN_0805a728.inc"); }
 
 // sprites[1..3] を見せる
-// 残差1命令, 原典は AND のマスクをループ変数の初期化より前に作る (FUN_0805a8d0 と同じ)
-NON_MATCH void FUN_0805a8b0(Entity0805b068Elem* elem) {
-#ifdef NONMATCHING_C
+void FUN_0805a8b0(Entity0805b068Elem* elem) {
   AuxSprite* spr = &elem->sprites[1];
   s32 i;
 
-  for (i = 2; i >= 0; i--, spr++) {
+  for (i = 0; i < 3; i++, spr++) {
     spr->flags &= ~SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_0805a8b0.inc");
-#endif
 }
 
 // sprites[1..3] を隠す

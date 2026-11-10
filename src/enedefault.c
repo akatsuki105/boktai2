@@ -200,8 +200,8 @@ void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
 void FUN_080e5098(Enemy* p, s32 param_2, s32 param_3);
 void FUN_080f5c0c(Enemy* p);
 void Enemy_StateDefeated(Enemy* p);
-bool8 FUN_080fa7a4(Enemy* p);
-void FUN_080faad8(Enemy* p);
+bool8 Enemy_RouteToNearestLinkPlayer(Enemy* p);
+void Enemy_PickPathNodeAwayFromPlayer(Enemy* p);
 void FUN_080ce544(u32 param_1, u32 param_2);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
 s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 param_5);
@@ -228,10 +228,7 @@ void (*const gEnemyDefaultMsgHandlers[6])(Enemy*, u16*) = {
 
 // "enedefault.c" を参照しているので、この関数が "enedefault.c" 内にあるのは間違いない
 // 敵がプレイヤーに気付く, 警戒の感情アイコンと声を出し, 通信プレイでなければプレイヤーごとの見つかった回数を数える
-// 残差は224/226命令, 頭打ちの 9999 を原典は r1 に読んでから r0 へ移し, 各回数のオフセットを r3 で作るが, こちらは r0 に直接読み r1 を使う
-// 試済: 回数を増やす inline (s16* を受ける形は後半がまとめられて 210), 三項演算子 (246), 分岐の向きの反転 (変化なし), switch (比較が増える)
-NON_MATCH void Enemy_Alert(Enemy* p) {
-#ifdef NONMATCHING_C
+void Enemy_Alert(Enemy* p) {
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_26)) {
     return;
   }
@@ -261,38 +258,35 @@ NON_MATCH void Enemy_Alert(Enemy* p) {
     return;
   }
   if (p->playerMover->unk_4 == 0) {
-    if (gStat->unk_950[0] < 9999) {
-      gStat->unk_950[0]++;
+    if (UNK_950(0) < 9999) {
+      UNK_950(0)++;
     } else {
-      gStat->unk_950[0] = 9999;
+      UNK_950(0) = 9999;
     }
-    if (gStat->alertCount < 9999) {
-      gStat->alertCount++;
+    if (ALERT_COUNT < 9999) {
+      ALERT_COUNT++;
     } else {
-      gStat->alertCount = 9999;
+      ALERT_COUNT = 9999;
     }
   } else if (p->playerMover->unk_4 == 1) {
-    if (gStat->unk_950[1] < 9999) {
-      gStat->unk_950[1]++;
+    if (UNK_950(1) < 9999) {
+      UNK_950(1)++;
     } else {
-      gStat->unk_950[1] = 9999;
+      UNK_950(1) = 9999;
     }
   } else if (p->playerMover->unk_4 == 2) {
-    if (gStat->unk_950[2] < 9999) {
-      gStat->unk_950[2]++;
+    if (UNK_950(2) < 9999) {
+      UNK_950(2)++;
     } else {
-      gStat->unk_950[2] = 9999;
+      UNK_950(2) = 9999;
     }
   } else if (p->playerMover->unk_4 == 3) {
-    if (gStat->unk_950[3] < 9999) {
-      gStat->unk_950[3]++;
+    if (UNK_950(3) < 9999) {
+      UNK_950(3)++;
     } else {
-      gStat->unk_950[3] = 9999;
+      UNK_950(3) = 9999;
     }
   }
-#else
-  INCFUNC("asm/func/Enemy_Alert.inc");
-#endif
 }
 
 // 攻撃が当たった相手 (hitTargetID) に気付いて追う相手にし, そちらを向く, 当たっていなければ FALSE
@@ -653,7 +647,7 @@ NON_MATCH void FUN_080f0e78(Enemy* p) {
   Enemy_UpdateWalkAnimSpeed(p);
 
   if (Map_ConsumeNavWaypointChanged(p->navAgent)) {
-    if (!FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
+    if (!Enemy_TurnTowardWaypoint(p, p->navAgent, 32, 32, speed)) {
       p->subStateTimer++;
       return;
     }
@@ -879,7 +873,7 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
       p->unk_542 = 6;
     }
   }
-  FUN_080e7b6c(p);
+  Enemy_StepToFloorEdge(p);
   p->animSpeedDiv = 2;
 #else
   INCFUNC("asm/func/FUN_080f12c4.inc");
@@ -1193,7 +1187,7 @@ void FUN_080f248c(Enemy* p) {
       Enemy_ResetState(p, 0, 0, 0);
       return;
     }
-  } else if (FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
+  } else if (Enemy_TurnTowardWaypoint(p, p->navAgent, 32, 32, speed)) {
     Enemy_ResetState(p, 0, 0, 6);
   }
   p->subStateTimer++;
@@ -1325,7 +1319,7 @@ void FUN_080f2a40(Enemy* p) {
   Enemy_UpdateWalkAnimSpeed(p);
 
   if (Map_ConsumeNavWaypointChanged(p->navAgent)) {
-    if (FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(p, p->navAgent, 32, 32, speed)) {
       Enemy_ResetState(p, 0, 0, 6);
       Enemy_EnterState(p, p->handlerWait, ES_UNK_0);
     }
@@ -1475,15 +1469,15 @@ NON_MATCH void FUN_080f31c4(Enemy* p) {
   Enemy_UpdateWalkAnimSpeed(p);
 
   if (Map_ConsumeNavWaypointChanged(p->navAgent)) {
-    if (FUN_080e60b8(p, p->navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(p, p->navAgent, 32, 32, speed)) {
       Enemy_ResetState(p, 0, 0, 6);
     }
   } else if (Enemy_MoveAlongNav(p, p->navAgent, 32, 32, speed)) {
     Enemy_ResetState(p, 0, 0, 8);
     Enemy_EnterState(p, p->unk_5a8, ES_UNK_19);
     if (IsLinkPlay()) {
-      if (!FUN_080fa7a4(p)) {
-        FUN_080faad8(p);
+      if (!Enemy_RouteToNearestLinkPlayer(p)) {
+        Enemy_PickPathNodeAwayFromPlayer(p);
       }
     } else {
       PathWalker* walker = p->mover.path;
@@ -2579,7 +2573,7 @@ NON_MATCH void FUN_080f5c0c(Enemy* p) {
   p->unk_494 = 65;
   if (p->unk_4be == 0) {
     p->hurtbox.flags |= HBFLAG_ANGLE;
-    FUN_080e64e4(p);
+    Enemy_BurstEmitterParticles(p);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_13);
     Enemy_ResetState(p, 3, 1, 0);
     Enemy_EnterState(p, p->unk_59c, ES_UNK_15);
@@ -3077,10 +3071,7 @@ NON_MATCH bool8 FUN_080f84d4(Enemy* p) {
 }
 
 // param_2 が正なら, 向きと逆の方へ破片のパーティクルを 2〜3 個飛ばす
-// 残差1命令 (138/139), 原典は gRandomTable を先に sl へ置いてから &gRandTableIdx を読むが, こちらは &gRandTableIdx を先に読み, table と 0x3FF の r9/r10 が入れ替わる
-// Random() と count のローカルでここまで寄る, u16* table + _Random(table) は table が定数に戻されて 144 命令に悪化
-NON_MATCH void FUN_080f8844(Enemy* p, s32 param_2) {
-#ifdef NONMATCHING_C
+void FUN_080f8844(Enemy* p, s32 param_2) {
   Vec3 vel;
   Vec3 velRange;
   u32 angle;
@@ -3092,16 +3083,13 @@ NON_MATCH void FUN_080f8844(Enemy* p, s32 param_2) {
 
   angle = (p->angle + 0x80) & 0xFF;
   vel.x = COS(angle) >> 10;
-  vel.y = Random() & 7;
+  vel.y = RandomNext() & 7;
   vel.z = SIN(angle) >> 10;
-  velRange.x = (Random() & 7) + 3;
-  velRange.y = (Random() & 7) + 3;
-  velRange.z = (Random() & 7) + 3;
-  count = (Random() & 1) + 2;
+  velRange.x = (RandomNext() & 7) + 3;
+  velRange.y = (RandomNext() & 7) + 3;
+  velRange.z = (RandomNext() & 7) + 3;
+  count = (RandomNext() & 1) + 2;
   ScatterEffect_Spawn(count, FUN_080f8abc(p), &p->mover.pos, &vel, &velRange, 45, 31);
-#else
-  INCFUNC("asm/func/FUN_080f8844.inc");
-#endif
 }
 
 // 移動量の半分の速さで, 破片のパーティクルを 4〜7 個ばらまく
@@ -3111,17 +3099,15 @@ NON_MATCH void FUN_080f897c(Enemy* p) {
 #ifdef NONMATCHING_C
   Vec3 vel;
   Vec3 velRange;
-  u16* table;
   s32 count;
 
   vel.x = FixToInt(1, p->mover.delta.x);
   vel.y = Random() & 7;
   vel.z = FixToInt(1, p->mover.delta.z);
-  table = gRandomTable;
-  velRange.x = (_Random(table) & 3) + 15;
-  velRange.y = (_Random(table) & 7) + 15;
-  velRange.z = (_Random(table) & 3) + 15;
-  count = (_Random(table) & 3) + 4;
+  velRange.x = (RandomNext() & 3) + 15;
+  velRange.y = (RandomNext() & 7) + 15;
+  velRange.z = (RandomNext() & 3) + 15;
+  count = (RandomNext() & 3) + 4;
   ScatterEffect_Spawn(count, FUN_080f8abc(p), &p->mover.pos, &vel, &velRange, 45, 31);
 #else
   INCFUNC("asm/func/FUN_080f897c.inc");
@@ -3146,23 +3132,16 @@ s32 FUN_080f8abc(Enemy* p) {
 }
 
 // ゴーレムが倒れたときに破片のパーティクルを 4〜7 個ばらまく
-// 残差3命令 (96/93) でこちらが長い: 原典は定数 0x18 を使用箇所ごとに movs で作るが agbcc は r9 に巻き上げて使い回す, 他はレジスタ順列
-// Tier A-C は試済: table の代入を vel.x の後に下げると 97, Random() 形も 97 と悪化
-NON_MATCH void FUN_080f8ae0(Enemy* p) {
-#ifdef NONMATCHING_C
+void FUN_080f8ae0(Enemy* p) {
   Vec3 vel;
   Vec3 velRange;
-  u16* table = gRandomTable;
   vel.x = -12;
-  vel.y = _Random(table) & 7;
+  vel.y = RandomNext() & 7;
   vel.z = -12;
   velRange.x = 24;
-  velRange.y = (_Random(table) & 7) + 3;
+  velRange.y = (RandomNext() & 7) + 3;
   velRange.z = 24;
-  ScatterEffect_Spawn((_Random(table) & 3) + 4, FUN_080f8abc(p), &p->mover.pos, &vel, &velRange, 0x3C, 0x3F);
-#else
-  INCFUNC("asm/func/FUN_080f8ae0.inc");
-#endif
+  ScatterEffect_Spawn((RandomNext() & 3) + 4, FUN_080f8abc(p), &p->mover.pos, &vel, &velRange, 0x3C, 0x3F);
 }
 
 // 通信プレイ中だけ, 持ち主のプレイヤー番号で追跡マーカーを出す

@@ -451,10 +451,8 @@ void Ringo_SetHurtboxPower(Ringo* p, u32 power) {
 }
 
 void FUN_08028084(Ringo* p) {
-  u16* table = gRandomTable;
-
-  p->unk_16e = _Random(table);
-  p->unk_16c = (_Random(table) & 3) + 3;
+  p->unk_16e = RandomNext();
+  p->unk_16c = (RandomNext() & 3) + 3;
 }
 
 // 残差は return FALSE の位置のみ (47/47): 原典は unk_888 を減らした直後に return FALSE を置いてリセット側を最後に置く, hpRatio は Boss_GetHPRatio を通すと符号付きの比較が揃う
@@ -740,9 +738,7 @@ void FUN_08028960(Ringo* p) {
   p->unk_8e4++;
 }
 
-// 1 回目で打ち切り (111/109), 原典は乱数の添字の番地をループの外に出し, 乱数表の番地は毎回読み直す
-NON_MATCH void FUN_08028a04(Ringo* p) {
-#ifdef NONMATCHING_C
+void FUN_08028a04(Ringo* p) {
   Mover* mover = &p->base.mover;
   Vec3 ofs;
   s32 i;
@@ -755,14 +751,11 @@ NON_MATCH void FUN_08028a04(Ringo* p) {
   for (i = 0; i < 4; i++) {
     Vec3 pos;
 
-    pos.x = ofs.x + (Random() & 0x7F) - 0x40;
+    pos.x = ofs.x + (RandomNext() & 0x7F) - 0x40;
     pos.y = ofs.y;
-    pos.z = ofs.z + (Random() & 0x7F) - 0x40;
+    pos.z = ofs.z + (RandomNext() & 0x7F) - 0x40;
     SpawnBloodEx(&mover->pos, &pos, NULL, NULL, 1, 1);
   }
-#else
-  INCFUNC("asm/func/FUN_08028a04.inc");
-#endif
 }
 
 // 1 回目で打ち切り, 残差はスタックの退避先 (sprite と回数) とレジスタ (119/119)
@@ -773,20 +766,18 @@ NON_MATCH void FUN_08028b00(Ringo* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    u16* table;
     u32 angle;
     s32 speed;
     s32 velYMax;
 
     VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
-    table = gRandomTable;
-    angle = _Random(table) & 0xFF;
-    speed = (_Random(table) & 3) + 2;
-    velYMax = (_Random(table) & 3) + 20;
+    angle = RandomNext() & 0xFF;
+    speed = (RandomNext() & 3) + 2;
+    velYMax = (RandomNext() & 3) + 20;
     EmitSmoke(&sprite->pos, 3, &size, angle, speed, velYMax, 2, 2);
-    angle = _Random(table) & 0xFF;
-    speed = (_Random(table) & 3) + 2;
-    velYMax = (_Random(table) & 3) + 20;
+    angle = RandomNext() & 0xFF;
+    speed = (RandomNext() & 3) + 2;
+    velYMax = (RandomNext() & 3) + 20;
     EmitSmoke(&sprite->pos, 3, &size, angle, speed, velYMax, 2, 2);
   }
 #else
@@ -800,16 +791,14 @@ void FUN_08028c04(Ringo* p) {
   s32 i;
 
   for (i = 0; i < 2; i++) {
-    u16* table;
     u32 angle;
     s32 speed;
     s32 velYMax;
 
     VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
-    table = gRandomTable;
-    angle = (u8)_Random(table);
-    speed = (_Random(table) & 3) + 2;
-    velYMax = (_Random(table) & 3) + 20;
+    angle = (u8)RandomNext();
+    speed = (RandomNext() & 3) + 2;
+    velYMax = (RandomNext() & 3) + 20;
     EmitSmoke(&sprite->pos, 3, &size, angle, speed, velYMax, 2, 2);
   }
 }
@@ -823,20 +812,18 @@ NON_MATCH void FUN_08028cb0(Ringo* p) {
 
   Vec3_CopyOffsetY(&pos, &p->sprites[0].pos, 0x40);
   for (i = 0; i < 3; i++) {
-    u16* table;
     u32 angle;
     s32 speed;
     s32 velYMax;
 
     VEC3_SET(size, Q8(1), Q8(0.063), Q8(1));
-    table = gRandomTable;
-    angle = _Random(table) & 0xFF;
-    speed = (_Random(table) & 3) + 2;
-    velYMax = (_Random(table) & 3) + 20;
+    angle = RandomNext() & 0xFF;
+    speed = (RandomNext() & 3) + 2;
+    velYMax = (RandomNext() & 3) + 20;
     EmitSmoke(&pos, 3, &size, angle, speed, velYMax, 2, 2);
-    angle = _Random(table) & 0xFF;
-    speed = (_Random(table) & 3) + 2;
-    velYMax = (_Random(table) & 3) + 20;
+    angle = RandomNext() & 0xFF;
+    speed = (RandomNext() & 3) + 2;
+    velYMax = (RandomNext() & 3) + 20;
     EmitSmoke(&pos, 3, &size, angle, speed, velYMax, 2, 2);
   }
 #else
@@ -898,7 +885,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
     }
     delay = 0;
     angle = Random() & 0xC0;
-    for (i = 2; i >= 0; i--) {
+    for (i = 0; i < 3; i++) {
       Vec3_SetPolar(&pos, angle, 400);
       Vec3_Add(&pos, p->base.playerPos[idx]);
       pos.y = mover->pos.y + 0xA4;
@@ -912,7 +899,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
     u32 angle = Angle_FromDir8(p->base.dir) - 0x30;
     u32 delay = 0;
 
-    for (i = 6; i >= 0; i--) {
+    for (i = 0; i < 7; i++) {
       Vec3_SetPolar(&pos2, angle, 256);
       Vec3_Add(&pos2, &mover->pos);
       pos2.y += 0xA4;
@@ -933,7 +920,7 @@ NON_MATCH void FUN_08029164(Ringo* p, s32 idx) {
   Mover* mover = &p->base.mover;
 
   if (p->entity0805b068 != NULL) {
-    u32 angle = Random() & 0x1F;
+    u32 angle = RandomNext() & 0x1F;
     s32 i;
 
     for (i = 0; i < 3; i++) {
@@ -946,7 +933,7 @@ NON_MATCH void FUN_08029164(Ringo* p, s32 idx) {
       pos.z += mover->pos.z;
       pos.y = mover->pos.y + 0xA4;
       angle += 0x56;
-      dir = ArcTan2_8(target->x - pos.x, target->z - pos.z) + (Random() & 0x1F) - 0x10;
+      dir = ArcTan2_8(target->x - pos.x, target->z - pos.z) + (RandomNext() & 0x1F) - 0x10;
       FUN_0805b0b0(p->entity0805b068, &pos, target, dir, 15, p->unk_8be);
     }
   }
@@ -1113,11 +1100,10 @@ void FUN_080298fc(Ringo* p) {
 NON_MATCH void FUN_0802991c(Ringo* p) {
 #ifdef NONMATCHING_C
   Vec3 pos = p->sprites[0].pos;
-  u16* table = gRandomTable;
 
-  pos.x = pos.x - 0x80 + (u8)_Random(table);
-  pos.y = pos.y + (_Random(table) & 0x3F);
-  pos.z = pos.z - 0x80 + (u8)_Random(table);
+  pos.x = pos.x - 0x80 + (u8)RandomNext();
+  pos.y = pos.y + (RandomNext() & 0x3F);
+  pos.z = pos.z - 0x80 + (u8)RandomNext();
   Entity08015584_SpawnSprayOne(&pos, 2, 0x3000, Q6(1), 12, 4, 0, 3);
 #else
   INCFUNC("asm/func/FUN_0802991c.inc");
@@ -1305,21 +1291,21 @@ NON_MATCH void Ringo_AddAuxSprite(Ringo* p, s32 kind, s32 idx, s32 param_4, s32 
       Vec3* ofs = &p->auxOffsets[i];
 
       if (param_4 == 2 || param_4 == 3) {
-        ofs->x = (Random() & 7) - s8_ARRAY_085aabd8[idx][0] - 14;
+        ofs->x = (RandomNext() & 7) - s8_ARRAY_085aabd8[idx][0] - 14;
       } else {
-        ofs->x = (Random() & 7) + s8_ARRAY_085aabd8[idx][0] + 6;
+        ofs->x = (RandomNext() & 7) + s8_ARRAY_085aabd8[idx][0] + 6;
       }
       if (param_5) {
         if (param_4 == 0 || param_4 == 3) {
-          ofs->y = (Random() & 7) + s8_ARRAY_085aabd8[idx - 16][1] - 40;
+          ofs->y = (RandomNext() & 7) + s8_ARRAY_085aabd8[idx - 16][1] - 40;
         } else {
-          ofs->y = (Random() & 7) + s8_ARRAY_085aabd8[idx][1] - 40;
+          ofs->y = (RandomNext() & 7) + s8_ARRAY_085aabd8[idx][1] - 40;
         }
       } else {
         if (param_4 == 0 || param_4 == 3) {
-          ofs->y = (Random() & 7) + s8_ARRAY_085aabd8[idx + 16][1] - 40;
+          ofs->y = (RandomNext() & 7) + s8_ARRAY_085aabd8[idx + 16][1] - 40;
         } else {
-          ofs->y = (Random() & 7) + s8_ARRAY_085aabd8[idx][1] - 40;
+          ofs->y = (RandomNext() & 7) + s8_ARRAY_085aabd8[idx][1] - 40;
         }
       }
       ofs->z = 0;
@@ -4170,7 +4156,7 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
       PlaySound_082406e0(VO_RINGO_829);
     }
     FUN_080846c8();
-    p->unk_16f = (Random() & 15) + 60;
+    p->unk_16f = (RandomNext() & 15) + 60;
     p->unk_170 = 0;
     Ringo_SetHurtboxPower(p, p->hurtboxPower2);
     p->hurtbox.flags &= ~HBFLAG_ANGLE;
@@ -4186,8 +4172,8 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
     return;
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_17)) {
-    p->unk_16e = Random();
-    p->unk_16f = (Random() & 31) + 30;
+    p->unk_16e = RandomNext();
+    p->unk_16f = (RandomNext() & 31) + 30;
     p->unk_16c = 12;
     if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_23)) {
       FUN_08028b00(p);
@@ -4197,31 +4183,31 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
   if (p->unk_16f) {
     if (--p->unk_16f == 0) {
       p->unk_170 = (p->unk_170 + 1) & 3;
-      p->unk_16e = Random();
+      p->unk_16e = RandomNext();
       if (p->unk_870 <= 300) {
         p->unk_16c = 8;
         if (p->unk_170 == 3) {
-          p->unk_16f = (Random() & 31) + 60;
+          p->unk_16f = (RandomNext() & 31) + 60;
         } else {
-          p->unk_16f = (Random() & 15) + 10;
+          p->unk_16f = (RandomNext() & 15) + 10;
         }
       } else if (p->unk_870 <= 450) {
         p->unk_16c = 8;
         if (p->unk_170 == 3) {
-          p->unk_16f = (Random() & 15) + 30;
+          p->unk_16f = (RandomNext() & 15) + 30;
         } else {
-          p->unk_16f = (Random() & 7) + 8;
+          p->unk_16f = (RandomNext() & 7) + 8;
         }
       } else {
         p->unk_16c = 6;
         if (p->unk_170 == 3) {
-          p->unk_16f = (Random() & 15) + 15;
+          p->unk_16f = (RandomNext() & 15) + 15;
         } else {
-          p->unk_16f = (Random() & 7) + 8;
+          p->unk_16f = (RandomNext() & 7) + 8;
         }
       }
     } else if (p->unk_168 == 0) {
-      p->unk_16e = Random();
+      p->unk_16e = RandomNext();
       p->unk_16c = 4;
     } else {
       p->unk_168--;
@@ -4261,13 +4247,13 @@ NON_MATCH void dainn_0803110c(Boss* boss, s32 timer) {
     return;
   }
   if (p->phase <= 1 && p->unk_16f && --p->unk_16f == 0) {
-    p->unk_16e = Random();
+    p->unk_16e = RandomNext();
     p->unk_170 = (p->unk_170 + 1) & 3;
     p->unk_16c = 8;
     if (p->unk_170 == 3) {
-      p->unk_16f = (Random() & 3) + 8;
+      p->unk_16f = (RandomNext() & 3) + 8;
     } else {
-      p->unk_16f = (Random() & 3) + 8;
+      p->unk_16f = (RandomNext() & 3) + 8;
     }
   }
   switch (p->phase) {
@@ -6166,8 +6152,8 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
 
       damage = (gStat->sunGauge * boss->maxHP) >> 5;
       VEC3_SET(size, Q8(0.641), Q8(1), Q8(0.641));
-      EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
-      EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
+      EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
+      EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
       p->unk_18c = 60;
     }
   } else {

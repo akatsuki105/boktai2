@@ -222,7 +222,7 @@ NON_MATCH void FUN_08023530(Duneyrr* p) {
   s32 dir;
 
   p->jumpFrom = mover->pos;
-  dir = ((((p->unk_167 + 0x20) & 0xFF) >> 6) + 1) & 3;
+  dir = Angle_ToDir4(p->unk_167);
   p->unk_170 = u8_ARRAY_085aaacc[Duneyrr_GetQuadrant(&mover->pos)][dir][p->unk_16f];
   p->jumpTo.x = POLAR_X(0x1000, p->unk_167);
   p->jumpTo.y = 0;
@@ -270,7 +270,7 @@ NON_MATCH void FUN_08023530(Duneyrr* p) {
   if (p->unk_16f == 0) {
     u8 side;
 
-    dir = ((((p->unk_167 + 0x20) & 0xFF) >> 6) + 1) & 3;
+    dir = Angle_ToDir4(p->unk_167);
     side = u8_ARRAY_085aaacc[Duneyrr_GetQuadrant(&mover->pos)][dir][p->unk_16f + 1];
     switch (p->unk_170) {
       case 0: {
@@ -338,7 +338,7 @@ void FUN_08023818(Duneyrr* p) {
   DuneyrrElem* elem = p->elems;
   s32 i;
 
-  for (i = 4; i >= 0; i--, elem++) {
+  for (i = 0; i < 5; i++, elem++) {
     MainSprite* sprite = &elem->sprite;
 
     CpuFill32(0, &elem->offset, sizeof(Vec3));
@@ -351,9 +351,7 @@ void FUN_08023818(Duneyrr* p) {
   p->elemsActive = TRUE;
 }
 
-// 残差は乱数で揺らす座標の計算で, 原典は pos.x を ldrh で読んで 0x80 を引いてから足す, 局所の Vec3 を 32bit 単位で書き直す形まで同じ
-NON_MATCH void FUN_080238ac(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
-#ifdef NONMATCHING_C
+void FUN_080238ac(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
   elem->offset.y += 0x30;
   if (idx == 4) {
     elem->offset.x -= 10;
@@ -365,19 +363,15 @@ NON_MATCH void FUN_080238ac(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
   }
   if ((elem->timer & 3) == 0) {
     Vec3 pos = elem->sprite.pos;
-    u16* table = gRandomTable;
 
-    pos.x += (_Random(table) & 0xFF) - 0x80;
-    pos.y += (_Random(table) & 0x3F) + 0x80;
-    pos.z += (_Random(table) & 0xFF) - 0x80;
+    pos.x += (RandomNext() & 0xFF) - 0x80;
+    pos.y += (RandomNext() & 0x3F) + 0x80;
+    pos.z += (RandomNext() & 0xFF) - 0x80;
     Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 3, 3);
   }
   if (elem->timer > 10) {
     DuneyrrElem_SetState(elem, 2);
   }
-#else
-  INCFUNC("asm/func/FUN_080238ac.inc");
-#endif
 }
 
 // 1 回目で打ち切り
@@ -396,11 +390,10 @@ NON_MATCH void FUN_080239bc(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
   }
   if ((elem->timer & 7) == 0) {
     Vec3 pos = elem->sprite.pos;
-    u16* table = gRandomTable;
 
-    pos.x = pos.x - 0x80 + (u8)_Random(table);
-    pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
-    pos.z = pos.z - 0x80 + (u8)_Random(table);
+    pos.x = pos.x - 0x80 + (u8)RandomNext();
+    pos.y = pos.y + 0x80 + (RandomNext() & 0x3F);
+    pos.z = pos.z - 0x80 + (u8)RandomNext();
     Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 7, 3);
   }
   if (elem->timer < 20 ? (elem->timer & 3) == 0 : (elem->timer & 1) == 0) {
@@ -443,7 +436,7 @@ void Duneyrr_RemoveElems(Duneyrr* p) {
     DuneyrrElem* elem = p->elems;
     s32 i;
 
-    for (i = 4; i >= 0; i--, elem++) {
+    for (i = 0; i < 5; i++, elem++) {
       MainSprite_Remove(&elem->sprite);
     }
     p->elemsActive = FALSE;
@@ -456,11 +449,10 @@ NON_MATCH void FUN_08023bd8(Duneyrr* p, s32 param_2) {
   if (param_2 == 0) {
     if (p->unk_16a == 0) {
       Vec3 pos = p->sprite.pos;
-      u16* table = gRandomTable;
 
-      pos.x = pos.x - 0x80 + (u8)_Random(table);
-      pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
-      pos.z = pos.z - 0x80 + (u8)_Random(table);
+      pos.x = pos.x - 0x80 + (u8)Random();
+      pos.y = pos.y + 0x80 + (Random() & 0x3F);
+      pos.z = pos.z - 0x80 + (u8)Random();
       Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 2, 2, 2, 3);
       p->unk_16a = (Random() & 3) + 2;
     } else {
@@ -469,11 +461,10 @@ NON_MATCH void FUN_08023bd8(Duneyrr* p, s32 param_2) {
   } else {
     if (p->unk_16a == 0) {
       Vec3 pos = p->sprite.pos;
-      u16* table = gRandomTable;
 
-      pos.x = pos.x - 0x80 + (u8)_Random(table);
-      pos.y = pos.y + 0x80 + (_Random(table) & 0x3F);
-      pos.z = pos.z - 0x80 + (u8)_Random(table);
+      pos.x = pos.x - 0x80 + (u8)Random();
+      pos.y = pos.y + 0x80 + (Random() & 0x3F);
+      pos.z = pos.z - 0x80 + (u8)Random();
       Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, 0, 3);
       p->unk_16a = (Random() & 3) + 1;
     } else {
@@ -571,20 +562,18 @@ void FUN_080240b4(Duneyrr* p) {
 
 void FUN_08024100(WorldPos* pos) {
   Vec3 size;
-  u16* table;
   s32 angle;
   s32 speed;
   s32 velY;
 
   VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
-  table = gRandomTable;
-  angle = (u8)_Random(table);
-  speed = (_Random(table) & 3) + 2;
-  velY = (_Random(table) & 3) + 20;
+  angle = (u8)RandomNext();
+  speed = (RandomNext() & 3) + 2;
+  velY = (RandomNext() & 3) + 20;
   EmitSmoke(pos, 3, &size, angle, speed, velY, 2, 2);
-  angle = (u8)_Random(table);
-  speed = (_Random(table) & 3) + 2;
-  velY = (_Random(table) & 3) + 20;
+  angle = (u8)RandomNext();
+  speed = (RandomNext() & 3) + 2;
+  velY = (RandomNext() & 3) + 20;
   EmitSmoke(pos, 3, &size, angle, speed, velY, 2, 2);
 }
 
@@ -1241,21 +1230,18 @@ NON_MATCH void FUN_080256c4(Boss* boss, s32 timer) {
       boss->mover.pos.z = boss->targetPos.z;
       arrived = TRUE;
     }
-    if ((timer & 7) == 0 && p->height > 0xFF) {
+    if ((timer & 7) == 0 && p->height > Q8(0.997)) {
       FUN_08023de8(p);
     }
     dy = boss->targetPos.y - p->height;
-    d = dy;
-    if (d < 0) {
-      d = -d;
-    }
-    if (d < 32) {
+    d = abs(dy);
+    if (d < Q8(0.125)) {
       p->height = boss->targetPos.y;
       if (arrived) {
         boss->subStateDone = TRUE;
       }
     } else {
-      p->height += dy < 0 ? -32 : 32;
+      p->height += dy < 0 ? Q8(-0.125) : Q8(0.125);
     }
   }
 #else
@@ -1376,30 +1362,23 @@ NON_MATCH void FUN_08025cf8(Boss* boss, s32 timer) {
     Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
-    s32 d;
+    s32 d = abs(p->sprite.pos.z - playerPos->z);
 
-    d = p->sprite.pos.z - playerPos->z;
-    if (d < 0) {
-      d = -d;
-    }
-    if (d <= 32) {
+    if (d <= Q8(0.125)) {
       boss->mover.delta.z = playerPos->z - p->sprite.pos.z;
     } else {
-      boss->mover.delta.z = p->sprite.pos.z < playerPos->z ? 32 : -32;
+      boss->mover.delta.z = p->sprite.pos.z < playerPos->z ? Q8(0.125) : Q8(-0.125);
     }
-    d = p->sprite.pos.x - playerPos->x;
-    if (d < 0) {
-      d = -d;
-    }
-    if (d <= 32) {
+    d = abs(p->sprite.pos.x - playerPos->x);
+    if (d <= Q8(0.125)) {
       boss->mover.delta.x = playerPos->x - p->sprite.pos.x;
     } else {
-      boss->mover.delta.x = p->sprite.pos.x < playerPos->x ? 32 : -32;
+      boss->mover.delta.x = p->sprite.pos.x < playerPos->x ? Q8(0.125) : Q8(-0.125);
     }
-    if (p->height <= 0x1900) {
-      p->height += 0x40;
+    if (p->height <= Q8(25)) {
+      p->height += Q8(0.25);
     } else {
-      p->height = 0x1900;
+      p->height = Q8(25);
       Boss_SetState(boss, FUN_08025e10, 7);
     }
   }
@@ -1654,7 +1633,7 @@ NON_MATCH void FUN_08026514(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は FUN_08026334 と同じ (247/244): pos.x への乱数加算で -0x80 を乱数側に畳む
+// 残差は FUN_08026334 と同じ (246/244): pos.x への乱数加算で -0x80 を乱数側に畳む
 NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Duneyrr* p = (Duneyrr*)boss;
@@ -1684,7 +1663,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
     if ((timer & 7) == 0) {
       Vec3 pos = mover->pos;
 
-      pos.x = pos.x - 0x80 + (u8)Random();
+      pos.x = pos.x - 0x80 + (u8)RandomNext();
       pos.y -= 0x40;
       Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
     }
@@ -1702,7 +1681,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
           s32 delay = 24;
 
           for (i = 0; i < 4; i++) {
-            p->unk_568[i] = delay + (Random() & 3);
+            p->unk_568[i] = delay + (RandomNext() & 3);
             delay += 3;
           }
         }

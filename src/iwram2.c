@@ -131,7 +131,7 @@ COMMON_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単
 COMMON_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, Q6(1) が等倍で 0 なら gBgPlttBlendColor 一色, ApplyBgPlttBlend が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
 COMMON_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), ResetObjPlttSlotCursor が毎フレーム gObjPlttSlotReserved + 2 に戻す, 根拠: AllocBlendPlttSlot (AllocParticlePlttSlot は gObjPlttSlotCount の方を使う)
 COMMON_DATA s32 gBgBrightnessApplied = 0;   // 0x03004048, ApplyBgPlttBlend が最後に適用した BG の明るさ, gObjBrightnessApplied の BG 版
-COMMON_DATA s32 gObjBrightnessApplied = 0;  // 0x0300404C, FUN_0822d248 が最後に適用した gObjBrightness, 等倍のまま変わっていなければ加工を省くための控え
+COMMON_DATA s32 gObjBrightnessApplied = 0;  // 0x0300404C, ApplyObjPlttBlend が最後に適用した gObjBrightness, 等倍のまま変わっていなければ加工を省くための控え
 
 COMMON_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 COMMON_DATA rgb555 gBgPlttBuffer[256] = {};      // 0x03004250, BG パレットの作業用バッファ, ゲーム側はここに書き、加工が要らなければこのまま CommitPalette の転送元になる
@@ -142,11 +142,11 @@ COMMON_DATA u8 u8_03004456[2] = {};        // todo
 
 COMMON_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: AllocParticlePlttSlot
 
-COMMON_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, Q6(1) が等倍で 0 なら gObjPlttBlendColor 一色, FUN_0822d248 が OBJ パレットに適用する, 掛ける相手はなく1本だけ
+COMMON_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, Q6(1) が等倍で 0 なら gObjPlttBlendColor 一色, ApplyObjPlttBlend が OBJ パレットに適用する, 掛ける相手はなく1本だけ
 
 COMMON_DATA s32 gBgBrightness2 = 0;  // 0x03004460, BG の明るさのもう一方の係数, gBgBrightness と独立に暗くしたい演出 (BgPlttDimmer 等) が使う
 
-COMMON_DATA rgb555 gObjPlttBlendColor = 0;  // 0x03004464, FUN_0822d248 が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: Entity6978 / Entity4DDF などのフェード
+COMMON_DATA rgb555 gObjPlttBlendColor = 0;  // 0x03004464, ApplyObjPlttBlend が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: Entity6978 / Entity4DDF などのフェード
 
 COMMON_DATA u8 u8_03004466[2] = {};  // todo
 
@@ -156,7 +156,7 @@ COMMON_DATA s32 gGrayscaleTimer = 0;  // 0x0300446C
 
 COMMON_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: AllocParticlePlttSlot (2 個まで), AllocBlendPlttSlot (16 個まで)
 
-COMMON_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, FUN_0822d248 のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
+COMMON_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, ApplyObjPlttBlend のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
 
 COMMON_DATA u8 u8_03004492[2] = {};     // todo
 COMMON_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, ApplyBgPlttBlend が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeIn (明転の完了時に RGB(4, 4, 4)), ResetPltt

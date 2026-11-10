@@ -87,17 +87,16 @@ void FUN_081d822c(Entity7B9FElem* e) {
 // 命令数は一致, 残差は 0xFFFF0000 と 0xFFFF の定数のレジスタの順序だけ
 NON_MATCH void FUN_081d8298(Entity7B9FElem* e) {
 #ifdef NONMATCHING_C
-  u16* table = gRandomTable;
   Vec3 vel;
   Vec3 accel;
 
-  vel.y = _Random(table) & 7;
+  vel.y = RandomNext() & 7;
   vel.x = -12;
   vel.z = -12;
-  accel.y = (_Random(table) & 7) + 3;
+  accel.y = (RandomNext() & 7) + 3;
   accel.x = 24;
   accel.z = 24;
-  ScatterEffect_Spawn((_Random(table) & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &accel, 60, 63);
+  ScatterEffect_Spawn((RandomNext() & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &accel, 60, 63);
 #else
   INCFUNC("asm/func/FUN_081d8298.inc");
 #endif

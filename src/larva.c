@@ -421,8 +421,8 @@ NON_MATCH void FUN_0805758c(LarvaManager* p, Larva* larva, s32 idx) {
 
   if (larva->unk_08 != 0) {
     larva->unk_08 = 0;
-    larva->targetX = (Random() & 0x3FF) + p->unk_3c[idx & 3].x;
-    larva->targetZ = (Random() & 0x3FF) + p->unk_3c[idx & 3].z;
+    larva->targetX = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].x;
+    larva->targetZ = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].z;
     larva->unk_10 = 0;
   }
   AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_CRAWL, larva->unk_05 == 1 || larva->unk_05 == 2, larva->unk_05 > 1);
@@ -458,8 +458,8 @@ NON_MATCH void FUN_0805758c(LarvaManager* p, Larva* larva, s32 idx) {
     s32 next;
     s32 last;
 
-    if ((dx < 0 ? -dx : dx) < 24) {
-      if ((dz < 0 ? -dz : dz) < 24) {
+    if (abs(dx) < Q8(0.094)) {
+      if (abs(dz) < Q8(0.094)) {
         larva->unk_06 = 0;
         larva->lastDir = -1;
         Larva_SetState(p, larva, 0);
@@ -467,7 +467,7 @@ NON_MATCH void FUN_0805758c(LarvaManager* p, Larva* larva, s32 idx) {
       }
       dir = dz >= 0 ? 2 : 0;
       alt = dx < 0 ? 3 : 1;
-    } else if ((dz < 0 ? -dz : dz) < 24) {
+    } else if (abs(dz) < Q8(0.094)) {
       dir = dx < 0 ? 3 : 1;
       alt = dz >= 0 ? 2 : 0;
     } else {
@@ -556,8 +556,8 @@ NON_MATCH void FUN_080579a4(LarvaManager* p, Larva* larva, s32 idx) {
 
   if (larva->unk_08 != 0) {
     larva->unk_08 = 0;
-    larva->targetX = (Random() & 0x3FF) + p->unk_3c[idx & 3].x;
-    larva->targetZ = (Random() & 0x3FF) + p->unk_3c[idx & 3].z;
+    larva->targetX = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].x;
+    larva->targetZ = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].z;
   }
   AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_CRAWL, larva->unk_05 == 1 || larva->unk_05 == 2, larva->unk_05 > 1);
 
@@ -592,8 +592,8 @@ NON_MATCH void FUN_080579a4(LarvaManager* p, Larva* larva, s32 idx) {
     s32 next;
     s32 last;
 
-    if ((dx < 0 ? -dx : dx) < 24) {
-      if ((dz < 0 ? -dz : dz) < 24) {
+    if (abs(dx) < Q8(0.094)) {
+      if (abs(dz) < Q8(0.094)) {
         larva->unk_06 = 0;
         larva->lastDir = -1;
         Larva_SetState(p, larva, 0);
@@ -601,7 +601,7 @@ NON_MATCH void FUN_080579a4(LarvaManager* p, Larva* larva, s32 idx) {
       }
       dir = dz >= 0 ? 2 : 0;
       alt = dx < 0 ? 3 : 1;
-    } else if ((dz < 0 ? -dz : dz) < 24) {
+    } else if (abs(dz) < Q8(0.094)) {
       dir = dx < 0 ? 3 : 1;
       alt = dz >= 0 ? 2 : 0;
     } else {
@@ -729,8 +729,8 @@ NON_MATCH void FUN_08057db0(LarvaManager* p, Larva* larva, s32 idx) {
     s32 next;
     s32 last;
 
-    if ((dx < 0 ? -dx : dx) < 24) {
-      if ((dz < 0 ? -dz : dz) < 24) {
+    if (abs(dx) < Q8(0.094)) {
+      if (abs(dz) < Q8(0.094)) {
         larva->unk_06 = 0;
         larva->lastDir = -1;
         Larva_SetState(p, larva, 0);
@@ -738,7 +738,7 @@ NON_MATCH void FUN_08057db0(LarvaManager* p, Larva* larva, s32 idx) {
       }
       dir = dz >= 0 ? 2 : 0;
       alt = dx < 0 ? 3 : 1;
-    } else if ((dz < 0 ? -dz : dz) < 24) {
+    } else if (abs(dz) < Q8(0.094)) {
       dir = dx < 0 ? 3 : 1;
       alt = dz >= 0 ? 2 : 0;
     } else {
@@ -841,7 +841,7 @@ NON_MATCH void FUN_080581dc(LarvaManager* p, Larva* larva, s32 idx) {
     larva->unk_08 = 0;
     larva->origin = sprite->pos;
     larva->angle = ArcTan2_8(p->player->mover.pos.x - larva->origin.x, p->player->mover.pos.z - larva->origin.z);
-    dir = ((((larva->angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    dir = Angle_ToDir4(larva->angle);
     larva->unk_05 = dir;
     AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_CRAWL, dir == 1 || dir == 2, dir > 1);
     AuxAnim_SetAnimSpeed(&larva->anim, Q6(0.25));
@@ -906,14 +906,8 @@ NON_MATCH void FUN_08058460(LarvaManager* p, Larva* larva, s32 idx) {
   floor = TileHeightAt(&sprite->pos);
   sprite->pos.y = floor + FixToInt(12, SIN(larva->stateTimer * 4) * 250);
 
-  vx = larva->velocity.x;
-  if (vx < 0) {
-    vx = -vx;
-  }
-  vz = larva->velocity.z;
-  if (vz < 0) {
-    vz = -vz;
-  }
+  vx = abs(larva->velocity.x);
+  vz = abs(larva->velocity.z);
   if (vx < vz) {
     AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_ROLLING, 0, 0);
   } else {
@@ -961,14 +955,8 @@ NON_MATCH void FUN_080587cc(LarvaManager* p, Larva* larva, s32 idx) {
   floor = TileHeightAt(&sprite->pos);
   sprite->pos.y = floor + FixToInt(12, SIN(larva->stateTimer * 4) * 250);
 
-  vx = larva->velocity.x;
-  if (vx < 0) {
-    vx = -vx;
-  }
-  vz = larva->velocity.z;
-  if (vz < 0) {
-    vz = -vz;
-  }
+  vx = abs(larva->velocity.x);
+  vz = abs(larva->velocity.z);
   if (vx < vz) {
     AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_ROLLING, 0, 0);
   } else {

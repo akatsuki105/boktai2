@@ -118,7 +118,7 @@ NON_MATCH s32 EntityFBE5_Init(EntityFBE5* p, u32 param_2) {
   args[4] = 31;
   Entity6978_SetRequest(3, 5, args);
   for (i = 0; i < 16; i++) {
-    for (j = 15; j >= 0; j--) {
+    for (j = 0; j < 16; j++) {
       p->pltt[i * 16 + j] = 0x1084;
     }
   }

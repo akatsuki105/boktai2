@@ -73,6 +73,8 @@ static inline bool8 EntityC60FItem_HasFlag(EntityC60FItem* p, u32 mask) {
   return FALSE;
 }
 
+static inline void EntityC60FItem_ClearFlag(EntityC60FItem* p, u32 mask) { CLEAR_FLAGS(p->flags, mask); }
+
 // 170/182 命令, ハンドラの判定をすべて bool8 inline にする形が途中まで
 NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
 #ifdef NONMATCHING_C
@@ -295,18 +297,13 @@ NON_MATCH void FUN_081d76bc(EntityC60FItem* p) {
 }
 
 // 生成した衝突タイルの上書きを取り消す
-// フラグ判定を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 原典は &flags を Map_RemoveTileOverride の呼び出しをまたいでレジスタに持つ
-NON_MATCH void FUN_081d7814(EntityC60FItem* p) {
-#ifdef NONMATCHING_C
+void EntityC60FItem_RemoveTileOverride(EntityC60FItem* p) {
   if (p->state == 3 || p->state == 4) {
-    if (p->flags & C60FITEM_TILE_OVERRIDE) {
+    if (EntityC60FItem_HasFlag(p, C60FITEM_TILE_OVERRIDE)) {
       Map_RemoveTileOverride(&p->tileOverride);
-      p->flags &= ~C60FITEM_TILE_OVERRIDE;
+      EntityC60FItem_ClearFlag(p, C60FITEM_TILE_OVERRIDE);
     }
   }
-#else
-  INCFUNC("asm/func/FUN_081d7814.inc");
-#endif
 }
 
 // 243/243 命令, レジスタ割当だけの差
@@ -320,7 +317,7 @@ NON_MATCH void FUN_081d785c(EntityC60FItem* p) {
   }
 
   if (p->stateEntered) {
-    FUN_081d7814(p);
+    EntityC60FItem_RemoveTileOverride(p);
     p->timer = 0;
     p->stateEntered = FALSE;
   }
@@ -369,7 +366,7 @@ NON_MATCH void FUN_081d7a60(EntityC60FItem* p) {
 
   anim = &p->anim;
   if (p->stateEntered) {
-    FUN_081d7814(p);
+    EntityC60FItem_RemoveTileOverride(p);
     AuxAnim_SetAnim(anim, m->anim1, 4, 0, 0);
     AuxSprite_AdvanceAnim(&p->sprite, anim);
     p->timer = 0;

@@ -9,6 +9,40 @@
 #define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))                 // 登録 = 剣槍槌銃 のスロットに登録されている
 #define MAP_ICON_FLAGS(stage) (*(gStat->mapIconFlags + (stage)))              // stageID ごとのマップアイコンの表示フラグ
 #define SOLAR_CHARM(n) (*(gStat->unk_2b0 + (n)))                              // 太陽ゲージ操作の道具の効果, [0]: 晴れ側, [1]: 曇り側
+#define STATS(n) (*(gStat->stats + (n)))                                      // 振り分けたステータスポイント
+#define STAT_BONUS(n) (*(gStat->statBonus + (n)))                             // ドーピングボーナス
+#define WEAPON_EXP(kind) (*(gStat->weaponExp + (kind)))                       // 武器種ごとの経験値
+#define WEAPON_FRAMES(kind) (*(gStat->weaponFrames + (kind)))                 // 武器種ごとの使用フレーム数
+#define KAAMOS_PROGRESS(playerCharacterID) (*(gStat->kaamosProgress + (playerCharacterID)))
+#define SOLAR_BANK_RATE (*(&gStat->solarBankInterestRate))  // 太陽バンクの利率, (1 + r) * 64
+#define ALERT_COUNT (*(&gStat->alertCount))                 // 敵に見つかった回数
+#define UNK_944 (*(&gStat->unk_944))
+#define UNK_946 (*(&gStat->unk_946))
+#define UNK_950(n) (*(gStat->unk_950 + (n)))  // Enemy_Alert がプレイヤーごとに数える, 添字は playerMover->unk_4
+
+// gStat のフィールドを型名の違うポインタ越しに触る, 原典はこれらへ書いたあと gStat を読み直すので普通のメンバ代入では一致しない
+#define PLAYER_X (*(s16*)&gStat->playerX)
+#define PLAYER_Y (*(s16*)&gStat->playerY)
+#define PLAYER_Z (*(s16*)&gStat->playerZ)
+#define PLAYER_FACING (*(u16*)&gStat->playerFacing)
+#define SUN_ANGLE (*(s16*)&gStat->sunAngle)
+#define PLAYER_KIND (*(u16*)&gStat->playerKind)
+#define PLAYER_ACTION (*(s16*)&gStat->playerAction)
+#define SABATA_HP (*(s16*)&gStat->sabataHP)
+#define SABATA_ENE (*(s16*)&gStat->sabataEne)
+#define SAVED_HP (*(s16*)&gStat->savedHP)
+#define SAVED_ENE (*(s16*)&gStat->savedEne)
+#define SAVED_MAX_HP (*(s16*)&gStat->savedMaxHP)
+#define SAVED_MAX_ENE (*(s16*)&gStat->savedMaxEne)
+#define PLAYER_EXP (*(u32*)&gStat->exp)
+#define BERSERK_COUNTER (*(u32*)&gStat->berserkCounter)
+#define BOSS_HP (*(u32*)&gStat->bossHP)
+#define BOSS_HP_MAX (*(u32*)&gStat->bossHPMax)
+#define FIELD_COFFIN (*(s16*)&gStat->coffin)  // フィールドに出ている棺桶の ID, 貴重品欄にあるときは -1
+#define SOLAR_BANK (*(u16*)&gStat->solarBank)
+#define DARK_DEBTS (*(u32*)&gStat->darkDebts)
+#define HEATSTROKE (*(u16*)&gStat->heatstroke)
+#define THERMAL (*(u32*)&gStat->thermal)
 
 // AttackStyle, GameInfo.style, WeaponKind とは別, ゲームクリア時に、ゲーム中で1番使っていた武器を表示する仕組みがあって、それの識別番号
 #define STYLE_SWORD 0   // 剣

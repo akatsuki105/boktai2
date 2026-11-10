@@ -54,7 +54,7 @@ void Coffin_UpdateRope(Coffin* p) {
     return;
   }
 
-  angle = ((gPlayerPtr[0]->animIDOffset + 1) & 7) << 5;
+  angle = ((gPlayerPtr[0]->animDir + 1) & 7) << 5;
   c = COS(angle);
   s = SIN(angle);
   if (gPlayerPtr[0]->xflip) {
@@ -73,7 +73,7 @@ void Coffin_UpdateRope(Coffin* p) {
   to.y = p->mover.pos.y - 50;
   to.z = p->mover.pos.z + POLAR_Z(100, angle);
 
-  if (gPlayerPtr[0]->animIDOffset == 4) {
+  if (gPlayerPtr[0]->animDir == 4) {
     offsetZ = -20;
   } else {
     offsetZ = -2;
@@ -421,15 +421,9 @@ void FUN_0808613c(Coffin* p) {
 void Coffin_ClearGlobal(void) { gCoffin = NULL; }
 
 // 0xD24B, 場に出ている棺桶を持ち物に戻す
-// 残差は17/19命令でこちらが短い, 原典は -1 を movs/rsbs で作って別レジスタから写すが agbcc はプール定数1本で済ませる
-// Tier A-B 試済 (定数の書き方, 代入順)
-NON_MATCH void Cmd_ReturnCoffinToBag(void) {
-#ifdef NONMATCHING_C
-  TryAddItem(gStat->coffin + ITEM_OAK_COFFIN, 0);
-  gStat->coffin = -1;
-#else
-  INCFUNC("asm/func/Cmd_ReturnCoffinToBag.inc");
-#endif
+void Cmd_ReturnCoffinToBag(void) {
+  TryAddItem(FIELD_COFFIN + ITEM_OAK_COFFIN, 0);
+  FIELD_COFFIN = -1;
 }
 
 // プレイヤーと棺桶が同じエレベータで動いているか, どちらも乗っていなければ TRUE
@@ -463,10 +457,8 @@ static inline s32 TestTileIdx(WorldPos* pos) {
     (_bx < 0 || _bz < 0 || (u32)_bx >= (u32)gMapBlockW || (u32)_bz >= (u32)gMapBlockH) ? 0 : gCollisionMap->rowOffsets[_bz] + _bx; \
   })
 
-// 338/337命令, 残差は posIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を bx と同じ r4 に作るが, こちらは r0 に作って r4 へ写す (FUN_08087cbc と同じ)
-// 試済: 早期 return を入れ子の if にして TRUE を1か所に寄せる (これで分岐の並びは揃った), 局所変数の宣言順, 自前の inline / マクロで索引を出す
-NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags) {
-#ifdef NONMATCHING_C
+// pos から棺桶を掴めるか, 棺桶の近くで掴める state にいて同じエレベーターに乗り, 同じタイルか高さの揃った隣のタイルにいれば TRUE
+bool32 Coffin_CanGrabFrom(Vec3* pos, u32 elevatorID, u32 elevatorFlags) {
   s32 dx, dz, posIdx, coffinIdx;
   Vec3 v;
 
@@ -476,7 +468,7 @@ NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags) {
 
   dx = pos->x - gCoffin->mover.pos.x;
   dz = pos->z - gCoffin->mover.pos.z;
-  if (dx * dx + dz * dz > 220 * 220) {
+  if (dx * dx + dz * dz > Q8(0.86) * Q8(0.86)) {
     return FALSE;
   }
   if (gCoffin->state == 15 || gCoffin->state == 16) {
@@ -495,25 +487,22 @@ NON_MATCH bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags) {
     return TRUE;
   }
   if (posIdx == coffinIdx + 1 || posIdx == coffinIdx - 1 || posIdx == coffinIdx + gCollisionMap->tiledata->width || posIdx == coffinIdx - gCollisionMap->tiledata->width) {
-    if (abs(pos->y - gCoffin->mover.pos.y) <= 255) {
+    if (abs(pos->y - gCoffin->mover.pos.y) <= Q8(0.997)) {
       return TRUE;
     }
-  } else if (abs(pos->y - gCoffin->mover.pos.y) <= 255) {
+  } else if (abs(pos->y - gCoffin->mover.pos.y) <= Q8(0.997)) {
     v.x = pos->x - dx;
     v.z = pos->z;
-    if (abs(pos->y - TileHeightAt(&v)) < 128) {
+    if (abs(pos->y - TileHeightAt(&v)) < Q8(0.5)) {
       return TRUE;
     }
     v.x = pos->x;
     v.z = pos->z - dz;
-    if (abs(pos->y - TileHeightAt(&v)) < 128) {
+    if (abs(pos->y - TileHeightAt(&v)) < Q8(0.5)) {
       return TRUE;
     }
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/FUN_08086294.inc");
-#endif
 }
 
 void FUN_08086590(Vec3* pos, s32 val) {
@@ -916,12 +905,10 @@ static const u16 sCoffinWeights[8] = {
     [COFFIN_IRON_MAIDEN] = 90,
 };  // 0x085BBFE8
 
-// 残差は gStat->coffin の再読み込み1箇所 (原典は gStat ポインタとハーフワードを両方読み直す), Tier A-B は試済
-// static inline アクセサ経由にすると値は読み直すがポインタは r1 に残り 39/40 まで, 未: per-TU フラグ
-NON_MATCH void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
-#ifdef NONMATCHING_C
+// 持ち物から棺桶を出して種類と重さを決め, '.c' と '.a' (初期状態) を読む
+void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
   p->subroutineID = id;
-  gStat->coffin = Coffin_TakeKind();
+  FIELD_COFFIN = Coffin_TakeKind();
   p->coffinID = gStat->coffin;
   if (VM_SeekToNamedArg('c')) {
     p->unk_1c = VM_GetValue();
@@ -934,9 +921,6 @@ NON_MATCH void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
   } else {
     Coffin_SetState(p, 0);
   }
-#else
-  INCFUNC("asm/func/Coffin_Init_Helper_08086df8.inc");
-#endif
 }
 
 // 棺桶の封印力, 高いほど棺桶が逃げにくくなる
@@ -1295,7 +1279,6 @@ NON_MATCH s32 FUN_08087970(Coffin* p) {
 NON_MATCH void FUN_08087a5c(Coffin* p) {
 #ifdef NONMATCHING_C
   s32 range;
-  u16* table;
 
   if (gGameFlags & GAMEFLAG_EVENT) {
     return;
@@ -1307,9 +1290,8 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
     p->unk_32a = 2;
     range = (p->unk_396 >> 2) + 16;
   }
-  table = gRandomTable;
-  p->unk_31e = Mod(_Random(table), range) - (range >> 1);
-  p->unk_322 = Mod(_Random(table), range) - (range >> 1);
+  p->unk_31e = Mod(RandomNext(), range) - (range >> 1);
+  p->unk_322 = Mod(RandomNext(), range) - (range >> 1);
   if ((++p->unk_39c & 7) == 0 && (Random() & 1)) {
     PlaySound_082406e0(SONG_697);
   }
@@ -1375,14 +1357,12 @@ void Coffin_UpdateState0(Coffin* p) {
   }
 }
 
-// 301/300命令, 残差は playerIdx の受け皿だけ: 原典は GetCollisionTileIdx の結果を直接 r4 に作るが, こちらは r0 に作って r4 へ写す1命令が増える
-// 試済: 2つの索引の計算順と宣言順, 型 (u32), ブロックで宣言して初期化, 比較の左右, 先頭の条件を && にまとめる
-NON_MATCH void FUN_08087cbc(Coffin* p) {
-#ifdef NONMATCHING_C
+// プレイヤーの足元が壁か棺桶と1段以上違うとき, プレイヤーを棺桶のタイルの縁 (隣のタイルなら境目から 2 内側) か棺桶の位置へ戻す
+void FUN_08087cbc(Coffin* p) {
   s32 playerIdx, coffinIdx;
 
   if (!(GetTileAttrAt(&gPlayerPtr[0]->mover.pos) & TATTR_UNK_0)) {
-    if (abs(TileHeightAt(&gPlayerPtr[0]->mover.pos) - TileHeightAt(&p->mover.pos)) < 256) {
+    if (abs(TileHeightAt(&gPlayerPtr[0]->mover.pos) - TileHeightAt(&p->mover.pos)) < Q8(1)) {
       return;
     }
   }
@@ -1401,9 +1381,6 @@ NON_MATCH void FUN_08087cbc(Coffin* p) {
     gPlayerPtr[0]->mover.pos.x = p->mover.pos.x;
     gPlayerPtr[0]->mover.pos.z = p->mover.pos.z;
   }
-#else
-  INCFUNC("asm/func/FUN_08087cbc.inc");
-#endif
 }
 
 // プレイヤーの前方 70 の点が棺桶から 150 より離れたら, プレイヤーを棺桶から 150 の位置へ 1/4 ずつ寄せる
@@ -1667,8 +1644,6 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
   }
 
   if (p->unk_398 > 64) {
-    u16* table;
-
     p->unk_32a = 2;
     if (p->unk_3a0 >= 0) {
       FUN_080dab9c(p->unk_3a0);
@@ -1686,9 +1661,8 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
       p->facing = (p->facing + Mod(Random(), 3) - 1) & 7;
       FUN_08086024(p, 0);
     }
-    table = gRandomTable;
-    p->unk_31e = (_Random(table) & 0x3F) - 31;
-    p->unk_322 = (_Random(table) & 0x3F) - 31;
+    p->unk_31e = (RandomNext() & 0x3F) - 31;
+    p->unk_322 = (RandomNext() & 0x3F) - 31;
     if ((p->unk_398 & 7) == 0) {
       FUN_08085880(p);
     }
@@ -1704,14 +1678,12 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
     }
   } else {
     s32 range = p->unk_398 >> 1;
-    u16* table;
 
     if (range < 2) {
       range = 2;
     }
-    table = gRandomTable;
-    p->unk_31e = Mod(_Random(table), range) - (range >> 1);
-    p->unk_322 = Mod(_Random(table), range) - (range >> 1);
+    p->unk_31e = Mod(RandomNext(), range) - (range >> 1);
+    p->unk_322 = Mod(RandomNext(), range) - (range >> 1);
     p->unk_32a = 0;
     p->unk_326 = 0;
     p->unk_324 = 0;
@@ -1951,9 +1923,8 @@ void Coffin_UpdateState8(Coffin* p) {
   }
 
   if (p->stateTimer < 12) {
-    u16* table = gRandomTable;
-    p->unk_31e = (_Random(table) & 0x1F) - 16;
-    p->unk_322 = (_Random(table) & 0x1F) - 16;
+    p->unk_31e = (RandomNext() & 0x1F) - 16;
+    p->unk_322 = (RandomNext() & 0x1F) - 16;
   }
   if (p->stateTimer == 2) {
     FUN_0808596c(p);

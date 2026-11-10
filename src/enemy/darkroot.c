@@ -203,7 +203,7 @@ NON_MATCH void DarkRoot_StateGrab(DarkRoot* p) {
         e->hurtbox.iframes = 0;
         Enemy_ClearDamage(e);
         CLEAR_FLAGS(e->flags3, ENEFLAG3_UNK_5);
-        FUN_080e6978(e, 0, &pos, 0, flags);
+        Enemy_OnCrushed(e, 0, &pos, 0, flags);
       }
       DarkRoot_SetFlags((p->e).owner, DARKFLAG_GRABBING);
       return;
@@ -242,7 +242,7 @@ void DarkRoot_StateRetract(DarkRoot* p) {
 }
 
 // 掴んだ相手を持ち上げて締める, プレイヤーは squeezeInterval フレームごとに締めて連打が escapeMashCount を超えるか hp が尽きたら放し, 敵は 140 フレームで倒す, 180 フレームで副状態を終える
-// 562/583命令の下書き, 敵を倒す枝のゲージ表示の判定は enemy.c の FUN_080e6978 と同じ形, 原典は持つ位置を WorldPos の DImode のまま書き換え (DarkRoot_StateGrab と同じ), 1回目の下書きで切り上げ
+// 562/583命令の下書き, 敵を倒す枝のゲージ表示の判定は enemy.c の Enemy_OnCrushed と同じ形, 原典は持つ位置を WorldPos の DImode のまま書き換え (DarkRoot_StateGrab と同じ), 1回目の下書きで切り上げ
 NON_MATCH void DarkRoot_StateHold(DarkRoot* p, s32 timer) {
 #ifdef NONMATCHING_C
   DarkRoot* q = (p->e).owner;
@@ -308,7 +308,7 @@ NON_MATCH void DarkRoot_StateHold(DarkRoot* p, s32 timer) {
     bool8 show;
 
     (p->e).s->aux.spr.priority = 2;
-    FUN_080e6978(e, 0, &pos, 0, flags);
+    Enemy_OnCrushed(e, 0, &pos, 0, flags);
     if (timer > 140) {
       e->hurtbox.damage = e->hp;
       e->unk_48a = e->hp;
@@ -447,12 +447,11 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
     PlayEnemyDeathCry(&p->e);
     Vec3_Clear(&vel);
     {
-      u16* table = gRandomTable;
-      u32 r = _Random(table) & 0x1F;
+      u32 r = Random() & 0x1F;
 
       vel.x = POLAR_X(r, (p->e).angle);
       vel.z = POLAR_Z(r, (p->e).angle);
-      vel.y = (_Random(table) & 0x1F) + 48;
+      vel.y = (Random() & 0x1F) + 48;
     }
     Entity081efa9c_Spawn(&(p->e).mover.pos, &vel, SPRITE_ROD, ANIM_DARKROOT, 10, 30, 2, 0, 220, 0, 0, 0, 0, 0, 0);
     if (!TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_1)) {

@@ -7,16 +7,13 @@
 // これらは gCollisionMap といったグローバル変数を参照するため、 必要のない include は決してしないこと
 
 static inline s32 GetCollisionTileIdx(WorldPos* pos) {
-  s32 idx;
-
   s32 tileX = (s8)(pos->x >> 8);
   s32 tileZ = (s8)(pos->z >> 8);
+
   if (IsOutsideMap(tileX, tileZ)) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[tileZ] + tileX;
+    return 0;
   }
-  return idx;
+  return gCollisionMap->rowOffsets[tileZ] + tileX;
 }
 
 // 索引 idx のタイルを返す, 上書きがあればそちらを返す
@@ -53,9 +50,9 @@ static inline void TilePosAtIndex(WorldPos* pos, s32 idx) {
   s32 x = Mod(idx, gCollisionMap->tiledata->width);
   s32 z = Div(idx, gCollisionMap->tiledata->width);
 
-  pos->x = (x << 8) + 0x80;
+  pos->x = (x << 8) + Q8(0.5);
   pos->y = (TileAtIndex(idx)->heightStairs & 0xF) << 8;
-  pos->z = (z << 8) + 0x80;
+  pos->z = (z << 8) + Q8(0.5);
 }
 
 #define GetTileAt(pos)                                               \
@@ -85,6 +82,9 @@ static inline s32 TileHeightAt(WorldPos* pos) {
   return height;
 }
 
-static inline TileAttr GetTileAttrAt(WorldPos* pos) { return GetTileAt(pos)->attr; }
+static inline u32 GetTileAttrAt(WorldPos* pos) { return GetTileAt(pos)->attr; }
+
+// 索引 idx のタイルの属性を返す, 上書きがあればそちらを見る
+static inline u32 TileAttrAtIndex(s32 idx) { return TileAtIndex(idx)->attr; }
 
 #endif  // __INCLUDE_MAP_INLINE_H__

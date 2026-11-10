@@ -239,7 +239,7 @@ _08185B18:
 	movs r1, #2
 	add r2, sp, #0x14
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	adds r0, r4, #0
 	bl Enemy_PlayVoice
 	b _08185B62
@@ -314,7 +314,7 @@ _08185BA2:
 	movs r1, #2
 	add r2, sp, #0x14
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	b _08185C88
 _08185BC4:
 	lsls r0, r1, #0x18

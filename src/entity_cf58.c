@@ -87,10 +87,8 @@ void FUN_080a5f40(EntityCF58* p) {
     PlaySound_082406e0(VO_FIGHT);
   }
   if (p->stateTimer < 8) {
-    u16* table = gRandomTable;
-
-    p->sprite.pos.x = (_Random(table) & 3) - 2;
-    p->sprite.pos.y = (_Random(table) & 3) - 2;
+    p->sprite.pos.x = (RandomNext() & 3) - 2;
+    p->sprite.pos.y = (RandomNext() & 3) - 2;
   } else if (p->stateTimer == 8) {
     p->sprite.pos.x = 0;
     p->sprite.pos.y = 0;

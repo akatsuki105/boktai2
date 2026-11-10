@@ -35,19 +35,12 @@ void FUN_080a6e88(bool32 stopSound);
 void TimeMC_UpdateActivated(TimeMC* p);
 void TimeMC_UpdateDone(TimeMC* p);
 
-// プレイヤーが魔方陣の中心から 0x60 以内にいるかどうか
+// プレイヤーが魔方陣の中心から Q8(0.375) 以内にいるかどうか
 bool32 TimeMC_IsPlayerNear(TimeMC* p) {
-  s32 dx = gStat->playerX - p->pos.x;
-  s32 dz;
+  s32 dx = abs(gStat->playerX - p->pos.x);
+  s32 dz = abs(gStat->playerZ - p->pos.z);
 
-  if (dx < 0) {
-    dx = -dx;
-  }
-  dz = gStat->playerZ - p->pos.z;
-  if (dz < 0) {
-    dz = -dz;
-  }
-  if (dx <= 0x60 && dz <= 0x60 && dx * dx + dz * dz <= 0x60 * 0x60) {
+  if (dx <= Q8(0.375) && dz <= Q8(0.375) && dx * dx + dz * dz <= Q8(0.375) * Q8(0.375)) {
     return TRUE;
   }
   return FALSE;

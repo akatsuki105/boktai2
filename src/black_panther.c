@@ -929,7 +929,7 @@ s32 BlackPanther_Init(BlackPanther* p, u32 id, u32 _) {
   p->auxGfx1.plttID = 0x7584;
   p->auxGfx1.pltt = p->pltt;
   color = RGB(20, 20, 20);
-  for (i = 15; i >= 0; i--) {
+  for (i = 0; i < 16; i++) {
     p->pltt[i] = color;
   }
 

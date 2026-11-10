@@ -666,7 +666,7 @@ s32 FUN_080b1148(PileDriver* p) {
 
 void FUN_080b1174(PileDriver* p) {
   if (FUN_080b1078(p)) {
-    FUN_0807bb3c(gPlayerPtr[0], NULL, -1, 0, 0);
+    Player_LockPullCoffinTo(gPlayerPtr[0], NULL, -1, 0, 0);
     p->unk_c16 = 0;
     PileDriver_SetSubState(p, 1);
   }

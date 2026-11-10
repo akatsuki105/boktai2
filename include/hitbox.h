@@ -28,14 +28,14 @@ typedef u8 HitboxHitResult8;
 #define HBRESULT_NORMAL (1 << 0)  // 0x1, 等倍または 5/4倍
 #define HBRESULT_RESIST (1 << 1)  // 0x2, 属性が噛み合って 1/4倍
 #define HBRESULT_WEAK (1 << 2)    // 0x4, 弱点を突いて 4倍
-#define HBRESULT_BONUS (1 << 3)   // 0x8, 1.5倍の追加補正を適用済み, 背後から当てたとき、または dark_django_0806f990 の条件で立つ
+#define HBRESULT_BONUS (1 << 3)   // 0x8, 1.5倍の追加補正を適用済み, 背後から当てたとき、または Django_OnWeaponHit の条件で立つ
 
 // HitboxData.hitState, 多段ヒットを抑えるために相手の攻撃側 flags と組で見る
 typedef u8 HitboxHitState8;
 #define HBHITSTATE_UNK_0 (1 << 0)  // 0x1, 相手の HBFLAG_UNK_9 が消費する
 #define HBHITSTATE_UNK_1 (1 << 1)  // 0x2, 相手の HBFLAG_UNK_10 が1回だけに制限するのに使う
 
-typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻撃側の属性と守備側の耐性を兼ねる, bit7-11 は dark_django_0806f990 が別の用途で見る
+typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻撃側の属性と守備側の耐性を兼ねる, bit7-11 は Django_OnWeaponHit が別の用途で見る
 #define HBATTR_SOL (1 << 0)        // 0x1, ソル属性
 #define HBATTR_DARK (1 << 1)       // 0x2, ダーク属性
 #define HBATTR_FLAME (1 << 2)      // 0x4, 炎属性
@@ -99,7 +99,7 @@ typedef struct HitboxData {
   HitboxHitState8 hitState;    // 0x46, 多段ヒット管理, see HBHITSTATE_*
   u8 unk_47;                   // 0x47, Hitbox_Init が 1 にする, 読み手が見つかっていない
 
-  // 0x48, e.g. dark_django_0806f990(ジャンゴ), EnemyBat_OnHurt(バット)
+  // 0x48, e.g. Django_OnWeaponHit(ジャンゴ), EnemyBat_OnHurt(バット)
   // Overlap時に呼ばれるが、ダメージ計算などの汎用処理もここでやるのか、追加のカスタム処理のためのコールバックなのかは不明
   // a: 攻撃側, b: 被攻撃側, owner: このHitboxの持ち主 (a->owner or b->owner のどちらか)
   // 例え、ジャンゴがバットに攻撃を当てると呼ばれる EnemyBat_OnHurt では a は Player.Hitbox, b は EnemyBat.Hitbox, owner は EnemyBat

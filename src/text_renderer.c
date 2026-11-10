@@ -938,7 +938,7 @@ NON_MATCH s32 TextRenderer_GetVarWidth(TextRenderer* p, s32 idx) {
 #ifdef NONMATCHING_C
   s32 v = p->vars[idx];
   s32 width = (u32)v >> 31;
-  s32 n = (v < 0) ? -v : v;
+  s32 n = abs(v);
 
   if (n > 9999999) {
     width += 8;

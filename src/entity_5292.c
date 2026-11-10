@@ -93,7 +93,6 @@ NON_MATCH void Entity5292_InitElems(Entity5292* p) {
     Entity5292Elem* elem = &p->elems[i];
     AuxSprite* spr = &elem->sprite;
     AuxSpriteGfx* gfx = &elem->gfx;
-    u16* table = gRandomTable;
     s32 offset;
     u32 angle;
     s32 speed;
@@ -103,12 +102,12 @@ NON_MATCH void Entity5292_InitElems(Entity5292* p) {
     elem->sprite.flags |= SPRFLAG_SCREEN_COORD;
     elem->sprite.priority = 1;
     elem->angle = p->baseAngle;
-    elem->speed = ((_Random(table) >> 3) & 15) + 16;
-    elem->x = (_Random(table) >> 3) & 0xFFF;
-    elem->y = (_Random(table) >> 3) & 0xFFF;
+    elem->speed = ((RandomNext() >> 3) & 15) + 16;
+    elem->x = (RandomNext() >> 3) & 0xFFF;
+    elem->y = (RandomNext() >> 3) & 0xFFF;
     elem->sprite.pos.x = elem->x >> 4;
     elem->sprite.pos.y = elem->y >> 4;
-    elem->animTimer = _Random(table) & 15;
+    elem->animTimer = RandomNext() & 15;
     elem->sprite.poseIdx = elem->animTimer >> 2;
     Video_SetAuxSpritePltt(gfx, p->plttOffset + 467);
     offset = ((Random() >> 3) & 31) - 15;

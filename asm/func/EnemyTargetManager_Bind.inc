@@ -368,7 +368,7 @@ _080F91A8:
 	adds r0, r7, #0
 	ldr r1, [sp, #0x80]
 	adds r2, r4, #0
-	bl FUN_080e3f50
+	bl Enemy_CheckStepTo
 	str r0, [sp, #0x6c]
 	str r4, [sp, #0x84]
 	cmp r0, #0
@@ -1147,7 +1147,7 @@ _080F973C:
 	adds r0, r7, #0
 	ldr r1, [sp, #0x80]
 	adds r2, r4, #0
-	bl FUN_080e3f50
+	bl Enemy_CheckStepTo
 	mov sl, r0
 	str r4, [sp, #0x78]
 	cmp r0, #0

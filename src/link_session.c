@@ -560,12 +560,10 @@ void FUN_081de090(LinkSession* p) {
   p->self.unk_44 = Time_GetSpanOfTime();
 }
 
-// 残差: 原典は coinOwners を &coinOwners[4] から下へ動くポインタと別の数え役で埋めるが, こちらは添字のまま [base + i] で書く
-NON_MATCH void FUN_081de0dc(LinkSession* p) {
-#ifdef NONMATCHING_C
+void FUN_081de0dc(LinkSession* p) {
   s32 i;
 
-  for (i = 4; i >= 0; i--) {
+  for (i = 0; i < 5; i++) {
     p->coinOwners[i] = 4;
   }
   for (i = 0; i < 4; i++) {
@@ -576,9 +574,6 @@ NON_MATCH void FUN_081de0dc(LinkSession* p) {
     p->rankPoints[i] = 0;
   }
   p->eneSpent = 0;
-#else
-  INCFUNC("asm/func/FUN_081de0dc.inc");
-#endif
 }
 
 // 切断を知らせる画面を出し, メッセージ窓が開いたら終了のメッセージを流す
@@ -684,7 +679,7 @@ s32 FUN_081de2dc(LinkSession* p) {
 }
 
 // ロビー, 全員の準備完了 (0x0400 | 0x3E か 0x1400) がそろって親機が START を押したら state 5 へ, 受信が途絶えたら state 2 からやり直す
-// 下書き (421/416命令): 流れは一致, 原典は unk_74 を消すループを &unk_74[3] から下へ動くポインタと &unk_74[0] の比較で回し (FUN_081de0dc と同じ形), &unk_23 を経路ごとに r6 へ作る
+// 下書き (421/416命令): 流れは一致, 原典は &unk_23 を経路ごとに r6 へ作る
 NON_MATCH s32 FUN_081de360(LinkSession* p) {
 #ifdef NONMATCHING_C
   u16 recv[4];
@@ -698,7 +693,7 @@ NON_MATCH s32 FUN_081de360(LinkSession* p) {
     if (gLinkSession != NULL) {
       gLinkSession->unk_2c[0] = 0;
     }
-    for (i = 3; i >= 0; i--) {
+    for (i = 0; i < 4; i++) {
       p->unk_74[i] = 0;
     }
   }
@@ -711,7 +706,7 @@ NON_MATCH s32 FUN_081de360(LinkSession* p) {
       return 0;
     }
     if (p->recvResult != -3) {
-      for (i = 3; i >= 0; i--) {
+      for (i = 0; i < 4; i++) {
         p->unk_74[i] = 0;
       }
       for (i = 0; i < 4; i++) {

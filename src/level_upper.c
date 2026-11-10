@@ -80,20 +80,18 @@ bool32 IsWeaponLevelChanged(LevelUpper* p) {
 
 // 粒子をプレイヤーの周りのランダムな位置に出し直す
 void FUN_080a8250(LevelUpParticle* p) {
-  u16* table;
   Player* player;
 
   p->base.flags &= ~SPRFLAG_HIDDEN;
-  table = gRandomTable;
-  p->offset.x = ((_Random(table) >> 3) & 0x7F) - 63;
-  p->offset.y = ((_Random(table) >> 3) & 0x3F) + 64;
-  p->offset.z = ((_Random(table) >> 3) & 0x7F) - 63;
+  p->offset.x = ((RandomNext() >> 3) & 0x7F) - 63;
+  p->offset.y = ((RandomNext() >> 3) & 0x3F) + 64;
+  p->offset.z = ((RandomNext() >> 3) & 0x7F) - 63;
   player = gPlayerPtr[0];
   p->base.pos.x = player->mover.pos.x + p->offset.x;
   p->base.pos.y = player->mover.pos.y + p->offset.y;
   p->base.pos.z = player->mover.pos.z + p->offset.z;
   p->unk_30 = 0;
-  p->unk_32 = (_Random(table) & 7) + 12;
+  p->unk_32 = (RandomNext() & 7) + 12;
   p->unk_34 = 0;
   p->unk_3a = 0;
   p->unk_38 = 1;

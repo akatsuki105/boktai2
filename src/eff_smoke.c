@@ -91,17 +91,17 @@ NON_MATCH s32 EmitSmoke(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 spee
         if (size->x == 0) {
           e->ptcl.pos.x = pos->x;
         } else {
-          e->ptcl.pos.x = Mod(Random(), size->x) - FixToInt(1, size->x) + pos->x;
+          e->ptcl.pos.x = Mod(RandomNext(), size->x) - FixToInt(1, size->x) + pos->x;
         }
         if (size->y == 0) {
           e->ptcl.pos.y = pos->y;
         } else {
-          e->ptcl.pos.y = Mod(Random(), size->y) - FixToInt(1, size->y) + pos->y;
+          e->ptcl.pos.y = Mod(RandomNext(), size->y) - FixToInt(1, size->y) + pos->y;
         }
         if (size->z == 0) {
           e->ptcl.pos.z = pos->z;
         } else {
-          e->ptcl.pos.z = Mod(Random(), size->z) - FixToInt(1, size->z) + pos->z;
+          e->ptcl.pos.z = Mod(RandomNext(), size->z) - FixToInt(1, size->z) + pos->z;
         }
       } else {
         e->ptcl.pos.x = pos->x;
@@ -117,9 +117,9 @@ NON_MATCH s32 EmitSmoke(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 spee
         e->vel.x = POLAR_X(speed, angle), e->vel.y = 0, e->vel.z = POLAR_Z(speed, angle);
       }
       if (velYMax == 0) {
-        e->vel.y = Mod(Random(), 32);
+        e->vel.y = Mod(RandomNext(), 32);
       } else {
-        e->vel.y = Mod(Random(), velYMax);
+        e->vel.y = Mod(RandomNext(), velYMax);
       }
 
       switch (kind) {

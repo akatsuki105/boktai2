@@ -245,7 +245,7 @@ void Enemy_SendMsgById(u8 enemyKind, void* payload, u16 moverID) {
 
 // スクリプトが登録したメッセージを宛先 (全体/種族/個体) ごとに敵へ配送する
 void EnemyManager_DispatchScriptMsgs(EnemyManager* p) {
-  s32 count = FUN_08230f94(p->msgRecordID, &p->msgRecords);
+  s32 count = ScriptRecord_Find(p->msgRecordID, &p->msgRecords);
   ScriptRecord* record = p->msgRecords;
 
   while (count-- > 0) {
@@ -614,8 +614,8 @@ NON_MATCH void Enemy_DamageAll(s32 damage) {
       p->unk_21e = 0;
       p->unk_220 = 0;
       p->unk_202 = 0;
-      dx = (Random() & 63) - 16;
-      dz = (Random() & 63) - 16;
+      dx = (RandomNext() & 63) - 16;
+      dz = (RandomNext() & 63) - 16;
       p->hurtbox.damage = damage;
       p->unk_48a = damage;
       p->hp -= p->hurtbox.damage;
@@ -1105,7 +1105,7 @@ NON_MATCH void EnemyManager_UpdateEnemies(EnemyManager* p) {
         enemy->unk_4be = 0;
         Enemy_ClearSpriteFlags(enemy, SPRFLAG_HIDDEN);
         enemy->hp = 0;
-        FUN_080e64e4(enemy);
+        Enemy_BurstEmitterParticles(enemy);
         CLEAR_FLAGS(enemy->flags3, ENEFLAG3_UNK_13);
         SET_FLAGS(enemy->flags, ENEFLAG_UNK_12);
       }
@@ -1117,7 +1117,7 @@ NON_MATCH void EnemyManager_UpdateEnemies(EnemyManager* p) {
         case ENEK_SHAIAN: {
           if (!TEST_FLAGS(enemy->flags, ENEFLAG_UNK_15 | ENEFLAG_UNK_25)) {
             if (enemy->spriteKind == 0) {
-              enemy->s->main.spr.unk_12 = enemy->unk_478;
+              enemy->s->main.spr.animId = enemy->unk_478;
             } else {
               enemy->s->main.spr.plttID = enemy->unk_478;
             }
@@ -1688,7 +1688,7 @@ NON_MATCH void Enemy_ApplyPaletteFade(Enemy* p) {
 
   if (fade->timer != 0) {
     if (p->spriteKind == 0) {
-      p->s->main.spr.unk_12 = p->unk_478;
+      p->s->main.spr.animId = p->unk_478;
       *(EnemyPaletteFade**)&p->s->main.spr.animFlags = fade;
     } else {
       MainSprite* sprite = &p->s->main.spr;

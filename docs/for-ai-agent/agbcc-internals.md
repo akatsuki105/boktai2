@@ -474,7 +474,7 @@ gained or lost pool constants. A `NAKED` function emits no pool constants
 through the compiler at all, so turning one into C shifts every later
 function's `.LC` numbers by however many constants it uses.
 
-Seen on `FUN_0807a270` (`src/player.c`), which stores 0 to seven `u16` globals
+Seen on `Player_ResetGlobals` (`src/player.c`), which stores 0 to seven `u16` globals
 through seven hoisted address registers. With `Player_UpdateCrossoverDjango` just before it left
 `NAKED`, its constants are `.LC86`-`.LC101` and the seven addresses go to r5, r6,
 r7, ip, r8, r9, sl in source order, matching the ROM. With `Player_UpdateCrossoverDjango` in C

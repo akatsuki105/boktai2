@@ -53,7 +53,7 @@
 	strb r4, [r6]
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08060e90
+	bl Player_ExecEventScript
 	adds r0, r5, #0
 	bl DjangoBerserk_Create
 	b _0807F1FA

@@ -137,12 +137,11 @@ NON_MATCH void Entity081f8a28_TurnToTarget(Entity081f8a28Elem* elem) {
 NON_MATCH void Entity081f8a28_SpawnTrail(Vec3* pos) {
 #ifdef NONMATCHING_C
   Vec3 vel;
-  u16* table = gRandomTable;
   u32 angle;
   s32 speed;
 
-  angle = _Random(table) & 0xFF;
-  speed = (_Random(table) & 31) - 16;
+  angle = Random() & 0xFF;
+  speed = (Random() & 31) - 16;
   Vec3_SetPolar(&vel, angle, speed);
   vel.y = (Random() & 63) - 48;
   Entity081ee2a0_SpawnDefault(pos, &vel, 60, 3);

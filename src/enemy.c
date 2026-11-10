@@ -47,7 +47,7 @@ const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_enemy_c_08251
 s32 FUN_08240b98(Vec3* param_1, s8 param_2);
 s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
-void FUN_080e7b6c(Enemy* p);
+void Enemy_StepToFloorEdge(Enemy* p);
 void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
@@ -493,7 +493,7 @@ bool8 FUN_080e3ed8(Vec3* a, Vec3* b, s32 kind, s32 expected) {
 // 今のタイルから dst のタイルへ段差を越えられるか調べる, 同じ高さなら 0, 1段下りなら 1, 上りで越えられれば 0 か 2 (2段目に届くとき), 越えられなければ -1
 // 差分は Vec3_Diff で取ると d がスタックに置かれて 474/479 命令, FUN_080e3ed8 は呼び出し側が戻り値の下位8bitだけ見るので bool8
 // 残差はレジスタ割当で, 原典は dstIdx をスタックに置き dst を r9, &b を r10 に持ち越して後の b の読み書きに使うが, こちらは dstIdx を r9 に置く
-NON_MATCH s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst) {
+NON_MATCH s32 Enemy_CheckStepTo(Enemy* p, WorldPos* pos, WorldPos* dst) {
 #ifdef NONMATCHING_C
   s32 dstIdx = GetCollisionTileIdx(dst);
   s32 h0 = TileHeightAtIndex(p->tileIdx, pos);
@@ -561,7 +561,7 @@ NON_MATCH s32 FUN_080e3f50(Enemy* p, WorldPos* pos, WorldPos* dst) {
   }
   return result;
 #else
-  INCFUNC("asm/func/FUN_080e3f50.inc");
+  INCFUNC("asm/func/Enemy_CheckStepTo.inc");
 #endif
 }
 
@@ -682,7 +682,7 @@ NON_MATCH Mover* Enemy_FindVisiblePlayer(Enemy* p) {
     Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
     return found;
   } else {
-    s32 step = FUN_080e3f50(p, &pos, &pl->mover.pos);
+    s32 step = Enemy_CheckStepTo(p, &pos, &pl->mover.pos);
     u8 visible;
     bool8 flag;
 
@@ -806,7 +806,7 @@ bool32 CalcVelocityToward(Vec3* a, Vec3* b, Vec3* out, u8* outAngle, u32 rangeX,
 
 // 跳ねている間の更新, 重力で落として着地したら跳ね返りを弱め, 止まったら TRUE
 // 残差は341/341命令で並びだけ, 原典は落下側の TileAtIndex の上書きが無いときの塊を ENEFLAG2_UNK_20 側の後ろへ置く
-// 速さの2乗の和を Vec3* を受ける inline, 2つの CpuFill32 を Vec3* を受ける inline にすると (一時変数のスタックを共有して 0x14 になる), flags2 を Enemy_GetFlag2 / Enemy_SetFlag2 にすると残りはこの並びだけになる
+// 速さの2乗の和を Vec3* を受ける inline (v->x * v->x + ...) にし, 2つの CpuFill32 を vec3.h の Vec3_Clear にすると 341/341 命令, 5 hunk で残りはこの並びだけになる (2乗の inline は一致しないので外してある)
 NON_MATCH bool8 Enemy_UpdateJump(Enemy* p) {
 #ifdef NONMATCHING_C
   if (p->jumpVel.x * p->jumpVel.x + p->jumpVel.y * p->jumpVel.y + p->jumpVel.z * p->jumpVel.z == 0 && p->heightAboveFloor == 0) {
@@ -832,7 +832,7 @@ NON_MATCH bool8 Enemy_UpdateJump(Enemy* p) {
 
       range.x = 0x52, range.y = 0, range.z = 0x52;
       if (p->unk_1bc == 0) {
-        CpuFill32(0, &p->jumpVel, sizeof(p->jumpVel));
+        Vec3_Clear(&p->jumpVel);
         p->heightAboveFloor = 0;
       } else {
         p->jumpVel.x = Div(p->jumpVel.x * 5, 10);
@@ -849,7 +849,7 @@ NON_MATCH bool8 Enemy_UpdateJump(Enemy* p) {
     }
     if (p->jumpVel.x * p->jumpVel.x + p->jumpVel.y * p->jumpVel.y + p->jumpVel.z * p->jumpVel.z == 0 && p->heightAboveFloor == 0) {
       p->heightAboveFloor = 0;
-      CpuFill32(0, &p->jumpVel, sizeof(p->jumpVel));
+      Vec3_Clear(&p->jumpVel);
       Enemy_SetFlag2(p, ENEFLAG2_UNK_4);
       return TRUE;
     }
@@ -1445,7 +1445,7 @@ void Enemy_InitPathWalker(Enemy* p, u32 pathIdx, u32 param_3, u32 nodeIdx) { Map
 // msg[0] が 0 なら活動停止から復帰, 1 なら復帰しつつ Enemy_ResetInPlace, それ以外は停止中なら Enemy_Reset, 1回だけ受け付ける
 // 残差は157/157命令のレジスタ順列だけ, 原典は p を r4, 0x800 を r5, 0 を r6, msg[0] を r7, flags3 の検査結果を r8 に置くが, こちらは1つずつずれる
 // 試済: Enemy_TestFlag3 / 素の & / Enemy_SetFlag3 / msg[0] や検査結果のローカル / if-else の連鎖, いずれも同じか悪化
-NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
+NON_MATCH void Enemy_HandleResumeMsg(Enemy* p, u16* msg) {
 #ifdef NONMATCHING_C
   if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_11)) {
     return;
@@ -1484,7 +1484,7 @@ NON_MATCH void FUN_080e59d0(Enemy* p, u16* msg) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080e59d0.inc");
+  INCFUNC("asm/func/Enemy_HandleResumeMsg.inc");
 #endif
 }
 
@@ -1521,7 +1521,7 @@ void Enemy_ReactivateAtPathNode(Enemy* p, s32 pathIdx, s32 nodeIdx, s32 angle) {
 // 残差1命令, 原典は dir を別レジスタへ複写してから比較に使うが agbcc は複写せず同じレジスタで済ませる (命令列は 29 対 30)
 NON_MATCH void Enemy_SetAnimFacing(Enemy* p, u8* variant, AuxAnimPlayFlags* flags) {
 #ifdef NONMATCHING_C
-  u32 dir = ((((p->mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+  u32 dir = Angle_ToDir4(p->mover.angle);
 
   p->facing = dir;
   if (dir > 1) {
@@ -1606,9 +1606,8 @@ bool8 Enemy_MoveAlongNav(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 
 bool32 FUN_080e5fe4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed) {
   s16 dx = agent->waypoint.x - p->mover.pos.x;
   s16 dz = agent->waypoint.z - p->mover.pos.z;
-  s32 d;
+  s32 d = abs(agent->dest.x - p->mover.pos.x);
 
-  d = abs(agent->dest.x - p->mover.pos.x);
   if ((u32)d <= rangeX) {
     d = abs(agent->dest.z - p->mover.pos.z);
     if ((u32)d <= rangeZ) {
@@ -1628,21 +1627,14 @@ bool32 FUN_080e5fe4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed
 // 目標点が範囲外で今の向きとも象限が違うとき, unk_1dc を目標のほうの8方向に更新して TRUE を返す
 // 残差は70/71命令で1命令, 原典は quad * 64 を8bitに切り詰める (quad <= 3 と分かっていないので and が残る)
 // Tier A-C 試済 (quad を u32/u8, (u8) キャスト / & 3 / u8 の中間変数)
-NON_MATCH bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed) {
+NON_MATCH bool8 Enemy_TurnTowardWaypoint(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed) {
 #ifdef NONMATCHING_C
   s16 dx = agent->waypoint.x - p->mover.pos.x;
   s16 dz = agent->waypoint.z - p->mover.pos.z;
-  s32 d;
+  s32 d = abs(dx);
 
-  d = dx;
-  if (d < 0) {
-    d = -d;
-  }
   if ((u32)d <= rangeX) {
-    d = dz;
-    if (d < 0) {
-      d = -d;
-    }
+    d = abs(dz);
     if ((u32)d <= rangeZ) {
       return FALSE;
     }
@@ -1652,10 +1644,7 @@ NON_MATCH bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, 
     u32 angle = ArcTan2_8(dx, dz);
     u8 quad = ((angle + 0x20) & 0xFF) >> 6;
 
-    d = quad - (((p->mover.angle + 0x20) & 0xFF) >> 6);
-    if (d < 0) {
-      d = -d;
-    }
+    d = abs(quad - (((p->mover.angle + 0x20) & 0xFF) >> 6));
     if (d != 0) {
       p->unk_1dc = (FixToInt(5, (u8)(quad * 64)) + 3) & 7;
       return TRUE;
@@ -1663,7 +1652,7 @@ NON_MATCH bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, 
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_080e60b8.inc");
+  INCFUNC("asm/func/Enemy_TurnTowardWaypoint.inc");
 #endif
 }
 
@@ -1754,9 +1743,8 @@ void Enemy_ScatterParticles(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 range
   spread.z = 0;
   spread.val = 0;
   for (i = 0; i < count; i++) {
-    u16* table = gRandomTable;
-    spread.x = Mod(_Random(table) >> 4, rangeX) - (rangeX >> 1);
-    spread.y = -Mod(_Random(table) >> 3, rangeY) - 6;
+    spread.x = Mod(RandomNext() >> 4, rangeX) - (rangeX >> 1);
+    spread.y = -Mod(RandomNext() >> 3, rangeY) - 6;
     ElementalCondEmitter_AddParticle(&p->emitter, kind, param_6, &spread);
   }
 }
@@ -1775,7 +1763,7 @@ void Enemy_FadeParticles(Enemy* p, s32 count) {
 // ENEFLAG3_UNK_13 が立っていればエミッタの位置から粒子を3回まとめて吹き出させる
 // 残差は145/147命令, 原典は p を r8 に置き &p->emitter と &p->emitter.pos をループの外でスタックに退避するが, こちらは p を r5 に置いて毎回組み立てる
 // 試済: ElementalCondEmitter* のローカル (142, 片方だけ退避), Vec3_CopyOffsetY (132), Vec3 を関数の先頭で宣言 (変化なし)
-NON_MATCH void FUN_080e64e4(Enemy* p) {
+NON_MATCH void Enemy_BurstEmitterParticles(Enemy* p) {
 #ifdef NONMATCHING_C
   if (Enemy_TestFlag3(p, ENEFLAG3_UNK_13)) {
     s32 i;
@@ -1798,7 +1786,7 @@ NON_MATCH void FUN_080e64e4(Enemy* p) {
     p->unk_4be = 0;
   }
 #else
-  INCFUNC("asm/func/FUN_080e64e4.inc");
+  INCFUNC("asm/func/Enemy_BurstEmitterParticles.inc");
 #endif
 }
 
@@ -1809,8 +1797,8 @@ void FUN_080e6624(Enemy* p, u16* param_2) {
   }
 }
 
-// FUN_080e59d0 を1語進めた位置から呼ぶ
-void FUN_080e664c(Enemy* p, u16* param_2) { FUN_080e59d0(p, param_2 + 1); }
+// Enemy_HandleResumeMsg を1語進めた位置から呼ぶ
+void FUN_080e664c(Enemy* p, u16* param_2) { Enemy_HandleResumeMsg(p, param_2 + 1); }
 
 // 足元のタイルに属性がなく高さの条件もそろったら, 位置などを引数に unk_198 のスクリプトを呼ぶ
 void FUN_080e6658(Enemy* p) {
@@ -1906,12 +1894,12 @@ void FUN_080e68d8(Enemy* p, s32 timer) {
 // 押し出されたり挟まれたりしたときの処理, type 0/1 は状態21へ移して警戒を解き pos から dy 上げた位置へ置き直す, 2 は姿を隠して damage があれば倒し (煙と声), 無ければ hp を半分削る
 // 状態21へ入るときと直後の flags2 を Enemy_SetFlag2 で立て, ダメージ表示を bool8 の inline (自分の画面のプレイヤーが当てたか) と (p, 第5引数) の inline, 煙を (p, count, size, angle) の inline で書くと 787/787 命令
 // 残差はレジスタ割当で, 原典は p を r7, pos と dy をスタックに置く (こちらは p を r6, pos を r10)
-NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
+NON_MATCH void Enemy_OnCrushed(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
 #ifdef NONMATCHING_C
   bool8 show;
 
   p->unk_4be = 0;
-  FUN_080e64e4(p);
+  Enemy_BurstEmitterParticles(p);
   CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_13);
 
   switch (type) {
@@ -2048,7 +2036,7 @@ NON_MATCH void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080e6978.inc");
+  INCFUNC("asm/func/Enemy_OnCrushed.inc");
 #endif
 }
 
@@ -2120,16 +2108,13 @@ void Enemy_TargetNearestPlayer(Enemy* p, Vec3* pos) {
 }
 
 // 今いるノードと直前のノードを避けて, 次の経路ノードを乱数で選ぶ (4回外したら順送り)
-// 残差は78/78命令で gRandomTable のプール定数の位置のみ, 原典は添字のスケールを先に出してから gRandomTable を読む
-NON_MATCH void Enemy_PickNextPathNode(Enemy* p) {
-#ifdef NONMATCHING_C
+void Enemy_PickNextPathNode(Enemy* p) {
   u8 cur = p->pathWalker.nodeIdx;
   s32 next;
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    next = Mod(gRandomTable[gRandTableIdx], p->pathWalker.path->nodeCount);
+    next = Mod(Random(), p->pathWalker.path->nodeCount);
     if (next != cur && next != p->prevPathNode) {
       break;
     }
@@ -2147,18 +2132,14 @@ NON_MATCH void Enemy_PickNextPathNode(Enemy* p) {
   p->pathWalker.waitTimer = 0;
   p->pathWalker.node = Map_GetPathNodes(p->pathWalker.path);
   p->pathWalker.node += p->pathWalker.nodeIdx;
-#else
-  INCFUNC("asm/func/Enemy_PickNextPathNode.inc");
-#endif
 }
 
 // 60〜119 フレームの間だけ3番のアニメを流し, 再生し直しの合図で unk_5f0 を呼んで相手を手放す
 // 残差は124/124命令で p->mover.angle の ldrb 1命令の位置だけ, 原典は ArcTan2_8 の引数を積んだ直後に読むが, こちらは引数の ldrsh より前に読む
-// stateBegun の 0/1 の作り置きは Enemy_ConsumeStateBegun 形の bool8 inline で揃う, Vec3_Diff 周りは EnemyTarget* / Vec3* / WorldPos* のローカルで揃う, angle を式の中で読むと呼び出し後の ldrb になる
+// stateBegun の判定は Enemy_ConsumeStateBegun で揃う, Vec3_Diff 周りは EnemyTarget* / Vec3* / WorldPos* のローカルで揃う, angle を式の中で読むと呼び出し後の ldrb になる, 引数を d.x / dst->z にする形, 差を static inline で取る形, -angle + ... の順は効かない
 NON_MATCH void FUN_080e72b0(Enemy* p, s32 timer) {
 #ifdef NONMATCHING_C
-  if (p->stateBegun) {
-    p->stateBegun = FALSE;
+  if (Enemy_ConsumeStateBegun(p)) {
     Enemy_PlayAnim(p, 0);
   }
 
@@ -2302,7 +2283,7 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
           }
         }
       }
-      FUN_080e7b6c(p);
+      Enemy_StepToFloorEdge(p);
       p->animSpeedDiv = 2;
       return;
     } else {
@@ -2368,7 +2349,7 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
 // 向いている方向の反対から順に4方向を試し, 同じ高さで通れる床が続く端のタイルへ一歩動く
 // 床の判定を bool8 の static inline, 端の探索を switch の各節から return する static inline にし, 末尾を Enemy_StepToward でなく p->navAgent の直書きにすると 439/443 命令まで縮む
 // 残差は start の索引と高さのレジスタ割当 (原典は索引をスタック, 高さを r8) と, attr & 0x43 の ands の向き
-NON_MATCH void FUN_080e7b6c(Enemy* p) {
+NON_MATCH void Enemy_StepToFloorEdge(Enemy* p) {
 #ifdef NONMATCHING_C
   s32 dir = ((((p->mover.angle + 0x20) >> 6) & 3) + 2) & 3;
   s32 i = 0;
@@ -2441,7 +2422,7 @@ NON_MATCH void FUN_080e7b6c(Enemy* p) {
   }
   Enemy_ClearFlag3(p, ENEFLAG3_UNK_9);
 #else
-  INCFUNC("asm/func/FUN_080e7b6c.inc");
+  INCFUNC("asm/func/Enemy_StepToFloorEdge.inc");
 #endif
 }
 
@@ -2759,7 +2740,7 @@ void PlayEnemyDamageCry(Enemy* p) {
 // unk_470 の間, 粒子を出す向きを unk_452 で振りながら 4 フレームおきに種族ごとの粒子を3回に分けて撒く
 // 3回の撒き方を (p, kind, Vec3* offset, angle) の static inline にし, 中で pos = p->mover.pos; pos.y += offset->y; と書くと offset->y の読み直しが揃って 505/510 命令
 // 原典は各回の前に乱数を2つ空読みする, 残差は角度を r10 に置く割当と, 3回目で角度の乱数を個数の乱数より先に引く順序
-NON_MATCH void FUN_080e8614(Enemy* p) {
+NON_MATCH void Enemy_ScatterKindParticles(Enemy* p) {
 #ifdef NONMATCHING_C
   s32 angle;
   Vec3 offset;
@@ -2816,7 +2797,7 @@ NON_MATCH void FUN_080e8614(Enemy* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080e8614.inc");
+  INCFUNC("asm/func/Enemy_ScatterKindParticles.inc");
 #endif
 }
 
@@ -2834,6 +2815,7 @@ bool8 Enemy_IsDead(Enemy* p) {
 // 8バイト2語の要素を先頭ワードの昇順に並べ替える (バブルソート)
 // 残差は31/33命令, 原典は count-1 を引数レジスタ上で潰してから番兵チェック後に退避するが agbcc は別レジスタに作る
 // Tier A-B 試済: count-1 を2回書く (34命令) / ローカル n に退避 / count-- 文
+// 入れ替えは比較で読んだ2つのキーを使い回す形 (a / b のローカル) で揃った, 残りは原典が count と i を r1 / r0 のまま比較しループ内で r5 / r6 へ写す点, 内側を減算ループ / while / for の初期化で count-- / KeyPair 構造体の代入は不一致
 NON_MATCH void SortPairsByKey(s32* p, s32 count) {
 #ifdef NONMATCHING_C
   s32 i;
@@ -2844,13 +2826,15 @@ NON_MATCH void SortPairsByKey(s32* p, s32 count) {
     s32* q = p;
 
     for (j = 0; j < count; j++) {
-      if (q[0] > q[2]) {
-        s32 key = q[0];
+      s32 a = q[0];
+      s32 b = q[2];
+
+      if (a > b) {
         s32 val = q[1];
 
-        q[0] = q[2];
+        q[0] = b;
         q[1] = q[3];
-        q[2] = key;
+        q[2] = a;
         q[3] = val;
       }
       q += 2;
@@ -2862,17 +2846,14 @@ NON_MATCH void SortPairsByKey(s32* p, s32 count) {
 }
 
 // target のタイルへ経路で行けるならそこを, 行けなければ4近傍のタイルの中心を近い順に調べて最初に行ける点を out に入れる, どれも駄目なら (30000, 0, 30000)
-// 属性の判定を TileAttr を返す static inline (TileAtIndex(idx)->attr) にすると ands の向きが揃って 487/491 命令
-// 残差は idx をスタックに置く (原典) かレジスタに置くかの割当と, 原典が TilePosAtIndex の pos 引数を毎回 r10 から r9 へ写す点
-NON_MATCH void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
-#ifdef NONMATCHING_C
+void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
   s32 cands[4][2];
   Vec3 pos;
   Vec3 d;
   s32 idx = GetCollisionTileIdx(target);
   s32 i;
 
-  if (!(TileAtIndex(idx)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) && Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, target)) {
+  if (!(TileAttrAtIndex(idx) & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) && Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, target)) {
     *out = *target;
     return;
   }
@@ -2896,7 +2877,7 @@ NON_MATCH void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
   SortPairsByKey(cands[0], 4);
 
   for (i = 0; i < 4; i++) {
-    if (!(TileAtIndex(cands[i][1])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL))) {
+    if (!(TileAttrAtIndex(cands[i][1]) & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL))) {
       TilePosAtIndex(&pos, cands[i][1]);
       if (Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, &pos)) {
         *out = pos;
@@ -2905,9 +2886,6 @@ NON_MATCH void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
     }
   }
   out->x = 30000, out->y = 0, out->z = 30000;
-#else
-  INCFUNC("asm/func/Enemy_FindReachablePosNear.inc");
-#endif
 }
 
 void FUN_080e8f20(Enemy* p, s32 param_2) {
@@ -3091,19 +3069,17 @@ bool32 Enemy_ShakeSprite(Enemy* p) {
 
   if (Enemy_TestFlag4(p, ENEFLAG4_UNK_4)) {
     Vec3* pos = Enemy_GetSpritePos(p);
-    u16* table = gRandomTable;
 
-    pos->x += Mod(_Random(table), 10) - 5;
-    pos->z += Mod(_Random(table), 10) - 5;
+    pos->x += Mod(RandomNext(), 10) - 5;
+    pos->z += Mod(RandomNext(), 10) - 5;
     Enemy_ClearFlags4(p, ENEFLAG4_UNK_4);
     return TRUE;
   }
   if (Enemy_TestFlag4(p, ENEFLAG4_UNK_5)) {
     Vec3* pos = Enemy_GetSpritePos(p);
-    u16* table = gRandomTable;
 
-    pos->x += Mod(_Random(table), 16) - 8;
-    pos->z += Mod(_Random(table), 16) - 8;
+    pos->x += Mod(RandomNext(), 16) - 8;
+    pos->z += Mod(RandomNext(), 16) - 8;
     Enemy_ClearFlags4(p, ENEFLAG4_UNK_5);
     return TRUE;
   }
@@ -3114,29 +3090,23 @@ NAKED bool8 FUN_080eb2a0(Enemy* p) { INCFUNC("asm/func/FUN_080eb2a0.inc"); }
 
 // 犬(プレイヤーに攻撃したときにアイテムを奪う)の処理
 // 道具欄をランダムな位置から16スロット分走査して, 持っている道具を1つ選ぶ (チョコまみれは除く)
-// 残差は62/62命令でブロック配置のみ, 原典は見つかった側のブロックをループの外 (return FALSE の後ろ) に置く
-// Tier A-C 試済 (for/while(TRUE), break+i==16, s16 ローカル経由)
-NON_MATCH bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot) {
-#ifdef NONMATCHING_C
+bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot) {
   s16 slot;
   s16 i;
 
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  slot = Mod(gRandomTable[gRandTableIdx], 16);
+  slot = Mod(Random(), 16);
 
   for (i = 0; i < 16; i++) {
     *outItem = GetNormalItemID(slot);
-    if (*outItem >= 0 && *outItem != ITEM_CHOCOLATE_COVERED) {
+    if (*outItem < 0 || *outItem == ITEM_CHOCOLATE_COVERED) {
+      slot = Mod(slot + 1, 16);
+    } else {
       *outSlot = slot;
       *outRot = GetRotCount(*outSlot);
       return TRUE;
     }
-    slot = Mod(slot + 1, 16);
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/PickItemToSteal.inc");
-#endif
 }
 
 void nop_080ec4c8(void) {}

@@ -254,7 +254,7 @@ s32 ShadeManCrossover_GetPlttID(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
 s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 s32 Map_FindNearestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
-void FUN_0807ae6c(struct Player* p, u32 param_2, s32 param_3);
+void Player_InflictCrossoverElementalCond(struct Player* p, u32 param_2, s32 param_3);
 void FUN_08050e2c(u32 param_1, u32 param_2, Vec3* pos);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
@@ -553,17 +553,12 @@ void FUN_0803ca14(void) {
   }
 }
 
-// 残差は乱数の添字と 3 のマスクの持ち方 (99/101), Durathror の FUN_080371d4 と同じ壁
-NON_MATCH void FUN_0803ca40(WorldPos* pos) {
-#ifdef NONMATCHING_C
+void FUN_0803ca40(WorldPos* pos) {
   Vec3 size;
 
   VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
-  EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
-  EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
-#else
-  INCFUNC("asm/func/FUN_0803ca40.inc");
-#endif
+  EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
+  EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
 }
 
 void FUN_0803cb24(void) {
@@ -606,9 +601,9 @@ NON_MATCH void FUN_0803cbb4(s32 kind) {
 
   if (p != NULL) {
     if (kind == 1 || kind == 4) {
-      FUN_0807ae6c(p->base.players[0], ELEMCOND_INKA, Div(kind, 3) + 1);
+      Player_InflictCrossoverElementalCond(p->base.players[0], ELEMCOND_INKA, Div(kind, 3) + 1);
     } else if (kind == 2 || kind == 5) {
-      FUN_0807ae6c(p->base.players[0], ELEMCOND_SEKIKA, Div(kind, 3) + 1);
+      Player_InflictCrossoverElementalCond(p->base.players[0], ELEMCOND_SEKIKA, Div(kind, 3) + 1);
     } else {
       Player_ApplyBadCondition(p->base.players[0], BAD_CONFUSE, (Div(kind, 3) * p->unk_311 + p->unk_310) * 60);
     }

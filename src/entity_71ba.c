@@ -14,15 +14,15 @@ typedef struct Entity71BA {
   bool8 tileOverrideActive;                    // 0x1D, tileOverride を衝突マップに繋いであるか, _Destroy が立っていれば Map_RemoveTileOverride で外す
   u16 tileIdx;                                 // 0x1E, gCollisionMap->rowOffsets[z] + x, '.p' の x/z から _Init が計算する
   u16 height;                                  // 0x20, '.p[1]' (>> 8 した値)
-  bool16 unk_22;                               // 0x22, FUN_080a035c が 0/1 を入れ替えるたび gPlayerPtr[0]->unk_3f3 を +1/-1 する
+  bool16 unk_22;                               // 0x22, FUN_080a035c が 0/1 を入れ替えるたび gPlayerPtr[0]->wallLockCount を +1/-1 する
   MapTileOverride tileOverride;                // 0x24
   u32 unk_34;                                  // 0x34, '.R'
   void (*updateCallback)(struct Entity71BA*);  // 0x38, .flags bit0 なら FUN_080a01d8, bit1 なら FUN_080a035c, どちらでもなければ _UpdateTileOverride
 } Entity71BA;
 static_assert(sizeof(Entity71BA) == 60);
 
-void FUN_0807a334(Player* p);
-void FUN_0807a44c(Player* p, s32 dir);
+void Player_EnterLanding(Player* p);
+void Player_EnterWall(Player* p, s32 dir);
 
 static inline bool32 Entity71BA_IsPlayerMini(void) {
   u16 timer = gGoodCondTimer;
@@ -92,7 +92,7 @@ void FUN_080a01d8(Entity71BA* p) {
       if (p->tileOverrideActive) {
         Map_RemoveTileOverride(&p->tileOverride);
         p->tileOverrideActive = FALSE;
-        FUN_0807a334(gPlayerPtr[0]);
+        Player_EnterLanding(gPlayerPtr[0]);
         if (p->unk_34 != 0) {
           VM_ExecByID(p->unk_34, NULL);
         }
@@ -148,7 +148,7 @@ void FUN_080a035c(Entity71BA* p) {
     ret = Entity71BA_IsPlayerOnTile(p);
     if (ret) {
       if (!p->unk_22) {
-        gPlayerPtr[0]->unk_3f3[0]++;
+        gPlayerPtr[0]->wallLockCount++;
         if (p->flags & 8) {
           gPlayerPtr[0]->actionDir = 7;
         } else {
@@ -163,15 +163,15 @@ void FUN_080a035c(Entity71BA* p) {
       Entity71BA_ClampPlayer(p, 40);
       if (gPlayerPtr[0]->action != 4 && !Entity71BA_IsPlayerMini() && gPlayerPtr[0]->kind != PLAYER_BAT && gPlayerPtr[0]->kind != PLAYER_MOUSE) {
         if (p->flags & 8) {
-          FUN_0807a44c(gPlayerPtr[0], 7);
+          Player_EnterWall(gPlayerPtr[0], 7);
         } else {
-          FUN_0807a44c(gPlayerPtr[0], 1);
+          Player_EnterWall(gPlayerPtr[0], 1);
         }
       }
       return;
     }
     if (p->unk_22) {
-      gPlayerPtr[0]->unk_3f3[0]--;
+      gPlayerPtr[0]->wallLockCount--;
       p->unk_22 = ret;
     }
     if (!FUN_080a0268(p)) {
@@ -183,7 +183,7 @@ void FUN_080a035c(Entity71BA* p) {
     }
   } else {
     if (p->unk_22) {
-      gPlayerPtr[0]->unk_3f3[0]--;
+      gPlayerPtr[0]->wallLockCount--;
       p->unk_22 = ret;
     }
   }
@@ -214,7 +214,7 @@ void Entity71BA_UpdateTileOverride(Entity71BA* p) {
         } else {
           Map_RemoveTileOverride(&p->tileOverride);
           p->tileOverrideActive = keep;
-          FUN_0807a334(gPlayerPtr[0]);
+          Player_EnterLanding(gPlayerPtr[0]);
         }
         if (p->unk_34 != 0) {
           VM_ExecByID(p->unk_34, NULL);

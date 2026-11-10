@@ -173,11 +173,8 @@ NON_MATCH void ScatterEffect_UpdateBouncing(ScatterEffect* p, ScatterBurst* data
           if (idx == sp->mapIdx) {
             sp->height = floorY;
           } else {
-            s32 diff = idx - sp->mapIdx;
+            s32 diff = abs(idx - sp->mapIdx);
 
-            if (diff < 0) {
-              diff = -diff;
-            }
             if (diff == 1) {
               sp->vel.x = -FixToInt(6, ((Random() & 7) + 50) * sp->vel.x);
               if (idx - sp->mapIdx < 0) {

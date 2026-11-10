@@ -472,7 +472,7 @@ unknown* Forge_UpgradeResult(Forge* p) {
   return NULL;
 }
 
-// 308/305 命令, inherited と count をスタックに置く形が合わない
+// 306/305 命令, inherited と count をスタックに置く形が合わない
 NON_MATCH void Forge_Finish(Forge* p) {
 #ifdef NONMATCHING_C
   WeaponData* data = &p->result.data;
@@ -498,7 +498,7 @@ NON_MATCH void Forge_Finish(Forge* p) {
       rate = 0;
     }
 
-    if (rate < Mod(Random(), 100)) {
+    if (rate < Mod(RandomNext(), 100)) {
       *(u8*)&data->effects[0] = 0;
     } else {
       const WeaponData* base = ReadWeaponDB(data->id);
@@ -511,7 +511,7 @@ NON_MATCH void Forge_Finish(Forge* p) {
       }
     }
 
-    if (rate < Mod(Random(), 100)) {
+    if (rate < Mod(RandomNext(), 100)) {
       *(u8*)&data->effects[1] = 0;
     } else {
       GetWeaponData(p->slots[0], &w1);
@@ -523,7 +523,7 @@ NON_MATCH void Forge_Finish(Forge* p) {
       }
     }
 
-    if (rate < Mod(Random(), 100)) {
+    if (rate < Mod(RandomNext(), 100)) {
       *(u8*)&data->effects[2] = 0;
     } else {
       GetWeaponData(p->slots[1], &w2);
@@ -573,7 +573,7 @@ NON_MATCH void Forge_Finish(Forge* p) {
       data->quality = quality;
     }
 
-    for (i = 2; i >= 0; i--) {
+    for (i = 0; i < 3; i++) {
       *(u8*)&data->effects[i] = 0;
     }
   }

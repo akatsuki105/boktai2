@@ -345,14 +345,13 @@ NON_MATCH void FUN_080c26cc(JormungandrSegment* part) {
 NON_MATCH void FUN_080c2824(JormungandrSegment* part) {
 #ifdef NONMATCHING_C
   if (part->timer == 0) {
-    u16* table = gRandomTable;
     s32 i;
 
     part->sprites[0].poseIdx = part->idx;
     for (i = 0; i < 8; i++) {
-      part->vels[i].x = (_Random(table) & 0x1F) - 16;
-      part->vels[i].y = (_Random(table) & 0x1F) - 24;
-      part->vels[i].z = (_Random(table) & 0x1F) - 16;
+      part->vels[i].x = (Random() & 0x1F) - 16;
+      part->vels[i].y = (Random() & 0x1F) - 24;
+      part->vels[i].z = (Random() & 0x1F) - 16;
     }
   }
   if (++part->timer < 90) {
@@ -561,17 +560,11 @@ NON_MATCH void FUN_080c2d38(Jormungandr* p) {
       debris->sprite.pos.y += debris->vel.y;
       debris->sprite.pos.z += debris->vel.z;
       if (debris->hurts && !hit) {
-        s32 d = gPlayerPtr[0]->mover.pos.x - debris->sprite.pos.x;
+        s32 d = abs(gPlayerPtr[0]->mover.pos.x - debris->sprite.pos.x);
 
-        if (d < 0) {
-          d = -d;
-        }
-        if (d < 0x40) {
-          d = gPlayerPtr[0]->mover.pos.z - debris->sprite.pos.z;
-          if (d < 0) {
-            d = -d;
-          }
-          if (d < 0x40) {
+        if (d < Q8(0.25)) {
+          d = abs(gPlayerPtr[0]->mover.pos.z - debris->sprite.pos.z);
+          if (d < Q8(0.25)) {
             Player_TakeInstantHit(gPlayerPtr[0], p->debrisPower, 0, 0, 4, HBATTR_DARK);
             hit = TRUE;
           }
@@ -599,17 +592,17 @@ NON_MATCH void FUN_080c2d38(Jormungandr* p) {
       debris->sprite.flags &= ~SPRFLAG_HIDDEN;
       debris->sprite.poseIdx = 0;
       if (p->debrisSpawn == 1) {
-        angle = Mod(Random() >> 3, 48);
-        height = (Random() & 0x7F) + 320;
-        speed = (Random() & 3) + 3;
+        angle = Mod(RandomNext() >> 3, 48);
+        height = (RandomNext() & 0x7F) + Q8(1.25);
+        speed = (RandomNext() & 3) + 3;
         debris->vel.x = Trig_Fix12ToInt(speed * SIN(angle + 0x68));
         debris->vel.y = 3;
         debris->vel.z = Trig_Fix12ToInt(speed * SIN(angle + 0x28));
         debris->hurts = FALSE;
       } else {
-        angle = (Random() >> 3) & 0x1F;
-        height = 384;
-        speed = (Random() & 7) + 10;
+        angle = (RandomNext() >> 3) & 0x1F;
+        height = Q8(1.5);
+        speed = (RandomNext() & 7) + 10;
         debris->vel.x = Trig_Fix12ToInt(speed * gSineTable[angle + 0x70]);
         debris->vel.y = 0;
         debris->vel.z = Trig_Fix12ToInt(speed * gSineTable[angle + 0x30]);
@@ -618,12 +611,12 @@ NON_MATCH void FUN_080c2d38(Jormungandr* p) {
       debris->sprite.pos = p->pos;
       debris->sprite.pos.z += debris->vel.x;
       debris->sprite.pos.z += debris->vel.z + height;
-      if ((Random() >> 3) & 1) {
+      if ((RandomNext() >> 3) & 1) {
         debris->sprite.flags |= SPRFLAG_XFLIP;
       } else {
         debris->sprite.flags &= ~SPRFLAG_XFLIP;
       }
-      if ((Random() >> 3) & 1) {
+      if ((RandomNext() >> 3) & 1) {
         debris->sprite.flags |= SPRFLAG_YFLIP;
       } else {
         debris->sprite.flags &= ~SPRFLAG_YFLIP;
@@ -1122,17 +1115,16 @@ NON_MATCH void FUN_080c3fd0(Jormungandr* p, u32 rate) {
   set->timer += rate + 2;
   if (set->timer >= 30) {
     JormungandrParticle* ptcl = &set->ptcls[set->idx];
-    const u16* table = gRandomTable;
     u8 angle;
     s32 dist;
 
     ptcl->frameTimer = 0;
     ptcl->active = TRUE;
-    angle = _Random(table);
-    dist = (_Random(table) & 0x7F) + 320;
+    angle = Random();
+    dist = (Random() & 0x7F) + 320;
     ptcl->ofs.x = Trig_Fix12ToInt(dist * COS(angle));
     ptcl->ofs.z = Trig_Fix12ToInt(dist * SIN(angle));
-    ptcl->speed = (_Random(table) & 7) + 28;
+    ptcl->speed = (Random() & 7) + 28;
     ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
     Particle_SetPose(&ptcl->ptcl, set->group, 2);
     ptcl->ptcl.pos.x = ptcl->ofs.x + p->pos.x;
@@ -1169,16 +1161,10 @@ NON_MATCH void FUN_080c4114(Jormungandr* p) {
       if (!ptcl->active) {
         continue;
       }
-      d = ptcl->ofs.x;
-      if (d < 0) {
-        d = -d;
-      }
-      if (d < 0x40) {
-        d = ptcl->ofs.z;
-        if (d < 0) {
-          d = -d;
-        }
-        if (d < 0x40) {
+      d = abs(ptcl->ofs.x);
+      if (d < Q8(0.25)) {
+        d = abs(ptcl->ofs.z);
+        if (d < Q8(0.25)) {
           ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
           ptcl->active = FALSE;
           continue;
@@ -1188,7 +1174,7 @@ NON_MATCH void FUN_080c4114(Jormungandr* p) {
       ptcl->ofs.x -= Trig_Fix12ToInt(ptcl->speed * COS(angle));
       ptcl->ofs.z -= Trig_Fix12ToInt(ptcl->speed * SIN(angle));
       ptcl->ptcl.pos.x = x + ptcl->ofs.x;
-      ptcl->ptcl.pos.z = z + 0x180 + ptcl->ofs.z;
+      ptcl->ptcl.pos.z = z + Q8(1.5) + ptcl->ofs.z;
       if (ptcl->frameTimer++ == 3) {
         Particle_SetPose(&ptcl->ptcl, set->group, 3);
       }
@@ -1437,31 +1423,25 @@ NON_MATCH void FUN_080c4a74(Jormungandr* p) {
   s32 i;
 
   if (dx == 0 && dz == 0) {
-    len = 0x300;
+    len = Q8(3);
   } else {
-    s32 ax = dx;
-    s32 az = dz;
+    s32 ax = abs(dx);
+    s32 az = abs(dz);
 
-    if (ax < 0) {
-      ax = -ax;
-    }
-    if (az < 0) {
-      az = -az;
-    }
     if (az < ax) {
       len = Div(dx * 0x1000, COS(angle));
     } else {
       len = Div(dz * 0x1000, SIN(angle));
     }
   }
-  if (dy > 0x280) {
-    len += (dy - 0x280) * 2;
-    if (len > 0x300) {
-      len = 0x300;
+  if (dy > Q8(2.5)) {
+    len += (dy - Q8(2.5)) * 2;
+    if (len > Q8(3)) {
+      len = Q8(3);
     }
   }
-  if (len < 0x300) {
-    bend = Div((0x300 - len) * 0x100, 0x300);
+  if (len < Q8(3)) {
+    bend = Div((Q8(3) - len) * 0x100, Q8(3));
   } else {
     bend = 0;
   }
@@ -1532,11 +1512,11 @@ NON_MATCH void FUN_080c4a74(Jormungandr* p) {
 
     if (i == 2) {
       pos.x += 8;
-      pos.y += 16;
+      pos.y += Q8(0.063);
       pos.z += 8;
     } else {
       pos.x -= 8;
-      pos.y -= 16;
+      pos.y -= Q8(0.063);
       pos.z -= 8;
     }
     *part->holder.pos = pos;
@@ -1556,9 +1536,9 @@ NON_MATCH void FUN_080c4a74(Jormungandr* p) {
   if (TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_31)) {
     SpriteHolder_ClearFlags(&p->sprites[6].holder, SPRFLAG_HIDDEN);
     *p->sprites[6].holder.pos = *p->sprites[3].holder.pos;
-    p->sprites[6].holder.pos->x += 0x80;
-    p->sprites[6].holder.pos->y += 0x100;
-    p->sprites[6].holder.pos->z += 0x80;
+    p->sprites[6].holder.pos->x += Q8(0.5);
+    p->sprites[6].holder.pos->y += Q8(1);
+    p->sprites[6].holder.pos->z += Q8(0.5);
     SpriteHolder_AdvanceAnim(&p->sprites[6].holder);
   } else {
     SpriteHolder_SetFlags(&p->sprites[6].holder, SPRFLAG_HIDDEN);
@@ -1568,9 +1548,9 @@ NON_MATCH void FUN_080c4a74(Jormungandr* p) {
   } else {
     SpriteHolder_ClearFlags(&p->sprites[5].holder, SPRFLAG_HIDDEN);
     *p->sprites[5].holder.pos = *p->sprites[0].holder.pos;
-    p->sprites[5].holder.pos->x += 0x10;
-    p->sprites[5].holder.pos->y += 0x20;
-    p->sprites[5].holder.pos->z += 0x10;
+    p->sprites[5].holder.pos->x += Q8(0.063);
+    p->sprites[5].holder.pos->y += Q8(0.125);
+    p->sprites[5].holder.pos->z += Q8(0.063);
     SpriteHolder_AdvanceAnim(&p->sprites[5].holder);
   }
   if (++p->swayTimer >= 64) {
@@ -1799,17 +1779,11 @@ NON_MATCH void FUN_080c5458(JormungandrLeg* part) {
     joint->sprite.pos.x = part->origin->x + Trig_Fix12ToInt(joint->dist * COS(angle));
     joint->sprite.pos.z = part->origin->z + Trig_Fix12ToInt(joint->dist * SIN(angle));
     if (!hit) {
-      s32 d = gPlayerPtr[0]->mover.pos.x - joint->sprite.pos.x;
+      s32 d = abs(gPlayerPtr[0]->mover.pos.x - joint->sprite.pos.x);
 
-      if (d < 0) {
-        d = -d;
-      }
-      if (d < 0x60) {
-        d = gPlayerPtr[0]->mover.pos.z - joint->sprite.pos.z;
-        if (d < 0) {
-          d = -d;
-        }
-        if (d < 0x60) {
+      if (d < Q8(0.375)) {
+        d = abs(gPlayerPtr[0]->mover.pos.z - joint->sprite.pos.z);
+        if (d < Q8(0.375)) {
           Hitbox_SetPos(&part->hitbox, &joint->sprite.pos, 0);
           Hitbox_Register(&part->hitbox);
           hit = TRUE;
@@ -1821,7 +1795,7 @@ NON_MATCH void FUN_080c5458(JormungandrLeg* part) {
     return;
   }
   again = FALSE;
-  if (part->unk_06 == 0 && gPlayerPtr[0]->mover.pos.z < part->origin->z + 0x300) {
+  if (part->unk_06 == 0 && gPlayerPtr[0]->mover.pos.z < part->origin->z + Q8(3)) {
     if (part->flip == 0) {
       if (part->origin->x < gPlayerPtr[0]->mover.pos.x) {
         again = TRUE;
@@ -2525,8 +2499,8 @@ NON_MATCH void FUN_080c6c8c(Jormungandr* p, s32 timer) {
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
     p->pos_2f0 = p->pos_2f8;
-    p->pos_2f0.y = p->pos_2f8.y + 0x80;
-    p->pos_2f0.z += 0x180;
+    p->pos_2f0.y = p->pos_2f8.y + Q8(0.5);
+    p->pos_2f0.z += Q8(1.5);
     p->unk_25fa = 0;
     SpriteHolder_SetAnim(&p->sprites[0].holder, 0, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
     SpriteHolder_SetAnim(&p->sprites[1].holder, 0x18, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
@@ -2563,12 +2537,9 @@ NON_MATCH void FUN_080c6c8c(Jormungandr* p, s32 timer) {
     return;
   }
   if (timer >= 90) {
-    s32 d = p->pos.x - gPlayerPtr[0]->mover.pos.x;
+    s32 d = abs(p->pos.x - gPlayerPtr[0]->mover.pos.x);
 
-    if (d < 0) {
-      d = -d;
-    }
-    if (d < 0x40) {
+    if (d < Q8(0.25)) {
       p->slamCount = p->slamCountMax;
       Boss_SetState(&p->base, FUN_080c73c0, 3);
       return;
@@ -2603,9 +2574,9 @@ NON_MATCH void FUN_080c6c8c(Jormungandr* p, s32 timer) {
   p->pos.y = FixToInt(3, p->pos.y * 7 + p->pos_2f0.y);
   p->pos.z += Trig_Fix12ToInt(p->moveSpeed * SIN(p->moveAngle));
   if ((timer & 0x3F) == 0) {
-    p->pos_2f0.x = gPlayerPtr[0]->mover.pos.x + (u8)Random() - 0x7F;
-    p->pos_2f0.y = p->pos_2f8.y + 0x80;
-    p->pos_2f0.z = (Random() & 0x1FF) + p->pos_2f8.z;
+    p->pos_2f0.x = gPlayerPtr[0]->mover.pos.x + (u8)RandomNext() - 0x7F;
+    p->pos_2f0.y = p->pos_2f8.y + Q8(0.5);
+    p->pos_2f0.z = (RandomNext() & 0x1FF) + p->pos_2f8.z;
   }
 #else
   INCFUNC("asm/func/FUN_080c6c8c.inc");
@@ -3004,8 +2975,8 @@ NON_MATCH void FUN_080c800c(Jormungandr* p, s32 timer) {
   if (p->base.stateEntered) {
     p->base.stateEntered = FALSE;
     p->pos_2f0 = p->pos_2f8;
-    p->pos_2f0.y += 0x80;
-    p->pos_2f0.z += 0x60;
+    p->pos_2f0.y += Q8(0.5);
+    p->pos_2f0.z += Q8(0.375);
     p->unk_25fc = Mod(Random(), 6);
     SpriteHolder_SetAnim(&p->sprites[0].holder, 0x14, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
     SpriteHolder_SetAnim(&p->sprites[1].holder, 0x18, 0, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
@@ -3015,14 +2986,11 @@ NON_MATCH void FUN_080c800c(Jormungandr* p, s32 timer) {
 
     if (Mod(timer, 50) == 0) {
       FUN_080c6b44(p);
-      p->pos.z -= 0x60;
+      p->pos.z -= Q8(0.375);
     }
     Jormungandr_EasePos(p);
-    d = gPlayerPtr[0]->mover.pos.x - p->pos.x;
-    if (d < 0) {
-      d = -d;
-    }
-    if (d < 0x80 && gPlayerPtr[0]->mover.pos.z - p->pos.z < 800) {
+    d = abs(gPlayerPtr[0]->mover.pos.x - p->pos.x);
+    if (d < Q8(0.5) && gPlayerPtr[0]->mover.pos.z - p->pos.z < Q8(3.125)) {
       p->slamCount = p->slamCountMax;
       Boss_SetState(&p->base, FUN_080c73c0, 3);
     } else if (timer >= 450) {

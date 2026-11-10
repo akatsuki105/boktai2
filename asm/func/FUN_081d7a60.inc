@@ -18,7 +18,7 @@ _081D7A70:
 	b _081D7B96
 _081D7A82:
 	adds r0, r5, #0
-	bl FUN_081d7814
+	bl EntityC60FItem_RemoveTileOverride
 	ldr r1, [r4, #0x1c]
 	movs r0, #0
 	str r0, [sp]

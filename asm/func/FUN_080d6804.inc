@@ -48,7 +48,7 @@ _080D6848:
 	movs r4, #0x19
 _080D6862:
 	adds r0, r5, #0
-	bl FUN_08078548
+	bl Player_StopChargeAndLookAround
 	b _080D69D4
 	.align 2, 0
 _080D686C: .4byte 0x00000446

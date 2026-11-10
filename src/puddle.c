@@ -224,22 +224,20 @@ NON_MATCH void FUN_0809f938(Puddle* elem) {
   if (elem->animTimer <= 7) {
     elem->sprite.poseIdx = 6;
     if ((elem->animTimer & 3) == 0) {
-      u16* table = gRandomTable;
       WorldPos pos = elem->sprite.pos;
 
-      pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
-      pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
+      pos.x = (u16)pos.x - 0x7F + (u8)RandomNext();
+      pos.z = (u16)pos.z - 0x7F + (u8)RandomNext();
       Entity08015584_SpawnSpray(1, 0, 1, Q6(1), &pos);
     }
   } else if (elem->animTimer <= 15) {
     elem->sprite.poseIdx = 7;
     elem->animTimer++;
     if ((elem->animTimer & 3) == 0) {
-      u16* table = gRandomTable;
       WorldPos pos = elem->sprite.pos;
 
-      pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
-      pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
+      pos.x = (u16)pos.x - 0x7F + (u8)RandomNext();
+      pos.z = (u16)pos.z - 0x7F + (u8)RandomNext();
       Entity08015584_SpawnSpray(1, 0, 1, Q6(1), &pos);
     }
   } else {

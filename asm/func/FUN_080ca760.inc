@@ -198,7 +198,7 @@ _080CA8BE:
 	orrs r2, r1
 	str r2, [sp, #4]
 	mov r1, sp
-	bl FUN_0807a91c
+	bl Player_SetPosAndSave
 	b _080CA946
 	.align 2, 0
 _080CA8FC: .4byte 0x03002BE0
@@ -237,7 +237,7 @@ _080CA922:
 	subs r1, r1, r4
 	strh r1, [r2, #4]
 	mov r1, sp
-	bl FUN_0807a91c
+	bl Player_SetPosAndSave
 _080CA946:
 	ldr r2, _080CA968 @ =0x03002BE0
 	ldr r0, [r2]
@@ -278,7 +278,7 @@ _080CA976:
 	adds r0, r0, r4
 	strh r0, [r1, #4]
 	ldr r0, [r7]
-	bl FUN_0807a91c
+	bl Player_SetPosAndSave
 	b _080CA9DC
 _080CA99A:
 	movs r0, #0x90
@@ -313,7 +313,7 @@ _080CA9BA:
 	subs r0, r0, r4
 	strh r0, [r1, #4]
 	ldr r0, [r7]
-	bl FUN_0807a91c
+	bl Player_SetPosAndSave
 _080CA9DC:
 	ldr r2, _080CAA2C @ =0x0000191C
 	adds r0, r5, r2

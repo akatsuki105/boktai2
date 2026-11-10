@@ -369,7 +369,7 @@ _0806EE34:
 	bl Player_PlayAnim
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080670fc
+	bl Player_PlayFootstep
 	ldr r0, _0806EE68 @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]

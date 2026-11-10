@@ -85,9 +85,8 @@ void EntityF41A_UpdateWander(EntityF41A* p) {
     }
   }
   if (p->turnTimer == 0) {
-    u16* table = gRandomTable;
-    p->targetAngle = 64 * (_Random(table) & 3);
-    p->turnTimer = 120 + (_Random(table) & 0x3F);
+    p->targetAngle = 64 * (RandomNext() & 3);
+    p->turnTimer = 120 + (RandomNext() & 0x3F);
   } else {
     p->turnTimer--;
   }

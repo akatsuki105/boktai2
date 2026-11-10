@@ -124,7 +124,6 @@ void Entity081ee7a8_Spawn(
     Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 priority, s32 _, SpriteFlags flags, s32 hideTime, SpriteID32 spriteID, u32 animFileID, u32 animIdx, u32 variant, s32 plttID) {
   Entity081ee7a8* p = gEntity081ee7a8;
   Entity081ee7a8Elem* elem;
-  u16* table;
 
   if (p == NULL) {
     p = Entity081ee7a8_Create();
@@ -144,10 +143,9 @@ void Entity081ee7a8_Spawn(
   AuxSprite_Add(&elem->sprite, &elem->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, p->animFile, animIdx, variant, 0);
   Video_SetAuxSpritePltt(&elem->gfx, plttID);
-  table = gRandomTable;
-  elem->riseSpeed = Mod(_Random(table), riseRand) + riseBase;
-  elem->speed = Mod(_Random(table), speedRand) - (speedRand >> 1) + speedBase;
-  elem->angle = angleBase + Mod(_Random(table), angleRand);
+  elem->riseSpeed = Mod(RandomNext(), riseRand) + riseBase;
+  elem->speed = Mod(RandomNext(), speedRand) - (speedRand >> 1) + speedBase;
+  elem->angle = angleBase + Mod(RandomNext(), angleRand);
   elem->delay = delay;
   elem->animSpeed = animSpeed;
   elem->riseTime = 12;

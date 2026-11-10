@@ -121,7 +121,7 @@ NON_MATCH void FUN_08146ae8(Mimic* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, FUN_081473ac, ES_UNK_35);
   }
-  if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, 0)) {
+  if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, 0)) {
     (p->e).jumpVel.x = 0;
     (p->e).jumpVel.z = 0;
   }
@@ -390,7 +390,7 @@ NON_MATCH void Mimic_StateDamaged(Mimic* p) {
     Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_5);
     if (!IsLinkPlay()) {
       (p->e).playerMover = &gPlayerPtr[0]->mover;
-    } else if (!FUN_080faa98(&p->e)) {
+    } else if (!Enemy_TargetNearestLinkPlayer(&p->e)) {
       FUN_081489f0(p);
     }
     if ((p->e).playerMover == NULL) {
@@ -477,11 +477,8 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
     }
     (p->e).unk_488 = 60;
     if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
-      s32 d = b->angle - a->angle;
+      s32 d = abs(b->angle - a->angle);
 
-      if (d < 0) {
-        d = -d;
-      }
       if (d <= 32) {
         (p->e).unk_4be = a->power;
         (p->e).unk_48c = 1;
@@ -623,7 +620,7 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
     (p->e).unk_48a = 0;
     (p->e).unk_48c = 1;
   }
-  FUN_080e64e4(&p->e);
+  Enemy_BurstEmitterParticles(&p->e);
   (p->e).unk_48a = b->damage;
   a->damage += (p->e).unk_188;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);

@@ -436,9 +436,9 @@ _080A3964:
 	ldr r4, _080A3A18 @ =0x03002BE0
 	ldr r0, [r4]
 	ldr r1, [sp, #0xc]
-	bl FUN_0807a91c
+	bl Player_SetPosAndSave
 	ldr r0, [r4]
-	bl FUN_0807b8dc
+	bl Player_LockHidden
 	ldr r0, [r7, #0x50]
 	movs r1, #2
 	rsbs r1, r1, #0

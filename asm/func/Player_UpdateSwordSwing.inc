@@ -180,7 +180,7 @@ _0806FE68:
 	adds r0, r7, #0
 	mov r1, sb
 	adds r2, r6, #0
-	bl FUN_0806fc20
+	bl Player_SpawnSwordEnchantPtcl
 _0806FEC2:
 	movs r0, #0
 	b _0806FECE

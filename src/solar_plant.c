@@ -144,16 +144,12 @@ void FUN_080a472c(Entity1E98Elem* elem) {
   }
 }
 
-// 残差は elem と &elem->timer のレジスタ入れ替えだけ (58/58 同数同順), 原典は elem が r5 で timer が r4
-// Tier A-C 試済 (ローカルの宣言位置を動かしても入れ替わらない)
-NON_MATCH void FUN_080a47d0(Entity1E98Elem* elem) {
-#ifdef NONMATCHING_C
+// 最初のフレームで成長の効果音を鳴らし, 7 フレームはコマ 1 で pos に置き, 過ぎたらコマ 2 にして次の更新へ移り unk_10c のスクリプトを実行する
+void FUN_080a47d0(Entity1E98Elem* elem) {
   if (elem->timer == 0) {
     PlaySound_082406e0(SE_M_HEALING_GROW);
   }
-
-  elem->timer++;
-  if (elem->timer <= 7) {
+  if (++elem->timer <= 7) {
     elem->spr.pos = elem->pos;
     elem->spr.poseIdx = 1;
   } else {
@@ -168,9 +164,6 @@ NON_MATCH void FUN_080a47d0(Entity1E98Elem* elem) {
       VM_ExecByID(elem->unk_10c, &sa);
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080a47d0.inc");
-#endif
 }
 
 // プレイヤーが同じタイルに乗っている間は沈み, 離れると元の高さまで浮き上がる

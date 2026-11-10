@@ -1008,7 +1008,7 @@ _08219BD4:
 	ldr r3, _08219C00 @ =0x0000FFFF
 	movs r1, #1
 	movs r2, #0x1e
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	bne _08219BE8
 	b _08219D7E

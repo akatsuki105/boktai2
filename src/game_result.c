@@ -44,13 +44,15 @@ const __attribute__((section(".rodata.faraddr"))) char s_STYLE_082528ae[6][9] = 
 const __attribute__((section(".rodata.faraddr"))) char s_PUSH_A_BUTTON_082528e4[] = "PUSH A BUTTON";
 
 // 8枚のスプライトを横一列に並べて隠しておく
+// 残差は並びのみ (56/56): 原典は i = 0 と &pos の写しを spr の初期化より前に置く, spr を for の初期化に入れる形, &p->sprites[i] の添字は試済
 NON_MATCH void FUN_08222270(GameResult* p) {
 #ifdef NONMATCHING_C
-  u8 xs[8] = {0x90, 0x98, 0xA8, 0xB0, 0xB8, 0xC8, 0xD0, 0xD8};
+  u8 xs[8];
   Vec3 pos;
   MainSprite* spr;
   s32 i;
 
+  memcpy(xs, u8_ARRAY_08252894, sizeof(xs));
   pos.y = 56, pos.z = 0;
   spr = p->sprites;
   for (i = 0; i < 8; spr++, i++) {
@@ -81,7 +83,6 @@ void FUN_0822230c(GameResult* p) {
 
 s32 UpdateSolDarkSide(void);
 s32 UpdateWeaponStyle(void);
-bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 
 // 681/705 命令, 下書き段階, r10 まで使う局所の持ち方が違う
 NON_MATCH static void _GameResult_Update(GameResult* p) {
@@ -116,7 +117,7 @@ NON_MATCH static void _GameResult_Update(GameResult* p) {
   switch (p->unk_50) {
     case 0: {
       p->unk_40 &= ~GRF_UNK_1;
-      if (FUN_0821b21c((s32*)p->unk_5c, 0, 60, 0xFFFF)) {
+      if (Video_StepBrightnessFade((s32*)p->unk_5c, 0, 60, 0xFFFF)) {
         p->unk_50 = 1;
         p->unk_54 = 0;
         SET_FLAGS(p->unk_40, GRF_UNK_1);
@@ -133,22 +134,22 @@ NON_MATCH static void _GameResult_Update(GameResult* p) {
       text[5] = ':';
       text[2] = ':';
       if (p->unk_54 < 60) {
-        text[0] = Mod(Random(), 10) + '0';
-        text[1] = Mod(Random(), 10) + '0';
+        text[0] = Mod(RandomNext(), 10) + '0';
+        text[1] = Mod(RandomNext(), 10) + '0';
       } else {
         text[0] = p->timeText[0];
         text[1] = p->timeText[1];
       }
       if (p->unk_54 < 105) {
-        text[3] = Mod(Random(), 10) + '0';
-        text[4] = Mod(Random(), 10) + '0';
+        text[3] = Mod(RandomNext(), 10) + '0';
+        text[4] = Mod(RandomNext(), 10) + '0';
       } else {
         text[3] = p->timeText[3];
         text[4] = p->timeText[4];
       }
       if (p->unk_54 < 150) {
-        text[6] = Mod(Random(), 10) + '0';
-        text[7] = Mod(Random(), 10) + '0';
+        text[6] = Mod(RandomNext(), 10) + '0';
+        text[7] = Mod(RandomNext(), 10) + '0';
         if (p->unk_54 & 1) {
           PlaySound_082406e0(SE_627);
         }
@@ -201,7 +202,7 @@ NON_MATCH static void _GameResult_Update(GameResult* p) {
         s32 i;
 
         for (i = 0; i < 8; i++) {
-          MainSprite_SetPose(sprite, &p->gfx, Mod(Random(), 10), PLAYMODE_LOOP);
+          MainSprite_SetPose(sprite, &p->gfx, Mod(RandomNext(), 10), PLAYMODE_LOOP);
           sprite->flags &= ~SPRFLAG_HIDDEN;
           sprite++;
         }
@@ -292,7 +293,7 @@ NON_MATCH static void _GameResult_Update(GameResult* p) {
     }
     case 7: {
       p->unk_40 &= ~GRF_UNK_1;
-      if (FUN_0821b21c((s32*)p->unk_5c, 1, 60, 0xFFFF)) {
+      if (Video_StepBrightnessFade((s32*)p->unk_5c, 1, 60, 0xFFFF)) {
         p->unk_50 = 99;
         p->unk_54 = 0;
         SET_FLAGS(p->unk_40, GRF_UNK_1);

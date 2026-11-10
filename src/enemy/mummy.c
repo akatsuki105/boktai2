@@ -363,8 +363,8 @@ NON_MATCH void Mummy_StateTurn(Mummy* p) {
     s32 dir;
     u32 target;
 
-    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
-    dir = (((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
       target = (p->e).mover.path->node->delay >> 12;
       (p->e).unk_1dc = target;
@@ -440,17 +440,14 @@ NON_MATCH void Mummy_StateTurn(Mummy* p) {
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).animForceRestart) {
-    s32 dir = (((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7;
-    s32 d = (p->e).unk_1dc - dir;
+    s32 dir = Angle_ToDir8((p->e).mover.angle);
+    s32 d = abs((p->e).unk_1dc - dir);
 
-    if (d < 0) {
-      d = -d;
-    }
     if (d > 0) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     } else {
       (p->e).subStateDone = 1;
-      (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+      (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
       Enemy_PlayAnim(&p->e, 0);
       if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
@@ -877,7 +874,7 @@ NON_MATCH void Mummy_StateDamaged(Mummy* p, s32 timer) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -1023,7 +1020,7 @@ NON_MATCH void Mummy_StateDamaged(Mummy* p, s32 timer) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -1300,7 +1297,7 @@ NON_MATCH void Mummy_StateWaitBombs(Mummy* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -1565,7 +1562,7 @@ NON_MATCH void FUN_08125e1c(Mummy* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     moved = TRUE;
   } else {
@@ -1630,7 +1627,7 @@ NON_MATCH void Mummy_SubChaseMove(Mummy* p) {
       Enemy_ResetState(&p->e, 0, 0, 14);
       return;
     }
-  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+  } else if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
     if (!TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
       if (FUN_080eb2a0(&p->e)) {
         return;
@@ -1803,7 +1800,7 @@ NON_MATCH void Mummy_SubChaseReroute(Mummy* p) {
     Enemy_ResetState(&p->e, 3, 1, 0);
     (p->e).unk_542 = 6;
   }
-  FUN_080e7b6c(&p->e);
+  Enemy_StepToFloorEdge(&p->e);
   (p->e).animSpeedDiv = 2;
 #else
   INCFUNC("asm/func/Mummy_SubChaseReroute.inc");
@@ -1825,7 +1822,7 @@ void Mummy_SubWaitBombsWalk(Mummy* p) {
       Enemy_ResetState(&p->e, 0, 0, 18);
       return;
     }
-  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+  } else if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
     Enemy_ResetState(&p->e, 0, 0, 17);
   }
   (p->e).subStateTimer++;
@@ -2083,7 +2080,7 @@ NON_MATCH bool8 Mummy_TryReachHeardPlayer(Mummy* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return FALSE;
   }
@@ -2412,7 +2409,7 @@ NON_MATCH bool8 Mummy_TryDetectPlayer(Mummy* p) {
           Enemy_ResetState(&p->e, 3, 1, 0);
           (p->e).unk_542 = 6;
         }
-        FUN_080e7b6c(&p->e);
+        Enemy_StepToFloorEdge(&p->e);
         (p->e).animSpeedDiv = 2;
         return FALSE;
       }
@@ -2994,7 +2991,7 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -3169,7 +3166,7 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -3325,7 +3322,7 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -3493,7 +3490,7 @@ NON_MATCH void Mummy_SubLeapAttack(Mummy* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }

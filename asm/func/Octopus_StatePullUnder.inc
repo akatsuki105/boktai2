@@ -133,7 +133,7 @@ _081857C6:
 	adds r0, r1, #0
 	movs r1, #1
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	b _08185884
 	.align 2, 0
 _08185854: .4byte 0x085ADC4C
@@ -212,7 +212,7 @@ _081858C2:
 	movs r1, #2
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	adds r0, r7, #0
 	adds r0, #8
 	movs r1, #0x8a

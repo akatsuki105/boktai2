@@ -204,7 +204,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
       Vec3_Add(&base, pos);
       base.y = (GetTileAt(&base)->heightStairs & 0xF) << 8;
       for (i = 0; i < 1; i++) {
-        u8 angle = Random() & 0xFF;
+        u8 angle = RandomNext() & 0xFF;
 
         spawn.x = base.x + SIN(angle);
         spawn.y = base.y;
@@ -221,7 +221,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
       Vec3_Add(&base, pos);
       base.y = (GetTileAt(&base)->heightStairs & 0xF) << 8;
       for (i = 0; i < 4; i++) {
-        u32 angle = i * 64 + (Random() & 0xF);
+        u32 angle = i * 64 + (RandomNext() & 0xF);
 
         spawn.x = base.x + POLAR_Z(256, angle);
         spawn.y = base.y;
@@ -232,7 +232,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
       Vec3_Add(&base, pos);
       base.y = (GetTileAt(&base)->heightStairs & 0xF) << 8;
       for (i = 0; i < 4; i++) {
-        u32 angle = i * 64 + (Random() & 0x1F);
+        u32 angle = i * 64 + (RandomNext() & 0x1F);
 
         spawn.x = base.x + POLAR_Z(256, angle);
         spawn.y = base.y;
@@ -291,14 +291,12 @@ NON_MATCH void FUN_081fae7c(Vec3* pos) {
   u32 blink;
   u8 angle;
   u8 radius;
-  u16* table;
 
   memcpy(kinds, u32_082526a4, sizeof(kinds));
   CpuFill32(0, &vel, sizeof(vel));
   blink = gFrameCounter & 1;
-  table = gRandomTable;
-  angle = _Random(table);
-  radius = _Random(table);
+  angle = RandomNext();
+  radius = RandomNext();
   p.x = pos->x;
   p.y = pos->y;
   p.z = pos->z;
@@ -327,10 +325,10 @@ NON_MATCH void FUN_081fafd4(void) {
     pos.z = src[1];
     if (i < 2) {
       r = Mod(Random(), 384);
-      pos.x += r < 0 ? -r : r;
+      pos.x += abs(r);
     } else {
       r = Mod(Random(), 384);
-      pos.x -= r < 0 ? -r : r;
+      pos.x -= abs(r);
     }
     pos.y = (GetTileAt(&pos)->heightStairs & 0xF) << 8;
     if ((u8)Random() < 128) {
@@ -343,10 +341,10 @@ NON_MATCH void FUN_081fafd4(void) {
     pos.z = src[1];
     if (i == 0 || i == 3) {
       r = Mod(Random(), 384);
-      pos.z += r < 0 ? -r : r;
+      pos.z += abs(r);
     } else {
       r = Mod(Random(), 384);
-      pos.z -= r < 0 ? -r : r;
+      pos.z -= abs(r);
     }
     pos.y = (GetTileAt(&pos)->heightStairs & 0xF) << 8;
     if ((u8)Random() < 128) {
@@ -667,18 +665,16 @@ NON_MATCH void FUN_081fbb08(Dvalinn* p) {
   NestedState* ns = &p->nestedState_1fc;
 
   if (Boss_EnterSubState(boss)) {
-    u16* table;
     s32 i;
     s32 node;
 
     NestedState_Reset0(ns);
-    table = gRandomTable;
-    node = _Random(table) & 1;
+    node = RandomNext() & 1;
     for (i = 0; i < 8; i++) {
       p->unk_810[i] = 0;
       p->unk_818[i] = node;
       node++;
-      if (node < i + 5 && (_Random(table) & 3)) {
+      if (node < i + 5 && (RandomNext() & 3)) {
         node++;
       }
     }
@@ -687,8 +683,8 @@ NON_MATCH void FUN_081fbb08(Dvalinn* p) {
       s8 tmp;
 
       do {
-        a = Mod(Random(), 8);
-        b = Mod(Random(), 8);
+        a = Mod(RandomNext(), 8);
+        b = Mod(RandomNext(), 8);
       } while (a == b);
       tmp = p->unk_818[a];
       p->unk_818[a] = p->unk_818[b];
@@ -882,7 +878,7 @@ void FUN_081fc0a0(Dvalinn* p) {
     }
     case 1: {
       if (ns->timer0 == 0) {
-        if ((u8)Random() > 128) {
+        if ((Random() & 0xFF) > 128) {
           Boss_RequestState(boss, 7);
         } else {
           Boss_RequestState(boss, 8);
@@ -1220,8 +1216,8 @@ NON_MATCH void FUN_081fca00(Dvalinn* p, s32 timer) {
 
     Vec3_SetPolar(&pos, boss->mover.angle, -90);
     Vec3_Add(&pos, &boss->mover.pos);
-    Random();
-    if ((u8)Random() > 128) {
+    RandomNext();
+    if ((RandomNext() & 0xFF) > 128) {
       FUN_081fad7c(p, 180);
     } else {
       FUN_081fabc0(p, 150);
@@ -1275,19 +1271,17 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
         NestedState_Set0(ns, 1);
       } else if (ns->timer0 & 1) {
         Vec3_Add(&p->unk_808, &d);
-        if ((u8)Random() > 128) {
+        if ((Random() & 0xFF) > 128) {
           FUN_081fae7c(&p->unk_808);
         } else {
           Vec3 vel;
           Vec3 pos;
-          u16* table;
           u32 angle;
           s32 radius;
 
           CpuFill32(0, &vel, sizeof(vel));
-          table = gRandomTable;
-          angle = _Random(table) & 0xFF;
-          radius = _Random(table) & 0xFF;
+          angle = RandomNext() & 0xFF;
+          radius = RandomNext() & 0xFF;
           pos = p->unk_808;
           pos.x += Trig_Fix12ToInt(SIN(angle) * radius);
           pos.z += Trig_Fix12ToInt(SIN(angle) * radius);
@@ -1302,7 +1296,7 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
         NestedState_Set0(ns, 2);
       }
       if (ns->timer0 > 90 && (ns->timer0 & 15) == 0) {
-        if ((u8)Random() > 128) {
+        if ((Random() & 0xFF) > 128) {
           FUN_081fad7c(p, 180);
         } else {
           FUN_081fabc0(p, 80);
@@ -1995,7 +1989,7 @@ NON_MATCH void FUN_081fe2e0(Dvalinn* p, s32 timer) {
       }
       pos->y = (GetTileAt(pos)->heightStairs & 0xF) << 8;
       if ((ns->timer0 & 15) == 0) {
-        if ((u8)Random() > 128) {
+        if ((Random() & 0xFF) > 128) {
           FUN_081fad7c(p, 250);
         } else {
           FUN_081fabc0(p, 250);
@@ -2186,7 +2180,7 @@ NON_MATCH void FUN_081fed08(Dvalinn* p, s32 timer) {
     NestedState_Reset0(&p->nestedState);
   }
   if ((timer & 15) == 0) {
-    if ((u8)Random() > 128) {
+    if ((Random() & 0xFF) > 128) {
       FUN_081fad7c(p, 0x40);
     } else {
       FUN_081fabc0(p, 0x40);
@@ -2308,7 +2302,7 @@ NON_MATCH void FUN_081fef30(Dvalinn* p, s32 timer) {
     p->unk_3c6 = 0;
   }
   if ((timer & 15) == 0) {
-    if ((u8)Random() > 128) {
+    if ((Random() & 0xFF) > 128) {
       FUN_081fad7c(p, 0x40);
     } else {
       FUN_081fabc0(p, 0x40);
@@ -2374,7 +2368,7 @@ NON_MATCH void FUN_081ff148(Dvalinn* p, s32 timer) {
   MainSprite_Show(&p->sprites[1]);
   done = MainSprite_AdvanceAnim(&p->sprites[1], &p->gfx);
   if ((timer & 15) == 0) {
-    if ((u8)Random() > 128) {
+    if ((Random() & 0xFF) > 128) {
       FUN_081fad7c(p, 0x40);
     } else {
       FUN_081fabc0(p, 0x40);
@@ -2455,7 +2449,7 @@ NON_MATCH void FUN_081ff34c(Dvalinn* p, s32 timer) {
     CpuFill32(0, &vel, sizeof(vel));
     Entity081f26bc_Spawn(&p->sprites[1].pos, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   } else if ((timer & 15) == 0) {
-    if ((u8)Random() > 128) {
+    if ((Random() & 0xFF) > 128) {
       FUN_081fad7c(p, 0x40);
     } else {
       FUN_081fabc0(p, 0x40);
@@ -2600,9 +2594,7 @@ void FUN_081ff948(Dvalinn* p) {
   }
 }
 
-// 1 回目で打ち切り (221/220), 原典は 0 と 0x7D2 をレジスタに残して使い回す
-NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
-#ifdef NONMATCHING_C
+s32 FUN_081ff988(Dvalinn* p) {
   s32 damage = (s16)p->damage;
 
   p->damage = 0;
@@ -2620,7 +2612,7 @@ NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
       Vec3 size;
 
       VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
-      EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
+      EmitSmoke(&p->sprites[0].pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
     }
     if (p->base.hp <= 0) {
       PlaySound_082406e0(SONG_450);
@@ -2641,9 +2633,6 @@ NON_MATCH s32 FUN_081ff988(Dvalinn* p) {
     }
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/FUN_081ff988.inc");
-#endif
 }
 
 // 残差は gMsgBus の読み直し (152/153), Duneyrr_PollMessages と同じ壁
@@ -2725,13 +2714,10 @@ NON_MATCH void FUN_081ffdb0(Dvalinn* p) {
 
   p->sprites[0].pos = boss->mover.pos;
   if (p->unk_804 != 0) {
-    u16* table;
-
     p->unk_804--;
-    table = gRandomTable;
-    p->sprites[0].pos.x += (_Random(table) & 0x1F) - 15;
-    p->sprites[0].pos.y += (_Random(table) & 0x1F) - 15;
-    p->sprites[0].pos.z += (_Random(table) & 0x1F) - 15;
+    p->sprites[0].pos.x += (RandomNext() & 0x1F) - 15;
+    p->sprites[0].pos.y += (RandomNext() & 0x1F) - 15;
+    p->sprites[0].pos.z += (RandomNext() & 0x1F) - 15;
   }
   mover = &boss->mover;
   if (p->unk_802 != 0) {

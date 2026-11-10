@@ -137,7 +137,7 @@ NON_MATCH void Cmd_SpawnDove(void) {
 
 // 8bit の向きを4方位に丸めて, 左右反転するかどうかと一緒に返す
 void FUN_081d8c80(u32 angle, u8* out1, u8* out2) {
-  s32 dir = (((((u16)angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+  s32 dir = Angle_ToDir4(angle);
 
   if (dir > 1) {
     *out2 = 1;
@@ -212,9 +212,9 @@ NON_MATCH void FUN_081d8dc4(DoveManager* p, Dove* e) {
     e->sprite.flags &= ~SPRFLAG_HIDDEN;
     e->unk_72 = 0;
     e->unk_74 = FALSE;
-    e->angle = Random();
-    Vec3_SetPolar(&e->vel, e->angle, (Random() & 7) + 3);
-    e->vel.y = (Random() & 15) + 4;
+    e->angle = RandomNext();
+    Vec3_SetPolar(&e->vel, e->angle, (RandomNext() & 7) + 3);
+    e->vel.y = (RandomNext() & 15) + 4;
     e->tileIdx = GetCollisionTileIdx(&e->sprite.pos);
     FUN_081d8c80(e->angle, &dir, &flip);
     AuxAnim_SetAnim(&e->anim, p->anim, 4, dir, flip);
@@ -255,11 +255,9 @@ void FUN_081d919c(DoveManager* p, Dove* e) {
   bool32 finished;
 
   if (e->unk_74) {
-    u16* table = gRandomTable;
-
-    e->timer = (_Random(table) & 127) + 90;
+    e->timer = (RandomNext() & 127) + 90;
     e->unk_74 = FALSE;
-    if ((u8)_Random(table) < 24) {
+    if ((RandomNext() & 0xFF) < 24) {
       Dove_SetFlags(e, 1);
       e->timer += 60;
     }
@@ -297,18 +295,16 @@ NON_MATCH void FUN_081d93b0(DoveManager* p, Dove* e) {
 
   if (e->unk_74) {
     u8* angle = &e->angle;
-    u16* table;
 
     *angle = (((*angle + 32) & 0xFF) >> 6) << 6;
-    table = gRandomTable;
-    *angle = (_Random(table) & 31) - 16 + *angle;
+    *angle = (Random() & 31) - 16 + *angle;
     FUN_081d8c80(*angle, &dir, &flip);
     AuxAnim_SetAnim(&e->anim, p->anim, 7, dir, flip);
     e->unk_78 = 0;
     e->timer = 0;
     Vec3_Clear(&e->vel);
-    Vec3_SetPolar(&e->vel, *angle, (_Random(table) & 7) + 2);
-    e->unk_7a = gPlayerPtr[0]->mover.pos.y + 256 + (_Random(table) & 511);
+    Vec3_SetPolar(&e->vel, *angle, (Random() & 7) + 2);
+    e->unk_7a = gPlayerPtr[0]->mover.pos.y + 256 + (Random() & 511);
     e->unk_74 = FALSE;
   }
 

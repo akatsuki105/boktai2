@@ -4,7 +4,44 @@
 // 相対オフセットで書かれた AnimCmd 列 の実アドレスを取得するマクロ
 #define GetMainSpriteGfxAnimCmds(spritegfx, animIdx) ((MainAnimCmd*)((u8*)(spritegfx)->cmds + (spritegfx)->anims[(animIdx)].cmdOffset))
 
-NAKED void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags) { INCFUNC("asm/func/MainSprite_SetAnim.inc"); }
+// アニメを animIdx に切り替える, 再生中と同じアニメなら MAIN_ANIM_FORCE_POSE が無い限りポーズは当て直さない
+void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags) {
+  MainAnim* anims = gfx->anims;
+  MainAnimCmd* cmds = (MainAnimCmd*)((u8*)gfx->cmds + anims[animIdx].cmdOffset);
+  MainAnimCmd* cmd;
+
+  if (!(flags & MAIN_ANIM_KEEP_FRAME)) {
+    if (flags & MAIN_ANIM_REVERSE) {
+      cmd = &cmds[anims[animIdx].cmdCount - 1];
+    } else {
+      cmd = cmds;
+    }
+  } else {
+    cmd = &cmds[p->animCmdIdx];
+  }
+  if (p->animId != anims[animIdx].id || (flags & MAIN_ANIM_FORCE_POSE)) {
+    MainSprite_SetPose(p, gfx, cmd->poseIdx, playMode);
+  }
+  p->animId = anims[animIdx].id;
+  p->animCmdLength = anims[animIdx].cmdCount;
+  p->animCmdDuration = FixToInt(6, cmd->duration * p->animSpeed);
+  if (p->animCmdDuration == 0) {
+    p->animCmdDuration = 1;
+  }
+  p->animFlags = flags;
+  p->animCmds = cmds;
+  p->playMode = playMode;
+  if (!(flags & MAIN_ANIM_KEEP_FRAME)) {
+    if (flags & MAIN_ANIM_REVERSE) {
+      p->animCmdIdx = p->animCmdLength - 1;
+    } else {
+      p->animCmdIdx = 0;
+    }
+    p->animCmdTimer = 0;
+    p->animEvents = 0;
+    p->animSpeed = Q6(1);
+  }
+}
 
 // 指定したアニメの cmdIdx 番目のコマに切り替え、表示時間と「次で終わる」通知を設定し直す
 void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 cmdIdx) {

@@ -242,7 +242,7 @@ _081A3584:
 	movs r1, #0
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 _081A35C0:
 	movs r1, #0xe6
 	lsls r1, r1, #1

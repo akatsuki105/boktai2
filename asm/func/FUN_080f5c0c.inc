@@ -345,7 +345,7 @@ _080F5EB2:
 	orrs r0, r1
 	strh r0, [r2, #6]
 	adds r0, r7, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	movs r1, #0xc0
 	lsls r1, r1, #1
 	adds r2, r7, r1

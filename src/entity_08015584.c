@@ -156,7 +156,7 @@ NON_MATCH u32 Entity08015584_GetPriority(s32 flags) {
 }
 
 // params に従って count 個の粒子を空き枠へ仕込む, 枠が足りなければ -1
-// 512/520 命令, 原典は sEntity08015584 の番地をレジスタに巻き上げるが, agbcc は参照のたびにプールから読み直す. ParticleSpawnParam の decayY / decayXZ はここでも読まれない
+// 513/520 命令, 原典は sEntity08015584 の番地をレジスタに巻き上げるが, agbcc は参照のたびにプールから読み直す. ParticleSpawnParam の decayY / decayXZ はここでも読まれない
 NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
 #ifdef NONMATCHING_C
   s32 i;
@@ -181,12 +181,12 @@ NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam*
     elem->active = TRUE;
     elem->kind = params->kind;
     elem->timer = 0;
-    elem->speedY = params->speedYRand == 0 ? params->speedY : params->speedY + Mod(Random(), params->speedYRand);
-    elem->speedXZ = params->speedXZRand == 0 ? params->speedXZ : params->speedXZ + Mod(Random(), params->speedXZRand);
-    angleY = params->angleYRand == 0 ? params->angleY : params->angleY + Mod(Random(), params->angleYRand);
-    angleXZ = params->angleXZRand == 0 ? params->angleXZ : params->angleXZ + Mod(Random(), params->angleXZRand);
-    elem->decayStartY = params->decayStartYRand == 0 ? params->decayStartY : params->decayStartY + Mod(Random(), params->decayStartYRand);
-    elem->decayStartXZ = params->decayStartXZRand == 0 ? params->decayStartXZ : params->decayStartXZ + Mod(Random(), params->decayStartXZRand);
+    elem->speedY = params->speedYRand == 0 ? params->speedY : params->speedY + Mod(RandomNext(), params->speedYRand);
+    elem->speedXZ = params->speedXZRand == 0 ? params->speedXZ : params->speedXZ + Mod(RandomNext(), params->speedXZRand);
+    angleY = params->angleYRand == 0 ? params->angleY : params->angleY + Mod(RandomNext(), params->angleYRand);
+    angleXZ = params->angleXZRand == 0 ? params->angleXZ : params->angleXZ + Mod(RandomNext(), params->angleXZRand);
+    elem->decayStartY = params->decayStartYRand == 0 ? params->decayStartY : params->decayStartY + Mod(RandomNext(), params->decayStartYRand);
+    elem->decayStartXZ = params->decayStartXZRand == 0 ? params->decayStartXZ : params->decayStartXZ + Mod(RandomNext(), params->decayStartXZRand);
 
     if (params->flags & 1) {
       elem->sprite.flags |= SPRFLAG_BLINK_ODD;
@@ -286,7 +286,6 @@ NON_MATCH void Entity08015584_SpawnInBox(u16* base, u16* mask, u32 angleXZ, u32 
 #ifdef NONMATCHING_C
   ParticleSpawnParam param;
   Vec3 spawnPos;
-  u16* table = gRandomTable;
   s32 i;
 
   param.kind = kind;
@@ -310,9 +309,9 @@ NON_MATCH void Entity08015584_SpawnInBox(u16* base, u16* mask, u32 angleXZ, u32 
   param.decayXZRand = 0;
 
   for (i = 0; i < count; i++) {
-    spawnPos.x = (_Random(table) & mask[0]) + base[0];
-    spawnPos.y = (_Random(table) & mask[1]) + base[1];
-    spawnPos.z = (_Random(table) & mask[2]) + base[2];
+    spawnPos.x = (Random() & mask[0]) + base[0];
+    spawnPos.y = (Random() & mask[1]) + base[1];
+    spawnPos.z = (Random() & mask[2]) + base[2];
     Entity08015584_Spawn(1, &spawnPos, &param);
   }
 #else

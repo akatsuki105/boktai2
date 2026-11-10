@@ -164,7 +164,7 @@ _0811F1A6:
 	cmp r0, #0
 	beq _0811F1BA
 	adds r0, r7, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0811F1B8
@@ -754,7 +754,7 @@ _0811F594:
 	strb r0, [r3]
 _0811F604:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r4, [sp, #0x44]
 	strh r0, [r4]

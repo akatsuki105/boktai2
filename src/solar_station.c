@@ -28,9 +28,9 @@ typedef struct {
 } SolarStation;
 static_assert(sizeof(SolarStation) == 612);
 
-void FUN_0807a528(Player* p, Vec3* pos, u16 param_3);
+void Player_EnterRefueling(Player* p, Vec3* pos, u16 param_3);
 
-// 1P が近くで A を押したら FUN_0807a528 で使用を始めさせて state 1 に移る, 近くにいる間は playerNear を立てる
+// 1P が近くで A を押したら Player_EnterRefueling で使用を始めさせて state 1 に移る, 近くにいる間は playerNear を立てる
 // 残差 117/116 命令: 3つの格納 (state = 1, playerNear = 0 ×2) を原典は末尾の1つの strb に寄せて mode 不一致の塊を先に置く, 小人判定の 0 の作り置きが早い (IsPlayerSmall と同じ残差), ほかはレジスタ割り当て
 // Tier A は試済 (mode 判定を if/else と早期 return, kind を switch と個別 if, 小人判定を bool8 inline), 未: 格納先アドレスと値をローカルに受けて1か所で書く形
 NON_MATCH void SolarStation_UpdateIdle(SolarStation* p) {
@@ -61,7 +61,7 @@ NON_MATCH void SolarStation_UpdateIdle(SolarStation* p) {
         return;
       }
       if (p->player->formRequest == 0 && (p->player->input->pressed & A_BUTTON) && p->player->action == PACT_UNK_7) {
-        FUN_0807a528(p->player, &p->unk_250, p->unk_262);
+        Player_EnterRefueling(p->player, &p->unk_250, p->unk_262);
         p->state = 1;
       }
       return;
@@ -159,7 +159,7 @@ void SolarStation_UpdateDigits(SolarStation* p) {
 // 自分の id で登録されたスクリプトのレコードを全部見て、forceShowDigits を最後の指示どおりに設定する
 void FUN_0809f30c(SolarStation* p) {
   ScriptRecord* rec;
-  s32 n = FUN_08230f94(p->id, &rec);
+  s32 n = ScriptRecord_Find(p->id, &rec);
 
   while (n-- > 0) {
     switch (rec->values[0]) {

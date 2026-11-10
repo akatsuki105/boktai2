@@ -19,6 +19,19 @@ s32 VM_ExecByPointer_Proxy_0823a88c(u8* pc, ScriptArgs* args);   // src/game_sys
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/game_system.c
 extern u32 gNextMapEventID;                                      // src/iwram2.c
 
+#define GetNavIsland(navMesh, i) ((NavIsland*)((u8*)(navMesh) + ((NavMesh*)(navMesh))->islandOffsets[i]))
+#define GetNavRect(island) ((NavRect*)((u8*)(island) + (island)->offsetToRects))
+#define GetNavPortal(island) ((NavPortal*)((u8*)(island) + (island)->offsetToPortals))
+#define GetNavDistanceMap(island) ((u16*)((u8*)(island) + (island)->offsetToDistanceMap))
+
+// pos の x / z が min..max の範囲に入っていれば TRUE
+static inline bool8 Map_IsInRectXZ(Vec3* pos, Vec3* min, Vec3* max) {
+  if (pos->x >= min->x && pos->x <= max->x && pos->z >= min->z && pos->z <= max->z) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
 // gCollisionMap を確保してレジストリに登録し, 空の状態にする
 void Map_InitCollisionMap(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));
@@ -62,23 +75,16 @@ void Map_BuildNeighborOffsets(void) {
 }
 
 // 行ごとのタイル索引オフセット表を作る, rowOffsets[z] = z * width
-// 残差1命令: 原典は rowOffsets の先頭を1本のレジスタに残したままカーソルへ複写する, こちらは先頭をそのままカーソルに使う
-// Tier A/B と C の添字形・guard+do/while は試済
-NON_MATCH void Map_BuildRowOffsets(void) {
-#ifdef NONMATCHING_C
+void Map_BuildRowOffsets(void) {
   s32 width = gCollisionMap->tiledata->width;
-  u16* dst = gCollisionMap->rowOffsets;
+  u16* rowOffsets = gCollisionMap->rowOffsets;
   s32 offset = 0;
   s32 i;
 
   for (i = 0; i < gCollisionMap->tiledata->height; i++) {
-    *dst = offset;
+    rowOffsets[i] = offset;
     offset += width;
-    dst++;
   }
-#else
-  INCFUNC("asm/func/Map_BuildRowOffsets.inc");
-#endif
 }
 
 // タイルデータの幅と奥行きを gMapBlockW / gMapBlockH に写す
@@ -128,11 +134,7 @@ void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
 }
 
 // from から to へ 4タイル以内で真っ直ぐ行ける向きを 8bit の角度で返す, 無ければ -1
-// 残差7命令: 原典は & 3 と & 0xFF をループ内で実際に計算し、配列先頭と定数2つを高位レジスタ (r8/r9/sl) に抱えている
-// こちらは dir が 0..3 と分かるので agbcc が両方のマスクを畳んでしまう, マスクが残る書き方が未発見
-NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to, s32 unused) {
-#ifdef NONMATCHING_C
-  s32 angle = 0xC0;
+s32 Map_FindDirToTile(s32 from, s32 to, s32 unused) {
   s32 dir;
 
   for (dir = 0; dir < 4; dir++) {
@@ -143,16 +145,11 @@ NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to, s32 unused) {
     for (i = 0; i < 4; i++) {
       idx += step;
       if (idx == to) {
-        return (u8)angle;
+        return (dir * 0x40 + 0xC0) & 0xFF;
       }
     }
-
-    angle += 0x40;
   }
   return -1;
-#else
-  INCFUNC("asm/func/Map_FindDirToTile.inc");
-#endif
 }
 
 // pos の足元の高さを返す, 階段タイルでは pos の位置で変わる
@@ -181,8 +178,9 @@ u16 Map_GetTileHeightDiff(Vec3* pos1, Vec3* pos2) {
 }
 
 // from から to へ移れるか, 階段タイルどうしの繋がりと段差を見て判定する
-// 残差21命令 (305/326): 原典は TileAtIndex の展開を <= 0x7F の両側それぞれに持ち, こちらは2つが丸ごと融合する
-// Tier A-C は試済: 索引の u16 切り捨てを別変数経由に, 分岐ごとの複製 (TileAtIndex 導入で 294→305)
+// 残差26命令 (300/326): 原典は TileAtIndex の展開を Q8(0.5) の両側それぞれに持つが, こちらは呼び出しごと交差ジャンプで他の節の展開に合流する
+// 端数の比較は (to->z & 0xFF) < Q8(0.5) で原典の ldrb / cmp #0x7F と一致する ((u8) キャストだと ldrsb の符号判定になる)
+// Tier A-C は試済: 索引の u16 切り捨てを別変数経由に, 分岐ごとの複製
 NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
 #ifdef NONMATCHING_C
   CollisionMapTile* tile1;
@@ -206,10 +204,10 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
   attr2 = tile2->attr;
   if (val == 4) {
     mask = TATTR_WALL;
-    limit = 0x80;
+    limit = Q8(0.5);
   } else {
     mask = TATTR_UNK_0;
-    limit = 0x64;
+    limit = Q8(0.391);
   }
 
   if (attr2 & mask) {
@@ -237,7 +235,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
       return TRUE;
     }
 
-    if ((u8)to->z <= 0x7F) {
+    if ((to->z & 0xFF) < Q8(0.5)) {
       tile3 = TileAtIndex(idx2 - gMapBlockW);
     } else {
       tile3 = TileAtIndex(idx2 + gMapBlockW);
@@ -259,7 +257,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
       return TRUE;
     }
 
-    if ((u8)to->x <= 0x7F) {
+    if ((to->x & 0xFF) < Q8(0.5)) {
       tile3 = TileAtIndex(idx2 - 1);
     } else {
       tile3 = TileAtIndex(idx2 + 1);
@@ -275,7 +273,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
       if (stairs2 != STAIRS_HORIZONTAL) {
         return TRUE;
       }
-      if ((u8)to->x <= 0x7F) {
+      if ((to->x & 0xFF) < Q8(0.5)) {
         tile3 = TileAtIndex(idx1 - 1);
       } else {
         tile3 = TileAtIndex(idx1 + 1);
@@ -284,7 +282,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
       if (stairs2 != STAIRS_VERTICAL) {
         return TRUE;
       }
-      if ((u8)to->z <= 0x7F) {
+      if ((to->z & 0xFF) < Q8(0.5)) {
         tile3 = TileAtIndex(idx1 - gMapBlockW);
       } else {
         tile3 = TileAtIndex(idx1 + gMapBlockW);
@@ -562,6 +560,7 @@ void Map_MovePointAlongWalls(MoverTile* tile, Vec3* pos, Vec3* offset, s32 unuse
 // p->unk_0[0] に 1 が入ったら何かに当たったという意味
 // 残差31命令 (929/960): 原典は p が r7, こちらは r8 に載るため p->unk_0[0] の書き込みが融合せず, 連鎖して Map_UpdateMoverTile の共有ブロックの切り方と freeX のスピル有無が変わる
 // Tier A-C は試済: 共有末尾を switch の break にする形 (1015→929 と改善), 宣言順の入れ替え
+// 原典のフレームは 0x68 でこちらより 12 バイト大きい, Vec3 のローカルがもう1つあるらしい
 NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4) {
 #ifdef NONMATCHING_C
   Vec3 dst;
@@ -945,12 +944,12 @@ s32 Map_StepToTileEdge(Vec3* dst, Vec3* src, Vec3* target) {
   out.y = src->y;
   fx = (u8)src->x;
   fz = (u8)src->z;
-  rx = 0x100 - fx;
-  rz = 0x100 - fz;
+  rx = Q8(1) - fx;
+  rz = Q8(1) - fz;
   bx0 = src->x & 0xFF00;
   bz0 = src->z & 0xFF00;
-  bx1 = bx0 + 0x100;
-  bz1 = bz0 + 0x100;
+  bx1 = bx0 + Q8(1);
+  bz1 = bz0 + Q8(1);
 
   if (target->x >= bx0 && target->x <= bx1 && target->z >= bz0 && target->z <= bz1) {
     *dst = *target;
@@ -1004,7 +1003,7 @@ s32 Map_StepToTileEdge(Vec3* dst, Vec3* src, Vec3* target) {
   }
 
   if (edge & 0x10) {
-    t = Div(rz * dx, dz < 0 ? -dz : dz);
+    t = Div(rz * dx, abs(dz));
     out.x = t + src->x;
     out.z = bz1;
     if (out.x >= bx0 && out.x <= bx1) {
@@ -1017,7 +1016,7 @@ s32 Map_StepToTileEdge(Vec3* dst, Vec3* src, Vec3* target) {
   }
 
   if (edge & 1) {
-    t = Div(fz * dx, dz < 0 ? -dz : dz);
+    t = Div(fz * dx, abs(dz));
     out.x = t + src->x;
     out.z = bz0 - 1;
     if (out.x >= bx0 && out.x <= bx1) {
@@ -1031,7 +1030,7 @@ s32 Map_StepToTileEdge(Vec3* dst, Vec3* src, Vec3* target) {
 
   if (edge & 0x100) {
     out.x = bx0 - 1;
-    t = Div(fx * dz, dx < 0 ? -dx : dx);
+    t = Div(fx * dz, abs(dx));
     out.z = t + src->z;
     if (out.z >= bz0 && out.z <= bz1) {
       if ((out.z & 0xFF00) > (src->z & 0xFF00)) {
@@ -1044,7 +1043,7 @@ s32 Map_StepToTileEdge(Vec3* dst, Vec3* src, Vec3* target) {
 
   if (edge & 0x1000) {
     out.x = bx1;
-    t = Div(rx * dz, dx < 0 ? -dx : dx);
+    t = Div(rx * dz, abs(dx));
     out.z = t + src->z;
     if (out.z >= bz0 && out.z <= bz1) {
       if ((out.z & 0xFF00) > (src->z & 0xFF00)) {
@@ -1059,15 +1058,12 @@ s32 Map_StepToTileEdge(Vec3* dst, Vec3* src, Vec3* target) {
 }
 
 // pos から target までタイルを最大 count 枚たどり, 途中に pos より limit 以上高いタイルがなければ 1 を返す
-// 残差4命令 (140/144): 原典は Map_StepToTileEdge の戻り値を r3 に置いてスタックに溢れさせ, 死んだ初期化 0 まで残るが, こちらは退避レジスタに収まる
-// Tier A-C は試済: TileIndexAt 相当の static inline を足すと &cur のレジスタ化までは再現できたが命令数は変わらず
+// 残差はレジスタ割当のみ: 原典は r = 0 が生きていて r が caller-save の r3 に入る (GetCollisionTileIdx を早期 return 形にして idx の写しは消えた)
+// ループ条件に r != 1 を足すと割当は揃うが, ループ入口の r != 1 の判定が畳まれず2命令残る (146/144), r = 0 を生かす自然な形は未発見
 NON_MATCH s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit) {
 #ifdef NONMATCHING_C
   Vec3 cur;
   Vec3 next;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
   s32 idx;
   s32 r;
   s32 i;
@@ -1081,26 +1077,14 @@ NON_MATCH s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit) 
   idx = GetCollisionTileIdx(&cur);
 
   for (i = 0; i < count; i++) {
+    s32 height;
+
     r = Map_StepToTileEdge(&next, &cur, target);
     if (r > 1) {
       idx = GetCollisionTileIdx(&next);
     }
 
-    tile = TileAtIndex(idx);
-
-    stairs = tile->heightStairs >> 4;
-    height = (tile->heightStairs & 0xF) << 8;
-    switch (stairs) {
-      case 1: {
-        height -= (u8)next.z;
-        break;
-      }
-      case 2: {
-        height -= (u8)next.x;
-        break;
-      }
-    }
-
+    height = TileHeightAtIndex(idx, &next);
     if (height - pos->y >= limit) {
       return 0;
     }
@@ -1188,28 +1172,28 @@ s32 Map_IsBehindHigherTile(Vec3* pos, s32 threshold) {
 
   if ((pos->x & 0xFF) < threshold) {
     if ((pos->z & 0xFF) >= threshold) {
-      v.x = x0, v.y = y0, v.z = z0 + 0xFF;
+      v.x = x0, v.y = y0, v.z = z0 + Q8(0.997);
       if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
         return 1;
       }
     }
   } else if ((pos->z & 0xFF) >= threshold) {
-    VEC3_SET(v, x0 + 0xFF, y0, z0);
+    VEC3_SET(v, x0 + Q8(0.997), y0, z0);
     if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
 
-    v.x = x0, v.y = y0, v.z = z0 + 0xFF;
+    v.x = x0, v.y = y0, v.z = z0 + Q8(0.997);
     if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
 
-    v.x = x0 + 0xFF, v.y = y0, v.z = z0 + 0xFF;
+    v.x = x0 + Q8(0.997), v.y = y0, v.z = z0 + Q8(0.997);
     if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
   } else {
-    VEC3_SET(v, x0 + 0xFF, y0, z0);
+    VEC3_SET(v, x0 + Q8(0.997), y0, z0);
     if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
@@ -1245,7 +1229,8 @@ void Map_LookupActiveEvents(ZoneEventSource* src) {
 
 // src の位置を全ゾーンイベントと突き合わせ, 範囲に入った/出たイベントのスクリプトを走らせる
 // 残差8命令 (221/229): 原典は hitIdx をスタックに置いて書き込みを残し, ループ条件を先頭と末尾の両方に展開して &gCollisionMap を r10 に巻き上げる
-// hitIdx はどこからも読まれないので agbcc が消してしまう
+// hitIdx はどこからも読まれないので agbcc が消してしまう, s32* idx を受ける探索/削除の inline に &hitIdx を渡すと書き込みは残る (218/229) が src がスタックに溢れる
+// 試済: continue を使わない形, while ループ, pass の三項演算子
 NON_MATCH void Map_UpdateZoneEvents(ZoneEventSource* src) {
 #ifdef NONMATCHING_C
   s32 hitIdx = 0;
@@ -1263,7 +1248,7 @@ NON_MATCH void Map_UpdateZoneEvents(ZoneEventSource* src) {
       continue;
     }
 
-    if (ev->flags & 0x10) {
+    if (ev->flags & ZEVFLAG_NEED_KEYS) {
       pass = (gInput[0].pressed & ev->keys) != 0;
     } else {
       pass = TRUE;
@@ -1342,18 +1327,15 @@ NON_MATCH void Map_UpdateZoneEvents(ZoneEventSource* src) {
 }
 
 // ゾーンイベントのスクリプトを 14 個の引数付きで起動する
-// 原典は args[2] から args[13] までを1本のカーソルで書くが, agbcc が先頭4本だけ固定オフセットに畳んでしまう
-// 命令数は68で一致, 残差はその畳み込み1箇所のみ, Tier A-C は試済
-NON_MATCH void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* ev, u16 msg) {
-#ifdef NONMATCHING_C
+void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* ev, u16 msg) {
   u32 args[14];
   ScriptArgs sa;
   u32* arg;
   s32 i;
 
-  args[0] = src->id;
-  args[1] = ev->zoneID;
-  arg = &args[2];
+  arg = args;
+  *arg++ = src->id;
+  *arg++ = ev->zoneID;
   *arg++ = msg;
   *arg++ = src->pos->x;
   *arg++ = src->pos->y;
@@ -1367,14 +1349,11 @@ NON_MATCH void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* e
 
   sa.argc = 14;
   sa.argv = args;
-  if (ev->flags & 0x20) {
+  if (ev->flags & ZEVFLAG_SCRIPT_ID) {
     VM_ExecById_Proxy_0823a8a4((u32)ev->scriptPC, &sa);
   } else {
     VM_ExecByPointer_Proxy_0823a88c(ev->scriptPC, &sa);
   }
-#else
-  INCFUNC("asm/func/Map_RunZoneEventScript.inc");
-#endif
 }
 
 // id を持つゾーンが1つでもあるか
@@ -1422,8 +1401,8 @@ CollisionMapEvent* Map_FindEventByID(u32 id) {
 }
 
 // 同じ zoneID が連続するように events へ挿し込む, 末尾から同じ zoneID を探し, 見つかればその次へ入れる
-// 残差2命令 (166/168): 原典は &gCollisionMap を r8 に巻き上げて使い回すが, こちらはプール定数を参照ごとに読み直す
-// Tier A-C は試済: found の宣言時初期化と代入文の分離
+// 残差2命令 (166/168): 原典は &gCollisionMap を最初の if より前で r8 に読み, 以後使い回す
+// 試済: found の初期化位置, for/while, ev->id = gNextMapEventID++, 連番払い出しの inline 化, &gCollisionMap のローカル (先頭には出るが値まで CSE される)
 NON_MATCH void Map_InsertEvent(CollisionMapEvent* ev, u32 ctrlBody) {
 #ifdef NONMATCHING_C
   bool32 found;
@@ -1467,7 +1446,8 @@ NON_MATCH void Map_InsertEvent(CollisionMapEvent* ev, u32 ctrlBody) {
 
 // スクリプトの 'n' 引数に並んだゾーンIDのイベントを events から取り除いて前へ詰める
 // 命令数は84で一致, 残差はレジスタ割当のみ (原典は events を r4, ctrlBodies を sl, 書き込み先のバイトオフセットを r3 に置く)
-// Tier A/B と C の宣言順は試済
+// 命令数は84で一致, 残差はレジスタ割当のみ (原典は events を r4, ctrlBodies を sl, 書き込み先のバイトオフセットを r3 に置き, ctrlBodies は 0xD24 を先に読んでから base を足す)
+// 試済: Tier A/B, 宣言順 (id 先頭 78命令, aux 先 / n を id の後ろは悪化), &ctrlBodies[0], 比較の左右
 NON_MATCH s32 VM_Ctrl_RemoveZoneEvents(void) {
 #ifdef NONMATCHING_C
   s32 count = gCollisionMap->eventCount;
@@ -1592,7 +1572,8 @@ s32 Map_LoadPaths(FileID id) {
 void Map_SetPaths(PathData* paths) { gCollisionMap->paths = paths; }
 
 // 経路をたどるカーソルを pathIdx / nodeIdx で初期化する
-// 残差1命令: 原典は2回目の nodeCount を path と同じレジスタに読んで潰すため, 先に path のコピーを1本持つ
+// 残差は path の番地の作り方 (39/39, 5 hunk), 原典は (idx * 4 + 4) を足して path を1回作り, コピーを1本持ってから nodeCount を [path] で読む
+// 試済: path を返す inline (9 hunk), path を先に代入 (6 hunk), 判定を d->paths[pathIdx] で書いて後から path を取る形が最良
 NON_MATCH bool8 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx) {
 #ifdef NONMATCHING_C
   PathData* d = gCollisionMap->paths;
@@ -1603,14 +1584,15 @@ NON_MATCH bool8 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 
     return FALSE;
   }
 
-  path = &d->paths[pathIdx];
-  if (path->nodeCount == 0) {
+  if (d->paths[pathIdx].nodeCount == 0) {
     return FALSE;
   }
 
-  if (nodeIdx >= path->nodeCount) {
+  if (nodeIdx >= d->paths[pathIdx].nodeCount) {
     nodeIdx = 0;
   }
+
+  path = &d->paths[pathIdx];
 
   nodes = (PathNode*)((u8*)d + path->nodeOffset);
   p->pathIdx = pathIdx;
@@ -1704,33 +1686,28 @@ s32 Map_GetPathNodePos(Vec3* dst, u8 pathIdx, u8 nodeIdx) {
 }
 
 // スクリプトから経路番号とノード番号を読み、そのノードの座標を配列変数に3つ書き込む
-// 残差2命令: 原典は pos をスタック先頭 (sp+0)、desc を sp+8 に置くが、agbcc はこちらでは逆に並べる
-// 宣言順の入れ替え・ブロック内宣言は効かなかった
-NON_MATCH s32 Cmd_GetPathNodePos(void) {
-#ifdef NONMATCHING_C
+s32 Cmd_GetPathNodePos(void) {
   Vec3 pos;
   s32 pathIdx = VM_GetValue();
   s32 nodeIdx = VM_GetValue();
-  u8 desc[8];
+  u32 desc[2];
 
   if (Map_GetPathNodePos(&pos, pathIdx, nodeIdx) < 0) {
     return -1;
   }
 
-  VM_GetMemoryRef(desc);
-  VM_StoreMemoryRef(desc, 0, pos.x);
-  VM_GetMemoryRef(desc);
-  VM_StoreMemoryRef(desc, 0, pos.y);
-  VM_GetMemoryRef(desc);
-  VM_StoreMemoryRef(desc, 0, pos.z);
+  VM_GetMemoryRef((u8*)desc);
+  VM_StoreMemoryRef((u8*)desc, 0, pos.x);
+  VM_GetMemoryRef((u8*)desc);
+  VM_StoreMemoryRef((u8*)desc, 0, pos.y);
+  VM_GetMemoryRef((u8*)desc);
+  VM_StoreMemoryRef((u8*)desc, 0, pos.z);
   return 0;
-#else
-  INCFUNC("asm/func/Cmd_GetPathNodePos.inc");
-#endif
 }
 
 // pos がカーソルの指すノードから rx, rz の範囲内にあるか調べる, 外なら 1
-// 残差は nodePos.z のレジスタコピー1命令のみ (41/42), Tier A-C は試済
+// 残差は nodePos.z のレジスタコピー1命令のみ (41/42), 原典は z を含む語を比較の前に別レジスタへ写す
+// 試済: Tier A-C, 読み出しの static inline (40命令でスタック退避), Vec3 を値渡しする判定 inline, dx / dz のローカル
 NON_MATCH bool8 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz) {
 #ifdef NONMATCHING_C
   Vec3 nodePos;
@@ -1852,9 +1829,7 @@ s32 Map_FindFarthestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx) {
 }
 
 // pos から minDistSq 以上離れたなかで最も近い経路ノードを探して dst に入れ, そのノード番号を返す
-// 残差0命令 (164/164), レジスタ名だけ違う: 原典は dst を r6 / i を r5 に置くが, こちらは逆になる (先頭ノードの先読みで dst の参照が2つ増えるため)
-NON_MATCH s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq) {
-#ifdef NONMATCHING_C
+s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq) {
   s32 ret = -1;
   Path* path = Map_GetPath(pathIdx);
   PathNode* nodes;
@@ -1897,9 +1872,6 @@ NON_MATCH s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u
 
   dst->y = TileHeightAt(dst);
   return ret;
-#else
-  INCFUNC("asm/func/Map_FindNearestPathNodeBeyond.inc");
-#endif
 }
 
 // 経路上のランダムな位置から順に走査して, pos から minDistSq 以上離れた最初のノードを dst に入れる
@@ -1935,8 +1907,8 @@ s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq) {
 }
 
 // 経路のランダムな位置から1周走査して, min..max の範囲に入る最後のノードを dst に入れる
-// 残差2命令 (179/181): 原典は idx を r7 に置き node.x を store 直前に読み直すが, こちらは idx をスタックに溢れさせて node.x を巻き上げる
-// Tier A-C は試済: ret の宣言位置 (prologue の -1 はこれで一致した), 範囲判定を 0/1 フラグに起こす形 (182 と悪化), idx の宣言位置
+// 残差はレジスタの r2 / r3 の入れ替わりだけ (181/181, 6 hunk), 範囲判定を cactus.c の IsInBox と同じ bool8 の inline にすると 0/1 の作り置きと命令数が揃った
+// 試済: inline の引数順, return 式の inline (14), bool32 (13), RandomNext (7), idx と局所変数の宣言位置
 NON_MATCH s32 Map_FindPathNodeInBounds(Vec3* dst, Vec3* min, Vec3* max, s32 pathIdx) {
 #ifdef NONMATCHING_C
   s32 ret = -1;
@@ -1966,7 +1938,7 @@ NON_MATCH s32 Map_FindPathNodeInBounds(Vec3* dst, Vec3* min, Vec3* max, s32 path
     s32 idx = Mod(i, path->nodeCount);
 
     Map_ReadPathNodePos(&node, nodes, idx);
-    if (node.x >= min->x && node.x <= max->x && node.z >= min->z && node.z <= max->z) {
+    if (Map_IsInRectXZ(&node, min, max)) {
       ret = idx;
       dst->x = node.x;
       dst->z = node.z;
@@ -1980,15 +1952,11 @@ NON_MATCH s32 Map_FindPathNodeInBounds(Vec3* dst, Vec3* min, Vec3* max, s32 path
 #endif
 }
 
-// kind ごとの移動判定に振り分ける, どれも失敗したら Map_PickRandomPathNode で戻す
 // kind に応じた探索で経路ノードを1つ選ぶ, 見つからなければ乱択にする
-// 残差1命令 (56/55): 原典は minDist の2乗を一旦別レジスタで作ってから minDistSq へ写すが, agbcc は宛先レジスタの中で直接 muls する
-// Tier A-C は試済: 宣言時初期化/代入文の分離, Square 相当の static inline
-NON_MATCH s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, Vec3* min, Vec3* max) {
-#ifdef NONMATCHING_C
+s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, Vec3* min, Vec3* max) {
   s32 ret = -1;
-  u32 minDistSq = minDist * minDist;
 
+  minDist *= minDist;
   switch (kind) {
     case 0: {
       ret = Map_PickRandomPathNode(dst, pathIdx);
@@ -2003,11 +1971,11 @@ NON_MATCH s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 
       break;
     }
     case 3: {
-      ret = Map_FindNearestPathNodeBeyond(dst, pos, pathIdx, minDistSq);
+      ret = Map_FindNearestPathNodeBeyond(dst, pos, pathIdx, minDist);
       break;
     }
     case 4: {
-      ret = Map_FindPathNodeBeyond(dst, pos, pathIdx, minDistSq);
+      ret = Map_FindPathNodeBeyond(dst, pos, pathIdx, minDist);
       break;
     }
     case 5: {
@@ -2020,13 +1988,11 @@ NON_MATCH s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 
     ret = Map_PickRandomPathNode(dst, pathIdx);
   }
   return ret;
-#else
-  INCFUNC("asm/func/Map_PickPathNode.inc");
-#endif
 }
 
 // このゲームでは使われない (呼び出す条件を満たさない)
 // 残差1命令, 原典は GetFile の戻り値を r1 へ写して r0 にプールを取るが gcc は逆に割り当てる
+// 試済: 戻り値をローカルで受ける, navMesh の setter inline, gCollisionMap の getter inline (いずれも 12/13 命令で同じ差)
 NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 #ifdef NONMATCHING_C
   gCollisionMap->navMesh = GetFile(0xF63B, id);
@@ -2050,7 +2016,8 @@ bool32 Map_IsPosInNavRect(NavRect* rects, Vec3* pos, u32 idx) {
 }
 
 // a と b の距離を distanceMap (上三角だけを詰めた行列) から引く, 同じなら 0
-// 残差は最後の4命令のレジスタだけ (原典は引き算の結果を左辺のレジスタに残す), 命令数は31で一致, Tier A/B と C の lo/hi 変数化・複合代入は試済
+// 残差は最後の4命令のレジスタだけ (原典は引き算の結果を左辺のレジスタに残す), 命令数は31で一致
+// 試済: Tier A/B, lo/hi 変数化, 複合代入, 小さい方を a に入れ替えて共通の式で引く (29命令), 三角数を別変数に (30命令), idx を u32
 NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
 #ifdef NONMATCHING_C
   s32 idx;
@@ -2081,8 +2048,8 @@ bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   }
 
   for (i = 0; i < navMesh->countIslands; i++) {
-    NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
+    NavIsland* island = GetNavIsland(navMesh, i);
+    NavRect* rects = GetNavRect(island);
     s32 j;
 
     for (j = 0; j < island->countRects; j++) {
@@ -2139,8 +2106,8 @@ NON_MATCH s32 Map_FindNavRoute(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   island = NULL;
   rects = NULL;
   for (i = 0; i < navMesh->countIslands; i++) {
-    island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    rects = (NavRect*)((u8*)island + island->offsetToRects);
+    island = GetNavIsland(navMesh, i);
+    rects = GetNavRect(island);
     for (j = 0; j < island->countRects; j++) {
       if (Map_IsPosInNavRect(rects, dst, j)) {
         island0 = i;
@@ -2170,8 +2137,8 @@ NON_MATCH s32 Map_FindNavRoute(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
     return 0;
   }
 
-  portals = (NavPortal*)((u8*)island + island->offsetToPortals);
-  distanceMap = (u16*)((u8*)island + island->offsetToDistanceMap);
+  portals = GetNavPortal(island);
+  distanceMap = GetNavDistanceMap(island);
 
   // dst を含む矩形をポータル伝いに集める
   for (i = 0; i < 6; i++) {
@@ -2316,31 +2283,26 @@ bool32 Map_ConsumeNavWaypointChanged(NavAgent* agent) {
 }
 
 // pos が agent のいる矩形から外れていたら, 隣のポータル先 -> 同じ島 -> 他の島 の順に探して agent を移す
-// 残差0命令 (149/149), レジスタ割当だけ違う: 原典は navMesh をスタックに溢れさせて pos を r10 / portal を r9 に置くが, こちらは navMesh が r10 を取り portal が低位レジスタに落ちる
-// Tier A-C は試済: portals/rect の bare block, j の宣言位置 (関数スコープにして命令数は一致した)
-NON_MATCH void Map_UpdateNavAgentRect(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
-#ifdef NONMATCHING_C
-  NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[agent->islandIdx]);
-  NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
+void Map_UpdateNavAgentRect(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
+  NavIsland* island = GetNavIsland(navMesh, agent->islandIdx);
+  NavRect* rects = GetNavRect(island);
   NavPortal* portals;
   NavRect* rect;
-  s32 i;
-  s32 j;
+  s32 i, j;
 
   if (Map_IsPosInNavRect(rects, pos, agent->rectIdx)) {
     return;
   }
 
-  portals = (NavPortal*)((u8*)island + island->offsetToPortals);
+  portals = GetNavPortal(island);
   rect = &rects[agent->rectIdx];
   for (i = 0; i < 12 && rect->portals[i] != 0xFF; i++) {
     NavPortal* portal = &portals[rect->portals[i]];
 
     for (j = 0; j < 6; j++) {
       if (portal->rects[j] == 0xFF) {
-        break;
-      }
-      if (portal->rects[j] != agent->rectIdx && Map_IsPosInNavRect(rects, pos, portal->rects[j])) {
+        j = 6;  // 0xFF から先は空きなので打ち切る
+      } else if (portal->rects[j] != agent->rectIdx && Map_IsPosInNavRect(rects, pos, portal->rects[j])) {
         agent->rectIdx = portal->rects[j];
         return;
       }
@@ -2356,8 +2318,8 @@ NON_MATCH void Map_UpdateNavAgentRect(NavMesh* navMesh, NavAgent* agent, Vec3* p
 
   for (i = 0; i < navMesh->countIslands; i++) {
     if (i != agent->islandIdx) {
-      island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-      rects = (NavRect*)((u8*)island + island->offsetToRects);
+      island = GetNavIsland(navMesh, i);
+      rects = GetNavRect(island);
       for (j = 0; j < island->countRects; j++) {
         if (Map_IsPosInNavRect(rects, pos, j)) {
           agent->islandIdx = i;
@@ -2367,20 +2329,14 @@ NON_MATCH void Map_UpdateNavAgentRect(NavMesh* navMesh, NavAgent* agent, Vec3* p
       }
     }
   }
-#else
-  INCFUNC("asm/func/Map_UpdateNavAgentRect.inc");
-#endif
 }
 
 // 向かっているポータルに近づいたら, そこから距離が最小のポータルを次の目標にする
-// 残差0命令 (151/151), レジスタ名だけ違う: 原典は unk_0a の値を r4, portal を r5 に置くが, こちらは逆になる
-// Tier A-C は試済: portal ローカルを外す形 (153 と悪化), 索引をローカルに退避する形 (無影響)
-NON_MATCH void Map_AdvanceNavPortal(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
-#ifdef NONMATCHING_C
-  NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[agent->islandIdx]);
-  NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
-  NavPortal* portals = (NavPortal*)((u8*)island + island->offsetToPortals);
-  u16* distanceMap = (u16*)((u8*)island + island->offsetToDistanceMap);
+void Map_AdvanceNavPortal(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
+  NavIsland* island = GetNavIsland(navMesh, agent->islandIdx);
+  NavRect* rects = GetNavRect(island);
+  NavPortal* portals = GetNavPortal(island);
+  u16* distanceMap = GetNavDistanceMap(island);
   NavPortal* portal = &portals[agent->nextPortal];
   s32 dx = pos->x - portal->x;
   s32 dz = pos->z - portal->y;
@@ -2388,11 +2344,11 @@ NON_MATCH void Map_AdvanceNavPortal(NavMesh* navMesh, NavAgent* agent, Vec3* pos
   s32 bestPortal;
   s32 i;
 
-  if (dx * dx + dz * dz > 3600) {
+  if (dx * dx + dz * dz > Q8(0.235) * Q8(0.235)) {
     return;
   }
 
-  if (agent->goalPortal == agent->nextPortal) {
+  if (agent->nextPortal == agent->goalPortal) {
     agent->waypoint = agent->dest;
     agent->flags = NAVFLAG_WAYPOINT_CHANGED | NAVFLAG_DIRECT;
     return;
@@ -2425,9 +2381,6 @@ NON_MATCH void Map_AdvanceNavPortal(NavMesh* navMesh, NavAgent* agent, Vec3* pos
     agent->waypoint.z = portals[bestPortal].y;
     agent->flags |= NAVFLAG_WAYPOINT_CHANGED;
   }
-#else
-  INCFUNC("asm/func/Map_AdvanceNavPortal.inc");
-#endif
 }
 
 // ナビメッシュ上の移動を1歩進める, flags の bit0 が立っているときだけ後段も回す
@@ -2443,13 +2396,11 @@ void Map_StepNavPath(NavAgent* agent, Vec3* pos) {
 // pos を含むナビ矩形の番号を返す, 見つからなければ 0xFF
 s32 Map_FindNavRectAt(Vec3* pos) {
   NavMesh* navMesh = gCollisionMap->navMesh;
-  s32 i;
+  s32 i, j;
 
   for (i = 0; i < navMesh->countIslands; i++) {
-    NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
-    s32 j;
-
+    NavIsland* island = GetNavIsland(navMesh, i);
+    NavRect* rects = GetNavRect(island);
     for (j = 0; j < island->countRects; j++) {
       if (Map_IsPosInNavRect(rects, pos, j)) {
         return j;
@@ -2462,15 +2413,13 @@ s32 Map_FindNavRectAt(Vec3* pos) {
 // pos を含むナビ矩形を総当たりで探して NavAgent を初期化する, 見つからなければ 0xFF のまま
 s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos) {
   NavMesh* navMesh = gCollisionMap->navMesh;
-  s32 i;
+  s32 i, j;
 
   agent->islandIdx = 0xFF;
   agent->rectIdx = 0xFF;
   for (i = 0; i < navMesh->countIslands; i++) {
-    NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
-    s32 j;
-
+    NavIsland* island = GetNavIsland(navMesh, i);
+    NavRect* rects = GetNavRect(island);
     for (j = 0; j < island->countRects; j++) {
       if (Map_IsPosInNavRect(rects, pos, j)) {
         agent->islandIdx = i;

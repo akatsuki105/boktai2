@@ -881,7 +881,7 @@ _08142F4A:
 	strb r0, [r1]
 _08142F64:
 	adds r0, r6, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	mov r2, r8
 	ldrh r0, [r2, #0x3e]
 	strh r0, [r4]

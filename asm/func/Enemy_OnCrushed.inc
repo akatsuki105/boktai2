@@ -16,7 +16,7 @@
 	movs r6, #0
 	strh r6, [r0]
 	adds r0, r7, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	movs r2, #0xc0
 	lsls r2, r2, #1
 	adds r5, r7, r2

@@ -197,9 +197,67 @@ void SwapValuable(slot32_t slot1, slot32_t slot2) {
   SetValuable(slot2, a);
 }
 
-NAKED void SortInventory(slot32_t slot) { INCFUNC("asm/func/SortInventory.inc"); }
+// 通常アイテム欄の from から 16 枠の空きを詰め, アイテム番号の小さい順に並べる
+void SortInventory(slot32_t from) {
+  s32 validCount = 0;
+  s32 emptyCount = 0;
+  s32 i;
 
-NAKED void SortValuable(slot32_t slot) { INCFUNC("asm/func/SortValuable.inc"); }
+  for (i = 0; i < 16; i++) {
+    s32 slot = from + i;
+
+    if (GetNormalItemID(slot) < 0) {
+      emptyCount++;
+    } else {
+      validCount++;
+      if (emptyCount > 0) {
+        SwapNormalItem(slot, slot - emptyCount);
+      }
+    }
+  }
+
+  if (validCount > 1) {
+    s32 j;
+
+    for (i = 0; i < validCount - 1; i++) {
+      for (j = i; j < validCount; j++) {
+        if (GetNormalItemID(from + i) > GetNormalItemID(from + j)) {
+          SwapNormalItem(from + i, from + j);
+        }
+      }
+    }
+  }
+}
+
+// 大事なもの欄の slot 以降の空きを詰め, 先頭からアイテム番号の小さい順に並べる
+void SortValuable(slot32_t slot) {
+  s32 validCount = 0;
+  s32 emptyCount = 0;
+  s32 i;
+
+  for (i = slot; i < 16; i++) {
+    if (GetValuableItemID(i) < 0) {
+      emptyCount++;
+    } else {
+      validCount++;
+      if (emptyCount > 0) {
+        SwapValuable(i, i - emptyCount);
+      }
+    }
+  }
+
+  if (validCount > 1) {
+    s32 j;
+
+    for (i = 0; i < validCount - 1; i++) {
+      for (j = i; j < validCount; j++) {
+        if (GetValuableItemID(i) > GetValuableItemID(j)) {
+          SwapValuable(i, j);
+        }
+      }
+    }
+  }
+}
 
 item32_t GetRottenItemID(item32_t n) {
   switch (n) {
@@ -233,7 +291,58 @@ item32_t GetRottenItemID(item32_t n) {
   }
 }
 
-NAKED void RotItem(s32 rotDelta) { INCFUNC("asm/func/RotItem.inc"); }
+// 所持アイテムの腐り具合を rotDelta 進めて限界を超えたものを腐らせる, チョコは溶けて1段下のアイテムにかかる
+void RotItem(s32 rotDelta) {
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    item32_t id = GetNormalItemID(i);
+
+    if (id >= 0 && gItemDB[id].durability != 0) {
+      s32 rot = GetRotCount2(i) + rotDelta;
+
+      if (rot > 0x7FFF) {
+        rot = 0x7FFF;
+      }
+      if (rot < gItemDB[id].durability * 32) {
+        SetRotCount2(i, rot);
+      } else if (id != ITEM_CHOCOLATE) {
+        SetItem(i, GetRottenItemID(id));
+        SetRotCount(i, 0);
+      } else {
+        bool32 done;
+        s32 j;
+
+        RemoveItem(i);
+        done = FALSE;
+        for (j = i + 4; !done && j < 16; j += 4) {
+          item32_t below = GetNormalItemID(j);
+
+          if (below >= 0) {
+            if (below == ITEM_CHOCOLATE || below == ITEM_MELTED_CHOCOLATE) {
+              SetItem(j, ITEM_DELUXE_CHOCOLATE);
+              SetRotCount(j, 0);
+            } else if (below == ITEM_POWER_NUT) {
+              SetItem(j, ITEM_CHOCOLATE_BANANA);
+              SetRotCount(j, 0);
+            } else if (below == ITEM_DELUXE_CHOCOLATE || below == ITEM_CHOCOLATE_BANANA || IsChocolateCovered(j)) {
+              j -= 4;
+              SetItem(j, ITEM_MELTED_CHOCOLATE);
+              SetRotCount(j, 0);
+            } else {
+              CoverChocolate(j);
+            }
+            done = TRUE;
+          }
+        }
+        if (!done) {
+          j -= 4;
+          SetItem(j, ITEM_MELTED_CHOCOLATE);
+        }
+      }
+    }
+  }
+}
 
 // 0x71C6, HashName("アイテム初期化")
 NON_MATCH void Cmd_ResetItems(void) {

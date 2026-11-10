@@ -134,14 +134,12 @@ void RisingSunEffect_SpawnOrbitParticle(RisingSunEffect* p, WorldPos* pos) {
 
   if (++em->spawnTimer > 1) {
     RisingSunEffectParticle* elem = &em->elems[em->nextIdx];
-    u16* table;
     Particle* ptcl;
 
     elem->active = TRUE;
-    table = gRandomTable;
-    elem->speed = (_Random(table) & 15) + 16;
-    elem->orbitRadius = (_Random(table) & 15) + 64;
-    elem->angle = _Random(table);
+    elem->speed = (RandomNext() & 15) + 16;
+    elem->orbitRadius = (RandomNext() & 15) + 64;
+    elem->angle = RandomNext();
     elem->angleVel = 8;
     elem->frame = 0;
     elem->vec = *pos;
@@ -183,21 +181,17 @@ void RisingSunEffectParticle_UpdateSpiral(RisingSunEffectParticle* elem, Particl
   }
 }
 
-// 150/151命令, 原典は active に入れる 1 を ip の定数と別に作り直し, center の書き込みがその後に来る, 試済: 乱数表のローカルの位置, & 1 と % 2
-NON_MATCH void RisingSunEffect_SpawnSpiralParticle(RisingSunEffect* p, Vec3* center) {
-#ifdef NONMATCHING_C
+void RisingSunEffect_SpawnSpiralParticle(RisingSunEffect* p, Vec3* center) {
   RisingSunEffectEmitter* em = &p->emitter;
 
   if (++em->spawnTimer > 2) {
     RisingSunEffectParticle* elem = &em->elems[em->nextIdx];
-    u16* table;
 
     elem->active = TRUE;
-    table = gRandomTable;
     elem->center = center;
-    elem->spiralRadius = (_Random(table) & 0x7F) + 384;
-    elem->angle = _Random(table);
-    elem->angleVel = (_Random(table) & 1) + 2;
+    elem->spiralRadius = (RandomNext() & 0x7F) + 384;
+    elem->angle = RandomNext();
+    elem->angleVel = (RandomNext() & 1) + 2;
     elem->frame = 0;
     elem->updateCallback = RisingSunEffectParticle_UpdateSpiral;
     elem->ptcl.flags &= ~SPRFLAG_HIDDEN;
@@ -212,9 +206,6 @@ NON_MATCH void RisingSunEffect_SpawnSpiralParticle(RisingSunEffect* p, Vec3* cen
     em->spawnTimer = 0;
     p->emitter.active = TRUE;
   }
-#else
-  INCFUNC("asm/func/RisingSunEffect_SpawnSpiralParticle.inc");
-#endif
 }
 
 // まっすぐ飛び散る粒を進める
@@ -232,11 +223,8 @@ void RisingSunEffectParticle_UpdateBurst(RisingSunEffectParticle* elem, Particle
   }
 }
 
-// 144/145命令, 原典は vec.y と frame に入れる 0 を別々に作り, vec.z の計算で speed と angle の読み込みレジスタが逆, 試済: Vec3_SetPolar (speed がレジスタに残ってスタックに溢れる), angle を u8 / s32
-NON_MATCH void RisingSunEffect_SpawnBurstParticles(RisingSunEffect* p, WorldPos* pos) {
-#ifdef NONMATCHING_C
-  u16* table = gRandomTable;
-  s32 angle = _Random(table) & 0xFF;
+void RisingSunEffect_SpawnBurstParticles(RisingSunEffect* p, WorldPos* pos) {
+  s32 angle = RandomNext() & 0xFF;
   s32 i;
 
   for (i = 0; i < 12; i++) {
@@ -259,9 +247,6 @@ NON_MATCH void RisingSunEffect_SpawnBurstParticles(RisingSunEffect* p, WorldPos*
     angle = (angle + 24) & 0xFF;
   }
   p->emitter.active = TRUE;
-#else
-  INCFUNC("asm/func/RisingSunEffect_SpawnBurstParticles.inc");
-#endif
 }
 
 // 動いている粒をそれぞれの updateCallback で進める

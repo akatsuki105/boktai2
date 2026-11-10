@@ -77,9 +77,7 @@ Octorok* OctorokManager_Alloc(OctorokManager* p) {
   return NULL;
 }
 
-// 211/212命令, 原典は乱数表のアドレスを vel.x の書き込みの後に読み, ip に置いて使い回す, 試済: table ローカルの位置, Random() マクロ直書き
-NON_MATCH void Octorok_UpdateState1(OctorokManager* p, Octorok* octorok) {
-#ifdef NONMATCHING_C
+void Octorok_UpdateState1(OctorokManager* p, Octorok* octorok) {
   AuxSprite* spr = &octorok->sprite;
   s32 y;
 
@@ -93,7 +91,6 @@ NON_MATCH void Octorok_UpdateState1(OctorokManager* p, Octorok* octorok) {
   if (y < (u32)TileHeightAt(&spr->pos) || spr->pos.y <= 0) {
     Vec3 vel;
     Vec3 velRange;
-    u16* table;
 
     PlaySound_082406e0(SONG_470);
     CLEAR_BIT(p->activeMask, octorok->idx);
@@ -103,17 +100,13 @@ NON_MATCH void Octorok_UpdateState1(OctorokManager* p, Octorok* octorok) {
     octorok->idx = -1;
     octorok->unk_d0 = 0;
     octorok->timer = 0;
-    table = gRandomTable;
-    VEC3_SET(vel, -12, _Random(table) & 7, -12);
-    VEC3_SET(velRange, 24, (_Random(table) & 7) + 3, 24);
+    VEC3_SET(vel, -12, RandomNext() & 7, -12);
+    VEC3_SET(velRange, 24, (RandomNext() & 7) + 3, 24);
     ScatterEffect_Spawn(6, SCATTER_STONE, &octorok->pos, &vel, &velRange, 32, 31);
   } else {
     Hitbox_SetPos(&octorok->hitbox, &octorok->pos, 0);
     Hitbox_Register(&octorok->hitbox);
   }
-#else
-  INCFUNC("asm/func/Octorok_UpdateState1.inc");
-#endif
 }
 
 // 点滅させてから 91 フレームで消す
@@ -167,18 +160,16 @@ void Octorok_GetAnimVariant(Mover* src, u8* variant, u8* xflip) {
 // vel を指定して岩を投げる
 s32 Octorok_Throw(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { return Octorok_Spawn(src, target, vel, power, knockback, attrs, iframes); }
 
-// 148/147命令, 原典は Div(n, 2) を呼んでから乱数の添字を進めるが, こちらは添字を先に進める, 試済: 加算の左右, 一旦 vel.y に入れて足す, (u16) キャスト
-NON_MATCH s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
-#ifdef NONMATCHING_C
+s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
   Vec3 vel;
   s32 n;
 
   vel.x = target->pos.x - src->pos.x;
   vel.z = target->pos.z - src->pos.z;
-  n = (Random() & 0x3F) + 30;
+  n = (RandomNext() & 0x3F) + 30;
   vel.x = Div(vel.x, n);
   vel.z = Div(vel.z, n);
-  vel.y = Div(n, 2) + (Random() & 7);
+  vel.y = Div(n, 2) + (RandomNext() & 7);
   if (vel.x > 48) {
     vel.x = 48;
   }
@@ -192,9 +183,6 @@ NON_MATCH s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockbac
     vel.z = -48;
   }
   return Octorok_Spawn(src, target, &vel, power, knockback, attrs, iframes);
-#else
-  INCFUNC("asm/func/Octorok_ThrowAt.inc");
-#endif
 }
 
 // src の位置から vel で岩を1つ投げ, octoroks の添字を返す

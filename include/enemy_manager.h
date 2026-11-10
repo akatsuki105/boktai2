@@ -43,10 +43,10 @@ static_assert(sizeof(EnemyPaletteFade) == 180);
 // エネミー全体の管理者, シングルトンで、生存中のエネミーを gEnemyListHead のリストで持つ
 typedef struct EnemyManager {
   Entity e;                     // 0x00, ENTITY_UNK_8
-  ScriptRecord* msgRecords;     // 0x18, EnemyManager_DispatchScriptMsgs が FUN_08230f94(msgRecordID, &msgRecords) で先頭を受け取り、戻り値の件数だけ走査する
+  ScriptRecord* msgRecords;     // 0x18, EnemyManager_DispatchScriptMsgs が ScriptRecord_Find(msgRecordID, &msgRecords) で先頭を受け取り、戻り値の件数だけ走査する
   EnemyListNode* list;          // 0x1C, EnemyManager_InitList が Malloc(8) した番兵ノード, gEnemyListHead と同じ値
   EnemyListNode* cursor;        // 0x20, EnemyManager_AdvanceCursor が1フレームおきに1つ進める巡回カーソル
-  u32 msgRecordID;              // 0x24, EnemyManager_Init の第2引数, FUN_08230f94 の検索キー
+  u32 msgRecordID;              // 0x24, EnemyManager_Init の第2引数, ScriptRecord_Find の検索キー
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
   EnemyManagerFlags flags;      // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え

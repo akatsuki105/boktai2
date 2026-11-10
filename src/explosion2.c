@@ -3,6 +3,7 @@
 #include "hitbox.h"
 #include "random.h"
 #include "sound.h"
+#include "sprite_common.h"
 #include "vm.h"
 
 // 爆発は用途の1つで他の攻撃判定も同じ仕組みで扱うのかもしれない
@@ -16,7 +17,7 @@ typedef struct {
   u8 state;           // 0x5D, PTR_ARRAY_085AD348 の添字, 0: 空き, 1: 判定中, 2: 解放
   s8 slot;            // 0x5E, 自分の添字, Alloc が書き、解放時に activeMask の該当ビットを落として 0xFF にする
   u8 unk_5f;          // 0x5F, padding?
-  u32 unk_60;         // 0x60, SpawnAttackBox の第3引数, 0 かどうかで Hitbox_SetAttack の flags が変わる
+  u32 variant;        // 0x60, SpawnAttackBox の第3引数, 0 は炎属性で音と破片を出す通常の爆発, 0 以外は属性を変え煙の色を Entity081eee80_Spawn の plttOffset でずらす
 } AttackBox;
 static_assert(sizeof(AttackBox) == 100);
 
@@ -31,17 +32,73 @@ static_assert(sizeof(AttackBoxManager) == 528);
 static AttackBoxManager* gAttackBoxManager;  // 0x03000170
 
 AttackBoxManager* AttackBoxManager_Create(void);
+s32 Entity081eee80_Spawn(Vec3* pos, s32 priority, s32 delay, s32 angle, s32 speed, s32 animShift, s32 plttOffset);
+void Entity081ee7a8_SpawnDefault(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 priority, s32 plttOffset, SpriteFlags flags, s32 hideTime);
 
 static inline bool8 AttackBoxManager_IsSlotUsed(AttackBoxManager* p, s32 i) {
   if (TEST_FLAGS(p->activeMask, 1 << i)) return TRUE;
   return FALSE;
 }
 
-NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); }
+// timer の 0..5 フレーム目に, 段階ごとに数と広がりを変えて爆発の煙と破片を出す
+// 残差は r0 / r1 の選び方2か所と case 5 の定数 2, 原典は 2 をループ外の r7 に置く (s32 pltt = 2 をループ外に出すと r0 / r1 の2か所だけになる)
+// Tier A-C は試済 (乱数 inline の Random / RandomNext, &box->pos のローカル化, case 5 の早期 break)
+NON_MATCH void AttackBox_SpawnExplosionEffects(AttackBox* box) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  switch (box->timer) {
+    case 0: {
+      if (box->variant == 0) {
+        PlaySound_082406e0(SE_M_SUN_BURST);
+      }
+      for (i = 0; i < 6; i++) {
+        Entity081eee80_Spawn(&box->pos, 1, 0, i << 6, 84, 1, box->variant);
+      }
+      break;
+    }
+    case 1: {
+      for (i = 0; i < 4; i++) {
+        Entity081eee80_Spawn(&box->pos, 1, 8, i << 6, 34, 1, box->variant);
+        Entity081eee80_Spawn(&box->pos, 1, 14, i << 6, 64, 1, box->variant);
+      }
+      break;
+    }
+    case 2: {
+      for (i = 0; i < 6; i++) {
+        Entity081eee80_Spawn(&box->pos, 1, Random() & 15, i << 6, 150, 1, box->variant);
+      }
+      break;
+    }
+    case 3: {
+      for (i = 0; i < 8; i++) {
+        Entity081eee80_Spawn(&box->pos, 1, Random() & 31, i << 5, 100, 1, box->variant);
+      }
+      break;
+    }
+    case 4: {
+      for (i = 0; i < 16; i++) {
+        Entity081eee80_Spawn(&box->pos, 1, (RandomNext() & 15) + 5, i << 4, (RandomNext() & 63) + 80, 2, box->variant);
+      }
+      break;
+    }
+    case 5: {
+      if (box->variant == 0) {
+        for (i = 0; i < 8; i++) {
+          Entity081ee7a8_SpawnDefault(&box->pos, 8, 16, 4, 12, 18, i << 5, 8, 64, 1, 2, SPRFLAG_BLINK_ODD, 8);
+        }
+      }
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/AttackBox_SpawnExplosionEffects.inc");
+#endif
+}
 
 // 通信中でない通常の判定のとき、9〜12フレームごとに1回だけ効果音を鳴らす
 void FUN_080dd6f4(AttackBox* box) {
-  if (!(gGameFlags & GAMEFLAG_LINK) && box->unk_60 == 0) {
+  if (!(gGameFlags & GAMEFLAG_LINK) && box->variant == 0) {
     if (Mod(box->timer, 9 + (Random() & 3)) == 0) {
       PlaySound_082406e0(SONG_825);
     }
@@ -55,7 +112,7 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 knockback, s32 iframes, s32 
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  if (box->unk_60 == 0) {
+  if (box->variant == 0) {
     Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);  // 0x40 は武器以外の攻撃
   } else {
     Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_18, iframes);
@@ -71,7 +128,7 @@ void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) {}
 
 // state 1 (判定中) の更新, 10..15 フレームの間だけ判定を登録し、0x28 を超えたら解放へ回す
 void AttackBox_Update(AttackBoxManager* p, AttackBox* box) {
-  FUN_080dd4fc(box);
+  AttackBox_SpawnExplosionEffects(box);
   FUN_080dd6f4(box);
 
   if (box->timer >= 10 && box->timer <= 15) {
@@ -111,7 +168,7 @@ AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) {
 }
 
 // 持ち主のいない判定を1つ出す, マネージャが無ければ作る
-s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s32 iframes, s32 ignoreMask) {
+s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 variant, s32 power, s32 knockback, s32 iframes, s32 ignoreMask) {
   if (pos != NULL) {
     AttackBoxManager* mgr = gAttackBoxManager;
     AttackBox* box;
@@ -129,7 +186,7 @@ s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 knockback, s3
       box->pos = *pos;
       box->timer = 0;
       box->kind = kind;
-      box->unk_60 = unk_60;
+      box->variant = variant;
       AttackBox_Setup(box, power, knockback, iframes, ignoreMask);
     }
   }
@@ -177,7 +234,7 @@ void Cmd_HugeExplosion(void) {
     ignoreMask = 0;
   }
 
-  box->unk_60 = VM_GetNamedArgValue('c', 0);
+  box->variant = VM_GetNamedArgValue('c', 0);
   box->state = 1;
   box->timer = 0;
   box->kind = 2;

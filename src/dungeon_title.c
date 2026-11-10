@@ -1,14 +1,20 @@
+#include "bg_pltt.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "input.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite_main.h"
+#include "text.h"
 #include "video.h"
 #include "vm.h"
 
 struct DungeonTitle;
 typedef void (*DungeonTitleFunc)(struct DungeonTitle*);
+
+// タイトルカードのスプライトに共通の flags, スクリーン座標で OAM へ直に描く
+#define TITLE_SPRFLAGS (SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_NO_CLIP | SPRFLAG_UNK_11)
 
 // ダンジョンやボスラッシュに入るときに出すタイトルカード, デバッグ文字列に "mini dungeon title" / "boss rush title" とある
 // 文字とアイコンをスプライトで並べ、HBlank テーブルでノイズの帯をかけながら開閉する
@@ -20,9 +26,9 @@ typedef struct DungeonTitle {
   s32 frameCounter;             // 0x03C, DungeonTitle_Update が毎フレーム +1, 読み手が見つかっていない
   s32 scriptOnClose;            // 0x040, '.e', 閉じるときに VM_ExecByID へ渡す
   s16 closable;                 // 0x044, '.C', 0 以外なら A/B で閉じられる
-  s16 unk_46;                   // 0x046, '.n', 0 なら DAT_03004040 と gObjBrightness を進行度に連動させ、パレットのフェード設定もする
-  s16 progress;                 // 0x048, 0..progressMax, DAT_03004040 = progress * 64 / progressMax
-  s16 openDelay;                // 0x04A, unk_46 が 0 なら 0x40、そうでなければ 0, state 0 の長さ
+  s16 noFade;                   // 0x046, '.n', 0 なら gBgBrightness と gObjBrightness を進行度に連動させ、パレットのフェード設定もする
+  s16 progress;                 // 0x048, 0..progressMax, gBgBrightness = progress * 64 / progressMax
+  s16 openDelay;                // 0x04A, noFade が 0 なら 0x40、そうでなければ 0, state 0 の長さ
   s16 closeDelay;               // 0x04C, '.d=0x80', state 2 の長さ
   s16 progressMax;              // 0x04E, 0x40 固定
   u8* text;                     // 0x050, '.r' があれば VM_GetPC_Proxy() の戻り値, 0 でなければ MessageWindow_Start に渡して文字を出す
@@ -33,12 +39,13 @@ typedef struct DungeonTitle {
   u16 lineTop;                  // 0x2DA, '.y[0]', ノイズをかける最初のスキャンライン
   u16 lineBottom;               // 0x2DC, '.y[1]', lineTop と等しければ効果音も鳴らさない
   s8 number;                    // 0x2DE, '.o=-1', 0 以上なら1の位と10の位を別々のスプライトで出す
-  s8 unk_2df;                   // 0x2DF, '.t=-1', 0 以上ならその番号のスプライトを sprites[3] に出す
-  s8 unk_2e0;                   // 0x2E0, '.l=0', 0 以外なら sprites[4] のスプライト番号が 1 でなく 0x26 になる
+  s8 unk_2df;                   // 0x2DF, '.t=-1', 0 以上ならその番号のスプライトを sprites[2] に出す
+  s8 unk_2e0;                   // 0x2E0, '.l=0', 0 以外なら sprites[3] のスプライト番号が 1 でなく 38 になり, number が無くても表示する
   u8 unk_2e1[3];                // 0x2E1
   DungeonTitleFunc progressFn;  // 0x2E4, 毎フレーム呼ぶ, DungeonTitle_UpdateOpen / DungeonTitle_UpdateClose, 終わると自分で NULL を入れる
   DungeonTitleFunc hblankFn;    // 0x2E8, 毎フレーム呼ぶ, DungeonTitle_BuildHBlankTable だけが入る
-  MainSprite sprites[6];        // 0x2EC
+  MainSprite sprites[4];        // 0x2EC, [0]: '.s' の文字, [1]: '.c' で出す文字, [2]: '.t' の番号の文字, [3]: number か '.l' のときに出す文字
+  MainSprite digits[2];         // 0x46C, number の1の位と10の位
 } DungeonTitle;
 static_assert(sizeof(DungeonTitle) == 1324);
 
@@ -73,7 +80,7 @@ NON_MATCH void DungeonTitle_BuildHBlankTable(DungeonTitle* p) {
 
 // 開くほうの進行, progress を上げきったら自分を外す
 void DungeonTitle_UpdateOpen(DungeonTitle* p) {
-  if (p->unk_46 == 0) {
+  if (p->noFade == 0) {
     gBgBrightness = Div(p->progress << 6, p->progressMax);
   }
   p->progress++;
@@ -85,7 +92,7 @@ void DungeonTitle_UpdateOpen(DungeonTitle* p) {
 
 // 閉じるほうの進行, progress が 0 を切ったらスクリプトを走らせて自分を消す
 void DungeonTitle_UpdateClose(DungeonTitle* p) {
-  if (p->unk_46 == 0) {
+  if (p->noFade == 0) {
     gBgBrightness = Div(p->progress << 6, p->progressMax);
   }
   p->progress--;
@@ -102,7 +109,7 @@ void DungeonTitle_UpdateClose(DungeonTitle* p) {
 // 202命令対202命令, スクラッチレジスタの番号だけがずれる
 NON_MATCH s32 DungeonTitle_Update(DungeonTitle* p) {
 #ifdef NONMATCHING_C
-  if (p->unk_46 == 0) {
+  if (p->noFade == 0) {
     gObjBrightness = gBgBrightness;
   }
   if (p->closable != 0 && (gInput[0].pressed & (A_BUTTON | B_BUTTON))) {
@@ -110,9 +117,9 @@ NON_MATCH s32 DungeonTitle_Update(DungeonTitle* p) {
     MainSprite_SetFlags(&p->sprites[1], SPRFLAG_HIDDEN);
     MainSprite_SetFlags(&p->sprites[2], SPRFLAG_HIDDEN);
     MainSprite_SetFlags(&p->sprites[3], SPRFLAG_HIDDEN);
-    MainSprite_SetFlags(&p->sprites[4], SPRFLAG_HIDDEN);
-    MainSprite_SetFlags(&p->sprites[5], SPRFLAG_HIDDEN);
-    if (p->unk_46 == 0) {
+    MainSprite_SetFlags(&p->digits[0], SPRFLAG_HIDDEN);
+    MainSprite_SetFlags(&p->digits[1], SPRFLAG_HIDDEN);
+    if (p->noFade == 0) {
       gBgBrightness = 0;
       gObjBrightness = 0;
     }
@@ -188,7 +195,7 @@ s32 DungeonTitle_Destroy(DungeonTitle* p) {
   MainSprite_Remove(&p->sprites[1]);
   MainSprite_Remove(&p->sprites[2]);
   MainSprite_Remove(&p->sprites[3]);
-  spr = &p->sprites[4];
+  spr = &p->digits[0];
   for (i = 0; i < 2; i++) {
     MainSprite_Remove(spr);
     spr++;
@@ -196,7 +203,116 @@ s32 DungeonTitle_Destroy(DungeonTitle* p) {
   return 0;
 }
 
-NAKED s32 DungeonTitle_Init(DungeonTitle* p) { INCFUNC("asm/func/DungeonTitle_Init.inc"); }
+// '.s' / '.c' / '.t' / '.o' / '.l' に応じてタイトルの文字スプライトを並べ, '.r' があればメッセージ窓に文字を出す
+s32 DungeonTitle_Init(DungeonTitle* p) {
+  Vec3 pos;
+  MainSpriteGfxFile* f;
+  s32 line;
+  s32 showSecond;
+  s32 firstPose;
+  s32 digitPoses[2];
+  s32 i;
+  s32 pose;
+
+  gBgPlttBuffer[0] = RGB(4, 4, 4);
+  pos.z = 0;
+  pos.x = 0;
+  pos.y = 0;
+  p->progressFn = NULL;
+  p->progress = 0;
+  p->state = 0;
+  p->closable = VM_GetNamedArgValue('C', 0);
+  p->noFade = VM_GetNamedArgValue('n', 0);
+  if (p->noFade == 0) {
+    p->openDelay = 0x40;
+  } else {
+    p->openDelay = 0;
+  }
+  p->progressMax = 0x40;
+  p->closeDelay = VM_GetNamedArgValue('d', 0x80);
+  line = VM_GetNamedArgValue('i', 0);
+  showSecond = VM_GetNamedArgValue('c', 0);
+  firstPose = VM_GetNamedArgValue('s', -1);
+  p->scriptOnClose = VM_GetNamedArgValue('e', 0);
+  p->number = VM_GetNamedArgValue('o', -1);
+  p->unk_2df = VM_GetNamedArgValue('t', -1);
+  p->unk_2e0 = VM_GetNamedArgValue('l', 0);
+  if (VM_SeekToNamedArg('r')) {
+    p->text = VM_GetPC_Proxy();
+  } else {
+    p->text = NULL;
+  }
+  if (VM_SeekToNamedArg('y')) {
+    p->lineTop = VM_GetValue();
+    p->lineBottom = VM_GetValue();
+  } else {
+    p->lineTop = 0;
+    p->lineBottom = 0;
+  }
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_E89F);
+  if (f == NULL) {
+    return -1;
+  }
+  p->gfx = *f;
+  OpenMainSpriteFile(&p->gfx, f);
+
+  if (firstPose >= 0) {
+    MainSprite_Add(&p->sprites[0], &p->gfx, firstPose + 23, TITLE_SPRFLAGS, 0, 0, 60, &pos);
+  } else {
+    MainSprite_Add(&p->sprites[0], &p->gfx, 23, TITLE_SPRFLAGS | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
+  }
+  MainSprite_Add(&p->sprites[1], &p->gfx, 22, TITLE_SPRFLAGS | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
+  if (showSecond) {
+    p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
+  }
+  MainSprite_Add(&p->sprites[3], &p->gfx, p->unk_2e0 ? 38 : 1, TITLE_SPRFLAGS | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
+  if (p->number >= 0) {
+    p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
+    digitPoses[0] = Mod(p->number, 10);
+    digitPoses[1] = Div(p->number, 10);
+    digitPoses[0] += 2;
+    digitPoses[1] += 12;
+  } else {
+    if (p->unk_2e0) {
+      p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
+    }
+    digitPoses[0] = 2;
+    digitPoses[1] = 12;
+  }
+  for (i = 0; i < 2; i++) {
+    MainSprite_Add(&p->digits[i], &p->gfx, digitPoses[i], TITLE_SPRFLAGS | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
+    if (p->number >= 0) {
+      p->digits[i].flags &= ~SPRFLAG_HIDDEN;
+    }
+  }
+  pose = p->unk_2df >= 0 ? p->unk_2df : 0;
+  MainSprite_Add(&p->sprites[2], &p->gfx, pose, TITLE_SPRFLAGS | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
+  if (p->unk_2df >= 0) {
+    p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
+  }
+
+  if (p->text != NULL) {
+    MessageWindow_SetInstant(TRUE);
+    MessageWindow_SetBgPltt(BGP_539C);
+    MessageWindow_Start(p->text);
+    MessageWindow_ShowLine(line);
+    MessageWindow_SetRect(0, 7, 26, 2);
+    gBgStates[0].hofs = MessageWindow_GetTextWidth() * 4 - 120;
+    Video_SetMosaic(0, 0, 0x11);
+  } else {
+    Video_SetMosaic(0, 0, 0x10);
+  }
+  if (p->noFade == 0) {
+    gBgBrightness = 0;
+    gBgPlttBlendColor = RGB(4, 4, 4);
+    gBgPlttFadeRowMask = 0xFFFF;
+    gObjBrightness = 0;
+    gObjPlttBlendColor = RGB(4, 4, 4);
+    gObjPlttFadeSkipMask = 0;
+  }
+  return 0;
+}
 
 // 0xB426, HashName("ダンジョンタイトル")
 DungeonTitle* DungeonTitle_Create(void) {

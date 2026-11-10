@@ -2987,7 +2987,7 @@ _081C734E:
 	cmp r0, #0
 	beq _081C7362
 	adds r0, r5, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081C7360
@@ -4595,7 +4595,7 @@ _081C7F5E:
 	strb r0, [r3]
 _081C7F76:
 	adds r0, r6, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	ldrh r0, [r7, #0x3e]
 	strh r0, [r4]
 	movs r4, #0xc4
@@ -6889,7 +6889,7 @@ _081C908A:
 	strb r0, [r4]
 _081C90F8:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x90]
 	strh r0, [r5]
@@ -7822,7 +7822,7 @@ _081C97CA:
 	strb r0, [r4]
 _081C9838:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x90]
 	strh r0, [r5]
@@ -10692,7 +10692,7 @@ _081CADD8:
 	strb r0, [r1]
 _081CAE48:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r2, [sp, #0x4c]
 	strh r0, [r2]
@@ -13051,7 +13051,7 @@ _081CC014:
 	strb r0, [r3]
 _081CC084:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r4, [sp, #0x64]
 	strh r0, [r4]
@@ -13362,7 +13362,7 @@ _081CC308:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e60b8
+	bl Enemy_TurnTowardWaypoint
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081CC342
@@ -13818,7 +13818,7 @@ _081CC67C:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	str r4, [sp, #0xb0]
 	cmp r0, #0
@@ -14505,7 +14505,7 @@ _081CCB62:
 	strb r0, [r4]
 _081CCBD0:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x8c]
 	strh r0, [r5]
@@ -14862,7 +14862,7 @@ FUN_081cce88: @ 0x081CCE88
 	bl Enemy_PlayAnim
 _081CCEB4:
 	adds r0, r7, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081CCEC4
@@ -15559,7 +15559,7 @@ _081CD39E:
 	strb r0, [r4]
 _081CD40C:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x8c]
 	strh r0, [r5]
@@ -16045,7 +16045,7 @@ _081CD7C4:
 	orrs r1, r2
 	str r1, [r0]
 	adds r0, r7, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081CD7E0
@@ -16722,7 +16722,7 @@ _081CDC82:
 	strb r0, [r4]
 _081CDCF0:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x90]
 	strh r0, [r5]
@@ -16962,7 +16962,7 @@ _081CDEE4: .4byte 0x0000046A
 _081CDEE8: .4byte 0x0000046C
 _081CDEEC:
 	adds r0, r7, #0
-	bl FUN_080faa98
+	bl Enemy_TargetNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081CDEFA
@@ -17654,7 +17654,7 @@ _081CE3BE:
 	strb r0, [r4]
 _081CE42C:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x90]
 	strh r0, [r5]
@@ -19661,7 +19661,7 @@ _081CF30C:
 	str r0, [r1]
 	adds r6, #0x7c
 	adds r1, r7, r6
-	ldr r0, _081CF56C @ =FUN_080fa384
+	ldr r0, _081CF56C @ =Enemy_TryHeadToSound
 	str r0, [r1]
 	movs r1, #0xde
 	lsls r1, r1, #1
@@ -19744,7 +19744,7 @@ _081CF55C: .4byte 0x0000058C
 _081CF560: .4byte FUN_081cc550
 _081CF564: .4byte FUN_081c9f70
 _081CF568: .4byte FUN_081c7108
-_081CF56C: .4byte FUN_080fa384
+_081CF56C: .4byte Enemy_TryHeadToSound
 _081CF570:
 	movs r0, #0
 _081CF572:

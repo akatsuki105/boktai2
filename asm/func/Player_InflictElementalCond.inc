@@ -20,7 +20,7 @@
 	b _08063462
 _080632B0:
 	adds r0, r7, #0
-	bl FUN_08063248
+	bl Player_ResetElementalCond
 _080632B6:
 	ldrb r0, [r4]
 	cmp r0, #0

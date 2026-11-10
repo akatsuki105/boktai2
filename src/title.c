@@ -35,7 +35,7 @@ typedef struct Title {
   s32 timer_68;                           // 0x068, 状態遷移で 0 に戻り, flags bit1 が落ちている間 Title_Update が +1 する
   s32 unk_6c;                             // 0x06C, Title_Init が -1 を入れる
   u16 unk_70[4][3];                       // 0x070, state で引く3値, 行は順に '.k' '.j' '.w' '.t'
-  s32 unk_88;                             // 0x088, FUN_0821b21c に s32* として渡す
+  s32 unk_88;                             // 0x088, Video_StepBrightnessFade に s32* として渡す
   s32 unk_8c;                             // 0x08C, unk_70[state][2] * gBgBrightness / 64
   s16 unk_90;                             // 0x090, '.K[0]'
   s16 unk_92;                             // 0x092, '.K[1]'
@@ -65,7 +65,6 @@ static_assert(sizeof(Title) == 1068);
 const __attribute__((section(".rodata.faraddr"))) u32 u32_ARRAY_08252750[10] = {0x2BC, 0x2BB, 0x2C4, 0x2C8, 0x2C5, 0x2C9, 0x2C6, 0x2CA, 0x2C7, 0x2CB};  // 0x08252750
 const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252778[8] = {6, 2, 7, 3, 8, 4, 7, 3};                                                   // 0x08252778
 
-bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 void FUN_0823d4ac(void);
 void Title_SetState(Title* p, s32 state);
 
@@ -86,7 +85,7 @@ NAKED void Title_UpdateState0(Title* p) { INCFUNC("asm/func/Title_UpdateState0.i
 
 NAKED void Title_UpdateState1(Title* p) { INCFUNC("asm/func/Title_UpdateState1.inc"); }
 
-// 残差14命令: 原典は関数の先頭で p + 0x88 を r8 に置き、case 2 の unk_8c への store だけにそれを使う (FUN_0821b21c の引数は毎回 p + 0x88 を作り直す) ため、r7/r8 の退避が増える
+// 残差14命令: 原典は関数の先頭で p + 0x88 を r8 に置き、case 2 の unk_8c への store だけにそれを使う (Video_StepBrightnessFade の引数は毎回 p + 0x88 を作り直す) ため、r7/r8 の退避が増える
 // さらに case 0 と case 1 の先頭に flags & TITLE_FLAG_UNK_1 を計算して捨てる ands が1つずつ入っている (使っているのは case 2 だけ)。Tier A-C 試済
 NON_MATCH void Title_UpdateState2(Title* p) {
 #ifdef NONMATCHING_C
@@ -115,7 +114,7 @@ NON_MATCH void Title_UpdateState2(Title* p) {
   switch (p->unk_64) {
     case 0: {
       CLEAR_FLAGS(p->flags, TITLE_FLAG_UNK_1);
-      if (FUN_0821b21c(&p->unk_88, 0, p->unk_70[p->state][0], 7)) {
+      if (Video_StepBrightnessFade(&p->unk_88, 0, p->unk_70[p->state][0], 7)) {
         p->unk_64 = 1;
         p->timer_68 = 0;
         SET_FLAGS(p->flags, TITLE_FLAG_UNK_1);
@@ -137,7 +136,7 @@ NON_MATCH void Title_UpdateState2(Title* p) {
       if (fade) {
         p->unk_8c = Div(p->unk_70[p->state][2] * gBgBrightness, 64);
       }
-      if (FUN_0821b21c(&p->unk_88, 1, p->unk_70[p->state][p->unk_64], 7)) {
+      if (Video_StepBrightnessFade(&p->unk_88, 1, p->unk_70[p->state][p->unk_64], 7)) {
         Title_SetState(p, 3);
         FUN_0823d4ac();
       }

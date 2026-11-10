@@ -41,9 +41,8 @@ void FUN_080b2888(Generator* p) {
   p->sprite.pos = p->pos;
   p->unk_ed = 1;
   {
-    u16* table = gRandomTable;
-    p->sprite.pos.x += Mod(_Random(table), 10) - 5;
-    p->sprite.pos.z += Mod(_Random(table), 10) - 5;
+    p->sprite.pos.x += Mod(RandomNext(), 10) - 5;
+    p->sprite.pos.z += Mod(RandomNext(), 10) - 5;
   }
 }
 

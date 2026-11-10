@@ -94,65 +94,24 @@ void InkBallPuddleManager_Remove(InkBallPuddle* puddle) {
   }
 }
 
-// 残差3命令: 原典は定数 1 をループ不変として高位レジスタに置くので、退避するレジスタが1本多い
-// AuxAnimState* の局所ポインタで14命令ぶんまでは寄せた
-NON_MATCH void InkBallPuddleManager_Update(InkBallPuddleManager* p) {
-#ifdef NONMATCHING_C
+// 使用中の墨だまりのアニメを進めて当たり判定を出し, 寿命が尽きたら外す
+void InkBallPuddleManager_Update(InkBallPuddleManager* p) {
   InkBallPuddle* puddle = p->puddles;
   s32 i;
 
   for (i = 0; i < 8; puddle++, i++) {
     if (puddle->ttl != 0) {
-      AuxAnimState* anim = &puddle->anim;
-      AuxAnimCmd* cmd = puddle->anim.cmds + anim->cmdIdx;
-
-      puddle->sprite.poseIdx = *cmd >> 6;
-      if ((anim->flags & ANIM_PLAY_XFLIP) == ((*cmd & 0x30) >> 4 & ANIM_PLAY_XFLIP)) {
-        puddle->sprite.flags &= ~SPRFLAG_XFLIP;
-      } else {
-        puddle->sprite.flags |= SPRFLAG_XFLIP;
-      }
-      if ((anim->flags & ANIM_PLAY_YFLIP) == ((*cmd & 0x30) >> 4 & ANIM_PLAY_YFLIP)) {
-        puddle->sprite.flags &= ~SPRFLAG_YFLIP;
-      } else {
-        puddle->sprite.flags |= SPRFLAG_YFLIP;
-      }
-
-      anim->tick++;
-      if (anim->wait <= anim->tick) {
-        anim->tick = 0;
-        if (!(anim->flags & ANIM_PLAY_REVERSE)) {
-          anim->cmdIdx++;
-          if (anim->cmdCount <= anim->cmdIdx) {
-            anim->cmdIdx = 0;
-          }
-        } else {
-          if (anim->cmdIdx == 0) {
-            anim->cmdIdx = anim->cmdCount;
-          }
-          anim->cmdIdx--;
-        }
-        anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
-        anim->wait = (anim->duration * anim->speed) >> 6;
-        if (anim->wait == 0) {
-          anim->wait = 1;
-        }
-      }
-
+      AuxSprite_AdvanceAnim(&puddle->sprite, &puddle->anim);
       Hitbox_SetPos(&puddle->hitbox, &puddle->pos, 0);
       Hitbox_Register(&puddle->hitbox);
       if (puddle->ttl < 60) {
         Sprite_UpdateVanishBlink(&puddle->sprite.flags, 60 - puddle->ttl, 20, 30);
       }
-      puddle->ttl--;
-      if (puddle->ttl == 0) {
+      if (--puddle->ttl == 0) {
         InkBallPuddleManager_Remove(puddle);
       }
     }
   }
-#else
-  INCFUNC("asm/func/InkBallPuddleManager_Update.inc");
-#endif
 }
 
 s32 InkBallPuddleManager_Destroy(InkBallPuddleManager* p) {

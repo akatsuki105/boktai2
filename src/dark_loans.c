@@ -319,7 +319,7 @@ NON_MATCH s32 FUN_080b4ffc(s32 val) {
 }
 
 // 借りる額を選ぶ入力待ち, A で借りて ENE と借金を増やす, 左右で額を増減, 返済額が 10000 を超えるなら警告を出す
-// 残差は A で借りるときに原典が gStat を代入のたびに読み直すこと (こちらは1回だけ), 348/349 命令
+// 残差14か所 (350/349): A で借りるときの gStat の読み直しは SAVED_ENE / DARK_DEBTS と掛け算の順で揃った, 残りは点滅表示 (blink) の枝の並びと Video_SetAuxSpritePltt / MainSprite_SetPose の共有
 NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
 #ifdef NONMATCHING_C
   s32 blink;
@@ -331,9 +331,9 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     } else {
       s32 total;
 
-      gStat->savedEne += p->unk_82e;
-      gStat->darkDebts += p->unk_82c * p->unk_82e;
-      total = gStat->loan_1d4 + p->unk_82c * p->unk_82e;
+      SAVED_ENE += p->unk_82e;
+      DARK_DEBTS += p->unk_82e * p->unk_82c;
+      total = gStat->loan_1d4 + p->unk_82e * p->unk_82c;
       if (total < 0) {
         total = 0x7FFFFFFF;
       }
@@ -349,7 +349,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     return;
   }
 
-  if ((gInput[0].down & DPAD_LEFT) && (s32)(gStat->darkDebts + p->unk_82c * (p->unk_82e + 1)) < 10000 && (s16)gStat->savedEne + p->unk_82e < (s16)gStat->savedMaxEne) {
+  if ((gInput[0].down & DPAD_LEFT) && (s32)(gStat->darkDebts + (p->unk_82e + 1) * p->unk_82c) < 10000 && (s16)gStat->savedEne + p->unk_82e < (s16)gStat->savedMaxEne) {
     PlaySound_082406e0(SE_MONEY_TRANSFER);
     p->unk_82e++;
     FUN_080b4818(p);

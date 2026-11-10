@@ -654,11 +654,9 @@ void EnemyBat_InitHitboxes(EnemyBat* p) {
 // curveT が大きいほど速く, unk_658 の bit3 が立っていればさらに速い
 s32 EnemyBat_GetMoveSpeed(EnemyBat* p) {
   EnemyBat* q = (p->e).owner;
-  s32 v = FixToInt(7, q->curveT);
-  s32 i;
+  s32 v = abs(FixToInt(7, q->curveT));
+  s32 i = v;
 
-  v = abs(v);
-  i = v;
   if (i > 7) {
     i = 7;
   }
@@ -860,9 +858,8 @@ NON_MATCH void EnemyBat_SpawnTrail(EnemyBat* p) {
     Vec3 vel;
     u32 quad = (u32)(((p->e).mover.angle + 0x20) & 0xFF) >> 6;
     s8 base = (quad + 2) << 6;
-    u16* table = gRandomTable;
-    u8 angle = base - 32 + (_Random(table) & 63);
-    s32 speed = (_Random(table) & 7) + 1;
+    u8 angle = base - 32 + (RandomNext() & 63);
+    s32 speed = (RandomNext() & 7) + 1;
 
     Vec3_SetPolar(&vel, angle, speed);
     Entity081fa164_SpawnEx(&(p->e).mover.pos, &vel, 40, 2, 1);

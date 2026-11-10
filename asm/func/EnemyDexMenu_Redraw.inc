@@ -113,7 +113,7 @@ _0820DC64:
 	ldr r5, [sp, #0x14]
 	add r5, r8
 	adds r0, r5, #0
-	bl FUN_0820d00c
+	bl EnemyDex_IsSeen
 	cmp r0, #0
 	beq _0820DCC0
 	ldr r0, [r6]
@@ -498,7 +498,7 @@ _0820DF88:
 	cmp r3, #0
 	bge _0820DF88
 	adds r0, r7, #0
-	bl FUN_0820d250
+	bl EnemyDexMenu_DrawEntryInfo
 	movs r1, #0
 	ldr r0, [sp, #0x40]
 	mov r8, r0
@@ -569,7 +569,7 @@ _0820DFFE:
 	bl FUN_0820fe98
 	ldr r1, [sp, #0x38]
 	ldrb r0, [r1]
-	bl FUN_0820d00c
+	bl EnemyDex_IsSeen
 	cmp r0, #0
 	beq _0820E05C
 	ldr r0, [r4]

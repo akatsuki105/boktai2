@@ -68,5 +68,33 @@ bool32 Cmd_IsMagicUnlocked(void) {
 
 void UnregisterMagic(s32 idx) { REGISTERED_MAGIC(idx) = -1; }
 
-// 0x1887, HashName("魔法初期化")
-NAKED void Cmd_InitMagicData(void) { INCFUNC("asm/func/Cmd_InitMagicData.inc"); }
+// 0x1887, HashName("魔法初期化"), 魔法を全て未取得にし, .n 個の魔法を .m から取得し, .q の4つを登録枠に入れる
+void Cmd_InitMagicData(void) {
+  s32 i;
+  s32 count;
+
+  gStat->unlockedMagic = 0;
+  for (i = 0; i < 4; i++) {
+    REGISTERED_MAGIC(i) = MAGIC_NONE;
+  }
+  gStat->equippedMagicIdx = 0;
+
+  if (VM_SeekToNamedArg('n')) {
+    count = VM_GetValue();
+  } else {
+    count = 0;
+  }
+
+  if (count > 0) {
+    if (VM_SeekToNamedArg('m')) {
+      for (i = 0; i < count; i++) {
+        UnlockMagic(VM_GetValue());
+      }
+    }
+    if (VM_SeekToNamedArg('q')) {
+      for (i = 0; i < 4; i++) {
+        REGISTERED_MAGIC(i) = VM_GetValue();
+      }
+    }
+  }
+}

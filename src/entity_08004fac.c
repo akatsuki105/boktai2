@@ -271,10 +271,7 @@ s32 Cmd_8153(void) { return Entity08004fac_DisableNodesById(VM_GetNamedArgValue(
 s32 Cmd_F0CC(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // 0xB8C7
-// 残差1命令 (105/104), GetCollisionTileIdx の結果を r0 で受けてから tileIdx の r2 へ写す1命令だけ (原典は直接 r2 に作る)
-// height と tileIdx の代入順を入れ替えると悪化する (9 hunks)
-NON_MATCH s32 Cmd_B8C7(void) {
-#ifdef NONMATCHING_C
+s32 Cmd_B8C7(void) {
   s32 id = VM_GetNamedArgValue('n', -1);
   s32 stairs = VM_GetNamedArgValue('t', -1);
   s32 unk_3 = VM_GetNamedArgValue('f', -1);
@@ -293,9 +290,6 @@ NON_MATCH s32 Cmd_B8C7(void) {
   }
 
   return Entity08004fac_SetNodeParamsById(id, stairs, unk_3, attr, tileIdx, height);
-#else
-  INCFUNC("asm/func/Cmd_B8C7.inc");
-#endif
 }
 
 // 0xFEBB

@@ -37,7 +37,7 @@ typedef struct {
 static_assert(sizeof(MainSpritePose) == 20);
 
 typedef struct {
-  u16 unk_0;      // 0x00
+  u16 id;         // 0x00, MainSprite_SetAnim が MainSprite.animId と比べ, 同じならポーズを当て直さない
   u16 cmdCount;   // 0x02, MainAnimCmd の数
   u32 cmdOffset;  // 0x04, cmds の先頭からこのアニメの最初のコマ (MainAnimCmd) までのバイトオフセット, 根拠: MainSprite_SetAnimFrame
 } MainAnim;
@@ -93,7 +93,7 @@ typedef struct MainSprite {
   u16 animCmdTimer;               // 0x0C, 現在のコマの経過フレーム数, 根拠: MainSprite_AdvanceAnim が毎フレーム +1 してコマ切り替えで 0 に戻す
   u16 animCmdDuration;            // 0x0E, 現在のコマの表示フレーム数, MainAnimCmd.duration * animSpeed / 64 (0 なら 1)
   u10_6 animSpeed;                // 0x10, 再生速度 (MainSprite_Load が 1.0 = 等速をセット)
-  u16 unk_12;                     // 0x12
+  u16 animId;                     // 0x12, 再生中のアニメの MainAnim.id
   u16 animCmdIdx;                 // 0x14, 現在のコマ番号, animCmds の添字
   u16 animCmdLength;              // 0x16, コマ総数, 根拠: MainSprite_AdvanceAnim の animCmdIdx の上限
   MainAnimPlayFlags16 animFlags;  // 0x18, see MainAnimPlayFlags16

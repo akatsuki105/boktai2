@@ -63,9 +63,8 @@ NON_MATCH void DurathrorImpaleSpike_SpawnParticle(DurathrorImpale* p, DurathrorI
 #ifdef NONMATCHING_C
   if ((elem->timer & 3) == 0) {
     MainSprite* sprite = &elem->sprite;
-    u16* table = gRandomTable;
-    u16 angle = _Random(table);
-    s32 radius = _Random(table) & 31;
+    u16 angle = RandomNext();
+    s32 radius = RandomNext() & 31;
     Vec3 pos;
 
     Vec3_SetPolar(&pos, angle, radius + 16);

@@ -167,7 +167,7 @@ _081A38BE:
 	movs r1, #0
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_080e6978
+	bl Enemy_OnCrushed
 	ldr r3, [sp, #0x2c]
 	cmp r3, #0x8c
 	bgt _081A38E6

@@ -69,7 +69,7 @@ static_assert(sizeof(Golem) == 1764);
 
 void FUN_080f3cdc(Enemy* p);
 bool8 FUN_080f0a0c(Enemy* p);
-bool8 FUN_080faa98(Enemy* p);
+bool8 Enemy_TargetNearestLinkPlayer(Enemy* p);
 // 丸まるアニメの2コマ目で止めて待つ
 void Golem_StateCurledIdle(Golem* p);
 s32 FUN_080f8abc(Enemy* p);
@@ -812,8 +812,8 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
     s32 dir;
     u32 target;
 
-    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
-    dir = (((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
       target = (p->e).mover.path->node->delay >> 12;
       (p->e).unk_1dc = target;
@@ -889,17 +889,14 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).animForceRestart) {
-    s32 dir = (((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7;
-    s32 d = (p->e).unk_1dc - dir;
+    s32 dir = Angle_ToDir8((p->e).mover.angle);
+    s32 d = abs((p->e).unk_1dc - dir);
 
-    if (d < 0) {
-      d = -d;
-    }
     if (d > 0) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     } else {
       (p->e).subStateDone = 1;
-      (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+      (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
       Enemy_PlayAnim(&p->e, 0);
       if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
@@ -1702,7 +1699,7 @@ NON_MATCH void FUN_081191b8(Golem* p, s32 timer) {
         Enemy_ResetState(&p->e, 3, 1, 0);
         (p->e).unk_542 = 6;
       }
-      FUN_080e7b6c(&p->e);
+      Enemy_StepToFloorEdge(&p->e);
       (p->e).animSpeedDiv = 2;
       return;
     }
@@ -1901,7 +1898,7 @@ NON_MATCH void Golem_StateDamaged(Golem* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2047,7 +2044,7 @@ NON_MATCH void Golem_StateDamaged(Golem* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2293,7 +2290,7 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2498,7 +2495,7 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2653,7 +2650,7 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2903,7 +2900,7 @@ NON_MATCH void FUN_0811d090(Golem* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -3245,7 +3242,7 @@ NON_MATCH void Golem_SubRoll(Golem* p) {
           Enemy_ResetState(&p->e, 3, 1, 0);
           (p->e).unk_542 = 6;
         }
-        FUN_080e7b6c(&p->e);
+        Enemy_StepToFloorEdge(&p->e);
         (p->e).animSpeedDiv = 2;
         return;
       }
@@ -3406,7 +3403,7 @@ NON_MATCH void Golem_SubReturnToRoute(Golem* p) {
     (p->e).pendingSubState2 = 12;
     if (!IsLinkPlay()) {
       (p->e).playerMover = &gPlayerPtr[0]->mover;
-    } else if (!FUN_080faa98(&p->e)) {
+    } else if (!Enemy_TargetNearestLinkPlayer(&p->e)) {
       return;
     }
     {
@@ -3483,7 +3480,7 @@ NON_MATCH void Golem_SubReturnToRoute(Golem* p) {
         Enemy_ResetState(&p->e, 3, 1, 0);
         (p->e).unk_542 = 6;
       }
-      FUN_080e7b6c(&p->e);
+      Enemy_StepToFloorEdge(&p->e);
       (p->e).animSpeedDiv = 2;
       return;
     }
@@ -3828,7 +3825,7 @@ NON_MATCH void Golem_SubRestAndResume(Golem* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }

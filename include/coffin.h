@@ -112,6 +112,6 @@ void FUN_08086a4c(Vec3* pos);
 bool32 FUN_0808626c(u32 playerEleveterID, u32 param_2, u32 coffinEleveterID, u32 param_4);
 void FUN_080869f8(u32 flags);
 void FUN_080869c8(u32 flags, u32 value);
-bool32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 elevatorFlags);
+bool32 Coffin_CanGrabFrom(Vec3* pos, u32 elevatorID, u32 elevatorFlags);
 
 #endif  // __INCLUDE_IMMORTAL_COFFIN_H__

@@ -851,7 +851,7 @@ _0814F0EA:
 	strb r0, [r4]
 _0814F158:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x8c]
 	strh r0, [r5]
@@ -1904,7 +1904,7 @@ _0814F91E:
 	strb r0, [r4]
 _0814F98C:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r5, [sp, #0x8c]
 	strh r0, [r5]

@@ -72,28 +72,22 @@ void CrossoverResult_UpdateRollTimes(CrossoverResult* p) {
     p->timer = 100;
   }
   if (p->timer < 30) {
-    u16* table = gRandomTable;
-
-    a0 = Mod(_Random(table), 99);
-    b0 = Mod(_Random(table), 99);
+    a0 = Mod(RandomNext(), 99);
+    b0 = Mod(RandomNext(), 99);
   } else {
     a0 = p->timeA[0];
     b0 = p->timeB[0];
   }
   if (p->timer < 60) {
-    u16* table = gRandomTable;
-
-    a1 = Mod(_Random(table), 60);
-    b1 = Mod(_Random(table), 60);
+    a1 = Mod(RandomNext(), 60);
+    b1 = Mod(RandomNext(), 60);
   } else {
     a1 = p->timeA[1];
     b1 = p->timeB[1];
   }
   if (p->timer < 90) {
-    u16* table = gRandomTable;
-
-    a2 = Mod(_Random(table), 99);
-    b2 = Mod(_Random(table), 99);
+    a2 = Mod(RandomNext(), 99);
+    b2 = Mod(RandomNext(), 99);
   } else {
     a2 = p->timeA[2];
     b2 = p->timeB[2];
@@ -175,10 +169,9 @@ NON_MATCH void CrossoverResult_UpdateShowResult(CrossoverResult* p) {
   }
   if (p->timer <= 7) {
     MainSprite* spr = &p->sprites[0];
-    u16* table = gRandomTable;
 
-    spr->pos.x = (_Random(table) & 3) - 2;
-    spr->pos.y = (_Random(table) & 3) - 2;
+    spr->pos.x = (RandomNext() & 3) - 2;
+    spr->pos.y = (RandomNext() & 3) - 2;
   } else if (p->timer == 8) {
     MainSprite* spr = &p->sprites[0];
 

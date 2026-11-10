@@ -372,7 +372,7 @@ _080F7106:
 	mov r1, sb
 	str r7, [r1]
 	adds r0, r6, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	ldr r0, _080F7188 @ =0xFFFFDFFF
 	ldrh r1, [r4]
 	ands r0, r1

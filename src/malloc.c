@@ -123,10 +123,43 @@ void FillMemory32(u32* dst, u32 fillval, s32 len) {
   }
 }
 
-NAKED void ClearMemory(void* dst, s32 bytesize) { INCFUNC("asm/func/ClearMemory.inc"); }
+// bytesize バイトを 0 で埋める, 4 バイト境界に揃わない前後は1バイトずつ, 間は CpuFill32 で埋める
+void ClearMemory(void* dst, s32 bytesize) {
+  u8* p = dst;
 
-// dst を fillval << 24 | fillval << 16 | fillval << 8 | fillval で埋める
-NAKED void FillMemory8(u32* dst, u8 fillval, s32 len) { INCFUNC("asm/func/FillMemory8.inc"); }
+  while (bytesize > 0 && ((u32)p & 3)) {
+    *p++ = 0;
+    bytesize--;
+  }
+  CpuFill32(0, p, bytesize & ~3);
+  p += bytesize & ~3;
+  bytesize &= 3;
+  while (bytesize > 0) {
+    *p = 0;
+    bytesize--;
+    p++;
+  }
+}
+
+// len バイトを fillval の下位8ビットで埋める, 4 バイト境界に揃わない前後は1バイトずつ, 間は CpuFill32 で埋める
+void FillMemory8(void* dst, u32 fillval, s32 len) {
+  u8* p = dst;
+
+  fillval &= 0xFF;
+  while (len > 0 && ((u32)p & 3)) {
+    *p++ = fillval;
+    len--;
+  }
+  fillval = fillval | (fillval << 8) | (fillval << 16) | (fillval << 24);
+  CpuFill32(fillval, p, len & ~3);
+  p += len & ~3;
+  len &= 3;
+  while (len > 0) {
+    *p = fillval;
+    len--;
+    p++;
+  }
+}
 
 void CopyMemory(u8* dst, u8* src, s32 bytesize) {
   while (bytesize > 7) {

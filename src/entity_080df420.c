@@ -283,9 +283,8 @@ NON_MATCH void FUN_080de820(Entity080df420* p, Entity080df420Elem* elem) {
 
       for (i = 0; i < 6; i++) {
         Vec3 vel;
-        u16* table = gRandomTable;
-        s32 a = angle + (_Random(table) & 0xFF);
-        s32 speed = (_Random(table) & 7) + 5;
+        s32 a = angle + (RandomNext() & 0xFF);
+        s32 speed = (RandomNext() & 7) + 5;
 
         Vec3_SetPolar(&vel, a, speed);
         Entity080df420_Spawn(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockback, elem->hitbox.attributes, elem->hitbox.iframes);
@@ -330,9 +329,8 @@ NON_MATCH void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) {
   height = TileHeightAtIndex(idx, &next);
   if (height <= 0) {
     s32 angle = ArcTan2_8(elem->vel.x, elem->vel.z);
-    u16* table = gRandomTable;
-    s32 a = angle + (_Random(table) & 31) + 63;
-    s32 speed = (_Random(table) & 15) + 8;
+    s32 a = angle + (RandomNext() & 31) + 63;
+    s32 speed = (RandomNext() & 15) + 8;
 
     Vec3_SetPolar(&elem->vel, a, speed);
     if (elem->flags & 1) {
@@ -342,9 +340,8 @@ NON_MATCH void FUN_080debbc(Entity080df420* p, Entity080df420Elem* elem) {
       for (i = 0; i < 6; i++) {
         Vec3 vel;
 
-        table = gRandomTable;
-        a = (_Random(table) & 0xFF) + angle;
-        speed = (_Random(table) & 1) + 4;
+        a = (RandomNext() & 0xFF) + angle;
+        speed = (RandomNext() & 1) + 4;
         Vec3_SetPolar(&vel, a, speed);
         Entity080df420_Spawn(&elem->sprite.pos, &vel, 4, elem->unk_f0, 12, elem->hitbox.power, elem->hitbox.knockback, elem->hitbox.attributes, elem->hitbox.iframes);
       }

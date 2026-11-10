@@ -162,7 +162,7 @@ typedef struct EntityA288 {
   s32 unk_64;                                  // 0x0064, _Init が -1 を入れる
   s32 unk_68;                                  // 0x0068, _Init が 0 を入れる
   s32 unk_6c;                                  // 0x006C, 上下キーを押し続けたフレーム数, unk_68 の縦版
-  s32 fade[2];                                 // 0x0070, FUN_0821b21c の作業領域, [0] が明るさ, [1] が経過フレーム
+  s32 fade[2];                                 // 0x0070, Video_StepBrightnessFade の作業領域, [0] が明るさ, [1] が経過フレーム
   EntityA288Sub78 sub78;                       // 0x0078
   EntityA288Sub10C sub10c;                     // 0x010C
   EntityA288Sub1D8 sub1d8;                     // 0x01D8
@@ -202,7 +202,6 @@ bool8 Save_ReadFromNextSlot(void);
 void Save_BackupStatAndWorld(void);
 void RestoreGameState(void);
 extern u32 gRtcReadInhibit;
-bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 
 char* GetPlayerName(void);
 s32 GetCurrentMapNameLine(void);
@@ -940,7 +939,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
     FUN_08214274(p);
     p->unk_68 = 0;
     p->fade[1] = 0;
-    FUN_0821b21c(p->fade, 0, 1, 0xFFFF);
+    Video_StepBrightnessFade(p->fade, 0, 1, 0xFFFF);
   }
 
   if (p->unk_5c < 5) {
@@ -1078,7 +1077,7 @@ NON_MATCH void FUN_08214a24(EntityA288* p) {
         gClock.rtcStatus = 0;
         p->fade[1] = 30;
       }
-      if (p->timer2 > 59 && FUN_0821b21c(p->fade, 1, 30, 0xFFFF)) {
+      if (p->timer2 > 59 && Video_StepBrightnessFade(p->fade, 1, 30, 0xFFFF)) {
         p->unk_5c = 99;
         p->timer2 = 0;
         p->flags |= 2;
@@ -1452,18 +1451,13 @@ void FUN_082158e4(EntityA288* p) {
   sprite->pos.y = p->subdbc.unk_c0 * 24;
 }
 
-// 残差0命令 (31/31), レジスタ名だけ違う: unk_c8 のプール定数が原典は r1, こちらは r2 に載る
-// EntityA288SubDBC* ローカルを持つ形は試済 (一致しない)
-NON_MATCH void FUN_082158fc(EntityA288* p) {
-#ifdef NONMATCHING_C
+// subdbc の文字列 (unk_c4 + unk_c8) を (9, 10) に描き直し, unk_c8 を gStat に控える
+void FUN_082158fc(EntityA288* p) {
   char* text = GetStringByID(VM_ParseStringRef(p->subdbc.unk_c4) + p->subdbc.unk_c8);
 
   Video_ClearTextRect(9, 10, 18, 2);
   Video_DrawText(9, 10, text);
-  gStat->unk_944 = p->subdbc.unk_c8;
-#else
-  INCFUNC("asm/func/FUN_082158fc.inc");
-#endif
+  UNK_944 = p->subdbc.unk_c8;
 }
 
 // 3択メニューの state, 3行目では左右で '.X' の番号を選び, A でそれぞれの行き先へ移る
@@ -1578,7 +1572,7 @@ NON_MATCH void FUN_08215950(EntityA288* p) {
         p->flags &= ~2;
         fade[1] = 30;
       }
-      if (FUN_0821b21c(fade, 1, 30, 0xFFFF)) {
+      if (Video_StepBrightnessFade(fade, 1, 30, 0xFFFF)) {
         p->unk_5c = 2;
         p->timer2 = 0;
         p->flags |= 2;
@@ -1850,7 +1844,7 @@ NON_MATCH void FUN_0821619c(EntityA288* p) {
         p->flags &= ~2;
         fade[1] = 30;
       }
-      if (FUN_0821b21c(fade, 1, 30, 0xFFFF)) {
+      if (Video_StepBrightnessFade(fade, 1, 30, 0xFFFF)) {
         p->unk_5c = 2;
         p->timer2 = 0;
         p->flags |= 2;
@@ -4031,7 +4025,7 @@ NON_MATCH void FUN_082192f4(EntityA288* p) {
         fade[1] = 30;
       }
       p->flags &= ~2;
-      if (FUN_0821b21c(p->fade, 1, 30, 0xFFFF)) {
+      if (Video_StepBrightnessFade(p->fade, 1, 30, 0xFFFF)) {
         p->unk_5c = s->unk_398;
         p->timer2 = 0;
         p->flags |= 2;

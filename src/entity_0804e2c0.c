@@ -711,6 +711,7 @@ NAKED unknown* FUN_0804e164(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e164.
 NAKED s32 FUN_0804e25c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e25c.inc"); }
 
 // 残差は64/64命令で unk_6c の式の評価順のみ, 原典は gRandomTable の読みを gFrameCounter より先に出す, OR の左右入れ替えと Time_GetSecond のローカル退避は試済
+// 乱数は Random(), 残差1か所: 原典は乱数表の値を読んでから gFrameCounter と 0xFF を先に用意して足し算する
 NON_MATCH Entity0804e2c0* Entity0804e2c0_Create(void) {
 #ifdef NONMATCHING_C
   Entity0804e2c0* p;
@@ -728,8 +729,7 @@ NON_MATCH Entity0804e2c0* Entity0804e2c0_Create(void) {
 
   ClearMemory(p, sizeof(Entity0804e2c0));
   sec = Time_GetSecond();
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  p->unk_6c = (((sec + gRandomTable[gRandTableIdx]) & 0xFF) << 8) | (u8)gFrameCounter;
+  p->unk_6c = (((Random() + sec) & 0xFF) << 8) | (gFrameCounter & 0xFF);
 
   if (FUN_0804e25c(p) < 0) {
     Free(p);

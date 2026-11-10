@@ -218,12 +218,8 @@ void DynamiteEffect_InitSprite(DynamiteEffect* p) {
   }
 }
 
-// 残差8箇所 (166/169): 原典は 0x3FF を r10 に持って gRandomTable を都度読むが, こちらは gRandomTable が r10 に載って 0x3FF を都度読む
-// Tier A-C は試済 (table の宣言と _Random/Random の組み合わせ, rnd の分離, 式の並び, base の型), 未: 先頭の乱数を gRandomTable[添字への代入] の形にする
-NON_MATCH void DynamiteEffect_InitParticles(DynamiteEffect* p) {
-#ifdef NONMATCHING_C
-  u16* table = gRandomTable;
-  u8 base = _Random(table);
+void DynamiteEffect_InitParticles(DynamiteEffect* p) {
+  u8 base = RandomNext();
   s32 i;
 
   p->group = GetParticleGroup(PTCL_GROUP_2);
@@ -235,18 +231,15 @@ NON_MATCH void DynamiteEffect_InitParticles(DynamiteEffect* p) {
     Particle_SetOffset(ptcl, -4, -4);
     Particle_SetPose(ptcl, p->group, PTCL2_FLAME_S);
     Particle_SetPltt(ptcl, 1);
-    rnd = Random();
+    rnd = RandomNext();
     p->ptcls[i].angle = (base + i * 32 + (rnd & 0xF)) & 0xFF;
-    p->ptcls[i].radius = (Random() & 0x1FF) + Q8(1);
+    p->ptcls[i].radius = (RandomNext() & 0x1FF) + Q8(1);
     ptcl->pos.x = p->pos.x + POLAR_X(p->ptcls[i].radius, p->ptcls[i].angle);
     ptcl->pos.y = Q8(1.172) + p->pos.y;
     ptcl->pos.z = p->pos.z + POLAR_Z(p->ptcls[i].radius, p->ptcls[i].angle);
     ptcl->priority = 2;
     ptcl->offsetZ = -20;
   }
-#else
-  INCFUNC("asm/func/DynamiteEffect_InitParticles.inc");
-#endif
 }
 
 s32 DynamiteEffect_Init(DynamiteEffect* p, Player* owner, Vec3* pos, s32 mode) {

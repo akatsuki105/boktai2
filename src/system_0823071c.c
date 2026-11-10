@@ -27,8 +27,7 @@ s32 SystemManager_Update(Entity* p) {
 }
 
 // 38/36 命令, gLinkKeyInput を埋める後ろ向きのループでカウンタが消えず, 符号付きのポインタ比較 (bge) で回す形が作れない
-NON_MATCH void InitSystemManager(void) {
-#ifdef NONMATCHING_C
+void InitSystemManager(void) {
   s32 i;
 
   InitHeap();
@@ -44,12 +43,9 @@ NON_MATCH void InitSystemManager(void) {
   gSuspendFlags = 0;
   gEntityCount = 1;
   gUseLinkInput = FALSE;
-  for (i = 3; i >= 0; i--) {
+  for (i = 0; i < 4; i++) {
     gLinkKeyInput[i] = KEYS_MASK;
   }
-#else
-  INCFUNC("asm/func/InitSystemManager.inc");
-#endif
 }
 
 // KEYINPUT (通信対戦時は受信したキー) から gInput の5人分の押下・押した瞬間・離した瞬間を更新する

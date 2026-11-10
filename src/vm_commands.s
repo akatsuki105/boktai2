@@ -650,7 +650,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xFD86, Cmd_FD86
 	.4byte 0xFEBB, Cmd_FEBB
 	.4byte 0xFEE0, Coffin_RequestKill
-	.4byte 0xFEF2, armor_082433bc
+	.4byte 0xFEF2, Cmd_ResetArmors
 	.4byte 0x0000, 0x00000000
 
 @ おそらくこのコマンドテーブルのビルド日時

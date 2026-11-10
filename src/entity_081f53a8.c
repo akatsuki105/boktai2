@@ -171,13 +171,11 @@ NON_MATCH void Entity081f53a8_SpawnDebris(Vec3* pos, u8 angle) {
 
   for (i = 0; i < 6; i++) {
     u8 dir = angle - 42 + i * 14;
-    s32 speed = (Random() & 3) + 4;
-    u16* table;
+    s32 speed = (RandomNext() & 3) + 4;
 
     Vec3_SetPolar(&vel, dir, speed);
-    table = gRandomTable;
-    vel.y = _Random(table) & 15;
-    Entity081ee2a0_SpawnDefault(pos, &vel, (_Random(table) & 15) + 30, 5);
+    vel.y = RandomNext() & 15;
+    Entity081ee2a0_SpawnDefault(pos, &vel, (RandomNext() & 15) + 30, 5);
   }
 #else
   INCFUNC("asm/func/Entity081f53a8_SpawnDebris.inc");
@@ -253,12 +251,7 @@ NON_MATCH void Entity081f53a8_UpdateChase(Entity081f53a8* p, Entity081f53a8Elem*
       diff += 256;
     }
     if (elem->turnTime != 0) {
-      s32 absDiff = diff;
-
-      if (absDiff < 0) {
-        absDiff = -absDiff;
-      }
-      if (absDiff > 2) {
+      if (abs(diff) > 2) {
         if (diff < 0) {
           elem->angle -= (u8)((Random() & 1) + 1);
         } else {

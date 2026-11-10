@@ -67,7 +67,7 @@ _0806E1E8:
 _0806E1EA:
 	strh r0, [r4]
 	mov r0, r8
-	bl FUN_08067068
+	bl Player_ResolveInputFacing
 	movs r1, #0xba
 	lsls r1, r1, #2
 	add r1, r8
@@ -279,7 +279,7 @@ _0806E386:
 	adds r1, r4, #0
 	movs r2, #1
 	movs r3, #1
-	bl FUN_08066e9c
+	bl Player_MakeNoise
 	b _0806E3F6
 	.align 2, 0
 _0806E398: .4byte 0x00000193
@@ -326,7 +326,7 @@ _0806E3DE:
 	adds r1, r4, #0
 	movs r2, #1
 	movs r3, #2
-	bl FUN_08066e9c
+	bl Player_MakeNoise
 _0806E3F6:
 	add sp, #0xc
 	pop {r3}

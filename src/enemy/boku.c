@@ -40,7 +40,7 @@ static_assert(sizeof(Boku) == 1708);
 
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
-void FUN_080e7b6c(Enemy* p);
+void Enemy_StepToFloorEdge(Enemy* p);
 void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9);
 
 void FUN_080ff67c(Boku* p);
@@ -149,11 +149,8 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
     }
     (p->e).unk_488 = 60;
     if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
-      s32 d = b->angle - a->angle;
+      s32 d = abs(b->angle - a->angle);
 
-      if (d < 0) {
-        d = -d;
-      }
       if (d <= 32) {
         (p->e).unk_4be = a->power;
         (p->e).unk_48c = 1;
@@ -295,7 +292,7 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
     (p->e).unk_48a = 0;
     (p->e).unk_48c = 1;
   }
-  FUN_080e64e4(&p->e);
+  Enemy_BurstEmitterParticles(&p->e);
   (p->e).unk_48a = b->damage;
   a->damage += (p->e).unk_188;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
@@ -338,10 +335,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
     } else if (d < -128) {
       d += 256;
     }
-    if (d < 0) {
-      d = -d;
-    }
-    if (d < 32) {
+    if (abs(d) < 32) {
       if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
         self->unk_668 = p->e.playerMover->pos;
       } else if (p->e.playerMover != NULL) {
@@ -494,8 +488,8 @@ NON_MATCH void FUN_080fba64(Boku* p) {
     u32 dir;
     u32 target;
 
-    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
-    dir = (((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 == 6 || (p->e).subState2 == 17 || TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10 | ENEFLAG3_UNK_14)) {
       target = (p->e).unk_1dc;
     } else {
@@ -672,11 +666,8 @@ NON_MATCH void FUN_080fba64(Boku* p) {
   if (anim->tick == 0 && (anim->cmdIdx == 1 || anim->cmdIdx == 3)) {
     u32 targetAngle = (((p->e).unk_1dc + 5) & 7) << 5;
     u8 angle = (p->e).mover.angle;
-    s32 d = angle - targetAngle;
+    s32 d = abs(angle - targetAngle);
 
-    if (d < 0) {
-      d = -d;
-    }
     if (d <= 32) {
       (p->e).mover.angle = targetAngle;
     } else if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
@@ -687,17 +678,14 @@ NON_MATCH void FUN_080fba64(Boku* p) {
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).animForceRestart) {
-    s32 d = (p->e).unk_1dc - ((((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7);
+    s32 d = abs((p->e).unk_1dc - Angle_ToDir8((p->e).mover.angle));
 
-    if (d < 0) {
-      d = -d;
-    }
     if (d > 0) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
       return;
     }
     (p->e).subStateDone = 1;
-    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
     Enemy_PlayAnim(&p->e, 0);
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
       Enemy_ResetState(&p->e, 3, 1, 0);
@@ -930,7 +918,7 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
         Enemy_ResetState(&p->e, 3, 1, 0);
         (p->e).unk_542 = 6;
       }
-      FUN_080e7b6c(&p->e);
+      Enemy_StepToFloorEdge(&p->e);
       (p->e).animSpeedDiv = 2;
       return;
     }
@@ -1183,7 +1171,7 @@ NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -1330,7 +1318,7 @@ NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -1702,7 +1690,7 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -1783,7 +1771,7 @@ void FUN_080ff06c(Boku* p) {
       return;
     }
   } else {
-    if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 0, 0, 16);
     }
   }
@@ -2141,22 +2129,17 @@ NON_MATCH void Boku_RouteAwayFromPlayer(Boku* p) {
 #endif
 }
 
-// 83/84命令, 原典は ~2 を movs/rsbs の 32bit で作って r6 に持つが, こちらは 16bit の ldr 0xFFFD になる, 型付き引数の inline は試済 (悪化)
-NON_MATCH void FUN_081000a4(Boku* p) {
-#ifdef NONMATCHING_C
+void FUN_081000a4(Boku* p) {
   Boku* q = (p->e).owner;
 
   q->unk_67c = q->unk_67e;
   SET_FLAGS(q->unk_65c, 1);
-  q->unk_65c &= ~2;
+  CLEAR_FLAGS(q->unk_65c, 2);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
   Enemy_ResetState(&p->e, 0, 0, 15);
   Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_4b4[(p->e).unk_4b6 ^ 1], 0, 0);
   Boku_RouteAwayFromPlayer(p);
-  q->unk_65c &= ~2;
-#else
-  INCFUNC("asm/func/FUN_081000a4.inc");
-#endif
+  CLEAR_FLAGS(q->unk_65c, 2);
 }
 
 // 44/48命令, 原典は unk_65b = 0 を両方の分岐に複写する, 分岐の向きの入れ替えは試済
@@ -2297,7 +2280,7 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2473,7 +2456,7 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -2629,7 +2612,7 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {

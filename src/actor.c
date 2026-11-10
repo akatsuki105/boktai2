@@ -1726,7 +1726,7 @@ NON_MATCH s32 FUN_080434ac(Actor* actor, PathNode* node) {
   switch (kind) {
     case 1: {
       actor->pathDir = delay >> 12;
-      if ((((((actor->mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7) != actor->pathDir) {
+      if (Angle_ToDir8(actor->mover.angle) != actor->pathDir) {
         return 8;
       }
       break;
@@ -1745,21 +1745,15 @@ NON_MATCH s32 FUN_080434ac(Actor* actor, PathNode* node) {
 s32 FUN_08043510(Actor* actor) {
   PathWalker* walker = &actor->pathWalker;
   PathNode* node = walker->node;
-  s32 dx = node->x - actor->mover.pos.x;
+  s32 dx = abs(node->x - actor->mover.pos.x);
   s32 dz;
 
-  if (dx < 0) {
-    dx = -dx;
-  }
-  if (dx > 0x28) {
+  if (dx > Q8(0.16)) {
     return 9;
   }
 
-  dz = node->y - actor->mover.pos.z;
-  if (dz < 0) {
-    dz = -dz;
-  }
-  if (dz > 0x28) {
+  dz = abs(node->y - actor->mover.pos.z);
+  if (dz > Q8(0.16)) {
     return 9;
   }
 

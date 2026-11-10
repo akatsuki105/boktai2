@@ -144,15 +144,11 @@ const __attribute__((section(".rodata.faraddr"))) u16 u16_ARRAY_08252864[16] = {
 const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252884[16] = {0x04, 0xF6, 0x08, 0xF9, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB};  // 0x08252884
 
 // 点滅をやめて flag38c の bit8 を立てる
-// 残差は命令の並び順だけ (17 対 17), 原典は定数 0x100 を flag38c のアドレス計算より前に作る
-// 0x100 を左に書く形 / AuxSprite_SetFlags 経由 / MainSprite* ローカル / SET_FLAGS は試済
-NON_MATCH void FUN_0821bd14(ShadeMan* p) {
-#ifdef NONMATCHING_C
-  MainSprite_ClearFlags(&p->sprite, SPRFLAG_BLINK_ODD);
-  p->flag38c |= SMFLAG_UNK_8;
-#else
-  INCFUNC("asm/func/FUN_0821bd14.inc");
-#endif
+void FUN_0821bd14(ShadeMan* p) {
+  MainSprite* sprite = &p->sprite;
+
+  sprite->flags &= ~SPRFLAG_BLINK_ODD;
+  SET_FLAGS(p->flag38c, SMFLAG_UNK_8);
 }
 
 const u8 u8_ARRAY_085affa8[16] = {9, 9, 9, 9, 6, 6, 11, 11, 6, 8, 9, 9, 10, 10, 6, 6};  // 0x085affa8
@@ -2367,12 +2363,8 @@ NON_MATCH void FUN_082201ec(ShadeMan* p) {
         p->unk_3f4--;
         FUN_0821c2a0(p, 1, p->unk_3f4, 30);
       } else if (p->unk_3f4 > -30) {
-        s32 t = --p->unk_3f4;
-
-        if (t < 0) {
-          t = -t;
-        }
-        FUN_0821c2a0(p, 1, t, 30);
+        p->unk_3f4--;
+        FUN_0821c2a0(p, 1, abs(p->unk_3f4), 30);
       }
       if (p->phaseTimer == 30) {
         s32 n = 15 - p->unk_3d9;
@@ -2781,20 +2773,19 @@ NON_MATCH void FUN_08220de0(ShadeMan* p) {
   p->base.flags |= BOSSFLAG_NO_HURTBOX | BOSSFLAG_NO_HITBOX;
   if (p->phase < 2) {
     if (p->motionTimer == Div(p->motionTimer, 6) * 6) {
-      u16* table = gRandomTable;
       WorldPos pos;
       Vec3 size;
 
       pos = p->sprite.pos;
-      pos.x += (_Random(table) & 0x80) - 0x40;
-      pos.y += (_Random(table) & 0x80) + 0x40;
-      pos.z += (_Random(table) & 0x80) - 0x40;
+      pos.x += (RandomNext() & 0x80) - 0x40;
+      pos.y += (RandomNext() & 0x80) + 0x40;
+      pos.z += (RandomNext() & 0x80) - 0x40;
       size.x = 0x50, size.y = 0x3C, size.z = 0x3C;
-      EmitSmoke(&pos, (_Random(table) & 3) + 1, &size, 0, 4, 20, 2, 1);
+      EmitSmoke(&pos, (RandomNext() & 3) + 1, &size, 0, 4, 20, 2, 1);
       PlaySound_082406e0(SONG_825);
     }
-    p->sprite.pos.x += (Random() & 0x30) - 24;
-    p->sprite.pos.z += (Random() & 0x30) - 24;
+    p->sprite.pos.x += (RandomNext() & 0x30) - 24;
+    p->sprite.pos.z += (RandomNext() & 0x30) - 24;
   }
   switch (p->phase) {
     case 0: {
@@ -2940,8 +2931,8 @@ NON_MATCH void FUN_0822129c(ShadeMan* p) {
   FUN_0821c520(p);
   FUN_08022e20(boss);
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_17)) {
-    p->sprite.pos.x += (Random() & 0x20) - 16;
-    p->sprite.pos.z += (Random() & 0x20) - 16;
+    p->sprite.pos.x += (RandomNext() & 0x20) - 16;
+    p->sprite.pos.z += (RandomNext() & 0x20) - 16;
   }
   if (p->shakeAmp != 0) {
     p->shakeAmp--;
@@ -2967,18 +2958,15 @@ NON_MATCH void FUN_08221450(ShadeMan* p) {
   FUN_08022ec0(boss);
   FUN_0821c5d4(p);
   if (p->unk_3f0 > 0) {
-    u16* table;
-
     if (--p->unk_3f0 == 0) {
       FUN_0821c238(p, 7);
     }
-    table = gRandomTable;
     if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_18)) {
-      p->sprite.pos.x = p->sprite.pos.x - 24 + (_Random(table) & 0x30);
-      p->sprite.pos.z = p->sprite.pos.z - 24 + (_Random(table) & 0x30);
+      p->sprite.pos.x = p->sprite.pos.x - 24 + (RandomNext() & 0x30);
+      p->sprite.pos.z = p->sprite.pos.z - 24 + (RandomNext() & 0x30);
     } else {
-      p->sprite.pos.x = p->sprite.pos.x - 8 + (_Random(table) & 0x10);
-      p->sprite.pos.z = p->sprite.pos.z - 8 + (_Random(table) & 0x10);
+      p->sprite.pos.x = p->sprite.pos.x - 8 + (RandomNext() & 0x10);
+      p->sprite.pos.z = p->sprite.pos.z - 8 + (RandomNext() & 0x10);
     }
   }
   ShadeMan_UpdateAfterimages(p);

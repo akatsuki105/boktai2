@@ -963,7 +963,7 @@ s32 CrossoverBattle_Destroy(CrossoverBattle* p) {
   return 0;
 }
 
-// 残差: 471 対 446 命令, 原典は後半で0を書くフィールドのアドレスを最初のループの前に作ってスタックへ逃がす, ループの形も未調整
+// 残差: 465 対 446 命令, 原典は後半で0を書くフィールドのアドレスを最初のループの前に作ってスタックへ逃がす, ループの形も未調整
 NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
 #ifdef NONMATCHING_C
   u8 magic[16];
@@ -985,7 +985,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
       }
     }
   } else {
-    for (i = 15; i >= 0; i--) {
+    for (i = 0; i < 16; i++) {
       p->weaponIDs[i] = 0;
     }
   }
@@ -1017,7 +1017,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
       }
     }
   } else {
-    for (i = 15; i >= 0; i--) {
+    for (i = 0; i < 16; i++) {
       magic[i] = 0;
     }
   }
@@ -1053,7 +1053,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
   for (i = 0; i < 2; i++) {
     s32 j;
 
-    for (j = 3; j >= 0; j--) {
+    for (j = 0; j < 4; j++) {
       p->sides[i].ojama[j] = 0;
     }
     p->sides[i].playerHP = 100;
@@ -1062,7 +1062,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
     p->sides[i].outcome = 0;
     p->sides[i].clearTime = 0;
   }
-  for (i = 3; i >= 0; i--) {
+  for (i = 0; i < 4; i++) {
     p->incomingOjama[i] = 0;
   }
   CrossoverBattle_ClearOjama(p, 0);

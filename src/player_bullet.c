@@ -171,7 +171,7 @@ s32 Bullet_GetDamage(Bullet* p) {
   if (gGameFlags & GAMEFLAG_LINK) {
     dmg = FUN_080d1b04(p->player);
   } else {
-    dmg = FUN_0806f900(p->player);
+    dmg = Player_GetAttackPower(p->player);
   }
   return dmg + ((dmg * p->charge) >> 1);
 }

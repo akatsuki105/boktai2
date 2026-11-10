@@ -115,9 +115,8 @@ void FUN_08089d24(CoffinSealEffect* p) {
 // 最初の4フレームで揺れ幅を乱数で決め、16フレーム揺らしてから状態3へ進む
 void FUN_08089d50(CoffinSealEffect* p) {
   if (p->stateTimer < 4) {
-    u16* table = gRandomTable;
-    p->shakeX = (_Random(table) & 0x1F) - 16;
-    p->shakeZ = (_Random(table) & 0x1F) - 16;
+    p->shakeX = (RandomNext() & 0x1F) - 16;
+    p->shakeZ = (RandomNext() & 0x1F) - 16;
   }
   if ((p->stateTimer & 3) == 0) {
     FUN_08089c60(p);
@@ -136,9 +135,8 @@ NAKED void FUN_08089ddc(CoffinSealEffect* p) { INCFUNC("asm/func/FUN_08089ddc.in
 
 // 揺らしながらパレットを8番の色へ寄せてから戻し、状態5へ進む
 void FUN_08089e98(CoffinSealEffect* p) {
-  u16* table = gRandomTable;
-  p->shakeX = (_Random(table) & 0x1F) - 16;
-  p->shakeZ = (_Random(table) & 0x1F) - 16;
+  p->shakeX = (RandomNext() & 0x1F) - 16;
+  p->shakeZ = (RandomNext() & 0x1F) - 16;
   if (p->stateTimer < 4) {
     Camera_Shake(40);
     FUN_08089b48(p, p->coffinID, 8, p->stateTimer * 16);
@@ -166,9 +164,8 @@ void FUN_08089f38(CoffinSealEffect* p) {
 // 10〜29 と 60〜79 フレームのあいだ揺らして効果音を鳴らし、90フレームで状態7へ進む
 void FUN_08089f58(CoffinSealEffect* p) {
   if ((10 <= p->stateTimer && p->stateTimer < 30) || (60 <= p->stateTimer && p->stateTimer < 80)) {
-    u16* table = gRandomTable;
-    p->shakeX = (_Random(table) & 0x1F) - 16;
-    p->shakeZ = (_Random(table) & 0x1F) - 16;
+    p->shakeX = (RandomNext() & 0x1F) - 16;
+    p->shakeZ = (RandomNext() & 0x1F) - 16;
   } else {
     p->shakeX = 0;
     p->shakeZ = 0;

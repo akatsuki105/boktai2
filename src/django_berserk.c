@@ -94,9 +94,7 @@ void FUN_0807f750(DjangoBerserk* p, DjangoBerserkParticle* ptcl) {
 }
 
 // 空いている粒子を1つ pos の周りから angle の向きへ直進させる
-// 残差: 位置に乱数を足すところで, 原典は乱数を引いてから pos を ldrh で読み (pos - 63) + 乱数 にする (EntityE534 系と同じ壁)
-NON_MATCH void FUN_0807f78c(DjangoBerserk* p, Vec3* pos, u32 angle) {
-#ifdef NONMATCHING_C
+void FUN_0807f78c(DjangoBerserk* p, Vec3* pos, u32 angle) {
   DjangoBerserkParticle* e;
   s32 i;
 
@@ -112,10 +110,8 @@ NON_MATCH void FUN_0807f78c(DjangoBerserk* p, Vec3* pos, u32 angle) {
   e->ptcl.flags &= ~SPRFLAG_HIDDEN;
   e->ptcl.pos = *pos;
   {
-    u16* table = gRandomTable;
-
-    e->ptcl.pos.x += (_Random(table) & 127) - 63;
-    e->ptcl.pos.z += (_Random(table) & 127) - 63;
+    e->ptcl.pos.x += (RandomNext() & 127) - 63;
+    e->ptcl.pos.z += (RandomNext() & 127) - 63;
   }
   e->ptcl.pos.y += 128;
   Particle_SetPose(&e->ptcl, p->group, 4);
@@ -125,9 +121,6 @@ NON_MATCH void FUN_0807f78c(DjangoBerserk* p, Vec3* pos, u32 angle) {
   e->mode = 1;
   e->lifetime = (Random() & 7) + 8;
   e->active = TRUE;
-#else
-  INCFUNC("asm/func/FUN_0807f78c.inc");
-#endif
 }
 
 // 粒子を寿命まで mode ごとに動かす
@@ -272,7 +265,7 @@ void FUN_0807fd1c(DjangoBerserk* p) {
   if (MainSprite_AdvanceAnim(&p->sprite, &p->gfx)) {
     gPlayerPtr[0]->action = 0;
     gPlayerPtr[0]->facing = 5;
-    gPlayerPtr[0]->animIDOffset = 3;
+    gPlayerPtr[0]->animDir = 3;
     gPlayerPtr[0]->xflip = TRUE;
     DjangoBerserk_SetState(p, FUN_0807fdac);
   }
@@ -339,7 +332,7 @@ void FUN_0807fed0(DjangoBerserk* p) {
 // 残差: 214 対 209 命令, 原典はループ中で乱数表のアドレスを毎回読み直し, 添字はスタックに i と i * 16 の2本で持つ (HealingEffect_InitParticles と同系統)
 NON_MATCH void FUN_0807ff78(DjangoBerserk* p) {
 #ifdef NONMATCHING_C
-  s32 baseAngle = Random() & 0xFF;
+  s32 baseAngle = RandomNext() & 0xFF;
   s32 i;
 
   p->group = GetParticleGroup(PTCL_GROUP_2);
@@ -349,17 +342,17 @@ NON_MATCH void FUN_0807ff78(DjangoBerserk* p) {
     Particle_Add(&e->ptcl, p->group, 0);
     Particle_SetOffset(&e->ptcl, -4, -4);
     Particle_SetPltt(&e->ptcl, 1);
-    e->angle = baseAngle + i * 16 + (Random() & 7);
-    e->angleStep = (Random() & 3) + 7;
-    e->radius = ((Random() >> 3) & 0x5F) + 96;
+    e->angle = baseAngle + i * 16 + (RandomNext() & 7);
+    e->angleStep = (RandomNext() & 3) + 7;
+    e->radius = ((RandomNext() >> 3) & 0x5F) + 96;
     e->riseSpeed = (i & 3) * 2 + 1;
-    e->startDelay = (Random() & 31) + 8;
+    e->startDelay = (RandomNext() & 31) + 8;
     e->ptcl.pos.x = p->player->mover.pos.x + POLAR_X(e->radius, e->angle);
     e->ptcl.pos.y = p->player->mover.pos.y;
     e->ptcl.pos.z = p->player->mover.pos.z + POLAR_Z(e->radius, e->angle);
     e->ptcl.priority = 2;
     e->ptcl.offsetZ = -20;
-    e->animTimer = Random() & 7;
+    e->animTimer = RandomNext() & 7;
     if (e->animTimer <= 3) {
       Particle_SetPose(&e->ptcl, p->group, 4);
     } else {
@@ -367,7 +360,7 @@ NON_MATCH void FUN_0807ff78(DjangoBerserk* p) {
     }
     e->animTimer = 0;
     e->mode = 0;
-    e->lifetime = (Random() & 15) + 56;
+    e->lifetime = (RandomNext() & 15) + 56;
     e->active = TRUE;
   }
 #else

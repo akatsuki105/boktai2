@@ -31,8 +31,6 @@ typedef struct Entity6367 {
 } Entity6367;
 static_assert(sizeof(Entity6367) == 404);
 
-bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
-
 static inline bool32 Entity6367_ConsumeFlag(u32* flags, u32 mask) {
   u32 set = *flags & mask;
 
@@ -96,7 +94,7 @@ NON_MATCH void Entity6367_UpdateRay(Entity6367* p) {
       p->scaleX = Div(size * 63, 90) + 64;
       p->scaleY = Div(size * 5, 90) + 64;
       p->sprites[2].pos.y = Div(size * 2, 90) + 128;
-      if (p->scaleX > 95 && FUN_0821b21c(&p->unk_188, 1, 15, 0xFFFF)) {
+      if (p->scaleX > 95 && Video_StepBrightnessFade(&p->unk_188, 1, 15, 0xFFFF)) {
         Entity6367_SetState(p, flags, 1);
       }
       if (p->sprites[0].flags & SPRFLAG_HIDDEN) {

@@ -17,7 +17,7 @@ _08064C64:
 	lsls r1, r0
 	adds r0, r6, #0
 _08064C6C:
-	bl FUN_08060ed8
+	bl Player_TestForbidFlags
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08064C94

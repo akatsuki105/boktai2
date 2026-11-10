@@ -107,7 +107,7 @@ _0809EFB8:
 	adds r0, r4, r2
 	ldrh r2, [r0]
 	adds r0, r3, #0
-	bl FUN_0807a528
+	bl Player_EnterRefueling
 	adds r5, #0xe
 	adds r1, r4, r5
 	movs r0, #1

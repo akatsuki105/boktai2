@@ -110,7 +110,7 @@ _08158848:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e60b8
+	bl Enemy_TurnTowardWaypoint
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081588F8

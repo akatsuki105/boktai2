@@ -151,7 +151,7 @@ _0820E1B6:
 	mov r6, sl
 	add r6, r8
 	adds r0, r6, #0
-	bl FUN_0820d00c
+	bl EnemyDex_IsSeen
 	cmp r0, #0
 	beq _0820E208
 	ldr r0, [r4]
@@ -637,7 +637,7 @@ _0820E59E:
 	adds r1, #0xee
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0820d250
+	bl EnemyDexMenu_DrawEntryInfo
 _0820E5B2:
 	ldr r0, _0820E5D0 @ =0x030044E0
 	ldrh r1, [r0, #2]
@@ -693,7 +693,7 @@ _0820E610:
 	beq _0820E6D0
 _0820E614:
 	adds r0, r7, #0
-	bl FUN_0820d250
+	bl EnemyDexMenu_DrawEntryInfo
 	movs r4, #0
 	adds r3, r7, #0
 	adds r3, #0x26
@@ -755,7 +755,7 @@ _0820E64A:
 	bl MainSprite_SetNumber
 	ldr r2, [sp, #0x30]
 	ldrb r0, [r2]
-	bl FUN_0820d00c
+	bl EnemyDex_IsSeen
 	cmp r0, #0
 	beq _0820E6C0
 	ldr r3, _0820E6BC @ =0x0000125C

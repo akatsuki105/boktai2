@@ -751,7 +751,7 @@ _0812C584:
 	strb r0, [r4]
 _0812C5F4:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r6, [sp, #0x50]
 	strh r0, [r6]

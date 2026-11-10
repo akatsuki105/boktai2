@@ -189,7 +189,7 @@ _0810C43C:
 	strh r1, [r0]
 	adds r0, r4, #0
 	mov r1, sp
-	bl FUN_080e59d0
+	bl Enemy_HandleResumeMsg
 _0810C458:
 	add sp, #4
 	pop {r4, r5, r6, r7}

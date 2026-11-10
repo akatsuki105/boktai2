@@ -790,7 +790,7 @@ _081D4DC2:
 	ldr r0, _081D4E88 @ =0x03002BE0
 	ldr r0, [r0]
 	adds r1, r7, #0
-	bl FUN_0807a91c
+	bl Player_SetPosAndSave
 	cmp r5, #2
 	bne _081D4E26
 	adds r0, r7, #0

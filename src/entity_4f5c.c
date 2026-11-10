@@ -52,7 +52,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
     s32 j;
 
     elem->pos.y -= 0x18;
-    for (j = 2; j >= 0; j--, ptcl++) {
+    for (j = 0; j < 3; j++, ptcl++) {
       ptcl->flags |= SPRFLAG_HIDDEN;
     }
   } else if (dy > 0x18) {
@@ -66,7 +66,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
       if (elem->ptclIdx > 2) {
         elem->ptclIdx = 1;
       }
-      Particle_SetOffset(&elem->ptcls[elem->ptclIdx], (Random() & 1) - 4, (Random() & 1) - 4);
+      Particle_SetOffset(&elem->ptcls[elem->ptclIdx], (RandomNext() & 1) - 4, (RandomNext() & 1) - 4);
       Particle_SetPose(&elem->ptcls[elem->ptclIdx], p->group2, PTCL2_SOL_L);
       elem->ptcls[elem->ptclIdx].plttSlot = p->group2->plttID + 1;
       elem->ptcls[elem->ptclIdx].flags &= ~SPRFLAG_HIDDEN;
@@ -88,7 +88,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
 
     elem->state = 2;
     elem->timer = 0;
-    elem->speed = (Random() & 1) + 4;
+    elem->speed = (RandomNext() & 1) + 4;
 
     for (j = 0; j < 3; j++, ptcl++) {
       ptcl->flags |= SPRFLAG_BLINK_ODD;
@@ -98,7 +98,7 @@ NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
       Particle_SetOffset(ptcl, -4, -4);
       ptcl->pos = elem->pos;
       elem->animIdx[j] = 1;
-      elem->animTimer[j] = Random() & 3;
+      elem->animTimer[j] = RandomNext() & 3;
     }
 
     Player_RemoveKaamos(gPlayerPtr[0]);
@@ -146,7 +146,7 @@ NON_MATCH void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) {
     Particle* q = elem->ptcls;
     s32 j;
 
-    for (j = 2; j >= 0; j--, q++) {
+    for (j = 0; j < 3; j++, q++) {
       q->flags |= SPRFLAG_HIDDEN;
     }
     elem->state = 0;
@@ -165,8 +165,7 @@ void (*const PTR_ARRAY_085aa974[3])(Entity4F5C*, Entity4F5CElem*) = {
 // 各要素を state ごとの関数で進め, 全部終わったらスクリプトを呼んで自分を消す
 // 命令数・内容とも一致 (54/54) するが, 原典は i=2 の初期化を PTR_ARRAY_085aa974 のプール読みより後に置くのに対し agbcc は先に置く
 // done / elem の初期化を playerPos の複写より後ろの代入文に分けると, そこまでは原典と揃う
-NON_MATCH s32 Entity4F5C_Update(Entity4F5C* p) {
-#ifdef NONMATCHING_C
+s32 Entity4F5C_Update(Entity4F5C* p) {
   Entity4F5CElem* elem;
   s32 done;
   s32 i;
@@ -175,7 +174,7 @@ NON_MATCH s32 Entity4F5C_Update(Entity4F5C* p) {
   done = 0;
   elem = p->elems;
 
-  for (i = 2; i >= 0; i--, elem++) {
+  for (i = 0; i < 3; i++, elem++) {
     if (elem->state == 0) {
       done++;
     } else {
@@ -193,9 +192,6 @@ NON_MATCH s32 Entity4F5C_Update(Entity4F5C* p) {
   }
 
   return 0;
-#else
-  INCFUNC("asm/func/Entity4F5C_Update.inc");
-#endif
 }
 
 // 残差0命令 (23/23), レジスタ名だけ違う: 原典は e を p のレジスタに重ねるが, こちらは p が別レジスタに残る

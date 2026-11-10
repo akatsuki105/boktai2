@@ -335,23 +335,23 @@ NON_MATCH s32 SpawnSpiritBugs(s32 count, s32 kind, s32 amount, Vec3* pos, Vec3* 
         SpiritBug* bug = &swarm->bugs[j];
 
         bug->state = 1;
-        bug->timer = lifetime + Mod(Random(), lifetimeRand);
+        bug->timer = lifetime + Mod(RandomNext(), lifetimeRand);
         bug->unk_6 = blink;
-        bug->speed = (Random() & 3) + 4;
-        bug->angle = Random();
-        bug->turnTimer = Random() | 0x80;
+        bug->speed = (RandomNext() & 3) + 4;
+        bug->angle = RandomNext();
+        bug->turnTimer = RandomNext() | 0x80;
         bug->ptcl.flags &= ~SPRFLAG_HIDDEN;
         bug->ptcl.pos.x = pos->x;
         if (spread->x != 0) {
-          bug->ptcl.pos.x += Mod(Random(), spread->x);
+          bug->ptcl.pos.x += Mod(RandomNext(), spread->x);
         }
         bug->ptcl.pos.y = pos->y;
         if (spread->y != 0) {
-          bug->ptcl.pos.y += Mod(Random(), spread->y);
+          bug->ptcl.pos.y += Mod(RandomNext(), spread->y);
         }
         bug->ptcl.pos.z = pos->z;
         if (spread->z != 0) {
-          bug->ptcl.pos.z += Mod(Random(), spread->z);
+          bug->ptcl.pos.z += Mod(RandomNext(), spread->z);
         }
         AuxAnim_SetAnim(&bug->anim, p->anim, sBugsAnimIdx[p->isSabata * 6 + kind * 2], 0, 0);
         bug->anim.cmdIdx = phase;
@@ -681,12 +681,9 @@ void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 f
   ptcl->pos.z += bug->vel.z;
   Particle_AdvanceAnim(&bug->ptcl, p->group0, &bug->anim);
   if (!Player_TestFlag20(p->player, PFLAG20_PALM_UP) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
-    u16* table;
-
     bug->state = 1;
-    table = gRandomTable;
-    bug->speed = (_Random(table) & 3) + 4;
-    bug->angle = _Random(table);
+    bug->speed = (RandomNext() & 3) + 4;
+    bug->angle = RandomNext();
   }
   if (--bug->timer == 0) {
     bug->state = 3;

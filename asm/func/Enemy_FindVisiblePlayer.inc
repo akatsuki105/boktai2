@@ -503,7 +503,7 @@ _080E47F4:
 	add r1, sp, #8
 	ldr r2, [sp, #0x18]
 	adds r0, r6, #0
-	bl FUN_080e3f50
+	bl Enemy_CheckStepTo
 	adds r5, r0, #0
 	cmp r5, #0
 	blt _080E4898

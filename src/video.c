@@ -74,10 +74,10 @@ void ResetPltt(rgb555* pltt, s32 val);
 void Video_ResetObjTileAlloc(void);
 void Video_BuildOAM(void);
 void ResetObjPlttSlotCursor(void);
-void FUN_0822d248(void);
+void ApplyObjPlttBlend(void);
 void ApplyBgPlttBlend(void);
-void FUN_0822d828(void);
-void FUN_0822d8e8(void);
+void ApplyObjPlttGrayscale(void);
+void ApplyBgPlttGrayscale(void);
 void FUN_0822d98c(void);
 void StageBGRegs(void);
 void CopyBGTileDataAndTilemapToVram(void);
@@ -124,8 +124,8 @@ s32 VideoRender_Update(VideoRender* p) {
   gDrawParticles();
   Video_BuildOAM();
   if (gGrayscaleTimer != 0) {
-    FUN_0822d8e8();
-    FUN_0822d828();
+    ApplyBgPlttGrayscale();
+    ApplyObjPlttGrayscale();
     if (gGrayscaleTimer > 0) {
       gGrayscaleTimer--;
     }
@@ -134,7 +134,7 @@ s32 VideoRender_Update(VideoRender* p) {
     }
   } else {
     ApplyBgPlttBlend();
-    FUN_0822d248();
+    ApplyObjPlttBlend();
   }
   Video_ResetFrameState(0);
   gFrameCounter++;
@@ -385,7 +385,7 @@ NON_MATCH void AuxSprite_DrawInternal(AuxSprite* p, s32 x, s32 y, s32 z) {
     if (p->flags & SPRFLAG_YFLIP) {
       sy = -sy;
     }
-    if ((sx < 0 ? -sx : sx) > 60 || (sy < 0 ? -sy : sy) > 60 || p->rotation != 0) {
+    if (abs(sx) > 60 || abs(sy) > 60 || p->rotation != 0) {
       attr01 |= 0x300;
     } else {
       attr01 |= 0x100;
@@ -856,12 +856,7 @@ void Video_ResetObjTileAlloc(void) {
 }
 
 // タイルデータの転送要求を積んで割り当てた OBJ VRAM のタイル番号を返す, 既に積んであれば積み直さずその番号を返す
-// この C は単体では原典と完全一致する (hunk 0) が、同じ TU の Video_ResetFrameState が壊れて ROM が合わなくなる
-// 壊れ方は命令2つのレジスタ名だけ: 原典は gStagedOAMCount→r4 / gObjAffineCount→r5, こちらは逆になる
-// プール順もストア順も同じで、local-alloc の同点崩しが TU 内の SYMBOL_REF の増減で裏返るのが原因
-// あちらの文の順序を入れ替えても出力は変わらず、どちらの関数の C からも制御できない
-NON_MATCH s32 Video_AllocObjTiles(void* tiles, s32 tileCount) {
-#ifdef NONMATCHING_C
+s32 Video_AllocObjTiles(void* tiles, s32 tileCount) {
   ObjTileRequest* req;
   ObjTileRequest* newReq;
   s32 i;
@@ -888,9 +883,6 @@ NON_MATCH s32 Video_AllocObjTiles(void* tiles, s32 tileCount) {
   gAuxSpriteTileCount += tileCount;
   gObjTileRequestCount++;
   return newReq->tileIdx;
-#else
-  INCFUNC("asm/func/Video_AllocObjTiles.inc");
-#endif
 }
 
 // 積まれた転送要求を順に OBJ VRAM へ流す, 転送先はパーティクルのタイルの直後から詰めていく

@@ -90,7 +90,7 @@ _0807DE40: @ jump table
 	.4byte _0807E1BC @ case 44
 _0807DEF4:
 	adds r0, r5, #0
-	bl FUN_0807b8dc
+	bl Player_LockHidden
 	b _0807E1D8
 _0807DEFC:
 	ldrh r0, [r4, #8]
@@ -128,7 +128,7 @@ _0807DF3C:
 	ldrsh r1, [r4, r2]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0807b9dc
+	bl Player_LockTurnTo
 	b _0807E178
 _0807DF4A:
 	movs r0, #8
@@ -224,7 +224,7 @@ _0807DFFA:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0807bb3c
+	bl Player_LockPullCoffinTo
 	b _0807E1D8
 _0807E00E:
 	movs r2, #8
@@ -233,7 +233,7 @@ _0807E00E:
 	ldrsh r2, [r4, r0]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0807bee0
+	bl Player_LockKnockback
 	b _0807E178
 _0807E020:
 	movs r2, #8
@@ -245,12 +245,12 @@ _0807E020:
 	movs r0, #0
 	str r0, [sp]
 	adds r0, r5, #0
-	bl FUN_0807bfa4
+	bl Player_LockBlownAway
 	b _0807E178
 _0807E038:
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_0807c048
+	bl Player_GetUpFromBlownAway
 	b _0807E178
 _0807E042:
 	movs r2, #8
@@ -266,14 +266,14 @@ _0807E054:
 	ldrsh r1, [r4, r2]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0807c200
+	bl Player_LockWarpOut
 	b _0807E178
 _0807E062:
 	movs r0, #8
 	ldrsh r1, [r4, r0]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0807c36c
+	bl Player_LockWarpIn
 	b _0807E178
 _0807E070:
 	movs r2, #8
@@ -294,7 +294,7 @@ _0807E08C:
 	ldrsh r1, [r4, r2]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0807c634
+	bl Player_LockFireGun
 	b _0807E178
 _0807E09A:
 	movs r0, #8
@@ -313,7 +313,7 @@ _0807E0AC:
 _0807E0B6:
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_0807cc84
+	bl Player_LockRevertToDarkDjango
 	adds r4, r0, #0
 	adds r0, r5, #0
 	bl Player_SetDoneEndWait
@@ -345,7 +345,7 @@ _0807E0CE:
 	rsbs r2, r2, #0
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0807c88c
+	bl Player_LockDashTo
 	b _0807E178
 	.align 2, 0
 _0807E100: .4byte 0xFFFF0000
@@ -413,7 +413,7 @@ _0807E178:
 _0807E180:
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_0807cd24
+	bl Player_AddElementalParticle
 	b _0807E1D8
 _0807E18A:
 	adds r0, r5, #0
@@ -425,7 +425,7 @@ _0807E192:
 	ldr r2, _0807E1A4 @ =0x00000121
 	adds r1, r1, r2
 	adds r0, r5, #0
-	bl FUN_0807b890
+	bl Player_StartPlttFadeIn
 	b _0807E1D8
 	.align 2, 0
 _0807E1A4: .4byte 0x00000121
@@ -435,13 +435,13 @@ _0807E1A8:
 	ldr r2, _0807E1B8 @ =0x00000121
 	adds r1, r1, r2
 	adds r0, r5, #0
-	bl FUN_0807b8a8
+	bl Player_StartPlttPulse
 	b _0807E1D8
 	.align 2, 0
 _0807E1B8: .4byte 0x00000121
 _0807E1BC:
 	adds r0, r5, #0
-	bl FUN_0807b8c0
+	bl Player_StopPlttEffect
 	b _0807E1D8
 _0807E1C4:
 	ldr r0, _0807E1CC @ =0x000004AD

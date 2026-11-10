@@ -30,7 +30,7 @@ _0806C424:
 	b _0806C5CC
 _0806C43C:
 	adds r0, r5, #0
-	bl FUN_08067068
+	bl Player_ResolveInputFacing
 	adds r3, r0, #0
 	movs r2, #1
 	ands r0, r2

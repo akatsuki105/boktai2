@@ -170,21 +170,21 @@ void RoomBlind_UpdatePos(RoomBlind* p) {
       p->blend++;
       k = 8 - p->blend;
       n = k + 1;
-      p->pos.x = Div(p->pos.x * k + gPlayerPtr[p->playerIdx]->pos_3c0.x, n);
-      p->pos.y = Div(p->pos.y * k + gPlayerPtr[p->playerIdx]->pos_3c0.y, n);
-      p->pos.z = Div(p->pos.z * k + gPlayerPtr[p->playerIdx]->pos_3c0.z, n);
+      p->pos.x = Div(p->pos.x * k + gPlayerPtr[p->playerIdx]->cameraLookAt.x, n);
+      p->pos.y = Div(p->pos.y * k + gPlayerPtr[p->playerIdx]->cameraLookAt.y, n);
+      p->pos.z = Div(p->pos.z * k + gPlayerPtr[p->playerIdx]->cameraLookAt.z, n);
     } else {
       p->blend = 8;
-      p->pos.x = gPlayerPtr[p->playerIdx]->pos_3c0.x;
-      p->pos.y = gPlayerPtr[p->playerIdx]->pos_3c0.y;
-      p->pos.z = gPlayerPtr[p->playerIdx]->pos_3c0.z;
+      p->pos.x = gPlayerPtr[p->playerIdx]->cameraLookAt.x;
+      p->pos.y = gPlayerPtr[p->playerIdx]->cameraLookAt.y;
+      p->pos.z = gPlayerPtr[p->playerIdx]->cameraLookAt.z;
     }
   } else {
     s32 diff = Angle_Diff((s16)gStat->sunAngle, p->angle - 256);
     s32 d = 128 - diff;
     s32 step;
 
-    if ((d < 0 ? -d : d) <= 16) {
+    if (abs(d) <= 16) {
       if (diff != 128) {
         if (diff < 128) {
           step = (d >> 2) + 1;
@@ -216,7 +216,7 @@ void RoomBlind_UpdatePos(RoomBlind* p) {
       s32 n;
 
       p->destPos.x = gPlayerPtr[p->playerIdx]->mover.pos.x + FixToInt(12, COS(p->angle) * p->dist);
-      p->destPos.y = (((0x80 - gPlayerPtr[p->playerIdx]->unk_97a) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
+      p->destPos.y = (((0x80 - gPlayerPtr[p->playerIdx]->shrink) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
       p->destPos.z = gPlayerPtr[p->playerIdx]->mover.pos.z + FixToInt(12, SIN(p->angle) * p->dist);
       p->blend--;
       n = p->blend + 1;
@@ -226,7 +226,7 @@ void RoomBlind_UpdatePos(RoomBlind* p) {
     } else {
       p->blend = 0;
       p->pos.x = gPlayerPtr[p->playerIdx]->mover.pos.x + FixToInt(12, COS(p->angle) * p->dist);
-      p->pos.y = (((0x80 - gPlayerPtr[p->playerIdx]->unk_97a) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
+      p->pos.y = (((0x80 - gPlayerPtr[p->playerIdx]->shrink) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
       p->pos.z = gPlayerPtr[p->playerIdx]->mover.pos.z + FixToInt(12, SIN(p->angle) * p->dist);
     }
   }
@@ -279,7 +279,7 @@ s32 RoomBlind_Init(RoomBlind* p, u32 param_2, u32 playerIdx, u32 isDim) {
   RoomBlind_SetupBG(p);
   RoomBlind_ResetOrbit(p);
   p->pos.x = gPlayerPtr[p->playerIdx]->mover.pos.x - FixToInt(12, COS(p->angle) * p->dist);
-  p->pos.y = (((0x80 - gPlayerPtr[p->playerIdx]->unk_97a) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
+  p->pos.y = (((0x80 - gPlayerPtr[p->playerIdx]->shrink) * 150) >> 7) + gPlayerPtr[p->playerIdx]->mover.pos.y;
   p->pos.z = gPlayerPtr[p->playerIdx]->mover.pos.z - FixToInt(12, SIN(p->angle) * p->dist);
   RoomBlind_Update(p);
   gRoomBlind = p;

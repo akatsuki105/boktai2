@@ -209,9 +209,8 @@ Entity4B15* Entity4B15_Create(void) {
   return gEntity4B15;
 }
 
-// 引数を (poseIdx, state) に取る inline で包むと残差は末尾の定数 0 と 1 のレジスタの入れ替わりだけになる
-NON_MATCH void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos) {
-#ifdef NONMATCHING_C
+// playerIdx 番のプレイヤーを指す矢印のマーカーを pos に出して追わせる, 自分自身には出さない
+void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos) {
   if (gEntity4B15 != NULL && Entity4B15_GetLocalPlayerIdx() != playerIdx) {
     Entity4B15Elem* elem = &gEntity4B15->elems[playerIdx];
 
@@ -219,14 +218,10 @@ NON_MATCH void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos) {
     Particle_SetPose(&elem->ptcl, gEntity4B15->group, PTCL0_ARROW);
     Entity4B15Elem_SetState(elem, 1);
   }
-#else
-  INCFUNC("asm/func/Entity4B15_ShowTrackingMarker.inc");
-#endif
 }
 
-// 引数を (poseIdx, state) に取る inline で包むと残差は末尾の movs の 2 命令の順序だけになる
-NON_MATCH void Entity4B15_ShowFixedMarker(s32 playerIdx, Vec3* pos) {
-#ifdef NONMATCHING_C
+// playerIdx 番のプレイヤーを指す赤い矢印のマーカーを pos に止めて出す, 自分自身には出さない
+void Entity4B15_ShowFixedMarker(s32 playerIdx, Vec3* pos) {
   if (gEntity4B15 != NULL && Entity4B15_GetLocalPlayerIdx() != playerIdx) {
     Entity4B15Elem* elem = &gEntity4B15->elems[playerIdx];
 
@@ -234,7 +229,4 @@ NON_MATCH void Entity4B15_ShowFixedMarker(s32 playerIdx, Vec3* pos) {
     Particle_SetPose(&elem->ptcl, gEntity4B15->group, PTCL0_ARROW_RED);
     Entity4B15Elem_SetState(elem, 2);
   }
-#else
-  INCFUNC("asm/func/Entity4B15_ShowFixedMarker.inc");
-#endif
 }

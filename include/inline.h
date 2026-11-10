@@ -28,6 +28,9 @@ static inline u8 Angle_FromDir4(u32 dir) { return dir * 64 - 64; }
 // Angle_ToDir8 の逆, 8 方向のインデックスをその方向の角度に戻す
 static inline u8 Angle_FromDir8(u32 dir) { return (dir + 5) * 32; }
 
+// 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
+static inline rgb555 MakeRgb555(s32 r, s32 g, s32 b) { return (b << 10) | (g << 5) | r; }
+
 // ワールド座標をアイソメトリック投影して視点座標にする
 static inline void WorldToVp(Vec3* vp, WorldPos* world) {
   s32 hx = world->x >> 1;

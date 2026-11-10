@@ -95,13 +95,11 @@ void FUN_080abe48(TransEffect* p, Vec3* pos) {
   if (++particles->spawnTimer > 1) {
     TransEffectParticle* e = &particles->elems[particles->nextIdx];
     Particle* ptcl;
-    u16* table;
 
     e->active = TRUE;
-    table = gRandomTable;
-    e->riseSpeed = (_Random(table) & 15) + 16;
-    e->radius = (_Random(table) & 15) + 64;
-    e->angle = _Random(table);
+    e->riseSpeed = (RandomNext() & 15) + 16;
+    e->radius = (RandomNext() & 15) + 64;
+    e->angle = RandomNext();
     e->angleSpeed = 8;
     e->timer = 0;
     e->center = *pos;
@@ -247,7 +245,7 @@ void FUN_080ac18c(TransEffect* p) {
 void FUN_080ac21c(TransEffect* p) { AuxSprite_Remove(&p->circle.spr); }
 
 // 足元に魔方陣を出し, 種類ごとのパレットを灰色から寄せ始める
-// 残差: 83 対 84 命令, 原典は unk_24 を r7 に読んで比較には r0 の写しを使い, 魔方陣のポインタを r4 に置く割当
+// 残差: 82 対 84 命令, 原典は unk_24 を r7 に読んで比較には r0 の写しを使い, 魔方陣のポインタを r4 に置く割当
 NON_MATCH void FUN_080ac228(TransEffect* p, Vec3* pos) {
 #ifdef NONMATCHING_C
   TransEffectSprite* s = &p->circle;
@@ -272,7 +270,7 @@ NON_MATCH void FUN_080ac228(TransEffect* p, Vec3* pos) {
   s->spr.pos.z += p->pos.z;
   s->spr.flags |= SPRFLAG_BLINK_EVEN;
   s->srcPltt = &gObjPlttData[plttID * 16];
-  for (i = 15; i >= 0; i--) {
+  for (i = 0; i < 16; i++) {
     s->pltt[i] = RGB(15, 15, 15);
   }
   s->gfx.plttID = plttID;

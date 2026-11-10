@@ -123,12 +123,9 @@ void CrossoverMC_StateRound(CrossoverMC* p) {
     PlaySound_082406e0(VO_FIGHT);
   }
   if (p->timer - 90 < 8) {
-    u16* table;
-
     spr = &p->sprites[0];
-    table = gRandomTable;
-    spr->pos.x = (_Random(table) & 3) - 2;
-    spr->pos.y = (_Random(table) & 3) - 2;
+    spr->pos.x = (RandomNext() & 3) - 2;
+    spr->pos.y = (RandomNext() & 3) - 2;
   }
   if (p->timer == 98) {
     spr = &p->sprites[0];
@@ -156,12 +153,9 @@ void CrossoverMC_StateFight(CrossoverMC* p) {
     PlaySound_082406e0(VO_FIGHT);
   }
   if (p->timer < 8) {
-    u16* table;
-
     spr = p->sprites;
-    table = gRandomTable;
-    spr->pos.x = (_Random(table) & 3) - 2;
-    spr->pos.y = (_Random(table) & 3) - 2;
+    spr->pos.x = (RandomNext() & 3) - 2;
+    spr->pos.y = (RandomNext() & 3) - 2;
   }
   if (p->timer == 8) {
     spr = p->sprites;

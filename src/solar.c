@@ -11,6 +11,11 @@
 #include "solar_sensor.h"
 #include "time.h"
 
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
+
 // 太陽センサーを毎フレーム読んで lx と太陽ゲージを作り、その結果を gStat に流し込むシングルトン
 typedef struct Taiyo {
   Entity e;                               // 0x00, ENTITY_UNK_5
@@ -237,27 +242,27 @@ bool32 IsGunCooled(void) {
   return FALSE;
 }
 
-// mapFlags の判定を bool8 を返す static inline にして分岐を裏返すと 0/1 の作り置きと両腕の並びは揃うが, 原典は gStat->heatstroke などへの書き込みのたびに gStat を読み直す (74/78)
-NON_MATCH void UpdateOverheat(Taiyo* _ UNUSED) {
-#ifdef NONMATCHING_C
+// オーバーヒート中, 太陽ゲージが 3 以上で日陰でなければ熱中症の値を太陽ゲージ分だけ増やし (5000 で打ち止め), そうでなければ減らして銃が冷えたら解除する
+void UpdateOverheat(Taiyo* _ UNUSED) {
   if (gStat->thermal > 29999) {
-    if ((gStat->sunGauge < 3) || (gStat->mapFlags & (MPF_UNK_14 | MPF_UNK_9))) {
+    if (gStat->sunGauge > 2 && !TestMapFlag(MPF_UNK_14 | MPF_UNK_9)) {
+      s16 heat;
+
+      SetOverheatTime();
+      HEATSTROKE = heat = gStat->heatstroke + gStat->sunGauge;
+      if (heat > 5000) {
+        HEATSTROKE = 5000;
+      }
+    } else {
       if (gStat->heatstroke > 0) {
         gStat->heatstroke--;
       }
       if (IsGunCooled()) {
-        gStat->thermal = 0;
-        gStat->heatstroke = 0;
+        THERMAL = 0;
+        HEATSTROKE = 0;
       }
-    } else {
-      SetOverheatTime();
-      gStat->heatstroke += gStat->sunGauge;
-      if (gStat->heatstroke > 5000) gStat->heatstroke = 5000;
     }
   }
-#else
-  INCFUNC("asm/func/UpdateOverheat.inc");
-#endif
 }
 
 // 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める

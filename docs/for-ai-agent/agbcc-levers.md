@@ -190,7 +190,7 @@ case whose body is only `break;` is removed before the tree is built, so writing
 `case 1: { break; }` for a case the target clearly dispatches on changes nothing
 and leaves the pivot wrong. `case 1: { return; }` keeps the node — the `return`
 is real code, and after jump optimization its jump lands on the same end label,
-which is why the case looks empty in the disassembly (`FUN_0806f1ec`).
+which is why the case looks empty in the disassembly (`Player_UpdateDjangoSpecialDeath`).
 
 ### A loop with no body survives
 
@@ -212,9 +212,9 @@ mechanism — it is a whole-translation-unit flag and `gStat` cannot be volatile
 since functions that read two of its fields in one expression match today.
 Writing the stores through three `static inline` setters does not help (they are
 inlined and then CSE'd together), nor does a `GameInfo*` local, which is the
-opposite direction. `FUN_0807a91c` stays two instructions short.
+opposite direction. `Player_SetPosAndSave` stays two instructions short.
 
-The read side behaves the same way. `FUN_08078844` tests `gEntity0B50 != NULL`,
+The read side behaves the same way. `Player_CanKeepPullCoffin` tests `gEntity0B50 != NULL`,
 reads one of its fields, and then reads two more fields to build a call's
 arguments; the target keeps `&gEntity0B50` in a register (`adds r3, r0, #0`) and
 reloads `[r3]` for the argument setup, because the branch join in the middle of
@@ -333,7 +333,7 @@ Still source-level, still defensible.
   body's first load. The same `lsl`/`lsr` pair sitting *between* two argument
   setups, right before the `str` that places it, is the **callee's** narrow
   parameter instead: this function's parameter is `s32` and the conversion
-  happens at the call. `FUN_08066e9c` closed only after its own `s16`/`u8`
+  happens at the call. `Player_MakeNoise` closed only after its own `s16`/`u8`
   parameters were widened to `s32` and `FUN_08240cf0` was declared with `s16`
   and `u8` ones — and for the same reason its sound id has to stay `SoundID32`,
   since `PlaySound_082406e0` takes the wide type and the target never truncates
@@ -422,8 +422,10 @@ Four positions, cheapest first:
   brings the base in between it and the `add`. Both `Cmd_Random`
   (`*(gRandTableIdx + gRandomTable)`) and `Player_WeaponEffectStatCond`
   (`*(p->isSabata + gStat->isKaamos)`, where the target reads the index before
-  loading `gStat`) only closed on the index-first spelling, which is also what
-  the rest of `src/` uses for `gRandomTable`.
+  loading `gStat`) only closed on the index-first spelling, which is also why
+  `Random()` in `include/random.h` reads the table through a `u16*` cast
+  (`build_array_ref` in `c-typeck.c` keeps an ARRAY_REF for an array, and the
+  PLUS_EXPR case in `expr.c` puts the constant term last for a pointer).
 - **Mixing a walked pointer and an indexed access in one loop creates a second
   induction variable.** `elem->field` alone strength-reduces to one register;
   writing `p->elems[i].other` in the same body makes gcc keep a separate byte
@@ -463,7 +465,7 @@ mentions `gStagedDISPCNT`. Merely being declared in an included header is enough
 Define the helper per translation unit instead (`src/forge_ef6f.c` keeps its
 own copy of `HideBG` for this reason, and `src/entity_5ccc.c` keeps its own
 `TileHeightAt` after moving `src/collision_map.c`'s into `include/collision_map.h`
-perturbed `FUN_0807a270` in `src/player.c`). For flag operations this does not
+perturbed `Player_ResetGlobals` in `src/player.c`). For flag operations this does not
 come up: use the macros in `include/macro.h`, which reach every file through
 `include/global.h`.
 

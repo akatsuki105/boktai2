@@ -553,24 +553,16 @@ void Emote_CalcPtclOffset(u32 kind, u32 enemyKind, s32 angle, s32* outX, s32* ou
 void nop_080d8ddc(Emote* _) {}
 
 // sEmoteKindUpdates[3] (FUN_080d8e98) の下請け, timer が unk_3e[idx] 以下になった最初の1回だけ unk_4[idx] を乱数で埋めて unk_32[idx] に印を付ける, idx は ptcls の添字 0..2
-// 残差は &unk_4[idx] の計算位置 (83/83), 原典は1つ目の乱数を読んだ直後に計算するが, こちらは乱数より前に計算してレジスタ割当がずれる
-// Tier A-B は試済 (Random と _Random(table), VEC3_SET, Vec3* ローカル, x だけローカル (7 hunk), idx の型), 未: 乱数の値を先にまとめて作る形
-NON_MATCH void FUN_080d8de0(Emote* p, u32 idx) {
-#ifdef NONMATCHING_C
+void FUN_080d8de0(Emote* p, u32 idx) {
   if (gEmoteManager != NULL) {
     if (*(s16*)p->timer <= p->unk_3e[idx] && p->unk_32[idx] != 1) {
-      u16* table = gRandomTable;
-
-      p->unk_4[idx].x = (_Random(table) & 15) - 8;
-      p->unk_4[idx].y = _Random(table) & 15;
-      p->unk_4[idx].z = (_Random(table) & 15) - 8;
+      p->unk_4[idx].x = (RandomNext() & 15) - 8;
+      p->unk_4[idx].y = RandomNext() & 15;
+      p->unk_4[idx].z = (RandomNext() & 15) - 8;
       p->unk_32[idx] |= 1;
       p->unk_4c[idx] = 0;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080d8de0.inc");
-#endif
 }
 
 // 以下5本は sEmoteKindUpdates の各エントリ (kind ごとの毎フレーム更新), 各 kind の意味が未解明なので名前は据え置き

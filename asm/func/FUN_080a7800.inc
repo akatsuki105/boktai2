@@ -46,7 +46,7 @@ _080A7844:
 	bl MainMenu_SetHudMode
 	ldr r0, _080A788C @ =0x03002BE0
 	ldr r0, [r0]
-	bl FUN_0807adc0
+	bl Player_StartDeathVanish
 	movs r0, #2
 	bl Sound_FadeOutBGM
 	ldr r3, _080A7890 @ =0x00000346

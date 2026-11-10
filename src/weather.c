@@ -30,7 +30,7 @@ typedef struct {
   u8 state;                   // 0x19, gWeatherStateFuncs[5] の添字, 2 以上で WeatherManager_ScrollClouds (BGスクロール) が回り、3 で gStat の 0x946 が 0x7FFF になる
   u8 unk_1a[2];               // 0x1A
   u32 stateTimer;             // 0x1C, WeatherManager_SetState が state を変えるときに 0 に戻す
-  u16 timer;                  // 0x20, FUN_08018324 が 0 になるまで毎フレーム減らし、0 で WeatherManager_ResetTimer が詰め直す
+  u16 timer;                  // 0x20, WeatherManager_UpdateRaining が 0 になるまで毎フレーム減らし、0 で WeatherManager_ResetTimer が詰め直す
   u8 unk_22;                  // 0x22, '.a=1'
   u8 unk_23;                  // 0x23
   u16 sunAccum;               // 0x24, 状態に入るとき 0 にし、以降 gStat->sunGauge を毎フレーム足す, 60 以上で天候を切り上げる
@@ -86,20 +86,14 @@ bool32 WeatherManager_IsActive(void) {
 }
 
 // 次に天候が変わるまでのフレーム数を詰め直す
-// 残差1命令, 添字の lsls #1 が gRandomTable のプールロードより前に出るか後に出るかだけ違う (命令列は 30 対 30)
-NON_MATCH void WeatherManager_ResetTimer(WeatherManager* p) {
-#ifdef NONMATCHING_C
+void WeatherManager_ResetTimer(WeatherManager* p) {
   p->timer = p->timerBase;
   if (p->timerRand != 0) {
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    p->timer += Mod(gRandomTable[gRandTableIdx], p->timerRand);
+    p->timer += Mod(Random(), p->timerRand);
   }
   if (p->timer < 10) {
     p->timer = 10;
   }
-#else
-  INCFUNC("asm/func/WeatherManager_ResetTimer.inc");
-#endif
 }
 
 void WeatherManager_SetState(WeatherManager* p, u8 state) {
@@ -131,10 +125,8 @@ void WeatherManager_ScrollClouds(WeatherManager* p) {
   s32 ofsY = gCameraVpCoords.y + gCameraCoords.tilemapY;
 
   if (p->driftTimer == 0) {
-    u16* table = gRandomTable;
-
-    p->driftTimer = (_Random(table) & 127) + 128;
-    p->driftTarget = (_Random(table) & 7) - 1;
+    p->driftTimer = (RandomNext() & 127) + 128;
+    p->driftTarget = (RandomNext() & 7) - 1;
   } else {
     p->driftTimer--;
   }
@@ -282,7 +274,7 @@ NON_MATCH s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 count, s32 in
 
 // 晴れの待機, 太陽ゲージで次の雨を遅らせ, 時間が来たら確率で雨を降らせ始める
 // 残差: 原典は gStat のアドレスを r6 に置き r4-r7 だけで済ませるが, こちらは r8/r9 まで使う, rainTimer に足したあと gStat を読み直す形も違う
-NON_MATCH bool32 FUN_08018118(WeatherManager* p) {
+NON_MATCH bool32 WeatherManager_UpdateClear(WeatherManager* p) {
 #ifdef NONMATCHING_C
   s32 chance;
   s32 sun;
@@ -302,10 +294,10 @@ NON_MATCH bool32 FUN_08018118(WeatherManager* p) {
         gStat->rainTimer = sRainIntervalBase;
       }
     } else if (gStat->rainTimer == 0) {
-      if ((Random() & 63) >= chance) {
+      if ((RandomNext() & 63) >= chance) {
         gStat->rainTimer = sRainIntervalBase;
         if (sRainIntervalRand > 0) {
-          gStat->rainTimer += Mod(Random(), sRainIntervalRand);
+          gStat->rainTimer += Mod(RandomNext(), sRainIntervalRand);
         }
       } else {
         WeatherManager_SetState(p, 1);
@@ -318,12 +310,12 @@ NON_MATCH bool32 FUN_08018118(WeatherManager* p) {
   p->stateTimer++;
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_08018118.inc");
+  INCFUNC("asm/func/WeatherManager_UpdateClear.inc");
 #endif
 }
 
 // 降り始めの100フレームを待ってから本降りへ移る
-bool32 FUN_08018250(WeatherManager* p) {
+bool32 WeatherManager_UpdateRainStart(WeatherManager* p) {
   if (p->unk_18 != 0) {
     p->unk_18 = 0;
     FUN_080026fc(1);
@@ -337,42 +329,38 @@ bool32 FUN_08018250(WeatherManager* p) {
 }
 
 // 本降り, BG1 の表示を周期的に間引きながら雨粒を撒く
-NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
-#ifdef NONMATCHING_C
+bool32 WeatherManager_UpdateDownpour(WeatherManager* p) {
   if (p->unk_18 != 0) {
     p->unk_18 = 0;
-    gStat->mapFlags |= MPF_RAIN;
+    SET_FLAGS(gStat->mapFlags, MPF_RAIN);
     if (p->unk_54 != 0) {
       VM_ExecByID(p->unk_54, NULL);
     }
   }
-  gStagedDISPCNT |= DISPCNT_BG1_ON;
+  SET_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
   if (p->stateTimer <= 14) {
     if ((p->stateTimer & 3) <= 2) {
-      gStagedDISPCNT &= ~DISPCNT_BG1_ON;
+      CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
     }
   } else if (p->stateTimer <= 29) {
     if ((p->stateTimer & 3) <= 1) {
-      gStagedDISPCNT &= ~DISPCNT_BG1_ON;
+      CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
     }
   } else if ((p->stateTimer & 3) == 0) {
-    gStagedDISPCNT &= ~DISPCNT_BG1_ON;
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
   }
   WeatherManager_SpawnParticles(p, 3, 10, 10);
-  if (p->stateTimer <= 44) {
-    p->layer = 0;
-    p->stateTimer++;
-    return FALSE;
+  if (p->stateTimer > 44) {
+    WeatherManager_SetState(p, 3);
+    return TRUE;
   }
-  WeatherManager_SetState(p, 3);
-  return TRUE;
-#else
-  INCFUNC("asm/func/FUN_08018284.inc");
-#endif
+  p->layer = 0;
+  p->stateTimer++;
+  return FALSE;
 }
 
 // 雨の最中, 雷を鳴らしながら雨粒を撒き, 太陽を浴びるか降る時間が尽きたら止ませる
-bool32 FUN_08018324(WeatherManager* p) {
+bool32 WeatherManager_UpdateRaining(WeatherManager* p) {
   if (p->unk_18) {
     p->unk_18 = 0;
     if (sRainDuration == 0) {
@@ -423,7 +411,7 @@ bool32 FUN_08018324(WeatherManager* p) {
 }
 
 // 雨の終わり, BG1 を数フレーム点滅させて雨粒を撒き終え, 次に降るまでのフレーム数を決めて待機へ戻る
-bool32 FUN_080184ec(WeatherManager* p) {
+bool32 WeatherManager_UpdateRainEnd(WeatherManager* p) {
   if (p->unk_18) {
     p->unk_18 = 0;
     FUN_080026fc(3);
@@ -454,15 +442,15 @@ bool32 FUN_080184ec(WeatherManager* p) {
 }
 
 bool32 (*const gWeatherStateFuncs[5])(WeatherManager*) = {
-    FUN_08018118,
-    FUN_08018250,
-    FUN_08018284,
-    FUN_08018324,
-    FUN_080184ec,
+    WeatherManager_UpdateClear,
+    WeatherManager_UpdateRainStart,
+    WeatherManager_UpdateDownpour,
+    WeatherManager_UpdateRaining,
+    WeatherManager_UpdateRainEnd,
 };  // 0x085AA948
 
-NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
-#ifdef NONMATCHING_C
+// 天候の状態関数を呼んで雲と粒を動かす, 雨の間は unk_946 を 0x7FFF に張り, 止んだら 0 まで減らす
+s32 WeatherManager_Update(WeatherManager* p) {
   bool32 (*fn)(WeatherManager*) = gWeatherStateFuncs[p->state];
 
   if (fn != NULL) {
@@ -472,11 +460,11 @@ NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
     WeatherManager_ScrollClouds(p);
   }
   if (p->state == 3) {
-    gStat->unk_946 = 0x7FFF;
+    UNK_946 = 0x7FFF;
     sRainFalling = TRUE;
   } else {
-    if (gStat->unk_946 > 0) {
-      gStat->unk_946--;
+    if (UNK_946 > 0) {
+      UNK_946--;
     }
     sRainFalling = FALSE;
   }
@@ -486,9 +474,6 @@ NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
   WeatherManager_UpdateParticles(p);
   p->frameCounter++;
   return 0;
-#else
-  INCFUNC("asm/func/WeatherManager_Update.inc");
-#endif
 }
 
 s32 WeatherManager_Destroy(WeatherManager* p) {
@@ -571,11 +556,9 @@ NON_MATCH s32 WeatherManager_Init(WeatherManager* p) {
   p->unk_54 = VM_GetNamedArgValue('C', 0);
   p->unk_58 = VM_GetNamedArgValue('O', 0);
   {
-    u16* table = gRandomTable;
-
-    p->driftTimer = (_Random(table) & 127) + 128;
-    p->drift = (_Random(table) & 7) - 4;
-    p->driftTarget = (_Random(table) & 7) - 4;
+    p->driftTimer = (RandomNext() & 127) + 128;
+    p->drift = (RandomNext() & 7) - 4;
+    p->driftTarget = (RandomNext() & 7) - 4;
   }
   WeatherManager_InitParticles(p);
   return 0;
@@ -631,8 +614,7 @@ s32 WeatherManager_StopScripted(void) {
 }
 
 // スクリプトから天候の周期を設定する
-NON_MATCH s32 Cmd_164D(void) {
-#ifdef NONMATCHING_C
+s32 Cmd_164D(void) {
   s32 a;
   s32 b;
 
@@ -646,14 +628,10 @@ NON_MATCH s32 Cmd_164D(void) {
   if (VM_SeekToNamedArg('i')) {
     VM_GetValue();
   } else if (sRainIntervalRand > 0) {
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    Mod(gRandomTable[gRandTableIdx], sRainIntervalRand);
+    Mod(Random(), sRainIntervalRand);
   }
   sRainIntervalBase = a;
   sRainIntervalRand = b;
-#else
-  INCFUNC("asm/func/Cmd_164D.inc");
-#endif
 }
 
 // 雨が降っているかどうかを返す

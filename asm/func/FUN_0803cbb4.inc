@@ -40,7 +40,7 @@ _0803CBEE:
 	adds r0, r4, #0
 	movs r1, #3
 _0803CC06:
-	bl FUN_0807ae6c
+	bl Player_InflictCrossoverElementalCond
 	adds r4, r5, #0
 	b _0803CC3E
 _0803CC0E:

@@ -355,9 +355,8 @@ void LeverSwitch_UpdateShake(LeverSwitch* item) {
   if (item->shakeTimer == 0) {
     item->sprite.pos = item->basePos;
   } else {
-    u16* table = gRandomTable;
-    item->sprite.pos.x = item->basePos.x + Mod(_Random(table), 20) - 10;
-    item->sprite.pos.z = item->basePos.z + Mod(_Random(table), 20) - 10;
+    item->sprite.pos.x = item->basePos.x + Mod(RandomNext(), 20) - 10;
+    item->sprite.pos.z = item->basePos.z + Mod(RandomNext(), 20) - 10;
     item->shakeTimer--;
   }
 }
@@ -380,15 +379,13 @@ NON_MATCH void LeverSwitch_OnHurt(HitboxData* a, HitboxData* b, LeverSwitch* ite
     if (item->kind == LEVER_RUSTY) {
       Vec3 vel;
       Vec3 velRange;
-      u16* table;
 
       CpuFill32(0, &vel, sizeof(vel));
       vel.y = 16;
-      table = gRandomTable;
-      velRange.x = (_Random(table) & 3) + 15;
-      velRange.y = (_Random(table) & 7) + 15;
-      velRange.z = (_Random(table) & 3) + 15;
-      ScatterEffect_Spawn((_Random(table) & 3) + 2, SCATTER_KIND_17, &item->sprite.pos, &vel, &velRange, 12, 15);
+      velRange.x = (RandomNext() & 3) + 15;
+      velRange.y = (RandomNext() & 7) + 15;
+      velRange.z = (RandomNext() & 3) + 15;
+      ScatterEffect_Spawn((RandomNext() & 3) + 2, SCATTER_KIND_17, &item->sprite.pos, &vel, &velRange, 12, 15);
     }
     if (LeverSwitch_TestFlags(item, LEVER_FLAG_ONCE)) {
       LeverSwitch_SetFlags(item, LEVER_FLAG_LOCKED);

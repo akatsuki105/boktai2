@@ -34,7 +34,7 @@ typedef struct {
   u16 power;              // 0x028, 毎フレーム 0 に戻してから elems が積む, player に与えるダメージ
   u8 attrKind;            // 0x02A, ダメージの属性, 0 と 3 は風, 1 は地, 2 はダーク, 1 のとき player を見る分岐に入る
   u8 unk_2b;              // 0x02B
-  Spore spores[32];         // 0x02C
+  Spore spores[32];       // 0x02C
   Player* player;         // 0xDAC, gPlayerPtr[0]
 } SporeManager;
 static_assert(sizeof(SporeManager) == 3504);
@@ -73,9 +73,9 @@ NON_MATCH void Spore_StateSpread(SporeManager* p, Spore* elem, s32 idx) {
     playerPos = &p->player->mover.pos;
     if (p->hitCount < sSporeHitLimits[attrKind] && (p->frameCount & 3) == (idx & 3)) {
       s32 dx = abs(playerPos->x - pos->x);
-      if (dx < 0x80) {
+      if (dx < Q8(0.5)) {
         s32 dz = abs(playerPos->z - pos->z);
-        if (dz < 0x80) {
+        if (dz < Q8(0.5)) {
           p->attrKind = attrKind;
           p->hitCount++;
           p->power += power;

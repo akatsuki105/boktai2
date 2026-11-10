@@ -387,9 +387,8 @@ s32 Durathror_GetQuadrant(Vec3* pos) {
 // 残差はレジスタの割り当て (27/27), 原典は乱数表と添字のアドレスを r5 / r4 に置き 1 のマスクを最後にまとめて掛ける
 NON_MATCH s32 FUN_08036990(s32 dir) {
 #ifdef NONMATCHING_C
-  u16* table = gRandomTable;
-  s32 a = _Random(table) & 1;
-  s32 b = _Random(table) & 1;
+  s32 a = RandomNext() & 1;
+  s32 b = RandomNext() & 1;
 
   return (dir + a + b + 1) & 3;
 #else
@@ -398,13 +397,12 @@ NON_MATCH s32 FUN_08036990(s32 dir) {
 }
 
 void FUN_080369d4(Vec3* pos, s32 corner) {
-  u16* table = gRandomTable;
-  u16 a = _Random(table);
-  u16 b = _Random(table);
-  u16 c = _Random(table);
+  u16 a = RandomNext();
+  u16 b = RandomNext();
+  u16 c = RandomNext();
   s32 dx = (a & 1) + (b & 1) + (c & 1);
-  u16 d = _Random(table);
-  u16 e = _Random(table);
+  u16 d = RandomNext();
+  u16 e = RandomNext();
   s32 dz = (d & 1) + (e & 1);
 
   dx <<= 8;
@@ -439,11 +437,10 @@ void FUN_080369d4(Vec3* pos, s32 corner) {
 NON_MATCH void FUN_08036b2c(Durathror* p, s32 count, u32 speedXZ) {
 #ifdef NONMATCHING_C
   Vec3 pos = p->sprite_280.pos;
-  u16* table = gRandomTable;
 
-  pos.x = pos.x - Q8(0.25) + (_Random(table) & 0x7F);
-  pos.y = pos.y + Q8(0.5) + (_Random(table) & 0x3F);
-  pos.z = pos.z - Q8(0.25) + (_Random(table) & 0x7F);
+  pos.x = pos.x - Q8(0.25) + (RandomNext() & 0x7F);
+  pos.y = pos.y + Q8(0.5) + (RandomNext() & 0x3F);
+  pos.z = pos.z - Q8(0.25) + (RandomNext() & 0x7F);
   Entity08015584_SpawnHorizontal(&pos, p->unk_158, 16, count, 6, 0x3001, Q6(0.75), speedXZ, 512, 0);
 #else
   INCFUNC("asm/func/FUN_08036b2c.inc");
@@ -455,28 +452,27 @@ void FUN_08036c1c(Durathror* p) { Entity08015584_SpawnRadial(&p->sprite_280.pos,
 // 残差は角ごとの定数の持ち方 (183/193), 原典は各 case で 1 と基準座標をレジスタに置き直し, case 1 だけ乱数表を読み直す
 NON_MATCH void FUN_08036c4c(Vec3* pos, s32 corner) {
 #ifdef NONMATCHING_C
-  u16* table = gRandomTable;
 
-  corner = (corner + Mod(_Random(table), 2) + 1) & 3;
+  corner = (corner + Mod(RandomNext(), 2) + 1) & 3;
   switch (corner) {
     case 0: {
-      pos->x = ((_Random(table) & 1) << 8) + 0x1280;
-      pos->z = ((_Random(table) & 1) << 8) + 0x280;
+      pos->x = ((RandomNext() & 1) << 8) + 0x1280;
+      pos->z = ((RandomNext() & 1) << 8) + 0x280;
       break;
     }
     case 1: {
-      pos->x = 0x1880 - ((_Random(table) & 1) << 8);
-      pos->z = ((_Random(table) & 1) << 8) + 0x280;
+      pos->x = 0x1880 - ((RandomNext() & 1) << 8);
+      pos->z = ((RandomNext() & 1) << 8) + 0x280;
       break;
     }
     case 2: {
-      pos->x = ((_Random(table) & 1) << 8) + 0x1280;
-      pos->z = 0x680 - ((_Random(table) & 1) << 8);
+      pos->x = ((RandomNext() & 1) << 8) + 0x1280;
+      pos->z = 0x680 - ((RandomNext() & 1) << 8);
       break;
     }
     case 3: {
-      pos->x = 0x1880 - ((_Random(table) & 1) << 8);
-      pos->z = 0x680 - ((_Random(table) & 1) << 8);
+      pos->x = 0x1880 - ((RandomNext() & 1) << 8);
+      pos->z = 0x680 - ((RandomNext() & 1) << 8);
       break;
     }
   }
@@ -525,14 +521,12 @@ void FUN_08036e4c(Durathror* p, Vec3* pos) {
 void FUN_08036ec4(Durathror* p) {
   Mover* mover = &p->base.mover;
   Vec3 pos;
-  u16* table;
   s32 i;
 
   pos.x = Q8(18.5), pos.y = Q8(15.625);
-  table = gRandomTable;
   for (i = 0; i < 7; i++) {
-    pos.y = (_Random(table) & 7) * 256 + Q8(15.625);
-    pos.z = Mod(_Random(table), 5) * 256 + Q8(2.5);
+    pos.y = (RandomNext() & 7) * 256 + Q8(15.625);
+    pos.z = Mod(RandomNext(), 5) * 256 + Q8(2.5);
     if (abs(mover->pos.x - pos.x) >= Q8(1) || abs(mover->pos.z - pos.z) >= Q8(1)) {
       FallingObject_Spawn(0, 2, 2, 60, 48, 32, p->unk_19a, p->unk_19c, &pos);  // 棘鉄球
     }
@@ -600,8 +594,8 @@ NON_MATCH void FUN_080371d4(WorldPos* pos) {
   Vec3 size;
 
   VEC3_SET(size, Q8(0.641), Q8(1), Q8(0.641));
-  EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
-  EmitSmoke(pos, 3, &size, (u8)Random(), (Random() & 3) + 2, (Random() & 3) + 20, 2, 2);
+  EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
+  EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
 #else
   INCFUNC("asm/func/FUN_080371d4.inc");
 #endif
@@ -736,18 +730,17 @@ NON_MATCH void FUN_080375d4(DurathrorElem* elem) {
 // 1 回目で打ち切り (147/144), 原典は i と p をスタックに逃がして乱数表と添字のアドレスをレジスタに置く
 NON_MATCH void FUN_0803767c(Durathror* p, DurathrorElem* elem) {
 #ifdef NONMATCHING_C
-  u16* table = gRandomTable;
   s32 i;
 
   for (i = 0; i < 4; i++) {
     Vec3 pos;
-    u32 angle = _Random(table) & 0xFF;
-    s32 radius = (_Random(table) & 0x1F) + 32;
+    u32 angle = RandomNext() & 0xFF;
+    s32 radius = (RandomNext() & 0x1F) + 32;
 
     Vec3_SetPolar(&pos, angle & 0xFF, radius);
     Vec3_Add(&pos, &elem->sprite.pos);
     pos.y += 0x80;
-    FUN_08060220(p->entity080601a8, _Random(table) & 0xFF, (_Random(table) & 3) + 8, _Random(table) & 3, i * 8 + 30, p->unk_162, &pos);
+    FUN_08060220(p->entity080601a8, RandomNext() & 0xFF, (RandomNext() & 3) + 8, RandomNext() & 3, i * 8 + 30, p->unk_162, &pos);
   }
 #else
   INCFUNC("asm/func/FUN_0803767c.inc");
@@ -1482,10 +1475,9 @@ void FUN_08038b54(Durathror* p) {
 // 残差はループ前の 0 の持ち方 (235/235), 原典は unk_18b に書く 0 と i の初期値を別のレジスタで作る
 NON_MATCH void FUN_08038b88(Durathror* p) {
 #ifdef NONMATCHING_C
-  u16* table = gRandomTable;
-  s32 delay = _Random(table) & 0x3F;
+  s32 delay = RandomNext() & 0x3F;
   Path* path = Map_GetPath(5);
-  s32 idx = gFrameCounter + 1 + p->unk_18a + (_Random(table) & 15);
+  s32 idx = gFrameCounter + 1 + p->unk_18a + (RandomNext() & 15);
   Vec3 pos;
   s32 i;
 
@@ -1620,12 +1612,10 @@ void FUN_080390f8(Durathror* p) {
   p->sprite_280.pos.y = mover->pos.y + p->unk_16e;
   p->sprite_280.pos.z = mover->pos.z;
   if (p->shakeTimer > 0) {
-    u16* table;
     Vec3 ofs;
 
     p->shakeTimer--;
-    table = gRandomTable;
-    Vec3_SetPolar(&ofs, _Random(table) & 0xFF, _Random(table) & 15);
+    Vec3_SetPolar(&ofs, RandomNext() & 0xFF, RandomNext() & 15);
     Vec3_Add(&p->sprite_280.pos, &ofs);
   }
   FUN_08022e20(boss);
@@ -2253,13 +2243,12 @@ NON_MATCH void durathror_0803aae8(Boss* boss, s32 timer) {
   }
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_18);
   if ((timer & 31) == 0 && ++p->unk_164 <= 8) {
-    u16* table = gRandomTable;
     Vec3 ofs;
     Vec3 pos;
-    s32 radius = _Random(table) & 0xFF;
+    s32 radius = RandomNext() & 0xFF;
     s32 angle = boss->players[0]->mover.angle;
 
-    Vec3_SetPolar(&ofs, angle + (_Random(table) & 31) - 16, radius);
+    Vec3_SetPolar(&ofs, angle + (RandomNext() & 31) - 16, radius);
     Vec3_Sum(&pos, boss->playerPos[0], &ofs);
     FUN_08036908(&pos);
     DurathrorImpale_Spawn(p->impale, p->unk_1a2, 32, &pos);
@@ -2513,11 +2502,9 @@ NON_MATCH void FUN_0803b628(Boss* boss, s32 timer) {
     return;
   }
   if (timer & 1) {
-    u16* table;
     Vec3 pos;
 
-    table = gRandomTable;
-    Vec3_SetPolar(&pos, _Random(table) & 0xFF, (_Random(table) & 0x1F) + 32);
+    Vec3_SetPolar(&pos, RandomNext() & 0xFF, (RandomNext() & 0x1F) + 32);
     Vec3_Add(&pos, &p->sprite_280.pos);
     pos.y += 0x80;
     FUN_08060220(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);

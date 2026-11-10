@@ -269,9 +269,9 @@ NON_MATCH s32 EntityE534_HandleCmd2(EntityE534* p, MsgQueue* mq, MsgPacket* msg)
     e->unk_04 = 0;
     e->target = target;
     e->angle = ArcTan2_8(e->target.x - e->pos.x, e->target.z - e->pos.z);
-    e->angle += (Random() & 31) - 16;
+    e->angle += (RandomNext() & 31) - 16;
     e->speed = speed;
-    e->moveTime = (Random() & 7) + 7;
+    e->moveTime = (RandomNext() & 7) + 7;
   }
   p->unk_18 = 1;
   return 0;
@@ -375,14 +375,11 @@ NON_MATCH void EntityE534Elem_UpdateState1(EntityE534* p, EntityE534Elem* e, s32
   s32 dz;
 
   if (e->active) {
-    u16* table;
-
     e->active = FALSE;
     e->angle = ArcTan2_8(p->center.x - e->pos.x, p->center.z - e->pos.z);
     e->moveAngle = ArcTan2_8(e->target.x - e->pos.x, e->target.z - e->pos.z);
-    table = gRandomTable;
-    e->moveAngle += (_Random(table) & 31) - 16;
-    e->moveTime = (_Random(table) & 15) + 16;
+    e->moveAngle += (RandomNext() & 31) - 16;
+    e->moveTime = (RandomNext() & 15) + 16;
   }
   dx = e->target.x - e->pos.x;
   dz = e->target.z - e->pos.z;
@@ -393,12 +390,9 @@ NON_MATCH void EntityE534Elem_UpdateState1(EntityE534* p, EntityE534Elem* e, s32
     return;
   }
   if (e->moveTime == 0) {
-    u16* table;
-
     e->moveAngle = ArcTan2_8(dx, dz);
-    table = gRandomTable;
-    e->moveAngle += (_Random(table) & 31) - 16;
-    e->moveTime = (_Random(table) & 31) + 32;
+    e->moveAngle += (RandomNext() & 31) - 16;
+    e->moveTime = (RandomNext() & 31) + 32;
   } else {
     e->moveTime--;
   }
@@ -428,21 +422,15 @@ NON_MATCH void EntityE534Elem_UpdateState3(EntityE534* p, EntityE534Elem* e, s32
   pos = &e->pos;
   target = &e->target;
   if (e->active) {
-    u16* table;
-
     e->active = FALSE;
     e->angle = ArcTan2_8(target->x - pos->x, target->z - pos->z);
-    table = gRandomTable;
-    e->angle += (_Random(table) & 31) - 16;
-    e->moveTime = (_Random(table) & 15) + 16;
+    e->angle += (RandomNext() & 31) - 16;
+    e->moveTime = (RandomNext() & 15) + 16;
   }
   if (e->moveTime == 0) {
-    u16* table;
-
     e->angle = ArcTan2_8(target->x - pos->x, target->z - pos->z);
-    table = gRandomTable;
-    e->angle += (_Random(table) & 15) - 8;
-    e->moveTime = (_Random(table) & 15) + 16;
+    e->angle += (RandomNext() & 15) - 8;
+    e->moveTime = (RandomNext() & 15) + 16;
   } else {
     e->moveTime--;
   }
@@ -480,12 +468,9 @@ NON_MATCH void EntityE534Elem_UpdateState4(EntityE534* p, EntityE534Elem* e, s32
   }
   LerpVec3(&e->orbitCenter, &e->orbitCenter, &e->target, idx + 8, 5);
   if (e->moveTime == 0) {
-    u16* table;
-
     e->angle = ArcTan2_8(-e->orbitOffset.x, -e->orbitOffset.z);
-    table = gRandomTable;
-    e->angle += (_Random(table) & 15) - 7;
-    e->moveTime = (_Random(table) & 7) + 8;
+    e->angle += (RandomNext() & 15) - 7;
+    e->moveTime = (RandomNext() & 7) + 8;
   } else {
     e->moveTime--;
   }
@@ -526,13 +511,10 @@ NON_MATCH void EntityE534Elem_UpdateState6(EntityE534* p, EntityE534Elem* e, s32
   s32 dz;
 
   if (e->active) {
-    u16* table;
-
     e->active = FALSE;
     e->angle = ArcTan2_8(e->target.x - e->pos.x, e->target.z - e->pos.z);
-    table = gRandomTable;
-    e->angle += (_Random(table) & 31) - 16;
-    e->moveTime = (_Random(table) & 15) + 16;
+    e->angle += (RandomNext() & 31) - 16;
+    e->moveTime = (RandomNext() & 15) + 16;
   }
   dx = e->target.x - e->pos.x;
   dz = e->target.z - e->pos.z;
@@ -543,12 +525,9 @@ NON_MATCH void EntityE534Elem_UpdateState6(EntityE534* p, EntityE534Elem* e, s32
     return;
   }
   if (e->moveTime == 0) {
-    u16* table;
-
     e->angle = ArcTan2_8(dx, dz);
-    table = gRandomTable;
-    e->angle += (_Random(table) & 31) - 16;
-    e->moveTime = (_Random(table) & 31) + 32;
+    e->angle += (RandomNext() & 31) - 16;
+    e->moveTime = (RandomNext() & 31) + 32;
   } else {
     e->moveTime--;
   }

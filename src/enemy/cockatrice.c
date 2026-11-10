@@ -342,8 +342,8 @@ NON_MATCH void Cockatrice_StateTurn(Cockatrice* p) {
     s32 dir;
     u32 target;
 
-    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
-    dir = (((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10) && !Cockatrice_TestFlags((p->e).owner, COCKAFLAG_FLEEING)) {
       target = (p->e).mover.path->node->delay >> 12;
       (p->e).unk_1dc = target;
@@ -419,17 +419,14 @@ NON_MATCH void Cockatrice_StateTurn(Cockatrice* p) {
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).animForceRestart) {
-    s32 dir = (((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7;
-    s32 d = (p->e).unk_1dc - dir;
+    s32 dir = Angle_ToDir8((p->e).mover.angle);
+    s32 d = abs((p->e).unk_1dc - dir);
 
-    if (d < 0) {
-      d = -d;
-    }
     if (d > 0) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     } else {
       (p->e).subStateDone = 1;
-      (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+      (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
       Enemy_PlayAnim(&p->e, 0);
       if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
@@ -710,7 +707,7 @@ NON_MATCH void Cockatrice_StateDamaged(Cockatrice* p, s32 timer) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -1191,7 +1188,7 @@ NON_MATCH void Cockatrice_StateLand(Cockatrice* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -1387,7 +1384,7 @@ NON_MATCH void Cockatrice_StateFire(Cockatrice* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -1779,7 +1776,7 @@ NON_MATCH void FUN_0815758c(Cockatrice* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -2015,7 +2012,7 @@ NON_MATCH void Cockatrice_SubFleeMove(Cockatrice* p) {
   speed = (p->e).getMoveSpeed(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (!Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE) && Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
-    if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 0, 0, 20);
     }
   } else if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
@@ -2066,7 +2063,7 @@ NON_MATCH void Cockatrice_SubChaseMove(Cockatrice* p) {
       Enemy_ResetState(&p->e, 0, 0, 14);
       return;
     }
-  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+  } else if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
     if (!TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
       if (FUN_0815d6d0(p)) {
         return;
@@ -2275,7 +2272,7 @@ NON_MATCH void Cockatrice_SubChaseReroute(Cockatrice* p) {
       (p->e).unk_542 = 6;
     }
   }
-  FUN_080e7b6c(&p->e);
+  Enemy_StepToFloorEdge(&p->e);
   (p->e).animSpeedDiv = 2;
 #else
   INCFUNC("asm/func/Cockatrice_SubChaseReroute.inc");
@@ -3140,7 +3137,7 @@ NON_MATCH void FUN_0815b8d0(Cockatrice* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -3231,7 +3228,7 @@ NON_MATCH void Cockatrice_PlayFireAnim(Cockatrice* p) {
 #ifdef NONMATCHING_C
   u8 variant;
   AuxAnimPlayFlags flags;
-  u32 dir = (((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+  u32 dir = Angle_ToDir8((p->e).mover.angle);
   u32 v;
   u32 f;
   u32 anim;
@@ -3383,21 +3380,16 @@ NON_MATCH void Cockatrice_ReleaseTarget(Cockatrice* p) {
 }
 
 // 足元から石のかけらを count 個はね上げる
-// 103/104命令, 乱数表の基底を置くレジスタの壁 (enedefault.c の FUN_080f8844 と同じ), 1回目の下書きで切り上げ
-NON_MATCH void Cockatrice_SpawnStoneShards(Cockatrice* p, s32 count) {
-#ifdef NONMATCHING_C
+void Cockatrice_SpawnStoneShards(Cockatrice* p, s32 count) {
   Vec3 vel, velRange;
 
   vel.x = -7;
-  vel.y = (Random() & 15) + 20;
+  vel.y = (RandomNext() & 15) + 20;
   vel.z = -7;
-  velRange.x = (Random() & 3) + 15;
-  velRange.y = (Random() & 7) + 15;
-  velRange.z = (Random() & 3) + 15;
+  velRange.x = (RandomNext() & 3) + 15;
+  velRange.y = (RandomNext() & 7) + 15;
+  velRange.z = (RandomNext() & 3) + 15;
   ScatterEffect_Spawn(count, SCATTER_STONE, &(p->e).mover.pos, &vel, &velRange, 45, 31);
-#else
-  INCFUNC("asm/func/Cockatrice_SpawnStoneShards.inc");
-#endif
 }
 
 s32 Cockatrice_GetMoveSpeed(Cockatrice* p) {
@@ -3642,7 +3634,7 @@ NON_MATCH bool8 Cockatrice_TryDetectPlayer(Cockatrice* p) {
 }
 
 // 向きが変わるところで, プレイヤーと高さが違えばプレイヤーのタイルへ経路を引き直し, 同じなら横の通路の端へ見回しながら回り込む, 何かしたら TRUE
-// 1421/1962命令の意味だけの下書き, 原典は直交する2方向の隣へ4方向からまっすぐ届くかの探索を (向きごとに) 全部展開し, 端のタイルを探す部分は enemy.c の FUN_080e7b6c の各節と同じ形, 前半の高さが違うときの経路の引き直しは FUN_0815b8d0 の形, 1回目の下書きで切り上げ
+// 1421/1962命令の意味だけの下書き, 原典は直交する2方向の隣へ4方向からまっすぐ届くかの探索を (向きごとに) 全部展開し, 端のタイルを探す部分は enemy.c の Enemy_StepToFloorEdge の各節と同じ形, 前半の高さが違うときの経路の引き直しは FUN_0815b8d0 の形, 1回目の下書きで切り上げ
 NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
 #ifdef NONMATCHING_C
   s32 tile;
@@ -3718,7 +3710,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
         u32 a;
 
         for (i = 0; i < 4; i++) {
-          a = (Random() & 3) << 6;
+          a = (RandomNext() & 3) << 6;
           if (a != angle) {
             break;
           }
@@ -3734,7 +3726,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
         Enemy_ResetState(&p->e, 3, 1, 0);
         (p->e).unk_542 = 6;
       }
-      FUN_080e7b6c(&p->e);
+      Enemy_StepToFloorEdge(&p->e);
       (p->e).animSpeedDiv = 2;
       (p->e).unk_222 |= ENEMY222_UNK_1;
       return TRUE;
@@ -3853,7 +3845,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
     u32 a;
 
     for (i = 0; i < 4; i++) {
-      a = (Random() & 3) << 6;
+      a = (RandomNext() & 3) << 6;
       if (a != angle) {
         break;
       }
@@ -4078,7 +4070,7 @@ void Cockatrice_ReduceHopTimer(Cockatrice* p) {
 NON_MATCH void Cockatrice_TryLookAround(Cockatrice* p) {
 #ifdef NONMATCHING_C
   Cockatrice* q = (p->e).owner;
-  s32 angle = (Random() & 7) << 5;
+  s32 angle = (RandomNext() & 7) << 5;
   s32 d = angle - (p->e).mover.angle;
 
   if (d > 128) {
@@ -4095,7 +4087,7 @@ NON_MATCH void Cockatrice_TryLookAround(Cockatrice* p) {
     (p->e).savedSubState2 = (p->e).subState2;
     q->lookBaseAngle = (p->e).mover.angle;
     q->lookDir = angle >> 5;
-    q->lookTimer = ((Random() & 3) + 1) * 120;
+    q->lookTimer = ((RandomNext() & 3) + 1) * 120;
     Enemy_EnterState(&p->e, Cockatrice_StateLookTurn, ES_UNK_44);
     Enemy_ResetState(&p->e, 3, 1, 0);
     q->lookCount = 4;
@@ -4272,7 +4264,7 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return TRUE;
   }

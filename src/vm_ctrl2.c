@@ -126,7 +126,7 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
   }
 
   if (VM_SeekToNamedArg('b')) {
-    ev.flags |= 0x10;
+    ev.flags |= ZEVFLAG_NEED_KEYS;
     ev.keys = VM_GetValue();
   }
 
@@ -134,7 +134,7 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
     VM_DecodeValue(VM_GetPC(), &type, &val);
     ev.scriptPC = (u8*)val;
   } else if (VM_SeekToNamedArg('p')) {
-    ev.flags |= 0x20;
+    ev.flags |= ZEVFLAG_SCRIPT_ID;
     ev.scriptPC = (u8*)VM_GetValue();
   }
 

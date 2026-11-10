@@ -46,6 +46,13 @@ static inline void Vec3_SetPolar(Vec3* v, u32 angle, s32 radius) {
   v->z = POLAR_Z(radius, angle);
 }
 
+// v に (x, y, z) を入れる
+static inline void Vec3_Set(Vec3* v, s32 x, s32 y, s32 z) {
+  v->x = x;
+  v->y = y;
+  v->z = z;
+}
+
 // v を 0 で埋める
 static inline void Vec3_Clear(Vec3* v) { CpuFill32(0, v, sizeof(Vec3)); }
 

@@ -207,21 +207,25 @@ typedef struct {
 } ZoneEventSource;
 static_assert(sizeof(ZoneEventSource) == 48);
 
+typedef u16 ZoneEventFlags;
+#define ZEVFLAG_NEED_KEYS (1 << 4)  // 0x0010, '.b', keys と gInput[0].pressed が重なったときだけ発火する
+#define ZEVFLAG_SCRIPT_ID (1 << 5)  // 0x0020, '.p', scriptPC はポインタではなくスクリプトID, VM_ExecByID で起動する
+
 // スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立てる
 // Map_InsertEvent は同じ zoneID が連続するように挿し込む: 末尾から同じ zoneID を探し、見つかればその次へ (後続を1つずつずらす)、無ければ末尾に追加する
 typedef struct CollisionMapEvent {
-  u32 id;           // 0x00, Map_InsertEvent が gNextMapEventID の連番を書く
-  u16 trigger;      // 0x04, '.m=0x0DD2', 0x0DD2: 入った時, 0xA5BF: 中にいる間, 0xD5CC: 出た時, 0x14C9 ('?'): 入った時と出た時, 0x1516 ('*'): 全部, 0x1517: 入った時と中にいる間
-  u16 sourceID;     // 0x06, 反応する ZoneEventSource.id, 0x14C9 ('?') なら誰にでも反応する
-  ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (Map_InsertEvent)
-  s16 unk_a;        // 0x0A, '.t=0', 読むコードは見つかっていない
-  u16 flags;        // 0x0C, VM_Ctrl_SetZoneCallback が '.b' で 0x10、'.p' で 0x20 を立てる
-  u16 zoneCount;    // 0x0E, FindZonesByID が zones の件数を書き込む
-  u16 args1[4];     // 0x10, '.w', Map_RunZoneEventScript がスクリプトの引数に積む
-  u16 args2[4];     // 0x18, '.s', 同上
-  u32 keys;         // 0x20, flags に 0x10 が立っているとき, gInput[0].pressed と重なったときだけ発火する, VM_Ctrl_SetZoneCallback の '.b'
-  u8* scriptPC;     // 0x24, Map_RunZoneEventScript がスクリプトの PC として実行する
-  Zone* zones;      // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
+  u32 id;                // 0x00, Map_InsertEvent が gNextMapEventID の連番を書く
+  u16 trigger;           // 0x04, '.m=0x0DD2', 0x0DD2: 入った時, 0xA5BF: 中にいる間, 0xD5CC: 出た時, 0x14C9 ('?'): 入った時と出た時, 0x1516 ('*'): 全部, 0x1517: 入った時と中にいる間
+  u16 sourceID;          // 0x06, 反応する ZoneEventSource.id, 0x14C9 ('?') なら誰にでも反応する
+  ZoneID16 zoneID;       // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (Map_InsertEvent)
+  s16 unk_a;             // 0x0A, '.t=0', 読むコードは見つかっていない
+  ZoneEventFlags flags;  // 0x0C, see ZoneEventFlags
+  u16 zoneCount;         // 0x0E, FindZonesByID が zones の件数を書き込む
+  u16 args1[4];          // 0x10, '.w', Map_RunZoneEventScript がスクリプトの引数に積む
+  u16 args2[4];          // 0x18, '.s', 同上
+  u32 keys;              // 0x20, '.b', ZEVFLAG_NEED_KEYS が立っているとき, gInput[0].pressed と重なったときだけ発火する
+  u8* scriptPC;          // 0x24, Map_RunZoneEventScript がスクリプトの PC として実行する
+  Zone* zones;           // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
 } CollisionMapEvent;
 static_assert(sizeof(CollisionMapEvent) == 44);
 

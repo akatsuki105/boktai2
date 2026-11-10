@@ -14,7 +14,7 @@ _081D786C:
 	cmp r0, #0
 	beq _081D788C
 	adds r0, r5, #0
-	bl FUN_081d7814
+	bl EntityC60FItem_RemoveTileOverride
 	movs r1, #0x83
 	lsls r1, r1, #1
 	adds r2, r5, r1

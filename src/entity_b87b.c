@@ -57,18 +57,18 @@ NON_MATCH void EntityB87B_UpdateShake(EntityB87B* p) {
     p->sprites[1].pos.y = p->animTimer * 2 - 90;
     p->sprites[3].flags |= SPRFLAG_HIDDEN;
   } else if (p->animTimer < 50) {
-    p->sprites[1].pos.x = Mod(Random(), 5) + 58;
-    p->sprites[1].pos.y = (45 - p->animTimer) * 2 + Mod(Random(), 5) - 2;
+    p->sprites[1].pos.x = Mod(RandomNext(), 5) + 58;
+    p->sprites[1].pos.y = (45 - p->animTimer) * 2 + Mod(RandomNext(), 5) - 2;
   } else if (p->animTimer < 55) {
-    p->sprites[1].pos.x = Mod(Random(), 5) + 58;
-    p->sprites[1].pos.y = (p->animTimer - 55) * 2 + Mod(Random(), 5) - 2;
+    p->sprites[1].pos.x = Mod(RandomNext(), 5) + 58;
+    p->sprites[1].pos.y = (p->animTimer - 55) * 2 + Mod(RandomNext(), 5) - 2;
   } else if (p->animTimer < 60) {
-    p->sprites[1].pos.x = Mod(Random(), 5) + 58;
-    p->sprites[1].pos.y = Mod(Random(), 5) - 2;
+    p->sprites[1].pos.x = Mod(RandomNext(), 5) + 58;
+    p->sprites[1].pos.y = Mod(RandomNext(), 5) - 2;
     p->sprites[3].flags |= SPRFLAG_HIDDEN;
   } else if (p->animTimer < 80) {
-    p->sprites[1].pos.x = Mod(Random(), 3) + 59;
-    p->sprites[1].pos.y = Mod(Random(), 3) - 1;
+    p->sprites[1].pos.x = Mod(RandomNext(), 3) + 59;
+    p->sprites[1].pos.y = Mod(RandomNext(), 3) - 1;
     p->sprites[3].flags |= SPRFLAG_HIDDEN;
   } else if (p->animTimer < 90) {
     p->sprites[1].pos.x = 60;

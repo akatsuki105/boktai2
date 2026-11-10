@@ -13,10 +13,10 @@
 	beq _0806290E
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08062468
+	bl Player_ApplyEnchantColors
 _0806290E:
 	adds r0, r5, #0
-	bl FUN_0806241c
+	bl Player_GetSunbathBrightness
 	adds r2, r0, #0
 	ldr r6, _08062994 @ =0x0000094C
 	adds r1, r5, r6

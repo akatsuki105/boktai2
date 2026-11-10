@@ -247,7 +247,7 @@ NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
       rgb555* dst = e->pltt;
       s32 i;
 
-      for (i = 15; i >= 0; i--) {
+      for (i = 0; i < 16; i++) {
         u32 c0 = *from;
         u32 c1 = *to;
         s32 r = Div(rest * (c0 & 0x1F) + (c1 & 0x1F) * e->plttTick, e->plttFrames);
@@ -295,7 +295,7 @@ NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
 }
 
 // スクリプトから要素を1個足す, '.t' のスプライトを '.p' に置き, '.m' があればアニメを1コマ目まで進め, '.s' なら影を付ける
-// 残差は 334/324, sprite / gfx のアドレスをレジスタに置く順と退避レジスタの割り当て, 後半の AuxAnim 手動送りは Player 側 (FUN_080772ec など) と同じ壁
+// 残差は 334/324, sprite / gfx のアドレスをレジスタに置く順と退避レジスタの割り当て, 後半の AuxAnim 手動送りは Player 側 (Player_AdvanceCoffinAnim など) と同じ壁
 // Tier A-C 試済 (sprite / gfx ポインタのローカル, '.n' / '.A' を if/else で 0 にする), 未: 割り当ての順
 NON_MATCH void Entity3117_AddEntryScripted(void) {
 #ifdef NONMATCHING_C

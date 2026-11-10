@@ -165,10 +165,8 @@ NON_MATCH void FUN_080171f4(ItemIconPopupManager* p, ItemIconPopup* elem, s32 id
   ItemIconPopup_ProjectPos(elem);
   if (elem->kind == 3) {
     if (elem->stateTimer > 3) {
-      u16* table = gRandomTable;
-
-      elem->sprite.pos.x += (_Random(table) & 3) - 1;
-      elem->sprite.pos.y += (_Random(table) & 3) - 1;
+      elem->sprite.pos.x += (RandomNext() & 3) - 1;
+      elem->sprite.pos.y += (RandomNext() & 3) - 1;
     }
   }
   if ((elem->kind == 3 && elem->stateTimer > 8) || (elem->kind != 3 && elem->stateTimer > 7)) {

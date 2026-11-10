@@ -287,7 +287,7 @@ NON_MATCH void Octopus_StateGrab(Octopus* p) {
         e->hurtbox.iframes = 0;
         Enemy_ClearDamage(e);
         CLEAR_FLAGS(e->flags3, ENEFLAG3_UNK_5);
-        FUN_080e6978(e, 0, &pos, 0, flags);
+        Enemy_OnCrushed(e, 0, &pos, 0, flags);
       }
     }
   } else if (anim->cmdIdx < 2) {
@@ -361,7 +361,7 @@ NON_MATCH void Octopus_StateHold(Octopus* p, s32 timer) {
   pos.z = vec3_ARRAY_085adbfc[flags * 5 + cmd].z + (p->e).mover.pos.z;
   if (m->unk_4 == 4) {
     (p->e).s->aux.spr.priority = 2;
-    FUN_080e6978(m->owner, 0, &pos, 0, flags);
+    Enemy_OnCrushed(m->owner, 0, &pos, 0, flags);
   } else if (m->unk_4 < 4) {
     Player* player = m->owner;
 
@@ -430,7 +430,7 @@ NON_MATCH void Octopus_StatePullUnder(Octopus* p) {
   pos.y = vec3_ARRAY_085adc4c[flags * 2 + cmd].y + (p->e).mover.pos.y;
   pos.z = vec3_ARRAY_085adc4c[flags * 2 + cmd].z + (p->e).mover.pos.z;
   if (m->unk_4 & 4) {
-    FUN_080e6978(m->owner, 1, &pos, 0, flags);
+    Enemy_OnCrushed(m->owner, 1, &pos, 0, flags);
   } else if (m->unk_4 < 4) {
     Player_HoldGrabbed(m->owner, &pos, NULL, 3, flags, 0, 0, 0, 0);
   }
@@ -440,7 +440,7 @@ NON_MATCH void Octopus_StatePullUnder(Octopus* p) {
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
     PlaySound_082406e0(SONG_480);
     if (m->unk_4 & 4) {
-      FUN_080e6978(FindEnemyById(m->id), 2, &pos, 0, 0);
+      Enemy_OnCrushed(FindEnemyById(m->id), 2, &pos, 0, 0);
       Entity081ea120_Spawn(&(p->e).mover.pos, 1, 2, 0, 276);
     } else if (m->unk_4 < 4) {
       Player_HoldGrabbed(m->owner, &pos, NULL, 3, flags, 0, 1, 0, 0);
@@ -489,7 +489,7 @@ NON_MATCH void Octopus_StateSlam(Octopus* p, s32 timer) {
     } else if (m->unk_4 & 4) {
       Enemy* e = m->owner;
 
-      FUN_080e6978(e, 2, &pos, 0, 0);
+      Enemy_OnCrushed(e, 2, &pos, 0, 0);
       Enemy_PlayVoice(e);
     }
   } else {
@@ -513,7 +513,7 @@ NON_MATCH void Octopus_StateSlam(Octopus* p, s32 timer) {
         PlaySound_082406e0(SONG_479);
       }
     } else {
-      FUN_080e6978(m->owner, 2, &pos, 0, 64);
+      Enemy_OnCrushed(m->owner, 2, &pos, 0, 64);
     }
     Enemy_PlayAnimFlipOnly(&p->e, 16);
     (p->e).pendingDelay = 60;
@@ -619,8 +619,8 @@ NON_MATCH void Octopus_StateDying(Octopus* p, s32 timer) {
     (p->e).hp = 1;
     (p->e).heightAboveFloor = 0;
     ClearMemory(q->unk_658, 8);
-    (p->e).jumpVel.y = (Random() & 7) + 72;
-    q->spinSpeed = Random() | 0xFFE0;
+    (p->e).jumpVel.y = (RandomNext() & 7) + 72;
+    q->spinSpeed = RandomNext() | 0xFFE0;
     (p->e).unk_1bc = 0;
     if (abs(q->spinSpeed) < 10) {
       q->spinSpeed = 10;

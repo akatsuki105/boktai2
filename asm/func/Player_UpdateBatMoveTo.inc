@@ -107,7 +107,7 @@ _08074F64:
 	movs r2, #0x93
 	lsls r2, r2, #3
 	adds r1, r6, r2
-	ldr r0, _08074F88 @ =FUN_08074d90
+	ldr r0, _08074F88 @ =Player_UpdateBatLockedIdle
 	str r0, [r1]
 	adds r0, r6, #0
 	bl Player_NotifyLockedDone
@@ -115,7 +115,7 @@ _08074F64:
 	.align 2, 0
 _08074F80: .4byte 0x000002E6
 _08074F84: .4byte 0x000002E7
-_08074F88: .4byte FUN_08074d90
+_08074F88: .4byte Player_UpdateBatLockedIdle
 _08074F8C:
 	ldr r2, _08074FAC @ =gSineTable
 	adds r0, r3, #0

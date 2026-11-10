@@ -443,10 +443,8 @@ static inline u8 LinkSession_GetLuxGauge(s32 idx) {
 
 // 投げた下駄の回転の速さを 5〜14 の範囲で, 向きも含めてランダムに決める
 static inline void SetRandomSpin(u16* spin) {
-  u16* table = gRandomTable;
-
-  *spin = Mod(_Random(table), 10) + 5;
-  if (_Random(table) & 1) {
+  *spin = Mod(RandomNext(), 10) + 5;
+  if (RandomNext() & 1) {
     *spin = -*spin;
   }
 }
@@ -1889,7 +1887,6 @@ void MainMenu_UpdateParticles(MainMenu* p) {
 NON_MATCH void UNUSED MainMenu_BurstParticles(MainMenu* p, s32 idx, s32 x, s32 y) {
 #ifdef NONMATCHING_C
   MMenuPtclSet* set = &p->ptclSets[idx];
-  u16* table;
   s32 i;
 
   set->group2 = GetParticleGroup(PTCL_GROUP_2);
@@ -1904,9 +1901,8 @@ NON_MATCH void UNUSED MainMenu_BurstParticles(MainMenu* p, s32 idx, s32 x, s32 y
     node->ptcl.pos.y = y;
     Particle_SetPose(&node->ptcl, set->group2, 0);
     Particle_SetPltt(&node->ptcl, 1);
-    table = gRandomTable;
-    angle = ((_Random(table) >> 3) & 15) + i * 32 - 8;
-    speed = ((_Random(table) >> 3) & 3) + 4;
+    angle = ((RandomNext() >> 3) & 15) + i * 32 - 8;
+    speed = ((RandomNext() >> 3) & 3) + 4;
     node->velX = POLAR_X(speed, angle);
     node->velY = POLAR_Z(speed, angle);
     node->active = TRUE;
@@ -1923,7 +1919,6 @@ NON_MATCH void UNUSED MainMenu_BurstParticles(MainMenu* p, s32 idx, s32 x, s32 y
 NON_MATCH void MainMenu_SparkleParticles(MainMenu* p, s32 idx, s32 x, s32 y) {
 #ifdef NONMATCHING_C
   MMenuPtclSet* set = &p->ptclSets[idx];
-  u16* table;
   s32 i;
 
   set->group2 = GetParticleGroup(PTCL_GROUP_1);
@@ -1941,9 +1936,8 @@ NON_MATCH void MainMenu_SparkleParticles(MainMenu* p, s32 idx, s32 x, s32 y) {
     }
     Particle_SetPose(&node->ptcl, set->group2, 21);
     Particle_SetPltt(&node->ptcl, 0);
-    table = gRandomTable;
-    angle = ((_Random(table) >> 3) & 15) + i * 32 - 8;
-    speed = ((_Random(table) >> 3) & 1) + 3;
+    angle = ((RandomNext() >> 3) & 15) + i * 32 - 8;
+    speed = ((RandomNext() >> 3) & 1) + 3;
     node->velX = POLAR_X(speed, angle);
     node->velY = POLAR_Z(speed, angle) - 2;
     node->ptcl.pos.x = node->velX + x;
@@ -4503,13 +4497,13 @@ NON_MATCH void InventoryCursor_ResetSlotmap(InventoryCursor* p, u32 flags) {
 
   p->flags = flags;
   for (i = 0; i < 4; i++) {
-    for (j = 3; j >= 0; j--) {
+    for (j = 0; j < 4; j++) {
       INVENTORY_SLOT(p, j, i) = i * 4 + j;
     }
   }
   if (flags & 1) {
     for (i = 0; i < 4; i++) {
-      for (j = 3; j >= 0; j--) {
+      for (j = 0; j < 4; j++) {
         INVENTORY_SLOT(p, j + 4, i) = 16;
       }
     }
@@ -4625,7 +4619,7 @@ void ItemEffect_Good(MainMenu* p, s32 goodCondID, s32 goodCondSec) {
     player->goodFrom = GetItemID(p->inValuableInventory, p->cursor.savedSlot);
     player->goodCondID = goodCondID;
     player->goodCondTimer = goodCondSec * 60;
-    player->plttID_95e = OBP_ELEMENT(0);
+    player->flashPlttID = OBP_ELEMENT(0);
     player->plttFlashTimer = 48;
     p->effectAmount = 0;
     p->unk_a95 = 1;
@@ -4649,10 +4643,10 @@ void ItemEffect_Vitamins(MainMenu* p, s32 statIdx, s32 amount) {
     p->vitaminAmount = amount;
     add = p->vitaminAmount;
     i = p->vitaminStat;
-    if (*(gStat->stats + i) + *(gStat->statBonus + i) + add > 99) {
-      add = 99 - *(gStat->stats + i) - *(gStat->statBonus + i);
+    if (STATS(i) + STAT_BONUS(i) + add > 99) {
+      add = 99 - STATS(i) - STAT_BONUS(i);
     }
-    *(gStat->statBonus + i) += add;
+    STAT_BONUS(i) += add;
     Player_RefreshAllStats(player);
     MainMenu_DrawEquipStats(p, 5, 3);
   }
@@ -5383,18 +5377,16 @@ void MainMenu_BeginWeatherDoll(MainMenu* p, s32 val) {
 // おてんきゲタを投げる演出を始める, アイコンをランダムな向きに飛ばし, 回転の速さを itemMoves[0].timer に入れる
 void MainMenu_BeginThrowGeta(MainMenu* p) {
   Vec3 from, to;
-  u16* table;
   u16 v;
 
   p->sprites[p->cursor.savedSlot + 17].flags |= SPRFLAG_HIDDEN;
   MainMenu_GetSlotPos(&from, p->cursor.savedSlot);
   from.x += 8;
   from.y += 8;
-  table = gRandomTable;
-  to.x = -6 - Mod(_Random(table), 3);
-  to.y = -5 - Mod(_Random(table), 5);
-  v = Mod(_Random(table), 10) + 5;
-  if (_Random(table) & 1) {
+  to.x = -6 - Mod(RandomNext(), 3);
+  to.y = -5 - Mod(RandomNext(), 5);
+  v = Mod(RandomNext(), 10) + 5;
+  if (RandomNext() & 1) {
     v = -v;
   }
   MainMenu_BeginItemMove(p, 0, ICON_ITEM(GetItemID(p->inValuableInventory, p->cursor.savedSlot)), p->sprites[p->cursor.savedSlot + 17].plttID, &from, &to, 0, 0);
@@ -6274,7 +6266,7 @@ void MainMenu_InitPage_Valuable(MainMenu* p) {
 }
 
 // 武器ページで武器を選んだ後のカーソル枠表を作る, permission の bit0〜3 で装備できる登録枠 16〜19 を右側に並べ, 無い枠は隣の枠で埋める
-// 残差: 218/225 命令, InventoryCursor_ResetSlotmap と同じ 4x4 の値の誘導変数の壁に加え, 原典は &cursor や slotmap の各位置をスタックに逃がして持つ
+// 残差: 219/225 命令, InventoryCursor_ResetSlotmap と同じ 4x4 の値の誘導変数の壁に加え, 原典は &cursor や slotmap の各位置をスタックに逃がして持つ
 NON_MATCH void MainMenu_ResetWeaponTargetCursor(MainMenu* p, u32 permission) {
 #ifdef NONMATCHING_C
   InventoryCursor* c = &p->cursor;
@@ -6294,7 +6286,7 @@ NON_MATCH void MainMenu_ResetWeaponTargetCursor(MainMenu* p, u32 permission) {
 
   c->flags = permission;
   for (i = 0; i < 4; i++) {
-    for (j = 3; j >= 0; j--) {
+    for (j = 0; j < 4; j++) {
       INVENTORY_SLOT(c, j, i) = i * 4 + j;
     }
   }
@@ -7303,13 +7295,13 @@ NON_MATCH void MainMenu_ResetArmorCursor(MainMenu* p, u32 flags) {
 
   c->flags = flags;
   for (i = 0; i < 4; i++) {
-    for (j = 3; j >= 0; j--) {
+    for (j = 0; j < 4; j++) {
       INVENTORY_SLOT(c, j, i) = i * 4 + j;
     }
   }
   if (flags & 1) {
     for (i = 0; i < 4; i++) {
-      for (j = 3; j >= 0; j--) {
+      for (j = 0; j < 4; j++) {
         INVENTORY_SLOT(c, j + 4, i) = 16;
       }
     }
@@ -8678,7 +8670,7 @@ void MainMenu_CommitStatAllocation(MainMenu* p) {
   u16* point;
 
   for (i = 0; i < 4; i++) {
-    *(gStat->stats + i) += p->allocatedStats[i];
+    STATS(i) += p->allocatedStats[i];
     p->allocatedStats[i] = 0;
   }
   point = &gStat->statusPoint;

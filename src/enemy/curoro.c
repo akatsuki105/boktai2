@@ -41,7 +41,7 @@ static_assert(sizeof(Curoro) == 1712);
 const STRING_DATA char s_eneinline_08252060[] = "../system/eneinline.h";
 const STRING_DATA char s_curorocom_c_08252078[] = "curorocom.c";
 
-void FUN_0807a904(Player* p, u32 flag);
+void Player_AddSpeedPenalty(Player* p, u32 flag);
 void Player_InflictElementalCond(Player* p, u32 kind);
 void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip);
 void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p);
@@ -109,11 +109,8 @@ NON_MATCH void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p) {
   if (b->ignoreMask != HIM_0 || Enemy_IsDead(&p->e)) {
     return;
   }
-  dy = ((IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_MOUSE) ? 60 : 260) - ((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y);
-  if (dy < 0) {
-    dy = -dy;
-  }
-  if (dy > 32) {
+  dy = abs(((IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_MOUSE) ? Q8(0.235) : Q8(1.016)) - ((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y));
+  if (dy > Q8(0.125)) {
     return;
   }
   Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -123,7 +120,7 @@ NON_MATCH void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p) {
   SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8);
   if ((p->e).variant == 0) {
-    FUN_0807a904(gPlayerPtr[0], 0);
+    Player_AddSpeedPenalty(gPlayerPtr[0], 0);
     q = (p->e).owner;
     SET_FLAGS(q->unk_658, 2);
     PlaySound_082406e0(SONG_685);
@@ -173,11 +170,8 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
     }
     (p->e).unk_488 = 60;
     if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
-      s32 d = b->angle - a->angle;
+      s32 d = abs(b->angle - a->angle);
 
-      if (d < 0) {
-        d = -d;
-      }
       if (d <= 32) {
         (p->e).unk_4be = a->power;
         (p->e).unk_48c = 1;
@@ -319,7 +313,7 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
     (p->e).unk_48a = 0;
     (p->e).unk_48c = 1;
   }
-  FUN_080e64e4(&p->e);
+  Enemy_BurstEmitterParticles(&p->e);
   (p->e).unk_48a = b->damage;
   a->damage += (p->e).unk_188;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
@@ -924,7 +918,7 @@ void Curoro_UpdateHover(Curoro* p) {
     } else {
       s32 h, d;
 
-      h = (IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_MOUSE) ? 60 : 260;
+      h = (IsPlayerMini() || gPlayerPtr[0]->kind == PLAYER_MOUSE) ? Q8(0.235) : Q8(1.016);
       if ((p->e).heightAboveFloor < h) {
         (p->e).heightAboveFloor += FixToInt(9, gSineTable[q->bobAngle]);
         if (q->bobAngle < 64) {
@@ -933,7 +927,7 @@ void Curoro_UpdateHover(Curoro* p) {
         (p->e).mover.pos.y = (p->e).floorY + (p->e).heightAboveFloor;
       }
       d = (p->e).floorY + h - (p->e).mover.pos.y;
-      if ((d < 0 ? -d : d) > 16) {
+      if (abs(d) > Q8(0.063)) {
         if (d < 0) {
           (p->e).heightAboveFloor -= 2;
         } else {
@@ -944,7 +938,7 @@ void Curoro_UpdateHover(Curoro* p) {
       {
         AuxSprite* sprite = &(p->e).s->aux.spr;
 
-        sprite->pos.y += FixToInt(12, gSineTable[q->bobAngle] * 32);
+        sprite->pos.y += FixToInt(12, gSineTable[q->bobAngle] * Q8(0.125));
       }
       q->bobAngle += 2;
     }
@@ -1182,11 +1176,8 @@ bool8 FUN_0813cc7c(Curoro* p) {
     return FALSE;
   }
   (p->e).flags &= ~ENEFLAG_UNK_3;
-  dy = (p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y;
-  if (dy < 0) {
-    dy = -dy;
-  }
-  if (dy > 512 || (p->e).playerDistSq >= (p->e).range0Sq) {
+  dy = abs((p->e).mover.pos.y - gPlayerPtr[0]->mover.pos.y);
+  if (dy > Q8(2) || (p->e).playerDistSq >= (p->e).range0Sq) {
     return FALSE;
   }
   SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
@@ -1248,7 +1239,7 @@ NON_MATCH void FUN_0813ce1c(Curoro* p) {
     s16 dx = agent->dest.x - (p->e).mover.pos.x;
     s16 dz = agent->dest.z - (p->e).mover.pos.z;
 
-    if ((dx < 0 ? -dx : dx) <= 32 && (dz < 0 ? -dz : dz) <= 32) {
+    if (abs(dx) <= Q8(0.125) && abs(dz) <= Q8(0.125)) {
       arrived = TRUE;
     } else {
       if (dx != 0 || dz != 0) {

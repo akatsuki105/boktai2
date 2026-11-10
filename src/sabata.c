@@ -38,25 +38,21 @@ static inline bool8 TestMapFlag(u32 mapflag) {
   return FALSE;
 }
 
-// facing から animIDOffset と xflip を決める
+// facing から animDir と xflip を決める
 void AllySabata_SetAnimFacing(Player* p) {
   u8 dir8 = p->facing;
 
   if (IS_8DIR_LEFT(dir8)) {
-    p->animIDOffset = 8 - dir8;
+    p->animDir = 8 - dir8;
     p->xflip = TRUE;
   } else {
-    p->animIDOffset = dir8;
+    p->animDir = dir8;
     p->xflip = FALSE;
   }
 }
 
 // human に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
-// 残差は animIdx + animIDOffset の adds のオペランド順だけ (57対57), 原典は adds r2, r1, r2
-// src/player.c の Player_PlayAnim が同じ1命令で止まっているので、この2つは同じ問題
-// Tier A-B 試済: オペランド入れ替え / u32 と u16 のキャスト / 複合代入 (加算位置が動いて悪化)
-NON_MATCH bool32 AllySabata_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
-#ifdef NONMATCHING_C
+bool32 AllySabata_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
   MainAnimPlayFlags16 flags = 0;
 
   if (p->animID == animIdx) {
@@ -64,7 +60,7 @@ NON_MATCH bool32 AllySabata_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
   }
   p->animID = animIdx;
 
-  MainSprite_SetAnim(&p->human, &p->humanGfx, animIdx + p->animIDOffset, PLAYMODE_LOOP, flags);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, p->animID + p->animDir, PLAYMODE_LOOP, flags);
   if (p->xflip) {
     p->human.flags |= SPRFLAG_XFLIP;
   } else {
@@ -73,40 +69,28 @@ NON_MATCH bool32 AllySabata_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
 
   MainSprite_SetAnimSpeed(&p->human, (u16)animSpeed);
   return MainSprite_AdvanceAnim(&p->human, &p->humanGfx);
-#else
-  INCFUNC("asm/func/AllySabata_PlayAnim.inc");
-#endif
 }
 
 // 向きと速さから mover.delta を作る, 階段タイルの上では上りで 52/64, 下りで 40/64 に変える
-// 残差10命令 (96/106): 原典は p を ip に置いたまま回すのでレジスタ圧が高く, こちらは低位レジスタで足りてしまう
-// src/player.c の Player_SetMoveDelta が同じコードで同じ所で止まっているので、この2つは同じ問題
-// Tier A-C 試済: stairs のローカル化 / ローカルの宣言順の入れ替え (どちらも割当は動かない)
-NON_MATCH void FUN_08080d2c(Player* p, s32 val) {
-#ifdef NONMATCHING_C
-  s32 v;
+void AllySabata_SetMoveDelta(Player* p, s32 val) {
   s32 angle = ((p->facing + 5) & 7) * 32;
+
   p->mover.delta.x = POLAR_X(val, angle);
   p->mover.delta.z = POLAR_Z(val, angle);
 
   if (p->tile.stairs[1] == 1) {
     if (p->mover.delta.z < 0) {
-      v = p->mover.delta.z * 40;
+      p->mover.delta.z = FixToInt(6, p->mover.delta.z * 40);
     } else {
-      v = p->mover.delta.z * 52;
+      p->mover.delta.z = FixToInt(6, p->mover.delta.z * 52);
     }
-    p->mover.delta.z = FixToInt(6, v);
   } else if (p->tile.stairs[1] == 2) {
     if (p->mover.delta.x < 0) {
-      v = p->mover.delta.x * 40;
+      p->mover.delta.x = FixToInt(6, p->mover.delta.x * 40);
     } else {
-      v = p->mover.delta.x * 52;
+      p->mover.delta.x = FixToInt(6, p->mover.delta.x * 52);
     }
-    p->mover.delta.x = FixToInt(6, v);
   }
-#else
-  INCFUNC("asm/func/FUN_08080d2c.inc");
-#endif
 }
 
 // action と state を切り替えて状態タイマーを 0 に戻す
@@ -246,60 +230,60 @@ s32 FUN_080810f8(void) {
   return COFFIN_OAK;
 }
 
-// kind を引数にして scriptID_9c4 のスクリプトを起動する
+// kind を引数にして eventScriptID のスクリプトを起動する
 void FUN_08081118(Player* p, u32 kind) {
   ScriptArgs args;
   u32 argv[1];
 
-  if (p->scriptID_9c4 != 0) {
+  if (p->eventScriptID != 0) {
     args.argc = 1;
     argv[0] = kind;
     args.argv = argv;
-    VM_ExecByID(p->scriptID_9c4, &args);
+    VM_ExecByID(p->eventScriptID, &args);
   }
 }
 
-void FUN_08081150(Player* p, u32 bits) { p->unk_9bc |= bits; }
+void FUN_08081150(Player* p, u32 bits) { p->forbidFlags |= bits; }
 
-u32 FUN_08081160(Player* p, u16 bits) { return p->unk_9bc & bits; }
+u32 FUN_08081160(Player* p, u16 bits) { return p->forbidFlags & bits; }
 
 void FUN_08081170(Player* p) {
-  if (p->scriptID_9c0 != 0) {
-    VM_ExecByID(p->scriptID_9c0, NULL);
+  if (p->forbidScriptID != 0) {
+    VM_ExecByID(p->forbidScriptID, NULL);
   }
 }
 
-// unk_94c のパレットを pltt_2a4 に取り込む, unk_94e のぶんだけ各成分を明るくする
+// plttIdx のパレットを pltt に取り込む, plttBrightness のぶんだけ各成分を明るくする
 void FUN_08081188(Player* p) {
-  rgb555* src = &gObjPlttData[p->unk_94c * 16];
+  rgb555* src = &gObjPlttData[p->plttIdx * 16];
   s32 i;
 
-  if (p->unk_94e == 0) {
+  if (p->plttBrightness == 0) {
     for (i = 0; i < 16; i++) {
       if (i != 5 && i != 6 && i != 13) {
-        p->pltt_2a4[i] = *src;
+        p->pltt[i] = *src;
       }
       src++;
     }
   } else {
     for (i = 0; i < 16; i++) {
       if (i != 5 && i != 6 && i != 13) {
-        s32 r = (*src & 0x1F) + p->unk_94e;
+        s32 r = (*src & 0x1F) + p->plttBrightness;
         s32 g;
         s32 b;
 
         if (r > 0x1F) {
           r = 0x1F;
         }
-        g = ((*src >> 5) & 0x1F) + p->unk_94e;
+        g = ((*src >> 5) & 0x1F) + p->plttBrightness;
         if (g > 0x1F) {
           g = 0x1F;
         }
-        b = ((*src >> 10) & 0x1F) + p->unk_94e;
+        b = ((*src >> 10) & 0x1F) + p->plttBrightness;
         if (b > 0x1F) {
           b = 0x1F;
         }
-        p->pltt_2a4[i] = (b << 10) | (g << 5) | r;
+        p->pltt[i] = MakeRgb555(r, g, b);
       }
       src++;
     }
@@ -322,17 +306,17 @@ s32 FUN_08081240(Player* p) {
   return ret;
 }
 
-// unk_950 で選んだ3色をパレットの 5/6/13 番に差し込む
+// enchantColorIdx で選んだ3色をパレットの 5/6/13 番に差し込む
 void FUN_0808128c(Player* p) {
   rgb555* src = &gObjPlttData[40 * 16];
 
-  src += p->unk_950 * 3;
-  p->pltt_2a4[5] = *src++;
-  p->pltt_2a4[6] = *src++;
-  p->pltt_2a4[13] = *src++;
+  src += p->enchantColorIdx * 3;
+  p->pltt[5] = *src++;
+  p->pltt[6] = *src++;
+  p->pltt[13] = *src++;
 }
 
-// pltt_2a4 と src を wSrc : wBase で混ぜて pltt_2a4[16] 以降に書き、そちらを表示に使う
+// pltt と src を wSrc : wBase で混ぜて pltt[16] 以降に書き、そちらを表示に使う
 // 命令数は一致 (123/123), 残差は割当と前処理の並びだけ: 原典は wBase を sp+4 に退避して src を sl に置くが, こちらは wBase を r9 に置いて退避を1つ減らす
 // src/player.c の Player_BlendPltt が同じコードなので、この2つは同じ問題
 // Tier A-C 試済: c / d をローカルにせず src[0] / base[0] を直接3回書くと lsls #16 の CSE が出る (これで 128→123), base の for 初期化への移動, ローカルの宣言順
@@ -342,15 +326,15 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
   s32 i;
 
   if (wSrc == 0) {
-    p->human.pltt = p->pltt_2a4;
+    p->human.pltt = p->pltt;
     return;
   }
 
-  for (i = 0, base = p->pltt_2a4; i < 16; i++) {
+  for (i = 0, base = p->pltt; i < 16; i++) {
     if (i == 5 || i == 6 || i == 13) {
       base[16] = base[0];
     } else {
-      s32 r = (src[0] & 0x1F) + p->unk_94e;
+      s32 r = (src[0] & 0x1F) + p->plttBrightness;
       s32 g;
       s32 b;
       s32 dr;
@@ -360,11 +344,11 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
       if (r > 0x1F) {
         r = 0x1F;
       }
-      g = ((src[0] >> 5) & 0x1F) + p->unk_94e;
+      g = ((src[0] >> 5) & 0x1F) + p->plttBrightness;
       if (g > 0x1F) {
         g = 0x1F;
       }
-      b = ((src[0] >> 10) & 0x1F) + p->unk_94e;
+      b = ((src[0] >> 10) & 0x1F) + p->plttBrightness;
       if (b > 0x1F) {
         b = 0x1F;
       }
@@ -378,46 +362,46 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
     src++;
     base++;
   }
-  p->human.pltt = &p->pltt_2a4[16];
+  p->human.pltt = &p->pltt[16];
 #else
   INCFUNC("asm/func/FUN_080812d4.inc");
 #endif
 }
 
 // 毎フレームのパレット更新, 被弾直後は白く飛ばし、それ以外はエンチャント色とのクロスフェードを進める
-// 残差1命令 (207/206): p と n のレジスタが入れ替わっているだけ (原典は p が r4), そのあおりで最初のループだけ &pltt_2a4[0] を 0x2C4 から subs #0x20 で作れない
+// 残差1命令 (207/206): p と n のレジスタが入れ替わっているだけ (原典は p が r4), そのあおりで最初のループだけ &pltt[0] を 0x2C4 から subs #0x20 で作れない
 // src/player.c の Player_UpdatePltt が同じ現象 (向きは逆) で止まっている
 // Tier A-C 試済: n の s32 / u32, ローカルをスコープ最小に移す
 NON_MATCH void FUN_080813d0(Player* p, u32 n) {
 #ifdef NONMATCHING_C
   u32 bright;
 
-  if (p->unk_951 != p->unk_950) {
-    p->unk_950 = p->unk_951;
+  if (p->nextEnchantColorIdx != p->enchantColorIdx) {
+    p->enchantColorIdx = p->nextEnchantColorIdx;
     FUN_0808128c(p);
   }
 
   bright = FUN_08081240(p);
-  if (p->unk_94c != n || p->unk_94e != bright) {
-    p->unk_94c = n;
-    p->unk_94e = bright;
+  if (p->plttIdx != n || p->plttBrightness != bright) {
+    p->plttIdx = n;
+    p->plttBrightness = bright;
     FUN_08081188(p);
   }
 
-  if (p->unk_476 != 0) {
+  if (p->blockFlashTimer != 0) {
     rgb555* src = &gObjPlttData[306 * 16];
     s32 i;
 
     for (i = 0; i < 16; i++) {
       if (i == 5 || i == 6 || i == 13) {
-        p->pltt_2a4[16 + i] = p->pltt_2a4[i];
+        p->pltt[16 + i] = p->pltt[i];
       } else {
-        p->pltt_2a4[16 + i] = src[i];
+        p->pltt[16 + i] = src[i];
       }
     }
 
-    p->human.pltt = &p->pltt_2a4[16];
-    p->unk_476--;
+    p->human.pltt = &p->pltt[16];
+    p->blockFlashTimer--;
     return;
   }
 
@@ -444,26 +428,26 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
       FUN_080812d4(p, src, w, 0x20 - w, 5);
     } else {
       p->enchantPlttTimer = 0;
-      p->human.pltt = p->pltt_2a4;
+      p->human.pltt = p->pltt;
     }
     return;
   }
 
   p->enchantPlttTimer = 0;
   if (p->plttFlashTimer > 31) {
-    rgb555* src = &gObjPlttData[p->plttID_95e * 16];
+    rgb555* src = &gObjPlttData[p->flashPlttID * 16];
     s32 i;
 
     for (i = 0; i < 16; i++) {
       if (i == 5 || i == 6 || i == 13) {
-        p->pltt_2a4[16 + i] = p->pltt_2a4[i];
+        p->pltt[16 + i] = p->pltt[i];
       } else {
-        p->pltt_2a4[16 + i] = src[i];
+        p->pltt[16 + i] = src[i];
       }
     }
-    p->human.pltt = &p->pltt_2a4[16];
+    p->human.pltt = &p->pltt[16];
   } else {
-    rgb555* src = &gObjPlttData[p->plttID_95e * 16];
+    rgb555* src = &gObjPlttData[p->flashPlttID * 16];
     s32 w = p->plttFlashTimer;
 
     FUN_080812d4(p, src, w, 0x20 - w, 5);
@@ -477,12 +461,12 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
 
 // サバタ用のパレットIDを入れ直す
 void FUN_080815ac(Player* p) {
-  p->plttID_94a = 39;
-  p->unk_94c = 0;
-  p->unk_950 = 0xFF;
+  p->basePlttID = 39;
+  p->plttIdx = 0;
+  p->enchantColorIdx = 0xFF;
   p->human.plttID = 289;
-  p->human.pltt = p->pltt_2a4;
-  FUN_080813d0(p, p->plttID_94a);
+  p->human.pltt = p->pltt;
+  FUN_080813d0(p, p->basePlttID);
 }
 
 // flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
@@ -504,7 +488,7 @@ NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
 
 // 点滅ポーズを反映してから、影の位置をスプライト位置+オフセットで作り直す
 void FUN_08081628(Player* p) {
-  FUN_080813d0(p, LinkPlayer_ApplyFlashPose(p, p->plttID_94a));
+  FUN_080813d0(p, LinkPlayer_ApplyFlashPose(p, p->basePlttID));
   p->shadowPos.x = p->human.pos.x + p->shadowOffset.x;
   p->shadowPos.y = p->human.pos.y + p->shadowOffset.y;
   p->shadowPos.z = p->human.pos.z + p->shadowOffset.z;
@@ -523,16 +507,16 @@ void FUN_080816a0(Player* p) {
   p->mosaicFrom[1] = 4;
   p->mosaicFrom[2] = 4;
   p->mosaicFrom[3] = 4;
-  p->unk_980[0] = 0;
-  p->unk_980[1] = 0;
-  p->unk_980[2] = 0;
-  p->unk_980[3] = 0;
+  p->mosaicTo[0] = 0;
+  p->mosaicTo[1] = 0;
+  p->mosaicTo[2] = 0;
+  p->mosaicTo[3] = 0;
   p->mosaicInterval[0] = 4;
   p->mosaicInterval[1] = 4;
   p->mosaicInterval[2] = 4;
   p->mosaicInterval[3] = 4;
-  VEC3_SET(p->pos_970, 0, 0, 0);
-  p->unk_3ff = 0xFF;
+  VEC3_SET(p->damageNumOffset, 0, 0, 0);
+  p->spiderWebIdx = 0xFF;
 }
 
 // サバタの被弾判定を組む, ダーク属性で受けてソル属性に弱い
@@ -584,7 +568,7 @@ void FUN_08081830(Player* p) {
   PLAYER_SET_ANIM_8DIR(p, p->facing);
 
   p->animID = 0;
-  MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, PLAYMODE_LOOP, 0);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, p->animDir, PLAYMODE_LOOP, 0);
   if (p->xflip) {
     p->human.flags |= SPRFLAG_XFLIP;
   } else {
@@ -629,9 +613,9 @@ void FUN_08081830(Player* p) {
   p->unk_4a6 = 0;
   p->approachUsed = 0;
   if (VM_SeekToNamedArg('r')) {
-    p->unk_467 = VM_GetValue();
+    p->approachChance = VM_GetValue();
   } else {
-    p->unk_467 = 0x32;
+    p->approachChance = 0x32;
   }
 
   p->blockCount = 0;
@@ -641,14 +625,14 @@ void FUN_08081830(Player* p) {
     p->blockLimit = 3;
   }
 
-  p->unk_46d = 0;
-  p->unk_474 = 0;
+  p->blownCount = 0;
+  p->pauseTimer = 0;
   if (VM_SeekToNamedArg('G')) {
-    p->unk_46c = VM_GetValue();
-    p->unk_472 = VM_GetValue();
+    p->blownLimit = VM_GetValue();
+    p->pauseTime = VM_GetValue();
   } else {
-    p->unk_46c = 4;
-    p->unk_472 = 0xB4;
+    p->blownLimit = 4;
+    p->pauseTime = 0xB4;
   }
 
   p->namakuraCount = 0;
@@ -677,7 +661,7 @@ s32 FUN_08081ab0(Player* p, u32 id) {
   Map_InitMoverTile(&p->tile, &pos);
   Mover_SetCollision(&p->mover, &p->tile, 30, 30);
   Map_InitNavAgent(&p->navAgent, &pos);
-  p->unk_464 = 1;
+  p->navAgentReady = 1;
   return FUN_08002a48(&p->mover);
 }
 
@@ -826,10 +810,10 @@ NON_MATCH void FUN_08081fb4(Player* p) {
     dir = p->pathEndFacing;
     p->facing = dir;
     if (dir > 4) {
-      p->animIDOffset = 8 - dir;
+      p->animDir = 8 - dir;
       p->xflip = 1;
     } else {
-      p->animIDOffset = dir;
+      p->animDir = dir;
       p->xflip = 0;
     }
 
@@ -841,7 +825,7 @@ NON_MATCH void FUN_08081fb4(Player* p) {
     p->mover.delta.x = FixToInt(12, COS(angle) * 12);
     p->mover.delta.z = FixToInt(12, SIN(angle) * 12);
     if (Map_ConsumeNavWaypointChanged(&p->navAgent)) {
-      p->facing = (((((u16)angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->facing = Angle_ToDir8(angle);
       AllySabata_SetAnimFacing(p);
     }
     AllySabata_PlayAnim(p, 419, Q6(1));
@@ -876,20 +860,20 @@ void FUN_08082154(Player* p) {
       if (p->stateTimer == 0) {
         if (p->facing >= 2 && p->facing <= 6) {
           p->facing = FACE_DOWN;
-          p->animIDOffset = 1;
+          p->animDir = 1;
           p->xflip = 0;
-          p->pos_930 = p->mover.pos;
-          p->pos_930.x -= 0x14;
-          p->pos_930.y += 0x14A;
-          p->pos_930.z += 0x3C;
+          p->chargePos = p->mover.pos;
+          p->chargePos.x -= 0x14;
+          p->chargePos.y += 0x14A;
+          p->chargePos.z += 0x3C;
         } else {
           p->facing = FACE_UP;
-          p->animIDOffset = 0;
+          p->animDir = 0;
           p->xflip = 0;
-          p->pos_930 = p->mover.pos;
-          p->pos_930.x += 0x14;
-          p->pos_930.y += 0x14A;
-          p->pos_930.z -= 0x1E;
+          p->chargePos = p->mover.pos;
+          p->chargePos.x += 0x14;
+          p->chargePos.y += 0x14A;
+          p->chargePos.z -= 0x1E;
         }
 
         p->stateTimer++;
@@ -902,11 +886,11 @@ void FUN_08082154(Player* p) {
           AllySabata_SetAction(p, PACT_UNK_7, 4);
         } else if (FUN_08082124(p)) {
           PlaySound_082406e0(NOISE_SOLAR_CHARGE);
-          p->unk_409 = 1;
-          p->unk_404 = 0;
+          p->chargeSoundOn = 1;
+          p->chargeVoiceTimer = 0;
           AllySabata_SetAction(p, PACT_UNK_7, 2);
         } else {
-          p->unk_404 = 0;
+          p->chargeVoiceTimer = 0;
           AllySabata_SetAction(p, PACT_UNK_7, 3);
         }
       }
@@ -914,16 +898,16 @@ void FUN_08082154(Player* p) {
     }
     case 2: {
       Player_SetFlag20(p, PFLAG20_PALM_UP | PFLAG20_QC);
-      if (p->unk_404 <= 4) {
-        p->unk_404++;
-        if (p->unk_404 == 5) {
+      if (p->chargeVoiceTimer <= 4) {
+        p->chargeVoiceTimer++;
+        if (p->chargeVoiceTimer == 5) {
           PlaySound_082406e0(VO_RDJANGO_TAIYO);
         }
       }
 
       AllySabata_PlayAnim(p, 468, Q6(1));
       p->shadowOffset.z = 0x1E;
-      p->plttID_95e = 290;
+      p->flashPlttID = 290;
       if (p->stateTimer <= 0x1F) {
         p->plttFlashTimer = p->stateTimer;
       } else {
@@ -937,11 +921,11 @@ void FUN_08082154(Player* p) {
 
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
-        p->unk_409 = 0;
+        p->chargeSoundOn = 0;
         AllySabata_SetAction(p, PACT_UNK_7, 4);
       } else if (!FUN_08082124(p)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
-        p->unk_409 = 0;
+        p->chargeSoundOn = 0;
         AllySabata_SetAction(p, PACT_UNK_7, 3);
       }
       break;
@@ -954,8 +938,8 @@ void FUN_08082154(Player* p) {
         AllySabata_SetAction(p, PACT_UNK_7, 4);
       } else if (FUN_08082124(p)) {
         PlaySound_082406e0(NOISE_SOLAR_CHARGE);
-        p->unk_409 = 1;
-        p->unk_404 = 0;
+        p->chargeSoundOn = 1;
+        p->chargeVoiceTimer = 0;
         AllySabata_SetAction(p, PACT_UNK_7, 2);
       }
       break;
@@ -963,7 +947,7 @@ void FUN_08082154(Player* p) {
     case 4: {
       p->shadowOffset.z = 0xF;
       if (AllySabata_PlayAnim(p, 472, Q6(1))) {
-        p->animIDOffset = p->facing;
+        p->animDir = p->facing;
         p->xflip = 0;
         AllySabata_SetAction(p, PACT_IDLE, 0);
       }
@@ -972,9 +956,9 @@ void FUN_08082154(Player* p) {
   }
 }
 
-// unk_3fe で flag35a に立てるビットを選ぶ
+// grabbedVisible で flag35a に立てるビットを選ぶ
 void FUN_08082464(Player* p) {
-  if (p->unk_3fe) {
+  if (p->grabbedVisible) {
     AllySabata_SetFlag35a(p, PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HURTBOX | PFLAG35A_NO_TILE | PFLAG35A_UNK_5);
   } else {
     AllySabata_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HURTBOX | PFLAG35A_NO_TILE | PFLAG35A_UNK_5);
@@ -1017,7 +1001,7 @@ void FUN_08082498(Player* p) {
   }
 
   if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
-    AllySabata_SetAction(p, PACT_UNK_19, 0);
+    AllySabata_SetAction(p, PACT_SEKIKA, 0);
     return;
   }
 
@@ -1098,10 +1082,10 @@ void FUN_08082670(Player* p) {
       if (AllySabata_PlayAnim(p, 456, Q6(1))) {
         p->blownAway = 0;
         AllySabata_SetAnimFacing(p);
-        p->unk_46d++;
-        if (p->unk_46d >= p->unk_46c) {
-          p->unk_46d = 0;
-          p->unk_474 = p->unk_472;
+        p->blownCount++;
+        if (p->blownCount >= p->blownLimit) {
+          p->blownCount = 0;
+          p->pauseTimer = p->pauseTime;
         }
         AllySabata_SetAction(p, PACT_IDLE, 0);
       }
@@ -1110,7 +1094,7 @@ void FUN_08082670(Player* p) {
   }
 }
 
-// PACT_UNK_18, 構えて unk_474 フレーム数えてから Emote_Show を呼び直し、アニメが終わったら行動 0 に戻す
+// PACT_UNK_18, 構えて pauseTimer フレーム数えてから Emote_Show を呼び直し、アニメが終わったら行動 0 に戻す
 void FUN_08082970(Player* p) {
   if (p->action != PACT_UNK_18) {
     sound_08240740(SONG_870);
@@ -1122,14 +1106,14 @@ void FUN_08082970(Player* p) {
     case 0: {
       if (AllySabata_PlayAnim(p, 498, Q6(1))) {
         p->emoteKind = EMOTE_1;
-        p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_474, p->unk_472, 300, 380);
+        p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->pauseTimer, p->pauseTime, 300, 380);
         AllySabata_SetAction(p, PACT_UNK_18, 1);
       }
       break;
     }
     case 1: {
-      p->unk_474--;
-      if (p->unk_474 == 0) {
+      p->pauseTimer--;
+      if (p->pauseTimer == 0) {
         p->emote = Emote_Show(p->emote, &p->mover, p->emoteKind, 0x7F, NULL, 0, 300, 380);
         AllySabata_SetAction(p, PACT_UNK_18, 2);
       }
@@ -1144,23 +1128,23 @@ void FUN_08082970(Player* p) {
   }
 }
 
-// PACT_UNK_19, 2フレームに1回 gPlayerPtr[0] の方へ向きを1段ずつ回し、16フレーム経ったら行動 2 に移る
+// PACT_SEKIKA, 2フレームに1回 gPlayerPtr[0] の方へ向きを1段ずつ回し、16フレーム経ったら行動 2 に移る
 // 残差2命令 (134/136) でこちらが短い: 定数 7 を r3 に残して向き差の & 7 でも使い回すが, 原典は movs を打ち直す
 // Tier A-C 試済: 向き差の書き方 (dir - facing + 8 / dir - (facing - 8)), facing のローカル化
 NON_MATCH void FUN_08082a94(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->action != PACT_UNK_19) {
+  if (p->action != PACT_SEKIKA) {
     sound_08240740(SONG_870);
     PlaySound_082406e0(SONG_873);
     p->emoteKind = EMOTE_0;
-    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_BLUE, &p->unk_474, p->unk_472, 300, 380);
-    AllySabata_SetAction(p, PACT_UNK_19, 0);
+    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, EM0_BANG_BLUE, &p->pauseTimer, p->pauseTime, 300, 380);
+    AllySabata_SetAction(p, PACT_SEKIKA, 0);
   }
 
   if (!(p->stateTimer & 1)) {
     s32 dx = gPlayerPtr[0]->mover.pos.x - p->mover.pos.x;
     s32 dz = gPlayerPtr[0]->mover.pos.z - p->mover.pos.z;
-    s32 dir = (((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+    s32 dir = Angle_ToDir8(ArcTan2_8(dx, dz));
 
     if (dir != p->facing) {
       if (((dir - p->facing + 8) & 7) > 4) {
@@ -1184,7 +1168,7 @@ NON_MATCH void FUN_08082a94(Player* p) {
 #endif
 }
 
-// サバタの行動2, 経路の次の点へ歩く, 遠いほど unk_3f2 が上がって姿が薄くなる
+// サバタの行動2, 経路の次の点へ歩く, 遠いほど dashVanish が上がって姿が薄くなる
 // 残差2命令 (195/197) でこちらが短い: 原典は abs の結果を別レジスタで作ってから dx / dz に移すが, こちらは行き先で直接作る
 // src/sabata.c の FUN_0808301c が同じ現象で止まっている
 // Tier A-C 試済: abs() / 手書きの符号反転 / static inline の Abs (どれも同じ出力)
@@ -1201,7 +1185,7 @@ NON_MATCH void FUN_08082bdc(Player* p) {
   dx = abs(p->navAgent.dest.x - p->mover.pos.x);
   dz = abs(p->navAgent.dest.z - p->mover.pos.z);
   if (dx <= 0x1F && dz <= 0x1F) {
-    p->unk_3f2 = 0;
+    p->dashVanish = 0;
     p->mover.pos.x = p->navAgent.dest.x;
     p->mover.pos.z = p->navAgent.dest.z;
     AllySabata_PlayAnim(p, 419, Q6(0.5));
@@ -1211,19 +1195,19 @@ NON_MATCH void FUN_08082bdc(Player* p) {
   } else {
     s32 angle;
 
-    p->plttID_95e = 295;
+    p->flashPlttID = 295;
     p->plttFlashTimer = 24;
     if (dx > 0xBF || dz > 0xBF) {
-      if (p->unk_3f2 <= 4) {
-        p->unk_3f2++;
+      if (p->dashVanish <= 4) {
+        p->dashVanish++;
       }
-    } else if (p->unk_3f2 != 0) {
-      p->unk_3f2--;
+    } else if (p->dashVanish != 0) {
+      p->dashVanish--;
     }
 
-    if (p->unk_3f2 == 5) {
+    if (p->dashVanish == 5) {
       AllySabata_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_BLINK);
-    } else if (p->unk_3f2 != 0) {
+    } else if (p->dashVanish != 0) {
       AllySabata_SetFlag35a(p, PFLAG35A_BLINK);
     }
 
@@ -1233,7 +1217,7 @@ NON_MATCH void FUN_08082bdc(Player* p) {
     p->mover.delta.x = FixToInt(12, COS(angle) * 32);
     p->mover.delta.z = FixToInt(12, SIN(angle) * 32);
     if (Map_ConsumeNavWaypointChanged(&p->navAgent)) {
-      p->facing = (((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->facing = Angle_ToDir8(ArcTan2_8(dx, dz));
       AllySabata_SetAnimFacing(p);
     }
     AllySabata_PlayAnim(p, 419, Q6(0.5));
@@ -1249,46 +1233,46 @@ NON_MATCH void FUN_08082dac(Player* p) {
 #ifdef NONMATCHING_C
   if (p->action != PACT_SUN_MAGIC) {
     AllySabata_SetAction(p, PACT_SUN_MAGIC, 0);
-    p->unk_951 = 0;
+    p->nextEnchantColorIdx = 0;
   }
 
   switch (p->state) {
     case 0: {
       if (p->facing >= 2 && p->facing <= 6) {
         p->facing = FACE_DOWN;
-        p->animIDOffset = 4;
+        p->animDir = 4;
         p->xflip = 0;
-        p->pos_930 = p->mover.pos;
-        p->pos_930.x -= 0x14;
-        p->pos_930.y += 0x14A;
-        p->pos_930.z += 0x3C;
+        p->chargePos = p->mover.pos;
+        p->chargePos.x -= 0x14;
+        p->chargePos.y += 0x14A;
+        p->chargePos.z += 0x3C;
       } else {
         p->facing = FACE_UP;
-        p->animIDOffset = 0;
+        p->animDir = 0;
         p->xflip = 0;
-        p->pos_930 = p->mover.pos;
-        p->pos_930.x += 0x14;
-        p->pos_930.y += 0x14A;
-        p->pos_930.z -= 0x14;
+        p->chargePos = p->mover.pos;
+        p->chargePos.x += 0x14;
+        p->chargePos.y += 0x14A;
+        p->chargePos.z -= 0x14;
       }
 
       AllySabata_PlayAnim(p, 414, Q6(1));
       if (p->facing == FACE_DOWN) {
-        p->animIDOffset = 1;
+        p->animDir = 1;
       } else {
-        p->animIDOffset = 0;
+        p->animDir = 0;
       }
 
       AllySabata_SetAction(p, PACT_SUN_MAGIC, 1);
-      p->plttID_95e = OBP_ELEMENT(1);
+      p->flashPlttID = OBP_ELEMENT(1);
       p->plttFlashTimer = 2;
       PlaySound_082406e0(VO_SABATA_ANKOKU_878);
-      RisingSunEffect_Create(p, &p->mover.pos, &p->pos_930, 1, p->unk_3ba);
+      RisingSunEffect_Create(p, &p->mover.pos, &p->chargePos, 1, p->unk_3ba);
       p->unk_477 = 0x3C;
       break;
     }
     case 1: {
-      p->plttID_95e = OBP_ELEMENT(1);
+      p->flashPlttID = OBP_ELEMENT(1);
       p->plttFlashTimer += 3;
       if (p->plttFlashTimer > 32) {
         p->plttFlashTimer = 32;
@@ -1303,7 +1287,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
     }
     case 2: {
       AllySabata_PlayAnim(p, 470, Q6(1));
-      p->plttID_95e = 290;
+      p->flashPlttID = 290;
       p->plttFlashTimer += 3;
       if (p->plttFlashTimer > 32) {
         p->plttFlashTimer = 32;
@@ -1338,7 +1322,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
   if (p->action != PACT_REFUELING) {
     AllySabata_SetAction(p, PACT_REFUELING, 0);
   }
-  p->unk_951 = 9;
+  p->nextEnchantColorIdx = 9;
 
   switch (p->state) {
     case 0: {
@@ -1353,7 +1337,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
       s32 dz;
 
       FUN_08084754();
-      p->plttID_95e = 290;
+      p->flashPlttID = 290;
       if (p->stateTimer <= 0x1F) {
         p->plttFlashTimer = p->stateTimer;
       } else {
@@ -1433,13 +1417,13 @@ void FUN_080832b8(Player* p) {
   if (p->action != PACT_ATTACK) {
     AllySabata_SetAction(p, PACT_ATTACK, 0);
   }
-  p->unk_951 = 9;
+  p->nextEnchantColorIdx = 9;
 
   switch (p->state) {
     case 0: {
       if (AllySabata_PlayAnim(p, 478, Q6(1))) {
         AllySabata_SetAction(p, PACT_ATTACK, 1);
-        p->unk_46e = 0;
+        p->slashDone = 0;
         p->slashCount = (Random() & 1) + 2;
       }
       break;
@@ -1482,8 +1466,8 @@ void FUN_080832b8(Player* p) {
       AllySabata_PlayAnim(p, 488, Q6(1));
       p->stateTimer++;
       if (p->stateTimer > 4) {
-        p->unk_46e++;
-        if (p->unk_46e < p->slashCount) {
+        p->slashDone++;
+        if (p->slashDone < p->slashCount) {
           AllySabata_SetAction(p, PACT_ATTACK, 1);
         } else if (gPlayerPtr[0]->action == PACT_GRABBED) {
           WorldPos pos;
@@ -1526,15 +1510,15 @@ void FUN_080832b8(Player* p) {
   }
 }
 
-// PACT_UNK_20, 構えて 1-2 回溜めたあと, 段差を避けて unk_3b0 の辺りをうろつきながら暗黒銃の散弾を撃ち続ける
-// 残差1命令 (917/916) と段差判定まわり, 原典は unk_3b0 のずらしで x を乱数の後に ldrh で読み, 段差で向きを反転する所に結果を使わない ldrsb と畳まれない blocked = 1 の判定が残る
+// PACT_SPIDER_WEB, 構えて 1-2 回溜めたあと, 段差を避けて refuelPos の辺りをうろつきながら暗黒銃の散弾を撃ち続ける
+// 残差1命令 (917/916) と段差判定まわり, 原典は refuelPos のずらしで x を乱数の後に ldrh で読み, 段差で向きを反転する所に結果を使わない ldrsb と畳まれない blocked = 1 の判定が残る
 // Tier A-C 試済 (乱数の式の書き順 4 通り, _Random(table) と table の取り位置, unk_4a7 は += 254 で一致, 段差判定の Vec3 を分ける)
 NON_MATCH void FUN_080835d8(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->action != PACT_UNK_20) {
-    AllySabata_SetAction(p, PACT_UNK_20, 0);
+  if (p->action != PACT_SPIDER_WEB) {
+    AllySabata_SetAction(p, PACT_SPIDER_WEB, 0);
   }
-  p->unk_951 = 9;
+  p->nextEnchantColorIdx = 9;
   if (p->knockbackSpeed != 0) {
     s32 angle = ((p->knockbackDir + 5) & 7) << 5;
 
@@ -1547,7 +1531,7 @@ NON_MATCH void FUN_080835d8(Player* p) {
     case 0: {
       Player_SetFlag20(p, PFLAG20_UNK_15);
       if (AllySabata_PlayAnim(p, 478, Q6(1))) {
-        AllySabata_SetAction(p, PACT_UNK_20, 1);
+        AllySabata_SetAction(p, PACT_SPIDER_WEB, 1);
       }
       break;
     }
@@ -1559,8 +1543,8 @@ NON_MATCH void FUN_080835d8(Player* p) {
       AllySabata_PlayAnim(p, 483, Q6(1));
       if (++p->stateTimer > 4) {
         p->speedPenalty = 0;
-        p->unk_403 = Random() & 1;
-        AllySabata_SetAction(p, PACT_UNK_20, 2);
+        p->spinRounds = Random() & 1;
+        AllySabata_SetAction(p, PACT_SPIDER_WEB, 2);
       }
       break;
     }
@@ -1568,14 +1552,14 @@ NON_MATCH void FUN_080835d8(Player* p) {
       Player_SetFlag20(p, PFLAG20_UNK_15);
       AllySabata_PlayAnim(p, 483, Q6(1));
       if (++p->stateTimer > 44) {
-        if (p->speedPenalty >= p->unk_403) {
+        if (p->speedPenalty >= p->spinRounds) {
           PlaySound_082406e0(VO_SABATA_TAKETHIS);
-          AllySabata_SetAction(p, PACT_UNK_20, 3);
+          AllySabata_SetAction(p, PACT_SPIDER_WEB, 3);
         } else {
-          AllySabata_SetAction(p, PACT_UNK_20, 2);
+          AllySabata_SetAction(p, PACT_SPIDER_WEB, 2);
           p->speedPenalty++;
         }
-        p->plttID_95e = 290;
+        p->flashPlttID = 290;
         p->plttFlashTimer = 32;
       }
       break;
@@ -1588,8 +1572,8 @@ NON_MATCH void FUN_080835d8(Player* p) {
         p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
         p->knockbackSpeed_4a4 = 0;
         p->unk_4a7 = ((p->facing + 5) & 7) << 5;
-        FUN_08084734(&p->unk_3b0);
-        AllySabata_SetAction(p, PACT_UNK_20, 4);
+        FUN_08084734(&p->refuelPos);
+        AllySabata_SetAction(p, PACT_SPIDER_WEB, 4);
       }
       break;
     }
@@ -1635,14 +1619,11 @@ NON_MATCH void FUN_080835d8(Player* p) {
         }
       }
       if (!(p->stateTimer & 0x3F)) {
-        u16* table;
-
-        FUN_08084734(&p->unk_3b0);
-        table = gRandomTable;
-        p->unk_3b0.x = (_Random(table) & 0x1FF) - 255 + p->unk_3b0.x;
-        p->unk_3b0.z = (_Random(table) & 0x1FF) - 255 + p->unk_3b0.z;
+        FUN_08084734(&p->refuelPos);
+        p->refuelPos.x = (Random() & 0x1FF) - 255 + p->refuelPos.x;
+        p->refuelPos.z = (Random() & 0x1FF) - 255 + p->refuelPos.z;
       }
-      diff = (ArcTan2_8(p->unk_3b0.x - p->mover.pos.x, p->unk_3b0.z - p->mover.pos.z) - p->unk_4a7 + 256) & 0xFF;
+      diff = (ArcTan2_8(p->refuelPos.x - p->mover.pos.x, p->refuelPos.z - p->mover.pos.z) - p->unk_4a7 + 256) & 0xFF;
       if (diff < 128) {
         p->unk_4a7 += 2;
       } else {
@@ -1687,16 +1668,16 @@ NON_MATCH void FUN_080835d8(Player* p) {
       if (!(p->stateTimer & 15)) {
         PlaySound_082406e0(SE_SABATA_SPIN);
       }
-      if (++p->stateTimer >= (p->unk_403 + 1) << 5) {
+      if (++p->stateTimer >= (p->spinRounds + 1) << 5) {
         sound_08240740(SONG_870);
-        AllySabata_SetAction(p, PACT_UNK_20, 5);
+        AllySabata_SetAction(p, PACT_SPIDER_WEB, 5);
       }
       break;
     }
     case 5: {
       AllySabata_PlayAnim(p, 483, Q6(1));
       if (++p->stateTimer > 4) {
-        AllySabata_SetAction(p, PACT_UNK_20, 6);
+        AllySabata_SetAction(p, PACT_SPIDER_WEB, 6);
       }
       break;
     }
@@ -1719,7 +1700,7 @@ s32 FUN_08083eac(Player* p) {
 
   if (gRisingSunCount != 0) {
     PlaySound_082406e0(VO_SABATA_DAMAGE1);
-    p->unk_474 = p->unk_472;
+    p->pauseTimer = p->pauseTime;
   }
 
   if (p->hurtbox.knockback != 0) {
@@ -1742,14 +1723,14 @@ s32 FUN_08083eac(Player* p) {
     return PACT_DAMAGED;
   }
 
-  if (action == PACT_UNK_18 || p->unk_474 != 0) {
+  if (action == PACT_UNK_18 || p->pauseTimer != 0) {
     return PACT_UNK_18;
   }
   if (action == PACT_DASH || action == PACT_ATTACK) {
     return action;
   }
-  if (action == PACT_UNK_19) {
-    return PACT_UNK_19;
+  if (action == PACT_SEKIKA) {
+    return PACT_SEKIKA;
   }
 
   if (gPlayerPtr[0]->action == PACT_GRABBED) {
@@ -1757,10 +1738,10 @@ s32 FUN_08083eac(Player* p) {
       WorldPos pos;
       s32 dir;
 
-      if (FUN_08081da4(p->unk_467) && FUN_08081de0(p, &pos, &dir) && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &pos)) {
+      if (FUN_08081da4(p->approachChance) && FUN_08081de0(p, &pos, &dir) && Map_TryFindNavRoute(&p->navAgent, &p->mover.pos, &pos)) {
         p->pathEndAction = PACT_ATTACK;
         p->pathEndFacing = dir;
-        return PACT_UNK_19;
+        return PACT_SEKIKA;
       }
       p->approachUsed = 1;
     }
@@ -1771,8 +1752,8 @@ s32 FUN_08083eac(Player* p) {
   if (action == PACT_WALK) {
     return PACT_WALK;
   }
-  if (action == PACT_UNK_20) {
-    return PACT_UNK_20;
+  if (action == PACT_SPIDER_WEB) {
+    return PACT_SPIDER_WEB;
   }
   if (action == PACT_REFUELING) {
     return PACT_REFUELING;
@@ -1819,11 +1800,11 @@ void FUN_08084078(Player* p) {
   }
 
   if (AllySabata_TestFlag35a(p, PFLAG35A_UNK_5)) {
-    p->unk_464 = 0;
+    p->navAgentReady = 0;
   } else {
-    if (p->unk_464 == 0) {
+    if (p->navAgentReady == 0) {
       Map_InitNavAgent(&p->navAgent, &p->mover.pos);
-      p->unk_464 = 1;
+      p->navAgentReady = 1;
     }
     Map_StepNavPath(&p->navAgent, &p->mover.pos);
   }
@@ -1867,8 +1848,8 @@ void AllySabata_UpdateActions(Player* p) {
       [PACT_REFUELING] = FUN_0808301c,
       [PACT_SUN_MAGIC] = FUN_08082dac,
       [PACT_UNK_18] = FUN_08082970,
-      [PACT_UNK_19] = FUN_08082a94,
-      [PACT_UNK_20] = FUN_080835d8,
+      [PACT_SEKIKA] = FUN_08082a94,
+      [PACT_SPIDER_WEB] = FUN_080835d8,
       [PACT_GRABBED] = FUN_08082464,
       [PACT_DAMAGED] = FUN_08082498,
       [PACT_BLOWN_AWAY] = FUN_08082670,
@@ -1917,12 +1898,12 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
   b->iframes = a->iframes;
 
   if (p->action == PACT_REFUELING && p->state != 0) {
-    p->unk_476 = 4;
+    p->blockFlashTimer = 4;
     if (Hitbox_HasWeakness(a, 0x1000)) {  // 攻撃元の種別マスクの 0x1000, 未解析
       p->namakuraCount++;
       if (p->namakuraCount >= p->namakuraLimit) {
         p->namakuraCount = 0;
-        AllySabata_SetAction(p, PACT_UNK_20, 0);
+        AllySabata_SetAction(p, PACT_SPIDER_WEB, 0);
         return;
       }
     } else {
@@ -1948,12 +1929,12 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 
   p->knockbackSpeed = a->knockback;
   if (a->flags & HBFLAG_ANGLE) {
-    p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+    p->knockbackDir = Angle_ToDir8(a->angle);
   } else {
     s32 dx = a->center.x - b->center.x;
     s32 dz = a->center.z - b->center.z;
 
-    p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+    p->knockbackDir = (Angle_ToDir8(ArcTan2_8(dx, dz)) + 4) & 7;
   }
 #else
   INCFUNC("asm/func/AllySabata_OnHurt.inc");
@@ -1971,7 +1952,7 @@ NON_MATCH void FUN_08084540(Player* p) {
     AllySabata_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
     if (p->hurtbox.knockback == 0) {
       v--;
-      if (v != 0 && p->unk_476 == 0 && ((v >> 2) & 1) != 0) {
+      if (v != 0 && p->blockFlashTimer == 0 && ((v >> 2) & 1) != 0) {
         AllySabata_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
       }
       p->hurtbox.iframes = v;

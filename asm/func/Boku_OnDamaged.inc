@@ -758,7 +758,7 @@ _0810078E:
 	strb r0, [r4]
 _081007FC:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	strh r0, [r5]
 	movs r0, #0
@@ -1825,7 +1825,7 @@ _08100FF2:
 	strb r0, [r4]
 _08101060:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	strh r0, [r5]
 	movs r0, #0
@@ -2778,7 +2778,7 @@ _0810175A:
 	strb r0, [r4]
 _081017C8:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	strh r0, [r5]
 	movs r0, #0

@@ -596,16 +596,14 @@ s32 UpdateSolDarkSide(void) {
 }
 
 // 武器ごとの使用フレーム数から一番多い攻撃種別を style に入れて返す, 同数で並んだら 5
-// 残差1命令: 原典は gStat のアドレスを r5 に置いて2つ目のループ後の store まで持ち越すが, こちらは r6 に置いて2つ目のループで max/style の後ろに回り, 写しが1つ増える
-NON_MATCH s32 UpdateWeaponStyle(void) {
-#ifdef NONMATCHING_C
+s32 UpdateWeaponStyle(void) {
   s32 i;
   s32 counts[5];
   s32 max;
   s32 style;
 
   for (i = 0; i < 5; i++) {
-    counts[i] = Div(gStat->weaponFrames[i], 54000);
+    counts[i] = Div(WEAPON_FRAMES(i), 54000);
   }
 
   max = 0;
@@ -621,9 +619,6 @@ NON_MATCH s32 UpdateWeaponStyle(void) {
 
   gStat->style = style;
   return style;
-#else
-  INCFUNC("asm/func/UpdateWeaponStyle.inc");
-#endif
 }
 
 // 0xA285, friendship が一番大きい添字を返す

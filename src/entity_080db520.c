@@ -16,7 +16,7 @@
 typedef u16 Entity080db520ElemFlags;
 #define E080DB520_UNK_1 (1 << 1)  // 0x02, FUN_080dab9c と FUN_080dacac が判定と一緒に立てる
 #define E080DB520_UNK_2 (1 << 2)  // 0x04, FUN_080dabe4 が立てる
-#define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->unk_3ff を -1 に戻す
+#define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->spiderWebIdx を -1 に戻す
 #define E080DB520_UNK_5 (1 << 5)  // 0x20, zoneID が FUN_0809dfec の条件を満たすときに立つ
 #define E080DB520_UNK_6 (1 << 6)  // 0x40, 使用中の枠のどこにも立っていないと FUN_080dadec が gCoffin->unk_3a0 を -1 に戻す
 
@@ -109,10 +109,8 @@ NON_MATCH void FUN_080dac24(Entity080db520* p, Entity080db520Elem* elem) {
     elem->unk_40 &= ~E080DB520_UNK_2;
   } else {
     if (elem->shakeTimer > 10) {
-      u16* table = gRandomTable;
-
-      elem->spr.pos.x = elem->spr.pos.x - 20 + Mod(_Random(table), 40);
-      elem->spr.pos.z = elem->spr.pos.z - 20 + Mod(_Random(table), 40);
+      elem->spr.pos.x = elem->spr.pos.x - 20 + Mod(RandomNext(), 40);
+      elem->spr.pos.z = elem->spr.pos.z - 20 + Mod(RandomNext(), 40);
     }
     elem->shakeTimer--;
   }
@@ -188,7 +186,7 @@ void FUN_080dadec(Entity080db520* p) {
   }
 
   if (!anyUnk4) {
-    gPlayerPtr[0]->unk_3ff = -1;
+    gPlayerPtr[0]->spiderWebIdx = -1;
   }
   if (!anyUnk6) {
     FUN_0808689c(-1);
@@ -347,9 +345,9 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
   d.y = player->mover.pos.y - elem->pos.y;
   d.z = player->mover.pos.z - elem->pos.z;
 
-  if (abs(d.y) < Q8(0.125) && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
-    if (player->unk_3ff < 0) {
-      player->unk_3ff = elem->unk_42;
+  if (abs(d.y) < Q8(0.125) && (d.x >= Q8(-0.25) && d.x <= Q8(0.625)) && d.z <= Q8(0.625) && d.z >= Q8(-0.23)) {
+    if (player->spiderWebIdx < 0) {
+      player->spiderWebIdx = elem->unk_42;
       elem->unk_40 |= E080DB520_UNK_4;
       elem->hurtbox.flags |= HBFLAG_HIDDEN;
       elem->grabMashBase = gPlayerPtr[0]->mashCount;
@@ -371,7 +369,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
   d.y -= elem->pos.y;
   d.z -= elem->pos.z;
 
-  if ((d.y < 0 ? -d.y : d.y) <= 31 && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
+  if (abs(d.y) <= Q8(0.122) && (d.x >= Q8(-0.25) && d.x <= Q8(0.625)) && d.z <= Q8(0.625) && d.z >= Q8(-0.23)) {
     if (FUN_08086878() < -1) {
       FUN_0808689c(elem->unk_42);
       elem->unk_40 |= E080DB520_UNK_6;
@@ -385,7 +383,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
 
 // 向きから象限を出して, アニメーションの variant と反転フラグを決める
 void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
-  u32 q = ((((mover->angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+  u32 q = Angle_ToDir4(mover->angle);
 
   if (q > 1) {
     *flags = 1;

@@ -11,7 +11,7 @@
 	movs r1, #0
 	str r1, [sp]
 	movs r3, #0
-	bl FUN_0807bb3c
+	bl Player_LockPullCoffinTo
 	ldr r0, _080B18FC @ =0x00000C16
 	adds r1, r5, r0
 	movs r0, #2
@@ -68,7 +68,7 @@ _080B193C:
 	ands r1, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0807b9dc
+	bl Player_LockTurnTo
 	b _080B1990
 	.align 2, 0
 _080B1960: .4byte 0x03002C00
@@ -90,7 +90,7 @@ _080B1968:
 	bl Player_Lock
 	ldr r0, [r6]
 	movs r1, #0
-	bl FUN_0807cc84
+	bl Player_LockRevertToDarkDjango
 _080B1990:
 	ldr r4, _080B19BC @ =0x03002C00
 	ldr r0, [r4]

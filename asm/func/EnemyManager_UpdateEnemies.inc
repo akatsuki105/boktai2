@@ -207,7 +207,7 @@ _080EE04E:
 	movs r0, #0
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	ldr r0, _080EE090 @ =0xFFFFDFFF
 	ldrh r1, [r4]
 	ands r0, r1

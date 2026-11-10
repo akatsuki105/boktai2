@@ -713,16 +713,16 @@ void FUN_080bafa4(ItemShop* p) {
   }
 }
 
-void FUN_080bb070(ItemShop* p);
+void ItemShop_ConfirmSellItem(ItemShop* p);
 
-// カーソル確定の入力待ち, 決定なら FUN_080bb070 へ, キャンセルなら SE を鳴らして戻る
+// カーソル確定の入力待ち, 決定なら ItemShop_ConfirmSellItem へ, キャンセルなら SE を鳴らして戻る
 void FUN_080bb01c(ItemShop* p) {
   s32 r = FUN_080b977c(&p->sprites[48], &p->gfx0, &p->unk_12ef);
 
   if (r == 1) {
     MessageWindow_Close();
     FUN_080ba710(p);
-    FUN_080ba054(p, FUN_080bb070, 0);
+    FUN_080ba054(p, ItemShop_ConfirmSellItem, 0);
   } else if (r == 0) {
     PlaySound_082406e0(SE_CANCEL);
     FUN_080baa64(p);
@@ -730,23 +730,19 @@ void FUN_080bb01c(ItemShop* p) {
 }
 
 // 売却を確定する, 売値を所持金に足して (9999 で打ち止め) 道具を手放す
-// 残差4命令 (39/43): 原典は打ち止めの代入で gStat をプール経由で読み直して &solarBank を組み立て直すが, agbcc は直前のアドレスを使い回す
-NON_MATCH void FUN_080bb070(ItemShop* p) {
-#ifdef NONMATCHING_C
+void ItemShop_ConfirmSellItem(ItemShop* p) {
   if (FUN_080b9adc(&p->pair0)) {
     s32 slot = (u8)p->cursor.savedSlot;
+    s16 bank;
 
-    gStat->solarBank += FUN_080ba288(slot);
-    if (gStat->solarBank > 9999) {
-      gStat->solarBank = 9999;
+    SOLAR_BANK = bank = gStat->solarBank + FUN_080ba288(slot);
+    if (bank > 9999) {
+      SOLAR_BANK = 9999;
     }
     RemoveItem(slot);
     p->unk_151c = 1;
     FUN_080ba054(p, FUN_080bb0e8, 0);
   }
-#else
-  INCFUNC("asm/func/FUN_080bb070.inc");
-#endif
 }
 
 // 売却後の演出, カーソルの絵を少し持ち上げてから元の状態へ戻す
@@ -1220,9 +1216,8 @@ NON_MATCH void FUN_080bbc60(ItemShop* p) {
 #endif
 }
 
-// 143/143 命令, pool を読む一時レジスタが r3 になり 0x12E8 + 12 の流用が起きる, 残りは FUN_080bad30 と同じ形
-NON_MATCH void FUN_080bbeec(ItemShop* p) {
-#ifdef NONMATCHING_C
+// 一覧画面の入力処理, A で選んだ結果に応じて次の状態へ移り, B で戻り, それ以外はカーソルを動かす
+void FUN_080bbeec(ItemShop* p) {
   if (gInput[0].pressed & A_BUTTON) {
     s32 result = FUN_080bba88(p);
 
@@ -1242,7 +1237,7 @@ NON_MATCH void FUN_080bbeec(ItemShop* p) {
       }
       case 5: {
         PlaySound_082406e0(SE_TEXT_SHOW);
-        FUN_080ba07c(p, 1, p->unk_12e8, gStat->armors[(u8)p->cursor.savedSlot]);
+        FUN_080ba07c(p, 1, p->unk_12e8, ARMORS((u8)p->cursor.savedSlot));
         FUN_080b9740(&p->sprites[48], &p->gfx0, (char*)&p->unk_12ef, 0);
         FUN_080ba054(p, FUN_080bc1ec, 0);
         break;
@@ -1267,9 +1262,6 @@ NON_MATCH void FUN_080bbeec(ItemShop* p) {
 
   FUN_080b95d0(&p->cursor, NULL, &p->sprites[32], &p->sprites[31]);
   MainSprite_AdvanceAnim(&p->sprites[35], &p->gfx0);
-#else
-  INCFUNC("asm/func/FUN_080bbeec.inc");
-#endif
 }
 
 // 購入の結果に応じて効果音を鳴らし, 決定ならカーソルの退避値を戻してから FUN_080bbbdc へ戻る
@@ -1333,16 +1325,16 @@ NON_MATCH void FUN_080bc170(ItemShop* p) {
 #endif
 }
 
-void FUN_080bc240(ItemShop* p);
+void ItemShop_ConfirmSellArmor(ItemShop* p);
 
-// カーソル確定の入力待ち, 決定なら FUN_080bc240 へ, キャンセルなら SE を鳴らして戻る
+// カーソル確定の入力待ち, 決定なら ItemShop_ConfirmSellArmor へ, キャンセルなら SE を鳴らして戻る
 void FUN_080bc1ec(ItemShop* p) {
   s32 r = FUN_080b977c(&p->sprites[48], &p->gfx0, &p->unk_12ef);
 
   if (r == 1) {
     MessageWindow_Close();
     FUN_080bb798(p);
-    FUN_080ba054(p, FUN_080bc240, 0);
+    FUN_080ba054(p, ItemShop_ConfirmSellArmor, 0);
   } else if (r == 0) {
     PlaySound_082406e0(SE_CANCEL);
     FUN_080bbbdc(p);
@@ -1350,23 +1342,19 @@ void FUN_080bc1ec(ItemShop* p) {
 }
 
 // 防具の売却を確定する, 値段の半額を所持金に足して (9999 で打ち止め) 装備欄から外す
-// 残差4命令 (54/58): FUN_080bb070 と同じく, 原典は打ち止めの代入で gStat を読み直して &solarBank を組み立て直す
-NON_MATCH void FUN_080bc240(ItemShop* p) {
-#ifdef NONMATCHING_C
+void ItemShop_ConfirmSellArmor(ItemShop* p) {
   if (FUN_080b9adc(&p->pair0)) {
     s32 slot = (u8)p->cursor.savedSlot;
+    s16 bank;
 
-    gStat->solarBank += Div(gArmorDB[ARMORS(slot)].price * 50, 100);
-    if (gStat->solarBank > 9999) {
-      gStat->solarBank = 9999;
+    SOLAR_BANK = bank = gStat->solarBank + Div(gArmorDB[ARMORS(slot)].price * 50, 100);
+    if (bank > 9999) {
+      SOLAR_BANK = 9999;
     }
     RemoveArmorFromInventory(slot);
     p->unk_151c = 1;
     FUN_080ba054(p, FUN_080bc2d8, 0);
   }
-#else
-  INCFUNC("asm/func/FUN_080bc240.inc");
-#endif
 }
 
 // 防具売却後の演出, カーソルの絵を少し持ち上げてから一覧へ戻す

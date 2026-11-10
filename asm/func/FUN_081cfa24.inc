@@ -131,7 +131,7 @@ _081CFAD0:
 	adds r0, r1, r2
 	strh r4, [r0]
 	adds r0, r1, #0
-	bl FUN_080e64e4
+	bl Enemy_BurstEmitterParticles
 	movs r3, #1
 	str r3, [sp, #0x24]
 _081CFB32:

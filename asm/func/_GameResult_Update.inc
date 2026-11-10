@@ -137,7 +137,7 @@ _0822242C:
 	ldr r3, _08222458 @ =0x0000FFFF
 	movs r1, #0
 	movs r2, #0x3c
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	bne _08222450
 	b _0822299C
@@ -732,7 +732,7 @@ _08222904:
 	ldr r3, _08222938 @ =0x0000FFFF
 	movs r1, #1
 	movs r2, #0x3c
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	beq _0822299C
 	movs r0, #0x63

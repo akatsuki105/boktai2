@@ -6,6 +6,8 @@
 #include "types.h"
 
 #define ARMORS(slot) (*(gStat->armors + slot))
+#define ARMOR_DEX(n) (*(gStat->armorDex + (n)))  // 防具図鑑の取得済みビット, [0]: 0..31, [1]: 32..63
+#define EQUIPPED_ARMOR (*(&gStat->armor))        // 装備中の防具の所持枠, 無ければ ARMOR_NONE
 
 typedef struct {
   u8 id;          // 0x00, see include/constants/armor.h

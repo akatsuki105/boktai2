@@ -758,7 +758,7 @@ s32 MessageWindow_GetExtendWidth(s32 idx) {
   return TextRenderer_GetExtendWidth(&gMessageWindow->renderer, idx);
 }
 
-s32 FUN_080488dc(void) {
+s32 MessageWindow_GetTextWidth(void) {
   if (gMessageWindow == NULL) {
     return 0;
   }

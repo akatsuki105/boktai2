@@ -353,7 +353,7 @@ _08215C28:
 	mov r0, sb
 	movs r1, #1
 	movs r2, #0x1e
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	beq _08215D04
 	str r4, [r6, #0x5c]

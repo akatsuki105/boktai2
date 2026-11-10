@@ -78,6 +78,7 @@ s32 MessageWindow_SetVarValue(s32 idx, s32 value);
 s32 MessageWindow_Close(void);
 bool32 MessageWindow_IsFinished(void);
 s32 MessageWindow_GetExtendWidth(s32 idx);
+s32 MessageWindow_GetTextWidth(void);
 s32 MessageWindow_GetVarWidth(s32 idx);
 s32 MessageWindow_GetRect(s32* rect);
 

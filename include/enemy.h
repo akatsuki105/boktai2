@@ -91,7 +91,7 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_15 (1 << 15)  // 0x00008000, 立っていると Enemy_Alert が見つかった回数を数えない
 #define ENEFLAG2_UNK_16 (1 << 16)  // 0x00010000, Enemy_UpdateMovement がアニメの頭で IsInPuddle を呼んで落とす
 #define ENEFLAG2_UNK_17 (1 << 17)  // 0x00020000, Enemy_CountAlive / Enemy_GetFirstAlive が「数えない敵」の判定に使う
-#define ENEFLAG2_UNK_18 (1 << 18)  // 0x00040000, FUN_080e6978 が ES_UNK_21 へ入るときに立てる
+#define ENEFLAG2_UNK_18 (1 << 18)  // 0x00040000, Enemy_OnCrushed が ES_UNK_21 へ入るときに立てる
 #define ENEFLAG2_UNK_19 (1 << 19)  // 0x00080000, FUN_080f44f4 が立てる
 #define ENEFLAG2_UNK_20 (1 << 20)  // 0x00100000, 立っていると Enemy_UpdateJump が落下させず水平に滑らせる
 #define ENEFLAG2_UNK_21 (1 << 21)  // 0x00200000, EnemyManager_UpdateEnemies がパレット転送の向きとして反転させる
@@ -114,7 +114,7 @@ typedef u16 EnemyFlags3;
 #define ENEFLAG3_UNK_8 (1 << 8)    // 0x0100, FUN_080f8400 が落とす
 #define ENEFLAG3_UNK_9 (1 << 9)    // 0x0200, FUN_080e6148 が経路を外れたときに落とす
 #define ENEFLAG3_UNK_10 (1 << 10)  // 0x0400, Enemy_Alert が落とす
-#define ENEFLAG3_UNK_11 (1 << 11)  // 0x0800, FUN_080e59d0 が一度だけ処理する印として立てる
+#define ENEFLAG3_UNK_11 (1 << 11)  // 0x0800, Enemy_HandleResumeMsg が一度だけ処理する印として立てる
 #define ENEFLAG3_UNK_12 (1 << 12)  // 0x1000, Enemy_Reset が見る
 #define ENEFLAG3_UNK_13 (1 << 13)  // 0x2000, FUN_08101bc0 が unk_4be より優先して見る
 #define ENEFLAG3_UNK_14 (1 << 14)  // 0x4000, FUN_080ec9b0 が立て EnemyManager_UpdateEnemies が落とす
@@ -284,7 +284,7 @@ typedef struct Enemy {
   void* owner;                              // 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される
   s32 exp;                                  // 0x1D0, 倒されたとき AddPlayerExp に渡す量
   s32 hitTargetID;                          // 0x1D4, 自分の攻撃判定が当たった相手 (HIM_0〜3) の HitboxData.id, 毎フレーム 0 に戻り, 正なら EnemyTargetManager_FindOwnerByID で playerMover をその相手にする
-  Mover* playerMover;                       // 0x1D8, FUN_080faa98 が gPlayerPtr[n]->mover を書く
+  Mover* playerMover;                       // 0x1D8, Enemy_TargetNearestLinkPlayer が gPlayerPtr[n]->mover を書く
   u8 unk_1dc;                               // 0x1DC
   u8 angle;                                 // 0x1DD, 8bit の向き, gSineTable の索引
   u8 facing;                                // 0x1DE, 0..3 の向き, Enemy_SetAnimFacing が mover.angle から作る
@@ -301,14 +301,14 @@ typedef struct Enemy {
   u8 unk_1fd;                               // 0x1FD
   s16 unk_1fe;                              // 0x1FE, Enemy_SetEmote が FUN_08240cf0 の第3引数に渡す
   u16 range2;                               // 0x200, 二乗が range2Sq に入る
-  u16 unk_202;                              // 0x202, FUN_080f9bfc が 0 でクリアする
+  u16 unk_202;                              // 0x202, Enemy_ForgetTarget が 0 でクリアする
   Vec3 unk_204;                             // 0x204, FUN_080f84d4 が音のした場所として向かう座標
   Vec3 unk_20c;                             // 0x20C, mover.pos から angle 方向へ伸ばした点
   Vec3 unk_214;                             // 0x214, mover.pos の控え
   u8 unk_21c;                               // 0x21C, Enemy_ReactivateAtPathNode が 0 に戻す
   u8 unk_21d;                               // 0x21D
-  u16 unk_21e;                              // 0x21E, FUN_080f9bfc が 0 でクリアする
-  u16 unk_220;                              // 0x220, FUN_080f9bfc が 0 でクリアする
+  u16 unk_21e;                              // 0x21E, Enemy_ForgetTarget が 0 でクリアする
+  u16 unk_220;                              // 0x220, Enemy_ForgetTarget が 0 でクリアする
   u16 unk_222;                              // 0x222, bit0 は FUN_080f624c が playerDistSq の大小で立て落としする
   u16 atkPower[4];                          // 0x224, Hitbox_SetAttack の power
   u16 atkKnockback[4];                      // 0x22C, Hitbox_SetAttack の knockback
@@ -336,7 +336,7 @@ typedef struct Enemy {
   u8 emitterRemoved;                        // 0x44D, 0 以外だと Enemy_FadeParticles がパーティクルを消さない
   u16 unk_44e;                              // 0x44E, unk_4be がこの値か 2 倍のとき FUN_080f5c0c が粒子を吹き出させる
   u8 unk_450[0x452 - 0x450];                // 0x450
-  u8 unk_452;                               // 0x452, FUN_080e8614 が粒子を出す向きに足すずれ, 毎フレーム unk_453 * 4 ずつ動き 0x40 で折り返す
+  u8 unk_452;                               // 0x452, Enemy_ScatterKindParticles が粒子を出す向きに足すずれ, 毎フレーム unk_453 * 4 ずつ動き 0x40 で折り返す
   s8 unk_453;                               // 0x453, unk_452 の増分, 折り返すたびに符号が反転する
   struct Emote* emote;                      // 0x454, EmoteManager, FUN_080f6bac が Emote_RemovePtcl に渡す
   u16 unk_458[4];                           // 0x458, unk_460 番目に FUN_080f6868 が 580 を書く
@@ -347,12 +347,12 @@ typedef struct Enemy {
   u8 subState0;                             // 0x468, FUN_080f34ec 系が 2 か 3 を書く
   u8 subState1;                             // 0x469, handlerTables[1] [5] [7] [9] の添字 (ldrb)
   u8 subState2;                             // 0x46A, handlerTables[2] [3] [4] [6] [8] の添字 (ldrb)
-  u8 subStateDone;                          // 0x46B, 0 が書かれる, 読み手は FUN_080fa384 ほか
+  u8 subStateDone;                          // 0x46B, 0 が書かれる, 読み手は Enemy_TryHeadToSound ほか
   u8 subStateBegun;                         // 0x46C, FUN_080f2644 が非0を条件にして 0 に戻す
   bool8 stateBegun;                         // 0x46D, 状態に入った直後のフレームだけ 1, 各状態ハンドラが入場処理をして 0 に戻す (Enemy_ClearStateBegun は食うだけ)
   bool8 animForceRestart;                   // 0x46E, 1 なら Enemy_PlayAnim が同じアニメ番号でも再生し直す, 再生後に 0 に戻る
   u8 unk_46f;                               // 0x46F, EnemyManager_UpdateEnemies が非0を条件にする
-  u16 unk_470;                              // 0x470, 0 でなければ FUN_080e8614 が毎フレーム減らし, 4 フレームおきに粒子を出す
+  u16 unk_470;                              // 0x470, 0 でなければ Enemy_ScatterKindParticles が毎フレーム減らし, 4 フレームおきに粒子を出す
   u16 floorY;                               // 0x472, 足元の床の高さ, Enemy_SnapToFloor が取り直す, mover.pos.y との差が 256 以下のときだけ unk_198 を実行する
   EnemyFlags5 flags5;                       // 0x474
   u16 unk_476;                              // 0x476, ENEFLAG2_UNK_14 のときに FUN_080f5c0c が使うパレット番号
@@ -435,11 +435,11 @@ typedef struct Enemy {
   void* handlerChase;                       // 0x5B8, ES_UNK_26 のハンドラ, FUN_080f11d0 が handlerState へ写す
   void* handlerLookAround;                  // 0x5BC, ES_UNK_27 のハンドラ, FUN_080f0e78 が handlerState へ写す
   void* unk_5c0;                            // 0x5C0, 既定の状態ハンドラ, Cmd_7659 が handlerState へコピーする
-  EnemyHandler onRouteFailed;               // 0x5C4, fn(p), FUN_080faa98 が座標の検索に失敗したときだけ呼ぶ
+  EnemyHandler onRouteFailed;               // 0x5C4, fn(p), Enemy_TargetNearestLinkPlayer が座標の検索に失敗したときだけ呼ぶ
   void* unk_5c8;                            // 0x5C8, ES_UNK_9 のハンドラ, FUN_080f84d4 が handlerState へ写す
   void* handlerDamaged;                     // 0x5CC, ES_DAMAGED のハンドラ, Enemy_OnDamaged / FUN_080f8400 が handlerState へ写す
   void* handlerDying;                       // 0x5D0, ES_DYING のハンドラ
-  void* unk_5d4;                            // 0x5D4, ES_UNK_21 のハンドラ, FUN_080e6978 が handlerState へ写す
+  void* unk_5d4;                            // 0x5D4, ES_UNK_21 のハンドラ, Enemy_OnCrushed が handlerState へ写す
   void* unk_5d8;                            // 0x5D8, ES_UNK_22 のハンドラ, NULL なら Enemy_StateFallDeath
   void* unk_5dc;                            // 0x5DC
   void* unk_5e0;                            // 0x5E0
@@ -455,7 +455,7 @@ typedef struct Enemy {
   bool8 (*tryDetectPlayer)(struct Enemy*);  // 0x608, FUN_080f22c4 ほか19関数が使う
   void* msgHandlers;                        // 0x60C, 関数ポインタ表, Enemy_DispatchMsg が fn = msgHandlers[arg[0]] を fn(p, arg) で呼ぶ
   u8 unk_610[0x614 - 0x610];                // 0x610
-  void* unk_614;                            // 0x614, fn(p), FUN_080fa384 が NULL でないときだけ呼ぶ
+  void* unk_614;                            // 0x614, fn(p), Enemy_TryHeadToSound が NULL でないときだけ呼ぶ
   bool8 (*unk_618)(struct Enemy*);          // 0x618, fn(p), FUN_080f2364 / FUN_080f0430
   EnemyHandler handlerUpdate;               // 0x61C, EnemyManager_UpdateEnemies が (owner) で毎フレーム呼ぶ
   EnemyHandler handlerDestroy;              // 0x620, Enemy_DestroyAll が (owner) で呼び、その後 owner を Free する
@@ -539,7 +539,7 @@ void Enemy_PlayAnimNoFacing(Enemy* p, s32 animIdx);
 void Enemy_SetAnimEntry(Enemy* p, s32 idx, s32 anim, s32 val3);
 void Enemy_RegisterHitbox(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags);
 void Enemy_Deactivate(Enemy* p);
-void FUN_080e6978(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage);
+void Enemy_OnCrushed(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage);
 void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner);
 void Enemy_InitHitboxWithAtk(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner);
 void Enemy_RegisterHurtboxWithFlags(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags);
@@ -578,10 +578,10 @@ void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b);
 void Enemy_080eff14(Enemy* p, s32 param_2);
 void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6);
 bool8 Enemy_MoveAlongNav(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-bool8 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
-bool8 FUN_080faa98(Enemy* p);
-void FUN_080e64e4(Enemy* p);
-void FUN_080e7b6c(Enemy* p);
+bool8 Enemy_TurnTowardWaypoint(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);
+bool8 Enemy_TargetNearestLinkPlayer(Enemy* p);
+void Enemy_BurstEmitterParticles(Enemy* p);
+void Enemy_StepToFloorEdge(Enemy* p);
 bool32 FUN_080f62b0(Enemy* p);
 bool8 FUN_080f8400(Enemy* p);
 void Enemy_PlayAnimNoFacingFlags(Enemy* p, s32 param_2, u32 param_3);

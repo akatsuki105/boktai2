@@ -3,7 +3,39 @@
 #include "text.h"
 #include "video.h"
 
-NAKED bool32 FUN_0821b21c(unknown* param_1, s32 val1, s32 val2, u16 val3) { INCFUNC("asm/func/FUN_0821b21c.inc"); }
+// fade[1] を dir (0: 明るく, 1: 暗く) へ duration フレームかけて進め, fade[0] と BG / OBJ の明るさに反映する, 端に着いたら TRUE
+// 残差1命令, 原典は gObjBrightness の前に fade の上位16ビットを ldrh で読み直す, ((u16*)fade)[1] は1回に畳まれる
+// u16* のローカルに出すと読み直すがレジスタが1本増える, (u32)fade[0] >> 16 は ldrh にならない
+NON_MATCH bool32 Video_StepBrightnessFade(s32* fade, s32 dir, s32 duration, u16 rowMask) {
+#ifdef NONMATCHING_C
+  bool32 done = FALSE;
+
+  switch (dir) {
+    case 0: {
+      if (++fade[1] >= duration) {
+        fade[1] = duration;
+        done = TRUE;
+      }
+      break;
+    }
+    case 1: {
+      if (--fade[1] <= 0) {
+        fade[1] = 0;
+        done = TRUE;
+      }
+      break;
+    }
+  }
+  fade[0] = Div(fade[1] << 24, duration << 2);
+  gBgBrightness = ((u16*)fade)[1];
+  gObjBrightness = ((u16*)fade)[1];
+  gBgPlttFadeRowMask |= rowMask;
+  gObjPlttFadeSkipMask = 0;
+  return done;
+#else
+  INCFUNC("asm/func/Video_StepBrightnessFade.inc");
+#endif
+}
 
 void Video_ClearTextRect(u32 x8, u32 y8, u32 w8, u32 h8) {
   Font_ReleaseRect(x8, y8, w8, h8);

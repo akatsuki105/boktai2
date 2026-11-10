@@ -42,10 +42,8 @@ void FUN_080b3e80(SolarBank* p);
 void FUN_080b4334(SolarBank* p);
 void FUN_080b438c(SolarBank* p);
 
-// 0x61A0
-// 77/77 命令, 末尾の + 65 が格納先のアドレス計算より後に来る形にならない
-NON_MATCH void Cmd_CalcInterestRate(void) {
-#ifdef NONMATCHING_C
+// 0x61A0, '.d' 日分 (最大 10) 太陽バンクの残高に利息を付けて 9999 で止め, 次の利率を選び直す
+void Cmd_CalcInterestRate(void) {
   s32 days;
   s32 amount;
   s32 i;
@@ -69,7 +67,7 @@ NON_MATCH void Cmd_CalcInterestRate(void) {
   amount = (s16)gStat->solarBank;
   if (amount >= 1 && amount <= 9998) {
     for (i = 0; i < days; i++) {
-      amount = ((amount * gStat->solarBankInterestRate) >> 6) + 1;
+      amount = ((amount * SOLAR_BANK_RATE) >> 6) + 1;
       if (amount >= 9999) {
         amount = 9999;
         break;
@@ -78,10 +76,7 @@ NON_MATCH void Cmd_CalcInterestRate(void) {
     gStat->solarBank = amount;
   }
 
-  gStat->solarBankInterestRate = Mod(gStat->playTime ^ Time_GetSecond(), 13) + 65;
-#else
-  INCFUNC("asm/func/Cmd_CalcInterestRate.inc");
-#endif
+  SOLAR_BANK_RATE = Mod(gStat->playTime ^ Time_GetSecond(), 13) + 65;
 }
 
 // 0x9E8B
@@ -99,15 +94,14 @@ void Cmd_SetSolarBankBalance(void) {
 }
 
 // 130/126 命令, 桁を 0 で埋めるループでカウンタが消えず &digits[3] から sp まで符号付き比較で回す形にならない (InitSystemManager と同じ)
-NON_MATCH void solar_bank_080b3a10(SolarBank* p) {
-#ifdef NONMATCHING_C
+void solar_bank_080b3a10(SolarBank* p) {
   s32 digits[4];
   s32 amount;
   s32 i;
 
   amount = p->bank;
   if (amount == 0) {
-    for (i = 3; i >= 0; i--) {
+    for (i = 0; i < 4; i++) {
       digits[i] = 0;
     }
   } else {
@@ -124,7 +118,7 @@ NON_MATCH void solar_bank_080b3a10(SolarBank* p) {
 
   amount = p->stand;
   if (amount == 0) {
-    for (i = 3; i >= 0; i--) {
+    for (i = 0; i < 4; i++) {
       digits[i] = 0;
     }
   } else {
@@ -138,9 +132,6 @@ NON_MATCH void solar_bank_080b3a10(SolarBank* p) {
   for (i = 0; i < 4; i++) {
     MainSprite_SetPose(&p->sprites[5 + i], &p->gfx[1], digits[i], PLAYMODE_LOOP);
   }
-#else
-  INCFUNC("asm/func/solar_bank_080b3a10.inc");
-#endif
 }
 
 // スプライトを全部隠す

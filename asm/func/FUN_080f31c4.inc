@@ -87,7 +87,7 @@ _080F3264:
 	adds r0, r5, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e60b8
+	bl Enemy_TurnTowardWaypoint
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080F328A
@@ -191,12 +191,12 @@ _080F334E:
 	cmp r6, #0
 	beq _080F3368
 	adds r0, r5, #0
-	bl FUN_080fa7a4
+	bl Enemy_RouteToNearestLinkPlayer
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080F33DA
 	adds r0, r5, #0
-	bl FUN_080faad8
+	bl Enemy_PickPathNodeAwayFromPlayer
 	b _080F33DA
 _080F3368:
 	ldr r4, [r5, #0x24]

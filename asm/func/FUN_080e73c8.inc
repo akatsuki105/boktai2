@@ -687,7 +687,7 @@ _080E7888:
 	strb r0, [r1]
 _080E78F8:
 	adds r0, r7, #0
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r2, [sp, #0x30]
 	strh r0, [r2]

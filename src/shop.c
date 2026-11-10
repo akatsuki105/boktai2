@@ -358,7 +358,7 @@ NON_MATCH bool32 FUN_080b9adc(unknown* p) {
 // 行と列から実際のスロット番号を引く
 s32 ShopCursor_GetSlot(ShopCursor* p) { return SHOP_SLOT(p, p->shopColX, p->shopRowY); }
 
-// 243/255 命令, スロット表を埋めるループのポインタの持ち方が違う
+// 241/255 命令, スロット表を埋めるループのポインタの持ち方が違う
 NON_MATCH void FUN_080b9b88(ShopCursor* p) {
 #ifdef NONMATCHING_C
   s32 row;
@@ -373,7 +373,7 @@ NON_MATCH void FUN_080b9b88(ShopCursor* p) {
     }
   } else {
     for (row = 0; row < 4; row++) {
-      for (col = 3; col >= 0; col--) {
+      for (col = 0; col < 4; col++) {
         p->slots[row + col * 4] = row * 4 + col;
       }
     }
@@ -388,11 +388,11 @@ NON_MATCH void FUN_080b9b88(ShopCursor* p) {
     }
   } else if (!(p->kind & 1)) {
     for (row = 0; row < 3; row++) {
-      for (col = 3; col >= 0; col--) {
+      for (col = 0; col < 4; col++) {
         p->slots[16 + row + col * 4] = 16 + row * 4 + col;
       }
     }
-    for (col = 3; col >= 0; col--) {
+    for (col = 0; col < 4; col++) {
       p->slots[19 + col * 4] = 28 + col;
     }
   } else if (FUN_080b9da0(p, 32)) {
@@ -403,7 +403,7 @@ NON_MATCH void FUN_080b9b88(ShopCursor* p) {
     }
   } else {
     for (row = 0; row < 3; row++) {
-      for (col = 3; col >= 0; col--) {
+      for (col = 0; col < 4; col++) {
         p->slots[16 + row + col * 4] = 16 + row * 4 + col;
       }
     }
@@ -434,7 +434,7 @@ NON_MATCH void FUN_080b9b88(ShopCursor* p) {
       }
       return;
     }
-    for (row = 2; row >= 0; row--) {
+    for (row = 0; row < 3; row++) {
       special[row] = 34;
     }
     if (FUN_080b9da0(p, 8)) {

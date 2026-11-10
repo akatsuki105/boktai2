@@ -85,6 +85,7 @@ BgMapEntry* GetTilemapBuffer(s32 bg);
 void FUN_0822f0d8(void);
 void Video_SetBGBlend(s32 bg, u32 evb, u32 eva);  // 第2ブレンド対象は BG2/BG3/OBJ/BD 固定, BLDY は 0 に落ちる
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
+bool32 Video_StepBrightnessFade(s32* fade, s32 dir, s32 duration, u16 rowMask);
 void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);
 void Video_ResetFrameState(u32 clearOam);

@@ -81,7 +81,6 @@ NON_MATCH void FUN_080aa0e4(Entity080aace8* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    u16* table = gRandomTable;
     s32 digit;
     s32 angle;
     s32 speed;
@@ -89,9 +88,9 @@ NON_MATCH void FUN_080aa0e4(Entity080aace8* p) {
     p->ptcls[i].ptcl.pos.x = p->spritePos.x + 8;
     p->ptcls[i].ptcl.pos.y = p->spritePos.y + 8;
 
-    digit = (_Random(table) >> 3) & 0xF;
+    digit = (RandomNext() >> 3) & 0xF;
     angle = i * 32 + digit - 8;
-    speed = ((_Random(table) >> 3) & 3) + 4;
+    speed = ((RandomNext() >> 3) & 3) + 4;
     p->ptcls[i].velX = POLAR_X(speed, angle);
     p->ptcls[i].velY = POLAR_Z(speed, angle);
     p->ptcls[i].ptcl.flags &= ~SPRFLAG_HIDDEN;
@@ -234,9 +233,7 @@ NON_MATCH void FUN_080aa4e8(Entity080aace8* p) {
 }
 
 // 0x12 フレームごとに波を1回出し、0x7A フレームで片付けて FUN_080aa23c に移る
-// 残差は gSuspendFlags のロード位置だけ (60対60), 原典はループの後に読むがこちらは前に読む
-NON_MATCH void FUN_080aa5d0(Entity080aace8* p) {
-#ifdef NONMATCHING_C
+void FUN_080aa5d0(Entity080aace8* p) {
   if (p->unk_34a == 0 || p->unk_34a == 0x12 || p->unk_34a == 0x24 || p->unk_34a == 0x36 || p->unk_34a == 0x48 || p->unk_34a == 0x5A) {
     FUN_080aa29c(p);
   }
@@ -250,21 +247,16 @@ NON_MATCH void FUN_080aa5d0(Entity080aace8* p) {
       p->auxSprites[i].flags |= SPRFLAG_HIDDEN;
     }
 
-    gSuspendFlags &= ~SUSPEND_MENU;
+    CLEAR_FLAGS(gSuspendFlags, SUSPEND_MENU);
     p->updateCallback = FUN_080aa23c;
     p->unk_34a = 0;
   }
-#else
-  INCFUNC("asm/func/FUN_080aa5d0.inc");
-#endif
 }
 
 // 画面を揺らしつつ 0x30 フレームで消える, 最初の1フレームでフラッシュを入れる
-// 残差2命令 (67/69) でこちらが短い: unk_34a の加算を破壊的に行うぶんと gSuspendFlags のロード位置
-NON_MATCH void FUN_080aa658(Entity080aace8* p) {
-#ifdef NONMATCHING_C
+void FUN_080aa658(Entity080aace8* p) {
   if (p->unk_34a == 0) {
-    gSuspendFlags &= ~SUSPEND_MENU;
+    CLEAR_FLAGS(gSuspendFlags, SUSPEND_MENU);
     PlaySound_082406e0(SE_THE_TOWER);
     StartBgObjPlttFade(2, 4, 0x1F, 0x1F, 0x1F, 0x1FFF, 1);
   }
@@ -274,18 +266,13 @@ NON_MATCH void FUN_080aa658(Entity080aace8* p) {
   } else if (p->unk_34a == 6) {
     gGameFlags &= ~GAMEFLAG_NO_PAUSE;
   }
-
-  p->unk_34a++;
-  if (p->unk_34a > 0x2F) {
+  if (++p->unk_34a > 0x2F) {
     KillEntity((Entity*)p);
   } else if (p->unk_34a <= 0xF) {
     Camera_Shake(0x20);
   } else {
     Camera_Shake(0x30 - p->unk_34a);
   }
-#else
-  INCFUNC("asm/func/FUN_080aa658.inc");
-#endif
 }
 
 // アイコンを8フレーム揺らし、0x1E フレームで弾けさせて 0x2D フレームで次の演出に移る
@@ -295,10 +282,9 @@ NON_MATCH void FUN_080aa708(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   p->unk_34a++;
   if (p->unk_34a < 8) {
-    u16* table = gRandomTable;
     s32 amp = 8 - p->unk_34a;
-    p->icon.pos.x = p->spritePos.x + Mod(_Random(table) / 8, amp) - (amp >> 1);
-    p->icon.pos.y = p->spritePos.y + Mod(_Random(table) / 8, amp) - (amp >> 1);
+    p->icon.pos.x = p->spritePos.x + Mod(RandomNext() / 8, amp) - (amp >> 1);
+    p->icon.pos.y = p->spritePos.y + Mod(RandomNext() / 8, amp) - (amp >> 1);
   }
 
   if (p->unk_34a == 30) {
@@ -403,7 +389,7 @@ NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
   Entity080aace8Particle* q = p->ptcls;
   s32 i;
 
-  for (i = 7; i >= 0; i--) {
+  for (i = 0; i < 8; i++) {
     q->group = g;
     Particle_Add(&q->ptcl, g, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&q->ptcl, -4, -4);

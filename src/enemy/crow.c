@@ -318,10 +318,10 @@ NON_MATCH void FUN_081436b4(Crow* p) {
 
     Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
     TilePosAtIndex(&home, q->homeTileIdx);
-    angle = Random();
+    angle = RandomNext();
     (p->e).mover.angle = angle;
     Vec3_Clear(&q->unk_6b0);
-    speed = (Random() & 7) + 1;
+    speed = (RandomNext() & 7) + 1;
     Vec3_SetPolar(&q->unk_6b0, angle, speed);
     q->unk_6b0.y = 14;
   }
@@ -924,7 +924,7 @@ NON_MATCH void Crow_SwoopAtPlayer(Crow* p) {
 }
 
 void FUN_081452cc(Crow* p) {
-  s32 d;
+  s32 floorY;
   s32 y;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
@@ -933,13 +933,9 @@ void FUN_081452cc(Crow* p) {
   }
   (p->e).tryDetectPlayer(&p->e);
   Enemy_UpdateWalkAnimSpeed(&p->e);
-  d = (p->e).floorY;
-  y = (p->e).mover.pos.y - 320;
-  d -= y;
-  if (d < 0) {
-    d = -d;
-  }
-  if (d <= 16 && (p->e).subStateTimer > 80) {
+  floorY = (p->e).floorY;
+  y = (p->e).mover.pos.y - Q8(1.25);
+  if (abs(floorY - y) <= Q8(0.063) && (p->e).subStateTimer > 80) {
     Enemy_ResetState(&p->e, 0, 0, 1);
   } else {
     (p->e).subStateTimer++;

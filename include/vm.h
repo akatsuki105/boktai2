@@ -81,7 +81,7 @@ typedef struct {
   u32* argv;  // 0x04, 引数配列の先頭 (.bokc で p0, p1, ... に対応 (pN が argv[N] に対応))
 } ScriptArgs;
 
-// スクリプトが VM_Ctrl_22FF で登録するレコード, FUN_08230eec が u32_ARRAY_0203f400 のテーブルへ積み、FUN_08230f94 が id で引く
+// スクリプトが VM_Ctrl_22FF で登録するレコード, FUN_08230eec が u32_ARRAY_0203f400 のテーブルへ積み、ScriptRecord_Find が id で引く
 // テーブルは 0x03000740 の深さで選ぶ 392 バイトのブロック単位 (先頭 word が件数、続けて 8 バイトのレコードが最大 48 件)
 typedef struct {
   u16 id;
@@ -92,7 +92,7 @@ typedef struct {
 static_assert(sizeof(ScriptRecord) == 8);
 
 // id で引いたレコードの先頭を *out に入れ、件数を返す
-s32 FUN_08230f94(u32 id, ScriptRecord** out);
+s32 ScriptRecord_Find(u32 id, ScriptRecord** out);
 
 // --------------------------------------------
 

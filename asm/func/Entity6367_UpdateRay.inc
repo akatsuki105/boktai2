@@ -183,7 +183,7 @@ _0821A424:
 	ldr r3, _0821A4CC @ =0x0000FFFF
 	movs r1, #1
 	movs r2, #0xf
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	beq _0821A49E
 	movs r1, #1

@@ -48,7 +48,7 @@ extern bool32 gPlayTimeEnabled;
 
 void GameSystem_HandleGameOverChoice(u32 val);
 s32 MainMenu_SetHudMode(s32 mode);
-void FUN_0807adc0(Player* p);
+void Player_StartDeathVanish(Player* p);
 
 // animState 0, BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
 void GameOverManager_AnimStart(GameOverManager* p) {
@@ -372,7 +372,7 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
     p->menu.flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
     MainMenu_SetHudMode(7);
-    FUN_0807adc0(gPlayerPtr[0]);
+    Player_StartDeathVanish(gPlayerPtr[0]);
     Sound_FadeOutBGM(2);
     p->timer = 0;
     p->cursor = 1;

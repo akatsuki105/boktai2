@@ -928,7 +928,7 @@ _08127F62:
 	strb r0, [r4]
 _08127FD0:
 	ldr r0, [sp, #8]
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r6, [sp, #0x68]
 	strh r0, [r6]

@@ -75,6 +75,7 @@ void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
 // poseIdx は "include/constants/particle.h" の定数
 void Particle_SetPose(Particle* p, ParticleGroup* g, u32 poseIdx);
 
+static inline void Particle_Show(Particle* p) { p->flags &= ~SPRFLAG_HIDDEN; }
 static inline void Particle_Hide(Particle* p) { p->flags |= SPRFLAG_HIDDEN; }
 static inline void Particle_SetFlags(Particle* p, SpriteFlags flags) { p->flags |= flags; }
 static inline void Particle_ClearFlags(Particle* p, SpriteFlags flags) { p->flags &= ~flags; }

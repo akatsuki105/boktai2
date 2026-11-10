@@ -122,7 +122,7 @@ _08212072:
 	ldrh r2, [r1]
 	movs r1, #0
 	movs r3, #7
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	beq _08212142
 	movs r0, #1
@@ -200,7 +200,7 @@ _0821211A:
 	ldrh r2, [r1]
 	movs r1, #1
 	movs r3, #7
-	bl FUN_0821b21c
+	bl Video_StepBrightnessFade
 	cmp r0, #0
 	beq _08212142
 	adds r0, r5, #0

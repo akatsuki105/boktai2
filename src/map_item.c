@@ -189,9 +189,8 @@ NON_MATCH void MapItem_UpdateShake(MapItem* item) {
       item->pos->x = item->shakeBaseX;
       item->pos->z = item->shakeBaseZ;
     } else {
-      u16* table = gRandomTable;
-      item->pos->x = item->shakeBaseX + ((_Random(table) % 16) - 4);
-      item->pos->z = item->shakeBaseZ + ((_Random(table) % 8) - 4);
+      item->pos->x = item->shakeBaseX + ((RandomNext() % 16) - 4);
+      item->pos->z = item->shakeBaseZ + ((RandomNext() % 8) - 4);
     }
   }
 #else

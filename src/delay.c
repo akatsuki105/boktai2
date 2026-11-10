@@ -7,21 +7,21 @@
 // スクリプト側の返り値(result) に応じて一度きり(oneshot)か定期実行(periodically)かが決まる
 typedef struct TimerEntity {
   Entity e;           // 0x00, ENTITY_UNK_5
-  u32 recordID;       // 0x18, FUN_08230f94 に渡すスクリプトレコードのID
+  u32 recordID;       // 0x18, ScriptRecord_Find に渡すスクリプトレコードのID
   ScriptArgs args;    // 0x1C, argv は下の argv を指す
   u32 script;         // 0x24, TIMERFLAG_SCRIPT_ID が立っていればスクリプトID、立っていなければバイトコードへのポインタ
   s32 frames;         // 0x28, 毎フレーム減る残りフレーム数
   u16 unk_2c;         // 0x2C, frames に負の値が渡されたときだけ 1
   u16 flags;          // 0x2E, bit0: TIMERFLAG_SCRIPT_ID, bit1..7: not used
   u32 argv[8];        // 0x30, 呼び出し元から写した引数
-  ScriptRecord* rec;  // 0x50, FUN_08230f94 が引いてくるレコード
+  ScriptRecord* rec;  // 0x50, ScriptRecord_Find が引いてくるレコード
 } TimerEntity;
 static_assert(sizeof(TimerEntity) == 84);
 
 #define TIMERFLAG_SCRIPT_ID (1 << 0)
 
 void TimerEntity_Update(TimerEntity* p) {
-  s32 i = FUN_08230f94(p->recordID, &p->rec);
+  s32 i = ScriptRecord_Find(p->recordID, &p->rec);
   ScriptRecord* rec = p->rec;
   s32 result;
 

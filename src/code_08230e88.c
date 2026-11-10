@@ -76,4 +76,21 @@ void FUN_08230eec(ScriptRecord* p) {
   }
 }
 
-NAKED s32 FUN_08230f94(u32 id, ScriptRecord** out) { INCFUNC("asm/func/FUN_08230f94.inc"); }
+// 前のフレームに積まれた面から id のレコードを探し, 先頭を *out に入れて同じ id が続く件数を返す, 無ければ 0
+s32 ScriptRecord_Find(u32 id, ScriptRecord** out) {
+  ScriptRecordBlock* b = &ScriptRecord_GetBlocks()[1 - u32_03000740];
+  ScriptRecord* rec = b->recs;
+  s32 i;
+
+  for (i = 0; i < b->count; i++, rec++) {
+    if (rec->id == id) {
+      s32 n;
+
+      *out = rec;
+      for (rec++, i++, n = 1; i < b->count && rec->id == id; i++, n++, rec++) {
+      }
+      return n;
+    }
+  }
+  return 0;
+}

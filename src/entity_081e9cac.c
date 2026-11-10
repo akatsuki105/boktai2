@@ -64,7 +64,7 @@ NON_MATCH void Entity081e9cacElem_OnHit(HitboxData* a, HitboxData* b, Entity081e
       } else {
         s32 d = FixToInt(6, (elem->angle + 0x20) & 0xFF) - FixToInt(6, (b->angle + 0x20) & 0xFF);
 
-        hit = (d < 0 ? -d : d) == 2;
+        hit = abs(d) == 2;
       }
       if (hit) {
         Vec3 d;

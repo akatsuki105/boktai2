@@ -88,9 +88,8 @@ u16 FUN_08240b98(Vec3* out, s8 idx) {
   return p->data[idx].id;
 }
 
-// 原典はプロトタイプなしの K&R 定義 (呼び出し側は s16 のまま渡し, ここで u16 に切り詰める), その形で命令は 97/94, 残差は z が r7 に載らずスタックへ逃げる割当
-NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u16 moverID) {
-#ifdef NONMATCHING_C
+// (x, z) が登録済みのゾーンに入っていなければ, 空いている枠に位置・大きさ・フラグ・moverID を登録する, MPF_UNK_7 のマップでは大きさを倍にする
+void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u16 moverID) {
   Entity794C* p = sEntity794C;
   Vec3 pos;
 
@@ -119,9 +118,6 @@ NON_MATCH void FUN_08240bcc(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u1
       }
     }
   }
-#else
-  INCFUNC("asm/func/FUN_08240bcc.inc");
-#endif
 }
 
 void FUN_08240c9c(s16 x, s16 z, s16 param_3, s16 param_4) { FUN_08240bcc(x, z, param_3, param_4, FLAG_0, 0); }

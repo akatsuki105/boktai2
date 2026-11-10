@@ -306,10 +306,7 @@ bool8 Dog_TryTurnToward(Dog* p, u32 angle) {
   } else if (diff < -128) {
     diff += 256;
   }
-  if (diff < 0) {
-    diff = -diff;
-  }
-  if (diff < (p->e).unk_1fd || (p->e).state == ES_UNK_2) {
+  if (abs(diff) < (p->e).unk_1fd || (p->e).state == ES_UNK_2) {
     return FALSE;
   }
   Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -378,10 +375,9 @@ NON_MATCH s32 FUN_0814a8dc(Dog* p) {
       Vec3 off;
       Vec3 vel;
       s32 life;
-      u16* table = gRandomTable;
 
-      pos.x = (_Random(table) & 63) - 48;
-      pos.z = (_Random(table) & 63) - 48;
+      pos.x = (RandomNext() & 63) - 48;
+      pos.z = (RandomNext() & 63) - 48;
       Vec3_Sum(&pos, &(p->e).mover.pos, &pos);
       Vec3_SetPolar(&off, ((p->e).mover.angle + 128) & 0xFF, 80);
       Vec3_Sum(&pos, &off, &pos);
@@ -714,7 +710,7 @@ NON_MATCH void enemy_dog_0814b500(Dog* p) {
         return;
       }
       if (IsLinkPlay()) {
-        if (!FUN_080faa98(&p->e)) {
+        if (!Enemy_TargetNearestLinkPlayer(&p->e)) {
           return;
         }
       } else {
@@ -749,10 +745,9 @@ NON_MATCH void Dog_SpawnSpark(Vec3* pos) {
   Vec3 vel;
   u32 angle;
   s32 speed;
-  u16* table = gRandomTable;
 
-  angle = _Random(table) & 0xFF;
-  speed = _Random(table) & 31;
+  angle = RandomNext() & 0xFF;
+  speed = RandomNext() & 31;
   Vec3_SetPolar(&vel, angle, speed);
   vel.y = (Random() & 63) - 48;
   Entity081ee2a0_SpawnEx(pos, &vel, 60, 3, 3);
@@ -884,8 +879,8 @@ NON_MATCH void Dog_StateTurn(Dog* p) {
     s32 dir;
     u32 target;
 
-    (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
-    dir = (((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
       target = (p->e).mover.path->node->delay >> 12;
       (p->e).unk_1dc = target;
@@ -964,15 +959,12 @@ NON_MATCH void Dog_StateTurn(Dog* p) {
     (p->e).animSpeedDiv = speedDiv;
   }
   if ((p->e).animForceRestart) {
-    s32 dir = (((((p->e).mover.angle + 0x10) & 0xFF) >> 5) + 3) & 7;
-    s32 d = (p->e).unk_1dc - dir;
+    s32 dir = Angle_ToDir8((p->e).mover.angle);
+    s32 d = abs((p->e).unk_1dc - dir);
 
-    if (d < 0) {
-      d = -d;
-    }
     if (d <= 0) {
       (p->e).subStateDone = 1;
-      (p->e).mover.angle = ((((((p->e).mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3) * 64 - 64;
+      (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
       Enemy_PlayAnim(&p->e, 0);
       if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
@@ -1170,7 +1162,7 @@ NON_MATCH void Dog_StateDamaged(Dog* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -1317,7 +1309,7 @@ NON_MATCH void Dog_StateDamaged(Dog* p) {
             Enemy_ResetState(&p->e, 3, 1, 0);
             (p->e).unk_542 = 6;
           }
-          FUN_080e7b6c(&p->e);
+          Enemy_StepToFloorEdge(&p->e);
           (p->e).animSpeedDiv = 2;
         }
       } else {
@@ -1841,7 +1833,7 @@ NON_MATCH bool8 Dog_OnDamaged(Dog* p) {
               Enemy_ResetState(&p->e, 3, 1, 0);
               (p->e).unk_542 = 6;
             }
-            FUN_080e7b6c(&p->e);
+            Enemy_StepToFloorEdge(&p->e);
             (p->e).animSpeedDiv = 2;
           }
         } else {
@@ -2013,7 +2005,7 @@ NON_MATCH bool8 Dog_OnDamaged(Dog* p) {
           Enemy_ResetState(&p->e, 3, 1, 0);
           (p->e).unk_542 = 6;
         }
-        FUN_080e7b6c(&p->e);
+        Enemy_StepToFloorEdge(&p->e);
         (p->e).animSpeedDiv = 2;
       }
     } else {
@@ -2261,7 +2253,7 @@ NON_MATCH void FUN_0814fc7c(Dog* p) {
       Enemy_ResetState(&p->e, 3, 1, 0);
       (p->e).unk_542 = 6;
     }
-    FUN_080e7b6c(&p->e);
+    Enemy_StepToFloorEdge(&p->e);
     (p->e).animSpeedDiv = 2;
     return;
   }
@@ -2610,7 +2602,7 @@ NON_MATCH void FUN_08150de8(Dog* p) {
       (p->e).unk_542 = 6;
     }
   }
-  FUN_080e7b6c(&p->e);
+  Enemy_StepToFloorEdge(&p->e);
   (p->e).animSpeedDiv = 2;
 #else
   INCFUNC("asm/func/FUN_08150de8.inc");
@@ -2635,7 +2627,7 @@ void FUN_081514f0(Dog* p) {
       Dog_SetUnk6a8(q, 4);
       return;
     }
-  } else if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+  } else if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
     Enemy_ResetState(&p->e, 0, 0, 18);
   }
   if (FUN_0814b3a0(p)) {

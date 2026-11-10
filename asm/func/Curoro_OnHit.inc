@@ -141,7 +141,7 @@ _0813A2DE:
 	ands r0, r3
 	ldr r0, [r6]
 	movs r1, #0
-	bl FUN_0807a904
+	bl Player_AddSpeedPenalty
 	movs r1, #0xe6
 	lsls r1, r1, #1
 	adds r0, r5, r1

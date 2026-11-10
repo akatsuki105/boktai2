@@ -103,7 +103,7 @@ s32 Enemy_UpdateHitboxes(Enemy* p);
 bool32 Enemy_ProcessRequests(Enemy* p);
 bool32 Enemy_ShakeSprite(Enemy* p);
 void FUN_080f06ac(Enemy* p);
-void FUN_080e59d0(Enemy* p, u16* msg);
+void Enemy_HandleResumeMsg(Enemy* p, u16* msg);
 bool8 Entity081f959c_IsAnyActive(void);
 bool8 FUN_080f0a0c(Enemy* p);
 void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 speed);
@@ -269,7 +269,7 @@ void Skeleton_OnWakeMsg(Skeleton* p, u16* msg) {
     CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
     Enemy_ResetInPlace(&p->e);
     msg2 = 1;
-    FUN_080e59d0(&p->e, &msg2);
+    Enemy_HandleResumeMsg(&p->e, &msg2);
   }
 }
 
@@ -2266,7 +2266,7 @@ void Skeleton_StateOrbitFlame(Skeleton* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     if ((p->e).hp <= (p->e).unk_546) {
       Skeleton_SpawnOrbitFlamesVaried(p);
-    } else if ((u8)Random() < 64) {
+    } else if ((Random() & 0xFF) < 64) {
       Skeleton_SpawnOrbitFlamesCounter(p);
     } else {
       Skeleton_SpawnOrbitFlames(p);
@@ -2425,8 +2425,8 @@ void Skeleton_StateWakeUp(Skeleton* p, s32 timer) {
   }
 }
 
-// 倒れて髑髏が跳ねる, 始めに判定を隠して乱数の向きと速さで跳ね, 着地したら FUN_080e59d0 へ知らせる
-// 182/175命令の下書き, 原典は跳ねる速さを jumpVel に直接 FixToInt で書く順と乱数の引き方が違う, 1回目の下書きで切り上げ
+// 倒れて髑髏が跳ねる, 始めに判定を隠して乱数の向きと速さで跳ね, 着地したら Enemy_HandleResumeMsg へ知らせる
+// 180/175命令の下書き, 原典は跳ねる速さを jumpVel に直接 FixToInt で書く順と乱数の引き方が違う, 1回目の下書きで切り上げ
 NON_MATCH void FUN_0810c2dc(Skeleton* p) {
 #ifdef NONMATCHING_C
   Skeleton* q = (p->e).owner;
@@ -2440,11 +2440,11 @@ NON_MATCH void FUN_0810c2dc(Skeleton* p) {
     Hitbox_Hide(&(p->e).hurtbox);
     Hitbox_ClearFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
     angle = (p->e).mover.angle;
-    speed = (Random() & 0xF) + 28;
+    speed = (RandomNext() & 0xF) + 28;
     (p->e).jumpVel.x = POLAR_X(speed, angle);
     (p->e).jumpVel.y = 0;
     (p->e).jumpVel.z = POLAR_Z(speed, angle);
-    (p->e).jumpVel.y = (Random() & 0x1F) + 24;
+    (p->e).jumpVel.y = (RandomNext() & 0x1F) + 24;
     Enemy_PlayAnim(&p->e, 17);
     ParticleShadow_Show(&(p->e).shadow);
     return;
@@ -2461,7 +2461,7 @@ NON_MATCH void FUN_0810c2dc(Skeleton* p) {
     }
     Hitbox_Hide(&(p->e).hitbox);
     msg = 1;
-    FUN_080e59d0(&p->e, &msg);
+    Enemy_HandleResumeMsg(&p->e, &msg);
   }
 #else
   INCFUNC("asm/func/FUN_0810c2dc.inc");
@@ -2481,7 +2481,7 @@ void Skeleton_StateDormant(Skeleton* p, s32 timer) {
   } else if (!Skeleton_TestFlags(q, 1 << 1) && q->wakeDelay < 20000 && q->wakeDelay < timer) {
     u16 msg = 1;
 
-    FUN_080e59d0(&p->e, &msg);
+    Enemy_HandleResumeMsg(&p->e, &msg);
   }
 }
 
@@ -3092,7 +3092,7 @@ void Skeleton_SubWalk(Skeleton* p) {
   (p->e).animSpeedDiv = 2;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
-    if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 0, 0, 16);
       Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
       return;
@@ -3149,7 +3149,7 @@ void Skeleton_SubRelocate(Skeleton* p) {
   (p->e).animSpeedDiv = 2;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
-    if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 0, 0, 19);
       Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
       return;
@@ -3213,7 +3213,7 @@ void Skeleton_SubWalkToAttackSpot(Skeleton* p) {
   (p->e).animSpeedDiv = 2;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if (Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
-    if (FUN_080e60b8(&p->e, (p->e).navAgent, 32, 32, speed)) {
+    if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
       Enemy_ResetState(&p->e, 0, 0, 22);
       Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
     }

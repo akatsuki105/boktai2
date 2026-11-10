@@ -4,6 +4,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "player.h"
 #include "random.h"
 #include "shadow.h"
@@ -20,7 +21,7 @@ typedef struct BeeNestFragment {
   AuxShadow shadow;          // 0x0A8, shadowId で管理
   Vec3 basePos;              // 0x114, 揺れの基準位置, sprite.pos へ複写する
   s16 unk_11c;               // 0x11C, 揺れの角速度, 折り返すたびに符号を反転して半分になる
-  s16 unk_11e;               // 0x11E, 落下速度, 毎フレーム +2
+  s16 fallSpeed;             // 0x11E, 落下速度, 毎フレーム +2
   u8 unk_120[4];             // 0x120
   s16 unk_124;               // 0x124, basePos からの半径 (X 成分)
   u8 unk_126[2];             // 0x126
@@ -48,7 +49,7 @@ typedef struct BeeNestFragment {
   AuxAnimPlayFlags unk_152;  // 0x152
   u8 unk_153;                // 0x153, 0 でない間はパレット 306 を強制して減らす
   u16 unk_154;               // 0x154, FUN_081d5d18 が毎フレーム 1 足すカウンタ
-  u8 unk_156;                // 0x156, 立っていると FUN_081d5d18 が状態を初期化して落とす
+  bool8 stateEntered;        // 0x156, state を切り替えると立ち, 各 state の最初のフレームで初期化して落とす
   u8 unk_157;                // 0x157, 0 でない間はスプライトを ±10 揺らして減らす
 } BeeNestFragment;
 static_assert(sizeof(BeeNestFragment) == 344);
@@ -173,7 +174,7 @@ NON_MATCH void Cmd_CreateBeeNest(void) {
 
   Video_GetAuxSprite(&frag->gfx, SPRITE_BEE_NEST_BROKEN);
   AuxSprite_Add(&frag->sprite, &frag->gfx, 0);
-  frag->unk_156 = 1;
+  frag->stateEntered = 1;
   frag->unk_13c = 0;
   frag->flags = VM_GetNamedArgValue('m', 0);
 
@@ -291,10 +292,10 @@ void FUN_081d5d14(BeeNest* p, BeeNestFragment* frag) {}
 
 // state 1 のハンドラ
 void FUN_081d5d18(BeeNest* p, BeeNestFragment* frag) {
-  if (frag->unk_156 != 0) {
+  if (frag->stateEntered != 0) {
     frag->unk_154 = 0;
     AuxSprite_Show(&frag->sprite);
-    frag->unk_156 = 0;
+    frag->stateEntered = 0;
   }
   FUN_081d5cac(frag);
   FUN_081d6444(frag);
@@ -309,11 +310,11 @@ void FUN_081d5d18(BeeNest* p, BeeNestFragment* frag) {
 // 呼び出し側が lsls #24 で丸めているので FUN_081d6cb0 の戻り値を bool8 にした (あちらの残差 69/57 は変わらない)
 NON_MATCH void FUN_081d5d70(BeeNest* p, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
-  if (frag->unk_156) {
+  if (frag->stateEntered) {
     frag->unk_154 = 0;
     frag->sprite.flags &= ~SPRFLAG_HIDDEN;
     frag->sprite.flags |= SPRFLAG_AFFINE;
-    frag->unk_156 = 0;
+    frag->stateEntered = 0;
     CpuFill32(0, &frag->unk_124, 8);
     frag->unk_124 = 0x29;
     frag->unk_128 = 0x94;
@@ -328,7 +329,7 @@ NON_MATCH void FUN_081d5d70(BeeNest* p, BeeNestFragment* frag) {
       PlaySound_082406e0(SE_BEE_969);
     } else {
       frag->state = 3;
-      frag->unk_156 = 1;
+      frag->stateEntered = 1;
       return;
     }
   }
@@ -386,70 +387,37 @@ NON_MATCH void FUN_081d5f54(BeeNestFragment* frag) {
 }
 
 // 足元の高さを測ってから落下させ, 着地したら state 4 へ移してエフェクトを撒く
-// 残差1命令 (139/140) でこちらが短い. &frag->sprite.pos を原典は r0 で作って r6 へ複写するがこちらは直接 r6 に作る, CpuSet の第1引数 (sp+0x20) の作り位置も1つずれる
-// タイル高さの算出は collision_map.c の TileHeightAt と同形, あちらは static inline なので展開形を直書きした
-NON_MATCH void FUN_081d60c8(BeeNest* p, BeeNestFragment* frag) {
+// 残差は先頭の pos の写しとレジスタ割当のみ (139/140): 原典は &frag->sprite.pos を r0 に作ってから r6 へ写す
+// TileHeightAtIndex(GetCollisionTileIdx(&frag->sprite.pos), &frag->sprite.pos) と式を2回渡すと写しは再現する (140/140, 残りは groundY の格納先と 0 のレジスタ入れ替え), TileHeightAt が展開される形が原典と違うらしい
+NON_MATCH void BeeNestFragment_UpdateFall(BeeNest* p, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
-  if (frag->unk_156) {
-    Vec3* pos = &frag->sprite.pos;
-    MapTileOverride* ov;
-    CollisionMapTile* tile;
-    s32 stairs;
-    s32 height;
-    s32 bx;
-    s32 bz;
-    s32 idx;
-
-    bx = (s8)(pos->x >> 8);
-    bz = (s8)(pos->z >> 8);
-    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-      idx = 0;
-    } else {
-      idx = gCollisionMap->rowOffsets[bz] + bx;
-    }
-
-    ov = Map_FindTileOverride(idx, 1);
-    tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-
-    stairs = tile->heightStairs >> 4;
-    height = (tile->heightStairs & 0xF) << 8;
-    switch (stairs) {
-      case STAIRS_VERTICAL: {
-        height -= (u8)pos->z;
-        break;
-      }
-      case STAIRS_HORIZONTAL: {
-        height -= (u8)pos->x;
-        break;
-      }
-    }
-
-    frag->groundY = height;
-    frag->unk_156 = 0;
+  if (frag->stateEntered) {
+    frag->groundY = TileHeightAt(&frag->sprite.pos);
+    frag->stateEntered = 0;
     CpuFill32(0, &frag->unk_11c, 8);
   } else {
-    frag->sprite.pos.y -= frag->unk_11e;
-    frag->unk_11e += 2;
+    frag->sprite.pos.y -= frag->fallSpeed;
+    frag->fallSpeed += 2;
     if (frag->groundY >= frag->sprite.pos.y) {
       s32 i;
 
       frag->sprite.pos.y = frag->groundY;
       frag->state = 4;
-      frag->unk_156 = 1;
+      frag->stateEntered = 1;
       for (i = 0; i < 8; i++) {
         Entity081ee7a8_SpawnDefaultNow(&frag->sprite.pos, 8, 0x10, 4, 12, 0x12, i * 32, 8, Q6(1), 1, 1, 0);
       }
     }
   }
 #else
-  INCFUNC("asm/func/FUN_081d60c8.inc");
+  INCFUNC("asm/func/BeeNestFragment_UpdateFall.inc");
 #endif
 }
 
 // 残差1命令 (81/82). 原典は &frag->idx の定数 0x14A を独立に作るが, agbcc は直前の frag->state の 0x148 を +2 して使い回す (定数再利用のピープホール, ソース側から向きを変えられない)
 NON_MATCH void FUN_081d6200(BeeNest* p, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
-  if (frag->unk_156) {
+  if (frag->stateEntered) {
     FUN_081d6764(frag);
     if (frag->unk_13d - frag->unk_13c >= 0) {
       PlaySound_082406e0(SE_BEE_967);
@@ -460,7 +428,7 @@ NON_MATCH void FUN_081d6200(BeeNest* p, BeeNestFragment* frag) {
       frag->shadowId = -1;
     }
     PlaySound_082406e0(SE_BEENEST_CRASH);
-    frag->unk_156 = 0;
+    frag->stateEntered = 0;
   } else {
     frag->sprite.flags |= SPRFLAG_HIDDEN;
     AuxSprite_Remove(&frag->sprite);
@@ -478,7 +446,7 @@ void (*const PTR_ARRAY_085ae104[5])(BeeNest*, BeeNestFragment*) = {
     FUN_081d5d14,
     FUN_081d5d18,
     FUN_081d5d70,
-    FUN_081d60c8,
+    BeeNestFragment_UpdateFall,
     FUN_081d6200,
 };  // 0x085AE104
 
@@ -552,9 +520,8 @@ void FUN_081d6444(BeeNestFragment* frag) {
   if (frag->unk_157 == 0) {
     frag->sprite.pos = frag->basePos;
   } else {
-    u16* table = gRandomTable;
-    frag->sprite.pos.x = frag->basePos.x + Mod(_Random(table), 20) - 10;
-    frag->sprite.pos.z = frag->basePos.z + Mod(_Random(table), 20) - 10;
+    frag->sprite.pos.x = frag->basePos.x + Mod(RandomNext(), 20) - 10;
+    frag->sprite.pos.z = frag->basePos.z + Mod(RandomNext(), 20) - 10;
     frag->unk_157--;
   }
 }
@@ -597,7 +564,7 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag)
 
   if (frag->hp <= 0) {
     frag->state = 4;
-    frag->unk_156 = 1;
+    frag->stateEntered = 1;
   }
 #else
   INCFUNC("asm/func/FUN_081d64d4.inc");
@@ -610,14 +577,13 @@ NON_MATCH void FUN_081d65e8(BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
   Vec3 vel;
   Vec3 velRange;
-  u16* table = gRandomTable;
 
   CpuFill32(0, &vel, sizeof(vel));
   vel.y = 0x10;
-  velRange.x = (_Random(table) & 3) + 15;
-  velRange.y = (_Random(table) & 7) + 15;
-  velRange.z = (_Random(table) & 3) + 15;
-  ScatterEffect_Spawn((_Random(table) & 3) + 2, SCATTER_KIND_17, &frag->sprite.pos, &vel, &velRange, 12, 15);
+  velRange.x = (RandomNext() & 3) + 15;
+  velRange.y = (RandomNext() & 7) + 15;
+  velRange.z = (RandomNext() & 3) + 15;
+  ScatterEffect_Spawn((RandomNext() & 3) + 2, SCATTER_KIND_17, &frag->sprite.pos, &vel, &velRange, 12, 15);
 #else
   INCFUNC("asm/func/FUN_081d65e8.inc");
 #endif
@@ -683,7 +649,6 @@ NON_MATCH void FUN_081d6ae8(BeeNestFragment* frag, s32 n) {
 #ifdef NONMATCHING_C
   s32 argv[4];
   ScriptArgs sa;
-  u16* table;
 
   if (n <= 0) {
     return;
@@ -694,12 +659,11 @@ NON_MATCH void FUN_081d6ae8(BeeNestFragment* frag, s32 n) {
 
   sa.argc = 4;
   sa.argv = argv;
-  table = gRandomTable;
 
   while (n > 0) {
-    argv[0] = frag->sprite.pos.x - 0x40 + (_Random(table) & 0x7F);
-    argv[1] = frag->sprite.pos.y - 0x40 + (_Random(table) & 0x7F);
-    argv[2] = frag->sprite.pos.z - 0x40 + (_Random(table) & 0x7F);
+    argv[0] = frag->sprite.pos.x - 0x40 + (Random() & 0x7F);
+    argv[1] = frag->sprite.pos.y - 0x40 + (Random() & 0x7F);
+    argv[2] = frag->sprite.pos.z - 0x40 + (Random() & 0x7F);
     argv[3] = frag->unk_13c;
     VM_ExecByID(frag->scriptID, &sa);
     frag->unk_13c++;

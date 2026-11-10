@@ -177,10 +177,9 @@ s32 Entity99CA_Init(Entity99CA* p, Vec3* pos, s32 radius, s32 lifetime, s32 coun
   elem = p->elems;
   for (i = 0; i < 8; i++, elem++) {
     Particle* ptcl = &elem->ptcl;
-    u16* table = gRandomTable;
 
     elem->active = FALSE;
-    elem->angle = (_Random(table) & 0x7F) - 32;
+    elem->angle = (RandomNext() & 0x7F) - 32;
     elem->height = 0;
     elem->radius = radius;
     elem->timer = i * 4;

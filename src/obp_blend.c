@@ -38,7 +38,7 @@ s32 GetTimeOfDayPlttPair(u16* from, u16* to);
 u32 FUN_0823cdf8(SpriteID16 id);
 
 // 1スロットぶん, srcs[srcFrom] と srcs[srcTo] を blend の割合で混ぜて pltt に書く
-// 残差3命令: 原典は 0x1F を2本のレジスタに分けて持ち srcA も退避するが、こちらは 0x1F が1本に畳まれる (Tier A-B 試済, 未: Tier C)
+// 残差 5 hunk (98/98): 色を MakeRgb555 で組むと 0x1F の2本持ちと命令数は揃う, 残りはスタックの並び (原典はループ回数を sp, dst を sp+4, srcA を sp+8) と 0x1F を置くタイミング, 宣言順の入れ替えは効かない
 NON_MATCH void ObjPlttBlender_UpdateSlot(ObjPlttBlender* p, ObjPlttBlend* slot) {
 #ifdef NONMATCHING_C
   rgb555* dst = slot->pltt;
@@ -63,7 +63,7 @@ NON_MATCH void ObjPlttBlender_UpdateSlot(ObjPlttBlender* p, ObjPlttBlend* slot) 
     s32 g = (t * bg + inv * ag) >> 6;
     s32 b = (t * bb + inv * ab) >> 6;
 
-    *dst++ = (r & 0x1F) | ((g & 0x1F) << 5) | ((b & 0x1F) << 10);
+    *dst++ = MakeRgb555(r & 0x1F, g & 0x1F, b & 0x1F);
     srcA++;
     srcB++;
   }

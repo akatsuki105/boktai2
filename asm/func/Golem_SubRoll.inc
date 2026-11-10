@@ -1750,7 +1750,7 @@ _0811EAC2:
 	strb r0, [r3]
 _0811EB32:
 	ldr r0, [sp, #0x18]
-	bl FUN_080e7b6c
+	bl Enemy_StepToFloorEdge
 	movs r0, #2
 	ldr r4, [sp, #0x48]
 	strh r0, [r4]

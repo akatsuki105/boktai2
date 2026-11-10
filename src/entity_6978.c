@@ -133,9 +133,7 @@ NON_MATCH s32 Entity6978_Update(Entity6978* p) {
 
 s32 Entity6978_Destroy(Entity6978* p) { gEntity6978 = NULL; }
 
-// 残差は 0 の読み込み位置だけ (ループの前に 0 を先に読む, 末尾の gObjPlttFadeSkipMask 用の 0 が 0x40 より先)
-NON_MATCH s32 Entity6978_Init(Entity6978* p, u16 id) {
-#ifdef NONMATCHING_C
+s32 Entity6978_Init(Entity6978* p, u16 id) {
   s32 i;
 
   gEntity6978 = p;
@@ -146,7 +144,7 @@ NON_MATCH s32 Entity6978_Init(Entity6978* p, u16 id) {
   p->timer = 0;
   p->durationShift = 0;
   p->request = 0;
-  for (i = 6; i >= 0; i--) {
+  for (i = 0; i < 7; i++) {
     p->params[i] = 0;
   }
   gObjBrightness = Q6(1);
@@ -154,9 +152,6 @@ NON_MATCH s32 Entity6978_Init(Entity6978* p, u16 id) {
   gObjPlttBlendColor = 0x1084;
   gObjPlttFadeSkipMask = 0;
   return 0;
-#else
-  INCFUNC("asm/func/Entity6978_Init.inc");
-#endif
 }
 
 Entity6978* Entity6978_Create(u32 id) {
