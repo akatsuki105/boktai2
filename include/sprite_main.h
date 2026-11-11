@@ -150,7 +150,7 @@ s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx);
 s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed);
 void MainSprite_Remove(MainSprite* p);
-void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val);
+void FUN_0822f588(MainSprite* dst, MainSprite* src, u32 flags);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
 void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 cmdIdx);
 void MainSprite_SetNumber(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, bool32 zeroSuppress);

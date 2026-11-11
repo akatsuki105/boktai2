@@ -154,7 +154,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3DB8, Cmd_GetPathNodePos
 	.4byte 0x3DF7, TextSlideshow_Create
 	.4byte 0x3E17, Cmd_3E17
-	.4byte 0x3E1F, Cmd_3E1F
+	.4byte 0x3E1F, Cmd_FreeTileOverrides
 	.4byte 0x3E91, Elevator_Destroy
 	.4byte 0x3E93, Cmd_3E93
 	.4byte 0x3EA2, Cmd_3EA2
@@ -175,7 +175,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x42EF, Cmd_42EF
 	.4byte 0x430D, Cmd_Delay @ HashName("delay")
 	.4byte 0x435E, Cmd_DeleteShadow @ HashName("影削除")
-	.4byte 0x4383, Cmd_4383
+	.4byte 0x4383, Cmd_SpawnPuffs
 	.4byte 0x43A0, Cmd_ReadTable
 	.4byte 0x43D6, Cmd_43D6
 	.4byte 0x440F, Cmd_TestEquipBuff
@@ -330,7 +330,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8071, Cmd_CameraPanTo
 	.4byte 0x8089, Map_SpawnLoadingZoneIndicator
 	.4byte 0x814C, Cmd_HasItem
-	.4byte 0x8153, Cmd_8153
+	.4byte 0x8153, Cmd_DisableTileOverrides
 	.4byte 0x815C, Cmd_815C
 	.4byte 0x81C4, Cmd_81C4
 	.4byte 0x820B, Cmd_820B
@@ -481,7 +481,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB87B, EntityB87B_Create
 	.4byte 0xB88C, EntityB88C_Create
 	.4byte 0xB8B9, MoverList_Create
-	.4byte 0xB8C7, Cmd_B8C7
+	.4byte 0xB8C7, Cmd_SetTileOverrideParams
 	.4byte 0xBA36, EntityBA36_Create
 	.4byte 0xBA4B, Ringo_Create @ HashName("リンゴ")
 	.4byte 0xBB01, Cmd_Retry
@@ -500,7 +500,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC233, Cmd_C233
 	.4byte 0xC347, Cmd_C347
 	.4byte 0xC3BC, Slime_Create @ HashName("スライム")
-	.4byte 0xC419, Entity081d0e20_Create
+	.4byte 0xC419, PitfallManager_Create
 	.4byte 0xC438, DungeonMarker_Create
 	.4byte 0xC46E, Cmd_C46E
 	.4byte 0xC556, MessageWindow_CloseScripted
@@ -513,7 +513,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC7DC, Cmd_C7DC
 	.4byte 0xC814, EntityC814_Create
 	.4byte 0xC946, PreviewStage_Create
-	.4byte 0xC9BC, EntityC9BC_Create
+	.4byte 0xC9BC, PropertyCubeManager_Create
 	.4byte 0xCA3D, Cmd_CA3D
 	.4byte 0xCA73, EnemyDogLink_Create @ HashName("通信ドッグ")
 	.4byte 0xCA7D, Cmd_CA7D
@@ -546,7 +546,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD438, EntityD438_Create
 	.4byte 0xD4B5, Cmd_AddForgeExp
 	.4byte 0xD4E3, Cmd_D4E3
-	.4byte 0xD53D, EntityD53D_Create
+	.4byte 0xD53D, CrossoverError_Create
 	.4byte 0xD562, Cmd_D562
 	.4byte 0xD6F7, Cmd_D6F7
 	.4byte 0xD774, Cmd_D774
@@ -556,7 +556,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD8DF, Cmd_D8DF
 	.4byte 0xD916, Cmd_ReplaceWeapon
 	.4byte 0xD935, Entity0804e2c0_Create
-	.4byte 0xD9AE, EntityD9AE_Create @ HashName("パス")?
+	.4byte 0xD9AE, MovableBlockManager_Create @ HashName("パス")?
 	.4byte 0xD9B7, Cmd_RemoveKaamos
 	.4byte 0xD9D3, BgPlttAnimator_Create
 	.4byte 0xDA0B, Forge_Create
@@ -624,14 +624,14 @@ gCommandList: @ 0x085A9208
 	.4byte 0xEFE6, Cmd_EFE6
 	.4byte 0xF04A, GameOver_CancelScripted
 	.4byte 0xF04B, Cmd_F04B
-	.4byte 0xF0CC, Cmd_F0CC
+	.4byte 0xF0CC, Cmd_EnableTileOverrides
 	.4byte 0xF11C, Cmd_HasWeapon
 	.4byte 0xF156, SolarBarrier_Create @ HashName("太陽結界")
 	.4byte 0xF1F9, Cmd_CreateBeeNest @ HashName("蜂の巣")
 	.4byte 0xF200, Cmd_F200
 	.4byte 0xF33F, Cmd_F33F
 	.4byte 0xF341, Camera_Reset
-	.4byte 0xF404, EntityD9AE_ReleaseAll
+	.4byte 0xF404, MovableBlockManager_ReleaseAll
 	.4byte 0xF41A, EntityF41A_Create
 	.4byte 0xF5EB, CreatePlayer @ HashName("プレイヤー")
 	.4byte 0xF661, Entity3117_HideScripted
@@ -648,7 +648,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xFD12, Cmd_FD12
 	.4byte 0xFD6B, Entity778B_AddElemScripted
 	.4byte 0xFD86, Cmd_FD86
-	.4byte 0xFEBB, Cmd_FEBB
+	.4byte 0xFEBB, Cmd_AddTileOverride
 	.4byte 0xFEE0, Coffin_RequestKill
 	.4byte 0xFEF2, Cmd_ResetArmors
 	.4byte 0x0000, 0x00000000

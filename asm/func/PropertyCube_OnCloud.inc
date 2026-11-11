@@ -70,7 +70,7 @@ _0800CEA4:
 	adds r7, r1, #0
 _0800CEAE:
 	adds r0, r6, #0
-	bl EntityC9BCElem_CanSlide
+	bl PropertyCube_CanSlide
 	cmp r0, #0
 	beq _0800CF04
 	movs r5, #4

@@ -7,22 +7,22 @@
 // スクリプト側の返り値(result) に応じて一度きり(oneshot)か定期実行(periodically)かが決まる
 typedef struct TimerEntity {
   Entity e;           // 0x00, ENTITY_UNK_5
-  u32 recordID;       // 0x18, ScriptRecord_Find に渡すスクリプトレコードのID
+  u32 mesgID;         // 0x18, このタイマー宛てのメッセージの id, 値 0xFFFF が届くと自分を消す
   ScriptArgs args;    // 0x1C, argv は下の argv を指す
   u32 script;         // 0x24, TIMERFLAG_SCRIPT_ID が立っていればスクリプトID、立っていなければバイトコードへのポインタ
   s32 frames;         // 0x28, 毎フレーム減る残りフレーム数
   u16 unk_2c;         // 0x2C, frames に負の値が渡されたときだけ 1
   u16 flags;          // 0x2E, bit0: TIMERFLAG_SCRIPT_ID, bit1..7: not used
   u32 argv[8];        // 0x30, 呼び出し元から写した引数
-  ScriptRecord* rec;  // 0x50, ScriptRecord_Find が引いてくるレコード
+  ScriptMesg* mesgs;  // 0x50, ScriptMesg_Find で引いた mesgID 宛てのメッセージの先頭
 } TimerEntity;
 static_assert(sizeof(TimerEntity) == 84);
 
 #define TIMERFLAG_SCRIPT_ID (1 << 0)
 
 void TimerEntity_Update(TimerEntity* p) {
-  s32 i = ScriptRecord_Find(p->recordID, &p->rec);
-  ScriptRecord* rec = p->rec;
+  s32 i = ScriptMesg_Find(p->mesgID, &p->mesgs);
+  ScriptMesg* rec = p->mesgs;
   s32 result;
 
   while (i-- > 0) {
@@ -86,7 +86,7 @@ TimerEntity* TimerEntity_Create(u32 script, ScriptArgs* args, s32 frames) {
 }
 
 // 0x430D, HashName("delay")
-TimerEntity* Cmd_Delay(u32 recordID) {
+TimerEntity* Cmd_Delay(u32 mesgID) {
   s32 frames = 0;
   u32 script = 0;
   bool32 isScriptID;
@@ -109,7 +109,7 @@ TimerEntity* Cmd_Delay(u32 recordID) {
 
   p = TimerEntity_Create(script, NULL, frames);
   if (p != NULL) {
-    p->recordID = recordID;
+    p->mesgID = mesgID;
     p->flags = isScriptID;
     if (VM_SeekToNamedArg('a')) {
       s32 i;

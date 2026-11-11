@@ -277,7 +277,7 @@ NON_MATCH void FUN_081d5cac(BeeNestFragment* frag) {
     frag->hurtbox.flags &= ~HBFLAG_HIDDEN;
   }
   if (frag->unk_153 != 0) {
-    Video_SetAuxSpritePltt(frag->sprite.gfx, 306);
+    Video_SetAuxSpritePltt(frag->sprite.gfx, OBP_WHITE_306);
     frag->unk_153--;
   } else {
     Video_SetAuxSpritePltt(frag->sprite.gfx, 380);

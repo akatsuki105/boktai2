@@ -55,9 +55,6 @@ typedef struct WarpMagicSquare {
 static_assert(sizeof(WarpMagicSquare) == 904);
 
 void WarpMagicSquare_UpdateDepartSink(WarpMagicSquare* p);
-void WarpMagicSquare_UpdateDormant(WarpMagicSquare* p);
-void WarpMagicSquare_UpdateSpinIn(WarpMagicSquare* p);
-void WarpMagicSquare_UpdatePillars(WarpMagicSquare* p);
 bool32 FUN_08086af0(void);
 void Player_LockHidden(Player* p);
 void FUN_080a6e88(bool32 stopSound);
@@ -65,16 +62,14 @@ void WarpMagicSquare_UpdateDemoParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateSpinOut(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateLit(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDepartPillarsUp(WarpMagicSquare* p);
-void Player_LockWarpOut(Player* p, DirS32 dir, u32 scriptID);
+void Player_LockWarpOut(Player* p, Dir8S32 dir, u32 scriptID);
 bool32 FUN_08086ab8(void);
 void FUN_080a6edc(void);
-void WarpMagicSquare_UpdateLightUp(WarpMagicSquare* p);
-void WarpMagicSquare_UpdateDemoSink(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDemoPillarsUp(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDemoPillarsDown(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateIdle(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArriveWait(WarpMagicSquare* p);
-void Player_LockWarpIn(Player* p, DirS32 dir, u32 scriptID);
+void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID);
 void WarpMagicSquare_UpdateDepartParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArriveParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArrivePillarsDown(WarpMagicSquare* p);
@@ -89,7 +84,7 @@ void WarpMagicSquarePtcl_Update(WarpMagicSquarePtcl* ptcl) {
     ptcl->ptcl.pos.x += ptcl->vel.x;
     ptcl->ptcl.pos.y += ptcl->vel.y;
     ptcl->ptcl.pos.z += ptcl->vel.z;
-    Particle_SetPose(&ptcl->ptcl, GetParticleGroup(PTCL_GROUP_2), ((ptcl->life >> 2) & 1) + 2);
+    Particle_SetPose(&ptcl->ptcl, GetParticleGroup(PTCL_GROUP_2), PTCL2_SOL_L + ((ptcl->life >> 2) & 1));
     ptcl->vel.x = FixToInt(4, ptcl->vel.x * 15);
     ptcl->vel.y = FixToInt(4, ptcl->vel.y * 15);
     ptcl->vel.z = FixToInt(4, ptcl->vel.z * 15);
@@ -633,7 +628,7 @@ void WarpMagicSquare_InitPtcls(WarpMagicSquare* p) {
     Particle_Add(pt, GetParticleGroup(PTCL_GROUP_2), SPRFLAG_HIDDEN);
     Particle_SetOffset(pt, -4, -4);
     Particle_SetPltt(pt, 1);
-    Particle_SetPose(pt, GetParticleGroup(PTCL_GROUP_2), 2);
+    Particle_SetPose(pt, GetParticleGroup(PTCL_GROUP_2), PTCL2_SOL_L);
     pt->priority = 1;
     pt->offsetZ = 20;
     pt->pos = p->pos;
@@ -647,14 +642,10 @@ NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
   s32 i;
 
   if (VM_SeekToNamedArg('p')) {
-    p->pos.x = VM_GetValue();
-    p->pos.y = VM_GetValue();
-    p->pos.z = VM_GetValue();
+    p->pos.x = VM_GetValue(), p->pos.y = VM_GetValue(), p->pos.z = VM_GetValue();
     p->pos.y = TileHeightAt(&p->pos);
   } else {
-    p->pos.x = 0;
-    p->pos.y = 0;
-    p->pos.z = 0;
+    p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
   }
   if (VM_SeekToNamedArg('C')) {
     p->departScriptID = VM_GetValue();
@@ -691,7 +682,7 @@ NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
   } else {
     p->warpScriptArg = 0;
   }
-  p->plttID = (p->design >> 1) * 3 + 97;
+  p->plttID = OBP_MSQUARE(p->design >> 1);
 
   Video_GetAuxSprite(&p->gfx, SPRITE_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);

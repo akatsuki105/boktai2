@@ -116,7 +116,7 @@ _08023A00:
 	add r0, sp, #0x10
 	movs r1, #5
 	movs r3, #0x40
-	bl Entity08015584_SpawnSprayOne
+	bl Puff_SpawnSprayOne
 _08023AA4:
 	ldrh r0, [r7, #2]
 	adds r2, r0, #0

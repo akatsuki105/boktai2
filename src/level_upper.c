@@ -102,7 +102,7 @@ void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
   Player* player;
 
   if (++p->unk_3a > 15) {
-    p->base.flags |= 1;
+    p->base.flags |= SPRFLAG_HIDDEN;
     p->unk_38 = 0;
   } else {
     p->offset.y += p->unk_32;
@@ -293,7 +293,7 @@ s32 LevelUpper_Init(LevelUpper* p) {
   if (VM_SeekToNamedArg('e')) {
     p->expTable = VM_GetValueSafe2();
   }
-  if (gStat->lv <= 98) {
+  if (gStat->lv < 99) {
     p->nextExp = GetNextLvExp(p, gStat->lv);
   }
   for (i = 0; i < 5; i++) {
@@ -305,6 +305,7 @@ s32 LevelUpper_Init(LevelUpper* p) {
   return 0;
 }
 
+// 0xB164
 LevelUpper* LevelUpper_Create(u32 _) {
   LevelUpper* p;
   if (gLevelUpper == NULL) {

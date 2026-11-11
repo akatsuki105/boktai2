@@ -4,6 +4,7 @@
 #include "gba/gba.h"
 #include "types.h"
 
+void MainMenu_SetHudMode(s32 mode);
 void HUD_ShowWeaponCrashEffect(void);
 void HUD_StartCountdown(u16* remainingTime);
 void HUD_RemoveCountdown(void);

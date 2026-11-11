@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "constants/weapon.h"
 #include "cwolf_target.h"
 #include "dust.h"
 #include "eff_elemcond.h"
@@ -11,16 +10,15 @@
 #include "enemy_target.h"
 #include "file.h"
 #include "global.h"
-#include "inline.h"
 #include "malloc.h"
 #include "map_inline.h"
 #include "msgbus.h"
 #include "player.h"
+#include "puff.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
 #include "sprite.h"
-#include "sprite_common.h"
 #include "vec3.h"
 #include "vm.h"
 
@@ -186,7 +184,6 @@ s32 Cockatrice_SetLongJumpTarget(Cockatrice* p);
 void Cockatrice_TryEndFlee(Cockatrice* p);
 void Cockatrice_StateFly(Cockatrice* p);
 void Cockatrice_PlayIdleAnim(Cockatrice* p);
-void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos);
 void Cockatrice_SpawnStoneShards(Cockatrice* p, s32 count);
 void Cockatrice_StatePrepareJump(Cockatrice* p);
 void Cockatrice_StartFlee(Cockatrice* p);
@@ -830,10 +827,10 @@ void Cockatrice_StateCrumble(Cockatrice* p, s32 timer) {
   Enemy_SnapToFloor(&p->e);
   if (timer > 42) {
     if (Mod(timer, 6) == 0) {
-      Entity08015584_SpawnSpray(1, 1, 0, Q6(0.5), &(p->e).mover.pos);
+      Puff_SpawnSpray(1, 1, 0, Q6(0.5), &(p->e).mover.pos);
     }
   } else if (timer > 52 && Mod(timer, 4) == 0) {
-    Entity08015584_SpawnSpray(1, 1, 0, Q6(0.5), &(p->e).mover.pos);
+    Puff_SpawnSpray(1, 1, 0, Q6(0.5), &(p->e).mover.pos);
   }
   if (timer == 48) {
     Cockatrice_SpawnStoneShards(p, 6);
@@ -4371,7 +4368,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_COCKATRICE);
+    Video_GetAuxSprite(&aux->gfx, SPRITE_COCKATRICE_0);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_COCKATRICE);
     k = (p->e).kind;
@@ -4388,7 +4385,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_COCKATRICE);
+    f = GetFile(DIR_MAIN_SPRITE, SPRITE_COCKATRICE_0);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -4525,7 +4522,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
   p->hopTimer = Mod(Random(), p->flightDuration);
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 513;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 513;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

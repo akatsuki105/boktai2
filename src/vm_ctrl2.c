@@ -5,7 +5,7 @@
 
 void VM_ClearCtrlHandlers(void);
 bool32 GameSystem_IsMapChangeBlocked(void);
-void FUN_08230eec(ScriptRecord*);
+void ScriptMesg_Post(ScriptMesg*);
 bool32 Map_HasCheckedZoneEvents(void);
 
 void* VM_GetSubroutine(u32 subroutineID);
@@ -50,10 +50,10 @@ s32 VM_Ctrl_CallSubroutine(void) {
   return 0;
 }
 
-// スクリプトからIDと可変個のu16値を読み取り、1件のレコードとして FUN_08230eec のテーブルに登録する
-s32 VM_Ctrl_22FF(void) {
+// 0x22FF (mesg), スクリプトから id と可変個の u16 値を読み, id 宛てのメッセージとして ScriptMesg_Post で送る
+s32 VM_Ctrl_Mesg(void) {
   u16 args[16];
-  ScriptRecord rec;
+  ScriptMesg rec;
   u16* p;
   s16 count;
 
@@ -64,7 +64,7 @@ s32 VM_Ctrl_22FF(void) {
     *p++ = VM_GetValue();
   }
   rec.count = count;
-  FUN_08230eec(&rec);
+  ScriptMesg_Post(&rec);
   return 0;
 }
 
@@ -166,7 +166,7 @@ static void nop_0823b12c(void) { return; }
 
 // こっちはランタイムに関係のないものばかりに見える
 static const Subroutine sCtrlHandlers2[8] = {
-    {id : 0x22FF,             fn : VM_Ctrl_22FF           },
+    {id : BOKHASH("mesg"),    fn : VM_Ctrl_Mesg           },
     {id : BOKHASH("command"), fn : VM_Ctrl_CallSubroutine },
     {id : BOKHASH("chara"),   fn : VM_Ctrl_CreateEntity   },
     {id : BOKHASH("trap"),    fn : VM_Ctrl_SetZoneCallback},

@@ -158,8 +158,8 @@
 #define BGM_BLACK_DJANGO 153      // BGM:"暗黒！", 黒ジャンゴに初めてなったときのBGM
 #define BGM_HOSHIYOMI 154         // BGM:"読めたで！"
 #define BGM_TAIYO 155             // BGM:"太陽！"
-#define BGM_SUNMIGUERE1 156       // BGM:"太陽街・その1"
-#define BGM_SUNMIGUERE2 157       // BGM:"太陽街・その2"
+#define BGM_SUNAVENUE1 156        // BGM:"太陽街・その1"
+#define BGM_SUNAVENUE2 157        // BGM:"太陽街・その2"
 #define BGM_NAKAMA2 158           // BGM:"街の仲間・その2"
 #define BGM_SOLAR_TREE 159        // BGM:"太陽樹"
 #define BGM_SOLAR_BANK 160        // BGM:"太陽バンク"
@@ -212,19 +212,19 @@
 #define SE_WOOD_DOOR_CLOSE 207  // 木のドアが閉まる音
 #define SE_COVER 208            // 汎用SE (壁張り付き や 立ち上がった ときの音)
 #define SONG_209 209
-#define SONG_210 210
-#define SONG_211 211
+#define SE_COFFIN_DRAG 210    // 棺桶を引きずるときの棺桶と地面との摩擦音
+#define SE_COFFIN_STAIRS 211  // 棺桶を引きながら階段を歩いた時
 #define CRY_BOKU_DAMAGED 212
 #define SE_GUN_MISFIRE 213  // エナジーが足りなくて、空撃ちした時のSE
 #define SONG_214 214
 #define CRY_BOKU_DEATH 215
 #define NOISE_SOLAR_CHARGE 216  // 太陽エネルギーチャージSE(無限ループ)
 #define SONG_217 217
-#define SONG_218 218
-#define SE_WALL_SLIDE 219   // 壁に張り付きながら横移動するときのSE
-#define SE_CURSOR_MOVE 220  // カーソルの汎用SE (インベントリでカーソル移動, 選択肢でのカーソル移動など)
-#define SE_SELECT 221       // メニュー画面でアイテムとかを選んだ時の音
-#define SE_CANCEL 222       // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
+#define SE_COFFIN_CHAIN 218  // 棺桶を引く鎖のSE?
+#define SE_WALL_SLIDE 219    // 壁に張り付きながら横移動するときのSE
+#define SE_CURSOR_MOVE 220   // カーソルの汎用SE (インベントリでカーソル移動, 選択肢でのカーソル移動など)
+#define SE_SELECT 221        // メニュー画面でアイテムとかを選んだ時の音
+#define SE_CANCEL 222        // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
 #define SONG_223 223
 #define SONG_224 224          // 汎用システム音, タイトル画面で"GAME START"を選んだ時やアイテムを使用した時の音
 #define SE_DUNGEON_TITLE 225  // ダンジョンタイトルとかのSE
@@ -331,7 +331,7 @@
 #define SE_326 326
 #define SONG_327 327
 #define SONG_328 328
-#define SONG_329 329
+#define SE_329 329  // 何かが解けるSE
 #define SE_330 330  // 壊れる様な音?
 #define SONG_331 331
 #define SE_LEVER_TOGGLE 332     // レバースイッチがトグルした時のSE
@@ -534,15 +534,15 @@
 #define SONG_529 529
 #define SONG_530 530
 #define SONG_531 531
-#define SONG_532 532
-#define SONG_533 533
-#define SONG_534 534
-#define SONG_535 535
-#define SE_536 536  // 氷の属性ブロックが落ちる音？
-#define SE_537 537
-#define SE_538 538        // 属性ブロックが浮き上がる音？
-#define SE_539 539        // 属性ブロック？
-#define SE_COUNTDOWN 540  // カウントダウンHUDのカウント音
+#define SE_PCUBE_VANISH 532  // 属性キューブがアースで消されるときのSE
+#define SE_PCUBE_SLIDE1 533  // 属性キューブがクラウドで1タイル移動するSE
+#define SE_PCUBE_SLIDE2 534  // 属性キューブがクラウドで2タイル移動するSE
+#define SE_PCUBE_NG 535      // 属性キューブに無効な挙動をしたときのビープSE
+#define SE_PCUBE_FALL 536    // 属性キューブがフロストで落ちる音？
+#define SE_PCUBE_HEAT 537    // 属性キューブがフレイムで熱を帯びるSE
+#define SE_PCUBE_538 538     // 属性キューブが浮き上がる音？
+#define SE_PCUBE_539 539     // 属性キューブ
+#define SE_COUNTDOWN 540     // カウントダウンHUDのカウント音
 #define SONG_541 541
 #define SE_GHOST_542 542  // CRY_GHOST_DEATH の代わりに使われることがある
 #define SONG_543 543

@@ -10,15 +10,21 @@
 #define STAT_AGILITY 3   // ハヤサ (プレイヤーの移動速度や防御力に影響)
 #define STAT_KINDS 4
 
-// 向き
-#define FACE_UP 0          // 上
-#define FACE_UP_RIGHT 1    // 右上
-#define FACE_RIGHT 2       // 右
-#define FACE_DOWN_RIGHT 3  // 右下
-#define FACE_DOWN 4        // 下
-#define FACE_DOWN_LEFT 5   // 左下
-#define FACE_LEFT 6        // 左
-#define FACE_UP_LEFT 7     // 左上
+// 向き, 対応する angle (256 で一周) も併記する, angle は 0 が東 (+x) で, 増えるほど南 (+z) へ回る
+#define DIR8_UP 0          // 画面上, 北西 (-x, -z), angle 160
+#define DIR8_UP_RIGHT 1    // 画面右上, 北 (-z), angle 192
+#define DIR8_RIGHT 2       // 画面右, 北東 (+x, -z), angle 224
+#define DIR8_DOWN_RIGHT 3  // 画面右下, 東 (+x), angle 0
+#define DIR8_DOWN 4        // 画面下, 南東 (+x, +z), angle 32
+#define DIR8_DOWN_LEFT 5   // 画面左下, 南 (+z), angle 64
+#define DIR8_LEFT 6        // 画面左, 南西 (-x, +z), angle 96
+#define DIR8_UP_LEFT 7     // 画面左上, 西 (-x), angle 128
+
+// 4方向の向き (Angle_ToDir4 の戻り値), 対応する angle (256 で一周) も併記する
+#define DIR4_NORTH 0  // -z, 画面右上, angle 192
+#define DIR4_EAST 1   // +x, 画面右下, angle 0
+#define DIR4_SOUTH 2  // +z, 画面左下, angle 64
+#define DIR4_WEST 3   // -x, 画面左上, angle 128
 
 // 良いステータス効果
 #define GOOD_NINJA 0      // しのびの実

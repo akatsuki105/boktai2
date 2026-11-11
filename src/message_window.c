@@ -693,7 +693,7 @@ NON_MATCH s32 MessageWindow_Init(MessageWindow* p, u32 _) {
   p->arrowGfx = *f;
   OpenMainSpriteFile(&p->arrowGfx, f);
   pos.x = 223, pos.y = 143, pos.z = 0;
-  MainSprite_Add(&p->arrow, &p->arrowGfx, 8, SPRFLAG_UNK_13 | SPRFLAG_GAMEOVER | SPRFLAG_NO_CLIP | SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_LOOP, 60, &pos);
+  MainSprite_Add(&p->arrow, &p->arrowGfx, MARKER_ARROW(0), SPRFLAG_UNK_13 | SPRFLAG_GAMEOVER | SPRFLAG_NO_CLIP | SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_LOOP, 60, &pos);
   MainSprite_SetAnim(&p->arrow, &p->arrowGfx, 0, PLAYMODE_LOOP, 0);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);

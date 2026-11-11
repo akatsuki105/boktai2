@@ -7,6 +7,7 @@
 #include "map_inline.h"
 #include "mover.h"
 #include "player.h"
+#include "puff.h"
 #include "sound.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -51,8 +52,6 @@ typedef struct {
 } EntityC60F;
 static_assert(sizeof(EntityC60F) == 168);
 
-void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
-
 IWRAM_DATA EntityC60F* gEntityC60F = NULL;  // 0x0300019C
 
 static inline bool8 EntityC60F_IsActive(EntityC60F* p, s32 i) {
@@ -94,7 +93,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
       if (p->unk_105 != 0) {
         p->unk_105--;
       } else {
-        Entity08015584_SpawnSpray(2, 0, 0, Q6(1), &p->pos);
+        Puff_SpawnSpray(2, 0, 0, Q6(1), &p->pos);
         p->unk_105 = 3;
         PlaySound_082406e0(SONG_348);
       }
@@ -102,7 +101,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
       if (p->unk_105 != 0) {
         p->unk_105--;
       } else {
-        Entity08015584_SpawnSpray(2, 2, 0, Q6(1), &p->pos);
+        Puff_SpawnSpray(2, 2, 0, Q6(1), &p->pos);
         p->unk_105 = 2;
         PlaySound_082406e0(SONG_348);
       }
@@ -329,17 +328,17 @@ NON_MATCH void FUN_081d785c(EntityC60FItem* p) {
     if (Mod(p->timer, 6) == 0) {
       pos = p->pos;
       pos.x -= 64;
-      Entity08015584_SpawnSpray(1, 0, 0, Q6(1), &pos);
+      Puff_SpawnSpray(1, 0, 0, Q6(1), &pos);
     }
     if (Mod(p->timer, 10) == 0) {
       pos = p->pos;
       pos.x += 64;
-      Entity08015584_SpawnSpray(1, 0, 0, Q6(1), &pos);
+      Puff_SpawnSpray(1, 0, 0, Q6(1), &pos);
     }
     if (Mod(p->timer, 16) == 0) {
       pos = p->pos;
       pos.z += 32;
-      Entity08015584_SpawnSpray(1, 0, 0, Q6(1), &pos);
+      Puff_SpawnSpray(1, 0, 0, Q6(1), &pos);
     }
     if (Mod(p->timer, 7) == 0 && (s8)m->unk_a4 < 0) {
       PlaySound_082406e0(SONG_348);
@@ -371,13 +370,13 @@ NON_MATCH void FUN_081d7a60(EntityC60FItem* p) {
     AuxSprite_AdvanceAnim(&p->sprite, anim);
     p->timer = 0;
     p->stateEntered = FALSE;
-    Entity08015584_SpawnSpray(1, 2, 0, Q6(1), &p->sprite.pos);
+    Puff_SpawnSpray(1, 2, 0, Q6(1), &p->sprite.pos);
   }
 
   if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
     p->state = 0;
     p->sprite.flags |= SPRFLAG_HIDDEN;
-    Entity08015584_SpawnSpray(3, 2, 0, Q6(1), &p->sprite.pos);
+    Puff_SpawnSpray(3, 2, 0, Q6(1), &p->sprite.pos);
   }
 #else
   INCFUNC("asm/func/FUN_081d7a60.inc");
@@ -439,7 +438,7 @@ NON_MATCH void Cmd_377D(void) {
   p->unk_105 = 0;
   p->unk_f8 = Div((s16)p->hp, 3);
   FUN_081d6eb8(p);
-  Map_AddTileOverride(&p->tileOverride, GetCollisionTileIdx(&p->sprite.pos), 0, p->sprite.pos.y >> 8, 0, 128);
+  Map_AddTileOverride(&p->tileOverride, GetCollisionTileIdx(&p->sprite.pos), 0, p->sprite.pos.y >> 8, 0, TATTR_SPECIAL);
   p->flags |= C60FITEM_TILE_OVERRIDE;
   if (VM_GetNamedArgValue('P', 0) != 0) {
     p->flags |= C60FITEM_FIXED_AREA;

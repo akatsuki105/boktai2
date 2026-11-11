@@ -38,10 +38,10 @@ typedef u8 HitboxHitState8;
 typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻撃側の属性と守備側の耐性を兼ねる, bit7-11 は Django_OnWeaponHit が別の用途で見る
 #define HBATTR_SOL (1 << 0)        // 0x1, ソル属性
 #define HBATTR_DARK (1 << 1)       // 0x2, ダーク属性
-#define HBATTR_FLAME (1 << 2)      // 0x4, 炎属性
-#define HBATTR_FROST (1 << 3)      // 0x8, 氷属性
-#define HBATTR_CLOUD (1 << 4)      // 0x10, 風属性
-#define HBATTR_EARTH (1 << 5)      // 0x20, 地属性
+#define HBATTR_FLAME (1 << 2)      // 0x4, 炎属性 (a.k.a. フレイム属性)
+#define HBATTR_FROST (1 << 3)      // 0x8, 氷属性 (a.k.a. フロスト属性)
+#define HBATTR_CLOUD (1 << 4)      // 0x10, 風属性 (a.k.a. クラウド属性)
+#define HBATTR_EARTH (1 << 5)      // 0x20, 地属性 (a.k.a. アース属性)
 #define HBATTR_ALL (1 << 6)        // 0x40, 全属性
 #define HBATTR_BEAST (1 << 7)      // 0x80, ビースト系の敵
 #define HBATTR_THING (1 << 8)      // 0x100, シング系の敵

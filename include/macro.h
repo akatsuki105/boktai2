@@ -6,7 +6,7 @@
 
 #define ANGLE_TO_DIR8(angle) (((((angle) & 0xFF) >> 5) + 3) & 7)
 
-// FACE_DOWN_LEFT or FACE_LEFT or FACE_UP_LEFT
+// DIR8_DOWN_LEFT or DIR8_LEFT or DIR8_UP_LEFT
 #define IS_8DIR_LEFT(dir8) ((dir8) > 4)
 
 #define SET_FLAGS(target, flags)     \

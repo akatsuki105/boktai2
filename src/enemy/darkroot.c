@@ -1125,7 +1125,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
   Enemy_SetSpritePos(&p->e, &(p->e).mover.pos);
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 220;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 220;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

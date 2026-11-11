@@ -4,19 +4,19 @@
 #include "global.h"
 #include "hitbox.h"
 #include "player.h"
+#include "puff.h"
 #include "sound.h"
 #include "vec3.h"
 
-// ドゥネイルの攻撃"鱗粉玉"
+// ドゥネイルの攻撃"燐粉玉"
 
-#define SCALES_BALL 7  // ドゥネイルの"鱗粉玉"(見た目はエネルギーボール)
+#define SCALES_BALL 7  // ドゥネイルの"燐粉玉"(見た目はエネルギーボール)
 
 s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
-void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 
-static inline void EmitParticles_08059a1c(WorldPos* pos, u8 angle) { Entity08015584_SpawnHorizontal(pos, angle, 0x20, 2, 5, 0x3000, Q6(0.5), 10, 10, 0xF8); }
+static inline void EmitParticles_08059a1c(WorldPos* pos, u8 angle) { Puff_SpawnHorizontal(pos, angle, 0x20, 2, 5, 0x3000, Q6(0.5), 10, 10, 0xF8); }
 
 // 状態を入れ替えて経過フレームを0に戻す
 static inline void DuneyrrPowderBall_SetState(DuneyrrPowderBall* elem, u8 state) {

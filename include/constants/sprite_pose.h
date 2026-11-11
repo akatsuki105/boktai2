@@ -34,10 +34,10 @@
 // --------------------------------------------
 // SPRITE_UI_LINK
 
-#define LINK_NUMBER_S1(num) (0 + (num))   // 0..9 までの小さな数字 (パレットが違う2種類のうちの1つ)
-#define LINK_COLON 10                     // ":" の文字
-#define LINK_NUMBER_S2(num) (11 + (num))  // 0..9 までの小さな数字 (パレットが違う2種類のうちの1つ)
-#define LINK_POSE21 21
+#define LINK_NUMBER_S1(num) (0 + (num))        // 0..9 までの小さな数字 (パレットが違う2種類のうちの1つ)
+#define LINK_COLON 10                          // ":" の文字
+#define LINK_NUMBER_S2(num) (11 + (num))       // 0..9 までの小さな数字 (パレットが違う2種類のうちの1つ)
+#define LINK_START_OWARI 21                    // "STARTおわり"
 #define LINK_SELL_BUY(cursor) (22 + (cursor))  // "売る 買う", (cursor 0: 売る, 1: 買う)
 #define LINK_POSE24 24
 #define LINK_POSE25 25
@@ -47,35 +47,29 @@
 #define LINK_POSE29 29
 #define LINK_POSE30 30
 #define LINK_POSE31 31
-#define LINK_READY(phase) (32 + (phase))  // "READY" の大文字, phase は 0: "READY", 1: "READY.", 2: "READY..", 3: "READY..."
-#define LINK_FIGHT 36                     // "FIGHT!" の大文字
-#define LINK_FINISH 37                    // "FINISH!" の大文字
-#define LINK_ROUND 38                     // "ROUND" の大文字
-#define LINK_NUMBER_L(num) (39 + (num))   // 0..9 までの大きな数字
-#define LINK_BLOCKING 49                  // "BLOCKING！！" の大文字
-#define LINK_DOUBLE_BANG 50               // "!!" の大文字
-#define LINK_POSE51 51
-#define LINK_POSE52 52
-#define LINK_POSE53 53
-#define LINK_POSE54 54
-#define LINK_POSE55 55
-#define LINK_POSE56 56
-#define LINK_POSE57 57
-#define LINK_POSE58 58
-#define LINK_POSE59 59
-#define LINK_POSE60 60
-#define LINK_POSE61 61
-#define LINK_STRENGTH_RED 62              // LINK_STRENGTH_ICON(0) の色を赤くしたもの, error用?
-#define LINK_STRENGTH_ICON(n) (63 + (n))  // 0..3 (0: 電波0, 1: 電波1, 2: 電波2, 3: 電波3)
-#define LINK_PUSHSTART 67                 // "PUSH START" の文字
-#define LINK_INTERVAL 68                  // "INTERVAL" の文字
-#define LINK_WAIT 69                      // "WAIT..." の文字
-#define LINK_BLOCK_ON 70                  // "BLOCK ON" の文字
-#define LINK_BLOCK_OFF 71                 // "BLOCK OFF" の文字
-#define LINK_RESULT_WIN 72                // "WIN!"
-#define LINK_RESULT_LOSE 73               // "LOSE!"
-#define LINK_RESULT_DRAW 74               // "DRAW"
-#define LINK_MAX_MODE 75                  // "MAX MODE!" の文字
+#define LINK_READY(phase) (32 + (phase))   // "READY" の大文字, phase は 0: "READY", 1: "READY.", 2: "READY..", 3: "READY..."
+#define LINK_FIGHT 36                      // "FIGHT!" の大文字
+#define LINK_FINISH 37                     // "FINISH!" の大文字
+#define LINK_ROUND 38                      // "ROUND" の大文字
+#define LINK_NUMBER_L(num) (39 + (num))    // 0..9 までの大きな数字
+#define LINK_BLOCKING 49                   // "BLOCKING！！" の大文字
+#define LINK_DOUBLE_BANG 50                // "!!" の大文字
+#define LINK_LONG_CURSOR 51                // 横長のカーソル
+#define LINK_LEFT 52                       // "◀︎"
+#define LINK_RIGHT 53                      // "▶︎"
+#define LINK_WAIT_ICON(idx) (54 + (idx))   // "WAIT" の文字, idx は 0..3
+#define LINK_NOT_LINKED(idx) (58 + (idx))  // "NOT LINKED" の文字, idx は 0..3
+#define LINK_STRENGTH_RED 62               // LINK_STRENGTH_ICON(0) の色を赤くしたもの, error用?
+#define LINK_STRENGTH_ICON(n) (63 + (n))   // 0..3 (0: 電波0, 1: 電波1, 2: 電波2, 3: 電波3)
+#define LINK_PUSHSTART 67                  // "PUSH START" の文字
+#define LINK_INTERVAL 68                   // "INTERVAL" の文字
+#define LINK_WAIT 69                       // "WAIT..." の文字
+#define LINK_BLOCK_ON 70                   // "BLOCK ON" の文字
+#define LINK_BLOCK_OFF 71                  // "BLOCK OFF" の文字
+#define LINK_RESULT_WIN 72                 // "WIN!"
+#define LINK_RESULT_LOSE 73                // "LOSE!"
+#define LINK_RESULT_DRAW 74                // "DRAW"
+#define LINK_MAX_MODE 75                   // "MAX MODE!" の文字
 
 // --------------------------------------------
 // SPRITE_UI_MISC
@@ -124,7 +118,8 @@
 #define UI_MISC_POSE_41 41
 
 // --------------------------------------------
-// SPRITE_PORTRAITS 0..29
+// SPRITE_PORTRAITS
+
 #define PORTRAIT_RDJANGO 0  // 赤ジャンゴ
 #define PORTRAIT_BDJANGO 1  // 黒ジャンゴ
 #define PORTRAIT_OTNK 2
@@ -155,6 +150,14 @@
 #define PORTRAIT_RDJANGO_ROCKMAN 27  // 赤ジャンゴ+ロックマン
 #define PORTRAIT_BDJANGO_ROCKMAN 28  // 黒ジャンゴ+ロックマン
 #define PORTRAIT_KURO_KEGA 29
+
+// --------------------------------------------
+// SPRITE_MARKERS
+
+#define MARKER_IMMORTAL(dir4) (0 + (dir4))  // "Immortal" + arrow, dir4: 0: ↖, 1: ↗, 2: ↙, 3: ↘
+#define MARKER_UNDEAD(dir4) (4 + (dir4))    // "Undead" + arrow, dir4: 0: ↖, 1: ↗, 2: ↙, 3: ↘
+#define MARKER_ARROW(step) (8 + (step))     // step: 0..2, 文字送りの矢印
+#define MARKER_MISSION(type) (11 + (type))  // 0: "TRAP!", 1: "MISSION COMPLETED!", 2: "PURIFICATION COMPLETED!", 3: "MISSION FAILED!"
 
 // --------------------------------------------
 

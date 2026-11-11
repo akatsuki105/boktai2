@@ -69,9 +69,9 @@ _0800436E:
 	str r1, [r4, #0x10]
 _080043AA:
 	adds r0, r5, #0
-	bl EntityD9AEElem_DropUpper
+	bl MovableBlock_DropUpper
 	adds r0, r5, #0
-	bl EntityD9AEElem_Release
+	bl MovableBlock_Release
 	b _080044D2
 	.align 2, 0
 _080043B8: .4byte 0x085AA658

@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "menu.h"
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
@@ -47,7 +48,6 @@ IWRAM_DATA GameOverManager* gGameOverManager = NULL;  // 0x03000150
 extern bool32 gPlayTimeEnabled;
 
 void GameSystem_HandleGameOverChoice(u32 val);
-s32 MainMenu_SetHudMode(s32 mode);
 void Player_StartDeathVanish(Player* p);
 
 // animState 0, BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める

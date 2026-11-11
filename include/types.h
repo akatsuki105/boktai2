@@ -61,7 +61,7 @@ typedef struct {
   s16 val;  // 用途不明だが、 Mover_Init で 16 がセットされていて、 lookAroundOffset ではここを見回しモードが有効かどうかのbool値として使うので、汎用のフィールドっぽい？
 } Vec3;
 
-// ワールド座標, isometric, Y-up, right-handed coordinate system (X: 画面右下, Y: 高さ, Z: 画面左下)
+// ワールド座標, isometric, Y-up, right-handed coordinate system (X: 画面右下(東), Y: 高さ, Z: 画面左下(南))
 // 1ブロック = 256, ブロック: このゲームの地形の単位ユニット, 木箱の大きさと同じ
 // 例：
 //   x と z は サンミゲルの太陽樹のところあたりのグリッドがわかりやすい, 右下に1グリッド進むと x が 256 増える, 左下に1グリッド進むと z が 256 増える
@@ -74,10 +74,11 @@ typedef union {
   u32 offset;
 } AssetRef;
 
-// 方向を8段階にしたもの, "include/constants/miscs.h" の FACE_* に対応 (e.g. FACE_UP)
-typedef u8 DirU8;
-typedef s8 DirS8;
-typedef u16 DirU16;
-typedef s32 DirS32;
+// 方向を8段階にしたもの, "include/constants/miscs.h" の DIR8_* に対応 (e.g. DIR8_UP)
+typedef u8 Dir8U8;
+typedef s8 Dir8S8;
+typedef u16 Dir8U16;
+typedef s16 Dir8S16;
+typedef s32 Dir8S32;
 
 #endif  // __INCLUDE_BOKTAI2_TYPES_H__

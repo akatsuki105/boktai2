@@ -157,7 +157,7 @@ _081D7B70:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x40
-	bl Entity08015584_SpawnSpray
+	bl Puff_SpawnSpray
 _081D7B96:
 	adds r4, r7, #0
 	ldrh r0, [r4, #8]
@@ -299,7 +299,7 @@ _081D7C78:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x40
-	bl Entity08015584_SpawnSpray
+	bl Puff_SpawnSpray
 _081D7C9E:
 	add sp, #4
 	pop {r4, r5, r6, r7}

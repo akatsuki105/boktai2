@@ -13,7 +13,6 @@
 #include "particle.h"
 #include "shadow.h"
 #include "sprite.h"
-#include "struct.h"
 #include "types.h"
 #include "weapon.h"
 
@@ -266,12 +265,12 @@ typedef struct Player {
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
   Weapon* unk_288;                  // 0x288, ここらへんは union の可能性がある (通信時とか)
   struct Input* input;              // 0x28C, &gInput[n]
-  DirU16 facingHistory[10];         // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
+  Dir8U16 facingHistory[10];        // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
   rgb555 pltt[32];                  // 0x2A4, 自前のパレット, [0..15] は plttIDs[plttIdx] を plttBrightness ぶん明るくしたもの, [16..31] は flashPlttID と混ぜた結果, スプライトのパレットがどちらかを指す
   u16 animID;                       // 0x2E4, 今 human で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
   u8 animDir;                       // 0x2E6, アニメの向き (0..4 か 0..2), アニメIDに足す, 左向きは右向きの番号を xflip で反転して使う
   bool8 xflip;                      // 0x2E7, 0 以外なら Player_PlayAnim が human.flags に SPRFLAG_XFLIP を立てる
-  DirU8 facing;                     // 0x2E8, プレイヤーの向き, 壁に背を向けている場合は壁と反対方向(=プレイヤーの顔が向いている方)
+  Dir8U8 facing;                    // 0x2E8, プレイヤーの向き, 壁に背を向けている場合は壁と反対方向(=プレイヤーの顔が向いている方)
   u8 unk_2e9[2];                    // 0x2E9
   u8 hitboxTimer;                   // 0x2EB, spikeHitbox を Hitbox_Register し続ける残りフレーム数, Django_Spike が 6 を入れる
   HitboxData spikeHitbox;           // 0x2EC, スパイクメイルの反撃の攻撃判定, hitboxTimer が残っている間だけ登録される
@@ -316,13 +315,13 @@ typedef struct Player {
   Vec3 knockbackTileCenter;         // 0x39C, Player_CheckPuddleHurt が今踏んでいるタイルの中心を書く
   u8 useForcedDelta;                // 0x3A4, 0 以外だと Player_UpdateWalk が移動速度を設定しない
   u8 slip_3a5[2];                   // 0x3A5, すべり床でのスリップに関係
-  DirU8 slideDir;                   // 0x3A7, 氷の床で滑っている向き, 滑り始めに facing を写し, 斜めで壁に当たると Player_GetSlideDeflectDir の向きに変わる
+  Dir8U8 slideDir;                  // 0x3A7, 氷の床で滑っている向き, 滑り始めに facing を写し, 斜めで壁に当たると Player_GetSlideDeflectDir の向きに変わる
   Vec3 forcedDelta;                 // 0x3A8, useForcedDelta が 0 以外のとき Player_UpdateDjango が mover.delta にそのまま写す移動量
   Vec3 refuelPos;                   // 0x3B0, 太陽スタンドを使うときに歩いて立つ位置 (共闘サバタは PACT_SPIDER_WEB でうろつく先の座標に使い回す)
   u16 refuelFacing;                 // 0x3B8, refuelPos に着いたときに向く方向
   u16 unk_3ba;                      // 0x3BA, Cmd_E9E2 が 1 を書く
   u8 wallSidling;                   // 0x3BC, 壁張り付き (PACT_WALL) が横歩きの段階 (state 1) に入っているか, 立っている間だけ PACT_WALL 中に R で見回せる
-  DirU8 actionDir;                  // 0x3BD, PACT_WALL / PACT_PUSH の基準方向, Player_EnterWall が設定して facing をその反対向きにし, Cmd_7017 は PACT_WALL / PACT_PUSH のときだけ facing の代わりに (actionDir + 4) & 7 を返す
+  Dir8U8 actionDir;                 // 0x3BD, PACT_WALL / PACT_PUSH の基準方向, Player_EnterWall が設定して facing をその反対向きにし, Cmd_7017 は PACT_WALL / PACT_PUSH のときだけ facing の代わりに (actionDir + 4) & 7 を返す
   u16 wallPressTimer;               // 0x3BE, 氷でない床でまっすぐ壁に歩き当たっている連続フレーム数, 5 になった回に前方が十分高い壁なら PACT_WALL に入る
   Vec3 cameraLookAt;                // 0x3C0, カメラの注視点, mover.pos + lookAroundOffset (+150 上) と今の注視点を 1:4 で混ぜて作る
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
@@ -340,7 +339,7 @@ typedef struct Player {
   u16 blackArmorTimer;              // 0x3E2, 黒の鎧を装備している間の経過フレーム, 15 ごとに damage を1増やす
   u16 heatstrokeTick;               // 0x3E4, gStat->heatstroke が 0 でない間毎フレーム 1 (2500 以上は 2) ずつ増え, 15 を超えるたびに煙を出して 0 に戻る
   u16 knockbackSpeed;               // 0x3E6, Player_SetupKnockback が相手の HitboxData.knockback を退避する, FUN_080835d8 が knockbackDir へ滑らせる速さに使い毎回 3/4 倍する
-  DirU16 knockbackDir;              // 0x3E8, Player_SetupKnockback が入れる押し出し方向 (0..7), 攻撃の向きか攻撃側から離れる向き
+  Dir8U16 knockbackDir;             // 0x3E8, Player_SetupKnockback が入れる押し出し方向 (0..7), 攻撃の向きか攻撃側から離れる向き
   u16 unk_3ea;                      // 0x3EA, FUN_0807ad60 が 1 を書く
   u16 mashRecoverTimer;             // 0x3EC, PACT_UNK_18 から立ち直るまでの残り, 毎フレーム 1 (A/B/方向キーを押した瞬間は 2) 減って 0 で終わる, 0 以外の間は他の行動より PACT_UNK_18 を優先する
   u8 unk_3ee[0x3F0 - 0x3EE];        // 0x3EE
@@ -410,7 +409,7 @@ typedef struct Player {
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
   u8 unk_4a7;                       // 0x4A7, FUN_0807c748 の第3引数
   u8 unk_4a8;                       // 0x4A8
-  DirS8 targetDir;                  // 0x4A9, 操作不能中の移動や向き直りを終えたときに向く方向, 負なら向きを変えない
+  Dir8S8 targetDir;                 // 0x4A9, 操作不能中の移動や向き直りを終えたときに向く方向, 負なら向きを変えない
   u8 doneNotify;                    // 0x4AA, 操作不能中の処理を終えたときに Player_NotifyLockedDone が行う通知, see PlayerDoneNotify
   bool8 doneWaitPending;            // 0x4AB, 非0ならメッセージの待ちをまだ解いていない
   u8 plttPulsePhase;                // 0x4AC, 0..15 を巡回するパレットの明滅の位相, pltt の色 5/6/13 を作り直す
@@ -526,7 +525,7 @@ s32 Player_GetAttackPower(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE(Player* player, s32 amount);
 void Player_Unlock(Player* p);
-void Player_LockPullCoffinTo(Player* p, Vec3* pos, DirS32 dir, s32 param_4, u32 scriptID);
+void Player_LockPullCoffinTo(Player* p, Vec3* pos, Dir8S32 dir, s32 param_4, u32 scriptID);
 void FUN_0807bc64(Player* p, u32 scriptID);
 void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void Player_AddWeaponExp(u32 mask, s32 amount);
@@ -538,9 +537,11 @@ void Player_SetPosAndSave(Player* p, Vec3* pos);
 s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockback, s32 angle, s32 iframes, HitboxAttributes attrs);
 void Player_EnterDeadState(Player* p);
 bool32 FUN_0807ad60(Player* p, s32 param_2);
-DirS32 Player_GetDpadFacing(Player* p);
+Dir8S32 Player_GetDpadFacing(Player* p);
 void AddPlayerExp(s32 amount);
-void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir);
+void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, Dir8S32 dir);
+void Player_EnterWall(Player* p, Dir8S32 dir);
+void Player_Lock(Player* p, Dir8S32 dir8);
 
 bool32 Player_TestElevatorFlags(Player* p, ElevatorFlagsU16 mask);
 void Player_SetElevatorFlags(Player* p, u32 flags, u32 elevatorID);

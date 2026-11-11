@@ -15,7 +15,7 @@ void Entity081e9cac_ClearGlobal(void);
 void OctorokManager_ClearGlobal(void);
 void Entity081edcc4_ClearGlobal(void);
 void Entity081ee2a0_ClearGlobal(void);
-void Entity081eeb28_ClearGlobal(void);
+void PitfallWarningManager_ClearGlobal(void);
 void Entity081eee80_ClearGlobal(void);
 void Entity081f0298_ClearGlobal(void);
 void Entity081f0b90_ClearGlobal(void);
@@ -30,7 +30,7 @@ void Entity081f959c_ClearGlobal(void);
 void LinkBattleLobby_ClearGlobal(void);
 void Entity081fa164_ClearGlobal(void);
 void FUN_081eafb0(void);
-void Entity081d0e20_ClearGlobal(void);
+void PitfallManager_ClearGlobal(void);
 void LeverSwitchManager_ClearGlobal(void);
 void EnemyManager_ClearGlobal(void);
 void EmoteManager_Clear(void);
@@ -467,7 +467,7 @@ NON_MATCH s32 FUN_080e0c28(Vec3* out, Vec3* a, Vec3* b, s32 mode, s32 param_5) {
 void FUN_080e0fbc(void) {
   Entity778B_ClearGlobal();
   FUN_081eafb0();
-  Entity081d0e20_ClearGlobal();
+  PitfallManager_ClearGlobal();
   LeverSwitchManager_ClearGlobal();
   EnemyManager_ClearGlobal();
   EmoteManager_Clear();
@@ -483,7 +483,7 @@ void FUN_080e0fbc(void) {
   Entity081ee2a0_ClearGlobal();
   FUN_080db56c();
   FUN_081d21cc();
-  Entity081eeb28_ClearGlobal();
+  PitfallWarningManager_ClearGlobal();
   Entity081eee80_ClearGlobal();
   FUN_080ddb1c();
   FUN_08241000();
@@ -704,7 +704,7 @@ Entity778B* Entity778B_Create(s32 param_1) {
   return gEntity778B;
 }
 
-// 命令列は一致, 残差はレジスタだけ (原典は 0x942 を r6 に載せ, オフセットの定数を r3 に置く)
+// 0xFD6B, 命令列は一致, 残差はレジスタだけ (原典は 0x942 を r6 に載せ, オフセットの定数を r3 に置く)
 NON_MATCH void Entity778B_AddElemScripted(void) {
 #ifdef NONMATCHING_C
   Entity778BElem* elem;
@@ -717,14 +717,10 @@ NON_MATCH void Entity778B_AddElemScripted(void) {
     return;
   }
   if (VM_SeekToNamedArg('p')) {
-    elem->pos.x = VM_GetValue();
-    elem->pos.y = VM_GetValue();
-    elem->pos.z = VM_GetValue();
+    elem->pos.x = VM_GetValue(), elem->pos.y = VM_GetValue(), elem->pos.z = VM_GetValue();
   }
   if (VM_SeekToNamedArg('a')) {
-    elem->unk_08.x = VM_GetValue();
-    elem->unk_08.y = VM_GetValue();
-    elem->unk_08.z = VM_GetValue();
+    elem->unk_08.x = VM_GetValue(), elem->unk_08.y = VM_GetValue(), elem->unk_08.z = VM_GetValue();
   }
   if (VM_SeekToNamedArg('f')) {
     s32 min;
@@ -754,7 +750,7 @@ NON_MATCH void Entity778B_AddElemScripted(void) {
 
 void Entity778B_ClearGlobal(void) { gEntity778B = NULL; }
 
-// '.n' で指された生成要求を使用中マスクから外して消す
+// 0x9700, '.n' で指された生成要求を使用中マスクから外して消す
 void Cmd_9700(void) {
   Entity778B* p = gEntity778B;
   Entity778BElem* e;

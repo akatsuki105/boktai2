@@ -9,6 +9,7 @@
 #include "map_inline.h"
 #include "msgbus.h"
 #include "player.h"
+#include "puff.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
@@ -110,8 +111,8 @@ typedef struct Durathror {
   MainSprite sprite_4e8;                  // 0x4E8
   rgb555 pltt_548[8][16];                 // 0x548, sprite_4e8 のパレット
   DurathrorElem elems[6];                 // 0x648
-  ParticleSpawnParam ptclSpawn;           // 0xD20
-  ParticleSpawnParam ptclSpawn2;          // 0xD48
+  PuffParam ptclSpawn;                    // 0xD20
+  PuffParam ptclSpawn2;                   // 0xD48
   AuxShadow shadow;                       // 0xD70
   u16 unk_ddc;                            // 0xDDC
   u16 unk_dde;                            // 0xDDE
@@ -134,186 +135,25 @@ static_assert(sizeof(Durathror) == 3620);
 
 void Durathror_UnregisterHurtbox(Durathror*);
 void Durathror_DestroyElems(Durathror*);
-void FUN_0803787c(Durathror*, DurathrorElem*, s32);
-void FUN_08037888(Durathror*, DurathrorElem*, s32);
-void FUN_080378b4(Durathror*, DurathrorElem*, s32);
-void FUN_080379a8(Durathror*, DurathrorElem*, s32);
-void FUN_08037a48(Durathror*, DurathrorElem*, s32);
-void FUN_08037e10(Durathror*, DurathrorElem*, s32);
-void FUN_08037ee0(Durathror*, DurathrorElem*, s32);
-void FUN_08038080(Durathror*, DurathrorElem*, s32);
-void FUN_08038200(Durathror*, DurathrorElem*, s32);
-void FUN_080382f0(Durathror*, DurathrorElem*, s32);
-void bee_08038358(Durathror*, DurathrorElem*, s32);
-void bee_08038514(Durathror*, DurathrorElem*, s32);
-void FUN_080385f8(Durathror*, DurathrorElem*, s32);
 
-void (*const PTR_ARRAY_085aae30[13])(Durathror*, DurathrorElem*, s32) = {
-    FUN_0803787c,
-    FUN_08037888,
-    FUN_080378b4,
-    FUN_080379a8,
-    FUN_08037a48,
-    FUN_08037e10,
-    FUN_08037ee0,
-    FUN_08038080,
-    FUN_08038200,
-    FUN_080382f0,
-    bee_08038358,
-    bee_08038514,
-    FUN_080385f8,
-};  // 0x085AAE30
-
-void FUN_080395fc(Durathror*);
-void FUN_08039680(Durathror*);
-void FUN_08039704(Durathror*);
-void FUN_08039754(Durathror*);
-void FUN_080397a4(Durathror*);
-void FUN_0803981c(Durathror*);
-void FUN_08039878(Durathror*);
-void FUN_08039918(Durathror*);
-void FUN_08039ac4(Durathror*);
-
-void (*const PTR_ARRAY_085aae64[9])(Durathror*) = {
-    FUN_080395fc,
-    FUN_08039680,
-    FUN_08039704,
-    FUN_08039754,
-    FUN_080397a4,
-    FUN_0803981c,
-    FUN_08039878,
-    FUN_08039918,
-    FUN_08039ac4,
-};  // 0x085AAE64
-
-void FUN_08039cd8(Durathror*);
-void FUN_08039d38(Durathror*);
-void FUN_08039d70(Durathror*);
-void FUN_08039dd0(Durathror*);
-
-void (*const PTR_ARRAY_085aae88[4])(Durathror*) = {
-    FUN_08039cd8,
-    FUN_08039d38,
-    FUN_08039d70,
-    FUN_08039dd0,
-};  // 0x085AAE88
-
-void FUN_08039df4(Durathror*);
-void FUN_08039e2c(Durathror*);
-void FUN_08039e70(Durathror*);
-void FUN_08039eb4(Durathror*);
-void FUN_08039f14(Durathror*);
-void FUN_08039f74(Durathror*);
-void FUN_08039fd8(Durathror*);
-
-void (*const PTR_ARRAY_085aae98[7])(Durathror*) = {
-    FUN_08039df4,
-    FUN_08039e2c,
-    FUN_08039e70,
-    FUN_08039eb4,
-    FUN_08039f14,
-    FUN_08039f74,
-    FUN_08039fd8,
-};  // 0x085AAE98
-
-void FUN_0803a03c(Durathror*);
-
-void (*const PTR_ARRAY_085aaeb4[1])(Durathror*) = {
-    FUN_0803a03c,
-};  // 0x085AAEB4
-
-void FUN_0803a058(Durathror*);
-
-void (*const PTR_ARRAY_085aaeb8[1])(Durathror*) = {
-    FUN_0803a058,
-};  // 0x085AAEB8
-
-void FUN_0803a074(Durathror*);
-
-void (*const PTR_ARRAY_085aaebc[1])(Durathror*) = {
-    FUN_0803a074,
-};  // 0x085AAEBC
-
-void FUN_0803a090(Durathror*);
-void FUN_0803a0cc(Durathror*);
-void FUN_0803a0e8(Durathror*);
-
-void (*const PTR_ARRAY_085aaec0[3])(Durathror*) = {
-    FUN_0803a090,
-    FUN_0803a0cc,
-    FUN_0803a0e8,
-};  // 0x085AAEC0
-
-void FUN_0803a128(Boss*, s32);
-void FUN_0803a180(Boss*, s32);
-void FUN_0803a1d8(Boss*, s32);
-void FUN_0803a3d0(Boss*, s32);
-void FUN_0803a438(Boss*, s32);
-void FUN_0803a500(Boss*, s32);
-void FUN_0803a668(Boss*, s32);
-void FUN_0803a6ec(Boss*, s32);
-void FUN_0803a8c0(Boss*, s32);
+void FUN_0803ad74(Boss*, s32);
+void bee_0803aee4(Boss*, s32);
 void durathror_0803aae8(Boss*, s32);
 void durathror_0803acbc(Boss*, s32);
-void FUN_0803ad74(Boss*, s32);
-void FUN_0803adf0(Boss*, s32);
-void bee_0803aee4(Boss*, s32);
-void FUN_0803af44(Boss*, s32);
 void durathror_0803b024(Boss*, s32);
-void FUN_0803b1a4(Boss*, s32);
-void FUN_0803b1e0(Boss*, s32);
-void FUN_0803b278(Boss*, s32);
-void FUN_0803b310(Boss*, s32);
-void FUN_0803b42c(Boss*, s32);
-void FUN_0803b52c(Boss*, s32);
-void FUN_0803b628(Boss*, s32);
-
-// clang-format off
-void (*const durathror_085aaecc[24])(Boss*, s32) = {
-    NULL,
-    FUN_0803a128,
-    FUN_0803a180,
-    FUN_0803a1d8,
-    FUN_0803a3d0,
-    FUN_0803a438,
-    FUN_0803a500,
-    FUN_0803a668,
-    FUN_0803a6ec,
-    FUN_0803a8c0,
-    durathror_0803aae8,
-    durathror_0803acbc,
-    FUN_0803ad74,
-    FUN_0803adf0,
-    bee_0803aee4,
-    FUN_0803af44,
-    durathror_0803b024,
-    FUN_0803b1a4,
-    FUN_0803b1e0,
-    FUN_0803b278,
-    FUN_0803b310,
-    FUN_0803b42c,
-    FUN_0803b52c,
-    FUN_0803b628,
-};  // 0x085AAECC
-// clang-format on
+void FUN_0803af44(Boss*, s32);
+void FUN_0803a8c0(Boss*, s32);
 
 void FUN_080390f8(Durathror*);
-s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 void DarkRoot_WitherAll(void);
 s32 FUN_08060220(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
-s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed, s32 hp, s32 power, s32 knockback, Vec3* pos);
-void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
-s32 DurathrorImpale_Spawn(struct DurathrorImpale* p, s32 power, u32 duration, Vec3* pos);
 s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
-void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 s32 Entity0805d79c_Spawn(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos);
 struct Entity0805d79c* Entity0805d79c_Create(void);
-struct DurathrorImpale* DurathrorImpale_Create(void);
 struct Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt);
 
 extern s32 gLightningTimer;
 void FUN_0803767c(Durathror* p, DurathrorElem* elem);
-void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 void FUN_0803a104(Durathror*);
 void FUN_0803b7c4(Durathror*);
 void FUN_08039280(Durathror*);
@@ -441,13 +281,13 @@ NON_MATCH void FUN_08036b2c(Durathror* p, s32 count, u32 speedXZ) {
   pos.x = pos.x - Q8(0.25) + (RandomNext() & 0x7F);
   pos.y = pos.y + Q8(0.5) + (RandomNext() & 0x3F);
   pos.z = pos.z - Q8(0.25) + (RandomNext() & 0x7F);
-  Entity08015584_SpawnHorizontal(&pos, p->unk_158, 16, count, 6, 0x3001, Q6(0.75), speedXZ, 512, 0);
+  Puff_SpawnHorizontal(&pos, p->unk_158, 16, count, 6, 0x3001, Q6(0.75), speedXZ, 512, 0);
 #else
   INCFUNC("asm/func/FUN_08036b2c.inc");
 #endif
 }
 
-void FUN_08036c1c(Durathror* p) { Entity08015584_SpawnRadial(&p->sprite_280.pos, 6, 7, 0x4001, Q6(1), 4, 512, 0); }
+void FUN_08036c1c(Durathror* p) { Puff_SpawnRadial(&p->sprite_280.pos, 6, 7, 0x4001, Q6(1), 4, 512, 0); }
 
 // 残差は角ごとの定数の持ち方 (183/193), 原典は各 case で 1 と基準座標をレジスタに置き直し, case 1 だけ乱数表を読み直す
 NON_MATCH void FUN_08036c4c(Vec3* pos, s32 corner) {
@@ -568,7 +408,7 @@ s32 FUN_0803712c(Vec3* out) {
   if (boss == NULL || boss->bossID != BOSS_DURATHROR) {
     return FALSE;
   }
-  Entity08015584_SpawnRadial(out, 3, 7, 0x2000, Q6(1), 4, 512, 0);
+  Puff_SpawnRadial(out, 3, 7, 0x2000, Q6(1), 4, 512, 0);
   return TRUE;
 }
 
@@ -840,7 +680,7 @@ void FUN_080378b4(Durathror* p, DurathrorElem* elem, s32 idx) {
       Vec3 pos;
 
       Vec3_CopyOffsetY(&pos, &sprite->pos, 0xA4);
-      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
+      Puff_Spawn(0, &pos, &p->ptclSpawn);
     }
   }
   if (elem->timer == 15) {
@@ -994,7 +834,7 @@ void FUN_08037e10(Durathror* p, DurathrorElem* elem, s32 idx) {
       Vec3 pos;
 
       Vec3_CopyOffsetY(&pos, &sprite->pos, 0x40);
-      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
+      Puff_Spawn(0, &pos, &p->ptclSpawn);
     }
   }
   if (elem->timer > 59) {
@@ -1319,6 +1159,22 @@ NON_MATCH void FUN_080385f8(Durathror* p, DurathrorElem* elem, s32 idx) {
 #endif
 }
 
+static void (*const PTR_ARRAY_085aae30[13])(Durathror*, DurathrorElem*, s32) = {
+    FUN_0803787c,
+    FUN_08037888,
+    FUN_080378b4,
+    FUN_080379a8,
+    FUN_08037a48,
+    FUN_08037e10,
+    FUN_08037ee0,
+    FUN_08038080,
+    FUN_08038200,
+    FUN_080382f0,
+    bee_08038358,
+    bee_08038514,
+    FUN_080385f8,
+};  // 0x085AAE30
+
 // 残差はループの誘導変数 (137/139), 原典は &hurtbox.flags を別の歩進ポインタで持ち &hurtbox を毎回作り直す
 NON_MATCH void FUN_08038878(Durathror* p) {
 #ifdef NONMATCHING_C
@@ -1367,7 +1223,7 @@ NON_MATCH void FUN_08038878(Durathror* p) {
 }
 
 void FUN_080389b0(Durathror* p) {
-  ParticleSpawnParam* param;
+  PuffParam* param;
   DurathrorElem* elem;
   s32 i;
 
@@ -1996,23 +1852,75 @@ void FUN_08039fd8(Durathror* p) {
   }
 }
 
-void FUN_0803a03c(Durathror* p) { PTR_ARRAY_085aae64[p->base.subState2](p); }
+void FUN_0803a03c(Durathror* p) {
+  static void (*const PTR_ARRAY_085aae64[9])(Durathror*) = {
+      FUN_080395fc,
+      FUN_08039680,
+      FUN_08039704,
+      FUN_08039754,
+      FUN_080397a4,
+      FUN_0803981c,
+      FUN_08039878,
+      FUN_08039918,
+      FUN_08039ac4,
+  };  // 0x085AAE64
+  PTR_ARRAY_085aae64[p->base.subState2](p);
+}
 
-void FUN_0803a058(Durathror* p) { PTR_ARRAY_085aae88[p->base.subState2](p); }
+void FUN_0803a058(Durathror* p) {
+  static void (*const PTR_ARRAY_085aae88[4])(Durathror*) = {
+      FUN_08039cd8,
+      FUN_08039d38,
+      FUN_08039d70,
+      FUN_08039dd0,
+  };  // 0x085AAE88
+  PTR_ARRAY_085aae88[p->base.subState2](p);
+}
 
-void FUN_0803a074(Durathror* p) { PTR_ARRAY_085aae98[p->base.subState2](p); }
+void FUN_0803a074(Durathror* p) {
+  static void (*const PTR_ARRAY_085aae98[7])(Durathror*) = {
+      FUN_08039df4,
+      FUN_08039e2c,
+      FUN_08039e70,
+      FUN_08039eb4,
+      FUN_08039f14,
+      FUN_08039f74,
+      FUN_08039fd8,
+  };  // 0x085AAE98
+  PTR_ARRAY_085aae98[p->base.subState2](p);
+}
 
 void FUN_0803a090(Durathror* p) {
+  static void (*const PTR_ARRAY_085aaeb4[1])(Durathror*) = {
+      FUN_0803a03c,
+  };  // 0x085AAEB4
+
   if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD) && !FUN_080395a4(p)) {
     PTR_ARRAY_085aaeb4[p->base.subState1](p);
   }
 }
 
-void FUN_0803a0cc(Durathror* p) { PTR_ARRAY_085aaeb8[p->base.subState1](p); }
+void FUN_0803a0cc(Durathror* p) {
+  static void (*const PTR_ARRAY_085aaeb8[1])(Durathror*) = {
+      FUN_0803a058,
+  };  // 0x085AAEB8
+  PTR_ARRAY_085aaeb8[p->base.subState1](p);
+}
 
-void FUN_0803a0e8(Durathror* p) { PTR_ARRAY_085aaebc[p->base.subState1](p); }
+void FUN_0803a0e8(Durathror* p) {
+  static void (*const PTR_ARRAY_085aaebc[1])(Durathror*) = {
+      FUN_0803a074,
+  };  // 0x085AAEBC
+  PTR_ARRAY_085aaebc[p->base.subState1](p);
+}
 
 void FUN_0803a104(Durathror* p) {
+  static void (*const PTR_ARRAY_085aaec0[3])(Durathror*) = {
+      FUN_0803a090,
+      FUN_0803a0cc,
+      FUN_0803a0e8,
+  };  // 0x085AAEC0
+
   p->base.unk_9d = 0;
   PTR_ARRAY_085aaec0[p->base.subState0](p);
 }
@@ -2119,7 +2027,7 @@ void FUN_0803a500(Boss* boss, s32 timer) {
       Vec3 pos = p->sprite_280.pos;
 
       pos.y = TileHeightAt(&pos);
-      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
+      Puff_Spawn(0, &pos, &p->ptclSpawn);
     }
     if (timer > 40) {
       p->unk_16c--;
@@ -2162,7 +2070,7 @@ void FUN_0803a6ec(Boss* boss, s32 timer) {
       Vec3 pos = p->sprite_280.pos;
 
       pos.y = TileHeightAt(&pos);
-      Entity08015584_Spawn(0, &pos, &p->ptclSpawn);
+      Puff_Spawn(0, &pos, &p->ptclSpawn);
     }
     if (timer <= 29) {
       SET_FLAGS(boss->flags, BOSSFLAG_HIDDEN);
@@ -2525,6 +2433,35 @@ void FUN_0803b7c4(Durathror* p) {
 }
 
 s32 FUN_0803b7ec(Durathror* p) {
+  // clang-format off
+  static void (*const durathror_085aaecc[24])(Boss*, s32) = {
+      NULL,
+      FUN_0803a128,
+      FUN_0803a180,
+      FUN_0803a1d8,
+      FUN_0803a3d0,
+      FUN_0803a438,
+      FUN_0803a500,
+      FUN_0803a668,
+      FUN_0803a6ec,
+      FUN_0803a8c0,
+      durathror_0803aae8,
+      durathror_0803acbc,
+      FUN_0803ad74,
+      FUN_0803adf0,
+      bee_0803aee4,
+      FUN_0803af44,
+      durathror_0803b024,
+      FUN_0803b1a4,
+      FUN_0803b1e0,
+      FUN_0803b278,
+      FUN_0803b310,
+      FUN_0803b42c,
+      FUN_0803b52c,
+      FUN_0803b628,
+  };  // 0x085AAECC
+  // clang-format on
+
   if (p->base.state == 0 || p->base.state > 24) {
     return FALSE;
   } else {
@@ -2545,7 +2482,7 @@ s32 Durathror_HandleDamage(Durathror* p) {
     p->base.hp -= damage;
     p->unk_15a = 15;
     p->unk_15e = 10;
-    p->sprite_280.plttID = 306;
+    p->sprite_280.plttID = OBP_WHITE_306;
     p->sprite_280.pltt = p->pltt_3e0[0];
     VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
     CreateDamageNumber(hurtbox, damage, 0, &p->base.mover.pos, &ofs, 1);

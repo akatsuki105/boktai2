@@ -16,10 +16,12 @@ static inline u32 DistSq(s32 dx, s32 dz) { return dx * dx + dz * dz; }
 // global.h の FixToInt(12, v) と同等 (global.h を include したくなかったので別途定義しただけ)
 #define Trig_Fix12ToInt(v) FixToInt(12, (v))
 
-// 角度 (0〜255) を 8 方向のインデックスに変換する (FUN_08237834 と全く同じ)
+// 角度 (0..255) を 8方向のインデックスに変換する (FUN_08237834 と全く同じ)
+// 方向は "include/constants/misc.h" の DIR8_* に対応
 static inline u16 Angle_ToDir8(u16 angle) { return ((((angle + 0x10) & 0xFF) >> 5) + 3) & 7; }
 
 // 角度 (0〜255) を 4 方向のインデックスに変換する (FUN_08237848 と全く同じ)
+// 方向は "include/constants/misc.h" の DIR4_* に対応
 static inline u16 Angle_ToDir4(u16 angle) { return ((((angle + 0x20) & 0xFF) >> 6) + 1) & 3; }
 
 // Angle_ToDir4 の逆, 4 方向のインデックスをその方向の角度に戻す
@@ -27,9 +29,6 @@ static inline u8 Angle_FromDir4(u32 dir) { return dir * 64 - 64; }
 
 // Angle_ToDir8 の逆, 8 方向のインデックスをその方向の角度に戻す
 static inline u8 Angle_FromDir8(u32 dir) { return (dir + 5) * 32; }
-
-// 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
-static inline rgb555 MakeRgb555(s32 r, s32 g, s32 b) { return (b << 10) | (g << 5) | r; }
 
 // ワールド座標をアイソメトリック投影して視点座標にする
 static inline void WorldToVp(Vec3* vp, WorldPos* world) {

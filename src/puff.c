@@ -1,3 +1,5 @@
+#include "puff.h"
+
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -5,9 +7,9 @@
 #include "sprite.h"
 #include "vm.h"
 
-// スプライトを使ったパーティクル(土煙で使用を確認, 他の水しぶきなどでも使うのかは調査中)
+// 水しぶき・煙・土煙など, パレット違いで使い回す玉状のパーティクル (SPRITE_4384, 地下水路の滝の根元などで確認)
 
-// パーティクル1個分, Entity08015584_Spawn で発生させる
+// パーティクル1個分, Puff_Spawn で発生させる
 typedef struct {
   bool8 active;       // 0x00, 0 でなければ Update/Destroy が処理する, アニメが終わると 0
   u8 kind;            // 0x01, 5/6/7 は別スプライト (SPRITE_DUNEYRR_AUX) と animFiles[1], それ以外はパレット kind + 0x7D
@@ -23,29 +25,29 @@ typedef struct {
   AuxSpriteGfx gfx;   // 0x20, SPRITE_4384
   AuxSprite sprite;   // 0x3C, ->gfx
   AuxAnimState anim;  // 0x68
-} Entity08015584Elem;
-static_assert(sizeof(Entity08015584Elem) == 120);
+} Puff;
+static_assert(sizeof(Puff) == 120);
 
 typedef struct {
-  Entity e;                      // 0x00, ENTITY_UNK_9
-  AuxAnimFile* animFiles[2];     // 0x18, id: sEntity08015584AnimFileIDs[i]
-  u32 frameCounter;              // 0x20
-  Entity08015584Elem elems[32];  // 0x24
-} Entity08015584;
-static_assert(sizeof(Entity08015584) == 3876);
+  Entity e;                   // 0x00, ENTITY_UNK_9
+  AuxAnimFile* animFiles[2];  // 0x18, id: sPuffAnimFileIDs[i]
+  u32 frameCounter;           // 0x20
+  Puff elems[32];             // 0x24
+} PuffManager;
+static_assert(sizeof(PuffManager) == 3876);
 
-static Entity08015584* sEntity08015584;  // 0x03000060
+static PuffManager* sPuffManager;  // 0x03000060
 
-void Entity08015584_ClearGlobal(void) { sEntity08015584 = NULL; }
+void PuffManager_ClearGlobal(void) { sPuffManager = NULL; }
 
 // 使用中の粒子を減速させながら動かし, アニメが一巡したら外す
 // 258/254 命令, 原典は elem と sprite の2本だけを歩かせ anim は elem から求めるが, こちらは anim 側もループ外で歩くポインタになる
-NON_MATCH s32 Entity08015584_Update(Entity08015584* p) {
+NON_MATCH s32 PuffManager_Update(PuffManager* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
   for (i = 0; i < 32; i++) {
-    Entity08015584Elem* elem = &p->elems[i];
+    Puff* elem = &p->elems[i];
 
     if (elem->active) {
       AuxSprite* sprite = &elem->sprite;
@@ -77,11 +79,11 @@ NON_MATCH s32 Entity08015584_Update(Entity08015584* p) {
   p->frameCounter++;
   return 0;
 #else
-  INCFUNC("asm/func/Entity08015584_Update.inc");
+  INCFUNC("asm/func/PuffManager_Update.inc");
 #endif
 }
 
-s32 Entity08015584_Destroy(Entity08015584* p) {
+s32 PuffManager_Destroy(PuffManager* p) {
   s32 i;
 
   for (i = 0; i < 32; i++) {
@@ -90,12 +92,12 @@ s32 Entity08015584_Destroy(Entity08015584* p) {
     }
   }
 
-  sEntity08015584 = NULL;
+  sPuffManager = NULL;
   return 0;
 }
 
-s32 Entity08015584_Init(Entity08015584* p, u32 _) {
-  static const FileID sEntity08015584AnimFileIDs[2] = {
+s32 PuffManager_Init(PuffManager* p, u32 _) {
+  static const FileID sPuffAnimFileIDs[2] = {
       ANIM_F62B,
       ANIM_31F4,
   };  // 0x085AA914
@@ -103,16 +105,16 @@ s32 Entity08015584_Init(Entity08015584* p, u32 _) {
   Vec3 pos;
   s32 i;
 
-  sEntity08015584 = p;
+  sPuffManager = p;
 
   for (i = 0; i < 2; i++) {
-    p->animFiles[i] = GetFile(DIR_ANIMATION, sEntity08015584AnimFileIDs[i]);
+    p->animFiles[i] = GetFile(DIR_ANIMATION, sPuffAnimFileIDs[i]);
   }
 
   VEC3_SET(pos, 0, 0, 0);
 
   for (i = 0; i < 32; i++) {
-    Entity08015584Elem* elem = &p->elems[i];
+    Puff* elem = &p->elems[i];
 
     elem->active = FALSE;
     elem->speedY = 0;
@@ -130,11 +132,11 @@ s32 Entity08015584_Init(Entity08015584* p, u32 _) {
   return 0;
 }
 
-Entity08015584* Entity08015584_Create(u32 val, u32 _) {
-  Entity08015584* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity08015584));
+PuffManager* PuffManager_Create(u32 val, u32 _) {
+  PuffManager* p = CreateEntity(ENTITY_UNK_9, sizeof(PuffManager));
   if (p != NULL) {
-    SetEntityRoutine(p, Entity08015584_Update, Entity08015584_Destroy);
-    if (Entity08015584_Init(p, val) < 0) {
+    SetEntityRoutine(p, PuffManager_Update, PuffManager_Destroy);
+    if (PuffManager_Init(p, val) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -144,33 +146,33 @@ Entity08015584* Entity08015584_Create(u32 val, u32 _) {
 
 // flags の bit12-15 (1〜4) を描画優先度 0〜3 にする, 範囲外は 2
 // 13/13 命令, 原典は & 0xF000 の結果を flags 側の r0 に書くが, こちらはマスク側の r1 に書くので直後の asrs / subs のレジスタがずれる
-NON_MATCH u32 Entity08015584_GetPriority(s32 flags) {
+NON_MATCH u32 Puff_GetPriority(s32 flags) {
 #ifdef NONMATCHING_C
   u32 n = ((flags & 0xF000) >> 12) - 1;
 
   n = (n < 4) ? n : 2;
   return n;
 #else
-  INCFUNC("asm/func/Entity08015584_GetPriority.inc");
+  INCFUNC("asm/func/Puff_GetPriority.inc");
 #endif
 }
 
 // params に従って count 個の粒子を空き枠へ仕込む, 枠が足りなければ -1
-// 513/520 命令, 原典は sEntity08015584 の番地をレジスタに巻き上げるが, agbcc は参照のたびにプールから読み直す. ParticleSpawnParam の decayY / decayXZ はここでも読まれない
-NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
+// 513/520 命令, 原典は sPuffManager の番地をレジスタに巻き上げるが, agbcc は参照のたびにプールから読み直す. PuffParam の decayY / decayXZ はここでも読まれない
+NON_MATCH s32 Puff_Spawn(s32 count, WorldPos* pos, PuffParam* params) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 spawned;
 
-  if (sEntity08015584 == NULL) {
-    if (Entity08015584_Create(0, 0) == NULL) {
+  if (sPuffManager == NULL) {
+    if (PuffManager_Create(0, 0) == NULL) {
       return -1;
     }
   }
 
   spawned = 0;
   for (i = 0; i < 32; i++) {
-    Entity08015584Elem* elem = &sEntity08015584->elems[i];
+    Puff* elem = &sPuffManager->elems[i];
     s32 angleY;
     s32 angleXZ;
 
@@ -211,27 +213,27 @@ NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam*
       Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 548);
       elem->sprite.poseIdx = 32;
-      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[1], 6, 0, 0);
+      AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 6, 0, 0);
     } else if (elem->kind == 6) {
       Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 556);
       elem->sprite.poseIdx = 32;
-      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[1], 6, 0, 0);
+      AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 6, 0, 0);
     } else if (elem->kind == 7) {
       Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 555);
       elem->sprite.poseIdx = 45;
-      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[1], 8, 0, 0);
+      AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 8, 0, 0);
     } else {
       Video_GetAuxSprite(&elem->gfx, SPRITE_4384);
       Video_SetAuxSpritePltt(&elem->gfx, elem->kind + 125);
-      AuxAnim_SetAnim(&elem->anim, sEntity08015584->animFiles[0], 0, 0, 0);
+      AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[0], 0, 0, 0);
     }
 
     AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
 
     elem->sprite.pos = *pos;
-    elem->sprite.priority = Entity08015584_GetPriority(params->flags);
+    elem->sprite.priority = Puff_GetPriority(params->flags);
     AuxAnim_SetAnimSpeed(&elem->anim, params->animSpeed);
     Video_AddAuxSpriteIntoDrawList(&elem->sprite, 0);
 
@@ -243,13 +245,13 @@ NON_MATCH s32 Entity08015584_Spawn(s32 count, WorldPos* pos, ParticleSpawnParam*
 
   return -1;
 #else
-  INCFUNC("asm/func/Entity08015584_Spawn.inc");
+  INCFUNC("asm/func/Puff_Spawn.inc");
 #endif
 }
 
 // count 個を 256 を等分した向きへ1つずつ発生させる
-void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
-  ParticleSpawnParam param;
+void Puff_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+  PuffParam param;
   s32 step;
   s32 i;
 
@@ -275,16 +277,16 @@ void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u
   param.angleXZ = 0;
 
   for (i = 0; i < count; i++) {
-    Entity08015584_Spawn(1, pos, &param);
+    Puff_Spawn(1, pos, &param);
     param.angleXZ += step;
   }
 }
 
 // base を中心に mask でマスクした乱数ぶんずらした位置へ count 個発生させる
 // 125/125 命令, base/mask は Vec3* ではなく u16* (原典は ldrh で読む), 残るのはレジスタ割り当ての入れ替えのみ
-NON_MATCH void Entity08015584_SpawnInBox(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+NON_MATCH void Puff_SpawnInBox(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
 #ifdef NONMATCHING_C
-  ParticleSpawnParam param;
+  PuffParam param;
   Vec3 spawnPos;
   s32 i;
 
@@ -312,15 +314,15 @@ NON_MATCH void Entity08015584_SpawnInBox(u16* base, u16* mask, u32 angleXZ, u32 
     spawnPos.x = (Random() & mask[0]) + base[0];
     spawnPos.y = (Random() & mask[1]) + base[1];
     spawnPos.z = (Random() & mask[2]) + base[2];
-    Entity08015584_Spawn(1, &spawnPos, &param);
+    Puff_Spawn(1, &spawnPos, &param);
   }
 #else
-  INCFUNC("asm/func/Entity08015584_SpawnInBox.inc");
+  INCFUNC("asm/func/Puff_SpawnInBox.inc");
 #endif
 }
 
-void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
-  ParticleSpawnParam param;
+void Puff_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+  PuffParam param;
 
   param.kind = kind;
   param.flags = flags;
@@ -341,12 +343,12 @@ void Entity08015584_SpawnHorizontal(WorldPos* pos, u32 angleXZ, u32 angleXZRand,
   param.decayStartXZRand = 0;
   param.decayXZ = decay;
   param.decayXZRand = 0;
-  Entity08015584_Spawn(count, pos, &param);
+  Puff_Spawn(count, pos, &param);
 }
 
 // 発生パラメータを決め打ちで組んで count 個ぶん発生させる
-void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
-  ParticleSpawnParam param;
+void Puff_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
+  PuffParam param;
 
   param.kind = kind;
   param.flags = flags;
@@ -367,11 +369,11 @@ void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, Wo
   param.decayStartXZRand = 0;
   param.decayXZ = 255;
   param.decayXZRand = 0;
-  Entity08015584_Spawn(count, pos, &param);
+  Puff_Spawn(count, pos, &param);
 }
 
-void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
-  ParticleSpawnParam param;
+void Puff_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
+  PuffParam param;
 
   param.kind = kind;
   param.flags = flags;
@@ -392,11 +394,11 @@ void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, 
   param.decayStartXZRand = 0;
   param.decayXZ = 255;
   param.decayXZRand = 0;
-  Entity08015584_Spawn(count, pos, &param);
+  Puff_Spawn(count, pos, &param);
 }
 
-void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand) {
-  ParticleSpawnParam param;
+void Puff_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand) {
+  PuffParam param;
 
   param.kind = kind;
   param.flags = flags;
@@ -417,11 +419,11 @@ void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSp
   param.decayStartXZRand = 0;
   param.decayXZ = 255;
   param.decayXZRand = 0;
-  Entity08015584_Spawn(1, pos, &param);
+  Puff_Spawn(1, pos, &param);
 }
 
-void UNUSED Entity08015584_SpawnSprayOneEx(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand, u32 angleY, u32 angleYRand) {
-  ParticleSpawnParam param;
+void UNUSED Puff_SpawnSprayOneEx(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand, u32 angleY, u32 angleYRand) {
+  PuffParam param;
 
   param.kind = kind;
   param.flags = flags;
@@ -442,15 +444,15 @@ void UNUSED Entity08015584_SpawnSprayOneEx(WorldPos* pos, u32 kind, u32 flags, u
   param.decayStartXZRand = 0;
   param.decayXZ = 255;
   param.decayXZRand = 0;
-  Entity08015584_Spawn(1, pos, &param);
+  Puff_Spawn(1, pos, &param);
 }
 
 // ランダムな向きへ speedXZ * 40 ぶんずらした位置に1個発生させる
 // 命令数・順序とも一致 (108/108) するが &param (sp のコピー) の作り位置が1つ手前にずれる. 原典は乱数テーブルのプール読みの後に作る
 // ずらし量は POLAR_X/POLAR_Z(speedXZ * 40, angleXZ + 0x80), agbcc は (speedXZ*40)*table を speedXZ*(40*table) に再結合する
-NON_MATCH void UNUSED Entity08015584_SpawnConverging(WorldPos* pos, u32 _, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+NON_MATCH void UNUSED Puff_SpawnConverging(WorldPos* pos, u32 _, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
 #ifdef NONMATCHING_C
-  ParticleSpawnParam param;
+  PuffParam param;
   Vec3 spawnPos;
 
   param.kind = kind;
@@ -476,15 +478,15 @@ NON_MATCH void UNUSED Entity08015584_SpawnConverging(WorldPos* pos, u32 _, u32 k
   spawnPos.x = pos->x + POLAR_X(speedXZ * 40, param.angleXZ + 128);
   spawnPos.y = pos->y;
   spawnPos.z = pos->z + POLAR_Z(speedXZ * 40, param.angleXZ + 128);
-  Entity08015584_Spawn(1, &spawnPos, &param);
+  Puff_Spawn(1, &spawnPos, &param);
 #else
-  INCFUNC("asm/func/Entity08015584_SpawnConverging.inc");
+  INCFUNC("asm/func/Puff_SpawnConverging.inc");
 #endif
 }
 
-// スクリプトの名前付き引数をそのまま発生パラメータにして発生させる
-void Cmd_4383(void) {
-  ParticleSpawnParam param;
+// 0x4383, スクリプトの名前付き引数をそのまま発生パラメータにして発生させる
+void Cmd_SpawnPuffs(void) {
+  PuffParam param;
   Vec3 pos;
   s32 count = VM_GetNamedArgValue('n', 1);
 
@@ -542,5 +544,5 @@ void Cmd_4383(void) {
     param.decayXZRand = 0;
   }
 
-  Entity08015584_Spawn(count, &pos, &param);
+  Puff_Spawn(count, &pos, &param);
 }

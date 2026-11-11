@@ -33,11 +33,11 @@ typedef struct Bullet {
   u16 offsetRadius;                        // 0x0C2, Init の第6引数, offset.x と offset.z の大きさ
   u16 eneCost;                             // 0x0C4, Init の第12引数, Bullet_PayENE が Player_ReduceENE に渡す
   u8 unk_c6[2];                            // 0x0C6
-  DirU8 dir;                               // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
+  Dir8U8 dir;                              // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
   u8 charge;                               // 0x0C9, player の 0xA8F の写し, damage を 1 + charge/2 倍にし、sprite.poseIdx にも入る
   u16 timer;                               // 0x0CA, Bullet_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
   u8 ptclIdx;                              // 0x0CC, 次に撒く ptcls の添字, 4 で 0 に戻る
-  u8 unk_cd;                               // 0x0CD, Init の第13引数, hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
+  u8 elefan;                               // 0x0CD, 棺桶獣エレファンによって発射されたものか
   u8 unk_ce[2];                            // 0x0CE, padding?
   ParticleGroup* group2;                   // 0x0D0, PTCL_GROUP_2
   BulletChargePtcl ptcls[4];               // 0x0D4, チャージ時のパーティクル
@@ -165,7 +165,7 @@ void Bullet_PayENE(Bullet* p) {
 s32 Bullet_GetDamage(Bullet* p) {
   s32 dmg;
 
-  if (p->unk_cd != 0) {
+  if (p->elefan != 0) {
     return 8;
   }
   if (gGameFlags & GAMEFLAG_LINK) {
@@ -335,13 +335,13 @@ void Bullet_SetupSprite(Bullet* p, s32 plttID) {
   Video_SetAuxSpritePltt(&p->gfx, plttID);
 }
 
-// 当たり判定を組み立てる, unk_cd が立っているときだけ判定を一段高い位置に置く
+// 当たり判定を組み立てる, elefan が立っているときだけ判定を一段高い位置に置く
 void Bullet_SetupHitbox(Bullet* p, u32 knockback, HitboxAttributes attrs, u32 iframes) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 offset, halfSize;
 
   VEC3_SET(halfSize, Q8(0.12), Q8(0.12), Q8(0.12));
-  if (p->unk_cd != 0) {
+  if (p->elefan != 0) {
     VEC3_SET(offset, 0, Q8(0.12), 0);
   } else {
     VEC3_SET(offset, 0, 0, 0);
@@ -367,7 +367,7 @@ void Bullet_SetupParticles(Bullet* p, s32 pose) {
   }
 }
 
-s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, u32 unk_cd) {
+s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, u32 elefan) {
   p->player = player;
   p->heightOffset = heightOffset;
   p->unk_be = unk_be;
@@ -375,7 +375,7 @@ s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk
   p->offsetRadius = offsetRadius;
   p->eneCost = cost;
   p->charge = 0;
-  p->unk_cd = unk_cd;
+  p->elefan = elefan;
   Bullet_SetupSprite(p, plttID);
   Bullet_SetupHitbox(p, knockback, attrs, iframes);
   Bullet_Reposition(p);
@@ -388,12 +388,12 @@ s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk
   return 0;
 }
 
-Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, u32 unk_cd) {
+Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan) {
   Bullet* p = CreateEntity(ENTITY_UNK_8, sizeof(Bullet));
 
   if (p != NULL) {
     SetEntityRoutine(p, Bullet_Update, Bullet_Destroy);
-    if (Bullet_Init(p, player, heightOffset, unk_be, unk_c0, offsetRadius, plttID, knockback, attrs, iframes, pose, cost, unk_cd) < 0) {
+    if (Bullet_Init(p, player, heightOffset, unk_be, unk_c0, offsetRadius, plttID, knockback, attrs, iframes, pose, cost, elefan) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

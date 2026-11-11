@@ -41,7 +41,7 @@ extern Entity gVideoRender;
 extern u16 gObjTileRequestCount;
 extern bool32 gDispcntLocked;
 
-s32 FUN_0804ba48(void);
+bool32 FUN_0804ba48(void);
 s32 JoyspotManager_IsActive(void);
 void Time_AdvanceFrame(void);
 void rfu_LMAN_syncVBlank(void);

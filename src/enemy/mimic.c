@@ -681,7 +681,7 @@ bool8 Mimic_FindOpeningPlayer(Mimic* p) {
       Vec3 d;
 
       Vec3_Diff(&d, &player->mover.pos, &(p->e).mover.pos);
-      if (d.x * d.x + d.z * d.z <= 96 * 96 && (gPlayerPtr[i]->input->pressed & A_BUTTON)) {
+      if (d.x * d.x + d.z * d.z <= Q8(0.375) * Q8(0.375) && (gPlayerPtr[i]->input->pressed & A_BUTTON)) {
         (p->e).playerMover = &gPlayerPtr[i]->mover;
         return TRUE;
       }
@@ -1136,7 +1136,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
 
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 650;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 650;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

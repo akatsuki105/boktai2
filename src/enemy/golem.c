@@ -10,7 +10,6 @@
 #include "enemy_target.h"
 #include "file.h"
 #include "global.h"
-#include "inline.h"
 #include "malloc.h"
 #include "map_inline.h"
 #include "msgbus.h"
@@ -537,7 +536,7 @@ NON_MATCH void Golem_OnReset(Golem* p) {
   q->rollFrames = 0;
   q->chargeGauge = 0;
   q->windUpTime = 0;
-  q->facing = 0;
+  q->facing = DIR4_NORTH;
   q->stopPhase = 0;
   q->moveAngle = 0;
   q->stopTimer = 0;
@@ -832,7 +831,7 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
       return;
     }
     switch (dir) {
-      case 0: {
+      case DIR4_NORTH: {
         if (target - 2 < 4) {
           Golem_PlayTurnAnim(p, 1, 0);
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
@@ -842,7 +841,7 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
         }
         break;
       }
-      case 1: {
+      case DIR4_EAST: {
         if (target - 4 < 4) {
           Golem_PlayTurnAnim(p, 2, 0);
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
@@ -852,7 +851,7 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
         }
         break;
       }
-      case 2: {
+      case DIR4_SOUTH: {
         if (target - 1 > 4) {
           Golem_PlayTurnAnim(p, 1, ANIM_PLAY_REVERSE | ANIM_PLAY_XFLIP);
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
@@ -862,7 +861,7 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
         }
         break;
       }
-      case 3: {
+      case DIR4_WEST: {
         if (target < 4) {
           Golem_PlayTurnAnim(p, 0, 0);
           SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
@@ -4088,7 +4087,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
   }
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 513;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 513;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

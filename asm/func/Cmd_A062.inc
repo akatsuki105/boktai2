@@ -4,12 +4,12 @@
 	mov r5, r8
 	push {r5, r6, r7}
 	sub sp, #0x54
-	bl GetEntityC9BC
+	bl GetPropertyCubeManager
 	str r0, [sp, #0x24]
 	cmp r0, #0
 	beq _0800DBB8
 	ldr r0, [sp, #0x24]
-	bl EntityC9BC_FindFreeElem
+	bl PropertyCubeManager_FindFreeCube
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _0800DBB8
@@ -19,7 +19,7 @@
 	mov r8, r0
 	ldr r0, [sp, #0x24]
 	mov r1, r8
-	bl EntityC9BC_FindElemById
+	bl PropertyCubeManager_FindCubeById
 	cmp r0, #0
 	beq _0800DBBE
 _0800DBB8:
@@ -607,7 +607,7 @@ _0800DFD4:
 	ldr r1, [sp, #0x4c]
 	movs r2, #0
 	bl Hitbox_SetPos
-	ldr r1, _0800E0E0 @ =EntityC9BCElem_OnHurt
+	ldr r1, _0800E0E0 @ =PropertyCube_OnHurt
 	adds r0, r6, #0
 	adds r2, r5, #0
 	bl Hitbox_SetHandler
@@ -681,7 +681,7 @@ _0800E0D0: .4byte 0x030046A4
 _0800E0D4: .4byte 0xFFFF0000
 _0800E0D8: .4byte 0x0000FFFF
 _0800E0DC: .4byte 0x00004041
-_0800E0E0: .4byte EntityC9BCElem_OnHurt
+_0800E0E0: .4byte PropertyCube_OnHurt
 _0800E0E4: .4byte 0x00002801
 _0800E0E8: .4byte nop_0800cc04
 _0800E0EC: .4byte 0x00010100

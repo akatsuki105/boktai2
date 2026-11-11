@@ -30,7 +30,7 @@ s32 FUN_08200ab4(Vec3* pos) {
 
 void FUN_08200b2c(Entity08202cd8* p, u8 val) { p->unk_6db = val; }
 
-void FUN_08200b38(AuxSprite* spr) { Video_SetAuxSpritePltt(spr->gfx, 306); }
+void FUN_08200b38(AuxSprite* spr) { Video_SetAuxSpritePltt(spr->gfx, OBP_WHITE_306); }
 
 void FUN_08200b48(AuxSprite* spr, Entity08202cd8* p) { Video_SetAuxSpritePltt(spr->gfx, 561); }
 

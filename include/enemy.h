@@ -358,7 +358,7 @@ typedef struct Enemy {
   u16 unk_476;                              // 0x476, ENEFLAG2_UNK_14 のときに FUN_080f5c0c が使うパレット番号
   u16 unk_478;                              // 0x478, パレット番号, EnemySprite の +0x32 / +0x5A に書かれる
   u16 plttBase;                             // 0x47A, variant と足して遷移先パレット番号になる
-  u16 unk_47c;                              // 0x47C, 被弾中のパレット番号
+  u16 unk_47c;                              // 0x47C, 被弾中のパレット番号 (OBP_WHITE_306)
   u16 unk_47e;                              // 0x47E, FUN_080f6868 が使うパレット番号
   u16 variant;                              // 0x480, 敵の変種(kind が ビー系 なら variant で ビー,ポイズンビー,キラービー を決める)
   u16 animSpeedDiv;                         // 0x482, 歩きアニメの速さの割る数, 速さは 64 / animSpeedDiv, 0 なら 1 に直される

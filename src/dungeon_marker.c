@@ -72,7 +72,7 @@ s32 DungeonMarker_Init(DungeonMarker* p) {
   if (VM_SeekToNamedArg('I')) {
     p->radius = VM_GetValue();
   } else {
-    p->radius = 384;
+    p->radius = Q8(1.5);
   }
 
   if (VM_SeekToNamedArg('t')) {
@@ -85,14 +85,14 @@ s32 DungeonMarker_Init(DungeonMarker* p) {
 
   switch (p->kind) {
     s32 d;
-    case 0: {
+    case 0: {  // "Immortal"
       d = VM_SeekToNamedArg('d') ? VM_GetValue() : 0;
-      poseIdx = d;
+      poseIdx = MARKER_IMMORTAL(d);
       break;
     }
-    case 1: {
+    case 1: {  // "Undead"
       d = VM_SeekToNamedArg('d') ? VM_GetValue() : 0;
-      poseIdx = d + 4;
+      poseIdx = MARKER_UNDEAD(d);
       break;
     }
     default: {

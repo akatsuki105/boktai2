@@ -53,7 +53,7 @@ static_assert(sizeof(DoorSpriteSet) == 140);
 // スクリプトの引数ごとに種類が対応する: 'd'=木の扉 / 'S'=鉄格子 / 'k'=鍵付き青扉1 / 'b'=鍵付き青扉2 / 's' / 'u'
 typedef struct {
   Entity e;                     // 0x00, ENTITY_UNK_9
-  u16 subroutineID;             // 0x18, DoorManager_Update が FUN_08230F94 の検索キーに使う
+  u16 mesgID;                   // 0x18, ドア管理宛てのメッセージの id, DoorManager_Create の引数
   u16 unk_1a;                   // 0x1A, DoorManager_Destroy が doors を走査する件数
   u8 unk_1c;                    // 0x1C, DoorManager_Update が unk_1e を走査する件数, 走査後 unk_1d へ移して 0 に戻す
   u8 unk_1d;                    // 0x1D, 前フレームの unk_1c
@@ -62,7 +62,7 @@ typedef struct {
   u16 unk_2e;                   // 0x2E, _Init が 0 を入れる
   s32 doorMax;                  // 0x30, '.m=16', doors の要素数
   s32 unk_34;                   // 0x34, '.e=1', 0 でなければ 0x410..0x428 も確保する
-  ScriptRecord* records;        // 0x38, FUN_08230F94(subroutineID, &records) の出力, _Update が values[0] を命令として分岐する
+  ScriptMesg* mesgs;            // 0x38, ScriptMesg_Find で引いた mesgID 宛てのメッセージの先頭, _Update が values[0] を命令として分岐する
   AuxSpriteGfx sprites_3c[5];   // 0x3C, '.d=SPRITE_DOOR_WOOD'
   AuxSpriteGfx sprites_c8[5];   // 0xC8, '.S=SPRITE_DOOR_IRON'
   AuxSpriteGfx sprites_154[5];  // 0x154, '.k=SPRITE_DOOR_LOCKED'
@@ -693,15 +693,15 @@ s32 DoorManager_Destroy(DoorManager* p) {
   return 0;
 }
 
-NAKED s32 DoorManager_Init(DoorManager* p, u32 subroutineID, unknown* param_3) { INCFUNC("asm/func/DoorManager_Init.inc"); }
+NAKED s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) { INCFUNC("asm/func/DoorManager_Init.inc"); }
 
 // 0x6D69
-DoorManager* DoorManager_Create(u32 subroutineID, unknown* param_2) {
+DoorManager* DoorManager_Create(u32 mesgID, unknown* param_2) {
   DoorManager* p = CreateEntity(ENTITY_UNK_9, sizeof(DoorManager));
 
   if (p != NULL) {
     SetEntityRoutine(p, DoorManager_Update, DoorManager_Destroy);
-    if (DoorManager_Init(p, subroutineID, param_2) < 0) {
+    if (DoorManager_Init(p, mesgID, param_2) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

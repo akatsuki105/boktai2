@@ -95,7 +95,7 @@
 	str r0, [sp, #0x14]
 	add r0, sp, #0x18
 	movs r2, #0x10
-	bl Entity08015584_SpawnHorizontal
+	bl Puff_SpawnHorizontal
 	add sp, #0x20
 	pop {r3, r4, r5}
 	mov r8, r3

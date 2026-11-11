@@ -22,7 +22,7 @@
 	movs r0, #4
 	movs r1, #2
 	movs r3, #0x40
-	bl Entity08015584_SpawnSpray
+	bl Puff_SpawnSpray
 	adds r0, r4, #0
 	bl InkBallShotManager_Remove
 _08202D88:

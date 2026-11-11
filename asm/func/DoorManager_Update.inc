@@ -39,7 +39,7 @@ _080210D2:
 	strb r1, [r3, #0x1c]
 	ldrh r0, [r3, #0x18]
 	adds r1, r2, #0
-	bl ScriptRecord_Find
+	bl ScriptMesg_Find
 	adds r4, r0, #0
 	mov r0, r8
 	ldr r5, [r0, #0x38]

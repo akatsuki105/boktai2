@@ -11,18 +11,18 @@ extern u16 gEntityCount;  // 0x030044C0
 
 void InitHeap(void);
 void ResetEntityManager(void);
-void ScriptRecord_ResetAll(void);
+void ScriptMesg_ResetAll(void);
 void FUN_081dfe5c(void);
 void FUN_0804e36c(void);
 void ReadKeyInput(void);
-void FUN_08230eb4(void);
+void ScriptMesg_SwapBlock(void);
 
 // gSystemManager.onUpdate
 s32 SystemManager_Update(Entity* p) {
   FUN_081dfe5c();
   FUN_0804e36c();
   ReadKeyInput();
-  FUN_08230eb4();
+  ScriptMesg_SwapBlock();
   return 0;
 }
 
@@ -33,7 +33,7 @@ void InitSystemManager(void) {
   InitHeap();
   ResetEntityManager();
   Registry_Reset();
-  ScriptRecord_ResetAll();
+  ScriptMesg_ResetAll();
   gRngValue = 123456;
   SetEntityRoutine(&gSystemManager, SystemManager_Update, NULL);
   gSystemManager.kind = ENTITY_SYSTEM;

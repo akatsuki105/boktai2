@@ -13,7 +13,7 @@
 	bne _08015614
 	movs r0, #0
 	movs r1, #0
-	bl Entity08015584_Create
+	bl PuffManager_Create
 	cmp r0, #0
 	bne _08015614
 	b _08015A7A
@@ -562,7 +562,7 @@ _08015A38:
 	str r0, [r3, #0x1c]
 	str r1, [r3, #0x20]
 	ldrh r0, [r6, #2]
-	bl Entity08015584_GetPriority
+	bl Puff_GetPriority
 	mov r1, r8
 	strb r0, [r1, #7]
 	ldrh r1, [r6, #6]

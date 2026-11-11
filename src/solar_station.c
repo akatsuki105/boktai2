@@ -23,7 +23,7 @@ typedef struct {
   u8 state;                // 0x25E, _Update の分岐, 0 なら SolarStation_UpdateIdle, 1 なら SolarStation_UpdateInUse
   u8 flashTimer;           // 0x25F, SolarStation_UpdateFlash のパレット切り替えの経過フレーム, PFLAG20_REFUELING が落ちると 4 から数え下ろす
   u8 playerNear;           // 0x260, 1P が同じ高さで半タイル以内にいて操作できる状態なら 1
-  bool8 forceShowDigits;   // 0x261, FUN_0809f30c がスクリプトのレコードから立て直す, SolarStation_UpdateDigits は playerNear と2バイトまとめて読んでどちらかが立っていれば残高を出す
+  bool8 forceShowDigits;   // 0x261, FUN_0809f30c がスクリプトからのメッセージで立て直す, SolarStation_UpdateDigits は playerNear と2バイトまとめて読んでどちらかが立っていれば残高を出す
   u16 unk_262;             // 0x262, _Init が sprite.flags bit2 のとき 7、そうでなければ 1 を入れる
 } SolarStation;
 static_assert(sizeof(SolarStation) == 612);
@@ -156,10 +156,10 @@ void SolarStation_UpdateDigits(SolarStation* p) {
   }
 }
 
-// 自分の id で登録されたスクリプトのレコードを全部見て、forceShowDigits を最後の指示どおりに設定する
+// 自分の id 宛てのスクリプトからのメッセージを全部見て、forceShowDigits を最後の指示どおりに設定する
 void FUN_0809f30c(SolarStation* p) {
-  ScriptRecord* rec;
-  s32 n = ScriptRecord_Find(p->id, &rec);
+  ScriptMesg* rec;
+  s32 n = ScriptMesg_Find(p->id, &rec);
 
   while (n-- > 0) {
     switch (rec->values[0]) {

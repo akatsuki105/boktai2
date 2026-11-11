@@ -28,7 +28,7 @@
 #define BGP_1EB2 0x1EB2
 #define BGP_1F3A 0x1F3A
 #define BGP_1F7A 0x1F7A
-#define BGP_2010 0x2010  // BOKHASH("lk00_00_col_arr")?
+#define BGP_LK00_00 BOKHASH("lk00_00_col_arr")  // 0x2010, 通信対戦用のマップで使うので合っていると思われる
 #define BGP_211E 0x211E
 #define BGP_212B 0x212B
 #define BGP_222D 0x222D
@@ -51,7 +51,7 @@
 #define BGP_35B3 0x35B3
 #define BGP_3894 0x3894
 #define BGP_3B01 0x3B01
-#define BGP_3E14 0x3E14
+#define BGP_3E14 BOKHASH("field_even_col_arr")  // 0x3E14
 #define BGP_3EC6 0x3EC6
 #define BGP_40D1 0x40D1
 #define BGP_4169 0x4169
@@ -73,7 +73,7 @@
 #define BGP_4F2B 0x4F2B
 #define BGP_4F31 0x4F31
 #define BGP_50AE 0x50AE
-#define BGP_513D 0x513D  // BOKHASH("random_col_arr")?
+#define BGP_RANDOM BOKHASH("random_col_arr")  // 0x513D, 夢幻街
 #define BGP_5170 0x5170
 #define BGP_519C 0x519C
 #define BGP_529C 0x529C
@@ -111,11 +111,11 @@
 #define BGP_794D 0x794D
 #define BGP_7970 0x7970
 #define BGP_7AC3 0x7AC3
-#define BGP_7C60 0x7C60
+#define BGP_7C60 0x7C60  // 0x7C60, field_nigh_col_arr
 #define BGP_7F66 0x7F66
 #define BGP_809C 0x809C
 #define BGP_818C 0x818C
-#define BGP_8279 0x8279
+#define BGP_8279 BOKHASH("field_noon_col_arr")  // 0x8279
 #define BGP_842B 0x842B
 #define BGP_86B5 0x86B5
 #define BGP_8757 0x8757

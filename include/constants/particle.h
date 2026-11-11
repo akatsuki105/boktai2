@@ -22,7 +22,7 @@
 #define PTCL0_SMOKE_D(step) (43 + (step))       // 煙のエフェクト (D), PTCL0_SMOKE_C の色違い, step 0..3
 #define PTCL0_SMOKE_E(step) (47 + (step))       // 煙のエフェクト (E), step 0..3
 #define PTCL0_ARROW 51                          // エリア移動場所に置かれる矢印マーカー, デフォルトのオレンジ
-#define PTCL0_WARNING 52                        // 警告マーク
+#define PTCL0_WARNING 52                        // 警告マーク⚠️
 #define PTCL0_ARROW_RED 53                      // PTCL0_ARROW の 赤色
 #define PTCL0_ARROW_GREEN 54                    // PTCL0_ARROW の 緑色
 #define PTCL0_ARROW_WHITE 55                    // PTCL0_ARROW の 白色

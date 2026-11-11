@@ -33,7 +33,7 @@ typedef struct {
   u8 body[0];
 } AuxAnimFile;
 
-// AuxAnimFile の1アニメーションを再生する状態, 根拠: AuxAnim_SetAnim (開始), AuxAnim_SetAnimSpeed (速度変更), Entity08015584_Update (進行)
+// AuxAnimFile の1アニメーションを再生する状態, 根拠: AuxAnim_SetAnim (開始), AuxAnim_SetAnimSpeed (速度変更), PuffManager_Update (進行)
 typedef struct {
   AuxAnimCmd* cmds;        // 0x00, 再生中のアニメーションコマンド列
   AuxAnimPlayFlags flags;  // 0x04, see AuxAnimPlayFlags

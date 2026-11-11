@@ -5,6 +5,7 @@
 #include "hitbox.h"
 #include "malloc.h"
 #include "map_inline.h"
+#include "puff.h"
 #include "sound.h"
 #include "sprite.h"
 #include "vec3.h"
@@ -59,7 +60,6 @@ static_assert(sizeof(Entity2D2B) == 96);
 static Entity2D2B* gEntity2D2B;  // 0x03000034
 
 bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
-void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 Vec3* Elevator_GetPosByID(s32 id);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 
@@ -217,11 +217,11 @@ void Entity2D2BElem_UpdateExtinguishing(Entity2D2B* p, Entity2D2BElem* elem) {
     Entity2D2BElem_RunScript(elem);
     pos = elem->sprite.pos;
     VEC3_SET(pos, elem->sprite.pos.x, elem->sprite.pos.y + 400, elem->sprite.pos.z);
-    Entity08015584_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
+    Puff_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
     VEC3_SET(pos, elem->sprite.pos.x - 64, elem->sprite.pos.y + 192, elem->sprite.pos.z + 64);
-    Entity08015584_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
+    Puff_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
     VEC3_SET(pos, elem->sprite.pos.x + 64, elem->sprite.pos.y + 192, elem->sprite.pos.z - 64);
-    Entity08015584_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
+    Puff_SpawnSprayEx(1, 2, 0x2001, Q6(1), 0, 0, 0, 0, 4, 2, &pos);
   }
   if (elem->stateTimer > 10) {
     Entity2D2BElem_SetState(elem, 1);

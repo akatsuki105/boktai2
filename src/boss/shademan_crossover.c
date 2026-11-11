@@ -251,9 +251,6 @@ static inline void ShadeManCrossover_SetShake(ShadeManCrossover* p, u32 amp) { p
 // 本体のパレット番号を返す, パレットのフェードもこの番号へ戻す
 s32 ShadeManCrossover_GetPlttID(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
 
-s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
-s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
-s32 Map_FindNearestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
 void Player_InflictCrossoverElementalCond(struct Player* p, u32 param_2, s32 param_3);
 void FUN_08050e2c(u32 param_1, u32 param_2, Vec3* pos);
 struct Entity0805e67c* Entity0805e67c_Create(void);
@@ -1517,12 +1514,12 @@ NON_MATCH void FUN_0803ef80(Boss* boss, s32 timer) {
     s32 i;
 
     boss->stateEntered = FALSE;
-    if (boss->facing > 1) {
+    if (boss->facing > DIR4_EAST) {
       boss->mover.angle = 0x40;
-      boss->facing = 2;
+      boss->facing = DIR4_SOUTH;
     } else {
       boss->mover.angle = 0;
-      boss->facing = 1;
+      boss->facing = DIR4_EAST;
     }
     boss->dir = Angle_ToDir8(boss->mover.angle);
     Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
@@ -1829,12 +1826,12 @@ NON_MATCH void FUN_0803fc70(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    if (boss->facing > 1) {
+    if (boss->facing > DIR4_EAST) {
       mover->angle = 0x40;
-      boss->facing = 2;
+      boss->facing = DIR4_SOUTH;
     } else {
       mover->angle = 0;
-      boss->facing = 1;
+      boss->facing = DIR4_EAST;
     }
     boss->dir = Angle_ToDir8(mover->angle);
     Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);

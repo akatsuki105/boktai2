@@ -238,7 +238,7 @@ void FUN_08017358(ItemIconPopupManager* p, ItemIconPopup* elem, s32 idx) {
   sprite->pos.x += ((Q6(1) - sprite->scaleX) >> 3) - 8;
   sprite->pos.y -= 8;
   if (elem->stateTimer > 15) {
-    if (elem->category == ITEM_CATEGORY_USABLE) {
+    if (elem->category == INVENTORY_ITEM) {
       if (elem->itemID >= ITEM_WAREHOUSE_KEY && elem->itemID <= ITEM_SQUARE_KEY) {
         PlaySound_0824078c(SE_GAIN_KEY);
       } else if (IsValuable(elem->itemID) == TRUE) {
@@ -246,7 +246,7 @@ void FUN_08017358(ItemIconPopupManager* p, ItemIconPopup* elem, s32 idx) {
       } else {
         PlaySound_0824078c(SE_EQUIP);
       }
-    } else if (elem->category != ITEM_CATEGORY_MAGIC) {
+    } else if (elem->category != INVENTORY_MAGIC) {
       PlaySound_0824078c(SE_GAIN_VALUABLE);
     }
     ItemIconPopup_Reset(elem);
@@ -405,19 +405,19 @@ add:
   elem->category = category;
   elem->itemID = itemID;
   switch (elem->category) {
-    case ITEM_CATEGORY_USABLE: {
+    case INVENTORY_ITEM: {
       poseIdx = ICON_ITEM(itemID);
       break;
     }
-    case ITEM_CATEGORY_WEAPON: {
+    case INVENTORY_WEAPON: {
       poseIdx = ICON_WEAPON(itemID);
       break;
     }
-    case ITEM_CATEGORY_ARMOR: {
+    case INVENTORY_ARMOR: {
       poseIdx = ICON_ARMOR(itemID);
       break;
     }
-    case ITEM_CATEGORY_MAGIC: {
+    case INVENTORY_MAGIC: {
       poseIdx = ICON_MAGIC(itemID);
       break;
     }

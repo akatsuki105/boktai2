@@ -65,7 +65,7 @@
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x40
-	bl Entity08015584_SpawnSprayOne
+	bl Puff_SpawnSprayOne
 	add sp, #0x18
 	pop {r3}
 	mov r8, r3

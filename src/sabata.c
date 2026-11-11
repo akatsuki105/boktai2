@@ -33,6 +33,9 @@ void FUN_08084754(void);
 void FUN_08084798(s32 val);
 struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes);
 
+// 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
+static inline rgb555 MakeRgb555(s32 r, s32 g, s32 b) { return (b << 10) | (g << 5) | r; }
+
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
   return FALSE;
@@ -562,7 +565,7 @@ void FUN_08081830(Player* p) {
   if (VM_SeekToNamedArg('d')) {
     p->facing = VM_GetValue();
   } else {
-    p->facing = FACE_UP;
+    p->facing = DIR8_UP;
   }
 
   PLAYER_SET_ANIM_8DIR(p, p->facing);
@@ -859,7 +862,7 @@ void FUN_08082154(Player* p) {
     case 1: {
       if (p->stateTimer == 0) {
         if (p->facing >= 2 && p->facing <= 6) {
-          p->facing = FACE_DOWN;
+          p->facing = DIR8_DOWN;
           p->animDir = 1;
           p->xflip = 0;
           p->chargePos = p->mover.pos;
@@ -867,7 +870,7 @@ void FUN_08082154(Player* p) {
           p->chargePos.y += 0x14A;
           p->chargePos.z += 0x3C;
         } else {
-          p->facing = FACE_UP;
+          p->facing = DIR8_UP;
           p->animDir = 0;
           p->xflip = 0;
           p->chargePos = p->mover.pos;
@@ -1239,7 +1242,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->facing >= 2 && p->facing <= 6) {
-        p->facing = FACE_DOWN;
+        p->facing = DIR8_DOWN;
         p->animDir = 4;
         p->xflip = 0;
         p->chargePos = p->mover.pos;
@@ -1247,7 +1250,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
         p->chargePos.y += 0x14A;
         p->chargePos.z += 0x3C;
       } else {
-        p->facing = FACE_UP;
+        p->facing = DIR8_UP;
         p->animDir = 0;
         p->xflip = 0;
         p->chargePos = p->mover.pos;
@@ -1257,7 +1260,7 @@ NON_MATCH void FUN_08082dac(Player* p) {
       }
 
       AllySabata_PlayAnim(p, 414, Q6(1));
-      if (p->facing == FACE_DOWN) {
+      if (p->facing == DIR8_DOWN) {
         p->animDir = 1;
       } else {
         p->animDir = 0;

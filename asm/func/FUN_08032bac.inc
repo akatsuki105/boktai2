@@ -163,7 +163,7 @@ _08032CD2:
 	movs r1, #3
 	movs r2, #2
 	mov r3, r8
-	bl Entity08015584_SpawnRadial
+	bl Puff_SpawnRadial
 	str r5, [sp]
 	movs r0, #0xa
 	str r0, [sp, #4]
@@ -173,7 +173,7 @@ _08032CD2:
 	movs r1, #5
 	movs r2, #2
 	mov r3, r8
-	bl Entity08015584_SpawnRadial
+	bl Puff_SpawnRadial
 _08032D0E:
 	movs r0, #0xb1
 	lsls r0, r0, #1

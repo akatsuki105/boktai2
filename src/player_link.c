@@ -942,7 +942,7 @@ NON_MATCH s32 FUN_080d0c38(Player* p) {
   s32 pos;
   s32 frac;
 
-  if (p->actionDir == FACE_UP_RIGHT || p->actionDir == FACE_DOWN_LEFT) {
+  if (p->actionDir == DIR8_UP_RIGHT || p->actionDir == DIR8_DOWN_LEFT) {
     pos = (u16)p->mover.pos.x;
   } else {
     pos = (u16)p->mover.pos.z;

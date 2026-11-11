@@ -93,7 +93,7 @@ _08003358:
 	bl PlaySound_082406e0
 _0800335E:
 	adds r0, r4, #0
-	bl EntityD9AEElem_IsEnclosed
+	bl MovableBlock_IsEnclosed
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08003398
@@ -115,7 +115,7 @@ _0800335E:
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0x40
-	bl Entity08015584_SpawnSprayEx
+	bl Puff_SpawnSprayEx
 	b _080033A2
 	.align 2, 0
 _08003394: .4byte 0x00000143
@@ -123,7 +123,7 @@ _08003398:
 	adds r0, r4, #0
 	adds r0, #0x34
 	movs r1, #0x90
-	bl EntityD9AE_SpawnDust
+	bl MovableBlock_SpawnDust
 _080033A2:
 	add sp, #0x24
 	pop {r4}

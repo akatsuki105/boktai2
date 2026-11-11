@@ -134,7 +134,7 @@ _0809FA40:
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0x40
-	bl Entity08015584_SpawnSpray
+	bl Puff_SpawnSpray
 	b _0809FA6E
 	.align 2, 0
 _0809FA50: .4byte 0x0203B400

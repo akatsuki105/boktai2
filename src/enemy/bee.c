@@ -1219,7 +1219,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
   (p->e).hurtbox.iframes = VM_GetNamedArgValue('n', 0);
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 176;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 176;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

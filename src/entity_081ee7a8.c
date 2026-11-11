@@ -5,7 +5,6 @@
 #include "sprite.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
-#include "trig.h"
 #include "vec3.h"
 
 typedef struct {
@@ -105,23 +104,21 @@ void Entity081ee7a8Elem_UpdateState2(Entity081ee7a8Elem* elem) {
 }
 
 // SPRITE_4384 / ANIM_F62B で粒を1つ出す
-void Entity081ee7a8_SpawnDefault(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 priority, s32 plttOffset, SpriteFlags flags, s32 hideTime) {
-  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, priority, plttOffset, flags, hideTime, SPRITE_4384, ANIM_F62B, 0, 0, plttOffset + 125);
+void Entity081ee7a8_SpawnDefault(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 plttOffset, SpriteFlags flags, s32 hideTime) {
+  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, plttOffset, flags, hideTime, SPRITE_4384, ANIM_F62B, 0, 0, plttOffset + 125);
 }
 
-void Entity081ee7a8_SpawnEx(
-    Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 priority, s32 _, SpriteFlags flags, s32 hideTime, SpriteID32 spriteID, u32 animFileID, u32 animIdx, u32 variant, s32 plttID) {
-  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, priority, _, flags, hideTime, spriteID, animFileID, animIdx, variant, plttID);
+void Entity081ee7a8_SpawnEx(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 _, SpriteFlags flags, s32 hideTime, SpriteID32 sprID, u32 animFileID, u32 animIdx, u32 variant, s32 plttID) {
+  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, _, flags, hideTime, sprID, animFileID, animIdx, variant, plttID);
 }
 
 // Entity081ee7a8_SpawnDefault の hideTime 0 版
-void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 priority, s32 plttOffset, SpriteFlags flags) {
-  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, priority, plttOffset, flags, 0, SPRITE_4384, ANIM_F62B, 0, 0, plttOffset + 125);
+void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 plttOffset, SpriteFlags flags) {
+  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, plttOffset, flags, 0, SPRITE_4384, ANIM_F62B, 0, 0, plttOffset + 125);
 }
 
 // 乱数で速さと向きを散らした粒を1つ出す
-void Entity081ee7a8_Spawn(
-    Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 priority, s32 _, SpriteFlags flags, s32 hideTime, SpriteID32 spriteID, u32 animFileID, u32 animIdx, u32 variant, s32 plttID) {
+void Entity081ee7a8_Spawn(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 _, SpriteFlags flags, s32 hideTime, SpriteID32 sprID, u32 animFileID, u32 animIdx, u32 variant, s32 plttID) {
   Entity081ee7a8* p = gEntity081ee7a8;
   Entity081ee7a8Elem* elem;
 
@@ -138,7 +135,7 @@ void Entity081ee7a8_Spawn(
   elem->state = 1;
   elem->unk_66 = 0;
   elem->sprite.pos = *pos;
-  Video_GetAuxSprite(&elem->gfx, spriteID);
+  Video_GetAuxSprite(&elem->gfx, sprID);
   p->animFile = GetFile(DIR_ANIMATION, animFileID);
   AuxSprite_Add(&elem->sprite, &elem->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, p->animFile, animIdx, variant, 0);
@@ -150,7 +147,7 @@ void Entity081ee7a8_Spawn(
   elem->animSpeed = animSpeed;
   elem->riseTime = 12;
   elem->sprite.flags |= SPRFLAG_HIDDEN | flags;
-  elem->sprite.priority = priority;
+  elem->sprite.priority = prio;
   elem->hideTime = hideTime;
 }
 

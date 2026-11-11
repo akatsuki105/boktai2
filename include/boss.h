@@ -59,7 +59,7 @@ typedef struct Boss {
   u8 unk_9d;                           // 0x09D
   u8 unk_9e[2];                        // 0x09E
   u8 facing;                           // 0x0A0, 0..3 の向き, 1 か 2 のときだけ呼び出し側の variant を使い、2 以上で左右反転する
-  DirU8 dir;                           // 0x0A1, 8方向の向き, Boss_PlayAnimDir8 は 5..7 を左右反転して使う
+  Dir8U8 dir;                          // 0x0A1, 8方向の向き, Boss_PlayAnimDir8 は 5..7 を左右反転して使う
   u8 state;                            // 0x0A2, 切り替えたい状態番号, stateRequestCallback が表を引いて updateCallback を差し替える
   u8 curState;                         // 0x0A3, 今の updateCallback の状態番号
   u8 subState0;                        // 0x0A4, 3段の下位状態の1段目, stateRequestCallback とは別に各ボスが表を引いて処理を呼び分ける
@@ -205,6 +205,5 @@ void FUN_08023024(Boss* p, Vec3* pos);
 void Boss_GiveWeaponExp(Boss* p, s32 amount);
 s32 FUN_080230a0(Vec3* out);
 void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4);
-void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 
 #endif  // __INCLUDE_BOSS_H__

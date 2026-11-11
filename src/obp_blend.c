@@ -37,6 +37,9 @@ extern s32 gObjPlttSlotCount;
 s32 GetTimeOfDayPlttPair(u16* from, u16* to);
 u32 FUN_0823cdf8(SpriteID16 id);
 
+// 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
+static inline rgb555 MakeRgb555(s32 r, s32 g, s32 b) { return (b << 10) | (g << 5) | r; }
+
 // 1スロットぶん, srcs[srcFrom] と srcs[srcTo] を blend の割合で混ぜて pltt に書く
 // 残差 5 hunk (98/98): 色を MakeRgb555 で組むと 0x1F の2本持ちと命令数は揃う, 残りはスタックの並び (原典はループ回数を sp, dst を sp+4, srcA を sp+8) と 0x1F を置くタイミング, 宣言順の入れ替えは効かない
 NON_MATCH void ObjPlttBlender_UpdateSlot(ObjPlttBlender* p, ObjPlttBlend* slot) {

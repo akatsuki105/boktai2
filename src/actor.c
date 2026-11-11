@@ -580,7 +580,7 @@ s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, 
   u32 b;
 
   if (sprite->kind == 1) {
-    if (actor->unk_19 > 1) {
+    if (actor->unk_19 > DIR4_EAST) {
       a = 3 - actor->unk_19;
       b = 1;
     } else {
@@ -589,7 +589,7 @@ s32 FUN_0804135c(Actor* actor, u32 pose, u32 param_3, u32 param_4, u32 param_5, 
     }
   } else {
     a = ((u8)(actor->unk_19 - 1) <= 1) ? param_4 : 0;
-    b = actor->unk_19 > 1;
+    b = actor->unk_19 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(sprite, pose, a, b, param_3, param_5, param_6);
 }
@@ -607,7 +607,7 @@ NON_MATCH s32 FUN_080413b8(Actor* actor, u32 pose, u32 param_3, s32 param_4, u32
     b = a > 1;
   } else {
     a = 0;
-    b = actor->unk_19 > 1;
+    b = actor->unk_19 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(&actor->sprite, pose, a, b, param_3, param_5, param_6);
 #else

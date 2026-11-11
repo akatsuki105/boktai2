@@ -111,7 +111,7 @@ void FUN_080b2b68(Generator* p) {
 
   AuxAnim_SetAnim(anim, p->animFile, 1, p->animVariant, p->animFlags);
   AuxSprite_AdvanceAnim(&p->sprite, anim);
-  p->plttID = 451;
+  p->plttID = OBP_GENERATOR(0);
 }
 
 // ジェネレーターの起動 (state 3), アニメのコマ 5 / 6 以降でパレットを切り替え, アニメ 1 周で state 4 (稼働) に進む
@@ -120,16 +120,16 @@ void FUN_080b2c70(Generator* p) {
 
   if (p->unk_ce != 0) {
     if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
-      p->plttID = 452;
+      p->plttID = OBP_GENERATOR(1);
     } else if (p->anim.cmdIdx > 5) {
       if (p->unk_ea) {
-        p->plttID = 453;
+        p->plttID = OBP_GENERATOR(2);
       } else {
-        p->plttID = 452;
+        p->plttID = OBP_GENERATOR(1);
       }
     }
   } else if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
-    p->plttID = 452;
+    p->plttID = OBP_GENERATOR(1);
   }
   anim = &p->anim;
   AuxAnim_SetAnim(anim, p->animFile, 2, p->animVariant, p->animFlags);
@@ -146,9 +146,9 @@ void FUN_080b2dec(Generator* p) {
   AuxAnim_SetAnim(anim, p->animFile, 3, p->animVariant, p->animFlags);
   AuxSprite_AdvanceAnim(&p->sprite, anim);
   if (p->unk_ea) {
-    p->plttID = 453;
+    p->plttID = OBP_GENERATOR(2);
   } else {
-    p->plttID = 452;
+    p->plttID = OBP_GENERATOR(1);
   }
 }
 
@@ -158,9 +158,9 @@ void FUN_080b2f0c(Generator* p) {
 
   if (p->unk_ce != 0) {
     if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
-      p->plttID = 452;
+      p->plttID = OBP_GENERATOR(1);
     } else if (p->anim.cmdIdx == 6 && p->anim.tick == 0) {
-      p->plttID = 451;
+      p->plttID = OBP_GENERATOR(0);
     }
     anim = &p->anim;
     AuxAnim_SetAnim(anim, p->animFile, 4, p->animVariant, p->animFlags);
@@ -171,7 +171,7 @@ void FUN_080b2f0c(Generator* p) {
     }
   } else {
     if (p->anim.cmdIdx == 5 && p->anim.tick == 0) {
-      p->plttID = 451;
+      p->plttID = OBP_GENERATOR(0);
     }
     anim = &p->anim;
     AuxAnim_SetAnim(anim, p->animFile, 4, p->animVariant, p->animFlags);
@@ -209,7 +209,7 @@ void FUN_080b32e0(Generator* p) {
     p->stateTimer++;
     if (p->stateTimer > 15) {
       p->sprite.pos = p->pos;
-      p->plttID = 453;
+      p->plttID = OBP_GENERATOR(2);
       Generator_SetState(p, 4);
       p->hurtbox.damage = 0;
       p->stateTimer = 0;
@@ -250,11 +250,11 @@ void Generator_UpdateFlash(Generator* p) {
     }
   }
   if (p->flashTimer == 12) {
-    Video_SetAuxSpritePltt(&p->gfx, 455);
+    Video_SetAuxSpritePltt(&p->gfx, OBP_GENERATOR(4));
   } else if (p->flashTimer != 0) {
-    Video_SetAuxSpritePltt(&p->gfx, 454);
+    Video_SetAuxSpritePltt(&p->gfx, OBP_GENERATOR(3));
   } else if (p->unk_eb != 0) {
-    Video_SetAuxSpritePltt(&p->gfx, 306);
+    Video_SetAuxSpritePltt(&p->gfx, OBP_WHITE_306);
     p->unk_eb--;
   } else {
     Video_SetAuxSpritePltt(&p->gfx, p->plttID);
@@ -325,14 +325,14 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
   switch (p->state) {
     case 0: {
       p->unk_d2 = 0;
-      p->plttID = 451;
+      p->plttID = OBP_GENERATOR(0);
       p->sprite.priority = 3;
       p->sprite.flags |= SPRFLAG_HIDDEN;
       break;
     }
     case 2: {
       p->unk_d2 = 0;
-      p->plttID = 451;
+      p->plttID = OBP_GENERATOR(0);
       anim = &p->anim;
       AuxAnim_SetAnim(anim, p->animFile, 1, p->animVariant, p->animFlags);
       AuxSprite_AdvanceAnim(spr, anim);
@@ -341,7 +341,7 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
     }
     case 4: {
       p->unk_d2 = p->unk_d4;
-      p->plttID = 452;
+      p->plttID = OBP_GENERATOR(1);
       anim = &p->anim;
       AuxAnim_SetAnim(anim, p->animFile, 3, p->animVariant, p->animFlags);
       AuxSprite_AdvanceAnim(spr, anim);

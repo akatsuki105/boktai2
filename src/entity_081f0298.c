@@ -1,14 +1,10 @@
-#include "constants/sprite.h"
-#include "constants/sprite_animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
-#include "inline.h"
 #include "map_inline.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
-#include "trig.h"
 #include "vec3.h"
 
 // 角度 angle の向きへ放物線を描いて飛び, 着地すると点滅して消える攻撃判定付きの物体1個
@@ -47,7 +43,7 @@ static inline bool8 Entity081f0298_IsUsed(Entity081f0298* p, s32 i) {
 static inline void Entity081f0298_GetAnimVariant(u8 angle, u8* variant, u8* xflip) {
   u16 dir = Angle_ToDir4(angle);
 
-  if (dir > 1) {
+  if (dir > DIR4_EAST) {
     *xflip = TRUE;
     *variant = 3 - dir;
   } else {

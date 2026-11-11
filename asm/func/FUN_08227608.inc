@@ -241,7 +241,7 @@ _082277C2:
 	movs r1, #1
 	mov r2, r8
 	movs r3, #0x30
-	bl Entity08015584_SpawnSprayOne
+	bl Puff_SpawnSprayOne
 	str r4, [sp]
 	str r4, [sp, #4]
 	str r4, [sp, #8]
@@ -250,7 +250,7 @@ _082277C2:
 	movs r1, #1
 	mov r2, r8
 	movs r3, #0x30
-	bl Entity08015584_SpawnSprayOne
+	bl Puff_SpawnSprayOne
 	str r4, [sp]
 	str r4, [sp, #4]
 	str r4, [sp, #8]
@@ -259,7 +259,7 @@ _082277C2:
 	movs r1, #1
 	mov r2, r8
 	movs r3, #0x30
-	bl Entity08015584_SpawnSprayOne
+	bl Puff_SpawnSprayOne
 	str r4, [sp]
 	str r4, [sp, #4]
 	str r4, [sp, #8]
@@ -268,7 +268,7 @@ _082277C2:
 	movs r1, #1
 	mov r2, r8
 	movs r3, #0x30
-	bl Entity08015584_SpawnSprayOne
+	bl Puff_SpawnSprayOne
 	movs r4, #0x3c
 	str r4, [sp]
 	str r5, [sp, #4]

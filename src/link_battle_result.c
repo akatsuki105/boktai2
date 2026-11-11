@@ -96,7 +96,7 @@ void FUN_081dc6d0(LinkBattleResult* p) {
   Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
   p->bgPltt = GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body;
-  CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
+  CpuCopy16(p->bgPltt, gBgPlttBuffer, 256 * sizeof(rgb555));
 }
 
 // 参加者4人分のテキストパネルを縦に並べて作り、最初は隠しておく

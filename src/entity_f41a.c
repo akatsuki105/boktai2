@@ -98,7 +98,7 @@ void EntityF41A_UpdateWander(EntityF41A* p) {
 // 被弾中, 6フレームだけ明るいパレットにして点滅させる
 void EntityF41A_UpdateHit(EntityF41A* p) {
   if (p->stateTimer <= 5) {
-    Video_SetAuxSpritePltt(&p->gfx, 306);
+    Video_SetAuxSpritePltt(&p->gfx, OBP_WHITE_306);
   } else {
     Video_SetAuxSpritePltt(&p->gfx, 307);
   }

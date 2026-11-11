@@ -14,8 +14,15 @@ typedef struct {
 } CrossoverBattleSide;
 static_assert(sizeof(CrossoverBattleSide) == 12);
 
-s32 CrossoverOjama_StartSend(void (*onFinish)(void), CrossoverBattleSide* mine);
-s32 CrossoverOjama_StartExchange(void (*onFinish)(void), CrossoverBattleSide* mine, CrossoverBattleSide* rival, u8* incoming);
+s32 CrossoverBattle_GetRound(void);
+s32 CrossoverBattle_IsMaxMode(void);
+s32 CrossoverBattle_GetRivalPlayerHP(void);
+s32 CrossoverBattle_GetRivalBossHP(void);
+s32 CrossoverBattle_GetBlockCount(void);
+s32 CrossoverBattle_ToggleBlocking(void);
+
+s32 CrossoverOjama_StartSend(void* onFinish, CrossoverBattleSide* mine);
+s32 CrossoverOjama_StartExchange(void* onFinish, CrossoverBattleSide* mine, CrossoverBattleSide* rival, u8* incoming);
 s32 CrossoverOjama_SpawnCollected(Vec3* pos, s32 color, s32 count);
 
 #endif  // __INCLUDE_CROSSOVER_H__

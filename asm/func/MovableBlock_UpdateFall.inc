@@ -86,9 +86,9 @@ _08004186:
 	ands r0, r1
 	strh r0, [r2]
 	adds r0, r4, #0
-	bl EntityD9AEElem_OnLanded
+	bl MovableBlock_OnLanded
 _08004198:
-	ldr r1, _080041C0 @ =EntityD9AEElem_UpdateIdle
+	ldr r1, _080041C0 @ =MovableBlock_UpdateIdle
 	movs r2, #0xcc
 	lsls r2, r2, #1
 	adds r0, r4, r2
@@ -108,4 +108,4 @@ _080041B4:
 	bx r0
 	.align 2, 0
 _080041BC: .4byte 0x0000FFDE
-_080041C0: .4byte EntityD9AEElem_UpdateIdle
+_080041C0: .4byte MovableBlock_UpdateIdle

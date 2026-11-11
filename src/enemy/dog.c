@@ -2904,7 +2904,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
   p->unk_6d4 = 0;
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 501;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 501;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

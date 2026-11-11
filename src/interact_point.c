@@ -197,9 +197,9 @@ s32 InteractPoint_StateIdle(InteractPointManager* p, InteractPoint* point, s32 i
       if (dist2 < point->rangeSq) {
         s32 a, b, c;
         if (point->wallSide != 0) {
-          a = FACE_UP, b = FACE_UP_RIGHT, c = FACE_RIGHT;
+          a = DIR8_UP, b = DIR8_UP_RIGHT, c = DIR8_RIGHT;
         } else {
-          a = FACE_LEFT, b = FACE_UP_LEFT, c = FACE_UP;
+          a = DIR8_LEFT, b = DIR8_UP_LEFT, c = DIR8_UP;
         }
         if (a == dir || b == dir || c == dir) {
           s32 facing = p->player->facing;
@@ -239,9 +239,9 @@ s32 InteractPoint_StateReady(InteractPointManager* p, InteractPoint* point, s32 
       dir = ANGLE_TO_DIR8((u16)ArcTan2_8(dx, dz) + 0x10);
       if (dist2 < point->rangeSq) {
         if (point->wallSide != 0) {
-          a = FACE_UP, b = FACE_UP_RIGHT, c = FACE_RIGHT;
+          a = DIR8_UP, b = DIR8_UP_RIGHT, c = DIR8_RIGHT;
         } else {
-          a = FACE_LEFT, b = FACE_UP_LEFT, c = FACE_UP;
+          a = DIR8_LEFT, b = DIR8_UP_LEFT, c = DIR8_UP;
         }
         if (a == dir || b == dir || c == dir) {
           facing = p->player->facing;
@@ -294,9 +294,9 @@ s32 InteractPoint_StateActive(InteractPointManager* p, InteractPoint* point, s32
       dir = ANGLE_TO_DIR8((u16)angle + 0x10);
       if (dist2 < point->rangeSq) {
         if (point->wallSide != 0) {
-          a = FACE_UP, b = FACE_UP_RIGHT, c = FACE_RIGHT;
+          a = DIR8_UP, b = DIR8_UP_RIGHT, c = DIR8_RIGHT;
         } else {
-          a = FACE_LEFT, b = FACE_UP_LEFT, c = FACE_UP;
+          a = DIR8_LEFT, b = DIR8_UP_LEFT, c = DIR8_UP;
         }
         if (a == dir || b == dir || c == dir) {
           facing = p->player->facing;

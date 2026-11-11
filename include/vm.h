@@ -81,18 +81,18 @@ typedef struct {
   u32* argv;  // 0x04, 引数配列の先頭 (.bokc で p0, p1, ... に対応 (pN が argv[N] に対応))
 } ScriptArgs;
 
-// スクリプトが VM_Ctrl_22FF で登録するレコード, FUN_08230eec が u32_ARRAY_0203f400 のテーブルへ積み、ScriptRecord_Find が id で引く
-// テーブルは 0x03000740 の深さで選ぶ 392 バイトのブロック単位 (先頭 word が件数、続けて 8 バイトのレコードが最大 48 件)
+// mesg 命令 (0x22FF, VM_Ctrl_Mesg) で id 宛てに送るメッセージ1件, 値の並びの意味は受け取り側が決める
+// ScriptMesg_Post が今フレームの面に積み, 宛先は次のフレームに ScriptMesg_Find で読む, 読まれても消えず1フレームで捨てられる
 typedef struct {
-  u16 id;
-  u8 unk_02;
-  u8 count;
-  u16* values;
-} ScriptRecord;
-static_assert(sizeof(ScriptRecord) == 8);
+  u16 id;       // 0x00, 宛先の id
+  u8 unk_02;    // 0x02, ScriptMesg_Post が 0 を入れる
+  u8 count;     // 0x03, values の個数
+  u16* values;  // 0x04, 値の並び, ScriptMesgBlock.values の中を指す
+} ScriptMesg;
+static_assert(sizeof(ScriptMesg) == 8);
 
-// id で引いたレコードの先頭を *out に入れ、件数を返す
-s32 ScriptRecord_Find(u32 id, ScriptRecord** out);
+// 前のフレームに送られた id 宛てのメッセージの先頭を *out に入れ, 件数を返す, 無ければ 0
+s32 ScriptMesg_Find(u32 id, ScriptMesg** out);
 
 // --------------------------------------------
 

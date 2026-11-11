@@ -211,7 +211,7 @@ void DynamiteEffect_InitSprite(DynamiteEffect* p) {
   AuxSprite_SetPoseIdx(&p->sprite, 12);
   p->sprite.pos = p->pos;
   if (Map_IsBehindHigherTile(&p->sprite.pos, Q8(0.5))) {
-    Video_SetAuxSpritePltt(gfx, 306);
+    Video_SetAuxSpritePltt(gfx, OBP_WHITE_306);
     p->sprite.priority = 1;
   } else {
     p->sprite.priority = 2;

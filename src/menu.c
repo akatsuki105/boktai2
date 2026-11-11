@@ -2,6 +2,7 @@
 
 #include "armor.h"
 #include "bg_pltt.h"
+#include "crossover.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -454,11 +455,6 @@ extern u16 gMosaicSize;
 extern u8 gObjMosaicEnabled;
 extern u8 gMosaicTargets;
 
-s32 CrossoverBattle_GetRivalPlayerHP(void);
-s32 CrossoverBattle_GetRivalBossHP(void);
-s32 CrossoverBattle_GetBlockCount(void);
-s32 CrossoverBattle_GetRound(void);
-s32 CrossoverBattle_ToggleBlocking(void);
 void BuildWeaponData(Weapon* w, WeaponData* data);
 void GetWeaponData(slot32_t n, WeaponData* data);
 extern u16 u16_03004864;
@@ -1601,7 +1597,7 @@ void MainMenu_RefreshPlayerFigure(MainMenu* p) {
       break;
     }
     case PLAYER_SLEEPING: {
-      Video_GetAuxSprite(&p->figureGfx, SPRITE_COFFIN);
+      Video_GetAuxSprite(&p->figureGfx, SPRITE_COFFIN_0);
       AuxSprite_SetGfx(&p->figure, &p->figureGfx);
       p->figure.flags &= ~SPRFLAG_HIDDEN;
       p->figure.pos.y = 96;

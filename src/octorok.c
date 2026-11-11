@@ -28,7 +28,7 @@ static_assert(sizeof(Octorok) == 212);
 // 岩を投げ, 着地すると砕けて消える
 typedef struct {
   Entity e;             // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;     // 0x018, SPRITE_CUBE_ICE, この1番小さいやつを岩として使う
+  AuxSpriteGfx gfx;     // 0x018, SPRITE_BLOCK_ICE, この1番小さいやつを岩として使う
   u32 activeMask;       // 0x034, octoroks の使用中ビット
   Octorok octoroks[8];  // 0x038
 } OctorokManager;
@@ -148,7 +148,7 @@ void Octorok_UpdateState2(OctorokManager* p, Octorok* octorok) {
 void Octorok_GetAnimVariant(Mover* src, u8* variant, u8* xflip) {
   u16 dir = Angle_ToDir4(src->angle);
 
-  if (dir > 1) {
+  if (dir > DIR4_EAST) {
     *xflip = TRUE;
     *variant = 3 - dir;
   } else {
@@ -256,7 +256,7 @@ s32 OctorokManager_Destroy(OctorokManager* p) {
 s32 OctorokManager_Init(OctorokManager* p) {
   p->activeMask = 0;
   gOctorokManager = p;
-  Video_GetAuxSprite(&p->gfx, SPRITE_CUBE_ICE);
+  Video_GetAuxSprite(&p->gfx, SPRITE_BLOCK_ICE);
   return 0;
 }
 

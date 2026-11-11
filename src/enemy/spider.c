@@ -1232,7 +1232,7 @@ NON_MATCH s32 Spider_Init(Spider* p) {
   }
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 143;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 143;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

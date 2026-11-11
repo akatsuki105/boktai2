@@ -195,7 +195,7 @@ _08004B6A:
 	adds r1, r7, #0
 	mov r2, sb
 	add r3, sp, #0x18
-	bl EntityD9AE_SpawnElem
+	bl MovableBlock_Spawn
 	movs r0, #0
 	add sp, #0x24
 	pop {r3, r4, r5}

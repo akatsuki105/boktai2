@@ -7,6 +7,7 @@
 #include "item.h"
 #include "msgbus.h"
 #include "player.h"
+#include "puff.h"
 #include "random.h"
 #include "shop.h"
 #include "solar.h"
@@ -75,7 +76,7 @@ typedef struct Forge {
   bool8 unk_91;                           // 0x0091
   u8 unk_92;                              // 0x0092, FUN_0801e00c がスクリプトへ返す値 (既定 2)
   u8 unk_93;                              // 0x0093, sprites2[0] の表示位置 (x)
-  u8 unk_94;                              // 0x0094, まだ未解析
+  Dir8U8 unk_94;                          // 0x0094, まだ未解析
   u8 unk_95;                              // 0x0095, Forge_OpenList が 0 を入れる
   u8 unk_96[2];                           // 0x0096, まだ未解析
   u32 unk_98;                             // 0x0098
@@ -133,8 +134,6 @@ void Forge_SubCool(Forge* p);
 void Forge_UpdateAward(Forge* p);
 void GetWeaponData(slot32_t n, WeaponData* data);
 void Video_DrawBGNumber(s32 bg, s32 x, s32 y, u32 n, u32 baseTile, s32 digits, u32 pltt);
-void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
-void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, Vec3* pos);
 void FUN_0801d71c(Forge* p);
 void Forge_UpdateSmithing(Forge* p);
 void FUN_0801d788(Forge* p);
@@ -145,7 +144,6 @@ void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID);
 void RemoveWeapon(slot32_t n);
 bool32 AddWeapon(WeaponData* data);
 const WeaponData* ReadWeaponDB(s32 idx);
-void Player_Lock(Player* p, s32 val);
 void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
 s32 GetWeaponWearPose(WeaponData* w);
@@ -1877,7 +1875,7 @@ void Forge_UpdateFinish(Forge* p) {
   Camera_MoveTo(&p->pos);
   if (p->fnTimer - 30 < 70 && (p->fnTimer & 3) == 0) {
     Vec3_CopyOffsetX(&gPlayerPtr[0]->mover.pos, &pos, 200);
-    Entity08015584_SpawnSpray(2, 0, 0x2000, Q6(1), &pos);
+    Puff_SpawnSpray(2, 0, 0x2000, Q6(1), &pos);
     PlaySound_082406e0(SONG_453);
   }
 
@@ -1902,8 +1900,8 @@ NON_MATCH void Forge_UpdateAward(Forge* p) {
     Forge_Finish(p);
     p->startPos = p->pos;
     p->endPos = player->mover.pos;
-    p->unk_94 = 4;
-    Player_Lock(gPlayerPtr[0], 4);
+    p->unk_94 = DIR8_DOWN;
+    Player_Lock(gPlayerPtr[0], DIR8_DOWN);
   }
 
   Forge_UpdateHUD(p);

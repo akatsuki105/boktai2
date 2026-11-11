@@ -5,6 +5,7 @@
 #include "input.h"
 #include "link.h"
 #include "link_session.h"
+#include "menu.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
@@ -48,7 +49,6 @@ u8 Save_SwitchSlot(void);
 void FUN_081e0588(Entity501B* p);
 void Entity501B_StateSaveDone(Entity501B* p);
 void Entity501B_StateSaveFailed(Entity501B* p);
-s32 MainMenu_SetHudMode(s32 mode);
 bool8 Save_WriteExtraToNextSlot(void);
 void FUN_081e0544(Entity501B* p);
 void Entity501B_StateTransfer(Entity501B* p);

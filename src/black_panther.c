@@ -295,7 +295,7 @@ void BlackPanther_ClearGlobal(void) { sBlackPanther = NULL; }
 
 NAKED void BlackPantherElem_ShowEmote(BlackPantherElem* elem, u32 kind, s32 param_3, s32 param_4) { INCFUNC("asm/func/BlackPantherElem_ShowEmote.inc"); }
 
-// 残差3箇所 (44/44): 原典は dir4 > 1 の枝を先に置く
+// 残差3箇所 (44/44): 原典は dir4 > DIR4_EAST の枝を先に置く
 // Tier A/B は試済 (sprite ローカル, 比較の書き方), 未: if の条件を反転して枝の順を入れ替える
 NON_MATCH s32 BlackPantherElem_SetAnimMode2(BlackPantherElem* elem, s32 pose, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
 #ifdef NONMATCHING_C
@@ -304,7 +304,7 @@ NON_MATCH s32 BlackPantherElem_SetAnimMode2(BlackPantherElem* elem, s32 pose, s3
   u32 xflip;
 
   if (elem->sprite.kind == 1) {
-    if (elem->dir4 < 2) {
+    if (elem->dir4 < DIR4_SOUTH) {
       variant = elem->dir4;
       xflip = FALSE;
     } else {
@@ -313,10 +313,10 @@ NON_MATCH s32 BlackPantherElem_SetAnimMode2(BlackPantherElem* elem, s32 pose, s3
     }
   } else {
     variant = 0;
-    if (elem->dir4 == 1 || elem->dir4 == 2) {
+    if (elem->dir4 == DIR4_EAST || elem->dir4 == DIR4_SOUTH) {
       variant = param_4;
     }
-    xflip = elem->dir4 > 1;
+    xflip = elem->dir4 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(sprite, pose, variant, xflip, param_3, param_5, param_6);
 #else
@@ -337,7 +337,7 @@ NON_MATCH s32 BlackPantherElem_SetAnimMode1(BlackPantherElem* elem, s32 pose, s3
     xflip = variant > 1;
   } else {
     variant = 0;
-    xflip = elem->dir4 > 1;
+    xflip = elem->dir4 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(sprite, pose, variant, xflip, param_3, param_5, param_6);
 #else
@@ -654,7 +654,7 @@ void FUN_08054698(BlackPanther* p, BlackPantherElem* elem) {
     BlackPantherElem_SetState(elem, 1);
     elem->angle = 0x40;
     elem->dir8 = 5;
-    elem->dir4 = 2;
+    elem->dir4 = DIR4_SOUTH;
   }
   if (elem->pos.z >= Q8(10.55)) {
     elem->pos.z = Q8(10.55);

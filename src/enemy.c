@@ -1524,7 +1524,7 @@ NON_MATCH void Enemy_SetAnimFacing(Enemy* p, u8* variant, AuxAnimPlayFlags* flag
   u32 dir = Angle_ToDir4(p->mover.angle);
 
   p->facing = dir;
-  if (dir > 1) {
+  if (dir > DIR4_EAST) {
     *flags = ANIM_PLAY_XFLIP;
     *variant = 3 - dir;
   } else {

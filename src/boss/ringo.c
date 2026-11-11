@@ -10,6 +10,7 @@
 #include "map_inline.h"
 #include "msgbus.h"
 #include "player.h"
+#include "puff.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
@@ -231,12 +232,10 @@ void FUN_080846c8(void);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
 s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
-void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 VampireSwordManager_Spawn(struct VampireSwordManager* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
 s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
 s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
-void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
 static inline void Ringo_StartPlttFade(Ringo* p, s32 mode, u32 plttID) {
   p->plttFadeMode = mode;
@@ -743,7 +742,7 @@ void FUN_08028a04(Ringo* p) {
   Vec3 ofs;
   s32 i;
 
-  if (p->base.facing <= 1) {
+  if (p->base.facing <= DIR4_EAST) {
     VEC3_SET(ofs, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
     VEC3_SET(ofs, Q8(-0.5), Q8(0.782), Q8(0.25));
@@ -952,25 +951,25 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
   u32 angle;
 
   switch (p->base.facing) {
-    case 0: {
+    case DIR4_NORTH: {
       pos.y += 0x100;
       pos.z -= 0xA0;
       smokePos.z -= 0x60;
       break;
     }
-    case 1: {
+    case DIR4_EAST: {
       pos.y += 0xF0;
       pos.x += 0x80;
       smokePos.x += 0x40;
       break;
     }
-    case 2: {
+    case DIR4_SOUTH: {
       pos.y += 0xF0;
       pos.z += 0x80;
       smokePos.z += 0x40;
       break;
     }
-    case 3: {
+    case DIR4_WEST: {
       pos.y += 0x100;
       pos.x -= 0xA0;
       smokePos.x -= 0x60;
@@ -1104,7 +1103,7 @@ NON_MATCH void FUN_0802991c(Ringo* p) {
   pos.x = pos.x - 0x80 + (u8)RandomNext();
   pos.y = pos.y + (RandomNext() & 0x3F);
   pos.z = pos.z - 0x80 + (u8)RandomNext();
-  Entity08015584_SpawnSprayOne(&pos, 2, 0x3000, Q6(1), 12, 4, 0, 3);
+  Puff_SpawnSprayOne(&pos, 2, 0x3000, Q6(1), 12, 4, 0, 3);
 #else
   INCFUNC("asm/func/FUN_0802991c.inc");
 #endif
@@ -4910,8 +4909,8 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
     if (p->scriptID && !(gPlayerModes[0] & PMODE_DEAD)) {
       VM_ExecByID(p->scriptID, NULL);
     }
-    Entity08015584_SpawnRadial(&mover->pos, 3, 2, 0x3000, Q6(1), 8, 0x100, 0x100);
-    Entity08015584_SpawnRadial(&mover->pos, 5, 2, 0x3000, Q6(1), 10, 0x100, 0x100);
+    Puff_SpawnRadial(&mover->pos, 3, 2, 0x3000, Q6(1), 8, 0x100, 0x100);
+    Puff_SpawnRadial(&mover->pos, 5, 2, 0x3000, Q6(1), 10, 0x100, 0x100);
   }
   if (p->hoverHeight > 3) {
     p->hoverHeight -= 4;
@@ -6435,12 +6434,12 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   FUN_0802adb8(p);
   AuxShadow_Init(&p->shadow, &p->sprites[0].pos, 0x40, 0x40, 0x40, 0x40, 0x1900, 1, 6, 1, 0);
   AuxShadow_SetSprite(&p->shadow, SPRITE_EFF_1C1B, 7);
-  src = &gObjPlttData[306 * 16];
+  src = &gObjPlttData[OBP_WHITE_306 * 16];
   dst = p->pltt[0];
   for (i = 0; i < 16; i++, dst += 16) {
     CpuCopy32(src, dst, 32);
   }
-  src = &gObjPlttData[195 * 16];
+  src = &gObjPlttData[OBP_RINGO(0) * 16];
   dst = p->pltt_620[0];
   for (i = 0; i < 2; i++, dst += 16) {
     CpuCopy32(src, dst, 32);

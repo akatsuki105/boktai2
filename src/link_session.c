@@ -5,6 +5,7 @@
 #include "input.h"
 #include "link.h"
 #include "malloc.h"
+#include "menu.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
@@ -29,7 +30,6 @@ s32 FUN_081de960(LinkSession*);
 s32 FUN_081df568(LinkSession* p);
 s32 FUN_081df62c(LinkSession* p);
 void EntityCF58_RequestKill(void);
-s32 MainMenu_SetHudMode(s32 mode);
 s32 Taiyo_LxToGauge(s32 lx);
 void FUN_08238c24(void);
 s32 FUN_081de2dc(LinkSession* p);

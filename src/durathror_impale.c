@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "puff.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
@@ -26,7 +27,7 @@ typedef struct DurathrorImpale {
   Entity e;                        // 0x000, ENTITY_UNK_8
   u32 activeMask;                  // 0x018, bit i が spikes[i] の使用中
   MainSpriteGfx gfx;               // 0x01C, SPRITE_DURATHROR
-  ParticleSpawnParam ptcl;         // 0x03C, 棘の周りに4フレームごとに散らす粒子
+  PuffParam ptcl;                  // 0x03C, 棘の周りに4フレームごとに散らす粒子
   DurathrorImpaleSpike spikes[8];  // 0x064
 } DurathrorImpale;
 static_assert(sizeof(DurathrorImpale) == 1604);
@@ -69,7 +70,7 @@ NON_MATCH void DurathrorImpaleSpike_SpawnParticle(DurathrorImpale* p, DurathrorI
 
     Vec3_SetPolar(&pos, angle, radius + 16);
     Vec3_Add(&pos, &sprite->pos);
-    Entity08015584_Spawn(0, &pos, &p->ptcl);
+    Puff_Spawn(0, &pos, &p->ptcl);
   }
 #else
   INCFUNC("asm/func/DurathrorImpaleSpike_SpawnParticle.inc");
@@ -152,7 +153,7 @@ s32 DurathrorImpale_Destroy(DurathrorImpale* p) {
 
 s32 DurathrorImpale_Init(DurathrorImpale* p) {
   MainSpriteGfxFile* f;
-  ParticleSpawnParam* param;
+  PuffParam* param;
   DurathrorImpaleSpike* elem;
   s32 i;
 

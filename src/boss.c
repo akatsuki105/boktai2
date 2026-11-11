@@ -4,6 +4,7 @@
 #include "emote.h"
 #include "global.h"
 #include "player.h"
+#include "puff.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
@@ -13,7 +14,6 @@
 IWRAM_DATA Boss* gBossList[8] = {};  // 0x030000A0
 
 void FUN_0802326c(Boss* p);
-void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 
 // hp の割合 (0..128) を作り直す
 static inline void Boss_UpdateHPRatio(Boss* p) {
@@ -107,7 +107,7 @@ void Boss_PlayAnimFlip(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 anim
   p->animVariant = 0;
   p->animID = animIdx;
   MainSprite_SetAnim(sprite, gfx, p->animID, playMode, flags);
-  if (p->facing > 1) {
+  if (p->facing > DIR4_EAST) {
     p->xflip = TRUE;
     sprite->flags |= SPRFLAG_XFLIP;
   } else {
@@ -117,12 +117,12 @@ void Boss_PlayAnimFlip(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 anim
 }
 
 void Boss_PlayAnimFacing(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 animIdx, u32 playMode, u32 variant, u32 flags) {
-  if (p->facing == 1 || p->facing == 2) {
+  if (p->facing == DIR4_EAST || p->facing == DIR4_SOUTH) {
     p->animVariant = variant;
   } else {
     p->animVariant = 0;
   }
-  if (p->facing > 1) {
+  if (p->facing > DIR4_EAST) {
     p->xflip = TRUE;
   } else {
     p->xflip = FALSE;
@@ -344,7 +344,7 @@ void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4) {
   }
 }
 
-// ボスの位置から乱数でずらした位置で Entity08015584_SpawnSprayOne を呼ぶ (unk_154 が立っている間、4 フレームに1回)
+// ボスの位置から乱数でずらした位置で Puff_SpawnSprayOne を呼ぶ (unk_154 が立っている間、4 フレームに1回)
 // 残差は y の & 0x1F の定数を作る位置だけ (74 対 74), 原典は &pos.y のアドレスを作ってから定数を作る
 // 効いたもの: dx を u32 にする (z の dx - 0x7F が畳まれなくなる), 試済: y を式のまま書く (ldrsh になる), 未: Tier C
 NON_MATCH void FUN_0802326c(Boss* p) {
@@ -357,7 +357,7 @@ NON_MATCH void FUN_0802326c(Boss* p) {
   dy = RandomNext() & 0x1F;
   pos.y = p->mover.pos.y + dy;
   pos.z = p->mover.pos.z - (dx - 0x7F);
-  Entity08015584_SpawnSprayOne(&pos, 1, 0, Q6(1), 12, 12, 4, 4);
+  Puff_SpawnSprayOne(&pos, 1, 0, Q6(1), 12, 12, 4, 4);
 #else
   INCFUNC("asm/func/FUN_0802326c.inc");
 #endif

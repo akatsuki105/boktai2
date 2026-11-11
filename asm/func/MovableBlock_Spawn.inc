@@ -13,7 +13,7 @@
 	cmp r4, #0
 	beq _080046F0
 	adds r0, r4, #0
-	bl EntityD9AE_FindFreeElem
+	bl MovableBlockManager_FindFreeBlock
 	adds r7, r0, #0
 	cmp r7, #0
 	bne _080046FC
@@ -125,7 +125,7 @@ _080047A0:
 	.align 2, 0
 _080047C8: .4byte 0x080042B9
 _080047CC:
-	ldr r0, _08004808 @ =EntityD9AEElem_UpdateIdle
+	ldr r0, _08004808 @ =MovableBlock_UpdateIdle
 	movs r3, #0xcc
 	lsls r3, r3, #1
 	adds r1, r7, r3
@@ -157,7 +157,7 @@ _08004802:
 	movs r5, #0
 	b _08004822
 	.align 2, 0
-_08004808: .4byte EntityD9AEElem_UpdateIdle
+_08004808: .4byte MovableBlock_UpdateIdle
 _0800480C: .4byte 0x030046A8
 _08004810: .4byte 0x030046AC
 _08004814:
@@ -244,7 +244,7 @@ _08004850:
 	mov r1, sl
 	movs r2, #0
 	bl Hitbox_SetPos
-	ldr r1, _08004974 @ =EntityD9AEElem_OnDamaged
+	ldr r1, _08004974 @ =MovableBlock_OnDamaged
 	adds r0, r4, #0
 	adds r2, r7, #0
 	bl Hitbox_SetHandler
@@ -325,7 +325,7 @@ _08004964: .4byte 0x030046A4
 _08004968: .4byte 0xFFFF0000
 _0800496C: .4byte 0x0000FFFF
 _08004970: .4byte 0x00004041
-_08004974: .4byte EntityD9AEElem_OnDamaged
+_08004974: .4byte MovableBlock_OnDamaged
 _08004978: .4byte 0x00002801
 _0800497C: .4byte FUN_080035e0
 _08004980: .4byte 0x000005DC

@@ -244,9 +244,9 @@ void Enemy_SendMsgById(u8 enemyKind, void* payload, u16 moverID) {
 }
 
 // スクリプトが登録したメッセージを宛先 (全体/種族/個体) ごとに敵へ配送する
-void EnemyManager_DispatchScriptMsgs(EnemyManager* p) {
-  s32 count = ScriptRecord_Find(p->msgRecordID, &p->msgRecords);
-  ScriptRecord* record = p->msgRecords;
+void EnemyManager_DispatchScriptMesgs(EnemyManager* p) {
+  s32 count = ScriptMesg_Find(p->mesgID, &p->mesgs);
+  ScriptMesg* record = p->mesgs;
 
   while (count-- > 0) {
     u16* values = record->values;
@@ -1391,7 +1391,7 @@ void EnemyManager_UpdateBrightFlag(EnemyManager* p) {
 
 s32 EnemyManager_Update(EnemyManager* p) {
   Enemy_RespawnDead();
-  EnemyManager_DispatchScriptMsgs(p);
+  EnemyManager_DispatchScriptMesgs(p);
   EnemyManager_AdvanceCursor(p);
   FUN_080ec9b0(p);
   EnemyManager_UpdateEnemies(p);
@@ -1409,8 +1409,8 @@ s32 EnemyManager_Destroy(EnemyManager* p) {
 }
 
 // 戻り値を設定しないまま返る, 呼び出し元の EnemyManager_Create は戻り値が負かどうかを見ている
-s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) {
-  p->msgRecordID = msgRecordID;
+s32 EnemyManager_Init(EnemyManager* p, u16 mesgID, u32 _) {
+  p->mesgID = mesgID;
   p->frameCounter = 0;
   p->enemyCount = 0;
   p->unk_30 = 3;
@@ -1418,12 +1418,12 @@ s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) {
   gEnemyManager = p;
 }
 
-EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) {
+EnemyManager* EnemyManager_Create(u16 mesgID, u16 _) {
   if (gEnemyManager == NULL) {
     EnemyManager* p = CreateEntity(ENTITY_UNK_8, sizeof(EnemyManager));
     if (p != NULL) {
       SetEntityRoutine(p, EnemyManager_Update, EnemyManager_Destroy);
-      if (EnemyManager_Init(p, msgRecordID, _) < 0) {
+      if (EnemyManager_Init(p, mesgID, _) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }

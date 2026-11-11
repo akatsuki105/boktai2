@@ -7,7 +7,7 @@
 // マップの 高さ情報、衝突判定データ、イベントトリガーなど をまとめたファイル, タイルセット、タイルマップ、パレットなどのグラフィックデータは含まない
 
 typedef struct {
-  char magic[4];      // 0x00, "HP\0\0", Height Property とかで HP なのかな？
+  char magic[4];      // 0x00, "HP\0\0", DIR_COLLISION_MAP が BOKHASH("hpk")
   AssetRef tileData;  // 0x04, CollisionMapTileData, 床の属性や高さ、階段やプレイヤーが奥側にいるときに手前に何を描画するかなどの情報を持つ
   AssetRef zones;     // 0x08, ZoneData, イベントのトリガー範囲を管理する
   AssetRef paths;     // 0x0C, PathData, 敵やエレベーターがたどる経路
@@ -37,7 +37,7 @@ typedef u16 TileAttr;             // CollisionMapTile.attr
 #define TATTR_UNK_4 (1 << 4)      // 0x0010, 未検証
 #define TATTR_UNK_5 (1 << 5)      // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
 #define TATTR_FALLDEATH (1 << 6)  // 0x0040, 地下水路で水に落ちたり、落下死する場所にいくとセットされた
-#define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: すべり床, MPF_HOT: 溶岩, MPF_WATERFRONT: ???, それ以外: 鳴り床?
+#define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: すべり床, MPF_HOT: 溶岩, それ以外: 鳴り床
 #define TATTR_FRAGILE (1 << 8)    // 0x0100, ダイナマイトで壊せる傷んだ壁?
 #define TATTR_UNK_9 (1 << 9)      // 0x0200, 未検証, 属性ブロックが止まっている間に立てる
 #define TATTR_WALLISH (1 << 10)   // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
@@ -270,6 +270,9 @@ ZoneID32 GetZoneAt(Vec3* pos);
 s32 Map_FindDirToTile(s32 from, s32 to, s32 unused);
 s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, Vec3* min, Vec3* max);
 s32 Map_IsBehindHigherTile(Vec3* pos, s32 threshold);
+s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
+s32 Map_FindNearestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
+s32 Map_FindNearestPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq);
 
 #define IsOutsideMap(tileX, tileZ) ((tileX) < 0 || (tileZ) < 0 || ((u32)(tileX)) >= (u32)gMapBlockW || ((u32)(tileZ)) >= (u32)gMapBlockH)
 

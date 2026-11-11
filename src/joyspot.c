@@ -33,16 +33,15 @@ typedef struct {
 } JoyspotManager;
 static_assert(sizeof(JoyspotManager) == 76);
 
-IWRAM_DATA s32 s32_030000d4 = 0;                    // 0x030000D4
-IWRAM_DATA JoyspotManager* gJoyspotManager = NULL;  // 0x030000D8
+static JoyspotManager* gJoyspotManager;  // 0x030000D8
 
 COMMON_DATA u32 u32_03002b54 = 0;  // 0x03002B54
 
-const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_Zokutai_08251d30[] = "Zokutai";  // 0x08251D30
-const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_Djungo_08251d38[] = "Djungo";    // 0x08251D38
+const STRING_DATA char s_Zokutai_08251d30[] = "Zokutai";  // 0x08251D30
+const STRING_DATA char s_Djungo_08251d38[] = "Djungo";    // 0x08251D38
 
 // clang-format off
-// ジョイスポットでの配信コンテンツのID
+// ジョイスポットでの配信コンテンツのID (型は u16 かも？)
 const u8 gJoyspotContentIDs[8] = {
   0x67, 0x8E, // BB (Blind Box) Lv.3
   0xAA, 0x8F, // BB Lv.4
@@ -52,9 +51,6 @@ const u8 gJoyspotContentIDs[8] = {
 // clang-format on
 
 s32 InitRfuAPI(void);  // src/rfu.c
-
-extern const char s_Zokutai_08251d30[];  // src/data.c
-extern const char s_Djungo_08251d38[];   // src/data.c
 
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
 

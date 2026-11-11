@@ -28,7 +28,7 @@ static_assert(sizeof(CrossoverLobbyPlayer) == 660);
 // 詳細は http://sunmiguere.web.fc2.com/zoktai_crossover_battle.html を参照
 typedef struct {
   Entity e;                         // 0x000, ENTITY_UNK_11
-  u8 linkState;                     // 0x018, 前フレームの FUN_0804e490 の値, 変わったときだけ state を切り替える
+  u8 linkState;                     // 0x018, 前フレームの Entity0804e2c0_GetState の値, 変わったときだけ state を切り替える
   u8 state;                         // 0x019, sCrossoverLobbyUpdates の添字, 7 は終了
   bool8 stateEntered;               // 0x01A, state を変えた直後の1フレームだけ 1
   u8 unk_1b;                        // 0x01B, padding?
@@ -52,7 +52,7 @@ u8* GetCrossoverPlayerName(s32 idx);
 void FUN_0804e4c4(void);
 void FUN_0804e4ac(void);
 s32 FUN_0804e458(void);
-s32 FUN_0804e490(void);
+s32 Entity0804e2c0_GetState(void);
 u8* FUN_0804e438(void);
 s32 FUN_0804e638(void);
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
@@ -376,7 +376,7 @@ void CrossoverLobby_StateExit(CrossoverLobby* p) {
 
 // 通信の状態が変わったら, それに対応する state へ切り替える
 void CrossoverLobby_SyncLinkState(CrossoverLobby* p) {
-  s32 linkState = FUN_0804e490();
+  s32 linkState = Entity0804e2c0_GetState();
 
   if (p->state == 7) {
     return;

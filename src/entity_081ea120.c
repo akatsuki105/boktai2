@@ -17,7 +17,7 @@ typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
   AuxAnimFile* animFile;        // 0x018, ANIM_931E
   AuxSprite sprites[8];         // 0x01C
-  AuxSpriteGfx gfx;             // 0x17C, SPRITE_863A
+  AuxSpriteGfx gfx;             // 0x17C, SPRITE_SPRING_863A
   AuxAnimState anims[8];        // 0x198
   u32 activeMask;               // 0x218, items の使用中ビット
   Entity081ea120Item items[8];  // 0x21C
@@ -136,7 +136,7 @@ s32 Entity081ea120_Destroy(Entity081ea120* p) {
 }
 
 void Entity081ea120_LoadAuxSprite(Entity081ea120* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_863A);
+  Video_GetAuxSprite(&p->gfx, SPRITE_SPRING_863A);
   p->animFile = GetFile(DIR_ANIMATION, ANIM_931E);
 }
 

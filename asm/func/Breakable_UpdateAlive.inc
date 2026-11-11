@@ -99,7 +99,7 @@ _08007A84:
 	movs r1, #1
 	mov r2, sl
 	movs r3, #0x40
-	bl Entity08015584_SpawnSprayEx
+	bl Puff_SpawnSprayEx
 	movs r1, #0
 	str r1, [sp]
 	str r6, [sp, #4]
@@ -115,7 +115,7 @@ _08007A84:
 	movs r1, #1
 	mov r2, sl
 	movs r3, #0x40
-	bl Entity08015584_SpawnSprayEx
+	bl Puff_SpawnSprayEx
 	str r6, [sp]
 	movs r0, #0x10
 	str r0, [sp, #4]

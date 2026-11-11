@@ -9,7 +9,6 @@
 #include "solar_sensor.h"
 #include "sound.h"
 #include "sprite.h"
-#include "struct.h"
 #include "time.h"
 #include "video.h"
 #include "vm.h"

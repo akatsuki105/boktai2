@@ -3,7 +3,6 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
-#include "inline.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"

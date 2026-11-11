@@ -90,13 +90,11 @@ s32 CrossoverMC_SetState(struct CrossoverMC* p, u32 state);
 void CrossoverMC_RequestExit(struct CrossoverMC* p);
 void Entity08052ffc_Spawn(void* p, u32 idx, u32 mode, Vec3* pos);
 void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
-s32 MainMenu_SetHudMode(s32 mode);
 void FUN_0804e604(void);
 void* FUN_0804ba3c(void);
 void FUN_0803cc70(void);
 bool32 FUN_0804e59c(void);
 void MosaicFader_Stop(void);
-void Player_Lock(Player* p, s32 val);
 void HUD_OpenCrossoverInterval(void);
 void HUD_CloseCrossoverInterval(void);
 s32 FUN_0804e458(void);
@@ -408,9 +406,6 @@ void CrossoverBattle_OnResultClosed(void) {
     p->resultClosed = 1;
   }
 }
-
-s32 CrossoverBattle_GetRivalPlayerHP(void);
-s32 CrossoverBattle_GetRivalBossHP(void);
 
 // 対戦用の武器を, 乱数で選んだ位置から順に登録枠へ配る
 void CrossoverBattle_DealWeapons(CrossoverBattle* p) {

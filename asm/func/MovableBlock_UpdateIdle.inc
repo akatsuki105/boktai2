@@ -7,7 +7,7 @@
 	ldrsh r0, [r2, r1]
 	cmp r0, #0
 	bgt _08003F7A
-	ldr r1, _08003F60 @ =EntityD9AEElem_UpdateBreak
+	ldr r1, _08003F60 @ =MovableBlock_UpdateBreak
 	movs r4, #0xcc
 	lsls r4, r4, #1
 	adds r0, r2, r4
@@ -19,7 +19,7 @@
 	strh r0, [r2, #4]
 	b _08003F7A
 	.align 2, 0
-_08003F60: .4byte EntityD9AEElem_UpdateBreak
+_08003F60: .4byte MovableBlock_UpdateBreak
 _08003F64:
 	movs r1, #0x16
 	ldrsh r0, [r2, r1]

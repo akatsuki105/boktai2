@@ -32,7 +32,7 @@ _0800CFBE:
 	beq _0800CFE4
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl EntityC9BCElem_OnFlame
+	bl PropertyCube_OnFlame
 	adds r2, r0, #0
 _0800CFE4:
 	cmp r2, #0
@@ -44,7 +44,7 @@ _0800CFE4:
 	beq _0800CFFC
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl EntityC9BCElem_OnFrost
+	bl PropertyCube_OnFrost
 	adds r2, r0, #0
 _0800CFFC:
 	cmp r2, #0
@@ -56,7 +56,7 @@ _0800CFFC:
 	beq _0800D014
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl EntityC9BCElem_OnEarth
+	bl PropertyCube_OnEarth
 	adds r2, r0, #0
 _0800D014:
 	cmp r2, #0
@@ -68,7 +68,7 @@ _0800D014:
 	beq _0800D02C
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl EntityC9BCElem_OnCloud
+	bl PropertyCube_OnCloud
 	adds r2, r0, #0
 _0800D02C:
 	ldrb r0, [r4, #2]
@@ -106,7 +106,7 @@ _0800D062:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	adds r2, r6, #0
-	bl EntityC9BCElem_TryFall
+	bl PropertyCube_TryFall
 _0800D06C:
 	pop {r4, r5, r6}
 	pop {r0}

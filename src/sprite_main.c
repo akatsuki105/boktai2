@@ -183,7 +183,8 @@ s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags
 
 void FUN_0822f584(void) {}
 
-NAKED void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val) { INCFUNC("asm/func/FUN_0822f588.inc"); }
+// src から dst へコピーする (flags でコピーする内容を指定)
+NAKED void FUN_0822f588(MainSprite* dst, MainSprite* src, u32 flags) { INCFUNC("asm/func/FUN_0822f588.inc"); }
 
 void MainSprite_SetPlttID(MainSprite* p, u32 plttID) {
   u16 id;

@@ -13,7 +13,7 @@
 	bge _08003690
 	movs r1, #0xf
 	mov r8, r1
-	ldr r2, _08003678 @ =EntityD9AEElem_UpdateFall
+	ldr r2, _08003678 @ =MovableBlock_UpdateFall
 	mov sl, r2
 	movs r0, #0
 	mov sb, r0
@@ -72,7 +72,7 @@ _0800360A:
 	b _08003682
 	.align 2, 0
 _08003674: .4byte 0x03000020
-_08003678: .4byte EntityD9AEElem_UpdateFall
+_08003678: .4byte MovableBlock_UpdateFall
 _0800367C: .4byte 0xFFFFFF00
 _08003680:
 	strh r4, [r3, #0x12]

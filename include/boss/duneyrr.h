@@ -30,7 +30,7 @@ typedef struct {
 } DuneyrrPowderBall;
 static_assert(sizeof(DuneyrrPowderBall) == 336);
 
-// ドゥネイルの攻撃"鱗粉玉" (Phosphorous Powder Ball)
+// ドゥネイルの攻撃"燐粉玉" (Phosphorous Powder Ball, 本来は"鱗粉"だが、公式攻略本が"燐粉"と表記している)
 // プレイヤーに対して飛ばしたり、ステージ中央の燭台の周りに複数出して燭台の周りをグルグル回らせたりする
 // 地形にぶつかると、粉エフェクトを出して消える
 typedef struct DuneyrrPowderBallManager {
@@ -41,7 +41,7 @@ typedef struct DuneyrrPowderBallManager {
   u16 power;                   // 0x024, 各部品の hitbox の power
   u16 knockback;               // 0x026, 各部品の hitbox の knockback
   u16 iframes;                 // 0x028, 各部品の hitbox の iframes
-  u16 sporePower;              // 0x02A, FUN_0805965c が SporeManager_Emit に渡す鱗粉の power
+  u16 sporePower;              // 0x02A, FUN_0805965c が SporeManager_Emit に渡す 燐粉 の power
   s32 circlingCount;           // 0x02C, state 1 (center の周りを回る) の部品の数
   u8 unk_30[0x34 - 0x30];      // 0x030
   Vec3 center;                 // 0x034

@@ -230,12 +230,12 @@ _08003EC8:
 	ldrh r1, [r2]
 	adds r0, r5, #0
 	ldr r2, [sp]
-	bl EntityD9AEElem_TryMove
+	bl MovableBlock_TryMove
 	adds r4, r0, #0
 	cmp r4, #0
 	ble _08003EF4
 	ldrb r0, [r5]
-	bl EntityD9AE_PlayPushSound
+	bl MovableBlock_PlayPushSound
 	ldrb r0, [r5]
 	cmp r0, #1
 	bne _08003EEA

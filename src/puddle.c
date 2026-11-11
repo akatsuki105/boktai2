@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "puff.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite_aux.h"
@@ -50,8 +51,6 @@ typedef struct {
 static_assert(sizeof(PuddleManager) == 1980);
 
 static PuddleManager* gPuddleManager;  // 0x03000144
-
-void Entity08015584_SpawnSpray(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -228,7 +227,7 @@ NON_MATCH void FUN_0809f938(Puddle* elem) {
 
       pos.x = (u16)pos.x - 0x7F + (u8)RandomNext();
       pos.z = (u16)pos.z - 0x7F + (u8)RandomNext();
-      Entity08015584_SpawnSpray(1, 0, 1, Q6(1), &pos);
+      Puff_SpawnSpray(1, 0, 1, Q6(1), &pos);
     }
   } else if (elem->animTimer <= 15) {
     elem->sprite.poseIdx = 7;
@@ -238,7 +237,7 @@ NON_MATCH void FUN_0809f938(Puddle* elem) {
 
       pos.x = (u16)pos.x - 0x7F + (u8)RandomNext();
       pos.z = (u16)pos.z - 0x7F + (u8)RandomNext();
-      Entity08015584_SpawnSpray(1, 0, 1, Q6(1), &pos);
+      Puff_SpawnSpray(1, 0, 1, Q6(1), &pos);
     }
   } else {
     elem->sprite.poseIdx = 8;

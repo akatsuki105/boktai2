@@ -41,11 +41,11 @@ void CrossoverBattle_NotifyPlayerDead(void);
 s32 FUN_08020358(u32 id);
 bool32 IsInPuddle(WorldPos* pos);
 void* Entity080c1abc_Create(u32 param_1, u32 param_2, u32 param_3);
-struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, u32 unk_cd);
+struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan);
 void Player_UpdateLockedIdle(Player* p);
 void FUN_080d040c(Player* p);
 void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
-void Player_LockFall(Player* p, DirS32 dir, s32 param_3, u32 scriptID);
+void Player_LockFall(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID);
 bool32 FUN_0809df78(Vec3* pos);
 s32 SpawnBlood(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
 void FUN_080dab9c(s32 idx);
@@ -64,7 +64,7 @@ bool8 MapItemManager_TryOpen(Mover* mover);
 Vec3* Elevator_GetPosByID(s32 id);
 struct Elevator* Elevator_FindAtPos(Vec3* pos);
 void FUN_080417dc(Mover* mover);
-s32 EntityD9AE_PushAtDir8(Vec3* pos, u32 dir);
+s32 MovableBlock_PushAtDir8(Vec3* pos, u32 dir);
 s32 FUN_08086958(void);
 void FUN_08086590(Vec3* pos, s32 val);
 s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 val4, Vec3* pos);
@@ -102,7 +102,9 @@ COMMON_DATA u8 u8_03002bf6[2] = {};                     // todo
 
 static magic32_t Player_CheckMagicEnchant(Player* p);
 static void Player_SetAction(Player* p, u32 action, u32 state);
-void Player_EnterWall(Player* p, s32 dir);
+
+// 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
+static inline rgb555 MakeRgb555(s32 r, s32 g, s32 b) { return (b << 10) | (g << 5) | r; }
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -795,7 +797,7 @@ void Player_InitShockwave(Player* p) {
   } else {
     Video_GetAuxSprite(gfx, SPRITE_MELEE_SHOCKWAVE);
     AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN);
-    Video_SetAuxSpritePltt(gfx, 29);
+    Video_SetAuxSpritePltt(gfx, OBP_RDJANGO);
     p->meleeShockwave.animFile = GetFile(DIR_ANIMATION, ANIM_0837);
     p->meleeShockwave.update = PlayerShockwave_UpdateAnim;
   }
@@ -3289,7 +3291,7 @@ void Player_InitSprite(Player* p) {
     if (VM_SeekToNamedArg('d')) {
       p->facing = VM_GetValue();
     } else {
-      p->facing = FACE_UP;
+      p->facing = DIR8_UP;
     }
 
     PLAYER_SET_ANIM_8DIR(p, p->facing);
@@ -3313,7 +3315,7 @@ void Player_InitBeastSprite(Player* p) {
 
   Video_GetAuxSprite(&p->beastGfxs[0], SPRITE_BAT);
   Video_GetAuxSprite(&p->beastGfxs[1], SPRITE_MOUSE);
-  Video_GetAuxSprite(&p->beastGfxs[2], SPRITE_COFFIN);
+  Video_GetAuxSprite(&p->beastGfxs[2], SPRITE_COFFIN_0);
   p->batAnim = GetFile(DIR_ANIMATION, ANIM_BAT);
   p->mouseAnim = GetFile(DIR_ANIMATION, ANIM_MOUSE);
   p->coffinAnim = GetFile(DIR_ANIMATION, ANIM_COFFIN);
@@ -3669,7 +3671,7 @@ void Player_UpdateIceSlide(Player* p) {
       p->slip_3a5[1] = 0;
       *flag = 0;
     } else if (p->tile.unk_0[0] & 1) {
-      DirU8* dir = &p->slideDir;
+      Dir8U8* dir = &p->slideDir;
 
       if (*dir & 1) {
         p->slip_3a5[0] = 0;
@@ -3942,7 +3944,7 @@ void Player_UpdateLookAround(Player* p) {
       p->facing = Angle_ToDir8(angle);
       if (p->kind == PLAYER_BAT) {
         s32 quad = Angle_ToDir4(angle);
-        if (quad > 1) {
+        if (quad > DIR4_EAST) {
           p->animDir = 3 - quad;
           p->xflip = TRUE;
         } else {
@@ -4324,7 +4326,7 @@ NON_MATCH bool32 Player_IsNearTileCenter(Player* p) {
   u16 pos;
   u32 ofs;
 
-  if (p->actionDir == FACE_UP_RIGHT || p->actionDir == FACE_DOWN_LEFT) {
+  if (p->actionDir == DIR8_UP_RIGHT || p->actionDir == DIR8_DOWN_LEFT) {
     pos = p->mover.pos.x;
   } else {
     pos = p->mover.pos.z;
@@ -4374,7 +4376,7 @@ void Player_UpdateWall(Player* p) {
       right = (p->actionDir + 1) & 7;
       animIdx = Player_GetAnimIdx(p->kind, 3);
       if (dir != left && dir != right) {
-        if (Player_IsNearTileCenter(p) && EntityD9AE_PushAtDir8(&p->mover.pos, p->facing) > 0) {
+        if (Player_IsNearTileCenter(p) && MovableBlock_PushAtDir8(&p->mover.pos, p->facing) > 0) {
           if (HasGoodCond(p, GOOD_POWER)) {
             Player_SetAction(p, PACT_IDLE, 0);
           } else {
@@ -4394,14 +4396,14 @@ void Player_UpdateWall(Player* p) {
         pos.z -= POLAR_Z(50, dir << 5);
         idx = GetCollisionTileIdx(&pos);
         height = TileHeightAt(&pos);
-        if (height > p->mover.pos.y - 128 && height < p->mover.pos.y + 128) {
+        if (height > p->mover.pos.y - Q8(0.5) && height < p->mover.pos.y + Q8(0.5)) {
           MapTileOverride* ov = Map_FindTileOverride(idx, 1);
           CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
 
           if (!Player_IsOnIce(tile->attr)) {
             pos.x -= POLAR_X(50, ((p->actionDir + 1) & 7) << 5);
             pos.z -= POLAR_Z(50, ((p->actionDir + 1) & 7) << 5);
-            if (TileHeightAt(&pos) >= height + 200 && !(GetTileAttrAt(&pos) & TATTR_UNK_2)) {
+            if (TileHeightAt(&pos) >= height + Q8(0.782) && !(GetTileAttrAt(&pos) & TATTR_UNK_2)) {
               s32 speed;
 
               animIdx = Player_GetAnimIdx(p->kind, 4);
@@ -4431,16 +4433,16 @@ void Player_UpdateWall(Player* p) {
         Vec3 doorPos = p->mover.pos;
         Vec3 wallPos;
 
-        if (p->actionDir == FACE_UP_RIGHT) {
+        if (p->actionDir == DIR8_UP_RIGHT) {
           effectPos.x += 28, effectPos.y += 44, effectPos.z -= 76;
           doorPos.x += 64, doorPos.z -= 128;
-        } else if (p->actionDir == FACE_DOWN_RIGHT) {
+        } else if (p->actionDir == DIR8_DOWN_RIGHT) {
           effectPos.x -= 52, effectPos.y += 0, effectPos.z += 0;
           doorPos.x += 128, doorPos.z += 64;
-        } else if (p->actionDir == FACE_DOWN_LEFT) {
+        } else if (p->actionDir == DIR8_DOWN_LEFT) {
           effectPos.x += 12, effectPos.y += 44, effectPos.z -= 32;
           doorPos.x += 64, doorPos.z += 128;
-        } else if (p->actionDir == FACE_UP_LEFT) {
+        } else if (p->actionDir == DIR8_UP_LEFT) {
           effectPos.x -= 64, effectPos.y += 68, effectPos.z += 44;
           doorPos.x -= 128, doorPos.z += 64;
         }
@@ -4477,7 +4479,7 @@ void Player_UpdatePush(Player* p) {
     }
     case 1: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 6), Q6(1));
-      if ((s16)p->facingHistory[0] == p->actionDir && EntityD9AE_PushAtDir8(&p->mover.pos, p->facing) > 0) {
+      if ((s16)p->facingHistory[0] == p->actionDir && MovableBlock_PushAtDir8(&p->mover.pos, p->facing) > 0) {
         if (HasGoodCond(p, GOOD_POWER)) {
           Player_SetAction(p, PACT_IDLE, 0);
         } else {
@@ -4508,7 +4510,7 @@ bool32 Player_CanSolarCharge(Player* p) {
 
 void Player_SetChargePos(Player* p) {
   p->chargePos = p->mover.pos;
-  if (p->facing == FACE_DOWN) {
+  if (p->facing == DIR8_DOWN) {
     p->chargePos.x -= Q8(0.08);
     p->chargePos.y += Q8(1.29);
     p->chargePos.z += Q8(0.235);
@@ -4535,7 +4537,7 @@ void Player_UpdateSolarCharge(Player* p) {
     case 1: {
       if (p->stateTimer == 0) {
         if (p->facing >= 2 && p->facing <= 6) {
-          p->facing = FACE_DOWN;
+          p->facing = DIR8_DOWN;
           p->animDir = 1;
           p->xflip = FALSE;
         } else {
@@ -4638,7 +4640,7 @@ void Player_UpdateDarkCharge(Player* p) {
     case 1: {
       if (p->stateTimer == 0) {
         if (p->facing >= 2 && p->facing <= 6) {
-          p->facing = FACE_DOWN;
+          p->facing = DIR8_DOWN;
           p->animDir = 1;
           p->xflip = FALSE;
         } else {
@@ -4677,7 +4679,7 @@ void Player_UpdateDarkCharge(Player* p) {
       p->shadowOffset.z = 30;
       Player_SetChargePos(p);
       Player_SpawnDarkChargePtcl(p, &p->chargePos);
-      p->flashPlttID = 290;
+      p->flashPlttID = OBP_ELEMENT(1);
       if (p->stateTimer < 32) {
         p->plttFlashTimer = p->stateTimer;
       } else {
@@ -4830,8 +4832,8 @@ void MagicRisingSun_08068944(Player* p) {
 
   switch (p->state) {
     case 0: {
-      if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
-        p->facing = FACE_DOWN;
+      if (p->facing >= DIR8_RIGHT && p->facing <= DIR8_LEFT) {
+        p->facing = DIR8_DOWN;
         p->animDir = 4;
         p->xflip = FALSE;
         p->chargePos = p->mover.pos;
@@ -4839,7 +4841,7 @@ void MagicRisingSun_08068944(Player* p) {
         p->chargePos.y += Q8(1.29);
         p->chargePos.z += Q8(0.235);
       } else {
-        p->facing = FACE_UP;
+        p->facing = DIR8_UP;
         p->animDir = 0;
         p->xflip = FALSE;
         p->chargePos = p->mover.pos;
@@ -4849,7 +4851,7 @@ void MagicRisingSun_08068944(Player* p) {
       }
 
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-      if (p->facing == FACE_DOWN) {
+      if (p->facing == DIR8_DOWN) {
         p->animDir = 1;
       } else {
         p->animDir = 0;
@@ -4957,7 +4959,7 @@ bool32 Player_CanPullCoffinTo(Player* p, Vec3* pos) {
   }
   coffin = Coffin_GetPos();
   if (abs(coffin->x - p->mover.pos.x) >= Q8(1) || abs(coffin->z - p->mover.pos.z) >= Q8(1)) {
-    PlaySound_082406e0(SONG_218);
+    PlaySound_082406e0(SE_COFFIN_CHAIN);
     Player_SetAction(p, PACT_IDLE, 0);
   }
   *pos = *coffin;
@@ -5930,7 +5932,7 @@ NON_MATCH void FUN_0806b06c(Player* p) {
       s32 i;
       u16 n;
 
-      p->facing = FACE_UP_LEFT;
+      p->facing = DIR8_UP_LEFT;
       p->animDir = 1;
       p->xflip = TRUE;
       p->mashHits = 0;
@@ -5974,7 +5976,7 @@ NON_MATCH void FUN_0806b06c(Player* p) {
     }
     case 1: {
       if (p->stateTimer == 0) {
-        p->facing = FACE_UP_LEFT;
+        p->facing = DIR8_UP_LEFT;
         p->animDir = 0;
         p->xflip = TRUE;
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
@@ -6010,7 +6012,7 @@ NON_MATCH void FUN_0806b06c(Player* p) {
       break;
     }
     case 4: {
-      p->facing = FACE_UP_LEFT;
+      p->facing = DIR8_UP_LEFT;
       p->animDir = 1;
       p->xflip = TRUE;
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
@@ -6063,8 +6065,8 @@ void Sabata_BlackSun(Player* p) {
 
   switch (p->state) {
     case 0: {
-      if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
-        p->facing = FACE_DOWN;
+      if (p->facing >= DIR8_RIGHT && p->facing <= DIR8_LEFT) {
+        p->facing = DIR8_DOWN;
         p->animDir = 4;
         p->xflip = FALSE;
         p->chargePos = p->mover.pos;
@@ -6072,7 +6074,7 @@ void Sabata_BlackSun(Player* p) {
         p->chargePos.y += Q8(1.29);
         p->chargePos.z += Q8(0.235);
       } else {
-        p->facing = FACE_UP;
+        p->facing = DIR8_UP;
         p->animDir = 0;
         p->xflip = FALSE;
         p->chargePos = p->mover.pos;
@@ -6082,7 +6084,7 @@ void Sabata_BlackSun(Player* p) {
       }
 
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-      if (p->facing == FACE_DOWN) {
+      if (p->facing == DIR8_DOWN) {
         p->animDir = 1;
       } else {
         p->animDir = 0;
@@ -6223,12 +6225,12 @@ NON_MATCH void MagicTransform_0806b92c(Player* p) {
 
   switch (p->state) {
     case 0: {
-      if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
-        p->facing = FACE_DOWN;
+      if (p->facing >= DIR8_RIGHT && p->facing <= DIR8_LEFT) {
+        p->facing = DIR8_DOWN;
         p->animDir = 4;
         p->xflip = FALSE;
       } else {
-        p->facing = FACE_UP;
+        p->facing = DIR8_UP;
         p->animDir = 0;
         p->xflip = FALSE;
       }
@@ -6347,7 +6349,7 @@ void MagicChangeBat_0806bc74(Player* p) {
   }
 
   if ((p->stateTimer & 7) < 7 - (p->stateTimer >> 2)) {
-    if (p->facing >= FACE_DOWN_LEFT) {
+    if (p->facing >= DIR8_DOWN_LEFT) {
       p->animDir = 8 - p->facing;
       p->xflip = TRUE;
     } else {
@@ -6359,7 +6361,7 @@ void MagicChangeBat_0806bc74(Player* p) {
     p->beast.pos = p->mover.pos;
     p->beast.pos.y += p->batHeight;
 
-    if (p->facing >= FACE_DOWN) {
+    if (p->facing >= DIR8_DOWN) {
       p->animDir = (7 - p->facing) >> 1;
       p->xflip = TRUE;
     } else {
@@ -7002,7 +7004,7 @@ void Player_UpdateSleepingAttack(Player* p) {
         p->attackVoiceCooldown = 40;
       }
       PlaySound_082406e0(SE_GUN_FIRE);
-      Bullet_Create(p, 20, 180, 0, 32, 44, 32, HBATTR_SOL, 20, 3, 10, 1);
+      Bullet_Create(p, 20, 180, 0, 32, 44, 32, HBATTR_SOL, 20, 3, 10, TRUE);
     }
   }
   p->stateTimer++;
@@ -7030,7 +7032,7 @@ void Player_UpdateSleepingCloseLid(Player* p) {
   }
   if (++p->stateTimer > 23) {
     p->eneAccum = 0;
-    p->facing = FACE_UP;
+    p->facing = DIR8_UP;
     p->animDir = 0;
     p->xflip = FALSE;
     Player_SetAction(p, PACT_IDLE, 0);
@@ -7063,7 +7065,7 @@ void Player_UpdateSleepingSpiderWeb(Player* p) {
 void Player_UndoSleeping(Player* p) {
   if (p->action != PACT_SLEEPING || p->stateTimer == 0) {
     Player_SetAction(p, PACT_SLEEPING, 0);
-    p->facing = FACE_DOWN;
+    p->facing = DIR8_DOWN;
     Player_SetAnimFacing(p);
     p->emote = Emote_Show(p->emote, &p->mover, p->emoteKind, 127, NULL, 0, 0, 0);
     PlaySound_082406e0(SE_COFFIN_OPEN);
@@ -7097,7 +7099,7 @@ void Player_UndoSleeping(Player* p) {
   if (++p->stateTimer > 39) {
     p->formRequest = TRUE;
     p->formRequestKind = PLAYER_DARK_DJANGO;
-    p->facing = FACE_DOWN;
+    p->facing = DIR8_DOWN;
     Player_SetAnimFacing(p);
     Player_SetAction(p, PACT_IDLE, 0);
   }
@@ -7424,12 +7426,12 @@ void Player_UpdateCrossoverDash(Player* p) {
 // 魔法ヒーリング, ENE を 2 使って HP を 40 回復する, ENE が足りなければ空振りの音だけ鳴らす
 void MagicHealing_0806f3a0(Player* p) {
   if (p->action != PACT_HEALING) {
-    if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
-      p->facing = FACE_DOWN;
+    if (p->facing >= DIR8_RIGHT && p->facing <= DIR8_LEFT) {
+      p->facing = DIR8_DOWN;
       p->animDir = 1;
       p->xflip = FALSE;
     } else {
-      p->facing = FACE_UP;
+      p->facing = DIR8_UP;
       p->animDir = 0;
       p->xflip = FALSE;
     }
@@ -8448,7 +8450,7 @@ void Player_UpdateSolarGunAttack(Player* p) {
           } else {
             Player_SetAction(p, PACT_ATTACK, 2);
           }
-          Bullet_Create(p, 230, 180, 0, 32, 44, 32, HBATTR_SOL, 20, 3, cost, 0);
+          Bullet_Create(p, 230, 180, 0, 32, 44, 32, HBATTR_SOL, 20, 3, cost, FALSE);
         }
       }
       break;
@@ -8599,7 +8601,7 @@ void Player_UpdateMegaBusterAttack(Player* p) {
           } else {
             Player_SetAction(p, PACT_ATTACK, 2);
           }
-          Bullet_Create(p, 200, 170, 8, 32, 46, 32, 0, 20, 17, 20, 0);
+          Bullet_Create(p, 200, 170, 8, 32, 46, 32, 0, 20, 17, 20, FALSE);
         }
       }
       break;
@@ -8736,7 +8738,7 @@ void Player_UpdateSabataAttack(Player* p) {
           } else {
             Player_SetAction(p, PACT_ATTACK, 2);
           }
-          Bullet_Create(p, 230, 170, 0, 32, 50, 32, HBATTR_DARK, 20, 5, 5, 0);
+          Bullet_Create(p, 230, 170, 0, 32, 50, 32, HBATTR_DARK, 20, 5, 5, FALSE);
         }
       }
       break;
@@ -10462,7 +10464,7 @@ void Player_UpdateMouseWarp(Player* p) {
   switch (p->state) {
     case 0: {
       if (p->stateTimer == 0) {
-        p->facing = FACE_DOWN;
+        p->facing = DIR8_DOWN;
         Player_SetAnimFacing(p);
       }
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animDir, p->xflip);
@@ -10498,7 +10500,7 @@ void Player_UpdateMouseWarp(Player* p) {
     }
     case 3: {
       if (p->stateTimer == 0) {
-        p->facing = FACE_DOWN;
+        p->facing = DIR8_DOWN;
         Player_SetAnimFacing(p);
       }
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animDir, p->xflip);
@@ -10644,7 +10646,7 @@ void Player_UpdateSleepingWarp(Player* p) {
     }
     case 3: {
       if (p->stateTimer == 0) {
-        p->facing = FACE_DOWN;
+        p->facing = DIR8_DOWN;
         Player_SetAnimFacing(p);
       }
       AuxAnim_SetAnim(&p->beastAnim, p->coffinAnim, p->coffin, 0, 0);
@@ -10745,7 +10747,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
     }
     case 1: {
       if (p->stateTimer == 0) {
-        p->facing = FACE_DOWN;
+        p->facing = DIR8_DOWN;
         p->animDir = 1;
         p->xflip = FALSE;
         Player_SetChargePos(p);
@@ -10875,7 +10877,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
     }
     case 1: {
       if (p->stateTimer == 0) {
-        p->facing = FACE_DOWN;
+        p->facing = DIR8_DOWN;
         p->animDir = 1;
         p->xflip = FALSE;
         Player_SetChargePos(p);
@@ -11009,19 +11011,19 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
 }
 
 // 十字キーの押下状態を 4bit に畳んで方向番号に引き直す, どれも押していない or ありえない組み合わせは -1
-DirS32 Player_GetDpadFacing(Player* p) {
+Dir8S32 Player_GetDpadFacing(Player* p) {
   static const s16 sDpadFacingTable[17] = {
       [0] = -1,
-      [1] = FACE_UP,           // ↑
-      [2] = FACE_DOWN,         // ↓
+      [1] = DIR8_UP,           // ↑
+      [2] = DIR8_DOWN,         // ↓
       [3] = -1,                // ↑+↓ (invalid)
-      [4] = FACE_LEFT,         // ←
-      [5] = FACE_UP_LEFT,      // ←+↑
-      [6] = FACE_DOWN_LEFT,    // ←+↓
+      [4] = DIR8_LEFT,         // ←
+      [5] = DIR8_UP_LEFT,      // ←+↑
+      [6] = DIR8_DOWN_LEFT,    // ←+↓
       [7] = -1,                // ↑+←+↓ (invalid)
-      [8] = FACE_RIGHT,        // →
-      [9] = FACE_UP_RIGHT,     // →+↑
-      [10] = FACE_DOWN_RIGHT,  // →+↓
+      [8] = DIR8_RIGHT,        // →
+      [9] = DIR8_UP_RIGHT,     // →+↑
+      [10] = DIR8_DOWN_RIGHT,  // →+↓
       [11] = -1,               // ↑+↓+→ (invalid)
       [12] = -1,               // ←+→ (invalid)
       [13] = -1,               // ←+↑+→ (invalid)
@@ -11186,7 +11188,7 @@ s32 Player_DecideAction(Player* p) {
     }
     case PACT_PULL_COFFIN: {
       if (!Player_CanKeepPullCoffin(p)) {
-        PlaySound_082406e0(SONG_218);
+        PlaySound_082406e0(SE_COFFIN_CHAIN);
         action = PACT_IDLE;
       }
       break;
@@ -11234,7 +11236,7 @@ s32 Player_DecideAction(Player* p) {
         }
       } else if (p->input->pressed & A_BUTTON) {
         if (Player_CanGrabCoffin(p)) {
-          PlaySound_082406e0(SONG_218);
+          PlaySound_082406e0(SE_COFFIN_CHAIN);
           action = PACT_PULL_COFFIN;
         } else if (MapItemManager_TryOpen(&p->mover)) {
           action = PACT_IDLE;
@@ -11352,11 +11354,6 @@ void Player_UpdateDjango(Player* p) {
 
   switch (p->mode) {
     case PMODE_ACTIVE: {
-      Vec3 pos;
-      s32 angle;
-      s32 attr;
-      bool32 canStep;
-
       Player_UpdateHeatstrokeSmoke(p);
       if (p->kind == PLAYER_SOLAR_DJANGO) {
         if (Player_IsInRain(p)) {
@@ -11394,16 +11391,16 @@ void Player_UpdateDjango(Player* p) {
       Player_UpdateIceSlide(p);
 
       if (!HasGoodCond(p, GOOD_MINI)) {
-        canStep = !Player_IsOnIce(p->tile.attr[1]) && p->action == PACT_WALK && (p->tile.unk_0[0] & 1) && (p->facing & 1);
+        bool32 canStep = !Player_IsOnIce(p->tile.attr[1]) && p->action == PACT_WALK && (p->tile.unk_0[0] & 1) && (p->facing & 1);
         if (canStep) {
           if (++p->wallPressTimer == 5) {
-            pos = p->mover.pos;
-            angle = ((p->facing + 5) & 7) * 32;
+            Vec3 pos = p->mover.pos;
+            s32 angle = ((p->facing + 5) & 7) * 32;
             pos.x += POLAR_X(50, angle);
             pos.z += POLAR_Z(50, angle);
 
-            if ((u32)TileHeightAt(&pos) >= (u32)(p->mover.pos.y + 200)) {
-              attr = GetTileAttrAt(&pos);
+            if ((u32)TileHeightAt(&pos) >= (u32)(p->mover.pos.y + Q8(0.782))) {
+              s32 attr = GetTileAttrAt(&pos);
               if (!(attr & TATTR_UNK_2)) {
                 p->actionDir = p->facing;
                 p->wallSidling = 0;
@@ -11518,7 +11515,7 @@ void Player_UpdateSabata(Player* p) {
             pos.x += POLAR_X(50, angle);
             pos.z += POLAR_Z(50, angle);
 
-            if ((u32)TileHeightAt(&pos) >= (u32)(p->mover.pos.y + 200)) {
+            if ((u32)TileHeightAt(&pos) >= (u32)(p->mover.pos.y + Q8(0.782))) {
               attr = GetTileAttrAt(&pos);
               if (!(attr & TATTR_UNK_2)) {
                 p->actionDir = p->facing;
@@ -12059,7 +12056,7 @@ void Player_UpdateCrossoverDjango(Player* p) {
           pos.z += POLAR_Z(50, angle);
 
           height = TileHeightAt(&pos);
-          if ((u32)height >= (u32)(p->mover.pos.y + 200)) {
+          if ((u32)height >= (u32)(p->mover.pos.y + Q8(0.782))) {
             attr = GetTileAttrAt(&pos);
             if (!(attr & TATTR_UNK_2)) {
               p->actionDir = p->facing;
@@ -12127,7 +12124,7 @@ NON_MATCH void UNUSED Player_ResetGlobals(Player* p) {
 #endif
 }
 
-// action 23 に入り, 足元タイルの高さから見た現在の高さを控えて向きのアニメを合わせる
+// PACT_LANDING に入り, 足元タイルの高さから見た現在の高さを控えて向きのアニメを合わせる
 void Player_EnterLanding(Player* p) {
   u8 dir;
 
@@ -12146,7 +12143,7 @@ void Player_EnterLanding(Player* p) {
 }
 
 // 壁張り付き (PACT_WALL) に入る, actionDir を dir にして反対を向く
-void Player_EnterWall(Player* p, s32 dir) {
+void Player_EnterWall(Player* p, Dir8S32 dir) {
   Player_SetAction(p, PACT_WALL, 1);
   p->actionDir = dir;
   p->facing = (dir + 4) & 7;
@@ -12205,7 +12202,7 @@ s32 CalcAttack(WeaponData* w, const ArmorData* armor) {
   }
 
   if (w->kind == WK_GUN) {
-    if (GetWeaponSkillLevel(WK_GUN) > 98) {
+    if (GetWeaponSkillLevel(WK_GUN) >= 99) {
       return (w->atk + 10) * 2;
     }
     return ((Div(GetWeaponSkillLevel(WK_GUN), 10) - 8) * 5 + w->atk) * 2;
@@ -12241,7 +12238,7 @@ s32 CalcAttack(WeaponData* w, const ArmorData* armor) {
     val = 99;
   }
   val = (val + gStat->lv) >> 1;
-  if (w->kind == WK_OTHERS) {
+  if (w->kind == WK_OTHERS) {  // 素手
     bonus = (GetWeaponSkillLevel(WK_OTHERS) + gStat->lv) >> 2;
   } else {
     bonus = w->quality + w->atk;
@@ -12672,7 +12669,7 @@ void Cmd_E14B(void) {
   if (p != NULL && VM_GetPosArg(&p->mover.pos)) {
     if (VM_SeekToNamedArg('d')) {
       p->facing = VM_GetValue();
-      if (p->facing > FACE_DOWN) {
+      if (p->facing > DIR8_DOWN) {
         p->animDir = 8 - p->facing;
         p->xflip = TRUE;
       } else {
@@ -13085,9 +13082,9 @@ void Player_LockHidden(Player* p) {
 
 // 向き (負なら据え置き) を指定して素立ちにし, 操作不能状態に移す (Cmd_LockPlayer から, イベント前の整え)
 // フォームは変えず, 今の kind の待機ルーチンを lockedUpdate に据える, バットは向きが4方向しかないので奇数に丸めて animDir / xflip を自前で作る
-void Player_Lock(Player* p, s32 val) {
-  if (val >= 0) {
-    p->facing = val;
+void Player_Lock(Player* p, Dir8S32 dir8) {
+  if (dir8 >= 0) {
+    p->facing = dir8;
   }
 
   if (p->kind == PLAYER_BAT) {
@@ -13110,7 +13107,7 @@ void Player_Lock(Player* p, s32 val) {
 }
 
 // 操作不能にして dir へ振り向かせ, 終わったら scriptID を実行する
-void Player_LockTurnTo(Player* p, DirS32 dir, u32 scriptID) {
+void Player_LockTurnTo(Player* p, Dir8S32 dir, u32 scriptID) {
   p->targetDir = dir;
   p->doneScriptID = scriptID;
   p->lockedUpdate = Player_UpdateLockedTurn;
@@ -13118,7 +13115,7 @@ void Player_LockTurnTo(Player* p, DirS32 dir, u32 scriptID) {
   Player_SetAction(p, PACT_IDLE, 0);
 }
 
-void FUN_0807ba14(Player* p, DirS32 dir) {
+void FUN_0807ba14(Player* p, Dir8S32 dir) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -13128,7 +13125,7 @@ void FUN_0807ba14(Player* p, DirS32 dir) {
   p->lockedUpdate = Player_UpdateLockedIdle;
 }
 
-void FUN_0807ba50(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807ba50(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -13140,7 +13137,7 @@ void FUN_0807ba50(Player* p, DirS32 dir, u32 scriptID) {
 }
 
 // 操作不能にして pos へ移動させる, フォームごとの移動ルーチンを lockedUpdate に据え, 着いたら dir を向く, scriptID は終わったときに実行するスクリプト
-void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir) {
+void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, Dir8S32 dir) {
   p->moveTarget = *pos;
   p->doneScriptID = scriptID;
   p->targetDir = dir;
@@ -13165,7 +13162,7 @@ void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, DirS32 dir) {
 }
 
 // 操作不能にして棺桶を引きながら pos (NULL なら今の位置) まで歩かせ, 着いたら dir を向いて scriptID を実行する
-void Player_LockPullCoffinTo(Player* p, Vec3* pos, DirS32 dir, s32 param_4, u32 scriptID) {
+void Player_LockPullCoffinTo(Player* p, Vec3* pos, Dir8S32 dir, s32 param_4, u32 scriptID) {
   if (pos == NULL) {
     p->moveTarget = p->mover.pos;
   } else {
@@ -13181,10 +13178,10 @@ void Player_LockPullCoffinTo(Player* p, Vec3* pos, DirS32 dir, s32 param_4, u32 
 }
 
 void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID) {
-  Player_Lock(p, 4);
+  Player_Lock(p, DIR8_DOWN);
   p->unk_4a6 = param_2;
   p->doneScriptID = scriptID;
-  p->facing = FACE_DOWN;
+  p->facing = DIR8_DOWN;
   p->animDir = 1;
   p->xflip = 0;
   Player_EnterLockedState(p);
@@ -13195,7 +13192,7 @@ void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID) {
 void FUN_0807bc14(Player* p, s32 param_2, u32 scriptID) {
   p->unk_4a6 = param_2;
   p->doneScriptID = scriptID;
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   p->animDir = 0;
   p->xflip = 0;
   Player_EnterLockedState(p);
@@ -13212,7 +13209,7 @@ void FUN_0807bc64(Player* p, u32 scriptID) {
   }
 }
 
-void FUN_0807bcb0(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807bcb0(Player* p, Dir8S32 dir, u32 scriptID) {
   Player_EnterLockedState(p);
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
@@ -13222,7 +13219,7 @@ void FUN_0807bcb0(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = FUN_08073574;
 }
 
-void FUN_0807bcfc(Player* p, DirS32 dir) {
+void FUN_0807bcfc(Player* p, Dir8S32 dir) {
   Player_EnterLockedState(p);
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
@@ -13232,7 +13229,7 @@ void FUN_0807bcfc(Player* p, DirS32 dir) {
   p->lockedUpdate = FUN_08073574;
 }
 
-void FUN_0807bd44(Player* p, DirS32 dir) {
+void FUN_0807bd44(Player* p, Dir8S32 dir) {
   Player_EnterLockedState(p);
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
@@ -13241,7 +13238,7 @@ void FUN_0807bd44(Player* p, DirS32 dir) {
   p->lockedUpdate = FUN_08073574;
 }
 
-void FUN_0807bd84(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807bd84(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13251,7 +13248,7 @@ void FUN_0807bd84(Player* p, DirS32 dir, u32 scriptID) {
 }
 
 // 操作不能にして落とし穴の落下 (PACT_FALL) に入れる, param_3 を unk_4a6 / fallFadeMode に控える
-void Player_LockFall(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+void Player_LockFall(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   p->doneScriptID = scriptID;
@@ -13271,7 +13268,7 @@ void Player_LockFall(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
 }
 
 // 操作不能にして floatHeight の高さから着地 (PACT_LANDING) させる
-void Player_LockLanding(Player* p, DirS32 dir, s32 floatHeight, u32 scriptID) {
+void Player_LockLanding(Player* p, Dir8S32 dir, s32 floatHeight, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   p->doneScriptID = scriptID;
@@ -13290,10 +13287,10 @@ void Player_LockLanding(Player* p, DirS32 dir, s32 floatHeight, u32 scriptID) {
 }
 
 // 操作不能にして knockbackSpeed の速さで吹き飛ばす (PACT_DAMAGED)
-void Player_LockKnockback(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+void Player_LockKnockback(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
-  if (p->facing > FACE_DOWN) {
+  if (p->facing > DIR8_DOWN) {
     p->animDir = (8 - p->facing) >> 1;
     p->xflip = TRUE;
   } else {
@@ -13314,10 +13311,10 @@ void Player_LockKnockback(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
 }
 
 // 操作不能にして吹き飛ばして倒す (PACT_BLOWN_AWAY), param_4 が 0 以外なら倒れたまま待つ
-void Player_LockBlownAway(Player* p, DirS32 dir, s32 param_3, s32 param_4, u32 scriptID) {
+void Player_LockBlownAway(Player* p, Dir8S32 dir, s32 param_3, s32 param_4, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
-  if (p->facing > FACE_DOWN) {
+  if (p->facing > DIR8_DOWN) {
     p->animDir = (8 - p->facing) >> 1;
     p->xflip = TRUE;
   } else {
@@ -13341,10 +13338,10 @@ void Player_GetUpFromBlownAway(Player* p, s32 scriptID) {
   }
 }
 
-void FUN_0807c084(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807c084(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
-  if (p->facing > FACE_DOWN) {
+  if (p->facing > DIR8_DOWN) {
     p->animDir = (8 - p->facing) >> 1;
     p->xflip = TRUE;
   } else {
@@ -13358,12 +13355,12 @@ void FUN_0807c084(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedCollapse;
 }
 
-void FUN_0807c11c(Player* p, DirS32 dir) {
+void FUN_0807c11c(Player* p, Dir8S32 dir) {
   u16 animID;
 
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
-  if (p->facing > FACE_DOWN) {
+  if (p->facing > DIR8_DOWN) {
     p->animDir = (8 - p->facing) >> 1;
     p->xflip = TRUE;
   } else {
@@ -13384,14 +13381,14 @@ void FUN_0807c11c(Player* p, DirS32 dir) {
 }
 
 // 操作不能にしてワープで消える演出 (PACT_UNK_7 の state 0) をフォームごとに始める
-void Player_LockWarpOut(Player* p, DirS32 dir, u32 scriptID) {
+void Player_LockWarpOut(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_UNK_7, 0);
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
-    if (p->facing > FACE_DOWN) {
+    if (p->facing > DIR8_DOWN) {
       p->animDir = (8 - p->facing) >> 1;
       p->xflip = TRUE;
     } else {
@@ -13400,10 +13397,10 @@ void Player_LockWarpOut(Player* p, DirS32 dir, u32 scriptID) {
     }
     p->lockedUpdate = Player_UpdateBatWarp;
   } else {
-    if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
-      p->facing = FACE_DOWN;
+    if (p->facing >= DIR8_RIGHT && p->facing <= DIR8_LEFT) {
+      p->facing = DIR8_DOWN;
     } else {
-      p->facing = FACE_UP;
+      p->facing = DIR8_UP;
     }
     Player_SetAnimFacing(p);
     if (p->kind == PLAYER_MOUSE) {
@@ -13418,7 +13415,7 @@ void Player_LockWarpOut(Player* p, DirS32 dir, u32 scriptID) {
   }
 }
 
-void FUN_0807c30c(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c30c(Player* p, Dir8S32 dir, u32 scriptID) {
   if (p->kind >= PLAYER_BAT && p->kind <= PLAYER_SLEEPING) {
     Player_LockWarpOut(p, dir, scriptID);
   }
@@ -13431,7 +13428,7 @@ void FUN_0807c30c(Player* p, DirS32 dir, u32 scriptID) {
 }
 
 // 向きとスクリプトを指定して操作不能状態に移し, フォームごとの PACT_UNK_7 の処理を lockedUpdate に据える (Cmd_EA96 から)
-void Player_LockWarpIn(Player* p, DirS32 dir, u32 scriptID) {
+void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
@@ -13455,7 +13452,7 @@ void Player_LockWarpIn(Player* p, DirS32 dir, u32 scriptID) {
   }
 }
 
-void FUN_0807c458(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c458(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13464,7 +13461,7 @@ void FUN_0807c458(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSwordAttack;
 }
 
-void FUN_0807c49c(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c49c(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13473,7 +13470,7 @@ void FUN_0807c49c(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSwordAttack;
 }
 
-void FUN_0807c4e0(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c4e0(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13482,7 +13479,7 @@ void FUN_0807c4e0(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSpearAttack;
 }
 
-void FUN_0807c524(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c524(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13491,7 +13488,7 @@ void FUN_0807c524(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSpearAttack;
 }
 
-void FUN_0807c568(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c568(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13500,7 +13497,7 @@ void FUN_0807c568(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedHammerAttack;
 }
 
-void FUN_0807c5ac(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c5ac(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13509,7 +13506,7 @@ void FUN_0807c5ac(Player* p, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedHammerAttack;
 }
 
-void FUN_0807c5f0(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807c5f0(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13541,7 +13538,7 @@ void Player_LockFireGun(Player* p, s32 param_2, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedGunAttack;
 }
 
-void FUN_0807c748(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807c748(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13587,7 +13584,7 @@ void FUN_0807c7c8(Player* p, s32 mode) {
 }
 
 // 操作不能にして pos へダッシュ (PACT_DASH) で移動させ, 着いたら dir を向いて scriptID を実行する
-void Player_LockDashTo(Player* p, Vec3* pos, DirS32 dir, u32 scriptID) {
+void Player_LockDashTo(Player* p, Vec3* pos, Dir8S32 dir, u32 scriptID) {
   p->moveTarget = *pos;
   p->doneScriptID = scriptID;
   p->targetDir = dir;
@@ -13596,7 +13593,7 @@ void Player_LockDashTo(Player* p, Vec3* pos, DirS32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateDashTo;
 }
 
-void FUN_0807c8d4(Player* p, DirS32 dir) {
+void FUN_0807c8d4(Player* p, Dir8S32 dir) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -13609,7 +13606,7 @@ void FUN_0807c8d4(Player* p, DirS32 dir) {
 
 void FUN_0807c928(Player* p, s32 val) {
   Player_EnterLockedState(p);
-  p->facing = FACE_UP_RIGHT;
+  p->facing = DIR8_UP_RIGHT;
   p->animDir = 0;
   p->xflip = 0;
   Player_SetAction(p, PACT_HEALING, 0);
@@ -13618,7 +13615,7 @@ void FUN_0807c928(Player* p, s32 val) {
 
 void FUN_0807c968(Player* p, s32 val) {
   Player_EnterLockedState(p);
-  p->facing = FACE_UP_RIGHT;
+  p->facing = DIR8_UP_RIGHT;
   p->animDir = 0;
   p->xflip = 0;
   Player_SetAction(p, PACT_HEALING, 2);
@@ -13627,11 +13624,11 @@ void FUN_0807c968(Player* p, s32 val) {
 
 void FUN_0807c9ac(Player* p, s32 xflip, u32 scriptID) {
   if (xflip != 0) {
-    p->facing = FACE_DOWN_LEFT;
+    p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
     p->xflip = TRUE;
   } else {
-    p->facing = FACE_DOWN_RIGHT;
+    p->facing = DIR8_DOWN_RIGHT;
     p->animDir = 0;
     p->xflip = FALSE;
   }
@@ -13643,11 +13640,11 @@ void FUN_0807c9ac(Player* p, s32 xflip, u32 scriptID) {
 
 void FUN_0807ca24(Player* p, s32 xflip, u32 scriptID) {
   if (xflip != 0) {
-    p->facing = FACE_DOWN_LEFT;
+    p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
     p->xflip = TRUE;
   } else {
-    p->facing = FACE_DOWN_RIGHT;
+    p->facing = DIR8_DOWN_RIGHT;
     p->animDir = 0;
     p->xflip = FALSE;
   }
@@ -13659,11 +13656,11 @@ void FUN_0807ca24(Player* p, s32 xflip, u32 scriptID) {
 
 void FUN_0807ca9c(Player* p, s32 xflip, u32 scriptID) {
   if (xflip != 0) {
-    p->facing = FACE_DOWN_LEFT;
+    p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
     p->xflip = TRUE;
   } else {
-    p->facing = FACE_DOWN_RIGHT;
+    p->facing = DIR8_DOWN_RIGHT;
     p->animDir = 0;
     p->xflip = FALSE;
   }
@@ -13675,11 +13672,11 @@ void FUN_0807ca9c(Player* p, s32 xflip, u32 scriptID) {
 
 void FUN_0807cb14(Player* p, bool32 xflip, u32 scriptID) {
   if (xflip) {
-    p->facing = FACE_DOWN_LEFT;
+    p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
     p->xflip = TRUE;
   } else {
-    p->facing = FACE_DOWN_RIGHT;
+    p->facing = DIR8_DOWN_RIGHT;
     p->animDir = 0;
     p->xflip = FALSE;
   }
@@ -13689,12 +13686,12 @@ void FUN_0807cb14(Player* p, bool32 xflip, u32 scriptID) {
   p->lockedUpdate = FUN_080728a8;
 }
 
-void FUN_0807cb8c(Player* p, DirS32 dir, u32 scriptID) {
+void FUN_0807cb8c(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
   p->facing |= 1;
-  if (p->facing > FACE_DOWN) {
+  if (p->facing > DIR8_DOWN) {
     p->animDir = (8 - p->facing) >> 1;
     p->xflip = TRUE;
   } else {
@@ -13709,11 +13706,11 @@ void FUN_0807cb8c(Player* p, DirS32 dir, u32 scriptID) {
 
 void FUN_0807cc14(Player* p, s32 xflip) {
   if (xflip != 0) {
-    p->facing = FACE_DOWN_LEFT;
+    p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
     p->xflip = TRUE;
   } else {
-    p->facing = FACE_DOWN_RIGHT;
+    p->facing = DIR8_DOWN_RIGHT;
     p->animDir = 0;
     p->xflip = FALSE;
   }
@@ -13737,7 +13734,7 @@ bool32 Player_LockRevertToDarkDjango(Player* p, u32 scriptID) {
     Player_SetAction(p, PACT_CMOUSE, 0);
     p->lockedUpdate = Player_RevertMouseToDarkDjango;
   } else if (p->kind == PLAYER_SLEEPING) {
-    p->facing = FACE_DOWN;
+    p->facing = DIR8_DOWN;
     Player_SetAnimFacing(p);
     Player_EnterLockedState(p);
     Player_SetAction(p, PACT_SLEEPING, 0);
@@ -13873,7 +13870,7 @@ void Player_Unlock(Player* p) {
 }
 
 // コマンドのヘルパーで、 '.d' で渡されたプレイヤーの向きを取得する
-DirS32 Player_GetCmdArgDir(void) {
+Dir8S32 Player_GetCmdArgDir(void) {
   if (VM_SeekToNamedArg('d')) {
     return VM_GetValue();
   }
@@ -13978,7 +13975,7 @@ void Cmd_MovePlayerTo(void) {
 
   if (p != NULL && VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    DirS32 dir;
+    Dir8S32 dir;
     u32 scriptID;
 
     VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
@@ -13996,7 +13993,7 @@ void Cmd_E990(void) {
 
   if (p != NULL && VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    DirS32 dir;
+    Dir8S32 dir;
     u32 scriptID;
 
     VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
@@ -14014,7 +14011,7 @@ void Cmd_9763(void) {
 
   if (p != NULL) {
     s32 param_4 = VM_SeekToNamedArg('f') ? VM_GetValue() : 0;
-    DirS32 dir = Player_GetCmdArgDir();
+    Dir8S32 dir = Player_GetCmdArgDir();
     u32 scriptID = Player_GetCmdArgScript();
 
     if (VM_SeekToNamedArg('p')) {
@@ -14041,7 +14038,7 @@ void Cmd_Retry(void) {
       Player_SetDoneRunScript(p);
     } else {
       p->doneScriptID = scriptID;
-      Player_Lock(p, 4);
+      Player_Lock(p, DIR8_DOWN);
       Player_SetDoneRunScript(p);
       Player_RunDoneScript(p);
     }
@@ -14109,7 +14106,7 @@ void Cmd_58D7(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    DirS32 dir = Player_GetCmdArgDir();
+    Dir8S32 dir = Player_GetCmdArgDir();
     u32 b = Player_GetCmdArgScript();
 
     Player_LockFall(p, dir, VM_SeekToNamedArg('f') ? VM_GetValue() : 0, b);
@@ -14122,7 +14119,7 @@ void Cmd_3705(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    DirS32 dir = Player_GetCmdArgDir();
+    Dir8S32 dir = Player_GetCmdArgDir();
     u32 b = Player_GetCmdArgScript();
 
     Player_LockLanding(p, dir, VM_SeekToNamedArg('h') ? VM_GetValue() : 1500, b);
@@ -14151,7 +14148,7 @@ void Cmd_172D(void) {
   if (p != NULL) {
     s32 param_3 = VM_SeekToNamedArg('f') ? VM_GetValue() : 50;
     s32 param_4 = VM_SeekToNamedArg('L') ? VM_GetValue() : 0;
-    DirS32 dir = Player_GetCmdArgDir();
+    Dir8S32 dir = Player_GetCmdArgDir();
     u32 scriptID = Player_GetCmdArgScript();
 
     Player_LockBlownAway(p, dir, param_3, param_4, scriptID);
@@ -14445,7 +14442,7 @@ void Cmd_30CC(void) {
     }
     p->timedCharge = 0;
     p->doneScriptID = Player_GetCmdArgScript();
-    p->facing = FACE_DOWN;
+    p->facing = DIR8_DOWN;
     Player_SetAnimFacing(p);
     Player_EnterLockedState(p);
     Player_SetAction(p, PACT_UNK_7, 0);
@@ -15157,7 +15154,7 @@ void Player_ApplyFormRequest(Player* p) {
     p->beastGfx->plttID = p->basePlttID;
     p->walkVoiceTimer = 0;
     p->attackVoiceCooldown = 0;
-    p->facing = FACE_UP;
+    p->facing = DIR8_UP;
     p->animDir = 0;
     p->xflip = 0;
 

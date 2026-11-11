@@ -19,12 +19,12 @@ static_assert(sizeof(EntityD438) == 120);
 static EntityD438* sEntityD438;  // 0x03000124
 
 static inline void EntityD438_GetAnimDir(u8 dir, u8* variant, u8* flags) {
-  if (dir == 1 || dir == 2) {
+  if (dir == DIR4_EAST || dir == DIR4_SOUTH) {
     *variant = 1;
   } else {
     *variant = 0;
   }
-  if (dir > 1) {
+  if (dir > DIR4_EAST) {
     *flags = 1;
   } else {
     *flags = 0;

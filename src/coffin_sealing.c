@@ -27,7 +27,7 @@ typedef struct {
   u32 scriptID;          // 0x68, '.e', VM_ExecByID に渡す
   Vec3 pos;              // 0x6C, '.p=gStat->playerPos', 各ノードの pos にコピーされる
   AuxSprite sprites[5];  // 0x74
-  AuxSpriteGfx gfx;      // 0x150, SPRITE_COFFIN
+  AuxSpriteGfx gfx;      // 0x150, SPRITE_COFFIN_0
   rgb555* pltt;          // 0x16C, plttBuf か gObjPlttData のパレット行を指す (FUN_08089b48)
   rgb555 plttBuf[16];    // 0x170, FUN_08089b48 で2つのパレットをブレンドした結果
 } CoffinSealEffect;
@@ -171,7 +171,7 @@ void FUN_08089f58(CoffinSealEffect* p) {
     p->shakeZ = 0;
   }
   if (p->stateTimer == 10 || p->stateTimer == 20 || p->stateTimer == 60 || p->stateTimer == 70) {
-    PlaySound_082406e0(SONG_211);
+    PlaySound_082406e0(SE_COFFIN_STAIRS);  // ここでは階段用のSEを棺桶がカタカタする演出のために鳴らす
   }
   if (p->stateTimer >= 90) {
     CoffinSealEffect_SetState(p, 7);
@@ -189,18 +189,18 @@ void FUN_08089ff0(CoffinSealEffect* p) {
   p->stateTimer++;
 }
 
-void (*const PTR_ARRAY_085ac044[8])(CoffinSealEffect*) = {
-    FUN_08089ce0,
-    FUN_08089d24,
-    FUN_08089d50,
-    FUN_08089ddc,
-    FUN_08089e98,
-    FUN_08089f38,
-    FUN_08089f58,
-    FUN_08089ff0,
-};
-
 s32 CoffinSealEffect_Update(CoffinSealEffect* p) {
+  static void (*const PTR_ARRAY_085ac044[8])(CoffinSealEffect*) = {
+      FUN_08089ce0,
+      FUN_08089d24,
+      FUN_08089d50,
+      FUN_08089ddc,
+      FUN_08089e98,
+      FUN_08089f38,
+      FUN_08089f58,
+      FUN_08089ff0,
+  };
+
   AuxSprite* spr;
   s32 spread;
   s32 i;

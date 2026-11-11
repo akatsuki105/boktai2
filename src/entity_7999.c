@@ -5,6 +5,7 @@
 #include "input.h"
 #include "link_session.h"
 #include "magic.h"
+#include "menu.h"
 #include "sound.h"
 #include "sprite.h"
 #include "text.h"
@@ -62,7 +63,6 @@ void FUN_081da218(Entity7999* p);
 void FUN_081da814(Entity7999* p);
 void FUN_081da69c(Entity7999* p);
 void FUN_081da468(Entity7999* p);
-void MainMenu_SetHudMode(s32 mode);
 void FUN_080e1238(s32 x, s32 y, s32 width, s32 height, u32 value, s32 bgIdx);
 
 static inline bool8 Entity7999_IsUnk56Set(void) {
@@ -203,8 +203,8 @@ void Entity7999_InitBG(Entity7999* p) {
   param = 5;
   Video_SetupBGLayout(2, 0, f, 0, 0, 1, &param);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
-  p->bgp = GetBgPlttFile(0x26BB)->body;
-  CpuCopy16(p->bgp, gBgPlttBuffer, 512);
+  p->bgp = GetBgPlttFile(BGP_LINK)->body;
+  CpuCopy16(p->bgp, gBgPlttBuffer, 256 * sizeof(rgb555));
   if (!Entity7999_IsUnk56Set()) {
     s32 i;
 
@@ -380,41 +380,35 @@ void Entity7999_InitSprites(Entity7999* p) {
   OpenMainSpriteFile(&p->gfxIcon, p->fileIcon);
   for (i = 0; i < 5; i++) {
     MainSpriteGfx* gfx;
-    u16 poseIdx;
+    u16 pose;
 
     switch (i) {
       case 0: {
-        poseIdx = 51;
-        gfx = &p->gfxLink;
+        pose = LINK_LONG_CURSOR, gfx = &p->gfxLink;
         break;
       }
       case 1: {
-        poseIdx = 52;
-        gfx = &p->gfxLink;
+        pose = LINK_LEFT, gfx = &p->gfxLink;
         break;
       }
       case 2: {
-        poseIdx = 53;
-        gfx = &p->gfxLink;
+        pose = LINK_RIGHT, gfx = &p->gfxLink;
         break;
       }
       case 3: {
-        poseIdx = ICON_MAGIC(MAGIC_SOL);
-        gfx = &p->gfxIcon;
+        pose = ICON_MAGIC(MAGIC_SOL), gfx = &p->gfxIcon;
         break;
       }
       case 4: {
-        poseIdx = 21;
-        gfx = &p->gfxLink;
+        pose = LINK_START_OWARI, gfx = &p->gfxLink;
         break;
       }
       default: {
-        poseIdx = 0;
-        gfx = &p->gfxIcon;
+        pose = 0, gfx = &p->gfxIcon;
         break;
       }
     }
-    MainSprite_Add(&p->sprites[i], gfx, poseIdx, SPRFLAG_SCREEN_COORD, 0, 0, 0, NULL);
+    MainSprite_Add(&p->sprites[i], gfx, pose, SPRFLAG_SCREEN_COORD, 0, 0, 0, NULL);
   }
 }
 

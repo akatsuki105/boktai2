@@ -9,6 +9,7 @@
 #include "map_inline.h"
 #include "msgbus.h"
 #include "player.h"
+#include "puff.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
@@ -81,7 +82,7 @@ typedef struct Duneyrr {
   u32 arriveDistSq;                       // 0x560, base.targetDistSq がこれ以下になったら止まる
   u32 unk_564;                            // 0x564, 毎フレーム +1
   u8 unk_568[4];                          // 0x568, Entity5DA5 の4つ分, 0 になったときに Entity5DA5_SetState する残りフレーム
-  DuneyrrPowderBallManager* powderBalls;  // 0x56C, "鱗粉玉"
+  DuneyrrPowderBallManager* powderBalls;  // 0x56C, "燐粉玉"
   rgb555 pltt[16][16];                    // 0x570, gObjPlttData の同じ16色を16回写す
   Vec3 homePos;                           // 0x770
   u16 hurtboxPower;                       // 0x778, '.s[1]=10'
@@ -93,7 +94,7 @@ typedef struct Duneyrr {
   s16 hitboxPower2;                       // 0x784, '.a[3]=50'
   s16 hitboxKnockback2;                   // 0x786, '.a[4]=240'
   s16 hitboxUnk44_2;                      // 0x788, '.a[5]=60'
-  s16 sporePower;                         // 0x78A, '.a[6]=13', SporeManager_Emit に渡す鱗粉の power
+  s16 sporePower;                         // 0x78A, '.a[6]=13', SporeManager_Emit に渡す燐粉の power
   s16 unk_78c;                            // 0x78C, '.a[7]=35', DuneyrrPowderBallManager_Create の power
   s16 unk_78e;                            // 0x78E, '.e[0]=30'
   s16 unk_790;                            // 0x790, '.e[1]=0'
@@ -113,9 +114,7 @@ s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speed
 s32 FUN_08059210(void);
 s32 FUN_080592a4(void);
 unknown* LarvaManager_Create(s32 param_1, s32 param_2, s32 param_3);
-void Entity08015584_SpawnSprayEx(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos);
 s32 Entity5DA5_SetState(s32 index, s32 state, s32 param_3);
-void Entity08015584_SpawnRadial(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay);
 s32 Entity5DA5_AreAllLit(void);
 
 void FUN_080262c0(Boss*, s32);
@@ -149,7 +148,7 @@ static const s16 s16_ARRAY_085aaac4[4] = {0x40, 0x40, 0x60, 0x20};  // 0x085AAAC
 // 残差はオフセットの定数を作るレジスタの割り当てだけ (原典は r6 を足して4本使う), 2つの表に分けて命令数までは揃った
 NON_MATCH void FUN_08023388(Duneyrr* p) {
 #ifdef NONMATCHING_C
-  u32 animID = p->sprite.unk_12;
+  u32 animID = p->sprite.animId;
   u32 idx = p->sprite.animCmdIdx;
   u32 duration = p->sprite.animCmdDuration;
   u32 t = p->sprite.animCmdTimer;
@@ -367,7 +366,7 @@ void FUN_080238ac(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
     pos.x += (RandomNext() & 0xFF) - 0x80;
     pos.y += (RandomNext() & 0x3F) + 0x80;
     pos.z += (RandomNext() & 0xFF) - 0x80;
-    Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 3, 3);
+    Puff_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 3, 3);
   }
   if (elem->timer > 10) {
     DuneyrrElem_SetState(elem, 2);
@@ -394,7 +393,7 @@ NON_MATCH void FUN_080239bc(Duneyrr* p, DuneyrrElem* elem, s32 idx) {
     pos.x = pos.x - 0x80 + (u8)RandomNext();
     pos.y = pos.y + 0x80 + (RandomNext() & 0x3F);
     pos.z = pos.z - 0x80 + (u8)RandomNext();
-    Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 7, 3);
+    Puff_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, elem->timer & 7, 3);
   }
   if (elem->timer < 20 ? (elem->timer & 3) == 0 : (elem->timer & 1) == 0) {
     elem->sprite.flags |= SPRFLAG_HIDDEN;
@@ -453,7 +452,7 @@ NON_MATCH void FUN_08023bd8(Duneyrr* p, s32 param_2) {
       pos.x = pos.x - 0x80 + (u8)Random();
       pos.y = pos.y + 0x80 + (Random() & 0x3F);
       pos.z = pos.z - 0x80 + (u8)Random();
-      Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 2, 2, 2, 3);
+      Puff_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 2, 2, 2, 3);
       p->unk_16a = (Random() & 3) + 2;
     } else {
       p->unk_16a--;
@@ -465,7 +464,7 @@ NON_MATCH void FUN_08023bd8(Duneyrr* p, s32 param_2) {
       pos.x = pos.x - 0x80 + (u8)Random();
       pos.y = pos.y + 0x80 + (Random() & 0x3F);
       pos.z = pos.z - 0x80 + (u8)Random();
-      Entity08015584_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, 0, 3);
+      Puff_SpawnSprayOne(&pos, 5, 0x3000, Q6(1), 12, 4, 0, 3);
       p->unk_16a = (Random() & 3) + 1;
     } else {
       p->unk_16a--;
@@ -1278,7 +1277,7 @@ NON_MATCH void FUN_08025830(Boss* boss, s32 timer) {
 #endif
 }
 
-// 1 回目で打ち切り (397/366), 揺れと鱗粉の位置は duneyrr_powder_ball.c の Vec3_Sum / Vec3_SetPolar と同じ形の static inline にすると命令数は揃う (366/366), 残りは p と boss のレジスタ
+// 1 回目で打ち切り (397/366), 揺れと燐粉の位置は duneyrr_powder_ball.c の Vec3_Sum / Vec3_SetPolar と同じ形の static inline にすると命令数は揃う (366/366), 残りは p と boss のレジスタ
 NON_MATCH void FUN_08025948(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Duneyrr* p = (Duneyrr*)boss;
@@ -1300,7 +1299,7 @@ NON_MATCH void FUN_08025948(Boss* boss, s32 timer) {
     Vec3 pos = mover->pos;
 
     pos.x = pos.x - 0x80 + (u8)Random();
-    Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
+    Puff_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
   }
   if (timer <= 0x40) {
     Vec3 ofs;
@@ -1438,8 +1437,8 @@ void FUN_08025f8c(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     Boss_PlayAnim(boss, &p->sprite, &p->gfx, 5, PLAYMODE_ONCE_AND_STOP, 0);
     pos = &boss->mover.pos;
-    Entity08015584_SpawnRadial(pos, 4, 5, 0x3001, Q6(1), 8, 0x100, 0x100);
-    Entity08015584_SpawnRadial(pos, 6, 5, 0x3001, Q6(1), 10, 0x100, 0x100);
+    Puff_SpawnRadial(pos, 4, 5, 0x3001, Q6(1), 8, 0x100, 0x100);
+    Puff_SpawnRadial(pos, 6, 5, 0x3001, Q6(1), 10, 0x100, 0x100);
     FUN_080240b4(p);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss) && (p->sprite.animEvents & MAIN_ANIM_EVENT_ENDED)) {
@@ -1563,7 +1562,7 @@ NON_MATCH void FUN_08026334(Boss* boss, s32 timer) {
 
         pos.x = pos.x - 0x80 + (u8)Random();
         pos.y -= 0x40;
-        Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
+        Puff_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
       }
     }
     for (i = 0; i < 4; i++) {
@@ -1602,7 +1601,7 @@ NON_MATCH void FUN_08026514(Boss* boss, s32 timer) {
     pos.x = mover->pos.x + (Random() & 0x1FF) - 0x100;
     pos.y = mover->pos.y;
     pos.z = mover->pos.z + (u8)Random() - 0x80;
-    Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), timer & 7, 0x100, 4, 2, -12, 6, &pos);
+    Puff_SpawnSprayEx(1, 5, 0x3001, Q6(1), timer & 7, 0x100, 4, 2, -12, 6, &pos);
   }
   if (boss->playerDistSq[0] <= p->arriveDistSq) {
     mover->pos.x = playerPos->x;
@@ -1665,7 +1664,7 @@ NON_MATCH void FUN_08026738(Boss* boss, s32 timer) {
 
       pos.x = pos.x - 0x80 + (u8)RandomNext();
       pos.y -= 0x40;
-      Entity08015584_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
+      Puff_SpawnSprayEx(1, 5, 0x3001, Q6(1), 0x40, 0x10, 8, 2, -4, timer & 7, &pos);
     }
   }
   for (i = 0; i < 4; i++) {

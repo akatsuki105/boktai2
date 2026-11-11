@@ -6,6 +6,7 @@
 #include "hitbox.h"
 #include "malloc.h"
 #include "map_inline.h"
+#include "puff.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
@@ -16,9 +17,9 @@
 
 // FallingObject.type
 enum {
-  TYPE_0 = 0,
-  TYPE_1 = 1,
-  TYPE_2 = 2,  // 夢幻街のトラップやドゥラスロールの落とす棘鉄球
+  TYPE_LAVA = 0,       // マグマの間欠泉, SPRITE_SPRING_863A
+  TYPE_ROCK = 1,       // 落石, SPRITE_ROCK_9D3F
+  TYPE_SPIKEBALL = 2,  // 夢幻街のトラップやドゥラスロールの落とす鉄球, SPRITE_SPIKEBALL
 };
 
 // FallingObject.state
@@ -41,7 +42,7 @@ typedef struct FallingObject {
   u16 id;                      // 0x00, '.n', hurtbox と hitbox の id
   u8 type;                     // 0x02, '.t', 2 以上は 2 にして超えた分でパレットを選ぶ
   bool8 stateBegun;            // 0x03, 立っていると次の更新で state の初期化をする
-  u8 state;                    // 0x04, PTR_ARRAY_085aa7a0[type][state] の添字, see FallingObjectState, TYPE_1/TYPE_2 は 1 以降ずっと跳ね返って消える
+  u8 state;                    // 0x04, PTR_ARRAY_085aa7a0[type][state] の添字, see FallingObjectState, TYPE_ROCK/TYPE_SPIKEBALL は 1 以降ずっと跳ね返って消える
   u8 flags;                    // 0x05, '.f', see FallingObjectFlags
   u16 timer;                   // 0x06, state に入ってからのフレーム数
   u16 duration;                // 0x08, '.T', type 0 の state 2 の長さ, type 1/2 は着地時に 30/25 で上書きし, 超えると消える
@@ -57,7 +58,7 @@ typedef struct FallingObject {
   u8 unk_16[2];                // 0x16
   Vec3 pos;                    // 0x18, '.p'
   HitboxData* hurtbox;         // 0x20, HAS_HURTBOX のときだけ持つ
-  HitboxData* hitbox;          // 0x24, HAS_HITBOX のときだけ持つ, TYPE_0 は HBATTR_FLAME | HBATTR_INKA
+  HitboxData* hitbox;          // 0x24, HAS_HITBOX のときだけ持つ, TYPE_LAVA は HBATTR_FLAME | HBATTR_INKA
   AuxSpriteGfx gfx;            // 0x28, sFallingObjectSpriteIDs[type]
   AuxSprite sprite;            // 0x44
   AuxAnimState anim;           // 0x70, type 0 だけ使う, animIdx 3: 落下, 2: 着地後, 4: 消える
@@ -77,7 +78,6 @@ static_assert(sizeof(FallingObjectManager) == 32);
 
 COMMON_DATA FallingObjectManager* gFallingObjectManager = NULL;  // 0x03002B3C
 
-void Entity08015584_SpawnSprayOne(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand);
 s32 Entity08016ba4_Spawn(s32 count, Vec3* pos, s32 lifeBase, s32 lifeRand, s32 speedBase, s32 speedRand, s32 angleBase, s32 angleRand, s32 velYBase, s32 velYRand);
 FallingObjectManager* FallingObjectManager_Create(u32 id, u32 _);
 
@@ -93,7 +93,7 @@ void FallingObjectManager_ClearGlobal(void) { gFallingObjectManager = NULL; }
 // Hitbox_TestAttr, damage を先に読むローカルは試済
 NON_MATCH void FallingObject_OnHurt(HitboxData* a, HitboxData* b, FallingObject* data) {
 #ifdef NONMATCHING_C
-  if (data->type == TYPE_0) {
+  if (data->type == TYPE_LAVA) {
     if (a->attributes & HBATTR_FROST) {
       data->hp -= a->damage * 2;
     }
@@ -156,13 +156,13 @@ s32 FallingObject_FreeNode(FallingObject* p) {
   Free(p);
 }
 
-static const SpriteID16 sFallingObjectSpriteIDs[8] = {
-    [TYPE_0] = SPRITE_863A,
-    [TYPE_1] = SPRITE_ROCK_9D3F,
-    [TYPE_2] = SPRITE_SPIKEBALL,
-};  // 0x085AA790
-
 s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed, s32 hp, s32 power, s32 knockback, Vec3* pos) {
+  static const SpriteID16 sFallingObjectSpriteIDs[8] = {
+      [TYPE_LAVA] = SPRITE_SPRING_863A,
+      [TYPE_ROCK] = SPRITE_ROCK_9D3F,
+      [TYPE_SPIKEBALL] = SPRITE_SPIKEBALL,
+  };  // 0x085AA790
+
   FallingObject* data;
   s32 plttOffset;
   Vec3 size, offset;
@@ -179,9 +179,9 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
 
   data->id = id;
   plttOffset = 0;
-  if (type >= TYPE_2) {
-    data->type = TYPE_2;
-    plttOffset = type - TYPE_2;
+  if (type >= TYPE_SPIKEBALL) {
+    data->type = TYPE_SPIKEBALL;
+    plttOffset = type - TYPE_SPIKEBALL;
   } else {
     data->type = type;
   }
@@ -189,7 +189,7 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
   data->flags = flags;
   data->duration = duration;
   data->pos = *pos;
-  if (data->type == TYPE_0) {
+  if (data->type == TYPE_LAVA) {
     data->animated = TRUE;
   } else {
     data->animated = FALSE;
@@ -205,11 +205,11 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
     }
     ClearMemory(data->hurtbox, sizeof(HitboxData));
     if (data->flags & LARGER) {
-      VEC3_SET(size, 180, 256, 180);
-      VEC3_SET(offset, 0, 256, 0);
+      VEC3_SET(size, Q8(0.704), Q8(1), Q8(0.704));
+      VEC3_SET(offset, 0, Q8(1), 0);
     } else {
-      VEC3_SET(size, 90, 128, 90);
-      VEC3_SET(offset, 0, 128, 0);
+      VEC3_SET(size, Q8(0.352), Q8(0.5), Q8(0.352));
+      VEC3_SET(offset, 0, Q8(0.5), 0);
     }
     Hitbox_Init(data->hurtbox, data->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
     Hitbox_SetHandler(data->hurtbox, FallingObject_OnHurt, data);
@@ -233,7 +233,7 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
       VEC3_SET(offset, 0, 40, 0);
     }
     attrs = 0;
-    if (data->type == TYPE_0) {
+    if (data->type == TYPE_LAVA) {
       attrs = HBATTR_FLAME | HBATTR_INKA;
     }
     Hitbox_Init(data->hitbox, data->id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_5, &size, &offset);
@@ -250,15 +250,15 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
   AuxSprite_Add(&data->sprite, &data->gfx, 0);
   data->sprite.priority = 2;
   data->sprite.pos = data->pos;
-  if (type >= TYPE_2) {
-    Video_SetAuxSpritePltt(&data->gfx, plttOffset + 635);
+  if (type >= TYPE_SPIKEBALL) {
+    Video_SetAuxSpritePltt(&data->gfx, OBP_SPIKEBALL(plttOffset));
   }
   if (data->flags & LARGER) {
     data->sprite.flags |= SPRFLAG_AFFINE;
-    data->sprite.scaleX = data->sprite.scaleY = 120;
+    data->sprite.scaleX = data->sprite.scaleY = Q6(1.88);
   } else {
     data->sprite.flags &= ~SPRFLAG_AFFINE;
-    data->sprite.scaleX = data->sprite.scaleY = 64;
+    data->sprite.scaleX = data->sprite.scaleY = Q6(1);
   }
   if (data->animated) {
     AuxAnim_SetAnim(&data->anim, gFallingObjectManager->anim, 3, 0, 0);
@@ -283,11 +283,9 @@ s32 Cmd_SpawnFallingObject(void) {
   Vec3 pos;
 
   if (VM_SeekToNamedArg('p')) {
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
+    pos.x = VM_GetValue(), pos.y = VM_GetValue(), pos.z = VM_GetValue();
   } else {
-    VEC3_SET(pos, 0, 0, 0);
+    pos.x = 0, pos.y = 0, pos.z = 0;
   }
   return FallingObject_Spawn(id, type, flags, duration, fallSpeed, hp, power, knockback, &pos);
 }
@@ -303,7 +301,7 @@ void FallingObject_UpdateFall(FallingObject* p) {
   p->pos.y -= p->fallSpeed;
   if (p->pos.y <= p->groundY) {
     p->pos.y = p->groundY;
-    if (p->type == TYPE_2) {
+    if (p->type == TYPE_SPIKEBALL) {
       if (p->flags & LARGER) {
         PlaySound_082406e0(SE_669);
       } else {
@@ -317,7 +315,7 @@ void FallingObject_UpdateFall(FallingObject* p) {
     p->poseTimer = 0;
   }
 
-  if (p->type > TYPE_1) {
+  if (p->type > TYPE_ROCK) {
     p->poseTimer++;
     if (p->poseTimer == 5) {
       p->pose++;
@@ -346,7 +344,7 @@ void FallingObject_UpdateLanded(FallingObject* p) {
     Entity08016ba4_Spawn((Random() & 3) + 6, &p->pos, 9, 20, 8, 8, 0, 256, 24, 16);
   }
 
-  if (p->type > TYPE_1) {
+  if (p->type > TYPE_ROCK) {
     p->poseTimer++;
     if (p->poseTimer == 10) {
       p->pose++;
@@ -498,7 +496,7 @@ s32 FallingObject_SpawnParticles(FallingObject* p) {
   Vec3 pos;
 
   VEC3_SET(pos, p->sprite.pos.x, p->sprite.pos.y, p->sprite.pos.z);
-  Entity08015584_SpawnSprayOne(&pos, 2, 0, Q6(1), 8, 4, 0, 0);
+  Puff_SpawnSprayOne(&pos, 2, 0, Q6(1), 8, 4, 0, 0);
 }
 
 void FallingObject_UpdateVanish(FallingObject* p) {
@@ -519,9 +517,9 @@ void FallingObject_UpdateVanish(FallingObject* p) {
 }
 
 void (*const PTR_ARRAY_085aa7a0[7][4])(FallingObject*) = {
-    [TYPE_0] = {FallingObject_UpdateFall, FallingObject_UpdateLanded,      FallingObject_UpdateWait,        FallingObject_UpdateVanish     },
-    [TYPE_1] = {FallingObject_UpdateFall, FallingObject_UpdateBounceType1, FallingObject_UpdateBounceType1, FallingObject_UpdateBounceType1},
-    [TYPE_2] = {FallingObject_UpdateFall, FallingObject_UpdateBounceType2, FallingObject_UpdateBounceType2, FallingObject_UpdateBounceType2},
+    [TYPE_LAVA] = {FallingObject_UpdateFall, FallingObject_UpdateLanded,      FallingObject_UpdateWait,        FallingObject_UpdateVanish     },
+    [TYPE_ROCK] = {FallingObject_UpdateFall, FallingObject_UpdateBounceType1, FallingObject_UpdateBounceType1, FallingObject_UpdateBounceType1},
+    [TYPE_SPIKEBALL] = {FallingObject_UpdateFall, FallingObject_UpdateBounceType2, FallingObject_UpdateBounceType2, FallingObject_UpdateBounceType2},
 };  // 0x085AA7A0
 
 s32 FallingObjectManager_Update(FallingObjectManager* p) {

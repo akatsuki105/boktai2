@@ -149,7 +149,7 @@ _0800D2E8: .4byte 0x030046A4
 _0800D2EC: .4byte 0xFFFFFF00
 _0800D2F0:
 	adds r0, r4, #0
-	bl EntityC9BCElem_CanSlide
+	bl PropertyCube_CanSlide
 	cmp r0, #0
 	beq _0800D302
 	movs r0, #4
@@ -167,7 +167,7 @@ _0800D302:
 	rsbs r2, r2, #0
 	mov r0, r8
 	adds r1, r4, #0
-	bl EntityC9BCElem_TryFall
+	bl PropertyCube_TryFall
 	cmp r0, #0
 	bne _0800D326
 	strb r6, [r4, #3]

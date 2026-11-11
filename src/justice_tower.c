@@ -23,7 +23,7 @@ typedef struct Entity080aace8Particle {
   u16 velX;                                    // 0x2C, 毎フレーム ptcl.pos.x に足す
   u16 velY;                                    // 0x2E, 毎フレーム ptcl.pos.y に足す, 8フレームごとに 1 増える
   u8 unk_30[4];                                // 0x30
-  ParticleGroup* group;                        // 0x34, PTCL_GROUP_2
+  ParticleGroup* group2;                       // 0x34, PTCL_GROUP_2
   void (*fn)(struct Entity080aace8Particle*);  // 0x38, FUN_080aa208 が active な枠について呼ぶ
 } Entity080aace8Particle;
 static_assert(sizeof(Entity080aace8Particle) == 60);
@@ -61,7 +61,7 @@ NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
     q->ptcl.flags |= SPRFLAG_HIDDEN;
     q->active = 0;
   } else {
-    Particle_SetPose(&q->ptcl, q->group, PTCL2_SOL_L + ((q->timer >> 2) & 1));
+    Particle_SetPose(&q->ptcl, q->group2, PTCL2_SOL_L + ((q->timer >> 2) & 1));
     q->ptcl.pos.x += q->velX;
     q->ptcl.pos.y += q->velY;
     if ((q->timer & 7) == 0) {
@@ -376,13 +376,13 @@ void FUN_080aa9d0(Entity080aace8* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_SPIKEBALL);
   for (i = 0; i < 2; i++) {
     AuxSprite_Add(&p->auxSprites[i], &p->gfx, SPRFLAG_HIDDEN);
-    Video_SetAuxSpritePltt(&p->gfx, 637);
+    Video_SetAuxSpritePltt(&p->gfx, OBP_SPIKEBALL(2));
     p->auxSprites[i].pos = p->player->mover.pos;
   }
 }
 
 // 8枠ぶんのパーティクルを用意して全部止めておく
-// 残差12命令 (43/55) でこちらが短い: 原典は定数 0 と枠のオフセットを高位レジスタに巻き上げて group だけ p + オフセットで触るが, こちらは1本のポインタで済ませる
+// 残差12命令 (43/55) でこちらが短い: 原典は定数 0 と枠のオフセットを高位レジスタに巻き上げて group2 だけ p + オフセットで触るが, こちらは1本のポインタで済ませる
 NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   ParticleGroup* g = GetParticleGroup(PTCL_GROUP_2);
@@ -390,10 +390,10 @@ NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    q->group = g;
+    q->group2 = g;
     Particle_Add(&q->ptcl, g, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&q->ptcl, -4, -4);
-    Particle_SetPose(&q->ptcl, q->group, PTCL2_SOL_L);
+    Particle_SetPose(&q->ptcl, q->group2, PTCL2_SOL_L);
     Particle_SetPltt(&q->ptcl, 1);
     q->ptcl.priority = 0;
     q->timer = 0;

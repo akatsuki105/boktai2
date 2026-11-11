@@ -1212,7 +1212,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
   }
   (p->e).variant = VM_GetNamedArgValue('C', 0);
   (p->e).plttBase = 610;
-  (p->e).unk_47c = 306;
+  (p->e).unk_47c = OBP_WHITE_306;
   (p->e).unk_47e = (p->e).variant + 612;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);

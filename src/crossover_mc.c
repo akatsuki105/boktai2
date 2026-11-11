@@ -1,3 +1,4 @@
+#include "crossover.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -18,8 +19,6 @@ typedef struct CrossoverMC {
 static_assert(sizeof(CrossoverMC) == 448);
 
 bool32 FUN_0804e59c(void);
-s32 CrossoverBattle_GetRound(void);
-s32 CrossoverBattle_IsMaxMode(void);
 
 void CrossoverMC_StateHidden(CrossoverMC* p) {
   if (p->entered) {

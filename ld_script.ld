@@ -26,7 +26,7 @@ SECTIONS {
       src/registry.o(ewram_data);
       src/utility_08237468.o(ewram_data);
       src/vm.o(ewram_data);
-      src/code_08230e88.o(ewram_data);
+      src/script_mesg.o(ewram_data);
       src/link.o(ewram_data);
       src/entity_0804e2c0.o(ewram_data);
     } >ewram = 0x00
@@ -38,8 +38,8 @@ SECTIONS {
       src/entity_08000a94.o(iwram_data);
       src/entity_08001610.o(iwram_data);
       src/main.o(iwram_data);
-      src/entity_d9ae.o(iwram_data);
-      src/entity_08004fac.o(iwram_data);
+      src/movable_block.o(.bss);
+      src/script_tile_override.o(.bss);
       src/message_choice.o(iwram_data);
       src/map_item.o(iwram_data);
       src/trigger_break.o(.bss);
@@ -54,7 +54,7 @@ SECTIONS {
       src/shadow_large.o(.bss);
       src/eff_scatter.o(.bss);
       src/entity_08015220.o(iwram_data);
-      src/entity_08015584.o(.bss);
+      src/puff.o(.bss);
       src/entity_08016ba4.o(iwram_data);
       src/mosaic_fader.o(.bss);
       src/item_icon_popup.o(.bss);
@@ -72,13 +72,14 @@ SECTIONS {
       src/text_marquee.o(iwram_data);
       src/text_panel.o(iwram_data);
       src/text_slideshow.o(iwram_data);
-      src/joyspot.o(iwram_data);
+      src/entity_b88c.o(.bss);
+      src/joyspot.o(.bss);
       src/entity_0804e2c0.o(iwram_data);
       src/signal_strength_icon.o(iwram_data);
-      src/entity_d53d.o(iwram_data);
+      src/crossover_error.o(.bss);
       . = ALIGN(8);
       src/crossover_battle.o(iwram_data);
-      src/crossover_ojama.o(iwram_data);
+      src/crossover_ojama.o(.bss);
       src/crossover_result.o(.bss);
       src/black_panther.o(.bss);
       src/entity_d438.o(.bss);
@@ -106,7 +107,7 @@ SECTIONS {
       src/entity_080e01bc.o(iwram_data);
       src/entity_778b.o(iwram_data);
       src/enemy_target.o(.bss);
-      src/entity_081d0e20.o(iwram_data);
+      src/pitfall.o(.bss);
       src/lever_switch.o(iwram_data);
       src/entity_081d2180.o(iwram_data);
       src/elevator.o(iwram_data);
@@ -125,7 +126,7 @@ SECTIONS {
       src/entity_081edcc4.o(.bss);
       src/entity_081ee2a0.o(.bss);
       src/entity_081ee7a8.o(.bss);
-      src/entity_081eeb28.o(.bss);
+      src/pitfall_warning.o(.bss);
       src/entity_081eee80.o(.bss);
       src/entity_081efa9c.o(.bss);
       src/entity_081f0298.o(.bss);
@@ -156,7 +157,7 @@ SECTIONS {
       . = ALIGN(8);
       src/font.o(iwram_data);
       src/system_0823071c.o(iwram_data);
-      src/code_08230e88.o(iwram_data);
+      src/script_mesg.o(.bss);
       . = ALIGN(8);
       src/vm.o(iwram_data);
       src/vm_ctrl1.o(iwram_data);
@@ -187,7 +188,7 @@ SECTIONS {
       src/map_pltt_4ae5.o(COMMON);
       src/entity_6978.o(COMMON);
       src/cactus.o(COMMON);
-      src/entity_c9bc.o(COMMON);
+      src/property_cube.o(COMMON);
       src/falling_object.o(COMMON);
       src/shadow_scripted.o(COMMON);
       src/entity_08016660.o(COMMON);
@@ -254,8 +255,8 @@ SECTIONS {
 			src/map_pltt_4ae5.o (.text);
 			src/entity_6978.o (.text);
 			src/entity_e28b.o (.text);
-			src/entity_d9ae.o (.text);
-			src/entity_08004fac.o (.text);
+			src/movable_block.o (.text);
+			src/script_tile_override.o (.text);
 			src/message_choice.o (.text);
 			src/map_item.o (.text);
 			src/trigger_break.o (.text);
@@ -266,7 +267,7 @@ SECTIONS {
 			src/spirit_bugs.o (.text);
 			src/bamboo.o (.text);
 			src/cactus.o (.text);
-			src/entity_c9bc.o (.text);
+			src/property_cube.o (.text);
 			src/entity_55c2.o (.text);
 			src/falling_object.o (.text);
 			src/dungeon_title.o (.text);
@@ -283,7 +284,7 @@ SECTIONS {
 			src/shadow_scripted.o (.text);
 			src/eff_scatter.o (.text);
 			src/entity_08015220.o (.text);
-			src/entity_08015584.o (.text);
+			src/puff.o (.text);
 			src/entity_08016660.o (.text);
 			src/entity_08016ba4.o (.text);
 			src/mosaic_fader.o (.text);
@@ -325,7 +326,7 @@ SECTIONS {
 			src/joyspot.o (.text);
 			src/entity_0804e2c0.o (.text);
 			src/signal_strength_icon.o (.text);
-			src/entity_d53d.o (.text);
+			src/crossover_error.o (.text);
 			src/crossover_lobby.o (.text);
 			src/crossover_battle.o (.text);
 			src/crossover_ojama.o (.text);
@@ -383,7 +384,7 @@ SECTIONS {
 			src/entity_8af6.o (.text);
 			src/entity_cf58.o (.text);
 			src/arrow_marker.o (.text);
-			src/code_080a6c94.o (.text);
+			src/script_utility.o (.text);
 			src/mission_marker.o (.text);
 			src/gameover.o (.text);
 			src/eff_mfreeze.o (.text);
@@ -465,7 +466,7 @@ SECTIONS {
 			src/enemy/boku_link.o (.text);
 			src/enemy/golem_link.o (.text);
 			src/enemy/dog_link.o (.text);
-			src/entity_081d0e20.o (.text);
+			src/pitfall.o (.text);
 			src/lever_switch.o (.text);
 			src/entity_081d2180.o (.text);
 			src/elevator.o (.text);
@@ -492,7 +493,7 @@ SECTIONS {
 			src/entity_081edcc4.o (.text);
 			src/entity_081ee2a0.o (.text);
 			src/entity_081ee7a8.o (.text);
-			src/entity_081eeb28.o (.text);
+			src/pitfall_warning.o (.text);
 			src/entity_081eee80.o (.text);
 			src/entity_081efa9c.o (.text);
 			src/entity_081f0298.o (.text);
@@ -561,7 +562,7 @@ SECTIONS {
 			src/malloc.o (.text);
 			src/entity.o (.text);
 			src/registry.o (.text);
-			src/code_08230e88.o (.text);
+			src/script_mesg.o (.text);
 			src/file.o (.text);
 			src/vm.o (.text);
 			src/vm_ctrl1.o (.text);
@@ -720,21 +721,21 @@ SECTIONS {
     *libc.a:syscalls.o(.rodata);
     src/vm_commands.o (.rodata);
     src/map_pltt_4ae5.o (.rodata);
-    src/entity_d9ae.o (.rodata);
+    src/movable_block.o (.rodata);
     src/trigger_lamp.o (.rodata);
     src/duneyrr_chandelier.o (.rodata);
     src/interact_point.o (.rodata);
     src/bamboo_shoots.o (.rodata);
     src/spirit_bugs.o (.rodata);
     src/bamboo.o (.rodata);
-    src/entity_c9bc.o (.rodata);
+    src/property_cube.o (.rodata);
     src/falling_object.o (.rodata);
     src/entity_329b.o (.rodata);
     src/entity_e534.o (.rodata);
     src/password.o (.rodata);
     src/eff_scatter.o (.rodata);
     src/entity_08015220.o (.rodata);
-    src/entity_08015584.o (.rodata);
+    src/puff.o (.rodata);
     src/entity_08016660.o (.rodata);
     src/mosaic_fader.o (.rodata);
     src/item_icon_popup.o (.rodata);
@@ -757,7 +758,7 @@ SECTIONS {
     src/entity_b88c.o (.rodata);
     src/joyspot.o (.rodata);
     src/entity_0804e2c0.o (.rodata);
-    src/entity_d53d.o (.rodata);
+    src/crossover_error.o (.rodata);
     src/crossover_lobby.o (.rodata);
     src/crossover_battle.o (.rodata);
     src/crossover_ojama.o (.rodata);
@@ -825,7 +826,7 @@ SECTIONS {
     src/enemy/boku_link.o (.rodata);
     src/enemy/golem_link.o (.rodata);
     src/enemy/dog_link.o (.rodata);
-    src/entity_081d0e20.o (.rodata);
+    src/pitfall.o (.rodata);
     src/lever_switch.o (.rodata);
     src/entity_081d2180.o (.rodata);
     src/elevator.o (.rodata);
@@ -846,7 +847,7 @@ SECTIONS {
     src/entity_081edcc4.o (.rodata);
     src/entity_081ee2a0.o (.rodata);
     src/entity_081ee7a8.o (.rodata);
-    src/entity_081eeb28.o (.rodata);
+    src/pitfall_warning.o (.rodata);
     src/entity_081eee80.o (.rodata);
     src/entity_081efa9c.o (.rodata);
     src/entity_081f0298.o (.rodata);

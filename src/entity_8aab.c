@@ -5,6 +5,7 @@
 #include "global.h"
 #include "input.h"
 #include "player.h"
+#include "puff.h"
 #include "shadow.h"
 #include "sound.h"
 #include "sprite.h"
@@ -133,7 +134,6 @@ static_assert(sizeof(Entity8AAB) == 3936);
 IWRAM_DATA Entity8AAB* gEntity8AAB = NULL;  // 0x03000248
 
 void FUN_080a6e88(bool32 stopSound);
-s32 Entity08015584_SpawnSprayOne(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8);
 void FUN_080a6edc(void);
 void Map_GetZoneMin(u16 id, u16* out);
 Entity8AAB* Entity8AAB_Create(u32 val, u32 _);
@@ -180,6 +180,8 @@ static inline s32 Entity8AAB_AngleToAnimDir(s16 angle, u8* animDir, u8* xflip) {
   while (angle > 255) {
     angle -= 256;
   }
+
+  // 本当は s32 dir8 を使うべきだが, angle に上書きしないと現状一致が崩れる
   angle = ((angle - 16) >> 5) & 7;
   if (angle == 4) {
     *animDir = 0;
@@ -1640,10 +1642,10 @@ NON_MATCH void FUN_08227608(Entity8AAB* p) {
       Vec3* pos = &p->sprite.pos;
       s32 i;
 
-      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
-      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
-      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
-      Entity08015584_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Puff_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Puff_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Puff_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
+      Puff_SpawnSprayOne(pos, 1, 512, Q6(0.75), 8, 8, 8, 4);
       ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 32, 60, 10, 3, 10, 5, 60, 10);
       ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 64, 60, 10, 3, 10, 5, 60, 10);
       ScatterEffect_SpawnAtAngle(1, SCATTER_STONE, pos, 96, 60, 10, 3, 10, 5, 60, 10);

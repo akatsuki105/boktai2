@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "malloc.h"
+#include "puff.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite_aux.h"
@@ -43,7 +44,6 @@ typedef struct BreakableManager {
 static_assert(sizeof(BreakableManager) == 32);
 
 void exit(int code);  // libc.a:exit.o
-s32 Entity08015584_SpawnSprayEx(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, Vec3* pos);
 s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 static BreakableManager* gBreakableManager;  // 0x03000030
@@ -80,7 +80,7 @@ void Breakable_OnHurt(HitboxData* a, HitboxData* b, Breakable* item) {
     PlaySound_082406e0(SONG_334);
   }
   item->flashTimer = 4;
-  Video_SetAuxSpritePltt(&item->gfx, 306);
+  Video_SetAuxSpritePltt(&item->gfx, OBP_WHITE_306);
   pos = item->pos;
   pos.x -= Q8(0.5), pos.y += Q8(0.5), pos.z += Q8(0.5);
   angle = a->angle + 0x80;
@@ -126,8 +126,8 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
     pos.x -= 0x80;
     pos.y = pos.y;
     pos.z += 0x80;
-    Entity08015584_SpawnSprayEx(4, 1, 0x2000, Q6(1), 0, 0x100, 2, 3, 0xC, 6, &pos);
-    Entity08015584_SpawnSprayEx(6, 1, 0x2000, Q6(1), 0, 0x100, 4, 4, 0xA, 4, &pos);
+    Puff_SpawnSprayEx(4, 1, 0x2000, Q6(1), 0, 0x100, 2, 3, 0xC, 6, &pos);
+    Puff_SpawnSprayEx(6, 1, 0x2000, Q6(1), 0, 0x100, 4, 4, 0xA, 4, &pos);
     ScatterEffect_SpawnAtAngle(4, SCATTER_STONE, &pos, 0, 0x100, 0x10, 4, 0xC, 3, 30, 0xF);
     FUN_08014da0(4, 6, &pos, 0, 0x14, 4, 0xA, 6, 0, 0x100, 0x14, 4);
   } else {

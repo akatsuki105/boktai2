@@ -97,12 +97,12 @@ NON_MATCH void Entity082047f0_SetElemAnim(Entity082047f0* p, AuxAnimState* anim,
   u8 variant;
   u8 xflip;
 
-  if (p->dir == 1 || p->dir == 2) {
+  if (p->dir == DIR4_EAST || p->dir == DIR4_SOUTH) {
     variant = 0;
   } else {
     variant = 1;
   }
-  xflip = p->dir > 1;
+  xflip = p->dir > DIR4_EAST;
   AuxAnim_SetAnim(anim, p->animFile, animIdx, variant, xflip | flags);
 #else
   INCFUNC("asm/func/Entity082047f0_SetElemAnim.inc");
@@ -151,7 +151,7 @@ NON_MATCH s32 Entity082047f0_UpdateMode1(Entity082047f0* p, Entity082047f0Elem* 
         Entity082047f0_ShowElems(p);
         p->dir = Angle_ToDir4(p->mover->angle);
         variant = Random() & 1;
-        AuxAnim_SetAnim(&elem->anim, p->animFile, 7, variant, p->dir > 1);
+        AuxAnim_SetAnim(&elem->anim, p->animFile, 7, variant, p->dir > DIR4_EAST);
         elem->stateInited = TRUE;
       }
       elem->animDone = AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
@@ -164,7 +164,7 @@ NON_MATCH s32 Entity082047f0_UpdateMode1(Entity082047f0* p, Entity082047f0Elem* 
       if (!elem->stateInited) {
         p->dir = Angle_ToDir4(p->mover->angle);
         variant = Random() & 1;
-        AuxAnim_SetAnim(&elem->anim, p->animFile, 7, variant, p->dir > 1);
+        AuxAnim_SetAnim(&elem->anim, p->animFile, 7, variant, p->dir > DIR4_EAST);
         elem->stateInited = TRUE;
       }
       elem->animDone = AuxSprite_AdvanceAnim(&elem->sprite, &elem->anim);
@@ -174,7 +174,7 @@ NON_MATCH s32 Entity082047f0_UpdateMode1(Entity082047f0* p, Entity082047f0Elem* 
           elem->stateInited = FALSE;
         } else {
           variant = Random() & 1;
-          AuxAnim_SetAnim(&elem->anim, p->animFile, 7, variant, p->dir > 1);
+          AuxAnim_SetAnim(&elem->anim, p->animFile, 7, variant, p->dir > DIR4_EAST);
           elem->animDone = FALSE;
         }
       }
@@ -253,7 +253,7 @@ s32 Entity082047f0_UpdateMode3(Entity082047f0* p, Entity082047f0Elem* elem, s32 
         elem->radius = 250;
         Entity082047f0_ShowElems(p);
         p->dir = Angle_ToDir4(p->mover->angle);
-        if (p->dir > 1) {
+        if (p->dir > DIR4_EAST) {
           if (idx == 0) {
             Entity082047f0_SetElemAnim(p, &elem->anim, 6, 0);
           } else {

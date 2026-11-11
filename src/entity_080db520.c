@@ -385,7 +385,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
 void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
   u32 q = Angle_ToDir4(mover->angle);
 
-  if (q > 1) {
+  if (q > DIR4_EAST) {
     *flags = 1;
     *variant = 3 - q;
   } else {

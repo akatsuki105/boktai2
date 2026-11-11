@@ -49,7 +49,9 @@ typedef struct {
 } CrossoverOjama;
 static_assert(sizeof(CrossoverOjama) == 1228);
 
-IWRAM_DATA CrossoverOjama* gCrossoverOjama = NULL;  // 0x03000118
+static CrossoverOjama* sCrossoverOjama;  // 0x03000118
+
+bool32 FUN_0804e59c(void);
 
 // 色と数を入れる, 数は表示できる 0..10 に収める
 static inline void CrossoverOjamaBat_SetColorCount(CrossoverOjamaBat* elem, u32 color, s32 n) {
@@ -64,45 +66,6 @@ static inline void CrossoverOjamaBat_SetColorCount(CrossoverOjamaBat* elem, u32 
 
 // 右上の出入口のうち idx の列を移動の始点にする
 static inline void CrossoverOjamaBat_SetFromTopRight(CrossoverOjamaBat* elem, s32 idx) { VEC3_SET(elem->from, (idx & 3) * 24 + 272, 32, 0); }
-
-bool32 FUN_0804e59c(void);
-void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
-
-void CrossoverOjamaBat_StateHidden(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-void CrossoverOjamaBat_StateStock(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-void CrossoverOjamaBat_StateFlyToStock(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-void CrossoverOjamaBat_StateFlyOut(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-void CrossoverOjamaBat_StateFlyIn(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-void CrossoverOjamaBat_StateDeflect(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-void CrossoverOjamaBat_StateShow(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx);
-
-void (*const sCrossoverOjamaBatStateFuncs[7])(CrossoverOjama*, CrossoverOjamaBat*, s32) = {
-    CrossoverOjamaBat_StateHidden,
-    CrossoverOjamaBat_StateStock,
-    CrossoverOjamaBat_StateFlyToStock,
-    CrossoverOjamaBat_StateFlyOut,
-    CrossoverOjamaBat_StateFlyIn,
-    CrossoverOjamaBat_StateDeflect,
-    CrossoverOjamaBat_StateShow,
-};  // 0x085AB6D4
-
-void CrossoverOjama_StateHidden(CrossoverOjama*);
-void CrossoverOjama_StateSend(CrossoverOjama*);
-void CrossoverOjama_StateReceive(CrossoverOjama*);
-void CrossoverOjama_StateBlock(CrossoverOjama*);
-void CrossoverOjama_StateRivalBlock(CrossoverOjama*);
-void CrossoverOjama_StateReturn(CrossoverOjama*);
-void CrossoverOjama_StateResult(CrossoverOjama*);
-
-void (*const sCrossoverOjamaStateFuncs[7])(CrossoverOjama*) = {
-    CrossoverOjama_StateHidden,
-    CrossoverOjama_StateSend,
-    CrossoverOjama_StateReceive,
-    CrossoverOjama_StateBlock,
-    CrossoverOjama_StateRivalBlock,
-    CrossoverOjama_StateReturn,
-    CrossoverOjama_StateResult,
-};  // 0x085AB6F0
 
 void CrossoverOjama_NextBlockStep(CrossoverOjama* p, s32 param_2) {
   if (p->blockFlags & 1) {
@@ -581,6 +544,26 @@ void CrossoverOjama_StateResult(CrossoverOjama* p) {
 }
 
 s32 CrossoverOjama_Update(CrossoverOjama* p) {
+  static void (*const sCrossoverOjamaBatStateFuncs[7])(CrossoverOjama*, CrossoverOjamaBat*, s32) = {
+      CrossoverOjamaBat_StateHidden,
+      CrossoverOjamaBat_StateStock,
+      CrossoverOjamaBat_StateFlyToStock,
+      CrossoverOjamaBat_StateFlyOut,
+      CrossoverOjamaBat_StateFlyIn,
+      CrossoverOjamaBat_StateDeflect,
+      CrossoverOjamaBat_StateShow,
+  };  // 0x085AB6D4
+
+  static void (*const sCrossoverOjamaStateFuncs[7])(CrossoverOjama*) = {
+      CrossoverOjama_StateHidden,
+      CrossoverOjama_StateSend,
+      CrossoverOjama_StateReceive,
+      CrossoverOjama_StateBlock,
+      CrossoverOjama_StateRivalBlock,
+      CrossoverOjama_StateReturn,
+      CrossoverOjama_StateResult,
+  };  // 0x085AB6F0
+
   if (FUN_0804e59c() == FALSE) {
     CrossoverOjamaBat* elem;
     s32 i;
@@ -613,7 +596,7 @@ s32 CrossoverOjama_Destroy(CrossoverOjama* p) {
     CrossoverOjamaBat_Destroy(p, elem, i);
   }
   MainSprite_Remove(&p->banner);
-  gCrossoverOjama = NULL;
+  sCrossoverOjama = NULL;
   return 0;
 }
 
@@ -623,7 +606,7 @@ s32 CrossoverOjama_Init(CrossoverOjama* p) {
   CrossoverOjamaBat* elem;
   s32 i;
 
-  gCrossoverOjama = p;
+  sCrossoverOjama = p;
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
   if (f == NULL) {
     return -1;
@@ -660,8 +643,8 @@ CrossoverOjama* CrossoverOjama_Create(u32 id, u32 unused) {
 }
 
 // 自分のオジャマバットの数を受け取り, 置き場から右上へ送り出す演出を始める
-s32 CrossoverOjama_StartSend(void (*onFinish)(void), CrossoverBattleSide* mine) {
-  CrossoverOjama* p = gCrossoverOjama;
+s32 CrossoverOjama_StartSend(void* onFinish, CrossoverBattleSide* mine) {
+  CrossoverOjama* p = sCrossoverOjama;
   s32 i;
 
   if (p == NULL) {
@@ -686,8 +669,8 @@ s32 CrossoverOjama_StartSend(void (*onFinish)(void), CrossoverBattleSide* mine) 
 }
 
 // 双方のオジャマバットの数とブロッキングを受け取り, 相手のバットが飛び込んでくる演出を始める, incoming は読まない
-s32 CrossoverOjama_StartExchange(void (*onFinish)(void), CrossoverBattleSide* mine, CrossoverBattleSide* rival, u8* incoming) {
-  CrossoverOjama* p = gCrossoverOjama;
+s32 CrossoverOjama_StartExchange(void* onFinish, CrossoverBattleSide* mine, CrossoverBattleSide* rival, u8* incoming) {
+  CrossoverOjama* p = sCrossoverOjama;
   s32 i;
 
   if (p == NULL) {
@@ -719,7 +702,7 @@ s32 CrossoverOjama_StartExchange(void (*onFinish)(void), CrossoverBattleSide* mi
 
 // 拾ったオジャマバットを pos の画面位置から置き場へ飛ばす, 飛んでいる途中の同じ色は先に置き場へ足す
 s32 CrossoverOjama_SpawnCollected(Vec3* pos, s32 color, s32 count) {
-  CrossoverOjama* p = gCrossoverOjama;
+  CrossoverOjama* p = sCrossoverOjama;
   CrossoverOjamaBat* elem;
 
   if (p == NULL) {

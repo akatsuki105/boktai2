@@ -1,14 +1,12 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
-#include "inline.h"
 #include "mover.h"
 #include "msgbus.h"
 #include "random.h"
 #include "shadow.h"
 #include "sprite_aux.h"
 #include "sprite_pltt.h"
-#include "trig.h"
 #include "vec3.h"
 #include "video.h"
 
@@ -52,16 +50,14 @@ typedef struct {
 } EntityE534;
 static_assert(sizeof(EntityE534) == 3336);
 
-void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
-
 // 4 方向の向き dir を左右反転とアニメの variant に分ける
 static inline void EntityE534_GetAnimVariant(u8 dir, u8* variant, u8* xflip) {
-  if (dir == 1 || dir == 2) {
+  if (dir == DIR4_EAST || dir == DIR4_SOUTH) {
     *variant = 1;
   } else {
     *variant = 0;
   }
-  if (dir > 1) {
+  if (dir > DIR4_EAST) {
     *xflip = TRUE;
   } else {
     *xflip = FALSE;

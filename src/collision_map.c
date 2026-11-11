@@ -228,7 +228,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
     if (d != 1 && d != -1) {
       return TRUE;
     }
-    if ((gStat->mapFlags & MPF_HOT) && (attr2 & TATTR_SPECIAL)) {  // マグマブロック
+    if ((gStat->mapFlags & MPF_HOT) && (attr2 & TATTR_SPECIAL)) {  // 溶岩タイル
       return FALSE;
     }
     if (stairs2 != 0) {
@@ -250,7 +250,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
     if (d != gMapBlockW && d != -gMapBlockW) {
       return TRUE;
     }
-    if ((gStat->mapFlags & MPF_HOT) && (attr2 & TATTR_SPECIAL)) {  // マグマブロック
+    if ((gStat->mapFlags & MPF_HOT) && (attr2 & TATTR_SPECIAL)) {  // 溶岩タイル
       return FALSE;
     }
     if (stairs2 != 0) {

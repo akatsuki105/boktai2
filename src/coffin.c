@@ -161,7 +161,7 @@ void FUN_08085880(Coffin* p) {
   VEC3_SET(accel, 0, 0, 0);
   DustManager_SpawnNoPause(&pos, &vel, &accel, 1, 3, 4);
   if (angle & 1) {
-    PlaySound_082406e0(SONG_211);
+    PlaySound_082406e0(SE_COFFIN_STAIRS);
   }
 }
 
@@ -184,7 +184,7 @@ void FUN_0808596c(Coffin* p) {
 
 // 残差1命令, 原典は &gRandTableIdx を ip に置いて毎回 [ip] から読み直すが, こちらは値をレジスタに持つため
 // callee-saved を1本多く push する, Tier A-C は試済, 未: per-TU フラグ
-NON_MATCH void FUN_08085a74(WorldPos* pos, ParticleSpawnParam* params) {
+NON_MATCH void Coffin_SpawnPuffNear(WorldPos* pos, PuffParam* params) {
 #ifdef NONMATCHING_C
   WorldPos v = *pos;
 
@@ -194,9 +194,9 @@ NON_MATCH void FUN_08085a74(WorldPos* pos, ParticleSpawnParam* params) {
   v.z = v.z - 15 + (*(gRandTableIdx + gRandomTable) & 0x1F);
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
   v.y = v.y - 16 - (*(gRandTableIdx + gRandomTable) & 0x3F);
-  Entity08015584_Spawn(1, &v, params);
+  Puff_Spawn(1, &v, params);
 #else
-  INCFUNC("asm/func/FUN_08085a74.inc");
+  INCFUNC("asm/func/Coffin_SpawnPuffNear.inc");
 #endif
 }
 
@@ -322,9 +322,9 @@ void FUN_08085da8(Coffin* p) {
       if (p->unk_336 == 0) {
         s32 stairs = GetTileAt(&p->mover.pos)->heightStairs >> 4;
         if (stairs == STAIRS_VERTICAL || stairs == STAIRS_HORIZONTAL) {
-          PlaySound_082406e0(SONG_211);
+          PlaySound_082406e0(SE_COFFIN_STAIRS);
         } else {
-          PlaySound_082406e0(SONG_210);
+          PlaySound_082406e0(SE_COFFIN_DRAG);
         }
       }
       if ((p->unk_336 & 7) == 0) {
@@ -970,7 +970,7 @@ void Coffin_InitSprite(Coffin* p) {
   s32 i;
 
   p->unk_31c = p->coffinID;
-  Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN);
+  Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN_0);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   p->unk_32e = p->unk_31c;
   Video_SetAuxSpritePltt(&p->gfx, OBP_COFFIN(p->unk_32e));
@@ -984,7 +984,7 @@ void Coffin_InitSprite(Coffin* p) {
   if (VM_SeekToNamedArg('d')) {
     p->facing = VM_GetValue();
   } else {
-    p->facing = FACE_UP;
+    p->facing = DIR8_UP;
   }
   p->animFile = GetFile(DIR_ANIMATION, ANIM_COFFIN);
   FUN_08086024(p, 0);
@@ -1707,7 +1707,7 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
 
 // 多分、棺桶が(変な場所に入ったりして回収不可能になったときに)ボス部屋に戻るときのアニメーション処理
 void Coffin_UpdateState9(Coffin* p) {
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->stateTimer++;
   FUN_08086024(p, 0);
@@ -1735,7 +1735,7 @@ void Coffin_UpdateState9(Coffin* p) {
 }
 
 void Coffin_UpdateState10(Coffin* p) {
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   FUN_08086024(p, 0);
 
@@ -1779,7 +1779,7 @@ void Coffin_UpdateState5(Coffin* p) {
   }
 
   p->unk_32a = 2;
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
   visible = FALSE;
   spawn = FALSE;
@@ -1820,7 +1820,7 @@ void Coffin_UpdateState5(Coffin* p) {
     p->effSprite.flags |= SPRFLAG_HIDDEN;
   }
   if (spawn) {
-    FUN_08085a74(&p->mover.pos, &p->ptclParam);
+    Coffin_SpawnPuffNear(&p->mover.pos, &p->ptclParam);
   }
   FUN_08086024(p, 0);
 
@@ -1944,7 +1944,7 @@ void Coffin_UpdateState11(Coffin* p) {
   p->unk_32a = 0;
   p->unk_394 = 0;
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   FUN_08086024(p, 0);
 }
 
@@ -1953,7 +1953,7 @@ void Coffin_UpdateState13(Coffin* p) {
     Coffin_SetState(p, 13);
   }
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   if (FUN_08086024(p, 8) != 0) {
     Coffin_SetState(p, 12);
   }
@@ -1974,7 +1974,7 @@ void Coffin_UpdateState12(Coffin* p) {
   }
 
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   FUN_08086024(p, 24);
 }
 
@@ -1983,7 +1983,7 @@ void Coffin_UpdateState14(Coffin* p) {
     Coffin_SetState(p, 14);
   }
   p->hurtbox.flags |= HBFLAG_HIDDEN;
-  p->facing = FACE_UP;
+  p->facing = DIR8_UP;
   if (FUN_08086024(p, 16) != 0) {
     Coffin_SetState(p, p->unk_408);
   }

@@ -9,14 +9,14 @@
 	mov sl, r0
 	cmp r0, #0
 	bne _081D0886
-	bl Entity081d0e20_Create
+	bl PitfallManager_Create
 	mov sl, r0
 	cmp r0, #0
 	bne _081D0886
 	b _081D0B6C
 _081D0886:
 	mov r0, sl
-	bl Entity081d0e20_AllocElem
+	bl PitfallManager_AllocPit
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _081D0894
@@ -352,7 +352,7 @@ _081D0B1E:
 	str r0, [sp, #8]
 	str r1, [sp, #0xc]
 	add r0, sp, #8
-	bl Entity081eeb28_Spawn
+	bl PitfallWarning_Spawn
 	movs r0, #0x73
 	movs r1, #0
 	bl VM_GetNamedArgValue

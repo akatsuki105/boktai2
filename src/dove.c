@@ -139,7 +139,7 @@ NON_MATCH void Cmd_SpawnDove(void) {
 void FUN_081d8c80(u32 angle, u8* out1, u8* out2) {
   s32 dir = Angle_ToDir4(angle);
 
-  if (dir > 1) {
+  if (dir > DIR4_EAST) {
     *out2 = 1;
     *out1 = 3 - dir;
   } else {

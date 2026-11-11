@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "map_inline.h"
+#include "puff.h"
 #include "random.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -11,7 +12,7 @@
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
   AuxSprite sprite;              // 0x18
-  AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_CUBE_ROCK`, SPRITE_DB6C, SPRITE_4AEE
+  AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_BLOCK_ROCK`, SPRITE_DB6C, SPRITE_4AEE
   HitboxData hurtbox;            // 0x60
   MapTileOverride tileOverride;  // 0xB0, tileIdx のタイルの高さを height で上書きする
   u8 unk_c0;                     // 0xC0
@@ -29,7 +30,7 @@ void Barricade_OnHurt(HitboxData* a, HitboxData* b, Barricade* p) {
 }
 
 void Barricade_SpawnBurstPtcl(Barricade* p) {
-  ParticleSpawnParam param;
+  PuffParam param;
   WorldPos pos;
   s32 i;
 
@@ -57,7 +58,7 @@ void Barricade_SpawnBurstPtcl(Barricade* p) {
     pos.x += Mod(RandomNext(), 300) - 150;
     pos.y += Mod(RandomNext(), 300);
     pos.z += Mod(RandomNext(), 300) - 150;
-    Entity08015584_Spawn(1, &pos, &param);
+    Puff_Spawn(1, &pos, &param);
   }
 }
 
@@ -93,7 +94,7 @@ NON_MATCH void Barricade_InitSprite(Barricade* p, Vec3* pos) {
   if (VM_SeekToNamedArg('t')) {
     Video_GetAuxSprite(gfx, VM_GetValue());
   } else {
-    Video_GetAuxSprite(gfx, SPRITE_CUBE_ROCK);
+    Video_GetAuxSprite(gfx, SPRITE_BLOCK_ROCK);
   }
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;

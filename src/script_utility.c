@@ -91,10 +91,10 @@ s32 Cmd_ReadTable(void) {
   return *(s16*)((u8*)base + (size != 1 ? idx * 4 : idx * 2));
 }
 
-// GAMEFLAG_EVENT で停止させ, stopSound なら対象のEntityとBGMも止める
-void FUN_080a6e88(bool32 stopSound) {
+// GAMEFLAG_EVENT で停止させ, pause=TRUE なら対象のEntityとBGMも止める
+void FUN_080a6e88(bool32 pause) {
   gGameFlags |= GAMEFLAG_EVENT;
-  if (stopSound && !(gSuspendFlags & SUSPEND_EVENT)) {
+  if (pause && !(gSuspendFlags & SUSPEND_EVENT)) {
     FUN_08240918();
     gSuspendFlags |= SUSPEND_EVENT;
   }

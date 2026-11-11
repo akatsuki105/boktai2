@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "input.h"
+#include "menu.h"
 #include "save.h"
 #include "sound.h"
 #include "text.h"
@@ -17,8 +18,6 @@ typedef struct {
   u8* msgPc;     // 0x28, _Init 時点の VM_GetPC(), TextPanel_SetScript(windowID, msgPc) に渡す
 } SaveSequence;
 static_assert(sizeof(SaveSequence) == 44);
-
-void MainMenu_SetHudMode(s32 mode);
 
 // 60フレーム目にセーブを実行して結果メッセージに差し替え、A 押下か 300 フレームで結果をスクリプトに渡して自滅する
 s32 SaveSequence_Update(SaveSequence* p) {

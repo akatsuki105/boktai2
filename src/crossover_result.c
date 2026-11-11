@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "menu.h"
 #include "random.h"
 #include "save.h"
 #include "sound.h"
@@ -41,7 +42,6 @@ static_assert(sizeof(CrossoverResult) == 2280);
 static CrossoverResult* sCrossoverResult;  // 0x0300011C
 
 bool32 FUN_0804e59c(void);
-s32 MainMenu_SetHudMode(s32 mode);
 u8* GetCrossoverPlayerName(s32 idx);
 
 CrossoverResult* CrossoverResult_Get(void) { return sCrossoverResult; }
@@ -138,11 +138,11 @@ NON_MATCH void CrossoverResult_UpdateShowResult(CrossoverResult* p) {
 
     p->stateEntered = FALSE;
     if (p->result == 0) {
-      pose = 0x48;
+      pose = LINK_RESULT_WIN;
     } else if (p->result == 1) {
-      pose = 0x49;
+      pose = LINK_RESULT_LOSE;
     } else {
-      pose = 0x4A;
+      pose = LINK_RESULT_DRAW;
     }
     n = gSystemSaveData->crossoverCount + 1;
     if (n > 9999) {

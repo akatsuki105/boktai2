@@ -136,7 +136,7 @@ _08003C36:
 	strh r0, [r5, #0x12]
 	mov r0, r8
 	strb r0, [r5, #0x10]
-	ldr r1, _08003CA8 @ =EntityD9AEElem_UpdateMove
+	ldr r1, _08003CA8 @ =MovableBlock_UpdateMove
 	movs r2, #0xcc
 	lsls r2, r2, #1
 	adds r0, r5, r2
@@ -163,7 +163,7 @@ _08003C36:
 	b _08003D08
 	.align 2, 0
 _08003CA4: .4byte 0x030046A4
-_08003CA8: .4byte EntityD9AEElem_UpdateMove
+_08003CA8: .4byte MovableBlock_UpdateMove
 _08003CAC:
 	lsls r0, r3, #8
 	strh r0, [r5, #0x12]
@@ -184,7 +184,7 @@ _08003CBE:
 	strb r0, [r1, #1]
 	mov r2, r8
 	strb r2, [r5, #0x10]
-	ldr r1, _08003D00 @ =EntityD9AEElem_UpdateMove
+	ldr r1, _08003D00 @ =MovableBlock_UpdateMove
 	movs r2, #0xcc
 	lsls r2, r2, #1
 	adds r0, r5, r2
@@ -209,7 +209,7 @@ _08003CBE:
 	movs r0, #1
 	b _08003D08
 	.align 2, 0
-_08003D00: .4byte EntityD9AEElem_UpdateMove
+_08003D00: .4byte MovableBlock_UpdateMove
 _08003D04:
 	subs r0, r7, #1
 _08003D06:

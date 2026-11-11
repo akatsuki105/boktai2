@@ -12,11 +12,11 @@
 #include "video.h"
 #include "vm.h"
 
-// Entity0804e2c0.unk_22
-typedef u16 LinkFlags22;
-#define LINKFLAG22_UNK_0 (1 << 0)  // 0x1, FUN_0804e514 が送信バッファ unk_b8 を埋めたあとに立てる
-#define LINKFLAG22_UNK_1 (1 << 1)  // 0x2, 立っている間は FUN_0804e514 が送信を断る
-#define LINKFLAG22_UNK_7 (1 << 7)  // 0x80, 立っていると FUN_0804c888 が FUN_0804d868 を呼ぶ
+typedef enum {
+  FLAG_0 = (1 << 0),  // 0x1, FUN_0804e514 が送信バッファ unk_b8 を埋めたあとに立てる
+  FLAG_1 = (1 << 1),  // 0x2, 立っている間は FUN_0804e514 が送信を断る
+  FLAG_7 = (1 << 7),  // 0x80, 立っていると FUN_0804c888 が FUN_0804d868 を呼ぶ
+} LinkFlags22;        // Entity0804e2c0.unk_22
 
 // 通信まわり, 他の Entity と 違って、 _Init, _Update, _Destroy を持たない
 typedef struct {
@@ -30,27 +30,27 @@ typedef struct {
   u8 unk_1e;  // 0x1E, 根拠: FUN_0804bb30 が 0 を入れる
   s8 unk_1f;  // 0x1F, 根拠: FUN_0804e3a0 が ldrsb で読んで返す
   u8 unk_20;
-  u8 unk_21;           // 0x21, 根拠: FUN_0804e3c0 が返す
-  LinkFlags22 unk_22;  // 0x22, see LinkFlags22
+  u8 unk_21;   // 0x21, 根拠: FUN_0804e3c0 が返す
+  u16 unk_22;  // 0x22, see LinkFlags22
   u8 unk_24[0x26 - 0x24];
   u8 unk_26;  // 0x26, 根拠: FUN_0804dee8 が 0 を入れる
   u8 unk_27[0x30 - 0x27];
   u8 unk_30;  // 0x30, 根拠: FUN_0804d680 が立っていたら rfu_clearAllSlot する
   u8 unk_31;
-  u8 motionEntered;  // 0x32, 根拠: FUN_0804de40 が立っていたら 0 に戻す
-  u8 unk_33;         // 0x33, 根拠: FUN_0804e584 が書く
+  bool8 stateBegun;  // 0x32, state を切り替えた側が立て, 各状態ハンドラが最初のフレームで 0 に戻す
+  u8 errorKind;      // 0x33, 通信エラーの種類, 0: なし, 1: 復帰できない, 2: ボタンで戻れる, CrossoverError_Update が見て state を振り分ける
   u8 unk_34;
   u8 unk_35;  // 0x35, 根拠: FUN_0804bb30 が 0 を入れる
   u8 unk_36;  // 0x36, 同上
   u8 unk_37;
-  u16 motion;  // 0x38, 根拠: FUN_0804e490 が返す
+  u16 state;  // 0x38, sEntity0804e2c0States の添字
   u8 unk_3a[0x3C - 0x3A];
   u8 unk_3c;  // 0x3C, 根拠: FUN_0804bb30 が 0 を入れる
   u8 unk_3d;  // 0x3D, 根拠: FUN_0804e5e8 が 1 を入れる
   u8 unk_3e;
   u8 unk_3f;  // 0x3F, 根拠: FUN_0804cc98 が rfu_LMAN_stopManager に渡す
   u8 unk_40[0x44 - 0x40];
-  u32 motionTimer;  // 0x44, 根拠: FUN_0804da50 が 0 を入れる
+  u32 stateTimer;  // 0x44, state が変わると 0 に戻る
   u8 unk_48[0x50 - 0x48];
   u8 unk_50[0x6C - 0x50];  // 0x50, 根拠: FUN_0804e61c がこの位置のアドレスを返す
   u16 unk_6c;              // 0x6C, 根拠: FUN_0804e638 が返す
@@ -96,92 +96,21 @@ const __attribute__((section(".rodata.faraddr"))) ALIGNED(4) u16 gAcceptableSeri
 void WaitForVBlanks(u16 n);
 void FUN_0804d868(Entity0804e2c0* p);
 void FUN_0804e584(s32);
-s32 FUN_0804c3cc(Entity0804e2c0*);
-s32 FUN_0804c3e4(Entity0804e2c0*);
-s32 FUN_0804c438(Entity0804e2c0*);
-s32 FUN_0804c57c(Entity0804e2c0*);
-s32 FUN_0804c5c0(Entity0804e2c0*);
-s32 FUN_0804c5d8(Entity0804e2c0*);
-s32 FUN_0804c650(Entity0804e2c0*);
-s32 FUN_0804c6ac(Entity0804e2c0*);
-s32 FUN_0804c7c8(Entity0804e2c0*);
-s32 FUN_0804c888(Entity0804e2c0*);
-s32 FUN_0804c8bc(Entity0804e2c0*);
-s32 FUN_0804c8f4(Entity0804e2c0*);
-s32 FUN_0804c940(Entity0804e2c0*);
-s32 FUN_0804c978(Entity0804e2c0*);
-s32 FUN_0804c9a8(Entity0804e2c0*);
-s32 FUN_0804cb6c(Entity0804e2c0*);
-s32 FUN_0804cb84(Entity0804e2c0*);
-s32 FUN_0804cb9c(Entity0804e2c0*);
-s32 FUN_0804cbb4(Entity0804e2c0*);
-s32 FUN_0804cbcc(Entity0804e2c0*);
-s32 FUN_0804cbfc(Entity0804e2c0*);
-s32 FUN_0804cc38(Entity0804e2c0*);
-s32 FUN_0804cc7c(Entity0804e2c0*);
-s32 FUN_0804cc98(Entity0804e2c0*);
-s32 FUN_0804ccbc(Entity0804e2c0*);
-s32 FUN_0804d698(Entity0804e2c0*);
-s32 FUN_0804d6d0(Entity0804e2c0*);
-s32 FUN_0804da50(Entity0804e2c0*);
-s32 FUN_0804da78(Entity0804e2c0*);
-s32 FUN_0804dae4(Entity0804e2c0*);
-s32 FUN_0804de18(Entity0804e2c0*);
-s32 FUN_0804de40(Entity0804e2c0*);
-s32 FUN_0804de58(Entity0804e2c0*);
 
-// clang-format off
-s32 (*const PTR_ARRAY_085ab5e0[33])(Entity0804e2c0*) = {
-    FUN_0804c3cc,
-    FUN_0804c3e4,
-    FUN_0804c438,
-    FUN_0804c57c,
-    FUN_0804c5c0,
-    FUN_0804c5d8,
-    FUN_0804c650,
-    FUN_0804c6ac,
-    FUN_0804c7c8,
-    FUN_0804c888,
-    FUN_0804c8bc,
-    FUN_0804c8f4,
-    FUN_0804c940,
-    FUN_0804c978,
-    FUN_0804c9a8,
-    FUN_0804cb6c,
-    FUN_0804cb84,
-    FUN_0804cb9c,
-    FUN_0804cbb4,
-    FUN_0804d698,
-    FUN_0804d6d0,
-    FUN_0804da50,
-    FUN_0804de18,
-    FUN_0804da78,
-    FUN_0804de40,
-    FUN_0804dae4,
-    FUN_0804de58,
-    FUN_0804cbcc,
-    FUN_0804cbfc,
-    FUN_0804cc38,
-    FUN_0804cc7c,
-    FUN_0804cc98,
-    FUN_0804ccbc,
-};  // 0x085AB5E0
-// clang-format on
-
-// 状態をリセットしてモーション番号を設定する
-static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
+// unk_1c を下ろし, state を切り替えて stateTimer を 0 に戻す
+static inline void Entity0804e2c0_SetState(Entity0804e2c0* p, u16 state) {
   p->unk_1c = 0;
-  p->motion = motion;
-  p->motionTimer = 0;
+  p->state = state;
+  p->stateTimer = 0;
 }
 
 Entity0804e2c0* FUN_0804ba3c(void) { return gEntity0804e2c0; }
 
-s32 FUN_0804ba48(void) {
+bool32 FUN_0804ba48(void) {
   if (gEntity0804e2c0 != NULL) {
-    return 1;
+    return TRUE;
   }
-  return 0;
+  return FALSE;
 }
 
 NAKED void FUN_0804ba64(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804ba64.inc"); }
@@ -251,23 +180,23 @@ void FUN_0804c3b4(void) {
 }
 
 s32 FUN_0804c3cc(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 }
 
-// リンクマネージャーを初期化し, 成否でモーションを分ける
+// リンクマネージャーを初期化し, 成否で state を分ける
 s32 FUN_0804c3e4(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 
   if (rfu_LMAN_initializeManager(FUN_0804bf90, FUN_0804c3a8) != 0) {
-    Entity0804e2c0_SetMotion(p, 0x1B);
-    p->motionEntered = 1;
+    Entity0804e2c0_SetState(p, 27);
+    p->stateBegun = TRUE;
   } else {
-    Entity0804e2c0_SetMotion(p, 2);
-    p->motionEntered = 1;
+    Entity0804e2c0_SetState(p, 2);
+    p->stateBegun = TRUE;
     p->unk_18 = 1;
   }
   return 0;
@@ -279,17 +208,17 @@ NAKED s32 FUN_0804c438(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c438.inc")
 // 残差は定数を作る順だけ (30 対 30), 原典は 4 と 0 を store の前にまとめて作るが agbcc は 0 を先に作って store と交互に出す
 NON_MATCH s32 FUN_0804c57c(Entity0804e2c0* p) {
 #ifdef NONMATCHING_C
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 
-  if (p->motionTimer > 0x3B) {
+  if (p->stateTimer > 0x3B) {
     rfu_LMAN_initializeRFU(&p->initParam);
     u8_030000dc = 0;
     p->unk_1c = 0;
-    p->motion = 4;
-    p->motionTimer = 0;
-    p->motionEntered = 1;
+    p->state = 4;
+    p->stateTimer = 0;
+    p->stateBegun = TRUE;
   }
   return 0;
 #else
@@ -298,8 +227,8 @@ NON_MATCH s32 FUN_0804c57c(Entity0804e2c0* p) {
 }
 
 s32 FUN_0804c5c0(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
   return 0;
 }
@@ -307,19 +236,19 @@ s32 FUN_0804c5c0(Entity0804e2c0* p) {
 NAKED s32 FUN_0804c5d8(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c5d8.inc"); }
 
 s32 FUN_0804c650(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     p->unk_26 = 0;
   }
 
   if (rfu_LMAN_establishConnection(0, 0, 600, (u16*)gAcceptableSerialNoList)) {
-    Entity0804e2c0_SetMotion(p, 27);
-    p->motionEntered = 1;
+    Entity0804e2c0_SetState(p, 27);
+    p->stateBegun = TRUE;
     return -1;
   }
 
-  Entity0804e2c0_SetMotion(p, 8);
-  p->motionEntered = 1;
+  Entity0804e2c0_SetState(p, 8);
+  p->stateBegun = TRUE;
 }
 
 NAKED s32 FUN_0804c6ac(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c6ac.inc"); }
@@ -327,45 +256,45 @@ NAKED s32 FUN_0804c6ac(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c6ac.inc")
 NAKED s32 FUN_0804c7c8(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c7c8.inc"); }
 
 s32 FUN_0804c888(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     PlaySound_082406e0(SE_SELECT);
   }
 
-  if (p->unk_22 & LINKFLAG22_UNK_7) {
+  if (p->unk_22 & FLAG_7) {
     WaitForVBlanks(8);
     FUN_0804d868(p);
   }
 }
 
 s32 FUN_0804c8bc(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 
-  if (p->motionTimer > 599) {
+  if (p->stateTimer > 599) {
     rfu_LMAN_stopManager(0);
-    Entity0804e2c0_SetMotion(p, 4);
-    p->motionEntered = 1;
+    Entity0804e2c0_SetState(p, 4);
+    p->stateBegun = TRUE;
   }
 }
 
-// 残差2命令, 原典は &motionEntered を r5 に載せたまま関数呼び出しを跨ぐが agbcc は最後の1回だけ再計算する, Entity0804e2c0_SetMotion 化とローカル退避は試済
+// 残差2命令, 原典は &stateBegun を r5 に載せたまま関数呼び出しを跨ぐが agbcc は最後の1回だけ再計算する, Entity0804e2c0_SetState 化とローカル退避は試済
 NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
 #ifdef NONMATCHING_C
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     PlaySound_082406e0(SE_CANCEL);
   }
 
-  if (p->motionTimer > 89) {
+  if (p->stateTimer > 89) {
     FUN_0804bb30(p);
     if (p->unk_30) {
-      Entity0804e2c0_SetMotion(p, 7);
+      Entity0804e2c0_SetState(p, 7);
     } else {
-      Entity0804e2c0_SetMotion(p, 6);
+      Entity0804e2c0_SetState(p, 6);
     }
-    p->motionEntered = 1;
+    p->stateBegun = TRUE;
   }
 #else
   INCFUNC("asm/func/FUN_0804c8f4.inc");
@@ -373,8 +302,8 @@ NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
 }
 
 s32 FUN_0804c940(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
   if (rfu_getMasterSlave() == AGB_CLK_MASTER) {
     rfu_REQ_disconnect(gRfuLinkStatus->connectSlot_flag | gRfuLinkStatus->linkLossSlot_flag);
@@ -382,47 +311,47 @@ s32 FUN_0804c940(Entity0804e2c0* p) {
   }
 }
 
-// 120フレーム経ったらモーション 8 に切り替える
+// 120フレーム経ったらstate 8 に切り替える
 s32 FUN_0804c978(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 
-  if (p->motionTimer > 120) {
-    Entity0804e2c0_SetMotion(p, 8);
-    p->motionEntered = 1;
+  if (p->stateTimer > 120) {
+    Entity0804e2c0_SetState(p, 8);
+    p->stateBegun = TRUE;
   }
 }
 
 NAKED s32 FUN_0804c9a8(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c9a8.inc"); }
 
 s32 FUN_0804cb6c(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 }
 
 s32 FUN_0804cb84(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 }
 
 s32 FUN_0804cb9c(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 }
 
 s32 FUN_0804cbb4(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
 }
 
 s32 FUN_0804cbcc(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     p->unk_1b = 0;
     p->unk_1c = 0;
   }
@@ -435,8 +364,8 @@ s32 FUN_0804cbcc(Entity0804e2c0* p) {
 }
 
 s32 FUN_0804cbfc(Entity0804e2c0* p) {
-  if (p->motionEntered != 0) {
-    p->motionEntered = 0;
+  if (p->stateBegun != 0) {
+    p->stateBegun = FALSE;
     FUN_0804e584(1);
     rfu_LMAN_stopManager(1);
     p->unk_1b = 0;
@@ -449,8 +378,8 @@ s32 FUN_0804cbfc(Entity0804e2c0* p) {
 }
 
 s32 FUN_0804cc38(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     FUN_0804e584(2);
     rfu_LMAN_stopManager(1);
     p->unk_1b = 0;
@@ -458,23 +387,23 @@ s32 FUN_0804cc38(Entity0804e2c0* p) {
   }
 
   if (FUN_0804bc10(p)) {
-    Entity0804e2c0_SetMotion(p, 30);
-    p->motionEntered = 1;
+    Entity0804e2c0_SetState(p, 30);
+    p->stateBegun = TRUE;
   }
   return 0;
 }
 
 s32 FUN_0804cc7c(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     rfu_LMAN_powerDownRFU();
   }
   return 0;
 }
 
 s32 FUN_0804cc98(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     rfu_LMAN_stopManager(p->unk_3f);
   }
   return 0;
@@ -559,8 +488,8 @@ s32 FUN_0804d680(Entity0804e2c0* p) {
 // u16 のローカルを挟む形, FUN_0804bb68 の第2引数を u32 にする形のどちらでも変わらない
 NON_MATCH s32 FUN_0804d698(Entity0804e2c0* p) {
 #ifdef NONMATCHING_C
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     ClearBGTilemapBuffer(0);
   }
 
@@ -576,8 +505,8 @@ NON_MATCH s32 FUN_0804d698(Entity0804e2c0* p) {
 // u16 のローカルを挟む形, FUN_0804bb68 の第2引数を u32 にする形のどちらでも変わらない
 NON_MATCH s32 FUN_0804d6d0(Entity0804e2c0* p) {
 #ifdef NONMATCHING_C
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
     ClearBGTilemapBuffer(0);
   }
 
@@ -598,21 +527,21 @@ NAKED s32 FUN_0804d90c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d90c.inc")
 
 NAKED void FUN_0804d9a4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d9a4.inc"); }
 
-// モーション 0x17 をセットする状態ハンドラ
+// state 23 に切り替える状態ハンドラ
 s32 FUN_0804da50(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
-  Entity0804e2c0_SetMotion(p, 0x17);
-  p->motionEntered = 1;
+  Entity0804e2c0_SetState(p, 23);
+  p->stateBegun = TRUE;
   return 0;
 }
 
 NAKED s32 FUN_0804da78(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804da78.inc"); }
 
 s32 FUN_0804dae4(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
   return 0;
 }
@@ -631,31 +560,69 @@ NAKED s32 FUN_0804dc90(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804dc90.inc")
 
 NAKED void FUN_0804dd80(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804dd80.inc"); }
 
-// モーション 0x17 をセットする状態ハンドラ, FUN_0804da50 と同じ内容
+// state 23 に切り替える状態ハンドラ, FUN_0804da50 と同じ内容
 s32 FUN_0804de18(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
-  Entity0804e2c0_SetMotion(p, 0x17);
-  p->motionEntered = 1;
+  Entity0804e2c0_SetState(p, 23);
+  p->stateBegun = TRUE;
   return 0;
 }
 
 s32 FUN_0804de40(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
   return 0;
 }
 
 s32 FUN_0804de58(Entity0804e2c0* p) {
-  if (p->motionEntered) {
-    p->motionEntered = 0;
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
   }
   return 0;
 }
 
 NAKED s32 FUN_0804de70(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804de70.inc"); }
+
+// clang-format off
+s32 (*const sEntity0804e2c0States[33])(Entity0804e2c0*) = {
+    FUN_0804c3cc,
+    FUN_0804c3e4,
+    FUN_0804c438,
+    FUN_0804c57c,
+    FUN_0804c5c0,
+    FUN_0804c5d8,
+    FUN_0804c650,
+    FUN_0804c6ac,
+    FUN_0804c7c8,
+    FUN_0804c888,
+    FUN_0804c8bc,
+    FUN_0804c8f4,
+    FUN_0804c940,
+    FUN_0804c978,
+    FUN_0804c9a8,
+    FUN_0804cb6c,
+    FUN_0804cb84,
+    FUN_0804cb9c,
+    FUN_0804cbb4,
+    FUN_0804d698,
+    FUN_0804d6d0,
+    FUN_0804da50,
+    FUN_0804de18,
+    FUN_0804da78,
+    FUN_0804de40,
+    FUN_0804dae4,
+    FUN_0804de58,
+    FUN_0804cbcc,
+    FUN_0804cbfc,
+    FUN_0804cc38,
+    FUN_0804cc7c,
+    FUN_0804cc98,
+    FUN_0804ccbc,
+};  // 0x085AB5E0
+// clang-format on
 
 // 残差はテーブル基点と添字のレジスタが入れ替わるのみ (命令列は 20 対 20 で一致)
 NON_MATCH s32 FUN_0804dee8(Entity0804e2c0* p) {
@@ -665,7 +632,7 @@ NON_MATCH s32 FUN_0804dee8(Entity0804e2c0* p) {
     rfu_LMAN_manager_entity(0);
   }
 
-  return PTR_ARRAY_085ab5e0[p->motion](p);
+  return sEntity0804e2c0States[p->state](p);
 #else
   INCFUNC("asm/func/FUN_0804dee8.inc");
 #endif
@@ -693,17 +660,17 @@ void FUN_0804e0bc(Entity0804e2c0* p) {
 
   FUN_0804d90c(p);
   FUN_0804d9a4(p);
-  PTR_ARRAY_085ab5e0[p->motion](p);
+  sEntity0804e2c0States[p->state](p);
 }
 
-// RFU の状態を進めてから motion 番の状態ハンドラを呼ぶ
+// RFU の状態を進めてから state 番の状態ハンドラを呼ぶ
 s32 FUN_0804e128(Entity0804e2c0* p) {
   p->unk_31 = 0;
   rfu_LMAN_manager_entity(0);
   rfu_getMasterSlave();
   FUN_0804dc90(p);
   FUN_0804dd80(p);
-  return PTR_ARRAY_085ab5e0[p->motion](p);
+  return sEntity0804e2c0States[p->state](p);
 }
 
 NAKED unknown* FUN_0804e164(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e164.inc"); }
@@ -786,7 +753,7 @@ s32 FUN_0804e3ec(void) {
   }
 
   if (gEntity0804e2c0->unk_30 != 0) {
-    if (gEntity0804e2c0->motion <= 4) {
+    if (gEntity0804e2c0->state <= 4) {
       return 0;
     }
     if (gRfuLinkStatus->parent_child == MODE_NEUTRAL) {
@@ -822,11 +789,11 @@ s32 FUN_0804e474(void) {
   return gEntity0804e2c0->unk_19;
 }
 
-s32 FUN_0804e490(void) {
+s32 Entity0804e2c0_GetState(void) {
   if (gEntity0804e2c0 == NULL) {
     return 0;
   }
-  return gEntity0804e2c0->motion;
+  return gEntity0804e2c0->state;
 }
 
 void FUN_0804e4ac(void) {
@@ -860,14 +827,14 @@ s32 FUN_0804e514(u8* src) {
   if (p == NULL) {
     return -1;
   }
-  if (p->unk_22 & LINKFLAG22_UNK_1) {
+  if (p->unk_22 & FLAG_1) {
     return -1;
   }
 
   dst = p->unk_b8;
   src[0]++;
   CpuCopy32(src, dst, 12);
-  p->unk_22 |= LINKFLAG22_UNK_0;
+  p->unk_22 |= FLAG_0;
   return 0;
 }
 
@@ -881,7 +848,7 @@ s32 FUN_0804e55c(void* dest) {
 
 void FUN_0804e584(s32 val) {
   if (gEntity0804e2c0 != NULL) {
-    gEntity0804e2c0->unk_33 = val;
+    gEntity0804e2c0->errorKind = val;
   }
 }
 
@@ -889,17 +856,17 @@ s32 FUN_0804e59c(void) {
   if (gEntity0804e2c0 == NULL) {
     return u32_030000e0;
   }
-  return gEntity0804e2c0->unk_33;
+  return gEntity0804e2c0->errorKind;
 }
 
-// モーション 0x1F をセットする
+// state 31 に切り替える
 void FUN_0804e5bc(void) {
   Entity0804e2c0* p = gEntity0804e2c0;
 
   if (p != NULL) {
     p->unk_3f = 1;
-    Entity0804e2c0_SetMotion(p, 0x1F);
-    p->motionEntered = 1;
+    Entity0804e2c0_SetState(p, 31);
+    p->stateBegun = TRUE;
   }
 }
 

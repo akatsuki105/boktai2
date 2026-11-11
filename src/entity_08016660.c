@@ -26,7 +26,7 @@ typedef struct Entity08016660Node {
   s16 hp;                           // 0x16, 被弾のたびにダメージを引く, 0 止まり
   HitboxData* hurtbox;              // 0x18, 非NULL なら解放時に Hitbox_Unregister して Free する
   HitboxData* hitbox;               // 0x1C, 非NULL なら解放時に Free する, 毎フレーム Hitbox_Register する
-  AuxSpriteGfx gfx;                 // 0x20, SPRITE_863A
+  AuxSpriteGfx gfx;                 // 0x20, SPRITE_SPRING_863A
   AuxSprite sprite;                 // 0x3C, 解放時に AuxSprite_Remove する
   AuxAnimState anim;                // 0x68
   struct Entity08016660Node* prev;  // 0x78
@@ -180,7 +180,7 @@ NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 hp, Vec3* pos) {
     node->hitbox = NULL;
   }
 
-  if (!Video_GetAuxSprite(&node->gfx, SPRITE_863A)) {
+  if (!Video_GetAuxSprite(&node->gfx, SPRITE_SPRING_863A)) {
     return -1;
   }
   AuxSprite_Add(&node->sprite, &node->gfx, SPRFLAG_HIDDEN);

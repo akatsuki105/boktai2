@@ -371,11 +371,11 @@ NON_MATCH void Cmd_ResetItems(void) {
 #endif
 }
 
-// 空きエントリがあるかチェックする (itemID は ITEM_CATEGORY_USABLE のときに、 消費アイテムか貴重品かの判定につかうだけ)
+// 空きエントリがあるかチェックする (itemID は INVENTORY_ITEM のときに、 消費アイテムか貴重品かの判定につかうだけ)
 bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
   s32 i;
   switch (category) {
-    case ITEM_CATEGORY_USABLE: {
+    case INVENTORY_ITEM: {
       if (!IsValuable(itemID)) {
         for (i = 0; i < 16; i++) {
           if (GetNormalItemID(i) < 0) {
@@ -392,7 +392,7 @@ bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
       break;
     }
 
-    case ITEM_CATEGORY_WEAPON: {
+    case INVENTORY_WEAPON: {
       if (gStat->playerKind != PLAYER_SABATA) {
         for (i = 0; i < 16; i++) {
           if (GetWeaponID(i) == WEAPON_NONE) {
@@ -403,7 +403,7 @@ bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
       break;
     }
 
-    case ITEM_CATEGORY_ARMOR: {
+    case INVENTORY_ARMOR: {
       if (gStat->playerKind != PLAYER_SABATA) {
         for (i = 0; i < 16; i++) {
           if (gStat->armors[i] < 0) {
@@ -414,8 +414,8 @@ bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
       break;
     }
 
-    case ITEM_CATEGORY_MAGIC:
-    case ITEM_CATEGORY_UNK4: {
+    case INVENTORY_MAGIC:
+    case INVENTORY_UNK4: {
       if (gStat->playerKind != PLAYER_SABATA) {
         return TRUE;
       }

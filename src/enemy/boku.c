@@ -507,7 +507,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
     }
     // 今の向きと目標の向きから回る向きを決めて振り向きアニメを流す
     switch (dir) {
-      case 0: {
+      case DIR4_NORTH: {
         if (target - 2 < 4) {
           if ((p->e).spriteKind == 0) {
             EnemyAuxSprite* s = &(p->e).s->aux;
@@ -545,7 +545,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
         }
         break;
       }
-      case 1: {
+      case DIR4_EAST: {
         if (target - 4 < 4) {
           if ((p->e).spriteKind == 0) {
             EnemyAuxSprite* s = &(p->e).s->aux;
@@ -583,7 +583,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
         }
         break;
       }
-      case 2: {
+      case DIR4_SOUTH: {
         if (target - 1 < 5) {
           if ((p->e).spriteKind == 0) {
             EnemyAuxSprite* s = &(p->e).s->aux;
@@ -619,7 +619,7 @@ NON_MATCH void FUN_080fba64(Boku* p) {
         }
         break;
       }
-      case 3: {
+      case DIR4_WEST: {
         if (target < 4) {
           if ((p->e).spriteKind == 0) {
             EnemyAuxSprite* s = &(p->e).s->aux;
@@ -2962,9 +2962,9 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     p->unk_672 = VM_GetPC() != NULL ? VM_GetValue() : 120;
   }
   (p->e).variant = VM_GetNamedArgValue('C', 0);
-  (p->e).plttBase = 306;
-  (p->e).unk_47c = 306;
-  (p->e).unk_47e = (p->e).variant + 306;
+  (p->e).plttBase = OBP_WHITE_306;
+  (p->e).unk_47c = OBP_WHITE_306;
+  (p->e).unk_47e = OBP_WHITE_306 + (p->e).variant;
   if ((p->e).spriteKind == 0) {
     Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);
   } else {

@@ -5,7 +5,6 @@
 #include "gba/gba.h"
 #include "inline.h"
 #include "macro.h"
-#include "struct.h"
 #include "trig.h"
 #include "types.h"
 //
@@ -50,7 +49,6 @@
 extern u32 gFrameCounter;
 extern s32 gMapBlockW;
 extern s32 gMapBlockH;
-extern u32 u32_ARRAY_0203f400[256];
 
 // --------------------------------------------
 
@@ -86,5 +84,6 @@ void BlendPltt(rgb555* dst, rgb555* src1, rgb555* src2, s32 t, s32 shift);
 s32 EmitSmoke(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority);
 void StartBgObjPlttFade(s32 kind, s32 durationShift, s32 r5, s32 g5, s32 b5, u32 bgRowMask, u32 objSkipMask);
 void FUN_08240cf0(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags, u16 moverID);
+void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift);
 
 #endif  // __INCLUDE_GLOBAL_H__
