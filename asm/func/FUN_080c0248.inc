@@ -100,7 +100,7 @@ _080C032C:
 	adds r0, r6, #0
 	bl Torture_CountMashFrames
 	adds r0, r6, #0
-	bl FUN_080c00d4
+	bl Torture_GeneratePower
 	adds r4, r0, #0
 	ldr r0, _080C036C @ =0x0000059C
 	adds r1, r6, r0

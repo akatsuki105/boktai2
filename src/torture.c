@@ -46,11 +46,11 @@ typedef struct Torture {
   u32 unk_598;                  // 0x598
   u32 unk_59c;                  // 0x59C
   u32 unk_5a0;                  // 0x5A0
-  u32 unk_5a4;                  // 0x5A4
+  u32 rateChangeScript;         // 0x5A4, mashRate が変わったときに新しい倍率を引数に起動するスクリプト, 0 なら起動しない
   u32 unk_5a8;                  // 0x5A8
   u32 unk_5ac;                  // 0x5AC
-  u8 unk_5b0[2];                // 0x5B0, まだ未解析
-  u16 unk_5b2;                  // 0x5B2, '.r=300'
+  u16 powerCharge;              // 0x5B0, 連打で貯めた発電量, powerPerUnit ごとに1単位として取り出す
+  u16 powerPerUnit;             // 0x5B2, '.r=300', 発電1単位に要る powerCharge
   u8 unk_5b4[0x5B6 - 0x5B4];    // 0x5B4, まだ未解析
   u16 stateTimer;               // 0x5B6
   TortureFunc* updateCallback;  // 0x5B8
@@ -364,7 +364,46 @@ void Cmd_StartTorture(void) {
   }
 }
 
-NAKED s32 FUN_080c00d4(Torture* p) { INCFUNC("asm/func/FUN_080c00d4.inc"); }
+// 連打数から発電量を出して倍率を掛けて貯め, powerPerUnit を超えた分の単位数を返す, 倍率が変わったら rateChangeScript を起動して表示を出す
+// power を2文に分ける形と, 足した結果を if で比べる形でだけ一致する
+s32 Torture_GeneratePower(Torture* p) {
+  s32 power;
+  s32 rate;
+  s32 n;
+
+  if (gPlayerPtr[0]->mashHits == 0) {
+    power = 0;
+  } else if (gPlayerPtr[0]->mashHits <= 3) {
+    power = 1;
+  } else {
+    power = gPlayerPtr[0]->mashHits - 2;
+    power = (power * (gPlayerPtr[0]->mashHits - 3)) >> 1;
+  }
+  rate = Torture_GetMashRate(p);
+  if (p->mashRate != rate) {
+    if (p->rateChangeScript != 0) {
+      ScriptArgs args;
+      u32 argv[1];
+
+      args.argc = 1;
+      args.argv = argv;
+      argv[0] = rate;
+      VM_ExecByID(p->rateChangeScript, &args);
+    }
+    p->mashRate = rate;
+    Torture_ShowMashRate(p);
+  }
+  power *= p->mashRate;
+  if ((p->powerCharge += power) >= p->powerPerUnit) {
+    n = 0;
+    while (p->powerCharge >= p->powerPerUnit) {
+      n++;
+      p->powerCharge -= p->powerPerUnit;
+    }
+    return n;
+  }
+  return 0;
+}
 
 void Torture_UpdateDone(Torture* _) {}
 
