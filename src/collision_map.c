@@ -1992,7 +1992,7 @@ s32 Map_PickPathNode(Vec3* dst, Vec3* pos, u32 kind, s32 pathIdx, s32 minDist, V
 
 // このゲームでは使われない (呼び出す条件を満たさない)
 // 残差1命令, 原典は GetFile の戻り値を r1 へ写して r0 にプールを取るが gcc は逆に割り当てる
-// 試済: 戻り値をローカルで受ける, navMesh の setter inline, gCollisionMap の getter inline (いずれも 12/13 命令で同じ差)
+// 試済: 戻り値をローカルで受ける, navMesh の setter inline, gCollisionMap の getter inline, gCollisionMap をローカルに受ける, (u32) で受ける, 兄弟 Map_LoadPaths と同じ形 (いずれも 12/13 命令で同じ差)
 NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 #ifdef NONMATCHING_C
   gCollisionMap->navMesh = GetFile(0xF63B, id);
