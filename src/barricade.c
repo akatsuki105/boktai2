@@ -120,6 +120,7 @@ void Barricade_InitHurtbox(Barricade* p, u32 id, Vec3* pos) {
 
 // 残差はレジスタ順列のみ (174/174, 同数同順, hunk 12件): 原典は p を r5 / &pos を r6 に置くが agbcc は逆, 他は全部この派生
 // Tier A-C は試済: (s32) キャストで >> 8 の asrs 化, scriptID を if/else にして命令数一致まで到達
+// 追試: TileHeightAtIndex(GetCollisionTileIdx(&pos), &pos) にすると p は r5 に揃うが &pos を2本に分けて作る (175 命令), 1本のポインタ (ローカル / inline の引数) で渡すと p と &pos が再び入れ替わる
 NON_MATCH s32 Barricade_Init(Barricade* p, u32 id, u32 _) {
 #ifdef NONMATCHING_C
   WorldPos pos;
