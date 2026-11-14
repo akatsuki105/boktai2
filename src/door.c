@@ -108,6 +108,8 @@ const u32 u32_ARRAY_085aaa8c[12] = {0, 6, 7, 0, 1, 2, 2, 3, 4, 4, 5, 6};  // 0x0
 
 static inline void Door_SetPhase(Door* door, u32 phase) { door->phase = phase; }
 
+static inline void Door_SetFn(Door* door, void (*fn)(Door*)) { door->fn = fn; }
+
 static inline void Door_SetStep(Door* door, u8 step) {
   door->step = step;
   door->stepTimer = 0;
@@ -405,8 +407,8 @@ void DoorManager_CloseByID(DoorManager* p, u16 id) {
   }
 }
 
-// そのIDの扉を待機状態に戻す
-void FUN_0801fd88(DoorManager* p, u16 id) {
+// そのIDの扉を動かさずに開いた状態にする
+void DoorManager_SetOpenByID(DoorManager* p, u16 id) {
   s32 i;
 
   for (i = 0; i < p->unk_1a; i++) {
@@ -421,9 +423,8 @@ void FUN_0801fd88(DoorManager* p, u16 id) {
   }
 }
 
-// そのIDの扉を開いた状態で止める
-NON_MATCH void FUN_0801fdf0(DoorManager* p, u16 id) {
-#ifdef NONMATCHING_C
+// そのIDの扉を動かさずに閉じた状態にする
+void DoorManager_SetClosedByID(DoorManager* p, u16 id) {
   s32 i;
 
   for (i = 0; i < p->unk_1a; i++) {
@@ -431,13 +432,10 @@ NON_MATCH void FUN_0801fdf0(DoorManager* p, u16 id) {
 
     if (door->id == id) {
       Door_SetPhase(door, 0);
-      door->fn = Door_IdleClosed;
+      Door_SetFn(door, Door_IdleClosed);
       Door_SetStep(door, 2);
     }
   }
-#else
-  INCFUNC("asm/func/FUN_0801fdf0.inc");
-#endif
 }
 
 // そのIDの扉に印を付ける
@@ -1323,11 +1321,11 @@ s32 DoorManager_Update(DoorManager* p) {
         break;
       }
       case 2: {
-        FUN_0801fd88(p, mesg->values[1]);
+        DoorManager_SetOpenByID(p, mesg->values[1]);
         break;
       }
       case 3: {
-        FUN_0801fdf0(p, mesg->values[1]);
+        DoorManager_SetClosedByID(p, mesg->values[1]);
         break;
       }
       case 4: {
