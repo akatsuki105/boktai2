@@ -18,9 +18,9 @@ typedef struct {
   u16 unk_16;   // 0x16, 5 ビット, gStat->unk_00e へ
   u16 name[5];  // 0x18, 名前の 2 バイト目, 0 で終わり, 0xF0 は名前の文字表の 0xA0 番の文字
   u16 unk_22;   // 0x22
-  u16 unk_24;   // 0x24, 6 ビット, version が 1 のときだけ
-  u16 unk_26;   // 0x26, 6 ビット, version が 1 のときだけ
-  u16 unk_28;   // 0x28, 8 ビット, version が 1 のときだけ
+  u16 unk_24;   // 0x24, 6 ビット, PasswordDecoder.version が 1 のときだけ
+  u16 unk_26;   // 0x26, 6 ビット, PasswordDecoder.version が 1 のときだけ
+  u16 unk_28;   // 0x28, 8 ビット, PasswordDecoder.version が 1 のときだけ
   u16 unk_2a;   // 0x2A
 } PasswordData;
 static_assert(sizeof(PasswordData) == 44);
@@ -33,8 +33,8 @@ typedef struct {
   char* charTable;      // 0x74, パスワードに使える文字の並び
   u8* nameTablePc;      // 0x78, 名前に使える文字テーブルの VM バイトコード位置
   u32 rngState;         // 0x7C, 線形合同法の内部状態, 初期値 0x0008C159
-  u32 unk_80;           // 0x80, 3 ビット
-  u32 unk_84;           // 0x84, 16 ビット
+  u32 version;          // 0x80, 3 ビット, 1 なら unk_24 / unk_26 / unk_28 も入っている
+  u32 crc;              // 0x84, 16 ビット, decoded の 5 文字目以降の CRC-16 の反転と一致しなければ不正
   u32 key;              // 0x88, パスワードに入っている鍵 (PasswordScreen.key), 文字を解く乱数をこの回数 + 4 だけ空回しする
 } PasswordDecoder;
 static_assert(sizeof(PasswordDecoder) == 140);
@@ -154,7 +154,76 @@ NON_MATCH s32 PasswordDecoder_IsIllegalName(PasswordDecoder* p) {
 #endif
 }
 
-NAKED s32 PasswordDecoder_Parse(PasswordDecoder* p) { INCFUNC("asm/func/PasswordDecoder_Parse.inc"); }
+// decoded から CRC を確かめて値を読み出す, CRC が合わなければ -2, 名前や値が不正なら -1
+s32 PasswordDecoder_Parse(PasswordDecoder* p) {
+  PasswordData* data = &p->data;
+  s32 pos;
+  u32 crc;
+  s32 i;
+  u32 j;
+
+  p->version = PasswordDecoder_GetBits(p->decoded, 0, 3);
+  p->crc = PasswordDecoder_GetBits(p->decoded, 3, 16);
+  p->key = PasswordDecoder_GetBits(p->decoded, 19, 2);
+  pos = 21;
+
+  crc = 0xFFFF;
+  for (i = 4; i < 24; i++) {
+    crc ^= p->decoded[i] << 8;
+    for (j = 0; j < 8; j++) {
+      if (crc & 0x8000) {
+        crc = (crc << 1) ^ 0x1021;
+      } else {
+        crc <<= 1;
+      }
+    }
+  }
+  if ((~crc & 0xFFFF) != p->crc) {
+    return -2;
+  }
+
+  PasswordDecoder_UnscrambleChars(p);
+  data->unk_00 = PasswordDecoder_GetBits(p->decoded, pos, 9);
+  pos += 9;
+  data->unk_02 = PasswordDecoder_GetBits(p->decoded, pos, 6);
+  pos += 6;
+  data->unk_04 = PasswordDecoder_GetBits(p->decoded, pos, 6);
+  pos += 6;
+  data->unk_06 = PasswordDecoder_GetBits(p->decoded, pos, 6);
+  pos += 6;
+  data->unk_08 = PasswordDecoder_GetBits(p->decoded, pos, 3);
+  pos += 3;
+  data->unk_0a = PasswordDecoder_GetBits(p->decoded, pos, 5);
+  pos += 5;
+  data->unk_0c = PasswordDecoder_GetBits(p->decoded, pos, 3);
+  pos += 3;
+  data->unk_0e = PasswordDecoder_GetBits(p->decoded, pos, 4);
+  pos += 4;
+  data->unk_10 = PasswordDecoder_GetBits(p->decoded, pos, 5);
+  pos += 5;
+  data->unk_12 = PasswordDecoder_GetBits(p->decoded, pos, 7);
+  pos += 7;
+  data->unk_14 = PasswordDecoder_GetBits(p->decoded, pos, 4);
+  pos += 4;
+  data->unk_16 = PasswordDecoder_GetBits(p->decoded, pos, 5);
+  pos += 5;
+  for (i = 0; i < 5; i++) {
+    data->name[i] = PasswordDecoder_GetBits(p->decoded, pos, 8);
+    pos += 8;
+  }
+  if (p->version == 1) {
+    data->unk_24 = PasswordDecoder_GetBits(p->decoded, pos, 6);
+    pos += 6;
+    data->unk_26 = PasswordDecoder_GetBits(p->decoded, pos, 6);
+    pos += 6;
+    data->unk_28 = PasswordDecoder_GetBits(p->decoded, pos, 8);
+  }
+
+  if (data->name[0] == 0 || PasswordDecoder_IsIllegalName(p) != 0 || data->unk_0c == 0 || (data->unk_04 == 0 && data->unk_06 == 0)) {
+    return -1;
+  }
+  return 0;
+}
 
 void PasswordDecoder_NOP(PasswordDecoder* p) {
   s32 i;
