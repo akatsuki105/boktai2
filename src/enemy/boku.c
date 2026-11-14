@@ -2030,7 +2030,7 @@ void Boku_InitAnims(Boku* p) {
 
 const u16 sBokuMoveSpeeds[4] = {336, 336, 0, 180};  // 0x085AD4DC
 
-// 37/39命令, 原典は anim のポインタを r3 と r4 の2本に持ち, 10〜13 の側は r4 から cmdIdx を読み直す, 判定順の入れ替えは試済
+// アニメのコマが切り替わった瞬間だけ, コマ 0..3 と 10..13 に応じた移動速度を返す
 s32 Boku_GetMoveSpeed(Boku* p) {
   AuxAnimState* anim = &(p->e).s->aux.anim;
   AuxAnimState* a = anim;
