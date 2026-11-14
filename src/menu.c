@@ -1417,36 +1417,38 @@ void MainMenu_ShowYesNo(MainMenu* p, s32 defaultYes) {
 }
 
 // はい/いいえ の選択を進める, A で選んだ側 (1: はい, 0: いいえ), B で 0, 決まっていなければ -1 を返す
-// 残差: 79/82 命令, 右キーの判定を原典は u16 に切り詰めてから rsbs/lsrs #31 で 0/1 にするが, こちらはビット抜き出しか分岐になる (TEST_FLAGS, ?:, !!, (u16) キャストは試済)
-NON_MATCH s32 MainMenu_UpdateYesNo(MainMenu* p) {
-#ifdef NONMATCHING_C
-  bool32 move;
+s32 MainMenu_UpdateYesNo(MainMenu* p) {
+  s32 moved;
 
   if (gInput[0].pressed & A_BUTTON) {
     p->sprites[15].flags |= SPRFLAG_HIDDEN;
     return p->yesNoCursor;
   }
+
   if (gInput[0].pressed & B_BUTTON) {
     p->sprites[15].flags |= SPRFLAG_HIDDEN;
     return 0;
   }
 
-  move = FALSE;
-  if (p->yesNoCursor) {
-    move = (gInput[0].pressed & DPAD_RIGHT) != 0;
-  } else if (gInput[0].pressed & DPAD_LEFT) {
-    move = TRUE;
+  moved = FALSE;
+  if (p->yesNoCursor != 0) {
+    if (gInput[0].pressed & DPAD_RIGHT) {
+      moved = TRUE;
+    }
+  } else {
+    if (gInput[0].pressed & DPAD_LEFT) {
+      moved = TRUE;
+    }
   }
-  if (move) {
+
+  if (moved) {
     PlaySound_082406e0(SE_CURSOR_MOVE);
     p->yesNoCursor = 1 - p->yesNoCursor;
     MainSprite_SetAnim(&p->sprites[15], &p->gfx.smenu, 5 - p->yesNoCursor, PLAYMODE_LOOP, 0);
   }
+
   MainSprite_AdvanceAnim(&p->sprites[15], &p->gfx.smenu);
   return -1;
-#else
-  INCFUNC("asm/func/MainMenu_UpdateYesNo.inc");
-#endif
 }
 
 // 116枚のスプライトと2枚の AuxSprite を全部隠す
