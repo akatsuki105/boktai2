@@ -11,35 +11,35 @@ typedef struct {
   u8* nameTablePc;         // 0x78, 名前に使える文字テーブルの VM バイトコード位置
   u32 rngState;            // 0x7C, 線形合同法の内部状態, 初期値 0x0008C159
   u8 unk_80[0x88 - 0x80];  // 0x80, まだ未解析
-  u32 unk_88;              // 0x88, 乱数を空回しする回数 + 4
+  u32 key;                 // 0x88, パスワードに入っている鍵 (PasswordScreen.key), 文字を解く乱数をこの回数 + 4 だけ空回しする
 } PasswordDecoder;
 static_assert(sizeof(PasswordDecoder) == 140);
 
 // 線形合同法で乱数を1ステップ進める
-u32 FUN_08011110(PasswordDecoder* p) {
+u32 PasswordDecoder_NextRandom(PasswordDecoder* p) {
   p->rngState = p->rngState * 0x6262C05D + 1;
   return p->rngState;
 }
 
-// 乱数を unk_88 + 4 回空回ししてから, decoded の後半20文字を乱数列で XOR して解く
+// 乱数を key + 4 回空回ししてから, decoded の後半20文字を乱数列で XOR して解く
 // 残差6命令 (44 対 38), gcc は 0x3F をループ外へ出して r8 まで使い出すが, 原典は毎回 movs で作り直す, PasswordScreen_ScrambleChars と同じ壁
 // 添字形 / ポインタ形 / % 64 は試済, xor の結果を u8 のローカルに受けると巻き上げは止まるが u8 への切り詰め (lsl/lsr) が残る, u32 のローカルでは巻き上がる
-NON_MATCH s32 FUN_08011124(PasswordDecoder* p) {
+NON_MATCH s32 PasswordDecoder_UnscrambleChars(PasswordDecoder* p) {
 #ifdef NONMATCHING_C
   u32 acc = 0xFFFF;
   u32 i;
 
-  for (i = 0; i < p->unk_88 + 4; i++) {
-    acc ^= FUN_08011110(p);
+  for (i = 0; i < p->key + 4; i++) {
+    acc ^= PasswordDecoder_NextRandom(p);
   }
 
   for (i = 0; i < 20; i++) {
     p->decoded[4 + i] = (acc ^ p->decoded[4 + i]) & 0x3F;
-    acc ^= FUN_08011110(p);
+    acc ^= PasswordDecoder_NextRandom(p);
   }
   return 0;
 #else
-  INCFUNC("asm/func/FUN_08011124.inc");
+  INCFUNC("asm/func/PasswordDecoder_UnscrambleChars.inc");
 #endif
 }
 

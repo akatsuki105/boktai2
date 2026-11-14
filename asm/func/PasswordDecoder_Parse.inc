@@ -73,7 +73,7 @@ _08011326:
 _08011344: .4byte 0x0000FFFF
 _08011348:
 	adds r0, r7, #0
-	bl FUN_08011124
+	bl PasswordDecoder_UnscrambleChars
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #9

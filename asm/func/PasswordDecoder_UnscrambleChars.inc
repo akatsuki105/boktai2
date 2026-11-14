@@ -11,7 +11,7 @@
 	adds r4, r1, #0
 _0801113A:
 	adds r0, r7, #0
-	bl FUN_08011110
+	bl PasswordDecoder_NextRandom
 	eors r6, r0
 	adds r5, #1
 	ldr r0, [r4]
@@ -29,7 +29,7 @@ _08011150:
 	ands r0, r1
 	strb r0, [r4]
 	adds r0, r7, #0
-	bl FUN_08011110
+	bl PasswordDecoder_NextRandom
 	eors r6, r0
 	adds r4, #1
 	subs r5, #1
