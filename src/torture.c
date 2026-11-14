@@ -26,7 +26,7 @@ typedef struct Torture {
   AuxSpriteGfx meterGfx;        // 0x234, SPRITE_PANTHER_BONUS
   AuxSprite bonusSprites[6];    // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
   AuxSpriteGfx bonusGfx;        // 0x358, SPRITE_PANTHER_BONUS
-  u16 unk_374;                  // 0x374
+  u16 bonusTimer;               // 0x374, 倍率表示を動かす残りフレーム数, 出すとき 10 (4 までは上へ, 残りは下へ), 下げるとき 4 で 0 になったら隠す
   u8 unk_376[2];                // 0x376, まだ未解析
   MainSpriteGfx uiGfx;          // 0x378, SPRITE_UI_START_MENU
   MainSprite mainSprites[5];    // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
@@ -155,7 +155,7 @@ void Torture_ShowMashRate(Torture* p) {
     for (i = 0; i < 6; i++) {
       p->bonusSprites[i].pos.y = 48;
     }
-    p->unk_374 = 4;
+    p->bonusTimer = 4;
     return;
   }
   if (p->mashRate == 2) {
@@ -169,11 +169,40 @@ void Torture_ShowMashRate(Torture* p) {
     p->bonusSprites[i].flags &= ~SPRFLAG_HIDDEN;
     p->bonusSprites[i].pos.y = 56;
   }
-  p->unk_374 = 10;
+  p->bonusTimer = 10;
   PlaySound_082406e0(SONG_651);
 }
 
-NAKED void FUN_080bfe50(Torture* p) { INCFUNC("asm/func/FUN_080bfe50.inc"); }
+// bonusTimer の間だけ倍率表示を跳ねさせ, 倍率が 1 に戻ったときは下げてから隠す
+void Torture_UpdateBonusSprites(Torture* p) {
+  s32 i;
+
+  if (p->bonusTimer != 0) {
+    if (p->mashRate == 1) {
+      p->bonusTimer--;
+      if (p->bonusTimer == 0) {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].flags |= SPRFLAG_HIDDEN;
+        }
+      } else {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].pos.y += 2;
+        }
+      }
+    } else {
+      if (p->bonusTimer > 3) {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].pos.y -= 2;
+        }
+      } else {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].pos.y += 2;
+        }
+      }
+      p->bonusTimer--;
+    }
+  }
+}
 
 void Torture_HideBonusSprites(Torture* p) {
   s32 i;

@@ -282,7 +282,7 @@ _080C04AE:
 	adds r0, r6, #0
 	bl Torture_UpdateMashMeter
 	adds r0, r6, #0
-	bl FUN_080bfe50
+	bl Torture_UpdateBonusSprites
 	ldr r0, _080C04D4 @ =0x0000057A
 	adds r1, r6, r0
 	ldrh r0, [r1]
