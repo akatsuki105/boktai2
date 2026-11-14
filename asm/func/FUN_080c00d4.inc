@@ -54,7 +54,7 @@ _080C0106:
 _080C013E:
 	strh r5, [r6]
 	adds r0, r4, #0
-	bl FUN_080bfdac
+	bl Torture_ShowMashRate
 _080C0146:
 	movs r1, #0xb2
 	lsls r1, r1, #3

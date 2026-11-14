@@ -26,7 +26,8 @@ typedef struct Torture {
   AuxSpriteGfx meterGfx;        // 0x234, SPRITE_PANTHER_BONUS
   AuxSprite bonusSprites[6];    // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
   AuxSpriteGfx bonusGfx;        // 0x358, SPRITE_PANTHER_BONUS
-  u8 unk_374[0x378 - 0x374];    // 0x374, まだ未解析
+  u16 unk_374;                  // 0x374
+  u8 unk_376[2];                // 0x376, まだ未解析
   MainSpriteGfx uiGfx;          // 0x378, SPRITE_UI_START_MENU
   MainSprite mainSprites[5];    // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
   u16 unk_578;                  // 0x578, '.p'
@@ -38,7 +39,7 @@ typedef struct Torture {
   u16 rate2Frames;              // 0x58A, '.t[0]=180', mashFrames がこれを超えると Torture_GetMashRate が 2
   u16 rate5Frames;              // 0x58C, '.t[1]=300', mashFrames がこれを超えると 5
   u16 rate10Frames;             // 0x58E, mashFrames がこれを超えると 10
-  u16 unk_590;                  // 0x590
+  u16 mashRate;                 // 0x590, 今の倍率 (1 / 2 / 5 / 10), Torture_GetMashRate の値, Torture_Finish が 1 に戻す
   u8 unk_592[2];                // 0x592, まだ未解析
   u32 unk_594;                  // 0x594
   u32 unk_598;                  // 0x598
@@ -146,7 +147,31 @@ s32 Torture_GetMashRate(Torture* p) {
   return 1;
 }
 
-NAKED void FUN_080bfdac(Torture* p) { INCFUNC("asm/func/FUN_080bfdac.inc"); }
+// 倍率が 1 なら bonusSprites を下げておき, 2 / 5 / 10 なら数字のコマを合わせて出して効果音を鳴らす
+void Torture_ShowMashRate(Torture* p) {
+  s32 i;
+
+  if (p->mashRate == 1) {
+    for (i = 0; i < 6; i++) {
+      p->bonusSprites[i].pos.y = 48;
+    }
+    p->unk_374 = 4;
+    return;
+  }
+  if (p->mashRate == 2) {
+    AuxSprite_SetPoseIdx(&p->bonusSprites[1], 4);
+  } else if (p->mashRate == 5) {
+    AuxSprite_SetPoseIdx(&p->bonusSprites[1], 5);
+  } else if (p->mashRate == 10) {
+    AuxSprite_SetPoseIdx(&p->bonusSprites[1], 6);
+  }
+  for (i = 0; i < 6; i++) {
+    p->bonusSprites[i].flags &= ~SPRFLAG_HIDDEN;
+    p->bonusSprites[i].pos.y = 56;
+  }
+  p->unk_374 = 10;
+  PlaySound_082406e0(SONG_651);
+}
 
 NAKED void FUN_080bfe50(Torture* p) { INCFUNC("asm/func/FUN_080bfe50.inc"); }
 
@@ -260,7 +285,7 @@ void Torture_UpdateDone(Torture* _) {}
 void Torture_Finish(Torture* p, s32 param_2) {
   gStat->darkDebts = 0;
   Torture_ResetMash();
-  p->unk_590 = 1;
+  p->mashRate = 1;
   p->mashFrames = 0;
   Sound_SetBGMTempo(256);
   FUN_0823bca8(8);
