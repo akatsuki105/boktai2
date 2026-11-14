@@ -123,7 +123,7 @@ typedef struct {
   u16 stateDuration;                      // 0x81C, 状態を続ける最短フレーム数
   u8 unk_81e;                             // 0x81E
   u8 unk_81f;                             // 0x81F
-  u16 unk_820;                            // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
+  u16 cameraDist;                         // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
   u16 unk_822;                            // 0x822
   u16 unk_824;                            // 0x824
   u16 spriteIdx;                          // 0x826, 次に使う sprites_834 の番号, 0..2 を回す
@@ -316,19 +316,20 @@ s32 FUN_0803c274(ShadeManCrossover* p, Vec3* out) {
   Vec3_Add(out, &mover->pos);
 }
 
-void FUN_0803c328(ShadeManCrossover* p) {
+// プレイヤーとの距離に応じて, カメラをプレイヤーから自分の方へずらした位置に置く
+void ShadeManCrossover_UpdateCamera(ShadeManCrossover* p) {
   Mover* mover = &p->base.mover;
   Vec3* target = p->base.playerPos[0];
   s32 dist = Sqrt(p->base.playerDistSq[0]) >> 5;
   s32 scale;
   Vec3 pos;
 
-  if (p->unk_820 > dist) {
-    p->unk_820--;
-  } else if (p->unk_820 < dist) {
-    p->unk_820++;
+  if (p->cameraDist > dist) {
+    p->cameraDist--;
+  } else if (p->cameraDist < dist) {
+    p->cameraDist++;
   }
-  scale = 0x80 - p->unk_820;
+  scale = 0x80 - p->cameraDist;
   scale = FixToInt(7, scale * p->unk_822);
   VEC3_SET(pos, target->x - FixToInt(8, (target->x - mover->pos.x) * scale), target->y + 0x78, target->z - FixToInt(8, (target->z - mover->pos.z) * scale));
   Camera_MoveTo(&pos);
@@ -848,10 +849,10 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
     if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (!p->unk_81f) {
         p->unk_81f = TRUE;
-        p->unk_820 = Sqrt(boss->playerDistSq[0]) >> 5;
+        p->cameraDist = Sqrt(boss->playerDistSq[0]) >> 5;
         p->unk_822 = 0;
       }
-      FUN_0803c328(p);
+      ShadeManCrossover_UpdateCamera(p);
       p->unk_822 += 2;
       if (p->unk_822 > 128) {
         p->unk_822 = 128;

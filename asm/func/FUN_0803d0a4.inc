@@ -628,7 +628,7 @@ _0803D566:
 	strh r4, [r0]
 _0803D5B4:
 	adds r0, r5, #0
-	bl FUN_0803c328
+	bl ShadeManCrossover_UpdateCamera
 	ldr r0, _0803D5DC @ =0x00000822
 	adds r1, r5, r0
 	ldrh r0, [r1]

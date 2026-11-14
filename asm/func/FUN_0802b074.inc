@@ -850,7 +850,7 @@ _0802B6DC:
 	strh r1, [r0]
 _0802B724:
 	adds r0, r6, #0
-	bl FUN_08028388
+	bl Ringo_UpdateCamera
 	ldr r3, _0802B758 @ =0x00000886
 	adds r1, r6, r3
 	ldrh r0, [r1]

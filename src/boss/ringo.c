@@ -119,7 +119,7 @@ typedef struct {
   u8 unk_87f;                                 // 0x87F
   bool8 unk_880;                              // 0x880
   u8 unk_881[0x884 - 0x881];                  // 0x881
-  u16 unk_884;                                // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
+  u16 cameraDist;                             // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
   u16 unk_886;                                // 0x886
   u16 unk_888;                                // 0x888
   u16 unk_88a;                                // 0x88A
@@ -545,28 +545,23 @@ NON_MATCH s32 FUN_0802835c(Ringo* p) {
 #endif
 }
 
-// 残差は 0x80 - unk_884 を入れるレジスタのみ (100/100), 掛け算の順番とローカルに分ける形は試済
-NON_MATCH void FUN_08028388(Ringo* p) {
-#ifdef NONMATCHING_C
+// プレイヤーとの距離に応じて, カメラをプレイヤーから自分の方へずらした位置に置く
+void Ringo_UpdateCamera(Ringo* p) {
   Mover* mover = &p->base.mover;
-  Vec3* playerPos = p->base.playerPos[0];
+  Vec3* target = p->base.playerPos[0];
   s32 dist = Sqrt(p->base.playerDistSq[0]) >> 5;
-  s32 t;
+  s32 scale;
   Vec3 pos;
 
-  if (p->unk_884 > dist) {
-    p->unk_884--;
-  } else if (p->unk_884 < dist) {
-    p->unk_884++;
+  if (p->cameraDist > dist) {
+    p->cameraDist--;
+  } else if (p->cameraDist < dist) {
+    p->cameraDist++;
   }
-  t = FixToInt(7, (0x80 - p->unk_884) * p->unk_886);
-  pos.x = playerPos->x - FixToInt(8, (playerPos->x - mover->pos.x) * t);
-  pos.y = playerPos->y + 0x78;
-  pos.z = playerPos->z - FixToInt(8, (playerPos->z - mover->pos.z) * t);
+  scale = 0x80 - p->cameraDist;
+  scale = FixToInt(7, scale * p->unk_886);
+  VEC3_SET(pos, target->x - FixToInt(8, (target->x - mover->pos.x) * scale), target->y + 0x78, target->z - FixToInt(8, (target->z - mover->pos.z) * scale));
   Camera_MoveTo(&pos);
-#else
-  INCFUNC("asm/func/FUN_08028388.inc");
-#endif
 }
 
 void FUN_08028474(Vec3* from, Vec3* to, u8* angle, u16* dist) {
@@ -1897,10 +1892,10 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerModes[0] & PMODE_DEAD)) {
       if (!p->unk_880) {
         p->unk_880 = TRUE;
-        p->unk_884 = 0;
+        p->cameraDist = 0;
         p->unk_886 = 0;
       }
-      FUN_08028388(p);
+      Ringo_UpdateCamera(p);
       if (++p->unk_886 > 128) {
         p->unk_886 = 128;
       }
