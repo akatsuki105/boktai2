@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "player.h"
+#include "sound.h"
 #include "sprite.h"
 #include "vm.h"
 
@@ -266,7 +267,25 @@ s32 EntityB3D1_Update(EntityB3D1* p) {
   return 0;
 }
 
-NAKED s32 EntityB3D1_Destroy(EntityB3D1* p) { INCFUNC("asm/func/EntityB3D1_Destroy.inc"); }
+s32 EntityB3D1_Destroy(EntityB3D1* p) {
+  s32 i;
+
+  AuxSprite_Remove(&p->sprite0);
+  AuxSprite_Remove(&p->sprite1);
+  AuxSprite_Remove(&p->sprite2);
+  for (i = 0; i < 5; i++) {
+    MainSprite_Remove(&p->mainSprites[i]);
+  }
+  for (i = 0; i < 7; i++) {
+    AuxSprite_Remove(&p->mashMeter[i]);
+  }
+  for (i = 0; i < 6; i++) {
+    AuxSprite_Remove(&p->sprites4[i]);
+  }
+  gEntityB3D1 = NULL;
+  sound_08240740(SONG_574);
+  return 0;
+}
 
 NAKED void FUN_080c05cc(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c05cc.inc"); }
 
