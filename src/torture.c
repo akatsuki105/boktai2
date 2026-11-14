@@ -20,8 +20,8 @@ typedef struct Torture {
   u8 unk_6a[2];                 // 0x06A, まだ未解析
   AuxSprite sprite1;            // 0x06C, _Destroy が AuxSprite_Remove に渡す
   AuxSpriteGfx gfx1;            // 0x098, SPRITE_DARKGENERATOR
-  u16 unk_b4;                   // 0x0B4
-  u16 unk_b6;                   // 0x0B6, _Init が '.N' から 1/2/3/4 を入れる
+  u16 sprite1Phase;             // 0x0B4, sprite1Speed ずつ進めて 0..23 を回り, 8 で割った値が sprite1 のコマ
+  u16 sprite1Speed;             // 0x0B6, '.N' が 4 なら 1, 3 なら 4, 10 なら 3, それ以外は 2
   AuxSprite sprite2;            // 0x0B8
   AuxSpriteGfx gfx2;            // 0x0E4, SPRITE_DARKGENERATOR
   AuxSprite mashMeter[7];       // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
@@ -48,8 +48,8 @@ typedef struct Torture {
   u32 unk_59c;                  // 0x59C
   u32 unk_5a0;                  // 0x5A0
   u32 rateChangeScript;         // 0x5A4, mashRate が変わったときに新しい倍率を引数に起動するスクリプト, 0 なら起動しない
-  u32 unk_5a8;                  // 0x5A8
-  u32 unk_5ac;                  // 0x5AC
+  u32 timeUpScript;             // 0x5A8, '.a[2]', 時間切れで起動するスクリプト (Scr_DarkLoanPunishTimeUp)
+  u32 endScript;                // 0x5AC, '.e', おしおきを終えたときに unk_57e を引数に起動するスクリプト (Scr_DarkLoanPunishEnd)
   u16 powerCharge;              // 0x5B0, 連打で貯めた発電量, powerPerUnit ごとに1単位として取り出す
   u16 powerPerUnit;             // 0x5B2, '.r=300', 発電1単位に要る powerCharge
   u8 unk_5b4[0x5B6 - 0x5B4];    // 0x5B4, まだ未解析
@@ -109,13 +109,13 @@ void Torture_SetupPlayer(Torture* p) {
   }
 }
 
-// unk_b4 を unk_b6 ずつ進めて, 8 で割った値を sprite1 のコマ番号にする
-void FUN_080bfb74(Torture* p) {
-  AuxSprite_SetPoseIdx(&p->sprite1, p->unk_b4 >> 3);
-  p->unk_b4 += p->unk_b6;
+// sprite1Phase を sprite1Speed ずつ進めて, 8 で割った値を sprite1 のコマ番号にする
+void Torture_AnimateSprite1(Torture* p) {
+  AuxSprite_SetPoseIdx(&p->sprite1, p->sprite1Phase >> 3);
+  p->sprite1Phase += p->sprite1Speed;
 
-  if (p->unk_b4 > 23) {
-    p->unk_b4 = 0;
+  if (p->sprite1Phase > 23) {
+    p->sprite1Phase = 0;
   }
 }
 
@@ -327,27 +327,27 @@ void Torture_Start(Torture* p) {
   Torture_SetState(p, FUN_080c0248);
 }
 
-// unk_57e を引数にして unk_5ac のスクリプトを起動する
-void FUN_080c0014(Torture* p) {
+// unk_57e を引数にして endScript のスクリプトを起動する
+void Torture_RunEndScript(Torture* p) {
   ScriptArgs args;
   u32 argv[1];
 
-  if (p->unk_5ac != 0) {
+  if (p->endScript != 0) {
     args.argc = 1;
     args.argv = argv;
     argv[0] = p->unk_57e;
-    VM_ExecByID(p->unk_5ac, &args);
+    VM_ExecByID(p->endScript, &args);
   }
 }
 
-// unk_5a8 のスクリプトを引数1個で起動する
-void FUN_080c0058(Torture* p) {
+// timeUpScript のスクリプトを引数1個で起動する
+void Torture_RunTimeUpScript(Torture* p) {
   u32 arg;
   ScriptArgs args;
 
-  if (p->unk_5a8 != 0) {
+  if (p->timeUpScript != 0) {
     args.argc = 1, args.argv = &arg;
-    VM_ExecByID(p->unk_5a8, &args);
+    VM_ExecByID(p->timeUpScript, &args);
   }
 }
 
@@ -408,8 +408,8 @@ s32 Torture_GeneratePower(Torture* p) {
 
 void Torture_UpdateDone(Torture* _) {}
 
-// おしおきを終える, 借金を 0 にして表示を消し, プレイヤーを操作不能に戻してから param_2 に応じた終わりのスクリプトを予約する
-void Torture_Finish(Torture* p, s32 param_2) {
+// おしおきを終える, 借金を 0 にして表示を消し, プレイヤーを操作不能に戻してから 時間切れなら timeUpScript, そうでなければ endScript を予約する
+void Torture_Finish(Torture* p, bool32 timeUp) {
   gStat->darkDebts = 0;
   Torture_ResetMash();
   p->mashRate = 1;
@@ -420,10 +420,10 @@ void Torture_Finish(Torture* p, s32 param_2) {
   gPlayerPtr[0]->mode = PMODE_LOCKED;
   gPlayerPtr[0]->action = 0;
   gPlayerPtr[0]->state = 0;
-  if (param_2 == 0) {
-    EntityCF58_CreateWithCallback(1, 0, FUN_080c0014, p);
+  if (!timeUp) {
+    EntityCF58_CreateWithCallback(1, 0, Torture_RunEndScript, p);
   } else {
-    EntityCF58_CreateWithCallback(1, 0, FUN_080c0058, p);
+    EntityCF58_CreateWithCallback(1, 0, Torture_RunTimeUpScript, p);
   }
   Torture_SetState(p, Torture_UpdateDone);
 }
@@ -445,7 +445,7 @@ void Torture_UpdateScreenBlend(Torture* p) {
 
 s32 Torture_Update(Torture* p) {
   p->updateCallback(p);
-  FUN_080bfb74(p);
+  Torture_AnimateSprite1(p);
   Torture_UpdateScreenBlend(p);
   return 0;
 }
@@ -533,7 +533,102 @@ void Torture_InitMashMeter(Torture* p) {
   }
 }
 
-NAKED s32 Torture_Init(Torture* p) { INCFUNC("asm/func/Torture_Init.inc"); }
+s32 Torture_Init(Torture* p) {
+  s32 n;
+
+  if (VM_SeekToNamedArg('p')) {
+    p->mashPattern = VM_GetValue();
+  } else {
+    p->mashPattern = 0;
+  }
+
+  Video_GetAuxSprite(&p->gfx0, SPRITE_DARKGENERATOR);
+  AuxSprite_Add(&p->sprite0, &p->gfx0, 0);
+  AuxSprite_SetPoseIdx(&p->sprite0, 0);
+  p->sprite0.pos.x = 896;
+  p->sprite0.pos.y = 0;
+  p->sprite0.pos.z = 1324;
+
+  Video_GetAuxSprite(&p->gfx1, SPRITE_DARKGENERATOR);
+  AuxSprite_Add(&p->sprite1, &p->gfx1, 0);
+  AuxSprite_SetPoseIdx(&p->sprite1, 0);
+  p->sprite1.pos = p->sprite0.pos;
+  p->sprite1.pos.z += 768;
+  if (VM_SeekToNamedArg('N')) {
+    n = VM_GetValue();
+    switch (n) {
+      case 4: {
+        p->sprite1Speed = 1;
+        break;
+      }
+      case 3: {
+        p->sprite1Speed = 4;
+        break;
+      }
+      case 10: {
+        p->sprite1Speed = 3;
+        break;
+      }
+      case 2:
+      default: {
+        p->sprite1Speed = 2;
+        break;
+      }
+    }
+  } else {
+    p->sprite1Speed = 2;
+  }
+
+  Video_GetAuxSprite(&p->gfx2, SPRITE_DARKGENERATOR);
+  AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
+  AuxSprite_SetPoseIdx(&p->sprite2, 0);
+  p->sprite2.pos = p->sprite0.pos;
+  p->sprite2.pos.z -= 768;
+
+  Torture_InitDebtSprites(p);
+  Torture_DrawDebts(p);
+  Torture_SetState(p, Torture_UpdateDone);
+  Torture_InitMashMeter(p);
+  Torture_InitBonusSprites(p);
+  Torture_HideHud(p);
+
+  if (VM_SeekToNamedArg('r')) {
+    p->powerPerUnit = VM_GetValue();
+  } else {
+    p->powerPerUnit = 300;
+  }
+  if (VM_SeekToNamedArg('t')) {
+    p->rate2Frames = VM_GetValue();
+    p->rate5Frames = VM_GetValue();
+    p->rate10Frames = VM_GetValue();
+  } else {
+    p->rate2Frames = 180;
+    p->rate5Frames = 300;
+    p->rate10Frames = 600;
+  }
+  if (VM_SeekToNamedArg('b')) {
+    p->rateChangeScript = VM_GetValue();
+  } else {
+    p->rateChangeScript = 0;
+  }
+  p->mashRate = 1;
+  p->mashFrames = 0;
+  if (VM_SeekToNamedArg('e')) {
+    p->endScript = VM_GetValue();
+  }
+  if (VM_SeekToNamedArg('a')) {
+    p->unk_598 = VM_GetValue();
+    p->unk_5a0 = VM_GetValue();
+    p->timeUpScript = VM_GetValue();
+  }
+  p->unk_594 = 0;
+  p->unk_59c = 0;
+  PlaySound_082406e0(SONG_574);
+  p->unk_57e = 0;
+  p->unk_594 = 0;
+  gTorture = p;
+  return 0;
+}
 
 // 0xB3D1
 Torture* Torture_Create(void) {
