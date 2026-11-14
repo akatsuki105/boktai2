@@ -44,7 +44,22 @@ s32 PasswordScreen_NextRandom(PasswordScreen* p) {
   return p->rngState;
 }
 
-NAKED s32 FUN_08012d00(PasswordScreen* p, s32 value, s32* bitPos, s32 width) { INCFUNC("asm/func/FUN_08012d00.inc"); }
+// value を width ビットに収め, 下位ビットから順に chars の *bitPos ビット目 (1 文字 6 ビット) へ詰めて *bitPos を進める
+s32 PasswordScreen_PutBits(PasswordScreen* p, u32 value, s32* bitPos, s32 width) {
+  s32 i;
+
+  if (value > (1 << width) - 1) {
+    value = (1 << width) - 1;
+  }
+  for (i = 0; i < width; i++) {
+    s32 idx = Div(*bitPos, 6);
+    s32 shift = Mod(*bitPos, 6);
+    u32 bit = (value >> i) & 1;
+
+    p->chars[idx] |= bit << shift;
+    (*bitPos)++;
+  }
+}
 
 // key + 4 回空回しした乱数で, chars の 5 文字目以降の 20 文字を xor して混ぜる
 // 残差: 原典は 2 つ目のループの & 63 の定数をループ内で作るが, こちらはループ外に出して r8 に置く (45/39 命令), 試済: xor の被演算子の順, 文字のポインタ, mask を u32

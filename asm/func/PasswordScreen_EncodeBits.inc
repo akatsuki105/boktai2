@@ -26,24 +26,24 @@
 	movs r1, #0
 	mov r2, sp
 	movs r3, #2
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldrh r1, [r6, #0x1c]
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #3
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldrb r1, [r4]
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #3
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, _08012FB4 @ =gSystemSaveData
 	ldr r0, [r0]
 	ldr r1, [r0, #0x20]
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #6
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r4, _08012FB8 @ =0x030046A0
 	ldr r0, [r4]
 	movs r2, #0xbe
@@ -54,7 +54,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #3
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	ldr r1, _08012FBC @ =0x000002FA
 	adds r0, r0, r1
@@ -63,7 +63,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #4
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	movs r1, #0xf8
 	lsls r1, r1, #1
@@ -74,7 +74,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #8
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	movs r2, #0xbf
 	lsls r2, r2, #2
@@ -84,7 +84,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #7
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	ldr r1, _08012FC0 @ =0x00000914
 	adds r0, r0, r1
@@ -93,7 +93,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #6
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	ldr r2, _08012FC4 @ =0x00000918
 	adds r1, r0, r2
@@ -107,7 +107,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #6
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	movs r1, #0xec
 	lsls r1, r1, #1
@@ -117,7 +117,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #0xa
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	movs r2, #0xea
 	lsls r2, r2, #1
@@ -127,7 +127,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #8
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	movs r1, #0xad
 	lsls r1, r1, #2
@@ -139,7 +139,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #6
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r0, [r4]
 	movs r2, #0xf7
 	lsls r2, r2, #1
@@ -149,7 +149,7 @@
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #0x10
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	ldr r1, [r4]
 	movs r0, #0xf0
 	lsls r0, r0, #2
@@ -170,7 +170,7 @@ _08012F2C:
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #8
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	adds r4, #1
 	adds r5, #1
 	cmp r5, #4
@@ -192,7 +192,7 @@ _08012F56:
 	movs r1, #0
 	mov r2, sp
 	movs r3, #8
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	adds r5, #1
 	cmp r5, #4
 	ble _08012F56
@@ -203,7 +203,7 @@ _08012F68:
 	adds r0, r6, #0
 	movs r1, #0
 	mov r2, sp
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	adds r0, r6, #0
 	bl PasswordScreen_ScrambleChars
 	ldr r2, _08012FD4 @ =0x0000FFFF
@@ -258,7 +258,7 @@ _08012FDE:
 	adds r0, r6, #0
 	mov r2, sp
 	movs r3, #0x10
-	bl FUN_08012d00
+	bl PasswordScreen_PutBits
 	add sp, #4
 	pop {r4, r5, r6, r7}
 	pop {r1}
