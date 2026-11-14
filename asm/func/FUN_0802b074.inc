@@ -1170,7 +1170,7 @@ _0802B8F8:
 	bl CreateDamageNumber
 _0802B9A2:
 	adds r0, r6, #0
-	bl FUN_08028a04
+	bl Ringo_SpawnBiteBlood
 	movs r0, #0xd3
 	lsls r0, r0, #2
 	bl PlaySound_0824078c

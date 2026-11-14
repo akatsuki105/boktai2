@@ -76,7 +76,7 @@ _0821DD54:
 	bl Player_HoldGrabbed
 	adds r4, r0, #0
 	adds r0, r5, #0
-	bl FUN_0821d900
+	bl ShadeMan_SpawnBiteBlood
 	adds r0, r5, #0
 	adds r1, r4, #0
 	bl ShadeMan_Heal

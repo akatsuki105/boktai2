@@ -737,7 +737,8 @@ void FUN_08028960(Ringo* p) {
   p->unk_8e4++;
 }
 
-void FUN_08028a04(Ringo* p) {
+// 掴んだプレイヤーから吸った血を体の前に 4 つ飛ばす
+void Ringo_SpawnBiteBlood(Ringo* p) {
   Mover* mover = &p->base.mover;
   Vec3 ofs;
   s32 i;
@@ -1950,7 +1951,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
               CreateDamageNumber(&p->hurtbox, dmg, 1, &boss->mover.pos, &ofs2, 1);
             }
           }
-          FUN_08028a04(p);
+          Ringo_SpawnBiteBlood(p);
           PlaySound_0824078c(SONG_844);
         }
         anim = FUN_08028ec8(p);

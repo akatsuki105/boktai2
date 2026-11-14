@@ -1223,29 +1223,26 @@ NON_MATCH void ShadeMan_Heal(ShadeMan* p, s32 amount) {
 #endif
 }
 
-// 原典は base を r4/r5 の 2 語に詰めたまま扱う (113/108)
-NON_MATCH void FUN_0821d900(ShadeMan* p) {
-#ifdef NONMATCHING_C
-  Vec3 base;
-  Vec3* pos;
+// 掴んだプレイヤーから吸った血を体の前に 2 つ飛ばす
+void ShadeMan_SpawnBiteBlood(ShadeMan* p) {
+  Vec3* center;
+  Vec3 ofs;
   s32 i;
 
-  if (p->base.facing <= 1) {
-    VEC3_SET(base, Q8(0.25), Q8(0.782), Q8(-0.5));
+  if (p->base.facing <= DIR4_EAST) {
+    VEC3_SET(ofs, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
-    VEC3_SET(base, Q8(-0.5), Q8(0.782), Q8(0.25));
+    VEC3_SET(ofs, Q8(-0.5), Q8(0.782), Q8(0.25));
   }
-  pos = &p->base.mover.pos;
+  center = &p->base.mover.pos;
   for (i = 0; i < 2; i++) {
-    Vec3 ofs = base;
+    Vec3 pos;
 
-    ofs.x += (Random() & 0x7F) - 0x40;
-    ofs.z += (Random() & 0x7F) - 0x40;
-    SpawnBloodEx(pos, &ofs, NULL, NULL, 1, 1);
+    pos.x = ofs.x + (RandomNext() & 0x7F) - 0x40;
+    pos.y = ofs.y;
+    pos.z = ofs.z + (RandomNext() & 0x7F) - 0x40;
+    SpawnBloodEx(center, &pos, NULL, NULL, 1, 1);
   }
-#else
-  INCFUNC("asm/func/FUN_0821d900.inc");
-#endif
 }
 
 // 抱えているプレイヤーの姿を本体の位置と向きに合わせる
@@ -1336,7 +1333,7 @@ NON_MATCH void FUN_0821dd00(ShadeMan* p) {
 
     VEC3_SET(ofs, x, Q8(0.625), x);
     amount = Player_HoldGrabbed(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, p->unk_3d0, 2);
-    FUN_0821d900(p);
+    ShadeMan_SpawnBiteBlood(p);
     ShadeMan_Heal(p, amount);
     PlaySound_082406e0(SONG_844);
   }
