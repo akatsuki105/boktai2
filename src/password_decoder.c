@@ -115,7 +115,44 @@ u32 PasswordDecoder_GetBits(u8* p, s32 start, s32 count) {
   return value;
 }
 
-NAKED s32 PasswordDecoder_IsIllegalName(PasswordDecoder* p) { INCFUNC("asm/func/PasswordDecoder_IsIllegalName.inc"); }
+// 名前の文字がどちらの文字表にも無ければ 1 を返す, 0xEC だけは 0xF0 に置き換えて許す
+// 残差: 58/58 命令, 原典は文字表を探す内側のループを回転させず (先頭の判定へ飛び込む形), *c を毎回読み直し, c のポインタを外側用と内側用の2本に持つ
+// 試済: 文字をローカルに受ける, for (;;), 探索を (u8* table, u16* c) の static inline に分ける (読み直しと t + 1 の位置は揃うが回転は残る), 外側を p->data.name[i] の直接参照にする
+NON_MATCH s32 PasswordDecoder_IsIllegalName(PasswordDecoder* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    u16* c = &p->data.name[i];
+
+    if (*c != 0) {
+      bool32 found = FALSE;
+      s32 t;
+
+      for (t = 0; t < 2; t++) {
+        u8* s = GetStringByID(VM_ParseStringRef(p->nameTablePc) + t);
+
+        while (s[0] != 0) {
+          if (s[1] == *c) {
+            found = TRUE;
+            break;
+          }
+          s += 2;
+        }
+      }
+      if (!found) {
+        if (*c != 0xEC) {
+          return 1;
+        }
+        *c = 0xF0;
+      }
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/PasswordDecoder_IsIllegalName.inc");
+#endif
+}
 
 NAKED s32 PasswordDecoder_Parse(PasswordDecoder* p) { INCFUNC("asm/func/PasswordDecoder_Parse.inc"); }
 
