@@ -559,11 +559,7 @@ s32 Cmd_SetDoorOpen(void) {
 }
 
 // '.n' が指す扉を閉じた状態に戻す, 1体でも見つかれば 1 を返す
-// 残差はプール定数の巻き上げ先1組のみ (97/97): 原典は ~TATTR_WALL (0xFFFD) を r10 に巻き上げて Door_BarsClosedWait を毎回 ldr するが, agbcc は逆を選ぶ
-// Door_SetPhase / Door_SetStep 経由にすると定数 1 が巻き上がる (直書きだと 98命令), 文の順序と found の形は Cmd_D6F7 と同じで原典どおり
-// Tier A-C 試済 (早期 return は 85命令で原典と別物), 未: per-TU フラグ
-NON_MATCH s32 Cmd_SetDoorClosed(void) {
-#ifdef NONMATCHING_C
+s32 Cmd_SetDoorClosed(void) {
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
   s32 id;
@@ -583,7 +579,7 @@ NON_MATCH s32 Cmd_SetDoorClosed(void) {
     if (door->id == id) {
       door->timer = 0;
       Door_SetPhase(door, 1);
-      door->fn = Door_BarsClosedWait;
+      Door_SetFn(door, Door_BarsClosedWait);
       Door_SetStep(door, door->closedStep);
       door->ov->tile.attr &= ~TATTR_WALL;
       door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
@@ -595,9 +591,6 @@ NON_MATCH s32 Cmd_SetDoorClosed(void) {
   }
 
   return found;
-#else
-  INCFUNC("asm/func/Cmd_SetDoorClosed.inc");
-#endif
 }
 
 // 0xCB30, '.n' が指す扉を開き始めさせる
