@@ -1,8 +1,7 @@
 #include "global.h"
+#include "menu.h"
 #include "player.h"
 #include "vm.h"
-
-void HUD_RebuildQCMagic(void);
 
 #define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + (n)))
 
@@ -35,7 +34,7 @@ void UnlockMagic(magic32_t n) {
   for (i = 0; i < 4; i++) {
     if (REGISTERED_MAGIC(i) == MAGIC_NONE) {
       RegisterMagic(i, n);
-      HUD_RebuildQCMagic();
+      QC_RebuildMagic();
       if (i != gStat->equippedMagicIdx) {
         return;
       }

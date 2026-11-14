@@ -12,7 +12,7 @@
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
   AuxSprite sprite;              // 0x18
-  AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_BLOCK_ROCK`, SPRITE_DB6C, SPRITE_4AEE
+  AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_BLOCK_ROCK`, SPRITE_WALL_DB6C, SPRITE_WALL_4AEE
   HitboxData hurtbox;            // 0x60
   MapTileOverride tileOverride;  // 0xB0, tileIdx のタイルの高さを height で上書きする
   u8 unk_c0;                     // 0xC0

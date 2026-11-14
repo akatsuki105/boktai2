@@ -612,7 +612,7 @@ void Cmd_8954(void) {
   *count = (*count < 9999) ? *count + 1 : 9999;
   count = &gStat->totalEnemyKillCount;
   *count = (*count < 9999) ? *count + 1 : 9999;
-  count = (s16*)&gStat->unk_222;
+  count = &gStat->enemyKillCount[ENEF_24];
   *count = (*count < 9999) ? *count + 1 : 9999;
   kills = gStat->killCounts[4] + 1;
   if (kills > 9999) {
@@ -705,7 +705,7 @@ Entity778B* Entity778B_Create(s32 param_1) {
 }
 
 // 0xFD6B, 命令列は一致, 残差はレジスタだけ (原典は 0x942 を r6 に載せ, オフセットの定数を r3 に置く)
-NON_MATCH void Entity778B_AddElemScripted(void) {
+NON_MATCH void Cmd_AddEntity778BElem(void) {
 #ifdef NONMATCHING_C
   Entity778BElem* elem;
 
@@ -744,7 +744,7 @@ NON_MATCH void Entity778B_AddElemScripted(void) {
   }
   Entity778BElem_Spawn(elem);
 #else
-  INCFUNC("asm/func/Entity778B_AddElemScripted.inc");
+  INCFUNC("asm/func/Cmd_AddEntity778BElem.inc");
 #endif
 }
 

@@ -4,6 +4,17 @@ description: Decompile boktai2 function into C code that generates matching buil
 argument-hint: [<function-name>...] [-n|--name] [-p|--push]
 ---
 
+## ⚠️ MANDATORY FOR EVERY SINGLE FUNCTION — SKIPPING EITHER STEP IS A DIRECT VIOLATION OF THE USER'S ORDERS ⚠️
+
+**THESE TWO STEPS ARE NOT OPTIONAL. NOT ONCE. NOT FOR ANY REASON.**
+
+They have been skipped before, repeatedly, and every time it wasted the user's time and money and made them furious. Skipping either one is not a shortcut — it is disobeying a direct instruction. They apply to **EVERY** function: the first one, the tenth one in a long run, the "obvious" one, the one right after a context compaction, the one you are in a hurry to finish. There are **NO EXCEPTIONS**.
+
+1. **BEFORE WRITING A SINGLE LINE OF C, FIND AND READ MATCHED FUNCTIONS OF THE SAME SHAPE ACROSS ALL OF `src/`** (step 2) — **NOT just the same file.** Grep for the callees, constants, globals and struct fields the asm touches, and actually read the matched C you find. Only then write the draft. Writing C without having done this search is a violation.
+2. **WITH `-n`, NAME THINGS ON THE SPOT, FUNCTION BY FUNCTION** (step 7) — the function itself, **AND** the struct members and globals its body settled. **MATCHING OR NON_MATCH, IT DOES NOT MATTER — NAME THEM.** **NEVER** batch the naming "for later". **NEVER** leave `FUN_xxxxxxxx` when the body already told you what it does. Moving on to the next function with unnamed things the body explained is a violation.
+
+**If you notice you skipped either step for a function, STOP, go back, and do it before touching the next function.**
+
 ## The one rule
 
 **Only the ROM proves a match.** A function is done when `make compare` prints the OK line for `boktai2.gba` (full-image SHA-1 against a verified retail dump). Compiling proves nothing about bytes; assembling nothing about layout; linking nothing about the image.
@@ -374,11 +385,14 @@ spelling that path out in full — there is no `scripts/` directory at the repo
 root, so a bare `scripts/context.ts` just fails with "no such file or
 directory":
 
-`rm` and `cp` are interactive here, which matters because this workflow deletes
-the `.inc` on a match and shuffles candidate sources around. Use `rm -f` /
-`cp -f`: without the flag they stop on a confirmation prompt that never gets an
-answer, so the call hangs and every later command in the same invocation is
-silently skipped — including the `make compare` you were relying on.
+`rm`, `cp` and `mv` are aliased to `-i` here, which matters because this
+workflow deletes the `.inc` on a match and shuffles candidate sources around.
+`rm -f` and `mv -f` are safe, since `-f` overrides `-i`. **`cp -f` is not**:
+macOS `cp` lets `-i` win, so it still stops on `overwrite ...? (y/n [n])`.
+Copy with `\cp src dst` (bypasses the alias) or `cat src > dst` instead.
+Otherwise the prompt never gets an answer, so the call hangs and every later
+command in the same invocation is silently skipped — including the
+`make compare` you were relying on.
 
 - `context.ts <FUNCTION_NAME> [SRC_FILE] [ASM_FILE]` — the assembly, the repo
   signature, a Ghidra decompile, the asm offsets mapped onto the struct

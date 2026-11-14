@@ -48,7 +48,7 @@ void Entity5E27_ApplyPltt(Entity5E27* p) {
 s32 Entity5E27_Update(Entity5E27* p) {
   if (FUN_0800271c()) {
     u32 span = Time_GetSpanOfTime();
-    if (span == TIME_UNK4 || span == TIME_UNK5 || span == TIME_NIGHT) {
+    if (span == TIME_NIGHT_DUSK || span == TIME_NIGHT_MID || span == TIME_NIGHT_DAWN) {
       Entity5E27_SavePltt(p);
       Entity5E27_ApplyPltt(p);
     }

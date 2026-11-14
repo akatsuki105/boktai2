@@ -28,7 +28,7 @@ void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 FUN_080298dc(void);
 void* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 WorldPos* FUN_080230c4(void);
-void FUN_08084734(WorldPos* out);
+void BlackHole_GetCenter(WorldPos* out);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
 struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes);
@@ -214,7 +214,7 @@ bool32 AllySabata_IsNight(Player* p) {
   }
 
   span = Time_GetSpanOfTime();
-  if (span == TIME_UNK4 || span == TIME_UNK5 || span == TIME_NIGHT) {
+  if (span == TIME_NIGHT_DUSK || span == TIME_NIGHT_MID || span == TIME_NIGHT_DAWN) {
     return TRUE;
   }
   return FALSE;
@@ -578,7 +578,7 @@ void FUN_08081830(Player* p) {
     p->human.flags &= ~SPRFLAG_XFLIP;
   }
 
-  FUN_08084734(&base);
+  BlackHole_GetCenter(&base);
   for (i = 0; i < 4; i++) {
     s32 dx;
     s32 dz;
@@ -1365,7 +1365,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
         s32 angle;
         s32 idx;
 
-        FUN_08084734(&pos);
+        BlackHole_GetCenter(&pos);
         ax = pos.x - target->x;
         az = pos.z - target->z;
         angle = ArcTan2_8(ax, az);
@@ -1412,7 +1412,7 @@ void FUN_080831e0(Player* p, s32 size, s32 plttOfs, HitboxAttributes attrs) {
   pos.y = p->mover.pos.y + Q8(0.9);
   pos.z = p->mover.pos.z + POLAR_Z(Q8(0.586), angle);
   Entity080cbabc_Create(&pos, angle, Q8(0.125), size, plttOfs, p->wpn.atkPower, p->wpn.knockback, attrs, p->wpn.iframes);
-  PlaySound_082406e0(SONG_871);
+  PlaySound_082406e0(SE_ALLY_SABATA_871);
 }
 
 // サバタの PACT_ATTACK, 2〜3回斬りつけてから間合いを取り直す
@@ -1575,7 +1575,7 @@ NON_MATCH void FUN_080835d8(Player* p) {
         p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
         p->knockbackSpeed_4a4 = 0;
         p->unk_4a7 = ((p->facing + 5) & 7) << 5;
-        FUN_08084734(&p->refuelPos);
+        BlackHole_GetCenter(&p->refuelPos);
         AllySabata_SetAction(p, PACT_SPIDER_WEB, 4);
       }
       break;
@@ -1622,7 +1622,7 @@ NON_MATCH void FUN_080835d8(Player* p) {
         }
       }
       if (!(p->stateTimer & 0x3F)) {
-        FUN_08084734(&p->refuelPos);
+        BlackHole_GetCenter(&p->refuelPos);
         p->refuelPos.x = (Random() & 0x1FF) - 255 + p->refuelPos.x;
         p->refuelPos.z = (Random() & 0x1FF) - 255 + p->refuelPos.z;
       }

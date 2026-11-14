@@ -3,14 +3,15 @@
 
 #include "gba/gba.h"
 
-// Clock.spanOfTime
-// Time_GetSpanOfTime が返す条件: 日中かどうか (現在時刻が morning〜sunset の間か) と untilSunrise / untilSunset の hour が 0 かどうかの組み合わせ
-#define TIME_NIGHT 0    // 日中でない + untilSunrise.hour == 0
-#define TIME_MORNING 1  // 日中 + untilSunrise.hour == 0
-#define TIME_DAYTIME 2  // 日中 + untilSunrise.hour != 0 + untilSunset.hour != 0
-#define TIME_SUNSET 3   // 日中 + untilSunrise.hour != 0 + untilSunset.hour == 0
-#define TIME_UNK4 4     // 日中でない + untilSunrise.hour != 0 + untilSunset.hour == 0
-#define TIME_UNK5 5     // 日中でない + untilSunrise.hour != 0 + untilSunset.hour != 0
+// Clock.spanOfTime, Time_GetSpanOfTime が決める
+// 1日を日の出と日の入を境に6つに分けた時間帯, 1〜3 が昼, TIME_NIGHT_XXX の3つが夜
+// 日の出と日の入のちょうどの1分間は, 日中かどうかを < で比べる都合で独立した時間帯になる
+#define TIME_NIGHT_DAWN 0  // 日の出前の1時間
+#define TIME_MORNING 1     // 日の出ちょうどの1分間
+#define TIME_DAYTIME 2     // 昼のほとんど (日の出の次の分から日の入の1時間前まで)
+#define TIME_SUNSET 3      // 日の入前の1時間
+#define TIME_NIGHT_DUSK 4  // 日の入ちょうどの1分間
+#define TIME_NIGHT_MID 5   // 夜のほとんど (日の入の次の分から日の出の1時間前まで)
 
 // BCD
 typedef union {
@@ -44,8 +45,8 @@ typedef struct {
   u8 rtcStatus;                         // 0x09, RTC の読み出し結果, 0 なら正常, 負なら壊れていたフィールドの理由コード
   struct Time ALIGNED(2) morning;       // 0x0A, 日の出の時刻
   struct Time ALIGNED(2) sunset;        // 0x0C, 日の入りの時刻
-  u8 spanOfTime;                        // 0x0E, see TIMESPAN_XXXX
-  u8 unk_0f;                            // 0x0F
+  u8 spanOfTime;                        // 0x0E, see TIME_XXX
+  u8 twilightLevel;                     // 0x0F, 日の出・日の入の前後の移り変わりの進み具合 (0〜64), 日の出前の1時間で 0→32, 日の出の1分間で 64, 日の入前の1時間で 0→64, 日の入の1分間で 64, それ以外は 0, 写す Entity はあるが値を使う箇所はない
   struct Time ALIGNED(2) untilSunset;   // 0x10, 日の入までの残り時間
   struct Time ALIGNED(2) untilSunrise;  // 0x12, 日の出までの残り時間
   u16 moonAge;                          // 0x14, 月齢の10倍, 日の入のたびに +1 し 280 を超えると 0 に戻る

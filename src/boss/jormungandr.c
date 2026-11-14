@@ -992,7 +992,7 @@ void FUN_080c3af4(Jormungandr* p) {
 // sunGauge == 0 の 0 を先に置く位置と plttFading のアドレス計算が違う (4 hunk)
 NON_MATCH void FUN_080c3b80(Jormungandr* p) {
 #ifdef NONMATCHING_C
-  if (p->base.isDemo) {
+  if (p->base.isCutscene) {
     p->plttIdx = p->plttTo = p->plttFrom = 2;
   } else {
     p->plttIdx = p->plttTo = p->plttFrom = gStat->sunGauge == 0;

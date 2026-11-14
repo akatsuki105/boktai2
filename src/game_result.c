@@ -18,7 +18,7 @@ typedef u32 GameResultFlags;
 // なんか GameResultFlags とかが TitleFlags と似てるし、 他にも Title との共通点がある気がする...
 typedef struct GameResult {
   Entity e;                                    // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                           // 0x018, SPRITE_42E2
+  MainSpriteGfx gfx;                           // 0x018, SPRITE_UI_TITLE
   Tilemaps* tilemap;                           // 0x038, TILEMAP_33B2
   rgb555* pltt;                                // 0x03C, BGP_E9C3
   GameResultFlags unk_40;                      // 0x040, なんかのbitfield?
@@ -336,7 +336,7 @@ void FUN_082229e8(GameResult* p) {
 
 // リザルト画面のスプライトファイルを開く
 void FUN_08222a18(GameResult* p) {
-  MainSpriteGfxFile* file = GetFile(DIR_MAIN_SPRITE, SPRITE_42E2);
+  MainSpriteGfxFile* file = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_TITLE);
 
   p->gfx = *(MainSpriteGfx*)file;
   OpenMainSpriteFile(&p->gfx, file);

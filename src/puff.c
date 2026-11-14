@@ -7,7 +7,7 @@
 #include "sprite.h"
 #include "vm.h"
 
-// 水しぶき・煙・土煙など, パレット違いで使い回す玉状のパーティクル (SPRITE_4384, 地下水路の滝の根元などで確認)
+// 水しぶき・煙・土煙など, パレット違いで使い回す玉状のパーティクル (SPRITE_PUFF_4384, 地下水路の滝の根元などで確認)
 
 // パーティクル1個分, Puff_Spawn で発生させる
 typedef struct {
@@ -22,7 +22,7 @@ typedef struct {
   u16 decayXZ;        // 0x0E, 同上
   Vec3 dir;           // 0x10, 4.12 固定小数の向き, x = COS(angleXZ), y = SIN(angleY), z = SIN(angleXZ)
   Vec3 vel;           // 0x18, dir * speed >> 12, 毎フレーム sprite.pos に加算, SCREEN_COORD なら z は足さない
-  AuxSpriteGfx gfx;   // 0x20, SPRITE_4384
+  AuxSpriteGfx gfx;   // 0x20, SPRITE_PUFF_4384
   AuxSprite sprite;   // 0x3C, ->gfx
   AuxAnimState anim;  // 0x68
 } Puff;
@@ -119,7 +119,7 @@ s32 PuffManager_Init(PuffManager* p, u32 _) {
     elem->active = FALSE;
     elem->speedY = 0;
     elem->dir.x = 0, elem->dir.y = 0, elem->dir.z = 0;
-    if (!Video_GetAuxSprite(&elem->gfx, SPRITE_4384)) {
+    if (!Video_GetAuxSprite(&elem->gfx, SPRITE_PUFF_4384)) {
       return -1;
     }
     AuxSprite_Setup(&elem->sprite, &elem->gfx, 0);
@@ -225,7 +225,7 @@ NON_MATCH s32 Puff_Spawn(s32 count, WorldPos* pos, PuffParam* params) {
       elem->sprite.poseIdx = 45;
       AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 8, 0, 0);
     } else {
-      Video_GetAuxSprite(&elem->gfx, SPRITE_4384);
+      Video_GetAuxSprite(&elem->gfx, SPRITE_PUFF_4384);
       Video_SetAuxSpritePltt(&elem->gfx, elem->kind + 125);
       AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[0], 0, 0, 0);
     }

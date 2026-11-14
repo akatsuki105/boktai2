@@ -18,7 +18,7 @@ typedef struct {
 static_assert(sizeof(ArrowManager) == 712);
 
 // 0xA61C
-void Map_SetLoadingZoneIndicatorMode(void) {
+void Cmd_SetLoadingZoneIndicatorMode(void) {
   if (VM_SeekToNamedArg('m')) {
     ArrowManager* p = Registry_Find(0xFD22);
 
@@ -87,7 +87,7 @@ void Map_AddLoadingZoneIndicator(WorldPos* pos, s32 dir, s32 kind, bool32 param_
 }
 
 // スクリプトから目印を1つ積む, '.d' の向きは 4方向に丸めて渡す
-void Map_AddLoadingZoneIndicatorScripted(void) {
+void Cmd_AddLoadingZoneIndicator(void) {
   WorldPos pos;
   s32 dir;
   s32 kind;
@@ -106,10 +106,163 @@ void Map_AddLoadingZoneIndicatorScripted(void) {
   Map_AddLoadingZoneIndicator(&pos, ((dir >> 1) + 1) & 3, kind, param_f);
 }
 
-NAKED s32 FUN_080a64cc(Zone* zone) { INCFUNC("asm/func/FUN_080a64cc.inc"); }
+#ifdef NONMATCHING_C
+static inline u32 Tile_Stairs(CollisionMapTile* t) { return (t->heightStairs >> 4) & 0xF; }
+
+// 索引 idx のタイル, タイルデータが無ければ NULL
+static inline CollisionMapTile* ArrowMarker_TileAt(s32 idx) {
+  if (gCollisionMap->tiledata == NULL) {
+    return NULL;
+  }
+  return &gCollisionMap->tiledata->tiles[idx];
+}
+#endif
+
+// ゾーンの4辺のうち, 内側と外側のタイルが段差なしでつながっている辺を探し, 矢印の向き (0〜3) を返す, 無ければ -1
+// 残差 670 対 678, 段差の種類を u32 の (x >> 4) & 0xF を返す inline で読み, 何もしない case を足すと分岐の木は揃う, 残りは外側タイルの値の写しのレジスタと, 縦の辺で定数 1 が既知のレジスタで代用されずに末尾が共通化される差
+// u8 ローカル, ビットフィールド, case の中身を2つの if に分ける形は試済
+NON_MATCH s32 Map_GetLoadingZoneDir(Zone* zone) {
+#ifdef NONMATCHING_C
+  WorldPos a, b;
+  s32 idxA, idxB;
+  CollisionMapTile* ta;
+  CollisionMapTile* tb;
+
+  a.x = zone->x2 - 16;
+  a.z = (zone->y2 + zone->y1) >> 1;
+  b = a;
+  b.x += 32;
+  idxA = GetCollisionTileIdx(&a);
+  idxB = GetCollisionTileIdx(&b);
+  if (idxA == idxB) {
+    return 0;
+  }
+  ta = ArrowMarker_TileAt(idxA);
+  tb = ArrowMarker_TileAt(idxB);
+  switch (Tile_Stairs(ta)) {
+    case STAIRS_NONE: {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 0;
+      }
+      if (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 0;
+      }
+      break;
+    }
+    case STAIRS_VERTICAL: {
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      if ((Tile_Stairs(tb) == STAIRS_NONE || Tile_Stairs(tb) == STAIRS_HORIZONTAL) && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) + 1 && !(tb->attr & TATTR_UNK_0)) {
+        return 0;
+      }
+      break;
+    }
+  }
+
+  a.x = (zone->x2 + zone->x1) >> 1;
+  a.z = zone->y2 - 16;
+  b = a;
+  b.z += 32;
+  idxA = GetCollisionTileIdx(&a);
+  idxB = GetCollisionTileIdx(&b);
+  if (idxA == idxB) {
+    return 1;
+  }
+  ta = ArrowMarker_TileAt(idxA);
+  tb = ArrowMarker_TileAt(idxB);
+  switch (Tile_Stairs(ta)) {
+    case STAIRS_NONE: {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 1;
+      }
+      if (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 1;
+      }
+      break;
+    }
+    case STAIRS_VERTICAL: {
+      if ((Tile_Stairs(tb) == STAIRS_NONE || Tile_Stairs(tb) == STAIRS_VERTICAL) && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) + 1 && !(tb->attr & TATTR_UNK_0)) {
+        return 1;
+      }
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      break;
+    }
+  }
+
+  a.x = zone->x1 + 16;
+  a.z = (zone->y2 + zone->y1) >> 1;
+  b = a;
+  b.x -= 32;
+  idxA = GetCollisionTileIdx(&a);
+  idxB = GetCollisionTileIdx(&b);
+  if (idxA == idxB) {
+    return 2;
+  }
+  ta = ArrowMarker_TileAt(idxA);
+  tb = ArrowMarker_TileAt(idxB);
+  switch (Tile_Stairs(ta)) {
+    case STAIRS_NONE: {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 2;
+      }
+      if (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 2;
+      }
+      break;
+    }
+    case STAIRS_VERTICAL: {
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      if (((Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF)) || (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF))) && !(tb->attr & TATTR_UNK_0)) {
+        return 2;
+      }
+      break;
+    }
+  }
+
+  a.x = (zone->x2 + zone->x1) >> 1;
+  a.z = zone->y1 + 16;
+  b = a;
+  b.z -= 32;
+  idxA = GetCollisionTileIdx(&a);
+  idxB = GetCollisionTileIdx(&b);
+  if (idxA == idxB) {
+    return 3;
+  }
+  ta = ArrowMarker_TileAt(idxA);
+  tb = ArrowMarker_TileAt(idxB);
+  switch (Tile_Stairs(ta)) {
+    case STAIRS_NONE: {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 3;
+      }
+      if (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+        return 3;
+      }
+      break;
+    }
+    case STAIRS_VERTICAL: {
+      if (((Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF)) || (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF))) && !(tb->attr & TATTR_UNK_0)) {
+        return 3;
+      }
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      break;
+    }
+  }
+  return -1;
+#else
+  INCFUNC("asm/func/Map_GetLoadingZoneDir.inc");
+#endif
+}
 
 // 0x8089, '.n' のゾーンの中心に目印を1つ置く
-void Map_SpawnLoadingZoneIndicator(void) {
+void Cmd_SpawnLoadingZoneIndicator(void) {
   u16 count;
   WorldPos pos;
   s32 dir;
@@ -124,7 +277,7 @@ void Map_SpawnLoadingZoneIndicator(void) {
   pos.z = (zone->y1 + zone->y2) >> 1;
   pos.y = TileHeightAt(&pos);
 
-  dir = FUN_080a64cc(zone);
+  dir = Map_GetLoadingZoneDir(zone);
   if (dir < 0) {
     return;
   }
@@ -135,13 +288,16 @@ void Map_SpawnLoadingZoneIndicator(void) {
 }
 
 // マーカー表示設定が有効な間だけ、矢印を点滅させながら表示する
-// 残差1命令 (64/63): show と mode のレジスタが逆 (原典は show が r1) で, 原典は 0 と分かっている mode のレジスタを blinkTimer = 0 に流用できる
+// 残差はブロックの並びだけ (63 対 63), 条件を mode != 0 || markerEnabled == 0 で先に 0 を書く形にすると 0 の書き込みが show / mode のレジスタで代用されて命令は揃うが, 原典はタイマー側を先に置く
+// 宣言順, ++ の比較, show = (blinkTimer < 48), bool16 show, mode == 0 && ... の形は試済 (64 対 63)
 NON_MATCH s32 ArrowManager_Update(ArrowManager* p) {
 #ifdef NONMATCHING_C
   bool32 show = FALSE;
   s32 i;
 
-  if (p->mode == 0 && gStat->markerEnabled != 0) {
+  if (p->mode != 0 || gStat->markerEnabled == 0) {
+    p->blinkTimer = 0;
+  } else {
     if (p->blinkTimer < 48) {
       show = TRUE;
     }
@@ -150,8 +306,6 @@ NON_MATCH s32 ArrowManager_Update(ArrowManager* p) {
     if (p->blinkTimer >= 72) {
       p->blinkTimer = 0;
     }
-  } else {
-    p->blinkTimer = 0;
   }
 
   if (show) {

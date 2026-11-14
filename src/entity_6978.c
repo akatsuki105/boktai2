@@ -45,7 +45,7 @@ void Entity6978_StepUp(Entity6978* p) {
   }
 }
 
-void Entity6978_SetRequestScripted(void) {
+void Cmd_SetEntity6978Request(void) {
   Entity6978* p = gEntity6978;
 
   if (p != NULL) {

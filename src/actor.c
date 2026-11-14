@@ -65,7 +65,7 @@ const ActorAnim sActorAnims[135] = {
     {dirMode : 2, unk_1 : 1, pose :  30},
     {dirMode : 2, unk_1 : 1, pose :   6},
 
-    // SPRITE_BOKU idx 0
+    // SPRITE_BOKU_0 idx 0
     {dirMode : 2, unk_1 : 0, pose :   7},
     {dirMode : 2, unk_1 : 0, pose :   8},
     {dirMode : 2, unk_1 : 0, pose :   9},
@@ -177,7 +177,7 @@ const ActorAnim sActorAnims[135] = {
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   7},
 
-    // SPRITE_COFFINSELLER_UNKNOWN idx 0
+    // SPRITE_COFSELLER_HATENA idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
@@ -203,7 +203,7 @@ const ActorAnim sActorAnims[135] = {
     {dirMode : 3, unk_1 : 1, pose :  16},
     {dirMode : 2, unk_1 : 1, pose :  23},
 
-    // SPRITE_COFFINSELLER_UNKNOWN idx 1
+    // SPRITE_COFSELLER_HATENA idx 1
     {dirMode : 3, unk_1 : 1, pose :   5},
     {dirMode : 2, unk_1 : 1, pose :  10},
     {dirMode : 3, unk_1 : 1, pose :   5},
@@ -227,51 +227,51 @@ typedef struct {
 } ActorSpriteEntry;
 
 const ActorSpriteEntry sActorSprites[21] = {
-    {id : SPRITE_DJANGO_SABATA,        idx : 0, data : &sActorAnims[0]  },
-    {id : SPRITE_MOUSE,                idx : 0, data : &sActorAnims[8]  },
-    {id : SPRITE_SKELETONS,            idx : 0, data : &sActorAnims[12] },
-    {id : SPRITE_BOKU,                 idx : 0, data : &sActorAnims[16] },
-    {id : SPRITE_OTENKO_00,            idx : 0, data : &sActorAnims[20] },
-    {id : SPRITE_SMITH_MARCELLO,       idx : 0, data : &sActorAnims[29] },
-    {id : SPRITE_SHAIAN,               idx : 0, data : &sActorAnims[40] },
-    {id : SPRITE_RITA,                 idx : 0, data : &sActorAnims[49] },
-    {id : SPRITE_ZAJI,                 idx : 0, data : &sActorAnims[60] },
-    {id : SPRITE_SUMIRE,               idx : 0, data : &sActorAnims[71] },
-    {id : SPRITE_KURO,                 idx : 0, data : &sActorAnims[79] },
-    {id : SPRITE_KID,                  idx : 0, data : &sActorAnims[100]},
-    {id : SPRITE_LADY,                 idx : 0, data : &sActorAnims[104]},
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, data : &sActorAnims[108]},
-    {id : SPRITE_ENNIO_LUIS,           idx : 0, data : &sActorAnims[112]},
-    {id : SPRITE_DAINN,                idx : 0, data : &sActorAnims[116]},
-    {id : SPRITE_DJANGO_SABATA,        idx : 1, data : &sActorAnims[4]  },
-    {id : SPRITE_SMITH_MARCELLO,       idx : 1, data : &sActorAnims[122]},
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, data : &sActorAnims[126]},
-    {id : SPRITE_ENNIO_LUIS,           idx : 1, data : &sActorAnims[130]},
-    {id : SPRITE_MEGAMAN,              idx : 0, data : &sActorAnims[134]}
+    {id : SPRITE_DJANGO_SABATA,    idx : 0, data : &sActorAnims[0]  },
+    {id : SPRITE_MOUSE,            idx : 0, data : &sActorAnims[8]  },
+    {id : SPRITE_SKELETONS,        idx : 0, data : &sActorAnims[12] },
+    {id : SPRITE_BOKU_0,           idx : 0, data : &sActorAnims[16] },
+    {id : SPRITE_OTENKO_00,        idx : 0, data : &sActorAnims[20] },
+    {id : SPRITE_SMITH_MARCELLO,   idx : 0, data : &sActorAnims[29] },
+    {id : SPRITE_SHAIAN,           idx : 0, data : &sActorAnims[40] },
+    {id : SPRITE_RITA,             idx : 0, data : &sActorAnims[49] },
+    {id : SPRITE_ZAJI,             idx : 0, data : &sActorAnims[60] },
+    {id : SPRITE_SUMIRE,           idx : 0, data : &sActorAnims[71] },
+    {id : SPRITE_KURO,             idx : 0, data : &sActorAnims[79] },
+    {id : SPRITE_KID,              idx : 0, data : &sActorAnims[100]},
+    {id : SPRITE_LADY,             idx : 0, data : &sActorAnims[104]},
+    {id : SPRITE_COFSELLER_HATENA, idx : 0, data : &sActorAnims[108]},
+    {id : SPRITE_ENNIO_LUIS,       idx : 0, data : &sActorAnims[112]},
+    {id : SPRITE_DAINN,            idx : 0, data : &sActorAnims[116]},
+    {id : SPRITE_DJANGO_SABATA,    idx : 1, data : &sActorAnims[4]  },
+    {id : SPRITE_SMITH_MARCELLO,   idx : 1, data : &sActorAnims[122]},
+    {id : SPRITE_COFSELLER_HATENA, idx : 1, data : &sActorAnims[126]},
+    {id : SPRITE_ENNIO_LUIS,       idx : 1, data : &sActorAnims[130]},
+    {id : SPRITE_MEGAMAN,          idx : 0, data : &sActorAnims[134]}
 };  // 0x085AB210
 
 const ActorFootStepSound sActorFootStepSounds[21] = {
-    {id : SPRITE_DJANGO_SABATA,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_MOUSE,                idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_SKELETONS,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_BOKU,                 idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_OTENKO_00,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_SMITH_MARCELLO,       idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_SHAIAN,               idx : 0, soundSet : 0, stepFrames : {4, 0, 4, 0}    },
-    {id : SPRITE_RITA,                 idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_ZAJI,                 idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_SUMIRE,               idx : 0, soundSet : 2, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_KURO,                 idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_KID,                  idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_LADY,                 idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_ENNIO_LUIS,           idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_DAINN,                idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_DJANGO_SABATA,        idx : 1, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_SMITH_MARCELLO,       idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_ENNIO_LUIS,           idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_MEGAMAN,              idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_DJANGO_SABATA,    idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_MOUSE,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_SKELETONS,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_BOKU_0,           idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_OTENKO_00,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_SMITH_MARCELLO,   idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_SHAIAN,           idx : 0, soundSet : 0, stepFrames : {4, 0, 4, 0}    },
+    {id : SPRITE_RITA,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_ZAJI,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_SUMIRE,           idx : 0, soundSet : 2, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_KURO,             idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_KID,              idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_LADY,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_COFSELLER_HATENA, idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_ENNIO_LUIS,       idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_DAINN,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_DJANGO_SABATA,    idx : 1, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_SMITH_MARCELLO,   idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_COFSELLER_HATENA, idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_ENNIO_LUIS,       idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_MEGAMAN,          idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
 };  // 0x085AB2B8
 
 const SoundID16 sFootStepSEs[3][2] = {
@@ -279,6 +279,12 @@ const SoundID16 sFootStepSEs[3][2] = {
     {SE_FSTEP_F_0, SE_FSTEP_F_1},
     {SE_FSTEP_F_0, SE_FSTEP_F_1},
 };  // 0x085AB360
+
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
+// pos から target を向く 8bit の向き
+static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 // id と idx の組に対応するデータを表から探す
 const ActorAnim* ActorManager_FindSpriteData(SpriteID32 id, s32 idx) {
@@ -2358,30 +2364,30 @@ s32 FUN_080441a4(ActorManager* p, Actor* actor) {
 }
 
 // 届いたメッセージで向き (cmd 2) か歩き先 (cmd 3) を決めて state を始め直す
-// 下書き (109/118命令): メッセージ取り出しのループの残差 (Camera_PollMessages / WarpMagicSquare_HandleMessages と同じ形), 原典は mq と gMsgBus を条件式で毎回読み直す
-NON_MATCH void FUN_080441d8(Actor* actor) {
-#ifdef NONMATCHING_C
+void FUN_080441d8(Actor* actor) {
   MsgQueue* mq = &actor->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
-    if (msg->cmd == 2) {
-      actor->unk_1b = Angle_FromDir8(msg->args[0]);
-      Actor_StartState(actor, 2);
-    } else if (msg->cmd == 3) {
-      actor->work.walk.target.x = msg->args[0];
-      actor->work.walk.target.y = msg->args[1];
-      actor->work.walk.target.z = msg->args[2];
-      actor->unk_1b = ArcTan2_8(actor->work.walk.target.x - actor->mover.pos.x, actor->work.walk.target.z - actor->mover.pos.z);
-      Actor_StartState(actor, 1);
+    switch (msg->cmd) {
+      case 3: {
+        actor->work.walk.target.x = msg->args[0];
+        actor->work.walk.target.y = msg->args[1];
+        actor->work.walk.target.z = msg->args[2];
+        actor->unk_1b = GetAngleTo(&actor->mover.pos, &actor->work.walk.target);
+        Actor_StartState(actor, 1);
+        break;
+      }
+      case 2: {
+        actor->unk_1b = Angle_FromDir8((u8)msg->args[0]);
+        Actor_StartState(actor, 2);
+        break;
+      }
     }
     MsgQueue_BeginWait(mq, msg);
   }
-#else
-  INCFUNC("asm/func/FUN_080441d8.inc");
-#endif
 }
 
 s32 FUN_080442d4(ActorManager* p, Actor* actor) {
@@ -2926,28 +2932,26 @@ s32 FUN_08044f1c(ActorManager* p, Actor* actor) {
 }
 
 // 届いたメッセージで state を決める: cmd 1 は向き, cmd 2 は歩き先, cmd 3..9 はその番号の state
-// 下書き (127/126命令): メッセージ取り出しのループの残差 (Camera_PollMessages と同じ形)
-NON_MATCH void FUN_08044f50(Actor* actor) {
-#ifdef NONMATCHING_C
+void FUN_08044f50(Actor* actor) {
   MsgQueue* mq = &actor->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
-      case 1: {
-        actor->unk_1b = Angle_FromDir8(msg->args[0]);
-        Actor_StartState(actor, 2);
-        break;
-      }
       case 2: {
         actor->work.walk.target.x = msg->args[0];
         actor->work.walk.target.y = msg->args[1];
         actor->work.walk.target.z = msg->args[2];
-        actor->unk_1b = ArcTan2_8(actor->work.walk.target.x - actor->mover.pos.x, actor->work.walk.target.z - actor->mover.pos.z);
+        actor->unk_1b = GetAngleTo(&actor->mover.pos, &actor->work.walk.target);
         Actor_StartState(actor, 1);
+        break;
+      }
+      case 1: {
+        actor->unk_1b = Angle_FromDir8((u8)msg->args[0]);
+        Actor_StartState(actor, 2);
         break;
       }
       case 3: {
@@ -2980,9 +2984,6 @@ NON_MATCH void FUN_08044f50(Actor* actor) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/FUN_08044f50.inc");
-#endif
 }
 
 s32 FUN_08045088(ActorManager* p, Actor* actor) {

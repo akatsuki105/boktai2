@@ -11,14 +11,14 @@
 
 struct BreakableManager;
 
-// マップに置かれた壊せるオブジェクト1個, スクリプトコマンド 0x2D8F (Breakable_Spawn) が1個ずつ置く
+// マップに置かれた壊せるオブジェクト1個, スクリプトコマンド 0x2D8F (Cmd_SpawnBreakable) が1個ずつ置く
 // このゲームでは 大聖堂の狛犬(壊すと宝箱が出現するやつ) でしか使っていないが、汎用的に使える構造になっている
 typedef struct Breakable {
   u16 id;                                                       // 0x00, '.n', hurtbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
   bool8 active;                                                 // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す, Update は 0 のものを飛ばす
   bool8 stateChanged;                                           // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
   s16 hp;                                                       // 0x04, '.l=10', Breakable_OnHurt が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
-  u16 unk_6;                                                    // 0x06, Breakable_Spawn が 0 を書くだけ
+  u16 unk_6;                                                    // 0x06, Cmd_SpawnBreakable が 0 を書くだけ
   u8 unk_8;                                                     // 0x08, '.k', 読み手が見つかっていない
   u8 flashTimer;                                                // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
   u8 brokenPose;                                                // 0x0A, '.P'+1, 壊れたときに sprite.poseIdx へ入る
@@ -248,7 +248,7 @@ Breakable* BreakableManager_FindFreeSlot(BreakableManager* p) {
 }
 
 // 0x2D8F, 空きスロットに壊せるオブジェクトを1つ置く
-s32 Breakable_Spawn(void) {
+s32 Cmd_SpawnBreakable(void) {
   Breakable* item;
   AuxSprite* sprite;
   HitboxData* hurtbox;

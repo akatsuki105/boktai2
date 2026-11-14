@@ -695,16 +695,16 @@ static const PreviewModel sPreviewModels[70] = {
     {SPRITE_DOG,            ANIM_DOG,        1, 3,   503, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 11
     {SPRITE_DOG,            ANIM_DOG,        1, 3,   502, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 12
     {SPRITE_DOG,            ANIM_DOG,        1, 3,   505, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 13
-    {SPRITE_ROD,            ANIM_DARKROOT,   1, 0,   220, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 14
+    {SPRITE_DARKROOT,       ANIM_DARKROOT,   1, 0,   220, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 14
     {SPRITE_SHAIAN,         0x0000,          2, 12,  626, 3,  0,                                    NULL,         NULL,         8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 15
     {SPRITE_OCTOPUS_0,      ANIM_OCTOPUS,    1, 0,   447, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 16
     {SPRITE_COCKATRICE_0,   ANIM_COCKATRICE, 1, 2,   506, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  6,  64, 64, 1}, // 17
     {SPRITE_COCKATRICE_0,   ANIM_COCKATRICE, 1, 8,   507, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         4,  0,   10, 64, 0,  16, 64, 64, 1}, // 18
     {SPRITE_WORM,           ANIM_WORM,       1, 5,   418, 10, 0,                                    FUN_0820f3e4, FUN_0820f4b4, 0,  0,   0,  0,  0,  32, 64, 64, 0}, // 19
     {SPRITE_WORM,           ANIM_WORM,       1, 8,   419, 10, 0,                                    FUN_0820f630, FUN_0820f700, 0,  0,   0,  0,  0,  0,  0,  0,  0}, // 20
-    {SPRITE_BOKU,           ANIM_BOKU,       1, 8,   307, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
-    {SPRITE_BOKU,           ANIM_BOKU,       1, 8,   308, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
-    {SPRITE_BOKU,           ANIM_BOKU,       1, 8,   309, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
+    {SPRITE_BOKU_0,         ANIM_BOKU,       1, 8,   307, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
+    {SPRITE_BOKU_0,         ANIM_BOKU,       1, 8,   308, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
+    {SPRITE_BOKU_0,         ANIM_BOKU,       1, 8,   309, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
     {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   23,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 24
     {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   24,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 25
     {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   25,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 26

@@ -25,7 +25,7 @@ typedef struct {
   s16 offsetY;             // 0x34, 縦の揺れ量
   u16 count;               // 0x36, '.n=4'
   u16 amount;              // 0x38, '.e=50', 回復量
-  AuxSpriteGfx gfx;        // 0x3C, SPRITE_SOLAR_BAMBOO
+  AuxSpriteGfx gfx;        // 0x3C, SPRITE_BAMBOO
   AuxSprite sprite;        // 0x58, ->gfx
   ParticleShadow shadow;   // 0x84
   HitboxData hurtbox;      // 0xC4
@@ -149,7 +149,7 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 id, u32 _) {
   Hitbox_SetPos(hurtbox, &pos, 0);
   Hitbox_Register(hurtbox);
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_SOLAR_BAMBOO);
+  Video_GetAuxSprite(gfx, SPRITE_BAMBOO);
   spr = &p->sprite;
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = 0;

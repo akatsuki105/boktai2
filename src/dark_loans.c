@@ -15,11 +15,11 @@
 // 暗黒ローンのメニュー(太陽バンクや暗黒カードは別)
 typedef struct DarkLoans {
   Entity e;                                   // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx0;                         // 0x018, SPRITE_UI_DARKLOAN
+  MainSpriteGfx gfx0;                         // 0x018, SPRITE_UI_LOAN
   MainSpriteGfx gfx1;                         // 0x038, SPRITE_UI_START_MENU
   MainSprite sprites[20];                     // 0x058
   AuxSprite auxSprite;                        // 0x7D8
-  AuxSpriteGfx auxGfx;                        // 0x804, SPRITE_SOLAR_STATION
+  AuxSpriteGfx auxGfx;                        // 0x804, SPRITE_STAND
   TilemapFile* tilemap;                       // 0x820, TILEMAP_BANK
   rgb555* pltt;                               // 0x824, BGP_BANK の body[208]
   u8* script;                                 // 0x828, MessageWindow_Start に渡す本文
@@ -518,7 +518,7 @@ NON_MATCH void DarkLoans_Init_Helper_080b5650(DarkLoans* p) {
   Vec3 pos;
   s32 i;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_DARKLOAN);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LOAN);
   p->gfx0 = *f;
   OpenMainSpriteFile(&p->gfx0, f);
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
@@ -567,7 +567,7 @@ NON_MATCH void DarkLoans_Init_Helper_080b5650(DarkLoans* p) {
     pos.x += 8;
   }
 
-  Video_GetAuxSprite(&p->auxGfx, SPRITE_SOLAR_STATION);
+  Video_GetAuxSprite(&p->auxGfx, SPRITE_STAND);
   AuxSprite_Add(&p->auxSprite, &p->auxGfx, 0);
   p->auxSprite.priority = 0;
   p->auxSprite.flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;

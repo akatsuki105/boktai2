@@ -8,7 +8,7 @@
 
 typedef struct {
   AuxSprite sprite;  // 0x00
-  AuxSpriteGfx gfx;  // 0x2C, SPRITE_CC88
+  AuxSpriteGfx gfx;  // 0x2C, SPRITE_PETAL_CC88
   Vec3 vel;          // 0x48, 毎フレーム sprite.pos に足す
   bool8 active;      // 0x50
   u8 unk_51[3];      // 0x51
@@ -134,7 +134,7 @@ NON_MATCH void EntityB6FF_InitElems(EntityB6FF* p) {
   for (i = 0; i < 24; i++) {
     EntityB6FFElem* elem = &p->elems[i];
 
-    Video_GetAuxSprite(&elem->gfx, SPRITE_CC88);
+    Video_GetAuxSprite(&elem->gfx, SPRITE_PETAL_CC88);
     AuxSprite_Add(&elem->sprite, &elem->gfx, 0);
     elem->sprite.poseIdx = 0;
     elem->sprite.flags |= SPRFLAG_HIDDEN;

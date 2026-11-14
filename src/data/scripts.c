@@ -8,17 +8,17 @@
 const u32 gScriptDirectory = 1084758124;  // 2004-05-17 01:42:04 UTC
 
 // 0x08CBF24C
-// 11540 のうち 7162 個は 全て Script_0x0001 を指している, それ以外はユニークなスクリプトを指している
+// 11540 のうち 7162 個は 全て Scr_0x0001 を指している, それ以外はユニークなスクリプトを指している
 const ScriptOffset ScriptEntries[11539 + 1] = INCBIN_U32("data/script_entries.bin");
 
 const u32 sOffsets[] = {
     298376,                     // Bytecode - sOffsets
     16,                         // gStringHeader - sOffsets
-    16 + (7141 * sizeof(u32)),  // String_0000 - sOffsets
+    16 + (7141 * sizeof(u32)),  // Str_SavePrompt - sOffsets
     298372,                     // unknown - sOffsets
 };  // 0x08CCA69C
 
-// 0x08CCA6AC, bit0..30: String_0000 からのオフセット, bit31: データの種類 (0=Binary, 1=String)
+// 0x08CCA6AC, bit0..30: Str_SavePrompt からのオフセット, bit31: データの種類 (0=Binary, 1=String)
 const u32 gStringHeader[7141] = INCBIN_U32("data/string_index.bin");
 
 // clang-format off
@@ -28,7 +28,7 @@ const u32 gStringHeader[7141] = INCBIN_U32("data/string_index.bin");
 #include "text/string_3790.h"
 #include "text/chat_luis.h"
 #include "text/chat_marcello.h"
-#include "text/chat_snake.h"
+#include "text/chat_hatena.h"
 #include "text/chat_zaji.h"
 #include "text/staff_roll.h"
 #include "text/map_codename.h"
@@ -44,7 +44,7 @@ const u32 Bytecode = 617012;
 const u8 Bytecode_start[] = INCBIN_U8("data/scripts/scripts.bin");
 
 // 0x08DA9E5C
+// VMスクリプトのエントリポイント
 // GameSystem_Update で gMapInitScriptID が 0のときに呼ばれる, ゲームの起動時に1回呼ばれるのは確認
-// TODO: これがVMスクリプトのエントリポイントか検証する
-const u32 SpecialScriptSize = 6;
-const u8 SpecialScript[] = INCBIN_U8("data/scripts/special.bin");
+const u32 BootScriptSize = 6;
+const u8 BootScript[] = INCBIN_U8("data/scripts/boot.bin");

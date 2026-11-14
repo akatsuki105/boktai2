@@ -20,7 +20,7 @@ typedef void (*DungeonTitleFunc)(struct DungeonTitle*);
 // 文字とアイコンをスプライトで並べ、HBlank テーブルでノイズの帯をかけながら開閉する
 typedef struct DungeonTitle {
   Entity e;                     // 0x000, ENTITY_UNK_8
-  MainSpriteGfx gfx;            // 0x018, SPRITE_E89F
+  MainSpriteGfx gfx;            // 0x018, SPRITE_DUNGEON_TITLE
   u16 state;                    // 0x038, 0 = 開くまでの待ち, 1 = 開く, 2 = 開いたまま, 3 = 閉じる
   u16 stateTimer;               // 0x03A, state 0 と 2 で毎フレーム +1, openDelay / closeDelay を超えたら次の state へ
   s32 frameCounter;             // 0x03C, DungeonTitle_Update が毎フレーム +1, 読み手が見つかっていない
@@ -250,7 +250,7 @@ s32 DungeonTitle_Init(DungeonTitle* p) {
     p->lineBottom = 0;
   }
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_E89F);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DUNGEON_TITLE);
   if (f == NULL) {
     return -1;
   }

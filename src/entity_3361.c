@@ -5,7 +5,7 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-// デモのメッセージを待ち受けるスプライト1枚, cmd 6 を受けると縮んで消える
+// カットシーンからのメッセージを待ち受けるスプライト1枚, cmd 6 (カットシーン 78 のステップ 4) を受けると縮んで消える
 typedef struct Entity3361 {
   Entity e;                                    // 0x00, ENTITY_UNK_10
   MsgQueue mq;                                 // 0x18, targetID は id, 待ち番号 10

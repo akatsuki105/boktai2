@@ -83,8 +83,8 @@ IWRAM_DATA CrossoverBattle* gCrossoverBattle = NULL;  // 0x030000F0
 IWRAM_DATA u8 u8_030000f4[4] = {};
 IWRAM_DATA u8 gCrossoverPlayerNames[2][16] = {};  // 0x030000F8, 通信対戦の待合画面で決まった双方のプレイヤー名
 
-s32 FUN_0804e514(void* param_1);  // src/entity_0804e2c0.c
-void FUN_0804e5e8(void);          // src/entity_0804e2c0.c
+s32 FUN_0804e514(void* param_1);  // src/rfu_session.c
+void FUN_0804e5e8(void);          // src/rfu_session.c
 
 s32 CrossoverMC_SetState(struct CrossoverMC* p, u32 state);
 void CrossoverMC_RequestExit(struct CrossoverMC* p);
@@ -95,8 +95,6 @@ void* FUN_0804ba3c(void);
 void FUN_0803cc70(void);
 bool32 FUN_0804e59c(void);
 void MosaicFader_Stop(void);
-void HUD_OpenCrossoverInterval(void);
-void HUD_CloseCrossoverInterval(void);
 s32 FUN_0804e458(void);
 s32 CrossoverResult_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32 remain, s32 total, Procedure exitCallback);
 bool8 Save_WriteSystemData(void);
@@ -107,7 +105,7 @@ void* Entity08052ffc_Create(void);
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
 const WeaponData* ReadWeaponDB(s32 idx);
 void SetWeaponData(slot32_t n, const WeaponData* data);
-void FUN_0804e4dc(void* param_1, void* param_2, void* param_3, void* param_4);
+void RfuSession_SetCallbacks(void* param_1, void* param_2, void* param_3, void* param_4);
 void FUN_0804f950(void);
 void FUN_0804f970(void);
 
@@ -896,7 +894,7 @@ void CrossoverBattle_StateExit(CrossoverBattle* p) {
     StartBgObjPlttFade(3, 3, 0, 0, 0, 0xFFFF, 0);
   }
   if (p->stateTimer == 10) {
-    MainMenu_SetHudMode(7);
+    HUD_SetMode(HUD_HIDDEN);
   } else if (p->stateTimer > 20) {
     if (p->stateTimer == 40) {
       FUN_0804e604();
@@ -927,7 +925,7 @@ s32 CrossoverBattle_Update(CrossoverBattle* p) {
 
   if (p->exitRequest != 0) {
     p->exitRequest = 0;
-    MainMenu_SetHudMode(7);
+    HUD_SetMode(HUD_HIDDEN);
     Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
     if (p->exitScript != 0) {
       VM_ExecByID(p->exitScript, NULL);
@@ -1044,7 +1042,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
   p->state = 0;
   p->stateBegun = TRUE;
   p->stateTimer = 0;
-  FUN_0804e4dc(CrossoverBattle_OnSent, CrossoverBattle_OnReceive, FUN_0804f950, FUN_0804f970);
+  RfuSession_SetCallbacks(CrossoverBattle_OnSent, CrossoverBattle_OnReceive, FUN_0804f950, FUN_0804f970);
   for (i = 0; i < 2; i++) {
     s32 j;
 

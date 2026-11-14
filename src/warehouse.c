@@ -6,6 +6,7 @@
 #include "input.h"
 #include "inventory.h"
 #include "item.h"
+#include "menu.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -59,12 +60,9 @@ typedef struct Warehouse {
 static_assert(sizeof(Warehouse) == 5276);
 
 s32 Marquee_SetVarValue(s32 idx, s32 value);
-u32 Item_GetRotStageIcon(s32 slot);
 bool32 IsWeaponRegistered(slot32_t n);
 void GetWeaponData(slot32_t n, WeaponData* data);
-void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
-s32 GetWeaponWearPose(WeaponData* w);
 void FUN_080b649c(Warehouse* p);
 s32 Warehouse_FindRegisteredSlot(Warehouse* p, s32 n);
 void FUN_080b685c(Warehouse* p);

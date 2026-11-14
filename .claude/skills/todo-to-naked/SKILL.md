@@ -222,11 +222,11 @@ Spending the time here only pays off when the answer is one xref away.
   a call. Promoting it produces a bogus C stub. Check whether the previous
   function branches to it, and see
   `docs/for-ai-agent/ghidra-split-functions.md` for how to merge it instead.
-- `rm` and `cp` are interactive here — use `rm -f` / `cp -f`. Without the flag they
-  stop on a confirmation prompt (`overwrite src/foo.c? (y/n)`) that never gets an
-  answer, so the call hangs until it is killed and every later command in the same
-  invocation is silently skipped. Writing the file from a script instead of copying
-  it avoids the trap entirely.
+- `rm`, `cp` and `mv` are aliased to `-i` here. `rm -f` / `mv -f` are safe, but
+  `cp -f` is not: macOS `cp` lets `-i` win, so it still stops on
+  `overwrite src/foo.c? (y/n [n])`. Copy with `\cp src dst` or `cat src > dst`.
+  The prompt never gets an answer, so the call hangs until it is killed and every
+  later command in the same invocation is silently skipped.
 - Renaming touches `data/*.inc` as well (script command tables reference these
   symbols). Check `git status` for files outside `src`/`include`/`asm` before
   reporting the work as done.

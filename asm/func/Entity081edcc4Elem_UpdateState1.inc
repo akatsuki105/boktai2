@@ -384,7 +384,7 @@ _081ED9CC:
 	ldrb r2, [r3]
 	add r0, sp, #0xc
 	movs r1, #2
-	bl FUN_081eb178
+	bl Entity081eb2f0_Spawn
 	cmp r0, #0
 	blt _081EDA3C
 	add r0, sp, #0x14

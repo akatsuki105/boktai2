@@ -30,14 +30,15 @@ typedef struct {
 } Entity8EC8;
 static_assert(sizeof(Entity8EC8) == 128);
 
-// 72/74命令, Camera_PollMessages と同じ残差, 原典は p を r0 から退避してから gMsgBus のプール定数を r0 に載せる, 試済: bus ローカル
-NON_MATCH void Entity8EC8_HandleMessages(Entity8EC8* p) {
-#ifdef NONMATCHING_C
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
+void Entity8EC8_HandleMessages(Entity8EC8* p) {
   MsgQueue* mq = &p->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
@@ -60,9 +61,6 @@ NON_MATCH void Entity8EC8_HandleMessages(Entity8EC8* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Entity8EC8_HandleMessages.inc");
-#endif
 }
 
 // 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (Cmd_TestEquipBuff 系と同じ)

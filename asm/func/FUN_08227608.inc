@@ -437,7 +437,7 @@ _08227972:
 	orrs r0, r1
 	strb r0, [r2]
 	movs r6, #4
-	ldr r4, _082279DC @ =FUN_08224dd0
+	ldr r4, _082279DC @ =OtenkoPanel_08224dd0
 	movs r5, #1
 	adds r1, r7, #0
 	adds r1, #0xc4
@@ -476,4 +476,4 @@ _082279CC: .4byte 0x00000F18
 _082279D0: .4byte 0x00000DEC
 _082279D4: .4byte 0x00000F42
 _082279D8: .4byte 0x00000DF2
-_082279DC: .4byte FUN_08224dd0
+_082279DC: .4byte OtenkoPanel_08224dd0

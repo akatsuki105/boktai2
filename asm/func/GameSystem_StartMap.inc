@@ -15,7 +15,7 @@
 	cmp r4, #0
 	bne _0823AE3E
 _0823AE3A:
-	bl VM_ExecSpecial
+	bl VM_ExecBoot
 _0823AE3E:
 	movs r0, #1
 	pop {r4}

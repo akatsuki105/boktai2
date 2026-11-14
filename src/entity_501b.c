@@ -21,11 +21,11 @@ typedef struct Entity501B {
   MainSprite digits[8];                        // 0x018, [0..3] が上段 (y=0x40), [4..7] が下段 (y=0x78), 各段とも [0] が1の位
   MainSpriteGfx gfx;                           // 0x318, SPRITE_UI_LINK
   u8 unk_338[0x358 - 0x338];                   // 0x338, まだ未解析
-  MainSpriteGfxFile* file;                     // 0x358, SPRITE_SOLAR_STATION
+  MainSpriteGfxFile* file;                     // 0x358, SPRITE_STAND
   u8 unk_35c[4];                               // 0x35C, まだ未解析
   u16 poses[8];                                // 0x360, digits ごとの MainSprite_Add のポーズ番号
   AuxSprite solarStandSpr;                     // 0x370
-  AuxSpriteGfx solarStandGfx;                  // 0x39C, SPRITE_SOLAR_STATION
+  AuxSpriteGfx solarStandGfx;                  // 0x39C, SPRITE_STAND
   u8 unk_3b8[2];                               // 0x3B8, まだ未解析
   u16 timer;                                   // 0x3BA, 90 から毎フレーム減り, 0 で次の状態へ, ボタンで 1 に飛ばせる
   u16 score;                                   // 0x3BC, gLinkSession->totalScores[playerIdx] (9999 で頭打ち), 精算で減っていく
@@ -178,7 +178,7 @@ NON_MATCH void Entity501B_InitAuxSprite(Entity501B* p) {
   AuxSpriteGfx* gfx = &p->solarStandGfx;
   AuxSprite* spr = &p->solarStandSpr;
 
-  Video_GetAuxSprite(gfx, SPRITE_SOLAR_STATION);
+  Video_GetAuxSprite(gfx, SPRITE_STAND);
   AuxSprite_Add(spr, gfx, 0);
   AuxSprite_SetPoseIdx(spr, 0);
   AuxSprite_SetFlags(spr, SPRFLAG_HIDDEN | 0x10);
@@ -563,7 +563,7 @@ NON_MATCH s32 Entity501B_Init(Entity501B* p) {
       return -1;
     }
   }
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
   ClearBGTilemapBuffer(0);
   ClearBGTilemapBuffer(1);
   ClearBGTilemapBuffer(2);

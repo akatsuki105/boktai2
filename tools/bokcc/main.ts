@@ -4,7 +4,7 @@ import { Command } from "@cliffy/command";
 import { ByteStream, InstructionReader } from "./instruction_reader.ts";
 import { parseAll } from "./parser.ts";
 import { compile as compileScript } from "./compiler.ts";
-import { buildPrintContext, INCLUDE_DIR } from "./print_context.ts";
+import { buildPrintContext } from "./print_context.ts";
 import * as gba from "../common/gba/gba.ts";
 
 // コンパイル・デコンパイル両方のエントリポイント。bokcc の CLI。
@@ -15,15 +15,19 @@ const decompile = new Command()
   .description("バイトコードをデコンパイルして出力する")
   .argument("<rom:string>", "Path to a GBA ROM file.")
   .argument("<addr:number>", "Script address in the ROM.")
-  .option("--strings <include:string>", `文字列IDの名前を定義したヘッダ, #include に書く綴りで指定する (${INCLUDE_DIR}/ 配下から読む)`)
-  .option("--scripts <include:string>", `スクリプトIDの名前を定義したヘッダ, #include に書く綴りで指定する (${INCLUDE_DIR}/ 配下から読む)`)
+  .option("--strings <path:string>", "文字列IDの名前を定義したヘッダのパス, e.g. data/scripts/strings.h")
+  .option("--scripts <path:string>", "スクリプトIDの名前を定義したヘッダのパス, e.g. data/scripts/script.h")
+  .option("--commands <path:string>", "コマンドIDの名前を定義したヘッダのパス, e.g. data/scripts/commands.h")
+  .option("--stat <path:string>", "gStat のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/stat.h")
+  .option("--world <path:string>", "gWorld のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/world.h")
+  .option("--scratch <path:string>", "gScratch のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/scratch.h")
   .action((opts, romPath, targetAddr) => {
     const offset = (targetAddr >= gba.BASE) ? targetAddr - gba.BASE : targetAddr; // 0x08000000 以降のアドレスが指定された場合はファイルオフセットに変換する
     const data = Deno.readFileSync(romPath);
     const reader = new InstructionReader(new ByteStream(data, offset));
 
     try {
-      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts });
+      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts, commands: opts.commands, stat: opts.stat, world: opts.world, scratch: opts.scratch });
       for (const instr of reader.decompile()) {
         console.log(instr.toString(ctx));
       }

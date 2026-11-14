@@ -8,7 +8,7 @@
 	adds r4, r7, #0
 	adds r4, #0x48
 	bl Ringo_PollMessages
-	bl FUN_08084710
+	bl BlackHole_IsActive
 	adds r1, r0, #0
 	ldr r2, _0802AEFC @ =0x00000864
 	adds r0, r7, r2

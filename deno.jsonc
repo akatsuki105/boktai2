@@ -15,6 +15,7 @@
     "@binary-parser": "npm:binary-parser@2.3.0"
   },
   "tasks": {
-    "asset": "mkdir -p /tmp/bokmagic && deno run --allow-read --allow-write https://akatsuki105.github.io/bokmagic-web/bokmagic.js baserom.gba"
+    "asset": "mkdir -p /tmp/bokmagic && deno run --allow-read --allow-write https://akatsuki105.github.io/bokmagic-web/bokmagic.js baserom.gba",
+    "bokvm": "deno run --allow-read --allow-run=arm-none-eabi-cpp tools/bokvm/main.ts"
   }
 }

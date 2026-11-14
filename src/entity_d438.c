@@ -32,10 +32,10 @@ static inline void EntityD438_GetAnimDir(u8 dir, u8* variant, u8* flags) {
 }
 
 // 0x1B77
-void Cmd_1B77(void) {}
+void Cmd_Nop_1B77(void) {}
 
 // 0xD562
-void Cmd_D562(void) {}
+void Cmd_Nop_D562(void) {}
 
 void FUN_080558c0(void) { sEntityD438 = NULL; }
 
@@ -96,4 +96,4 @@ EntityD438* EntityD438_Create(u32 id) {
 }
 
 // 0x3D0C
-void Cmd_3D0C(void) {}
+void Cmd_Nop_3D0C(void) {}

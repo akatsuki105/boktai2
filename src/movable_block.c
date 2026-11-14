@@ -424,7 +424,7 @@ s32 MovableBlock_Release(MovableBlock* blk) {
   return 0;
 }
 
-s32 MovableBlockManager_ReleaseAll(void) {
+s32 Cmd_ReleaseAllMovableBlocks(void) {
   MovableBlockManager* p = sMovableBlockManager;
   MovableBlock* blk;
   s32 i;
@@ -1011,7 +1011,7 @@ NON_MATCH s32 MovableBlockManager_Update(MovableBlockManager* p) {
 }
 
 s32 MovableBlockManager_Destroy(MovableBlockManager* p) {
-  MovableBlockManager_ReleaseAll();
+  Cmd_ReleaseAllMovableBlocks();
   Free(p->blocks);
   sMovableBlockManager = NULL;
   return 0;

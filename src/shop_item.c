@@ -6,6 +6,7 @@
 #include "input.h"
 #include "inventory.h"
 #include "item.h"
+#include "menu.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -81,7 +82,6 @@ void FUN_080bc2d8(ItemShop* p);
 s32 FindEmptyArmorSlot(ItemShop* p);
 void FUN_080bb0e8(ItemShop* p);
 void FUN_080bca7c(ItemShop* p);
-u32 Item_GetRotStageIcon(s32 slot);
 
 void ItemShop_SetState(ItemShop* p, ItemShopFunc* fn) {
   p->updateCallback = fn;

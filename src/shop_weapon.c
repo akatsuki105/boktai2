@@ -4,6 +4,7 @@
 #include "global.h"
 #include "input.h"
 #include "inventory.h"
+#include "menu.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -60,9 +61,7 @@ void SetWeaponData(slot32_t n, const WeaponData* data);
 void GetWeaponData(slot32_t n, WeaponData* data);
 bool32 IsWeaponRegistered(slot32_t n);
 s32 CalcAttackWithEquippedArmor(WeaponData* w);
-void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
-s32 GetWeaponWearPose(WeaponData* w);
 
 void WeaponShop_ConfirmSort(WeaponShop* p);
 void WeaponShop_HandleActionInput(WeaponShop* p);

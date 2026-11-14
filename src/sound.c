@@ -7,6 +7,7 @@
 // songs.s の gSongTable の .ms
 typedef enum {
   P_BGM = 10,    // = gSoundIDs[10] = gMPlayTable[10]
+  P_UNK12 = 12,  // (あまり重要ではない)環境音, (重要な)SE がこれ
   P_SE = 20,     // 足音や武器を振った時の音はここだった
   P_NOISE = 29,  // 太陽チャージSEなどのループする環境音?
 } PlayerUsage;
@@ -44,15 +45,15 @@ void sound_08240264(SoundID32 id) {
   gSoundIDs[gSongTable[id].ms] = id;
 }
 
-// 0x53BF
-void Cmd_53BF(void) {
+// 0x53BF, スクリプトは BGM (ms 10) にだけ使う
+void Cmd_PlayBGM(void) {
   if (VM_SeekToNamedArg('i')) {
     sound_08240264(VM_GetValue());
   }
 }
 
-// 0xE7CA
-void Cmd_E7CA(void) {
+// 0xE7CA, 処理は Cmd_PlayBGM と同じ, スクリプトは BGM 以外の音を再生中として記録して鳴らすのに使う
+void Cmd_PlayTrackedSound(void) {
   if (VM_SeekToNamedArg('i')) {
     sound_08240264(VM_GetValue());
   }
@@ -71,7 +72,7 @@ void sound_082402f8(SoundID32 id) {
 }
 
 // 0x364D
-void sound_08240344(void) { sound_082402f8(VM_SeekToNamedArg('i') ? VM_GetValue() : 0); }
+void Cmd_StopSound(void) { sound_082402f8(VM_SeekToNamedArg('i') ? VM_GetValue() : 0); }
 
 // 再生中のBGMを最小音量から指定速度でフェードインさせ直す
 void Sound_FadeInBGM(u32 speed) {
@@ -106,7 +107,7 @@ void Sound_FadeOutBGMTemporarily(u32 speed) {
 }
 
 // 0xD0C7
-void Cmd_D0C7(void) {
+void Cmd_FadeOutBGMTemporarily(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeOutBGMTemporarily(VM_GetValue());
   }
@@ -125,7 +126,7 @@ void Sound_FadeOutBGM(u32 speed) {
 }
 
 // 0x6AFF
-void Cmd_6AFF(void) {
+void Cmd_FadeOutBGM(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeOutBGM(VM_GetValue());
   }
@@ -133,7 +134,7 @@ void Cmd_6AFF(void) {
 
 // 環境音・ループするサブBGMのような同じ曲を鳴らしっぱなしにする用途?
 void FUN_082404b0(SoundID32 id) {
-  if (gSongTable[id].ms == 12) {
+  if (gSongTable[id].ms == P_UNK12) {
     m4aSongNumStartOrContinue(id);
     m4aMPlayVolumeControl(gMPlayTable[gSongTable[id].ms].info, 0xFFFF, 0x100);
     gSoundIDs[gSongTable[id].ms] = id;
@@ -141,10 +142,10 @@ void FUN_082404b0(SoundID32 id) {
 }
 
 void FUN_082404fc(u32 speed) {
-  SoundID16 id = gSoundIDs[12];
+  SoundID16 id = gSoundIDs[P_UNK12];
 
-  if ((id != 0) && (gSongTable[id].ms == 12)) {
-    MusicPlayerInfo* mplay = gMPlayTable[12].info;
+  if ((id != 0) && (gSongTable[id].ms == P_UNK12)) {
+    MusicPlayerInfo* mplay = gMPlayTable[P_UNK12].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 1);
     m4aSongNumStop(id);
@@ -160,8 +161,8 @@ void Cmd_3EA2(void) {
 }
 
 void FUN_08240568(u32 speed) {
-  if (gSoundIDs[12] != 0) {
-    u16 ms = gSongTable[gSoundIDs[12]].ms;
+  if (gSoundIDs[P_UNK12] != 0) {
+    u16 ms = gSongTable[gSoundIDs[P_UNK12]].ms;
     m4aMPlayFadeOutTemporarily(gMPlayTable[ms].info, speed);
     gSoundIDs[ms] = 0;
   }
@@ -175,7 +176,7 @@ void Cmd_4CBB(void) {
 }
 
 void FUN_082405c0(u32 speed) {
-  SoundID16 id = gSoundIDs[12];
+  SoundID16 id = gSoundIDs[P_UNK12];
 
   if (id != 0) {
     u16 ms = gSongTable[id].ms;
@@ -195,7 +196,7 @@ void Cmd_E6F2(void) {
 }
 
 void Sound_SetBGMTempo(u32 tempo) {
-  SoundID16 id = gSoundIDs[10];
+  SoundID16 id = gSoundIDs[P_BGM];
 
   if (id != 0) {
     u16 ms = gSongTable[id].ms;
@@ -204,14 +205,14 @@ void Sound_SetBGMTempo(u32 tempo) {
 }
 
 // 0xEE18
-void Cmd_EE18(void) {
+void Cmd_SetBGMTempo(void) {
   if (VM_SeekToNamedArg('t')) {
     Sound_SetBGMTempo(VM_GetValue());
   }
 }
 
 // 0x3ED0, 再生中の BGM の音量をスクリプト引数 'v'(音量) と 't'(対象トラック、省略時 0xFF) で変更する
-void Cmd_3ED0(void) {
+void Cmd_SetBGMVolume(void) {
   u32 volume, trackBits;
   SoundID16 id;
 
@@ -222,7 +223,7 @@ void Cmd_3ED0(void) {
     } else {
       trackBits = 0xFF;
     }
-    id = gSoundIDs[10];
+    id = gSoundIDs[P_BGM];
     if (id != 0) {
       u16 ms = gSongTable[id].ms;
       m4aMPlayVolumeControl(gMPlayTable[ms].info, trackBits, volume);
@@ -239,7 +240,7 @@ void PlaySound_082406e0(SoundID32 id) {
 void PlaySound_08240718(SoundID32 id) { m4aSongNumStart(id); }
 
 // 0x1870
-void sound_08240728(void) {
+void Cmd_PlaySound(void) {
   if (VM_SeekToNamedArg('i')) {
     PlaySound_08240718(VM_GetValue());
   }
@@ -280,7 +281,7 @@ void FUN_082407e0(void) {
   for (i = 0; i < MUSIC_PLAYER_LENGTH; i++) {
     if (i == 10) {
       if (!(gMPlayTable[P_BGM].info->status & MUSICPLAYER_STATUS_TRACK)) gSoundIDs[P_BGM] = 0;
-    } else if (i != 12 && i != P_NOISE && i != 30) {
+    } else if (i != P_UNK12 && i != P_NOISE && i != 30) {
       gSoundIDs[i] = 0;
     }
   }
@@ -295,7 +296,7 @@ void Sound_Resume(void) {
     if (gSoundIDs[i] != 0) {
       if (i == P_BGM) {
         m4aSongNumStartOrContinue(gSoundIDs[P_BGM]);
-      } else if (i == 12 || i == P_NOISE || i == 30) {
+      } else if (i == P_UNK12 || i == P_NOISE || i == 30) {
         m4aSongNumStartOrChange(gSoundIDs[i]);
       }
     }

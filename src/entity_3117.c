@@ -12,7 +12,7 @@
 typedef struct {
   u16 id;                      // 0x00, '.n' で要素を引くときの識別子, gfx.plttID = id + 600
   u8 flags;                    // 0x02, bit0 位置補間中, bit1 パレット補間中, bit2 スケール補間中, bit3 アニメ再生中
-  AuxAnimPlayFlags animFlags;  // 0x03, '.r', AddEntryScripted では '.f' が入り, 0 以外なら sprite に SPRFLAG_XFLIP を立てる
+  AuxAnimPlayFlags animFlags;  // 0x03, '.r', Cmd_AddEntity3117Entry では '.f' が入り, 0 以外なら sprite に SPRFLAG_XFLIP を立てる
   u8 optionFlags;              // 0x04, '.A', bit0/bit1 をアニメコマンドの反転ビットと比べて sprite の XFLIP/YFLIP を決める
   u8 unk_05[3];                // 0x05
   rgb555 pltt[16];             // 0x08, パレット補間の書き込み先, gfx.pltt がここを指すように差し替えられる
@@ -46,7 +46,7 @@ static_assert(sizeof(Entity3117Entry) == 184);
 typedef struct Entity3117 {
   Entity e;                    // 0x00, ENTITY_UNK_9
   u8 capacity;                 // 0x18, entries の確保数, '.m=8' (0 なら 8)
-  u8 count;                    // 0x19, 使用済みの entries 数, AddEntryScripted が capacity を上限に足す
+  u8 count;                    // 0x19, 使用済みの entries 数, Cmd_AddEntity3117Entry が capacity を上限に足す
   u8 unk_1a[2];                // 0x1A
   Entity3117Entry entries[1];  // 0x1C, 実際は capacity 個 (可変長)
 } Entity3117;
@@ -76,7 +76,7 @@ Entity3117Entry* Entity3117_FindEntry(void) {
 }
 
 // '.n' の要素を '.p' へ '.f' フレームかけて動かし始める
-void Entity3117_StartMoveScripted(void) {
+void Cmd_StartEntity3117Move(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('p')) {
@@ -92,7 +92,7 @@ void Entity3117_StartMoveScripted(void) {
   }
 }
 
-void Entity3117_SetPoseScripted(void) {
+void Cmd_SetEntity3117Pose(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('p')) {
@@ -100,7 +100,7 @@ void Entity3117_SetPoseScripted(void) {
   }
 }
 
-void Entity3117_HideScripted(void) {
+void Cmd_HideEntity3117(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL) {
@@ -108,7 +108,7 @@ void Entity3117_HideScripted(void) {
   }
 }
 
-void Entity3117_ShowScripted(void) {
+void Cmd_ShowEntity3117(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL) {
@@ -116,7 +116,7 @@ void Entity3117_ShowScripted(void) {
   }
 }
 
-void Entity3117_SetPriorityScripted(void) {
+void Cmd_SetEntity3117Priority(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('p')) {
@@ -125,7 +125,7 @@ void Entity3117_SetPriorityScripted(void) {
 }
 
 // '.n' の要素のパレットを '.s' 行から '.e' 行へ '.f' フレームかけて変え始める, 2 フレーム未満なら '.e' 行をすぐに当てる
-void Entity3117_StartPlttFadeScripted(void) {
+void Cmd_StartEntity3117PlttFade(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('s')) {
@@ -146,7 +146,7 @@ void Entity3117_StartPlttFadeScripted(void) {
 }
 
 // '.n' の要素を '.s' から '.e' の拡大率へ '.f' フレームかけて変え始める
-void Entity3117_StartScaleScripted(void) {
+void Cmd_StartEntity3117Scale(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('s')) {
@@ -171,7 +171,7 @@ void Entity3117_StartScaleScripted(void) {
 }
 
 // '.n' の要素に '.m' のアニメを '.d' / '.r' で流し始める ('.E' なら頭から), '.o' ならアニメ終端で '.e' のスクリプトを実行する
-void Entity3117_SetAnimScripted(void) {
+void Cmd_SetEntity3117Anim(void) {
   Entity3117Entry* e = Entity3117_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('m')) {
@@ -297,7 +297,7 @@ NON_MATCH void Entity3117_UpdateEntry(Entity3117Entry* e) {
 // スクリプトから要素を1個足す, '.t' のスプライトを '.p' に置き, '.m' があればアニメを1コマ目まで進め, '.s' なら影を付ける
 // 残差は 334/324, sprite / gfx のアドレスをレジスタに置く順と退避レジスタの割り当て, 後半の AuxAnim 手動送りは Player 側 (Player_AdvanceCoffinAnim など) と同じ壁
 // Tier A-C 試済 (sprite / gfx ポインタのローカル, '.n' / '.A' を if/else で 0 にする), 未: 割り当ての順
-NON_MATCH void Entity3117_AddEntryScripted(void) {
+NON_MATCH void Cmd_AddEntity3117Entry(void) {
 #ifdef NONMATCHING_C
   Entity3117Entry* e;
   AuxSprite* sprite;
@@ -428,7 +428,7 @@ NON_MATCH void Entity3117_AddEntryScripted(void) {
     gEntity3117->count++;
   }
 #else
-  INCFUNC("asm/func/Entity3117_AddEntryScripted.inc");
+  INCFUNC("asm/func/Cmd_AddEntity3117Entry.inc");
 #endif
 }
 

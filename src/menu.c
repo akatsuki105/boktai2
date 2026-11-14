@@ -85,7 +85,7 @@ typedef struct {
   u8 registeredIdx;     // 0x0000, registeredWeapon の添字 (0: 剣, 1: 槍, 2: 槌, 3: 銃), 読み手は (s8) を付けて負を空きと見る
   u8 inventorySlotIdx;  // 0x0001, このQCスロットの武器のインベントリ上のスロット番号
   u8 unk_02[2];         // 0x0002, まだ未解析, padding?
-  Weapon* weapon;       // 0x0004, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
+  Weapon* weapon;       // 0x0004, 根拠: QC_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
   MainSprite sprite;    // 0x0008
 } QCWeaponSlot;
 static_assert(sizeof(QCWeaponSlot) == 104);
@@ -206,19 +206,19 @@ typedef struct MainMenu {
   rgb555* dungeonMapPltt;        // 0x0034, BGP_ECBF
   rgb555* worldMapPltt;          // 0x0038, BGP_5F5E
   rgb555* bankPltt;              // 0x003C, BGP_BANK
-  char* itemNames;               // 0x0040, '.i', String_1608
-  char* weaponNames;             // 0x0044, '.w', String_170D
-  char* armorNames;              // 0x0048, '.a', String_17B7
-  char* magicNames;              // 0x004C, '.m', String_1802
-  char* areaNames;               // 0x0050, '.A', String_1826
-  char* loanTexts;               // 0x0054, '.l', String_053B, 暗黒カードを使ったに表示されるテキスト
-  char* etcTexts;                // 0x0058, '.E', String_1880, その他のテキスト
+  char* itemNames;               // 0x0040, '.i', Str_StartMenuItems
+  char* weaponNames;             // 0x0044, '.w', Str_StartMenuWeapons
+  char* armorNames;              // 0x0048, '.a', Str_StartMenuArmors
+  char* magicNames;              // 0x004C, '.m', Str_StartMenuMagics
+  char* areaNames;               // 0x0050, '.A', Str_AreaName
+  char* loanTexts;               // 0x0054, '.l', Str_053B, 暗黒カードを使ったに表示されるテキスト
+  char* etcTexts;                // 0x0058, '.E', Str_StartMenuMisc, その他のテキスト
   u32* expTable;                 // 0x005C, '.e', 経験値テーブル(レベルごとの必要経験値 の 1/10)
   struct {
     MainSpriteGfx smenu;          // SPRITE_UI_START_MENU
     MainSpriteGfx map;            // SPRITE_UI_MAP
     MainSpriteGfx icons;          // SPRITE_INVENTORY_ICONS
-    MainSpriteGfx loans;          // SPRITE_UI_DARKLOAN
+    MainSpriteGfx loans;          // SPRITE_UI_LOAN
     MainSpriteGfx portraits;      // SPRITE_PORTRAITS
     MainSpriteGfx player;         // SPRITE_DJANGO_SABATA
     MainSpriteGfx rita;           // SPRITE_RITA
@@ -248,11 +248,11 @@ typedef struct MainMenu {
   u8 blocking;                    // 0x09F9, CrossoverBattle_ToggleBlocking の結果, BLOCK ON/OFF の表示を選ぶ
   u16 id;                         // 0x09FA
   u16 menuOpen;                   // 0x09FC
-  u8 hudMode;                     // 0x09FE, HUD の表示モード, MainMenu_SetHudMode が書く, 7 は全部隠す, 1 はボスのゲージ
-  s8 savedHudMode;                // 0x09FF, 根拠: MainMenu_RestoreHudMode が ldrsb で読んで負かどうかを見る
+  u8 hudMode;                     // 0x09FE, see HUDMode
+  s8 savedHUDMode;                // 0x09FF, see HUDMode, -1 なら退避なし (HUD_RestoreMode が ldrsb で読んで負かどうかを見る)
   u16 hpBlinkTimer;               // 0x0A00, HP が少ないときに増え, HP ゲージの枠を点滅させる
   u16 eneBlinkTimer;              // 0x0A02, 急速チャージ中に増え, EN ゲージの枠を白く点滅させる
-  u16 sunFrameTimer;              // 0x0A04, 日光を浴びている間 0..59 を回し, 太陽ゲージの枠の色を変える
+  u16 sunFrameTimer;              // 0x0A04, 日光を浴びている間 0..59 を回し, 太陽ゲージの溜まっている部分の色を変える
   u16 enemyGaugeHP;               // 0x0A06, 右上に出す敵の HP ゲージ
   u16 enemyGaugeMaxHP;            // 0x0A08
   u16 enemyGaugeTimer;            // 0x0A0A, 180 から減らし, 0 でないあいだ敵のゲージを出す
@@ -292,7 +292,7 @@ typedef struct MainMenu {
   AuxSpriteGfx figureGfx;         // 0x0B8C, SPRITE_BAT
   AuxAnimState figureAnim;        // 0x0BA8, figure のアニメの再生状態
   AuxSprite stand;                // 0x0BB8, ->standGfx
-  AuxSpriteGfx standGfx;          // 0x0BE4, SPRITE_SOLAR_STATION (暗黒カードの太陽スタンド)
+  AuxSpriteGfx standGfx;          // 0x0BE4, SPRITE_STAND (暗黒カードの太陽スタンド)
   QuickChange qc;                 // 0x0C00
   u8 unk_f44[0xF56 - 0xF44];      // 0x0F44, まだ未解析
   u8 page;                        // 0x0F56, スタートメニューのページ番号
@@ -500,9 +500,9 @@ void MainMenu_UpdateCrossoverField(MainMenu* p);
 void MainMenu_UpdateConfig(MainMenu* p);
 void MainMenu_StateConfirmSave(MainMenu* p);
 void MainMenu_UpdateFadeOut(MainMenu* p);
-bool32 MainMenu_QC_TryOpen(MainMenu* p);
+bool32 QC_TryOpen(MainMenu* p);
 s32 MainMenu_TryOpen(MainMenu* p);
-void MainMenu_QC_Update(MainMenu* p);
+void QC_Update(MainMenu* p);
 void MainMenu_StateVitaminResult(MainMenu* p);
 void MainMenu_StateWeatherDollRaise(MainMenu* p);
 void MainMenu_StateGetaResult(MainMenu* p);
@@ -531,7 +531,7 @@ void MainMenu_StateLoanRetryThanks(MainMenu* p);
 void MainMenu_StateLoverAppear(MainMenu* p);
 void MainMenu_StateLoverFillEne(MainMenu* p);
 void MainMenu_StateLoverDisappear(MainMenu* p);
-void WeaponData_ShowNameInPanel(s32 param_1, u8* param_2, s8* param_3);
+void WeaponData_ShowNameInPanel(s32 panelID, u8* weapon, s8* suffix);
 void MainMenu_UpdateLoanMenuFadeOut(MainMenu* p);
 void MainMenu_StateLoverArrive(MainMenu* p);
 void MainMenu_StateMagicQuickChange(MainMenu* p);
@@ -557,7 +557,7 @@ void MainMenu_StateLoanRetryConfirm(MainMenu* p);
 void MainMenu_UpdateLoanIntro(MainMenu* p);
 void FUN_08231d5c(void* statFieldPtr, s32 bytesize);
 
-// MainMenu_QC_DrawFrame が参照
+// QC_DrawFrame が参照
 const u16 u16_ARRAY_085ac064[16] = {
     0xD01B,
     0xD000,
@@ -615,18 +615,18 @@ static BgMapEntry* MainMenu_GetBgMapAddr(s32 bg, u32 x8, u32 y8) {
   return map + (x8 & 31) + (y8 & 31) * 32;
 }
 
-// 数字 param_1 の BG タイル番号, param_2 は書体 (0: 0x11〜, 1: 0x91〜, それ以外: 0x31〜)
-s32 GetDigitTile(s32 param_1, s32 param_2) {
+// 数字 digit の BG タイル番号, font は書体 (0: 0x11〜, 1: 0x91〜, それ以外: 0x31〜)
+s32 GetDigitTile(s32 digit, s32 font) {
   s32 off = 0x11;
 
-  if (param_2 != 0) {
+  if (font != 0) {
     off = 0x31;
-    if (param_2 == 1) {
+    if (font == 1) {
       off = 0x91;
     }
   }
 
-  return param_1 + off;
+  return digit + off;
 }
 
 // BG と OBJ の明るさ・ブレンド色をまとめて設定する
@@ -647,8 +647,8 @@ static s32 MinS32(s32 a, s32 b) {
   return min;
 }
 
-// BG0 に「現在値/最大値」を3桁ずつ描く, param_2 で文字の種類と色を切り替える
-void MainMenu_DrawFraction(MainMenu* p, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
+// BG0 に「現在値/最大値」を3桁ずつ描く, style で文字の種類と色を切り替える
+void MainMenu_DrawFraction(MainMenu* p, s32 style, s32 value, s32 maxValue, s32 x8, s32 y8) {
   s32 cur[3];
   s32 max[3];
   s32 rest;
@@ -660,29 +660,29 @@ void MainMenu_DrawFraction(MainMenu* p, s32 param_2, s32 param_3, s32 param_4, s
   s32 pltt;
   s32 i;
 
-  cur[0] = Div(param_3, 100);
-  rest = param_3 - cur[0] * 100;
+  cur[0] = Div(value, 100);
+  rest = value - cur[0] * 100;
   cur[1] = Div(rest, 10);
   cur[2] = rest - cur[1] * 10;
-  max[0] = Div(param_4, 100);
-  rest = param_4 - max[0] * 100;
+  max[0] = Div(maxValue, 100);
+  rest = maxValue - max[0] * 100;
   max[1] = Div(rest, 10);
   max[2] = rest - max[1] * 10;
 
-  if (param_2 == 0) {
+  if (style == 0) {
     blank = 0;
     slash = 28;
     font = 0;
     trailing = 3;
     pltt = 0xD000;
-    map = MainMenu_GetBgMapAddr(0, param_5, param_6);
+    map = MainMenu_GetBgMapAddr(0, x8, y8);
   } else {
     blank = 1;
     slash = 155;
     font = 1;
     trailing = 4;
     pltt = 0xF000;
-    map = MainMenu_GetBgMapAddr(0, param_5 - 1, param_6);
+    map = MainMenu_GetBgMapAddr(0, x8 - 1, y8);
   }
   *map++ = pltt | blank;
   for (i = 0; i < 3; i++) {
@@ -698,14 +698,14 @@ void MainMenu_DrawFraction(MainMenu* p, s32 param_2, s32 param_3, s32 param_4, s
 }
 
 // HP を MainMenu_DrawFraction に渡す
-void MainMenu_DrawHP(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) { MainMenu_DrawFraction(p, param_2, p->player->hp, p->player->maxHP, param_3, param_4); }
+void MainMenu_DrawHP(MainMenu* p, s32 style, s32 x8, s32 y8) { MainMenu_DrawFraction(p, style, p->player->hp, p->player->maxHP, x8, y8); }
 
 // EN を MainMenu_DrawFraction に渡す
-void MainMenu_DrawEne(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) { MainMenu_DrawFraction(p, param_2, p->player->ene, p->player->maxEne, param_3, param_4); }
+void MainMenu_DrawEne(MainMenu* p, s32 style, s32 x8, s32 y8) { MainMenu_DrawFraction(p, style, p->player->ene, p->player->maxEne, x8, y8); }
 
-// BG0 に HP ゲージを10マスで描き, 残量で枠の色を変える (少ないと点滅)
+// BG0 に HP ゲージを10マスで描く, 残りの部分の色は半分より多ければ緑, 4分の1より多ければオレンジ, それ以下は赤 (HUD では点滅)
 // 残差: 150/149 命令, 原典は点滅色の 0x12 を r4 に直接作り, 端数のタイルを bodyTile - (rem - 8) の順に作るが, こちらは別レジスタから移して (bodyTile + 8) - rem に畳む (if で色を作る形は命令数が合うが割り当てが崩れる)
-NON_MATCH s32 MainMenu_DrawHPGauge(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) {
+NON_MATCH s32 MainMenu_DrawHPGauge(MainMenu* p, s32 style, s32 x8, s32 y8) {
 #ifdef NONMATCHING_C
   s32 hp = p->player->hp;
   s32 maxHP = p->player->maxHP;
@@ -715,7 +715,7 @@ NON_MATCH s32 MainMenu_DrawHPGauge(MainMenu* p, s32 param_2, s32 param_3, s32 pa
   s32 bodyTile;
   s32 emptyTile;
   s32 endTile;
-  rgb555 color;
+  rgb555 fillColor;
   BgMapEntry* map;
   s32 i;
 
@@ -729,38 +729,38 @@ NON_MATCH s32 MainMenu_DrawHPGauge(MainMenu* p, s32 param_2, s32 param_3, s32 pa
     rem = v - (full << 3);
   }
 
-  if (param_2 == 0) {
+  if (style == 0) {
     bodyTile = 0x43;
     emptyTile = 0x4B;
     endTile = 0x4C;
     if (v > 39) {
-      color = 0x3E0;
+      fillColor = 0x3E0;
     } else if (v > 19) {
-      color = 0x29F;
+      fillColor = 0x29F;
     } else {
-      color = (p->hpBlinkTimer >> 2) & 1 ? 0x109F : 0x12;
+      fillColor = (p->hpBlinkTimer >> 2) & 1 ? 0x109F : 0x12;
       p->hpBlinkTimer++;
     }
-    map = MainMenu_GetBgMapAddr(0, param_3, param_4);
+    map = MainMenu_GetBgMapAddr(0, x8, y8);
   } else {
     bodyTile = 0x63;
     emptyTile = 0x6B;
     endTile = 0x4BD;
-    color = 0x3E0;
+    fillColor = 0x3E0;
     if (v <= 39) {
-      color = 0x109F;
+      fillColor = 0x109F;
       if (v > 19) {
-        color = 0x29F;
+        fillColor = 0x29F;
       }
     }
-    map = MainMenu_GetBgMapAddr(0, param_3 - 1, param_4);
+    map = MainMenu_GetBgMapAddr(0, x8 - 1, y8);
     *map++ = 0xD0BD;
   }
   {
     rgb555* pltt = &gBgPlttBuffer[219];
 
-    if (*pltt != color) {
-      *pltt = color;
+    if (*pltt != fillColor) {
+      *pltt = fillColor;
     }
   }
   for (i = 0; i < full; i++) {
@@ -779,9 +779,9 @@ NON_MATCH s32 MainMenu_DrawHPGauge(MainMenu* p, s32 param_2, s32 param_3, s32 pa
 #endif
 }
 
-// HUD の EN ゲージを描く, アストロ武器を装備していれば太陽スタンドの貯金も出す
-// 残差: 252/251 命令, MainMenu_DrawHPGauge と同じく端数のタイルを (bodyTile + 8) - rem に畳んで1命令多く, param_3 を r4 に置く (原典は sl)
-NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) {
+// HUD の EN ゲージを描く, 残りの部分の色はジャンゴが黄色でサバタが赤, 太陽チャージ中と太陽スタンドから受け取っている間は白と点滅する, アストロ武器を装備していれば太陽スタンドの貯金も出す
+// 残差: 252/251 命令, MainMenu_DrawHPGauge と同じく端数のタイルを (bodyTile + 8) - rem に畳んで1命令多く, x8 を r4 に置く (原典は sl)
+NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 style, s32 x8, s32 y8) {
 #ifdef NONMATCHING_C
   s32 ene = p->player->ene;
   s32 maxEne = p->player->maxEne;
@@ -791,7 +791,7 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
   s32 bodyTile;
   s32 emptyTile;
   s32 endTile;
-  rgb555 color;
+  rgb555 fillColor;
   BgMapEntry* map;
   s32 i;
 
@@ -804,32 +804,32 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
     rem = v - (full << 3);
   }
 
-  color = 0x1F;
+  fillColor = 0x1F;
   if (p->player->kind != PLAYER_SABATA) {
-    color = 0x35F;
+    fillColor = 0x35F;
   }
-  if (param_2 == 0) {
+  if (style == 0) {
     bodyTile = 0x53;
     emptyTile = 0x4B;
     endTile = 0x4C;
     if (Player_TestFlag20(p->player, PFLAG20_QC | PFLAG20_REFUELING)) {
       if (!((++p->eneBlinkTimer >> 2) & 1)) {
-        color = 0x7FFF;
+        fillColor = 0x7FFF;
       }
     }
-    map = MainMenu_GetBgMapAddr(0, param_3, param_4);
+    map = MainMenu_GetBgMapAddr(0, x8, y8);
   } else {
     bodyTile = 0x73;
     emptyTile = 0x6B;
     endTile = 0x4BD;
-    map = MainMenu_GetBgMapAddr(0, param_3 - 1, param_4);
+    map = MainMenu_GetBgMapAddr(0, x8 - 1, y8);
     *map++ = 0xD0BD;
   }
   {
     rgb555* pltt = &gBgPlttBuffer[220];
 
-    if (*pltt != color) {
-      *pltt = color;
+    if (*pltt != fillColor) {
+      *pltt = fillColor;
     }
   }
   for (i = 0; i < full; i++) {
@@ -844,7 +844,7 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
   }
   *map = endTile | 0xD000;
 
-  if (!(gGameFlags & GAMEFLAG_CROSSOVER) && param_2 == 0) {
+  if (!(gGameFlags & GAMEFLAG_CROSSOVER) && style == 0) {
     if (Player_TestEquipBuff(p->player, EBUFF_ASTRO)) {
       s32 digits[4];
       s32 n;
@@ -876,9 +876,9 @@ NON_MATCH s32 MainMenu_DrawEneGauge(MainMenu* p, s32 param_2, s32 param_3, s32 p
 
 void FUN_0808a9a0(void) {}
 
-// HUD の太陽ゲージを描く, 熱中症が溜まると点滅し, カーモス状態ならその表示も出す
-// 残差: 240/240 命令, 引数の割り当てだけが違い, 原典は param_2 を r7, x8/y8 を r8/r9 に置くが, こちらは x8/y8 が r7/r8 で param_2 が r9 になる (ゲージ部分の static inline 化は悪化)
-NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 x8, s32 y8) {
+// HUD の太陽ゲージを描く, 日光を浴びている間は溜まっている部分の色をオレンジの明暗で回し, 熱中症が溜まるとゲージごと点滅し, カーモス状態ならその表示も出す, alwaysLit が 1 なら日光の有無に関わらず明るいオレンジで描く
+// 残差: 240/240 命令, 引数の割り当てだけが違い, 原典は alwaysLit を r7, x8/y8 を r8/r9 に置くが, こちらは x8/y8 が r7/r8 で alwaysLit が r9 になる (ゲージ部分の static inline 化は悪化)
+NON_MATCH void HUD_DrawSunGauge(MainMenu* p, s32 alwaysLit, s32 x8, s32 y8) {
 #ifdef NONMATCHING_C
   BgMapEntry* map;
   bool32 hidden;
@@ -916,20 +916,20 @@ NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 x8, s32 y8) {
       *map++ = (i + 3) | 0xD000;
     }
   } else {
-    rgb555 color;
+    rgb555 fillColor;
     s32 n;
 
-    if (param_2 == 1) {
-      color = 0x29F;
+    if (alwaysLit == 1) {
+      fillColor = 0x29F;
     } else if (Player_TestFlag20(p->player, PFLAG20_SUNBATHING)) {
       u16 t = p->sunFrameTimer;
 
-      color = 0x29F;
+      fillColor = 0x29F;
       if (t > 36) {
-        color = 0x1FB;
+        fillColor = 0x1FB;
         if (t > 44) {
           if (t <= 52) {
-            color = 0x177;
+            fillColor = 0x177;
           }
         }
       }
@@ -938,13 +938,13 @@ NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 x8, s32 y8) {
       }
     } else {
       p->sunFrameTimer = 52;
-      color = 0x177;
+      fillColor = 0x177;
     }
     {
       rgb555* pltt = &gBgPlttBuffer[218];
 
-      if (*pltt != color) {
-        *pltt = color;
+      if (*pltt != fillColor) {
+        *pltt = fillColor;
       }
     }
 
@@ -972,50 +972,50 @@ NON_MATCH void MainMenu_DrawSunGauge(MainMenu* p, s32 param_2, s32 x8, s32 y8) {
     p->kaamosShown = FALSE;
   }
 #else
-  INCFUNC("asm/func/MainMenu_DrawSunGauge.inc");
+  INCFUNC("asm/func/HUD_DrawSunGauge.inc");
 #endif
 }
 
-// 画面右上のボスの HP ゲージを右から10マスで描き, 減ったときやボス戦かどうかで枠とゲージの色を変える
-void MainMenu_DrawBossGauge(MainMenu* p, s32 param_2) {
-  rgb555 frame;
-  rgb555 gauge;
+// 画面右上のボスの HP ゲージを右から10マスで描く, see HUDMode, 回復している間は点滅し, HUD_FlashBossGauge の直後は白く光る
+void HUD_DrawBossGauge(MainMenu* p, s32 hudMode) {
+  rgb555 lostColor;
+  rgb555 fillColor;
   rgb555* pltt;
   s32 full;
   s32 rem;
   BgMapEntry* map;
   s32 i;
 
-  if (param_2 == 1) {
-    frame = 0x1F;
+  if (hudMode == HUD_BOSS_BATTLE) {
+    lostColor = 0x1F;
     if (p->prevBossHP < gStat->bossHP) {
       if ((++p->bossBlinkTimer >> 2) & 1) {
-        gauge = 0x3E0;
+        fillColor = 0x3E0;
       } else {
-        gauge = 0x7FFF;
+        fillColor = 0x7FFF;
       }
     } else if (p->bossFlashTimer != 0) {
-      gauge = 0x7FFF;
+      fillColor = 0x7FFF;
       p->bossFlashTimer--;
     } else {
-      gauge = 0x3E0;
+      fillColor = 0x3E0;
     }
   } else {
-    frame = 0x39CE;
+    lostColor = 0x39CE;
     if (p->bossFlashTimer != 0) {
-      gauge = 0x7FFF;
+      fillColor = 0x7FFF;
       p->bossFlashTimer--;
     } else {
-      gauge = 0x1F;
+      fillColor = 0x1F;
     }
   }
   pltt = &gBgPlttBuffer[222];
-  if (*pltt != frame) {
-    *pltt = frame;
+  if (*pltt != lostColor) {
+    *pltt = lostColor;
   }
   pltt--;
-  if (*pltt != gauge) {
-    *pltt = gauge;
+  if (*pltt != fillColor) {
+    *pltt = fillColor;
   }
 
   p->prevBossHP = gStat->bossHP;
@@ -1050,7 +1050,7 @@ void MainMenu_DrawBossGauge(MainMenu* p, s32 param_2) {
 }
 
 // 右上に敵の HP ゲージ (なければ棺桶運搬中の黒ジャンゴのゲージ) を出し, 時間が切れたら消す
-void MainMenu_DrawEnemyGauge(MainMenu* p) {
+void HUD_DrawEnemyGauge(MainMenu* p) {
   bool32 drawn = FALSE;
   s32 full = 0;
   s32 dots = 0;
@@ -1154,7 +1154,7 @@ void MainMenu_DrawEnemyGauge(MainMenu* p) {
 }
 
 // HUD 左上の状態アイコン, よいステータス効果の残り秒数か gStat->unk_2b0 の状態を出し, 何もなくなったら消す
-void MainMenu_UpdateCondIcon(MainMenu* p) {
+void HUD_UpdateCondIcon(MainMenu* p) {
   BgMapEntry* map;
 
   if (p->player->goodCondTimer != 0) {
@@ -1194,9 +1194,9 @@ void MainMenu_UpdateCondIcon(MainMenu* p) {
 }
 
 // カウントダウン HUD の表示が切り替わったときにカウント音を鳴らし, 今の値を覚えておく
-void MainMenu_PlayCountdownSound(MainMenu* p, s32 param_2, u32 param_3) {
+void HUD_PlayCountdownSound(MainMenu* p, s32 tens, u32 ones) {
   if (gGameFlags & GAMEFLAG_CROSSOVER) {
-    if (param_2 == 0 && param_3 - 1 < 3 && param_3 != p->countdownOnes) {
+    if (tens == 0 && ones - 1 < 3 && ones != p->countdownOnes) {
       PlaySound_082406e0(SE_COUNTDOWN);
     }
   } else if (!p->countdownShown) {
@@ -1204,15 +1204,15 @@ void MainMenu_PlayCountdownSound(MainMenu* p, s32 param_2, u32 param_3) {
       PlaySound_082406e0(SE_COUNTDOWN);
     }
     p->countdownShown = 1;
-  } else if ((param_2 == 0 || (param_2 == 1 && param_3 == 0)) && param_3 != p->countdownOnes) {
+  } else if ((tens == 0 || (tens == 1 && ones == 0)) && ones != p->countdownOnes) {
     PlaySound_082406e0(SE_COUNTDOWN);
   }
-  p->countdownTens = param_2;
-  p->countdownOnes = param_3;
+  p->countdownTens = tens;
+  p->countdownOnes = ones;
 }
 
 // HUD のカウントダウン (countdownRemaining が指す残りフレーム) を秒に直して2桁で描く, 99 秒を超える間は隠す
-void MainMenu_UpdateCountdown(MainMenu* p) {
+void HUD_UpdateCountdown(MainMenu* p) {
   s32 i;
 
   if (p->countdownActive) {
@@ -1250,7 +1250,7 @@ void MainMenu_UpdateCountdown(MainMenu* p) {
           MainSprite_SetPose(&p->countdownDigits[0], &p->gfx.smenu, tens + 115, PLAYMODE_LOOP);
           MainSprite_SetPose(&p->countdownDigits[1], &p->gfx.smenu, t + 115, PLAYMODE_LOOP);
         }
-        MainMenu_PlayCountdownSound(p, tens, t);
+        HUD_PlayCountdownSound(p, tens, t);
       }
     }
   }
@@ -1402,16 +1402,16 @@ s32 MainMenu_GetDpadRepeat(MainMenu* p) {
   return 0;
 }
 
-// はい/いいえ の選択肢を出す, param_2 が 0 以外なら はい を選んだ状態で始める
-void MainMenu_ShowYesNo(MainMenu* p, s32 param_2) {
+// はい/いいえ の選択肢を出す, defaultYes が 0 以外なら はい を選んだ状態で始める
+void MainMenu_ShowYesNo(MainMenu* p, s32 defaultYes) {
   s32 anim;
 
   p->sprites[15].flags &= ~SPRFLAG_HIDDEN;
   p->sprites[15].pos.x = 0;
   p->sprites[15].pos.y = 0;
-  p->yesNoCursor = param_2;
+  p->yesNoCursor = defaultYes;
 
-  anim = (u8)param_2 != 0 ? 4 : 5;
+  anim = (u8)defaultYes != 0 ? 4 : 5;
   MainSprite_SetAnim(&p->sprites[15], &p->gfx.smenu, anim, PLAYMODE_LOOP, 0);
   MainSprite_AdvanceAnim(&p->sprites[15], &p->gfx.smenu);
 }
@@ -1494,27 +1494,27 @@ void MainMenu_PlaceRegisteredWeaponIcons(MainMenu* p) {
   }
 }
 
-void MainMenu_ClearRect(s32 param_1, s32 param_2, s32 param_3, s32 param_4) {
+void MainMenu_ClearRect(s32 x8, s32 y8, s32 w, s32 h) {
   s32 i;
 
-  for (i = 0; i < param_4; i++) {
-    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, param_1, param_2 + i);
+  for (i = 0; i < h; i++) {
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, x8, y8 + i);
     s32 j;
 
-    for (j = 0; j < param_3; j++) {
+    for (j = 0; j < w; j++) {
       *entry++ = 0xF001;
     }
   }
 }
 
-void MainMenu_MaskRect(s32 param_1, s32 param_2, s32 param_3, s32 param_4) {
+void MainMenu_MaskRect(s32 x8, s32 y8, s32 w, s32 h) {
   s32 i;
 
-  for (i = 0; i < param_4; i++) {
-    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, param_1, param_2 + i);
+  for (i = 0; i < h; i++) {
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, x8, y8 + i);
     s32 j;
 
-    for (j = 0; j < param_3; j++) {
+    for (j = 0; j < w; j++) {
       *entry++ = 0xF002;
     }
   }
@@ -1632,20 +1632,20 @@ void MainMenu_AnimPlayerFigure(MainMenu* p) {
   }
 }
 
-// OBJ パレットの補間を始める, param_2 の行から param_3 の行へ param_4 フレームかけて fadePltt を動かす
-void MainMenu_StartPlttFade(MainMenu* p, u16 param_2, s32 param_3, s32 param_4) {
+// OBJ パレットの補間を始める, fromPltt の行から toPltt の行へ frames フレームかけて fadePltt を動かす
+void MainMenu_StartPlttFade(MainMenu* p, u16 fromPltt, s32 toPltt, s32 frames) {
   rgb555* src;
   rgb555* dst;
   s32 i;
 
-  p->fadeFromPltt = param_2;
-  p->fadeToPltt = param_3;
+  p->fadeFromPltt = fromPltt;
+  p->fadeToPltt = toPltt;
   src = &gObjPlttData[p->fadeFromPltt * 16];
   dst = p->fadePltt;
   for (i = 0; i < 16; i++) {
     *dst++ = *src++;
   }
-  p->fadeSteps = param_4;
+  p->fadeSteps = frames;
   p->fadeStep = 0;
   p->fadeActive = TRUE;
 }
@@ -1721,9 +1721,9 @@ NON_MATCH void MainMenu_BeginItemMove(MainMenu* p, s32 idx, s32 pose, s32 pltt, 
 #endif
 }
 
-s32 MainMenu_UpdateItemMove(MainMenu* p, s32 param_2) {
-  MainSprite* sprite = &p->sprites[46 + param_2];
-  MenuItemMove* m = &p->itemMoves[param_2];
+s32 MainMenu_UpdateItemMove(MainMenu* p, s32 idx) {
+  MainSprite* sprite = &p->sprites[46 + idx];
+  MenuItemMove* m = &p->itemMoves[idx];
 
   if (!m->active) {
     return TRUE;
@@ -1791,41 +1791,41 @@ void MainMenu_SetButtonGuidePos(MainMenu* p, s32 x, s32 y) {
 }
 
 // ボタン案内のポーズ番号, 0 は Bもどる, 1 以上は A/R の案内
-s32 GetButtonGuidePose(s32 param_1) {
-  if (param_1 == 0) {
+s32 GetButtonGuidePose(s32 guide) {
+  if (guide == 0) {
     return 147;
   }
-  return 160 + param_1;
+  return 160 + guide;
 }
 
 // 画面下のボタン案内2枠を設定する, 負の値なら隠す
-void MainMenu_SetButtonGuides(MainMenu* p, s32 param_2, s32 param_3) {
-  if (param_2 < 0) {
+void MainMenu_SetButtonGuides(MainMenu* p, s32 guide0, s32 guide1) {
+  if (guide0 < 0) {
     p->sprites[59].flags |= SPRFLAG_HIDDEN;
   } else {
     p->sprites[59].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[59], &p->gfx.smenu, GetButtonGuidePose(param_2), PLAYMODE_LOOP);
+    MainSprite_SetPose(&p->sprites[59], &p->gfx.smenu, GetButtonGuidePose(guide0), PLAYMODE_LOOP);
   }
-  if (param_3 < 0) {
+  if (guide1 < 0) {
     p->sprites[60].flags |= SPRFLAG_HIDDEN;
   } else {
     p->sprites[60].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[60], &p->gfx.smenu, GetButtonGuidePose(param_3), PLAYMODE_LOOP);
+    MainSprite_SetPose(&p->sprites[60], &p->gfx.smenu, GetButtonGuidePose(guide1), PLAYMODE_LOOP);
   }
 }
 
 void MainMenu_HideButtonGuides(MainMenu* p) { MainMenu_SetButtonGuides(p, -1, -1); }
 
 // 46/46 命令, node->active の読み出しで &node->active をレジスタに持つ形にならない
-NON_MATCH s32 MainMenu_UpdateBurstParticle(struct MMenuPtclNode* param_1, ParticleGroup* param_2) {
+NON_MATCH s32 MainMenu_UpdateBurstParticle(struct MMenuPtclNode* ptclNode, ParticleGroup* group) {
 #ifdef NONMATCHING_C
-  struct MMenuPtclNode* node = param_1;
+  struct MMenuPtclNode* node = ptclNode;
 
   if (++node->timer >= 16) {
     node->ptcl.flags |= SPRFLAG_HIDDEN;
     node->active = 0;
   } else {
-    Particle_SetPose(&node->ptcl, param_2, (node->timer >> 3) + 2);
+    Particle_SetPose(&node->ptcl, group, (node->timer >> 3) + 2);
     node->ptcl.pos.x += node->velX;
     node->ptcl.pos.y += node->velY;
     if ((node->timer & 7) == 0) {
@@ -1840,7 +1840,7 @@ NON_MATCH s32 MainMenu_UpdateBurstParticle(struct MMenuPtclNode* param_1, Partic
 }
 
 // 粒を放物線で飛ばす, 20フレーム経ったら隠して使い終わりにする
-s32 MainMenu_UpdateSparkleParticle(MMenuPtclNode* p) {
+s32 HUD_UpdateSparkleParticle(MMenuPtclNode* p) {
   p->timer++;
   if (p->timer > 19) {
     p->ptcl.flags |= SPRFLAG_HIDDEN;
@@ -1912,7 +1912,7 @@ NON_MATCH void UNUSED MainMenu_BurstParticles(MainMenu* p, s32 idx, s32 x, s32 y
 
 // ptclSets[idx] の8粒を (x, y) のまわりから少し上向きに放射状に飛ばす, 向きはランダムに左右反転する
 // 残差: 157/157 命令, 角度の i * 32 を原典は乱数を読んだ直後に r3 へ作り, 足した値の方を cos 側に使うが, こちらは r2 と r3 が逆になる (足す順, (i << 5) は試済)
-NON_MATCH void MainMenu_SparkleParticles(MainMenu* p, s32 idx, s32 x, s32 y) {
+NON_MATCH void HUD_SparkleParticles(MainMenu* p, s32 idx, s32 x, s32 y) {
 #ifdef NONMATCHING_C
   MMenuPtclSet* set = &p->ptclSets[idx];
   s32 i;
@@ -1940,10 +1940,10 @@ NON_MATCH void MainMenu_SparkleParticles(MainMenu* p, s32 idx, s32 x, s32 y) {
     node->ptcl.pos.y = node->velY + y;
     node->active = TRUE;
     node->timer = 0;
-    node->update = (void*)MainMenu_UpdateSparkleParticle;
+    node->update = (void*)HUD_UpdateSparkleParticle;
   }
 #else
-  INCFUNC("asm/func/MainMenu_SparkleParticles.inc");
+  INCFUNC("asm/func/HUD_SparkleParticles.inc");
 #endif
 }
 
@@ -1978,7 +1978,7 @@ void MainMenu1P_AddParticles(MainMenu* p) {
 }
 
 // BG0 の先頭9タイルに 0xA0 からの連番を並べる
-void MainMenu_ShowStatusPointNotice(MainMenu* p) {
+void HUD_ShowStatusPointNotice(MainMenu* p) {
   if (!p->statusPointNoticeShown) {
     BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
@@ -1990,7 +1990,7 @@ void MainMenu_ShowStatusPointNotice(MainMenu* p) {
   }
 }
 
-void MainMenu_HideStatusPointNotice(MainMenu* p) {
+void HUD_HideStatusPointNotice(MainMenu* p) {
   if (p->statusPointNoticeShown) {
     BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
@@ -2004,25 +2004,25 @@ void MainMenu_HideStatusPointNotice(MainMenu* p) {
   }
 }
 
-void MainMenu_BlinkStatusPointNotice(MainMenu* p) {
+void HUD_BlinkStatusPointNotice(MainMenu* p) {
   if (p->player->kind != PLAYER_SABATA) {
     if ((s16)gStat->statusPoint >= 1) {
       if (p->statusPointBlinkTimer < 30) {
-        MainMenu_HideStatusPointNotice(p);
+        HUD_HideStatusPointNotice(p);
       } else {
-        MainMenu_ShowStatusPointNotice(p);
+        HUD_ShowStatusPointNotice(p);
       }
       if (++p->statusPointBlinkTimer >= 60) {
         p->statusPointBlinkTimer = 0;
       }
     } else {
-      MainMenu_HideStatusPointNotice(p);
+      HUD_HideStatusPointNotice(p);
     }
   }
 }
 
 // 選択中の魔法と武器のアイコンの絵を, 魔法の点滅・エンチャント・武器の破損に合わせて切り替える
-void MainMenu_QC_AnimSelectedIcons(MainMenu* p) {
+void QC_AnimSelectedIcons(MainMenu* p) {
   if (p->player->magic.id >= 0) {
     if (!p->player->magic.availableForm || p->player->magic.unk_285) {
       if (p->qc.magicBlinkTimer == 0) {
@@ -2053,27 +2053,27 @@ void MainMenu_QC_AnimSelectedIcons(MainMenu* p) {
   }
 }
 
-void MainMenu_UpdateFieldHud(MainMenu* p) {
-  if (p->player != NULL && p->hudMode != 7 && p->hudMode <= 2) {
+void HUD_UpdateField(MainMenu* p) {
+  if (p->player != NULL && p->hudMode != HUD_HIDDEN && p->hudMode <= HUD_PILE_DRIVER) {
     MainMenu_DrawHPGauge(p, 0, 3, 1);
     MainMenu_DrawEneGauge(p, 0, 3, 2);
-    MainMenu_DrawSunGauge(p, 0, 9, 18);
-    MainMenu_UpdateCondIcon(p);
-    if (p->hudMode == 0) {
-      MainMenu_DrawEnemyGauge(p);
+    HUD_DrawSunGauge(p, 0, 9, 18);
+    HUD_UpdateCondIcon(p);
+    if (p->hudMode == HUD_FIELD) {
+      HUD_DrawEnemyGauge(p);
     } else {
-      MainMenu_DrawBossGauge(p, p->hudMode);
+      HUD_DrawBossGauge(p, p->hudMode);
     }
-    MainMenu_BlinkStatusPointNotice(p);
-    MainMenu_QC_AnimSelectedIcons(p);
-    MainMenu_UpdateCountdown(p);
+    HUD_BlinkStatusPointNotice(p);
+    QC_AnimSelectedIcons(p);
+    HUD_UpdateCountdown(p);
   }
 }
 
 void MainMenu_UpdateField(MainMenu* p) {
   if (!(gSuspendFlags & SUSPEND_LINK_WAIT)) {
-    MainMenu_UpdateFieldHud(p);
-    if (MainMenu_QC_TryOpen(p)) {
+    HUD_UpdateField(p);
+    if (QC_TryOpen(p)) {
       PlaySound_082406e0(SE_SIDEBAR_TOGGLE);
     } else {
       MainMenu_TryOpen(p);
@@ -2124,7 +2124,7 @@ void MainMenu1P_SetupBg(MainMenu* p) {
   p->dungeonMapTilemap0 = GetFile(DIR_TILE_MAP, TILEMAP_A7E7);
   p->dungeonMapTilemap1 = GetFile(DIR_TILE_MAP, TILEMAP_A7F7);
   p->bankTilemap = GetFile(DIR_TILE_MAP, TILEMAP_BANK);
-  p->hudMode = 0;
+  p->hudMode = HUD_FIELD;
   p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
   p->dungeonMapPltt = BgPlttRow13(GetBgPlttFile(BGP_ECBF));
   p->worldMapPltt = BgPlttRow13(GetBgPlttFile(BGP_5F5E));
@@ -2137,7 +2137,7 @@ void MainMenu1P_SetupBg(MainMenu* p) {
 }
 
 // クイックチェンジのカーソル点滅処理
-void MainMenu_QC_PulseCursor(MainMenu* p) {
+void QC_PulseCursor(MainMenu* p) {
   u8 t = p->qc.cursorPulseCounter;
   rgb555 color = RGB(31, 0, 0);
 
@@ -2165,7 +2165,7 @@ void MainMenu_QC_PulseCursor(MainMenu* p) {
 }
 
 // 左右のクイックチェンジの枠を BG0 に描き, カーソルの点滅を最初からにする
-void MainMenu_QC_DrawFrame(MainMenu* p) {
+void QC_DrawFrame(MainMenu* p) {
   const u16* src = u16_ARRAY_085ac064;
   s32 y;
   s32 x;
@@ -2182,11 +2182,11 @@ void MainMenu_QC_DrawFrame(MainMenu* p) {
   }
 
   p->qc.cursorPulseCounter = 0;
-  MainMenu_QC_PulseCursor(p);
+  QC_PulseCursor(p);
 }
 
 // 画面左右の縁 (x=0 と x=26 から4列ぶん) の4行を空タイルで塗る
-void MainMenu_QC_ClearFrame(void) {
+void QC_ClearFrame(void) {
   s32 y;
 
   for (y = 0; y < 4; y++) {
@@ -2202,7 +2202,7 @@ void MainMenu_QC_ClearFrame(void) {
 }
 
 // QC の魔法と武器のアイコンを枠の数だけ出して絵柄を合わせ, 残りの枠は隠す
-void MainMenu_QC_RefreshIcons(MainMenu* p) {
+void QC_RefreshIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -2226,7 +2226,7 @@ void MainMenu_QC_RefreshIcons(MainMenu* p) {
 }
 
 // QC用のスプライトを非表示にする
-void MainMenu_HideQCIcons(MainMenu* p) {
+void QC_HideIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -2236,7 +2236,7 @@ void MainMenu_HideQCIcons(MainMenu* p) {
 }
 
 // QC を閉じているときの表示, 選択中の魔法と武器のアイコンだけを残して他を隠す
-void MainMenu_QC_ShowSelectedOnly(MainMenu* p) {
+void QC_ShowSelectedOnly(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -2254,7 +2254,7 @@ void MainMenu_QC_ShowSelectedOnly(MainMenu* p) {
 }
 
 // スクロール位置から行の表示Y座標を出す, 画面外に出たら1周ぶん下へ回す
-NON_MATCH s32 MainMenu_CalcQCIconY(MainMenu* p, s32 i, s32 selectedIdx, s32 iconNums, s32 scrollTimer) {
+NON_MATCH s32 QC_CalcIconY(MainMenu* p, s32 i, s32 selectedIdx, s32 iconNums, s32 scrollTimer) {
 #ifdef NONMATCHING_C
   s32 col = Mod(iconNums + i - selectedIdx, iconNums);
   s32 y = 136 - scrollTimer * 3;
@@ -2265,12 +2265,12 @@ NON_MATCH s32 MainMenu_CalcQCIconY(MainMenu* p, s32 i, s32 selectedIdx, s32 icon
   }
   return y;
 #else
-  INCFUNC("asm/func/MainMenu_CalcQCIconY.inc");
+  INCFUNC("asm/func/QC_CalcIconY.inc");
 #endif
 }
 
 // 各武器アイコンの絵柄を装備中の武器に, 縦位置を選択中インデックスからの並び順に合わせる
-void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
+void QC_RefreshWeaponIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < p->qc.weaponCount; i++) {
@@ -2279,25 +2279,25 @@ void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
     } else {
       MainSprite_SetPose(&p->qc.weapons[i].sprite, &p->gfx.icons, ICON_WEAPON(p->qc.weapons[i].weapon->id), PLAYMODE_LOOP);
     }
-    p->qc.weapons[i].sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qc.weaponIdx, p->qc.weaponCount, 0);
+    p->qc.weapons[i].sprite.pos.y = QC_CalcIconY(p, i, p->qc.weaponIdx, p->qc.weaponCount, 0);
   }
 }
 
 // 各魔法アイコンの絵柄を登録中の魔法に, 縦位置を選択中インデックスからの並び順に合わせる
-void MainMenu_RefreshQCMagicIcons(MainMenu* p) {
+void QC_RefreshMagicIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < p->qc.magicCount; i++) {
     QCMagicSlot* slot = &p->qc.magics[i];
 
     MainSprite_SetPose(&slot->sprite, &p->gfx.icons, ICON_MAGIC(slot->id), PLAYMODE_LOOP);
-    slot->sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qc.magicIdx, p->qc.magicCount, 0);
+    slot->sprite.pos.y = QC_CalcIconY(p, i, p->qc.magicIdx, p->qc.magicCount, 0);
   }
 }
 
 // 残差1箇所2命令 (187/187, 同じ命令が同じ順), 原典は &qc.weapons[n] を添字レジスタ r0 に上書きで作るが, こちらは r1 に作って r0 を残す
 // Tier A-C 試済 (分岐順の入替, u8+（s8)キャスト, slot ポインタのローカル化, 宣言順, ブロックローカル化)
-NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
+NON_MATCH void QC_BuildWeaponSlots(MainMenu* p) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 n = 0;
@@ -2383,11 +2383,11 @@ NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
     }
   }
 #else
-  INCFUNC("asm/func/MainMenu_BuildQCWeaponSlots.inc");
+  INCFUNC("asm/func/QC_BuildWeaponSlots.inc");
 #endif
 }
 
-NON_MATCH void MainMenu_BuildQCMagicSlots(MainMenu* p) {
+NON_MATCH void QC_BuildMagicSlots(MainMenu* p) {
 #ifdef NONMATCHING_C
   s32 n = 0;
   s32 i;
@@ -2444,20 +2444,20 @@ NON_MATCH void MainMenu_BuildQCMagicSlots(MainMenu* p) {
   }
   p->qc.magicBlinkTimer = 0;
 #else
-  INCFUNC("asm/func/MainMenu_BuildQCMagicSlots.inc");
+  INCFUNC("asm/func/QC_BuildMagicSlots.inc");
 #endif
 }
 
-void MainMenu_QC_Open(MainMenu* p) {
-  MainMenu_QC_DrawFrame(p);
-  MainMenu_QC_RefreshIcons(p);
+void QC_Open(MainMenu* p) {
+  QC_DrawFrame(p);
+  QC_RefreshIcons(p);
   FUN_082408d0();
   SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
-  MainMenu_SetUpdateCallback(p, MainMenu_QC_Update);
+  MainMenu_SetUpdateCallback(p, QC_Update);
 }
 
 // 選んでいる魔法をプレイヤーに持たせる, 選択なしなら外す
-void MainMenu_ApplyMagic(MainMenu* p) {
+void QC_ApplyMagic(MainMenu* p) {
   if (p->qc.magicIdx >= 0 && p->qc.magicCount != 0) {
     Player_EquipMagic(p->player, p->qc.magics[p->qc.magicIdx].id);
   } else {
@@ -2466,26 +2466,26 @@ void MainMenu_ApplyMagic(MainMenu* p) {
 }
 
 // 4つめのスプライトが指す武器を Player に適用する
-void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->qc.weapons[p->qc.weaponIdx].weapon); }
+void QC_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->qc.weapons[p->qc.weaponIdx].weapon); }
 
 // 選んだ武器と魔法を適用してクイックチェンジを閉じる, スタートメニューでの切り替えからは呼ばれない
-void MainMenu_QC_Close(MainMenu* p) {
-  MainMenu_QC_ClearFrame();
-  MainMenu_ApplyWeapon(p);
-  MainMenu_ApplyMagic(p);
+void QC_Close(MainMenu* p) {
+  QC_ClearFrame();
+  QC_ApplyWeapon(p);
+  QC_ApplyMagic(p);
   p->qc.magicBlinkTimer = 0;
-  MainMenu_QC_ShowSelectedOnly(p);
+  QC_ShowSelectedOnly(p);
   FUN_082408f4();
   CLEAR_FLAGS(gSuspendFlags, SUSPEND_MENU);
   MainMenu_SetUpdateCallback(p, MainMenu_UpdateField);
 }
 
 // SELECT が押されていて, プレイヤーが操作できる状態で, '.q' で許されていればクイックチェンジを開ける
-static bool32 MainMenu_QC_CanOpen(MainMenu* p) {
+static bool32 QC_CanOpen(MainMenu* p) {
   if (gInput[0].down & SELECT_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & PFLAG20_BUSY) && p->qc.enabled != 0 && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & PFLAG20_BUSY) && p->qc.enabled != 0 && p->hudMode <= HUD_PILE_DRIVER && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
       return TRUE;
     }
   }
@@ -2494,38 +2494,38 @@ static bool32 MainMenu_QC_CanOpen(MainMenu* p) {
 }
 
 // 開ける状態ならクイックチェンジを開く, 開いたら TRUE
-bool32 MainMenu_QC_TryOpen(MainMenu* p) {
-  if (MainMenu_QC_CanOpen(p)) {
-    MainMenu_QC_Open(p);
+bool32 QC_TryOpen(MainMenu* p) {
+  if (QC_CanOpen(p)) {
+    QC_Open(p);
     return TRUE;
   }
   return FALSE;
 }
 
 // スクロールタイマーを減らしながら魔法と武器のアイコンを縦に動かす
-void MainMenu_QC_ScrollIcons(MainMenu* p) {
+void QC_ScrollIcons(MainMenu* p) {
   s32 i;
 
   if (p->qc.magicScrollTimer != 0) {
     p->qc.magicScrollTimer--;
     for (i = 0; i < p->qc.magicCount; i++) {
-      p->qc.magics[i].sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qc.magicIdx, p->qc.magicCount, p->qc.magicScrollTimer);
+      p->qc.magics[i].sprite.pos.y = QC_CalcIconY(p, i, p->qc.magicIdx, p->qc.magicCount, p->qc.magicScrollTimer);
     }
   }
   if (p->qc.weaponScrollTimer != 0) {
     p->qc.weaponScrollTimer--;
     for (i = 0; i < p->qc.weaponCount; i++) {
-      p->qc.weapons[i].sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qc.weaponIdx, p->qc.weaponCount, p->qc.weaponScrollTimer);
+      p->qc.weapons[i].sprite.pos.y = QC_CalcIconY(p, i, p->qc.weaponIdx, p->qc.weaponCount, p->qc.weaponScrollTimer);
     }
   }
 }
 
 // クイックチェンジ中の更新, L で魔法, R で武器を回し, SELECT を離すと確定して閉じる
-void MainMenu_QC_Update(MainMenu* p) {
+void QC_Update(MainMenu* p) {
   MainMenu_DrawHP(p, 0, 3, 1);
   MainMenu_DrawEne(p, 0, 3, 2);
   if (!(gInput[0].down & SELECT_BUTTON) && p->qc.magicScrollTimer == 0 && p->qc.weaponScrollTimer == 0) {
-    MainMenu_QC_Close(p);
+    QC_Close(p);
   } else {
     if ((gInput[0].pressed & L_BUTTON) && p->qc.magicScrollTimer == 0 && p->qc.magicCount > 1) {
       if (p->player->magic.unk_285) {
@@ -2551,8 +2551,8 @@ void MainMenu_QC_Update(MainMenu* p) {
       p->qc.weaponScrollTimer = 8;
     }
   }
-  MainMenu_QC_ScrollIcons(p);
-  MainMenu_QC_PulseCursor(p);
+  QC_ScrollIcons(p);
+  QC_PulseCursor(p);
 }
 
 // クイックチェンジ用のスプライトを追加する (通信対戦では武器を1つしか使えないので、別処理)
@@ -2570,7 +2570,7 @@ void MainMenu1P_AddQCIcons(MainMenu* p) {
 }
 
 // QC用のスプライトを削除
-void MainMenu_RemoveQCIcons(MainMenu* p) {
+void QC_RemoveIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -2583,34 +2583,34 @@ void MainMenu1P_0808dddc(MainMenu* p) {
   MainMenu1P_AddQCIcons(p);
 
   if (p->player != NULL) {
-    MainMenu_BuildQCWeaponSlots(p);
-    MainMenu_BuildQCMagicSlots(p);
-    MainMenu_RefreshQCWeaponIcons(p);
-    MainMenu_RefreshQCMagicIcons(p);
+    QC_BuildWeaponSlots(p);
+    QC_BuildMagicSlots(p);
+    QC_RefreshWeaponIcons(p);
+    QC_RefreshMagicIcons(p);
     if (gGameFlags & GAMEFLAG_CROSSOVER) {
-      MainMenu_HideQCIcons(p);
+      QC_HideIcons(p);
     } else {
-      MainMenu_QC_ShowSelectedOnly(p);
+      QC_ShowSelectedOnly(p);
     }
   }
 }
 
-void MainMenu_RebuildQCWeapons(MainMenu* p) {
-  MainMenu_BuildQCWeaponSlots(p);
-  MainMenu_RefreshQCWeaponIcons(p);
-  MainMenu_QC_ShowSelectedOnly(p);
-  MainMenu_ApplyWeapon(p);
+void QC_RebuildAndApplyWeapons(MainMenu* p) {
+  QC_BuildWeaponSlots(p);
+  QC_RefreshWeaponIcons(p);
+  QC_ShowSelectedOnly(p);
+  QC_ApplyWeapon(p);
 }
 
-void MainMenu_RebuildQCMagic(MainMenu* p) {
-  MainMenu_BuildQCMagicSlots(p);
-  MainMenu_RefreshQCMagicIcons(p);
-  MainMenu_QC_ShowSelectedOnly(p);
-  MainMenu_ApplyMagic(p);
+void QC_RebuildAndApplyMagic(MainMenu* p) {
+  QC_BuildMagicSlots(p);
+  QC_RefreshMagicIcons(p);
+  QC_ShowSelectedOnly(p);
+  QC_ApplyMagic(p);
 }
 
 // L で魔法, R で武器の QC を1つ回して装備を切り替え, アイコンのスクロールとカーソルの点滅を進める
-void MainMenu_QC_UpdateRotate(MainMenu* p) {
+void QC_UpdateRotate(MainMenu* p) {
   if ((gInput[0].pressed & L_BUTTON) && p->qc.magicScrollTimer == 0 && p->qc.magicCount > 1) {
     PlaySound_082406e0(SE_QUICK_CHANGE);
     if (++p->qc.magicIdx >= p->qc.magicCount) {
@@ -2630,28 +2630,28 @@ void MainMenu_QC_UpdateRotate(MainMenu* p) {
     *equipped = (s8)p->qc.weapons[p->qc.weaponIdx].registeredIdx;
     p->qc.weaponScrollTimer = 8;
   }
-  MainMenu_QC_ScrollIcons(p);
-  MainMenu_QC_PulseCursor(p);
+  QC_ScrollIcons(p);
+  QC_PulseCursor(p);
 }
 
 // 選ばれている武器のスプライトだけを見せる
 void FUN_0808df7c(MainMenu* p) {
-  MainMenu_HideQCIcons(p);
+  QC_HideIcons(p);
   p->qc.weapons[p->qc.weaponIdx].sprite.flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetPose(&p->qc.weapons[p->qc.weaponIdx].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_NONE), PLAYMODE_LOOP);
 }
 
-void MainMenu_UpdateCrossoverIntervalReady(MainMenu* p) {
-  if (!(gSuspendFlags & SUSPEND_LINK_WAIT) && p->hudMode <= 2) {
+void HUD_UpdateCrossoverIntervalReady(MainMenu* p) {
+  if (!(gSuspendFlags & SUSPEND_LINK_WAIT) && p->hudMode <= HUD_PILE_DRIVER) {
     MainMenu_DrawHPGauge(p, 0, 3, 1);
-    MainMenu_QC_ScrollIcons(p);
+    QC_ScrollIcons(p);
   }
 }
 
-// クロスオーバーのインターバル中の更新, 64 フレームごとに表示を HP と切り替え, START で MainMenu_UpdateCrossoverIntervalReady へ, SELECT でブロッキングを切り替えて condIcon の絵を変える
-void MainMenu_UpdateCrossoverInterval(MainMenu* p) {
-  if (!(gSuspendFlags & SUSPEND_LINK_WAIT) && p->hudMode <= 2) {
-    MainMenu_QC_UpdateRotate(p);
+// クロスオーバーのインターバル中の更新, 64 フレームごとに表示を HP と切り替え, START で HUD_UpdateCrossoverIntervalReady へ, SELECT でブロッキングを切り替えて condIcon の絵を変える
+void HUD_UpdateCrossoverInterval(MainMenu* p) {
+  if (!(gSuspendFlags & SUSPEND_LINK_WAIT) && p->hudMode <= HUD_PILE_DRIVER) {
+    QC_UpdateRotate(p);
     if (p->hpToggleTimer < 64) {
       MainMenu_DrawHPGauge(p, 0, 3, 1);
     } else {
@@ -2661,7 +2661,7 @@ void MainMenu_UpdateCrossoverInterval(MainMenu* p) {
       p->hpToggleTimer = 0;
     }
     if (gInput[0].pressed & START_BUTTON) {
-      MainMenu_SetUpdateCallback(p, MainMenu_UpdateCrossoverIntervalReady);
+      MainMenu_SetUpdateCallback(p, HUD_UpdateCrossoverIntervalReady);
     } else if (gInput[0].pressed & SELECT_BUTTON) {
       p->blocking = CrossoverBattle_ToggleBlocking();
       if (p->blocking) {
@@ -2674,7 +2674,7 @@ void MainMenu_UpdateCrossoverInterval(MainMenu* p) {
 }
 
 // 0..999 の値を3桁で BG0 に描いて後ろに記号を付ける, 上の桁の 0 は空白にする
-void MainMenu_DrawRivalHPValue(MainMenu* p, s32 x, s32 y, s32 value) {
+void HUD_DrawRivalHPValue(MainMenu* p, s32 x, s32 y, s32 value) {
   s32 digits[3];
   bool32 started;
   BgMapEntry* entry;
@@ -2701,26 +2701,26 @@ void MainMenu_DrawRivalHPValue(MainMenu* p, s32 x, s32 y, s32 value) {
   *entry = BGMAP_BGP13 | 0x7B;
 }
 
-void MainMenu_DrawRivalPlayerHP(MainMenu* p) {
+void HUD_DrawRivalPlayerHP(MainMenu* p) {
   BgMapEntry* e = MainMenu_GetBgMapAddr(0, 19, 3);
 
   *e++ = BGMAP_BGP13 | 0x4D;
   e[0] = BGMAP_BGP13 | 0x4E;
   e[1] = BGMAP_BGP13 | 0x5B;
-  MainMenu_DrawRivalHPValue(p, 22, 3, CrossoverBattle_GetRivalPlayerHP());
+  HUD_DrawRivalHPValue(p, 22, 3, CrossoverBattle_GetRivalPlayerHP());
 }
 
-void MainMenu_DrawRivalBossHP(MainMenu* p) {
+void HUD_DrawRivalBossHP(MainMenu* p) {
   BgMapEntry* e = MainMenu_GetBgMapAddr(0, 20, 4);
 
   *e++ = BGMAP_BGP13 | 0x0F;
   e[0] = BGMAP_BGP13 | 0x10;
   e[1] = BGMAP_BGP13 | 0x5B;
-  MainMenu_DrawRivalHPValue(p, 23, 4, CrossoverBattle_GetRivalBossHP());
+  HUD_DrawRivalHPValue(p, 23, 4, CrossoverBattle_GetRivalBossHP());
 }
 
 // BG0 の (9, 17) から2行ぶん 12 タイルを 0xD000 で埋める
-void MainMenu_ClearSunGauge(MainMenu* p) {
+void HUD_ClearSunGauge(MainMenu* p) {
   BgMapEntry* e;
   s32 x, y;
 
@@ -2735,18 +2735,18 @@ void MainMenu_ClearSunGauge(MainMenu* p) {
 }
 
 // クロスオーバーバトルの HUD を毎フレーム描き直す, ゲージ類と状態アイコン, 相手の HP, 装備中の魔法アイコン (使えない形態なら点滅, エンチャント中は明滅) を更新する
-void MainMenu_UpdateCrossoverHud(MainMenu* p) {
-  if (p->player == NULL || p->hudMode > 2) {
+void HUD_UpdateCrossover(MainMenu* p) {
+  if (p->player == NULL || p->hudMode > HUD_PILE_DRIVER) {
     return;
   }
   MainMenu_DrawHPGauge(p, 0, 3, 1);
   MainMenu_DrawEneGauge(p, 0, 3, 2);
-  MainMenu_ClearSunGauge(p);
-  MainMenu_UpdateCondIcon(p);
-  MainMenu_DrawBossGauge(p, p->hudMode);
-  MainMenu_UpdateCountdown(p);
-  MainMenu_DrawRivalPlayerHP(p);
-  MainMenu_DrawRivalBossHP(p);
+  HUD_ClearSunGauge(p);
+  HUD_UpdateCondIcon(p);
+  HUD_DrawBossGauge(p, p->hudMode);
+  HUD_UpdateCountdown(p);
+  HUD_DrawRivalPlayerHP(p);
+  HUD_DrawRivalBossHP(p);
   if (p->player->magic.id < 0) {
     return;
   }
@@ -2772,7 +2772,7 @@ void MainMenu_UpdateCrossoverHud(MainMenu* p) {
 
 void MainMenu_UpdateCrossoverField(MainMenu* p) {
   if (!(gSuspendFlags & SUSPEND_LINK_WAIT)) {
-    MainMenu_UpdateCrossoverHud(p);
+    HUD_UpdateCrossover(p);
   }
 }
 
@@ -2781,12 +2781,12 @@ void HUD_OpenCrossoverInterval(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL) {
-    MainMenu_QC_DrawFrame(p);
-    MainMenu_BuildQCWeaponSlots(p);
-    MainMenu_RefreshQCWeaponIcons(p);
-    MainMenu_BuildQCMagicSlots(p);
-    MainMenu_RefreshQCMagicIcons(p);
-    MainMenu_QC_RefreshIcons(p);
+    QC_DrawFrame(p);
+    QC_BuildWeaponSlots(p);
+    QC_RefreshWeaponIcons(p);
+    QC_BuildMagicSlots(p);
+    QC_RefreshMagicIcons(p);
+    QC_RefreshIcons(p);
     p->blocking = 0;
     if (CrossoverBattle_GetBlockCount()) {
       if (!CrossoverBattle_GetRound()) {
@@ -2800,7 +2800,7 @@ void HUD_OpenCrossoverInterval(void) {
     MainMenu_DrawEneGauge(p, 0, 3, 2);
     PlaySound_082406e0(SE_SIDEBAR_TOGGLE);
     p->hpToggleTimer = 0;
-    MainMenu_SetUpdateCallback(p, MainMenu_UpdateCrossoverInterval);
+    MainMenu_SetUpdateCallback(p, HUD_UpdateCrossoverInterval);
   }
 }
 
@@ -2808,11 +2808,11 @@ void HUD_CloseCrossoverInterval(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL) {
-    MainMenu_QC_ClearFrame();
+    QC_ClearFrame();
     p->condIcon.flags |= SPRFLAG_HIDDEN;
-    MainMenu_ApplyWeapon(p);
-    MainMenu_ApplyMagic(p);
-    MainMenu_QC_ShowSelectedOnly(p);
+    QC_ApplyWeapon(p);
+    QC_ApplyMagic(p);
+    QC_ShowSelectedOnly(p);
     MainMenu_SetUpdateCallback(p, MainMenu_UpdateCrossoverField);
   }
 }
@@ -2918,8 +2918,8 @@ void MainMenu_ShowLoanEneMarker(MainMenu* p) {
 }
 
 // 太陽スタンドのアニメのタイマーから 0, 1, 2, 1 のコマを返す
-s32 GetLoanStandFrame(s32 param_1) {
-  switch (param_1 >> 2) {
+s32 GetLoanStandFrame(s32 timer) {
+  switch (timer >> 2) {
     case 0: {
       return 0;
     }
@@ -3703,7 +3703,7 @@ void Cmd_SetCoffinMapSpot(void) {
 }
 
 // 0x54C1, HashName("マップ取得"), VM の i 引数で指定された地図を解放済みにする
-void UnlockMap(void) {
+void Cmd_UnlockMap(void) {
   if (VM_SeekToNamedArg('i')) {
     gStat->unlockedMap |= 1 << VM_GetValue();
   }
@@ -3765,13 +3765,13 @@ void Cmd_ClearMapIconFlag(void) {
   }
 }
 
-u32 MapIcon_GetType(u32 param_1) { return param_1 & 0xF; }
+u32 MapIcon_GetType(u32 kind) { return kind & 0xF; }
 
-s32 MapIcon_GetPltt(s32 param_1) { return param_1 >> 4; }
+s32 MapIcon_GetPltt(s32 kind) { return kind >> 4; }
 
 // 表示中の画面にあるマップアイコンのうちフラグの立っているものを BG1 に描く
 // 残差: 102/102 命令, 最後の orrs で原典は tile 側のレジスタに結果を作り, プール定数も 0xFFFFE400 / 0xFFFFE000 と符号付きになっている (被演算子の順, if/else と |=, tile を s16 は試済)
-NON_MATCH void MainMenu_DrawMapIcons(MainMenu* p, s32 param_2, s32 param_3) {
+NON_MATCH void MainMenu_DrawMapIcons(MainMenu* p, s32 originX, s32 originY) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -3789,7 +3789,7 @@ NON_MATCH void MainMenu_DrawMapIcons(MainMenu* p, s32 param_2, s32 param_3) {
       s32 x = icon->x;
       s32 y = icon->y;
 
-      if (x >= param_2 && x < param_2 + 32 && y >= param_3 && y < param_3 + 32) {
+      if (x >= originX && x < originX + 32 && y >= originY && y < originY + 32) {
         BgMapEntry* map;
         s32 tile = 0;
 
@@ -4265,8 +4265,8 @@ void Cmd_SetWorldMapFlag(void) {
 u32 TestWorldMapFlag(u32 bitidx) { return gStat->worldMapFlags & (1 << bitidx); }
 
 // ワールドマップに解放済みの場所の 2x2 タイルを描き, フラグ 14 が立つまでは右下の一画を塞ぐタイルを描く
-// 残差: 157/160 命令, 原典は param_2 + 32 をスタックに逃がして i を r7 に置き, 書き込む値を呼び出しの後で r0 に作るが, こちらは i をスタックに置く (タイル番号の三項, ポインタ演算の書き方は試済)
-NON_MATCH void MainMenu_DrawWorldMapTiles(MainMenu* p, s32 param_2, s32 param_3) {
+// 残差: 157/160 命令, 原典は originX + 32 をスタックに逃がして i を r7 に置き, 書き込む値を呼び出しの後で r0 に作るが, こちらは i をスタックに置く (タイル番号の三項, ポインタ演算の書き方は試済)
+NON_MATCH void MainMenu_DrawWorldMapTiles(MainMenu* p, s32 originX, s32 originY) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -4281,16 +4281,16 @@ NON_MATCH void MainMenu_DrawWorldMapTiles(MainMenu* p, s32 param_2, s32 param_3)
       if (t->shape) {
         tile = 12;
       }
-      if (x >= param_2 && x < param_2 + 32 && y >= param_3 && y < param_3 + 32) {
+      if (x >= originX && x < originX + 32 && y >= originY && y < originY + 32) {
         *MainMenu_GetBgMapAddr(1, x, y) = tile | 0xE000;
       }
-      if (x + 1 >= param_2 && x + 1 < param_2 + 32 && y >= param_3 && y < param_3 + 32) {
+      if (x + 1 >= originX && x + 1 < originX + 32 && y >= originY && y < originY + 32) {
         *MainMenu_GetBgMapAddr(1, x + 1, y) = (tile + 1) | 0xE000;
       }
-      if (x >= param_2 && x < param_2 + 32 && y + 1 >= param_3 && y + 1 < param_3 + 32) {
+      if (x >= originX && x < originX + 32 && y + 1 >= originY && y + 1 < originY + 32) {
         *MainMenu_GetBgMapAddr(1, x, y + 1) = (tile + 16) | 0xE000;
       }
-      if (x + 1 >= param_2 && x + 1 < param_2 + 32 && y + 1 >= param_3 && y + 1 < param_3 + 32) {
+      if (x + 1 >= originX && x + 1 < originX + 32 && y + 1 >= originY && y + 1 < originY + 32) {
         *MainMenu_GetBgMapAddr(1, x + 1, y + 1) = (tile + 17) | 0xE000;
       }
     }
@@ -5068,14 +5068,14 @@ void MainMenu_RefreshItemIcons(MainMenu* p) {
   }
 }
 
-void MainMenu_BeginItemIconMove(MainMenu* p, s32 idx, s32 param_3, s32 param_4) {
+void MainMenu_BeginItemIconMove(MainMenu* p, s32 idx, s32 fromSlot, s32 toSlot) {
   MainSprite* sprite = &p->sprites[idx + 46];
 
   sprite->flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(sprite, &p->gfx.icons, ICON_ITEM(GetItemID(p->inValuableInventory, param_3)), PLAYMODE_LOOP);
-  MainMenu_GetSlotPos(&sprite->pos, param_3);
-  MainMenu_GetSlotPos((Vec3*)&p->unk_3b68[idx * 4], param_4);
-  MainSprite_SetPltt(sprite, p->sprites[param_3 + 17].plttID);
+  MainSprite_SetPose(sprite, &p->gfx.icons, ICON_ITEM(GetItemID(p->inValuableInventory, fromSlot)), PLAYMODE_LOOP);
+  MainMenu_GetSlotPos(&sprite->pos, fromSlot);
+  MainMenu_GetSlotPos((Vec3*)&p->unk_3b68[idx * 4], toSlot);
+  MainSprite_SetPltt(sprite, p->sprites[fromSlot + 17].plttID);
 }
 
 // カーモス・エフェクト・毒・混乱・腹痛のうちかかっているものを sprites[62〜65] に縦に並べて出す
@@ -5143,8 +5143,8 @@ u32 GetItemPermission(item32_t n) {
 }
 
 // 道具ページのボタン案内を, 入れ替え中かどうかとカーソルの位置で切り替える
-void MainMenu_UpdateItemButtonGuides(MainMenu* p, s32 param_2) {
-  if (param_2 == 0) {
+void MainMenu_UpdateItemButtonGuides(MainMenu* p, s32 swapping) {
+  if (swapping == 0) {
     if (p->cursor.slot == 21) {
       MainMenu_SetButtonGuides(p, 0, 4);
     } else {
@@ -5551,15 +5551,15 @@ void MainMenu_StateWeatherResult(MainMenu* p) {
   }
 }
 
-// 吊るされた男 (param_2 == 0, HP と Ene の割合を入れ替える) と死神 (HP を 0, Ene を満タン) のカードの演出を始める
-void MainMenu_BeginHPMPCard(MainMenu* p, s32 param_2) {
+// 吊るされた男 (isDeath == 0, HP と Ene の割合を入れ替える) と死神 (HP を 0, Ene を満タン) のカードの演出を始める
+void MainMenu_BeginHPMPCard(MainMenu* p, s32 isDeath) {
   Vec3 from, to;
 
   p->sprites[p->cursor.savedSlot + 17].flags |= SPRFLAG_HIDDEN;
   MainMenu_GetSlotPos(&from, p->cursor.savedSlot);
   MainMenu_GetSlotPos(&to, p->cursor.slot);
   MainMenu_BeginItemMove(p, 0, ICON_ITEM(GetItemID(p->inValuableInventory, p->cursor.savedSlot)), p->sprites[p->cursor.savedSlot + 17].plttID, &from, &to, 24, 16);
-  if (param_2 == 0) {
+  if (isDeath == 0) {
     p->pendingCard = 1;
     p->prevHP = p->player->hp;
     p->prevEne = p->player->ene;
@@ -6354,21 +6354,21 @@ void WeaponData_FormatSuffix(WeaponData* w, s8* text) {
   }
 }
 
-void WeaponData_ShowName(s32 usePanel, s32 panelID, u8* param_3, s8* param_4) {
-  WeaponData_FormatSuffix((WeaponData*)param_3, param_4);
+void WeaponData_ShowName(s32 usePanel, s32 panelID, u8* weapon, s8* suffix) {
+  WeaponData_FormatSuffix((WeaponData*)weapon, suffix);
 
   if (usePanel) {
-    TextPanel_SetMessage(panelID, param_3[0]);
-    FUN_0804a40c(panelID, 0, (char*)param_4);
+    TextPanel_SetMessage(panelID, weapon[0]);
+    FUN_0804a40c(panelID, 0, (char*)suffix);
   } else {
-    MessageWindow_ShowLine(param_3[0]);
-    MessageWindow_SetExtendValue(0, (char*)param_4);
+    MessageWindow_ShowLine(weapon[0]);
+    MessageWindow_SetExtendValue(0, (char*)suffix);
   }
 }
 
-void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2) { WeaponData_ShowName(0, -1, param_1, param_2); }
+void WeaponData_ShowNameInWindow(u8* weapon, s8* suffix) { WeaponData_ShowName(0, -1, weapon, suffix); }
 
-void WeaponData_ShowNameInPanel(s32 param_1, u8* param_2, s8* param_3) { WeaponData_ShowName(1, param_1, param_2, param_3); }
+void WeaponData_ShowNameInPanel(s32 panelID, u8* weapon, s8* suffix) { WeaponData_ShowName(1, panelID, weapon, suffix); }
 
 // 武器説明のマーキーを組み立てる, レベルと攻撃力, 武器名, 特殊効果名 (最大3つ), PS の順に並べる
 // 残差: 130/128 命令, 原典は効果名の ID を (効果 + 66) + top の順に作るが, こちらは top = base + 66 を見抜かれて base + 132 + 効果 に畳まれ, w と n のレジスタも入れ替わる (top を使わない形, 足す順の入れ替えは試済)
@@ -6734,15 +6734,15 @@ void MainMenu_RefreshRegisteredWeapons(MainMenu* p, bool32 pickingTarget) {
   }
 }
 
-// 枠 param_3 の武器のアイコンを sprites[46 + idx] に出し, 枠 param_4 へ動かす準備をする
-void MainMenu_BeginWeaponIconMove(MainMenu* p, s32 idx, s32 param_3, s32 param_4) {
+// 枠 fromSlot の武器のアイコンを sprites[46 + idx] に出し, 枠 toSlot へ動かす準備をする
+void MainMenu_BeginWeaponIconMove(MainMenu* p, s32 idx, s32 fromSlot, s32 toSlot) {
   MainSprite* sprite = &p->sprites[idx + 46];
 
   sprite->flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(sprite, &p->gfx.icons, ICON_WEAPON(GetWeaponID(param_3)), PLAYMODE_LOOP);
-  GetInventorySlotPos(&sprite->pos, param_3);
-  GetInventorySlotPos((Vec3*)&p->unk_3b68[idx * 4], param_4);
-  MainSprite_SetPltt(sprite, p->sprites[param_3 + 17].plttID);
+  MainSprite_SetPose(sprite, &p->gfx.icons, ICON_WEAPON(GetWeaponID(fromSlot)), PLAYMODE_LOOP);
+  GetInventorySlotPos(&sprite->pos, fromSlot);
+  GetInventorySlotPos((Vec3*)&p->unk_3b68[idx * 4], toSlot);
+  MainSprite_SetPltt(sprite, p->sprites[fromSlot + 17].plttID);
 }
 
 // 武器でできる操作のビットを返す, 0x10: 売れる (登録中でなく値段がある), 1/2/4/8: レベルが足りていて種類ごとに装備できる
@@ -6790,9 +6790,9 @@ u32 GetWeaponPermission(MainMenu* p, s32 slot) {
 
 // 武器ページのボタン案内を, 入れ替え中かどうかとカーソルの位置で切り替える
 // 残差: 141/142 命令, 原典はサバタの判定の前に mode = 0 を置いて beq で switch へ飛び, 3 \/ 0 の三項の分岐の並びも違う (mode の初期化を先に置く形は mode が呼び出しをまたいで r5 に乗るので不可)
-NON_MATCH void MainMenu_UpdateWeaponButtonGuides(MainMenu* p, s32 param_2) {
+NON_MATCH void MainMenu_UpdateWeaponButtonGuides(MainMenu* p, s32 swapping) {
 #ifdef NONMATCHING_C
-  if (param_2 == 0) {
+  if (swapping == 0) {
     if (p->cursor.slot == 21) {
       MainMenu_SetButtonGuides(p, 0, 4);
     } else {
@@ -6922,7 +6922,7 @@ s32 MainMenu_GetWeaponAction(MainMenu* p) {
 // 武器ページの基本状態に戻す
 void MainMenu_ReturnToWeaponPage(MainMenu* p) {
   p->sprites[14].flags |= SPRFLAG_HIDDEN;
-  MainMenu_RebuildQCWeapons(p);
+  QC_RebuildAndApplyWeapons(p);
   MainMenu_RefreshWeaponIcons(p);
   MainMenu_RefreshRegisteredWeapons(p, 0);
   p->sprites[13].flags &= ~SPRFLAG_HIDDEN;
@@ -6994,7 +6994,7 @@ void MainMenu_StateWeaponQuickChange(MainMenu* p) {
       equipped = &gStat->equippedWeaponIdx;
       *equipped = (s8)p->qc.weapons[p->qc.weaponIdx].registeredIdx;
       MainMenu_RefreshRegisteredWeapons(p, 0);
-      MainMenu_RebuildQCWeapons(p);
+      QC_RebuildAndApplyWeapons(p);
     }
   } else {
     MainMenu_UpdateWeaponButtonGuides(p, 0);
@@ -7480,11 +7480,11 @@ void MainMenu_RefreshArmorIcons(MainMenu* p) {
 }
 
 // 装備中の防具のアイコン (sprites[36]) と, その枠に重ねる印 (sprites[41]) を出す
-void MainMenu_ShowEquippedArmor(MainMenu* p, s32 param_2) {
+void MainMenu_ShowEquippedArmor(MainMenu* p, s32 swapping) {
   if (p->equippedArmorSlot >= 0) {
     p->sprites[36].flags &= ~SPRFLAG_HIDDEN;
     MainSprite_SetPose(&p->sprites[36], &p->gfx.icons, ICON_ARMOR(p->armorIDs[p->equippedArmorSlot]), PLAYMODE_LOOP);
-    if (param_2) {
+    if (swapping) {
       if (p->cursor.flags & 1) {
         MainSprite_SetPltt(&p->sprites[36], 735);
       } else {
@@ -7501,15 +7501,15 @@ void MainMenu_ShowEquippedArmor(MainMenu* p, s32 param_2) {
   }
 }
 
-// 枠 param_3 の防具のアイコンを sprites[46 + idx] に出し, 枠 param_4 へ動かす準備をする
-void MainMenu_BeginArmorIconMove(MainMenu* p, s32 idx, s32 param_3, s32 param_4) {
+// 枠 fromSlot の防具のアイコンを sprites[46 + idx] に出し, 枠 toSlot へ動かす準備をする
+void MainMenu_BeginArmorIconMove(MainMenu* p, s32 idx, s32 fromSlot, s32 toSlot) {
   MainSprite* sprite = &p->sprites[idx + 46];
 
   sprite->flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(sprite, &p->gfx.icons, ICON_ARMOR(p->armorIDs[param_3]), PLAYMODE_LOOP);
-  GetArmorSlotPos(&sprite->pos, param_3);
-  GetArmorSlotPos((Vec3*)&p->unk_3b68[idx * 4], param_4);
-  MainSprite_SetPltt(sprite, p->sprites[param_3 + 17].plttID);
+  MainSprite_SetPose(sprite, &p->gfx.icons, ICON_ARMOR(p->armorIDs[fromSlot]), PLAYMODE_LOOP);
+  GetArmorSlotPos(&sprite->pos, fromSlot);
+  GetArmorSlotPos((Vec3*)&p->unk_3b68[idx * 4], toSlot);
+  MainSprite_SetPltt(sprite, p->sprites[fromSlot + 17].plttID);
 }
 
 // 枠の防具が選べるかどうかを返す, 値段が付いているものは 0x11
@@ -7525,8 +7525,8 @@ s32 GetArmorPermission(MainMenu* p, s32 slot) {
 }
 
 // 防具ページのボタン案内を, 入れ替え中かどうかとカーソルの位置で切り替える
-void MainMenu_UpdateArmorButtonGuides(MainMenu* p, s32 param_2) {
-  if (param_2 == 0) {
+void MainMenu_UpdateArmorButtonGuides(MainMenu* p, s32 swapping) {
+  if (swapping == 0) {
     if (p->cursor.slot == 21) {
       MainMenu_SetButtonGuides(p, 0, 4);
     } else {
@@ -7944,13 +7944,13 @@ void MainMenu_InitPage_Armor(MainMenu* p) {
 
 // 魔法ページのカーソルの枠表を作り直す, bit0 なら左の16枠を元の枠に固定して右側を登録枠 16〜19 にする
 // 残差: 150/155 命令, 原典は &cursor と &slotmap を最初に callee-saved に取り, 2つ目の4x4のループでも別の誘導変数を持つ (引数の u32 化, k + 16 の先出しまでで止まった)
-NON_MATCH void MainMenu_ResetMagicCursor(MainMenu* p, u32 param_2) {
+NON_MATCH void MainMenu_ResetMagicCursor(MainMenu* p, u32 flags) {
 #ifdef NONMATCHING_C
   InventoryCursor* c = &p->cursor;
   s32 i, j, k;
 
-  c->flags = param_2;
-  if (!(param_2 & 1)) {
+  c->flags = flags;
+  if (!(flags & 1)) {
     for (i = 0; i < 4; i++) {
       for (j = 0; j < 4; j++) {
         if ((s8)p->magicIDs[i * 4 + j] >= 0) {
@@ -8105,19 +8105,19 @@ void MainMenu_RefreshRegisteredMagic(MainMenu* p) {
   }
 }
 
-void MainMenu_BeginMagicIconMove(MainMenu* p, s32 idx, s32 id, s32 param_4, s32 param_5) {
+void MainMenu_BeginMagicIconMove(MainMenu* p, s32 idx, s32 id, s32 fromSlot, s32 toSlot) {
   MainSprite* sprite = &p->sprites[idx + 46];
 
   sprite->flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetPose(sprite, &p->gfx.icons, ICON_MAGIC(id), PLAYMODE_LOOP);
-  GetMagicSlotPos(&sprite->pos, param_4);
-  GetMagicSlotPos((Vec3*)&p->unk_3b68[idx * 4], param_5);
+  GetMagicSlotPos(&sprite->pos, fromSlot);
+  GetMagicSlotPos((Vec3*)&p->unk_3b68[idx * 4], toSlot);
   MainSprite_SetPltt(sprite, 1);
 }
 
 // 魔法ページのボタン案内を, 入れ替え中かどうかとカーソルの位置で切り替える
-void MainMenu_UpdateMagicButtonGuides(MainMenu* p, s32 param_2) {
-  if (param_2 == 0) {
+void MainMenu_UpdateMagicButtonGuides(MainMenu* p, s32 swapping) {
+  if (swapping == 0) {
     MainMenu_SetButtonGuides(p, 0, -1);
   } else {
     s32 mode = 0;
@@ -8240,7 +8240,7 @@ NON_MATCH s32 MainMenu_GetMagicAction(MainMenu* p) {
 
 void MainMenu_ReturnToMagicPage(MainMenu* p) {
   p->sprites[14].flags |= SPRFLAG_HIDDEN;
-  MainMenu_RebuildQCMagic(p);
+  QC_RebuildAndApplyMagic(p);
   MainMenu_RefreshMagicIcons(p);
   MainMenu_RefreshRegisteredMagic(p);
   p->sprites[13].flags &= ~SPRFLAG_HIDDEN;
@@ -8299,7 +8299,7 @@ void MainMenu_StateMagicQuickChange(MainMenu* p) {
         }
         *p->qc.equippedMagicIdx = p->qc.magics[p->qc.magicIdx].idx;
         MainMenu_RefreshRegisteredMagic(p);
-        MainMenu_RebuildQCMagic(p);
+        QC_RebuildAndApplyMagic(p);
       }
     }
   } else {
@@ -9038,12 +9038,12 @@ void MainMenu_InitPage_Stats(MainMenu* p) {
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
 }
 
-void MainMenu_ShowLine(s32 param_1) {
-  if (param_1 < 0) {
+void MainMenu_ShowLine(s32 line) {
+  if (line < 0) {
     MessageWindow_Close();
   } else {
     MessageWindow_SetInstant(TRUE);
-    MessageWindow_ShowLine(param_1);
+    MessageWindow_ShowLine(line);
   }
 }
 
@@ -9097,13 +9097,13 @@ void MainMenu_LoadGameConfig(MainMenu* p) {
   p->config[CONFIG_MARKER] = gStat->markerEnabled;
 }
 
-// コンフィグの3項目の設定値を描く, param_2 が 0 ならカーソルを隠し, そうでなければ選択中の行を強調する
-void MainMenu_ShowConfigOptions(MainMenu* p, s32 param_2) {
+// コンフィグの3項目の設定値を描く, showCursor が 0 ならカーソルを隠し, そうでなければ選択中の行を強調する
+void MainMenu_ShowConfigOptions(MainMenu* p, s32 showCursor) {
   s32 control;
   s32 speed;
   s32 marker;
 
-  if (param_2 == 0) {
+  if (showCursor == 0) {
     p->sprites[13].flags |= SPRFLAG_HIDDEN;
     control = 79;
     speed = 82;
@@ -9539,7 +9539,7 @@ void MainMenu_RestoreBg(MainMenu* p) {
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 0, p->menuPltt);
   p->statusPointNoticeShown = 0;
   p->statusPointBlinkTimer = 0;
-  MainMenu_UpdateFieldHud(p);
+  HUD_UpdateField(p);
 }
 
 // スタートメニューで引数の page の次のページ番号を返す
@@ -9940,7 +9940,7 @@ s32 MainMenu_CanOpen(MainMenu* p) {
   if (gInput[0].pressed & START_BUTTON) {
     Player* player = p->player;
 
-    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->hudMode <= 2 && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
+    if (player != NULL && player->mode == 1 && !(player->flag20 & 1) && p->hudMode <= HUD_PILE_DRIVER && !TEST_FLAGS(gGameFlags | gDebugGameFlags, GAMEFLAG_EVENT | GAMEFLAG_NO_PAUSE)) {
       return TRUE;
     }
   }
@@ -10120,7 +10120,7 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
     pos.x += 8;
   }
 
-  Video_GetAuxSprite(&p->standGfx, SPRITE_SOLAR_STATION);
+  Video_GetAuxSprite(&p->standGfx, SPRITE_STAND);
   AuxSprite_Add(&p->stand, &p->standGfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
   Video_SetAuxSpritePltt(&p->standGfx, 323);  // 暗黒ローンなので赤色
   p->stand.priority = 0;
@@ -10154,7 +10154,7 @@ void MainMenu_OpenSpriteFiles(MainMenu* p) {
   p->gfx.map = *f;
   OpenMainSpriteFile(&p->gfx.map, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_DARKLOAN);
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LOAN);
   if (f == NULL) {
     return;
   }
@@ -10211,13 +10211,13 @@ void MainMenu1P_ReadNamedArgs(MainMenu* p) {
     p->magicNames = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('A')) {
-    p->areaNames = VM_GetPC_Proxy();  // String_1826
+    p->areaNames = VM_GetPC_Proxy();  // Str_AreaName
   }
   if (VM_SeekToNamedArg('l')) {
     p->loanTexts = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('E')) {
-    p->etcTexts = VM_GetPC_Proxy();  // STR_STARTMENU_MISC
+    p->etcTexts = VM_GetPC_Proxy();  // Str_StartMenuMisc
   }
   if (VM_SeekToNamedArg('e')) {
     p->expTable = VM_GetValueSafe2();
@@ -10280,8 +10280,8 @@ s32 MainMenu_IsOpen(void) {
   return gMainMenu->menuOpen;
 }
 
-// フィールドの HUD の表示モードを切り替える, 7 で全部隠し, 0〜2 は QC と通常の HUD, 3 以上は BG0 の層を mode - 2 にする
-void MainMenu_SetHudMode(s32 mode) {
+// フィールドの HUD の表示モードを切り替える, see HUDMode
+void HUD_SetMode(s32 mode) {
   MainMenu* p = gMainMenu;
 
   if (p == NULL) {
@@ -10291,24 +10291,24 @@ void MainMenu_SetHudMode(s32 mode) {
   if (p->menuOpen != 0) {
     return;
   }
-  if (p->hudMode == 7) {
-    MainMenu_HideQCIcons(p);
+  if (p->hudMode == HUD_HIDDEN) {
+    QC_HideIcons(p);
     p->condIcon.flags |= SPRFLAG_HIDDEN;
     p->countdownDigits[0].flags |= SPRFLAG_HIDDEN;
     p->countdownDigits[1].flags |= SPRFLAG_HIDDEN;
     p->statusPointBlinkTimer = 0;
     ClearBGTilemapBuffer(0);
   } else {
-    if (p->hudMode <= 2) {
+    if (p->hudMode <= HUD_PILE_DRIVER) {
       if (!(gGameFlags & GAMEFLAG_CROSSOVER)) {
-        MainMenu_QC_ShowSelectedOnly(p);
+        QC_ShowSelectedOnly(p);
       }
       Video_SetBGLayer(0, p->menuTilemap, 0);
-      if (p->hudMode == 1) {
+      if (p->hudMode == HUD_BOSS_BATTLE) {
         p->prevBossHP = gStat->bossHP;
       }
     } else {
-      MainMenu_HideQCIcons(p);
+      QC_HideIcons(p);
       p->condIcon.flags |= SPRFLAG_HIDDEN;
       p->countdownDigits[0].flags |= SPRFLAG_HIDDEN;
       p->countdownDigits[1].flags |= SPRFLAG_HIDDEN;
@@ -10321,37 +10321,39 @@ void MainMenu_SetHudMode(s32 mode) {
   p->unk_a24 = 0;
 }
 
-void MainMenu_SaveHudMode(void) {
+void HUD_SaveMode(void) {
   if (gMainMenu != NULL) {
-    gMainMenu->savedHudMode = gMainMenu->hudMode;
+    gMainMenu->savedHUDMode = gMainMenu->hudMode;
   }
 }
 
-void MainMenu_RestoreHudMode(void) {
+void HUD_RestoreMode(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL) {
-    if (p->savedHudMode >= 0) {
-      MainMenu_SetHudMode(p->savedHudMode);
-      p->savedHudMode = -1;
+    if (p->savedHUDMode >= 0) {
+      HUD_SetMode(p->savedHUDMode);
+      p->savedHUDMode = -1;
     }
   }
 }
 
-void Cmd_DF85(void) { MainMenu_SaveHudMode(); }
+// 0xDF85
+void Cmd_SaveHUDMode(void) { HUD_SaveMode(); }
 
-void Cmd_CCD9(void) { MainMenu_RestoreHudMode(); }
+// 0xCCD9
+void Cmd_RestoreHUDMode(void) { HUD_RestoreMode(); }
 
 // 0xC6AA
-void Textbox_CloseBox(void) {
+void Cmd_SetHUDMode(void) {
   if (VM_SeekToNamedArg('m')) {
-    MainMenu_SetHudMode(VM_GetValue());
+    HUD_SetMode(VM_GetValue());
   }
 }
 
-void MainMenu_RefreshHudMode(void) {
+void HUD_RefreshMode(void) {
   if (gMainMenu != NULL) {
-    MainMenu_SetHudMode(gMainMenu->hudMode);
+    HUD_SetMode(gMainMenu->hudMode);
   }
 }
 
@@ -10362,22 +10364,22 @@ void Cmd_2FA0(void) {
   }
 }
 
-void HUD_RebuildQCWeapons(void) {
+void QC_RebuildWeapons(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
-    MainMenu_BuildQCWeaponSlots(gMainMenu);
-    MainMenu_RefreshQCWeaponIcons(gMainMenu);
-    if (gMainMenu->hudMode <= 2) {
-      MainMenu_QC_ShowSelectedOnly(gMainMenu);
+    QC_BuildWeaponSlots(gMainMenu);
+    QC_RefreshWeaponIcons(gMainMenu);
+    if (gMainMenu->hudMode <= HUD_PILE_DRIVER) {
+      QC_ShowSelectedOnly(gMainMenu);
     }
   }
 }
 
-void HUD_RebuildQCMagic(void) {
+void QC_RebuildMagic(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
-    MainMenu_BuildQCMagicSlots(gMainMenu);
-    MainMenu_RefreshQCMagicIcons(gMainMenu);
-    if (gMainMenu->hudMode <= 2) {
-      MainMenu_QC_ShowSelectedOnly(gMainMenu);
+    QC_BuildMagicSlots(gMainMenu);
+    QC_RefreshMagicIcons(gMainMenu);
+    if (gMainMenu->hudMode <= HUD_PILE_DRIVER) {
+      QC_ShowSelectedOnly(gMainMenu);
     }
   }
 }
@@ -10391,19 +10393,19 @@ void Cmd_SetQCEnabled(void) {
   }
 }
 
-void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) {
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, s32 maxHP, s32 cells, s32 flash) {
   MainMenu* p = gMainMenu;
 
-  if (p != NULL && p->hudMode == 0) {
-    if (param_2 < 0) {
+  if (p != NULL && p->hudMode == HUD_FIELD) {
+    if (hp < 0) {
       p->enemyGaugeHP = 0;
     } else {
-      p->enemyGaugeHP = param_2;
+      p->enemyGaugeHP = hp;
     }
-    p->enemyGaugeMaxHP = param_3;
-    p->enemyGaugeCells = param_4;
+    p->enemyGaugeMaxHP = maxHP;
+    p->enemyGaugeCells = cells;
     p->enemyGaugeTimer = 180;
-    if (param_5 != 0) {
+    if (flash != 0) {
       p->enemyGaugeFlash = 6;
     } else {
       p->enemyGaugeFlash = 0;
@@ -10412,18 +10414,18 @@ void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 
 }
 
 // HUD上のボスHPゲージ? (ただし、黒ジャンゴのHPのみで呼ばれるだけで、他のボスではこの関数を使わない)
-void HUD_ShowCoffinGauge(s32 param_1, s32 param_2, s32 param_3) {
+void HUD_ShowCoffinGauge(s32 hp, s32 maxHP, s32 flash) {
   MainMenu* p = gMainMenu;
 
-  if (p != NULL && p->hudMode == 0) {
-    if (param_1 < 0) {
+  if (p != NULL && p->hudMode == HUD_FIELD) {
+    if (hp < 0) {
       p->coffinGaugeHP = 0;
     } else {
-      p->coffinGaugeHP = param_1;
+      p->coffinGaugeHP = hp;
     }
-    p->coffinGaugeMaxHP = param_2;
+    p->coffinGaugeMaxHP = maxHP;
     p->coffinGaugeTimer = 180;
-    if (param_3 != 0) {
+    if (flash != 0) {
       p->coffinGaugeFlash = 6;
     } else {
       p->coffinGaugeFlash = 0;
@@ -10433,30 +10435,30 @@ void HUD_ShowCoffinGauge(s32 param_1, s32 param_2, s32 param_3) {
 
 void HUD_FlashBossGauge(void) {
   if (gMainMenu != NULL) {
-    if (gMainMenu->hudMode == 1 || gMainMenu->hudMode == 2) {
+    if (gMainMenu->hudMode == HUD_BOSS_BATTLE || gMainMenu->hudMode == HUD_PILE_DRIVER) {
       gMainMenu->bossFlashTimer = 4;
     }
   }
 }
 
-void HUD_RebuildQC(void) {
+void QC_Rebuild(void) {
   if (gMainMenu != NULL) {
     gMainMenu->player = GetPlayer(0);
     if (gMainMenu->player != NULL) {
-      MainMenu_BuildQCMagicSlots(gMainMenu);
-      MainMenu_RefreshQCMagicIcons(gMainMenu);
-      MainMenu_BuildQCWeaponSlots(gMainMenu);
-      MainMenu_RefreshQCWeaponIcons(gMainMenu);
+      QC_BuildMagicSlots(gMainMenu);
+      QC_RefreshMagicIcons(gMainMenu);
+      QC_BuildWeaponSlots(gMainMenu);
+      QC_RefreshWeaponIcons(gMainMenu);
 
       if (gGameFlags & GAMEFLAG_CROSSOVER) {
-        if (gMainMenu->hudMode == 0) {
-          MainMenu_UpdateCrossoverHud(gMainMenu);
+        if (gMainMenu->hudMode == HUD_FIELD) {
+          HUD_UpdateCrossover(gMainMenu);
         }
-        MainMenu_HideQCIcons(gMainMenu);
+        QC_HideIcons(gMainMenu);
       } else {
-        if (gMainMenu->hudMode == 0) {
-          MainMenu_QC_ShowSelectedOnly(gMainMenu);
-          MainMenu_UpdateFieldHud(gMainMenu);
+        if (gMainMenu->hudMode == HUD_FIELD) {
+          QC_ShowSelectedOnly(gMainMenu);
+          HUD_UpdateField(gMainMenu);
         }
       }
     }
@@ -10466,8 +10468,8 @@ void HUD_RebuildQC(void) {
 void HUD_ShowWeaponCrashEffect(void) {
   MainMenu* p = gMainMenu;
 
-  if (p != NULL && p->menuOpen == 0 && p->hudMode <= 2) {
-    MainMenu_SparkleParticles(p, 0, 224, 144);
+  if (p != NULL && p->menuOpen == 0 && p->hudMode <= HUD_PILE_DRIVER) {
+    HUD_SparkleParticles(p, 0, 224, 144);
     p->qc.weaponCrashTimer = 6;
     PlaySound_082406e0(SE_WEAPON_BREAK);
   }
@@ -10501,7 +10503,7 @@ void HUD_RemoveCountdown(void) {
 
 void Cmd_610A(void) {
   if (gMainMenu != NULL) {
-    MainMenu_DrawBossGauge(gMainMenu, 2);
+    HUD_DrawBossGauge(gMainMenu, 2);
   }
 }
 
@@ -10513,7 +10515,7 @@ void Cmd_94EB(void) {
     p->coffinGaugeHP = 10;
     p->coffinGaugeTimer = 180;
     p->coffinGaugeFlash = 0;
-    MainMenu_DrawEnemyGauge(p);
+    HUD_DrawEnemyGauge(p);
   }
 }
 
@@ -10526,7 +10528,7 @@ void Cmd_EFD1(void) {
 }
 
 // HUD の先頭の魔法と武器のアイコンを今の装備に合わせる, エンチャント中は魔法アイコンを点滅させる
-void MainMenuLink_RefreshQCIcons(MainMenu* p) {
+void QC_RefreshLinkIcons(MainMenu* p) {
   if (p->player->magic.enchanted && (++p->stateTimer & 1)) {
     MainSprite_SetPose(&p->qc.magics[0].sprite, &p->gfx.icons, ICON_NONE, PLAYMODE_LOOP);
   } else {
@@ -10535,7 +10537,7 @@ void MainMenuLink_RefreshQCIcons(MainMenu* p) {
   MainSprite_SetPose(&p->qc.weapons[0].sprite, &p->gfx.icons, ICON_WEAPON(p->player->wpn.weaponID), PLAYMODE_LOOP);
 }
 
-void FUN_0809c70c(MainMenu* p) {
+void HUD_DrawLinkCoins(MainMenu* p) {
   u8* data = gLinkSession->coinOwners;
   BgMapEntry* tile;
   s32 i;
@@ -10561,24 +10563,24 @@ void FUN_0809c70c(MainMenu* p) {
   }
 }
 
-// 通信対戦の HUD に 10 マスのゲージを描き, 枠の色を日光の当たり具合で点滅させる
-void FUN_0809c780(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) {
-  BgMapEntry* map = MainMenu_GetBgMapAddr(0, param_3, param_4);
-  rgb555 color;
+// 通信対戦の HUD に太陽ゲージを描く, 量は LinkSession が受け取ったそのプレイヤーの太陽センサーの値, 日光を浴びている間は溜まっている部分の色をオレンジの明暗で回す, alwaysLit が 1 なら明るいオレンジで描く
+void HUD_DrawLinkSunGauge(MainMenu* p, s32 alwaysLit, s32 x8, s32 y8) {
+  BgMapEntry* map = MainMenu_GetBgMapAddr(0, x8, y8);
+  rgb555 fillColor;
   s32 n;
   s32 i;
 
-  if (param_2 == 1) {
-    color = 0x29F;
+  if (alwaysLit == 1) {
+    fillColor = 0x29F;
   } else if (Player_TestFlag20(p->player, PFLAG20_SUNBATHING)) {
     u16 t = p->sunFrameTimer;
 
-    color = 0x29F;
+    fillColor = 0x29F;
     if (t > 36) {
-      color = 0x1FB;
+      fillColor = 0x1FB;
       if (t > 44) {
         if (t <= 52) {
-          color = 0x177;
+          fillColor = 0x177;
         }
       }
     }
@@ -10587,13 +10589,13 @@ void FUN_0809c780(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) {
     }
   } else {
     p->sunFrameTimer = 52;
-    color = 0x177;
+    fillColor = 0x177;
   }
   {
     rgb555* pltt = &gBgPlttBuffer[218];
 
-    if (*pltt != color) {
-      *pltt = color;
+    if (*pltt != fillColor) {
+      *pltt = fillColor;
     }
   }
 
@@ -10608,23 +10610,23 @@ void FUN_0809c780(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) {
   *map = 0xD05F;
 }
 
-void MainMenuLink_Update_Internal(MainMenu* p) {
-  if (p->player != NULL && p->hudMode != 7 && p->hudMode <= 2) {
+void HUD_UpdateLink(MainMenu* p) {
+  if (p->player != NULL && p->hudMode != HUD_HIDDEN && p->hudMode <= HUD_PILE_DRIVER) {
     MainMenu_DrawHPGauge(p, 0, 3, 1);
     MainMenu_DrawEneGauge(p, 0, 3, 2);
-    FUN_0809c780(p, 0, 9, 18);
-    MainMenu_UpdateCondIcon(p);
-    MainMenu_DrawEnemyGauge(p);
-    MainMenuLink_RefreshQCIcons(p);
-    FUN_0809c70c(p);
-    MainMenu_UpdateCountdown(p);
+    HUD_DrawLinkSunGauge(p, 0, 9, 18);
+    HUD_UpdateCondIcon(p);
+    HUD_DrawEnemyGauge(p);
+    QC_RefreshLinkIcons(p);
+    HUD_DrawLinkCoins(p);
+    HUD_UpdateCountdown(p);
   }
 }
 
 s32 MainMenuLink_Update(MainMenu* p) {
   if (!(gSuspendFlags & SUSPEND_LINK_WAIT)) {
     p->player = GetPlayer(p->playerIdx);
-    MainMenuLink_Update_Internal(p);
+    HUD_UpdateLink(p);
   }
   return 0;
 }
@@ -10656,7 +10658,7 @@ void MainMenuLink_AddQCIcons(MainMenu* p) {
 void MainMenuLink_LoadResources(MainMenu* p) {
   MainSpriteGfxFile* f;
 
-  p->hudMode = 0;
+  p->hudMode = HUD_FIELD;
   p->menuTilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
   p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 0, p->menuPltt);
@@ -10688,10 +10690,10 @@ s32 MainMenuLink_Init(MainMenu* p, u32 id) {
   p->player = GetPlayer(p->playerIdx);
   MainMenu_OpenSpriteFiles(p);
   MainMenuLink_LoadResources(p);
-  MainMenuLink_Update_Internal(p);
+  HUD_UpdateLink(p);
   p->countdownTens = 0xFF;
   p->countdownOnes = 0xFF;
-  p->savedHudMode = -1;
+  p->savedHUDMode = -1;
   gMainMenu = p;
   return 0;
 }
@@ -10723,7 +10725,7 @@ s32 MainMenu1P_Update(MainMenu* p) {
 }
 
 s32 MainMenu1P_Destroy(MainMenu* p) {
-  MainMenu_RemoveQCIcons(p);
+  QC_RemoveIcons(p);
   MainMenu_RemoveCondIcon(p);
   MainMenu1P_RemoveParticles(p);
   MainMenu1P_RemoveSprites(p);
@@ -10770,17 +10772,17 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   p->textPanelID = TextPanel_Create(4, 6, 22, 6);
   MainMenu1P_SetupBg(p);
   if (gGameFlags & GAMEFLAG_CROSSOVER) {
-    MainMenu_UpdateCrossoverHud(p);
+    HUD_UpdateCrossover(p);
     MainMenu_SetUpdateCallback(p, MainMenu_UpdateCrossoverField);
   } else {
-    MainMenu_UpdateFieldHud(p);
+    HUD_UpdateField(p);
     MainMenu_SetUpdateCallback(p, MainMenu_UpdateField);
   }
   MainMenu1P_AddParticles(p);
   p->countdownSilentTimer = 2;
   p->countdownTens = 0xFF;
   p->countdownOnes = -1;
-  p->savedHudMode = -1;
+  p->savedHUDMode = -1;
   gMainMenu = p;
   return 0;
 }

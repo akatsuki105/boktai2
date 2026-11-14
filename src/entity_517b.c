@@ -212,7 +212,7 @@ BgPlttGroupFader* BgPlttGroupFader_Create(void) {
 }
 
 // スクリプトコマンド 0x800C, 動いているフェーダの mode を差し替える
-void BgPlttGroupFader_SetModeScripted(void) {
+void Cmd_SetBgPlttGroupFaderMode(void) {
   BgPlttGroupFader* p = gBgPlttGroupFader;
   if (p != NULL) {
     p->mode = VM_GetNamedArgValue('m', 0);

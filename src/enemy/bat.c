@@ -62,7 +62,7 @@ void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_08140904(EnemyBat* p);
 void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos);
 void EnemyBat_UpdateCurveBend(EnemyBat* p);
-void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 u8 EnemyBat_StepCurve(EnemyBat* p);
 void EnemyBat_PickRandomPathNode(EnemyBat* p);
 void FUN_08140c14(EnemyBat* p);

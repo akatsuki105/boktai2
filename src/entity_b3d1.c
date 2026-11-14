@@ -12,14 +12,14 @@ typedef struct EntityB3D1 {
   Entity e;                        // 0x000, ENTITY_UNK_8
   u8 unk_18[0x020 - 0x018];        // 0x018, まだ未解析
   AuxSprite sprite0;               // 0x020, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx0;               // 0x04C, SPRITE_TREADMILL
+  AuxSpriteGfx gfx0;               // 0x04C, SPRITE_DARKGENERATOR
   u8 unk_68[0x06C - 0x068];        // 0x068, まだ未解析
   AuxSprite sprite1;               // 0x06C, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx1;               // 0x098, SPRITE_TREADMILL
+  AuxSpriteGfx gfx1;               // 0x098, SPRITE_DARKGENERATOR
   u16 unk_b4;                      // 0x0B4
   u16 unk_b6;                      // 0x0B6, _Init が '.N' から 1/2/3/4 を入れる
   AuxSprite sprite2;               // 0x0B8
-  AuxSpriteGfx gfx2;               // 0x0E4, SPRITE_TREADMILL
+  AuxSpriteGfx gfx2;               // 0x0E4, SPRITE_DARKGENERATOR
   AuxSprite sprites3[7];           // 0x100, _Destroy が stride 0x2C で7枚 AuxSprite_Remove する
   u8 unk_234[0x250 - 0x234];       // 0x234, まだ未解析
   AuxSprite sprites4[6];           // 0x250, _Destroy が stride 0x2C で6枚 AuxSprite_Remove する

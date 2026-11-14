@@ -28,6 +28,8 @@ extern SystemSaveData* gSystemSaveData;  // 0x030047A8
 extern bool32 gSoftResetInhibit;
 extern bool32 gSaveSucceeded;
 
+bool8 Save_WriteSystemData(void);
+
 // もう一方のスロットにセーブデータを書き込み、成功したらそちらを現在のスロットにする
 u8 Save_WriteToNextSlot(void);
 

@@ -244,7 +244,7 @@ NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 kind, Vec3* pos, u32 shape, 
 }
 
 // 0xD25F, '.n' と '.a' から矩形だけの光柱 (スプライトなし) を1本登録する
-void Entity5CCC_AddLightAreaScripted(void) {
+void Cmd_AddEntity5CCCLightArea(void) {
   Entity5CCC* p = gEntity5CCC;
   Vec3 pos;
 
@@ -276,7 +276,7 @@ void Entity5CCC_AddLightAreaScripted(void) {
 }
 
 // 0x320C, '.p' のタイルの高さに合わせて光柱を1本立てる
-void Entity5CCC_AddBeamScripted(void) {
+void Cmd_AddEntity5CCCBeam(void) {
   Entity5CCC* p = gEntity5CCC;
   Vec3 pos;
   s32 size;

@@ -182,6 +182,9 @@ typedef struct {
   s16 y;         // 0x06
 } DvalinnSpriteOfs;
 
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
 void FUN_081fa608(s32 amount) { gDvalinn->unk_7dc += amount; }
 
 u32 FUN_081fa620(Dvalinn* p) { return 561; }
@@ -2635,15 +2638,13 @@ s32 FUN_081ff988(Dvalinn* p) {
   return FALSE;
 }
 
-// 残差は gMsgBus の読み直し (152/153), Duneyrr_PollMessages と同じ壁
-NON_MATCH void Dvalinn_PollMessages(Dvalinn* p) {
-#ifdef NONMATCHING_C
+void Dvalinn_PollMessages(Dvalinn* p) {
   Boss* boss = &p->base;
   MsgQueue* queue = &boss->mq;
   s32 i;
 
-  for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = queue->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < queue->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = queue->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(queue, msg);
     switch (msg->cmd) {
@@ -2695,9 +2696,6 @@ NON_MATCH void Dvalinn_PollMessages(Dvalinn* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Dvalinn_PollMessages.inc");
-#endif
 }
 
 void FUN_081ffd9c(Dvalinn* p) {
@@ -2909,7 +2907,7 @@ NON_MATCH s32 Dvalinn_Init(Dvalinn* p, u32 id) {
   }
   Boss_Init(boss, id, bossID, &pos, angle);
   boss->destAngle = angle;
-  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  boss->isCutscene = VM_GetNamedArgValue('i', 0);
   boss->damageCallback = (BossCheckFunc)FUN_081ff988;
   boss->stateRequestCallback = (BossCheckFunc)FUN_081ff740;
   Boss_InitHP(boss, hp, hp, power);
@@ -2959,7 +2957,7 @@ NON_MATCH s32 Dvalinn_Init(Dvalinn* p, u32 id) {
   MainSprite_Add(&p->sprites[1], &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
   MainSprite_SetAnim(&p->sprites[1], &p->gfx, 15, PLAYMODE_PAUSE, MAIN_ANIM_REVERSE);
   MainSprite_Hide(&p->sprites[1]);
-  if (!boss->isDemo) {
+  if (!boss->isCutscene) {
     Boss_SetSubStates(boss, 1, 0, 0);
     Boss_SetState(boss, FUN_081febb8, 11);
   } else {

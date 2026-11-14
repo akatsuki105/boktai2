@@ -31,9 +31,9 @@ VM 側の opcode 定数は `include/vm.h` に `OP_*` / `CLAUSE_*` として定�
 
 バイトコードの実行単位。1本がブロック (`0x80`) 1つに対応する。
 ID で引くもので、ID は `ScriptDirectory.script_entries` の添字 + 1 (ROM には 11539 本ある)。
-`scripts.bokc` の `Script_0xXXXX` の番号がこの ID である。
+`scripts.bokc` の `Scr_0xXXXX` の番号がこの ID である。
 
-`.bokc` からは `Script_0x0003()` で呼ぶ。引数は最大16個渡せて、
+`.bokc` からは `Scr_0x0003()` で呼ぶ。引数は最大16個渡せて、
 呼ばれた側は `p0` `p1` ... で読む。`return` で値を返せる。
 戻り値は呼び出した側の `result` に入る (`result` は直前の文の値を指すので、
 式の結果でも上書きされる)。
@@ -44,14 +44,14 @@ ID で引くもので、ID は `ScriptDirectory.script_entries` の添字 + 1 (R
 16bit の ID と関数ポインタの組 (`Subroutine`) を ID 順に並べた
 `gCommandList` (`data/subroutine.inc`, 643件) を二分探索して引く。
 
-`.bokc` からは `SubroutineCall` / `EntityCreate` の第1引数がこの ID である。
+`.bokc` からは `Command` / `Chara` の第1引数がこの ID である。
 引数の渡し方は決まっていない。呼ばれた側が `VM_GetValue` や `VM_SeekToNamedArg` で
 スクリプトから自分で読むので、個数も形も関数ごとに違う。
 
 ややこしいことに、制御命令 (`0x60`) のハンドラも同じ `Subroutine` 型で登録されている。
 こちらは `gCtrlHandlers` (`src/vm_ctrl1.c` の6件 + `src/vm_ctrl2.c` の8件) を
 線形に探すもので、`gCommandList` とは別の ID 空間である。
-`if` の `0x0D86` や `SubroutineCall` の `0xB745` はこちら側の ID。
+`if` の `0x0D86` や `Command` の `0xB745` はこちら側の ID。
 
 ### Label
 
@@ -84,8 +84,8 @@ boktaihacking の wiki はこの命令を keyword と呼んでいる。
 | `0x30` | 式 | `a + b` |
 | `0x40` | 引数参照 | `result` `p0` |
 | `0x50` | ラベル | `.p = 1` `case 3:` `else` |
-| `0x60` | 制御命令 | `if` `switch` `return` `SubroutineCall(...)` |
-| `0x70` | スクリプト呼び出し | `Script_0x0003()` |
+| `0x60` | 制御命令 | `if` `switch` `return` `Command(...)` |
+| `0x70` | スクリプト呼び出し | `Scr_0x0003()` |
 | `0x80` | ブロック | `{ ... }` |
 | `0x90` | 変数参照 | `v0` |
 | `0xA0` `0xB0` | 演算子 | `+` `==` `=` |
@@ -136,12 +136,12 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 | `0x4A6F` | `VM_Ctrl_Switch` | `switch` | 346 | 値が一致した `case`、無ければ `default` の節を実行する |
 | `0xCD3A` | `VM_Ctrl_Return` | `return` | 648 | `result` に値を入れてスクリプトを終える |
 | `0x121F` | `VM_Ctrl_CallScriptIndirect` | `ScriptCall(式, ...)` | 37 | 呼び先を式で指定するスクリプト呼び出し |
-| `0xB745` | `VM_Ctrl_CallSubroutine` | `SubroutineCall(ID, ...)` | 7057 | サブルーチンを呼ぶ。戻り値は `result` に入る |
-| `0x9906` | `VM_Ctrl_CreateEntity` | `EntityCreate(ID, 値)` | 2130 | 値1つを C の実引数として渡し Entity を生成する。戻り値は捨てる |
+| `0xB745` | `VM_Ctrl_CallSubroutine` | `Command(ID, ...)` | 7057 | サブルーチンを呼ぶ。戻り値は `result` に入る |
+| `0x9906` | `VM_Ctrl_CreateEntity` | `Chara(ID, 値)` | 2130 | 値1つを C の実引数として渡し Entity を生成する。戻り値は捨てる |
 | `0xC8BB` | `VM_Ctrl_LoadMap` | `LoadMap(ID, ...)` | 96 | マップ初期化スクリプトIDを設定してマップ遷移を要求する |
 | `0xD4CB` | `VM_Ctrl_SetZoneCallback` | `SetZoneCallback(...)` | 208 | Zone に重なったときのコールバックを登録する |
 | `0xB96E` | `VM_Ctrl_DebugPrint` | `DebugPrint(...)` | 107 | 文字列を Shift-JIS に変換する。出力先は残っていない |
-| `0x22FF` | `VM_Ctrl_22FF` | `Ctrl_0x22FF(...)` | 115 | ID と可変個の u16 を1件のレコードとして登録する |
+| `0x22FF` | `VM_Ctrl_Mesg` | `Mesg(ID, ...)` | 115 | ID 宛てに可変個の u16 をメッセージとして送る |
 | `0xE43C` | `VM_Ctrl_E43C` | `Ctrl_0xE43C(...)` | 17 | `.s` / `.r` を見て `u32_03004798` にフラグを立てる |
 | `0x64C0` | `VM_Ctrl_Unused_64C0` | `Ctrl_0x64C0(...)` | 0 | 第1オペランドを `result` に入れるだけ |
 | `0x0BB3` | `VM_Ctrl_Unused_0BB3` | `Ctrl_0x0BB3(...)` | 0 | 何もしない |
@@ -154,7 +154,7 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 ### 構文に見える制御命令
 
 `if` / `switch` / `return` が C の構文に見えるのは bokcc がそう描いているからで、
-バイトコード上は `SubroutineCall` と同じ制御命令である。
+バイトコード上は `Command` と同じ制御命令である。
 `if` のオペランドは条件とブロックの組で、2つめ以降の分岐は
 `else if` (`'i'`) / `else` (`'e'`) のラベルとして後ろに並ぶ。
 
@@ -172,15 +172,49 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 ### スクリプト呼び出しの2つの形
 
 呼び先が定数なら `0x70`、式なら `0x121F` になる。
-`0x70` は `Script_0x0003(...)` と、定義の見出しと同じ綴りの関数呼び出しとして書く。
+`0x70` は `Scr_0x0003(...)` と、定義の見出しと同じ綴りの関数呼び出しとして書く。
 `0x121F` は呼び先が式で綴れないので、こちらだけ `ScriptCall(式, ...)` と書く。
 
-`Script_0x0003(...)` は定義の見出し `Script_0x0003() { ... }` と綴りが同じだが、
+`Scr_0x0003(...)` は定義の見出し `Scr_0x0003() { ... }` と綴りが同じだが、
 C が関数定義と関数呼び出しを区別するのと同じ理由で曖昧にはならない。
 定義はトップレベルにしか置けず引数リストの後ろに `{` が続き、
 呼び出しはブロックの中にしか置けず `;` で終わる。
 
 スクリプトIDの綴りを決めているのは `instruction.ts` の `scriptName` で、
 定義の見出しを出す `tools/dumper/bokcc.ts` もここを通る。
-`include/constants/script.h` を `--scripts` で渡すと、`#define Script_StaffRoll Script_0x1040`
-の名前の方で出る (コンパイル時に展開するのはCプリプロセッサなので、parser は `Script_0xXXXX` だけを受ける)。
+`data/scripts/script.h` を `--scripts` で渡すと、`#define Scr_StaffRoll 0x1040`
+の名前の方で出る。コンパイル時に展開するのはCプリプロセッサなので、parser には `0x1040(...)` / `0x1040() { ... }`
+の形で届く。parser は数値の直後の `(` もスクリプト呼び出しとして受けるので、`Scr_0xXXXX` の綴りと両方が使える。
+名前は数値に展開されるので、引数で渡すスクリプトID (`(u24)Scr_StaffRoll`) にも使える。
+u24 の定数はスクリプトIDにしか使われていないので、名前があれば u24 の定数もその名前で出す。
+
+### メモリ参照の名前 (stat / world / scratch)
+
+`data/scripts/stat.h` に `#define PLAYER_X *((s16 *)(stat + 0x30))` のように .bokc のメモリ参照の綴りをそのまま書くと、
+ダンプ時に綴りが完全に一致する参照がその名前で出る (`PLAYER_X - (u8)128`)。名前は `include/game.h` の gStat のマクロにそろえる。
+cpp が元の綴りに戻すので parser は何もしない。型やオフセットが違う参照は元の綴りのまま。
+.bokc では括弧が式の命令 (0x30) になるので、C のマクロと違って中身を括弧で囲んではいけない (囲むとバイト列が変わる)。
+添字付きの参照は `#define FRIENDSHIP(i) ((s16 *)(stat + 0x2FE))[5, i]` のように引数付きのマクロにすると、添字以外の綴りが一致する参照が `FRIENDSHIP(1)` の形で出る。
+`[要素数, 添字]` の1つ目は配列の要素数 (VM は読み捨てるがバイト列には残る) なので、宣言の要素数をそのまま書く。
+添字が式の命令のときは `FRIENDSHIP((p0))` と括弧が残る (この括弧がバイト列の式の命令に当たる)。
+world と scratch も同じ形で `data/scripts/world.h` / `data/scripts/scratch.h` に書き、`--world` / `--scratch` で渡す。
+名前は `include/vm_memory.h` の World / Scratch のメンバ名を大文字にしたもので、world.h はすべて `W_`、scratch.h はすべて `S_` を付ける。
+ビット配列も `#define W_CHEST_OPENED(i) BIT(world + 0x1A8, 0, (u8)100, i)` のように引数付きのマクロにできる。
+
+### 引数と処理の説明
+
+`script.h` の行末コメントは、ダンプ時に定義の直前のアドレスのコメントへそのまま付け足される。
+引数の説明は先頭に `pN=名前` を並べて書く (書き方の慣習で、ダンパーは中身を読まない)。
+
+```c
+#define Scr_AddFriendship 0x0236  // p0=who, p1=amount 好感度を増減する
+```
+
+```c
+// 0x08D24AFE, p0=who, p1=amount 好感度を増減する
+Scr_AddFriendship() {
+	((s16 *)(stat + 0x2FE))[5, (p0)] = ((s16 *)(stat + 0x2FE))[5, (p0)] + p1;
+```
+
+コメントなので cpp も parser も読まず、本文も `p0` / `p1` のまま。
+意味の分かった引数だけを書けばよく、全部の引数を並べる必要はない。

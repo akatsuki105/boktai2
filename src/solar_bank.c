@@ -22,8 +22,8 @@ typedef struct SolarBank {
   TilemapFile* tilemap;                       // 0x5C8, TILEMAP_BANK
   rgb555* bgPltt;                             // 0x5CC, BGP_BANK[208]
   u8* textPc;                                 // 0x5D0, MessageWindow_Start に渡すバイトコード位置
-  s32 bank;                                   // 0x5D4, 預けている太陽
-  s32 stand;                                  // 0x5D8, 持っている太陽
+  s32 bank;                                   // 0x5D4
+  s32 stand;                                  // 0x5D8
   u32 scriptID;                               // 0x5DC, 閉じるときに VM_ExecByID に渡す
   u16 unk_5e0;                                // 0x5E0
   u16 unk_5e2[4];                             // 0x5E2
@@ -65,9 +65,9 @@ void Cmd_CalcInterestRate(void) {
   }
 
   amount = (s16)gStat->solarBank;
-  if (amount >= 1 && amount <= 9998) {
+  if (amount >= 1 && amount < 9999) {
     for (i = 0; i < days; i++) {
-      amount = ((amount * SOLAR_BANK_RATE) >> 6) + 1;
+      amount = ((amount * BANK_RATE) >> 6) + 1;
       if (amount >= 9999) {
         amount = 9999;
         break;
@@ -76,14 +76,14 @@ void Cmd_CalcInterestRate(void) {
     gStat->solarBank = amount;
   }
 
-  SOLAR_BANK_RATE = Mod(gStat->playTime ^ Time_GetSecond(), 13) + 65;
+  BANK_RATE = Mod(gStat->playTime ^ Time_GetSecond(), 13) + 65;
 }
 
-// 0x9E8B
-s32 Cmd_GetSolarBankBalance(void) { return gStat->solarBank; }
+// 0x9E8B, HashName("太陽バンク残高取得")
+s32 Cmd_GetBankBalance(void) { return gStat->solarBank; }
 
-// 0x7A77
-void Cmd_SetSolarBankBalance(void) {
+// 0x7A77, HashName("太陽バンク残高設定")
+void Cmd_SetBankBalance(void) {
   if (VM_SeekToNamedArg('a')) {
     s32 amount = VM_GetValue();
     if (amount > 9999) {
@@ -478,7 +478,7 @@ NON_MATCH void FUN_080b4490(SolarBank* p) {
   s32 tens;
   s32 i;
 
-  file = GetFile(DIR_MAIN_SPRITE, 0x92F0);
+  file = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LOAN);
   p->gfx[0] = *file;
   gfx0 = &p->gfx[0];
   OpenMainSpriteFile(gfx0, file);
@@ -490,10 +490,10 @@ NON_MATCH void FUN_080b4490(SolarBank* p) {
   posPtr = &pos;
   pos.x = 0, pos.y = 0, pos.z = 0;
   MainSprite_Add(&p->sprites[0], gfx0, 0, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
-  if (gStat->solarBankInterestRate == 0) {
-    gStat->solarBankInterestRate = Mod(gStat->playTime ^ Time_GetSecond(), 13) + 65;
+  if (gStat->bankInterestRate == 0) {
+    gStat->bankInterestRate = Mod(gStat->playTime ^ Time_GetSecond(), 13) + 65;
   }
-  rate = ((gStat->solarBankInterestRate * 100) >> 6) - 100;
+  rate = ((gStat->bankInterestRate * 100) >> 6) - 100;
   tens = Div(rate, 10);
   MainSprite_Add(&p->sprites[2], gfx0, tens + 8, SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, &pos);
   pos.x += 8;
@@ -515,7 +515,7 @@ NON_MATCH void FUN_080b4490(SolarBank* p) {
     pos.x += 8;
   }
   for (i = 0; i < 2; i++) {
-    Video_GetAuxSprite(&p->auxGfx[i], 0xA47C);
+    Video_GetAuxSprite(&p->auxGfx[i], SPRITE_STAND);
     AuxSprite_Add(&p->auxSprites[i], &p->auxGfx[i], 0);
     p->auxSprites[i].priority = 0;
     p->auxSprites[i].flags = 48;

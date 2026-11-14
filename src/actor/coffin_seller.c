@@ -100,7 +100,7 @@ void Cmd_A133(void) {
   if (FUN_08040f0c(actor, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(actor, 2, SPRITE_COFFINSELLER_UNKNOWN, 0, flags) < 0) {
+  if (FUN_08040f48(actor, 2, SPRITE_COFSELLER_HATENA, 0, flags) < 0) {
     return;
   }
 
@@ -116,7 +116,7 @@ void Cmd_A133(void) {
   Actor_SetCb(actor, 2, FUN_0820a2c4);
   Actor_SetCb(actor, 3, FUN_0820a464);
   Actor_SetOnDestroy(actor, FUN_0820a470);
-  FUN_08040df4(p, actor, SPRITE_COFFINSELLER_UNKNOWN, 0);
+  FUN_08040df4(p, actor, SPRITE_COFSELLER_HATENA, 0);
   ActorManager_LinkActor(p, actor);
   FUN_08041e10(p, actor);
 

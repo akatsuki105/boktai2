@@ -16,7 +16,10 @@ static_assert(sizeof(Entity730A) == 88);
 void Entity99CA_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 void MapPltt_PushCommand(s32 val, s32 count, u32* args);
 void Entity6978_SetRequest(s32 val, s32 count, s32* args);
-void RingoDemoAnim_Create(Vec3* pos, MsgQueue* mq);
+void RingoCutsceneAnim_Create(Vec3* pos, MsgQueue* mq);
+
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void FUN_08022668(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   Vec3 pos;
@@ -132,41 +135,47 @@ void FUN_0802285c(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
 }
 
 // 溜まったメッセージを cmd ごとのハンドラへ配る
-NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
-#ifdef NONMATCHING_C
+s32 Entity730A_HandleMessages(Entity730A* p) {
   MsgQueue* mq = &p->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
       case 0: {
         FUN_08022668(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 1: {
         FUN_080226a8(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 2: {
         FUN_08022704(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 3: {
         FUN_08022770(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 4: {
         FUN_080227f4(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 5: {
         FUN_0802284c(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 6: {
         FUN_0802285c(p, mq, msg);
+        MsgQueue_EndWait(mq, 1);
         break;
       }
       case 7: {
@@ -174,22 +183,16 @@ NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
         pos.x = msg->args[0];
         pos.y = msg->args[1];
         pos.z = msg->args[2];
-        RingoDemoAnim_Create(&pos, mq);
-      }
-      default: {
-        continue;
+        RingoCutsceneAnim_Create(&pos, mq);
+        break;
       }
     }
-    MsgQueue_EndWait(mq, 1);
   }
   return 0;
-#else
-  INCFUNC("asm/func/Entity730A_Update_Helper_08022864.inc");
-#endif
 }
 
 s32 Entity730A_Update(Entity730A* p) {
-  Entity730A_Update_Helper_08022864(p);
+  Entity730A_HandleMessages(p);
   if (p->unk_50 != 0) {
     if (p->unk_50 > 0) {
       p->unk_50--;

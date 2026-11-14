@@ -69,7 +69,7 @@ typedef struct Boss {
   bool8 subStateEntered;               // 0x0A8, 下位状態を差し替えると 1, その状態の最初のフレームで 0 に戻す
   bool8 stateEntered;                  // 0x0A9, updateCallback を差し替えると 1, 各状態の最初のフレームで 0 に戻す
   bool8 animDone;                      // 0x0AA, MainSprite_AdvanceAnim の戻り値
-  u8 isDemo;                           // 0x0AB, '.i', 立っていると初期状態を '.D' で選ぶ, 0 のボスだけを FUN_08022a3c が拾う
+  u8 isCutscene;                       // 0x0AB, '.i', 立っていると初期状態を '.D' で選ぶ, 0 のボスだけを FUN_08022a3c が拾う
   u8 unk_ac;                           // 0x0AC, 0 でない間 FUN_08022ec0 が減らしながら Camera_Shake(unk_ad) を呼ぶ
   u8 unk_ad;                           // 0x0AD
   u8 animVariant;                      // 0x0AE, facing から決まるアニメ番号のオフセット

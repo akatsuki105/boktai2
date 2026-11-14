@@ -8,7 +8,7 @@
 typedef struct {
   Entity e;          // 0x00, ENTITY_UNK_8
   u16 timer;         // 0x18, 残りフレーム数, _Init が '.t=1800' を入れ、_Update が毎フレーム -1. アドレスを HUD_StartCountdown に渡して画面に出す
-  bool16 cancelled;  // 0x1A, Entity4063_Cancel が立てる, _Update はこれを見るとスクリプトを実行せずに KillEntity する
+  bool16 cancelled;  // 0x1A, Cmd_CancelEntity4063 が立てる, _Update はこれを見るとスクリプトを実行せずに KillEntity する
   u32 scriptID;      // 0x1C, timer が 0 になったとき VM_ExecByID に渡す, _Init が '.p' から取る, 0 なら何も実行しない
 } Entity4063;
 static_assert(sizeof(Entity4063) == 32);
@@ -16,7 +16,7 @@ static_assert(sizeof(Entity4063) == 32);
 COMMON_DATA Entity4063* gEntity4063 = NULL;  // 0x03002C50
 
 // 0x075C, 残りフレーム数を返す, Entity がいなければ 0
-s32 Entity4063_GetRemaining(void) {
+s32 Cmd_GetEntity4063Remaining(void) {
   if (gEntity4063 == NULL) {
     return 0;
   }
@@ -24,7 +24,7 @@ s32 Entity4063_GetRemaining(void) {
 }
 
 // 0xAF8E, 次の更新でスクリプトを実行せずに消えるようにする
-void Entity4063_Cancel(void) {
+void Cmd_CancelEntity4063(void) {
   if (gEntity4063 != NULL) {
     gEntity4063->cancelled = TRUE;
   }

@@ -416,7 +416,7 @@ s32 CrossoverResult_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32
   p->result = result;
   p->exitCallback = exitCallback;
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG2_ON | DISPCNT_BG3_ON);
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
   ClearBGTilemapBuffer(0);
   CrossoverResult_SetupBG(p, 12);
   Video_SetDrawPasses(0, Particle_DrawListUnk13, AuxSprite_DrawListUnk13, FUN_0822f264);

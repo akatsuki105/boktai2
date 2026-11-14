@@ -516,8 +516,8 @@
 #define SE_SPIKEBALL 511  // 鉄球(SPRITE_SPIKEBALL)が落ちてきたときのSE
 #define SONG_512 512
 #define SONG_513 513
-#define SE_GUN_SPREAD 514  // ガンデルヘルスプレッド攻撃時の照射SE
-#define SONG_515 515
+#define SE_GUN_SPREAD 514   // ガンデルヘルスプレッド攻撃時の照射SE
+#define SE_SABATA_FIRE 515  // (サバタが操作キャラのときの)ガンデルヘルの発射音
 #define SE_SABATA_SPIN 516  // 暗黒独楽(回転しながらスプレッド攻撃)のときのブンブン回るSE
 #define SONG_517 517
 #define SONG_518 518
@@ -873,7 +873,7 @@
 #define SE_868 868    // 棺桶封印のようなSE
 #define SONG_869 869
 #define SONG_870 870
-#define SONG_871 871
+#define SE_ALLY_SABATA_871 871  // 共闘サバタが出すSE(SE_SABATA_FIRE と音が似てる)
 #define SONG_872 872
 #define SONG_873 873
 #define VO_SABATA_DAMAGE1 874  // ｳｯ, サバタのダメージボイス?

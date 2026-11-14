@@ -28,7 +28,7 @@ SECTIONS {
       src/vm.o(ewram_data);
       src/script_mesg.o(ewram_data);
       src/link.o(ewram_data);
-      src/entity_0804e2c0.o(ewram_data);
+      src/rfu_session.o(ewram_data);
     } >ewram = 0x00
 
 	. = 0x3000000;
@@ -74,7 +74,7 @@ SECTIONS {
       src/text_slideshow.o(iwram_data);
       src/entity_b88c.o(.bss);
       src/joyspot.o(.bss);
-      src/entity_0804e2c0.o(iwram_data);
+      src/rfu_session.o(iwram_data);
       src/signal_strength_icon.o(iwram_data);
       src/crossover_error.o(.bss);
       . = ALIGN(8);
@@ -147,7 +147,7 @@ SECTIONS {
       src/ink_ball_puddle.o(.bss);
       src/dvalinn_08204cb8.o(.bss);
       src/actor/kuro.o(.bss);
-      src/entity_8aab.o(iwram_data);
+      src/otenko_guide.o(iwram_data);
       . = ALIGN(8);
       src/interrupts.o(.bss);
       . = ALIGN(8);
@@ -196,7 +196,7 @@ SECTIONS {
       src/msgbus.o(COMMON);
       src/actor.o(COMMON);
       src/joyspot.o(COMMON);
-      src/entity_0804e2c0.o(COMMON);
+      src/rfu_session.o(COMMON);
       . = ALIGN(8);
       src/player.o(COMMON);
       src/cwolf_target.o(COMMON);
@@ -276,7 +276,7 @@ SECTIONS {
 			src/sun_countdown.o (.text);
 			src/password_decoder.o (.text);
 			src/save_sequence.o (.text);
-			src/entity_e534.o (.text);
+			src/cutscene_bat_swarm.o (.text);
 			src/password.o (.text);
 			src/entity_ec96.o (.text);
 			src/shadow_normal.o (.text);
@@ -324,7 +324,7 @@ SECTIONS {
 			src/text_slideshow.o (.text);
 			src/entity_b88c.o (.text);
 			src/joyspot.o (.text);
-			src/entity_0804e2c0.o (.text);
+			src/rfu_session.o (.text);
 			src/signal_strength_icon.o (.text);
 			src/crossover_error.o (.text);
 			src/crossover_lobby.o (.text);
@@ -344,7 +344,7 @@ SECTIONS {
 			src/ringo_vampire_sword.o (.text);
 			src/ringo_0805b068.o (.text);
 			src/ringo_0805b790.o (.text);
-			src/entity_0805d364.o (.text);
+			src/ringo_bat_swarm.o (.text);
 			src/durathror_spike.o (.text);
 			src/durathror_impale.o (.text);
 			src/shademan_0805e67c.o (.text);
@@ -377,7 +377,7 @@ SECTIONS {
 			src/barricade.o (.text);
 			src/solar_barrier.o (.text);
 			src/warp_magic_square.o (.text);
-			src/entity_7c62.o (.text);
+			src/change_magic_square.o (.text);
 			src/time_magic_square.o (.text);
 			src/solar_plant.o (.text);
 			src/entity_3117.o (.text);
@@ -416,7 +416,7 @@ SECTIONS {
 			src/prologue_event_bullet.o (.text);
 			src/entity_3361.o (.text);
 			src/entity_080c1abc.o (.text);
-			src/entity_b87b.o (.text);
+			src/sensor_guide.o (.text);
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
 			src/entity_c814.o (.text);
@@ -547,7 +547,7 @@ SECTIONS {
 			src/entity_8ec8.o (.text);
 			src/boss/shademan.o (.text);
 			src/game_result.o (.text);
-			src/entity_8aab.o (.text);
+			src/otenko_guide.o (.text);
 			src/interrupts.o (.text);
 			src/video.o (.text);
 			src/bg.o (.text);
@@ -576,7 +576,7 @@ SECTIONS {
 			src/link.o (.text);
 			src/lib/linkManager.o (.text);
 			src/rfu.o (.text);
-			src/demo.o (.text);
+			src/cutscene.o (.text);
 			src/game_system.o (.text);
 			src/vm_ctrl2.o (.text);
 			src/vm_subroutine.o (.text);
@@ -656,7 +656,7 @@ SECTIONS {
     src/entity_4b15.o (.rodata);
     src/text_renderer.o (.rodata.string);
     src/joyspot.o (.rodata.string);
-    src/entity_0804e2c0.o (.rodata.faraddr);
+    src/rfu_session.o (.rodata.faraddr);
     src/entity_1b24.o (.rodata.string);
     src/pile_driver.o (.rodata.string);
     src/boss/jormungandr.o (.rodata.string);
@@ -731,7 +731,7 @@ SECTIONS {
     src/property_cube.o (.rodata);
     src/falling_object.o (.rodata);
     src/entity_329b.o (.rodata);
-    src/entity_e534.o (.rodata);
+    src/cutscene_bat_swarm.o (.rodata);
     src/password.o (.rodata);
     src/eff_scatter.o (.rodata);
     src/entity_08015220.o (.rodata);
@@ -757,7 +757,7 @@ SECTIONS {
     src/text_slideshow.o (.rodata);
     src/entity_b88c.o (.rodata);
     src/joyspot.o (.rodata);
-    src/entity_0804e2c0.o (.rodata);
+    src/rfu_session.o (.rodata);
     src/crossover_error.o (.rodata);
     src/crossover_lobby.o (.rodata);
     src/crossover_battle.o (.rodata);
@@ -772,7 +772,7 @@ SECTIONS {
     src/ringo_vampire_sword.o (.rodata);
     src/ringo_0805b068.o (.rodata);
     src/ringo_0805b790.o (.rodata);
-    src/entity_0805d364.o (.rodata);
+    src/ringo_bat_swarm.o (.rodata);
     src/shademan_0805e67c.o (.rodata);
     src/entity_0805ee80.o (.rodata);
     src/damage_number.o (.rodata);
@@ -893,7 +893,7 @@ SECTIONS {
     src/opening_runner.o (.rodata);
     src/boss/shademan.o (.rodata);
     src/game_result.o (.rodata);
-    src/entity_8aab.o (.rodata);
+    src/otenko_guide.o (.rodata);
     src/video.o (.rodata);
     src/bg.o (.rodata);
     src/video_reg.o (.rodata);
@@ -916,7 +916,7 @@ SECTIONS {
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
     src/item/data.o (.rodata);
-    src/demo.o (.rodata);
+    src/cutscene.o (.rodata);
     src/vm_ctrl2.o (.rodata);
     src/solar.o (.rodata);
     src/homing_laser.o (.rodata);

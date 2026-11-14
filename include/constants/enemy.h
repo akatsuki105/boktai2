@@ -28,6 +28,9 @@
 #define ENEF_SERPENT 21    // サーペント
 #define ENEF_SHAIAN 22     // シャイアン
 #define ENEF_DARKROOT 23   // 暗黒の根
+#define ENEF_24 24         // ???(不使用?)
+#define ENEF_25 25         // ???(不使用?)
+#define ENEF_26 26         // ???(不使用?)
 
 // EnemyKind (Enemy.kind)
 // 同じ kind に属するものはグラフィックが全く同じで Enemy.variant で色が変わる

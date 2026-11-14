@@ -357,7 +357,7 @@ s32 Entity5DA5_SetState(s32 index, s32 state, s32 notify) {
   }
 }
 
-s32 Entity5DA5_SetStateScripted(void) {
+s32 Cmd_SetEntity5DA5State(void) {
   s32 index = VM_GetNamedArgValue('i', -1);
   s32 state = VM_GetNamedArgValue('m', 0);
   s32 param_3 = VM_GetNamedArgValue('d', 0);

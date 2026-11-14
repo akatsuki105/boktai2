@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "menu.h"
 #include "player.h"
 #include "vm.h"
 
@@ -11,8 +12,6 @@ typedef struct {
   u16 interval;  // 0x1A, '.s' があればその値, なければ 30
 } CoffinTimer;
 static_assert(sizeof(CoffinTimer) == 28);
-
-void HUD_ShowCoffinGauge(s32 param_1, s32 param_2, s32 param_3);
 
 // ゲージを一定間隔で減らし, 0 になったら PACT_SPECIALDEATH にして、 この Entity を消す
 s32 CoffinTimer_Update(CoffinTimer* p) {

@@ -25,10 +25,7 @@ void* VM_Ctrl_LoadMap(void) {
   return NULL;
 }
 
-// 0x9906, EntityCreate
-// IDは EUC-JPの文字列をハッシュ化した値
-//   HashName("プレイヤー") -> 0xF5EB
-//   HashName("シャイアン") -> 0x8E9F
+// 0x9906, Chara
 s32 VM_Ctrl_CreateEntity(void) {
   u16 subID = (u16)VM_GetValue();
   EntityCreateFn fn = VM_GetSubroutine(subID);
@@ -39,7 +36,7 @@ s32 VM_Ctrl_CreateEntity(void) {
   return 0;
 }
 
-// 0xB745, .bokc の NativeCall_B745
+// 0xB745, Command
 s32 VM_Ctrl_CallSubroutine(void) {
   u16 subID = (u16)VM_GetValue();
   SubroutineFn fn = VM_GetSubroutine(subID);
@@ -85,17 +82,17 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
   if (VM_SeekToNamedArg('m')) {
     ev.trigger = VM_GetValue();
   } else {
-    ev.trigger = 0xDD2;
+    ev.trigger = 0x0DD2;
   }
 
   ev.unk_a = VM_GetNamedArgValue('t', 0);
   ev.flags = 0;
-  if (ev.sourceID == 0x3F) {
+  if (ev.sourceID == 0x003F) {
     ev.sourceID = 0x14C9;
   }
-  if (ev.trigger == 0x3F) {
+  if (ev.trigger == 0x003F) {
     ev.trigger = 0x14C9;
-  } else if (ev.trigger == 0x2A) {
+  } else if (ev.trigger == 0x002A) {
     ev.trigger = 0x1516;
   }
 

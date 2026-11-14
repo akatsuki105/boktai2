@@ -360,7 +360,7 @@ Entity2D2B* Entity2D2B_Create(void) {
 }
 
 // 0x2E1C
-s32 Entity2D2B_AddElemScripted(void) {
+s32 Cmd_AddEntity2D2BElem(void) {
   Entity2D2B* p = gEntity2D2B;
   Entity2D2BElem* elem;
   Vec3 pos;
@@ -440,7 +440,7 @@ s32 Entity2D2B_AddElemScripted(void) {
 }
 
 // 0x8602, '.n' で指定した枠の点灯時間を '.d' に差し替える
-void Entity2D2B_SetLitDurationScripted(void) {
+void Cmd_SetEntity2D2BLitDuration(void) {
   Entity2D2B* p = gEntity2D2B;
 
   if (p != NULL) {
@@ -458,7 +458,7 @@ void Entity2D2B_SetLitDurationScripted(void) {
 }
 
 // 0x19CC
-void Entity2D2B_SetStateScripted(void) {
+void Cmd_SetEntity2D2BState(void) {
   Entity2D2B* p = gEntity2D2B;
 
   if (p != NULL) {

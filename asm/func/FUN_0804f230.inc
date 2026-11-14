@@ -82,7 +82,7 @@ _0804F2B8:
 	adds r0, #6
 	mov r1, sb
 	movs r2, #0xb
-	bl FUN_0804e69c
+	bl Crossover_DecodeText
 	ldr r0, [r5]
 	adds r0, r0, r4
 	adds r0, #6

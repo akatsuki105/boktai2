@@ -100,7 +100,7 @@ typedef struct BlackPanther {
   u32 combo;                     // 0x0050, 30 と 100 で comboTier が上がる
   u32 maxCombo;                  // 0x0054, gStat+0x3B2 へ写す
   u32 fadeMode;                  // 0x0058, 1 で画面を明転, 2 で暗転 (gObjBrightness を 4 ずつ動かす), 終わると 0 に戻る
-  u32 hideHud;                   // 0x005C, 立っていると数字とコンボ表示を毎フレーム隠す
+  u32 hideHUD;                   // 0x005C, 立っていると数字とコンボ表示を毎フレーム隠す
   Vec3 pos;                      // 0x0060, '.c', Camera_MoveTo に渡す
   MainSpriteGfx gfx[7];          // 0x0068, BlackPantherEntry.unk_08 が 2 の要素だけ
   BlackPantherElem elems[5];     // 0x0148
@@ -758,7 +758,7 @@ NAKED void BlackPanther_UpdateScorePopup(BlackPanther* p) { INCFUNC("asm/func/Bl
 
 void BlackPanther_UpdateComboNumber(BlackPanther* p) { MainSprite_SetNumber(p->mainSprites3, &p->mainGfx, p->combo, 3, 30, 32, 144, 8, 0); }
 
-NAKED void BlackPanther_UpdateHudHidden(BlackPanther* p) { INCFUNC("asm/func/BlackPanther_UpdateHudHidden.inc"); }
+NAKED void BlackPanther_UpdateHUDHidden(BlackPanther* p) { INCFUNC("asm/func/BlackPanther_UpdateHUDHidden.inc"); }
 
 s32 BlackPanther_Update(BlackPanther* p) {
   BlackPantherElem* elem;
@@ -825,7 +825,7 @@ s32 BlackPanther_Update(BlackPanther* p) {
     }
   }
 
-  BlackPanther_UpdateHudHidden(p);
+  BlackPanther_UpdateHUDHidden(p);
   MINIGAME_SCORE = p->score;
   MINIGAME_MAX_COMBO = p->maxCombo;
   p->frameCounter++;
@@ -991,7 +991,7 @@ s32 BlackPanther_Init(BlackPanther* p, u32 id, u32 _) {
   p->bonusScore1 = 50;
   p->bonusScore2 = 500;
   p->finished = 0;
-  p->hideHud = 0;
+  p->hideHUD = 0;
   MINIGAME_ENDED = 0;
   return 0;
 }

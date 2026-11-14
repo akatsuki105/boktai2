@@ -44,6 +44,7 @@ void Font_FlushGlyphTiles(void) {
 
 // タイル1枚ぶんの字形を gGlyphTileBuffer に積む
 // 残差1命令, 原典は src を r1 のまま使い val を r3 に退避するが, こちらはカウンタに r1 を取るので src の退避が1本増える
+// 早期 return, 添字を先に書く形, val を u8 で受ける形は試済
 NON_MATCH void Font_QueueGlyphTile(s32 val, u8* src) {
 #ifdef NONMATCHING_C
   if (gGlyphTileCount <= 0x80) {
@@ -129,6 +130,8 @@ s32 Font_FindGlyph(u32 val1, u32 val2, u32 val3, u32 val4) {
   return -1;
 }
 
+// 残差は字形を組み立てるループの読み出し側と書き込み側のポインタのレジスタの入れ替わり (111/111)
+// 読み出し元を u32* ローカルにする形, 書き込む値をローカルに出す形, 1文で書く形, ポインタを進める形は試済
 NON_MATCH s32 Font_AcquireGlyph(void* tiledata, u32 val2, u32 val3, u32 val4, u32 val5) {
 #ifdef NONMATCHING_C
   u32 buf[8];
@@ -215,9 +218,58 @@ void Font_FillRect(u32 x8, u32 y8, u32 w8, u32 h8) {
   }
 }
 
-NAKED void Font_DrawHankakuChar(u16 charcode, s32 x8, s32 y8, s32 style) { INCFUNC("asm/func/Font_DrawHankakuChar.inc"); }
+// 半角文字 (8x16px) の上下2タイルを確保して, タイルマップの (x8, y8) から縦に並べる
+void Font_DrawHankakuChar(u16 charcode, s32 x8, s32 y8, s32 style) {
+  u8* tiles;
+  BgMapEntry* map;
+  s32 i;
 
-NAKED void Font_DrawZenkakuChar(u16 charcode, s32 x8, s32 y8, s32 style) { INCFUNC("asm/func/Font_DrawZenkakuChar.inc"); }
+  if (Font_GetInfo() == NULL && Font_LoadInfo() < 0) {
+    return;
+  }
+
+  tiles = Font_GetHankakuTiles() + charcode * 64;
+  map = GetTilemapBuffer(0);
+  for (i = 0; i < 2; i++) {
+    s32 tile = Font_AcquireGlyph(tiles, charcode, i, style, 0);
+
+    if (tile < 0) {
+      return;
+    }
+    tile += 256;
+    tiles += 32;
+    map[(y8 << 5) + x8] = tile | (15 << 12);
+    y8 = (y8 + 1) & 31;
+  }
+}
+
+// 全角文字 (16x16px) の 2x2 タイルを確保して, タイルマップの (x8, y8) から並べる
+void Font_DrawZenkakuChar(u16 charcode, s32 x8, s32 y8, s32 style) {
+  u8* tiles;
+  BgMapEntry* map;
+  s32 i, j;
+
+  if (Font_GetInfo() == NULL && Font_LoadInfo() < 0) {
+    return;
+  }
+
+  tiles = Font_GetZenkakuTiles() + charcode * 128;
+  map = GetTilemapBuffer(0);
+  for (i = 0; i < 2; i++) {
+    s32 row = ((y8 + i) & 31) << 5;
+
+    for (j = 0; j < 2; j++) {
+      s32 tile = Font_AcquireGlyph(tiles, charcode, i * 2 + j, style, 1);
+
+      if (tile < 0) {
+        return;
+      }
+      tile += 256;
+      tiles += 32;
+      map[row + ((x8 + j) & 31)] = tile | (15 << 12);
+    }
+  }
+}
 
 void nop_0822ec58(void) {}
 

@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "menu.h"
 #include "save.h"
 #include "sound.h"
 #include "sprite.h"
@@ -147,7 +148,7 @@ static_assert(sizeof(EntityA288Sub12C8) == 0x166C - 0x12C8);
 // タイトル画面で、 "GAME START" or "OPTION" or "SOUND" を選んだ後に生成される "LINK" は別
 typedef struct EntityA288 {
   Entity e;                                    // 0x0000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                           // 0x0018, SPRITE_42E2
+  MainSpriteGfx gfx;                           // 0x0018, SPRITE_UI_TITLE
   Tilemaps* tilemap;                           // 0x0038, TILEMAP_33B2
   rgb555* pltt;                                // 0x003C, BGP_E9C3
   s32 kind;                                    // 0x0040, '.t', 初期 state を選ぶ
@@ -204,7 +205,6 @@ void RestoreGameState(void);
 extern u32 gRtcReadInhibit;
 
 char* GetPlayerName(void);
-s32 GetCurrentMapNameLine(void);
 bool32 Taiyo_CalibrateSensor(void);
 bool32 SetGameDateTime(s32 year, s32 month, s32 day, s32 hour, s32 minute, s32 second, bool32 writeRTC);
 s32 Time_GetDaysInMonth(s32 year, s32 month);
@@ -4159,7 +4159,7 @@ void FUN_08219e9c(EntityA288* p) {
 
 // スプライトを読み込んで各パーツを順に初期化する
 void FUN_08219ed0(EntityA288* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_42E2);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_TITLE);
 
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);

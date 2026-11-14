@@ -52,9 +52,9 @@ gMainSpritesDirectory: @ 0x08B79944
     .include "data/sprite_main/inventory_icons.inc"             @ 0x5D04
     .include "data/sprite_main/shademan.inc"                    @ 0x5D36
     .include "data/sprite_main/ui_gallery.inc"                  @ 0x5EBF
-    .include "data/sprite_main/6893.inc"                        @ 0x6893
+    .include "data/sprite_main/ui_bank.inc"                     @ 0x6893
     .include "data/sprite_main/markers.inc"                     @ 0x82F1
-    .include "data/sprite_main/92F0.inc"                        @ 0x92F0
+    .include "data/sprite_main/ui_loan.inc"                     @ 0x92F0
     .include "data/sprite_main/jormungandr.inc"                 @ 0x9524
     .include "data/sprite_main/skeletons.inc"                   @ 0xAE52
     .include "data/sprite_main/megaman.inc"                     @ 0xAF82
@@ -69,7 +69,7 @@ gMainSpritesDirectory: @ 0x08B79944
     .include "data/sprite_main/dvalinn.inc"                     @ 0xD40A
     .include "data/sprite_main/ui_link.inc"                     @ 0xDCC1
     .include "data/sprite_main/django_sabata.inc"               @ 0xDE23
-    .include "data/sprite_main/ui_solar_sensor_help.inc"        @ 0xDF11
+    .include "data/sprite_main/ui_sensor_help.inc"              @ 0xDF11
     .include "data/sprite_main/smith_marcello.inc"              @ 0xDFCE
     .include "data/sprite_main/rita.inc"                        @ 0xDFDE
     .include "data/sprite_main/zaji.inc"                        @ 0xDFEE
@@ -77,9 +77,9 @@ gMainSpritesDirectory: @ 0x08B79944
     .include "data/sprite_main/kuro.inc"                        @ 0xE00E
     .include "data/sprite_main/kid.inc"                         @ 0xE01E
     .include "data/sprite_main/lady.inc"                        @ 0xE02E
-    .include "data/sprite_main/coffinseller_snake.inc"          @ 0xE03E
+    .include "data/sprite_main/cofseller_hatena.inc"            @ 0xE03E
     .include "data/sprite_main/ennio_luis.inc"                  @ 0xE04E
     .include "data/sprite_main/carmilla.inc"                    @ 0xE2DE
     .include "data/sprite_main/dainn.inc"                       @ 0xE349
-    .include "data/sprite_main/E89F.inc"                        @ 0xE89F
+    .include "data/sprite_main/dungeon_title.inc"               @ 0xE89F
     .include "data/sprite_main/chandelier.inc"                  @ 0xF099

@@ -149,7 +149,7 @@ _08036004:
 	ldr r0, _0803607C @ =0x00000868
 	adds r4, r7, r0
 	adds r0, r4, #0
-	bl FUN_08084734
+	bl BlackHole_GetCenter
 	ldr r1, _08036080 @ =0x00000844
 	adds r2, r7, r1
 	ldr r0, [r4]
@@ -954,7 +954,7 @@ _080366E4:
 	ldr r4, _08036754 @ =0x0000016B
 	adds r0, r7, r4
 	ldrb r0, [r0]
-	bl Entity0805d364_Create
+	bl RingoBatSwarm_Create
 	ldr r5, _08036758 @ =0x00001058
 	adds r1, r7, r5
 	str r0, [r1]

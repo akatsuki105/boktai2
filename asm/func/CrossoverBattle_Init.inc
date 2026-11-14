@@ -302,7 +302,7 @@ _08050A9C:
 	ldr r1, _08050B78 @ =CrossoverBattle_OnReceive
 	ldr r2, _08050B7C @ =FUN_0804f950
 	ldr r3, _08050B80 @ =FUN_0804f970
-	bl FUN_0804e4dc
+	bl RfuSession_SetCallbacks
 	movs r0, #0
 	mov r8, r0
 	movs r4, #0

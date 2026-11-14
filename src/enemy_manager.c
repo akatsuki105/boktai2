@@ -770,7 +770,7 @@ void Cmd_7659(void) {
 }
 
 // 0xC1F2
-void Enemy_Sleep(void) {
+void Cmd_SleepEnemy(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);

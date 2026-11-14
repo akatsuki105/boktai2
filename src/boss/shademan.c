@@ -143,6 +143,9 @@ const __attribute__((section(".rodata.faraddr"))) u16 u16_ARRAY_08252864[16] = {
 
 const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252884[16] = {0x04, 0xF6, 0x08, 0xF9, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB};  // 0x08252884
 
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
 // 点滅をやめて flag38c の bit8 を立てる
 void FUN_0821bd14(ShadeMan* p) {
   MainSprite* sprite = &p->sprite;
@@ -606,7 +609,7 @@ NON_MATCH void FUN_0821c520(ShadeMan* p) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_UNK_19);
   }
   hitbox = &p->hurtbox;
-  if (boss->isDemo || TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
+  if (boss->isCutscene || TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
     Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
   } else {
     Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
@@ -614,7 +617,7 @@ NON_MATCH void FUN_0821c520(ShadeMan* p) {
     p->hurtbox.angle = p->angle;
   }
   hitbox = &p->hurtbox2;
-  if (boss->isDemo || TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
+  if (boss->isCutscene || TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
     Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
   } else {
     Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
@@ -628,7 +631,7 @@ NON_MATCH void FUN_0821c520(ShadeMan* p) {
 // 残差は pos を指す sp の写しを作る位置だけ (110/110), FUN_0821cd9c と同じ
 NON_MATCH void FUN_0821c5d4(ShadeMan* p) {
 #ifdef NONMATCHING_C
-  if (!p->base.isDemo) {
+  if (!p->base.isCutscene) {
     u32 angle = p->angle;
     HitboxData* hitbox = &p->hitbox;
 
@@ -2971,7 +2974,7 @@ NON_MATCH void FUN_08221450(ShadeMan* p) {
   }
   ShadeMan_UpdateAfterimages(p);
   p->flag38c &= ~0xFF000000;
-  if (!boss->isDemo) {
+  if (!boss->isCutscene) {
     if (!TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (boss->subState0 == 2 || TEST_FLAGS(boss->flags, BOSSFLAG_HIDDEN)) {
         if (p->unk_bc3 == 1) {
@@ -3128,15 +3131,13 @@ NON_MATCH void FUN_08221938(ShadeMan* p) {
 #endif
 }
 
-// 残差は他のボスの PollMessages と同じ gMsgBus の読み直し (133/131)
-NON_MATCH void ShadeMan_PollMessages(ShadeMan* p) {
-#ifdef NONMATCHING_C
+void ShadeMan_PollMessages(ShadeMan* p) {
   Boss* boss = &p->base;
   MsgQueue* queue = &boss->mq;
   s32 i;
 
-  for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = queue->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < queue->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = queue->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(queue, msg);
     switch (msg->cmd) {
@@ -3179,9 +3180,6 @@ NON_MATCH void ShadeMan_PollMessages(ShadeMan* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/ShadeMan_PollMessages.inc");
-#endif
 }
 
 s32 ShadeMan_Update(ShadeMan* p) {
@@ -3250,7 +3248,7 @@ NON_MATCH s32 ShadeMan_Init(ShadeMan* p, u32 id) {
   Boss_Init(boss, id, bossID, &pos, angle);
   Boss_InitHP(boss, hp, hp, power);
   boss->destAngle = angle;
-  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  boss->isCutscene = VM_GetNamedArgValue('i', 0);
   p->unk_388 = 0;
   p->flag38c = 0;
   p->unk_390 = 0;
@@ -3317,7 +3315,7 @@ NON_MATCH s32 ShadeMan_Init(ShadeMan* p, u32 id) {
     boss->players[0] = NULL;
     boss->playerPos[0] = NULL;
   }
-  if (!boss->isDemo) {
+  if (!boss->isCutscene) {
     ShadeMan_SetSubState0(p, 0, 0, 0, 120);
     ShadeMan_SetMotion(p, 0, TRUE);
   } else {

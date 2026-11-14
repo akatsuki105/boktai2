@@ -875,7 +875,7 @@ s32 Entity7999_Init(Entity7999* p) {
   if (VM_GetNamedArgValue('f', 0)) {
     StartBgObjPlttFade(2, 4, 4, 4, 4, 0xFFFF, 0);
   }
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
   data = &gLinkSession->self;
   if (gLinkSession == NULL) {
     data = NULL;

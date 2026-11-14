@@ -16,10 +16,10 @@ typedef struct TimeMC {
   u16 nearState;                           // 0x18, プレイヤーが近いかを 0/1 で覚え、変わったフレームだけ効果音を鳴らす
   u8 kind;                                 // 0x1A, '.t', 0: 現在から過去(TO_PAST), 1: 過去から現在(TO_PRESENT)
   AuxSprite sprite;                        // 0x1C, flags に SPRFLAG_BLINK_ODD が立つ, rise が 0 の間は隠す
-  AuxSpriteGfx gfx;                        // 0x48, SPRITE_TIME_MAGIC_SQUARE
+  AuxSpriteGfx gfx;                        // 0x48, SPRITE_TIME_M_SQ
   WorldPos pos;                            // 0x64, '.p', y はタイルの attr から計算し直す, 起動するとプレイヤーをここへ移す
   AuxSprite sprite2;                       // 0x6C, flags に 0x400 が立つ, 起動が終わると隠す
-  AuxSpriteGfx gfx2;                       // 0x98, SPRITE_TIME_MAGIC_SQUARE
+  AuxSpriteGfx gfx2;                       // 0x98, SPRITE_TIME_M_SQ
   u16 plttID;                              // 0xB4, kind が TO_PAST: 284 (青), TO_PRESENT: 285 (黄)
   u16 highlight;                           // 0xB6, 近いと 8 まで増え離れると減る, 8 でパレットが 286 になる
   u16 rise;                                // 0xB8, 近いと 2 ずつ 0x18 まで増え離れると減る, pos.y に足した値が sprite の y になる
@@ -188,14 +188,14 @@ s32 TimeMC_Init(TimeMC* p, u32 _, u32 __) {
     p->plttID = 285;
   }
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_TIME_MAGIC_SQUARE);
+  Video_GetAuxSprite(&p->gfx, SPRITE_TIME_M_SQ);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   Video_SetAuxSpritePltt(&p->gfx, p->plttID);
   p->sprite.flags |= SPRFLAG_BLINK_ODD;
   p->sprite.priority = 3;
   p->sprite.pos = p->pos;
 
-  Video_GetAuxSprite(&p->gfx2, SPRITE_TIME_MAGIC_SQUARE);
+  Video_GetAuxSprite(&p->gfx2, SPRITE_TIME_M_SQ);
   AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
   Video_SetAuxSpritePltt(&p->gfx2, p->plttID);
   p->sprite2.flags |= SPRFLAG_BLINK_EVEN;

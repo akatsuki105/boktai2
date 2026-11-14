@@ -846,7 +846,7 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
       p->unk_81e = FALSE;
     }
   }
-  if (!boss->isDemo) {
+  if (!boss->isCutscene) {
     if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (!p->unk_81f) {
         p->unk_81f = TRUE;
@@ -2239,7 +2239,7 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
   p->unk_30a = 0x200;
   p->unk_30c = 0x400;
   Boss_Init(boss, id, bossID, &pos, angle);
-  p->unk_160 = boss->isDemo ? 0 : 0x40;
+  p->unk_160 = boss->isCutscene ? 0 : 0x40;
   MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
   Boss_PlayAnimDir8(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
   ShadeManCrossover_ResetSubStates(p, 120);

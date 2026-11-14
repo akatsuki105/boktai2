@@ -1,0 +1,3 @@
+Scr_Boot() {
+	Scr_0x02BC();
+}

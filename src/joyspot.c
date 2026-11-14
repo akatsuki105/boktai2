@@ -1,10 +1,14 @@
+#include "bg_pltt.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "input.h"
 #include "save.h"
 #include "solar.h"
 #include "sound.h"
 #include "text.h"
+#include "tilemap.h"
+#include "video.h"
 #include "vm.h"
 
 // ジョイスポット: GBAワイヤレスアダプタを利用して、玩具店の店頭などでデータ配信や対戦が楽しめるサービス
@@ -29,7 +33,7 @@ typedef struct {
   u8 linkLossReason;    // 0x3A, rfu_REQBN_watchLink の linkLossReason
   u8 linkRecoverySlot;  // 0x3B, rfu_REQBN_watchLink の parentBmLinkRecoverySlot
   u8 partnerRecord[8];  // 0x3C, Rfu_FindPartnerRecord の dst, 先頭2バイトを JoyspotManager_FindContentIdx が gJoyspotContentIDs の4つと比べる
-  u8 unk_44[8];         // 0x44, Rfu_FindPartnerRecord の buf
+  u8 partnerInfo[8];    // 0x44, 見つけた接続相手の情報 (Rfu_UnpackPartnerInfo で展開したもの)
 } JoyspotManager;
 static_assert(sizeof(JoyspotManager) == 76);
 
@@ -46,11 +50,12 @@ const u8 gJoyspotContentIDs[8] = {
   0x67, 0x8E, // BB (Blind Box) Lv.3
   0xAA, 0x8F, // BB Lv.4
   0xE0, 0x90, // BB Lv.5 + バレンタイン
-  0xD6, 0x8F, // ???(スネーク)関連のイベント配信
+  0xD6, 0x8F, // ハテナ関連のイベント配信
 };  // 0x085AB5B0
 // clang-format on
 
 s32 InitRfuAPI(void);  // src/rfu.c
+s8 Rfu_FindPartnerRecord(u16 id, u8* dst, u8* buf, u8 flags);
 
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
 
@@ -109,7 +114,7 @@ s32 JoyspotManager_InitAdapter(JoyspotManager* unused) {
 }
 
 // 接続中の最初のスロットを切って通信を止める
-void JoyspotManager_Disconnect(void) {
+void JoyspotManager_Disconnect(JoyspotManager* unused) {
   u8 i;
 
   for (i = 0; i < 4; i++) {
@@ -126,7 +131,16 @@ void JoyspotManager_Disconnect(void) {
   rfu_waitREQComplete();
 }
 
-NAKED void JoyspotManager_SetupBG(JoyspotManager* p, s32 param_2) { INCFUNC("asm/func/JoyspotManager_SetupBG.inc"); }
+// 背景のタイルマップとパレットを読み込む
+void JoyspotManager_SetupBG(JoyspotManager* p, s32 param_2) {
+  TilemapFile* tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  BgPlttFile* f;
+
+  Video_SetupBGLayout(0, 0, tilemap, 0, 0, 1, &param_2);
+  Video_GenerateBGMap(0, 0, 0, 0, 0);
+  f = GetBgPlttFile(BGP_EFDA);
+  CpuCopy16(f->body, gBgPlttBuffer, 256 * sizeof(rgb555));
+}
 
 void JoyspotManager_Start(JoyspotManager* p) {
   JoyspotManager_SetupBG(p, 3);
@@ -152,10 +166,7 @@ void JoyspotManager_Start(JoyspotManager* p) {
 }
 
 // 初期化に失敗した旨を出し, 30フレーム後に A/B/START のどれかで state 8 へ進む
-// 残差1命令 (32 対 33), 原典は timer への 0 代入と +1 代入を別々の str で持つが agbcc は共通の末尾として1本に畳む
-// early return / if のネスト / timer をローカルに退避する形は試済
-NON_MATCH void JoyspotManager_StateInitFailed(JoyspotManager* p) {
-#ifdef NONMATCHING_C
+void JoyspotManager_StateInitFailed(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     PlaySound_082406e0(SE_NG);
@@ -163,15 +174,10 @@ NON_MATCH void JoyspotManager_StateInitFailed(JoyspotManager* p) {
 
   if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
     PlaySound_082406e0(SE_CANCEL);
-    p->state = 8;
-    p->stateChanged = TRUE;
-    p->timer = 0;
+    JoyspotManager_SetState(p, 8);
   } else {
     p->timer++;
   }
-#else
-  INCFUNC("asm/func/JoyspotManager_StateInitFailed.inc");
-#endif
 }
 
 // record の先頭2バイトと一致する配信コンテンツIDの番号, 見つからなければ -1
@@ -199,6 +205,7 @@ s32 JoyspotManager_FindContentIdx(u8* record) {
 
 // idx 番の配信コンテンツIDをセーブデータの eventFlags[idx] に書き写す
 // 残差1命令, gSystemSaveData のプールアドレスのロードが id の初期化より前に出るかどうかだけ違う (ループ不変式の巻き上げ位置)
+// 添字で書くループ / ポインタを進める形 / id と dst の宣言順の入れ替え / eventFlags を static inline の getter / setter で触る形は試済
 NON_MATCH void JoyspotManager_StoreContentID(s32 idx) {
 #ifdef NONMATCHING_C
   s32 dst = idx * 2;
@@ -217,19 +224,173 @@ NON_MATCH void JoyspotManager_StoreContentID(s32 idx) {
 #endif
 }
 
-NAKED void JoyspotManager_StateSearch(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateSearch.inc"); }
+// 親を探して配信コンテンツIDを照合する, 見つからないまま600フレーム経つか B で中断すると次の state へ進む
+void JoyspotManager_StateSearch(JoyspotManager* p) {
+  s8 ret;
 
-NAKED void JoyspotManager_StateRecvOk(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateRecvOk.inc"); }
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    p->partnerFound = FALSE;
+  }
 
-NAKED void JoyspotManager_StateRecvFailed(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateRecvFailed.inc"); }
+  rfu_REQ_pollSearchParent();
+  rfu_waitREQComplete();
+  ret = Rfu_FindPartnerRecord(16, p->partnerRecord, p->partnerInfo, 1);
+  if (ret >= 0) {
+    s32 idx = JoyspotManager_FindContentIdx(p->partnerRecord);
 
-NAKED void JoyspotManager_StateNotFound(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateNotFound.inc"); }
+    if (idx >= 0) {
+      p->contentIdx = idx;
+      JoyspotManager_StoreContentID(idx);
+      JoyspotManager_SetState(p, 2);
+    } else {
+      JoyspotManager_SetState(p, 3);
+    }
+  } else {
+    if (ret == -2) {
+      p->partnerFound = TRUE;
+    }
 
-NAKED void JoyspotManager_StateSave(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateSave.inc"); }
+    if (p->timer > 599) {
+      if (p->partnerFound) {
+        JoyspotManager_SetState(p, 3);
+      } else {
+        JoyspotManager_SetState(p, 4);
+      }
+    } else if (p->timer > 9 && (gInput[0].pressed & B_BUTTON)) {
+      JoyspotManager_Disconnect(p);
+      PlaySound_082406e0(SE_CANCEL);
+      JoyspotManager_SetState(p, 8);
+    } else {
+      p->timer++;
+    }
+  }
+}
 
-NAKED void JoyspotManager_StateSaveOk(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateSaveOk.inc"); }
+// 受け取れた配信コンテンツの旨を出して通信を止め, 30フレーム後に A/B/START のどれかで state 5 (セーブ) へ進む
+void JoyspotManager_StateRecvOk(JoyspotManager* p) {
+  if (p->stateChanged) {
+    s32 i;
 
-NAKED void JoyspotManager_StateSaveFailed(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateSaveFailed.inc"); }
+    p->stateChanged = FALSE;
+    for (i = 0; i < 8; i++) {
+      // 中身のないループ, 原典ではデバッグ用の処理が消えた跡と思われる
+    }
+    if (p->panelID >= 0) {
+      TextPanel_SetMessage(p->panelID, p->contentIdx + 3);
+    }
+    PlaySound_082406e0(SE_GAIN_VALUABLE);
+    JoyspotManager_Disconnect(p);
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    p->retryCount = 0;
+    JoyspotManager_SetState(p, 5);
+  } else {
+    p->timer++;
+  }
+}
+
+// 受け取れなかった旨を出して通信を止め, 30フレーム後に A/B/START のどれかで state 8 へ進む
+void JoyspotManager_StateRecvFailed(JoyspotManager* p) {
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    if (p->panelID >= 0) {
+      TextPanel_SetMessage(p->panelID, 7);
+    }
+    JoyspotManager_Disconnect(p);
+    PlaySound_082406e0(SE_NG);
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    PlaySound_082406e0(SE_CANCEL);
+    JoyspotManager_SetState(p, 8);
+  } else {
+    p->timer++;
+  }
+}
+
+// 相手が見つからなかった旨を出して通信を止め, 30フレーム後に A/B/START のどれかで state 8 へ進む
+void JoyspotManager_StateNotFound(JoyspotManager* p) {
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    if (p->panelID >= 0) {
+      TextPanel_SetMessage(p->panelID, 7);
+    }
+    JoyspotManager_Disconnect(p);
+    PlaySound_082406e0(SE_NG);
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    PlaySound_082406e0(SE_CANCEL);
+    JoyspotManager_SetState(p, 8);
+  } else {
+    p->timer++;
+  }
+}
+
+// セーブ中の旨を出し, 60フレーム後にシステムデータを書き込んで結果で state 6 か 7 へ進む
+void JoyspotManager_StateSave(JoyspotManager* p) {
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptS);
+      TextPanel_SetMessage(p->panelID, 11);
+    }
+  }
+
+  if (p->timer == 60) {
+    p->saveResult = Save_WriteSystemData();
+    if (p->saveResult == 1) {
+      JoyspotManager_SetState(p, 6);
+    } else {
+      JoyspotManager_SetState(p, 7);
+    }
+  } else {
+    p->timer++;
+  }
+}
+
+// セーブできた旨を出し, 30フレーム後に A/B/START のどれかで state 8 へ進む
+void JoyspotManager_StateSaveOk(JoyspotManager* p) {
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptS);
+      TextPanel_SetMessage(p->panelID, 14);
+      PlaySound_082406e0(SE_SAVE_SUCCESS);
+    }
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    JoyspotManager_SetState(p, 8);
+  } else {
+    p->timer++;
+  }
+}
+
+// セーブに失敗した旨を出し, 30フレーム後に A/B/START のどれかで 3回までは state 5 へ戻って再試行し, 尽きたら state 8 へ進む
+void JoyspotManager_StateSaveFailed(JoyspotManager* p) {
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptS);
+      TextPanel_SetMessage(p->panelID, 15);
+      PlaySound_082406e0(SE_NG);
+    }
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    p->retryCount++;
+    if (p->retryCount >= 3) {
+      JoyspotManager_SetState(p, 8);
+    } else {
+      JoyspotManager_SetState(p, 5);
+    }
+  } else {
+    p->timer++;
+  }
+}
 
 // 20フレーム待ってから '.e' のスクリプトを起動して自分を消す
 void JoyspotManager_StateFinish(JoyspotManager* p) {
@@ -245,7 +406,24 @@ void JoyspotManager_StateFinish(JoyspotManager* p) {
   }
 }
 
-NAKED void JoyspotManager_StateLinkError(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateLinkError.inc"); }
+// 通信エラーの旨を出し, 30フレーム後に A/B/START のどれかで state 8 へ進む
+void JoyspotManager_StateLinkError(JoyspotManager* p) {
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptM);
+      TextPanel_SetMessage(p->panelID, 0);
+    }
+    PlaySound_082406e0(SE_NG);
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    PlaySound_082406e0(SE_CANCEL);
+    JoyspotManager_SetState(p, 8);
+  } else {
+    p->timer++;
+  }
+}
 
 // clang-format off
 static void (*const sJoyspotManagerUpdates[10])(JoyspotManager*) = {
@@ -332,7 +510,7 @@ JoyspotManager* JoyspotManager_Create(void) {
 
 // 0x3699, '.n' 番の配信コンテンツIDがセーブデータに書かれているか
 // 残差はループの向きだけ (30 対 30), 原典は i を上に数えるが agbcc は使い捨ての添字とみて下に数える形へ反転する
-// u32 / do-while / i != 2 / flags をループ内で引く形 / flags[dst + i] と id[i] は試済
+// u32 / do-while / while (j < 2) / i != 2 / flags をループ内で引く形 / flags[dst + i] と id[i] / 両方 [dst + i] / record[j] (FindContentIdx の形) は試済
 NON_MATCH s32 Cmd_3699(void) {
 #ifdef NONMATCHING_C
   s32 dst = VM_GetValue() * 2;

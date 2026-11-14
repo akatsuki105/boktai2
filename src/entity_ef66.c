@@ -26,7 +26,7 @@ extern u16 gWindPushThreshold;
 extern u16 gWindAngle;
 extern u16 gWindStrength;
 
-void EntityEF66_StopScripted(void) {
+void Cmd_StopEntityEF66(void) {
   if (gEntityEF66 != NULL) {
     gEntityEF66->mode = 0;
     gEntityEF66->speed = 0;

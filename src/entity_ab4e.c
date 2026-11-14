@@ -169,4 +169,4 @@ EntityAB4E* EntityAB4E_Create(void) {
   return gEntityAB4E;
 }
 
-NAKED s32 EntityAB4E_AddElemScripted(void) { INCFUNC("asm/func/EntityAB4E_AddElemScripted.inc"); }
+NAKED s32 Cmd_AddEntityAB4EElem(void) { INCFUNC("asm/func/Cmd_AddEntityAB4EElem.inc"); }

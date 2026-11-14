@@ -57,7 +57,7 @@ _0823AAE0:
 	cmp r4, #0
 	bne _0823AB12
 _0823AB0E:
-	bl VM_ExecSpecial
+	bl VM_ExecBoot
 _0823AB12:
 	str r5, [r7]
 	mov r1, r8

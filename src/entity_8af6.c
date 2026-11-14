@@ -7,7 +7,7 @@
 // スクリプトから足せる飾りのスプライト1枚, 位置の補間とマーカー設定への追従を持つ
 typedef struct {
   u8 unk_0[24];           // 0x00, どの関数も触っていない
-  MainSpriteGfx gfx;      // 0x18, '.d' で指定したスプライトファイル (e.g. SPRITE_DJANGO_LARGE, SPRITE_E89F, SPRITE_UI_SOLARBANK)
+  MainSpriteGfx gfx;      // 0x18, '.d' で指定したスプライトファイル (e.g. SPRITE_DJANGO_LARGE, SPRITE_DUNGEON_TITLE, SPRITE_UI_BANK)
   MainSprite sprite;      // 0x38
   u16 id;                 // 0x98, '.n', スクリプトから枠を引くときの番号
   bool16 moving;          // 0x9A, 0 以外なら pos を fromPos から toPos へ補間する
@@ -54,7 +54,7 @@ Entity8AF6Entry* Entity8AF6_FindEntry(void) {
 }
 
 // 0x44CD
-void Entity8AF6_SetPoseScripted(void) {
+void Cmd_SetEntity8AF6Pose(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL && VM_SeekToNamedArg('p')) {
@@ -76,7 +76,7 @@ void Cmd_ED1F(void) {
 }
 
 // 0xEBFF
-void Entity8AF6_HideScripted(void) {
+void Cmd_HideEntity8AF6(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL) {
@@ -88,7 +88,7 @@ void Entity8AF6_HideScripted(void) {
 }
 
 // 0x9C3F
-void Entity8AF6_ShowScripted(void) {
+void Cmd_ShowEntity8AF6(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL) {
@@ -109,7 +109,7 @@ void Cmd_65E1(void) {
 }
 
 // 0x997B, 現在位置から '.p' の位置へ '.f' フレームかけて移動させる
-void Entity8AF6_MoveToScripted(void) {
+void Cmd_MoveEntity8AF6To(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
   if (e != NULL) {
@@ -153,7 +153,7 @@ void Entity8AF6Entry_Update(Entity8AF6Entry* p) {
 }
 
 // 0xEAB4, 空き枠に '.d' のスプライトを '.p' の位置へ置く, '.n' で番号, '.A' でマーカー連動を指定する
-void Entity8AF6_AddEntryScripted(void) {
+void Cmd_AddEntity8AF6Entry(void) {
   Entity8AF6Entry* e;
   MainSpriteGfxFile* f;
   u32 poseIdx;

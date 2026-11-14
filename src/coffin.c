@@ -849,7 +849,7 @@ void Cmd_4561(void) {
 }
 
 // 0xFEE0
-void Coffin_RequestKill(void) {
+void Cmd_RequestCoffinKill(void) {
   if (gCoffin != NULL) {
     gCoffin->killRequested = TRUE;
   }

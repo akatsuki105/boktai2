@@ -13,7 +13,7 @@
 	ldr r7, _0801FE50 @ =0x0000042C
 	adds r6, r4, r7
 	movs r5, #0
-	ldr r0, _0801FE54 @ =FUN_080206b0
+	ldr r0, _0801FE54 @ =Door_IdleClosed
 	mov r8, r0
 	movs r7, #2
 	mov ip, r7
@@ -50,4 +50,4 @@ _0801FE42:
 	bx r0
 	.align 2, 0
 _0801FE50: .4byte 0x0000042C
-_0801FE54: .4byte FUN_080206b0
+_0801FE54: .4byte Door_IdleClosed

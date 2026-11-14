@@ -591,7 +591,7 @@ s32 FUN_081de130(LinkSession* p) {
 
   if (p->unk_54[1] == 0 && MessageWindow_IsOpen()) {
     p->unk_54[1] = 1;
-    MainMenu_SetHudMode(5);
+    HUD_SetMode(HUD_WINDOW_3);
     TextPanel_SetScript(p->windowID, p->messageScript);
     TextPanel_SetMessage(p->windowID, 2);
     TextPanel_Start(p->windowID);
@@ -1277,7 +1277,7 @@ NON_MATCH s32 FUN_081df0f8(LinkSession* p) {
   if (p->unk_25 != 0) {
     if (p->unk_26 == 0) {
       StartBgObjPlttFade(0, 1, 4, 4, 4, 0xFFFF, 0);
-      MainMenu_SetHudMode(5);
+      HUD_SetMode(HUD_WINDOW_3);
       p->windowID = TextPanel_Create(1, 7, 28, 6);
       TextPanel_SetScript(p->windowID, p->unk_2f0);
       TextPanel_SetMessage(p->windowID, 9);
@@ -1461,7 +1461,7 @@ s32 FUN_081df604(LinkSession* p) {
 
 s32 FUN_081df62c(LinkSession* p) {
   if ((u8)FUN_081dd9d4(p)) {
-    MainMenu_SetHudMode(7);
+    HUD_SetMode(HUD_HIDDEN);
     p->killRequested = 1;
   }
 }
@@ -1883,7 +1883,7 @@ NON_MATCH LinkSession* LinkSession_Create(void) {
   if (p->unk_2f0 == NULL) {
     return NULL;
   }
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
 #else
   INCFUNC("asm/func/LinkSession_Create.inc");
 #endif

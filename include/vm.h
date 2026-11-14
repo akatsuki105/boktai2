@@ -11,7 +11,7 @@
 #define OP_BOOL8 4    // 8ビットのブール値
 #define OP_U16 6
 #define OP_STRING 7
-#define OP_U24 8
+#define OP_U24 8  // 定数としてはスクリプトIDにだけ使われる, 名前と違い VM_DecodeValue は2バイトを s16 として読む
 #define OP_S32 9
 #define OP_S32_0x0A 10  // s32 と同じ扱いだが不使用
 #define OP_S32_0x0D 13  // 不使用
@@ -120,8 +120,8 @@ typedef struct {
   u32 bytecodeSize;     // 0x541DC
   u8 bytecode[617012];  // 0x541E0, bytecode[bytecodeSize]
 
-  u32 specialScriptSize;    // 0xEAC14
-  u8 specialScriptData[6];  // 0xEAC18
+  u32 bootBytecodeSize;  // 0xEAC14
+  u8 bootBytecode[6];    // 0xEAC18, 起動時に最初に実行するスクリプト (data/scripts/boot.bokc の Scr_Boot), ID を持たない
 
 } ScriptDirectory;
 static_assert(sizeof(ScriptDirectory) == 961568);
@@ -132,13 +132,13 @@ typedef struct {
   ScriptOffset* entries;  // 0x00, = ScriptDirectory.script_entries
   s32 scriptCount;        // 0x04, = 11539, length of ScriptDirectory.script_entries
   u8* bytecode;           // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
-  u8* specialScriptData;  // 0x0C, 0x08DA9E60, ScriptDirectory.specialScriptData
+  u8* bootBytecode;       // 0x0C, 0x08DA9E60, ScriptDirectory.bootBytecode
 } ScriptTable;
 
 typedef struct {
   ScriptDirectoryOffsets* offsets;  // 0x0, = &ScriptDirectory.offsets
   u32* header;                      // 0x4, gStringHeader
-  u8* body;                         // 0x8, String_0000
+  u8* body;                         // 0x8, Str_SavePrompt
   u8* unknown;                      // 0xC, unk08D13420
 } StringTable;
 
@@ -159,7 +159,7 @@ s32 VM_ParseStringRef(u8* pc);
 char* GetStringByID(s32 stringID);
 
 s32 VM_ExecByID(u32 scriptID, ScriptArgs* args);
-void VM_ExecSpecial(void);
+void VM_ExecBoot(void);
 void VM_ClearScratchpad_Proxy(void);
 bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 localVarCount);
 s32 VM_ExecByPointer(u8* pc, ScriptArgs* args);

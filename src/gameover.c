@@ -181,7 +181,7 @@ NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 }
 
 // 0xF04A, ゲームオーバー状態を解除して BGM を止める
-void GameOver_CancelScripted(void) {
+void Cmd_CancelGameOver(void) {
   gGameFlags &= ~GAMEFLAG_GAMEOVER;
   sound_08240740(BGM_GAMEOVER);
   GameSystem_HandleGameOverChoice(0);
@@ -287,14 +287,14 @@ void GameOverManager_SetupMenu(GameOverManager* p) {
 }
 
 // スクリプトコマンド 0xDED5, ゲームオーバー演出を今すぐ始める
-void GameOverManager_StartScripted(void) {
+void Cmd_StartGameOver(void) {
   GameOverManager* p = gGameOverManager;
 
   if (p == NULL) {
     return;
   }
   GameOverManager_AddSprites(p);
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
   p->state = 1;
   if (!VM_SeekToNamedArg('f')) {
     return;
@@ -311,7 +311,7 @@ void GameOverManager_StateWaitFlag(GameOverManager* p) {
     return;
   }
   GameOverManager_AddSprites(p);
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
   if (gPlayerPtr[0]->action >= PACT_FALLDEATH && gPlayerPtr[0]->action <= PACT_DROWNING) {
     p->costIdx = 1;
   } else {
@@ -340,7 +340,7 @@ void GameOverManager_StateOpenMenu(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 6) {
     p->menu.flags &= ~SPRFLAG_HIDDEN;
-    MainMenu_SetHudMode(3);
+    HUD_SetMode(HUD_WINDOW_1);
     MessageWindow_SetRect(1, 13, 28, 4);
     MessageWindow_SetInstant(1);
     MessageWindow_Start(p->script);
@@ -371,7 +371,7 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
   if (choice == 0) {
     p->menu.flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    MainMenu_SetHudMode(7);
+    HUD_SetMode(HUD_HIDDEN);
     Player_StartDeathVanish(gPlayerPtr[0]);
     Sound_FadeOutBGM(2);
     p->timer = 0;
@@ -387,7 +387,7 @@ NON_MATCH void FUN_080a7800(GameOverManager* p) {
       p->letters[i].sprite.flags |= SPRFLAG_HIDDEN;
     }
     MessageWindow_Close();
-    MainMenu_SetHudMode(7);
+    HUD_SetMode(HUD_HIDDEN);
     if (p->scriptId != 0) {
       u32 argv[1];
       ScriptArgs args;

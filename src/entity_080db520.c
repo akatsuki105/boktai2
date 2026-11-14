@@ -155,7 +155,7 @@ Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
 
 // 日中で, かつ今いるゾーンがこの枠の指定と同じなら TRUE
 bool8 FUN_080dad94(Entity080db520Elem* elem) {
-  if (gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4) {
+  if (gClock.spanOfTime == TIME_NIGHT_MID || gClock.spanOfTime == TIME_NIGHT_DAWN || gClock.spanOfTime == TIME_NIGHT_DUSK) {
     return FALSE;
   }
   if (!(gStat->mapFlags & MPF_OUTDOOR)) {

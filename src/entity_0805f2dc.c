@@ -16,10 +16,10 @@ typedef struct {
 } Entity0805f2dcElem;
 static_assert(sizeof(Entity0805f2dcElem) == 148);
 
-// 輪っか (SPRITE_5AFE) を最大 12 個まで飛ばす
+// 輪っか (SPRITE_EFF_5AFE) を最大 12 個まで飛ばす
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx[2];           // 0x018, SPRITE_5AFE, [0] は kind が 0 以外, [1] は kind が 0 の輪っか用
+  AuxSpriteGfx gfx[2];           // 0x018, SPRITE_EFF_5AFE, [0] は kind が 0 以外, [1] は kind が 0 の輪っか用
   u32 lifetime;                  // 0x050, 輪っかが消えるまでのフレーム数, 60 未満なら 60
   Entity0805f2dcElem elems[12];  // 0x054
 } Entity0805f2dc;

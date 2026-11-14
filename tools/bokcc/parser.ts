@@ -1,4 +1,4 @@
-import { ClauseType, ControlType, ctrlIdOf, DATA_TYPE_BY_NAME, DataType, DEBUG_PRINT_NAME, ENTITY_CREATE_NAME, IMPLICIT_ARG_TYPES, InsnType, Instruction, LOAD_MAP_NAME, MEM_REGION_BY_NAME, OPERATORS, SCRIPT_CALL_NAME, scriptIdOf, SET_ZONE_CALLBACK_NAME, STRING_REF_NAME, SUBROUTINE_CALL_NAME } from "./instruction.ts";
+import { CHARA_NAME, ClauseType, COMMAND_NAME, ControlType, ctrlIdOf, DATA_TYPE_BY_NAME, DataType, DEBUG_PRINT_NAME, IMPLICIT_ARG_TYPES, InsnType, Instruction, LOAD_MAP_NAME, MEM_REGION_BY_NAME, MESG_NAME, OPERATORS, SCRIPT_CALL_NAME, scriptIdOf, SET_ZONE_CALLBACK_NAME, STRING_REF_NAME } from "./instruction.ts";
 import { encodeChar } from "./eucjp.ts";
 
 // コンパイル専用。.bokc のテキストから Instruction を読む(コンパイル前半。 コンパイル後半の書き出しは compiler.ts)。
@@ -77,7 +77,7 @@ const lex = (input: string): Token[] => {
       continue;
     }
 
-    // 識別子  if, return, result, p0, v3, BIT, StringRef, EntityCreate
+    // 識別子  if, return, result, p0, v3, BIT, StringRef, Chara
     // キーワードも区別せず IDENT にして、構文解析側が text で見分ける
     if (/[A-Za-z_]/.test(ch)) {
       let j = i;
@@ -173,11 +173,13 @@ class Parser {
     return scripts;
   }
 
-  // Script_0x00F1() { ... } のように名前が付いていてもよい。名前はバイト列に現れないので読み捨てる
-  // 呼び出し文 Script_0x00F1(); と綴りが同じだが、Cと同じく位置と後ろの1トークンで区別できる
+  // Scr_0x00F1() { ... } のように名前が付いていてもよい。名前はバイト列に現れないので読み捨てる
+  // script.h で名前を付けたスクリプトは cpp が数値に展開するので, 0x00F1() { ... } の形でも来る
+  // 呼び出し文 Scr_0x00F1(); と綴りが同じだが、Cと同じく位置と後ろの1トークンで区別できる
   // (定義はトップレベルにしか現れず引数リストの後ろが "{", 呼び出しはブロックの中にしか現れず ";" で終わる)
   private parseScript(): Instruction {
-    if (this.peek().type === "IDENT" && this.peek(1).text === "(" && this.peek(2).text === ")" && this.peek(3).text === "{") {
+    const head = this.peek().type;
+    if ((head === "IDENT" || head === "NUMBER") && this.peek(1).text === "(" && this.peek(2).text === ")" && this.peek(3).text === "{") {
       this.next();
       this.expect("(");
       this.expect(")");
@@ -290,9 +292,19 @@ class Parser {
   // 関数呼び出しの形 `XXX(...)` で XXX が特定の名前であれば対応する制御命令に変換し、それ以外は式として扱う(ここではnullを返すだけで式として読み直すのは呼び出し側の責任)
   private tryParseCallLike(): Instruction | null {
     const t = this.peek();
-    if (t.type !== "IDENT" || this.peek(1).text !== "(") return null;
+    if (this.peek(1).text !== "(") return null;
 
-    // Script_0xXXXX(...) は呼び先が定数のスクリプト呼び出し(0x70)。制御命令ではないので先に処理する
+    // 数値の直後の "(" も呼び先が定数のスクリプト呼び出し (0x70), script.h の名前 (#define Scr_MapRetry 0x0177) を cpp が展開した形
+    if (t.type === "NUMBER") {
+      this.next();
+      this.expect("(");
+      const instr = new Instruction(InsnType.Call, t.value!);
+      this.parseArgList(instr);
+      return instr;
+    }
+    if (t.type !== "IDENT") return null;
+
+    // Scr_0xXXXX(...) は呼び先が定数のスクリプト呼び出し(0x70)。制御命令ではないので先に処理する
     const scriptId = scriptIdOf(t.text);
     if (scriptId !== undefined) {
       this.next();
@@ -302,15 +314,16 @@ class Parser {
       return instr;
     }
 
-    // 残りは制御命令, e.g. EntityCreate(0x1B77, (u16)7031), SubroutineCall(0x0C63), Ctrl_0xXXXX(...)
+    // 残りは制御命令, e.g. Chara(0x1B77, (u16)7031), Command(0x0C63), Ctrl_0xXXXX(...)
     let tag: number;
     // 制御命令 のうち、用途がわかっているものは専用の名前をつけているので、名前から opcode を決める
     if (t.text === SCRIPT_CALL_NAME) tag = ControlType.CallIndirect; // 呼び先が式のスクリプト呼び出し, e.g. ScriptCall(p1, 0)
-    else if (t.text === ENTITY_CREATE_NAME) tag = ControlType.EntityCreate;
-    else if (t.text === SUBROUTINE_CALL_NAME) tag = ControlType.SubroutineCall;
+    else if (t.text === CHARA_NAME) tag = ControlType.Chara;
+    else if (t.text === COMMAND_NAME) tag = ControlType.Command;
     else if (t.text === LOAD_MAP_NAME) tag = ControlType.LoadMap;
     else if (t.text === DEBUG_PRINT_NAME) tag = ControlType.DebugPrint;
     else if (t.text === SET_ZONE_CALLBACK_NAME) tag = ControlType.SetZoneCallback;
+    else if (t.text === MESG_NAME) tag = ControlType.Mesg;
     else {
       // Ctrl_0xXXXX は opcode を直に書いた形。それ以外の識別子は呼び出しではない
       const ctrlId = ctrlIdOf(t.text);
@@ -493,7 +506,7 @@ class Parser {
     if (this.at("*")) return this.parseMemory(false);
     if (this.at("BIT")) return this.parseBit();
 
-    // 識別子  result / p0 / v3 / StringRef(STR_XXXX) / 呼び出し
+    // 識別子  result / p0 / v3 / StringRef(Str_XXXX) / 呼び出し
     if (t.type === "IDENT") {
       // result (スクリプトの戻り値)
       if (t.text === "result") {
@@ -515,7 +528,7 @@ class Parser {
         return new Instruction(InsnType.Variable, Number(m[1]));
       }
 
-      // StringRef(STR_XXXX)
+      // StringRef(Str_XXXX)
       if (t.text === STRING_REF_NAME) {
         this.next();
         this.expect("(");

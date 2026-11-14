@@ -43,7 +43,7 @@ _080A7844:
 	str r0, [r1]
 	bl MessageWindow_Close
 	movs r0, #7
-	bl MainMenu_SetHudMode
+	bl HUD_SetMode
 	ldr r0, _080A788C @ =0x03002BE0
 	ldr r0, [r0]
 	bl Player_StartDeathVanish
@@ -94,7 +94,7 @@ _080A78BA:
 	bge _080A78BA
 	bl MessageWindow_Close
 	movs r0, #7
-	bl MainMenu_SetHudMode
+	bl HUD_SetMode
 	movs r1, #0xd4
 	lsls r1, r1, #2
 	adds r0, r5, r1

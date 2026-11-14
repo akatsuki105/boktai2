@@ -61,28 +61,28 @@ static inline void UpdateSunTimers(Clock* c) {
 
   c->spanOfTime = Time_GetSpanOfTime();
   switch (c->spanOfTime) {
-    case TIME_NIGHT: {
-      c->unk_0f = Div(blend, 60) >> 1;
+    case TIME_NIGHT_DAWN: {
+      c->twilightLevel = Div(blend, 60) >> 1;
       break;
     }
     case TIME_MORNING: {
-      c->unk_0f = (Div(blend, 60) >> 1) + 32;
+      c->twilightLevel = (Div(blend, 60) >> 1) + 32;
       break;
     }
     case TIME_DAYTIME: {
-      c->unk_0f = 0;
+      c->twilightLevel = 0;
       break;
     }
     case TIME_SUNSET: {
-      c->unk_0f = Div(blend, 60);
+      c->twilightLevel = Div(blend, 60);
       break;
     }
-    case TIME_UNK4: {
-      c->unk_0f = Div(blend, 60);
+    case TIME_NIGHT_DUSK: {
+      c->twilightLevel = Div(blend, 60);
       break;
     }
-    case TIME_UNK5: {
-      c->unk_0f = 0;
+    case TIME_NIGHT_MID: {
+      c->twilightLevel = 0;
       break;
     }
   }
@@ -342,12 +342,12 @@ NON_MATCH u32 Time_GetSpanOfTime(void) {
     return TIME_SUNSET;
   }
   if (gClock.untilSunrise.hour == 0) {
-    return TIME_NIGHT;
+    return TIME_NIGHT_DAWN;
   }
   if (gClock.untilSunset.hour == 0) {
-    return TIME_UNK4;
+    return TIME_NIGHT_DUSK;
   }
-  return TIME_UNK5;
+  return TIME_NIGHT_MID;
 #else
   INCFUNC("asm/func/Time_GetSpanOfTime.inc");
 #endif
@@ -437,13 +437,13 @@ u32 Cmd_GetSpanOfTime(void) {
 }
 
 // 0x1833
-void Cmd_1833(void) {}
+void Cmd_Nop_1833(void) {}
 
 // 0x2F51
-void Cmd_2F51(void) {}
+void Cmd_Nop_2F51(void) {}
 
 // 0x9146
-void Cmd_9146(void) {}
+void Cmd_Nop_9146(void) {}
 
 // 残差7命令 (34/41). 原典は段ごとに cmp + bhi で次へ進み movs で月相を作るが, if/else で phase に代入すると agbcc は bls で共通の代入へ寄せて縮める
 // 月相判定を値を返す static inline に切り出すと 41/41 まで揃い, 残りは moonAge を ldrh で読み直すか計算値を lsls/lsrs で切り詰めるかだけ (u16 ローカルで受けると 42)

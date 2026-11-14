@@ -52,7 +52,7 @@ NON_MATCH void SunCountdown_Draw(SunCountdown* p) {
   s32 x;
 
   if (clock != NULL) {
-    if (clock->spanOfTime == TIME_NIGHT || clock->spanOfTime == TIME_UNK4 || clock->spanOfTime == TIME_UNK5) {
+    if (clock->spanOfTime == TIME_NIGHT_DAWN || clock->spanOfTime == TIME_NIGHT_DUSK || clock->spanOfTime == TIME_NIGHT_MID) {
       tile = SunCountdown_GetTilePtr(0, 4, 15);
       hour = gClock.untilSunrise.hour;
       minute = gClock.untilSunrise.minute;
@@ -74,7 +74,7 @@ NON_MATCH void SunCountdown_Draw(SunCountdown* p) {
     }
 
     tile = SunCountdown_GetTilePtr(0, 8, 15);
-    if (gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5) {
+    if (gClock.spanOfTime == TIME_NIGHT_DAWN || gClock.spanOfTime == TIME_NIGHT_DUSK || gClock.spanOfTime == TIME_NIGHT_MID) {
       base = 110;
     } else {
       base = 78;

@@ -8,24 +8,30 @@ import type { addr } from "../common/gba/gba.ts";
 import * as MFT from "../encoding/mft/mft.ts";
 import { ByteStream, InstructionReader } from "../bokcc/instruction_reader.ts";
 import { scriptName } from "../bokcc/instruction.ts";
-import { buildPrintContext, INCLUDE_DIR } from "../bokcc/print_context.ts";
+import { buildPrintContext } from "../bokcc/print_context.ts";
 import * as path from "@std/path";
 
 const filename = path.basename(import.meta.filename ?? "unknown.ts");
 
 const ID = 0xA41E;
 
-// bokcc.ts baserom.gba --strings constants/strings.h --scripts constants/script.h > data/scripts/scripts.bokc
+// tools/extract_script.sh
+// or
+// bokcc.ts baserom.gba --strings data/scripts/strings.h --scripts data/scripts/script.h --commands data/scripts/commands.h --stat data/scripts/stat.h --world data/scripts/world.h --scratch data/scripts/scratch.h > data/scripts/scripts.bokc
 const main = () => {
   new Command()
     .name("bokcc.ts")
     .description("ROM内の全スクリプトをデコンパイルして .bokc として標準出力に書き出す。")
     .argument("<rom:string>", "Path to a GBA ROM file.")
-    .option("--strings <include:string>", `文字列IDの名前を定義したヘッダ, #include に書く綴りで指定する (${INCLUDE_DIR}/ 配下から読む)`)
-    .option("--scripts <include:string>", `スクリプトIDの名前を定義したヘッダ, #include に書く綴りで指定する (${INCLUDE_DIR}/ 配下から読む)`)
+    .option("--strings <path:string>", "文字列IDの名前を定義したヘッダのパス, e.g. data/scripts/strings.h")
+    .option("--scripts <path:string>", "スクリプトIDの名前を定義したヘッダのパス, e.g. data/scripts/script.h")
+    .option("--commands <path:string>", "コマンドIDの名前を定義したヘッダのパス, e.g. data/scripts/commands.h")
+    .option("--stat <path:string>", "gStat のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/stat.h")
+    .option("--world <path:string>", "gWorld のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/world.h")
+    .option("--scratch <path:string>", "gScratch のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/scratch.h")
     .action((opts, romPath) => {
-      const includes = [opts.strings, opts.scripts].filter((i): i is string => i !== undefined).sort();
-      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts });
+      const includes = [opts.strings, opts.scripts, opts.commands, opts.stat, opts.world, opts.scratch].filter((i): i is string => i !== undefined).sort();
+      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts, commands: opts.commands, stat: opts.stat, world: opts.world, scratch: opts.scratch });
 
       try {
         const rom = new DataView((Deno.readFileSync(romPath)).buffer);
@@ -60,7 +66,8 @@ const main = () => {
            *  }
            */
           const reader = new InstructionReader(new ByteStream(rom, script - gba.BASE));
-          console.log(`// 0x${gba.toHex32(script)}`);
+          const comment = ctx.scriptComments?.get(scripts[i].id);
+          console.log(`// 0x${gba.toHex32(script)}` + (comment !== undefined ? ", " + comment : ""));
           try {
             const name = scriptName(scripts[i].id, ctx);
             let first = true;

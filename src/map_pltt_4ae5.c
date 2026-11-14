@@ -41,7 +41,7 @@ typedef struct {
   u16 unk_648;                   // 0x648, _Init と時間帯の変わり目で 0 を入れるだけ, 読み手は未発見
   u16 unk_64a;                   // 0x64A, 0 のときだけ weatherState の処理を回す, 非0 を入れる箇所は未発見
   u16 spanOfTime;                // 0x64C
-  u16 unk_64e;                   // 0x64E, gClock.unk_0f
+  u16 twilightLevel;             // 0x64E, gClock.twilightLevel の写し, 書くだけで読み手がいない
   u16 oscTimer;                  // 0x650, oscPeriod に達すると oscLevel を1段動かす
   u16 unk_652;                   // 0x652, '.a[0]=4', 読み手は未発見
   u16 oscLevel;                  // 0x654, 往復する混合比, MapPltt_BlendRows が s16 として読み >>1 して使う
@@ -550,7 +550,7 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
       p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;
     }
     p->spanOfTime = gClock.spanOfTime;
-    p->unk_64e = gClock.unk_0f;
+    p->twilightLevel = gClock.twilightLevel;
     p->curPltt = p->plttTimeBlend;
     if (p->timeBlendLevel <= 0x3F) {
       MapPltt_StepBlend(p);
@@ -624,7 +624,7 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 id) {
   p->fadeTimer = 0;
   p->fadeShift = 0;
   p->crossfadeLevel = 0;
-  p->unk_64e = 0;
+  p->twilightLevel = 0;
   p->timeBlendLevel = 0;
   if (p->flags & MAPPLTT_TIMEOFDAY) {
     GetTimeOfDayPlttPair(&id0, &id1);
@@ -632,7 +632,7 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 id) {
     p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
     p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;
     MapPltt_Rebuild(p);
-    p->unk_64e = gClock.unk_0f;
+    p->twilightLevel = gClock.twilightLevel;
     p->spanOfTime = gClock.spanOfTime;
     src = p->plttWeatherBlend;
   } else if (p->flags & MAPPLTT_OSCILLATE) {

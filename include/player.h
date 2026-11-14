@@ -321,7 +321,7 @@ typedef struct Player {
   u16 refuelFacing;                 // 0x3B8, refuelPos に着いたときに向く方向
   u16 unk_3ba;                      // 0x3BA, Cmd_E9E2 が 1 を書く
   u8 wallSidling;                   // 0x3BC, 壁張り付き (PACT_WALL) が横歩きの段階 (state 1) に入っているか, 立っている間だけ PACT_WALL 中に R で見回せる
-  Dir8U8 actionDir;                 // 0x3BD, PACT_WALL / PACT_PUSH の基準方向, Player_EnterWall が設定して facing をその反対向きにし, Cmd_7017 は PACT_WALL / PACT_PUSH のときだけ facing の代わりに (actionDir + 4) & 7 を返す
+  Dir8U8 actionDir;                 // 0x3BD, PACT_WALL / PACT_PUSH の基準方向, Player_EnterWall が設定して facing をその反対向きにし, Cmd_GetPlayerDir は PACT_WALL / PACT_PUSH のときだけ facing の代わりに (actionDir + 4) & 7 を返す
   u16 wallPressTimer;               // 0x3BE, 氷でない床でまっすぐ壁に歩き当たっている連続フレーム数, 5 になった回に前方が十分高い壁なら PACT_WALL に入る
   Vec3 cameraLookAt;                // 0x3C0, カメラの注視点, mover.pos + lookAroundOffset (+150 上) と今の注視点を 1:4 で混ぜて作る
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
@@ -405,7 +405,7 @@ typedef struct Player {
   WorldPos waypoints[4];            // 0x478, 巡回地点, val に着いたときの向きが入る
   PlayerFunc lockedUpdate;          // 0x498, mode == PMODE_LOCKED のときの update
   Vec3 moveTarget;                  // 0x49C, 操作不能中の移動ルーチンが向かう座標
-  u16 knockbackSpeed_4a4;           // 0x4A4, スクリプト (Cmd_7A25 の '.f'=30) が入れる吹き飛びの速さ, 操作不能中の吹き飛び処理が向きの反対へ押し出しながら毎フレーム 3/4 に減らし 0 で止まる
+  u16 knockbackSpeed_4a4;           // 0x4A4, スクリプト (Cmd_KnockbackPlayer の '.f'=30) が入れる吹き飛びの速さ, 操作不能中の吹き飛び処理が向きの反対へ押し出しながら毎フレーム 3/4 に減らし 0 で止まる
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
   u8 unk_4a7;                       // 0x4A7, FUN_0807c748 の第3引数
   u8 unk_4a8;                       // 0x4A8
@@ -462,7 +462,7 @@ typedef struct Player {
   u16 emoteTimer;                   // 0x992, エモートを出しておく残りフレーム, 0 になった回に Emote_Show で消す, 0 なら時間では消さない
   MsgPacket selfMsg;                // 0x994, Player_SendMsgToSelf が組み立てて自分宛てに送るメッセージ, args は可変長なので後ろの unk_9a0 まで伸びる
   u8 unk_9a0[0x9BC - 0x9A0];        // 0x9A0
-  u16 forbidFlags;                  // 0x9BC, スクリプト (Cmd_CD57 '.f') が立てる禁止ビット, bit0: 武器での攻撃, bit1: MAGIC_EARTH 以下の魔法, bit2〜: MAGIC_TRANSFORM 以降の魔法を1つずつ, 0x4000: 攻撃すべて
+  u16 forbidFlags;                  // 0x9BC, スクリプト (Cmd_SetPlayerForbidFlags '.f') が立てる禁止ビット, bit0: 武器での攻撃, bit1: MAGIC_EARTH 以下の魔法, bit2〜: MAGIC_TRANSFORM 以降の魔法を1つずつ, 0x4000: 攻撃すべて
   u16 pad_9be;                      // 0x9BE, padding
   s32 forbidScriptID;               // 0x9C0, 禁止された攻撃を B で出そうとしたときに実行するスクリプト, '.p'
   s32 eventScriptID;                // 0x9C4, カーモス化 (0), 熱中症で倒れた (1), 黒ジャンゴの暴走 (2) のときに kind を引数にして実行するスクリプト, '.R'

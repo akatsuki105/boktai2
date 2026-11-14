@@ -29,18 +29,20 @@ export enum ControlType {
   CallIndirect = 0x121F,
   Return = 0xCD3A,
   LoadMap = 0xC8BB,
-  EntityCreate = 0x9906,
-  SubroutineCall = 0xB745,
+  Chara = 0x9906,
+  Command = 0xB745,
   DebugPrint = 0xB96E,
   SetZoneCallback = 0xD4CB,
+  Mesg = 0x22FF,
 }
 
 // .bokc 上の綴り。printer (controlToString) と parser (tryParseCallLike) が同じものを使う
-export const ENTITY_CREATE_NAME = "EntityCreate";
-export const SUBROUTINE_CALL_NAME = "SubroutineCall";
+export const CHARA_NAME = "Chara";
+export const COMMAND_NAME = "Command";
 export const LOAD_MAP_NAME = "LoadMap";
 export const DEBUG_PRINT_NAME = "DebugPrint";
 export const SET_ZONE_CALLBACK_NAME = "SetZoneCallback";
+export const MESG_NAME = "Mesg";
 export const SCRIPT_CALL_NAME = "ScriptCall"; // 0x121F 専用, 呼び先が定数の 0x70 は scriptName() の綴り
 export const STRING_REF_NAME = "StringRef";
 
@@ -48,6 +50,10 @@ export const STRING_REF_NAME = "StringRef";
 export type PrintContext = {
   stringNames?: ReadonlyMap<number, string>; // STRING_REF_NAME の 文字列ID
   scriptNames?: ReadonlyMap<number, string>; // スクリプトID, 定義の見出しと 0x70 の呼び先の両方に使う
+  commandNames?: ReadonlyMap<number, string>; // gCommandList のコマンドID, Command / Chara の第1引数に使う
+  memoryNames?: ReadonlyMap<string, string>; // メモリ参照の綴り -> 名前 (data/scripts/stat.h の PLAYER_X など, world.h / scratch.h も同じ)
+  memoryIndexedNames?: ReadonlyMap<string, string>; // 添字付きメモリ参照の綴り (添字の位置を \0 にしたもの) -> 名前 (data/scripts/stat.h の FRIENDSHIP(i) など)
+  scriptComments?: ReadonlyMap<number, string>; // script.h の行末コメント, 定義の直前のアドレスのコメントにだけ出す
 };
 
 // ラベル(0x50)のうち if/switch の節として現れるもの。これ以外のラベルは名前付き引数で、1文字の意味は呼び出し先のエンジン関数ごとに異なる。
@@ -129,21 +135,22 @@ export const DATA_TYPE_BY_NAME: Readonly<Record<string, DataType>> = Object.from
 // 型タグから型を引く。タグは enum の値そのものなので、型を持たないニブルかどうかの判定だけを行う。
 // 第1引数のキャストを書かない制御命令と、書かなかったときの型。その位置の値は型が1つに決まっているのでキャストが省ける。printer と parser が同じ表を見る
 export const IMPLICIT_ARG_TYPES: Readonly<Record<number, DataType>> = {
-  [ControlType.SubroutineCall]: DataType.UInt16,
-  [ControlType.EntityCreate]: DataType.UInt16,
+  [ControlType.Command]: DataType.UInt16,
+  [ControlType.Chara]: DataType.UInt16,
   [ControlType.LoadMap]: DataType.UInt24,
+  [ControlType.Mesg]: DataType.UInt16,
 };
 
 export const dataTypeOfTag = (tag: number): DataType | undefined => (tag !== DataType.Void && tag in DATA_TYPE_NAMES) ? tag as DataType : undefined;
 
 export const toHex = (n: number, minDigits = 0): string => n.toString(16).toUpperCase().padStart(minDigits, "0");
 
-// 名前の付いていない識別子の綴り。16進であることを示す 0x を名前の中に入れてあるので、ヘッダで付ける名前(Script_StaffRoll)と衝突しない。
-const SCRIPT_NAME_PREFIX = "Script_0x";
+// 名前の付いていない識別子の綴り。16進であることを示す 0x を名前の中に入れてあるので、ヘッダで付ける名前(Scr_StaffRoll)と衝突しない。
+const SCRIPT_NAME_PREFIX = "Scr_0x";
 const CTRL_NAME_PREFIX = "Ctrl_0x";
 
 // スクリプトIDの綴り。定義の見出し(tools/dumper/bokcc.ts)と 0x70 の呼び先(callToString)が同じものを使うので、綴りの定義元はここ1箇所。
-// ctx に名前の表があればそれを出す。その名前は StringRef と同じくCプリプロセッサが展開してから parser に届く前提なので、parser 側は Script_0xXXXX の形だけを受ける。
+// ctx に名前の表があればそれを出す。名前は script.h で数値に定義してあり, Cプリプロセッサが展開するので, parser は Scr_0xXXXX の綴りと数値の両方を受ける。
 export const scriptName = (id: number, ctx?: PrintContext): string => ctx?.scriptNames?.get(id) ?? SCRIPT_NAME_PREFIX + toHex(id, 4);
 
 // 挙動が未解明の制御命令の綴り。
@@ -361,7 +368,9 @@ export class Instruction {
       }
       case InsnType.Constant: {
         // 定数の型(=ニブル)はテキストから復元できないとコンパイルできないので、最頻の s32(コンパクト形式)以外はキャストで型を明示する。
-        s = this.typeCast() + this.value.toString() + this.aliasSuffix();
+        // u24 の定数はスクリプトIDにしか使われていないので, script.h に名前があればその名前で書く
+        const name = this.dataType === DataType.UInt24 ? ctx?.scriptNames?.get(this.value) : undefined;
+        s = this.typeCast() + (name ?? this.value.toString()) + this.aliasSuffix();
         break;
       }
       case InsnType.Memory: {
@@ -370,17 +379,21 @@ export class Instruction {
         } else {
           s = "*((" + DATA_TYPE_NAMES[this.dataType] + " *)(" + this.formatBase(this.value) + "))"; // *((s16 *)(world + 0x2))
         }
+        // 綴りが stat.h / world.h / scratch.h のマクロの中身と完全に一致すれば, その名前で書く (cpp が同じ綴りに戻す)
+        if (this.aliasSuffix() === "") s = ctx?.memoryNames?.get(s) ?? s;
         s += this.aliasSuffix();
         break;
       }
       case InsnType.MemoryIndexed: {
-        const index = this.children[0].toString(ctx) + ", " + this.children[1].toString(ctx);
-        if (this.dataType === DataType.Bool) {
-          s = "BIT(" + this.formatBase(this.value) + ", " + this.bitIndex + ", " + index + ")"; // BIT(world + 0xC, 1, 要素サイズ, 添字)
-        } else {
-          s = "((" + DATA_TYPE_NAMES[this.dataType] + " *)(" + this.formatBase(this.value) + "))[" + index + "]"; // ((s16 *)(world + 0x2))[要素サイズ, 添字]
-        }
-        s += this.aliasSuffix();
+        const spell = (index: string) => {
+          const lenAndIndex = this.children[0].toString(ctx) + ", " + index;
+          if (this.dataType === DataType.Bool) return "BIT(" + this.formatBase(this.value) + ", " + this.bitIndex + ", " + lenAndIndex + ")"; // BIT(world + 0xC, 1, 要素数, 添字)
+          return "((" + DATA_TYPE_NAMES[this.dataType] + " *)(" + this.formatBase(this.value) + "))[" + lenAndIndex + "]"; // ((s16 *)(world + 0x2))[要素数, 添字]
+        };
+        const index = this.children[1].toString(ctx);
+        // 添字以外の綴りが stat.h / world.h / scratch.h の引数付きマクロと完全に一致すれば, 添字を引数にしてその名前で書く
+        const name = this.aliasSuffix() === "" ? ctx?.memoryIndexedNames?.get(spell("\0")) : undefined;
+        s = (name !== undefined ? name + "(" + index + ")" : spell(index)) + this.aliasSuffix();
         break;
       }
       case InsnType.Expression: {
@@ -539,25 +552,30 @@ export class Instruction {
         s = operands.length > 0 ? "return " + operands[0].toString(ctx) : "return";
         break;
       }
-      // 呼び先が式のスクリプト呼び出し。呼び先を綴れないのでこちらだけ ScriptCall(...) の形で書く(呼び先が定数の 0x70 は Script_0xXXXX(...))
+      // 呼び先が式のスクリプト呼び出し。呼び先を綴れないのでこちらだけ ScriptCall(...) の形で書く(呼び先が定数の 0x70 は Scr_0xXXXX(...))
       case ControlType.CallIndirect: {
         s = SCRIPT_CALL_NAME + "(" + this.paramsToString(ctx, 0) + ")";
         break;
       }
+      // 第1引数はマップ初期化スクリプトのIDなので, script.h の名前で書く
       case ControlType.LoadMap: {
-        s = LOAD_MAP_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value]) + this.paramsToString(ctx, 1, ", ") + ")";
+        s = LOAD_MAP_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value], ctx?.scriptNames) + this.paramsToString(ctx, 1, ", ") + ")";
         break;
       }
       // Entity を生成するサブルーチンを呼ぶ。値1つを C の実引数として渡し、戻り値は捨てる。
       // ハンドラは src/vm_ctrl2.c の VM_Ctrl_CreateEntity
-      case ControlType.EntityCreate: {
-        s = ENTITY_CREATE_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value]) + this.paramsToString(ctx, 1, ", ") + ")";
+      // 2つ目の値は C の実引数として渡す u16 で, ID やフラグのことが多いので 0 以外は16進で書く
+      case ControlType.Chara: {
+        const param = this.children[1];
+        const hexParam = param !== undefined && param.insnType === InsnType.Constant && param.dataType === DataType.UInt16 && param.value !== 0;
+        const rest = hexParam ? ", " + param.idToString(ctx) + this.paramsToString(ctx, 2, ", ") : this.paramsToString(ctx, 1, ", ");
+        s = CHARA_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value], ctx?.commandNames) + rest + ")";
         break;
       }
       // 汎用のサブルーチン呼び出し。引数は呼ばれた側が自分で読み、戻り値は result に入る。
       // ハンドラは src/vm_ctrl2.c の VM_Ctrl_CallSubroutine
-      case ControlType.SubroutineCall: {
-        s = SUBROUTINE_CALL_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value]) + this.paramsToString(ctx, 1, ", ") + ")";
+      case ControlType.Command: {
+        s = COMMAND_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value], ctx?.commandNames) + this.paramsToString(ctx, 1, ", ") + ")";
         break;
       }
       // EUC-JP の文字列をデバッグ出力する。ハンドラは src/vm.c の VM_Ctrl_DebugPrint
@@ -567,6 +585,11 @@ export class Instruction {
       }
       case ControlType.SetZoneCallback: {
         s = SET_ZONE_CALLBACK_NAME + "(" + this.paramsToString(ctx, 0) + ")";
+        break;
+      }
+      // 第1引数の id 宛てに、残りの u16 値の並びをメッセージとして送る。ハンドラは src/vm_ctrl2.c の VM_Ctrl_Mesg
+      case ControlType.Mesg: {
+        s = MESG_NAME + "(" + operands[0].idToString(ctx, IMPLICIT_ARG_TYPES[this.value]) + this.paramsToString(ctx, 1, ", ") + ")";
         break;
       }
       // 挙動が未解明の制御命令は opcode をそのまま名前にして保留する。
@@ -590,10 +613,11 @@ export class Instruction {
 
   // subroutine ID / script ID のような識別子は16進で描画する(型とエイリアス注釈は残す)。
   // implicitType を渡すとその型のときだけキャストを省く(IMPLICIT_ARG_TYPES の命令は型が1つに決まっているので parser 側が決め打ちできる)
-  private idToString(ctx?: PrintContext, implicitType?: DataType): string {
+  // names に名前があればマクロ名で出す。Cプリプロセッサが16進に展開してから parser に届くので、parser 側は数値だけを受ける
+  private idToString(ctx?: PrintContext, implicitType?: DataType, names?: ReadonlyMap<number, string>): string {
     if (this.insnType !== InsnType.Constant) return this.toString(ctx); // e.g. LoadMap(p0);
     const cast = this.dataType === implicitType ? "" : this.typeCast();
-    return cast + "0x" + toHex(this.value, 4) + this.aliasSuffix();
+    return cast + (names?.get(this.value) ?? "0x" + toHex(this.value, 4)) + this.aliasSuffix();
   }
 
   private paramsToString(ctx: PrintContext | undefined, skip: number, prefix = ""): string {

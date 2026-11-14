@@ -207,7 +207,7 @@ NON_MATCH s32 GameSystem_Update(GameSystem* p) {
         VM_ExecByID(scriptID, NULL);
       }
       if (scriptID == 0) {
-        VM_ExecSpecial();
+        VM_ExecBoot();
       }
 
       gDispcntLocked = FALSE;
@@ -342,7 +342,7 @@ u32 Cmd_GetBackupValue(void) { return FUN_082321e0(VM_GetPC()); }
 // システムデータを読み込み、読めなかったら初期値で作り直す
 // 残差2件: 原典は ok が入ったレジスタを 0 の供給元として使い回すが、こちらは movs r2, #0 を別に作る。そのぶん ok と gSystemSaveData のポインタの割り当てが r4/r5 で逆になる
 // 値をアドレスより先に作る順序は、 textSpeed と calibration を static inline の setter 経由にすると消えた (それだけでは一致しないので直接アクセスに戻した)。Tier A-C 試済
-NON_MATCH bool32 Save_ReadSystemDataOrInit(void) {
+NON_MATCH bool32 Cmd_ReadSystemDataOrInit(void) {
 #ifdef NONMATCHING_C
   bool8 ok = Save_ReadSystemData();
   if (!ok) {
@@ -357,7 +357,7 @@ NON_MATCH bool32 Save_ReadSystemDataOrInit(void) {
   }
   return ok;
 #else
-  INCFUNC("asm/func/Save_ReadSystemDataOrInit.inc");
+  INCFUNC("asm/func/Cmd_ReadSystemDataOrInit.inc");
 #endif
 }
 
@@ -376,7 +376,7 @@ NON_MATCH bool32 UNUSED GameSystem_StartMap(GameSystem* p) {
     VM_ExecByID(id, NULL);
   }
   if (id == 0) {
-    VM_ExecSpecial();
+    VM_ExecBoot();
   }
   return TRUE;
 #else

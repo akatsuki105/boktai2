@@ -150,7 +150,7 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
 }
 
 // 0x3535, モザイクをかけるスクリプトコマンド, 'c' が開始値、'a' が目標値、'i' が1段あたりのフレーム数
-s32 MosaicFader_StartFromScript(void) {
+s32 Cmd_StartMosaicFader(void) {
   u8 from[4], to[4];
   u16 interval[4];
   s32 i;

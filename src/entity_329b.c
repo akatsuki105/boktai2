@@ -155,7 +155,7 @@ NON_MATCH void Entity329B_DrawSunTime(Entity329B* p) {
     return;
   }
 
-  if (gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5) {
+  if (gClock.spanOfTime == TIME_NIGHT_DAWN || gClock.spanOfTime == TIME_NIGHT_DUSK || gClock.spanOfTime == TIME_NIGHT_MID) {
     dst = Entity329B_GetTilePtr(0, 4, 15);
     hour = gClock.untilSunrise.hour;
     minute = gClock.untilSunrise.minute;
@@ -172,7 +172,7 @@ NON_MATCH void Entity329B_DrawSunTime(Entity329B* p) {
   }
 
   dst = Entity329B_GetTilePtr(0, 8, 15);
-  if (gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5) {
+  if (gClock.spanOfTime == TIME_NIGHT_DAWN || gClock.spanOfTime == TIME_NIGHT_DUSK || gClock.spanOfTime == TIME_NIGHT_MID) {
     width = 2;
     tile = 0x6E;
   } else {

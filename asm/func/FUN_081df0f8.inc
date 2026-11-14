@@ -123,7 +123,7 @@ _081DF1BC:
 	movs r3, #4
 	bl StartBgObjPlttFade
 	movs r0, #5
-	bl MainMenu_SetHudMode
+	bl HUD_SetMode
 	movs r0, #1
 	movs r1, #7
 	movs r2, #0x1c

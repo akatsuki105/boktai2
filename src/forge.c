@@ -5,6 +5,7 @@
 #include "global.h"
 #include "input.h"
 #include "item.h"
+#include "menu.h"
 #include "msgbus.h"
 #include "player.h"
 #include "puff.h"
@@ -144,9 +145,7 @@ void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID);
 void RemoveWeapon(slot32_t n);
 bool32 AddWeapon(WeaponData* data);
 const WeaponData* ReadWeaponDB(s32 idx);
-void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
-s32 GetWeaponWearPose(WeaponData* w);
 
 // 武器スキルと素材の組み合わせからRランクの武器ができるかを判定する
 static inline bool8 RollRareWeapon(Forge* p, ForgeWeapon* e) {

@@ -6,7 +6,7 @@
 
 typedef struct {
   AuxSprite sprite;        // 0x00
-  AuxSpriteGfx gfx;        // 0x2C, SPRITE_CC88
+  AuxSpriteGfx gfx;        // 0x2C, SPRITE_PETAL_CC88
   s16 x;                   // 0x48, 下位4ビットが小数, 0xFFF で折り返すので画面の 0..255 を回る
   s16 y;                   // 0x4A, x と同じ
   u8 unk_4c[0x50 - 0x4C];  // 0x4C, 読み手も書き手も未発見
@@ -97,7 +97,7 @@ NON_MATCH void Entity5292_InitElems(Entity5292* p) {
     u32 angle;
     s32 speed;
 
-    Video_GetAuxSprite(gfx, SPRITE_CC88);
+    Video_GetAuxSprite(gfx, SPRITE_PETAL_CC88);
     AuxSprite_Add(spr, gfx, 0);
     elem->sprite.flags |= SPRFLAG_SCREEN_COORD;
     elem->sprite.priority = 1;

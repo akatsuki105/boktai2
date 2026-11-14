@@ -43,7 +43,7 @@ typedef enum {
   STATE_H_STOP = 3,     // 移動床がノードで止まっている, 待ち時間が過ぎると STATE_H_MOVE
   STATE_V_STOP = 4,     // 昇降床が端で止まっている, プレイヤーが waitTime 乗っていると STATE_V_MOVE
   STATE_UNK_5 = 5,      // 何もしない
-  STATE_DESTROYED = 6,  // Elevator_Destroy が入れる, ElevatorManager_Update は飛ばす
+  STATE_DESTROYED = 6,  // Cmd_DestroyElevator が入れる, ElevatorManager_Update は飛ばす
 } ElevatorState;
 
 struct Elevator;
@@ -1679,7 +1679,7 @@ s32 Cmd_7A75(void) {
 }
 
 // 0x7E33, 指定した id のエレベータを動かす, '.m' で動かし方を選ぶ
-void Elevator_Start(void) {
+void Cmd_StartElevator(void) {
   s32 mode = VM_GetNamedArgValue('m', 1);
   s32 id = VM_GetNamedArgValue('n', 0);
 
@@ -1717,7 +1717,7 @@ void Cmd_AE3A(void) {
 }
 
 // 0x3E91
-void Elevator_Destroy(void) {
+void Cmd_DestroyElevator(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevatorManager != NULL && id != 0) {

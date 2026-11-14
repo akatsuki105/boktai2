@@ -8,6 +8,8 @@
 #include "sprite_aux.h"
 #include "vec3.h"
 
+// コカトリス(ENEK_COCKA)の石化光線?(光線という名前だが、実際の見た目は気弾の方が近い)
+
 typedef struct {
   u8 state;            // 0x00, 下位3bitが状態関数表の添字, bit3 が立つと timer を張り直して anim を 2 番に戻す
   u8 unk_01;           // 0x01, 生成時に 0xFF
@@ -33,7 +35,7 @@ static_assert(sizeof(Entity081e9cacElem) == 244);
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_10
   AuxAnimFile* animFile;         // 0x18, ANIM_D6C8
-  AuxSpriteGfx gfx;              // 0x1C, SPRITE_2D41
+  AuxSpriteGfx gfx;              // 0x1C, SPRITE_EFF_2D41
   u32 activeMask;                // 0x38, elems の使用中ビット
   Entity081e9cacElem elems[12];  // 0x3C
 } Entity081e9cac;
@@ -377,7 +379,7 @@ Entity081e9cacElem* Entity081e9cac_SpawnAtAngle(Vec3* pos, u32 angle, s32 speed,
   Vec3 vel;
 
   Vec3_SetPolar(&vel, angle, speed);
-  return Entity081e9cac_Spawn(pos, NULL, &vel, angle, 0x309, power, knockback, iframes, lifetime);
+  return Entity081e9cac_Spawn(pos, NULL, &vel, angle, 0x0309, power, knockback, iframes, lifetime);
 }
 
 // 258/258命令, AuxSprite_AdvanceAnim に渡す sprite の写しが原典は r8, こちらは ip, 試済: spr ローカル, &elem->sprite 直書き, priority の書き方
@@ -478,7 +480,7 @@ s32 Entity081e9cac_Destroy(Entity081e9cac* p) {
 }
 
 s32 Entity081e9cac_Init(Entity081e9cac* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_2D41);
+  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_2D41);
   p->animFile = GetFile(DIR_ANIMATION, ANIM_D6C8);
   gEntity081e9cac = p;
   p->activeMask = 0;

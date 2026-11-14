@@ -62,7 +62,8 @@ void FUN_080846f8(void) {
   }
 }
 
-bool32 FUN_08084710(void) {
+// ブラックホールが吸い込んでいる (state 6) か
+bool32 BlackHole_IsActive(void) {
   if (gBlackHole == NULL) {
     return FALSE;
   }
@@ -73,7 +74,8 @@ bool32 FUN_08084710(void) {
   return FALSE;
 }
 
-void FUN_08084734(Vec3* out) {
+// ブラックホールがいれば吸い込む中心の座標を out に写す
+void BlackHole_GetCenter(Vec3* out) {
   if (gBlackHole != NULL) {
     *out = gBlackHole->unk_c0;
   }

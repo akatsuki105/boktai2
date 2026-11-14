@@ -37,7 +37,7 @@ Boss* FUN_08022a3c(void) {
   for (i = 0; i < 8; i++) {
     Boss* p = gBossList[i];
 
-    if (p != NULL && p->isDemo == 0) {
+    if (p != NULL && p->isCutscene == 0) {
       if (found != NULL) {
         return found;
       }

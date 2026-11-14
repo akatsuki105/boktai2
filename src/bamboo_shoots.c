@@ -211,7 +211,7 @@ NON_MATCH s32 BambooShootManager_Update(BambooShootManager* p) {
   bool32 revealed;
   s32 i;
 
-  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
+  if (gClock.spanOfTime == TIME_NIGHT_DUSK || gClock.spanOfTime == TIME_NIGHT_MID || gClock.spanOfTime == TIME_NIGHT_DAWN) {
     revealed = TRUE;
   } else if (gGameFlags & GAMEFLAG_LINK) {
     revealed = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;
@@ -280,7 +280,7 @@ NON_MATCH s32 BambooShootManager_Init(BambooShootManager* p, u32 _) {
   bool32 visible;
 
   sBambooShootManager = p;
-  if (gClock.spanOfTime == TIME_UNK4 || gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT) {
+  if (gClock.spanOfTime == TIME_NIGHT_DUSK || gClock.spanOfTime == TIME_NIGHT_MID || gClock.spanOfTime == TIME_NIGHT_DAWN) {
     visible = TRUE;
   } else if (gGameFlags & GAMEFLAG_LINK) {
     visible = gPlayerPtr[0] != NULL && gPlayerPtr[0]->goodCondTimer != 0 && gPlayerPtr[0]->goodCondID == GOOD_SEE;

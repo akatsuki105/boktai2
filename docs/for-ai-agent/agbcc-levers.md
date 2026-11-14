@@ -99,7 +99,7 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
   put different arms on the fallthrough.** The `&&` chain emits the `X` block
   first and branches over it; the split form emits `Y` right after the second
   compare and puts `X` last, cross-jumping the two `Y` returns into one.
-  `FUN_08084710` only closed on the split form.
+  `BlackHole_IsActive` only closed on the split form.
 - **Which of the two `movs r0, #N` blocks comes first names the `if`'s own
   return.** For a predicate that ends in `movs r0, #0` / `b` / `movs r0, #1`,
   the block emitted *first* is the value the `if` body returns and the second is
@@ -249,7 +249,7 @@ spelling of the direct form reaches it. The same three stores inside a
 `static inline f(Vec3* out, ...)` do emit plain `strh`, because the parameter is
 a pointer; that is 14 instructions closer on `FUN_080db0f8` (177 -> 163 of 166).
 Note this cuts against the VM-argument idiom, where the word merge *is* what the
-target has (`Entity080ac574_SpawnScripted`) — there the local's address is only
+target has (`Cmd_SpawnEntity080ac574`) — there the local's address is only
 taken after it is filled.
 
 ### `&&` is left-associative, and only sibling comparisons get range-merged

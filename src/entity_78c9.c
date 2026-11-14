@@ -1,6 +1,8 @@
 #include "entity.h"
 #include "global.h"
+#include "random.h"
 #include "sprite_aux.h"
+#include "trig.h"
 
 // 画面下から湧いて左右に揺れながら上がっていく粒, 32個を使い回す
 typedef struct {
@@ -25,24 +27,63 @@ static_assert(sizeof(Entity78C9) == 1720);
 
 const u8 u8_ARRAY_085aa988[4] = {8, 14, 9, 15};  // 0x085AA988
 
-NAKED void Entity78C9Elem_Respawn(Entity78C9* p, Entity78C9Elem* elem, u8 index) { INCFUNC("asm/func/Entity78C9Elem_Respawn.inc"); }
+// 粒を画面下に置き直し, 上昇量・振れ幅・揺れの速さを乱数で決め直す
+void Entity78C9Elem_Respawn(Entity78C9* p, Entity78C9Elem* elem, s32 index) {
+  AuxSprite* sprite = &elem->sprite;
+  s32 amp;
 
-// 残差3命令 (27 対 30), 原典は index を r8 に逃がして elem+8 を呼び出しをまたいで保持するが, こちらは呼び出し後に elem から作り直す
-// AuxSprite* ローカル / AuxSprite_SetPoseIdx / 引数の型 (u8/s32) はいずれも 31〜32 命令で遠ざかる
-NON_MATCH void Entity78C9Elem_Init(Entity78C9* p, Entity78C9Elem* elem, u32 index) {
-#ifdef NONMATCHING_C
-  AuxSprite_Add(&elem->sprite, &p->gfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
-  elem->sprite.poseIdx = u8_ARRAY_085aa988[index & 3];
-  elem->sprite.priority = 1;
+  sprite->flags &= ~SPRFLAG_HIDDEN;
+  elem->active = TRUE;
+  elem->riseSpeed = (index & 1) + 3 + (RandomNext() & 1);
+  amp = (RandomNext() & 3) + 5;
+  elem->swayAmp = (amp - elem->riseSpeed) >> 2;
+  elem->angleStep = (RandomNext() & 7) + 1;
+  elem->angle = 0;
+  elem->unk_6 = 0;
+  sprite->pos.x = (u8)RandomNext() - 16;
+  sprite->pos.y = (RandomNext() & 0x7F) + 160;
+}
+
+void Entity78C9Elem_Init(Entity78C9* p, Entity78C9Elem* elem, s32 index) {
+  AuxSprite* sprite = &elem->sprite;
+
+  AuxSprite_Add(sprite, &p->gfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+  sprite->poseIdx = u8_ARRAY_085aa988[index & 3];
+  sprite->priority = 1;
   Entity78C9Elem_Respawn(p, elem, index);
-#else
-  INCFUNC("asm/func/Entity78C9Elem_Init.inc");
-#endif
 }
 
 void Entity78C9Elem_Destroy(Entity78C9* p, Entity78C9Elem* elem, u32 index) { AuxSprite_Remove(&elem->sprite); }
 
-NAKED s32 Entity78C9_Update(Entity78C9* p) { INCFUNC("asm/func/Entity78C9_Update.inc"); }
+// 粒を左右に揺らしながら上げ, 画面の上に抜けたら下に置き直す
+// 残差はループ外に出す値の選び方だけ (95 対 97), 原典は &gRandTableIdx を退避するがこちらは比較の定数 -20 を退避する
+// Random / RandomNext, 掛け算のオペランド順, dx / dy をローカルに出す形, < -19 / <= -20, y を s16 ローカルに出す形は試済
+NON_MATCH s32 Entity78C9_Update(Entity78C9* p) {
+#ifdef NONMATCHING_C
+  Entity78C9Elem* elem = &p->elems[0];
+  s32 i;
+
+  for (i = 0; i < 32; i++, elem++) {
+    if (elem->active) {
+      AuxSprite* sprite = &elem->sprite;
+      s32 angle, dx, dy;
+
+      elem->angle += elem->angleStep + (Random() & 1);
+      angle = abs(elem->angle);
+      dx = (COS(angle) * elem->swayAmp) >> 12;
+      dy = (((SIN(angle) >> 1) + 0x800) * elem->riseSpeed) >> 12;
+      sprite->pos.x += dx;
+      sprite->pos.y -= dy;
+      if (sprite->pos.y <= -20) {
+        Entity78C9Elem_Respawn(p, elem, i);
+      }
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Entity78C9_Update.inc");
+#endif
+}
 
 s32 Entity78C9_Destroy(Entity78C9* p) {
   Entity78C9Elem* elem = &p->elems[0];

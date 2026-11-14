@@ -1,3 +1,5 @@
+#include "rfu.h"
+
 #include "global.h"
 #include "interrupts.h"
 #include "video.h"
@@ -46,17 +48,7 @@ NON_MATCH void FUN_0823a730(INIT_PARAM* p, u32 isParent, u32 serialNo, u16 avail
 #endif
 }
 
-// 16バイト × 32件のリングバッファ, FUN_0823a790 が書き込み FUN_0823a7d8 が取り出す
-typedef struct {
-  bool8 empty;         // 0x000, FUN_0823a76c が 1 を入れ, 書き込むと 0 になる
-  u8 readIdx;          // 0x001, FUN_0823a7d8 が読む側の添字
-  u8 writeIdx;         // 0x002, FUN_0823a790 が書く側の添字 (0..31)
-  u8 writeCount;       // 0x003, 書き込んだ回数
-  u8 entries[32][16];  // 0x004
-} RfuRingBuf;
-static_assert(sizeof(RfuRingBuf) == 516);
-
-// 呼び出し元 4つ (FUN_0804d868 / FUN_0804dbe0 / FUN_0804d394 / FUN_0804d548) がいずれも rfu_setRecvBuffer と rfu_LMAN_setLMANCallback を呼ぶ文脈でこれを呼ぶので、通信用バッファの初期化とみられる
+// 呼び出し元 4つ (RfuSession_StartNIDataParent / RfuSession_StartNIDataChild / RfuSession_StartUniParent / RfuSession_StartUniChild) がいずれも rfu_setRecvBuffer と rfu_LMAN_setLMANCallback を呼ぶ文脈でこれを呼ぶので、通信用バッファの初期化とみられる
 void FUN_0823a76c(RfuRingBuf* p) {
   CpuFill32(0, p, sizeof(RfuRingBuf));
   p->empty = TRUE;
@@ -75,7 +67,7 @@ bool32 FUN_0823a790(RfuRingBuf* p, void* src) {
   p->empty = FALSE;
 }
 
-// 根拠は FUN_0823a790 と (p, src) / (p, dst) の対になっていることとアドレスが隣接していることだけで、呼び出し元の FUN_0804bb98 は rfu の API を直接は呼んでいない
+// 根拠は FUN_0823a790 と (p, src) / (p, dst) の対になっていることとアドレスが隣接していることだけで、呼び出し元の RfuSession_PopRecvPacket は rfu の API を直接は呼んでいない
 // リングバッファから 16バイト取り出して枠を 0 で埋める, 空なら FALSE
 bool32 FUN_0823a7d8(RfuRingBuf* p, void* dst) {
   if (p->empty) {

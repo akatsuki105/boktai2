@@ -551,7 +551,7 @@ MessageChoice* MessageChoice_Create(u8* textPC, s32 stringBase, void (*callback)
 }
 
 // 選択肢を出すスクリプトコマンド, 'a' が無ければ今のテキストボックスの矩形を使う
-MessageChoice* MessageChoice_CreateFromScript(void) {
+MessageChoice* Cmd_CreateMessageChoice(void) {
   MessageChoice* p;
   s32 settings[7];
   u32 args[4];
@@ -614,7 +614,7 @@ MessageChoice* MessageChoice_CreateFromScript(void) {
 }
 
 // 表示中の選択肢に別の文字列を読み直させるスクリプトコマンド
-void MessageChoice_SetTextFromScript(void) {
+void Cmd_SetMessageChoiceText(void) {
   MessageChoice* p = gMessageChoice;
 
   if (p != NULL && VM_SeekToNamedArg('r')) {

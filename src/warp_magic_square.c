@@ -58,23 +58,26 @@ void WarpMagicSquare_UpdateDepartSink(WarpMagicSquare* p);
 bool32 FUN_08086af0(void);
 void Player_LockHidden(Player* p);
 void FUN_080a6e88(bool32 stopSound);
-void WarpMagicSquare_UpdateDemoParticles(WarpMagicSquare* p);
+void WarpMagicSquare_UpdateCutsceneParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateSpinOut(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateLit(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDepartPillarsUp(WarpMagicSquare* p);
 void Player_LockWarpOut(Player* p, Dir8S32 dir, u32 scriptID);
 bool32 FUN_08086ab8(void);
 void FUN_080a6edc(void);
-void WarpMagicSquare_UpdateDemoPillarsUp(WarpMagicSquare* p);
-void WarpMagicSquare_UpdateDemoPillarsDown(WarpMagicSquare* p);
+void WarpMagicSquare_UpdateCutscenePillarsUp(WarpMagicSquare* p);
+void WarpMagicSquare_UpdateCutscenePillarsDown(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateIdle(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArriveWait(WarpMagicSquare* p);
 void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID);
 void WarpMagicSquare_UpdateDepartParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArriveParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArrivePillarsDown(WarpMagicSquare* p);
-void WarpMagicSquare_UpdateDemoWait(WarpMagicSquare* p);
+void WarpMagicSquare_UpdateCutsceneWait(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDepartWait(WarpMagicSquare* p);
+
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void WarpMagicSquarePtcl_Update(WarpMagicSquarePtcl* ptcl) {
   if (--ptcl->life == 0) {
@@ -253,7 +256,7 @@ void WarpMagicSquare_UpdateLit(WarpMagicSquare* p) {
   Video_SetAuxSpritePltt(&p->gfx, p->plttID + 2);
 }
 
-void WarpMagicSquare_UpdateDemoSink(WarpMagicSquare* p) {
+void WarpMagicSquare_UpdateCutsceneSink(WarpMagicSquare* p) {
   if (p->lift >= 2) {
     p->lift -= 2;
   } else {
@@ -264,11 +267,11 @@ void WarpMagicSquare_UpdateDemoSink(WarpMagicSquare* p) {
     p->sprite.flags &= ~SPRFLAG_BLINK_ODD;
     p->sprite.priority = 3;
     p->sprite2.flags |= SPRFLAG_HIDDEN;
-    WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateDemoPillarsUp);
+    WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateCutscenePillarsUp);
   }
 }
 
-void WarpMagicSquare_UpdateDemoPillarsUp(WarpMagicSquare* p) {
+void WarpMagicSquare_UpdateCutscenePillarsUp(WarpMagicSquare* p) {
   if (p->pillarLevel <= 6) {
     p->pillarLevel++;
     WarpMagicSquare_UpdatePillars(p);
@@ -276,28 +279,28 @@ void WarpMagicSquare_UpdateDemoPillarsUp(WarpMagicSquare* p) {
     p->stateTimer++;
     if (p->stateTimer > 0x1F) {
       PlaySound_082406e0(SE_WARP_START);
-      WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateDemoWait);
+      WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateCutsceneWait);
     }
   }
 }
 
-void WarpMagicSquare_UpdateDemoWait(WarpMagicSquare* p) {
+void WarpMagicSquare_UpdateCutsceneWait(WarpMagicSquare* p) {
   p->stateTimer++;
   if (p->stateTimer > 0xF) {
-    WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateDemoParticles);
+    WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateCutsceneParticles);
   }
 }
 
-void WarpMagicSquare_UpdateDemoParticles(WarpMagicSquare* p) {
+void WarpMagicSquare_UpdateCutsceneParticles(WarpMagicSquare* p) {
   if (p->stateTimer < 32 && !(p->stateTimer & 3)) {
     WarpMagicSquarePtcl_SpawnRise(&p->ptcls[p->stateTimer >> 2], &p->pos);
   }
   if (++p->stateTimer == 64) {
-    WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateDemoPillarsDown);
+    WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateCutscenePillarsDown);
   }
 }
 
-void WarpMagicSquare_UpdateDemoPillarsDown(WarpMagicSquare* p) {
+void WarpMagicSquare_UpdateCutscenePillarsDown(WarpMagicSquare* p) {
   p->sprite.flags &= ~SPRFLAG_HIDDEN;
   if (p->sprite.pos.y < p->pos.y + 22) {
     p->sprite.pos.y += 2;
@@ -349,7 +352,7 @@ NON_MATCH void WarpMagicSquare_UpdateSpinIn(WarpMagicSquare* p) {
 #endif
 }
 
-// プレイヤーが近いと浮き上がって光り, A ボタンでプレイヤーを pos へ飛ばす (Entity7C62_UpdateIdle と同じ形)
+// プレイヤーが近いと浮き上がって光り, A ボタンでプレイヤーを pos へ飛ばす (ChangeMagicSquare_UpdateIdle と同じ形)
 void WarpMagicSquare_UpdateIdle(WarpMagicSquare* p) {
   s32 near;
 
@@ -569,26 +572,27 @@ NON_MATCH void WarpMagicSquare_UpdateSpinOut(WarpMagicSquare* p) {
   INCFUNC("asm/func/WarpMagicSquare_UpdateSpinOut.inc");
 #endif
 }
-
+// 届いたメッセージで光り始め (cmd 7) か沈む演出 (cmd 8) へ切り替える
 // 48/59命令, camera.c の Camera_PollMessages と同じメッセージ取り出しのループの残差, 原典は p と mq を別々のレジスタに持って条件式で gMsgBus を毎回読み直す
-NON_MATCH void WarpMagicSquare_HandleMessages(WarpMagicSquare* p) {
-#ifdef NONMATCHING_C
+void WarpMagicSquare_HandleMessages(WarpMagicSquare* p) {
   MsgQueue* mq = &p->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(mq, msg);
-    if (msg->cmd == 7) {
-      WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateLightUp);
-    } else if (msg->cmd == 8) {
-      WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateDemoSink);
+    switch (msg->cmd) {
+      case 7: {
+        WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateLightUp);
+        break;
+      }
+      case 8: {
+        WarpMagicSquare_SetUpdateCallback(p, WarpMagicSquare_UpdateCutsceneSink);
+        break;
+      }
     }
   }
-#else
-  INCFUNC("asm/func/WarpMagicSquare_HandleMessages.inc");
-#endif
 }
 
 s32 WarpMagicSquare_Update(WarpMagicSquare* p) {
@@ -636,7 +640,7 @@ void WarpMagicSquare_InitPtcls(WarpMagicSquare* p) {
   }
 }
 
-// 518/509命令の下書き, sprite のポインタを r4 に置いて poseIdx を書く形と sub スプライトのループのレジスタが原典と違う, Entity7C62_Init が近い形
+// 518/509命令の下書き, sprite のポインタを r4 に置いて poseIdx を書く形と sub スプライトのループのレジスタが原典と違う, ChangeMagicSquare_Init が近い形
 NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
 #ifdef NONMATCHING_C
   s32 i;

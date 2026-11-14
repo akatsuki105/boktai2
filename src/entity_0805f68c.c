@@ -4,7 +4,7 @@
 #include "msgbus.h"
 #include "sprite.h"
 
-// デモのメッセージ cmd 7 で呼び出され、リンゴ を 6段のアニメーションで見せてからデモの待ちを解く
+// カットシーンのメッセージ cmd 7 で呼び出され、リンゴ を 6段のアニメーションで見せてからカットシーンの待ちを解く
 typedef struct {
   Entity e;            // 0x000, ENTITY_UNK_8
   u32 state;           // 0x018, 0..5 の switch, 5 フレームごとに次へ進む
@@ -14,11 +14,11 @@ typedef struct {
   MainSprite sprite;   // 0x048, prio2, state 5 で animEvents の bit1 を見て終了を待つ
   MainSprite sprite2;  // 0x0A8, prio3, state 3 で SPRFLAG_HIDDEN を立てて消す
   MsgQueue* mq;        // 0x108, Init の第3引数, 終わったら MsgQueue_EndWait(mq, 1)
-} RingoDemoAnim;
-static_assert(sizeof(RingoDemoAnim) == 268);
+} RingoCutsceneAnim;
+static_assert(sizeof(RingoCutsceneAnim) == 268);
 
-// 5 フレームおきに次のポーズ対を当てていき、最後のアニメーションが終わったらデモの待ちを解いて消える
-s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
+// 5 フレームおきに次のポーズ対を当てていき、最後のアニメーションが終わったらカットシーンの待ちを解いて消える
+s32 RingoCutsceneAnim_Update(RingoCutsceneAnim* p) {
   switch (p->state) {
     case 0: {
       p->timer++;
@@ -84,14 +84,14 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
   return 0;
 }
 
-s32 RingoDemoAnim_Destroy(RingoDemoAnim* p) {
+s32 RingoCutsceneAnim_Destroy(RingoCutsceneAnim* p) {
   MainSprite_Remove(&p->sprite);
   MainSprite_Remove(&p->sprite2);
   return 0;
 }
 
 // リンゴの絵を読んで 2 枚のスプライトを同じ座標に重ね、1 段目のアニメーションを当てる
-s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, MsgQueue* mq) {
+s32 RingoCutsceneAnim_Init(RingoCutsceneAnim* p, Vec3* pos, MsgQueue* mq) {
   Vec3* q;
   MainSpriteGfxFile* f;
 
@@ -113,12 +113,12 @@ s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, MsgQueue* mq) {
   return 0;
 }
 
-RingoDemoAnim* RingoDemoAnim_Create(Vec3* pos, MsgQueue* mq) {
-  RingoDemoAnim* p = CreateEntity(ENTITY_UNK_8, sizeof(RingoDemoAnim));
+RingoCutsceneAnim* RingoCutsceneAnim_Create(Vec3* pos, MsgQueue* mq) {
+  RingoCutsceneAnim* p = CreateEntity(ENTITY_UNK_8, sizeof(RingoCutsceneAnim));
 
   if (p != NULL) {
-    SetEntityRoutine(p, RingoDemoAnim_Update, RingoDemoAnim_Destroy);
-    if (RingoDemoAnim_Init(p, pos, mq) < 0) {
+    SetEntityRoutine(p, RingoCutsceneAnim_Update, RingoCutsceneAnim_Destroy);
+    if (RingoCutsceneAnim_Init(p, pos, mq) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

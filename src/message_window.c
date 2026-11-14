@@ -23,7 +23,7 @@ typedef struct MessageWindow {
   u8 unk_17f;                                     // 0x17F, 入力待ちのフラグらしい, キー状態の bit1 が入る
   s8 shownFace;                                   // 0x180, 顔スプライトに実際に反映済みの renderer.face, 食い違うと MessageWindow_RefreshFace が貼り直す
   u8 unk_181;                                     // 0x181, MessageWindow_Init が 0 を入れるだけ
-  u8 autoAdvance;                                 // 0x182, MessageWindow_EnableAutoAdvance (MessageWindow_SetAutoAdvance) の第1引数
+  u8 autoAdvance;                                 // 0x182, Cmd_EnableMessageWindowAutoAdvance (MessageWindow_SetAutoAdvance) の第1引数
   u8 fastForwardDelay;                            // 0x183, 行を出すと 3 を入れ, 0 になるまで A での早送りを受け付けない
   u16 autoAdvanceDelay;                           // 0x184, MessageWindow_SetAutoAdvance の第2引数, autoAdvanceTimer がこれ以上になると次へ進む
   u16 autoAdvanceTimer;                           // 0x186, 毎フレーム +1
@@ -112,7 +112,7 @@ s32 MessageWindow_SetInstant(s32 instant) {
   MessageWindow_RefreshFace(p);
 }
 
-s32 MessageWindow_SetInstantScripted(void) { return MessageWindow_SetInstant(VM_GetValue()); }
+s32 Cmd_SetMessageWindowInstant(void) { return MessageWindow_SetInstant(VM_GetValue()); }
 
 s32 MessageWindow_Close(void) {
   MessageWindow* p = gMessageWindow;
@@ -127,7 +127,7 @@ s32 MessageWindow_Close(void) {
   p->pendingLine = -1;
 }
 
-s32 MessageWindow_CloseScripted(void) { return MessageWindow_Close(); }
+s32 Cmd_CloseMessageWindow(void) { return MessageWindow_Close(); }
 
 s32 MessageWindow_Start(u8* pc) {
   MessageWindow* p = gMessageWindow;
@@ -182,7 +182,7 @@ NON_MATCH s32 MessageWindow_StartWithLabels(u8* pc, s32 labelCount, s32 labelIdx
 }
 
 // '.r' があればそこを、なければ現在位置を本文の先頭にする
-s32 MessageWindow_Open(void) { return MessageWindow_Start(!VM_SeekToNamedArg('r') ? VM_GetPC() : VM_GetPC_Proxy()); }
+s32 Cmd_OpenMessageWindow(void) { return MessageWindow_Start(!VM_SeekToNamedArg('r') ? VM_GetPC() : VM_GetPC_Proxy()); }
 
 // 指定行の表示を始める, unk_17e が 0 なら1文字ずつ, それ以外なら一気に描く状態へ入る
 // 残差0命令 (103/103), レジスタ割当だけ違う: 原典は定数 0x18 を r9 に残して p を r5 に置くが, こちらは p が r6 を取る
@@ -214,7 +214,7 @@ NON_MATCH s32 MessageWindow_ShowLine(s32 line) {
 #endif
 }
 
-s32 MessageWindow_SetPendingLineScripted(void) {
+s32 Cmd_SetMessageWindowPendingLine(void) {
   MessageWindow* p = gMessageWindow;
 
   if (p != NULL && p->scriptPc != NULL) {
@@ -297,13 +297,13 @@ s32 Cmd_2575(void) {
 }
 
 // 0x352D
-s32 MessageWindow_SetExtend(void) {
+s32 Cmd_SetMessageWindowExtend(void) {
   s32 idx = VM_GetValue();
   return MessageWindow_SetExtendValue(idx, VM_GetValueSafe2_Proxy());
 }
 
 // 0x75AF
-s32 MessageWindow_SetScriptIdsScripted(void) {
+s32 Cmd_SetMessageWindowScriptIds(void) {
   MessageWindow* p = gMessageWindow;
   TextRenderer* r;
 
@@ -334,7 +334,7 @@ s32 MessageWindow_SetAutoAdvance(s32 enable, s32 delay, u32 unk_194) {
 }
 
 // 0xADD2
-s32 MessageWindow_EnableAutoAdvance(void) {
+s32 Cmd_EnableMessageWindowAutoAdvance(void) {
   s32 enable = VM_GetValue();
   s32 delay = VM_GetValue();
 
@@ -354,10 +354,10 @@ s32 MessageWindow_SetBgPltt(s32 fileID) {
 }
 
 // 0x8F41
-s32 MessageWindow_SetBgPlttScripted(void) { return MessageWindow_SetBgPltt(VM_GetValue()); }
+s32 Cmd_SetMessageWindowBgPltt(void) { return MessageWindow_SetBgPltt(VM_GetValue()); }
 
 // 0xDD91, 開いているメッセージウィンドウを名前付き引数で設定し直す, '.s' 文字列表, '.r' 矩形, '.c' パレット, '.i' 行, '.m' 文字送り音, '.w' 速度, '.d' オート送り, '.p' スクリプトID の並び, '.a' 早送りの解除
-s32 MessageWindow_ConfigureScripted(void) {
+s32 Cmd_ConfigureMessageWindow(void) {
   MessageWindow* p = gMessageWindow;
   TextRenderer* r;
 

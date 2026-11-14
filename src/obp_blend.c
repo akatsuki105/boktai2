@@ -25,7 +25,7 @@ typedef struct {
   u16 srcTo;              // 0x1E, 混ぜ終わりの srcs[] の添字
   u16 blend;              // 0x20, srcFrom から srcTo への混ぜ具合 (6.6固定小数, 0..0x40), Update が毎フレーム +1 して 0x40 で止める
   u16 unk_22;             // 0x22
-  u16 unk_24;             // 0x24, gClock.unk_0f の控え, 書くだけで読み手がいない
+  u16 twilightLevel;      // 0x24, gClock.twilightLevel の写し, 書くだけで読み手がいない
   u16 spanOfTime;         // 0x26, gClock.spanOfTime の控え, Update が変化を見て blend を 0 に戻す
   ObjPlttBlend slots[6];  // 0x28
 } ObjPlttBlender;
@@ -101,7 +101,7 @@ s32 ObjPlttBlender_Update(ObjPlttBlender* p) {
     gObjPlttSlotReserved++;
   }
 
-  p->unk_24 = gClock.unk_0f;
+  p->twilightLevel = gClock.twilightLevel;
   p->spanOfTime = gClock.spanOfTime;
   return 0;
 }
@@ -148,7 +148,7 @@ s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
 
   GetTimeOfDayPlttPair(&p->srcFrom, &p->srcTo);
   p->blend = 0x40;
-  p->unk_24 = gClock.unk_0f;
+  p->twilightLevel = gClock.twilightLevel;
   p->spanOfTime = gClock.spanOfTime;
   for (i = 0; i < p->count; i++) {
     ObjPlttBlender_UpdateSlot(p, &p->slots[i]);

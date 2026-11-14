@@ -37,7 +37,7 @@ static_assert(sizeof(Entity081edcc4) == 468);
 
 static Entity081edcc4* gEntity081edcc4;  // 0x030001C8
 
-s32 FUN_081eb178(Vec3* pos, u32 prio, u32 param_3);
+s32 Entity081eb2f0_Spawn(Vec3* pos, u32 prio, u32 param_3);
 s32 Entity081eee80_Spawn(Vec3* pos, s32 priority, s32 delay, s32 angle, s32 speed, s32 animShift, s32 plttOffset);
 Entity081edcc4* Entity081edcc4_Create(void);
 
@@ -1911,7 +1911,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
 
 static void Entity081edcc4Elem_OnHit(HitboxData* a, HitboxData* b, Entity081edcc4Elem* elem) {}
 
-// from と to が離れていれば中間点に FUN_081eb178 で置けるかを確かめる
+// from と to が離れていれば中間点に Entity081eb2f0_Spawn で置けるかを確かめる
 static bool8 Entity081edcc4_CanReach(Vec3* from, Vec3* to, u32 param_3) {
   Vec3 d;
 
@@ -1920,7 +1920,7 @@ static bool8 Entity081edcc4_CanReach(Vec3* from, Vec3* to, u32 param_3) {
     d.x = from->x + Div(d.x, 2);
     d.y = from->y;
     d.z = from->z + Div(d.z, 2);
-    if (FUN_081eb178(&d, 2, param_3) < 0) {
+    if (Entity081eb2f0_Spawn(&d, 2, param_3) < 0) {
       goto blocked;
     }
   }
@@ -2005,7 +2005,7 @@ NON_MATCH static void Entity081edcc4Elem_UpdateState1(Entity081edcc4* p, Entity0
     }
     elem->timer = 8;
   } else {
-    if (FUN_081eb178(&spot, 2, elem->kind) < 0 || !Entity081edcc4_CanReach(&prev, &spot, elem->kind)) {
+    if (Entity081eb2f0_Spawn(&spot, 2, elem->kind) < 0 || !Entity081edcc4_CanReach(&prev, &spot, elem->kind)) {
       elem->state = 2;
       return;
     }

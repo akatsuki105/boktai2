@@ -39,7 +39,7 @@ s32 SaveSequence_Update(SaveSequence* p) {
     }
   }
   if ((p->result >= 0 && p->timer >= SECOND(2) && (gInput[0].pressed & A_BUTTON)) || p->timer >= SECOND(5)) {
-    MainMenu_SetHudMode(7);
+    HUD_SetMode(HUD_HIDDEN);
     if (p->scriptID != 0) {
       arg = p->result;
       sa.argc = 1, sa.argv = &arg;
@@ -60,7 +60,7 @@ s32 SaveSequence_Destroy(SaveSequence* p) {
 s32 SaveSequence_Init(SaveSequence* p) {
   s32 err;
 
-  MainMenu_SetHudMode(3);
+  HUD_SetMode(HUD_WINDOW_1);
   p->scriptID = VM_GetNamedArgValue('e', 0);
   p->timer = 0;
   p->result = err = -1;

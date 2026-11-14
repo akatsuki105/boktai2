@@ -302,7 +302,7 @@ _08083828:
 	movs r1, #0xec
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl FUN_08084734
+	bl BlackHole_GetCenter
 	adds r0, r7, #0
 	movs r1, #0x14
 	movs r2, #4
@@ -703,7 +703,7 @@ _08083B48:
 	lsls r6, r6, #2
 	adds r4, r7, r6
 	adds r0, r4, #0
-	bl FUN_08084734
+	bl BlackHole_GetCenter
 	ldr r0, _08083BE8 @ =0x0203B400
 	mov r8, r0
 	ldr r1, _08083BEC @ =0x030046B8

@@ -123,7 +123,7 @@ typedef u16 EnemyFlags3;
 // Enemy.flags4 (0x182)
 typedef u16 EnemyFlags4;
 #define ENEFLAG4_UNK_0 (1 << 0)    // 0x0001, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Enemy_Sleep が立てる
+#define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Cmd_SleepEnemy が立てる
 #define ENEFLAG4_UNK_2 (1 << 2)    // 0x0004, Enemy_ProcessRequests が真っ先に見て UNK_0/1/7/8/11 とまとめて落とす
 #define ENEFLAG4_UNK_3 (1 << 3)    // 0x0008, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_4 (1 << 4)    // 0x0010, FUN_080fc174 が立てる
@@ -165,7 +165,7 @@ typedef u32 EnemyFlags6;
 #define ES_UNK_4 4
 #define ES_UNK_5 5  // unk_5c0
 #define ES_UNK_6 6
-#define ES_SLEEP 7  // handlerSleep, Enemy_Sleep の要求 (ENEFLAG4_UNK_1) で入る
+#define ES_SLEEP 7  // handlerSleep, Cmd_SleepEnemy の要求 (ENEFLAG4_UNK_1) で入る
 #define ES_UNK_8 8  // unk_598
 #define ES_UNK_9 9  // unk_5c8
 #define ES_UNK_10 10
@@ -266,8 +266,8 @@ typedef struct Enemy {
   u16 attrs;                                // 0x18A, Hitbox_SetPowerAndAttributes の attrs (HitboxAttributes の下位16bit)
   u16 weakness;                             // 0x18C, Hitbox_SetPowerAndAttributes の weakness
   u16 unk_18e;                              // 0x18E, Enemy_InitHpAndState が第3引数を入れる, sleepTime と対
-  s16 sleepTime;                            // 0x190, Enemy_Sleep が sleepTimer へ写す
-  u16 sleepTimer;                           // 0x192, Enemy_Sleep / Cmd_C12A / Enemy_Reset が書く
+  s16 sleepTime;                            // 0x190, Cmd_SleepEnemy が sleepTimer へ写す
+  u16 sleepTimer;                           // 0x192, Cmd_SleepEnemy / Cmd_C12A / Enemy_Reset が書く
   u16 unk_194;                              // 0x194, Enemy の _Init が &unk_194 を控える (unk_196 と対)
   u16 scriptID;                             // 0x196, 0 以外なら Enemy_RunScript が VM_ExecByID(scriptID, NULL) で実行する
   u16 unk_198;                              // 0x198, 条件がそろうと FUN_080e6658 が VM_ExecByID するスクリプト ID
@@ -423,7 +423,7 @@ typedef struct Enemy {
   s32 (*getMoveSpeed)(struct Enemy*);       // 0x588, 移動の速さを返す
   bool8 (*onDamaged)(struct Enemy*);        // 0x58C, fn(p), FUN_080f6604 が hp が残っているときに呼んで結果を返す
   void* handlerTurn;                        // 0x590, ES_UNK_2 (向きを変える) のハンドラ
-  void* handlerSleep;                       // 0x594, Enemy_Sleep が非NULLのときだけ動く
+  void* handlerSleep;                       // 0x594, Cmd_SleepEnemy が非NULLのときだけ動く
   void* unk_598;                            // 0x598, ES_UNK_8 のハンドラ, FUN_080f56ec が止まったときに handlerState へ写す
   void* unk_59c;                            // 0x59C, 状態ハンドラの控え, FUN_080f5b34 が handlerState へ写す
   void* handlerMove;                        // 0x5A0, ES_UNK_1 のハンドラ, FUN_080f1ef8 が入場時に handlerState へ写す

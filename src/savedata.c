@@ -3,6 +3,7 @@
 #include "malloc.h"
 #include "save.h"
 #include "vm.h"
+#include "vm_memory.h"
 
 // EEPROM_WriteOnce が各データの末尾に付ける 8 バイトのトレーラー (EEPROM_ReadOnce が検証する)
 typedef struct {
@@ -254,7 +255,7 @@ s32 VM_RestoreVars(UnkData6148* p) {
   return 0;
 }
 
-s32 VM_ResetGameKeepingVars(void) {
+s32 Cmd_ResetGameKeepingVars(void) {
   UnkData6148* buf = Malloc(6148);
   if (buf == NULL) return -1;
   ClearMemory(buf, 6148);

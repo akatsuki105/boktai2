@@ -183,7 +183,7 @@ bool8 Mummy_AvoidNearbyBomb(Mummy* p);
 bool8 FUN_080eb2a0(Enemy* p);
 void FUN_080ce544(u32 param_1, u32 param_2);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
-void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void Enemy_AddKillCount(Enemy* p);
 Mover* Enemy_FindVisiblePlayer(Enemy* p);
 void Mummy_Explode(Mummy* p);

@@ -71,8 +71,8 @@ typedef struct {
   u16 unk_17c;                                // 0x17C
   u16 unk_17e;                                // 0x17E
   s16 damage;                                 // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
-  s16 unk_182;                                // 0x182, FUN_08029864 が足す
-  u16 unk_184;                                // 0x184, FUN_080298b8 が足す
+  s16 pendingDamage;                          // 0x182, Ringo_AddPendingDamage が足し, 次の更新で HP から引く (1 は残す)
+  u16 pendingHeal;                            // 0x184, Ringo_AddPendingHeal が足し, 次の更新で HP に足して回復の数字を出す
   u16 unk_186;                                // 0x186
   u16 unk_188;                                // 0x188
   u8 unk_18a;                                 // 0x18A
@@ -208,31 +208,31 @@ typedef struct {
   struct VampireSwordManager* vampireSwords;  // 0x104C
   struct Entity0805b068* entity0805b068;      // 0x1050
   struct Entity0805b790* entity0805b790;      // 0x1054
-  struct Entity0805d364* entity0805d364;      // 0x1058
+  struct RingoBatSwarm* batSwarm;             // 0x1058
 } Ringo;
 static_assert(sizeof(Ringo) == 4188);
 
 struct Entity0805b068;
 s32 FUN_0805b1a0(struct Entity0805b068* p);
 
-void Entity0805d364_StartReturn(struct Entity0805d364* p);
+void RingoBatSwarm_StartReturn(struct RingoBatSwarm* p);
 s32 FUN_0805b0b0(struct Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
-s32 Entity0805d364_Start(struct Entity0805d364* p, Vec3* from, Vec3* to, s32 speed, s32 param_5);
+s32 RingoBatSwarm_Start(struct RingoBatSwarm* p, Vec3* from, Vec3* to, s32 speed, s32 param_5);
 bool32 FUN_0809df78(Vec3* pos);
 void FUN_080846f8(void);
-void FUN_08084734(Vec3* out);
-bool32 FUN_08084710(void);
+void BlackHole_GetCenter(Vec3* out);
+bool32 BlackHole_IsActive(void);
 void FUN_0823b880(s32 n);
 struct VampireSwordManager* VampireSwordManager_Create(u32 attackID);
 struct Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2);
-struct Entity0805d364* Entity0805d364_Create(u32 targetCount);
+struct RingoBatSwarm* RingoBatSwarm_Create(u32 targetCount);
 struct Entity0805b790* Entity0805b790_Create(bool32 isDark);
 s32 FUN_08035a64(Ringo* p);
 void FUN_080846c8(void);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
 s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
-s32 VampireSwordManager_Spawn(struct VampireSwordManager* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6);
+s32 VampireSwordManager_Spawn(struct VampireSwordManager* p, Vec3* pos, u32 kind, Vec3* target, u32 speed, u32 delay);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
 s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
 s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
@@ -250,7 +250,7 @@ static inline void Ringo_StartPlttFade(Ringo* p, s32 mode, u32 plttID) {
 }
 
 static inline u32 Ringo_SelectAnim(Ringo* p, u32 anim, u32 anim2) {
-  if (p->base.isDemo) {
+  if (p->base.isCutscene) {
     return p->unk_824 == 0 ? anim : anim2;
   }
   return p->unk_820 != 0 ? anim2 : anim;
@@ -362,7 +362,7 @@ static const s8 s8_ARRAY_085aabd8[32][2] = {
 // 残差は末尾の 0xC8 / 0xC3 の並び (25/25): 原典は unk_fd4 が立っているときの 0xC8 を最後に置く, if の向きを逆にする形, 三項演算子, 戻り値をローカルに置く形は試済
 NON_MATCH u32 Ringo_GetPlttID(Ringo* p) {
 #ifdef NONMATCHING_C
-  if (p->base.isDemo) {
+  if (p->base.isCutscene) {
     switch (p->unk_824) {
       case 0: {
         break;
@@ -383,7 +383,7 @@ NON_MATCH u32 Ringo_GetPlttID(Ringo* p) {
 // 残差は unk_824 の 0 / 1 の比べ方と return 1 の位置 (29/31): 原典は 0 と 1 を別々に比べ, return 1 を最後に置く, case を分けた switch で比べ方は揃う
 NON_MATCH s32 FUN_08027f10(Ringo* p) {
 #ifdef NONMATCHING_C
-  if (!p->base.isDemo) {
+  if (!p->base.isCutscene) {
     if (p->unk_820 == 0) {
       return 1;
     }
@@ -1040,7 +1040,8 @@ NON_MATCH void FUN_08029628(Ringo* p) {
 #endif
 }
 
-void FUN_080297fc(Vec3* pos) {
+// Ringo を pos に移して再び現れる状態に入れる, コウモリの群れが終わったときに呼ばれる
+void Ringo_ReappearAt(Vec3* pos) {
   Ringo* p = Boss_Get(BOSS_RINGO);
 
   if (p != NULL) {
@@ -1050,36 +1051,39 @@ void FUN_080297fc(Vec3* pos) {
   }
 }
 
-void FUN_08029840(void) {
+// コウモリの群れがいれば goal へ戻らせる
+void Ringo_RecallBatSwarm(void) {
   Ringo* p = Boss_Get(BOSS_RINGO);
 
-  if (p != NULL && p->entity0805d364 != NULL) {
-    Entity0805d364_StartReturn(p->entity0805d364);
+  if (p != NULL && p->batSwarm != NULL) {
+    RingoBatSwarm_StartReturn(p->batSwarm);
   }
 }
 
-void FUN_08029864(s32 n) {
+// コウモリが受けたダメージを Ringo の受けるダメージに足し, 残り HP が少ないか一定量減ったら群れを呼び戻す
+void Ringo_AddPendingDamage(s32 n) {
   if (n > 0) {
     Ringo* p = Boss_Get(BOSS_RINGO);
 
     if (p != NULL) {
       s32 d;
 
-      p->unk_182 += n;
-      d = p->base.hp - p->unk_182;
+      p->pendingDamage += n;
+      d = p->base.hp - p->pendingDamage;
       if (d <= 1 || abs(d - p->unk_8d8) < 50) {
-        FUN_08029840();
+        Ringo_RecallBatSwarm();
       }
     }
   }
 }
 
-void FUN_080298b8(s32 n) {
+// コウモリが当てたダメージを Ringo の回復待ちに足す
+void Ringo_AddPendingHeal(s32 n) {
   if (n > 0) {
     Ringo* p = Boss_Get(BOSS_RINGO);
 
     if (p != NULL) {
-      p->unk_184 += n;
+      p->pendingHeal += n;
     }
   }
 }
@@ -1123,11 +1127,11 @@ s32 FUN_080299e0(Ringo* p) {
 NON_MATCH void FUN_08029a1c(Ringo* p, s32 n) {
 #ifdef NONMATCHING_C
   if (n > 0x5F) {
-    if (p->base.isDemo ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
+    if (p->base.isCutscene ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
       PlaySound_0824078c(SONG_840);
     }
   } else if (n > 0x3F) {
-    if (p->base.isDemo ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
+    if (p->base.isCutscene ? p->unk_824 == 2 : (p->unk_820 != 0 && p->unk_fd4)) {
       PlaySound_0824078c(SONG_841);
     }
   } else {
@@ -1417,7 +1421,7 @@ void FUN_0802a538(Ringo* p) {
   ParticleShadow_Show(&p->ptclShadow);
 }
 
-// 残差は gMsgBus の読み直し (558/556), 原典はループの先頭で毎回プールから読む, Duneyrr_PollMessages と同じ壁
+// 残差は gMsgBus の読み直しと pltt の差し替え (558/556), 読み直しは GetMsgBus() inline で揃うが, sprites[0].pltt を決める部分が Ringo の pltt の壁 (FUN_080353ac ほか) と同じ形で残る
 NON_MATCH void Ringo_PollMessages(Ringo* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
@@ -1669,7 +1673,7 @@ void FUN_0802adb8(Ringo* p) {
   p->unk_17a = 0;
   p->unk_17b = 3;
   p->unk_17c = 0x40;
-  p->unk_182 = 0;
+  p->pendingDamage = 0;
   p->unk_893 = 0;
   p->unk_8d4 = 240;
   p->unk_896 = 240;
@@ -1688,7 +1692,7 @@ NON_MATCH void FUN_0802ae4c(Ringo* p) {
   s32 i;
 
   Ringo_PollMessages(p);
-  p->unk_864 = FUN_08084710();
+  p->unk_864 = BlackHole_IsActive();
   if (!p->unk_864) {
     p->unk_87e = FALSE;
   }
@@ -1735,8 +1739,8 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
   Mover* mover = &boss->mover;
   MainSprite* sprite;
 
-  if (p->unk_184 > 0) {
-    s32 heal = p->unk_184;
+  if (p->pendingHeal > 0) {
+    s32 heal = p->pendingHeal;
     s32 hp = boss->hp;
 
     Boss_SetHP(boss, hp + heal);
@@ -1746,14 +1750,14 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
       VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
       CreateDamageNumber(&p->hurtbox, heal, 1, &boss->mover.pos, &ofs, 1);
     }
-    p->unk_184 = 0;
+    p->pendingHeal = 0;
   }
-  if (p->unk_182 > 0) {
-    boss->hp -= p->unk_182;
+  if (p->pendingDamage > 0) {
+    boss->hp -= p->pendingDamage;
     if (boss->hp <= 0) {
       boss->hp = 1;
     }
-    p->unk_182 = 0;
+    p->pendingDamage = 0;
   }
   FUN_08022ec0(boss);
   FUN_08028960(p);
@@ -1794,7 +1798,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     CLEAR_FLAGS(boss->flags, BOSSFLAG_VISIBLE);
   } else {
     MainSprite_Show(&p->sprites[0]);
-    if (boss->isDemo) {
+    if (boss->isCutscene) {
       if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_SHADOW)) {
         AuxShadow_Hide(&p->shadow);
       } else {
@@ -1891,7 +1895,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
       }
     }
   }
-  if (!boss->isDemo) {
+  if (!boss->isCutscene) {
     if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerModes[0] & PMODE_DEAD)) {
       if (!p->unk_880) {
         p->unk_880 = TRUE;
@@ -1934,7 +1938,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
           ofs.x = d;
           ofs.z = d;
           ofs.y = 160;
-          if (!boss->isDemo) {
+          if (!boss->isCutscene) {
             s32 dmg = Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, p->unk_8c4, 2);
             s32 hp = boss->hp;
 
@@ -1993,7 +1997,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
       }
       MainSprite_AdvanceAnim(sprite, &p->gfx_a20);
     } else if (p->phaseTimer == 1 && p->phase == 4) {
-      if (!boss->isDemo) {
+      if (!boss->isCutscene) {
         Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, NULL, 0, 0, 0, 1, p->unk_8c6, 0);
       }
       PlaySound_0824078c(SONG_478);
@@ -2022,7 +2026,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
   }
   gBgBrightness2 = p->unk_1048;
   p->unk_178 = 0;
-  if (boss->isDemo && p->unk_18b && (boss->frameCount & 15) == 0) {
+  if (boss->isCutscene && p->unk_18b && (boss->frameCount & 15) == 0) {
     FUN_08028c04(p);
   }
   boss->weaponExpMask = 0;
@@ -2683,8 +2687,8 @@ void FUN_0802d4bc(Ringo* p) {
 
       Vec3_CopyOffsetY(&from, &mover->pos, 200);
       Map_PickPathNode(&to, &mover->pos, 0, 1, 0x100, NULL, NULL);
-      if (p->entity0805d364 != NULL) {
-        Entity0805d364_Start(p->entity0805d364, &from, &to, 10, 10);
+      if (p->batSwarm != NULL) {
+        RingoBatSwarm_Start(p->batSwarm, &from, &to, 10, 10);
       }
       Boss_SetSubState2(boss, 28);
       p->unk_893 = FALSE;
@@ -3622,7 +3626,7 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
     ofs.x = d;
     ofs.z = d;
     ofs.y = 160;
-    if (!boss->isDemo) {
+    if (!boss->isCutscene) {
       Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, 0, 2);
     }
     sprite->plttID = 0x4200;
@@ -3638,7 +3642,7 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
   }
   if (boss->damageCallback(boss)) {
     MainSprite_Hide(&p->sprite_a40);
-    if (!boss->isDemo && p->grabbedPlayer >= 0) {
+    if (!boss->isCutscene && p->grabbedPlayer >= 0) {
       Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
     }
     p->grabbedPlayer = -1;
@@ -3646,7 +3650,7 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
   }
   if (boss->stateRequestCallback(boss)) {
     MainSprite_Hide(&p->sprite_a40);
-    if (!boss->isDemo && p->grabbedPlayer >= 0) {
+    if (!boss->isCutscene && p->grabbedPlayer >= 0) {
       Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
     }
     p->grabbedPlayer = -1;
@@ -4068,7 +4072,7 @@ void dainn_08030960(Boss* boss, s32 timer) {
 
     boss->stateEntered = FALSE;
     target = &p->unk_868;
-    FUN_08084734(target);
+    BlackHole_GetCenter(target);
     pos = &mover->pos;
     Boss_SetAngle(boss, ArcTan2_8(target->x - mover->pos.x, target->z - pos->z));
     Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_LOOP, 1, MAIN_ANIM_FORCE_POSE);
@@ -4111,7 +4115,7 @@ void FUN_08030b80(Boss* boss, s32 timer) {
     Vec3* pos;
 
     boss->stateEntered = FALSE;
-    FUN_08084734(&p->unk_868);
+    BlackHole_GetCenter(&p->unk_868);
     pos = &mover->pos;
     target = &p->unk_868;
     Boss_SetAngle(boss, ArcTan2_8(target->x - mover->pos.x, target->z - pos->z));
@@ -4443,7 +4447,7 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
     MainSprite_Show(sprite);
     p->unk_a14 = -1;
     p->unk_a16 = p->sprites[0].animCmdIdx;
-    if (!boss->isDemo) {
+    if (!boss->isCutscene) {
       Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, NULL, 0, 0, 0, 1, 0, 2);
     }
     sprite->plttID = 0x4200;
@@ -4528,7 +4532,7 @@ NON_MATCH void FUN_080317f0(Boss* boss, s32 timer) {
         if (p->unk_874 <= 0) {
           Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
           MainSprite_Hide(&p->sprite_a40);
-          if (!boss->isDemo && p->grabbedPlayer >= 0) {
+          if (!boss->isCutscene && p->grabbedPlayer >= 0) {
             Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->playerAngle[p->grabbedPlayer], 50, 0, 0, 0);
           }
           p->grabbedPlayer = -1;
@@ -4686,7 +4690,7 @@ NON_MATCH void FUN_08032180(Boss* boss, s32 timer) {
         p->phaseTimer = 0;
         Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 57, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
         MainSprite_Hide(&p->sprite_a40);
-        if (!boss->isDemo && p->grabbedPlayer >= 0) {
+        if (!boss->isCutscene && p->grabbedPlayer >= 0) {
           Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->playerAngle[p->grabbedPlayer], 50, 0, 0, 0);
         }
         p->grabbedPlayer = -1;
@@ -5713,7 +5717,7 @@ NON_MATCH void FUN_08034b18(Boss* boss, s32 timer) {
     ofs.x = d;
     ofs.z = d;
     ofs.y = 160;
-    if (!boss->isDemo) {
+    if (!boss->isCutscene) {
       Player_HoldGrabbed(gPlayerPtr[p->grabbedPlayer], &p->sprites[0].pos, &ofs, 0, 0, 0, 1, 0, 2);
     }
     sprite->plttID = 0x4200;
@@ -5748,7 +5752,7 @@ NON_MATCH void FUN_08034dd8(Boss* boss, s32 timer) {
   if (!boss->stateRequestCallback(boss)) {
     if (timer == 5) {
       MainSprite_Hide(&p->sprite_a40);
-      if (!boss->isDemo && p->grabbedPlayer >= 0) {
+      if (!boss->isCutscene && p->grabbedPlayer >= 0) {
         Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->mover.angle, 50, 0, 0, 0);
       }
       p->grabbedPlayer = -1;
@@ -5832,7 +5836,7 @@ NON_MATCH void FUN_08034ebc(Boss* boss, s32 timer) {
         if (p->unk_874 <= 0) {
           Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 56, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
           MainSprite_Hide(&p->sprite_a40);
-          if (!boss->isDemo && p->grabbedPlayer >= 0) {
+          if (!boss->isCutscene && p->grabbedPlayer >= 0) {
             Player_ReleaseGrabbed(gPlayerPtr[p->grabbedPlayer], &p->unk_a18, 50, boss->playerAngle[p->grabbedPlayer], 50, 0, 0, 0);
           }
           p->grabbedPlayer = -1;
@@ -6292,7 +6296,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
     angle = 0x40;
   }
   p->unk_164 = pos.y;
-  FUN_08084734(&p->unk_868);
+  BlackHole_GetCenter(&p->unk_868);
   p->unk_844 = p->unk_868;
   FUN_08028604(p);
   if (VM_SeekToNamedArg('s')) {
@@ -6360,8 +6364,8 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   p->unk_8d0 = 0x400;
   Boss_Init(boss, id, bossID, &pos, angle);
   boss->destAngle = angle;
-  boss->isDemo = VM_GetNamedArgValue('i', 0);
-  if (boss->isDemo) {
+  boss->isCutscene = VM_GetNamedArgValue('i', 0);
+  if (boss->isCutscene) {
     p->spriteOffsetY = 0;
   } else {
     p->spriteOffsetY = 64;
@@ -6378,7 +6382,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   p->sprites[1].pltt = p->sprites[0].pltt;
   FUN_0802a208(p);
   FUN_08029ab8(p);
-  if (boss->isDemo) {
+  if (boss->isCutscene) {
     switch (VM_GetNamedArgValue('D', 1)) {
       case 0: {
         Boss_SetSubStates(boss, 2, 0, 0);
@@ -6456,10 +6460,10 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   boss->mover.unk_30.x = 0;
   boss->mover.unk_30.y = 400;
   boss->mover.unk_30.z = 0;
-  if (boss->isDemo) {
+  if (boss->isCutscene) {
     p->vampireSwords = NULL;
     p->entity0805b068 = NULL;
-    p->entity0805d364 = NULL;
+    p->batSwarm = NULL;
   } else {
     p->vampireSwords = VampireSwordManager_Create(p->unk_8ba);
     if (p->vampireSwords == NULL) {
@@ -6469,8 +6473,8 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
     if (p->entity0805b068 == NULL) {
       return -1;
     }
-    p->entity0805d364 = Entity0805d364_Create(p->numPlayers);
-    if (p->entity0805d364 == NULL) {
+    p->batSwarm = RingoBatSwarm_Create(p->numPlayers);
+    if (p->batSwarm == NULL) {
       return -1;
     }
   }

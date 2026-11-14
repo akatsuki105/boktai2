@@ -126,7 +126,7 @@ _0808310A:
 _08083112:
 	mov r4, sp
 	mov r0, sp
-	bl FUN_08084734
+	bl BlackHole_GetCenter
 	mov r0, sp
 	movs r2, #0
 	ldrsh r1, [r0, r2]

@@ -113,7 +113,7 @@ s32 WeatherManager_GetChance(WeatherManager* p) {
     chance = p->unk_30 * p->unk_32 >> 6;
   }
   span = Time_GetSpanOfTime();
-  if ((span >= TIME_UNK4 && span <= TIME_UNK5) || span == TIME_NIGHT) {
+  if ((span >= TIME_NIGHT_DUSK && span <= TIME_NIGHT_MID) || span == TIME_NIGHT_DAWN) {
     chance >>= 1;
   }
   return chance;
@@ -585,7 +585,7 @@ WeatherManager* WeatherManager_Create(void) {
 }
 
 // スクリプトから天候を降らせ始める
-s32 WeatherManager_StartScripted(void) {
+s32 Cmd_StartWeather(void) {
   WeatherManager* p = sWeatherManager;
 
   if (p == NULL) {
@@ -596,7 +596,7 @@ s32 WeatherManager_StartScripted(void) {
 }
 
 // スクリプトから天候を止める
-s32 WeatherManager_StopScripted(void) {
+s32 Cmd_StopWeather(void) {
   WeatherManager* p = sWeatherManager;
 
   if (p == NULL) {

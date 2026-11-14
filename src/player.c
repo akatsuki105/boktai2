@@ -84,7 +84,7 @@ COMMON_DATA u16 ALIGNED(4) gGoodCondTimer = 0;          // 0x03002B8C, Player.go
 COMMON_DATA u16 ALIGNED(4) gWindAngle = 0;              // 0x03002B90, Player_InitEffects が 0 に戻す
 COMMON_DATA u16 ALIGNED(8) gPlayerCount = 0;            // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
 COMMON_DATA u8 u8_03002b9a[6] = {};                     // todo
-COMMON_DATA u16 gBadCondTimer[3] = {};                  // 0x03002BA0, Player がいないときに Cmd_650B が書き込む退避先
+COMMON_DATA u16 gBadCondTimer[3] = {};                  // 0x03002BA0, Player がいないときに Cmd_ApplyBadCond が書き込む退避先
 COMMON_DATA u8 u8_03002ba6[2] = {};                     // todo
 COMMON_DATA CWolfTargetNode* gCWolfTarget = NULL;       // 0x03002BA8, チェンジウルフで噛みつく相手のノード, Player_Destroy が NULL に戻す
 COMMON_DATA u16 gWindStrength = 0;                      // 0x03002BAC, Player_InitEffects が 0 に戻す
@@ -131,6 +131,9 @@ static inline s32 Player_GetAction(Player* p) { return p->action; }
 
 // 当たり判定の向きを入れる
 static inline void Hitbox_SetAngle(HitboxData* p, s32 angle) { p->angle = angle; }
+
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void Player_SetAnimFacing(Player* p) {
   u8 dir8 = p->facing;
@@ -295,7 +298,7 @@ bool32 Player_IsNight(Player* p) {
   if (Player_TestEquipBuff(p, EBUFF_ALLNIGHT)) return TRUE;
 
   span = Time_GetSpanOfTime();
-  if (span == TIME_UNK4 || span == TIME_UNK5 || span == TIME_NIGHT) {
+  if (span == TIME_NIGHT_DUSK || span == TIME_NIGHT_MID || span == TIME_NIGHT_DAWN) {
     return TRUE;
   }
   return FALSE;
@@ -8733,7 +8736,7 @@ void Player_UpdateSabataAttack(Player* p) {
           Player_SetAction(p, PACT_ATTACK, 5);
         } else {
           if (!(p->input->down & B_BUTTON)) {
-            PlaySound_082406e0(SONG_515);
+            PlaySound_082406e0(SE_SABATA_FIRE);
             Player_SetAction(p, PACT_ATTACK, 5);
           } else {
             Player_SetAction(p, PACT_ATTACK, 2);
@@ -8750,7 +8753,7 @@ void Player_UpdateSabataAttack(Player* p) {
         PlaySound_082406e0(SE_GUN_CHARGING);
       }
       if (!(p->input->down & B_BUTTON)) {
-        PlaySound_082406e0(SONG_515);
+        PlaySound_082406e0(SE_SABATA_FIRE);
         Player_SetAction(p, PACT_ATTACK, 5);
       } else if (++p->stateTimer >= p->chargeStepTime) {
         p->wpn.charge = 1;
@@ -9748,7 +9751,7 @@ void Player_UpdateLockedSpearAttack(Player* p) {
   }
 }
 
-// 操作不能中に lockedUpdate から回す槌の攻撃モーション (FUN_0807c568 / FUN_0807c5ac が据える), 振りの途中でジャンゴごとの効果音, 黒ジャンゴは衝撃波も出す
+// 操作不能中に lockedUpdate から回す槌の攻撃モーション (Player_LockHammerReady / Player_LockHammerSwing が据える), 振りの途中でジャンゴごとの効果音, 黒ジャンゴは衝撃波も出す
 void Player_UpdateLockedHammerAttack(Player* p) {
   s32 speed = p->kind == PLAYER_DARK_DJANGO ? Q6(0.75) : Q6(1);
 
@@ -12662,7 +12665,7 @@ static bool32 VM_GetPosArg(Vec3* pos) {
 }
 
 // 0xE14B
-void Cmd_E14B(void) {
+void Cmd_SetPlayerPos(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -12684,11 +12687,11 @@ void Cmd_E14B(void) {
 }
 
 // 0x7017, プレイヤーの向き取得
-s32 Cmd_7017(void) {
+s32 Cmd_GetPlayerDir(void) {
   Player* p = GetPlayer(VM_GetPlayerIdx());
 
   if (p == NULL) {
-    return gStat->playerFacing;
+    return gStat->playerDir;
   }
   if (p->action == PACT_WALL || p->action == PACT_PUSH) {  // 壁に背を向けている場合は背中が向いている方 (壁の方向)
     return (p->actionDir + 4) & 7;
@@ -12697,7 +12700,7 @@ s32 Cmd_7017(void) {
 }
 
 // 0x5986
-bool32 Cmd_5986(void) {
+bool32 Cmd_IsPlayerDead(void) {
   if (gPlayerPtr[0] == NULL || gPlayerPtr[0]->mode != PMODE_DEAD) {
     return FALSE;
   }
@@ -12748,7 +12751,7 @@ s32 Cmd_TestEquipBuff(void) {
 }
 
 // 0xEA00, '.E' のアイテムの効果を Player に直接かける, IET_GOOD は '.t' (既定は value2 秒) だけよい状態にし, IET_HP は回復量を表示する
-void Cmd_EA00(void) {
+void Cmd_ApplyItemEffect(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -12805,7 +12808,7 @@ void Cmd_RemoveGoodCond(void) {
 }
 
 // 0xCD57
-void Cmd_CD57(void) {
+void Cmd_SetPlayerForbidFlags(void) {
   Player* p = GetPlayer(VM_GetPlayerIdx());
 
   if (p != NULL && VM_SeekToNamedArg('f')) {
@@ -12820,7 +12823,7 @@ void Cmd_CD57(void) {
 }
 
 // 0x2B68
-void Cmd_2B68(void) {
+void Cmd_ClearElementalCond(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
@@ -12831,7 +12834,7 @@ void Cmd_2B68(void) {
 // 0xDD0E
 // 残差は最後の判定だけ (28/28): if (n <= 2) { return ... != 0; } の形で分岐の配置は一致したが, != 0 が rsbs/orrs/lsrs の値になる, 原典は cmp/beq で return 0 のブロックへ戻り movs r0, #1
 // != 0 を if で書く形 (入れ子, &&, == 0 で早期 return), 三項演算子, > 0, static inline の判定, switch は return 0 の置き場が末尾へ移る
-NON_MATCH bool32 Cmd_DD0E(void) {
+NON_MATCH bool32 Cmd_HasBadCond(void) {
 #ifdef NONMATCHING_C
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
@@ -12846,12 +12849,12 @@ NON_MATCH bool32 Cmd_DD0E(void) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/Cmd_DD0E.inc");
+  INCFUNC("asm/func/Cmd_HasBadCond.inc");
 #endif
 }
 
 // 0x650B
-void Cmd_650B(void) {
+void Cmd_ApplyBadCond(void) {
   static const u16 sBadCondFrames[3] = {SECOND(30), SECOND(30), SECOND(15)};  // 0x085ABF4C
   if (VM_SeekToNamedArg('s')) {
     s32 n = VM_GetValue();
@@ -12869,7 +12872,7 @@ void Cmd_650B(void) {
 }
 
 // 0x89C6
-void Cmd_89C6(void) {
+void Cmd_ClearBadCond(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -12879,7 +12882,7 @@ void Cmd_89C6(void) {
 }
 
 // 0xB603
-void Cmd_B603(void) {
+void Cmd_ClearAllBadConds(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -12972,7 +12975,7 @@ s32 Cmd_GetWeaponKind(void) {
 }
 
 // 0x0353
-void Cmd_0353(void) {
+void Cmd_SetPlayerDead(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
@@ -12981,7 +12984,7 @@ void Cmd_0353(void) {
 }
 
 // 0xD8DF
-void Cmd_D8DF(void) {
+void Cmd_PlayerSpecialDeath(void) {
   Player* p = GetPlayer(VM_GetPlayerIdx());
 
   if (p != NULL) {
@@ -13338,7 +13341,8 @@ void Player_GetUpFromBlownAway(Player* p, s32 scriptID) {
   }
 }
 
-void FUN_0807c084(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
+// 操作不能にして dir の反対へ押し出し, 止まったら倒れてうつ伏せのまま待つ (Player_LockProne の倒れる途中から始める版)
+void Player_LockKnockProne(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   if (p->facing > DIR8_DOWN) {
@@ -13355,7 +13359,8 @@ void FUN_0807c084(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedCollapse;
 }
 
-void FUN_0807c11c(Player* p, Dir8S32 dir) {
+// 操作不能にして dir を向いたうつ伏せに倒れた姿にする, 倒れるアニメ (46) を逆再生で最後のコマに置き, 倒れたまま待つ state 2 に入れる
+void Player_LockProne(Player* p, Dir8S32 dir) {
   u16 animID;
 
   if (dir >= 0) p->facing = dir;
@@ -13427,7 +13432,7 @@ void FUN_0807c30c(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateWarp;
 }
 
-// 向きとスクリプトを指定して操作不能状態に移し, フォームごとの PACT_UNK_7 の処理を lockedUpdate に据える (Cmd_EA96 から)
+// 向きとスクリプトを指定して操作不能状態に移し, フォームごとの PACT_UNK_7 の処理を lockedUpdate に据える (Cmd_WarpInPlayer から)
 void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->doneScriptID = scriptID;
@@ -13452,7 +13457,8 @@ void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID) {
   }
 }
 
-void FUN_0807c458(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして剣を振りかぶり, 構えたまま待つ
+void Player_LockSwordReady(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13461,7 +13467,8 @@ void FUN_0807c458(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSwordAttack;
 }
 
-void FUN_0807c49c(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして剣を振り下ろす
+void Player_LockSwordSwing(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13470,7 +13477,8 @@ void FUN_0807c49c(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSwordAttack;
 }
 
-void FUN_0807c4e0(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして槍を構え, 構えたまま待つ
+void Player_LockSpearReady(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13479,7 +13487,8 @@ void FUN_0807c4e0(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSpearAttack;
 }
 
-void FUN_0807c524(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして槍を突く
+void Player_LockSpearSwing(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13488,7 +13497,8 @@ void FUN_0807c524(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedSpearAttack;
 }
 
-void FUN_0807c568(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして槌を振りかぶり, 構えたまま待つ
+void Player_LockHammerReady(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13497,7 +13507,8 @@ void FUN_0807c568(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedHammerAttack;
 }
 
-void FUN_0807c5ac(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして槌を振り下ろす
+void Player_LockHammerSwing(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13506,7 +13517,8 @@ void FUN_0807c5ac(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedHammerAttack;
 }
 
-void FUN_0807c5f0(Player* p, Dir8S32 dir, u32 scriptID) {
+// 操作不能にして銃を構える
+void Player_LockGunReady(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
@@ -13515,7 +13527,7 @@ void FUN_0807c5f0(Player* p, Dir8S32 dir, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedGunAttack;
 }
 
-// イベント中に銃を撃つ (Cmd_1F3B から), 向きの前方 150 / 高さ 230 に弾 (Entity080c0fa0) を出して操作不能の攻撃モーションに入る
+// イベント中に銃を撃つ (Cmd_PlayerFireGun から), 向きの前方 150 / 高さ 230 に弾 (Entity080c0fa0) を出して操作不能の攻撃モーションに入る
 void Player_LockFireGun(Player* p, s32 param_2, u32 scriptID) {
   Vec3 pos = p->mover.pos;
   s32 angle = ((p->facing + 5) & 7) * 32;
@@ -13525,7 +13537,7 @@ void Player_LockFireGun(Player* p, s32 param_2, u32 scriptID) {
   pos.y += Q8(0.9);
   pos.z += POLAR_Z(Q8(0.586), angle);
   if (p->kind == PLAYER_SABATA) {
-    PlaySound_082406e0(SONG_515);
+    PlaySound_082406e0(SE_SABATA_FIRE);
     pltt = 50;
   } else {
     PlaySound_082406e0(SE_GUN_FIRE);
@@ -13881,7 +13893,7 @@ Dir8S32 Player_GetCmdArgDir(void) {
 u32 Player_GetCmdArgScript(void) { return VM_SeekToNamedArg('e') ? VM_GetValue() : 0; }
 
 // 0xEFE6
-void Cmd_EFE6(void) {
+void Cmd_HidePlayer(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -13892,7 +13904,7 @@ void Cmd_EFE6(void) {
 }
 
 // 0x8FA3
-void Cmd_8FA3(void) {
+void Cmd_StartPlayerPlttFadeIn(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -13903,7 +13915,7 @@ void Cmd_8FA3(void) {
 }
 
 // 0xC12D
-void Cmd_C12D(void) {
+void Cmd_StartPlayerPlttPulse(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -13914,7 +13926,7 @@ void Cmd_C12D(void) {
 }
 
 // 0x6F85
-void Cmd_6F85(void) {
+void Cmd_StopPlayerPlttEffect(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -13936,7 +13948,7 @@ void Cmd_LockPlayer(void) {
 }
 
 // 0x9FFD
-void Cmd_9FFD(void) {
+void Cmd_TurnPlayerTo(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -13987,7 +13999,7 @@ void Cmd_MovePlayerTo(void) {
 }
 
 // 0xE990
-void Cmd_E990(void) {
+void Cmd_DashPlayerTo(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14005,7 +14017,7 @@ void Cmd_E990(void) {
 }
 
 // 0x9763
-void Cmd_9763(void) {
+void Cmd_PullCoffinTo(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14101,7 +14113,7 @@ void Cmd_40D7(void) {
 }
 
 // 0x58D7
-void Cmd_58D7(void) {
+void Cmd_PlayerFall(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14114,7 +14126,7 @@ void Cmd_58D7(void) {
 }
 
 // 0x3705
-void Cmd_3705(void) {
+void Cmd_PlayerLand(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14128,7 +14140,7 @@ void Cmd_3705(void) {
 }
 
 // 0x7A25
-void Cmd_7A25(void) {
+void Cmd_KnockbackPlayer(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14141,7 +14153,7 @@ void Cmd_7A25(void) {
 }
 
 // 0x172D
-void Cmd_172D(void) {
+void Cmd_BlowAwayPlayer(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14157,7 +14169,7 @@ void Cmd_172D(void) {
 }
 
 // 0x4127
-void Cmd_4127(void) {
+void Cmd_PlayerGetUp(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14168,25 +14180,25 @@ void Cmd_4127(void) {
 }
 
 // 0x1343
-void Cmd_1343(void) {
+void Cmd_KnockPlayerProne(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('f') ? VM_GetValue() : 50;
 
-    FUN_0807c084(p, Player_GetCmdArgDir(), n, Player_GetCmdArgScript());
+    Player_LockKnockProne(p, Player_GetCmdArgDir(), n, Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
-// 0x2593
-void Cmd_2593(void) {
+// 0x2593, プレイヤーを '.d' の向きでうつ伏せに倒れた状態にする
+void Cmd_SetPlayerProne(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c11c(p, Player_GetCmdArgDir());
+    Player_LockProne(p, Player_GetCmdArgDir());
     Player_SetDoneRunScript(p);
   }
 }
@@ -14203,7 +14215,7 @@ void Cmd_Riremito(void) {
 }
 
 // 0xEA96
-void Cmd_EA96(void) {
+void Cmd_WarpInPlayer(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14214,84 +14226,84 @@ void Cmd_EA96(void) {
 }
 
 // 0xCAFE
-void Cmd_CAFE(void) {
+void Cmd_PlayerSwordReady(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c458(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockSwordReady(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0xAF43
-void Cmd_AF43(void) {
+void Cmd_PlayerSwordSwing(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c49c(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockSwordSwing(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0xDDEE
-void Cmd_DDEE(void) {
+void Cmd_PlayerSpearReady(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c4e0(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockSpearReady(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0xC233
-void Cmd_C233(void) {
+void Cmd_PlayerSpearSwing(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c524(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockSpearSwing(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0xB683
-void Cmd_B683(void) {
+void Cmd_PlayerHammerReady(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c568(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockHammerReady(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0x9AC8
-void Cmd_9AC8(void) {
+void Cmd_PlayerHammerSwing(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c5ac(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockHammerSwing(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0xD40E
-void Cmd_D40E(void) {
+void Cmd_PlayerGunReady(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c5f0(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
+    Player_LockGunReady(p, Player_GetCmdArgDir(), Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
 // 0x1F3B (不使用?)
-void Cmd_1F3B(void) {
+void Cmd_PlayerFireGun(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14304,7 +14316,7 @@ void Cmd_1F3B(void) {
 }
 
 // 0x490F
-void Cmd_490F(void) {
+void Cmd_RevertToDarkDjango(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14458,16 +14470,13 @@ void Player_RegisterMsgQueue(Player* p) { MsgQueue_Register(&p->mq, p->mover.id,
 
 void Player_UnregisterMsgQueue(Player* p) { MsgQueue_Unregister(&p->mq); }
 
-// 溜まったメッセージを受け取り, cmd ごとにデモ用の操作 (移動, 向き, 操作不能化, 感情表現など) を振り分ける
-// 残差は Camera_PollMessages と同じ壁 (389/390 命令), 原典は gMsgBus のプール定数をループ内で読み直すが, こちらは r2 に持ち続けるので case 内の一時レジスタが1つずつずれる, case の並びは原典のブロック順に合わせてある
-NON_MATCH void Player_HandleMessages(Player* p) {
-#ifdef NONMATCHING_C
+// 溜まったメッセージを受け取り, cmd ごとにカットシーン用の操作 (移動, 向き, 操作不能化, 感情表現など) を振り分ける
+void Player_HandleMessages(Player* p) {
   MsgQueue* mq = &p->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgBus* bus = gMsgBus;
-    MsgPacket* msg = mq->msgs[bus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
@@ -14579,7 +14588,7 @@ NON_MATCH void Player_HandleMessages(Player* p) {
         break;
       }
       case 18: {
-        FUN_0807c084(p, msg->args[0], msg->args[1], 0);
+        Player_LockKnockProne(p, msg->args[0], msg->args[1], 0);
         Player_SetDoneEndWait(p);
         break;
       }
@@ -14599,7 +14608,7 @@ NON_MATCH void Player_HandleMessages(Player* p) {
         break;
       }
       case 22: {
-        FUN_0807c5f0(p, msg->args[0], 0);
+        Player_LockGunReady(p, msg->args[0], 0);
         Player_SetDoneEndWait(p);
         break;
       }
@@ -14750,9 +14759,6 @@ NON_MATCH void Player_HandleMessages(Player* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Player_HandleMessages.inc");
-#endif
 }
 
 // 自分宛ての targetClass 2 のメッセージを1件組み立てて送る
@@ -15089,7 +15095,7 @@ void Player_SaveState(Player* p) {
   PLAYER_X = p->mover.pos.x;
   PLAYER_Y = p->mover.pos.y;
   PLAYER_Z = p->mover.pos.z;
-  PLAYER_FACING = p->facing;
+  PLAYER_DIR = p->facing;
   SUN_ANGLE = ((p->facing + 5) & 7) << 5;
   p->mover.angle = SUN_ANGLE;
   Hitbox_SetAngle(&p->hurtbox, SUN_ANGLE);
@@ -15341,13 +15347,13 @@ static s32 Player_Init(Player* p, u32 id, void* _) {
   gPlayerCount++;
   if ((p->mover).unk_4 == 0) {
     Player_SaveState(p);
-    HUD_RebuildQC();
+    QC_Rebuild();
   }
   return 0;
 }
 
 // 0xF5EB, HashName("プレイヤー"), エリア移動などでも毎回作り直す
-Player* CreatePlayer(u32 id, void* _) {
+Player* Player_Create(u32 id, void* _) {
   Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
 
   if (p != NULL) {

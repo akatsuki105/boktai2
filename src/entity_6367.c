@@ -6,10 +6,9 @@
 #include "video.h"
 #include "vm.h"
 
-// SPRITE_EVENT_SUN_RAY をロードしている
 typedef struct Entity6367 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                           // 0x018
+  MainSpriteGfx gfx;                           // 0x018, SPRITE_EVENT_SUN
   MainSprite sprites[3];                       // 0x038
   u32 unk_158;                                 // 0x158
   s32 scriptID_15c;                            // 0x15C
@@ -148,7 +147,7 @@ void (*const PTR_ARRAY_085affa0[1])(Entity6367*) = {
 };  // 0x085AFFA0
 
 void Entity6367_InitSprites(Entity6367* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_EVENT_SUN_RAY);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_EVENT_SUN);
   MainSpriteGfx* gfx;
   MainSprite* spr;
   Vec3 pos;
@@ -228,7 +227,7 @@ s32 Entity6367_Init(Entity6367* p) {
   return 0;
 }
 
-// 0x6367, HashName("エンディング"), SPRITE_EVENT_SUN_RAY は ラスボス撃破時に使うので、 エンディングで合ってる可能性は高い
+// 0x6367, HashName("エンディング"), SPRITE_EVENT_SUN は ラスボス撃破時に使うので、 エンディングで合ってる可能性は高い
 Entity6367* Entity6367_Create(void) {
   Entity6367* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity6367));
   if (p != NULL) {

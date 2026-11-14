@@ -53,7 +53,7 @@ s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 par
 void DefeatedEnemyLog_Add(u16 a, u16 b);
 void Enemy_AddKillCount(Enemy* p);
 s32 DarkRoot_GetGrabbedAnimOffset(DarkRoot* p);
-void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void DarkRoot_StateRetract(DarkRoot* p);
 void DarkRoot_StateHold(DarkRoot* p, s32 timer);
 Mover* DarkRoot_FindAdjacentTarget(DarkRoot* p, s32 faceTarget);
@@ -453,7 +453,7 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
       vel.z = POLAR_Z(r, (p->e).angle);
       vel.y = (Random() & 0x1F) + 48;
     }
-    Entity081efa9c_Spawn(&(p->e).mover.pos, &vel, SPRITE_ROD, ANIM_DARKROOT, 10, 30, 2, 0, 220, 0, 0, 0, 0, 0, 0);
+    Entity081efa9c_Spawn(&(p->e).mover.pos, &vel, SPRITE_DARKROOT, ANIM_DARKROOT, 10, 30, 2, 0, 220, 0, 0, 0, 0, 0, 0);
     if (!TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_1)) {
       if (q->regrowScriptID != 0) {
         u32 argv[1];
@@ -972,7 +972,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_ROD);
+    Video_GetAuxSprite(&aux->gfx, SPRITE_DARKROOT);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_DARKROOT);
     k = (p->e).kind;
@@ -989,7 +989,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_ROD);
+    f = GetFile(DIR_MAIN_SPRITE, SPRITE_DARKROOT);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);

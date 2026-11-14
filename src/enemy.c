@@ -48,7 +48,7 @@ s32 FUN_08240b98(Vec3* param_1, s8 param_2);
 s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
 void Enemy_StepToFloorEdge(Enemy* p);
-void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 IsInPuddle(WorldPos* pos);

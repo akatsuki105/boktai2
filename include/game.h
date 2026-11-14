@@ -14,8 +14,8 @@
 #define WEAPON_EXP(kind) (*(gStat->weaponExp + (kind)))                       // 武器種ごとの経験値
 #define WEAPON_FRAMES(kind) (*(gStat->weaponFrames + (kind)))                 // 武器種ごとの使用フレーム数
 #define KAAMOS_PROGRESS(playerCharacterID) (*(gStat->kaamosProgress + (playerCharacterID)))
-#define SOLAR_BANK_RATE (*(&gStat->solarBankInterestRate))  // 太陽バンクの利率, (1 + r) * 64
-#define ALERT_COUNT (*(&gStat->alertCount))                 // 敵に見つかった回数
+#define BANK_RATE (*(&gStat->bankInterestRate))  // 太陽バンクの利率, (1 + r) * 64
+#define ALERT_COUNT (*(&gStat->alertCount))      // 敵に見つかった回数
 #define UNK_944 (*(&gStat->unk_944))
 #define UNK_946 (*(&gStat->unk_946))
 #define UNK_950(n) (*(gStat->unk_950 + (n)))  // Enemy_Alert がプレイヤーごとに数える, 添字は playerMover->unk_4
@@ -24,7 +24,7 @@
 #define PLAYER_X (*(s16*)&gStat->playerX)
 #define PLAYER_Y (*(s16*)&gStat->playerY)
 #define PLAYER_Z (*(s16*)&gStat->playerZ)
-#define PLAYER_FACING (*(u16*)&gStat->playerFacing)
+#define PLAYER_DIR (*(s16*)&gStat->playerDir)
 #define SUN_ANGLE (*(s16*)&gStat->sunAngle)
 #define PLAYER_KIND (*(u16*)&gStat->playerKind)
 #define PLAYER_ACTION (*(s16*)&gStat->playerAction)
@@ -98,7 +98,7 @@ typedef struct {
   s8_8 playerX;                  // 0x030, セーブされたプレイヤーの座標
   s8_8 playerY;                  // 0x032
   s8_8 playerZ;                  // 0x034
-  s16 playerFacing;              // 0x036, Vec3 の val に当たる位置, Cmd_7017 が符号付きで読んで向きとして返す
+  Dir8S16 playerDir;             // 0x036, Vec3 の val に当たる位置, Cmd_GetPlayerDir が符号付きで読んで向きとして返す
   u16 sabataHP;                  // 0x038
   u16 sabataEne;                 // 0x03A
   u8 unk_03c[4];                 // 0x03C
@@ -141,15 +141,14 @@ typedef struct {
   s16 tortureCount;              // 0x1EC, おしおき回数
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
   s16 totalEnemyKillCount;       // 0x1F0
-  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の ENEF_XXX (e.g. ENEF_BOKU)
-  u16 unk_222;                   // 0x222
-  u8 unk_224[0x228 - 0x224];     // 0x224
+  s16 enemyKillCount[27];        // 0x1F2, idx: include/constants/enemy.h の ENEF_XXX (e.g. ENEF_BOKU), 要素数はスクリプトの添字付き参照の長さ ([27, i]) から
   s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数
   u8 unk_232[0x23A - 0x232];     // 0x232
-  s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
+  s16 bankInterestRate;          // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
   s16 lap;                       // 0x240, 現在のゲーム周回数
-  u8 unk_242[4];                 // 0x242
+  s16 room;                      // 0x242, 現在いる部屋の番号 (ゲーム全体で通し), スクリプトだけが使う, ワープで書き換わり, 1つ前と2つ前は .bokc の world + 0x54 / 0x56 に送られる
+  s16 unk_244;                   // 0x244
   u16 unk_246;                   // 0x246, FUN_08231ca8
   ZoneID32 zoneID;               // 0x248, 現在のゾーンID
   s32 mapInitScriptID;           // 0x24C, Current map's init script ID
@@ -162,7 +161,7 @@ typedef struct {
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
   u32 worldMapFlags;             // 0x264, ワールドマップに出す目印のフラグ, ビット 6..13 は sWorldMapStages[7..14] のマーカー, それ以降は WorldMapTile.flagBit
-  s32 mapIconFlags[16];          // 0x268, stageID で引く, ビット i が立っていると MapIcon の i 番目を描く, Cmd_ClearMapIconFlags が 0 でクリアする
+  s32 mapIconFlags[16];          // 0x268, stageID で引く, ビット i が立っていると MapIcon の i 番目を描く
   s32 berserkCounter;            // 0x2A8
   s32 berserkThresh;             // 0x2AC, berserkCounter がここに届くと黒ジャンゴ暴走の準備ができる, 発動のたびに 200 + 0..99 で引き直す
   s16 unk_2b0[2];                // 0x2B0
@@ -221,27 +220,12 @@ typedef struct {
 } GameInfo;
 static_assert(sizeof(GameInfo) == 2392);
 
-typedef struct {
-  u8 unk_000[1024];  // 0x000
-} World;
-static_assert(sizeof(World) == 1024);
-
-typedef struct {
-  u8 unk_000[1024];  // 0x000
-} Scratch;
-static_assert(sizeof(Scratch) == 1024);  // VM_StorePointer で World と別扱いしているので World とはサイズが同じだけの別の構造体として定義しておく
-
 // --------------------------------------------
 
-extern Scratch* gScratch;      // 0x03004690, 多分VM用のスクラッチパッド
-extern World* gWorldBackup;    // 0x03004694, ハード起動時は 0x0203DE00, 特定のタイミング(トランジションや死亡時)で、 gWorld の内容をこっちに反映する, ゲームをセーブする際にはこのデータを EEPROM に書き込む
-extern World* gWorld;          // 0x03004698, ハード起動時は 0x0203DA00, ゲームプレイ中はこのデータを参照・更新する
-extern GameInfo* gStatBackup;  // 0x0300469C, ハード起動時は 0x0203CF00, gWorldBackup と同じ
-extern GameInfo* gStat;        // 0x030046A0, ハード起動時は 0x0203C400
+extern GameInfo* gStatBackup;  // 0x0300469C, 特定のタイミング(トランジションなど)で、 gStat の内容をこっちに反映する, ゲームをセーブする際にはこのデータを EEPROM に書き込む
+extern GameInfo* gStat;        // 0x030046A0
 
 GameInfo* FUN_08232254(void);
-World* FUN_08232260(void);
-
 s32 GetWeaponSkillLevel(s32 kind);
 
 #endif  // GUARD_ZOKTAI_GAME_H

@@ -2810,7 +2810,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_BOKU);
+    Video_GetAuxSprite(&aux->gfx, SPRITE_BOKU_0);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_BOKU);
     k = (p->e).kind;
@@ -2827,7 +2827,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_BOKU);
+    f = GetFile(DIR_MAIN_SPRITE, SPRITE_BOKU_0);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);

@@ -74,6 +74,9 @@ void Map_SetZones(ZoneData* zones);
 void Map_SetPaths(PathData* paths);
 void Map_SetNavMesh(NavMesh* navMesh);
 
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {
   u8* magic = file;
@@ -113,7 +116,7 @@ s32 Map_LoadCollisionMapFile(s32 id) {
 }
 
 // 0x30AD, このゲームでは、 '.n' と '.p' 以外の引数は渡していない
-void Map_LoadMapScripted(void) {
+void Cmd_LoadMap(void) {
   CollisionMapData* cm;
   CollisionMapTileData* td;
 
@@ -134,7 +137,7 @@ void Map_LoadMapScripted(void) {
     if (z != 0) Map_LoadNavMesh(z);
   }
 
-  // これ以降が Camera_SetTilemapOffset と同じ処理になる
+  // これ以降が Cmd_SetCameraTilemapOffset と同じ処理になる
   cm = Registry_Find(0x56C2);
   td = cm->tiledata;
   if (VM_SeekToNamedArg('v')) {  // このゲームではこの引数を渡しているものはないので、これ以降は実行されない
@@ -152,7 +155,7 @@ void Map_LoadMapScripted(void) {
 }
 
 // 0x7539
-void Camera_SetTilemapOffset(void) {
+void Cmd_SetCameraTilemapOffset(void) {
   s32 val = VM_GetNamedArgValue('v', 0);
   if (val == 0) {
     CollisionMapData* p = Registry_Find(0x56C2);
@@ -499,7 +502,7 @@ void Cmd_BBAA(void) {
   }
 }
 
-void Camera_Reset(void) {
+void Cmd_ResetCamera(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_0823bca8(VM_GetValue());
     FUN_0823bd98(gCamera);
@@ -521,15 +524,12 @@ void FUN_0823c0a4(Camera* cam) { cam->completeAction = 2; }
 void FUN_0823c0ac(Camera* cam) { MsgQueue_EndWait(&cam->mq, 1); }
 
 // 溜まったメッセージを受け取り, 注視点・移動・画面ゆれの指示を振り分ける
-// 残差2命令 (114/117): 原典は gMsgBus のプール定数を r0 に載せてループ内で読み直すが, こちらは cam が r0 に残るぶん r2 に載って使い回される
-// Tier A-C は試済: mq ローカルの有無/宣言順, bus ローカルの追加, 条件式のベースを cam->mq にする形
-NON_MATCH void Camera_PollMessages(Camera* cam) {
-#ifdef NONMATCHING_C
+void Camera_PollMessages(Camera* cam) {
   MsgQueue* mq = &cam->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
@@ -575,9 +575,6 @@ NON_MATCH void Camera_PollMessages(Camera* cam) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Camera_PollMessages.inc");
-#endif
 }
 
 void Camera_RunScript(Camera* cam) {
@@ -618,7 +615,7 @@ void FUN_0823c260(Vec3* min, Vec3* max) {
   }
 }
 
-void Camera_ConnectToTilemap(void) {
+void Cmd_ConnectCameraToTilemap(void) {
   if (VM_SeekToNamedArg('I')) {
     Vec3 min, max;
     VEC3_SET(min, VM_GetValue(), VM_GetValue(), VM_GetValue());
@@ -640,7 +637,7 @@ void FUN_0823c35c(Vec3* min, Vec3* max) {
   }
 }
 
-void Camera_SetBoundsType2Scripted(void) {
+void Cmd_SetCameraBoundsType2(void) {
   if (VM_SeekToNamedArg('I')) {
     Vec3 min, max;
     VEC3_SET(min, VM_GetValue(), VM_GetValue(), VM_GetValue());

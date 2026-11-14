@@ -28,7 +28,7 @@ static_assert(sizeof(CrossoverLobbyPlayer) == 660);
 // 詳細は http://sunmiguere.web.fc2.com/zoktai_crossover_battle.html を参照
 typedef struct {
   Entity e;                         // 0x000, ENTITY_UNK_11
-  u8 linkState;                     // 0x018, 前フレームの Entity0804e2c0_GetState の値, 変わったときだけ state を切り替える
+  u8 linkState;                     // 0x018, 前フレームの RfuSession_GetState の値, 変わったときだけ state を切り替える
   u8 state;                         // 0x019, sCrossoverLobbyUpdates の添字, 7 は終了
   bool8 stateEntered;               // 0x01A, state を変えた直後の1フレームだけ 1
   u8 unk_1b;                        // 0x01B, padding?
@@ -52,11 +52,11 @@ u8* GetCrossoverPlayerName(s32 idx);
 void FUN_0804e4c4(void);
 void FUN_0804e4ac(void);
 s32 FUN_0804e458(void);
-s32 Entity0804e2c0_GetState(void);
+s32 RfuSession_GetState(void);
 u8* FUN_0804e438(void);
 s32 FUN_0804e638(void);
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
-void FUN_0804e69c(u8* src, u8* dst, s32 count);
+void Crossover_DecodeText(u8* src, u8* dst, s32 count);
 void FUN_0804e5e8(void);
 void FUN_0804e604(void);
 void* FUN_0804ba3c(void);
@@ -146,7 +146,7 @@ s32 CrossoverLobby_SetPlayerName(CrossoverLobby* p, CrossoverLobbyPlayer* player
   player->unk_04 = 0;
   CpuFill32(0, p->nameBuf, 4);
   CopyMemory(p->nameBuf, &data[n * 10 + 4], sizeof(p->nameBuf));
-  FUN_0804e69c(p->nameBuf, player->name, 8);
+  Crossover_DecodeText(p->nameBuf, player->name, 8);
   CopyMemory(dst, player->name, sizeof(player->name));
   TextPanel_SetMessage(p->textPanels[idx], idx + 3);
 }
@@ -281,7 +281,7 @@ NON_MATCH void FUN_0804f230(CrossoverLobby* p) {
           }
         }
         ClearMemory(name, sizeof(p->players[1].gname));
-        FUN_0804e69c(gRfuLinkStatus->partner[i].gname, name, 11);
+        Crossover_DecodeText(gRfuLinkStatus->partner[i].gname, name, 11);
         gname = gRfuLinkStatus->partner[i].gname;
         MainSprite_SetNumber(digits, &p->gfx, gname[11] | (gname[12] << 8), 5, 0, 136, 70, 8, FALSE);
         for (i = 0; i < 5; i++) {
@@ -376,7 +376,7 @@ void CrossoverLobby_StateExit(CrossoverLobby* p) {
 
 // 通信の状態が変わったら, それに対応する state へ切り替える
 void CrossoverLobby_SyncLinkState(CrossoverLobby* p) {
-  s32 linkState = Entity0804e2c0_GetState();
+  s32 linkState = RfuSession_GetState();
 
   if (p->state == 7) {
     return;

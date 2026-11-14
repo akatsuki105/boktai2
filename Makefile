@@ -242,7 +242,7 @@ BOKC := $(shell find data/scripts -type f -name '*.bokc')
 BOKC_BIN := $(BOKC:.bokc=.bin)
 
 $(BOKC_BIN): %.bin: %.bokc
-	$(CPP) -P -C -iquote include $< | $(BOKCC) compile - -o $@
+	$(CPP) -P -C -iquote . $< | $(BOKCC) compile - -o $@
 
 # Assets --------------------------------------------
 

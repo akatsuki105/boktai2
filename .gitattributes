@@ -1,3 +1,4 @@
 deno.lock linguist-generated=true
 *.bokc linguist-generated=true
+*.bokc linguist-language=C
 *.inc linguist-language=Assembly

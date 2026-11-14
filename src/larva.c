@@ -26,11 +26,11 @@ enum {
 typedef struct {
   s16 unk_00;             // 0x000
   s16 power;              // 0x002, ラルバの hurtbox の攻撃力
-  u8 state;               // 0x004, PTR_ARRAY_085ab9b4 の添字
+  u8 state;               // 0x004, sLarvaStates の添字
   u8 unk_05;              // 0x005
   u8 unk_06;              // 0x006
   u8 animLooped;          // 0x007, anim が最後のフレームまで進んだフレームだけ 1
-  u8 unk_08;              // 0x008
+  bool8 stateEntered;     // 0x008, Larva_SetState で 1 にし, 各状態関数が入り口の処理をして 0 に戻す
   u8 flashTimer;          // 0x009, 0 になったフレームにパレットを 0x22A に戻す
   u8 flags;               // 0x00A, bit0 なら hurtbox を動かさない, bit1 なら FUN_08057214 を呼ぶ, _Update が毎フレーム 0 に戻す
   s8 lastDir;             // 0x00B, 前に進んだ向き, -1 ならなし
@@ -82,7 +82,7 @@ static inline void Larva_SetState(LarvaManager* p, Larva* larva, u8 state) {
     state = 8;
   }
   larva->state = state;
-  larva->unk_08 = 1;
+  larva->stateEntered = 1;
   larva->stateTimer = 0;
 }
 
@@ -252,11 +252,11 @@ NON_MATCH void FUN_08056f94(HitboxData* a, HitboxData* b, Larva* larva) {
   if (larva->unk_00 <= 0) {
     larva->unk_00 = 0;
     larva->state = 7;
-    larva->unk_08 = 1;
+    larva->stateEntered = 1;
     larva->stateTimer = 0;
   } else {
     larva->state = 6;
-    larva->unk_08 = 1;
+    larva->stateEntered = 1;
     larva->stateTimer = 0;
   }
 #else
@@ -349,8 +349,8 @@ void FUN_08057354(LarvaManager* p, Larva* larva) {
 
 // 待機状態, player との距離と経過時間で次の状態 (5/4/2) を選ぶ
 void FUN_080573a0(LarvaManager* p, Larva* larva, s32 param_3) {
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_IDLE, larva->unk_05 == 1 || larva->unk_05 == 2, larva->unk_05 > 1);
     AuxAnim_SetAnimSpeed(&larva->anim, Q6(1));
   }
@@ -379,16 +379,16 @@ void FUN_080573a0(LarvaManager* p, Larva* larva, s32 param_3) {
   }
 }
 
-// 落下中の状態, 床に着いたら player との距離で次の状態を選ぶ
-// 残差は TileHeightAt の x を sprite 経由で読む1命令と, 距離比較で定数より先にフィールドを読む順序 (124/124命令)
-NON_MATCH void FUN_08057478(LarvaManager* p, Larva* larva, s32 param_3) {
+// 床に着くまで落ち, 着いたら player との距離で次の状態を選ぶ
+// 残差は TileHeightAt の x を原典は sprite 経由の [r7, #0x1c] で読む1命令と, 距離比較で原典が定数 0x100000 を先に作る順序 (124/124命令)
+// 分岐ごとに Larva_SetState を呼ぶ形で状態の作り方は揃った, 試済: 高さを索引経由で返す inline (ringo_vampire_sword.c の FloorHeightAt と同形, 効かず), 引数を &sprite->pos, Larva_IsPlayerNear, 比較の向き
+NON_MATCH void Larva_UpdateFall(LarvaManager* p, Larva* larva, s32 param_3) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite = &larva->sprite;
   s32 floor;
-  u8 state;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_ROLLING, 0, 0);
     larva->sprite.flags &= ~SPRFLAG_HIDDEN;
     ParticleShadow_Show(&larva->shadow);
@@ -399,17 +399,16 @@ NON_MATCH void FUN_08057478(LarvaManager* p, Larva* larva, s32 param_3) {
   if (sprite->pos.y <= floor) {
     sprite->pos.y = floor;
     if (larva->playerDistSq <= 0x100000) {
-      state = 4;
+      Larva_SetState(p, larva, 4);
     } else {
-      state = 2;
+      Larva_SetState(p, larva, 2);
     }
-    Larva_SetState(p, larva, state);
     ParticleShadow_Hide(&larva->shadow);
   } else {
     larva->stateTimer++;
   }
 #else
-  INCFUNC("asm/func/FUN_08057478.inc");
+  INCFUNC("asm/func/Larva_UpdateFall.inc");
 #endif
 }
 
@@ -419,8 +418,8 @@ NON_MATCH void FUN_0805758c(LarvaManager* p, Larva* larva, s32 idx) {
 #ifdef NONMATCHING_C
   s32 speed;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     larva->targetX = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].x;
     larva->targetZ = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].z;
     larva->unk_10 = 0;
@@ -554,8 +553,8 @@ NON_MATCH void FUN_080579a4(LarvaManager* p, Larva* larva, s32 idx) {
 #ifdef NONMATCHING_C
   s32 speed;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     larva->targetX = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].x;
     larva->targetZ = (RandomNext() & 0x3FF) + p->unk_3c[idx & 3].z;
   }
@@ -688,8 +687,8 @@ NON_MATCH void FUN_08057db0(LarvaManager* p, Larva* larva, s32 idx) {
 #ifdef NONMATCHING_C
   s32 speed;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     larva->targetX = (p->player->mover.pos.x & 0xFF00) + (idx & 3) * 32;
     larva->targetZ = (p->player->mover.pos.z & 0xFF00) + (idx >> 2) * 32;
     larva->farTimer = 0;
@@ -835,10 +834,10 @@ NON_MATCH void FUN_080581dc(LarvaManager* p, Larva* larva, s32 idx) {
   u8 angle;
   bool32 blocked;
 
-  if (larva->unk_08 != 0) {
+  if (larva->stateEntered != 0) {
     u8 dir;
 
-    larva->unk_08 = 0;
+    larva->stateEntered = 0;
     larva->origin = sprite->pos;
     larva->angle = ArcTan2_8(p->player->mover.pos.x - larva->origin.x, p->player->mover.pos.z - larva->origin.z);
     dir = Angle_ToDir4(larva->angle);
@@ -892,8 +891,8 @@ NON_MATCH void FUN_08058460(LarvaManager* p, Larva* larva, s32 idx) {
   s32 vx;
   s32 vz;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     ParticleShadow_Show(&larva->shadow);
     if (!(GetTileAttrAt(&sprite->pos) & TATTR_UNK_0)) {
       TileHeightAt(&sprite->pos);
@@ -938,8 +937,8 @@ NON_MATCH void FUN_080587cc(LarvaManager* p, Larva* larva, s32 idx) {
   s32 vx;
   s32 vz;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     ParticleShadow_Show(&larva->shadow);
     if (!(GetTileAttrAt(&sprite->pos) & TATTR_UNK_0)) {
       TileHeightAt(&sprite->pos);
@@ -993,24 +992,25 @@ NON_MATCH void FUN_080587cc(LarvaManager* p, Larva* larva, s32 idx) {
 #endif
 }
 
-// unk_08 が立っていたら unk_05 に応じたアニメを最初から再生し直す
+// stateEntered が立っていたら unk_05 に応じたアニメを最初から再生し直す
 void FUN_08058a98(LarvaManager* p, Larva* larva, s32 param_3) {
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     AuxAnim_SetAnim(&larva->anim, p->animFile, ANIM_IDLE, larva->unk_05 == 1 || larva->unk_05 == 2, larva->unk_05 > 1);
     AuxAnim_SetAnimSpeed(&larva->anim, Q6(1));
   }
 }
 
 // 消滅中の状態, 揺れながら点滅して 32 フレームで枠を空ける
-// 残差は TileHeightAt の x を原典は sprite (r6) 経由の [r6, #0x1c] で読み, こちらは pos (r7) 経由になる1命令だけ (200/200命令), FUN_08057478 と同じ
+// 残差は TileHeightAt の x を原典は sprite (r6) 経由の [r6, #0x1c] で読み, こちらは pos (r7) 経由になる1命令だけ (200/200命令), Larva_UpdateFall と同じ
+// 試済: TileHeightAt / ScatterEffect の引数を &sprite->pos, TileHeightAtIndex(GetCollisionTileIdx(pos), pos) を u32 で返す inline (VampireSword_StateFly で効いた形, 効かず)
 NON_MATCH void FUN_08058ae4(LarvaManager* p, Larva* larva, s32 idx) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite = &larva->sprite;
   s32 floor;
 
-  if (larva->unk_08 != 0) {
-    larva->unk_08 = 0;
+  if (larva->stateEntered != 0) {
+    larva->stateEntered = 0;
     ParticleShadow_Show(&larva->shadow);
     Video_SetAuxSpritePltt(&larva->gfx, OBP_WHITE_306);
   }
@@ -1050,9 +1050,9 @@ NON_MATCH void FUN_08058ae4(LarvaManager* p, Larva* larva, s32 idx) {
 #endif
 }
 
-void (*const PTR_ARRAY_085ab9b4[10])(LarvaManager*, Larva*, s32) = {
+void (*const sLarvaStates[10])(LarvaManager*, Larva*, s32) = {
     FUN_080573a0,
-    FUN_08057478,
+    Larva_UpdateFall,
     FUN_0805758c,
     FUN_080579a4,
     FUN_08057db0,
@@ -1087,7 +1087,7 @@ NON_MATCH s32 LarvaManager_Update(LarvaManager* p) {
 
         larva->playerDistSq = dx * dx + dz * dz;
       }
-      PTR_ARRAY_085ab9b4[larva->state](p, larva, i);
+      sLarvaStates[larva->state](p, larva, i);
 
       if (larva->flags & 1) {
         larva->hurtbox.flags |= HBFLAG_HIDDEN;
@@ -1296,7 +1296,7 @@ NON_MATCH s32 FUN_08059248(void) {
 
     if ((p->activeMask & (1 << i)) && larva->state <= 5) {
       larva->state = 8;
-      larva->unk_08 = 1;
+      larva->stateEntered = 1;
       larva->stateTimer = 0;
     }
   }
@@ -1319,7 +1319,7 @@ NON_MATCH s32 FUN_080592a4(void) {
 
     if ((p->activeMask & (1 << i)) && larva->state != 7) {
       larva->state = 9;
-      larva->unk_08 = 1;
+      larva->stateEntered = 1;
       larva->stateTimer = 0;
     }
   }

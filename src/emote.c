@@ -13,8 +13,8 @@
 // キャラクターの頭上に出るエモートアイコン(の管理構造体)
 typedef struct {
   Entity e;              // 0x000, ENTITY_UNK_9
-  AuxSpriteGfx gfx_18;   // 0x018, SPRITE_EMOTION_ICONS_0 (吹き出し無し)
-  AuxSpriteGfx gfx_34;   // 0x034, SPRITE_EMOTION_ICONS_1 (吹き出し付き)
+  AuxSpriteGfx gfx_18;   // 0x018, SPRITE_EMOTION_0 (吹き出し無し)
+  AuxSpriteGfx gfx_34;   // 0x034, SPRITE_EMOTION_1 (吹き出し付き)
   AuxAnimFile* anim_50;  // 0x050, ANIM_6830
   AuxAnimFile* anim_54;  // 0x054, ANIM_D41F
   ParticleGroup* group;  // 0x058, PTCL_GROUP_1
@@ -1755,8 +1755,8 @@ NON_MATCH s32 EmoteManager_Destroy(EmoteManager* p) {
 
 // スプライト2種とアニメ2本、粒子グループを読み込む
 void EmoteManager_LoadResources(EmoteManager* p) {
-  Video_GetAuxSprite(&p->gfx_18, SPRITE_EMOTION_ICONS_0);
-  Video_GetAuxSprite(&p->gfx_34, SPRITE_EMOTION_ICONS_1);
+  Video_GetAuxSprite(&p->gfx_18, SPRITE_EMOTION_0);
+  Video_GetAuxSprite(&p->gfx_34, SPRITE_EMOTION_1);
   p->group = GetParticleGroup(PTCL_GROUP_1);
   p->anim_50 = GetFile(DIR_ANIMATION, ANIM_6830);
   p->anim_54 = GetFile(DIR_ANIMATION, ANIM_D41F);

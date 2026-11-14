@@ -6,7 +6,10 @@
 
 COMMON_DATA MsgBus* gMsgBus = NULL;  // 0x03002B4C
 
-static u16 Demo_FindScriptID(u32 id);
+static u16 Cutscene_FindScriptID(u32 id);
+
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 // p->queues のリストから targetID と targetClass が一致する受け口を探す
 MsgQueue* MsgBus_FindQueue(MsgBus* p, u32 targetID, u32 targetClass) {
@@ -70,55 +73,51 @@ void MsgBus_SwapBuffers(MsgBus* p) {
 }
 
 // msg->args[0] に対応するスクリプトがあれば実行する
-void Demo_CmdExecScript(MsgBus* p, MsgQueue* mq, MsgPacket* msg) {
-  u16 scriptID = Demo_FindScriptID((u16)msg->args[0]);
+void Cutscene_CmdExecScript(MsgBus* p, MsgQueue* mq, MsgPacket* msg) {
+  u16 scriptID = Cutscene_FindScriptID((u16)msg->args[0]);
   if (scriptID != 0) {
     VM_ExecByID(scriptID, NULL);
   }
   MsgQueue_EndWait(mq, 1);
 }
 
-void Demo_CmdWait(MsgBus* p, MsgQueue* mq, MsgPacket* msg) {
+void Cutscene_CmdWait(MsgBus* p, MsgQueue* mq, MsgPacket* msg) {
   p->waitTimer = msg->args[0];
   if (p->waitTimer == 0) {
     MsgQueue_EndWait(mq, 1);
   }
 }
 
-void Demo_CmdWaitExternal(MsgBus* p, MsgQueue* mq, MsgPacket* _) {
+void Cutscene_CmdWaitExternal(MsgBus* p, MsgQueue* mq, MsgPacket* _) {
   p->extWait = 1;
   MsgQueue_EndWait(mq, 1);
 }
 
 // 現在の面に溜まった msg を種類 (cmd) ごとのハンドラで処理する
-NON_MATCH s32 Demo_HandleMsgs(MsgBus* p) {
-#ifdef NONMATCHING_C
+s32 Cutscene_HandleMsgs(MsgBus* p) {
   MsgQueue* mq = &p->mq;
+  s32 i;
 
-  s32 i = 0;
-  while (i < mq->count[gMsgBus->bufIdx]) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
+
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
       case 0: {
-        Demo_CmdExecScript(p, mq, msg);
+        Cutscene_CmdExecScript(p, mq, msg);
         break;
       }
       case 1: {
-        Demo_CmdWait(p, mq, msg);
+        Cutscene_CmdWait(p, mq, msg);
         break;
       }
       case 2: {
-        Demo_CmdWaitExternal(p, mq, msg);
+        Cutscene_CmdWaitExternal(p, mq, msg);
         break;
       }
     }
-    i++;
   }
   return 0;
-#else
-  INCFUNC("asm/func/Demo_HandleMsgs.inc");
-#endif
 }
 
 s32 MsgBus_Update(MsgBus* p) {
@@ -137,7 +136,7 @@ s32 MsgBus_Update(MsgBus* p) {
       MsgPacket* msg;
 
       p->msgIdx = 0;
-      while ((msg = DemoTable_GetMsg(p->demoID, p->step, p->msgIdx)) != NULL) {
+      while ((msg = CutsceneTable_GetMsg(p->cutsceneID, p->step, p->msgIdx)) != NULL) {
         MsgBus_Post(p, msg);
         p->msgIdx++;
       }
@@ -160,7 +159,7 @@ s32 MsgBus_Update(MsgBus* p) {
 
   MsgBus_SwapBuffers(p);
   if (exec) {
-    Demo_HandleMsgs(p);
+    Cutscene_HandleMsgs(p);
   }
   return 0;
 }
@@ -174,7 +173,7 @@ s32 MsgBus_Destroy(MsgBus* p) {
 s32 MsgBus_Init(MsgBus* p, u32 targetID) {
   gMsgBus = p;
   p->running = 0;
-  p->demoID = -1;
+  p->cutsceneID = -1;
   p->step = -1;
   p->msgIdx = 0;
   p->advanceReq = FALSE;
@@ -224,7 +223,7 @@ s32 MsgQueue_Unregister(MsgQueue* mq) {
   return MsgBus_UnlinkQueue(gMsgBus, mq);
 }
 
-s32 Demo_RequestNextStep(void) {
+s32 Cutscene_RequestNextStep(void) {
   if (gMsgBus == NULL) return -1;
   if (gMsgBus->advanceReq) return -2;
   gMsgBus->advanceReq = TRUE;
@@ -241,7 +240,7 @@ bool32 MsgQueue_BeginWait(MsgQueue* mq, MsgPacket* msg) {
 
 bool32 MsgQueue_EndWait(MsgQueue* mq, u32 waitFlag) {
   if (mq->waitFlag == waitFlag) {
-    Demo_RequestNextStep();
+    Cutscene_RequestNextStep();
     mq->waitFlag = 0;
     return TRUE;
   }
@@ -249,7 +248,7 @@ bool32 MsgQueue_EndWait(MsgQueue* mq, u32 waitFlag) {
 }
 
 // id に対応するスクリプトIDを scriptKeys/scriptIDs のテーブルから引く (見つからなければ 0)
-static u16 Demo_FindScriptID(u32 id) {
+static u16 Cutscene_FindScriptID(u32 id) {
   MsgBus* p = gMsgBus;
   s32 i;
   if (p == NULL) {
@@ -272,7 +271,7 @@ s32 MsgPacket_Send(MsgPacket* msg) {
 }
 
 // '.d'/'.c'/'.e'/'.p' から設定を読み込み、scriptKeys/scriptIDs のテーブルを作る
-s32 Demo_Start(void) {
+s32 Cmd_StartCutscene(void) {
   MsgBus* p = gMsgBus;
   MsgQueue* mq;
 
@@ -281,7 +280,7 @@ s32 Demo_Start(void) {
     return -1;
   }
   p->running = 1;
-  p->demoID = VM_GetNamedArgValue('d', -1);
+  p->cutsceneID = VM_GetNamedArgValue('d', -1);
   p->step = VM_GetNamedArgValue('c', -1) - 1;
   p->msgIdx = 0;
   p->advanceReq = TRUE;
@@ -307,13 +306,13 @@ s32 Demo_Start(void) {
   return 0;
 }
 
-s32 Demo_Stop(void) {
+s32 Cmd_StopCutscene(void) {
   MsgBus* p = gMsgBus;
   if (p == NULL) {
     return -1;
   }
   p->running = 0;
-  p->demoID = -1;
+  p->cutsceneID = -1;
   p->step = -1;
   p->msgIdx = 0;
   p->advanceReq = FALSE;
@@ -324,16 +323,16 @@ s32 Demo_Stop(void) {
   return 0;
 }
 
-s32 Demo_Resume(void) {
+s32 Cmd_ResumeCutscene(void) {
   if (gMsgBus == NULL || gMsgBus->extWait == 0) {
     return -1;
   }
   gMsgBus->extWait = 0;
-  Demo_RequestNextStep();
+  Cutscene_RequestNextStep();
   return 0;
 }
 
-bool32 Demo_IsRunning(void) {
+bool32 Cutscene_IsRunning(void) {
   if (gMsgBus == NULL || gMsgBus->running != 1) {
     return FALSE;
   }

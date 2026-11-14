@@ -12,6 +12,7 @@
 #include "time.h"
 #include "video.h"
 #include "vm.h"
+#include "vm_memory.h"
 
 COMMON_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
@@ -180,7 +181,7 @@ COMMON_DATA u8 u8_030044c2[0x44D0 - 0x44C2] = {};          // todo
 COMMON_DATA bool32 gUseLinkInput = FALSE;                  // 0x030044D0, TRUE なら ReadKeyInput が通信で受け取ったキー (gLinkKeyInput) から gInput を作る
 COMMON_DATA u8 u8_030044d4[0x44E0 - 0x44D4] = {};          // todo
 COMMON_DATA Input gInput[5] = {};                          // 0x030044E0
-COMMON_DATA Keys16 gRawKeyInput = 0;                       // 0x03004508, ReadKeyInput が読んだ KEYINPUT の生の値 (active low), 通信対戦時は | 0x2000 して相手に送る (FUN_0804d698)
+COMMON_DATA Keys16 gRawKeyInput = 0;                       // 0x03004508, ReadKeyInput が読んだ KEYINPUT の生の値 (active low), 通信対戦時は | 0x2000 して相手に送る (RfuSession_StateUniParent)
 COMMON_DATA u8 padding_0300450a[0x4510 - 0x450A] = {};     // padding (Unused)
 COMMON_DATA Keys16 gLinkKeyInput[5] = {};                  // 0x03004510, 通信で受け取った各プレイヤーのキー (KEYINPUT と同じ active low), 0xFFFF はデータなし
 COMMON_DATA u32 gRngValue = 0;                             // 0x0300451C

@@ -3,6 +3,7 @@
 #include "global.h"
 #include "input.h"
 #include "link_session.h"
+#include "menu.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -39,9 +40,7 @@ typedef struct Entity1B24 {
 static_assert(sizeof(Entity1B24) == 3984);
 
 void GetWeaponData(slot32_t n, WeaponData* data);
-void WeaponData_ShowNameInWindow(u8* param_1, s8* param_2);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
-s32 GetWeaponWearPose(WeaponData* w);
 void FUN_0809d7a4(Entity1B24* p);
 
 // gLinkSession の記録を返す, セッションが無ければ NULL

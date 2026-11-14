@@ -158,6 +158,9 @@ void FUN_0803a104(Durathror*);
 void FUN_0803b7c4(Durathror*);
 void FUN_08039280(Durathror*);
 
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
 void Durathror_OnHurt(HitboxData* a, HitboxData* b, Durathror* p) {
   Boss* boss = &p->base;
 
@@ -1385,15 +1388,13 @@ void Durathror_InitHurtbox(Durathror* p, u32 power) {
 
 void FUN_08038f00(Durathror* p) {}
 
-// 残差は gMsgBus の読み直し (191/189), Duneyrr_PollMessages と同じ壁
-NON_MATCH void Durathror_PollMessages(Durathror* p) {
-#ifdef NONMATCHING_C
+void Durathror_PollMessages(Durathror* p) {
   Boss* boss = &p->base;
   MsgQueue* queue = &boss->mq;
   s32 i;
 
-  for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = queue->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < queue->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = queue->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(queue, msg);
     switch (msg->cmd) {
@@ -1445,9 +1446,6 @@ NON_MATCH void Durathror_PollMessages(Durathror* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Durathror_PollMessages.inc");
-#endif
 }
 
 // 移動とアニメを進めてスプライトの位置とプレイヤーへの向きを更新する
@@ -1460,7 +1458,7 @@ void FUN_080390f8(Durathror* p) {
 
   Durathror_PollMessages(p);
   Mover_ApplyMove(mover);
-  if (p->base.isDemo == 0) {
+  if (p->base.isCutscene == 0) {
     FUN_080368c4(&p->base.mover.pos);
   }
   Boss_AdvanceAnim(&p->base, &p->sprite_280, &p->gfx);
@@ -2607,7 +2605,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
   }
   Boss_Init(boss, id, bossID, &pos, angle);
   boss->destAngle = angle;
-  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  boss->isCutscene = VM_GetNamedArgValue('i', 0);
   MainSprite_Add(&p->sprite_280, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
   Boss_PlayAnim(boss, &p->sprite_280, &p->gfx, 0, PLAYMODE_LOOP, 0);
   CpuCopy32(&gObjPlttData[0x2F4 * 16], p->pltt, sizeof(p->pltt));
@@ -2634,7 +2632,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
   }
   p->sprite_4e8.plttID = 0x6583;
   p->sprite_4e8.pltt = p->pltt_548[0];
-  if (boss->isDemo) {
+  if (boss->isCutscene) {
     switch (VM_GetNamedArgValue('D', 1)) {
       case 0: {
         Boss_SetSubStates(boss, 2, 0, 0);
@@ -2690,7 +2688,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
     p->unk_16a = 50;
   }
   p->unk_168 = p->unk_166;
-  if (!boss->isDemo) {
+  if (!boss->isCutscene) {
     Path* path = Map_GetPath(5);
 
     p->unk_18a = Mod(Random(), path->nodeCount);

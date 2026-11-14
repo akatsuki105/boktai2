@@ -17,7 +17,7 @@ static_assert(sizeof(EntityBA36) == 32);
 COMMON_DATA EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
 
 // 残りフレーム数を '.c' で入れ直し、おいしい水と画面のカウントダウンを揃える
-void EntityBA36_SetRemaining(void) {
+void Cmd_SetEntityBA36Remaining(void) {
   s32 timer = VM_SeekToNamedArg('c') ? VM_GetValue() : SECOND(30);
 
   gEntityBA36->timer = timer;
@@ -30,7 +30,7 @@ void EntityBA36_SetRemaining(void) {
 }
 
 // 残りフレーム数を返す, Entity がいなければ 0
-s32 EntityBA36_GetRemaining(void) {
+s32 Cmd_GetEntityBA36Remaining(void) {
   if (gEntityBA36 == NULL) {
     return 0;
   }

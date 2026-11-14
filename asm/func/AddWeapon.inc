@@ -52,7 +52,7 @@ _08242BB4:
 	adds r0, r4, #0
 	bl Player_ApplyWeapon
 _08242BF2:
-	bl HUD_RebuildQCWeapons
+	bl QC_RebuildWeapons
 _08242BF6:
 	movs r0, #1
 _08242BF8:

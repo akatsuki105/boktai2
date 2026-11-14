@@ -115,13 +115,13 @@ _0804C504:
 	adds r7, #0x60
 	adds r1, r7, #0
 	movs r2, #8
-	bl FUN_0804e6d8
+	bl Crossover_EncodeText
 	adds r6, r5, #0
 	adds r6, #0x50
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0xb
-	bl FUN_0804e6d8
+	bl Crossover_EncodeText
 	adds r1, r5, #0
 	adds r1, #0x6c
 	ldrh r0, [r1]

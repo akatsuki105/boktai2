@@ -10,6 +10,9 @@ typedef struct {
 } EntityD3A9;
 static_assert(sizeof(EntityD3A9) == 80);
 
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
 void FUN_080c0ae4(EntityD3A9* p, MsgQueue* mq, MsgPacket* msg) {
   PlaySound_082406e0(msg->args[0]);
   MsgQueue_EndWait(mq, 1);
@@ -60,14 +63,13 @@ void FUN_080c0be0(EntityD3A9* p, MsgQueue* mq, MsgPacket* msg) {
   MsgQueue_EndWait(mq, 1);
 }
 
-// 94/95 命令, ループ初回の判定は p + 0x22, 2回目以降は mq + 6 を使っている形が作れない
-NON_MATCH void* EntityD3A9_Update_Internal(EntityD3A9* p) {
-#ifdef NONMATCHING_C
+// 届いたメッセージを cmd ごとのハンドラへ配る
+void* EntityD3A9_HandleMessages(EntityD3A9* p) {
   MsgQueue* mq = &p->mq;
   s32 i;
 
-  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
@@ -113,13 +115,10 @@ NON_MATCH void* EntityD3A9_Update_Internal(EntityD3A9* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/EntityD3A9_Update_Internal.inc");
-#endif
 }
 
 s32 EntityD3A9_Update(EntityD3A9* p) {
-  EntityD3A9_Update_Internal(p);
+  EntityD3A9_HandleMessages(p);
   return 0;
 }
 

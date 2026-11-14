@@ -164,7 +164,7 @@ void Entity080ac574_Spawn(s32 id, Vec3* origin, s32 lifetimeBase, s32 lifetimeRa
 }
 
 // スクリプトから 'n'(ID) 'p'(発生位置) 's'(寿命) を受け取って1発生させる
-void Entity080ac574_SpawnScripted(void) {
+void Cmd_SpawnEntity080ac574(void) {
   Vec3 origin;
   s32 id = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
   s32 lifetimeBase;

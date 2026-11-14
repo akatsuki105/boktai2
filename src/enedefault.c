@@ -207,7 +207,7 @@ void DefeatedEnemyLog_Add(u16 a, u16 b);
 s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 param_5);
 void FUN_080e8f20(Enemy* p, s32 param_2);
 bool8 FUN_080eb2a0(Enemy* p);
-void HUD_ShowEnemyGauge(s32 param_1, s32 param_2, u16 param_3, u16 param_4, s32 param_5);
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void Enemy_ScatterParticles(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 param_6);
 void Enemy_AddKillCount(Enemy* p);
 
@@ -1004,7 +1004,7 @@ void FUN_080f1e0c(Enemy* p) {
   p->subStateTimer++;
 }
 
-// 巻き戻しの印が立っていたら handlerWait のハンドラへ移し、そうでなければ最初のフレームでデモの待ちを解除する
+// 巻き戻しの印が立っていたら handlerWait のハンドラへ移し、そうでなければ最初のフレームでカットシーンの待ちを解除する
 void FUN_080f1e78(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
     Enemy_EnterState(p, p->handlerWait, ES_UNK_0);
@@ -1079,7 +1079,7 @@ NON_MATCH void FUN_080f2074(Enemy* p) {
 #endif
 }
 
-// 巻き戻しの直後は状態17へ移り, 下位状態が済んだらデモの待ちを解いて状態16へ移り破棄側へ回す
+// 巻き戻しの直後は状態17へ移り, 下位状態が済んだらカットシーンの待ちを解いて状態16へ移り破棄側へ回す
 void FUN_080f2160(Enemy* p) {
   if (Enemy_ConsumeSubStateBegun(p)) {
     Enemy_EnterState(p, p->handlerDying, ES_DYING);
@@ -1575,9 +1575,9 @@ void Enemy_InitHandlerTables(Enemy* p) {
   p->handlerTables[9] = (void*)gEnemyHandlerTable9;
 }
 
-// ENEFLAG5_UNK_8 が立っている間, 受け口に溜まったデモのメッセージを処理する (移動先の指定, 向き直り, エモート, 他の敵への中継など)
+// ENEFLAG5_UNK_8 が立っている間, 受け口に溜まったカットシーンのメッセージを処理する (移動先の指定, 向き直り, エモート, 他の敵への中継など)
 // 中継の payload は u16[2] で, cmd 6 は payload[2] まで書く (原典のはみ出し, 隣の x のスロットに乗る), 向きは FixToInt(5, angle) で符号付きの割り算になる
-// flags5 の判定を bool8 を返す static inline にすると 569/567 命令, 残差は gMsgBus のプール定数をループ内で読み直さない点と, cmd 5〜7 で &p->kind を先に作らないぶん末尾の Enemy_SendMsgById 呼び出しが1つに畳まれない点
+// flags5 の判定を Enemy_TestFlag5, gMsgBus を GetMsgBus() inline 越しにすると 570/567 命令で, 残差は cmd 6/7 で &p->kind を payload より先に作り末尾の Enemy_SendMsgById 呼び出しを cmd 5〜7 で1つに畳む点だけになる
 NON_MATCH bool8 Enemy_PollMessages(Enemy* p) {
 #ifdef NONMATCHING_C
   MsgQueue* mq;

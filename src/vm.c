@@ -4,6 +4,7 @@
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
+#include "vm_memory.h"
 #include "vm_subroutine.h"
 
 static void ClearStatAndWorld(void);
@@ -492,9 +493,9 @@ void* VM_Parse_ScriptDirectory_ScriptEntries(s32* offsets, s32* length) {
  */
 u8* VM_LookupByID(u32 scriptID, u32* localVarCount) {
   // GameSystem_Update で gMapInitScriptID
-  //   0 なら VM_ExecSpecial
+  //   0 なら VM_ExecBoot
   //   0 以外なら VM_ExecByID
-  // を呼ぶので、実質的に VM_ExecSpecial が scriptID 0 で、 これらが 1.. に相当するのかもしれない
+  // を呼ぶので、実質的に起動時のスクリプト (Scr_Boot) が scriptID 0 で、 これらが 1.. に相当する
   u32 idx = (scriptID & 0x7FFFFFFF) - 1;
   u8* ptr = (u8*)&gScriptTable.entries[idx];
   *localVarCount = ptr[3];
@@ -580,7 +581,7 @@ NON_MATCH static s32 VM_MountScriptDirectory(ScriptDirectory* d) {
   s32 count;
   s32* entries;
   u8* offsets;
-  u8* special;
+  u8* scriptData;
   u32 val;
   u8* q;
   u8* p = (u8*)d;
@@ -607,11 +608,11 @@ NON_MATCH static s32 VM_MountScriptDirectory(ScriptDirectory* d) {
   gStringTable.unknown = offsets + val;
 
   val = (offsets[3] << 24) | (offsets[2] << 16) | (offsets[1] << 8) | offsets[0];
-  special = offsets + val;
-  t->bytecode = special + 4;
+  scriptData = offsets + val;
+  t->bytecode = scriptData + 4;
 
-  val = (special[3] << 24) | (special[2] << 16) | (special[1] << 8) | special[0];
-  t->specialScriptData = val + special + 8;
+  val = (scriptData[3] << 24) | (scriptData[2] << 16) | (scriptData[1] << 8) | scriptData[0];
+  t->bootBytecode = val + scriptData + 8;
 
   return 0;
 #else
@@ -704,11 +705,10 @@ s32 VM_Exec(u8* pc, ScriptArgs* args, s32 localVarCount) {
   return 0;
 }
 
-// GameSystem_Update で gMapInitScriptID が 0のときに呼ばれる, ゲームの起動時に1回呼ばれるのは確認
-// これがVMスクリプトのエントリポイントかも？
-void VM_ExecSpecial(void) {
+// 起動時のスクリプト (Scr_Boot) を実行する, VM の初期化で gMapInitScriptID が 0 になるので起動直後に1回だけ呼ばれる
+void VM_ExecBoot(void) {
   u32 length;
-  u8* pc = VM_ReadContainerLength(gScriptTable.specialScriptData, &length);
+  u8* pc = VM_ReadContainerLength(gScriptTable.bootBytecode, &length);
   VM_ExecByPointer(pc, (ScriptArgs*)&sEmptyArgs);
 }
 

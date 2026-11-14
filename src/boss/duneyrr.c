@@ -145,6 +145,9 @@ static inline void Hitbox_RemoveAttributes(HitboxData* hitbox, HitboxAttributes 
 static const s16 s16_ARRAY_085aaabc[4] = {0x40, 0x80, 0xC0, 0x20};  // 0x085AAABC
 static const s16 s16_ARRAY_085aaac4[4] = {0x40, 0x40, 0x60, 0x20};  // 0x085AAAC4
 
+// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+
 // 残差はオフセットの定数を作るレジスタの割り当てだけ (原典は r6 を足して4本使う), 2つの表に分けて命令数までは揃った
 NON_MATCH void FUN_08023388(Duneyrr* p) {
 #ifdef NONMATCHING_C
@@ -609,15 +612,13 @@ void FUN_08024324(Duneyrr* p) {
 }
 
 // 溜まったメッセージを受け取り, cmd ごとに下位状態や位置を切り替える
-// 残差は gMsgBus のプール定数の扱いのみ (178/179): 原典はループ内で読み直すが, こちらは r2 に載せて使い回す, Camera_PollMessages と同じ壁
-NON_MATCH void Duneyrr_PollMessages(Duneyrr* p) {
-#ifdef NONMATCHING_C
+void Duneyrr_PollMessages(Duneyrr* p) {
   Boss* boss = &p->base;
   MsgQueue* queue = &boss->mq;
   s32 i;
 
-  for (i = 0; i < queue->count[gMsgBus->bufIdx]; i++) {
-    MsgPacket* msg = queue->msgs[gMsgBus->bufIdx][i];
+  for (i = 0; i < queue->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = queue->msgs[GetMsgBus()->bufIdx][i];
 
     MsgQueue_BeginWait(queue, msg);
     switch (msg->cmd) {
@@ -659,9 +660,6 @@ NON_MATCH void Duneyrr_PollMessages(Duneyrr* p) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/Duneyrr_PollMessages.inc");
-#endif
 }
 
 void FUN_08024500(Duneyrr* p) {
@@ -2193,10 +2191,10 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
   }
   Boss_Init(boss, id, bossID, &pos, angle);
   boss->destAngle = angle;
-  boss->isDemo = VM_GetNamedArgValue('i', 0);
+  boss->isCutscene = VM_GetNamedArgValue('i', 0);
   MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, &pos);
   Boss_PlayAnim(boss, &p->sprite, &p->gfx, 0, PLAYMODE_LOOP, 0);
-  if (boss->isDemo != 0) {
+  if (boss->isCutscene != 0) {
     switch (VM_GetNamedArgValue('D', 1)) {
       case 0: {
         Boss_SetSubStates(boss, 2, 0, 0);

@@ -13,7 +13,7 @@
 typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_8
   AuxSprite sprite;        // 0x018, ->gfx
-  AuxSpriteGfx gfx;        // 0x044, SPRITE_SOLAR_STATION
+  AuxSpriteGfx gfx;        // 0x044, SPRITE_STAND
   MainSpriteGfx digitGfx;  // 0x060, SPRITE_UI_START_MENU (SMENU_NUM_BOLD を残高表示に使う)
   MainSprite digits[4];    // 0x080, 太陽スタンドの上に表示される残高
   HitboxData hurtbox;      // 0x200, _Destroy が Hitbox_Unregister に渡す
@@ -214,7 +214,7 @@ void SolarStation_InitSprite(SolarStation* p) {
   AuxSpriteGfx* gfx = &p->gfx;
   SpriteFlags flags;
 
-  Video_GetAuxSprite(gfx, SPRITE_SOLAR_STATION);
+  Video_GetAuxSprite(gfx, SPRITE_STAND);
   AuxSprite_Add(sprite, gfx, 0);
   sprite->poseIdx = 0;
 

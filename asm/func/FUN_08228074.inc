@@ -43,12 +43,12 @@ _082280A6:
 	movs r3, #0
 	bl AuxAnim_SetAnim
 	adds r0, r6, #0
-	bl Entity8AAB_RestoreAnimState
+	bl OtenkoGuide_RestoreAnimState
 	ldr r1, _08228130 @ =0x00000DF4
 	adds r0, r6, r1
 	bl ParticleShadow_Hide
 	adds r0, r6, #0
-	bl FUN_082239fc
+	bl OtenkoGuide_StartDozeTimer
 _082280E0:
 	ldr r2, _08228134 @ =0x00000F4C
 	adds r0, r6, r2

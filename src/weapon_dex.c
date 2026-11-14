@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "menu.h"
 #include "preview_stage.h"
 #include "sound.h"
 #include "sprite.h"
@@ -55,7 +56,6 @@ static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, æ­¦å™
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
 void MainMenu_SetWeaponMarquee(unknown* w, u8* pc);
-s32 GetWeaponWearPose(WeaponData* w);
 void WeaponDexMenu_RefreshIcons(WeaponDexMenu* p);
 
 s32 WeaponDexMenu_GetPageEntryCount(s32 page) { return sWeaponDexItemCounts[page]; }

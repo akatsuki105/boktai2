@@ -48,7 +48,7 @@ void CrossoverError_ResetVideo(CrossoverError* p) {
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON);
   Video_ResetFrameState(1);
   Video_SetDrawPasses(0, nop_0822e738, nop_0822b09c, FUN_0822f584);
-  MainMenu_SetHudMode(7);
+  HUD_SetMode(HUD_HIDDEN);
   ClearBGTilemapBuffer(0);
 }
 

@@ -43,7 +43,7 @@ Every function in this codebase is in one of four states:
 
 2. **NAKED** — C signature defined, but no C implementation:
 ```c
-NAKED void* VM_Ctrl_22FF(void) { INCFUNC("asm/func/VM_Ctrl_22FF.inc"); }
+NAKED s32 VM_Ctrl_Mesg(void) { INCFUNC("asm/func/VM_Ctrl_Mesg.inc"); }
 ```
 
 3. **NON_MATCH** — C implementation written, but it does not produce matching output:
@@ -93,4 +93,21 @@ deno task asset map Script_0x02BF -o /tmp/bokmagic/d.png                # map co
 - Options: `--scale`, `--pose`, `--sheet`, `--pltt`, `--xflip`/`--yflip`, `--layers`, `--part`, `--scene`, `--hide-bg`. Run without arguments for help
 - Deno caches the script; add `--reload` once to pick up a newer version
 - Constant names come from the headers at the time the tool was built; after renaming constants, ask for the tool to be rebuilt
+
+---
+
+## Script Interpreter CLI (bokvm)
+
+`deno task bokvm` runs a script from `baserom.gba` on a TypeScript port of the VM (`tools/bokvm`, ported from `src/vm.c`, `src/vm_expr.c`, `src/vm_ctrl1.c` and `src/vm_ctrl2.c`). It prints each executed statement in `.bokc` spelling, which branch was taken, script calls and their return values, and every write to variables and `stat` / `world` / `scratch`, then a summary of the memory that changed. Use it to see what a script actually does, or how a command gets called and with which named arguments, instead of tracing `scripts.bokc` by hand.
+
+```sh
+deno task bokvm Scr_UseKey --args 65                    # script by script.h name, Scr_0xXXXX or ID; --args fills p0, p1, ...
+deno task bokvm Scr_st00_00 -q                          # -q: hide statements, keep calls, commands, writes and events
+deno task bokvm Scr_UseKey --ret Cmd_HasItem=1          # return value of a command that is not ported (default 0)
+deno task bokvm Scr_UseKey --overlay my.bokc            # scripts defined in my.bokc replace the ROM's (goes through cpp)
+```
+
+- Only a few commands are ported (`tools/bokvm/commands/`); the rest log their call and return 0, so branches after them may differ from the game
+- Control instructions that act on the game (LoadMap, trap, Mesg, ...) read their arguments like the C does and only log them
+- `src/vm.c` is the source of truth for VM behavior; bokvm copies it, so fix bokvm when they disagree
 

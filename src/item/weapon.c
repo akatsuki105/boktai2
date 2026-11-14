@@ -5,8 +5,6 @@
 #include "player.h"
 #include "vm.h"
 
-void HUD_RebuildQCWeapons(void);
-
 bool32 IsWeaponAlreadyFound(weapon32_t n) {
   if (n >= 32) {
     return (gStat->weaponDex[1]) & (1 << (n - 32));
@@ -157,7 +155,7 @@ NON_MATCH bool32 AddWeapon(WeaponData* data) {
         Player_ApplyWeapon(gPlayerPtr[0], w);
       }
     }
-    HUD_RebuildQCWeapons();
+    QC_RebuildWeapons();
   }
   return TRUE;
 #else
@@ -324,7 +322,7 @@ void Cmd_TakeEquippedWeapon(void) {
   RemoveWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx));
   if (gPlayerPtr[0] != NULL) {
     Player_ApplyWeapon(gPlayerPtr[0], NULL);
-    HUD_RebuildQC();
+    QC_Rebuild();
   }
 }
 

@@ -258,7 +258,7 @@ NON_MATCH void Bullet_StateChargeSabata(Bullet* p) {
 #endif
 }
 
-// 前へ進めながら当たり判定を出し、地面より下に潜ったら次の状態へ
+// 前へ進めながら当たり判定を出し、壁に当たったら次の状態へ
 void Bullet_StateFly(Bullet* p) {
   p->sprite.pos.x += p->offset.x;
   p->sprite.pos.z += p->offset.z;
@@ -270,7 +270,7 @@ void Bullet_StateFly(Bullet* p) {
   if (Map_GetTileHeightAt(&p->sprite.pos) > p->sprite.pos.y) {
     Bullet_SetState(p, Bullet_StateImpact);
   } else {
-    if (++p->timer >= 60) {
+    if (++p->timer >= SECOND(1)) {
       KillEntity(&p->e);
     }
   }

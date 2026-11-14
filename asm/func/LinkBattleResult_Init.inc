@@ -58,7 +58,7 @@ _081DD8D4:
 	adds r0, r4, r1
 	strb r5, [r0]
 	movs r0, #7
-	bl MainMenu_SetHudMode
+	bl HUD_SetMode
 	movs r0, #1
 	b _081DD958
 	.align 2, 0

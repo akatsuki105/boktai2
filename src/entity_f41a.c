@@ -11,13 +11,13 @@
 #include "vm.h"
 
 // 不使用 (おそらく、Cウルフのテスト用のダミー敵)
-// SPRITE_BOKU の姿でうろつく生き物, 叩かれると点滅してノックバックし、また歩き出す
+// SPRITE_BOKU_0 の姿でうろつく生き物, 叩かれると点滅してノックバックし、また歩き出す
 typedef struct EntityF41A {
   Entity e;                            // 0x000, ENTITY_UNK_8
   u16 id;                              // 0x018, Init の第2引数, Mover_Init に渡して mover に入れる
   Mover mover;                         // 0x01C
   AuxSprite sprite;                    // 0x060
-  AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU
+  AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU_0
   MoverTile tile;                      // 0x0A8, mover.tile がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
@@ -173,7 +173,7 @@ void EntityF41A_InitTile(EntityF41A* p) {
 
 // AuxSprite を用意して mover に結びつけ、アニメファイルを読む
 void EntityF41A_InitSprite(EntityF41A* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_BOKU);
+  Video_GetAuxSprite(&p->gfx, SPRITE_BOKU_0);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   Mover_SetAuxSprite(&p->mover, &p->sprite);
   Video_SetAuxSpritePltt(&p->gfx, 307);

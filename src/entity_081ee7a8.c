@@ -9,7 +9,7 @@
 
 typedef struct {
   AuxSprite sprite;   // 0x00
-  AuxSpriteGfx gfx;   // 0x2C, 生成時の spriteID (Entity081ee7a8_SpawnDefault と Entity081ee7a8_SpawnDefaultNow は SPRITE_4384)
+  AuxSpriteGfx gfx;   // 0x2C, 生成時の spriteID (Entity081ee7a8_SpawnDefault と Entity081ee7a8_SpawnDefaultNow は SPRITE_PUFF_4384)
   AuxAnimState anim;  // 0x48, 一巡すると状態 2 で片付く
   u8 state;           // 0x58, PTR_ARRAY_085ae4d4 の添字
   u8 unk_59;          // 0x59
@@ -103,9 +103,9 @@ void Entity081ee7a8Elem_UpdateState2(Entity081ee7a8Elem* elem) {
   elem->state = 0;
 }
 
-// SPRITE_4384 / ANIM_F62B で粒を1つ出す
+// SPRITE_PUFF_4384 / ANIM_F62B で粒を1つ出す
 void Entity081ee7a8_SpawnDefault(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 plttOffset, SpriteFlags flags, s32 hideTime) {
-  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, plttOffset, flags, hideTime, SPRITE_4384, ANIM_F62B, 0, 0, plttOffset + 125);
+  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, plttOffset, flags, hideTime, SPRITE_PUFF_4384, ANIM_F62B, 0, 0, plttOffset + 125);
 }
 
 void Entity081ee7a8_SpawnEx(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 _, SpriteFlags flags, s32 hideTime, SpriteID32 sprID, u32 animFileID, u32 animIdx, u32 variant, s32 plttID) {
@@ -114,7 +114,7 @@ void Entity081ee7a8_SpawnEx(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase
 
 // Entity081ee7a8_SpawnDefault の hideTime 0 版
 void Entity081ee7a8_SpawnDefaultNow(Vec3* pos, s32 riseBase, s32 riseRand, s32 speedBase, s32 speedRand, s32 delay, s32 angleBase, s32 angleRand, s32 animSpeed, u32 prio, s32 plttOffset, SpriteFlags flags) {
-  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, plttOffset, flags, 0, SPRITE_4384, ANIM_F62B, 0, 0, plttOffset + 125);
+  Entity081ee7a8_Spawn(pos, riseBase, riseRand, speedBase, speedRand, delay, angleBase, angleRand, animSpeed, prio, plttOffset, flags, 0, SPRITE_PUFF_4384, ANIM_F62B, 0, 0, plttOffset + 125);
 }
 
 // 乱数で速さと向きを散らした粒を1つ出す

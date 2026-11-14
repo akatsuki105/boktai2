@@ -156,9 +156,9 @@ static s32 IsNight(void) {
     case TIME_SUNSET: {
       return 0;
     }
-    case TIME_NIGHT:
-    case TIME_UNK4:
-    case TIME_UNK5: {
+    case TIME_NIGHT_DAWN:
+    case TIME_NIGHT_DUSK:
+    case TIME_NIGHT_MID: {
       return 1;
     }
   }
