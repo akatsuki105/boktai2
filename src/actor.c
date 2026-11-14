@@ -492,7 +492,7 @@ s32 Actor_ApplyPltt(Actor* actor, u16 plttID) {
   return SpriteHolder_SetPlttID(sprite, actor->curPlttID);
 }
 
-s32 Actor_SetPltt(Actor* actor, u16 param_2) {
+s32 Actor_SetPltt(Actor* actor, u32 param_2) {
   actor->plttID = param_2;
   return Actor_ApplyPltt(actor, actor->plttID);
 }
@@ -2405,9 +2405,7 @@ s32 FUN_080442f4(ActorManager* p, Actor* actor) {
 s32 FUN_08044300(ActorManager* p, Actor* actor) { return MsgQueue_Unregister(&actor->mq); }
 
 // 0x920F, '.n' / '.k' / '.p' / '.d' / '.o' / '.t' / '.m' / '.c' から Actor を1体作り, state 0 から始める (使われていない?)
-// 残差1命令: 原典は '.c' の値を Actor_SetPltt へ u16 に切り詰めずに渡す (呼び出し時に u16 の原型が見えていなかった形), こちらは lsls/lsrs が付く
-NON_MATCH void Cmd_920F(void) {
-#ifdef NONMATCHING_C
+void Cmd_920F(void) {
   s32 spriteType;
   ActorManager* p = gActorManager;
   u32 id;
@@ -2475,9 +2473,6 @@ NON_MATCH void Cmd_920F(void) {
     actor->unk_1ea = 0;
   }
   ActorManager_LinkActor(p, actor);
-#else
-  INCFUNC("asm/func/Cmd_920F.inc");
-#endif
 }
 
 void FUN_0804454c(ActorManager* p, Actor* actor) {
