@@ -1758,7 +1758,7 @@ void Skeleton_StateLichBlownAway(Skeleton* p) {
 }
 
 // 後ろへ向き直り, 着地したら retreatCooldown と lichAtkFlags の印を消して Skeleton_LichPSelectAction で動き出す
-// 66/66命令, 残差は retreatCooldown と lichAtkFlags の格納先を作る並び (原典は owner + 0x6FC を基点に [r2, #0x26] で lichAtkFlags を触る), 1回目の下書きで切り上げ
+// 66/66命令, 残差は retreatCooldown と lichAtkFlags の格納先を作る並び (原典は owner + 0x6FC を基点に [r2, #0x26] で lichAtkFlags を触る, ~0xD は直前の 0 から subs で作る), 試済: Skeleton_StateLichBlownAway と同じく owner を毎回キャストする形 (67/66), 0x6FC 基点は構造体の切り方の問題かもしれない
 NON_MATCH void Skeleton_StateLichPBlownAway(Skeleton* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
