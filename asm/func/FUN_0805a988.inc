@@ -21,7 +21,7 @@
 	movs r3, #0
 	bl AuxAnim_SetAnim
 	adds r0, r5, #0
-	bl FUN_0805a8b0
+	bl Entity0805b068Elem_ShowSprites
 	adds r1, r5, #0
 	adds r1, #0x14
 	adds r0, r4, #0

@@ -94,7 +94,7 @@ s32 FUN_0805a6ec(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
 NAKED void FUN_0805a728(Entity0805b068Elem* elem) { INCFUNC("asm/func/FUN_0805a728.inc"); }
 
 // sprites[1..3] を見せる
-void FUN_0805a8b0(Entity0805b068Elem* elem) {
+void Entity0805b068Elem_ShowSprites(Entity0805b068Elem* elem) {
   AuxSprite* spr = &elem->sprites[1];
   s32 i;
 
@@ -104,16 +104,13 @@ void FUN_0805a8b0(Entity0805b068Elem* elem) {
 }
 
 // sprites[1..3] を隠す
-NON_MATCH void FUN_0805a8d0(Entity0805b068Elem* elem) {
-#ifdef NONMATCHING_C
+void Entity0805b068Elem_HideSprites(Entity0805b068Elem* elem) {
+  AuxSprite* spr = &elem->sprites[1];
   s32 i;
 
-  for (i = 0; i < 3; i++) {
-    elem->sprites[1 + i].flags |= SPRFLAG_HIDDEN;
+  for (i = 0; i < 3; i++, spr++) {
+    spr->flags |= SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_0805a8d0.inc");
-#endif
 }
 
 // target の方向へ1フレーム2刻みで向きを寄せる
