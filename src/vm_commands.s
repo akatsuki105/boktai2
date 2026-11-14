@@ -461,7 +461,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB189, Cmd_B189
 	.4byte 0xB1C4, Cmd_ShakeElevator
 	.4byte 0xB294, Cmd_B294
-	.4byte 0xB3D1, EntityB3D1_Create
+	.4byte 0xB3D1, Torture_Create
 	.4byte 0xB3D7, Cmd_B3D7 @ HashName("アルバム")
 	.4byte 0xB426, DungeonTitle_Create @ HashName("ダンジョンタイトル")
 	.4byte 0xB45F, Cmd_GetCrossoverPoint

@@ -458,7 +458,7 @@
 #define Cmd_B189 0xB189
 #define Cmd_ShakeElevator 0xB1C4
 #define Cmd_B294 0xB294
-#define EntityB3D1_Create 0xB3D1
+#define Torture_Create 0xB3D1
 #define Cmd_B3D7 0xB3D7
 #define DungeonTitle_Create 0xB426
 #define Cmd_GetCrossoverPoint 0xB45F

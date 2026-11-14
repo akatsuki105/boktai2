@@ -15165,7 +15165,7 @@ Scr_DarkLoanPunishment() {
 			} else {
 				W_UNK_1C5 = 0;
 			}
-			Chara(EntityB3D1_Create, (u16)0x963D, .r = (u8)100, .a = [(s16)10800, (s16)1000, (u24)Scr_DarkLoanPunishTimeUp], .N = 4, .p = S_TORTURE_PATTERN, .e = (u24)Scr_DarkLoanPunishEnd);
+			Chara(Torture_Create, (u16)0x963D, .r = (u8)100, .a = [(s16)10800, (s16)1000, (u24)Scr_DarkLoanPunishTimeUp], .N = 4, .p = S_TORTURE_PATTERN, .e = (u24)Scr_DarkLoanPunishEnd);
 			Command(Cmd_AddEntity3117Entry, .n = (u16)13510, .t = (u16)3550, .i = 0, .p = [(s16)1664, (s16)256, (s16)896], .f = 1, .R = 2, .m = [(u16)34799, 1, 0], .P = 32, .o = 1, .s = 1);
 			Scr_BeginCutscene((u24)Scr_Nop);
 			Chara(Cmd_Delay, (u16)0xEC51, .t = (u8)64, .e = {

@@ -133,14 +133,14 @@ _080C08E6:
 	adds r0, r7, #0
 	bl FUN_080c05cc
 	adds r0, r7, #0
-	bl EntityB3D1_DrawDebts
+	bl Torture_DrawDebts
 	ldr r1, _080C0964 @ =FUN_080c01a8
 	adds r0, r7, #0
-	bl EntityB3D1_SetState
+	bl Torture_SetState
 	adds r0, r7, #0
 	bl FUN_080c0770
 	adds r0, r7, #0
-	bl EntityB3D1_InitBonusSprites
+	bl Torture_InitBonusSprites
 	adds r0, r7, #0
 	bl FUN_080bffcc
 	movs r0, #0x72

@@ -171,7 +171,7 @@ _080C03A4:
 	str r0, [r1]
 _080C03C8:
 	adds r0, r6, #0
-	bl EntityB3D1_DrawDebts
+	bl Torture_DrawDebts
 	movs r2, #0xb2
 	lsls r2, r2, #3
 	adds r1, r6, r2
@@ -280,7 +280,7 @@ _080C048C:
 	strh r0, [r1]
 _080C04AE:
 	adds r0, r6, #0
-	bl EntityB3D1_UpdateMashMeter
+	bl Torture_UpdateMashMeter
 	adds r0, r6, #0
 	bl FUN_080bfe50
 	ldr r0, _080C04D4 @ =0x0000057A

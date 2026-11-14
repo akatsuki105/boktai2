@@ -95,7 +95,7 @@ SECTIONS {
       src/entity_cf58.o(iwram_data);
       src/gameover.o(iwram_data);
       src/level_upper.o(iwram_data);
-      src/entity_b3d1.o(iwram_data);
+      src/torture.o(iwram_data);
       src/emote.o(iwram_data);
       src/entity_080db520.o(iwram_data);
       src/dust.o(.bss);
@@ -411,7 +411,7 @@ SECTIONS {
 			src/shop_item.o (.text);
 			src/shop_weapon.o (.text);
 			src/shop_coffin.o (.text);
-			src/entity_b3d1.o (.text);
+			src/torture.o (.text);
 			src/soundbus.o (.text);
 			src/prologue_event_bullet.o (.text);
 			src/entity_3361.o (.text);

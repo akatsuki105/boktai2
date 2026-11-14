@@ -59,7 +59,7 @@ _080C0224:
 _080C0230:
 	ldr r1, _080C0244 @ =FUN_080c01a8
 	adds r0, r7, #0
-	bl EntityB3D1_SetState
+	bl Torture_SetState
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0

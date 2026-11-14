@@ -5,11 +5,11 @@
 #include "sprite.h"
 #include "vm.h"
 
-struct EntityB3D1;
-typedef void(EntityB3D1Func)(struct EntityB3D1*);
+struct Torture;
+typedef void(TortureFunc)(struct Torture*);
 
-// 暗黒ローン関係
-typedef struct EntityB3D1 {
+// 暗黒ローンのおしおき, 返済できなかったときにボタン連打で返済分を発電させるイベント
+typedef struct Torture {
   Entity e;                        // 0x000, ENTITY_UNK_8
   u8 unk_18[0x020 - 0x018];        // 0x018, まだ未解析
   AuxSprite sprite0;               // 0x020, _Destroy が AuxSprite_Remove に渡す
@@ -50,15 +50,15 @@ typedef struct EntityB3D1 {
   u16 unk_5b2;                     // 0x5B2, '.r=300'
   u8 unk_5b4[0x5B6 - 0x5B4];       // 0x5B4, まだ未解析
   u16 stateTimer;                  // 0x5B6
-  EntityB3D1Func* updateCallback;  // 0x5B8
-} EntityB3D1;
-static_assert(sizeof(EntityB3D1) == 1468);
+  TortureFunc* updateCallback;  // 0x5B8
+} Torture;
+static_assert(sizeof(Torture) == 1468);
 
-IWRAM_DATA EntityB3D1* gEntityB3D1 = NULL;  // 0x03000158
+IWRAM_DATA Torture* gTorture = NULL;  // 0x03000158
 
-void FUN_080bfa50(void) { gEntityB3D1 = NULL; }
+void FUN_080bfa50(void) { gTorture = NULL; }
 
-void EntityB3D1_SetState(EntityB3D1* p, EntityB3D1Func* fn) {
+void Torture_SetState(Torture* p, TortureFunc* fn) {
   p->updateCallback = fn;
   p->stateTimer = 0;
 }
@@ -74,10 +74,10 @@ void FUN_080bfa74(void) {
   gPlayerPtr[0]->mashHits = 0;
 }
 
-NAKED void FUN_080bfaac(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfaac.inc"); }
+NAKED void FUN_080bfaac(Torture* p) { INCFUNC("asm/func/FUN_080bfaac.inc"); }
 
 // unk_b4 を unk_b6 ずつ進めて, 8 で割った値を sprite1 のコマ番号にする
-void FUN_080bfb74(EntityB3D1* p) {
+void FUN_080bfb74(Torture* p) {
   AuxSprite_SetPoseIdx(&p->sprite1, p->unk_b4 >> 3);
   p->unk_b4 += p->unk_b6;
 
@@ -86,10 +86,10 @@ void FUN_080bfb74(EntityB3D1* p) {
   }
 }
 
-NAKED void FUN_080bfba4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfba4.inc"); }
+NAKED void FUN_080bfba4(Torture* p) { INCFUNC("asm/func/FUN_080bfba4.inc"); }
 
 // 暗黒ローンの借金 (darkDebts) を4桁の数字で mainSprites[1..4] に出す
-void EntityB3D1_DrawDebts(EntityB3D1* p) {
+void Torture_DrawDebts(Torture* p) {
   s32 digits[4];
   s32 debts;
   s32 i;
@@ -107,7 +107,7 @@ void EntityB3D1_DrawDebts(EntityB3D1* p) {
   }
 }
 
-void FUN_080bfce4(EntityB3D1* p) {
+void FUN_080bfce4(Torture* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
@@ -115,7 +115,7 @@ void FUN_080bfce4(EntityB3D1* p) {
   }
 }
 
-void FUN_080bfd04(EntityB3D1* p) {
+void FUN_080bfd04(Torture* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
@@ -123,7 +123,7 @@ void FUN_080bfd04(EntityB3D1* p) {
   }
 }
 
-void FUN_080bfd24(EntityB3D1* p) {
+void FUN_080bfd24(Torture* p) {
   if (gPlayerPtr[0]->mashHits > 3) {
     p->unk_588++;
   } else {
@@ -132,7 +132,7 @@ void FUN_080bfd24(EntityB3D1* p) {
 }
 
 // unk_588 がどの区間にあるかを 10 / 5 / 1 / 2 で返す
-s32 FUN_080bfd5c(EntityB3D1* p) {
+s32 FUN_080bfd5c(Torture* p) {
   if (p->unk_588 > p->unk_58e) {
     return 10;
   }
@@ -145,11 +145,11 @@ s32 FUN_080bfd5c(EntityB3D1* p) {
   return 1;
 }
 
-NAKED void FUN_080bfdac(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfdac.inc"); }
+NAKED void FUN_080bfdac(Torture* p) { INCFUNC("asm/func/FUN_080bfdac.inc"); }
 
-NAKED void FUN_080bfe50(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfe50.inc"); }
+NAKED void FUN_080bfe50(Torture* p) { INCFUNC("asm/func/FUN_080bfe50.inc"); }
 
-void FUN_080bfef8(EntityB3D1* p) {
+void FUN_080bfef8(Torture* p) {
   s32 i;
 
   for (i = 0; i < 6; i++) {
@@ -158,7 +158,7 @@ void FUN_080bfef8(EntityB3D1* p) {
 }
 
 // 残差: 44/44 命令, 1つ目のループで原典は &mashMeter[i] を基点に strh [r0, #0x10] で書くが, こちらは poseIdx の番地 (+0x110) に畳む, 2つ目のループは AuxSprite* のローカルで揃った, 試済: 条件演算子, if/else, 要素ポインタ
-NON_MATCH void EntityB3D1_UpdateMashMeter(EntityB3D1* p) {
+NON_MATCH void Torture_UpdateMashMeter(Torture* p) {
 #ifdef NONMATCHING_C
   s32 n = gPlayerPtr[0]->mashHits;
   s32 i;
@@ -181,11 +181,11 @@ NON_MATCH void EntityB3D1_UpdateMashMeter(EntityB3D1* p) {
     sprite->poseIdx = 0;
   }
 #else
-  INCFUNC("asm/func/EntityB3D1_UpdateMashMeter.inc");
+  INCFUNC("asm/func/Torture_UpdateMashMeter.inc");
 #endif
 }
 
-void FUN_080bff78(EntityB3D1* p) {
+void FUN_080bff78(Torture* p) {
   s32 i;
 
   for (i = 0; i < 7; i++) {
@@ -193,7 +193,7 @@ void FUN_080bff78(EntityB3D1* p) {
   }
 }
 
-void FUN_080bff98(EntityB3D1* p) {
+void FUN_080bff98(Torture* p) {
   s32 i;
 
   for (i = 0; i < 7; i++) {
@@ -201,28 +201,28 @@ void FUN_080bff98(EntityB3D1* p) {
   }
 }
 
-void FUN_080bffb8(EntityB3D1* p) {
+void FUN_080bffb8(Torture* p) {
   FUN_080bfce4(p);
   FUN_080bff78(p);
 }
 
-void FUN_080bffcc(EntityB3D1* p) {
+void FUN_080bffcc(Torture* p) {
   FUN_080bfd04(p);
   FUN_080bfef8(p);
   FUN_080bff98(p);
 }
 
-void FUN_080c0248(EntityB3D1* p);
+void FUN_080c0248(Torture* p);
 
-void FUN_080bffe8(EntityB3D1* p) {
+void FUN_080bffe8(Torture* p) {
   FUN_080bfaac(p);
   FUN_080bffb8(p);
   p->unk_57a = 0x20;
-  EntityB3D1_SetState(p, FUN_080c0248);
+  Torture_SetState(p, FUN_080c0248);
 }
 
 // unk_57e を引数にして unk_5ac のスクリプトを起動する
-void FUN_080c0014(EntityB3D1* p) {
+void FUN_080c0014(Torture* p) {
   ScriptArgs args;
   u32 argv[1];
 
@@ -235,7 +235,7 @@ void FUN_080c0014(EntityB3D1* p) {
 }
 
 // unk_5a8 のスクリプトを引数1個で起動する
-void FUN_080c0058(EntityB3D1* p) {
+void FUN_080c0058(Torture* p) {
   u32 arg;
   ScriptArgs args;
 
@@ -249,7 +249,7 @@ void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg
 
 // プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
 void Cmd_A864(void) {
-  EntityB3D1* p = gEntityB3D1;
+  Torture* p = gTorture;
 
   if (p != NULL) {
     EntityCF58_CreateWithCallback(0, 0, FUN_080bffe8, p);
@@ -258,15 +258,15 @@ void Cmd_A864(void) {
   }
 }
 
-NAKED s32 FUN_080c00d4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c00d4.inc"); }
+NAKED s32 FUN_080c00d4(Torture* p) { INCFUNC("asm/func/FUN_080c00d4.inc"); }
 
 void FUN_080c01a8(void) {}
 
-NAKED void FUN_080c01ac(EntityB3D1* p, s32 param_2) { INCFUNC("asm/func/FUN_080c01ac.inc"); }
+NAKED void FUN_080c01ac(Torture* p, s32 param_2) { INCFUNC("asm/func/FUN_080c01ac.inc"); }
 
-NAKED void FUN_080c0248(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
+NAKED void FUN_080c0248(Torture* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
 
-void FUN_080c04d8(EntityB3D1* p) {
+void FUN_080c04d8(Torture* p) {
   Player* q = gPlayerPtr[0];
 
   if (q->mashHits <= 3) {
@@ -279,14 +279,14 @@ void FUN_080c04d8(EntityB3D1* p) {
   REG_BLDALPHA = 0;
 }
 
-s32 EntityB3D1_Update(EntityB3D1* p) {
+s32 Torture_Update(Torture* p) {
   p->updateCallback(p);
   FUN_080bfb74(p);
   FUN_080c04d8(p);
   return 0;
 }
 
-s32 EntityB3D1_Destroy(EntityB3D1* p) {
+s32 Torture_Destroy(Torture* p) {
   s32 i;
 
   AuxSprite_Remove(&p->sprite0);
@@ -301,15 +301,15 @@ s32 EntityB3D1_Destroy(EntityB3D1* p) {
   for (i = 0; i < 6; i++) {
     AuxSprite_Remove(&p->bonusSprites[i]);
   }
-  gEntityB3D1 = NULL;
+  gTorture = NULL;
   sound_08240740(SONG_574);
   return 0;
 }
 
-NAKED void FUN_080c05cc(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c05cc.inc"); }
+NAKED void FUN_080c05cc(Torture* p) { INCFUNC("asm/func/FUN_080c05cc.inc"); }
 
 // bonusGfx を読み込み, bonusSprites を隠した状態で並べる
-void EntityB3D1_InitBonusSprites(EntityB3D1* p) {
+void Torture_InitBonusSprites(Torture* p) {
   Vec3 pos;
   s32 i;
 
@@ -328,23 +328,23 @@ void EntityB3D1_InitBonusSprites(EntityB3D1* p) {
   }
 }
 
-NAKED void FUN_080c0770(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
+NAKED void FUN_080c0770(Torture* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
 
-NAKED s32 EntityB3D1_Init(EntityB3D1* p) { INCFUNC("asm/func/EntityB3D1_Init.inc"); }
+NAKED s32 Torture_Init(Torture* p) { INCFUNC("asm/func/Torture_Init.inc"); }
 
 // 0xB3D1
-EntityB3D1* EntityB3D1_Create(void) {
-  if (gEntityB3D1 == NULL) {
-    EntityB3D1* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityB3D1));
+Torture* Torture_Create(void) {
+  if (gTorture == NULL) {
+    Torture* p = CreateEntity(ENTITY_UNK_8, sizeof(Torture));
 
     if (p != NULL) {
-      SetEntityRoutine(p, EntityB3D1_Update, EntityB3D1_Destroy);
-      if (EntityB3D1_Init(p) < 0) {
+      SetEntityRoutine(p, Torture_Update, Torture_Destroy);
+      if (Torture_Init(p) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
     }
     return p;
   }
-  return gEntityB3D1;
+  return gTorture;
 }
