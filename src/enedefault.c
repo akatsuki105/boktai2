@@ -1038,45 +1038,17 @@ void FUN_080f1ef8(Enemy* p) {
   }
 }
 
-// 残差6命令 (89/95): begun の 0/1 が分岐に畳まれる
-NON_MATCH void FUN_080f2074(Enemy* p) {
-#ifdef NONMATCHING_C
-  bool8 restart = p->subStateBegun;
-  bool32 begun = FALSE;
-
-  if (restart) {
-    p->subStateBegun = 0;
-    begun = TRUE;
-  }
-  if (begun) {
-    void* handler = p->handlerTurn;
-
-    p->stateBegun = TRUE;
-    p->subStateDone = 0;
-    p->state = 1;
-    p->handlerState = p->unk_59c;
-    p->stateTimer = 0;
+// 下位状態に入ったら handlerTurn を状態1で動かし, 済んだらカットシーンの待ちを解いて handlerWait へ戻す
+void FUN_080f2074(Enemy* p) {
+  if (Enemy_ConsumeSubStateBegun(p)) {
+    Enemy_EnterState(p, p->handlerTurn, ES_UNK_1);
   } else if (p->subStateDone) {
-    void* handler;
-
     MsgQueue_EndWait(&p->mq, 1);
-    handler = p->handlerWait;
-    p->stateBegun = TRUE;
-    p->subStateDone = 0;
-    p->state = 0;
-    p->handlerState = p->unk_59c;
-    p->stateTimer = 0;
-    p->subState0 = 2;
-    p->subState1 = 0;
-    p->subState2 = 2;
-    p->subStateTimer = 0;
-    p->subStateBegun = 1;
+    Enemy_EnterState(p, p->handlerWait, ES_UNK_0);
+    Enemy_ResetState(p, 2, 0, 2);
   } else {
     p->subStateTimer++;
   }
-#else
-  INCFUNC("asm/func/FUN_080f2074.inc");
-#endif
 }
 
 // 巻き戻しの直後は状態17へ移り, 下位状態が済んだらカットシーンの待ちを解いて状態16へ移り破棄側へ回す
