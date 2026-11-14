@@ -1286,30 +1286,25 @@ NON_MATCH bool8 Skeleton_PickWalkDestRandom(Skeleton* p, u32 angle) {
 }
 
 // 攻撃が当たった相手がいれば警戒してその相手を追う対象にし, 向き直って TRUE
-// 111/127命令の下書き, 原典は相手のタイル索引を GetCollisionTileIdx の展開で別の形 (x の上位バイトを (s8) で再計算) に書く, 1回目の下書きで切り上げ
-NON_MATCH s32 Skeleton_NoticeHitTarget(Skeleton* p) {
-#ifdef NONMATCHING_C
-  Mover* m;
+s32 Skeleton_NoticeHitTarget(Skeleton* p) {
+  if ((p->e).hitTargetID > 0) {
+    Vec3 diff;
 
-  if ((p->e).hitTargetID < 1) {
-    if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
-      CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_27);
-    }
-    return FALSE;
+    Enemy_Alert(&p->e);
+    CLEAR_FLAGS((p->e).unk_222, ENEMY222_UNK_1);
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+    (p->e).playerMover = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
+    (p->e).unk_25e = GetCollisionTileIdx(&(p->e).playerMover->pos);
+    Vec3_Delta(&diff, &(p->e).mover.pos, &(p->e).playerMover->pos);
+    (p->e).mover.angle = ArcTan2_8(diff.x, diff.z);
+    Skeleton_ClearFlags((p->e).owner, (1 << 8) | (1 << 9));
+    return TRUE;
   }
-  Enemy_Alert(&p->e);
-  (p->e).unk_222 &= ~ENEMY222_UNK_1;
-  Enemy_SetFlag4(&p->e, ENEFLAG4_UNK_7);
-  SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
-  m = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
-  (p->e).playerMover = m;
-  (p->e).unk_25e = GetCollisionTileIdx(&m->pos);
-  (p->e).mover.angle = ArcTan2_8((s16)((p->e).playerMover->pos.x - (p->e).mover.pos.x), (s16)((p->e).playerMover->pos.z - (p->e).mover.pos.z));
-  CLEAR_FLAGS(((Skeleton*)(p->e).owner)->flags, (1 << 8) | (1 << 9));
-  return TRUE;
-#else
-  INCFUNC("asm/func/Skeleton_NoticeHitTarget.inc");
-#endif
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+  }
+  return FALSE;
 }
 
 bool8 Skeleton_LichTryDetectPlayer(Skeleton* p) {
