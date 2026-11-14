@@ -24,7 +24,8 @@ typedef struct EntityB3D1 {
   AuxSprite mashMeter[7];          // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
   u8 unk_234[0x250 - 0x234];       // 0x234, まだ未解析
   AuxSprite sprites4[6];           // 0x250, _Destroy が stride 0x2C で6枚 AuxSprite_Remove する
-  u8 unk_358[0x398 - 0x358];       // 0x358, まだ未解析
+  u8 unk_358[0x378 - 0x358];       // 0x358, まだ未解析
+  MainSpriteGfx uiGfx;             // 0x378, SPRITE_UI_START_MENU
   MainSprite mainSprites[5];       // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
   u16 unk_578;                     // 0x578, '.p'
   u16 unk_57a;                     // 0x57A
@@ -86,7 +87,24 @@ void FUN_080bfb74(EntityB3D1* p) {
 
 NAKED void FUN_080bfba4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfba4.inc"); }
 
-NAKED void FUN_080bfc60(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfc60.inc"); }
+// 暗黒ローンの借金 (darkDebts) を4桁の数字で mainSprites[1..4] に出す
+void EntityB3D1_DrawDebts(EntityB3D1* p) {
+  s32 digits[4];
+  s32 debts;
+  s32 i;
+
+  debts = gStat->darkDebts;
+  digits[0] = Div(debts, 1000);
+  debts -= digits[0] * 1000;
+  digits[1] = Div(debts, 100);
+  debts -= digits[1] * 100;
+  digits[2] = Div(debts, 10);
+  debts -= digits[2] * 10;
+  digits[3] = debts;
+  for (i = 0; i < 4; i++) {
+    MainSprite_SetPose(&p->mainSprites[1 + i], &p->uiGfx, digits[i] + 30, PLAYMODE_LOOP);
+  }
+}
 
 void FUN_080bfce4(EntityB3D1* p) {
   s32 i;

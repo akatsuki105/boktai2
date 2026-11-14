@@ -171,7 +171,7 @@ _080C03A4:
 	str r0, [r1]
 _080C03C8:
 	adds r0, r6, #0
-	bl FUN_080bfc60
+	bl EntityB3D1_DrawDebts
 	movs r2, #0xb2
 	lsls r2, r2, #3
 	adds r1, r6, r2

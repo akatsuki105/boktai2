@@ -133,7 +133,7 @@ _080C08E6:
 	adds r0, r7, #0
 	bl FUN_080c05cc
 	adds r0, r7, #0
-	bl FUN_080bfc60
+	bl EntityB3D1_DrawDebts
 	ldr r1, _080C0964 @ =FUN_080c01a8
 	adds r0, r7, #0
 	bl EntityB3D1_SetState
