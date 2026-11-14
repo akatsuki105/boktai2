@@ -431,17 +431,13 @@ void Cmd_FreeDurathrorScriptArg(void) {
   }
 }
 
-// 残差は乱数の添字と 3 のマスクの持ち方 (99/101), 原典は乱数表と添字のアドレスと 3 を r6 / sb / r8 に置いて 2 回の呼び出しで使い回す
-NON_MATCH void FUN_080371d4(WorldPos* pos) {
-#ifdef NONMATCHING_C
+// pos から煙を 2 回出す
+void Durathror_EmitSmoke(WorldPos* pos) {
   Vec3 size;
 
-  VEC3_SET(size, Q8(0.641), Q8(1), Q8(0.641));
+  VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
   EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
   EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
-#else
-  INCFUNC("asm/func/FUN_080371d4.inc");
-#endif
 }
 
 void DurathrorElem_SetFlags(DurathrorElem* elem, u32 flags) { elem->flags |= flags; }
@@ -500,7 +496,7 @@ void Durathror_OnElemHurt(HitboxData* a, HitboxData* b, DurathrorElem* elem) {
   Hitbox_ApplyDamage(a, b);
   elem->damage = b->damage;
   if (TEST_FLAGS(a->attributes, HBATTR_DARK)) {
-    FUN_080371d4(&elem->sprite.pos);
+    Durathror_EmitSmoke(&elem->sprite.pos);
   }
   if (boss != NULL) {
     a->damage += boss->damageBonus;
@@ -2492,7 +2488,7 @@ s32 Durathror_HandleDamage(Durathror* p) {
     }
     p->shakeTimer = 8;
     if (p->base.hurtAttributes & HBATTR_DARK) {
-      FUN_080371d4(&p->sprite_280.pos);
+      Durathror_EmitSmoke(&p->sprite_280.pos);
     }
     if (p->unk_168 > 0) {
       PlaySound_0824078c(SE_ENEMY_DAMAGED);
