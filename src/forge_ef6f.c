@@ -8,6 +8,7 @@
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
+#include "vec3.h"
 #include "video.h"
 #include "vm.h"
 #include "weapon.h"
@@ -78,7 +79,7 @@ typedef struct {
   s32 unk_130;                  // 0x130, _Init が書き込み先として使う
   Particle ptcls[4];            // 0x134, _Destroy が stride 0x28 で4個 Particle_Remove する
   WeaponData weapon;            // 0x1D4, _Init が gWeaponDB[0x0F] を丸ごとコピーする
-  MainSprite sprites[13];       // 0x1F8, FUN_0801e458 が13個まとめて MainSprite_Add し、FUN_0801e960 がまとめて Remove する
+  MainSprite sprites[13];       // 0x1F8, EntityEF6F_AddHUDSprites が13個まとめて MainSprite_Add し、FUN_0801e960 がまとめて Remove する
   MainSprite sprite;            // 0x6D8, _Destroy が MainSprite_Remove に渡す
   rgb555 pltt[16];              // 0x738, FUN_0801e4b0 が gObjPlttData + 0x53E0 から16色コピーして sprites[5].pltt に渡す
   u8* unk_758;                  // 0x758, _Init がポインタを入れる
@@ -191,23 +192,15 @@ void EntityEF6F_UpdateRatings(EntityEF6F* p) {
   }
 }
 
-// 残差はレジスタの割り当てのみ (命令数 40 対 40, 命令の並びは一致)
-// 原典は p=r6 / 定数0=r7 / dst=r8, こちらは dst=r6 / p=r7 / 定数0=r8 で、優先度の順が逆になっている
-// dst を宣言と同時に初期化して materialize 順は合わせた, 宣言順の入れ替えとポインタ走査のループは効かず
-// コンパイルフラグの線は否定済み (-fno-gcse / -fforce-addr / -fno-strict-aliasing / -fno-caller-saves で不変)
-NON_MATCH void FUN_0801e458(EntityEF6F* p) {
-#ifdef NONMATCHING_C
+// HUD のスプライト 13 枚を隠したまま追加する
+void EntityEF6F_AddHUDSprites(EntityEF6F* p) {
   Vec3 pos;
-  Vec3* dst = &pos;
   s32 i;
 
-  CpuFill32(0, dst, sizeof(pos));
+  Vec3_Clear(&pos);
   for (i = 0; i < 13; i++) {
-    MainSprite_Add(&p->sprites[i], &p->gfx0, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, PLAYMODE_PAUSE, 60, dst);
+    MainSprite_Add(&p->sprites[i], &p->gfx0, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_PAUSE, 60, &pos);
   }
-#else
-  INCFUNC("asm/func/FUN_0801e458.inc");
-#endif
 }
 
 // 残差1命令: sprites[4] の MainSprite_SetPose だけ、原典はポーズ番号 6 を r0/r1 の設定より先に materialize する

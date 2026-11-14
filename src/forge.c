@@ -1271,7 +1271,8 @@ NON_MATCH void FUN_0801d01c(Forge* p) {
 #endif
 }
 
-s32 FUN_0801d084(Forge* p) {
+// HUD のスプライト 13 枚を隠したまま追加する
+s32 Forge_AddHUDSprites(Forge* p) {
   Vec3 pos;
   s32 i;
 
@@ -2066,7 +2067,7 @@ next:
   FUN_0801c2bc(p);
   MessageWindow_SetRect(0, 16, 30, 2);
   Forge_OpenList(p);
-  FUN_0801d084(p);
+  Forge_AddHUDSprites(p);
   Forge_SetFn(p, Forge_UpdateList);
   FUN_08049f5c();
   return 0;

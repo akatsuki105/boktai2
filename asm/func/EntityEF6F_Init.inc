@@ -137,7 +137,7 @@ _0801F5E0:
 	adds r0, r6, #0
 	bl FUN_0801e328
 	adds r0, r6, #0
-	bl FUN_0801e458
+	bl EntityEF6F_AddHUDSprites
 	adds r0, r6, #0
 	bl FUN_0801e4b0
 	ldr r0, _0801F714 @ =0x00001C1A
