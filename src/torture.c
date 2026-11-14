@@ -15,7 +15,8 @@ typedef struct Torture {
   u8 unk_18[0x020 - 0x018];     // 0x018, まだ未解析
   AuxSprite sprite0;            // 0x020, _Destroy が AuxSprite_Remove に渡す
   AuxSpriteGfx gfx0;            // 0x04C, SPRITE_DARKGENERATOR
-  u8 unk_68[0x06C - 0x068];     // 0x068, まだ未解析
+  u16 sprite0Phase;             // 0x068, 0..11 を回り, 4 で割った値が sprite0 のコマ
+  u8 unk_6a[2];                 // 0x06A, まだ未解析
   AuxSprite sprite1;            // 0x06C, _Destroy が AuxSprite_Remove に渡す
   AuxSpriteGfx gfx1;            // 0x098, SPRITE_DARKGENERATOR
   u16 unk_b4;                   // 0x0B4
@@ -32,7 +33,7 @@ typedef struct Torture {
   MainSprite mainSprites[5];    // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
   u16 unk_578;                  // 0x578, '.p'
   u16 unk_57a;                  // 0x57A
-  u16 unk_57c;                  // 0x57C, まだ未解析
+  u16 soundTimer;               // 0x57C, 0..9 を回り, 0 のときに連打数に応じた効果音を鳴らす
   u16 unk_57e;                  // 0x57E, _Init が 0 を入れる
   u8 unk_580[0x588 - 0x580];    // 0x580, まだ未解析
   u16 mashFrames;               // 0x588, 連打数が 3 を超えているフレームが続いた数, 3 以下で 0 に戻る
@@ -88,7 +89,35 @@ void FUN_080bfb74(Torture* p) {
   }
 }
 
-NAKED void FUN_080bfba4(Torture* p) { INCFUNC("asm/func/FUN_080bfba4.inc"); }
+// 連打のアニメ速度に合わせて sprite0 のコマを進め, 10 フレームおきに連打数に応じた効果音を鳴らす
+// step の決め方は条件式の中で代入する形でだけ一致する, if のネストや代入を別の文にすると mashAnimSpeed を読み直す
+void Torture_AnimateSprite0(Torture* p) {
+  s32 step;
+
+  if (gPlayerPtr[0]->mashAnimSpeed == 0 || (step = Div(128, gPlayerPtr[0]->mashAnimSpeed)) <= 0) {
+    step = 1;
+  }
+  p->sprite0Phase += step;
+  if (p->sprite0Phase > 11) {
+    p->sprite0Phase -= 12;
+  }
+  AuxSprite_SetPoseIdx(&p->sprite0, p->sprite0Phase >> 2);
+  if (p->soundTimer == 0) {
+    if (gPlayerPtr[0]->mashHits < 2) {
+      PlaySound_082406e0(SONG_570);
+    } else if (gPlayerPtr[0]->mashHits < 4) {
+      PlaySound_082406e0(SONG_571);
+    } else if (gPlayerPtr[0]->mashHits < 6) {
+      PlaySound_082406e0(SONG_572);
+    } else {
+      PlaySound_082406e0(SONG_573);
+    }
+  }
+  p->soundTimer++;
+  if (p->soundTimer > 9) {
+    p->soundTimer = 0;
+  }
+}
 
 // 暗黒ローンの借金 (darkDebts) を4桁の数字で mainSprites[1..4] に出す
 void Torture_DrawDebts(Torture* p) {

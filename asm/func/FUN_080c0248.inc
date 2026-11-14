@@ -16,7 +16,7 @@ _080C025E:
 	adds r0, #1
 	str r0, [r1]
 	adds r0, r6, #0
-	bl FUN_080bfba4
+	bl Torture_AnimateSprite0
 	movs r5, #0
 	ldr r2, [r4]
 	ldr r1, _080C02A0 @ =0x0000042E
