@@ -394,7 +394,7 @@ void Entity329B_UpdateWait(Entity329B* p) {
 
 // pltt の各16色のうち [fadeFirst, fadeEnd) を, basePltt と fadeColor の色を fadeRatio / 256 の割合で混ぜた色にする
 // 残差は base + 16 と i + 1 を退避するスタック位置 (sp+0x14 / sp+0x18) の入れ替わりだけ (143/143)
-// Tier A-C は試済 (宣言順, base の更新を本体の最後へ, base = i * 16)
+// Tier A-C は試済 (宣言順, base の更新を本体の最後へ, base = i * 16, for の初期化と更新の順, 足し算の被演算子の順, Entity329B_FadeToColor と同じ形)
 NON_MATCH void Entity329B_FadeFromColor(Entity329B* p) {
 #ifdef NONMATCHING_C
   s32 t = p->fadeRatio;
