@@ -104,7 +104,54 @@ void PasswordDecoder_NOP(PasswordDecoder* p) {
 
 NAKED void PasswordDecoder_SaveChanges(PasswordDecoder* p, u8* name) { INCFUNC("asm/func/PasswordDecoder_SaveChanges.inc"); }
 
-NAKED s32 PasswordDecoder_StripTags(char* dst, char* src, s32 max) { INCFUNC("asm/func/PasswordDecoder_StripTags.inc"); }
+// src から <...> のタグを除いて dst へ写す, 2 バイト文字はそのまま写して max バイトで止め, 写した数を返す
+// 残差: 51/50 命令, 原典はループの判定で読んだ *src をそのまま c に使い, 符号の判定を lsl で行う, こちらは本体で読み直して & 0x80 で判定する
+// 試済: c を s8 (ldrsb になる), while ((c = *src) != 0) と (s8)c (ループの形が崩れる)
+NON_MATCH s32 PasswordDecoder_StripTags(char* dst, char* src, s32 max) {
+#ifdef NONMATCHING_C
+  bool32 inTag = FALSE;
+  s32 n = 0;
+
+  while (*src != '\0') {
+    u8 c = *src;
+
+    if (!(c & 0x80)) {
+      if (c == '<') {
+        inTag = TRUE;
+      } else if (c == '>') {
+        inTag = FALSE;
+      } else if (!inTag) {
+        *dst++ = c;
+        n++;
+        if (n >= max) {
+          break;
+        }
+      }
+      src++;
+    } else {
+      inTag = FALSE;
+      *dst++ = c;
+      src++;
+      n++;
+      if (n >= max) {
+        break;
+      }
+      if (*src == '\0') {
+        break;
+      }
+      *dst++ = *src;
+      src++;
+      n++;
+      if (n >= max) {
+        break;
+      }
+    }
+  }
+  return n;
+#else
+  INCFUNC("asm/func/PasswordDecoder_StripTags.inc");
+#endif
+}
 
 // パスワード文字列を解析してセーブデータに反映する, 戻り値が負なら失敗
 // 残差は53/53命令でレジスタ割当のみ, 原典は p を r5, charTablePc と ret を r4 に置くが逆になる, 宣言順の入れ替えと宣言/代入の分離は試済
