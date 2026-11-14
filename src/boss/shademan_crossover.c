@@ -348,16 +348,13 @@ void FUN_0803c40c(Vec3* from, Vec3* to, u8* angle, u16* dist) {
   }
 }
 
-// 残差は ofs のアドレスの持ち方 (60/60), 原典は足し算で sp を 2 回写し直す
-NON_MATCH void FUN_0803c454(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
-#ifdef NONMATCHING_C
+void FUN_0803c454(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
   Vec3 ofs;
 
   Vec3_SetPolar(&ofs, angle, radius);
-  Vec3_Sum(dst, center, &ofs);
-#else
-  INCFUNC("asm/func/FUN_0803c454.inc");
-#endif
+  dst->x = center->x + ofs.x;
+  dst->y = center->y + ofs.y;
+  dst->z = center->z + ofs.z;
 }
 
 void FUN_0803c4d4(ShadeManCrossover* p, Vec3* target, u32 duration) {

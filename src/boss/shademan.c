@@ -340,16 +340,14 @@ void FUN_0821bd5c(Vec3* from, Vec3* to, u8* angle, u16* dist) {
   }
 }
 
-// 残差は ofs のアドレスの持ち方 (60/60), FUN_0803c454 と同じ
-NON_MATCH void FUN_0821bda4(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
-#ifdef NONMATCHING_C
+// center から angle の向きに radius だけ離れた位置を dst に入れる
+void ShadeMan_GetPolarPos(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
   Vec3 ofs;
 
   Vec3_SetPolar(&ofs, angle, radius);
-  Vec3_Sum(dst, center, &ofs);
-#else
-  INCFUNC("asm/func/FUN_0821bda4.inc");
-#endif
+  dst->x = center->x + ofs.x;
+  dst->y = center->y + ofs.y;
+  dst->z = center->z + ofs.z;
 }
 
 // centerPos を中心に target まで duration フレームかけて回り込む準備をする
@@ -402,7 +400,7 @@ void FUN_0821bf34(ShadeMan* p) {
 }
 
 // 控えた角度と距離から位置を作り直す
-void FUN_0821bfc8(ShadeMan* p) { FUN_0821bda4(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_bd4), p->unk_be0 >> 8); }
+void FUN_0821bfc8(ShadeMan* p) { ShadeMan_GetPolarPos(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_bd4), p->unk_be0 >> 8); }
 
 // 移動に使う経路を切り替える
 void FUN_0821c010(ShadeMan* p, u32 pathIdx) {
