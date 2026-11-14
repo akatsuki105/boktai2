@@ -102,7 +102,7 @@ _08013136:
 	ble _080130E0
 	adds r0, r7, #0
 	movs r1, #0xc
-	bl FUN_08012c74
+	bl PasswordScreen_SetupBG
 	ldr r0, _08013220 @ =0x0000044C
 	adds r6, r7, r0
 	movs r0, #2

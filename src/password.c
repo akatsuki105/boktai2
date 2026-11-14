@@ -1,8 +1,12 @@
+#include "bg_pltt.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "input.h"
 #include "sound.h"
 #include "text.h"
+#include "tilemap.h"
+#include "video.h"
 #include "vm.h"
 
 typedef struct {
@@ -17,14 +21,22 @@ typedef struct {
   u8 chars[24];              // 0x02A, パスワードの文字 (6 ビット値), 先頭 4 文字の後ろ 20 文字は乱数で混ぜる
   u8 unk_42[0x44C - 0x042];  // 0x042
   s32 windowIDs[3];          // 0x44C, TextPanel_Create の戻り値, _Destroy が TextPanel_Destroy に渡す
-  u8 unk_458[1120 - 0x458];  // 0x458
+  TilemapFile* tilemap;      // 0x458, TILEMAP_33B2
+  rgb555* pltt;              // 0x45C, BGP_E9C3 の本体, gBgPlttBuffer へ写す
 } PasswordScreen;
 static_assert(sizeof(PasswordScreen) == 1120);
 
 const ALIGNED(4) char sChar_085aa838[] = "<WEIGHT>";   // 0x085aa838
 const ALIGNED(4) char sChar_085aa844[] = "</WEIGHT>";  // 0x085aa844
 
-NAKED void FUN_08012c74(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08012c74.inc"); }
+// パスワード画面の BG1 と BG パレットを読み込む
+void PasswordScreen_SetupBG(PasswordScreen* p, s32 bgIndex) {
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_33B2);
+  Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
+  Video_GenerateBGMap(2, 0, 0, 0, 0);
+  p->pltt = GetBgPlttFile(BGP_E9C3)->body;
+  CpuCopy16(p->pltt, gBgPlttBuffer, 256 * sizeof(rgb555));
+}
 
 // 線形合同法を1回まわして次の値を返す
 s32 PasswordScreen_NextRandom(PasswordScreen* p) {
