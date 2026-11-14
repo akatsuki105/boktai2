@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "player.h"
 #include "sound.h"
@@ -469,7 +470,32 @@ s32 Torture_Destroy(Torture* p) {
   return 0;
 }
 
-NAKED void FUN_080c05cc(Torture* p) { INCFUNC("asm/func/FUN_080c05cc.inc"); }
+// uiGfx を読み込み, mainSprites[0] (コマ 40) と借金の4桁の数字 mainSprites[1..4] を並べる
+// 残差: 122/122 命令, 原典は最初の MainSprite_Add の playMode の 0 を pos を作った直後に r2 へ置いて使うが, こちらは引数を積む所で作る, 試済: pos の代入順 (z を先に), i = 0 を前に出すと 0 は早く作られるが callee-saved に置かれる, Vec3_Set は悪化, dark_loans.c / warehouse.c / shop_weapon.c / shop_coffin.c の「pos 初期化の 0 と引数の 0」の壁の逆向き
+NON_MATCH void Torture_InitDebtSprites(Torture* p) {
+#ifdef NONMATCHING_C
+  MainSpriteGfxFile* f;
+  Vec3 pos;
+  s32 i;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  p->uiGfx = *f;
+  OpenMainSpriteFile(&p->uiGfx, f);
+  pos.x = 144, pos.y = 64, pos.z = 0;
+  MainSprite_Add(&p->mainSprites[0], &p->uiGfx, 40, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 1, PLAYMODE_PAUSE, 60, &pos);
+  p->mainSprites[0].plttID = 679;
+  p->mainSprites[0].pltt = &gObjPlttData[p->mainSprites[0].plttID * 16];
+  pos.x += 8;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->mainSprites[1 + i], &p->uiGfx, 30, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 1, PLAYMODE_PAUSE, 60, &pos);
+    p->mainSprites[1 + i].plttID = 679;
+    p->mainSprites[1 + i].pltt = &gObjPlttData[p->mainSprites[1 + i].plttID * 16];
+    pos.x += 8;
+  }
+#else
+  INCFUNC("asm/func/Torture_InitDebtSprites.inc");
+#endif
+}
 
 // bonusGfx を読み込み, bonusSprites を隠した状態で並べる
 void Torture_InitBonusSprites(Torture* p) {

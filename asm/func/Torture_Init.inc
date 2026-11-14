@@ -131,7 +131,7 @@ _080C08E6:
 	adds r0, r0, r2
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080c05cc
+	bl Torture_InitDebtSprites
 	adds r0, r7, #0
 	bl Torture_DrawDebts
 	ldr r1, _080C0964 @ =Torture_UpdateDone
