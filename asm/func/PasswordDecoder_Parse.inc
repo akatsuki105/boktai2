@@ -9,21 +9,21 @@
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #3
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	adds r1, r7, #0
 	adds r1, #0x80
 	str r0, [r1]
 	adds r0, r7, #0
 	movs r1, #3
 	movs r2, #0x10
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	adds r4, r7, #0
 	adds r4, #0x84
 	str r0, [r4]
 	adds r0, r7, #0
 	movs r1, #0x13
 	movs r2, #2
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	adds r1, r7, #0
 	adds r1, #0x88
 	str r0, [r1]
@@ -77,84 +77,84 @@ _08011348:
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #9
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1]
 	adds r6, #9
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #6
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #2]
 	adds r6, #6
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #6
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1, #4]
 	adds r6, #6
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #6
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #6]
 	adds r6, #6
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #3
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1, #8]
 	adds r6, #3
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #0xa]
 	adds r6, #5
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #3
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1, #0xc]
 	adds r6, #3
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #4
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #0xe]
 	adds r6, #4
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1, #0x10]
 	adds r6, #5
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #7
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #0x12]
 	adds r6, #7
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #4
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1, #0x14]
 	adds r6, #4
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #0x16]
 	adds r6, #5
@@ -168,7 +168,7 @@ _0801141A:
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #8
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	strh r0, [r4]
 	adds r6, #8
 	adds r4, #2
@@ -182,21 +182,21 @@ _0801141A:
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #6
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #0x24]
 	adds r6, #6
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #6
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r1, r8
 	strh r0, [r1, #0x26]
 	adds r6, #6
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #8
-	bl FUN_080111d8
+	bl PasswordDecoder_GetBits
 	mov r2, r8
 	strh r0, [r2, #0x28]
 _08011466:

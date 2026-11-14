@@ -71,7 +71,25 @@ s32 FUN_080111a4(PasswordDecoder* p) {
   return 0;
 }
 
-NAKED u32 FUN_080111d8(u8* p, s32 start, s32 count) { INCFUNC("asm/func/FUN_080111d8.inc"); }
+// 1 文字 6 ビットの p の start ビット目から count ビットを下位から順に読む, 144 ビットを越えた分は 0
+u32 PasswordDecoder_GetBits(u8* p, s32 start, s32 count) {
+  u32 value = 0;
+  s32 i;
+
+  for (i = 0; i < count; i++) {
+    s32 pos = start + i;
+    s32 idx;
+    s32 shift;
+
+    if (pos >= 144) {
+      break;
+    }
+    idx = Div(pos, 6);
+    shift = Mod(pos, 6);
+    value |= ((p[idx] >> shift) & 1) << i;
+  }
+  return value;
+}
 
 NAKED s32 PasswordDecoder_IsIllegalName(PasswordDecoder* p) { INCFUNC("asm/func/PasswordDecoder_IsIllegalName.inc"); }
 
