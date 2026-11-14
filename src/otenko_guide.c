@@ -1683,7 +1683,7 @@ NON_MATCH void FUN_08227608(OtenkoGuide* p) {
 
 void FUN_082279e0(OtenkoGuide* _) {}
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void OtenkoGuide_UpdateIdle(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
@@ -1731,7 +1731,7 @@ NON_MATCH void OtenkoGuide_UpdateIdle(OtenkoGuide* p) {
 #endif
 }
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void OtenkoGuide_UpdateCheer(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
@@ -1779,7 +1779,7 @@ NON_MATCH void OtenkoGuide_UpdateCheer(OtenkoGuide* p) {
 #endif
 }
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void OtenkoGuide_UpdateWink(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
@@ -1827,7 +1827,7 @@ NON_MATCH void OtenkoGuide_UpdateWink(OtenkoGuide* p) {
 #endif
 }
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void FUN_08228074(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
@@ -1911,7 +1911,7 @@ void OtenkoGuide_UpdateSleep(OtenkoGuide* p) {
   p->animDone = AuxSprite_AdvanceAnim(&p->sprite, &p->anim);
 }
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void OtenkoGuide_UpdateSad(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
@@ -1959,7 +1959,7 @@ NON_MATCH void OtenkoGuide_UpdateSad(OtenkoGuide* p) {
 #endif
 }
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void OtenkoGuide_UpdatePout(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
@@ -2007,7 +2007,7 @@ NON_MATCH void OtenkoGuide_UpdatePout(OtenkoGuide* p) {
 #endif
 }
 
-// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない
+// 234/236 命令, switch を抜けた後で &p->bobStep を r1 に持ち越す形が作れない, 揺らす処理 (bobTimer から sprite->pos.y += bobStep まで) を static inline にすると 236/236 まで揃い, 残りは case 0/3 の &bobStep を原典が sprite + 0x9E で作る2か所だけ (sprite を引数で渡しても同じ), UpdateSad / Pout / Idle / Cheer なども同じ形
 NON_MATCH void FUN_08228918(OtenkoGuide* p) {
 #ifdef NONMATCHING_C
   AuxSprite* sprite;
