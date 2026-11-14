@@ -10,19 +10,22 @@
 #include "vm.h"
 
 typedef struct {
-  Entity e;                  // 0x000, ENTITY_UNK_11
-  u32 timer;                 // 0x018, 毎フレーム +1
-  u16 unk_1c;                // 0x01C
-  u16 unk_1e;                // 0x01E
-  u8 key;                    // 0x020, PasswordScreen_EncodeBits が乱数で 0..7 を入れる, 文字を混ぜる乱数をこの回数 + 4 だけ空回しする
-  u8 unk_21[3];              // 0x021
-  u32 rngState;              // 0x024, PasswordScreen_NextRandom が回す線形合同法の状態
-  u16 scriptID;              // 0x028, START を押したときに VM_ExecByID する, 実行したら 0 に戻す
-  u8 chars[24];              // 0x02A, パスワードの文字 (6 ビット値), 先頭 4 文字の後ろ 20 文字は乱数で混ぜる
-  u8 unk_42[0x44C - 0x042];  // 0x042
-  s32 windowIDs[3];          // 0x44C, TextPanel_Create の戻り値, _Destroy が TextPanel_Destroy に渡す
-  TilemapFile* tilemap;      // 0x458, TILEMAP_33B2
-  rgb555* pltt;              // 0x45C, BGP_E9C3 の本体, gBgPlttBuffer へ写す
+  Entity e;              // 0x000, ENTITY_UNK_11
+  u32 timer;             // 0x018, 毎フレーム +1
+  u16 unk_1c;            // 0x01C
+  u16 unk_1e;            // 0x01E
+  u8 key;                // 0x020, PasswordScreen_EncodeBits が乱数で 0..7 を入れる, 文字を混ぜる乱数をこの回数 + 4 だけ空回しする
+  u8 unk_21[3];          // 0x021
+  u32 rngState;          // 0x024, PasswordScreen_NextRandom が回す線形合同法の状態
+  u16 scriptID;          // 0x028, START を押したときに VM_ExecByID する, 実行したら 0 に戻す
+  u8 chars[24];          // 0x02A, パスワードの文字 (6 ビット値), 先頭 4 文字の後ろ 20 文字は乱数で混ぜる
+  char lines[4][256];    // 0x042, chars を 6 文字ずつ並べた4行の文字列, 文字表の 45 番以降の文字は <WEIGHT> で囲む
+  u8 unk_442[2];         // 0x442
+  char* charTable;       // 0x444, '.c' の文字列, 1 文字 2 バイトで chars の値を引く
+  u8* msgPc;             // 0x448, '.d' の位置, テキストパネルの TextPanel_SetScript に渡す
+  s32 windowIDs[3];      // 0x44C, TextPanel_Create の戻り値, _Destroy が TextPanel_Destroy に渡す
+  TilemapFile* tilemap;  // 0x458, TILEMAP_33B2
+  rgb555* pltt;          // 0x45C, BGP_E9C3 の本体, gBgPlttBuffer へ写す
 } PasswordScreen;
 static_assert(sizeof(PasswordScreen) == 1120);
 
@@ -111,7 +114,93 @@ s32 PasswordScreen_Destroy(PasswordScreen* p) {
   return 0;
 }
 
-NAKED s32 PasswordScreen_Init(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_Init.inc"); }
+// パスワードを作って4行の文字列にし, BG とテキストパネル3枚を用意する
+s32 PasswordScreen_Init(PasswordScreen* p) {
+  BgPlttFile* f;
+  s32* windowID;
+  u8* src;
+  s32 i;
+  s32 j;
+  s32 k;
+
+  p->timer = 0;
+  p->rngState = 757358;
+  if (!VM_SeekToNamedArg('c')) {
+    return -1;
+  }
+  p->charTable = GetStringByID(VM_ParseStringRef(VM_GetPC()));
+  if (!VM_SeekToNamedArg('d')) {
+    return -1;
+  }
+  p->msgPc = VM_GetPC();
+  if (p->msgPc == NULL) {
+    return -1;
+  }
+  p->scriptID = VM_GetNamedArgValue('e', 0);
+  PasswordScreen_EncodeBits(p);
+
+  src = p->chars;
+  for (i = 0; i < 4; i++) {
+    char* dst = p->lines[i];
+
+    for (j = 0; j < 6; j++) {
+      s32 idx = *src++ * 2;
+
+      if (idx > 89) {
+        for (k = 0; k < 8; k++) {
+          *dst++ = sChar_085aa838[k];
+        }
+      }
+      *dst++ = p->charTable[idx];
+      *dst++ = p->charTable[idx + 1];
+      if (idx > 89) {
+        for (k = 0; k < 9; k++) {
+          *dst++ = sChar_085aa844[k];
+        }
+      }
+    }
+    *dst = '\0';
+  }
+
+  PasswordScreen_SetupBG(p, 12);
+
+  windowID = &p->windowIDs[0];
+  *windowID = TextPanel_Create(2, 5, 28, 2);
+  if (*windowID < 0) {
+    return -1;
+  }
+  for (j = 0; j < 4; j++) {
+    FUN_0804a40c(*windowID, j, p->lines[j]);
+  }
+  TextPanel_SetScript(*windowID, p->msgPc);
+  TextPanel_SetMessage(*windowID, 0);
+  TextPanel_Start(*windowID);
+
+  windowID = &p->windowIDs[1];
+  *windowID = TextPanel_Create(6, 17, 28, 1);
+  if (*windowID < 0) {
+    return -1;
+  }
+  TextPanel_SetScript(*windowID, p->msgPc);
+  TextPanel_SetMessage(*windowID, 1);
+  TextPanel_Start(*windowID);
+
+  windowID = &p->windowIDs[2];
+  *windowID = TextPanel_Create(2, 11, 28, 2);
+  if (*windowID < 0) {
+    return -1;
+  }
+  TextPanel_SetScript(*windowID, p->msgPc);
+  TextPanel_SetMessage(*windowID, 2);
+  TextPanel_Start(*windowID);
+
+  f = GetBgPlttFile(BGP_519C);
+  if (f == NULL) {
+    return -1;
+  }
+  CpuCopy32(&f->body[240], &gBgPlttBuffer[240], 16 * sizeof(rgb555));
+  return 0;
+}
 
 PasswordScreen* PasswordScreen_Create(void) {
   PasswordScreen* p = CreateEntity(ENTITY_UNK_11, sizeof(PasswordScreen));
