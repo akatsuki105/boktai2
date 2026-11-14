@@ -42,7 +42,7 @@ void Hitbox_LinkTarget(HitboxData* p) {
 }
 
 // attacks リストの先頭に p を繋ぐ, 既に繋がっていれば何もしない
-// ループに入る前のガード (cmp/beq) が出ない, agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう
+// ループに入る前のガード (cmp/beq) が出ない, agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう, 原典は q を r2 に置き attacks (r0) と分けるので guard と末尾判定が別の命令列のまま残る, 試済: Hitbox_LinkTarget と同じ条件内代入の while, for, ガード付き do/while (いずれも q が r0 に重なり 25/27)
 NON_MATCH void Hitbox_LinkAttack(HitboxData* p) {
 #ifdef NONMATCHING_C
   HitboxData* q;
