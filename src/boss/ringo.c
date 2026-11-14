@@ -1193,19 +1193,15 @@ void FUN_08029c74(Ringo* p) {
   p->unk_fd6 = FALSE;
 }
 
-// 残差は FUN_08029c2c と同じ (35/34): 原典は plttID に入れた 0xC1 のレジスタを lsls #5 して使い回す
-NON_MATCH void FUN_08029cc8(Ringo* p) {
-#ifdef NONMATCHING_C
+// sprite_fe0 に 22 番のアニメを流してパレット 0xC1 にする
+void FUN_08029cc8(Ringo* p) {
   MainSprite* sprite = &p->sprite_fe0;
 
   MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   sprite->plttID = 0xC1;
-  sprite->pltt = &gObjPlttData[0xC1 * 16];
+  sprite->pltt = &gObjPlttData[sprite->plttID * 16];
   p->unk_fd5 = FALSE;
   p->unk_fd6 = TRUE;
-#else
-  INCFUNC("asm/func/FUN_08029cc8.inc");
-#endif
 }
 
 void Ringo_InitAuxSprites(Ringo* p) {
