@@ -3331,7 +3331,7 @@ NON_MATCH void FUN_080c8cc8(Jormungandr* p, s32 timer) {
 #endif
 }
 
-// 同上 (5 hunk)
+// 同上 (5 hunk), 試済: Boss* で受けて (Jormungandr*)boss, Jormungandr* で受けて Boss* boss = &p->base, stateEntered を消費する inline, 入場アニメを inline にして p を渡す (いずれも写しが出ない)
 NON_MATCH void FUN_080c8dac(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
