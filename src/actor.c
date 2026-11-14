@@ -1506,7 +1506,7 @@ void FUN_08042cf0(ActorManager* p, Actor* actor, s32 elapsed) {
 }
 
 // navTarget へナビメッシュで歩かせ, 目的地に近づいたら終える, MainSprite のコマが進むたびに 32/64 (それ以外は 16) 進む
-// 下書き (222/223命令): 命令列はほぼ一致, 残差はレジスタ割当 (定数オフセットの一時レジスタと pos の置き場所)
+// 下書き (222/223命令): 命令列はほぼ一致, 残差はレジスタ割当 (定数オフセットの一時レジスタと pos の置き場所), 試済: FUN_08042f34 と同じく waypoint を actor->navAgent 経由で読む (226), Vec3* wp を使う (229)
 NON_MATCH void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) {
 #ifdef NONMATCHING_C
   Mover* mover = &actor->mover;
