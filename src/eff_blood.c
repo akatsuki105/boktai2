@@ -174,17 +174,17 @@ void (*const PTR_ARRAY_085ad32c[3])(BloodEmitter*, BloodPtcl*) = {
 };  // 0x085AD32C
 
 // 使用中の枠について state ごとの更新関数を呼ぶ
-// 残差7命令 (40/47). 5命令は使用中判定の 0/1 の作り置き, 残り2命令は原典が &activeMask と &slots の定数を別々に作るのに対しこちらは片方から差分で導くため
-// Entity080db520_Update と同じ壁. slot の初期化を for の初期化節に移すと i=0 の位置だけは合う
-// 使用中判定を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 原典はループの前で &activeMask をガードとは別に作り直す (BeeNest_Update と同じ)
+// 残差2命令 (45/47), 原典はループの前で &activeMask の定数 0x1E0 を判定とは別に作り直すが, こちらは判定で作ったものを使い回す, slots はループ内で &p->slots[i] を取ると原典どおり作り直される
+// 試済: BloodEmitter_IsActive, slots を先頭や if の中のローカルにする形, BeeNest_Update と同じ早めの return
 NON_MATCH s32 BloodEmitter_Update(BloodEmitter* p) {
 #ifdef NONMATCHING_C
   if (p->activeMask != 0) {
-    BloodPtcl* slot;
     s32 i;
 
-    for (i = 0, slot = &p->slots[0]; i < 8; i++, slot++) {
-      if (p->activeMask & (1 << i)) {
+    for (i = 0; i < 8; i++) {
+      if (BloodEmitter_IsActive(&p->activeMask, i)) {
+        BloodPtcl* slot = &p->slots[i];
+
         PTR_ARRAY_085ad32c[slot->state](p, slot);
       }
     }
