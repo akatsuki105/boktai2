@@ -158,9 +158,8 @@ void Torture_HideBonusSprites(Torture* p) {
   }
 }
 
-// 残差: 44/44 命令, 1つ目のループで原典は &mashMeter[i] を基点に strh [r0, #0x10] で書くが, こちらは poseIdx の番地 (+0x110) に畳む, 2つ目のループは AuxSprite* のローカルで揃った, 試済: 条件演算子, if/else, 要素ポインタ
-NON_MATCH void Torture_UpdateMashMeter(Torture* p) {
-#ifdef NONMATCHING_C
+// 連打数 (最大 7) だけ mashMeter を点け, 先頭 4 枚とそれ以降でコマを変え, 残りは消す
+void Torture_UpdateMashMeter(Torture* p) {
   s32 n = gPlayerPtr[0]->mashHits;
   s32 i;
 
@@ -168,22 +167,15 @@ NON_MATCH void Torture_UpdateMashMeter(Torture* p) {
     n = 7;
   }
   for (i = 0; i < n; i++) {
-    AuxSprite* sprite = &p->mashMeter[i];
-
     if (i < 4) {
-      sprite->poseIdx = 1;
+      AuxSprite_SetPoseIdx(&p->mashMeter[i], 1);
     } else {
-      sprite->poseIdx = 2;
+      AuxSprite_SetPoseIdx(&p->mashMeter[i], 2);
     }
   }
   for (; i < 7; i++) {
-    AuxSprite* sprite = &p->mashMeter[i];
-
-    sprite->poseIdx = 0;
+    AuxSprite_SetPoseIdx(&p->mashMeter[i], 0);
   }
-#else
-  INCFUNC("asm/func/Torture_UpdateMashMeter.inc");
-#endif
 }
 
 void Torture_ShowMashMeter(Torture* p) {
