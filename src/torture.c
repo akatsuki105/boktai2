@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "entity.h"
 #include "global.h"
 #include "player.h"
@@ -246,6 +247,7 @@ void FUN_080c0058(Torture* p) {
 }
 
 void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
+void Sound_SetBGMTempo(u32 tempo);
 
 // プレイヤーを決まった座標へ戻してから Torture_Start を予約する
 void Cmd_StartTorture(void) {
@@ -260,9 +262,27 @@ void Cmd_StartTorture(void) {
 
 NAKED s32 FUN_080c00d4(Torture* p) { INCFUNC("asm/func/FUN_080c00d4.inc"); }
 
-void Torture_UpdateDone(void) {}
+void Torture_UpdateDone(Torture* _) {}
 
-NAKED void Torture_Finish(Torture* p, s32 param_2) { INCFUNC("asm/func/Torture_Finish.inc"); }
+// おしおきを終える, 借金を 0 にして表示を消し, プレイヤーを操作不能に戻してから param_2 に応じた終わりのスクリプトを予約する
+void Torture_Finish(Torture* p, s32 param_2) {
+  gStat->darkDebts = 0;
+  Torture_ResetMash();
+  p->unk_590 = 1;
+  p->mashFrames = 0;
+  Sound_SetBGMTempo(256);
+  FUN_0823bca8(8);
+  Torture_HideHud(p);
+  gPlayerPtr[0]->mode = PMODE_LOCKED;
+  gPlayerPtr[0]->action = 0;
+  gPlayerPtr[0]->state = 0;
+  if (param_2 == 0) {
+    EntityCF58_CreateWithCallback(1, 0, FUN_080c0014, p);
+  } else {
+    EntityCF58_CreateWithCallback(1, 0, FUN_080c0058, p);
+  }
+  Torture_SetState(p, Torture_UpdateDone);
+}
 
 NAKED void FUN_080c0248(Torture* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
 
