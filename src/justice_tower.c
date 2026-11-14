@@ -52,7 +52,7 @@ typedef struct Entity080aace8 {
 static_assert(sizeof(Entity080aace8) == 848);
 
 // 1枠を1フレーム進める, 16フレームで消える
-void FUN_080aa08c(Entity080aace8Particle* q) {
+void Entity080aace8_UpdateParticle(Entity080aace8Particle* q) {
   if (++q->timer > 15) {
     q->ptcl.flags |= SPRFLAG_HIDDEN;
     q->active = 0;
@@ -89,7 +89,7 @@ NON_MATCH void FUN_080aa0e4(Entity080aace8* p) {
     p->ptcls[i].ptcl.flags &= ~SPRFLAG_HIDDEN;
     p->ptcls[i].active = 1;
     p->ptcls[i].timer = 0;
-    p->ptcls[i].fn = FUN_080aa08c;
+    p->ptcls[i].fn = Entity080aace8_UpdateParticle;
   }
 #else
   INCFUNC("asm/func/FUN_080aa0e4.inc");
