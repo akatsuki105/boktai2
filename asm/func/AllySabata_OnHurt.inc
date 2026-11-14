@@ -96,7 +96,7 @@ _0808444C:
 	strb r0, [r2]
 	adds r0, r3, #0
 	adds r1, r5, #0
-	bl FUN_08080f20
+	bl LinkPlayer_GetDirToAttacker
 	movs r2, #0xba
 	lsls r2, r2, #2
 	adds r1, r4, r2

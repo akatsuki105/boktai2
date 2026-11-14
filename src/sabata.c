@@ -134,29 +134,25 @@ void FUN_08080ee8(Player* p) {
 }
 
 // a から b を見た方向の象限を 1/3/5/7 で返す, a に HBFLAG_ANGLE が立っていれば a の angle をそのまま使う
-// 残差は 43 対 47 でこちらが短い, 原典は angle + 0xE0 の5命令を両分岐に重複して置くが、こちらは cross-jumping で共有してしまう
-// Tier A-B 試済: ネスト形 / dx,dz の関数スコープ化 (どちらも共有される)
-NON_MATCH s32 FUN_08080f20(HitboxData* a, HitboxData* b) {
-#ifdef NONMATCHING_C
+s32 LinkPlayer_GetDirToAttacker(HitboxData* a, HitboxData* b) {
   s32 dir;
   s32 dx;
   s32 dz;
 
   if (a->flags & HBFLAG_ANGLE) {
     dir = a->angle + 0xE0;
-  } else {
-    dx = a->center.x - b->center.x;
-    dz = a->center.z - b->center.z;
-    if (dx == 0 && dz == 0) {
-      dir = b->angle + 0xE0;
-    } else {
-      dir = ArcTan2_8(dx, dz) + 0x60;
-    }
+    return ((dir & 0xFF) >> 6) * 2 + 1;
   }
-  return (((dir & 0xFF) >> 6) * 2) + 1;
-#else
-  INCFUNC("asm/func/FUN_08080f20.inc");
-#endif
+
+  dx = a->center.x - b->center.x;
+  dz = a->center.z - b->center.z;
+  if (dx == 0 && dz == 0) {
+    dir = b->angle + 0xE0;
+    return ((dir & 0xFF) >> 6) * 2 + 1;
+  }
+
+  dir = ArcTan2_8(dx, dz) + 0x60;
+  return ((dir & 0xFF) >> 6) * 2 + 1;
 }
 
 // 被弾した向きを決める, PFLAG20_UNK_15 が立っているときは facing でなく unk_3e8 に入れて相手の unk_40 を退避する
@@ -168,7 +164,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
 
   if (Hitbox_TestAttr(a, HBATTR_18)) {
     p->blownAway = 1;
-    p->facing = FUN_08080f20(a, b);
+    p->facing = LinkPlayer_GetDirToAttacker(a, b);
     return;
   }
 
@@ -199,7 +195,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
   }
 
   p->blownAway = 0;
-  p->facing = FUN_08080f20(a, b);
+  p->facing = LinkPlayer_GetDirToAttacker(a, b);
 }
 
 // 夜扱いかどうか, 闇のガーブを着ていれば時刻を問わず夜になる
@@ -1907,7 +1903,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
       p->blockCount++;
       if (p->blockCount >= p->blockLimit) {
         p->blockCount = 0;
-        p->facing = FUN_08080f20(a, b);
+        p->facing = LinkPlayer_GetDirToAttacker(a, b);
         p->blownAway = 1;
         b->knockback = 100;
         return;
