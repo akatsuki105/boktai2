@@ -428,7 +428,8 @@ NON_MATCH s32 FUN_0803c6a0(ShadeManCrossover* p, Vec3* min, Vec3* max) {
 #endif
 }
 
-void FUN_0803c6f0(ShadeManCrossover* p, Vec3* pos) {
+// 残像のスプライト 3 枚を隠したまま追加する
+void ShadeManCrossover_AddAfterimages(ShadeManCrossover* p, Vec3* pos) {
   u32 plttIdx = 7;
   s32 i;
 
@@ -2286,7 +2287,7 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
   }
   plttIdx = ShadeManCrossover_GetPlttID(p);
   p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
-  FUN_0803c6f0(p, &p->sprite.pos);
+  ShadeManCrossover_AddAfterimages(p, &p->sprite.pos);
   p->plttFadeMode = -1;
   p->plttFadeTo = 7;
   p->entity0805e67c = Entity0805e67c_Create();

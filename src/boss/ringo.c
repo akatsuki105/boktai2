@@ -653,20 +653,19 @@ NON_MATCH s32 FUN_08028720(Ringo* p, s32 count, Vec3* min, Vec3* max) {
 #endif
 }
 
-// 残差は pltt の代入で値と番地を作る順番のみ (58/58): 原典は gObjPlttData を読んでから p + 0x93C + i * 0x60 を作る
-NON_MATCH void FUN_08028790(Ringo* p, Vec3* pos) {
-#ifdef NONMATCHING_C
+// 残像のスプライト 3 枚を隠したまま追加する
+void Ringo_AddAfterimages(Ringo* p, Vec3* pos) {
   u32 plttID = p->unk_820 != 0 ? 0xC5 : 0xC7;
   s32 i;
 
   for (i = 0; i < 3; i++) {
+    rgb555* pltt;
+
     MainSprite_Add(&p->afterimages[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
     p->afterimages[i].plttID = 0x4100;
-    p->afterimages[i].pltt = &gObjPlttData[plttID * 16];
+    pltt = &gObjPlttData[plttID * 16];
+    p->afterimages[i].pltt = pltt;
   }
-#else
-  INCFUNC("asm/func/FUN_08028790.inc");
-#endif
 }
 
 void FUN_08028818(Ringo* p) {
@@ -6437,7 +6436,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   for (i = 0; i < 14; i++, src += 16, dst += 16) {
     CpuCopy32(src, dst, 32);
   }
-  FUN_08028790(p, &p->sprites[0].pos);
+  Ringo_AddAfterimages(p, &p->sprites[0].pos);
   FUN_08028dbc(p);
   Ringo_InitAuxSprites(p);
   p->plttFadeMode = -1;
