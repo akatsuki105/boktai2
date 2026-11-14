@@ -78,7 +78,7 @@ _080B1A56:
 	bne _080B1A68
 	adds r0, r6, #0
 	movs r1, #7
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080B1A68:
 	pop {r4, r5, r6}
 	pop {r0}

@@ -45,7 +45,7 @@ _080B25C0:
 	bl FUN_080af0c8
 	adds r0, r4, #0
 	movs r1, #8
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080B2604:
 	ldr r1, _080B2634 @ =0x085AD07C
 	ldr r2, _080B2628 @ =0x000004FC

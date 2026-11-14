@@ -101,7 +101,7 @@ typedef struct PileDriver {
   u32 unk_1424;                     // 0x1424, まだ未解析
   bool16 unk_1428;                  // 0x1428, FUN_080ad9d4 / FUN_080ad6a8 が立て, FUN_080ad96c が見て下ろす
   u8 unk_142a[0x17A4 - 0x142A];     // 0x142A, まだ未解析
-  u32 unk_17a4;                     // 0x17A4, '.p'
+  u32 eventScriptID;                // 0x17A4, '.p', 段階 (kind) を引数に起動するスクリプト
   MsgQueue mq;                      // 0x17A8
 } PileDriver;
 static_assert(sizeof(PileDriver) == 6108);

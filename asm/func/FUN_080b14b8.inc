@@ -50,7 +50,7 @@ _080B1506:
 	strb r0, [r1]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080B1522:
 	movs r1, #0x94
 	lsls r1, r1, #2

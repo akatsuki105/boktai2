@@ -104,7 +104,7 @@ _080B1990:
 	bl PileDriver_SetSubState
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080B19B2:
 	add sp, #4
 	pop {r4, r5, r6}

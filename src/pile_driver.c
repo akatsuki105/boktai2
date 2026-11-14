@@ -127,15 +127,16 @@ void PileDriver_SetSubState(PileDriver* p, u32 subState) {
   p->unk_4fe = 0;
 }
 
-void FUN_080ad204(PileDriver* p, u32 kind) {
+// kind を引数にして eventScriptID のスクリプトを起動する
+void PileDriver_RunEventScript(PileDriver* p, u32 kind) {
   ScriptArgs args;
   u32 argv[1];
 
-  if (p->unk_17a4 != 0) {
+  if (p->eventScriptID != 0) {
     args.argc = 1;
     argv[0] = kind;
     args.argv = argv;
-    VM_ExecByID(p->unk_17a4, &args);
+    VM_ExecByID(p->eventScriptID, &args);
   }
 }
 
@@ -674,7 +675,7 @@ void FUN_080b1404(PileDriver* p) {
   if (FUN_080b10c4(p)) {
     Player_Unlock(gPlayerPtr[0]);
     PileDriver_SetSubState(p, 3);
-    FUN_080ad204(p, 0);
+    PileDriver_RunEventScript(p, 0);
   }
 }
 
@@ -704,7 +705,7 @@ void FUN_080b165c(PileDriver* p) {
       Player_Unlock(gPlayerPtr[0]);
       PileDriver_SetSubState(p, 3);
       p->unk_1332 = 0;
-      FUN_080ad204(p, 2);
+      PileDriver_RunEventScript(p, 2);
     }
   }
 }
@@ -713,7 +714,7 @@ void FUN_080b1718(PileDriver* p) {
   if (p->unk_4fe <= 69) {
     p->unk_4fe++;
     if (p->unk_4fe == 70) {
-      FUN_080ad204(p, 3);
+      PileDriver_RunEventScript(p, 3);
     }
   }
   if (p->unk_1333) {
@@ -748,7 +749,7 @@ void FUN_080b1888(PileDriver* p) {
     PlaySound_082406e0(SE_COFFIN_CLOSE);
     FUN_08086b18(&p->pos_510);
     PileDriver_SetSubState(p, 12);
-    FUN_080ad204(p, 5);
+    PileDriver_RunEventScript(p, 5);
   }
 }
 
@@ -768,9 +769,9 @@ NAKED void FUN_080b1d5c(PileDriver* p) { INCFUNC("asm/func/FUN_080b1d5c.inc"); }
 
 void FUN_080b1de8(PileDriver* p) {
   if (VM_SeekToNamedArg('p')) {
-    p->unk_17a4 = VM_GetValue();
+    p->eventScriptID = VM_GetValue();
   } else {
-    p->unk_17a4 = 0;
+    p->eventScriptID = 0;
   }
 }
 
