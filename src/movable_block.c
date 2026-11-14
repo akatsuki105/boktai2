@@ -131,7 +131,7 @@ NON_MATCH void MovableBlock_SpawnDust(Vec3* pos, s16 edgeOffset) {
 #endif
 }
 
-// 78/79命令, 末尾の attr の判定の後の分岐の向き (原典は bne で FALSE へ跳ぶ) と FALSE の置き場所が違う, || の分解は試済
+// 78/79命令, 末尾の attr の判定の後の分岐の向き (原典は bne で FALSE へ跳ぶ) と FALSE の置き場所が違う, 原典は FALSE を返すブロックが TRUE より前に1つだけある, 試済: || の分解, MovableBlock_IsFacingWall と同じく tile != NULL の中で TRUE を返す形 (78/79), 分岐ごとに FALSE を先に返す形 (79/79 だが TRUE が各枝に残る)
 NON_MATCH bool8 MovableBlock_IsSideBlocked(MovableBlock* blk, s32 tileIdx, s32 dir) {
 #ifdef NONMATCHING_C
   CollisionMapTile* self = &blk->tile.tile;
