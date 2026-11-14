@@ -31,7 +31,7 @@ typedef struct Torture {
   u8 unk_376[2];                // 0x376, まだ未解析
   MainSpriteGfx uiGfx;          // 0x378, SPRITE_UI_START_MENU
   MainSprite mainSprites[5];    // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
-  u16 unk_578;                  // 0x578, '.p'
+  u16 mashPattern;              // 0x578, '.p', A と一緒に連打させる十字キー (0: 左, 1: 上, 2: 右, 3: 下)
   u16 unk_57a;                  // 0x57A
   u16 soundTimer;               // 0x57C, 0..9 を回り, 0 のときに連打数に応じた効果音を鳴らす
   u16 unk_57e;                  // 0x57E, _Init が 0 を入れる
@@ -77,7 +77,36 @@ void Torture_ResetMash(void) {
   gPlayerPtr[0]->mashHits = 0;
 }
 
-NAKED void FUN_080bfaac(Torture* p) { INCFUNC("asm/func/FUN_080bfaac.inc"); }
+// プレイヤーを発電の位置に置いて連打の行動 (PACT_UNK_32) にし, mashPattern で連打させるキーを決める
+void Torture_SetupPlayer(Torture* p) {
+  gPlayerPtr[0]->mode = PMODE_ACTIVE;
+  gPlayerPtr[0]->action = PACT_UNK_32;
+  gPlayerPtr[0]->state = 0;
+  VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
+  gPlayerPtr[0]->facing = DIR8_UP_LEFT;
+  gPlayerPtr[0]->animDir = 1;
+  gPlayerPtr[0]->xflip = TRUE;
+  Torture_ResetMash();
+  gPlayerPtr[0]->mashKeys = A_BUTTON;
+  switch (p->mashPattern) {
+    case 0: {
+      gPlayerPtr[0]->mashKeys |= DPAD_LEFT;
+      break;
+    }
+    case 1: {
+      gPlayerPtr[0]->mashKeys |= DPAD_UP;
+      break;
+    }
+    case 2: {
+      gPlayerPtr[0]->mashKeys |= DPAD_RIGHT;
+      break;
+    }
+    case 3: {
+      gPlayerPtr[0]->mashKeys |= DPAD_DOWN;
+      break;
+    }
+  }
+}
 
 // unk_b4 を unk_b6 ずつ進めて, 8 で割った値を sprite1 のコマ番号にする
 void FUN_080bfb74(Torture* p) {
@@ -291,7 +320,7 @@ void Torture_HideHud(Torture* p) {
 void FUN_080c0248(Torture* p);
 
 void Torture_Start(Torture* p) {
-  FUN_080bfaac(p);
+  Torture_SetupPlayer(p);
   Torture_ShowHud(p);
   p->unk_57a = 0x20;
   Torture_SetState(p, FUN_080c0248);
