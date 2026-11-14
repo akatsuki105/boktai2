@@ -29,7 +29,7 @@
 	bne _08000ED4
 	mov r0, sp
 	adds r1, r6, #0
-	bl FUN_08000c84
+	bl Tilemaps_FindLayerIndex
 	lsls r0, r0, #0x10
 	lsrs r6, r0, #0x10
 _08000ED4:

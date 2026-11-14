@@ -467,7 +467,7 @@ BgMapScroller* Cmd_CreateBG(u32 param_1) {
 // id のレイヤが何番目かを返す, 見つからなければ 0
 // 残差は layer と i のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致), 同形の TileSet_FindPart (bg.c) はポインタを返すので揃う
 // 試済: i を先に宣言して layer の宣言と代入を分ける, f->layers[i] の添字形, for の初期化と増分に layer を入れる形
-NON_MATCH s32 FUN_08000c84(Tilemaps* f, u16 id) {
+NON_MATCH s32 Tilemaps_FindLayerIndex(Tilemaps* f, u16 id) {
 #ifdef NONMATCHING_C
   TilemapLayer* layer = f->layers;
   s32 i;
@@ -480,7 +480,7 @@ NON_MATCH s32 FUN_08000c84(Tilemaps* f, u16 id) {
   }
   return 0;
 #else
-  INCFUNC("asm/func/FUN_08000c84.inc");
+  INCFUNC("asm/func/Tilemaps_FindLayerIndex.inc");
 #endif
 }
 
@@ -541,7 +541,7 @@ s32 Cmd_LoadTileMap(void) {
 
     for (j = 0; j < 4; j++) {
       if (pc != NULL) {
-        indices[j] = FUN_08000c84(&tm, VM_GetValueAt(pc));
+        indices[j] = Tilemaps_FindLayerIndex(&tm, VM_GetValueAt(pc));
         pc = VM_GetPC();
       }
     }
@@ -581,7 +581,7 @@ NON_MATCH s32 Cmd_SetBGLayer(void) {
   }
 
   if (!found && VM_SeekToNamedArg('c') && (pc = VM_GetPC()) != NULL) {
-    layerIdx = FUN_08000c84(&tm, VM_GetValueAt(pc));
+    layerIdx = Tilemaps_FindLayerIndex(&tm, VM_GetValueAt(pc));
   }
 
   Video_SetBGLayer(bg, f, layerIdx);

@@ -52,7 +52,7 @@ _08000E4A:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	mov r0, sp
-	bl FUN_08000c84
+	bl Tilemaps_FindLayerIndex
 _08000E74:
 	lsls r0, r0, #0x10
 	lsrs r4, r0, #0x10
