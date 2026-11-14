@@ -691,7 +691,7 @@ void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 f
 }
 
 // 暗黒虫の state 2, プレイヤーへ向かって飛び, 近づいたら回収して効果を与える, 寿命が切れたら state 3 へ
-// 下書き (294/296命令): 原典は box を sl に置くが, こちらは引数のスタックから毎回読む, 先頭で SpiritBugScreenBox* のローカルに写すと 296 命令になり swarm / box / 定数 4 の高位レジスタの割り当てだけが入れ替わる (同形の FUN_0800b7a0 は一致)
+// 下書き (294/296命令): 原典は box を sl に置くが, こちらは引数のスタックから毎回読む, 先頭で SpiritBugScreenBox* のローカルに写すと 296 命令になり swarm / box / 定数 4 の高位レジスタの割り当てだけが入れ替わる (同形の FUN_0800b7a0 は一致), 双子と違い p の参照が末尾に無いので p の優先度が上がって box が押し出される形, 試済: box を先頭で別名のローカルに受ける (294 のまま)
 NON_MATCH void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, SpiritBugScreenBox* box) {
 #ifdef NONMATCHING_C
   SpiritBug* bug = &swarm->bugs[bugIdx];
