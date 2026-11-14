@@ -2725,7 +2725,6 @@ NAKED void FUN_0810f680(Skeleton* p) { INCFUNC("asm/func/FUN_0810f680.inc"); }
 void Skeleton_SetHandlerTable3(Skeleton* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad524; }
 
 // 1番の攻撃 (アーチャーは別の状態) を出し, 終わったら次の行動を選ぶ
-// 86/87命令, 原典は 0 を r7 に置いて stateTimer に使い回し, kind の分岐の枝の並びも違う, 試済: 三項演算子 (同じ)
 void Skeleton_SubMelee(Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
