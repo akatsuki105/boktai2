@@ -1169,18 +1169,14 @@ void FUN_08029b40(Ringo* p) {
   }
 }
 
-// 残差1命令 (31/30): 原典は plttID に入れた 0xC1 のレジスタを lsls #5 して gObjPlttData の添字に使い回すが, こちらは作り直す, static inline の引数にしても変わらない
-NON_MATCH void FUN_08029c2c(Ringo* p) {
-#ifdef NONMATCHING_C
+// sprite_fe0 に 22 番のアニメを流してパレット 0xC1 にする
+void FUN_08029c2c(Ringo* p) {
   MainSprite* sprite = &p->sprite_fe0;
 
   MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_LOOP, 0);
   sprite->plttID = 0xC1;
-  sprite->pltt = &gObjPlttData[0xC1 * 16];
+  sprite->pltt = &gObjPlttData[sprite->plttID * 16];
   p->unk_fd4 = TRUE;
-#else
-  INCFUNC("asm/func/FUN_08029c2c.inc");
-#endif
 }
 
 void FUN_08029c74(Ringo* p) {
