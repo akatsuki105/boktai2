@@ -425,7 +425,7 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
 }
 
 // unk_1654 のタブ (1=剣 2=槍 3=槌) の savedSlot 番目の武器を slot へ飛ばすアニメを仕込む
-// 残差は &cursor.savedSlot の算出位置が2命令ぶん後ろにずれるだけ (67/67命令), Tier A-C は試済
+// 残差は &cursor.savedSlot の算出位置が2命令ぶん後ろにずれるだけ (67/67命令), Tier A-C は試済, FUN_080ba7bc と同じ形 (68/67), 添字を引数で受ける inline (savedSlot の読み込みまで前に出る)
 NON_MATCH void FUN_080bd624(WeaponShop* p) {
 #ifdef NONMATCHING_C
   WorldPos from[2];
