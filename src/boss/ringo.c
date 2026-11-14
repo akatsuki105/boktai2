@@ -3665,7 +3665,7 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は dir の計算 (156/155): 原典は 4 方向に丸めた角度を符号なしで >> 5 し, & 7 の結果を定数側のレジスタに置く (FUN_0803446c と同じ壁)
+// 残差は dir の格納 (156/155): 原典は & 7 の結果を定数側のレジスタに置き, dir の番地 + 0xA で isCutscene を読む (FUN_0803446c と同じ壁), u32 にして >> 5 の符号は揃えた, 試済: u8 キャスト (畳まれる), Angle_ToDir8, dir の setter inline
 NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -3673,7 +3673,7 @@ NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    boss->dir = ((((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
+    boss->dir = (((u32)((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
     Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
