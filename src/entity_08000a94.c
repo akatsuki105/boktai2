@@ -465,7 +465,8 @@ BgMapScroller* Cmd_CreateBG(u32 param_1) {
 }
 
 // id のレイヤが何番目かを返す, 見つからなければ 0
-// 残差は layer と i のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致)
+// 残差は layer と i のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致), 同形の TileSet_FindPart (bg.c) はポインタを返すので揃う
+// 試済: i を先に宣言して layer の宣言と代入を分ける, f->layers[i] の添字形, for の初期化と増分に layer を入れる形
 NON_MATCH s32 FUN_08000c84(Tilemaps* f, u16 id) {
 #ifdef NONMATCHING_C
   TilemapLayer* layer = f->layers;
