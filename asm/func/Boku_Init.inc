@@ -1387,7 +1387,7 @@ _08102834:
 	mov r8, r2
 	ldr r6, _081029F8 @ =FUN_08101bc0
 	mov sb, r6
-	ldr r1, _081029FC @ =FUN_080ffcd0
+	ldr r1, _081029FC @ =Boku_GetMoveSpeed
 	mov sl, r1
 	ldr r2, _08102A00 @ =FUN_080fba64
 	mov ip, r2
@@ -1586,7 +1586,7 @@ _081029E4:
 	.align 2, 0
 _081029F4: .4byte 0x000006A4
 _081029F8: .4byte FUN_08101bc0
-_081029FC: .4byte FUN_080ffcd0
+_081029FC: .4byte Boku_GetMoveSpeed
 _08102A00: .4byte FUN_080fba64
 _08102A04: .4byte Boku_StateDamaged
 _08102A08: .4byte FUN_080f62b0

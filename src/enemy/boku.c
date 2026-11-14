@@ -2028,26 +2028,22 @@ void Boku_InitAnims(Boku* p) {
   Enemy_SetAnimEntry(&p->e, 11, 0, 0);
 }
 
-const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
+const u16 sBokuMoveSpeeds[4] = {336, 336, 0, 180};  // 0x085AD4DC
 
 // 37/39命令, 原典は anim のポインタを r3 と r4 の2本に持ち, 10〜13 の側は r4 から cmdIdx を読み直す, 判定順の入れ替えは試済
-NON_MATCH s32 FUN_080ffcd0(Boku* p) {
-#ifdef NONMATCHING_C
+s32 Boku_GetMoveSpeed(Boku* p) {
   AuxAnimState* anim = &(p->e).s->aux.anim;
+  AuxAnimState* a = anim;
 
   if (anim->tick == 0) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
-    if (anim->cmdIdx <= 3) {
-      return u16_ARRAY_085ad4dc[anim->cmdIdx];
-    }
-    if (anim->cmdIdx >= 10 && anim->cmdIdx <= 13) {
-      return u16_ARRAY_085ad4dc[anim->cmdIdx - 10];
+    if (anim->cmdIdx < 4) {
+      return sBokuMoveSpeeds[anim->cmdIdx];
+    } else if (anim->cmdIdx >= 10 && anim->cmdIdx < 14) {
+      return sBokuMoveSpeeds[a->cmdIdx - 10];
     }
   }
   return 0;
-#else
-  INCFUNC("asm/func/FUN_080ffcd0.inc");
-#endif
 }
 
 void FUN_080ffd28(Boku* p) {
@@ -2988,7 +2984,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
   (p->e).navAgent = &p->navAgent;
   (p->e).pathNodePos = &p->pathNodePos;
   (p->e).handlerFrame = (EnemyHandler)FUN_08101bc0;
-  (p->e).getMoveSpeed = (void*)FUN_080ffcd0;
+  (p->e).getMoveSpeed = (void*)Boku_GetMoveSpeed;
   (p->e).handlerTurn = FUN_080fba64;
   (p->e).handlerMove = FUN_080fba28;
   (p->e).handlerWait = FUN_080fba40;
