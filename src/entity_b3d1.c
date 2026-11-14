@@ -20,7 +20,7 @@ typedef struct EntityB3D1 {
   u16 unk_b6;                      // 0x0B6, _Init が '.N' から 1/2/3/4 を入れる
   AuxSprite sprite2;               // 0x0B8
   AuxSpriteGfx gfx2;               // 0x0E4, SPRITE_DARKGENERATOR
-  AuxSprite sprites3[7];           // 0x100, _Destroy が stride 0x2C で7枚 AuxSprite_Remove する
+  AuxSprite mashMeter[7];          // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
   u8 unk_234[0x250 - 0x234];       // 0x234, まだ未解析
   AuxSprite sprites4[6];           // 0x250, _Destroy が stride 0x2C で6枚 AuxSprite_Remove する
   u8 unk_358[0x398 - 0x358];       // 0x358, まだ未解析
@@ -137,13 +137,39 @@ void FUN_080bfef8(EntityB3D1* p) {
   }
 }
 
-NAKED void FUN_080bff18(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bff18.inc"); }
+// 残差: 44/44 命令, 1つ目のループで原典は &mashMeter[i] を基点に strh [r0, #0x10] で書くが, こちらは poseIdx の番地 (+0x110) に畳む, 2つ目のループは AuxSprite* のローカルで揃った, 試済: 条件演算子, if/else, 要素ポインタ
+NON_MATCH void EntityB3D1_UpdateMashMeter(EntityB3D1* p) {
+#ifdef NONMATCHING_C
+  s32 n = gPlayerPtr[0]->mashHits;
+  s32 i;
+
+  if (n > 7) {
+    n = 7;
+  }
+  for (i = 0; i < n; i++) {
+    AuxSprite* sprite = &p->mashMeter[i];
+
+    if (i < 4) {
+      sprite->poseIdx = 1;
+    } else {
+      sprite->poseIdx = 2;
+    }
+  }
+  for (; i < 7; i++) {
+    AuxSprite* sprite = &p->mashMeter[i];
+
+    sprite->poseIdx = 0;
+  }
+#else
+  INCFUNC("asm/func/EntityB3D1_UpdateMashMeter.inc");
+#endif
+}
 
 void FUN_080bff78(EntityB3D1* p) {
   s32 i;
 
   for (i = 0; i < 7; i++) {
-    p->sprites3[i].flags &= ~SPRFLAG_HIDDEN;
+    p->mashMeter[i].flags &= ~SPRFLAG_HIDDEN;
   }
 }
 
@@ -151,7 +177,7 @@ void FUN_080bff98(EntityB3D1* p) {
   s32 i;
 
   for (i = 0; i < 7; i++) {
-    p->sprites3[i].flags |= SPRFLAG_HIDDEN;
+    p->mashMeter[i].flags |= SPRFLAG_HIDDEN;
   }
 }
 

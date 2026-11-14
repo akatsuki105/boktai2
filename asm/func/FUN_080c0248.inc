@@ -280,7 +280,7 @@ _080C048C:
 	strh r0, [r1]
 _080C04AE:
 	adds r0, r6, #0
-	bl FUN_080bff18
+	bl EntityB3D1_UpdateMashMeter
 	adds r0, r6, #0
 	bl FUN_080bfe50
 	ldr r0, _080C04D4 @ =0x0000057A
