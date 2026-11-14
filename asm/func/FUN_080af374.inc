@@ -60,7 +60,7 @@ _080AF3EC: .4byte 0x0000133E
 _080AF3F0: .4byte 0x0000067A
 _080AF3F4:
 	adds r0, r4, #0
-	bl FUN_080af334
+	bl PileDriver_ShowSprites
 _080AF3FA:
 	pop {r4, r5}
 	pop {r0}

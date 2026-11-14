@@ -463,28 +463,16 @@ void PileDriver_HideSprites(PileDriverSprite104* elems) {
 }
 
 // 15枚をまとめて出す
-// 残差は2つめのループだけ (32 対 32), 原典は ~1 を base より先に作る, PileDriver_HideSprites と同じ形
-NON_MATCH void FUN_080af334(PileDriverSprite104* elems) {
-#ifdef NONMATCHING_C
+void PileDriver_ShowSprites(PileDriverSprite104* elems) {
   s32 i;
-  PileDriverSprite104* elem;
 
-  elems->spr.flags &= ~SPRFLAG_HIDDEN;
-
-  elem = &elems[1];
+  elems[0].spr.flags &= ~SPRFLAG_HIDDEN;
   for (i = 0; i < 8; i++) {
-    elem->spr.flags &= ~SPRFLAG_HIDDEN;
-    elem++;
+    elems[1 + i].spr.flags &= ~SPRFLAG_HIDDEN;
   }
-
-  elem = &elems[9];
   for (i = 0; i < 6; i++) {
-    elem->spr.flags &= ~SPRFLAG_HIDDEN;
-    elem++;
+    elems[9 + i].spr.flags &= ~SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_080af334.inc");
-#endif
 }
 
 NAKED void FUN_080af374(unknown* p, s32 param_2) { INCFUNC("asm/func/FUN_080af374.inc"); }
