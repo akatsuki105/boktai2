@@ -375,27 +375,20 @@ void FUN_080aa9d0(Entity080aace8* p) {
 }
 
 // 8枠ぶんのパーティクルを用意して全部止めておく
-// 残差12命令 (43/55) でこちらが短い: 原典は定数 0 と枠のオフセットを高位レジスタに巻き上げて group2 だけ p + オフセットで触るが, こちらは1本のポインタで済ませる
-NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
-#ifdef NONMATCHING_C
-  ParticleGroup* g = GetParticleGroup(PTCL_GROUP_2);
-  Entity080aace8Particle* q = p->ptcls;
+void Entity080aace8_InitParticles(Entity080aace8* p) {
+  ParticleGroup* group = GetParticleGroup(PTCL_GROUP_2);
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    q->group2 = g;
-    Particle_Add(&q->ptcl, g, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
-    Particle_SetOffset(&q->ptcl, -4, -4);
-    Particle_SetPose(&q->ptcl, q->group2, PTCL2_SOL_L);
-    Particle_SetPltt(&q->ptcl, 1);
-    q->ptcl.priority = 0;
-    q->timer = 0;
-    q->active = 0;
-    q++;
+    p->ptcls[i].group2 = group;
+    Particle_Add(&p->ptcls[i].ptcl, group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+    Particle_SetOffset(&p->ptcls[i].ptcl, -4, -4);
+    Particle_SetPose(&p->ptcls[i].ptcl, p->ptcls[i].group2, PTCL2_SOL_L);
+    Particle_SetPltt(&p->ptcls[i].ptcl, 1);
+    p->ptcls[i].ptcl.priority = 0;
+    p->ptcls[i].timer = 0;
+    p->ptcls[i].active = FALSE;
   }
-#else
-  INCFUNC("asm/func/FUN_080aaa2c.inc");
-#endif
 }
 
 // 画面全体を覆う当たり判定を作る, 威力は失った HP か (変身中なら) レベル から決める
@@ -448,7 +441,7 @@ s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
   WorldToScreen(&p->screen, &pos);
 
   FUN_080aa940(p);
-  FUN_080aaa2c(p);
+  Entity080aace8_InitParticles(p);
   FUN_080aaaa8(p);
   if (p->player->useAuxSprite == 0) {
     p->player->human.flags &= ~SPRFLAG_HIDDEN;
