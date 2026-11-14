@@ -23,7 +23,7 @@ typedef struct Torture {
   AuxSprite sprite2;            // 0x0B8
   AuxSpriteGfx gfx2;            // 0x0E4, SPRITE_DARKGENERATOR
   AuxSprite mashMeter[7];       // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
-  u8 unk_234[0x250 - 0x234];    // 0x234, まだ未解析
+  AuxSpriteGfx meterGfx;        // 0x234, SPRITE_PANTHER_BONUS
   AuxSprite bonusSprites[6];    // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
   AuxSpriteGfx bonusGfx;        // 0x358, SPRITE_PANTHER_BONUS
   u8 unk_374[0x378 - 0x374];    // 0x374, まだ未解析
@@ -348,7 +348,21 @@ void Torture_InitBonusSprites(Torture* p) {
   }
 }
 
-NAKED void FUN_080c0770(Torture* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
+// meterGfx を読み込み, mashMeter をコマ 0 で (128, 56) から 8 ずつ右へ並べる
+void Torture_InitMashMeter(Torture* p) {
+  Vec3 pos;
+  s32 i;
+
+  pos.x = 128, pos.y = 56, pos.z = 0;
+  Video_GetAuxSprite(&p->meterGfx, SPRITE_PANTHER_BONUS);
+  for (i = 0; i < 7; i++) {
+    AuxSprite_Add(&p->mashMeter[i], &p->meterGfx, SPRFLAG_SCREEN_COORD);
+    AuxSprite_SetPoseIdx(&p->mashMeter[i], 0);
+    p->mashMeter[i].pos = pos;
+    p->mashMeter[i].priority = 1;
+    pos.x += 8;
+  }
+}
 
 NAKED s32 Torture_Init(Torture* p) { INCFUNC("asm/func/Torture_Init.inc"); }
 

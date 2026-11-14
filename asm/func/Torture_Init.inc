@@ -138,7 +138,7 @@ _080C08E6:
 	adds r0, r7, #0
 	bl Torture_SetState
 	adds r0, r7, #0
-	bl FUN_080c0770
+	bl Torture_InitMashMeter
 	adds r0, r7, #0
 	bl Torture_InitBonusSprites
 	adds r0, r7, #0
