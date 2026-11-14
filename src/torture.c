@@ -33,9 +33,9 @@ typedef struct Torture {
   MainSpriteGfx uiGfx;          // 0x378, SPRITE_UI_START_MENU
   MainSprite mainSprites[5];    // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
   u16 mashPattern;              // 0x578, '.p', A と一緒に連打させる十字キー (0: 左, 1: 上, 2: 右, 3: 下)
-  u16 unk_57a;                  // 0x57A
+  u16 startDelay;               // 0x57A, Torture_Start が 32 を入れて毎フレーム減らす, 0 になるまでは借金を返し終えても終えない
   u16 soundTimer;               // 0x57C, 0..9 を回り, 0 のときに連打数に応じた効果音を鳴らす
-  u16 unk_57e;                  // 0x57E, _Init が 0 を入れる
+  u16 fallCount;                // 0x57E, ベルトコンベアの端から落ちた回数, endScript の引数
   u8 unk_580[0x588 - 0x580];    // 0x580, まだ未解析
   u16 mashFrames;               // 0x588, 連打数が 3 を超えているフレームが続いた数, 3 以下で 0 に戻る
   u16 rate2Frames;              // 0x58A, '.t[0]=180', mashFrames がこれを超えると Torture_GetMashRate が 2
@@ -43,13 +43,13 @@ typedef struct Torture {
   u16 rate10Frames;             // 0x58E, mashFrames がこれを超えると 10
   u16 mashRate;                 // 0x590, 今の倍率 (1 / 2 / 5 / 10), Torture_GetMashRate の値, Torture_Finish が 1 に戻す
   u8 unk_592[2];                // 0x592, まだ未解析
-  u32 unk_594;                  // 0x594
-  u32 unk_598;                  // 0x598
-  u32 unk_59c;                  // 0x59C
-  u32 unk_5a0;                  // 0x5A0
+  s32 elapsedFrames;            // 0x594, 走っているフレーム数
+  s32 timeLimit;                // 0x598, '.a[0]', elapsedFrames がこれに届くと時間切れ
+  s32 totalUnits;               // 0x59C, 発電した単位数の合計
+  s32 requiredUnits;            // 0x5A0, '.a[1]', 時間切れで終えるのに要る totalUnits
   u32 rateChangeScript;         // 0x5A4, mashRate が変わったときに新しい倍率を引数に起動するスクリプト, 0 なら起動しない
   u32 timeUpScript;             // 0x5A8, '.a[2]', 時間切れで起動するスクリプト (Scr_DarkLoanPunishTimeUp)
-  u32 endScript;                // 0x5AC, '.e', おしおきを終えたときに unk_57e を引数に起動するスクリプト (Scr_DarkLoanPunishEnd)
+  u32 endScript;                // 0x5AC, '.e', おしおきを終えたときに fallCount を引数に起動するスクリプト (Scr_DarkLoanPunishEnd)
   u16 powerCharge;              // 0x5B0, 連打で貯めた発電量, powerPerUnit ごとに1単位として取り出す
   u16 powerPerUnit;             // 0x5B2, '.r=300', 発電1単位に要る powerCharge
   u8 unk_5b4[0x5B6 - 0x5B4];    // 0x5B4, まだ未解析
@@ -318,16 +318,16 @@ void Torture_HideHud(Torture* p) {
   Torture_HideMashMeter(p);
 }
 
-void FUN_080c0248(Torture* p);
+void Torture_UpdateRun(Torture* p);
 
 void Torture_Start(Torture* p) {
   Torture_SetupPlayer(p);
   Torture_ShowHud(p);
-  p->unk_57a = 0x20;
-  Torture_SetState(p, FUN_080c0248);
+  p->startDelay = 0x20;
+  Torture_SetState(p, Torture_UpdateRun);
 }
 
-// unk_57e を引数にして endScript のスクリプトを起動する
+// fallCount を引数にして endScript のスクリプトを起動する
 void Torture_RunEndScript(Torture* p) {
   ScriptArgs args;
   u32 argv[1];
@@ -335,12 +335,12 @@ void Torture_RunEndScript(Torture* p) {
   if (p->endScript != 0) {
     args.argc = 1;
     args.argv = argv;
-    argv[0] = p->unk_57e;
+    argv[0] = p->fallCount;
     VM_ExecByID(p->endScript, &args);
   }
 }
 
-// timeUpScript のスクリプトを引数1個で起動する
+// timeUpScript を起動する
 void Torture_RunTimeUpScript(Torture* p) {
   u32 arg;
   ScriptArgs args;
@@ -428,7 +428,79 @@ void Torture_Finish(Torture* p, bool32 timeUp) {
   Torture_SetState(p, Torture_UpdateDone);
 }
 
-NAKED void FUN_080c0248(Torture* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
+// 連打でベルトコンベアを走らせて発電し借金を減らす, 遅いと端まで流されて落ち, 暗転して元の位置から走り直す, 返し終えるか時間切れで終える
+void Torture_UpdateRun(Torture* p) {
+  if (gPlayerPtr[0]->state == 0) {
+    bool32 fellOff;
+
+    p->elapsedFrames++;
+    Torture_AnimateSprite0(p);
+    fellOff = FALSE;
+    gPlayerPtr[0]->mover.pos.x -= gPlayerPtr[0]->mashHits - 3;
+    if (gPlayerPtr[0]->mover.pos.x < 896) {
+      gPlayerPtr[0]->mover.pos.x = 896;
+    } else if (gPlayerPtr[0]->mover.pos.x > 1023) {
+      gPlayerPtr[0]->mover.pos.x = 1023;
+      fellOff = TRUE;
+    }
+    if (fellOff) {
+      gPlayerPtr[0]->state = 1;
+      p->fallCount++;
+      sound_08240740(SONG_570);
+      sound_08240740(SONG_571);
+      sound_08240740(SONG_572);
+      sound_08240740(SONG_573);
+      p->soundTimer = 0;
+      p->mashRate = 1;
+      p->mashFrames = 0;
+      Sound_SetBGMTempo(256);
+      Torture_ResetMash();
+    } else {
+      s32 units;
+
+      Torture_CountMashFrames(p);
+      units = Torture_GeneratePower(p);
+      p->totalUnits += units;
+      if (gStat->darkDebts < units) {
+        gStat->darkDebts = 0;
+        if (p->startDelay == 0) {
+          Torture_Finish(p, FALSE);
+        }
+      } else if (p->elapsedFrames >= p->timeLimit && p->totalUnits >= p->requiredUnits) {
+        Torture_Finish(p, TRUE);
+      } else {
+        Sound_SetBGMTempo(gPlayerPtr[0]->mashHits * 96);
+        gStat->darkDebts -= units;
+      }
+    }
+    Torture_DrawDebts(p);
+    if (p->mashRate > 1) {
+      Camera_Shake(p->mashRate * 4);
+    }
+  } else if (gPlayerPtr[0]->state == 2 && gPlayerPtr[0]->stateTimer == 1) {
+    StartBgObjPlttFade(1, 5, 4, 4, 4, 0x1FFF, 0);
+  } else if (gPlayerPtr[0]->state == 3) {
+    if (gPlayerPtr[0]->stateTimer > 31) {
+      gPlayerPtr[0]->state = 4;
+      gPlayerPtr[0]->stateTimer = 0;
+      VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
+      gPlayerPtr[0]->animDir = 1;
+      gPlayerPtr[0]->xflip = TRUE;
+      StartBgObjPlttFade(0, 5, 4, 4, 4, 0x1FFF, 0);
+    }
+  } else if (gPlayerPtr[0]->state == 4) {
+    if (gPlayerPtr[0]->stateTimer > 31) {
+      gPlayerPtr[0]->state = 0;
+      gPlayerPtr[0]->stateTimer = 0;
+      p->mashFrames = 0;
+    }
+  }
+  Torture_UpdateMashMeter(p);
+  Torture_UpdateBonusSprites(p);
+  if (p->startDelay != 0) {
+    p->startDelay--;
+  }
+}
 
 void Torture_UpdateScreenBlend(Torture* p) {
   Player* q = gPlayerPtr[0];
@@ -617,15 +689,15 @@ s32 Torture_Init(Torture* p) {
     p->endScript = VM_GetValue();
   }
   if (VM_SeekToNamedArg('a')) {
-    p->unk_598 = VM_GetValue();
-    p->unk_5a0 = VM_GetValue();
+    p->timeLimit = VM_GetValue();
+    p->requiredUnits = VM_GetValue();
     p->timeUpScript = VM_GetValue();
   }
-  p->unk_594 = 0;
-  p->unk_59c = 0;
+  p->elapsedFrames = 0;
+  p->totalUnits = 0;
   PlaySound_082406e0(SONG_574);
-  p->unk_57e = 0;
-  p->unk_594 = 0;
+  p->fallCount = 0;
+  p->elapsedFrames = 0;
   gTorture = p;
   return 0;
 }
