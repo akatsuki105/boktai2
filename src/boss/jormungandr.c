@@ -2286,21 +2286,17 @@ void FUN_080c6414(Boss* boss, s32 timer) {
   }
 }
 
-// args.argv の書き込みを argc の後に回す形が出ない
-NON_MATCH void FUN_080c6500(Jormungandr* p, s32 arg) {
-#ifdef NONMATCHING_C
+// arg を引数にして scriptID のスクリプトを起動する
+void Jormungandr_RunScript(Jormungandr* p, s32 arg) {
   ScriptArgs args;
   u32 argv[1];
 
-  args.argv = argv;
   if (p->scriptID != 0) {
     args.argc = 1;
     argv[0] = arg;
+    args.argv = argv;
     VM_ExecByID(p->scriptID, &args);
   }
-#else
-  INCFUNC("asm/func/FUN_080c6500.inc");
-#endif
 }
 
 // A ボタンを押している間、太陽ゲージぶん力を溜める, 6 段階溜めきると FUN_080c6a5c へ, 時間切れなら FUN_080c6850 へ
@@ -2372,14 +2368,14 @@ NON_MATCH void FUN_080c6538(Jormungandr* p) {
     Boss_SetState(&p->base, FUN_080c6a5c, 58);
     FUN_080c4254(p);
     sound_08240740(SONG_217);
-    FUN_080c6500(p, p->chargeLevel);
+    Jormungandr_RunScript(p, p->chargeLevel);
   } else if (p->chargeTimeLeft == 0) {
     HUD_RemoveCountdown();
     FUN_080c4254(p);
     sound_08240740(SONG_217);
     Boss_SetState(&p->base, FUN_080c6850, 57);
   } else if (levelUp) {
-    FUN_080c6500(p, p->chargeLevel);
+    Jormungandr_RunScript(p, p->chargeLevel);
   }
 #else
   INCFUNC("asm/func/FUN_080c6538.inc");
@@ -2428,7 +2424,7 @@ void FUN_080c6850(Boss* boss, s32 timer) {
     FUN_080c4a54(p, 16);
   }
   if (timer == 170) {
-    FUN_080c6500(p, -1);
+    Jormungandr_RunScript(p, -1);
   }
 }
 

@@ -307,7 +307,7 @@ _080C677A:
 	bl sound_08240740
 	ldrb r1, [r5]
 	adds r0, r6, #0
-	bl FUN_080c6500
+	bl Jormungandr_RunScript
 	b _080C6840
 	.align 2, 0
 _080C67C4: .4byte 0x000025FF
@@ -356,7 +356,7 @@ _080C6830:
 	mov r3, r8
 	ldrb r1, [r3]
 	adds r0, r6, #0
-	bl FUN_080c6500
+	bl Jormungandr_RunScript
 _080C6840:
 	add sp, #0x20
 	pop {r3, r4, r5}

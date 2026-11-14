@@ -127,20 +127,16 @@ void PileDriver_SetSubState(PileDriver* p, u32 subState) {
   p->unk_4fe = 0;
 }
 
-// 残差は kind のスタック退避が分岐前に出る1命令のみ, Tier A は試済 (引数直接/ブロック内宣言/ローカルコピー), 未: B/C
-NON_MATCH void FUN_080ad204(PileDriver* p, u32 kind) {
-#ifdef NONMATCHING_C
+void FUN_080ad204(PileDriver* p, u32 kind) {
   ScriptArgs args;
-  u32 argv;
+  u32 argv[1];
 
   if (p->unk_17a4 != 0) {
-    argv = kind;
-    args.argc = 1, args.argv = &argv;
+    args.argc = 1;
+    argv[0] = kind;
+    args.argv = argv;
     VM_ExecByID(p->unk_17a4, &args);
   }
-#else
-  INCFUNC("asm/func/FUN_080ad204.inc");
-#endif
 }
 
 NAKED void FUN_080ad23c(PileDriver* p) { INCFUNC("asm/func/FUN_080ad23c.inc"); }
