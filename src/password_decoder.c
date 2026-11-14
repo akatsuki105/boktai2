@@ -25,9 +25,9 @@ typedef struct {
 } PasswordData;
 static_assert(sizeof(PasswordData) == 44);
 
-// パスワード (ふっかつのじゅもん) の解析用に FUN_08011584 が一時的に確保する作業領域
+// パスワード (ふっかつのじゅもん) の解析用に PasswordDecoder_Apply が一時的に確保する作業領域
 typedef struct {
-  u8 decoded[24];       // 0x00, FUN_080111a4 が password を2文字ずつ charTable の添字に直して入れる
+  u8 decoded[24];       // 0x00, PasswordDecoder_CharsToIndices が password を2文字ずつ charTable の添字に直して入れる
   char password[0x30];  // 0x18, タグを除いたパスワード文字列
   PasswordData data;    // 0x48
   char* charTable;      // 0x74, パスワードに使える文字の並び
@@ -68,7 +68,7 @@ NON_MATCH s32 PasswordDecoder_UnscrambleChars(PasswordDecoder* p) {
 }
 
 // 2バイト1組のテーブル64エントリから (lo, hi) の組を探して添字を返す, 無ければ -1
-s32 FUN_08011178(u8* table, s32 lo, s32 hi) {
+s32 PasswordDecoder_FindCharIndex(u8* table, s32 lo, s32 hi) {
   s32 i;
 
   for (i = 0; i < 64; i++, table += 2) {
@@ -80,12 +80,12 @@ s32 FUN_08011178(u8* table, s32 lo, s32 hi) {
 }
 
 // password を2文字ずつ charTable の添字に直して decoded へ入れる, 表に無い組があれば -1
-s32 FUN_080111a4(PasswordDecoder* p) {
+s32 PasswordDecoder_CharsToIndices(PasswordDecoder* p) {
   u8* s = (u8*)p->password;
   s32 i;
 
   for (i = 0; i < 24; i++, s += 2) {
-    u32 idx = FUN_08011178(p->charTable, s[0], s[1]);
+    u32 idx = PasswordDecoder_FindCharIndex(p->charTable, s[0], s[1]);
 
     if (idx > 0x3F) {
       return -1;
@@ -312,8 +312,9 @@ NON_MATCH s32 PasswordDecoder_StripTags(char* dst, char* src, s32 max) {
 }
 
 // パスワード文字列を解析してセーブデータに反映する, 戻り値が負なら失敗
-// 残差は53/53命令でレジスタ割当のみ, 原典は p を r5, charTablePc と ret を r4 に置くが逆になる, 宣言順の入れ替えと宣言/代入の分離は試済
-NON_MATCH s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8* name) {
+// 残差は53/53命令でレジスタ割当のみ, 原典は p を r5, charTablePc と ret を r4 に置くが逆になる
+// 試済: 宣言順の入れ替え, 宣言と代入の分離, 解析の if を順に並べる形, 初期化を static inline に分ける
+NON_MATCH s32 PasswordDecoder_Apply(char* password, u8* charTablePc, u8* nameTablePc, u8* name) {
 #ifdef NONMATCHING_C
   s32 ret;
   PasswordDecoder* p = Malloc(sizeof(PasswordDecoder));
@@ -328,7 +329,7 @@ NON_MATCH s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8*
   p->rngState = 0x0008C159;
   PasswordDecoder_StripTags(p->password, password, 0x30);
 
-  ret = FUN_080111a4(p);
+  ret = PasswordDecoder_CharsToIndices(p);
   if (ret >= 0) {
     ret = PasswordDecoder_Parse(p);
     if (ret >= 0) {
@@ -339,12 +340,12 @@ NON_MATCH s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8*
   Free(p);
   return ret;
 #else
-  INCFUNC("asm/func/FUN_08011584.inc");
+  INCFUNC("asm/func/PasswordDecoder_Apply.inc");
 #endif
 }
 
-// '.c' と '.n' の文字テーブルと '.d' のパスワード文字列で FUN_08011584 を呼ぶ
-void Cmd_C673(void) {
+// '.c' と '.n' の文字テーブルと '.d' のパスワード文字列で PasswordDecoder_Apply を呼ぶ
+void Cmd_ApplyPassword(void) {
   if (VM_SeekToNamedArg('c')) {
     u8* charTablePc = VM_GetPC();
 
@@ -355,7 +356,7 @@ void Cmd_C673(void) {
         u8* passwordPc = VM_GetPC();
 
         if (passwordPc != NULL) {
-          FUN_08011584(GetStringByID(VM_ParseStringRef(passwordPc)), charTablePc, nameTablePc, gStat->name);
+          PasswordDecoder_Apply(GetStringByID(VM_ParseStringRef(passwordPc)), charTablePc, nameTablePc, gStat->name);
         }
       }
     }

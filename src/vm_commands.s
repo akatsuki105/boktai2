@@ -506,7 +506,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC556, Cmd_CloseMessageWindow
 	.4byte 0xC5D8, Cmd_FreeShadeManCrossoverScriptArg
 	.4byte 0xC60F, EntityC60F_Create
-	.4byte 0xC673, Cmd_C673
+	.4byte 0xC673, Cmd_ApplyPassword
 	.4byte 0xC6AA, Cmd_SetHUDMode
 	.4byte 0xC765, Cmd_SetEntity3117Pose
 	.4byte 0xC783, LinkBattleLobby_Create

@@ -30,7 +30,7 @@ _080115A4:
 	movs r2, #0x30
 	bl PasswordDecoder_StripTags
 	adds r0, r5, #0
-	bl FUN_080111a4
+	bl PasswordDecoder_CharsToIndices
 	adds r4, r0, #0
 	cmp r4, #0
 	blt _080115F0

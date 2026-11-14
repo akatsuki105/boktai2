@@ -210,7 +210,7 @@ bool32 SetGameDateTime(s32 year, s32 month, s32 day, s32 hour, s32 minute, s32 s
 s32 Time_GetDaysInMonth(s32 year, s32 month);
 void FUN_08214274(EntityA288* p);
 void FUN_08214334(EntityA288* p);
-s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8* name);
+s32 PasswordDecoder_Apply(char* password, u8* charTablePc, u8* nameTablePc, u8* name);
 void FUN_082152ec(EntityA288* p);
 void FUN_0821722c(EntityA288* p);
 void FUN_08217440(EntityA288* p);
@@ -2414,7 +2414,7 @@ s32 FUN_08216f0c(EntityA288* p) {
       SET_FLAGS(p->flags, 0x10);
       FUN_08216cf4(p, 0);
       FUN_08216968(in->lines, in->text);
-      ret = FUN_08011584(in->text, in->unk_128, in->unk_12c, GetPlayerName());
+      ret = PasswordDecoder_Apply(in->text, in->unk_128, in->unk_12c, GetPlayerName());
       name = GetPlayerName();
       for (i = 0; i < 10; i++) {
         if (*name == 0 && i < 9) {

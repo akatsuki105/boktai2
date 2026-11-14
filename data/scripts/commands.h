@@ -503,7 +503,7 @@
 #define Cmd_CloseMessageWindow 0xC556
 #define Cmd_FreeShadeManCrossoverScriptArg 0xC5D8
 #define EntityC60F_Create 0xC60F
-#define Cmd_C673 0xC673
+#define Cmd_ApplyPassword 0xC673
 #define Cmd_SetHUDMode 0xC6AA
 #define Cmd_SetEntity3117Pose 0xC765
 #define LinkBattleLobby_Create 0xC783
