@@ -2,16 +2,40 @@
 #include "malloc.h"
 #include "vm.h"
 
+// パスワードから読み出した値, 1 つの値を u16 に1つずつ入れる
+typedef struct {
+  u16 unk_00;   // 0x00, 9 ビット
+  u16 unk_02;   // 0x02, 6 ビット, gStat->unk_00a へ
+  u16 unk_04;   // 0x04, 6 ビット
+  u16 unk_06;   // 0x06, 6 ビット
+  u16 unk_08;   // 0x08, 3 ビット
+  u16 unk_0a;   // 0x0A, 5 ビット
+  u16 unk_0c;   // 0x0C, 3 ビット
+  u16 unk_0e;   // 0x0E, 4 ビット
+  u16 unk_10;   // 0x10, 5 ビット
+  u16 unk_12;   // 0x12, 7 ビット
+  u16 unk_14;   // 0x14, 4 ビット, gStat->unk_00c へ
+  u16 unk_16;   // 0x16, 5 ビット, gStat->unk_00e へ
+  u16 name[5];  // 0x18, 名前の 2 バイト目, 0 で終わり, 0xF0 は名前の文字表の 0xA0 番の文字
+  u16 unk_22;   // 0x22
+  u16 unk_24;   // 0x24, 6 ビット, version が 1 のときだけ
+  u16 unk_26;   // 0x26, 6 ビット, version が 1 のときだけ
+  u16 unk_28;   // 0x28, 8 ビット, version が 1 のときだけ
+  u16 unk_2a;   // 0x2A
+} PasswordData;
+static_assert(sizeof(PasswordData) == 44);
+
 // パスワード (ふっかつのじゅもん) の解析用に FUN_08011584 が一時的に確保する作業領域
 typedef struct {
-  u8 decoded[24];          // 0x00, FUN_080111a4 が password を2文字ずつ charTable の添字に直して入れる
-  char password[0x30];     // 0x18, タグを除いたパスワード文字列
-  u8 unk_48[0x74 - 0x48];  // 0x48, まだ未解析
-  char* charTable;         // 0x74, パスワードに使える文字の並び
-  u8* nameTablePc;         // 0x78, 名前に使える文字テーブルの VM バイトコード位置
-  u32 rngState;            // 0x7C, 線形合同法の内部状態, 初期値 0x0008C159
-  u8 unk_80[0x88 - 0x80];  // 0x80, まだ未解析
-  u32 key;                 // 0x88, パスワードに入っている鍵 (PasswordScreen.key), 文字を解く乱数をこの回数 + 4 だけ空回しする
+  u8 decoded[24];       // 0x00, FUN_080111a4 が password を2文字ずつ charTable の添字に直して入れる
+  char password[0x30];  // 0x18, タグを除いたパスワード文字列
+  PasswordData data;    // 0x48
+  char* charTable;      // 0x74, パスワードに使える文字の並び
+  u8* nameTablePc;      // 0x78, 名前に使える文字テーブルの VM バイトコード位置
+  u32 rngState;         // 0x7C, 線形合同法の内部状態, 初期値 0x0008C159
+  u32 unk_80;           // 0x80, 3 ビット
+  u32 unk_84;           // 0x84, 16 ビット
+  u32 key;              // 0x88, パスワードに入っている鍵 (PasswordScreen.key), 文字を解く乱数をこの回数 + 4 だけ空回しする
 } PasswordDecoder;
 static_assert(sizeof(PasswordDecoder) == 140);
 
@@ -102,7 +126,35 @@ void PasswordDecoder_NOP(PasswordDecoder* p) {
   }
 }
 
-NAKED void PasswordDecoder_SaveChanges(PasswordDecoder* p, u8* name) { INCFUNC("asm/func/PasswordDecoder_SaveChanges.inc"); }
+// パスワードの名前を 2 バイト文字に直して name へ書き, パスワードの値を gStat に入れる
+// 残差: 52/54 命令, 原典は gStat への3つの書き込みのたびに gStat を読み直し, 引数 name を r4 へ写すのを data / src を作った後にする
+// 試済: gStat の書き込みを *(&gStat->x) にする, 0x08-0x0E を s16 の配列にして *(gStat->arr + n) で書く (読み直しは起きない)
+NON_MATCH void PasswordDecoder_SaveChanges(PasswordDecoder* p, u8* name) {
+#ifdef NONMATCHING_C
+  PasswordData* data = &p->data;
+  u16* src = data->name;
+  u16 c;
+  s32 i;
+
+  for (i = 0; i < 5 && (c = *src) != 0; i++, name += 2, src++) {
+    if (c == 0xF0) {
+      char* table = GetStringByID(VM_ParseStringRef(p->nameTablePc));
+
+      name[0] = table[0xA0];
+      name[1] = table[0xA1];
+    } else {
+      name[0] = 0x80;
+      name[1] = c;
+    }
+  }
+  *name = 0;
+  gStat->unk_00a = data->unk_02;
+  gStat->unk_00c = data->unk_14;
+  gStat->unk_00e = data->unk_16;
+#else
+  INCFUNC("asm/func/PasswordDecoder_SaveChanges.inc");
+#endif
+}
 
 // src から <...> のタグを除いて dst へ写す, 2 バイト文字はそのまま写して max バイトで止め, 写した数を返す
 // 残差: 51/50 命令, 原典はループの判定で読んだ *src をそのまま c に使い, 符号の判定を lsl で行う, こちらは本体で読み直して & 0x80 で判定する

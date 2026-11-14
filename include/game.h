@@ -81,7 +81,7 @@ typedef struct {
   u8 unk_004[4];              // 0x004
   u16 unk_008;                // 0x008
   u16 unk_00a;                // 0x00A
-  u8 unk_00c[2];              // 0x00C
+  u16 unk_00c;                // 0x00C, パスワードの値を PasswordDecoder_SaveChanges が入れる
   s16 unk_00e;                // 0x00E, EntityA288 が '.T' の参照先に足す文字列IDのオフセット
   u16 controlUp;              // 0x010, 十字キー上を押した時の移動方向の設定, 0: 左上, 1: 上, 2: 右上
   s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
