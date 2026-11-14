@@ -4283,23 +4283,21 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
 #endif
 }
 
-// 37/38命令, 原典は判定の前に p を r2 へ写して判定に r2, 呼び出しに r4 を使う (inline の引数の写しらしい), 試済: Enemy_TestFlag3, Enemy* のローカル
-NON_MATCH s32 Cockatrice_UpdateFrame(Cockatrice* p) {
-#ifdef NONMATCHING_C
+// 止まっていなければ前処理, 状態の処理, 後処理を1フレーム分まわす
+s32 Cockatrice_UpdateFrame(Cockatrice* p) {
+  Cockatrice* self = p;
+
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_2) || (p->e).unk_4be == 0) {
-    Cockatrice_PreUpdate(p);
+    Cockatrice_PreUpdate(self);
     {
-      u32 idx = (p->e).subState0;
-      EnemyHandler* table = (p->e).handlerTables[0];
-      table[idx](&p->e);
+      u32 idx = (self->e).subState0;
+      EnemyHandler* table = (self->e).handlerTables[0];
+      table[idx](&self->e);
     }
-    Enemy_RunStateHandler(&p->e);
-    Cockatrice_PostUpdate(p);
+    Enemy_RunStateHandler(&self->e);
+    Cockatrice_PostUpdate(self);
   }
   return 1;
-#else
-  INCFUNC("asm/func/Cockatrice_UpdateFrame.inc");
-#endif
 }
 
 s32 Cockatrice_Update(Cockatrice* p) {
