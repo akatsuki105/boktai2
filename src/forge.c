@@ -62,7 +62,7 @@ typedef struct Forge {
   s16 unk_62;                             // 0x0062
   u8 unk_64;                              // 0x0064
   bool8 unk_65;                           // 0x0065, FUN_0801dfe4 が読んで落とす1フレームの目印
-  u8 unk_66;                              // 0x0066, ratings の次に使う添字
+  u8 ratingIdx;                           // 0x0066, ratings の次に使う添字
   u8 unk_67;                              // 0x0067, まだ未解析
   s32 unk_68;                             // 0x0068
   s32 sunGauge;                           // 0x006C
@@ -1400,20 +1400,22 @@ NON_MATCH s32 Forge_SetupHUD(Forge* p) {
 #endif
 }
 
-void FUN_0801d338(Forge* p) {
-  StrikeRating* rating = &p->ratings[p->unk_66];
-  MainSprite* sprite = &p->sprites2[8 + p->unk_66];
+// 次の評価スプライトに今回の評価のポーズを出して動かし始める
+void Forge_ShowRating(Forge* p) {
+  StrikeRating* rating = &p->ratings[p->ratingIdx];
+  MainSprite* sprite = &p->sprites2[8 + p->ratingIdx];
 
   MainSprite_SetPose(sprite, &p->gfx0, p->unk_92 + 20, PLAYMODE_PAUSE);
   sprite->flags &= ~SPRFLAG_HIDDEN;
   rating->state = 1;
   rating->timer = 0;
-  if (++p->unk_66 >= 5) {
-    p->unk_66 = 0;
+  if (++p->ratingIdx >= 5) {
+    p->ratingIdx = 0;
   }
 }
 
-void FUN_0801d394(Forge* p) {
+// sprites2[8..12] に出した打撃評価のポップアップを1フレーム進める
+void Forge_UpdateRatings(Forge* p) {
   StrikeRating* rating = p->ratings;
   MainSprite* sprite = &p->sprites2[8];
   s32 i;
@@ -1562,7 +1564,7 @@ NON_MATCH s32 Forge_UpdateHUD(Forge* p) {
   sec = Div(p->unk_b4, 60);
   Video_DrawBGNumber(0, 21, 16, sec, 17, 2, 13);
   Video_DrawBGNumber(0, 24, 16, frac, 17, 2, 13);
-  FUN_0801d394(p);
+  Forge_UpdateRatings(p);
 #else
   INCFUNC("asm/func/Forge_UpdateHUD.inc");
 #endif
@@ -1679,7 +1681,7 @@ NON_MATCH void Forge_SubHammer(Forge* p) {
     p->unk_7c = 0;
     p->unk_8c = 0;
     p->unk_90 = 0;
-    p->unk_66 = 0;
+    p->ratingIdx = 0;
     p->unk_92 = 0;
     p->unk_93 = 0;
     FUN_0807c7c8(gPlayerPtr[0], 1);
@@ -1735,7 +1737,7 @@ NON_MATCH void Forge_SubHammer(Forge* p) {
     Forge_SetSubFn(p, Forge_SubCool);
   } else {
     if (p->unk_90-- == 10) {
-      FUN_0801d338(p);
+      Forge_ShowRating(p);
     }
     p->unk_1314++;
   }
@@ -1780,7 +1782,7 @@ NON_MATCH void Forge_UpdateSmithing(Forge* p) {
     p->unk_7c = 0;
     p->unk_80 = 32;
     p->sunGauge = p->unk_68 >> 5;
-    p->unk_66 = 0;
+    p->ratingIdx = 0;
     p->unk_a4 = 0;
     p->unk_a8 = 0;
     p->unk_ac = 0;

@@ -264,7 +264,7 @@ _0801E944:
 	adds r0, r7, #0
 	bl FUN_0801e6a0
 	adds r0, r7, #0
-	bl FUN_0801e3d0
+	bl EntityEF6F_UpdateRatings
 	add sp, #0xc
 	pop {r3, r4}
 	mov r8, r3

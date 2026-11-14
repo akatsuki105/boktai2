@@ -14,7 +14,7 @@
 
 // これも太陽鍛冶に関係
 
-// FUN_0801e378 が撒いてから FUN_0801e3d0 が進める、sprites[8..12] 1枚ぶんの再生状態
+// EntityEF6F_ShowRating が撒いてから EntityEF6F_UpdateRatings が進める、sprites[8..12] 1枚ぶんの再生状態
 typedef struct {
   u16 state;  // 0x0, 0=停止, 1..3 が進行段階
   u16 timer;  // 0x2, state ごとの経過フレーム数
@@ -44,7 +44,7 @@ typedef struct {
   s16 unk_36;                   // 0x036, FUN_0801ed18 が 0xB0 を入れる, FUN_0801f130 が unk_34 と比べる
   u8 unk_38;                    // 0x038, まだ未解析
   u8 unk_39;                    // 0x039, FUN_0801eaac が判定結果を入れ、PlayForgeStrikeSE へ渡す
-  u8 unk_3a;                    // 0x03A, FUN_0801e378 が使う 0..4 を回るカウンタ, effects[] と sprites[8..12] の添字
+  u8 ratingIdx;                 // 0x03A, EntityEF6F_ShowRating が使う 0..4 を回るカウンタ, effects[] と sprites[8..12] の添字
   u8 unk_3b[0x040 - 0x03B];     // 0x03B, まだ未解析
   u32 unk_40;                   // 0x040, FUN_0801ed18 が 8 フレームごとに 1 減らし、FUN_0801ec6c が 10 まで増やす, 0 でなければ unk_58 を加算する
   u8 unk_44[0x050 - 0x044];     // 0x044, まだ未解析
@@ -55,7 +55,7 @@ typedef struct {
   s32 unk_60;                   // 0x060
   u8 unk_64;                    // 0x064
   u8 unk_65;                    // 0x065, まだ未解析
-  u8 unk_66;                    // 0x066, FUN_0801e378 が MainSprite_SetPose のポーズ番号 (+0x14) に使う
+  u8 unk_66;                    // 0x066, EntityEF6F_ShowRating が MainSprite_SetPose のポーズ番号 (+0x14) に使う
   u8 unk_67;                    // 0x067, FUN_0801e980 / FUN_0801e998 が sprites[0].pos.x へ写す
   u8 unk_68;                    // 0x068, まだ未解析
   u8 unk_69;                    // 0x069, FUN_0801f0e4 が 60 を入れる
@@ -135,62 +135,60 @@ s32 FUN_0801e328(EntityEF6F* p) {
   return 0;
 }
 
-void FUN_0801e378(EntityEF6F* p) {
-  EntityEF6FEffect* eff = &p->effects[p->unk_3a];
-  MainSprite* spr = &p->sprites[8 + p->unk_3a];
+// 次の評価スプライトに今回の評価のポーズを出して動かし始める
+void EntityEF6F_ShowRating(EntityEF6F* p) {
+  EntityEF6FEffect* eff = &p->effects[p->ratingIdx];
+  MainSprite* spr = &p->sprites[8 + p->ratingIdx];
 
   MainSprite_SetPose(spr, &p->gfx0, p->unk_66 + 20, PLAYMODE_PAUSE);
   MainSprite_Show(spr);
   eff->state = 1;
   eff->timer = 0;
-  p->unk_3a++;
-  if (p->unk_3a > 4) {
-    p->unk_3a = 0;
+  p->ratingIdx++;
+  if (p->ratingIdx > 4) {
+    p->ratingIdx = 0;
   }
 }
 
-// sprites[8..12] に撒いたエフェクトを1フレーム進める
-// 残差1命令: switch の比較木の根が違う (原典は 1, こちらは中央値の 2) ので、ケース集合が {1,2,3} ではない可能性がある
-// Tier A は試済 (空の case 0 の追加), 未: ケース集合の再検討
-NON_MATCH void FUN_0801e3d0(EntityEF6F* p) {
-#ifdef NONMATCHING_C
+// sprites[8..12] に出した打撃評価のポップアップを1フレーム進める
+void EntityEF6F_UpdateRatings(EntityEF6F* p) {
   EntityEF6FEffect* eff = p->effects;
-  MainSprite* spr = &p->sprites[8];
+  MainSprite* sprite = &p->sprites[8];
   s32 i;
 
-  for (i = 0; i < 5; i++, eff++, spr++) {
+  for (i = 0; i < 5; i++, eff++, sprite++) {
     switch (eff->state) {
+      case 0: {
+        break;
+      }
       case 1: {
-        spr->pos.x = ((8 - eff->timer) << 3) + 4;
-        if (eff->timer > 7) {
-          spr->pos.x = 4;
+        sprite->pos.x = (8 - eff->timer) * 8 + 4;
+        if (eff->timer >= 8) {
+          sprite->pos.x = 4;
           eff->state = 2;
           eff->timer = 0;
         }
         break;
       }
       case 2: {
-        if (eff->timer > 0x3F) {
+        if (eff->timer >= 64) {
           eff->state = 3;
           eff->timer = 0;
-          spr->flags |= SPRFLAG_BLINK_ODD;
+          sprite->flags |= SPRFLAG_BLINK_ODD;
         }
         break;
       }
       case 3: {
-        if (eff->timer > 7) {
+        if (eff->timer >= 8) {
           eff->state = 0;
           eff->timer = 0;
-          spr->flags = (spr->flags & ~SPRFLAG_BLINK_ODD) | SPRFLAG_HIDDEN;
+          sprite->flags = (sprite->flags & ~SPRFLAG_BLINK_ODD) | SPRFLAG_HIDDEN;
         }
         break;
       }
     }
     eff->timer++;
   }
-#else
-  INCFUNC("asm/func/FUN_0801e3d0.inc");
-#endif
 }
 
 // 残差はレジスタの割り当てのみ (命令数 40 対 40, 命令の並びは一致)
@@ -437,7 +435,7 @@ void FUN_0801eaac(EntityEF6F* p, s32 kind) {
   }
 
   PlayForgeStrikeSE(p->unk_39, kind);
-  FUN_0801e378(p);
+  EntityEF6F_ShowRating(p);
   p->unk_60++;
 }
 
@@ -713,7 +711,7 @@ void FUN_0801f054(EntityEF6F* p) {
     p->unk_50 = 0;
     p->unk_60 = 0;
     p->unk_64 = 0;
-    p->unk_3a = 0;
+    p->ratingIdx = 0;
     p->unk_6b = 0;
   }
   if (FUN_0801ea34(p)) {

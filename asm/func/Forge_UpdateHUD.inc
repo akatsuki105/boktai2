@@ -162,7 +162,7 @@ _0801D642:
 	mov r3, r8
 	bl Video_DrawBGNumber
 	adds r0, r7, #0
-	bl FUN_0801d394
+	bl Forge_UpdateRatings
 	add sp, #0xc
 	pop {r3, r4}
 	mov r8, r3

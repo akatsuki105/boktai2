@@ -196,7 +196,7 @@ _0801DA50:
 	cmp r0, #9
 	bne _0801DA62
 	adds r0, r5, #0
-	bl FUN_0801d338
+	bl Forge_ShowRating
 _0801DA62:
 	ldr r0, _0801DA78 @ =0x00001314
 	adds r1, r5, r0
