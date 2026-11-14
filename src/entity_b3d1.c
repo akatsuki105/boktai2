@@ -23,8 +23,9 @@ typedef struct EntityB3D1 {
   AuxSpriteGfx gfx2;               // 0x0E4, SPRITE_DARKGENERATOR
   AuxSprite mashMeter[7];          // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
   u8 unk_234[0x250 - 0x234];       // 0x234, まだ未解析
-  AuxSprite sprites4[6];           // 0x250, _Destroy が stride 0x2C で6枚 AuxSprite_Remove する
-  u8 unk_358[0x378 - 0x358];       // 0x358, まだ未解析
+  AuxSprite bonusSprites[6];       // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
+  AuxSpriteGfx bonusGfx;           // 0x358, SPRITE_PANTHER_BONUS
+  u8 unk_374[0x378 - 0x374];       // 0x374, まだ未解析
   MainSpriteGfx uiGfx;             // 0x378, SPRITE_UI_START_MENU
   MainSprite mainSprites[5];       // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
   u16 unk_578;                     // 0x578, '.p'
@@ -152,7 +153,7 @@ void FUN_080bfef8(EntityB3D1* p) {
   s32 i;
 
   for (i = 0; i < 6; i++) {
-    p->sprites4[i].flags |= SPRFLAG_HIDDEN;
+    p->bonusSprites[i].flags |= SPRFLAG_HIDDEN;
   }
 }
 
@@ -298,7 +299,7 @@ s32 EntityB3D1_Destroy(EntityB3D1* p) {
     AuxSprite_Remove(&p->mashMeter[i]);
   }
   for (i = 0; i < 6; i++) {
-    AuxSprite_Remove(&p->sprites4[i]);
+    AuxSprite_Remove(&p->bonusSprites[i]);
   }
   gEntityB3D1 = NULL;
   sound_08240740(SONG_574);
@@ -307,7 +308,25 @@ s32 EntityB3D1_Destroy(EntityB3D1* p) {
 
 NAKED void FUN_080c05cc(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c05cc.inc"); }
 
-NAKED void FUN_080c06e4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c06e4.inc"); }
+// bonusGfx を読み込み, bonusSprites を隠した状態で並べる
+void EntityB3D1_InitBonusSprites(EntityB3D1* p) {
+  Vec3 pos;
+  s32 i;
+
+  pos.x = 132, pos.y = 48, pos.z = 0;
+  Video_GetAuxSprite(&p->bonusGfx, SPRITE_PANTHER_BONUS);
+  for (i = 0; i < 6; i++) {
+    AuxSprite_Add(&p->bonusSprites[i], &p->bonusGfx, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
+    if (i < 2) {
+      p->bonusSprites[i].poseIdx = i + 3;
+    } else {
+      p->bonusSprites[i].poseIdx = i + 5;
+    }
+    p->bonusSprites[i].pos = pos;
+    p->bonusSprites[i].priority = 1;
+    pos.x += 8;
+  }
+}
 
 NAKED void FUN_080c0770(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
 

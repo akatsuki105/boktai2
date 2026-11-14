@@ -140,7 +140,7 @@ _080C08E6:
 	adds r0, r7, #0
 	bl FUN_080c0770
 	adds r0, r7, #0
-	bl FUN_080c06e4
+	bl EntityB3D1_InitBonusSprites
 	adds r0, r7, #0
 	bl FUN_080bffcc
 	movs r0, #0x72
