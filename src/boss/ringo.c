@@ -3542,11 +3542,11 @@ void FUN_0802f368(Boss* boss, s32 timer) {
   }
 }
 
-// 1 回目で打ち切り, 残差は timer と mover のレジスタ (148/148)
+// 148/148 命令, mover を p より先に宣言すると割り当ては揃い, p の写し (adds r7, r4) が mover の後ろに回る1命令だけ残る (FUN_08033b28 と同じ壁), 試済: delta を boss->mover から取る, mover を p->base から取る, Ringo* で受けて Boss* boss = &p->base
 NON_MATCH void FUN_0802f4a8(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
-  Ringo* p = (Ringo*)boss;
   Mover* mover = &boss->mover;
+  Ringo* p = (Ringo*)boss;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
