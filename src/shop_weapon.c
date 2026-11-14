@@ -726,7 +726,6 @@ void WeaponShop_SwapSelectedWeapon(WeaponShop* p) {
 }
 
 void WeaponShop_BuyWeapon(WeaponShop* p);
-// 売却を確定する, 売値を所持金に足して (9999 で打ち止め) 武器を手放す
 void WeaponShop_ConfirmSellWeapon(WeaponShop* p);
 
 // カーソル確定の入力待ち, 決定なら WeaponShop_BuyWeapon へ, キャンセルなら SE を鳴らして戻る
@@ -773,6 +772,7 @@ void FUN_080bdf94(WeaponShop* p) {
   }
 }
 
+// 売却を確定する, 売値を所持金に足して (9999 で打ち止め) 武器を手放す
 void WeaponShop_ConfirmSellWeapon(WeaponShop* p) {
   if (FUN_080b9adc(&p->pair0)) {
     s32 slot = (u8)p->cursor.savedSlot;
