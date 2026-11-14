@@ -3,6 +3,8 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
+#include "random.h"
+#include "save.h"
 #include "sound.h"
 #include "text.h"
 #include "tilemap.h"
@@ -84,7 +86,71 @@ NON_MATCH s32 PasswordScreen_ScrambleChars(PasswordScreen* p) {
 #endif
 }
 
-NAKED s32 PasswordScreen_EncodeBits(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_EncodeBits.inc"); }
+// セーブの記録をビット列にして chars に詰め, 乱数で混ぜてから先頭 16 ビットに CRC-16 の反転を入れる
+// 残差: 243/243 命令, gStat->side を読むときのオフセット 0x2F8 を置く一時レジスタだけ (原典 r2, こちら r1), 他の gStat のメンバは同じ形で揃う, 試済: side を s16 にする, (s32) / (u16) のキャスト
+NON_MATCH s32 PasswordScreen_EncodeBits(PasswordScreen* p) {
+#ifdef NONMATCHING_C
+  s32 bitPos;
+  u8* name;
+  u32 crc;
+  s32 i;
+  u32 j;
+
+  p->unk_1e = 0;
+  p->unk_1c = 1;
+  p->key = Random() & 7;
+  bitPos = 16;
+  PasswordScreen_PutBits(p, 0, &bitPos, 2);
+  PasswordScreen_PutBits(p, p->unk_1c, &bitPos, 3);
+  PasswordScreen_PutBits(p, p->key, &bitPos, 3);
+  PasswordScreen_PutBits(p, gSystemSaveData->prefecture, &bitPos, 6);
+  PasswordScreen_PutBits(p, (s16)gStat->side, &bitPos, 3);
+  PasswordScreen_PutBits(p, (s16)gStat->style, &bitPos, 4);
+  PasswordScreen_PutBits(p, gStat->totalEnemyKillCount >> 3, &bitPos, 8);
+  PasswordScreen_PutBits(p, (s16)gStat->forge, &bitPos, 7);
+  PasswordScreen_PutBits(p, gStat->linkBattleCount, &bitPos, 6);
+  PasswordScreen_PutBits(p, gStat->unk_918 + gStat->unk_91a, &bitPos, 6);
+  PasswordScreen_PutBits(p, (s32)gStat->treeExp >> 12, &bitPos, 10);
+  PasswordScreen_PutBits(p, (s32)gStat->loan_1d4 >> 8, &bitPos, 8);
+  PasswordScreen_PutBits(p, Div(gStat->playTime, 216000), &bitPos, 6);
+  PasswordScreen_PutBits(p, (s16)gStat->titles, &bitPos, 16);
+
+  name = gStat->name;
+  for (i = 0; i < 5; i++) {
+    if (*name == 0) {
+      break;
+    }
+    name++;
+    if (*name == 0) {
+      break;
+    }
+    PasswordScreen_PutBits(p, *name, &bitPos, 8);
+    name++;
+  }
+  for (; i < 5; i++) {
+    PasswordScreen_PutBits(p, 0, &bitPos, 8);
+  }
+  PasswordScreen_PutBits(p, 0, &bitPos, 144 - bitPos);
+  PasswordScreen_ScrambleChars(p);
+
+  crc = 0xFFFF;
+  for (i = 3; i < 24; i++) {
+    crc ^= p->chars[i] << 8;
+    for (j = 0; j < 8; j++) {
+      if (crc & 0x8000) {
+        crc = (crc << 1) ^ 0x1021;
+      } else {
+        crc <<= 1;
+      }
+    }
+  }
+  crc = ~crc & 0xFFFF;
+  bitPos = 0;
+  PasswordScreen_PutBits(p, crc, &bitPos, 16);
+#else
+  INCFUNC("asm/func/PasswordScreen_EncodeBits.inc");
+#endif
+}
 
 // 最初の40フレームは2フレームおきに文字送りの音を鳴らし, 60フレーム目以降は START でスクリプトへ戻る
 s32 PasswordScreen_Update(PasswordScreen* p) {

@@ -198,7 +198,9 @@ typedef struct {
   s16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
   s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数
-  u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
+  s16 unk_918;                   // 0x918, bokpass に記述があるが用途は不明, PasswordScreen_EncodeBits が unk_91a との和をパスワードに入れる
+  s16 unk_91a;                   // 0x91A
+  u8 unk_91c[4];                 // 0x91C
   u32 weaponDex[2];              // 0x920
 
   // これ以降はセーブデータには含まれない(太陽ゲージなどのtmpデータ?)
