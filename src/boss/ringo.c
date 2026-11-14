@@ -3358,7 +3358,7 @@ NON_MATCH void FUN_0802e8d0(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は p と &boss->flags の r4 / r5 が入れ替わるだけ (239/239)
+// 残差は p と &boss->flags の r4 / r5 が入れ替わるだけ (239/239), 試済: Ringo* で受けて Boss* boss = &p->base (p が別のレジスタに移るだけ), 片方の SET_FLAGS を p->base.flags にする (240)
 NON_MATCH void FUN_0802eac0(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
