@@ -238,7 +238,7 @@ _0802EC94:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08028838
+	bl Ringo_SpawnAfterimage
 _0802ECA8:
 	movs r2, #0x84
 	lsls r2, r2, #4

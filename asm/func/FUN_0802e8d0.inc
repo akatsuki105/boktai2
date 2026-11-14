@@ -222,7 +222,7 @@ _0802EA60:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08028838
+	bl Ringo_SpawnAfterimage
 _0802EA9C:
 	mov r3, sb
 	cmp r3, #0xf

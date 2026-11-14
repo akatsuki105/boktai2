@@ -172,10 +172,10 @@ typedef struct {
   u8 unk_8de[0x8E0 - 0x8DE];                  // 0x8DE
   s32 weaponExp;                              // 0x8E0, '.K'
   u16 unk_8e4;                                // 0x8E4
-  u16 unk_8e6;                                // 0x8E6
-  u16 unk_8e8[3];                             // 0x8E8, sprites_8f4 ごとの残りフレーム, 0 になったら隠す
-  u16 unk_8ee[3];                             // 0x8EE, sprites_8f4 ごと, 1 なら unk_868 へ寄せる
-  MainSprite sprites_8f4[3];                  // 0x8F4
+  u16 afterimageIdx;                          // 0x8E6
+  u16 afterimageTimers[3];                    // 0x8E8, afterimages ごとの残りフレーム, 0 になったら隠す
+  u16 unk_8ee[3];                             // 0x8EE, afterimages ごと, 1 なら unk_868 へ寄せる
+  MainSprite afterimages[3];                  // 0x8F4
   s16 unk_a14;                                // 0xA14, 前のフレームの unk_a16
   s16 unk_a16;                                // 0xA16, sprites[0].animCmdIdx の控え
   Vec3 unk_a18;                               // 0xA18
@@ -665,9 +665,9 @@ NON_MATCH void FUN_08028790(Ringo* p, Vec3* pos) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites_8f4[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
-    p->sprites_8f4[i].plttID = 0x4100;
-    p->sprites_8f4[i].pltt = &gObjPlttData[plttID * 16];
+    MainSprite_Add(&p->afterimages[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
+    p->afterimages[i].plttID = 0x4100;
+    p->afterimages[i].pltt = &gObjPlttData[plttID * 16];
   }
 #else
   INCFUNC("asm/func/FUN_08028790.inc");
@@ -678,25 +678,24 @@ void FUN_08028818(Ringo* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Remove(&p->sprites_8f4[i]);
+    MainSprite_Remove(&p->afterimages[i]);
   }
 }
 
-// 残差は plttID を受けるレジスタと gObjPlttData の読み込み位置 (126/126)
-NON_MATCH void FUN_08028838(Ringo* p, s32 kind, u32 duration) {
-#ifdef NONMATCHING_C
+void Ringo_SpawnAfterimage(Ringo* p, s32 kind, u32 duration) {
   u32 plttID;
+  rgb555* pltt;
 
-  p->sprites_8f4[p->unk_8e6].flags &= ~SPRFLAG_HIDDEN;
-  FUN_0822f588(&p->sprites_8f4[p->unk_8e6], &p->sprites[0], 9);
-  if (p->unk_8e6 & 1) {
-    p->sprites_8f4[p->unk_8e6].flags |= SPRFLAG_BLINK_ODD;
+  p->afterimages[p->afterimageIdx].flags &= ~SPRFLAG_HIDDEN;
+  FUN_0822f588(&p->afterimages[p->afterimageIdx], &p->sprites[0], 9);
+  if (p->afterimageIdx & 1) {
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_ODD;
   } else {
-    p->sprites_8f4[p->unk_8e6].flags |= SPRFLAG_BLINK_EVEN;
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_EVEN;
   }
-  p->sprites_8f4[p->unk_8e6].pos = p->sprites[0].pos;
-  p->unk_8ee[p->unk_8e6] = duration;
-  p->unk_8e8[p->unk_8e6] = 12;
+  p->afterimages[p->afterimageIdx].pos = p->sprites[0].pos;
+  p->unk_8ee[p->afterimageIdx] = duration;
+  p->afterimageTimers[p->afterimageIdx] = 12;
   switch (kind) {
     case 1: {
       plttID = 0xC8;
@@ -708,14 +707,12 @@ NON_MATCH void FUN_08028838(Ringo* p, s32 kind, u32 duration) {
       break;
     }
   }
-  p->sprites_8f4[p->unk_8e6].pltt = &gObjPlttData[plttID * 16];
-  if (++p->unk_8e6 > 2) {
-    p->unk_8e6 = 0;
+  pltt = &gObjPlttData[plttID * 16];
+  p->afterimages[p->afterimageIdx].pltt = pltt;
+  if (++p->afterimageIdx > 2) {
+    p->afterimageIdx = 0;
   }
   p->unk_8e4 = 0;
-#else
-  INCFUNC("asm/func/FUN_08028838.inc");
-#endif
 }
 
 // src を dy だけ上下にずらした位置を dst に入れる
@@ -725,12 +722,12 @@ void FUN_08028960(Ringo* p) {
 
   Vec3_CopyOffsetY(&target, &p->unk_868, -0x80);
   for (i = 0; i < 3; i++) {
-    if (p->unk_8e8[i] != 0) {
+    if (p->afterimageTimers[i] != 0) {
       if (p->unk_8ee[i] == 1) {
-        LerpVec3(&p->sprites_8f4[i].pos, &p->sprites_8f4[i].pos, &target, 16, 6);
+        LerpVec3(&p->afterimages[i].pos, &p->afterimages[i].pos, &target, 16, 6);
       }
-      if (--p->unk_8e8[i] == 0) {
-        p->sprites_8f4[i].flags |= SPRFLAG_HIDDEN;
+      if (--p->afterimageTimers[i] == 0) {
+        p->afterimages[i].flags |= SPRFLAG_HIDDEN;
       }
     }
   }
@@ -3317,7 +3314,7 @@ void FUN_0802e6ac(Boss* boss, s32 timer) {
     }
     Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
-      FUN_08028838(p, 0, 0);
+      Ringo_SpawnAfterimage(p, 0, 0);
     }
     if (p->unk_840 < p->unk_842) {
       FUN_08028648(p);
@@ -3354,7 +3351,7 @@ NON_MATCH void FUN_0802e8d0(Boss* boss, s32 timer) {
       mover->pos.y = ofs.y + p->unk_854.y;
       mover->pos.z = ofs.z + p->unk_854.z;
       if (p->unk_8e4 > 3) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       }
     }
     if (timer > 15) {
@@ -3392,7 +3389,7 @@ NON_MATCH void FUN_0802eac0(Boss* boss, s32 timer) {
     }
     Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
-      FUN_08028838(p, 0, 0);
+      Ringo_SpawnAfterimage(p, 0, 0);
     }
     if (p->unk_840 < p->unk_842) {
       FUN_08028648(p);
@@ -3548,9 +3545,9 @@ void FUN_0802f368(Boss* boss, s32 timer) {
     Vec3_SetPolar(&mover->delta, mover->angle, 40);
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     if (timer > 159) {
@@ -3699,9 +3696,9 @@ NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
     }
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     if (timer > 59) {
@@ -3885,7 +3882,7 @@ NON_MATCH void FUN_08030148(Boss* boss, s32 timer) {
         FUN_080286d8(p);
         Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
         if (p->unk_8e4 > 3) {
-          FUN_08028838(p, 0, 0);
+          Ringo_SpawnAfterimage(p, 0, 0);
         }
       } else {
         p->phaseTimer = 0;
@@ -4024,7 +4021,7 @@ NON_MATCH void FUN_08030680(Boss* boss, s32 timer) {
         FUN_080286d8(p);
         Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
         if (p->unk_8e4 > 3) {
-          FUN_08028838(p, 0, 0);
+          Ringo_SpawnAfterimage(p, 0, 0);
         }
       } else {
         Mover* mover = &p->base.mover;
@@ -5189,7 +5186,7 @@ void FUN_080335e8(Boss* boss, s32 timer) {
 
     Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
-      FUN_08028838(p, 0, 0);
+      Ringo_SpawnAfterimage(p, 0, 0);
     }
     target = &p->unk_84c;
     dx = target->x - mover->pos.x;
@@ -5398,9 +5395,9 @@ void FUN_08034014(Boss* boss, s32 timer) {
 
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     target = &p->unk_84c;
@@ -5465,9 +5462,9 @@ void FUN_0803427c(Boss* boss, s32 timer) {
 
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     target = &p->unk_84c;

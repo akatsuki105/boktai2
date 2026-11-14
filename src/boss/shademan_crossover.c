@@ -449,7 +449,7 @@ void ShadeManCrossover_RemoveSprites(ShadeManCrossover* p) {
   }
 }
 
-void FUN_0803c78c(ShadeManCrossover* p, s32 kind, u32 param_3) {
+void ShadeManCrossover_SpawnAfterimage(ShadeManCrossover* p, s32 kind, u32 param_3) {
   u32 plttIdx;
   rgb555* pltt;
 
@@ -1366,9 +1366,9 @@ void FUN_0803e860(Boss* boss, s32 timer) {
     ShadeManCrossover_UpdateUnk160(p, timer);
     if (p->unk_824 > 3) {
       if (p->unk_2b4 == 1 && boss->subState2 == 11) {
-        FUN_0803c78c(p, 1, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 1, 0);
       } else {
-        FUN_0803c78c(p, 0, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 0, 0);
       }
     }
     if (p->unk_288 < p->unk_28a) {
@@ -1442,9 +1442,9 @@ void FUN_0803ebc4(Boss* boss, s32 timer) {
     }
     if (p->unk_824 > 3) {
       if (p->unk_2b4 == 1) {
-        FUN_0803c78c(p, 1, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 1, 0);
       } else {
-        FUN_0803c78c(p, 0, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 0, 0);
       }
     }
     if (timer > 159) {
@@ -1491,9 +1491,9 @@ void FUN_0803ee50(Boss* boss, s32 timer) {
     }
     if (timer < 20 && p->unk_824 > 3) {
       if (p->unk_2b4 == 1) {
-        FUN_0803c78c(p, 1, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 1, 0);
       } else {
-        FUN_0803c78c(p, 0, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 0, 0);
       }
     }
     if (timer > 69) {
