@@ -446,7 +446,7 @@ _0811AE08:
 	str r0, [r1, #8]
 _0811AE12:
 	adds r0, r7, #0
-	bl FUN_080f8ae0
+	bl Golem_ScatterDebris
 	adds r0, r7, #0
 	bl PlayEnemyDeathCry
 _0811AE1E:

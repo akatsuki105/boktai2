@@ -72,7 +72,7 @@ bool8 Enemy_TargetNearestLinkPlayer(Enemy* p);
 // 丸まるアニメの2コマ目で止めて待つ
 void Golem_StateCurledIdle(Golem* p);
 s32 FUN_080f8abc(Enemy* p);
-void FUN_080f8ae0(Enemy* p);
+void Golem_ScatterDebris(Enemy* p);
 void Golem_OnReset(Golem* p);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 void Golem_StateCharge(Golem* p, s32 timer);
@@ -2186,7 +2186,7 @@ NON_MATCH void Golem_StateDying(Golem* p) {
     Enemy_ResetState(&p->e, 1, 0, 2);
     ParticleShadow_Hide(&(p->e).shadow);
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
-    FUN_080f8ae0(&p->e);
+    Golem_ScatterDebris(&p->e);
     PlayEnemyDeathCry(&p->e);
   }
 #else

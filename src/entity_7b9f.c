@@ -84,22 +84,18 @@ void FUN_081d822c(Entity7B9FElem* e) {
   }
 }
 
-// 命令数は一致, 残差は 0xFFFF0000 と 0xFFFF の定数のレジスタの順序だけ
-NON_MATCH void FUN_081d8298(Entity7B9FElem* e) {
-#ifdef NONMATCHING_C
+// 氷の破片のパーティクルを 3〜6 個ばらまく
+void Entity7B9FElem_ScatterIceShards(Entity7B9FElem* e) {
   Vec3 vel;
-  Vec3 accel;
+  Vec3 velRange;
 
-  vel.y = RandomNext() & 7;
   vel.x = -12;
+  vel.y = RandomNext() & 7;
   vel.z = -12;
-  accel.y = (RandomNext() & 7) + 3;
-  accel.x = 24;
-  accel.z = 24;
-  ScatterEffect_Spawn((RandomNext() & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &accel, 60, 63);
-#else
-  INCFUNC("asm/func/FUN_081d8298.inc");
-#endif
+  velRange.x = 24;
+  velRange.y = (RandomNext() & 7) + 3;
+  velRange.z = 24;
+  ScatterEffect_Spawn((RandomNext() & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &velRange, 60, 63);
 }
 
 void nop_081d8368(Entity7B9FElem* e) {}
@@ -165,7 +161,7 @@ void FUN_081d85a8(Entity7B9FElem* e) {
     Hitbox_Register(&e->hitbox);
     AuxSprite_AdvanceAnim(&e->sprite, &e->anim);
     if (e->anim.cmdIdx == 3) {
-      FUN_081d8298(e);
+      Entity7B9FElem_ScatterIceShards(e);
       FUN_081d8560(e);
       FUN_081d822c(e);
       PlaySound_082406e0(SONG_481);

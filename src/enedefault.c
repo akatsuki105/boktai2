@@ -172,7 +172,7 @@ static inline void Enemy_SetSpritePriority(Enemy* p, u8 priority) {
   }
 }
 
-void FUN_080f8ae0(Enemy* p);
+void Golem_ScatterDebris(Enemy* p);
 
 // ENEFLAG_UNK_21 が立っていればそれに付随する印と値を片付け, ENEFLAG_UNK_4 / UNK_7 も落とす
 static inline void Enemy_ClearUnk21Flags(Enemy* p) {
@@ -1854,7 +1854,7 @@ NON_MATCH void FUN_080f410c(Enemy* p) {
     }
     PlayEnemyDeathCry(p);
     if (p->kind == ENEK_GOLEM) {
-      FUN_080f8ae0(p);
+      Golem_ScatterDebris(p);
     }
     if (p->defeatScriptID != 0) {
       u32 argv[8];
@@ -3132,7 +3132,7 @@ s32 FUN_080f8abc(Enemy* p) {
 }
 
 // ゴーレムが倒れたときに破片のパーティクルを 4〜7 個ばらまく
-void FUN_080f8ae0(Enemy* p) {
+void Golem_ScatterDebris(Enemy* p) {
   Vec3 vel;
   Vec3 velRange;
   vel.x = -12;
