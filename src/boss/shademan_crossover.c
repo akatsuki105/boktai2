@@ -348,7 +348,8 @@ void FUN_0803c40c(Vec3* from, Vec3* to, u8* angle, u16* dist) {
   }
 }
 
-void FUN_0803c454(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
+// center から angle の向きに radius だけ離れた位置を dst に入れる
+void ShadeManCrossover_GetPolarPos(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
   Vec3 ofs;
 
   Vec3_SetPolar(&ofs, angle, radius);
@@ -403,7 +404,7 @@ void FUN_0803c5d0(ShadeManCrossover* p) {
   p->unk_270 &= 0xFFFF;
 }
 
-void FUN_0803c660(ShadeManCrossover* p) { FUN_0803c454(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_270), p->unk_27c >> 8); }
+void FUN_0803c660(ShadeManCrossover* p) { ShadeManCrossover_GetPolarPos(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_270), p->unk_27c >> 8); }
 
 // 残差は playerPos の読み方 (39/40), 原典は読んだ値を別のレジスタに写してから使い 0 を r5 に作り直す
 NON_MATCH s32 FUN_0803c6a0(ShadeManCrossover* p, Vec3* min, Vec3* max) {
