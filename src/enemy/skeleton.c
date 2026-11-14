@@ -2726,20 +2726,16 @@ void Skeleton_SetHandlerTable3(Skeleton* p) { (p->e).handlerTables[3] = (void*)P
 
 // 1番の攻撃 (アーチャーは別の状態) を出し, 終わったら次の行動を選ぶ
 // 86/87命令, 原典は 0 を r7 に置いて stateTimer に使い回し, kind の分岐の枝の並びも違う, 試済: 三項演算子 (同じ)
-NON_MATCH void Skeleton_SubMelee(Skeleton* p) {
-#ifdef NONMATCHING_C
+void Skeleton_SubMelee(Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    void* handler;
-
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
     if ((p->e).kind == ENEK_SKELETON_A) {
-      handler = Skeleton_StateArcherMelee;
+      Enemy_EnterState(&p->e, Skeleton_StateArcherMelee, ES_UNK_3);
     } else {
-      handler = Skeleton_StateMelee;
+      Enemy_EnterState(&p->e, Skeleton_StateMelee, ES_UNK_3);
     }
-    Enemy_EnterState(&p->e, handler, ES_UNK_3);
     Skeleton_SetAtkHitbox2Attack(p, 1);
     q->atkCooldown0 = q->atkCooldownInit[0];
   }
@@ -2749,9 +2745,6 @@ NON_MATCH void Skeleton_SubMelee(Skeleton* p) {
   } else {
     (p->e).subStateTimer++;
   }
-#else
-  INCFUNC("asm/func/Skeleton_SubMelee.inc");
-#endif
 }
 
 void Skeleton_SubDashAttack(Skeleton* p) {
