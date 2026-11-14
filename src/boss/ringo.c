@@ -5261,7 +5261,7 @@ void FUN_08033970(Boss* boss, s32 timer) {
   }
 }
 
-// 1 回目で打ち切り (139/145), FUN_08033c60 と同じ 0 : 5 の三項演算子の畳み込みが主
+// 145/145 命令, 残差は timer と mover の r6 / r7 が入れ替わるだけ, mover を p より先に宣言すると割り当ては揃うが p の写しが mover の後ろに回る, 試済: mover を後から代入, mover ローカルなし, ~timer & 3, 分岐の向き
 NON_MATCH void FUN_08033b28(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
