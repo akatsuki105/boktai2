@@ -205,7 +205,7 @@ _08012F68:
 	mov r2, sp
 	bl FUN_08012d00
 	adds r0, r6, #0
-	bl FUN_08012d68
+	bl PasswordScreen_ScrambleChars
 	ldr r2, _08012FD4 @ =0x0000FFFF
 	movs r5, #3
 	mov ip, r7

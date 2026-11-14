@@ -8,10 +8,14 @@
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_11
   u32 timer;                 // 0x018, 毎フレーム +1
-  u8 unk_1c[0x24 - 0x01C];   // 0x01C
+  u16 unk_1c;                // 0x01C
+  u16 unk_1e;                // 0x01E
+  u8 key;                    // 0x020, PasswordScreen_EncodeBits が乱数で 0..7 を入れる, 文字を混ぜる乱数をこの回数 + 4 だけ空回しする
+  u8 unk_21[3];              // 0x021
   u32 rngState;              // 0x024, PasswordScreen_NextRandom が回す線形合同法の状態
   u16 scriptID;              // 0x028, START を押したときに VM_ExecByID する, 実行したら 0 に戻す
-  u8 unk_2a[0x44C - 0x02A];  // 0x02A
+  u8 chars[24];              // 0x02A, パスワードの文字 (6 ビット値), 先頭 4 文字の後ろ 20 文字は乱数で混ぜる
+  u8 unk_42[0x44C - 0x042];  // 0x042
   s32 windowIDs[3];          // 0x44C, TextPanel_Create の戻り値, _Destroy が TextPanel_Destroy に渡す
   u8 unk_458[1120 - 0x458];  // 0x458
 } PasswordScreen;
@@ -30,7 +34,25 @@ s32 PasswordScreen_NextRandom(PasswordScreen* p) {
 
 NAKED s32 FUN_08012d00(PasswordScreen* p, s32 value, s32* bitPos, s32 width) { INCFUNC("asm/func/FUN_08012d00.inc"); }
 
-NAKED s32 FUN_08012d68(PasswordScreen* p) { INCFUNC("asm/func/FUN_08012d68.inc"); }
+// key + 4 回空回しした乱数で, chars の 5 文字目以降の 20 文字を xor して混ぜる
+// 残差: 原典は 2 つ目のループの & 63 の定数をループ内で作るが, こちらはループ外に出して r8 に置く (45/39 命令), 試済: xor の被演算子の順, 文字のポインタ, mask を u32
+NON_MATCH s32 PasswordScreen_ScrambleChars(PasswordScreen* p) {
+#ifdef NONMATCHING_C
+  s32 mask = 0xFFFF;
+  s32 i;
+
+  for (i = 0; i < p->key + 4; i++) {
+    mask ^= PasswordScreen_NextRandom(p);
+  }
+  for (i = 0; i < 20; i++) {
+    p->chars[4 + i] = (p->chars[4 + i] ^ mask) & 63;
+    mask ^= PasswordScreen_NextRandom(p);
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/PasswordScreen_ScrambleChars.inc");
+#endif
+}
 
 NAKED s32 PasswordScreen_EncodeBits(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_EncodeBits.inc"); }
 
