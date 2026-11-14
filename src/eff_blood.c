@@ -175,7 +175,7 @@ void (*const PTR_ARRAY_085ad32c[3])(BloodEmitter*, BloodPtcl*) = {
 
 // 使用中の枠について state ごとの更新関数を呼ぶ
 // 残差2命令 (45/47), 原典はループの前で &activeMask の定数 0x1E0 を判定とは別に作り直すが, こちらは判定で作ったものを使い回す, slots はループ内で &p->slots[i] を取ると原典どおり作り直される
-// 試済: BloodEmitter_IsActive, slots を先頭や if の中のローカルにする形, BeeNest_Update と同じ早めの return
+// 試済: BloodEmitter_IsActive, slots を先頭や if の中のローカルにする形, BeeNest_Update と同じ形 (slots を先頭で取って早めに return, 48/47 命令), BeeNest_Update で作り直しが出るのは 0x57C がプールからの ldr で, 使うたびに読み直されるためで, movs / lsls で作る 0x1E0 は使い回される
 NON_MATCH s32 BloodEmitter_Update(BloodEmitter* p) {
 #ifdef NONMATCHING_C
   if (p->activeMask != 0) {
