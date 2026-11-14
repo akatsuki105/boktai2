@@ -373,8 +373,7 @@ s32 Cmd_AddDoor(void) {
 }
 
 // そのIDの閉じている扉を開き始めさせる
-NON_MATCH void DoorManager_OpenByID(DoorManager* p, u16 id) {
-#ifdef NONMATCHING_C
+void DoorManager_OpenByID(DoorManager* p, u16 id) {
   s32 i;
 
   for (i = 0; i < p->unk_1a; i++) {
@@ -383,13 +382,10 @@ NON_MATCH void DoorManager_OpenByID(DoorManager* p, u16 id) {
     if (door->id == id && (door->phase == 0 || door->phase == 3) && !(door->unk_36 & 1)) {
       door->unk_41 = 1;
       Door_SetPhase(door, 2);
-      door->fn = Door_AnimateWoodOpen;
+      Door_SetFn(door, Door_AnimateWoodOpen);
       Door_SetStep(door, 0);
     }
   }
-#else
-  INCFUNC("asm/func/DoorManager_OpenByID.inc");
-#endif
 }
 
 // 開閉中のそのIDの扉を逆方向に折り返させる
