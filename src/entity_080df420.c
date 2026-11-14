@@ -212,29 +212,21 @@ NON_MATCH void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080
 }
 
 // 攻撃判定と食らい判定を作る
-// 96/98命令, 引数を受けるレジスタだけが違う (原典は elem を r6, power を sl, knockback を r7, attrs を r8 に置く), 試済: ローカルの宣言順, 2つ目の判定を hitbox++ で作る
-NON_MATCH void Entity080df420Elem_InitHitboxes(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) {
-#ifdef NONMATCHING_C
-  HitboxData* hitbox;
+void Entity080df420Elem_InitHitboxes(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) {
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 32, 64, 32);
   VEC3_SET(offset, 0, 0, 0);
-  hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
-  Hitbox_SetHandler(hitbox, Entity080df420Elem_OnHit, elem);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  hitbox = &elem->hurtbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, defPower, defAttrs, defWeakness);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  Hitbox_SetHandler(hitbox, Entity080df420Elem_OnHurt, elem);
-  Hitbox_Register(hitbox);
-#else
-  INCFUNC("asm/func/Entity080df420Elem_InitHitboxes.inc");
-#endif
+  Hitbox_Init(&elem->hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetAttack(&elem->hitbox, power, knockback, 0, attrs, iframes);
+  Hitbox_SetHandler(&elem->hitbox, Entity080df420Elem_OnHit, elem);
+  Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+  Hitbox_Init(&elem->hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_SetPowerAndAttributes(&elem->hurtbox, defPower, defAttrs, defWeakness);
+  Hitbox_SetPos(&elem->hurtbox, &elem->sprite.pos, 0);
+  Hitbox_SetHandler(&elem->hurtbox, Entity080df420Elem_OnHurt, elem);
+  Hitbox_Register(&elem->hurtbox);
 }
 
 // 攻撃判定を出す印が立っていれば判定を表に出して登録し, 立っていなければ隠す
