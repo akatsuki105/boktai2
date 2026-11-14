@@ -428,7 +428,7 @@
 #define BgPlttDimmer_Create 0xA687
 #define Cmd_SetEnemyDexDropItemFlag 0xA76D
 #define Cmd_A7CE 0xA7CE
-#define Cmd_A864 0xA864
+#define Cmd_StartTorture 0xA864
 #define WarpMagicSquare_Create 0xA8F1
 #define Cmd_ClearMapIconFlags 0xA995
 #define Cmd_OtenkoGuideIdle 0xA99F

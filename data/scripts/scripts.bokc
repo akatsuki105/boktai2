@@ -15248,7 +15248,7 @@ Scr_DarkLoanPunishment() {
 			S_UNK_130 = 0;
 			Chara(Cmd_Delay, (u16)0xEC51, .t = (u8)120, .e = {
 				Scr_EndEvent();
-				Command(Cmd_A864);
+				Command(Cmd_StartTorture);
 			});
 		}
 	}

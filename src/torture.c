@@ -10,53 +10,53 @@ typedef void(TortureFunc)(struct Torture*);
 
 // 暗黒ローンのおしおき, 返済できなかったときにボタン連打で返済分を発電させるイベント
 typedef struct Torture {
-  Entity e;                        // 0x000, ENTITY_UNK_8
-  u8 unk_18[0x020 - 0x018];        // 0x018, まだ未解析
-  AuxSprite sprite0;               // 0x020, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx0;               // 0x04C, SPRITE_DARKGENERATOR
-  u8 unk_68[0x06C - 0x068];        // 0x068, まだ未解析
-  AuxSprite sprite1;               // 0x06C, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx1;               // 0x098, SPRITE_DARKGENERATOR
-  u16 unk_b4;                      // 0x0B4
-  u16 unk_b6;                      // 0x0B6, _Init が '.N' から 1/2/3/4 を入れる
-  AuxSprite sprite2;               // 0x0B8
-  AuxSpriteGfx gfx2;               // 0x0E4, SPRITE_DARKGENERATOR
-  AuxSprite mashMeter[7];          // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
-  u8 unk_234[0x250 - 0x234];       // 0x234, まだ未解析
-  AuxSprite bonusSprites[6];       // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
-  AuxSpriteGfx bonusGfx;           // 0x358, SPRITE_PANTHER_BONUS
-  u8 unk_374[0x378 - 0x374];       // 0x374, まだ未解析
-  MainSpriteGfx uiGfx;             // 0x378, SPRITE_UI_START_MENU
-  MainSprite mainSprites[5];       // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
-  u16 unk_578;                     // 0x578, '.p'
-  u16 unk_57a;                     // 0x57A
-  u16 unk_57c;                     // 0x57C, まだ未解析
-  u16 unk_57e;                     // 0x57E, _Init が 0 を入れる
-  u8 unk_580[0x588 - 0x580];       // 0x580, まだ未解析
-  u16 unk_588;                     // 0x588, _Init が 0 を入れる
-  u16 unk_58a;                     // 0x58A, '.t[0]=180'
-  u16 unk_58c;                     // 0x58C, '.t[1]=300'
-  u16 unk_58e;                     // 0x58E
-  u16 unk_590;                     // 0x590
-  u8 unk_592[2];                   // 0x592, まだ未解析
-  u32 unk_594;                     // 0x594
-  u32 unk_598;                     // 0x598
-  u32 unk_59c;                     // 0x59C
-  u32 unk_5a0;                     // 0x5A0
-  u32 unk_5a4;                     // 0x5A4
-  u32 unk_5a8;                     // 0x5A8
-  u32 unk_5ac;                     // 0x5AC
-  u8 unk_5b0[2];                   // 0x5B0, まだ未解析
-  u16 unk_5b2;                     // 0x5B2, '.r=300'
-  u8 unk_5b4[0x5B6 - 0x5B4];       // 0x5B4, まだ未解析
-  u16 stateTimer;                  // 0x5B6
+  Entity e;                     // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x020 - 0x018];     // 0x018, まだ未解析
+  AuxSprite sprite0;            // 0x020, _Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx0;            // 0x04C, SPRITE_DARKGENERATOR
+  u8 unk_68[0x06C - 0x068];     // 0x068, まだ未解析
+  AuxSprite sprite1;            // 0x06C, _Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx1;            // 0x098, SPRITE_DARKGENERATOR
+  u16 unk_b4;                   // 0x0B4
+  u16 unk_b6;                   // 0x0B6, _Init が '.N' から 1/2/3/4 を入れる
+  AuxSprite sprite2;            // 0x0B8
+  AuxSpriteGfx gfx2;            // 0x0E4, SPRITE_DARKGENERATOR
+  AuxSprite mashMeter[7];       // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
+  u8 unk_234[0x250 - 0x234];    // 0x234, まだ未解析
+  AuxSprite bonusSprites[6];    // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
+  AuxSpriteGfx bonusGfx;        // 0x358, SPRITE_PANTHER_BONUS
+  u8 unk_374[0x378 - 0x374];    // 0x374, まだ未解析
+  MainSpriteGfx uiGfx;          // 0x378, SPRITE_UI_START_MENU
+  MainSprite mainSprites[5];    // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
+  u16 unk_578;                  // 0x578, '.p'
+  u16 unk_57a;                  // 0x57A
+  u16 unk_57c;                  // 0x57C, まだ未解析
+  u16 unk_57e;                  // 0x57E, _Init が 0 を入れる
+  u8 unk_580[0x588 - 0x580];    // 0x580, まだ未解析
+  u16 mashFrames;               // 0x588, 連打数が 3 を超えているフレームが続いた数, 3 以下で 0 に戻る
+  u16 rate2Frames;              // 0x58A, '.t[0]=180', mashFrames がこれを超えると Torture_GetMashRate が 2
+  u16 rate5Frames;              // 0x58C, '.t[1]=300', mashFrames がこれを超えると 5
+  u16 rate10Frames;             // 0x58E, mashFrames がこれを超えると 10
+  u16 unk_590;                  // 0x590
+  u8 unk_592[2];                // 0x592, まだ未解析
+  u32 unk_594;                  // 0x594
+  u32 unk_598;                  // 0x598
+  u32 unk_59c;                  // 0x59C
+  u32 unk_5a0;                  // 0x5A0
+  u32 unk_5a4;                  // 0x5A4
+  u32 unk_5a8;                  // 0x5A8
+  u32 unk_5ac;                  // 0x5AC
+  u8 unk_5b0[2];                // 0x5B0, まだ未解析
+  u16 unk_5b2;                  // 0x5B2, '.r=300'
+  u8 unk_5b4[0x5B6 - 0x5B4];    // 0x5B4, まだ未解析
+  u16 stateTimer;               // 0x5B6
   TortureFunc* updateCallback;  // 0x5B8
 } Torture;
 static_assert(sizeof(Torture) == 1468);
 
 IWRAM_DATA Torture* gTorture = NULL;  // 0x03000158
 
-void FUN_080bfa50(void) { gTorture = NULL; }
+void Torture_ClearInstance(void) { gTorture = NULL; }
 
 void Torture_SetState(Torture* p, TortureFunc* fn) {
   p->updateCallback = fn;
@@ -64,7 +64,7 @@ void Torture_SetState(Torture* p, TortureFunc* fn) {
 }
 
 // プレイヤー1の連打の履歴を空にする
-void FUN_080bfa74(void) {
+void Torture_ResetMash(void) {
   s32 i;
 
   for (i = 0; i < 32; i++) {
@@ -107,7 +107,7 @@ void Torture_DrawDebts(Torture* p) {
   }
 }
 
-void FUN_080bfce4(Torture* p) {
+void Torture_ShowMainSprites(Torture* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
@@ -115,7 +115,7 @@ void FUN_080bfce4(Torture* p) {
   }
 }
 
-void FUN_080bfd04(Torture* p) {
+void Torture_HideMainSprites(Torture* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
@@ -123,23 +123,23 @@ void FUN_080bfd04(Torture* p) {
   }
 }
 
-void FUN_080bfd24(Torture* p) {
+void Torture_CountMashFrames(Torture* p) {
   if (gPlayerPtr[0]->mashHits > 3) {
-    p->unk_588++;
+    p->mashFrames++;
   } else {
-    p->unk_588 = 0;
+    p->mashFrames = 0;
   }
 }
 
-// unk_588 がどの区間にあるかを 10 / 5 / 1 / 2 で返す
-s32 FUN_080bfd5c(Torture* p) {
-  if (p->unk_588 > p->unk_58e) {
+// mashFrames がどの区間にあるかを 10 / 5 / 1 / 2 で返す
+s32 Torture_GetMashRate(Torture* p) {
+  if (p->mashFrames > p->rate10Frames) {
     return 10;
   }
-  if (p->unk_588 > p->unk_58c) {
+  if (p->mashFrames > p->rate5Frames) {
     return 5;
   }
-  if (p->unk_588 > p->unk_58a) {
+  if (p->mashFrames > p->rate2Frames) {
     return 2;
   }
   return 1;
@@ -149,7 +149,7 @@ NAKED void FUN_080bfdac(Torture* p) { INCFUNC("asm/func/FUN_080bfdac.inc"); }
 
 NAKED void FUN_080bfe50(Torture* p) { INCFUNC("asm/func/FUN_080bfe50.inc"); }
 
-void FUN_080bfef8(Torture* p) {
+void Torture_HideBonusSprites(Torture* p) {
   s32 i;
 
   for (i = 0; i < 6; i++) {
@@ -185,7 +185,7 @@ NON_MATCH void Torture_UpdateMashMeter(Torture* p) {
 #endif
 }
 
-void FUN_080bff78(Torture* p) {
+void Torture_ShowMashMeter(Torture* p) {
   s32 i;
 
   for (i = 0; i < 7; i++) {
@@ -193,7 +193,7 @@ void FUN_080bff78(Torture* p) {
   }
 }
 
-void FUN_080bff98(Torture* p) {
+void Torture_HideMashMeter(Torture* p) {
   s32 i;
 
   for (i = 0; i < 7; i++) {
@@ -201,22 +201,22 @@ void FUN_080bff98(Torture* p) {
   }
 }
 
-void FUN_080bffb8(Torture* p) {
-  FUN_080bfce4(p);
-  FUN_080bff78(p);
+void Torture_ShowHud(Torture* p) {
+  Torture_ShowMainSprites(p);
+  Torture_ShowMashMeter(p);
 }
 
-void FUN_080bffcc(Torture* p) {
-  FUN_080bfd04(p);
-  FUN_080bfef8(p);
-  FUN_080bff98(p);
+void Torture_HideHud(Torture* p) {
+  Torture_HideMainSprites(p);
+  Torture_HideBonusSprites(p);
+  Torture_HideMashMeter(p);
 }
 
 void FUN_080c0248(Torture* p);
 
-void FUN_080bffe8(Torture* p) {
+void Torture_Start(Torture* p) {
   FUN_080bfaac(p);
-  FUN_080bffb8(p);
+  Torture_ShowHud(p);
   p->unk_57a = 0x20;
   Torture_SetState(p, FUN_080c0248);
 }
@@ -247,12 +247,12 @@ void FUN_080c0058(Torture* p) {
 
 void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
 
-// プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
-void Cmd_A864(void) {
+// プレイヤーを決まった座標へ戻してから Torture_Start を予約する
+void Cmd_StartTorture(void) {
   Torture* p = gTorture;
 
   if (p != NULL) {
-    EntityCF58_CreateWithCallback(0, 0, FUN_080bffe8, p);
+    EntityCF58_CreateWithCallback(0, 0, Torture_Start, p);
     Player_Lock(gPlayerPtr[0], DIR8_UP_LEFT);
     VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
   }
@@ -260,13 +260,13 @@ void Cmd_A864(void) {
 
 NAKED s32 FUN_080c00d4(Torture* p) { INCFUNC("asm/func/FUN_080c00d4.inc"); }
 
-void FUN_080c01a8(void) {}
+void Torture_UpdateDone(void) {}
 
-NAKED void FUN_080c01ac(Torture* p, s32 param_2) { INCFUNC("asm/func/FUN_080c01ac.inc"); }
+NAKED void Torture_Finish(Torture* p, s32 param_2) { INCFUNC("asm/func/Torture_Finish.inc"); }
 
 NAKED void FUN_080c0248(Torture* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
 
-void FUN_080c04d8(Torture* p) {
+void Torture_UpdateScreenBlend(Torture* p) {
   Player* q = gPlayerPtr[0];
 
   if (q->mashHits <= 3) {
@@ -282,7 +282,7 @@ void FUN_080c04d8(Torture* p) {
 s32 Torture_Update(Torture* p) {
   p->updateCallback(p);
   FUN_080bfb74(p);
-  FUN_080c04d8(p);
+  Torture_UpdateScreenBlend(p);
   return 0;
 }
 

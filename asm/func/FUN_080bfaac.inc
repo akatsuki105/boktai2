@@ -41,7 +41,7 @@
 	adds r1, #1
 	adds r0, r0, r1
 	strb r4, [r0]
-	bl FUN_080bfa74
+	bl Torture_ResetMash
 	ldr r0, [r6]
 	ldr r1, _080BFB30 @ =0x0000042C
 	adds r0, r0, r1

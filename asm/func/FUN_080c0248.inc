@@ -85,7 +85,7 @@ _080C02B2:
 	movs r0, #0x80
 	lsls r0, r0, #1
 	bl Sound_SetBGMTempo
-	bl FUN_080bfa74
+	bl Torture_ResetMash
 	b _080C03C8
 	.align 2, 0
 _080C030C: .4byte 0x000003FF
@@ -98,7 +98,7 @@ _080C0324: .4byte 0x0000023D
 _080C0328: .4byte 0x0000057C
 _080C032C:
 	adds r0, r6, #0
-	bl FUN_080bfd24
+	bl Torture_CountMashFrames
 	adds r0, r6, #0
 	bl FUN_080c00d4
 	adds r4, r0, #0
@@ -123,7 +123,7 @@ _080C032C:
 	bne _080C03C8
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080c01ac
+	bl Torture_Finish
 	b _080C03C8
 	.align 2, 0
 _080C036C: .4byte 0x0000059C
@@ -147,7 +147,7 @@ _080C0378:
 	blt _080C03A4
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_080c01ac
+	bl Torture_Finish
 	b _080C03C8
 	.align 2, 0
 _080C03A0: .4byte 0x00000594

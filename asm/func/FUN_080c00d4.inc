@@ -26,7 +26,7 @@ _080C00FC:
 	asrs r7, r0, #1
 _080C0106:
 	adds r0, r4, #0
-	bl FUN_080bfd5c
+	bl Torture_GetMashRate
 	adds r5, r0, #0
 	movs r2, #0xb2
 	lsls r2, r2, #3

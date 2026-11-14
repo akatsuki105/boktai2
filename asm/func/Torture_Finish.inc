@@ -8,7 +8,7 @@
 	adds r0, r0, r1
 	movs r4, #0
 	str r4, [r0]
-	bl FUN_080bfa74
+	bl Torture_ResetMash
 	movs r0, #0xb2
 	lsls r0, r0, #3
 	adds r1, r7, r0
@@ -25,7 +25,7 @@
 	movs r0, #8
 	bl FUN_0823bca8
 	adds r0, r7, #0
-	bl FUN_080bffcc
+	bl Torture_HideHud
 	ldr r2, _080C021C @ =0x03002BE0
 	ldr r0, [r2]
 	movs r1, #2
@@ -57,7 +57,7 @@ _080C0224:
 	adds r3, r7, #0
 	bl EntityCF58_CreateWithCallback
 _080C0230:
-	ldr r1, _080C0244 @ =FUN_080c01a8
+	ldr r1, _080C0244 @ =Torture_UpdateDone
 	adds r0, r7, #0
 	bl Torture_SetState
 	pop {r4, r5, r6, r7}
@@ -65,4 +65,4 @@ _080C0230:
 	bx r0
 	.align 2, 0
 _080C0240: .4byte FUN_080c0058
-_080C0244: .4byte FUN_080c01a8
+_080C0244: .4byte Torture_UpdateDone

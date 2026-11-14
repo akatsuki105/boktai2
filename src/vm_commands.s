@@ -431,7 +431,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, Cmd_SetEnemyDexDropItemFlag
 	.4byte 0xA7CE, Cmd_A7CE
-	.4byte 0xA864, Cmd_A864
+	.4byte 0xA864, Cmd_StartTorture
 	.4byte 0xA8F1, WarpMagicSquare_Create @ HashName("ワープ魔方陣")
 	.4byte 0xA995, Cmd_ClearMapIconFlags
 	.4byte 0xA99F, Cmd_OtenkoGuideIdle

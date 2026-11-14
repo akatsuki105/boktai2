@@ -134,7 +134,7 @@ _080C08E6:
 	bl FUN_080c05cc
 	adds r0, r7, #0
 	bl Torture_DrawDebts
-	ldr r1, _080C0964 @ =FUN_080c01a8
+	ldr r1, _080C0964 @ =Torture_UpdateDone
 	adds r0, r7, #0
 	bl Torture_SetState
 	adds r0, r7, #0
@@ -142,7 +142,7 @@ _080C08E6:
 	adds r0, r7, #0
 	bl Torture_InitBonusSprites
 	adds r0, r7, #0
-	bl FUN_080bffcc
+	bl Torture_HideHud
 	movs r0, #0x72
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -154,7 +154,7 @@ _080C08E6:
 	.align 2, 0
 _080C095C: .4byte 0x0000C046
 _080C0960: .4byte 0xFFFFFD00
-_080C0964: .4byte FUN_080c01a8
+_080C0964: .4byte Torture_UpdateDone
 _080C0968: .4byte 0x000005B2
 _080C096C:
 	ldr r0, _080C09A0 @ =0x000005B2
