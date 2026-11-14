@@ -146,7 +146,7 @@ NAKED void FUN_080ad2d0(PileDriver* p, s32* param_2, SpriteFlags* param_3, u8 pa
 
 // PileDriver が 0x0C6C から15件持つ枠
 typedef struct {
-  AuxSprite spr;          // 0x00, FUN_080b0ab4 が AuxSprite_Remove に渡す
+  AuxSprite spr;          // 0x00, PileDriver_RemoveSprites が AuxSprite_Remove に渡す
   u8 unk_2c[104 - 0x2C];  // 0x2C, まだ未解析
 } PileDriverSprite104;
 static_assert(sizeof(PileDriverSprite104) == 104);
@@ -450,33 +450,20 @@ NAKED void FUN_080af0f8(PileDriver* p) { INCFUNC("asm/func/FUN_080af0f8.inc"); }
 NAKED void FUN_080af200(PileDriver* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080af200.inc"); }
 
 // 15枚をまとめて隠す
-// 残差2命令ぶんの位置ずれ (32 対 32), 原典はループ不変の 1 を elem の初期化より前に作る
-// 直接代入 / AuxSprite_Hide / AuxSprite_SetFlags / 添字形 / 宣言順の入れ替えはいずれも同じ並び
-NON_MATCH void FUN_080af2f4(PileDriverSprite104* elems) {
-#ifdef NONMATCHING_C
+void PileDriver_HideSprites(PileDriverSprite104* elems) {
   s32 i;
-  PileDriverSprite104* elem;
 
-  elems->spr.flags |= SPRFLAG_HIDDEN;
-
-  elem = &elems[1];
+  elems[0].spr.flags |= SPRFLAG_HIDDEN;
   for (i = 0; i < 8; i++) {
-    elem->spr.flags |= SPRFLAG_HIDDEN;
-    elem++;
+    elems[1 + i].spr.flags |= SPRFLAG_HIDDEN;
   }
-
-  elem = &elems[9];
   for (i = 0; i < 6; i++) {
-    elem->spr.flags |= SPRFLAG_HIDDEN;
-    elem++;
+    elems[9 + i].spr.flags |= SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_080af2f4.inc");
-#endif
 }
 
 // 15枚をまとめて出す
-// 残差は2つめのループだけ (32 対 32), 原典は ~1 を base より先に作る, FUN_080af2f4 と同じ形
+// 残差は2つめのループだけ (32 対 32), 原典は ~1 を base より先に作る, PileDriver_HideSprites と同じ形
 NON_MATCH void FUN_080af334(PileDriverSprite104* elems) {
 #ifdef NONMATCHING_C
   s32 i;
@@ -563,7 +550,7 @@ NAKED void FUN_080b087c(PileDriver* p, s32 param_2) { INCFUNC("asm/func/FUN_080b
 
 NAKED void FUN_080b09d4(PileDriver* p) { INCFUNC("asm/func/FUN_080b09d4.inc"); }
 
-void FUN_080b0ab4(PileDriverSprite104* elems) {
+void PileDriver_RemoveSprites(PileDriverSprite104* elems) {
   PileDriverSprite104* elem;
   s32 i;
 
@@ -874,7 +861,7 @@ s32 PileDriver_Destroy(PileDriver* p) {
       AuxSprite_Remove(&p->sprite_254.spr);
     }
   } else {
-    FUN_080b0ab4((PileDriverSprite104*)p->unk_c6c);
+    PileDriver_RemoveSprites((PileDriverSprite104*)p->unk_c6c);
     AuxSprite_Remove(&p->sprite_518);
     SetBGPrioDirect(1, 1);
   }

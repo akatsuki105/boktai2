@@ -50,7 +50,7 @@ _080AF3C2:
 	cmp r0, #0
 	bne _080AF3F4
 	adds r0, r4, #0
-	bl FUN_080af2f4
+	bl PileDriver_HideSprites
 	b _080AF3FA
 	.align 2, 0
 _080AF3E0: .4byte 0x0000061A
