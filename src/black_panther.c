@@ -295,33 +295,25 @@ void BlackPanther_ClearGlobal(void) { sBlackPanther = NULL; }
 
 NAKED void BlackPantherElem_ShowEmote(BlackPantherElem* elem, u32 kind, s32 param_3, s32 param_4) { INCFUNC("asm/func/BlackPantherElem_ShowEmote.inc"); }
 
-// 残差3箇所 (44/44): 原典は dir4 > DIR4_EAST の枝を先に置く
-// Tier A/B は試済 (sprite ローカル, 比較の書き方), 未: if の条件を反転して枝の順を入れ替える
-NON_MATCH s32 BlackPantherElem_SetAnimMode2(BlackPantherElem* elem, s32 pose, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
-#ifdef NONMATCHING_C
+// dir4 から左右反転と向きの番号を作ってアニメを設定する (actor.c の FUN_0804135c と同じ)
+s32 BlackPantherElem_SetAnimMode2(BlackPantherElem* elem, s32 pose, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
   SpriteHolder* sprite = &elem->sprite;
   u32 variant;
   u32 xflip;
 
-  if (elem->sprite.kind == 1) {
-    if (elem->dir4 < DIR4_SOUTH) {
-      variant = elem->dir4;
-      xflip = FALSE;
-    } else {
+  if (sprite->kind == 1) {
+    if (elem->dir4 > DIR4_EAST) {
       variant = 3 - elem->dir4;
       xflip = TRUE;
+    } else {
+      variant = elem->dir4;
+      xflip = FALSE;
     }
   } else {
-    variant = 0;
-    if (elem->dir4 == DIR4_EAST || elem->dir4 == DIR4_SOUTH) {
-      variant = param_4;
-    }
+    variant = (elem->dir4 == DIR4_EAST || elem->dir4 == DIR4_SOUTH) ? param_4 : 0;
     xflip = elem->dir4 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(sprite, pose, variant, xflip, param_3, param_5, param_6);
-#else
-  INCFUNC("asm/func/BlackPantherElem_SetAnimMode2.inc");
-#endif
 }
 
 // 残差11箇所 (34/33): 原典は sprite を先に r4 へ作り, 2 つの枝の両方で xflip の比較を持って末尾の代入を共有する
