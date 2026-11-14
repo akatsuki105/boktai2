@@ -126,10 +126,10 @@ typedef struct {
   u16 cameraDist;                         // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
   u16 unk_822;                            // 0x822
   u16 unk_824;                            // 0x824
-  u16 spriteIdx;                          // 0x826, 次に使う sprites_834 の番号, 0..2 を回す
-  u16 spriteTimers[3];                    // 0x828, 0 になった瞬間 sprites_834 の同じ番号を隠す
+  u16 afterimageIdx;                      // 0x826, 次に使う afterimages の番号, 0..2 を回す
+  u16 afterimageTimers[3];                // 0x828, 0 になった瞬間 afterimages の同じ番号を隠す
   u16 unk_82e[3];                         // 0x82E
-  MainSprite sprites_834[3];              // 0x834
+  MainSprite afterimages[3];              // 0x834
   struct Entity0805e67c* entity0805e67c;  // 0x954
   struct Entity0805ee80* entity0805ee80;  // 0x958
 } ShadeManCrossover;
@@ -436,10 +436,10 @@ void ShadeManCrossover_AddAfterimages(ShadeManCrossover* p, Vec3* pos) {
   for (i = 0; i < 3; i++) {
     rgb555* pltt;
 
-    MainSprite_Add(&p->sprites_834[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
-    p->sprites_834[i].plttID = 0x4300;
+    MainSprite_Add(&p->afterimages[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
+    p->afterimages[i].plttID = 0x4300;
     pltt = &gObjPlttData[plttIdx * 16];
-    p->sprites_834[i].pltt = pltt;
+    p->afterimages[i].pltt = pltt;
   }
 }
 
@@ -447,7 +447,7 @@ void ShadeManCrossover_RemoveSprites(ShadeManCrossover* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Remove(&p->sprites_834[i]);
+    MainSprite_Remove(&p->afterimages[i]);
   }
 }
 
@@ -455,16 +455,16 @@ void ShadeManCrossover_SpawnAfterimage(ShadeManCrossover* p, s32 kind, u32 param
   u32 plttIdx;
   rgb555* pltt;
 
-  p->sprites_834[p->spriteIdx].flags &= ~SPRFLAG_HIDDEN;
-  FUN_0822f588(&p->sprites_834[p->spriteIdx], &p->sprite, 9);
-  if (p->spriteIdx & 1) {
-    p->sprites_834[p->spriteIdx].flags |= SPRFLAG_BLINK_ODD;
+  p->afterimages[p->afterimageIdx].flags &= ~SPRFLAG_HIDDEN;
+  FUN_0822f588(&p->afterimages[p->afterimageIdx], &p->sprite, 9);
+  if (p->afterimageIdx & 1) {
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_ODD;
   } else {
-    p->sprites_834[p->spriteIdx].flags |= SPRFLAG_BLINK_EVEN;
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_EVEN;
   }
-  p->sprites_834[p->spriteIdx].pos = p->sprite.pos;
-  p->unk_82e[p->spriteIdx] = param_3;
-  p->spriteTimers[p->spriteIdx] = 12;
+  p->afterimages[p->afterimageIdx].pos = p->sprite.pos;
+  p->unk_82e[p->afterimageIdx] = param_3;
+  p->afterimageTimers[p->afterimageIdx] = 12;
   switch (kind) {
     case 1: {
       plttIdx = 11;
@@ -477,9 +477,9 @@ void ShadeManCrossover_SpawnAfterimage(ShadeManCrossover* p, s32 kind, u32 param
     }
   }
   pltt = &gObjPlttData[plttIdx * 16];
-  p->sprites_834[p->spriteIdx].pltt = pltt;
-  if (++p->spriteIdx > 2) {
-    p->spriteIdx = 0;
+  p->afterimages[p->afterimageIdx].pltt = pltt;
+  if (++p->afterimageIdx > 2) {
+    p->afterimageIdx = 0;
   }
   p->unk_824 = 0;
 }
@@ -488,10 +488,10 @@ void FUN_0803c8b4(ShadeManCrossover* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    if (p->spriteTimers[i] != 0) {
-      p->spriteTimers[i]--;
-      if (p->spriteTimers[i] == 0) {
-        p->sprites_834[i].flags |= SPRFLAG_HIDDEN;
+    if (p->afterimageTimers[i] != 0) {
+      p->afterimageTimers[i]--;
+      if (p->afterimageTimers[i] == 0) {
+        p->afterimages[i].flags |= SPRFLAG_HIDDEN;
       }
     }
   }
