@@ -52,12 +52,8 @@ typedef struct Entity080aace8 {
 static_assert(sizeof(Entity080aace8) == 848);
 
 // 1枠を1フレーム進める, 16フレームで消える
-// 残差1命令 (41/42) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
-// src/solar_barrier.c の SolarBarrierPtcl_Update が同じ現象
-NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
-#ifdef NONMATCHING_C
-  q->timer++;
-  if (q->timer > 15) {
+void FUN_080aa08c(Entity080aace8Particle* q) {
+  if (++q->timer > 15) {
     q->ptcl.flags |= SPRFLAG_HIDDEN;
     q->active = 0;
   } else {
@@ -68,9 +64,6 @@ NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
       q->velY++;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080aa08c.inc");
-#endif
 }
 
 // 8枠を spritePos から放射状に飛ばす

@@ -298,10 +298,12 @@ void FUN_080b4f48(DarkLoans* p) {
   }
 }
 
-// 残差1命令 (19/18): agbcc は3ケースの switch を必ず中央 (case 2) 根で木にするが, 原典は case 1 根の一直線な木になる
-NON_MATCH s32 FUN_080b4ffc(s32 val) {
-#ifdef NONMATCHING_C
+// 太陽スタンドのアニメのタイマーから 0, 1, 2, 1 のコマを返す (menu.c の GetLoanStandFrame と同じ)
+s32 DarkLoans_GetStandFrame(s32 val) {
   switch (val >> 2) {
+    case 0: {
+      return 0;
+    }
     case 1: {
       return 1;
     }
@@ -313,9 +315,6 @@ NON_MATCH s32 FUN_080b4ffc(s32 val) {
     }
   }
   return 0;
-#else
-  INCFUNC("asm/func/FUN_080b4ffc.inc");
-#endif
 }
 
 // 借りる額を選ぶ入力待ち, A で借りて ENE と借金を増やす, 左右で額を増減, 返済額が 10000 を超えるなら警告を出す
@@ -356,7 +355,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     FUN_080b4a50(p);
     dark_loans_080b48c8(p);
     p->unk_840 = 19;
-    blink = FUN_080b4ffc(p->unk_83e);
+    blink = DarkLoans_GetStandFrame(p->unk_83e);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, p->unk_840 + blink, PLAYMODE_LOOP);
     Video_SetAuxSpritePltt(&p->auxGfx, blink + 323);
     if (++p->unk_83e > 15) {
@@ -369,7 +368,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     FUN_080b4a50(p);
     dark_loans_080b48c8(p);
     p->unk_840 = 22;
-    blink = FUN_080b4ffc(p->unk_83e);
+    blink = DarkLoans_GetStandFrame(p->unk_83e);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, p->unk_840 + blink, PLAYMODE_LOOP);
     Video_SetAuxSpritePltt(&p->auxGfx, blink + 323);
     if (++p->unk_83e > 15) {
@@ -382,7 +381,7 @@ NON_MATCH void dark_loans_080b5020(DarkLoans* p) {
     Video_SetAuxSpritePltt(&p->auxGfx, 323);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, 18, PLAYMODE_LOOP);
   } else {
-    blink = FUN_080b4ffc(p->unk_83e);
+    blink = DarkLoans_GetStandFrame(p->unk_83e);
     MainSprite_SetPose(&p->sprites[5], &p->gfx0, p->unk_840 + blink, PLAYMODE_LOOP);
     Video_SetAuxSpritePltt(&p->auxGfx, blink + 323);
     if (++p->unk_83e > 15) {
