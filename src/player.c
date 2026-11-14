@@ -10865,7 +10865,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
 }
 
 // サバタ版の制限時間つき暗黒チャージ (lockedUpdate), 日光を浴びずにいると timedCharge が 4 ずつ貯まり timedChargeGoal に届けば doneScriptID を引数 1 で, 時間切れなら引数 0 で実行する
-// 残差 418 対 426 命令, 原典は 0 / 1 / 0xFFFF を r5 / r6 / r7 / r2 に持って複数の case で使い回し, timedCharge の比較を ands 0xFFFF で切るが, こちらはレジスタの持ち方が違い case 1 と case 3 の末尾が深く合流し plttFlashTimer の格納先も共有される, 兄弟の Player_UpdateTimedSolarCharge は一致済み
+// 残差 418 対 426 命令, 原典は 0 / 1 / 0xFFFF を r5 / r6 / r7 / r2 に持って複数の case で使い回し, timedCharge の比較を ands 0xFFFF で切るが, こちらはレジスタの持ち方が違い case 1 と case 3 の末尾が深く合流し plttFlashTimer の格納先も共有される, 兄弟の Player_UpdateTimedSolarCharge は一致済み, 試済: 状態5への移行を Player_SetAction にする (原典は呼ばない)
 NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
 #ifdef NONMATCHING_C
   Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
