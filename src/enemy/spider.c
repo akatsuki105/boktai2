@@ -433,7 +433,7 @@ void Spider_StateDamaged(Spider* p, s32 timer) {
 }
 
 // 倒されたときの状態, 粒子を散らしながら点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
-// 228/228命令, flags の検査を Enemy_TestFlag にし, 消えきった後は影を触らず return すると割り当て以外は揃う, 残差は入場時の乱数とフィールド格納のアドレス用の一時レジスタ番号 (r1/r3/r6 と原典 r3/r6/r0), 試済: Random() & 0xFF, 片方だけ TEST_FLAGS, 入場の3行の inline
+// 228/228命令, flags の検査を Enemy_TestFlag にし, 消えきった後は影を触らず return すると割り当て以外は揃う, 残差は入場時の乱数とフィールド格納のアドレス用の一時レジスタ番号 (r1/r3/r6 と原典 r3/r6/r0), 試済: Random() & 0xFF, 片方だけ TEST_FLAGS, 入場の3行の inline, 乱数を引数で渡す inline (u8 / s32), idx を関数先頭で宣言, Slime_StateDying と同形
 NON_MATCH void Spider_StateDying(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
