@@ -473,20 +473,14 @@ void FUN_080815ac(Player* p) {
 }
 
 // flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
-// 残差は23/23命令で共有された return pose のブロック位置だけ (player.c の Player_ApplyFlashPose と同じ), 分岐形の反転は試済
-NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
-#ifdef NONMATCHING_C
-  if (p->flashTimer != 0) {
-    p->flashTimer--;
-    if ((p->flashTimer >> 2) & 1) {
-      return p->flashPose;
-    }
+u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
+  if (p->flashTimer == 0) {
+    return pose;
+  } else if ((--p->flashTimer >> 2) & 1) {
+    return p->flashPose;
+  } else {
+    return pose;
   }
-
-  return pose;
-#else
-  INCFUNC("asm/func/LinkPlayer_ApplyFlashPose.inc");
-#endif
 }
 
 // 点滅ポーズを反映してから、影の位置をスプライト位置+オフセットで作り直す
