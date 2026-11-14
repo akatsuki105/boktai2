@@ -22,8 +22,8 @@ u32 FUN_08011110(PasswordDecoder* p) {
 }
 
 // 乱数を unk_88 + 4 回空回ししてから, decoded の後半20文字を乱数列で XOR して解く
-// 残差6命令 (44 対 38), gcc は 0x3F をループ外へ出して r8 まで使い出すが, 原典は毎回 movs で作り直す
-// 添字形 / ポインタ形 / % 64 のいずれでも同じく巻き上げられる
+// 残差6命令 (44 対 38), gcc は 0x3F をループ外へ出して r8 まで使い出すが, 原典は毎回 movs で作り直す, PasswordScreen_ScrambleChars と同じ壁
+// 添字形 / ポインタ形 / % 64 は試済, xor の結果を u8 のローカルに受けると巻き上げは止まるが u8 への切り詰め (lsl/lsr) が残る, u32 のローカルでは巻き上がる
 NON_MATCH s32 FUN_08011124(PasswordDecoder* p) {
 #ifdef NONMATCHING_C
   u32 acc = 0xFFFF;
