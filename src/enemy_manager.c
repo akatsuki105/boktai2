@@ -534,7 +534,7 @@ s32 Enemy_CountByKind(u32 kind) {
 }
 
 // 指定した種族と variant の生きている敵の数を数える
-// 46/46 命令, variant の読み出しで add r7, #0x63 にならない
+// 46/46 命令, kind の番地を flags2 の番地 (r7) + 0x63 で作らずプールから読む, 双子の Enemy_CountByKind は 0x1DF をループ外に出せている, 試済: Enemy_CountByKind と同形, variant の判定を別の if にする, (u8) / (u16) で比べる (50)
 NON_MATCH s32 Enemy_CountByKindVariant(u32 kind, u32 variant) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
