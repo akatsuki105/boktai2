@@ -12,7 +12,7 @@ typedef struct Flamethrower {
   Mover unk_60;       // 0x060, flags の bit0 が立っていれば _Destroy が FUN_08002a58 に、その後 Mover_Unlink に渡す
   AuxSprite unk_a4;   // 0x0A4, unk_60 に Mover_SetAuxSprite で繋ぐ
   Vec3 hitboxPos;     // 0x0D0, Hitbox_SetPos に渡す位置
-  HitboxData hitbox;  // 0x0D8, FUN_081eaa10 が unk_128 が 1 のときだけ登録する
+  Hitbox hitbox;      // 0x0D8, FUN_081eaa10 が unk_128 が 1 のときだけ登録する
   s16 unk_128;        // 0x128, 1 のときだけヒットボックスを登録する
   s16 unk_12a;        // 0x12A
   s16 unk_12c;        // 0x12C

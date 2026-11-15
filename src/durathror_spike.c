@@ -9,10 +9,10 @@
 
 // 棘1発
 typedef struct {
-  u32 timer;          // 0x00, 出してからのフレーム数, 60 に達すると消える, 当たったときも 60 にして消す
-  Vec3 vel;           // 0x04, 1フレームに sprite.pos へ足す量, y は常に 0
-  AuxSprite sprite;   // 0x0C, pos が弾の座標, poseIdx は進む向きで 4..12, 残りの向きは左右反転で表す
-  HitboxData hitbox;  // 0x38
+  u32 timer;         // 0x00, 出してからのフレーム数, 60 に達すると消える, 当たったときも 60 にして消す
+  Vec3 vel;          // 0x04, 1フレームに sprite.pos へ足す量, y は常に 0
+  AuxSprite sprite;  // 0x0C, pos が弾の座標, poseIdx は進む向きで 4..12, 残りの向きは左右反転で表す
+  Hitbox hitbox;     // 0x38
 } Entity0805d79cElem;
 static_assert(sizeof(Entity0805d79cElem) == 136);
 
@@ -26,10 +26,10 @@ typedef struct Entity0805d79c {
 static_assert(sizeof(Entity0805d79c) == 4408);
 
 // 当たったら寿命を尽きさせて消す
-void Entity0805d79c_OnHit(HitboxData* a, HitboxData* b, Entity0805d79cElem* elem) { elem->timer = 60; }
+void Entity0805d79c_OnHit(Hitbox* a, Hitbox* b, Entity0805d79cElem* elem) { elem->timer = 60; }
 
 void Entity0805d79c_InitElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 idx) {
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
@@ -39,7 +39,7 @@ void Entity0805d79c_InitElem(Entity0805d79c* p, Entity0805d79cElem* elem, s32 id
   hitbox = &elem->hitbox;
   VEC3_SET(halfSize, 8, 32, 8);
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, Entity0805d79c_OnHit, elem);
   Hitbox_SetAttack(hitbox, 10, 20, 0, 0, 20);
 }
@@ -58,7 +58,7 @@ s32 Entity0805d79c_Update(Entity0805d79c* p) {
 
   for (i = 0; i < 32; i++, elem++, e++) {
     if (p->activeMask & (1 << i)) {
-      HitboxData* hitbox = &e->hitbox;
+      Hitbox* hitbox = &e->hitbox;
       Vec3* pos = &e->sprite.pos;
 
       Vec3_Sum(&elem->sprite.pos, &elem->sprite.pos, &elem->vel);
@@ -135,7 +135,7 @@ Entity0805d79cElem* Entity0805d79c_AllocElem(Entity0805d79c* p, s32* outIdx) {
 NON_MATCH s32 Entity0805d79c_Spawn(Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos) {
 #ifdef NONMATCHING_C
   Entity0805d79cElem* elem;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   AuxSprite* spr;
   s32 idx;
   u8 dir;

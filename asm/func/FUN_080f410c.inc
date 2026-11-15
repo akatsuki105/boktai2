@@ -309,7 +309,7 @@ _080F4366:
 	cmp r0, #3
 	bne _080F437C
 	adds r0, r7, #0
-	bl FUN_080f8ae0
+	bl Golem_ScatterDebris
 _080F437C:
 	movs r3, #0xcd
 	lsls r3, r3, #1

@@ -881,7 +881,7 @@ _0803664E:
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	adds r0, r7, #0
-	bl FUN_08028790
+	bl Ringo_AddAfterimages
 	adds r0, r7, #0
 	bl FUN_08028dbc
 	adds r0, r7, #0

@@ -13,7 +13,7 @@ typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
   AuxSprite sprite;              // 0x18
   AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_BLOCK_ROCK`, SPRITE_WALL_DB6C, SPRITE_WALL_4AEE
-  HitboxData hurtbox;            // 0x60
+  Hitbox hurtbox;                // 0x60
   MapTileOverride tileOverride;  // 0xB0, tileIdx のタイルの高さを height で上書きする
   u8 unk_c0;                     // 0xC0
   u8 height;                     // 0xC1, Map_AddTileOverride に渡す上書き後の高さ
@@ -23,8 +23,8 @@ typedef struct {
 } Barricade;
 static_assert(sizeof(Barricade) == 204);
 
-void Barricade_OnHurt(HitboxData* a, HitboxData* b, Barricade* p) {
-  if (Hitbox_HasWeakness(a, HBATTR_ALL)) {
+void Barricade_OnHurt(Hitbox* a, Hitbox* b, Barricade* p) {
+  if (Hitbox_HasSource(a, HBATTR_ALL)) {
     p->triggered = TRUE;
   }
 }
@@ -108,11 +108,11 @@ NON_MATCH void Barricade_InitSprite(Barricade* p, Vec3* pos) {
 }
 
 void Barricade_InitHurtbox(Barricade* p, u32 id, Vec3* pos) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_5, &halfSize, &offset);
+  Hitbox_Init(hurtbox, id, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_5, &halfSize, &offset);
   Hitbox_SetHandler(hurtbox, Barricade_OnHurt, p);
   Hitbox_SetPos(hurtbox, pos, 0);
   Hitbox_Register(hurtbox);
@@ -120,6 +120,7 @@ void Barricade_InitHurtbox(Barricade* p, u32 id, Vec3* pos) {
 
 // 残差はレジスタ順列のみ (174/174, 同数同順, hunk 12件): 原典は p を r5 / &pos を r6 に置くが agbcc は逆, 他は全部この派生
 // Tier A-C は試済: (s32) キャストで >> 8 の asrs 化, scriptID を if/else にして命令数一致まで到達
+// 追試: TileHeightAtIndex(GetCollisionTileIdx(&pos), &pos) にすると p は r5 に揃うが &pos を2本に分けて作る (175 命令), 1本のポインタ (ローカル / inline の引数 / GetTileAt と階段の分岐を直接書く形) で渡すと p と &pos が再び入れ替わる
 NON_MATCH s32 Barricade_Init(Barricade* p, u32 id, u32 _) {
 #ifdef NONMATCHING_C
   WorldPos pos;

@@ -30,7 +30,7 @@ typedef struct {
   void* obj;           // 0x00, flags の bit3 なら AuxSprite + AuxSpriteGfx (0x48), bit4 なら Particle + ParticleGroup* (0x2C) を Malloc したもの
   AuxAnimState anim;   // 0x04
   Vec3 vel;            // 0x14
-  HitboxData hitbox;   // 0x1C, flags の bit2 と bit8 が立っているときだけ登録する
+  Hitbox hitbox;       // 0x1C, flags の bit2 と bit8 が立っているときだけ登録する
   u16 flags;           // 0x6C, bit2: hitbox あり, bit3: AuxSprite, bit4: Particle, bit7: vel が 0 でない, bit8: hitbox が有効
   u8 state;            // 0x6E, sEntity081f26bcStates の添字, 0: 空き, 3: 点滅して消える
   s8 idx;              // 0x6F, elems の添字, 空きなら -1
@@ -109,15 +109,15 @@ void Entity081f26bc_UpdateHitbox(Entity081f26bcElem* e, Vec3* pos) {
 void Entity081f26bc_OnHit(void) {}
 
 // 破片の攻撃判定を作る
-void Entity081f26bc_InitHitbox(Entity081f26bcElem* e, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081f26bc_InitHitbox(Entity081f26bcElem* e, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Vec3 size;
   Vec3 offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   VEC3_SET(size, Q8(0.0625), Q8(0.125), Q8(0.0625));
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &e->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f26bc_OnHit, e);
   if (e->flags & 8) {
@@ -330,8 +330,7 @@ AuxAnimFile* Entity081f26bc_LoadAuxSprite(Entity081f26bcElem* e, SpriteID32 spri
 }
 
 // 破片を1つ出す, flags の bit3 ならスプライト, bit4 なら粒子として作る
-Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY) {
+Entity081f26bcElem* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY) {
   Entity081f26bc* p = gEntity081f26bc;
   Entity081f26bcElem* e;
   AuxAnimFile* animFile;

@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#define VALUABLE_CAP 16  // 貴重品インベントリのスロット数
+
 typedef u16 ItemEffectType;  // see "include/constants/item.h", gItemEffectHandlers の idx
 
 typedef struct {

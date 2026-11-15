@@ -25,8 +25,8 @@ typedef u16 SkeletonFlags;
 typedef struct {
   Enemy e;
   u8 unk_654[4];                   // 0x654
-  HitboxData dodgeHitbox;          // 0x658
-  HitboxData atkHitbox2;           // 0x6A8, Hitbox_SetAttack で atkPower などの番号を選んで攻撃にする
+  Hitbox dodgeHurtbox;             // 0x658
+  Hitbox atkHitbox2;               // 0x6A8, Hitbox_SetAttack で atkPower などの番号を選んで攻撃にする
   u16 hitScriptID;                 // 0x6F8
   u8 hitScriptHits;                // 0x6FA
   u8 hitCount;                     // 0x6FB
@@ -106,18 +106,18 @@ void FUN_080f06ac(Enemy* p);
 void Enemy_HandleResumeMsg(Enemy* p, u16* msg);
 bool8 Entity081f959c_IsAnyActive(void);
 bool8 FUN_080f0a0c(Enemy* p);
-void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 speed);
-void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
-void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle);
+void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 speed);
+void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
+void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle);
 void Enemy_StateDefeated(Enemy* p, s32 timer);
 void Entity081f53a8_VanishAll(void);
 void Entity081f4554_VanishAll(void);
 void Entity081f9cb8_CancelAll(void);
 void Entity081f959c_VanishAll(void);
-void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
-void Entity081f4554_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_9, u32 scriptID, u32 explodeScriptID);
+void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
+void Entity081f4554_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_9, u32 scriptID, u32 explodeScriptID);
 bool8 Entity081f9cb8_ExistsAt(Vec3* pos);
-void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
+void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 void Skeleton_StateSummonEnemyEnd(Skeleton* p);
 void Skeleton_StateVolleyEnd(Skeleton* p);
 void Skeleton_StateHomingMissileEnd(Skeleton* p);
@@ -128,10 +128,10 @@ void Skeleton_StateCurveShotEnd(Skeleton* p);
 void Skeleton_StateDashSlide(Skeleton* p, s32 timer);
 void Skeleton_StateHomingMissile(Skeleton* p, s32 timer);
 void Skeleton_StateLichHoldPosition(Skeleton* p);
-void Skeleton_OnAtkHitbox2Hit(HitboxData* a, HitboxData* b, Skeleton* p);
-void Skeleton_OnDodgeHurt(HitboxData* a, HitboxData* b, Skeleton* p);
-void Skeleton_OnHit(HitboxData* a, HitboxData* b, Skeleton* p);
-void Skeleton_OnHurt(HitboxData* a, HitboxData* b, Skeleton* p);
+void Skeleton_OnAtkHitbox2Hit(Hitbox* a, Hitbox* b, Skeleton* p);
+void Skeleton_OnDodgeHurt(Hitbox* a, Hitbox* b, Skeleton* p);
+void Skeleton_OnHit(Hitbox* a, Hitbox* b, Skeleton* p);
+void Skeleton_OnHurt(Hitbox* a, Hitbox* b, Skeleton* p);
 bool8 Skeleton_CanAttack(Skeleton* p);
 void Skeleton_RetreatOrChase(Skeleton* p);
 void Skeleton_StateAttackRecover(Skeleton* p, s32 timer);
@@ -453,7 +453,7 @@ NON_MATCH void Skeleton_OnReset(Skeleton* p) {
 #endif
 }
 
-// 避けの判定 (dodgeHitbox), 食らい判定, 攻撃判定, 2つ目の攻撃判定 (atkHitbox2) を作る
+// 避けの判定 (dodgeHurtbox), 食らい判定, 攻撃判定, 2つ目の攻撃判定 (atkHitbox2) を作る
 // 125/125命令, 残差は Enemy_InitAtkHitbox の handler をプールから読む位置 (原典は1つ前の呼び出しの引数を積む前) だけ, 1回目の下書きで切り上げ
 NON_MATCH void Skeleton_InitHitboxes(Skeleton* p) {
 #ifdef NONMATCHING_C
@@ -462,7 +462,7 @@ NON_MATCH void Skeleton_InitHitboxes(Skeleton* p) {
 
   VEC3_SET(size1, 128, 128, 128);
   VEC3_SET(offset1, 0, 128, 0);
-  Enemy_RegisterHitbox(&p->e, &q->dodgeHitbox, &size1, &offset1, Skeleton_OnDodgeHurt, p, HBFLAG_HURTBOX | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_1 | HBFLAG_UNK_0);
+  Enemy_RegisterHitbox(&p->e, &q->dodgeHurtbox, &size1, &offset1, Skeleton_OnDodgeHurt, p, HBF_HURTBOX | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE);
   VEC3_SET(hurtSize, 128, 128, 128);
   VEC3_SET(hurtOffset, 0, 128, 0);
   Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, Skeleton_OnHurt, p);
@@ -479,7 +479,7 @@ NON_MATCH void Skeleton_InitHitboxes(Skeleton* p) {
 
 void Skeleton_SetAtkHitbox2Attack(Skeleton* p, s32 param_2) { Hitbox_SetAttack(&((Skeleton*)(p->e).owner)->atkHitbox2, (p->e).atkPower[param_2], (p->e).atkKnockback[param_2], 0, (p->e).atkAttrs[param_2], (p->e).atkIframes[param_2]); }
 
-// 毎フレーム, 背後判定 (dodgeHitbox) と2つ目の攻撃判定を自分の位置と前方へ置き直し, 向きに応じて攻撃判定の大きさを変える
+// 毎フレーム, 背後判定 (dodgeHurtbox) と2つ目の攻撃判定を自分の位置と前方へ置き直し, 向きに応じて攻撃判定の大きさを変える
 // 208/225命令の下書き, 原典は前方の位置を WorldPos の DImode のまま組み, 大きさを halfSize へ 32bit でまとめて書く, 1回目の下書きで切り上げ
 NON_MATCH void Skeleton_UpdateHitboxes(Skeleton* p) {
 #ifdef NONMATCHING_C
@@ -491,7 +491,7 @@ NON_MATCH void Skeleton_UpdateHitboxes(Skeleton* p) {
     return;
   }
   if ((p->e).kind == ENEK_LICH) {
-    Hitbox_Hide(&q->dodgeHitbox);
+    Hitbox_Hide(&q->dodgeHurtbox);
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_11)) {
     return;
@@ -500,15 +500,15 @@ NON_MATCH void Skeleton_UpdateHitboxes(Skeleton* p) {
     return;
   }
   if (q->dodgeTimer == 0) {
-    Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
-    Hitbox_ClearFlags(&q->dodgeHitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hurtbox, HBF_HIDDEN);
+    Hitbox_ClearFlags(&q->dodgeHurtbox, HBF_HIDDEN);
   } else {
     Hitbox_Hide(&(p->e).hurtbox);
-    Hitbox_Hide(&q->dodgeHitbox);
+    Hitbox_Hide(&q->dodgeHurtbox);
     q->dodgeTimer--;
   }
   pos = (p->e).mover.pos;
-  Hitbox_SetPos(&q->dodgeHitbox, &pos, 0);
+  Hitbox_SetPos(&q->dodgeHurtbox, &pos, 0);
   pos.x += POLAR_X(128, (p->e).mover.angle);
   pos.z += POLAR_Z(128, (p->e).mover.angle);
   dir = (((p->e).mover.angle + 0x10) & 0xFF) >> 6;
@@ -538,7 +538,7 @@ NON_MATCH void Skeleton_UpdateHitboxes(Skeleton* p) {
   }
   q->atkHitbox2.halfSize.y = 100;
   Hitbox_SetPos(&q->atkHitbox2, &pos, 0);
-  Hitbox_SetPos(&q->dodgeHitbox, &pos, 0);
+  Hitbox_SetPos(&q->dodgeHurtbox, &pos, 0);
 #else
   INCFUNC("asm/func/Skeleton_UpdateHitboxes.inc");
 #endif
@@ -1286,30 +1286,25 @@ NON_MATCH bool8 Skeleton_PickWalkDestRandom(Skeleton* p, u32 angle) {
 }
 
 // 攻撃が当たった相手がいれば警戒してその相手を追う対象にし, 向き直って TRUE
-// 111/127命令の下書き, 原典は相手のタイル索引を GetCollisionTileIdx の展開で別の形 (x の上位バイトを (s8) で再計算) に書く, 1回目の下書きで切り上げ
-NON_MATCH s32 Skeleton_NoticeHitTarget(Skeleton* p) {
-#ifdef NONMATCHING_C
-  Mover* m;
+s32 Skeleton_NoticeHitTarget(Skeleton* p) {
+  if ((p->e).hitTargetID > 0) {
+    Vec3 diff;
 
-  if ((p->e).hitTargetID < 1) {
-    if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
-      CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_27);
-    }
-    return FALSE;
+    Enemy_Alert(&p->e);
+    CLEAR_FLAGS((p->e).unk_222, ENEMY222_UNK_1);
+    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_7);
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+    (p->e).playerMover = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
+    (p->e).unk_25e = GetCollisionTileIdx(&(p->e).playerMover->pos);
+    Vec3_Delta(&diff, &(p->e).mover.pos, &(p->e).playerMover->pos);
+    (p->e).mover.angle = ArcTan2_8(diff.x, diff.z);
+    Skeleton_ClearFlags((p->e).owner, (1 << 8) | (1 << 9));
+    return TRUE;
   }
-  Enemy_Alert(&p->e);
-  (p->e).unk_222 &= ~ENEMY222_UNK_1;
-  Enemy_SetFlag4(&p->e, ENEFLAG4_UNK_7);
-  SET_FLAGS((p->e).flags, ENEFLAG_UNK_27);
-  m = EnemyTargetManager_FindOwnerByID((p->e).hitTargetID);
-  (p->e).playerMover = m;
-  (p->e).unk_25e = GetCollisionTileIdx(&m->pos);
-  (p->e).mover.angle = ArcTan2_8((s16)((p->e).playerMover->pos.x - (p->e).mover.pos.x), (s16)((p->e).playerMover->pos.z - (p->e).mover.pos.z));
-  CLEAR_FLAGS(((Skeleton*)(p->e).owner)->flags, (1 << 8) | (1 << 9));
-  return TRUE;
-#else
-  INCFUNC("asm/func/Skeleton_NoticeHitTarget.inc");
-#endif
+  if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_27);
+  }
+  return FALSE;
 }
 
 bool8 Skeleton_LichTryDetectPlayer(Skeleton* p) {
@@ -1763,7 +1758,7 @@ void Skeleton_StateLichBlownAway(Skeleton* p) {
 }
 
 // 後ろへ向き直り, 着地したら retreatCooldown と lichAtkFlags の印を消して Skeleton_LichPSelectAction で動き出す
-// 66/66命令, 残差は retreatCooldown と lichAtkFlags の格納先を作る並び (原典は owner + 0x6FC を基点に [r2, #0x26] で lichAtkFlags を触る), 1回目の下書きで切り上げ
+// 66/66命令, 残差は retreatCooldown と lichAtkFlags の格納先を作る並び (原典は owner + 0x6FC を基点に [r2, #0x26] で lichAtkFlags を触る, ~0xD は直前の 0 から subs で作る), 試済: Skeleton_StateLichBlownAway と同じく owner を毎回キャストする形 (67/66), 0x6FC 基点は構造体の切り方の問題かもしれない
 NON_MATCH void Skeleton_StateLichPBlownAway(Skeleton* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -1822,7 +1817,7 @@ s32 Skeleton_PostUpdate(Skeleton* p) {
 
 // 当たった相手を攻撃対象として覚える, 怯み中 (owner の bit4) で bit11 なら跳ねる速さを消す
 // 72/73命令, Mummy_OnHit と同じ壁 (原典は p を2本のレジスタに持つ), 1回目の下書きで切り上げ
-NON_MATCH void Skeleton_OnHit(HitboxData* a, HitboxData* b, Skeleton* p) {
+NON_MATCH void Skeleton_OnHit(Hitbox* a, Hitbox* b, Skeleton* p) {
 #ifdef NONMATCHING_C
   Skeleton* q = (p->e).owner;
 
@@ -1841,7 +1836,7 @@ NON_MATCH void Skeleton_OnHit(HitboxData* a, HitboxData* b, Skeleton* p) {
 #endif
 }
 
-void Skeleton_OnAtkHitbox2Hit(HitboxData* a, HitboxData* b, Skeleton* p) {
+void Skeleton_OnAtkHitbox2Hit(Hitbox* a, Hitbox* b, Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
   if (!Enemy_IsDead(&p->e) && !Skeleton_TestFlags(q, 1 << 4)) {
@@ -1852,7 +1847,7 @@ void Skeleton_OnAtkHitbox2Hit(HitboxData* a, HitboxData* b, Skeleton* p) {
 
 // 怯み中 (owner の bit4) か無敵の数え中でなければ敵共通の被弾処理を行う
 // 782/793命令, 敵共通の Enemy_HandleHurt の壁 (Golem_OnHurt / Mummy_OnHurt と同じ), 1回目の下書きで切り上げ
-NON_MATCH void Skeleton_OnHurt(HitboxData* a, HitboxData* b, Skeleton* p) {
+NON_MATCH void Skeleton_OnHurt(Hitbox* a, Hitbox* b, Skeleton* p) {
 #ifdef NONMATCHING_C
   Skeleton* q = (p->e).owner;
 
@@ -1865,11 +1860,11 @@ NON_MATCH void Skeleton_OnHurt(HitboxData* a, HitboxData* b, Skeleton* p) {
 #endif
 }
 
-void Skeleton_OnDodgeHurt(HitboxData* a, HitboxData* b, Skeleton* p) {
+void Skeleton_OnDodgeHurt(Hitbox* a, Hitbox* b, Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
-  if (!Enemy_IsDead(&p->e) && !Hitbox_TestFlags(b, HBFLAG_HIDDEN) && (p->e).kind != ENEK_LICH && (p->e).hurtbox.iframes == 0 && !Skeleton_TestFlags(q, 1 << 4) &&
-      !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasWeakness(a, 0x10) && Skeleton_CanDodge(p)) {
+  if (!Enemy_IsDead(&p->e) && !Hitbox_TestFlags(b, HBF_HIDDEN) && (p->e).kind != ENEK_LICH && (p->e).hurtbox.iframes == 0 && !Skeleton_TestFlags(q, 1 << 4) &&
+      !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasSource(a, HBSRC_GUN) && Skeleton_CanDodge(p)) {
     Skeleton_StartDodge(p, q);
     q->dodgeTimer = 20;
     (p->e).angle = (p->e).playerAngle + 0x80;
@@ -2435,10 +2430,10 @@ NON_MATCH void FUN_0810c2dc(Skeleton* p) {
     s32 speed;
     u8 angle;
 
-    Hitbox_Hide(&q->dodgeHitbox);
+    Hitbox_Hide(&q->dodgeHurtbox);
     Hitbox_Hide(&q->atkHitbox2);
     Hitbox_Hide(&(p->e).hurtbox);
-    Hitbox_ClearFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hitbox, HBF_HIDDEN);
     angle = (p->e).mover.angle;
     speed = (RandomNext() & 0xF) + 28;
     (p->e).jumpVel.x = POLAR_X(speed, angle);
@@ -2474,7 +2469,7 @@ void Skeleton_StateDormant(Skeleton* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Hitbox_Hide(&(p->e).hitbox);
     Hitbox_Hide(&(p->e).hurtbox);
-    Hitbox_Hide(&q->dodgeHitbox);
+    Hitbox_Hide(&q->dodgeHurtbox);
     Hitbox_Hide(&q->atkHitbox2);
     Enemy_PlayAnim(&p->e, 17);
     ParticleShadow_Hide(&(p->e).shadow);
@@ -2629,7 +2624,7 @@ void Skeleton_StateFallDeath(Skeleton* p, s32 timer) {
       Enemy_PlayAnim(&p->e, 3);
       Enemy_SetEmote(&p->e, 0, 1, (p->e).kind);
     }
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
     Enemy_ClearSpriteFlags(&p->e, SPRFLAG_HIDDEN);
     Enemy_ResetState(&p->e, 3, 0, 0);
     (p->e).sleepTimer = 0;
@@ -2670,7 +2665,7 @@ void Skeleton_StateLichDying(Skeleton* p, s32 timer) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
     if ((p->e).variant == 2) {
       Entity081f53a8_VanishAll();
       Entity081f4554_VanishAll();
@@ -2730,21 +2725,16 @@ NAKED void FUN_0810f680(Skeleton* p) { INCFUNC("asm/func/FUN_0810f680.inc"); }
 void Skeleton_SetHandlerTable3(Skeleton* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085ad524; }
 
 // 1番の攻撃 (アーチャーは別の状態) を出し, 終わったら次の行動を選ぶ
-// 86/87命令, 原典は 0 を r7 に置いて stateTimer に使い回し, kind の分岐の枝の並びも違う, 試済: 三項演算子 (同じ)
-NON_MATCH void Skeleton_SubMelee(Skeleton* p) {
-#ifdef NONMATCHING_C
+void Skeleton_SubMelee(Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    void* handler;
-
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
     if ((p->e).kind == ENEK_SKELETON_A) {
-      handler = Skeleton_StateArcherMelee;
+      Enemy_EnterState(&p->e, Skeleton_StateArcherMelee, ES_UNK_3);
     } else {
-      handler = Skeleton_StateMelee;
+      Enemy_EnterState(&p->e, Skeleton_StateMelee, ES_UNK_3);
     }
-    Enemy_EnterState(&p->e, handler, ES_UNK_3);
     Skeleton_SetAtkHitbox2Attack(p, 1);
     q->atkCooldown0 = q->atkCooldownInit[0];
   }
@@ -2754,9 +2744,6 @@ NON_MATCH void Skeleton_SubMelee(Skeleton* p) {
   } else {
     (p->e).subStateTimer++;
   }
-#else
-  INCFUNC("asm/func/Skeleton_SubMelee.inc");
-#endif
 }
 
 void Skeleton_SubDashAttack(Skeleton* p) {
@@ -3324,7 +3311,7 @@ s32 Skeleton_Update(Skeleton* p) {
 }
 
 s32 Skeleton_Destroy(Skeleton* p) {
-  Hitbox_Unregister(&p->dodgeHitbox);
+  Hitbox_Unregister(&p->dodgeHurtbox);
   if ((p->e).spriteKind == 0) {
     AuxSprite_Remove(&(p->e).s->aux.spr);
   } else {
@@ -3357,6 +3344,7 @@ s32 Skeleton_Destroy(Skeleton* p) {
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
 NAKED s32 Skeleton_Init(Skeleton* p) { INCFUNC("asm/func/Skeleton_Init.inc"); }
 
+// 0xAD03, HashName("スケルトン")
 void Skeleton_Create(void) {
   Skeleton* p = Malloc(sizeof(Skeleton));
 

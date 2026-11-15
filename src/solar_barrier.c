@@ -39,11 +39,8 @@ typedef struct SolarBarrier {
 static_assert(sizeof(SolarBarrier) == 616);
 
 // 1枠を1フレーム進める, 16フレームで消える
-// 残差1命令 (37/38) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
-NON_MATCH void SolarBarrierPtcl_Update(SolarBarrierPtcl* elem, ParticleGroup* g) {
-#ifdef NONMATCHING_C
-  elem->timer++;
-  if (elem->timer > 15) {
+void SolarBarrierPtcl_Update(SolarBarrierPtcl* elem, ParticleGroup* g) {
+  if (++elem->timer > 15) {
     elem->ptcl.flags |= SPRFLAG_HIDDEN;
     elem->active = FALSE;
   } else {
@@ -52,9 +49,6 @@ NON_MATCH void SolarBarrierPtcl_Update(SolarBarrierPtcl* elem, ParticleGroup* g)
     elem->ptcl.pos.z += elem->vel.z;
     Particle_SetPose(&elem->ptcl, g, ((elem->timer >> 2) & 1) + 2);
   }
-#else
-  INCFUNC("asm/func/SolarBarrierPtcl_Update.inc");
-#endif
 }
 
 // 空いている枠を1つ起こして結界の内側に散らす

@@ -225,7 +225,7 @@ NON_MATCH s32 GameSystem_Update(GameSystem* p) {
             u32_0300478c = 0;
             u32_030047c4 = 0;
             gMapChanging = 1;
-            CLEAR_FLAGS(gSuspendFlags, SUSPEND_PAUSE | SUSPEND_MENU | SUSPEND_EVENT);
+            CLEAR_FLAGS(gSuspendFlags, SUSPEND_PAUSE | SUSPEND_MENU | SUSPEND_CUTSCENE);
             entity_08230ca4(1);
             p->mapChangeTimer = 3;
             gStagedDISPCNT &= ~(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
@@ -241,10 +241,10 @@ NON_MATCH s32 GameSystem_Update(GameSystem* p) {
         if (p->mapChangeTimer < 1) {
           nop_0823aa70();
           GameSystem_CleanupMap();
-          if (gGameFlags & GAMEFLAG_EVENT) {
-            gGameFlags &= ~GAMEFLAG_EVENT;
-            if (gSuspendFlags & SUSPEND_EVENT) {
-              CLEAR_FLAGS(gSuspendFlags, SUSPEND_EVENT);
+          if (gGameFlags & GAMEFLAG_CUTSCENE) {
+            gGameFlags &= ~GAMEFLAG_CUTSCENE;
+            if (gSuspendFlags & SUSPEND_CUTSCENE) {
+              CLEAR_FLAGS(gSuspendFlags, SUSPEND_CUTSCENE);
             }
           }
           if (gMapChangeFlags & MAPCHANGE_BACKUP) {

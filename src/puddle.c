@@ -23,7 +23,7 @@ typedef struct Puddle {
   AuxSprite sprite;                        // 0x000, poseIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
   AuxSpriteGfx gfx;                        // 0x02C, SPRITE_TRAP_FLOOR
   Mover mover;                             // 0x048, moverLinked が立っているときだけリストに繋がれる
-  HitboxData hurtbox;                      // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
+  Hitbox hurtbox;                          // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
   u8 state;                                // 0x0DC, '.s', 0/1/2 で updateCallback を選ぶ
   u8 lockFlags;                            // 0x0DD, '.f', see PuddleLockFlags
   u8 unk_de;                               // 0x0DE, 読み手も書き手も見つかっていない
@@ -131,13 +131,13 @@ void Puddle_SetState(Puddle* elem, u8 state, void* fn) {
 }
 
 // 炎属性で状態を進め, 氷属性で凍らせ, 属性なしなら touched だけ立てる
-void Puddle_OnHurt(HitboxData* a, HitboxData* b, void* owner) {
+void Puddle_OnHurt(Hitbox* a, Hitbox* b, void* owner) {
   Puddle* elem = owner;
 
   if (b->iframes != 0) {
     return;
   }
-  if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) {
+  if (!Hitbox_HasSource(a, HBATTR_FLAME)) {
     return;
   }
 
@@ -327,7 +327,7 @@ void Puddle_Update(Puddle* elem) {
   if (elem->areaBound) {
     if (elem->zoneID == gStat->zoneID) {
       if (!elem->unk_e7) {
-        elem->hurtbox.flags &= ~HBFLAG_HIDDEN;
+        elem->hurtbox.flags &= ~HBF_HIDDEN;
       }
       elem->updateCallback(elem);
     } else if (elem->unk_e7) {
@@ -345,7 +345,7 @@ void Puddle_Update(Puddle* elem) {
         elem->sprite.poseIdx = 5;
         elem->unk_e2 = 0x10;
       }
-      elem->hurtbox.flags |= HBFLAG_HIDDEN;
+      elem->hurtbox.flags |= HBF_HIDDEN;
       elem->unk_e7 = FALSE;
     }
   } else {
@@ -387,11 +387,11 @@ void Puddle_InitSprite(Puddle* elem, Vec3* pos, u32 moverLinked) {
 }
 
 void Puddle_InitHurtbox(Puddle* elem) {
-  HitboxData* hurtbox = &elem->hurtbox;
+  Hitbox* hurtbox = &elem->hurtbox;
   Vec3 size, offset;
   VEC3_SET(size, Q8(0.5), Q8(0.196), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hurtbox, elem->id, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hurtbox, elem->id, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hurtbox, Puddle_OnHurt, elem);
   Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
   Hitbox_Register(hurtbox);

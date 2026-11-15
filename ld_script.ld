@@ -43,7 +43,7 @@ SECTIONS {
       src/message_choice.o(iwram_data);
       src/map_item.o(iwram_data);
       src/trigger_break.o(.bss);
-      src/trigger_lamp.o(.bss);
+      src/candlestick.o(.bss);
       src/duneyrr_chandelier.o(.bss);
       src/interact_point.o(iwram_data);
       src/bamboo_shoots.o(.bss);
@@ -72,7 +72,7 @@ SECTIONS {
       src/text_marquee.o(iwram_data);
       src/text_panel.o(iwram_data);
       src/text_slideshow.o(iwram_data);
-      src/entity_b88c.o(.bss);
+      src/link_menu.o(.bss);
       src/joyspot.o(.bss);
       src/rfu_session.o(iwram_data);
       src/signal_strength_icon.o(iwram_data);
@@ -91,11 +91,11 @@ SECTIONS {
       src/menu.o(iwram_data);
       src/entity_5ccc.o(iwram_data);
       src/puddle.o(.bss);
-      src/entity_ef66.o(iwram_data);
+      src/wind.o(iwram_data);
       src/entity_cf58.o(iwram_data);
       src/gameover.o(iwram_data);
       src/level_upper.o(iwram_data);
-      src/entity_b3d1.o(iwram_data);
+      src/torture.o(iwram_data);
       src/emote.o(iwram_data);
       src/entity_080db520.o(iwram_data);
       src/dust.o(.bss);
@@ -173,7 +173,7 @@ SECTIONS {
       src/vm_subroutine.o(.bss);
       src/mover.o(.bss);
       src/entity_08240a54.o(.bss);
-      src/entity_794c.o(.bss);
+      src/noise.o(.bss);
       src/zonelist.o(.bss);
       src/solar.o(.bss);
       src/eeprom.o(.bss);
@@ -260,7 +260,7 @@ SECTIONS {
 			src/message_choice.o (.text);
 			src/map_item.o (.text);
 			src/trigger_break.o (.text);
-			src/trigger_lamp.o (.text);
+			src/candlestick.o (.text);
 			src/duneyrr_chandelier.o (.text);
 			src/interact_point.o (.text);
 			src/bamboo_shoots.o (.text);
@@ -299,8 +299,8 @@ SECTIONS {
 			src/entity_82b7.o (.text);
 			src/entity_4b15.o (.text);
 			src/entity_4f5c.o (.text);
-			src/entity_fbe5.o (.text);
-			src/entity_78c9.o (.text);
+			src/ringo_silhouette.o (.text);
+			src/cutscene_bubble.o (.text);
 			src/entity_12c4.o (.text);
 			src/entity_a687.o (.text);
 			src/clock_alarm.o (.text);
@@ -309,7 +309,7 @@ SECTIONS {
 			src/forge_ef6f.o (.text);
 			src/door.o (.text);
 			src/msgbus.o (.text);
-			src/entity_730a.o (.text);
+			src/cutscene_effect.o (.text);
 			src/boss.o (.text);
 			src/boss/duneyrr.o (.text);
 			src/boss/ringo.o (.text);
@@ -322,7 +322,7 @@ SECTIONS {
 			src/text_marquee.o (.text);
 			src/text_panel.o (.text);
 			src/text_slideshow.o (.text);
-			src/entity_b88c.o (.text);
+			src/link_menu.o (.text);
 			src/joyspot.o (.text);
 			src/rfu_session.o (.text);
 			src/signal_strength_icon.o (.text);
@@ -372,7 +372,7 @@ SECTIONS {
 			src/entity_71ba.o (.text);
 			src/room_blind.o (.text);
 			src/tasty_water.o (.text);
-			src/entity_ef66.o (.text);
+			src/wind.o (.text);
 			src/alarm_panel.o (.text);
 			src/barricade.o (.text);
 			src/solar_barrier.o (.text);
@@ -411,11 +411,11 @@ SECTIONS {
 			src/shop_item.o (.text);
 			src/shop_weapon.o (.text);
 			src/shop_coffin.o (.text);
-			src/entity_b3d1.o (.text);
-			src/soundbus.o (.text);
-			src/prologue_event_bullet.o (.text);
+			src/torture.o (.text);
+			src/cutscene_sound.o (.text);
+			src/cutscene_bullet.o (.text);
 			src/entity_3361.o (.text);
-			src/entity_080c1abc.o (.text);
+			src/cutscene_buster.o (.text);
 			src/sensor_guide.o (.text);
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
@@ -588,7 +588,7 @@ SECTIONS {
 			src/time_math.o (.text);
 			src/sound.o (.text);
 			src/entity_08240a54.o (.text);
-			src/entity_794c.o (.text);
+			src/noise.o (.text);
 			src/savedata.o (.text);
 			src/zonelist.o (.text);
 			src/solar.o (.text);
@@ -722,7 +722,7 @@ SECTIONS {
     src/vm_commands.o (.rodata);
     src/map_pltt_4ae5.o (.rodata);
     src/movable_block.o (.rodata);
-    src/trigger_lamp.o (.rodata);
+    src/candlestick.o (.rodata);
     src/duneyrr_chandelier.o (.rodata);
     src/interact_point.o (.rodata);
     src/bamboo_shoots.o (.rodata);
@@ -743,7 +743,7 @@ SECTIONS {
     src/entity_cf82.o (.rodata);
     src/entity_5e27.o (.rodata);
     src/entity_4f5c.o (.rodata);
-    src/entity_78c9.o (.rodata);
+    src/cutscene_bubble.o (.rodata);
     src/forge_ef6f.o (.rodata);
     src/door.o (.rodata);
     src/boss/duneyrr.o (.rodata);
@@ -755,7 +755,7 @@ SECTIONS {
     src/text_renderer.o (.rodata);
     src/text_marquee.o (.rodata);
     src/text_slideshow.o (.rodata);
-    src/entity_b88c.o (.rodata);
+    src/link_menu.o (.rodata);
     src/joyspot.o (.rodata);
     src/rfu_session.o (.rodata);
     src/crossover_error.o (.rodata);
@@ -916,6 +916,9 @@ SECTIONS {
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
     src/item/data.o (.rodata);
+    src/cutscene.o (.rodata.cutscene_msg);
+    src/cutscene.o (.rodata.cutscene_step);
+    src/cutscene.o (.rodata.cutscene_list);
     src/cutscene.o (.rodata);
     src/vm_ctrl2.o (.rodata);
     src/solar.o (.rodata);

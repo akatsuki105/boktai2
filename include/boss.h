@@ -25,7 +25,7 @@ typedef s32 BossID;
 typedef u32 BossFlags;
 #define BOSSFLAG_UNK_0 (1 << 0)       // 0x1
 #define BOSSFLAG_UNK_1 (1 << 1)       // 0x2
-#define BOSSFLAG_NO_HURTBOX (1 << 2)  // 0x4, hurtbox に HBFLAG_HIDDEN を付けて食らわないようにする
+#define BOSSFLAG_NO_HURTBOX (1 << 2)  // 0x4, hurtbox に HBF_HIDDEN を付けて食らわないようにする
 #define BOSSFLAG_NO_HITBOX (1 << 3)   // 0x8, hitbox を登録しない
 #define BOSSFLAG_HIDDEN (1 << 4)      // 0x10, スプライトと影を隠す
 #define BOSSFLAG_NO_SHADOW (1 << 16)  // 0x10000, 影だけを隠す
@@ -77,7 +77,7 @@ typedef struct Boss {
   u16 animID;                          // 0x0B0, animVariant + 呼び出し側のアニメ番号, MainSprite_SetAnim に渡した値
   u16 prevAnimID;                      // 0x0B2, Boss_AdvanceAnim が animID を写す
   u32 weaponExpMask;                   // 0x0B4, Player_AddWeaponExp の mask
-  HitboxAttributes hurtAttributes;     // 0x0B8, 当たってきた攻撃の attributes, weaponExpMask と対
+  HitboxAttrs hurtAttributes;          // 0x0B8, 当たってきた攻撃の attributes, weaponExpMask と対
   u32 subStateTimer;                   // 0x0BC, 下位状態を差し替えると 0 に戻る
   s32 playerDistSq[2];                 // 0x0C0, playerPos までの距離の2乗
   u8 playerAngle[2];                   // 0x0C8, playerPos への 8bit 角度
@@ -123,7 +123,7 @@ static inline void Boss_SetAngle(Boss* p, u32 angle) {
 
 // 当たってきた攻撃の weakness / attributes を控える, 経験値の配分に使う
 static inline void Boss_SetWeaponExpMask(Boss* p, u32 mask) { p->weaponExpMask = mask; }
-static inline void Boss_SetHurtAttributes(Boss* p, HitboxAttributes attributes) { p->hurtAttributes = attributes; }
+static inline void Boss_SetHurtAttributes(Boss* p, HitboxAttrs attributes) { p->hurtAttributes = attributes; }
 
 // updateCallback を差し替えて timer を 0 に戻す
 static inline void Boss_SetState(Boss* p, void* fn, u32 state) {

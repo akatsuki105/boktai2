@@ -14,7 +14,7 @@
 	cmp r0, #0
 	bne _080B021C
 	adds r0, r4, #0
-	bl FUN_080af2f4
+	bl PileDriver_HideSprites
 	ldr r0, _080B02BC @ =0x03002C58
 	ldr r0, [r0]
 	ldr r1, _080B02C0 @ =0x0000133E

@@ -73,7 +73,7 @@ static inline s32 Crow_GetAngleDiffToPlayer(Crow* p) {
 }
 
 // 当たった相手が HIM_0 だけを無視する判定のときだけ攻撃対象として覚える
-void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) {
+void Crow_OnHit(Hitbox* a, Hitbox* b, Crow* p) {
   if (b->ignoreMask == HIM_0 && Enemy_IsDead(&p->e) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
       (p->e).hitTargetID = b->id;
@@ -84,14 +84,14 @@ void Crow_OnHit(HitboxData* a, HitboxData* b, Crow* p) {
 
 // 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にする
 // 791/796命令, ノックバックの種別判定で TRUE 側ブロックが属性検査より前に来る配置と p->angle の格納先を分岐ごとに計算する形が合わない, 末尾は原典が乱数を先に読む (knockback に Random() を入れてから引くと揃うが不自然なので採らず)
-NON_MATCH void Crow_OnHurt(HitboxData* a, HitboxData* b, Crow* p) {
+NON_MATCH void Crow_OnHurt(Hitbox* a, Hitbox* b, Crow* p) {
 #ifdef NONMATCHING_C
   s32 knockback;
 
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+  if (Hitbox_TestFlags(a, HBF_BLOCK)) {
     return;
   }
   Enemy_HandleHurt(a, b, &p->e);
@@ -266,7 +266,7 @@ void Crow_StateDying(Crow* p, s32 timer) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   if (Sprite_UpdateVanishBlink(&(p->e).s->aux.spr.flags, timer, 10, 30)) {
     s32 idx;
@@ -709,7 +709,7 @@ void FUN_081447cc(Crow* p) {
 
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   CLEAR_FLAGS(q->unk_658, 1);
-  (p->e).hitbox.flags &= ~HBFLAG_HIDDEN;
+  (p->e).hitbox.flags &= ~HBF_HIDDEN;
 }
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
@@ -1314,7 +1314,7 @@ NON_MATCH s32 Crow_Init(Crow* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1359,6 +1359,7 @@ NON_MATCH s32 Crow_Init(Crow* p) {
 #endif
 }
 
+// 0x9E8D, HashName("クロウ")
 void Crow_Create(void) {
   Crow* p = Malloc(sizeof(Crow));
 

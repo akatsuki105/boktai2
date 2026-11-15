@@ -19,7 +19,7 @@
 	orrs r0, r1
 	strh r0, [r2, #6]
 	adds r0, r7, #0
-	bl FUN_0805a8d0
+	bl Entity0805b068Elem_HideSprites
 	adds r0, r7, #0
 	adds r0, #0xe8
 	mov r2, sb

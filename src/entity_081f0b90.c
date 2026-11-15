@@ -15,7 +15,7 @@ typedef struct {
   AuxAnimState anims[4];  // 0x0B0
   Vec3 pos;               // 0x0F0, 生成位置 (ワールド座標)
   Vec3 hitPos;            // 0x0F8, pos から y を 0x300 下げた hitbox の位置
-  HitboxData hitbox;      // 0x100
+  Hitbox hitbox;          // 0x100
   s16 unk_150;            // 0x150
   u8 state;               // 0x152, PTR_ARRAY_085ae518 の添字, 1 で 5 フレーム判定を出し, 2 で広がり, アニメが一巡すると 3 で片付く
   s8 idx;                 // 0x153, elems の添字, 空きは -1
@@ -52,7 +52,7 @@ s32 Entity081f0b90_Update(Entity081f0b90* p);
 s32 Entity081f0b90_Destroy(Entity081f0b90* p);
 s32 Entity081f0b90_Init(Entity081f0b90* p);
 Entity081f0b90Elem* Entity081f0b90_TryAllocElem(Entity081f0b90* p);
-void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
+void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 
 void (*const PTR_ARRAY_085ae518[4])(Entity081f0b90*, Entity081f0b90Elem*) = {
     Entity081f0b90Elem_UpdateState0,
@@ -67,17 +67,17 @@ void Entity081f0b90Elem_ExecScript(Entity081f0b90Elem* elem) {
   }
 }
 
-void Entity081f0b90Elem_OnHit(HitboxData* a, HitboxData* b, Entity081f0b90Elem* elem) {}
+void Entity081f0b90Elem_OnHit(Hitbox* a, Hitbox* b, Entity081f0b90Elem* elem) {}
 
-void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
-  HitboxData* hitbox;
+void Entity081f0b90Elem_InitHitbox(Entity081f0b90Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
+  Hitbox* hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 128, 32, 128);
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f0b90Elem_OnHit, elem);
 }
@@ -223,7 +223,7 @@ Entity081f0b90Elem* Entity081f0b90_TryAllocElem(Entity081f0b90* p) {
 }
 
 // 205/205命令, spr->pos.y に i * 32 を足すとき原典は pos.y を r2 に読むが, こちらは r1
-NON_MATCH void Entity081f0b90_Spawn(Vec3* pos, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 _, u32 scriptID) {
+NON_MATCH void Entity081f0b90_Spawn(Vec3* pos, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 _, u32 scriptID) {
 #ifdef NONMATCHING_C
   Entity081f0b90* p = gEntity081f0b90;
   Entity081f0b90Elem* elem;

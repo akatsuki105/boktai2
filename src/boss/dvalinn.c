@@ -23,8 +23,8 @@ typedef struct Dvalinn {
   Boss base;                                 // 0x000
   u8 unk_158;                                // 0x158
   u8 unk_159[3];                             // 0x159
-  HitboxData hurtbox;                        // 0x15C, ハンドラは Dvalinn_OnHurt
-  HitboxData hitbox;                         // 0x1AC
+  Hitbox hurtbox;                            // 0x15C, ハンドラは Dvalinn_OnHurt
+  Hitbox hitbox;                             // 0x1AC
   NestedState nestedState_1fc;               // 0x1FC
   NestedState nestedState;                   // 0x20C
   MainSpriteGfx gfx;                         // 0x21C, SPRITE_DVALINN
@@ -93,12 +93,12 @@ Entity* Entity081ea120_Create(s32 param_1, s32 param_2);
 void Entity082047f0_SetFlags(struct Entity082047f0* p, u32 flags);
 void Entity082047f0_ClearFlags(struct Entity082047f0* p, u32 flags);
 void Entity082047f0_SetMode(struct Entity082047f0* p, u32 mode);
-s32 InkBallShot_SpawnHoming(Vec3* pos, Vec3* target, u32 speed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl);
+s32 InkBallShot_SpawnHoming(Vec3* pos, Vec3* target, u32 speed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl);
 void Entity082047f0_RequestEnd(struct Entity082047f0* p);
 void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9);
 void Entity08204cb8_Spawn(Vec3* pos, u32 param_2);
 struct Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
+    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 const __attribute__((section(".rodata.faraddr"))) u32 u32_082526a4[7] = {8, 9, 10, 11, 12, 5, 12};
 
@@ -2534,7 +2534,7 @@ s32 FUN_081ff740(Dvalinn* p) {
 }
 
 // 残差は p を 2 本目のレジスタに写して unk_7de を書くところ (42/43), ((Dvalinn*)boss)->unk_7de と書くと一致する
-NON_MATCH void Dvalinn_OnHurt(HitboxData* a, HitboxData* b, Dvalinn* p) {
+NON_MATCH void Dvalinn_OnHurt(Hitbox* a, Hitbox* b, Dvalinn* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
 
@@ -2542,7 +2542,7 @@ NON_MATCH void Dvalinn_OnHurt(HitboxData* a, HitboxData* b, Dvalinn* p) {
     if (p->unk_802 == 0) {
       Hitbox_ApplyDamage(a, b);
       p->damage = b->damage;
-      Boss_SetWeaponExpMask(boss, a->weakness);
+      Boss_SetWeaponExpMask(boss, a->typeMask);
       Boss_SetHurtAttributes(boss, a->attributes);
     }
     if (TEST_FLAGS(a->attributes, HBATTR_FLAME)) {
@@ -2554,30 +2554,30 @@ NON_MATCH void Dvalinn_OnHurt(HitboxData* a, HitboxData* b, Dvalinn* p) {
 #endif
 }
 
-void FUN_081ff7e8(HitboxData* a, HitboxData* b, Dvalinn* p) {
+void FUN_081ff7e8(Hitbox* a, Hitbox* b, Dvalinn* p) {
   b->damage = 0;
   p->unk_7d4 = 1;
 }
 
 void Dvalinn_InitHitbox(Dvalinn* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hitbox, FUN_081ff7e8, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, HBATTR_18, p->hitboxUnk44);
 }
 
 void Dvalinn_InitHurtbox(Dvalinn* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Dvalinn_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_FROST, HBATTR_FLAME);
@@ -2708,7 +2708,7 @@ NON_MATCH void FUN_081ffdb0(Dvalinn* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Mover* mover;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   p->sprites[0].pos = boss->mover.pos;
   if (p->unk_804 != 0) {
@@ -2726,12 +2726,12 @@ NON_MATCH void FUN_081ffdb0(Dvalinn* p) {
   }
   hitbox = &p->hurtbox;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
     Vec3 pos;
     u32 angle;
 
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     angle = ((mover->angle - 32) & ~63) + 64;
     Vec3_SetPolar(&pos, angle, -160);
     Vec3_Add(&pos, &mover->pos);
@@ -3037,6 +3037,7 @@ NON_MATCH s32 Dvalinn_Init(Dvalinn* p, u32 id) {
 #endif
 }
 
+// 0x0074, HashName("ドヴァリン")
 Dvalinn* Dvalinn_Create(u32 id) {
   Dvalinn* p = Boss_Get(BOSS_DVALINN);
   if (p != NULL) {

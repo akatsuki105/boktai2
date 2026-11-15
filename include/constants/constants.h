@@ -11,7 +11,6 @@
 #include "constants/map.h"
 #include "constants/miscs.h"
 #include "constants/particle.h"
-#include "constants/size.h"
 #include "constants/songs.h"
 #include "constants/sprite.h"
 #include "constants/sprite_animation.h"

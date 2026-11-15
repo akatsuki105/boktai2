@@ -16,7 +16,7 @@ typedef struct {
   u8 turnRate;         // 0x08, state 1 で angle を target へ寄せる1フレームの上限, 1 固定
   u8 unk_9[3];         // 0x09
   Vec3* target;        // 0x0C, state 1 で追う座標
-  HitboxData hitbox;   // 0x10, 当たると state 2 へ移る
+  Hitbox hitbox;       // 0x10, 当たると state 2 へ移る
   AuxSprite sprite;    // 0x60, pos が弾の座標, 地面より低くなると state 2 へ移る
 } Entity0805b790Elem;
 static_assert(sizeof(Entity0805b790Elem) == 140);
@@ -35,7 +35,7 @@ static_assert(sizeof(Entity0805b790) == 2304);
 
 NAKED Entity0805b790Elem* Entity0805b790_AllocElem(Entity0805b790* p, u32* outIdx) { INCFUNC("asm/func/Entity0805b790_AllocElem.inc"); }
 
-NAKED void Entity0805b790_OnHit(HitboxData* a, HitboxData* b, Entity0805b790Elem* elem) { INCFUNC("asm/func/Entity0805b790_OnHit.inc"); }
+NAKED void Entity0805b790_OnHit(Hitbox* a, Hitbox* b, Entity0805b790Elem* elem) { INCFUNC("asm/func/Entity0805b790_OnHit.inc"); }
 
 NAKED s32 Entity0805b790_InitElem(Entity0805b790* p, Entity0805b790Elem* elem, s32 index) { INCFUNC("asm/func/Entity0805b790_InitElem.inc"); }
 

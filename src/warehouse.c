@@ -1987,6 +1987,7 @@ s32 Warehouse_Init(Warehouse* p) {
   return 0;
 }
 
+// 0xE02E, HashName("倉庫")
 Warehouse* Warehouse_Create(void) {
   Warehouse* p = CreateEntity(ENTITY_UNK_11, sizeof(Warehouse));
 

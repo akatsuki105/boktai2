@@ -25,35 +25,35 @@ static inline void DuneyrrPowderBall_SetState(DuneyrrPowderBall* elem, u8 state)
   elem->stateEntered = TRUE;
 }
 
-void FUN_080592fc(HitboxData* a, HitboxData* b, DuneyrrPowderBall* elem) {}
+void FUN_080592fc(Hitbox* a, Hitbox* b, DuneyrrPowderBall* elem) {}
 
 void DuneyrrPowderBall_InitHitbox(DuneyrrPowderBall* elem, s32 power, s32 knockback, s32 iframes) {
-  HitboxData* hitbox = &elem->hitbox;
+  Hitbox* hitbox = &elem->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.19), Q8(0.125), Q8(0.19));
   VEC3_SET(offset, 0, Q8(0.125), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, FUN_080592fc, elem);
   Hitbox_SetAttack(hitbox, power, knockback, 0, 0, iframes);
 }
 
-void DuneyrrPowderBall_OnHurt(HitboxData* a, HitboxData* b, DuneyrrPowderBall* elem) {
+void DuneyrrPowderBall_OnHurt(Hitbox* a, Hitbox* b, DuneyrrPowderBall* elem) {
   if (elem->state == 1 || elem->state == 2) {
     DuneyrrPowderBall_SetState(elem, 3);
-    b->flags |= HBFLAG_HIDDEN;
+    b->flags |= HBF_HIDDEN;
     EmitParticles_08059a1c(&elem->sprite.pos, a->angle - 0x40);
     EmitParticles_08059a1c(&elem->sprite.pos, a->angle + 0x40);
   }
 }
 
 void DuneyrrPowderBall_InitHurtbox(DuneyrrPowderBall* elem) {
-  HitboxData* hurtbox = &elem->hurtbox;
+  Hitbox* hurtbox = &elem->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, DuneyrrPowderBall_OnHurt, elem);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
@@ -149,7 +149,7 @@ s32 FUN_0805965c(DuneyrrPowderBallManager* p, DuneyrrPowderBall* elem, s32 idx) 
     dx = target->x - start->x;
     dz = target->z - start->z;
     elem->dist = Sqrt(dx * dx + dz * dz);
-    Hitbox_ClearFlags(&elem->hurtbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&elem->hurtbox, HBF_HIDDEN);
   }
   Vec3_SetPolar(&ofs, elem->angle, (elem->dist * elem->timer) >> 6);
   Vec3_Sum(&sprite->pos, &elem->startPos, &ofs);
@@ -162,8 +162,8 @@ s32 FUN_0805965c(DuneyrrPowderBallManager* p, DuneyrrPowderBall* elem, s32 idx) 
     PlaySound_082406e0(SONG_963);
     DuneyrrPowderBall_SetState(elem, 3);
     {
-      HitboxData* hurtbox = &elem->hurtbox;
-      hurtbox->flags |= HBFLAG_HIDDEN;
+      Hitbox* hurtbox = &elem->hurtbox;
+      hurtbox->flags |= HBF_HIDDEN;
     }
     SporeManager_Emit(3, 0, 0x100, 2, 2, 30, p->sporePower, 0, &sprite->pos);
   }

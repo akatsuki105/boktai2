@@ -21,7 +21,7 @@ static_assert(sizeof(FreezeSubParticle) == 44);  // 根拠: FreezeEffect_InitSub
 typedef struct FreezeEffect {
   Entity e;                                      // 0x00, ENTITY_UNK_8
   Vec3 pos;                                      // 0x18, 根拠: FreezeEffect_Init
-  HitboxData hitbox;                             // 0x20, 根拠: FreezeEffect_InitHitbox
+  Hitbox hitbox;                                 // 0x20, 根拠: FreezeEffect_InitHitbox
   Particle ptcl;                                 // 0x70, 中心の粒子, 根拠: FreezeEffect_InitCenterParticle
   ParticleGroup* group0;                         // 0x98, PTCL_GROUP_0
   ParticleGroup* group2;                         // 0x9C, PTCL_GROUP_2
@@ -187,12 +187,12 @@ s32 FreezeEffect_Destroy(FreezeEffect* p) {
 
 // 当たり判定を設定する
 void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 param_4) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 size, offset;
   VEC3_SET(size, Q8(0.391), Q8(0.391), Q8(0.391));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE, 0, param_2, &size, &offset);
-  Hitbox_SetAttack(hitbox, param_3, 0, 0x4000, 0, 0);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ANGLE, 0, param_2, &size, &offset);
+  Hitbox_SetAttack(hitbox, param_3, 0, HBSRC_MFREEZE, 0, 0);
   hitbox->angle = param_4;
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->ptcl.pos, 0);

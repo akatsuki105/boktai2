@@ -12,16 +12,16 @@
 // サボテン1つ (破壊可能, 触れるとダメージ)
 typedef struct {
   u16 id;                        // 0x00, '.n', hurtbox の id になる
-  s16 hp;                        // 0x02, '.l=100', Cactus_OnHurt が HitboxData.damage の分だけ減らし 0 以下で破壊される
+  s16 hp;                        // 0x02, '.l=100', Cactus_OnHurt が Hitbox.damage の分だけ減らし 0 以下で破壊される
   ZoneID32 zoneID;               // 0x04, '.m' が 0 以外のときだけ GetZoneAt(pos) の戻り値が入る,負なら生成を中止する,書くだけで読み手はいない
   u16 scriptId;                  // 0x08, '.b', 破壊時に VM_ExecByID へ渡してから 0 に戻す
-  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hurtbox.flags に HBFLAG_HIDDEN が立つ
+  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hurtbox.flags に HBF_HIDDEN が立つ
   u8 unk_0b;                     // 0x0B, padding?
   s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の VM_ExecByID の argv[4..7] になる
   Vec3 pos;                      // 0x14, SpawnCactus の第1引数のコピー
   Vec3 min;                      // 0x1C, pos - (0xA4, 0x80, 0xA4)
   Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると CactusManager.hitbox が攻撃側として登録される
-  HitboxData hurtbox;            // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHurt で owner はこの Cactus
+  Hitbox hurtbox;                // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHurt で owner はこの Cactus
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
   AuxSprite sprite;              // 0x8C
   AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
@@ -31,12 +31,12 @@ static_assert(sizeof(Cactus) == 212);
 // サボテンの管理構造体
 // 攻撃判定は Cactus ごとには持たず、プレイヤーが近付いた Cactus の位置へ hitbox を移して1フレームだけ登録する
 typedef struct {
-  Entity e;           // 0x00, ENTITY_UNK_8
-  u8 count;           // 0x18, '.m=8'
-  u8 unk_19[3];       // 0x19, padding?
-  u32 activeMask;     // 0x1C, bit i が list[i] 使用中
-  Cactus* list;       // 0x20, Malloc(count * sizeof(Cactus))
-  HitboxData hitbox;  // 0x24, プレイヤーへの攻撃判定 (flags 0x2001), 威力は '.p'/'.f'/'.i'
+  Entity e;        // 0x00, ENTITY_UNK_8
+  u8 count;        // 0x18, '.m=8'
+  u8 unk_19[3];    // 0x19, padding?
+  u32 activeMask;  // 0x1C, bit i が list[i] 使用中
+  Cactus* list;    // 0x20, Malloc(count * sizeof(Cactus))
+  Hitbox hitbox;   // 0x24, プレイヤーへの攻撃判定 (flags 0x2001), 威力は '.p'/'.f'/'.i'
 } CactusManager;
 static_assert(sizeof(CactusManager) == 116);
 
@@ -52,7 +52,7 @@ static inline bool8 IsInBox(Vec3* pos, Vec3* min, Vec3* max) {
 s32 FUN_08014da0(s32 count, s32 kind, Vec3* pos, s32 speed, s32 lifetimeBase, s32 lifetimeRand, s32 speedBase, s32 speedRand, s32 angleBase, s32 angleRand, s32 velYBase, s32 velYRand);
 
 // 被弾時に呼ばれる,hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
-void Cactus_OnHurt(HitboxData* a, HitboxData* b, Cactus* owner) {
+void Cactus_OnHurt(Hitbox* a, Hitbox* b, Cactus* owner) {
   Cactus* p = owner;  // これを入れないと一致しない, でも不自然なので後で自然な書き方に直せるか試す
   Hitbox_ApplyDamage(a, b);
   if (b->damage != 0) {
@@ -62,7 +62,7 @@ void Cactus_OnHurt(HitboxData* a, HitboxData* b, Cactus* owner) {
     } else {
       p->damageTimer = 10;
       Video_SetAuxSpritePltt(&p->gfx, OBP_WHITE_306);
-      if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) PlaySound_082406e0(SE_ENEMY_DAMAGED);
+      if (!Hitbox_HasSource(a, HBATTR_FLAME)) PlaySound_082406e0(SE_ENEMY_DAMAGED);
     }
     b->damage = 0;
   }
@@ -126,12 +126,12 @@ s32 CactusManager_Update(CactusManager* p) {
     }
 
     if (cactus->damageTimer != 0) {
-      cactus->hurtbox.flags |= HBFLAG_HIDDEN;
+      cactus->hurtbox.flags |= HBF_HIDDEN;
       if (--cactus->damageTimer == 0) {
         Video_SetAuxSpritePltt(&cactus->gfx, 283);
       }
     } else {
-      Hitbox_ClearFlags(&cactus->hurtbox, HBFLAG_HIDDEN);
+      Hitbox_ClearFlags(&cactus->hurtbox, HBF_HIDDEN);
     }
 
     if (playerPos != NULL && !attacked && IsInBox(playerPos, &cactus->min, &cactus->max)) {
@@ -164,7 +164,7 @@ s32 CactusManager_Destroy(CactusManager* p) {
 
 // プレイヤーへの攻撃判定を1個だけ用意し、 Cactus の配列を確保する
 s32 CactusManager_Init(CactusManager* p) {
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   Cactus* list;
   s32 power;
   s32 knockback;
@@ -180,7 +180,7 @@ s32 CactusManager_Init(CactusManager* p) {
   hitbox = &p->hitbox;
   VEC3_SET(halfSize, Q8(0.641), Q8(0.5), Q8(0.641));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetAttack(hitbox, power, knockback, 0, 0, iframes);
   list = Malloc(p->count * sizeof(Cactus));
@@ -231,7 +231,7 @@ NON_MATCH s32 SpawnCactus(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireAre
   s32 slot;
   Cactus* cactus;
   Vec3* cactusPos;
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
   Vec3* min;
   Vec3* max;
   MapTileOverride* tileOverride;
@@ -274,7 +274,7 @@ NON_MATCH s32 SpawnCactus(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireAre
 
   VEC3_SET(size, 0x82, Q8(0.5), 0x82);
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, cactus->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hurtbox, cactus->id, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetPos(hurtbox, cactusPos, 0);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
   Hitbox_SetHandler(hurtbox, Cactus_OnHurt, cactus);

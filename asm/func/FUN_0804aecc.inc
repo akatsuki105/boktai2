@@ -34,12 +34,12 @@ _0804AF16:
 	cmp r0, #0x1e
 	bls _0804AF26
 	adds r0, r5, #0
-	bl EntityB88C_ConfirmOrCancel
+	bl LinkMenu_ConfirmOrCancel
 	cmp r0, #0
 	bne _0804AF32
 _0804AF26:
 	adds r0, r5, #0
-	bl EntityB88C_MoveCursor
+	bl LinkMenu_MoveCursor
 	ldr r0, [r5, #0x34]
 	adds r0, #1
 	str r0, [r5, #0x34]

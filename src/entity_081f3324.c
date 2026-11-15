@@ -15,7 +15,7 @@ typedef struct {
   Vec3 target;        // 0x80, 向かう先の座標, xz の距離の2乗が 48399 以下になると落ち始める
   Vec3 vel;           // 0x88, x と z は target の向きに speed, y は落ち始めると毎フレーム 4 ずつ減る, 着地すると全て 0
   Vec3 landPos;       // 0x90, 着地した位置, state 3 の攻撃判定と state 4 の煙をここに出す
-  HitboxData hitbox;  // 0x98, 攻撃判定, 飛行中に当たると vel の x と z を 0 にして state 2 へ移る
+  Hitbox hitbox;      // 0x98, 攻撃判定, 飛行中に当たると vel の x と z を 0 にして state 2 へ移る
   u16 flags;          // 0xE8, bit0: target に近づいて落ち始めた
   u8 state;           // 0xEA, PTR_ARRAY_085ae54c の添字 (0:待機 1:飛行 2:落下 3:着地 4:消滅)
   s8 slotIdx;         // 0xEB, usedMask 上の自分のビット番号
@@ -40,9 +40,9 @@ static Entity081f3324* gEntity081f3324;  // 0x030001F0
 
 const u8 u8_ARRAY_085ae548[4] = {8, 4, 2, 1};  // 0x085AE548, 消えるときの点滅の間隔 (フレーム), timer が 40 以下, 60 以下, それより上で 0, 1, 2 番を使う
 
-NAKED void Entity081f3324_OnHit(HitboxData* a, HitboxData* b, Entity081f3324Elem* elem) { INCFUNC("asm/func/Entity081f3324_OnHit.inc"); }
+NAKED void Entity081f3324_OnHit(Hitbox* a, Hitbox* b, Entity081f3324Elem* elem) { INCFUNC("asm/func/Entity081f3324_OnHit.inc"); }
 
-NAKED void Entity081f3324_InitHitbox(Entity081f3324Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/Entity081f3324_InitHitbox.inc"); }
+NAKED void Entity081f3324_InitHitbox(Entity081f3324Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) { INCFUNC("asm/func/Entity081f3324_InitHitbox.inc"); }
 
 NAKED void Entity081f3324_UpdateIdle(Entity081f3324* p, Entity081f3324Elem* elem) { INCFUNC("asm/func/Entity081f3324_UpdateIdle.inc"); }
 
@@ -62,7 +62,7 @@ NAKED Entity081f3324Elem* Entity081f3324_AllocElem(Entity081f3324* p) { INCFUNC(
 
 NAKED Entity081f3324Elem* Entity081f3324_TryAllocElem(Entity081f3324* p) { INCFUNC("asm/func/Entity081f3324_TryAllocElem.inc"); }
 
-NAKED void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9) { INCFUNC("asm/func/Entity081f3324_Spawn.inc"); }
+NAKED void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9) { INCFUNC("asm/func/Entity081f3324_Spawn.inc"); }
 
 void (*const PTR_ARRAY_085ae54c[5])(Entity081f3324*, Entity081f3324Elem*) = {
     Entity081f3324_UpdateIdle,

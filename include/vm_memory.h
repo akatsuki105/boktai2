@@ -359,8 +359,8 @@ typedef struct {
   s16 enemyAtk0Knockback;        // 0x0CE, 敵の攻撃0のふっとばし
   s16 enemyAtkKnockback;         // 0x0D0, 敵の攻撃1以降に共通のふっとばし
   s16 enemyAtk1Iframes;          // 0x0D2, 敵の攻撃1の無敵フレーム
-  s32 enemyAtk1Attrs;            // 0x0D4, 敵の攻撃1の HitboxAttributes
-  s16 enemyAtk0Attrs;            // 0x0D8, 敵の攻撃0の HitboxAttributes
+  s32 enemyAtk1Attrs;            // 0x0D4, 敵の攻撃1の HitboxAttrs
+  s16 enemyAtk0Attrs;            // 0x0D8, 敵の攻撃0の HitboxAttrs
   s16 enemyAtk0Iframes;          // 0x0DA, 敵の攻撃0の無敵フレーム
   s16 enemyMaxHp;                // 0x0DC, 敵の最大 HP ('.A[0]')
   s16 enemyPower;                // 0x0DE, 敵の体当たりの力 (Enemy.power, '.A[1]')
@@ -379,15 +379,15 @@ typedef struct {
   s16 unk_0f6;                   // 0x0F6
   s16 unk_0f8;                   // 0x0F8
   s16 enemyAtk2Iframes;          // 0x0FA, 敵の攻撃2の無敵フレーム
-  s32 enemyAtk2Attrs;            // 0x0FC, 敵の攻撃2の HitboxAttributes
-  s32 enemyAtk3Attrs;            // 0x100, 敵の攻撃3の HitboxAttributes
+  s32 enemyAtk2Attrs;            // 0x0FC, 敵の攻撃2の HitboxAttrs
+  s32 enemyAtk3Attrs;            // 0x100, 敵の攻撃3の HitboxAttrs
   s16 enemyAtk3Iframes;          // 0x104, 敵の攻撃3の無敵フレーム
   s16 unk_106;                   // 0x106
   s16 unk_108;                   // 0x108
   s16 unk_10a;                   // 0x10A
   u16 unk_10c;                   // 0x10C
   s16 enemyAtk4Power;            // 0x10E, 敵の攻撃4の威力
-  s32 enemyAtk4Attrs;            // 0x110, 敵の攻撃4の HitboxAttributes
+  s32 enemyAtk4Attrs;            // 0x110, 敵の攻撃4の HitboxAttrs
   s16 enemyAtk4Iframes;          // 0x114, 敵の攻撃4の無敵フレーム
   s16 unk_116;                   // 0x116
   s16 unk_118;                   // 0x118

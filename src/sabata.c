@@ -22,7 +22,7 @@
 // 通信対戦のサバタはこのEntityを使わない(自キャラでも対戦相手でも)
 // gPlayerPtr[0] がジャンゴ(プレイヤー) で、 サバタは gPlayerPtr[1]
 
-void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p);
+void AllySabata_OnHurt(Hitbox* a, Hitbox* b, Player* p);
 bool32 FUN_0809e138(Player* p);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 FUN_080298dc(void);
@@ -31,7 +31,7 @@ WorldPos* FUN_080230c4(void);
 void BlackHole_GetCenter(WorldPos* out);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
-struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttributes attrs, u32 iframes);
+struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttrs attrs, u32 iframes);
 
 // 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
 static inline rgb555 MakeRgb555(s32 r, s32 g, s32 b) { return (b << 10) | (g << 5) | r; }
@@ -115,7 +115,7 @@ void FUN_08080e34(Player* p) {
 
   VEC3_SET(p->shadowOffset, 0, 0, 0);
   p->flag35a = 0;
-  p->hurtbox.hitState &= ~HBHITSTATE_UNK_1;
+  p->hurtbox.hitState &= ~HBHITSTATE_ONCE_HIT;
 }
 
 void AllySabata_SetFlag35a(Player* p, u32 bits) { p->flag35a |= bits; }
@@ -133,34 +133,30 @@ void FUN_08080ee8(Player* p) {
   }
 }
 
-// a から b を見た方向の象限を 1/3/5/7 で返す, a に HBFLAG_ANGLE が立っていれば a の angle をそのまま使う
-// 残差は 43 対 47 でこちらが短い, 原典は angle + 0xE0 の5命令を両分岐に重複して置くが、こちらは cross-jumping で共有してしまう
-// Tier A-B 試済: ネスト形 / dx,dz の関数スコープ化 (どちらも共有される)
-NON_MATCH s32 FUN_08080f20(HitboxData* a, HitboxData* b) {
-#ifdef NONMATCHING_C
+// a から b を見た方向の象限を 1/3/5/7 で返す, a に HBF_ANGLE が立っていれば a の angle をそのまま使う
+s32 LinkPlayer_GetDirToAttacker(Hitbox* a, Hitbox* b) {
   s32 dir;
   s32 dx;
   s32 dz;
 
-  if (a->flags & HBFLAG_ANGLE) {
+  if (a->flags & HBF_ANGLE) {
     dir = a->angle + 0xE0;
-  } else {
-    dx = a->center.x - b->center.x;
-    dz = a->center.z - b->center.z;
-    if (dx == 0 && dz == 0) {
-      dir = b->angle + 0xE0;
-    } else {
-      dir = ArcTan2_8(dx, dz) + 0x60;
-    }
+    return ((dir & 0xFF) >> 6) * 2 + 1;
   }
-  return (((dir & 0xFF) >> 6) * 2) + 1;
-#else
-  INCFUNC("asm/func/FUN_08080f20.inc");
-#endif
+
+  dx = a->center.x - b->center.x;
+  dz = a->center.z - b->center.z;
+  if (dx == 0 && dz == 0) {
+    dir = b->angle + 0xE0;
+    return ((dir & 0xFF) >> 6) * 2 + 1;
+  }
+
+  dir = ArcTan2_8(dx, dz) + 0x60;
+  return ((dir & 0xFF) >> 6) * 2 + 1;
 }
 
 // 被弾した向きを決める, PFLAG20_UNK_15 が立っているときは facing でなく unk_3e8 に入れて相手の unk_40 を退避する
-void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
+void FUN_08080f80(Player* p, Hitbox* a, Hitbox* b) {
   b->knockback = a->knockback;
   if (a->knockback > 200) {
     b->knockback = 200;
@@ -168,18 +164,18 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
 
   if (Hitbox_TestAttr(a, HBATTR_18)) {
     p->blownAway = 1;
-    p->facing = FUN_08080f20(a, b);
+    p->facing = LinkPlayer_GetDirToAttacker(a, b);
     return;
   }
 
   if (p->action == PACT_PUSH) {
-    b->flags |= HBFLAG_HIDDEN;
+    b->flags |= HBF_HIDDEN;
     b->knockback = 0;
     return;
   }
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
-    if (a->flags & HBFLAG_ANGLE) {
+    if (a->flags & HBF_ANGLE) {
       p->knockbackDir = ANGLE_TO_DIR8(a->angle + 0x10);
     } else {
       s32 dx = a->center.x - b->center.x;
@@ -194,12 +190,12 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
 
     p->knockbackSpeed = b->knockback;
     b->knockback = 0;
-    b->flags |= HBFLAG_HIDDEN;
+    b->flags |= HBF_HIDDEN;
     return;
   }
 
   p->blownAway = 0;
-  p->facing = FUN_08080f20(a, b);
+  p->facing = LinkPlayer_GetDirToAttacker(a, b);
 }
 
 // 夜扱いかどうか, 闇のガーブを着ていれば時刻を問わず夜になる
@@ -473,20 +469,14 @@ void FUN_080815ac(Player* p) {
 }
 
 // flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
-// 残差は23/23命令で共有された return pose のブロック位置だけ (player.c の Player_ApplyFlashPose と同じ), 分岐形の反転は試済
-NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
-#ifdef NONMATCHING_C
-  if (p->flashTimer != 0) {
-    p->flashTimer--;
-    if ((p->flashTimer >> 2) & 1) {
-      return p->flashPose;
-    }
+u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
+  if (p->flashTimer == 0) {
+    return pose;
+  } else if ((--p->flashTimer >> 2) & 1) {
+    return p->flashPose;
+  } else {
+    return pose;
   }
-
-  return pose;
-#else
-  INCFUNC("asm/func/LinkPlayer_ApplyFlashPose.inc");
-#endif
 }
 
 // 点滅ポーズを反映してから、影の位置をスプライト位置+オフセットで作り直す
@@ -524,12 +514,12 @@ void FUN_080816a0(Player* p) {
 
 // サバタの被弾判定を組む, ダーク属性で受けてソル属性に弱い
 void AllySabata_SetupHurtbox(Player* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.196), Q8(0.497), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.497), 0);
-  Hitbox_Init(hurtbox, p->mover.id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_DAMAGE, 0, 1, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_DARK, HBATTR_SOL);
   Hitbox_SetHandler(hurtbox, AllySabata_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->beast.pos, 0);
@@ -700,8 +690,8 @@ NON_MATCH void FUN_08081c04(Player* p) {
 
   halfSize.x = 170, halfSize.y = 50, halfSize.z = 170;
   offset.x = 0, offset.y = -20, offset.z = 0;
-  Hitbox_Init(&p->wpn.hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, 1 << WK_GUN, 2, p->wpn.iframes);
+  Hitbox_Init(&p->wpn.hitbox, 0, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 1, &halfSize, &offset);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, 50, HBSRC_GUN, 2, p->wpn.iframes);
   Hitbox_SetHandler(&p->wpn.hitbox, NULL, p);
 #else
   INCFUNC("asm/func/FUN_08081c04.inc");
@@ -1404,7 +1394,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
 }
 
 // 向いている方向の少し前に Entity080cbabc を出して効果音を鳴らす
-void FUN_080831e0(Player* p, s32 size, s32 plttOfs, HitboxAttributes attrs) {
+void FUN_080831e0(Player* p, s32 size, s32 plttOfs, HitboxAttrs attrs) {
   s32 angle = ((p->facing + 5) & 7) * 32;
   WorldPos pos = p->mover.pos;
 
@@ -1796,9 +1786,9 @@ void FUN_08084078(Player* p) {
   }
 
   if (AllySabata_TestFlag35a(p, PFLAG35A_NO_HURTBOX)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 
@@ -1882,16 +1872,16 @@ void AllySabata_UpdateActions(Player* p) {
 }
 
 // サバタの被弾処理, 行動8 の間は規定回数まで弾き, 超えたら弾き返すか行動 0x14 に移る
-// 命令数は一致 (181/181), 残差は a->flags の扱いだけ: こちらは最初の判定で r7 に退避して最後の HBFLAG_ANGLE 判定で使い回すが, 原典は読み直す
+// 命令数は一致 (181/181), 残差は a->flags の扱いだけ: こちらは最初の判定で r7 に退避して最後の HBF_ANGLE 判定で使い回すが, 原典は読み直す
 // そのぶん原典は r7 が空いていて 0x46A のアドレスを 0x37C から add #0xee で作れている
 // Tier A-C 試済: Hitbox_TestFlags / 直接 & の書き分け (最初はヘルパ形, 最後は直接形で原典のオペランド順になる), 判定順の入れ替え
-NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
+NON_MATCH void AllySabata_OnHurt(Hitbox* a, Hitbox* b, Player* p) {
 #ifdef NONMATCHING_C
   if (p->mode != PMODE_ACTIVE) {
     return;
   }
 
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_9)) {
+  if (Hitbox_TestFlags(a, HBF_9)) {
     if (!(b->hitState & HBHITSTATE_UNK_0)) {
       return;
     }
@@ -1902,7 +1892,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 
   if (p->action == PACT_REFUELING && p->state != 0) {
     p->blockFlashTimer = 4;
-    if (Hitbox_HasWeakness(a, 0x1000)) {  // 攻撃元の種別マスクの 0x1000, 未解析
+    if (Hitbox_HasSource(a, HBSRC_12)) {
       p->namakuraCount++;
       if (p->namakuraCount >= p->namakuraLimit) {
         p->namakuraCount = 0;
@@ -1913,7 +1903,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
       p->blockCount++;
       if (p->blockCount >= p->blockLimit) {
         p->blockCount = 0;
-        p->facing = FUN_08080f20(a, b);
+        p->facing = LinkPlayer_GetDirToAttacker(a, b);
         p->blownAway = 1;
         b->knockback = 100;
         return;
@@ -1931,7 +1921,7 @@ NON_MATCH void AllySabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
   }
 
   p->knockbackSpeed = a->knockback;
-  if (a->flags & HBFLAG_ANGLE) {
+  if (a->flags & HBF_ANGLE) {
     p->knockbackDir = Angle_ToDir8(a->angle);
   } else {
     s32 dx = a->center.x - b->center.x;

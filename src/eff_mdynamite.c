@@ -37,7 +37,7 @@ typedef struct DynamiteEffect {
 } DynamiteEffect;
 static_assert(sizeof(DynamiteEffect) == 480);
 
-struct Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 plttOffset, s32 delay);
+struct Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 plttOffset, s32 delay);
 
 void DynamiteEffect_StateFuse(DynamiteEffect* p);
 void DynamiteEffect_StateSink(DynamiteEffect* p);
@@ -167,7 +167,7 @@ void DynamiteEffect_StateFuse(DynamiteEffect* p) {
       }
       Explosion_CreateWithAttrs(&pos, 0, power, 50, HBATTR_INKA | HBATTR_18 | HBATTR_NAMAKURA | HBATTR_FLAME, 30, 0, i * 4);
     }
-    FUN_08240cf0(p->pos.x, p->pos.z, 0x400, 0, 1, 0xB546);
+    NoiseManager_AddMoverNoise(p->pos.x, p->pos.z, 0x400, 0, 1, 0xB546);
     p->owner->dynamiteCount--;
     KillEntity((Entity*)p);
   } else if (p->timeoutTimer == 0) {

@@ -16,6 +16,9 @@ static inline u32 DistSq(s32 dx, s32 dz) { return dx * dx + dz * dz; }
 // global.h の FixToInt(12, v) と同等 (global.h を include したくなかったので別途定義しただけ)
 #define Trig_Fix12ToInt(v) FixToInt(12, (v))
 
+// 角度を 8 方向にする, Angle_ToDir8 と違い +0x10 の丸めをしない
+static inline u16 Angle_ToDir8Floor(u32 angle) { return (((((angle) & 0xFF) >> 5) + 3) & 7); }
+
 // 角度 (0..255) を 8方向のインデックスに変換する (FUN_08237834 と全く同じ)
 // 方向は "include/constants/misc.h" の DIR8_* に対応
 static inline u16 Angle_ToDir8(u16 angle) { return ((((angle + 0x10) & 0xFF) >> 5) + 3) & 7; }

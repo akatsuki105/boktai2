@@ -150,7 +150,7 @@ _080DE4BE:
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08240cc4
+	bl NoiseManager_AddNoiseWithFlags
 	adds r2, r4, #0
 	adds r2, #0x3c
 	ldrh r0, [r2, #6]

@@ -35,8 +35,8 @@ typedef struct {
   u32 scriptID;                  // 0x08, 0 以外なら property が変わったとき VM_ExecByID で実行する
   u32 scriptArgs[4];             // 0x0C, スクリプトの argv[4..7]
   u32 unk_1c;                    // 0x1C, PropertyCube_OnHurt が被弾時に 1 を入れる
-  u32 unk_20;                    // 0x20, 被弾させた側の HitboxData.weakness
-  u32 unk_24;                    // 0x24, 被弾させた側の HitboxData.attributes
+  u32 unk_20;                    // 0x20, 被弾させた側の Hitbox.typeMask
+  u32 unk_24;                    // 0x24, 被弾させた側の Hitbox.attributes
   u16 unk_28;                    // 0x28, bit0 が立っていると PropertyCube_Remove が FUN_08002a58 を飛ばす
   u16 unk_2a;                    // 0x2A, 状態関数がビットを立てる, 退避時に 0 に戻る
   u16 zone;                      // 0x2C, '.m' が 0 以外なら置いた位置の GetZoneAt
@@ -63,8 +63,8 @@ typedef struct {
   AuxSpriteGfx gfx2;             // 0xD4, SPRITE_PROPERTY_CUBE
   AuxSprite spr_f0;              // 0xF0
   MapTileOverride tileOverride;  // 0x11C
-  HitboxData hurtbox;            // 0x12C
-  HitboxData hitbox;             // 0x17C
+  Hitbox hurtbox;                // 0x12C
+  Hitbox hitbox;                 // 0x17C
   ZoneEventSource zoneSource;    // 0x1CC
 } PropertyCube;
 static_assert(sizeof(PropertyCube) == 508);
@@ -170,11 +170,11 @@ void PropertyCube_Remove(PropertyCubeManager* p, PropertyCube* cube) {
 }
 
 // 残差0命令 (26/26), レジスタ名だけ違う: 原典は weakness をスクラッチ (r1) に置くが, こちらは r4 に載る
-NON_MATCH void PropertyCube_OnHurt(HitboxData* a, HitboxData* b, PropertyCube* cube) {
+NON_MATCH void PropertyCube_OnHurt(Hitbox* a, Hitbox* b, PropertyCube* cube) {
 #ifdef NONMATCHING_C
-  if (a->id != b->id && (a->weakness & ((1 << WK_SWORD) | (1 << WK_SPEAR) | (1 << WK_HAMMER))) && cube->unk_40 == 0) {
+  if (a->id != b->id && (a->typeMask & (HBSRC_SWORD | HBSRC_SPEAR | HBSRC_HAMMER)) && cube->unk_40 == 0) {
     cube->unk_1c = 1;
-    cube->unk_20 = a->weakness;
+    cube->unk_20 = a->typeMask;
     cube->unk_24 = a->attributes;
     cube->unk_40 = 10;
   }
@@ -527,7 +527,7 @@ NON_MATCH void PropertyCube_UpdateCommon(PropertyCubeManager* p, PropertyCube* c
   Mover* obj = &cube->obj;
   MapTileOverride* self = &cube->tileOverride;
   AuxSprite* spr;
-  HitboxData* hb;
+  Hitbox* hb;
   u32 argv[8];
   Vec3 ofs;
   Vec3 size;
@@ -596,14 +596,14 @@ NON_MATCH void PropertyCube_UpdateCommon(PropertyCubeManager* p, PropertyCube* c
 
   hb = &cube->hurtbox;
   if (cube->unk_2a & 0x10) {
-    SET_FLAGS(hb->flags, HBFLAG_HIDDEN);
+    SET_FLAGS(hb->flags, HBF_HIDDEN);
   } else {
     Hitbox_SetPos(hb, &cube->obj.pos, 0);
     if (cube->unk_40 != 0) {
       cube->unk_40--;
-      SET_FLAGS(hb->flags, HBFLAG_HIDDEN);
+      SET_FLAGS(hb->flags, HBF_HIDDEN);
     } else {
-      CLEAR_FLAGS(hb->flags, HBFLAG_HIDDEN);
+      CLEAR_FLAGS(hb->flags, HBF_HIDDEN);
     }
   }
 
@@ -909,17 +909,17 @@ NON_MATCH s32 Cmd_A062(void) {
 
   halfSize.x = 0x82, halfSize.y = 0x80, halfSize.z = 0x82;
   offset.x = 0, offset.y = 0x80, offset.z = 0;
-  Hitbox_Init(&cube->hurtbox, cube->obj.id, HBFLAG_HURTBOX | HBFLAG_UNK_6 | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(&cube->hurtbox, cube->obj.id, HBF_HURTBOX | HBF_6 | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(&cube->hurtbox, &cube->obj.pos, 0);
   Hitbox_SetHandler(&cube->hurtbox, PropertyCube_OnHurt, cube);
   Hitbox_Register(&cube->hurtbox);
 
   halfSize.x = 0x90, halfSize.y = 0x80, halfSize.z = 0x90;
-  Hitbox_Init(&cube->hitbox, cube->obj.id, HBFLAG_HITBOX | HBFLAG_UNK_11 | HBFLAG_UNK_0, 0, HIM_0, &halfSize, &offset);
+  Hitbox_Init(&cube->hitbox, cube->obj.id, HBF_HITBOX | HBF_BLOCK | HBF_DAMAGE, 0, HIM_0, &halfSize, &offset);
   Hitbox_SetPos(&cube->hitbox, &cube->obj.pos, 0);
   Hitbox_SetHandler(&cube->hitbox, nop_0800cc04, cube);
   Hitbox_SetPower(&cube->hitbox, 50, 0);
-  cube->hitbox.weakness = 0x10100;
+  cube->hitbox.typeMask = 0x10100;
   cube->hitbox.attributes = HBATTR_FLAME;
 
   if (!TEST_FLAGS(cube->unk_28, 1)) {

@@ -133,7 +133,7 @@ void Cmd_FadeOutBGM(void) {
 }
 
 // 環境音・ループするサブBGMのような同じ曲を鳴らしっぱなしにする用途?
-void FUN_082404b0(SoundID32 id) {
+void Sound_PlaySub(SoundID32 id) {
   if (gSongTable[id].ms == P_UNK12) {
     m4aSongNumStartOrContinue(id);
     m4aMPlayVolumeControl(gMPlayTable[gSongTable[id].ms].info, 0xFFFF, 0x100);
@@ -141,7 +141,7 @@ void FUN_082404b0(SoundID32 id) {
   }
 }
 
-void FUN_082404fc(u32 speed) {
+void Sound_FadeInSub(u32 speed) {
   SoundID16 id = gSoundIDs[P_UNK12];
 
   if ((id != 0) && (gSongTable[id].ms == P_UNK12)) {
@@ -156,11 +156,11 @@ void FUN_082404fc(u32 speed) {
 // 0x3EA2
 void Cmd_3EA2(void) {
   if (VM_SeekToNamedArg('f')) {
-    FUN_082404fc(VM_GetValue());
+    Sound_FadeInSub(VM_GetValue());
   }
 }
 
-void FUN_08240568(u32 speed) {
+void Sound_FadeOutSubTemporarily(u32 speed) {
   if (gSoundIDs[P_UNK12] != 0) {
     u16 ms = gSongTable[gSoundIDs[P_UNK12]].ms;
     m4aMPlayFadeOutTemporarily(gMPlayTable[ms].info, speed);
@@ -171,11 +171,11 @@ void FUN_08240568(u32 speed) {
 // 0x4CBB
 void Cmd_4CBB(void) {
   if (VM_SeekToNamedArg('f')) {
-    FUN_08240568(VM_GetValue());
+    Sound_FadeOutSubTemporarily(VM_GetValue());
   }
 }
 
-void FUN_082405c0(u32 speed) {
+void Sound_FadeOutSub(u32 speed) {
   SoundID16 id = gSoundIDs[P_UNK12];
 
   if (id != 0) {
@@ -191,7 +191,7 @@ void FUN_082405c0(u32 speed) {
 // 0xE6F2
 void Cmd_E6F2(void) {
   if (VM_SeekToNamedArg('f')) {
-    FUN_082405c0(VM_GetValue());
+    Sound_FadeOutSub(VM_GetValue());
   }
 }
 
@@ -204,14 +204,14 @@ void Sound_SetBGMTempo(u32 tempo) {
   }
 }
 
-// 0xEE18
+// 0xEE18, HashName("ＢＧＭテンポ変更")
 void Cmd_SetBGMTempo(void) {
   if (VM_SeekToNamedArg('t')) {
     Sound_SetBGMTempo(VM_GetValue());
   }
 }
 
-// 0x3ED0, 再生中の BGM の音量をスクリプト引数 'v'(音量) と 't'(対象トラック、省略時 0xFF) で変更する
+// 0x3ED0, HashName("ＢＧＭボリューム変更"), 再生中の BGM の音量をスクリプト引数 'v'(音量) と 't'(対象トラック、省略時 0xFF) で変更する
 void Cmd_SetBGMVolume(void) {
   u32 volume, trackBits;
   SoundID16 id;

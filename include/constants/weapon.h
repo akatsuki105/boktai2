@@ -1,11 +1,11 @@
-#ifndef GUARD_ZOKTAI_CONST_WEAPON_H
-#define GUARD_ZOKTAI_CONST_WEAPON_H
+#ifndef __INCLUDE_CONSTANTS_WEAPON_H__
+#define __INCLUDE_CONSTANTS_WEAPON_H__
 
 // WeaponKind
 #define WK_SWORD 0   // 剣(ソード)
 #define WK_SPEAR 1   // 槍(スピア)
 #define WK_HAMMER 2  // 槌(ハンマー)
-#define WK_OTHERS 3  // その他(拳, 星のかけら)
+#define WK_OTHERS 3  // その他(拳, 星のかけら), 装備できるのは 拳(WEAPON_NONE) のみなので、実質拳
 #define WK_GUN 4     // 銃
 
 // Weapon ID
@@ -111,4 +111,4 @@
 #define WET_ENE_COST 30       // エンチャント攻撃のMP消費を下げる(マジックソード)
 #define WET_DURABILITY 31     // 武器の耐久消費を減らす
 
-#endif  // GUARD_ZOKTAI_CONST_WEAPON_H
+#endif  // __INCLUDE_CONSTANTS_WEAPON_H__

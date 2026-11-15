@@ -56,7 +56,7 @@ static inline void Entity081f1770_GetAnimVariant(u8 angle, u8* variant, u8* xfli
 }
 
 s32 Entity081f1770_Update(Entity081f1770* p);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 s32 Entity081f1770_Destroy(Entity081f1770* p);
 s32 Entity081f1770_Init(Entity081f1770* p);
 Entity081f1770* Entity081f1770_Create(void);

@@ -23,7 +23,7 @@ typedef struct {
   Mover unk_48;                  // 0x048
   AuxAnimState anim;             // 0x08C
   Vec3 pos;                      // 0x09C, Hitbox_SetPos に渡す
-  HitboxData hurtbox;            // 0x0A4, FUN_081d6eb8 が組み立てる
+  Hitbox hurtbox;                // 0x0A4, FUN_081d6eb8 が組み立てる
   u16 hp;                        // 0x0F4
   u16 maxHp;                     // 0x0F6
   s32 unk_f8;                    // 0x0F8
@@ -75,13 +75,13 @@ static inline bool8 EntityC60FItem_HasFlag(EntityC60FItem* p, u32 mask) {
 static inline void EntityC60FItem_ClearFlag(EntityC60FItem* p, u32 mask) { CLEAR_FLAGS(p->flags, mask); }
 
 // 170/182 命令, ハンドラの判定をすべて bool8 inline にする形が途中まで
-NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
+NON_MATCH void FUN_081d6d28(Hitbox* a, Hitbox* b, EntityC60FItem* p) {
 #ifdef NONMATCHING_C
   if (EntityC60FItem_HasFlag(p, 8)) {
     return;
   }
 
-  if ((p->unk_109 != 1 && (a->weakness & 0x10)) || EntityC60FItem_HasFlag(p, 2)) {
+  if ((p->unk_109 != 1 && (a->typeMask & HBSRC_GUN)) || EntityC60FItem_HasFlag(p, 2)) {
     b->damage = 0;
     b->knockback = 0;
     return;
@@ -121,8 +121,8 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
     }
   }
 
-  if (p->unk_109 == 1 && a->owner != NULL && a->fn != NULL && (a->weakness & 0x10)) {
-    ((void (*)(HitboxData*, HitboxData*, void*))a->fn)(a, b, a->owner);
+  if (p->unk_109 == 1 && a->owner != NULL && a->fn != NULL && (a->typeMask & HBSRC_GUN)) {
+    ((void (*)(Hitbox*, Hitbox*, void*))a->fn)(a, b, a->owner);
   }
 #else
   INCFUNC("asm/func/FUN_081d6d28.inc");
@@ -132,7 +132,7 @@ NON_MATCH void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) {
 // 種別に応じた大きさで当たり判定を作る
 NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
 #ifdef NONMATCHING_C
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize;
   Vec3 offset;
   s32 radius, height;
@@ -144,7 +144,7 @@ NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
   }
   halfSize.x = radius, halfSize.y = height, halfSize.z = radius;
   offset.x = 0, offset.y = height, offset.z = 0;
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_081d6d28, p);
   Hitbox_Register(hurtbox);

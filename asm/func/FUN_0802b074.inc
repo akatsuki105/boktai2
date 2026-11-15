@@ -850,7 +850,7 @@ _0802B6DC:
 	strh r1, [r0]
 _0802B724:
 	adds r0, r6, #0
-	bl FUN_08028388
+	bl Ringo_UpdateCamera
 	ldr r3, _0802B758 @ =0x00000886
 	adds r1, r6, r3
 	ldrh r0, [r1]
@@ -1170,7 +1170,7 @@ _0802B8F8:
 	bl CreateDamageNumber
 _0802B9A2:
 	adds r0, r6, #0
-	bl FUN_08028a04
+	bl Ringo_SpawnBiteBlood
 	movs r0, #0xd3
 	lsls r0, r0, #2
 	bl PlaySound_0824078c

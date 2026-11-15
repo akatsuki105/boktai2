@@ -646,7 +646,7 @@ NON_MATCH bool32 Player_CanTalk(void) {
   if (player == NULL) {
     return FALSE;
   }
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return FALSE;
   }
   if (!TEST_FLAGS(gPlayerModes[0], PMODE_ACTIVE)) {
@@ -682,10 +682,10 @@ bool32 Cmd_IsCrossoverUnlocked(void) {
   return FALSE;
 }
 
-// 0xB45F
+// 0xB45F, HashName("クロスオーバーポイント取得")
 s32 Cmd_GetCrossoverPoint(void) { return gSystemSaveData->crossoverPoint; }
 
-// 0x904B
+// 0x904B, HashName("クロスオーバーポイント設定")
 s32 Cmd_SetCrossoverPoint(void) {
   s32 point = VM_GetNamedArgValue('p', gSystemSaveData->crossoverPoint);
 

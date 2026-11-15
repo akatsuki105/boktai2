@@ -24,8 +24,8 @@ typedef struct {
   AuxSpriteGfx gfx;       // 0x018, SPRITE_DUNEYRR_AUX
   AuxSprite sprite;       // 0x034
   AuxAnimState anim;      // 0x060
-  HitboxData hurtbox;     // 0x070, ハンドラは DuneyrrPowderBall_OnHurt
-  HitboxData hitbox;      // 0x0C0
+  Hitbox hurtbox;         // 0x070, ハンドラは DuneyrrPowderBall_OnHurt
+  Hitbox hitbox;          // 0x0C0
   ParticleShadow shadow;  // 0x110
 } DuneyrrPowderBall;
 static_assert(sizeof(DuneyrrPowderBall) == 336);

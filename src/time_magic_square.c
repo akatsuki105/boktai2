@@ -53,7 +53,7 @@ void TimeMC_SetUpdateCallback(TimeMC* p, void* fn) {
 
 // プレイヤーが近いと浮き上がって光り, A ボタンでプレイヤーを pos へ飛ばす
 void TimeMC_UpdateIdle(TimeMC* p) {
-  if (!(gGameFlags & GAMEFLAG_EVENT)) {
+  if (!(gGameFlags & GAMEFLAG_CUTSCENE)) {
     if (p->readyTimer < 10) {
       p->readyTimer++;
     }

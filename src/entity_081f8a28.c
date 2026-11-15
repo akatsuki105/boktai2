@@ -15,7 +15,7 @@ typedef struct {
   AuxSprite sprite;       // 0x000
   AuxAnimState anim;      // 0x02C
   AuxShadow shadow;       // 0x03C, SPRITE_EFF_1C1B
-  HitboxData hitbox;      // 0x0A8, 攻撃判定, 当たると state 3 へ移る
+  Hitbox hitbox;          // 0x0A8, 攻撃判定, 当たると state 3 へ移る
   Vec3 vel;               // 0x0F8, x と z は speed と angle から毎フレーム作り直す, y は落ち始めると毎フレーム 3 ずつ減る
   Vec3 target;            // 0x100, 向かう先の座標
   u8 unk_108;             // 0x108, 生成時の angle, 読み手は未発見
@@ -60,20 +60,20 @@ static inline bool8 Entity081f8a28_IsElemUsed(Entity081f8a28* p, s32 i) {
 }
 
 // 当たったら爆発へ移る
-void Entity081f8a28_OnHit(HitboxData* a, HitboxData* b, Entity081f8a28Elem* elem) {
+void Entity081f8a28_OnHit(Hitbox* a, Hitbox* b, Entity081f8a28Elem* elem) {
   elem->state = 3;
   elem->stateBegun = TRUE;
 }
 
-void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
-  HitboxData* hitbox;
+void Entity081f8a28_InitHitbox(Entity081f8a28Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
+  Hitbox* hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 64, 128, 64);
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ONCE | HBF_SENSOR | HBF_DAMAGE, 0, 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f8a28_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
@@ -250,7 +250,7 @@ void Entity081f8a28_UpdateExplode(Entity081f8a28* p, Entity081f8a28Elem* elem) {
   }
 }
 
-void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Entity081f8a28* p = gEntity081f8a28;
   Entity081f8a28Elem* elem;
   AuxSprite* sprite;

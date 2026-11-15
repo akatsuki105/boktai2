@@ -98,13 +98,13 @@ _080B1990:
 	ldr r1, [r4]
 	adds r1, #0x48
 	movs r0, #0x10
-	bl FUN_0823bb7c
+	bl Camera_PanTo
 	adds r0, r5, #0
 	movs r1, #0xd
 	bl PileDriver_SetSubState
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080B19B2:
 	add sp, #4
 	pop {r4, r5, r6}

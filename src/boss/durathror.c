@@ -42,8 +42,8 @@ typedef struct {
   s16 unk_1a;          // 0x01A, 0 になった瞬間 FUN_080373a4 でパレットを戻す
   Vec3 unk_1c;         // 0x01C, 出現位置, FUN_080375d4 はここを中心に揺らす
   MainSprite sprite;   // 0x024
-  HitboxData hitbox;   // 0x084
-  HitboxData hurtbox;  // 0x0D4, ハンドラは Durathror_OnElemHurt
+  Hitbox hitbox;       // 0x084
+  Hitbox hurtbox;      // 0x0D4, ハンドラは Durathror_OnElemHurt
 } DurathrorElem;
 static_assert(sizeof(DurathrorElem) == 292);
 
@@ -101,8 +101,8 @@ typedef struct Durathror {
   s16 elemHurtboxPower5;                  // 0x1B8, '.f[8]=50'
   u8 unk_1ba[0x1BC - 0x1BA];              // 0x1BA
   s32 weaponExp;                          // 0x1BC, '.K'
-  HitboxData hitbox;                      // 0x1C0
-  HitboxData hurtbox;                     // 0x210, ハンドラは Durathror_OnHurt
+  Hitbox hitbox;                          // 0x1C0
+  Hitbox hurtbox;                         // 0x210, ハンドラは Durathror_OnHurt
   MainSpriteGfx gfx;                      // 0x260, SPRITE_DURATHROR
   MainSprite sprite_280;                  // 0x280
   rgb555 pltt[8][16];                     // 0x2E0
@@ -161,10 +161,10 @@ void FUN_08039280(Durathror*);
 // gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
 static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
-void Durathror_OnHurt(HitboxData* a, HitboxData* b, Durathror* p) {
+void Durathror_OnHurt(Hitbox* a, Hitbox* b, Durathror* p) {
   Boss* boss = &p->base;
 
-  if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
+  if (TEST_FLAGS(a->flags, HBF_ANGLE)) {
     p->unk_158 = a->angle;
   } else {
     p->unk_158 = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
@@ -172,7 +172,7 @@ void Durathror_OnHurt(HitboxData* a, HitboxData* b, Durathror* p) {
   Hitbox_ApplyDamage(a, b);
   p->unk_15c = b->damage;
   a->damage += boss->damageBonus;
-  Boss_SetWeaponExpMask(boss, a->weakness);
+  Boss_SetWeaponExpMask(boss, a->typeMask);
   Boss_SetHurtAttributes(boss, a->attributes);
 }
 
@@ -431,17 +431,13 @@ void Cmd_FreeDurathrorScriptArg(void) {
   }
 }
 
-// 残差は乱数の添字と 3 のマスクの持ち方 (99/101), 原典は乱数表と添字のアドレスと 3 を r6 / sb / r8 に置いて 2 回の呼び出しで使い回す
-NON_MATCH void FUN_080371d4(WorldPos* pos) {
-#ifdef NONMATCHING_C
+// pos から煙を 2 回出す
+void Durathror_EmitSmoke(WorldPos* pos) {
   Vec3 size;
 
-  VEC3_SET(size, Q8(0.641), Q8(1), Q8(0.641));
+  VEC3_SET(size, Q8(0.641), Q8(0.063), Q8(0.641));
   EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
   EmitSmoke(pos, 3, &size, (u8)RandomNext(), (RandomNext() & 3) + 2, (RandomNext() & 3) + 20, 2, 2);
-#else
-  INCFUNC("asm/func/FUN_080371d4.inc");
-#endif
 }
 
 void DurathrorElem_SetFlags(DurathrorElem* elem, u32 flags) { elem->flags |= flags; }
@@ -494,13 +490,13 @@ void FUN_080373a4(Durathror* p, DurathrorElem* elem) {
 
 void FUN_080373b8(void) {}
 
-void Durathror_OnElemHurt(HitboxData* a, HitboxData* b, DurathrorElem* elem) {
+void Durathror_OnElemHurt(Hitbox* a, Hitbox* b, DurathrorElem* elem) {
   Boss* boss = Boss_Get(BOSS_DURATHROR);
 
   Hitbox_ApplyDamage(a, b);
   elem->damage = b->damage;
   if (TEST_FLAGS(a->attributes, HBATTR_DARK)) {
-    FUN_080371d4(&elem->sprite.pos);
+    Durathror_EmitSmoke(&elem->sprite.pos);
   }
   if (boss != NULL) {
     a->damage += boss->damageBonus;
@@ -508,24 +504,24 @@ void Durathror_OnElemHurt(HitboxData* a, HitboxData* b, DurathrorElem* elem) {
 }
 
 void Durathror_InitElemHitbox(Durathror* p, DurathrorElem* elem) {
-  HitboxData* hitbox = &elem->hitbox;
+  Hitbox* hitbox = &elem->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_080373b8, elem);
   Hitbox_SetAttack(hitbox, p->elemHitboxPower, p->elemHitboxKnockback, 0, 0, p->elemHitboxUnk44);
 }
 
 void Durathror_InitElemHurtbox(Durathror* p, DurathrorElem* elem) {
-  HitboxData* hurtbox = &elem->hurtbox;
+  Hitbox* hurtbox = &elem->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_HIDDEN | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, Durathror_OnElemHurt, elem);
   Hitbox_SetPowerAndAttributes(hurtbox, p->elemHurtboxPower, HBATTR_IMMORTAL, 0);
@@ -1202,10 +1198,10 @@ NON_MATCH void FUN_08038878(Durathror* p) {
         FUN_080373a4(p, elem);
       }
       if (DurathrorElem_TestFlags(elem, 1)) {
-        SET_FLAGS(elem->hurtbox.flags, HBFLAG_HIDDEN);
+        SET_FLAGS(elem->hurtbox.flags, HBF_HIDDEN);
         elem->damage = 0;
       } else {
-        CLEAR_FLAGS(elem->hurtbox.flags, HBFLAG_HIDDEN);
+        CLEAR_FLAGS(elem->hurtbox.flags, HBF_HIDDEN);
         Hitbox_SetPos(&elem->hurtbox, &elem->sprite.pos, 0);
       }
       if (DurathrorElem_TestFlags(elem, 2)) {
@@ -1362,24 +1358,24 @@ NON_MATCH void FUN_08038b88(Durathror* p) {
 }
 
 void Durathror_InitHitbox(Durathror* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.504), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite_280.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08036844, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
 }
 
 void Durathror_InitHurtbox(Durathror* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite_280.pos, 0);
   Hitbox_SetHandler(hurtbox, Durathror_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_SOL, HBATTR_DARK);
@@ -1490,7 +1486,7 @@ void FUN_080390f8(Durathror* p) {
 NON_MATCH void FUN_08039280(Durathror* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   FUN_08022ec0(boss);
   FUN_08038878(p);
@@ -1500,16 +1496,16 @@ NON_MATCH void FUN_08039280(Durathror* p) {
   }
   hitbox = &p->hurtbox;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &p->sprite_280.pos, 0);
   }
   hitbox = &p->hitbox;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &p->sprite_280.pos, 0);
     Hitbox_Register(hitbox);
   }
@@ -2469,7 +2465,7 @@ s32 FUN_0803b7ec(Durathror* p) {
 }
 
 s32 Durathror_HandleDamage(Durathror* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   s32 damage = p->unk_15c;
 
   p->unk_15c = 0;
@@ -2492,7 +2488,7 @@ s32 Durathror_HandleDamage(Durathror* p) {
     }
     p->shakeTimer = 8;
     if (p->base.hurtAttributes & HBATTR_DARK) {
-      FUN_080371d4(&p->sprite_280.pos);
+      Durathror_EmitSmoke(&p->sprite_280.pos);
     }
     if (p->unk_168 > 0) {
       PlaySound_0824078c(SE_ENEMY_DAMAGED);

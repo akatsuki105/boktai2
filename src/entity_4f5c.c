@@ -194,21 +194,18 @@ s32 Entity4F5C_Update(Entity4F5C* p) {
   return 0;
 }
 
-// 残差0命令 (23/23), レジスタ名だけ違う: 原典は e を p のレジスタに重ねるが, こちらは p が別レジスタに残る
-NON_MATCH s32 Entity4F5C_Destroy(Entity4F5C* p) {
-#ifdef NONMATCHING_C
-  Entity4F5CElem* e = p->elems;
+// 3 組ぶんのパーティクルを全部外す
+s32 Entity4F5C_Destroy(Entity4F5C* p) {
   s32 i;
   s32 j;
+  Entity4F5CElem* e = p->elems;
 
   for (i = 0; i < 3; i++, e++) {
     for (j = 0; j < 3; j++) {
       Particle_Remove(&e->ptcls[j]);
     }
   }
-#else
-  INCFUNC("asm/func/Entity4F5C_Destroy.inc");
-#endif
+  return 0;
 }
 
 const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980

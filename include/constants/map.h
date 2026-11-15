@@ -23,7 +23,7 @@
 #define ST_AVE2 18       // "f03", 2番街
 #define ST_AVE8 19       // "f04", 8番街
 #define ST_AVE12 20      // "f05", 12番街
-#define ST_HILL 21       // "f06", 約束の丘
+#define ST_HILL 21       // "f06", "st05_00_tower", 約束の丘
 #define ST_MALL 22       // サンミゲル
 #define ST_TREE 23       // 太陽樹
 #define ST_PD_POINT 24   // パイルドライバー

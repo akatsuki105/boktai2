@@ -59,7 +59,7 @@ s32 AlarmPanel_Update(AlarmPanel* p) {
       p->sprite2.flags &= ~SPRFLAG_XFLIP;
     }
     if ((p->animTimer & 0x1F) == 0) {
-      FUN_08240cf0(p->sprite.pos.x, p->sprite.pos.z, 0x400, 0, 0x80, 0xB546);
+      NoiseManager_AddMoverNoise(p->sprite.pos.x, p->sprite.pos.z, 0x400, 0, 0x80, 0xB546);
     }
     p->animTimer++;
   } else {

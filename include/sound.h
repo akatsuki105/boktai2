@@ -26,10 +26,10 @@ void Sound_FadeInBGM(u32 speed);
 void Sound_FadeOutBGM(u32 speed);
 void Sound_FadeOutBGMTemporarily(u32 speed);
 void PlaySound_08240718(SoundID32 id);
-void FUN_082404b0(SoundID32 id);
-void FUN_082404fc(u32 speed);
-void FUN_08240568(u32 speed);
-void FUN_082405c0(u32 speed);
+void Sound_PlaySub(SoundID32 id);
+void Sound_FadeInSub(u32 speed);
+void Sound_FadeOutSubTemporarily(u32 speed);
+void Sound_FadeOutSub(u32 speed);
 bool32 sound_08240960(SoundID32 id);
 
 #endif  // __INCLUDE_SOUND_H__

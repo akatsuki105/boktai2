@@ -11,7 +11,7 @@
 	bl FUN_080cddf0
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_080cdfd4
+	bl PlayerLink_ApplyFlashPose
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_080cd958

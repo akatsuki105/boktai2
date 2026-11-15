@@ -160,7 +160,7 @@ _080DE656:
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08240cc4
+	bl NoiseManager_AddNoiseWithFlags
 	ldr r0, [sp, #0x38]
 	ldrh r1, [r0, #6]
 	movs r0, #4

@@ -44,10 +44,10 @@ static_assert(sizeof(ShadeManAfterimage) == 100);
 typedef struct ShadeMan {
   Boss base;                                 // 0x000
   s32 weaponExp;                             // 0x158, '.K'
-  HitboxData hurtbox;                        // 0x15C, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, ハンドラは ShadeMan_OnHurt
-  HitboxData hurtbox2;                       // 0x1AC, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, ハンドラは空
-  HitboxData hitbox;                         // 0x1FC
-  HitboxData hitbox2;                        // 0x24C
+  Hitbox hurtbox;                            // 0x15C, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, ハンドラは ShadeMan_OnHurt
+  Hitbox hurtbox2;                           // 0x1AC, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, ハンドラは空
+  Hitbox hitbox;                             // 0x1FC
+  Hitbox hitbox2;                            // 0x24C
   MainSpriteGfx gfx;                         // 0x29C, SPRITE_SHADEMAN
   MainSprite sprite;                         // 0x2BC
   AuxShadow shadow;                          // 0x31C
@@ -296,7 +296,7 @@ void (*const PTR_ARRAY_085b0028[22])(ShadeMan*) = {
 
 void FUN_0821c918(ShadeMan*);
 void ShadeMan_SetMotion(ShadeMan* p, u32 next, bool8 force);
-s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
+s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttrs attrs);
 s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 void FUN_0823b880(s32 n);
 struct Entity0805e67c* Entity0805e67c_Create(void);
@@ -310,7 +310,7 @@ void FUN_08221938(ShadeMan* p);
 void ShadeMan_HandleDamage(ShadeMan* p);
 void ShadeMan_PollMessages(ShadeMan* p);
 s32 Map_FindFarthestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx);
-s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttrs attrs);
 void ShadeMan_SetSubState0(ShadeMan* p, u32 subState0, u32 subState1, u32 subState2, u32 duration);
 void FUN_0822129c(ShadeMan*);
 void FUN_0821d800(ShadeMan*);
@@ -340,16 +340,14 @@ void FUN_0821bd5c(Vec3* from, Vec3* to, u8* angle, u16* dist) {
   }
 }
 
-// 残差は ofs のアドレスの持ち方 (60/60), FUN_0803c454 と同じ
-NON_MATCH void FUN_0821bda4(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
-#ifdef NONMATCHING_C
+// center から angle の向きに radius だけ離れた位置を dst に入れる
+void ShadeMan_GetPolarPos(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
   Vec3 ofs;
 
   Vec3_SetPolar(&ofs, angle, radius);
-  Vec3_Sum(dst, center, &ofs);
-#else
-  INCFUNC("asm/func/FUN_0821bda4.inc");
-#endif
+  dst->x = center->x + ofs.x;
+  dst->y = center->y + ofs.y;
+  dst->z = center->z + ofs.z;
 }
 
 // centerPos を中心に target まで duration フレームかけて回り込む準備をする
@@ -402,7 +400,7 @@ void FUN_0821bf34(ShadeMan* p) {
 }
 
 // 控えた角度と距離から位置を作り直す
-void FUN_0821bfc8(ShadeMan* p) { FUN_0821bda4(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_bd4), p->unk_be0 >> 8); }
+void FUN_0821bfc8(ShadeMan* p) { ShadeMan_GetPolarPos(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_bd4), p->unk_be0 >> 8); }
 
 // 移動に使う経路を切り替える
 void FUN_0821c010(ShadeMan* p, u32 pathIdx) {
@@ -603,24 +601,24 @@ void ShadeMan_PlayAnim(ShadeMan* p, s32 animIdx, s32 mode, bool8 restart, bool8 
 NON_MATCH void FUN_0821c520(ShadeMan* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   if (TEST_FLAGS(p->flag38c, SMFLAG_UNK_5)) {
     SET_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX | BOSSFLAG_UNK_19);
   }
   hitbox = &p->hurtbox;
   if (boss->isCutscene || TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &boss->mover.pos, 0);
     p->hurtbox.angle = p->angle;
   }
   hitbox = &p->hurtbox2;
   if (boss->isCutscene || TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &boss->mover.pos, 0);
   }
 #else
@@ -633,7 +631,7 @@ NON_MATCH void FUN_0821c5d4(ShadeMan* p) {
 #ifdef NONMATCHING_C
   if (!p->base.isCutscene) {
     u32 angle = p->angle;
-    HitboxData* hitbox = &p->hitbox;
+    Hitbox* hitbox = &p->hitbox;
 
     if (!TEST_FLAGS(p->base.flags, BOSSFLAG_NO_HITBOX)) {
       Hitbox_SetPos(hitbox, &p->base.mover.pos, 0);
@@ -656,14 +654,14 @@ NON_MATCH void FUN_0821c5d4(ShadeMan* p) {
 #endif
 }
 
-void ShadeMan_OnHurt(HitboxData* a, HitboxData* b, ShadeMan* p) {
+void ShadeMan_OnHurt(Hitbox* a, Hitbox* b, ShadeMan* p) {
   Boss* boss = &p->base;
 
   if (!TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
     Hitbox_ApplyDamage(a, b);
     p->damage = b->damage;
     p->hurtAngle = a->angle;
-    Boss_SetWeaponExpMask(boss, a->weakness);
+    Boss_SetWeaponExpMask(boss, a->typeMask);
     Boss_SetHurtAttributes(boss, a->attributes);
   }
   SET_FLAGS(boss->flags, BOSSFLAG_UNK_0);
@@ -677,7 +675,7 @@ void ShadeMan_OnHurt(HitboxData* a, HitboxData* b, ShadeMan* p) {
 
 void FUN_0821c740(void) {}
 
-void FUN_0821c744(HitboxData* a, HitboxData* b, ShadeMan* p) { SET_FLAGS(p->flag38c, SMFLAG_UNK_24); }
+void FUN_0821c744(Hitbox* a, Hitbox* b, ShadeMan* p) { SET_FLAGS(p->flag38c, SMFLAG_UNK_24); }
 
 // 本体, SPRITE_DJANGO_SABATA の画面座標スプライト, 8枚の残像を用意する
 void ShadeMan_Init_Helper_0821c758(ShadeMan* p, Vec3* pos, u32 angle) {
@@ -719,12 +717,12 @@ void FUN_0821c918(ShadeMan* p) {
 }
 
 void ShadeMan_InitHurtboxes(ShadeMan* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hurtbox, ShadeMan_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);
@@ -732,7 +730,7 @@ void ShadeMan_InitHurtboxes(ShadeMan* p, u32 power) {
   hurtbox = &p->hurtbox2;
   VEC3_SET(halfSize, Q8(1), Q8(0.5), Q8(1));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_0821c740, p);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
@@ -740,19 +738,19 @@ void ShadeMan_InitHurtboxes(ShadeMan* p, u32 power) {
 }
 
 void ShadeMan_InitHitboxes(ShadeMan* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0821c744, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
   hitbox = &p->hitbox2;
   VEC3_SET(halfSize, Q8(0.625), Q8(0.5), Q8(0.625));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0821c744, p);
   Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
@@ -1225,29 +1223,26 @@ NON_MATCH void ShadeMan_Heal(ShadeMan* p, s32 amount) {
 #endif
 }
 
-// 原典は base を r4/r5 の 2 語に詰めたまま扱う (113/108)
-NON_MATCH void FUN_0821d900(ShadeMan* p) {
-#ifdef NONMATCHING_C
-  Vec3 base;
-  Vec3* pos;
+// 掴んだプレイヤーから吸った血を体の前に 2 つ飛ばす
+void ShadeMan_SpawnBiteBlood(ShadeMan* p) {
+  Vec3* center;
+  Vec3 ofs;
   s32 i;
 
-  if (p->base.facing <= 1) {
-    VEC3_SET(base, Q8(0.25), Q8(0.782), Q8(-0.5));
+  if (p->base.facing <= DIR4_EAST) {
+    VEC3_SET(ofs, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
-    VEC3_SET(base, Q8(-0.5), Q8(0.782), Q8(0.25));
+    VEC3_SET(ofs, Q8(-0.5), Q8(0.782), Q8(0.25));
   }
-  pos = &p->base.mover.pos;
+  center = &p->base.mover.pos;
   for (i = 0; i < 2; i++) {
-    Vec3 ofs = base;
+    Vec3 pos;
 
-    ofs.x += (Random() & 0x7F) - 0x40;
-    ofs.z += (Random() & 0x7F) - 0x40;
-    SpawnBloodEx(pos, &ofs, NULL, NULL, 1, 1);
+    pos.x = ofs.x + (RandomNext() & 0x7F) - 0x40;
+    pos.y = ofs.y;
+    pos.z = ofs.z + (RandomNext() & 0x7F) - 0x40;
+    SpawnBloodEx(center, &pos, NULL, NULL, 1, 1);
   }
-#else
-  INCFUNC("asm/func/FUN_0821d900.inc");
-#endif
 }
 
 // 抱えているプレイヤーの姿を本体の位置と向きに合わせる
@@ -1338,7 +1333,7 @@ NON_MATCH void FUN_0821dd00(ShadeMan* p) {
 
     VEC3_SET(ofs, x, Q8(0.625), x);
     amount = Player_HoldGrabbed(gPlayerPtr[0], &p->base.mover.pos, &ofs, 0, 0, 0, 1, p->unk_3d0, 2);
-    FUN_0821d900(p);
+    ShadeMan_SpawnBiteBlood(p);
     ShadeMan_Heal(p, amount);
     PlaySound_082406e0(SONG_844);
   }
@@ -2142,7 +2137,7 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
           p->phase = 2;
           p->phaseTimer = 0;
           p->flag38c |= SMFLAG_PHASE_ENTERED;
-          Hitbox_SetFlags(&p->hurtbox, HBFLAG_HIDDEN);
+          Hitbox_SetFlags(&p->hurtbox, HBF_HIDDEN);
           return;
         }
       } else {

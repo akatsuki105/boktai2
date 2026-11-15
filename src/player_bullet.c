@@ -25,11 +25,11 @@ typedef struct Bullet {
   Player* player;                          // 0x018, Init の第1引数
   AuxSprite sprite;                        // 0x01C
   AuxSpriteGfx gfx;                        // 0x048, SPRITE_EBALL_210E
-  HitboxData hitbox;                       // 0x064, Bullet_SetupHitbox が組み立て、位置は sprite.pos を見る
+  Hitbox hitbox;                           // 0x064, Bullet_SetupHitbox が組み立て、位置は sprite.pos を見る
   Vec3 offset;                             // 0x0B4, Bullet_Reposition が offsetRadius から x と z を作り、Bullet_StateImpact が sprite.pos に足す
   u16 heightOffset;                        // 0x0BC, Init の第3引数, Bullet_Reposition が sprite.pos.y に足す
-  u16 unk_be;                              // 0x0BE, Init の第4引数, Bullet_Reposition で gSineTable に掛ける
-  u16 unk_c0;                              // 0x0C0, Init の第5引数, unk_be と対で使う
+  u16 forwardOffset;                       // 0x0BE, Init の第4引数, 銃口までの向き方向のずれ
+  u16 sideOffset;                          // 0x0C0, Init の第5引数, 銃口までの横方向のずれ, xflip で向きが反転する
   u16 offsetRadius;                        // 0x0C2, Init の第6引数, offset.x と offset.z の大きさ
   u16 eneCost;                             // 0x0C4, Init の第12引数, Bullet_PayENE が Player_ReduceENE に渡す
   u8 unk_c6[2];                            // 0x0C6
@@ -45,6 +45,26 @@ typedef struct Bullet {
 } Bullet;
 static_assert(sizeof(Bullet) == 408);
 
+// 向きに合わせて着弾の絵と反転を選ぶ
+static inline void AuxSprite_SetImpactPose(AuxSprite* spr, s32 dir) {
+  if (dir & 1) {
+    spr->poseIdx = 7;
+  } else if ((dir >> 1) & 1) {
+    spr->poseIdx = 8;
+  } else {
+    spr->poseIdx = 6;
+  }
+  if (dir <= 2) {
+    spr->flags &= ~(SPRFLAG_XFLIP | SPRFLAG_YFLIP);
+  } else if (dir <= 4) {
+    spr->flags = (spr->flags & ~SPRFLAG_XFLIP) | SPRFLAG_YFLIP;
+  } else if (dir <= 5) {
+    spr->flags |= SPRFLAG_XFLIP | SPRFLAG_YFLIP;
+  } else {
+    spr->flags = (spr->flags | SPRFLAG_XFLIP) & ~SPRFLAG_YFLIP;
+  }
+}
+
 void Bullet_StateFly(Bullet* p);
 void Bullet_StateImpact(Bullet* p);
 
@@ -55,10 +75,7 @@ void Bullet_SetState(Bullet* p, void* fn) {
 }
 
 // プレイヤーの位置と向きから、スプライト・当たり判定・毎フレームの進み幅を作り直す
-// 残差は末尾の 0xFF 定数の生成位置と dir 計算のレジスタ割り当てのみ, 末尾の offset は 表 * offsetRadius の順 (POLAR_X/POLAR_Z は順が逆で不可)
-// dir を ((angle & 0xFF) / 32 + 3) & 7 にすると 0xFF の位置まで一致し残差は ands r1, r0 の1命令 (原典はマスク付きのマクロかも), Tier A-B は試済, 未: Tier C
-NON_MATCH void Bullet_Reposition(Bullet* p) {
-#ifdef NONMATCHING_C
+void Bullet_Reposition(Bullet* p) {
   Player* player = p->player;
   u32 angle;
   s32 cosv;
@@ -70,24 +87,20 @@ NON_MATCH void Bullet_Reposition(Bullet* p) {
   cosv = COS(angle);
   sinv = SIN(angle);
   if (player->xflip) {
-    p->sprite.pos.x += FixToInt(12, cosv * p->unk_be) + FixToInt(12, sinv * p->unk_c0);
-    p->sprite.pos.z += FixToInt(12, sinv * p->unk_be) - FixToInt(12, cosv * p->unk_c0);
+    p->sprite.pos.x += FixToInt(12, cosv * p->forwardOffset) + FixToInt(12, sinv * p->sideOffset);
+    p->sprite.pos.z += FixToInt(12, sinv * p->forwardOffset) - FixToInt(12, cosv * p->sideOffset);
   } else {
-    p->sprite.pos.x += FixToInt(12, cosv * p->unk_be) - FixToInt(12, sinv * p->unk_c0);
-    p->sprite.pos.z += FixToInt(12, sinv * p->unk_be) + FixToInt(12, cosv * p->unk_c0);
+    p->sprite.pos.x += FixToInt(12, cosv * p->forwardOffset) - FixToInt(12, sinv * p->sideOffset);
+    p->sprite.pos.z += FixToInt(12, sinv * p->forwardOffset) + FixToInt(12, cosv * p->sideOffset);
   }
-  p->dir = (angle / 32 + 3) & 7;
+  p->dir = Angle_ToDir8Floor(angle);
   p->offset.x = FixToInt(12, COS(angle) * p->offsetRadius);
   p->offset.z = FixToInt(12, SIN(angle) * p->offsetRadius);
   p->hitbox.angle = angle;
-#else
-  INCFUNC("asm/func/Bullet_Reposition.inc");
-#endif
 }
 
 // 撒いた粒子を寿命まで動かす, 距離が毎フレーム縮むので中心へ吸い込まれていく
-NON_MATCH void Bullet_UpdateParticles(Bullet* p) {
-#ifdef NONMATCHING_C
+void Bullet_UpdateParticles(Bullet* p) {
   s32 dirBase = ((p->dir + 5) & 7) * 32;
   s32 i;
 
@@ -99,42 +112,34 @@ NON_MATCH void Bullet_UpdateParticles(Bullet* p) {
         p->ptcls[i].base.flags |= SPRFLAG_HIDDEN;
       } else {
         s32 dist = p->ptcls[i].radius * (16 - p->ptcls[i].timer) >> 3;
-        s32 angle = (dirBase + p->ptcls[i].angleOffset + 0x100) & 0xFF;
+        s32 angle = (dirBase + 0x100 + p->ptcls[i].angleOffset) & 0xFF;
 
         p->ptcls[i].base.pos = p->sprite.pos;
-        p->ptcls[i].base.pos.x += dist * COS(angle) / 4096;
-        p->ptcls[i].base.pos.z += dist * gSineTable[angle] / 4096;
+        p->ptcls[i].base.pos.x += POLAR_X(dist, angle);
+        p->ptcls[i].base.pos.z += POLAR_Z(dist, angle);
       }
     }
   }
-#else
-  INCFUNC("asm/func/Bullet_UpdateParticles.inc");
-#endif
 }
 
 // 粒子を1個、向きと距離をばらつかせて撒く
-NON_MATCH void Bullet_SpawnParticle(Bullet* p) {
-#ifdef NONMATCHING_C
+void Bullet_SpawnParticle(Bullet* p) {
   s32 angle;
 
   p->ptcls[p->ptclIdx].active = TRUE;
   p->ptcls[p->ptclIdx].base.flags &= ~SPRFLAG_HIDDEN;
   p->ptcls[p->ptclIdx].timer = 0;
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  p->ptcls[p->ptclIdx].radius = ((gRandomTable[gRandTableIdx] >> 3) & 0x7F) + 0x40;
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  p->ptcls[p->ptclIdx].angleOffset = Mod(gRandomTable[gRandTableIdx], 0x60) - 0x30;
-  angle = (((p->dir + 5) & 7) * 32 + p->ptcls[p->ptclIdx].angleOffset + 0x100) & 0xFF;
+  p->ptcls[p->ptclIdx].radius = ((RandomNext() >> 3) & 0x7F) + 0x40;
+  p->ptcls[p->ptclIdx].angleOffset = Mod(RandomNext(), 0x60) - 0x30;
+  angle = ((p->dir + 5) & 7) * 32;
+  angle = (angle + 0x100 + p->ptcls[p->ptclIdx].angleOffset) & 0xFF;
   p->ptcls[p->ptclIdx].base.pos = p->sprite.pos;
-  p->ptcls[p->ptclIdx].base.pos.x += p->ptcls[p->ptclIdx].radius * COS(angle) / 4096;
-  p->ptcls[p->ptclIdx].base.pos.z += p->ptcls[p->ptclIdx].radius * gSineTable[angle] / 4096;
+  p->ptcls[p->ptclIdx].base.pos.x += POLAR_X(p->ptcls[p->ptclIdx].radius, angle);
+  p->ptcls[p->ptclIdx].base.pos.z += POLAR_Z(p->ptcls[p->ptclIdx].radius, angle);
   p->ptclIdx++;
   if (p->ptclIdx > 3) {
     p->ptclIdx = 0;
   }
-#else
-  INCFUNC("asm/func/Bullet_SpawnParticle.inc");
-#endif
 }
 
 // 撒いた粒子を全部止めて消す
@@ -147,7 +152,7 @@ void Bullet_ClearParticles(Bullet* p) {
   }
 }
 
-void Bullet_OnHit(HitboxData* a, HitboxData* b, Bullet* p) { Bullet_SetState(p, Bullet_StateImpact); }
+void Bullet_OnHit(Hitbox* a, Hitbox* b, Bullet* p) { Bullet_SetState(p, Bullet_StateImpact); }
 
 // 発射時に ENE を払う
 void Bullet_PayENE(Bullet* p) {
@@ -177,8 +182,7 @@ s32 Bullet_GetDamage(Bullet* p) {
 }
 
 // ジャンゴ側の溜め状態, 溜め中は粒子を出しつつ4フレームおきに絵を切り替え、発射で StateFly へ
-NON_MATCH void Bullet_StateChargeDjango(Bullet* p) {
-#ifdef NONMATCHING_C
+void Bullet_StateChargeDjango(Bullet* p) {
   u8 state;
 
   if (p->player->action != PACT_ATTACK) {
@@ -190,7 +194,7 @@ NON_MATCH void Bullet_StateChargeDjango(Bullet* p) {
     Bullet_ClearParticles(p);
     AuxSprite_Show(&p->sprite);
     p->sprite.poseIdx = p->charge;
-    p->hitbox.power = Bullet_GetDamage(p);
+    Hitbox_SetAttackPower(&p->hitbox, Bullet_GetDamage(p));
     Bullet_PayENE(p);
     Bullet_SetState(p, Bullet_StateFly);
     return;
@@ -212,50 +216,42 @@ NON_MATCH void Bullet_StateChargeDjango(Bullet* p) {
   p->charge = p->player->wpn.charge;
   p->sprite.poseIdx = ((p->timer >> 2) & 1) ? p->charge + 1 : p->charge;
   p->timer++;
-#else
-  INCFUNC("asm/func/Bullet_StateChargeDjango.inc");
-#endif
 }
 
 // サバタ側の溜め状態, 溜め中は粒子を出し、発射で StateFly へ、中断なら消える
-NON_MATCH void Bullet_StateChargeSabata(Bullet* p) {
-#ifdef NONMATCHING_C
-  if (p->player->action == PACT_ATTACK) {
-    u8 state;
-
-    Bullet_Reposition(p);
-    state = p->player->state;
-    if (state == 5) {
-      Bullet_ClearParticles(p);
-      AuxSprite_Show(&p->sprite);
-      p->sprite.poseIdx = p->charge + 1;
-      p->hitbox.power = Bullet_GetDamage(p);
-      Bullet_PayENE(p);
-      Bullet_SetState(p, Bullet_StateFly);
-      return;
+void Bullet_StateChargeSabata(Bullet* p) {
+  if (p->player->action != PACT_ATTACK) {
+    KillEntity(&p->e);
+    return;
+  }
+  Bullet_Reposition(p);
+  if (p->player->state == 5) {
+    Bullet_ClearParticles(p);
+    AuxSprite_Show(&p->sprite);
+    p->sprite.poseIdx = p->charge + 1;
+    Hitbox_SetAttackPower(&p->hitbox, Bullet_GetDamage(p));
+    Bullet_PayENE(p);
+    Bullet_SetState(p, Bullet_StateFly);
+    return;
+  }
+  if (p->player->state == 8) {
+    Bullet_ClearParticles(p);
+    Bullet_PayENE(p);
+    KillEntity(&p->e);
+    return;
+  }
+  Bullet_UpdateParticles(p);
+  if (p->player->state == 2) {
+    if ((p->timer & 3) == 3) {
+      Bullet_SpawnParticle(p);
     }
-    if (state == 8) {
-      Bullet_ClearParticles(p);
-      Bullet_PayENE(p);
-    } else {
-      Bullet_UpdateParticles(p);
-      state = p->player->state;
-      if (state == 2) {
-        if ((p->timer & 3) == 3) {
-          Bullet_SpawnParticle(p);
-        }
-      } else if (state == 3 && (p->timer & 3) == 3) {
-        Bullet_SpawnParticle(p);
-      }
-      p->charge = p->player->wpn.charge;
-      p->timer++;
-      return;
+  } else if (p->player->state == 3) {
+    if ((p->timer & 3) == 3) {
+      Bullet_SpawnParticle(p);
     }
   }
-  KillEntity(&p->e);
-#else
-  INCFUNC("asm/func/Bullet_StateChargeSabata.inc");
-#endif
+  p->charge = p->player->wpn.charge;
+  p->timer++;
 }
 
 // 前へ進めながら当たり判定を出し、壁に当たったら次の状態へ
@@ -277,39 +273,15 @@ void Bullet_StateFly(Bullet* p) {
 }
 
 // 着弾の短い演出, 4フレーム目に向きに合わせた絵と反転を決め、7フレーム目で消える
-NON_MATCH void Bullet_StateImpact(Bullet* p) {
-#ifdef NONMATCHING_C
+void Bullet_StateImpact(Bullet* p) {
   p->timer++;
   if (p->timer == 1) {
     p->sprite.poseIdx = 4;
-    return;
-  }
-  if (p->timer == 4) {
-    s32 dir = p->dir;
-    AuxSprite* spr = &p->sprite;
-
-    if (dir & 1) {
-      spr->poseIdx = 7;
-    } else if ((dir >> 1) & 1) {
-      spr->poseIdx = 8;
-    } else {
-      spr->poseIdx = 6;
-    }
-    if (dir <= 2) {
-      spr->flags &= ~(SPRFLAG_XFLIP | SPRFLAG_YFLIP);
-    } else if (dir <= 4) {
-      spr->flags = (spr->flags & ~SPRFLAG_XFLIP) | SPRFLAG_YFLIP;
-    } else if (dir <= 5) {
-      spr->flags |= SPRFLAG_XFLIP | SPRFLAG_YFLIP;
-    } else {
-      spr->flags = (spr->flags | SPRFLAG_XFLIP) & ~SPRFLAG_YFLIP;
-    }
+  } else if (p->timer == 4) {
+    AuxSprite_SetImpactPose(&p->sprite, p->dir);
   } else if (p->timer > 6) {
     KillEntity(&p->e);
   }
-#else
-  INCFUNC("asm/func/Bullet_StateImpact.inc");
-#endif
 }
 
 s32 Bullet_Update(Bullet* p) {
@@ -336,8 +308,8 @@ void Bullet_SetupSprite(Bullet* p, s32 plttID) {
 }
 
 // 当たり判定を組み立てる, elefan が立っているときだけ判定を一段高い位置に置く
-void Bullet_SetupHitbox(Bullet* p, u32 knockback, HitboxAttributes attrs, u32 iframes) {
-  HitboxData* hitbox = &p->hitbox;
+void Bullet_SetupHitbox(Bullet* p, u32 knockback, HitboxAttrs attrs, u32 iframes) {
+  Hitbox* hitbox = &p->hitbox;
   Vec3 offset, halfSize;
 
   VEC3_SET(halfSize, Q8(0.12), Q8(0.12), Q8(0.12));
@@ -346,8 +318,8 @@ void Bullet_SetupHitbox(Bullet* p, u32 knockback, HitboxAttributes attrs, u32 if
   } else {
     VEC3_SET(offset, 0, 0, 0);
   }
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1 << p->player->mover.unk_4, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, 0, knockback, 1 << WK_GUN, attrs, iframes);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 1 << p->player->mover.unk_4, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, 0, knockback, HBSRC_GUN, attrs, iframes);
   Hitbox_SetHandler(hitbox, Bullet_OnHit, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
 }
@@ -367,11 +339,11 @@ void Bullet_SetupParticles(Bullet* p, s32 pose) {
   }
 }
 
-s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, u32 elefan) {
+s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 forwardOffset, u32 sideOffset, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttrs attrs, u32 iframes, u32 pose, u32 cost, u32 elefan) {
   p->player = player;
   p->heightOffset = heightOffset;
-  p->unk_be = unk_be;
-  p->unk_c0 = unk_c0;
+  p->forwardOffset = forwardOffset;
+  p->sideOffset = sideOffset;
   p->offsetRadius = offsetRadius;
   p->eneCost = cost;
   p->charge = 0;
@@ -388,12 +360,12 @@ s32 Bullet_Init(Bullet* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk
   return 0;
 }
 
-Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan) {
+Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 forwardOffset, u32 sideOffset, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttrs attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan) {
   Bullet* p = CreateEntity(ENTITY_UNK_8, sizeof(Bullet));
 
   if (p != NULL) {
     SetEntityRoutine(p, Bullet_Update, Bullet_Destroy);
-    if (Bullet_Init(p, player, heightOffset, unk_be, unk_c0, offsetRadius, plttID, knockback, attrs, iframes, pose, cost, elefan) < 0) {
+    if (Bullet_Init(p, player, heightOffset, forwardOffset, sideOffset, offsetRadius, plttID, knockback, attrs, iframes, pose, cost, elefan) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

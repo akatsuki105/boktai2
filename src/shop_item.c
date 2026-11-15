@@ -272,36 +272,45 @@ void FUN_080ba2d8(ItemShop* p) {
   }
 }
 
-// 146/165 命令, 行ごとのオフセットをスタックに積む2重ループの形が未解決
+// 160/165 命令, CoffinShop_DrawItemIcons と同じ2重ループの形, 原典は1つ目のループでも id を呼び出しをまたいで r5 に持ち, 行のオフセットをスタックに積む, こちらは id が r2 で行のオフセットもレジスタに残る, 試済: 添字を 3 + n にする
 NON_MATCH void FUN_080ba410(ItemShop* p) {
 #ifdef NONMATCHING_C
-  s32 y;
-  s32 x;
+  s32 i, j, n;
 
-  for (y = 0; y < 4; y++) {
-    for (x = 0; x < 4; x++) {
-      s32 id = GetNormalItemID(y * 4 + x);
+  for (i = 0; i < 4; i++) {
+    for (j = 0; j < 4; j++) {
+      item32_t id;
 
-      p->sprites[3 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
-      MainSprite_SetPose(&p->sprites[3 + y * 4 + x], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
-      FUN_080b95bc(&p->sprites[3 + y * 4 + x], 735);
+      n = i * 4 + j;
+      id = GetNormalItemID(n);
+
+      if (id >= 0) {
+        p->sprites[n + 3].flags &= ~SPRFLAG_HIDDEN;
+        MainSprite_SetPose(&p->sprites[n + 3], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
+      } else {
+        p->sprites[n + 3].flags |= SPRFLAG_HIDDEN;
+      }
+      FUN_080b95bc(&p->sprites[n + 3], 0x2DF);
     }
   }
 
-  for (y = 0; y < 3; y++) {
-    for (x = 0; x < 4; x++) {
-      s32 id = p->items0[y * 4 + x];
+  for (i = 0; i < 3; i++) {
+    for (j = 0; j < 4; j++) {
+      item32_t id;
 
-      if (id < 0) {
-        p->sprites[19 + y * 4 + x].flags |= SPRFLAG_HIDDEN;
-      } else {
-        p->sprites[19 + y * 4 + x].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[19 + y * 4 + x], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
+      n = i * 4 + j;
+      id = p->items0[n];
+
+      if (id >= 0) {
+        p->sprites[n + 19].flags &= ~SPRFLAG_HIDDEN;
+        MainSprite_SetPose(&p->sprites[n + 19], &p->icons, ICON_ITEM(id), PLAYMODE_LOOP);
         if ((s16)gStat->solarBank < Item_GetBuyPrice(id)) {
-          FUN_080b95bc(&p->sprites[19 + y * 4 + x], 736);
+          FUN_080b95bc(&p->sprites[n + 19], 0x2E0);
         } else {
-          FUN_080b95bc(&p->sprites[19 + y * 4 + x], 735);
+          FUN_080b95bc(&p->sprites[n + 19], 0x2DF);
         }
+      } else {
+        p->sprites[n + 19].flags |= SPRFLAG_HIDDEN;
       }
     }
   }

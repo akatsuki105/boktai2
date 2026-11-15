@@ -28,7 +28,7 @@ typedef u32 SuspendFlags;
 #define SUSPEND_LINK_WAIT (1 << 0)  // 0x1, 通信相手の応答待ち, 受信できない間は HUD の更新や通信のキー入力の取り込みも止まる
 #define SUSPEND_PAUSE (1 << 1)      // 0x2, ポーズ中, BGM も止める
 #define SUSPEND_MENU (1 << 2)       // 0x4, クイックチェンジ, スタートメニュー中 (ショップなどではセットされない)
-#define SUSPEND_EVENT (1 << 3)      // 0x8, イベント中, GAMEFLAG_EVENT と一緒に立ち BGM も止める
+#define SUSPEND_CUTSCENE (1 << 3)   // 0x8, イベント中, GAMEFLAG_CUTSCENE と一緒に立ち BGM も止める
 
 // Entity.unk_12
 #define E_FLAG_DELETE (1 << 0)  // 1 にすると Entity を削除する

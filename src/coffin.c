@@ -17,7 +17,7 @@
 COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
 COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
-void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p);
+void Coffin_OnHurt(Hitbox* a, Hitbox* b, Coffin* p);
 struct Elevator* Elevator_FindAtPos(Vec3* pos);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 void FUN_080dab9c(s32 idx);
@@ -1021,7 +1021,7 @@ void Coffin_InitMover(Coffin* p) {
 }
 
 void Coffin_InitHurtbox(Coffin* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 size, offset;
   s32 ignoreMask;
 
@@ -1032,7 +1032,7 @@ void Coffin_InitHurtbox(Coffin* p) {
   } else {
     ignoreMask = HIM_4;
   }
-  Hitbox_Init(hurtbox, p->subroutineID, HBFLAG_HURTBOX | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
+  Hitbox_Init(hurtbox, p->subroutineID, HBF_HURTBOX | HBF_7 | HBF_DAMAGE, 0, ignoreMask, &size, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
   Hitbox_SetHandler(hurtbox, Coffin_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->mover.pos, 0);
@@ -1040,12 +1040,12 @@ void Coffin_InitHurtbox(Coffin* p) {
 }
 
 void Coffin_InitHitbox(Coffin* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 size, offset;
 
   VEC3_SET(size, Q8(0.5), Q8(0.125), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.125), 0);
-  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, p->subroutineID, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
@@ -1114,7 +1114,7 @@ void FUN_08087494(Coffin* p) {
 }
 
 void FUN_080874cc(Coffin* p) {
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1122,28 +1122,28 @@ void FUN_080874cc(Coffin* p) {
   FUN_08087494(p);
 
   if (p->unk_332 != 0) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     p->unk_332--;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
   }
 }
 
-// 88/89命令, ダメージは攻撃元の武器の種類 (a->weakness) で決まる, timer = 8 は各分岐に置くと共通末尾に畳まれて揃う
+// 88/89命令, ダメージは攻撃元の武器の種類 (a->typeMask) で決まる, timer = 8 は各分岐に置くと共通末尾に畳まれて揃う
 // 残差は unk_1c / ignoreMask / weakness の || の飛び先 (原典は unk_1c != 0 だけ 0/1 に落としてから見る) と p の写しの位置, 試済: || をローカルに受ける, 三項演算子, inline の述語
-NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
+NON_MATCH void Coffin_OnHurt(Hitbox* a, Hitbox* b, Coffin* p) {
 #ifdef NONMATCHING_C
   s32 damage;
   s32 timer;
   bool32 canHit;
 
-  if (a->flags & HBFLAG_UNK_11) {
+  if (a->flags & HBF_BLOCK) {
     return;
   }
   if (p->unk_1b == 1) {
     return;
   }
-  canHit = p->unk_1c != 0 || (a->ignoreMask & 1) || (a->weakness & 0x40);  // 0x40 は武器以外の攻撃
+  canHit = p->unk_1c != 0 || (a->ignoreMask & 1) || (a->typeMask & HBSRC_NON_WEAPON);
   if (!canHit) {
     return;
   }
@@ -1154,19 +1154,19 @@ NON_MATCH void Coffin_OnHurt(HitboxData* a, HitboxData* b, Coffin* p) {
     return;
   }
 
-  if (a->weakness & (1 << WK_SWORD)) {
+  if (a->typeMask & HBSRC_SWORD) {
     damage = 200;
     timer = 8;
-  } else if (a->weakness & (1 << WK_SPEAR)) {
+  } else if (a->typeMask & HBSRC_SPEAR) {
     damage = 300;
     timer = 12;
-  } else if (a->weakness & (1 << WK_HAMMER)) {
+  } else if (a->typeMask & HBSRC_HAMMER) {
     damage = 500;
     timer = 8;
-  } else if (a->weakness & (1 << WK_OTHERS)) {
+  } else if (a->typeMask & HBSRC_FIST) {
     damage = 150;
     timer = 8;
-  } else if (a->weakness & (1 << WK_GUN)) {
+  } else if (a->typeMask & HBSRC_GUN) {
     damage = 500;
     timer = 8;
   } else {
@@ -1280,7 +1280,7 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
 #ifdef NONMATCHING_C
   s32 range;
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1312,7 +1312,7 @@ NON_MATCH void FUN_08087a5c(Coffin* p) {
 }
 
 void FUN_08087bac(Coffin* p) {
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
   if (p->canSelfMove == 0) {
@@ -1336,11 +1336,11 @@ void Coffin_UpdateState0(Coffin* p) {
   if (p->state != 0) {
     Coffin_SetState(p, 0);
   }
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   p->unk_32a = 0;
   FUN_08086024(p, 0);
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1447,7 +1447,7 @@ void Coffin_UpdateState1(Coffin* p) {
     FUN_08086024(p, 0);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1530,7 +1530,7 @@ void Coffin_UpdateState3(Coffin* p) {
     Coffin_SetState(p, 3);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1582,7 +1582,7 @@ NON_MATCH void Coffin_UpdateState4(Coffin* p) {
     Coffin_SetState(p, 4);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1639,7 +1639,7 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
     Coffin_SetState(p, 2);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1708,7 +1708,7 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
 // 多分、棺桶が(変な場所に入ったりして回収不可能になったときに)ボス部屋に戻るときのアニメーション処理
 void Coffin_UpdateState9(Coffin* p) {
   p->facing = DIR8_UP;
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->stateTimer++;
   FUN_08086024(p, 0);
 
@@ -1736,7 +1736,7 @@ void Coffin_UpdateState9(Coffin* p) {
 
 void Coffin_UpdateState10(Coffin* p) {
   p->facing = DIR8_UP;
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   FUN_08086024(p, 0);
 
   if (p->stateTimer < 76) {
@@ -1774,13 +1774,13 @@ void Coffin_UpdateState5(Coffin* p) {
     Coffin_SetState(p, 5);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
   p->unk_32a = 2;
   p->facing = DIR8_UP;
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   visible = FALSE;
   spawn = FALSE;
   if (p->stateTimer < 64) {
@@ -1848,7 +1848,7 @@ void Coffin_UpdateState6(Coffin* p) {
     Coffin_SetState(p, 6);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -1943,7 +1943,7 @@ void Coffin_UpdateState11(Coffin* p) {
   }
   p->unk_32a = 0;
   p->unk_394 = 0;
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->facing = DIR8_UP;
   FUN_08086024(p, 0);
 }
@@ -1952,7 +1952,7 @@ void Coffin_UpdateState13(Coffin* p) {
   if (p->state != 13) {
     Coffin_SetState(p, 13);
   }
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->facing = DIR8_UP;
   if (FUN_08086024(p, 8) != 0) {
     Coffin_SetState(p, 12);
@@ -1973,7 +1973,7 @@ void Coffin_UpdateState12(Coffin* p) {
     p->unk_32a = 0;
   }
 
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->facing = DIR8_UP;
   FUN_08086024(p, 24);
 }
@@ -1982,7 +1982,7 @@ void Coffin_UpdateState14(Coffin* p) {
   if (p->state != 14) {
     Coffin_SetState(p, 14);
   }
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->facing = DIR8_UP;
   if (FUN_08086024(p, 16) != 0) {
     Coffin_SetState(p, p->unk_408);
@@ -2013,11 +2013,11 @@ void Coffin_UpdateState15(Coffin* p) {
   if (p->state != 15) {
     Coffin_SetState(p, 15);
   }
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   p->unk_32a = 1;
   FUN_08086024(p, 0);
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 
@@ -2069,7 +2069,7 @@ void Coffin_UpdateState16(Coffin* p) {
     FUN_08086024(p, 0);
   }
 
-  if (gGameFlags & GAMEFLAG_EVENT) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) {
     return;
   }
 

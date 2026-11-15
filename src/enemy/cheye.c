@@ -169,11 +169,11 @@ NAKED s32 FUN_0817ee6c(Shaian* p) { INCFUNC("asm/func/FUN_0817ee6c.inc"); }
 
 NAKED s32 FUN_0817ee94(Shaian* p) { INCFUNC("asm/func/FUN_0817ee94.inc"); }
 
-NAKED void FUN_0817eeb0(HitboxData* a, HitboxData* b, Shaian* p) { INCFUNC("asm/func/FUN_0817eeb0.inc"); }
+NAKED void FUN_0817eeb0(Hitbox* a, Hitbox* b, Shaian* p) { INCFUNC("asm/func/FUN_0817eeb0.inc"); }
 
-NAKED void Shaian_OnHit(HitboxData* a, HitboxData* b, Shaian* p) { INCFUNC("asm/func/Shaian_OnHit.inc"); }
+NAKED void Shaian_OnHit(Hitbox* a, Hitbox* b, Shaian* p) { INCFUNC("asm/func/Shaian_OnHit.inc"); }
 
-NAKED void Shaian_OnHurt(HitboxData* a, HitboxData* b, Shaian* p) { INCFUNC("asm/func/Shaian_OnHurt.inc"); }
+NAKED void Shaian_OnHurt(Hitbox* a, Hitbox* b, Shaian* p) { INCFUNC("asm/func/Shaian_OnHurt.inc"); }
 
 NAKED void FUN_0817fab0(Shaian* p) { INCFUNC("asm/func/FUN_0817fab0.inc"); }
 
@@ -258,4 +258,5 @@ NAKED s32 Shaian_Destroy(Shaian* p) { INCFUNC("asm/func/Shaian_Destroy.inc"); }
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
 NAKED s32 Shaian_Init(Shaian* p) { INCFUNC("asm/func/Shaian_Init.inc"); }
 
+// 0x8E9F, HashName("シャイアン")
 NAKED void Shaian_Create(void) { INCFUNC("asm/func/Shaian_Create.inc"); }

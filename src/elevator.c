@@ -1555,7 +1555,7 @@ NON_MATCH s32 ElevatorManager_Update(ElevatorManager* p) {
     return 0;
   }
 
-  if ((gSuspendFlags & SUSPEND_EVENT)) return 0;
+  if ((gSuspendFlags & SUSPEND_CUTSCENE)) return 0;
 
   for (i = 0; i < 12; i++) {
     if (Elevator_IsSlotUsed(p, i) && elevators[i].state != STATE_DESTROYED) {

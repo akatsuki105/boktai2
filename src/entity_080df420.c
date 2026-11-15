@@ -15,8 +15,8 @@
 typedef struct {
   AuxSprite sprite;       // 0x00
   AuxAnimState anim;      // 0x2C
-  HitboxData hitbox;      // 0x3C, 攻撃判定
-  HitboxData hurtbox;     // 0x8C, 食らい判定
+  Hitbox hitbox;          // 0x3C, 攻撃判定
+  Hitbox hurtbox;         // 0x8C, 食らい判定
   Vec3 vel;               // 0xDC, 1フレームに進む量
   WorldPos basePos;       // 0xE4, 状態 1 に入ったときの位置, y は 1P より 220 上を目指して下がる
   AuxAnimFile* animFile;  // 0xEC
@@ -60,12 +60,12 @@ void (*const sEntity080df420Updates[2])(Entity080df420*, Entity080df420Elem*) = 
 };  // 0x085AD354
 
 void FUN_080debbc(Entity080df420*, Entity080df420Elem*);
-void Entity080df420Elem_OnHit(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
-void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080df420Elem* elem);
+void Entity080df420Elem_OnHit(Hitbox* a, Hitbox* b, Entity080df420Elem* elem);
+void Entity080df420Elem_OnHurt(Hitbox* a, Hitbox* b, Entity080df420Elem* elem);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
-void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5);
+void NoiseManager_AddNoiseWithFlags(s16 x, s16 z, s16 param_3, s16 param_4, u8 param_5);
 Entity080df420* Entity080df420_Create(void);
-void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 iframes, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkIframes);
+void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 iframes, s32 power, s32 knockback, HitboxAttrs attrs, s32 atkIframes);
 void Entity080df420Elem_StateVanish(Entity080df420*, Entity080df420Elem*);
 
 void (*const PTR_ARRAY_085ad35c[2])(Entity080df420*, Entity080df420Elem*) = {
@@ -156,7 +156,7 @@ void FUN_080de344(Entity080df420* p) {
 
 // 攻撃判定が当たったら, 分裂する弾なら6つの小さな弾を散らし, 火の粉と効果音を出して消滅へ移る
 // 167/167命令, ループ外へ出す定数の順だけが違う (原典は &gRandTableIdx を半径 5 より先に sb へ置く), 試済: 角度を先にローカルへ
-NON_MATCH void Entity080df420Elem_OnHit(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
+NON_MATCH void Entity080df420Elem_OnHit(Hitbox* a, Hitbox* b, Entity080df420Elem* elem) {
 #ifdef NONMATCHING_C
   if (elem->flags & 1) {
     s32 angle = ArcTan2_8(elem->vel.x, elem->vel.z);
@@ -170,7 +170,7 @@ NON_MATCH void Entity080df420Elem_OnHit(HitboxData* a, HitboxData* b, Entity080d
     }
   }
   FUN_080de1cc(elem, ArcTan2_8(elem->vel.x, elem->vel.z));
-  FUN_08240cc4(elem->sprite.pos.x, elem->sprite.pos.z, 0, 0, 0x80);
+  NoiseManager_AddNoiseWithFlags(elem->sprite.pos.x, elem->sprite.pos.z, 0, 0, 0x80);
   Hitbox_Hide(&elem->hitbox);
   Hitbox_Hide(&elem->hurtbox);
   PlaySound_082406e0(991);
@@ -183,7 +183,7 @@ NON_MATCH void Entity080df420Elem_OnHit(HitboxData* a, HitboxData* b, Entity080d
 
 // 攻撃を食らったら, 分裂する弾なら6つの小さな弾を散らし, 火の粉と効果音を出して消滅へ移る
 // 175/175命令, Entity080df420Elem_OnHit と同じループ外の定数の順に加え, スタックに置くポインタの並びが違う
-NON_MATCH void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080df420Elem* elem) {
+NON_MATCH void Entity080df420Elem_OnHurt(Hitbox* a, Hitbox* b, Entity080df420Elem* elem) {
 #ifdef NONMATCHING_C
   if (b->iframes != 0) {
     return;
@@ -200,7 +200,7 @@ NON_MATCH void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080
     }
   }
   FUN_080de1cc(elem, a->angle);
-  FUN_08240cc4(elem->sprite.pos.x, elem->sprite.pos.z, 0, 0, 0x80);
+  NoiseManager_AddNoiseWithFlags(elem->sprite.pos.x, elem->sprite.pos.z, 0, 0, 0x80);
   Hitbox_Hide(&elem->hitbox);
   Hitbox_Hide(&elem->hurtbox);
   PlaySound_082406e0(991);
@@ -212,29 +212,21 @@ NON_MATCH void Entity080df420Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080
 }
 
 // 攻撃判定と食らい判定を作る
-// 96/98命令, 引数を受けるレジスタだけが違う (原典は elem を r6, power を sl, knockback を r7, attrs を r8 に置く), 試済: ローカルの宣言順, 2つ目の判定を hitbox++ で作る
-NON_MATCH void Entity080df420Elem_InitHitboxes(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 defPower, HitboxAttributes defAttrs, s32 defWeakness) {
-#ifdef NONMATCHING_C
-  HitboxData* hitbox;
+void Entity080df420Elem_InitHitboxes(Entity080df420Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 defPower, HitboxAttrs defAttrs, s32 defWeakness) {
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 32, 64, 32);
   VEC3_SET(offset, 0, 0, 0);
-  hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
-  Hitbox_SetHandler(hitbox, Entity080df420Elem_OnHit, elem);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  hitbox = &elem->hurtbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, defPower, defAttrs, defWeakness);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
-  Hitbox_SetHandler(hitbox, Entity080df420Elem_OnHurt, elem);
-  Hitbox_Register(hitbox);
-#else
-  INCFUNC("asm/func/Entity080df420Elem_InitHitboxes.inc");
-#endif
+  Hitbox_Init(&elem->hitbox, 0, HBF_HITBOX | HBF_ONCE | HBF_DAMAGE, 0, 16, &halfSize, &offset);
+  Hitbox_SetAttack(&elem->hitbox, power, knockback, 0, attrs, iframes);
+  Hitbox_SetHandler(&elem->hitbox, Entity080df420Elem_OnHit, elem);
+  Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
+  Hitbox_Init(&elem->hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
+  Hitbox_SetPowerAndAttributes(&elem->hurtbox, defPower, defAttrs, defWeakness);
+  Hitbox_SetPos(&elem->hurtbox, &elem->sprite.pos, 0);
+  Hitbox_SetHandler(&elem->hurtbox, Entity080df420Elem_OnHurt, elem);
+  Hitbox_Register(&elem->hurtbox);
 }
 
 // 攻撃判定を出す印が立っていれば判定を表に出して登録し, 立っていなければ隠す
@@ -247,8 +239,8 @@ void Entity080df420Elem_UpdateHitboxes(Entity080df420Elem* elem) {
     Hitbox_Hide(&elem->hurtbox);
   } else {
     elem->flags &= ~4;
-    Hitbox_ClearFlags(&elem->hitbox, HBFLAG_HIDDEN);
-    Hitbox_ClearFlags(&elem->hurtbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&elem->hitbox, HBF_HIDDEN);
+    Hitbox_ClearFlags(&elem->hurtbox, HBF_HIDDEN);
     Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
     Hitbox_SetPos(&elem->hurtbox, &elem->sprite.pos, 0);
     Hitbox_Register(&elem->hitbox);
@@ -388,7 +380,7 @@ void Entity080df420Elem_StateVanish(Entity080df420* p, Entity080df420Elem* elem)
 }
 
 // 弾を1発出す, kind が 8 なら分裂する弾, 4 なら分裂しない弾
-void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 iframes, s32 power, s32 knockback, HitboxAttributes attrs, s32 atkIframes) {
+void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 kind, s32 unk_f0, s32 iframes, s32 power, s32 knockback, HitboxAttrs attrs, s32 atkIframes) {
   Entity080df420* p = gEntity080df420;
   Entity080df420Elem* elem;
   AuxSprite* spr;

@@ -378,24 +378,20 @@ void (*const PTR_ARRAY_085ae12c[6])(DoveManager*, Dove*) = {
     FUN_081d98a0,
 };  // 0x085AE12C
 
-// 残差は 1 命令, usedMask のアドレスを r6 へ置く位置と elems の複写
-NON_MATCH s32 DoveManager_Update(DoveManager* p) {
-#ifdef NONMATCHING_C
+// 使用中の枠について state ごとの更新関数を呼ぶ
+s32 DoveManager_Update(DoveManager* p) {
   Dove* elems = p->elems;
+  s32 i;
 
-  if (p->usedMask != 0) {
-    s32 i;
-
-    for (i = 0; i < 20; i++) {
-      if (DoveManager_IsActive(&p->usedMask, i)) {
-        PTR_ARRAY_085ae12c[elems[i].state](p, &elems[i]);
-      }
+  if (p->usedMask == 0) {
+    return 0;
+  }
+  for (i = 0; i < 20; i++) {
+    if (DoveManager_IsActive(&p->usedMask, i)) {
+      PTR_ARRAY_085ae12c[elems[i].state](p, &elems[i]);
     }
   }
   return 0;
-#else
-  INCFUNC("asm/func/DoveManager_Update.inc");
-#endif
 }
 
 s32 DoveManager_Destroy(DoveManager* p) {

@@ -534,7 +534,7 @@ s32 Enemy_CountByKind(u32 kind) {
 }
 
 // 指定した種族と variant の生きている敵の数を数える
-// 46/46 命令, variant の読み出しで add r7, #0x63 にならない
+// 46/46 命令, kind の番地を flags2 の番地 (r7) + 0x63 で作らずプールから読む, 双子の Enemy_CountByKind は 0x1DF をループ外に出せている, 試済: Enemy_CountByKind と同形, variant の判定を別の if にする, (u8) / (u16) で比べる (50)
 NON_MATCH s32 Enemy_CountByKindVariant(u32 kind, u32 variant) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
@@ -682,7 +682,7 @@ NON_MATCH void Enemy_DamageAll(s32 damage) {
           if (!TEST_FLAGS(p->flags5, ENEFLAG5_UNK_7) && !(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
             DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
           }
-          SET_FLAGS(p->hurtbox.flags, HBFLAG_HIDDEN);
+          SET_FLAGS(p->hurtbox.flags, HBF_HIDDEN);
         } else {
           FUN_080ce544(p->unk_4a0, p->weaponExpMask);
         }
@@ -1243,7 +1243,7 @@ void Enemy_ResetToSpawn(Enemy* p) {
   CLEAR_FLAGS(*flags2, ENEFLAG2_UNK_6 | ENEFLAG2_UNK_7 | ENEFLAG2_UNK_8 | ENEFLAG2_UNK_14);
   Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
   Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   p->unk_494 = 0;
   p->unk_492 = 0;
   priority = 2;
@@ -1365,7 +1365,7 @@ NON_MATCH void Enemy_Reset(Enemy* p) {
   p->savedState = 0;
   EnemyManager_TryEndPaletteFade(p);
   SET_FLAGS(p->flags, ENEFLAG_UNK_1);
-  SET_FLAGS(p->hurtbox.flags, HBFLAG_HIDDEN);
+  SET_FLAGS(p->hurtbox.flags, HBF_HIDDEN);
   if (p->onReset != NULL) {
     p->onReset(p);
   }
@@ -1418,6 +1418,7 @@ s32 EnemyManager_Init(EnemyManager* p, u16 mesgID, u32 _) {
   gEnemyManager = p;
 }
 
+// 0xEC2A, HashName("敵マネージャ")
 EnemyManager* EnemyManager_Create(u16 mesgID, u16 _) {
   if (gEnemyManager == NULL) {
     EnemyManager* p = CreateEntity(ENTITY_UNK_8, sizeof(EnemyManager));
@@ -1702,7 +1703,7 @@ NON_MATCH void Enemy_ApplyPaletteFade(Enemy* p) {
 #endif
 }
 
-// '.n' の敵の初期位置の経路と経路ノードを '.r' で差し替える
+// 0xB3D7, HashName("アルバム"), '.n' の敵の初期位置の経路と経路ノードを '.r' で差し替える
 void Cmd_B3D7(void) {
   u32 id = VM_GetNamedArgValue('n', 0);
 

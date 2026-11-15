@@ -218,7 +218,7 @@ void FUN_080cc370(Player* p) {
 
   VEC3_SET(p->shadowOffset, 0, 0, 0);
   p->flag35a = 0;
-  p->hurtbox.hitState &= ~HBHITSTATE_UNK_1;
+  p->hurtbox.hitState &= ~HBHITSTATE_ONCE_HIT;
 }
 
 void FUN_080cc3c4(Player* p, s32 bits) { p->flag35a |= bits; }
@@ -522,20 +522,15 @@ NAKED s32 FUN_080cddf0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cddf0.
 
 NAKED s32 FUN_080cdeb0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cdeb0.inc"); }
 
-// 残差は共有された return pose のブロック位置だけ (23/23), player.c の Player_ApplyFlashPose と同じ
-NON_MATCH s32 FUN_080cdfd4(Player* p, s32 pose) {
-#ifdef NONMATCHING_C
-  if (p->flashTimer != 0) {
-    p->flashTimer--;
-    if ((p->flashTimer >> 2) & 1) {
-      return p->flashPose;
-    }
+// flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
+s32 PlayerLink_ApplyFlashPose(Player* p, s32 pose) {
+  if (p->flashTimer == 0) {
+    return pose;
+  } else if ((--p->flashTimer >> 2) & 1) {
+    return p->flashPose;
+  } else {
+    return pose;
   }
-
-  return pose;
-#else
-  INCFUNC("asm/func/FUN_080cdfd4.inc");
-#endif
 }
 
 NAKED void FUN_080ce00c(Player* p) { INCFUNC("asm/func/FUN_080ce00c.inc"); }
@@ -578,7 +573,7 @@ s32 FUN_080ce4f0(void) {
 }
 
 // 相手が魔物なら 10, そうでなければ 0
-s32 FUN_080ce504(Player* p, s32 param_2, HitboxData* b) {
+s32 FUN_080ce504(Player* p, s32 param_2, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_BEAST) || Hitbox_TestAttr(b, HBATTR_THING) || Hitbox_TestAttr(b, HBATTR_PHANTOM) || Hitbox_TestAttr(b, HBATTR_UNDEAD) || Hitbox_TestAttr(b, HBATTR_IMMORTAL)) {
     return 10;
   }
@@ -806,7 +801,7 @@ NON_MATCH void FUN_080cfa24(Player* p) {
   }
 
   if (p->inputIdx == idx) {
-    FUN_0823bca8(8);
+    Camera_ReleaseLook(8);
   }
   p->lookAroundOffset.val = 0;
 #else
@@ -886,7 +881,7 @@ void FUN_080d0394(Player* p, s32 sungauge) {
 
 // pos に何かを出し, marker があれば追尾マーカーも出して soundID を鳴らす
 void FUN_080d03bc(Player* p, Vec3* pos, s16 param_3, s32 param_4, Vec3* marker, s32 param_6, s32 soundID) {
-  FUN_08240cf0(pos->x, pos->z, param_3, 0, param_4, p->mover.id);
+  NoiseManager_AddMoverNoise(pos->x, pos->z, param_3, 0, param_4, p->mover.id);
 
   if (marker != NULL) {
     Entity4B15_ShowTrackingMarker(p->inputIdx, marker);
@@ -1180,7 +1175,7 @@ NAKED void FUN_080d72a8(Player* p) { INCFUNC("asm/func/FUN_080d72a8.inc"); }
 NAKED void FUN_080d7374(Player* p) { INCFUNC("asm/func/FUN_080d7374.inc"); }
 
 // ignoreMask の立っているビットのプレイヤーを返す, 無ければ1人目
-Player* FUN_080d7444(HitboxData* hitbox) {
+Player* FUN_080d7444(Hitbox* hitbox) {
   s32 i;
 
   for (i = 0; i < 4; i++) {

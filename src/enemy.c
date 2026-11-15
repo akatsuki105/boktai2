@@ -44,7 +44,7 @@ const __attribute__((section(".rodata.string"))) ALIGNED(4) char gString_08251f3
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f54[] = "eneinline.h";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_enemy_c_08251f60[] = "enemy.c";
 
-s32 FUN_08240b98(Vec3* param_1, s8 param_2);
+s32 NoiseManager_GetNoise(Vec3* param_1, s8 param_2);
 s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
 void Enemy_StepToFloorEdge(Enemy* p);
@@ -250,20 +250,20 @@ NON_MATCH s32 Enemy_UpdateHitboxes(Enemy* p) {
   }
 
   if (Enemy_TestFlag5(p, ENEFLAG5_UNK_11)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
   } else if (p->kind == ENEK_AX || p->kind == ENEK_GHOST) {
     p->flags4 &= ~ENEFLAG4_UNK_14;
   } else if (p->state == ES_UNK_21 || p->state == ES_UNK_22 || TEST_FLAGS(p->flags3, ENEFLAG3_UNK_15)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
   } else if (!Enemy_TestFlag4(p, ENEFLAG4_UNK_14)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
     if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(p) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
-      if (!(p->hitbox.flags & HBFLAG_HIDDEN)) {
+      if (!(p->hitbox.flags & HBF_HIDDEN)) {
         Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
         Hitbox_Register(&p->hitbox);
       }
@@ -310,7 +310,7 @@ void EnemyAuxSprite_LoadAnim(EnemyAuxSprite* p, FileID animID) {
 
 // 自前の食らい判定を固定フラグで組んで登録する
 void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
-  Hitbox_Init(&p->hurtbox, p->mover.id, (HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, HIM_4, halfSize, offset);
+  Hitbox_Init(&p->hurtbox, p->mover.id, (HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_3 | HBF_DAMAGE), 0, HIM_4, halfSize, offset);
   Hitbox_SetPowerAndAttributes(&p->hurtbox, p->power, p->attrs, p->weakness);
   Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   Hitbox_SetHandler(&p->hurtbox, handler, owner);
@@ -327,7 +327,7 @@ void Enemy_RegisterHurtboxWithFlags(Enemy* p, Vec3* halfSize, Vec3* offset, void
 }
 
 // 敵の攻撃力と属性を載せた Hitbox を組んで登録する
-void Enemy_RegisterHitbox(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags) {
+void Enemy_RegisterHitbox(Enemy* p, Hitbox* hitbox, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags) {
   Hitbox_Init(hitbox, p->mover.id, (u16)flags, 0, HIM_4, halfSize, offset);
   Hitbox_SetPowerAndAttributes(hitbox, p->power, p->attrs, p->weakness);
   Hitbox_SetPos(hitbox, &p->mover.pos, 0);
@@ -337,7 +337,7 @@ void Enemy_RegisterHitbox(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* of
 
 // 攻撃判定を組む, 攻撃パラメータは idx 番目の atk テーブルから取る (登録はしない)
 void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner) {
-  HitboxFlags32 flags = HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0;
+  HitboxFlags32 flags = HBF_HITBOX | HBF_ONCE | HBF_DAMAGE;
 
   Hitbox_Init(&p->hitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
   Hitbox_SetAttack(&p->hitbox, p->atkPower[idx], p->atkKnockback[idx], 0, p->atkAttrs[idx], p->atkIframes[idx]);
@@ -346,8 +346,8 @@ void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, 
 }
 
 // index 番目の攻撃データを載せた Hitbox を組む (登録はしない)
-void Enemy_InitHitboxWithAtk(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner) {
-  HitboxFlags32 flags = HBFLAG_HITBOX | HBFLAG_UNK_0;
+void Enemy_InitHitboxWithAtk(Enemy* p, Hitbox* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner) {
+  HitboxFlags32 flags = HBF_HITBOX | HBF_DAMAGE;
 
   Hitbox_Init(hitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
   Hitbox_SetAttack(hitbox, p->atkPower[index], p->atkKnockback[index], 0, p->atkAttrs[index], p->atkIframes[index]);
@@ -767,7 +767,7 @@ void Enemy_ClearDamage(Enemy* p) {
 // 敵を活動停止させる, 種族が特定の10種なら破棄対象の印も立てる
 void Enemy_Deactivate(Enemy* p) {
   Enemy_SetFlag(p, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   EnemyManager_TryEndPaletteFade(p);
   if (Enemy_GetFlag2(p, ENEFLAG2_UNK_11)) {
     if (Enemy_IsDisposable(p)) {
@@ -1400,7 +1400,7 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
       p->emote = FUN_080d9b3c(variant, &mover->pos, mover->id, x, y, kind, p, mover);
       FUN_080e5388(emote, variant, kind, p->variant);
       if (variant == 0) {
-        FUN_08240cf0(p->mover.pos.x, p->mover.pos.z, p->unk_1fe, 0, 1, mover->id);
+        NoiseManager_AddMoverNoise(p->mover.pos.x, p->mover.pos.z, p->unk_1fe, 0, 1, mover->id);
       }
       break;
     }
@@ -1510,7 +1510,7 @@ void Enemy_ReactivateAtPathNode(Enemy* p, s32 pathIdx, s32 nodeIdx, s32 angle) {
     p->unk_21e = 0;
     p->unk_202 = 0;
   }
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   Enemy_SetSpriteFlags(p, SPRFLAG_AFFINE);
   Enemy_ClearSpriteFlags(p, SPRFLAG_HIDDEN);
   Enemy_ResetState(p, 3, 0, 0);
@@ -2889,7 +2889,7 @@ void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
 }
 
 void FUN_080e8f20(Enemy* p, s32 param_2) {
-  p->unk_21e = FUN_08240b98(&p->unk_204, param_2);
+  p->unk_21e = NoiseManager_GetNoise(&p->unk_204, param_2);
 
   if (p->unk_21e == 0xB546) {
     Enemy_FindReachablePosNear(p, &p->unk_204, &p->unk_204);

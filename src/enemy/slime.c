@@ -88,7 +88,7 @@ void (*const PTR_ARRAY_085ad9c8[16])(Slime*) = {
     FUN_08163e10,
 };  // 0x085AD9C8
 
-void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) {
+void Slime_OnHit(Hitbox* a, Hitbox* b, Slime* p) {
   if (Enemy_IsDead(&p->e) == 0 && b->ignoreMask == HIM_0) {
     Enemy_SetHitTarget(&p->e, b);
     if ((p->e).variant == 3) {
@@ -97,14 +97,14 @@ void Slime_OnHit(HitboxData* a, HitboxData* b, Slime* p) {
   }
 }
 
-// 食らい判定, HBFLAG_UNK_11 の攻撃では攻撃の中心から見た向きの軸へ 192 押し出され, 押し出し先の床の高さが違えば倒れる
+// 食らい判定, HBF_BLOCK の攻撃では攻撃の中心から見た向きの軸へ 192 押し出され, 押し出し先の床の高さが違えば倒れる
 // 998/1001命令, 押し出し前の next = pos + delta で原典は &pos を先に作り pos.x を先に読む, 残りは Crow_OnHurt と同じ共通処理の残差
-NON_MATCH void Slime_OnHurt(HitboxData* a, HitboxData* b, Slime* p) {
+NON_MATCH void Slime_OnHurt(Hitbox* a, Hitbox* b, Slime* p) {
 #ifdef NONMATCHING_C
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+  if (Hitbox_TestFlags(a, HBF_BLOCK)) {
     Slime* self = p;
     Vec3 next;
     Vec3 push;
@@ -1338,7 +1338,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1387,6 +1387,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
 #endif
 }
 
+// 0xC3BC, HashName("スライム")
 void Slime_Create(void) {
   Slime* p = Malloc(sizeof(Slime));
 

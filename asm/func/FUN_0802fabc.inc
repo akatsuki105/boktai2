@@ -146,7 +146,7 @@ _0802FBBE:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08028838
+	bl Ringo_SpawnAfterimage
 	b _0802FBEE
 	.align 2, 0
 _0802FBE0: .4byte 0x000008E4
@@ -154,7 +154,7 @@ _0802FBE4:
 	adds r0, r7, #0
 	movs r1, #1
 	movs r2, #0
-	bl FUN_08028838
+	bl Ringo_SpawnAfterimage
 _0802FBEE:
 	mov r0, r8
 	cmp r0, #0x3b

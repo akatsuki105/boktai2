@@ -9,15 +9,15 @@
 // 爆発は用途の1つで他の攻撃判定も同じ仕組みで扱うのかもしれない
 
 typedef struct {
-  HitboxData hitbox;  // 0x00, AttackBox_Setup が Hitbox_Init / Hitbox_SetAttack / Hitbox_SetHandler に渡す
-  Vec3 pos;           // 0x50, Hitbox_SetPos の第2引数, SpawnAttackBox が引数の Vec3 を8バイトまるごと写す
-  u16 timer;          // 0x58, AttackBox_Update が毎フレーム +1, 10..15 の間だけ Hitbox_Register し、0x28 を超えると state を 2 にする
-  u8 unk_5a[2];       // 0x5A
-  u8 kind;            // 0x5C, SpawnAttackBox の第2引数, Cmd_HugeExplosion は 2 を入れる
-  u8 state;           // 0x5D, PTR_ARRAY_085AD348 の添字, 0: 空き, 1: 判定中, 2: 解放
-  s8 slot;            // 0x5E, 自分の添字, Alloc が書き、解放時に activeMask の該当ビットを落として 0xFF にする
-  u8 unk_5f;          // 0x5F, padding?
-  u32 variant;        // 0x60, SpawnAttackBox の第3引数, 0 は炎属性で音と破片を出す通常の爆発, 0 以外は属性を変え煙の色を Entity081eee80_Spawn の plttOffset でずらす
+  Hitbox hitbox;  // 0x00, AttackBox_Setup が Hitbox_Init / Hitbox_SetAttack / Hitbox_SetHandler に渡す
+  Vec3 pos;       // 0x50, Hitbox_SetPos の第2引数, SpawnAttackBox が引数の Vec3 を8バイトまるごと写す
+  u16 timer;      // 0x58, AttackBox_Update が毎フレーム +1, 10..15 の間だけ Hitbox_Register し、0x28 を超えると state を 2 にする
+  u8 unk_5a[2];   // 0x5A
+  u8 kind;        // 0x5C, SpawnAttackBox の第2引数, Cmd_HugeExplosion は 2 を入れる
+  u8 state;       // 0x5D, PTR_ARRAY_085AD348 の添字, 0: 空き, 1: 判定中, 2: 解放
+  s8 slot;        // 0x5E, 自分の添字, Alloc が書き、解放時に activeMask の該当ビットを落として 0xFF にする
+  u8 unk_5f;      // 0x5F, padding?
+  u32 variant;    // 0x60, SpawnAttackBox の第3引数, 0 は炎属性で音と破片を出す通常の爆発, 0 以外は属性を変え煙の色を Entity081eee80_Spawn の plttOffset でずらす
 } AttackBox;
 static_assert(sizeof(AttackBox) == 100);
 
@@ -107,15 +107,15 @@ void FUN_080dd6f4(AttackBox* box) {
 
 // 借りた枠に 0x100 角の判定を作って攻撃値を入れる
 void AttackBox_Setup(AttackBox* box, s32 power, s32 knockback, s32 iframes, s32 ignoreMask) {
-  HitboxData* hitbox = &box->hitbox;
+  Hitbox* hitbox = &box->hitbox;
   Vec3 halfSize, offset;
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, ignoreMask, &halfSize, &offset);
   if (box->variant == 0) {
-    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);  // 0x40 は武器以外の攻撃
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);
   } else {
-    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_18, iframes);
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_18, iframes);
   }
 
   hitbox->id = 0x3246;

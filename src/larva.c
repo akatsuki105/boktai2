@@ -49,27 +49,27 @@ typedef struct {
   AuxSpriteGfx gfx;       // 0x030, SPRITE_DUNEYRR_AUX
   AuxSprite sprite;       // 0x04C
   AuxAnimState anim;      // 0x078, ANIM_31F4
-  HitboxData hurtbox;     // 0x088
+  Hitbox hurtbox;         // 0x088
   ParticleShadow shadow;  // 0x0D8
 } Larva;
 static_assert(sizeof(Larva) == 280);
 
 typedef struct {
-  Entity e;                // 0x000, ENTITY_UNK_8
-  AuxAnimFile* animFile;   // 0x018, ANIM_31F4
-  u32 activeMask;          // 0x01C, larvae のどの枠が使用中か
-  u32 frameCounter;        // 0x020, _Update が毎フレーム +1, 下位2ビットで playerDistSq を測る枠を選ぶ
-  u16 unk_24;              // 0x024, _Update が毎フレーム 0 に戻す
-  u16 activeCount;         // 0x026, そのフレームに動いた枠の数
-  u32 unk_28;              // 0x028
-  u32 unk_2c;              // 0x02C
-  u32 unk_30;              // 0x030
-  s32 unk_34;              // 0x034
-  s32 unk_38;              // 0x038
-  Vec3 unk_3c[4];          // 0x03C, 初期値は (0x100, 0x100, 0x200), (0x800, 0x100, 0x200), (0x100, 0x100, 0x900), (0x800, 0x100, 0x900)
-  Larva larvae[12];        // 0x05C
-  HitboxData hitboxes[4];  // 0xD7C, ラルバから四方へ伸ばす攻撃判定, unk_24 枚目まで使う
-  Player* player;          // 0xEBC, gPlayerPtr[0]
+  Entity e;               // 0x000, ENTITY_UNK_8
+  AuxAnimFile* animFile;  // 0x018, ANIM_31F4
+  u32 activeMask;         // 0x01C, larvae のどの枠が使用中か
+  u32 frameCounter;       // 0x020, _Update が毎フレーム +1, 下位2ビットで playerDistSq を測る枠を選ぶ
+  u16 unk_24;             // 0x024, _Update が毎フレーム 0 に戻す
+  u16 activeCount;        // 0x026, そのフレームに動いた枠の数
+  u32 unk_28;             // 0x028
+  u32 unk_2c;             // 0x02C
+  u32 unk_30;             // 0x030
+  s32 unk_34;             // 0x034
+  s32 unk_38;             // 0x038
+  Vec3 unk_3c[4];         // 0x03C, 初期値は (0x100, 0x100, 0x200), (0x800, 0x100, 0x200), (0x100, 0x100, 0x900), (0x800, 0x100, 0x900)
+  Larva larvae[12];       // 0x05C
+  Hitbox hitboxes[4];     // 0xD7C, ラルバから四方へ伸ばす攻撃判定, unk_24 枚目まで使う
+  Player* player;         // 0xEBC, gPlayerPtr[0]
 } LarvaManager;
 static_assert(sizeof(LarvaManager) == 3776);
 
@@ -211,28 +211,28 @@ void FUN_08056f90(void) {}
 
 // ラルバの被弾ハンドラ, 攻撃の weakness に応じた向きと速さで弾き, ダメージ表示を出して hp が尽きたら state 7 へ
 // 残差は a/b の割り当て (r5/r6 対 r6/r7) と speed を ip に置く形, 193/201 命令
-NON_MATCH void FUN_08056f94(HitboxData* a, HitboxData* b, Larva* larva) {
+NON_MATCH void FUN_08056f94(Hitbox* a, Hitbox* b, Larva* larva) {
 #ifdef NONMATCHING_C
   u32 angle;
   s32 speed;
   Vec3 v;
 
   Hitbox_ApplyDamage(a, b);
-  if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
+  if (TEST_FLAGS(a->flags, HBF_ANGLE)) {
     angle = a->angle;
   } else {
     angle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
   }
 
-  if (a->weakness & (1 << WK_SWORD)) {
+  if (a->typeMask & HBSRC_SWORD) {
     angle = ArcTan2_8(b->pos.x - gPlayerPtr[0]->mover.pos.x, b->pos.z - gPlayerPtr[0]->mover.pos.z);
     speed = 16;
-  } else if (a->weakness & (1 << WK_SPEAR)) {
+  } else if (a->typeMask & HBSRC_SPEAR) {
     speed = 32;
-  } else if (a->weakness & (1 << WK_HAMMER)) {
+  } else if (a->typeMask & HBSRC_HAMMER) {
     angle = ArcTan2_8(b->pos.x - a->pos.x, b->pos.z - a->pos.z);
     speed = 24;
-  } else if (a->weakness & (1 << WK_OTHERS)) {
+  } else if (a->typeMask & HBSRC_FIST) {
     speed = 8;
   } else {
     speed = 16;
@@ -273,11 +273,11 @@ NON_MATCH void FUN_08057154(LarvaManager* p, s32 power) {
 
   p->unk_24 = 0;
   for (i = 0; i < 4; i++) {
-    HitboxData* hitbox = &p->hitboxes[i];
+    Hitbox* hitbox = &p->hitboxes[i];
 
     VEC3_SET(halfSize, Q8(0.094), Q8(0.125), Q8(0.094));
     VEC3_SET(offset, 0, Q8(0.125), 0);
-    Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetHandler(hitbox, FUN_08056f90, p);
     Hitbox_SetAttack(hitbox, power, 30, 0, 0, 30);
   }
@@ -289,7 +289,7 @@ NON_MATCH void FUN_08057154(LarvaManager* p, s32 power) {
 // ラルバの向き (unk_05) の先 48 に四方の攻撃判定を1枚置いて登録する
 void FUN_08057214(LarvaManager* p, Larva* larva) {
   if (p->unk_24 < 4) {
-    HitboxData* hitbox = &p->hitboxes[p->unk_24];
+    Hitbox* hitbox = &p->hitboxes[p->unk_24];
     Vec3 pos = larva->sprite.pos;
 
     switch (larva->unk_05) {
@@ -318,13 +318,13 @@ void FUN_08057214(LarvaManager* p, Larva* larva) {
 
 // ラルバの食らい判定を作って登録する
 void FUN_080572b8(LarvaManager* p, Larva* larva) {
-  HitboxData* hurtbox = &larva->hurtbox;
+  Hitbox* hurtbox = &larva->hurtbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &larva->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_08056f94, larva);
   Hitbox_SetPowerAndAttributes(hurtbox, larva->power, HBATTR_BEAST, 0);
@@ -1090,9 +1090,9 @@ NON_MATCH s32 LarvaManager_Update(LarvaManager* p) {
       sLarvaStates[larva->state](p, larva, i);
 
       if (larva->flags & 1) {
-        larva->hurtbox.flags |= HBFLAG_HIDDEN;
+        larva->hurtbox.flags |= HBF_HIDDEN;
       } else {
-        larva->hurtbox.flags &= ~HBFLAG_HIDDEN;
+        larva->hurtbox.flags &= ~HBF_HIDDEN;
         Hitbox_SetPos(&larva->hurtbox, pos, 0);
       }
       if (larva->flags & 2) {

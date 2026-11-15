@@ -8,13 +8,13 @@
 
 // 未使用っぽい, スクリプトから置かれる当たり判定付きのオブジェクト, 位置はマップのタイル座標から決まる
 typedef struct {
-  Entity e;            // 0x00, ENTITY_UNK_8
-  u16 id;              // 0x18, EntityE06A_Init の引数, ヒットボックスの所有者IDとして Hitbox_Init に渡る
-  u8 unk_1a[2];        // 0x1A, padding?
-  AuxSprite sprite;    // 0x1C
-  AuxSpriteGfx gfx;    // 0x48, SPRITE_NODATA_9DA7
-  HitboxData hitbox;   // 0x64
-  HitboxData hurtbox;  // 0xB4
+  Entity e;          // 0x00, ENTITY_UNK_8
+  u16 id;            // 0x18, EntityE06A_Init の引数, ヒットボックスの所有者IDとして Hitbox_Init に渡る
+  u8 unk_1a[2];      // 0x1A, padding?
+  AuxSprite sprite;  // 0x1C
+  AuxSpriteGfx gfx;  // 0x48, SPRITE_NODATA_9DA7
+  Hitbox hitbox;     // 0x64
+  Hitbox hurtbox;    // 0xB4
 } EntityE06A;
 static_assert(sizeof(EntityE06A) == 260);
 
@@ -49,12 +49,12 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
 
 // hitbox を組み立てて登録する
 void EntityE06A_SetupHitbox(EntityE06A* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 size, offset;
 
   VEC3_SET(size, Q8(0.196), Q8(0.391), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.391), 0);
-  Hitbox_Init(hitbox, p->id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, p->id, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_18 | HBATTR_DARK, 0x1E);
   Hitbox_SetHandler(hitbox, nop_080cb254, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
@@ -63,12 +63,12 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
 
 // hurtbox を組み立てて登録する, 呼び出し元は未発見
 void EntityE06A_SetupHurtbox(EntityE06A* p) {
-  HitboxData* hitbox = &p->hurtbox;
+  Hitbox* hitbox = &p->hurtbox;
   Vec3 size, offset;
 
   VEC3_SET(size, Q8(0.196), Q8(0.391), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.391), 0);
-  Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, p->id, HBF_HURTBOX | HBF_DAMAGE, 0, 0x10, &size, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, 10, HBATTR_DARK, HBATTR_SOL);
   Hitbox_SetHandler(hitbox, nop_080cb258, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);

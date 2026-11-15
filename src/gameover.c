@@ -485,6 +485,7 @@ s32 GameOverManager_Init(GameOverManager* p) {
   return 0;
 }
 
+// 0xFB8C, HashName("ゲームオーバーマネージャ")
 GameOverManager* GameOverManager_Create(void) {
   GameOverManager* p;
   if (gGameOverManager != NULL) {

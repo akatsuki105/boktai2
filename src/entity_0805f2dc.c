@@ -11,7 +11,7 @@ typedef struct {
   u32 timer;              // 0x04, 毎フレーム +1, 6 から lifetime - 31 まで当たり判定を出し, lifetime - 30 から点滅して (lifetime - 15 からは速く) lifetime で消える
   u16 mosaicInterval[4];  // 0x08, MosaicFader_Start の interval
   Vec3 vel;               // 0x10, 毎フレーム sprite.pos に足す, y は 0
-  HitboxData hitbox;      // 0x18
+  Hitbox hitbox;          // 0x18
   AuxSprite sprite;       // 0x68
 } Entity0805f2dcElem;
 static_assert(sizeof(Entity0805f2dcElem) == 148);
@@ -25,7 +25,7 @@ typedef struct {
 } Entity0805f2dc;
 static_assert(sizeof(Entity0805f2dc) == 1860);
 
-NAKED void Entity0805f2dc_OnHit(HitboxData* a, HitboxData* b, Entity0805f2dcElem* elem) { INCFUNC("asm/func/Entity0805f2dc_OnHit.inc"); }
+NAKED void Entity0805f2dc_OnHit(Hitbox* a, Hitbox* b, Entity0805f2dcElem* elem) { INCFUNC("asm/func/Entity0805f2dc_OnHit.inc"); }
 
 NAKED s32 Entity0805f2dc_InitElem(Entity0805f2dc* p, Entity0805f2dcElem* elem, s32 idx) { INCFUNC("asm/func/Entity0805f2dc_InitElem.inc"); }
 

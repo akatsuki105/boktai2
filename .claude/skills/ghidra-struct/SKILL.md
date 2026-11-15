@@ -63,7 +63,7 @@ The text after the command arrives as `ARGUMENTS:` at the end of this skill.
   struct's size; a mismatch is the first thing to report.
 - **The unit of work is this one type** plus the element/sub-types it needs.
   What you learn about other types (e.g. an undefined byte inside
-  `HitboxData`) goes into the report as a hint, not into edits.
+  `Hitbox`) goes into the report as a hint, not into edits.
 - **Large or widely used types:** if the pass would span many functions or
   unrelated subsystems (as a rough guide, more than ~15 users, or hundreds of
   undefined bytes), finish one coherent part — e.g. everything the
@@ -291,7 +291,7 @@ Strongest first. Most of these produced a confirmed field on this project.
 - Remaining gaps and why they are still open (e.g. "written only, no reader").
 - Mistakes and how they were rolled back — state them plainly.
 - Hints for other types found on the way (e.g. an undefined byte in
-  `HitboxData` that this struct writes to).
+  `Hitbox` that this struct writes to).
 - With `--name`: an old → new table of the **function** renames with the
   evidence for each name, and the
   ones you deliberately left as `FUN_xxxxxxxx`.

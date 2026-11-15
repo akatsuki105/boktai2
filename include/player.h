@@ -85,7 +85,7 @@ typedef u16 PlayerFlag35A;
 #define PFLAG35A_HIDE_BODY (1 << 0)    // 0x0001, 今のフォームの本体スプライトに SPRFLAG_HIDDEN を立てる, ジャンゴ / サバタは human, バット / マウス / スリーピングは beast
 #define PFLAG35A_BLINK (1 << 1)        // 0x0002, human に SPRFLAG_BLINK_ODD を立てる
 #define PFLAG35A_HIDE_SHADOW (1 << 2)  // 0x0004, 影を ParticleShadow_Hide する
-#define PFLAG35A_NO_HURTBOX (1 << 3)   // 0x0008, hurtbox に HBFLAG_HIDDEN をセット, ワープ魔法陣のワープ中などプレイヤーの食らい判定を無効化するためのフラグ
+#define PFLAG35A_NO_HURTBOX (1 << 3)   // 0x0008, hurtbox に HBF_HIDDEN をセット, ワープ魔法陣のワープ中などプレイヤーの食らい判定を無効化するためのフラグ
 #define PFLAG35A_NO_TILE (1 << 4)      // 0x0010, mover.tile を NULL にして Map_InitMoverTile を飛ばす
 #define PFLAG35A_UNK_5 (1 << 5)        // 0x0020, FUN_08082464 が立てるが読み手は未発見
 #define PFLAG35A_SHOW_OTHER (1 << 6)   // 0x0040, 立てたときだけ本体でない方のスプライトの SPRFLAG_HIDDEN を落とす (既定は隠す), ジャンゴ / サバタは beast, バット / マウス / スリーピングは human
@@ -223,7 +223,7 @@ static_assert(sizeof(PlayerShockwave) == 108);
 typedef struct {
   AuxSprite sprite;    // 0x00, 根拠: AllySabata_Destroy が AuxSprite_Remove に渡す
   AuxSpriteGfx gfx;    // 0x2C, SPRITE_GUN_SPREAD, sprite が参照する
-  HitboxData hitbox;   // 0x48, 武器の攻撃判定, Player_SetWeaponHitbox が設定し, 当てたダメージを Player_UpdateWeaponWear が武器の損傷に回す
+  Hitbox hitbox;       // 0x48, 武器の攻撃判定, Player_SetWeaponHitbox が設定し, 当てたダメージを Player_UpdateWeaponWear が武器の損傷に回す
   Vec3 atkPos;         // 0x98, basePos から angle の向きへ進めた位置, 攻撃判定の基準位置になる
   Vec3 basePos;        // 0xA0, 攻撃を出した瞬間の自分の位置を上へずらしたもの
   Weapon* weapon;      // 0xA8, 装備中の武器の実体, Player_ApplyWeapon が差し替え, 外すときは NULL
@@ -232,8 +232,8 @@ typedef struct {
   u8 unk_ae[2];        // 0xAE, padding?
   u16 weaponAtk;       // 0xB0, WeaponData.atk の複写, 根拠: Player_ApplyWeapon
   u16 atkPower;        // 0xB2, ステータス画面に表示される"コウゲキ"の値と等しくなる(力, 防具込みの最終値っぽい), 装備してすぐに更新されず、クイックチェンジ(セレクトでの武器切り替え)のタイミングで更新される
-  u16 knockback;       // 0xB4, 攻撃判定の HitboxData.knockback, 武器種ごとに Player_SetWeaponHitbox が決める
-  u16 iframes;         // 0xB6, 攻撃判定の HitboxData.iframes (当てた相手に与える無敵時間), 武器種ごとに決まる
+  u16 knockback;       // 0xB4, 攻撃判定の Hitbox.knockback, 武器種ごとに Player_SetWeaponHitbox が決める
+  u16 iframes;         // 0xB6, 攻撃判定の Hitbox.iframes (当てた相手に与える無敵時間), 武器種ごとに決まる
   u16 unk_b8[5];       // 0xB8, 攻撃判定の形の値, 槍は武器の状態に応じて 56 / 27 か 28 / 2 か 4 / 3, 4, 7 / 0, 1, 5 を入れる
   u16 gunSpreadAngle;  // 0xC2, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き, 攻撃処理では経過フレーム数として数える
   u8 angle;            // 0xC4, 攻撃の向き (8bit), ((facing + 5) & 7) << 5 で決める
@@ -254,14 +254,14 @@ typedef struct Player {
   AuxSprite beast;                  // 0x0E8, 人型以外 (バット / マウス / スリーピング) のときに使うスプライト
   AuxSpriteGfx* beastGfx;           // 0x114, beastGfxs のどれかを指す
   AuxSpriteGfx beastGfxs[3];        // 0x118, 変身3種のグラフィック [Bat, Mouse, Sleeping]
-  HitboxData hurtbox;               // 0x16C
+  Hitbox hurtbox;                   // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
   ZoneEventSource zoneEvents;       // 0x1CC, pos は mover.pos を指す, 毎フレーム Map_UpdateZoneEvents に渡して範囲内のイベントを拾う
   NavAgent navAgent;                // 0x1FC, FUN_08081ab0 が Map_InitNavAgent に渡す
   EnemyTarget target;               // 0x220, kindMask 2 で登録される
   MsgQueue mq;                      // 0x230, Player_UnregisterMsgQueue が MsgQueue_Unregister に渡す
   PlayerArmor armor;                // 0x264
-  HitboxAttributes hbattrs;         // 0x27C
+  HitboxAttrs hbattrs;              // 0x27C
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
   Weapon* unk_288;                  // 0x288, ここらへんは union の可能性がある (通信時とか)
   struct Input* input;              // 0x28C, &gInput[n]
@@ -273,7 +273,7 @@ typedef struct Player {
   Dir8U8 facing;                    // 0x2E8, プレイヤーの向き, 壁に背を向けている場合は壁と反対方向(=プレイヤーの顔が向いている方)
   u8 unk_2e9[2];                    // 0x2E9
   u8 hitboxTimer;                   // 0x2EB, spikeHitbox を Hitbox_Register し続ける残りフレーム数, Django_Spike が 6 を入れる
-  HitboxData spikeHitbox;           // 0x2EC, スパイクメイルの反撃の攻撃判定, hitboxTimer が残っている間だけ登録される
+  Hitbox spikeHitbox;               // 0x2EC, スパイクメイルの反撃の攻撃判定, hitboxTimer が残っている間だけ登録される
   AuxAnimState beastAnim;           // 0x33C, beast の変身アニメの再生状態, 根拠: Player_GetMagicAction が AuxAnim_RestartAnim に渡す
   AuxAnimFile* batAnim;             // 0x34C, ANIM_BAT
   AuxAnimFile* mouseAnim;           // 0x350, ANIM_MOUSE
@@ -338,7 +338,7 @@ typedef struct Player {
   u16 desertTimer;                  // 0x3E0, 砂漠エリアでの経過フレーム, 120 ごとに damage を1増やす (エリア外では 120 を入れておく)
   u16 blackArmorTimer;              // 0x3E2, 黒の鎧を装備している間の経過フレーム, 15 ごとに damage を1増やす
   u16 heatstrokeTick;               // 0x3E4, gStat->heatstroke が 0 でない間毎フレーム 1 (2500 以上は 2) ずつ増え, 15 を超えるたびに煙を出して 0 に戻る
-  u16 knockbackSpeed;               // 0x3E6, Player_SetupKnockback が相手の HitboxData.knockback を退避する, FUN_080835d8 が knockbackDir へ滑らせる速さに使い毎回 3/4 倍する
+  u16 knockbackSpeed;               // 0x3E6, Player_SetupKnockback が相手の Hitbox.knockback を退避する, FUN_080835d8 が knockbackDir へ滑らせる速さに使い毎回 3/4 倍する
   Dir8U16 knockbackDir;             // 0x3E8, Player_SetupKnockback が入れる押し出し方向 (0..7), 攻撃の向きか攻撃側から離れる向き
   u16 unk_3ea;                      // 0x3EA, FUN_0807ad60 が 1 を書く
   u16 mashRecoverTimer;             // 0x3EC, PACT_UNK_18 から立ち直るまでの残り, 毎フレーム 1 (A/B/方向キーを押した瞬間は 2) 減って 0 で終わる, 0 以外の間は他の行動より PACT_UNK_18 を優先する
@@ -407,7 +407,7 @@ typedef struct Player {
   Vec3 moveTarget;                  // 0x49C, 操作不能中の移動ルーチンが向かう座標
   u16 knockbackSpeed_4a4;           // 0x4A4, スクリプト (Cmd_KnockbackPlayer の '.f'=30) が入れる吹き飛びの速さ, 操作不能中の吹き飛び処理が向きの反対へ押し出しながら毎フレーム 3/4 に減らし 0 で止まる
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
-  u8 unk_4a7;                       // 0x4A7, FUN_0807c748 の第3引数
+  u8 unk_4a7;                       // 0x4A7, ロックバスターでは弾が飛ぶフレーム数, ほかの行動でも別の用途に使い回される
   u8 unk_4a8;                       // 0x4A8
   Dir8S8 targetDir;                 // 0x4A9, 操作不能中の移動や向き直りを終えたときに向く方向, 負なら向きを変えない
   u8 doneNotify;                    // 0x4AA, 操作不能中の処理を終えたときに Player_NotifyLockedDone が行う通知, see PlayerDoneNotify
@@ -475,9 +475,9 @@ typedef struct Player {
   PlayerFunc attackCB;              // 0xA98, sPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
-  u32 (*weaponExDamageCb[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);                               // 0xA9C, プレイヤーの状態を参照する武器の特殊効果コールバック
-  u32 (*weaponEffectCb2[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);                                // 0xAA8, 状態を参照しない武器の特殊効果コールバック, 防御無視効果と麻痺のハンドラはここ
-  u32 (*weaponEffectCb3[WEAPON_EFFECT_SLOT_COUNT])(struct Player*, HitboxData* a, HitboxData* b);  // 0xAB4, 敵の状態を参照する武器の特殊効果コールバック, xx特効系のハンドラはここ, 戻り値は b->damage に足す
+  u32 (*weaponExDamageCb[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);                       // 0xA9C, プレイヤーの状態を参照する武器の特殊効果コールバック
+  u32 (*weaponEffectCb2[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);                        // 0xAA8, 状態を参照しない武器の特殊効果コールバック, 防御無視効果と麻痺のハンドラはここ
+  u32 (*weaponEffectCb3[WEAPON_EFFECT_SLOT_COUNT])(struct Player*, Hitbox* a, Hitbox* b);  // 0xAB4, 敵の状態を参照する武器の特殊効果コールバック, xx特効系のハンドラはここ, 戻り値は b->damage に足す
 
   PlayerFunc updateCallback;  // 0xAC0
 } Player;
@@ -534,7 +534,7 @@ void Player_RefreshAllStats(Player* p);
 void Player_EquipMagic(Player* p, magic32_t n);
 u32 Player_GetAnimIdx(s32 playerKind, s32 idx);
 void Player_SetPosAndSave(Player* p, Vec3* pos);
-s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockback, s32 angle, s32 iframes, HitboxAttributes attrs);
+s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockback, s32 angle, s32 iframes, HitboxAttrs attrs);
 void Player_EnterDeadState(Player* p);
 bool32 FUN_0807ad60(Player* p, s32 param_2);
 Dir8S32 Player_GetDpadFacing(Player* p);
@@ -547,8 +547,8 @@ bool32 Player_TestElevatorFlags(Player* p, ElevatorFlagsU16 mask);
 void Player_SetElevatorFlags(Player* p, u32 flags, u32 elevatorID);
 void Player_ClearElevatorFlags(Player* p, u32 flags);
 void Player_SetKnockbackOrigin(Player* p, Vec3* origin);
-s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
-s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
+s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttrs attrs);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttrs attrs);
 
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->flag20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->flag20 & bit; }

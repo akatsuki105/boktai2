@@ -13,13 +13,13 @@ typedef struct {
   u16 id;                        // 0x18
   bool8 breakable;               // 0x1A, '.t', 1 なら hp を消費して破壊できる (パレットも別)
   bool8 broken;                  // 0x1B, 1 になると消滅処理に入る
-  u16 hp;                        // 0x1C, '.l' (default: 50), 被弾で HitboxData.damage の分だけ減る
+  u16 hp;                        // 0x1C, '.l' (default: 50), 被弾で Hitbox.damage の分だけ減る
   u8 damageTimer;                // 0x1E, 被弾時に 10 がセットされ毎フレーム減る (この間だけ点滅と振動をする)
   u8 unk_1f;                     // 0x1F, padding?
   u32 timer;                     // 0x20, 毎フレーム +1, 被弾して unk_1b が立つときに 0 に戻る
   s32 scriptID;                  // 0x24, '.e', 消滅時に VM_ExecByID に渡す
   Vec3 pos;                      // 0x28, '.p'
-  HitboxData hurtbox;            // 0x30
+  Hitbox hurtbox;                // 0x30
   MapTileOverride tileOverride;  // 0x80
   AuxSpriteGfx gfx;              // 0x90, SPRITE_PLANT_2567
   AuxSprite sprite;              // 0xAC
@@ -27,7 +27,7 @@ typedef struct {
 static_assert(sizeof(EntityEC96) == 216);
 
 // 被弾時に呼ばれる, 破壊できる相手なら hp を削って 0 未満で壊し、そうでなければ点滅させるだけ
-NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
+NON_MATCH void FUN_08013288(Hitbox* a, Hitbox* b, EntityEC96* p) {
 #ifdef NONMATCHING_C
   Hitbox_ApplyDamage(a, b);
   if (b->damage != 0) {
@@ -64,13 +64,13 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
       p->sprite.pos = p->pos;
       if (--p->damageTimer == 0) {
         if (p->breakable) Video_SetAuxSpritePltt(&p->gfx, 648);
-        Hitbox_ClearFlags(&p->hurtbox, HBFLAG_HIDDEN);
+        Hitbox_ClearFlags(&p->hurtbox, HBF_HIDDEN);
       } else {
         idx = (gRandTableIdx + 1) & 0x3FF;
         p->sprite.pos.x = p->sprite.pos.x - 8 + (gRandomTable[idx] & 0xF);
         gRandTableIdx = (idx + 1) & 0x3FF;
         p->sprite.pos.z = p->sprite.pos.z - 8 + (gRandomTable[gRandTableIdx] & 0xF);
-        p->hurtbox.flags |= HBFLAG_HIDDEN;
+        p->hurtbox.flags |= HBF_HIDDEN;
       }
     }
   } else {
@@ -97,7 +97,7 @@ s32 EntityEC96_Destroy(EntityEC96* p) {
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   AuxSpriteGfx* gfx;
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
   Vec3* pos;
   CollisionMapTile* tile;
   MapTileOverride* ov;
@@ -130,7 +130,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   hurtbox = &p->hurtbox;
   VEC3_SET(size, Q8(0.51), Q8(0.5), Q8(0.51));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hurtbox, p->id, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   pos = &p->pos;
   Hitbox_SetPos(hurtbox, pos, 0);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);

@@ -12,7 +12,7 @@
 typedef struct {
   AuxSprite sprite;   // 0x00
   AuxAnimState anim;  // 0x2C
-  HitboxData hitbox;  // 0x3C
+  Hitbox hitbox;      // 0x3C
   Vec3 pos;           // 0x8C, Hitbox_SetPos の第2引数, InkBallPuddleManager_Add が引数の Vec3 を写す
   u16 ttl;            // 0x94, 残りフレーム数, _Update が毎フレーム -1 して 0 で InkBallPuddleManager_Remove が解放する, 60未満でフェードに入る
   u8 unk_96[2];       // 0x96, padding?
@@ -32,9 +32,9 @@ static_assert(sizeof(InkBallPuddleManager) == 1280);
 
 static InkBallPuddleManager* gInkBallPuddleManager;  // 0x0300021C
 
-NAKED void InkBallPuddle_OnHit(HitboxData* a, HitboxData* b, InkBallPuddle* puddle) { INCFUNC("asm/func/InkBallPuddle_OnHit.inc"); }
+NAKED void InkBallPuddle_OnHit(Hitbox* a, Hitbox* b, InkBallPuddle* puddle) { INCFUNC("asm/func/InkBallPuddle_OnHit.inc"); }
 
-NAKED void InkBallPuddle_InitHitbox(InkBallPuddle* puddle, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/InkBallPuddle_InitHitbox.inc"); }
+NAKED void InkBallPuddle_InitHitbox(InkBallPuddle* puddle, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) { INCFUNC("asm/func/InkBallPuddle_InitHitbox.inc"); }
 
 // 空いている枠を探す, ttl が 0 で非表示のものが空き
 // 残差1命令: 原典は return puddle のブロックをループの手前に置くので、ガードが bls + b の2段になる
@@ -59,7 +59,7 @@ NON_MATCH InkBallPuddle* InkBallPuddleManager_FindFree(void) {
 }
 
 // 空き枠を1つ取って墨だまりを出す, Y座標は足元のタイルの高さに合わせる
-void InkBallPuddleManager_Add(Vec3* pos, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ttl) {
+void InkBallPuddleManager_Add(Vec3* pos, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ttl) {
   InkBallPuddleManager* p = gInkBallPuddleManager;
   InkBallPuddle* puddle = InkBallPuddleManager_FindFree();
 
@@ -178,7 +178,7 @@ InkBallPuddleManager* InkBallPuddleManager_Create(void) {
 }
 
 // 墨だまりを出す入口, エンティティがまだなければ先に作る
-s32 InkBallPuddle_Spawn(Vec3* pos, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ttl) {
+s32 InkBallPuddle_Spawn(Vec3* pos, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ttl) {
   if (gInkBallPuddleManager == NULL) {
     gInkBallPuddleManager = InkBallPuddleManager_Create();
   }

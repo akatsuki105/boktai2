@@ -15,8 +15,8 @@ typedef struct {
   AuxSprite sprite;                 // 0x000, pos は FUN_080dfeb0 の第1引数の写し
   AuxAnimState anim;                // 0x02C
   Entity080e01bcSprite sprites[2];  // 0x03C
-  HitboxData hitbox_f4;             // 0x0F4
-  HitboxData hitbox_144;            // 0x144
+  Hitbox hitbox_f4;                 // 0x0F4
+  Hitbox hitbox_144;                // 0x144
   u8 unk_194[0x19C - 0x194];        // 0x194, まだ未解析
   u8 unk_19c;                       // 0x19C
   u8 unk_19d;                       // 0x19D
@@ -90,27 +90,27 @@ void FUN_080df714(Entity080e01bcElem* elem) {
 }
 
 void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bcElem* elem) {
-  HitboxData* hb;
+  Hitbox* hb;
 
   elem->state = 2;
   elem->stateBegun = 1;
 
   hb = &elem->hitbox_f4;
-  hb->flags |= HBFLAG_HIDDEN;
+  hb->flags |= HBF_HIDDEN;
   hb = &elem->hitbox_144;
-  hb->flags |= HBFLAG_HIDDEN;
+  hb->flags |= HBF_HIDDEN;
 }
 
 void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bcElem* elem) {
-  HitboxData* hb;
+  Hitbox* hb;
 
   elem->state = 2;
   elem->stateBegun = 1;
 
   hb = &elem->hitbox_f4;
-  hb->flags |= HBFLAG_HIDDEN;
+  hb->flags |= HBF_HIDDEN;
   hb = &elem->hitbox_144;
-  hb->flags |= HBFLAG_HIDDEN;
+  hb->flags |= HBF_HIDDEN;
 }
 
 NAKED void FUN_080df790(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080df790.inc"); }

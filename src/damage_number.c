@@ -300,7 +300,7 @@ DamageNumberManager* DamageNumberManager_Create(void) {
 }
 
 // hitbox ごとに枠を 1 つ割り当てて数字を出す, 同じ hitbox なら同じ枠を使い直す, kind は 0 = ダメージ, 1 = 回復 (未確定)
-s32 CreateDamageNumber(HitboxData* hitbox, s32 amount, s32 kind, Vec3* pos, Vec3* param_5, s32 priority) {
+s32 CreateDamageNumber(Hitbox* hitbox, s32 amount, s32 kind, Vec3* pos, Vec3* param_5, s32 priority) {
   DamageNumberManager* p = sDamageNumberManager;
   s32 key;
   s32 idx;

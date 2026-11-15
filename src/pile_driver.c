@@ -127,20 +127,17 @@ void PileDriver_SetSubState(PileDriver* p, u32 subState) {
   p->unk_4fe = 0;
 }
 
-// 残差は kind のスタック退避が分岐前に出る1命令のみ, Tier A は試済 (引数直接/ブロック内宣言/ローカルコピー), 未: B/C
-NON_MATCH void FUN_080ad204(PileDriver* p, u32 kind) {
-#ifdef NONMATCHING_C
+// kind を引数にして eventScriptID のスクリプトを起動する
+void PileDriver_RunEventScript(PileDriver* p, u32 kind) {
   ScriptArgs args;
-  u32 argv;
+  u32 argv[1];
 
-  if (p->unk_17a4 != 0) {
-    argv = kind;
-    args.argc = 1, args.argv = &argv;
-    VM_ExecByID(p->unk_17a4, &args);
+  if (p->eventScriptID != 0) {
+    args.argc = 1;
+    argv[0] = kind;
+    args.argv = argv;
+    VM_ExecByID(p->eventScriptID, &args);
   }
-#else
-  INCFUNC("asm/func/FUN_080ad204.inc");
-#endif
 }
 
 NAKED void FUN_080ad23c(PileDriver* p) { INCFUNC("asm/func/FUN_080ad23c.inc"); }
@@ -149,7 +146,7 @@ NAKED void FUN_080ad2d0(PileDriver* p, s32* param_2, SpriteFlags* param_3, u8 pa
 
 // PileDriver が 0x0C6C から15件持つ枠
 typedef struct {
-  AuxSprite spr;          // 0x00, FUN_080b0ab4 が AuxSprite_Remove に渡す
+  AuxSprite spr;          // 0x00, PileDriver_RemoveSprites が AuxSprite_Remove に渡す
   u8 unk_2c[104 - 0x2C];  // 0x2C, まだ未解析
 } PileDriverSprite104;
 static_assert(sizeof(PileDriverSprite104) == 104);
@@ -453,54 +450,29 @@ NAKED void FUN_080af0f8(PileDriver* p) { INCFUNC("asm/func/FUN_080af0f8.inc"); }
 NAKED void FUN_080af200(PileDriver* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080af200.inc"); }
 
 // 15枚をまとめて隠す
-// 残差2命令ぶんの位置ずれ (32 対 32), 原典はループ不変の 1 を elem の初期化より前に作る
-// 直接代入 / AuxSprite_Hide / AuxSprite_SetFlags / 添字形 / 宣言順の入れ替えはいずれも同じ並び
-NON_MATCH void FUN_080af2f4(PileDriverSprite104* elems) {
-#ifdef NONMATCHING_C
+void PileDriver_HideSprites(PileDriverSprite104* elems) {
   s32 i;
-  PileDriverSprite104* elem;
 
-  elems->spr.flags |= SPRFLAG_HIDDEN;
-
-  elem = &elems[1];
+  elems[0].spr.flags |= SPRFLAG_HIDDEN;
   for (i = 0; i < 8; i++) {
-    elem->spr.flags |= SPRFLAG_HIDDEN;
-    elem++;
+    elems[1 + i].spr.flags |= SPRFLAG_HIDDEN;
   }
-
-  elem = &elems[9];
   for (i = 0; i < 6; i++) {
-    elem->spr.flags |= SPRFLAG_HIDDEN;
-    elem++;
+    elems[9 + i].spr.flags |= SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_080af2f4.inc");
-#endif
 }
 
 // 15枚をまとめて出す
-// 残差は2つめのループだけ (32 対 32), 原典は ~1 を base より先に作る, FUN_080af2f4 と同じ形
-NON_MATCH void FUN_080af334(PileDriverSprite104* elems) {
-#ifdef NONMATCHING_C
+void PileDriver_ShowSprites(PileDriverSprite104* elems) {
   s32 i;
-  PileDriverSprite104* elem;
 
-  elems->spr.flags &= ~SPRFLAG_HIDDEN;
-
-  elem = &elems[1];
+  elems[0].spr.flags &= ~SPRFLAG_HIDDEN;
   for (i = 0; i < 8; i++) {
-    elem->spr.flags &= ~SPRFLAG_HIDDEN;
-    elem++;
+    elems[1 + i].spr.flags &= ~SPRFLAG_HIDDEN;
   }
-
-  elem = &elems[9];
   for (i = 0; i < 6; i++) {
-    elem->spr.flags &= ~SPRFLAG_HIDDEN;
-    elem++;
+    elems[9 + i].spr.flags &= ~SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_080af334.inc");
-#endif
 }
 
 NAKED void FUN_080af374(unknown* p, s32 param_2) { INCFUNC("asm/func/FUN_080af374.inc"); }
@@ -566,7 +538,7 @@ NAKED void FUN_080b087c(PileDriver* p, s32 param_2) { INCFUNC("asm/func/FUN_080b
 
 NAKED void FUN_080b09d4(PileDriver* p) { INCFUNC("asm/func/FUN_080b09d4.inc"); }
 
-void FUN_080b0ab4(PileDriverSprite104* elems) {
+void PileDriver_RemoveSprites(PileDriverSprite104* elems) {
   PileDriverSprite104* elem;
   s32 i;
 
@@ -678,7 +650,7 @@ void FUN_080b1404(PileDriver* p) {
   if (FUN_080b10c4(p)) {
     Player_Unlock(gPlayerPtr[0]);
     PileDriver_SetSubState(p, 3);
-    FUN_080ad204(p, 0);
+    PileDriver_RunEventScript(p, 0);
   }
 }
 
@@ -701,14 +673,14 @@ void FUN_080b165c(PileDriver* p) {
     PileDriver_SetState(p, FUN_080adb5c);
     Sound_FadeOutBGM(4);
   } else if (p->unk_4fe == 90) {
-    FUN_0823bca8(16);
+    Camera_ReleaseLook(16);
     FUN_0807bc64(gPlayerPtr[0], 0);
   } else if (p->unk_4fe > 105) {
     if (gPlayerPtr[0]->action == PACT_IDLE) {
       Player_Unlock(gPlayerPtr[0]);
       PileDriver_SetSubState(p, 3);
       p->unk_1332 = 0;
-      FUN_080ad204(p, 2);
+      PileDriver_RunEventScript(p, 2);
     }
   }
 }
@@ -717,7 +689,7 @@ void FUN_080b1718(PileDriver* p) {
   if (p->unk_4fe <= 69) {
     p->unk_4fe++;
     if (p->unk_4fe == 70) {
-      FUN_080ad204(p, 3);
+      PileDriver_RunEventScript(p, 3);
     }
   }
   if (p->unk_1333) {
@@ -752,7 +724,7 @@ void FUN_080b1888(PileDriver* p) {
     PlaySound_082406e0(SE_COFFIN_CLOSE);
     FUN_08086b18(&p->pos_510);
     PileDriver_SetSubState(p, 12);
-    FUN_080ad204(p, 5);
+    PileDriver_RunEventScript(p, 5);
   }
 }
 
@@ -772,9 +744,9 @@ NAKED void FUN_080b1d5c(PileDriver* p) { INCFUNC("asm/func/FUN_080b1d5c.inc"); }
 
 void FUN_080b1de8(PileDriver* p) {
   if (VM_SeekToNamedArg('p')) {
-    p->unk_17a4 = VM_GetValue();
+    p->eventScriptID = VM_GetValue();
   } else {
-    p->unk_17a4 = 0;
+    p->eventScriptID = 0;
   }
 }
 
@@ -877,7 +849,7 @@ s32 PileDriver_Destroy(PileDriver* p) {
       AuxSprite_Remove(&p->sprite_254.spr);
     }
   } else {
-    FUN_080b0ab4((PileDriverSprite104*)p->unk_c6c);
+    PileDriver_RemoveSprites((PileDriverSprite104*)p->unk_c6c);
     AuxSprite_Remove(&p->sprite_518);
     SetBGPrioDirect(1, 1);
   }
@@ -890,6 +862,7 @@ s32 PileDriver_Destroy(PileDriver* p) {
 
 NAKED s32 PileDriver_Init(PileDriver* p) { INCFUNC("asm/func/PileDriver_Init.inc"); }
 
+// 0xCBB0, HashName("パイルドライバー")
 PileDriver* PileDriver_Create(u32 subroutineID) {
   PileDriver* p;
 

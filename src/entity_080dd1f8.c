@@ -14,8 +14,8 @@
 typedef struct {
   AuxSprite spr;          // 0x000, _Destroy が AuxSprite_Remove に渡す
   AuxAnimState anim;      // 0x02C
-  HitboxData hitbox;      // 0x03C, 攻撃判定, 当たると Entity080dd1f8Elem_OnHit で弾かれる
-  HitboxData hurtbox;     // 0x08C, 食らい判定, Entity080dd1f8Elem_OnHurt で炎と氷に反応する
+  Hitbox hitbox;          // 0x03C, 攻撃判定, 当たると Entity080dd1f8Elem_OnHit で弾かれる
+  Hitbox hurtbox;         // 0x08C, 食らい判定, Entity080dd1f8Elem_OnHurt で炎と氷に反応する
   ParticleShadow shadow;  // 0x0DC, _Destroy が ParticleShadow_Remove に渡す
   Vec3 vel;               // 0x11C, 弾かれると Entity080dd1f8Elem_OnHit が書き換える
   Vec3 unk_124;           // 0x124, Entity080dd1f8_Spawn の第3引数
@@ -30,7 +30,7 @@ typedef struct {
   u16 unk_138;            // 0x138, Explosion_Create の knockback
   u8 unk_13a;             // 0x13A, 0 になると点滅のアニメを切り替える
   u8 unk_13b;             // 0x13B, 流しているアニメ番号 (1 か 2)
-  u16 unk_13c;            // 0x13C, 攻撃判定と食らい判定の id, FUN_08240cf0 の第6引数
+  u16 unk_13c;            // 0x13C, 攻撃判定と食らい判定の id, NoiseManager_AddMoverNoise の第6引数
   u16 unk_13e;            // 0x13E, unk_132 の戻し先の値
   u16 unk_140;            // 0x140, 状態に入ってからのフレーム数
   u8 unk_142[2];          // 0x142
@@ -49,7 +49,7 @@ static_assert(sizeof(Entity080dd1f8) == 3948);
 IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 
 struct Explosion* Explosion_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, s32 plttOffset);
-void Entity080dd1f8Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem);
+void Entity080dd1f8Elem_OnHurt(Hitbox* a, Hitbox* b, Entity080dd1f8Elem* elem);
 Entity080dd1f8* Entity080dd1f8_Create(void);
 
 const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
@@ -62,7 +62,7 @@ static inline bool8 Entity080dd1f8_IsElemUsed(u32* mask, s32 i) {
 void FUN_080dc4a4(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {}
 
 // 攻撃判定が当たったら当てた相手から離れる向きへ弾かれる, 相手より上なら跳ね上がり, そうでなければ横へ押される
-void Entity080dd1f8Elem_OnHit(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
+void Entity080dd1f8Elem_OnHit(Hitbox* a, Hitbox* b, Entity080dd1f8Elem* elem) {
   Vec3 diff;
   Vec3 v;
   s32 angle;
@@ -91,7 +91,7 @@ void Entity080dd1f8Elem_OnHit(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* 
 // 判定の属性でタイマーを止めるか初期値に戻すかを決める
 // 残差2命令 (28 対 30), 原典は elem を r12 に逃がして第2分岐で add r1, ip を使うが, こちらは r3 に置けてしまう (leaf なので r4-r7 は使えない)
 // && / 条件の反転 / u16* ローカルは試済
-NON_MATCH void Entity080dd1f8Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
+NON_MATCH void Entity080dd1f8Elem_OnHurt(Hitbox* a, Hitbox* b, Entity080dd1f8Elem* elem) {
 #ifdef NONMATCHING_C
   if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
     elem->unk_132 = 0;
@@ -107,22 +107,22 @@ NON_MATCH void Entity080dd1f8Elem_OnHurt(HitboxData* a, HitboxData* b, Entity080
 
 // 攻撃判定と食らい判定を作る
 void Entity080dd1f8Elem_InitHitboxes(Entity080dd1f8Elem* elem, u16 power, u16 knockback) {
-  HitboxData* hitbox;
-  HitboxData* hurtbox;
+  Hitbox* hitbox;
+  Hitbox* hurtbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 32, 32, 32);
   VEC3_SET(offset, 0, 32, 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, elem->unk_13c, HBFLAG_HITBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_Init(hitbox, elem->unk_13c, HBF_HITBOX | HBF_SENSOR | HBF_DAMAGE, 0, 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, (s16)power, (s16)knockback, 0, 0, 0);
   Hitbox_SetPos(hitbox, &elem->spr.pos, 0);
   Hitbox_SetHandler(hitbox, Entity080dd1f8Elem_OnHit, elem);
   VEC3_SET(halfSize, 64, 128, 64);
   VEC3_SET(offset, 0, 128, 0);
   hurtbox = &elem->hurtbox;
-  Hitbox_Init(hurtbox, elem->unk_13c, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_Init(hurtbox, elem->unk_13c, HBF_HURTBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &elem->spr.pos, 0);
   Hitbox_SetHandler(hurtbox, Entity080dd1f8Elem_OnHurt, elem);
   Hitbox_Register(hurtbox);
@@ -277,7 +277,7 @@ NON_MATCH void Entity080dd1f8Elem_StateExplode(Entity080dd1f8* p, Entity080dd1f8
 #ifdef NONMATCHING_C
   if (elem->unk_130) {
     Explosion_Create(&elem->spr.pos, 32, elem->unk_136, elem->unk_138, 0);
-    FUN_08240cf0(elem->spr.pos.x, elem->spr.pos.z, 0x400, 0, 1, elem->unk_13c);
+    NoiseManager_AddMoverNoise(elem->spr.pos.x, elem->spr.pos.z, 0x400, 0, 1, elem->unk_13c);
     elem->unk_130 = FALSE;
   }
   gEntity080dd1f8->activeMask &= ~(1 << elem->unk_12f);

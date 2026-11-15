@@ -41,7 +41,7 @@ static_assert(sizeof(Boku) == 1708);
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
 void Enemy_StepToFloorEdge(Enemy* p);
-void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9);
+void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9);
 
 void FUN_080ff67c(Boku* p);
 void Boku_RouteAwayFromPlayer(Boku* p);
@@ -108,7 +108,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
 
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
 
-void Boku_OnHit(HitboxData* a, HitboxData* b, Boku* p) {
+void Boku_OnHit(Hitbox* a, Hitbox* b, Boku* p) {
   if (Enemy_IsDead(&p->e) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
       (p->e).hitTargetID = b->id;
@@ -118,7 +118,7 @@ void Boku_OnHit(HitboxData* a, HitboxData* b, Boku* p) {
 }
 
 // Mimic_OnHurt と同じ食らい判定 (敵共通の処理の inline 展開らしい), Mimic_OnHurt の下書きをそのまま当てただけ
-NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
+NON_MATCH void Boku_OnHurt(Hitbox* a, Hitbox* b, Boku* p) {
 #ifdef NONMATCHING_C
   u32 knockback;
   u8 angle;
@@ -133,12 +133,12 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
     }
     return;
   }
-  if ((p->e).hurtbox.flags & HBFLAG_HIDDEN) {
+  if ((p->e).hurtbox.flags & HBF_HIDDEN) {
     return;
   }
 
-  if (!(a->flags & HBFLAG_UNK_0)) {
-    if (!(a->weakness & 0x4000)) {
+  if (!(a->flags & HBF_DAMAGE)) {
+    if (!(a->typeMask & HBSRC_MFREEZE)) {
       return;
     }
     if ((p->e).flags3 & (ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
@@ -148,7 +148,7 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
       return;
     }
     (p->e).unk_488 = 60;
-    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBF_ANGLE) && (a->flags & HBF_ANGLE)) {
       s32 d = abs(b->angle - a->angle);
 
       if (d <= 32) {
@@ -184,7 +184,7 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
         found = TRUE;
       }
       (p->e).unk_4a0 = mask;
-      (p->e).weaponExpMask = a->weakness;
+      (p->e).weaponExpMask = a->typeMask;
       (p->e).flags6 = a->attributes;
       if (found) {
         if ((p->e).flags5 & ENEFLAG5_UNK_1) {
@@ -229,7 +229,7 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
     b->damage <<= 1;
     b->knockback >>= 1;
   }
-  if (!(a->flags & HBFLAG_ANGLE)) {
+  if (!(a->flags & HBF_ANGLE)) {
     s16 dx = b->pos.x - a->pos.x;
     s16 dz = b->pos.z - a->pos.z;
 
@@ -265,7 +265,7 @@ NON_MATCH void Boku_OnHurt(HitboxData* a, HitboxData* b, Boku* p) {
       found = TRUE;
     }
     (p->e).unk_4a0 = mask;
-    (p->e).weaponExpMask = a->weakness;
+    (p->e).weaponExpMask = a->typeMask;
     (p->e).flags6 = a->attributes;
     if (found) {
       if ((p->e).flags5 & ENEFLAG5_UNK_1) {
@@ -1437,7 +1437,7 @@ NON_MATCH void Boku_StateDying(Boku* p, s32 param_2) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   Enemy_ClearDamage(&p->e);
   if (Mod(param_2, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
@@ -2028,26 +2028,22 @@ void Boku_InitAnims(Boku* p) {
   Enemy_SetAnimEntry(&p->e, 11, 0, 0);
 }
 
-const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
+const u16 sBokuMoveSpeeds[4] = {336, 336, 0, 180};  // 0x085AD4DC
 
-// 37/39命令, 原典は anim のポインタを r3 と r4 の2本に持ち, 10〜13 の側は r4 から cmdIdx を読み直す, 判定順の入れ替えは試済
-NON_MATCH s32 FUN_080ffcd0(Boku* p) {
-#ifdef NONMATCHING_C
+// アニメのコマが切り替わった瞬間だけ, コマ 0..3 と 10..13 に応じた移動速度を返す
+s32 Boku_GetMoveSpeed(Boku* p) {
   AuxAnimState* anim = &(p->e).s->aux.anim;
+  AuxAnimState* a = anim;
 
   if (anim->tick == 0) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
-    if (anim->cmdIdx <= 3) {
-      return u16_ARRAY_085ad4dc[anim->cmdIdx];
-    }
-    if (anim->cmdIdx >= 10 && anim->cmdIdx <= 13) {
-      return u16_ARRAY_085ad4dc[anim->cmdIdx - 10];
+    if (anim->cmdIdx < 4) {
+      return sBokuMoveSpeeds[anim->cmdIdx];
+    } else if (anim->cmdIdx >= 10 && anim->cmdIdx < 14) {
+      return sBokuMoveSpeeds[a->cmdIdx - 10];
     }
   }
   return 0;
-#else
-  INCFUNC("asm/func/FUN_080ffcd0.inc");
-#endif
 }
 
 void FUN_080ffd28(Boku* p) {
@@ -2988,7 +2984,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
   (p->e).navAgent = &p->navAgent;
   (p->e).pathNodePos = &p->pathNodePos;
   (p->e).handlerFrame = (EnemyHandler)FUN_08101bc0;
-  (p->e).getMoveSpeed = (void*)FUN_080ffcd0;
+  (p->e).getMoveSpeed = (void*)Boku_GetMoveSpeed;
   (p->e).handlerTurn = FUN_080fba64;
   (p->e).handlerMove = FUN_080fba28;
   (p->e).handlerWait = FUN_080fba40;
@@ -3035,7 +3031,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
   (p->e).onDamaged = (void*)Boku_OnDamaged;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22 | ENEFLAG_UNK_24);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_27);
-  (p->e).hurtbox.flags &= ~HBFLAG_UNK_0;
+  (p->e).hurtbox.flags &= ~HBF_DAMAGE;
   (p->e).kind = ENEK_BOKU;
   Enemy_InitShadowAndEmitter(&p->e);
 
@@ -3072,7 +3068,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -3117,6 +3113,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
 #endif
 }
 
+// 0x05A5, HashName("ボク")
 void Boku_Create(void) {
   Boku* p = Malloc(sizeof(Boku));
   if (p != NULL) {

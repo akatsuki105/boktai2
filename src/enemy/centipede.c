@@ -44,9 +44,9 @@ void (*const PTR_ARRAY_085ad76c[1])(Centipede*) = {
     FUN_08138b34,
 };  // 0x085AD76C
 
-NAKED void Centipede_OnHit(HitboxData* a, HitboxData* b, Centipede* p) { INCFUNC("asm/func/Centipede_OnHit.inc"); }
+NAKED void Centipede_OnHit(Hitbox* a, Hitbox* b, Centipede* p) { INCFUNC("asm/func/Centipede_OnHit.inc"); }
 
-NAKED void Centipede_OnHurt(HitboxData* a, HitboxData* b, Centipede* p) { INCFUNC("asm/func/Centipede_OnHurt.inc"); }
+NAKED void Centipede_OnHurt(Hitbox* a, Hitbox* b, Centipede* p) { INCFUNC("asm/func/Centipede_OnHurt.inc"); }
 
 NAKED void FUN_08132a24(Centipede* p) { INCFUNC("asm/func/FUN_08132a24.inc"); }
 
@@ -170,9 +170,9 @@ NAKED void FUN_08137d80(Centipede* p) { INCFUNC("asm/func/FUN_08137d80.inc"); }
 
 NAKED void FUN_08137e98(Centipede* p) { INCFUNC("asm/func/FUN_08137e98.inc"); }
 
-NAKED void FUN_08137f2c(HitboxData* a, HitboxData* b, unknown* seg) { INCFUNC("asm/func/FUN_08137f2c.inc"); }
+NAKED void FUN_08137f2c(Hitbox* a, Hitbox* b, unknown* seg) { INCFUNC("asm/func/FUN_08137f2c.inc"); }
 
-NAKED void FUN_08137f30(HitboxData* a, HitboxData* b, unknown* seg) { INCFUNC("asm/func/FUN_08137f30.inc"); }
+NAKED void FUN_08137f30(Hitbox* a, Hitbox* b, unknown* seg) { INCFUNC("asm/func/FUN_08137f30.inc"); }
 
 NAKED void FUN_08138058(Centipede* p) { INCFUNC("asm/func/FUN_08138058.inc"); }
 
@@ -223,6 +223,7 @@ NAKED s32 Centipede_Destroy(Centipede* p) { INCFUNC("asm/func/Centipede_Destroy.
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
 NAKED s32 Centipede_Init(Centipede* p) { INCFUNC("asm/func/Centipede_Init.inc"); }
 
+// 0x0AC7, HashName("センチビート")
 NAKED void Centipede_Create(void) { INCFUNC("asm/func/Centipede_Create.inc"); }
 
 NAKED void FUN_0813a160(Centipede* p) { INCFUNC("asm/func/FUN_0813a160.inc"); }

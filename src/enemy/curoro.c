@@ -44,8 +44,8 @@ const STRING_DATA char s_curorocom_c_08252078[] = "curorocom.c";
 void Player_AddSpeedPenalty(Player* p, u32 flag);
 void Player_InflictElementalCond(Player* p, u32 kind);
 void Curoro_GetAnimVariant(u16 angle, u32* variant, u32* xflip);
-void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p);
-void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p);
+void Curoro_OnHit(Hitbox* a, Hitbox* b, Curoro* p);
+void Curoro_OnHurt(Hitbox* a, Hitbox* b, Curoro* p);
 void Curoro_HoldPlayer(Curoro* p);
 void FUN_0813ac34(Curoro* p);
 void FUN_0813ad34(Curoro* p);
@@ -101,7 +101,7 @@ static inline bool8 Curoro_TestUnk658(Curoro* p, u32 bit) {
 }
 
 // 161/182命令, 原典は variant の両分岐で unk_658 & 2 を読んで捨てる (ldr/ands が残る) 形, 判定 inline の呼び捨ては消える, 1回目の下書きで切り上げ
-NON_MATCH void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p) {
+NON_MATCH void Curoro_OnHit(Hitbox* a, Hitbox* b, Curoro* p) {
 #ifdef NONMATCHING_C
   s32 dy;
   Curoro* q;
@@ -115,8 +115,8 @@ NON_MATCH void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p) {
   }
   Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
   Enemy_ResetState(&p->e, 0, 2, 0);
-  Hitbox_SetFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
-  Hitbox_SetFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+  Hitbox_SetFlags(&(p->e).hitbox, HBF_HIDDEN);
+  Hitbox_SetFlags(&(p->e).hurtbox, HBF_HIDDEN);
   SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8);
   if ((p->e).variant == 0) {
@@ -139,7 +139,7 @@ NON_MATCH void Curoro_OnHit(HitboxData* a, HitboxData* b, Curoro* p) {
 }
 
 // Mimic_OnHurt と同じ食らい判定 (敵共通の処理の inline 展開らしい), Mimic_OnHurt の下書きをそのまま当てただけ
-NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
+NON_MATCH void Curoro_OnHurt(Hitbox* a, Hitbox* b, Curoro* p) {
 #ifdef NONMATCHING_C
   u32 knockback;
   u8 angle;
@@ -154,12 +154,12 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
     }
     return;
   }
-  if ((p->e).hurtbox.flags & HBFLAG_HIDDEN) {
+  if ((p->e).hurtbox.flags & HBF_HIDDEN) {
     return;
   }
 
-  if (!(a->flags & HBFLAG_UNK_0)) {
-    if (!(a->weakness & 0x4000)) {
+  if (!(a->flags & HBF_DAMAGE)) {
+    if (!(a->typeMask & HBSRC_MFREEZE)) {
       return;
     }
     if ((p->e).flags3 & (ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
@@ -169,7 +169,7 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
       return;
     }
     (p->e).unk_488 = 60;
-    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBF_ANGLE) && (a->flags & HBF_ANGLE)) {
       s32 d = abs(b->angle - a->angle);
 
       if (d <= 32) {
@@ -205,7 +205,7 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
         found = TRUE;
       }
       (p->e).unk_4a0 = mask;
-      (p->e).weaponExpMask = a->weakness;
+      (p->e).weaponExpMask = a->typeMask;
       (p->e).flags6 = a->attributes;
       if (found) {
         if ((p->e).flags5 & ENEFLAG5_UNK_1) {
@@ -250,7 +250,7 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
     b->damage <<= 1;
     b->knockback >>= 1;
   }
-  if (!(a->flags & HBFLAG_ANGLE)) {
+  if (!(a->flags & HBF_ANGLE)) {
     s16 dx = b->pos.x - a->pos.x;
     s16 dz = b->pos.z - a->pos.z;
 
@@ -286,7 +286,7 @@ NON_MATCH void Curoro_OnHurt(HitboxData* a, HitboxData* b, Curoro* p) {
       found = TRUE;
     }
     (p->e).unk_4a0 = mask;
-    (p->e).weaponExpMask = a->weakness;
+    (p->e).weaponExpMask = a->typeMask;
     (p->e).flags6 = a->attributes;
     if (found) {
       if ((p->e).flags5 & ENEFLAG5_UNK_1) {
@@ -824,8 +824,8 @@ void FUN_0813be38(Curoro* p) {
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_PlayAnimNoFacing(&p->e, 17);
     SET_FLAGS(q->unk_658, 1);
-    Hitbox_ClearFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
-    Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hitbox, HBF_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hurtbox, HBF_HIDDEN);
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   if ((p->e).subStateTimer < 40) {
@@ -979,7 +979,7 @@ void Curoro_InitHitboxes(Curoro* p) {
   Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, Curoro_OnHurt, p);
   VEC3_SET(hitSize, 16, 84, 16);
   VEC3_SET(hitOffset, 0, 0, 0);
-  flags = HBFLAG_HITBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0;
+  flags = HBF_HITBOX | HBF_SENSOR | HBF_DAMAGE;
   Hitbox_Init(&(p->e).hitbox, (p->e).mover.id, flags, 0, HIM_4, &hitSize, &hitOffset);
   Hitbox_SetAttack(&(p->e).hitbox, 0, 0, 0, 0, 0);
   Hitbox_SetPos(&(p->e).hitbox, &(p->e).mover.pos, 0);
@@ -1091,8 +1091,8 @@ void FUN_0813c938(Curoro* p) {
 
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   CLEAR_FLAGS(q->unk_658, 1);
-  Hitbox_ClearFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
-  Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+  Hitbox_ClearFlags(&(p->e).hitbox, HBF_HIDDEN);
+  Hitbox_ClearFlags(&(p->e).hurtbox, HBF_HIDDEN);
   CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
 }
 
@@ -1724,7 +1724,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);

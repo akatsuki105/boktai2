@@ -15,7 +15,7 @@
 
 void FUN_081fa608(void);
 void Entity08204cb8_Spawn(Vec3* pos, s32 param_2);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void Octorok_ThrowAt(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
 
@@ -92,19 +92,19 @@ NON_MATCH void FUN_08200c8c(Entity08202cd8* p) {
   }
   if (p->unk_6da != 0 || p->unk_25 != 0) {
     for (i = 0; i < 8; i++) {
-      p->hurtboxes[i].flags |= HBFLAG_HIDDEN;
+      p->hurtboxes[i].flags |= HBF_HIDDEN;
     }
   } else {
     s32 start = gFrameCounter & 3;
     AuxSprite* spr = &p->sprites[start];
-    HitboxData* a = &p->hitboxes[start];
-    HitboxData* b = &p->hurtboxes[start];
+    Hitbox* a = &p->hitboxes[start];
+    Hitbox* b = &p->hurtboxes[start];
 
     for (i = start; i < 8; i += 4) {
       Hitbox_SetPos(b, &spr->pos, 0);
-      b->flags &= ~HBFLAG_HIDDEN;
+      b->flags &= ~HBF_HIDDEN;
       if (i + 1 < 8) {
-        b[1].flags |= HBFLAG_HIDDEN;
+        b[1].flags |= HBF_HIDDEN;
       }
       Hitbox_SetPos(a, &spr->pos, 0);
       if (p->unk_25 == 0) {
@@ -756,11 +756,11 @@ NON_MATCH void FUN_082024e8(Entity08202cd8* p, s32 val) {
 
 void FUN_0820287c(Entity08202cd8* p, s32 keep) {
   if (keep == 0) {
-    HitboxData* hb = p->hurtboxes;
+    Hitbox* hb = p->hurtboxes;
     s32 i;
 
     for (i = 0; i < 8; i++) {
-      hb->flags |= HBFLAG_HIDDEN;
+      hb->flags |= HBF_HIDDEN;
       hb++;
     }
   }
@@ -833,10 +833,10 @@ s32 Entity08202cd8_Destroy(Entity08202cd8* p) {
 }
 
 // hitboxes の被弾コールバック, 何もしない
-void FUN_082029b8(HitboxData* a, HitboxData* b, Entity08202cd8* p) {}
+void FUN_082029b8(Hitbox* a, Hitbox* b, Entity08202cd8* p) {}
 
 // 被弾時のハンドラ, 全スプライトを赤くしてダメージを適用する
-void FUN_082029bc(HitboxData* a, HitboxData* b, Entity08202cd8* p) {
+void FUN_082029bc(Hitbox* a, Hitbox* b, Entity08202cd8* p) {
   s32 i;
 
   p->unk_24 = 4;
@@ -868,7 +868,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
   p->unk_6e0 = param_4;
   for (i = 0; i < 8; i++) {
     AuxSprite* spr = &p->sprites[i];
-    HitboxData* hb;
+    Hitbox* hb;
 
     if (i < 3) {
       AuxSprite_Add(spr, &p->gfx1, 0);
@@ -886,7 +886,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
     hb = &p->hitboxes[i];
     halfSize.x = 50, halfSize.y = 50, halfSize.z = 50;
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(hb, 0, HBFLAG_HITBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hb, 0, HBF_HITBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetPos(hb, &spr->pos, 0);
     Hitbox_SetHandler(hb, FUN_082029b8, p);
     Hitbox_SetAttack(hb, p->unk_6e0, 100, 0, 0, 30);
@@ -894,7 +894,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
     hb = &p->hurtboxes[i];
     halfSize.x = 100, halfSize.y = 100, halfSize.z = 100;
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(hb, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hb, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetPos(hb, &spr->pos, 0);
     Hitbox_SetHandler(hb, FUN_082029bc, p);
     Hitbox_SetPowerAndAttributes(hb, p->unk_6e2, 8, 4);

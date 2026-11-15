@@ -16,7 +16,7 @@ typedef struct {
   u8 angle;            // 0x02, 8bit の向き, 上位3bitで anim の variant と hitPos のずらし方が決まる
   Vec3 pos;            // 0x04, 毎フレーム vel を足して sprite.pos に写す
   Vec3 vel;            // 0x0C
-  HitboxData hitbox;   // 0x14
+  Hitbox hitbox;       // 0x14
   AuxSprite sprite;    // 0x64
   AuxSprite sprite2;   // 0x90, 生成時は隠れている
   AuxAnimState anim;   // 0xBC, sprite のアニメ
@@ -55,9 +55,9 @@ static inline bool8 Entity081e9cac_IsElemUsed(Entity081e9cac* p, s32 i) {
 }
 
 // 148/149命令, 原典は elem を r3 に写して r2 を向きの計算に回し, 定数 1 を r4 に置く
-NON_MATCH void Entity081e9cacElem_OnHit(HitboxData* a, HitboxData* b, Entity081e9cacElem* elem) {
+NON_MATCH void Entity081e9cacElem_OnHit(Hitbox* a, Hitbox* b, Entity081e9cacElem* elem) {
 #ifdef NONMATCHING_C
-  if (!(b->flags & HBFLAG_UNK_7) && (b->flags & HBFLAG_UNK_0)) {
+  if (!(b->flags & HBF_7) && (b->flags & HBF_DAMAGE)) {
     if (b->ignoreMask & 0xF) {
       s32 hit;
 
@@ -92,14 +92,14 @@ NON_MATCH void Entity081e9cacElem_OnHit(HitboxData* a, HitboxData* b, Entity081e
 }
 
 void Entity081e9cacElem_InitHitbox(Entity081e9cacElem* elem, s32 power, s32 knockback, s32 iframes) {
-  HitboxData* hitbox = &elem->hitbox;
+  Hitbox* hitbox = &elem->hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 32, 82, 32);
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, elem->hitboxId, HBFLAG_HITBOX | HBFLAG_UNK_9 | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockback, 0x10, HBATTR_SEKIKA | HBATTR_CLOUD, iframes);
+  Hitbox_Init(hitbox, elem->hitboxId, HBF_HITBOX | HBF_9 | HBF_ANGLE | HBF_DAMAGE, 0, 0, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, knockback, HBSRC_GUN, HBATTR_SEKIKA | HBATTR_CLOUD, iframes);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, Entity081e9cacElem_OnHit, elem);
   hitbox->angle = elem->angle;
@@ -460,7 +460,7 @@ s32 Entity081e9cac_Update(Entity081e9cac* p) {
       Entity081e9cacElem* elem = &p->elems[i];
 
       funcs[elem->state & 7](elem);
-      elem->hitbox.flags &= ~HBFLAG_HIDDEN;
+      elem->hitbox.flags &= ~HBF_HIDDEN;
     }
   }
 }

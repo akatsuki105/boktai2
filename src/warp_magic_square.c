@@ -356,7 +356,7 @@ NON_MATCH void WarpMagicSquare_UpdateSpinIn(WarpMagicSquare* p) {
 void WarpMagicSquare_UpdateIdle(WarpMagicSquare* p) {
   s32 near;
 
-  if (!(gGameFlags & GAMEFLAG_EVENT)) {
+  if (!(gGameFlags & GAMEFLAG_CUTSCENE)) {
     if (p->readyTimer < 10) {
       p->readyTimer++;
     }

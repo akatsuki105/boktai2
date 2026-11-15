@@ -54,8 +54,8 @@ typedef struct Duneyrr {
   s32 jumpDuration;                       // 0x184, jumpFrom から jumpTo へ跳ぶのにかかるフレーム数
   Vec3 jumpFrom;                          // 0x188, FUN_08023530 を呼んだときの base.mover.pos
   Vec3 jumpTo;                            // 0x190, jumpFrom から unk_167 の向きに進んだ先を壁沿いに寄せた位置
-  HitboxData hitbox;                      // 0x198
-  HitboxData hurtbox;                     // 0x1E8, ハンドラは Duneyrr_OnHurt
+  Hitbox hitbox;                          // 0x198
+  Hitbox hurtbox;                         // 0x1E8, ハンドラは Duneyrr_OnHurt
   MainSpriteGfx gfx;                      // 0x238, SPRITE_DUNEYRR
   MainSprite sprite;                      // 0x258
   DuneyrrElem elems[5];                   // 0x2B8
@@ -138,9 +138,9 @@ static inline void Duneyrr_ResetSubStates(Duneyrr* p, u32 duration) {
 
 static inline void Duneyrr_SetMoveSpeed(Duneyrr* p, u32 speed) { p->moveSpeed = speed; }
 
-static inline void Hitbox_AddAttributes(HitboxData* hitbox, HitboxAttributes attrs) { hitbox->attributes |= attrs; }
+static inline void Hitbox_AddAttributes(Hitbox* hitbox, HitboxAttrs attrs) { hitbox->attributes |= attrs; }
 
-static inline void Hitbox_RemoveAttributes(HitboxData* hitbox, HitboxAttributes attrs) { hitbox->attributes &= ~attrs; }
+static inline void Hitbox_RemoveAttributes(Hitbox* hitbox, HitboxAttrs attrs) { hitbox->attributes &= ~attrs; }
 
 static const s16 s16_ARRAY_085aaabc[4] = {0x40, 0x80, 0xC0, 0x20};  // 0x085AAABC
 static const s16 s16_ARRAY_085aaac4[4] = {0x40, 0x40, 0x60, 0x20};  // 0x085AAAC4
@@ -177,10 +177,10 @@ NON_MATCH void FUN_08023388(Duneyrr* p) {
 #endif
 }
 
-void Duneyrr_OnHurt(HitboxData* a, HitboxData* b, Duneyrr* p) {
+void Duneyrr_OnHurt(Hitbox* a, Hitbox* b, Duneyrr* p) {
   Boss* boss = &p->base;
 
-  if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
+  if (TEST_FLAGS(a->flags, HBF_ANGLE)) {
     p->hurtAngle = a->angle;
   } else {
     p->hurtAngle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
@@ -188,7 +188,7 @@ void Duneyrr_OnHurt(HitboxData* a, HitboxData* b, Duneyrr* p) {
   Hitbox_ApplyDamage(a, b);
   p->damage = b->damage;
   a->damage += boss->damageBonus;
-  Boss_SetWeaponExpMask(boss, a->weakness);
+  Boss_SetWeaponExpMask(boss, a->typeMask);
   Boss_SetHurtAttributes(boss, a->attributes);
 }
 
@@ -529,14 +529,14 @@ NON_MATCH void FUN_08023de8(Duneyrr* p) {
 }
 
 void Duneyrr_SetHurtboxPower(Duneyrr* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
 
   p->base.hurtboxPower = power;
   hurtbox->power = power;
 }
 
 void Duneyrr_SetHitboxAttack(Duneyrr* p, u32 power, u32 knockback, u32 iframes) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
 
   hitbox->power = power;
   hitbox->knockback = knockback;
@@ -580,24 +580,24 @@ void FUN_08024100(WorldPos* pos) {
 }
 
 void Duneyrr_InitHitbox(Duneyrr* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.504), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_080234d8, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
 }
 
 void Duneyrr_InitHurtbox(Duneyrr* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.641), Q8(0.5), Q8(0.641));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, Duneyrr_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_CLOUD, HBATTR_EARTH);
@@ -694,7 +694,7 @@ NON_MATCH void FUN_080245e4(Duneyrr* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Mover* mover = &boss->mover;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   FUN_08022ec0(boss);
   if (p->invincibleTimer != 0) {
@@ -706,16 +706,16 @@ NON_MATCH void FUN_080245e4(Duneyrr* p) {
   }
   hitbox = &p->hurtbox;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   }
   hitbox = &p->hitbox;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
     Hitbox_Register(hitbox);
   }
@@ -2072,7 +2072,7 @@ s32 FUN_080275b0(Duneyrr* p) {
 }
 
 s32 Duneyrr_HandleDamage(Duneyrr* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   s32 damage = p->damage;
 
   p->damage = 0;

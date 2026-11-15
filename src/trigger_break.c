@@ -17,7 +17,7 @@ typedef struct Breakable {
   u16 id;                                                       // 0x00, '.n', hurtbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
   bool8 active;                                                 // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す, Update は 0 のものを飛ばす
   bool8 stateChanged;                                           // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
-  s16 hp;                                                       // 0x04, '.l=10', Breakable_OnHurt が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
+  s16 hp;                                                       // 0x04, '.l=10', Breakable_OnHurt が相手の Hitbox.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
   u16 unk_6;                                                    // 0x06, Cmd_SpawnBreakable が 0 を書くだけ
   u8 unk_8;                                                     // 0x08, '.k', 読み手が見つかっていない
   u8 flashTimer;                                                // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
@@ -30,7 +30,7 @@ typedef struct Breakable {
   void (*update)(struct BreakableManager*, struct Breakable*);  // 0x1C
   AuxSpriteGfx gfx;                                             // 0x20, '.t=SPRITE_KOMAINU'
   AuxSprite sprite;                                             // 0x3C
-  HitboxData hurtbox;                                           // 0x68
+  Hitbox hurtbox;                                               // 0x68
 } Breakable;
 static_assert(sizeof(Breakable) == 184);
 
@@ -67,7 +67,7 @@ bool32 Breakable_TakeStateChanged(Breakable* item) {
 }
 
 // 攻撃が当たったときの処理, 耐久値を削り、当たった向きへ火花を飛ばして少しのけぞらせる
-void Breakable_OnHurt(HitboxData* a, HitboxData* b, Breakable* item) {
+void Breakable_OnHurt(Hitbox* a, Hitbox* b, Breakable* item) {
   Vec3 pos;
   s32 angle;
 
@@ -119,7 +119,7 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
       VM_ExecByID(item->scriptOnBreak, &sa);
     }
     item->sprite.poseIdx = item->brokenPose;
-    item->hurtbox.flags |= HBFLAG_HIDDEN;
+    item->hurtbox.flags |= HBF_HIDDEN;
     Breakable_SetUpdate(item, Breakable_UpdateIdle);
     Video_SetAuxSpritePltt(&item->gfx, 6);
     pos = item->pos;
@@ -140,9 +140,9 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
     if (item->shakeTimer != 0) {
       item->shakeTimer--;
       if (item->shakeTimer == 0) {
-        item->hurtbox.flags &= ~HBFLAG_HIDDEN;
+        item->hurtbox.flags &= ~HBF_HIDDEN;
       } else {
-        item->hurtbox.flags |= HBFLAG_HIDDEN;
+        item->hurtbox.flags |= HBF_HIDDEN;
       }
       item->sprite.pos = item->pos;
       table = gRandomTable;
@@ -251,7 +251,7 @@ Breakable* BreakableManager_FindFreeSlot(BreakableManager* p) {
 s32 Cmd_SpawnBreakable(void) {
   Breakable* item;
   AuxSprite* sprite;
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
   SpriteID32 spriteID;
   s32 pose;
   Vec3 size;
@@ -287,7 +287,7 @@ s32 Cmd_SpawnBreakable(void) {
   hurtbox = &item->hurtbox;
   VEC3_SET(size, Q8(0.5), Q8(1), Q8(0.5));
   VEC3_SET(offset, -Q8(0.5), Q8(0.5), Q8(0.5));
-  Hitbox_Init(hurtbox, item->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hurtbox, item->id, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetHandler(hurtbox, Breakable_OnHurt, item);
   Hitbox_SetPos(hurtbox, &item->pos, 0);
   Hitbox_Register(hurtbox);

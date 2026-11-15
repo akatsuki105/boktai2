@@ -39,12 +39,12 @@ _0804AE2C:
 	cmp r0, #0x1e
 	bls _0804AE3C
 	adds r0, r6, #0
-	bl EntityB88C_ConfirmOrCancel
+	bl LinkMenu_ConfirmOrCancel
 	cmp r0, #0
 	bne _0804AEBA
 _0804AE3C:
 	adds r0, r6, #0
-	bl EntityB88C_MoveCursor
+	bl LinkMenu_MoveCursor
 	adds r2, r6, #0
 	adds r2, #0x2d
 	ldrb r3, [r2]

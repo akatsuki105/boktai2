@@ -17,7 +17,7 @@ _080CFA40:
 	cmp r0, r1
 	bne _080CFA4C
 	movs r0, #8
-	bl FUN_0823bca8
+	bl Camera_ReleaseLook
 _080CFA4C:
 	ldr r0, _080CFA5C @ =0x000003CE
 	adds r1, r4, r0

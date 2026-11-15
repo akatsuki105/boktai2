@@ -28,14 +28,14 @@ typedef struct {
   AuxSpriteGfx gfx;        // 0x3C, SPRITE_BAMBOO
   AuxSprite sprite;        // 0x58, ->gfx
   ParticleShadow shadow;   // 0x84
-  HitboxData hurtbox;      // 0xC4
+  Hitbox hurtbox;          // 0xC4
 } SolarBamboo;
 static_assert(sizeof(SolarBamboo) == 276);
 
 const u16 u16_ARRAY_085aa76c[4] = {0x6F, 0x3, 0x3, 0x3};  // 0x085aa76c
 
 // 被弾時に呼ばれる, 点滅させて耐久を削り、0 以下になったら月光虫を出して耐久を戻す
-void SolarBamboo_OnHurt(HitboxData* a, HitboxData* b, SolarBamboo* p) {
+void SolarBamboo_OnHurt(Hitbox* a, Hitbox* b, SolarBamboo* p) {
   s32 damage;
   Vec3 pos;
 
@@ -65,11 +65,11 @@ NON_MATCH s32 SolarBamboo_Update(SolarBamboo* p) {
   active = (p->zoneID == gStat->zoneID) ? TRUE : FALSE;
   if (!active) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     ParticleShadow_Hide(&p->shadow);
   } else {
     p->sprite.flags &= ~SPRFLAG_HIDDEN;
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     ParticleShadow_Show(&p->shadow);
     if (p->unk_28 != 0) {
       p->unk_28--;
@@ -118,7 +118,7 @@ s32 SolarBamboo_Destroy(SolarBamboo* p) {
 
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
 s32 SolarBamboo_Init(SolarBamboo* p, u32 id, u32 _) {
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
   AuxSpriteGfx* gfx;
   AuxSprite* spr;
   Vec3 pos, size, offset;
@@ -144,7 +144,7 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 id, u32 _) {
   VEC3_SET(size, Q8(0.12), Q8(1.25), Q8(0.12));
   VEC3_SET(offset, 0, Q8(0.625), 0);
   hurtbox = &p->hurtbox;
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetHandler(hurtbox, SolarBamboo_OnHurt, p);
   Hitbox_SetPos(hurtbox, &pos, 0);
   Hitbox_Register(hurtbox);

@@ -492,7 +492,7 @@ s32 Actor_ApplyPltt(Actor* actor, u16 plttID) {
   return SpriteHolder_SetPlttID(sprite, actor->curPlttID);
 }
 
-s32 Actor_SetPltt(Actor* actor, u16 param_2) {
+s32 Actor_SetPltt(Actor* actor, u32 param_2) {
   actor->plttID = param_2;
   return Actor_ApplyPltt(actor, actor->plttID);
 }
@@ -544,7 +544,7 @@ s32 FUN_080411d8(ActorManager* p, Actor* actor) {
   SpriteHolder_SetPos(sprite, &mover->pos);
   SpriteHolder_AdvanceAnim(sprite);
   if (actor->unk_2c8 > 0 && --actor->unk_2c8 <= 3) {
-    if (actor->unk_0a && !(gGameFlags & GAMEFLAG_EVENT)) {
+    if (actor->unk_0a && !(gGameFlags & GAMEFLAG_CUTSCENE)) {
       actor->unk_2c8 = actor->unk_2ca;
     } else {
       actor->unk_2c8 = 0;
@@ -785,7 +785,7 @@ NON_MATCH void FUN_080417dc(Mover* mover) {
   ActorManager* p = gActorManager;
   Actor* actor;
 
-  if (p == NULL || (gGameFlags & GAMEFLAG_EVENT)) {
+  if (p == NULL || (gGameFlags & GAMEFLAG_CUTSCENE)) {
     return;
   }
 
@@ -1462,7 +1462,7 @@ NON_MATCH void FUN_08042a48(ActorManager* p, Actor* actor, s32 elapsed) {
     if (player != NULL) {
       if (!(player->kind == PLAYER_BAT || player->kind == PLAYER_MOUSE || player->kind == PLAYER_SLEEPING) && !player->formRequest && !(player->goodCondTimer != 0 && (player->goodCondID == GOOD_MINI || player->goodCondID == GOOD_INVISIBLE)) &&
           (player->action <= PACT_WALK || player->action == PACT_UNK_7)) {
-      } else if (!(gGameFlags & GAMEFLAG_EVENT) && actor->unk_0b) {
+      } else if (!(gGameFlags & GAMEFLAG_CUTSCENE) && actor->unk_0b) {
         if ((p->player->action == PACT_PULL_COFFIN && Coffin_GetPos() != NULL) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
           FUN_080415cc(actor, 0, 0, 0);
         } else {
@@ -1506,7 +1506,7 @@ void FUN_08042cf0(ActorManager* p, Actor* actor, s32 elapsed) {
 }
 
 // navTarget へナビメッシュで歩かせ, 目的地に近づいたら終える, MainSprite のコマが進むたびに 32/64 (それ以外は 16) 進む
-// 下書き (222/223命令): 命令列はほぼ一致, 残差はレジスタ割当 (定数オフセットの一時レジスタと pos の置き場所)
+// 下書き (222/223命令): 命令列はほぼ一致, 残差はレジスタ割当 (定数オフセットの一時レジスタと pos の置き場所), 試済: FUN_08042f34 と同じく waypoint を actor->navAgent 経由で読む (226), Vec3* wp を使う (229)
 NON_MATCH void FUN_08042d50(ActorManager* p, Actor* actor, s32 elapsed) {
 #ifdef NONMATCHING_C
   Mover* mover = &actor->mover;
@@ -2405,9 +2405,7 @@ s32 FUN_080442f4(ActorManager* p, Actor* actor) {
 s32 FUN_08044300(ActorManager* p, Actor* actor) { return MsgQueue_Unregister(&actor->mq); }
 
 // 0x920F, '.n' / '.k' / '.p' / '.d' / '.o' / '.t' / '.m' / '.c' から Actor を1体作り, state 0 から始める (使われていない?)
-// 残差1命令: 原典は '.c' の値を Actor_SetPltt へ u16 に切り詰めずに渡す (呼び出し時に u16 の原型が見えていなかった形), こちらは lsls/lsrs が付く
-NON_MATCH void Cmd_920F(void) {
-#ifdef NONMATCHING_C
+void Cmd_920F(void) {
   s32 spriteType;
   ActorManager* p = gActorManager;
   u32 id;
@@ -2475,9 +2473,6 @@ NON_MATCH void Cmd_920F(void) {
     actor->unk_1ea = 0;
   }
   ActorManager_LinkActor(p, actor);
-#else
-  INCFUNC("asm/func/Cmd_920F.inc");
-#endif
 }
 
 void FUN_0804454c(ActorManager* p, Actor* actor) {

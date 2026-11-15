@@ -134,8 +134,8 @@
 #define S_ENEMY_ATK0_KNOCKBACK *((s16 *)(scratch + 0xCE))  // 敵の攻撃0のふっとばし
 #define S_ENEMY_ATK_KNOCKBACK *((s16 *)(scratch + 0xD0))  // 敵の攻撃1以降に共通のふっとばし
 #define S_ENEMY_ATK1_IFRAMES *((s16 *)(scratch + 0xD2))  // 敵の攻撃1の無敵フレーム
-#define S_ENEMY_ATK1_ATTRS *((s32 *)(scratch + 0xD4))  // 敵の攻撃1の HitboxAttributes
-#define S_ENEMY_ATK0_ATTRS *((s16 *)(scratch + 0xD8))  // 敵の攻撃0の HitboxAttributes
+#define S_ENEMY_ATK1_ATTRS *((s32 *)(scratch + 0xD4))  // 敵の攻撃1の HitboxAttrs
+#define S_ENEMY_ATK0_ATTRS *((s16 *)(scratch + 0xD8))  // 敵の攻撃0の HitboxAttrs
 #define S_ENEMY_ATK0_IFRAMES *((s16 *)(scratch + 0xDA))  // 敵の攻撃0の無敵フレーム
 #define S_ENEMY_MAX_HP *((s16 *)(scratch + 0xDC))  // 敵の最大 HP ('.A[0]')
 #define S_ENEMY_POWER *((s16 *)(scratch + 0xDE))  // 敵の体当たりの力 (Enemy.power, '.A[1]')
@@ -154,15 +154,15 @@
 #define S_UNK_0F6 *((s16 *)(scratch + 0xF6))
 #define S_UNK_0F8 *((s16 *)(scratch + 0xF8))
 #define S_ENEMY_ATK2_IFRAMES *((s16 *)(scratch + 0xFA))  // 敵の攻撃2の無敵フレーム
-#define S_ENEMY_ATK2_ATTRS *((s32 *)(scratch + 0xFC))  // 敵の攻撃2の HitboxAttributes
-#define S_ENEMY_ATK3_ATTRS *((s32 *)(scratch + 0x100))  // 敵の攻撃3の HitboxAttributes
+#define S_ENEMY_ATK2_ATTRS *((s32 *)(scratch + 0xFC))  // 敵の攻撃2の HitboxAttrs
+#define S_ENEMY_ATK3_ATTRS *((s32 *)(scratch + 0x100))  // 敵の攻撃3の HitboxAttrs
 #define S_ENEMY_ATK3_IFRAMES *((s16 *)(scratch + 0x104))  // 敵の攻撃3の無敵フレーム
 #define S_UNK_106 *((s16 *)(scratch + 0x106))
 #define S_UNK_108 *((s16 *)(scratch + 0x108))
 #define S_UNK_10A *((s16 *)(scratch + 0x10A))
 #define S_UNK_10C *((u16 *)(scratch + 0x10C))
 #define S_ENEMY_ATK4_POWER *((s16 *)(scratch + 0x10E))  // 敵の攻撃4の威力
-#define S_ENEMY_ATK4_ATTRS *((s32 *)(scratch + 0x110))  // 敵の攻撃4の HitboxAttributes
+#define S_ENEMY_ATK4_ATTRS *((s32 *)(scratch + 0x110))  // 敵の攻撃4の HitboxAttrs
 #define S_ENEMY_ATK4_IFRAMES *((s16 *)(scratch + 0x114))  // 敵の攻撃4の無敵フレーム
 #define S_UNK_116 *((s16 *)(scratch + 0x116))
 #define S_UNK_118 *((s16 *)(scratch + 0x118))

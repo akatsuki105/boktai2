@@ -64,8 +64,8 @@ typedef struct MovableBlock {
   AuxSpriteGfx gfx;                              // 0x070, '.a'
   AuxSprite sprite;                              // 0x08C
   MapTileOverride tile;                          // 0x0B8
-  HitboxData hurtbox;                            // 0x0C8
-  HitboxData hitbox;                             // 0x118
+  Hitbox hurtbox;                                // 0x0C8
+  Hitbox hitbox;                                 // 0x118
   ZoneEventSource zoneEvents;                    // 0x168
   void (*updateCallback)(struct MovableBlock*);  // 0x198
 } MovableBlock;
@@ -131,7 +131,7 @@ NON_MATCH void MovableBlock_SpawnDust(Vec3* pos, s16 edgeOffset) {
 #endif
 }
 
-// 78/79命令, 末尾の attr の判定の後の分岐の向き (原典は bne で FALSE へ跳ぶ) と FALSE の置き場所が違う, || の分解は試済
+// 78/79命令, 末尾の attr の判定の後の分岐の向き (原典は bne で FALSE へ跳ぶ) と FALSE の置き場所が違う, 原典は FALSE を返すブロックが TRUE より前に1つだけある, 試済: || の分解, MovableBlock_IsFacingWall と同じく tile != NULL の中で TRUE を返す形 (78/79), 分岐ごとに FALSE を先に返す形 (79/79 だが TRUE が各枝に残る)
 NON_MATCH bool8 MovableBlock_IsSideBlocked(MovableBlock* blk, s32 tileIdx, s32 dir) {
 #ifdef NONMATCHING_C
   CollisionMapTile* self = &blk->tile.tile;
@@ -331,12 +331,12 @@ void MovableBlock_PlayPushSound(s32 kind) {
   }
 }
 
-void MovableBlock_OnDamaged(HitboxData* hurtbox, HitboxData* b, void* owner) {
+void MovableBlock_OnDamaged(Hitbox* hurtbox, Hitbox* b, void* owner) {
   bool8 hit = FALSE;
   MovableBlock* blk = owner;
 
   if (blk->kind == B_ROCK) {
-    if (TEST_FLAGS(hurtbox->weakness, 7) && TEST_FLAGS(hurtbox->attributes, HBATTR_CLOUD)) {
+    if (TEST_FLAGS(hurtbox->typeMask, 7) && TEST_FLAGS(hurtbox->attributes, HBATTR_CLOUD)) {
       blk->hp -= 24;
       blk->hitCooldown = 10;
       blk->flashTimer = 2;
@@ -344,7 +344,7 @@ void MovableBlock_OnDamaged(HitboxData* hurtbox, HitboxData* b, void* owner) {
       hit = TRUE;
     }
   } else if (blk->kind == B_ICE) {
-    if (TEST_FLAGS(hurtbox->attributes, HBATTR_FLAME) && TEST_FLAGS(hurtbox->weakness, 0x10007) && !(hurtbox->weakness & 0x40)) {
+    if (TEST_FLAGS(hurtbox->attributes, HBATTR_FLAME) && TEST_FLAGS(hurtbox->typeMask, 0x10007) && !(hurtbox->typeMask & HBSRC_NON_WEAPON)) {
       blk->hp -= 24;
       blk->hitCooldown = 10;
       blk->flashTimer = 2;
@@ -357,7 +357,7 @@ void MovableBlock_OnDamaged(HitboxData* hurtbox, HitboxData* b, void* owner) {
       hit = TRUE;
     }
   } else if (blk->kind == B_WOOD) {
-    if (TEST_FLAGS(hurtbox->weakness, 4)) {
+    if (TEST_FLAGS(hurtbox->typeMask, 4)) {
       blk->hp -= 24;
       blk->hitCooldown = 10;
       blk->flashTimer = 2;
@@ -375,7 +375,7 @@ void MovableBlock_OnDamaged(HitboxData* hurtbox, HitboxData* b, void* owner) {
     blk->hp = 0;
     return;
   }
-  if (!TEST_FLAGS(hurtbox->weakness, 4)) {
+  if (!TEST_FLAGS(hurtbox->typeMask, 4)) {
     PlaySound_082406e0(SE_ENEMY_DAMAGED);
   }
 }
@@ -947,14 +947,14 @@ NON_MATCH s32 MovableBlockManager_Update(MovableBlockManager* p) {
         }
         if (blk->hitCooldown == 0 && blk->hp > 0) {
           if (blk->zone != 0 && gStat->zoneID != blk->zone) {
-            blk->hurtbox.flags |= HBFLAG_HIDDEN;
+            blk->hurtbox.flags |= HBF_HIDDEN;
           } else {
-            blk->hurtbox.flags &= ~HBFLAG_HIDDEN;
+            blk->hurtbox.flags &= ~HBF_HIDDEN;
             Hitbox_SetPos(&blk->hurtbox, &blk->mover.pos, 0);
           }
         } else {
           blk->hitCooldown--;
-          blk->hurtbox.flags |= HBFLAG_HIDDEN;
+          blk->hurtbox.flags |= HBF_HIDDEN;
         }
         if (blk->flashTimer != 0 && --blk->flashTimer == 0) {
           Video_SetAuxSpritePltt(&blk->gfx, blk->plttID);
@@ -1040,7 +1040,7 @@ s32 MovableBlockManager_Init(MovableBlockManager* p, u32 id) {
   return 0;
 }
 
-// 0xD9AE
+// 0xD9AE, HashName("パス")?
 MovableBlockManager* MovableBlockManager_Create(u32 id, u32 _) {
   MovableBlockManager* p;
 
@@ -1095,8 +1095,8 @@ NON_MATCH s32 MovableBlock_Spawn(u32 id, s32 kind, s32 flags, Vec3* pos, s32 fil
   Mover* mover;
   AuxSpriteGfx* gfx;
   WorldPos* mpos;
-  HitboxData* hurtbox;
-  HitboxData* hitbox;
+  Hitbox* hurtbox;
+  Hitbox* hitbox;
   s32 tileIdx, height;
   Vec3 size, offset;
   bool8 limited;
@@ -1153,17 +1153,17 @@ NON_MATCH s32 MovableBlock_Spawn(u32 id, s32 kind, s32 flags, Vec3* pos, s32 fil
   VEC3_SET(size, 130, 128, 130);
   VEC3_SET(offset, 0, 128, 0);
   hurtbox = &blk->hurtbox;
-  Hitbox_Init(hurtbox, blk->mover.id, HBFLAG_HURTBOX | HBFLAG_UNK_6 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hurtbox, blk->mover.id, HBF_HURTBOX | HBF_6 | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetPos(hurtbox, mpos, 0);
   Hitbox_SetHandler(hurtbox, MovableBlock_OnDamaged, blk);
   Hitbox_Register(hurtbox);
   VEC3_SET(size, 128, 128, 128);
   hitbox = &blk->hitbox;
-  Hitbox_Init(hitbox, blk->mover.id, HBFLAG_HITBOX | HBFLAG_UNK_11 | HBFLAG_UNK_0, 0, HIM_0, &size, &offset);
+  Hitbox_Init(hitbox, blk->mover.id, HBF_HITBOX | HBF_BLOCK | HBF_DAMAGE, 0, HIM_0, &size, &offset);
   Hitbox_SetPos(hitbox, mpos, 0);
   Hitbox_SetHandler(hitbox, FUN_080035e0, blk);
   Hitbox_SetPower(hitbox, 1500, 50);
-  blk->hitbox.weakness = 0x100;
+  blk->hitbox.typeMask = 0x100;
   blk->hitbox.attributes = 0;
   blk->hp = hp;
   blk->hitCooldown = 0;

@@ -96,7 +96,7 @@ _080FA424:
 	lsls r4, r6, #0x18
 	asrs r4, r4, #0x18
 	str r4, [sp, #4]
-	bl FUN_08240dec
+	bl NoiseManager_FindNextHeardNoise
 	lsls r0, r0, #0x18
 	lsrs r6, r0, #0x18
 	cmp r0, #0

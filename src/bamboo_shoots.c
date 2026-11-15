@@ -27,7 +27,7 @@ typedef struct {
   u16 amount;          // 0x0E, この太陽タケノコから出す精霊虫の効果量
   u16 lifetime;        // 0x10, SpawnSpiritBugs の lifetime
   u16 lifetimeRand;    // 0x12, SpawnSpiritBugs の lifetimeRand
-  HitboxData hurtbox;  // 0x14
+  Hitbox hurtbox;      // 0x14
   Particle ptcl;       // 0x64
   AuxAnimState anim;   // 0x8C
 } BambooShoot;
@@ -76,13 +76,13 @@ BambooShoot* FUN_08009b10(BambooShootManager* p) {
   return NULL;
 }
 
-void BambooShoot_OnHurt(HitboxData* a, HitboxData* b, BambooShoot* shoot) {
-  if (!Hitbox_TestAttr(a, HBATTR_SEKIKA) && !Hitbox_HasWeakness(a, 0x40 | 0x80 | 0x100)) {
+void BambooShoot_OnHurt(Hitbox* a, Hitbox* b, BambooShoot* shoot) {
+  if (!Hitbox_TestAttr(a, HBATTR_SEKIKA) && !Hitbox_HasSource(a, HBSRC_NON_WEAPON | HBSRC_7 | HBSRC_8)) {
     b->hitResult = HBRESULT_NORMAL;
     shoot->state = 1;
     shoot->timer = 0;
     shoot->stateEntered = TRUE;
-    shoot->hurtbox.flags |= HBFLAG_HIDDEN;
+    shoot->hurtbox.flags |= HBF_HIDDEN;
   }
 }
 
@@ -91,7 +91,7 @@ s32 BambooShoot_Init(BambooShootManager* p, BambooShoot* shoot) {
 
   VEC3_SET(size, Q8(0.12), Q8(1.25), Q8(0.12));
   VEC3_SET(offset, 0, Q8(0.625), 0);
-  Hitbox_Init(&shoot->hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_5, 0, HIM_4, &size, &offset);
+  Hitbox_Init(&shoot->hurtbox, 0, HBF_HURTBOX | HBF_5, 0, HIM_4, &size, &offset);
   Hitbox_SetHandler(&shoot->hurtbox, BambooShoot_OnHurt, shoot);
   Hitbox_Register(&shoot->hurtbox);
   Particle_Add(&shoot->ptcl, p->group0, SPRFLAG_HIDDEN);

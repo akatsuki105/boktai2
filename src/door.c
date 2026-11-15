@@ -108,6 +108,8 @@ const u32 u32_ARRAY_085aaa8c[12] = {0, 6, 7, 0, 1, 2, 2, 3, 4, 4, 5, 6};  // 0x0
 
 static inline void Door_SetPhase(Door* door, u32 phase) { door->phase = phase; }
 
+static inline void Door_SetFn(Door* door, void (*fn)(Door*)) { door->fn = fn; }
+
 static inline void Door_SetStep(Door* door, u8 step) {
   door->step = step;
   door->stepTimer = 0;
@@ -318,7 +320,7 @@ bool32 Door_IsPlayerFacingAway(DoorManager* p, Door* door) {
   return TRUE;
 }
 
-// 0xD4E3, 名前付き引数で扉を1つ置く, 位置は '.t' のゾーンの角か '.p' の座標
+// 0xD4E3, HashName("ドア追加"), 名前付き引数で扉を1つ置く, 位置は '.t' のゾーンの角か '.p' の座標
 s32 Cmd_AddDoor(void) {
   DoorManager* p = Registry_Find(0x85E6);
   u16 id;
@@ -371,8 +373,7 @@ s32 Cmd_AddDoor(void) {
 }
 
 // そのIDの閉じている扉を開き始めさせる
-NON_MATCH void DoorManager_OpenByID(DoorManager* p, u16 id) {
-#ifdef NONMATCHING_C
+void DoorManager_OpenByID(DoorManager* p, u16 id) {
   s32 i;
 
   for (i = 0; i < p->unk_1a; i++) {
@@ -381,13 +382,10 @@ NON_MATCH void DoorManager_OpenByID(DoorManager* p, u16 id) {
     if (door->id == id && (door->phase == 0 || door->phase == 3) && !(door->unk_36 & 1)) {
       door->unk_41 = 1;
       Door_SetPhase(door, 2);
-      door->fn = Door_AnimateWoodOpen;
+      Door_SetFn(door, Door_AnimateWoodOpen);
       Door_SetStep(door, 0);
     }
   }
-#else
-  INCFUNC("asm/func/DoorManager_OpenByID.inc");
-#endif
 }
 
 // 開閉中のそのIDの扉を逆方向に折り返させる
@@ -405,8 +403,8 @@ void DoorManager_CloseByID(DoorManager* p, u16 id) {
   }
 }
 
-// そのIDの扉を待機状態に戻す
-void FUN_0801fd88(DoorManager* p, u16 id) {
+// そのIDの扉を動かさずに開いた状態にする
+void DoorManager_SetOpenByID(DoorManager* p, u16 id) {
   s32 i;
 
   for (i = 0; i < p->unk_1a; i++) {
@@ -421,9 +419,8 @@ void FUN_0801fd88(DoorManager* p, u16 id) {
   }
 }
 
-// そのIDの扉を開いた状態で止める
-NON_MATCH void FUN_0801fdf0(DoorManager* p, u16 id) {
-#ifdef NONMATCHING_C
+// そのIDの扉を動かさずに閉じた状態にする
+void DoorManager_SetClosedByID(DoorManager* p, u16 id) {
   s32 i;
 
   for (i = 0; i < p->unk_1a; i++) {
@@ -431,13 +428,10 @@ NON_MATCH void FUN_0801fdf0(DoorManager* p, u16 id) {
 
     if (door->id == id) {
       Door_SetPhase(door, 0);
-      door->fn = Door_IdleClosed;
+      Door_SetFn(door, Door_IdleClosed);
       Door_SetStep(door, 2);
     }
   }
-#else
-  INCFUNC("asm/func/FUN_0801fdf0.inc");
-#endif
 }
 
 // そのIDの扉に印を付ける
@@ -565,11 +559,7 @@ s32 Cmd_SetDoorOpen(void) {
 }
 
 // '.n' が指す扉を閉じた状態に戻す, 1体でも見つかれば 1 を返す
-// 残差はプール定数の巻き上げ先1組のみ (97/97): 原典は ~TATTR_WALL (0xFFFD) を r10 に巻き上げて Door_BarsClosedWait を毎回 ldr するが, agbcc は逆を選ぶ
-// Door_SetPhase / Door_SetStep 経由にすると定数 1 が巻き上がる (直書きだと 98命令), 文の順序と found の形は Cmd_D6F7 と同じで原典どおり
-// Tier A-C 試済 (早期 return は 85命令で原典と別物), 未: per-TU フラグ
-NON_MATCH s32 Cmd_SetDoorClosed(void) {
-#ifdef NONMATCHING_C
+s32 Cmd_SetDoorClosed(void) {
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
   s32 id;
@@ -589,7 +579,7 @@ NON_MATCH s32 Cmd_SetDoorClosed(void) {
     if (door->id == id) {
       door->timer = 0;
       Door_SetPhase(door, 1);
-      door->fn = Door_BarsClosedWait;
+      Door_SetFn(door, Door_BarsClosedWait);
       Door_SetStep(door, door->closedStep);
       door->ov->tile.attr &= ~TATTR_WALL;
       door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
@@ -601,9 +591,6 @@ NON_MATCH s32 Cmd_SetDoorClosed(void) {
   }
 
   return found;
-#else
-  INCFUNC("asm/func/Cmd_SetDoorClosed.inc");
-#endif
 }
 
 // 0xCB30, '.n' が指す扉を開き始めさせる
@@ -629,7 +616,7 @@ void Cmd_CB30(void) {
   }
 }
 
-// '.n' が1体だけ該当するとき、その扉の座標を '.p' の変数へ返す
+// 0xEAAF, HashName("ドア位置取得"), '.n' が1体だけ該当するとき、その扉の座標を '.p' の変数へ返す
 void Cmd_GetDoorPos(void) {
   DoorManager* p = Registry_Find(0x85E6);
 
@@ -1323,11 +1310,11 @@ s32 DoorManager_Update(DoorManager* p) {
         break;
       }
       case 2: {
-        FUN_0801fd88(p, mesg->values[1]);
+        DoorManager_SetOpenByID(p, mesg->values[1]);
         break;
       }
       case 3: {
-        FUN_0801fdf0(p, mesg->values[1]);
+        DoorManager_SetClosedByID(p, mesg->values[1]);
         break;
       }
       case 4: {
@@ -1625,7 +1612,7 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
   return 0;
 }
 
-// 0x6D69
+// 0x6D69, HashName("ドアマネージャ")
 DoorManager* DoorManager_Create(u32 mesgID, unknown* param_2) {
   DoorManager* p = CreateEntity(ENTITY_UNK_9, sizeof(DoorManager));
 

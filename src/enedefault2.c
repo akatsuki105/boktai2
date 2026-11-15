@@ -9,9 +9,9 @@
 
 // enedefault.c と同様にいろんなエネミーから呼ばれる関数群
 
-s32 FUN_08240b98(Vec3* param_1, s8 param_2);
+s32 NoiseManager_GetNoise(Vec3* param_1, s8 param_2);
 void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target);
-s8 FUN_08240dec(s32 x, s32 y, s32 size, u8 mask, u16 moverID, s32 start);
+s8 NoiseManager_FindNextHeardNoise(s32 x, s32 y, s32 size, u8 mask, u16 moverID, s32 start);
 
 s32 UNUSED FUN_080f9bf8(unknown* p, s32 val) { return val; }
 
@@ -185,7 +185,7 @@ s32 FUN_080fa2ac(Enemy* p, Vec3* pos, u32 param_3) {
 }
 
 s32 FUN_080fa354(Enemy* p, Vec3* pos, s8 idx) {
-  s32 ret = FUN_08240b98(pos, idx);
+  s32 ret = NoiseManager_GetNoise(pos, idx);
 
   if (ret == 0xB546) {
     Enemy_FindReachablePosNear(p, pos, pos);
@@ -223,7 +223,7 @@ NON_MATCH s32 Enemy_TryHeadToSound(Enemy* p) {
   for (slot = 0; slot <= 7; slot++) {
     s32 id;
 
-    slot = FUN_08240dec(p->mover.pos.x, p->mover.pos.z, p->range2, p->unk_21d, p->mover.id, slot);
+    slot = NoiseManager_FindNextHeardNoise(p->mover.pos.x, p->mover.pos.z, p->range2, p->unk_21d, p->mover.id, slot);
     if (slot < 0) {
       break;
     }

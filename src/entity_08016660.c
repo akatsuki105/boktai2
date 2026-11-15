@@ -24,8 +24,8 @@ typedef struct Entity08016660Node {
   Vec3 pos;                         // 0x0C, ヒットボックスの位置
   s16 floorY;                       // 0x14, pos の足元の高さ
   s16 hp;                           // 0x16, 被弾のたびにダメージを引く, 0 止まり
-  HitboxData* hurtbox;              // 0x18, 非NULL なら解放時に Hitbox_Unregister して Free する
-  HitboxData* hitbox;               // 0x1C, 非NULL なら解放時に Free する, 毎フレーム Hitbox_Register する
+  Hitbox* hurtbox;                  // 0x18, 非NULL なら解放時に Hitbox_Unregister して Free する
+  Hitbox* hitbox;                   // 0x1C, 非NULL なら解放時に Free する, 毎フレーム Hitbox_Register する
   AuxSpriteGfx gfx;                 // 0x20, SPRITE_SPRING_863A
   AuxSprite sprite;                 // 0x3C, 解放時に AuxSprite_Remove する
   AuxAnimState anim;                // 0x68
@@ -59,7 +59,7 @@ void (*const PTR_ARRAY_085aa918[2])(Entity08016660Node*) = {
 void FUN_08016060(void) { gEntity08016660 = NULL; }
 
 // 氷属性なら2倍のダメージを hp から引く
-void FUN_0801606c(HitboxData* a, HitboxData* b, Entity08016660Node* node) {
+void FUN_0801606c(Hitbox* a, Hitbox* b, Entity08016660Node* node) {
   s32 damage = b->damage;
 
   if (Hitbox_TestAttr(a, HBATTR_FROST)) {
@@ -148,14 +148,14 @@ NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 hp, Vec3* pos) {
   node->hp = hp;
 
   if (node->flags & 1) {
-    node->hurtbox = Malloc(sizeof(HitboxData));
+    node->hurtbox = Malloc(sizeof(Hitbox));
     if (node->hurtbox == NULL) {
       return -1;
     }
-    ClearMemory(node->hurtbox, sizeof(HitboxData));
+    ClearMemory(node->hurtbox, sizeof(Hitbox));
     size.x = 90, size.y = 128, size.z = 90;
     offset.x = 0, offset.y = 128, offset.z = 0;
-    Hitbox_Init(node->hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+    Hitbox_Init(node->hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
     Hitbox_SetHandler(node->hurtbox, FUN_0801606c, node);
     Hitbox_Register(node->hurtbox);
     Hitbox_SetPos(node->hurtbox, &node->pos, 0);
@@ -164,14 +164,14 @@ NON_MATCH s32 FUN_08016110(u32 val1, u32 val2, u32 val3, u32 hp, Vec3* pos) {
   }
 
   if (node->flags & 1) {
-    node->hitbox = Malloc(sizeof(HitboxData));
+    node->hitbox = Malloc(sizeof(Hitbox));
     if (node->hitbox == NULL) {
       return -1;
     }
-    ClearMemory(node->hitbox, sizeof(HitboxData));
+    ClearMemory(node->hitbox, sizeof(Hitbox));
     size.x = Q8(0.391), size.y = Q8(0.47), size.z = Q8(0.391);
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(node->hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+    Hitbox_Init(node->hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
     Hitbox_SetHandler(node->hitbox, nop_08016090, node);
     Hitbox_SetPower(node->hitbox, 50, 20);
     Hitbox_Register(node->hitbox);

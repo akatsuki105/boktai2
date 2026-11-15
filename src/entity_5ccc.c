@@ -385,7 +385,7 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
     p->idleTimer++;
   }
 
-  if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_EVENT)) == GAMEFLAG_EVENT) {
+  if ((gGameFlags & (GAMEFLAG_UNK_8 | GAMEFLAG_CUTSCENE)) == GAMEFLAG_CUTSCENE) {
     return;
   }
   if (TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {

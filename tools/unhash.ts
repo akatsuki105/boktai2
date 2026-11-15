@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read
 
 import { Command } from "@cliffy/command";
+import { encodeChar } from "./bokcc/eucjp.ts";
 import { hashName } from "./hash.ts";
 import * as gba from "./common/gba/gba.ts";
 
@@ -14,6 +15,8 @@ import * as gba from "./common/gba/gba.ts";
 // e.g. tools/unhash.ts 0xAE6C --prefix h --suffix p --max-len 5          -> h?????p (magic が "HP" なので先頭 h, 末尾 p)
 // e.g. tools/unhash.ts 0x26BB --contains link --suffix _col_arr             -> bg_link_col_arr (BGP_LINK, "link" の前後を探す)
 // e.g. tools/unhash.ts 0x26BB --contains link,col --suffix _arr --max-len 4    -> bg_link_col_arr ("link" と "col" を両方含む)
+// e.g. tools/unhash.ts 0x730A --ja                                             -> デモエフェクトマネージャ (日本語の語を2つまでつなげて探す)
+// e.g. tools/unhash.ts 0xD23E --ja --prefix カメラ                              -> カメラ1
 
 const MASK = 0xFFFF;
 
@@ -192,6 +195,129 @@ const solveContains = (table: Map<number, string[]>, words: string[], id: number
   return [...names].sort((a, b) => vocabScore(b) - vocabScore(a) || a.length - b.length || a.localeCompare(b));
 };
 
+
+// ---- 日本語の総当たり (--ja) ----
+//
+// サブルーチンIDやメッセージの宛先IDは日本語の名前のハッシュのことが多い ("デモマネージャ", "カメラ1", "道具屋")。
+// 文字単位の総当たりは日本語では空間が広すぎるので, 語を単位にして 1〜2 語をつなげたものを試す。
+// 語彙は外部の辞書を使わず, リポジトリにあるものから集める:
+//   data/scripts/strings.h の台詞 (カタカナ・漢字の連なり), src/vm_commands.s の HashName("..."),
+//   src/cutscene.c の BOKHASH("...") (確定した名前), JA_FIXED (名前の部品になりやすい語と番号), DEV_WORDS (開発用の語)
+// ゲーム内に無い語も使われるので, --word / --vocab で語を足せる (足した語は部品と同じ重み)
+// 16bit なので 2 語をつなげると偶然の一致が多く出る。台詞での出現回数と確定した名前を重みにして, もっともらしい順に並べる。
+
+// 名前の部品になりやすい語。確定した名前 ("デモマネージャ", "カメラ1", "カメラ１") の形から
+const JA_FIXED = [
+  "デモ", "マネージャ", "マネージャー", "管理", "係", "用", "屋",
+  ..."0123456789", ..."０１２３４５６７８９", ..."ABCDEFGH", ..."ＡＢＣＤＥＦＧＨ",
+  // コマンド名の語尾 (確定した "曜日取得", "アイテム破棄", "影配置", "BG非表示", "サウンド再開" などの形から)
+  "取得", "設定", "初期化", "破棄", "削除", "配置", "表示", "非表示", "変更", "再開", "開始", "停止", "終了", "再生", "生成", "作成",
+  "実行", "登録", "解除", "追加", "待ち", "判定", "確認", "移動", "位置", "呼出", "読込", "保存", "消去", "起動", "フェードイン", "フェードアウト",
+];
+
+// ゲーム内の文字列には出てこないが, 開発用の名前に使われそうな語 ("エフェクト" は台詞に無く "デモエフェクトマネージャ" に使われていた)
+const DEV_WORDS = [
+  "エフェクト", "サウンド", "コントローラ", "コントローラー", "システム", "タスク", "ワーク", "バッファ", "データ", "テーブル",
+  "リスト", "キュー", "バス", "メッセージ", "イベント", "シーン", "ステート", "モード", "フラグ", "パラメータ",
+  "オブジェクト", "オブジェ", "エンティティ", "アクター", "キャラ", "ユニット", "ノード", "ルート", "パス", "ポイント",
+  "エリア", "ゾーン", "ルーム", "ステージ", "フィールド", "ワールド", "マップ", "レイヤー", "スプライト", "パレット",
+  "フェード", "スクロール", "カメラ", "ライト", "トリガー", "スイッチ", "タイマー", "カウンター", "ジェネレーター", "スポナー",
+  "ドライバ", "ハンドラ", "ディレクター", "プレイヤー", "エネミー", "ボス", "ギミック", "アイテム", "ショップ", "ウィンドウ",
+  "メニュー", "テスト", "デバッグ", "ダミー", "サンプル", "初期化", "生成", "配置", "設定", "制御", "処理", "表示", "演出", "管理者",
+];
+
+// 重み (台詞の語は出現回数), 名前の部品は強く, 確定した名前と開発用の語は中くらい
+// 確定した名前どうしをつないだもの ("ダーイン" + "影配置") が部品を使った本命 ("デモ" + "サウンドマネージャ") より上に来ないようにする
+const PART_WEIGHT = 1000;
+const KNOWN_WEIGHT = 20;
+
+// EUC-JP のバイト列, 表せない文字があれば null
+const eucBytes = (s: string): number[] | null => {
+  const bytes: number[] = [];
+  for (const ch of s) {
+    const encoded = encodeChar(ch);
+    if (!encoded) return null;
+    bytes.push(...encoded);
+  }
+  return bytes;
+};
+
+const stepBytes = (h: number, bytes: number[]): number => bytes.reduce(stepForward, h);
+const stepBackBytes = (h: number, bytes: number[]): number => {
+  let state = h;
+  for (let i = bytes.length - 1; i >= 0; i--) state = stepBack(state, bytes[i]);
+  return state;
+};
+
+// 語 -> 重み
+export const readJaVocab = (root: string, extra: string[]): Map<string, number> => {
+  const vocab = new Map<string, number>();
+  const add = (w: string, n: number) => {
+    if (eucBytes(w) === null) return;
+    vocab.set(w, (vocab.get(w) ?? 0) + n);
+  };
+  const read = (path: string): string => {
+    try {
+      return Deno.readTextFileSync(`${root}/${path}`);
+    } catch {
+      return "";
+    }
+  };
+
+  // 台詞は行末のコメントにある, タグを除いてカタカナ (長音・中点込み) と漢字の連なりを語とする
+  for (const m of read("data/scripts/strings.h").matchAll(/^#define Str_\w+ \S+\s*\/\/ (.*)$/gm)) {
+    const text = m[1].replace(/<[^>]*>/g, " ").replace(/\([ぁ-ん]+\)/g, "");
+    for (const w of text.match(/[ァ-ヶー・]{2,}|[一-龠々]{1,}/g) ?? []) add(w, 1);
+  }
+  for (const m of read("src/vm_commands.s").matchAll(/HashName\("([^"]+)"\)/g)) add(m[1], KNOWN_WEIGHT);
+  for (const m of read("src/cutscene.c").matchAll(/BOKHASH\("([^"]+)"\)/g)) add(m[1], KNOWN_WEIGHT);
+  for (const w of JA_FIXED) add(w, PART_WEIGHT);
+  for (const w of DEV_WORDS) add(w, KNOWN_WEIGHT);
+  for (const w of extra) add(w, PART_WEIGHT);
+  return vocab;
+};
+
+// prefix + 1〜2語 + suffix が id になるものを, 重みの大きい順に返す
+// 2語は, 前半の語を食べた状態の表を作り, 後半の語ごとに id から巻き戻した状態で引く
+export const solveJa = (vocab: Map<string, number>, id: number, prefix: string, suffix: string, maxWords: number): { name: string; score: number }[] => {
+  const prefixBytes = eucBytes(prefix);
+  const suffixBytes = eucBytes(suffix);
+  if (prefixBytes === null || suffixBytes === null) throw new Error("--prefix / --suffix に EUC-JP で表せない文字があります");
+
+  const start = stepBytes(0, prefixBytes);
+  const target = stepBackBytes(id, suffixBytes);
+  const words = [...vocab].map(([w, n]) => ({ w, n, bytes: eucBytes(w)! }));
+  const score = (...ns: number[]) => ns.reduce((sum, n) => sum + Math.log2(1 + n), 0);
+
+  const results = new Map<string, number>();
+  const push = (name: string, s: number) => {
+    if (hashName(name) !== id) return; // 自己検証
+    results.set(name, Math.max(results.get(name) ?? 0, s));
+  };
+
+  // 前半の語を食べた状態 -> 語
+  const table = new Map<number, typeof words>();
+  for (const x of words) {
+    const st = stepBytes(start, x.bytes);
+    // 1語で当たるもの, 確定した名前そのもの (重みが KNOWN_WEIGHT 以上) は確定とみなして一番上に出す
+    if (st === target) push(prefix + x.w + suffix, x.n >= KNOWN_WEIGHT && x.n < PART_WEIGHT ? Infinity : score(x.n) * 2);
+    const list = table.get(st);
+    if (list === undefined) table.set(st, [x]);
+    else list.push(x);
+  }
+
+  if (maxWords >= 2) {
+    for (const y of words) {
+      for (const x of table.get(stepBackBytes(target, y.bytes)) ?? []) push(prefix + x.w + y.w + suffix, score(x.n, y.n));
+    }
+  }
+
+  // prefix + suffix だけで当たる場合
+  if ((prefix + suffix).length > 0 && start === target) push(prefix + suffix, Infinity);
+
+  return [...results].map(([name, s]) => ({ name, score: s })).sort((a, b) => b.score - a.score || a.name.length - b.name.length);
+};
+
 const report = (id: number, names: string[], limit: number) => {
   if (names.length === 0) {
     console.log(`0x${gba.toHex16(id)}  候補なし`);
@@ -216,7 +342,25 @@ const main = () => {
     .option("--tail-len <n:number>", `末尾の --contains の後に来る未知の部分の最大の長さ (0〜${TABLE_LEN})`, { default: TABLE_LEN })
     .option("-m,--max-len <n:number>", `prefix と suffix の間の未知の部分として試す最大の長さ (1〜${MAX_LEN}), --contains のときは未知の部分全体の合計で、head 以外は合計 ${TABLE_LEN} まで`, { default: TABLE_LEN })
     .option("-l, --limit <n:number>", "1件あたりに表示する候補の最大数", { default: 100 })
+    .option("--ja", "日本語の語を単位に総当たりする (語彙は strings.h の台詞と確定した名前から集める), --prefix / --suffix は日本語も可")
+    .option("--words <n:number>", "--ja でつなげる語の最大数 (1 か 2)", { default: 2 })
+    .option("-w, --word <words:string[]>", "--ja の語彙に足す語, \",\" で区切る, e.g. ネズミ,ドブネズミ")
+    .option("--vocab <path:string>", "--ja の語彙に足す語のファイル (1行1語)")
     .action((opts, idArg) => {
+      if (opts.ja) {
+        const id = Number(idArg);
+        if (!Number.isInteger(id) || id < 0 || id > MASK) {
+          console.error(`16bitのハッシュ値として読めません: ${idArg}`);
+          Deno.exit(1);
+        }
+        const root = new URL("..", import.meta.url).pathname;
+        const extra = [...(opts.word ?? [])];
+        if (opts.vocab) extra.push(...Deno.readTextFileSync(opts.vocab).split("\n").map((l) => l.trim()).filter((l) => l !== ""));
+        const found = solveJa(readJaVocab(root, extra), id, opts.prefix, opts.suffix, Math.min(Math.max(opts.words, 1), 2));
+        report(id, found.map((x) => x.name), opts.limit);
+        return;
+      }
+
       const maxLen = opts.maxLen;
       if (maxLen < 1 || maxLen > MAX_LEN) {
         console.error(`--max-len は 1〜${MAX_LEN} で指定してください (前半と後半に割って突き合わせるため ${TABLE_LEN} の2倍が上限)`);

@@ -104,7 +104,7 @@ void (*const PTR_ARRAY_085ad80c[7])(EnemyBat*, u16*) = {
 
 // 当てたときの処理, 回復するバリアントなら与えたダメージぶん体力を戻してゲージと数字を出し, 攻撃判定を外して離れる副状態へ移る
 // 286/290命令, 表示判定は原典では bool を返す inline (通信中なら gLinkSession の playerIdx で unk_4a0 を見て case ごとに 0 を返す形) で, playerIdx は solar.c の LinkSession_GetPlayerIdx の形にすると -1 の作り方まで揃う, 残差は case ごとの 0 を返す塊が原典では畳まれず unk_4a0 を読み直す点と, CpuFill32 の v のアドレスを r6 に置く点
-NON_MATCH void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) {
+NON_MATCH void EnemyBat_OnHit(Hitbox* a, Hitbox* b, EnemyBat* p) {
 #ifdef NONMATCHING_C
   if (b->ignoreMask != HIM_0) {
     return;
@@ -157,7 +157,7 @@ NON_MATCH void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) {
       }
     }
   }
-  (p->e).hitbox.flags |= HBFLAG_HIDDEN;
+  (p->e).hitbox.flags |= HBF_HIDDEN;
   ((EnemyBat*)(p->e).owner)->unk_658 &= ~8;
   if (!EnemyBat_TestUnk658((p->e).owner, 4)) {
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -171,14 +171,14 @@ NON_MATCH void EnemyBat_OnHit(HitboxData* a, HitboxData* b, EnemyBat* p) {
 
 // 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にして, 速く動く印を落とす
 // 803/808命令, Crow_OnHurt と同じ残差 (ノックバックの種別判定の配置, p->angle の格納先の計算位置, 末尾の乱数の読み順)
-NON_MATCH void EnemyBat_OnHurt(HitboxData* a, HitboxData* b, EnemyBat* p) {
+NON_MATCH void EnemyBat_OnHurt(Hitbox* a, Hitbox* b, EnemyBat* p) {
 #ifdef NONMATCHING_C
   s32 knockback;
 
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+  if (Hitbox_TestFlags(a, HBF_BLOCK)) {
     return;
   }
   Enemy_HandleHurt(a, b, &p->e);
@@ -202,7 +202,7 @@ NON_MATCH void EnemyBat_HoldPlayer(EnemyBat* p) {
     q->unk_661 = (p->e).mover.angle;
   }
   if (Mod((p->e).stateTimer, q->biteInterval) == 0) {
-    (p->e).hitbox.flags &= ~HBFLAG_HIDDEN;
+    (p->e).hitbox.flags &= ~HBF_HIDDEN;
   }
   if ((p->e).variant > 11) {
     EnemyBat_SpawnTrail(p);
@@ -391,7 +391,7 @@ void EnemyBat_StateDying(EnemyBat* p, s32 timer) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   if (Sprite_UpdateVanishBlink(&(p->e).s->aux.spr.flags, timer, 10, 30)) {
     s32 idx;
@@ -732,7 +732,7 @@ void FUN_08140904(EnemyBat* p) {
 
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   CLEAR_FLAGS(q->unk_658, 7);
-  Hitbox_ClearFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
+  Hitbox_ClearFlags(&(p->e).hitbox, HBF_HIDDEN);
 }
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
@@ -1336,7 +1336,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1388,6 +1388,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
 #endif
 }
 
+// 0xF8BE, HashName("バット")
 void EnemyBat_Create(void) {
   EnemyBat* p = Malloc(sizeof(EnemyBat));
 

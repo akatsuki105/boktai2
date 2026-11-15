@@ -181,7 +181,7 @@ EntityE28B* EntityE28B_Create(u16 param_1, u16 param_2) {
   return p;
 }
 
-// '.m' の種別で '.n' の Mover を slots に登録する
+// 0x0AD8, '.m' の種別で '.n' の Mover を slots に登録する
 s32 Cmd_0AD8(void) {
   s32 kind = VM_GetNamedArgValue('m', 0);
   s32 id = VM_GetNamedArgValue('n', 0);

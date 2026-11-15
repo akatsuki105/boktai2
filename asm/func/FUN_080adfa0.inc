@@ -445,7 +445,7 @@ _080AE312:
 	ldr r0, _080AE36C @ =0x03002C58
 	ldr r0, [r0]
 	movs r1, #9
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 	b _080AE37A
 	.align 2, 0
 _080AE348: .4byte 0x00001324

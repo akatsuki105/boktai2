@@ -86,9 +86,9 @@ void (*const PTR_ARRAY_085add74[7])(Serpent*, u16*) = {
 
 const s32 s32_ARRAY_085add90[6] = {-100, 0, 100, -70, 0, 130};  // 0x085ADD90
 
-NAKED void Serpent_OnHit(HitboxData* a, HitboxData* b, Serpent* p) { INCFUNC("asm/func/Serpent_OnHit.inc"); }
+NAKED void Serpent_OnHit(Hitbox* a, Hitbox* b, Serpent* p) { INCFUNC("asm/func/Serpent_OnHit.inc"); }
 
-NAKED void Serpent_OnHurt(HitboxData* a, HitboxData* b, Serpent* p) { INCFUNC("asm/func/Serpent_OnHurt.inc"); }
+NAKED void Serpent_OnHurt(Hitbox* a, Hitbox* b, Serpent* p) { INCFUNC("asm/func/Serpent_OnHurt.inc"); }
 
 NAKED void FUN_08189104(Serpent* p) { INCFUNC("asm/func/FUN_08189104.inc"); }
 
@@ -240,11 +240,11 @@ NAKED void FUN_08190ae0(Serpent* p) { INCFUNC("asm/func/FUN_08190ae0.inc"); }
 
 NAKED void FUN_08190c00(Serpent* p) { INCFUNC("asm/func/FUN_08190c00.inc"); }
 
-NAKED void FUN_08190c94(Serpent* p, HitboxData* hb, unknown* seg) { INCFUNC("asm/func/FUN_08190c94.inc"); }
+NAKED void FUN_08190c94(Serpent* p, Hitbox* hb, unknown* seg) { INCFUNC("asm/func/FUN_08190c94.inc"); }
 
-NAKED void FUN_08190d18(HitboxData* a, HitboxData* b, unknown* seg) { INCFUNC("asm/func/FUN_08190d18.inc"); }
+NAKED void FUN_08190d18(Hitbox* a, Hitbox* b, unknown* seg) { INCFUNC("asm/func/FUN_08190d18.inc"); }
 
-NAKED void FUN_08190d1c(HitboxData* a, HitboxData* b, unknown* seg) { INCFUNC("asm/func/FUN_08190d1c.inc"); }
+NAKED void FUN_08190d1c(Hitbox* a, Hitbox* b, unknown* seg) { INCFUNC("asm/func/FUN_08190d1c.inc"); }
 
 NAKED void FUN_08190f34(Serpent* p) { INCFUNC("asm/func/FUN_08190f34.inc"); }
 
@@ -353,6 +353,7 @@ NAKED s32 Serpent_Destroy(Serpent* p) { INCFUNC("asm/func/Serpent_Destroy.inc");
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
 NAKED s32 Serpent_Init(Serpent* p) { INCFUNC("asm/func/Serpent_Init.inc"); }
 
+// 0x13AC, HashName("サーペント")
 NAKED void Serpent_Create(void) { INCFUNC("asm/func/Serpent_Create.inc"); }
 
 NAKED void FUN_081957c4(Serpent* p) { INCFUNC("asm/func/FUN_081957c4.inc"); }

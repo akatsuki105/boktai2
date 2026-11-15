@@ -17,25 +17,25 @@ typedef void(ChangeMagicSquareFunc)(struct ChangeMagicSquare* p);
 
 // プレイヤーが近づくと浮き上がり、A ボタンでその場所へ飛ばす足場 (Mover 付き)
 typedef struct ChangeMagicSquare {
-  Entity e;                        // 0x000, ENTITY_UNK_9
-  u16 id;                          // 0x018, ChangeMagicSquare_Init の第2引数, mover の id を兼ねる
-  u8 nearState;                    // 0x01A, プレイヤーが近いかを 0/1 で覚え、変わったフレームだけ効果音を鳴らす
-  bool8 moverLinked;               // 0x01B, '.h=0', 立っていれば mover を使う
-  u8 unk_1c[4];                    // 0x01C, 触られていない
-  Mover mover;                     // 0x020
-  AuxSprite sprite;                // 0x064, flags に 0x200 が立つ, rise が 0 の間は隠す
-  AuxSpriteGfx gfx;                // 0x090, SPRITE_MAGIC_SQUARE
-  Vec3 pos;                        // 0x0AC, '.p', y はタイルの attr から計算し直す, 起動するとプレイヤーをここへ移す
-  AuxSprite sprite2;               // 0x0B4, flags に BLINK_EVEN が立つ2枚目
-  AuxSpriteGfx gfx2;               // 0x0E0, SPRITE_MAGIC_SQUARE
-  u16 plttID;                      // 0x0FC, 106
-  u16 highlight;                   // 0x0FE, 近いと 8 まで増え離れると減る
-  u16 rise;                        // 0x100, 近いと 2 ずつ 0x18 まで増え離れると減る, 0 のときは sprite を隠す
-  u16 readyTimer;                  // 0x102, 10 を越えていないと A ボタンで起動できない
-  u16 scriptArgs[2];               // 0x104, '.A'
-  s32 scriptID;                    // 0x108, '.s', 0 なら実行しない
-  u16 stateTimer;                  // 0x10C, updateCallback を差し替えるたびに 0 に戻る
-  u8 unk_10e[2];                   // 0x10E, 触られていない, padding?
+  Entity e;                               // 0x000, ENTITY_UNK_9
+  u16 id;                                 // 0x018, ChangeMagicSquare_Init の第2引数, mover の id を兼ねる
+  u8 nearState;                           // 0x01A, プレイヤーが近いかを 0/1 で覚え、変わったフレームだけ効果音を鳴らす
+  bool8 moverLinked;                      // 0x01B, '.h=0', 立っていれば mover を使う
+  u8 unk_1c[4];                           // 0x01C, 触られていない
+  Mover mover;                            // 0x020
+  AuxSprite sprite;                       // 0x064, flags に 0x200 が立つ, rise が 0 の間は隠す
+  AuxSpriteGfx gfx;                       // 0x090, SPRITE_MAGIC_SQUARE
+  Vec3 pos;                               // 0x0AC, '.p', y はタイルの attr から計算し直す, 起動するとプレイヤーをここへ移す
+  AuxSprite sprite2;                      // 0x0B4, flags に BLINK_EVEN が立つ2枚目
+  AuxSpriteGfx gfx2;                      // 0x0E0, SPRITE_MAGIC_SQUARE
+  u16 plttID;                             // 0x0FC, 106
+  u16 highlight;                          // 0x0FE, 近いと 8 まで増え離れると減る
+  u16 rise;                               // 0x100, 近いと 2 ずつ 0x18 まで増え離れると減る, 0 のときは sprite を隠す
+  u16 readyTimer;                         // 0x102, 10 を越えていないと A ボタンで起動できない
+  u16 scriptArgs[2];                      // 0x104, '.A'
+  s32 scriptID;                           // 0x108, '.s', 0 なら実行しない
+  u16 stateTimer;                         // 0x10C, updateCallback を差し替えるたびに 0 に戻る
+  u8 unk_10e[2];                          // 0x10E, 触られていない, padding?
   ChangeMagicSquareFunc* updateCallback;  // 0x110
 } ChangeMagicSquare;
 static_assert(sizeof(ChangeMagicSquare) == 276);
@@ -63,7 +63,7 @@ void ChangeMagicSquare_SetUpdateCallback(ChangeMagicSquare* p, ChangeMagicSquare
 
 // プレイヤーが近いと浮き上がって光り, A ボタンでプレイヤーを pos へ飛ばす
 void ChangeMagicSquare_UpdateIdle(ChangeMagicSquare* p) {
-  if (!(gGameFlags & GAMEFLAG_EVENT)) {
+  if (!(gGameFlags & GAMEFLAG_CUTSCENE)) {
     if (p->readyTimer < 10) {
       p->readyTimer++;
     }

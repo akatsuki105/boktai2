@@ -217,26 +217,24 @@ void CrossoverOjamaBat_StateFlyOut(CrossoverOjama* p, CrossoverOjamaBat* elem, s
   elem->timer++;
 }
 
-// 残差は entered を落とす 0 と from/to を指すポインタの r2/r3 入れ替えだけ (109/109), Tier A-C (Vec3 ポインタの使い回し, inline setter, counterSprite/2 の宣言順) は試済
-NON_MATCH void CrossoverOjamaBat_StateFlyIn(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx) {
-#ifdef NONMATCHING_C
+// 画面の右外から自分の列のストックへ飛び込み, 着いたら数をストックに足す
+void CrossoverOjamaBat_StateFlyIn(CrossoverOjama* p, CrossoverOjamaBat* elem, s32 idx) {
   AuxSprite* batSprite = &elem->batSprite;
   AuxSprite* counterSprite = &elem->counterSprite;
 
   if (elem->entered) {
-    Vec3* v;
-    s16 x;
+    Vec3* from;
+    Vec3* to;
 
     elem->entered = FALSE;
     counterSprite->poseIdx = elem->count;
     batSprite->poseIdx = elem->color;
     AuxSprite_Show(&elem->counterSprite);
     AuxSprite_Show(&elem->batSprite);
-    v = &elem->from;
-    x = (idx & 3) * 24;
-    VEC3_SET(*v, x + 272, 32, 0);
-    v = &elem->to;
-    VEC3_SET(*v, x + 80, 144, 0);
+    from = &elem->from;
+    VEC3_SET(*from, (idx & 3) * 24 + 272, 32, 0);
+    to = &elem->to;
+    VEC3_SET(*to, (idx & 3) * 24 + 80, 144, 0);
     CrossoverOjamaBat_SetRandomWobble(elem, 32, 15);
   }
   LerpVec3(&batSprite->pos, &elem->from, &elem->to, elem->timer, 5);
@@ -251,9 +249,6 @@ NON_MATCH void CrossoverOjamaBat_StateFlyIn(CrossoverOjama* p, CrossoverOjamaBat
     elem->count = 0;
   }
   elem->timer++;
-#else
-  INCFUNC("asm/func/CrossoverOjamaBat_StateFlyIn.inc");
-#endif
 }
 
 // 右上から置き場へ近づき, 28 フレームで乱数で少しずらした逆向きへ逸れていく

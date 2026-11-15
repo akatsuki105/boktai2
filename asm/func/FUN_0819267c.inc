@@ -23,7 +23,7 @@
 	ldrb r3, [r3]
 	ldrh r4, [r5]
 	str r4, [sp]
-	bl FUN_08240dc8
+	bl NoiseManager_FindFirstHeardNoise
 	lsls r0, r0, #0x18
 	asrs r1, r0, #0x18
 	cmp r1, #0

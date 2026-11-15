@@ -17,7 +17,7 @@ typedef struct BeeNestFragment {
   AuxSprite sprite;          // 0x000
   AuxAnimState anim;         // 0x02C, ANIM_74C9
   AuxSpriteGfx gfx;          // 0x03C, SPRITE_BEE_NEST_BROKEN
-  HitboxData hurtbox;        // 0x058
+  Hitbox hurtbox;            // 0x058
   AuxShadow shadow;          // 0x0A8, shadowId で管理
   Vec3 basePos;              // 0x114, 揺れの基準位置, sprite.pos へ複写する
   s16 unk_11c;               // 0x11C, 揺れの角速度, 折り返すたびに符号を反転して半分になる
@@ -45,7 +45,7 @@ typedef struct BeeNestFragment {
   u16 flags;                 // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
   s8 shadowId;               // 0x14E, -1 なら影なし
   u8 unk_14f;                // 0x14F
-  u16 unk_150;               // 0x150, HitboxData の unk_4 に入れる
+  u16 unk_150;               // 0x150, Hitbox の unk_4 に入れる
   AuxAnimPlayFlags unk_152;  // 0x152
   u8 unk_153;                // 0x153, 0 でない間はパレット 306 を強制して減らす
   u16 unk_154;               // 0x154, FUN_081d5d18 が毎フレーム 1 足すカウンタ
@@ -80,7 +80,7 @@ s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 par
 
 BeeNest* BeeNest_Create(void);
 BeeNestFragment* FUN_081d5864(BeeNest* p);
-void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttributes attributes, u32 weakness);
+void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttrs attributes, u32 weakness);
 
 void FUN_081d6444(BeeNestFragment* frag);
 void FUN_081d65e8(BeeNestFragment* frag);
@@ -271,10 +271,10 @@ NON_MATCH void Cmd_CreateBeeNest(void) {
 NON_MATCH void FUN_081d5cac(BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
   if (frag->hurtbox.iframes != 0) {
-    frag->hurtbox.flags |= HBFLAG_HIDDEN;
+    frag->hurtbox.flags |= HBF_HIDDEN;
     frag->hurtbox.iframes--;
   } else {
-    frag->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    frag->hurtbox.flags &= ~HBF_HIDDEN;
   }
   if (frag->unk_153 != 0) {
     Video_SetAuxSpritePltt(frag->sprite.gfx, OBP_WHITE_306);
@@ -529,7 +529,7 @@ void FUN_081d6444(BeeNestFragment* frag) {
 // 被弾ハンドラ, 体力を削って演出を出し, 0 になったら state 4 へ移す
 // 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &frag->hurtbox.iframes を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
 // dealt は min(unk_140, damage) だが, 原典の形 (差を取ってから符号で分岐) に合わせて if/else で書いた
-NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, BeeNestFragment* frag) {
+NON_MATCH void FUN_081d64d4(Hitbox* a, Hitbox* b, BeeNestFragment* frag) {
 #ifdef NONMATCHING_C
   s32 dealt;
   Vec3 v;
@@ -589,14 +589,14 @@ NON_MATCH void FUN_081d65e8(BeeNestFragment* frag) {
 #endif
 }
 
-void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttributes attributes, u32 weakness) {
-  HitboxData* hurtbox = &frag->hurtbox;
+void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttrs attributes, u32 weakness) {
+  Hitbox* hurtbox = &frag->hurtbox;
   Vec3 offset, halfSize;
 
   VEC3_SET(offset, 0, Q8(0.313), 0);
   VEC3_SET(halfSize, Q8(0.25), Q8(0.313), Q8(0.25));
   hurtbox->id = frag->unk_150;
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, attributes, weakness);
   Hitbox_SetPos(hurtbox, &frag->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_081d64d4, frag);

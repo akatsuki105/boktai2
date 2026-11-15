@@ -57,8 +57,8 @@ typedef struct FallingObject {
   u16 groundY;                 // 0x14, 着地する高さ, pos のタイルの高さから求める (階段は pos で補正)
   u8 unk_16[2];                // 0x16
   Vec3 pos;                    // 0x18, '.p'
-  HitboxData* hurtbox;         // 0x20, HAS_HURTBOX のときだけ持つ
-  HitboxData* hitbox;          // 0x24, HAS_HITBOX のときだけ持つ, TYPE_LAVA は HBATTR_FLAME | HBATTR_INKA
+  Hitbox* hurtbox;             // 0x20, HAS_HURTBOX のときだけ持つ
+  Hitbox* hitbox;              // 0x24, HAS_HITBOX のときだけ持つ, TYPE_LAVA は HBATTR_FLAME | HBATTR_INKA
   AuxSpriteGfx gfx;            // 0x28, sFallingObjectSpriteIDs[type]
   AuxSprite sprite;            // 0x44
   AuxAnimState anim;           // 0x70, type 0 だけ使う, animIdx 3: 落下, 2: 着地後, 4: 消える
@@ -91,7 +91,7 @@ void FallingObjectManager_ClearGlobal(void) { gFallingObjectManager = NULL; }
 
 // 残差1命令 (23/24), 原典は data を r2 と r5 の2本に持ち, 属性判定の前に damage を読む
 // Hitbox_TestAttr, damage を先に読むローカルは試済
-NON_MATCH void FallingObject_OnHurt(HitboxData* a, HitboxData* b, FallingObject* data) {
+NON_MATCH void FallingObject_OnHurt(Hitbox* a, Hitbox* b, FallingObject* data) {
 #ifdef NONMATCHING_C
   if (data->type == TYPE_LAVA) {
     if (a->attributes & HBATTR_FROST) {
@@ -106,7 +106,7 @@ NON_MATCH void FallingObject_OnHurt(HitboxData* a, HitboxData* b, FallingObject*
 #endif
 }
 
-void FallingObject_OnHit(HitboxData* a, HitboxData* b, FallingObject* data) {}
+void FallingObject_OnHit(Hitbox* a, Hitbox* b, FallingObject* data) {}
 
 s32 FallingObjectManager_LinkNode(FallingObjectManager* p, FallingObject* data) {
   data->prev = NULL;
@@ -166,7 +166,7 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
   FallingObject* data;
   s32 plttOffset;
   Vec3 size, offset;
-  HitboxAttributes attrs;
+  HitboxAttrs attrs;
 
   if (gFallingObjectManager == NULL && FallingObjectManager_Create(0xC0DB, 0) == NULL) {
     return -1;
@@ -199,11 +199,11 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
   data->hp = hp;
 
   if (data->flags & HAS_HURTBOX) {
-    data->hurtbox = Malloc(sizeof(HitboxData));
+    data->hurtbox = Malloc(sizeof(Hitbox));
     if (data->hurtbox == NULL) {
       return -1;
     }
-    ClearMemory(data->hurtbox, sizeof(HitboxData));
+    ClearMemory(data->hurtbox, sizeof(Hitbox));
     if (data->flags & LARGER) {
       VEC3_SET(size, Q8(0.704), Q8(1), Q8(0.704));
       VEC3_SET(offset, 0, Q8(1), 0);
@@ -211,7 +211,7 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
       VEC3_SET(size, Q8(0.352), Q8(0.5), Q8(0.352));
       VEC3_SET(offset, 0, Q8(0.5), 0);
     }
-    Hitbox_Init(data->hurtbox, data->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+    Hitbox_Init(data->hurtbox, data->id, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
     Hitbox_SetHandler(data->hurtbox, FallingObject_OnHurt, data);
     Hitbox_Register(data->hurtbox);
     Hitbox_SetPos(data->hurtbox, &data->pos, 0);
@@ -220,11 +220,11 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
   }
 
   if (data->flags & HAS_HITBOX) {
-    data->hitbox = Malloc(sizeof(HitboxData));
+    data->hitbox = Malloc(sizeof(Hitbox));
     if (data->hitbox == NULL) {
       return -1;
     }
-    ClearMemory(data->hitbox, sizeof(HitboxData));
+    ClearMemory(data->hitbox, sizeof(Hitbox));
     if (data->flags & LARGER) {
       VEC3_SET(size, 120, 160, 120);
       VEC3_SET(offset, 0, 80, 0);
@@ -236,8 +236,8 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
     if (data->type == TYPE_LAVA) {
       attrs = HBATTR_FLAME | HBATTR_INKA;
     }
-    Hitbox_Init(data->hitbox, data->id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_5, &size, &offset);
-    Hitbox_SetAttack(data->hitbox, power, knockback, 0x2000, attrs, 60);
+    Hitbox_Init(data->hitbox, data->id, HBF_HITBOX | HBF_DAMAGE, 0, HIM_5, &size, &offset);
+    Hitbox_SetAttack(data->hitbox, power, knockback, HBSRC_13, attrs, 60);
     Hitbox_SetHandler(data->hitbox, FallingObject_OnHit, data);
     Hitbox_SetPos(data->hitbox, &data->pos, 0);
   } else {
@@ -271,6 +271,7 @@ s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed
   return FallingObjectManager_LinkNode(gFallingObjectManager, data);
 }
 
+// 0x2B8C, HashName("落下物生成")
 s32 Cmd_SpawnFallingObject(void) {
   u16 id = VM_GetNamedArgValue('n', 0);
   s32 type = VM_GetNamedArgValue('t', 0);
@@ -504,7 +505,7 @@ void FallingObject_UpdateVanish(FallingObject* p) {
     p->stateBegun = FALSE;
     AuxAnim_SetAnim(&p->anim, gFallingObjectManager->anim, 4, 0, 0);
     if (p->hurtbox != NULL) {
-      p->hurtbox->flags |= HBFLAG_HIDDEN;
+      p->hurtbox->flags |= HBF_HIDDEN;
     }
     FallingObject_RemoveShadow(p);
   }

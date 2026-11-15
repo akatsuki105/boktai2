@@ -244,7 +244,7 @@ s32 FUN_08146fc0(Mimic* p) {
 void FUN_08146fcc(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacingFlags(&p->e, 16, FUN_08148750((p->e).mover.angle));
-    (p->e).hitbox.flags &= ~HBFLAG_HIDDEN;
+    (p->e).hitbox.flags &= ~HBF_HIDDEN;
   }
   if ((p->e).animForceRestart) {
     (p->e).subStateDone = 1;
@@ -270,10 +270,10 @@ void FUN_081473ac(Mimic* p) {
 void FUN_08147428(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
     Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
     Enemy_ResetState(&p->e, 0, 0, 0);
   }
@@ -282,14 +282,14 @@ void FUN_08147428(Mimic* p) {
 void FUN_081474e8(Mimic* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
-    (p->e).hitbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hitbox.flags |= HBF_HIDDEN;
   }
 }
 
 void FUN_08147530(Mimic* p, s32 param_2) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacingFlags(&p->e, 0, FUN_08148750((p->e).mover.angle));
-    (p->e).hitbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hitbox.flags |= HBF_HIDDEN;
   }
   if (param_2 == 160) {
     Enemy_SetEmote(&p->e, 0, 2, (p->e).kind);
@@ -436,7 +436,7 @@ NON_MATCH void Mimic_OnReset(Mimic* p) {
 #endif
 }
 
-void Mimic_OnHit(HitboxData* a, HitboxData* b, Mimic* p) {
+void Mimic_OnHit(Hitbox* a, Hitbox* b, Mimic* p) {
   if (Enemy_IsDead(&p->e) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
       (p->e).hitTargetID = b->id;
@@ -446,7 +446,7 @@ void Mimic_OnHit(HitboxData* a, HitboxData* b, Mimic* p) {
 }
 
 // 614/763命令, 原典は攻撃者を ignoreMask から覚える塊を3か所に展開し (inline らしい), 前半の分岐の並びも違う, 1回目の下書きで切り上げ
-NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
+NON_MATCH void Mimic_OnHurt(Hitbox* a, Hitbox* b, Mimic* p) {
 #ifdef NONMATCHING_C
   u32 knockback;
   u8 angle;
@@ -461,12 +461,12 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
     }
     return;
   }
-  if ((p->e).hurtbox.flags & HBFLAG_HIDDEN) {
+  if ((p->e).hurtbox.flags & HBF_HIDDEN) {
     return;
   }
 
-  if (!(a->flags & HBFLAG_UNK_0)) {
-    if (!(a->weakness & 0x4000)) {
+  if (!(a->flags & HBF_DAMAGE)) {
+    if (!(a->typeMask & HBSRC_MFREEZE)) {
       return;
     }
     if ((p->e).flags3 & (ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
@@ -476,7 +476,7 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
       return;
     }
     (p->e).unk_488 = 60;
-    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBF_ANGLE) && (a->flags & HBF_ANGLE)) {
       s32 d = abs(b->angle - a->angle);
 
       if (d <= 32) {
@@ -512,7 +512,7 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
         found = TRUE;
       }
       (p->e).unk_4a0 = mask;
-      (p->e).weaponExpMask = a->weakness;
+      (p->e).weaponExpMask = a->typeMask;
       (p->e).flags6 = a->attributes;
       if (found) {
         if ((p->e).flags5 & ENEFLAG5_UNK_1) {
@@ -557,7 +557,7 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
     b->damage <<= 1;
     b->knockback >>= 1;
   }
-  if (!(a->flags & HBFLAG_ANGLE)) {
+  if (!(a->flags & HBF_ANGLE)) {
     s16 dx = b->pos.x - a->pos.x;
     s16 dz = b->pos.z - a->pos.z;
 
@@ -593,7 +593,7 @@ NON_MATCH void Mimic_OnHurt(HitboxData* a, HitboxData* b, Mimic* p) {
       found = TRUE;
     }
     (p->e).unk_4a0 = mask;
-    (p->e).weaponExpMask = a->weakness;
+    (p->e).weaponExpMask = a->typeMask;
     (p->e).flags6 = a->attributes;
     if (found) {
       if ((p->e).flags5 & ENEFLAG5_UNK_1) {
@@ -1240,7 +1240,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1296,6 +1296,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
 #endif
 }
 
+// 0xBEF5, HashName("ミミック")
 void Mimic_Create(void) {
   Mimic* p = Malloc(sizeof(Mimic));
 

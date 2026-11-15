@@ -13,35 +13,35 @@ typedef enum {
 
 // 食らい判定を1つ持ち、当たったらスクリプトの引数で指定された条件を見て反応するエンティティ
 typedef struct {
-  Entity e;            // 0x00, ENTITY_UNK_8
-  HitboxData hurtbox;  // 0x18, _Destroy が Hitbox_Unregister に渡す
-  u16 id;              // 0x68, _Create / _Init の引数, Hitbox_Init の第2引数にもなる
-  s16 hp;              // 0x6A, '.l=100' を入れる
-  u16 maxHP;           // 0x6C, '.l=100' を入れる, hp が 0になった処理の後にこれを再設定する
-  u16 flags;           // 0x6E, '.f', Entity55C2Flags
-  u32 unk_70;          // 0x70, '.w'
-  u32 unk_74;          // 0x74, '.a'
-  u32 ignoreMask;      // 0x78, '.S'
-  u16 unk_7c;          // 0x7C
-  u16 unk_7e;          // 0x7E, '.i'
-  u16 unk_80;          // 0x80, '.D'
-  u16 unk_82;          // 0x82, '.d'
-  Vec3 hurtPos;        // 0x84
+  Entity e;        // 0x00, ENTITY_UNK_8
+  Hitbox hurtbox;  // 0x18, _Destroy が Hitbox_Unregister に渡す
+  u16 id;          // 0x68, _Create / _Init の引数, Hitbox_Init の第2引数にもなる
+  s16 hp;          // 0x6A, '.l=100' を入れる
+  u16 maxHP;       // 0x6C, '.l=100' を入れる, hp が 0になった処理の後にこれを再設定する
+  u16 flags;       // 0x6E, '.f', Entity55C2Flags
+  u32 unk_70;      // 0x70, '.w'
+  u32 unk_74;      // 0x74, '.a'
+  u32 ignoreMask;  // 0x78, '.S'
+  u16 unk_7c;      // 0x7C
+  u16 unk_7e;      // 0x7E, '.i'
+  u16 unk_80;      // 0x80, '.D'
+  u16 unk_82;      // 0x82, '.d'
+  Vec3 hurtPos;    // 0x84
 } Entity55C2;
 static_assert(sizeof(Entity55C2) == 140);
 
 // 当たった相手の weakness と attributes が flags で指定された条件を満たしていたら、与ダメージを足して当たった位置を覚える
-void Entity55C2_OnHurt(HitboxData* a, HitboxData* b, Entity55C2* p) {
+void Entity55C2_OnHurt(Hitbox* a, Hitbox* b, Entity55C2* p) {
   s32 okWeakness = 0;
   s32 okAttributes;
 
   if (p->flags & F_UNK_3) {
     okWeakness = 1;
   } else if (p->flags & F_UNK_1) {
-    if (p->unk_70 == a->weakness) {
+    if (p->unk_70 == a->typeMask) {
       okWeakness = 1;
     }
-  } else if (p->unk_70 & a->weakness) {
+  } else if (p->unk_70 & a->typeMask) {
     okWeakness = 1;
   }
 
@@ -64,14 +64,14 @@ void Entity55C2_OnHurt(HitboxData* a, HitboxData* b, Entity55C2* p) {
 
 // 被弾した分だけ hp を削り, 0 を切ったら '.d' のスクリプト, まだ残っていれば '.D' のスクリプトを呼ぶ
 s32 Entity55C2_Update(Entity55C2* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   s32 argv[3];
 
   if (p->unk_7c != 0) {
     p->unk_7c--;
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
   }
 
   if (hurtbox->damage != 0) {
@@ -135,7 +135,7 @@ s32 Entity55C2_Init(Entity55C2* p, u32 id) {
     VEC3_SET(offset, 0, 0, 0);
   }
 
-  Hitbox_Init(&p->hurtbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, p->ignoreMask, &size, &offset);
+  Hitbox_Init(&p->hurtbox, id, HBF_HURTBOX | HBF_DAMAGE, 0, p->ignoreMask, &size, &offset);
   Hitbox_SetPos(&p->hurtbox, &pos, 0);
   Hitbox_SetHandler(&p->hurtbox, Entity55C2_OnHurt, p);
   Hitbox_SetPowerAndAttributes(&p->hurtbox, 0, 0, 0);

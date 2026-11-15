@@ -1372,6 +1372,7 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
   return 0;
 }
 
+// 0x34EA, HashName("魔物図鑑")
 EnemyDexMenu* EnemyDexMenu_Create(u32 val) {
   EnemyDexMenu* p = CreateEntity(ENTITY_UNK_8, sizeof(EnemyDexMenu));
 

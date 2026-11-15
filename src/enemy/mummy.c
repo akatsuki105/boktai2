@@ -174,7 +174,7 @@ void Mummy_OnReset(Mummy* p);
 void Mummy_StateSpit(Mummy* p);
 void* Entity080dd1f8_Spawn(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power, s32 knockback, s32 timer, s32 id);
 void Mummy_TickSpitTimers(Mummy* p);
-s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 moverID);
+s8 NoiseManager_FindFirstHeardNoise(s32 x, s32 y, s32 size, u8 mask, u16 moverID);
 void FUN_080e8f20(Enemy* p, s32 param_2);
 bool8 Mummy_HearWallCover(Mummy* p, Vec3* pos, u32 id);
 void Mummy_SnapToTile(Vec3* pos, u32 id);
@@ -187,7 +187,7 @@ void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void Enemy_AddKillCount(Enemy* p);
 Mover* Enemy_FindVisiblePlayer(Enemy* p);
 void Mummy_Explode(Mummy* p);
-void FUN_08240cc4(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags);
+void NoiseManager_AddNoiseWithFlags(s16 x, s16 z, s16 param_3, s16 param_4, u8 flags);
 void Mummy_UpdateBurn(Mummy* p);
 void Mummy_TickFloorEndCooldown(Mummy* p);
 void Mummy_TickHeardSoundTimer(Mummy* p);
@@ -252,7 +252,7 @@ void (*const PTR_ARRAY_085ad6b4[2])(Mummy*) = {
 
 // 攻撃が当たった相手を覚える, プレイヤーが壁に張り付いていないか気付いていれば掴み, 引火中のプレイヤーなら自分も燃える被弾を受ける
 // 140/148命令, 原典は p を2本のレジスタに持ち, 被弾した相手の Enemy_SetHitTarget を両方の枝で展開する, 1回目の下書きで切り上げ
-NON_MATCH void Mummy_OnHit(HitboxData* a, HitboxData* b, Mummy* p) {
+NON_MATCH void Mummy_OnHit(Hitbox* a, Hitbox* b, Mummy* p) {
 #ifdef NONMATCHING_C
   Mummy* q = (p->e).owner;
 
@@ -286,7 +286,7 @@ NON_MATCH void Mummy_OnHit(HitboxData* a, HitboxData* b, Mummy* p) {
 
 // 食らい判定, 敵共通の処理だけ
 // 752/763命令, 敵共通の Enemy_HandleHurt だけ, Golem_OnHurt / Dog_OnHurt と同じ共通 inline の壁 (a / b のレジスタとノックバック判定の配置)
-NON_MATCH void Mummy_OnHurt(HitboxData* a, HitboxData* b, Mummy* p) {
+NON_MATCH void Mummy_OnHurt(Hitbox* a, Hitbox* b, Mummy* p) {
 #ifdef NONMATCHING_C
   Enemy_HandleHurt(a, b, &p->e);
 #else
@@ -1119,7 +1119,7 @@ NON_MATCH void Mummy_StateDying(Mummy* p, s32 timer) {
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
       PlaySound_082406e0(SE_UNK_298);
     }
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   if (Mod(timer, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
     Vec3 size;
@@ -1139,7 +1139,7 @@ NON_MATCH void Mummy_StateDying(Mummy* p, s32 timer) {
     if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
       if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
         Mummy_Explode(p);
-        FUN_08240cc4((p->e).mover.pos.x, (p->e).mover.pos.z, 0x400, 0, 1);
+        NoiseManager_AddNoiseWithFlags((p->e).mover.pos.x, (p->e).mover.pos.z, 0x400, 0, 1);
       } else {
         Vec3 size;
         WorldPos* pos;
@@ -1334,7 +1334,7 @@ s32 Mummy_HearSound(Mummy* p) {
   (p->e).unk_21c = 0;
   noticed = FALSE;
   q = (p->e).owner;
-  idx = FUN_08240dc8((p->e).mover.pos.x, (p->e).mover.pos.z, (p->e).range2, (p->e).unk_21d, (p->e).mover.id);
+  idx = NoiseManager_FindFirstHeardNoise((p->e).mover.pos.x, (p->e).mover.pos.z, (p->e).range2, (p->e).unk_21d, (p->e).mover.id);
   if (idx < 0) {
     return 0;
   }
@@ -2479,11 +2479,11 @@ NON_MATCH void Mummy_UpdateAtkHitbox(Mummy* p) {
       size.y = 100;
       size.z = 64;
       {
-        HitboxData* hb = &(p->e).hitbox;
+        Hitbox* hb = &(p->e).hitbox;
 
         hb->halfSize = size;
         hb->ignoreMask = 0x20;
-        hb->flags = HBFLAG_HITBOX | HBFLAG_UNK_9 | HBFLAG_UNK_0;
+        hb->flags = HBF_HITBOX | HBF_9 | HBF_DAMAGE;
       }
       Hitbox_SetAttack(&(p->e).hitbox, (p->e).atkPower[1], (p->e).atkKnockback[1], 0, (p->e).atkAttrs[1] | HBATTR_INKA | HBATTR_FLAME, (p->e).atkIframes[1]);
       Enemy_SetFlag4(&p->e, ENEFLAG4_UNK_14);
@@ -2492,11 +2492,11 @@ NON_MATCH void Mummy_UpdateAtkHitbox(Mummy* p) {
       size.y = 100;
       size.z = 32;
       {
-        HitboxData* hb = &(p->e).hitbox;
+        Hitbox* hb = &(p->e).hitbox;
 
         hb->halfSize = size;
         hb->ignoreMask = 0x10;
-        hb->flags = HBFLAG_HITBOX | HBFLAG_UNK_9 | HBFLAG_UNK_0;
+        hb->flags = HBF_HITBOX | HBF_9 | HBF_DAMAGE;
       }
       Hitbox_SetAttack(&(p->e).hitbox, (p->e).atkPower[1], (p->e).atkKnockback[1], 0, (p->e).atkAttrs[1] | HBATTR_17, (p->e).atkIframes[1]);
     } else {
@@ -2504,11 +2504,11 @@ NON_MATCH void Mummy_UpdateAtkHitbox(Mummy* p) {
       size.y = 100;
       size.z = 32;
       {
-        HitboxData* hb = &(p->e).hitbox;
+        Hitbox* hb = &(p->e).hitbox;
 
         hb->halfSize = size;
         hb->ignoreMask = 0x10;
-        hb->flags = HBFLAG_HITBOX | HBFLAG_UNK_9 | HBFLAG_UNK_0;
+        hb->flags = HBF_HITBOX | HBF_9 | HBF_DAMAGE;
       }
       Hitbox_SetAttack(&(p->e).hitbox, (p->e).atkPower[0], (p->e).atkKnockback[0], 0, (p->e).atkAttrs[0], (p->e).atkIframes[0]);
     }
@@ -2648,7 +2648,7 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
       if (!Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_7) && !IsLinkPlay() && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_11)) {
         DefeatedEnemyLog_Add(gMapInitScriptID, (p->e).mover.id);
       }
-      (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+      (p->e).hurtbox.flags |= HBF_HIDDEN;
     }
     (p->e).unk_464 = 0;
     (p->e).unk_4be = 0;
@@ -3839,7 +3839,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
   (p->e).unk_1bc = 1;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_27);
-  (p->e).hurtbox.flags &= ~HBFLAG_UNK_0;
+  (p->e).hurtbox.flags &= ~HBF_DAMAGE;
   Enemy_InitShadowAndEmitter(&p->e);
 
   (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
@@ -3875,7 +3875,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -3930,6 +3930,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
 #endif
 }
 
+// 0x6913, HashName("マミー")
 void Mummy_Create(void) {
   Mummy* p = Malloc(sizeof(Mummy));
 

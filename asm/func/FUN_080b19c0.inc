@@ -53,7 +53,7 @@ _080B1A22:
 	ldr r1, [r0]
 	adds r1, #0x2c
 	movs r0, #0x10
-	bl FUN_0823bb7c
+	bl Camera_PanTo
 _080B1A34:
 	ldrh r1, [r5]
 	movs r0, #0x80
@@ -78,7 +78,7 @@ _080B1A56:
 	bne _080B1A68
 	adds r0, r6, #0
 	movs r1, #7
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080B1A68:
 	pop {r4, r5, r6}
 	pop {r0}

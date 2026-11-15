@@ -101,7 +101,7 @@ void (*const PTR_ARRAY_085ad710[7])(Spider*, u16*) = {
     FUN_081302f8,
 };  // 0x085AD710
 
-void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) {
+void Spider_OnHit(Hitbox* a, Hitbox* b, Spider* p) {
   if (Enemy_IsDead(&p->e) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
       (p->e).hitTargetID = b->id;
@@ -112,12 +112,12 @@ void Spider_OnHit(HitboxData* a, HitboxData* b, Spider* p) {
 
 // 食らい判定, ACTOR 以外の攻撃は高さの差の半分だけずらした攻撃位置が自分の xz の箱に入るときだけ攻撃側の fn を呼んでから受ける
 // 1503/1505命令, 原典は a を sb / b を r8 に置く (こちらは逆), 残りは Crow_OnHurt と同じ共通処理の残差
-NON_MATCH void Spider_OnHurt(HitboxData* a, HitboxData* b, Spider* p) {
+NON_MATCH void Spider_OnHurt(Hitbox* a, Hitbox* b, Spider* p) {
 #ifdef NONMATCHING_C
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBFLAG_ACTOR)) {
+  if (Hitbox_TestFlags(a, HBF_ACTOR)) {
     Enemy_HandleHurt(a, b, &p->e);
   } else {
     Vec3 v;
@@ -284,8 +284,8 @@ NON_MATCH void FUN_0812edf8(Spider* p) {
     Enemy_PlayAnim(&p->e, 0);
     AuxShadow_Show(&(p->e).auxShadow);
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
-    Hitbox_SetFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
-    Hitbox_SetFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hitbox, HBF_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hurtbox, HBF_HIDDEN);
   }
   if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_4)) {
     if (!(p->e).shadowRemoved) {
@@ -293,8 +293,8 @@ NON_MATCH void FUN_0812edf8(Spider* p) {
       (p->e).shadowRemoved = 1;
     }
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
-    Hitbox_ClearFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
-    Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hitbox, HBF_HIDDEN);
+    Hitbox_ClearFlags(&(p->e).hurtbox, HBF_HIDDEN);
     (p->e).pendingDelay = 20;
     (p->e).pendingHandler = (p->e).handlerWait;
     (p->e).pendingSubState0 = 0;
@@ -433,7 +433,7 @@ void Spider_StateDamaged(Spider* p, s32 timer) {
 }
 
 // 倒されたときの状態, 粒子を散らしながら点滅して消えたら倒されたスクリプトを呼び図鑑に載せて止まる
-// 228/228命令, flags の検査を Enemy_TestFlag にし, 消えきった後は影を触らず return すると割り当て以外は揃う, 残差は入場時の乱数とフィールド格納のアドレス用の一時レジスタ番号 (r1/r3/r6 と原典 r3/r6/r0), 試済: Random() & 0xFF, 片方だけ TEST_FLAGS, 入場の3行の inline
+// 228/228命令, flags の検査を Enemy_TestFlag にし, 消えきった後は影を触らず return すると割り当て以外は揃う, 残差は入場時の乱数とフィールド格納のアドレス用の一時レジスタ番号 (r1/r3/r6 と原典 r3/r6/r0), 試済: Random() & 0xFF, 片方だけ TEST_FLAGS, 入場の3行の inline, 乱数を引数で渡す inline (u8 / s32), idx を関数先頭で宣言, Slime_StateDying と同形
 NON_MATCH void Spider_StateDying(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -646,7 +646,7 @@ void Spider_InitHitboxes(Spider* p) {
 
   VEC3_SET(hurtSize, 128, 128, 128);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_1 | HBFLAG_UNK_0);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE);
   VEC3_SET(hitSize, 64, 100, 64);
   VEC3_SET(hitOffset, 0, 128, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Spider_OnHit, 0, p);
@@ -1341,7 +1341,7 @@ NON_MATCH s32 Spider_Init(Spider* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1403,6 +1403,7 @@ NON_MATCH s32 Spider_Init(Spider* p) {
 #endif
 }
 
+// 0x87E4, HashName("スパイダー")
 void Spider_Create(void) {
   Spider* p = Malloc(sizeof(Spider));
 

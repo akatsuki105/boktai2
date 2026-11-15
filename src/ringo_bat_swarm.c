@@ -40,8 +40,8 @@ typedef struct {
   Vec3 pos;               // 0x014, sprite.pos へ写す
   Vec3 dest;              // 0x01C, state 1, 5, 6, 7, 9 で向かう点
   Vec3 lungeOrigin;       // 0x024, state 4 の突進の起点, ここから angle の向きへ最大 256 出て戻る
-  HitboxData hitbox;      // 0x02C, state 4 の間だけ登録する, 攻撃力は power
-  HitboxData hurtbox;     // 0x07C, 防御力は defense, 当たると state 6 か 8 へ移る
+  Hitbox hitbox;          // 0x02C, state 4 の間だけ登録する, 攻撃力は power
+  Hitbox hurtbox;         // 0x07C, 防御力は defense, 当たると state 6 か 8 へ移る
   AuxAnimState anim;      // 0x0CC, コマ送りは自前で行う
   AuxSprite sprite;       // 0x0DC
   AuxSpriteGfx gfx;       // 0x108, SPRITE_BAT, パレット 611 (被弾直後の 6 フレームは 306), pltt は RingoBatSwarm.pltt を指す
@@ -105,11 +105,11 @@ static inline void RingoBat_SetState(RingoBat* elem, u8 state) {
 // 攻撃の向きへ弾かれ, ダメージの数字を出してそのぶん Ringo にもダメージを与える, ブラックホールがあればそこへ飛ぶ
 // 残差は原典が targetIdx の判定の前に 0 を r8 に作り, targetIdx = 0 と state 6 の timer = 0 で使い回す点 (86/92命令, 差は r8 の退避と 0 の作り方)
 // 試済: SetState の展開, 引数で 0 を渡す inline, ofs の設定を前に移す, 未: 0 を分岐前に作る自然な形
-NON_MATCH void RingoBat_OnHurt(HitboxData* a, HitboxData* b, RingoBat* elem) {
+NON_MATCH void RingoBat_OnHurt(Hitbox* a, Hitbox* b, RingoBat* elem) {
 #ifdef NONMATCHING_C
   Vec3 ofs;
 
-  if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
+  if (TEST_FLAGS(a->flags, HBF_ANGLE)) {
     elem->angle = a->angle;
   } else {
     elem->angle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
@@ -135,7 +135,7 @@ NON_MATCH void RingoBat_OnHurt(HitboxData* a, HitboxData* b, RingoBat* elem) {
 }
 
 // 当てたダメージを回復の数字で出し, そのぶん Ringo の HP を回復させる
-void RingoBat_OnHit(HitboxData* a, HitboxData* b, RingoBat* elem) {
+void RingoBat_OnHit(Hitbox* a, Hitbox* b, RingoBat* elem) {
   Vec3 ofs;
 
   Hitbox_ApplyDamage(a, b);
@@ -152,7 +152,7 @@ NON_MATCH s32 RingoBat_Init(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   AuxSpriteGfx* gfx;
   AuxSprite* sprite;
   Vec3* pos;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   Vec3 halfSize, offset;
 
   RingoBat_SetState(elem, 0);
@@ -171,7 +171,7 @@ NON_MATCH s32 RingoBat_Init(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   hitbox = &elem->hurtbox;
   VEC3_SET(halfSize, 32, 240, 32);
   VEC3_SET(offset, 0, 120, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_HIDDEN | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HURTBOX | HBF_HIDDEN | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &elem->pos, 0);
   Hitbox_SetHandler(hitbox, RingoBat_OnHurt, elem);
   Hitbox_SetPowerAndAttributes(hitbox, p->defense, HBATTR_BEAST, 0);
@@ -180,10 +180,10 @@ NON_MATCH s32 RingoBat_Init(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   hitbox = &elem->hitbox;
   VEC3_SET(halfSize, 32, 240, 32);
   VEC3_SET(offset, 0, 120, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &elem->pos, 0);
   Hitbox_SetHandler(hitbox, RingoBat_OnHit, elem);
-  Hitbox_SetAttack(hitbox, p->power, 30, 0x1000, 0, 30);
+  Hitbox_SetAttack(hitbox, p->power, 30, HBSRC_12, 0, 30);
 #else
   INCFUNC("asm/func/RingoBat_Init.inc");
 #endif
@@ -198,11 +198,11 @@ s32 RingoBat_Destroy(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
 
 // sprite と影を隠して食らい判定を外す, 原典は return を書き忘れている
 s32 RingoBat_Hide(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
 
   elem->sprite.flags |= SPRFLAG_HIDDEN;
   hurtbox = &elem->hurtbox;
-  hurtbox->flags |= HBFLAG_HIDDEN;
+  hurtbox->flags |= HBF_HIDDEN;
   ParticleShadow_Hide(&elem->shadow);
 }
 
@@ -269,11 +269,11 @@ NON_MATCH void RingoBat_UpdateAim(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   Vec3* pos;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     hurtbox = &elem->hurtbox;
-    CLEAR_FLAGS(hurtbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hurtbox->flags, HBF_HIDDEN);
     Hitbox_SetPos(hurtbox, &elem->pos, 0);
   }
   if (p->blackHoleActive) {
@@ -335,7 +335,7 @@ NON_MATCH void RingoBat_UpdateApproach(RingoBatSwarm* p, RingoBat* elem, s32 idx
   s32 dz;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     if (elem->targetIdx >= 0) {
@@ -347,7 +347,7 @@ NON_MATCH void RingoBat_UpdateApproach(RingoBatSwarm* p, RingoBat* elem, s32 idx
     elem->angle += (RandomNext() & 63) - 32;
     elem->turnTimer = (RandomNext() & 15) + 16;
     hurtbox = &elem->hurtbox;
-    CLEAR_FLAGS(hurtbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hurtbox->flags, HBF_HIDDEN);
   }
   if (p->blackHoleActive) {
     RingoBat_SetState(elem, 5);
@@ -415,13 +415,13 @@ void RingoBat_UpdateWander(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   Vec3 vel;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     elem->angle = RandomNext();
     elem->turnTimer = (RandomNext() & 15) + 16;
     hurtbox = &elem->hurtbox;
-    CLEAR_FLAGS(hurtbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hurtbox->flags, HBF_HIDDEN);
   }
   if (p->blackHoleActive) {
     RingoBat_SetState(elem, 5);
@@ -472,12 +472,12 @@ NON_MATCH void RingoBat_UpdateLunge(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   u32 dist;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
     Vec3* pos;
 
     elem->stateEntered = FALSE;
     hurtbox = &elem->hurtbox;
-    CLEAR_FLAGS(hurtbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hurtbox->flags, HBF_HIDDEN);
     pos = &elem->pos;
     elem->lungeOrigin = elem->pos;
     if (elem->targetIdx >= 0) {
@@ -537,7 +537,7 @@ void RingoBat_UpdateToBlackHole(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   u32 distSq;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
     Vec3 ofs;
     Vec3* d;
 
@@ -549,7 +549,7 @@ void RingoBat_UpdateToBlackHole(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
     elem->angle += (RandomNext() & 63) + 0x60;
     elem->turnTimer = (RandomNext() & 31) + 32;
     hurtbox = &elem->hurtbox;
-    CLEAR_FLAGS(hurtbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hurtbox->flags, HBF_HIDDEN);
   }
   if (!p->blackHoleActive) {
     RingoBat_SetState(elem, 1);
@@ -603,7 +603,7 @@ void RingoBat_UpdateHurtToBlackHole(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   u32 distSq;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
     Vec3* dest;
 
     elem->stateEntered = FALSE;
@@ -612,7 +612,7 @@ void RingoBat_UpdateHurtToBlackHole(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
     Vec3_Sum(dest, &p->blackHolePos, &ofs);
     elem->angle = ArcTan2_8(dest->x - elem->pos.x, dest->z - elem->pos.z);
     hurtbox = &elem->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
   }
   if (!p->blackHoleActive) {
     RingoBat_SetState(elem, 1);
@@ -649,12 +649,12 @@ NON_MATCH void RingoBat_UpdateInBlackHole(RingoBatSwarm* p, RingoBat* elem, s32 
   u32 distSq;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     ArcTan2_8(elem->dest.x - elem->pos.x, elem->dest.z - elem->pos.z);
     hurtbox = &elem->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
     elem->turnTimer = (Random() & 15) + 16;
   }
   if (!p->blackHoleActive) {
@@ -693,11 +693,11 @@ void RingoBat_UpdateHurt(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   Vec3 vel;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     hurtbox = &elem->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
     Video_SetAuxSpritePltt(&elem->gfx, OBP_WHITE_306);
   }
   Vec3_SetPolar(&vel, elem->angle, (20 - elem->timer) * 2);
@@ -727,12 +727,12 @@ void RingoBat_UpdateReturn(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   s32 dz;
 
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
     Vec3* dest;
 
     elem->stateEntered = FALSE;
     hurtbox = &elem->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
     Vec3_SetPolar(&vel, RandomNext() & 0xFF, (RandomNext() & 63) + 16);
     dest = &elem->dest;
     Vec3_Sum(dest, &p->goal, &vel);
@@ -770,11 +770,11 @@ void RingoBat_UpdateReturn(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
 // goal で待つ, 群れが終われば止まり, ブラックホールが出ればそちらへ寄る
 void RingoBat_UpdateArrived(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     hurtbox = &elem->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
   }
   RingoBat_SetAnim(p, elem, 0);
   if (p->finished) {
@@ -789,11 +789,11 @@ void RingoBat_UpdateArrived(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
 // 食らい判定を外して止まっている
 void RingoBat_UpdateIdle(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   if (elem->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     elem->stateEntered = FALSE;
     hurtbox = &elem->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
   }
   RingoBat_SetAnim(p, elem, 0);
   elem->timer++;
@@ -959,7 +959,7 @@ NON_MATCH s32 RingoBatSwarm_Start(RingoBatSwarm* p, Vec3* from, Vec3* to, s32 sp
   for (i = 0; i < 16; i++, elem++) {
     AuxSprite* sprite;
     Vec3* pos;
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
     s32 r;
 
     RingoBat_SetState(elem, 0);
@@ -994,7 +994,7 @@ NON_MATCH s32 RingoBatSwarm_Start(RingoBatSwarm* p, Vec3* from, Vec3* to, s32 sp
     Hitbox_SetPos(&elem->hitbox, pos, 0);
     hurtbox = &elem->hurtbox;
     Hitbox_SetPos(hurtbox, pos, 0);
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
   }
   p->active = TRUE;
   return 0;

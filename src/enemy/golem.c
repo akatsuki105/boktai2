@@ -37,7 +37,7 @@ typedef struct {
   GolemFlags flags;   // 0x65C, see GolemFlags
   u32 unk_660;        // 0x660
   u8 unk_664[4];      // 0x664
-  u16 rollHitID;      // 0x668, 転がりで当てた相手の HitboxData.id, 突進の終わりに hitTargetID へ渡す
+  u16 rollHitID;      // 0x668, 転がりで当てた相手の Hitbox.id, 突進の終わりに hitTargetID へ渡す
   u8 unk_66a[2];      // 0x66A
   NavAgent navAgent;  // 0x66C, Enemy.navAgent が指す
   Vec3 pathNodePos;   // 0x690, Enemy.pathNodePos が指す
@@ -72,7 +72,7 @@ bool8 Enemy_TargetNearestLinkPlayer(Enemy* p);
 // 丸まるアニメの2コマ目で止めて待つ
 void Golem_StateCurledIdle(Golem* p);
 s32 FUN_080f8abc(Enemy* p);
-void FUN_080f8ae0(Enemy* p);
+void Golem_ScatterDebris(Enemy* p);
 void Golem_OnReset(Golem* p);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
 void Golem_StateCharge(Golem* p, s32 timer);
@@ -88,8 +88,8 @@ void Golem_StateUncurl(Golem* p);
 void Golem_StateStopAndTurn(Golem* p);
 void Golem_StateBrake(Golem* p);
 s32 Golem_RouteTo(Golem* p);
-void Golem_OnHit(HitboxData* a, HitboxData* b, Golem* p);
-void Golem_OnHurt(HitboxData* a, HitboxData* b, Golem* p);
+void Golem_OnHit(Hitbox* a, Hitbox* b, Golem* p);
+void Golem_OnHurt(Hitbox* a, Hitbox* b, Golem* p);
 // プレイヤーに気付いて向き直り, 感情アイコンとスクリプトを出して追いかけを始め, 終わったら移動に戻る
 void Golem_StartChase(Golem*);
 void FUN_0811d090(Golem*);
@@ -655,16 +655,16 @@ NON_MATCH void Golem_UpdateAtkHitbox(Golem* p) {
 
   if (!Enemy_IsDead(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_4)) {
-      HitboxData* hb = &(p->e).hitbox;
+      Hitbox* hb = &(p->e).hitbox;
 
       hb->ignoreMask = HIM_5;
-      hb->flags = HBFLAG_HITBOX | HBFLAG_UNK_0;
+      hb->flags = HBF_HITBOX | HBF_DAMAGE;
       Hitbox_SetAttack(hb, (p->e).atkPower[2], (p->e).atkKnockback[2], 0, (p->e).atkAttrs[2] | HBATTR_INKA | HBATTR_FLAME, (p->e).atkIframes[2]);
       SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_14);
     } else if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
       s32 rate = FixToInt(5, q->speed);
       s32 power, knockback;
-      HitboxData* hb;
+      Hitbox* hb;
 
       if (rate > 20) {
         rate = 20;
@@ -674,15 +674,15 @@ NON_MATCH void Golem_UpdateAtkHitbox(Golem* p) {
       power = Div(rate * (p->e).atkPower[1], 10);
       knockback = Div((p->e).atkKnockback[1] * (rate >> 1), 10);
       hb = &(p->e).hitbox;
-      hb->flags = HBFLAG_HITBOX | HBFLAG_UNK_9 | HBFLAG_ANGLE | HBFLAG_UNK_0;
+      hb->flags = HBF_HITBOX | HBF_9 | HBF_ANGLE | HBF_DAMAGE;
       hb->ignoreMask = 0;
-      Hitbox_SetAttack(hb, power, knockback, 128, (p->e).atkAttrs[1] | HBATTR_18, (p->e).atkIframes[1]);
+      Hitbox_SetAttack(hb, power, knockback, HBSRC_7, (p->e).atkAttrs[1] | HBATTR_18, (p->e).atkIframes[1]);
       SET_FLAGS((p->e).cwolfNode.flags, 1);
       SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_14);
     } else {
-      HitboxData* hb = &(p->e).hitbox;
+      Hitbox* hb = &(p->e).hitbox;
 
-      hb->flags = HBFLAG_HITBOX | HBFLAG_UNK_0;
+      hb->flags = HBF_HITBOX | HBF_DAMAGE;
       hb->ignoreMask = HIM_4;
       Hitbox_SetAttack(hb, (p->e).atkPower[0], (p->e).atkKnockback[0], 0, (p->e).atkAttrs[0], (p->e).atkIframes[0]);
     }
@@ -694,7 +694,7 @@ NON_MATCH void Golem_UpdateAtkHitbox(Golem* p) {
 
 // 当たった相手を覚えて溜めゲージを 200 足す, 転がり中は壁張り付きで背を向けた相手には当てず (ゲージだけ満たす), 当てたら相手の多段ヒットを抑えて rollHitID に覚える
 // 327/327命令, 残差は a / mover / owner の sb, r7, r8 の割当だけ, 試済: 宣言順, switch の角度を p から読む, 枝の向き
-NON_MATCH void Golem_OnHit(HitboxData* a, HitboxData* b, Golem* p) {
+NON_MATCH void Golem_OnHit(Hitbox* a, Hitbox* b, Golem* p) {
 #ifdef NONMATCHING_C
   Mover* mover = &(p->e).mover;
   Golem* q = (p->e).owner;
@@ -785,7 +785,7 @@ NON_MATCH void Golem_OnHit(HitboxData* a, HitboxData* b, Golem* p) {
 
 // 食らい判定, 敵共通の処理だけ
 // 752/763命令, 敵共通の Enemy_HandleHurt だけ, Dog_OnHurt / Crow_OnHurt と同じ共通 inline の壁 (a / b のレジスタとノックバック判定の配置)
-NON_MATCH void Golem_OnHurt(HitboxData* a, HitboxData* b, Golem* p) {
+NON_MATCH void Golem_OnHurt(Hitbox* a, Hitbox* b, Golem* p) {
 #ifdef NONMATCHING_C
   Enemy_HandleHurt(a, b, &p->e);
 #else
@@ -2134,7 +2134,7 @@ NON_MATCH void Golem_StateDying(Golem* p) {
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
     PlayGolemSound(&p->e, 1);
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   Enemy_ClearDamage(&p->e);
   if ((p->e).animForceRestart) {
@@ -2186,7 +2186,7 @@ NON_MATCH void Golem_StateDying(Golem* p) {
     Enemy_ResetState(&p->e, 1, 0, 2);
     ParticleShadow_Hide(&(p->e).shadow);
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
-    FUN_080f8ae0(&p->e);
+    Golem_ScatterDebris(&p->e);
     PlayEnemyDeathCry(&p->e);
   }
 #else
@@ -4160,7 +4160,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
   (p->e).unk_1bc = 0;
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22 | ENEFLAG_UNK_24);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_3 | ENEFLAG2_UNK_27);
-  (p->e).hurtbox.flags &= ~HBFLAG_UNK_0;
+  (p->e).hurtbox.flags &= ~HBF_DAMAGE;
   Enemy_InitShadowAndEmitter(&p->e);
 
   (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
@@ -4196,7 +4196,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -4250,6 +4250,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
 #endif
 }
 
+// 0x98EC, HashName("ゴーレム")
 void Golem_Create(void) {
   Golem* p = Malloc(sizeof(Golem));
 

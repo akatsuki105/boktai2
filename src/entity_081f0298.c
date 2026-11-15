@@ -12,7 +12,7 @@ typedef struct {
   AuxSprite sprite;   // 0x00
   AuxAnimState anim;  // 0x2C, 飛行中は animIdx 18, 着地後は 19, variant は angle から決まる
   Vec3 vel;           // 0x3C, 毎フレーム sprite.pos に足す, y は毎フレーム 1 ずつ減る
-  HitboxData hitbox;  // 0x44
+  Hitbox hitbox;      // 0x44
   u16 unk_94;         // 0x94, 生成時に 0 が入るだけ
   u8 state;           // 0x96, sEntity081f0298States の添字 (0: 待機, 1: 飛行, 2: 着地)
   s8 slotIdx;         // 0x97, usedMask 上の自分のビット番号, 空きは -1
@@ -59,18 +59,18 @@ Entity081f0298* Entity081f0298_Create(void);
 
 const u8 sEntity081f0298BlinkIntervals[4] = {8, 4, 2, 1};  // 0x085AE508
 
-void Entity081f0298_OnHit(HitboxData* a, HitboxData* b, Entity081f0298Elem* elem) {}
+void Entity081f0298_OnHit(Hitbox* a, Hitbox* b, Entity081f0298Elem* elem) {}
 
 // 物体の攻撃判定を作る
-void Entity081f0298_InitHitbox(Entity081f0298Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081f0298_InitHitbox(Entity081f0298Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Vec3 size;
   Vec3 offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   VEC3_SET(size, Q8(0.125), Q8(0.25), Q8(0.125));
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f0298_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
@@ -199,7 +199,7 @@ Entity081f0298Elem* FUN_081f0088(Entity081f0298* p) {
 }
 
 // pos から angle の向きへ speed で物体を投げる
-void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 speed) {
+void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 speed) {
   Entity081f0298* p = gEntity081f0298;
   Entity081f0298Elem* elem;
   AuxSprite* sprite;

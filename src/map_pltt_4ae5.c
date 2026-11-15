@@ -54,7 +54,7 @@ typedef struct {
   u16 oscWait;                   // 0x65E, 折り返しで止まっている間のカウントダウン
   u16 oscStep;                   // 0x660, '.a[4]=0x20', oscLevel の増分, 折り返しで符号が反転する
   u16 oscWaitLength;             // 0x662, '.a[5]=0', 上限側で折り返すときの待ち時間
-  s32 cmdCount;                  // 0x664, cmds に積まれた件数, 最大8
+  u32 cmdCount;                  // 0x664, cmds に積まれた件数, 最大8
   u16 cmds[8];                   // 0x668, MapPltt_PushCommand が積むコマンド番号
   u16 cmdArgs[8][8];             // 0x678, コマンド1件につき引数8個
 } Entity4AE5;
@@ -427,26 +427,19 @@ void Cmd_CA7D(void) {
   }
 }
 
-NON_MATCH void MapPltt_PushCommand(s32 val, s32 count, u32* args) {
-#ifdef NONMATCHING_C
-  Entity4AE5* p;
-  s32 i;
-  u16* dst;
+// コマンドキューに1件積む, 8件たまっていたら捨てる
+void MapPltt_PushCommand(s32 val, s32 count, u32* args) {
+  Entity4AE5* p = gEntity4AE5;
 
-  p = gEntity4AE5;
-  if (p != NULL) {
-    if ((u32)p->cmdCount <= 7) {
-      p->cmds[p->cmdCount] = val;
-      dst = p->cmdArgs[p->cmdCount];
-      for (i = 0; i < count; i++) {
-        dst[i] = *args++;
-      }
-      p->cmdCount++;
+  if (p != NULL && p->cmdCount <= 7) {
+    s32 i;
+
+    p->cmds[p->cmdCount] = val;
+    for (i = 0; i < count; i++) {
+      p->cmdArgs[p->cmdCount][i] = args[i];
     }
+    p->cmdCount++;
   }
-#else
-  INCFUNC("asm/func/MapPltt_PushCommand.inc");
-#endif
 }
 
 void Cmd_62BC(void) {

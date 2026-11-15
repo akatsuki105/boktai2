@@ -18,7 +18,7 @@ typedef struct {
   u32 timer;          // 0x04, state が変わるたびに 0 に戻る
   u32 duration;       // 0x08, state 2 に留まるフレーム数
   MainSprite sprite;  // 0x0C
-  HitboxData hitbox;  // 0x6C
+  Hitbox hitbox;      // 0x6C
 } DurathrorImpaleSpike;
 static_assert(sizeof(DurathrorImpaleSpike) == 188);
 
@@ -38,7 +38,7 @@ void DurathrorImpaleSpike_Init(DurathrorImpale* p, DurathrorImpaleSpike* elem, s
   Vec3 pos;
   Vec3 size;
   Vec3 offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   elem->timer = 0;
   Vec3_Clear(&pos);
@@ -46,7 +46,7 @@ void DurathrorImpaleSpike_Init(DurathrorImpale* p, DurathrorImpaleSpike* elem, s
   hitbox = &elem->hitbox;
   VEC3_SET(size, Q8(0.375), Q8(0.25), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.25), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 16, &size, &offset);
   Hitbox_SetHandler(hitbox, nop_0805d918, elem);
   Hitbox_SetAttack(hitbox, 50, 64, 0, 0, 64);
 }
@@ -84,7 +84,7 @@ s32 DurathrorImpale_Update(DurathrorImpale* p) {
   for (i = 0; i < 8; i++, elem++) {
     if (p->activeMask & (1 << i)) {
       MainSprite* sprite = &elem->sprite;
-      HitboxData* hitbox = &elem->hitbox;
+      Hitbox* hitbox = &elem->hitbox;
 
       switch (elem->state) {
         case 0: {
@@ -225,7 +225,7 @@ s32 DurathrorImpale_Spawn(DurathrorImpale* p, s32 power, u32 duration, Vec3* pos
   s32 idx;
   DurathrorImpaleSpike* elem = DurathrorImpale_FindFreeSpike(p, &idx);
   MainSprite* sprite;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   if (elem == NULL) {
     return -1;

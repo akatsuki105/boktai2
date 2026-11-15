@@ -42,7 +42,7 @@ typedef u32 CockatriceFlags2;
 typedef struct {
   Enemy e;
   u8 unk_654[4];            // 0x654
-  HitboxData senseHitbox;   // 0x658, 攻撃が来るのを感じ取る大きめの判定, Cockatrice_OnSenseAttack が受ける
+  Hitbox senseHitbox;       // 0x658, 攻撃が来るのを感じ取る大きめの判定, Cockatrice_OnSenseAttack が受ける
   Vec3 jumpVel;             // 0x6A8, 跳ぶ速さ, x と z は jumpTarget まで 18 フレームで着く速さ, y は上向き 20 から
   Vec3 jumpTarget;          // 0x6B0, 跳んで着く先
   s16 lookTimer;            // 0x6B8, 歩いている間に減り, 尽きたら見回しを始める (120 の 1〜4 倍で張り直す)
@@ -205,12 +205,12 @@ void Cockatrice_StateFlee(Cockatrice* p);
 // 前から来た攻撃をかわす, 撃ちかけの弾を消して跳び上がり, 追いかけていなければ追いかけの印を消して攻撃元へ向き直る
 void Cockatrice_StartDodge(Cockatrice* p);
 // 正面の unk_1fd 以内から銃以外の攻撃が来たのを感じ取ったら, 手が空いていれば Cockatrice_StartDodge で応じる
-void Cockatrice_OnSenseAttack(HitboxData* a, HitboxData* b, Cockatrice* p);
-void Cockatrice_OnHit(HitboxData* a, HitboxData* b, Cockatrice* p);
-void Cockatrice_OnHurt(HitboxData* a, HitboxData* b, Cockatrice* p);
+void Cockatrice_OnSenseAttack(Hitbox* a, Hitbox* b, Cockatrice* p);
+void Cockatrice_OnHit(Hitbox* a, Hitbox* b, Cockatrice* p);
+void Cockatrice_OnHurt(Hitbox* a, Hitbox* b, Cockatrice* p);
 void Cockatrice_StateRespawn(Cockatrice* p);
 void Cockatrice_UpdateHitboxes(Cockatrice* p);
-void Cockatrice_HandleHurt(HitboxData* a, HitboxData* b, Cockatrice* p);
+void Cockatrice_HandleHurt(Hitbox* a, Hitbox* b, Cockatrice* p);
 void Cockatrice_ReleaseSharedEntity(Cockatrice* p);
 void Cockatrice_UpdateLookTimer(Cockatrice* p);
 void Cockatrice_UpdateSenseHitbox(Cockatrice* p);
@@ -289,20 +289,20 @@ void (*const sCockatriceHandlerTable4[2])(Cockatrice*) = {
 const u16 sCockatriceFastMoveSpeeds[4] = {512, 256, 384, 408};                         // 0x085AD9A8
 const u16 sCockatriceMoveSpeeds[10] = {674, 674, 0, 578, 642, 674, 674, 0, 578, 642};  // 0x085AD9B0
 
-void Cockatrice_OnHit(HitboxData* a, HitboxData* b, Cockatrice* p) { Enemy_SetHitTarget(&p->e, b); }
+void Cockatrice_OnHit(Hitbox* a, Hitbox* b, Cockatrice* p) { Enemy_SetHitTarget(&p->e, b); }
 
-void Cockatrice_OnHurt(HitboxData* a, HitboxData* b, Cockatrice* p) {
+void Cockatrice_OnHurt(Hitbox* a, Hitbox* b, Cockatrice* p) {
   if (!Enemy_IsDead(&p->e) && !Cockatrice_TestFlags((p->e).owner, COCKAFLAG_DODGING)) {
     Cockatrice_HandleHurt(a, b, p);
   }
 }
 
 // 正面の unk_1fd 以内から銃以外の攻撃が来たのを感じ取ったら, 手が空いていれば Cockatrice_StartDodge で応じる
-void Cockatrice_OnSenseAttack(HitboxData* a, HitboxData* b, Cockatrice* p) {
+void Cockatrice_OnSenseAttack(Hitbox* a, Hitbox* b, Cockatrice* p) {
   Cockatrice* q = (p->e).owner;
 
-  if (!Enemy_IsDead(&p->e) && !Hitbox_TestFlags(b, HBFLAG_HIDDEN) && (p->e).hurtbox.iframes == 0 && q->dodgeCooldown <= 0 &&
-      !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasWeakness(a, 1 << WK_GUN) && !Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
+  if (!Enemy_IsDead(&p->e) && !Hitbox_TestFlags(b, HBF_HIDDEN) && (p->e).hurtbox.iframes == 0 && q->dodgeCooldown <= 0 &&
+      !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasSource(a, HBSRC_GUN) && !Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
     s32 d = ((a->angle + 0x80) & 0xFF) - (p->e).mover.angle;
 
     if (d > 128) {
@@ -769,7 +769,7 @@ void Cockatrice_StateDying(Cockatrice* p, s32 timer) {
     Enemy_SetEmote(&p->e, 3, 0x7F, 0);
     Enemy_FadeParticles(&p->e, 4);
     PlayEnemyDeathCry(&p->e);
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   }
   Enemy_ClearDamage(&p->e);
@@ -782,7 +782,7 @@ void Cockatrice_StateDying(Cockatrice* p, s32 timer) {
     PlaySound_082406e0(SONG_466);
   }
   if ((p->e).animForceRestart) {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
     ParticleShadow_Hide(&(p->e).shadow);
     if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
       s32 idx;
@@ -2367,7 +2367,7 @@ void Cockatrice_InitHitboxes(Cockatrice* p) {
 
   VEC3_SET(size, 128, 128, 128);
   VEC3_SET(offset, 0, 128, 0);
-  flags = HBFLAG_HURTBOX | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_1 | HBFLAG_UNK_0;
+  flags = HBF_HURTBOX | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE;
   Enemy_RegisterHitbox(&p->e, &q->senseHitbox, &size, &offset, Cockatrice_OnSenseAttack, p, flags);
   VEC3_SET(hurtSize, 64, 128, 64);
   VEC3_SET(hurtOffset, 0, 128, 0);
@@ -2388,10 +2388,10 @@ NON_MATCH void Cockatrice_UpdateSenseHitbox(Cockatrice* p) {
     return;
   }
   if (Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE | COCKAFLAG_FLEEING) || TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
-    Hitbox_SetFlags(&q->senseHitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(&q->senseHitbox, HBF_HIDDEN);
     return;
   }
-  Hitbox_ClearFlags(&q->senseHitbox, HBFLAG_HIDDEN);
+  Hitbox_ClearFlags(&q->senseHitbox, HBF_HIDDEN);
   pos = (p->e).mover.pos;
   pos.x += POLAR_X(128, (p->e).mover.angle);
   pos.z += POLAR_Z(128, (p->e).mover.angle);
@@ -3880,7 +3880,7 @@ NON_MATCH void Cockatrice_UpdateHitboxes(Cockatrice* p) {
 #ifdef NONMATCHING_C
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_6)) {
     if (Cockatrice_TestFlags((p->e).owner, COCKAFLAG_AIRBORNE)) {
-      Hitbox_SetAttack(&(p->e).hitbox, (p->e).atkPower[1], (p->e).atkKnockback[1], 0x800, (p->e).atkAttrs[1], (p->e).atkIframes[1]);
+      Hitbox_SetAttack(&(p->e).hitbox, (p->e).atkPower[1], (p->e).atkKnockback[1], HBSRC_11, (p->e).atkAttrs[1], (p->e).atkIframes[1]);
       (p->e).hitbox.ignoreMask = HIM_4;
       (p->e).hurtbox.halfSize.x = 64;
       (p->e).hurtbox.halfSize.y = 256;
@@ -3888,7 +3888,7 @@ NON_MATCH void Cockatrice_UpdateHitboxes(Cockatrice* p) {
       (p->e).hurtbox.offset.x = 0;
       (p->e).hurtbox.offset.y = 256 - (p->e).heightAboveFloor;
       (p->e).hurtbox.offset.z = 0;
-      (p->e).hurtbox.flags |= HBFLAG_UNK_1;
+      (p->e).hurtbox.flags |= HBF_SENSOR;
     } else {
       Hitbox_SetAttack(&(p->e).hitbox, (p->e).atkPower[0], (p->e).atkKnockback[0], 0, (p->e).atkAttrs[0], (p->e).atkIframes[0]);
       (p->e).hitbox.ignoreMask = HIM_4;
@@ -3898,7 +3898,7 @@ NON_MATCH void Cockatrice_UpdateHitboxes(Cockatrice* p) {
       (p->e).hurtbox.offset.x = 0;
       (p->e).hurtbox.offset.y = 128;
       (p->e).hurtbox.offset.z = 0;
-      (p->e).hurtbox.flags &= ~HBFLAG_UNK_1;
+      (p->e).hurtbox.flags &= ~HBF_SENSOR;
     }
   }
 #else
@@ -3961,7 +3961,7 @@ void FUN_0815ec0c(Cockatrice* p) {}
 
 // 敵共通の被弾処理のあと, 宙に浮いていて下から石化以外の攻撃を受けたときはダメージとノックバックを消し, 姿と影を戻して攻撃元を追いかけ始める
 // 960/978命令, 前半は敵共通の Enemy_HandleHurt で Golem_OnHurt と同じ共通 inline の壁, 1回目の下書きで切り上げ
-NON_MATCH void Cockatrice_HandleHurt(HitboxData* a, HitboxData* b, Cockatrice* p) {
+NON_MATCH void Cockatrice_HandleHurt(Hitbox* a, Hitbox* b, Cockatrice* p) {
 #ifdef NONMATCHING_C
   Cockatrice* q = (p->e).owner;
 
@@ -4283,23 +4283,21 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
 #endif
 }
 
-// 37/38命令, 原典は判定の前に p を r2 へ写して判定に r2, 呼び出しに r4 を使う (inline の引数の写しらしい), 試済: Enemy_TestFlag3, Enemy* のローカル
-NON_MATCH s32 Cockatrice_UpdateFrame(Cockatrice* p) {
-#ifdef NONMATCHING_C
+// 止まっていなければ前処理, 状態の処理, 後処理を1フレーム分まわす
+s32 Cockatrice_UpdateFrame(Cockatrice* p) {
+  Cockatrice* self = p;
+
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_2) || (p->e).unk_4be == 0) {
-    Cockatrice_PreUpdate(p);
+    Cockatrice_PreUpdate(self);
     {
-      u32 idx = (p->e).subState0;
-      EnemyHandler* table = (p->e).handlerTables[0];
-      table[idx](&p->e);
+      u32 idx = (self->e).subState0;
+      EnemyHandler* table = (self->e).handlerTables[0];
+      table[idx](&self->e);
     }
-    Enemy_RunStateHandler(&p->e);
-    Cockatrice_PostUpdate(p);
+    Enemy_RunStateHandler(&self->e);
+    Cockatrice_PostUpdate(self);
   }
   return 1;
-#else
-  INCFUNC("asm/func/Cockatrice_UpdateFrame.inc");
-#endif
 }
 
 s32 Cockatrice_Update(Cockatrice* p) {
@@ -4648,7 +4646,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -4699,6 +4697,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
 #endif
 }
 
+// 0xAC98, HashName("コカトリス")
 void Cockatrice_Create(void) {
   Cockatrice* p = Malloc(sizeof(Cockatrice));
 

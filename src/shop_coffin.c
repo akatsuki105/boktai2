@@ -589,6 +589,7 @@ s32 CoffinShop_Init(CoffinShop* p) {
   return 0;
 }
 
+// 0x571D, HashName("棺桶屋")
 CoffinShop* CoffinShop_Create(void) {
   CoffinShop* p = CreateEntity(ENTITY_UNK_11, sizeof(CoffinShop));
 

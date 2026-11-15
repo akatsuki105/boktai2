@@ -13,7 +13,7 @@
 typedef struct {
   AuxSprite sprite;       // 0x00, pos は毎フレーム center + offset になる
   AuxAnimState anim;      // 0x2C, animIdx 7, variant 0
-  HitboxData hitbox;      // 0x3C
+  Hitbox hitbox;          // 0x3C
   Vec3 center;            // 0x8C, 回る中心の座標
   Vec3 offset;            // 0x94, center からのずれ, y は常に 0
   u32 angle;              // 0x9C, 中心から見た向き, 下位12ビットが小数部で >> 12 が gSineTable の添字
@@ -56,17 +56,17 @@ s32 Entity081f959c_Init(Entity081f959c* p);
 Entity081f959c* Entity081f959c_Create(void);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
 
-void Entity081f959c_OnHit(HitboxData* a, HitboxData* b, Entity081f959cElem* elem) {}
+void Entity081f959c_OnHit(Hitbox* a, Hitbox* b, Entity081f959cElem* elem) {}
 
-void Entity081f959c_InitHitbox(Entity081f959cElem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
+void Entity081f959c_InitHitbox(Entity081f959cElem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
   Vec3 size;
   Vec3 offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   VEC3_SET(size, 24, 128, 24);
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ONCE | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f959c_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
@@ -212,7 +212,7 @@ void Entity081f959c_UpdateVanish(Entity081f959c* p, Entity081f959cElem* elem) {
 }
 
 // pos を中心に radius の円周上を回る火の玉を1つ出す
-void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Entity081f959c* p = gEntity081f959c;
   Entity081f959cElem* elem;
   AuxSprite* sprite;

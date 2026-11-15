@@ -153,7 +153,7 @@ Flamethrower* FUN_081eab78(Entity081eaf6c* p) {
   return NULL;
 }
 
-void FUN_081eabcc(HitboxData* a, HitboxData* b, void* p) {}
+void FUN_081eabcc(Hitbox* a, Hitbox* b, void* p) {}
 
 const Vec3 vec3_ARRAY_085ae498[3] = {
     {Q8(0.19), Q8(0.125), Q8(0.86)},
@@ -212,8 +212,8 @@ NON_MATCH void FUN_081eabd0(Flamethrower* item, s32 a, s32 b, s32 power, s32 kno
     angle = 0;
   }
 
-  Hitbox_Init(&item->hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, HIM_5, &halfSize, &offset);
-  Hitbox_SetAttack(&item->hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_FLAME, iframes);  // 0x40 は武器以外の攻撃
+  Hitbox_Init(&item->hitbox, 0, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, HIM_5, &halfSize, &offset);
+  Hitbox_SetAttack(&item->hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_FLAME, iframes);
   Hitbox_SetPos(&item->hitbox, &item->hitboxPos, 0);
   Hitbox_SetHandler(&item->hitbox, FUN_081eabcc, item);
   item->hitbox.angle = angle;

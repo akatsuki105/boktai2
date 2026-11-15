@@ -8,12 +8,12 @@
 
 // _Create が Explosion_Create と Explosion_CreateDelayed と Explosion_CreateWithAttrs の 3つある (_Init, _Update, _Destroy は共有)
 typedef struct {
-  Entity e;           // 0x00, ENTITY_UNK_10
-  AuxSprite sprite;   // 0x18
-  AuxSpriteGfx gfx;   // 0x44, SPRITE_EXPLOSION
-  HitboxData hitbox;  // 0x60, timer が 8 未満の間だけ毎フレーム登録し直す
-  u16 delay;          // 0xB0, 0 になるまで何もしない
-  u16 timer;          // 0xB2, 毎フレーム +1, 23 を越えると自分を消す
+  Entity e;          // 0x00, ENTITY_UNK_10
+  AuxSprite sprite;  // 0x18
+  AuxSpriteGfx gfx;  // 0x44, SPRITE_EXPLOSION
+  Hitbox hitbox;     // 0x60, timer が 8 未満の間だけ毎フレーム登録し直す
+  u16 delay;         // 0xB0, 0 になるまで何もしない
+  u16 timer;         // 0xB2, 毎フレーム +1, 23 を越えると自分を消す
 } Explosion;
 static_assert(sizeof(Explosion) == 180);
 
@@ -55,18 +55,18 @@ void Explosion_InitSprite(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 p
 }
 
 // 爆発の攻撃判定を 0x100 角で作る
-void Explosion_InitHitbox(Explosion* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Explosion_InitHitbox(Explosion* p, Hitbox* hitbox, s32 ignoreMask, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockback, 0x40, attrs, iframes);  // 0x40 は武器以外の攻撃
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, attrs, iframes);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
-s32 Explosion_Init(Explosion* p, Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 plttOffset, s32 delay) {
+s32 Explosion_Init(Explosion* p, Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 plttOffset, s32 delay) {
   Explosion_InitSprite(&p->sprite, &p->gfx, pos, plttOffset);
   Explosion_InitHitbox(p, &p->hitbox, ignoreMask, power, knockback, attrs, iframes);
   Hitbox_SetPos(&p->hitbox, pos, 0);
@@ -101,7 +101,7 @@ Explosion* Explosion_CreateDelayed(Vec3* pos, s32 ignoreMask, s32 power, s32 kno
   return p;
 }
 
-Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 plttOffset, s32 delay) {
+Explosion* Explosion_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 plttOffset, s32 delay) {
   Explosion* p = CreateEntity(ENTITY_UNK_10, sizeof(Explosion));
 
   if (p != NULL) {

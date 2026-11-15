@@ -14,7 +14,7 @@
 typedef struct Entity7B9FElem {
   AuxSprite sprite;                                // 0x00, Entity7B9F_Destroy が AuxSprite_Remove に渡す
   AuxAnimState anim;                               // 0x2C, ANIM_1E38
-  HitboxData hitbox;                               // 0x3C
+  Hitbox hitbox;                                   // 0x3C
   ParticleShadow shadow;                           // 0x8C, unk_d2 が -1 でなければ _Destroy が ParticleShadow_Remove に渡す
   s16 id;                                          // 0xCC, '.n'
   u8 unk_ce[2];                                    // 0xCE
@@ -84,22 +84,18 @@ void FUN_081d822c(Entity7B9FElem* e) {
   }
 }
 
-// 命令数は一致, 残差は 0xFFFF0000 と 0xFFFF の定数のレジスタの順序だけ
-NON_MATCH void FUN_081d8298(Entity7B9FElem* e) {
-#ifdef NONMATCHING_C
+// 氷の破片のパーティクルを 3〜6 個ばらまく
+void Entity7B9FElem_ScatterIceShards(Entity7B9FElem* e) {
   Vec3 vel;
-  Vec3 accel;
+  Vec3 velRange;
 
-  vel.y = RandomNext() & 7;
   vel.x = -12;
+  vel.y = RandomNext() & 7;
   vel.z = -12;
-  accel.y = (RandomNext() & 7) + 3;
-  accel.x = 24;
-  accel.z = 24;
-  ScatterEffect_Spawn((RandomNext() & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &accel, 60, 63);
-#else
-  INCFUNC("asm/func/FUN_081d8298.inc");
-#endif
+  velRange.x = 24;
+  velRange.y = (RandomNext() & 7) + 3;
+  velRange.z = 24;
+  ScatterEffect_Spawn((RandomNext() & 3) + 3, SCATTER_ICE, &e->sprite.pos, &vel, &velRange, 60, 63);
 }
 
 void nop_081d8368(Entity7B9FElem* e) {}
@@ -165,7 +161,7 @@ void FUN_081d85a8(Entity7B9FElem* e) {
     Hitbox_Register(&e->hitbox);
     AuxSprite_AdvanceAnim(&e->sprite, &e->anim);
     if (e->anim.cmdIdx == 3) {
-      FUN_081d8298(e);
+      Entity7B9FElem_ScatterIceShards(e);
       FUN_081d8560(e);
       FUN_081d822c(e);
       PlaySound_082406e0(SONG_481);
@@ -241,15 +237,15 @@ Entity7B9F* Entity7B9F_Create(void) {
 void nop_081d88a4(void) {}
 
 void FUN_081d88a8(Entity7B9FElem* e, s32 param_2, s32 param_3) {
-  HitboxData* hitbox = &e->hitbox;
+  Hitbox* hitbox = &e->hitbox;
   Vec3 offset;
   Vec3 size;
 
   VEC3_SET(offset, 0, 50, 0);
   VEC3_SET(size, 84, 64, 84);
   hitbox->id = e->id;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x20, &size, &offset);
-  Hitbox_SetAttack(hitbox, param_2, param_3, 0x2000, 0x440008, 60);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x20, &size, &offset);
+  Hitbox_SetAttack(hitbox, param_2, param_3, HBSRC_13, 0x440008, 60);
   Hitbox_SetPos(hitbox, &e->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, nop_081d88a4, e);
 }

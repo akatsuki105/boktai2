@@ -101,7 +101,7 @@ typedef struct PileDriver {
   u32 unk_1424;                     // 0x1424, まだ未解析
   bool16 unk_1428;                  // 0x1428, FUN_080ad9d4 / FUN_080ad6a8 が立て, FUN_080ad96c が見て下ろす
   u8 unk_142a[0x17A4 - 0x142A];     // 0x142A, まだ未解析
-  u32 unk_17a4;                     // 0x17A4, '.p'
+  u32 eventScriptID;                // 0x17A4, '.p', 段階 (kind) を引数に起動するスクリプト
   MsgQueue mq;                      // 0x17A8
 } PileDriver;
 static_assert(sizeof(PileDriver) == 6108);
@@ -118,7 +118,7 @@ typedef struct Generator {
   AuxSprite sprite;                           // 0x018, ->gfx
   AuxSpriteGfx gfx;                           // 0x044, SPRITE_GENERATOR
   Vec3 pos;                                   // 0x060, Generator_Create の第1引数を8バイト複写したもの,Hitbox_SetPos に渡す
-  HitboxData hurtbox;                         // 0x068, Generator_InitHurtbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
+  Hitbox hurtbox;                             // 0x068, Generator_InitHurtbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
   AuxAnimState anim;                          // 0x0B8, ANIM_PILE, animIdx は 1 or 3
   AuxAnimFile* animFile;                      // 0x0C8, ANIM_PILE
   u8 animVariant;                             // 0x0CC

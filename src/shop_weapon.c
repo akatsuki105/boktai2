@@ -425,7 +425,7 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
 }
 
 // unk_1654 のタブ (1=剣 2=槍 3=槌) の savedSlot 番目の武器を slot へ飛ばすアニメを仕込む
-// 残差は &cursor.savedSlot の算出位置が2命令ぶん後ろにずれるだけ (67/67命令), Tier A-C は試済
+// 残差は &cursor.savedSlot の算出位置が2命令ぶん後ろにずれるだけ (67/67命令), Tier A-C は試済, FUN_080ba7bc と同じ形 (68/67), 添字を引数で受ける inline (savedSlot の読み込みまで前に出る)
 NON_MATCH void FUN_080bd624(WeaponShop* p) {
 #ifdef NONMATCHING_C
   WorldPos from[2];
@@ -726,7 +726,7 @@ void WeaponShop_SwapSelectedWeapon(WeaponShop* p) {
 }
 
 void WeaponShop_BuyWeapon(WeaponShop* p);
-void FUN_080bdfe8(WeaponShop* p);
+void WeaponShop_ConfirmSellWeapon(WeaponShop* p);
 
 // カーソル確定の入力待ち, 決定なら WeaponShop_BuyWeapon へ, キャンセルなら SE を鳴らして戻る
 void FUN_080bde60(WeaponShop* p) {
@@ -758,38 +758,34 @@ void WeaponShop_BuyWeapon(WeaponShop* p) {
   }
 }
 
-// カーソル確定の入力待ち, 決定なら FUN_080bdfe8 へ, キャンセルなら SE を鳴らして戻る
+// カーソル確定の入力待ち, 決定なら WeaponShop_ConfirmSellWeapon へ, キャンセルなら SE を鳴らして戻る
 void FUN_080bdf94(WeaponShop* p) {
   s32 r = FUN_080b977c(&p->sprites[57], &p->gfx0, &p->unk_1656);
 
   if (r == 1) {
     MessageWindow_Close();
     WeaponShop_StartMoveAnim(p);
-    FUN_080bcdf8(p, FUN_080bdfe8, 0);
+    FUN_080bcdf8(p, WeaponShop_ConfirmSellWeapon, 0);
   } else if (r == 0) {
     PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
   }
 }
 
-// 残差は 9999 クランプで gStat を再ロードしない4命令 (39/43命令), Tier A-C は試済
-NON_MATCH void FUN_080bdfe8(WeaponShop* p) {
-#ifdef NONMATCHING_C
+// 売却を確定する, 売値を所持金に足して (9999 で打ち止め) 武器を手放す
+void WeaponShop_ConfirmSellWeapon(WeaponShop* p) {
   if (FUN_080b9adc(&p->pair0)) {
     s32 slot = (u8)p->cursor.savedSlot;
+    s16 bank;
 
-    gStat->solarBank += WeaponShop_GetSellPrice(slot);
-    if (gStat->solarBank > 9999) {
-      gStat->solarBank = 9999;
+    SOLAR_BANK = bank = gStat->solarBank + WeaponShop_GetSellPrice(slot);
+    if (bank > 9999) {
+      SOLAR_BANK = 9999;
     }
-
     RemoveWeapon(slot);
     p->unk_1659 = 1;
     FUN_080bcdf8(p, WeaponShop_AnimateSale, 0);
   }
-#else
-  INCFUNC("asm/func/FUN_080bdfe8.inc");
-#endif
 }
 
 void WeaponShop_AnimateSale(WeaponShop* p) {

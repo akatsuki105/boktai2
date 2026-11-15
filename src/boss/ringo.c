@@ -79,10 +79,10 @@ typedef struct {
   u8 unk_18b;                                 // 0x18B
   u16 unk_18c;                                // 0x18C
   u8 unk_18e[0x194 - 0x18E];                  // 0x18E
-  HitboxData hitbox;                          // 0x194
-  HitboxData hurtbox;                         // 0x1E4, ハンドラは Ringo_OnHurt
-  HitboxData hitbox2;                         // 0x234
-  HitboxData hurtbox2;                        // 0x284, ハンドラ FUN_0802802c はダメージを 0 にする
+  Hitbox hitbox;                              // 0x194
+  Hitbox hurtbox;                             // 0x1E4, ハンドラは Ringo_OnHurt
+  Hitbox hitbox2;                             // 0x234
+  Hitbox hurtbox2;                            // 0x284, ハンドラ FUN_0802802c はダメージを 0 にする
   MainSpriteGfx gfx;                          // 0x2D4, SPRITE_RINGO
   MainSprite sprites[2];                      // 0x2F4
   AuxShadow shadow;                           // 0x3B4
@@ -119,7 +119,7 @@ typedef struct {
   u8 unk_87f;                                 // 0x87F
   bool8 unk_880;                              // 0x880
   u8 unk_881[0x884 - 0x881];                  // 0x881
-  u16 unk_884;                                // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
+  u16 cameraDist;                             // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
   u16 unk_886;                                // 0x886
   u16 unk_888;                                // 0x888
   u16 unk_88a;                                // 0x88A
@@ -172,10 +172,10 @@ typedef struct {
   u8 unk_8de[0x8E0 - 0x8DE];                  // 0x8DE
   s32 weaponExp;                              // 0x8E0, '.K'
   u16 unk_8e4;                                // 0x8E4
-  u16 unk_8e6;                                // 0x8E6
-  u16 unk_8e8[3];                             // 0x8E8, sprites_8f4 ごとの残りフレーム, 0 になったら隠す
-  u16 unk_8ee[3];                             // 0x8EE, sprites_8f4 ごと, 1 なら unk_868 へ寄せる
-  MainSprite sprites_8f4[3];                  // 0x8F4
+  u16 afterimageIdx;                          // 0x8E6
+  u16 afterimageTimers[3];                    // 0x8E8, afterimages ごとの残りフレーム, 0 になったら隠す
+  u16 unk_8ee[3];                             // 0x8EE, afterimages ごと, 1 なら unk_868 へ寄せる
+  MainSprite afterimages[3];                  // 0x8F4
   s16 unk_a14;                                // 0xA14, 前のフレームの unk_a16
   s16 unk_a16;                                // 0xA16, sprites[0].animCmdIdx の控え
   Vec3 unk_a18;                               // 0xA18
@@ -233,8 +233,8 @@ struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 pos
 s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
 s32 VampireSwordManager_Spawn(struct VampireSwordManager* p, Vec3* pos, u32 kind, Vec3* target, u32 speed, u32 delay);
-s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs);
-s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs);
+s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttrs attrs);
+s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttrs attrs);
 s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 
 static inline void Ringo_StartPlttFade(Ringo* p, s32 mode, u32 plttID) {
@@ -401,18 +401,18 @@ NON_MATCH s32 FUN_08027f10(Ringo* p) {
 #endif
 }
 
-void Ringo_OnHurt(HitboxData* a, HitboxData* b, Ringo* p) {
+void Ringo_OnHurt(Hitbox* a, Hitbox* b, Ringo* p) {
   Boss* boss = &p->base;
 
   if (!TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_19)) {
     Hitbox_ApplyDamage(a, b);
     p->damage = b->damage;
-    if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
+    if (TEST_FLAGS(a->flags, HBF_ANGLE)) {
       p->hurtAngle = a->angle;
     } else {
       p->hurtAngle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
     }
-    Boss_SetWeaponExpMask(boss, a->weakness);
+    Boss_SetWeaponExpMask(boss, a->typeMask);
     Boss_SetHurtAttributes(boss, a->attributes);
     a->damage += boss->damageBonus;
   }
@@ -428,7 +428,7 @@ void Ringo_OnHurt(HitboxData* a, HitboxData* b, Ringo* p) {
 }
 
 // hurtbox2 に当たった攻撃のダメージを 0 にする
-void FUN_0802802c(HitboxData* a, HitboxData* b, Ringo* p) {
+void FUN_0802802c(Hitbox* a, Hitbox* b, Ringo* p) {
   b->damage = 0;
   if (TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_19)) {
     p->unk_178 = TRUE;
@@ -443,7 +443,7 @@ void Ringo_UnregisterHurtboxes(Ringo* p) {
 }
 
 void Ringo_SetHurtboxPower(Ringo* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
 
   p->base.hurtboxPower = power;
   hurtbox->power = power;
@@ -545,28 +545,23 @@ NON_MATCH s32 FUN_0802835c(Ringo* p) {
 #endif
 }
 
-// 残差は 0x80 - unk_884 を入れるレジスタのみ (100/100), 掛け算の順番とローカルに分ける形は試済
-NON_MATCH void FUN_08028388(Ringo* p) {
-#ifdef NONMATCHING_C
+// プレイヤーとの距離に応じて, カメラをプレイヤーから自分の方へずらした位置に置く
+void Ringo_UpdateCamera(Ringo* p) {
   Mover* mover = &p->base.mover;
-  Vec3* playerPos = p->base.playerPos[0];
+  Vec3* target = p->base.playerPos[0];
   s32 dist = Sqrt(p->base.playerDistSq[0]) >> 5;
-  s32 t;
+  s32 scale;
   Vec3 pos;
 
-  if (p->unk_884 > dist) {
-    p->unk_884--;
-  } else if (p->unk_884 < dist) {
-    p->unk_884++;
+  if (p->cameraDist > dist) {
+    p->cameraDist--;
+  } else if (p->cameraDist < dist) {
+    p->cameraDist++;
   }
-  t = FixToInt(7, (0x80 - p->unk_884) * p->unk_886);
-  pos.x = playerPos->x - FixToInt(8, (playerPos->x - mover->pos.x) * t);
-  pos.y = playerPos->y + 0x78;
-  pos.z = playerPos->z - FixToInt(8, (playerPos->z - mover->pos.z) * t);
+  scale = 0x80 - p->cameraDist;
+  scale = FixToInt(7, scale * p->unk_886);
+  VEC3_SET(pos, target->x - FixToInt(8, (target->x - mover->pos.x) * scale), target->y + 0x78, target->z - FixToInt(8, (target->z - mover->pos.z) * scale));
   Camera_MoveTo(&pos);
-#else
-  INCFUNC("asm/func/FUN_08028388.inc");
-#endif
 }
 
 void FUN_08028474(Vec3* from, Vec3* to, u8* angle, u16* dist) {
@@ -658,45 +653,43 @@ NON_MATCH s32 FUN_08028720(Ringo* p, s32 count, Vec3* min, Vec3* max) {
 #endif
 }
 
-// 残差は pltt の代入で値と番地を作る順番のみ (58/58): 原典は gObjPlttData を読んでから p + 0x93C + i * 0x60 を作る
-NON_MATCH void FUN_08028790(Ringo* p, Vec3* pos) {
-#ifdef NONMATCHING_C
+// 残像のスプライト 3 枚を隠したまま追加する
+void Ringo_AddAfterimages(Ringo* p, Vec3* pos) {
   u32 plttID = p->unk_820 != 0 ? 0xC5 : 0xC7;
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Add(&p->sprites_8f4[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
-    p->sprites_8f4[i].plttID = 0x4100;
-    p->sprites_8f4[i].pltt = &gObjPlttData[plttID * 16];
+    rgb555* pltt;
+
+    MainSprite_Add(&p->afterimages[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
+    p->afterimages[i].plttID = 0x4100;
+    pltt = &gObjPlttData[plttID * 16];
+    p->afterimages[i].pltt = pltt;
   }
-#else
-  INCFUNC("asm/func/FUN_08028790.inc");
-#endif
 }
 
 void FUN_08028818(Ringo* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Remove(&p->sprites_8f4[i]);
+    MainSprite_Remove(&p->afterimages[i]);
   }
 }
 
-// 残差は plttID を受けるレジスタと gObjPlttData の読み込み位置 (126/126)
-NON_MATCH void FUN_08028838(Ringo* p, s32 kind, u32 duration) {
-#ifdef NONMATCHING_C
+void Ringo_SpawnAfterimage(Ringo* p, s32 kind, u32 duration) {
   u32 plttID;
+  rgb555* pltt;
 
-  p->sprites_8f4[p->unk_8e6].flags &= ~SPRFLAG_HIDDEN;
-  FUN_0822f588(&p->sprites_8f4[p->unk_8e6], &p->sprites[0], 9);
-  if (p->unk_8e6 & 1) {
-    p->sprites_8f4[p->unk_8e6].flags |= SPRFLAG_BLINK_ODD;
+  p->afterimages[p->afterimageIdx].flags &= ~SPRFLAG_HIDDEN;
+  FUN_0822f588(&p->afterimages[p->afterimageIdx], &p->sprites[0], 9);
+  if (p->afterimageIdx & 1) {
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_ODD;
   } else {
-    p->sprites_8f4[p->unk_8e6].flags |= SPRFLAG_BLINK_EVEN;
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_EVEN;
   }
-  p->sprites_8f4[p->unk_8e6].pos = p->sprites[0].pos;
-  p->unk_8ee[p->unk_8e6] = duration;
-  p->unk_8e8[p->unk_8e6] = 12;
+  p->afterimages[p->afterimageIdx].pos = p->sprites[0].pos;
+  p->unk_8ee[p->afterimageIdx] = duration;
+  p->afterimageTimers[p->afterimageIdx] = 12;
   switch (kind) {
     case 1: {
       plttID = 0xC8;
@@ -708,14 +701,12 @@ NON_MATCH void FUN_08028838(Ringo* p, s32 kind, u32 duration) {
       break;
     }
   }
-  p->sprites_8f4[p->unk_8e6].pltt = &gObjPlttData[plttID * 16];
-  if (++p->unk_8e6 > 2) {
-    p->unk_8e6 = 0;
+  pltt = &gObjPlttData[plttID * 16];
+  p->afterimages[p->afterimageIdx].pltt = pltt;
+  if (++p->afterimageIdx > 2) {
+    p->afterimageIdx = 0;
   }
   p->unk_8e4 = 0;
-#else
-  INCFUNC("asm/func/FUN_08028838.inc");
-#endif
 }
 
 // src を dy だけ上下にずらした位置を dst に入れる
@@ -725,19 +716,20 @@ void FUN_08028960(Ringo* p) {
 
   Vec3_CopyOffsetY(&target, &p->unk_868, -0x80);
   for (i = 0; i < 3; i++) {
-    if (p->unk_8e8[i] != 0) {
+    if (p->afterimageTimers[i] != 0) {
       if (p->unk_8ee[i] == 1) {
-        LerpVec3(&p->sprites_8f4[i].pos, &p->sprites_8f4[i].pos, &target, 16, 6);
+        LerpVec3(&p->afterimages[i].pos, &p->afterimages[i].pos, &target, 16, 6);
       }
-      if (--p->unk_8e8[i] == 0) {
-        p->sprites_8f4[i].flags |= SPRFLAG_HIDDEN;
+      if (--p->afterimageTimers[i] == 0) {
+        p->afterimages[i].flags |= SPRFLAG_HIDDEN;
       }
     }
   }
   p->unk_8e4++;
 }
 
-void FUN_08028a04(Ringo* p) {
+// 掴んだプレイヤーから吸った血を体の前に 4 つ飛ばす
+void Ringo_SpawnBiteBlood(Ringo* p) {
   Mover* mover = &p->base.mover;
   Vec3 ofs;
   s32 i;
@@ -1176,18 +1168,14 @@ void FUN_08029b40(Ringo* p) {
   }
 }
 
-// 残差1命令 (31/30): 原典は plttID に入れた 0xC1 のレジスタを lsls #5 して gObjPlttData の添字に使い回すが, こちらは作り直す, static inline の引数にしても変わらない
-NON_MATCH void FUN_08029c2c(Ringo* p) {
-#ifdef NONMATCHING_C
+// sprite_fe0 に 22 番のアニメを流してパレット 0xC1 にする
+void FUN_08029c2c(Ringo* p) {
   MainSprite* sprite = &p->sprite_fe0;
 
   MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_LOOP, 0);
   sprite->plttID = 0xC1;
-  sprite->pltt = &gObjPlttData[0xC1 * 16];
+  sprite->pltt = &gObjPlttData[sprite->plttID * 16];
   p->unk_fd4 = TRUE;
-#else
-  INCFUNC("asm/func/FUN_08029c2c.inc");
-#endif
 }
 
 void FUN_08029c74(Ringo* p) {
@@ -1200,19 +1188,15 @@ void FUN_08029c74(Ringo* p) {
   p->unk_fd6 = FALSE;
 }
 
-// 残差は FUN_08029c2c と同じ (35/34): 原典は plttID に入れた 0xC1 のレジスタを lsls #5 して使い回す
-NON_MATCH void FUN_08029cc8(Ringo* p) {
-#ifdef NONMATCHING_C
+// sprite_fe0 に 22 番のアニメを流してパレット 0xC1 にする
+void FUN_08029cc8(Ringo* p) {
   MainSprite* sprite = &p->sprite_fe0;
 
   MainSprite_SetAnim(sprite, &p->gfx, 22, PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
   sprite->plttID = 0xC1;
-  sprite->pltt = &gObjPlttData[0xC1 * 16];
+  sprite->pltt = &gObjPlttData[sprite->plttID * 16];
   p->unk_fd5 = FALSE;
   p->unk_fd6 = TRUE;
-#else
-  INCFUNC("asm/func/FUN_08029cc8.inc");
-#endif
 }
 
 void Ringo_InitAuxSprites(Ringo* p) {
@@ -1616,36 +1600,36 @@ NON_MATCH void Ringo_PollMessages(Ringo* p) {
 }
 
 void Ringo_InitHitbox(Ringo* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08028050, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
 }
 
 void Ringo_InitHitbox2(Ringo* p) {
-  HitboxData* hitbox = &p->hitbox2;
+  Hitbox* hitbox = &p->hitbox2;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.563), Q8(0.5), Q8(0.563));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08028050, p);
   Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
 }
 
 void Ringo_InitHurtbox(Ringo* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Ringo_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);
@@ -1653,12 +1637,12 @@ void Ringo_InitHurtbox(Ringo* p, u32 power) {
 }
 
 void Ringo_InitHurtbox2(Ringo* p) {
-  HitboxData* hurtbox = &p->hurtbox2;
+  Hitbox* hurtbox = &p->hurtbox2;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(1), Q8(0.5), Q8(1));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_0802802c, p);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
@@ -1766,18 +1750,18 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     p->unk_188--;
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
-    p->hurtbox2.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
+    p->hurtbox2.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->sprites[0].pos, 0);
     p->hurtbox.angle = mover->angle;
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_19)) {
-    p->hurtbox2.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox2.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox2, &p->sprites[0].pos, 0);
   } else {
-    p->hurtbox2.flags |= HBFLAG_HIDDEN;
+    p->hurtbox2.flags |= HBF_HIDDEN;
   }
   if (!TEST_FLAGS(boss->flags, BOSSFLAG_NO_HITBOX)) {
     Hitbox_SetPos(&p->hitbox, &p->sprites[0].pos, 0);
@@ -1899,10 +1883,10 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
     if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(boss->flags, BOSSFLAG_UNK_24) && !(gPlayerModes[0] & PMODE_DEAD)) {
       if (!p->unk_880) {
         p->unk_880 = TRUE;
-        p->unk_884 = 0;
+        p->cameraDist = 0;
         p->unk_886 = 0;
       }
-      FUN_08028388(p);
+      Ringo_UpdateCamera(p);
       if (++p->unk_886 > 128) {
         p->unk_886 = 128;
       }
@@ -1950,7 +1934,7 @@ NON_MATCH void FUN_0802b074(Ringo* p) {
               CreateDamageNumber(&p->hurtbox, dmg, 1, &boss->mover.pos, &ofs2, 1);
             }
           }
-          FUN_08028a04(p);
+          Ringo_SpawnBiteBlood(p);
           PlaySound_0824078c(SONG_844);
         }
         anim = FUN_08028ec8(p);
@@ -3316,7 +3300,7 @@ void FUN_0802e6ac(Boss* boss, s32 timer) {
     }
     Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
-      FUN_08028838(p, 0, 0);
+      Ringo_SpawnAfterimage(p, 0, 0);
     }
     if (p->unk_840 < p->unk_842) {
       FUN_08028648(p);
@@ -3353,7 +3337,7 @@ NON_MATCH void FUN_0802e8d0(Boss* boss, s32 timer) {
       mover->pos.y = ofs.y + p->unk_854.y;
       mover->pos.z = ofs.z + p->unk_854.z;
       if (p->unk_8e4 > 3) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       }
     }
     if (timer > 15) {
@@ -3365,7 +3349,7 @@ NON_MATCH void FUN_0802e8d0(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は p と &boss->flags の r4 / r5 が入れ替わるだけ (239/239)
+// 残差は p と &boss->flags の r4 / r5 が入れ替わるだけ (239/239), 試済: Ringo* で受けて Boss* boss = &p->base (p が別のレジスタに移るだけ), 片方の SET_FLAGS を p->base.flags にする (240)
 NON_MATCH void FUN_0802eac0(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -3391,7 +3375,7 @@ NON_MATCH void FUN_0802eac0(Boss* boss, s32 timer) {
     }
     Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
-      FUN_08028838(p, 0, 0);
+      Ringo_SpawnAfterimage(p, 0, 0);
     }
     if (p->unk_840 < p->unk_842) {
       FUN_08028648(p);
@@ -3547,9 +3531,9 @@ void FUN_0802f368(Boss* boss, s32 timer) {
     Vec3_SetPolar(&mover->delta, mover->angle, 40);
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     if (timer > 159) {
@@ -3558,11 +3542,11 @@ void FUN_0802f368(Boss* boss, s32 timer) {
   }
 }
 
-// 1 回目で打ち切り, 残差は timer と mover のレジスタ (148/148)
+// 148/148 命令, mover を p より先に宣言すると割り当ては揃い, p の写し (adds r7, r4) が mover の後ろに回る1命令だけ残る (FUN_08033b28 と同じ壁), 試済: delta を boss->mover から取る, mover を p->base から取る, Ringo* で受けて Boss* boss = &p->base
 NON_MATCH void FUN_0802f4a8(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
-  Ringo* p = (Ringo*)boss;
   Mover* mover = &boss->mover;
+  Ringo* p = (Ringo*)boss;
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
@@ -3681,7 +3665,7 @@ NON_MATCH void FUN_0802f5e8(Boss* boss, s32 timer) {
 #endif
 }
 
-// 残差は dir の計算 (156/155): 原典は 4 方向に丸めた角度を符号なしで >> 5 し, & 7 の結果を定数側のレジスタに置く (FUN_0803446c と同じ壁)
+// 残差は dir の格納 (156/155): 原典は & 7 の結果を定数側のレジスタに置き, dir の番地 + 0xA で isCutscene を読む (FUN_0803446c と同じ壁), u32 にして >> 5 の符号は揃えた, 試済: u8 キャスト (畳まれる), Angle_ToDir8, dir の setter inline
 NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -3689,7 +3673,7 @@ NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    boss->dir = ((((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
+    boss->dir = (((u32)((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
     Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -3698,9 +3682,9 @@ NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
     }
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     if (timer > 59) {
@@ -3884,7 +3868,7 @@ NON_MATCH void FUN_08030148(Boss* boss, s32 timer) {
         FUN_080286d8(p);
         Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
         if (p->unk_8e4 > 3) {
-          FUN_08028838(p, 0, 0);
+          Ringo_SpawnAfterimage(p, 0, 0);
         }
       } else {
         p->phaseTimer = 0;
@@ -4023,7 +4007,7 @@ NON_MATCH void FUN_08030680(Boss* boss, s32 timer) {
         FUN_080286d8(p);
         Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_KEEP_FRAME);
         if (p->unk_8e4 > 3) {
-          FUN_08028838(p, 0, 0);
+          Ringo_SpawnAfterimage(p, 0, 0);
         }
       } else {
         Mover* mover = &p->base.mover;
@@ -4162,16 +4146,16 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
     p->unk_16f = (RandomNext() & 15) + 60;
     p->unk_170 = 0;
     Ringo_SetHurtboxPower(p, p->hurtboxPower2);
-    p->hurtbox.flags &= ~HBFLAG_ANGLE;
+    p->hurtbox.flags &= ~HBF_ANGLE;
   }
   if (boss->damageCallback(boss)) {
     Ringo_SetHurtboxPower(p, p->hurtboxPower);
-    p->hurtbox.flags |= HBFLAG_ANGLE;
+    p->hurtbox.flags |= HBF_ANGLE;
     return;
   }
   if (boss->stateRequestCallback(boss)) {
     Ringo_SetHurtboxPower(p, p->hurtboxPower);
-    p->hurtbox.flags |= HBFLAG_ANGLE;
+    p->hurtbox.flags |= HBF_ANGLE;
     return;
   }
   if (TEST_FLAGS(boss->flags, BOSSFLAG_UNK_17)) {
@@ -4677,7 +4661,7 @@ NON_MATCH void FUN_08032180(Boss* boss, s32 timer) {
         hp = boss->hp;
         Boss_SetHP(boss, hp + damage);
         if (hp != boss->hp) {
-          HitboxData* hurtbox = &p->hurtbox;
+          Hitbox* hurtbox = &p->hurtbox;
           Vec3 ofs;
 
           VEC3_SET(ofs, Q8(0.063), 0, Q8(0.063));
@@ -5188,7 +5172,7 @@ void FUN_080335e8(Boss* boss, s32 timer) {
 
     Ringo_UpdateHover(p, timer);
     if (p->unk_8e4 > 3) {
-      FUN_08028838(p, 0, 0);
+      Ringo_SpawnAfterimage(p, 0, 0);
     }
     target = &p->unk_84c;
     dx = target->x - mover->pos.x;
@@ -5276,7 +5260,7 @@ void FUN_08033970(Boss* boss, s32 timer) {
   }
 }
 
-// 1 回目で打ち切り (139/145), FUN_08033c60 と同じ 0 : 5 の三項演算子の畳み込みが主
+// 145/145 命令, 残差は timer と mover の r6 / r7 が入れ替わるだけ, mover を p より先に宣言すると割り当ては揃うが p の写しが mover の後ろに回る, 試済: mover を後から代入, mover ローカルなし, ~timer & 3, 分岐の向き
 NON_MATCH void FUN_08033b28(Boss* boss, s32 timer) {
 #ifdef NONMATCHING_C
   Ringo* p = (Ringo*)boss;
@@ -5397,9 +5381,9 @@ void FUN_08034014(Boss* boss, s32 timer) {
 
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     target = &p->unk_84c;
@@ -5464,9 +5448,9 @@ void FUN_0803427c(Boss* boss, s32 timer) {
 
     if (p->unk_8e4 > 3) {
       if (p->unk_172 == 0) {
-        FUN_08028838(p, 0, 0);
+        Ringo_SpawnAfterimage(p, 0, 0);
       } else {
-        FUN_08028838(p, 1, 0);
+        Ringo_SpawnAfterimage(p, 1, 0);
       }
     }
     target = &p->unk_84c;
@@ -6141,7 +6125,7 @@ NON_MATCH s32 Ringo_HandleDamage(Ringo* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Mover* mover = &p->base.mover;
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   s32 damage = p->damage;
   u8 attr = p->hitBySol;
   bool32 chained;
@@ -6452,7 +6436,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   for (i = 0; i < 14; i++, src += 16, dst += 16) {
     CpuCopy32(src, dst, 32);
   }
-  FUN_08028790(p, &p->sprites[0].pos);
+  Ringo_AddAfterimages(p, &p->sprites[0].pos);
   FUN_08028dbc(p);
   Ringo_InitAuxSprites(p);
   p->plttFadeMode = -1;

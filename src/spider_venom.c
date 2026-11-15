@@ -15,7 +15,7 @@ typedef struct {
   AuxSprite sprite;   // 0x00
   AuxAnimState anim;  // 0x2C
   Vec3 vel;           // 0x3C, 毎フレーム sprite.pos に足す, y は毎フレーム 1 ずつ減る
-  HitboxData hitbox;  // 0x44
+  Hitbox hitbox;      // 0x44
   s16 flags;          // 0x94, bit5: 地形に当たって止まった
   u8 state;           // 0x96, PTR_ARRAY_085ae450 の添字, 0 は空き
   s8 idx;             // 0x97, activeMask のビット番号, 空きなら -1
@@ -48,12 +48,12 @@ void nop_081e85bc(void) {}
 
 void SpiderVenomShot_InitHitbox(SpiderVenomShot* elem, s32 power, s32 knockback, s32 iframes) {
   Vec3 size, offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   VEC3_SET(size, Q8(0.0625), Q8(1), Q8(0.0625));
   VEC3_SET(offset, 0, Q8(0.5), 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, HBATTR_POISON | HBATTR_EARTH, iframes);
   Hitbox_SetHandler(hitbox, nop_081e85bc, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);

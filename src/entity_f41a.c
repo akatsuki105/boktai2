@@ -19,7 +19,7 @@ typedef struct EntityF41A {
   AuxSprite sprite;                    // 0x060
   AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU_0
   MoverTile tile;                      // 0x0A8, mover.tile がここを指す
-  HitboxData hitbox;                   // 0x0B8
+  Hitbox hitbox;                       // 0x0B8
   AuxAnimState anim;                   // 0x108
   AuxAnimFile* animFile;               // 0x118, ANIM_BOKU
   CWolfTargetNode target;              // 0x11C, CWolfTargetManager_Register / CWolfTargetManager_Unregister
@@ -184,12 +184,12 @@ void EntityF41A_InitSprite(EntityF41A* p) {
 }
 
 void EntityF41A_InitHitbox(EntityF41A* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 size, offset;
 
   VEC3_SET(size, Q8(0.25), Q8(0.391), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.391), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, 10, 30, 0, 0, 16);
   Hitbox_SetHandler(hitbox, NULL, p);
 }

@@ -88,7 +88,7 @@ _080F855E:
 	ldrb r3, [r3]
 	ldrh r4, [r5]
 	str r4, [sp]
-	bl FUN_08240dc8
+	bl NoiseManager_FindFirstHeardNoise
 	lsls r0, r0, #0x18
 	lsrs r6, r0, #0x18
 	mov sl, r6

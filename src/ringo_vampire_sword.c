@@ -24,8 +24,8 @@ typedef struct {
   u16 speed;           // 0x00E, 1 フレームに進む距離, 飛ぶときは 40, 跳ね返りは 10
   Vec3 basePos;        // 0x010, 出現と跳ね返りの動きの基準点, sprite.pos の写し
   Vec3* target;        // 0x018, Spawn の target, 狙う先の座標
-  HitboxData hitbox;   // 0x01C, flags 0x2001, ignoreMask 0x10, 攻撃側
-  HitboxData hurtbox;  // 0x06C, flags 0x4005, ignoreMask 0x10, 被弾側
+  Hitbox hitbox;       // 0x01C, flags 0x2001, ignoreMask 0x10, 攻撃側
+  Hitbox hurtbox;      // 0x06C, flags 0x4005, ignoreMask 0x10, 被弾側
   AuxSprite sprite;    // 0x0BC, AFFINE|UNK_0, +0x1C の Vec3 を両方の Hitbox_SetPos に渡す
   AuxSpriteGfx gfx;    // 0x0E8, SPRITE_SLAVE_SWORD_AX
 } VampireSword;
@@ -81,7 +81,7 @@ VampireSword* VampireSwordManager_FindFree(VampireSwordManager* p, u32* outIndex
 }
 
 // 当たったら状態5 (被弾) へ入れ直して効果音を鳴らす
-void VampireSword_OnHurt(HitboxData* a, HitboxData* b, VampireSword* owner) {
+void VampireSword_OnHurt(Hitbox* a, Hitbox* b, VampireSword* owner) {
   VampireSword_SetState(owner, 5);
   PlaySound_082406e0(SONG_368);
 }
@@ -96,7 +96,7 @@ NON_MATCH s32 VampireSword_Init(VampireSwordManager* p, VampireSword* elem, s32 
   AuxSprite* sprite;
   AuxSpriteGfx* gfx;
   Vec3* pos;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   Vec3 halfSize, offset;
 
   VampireSword_SetState(elem, 1);
@@ -114,7 +114,7 @@ NON_MATCH s32 VampireSword_Init(VampireSwordManager* p, VampireSword* elem, s32 
   hitbox = &elem->hurtbox;
   VEC3_SET(halfSize, 64, 240, 64);
   VEC3_SET(offset, 0, 120, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_HIDDEN | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HURTBOX | HBF_HIDDEN | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_SetHandler(hitbox, VampireSword_OnHurt, elem);
   Hitbox_SetPowerAndAttributes(hitbox, p->power, 0, 0);
@@ -123,7 +123,7 @@ NON_MATCH s32 VampireSword_Init(VampireSwordManager* p, VampireSword* elem, s32 
   hitbox = &elem->hitbox;
   VEC3_SET(halfSize, 32, 240, 32);
   VEC3_SET(offset, 0, 120, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_SetHandler(hitbox, VampireSword_OnHit, elem);
   Hitbox_SetAttack(hitbox, p->attackID, 30, 0, HBATTR_17, 5);
@@ -140,11 +140,11 @@ s32 VampireSword_Destroy(VampireSwordManager* p, VampireSword* elem, s32 index) 
 
 // 枠を片付けて使用中ビットを落とす, 原典は return を書き忘れている
 s32 VampireSword_Release(VampireSwordManager* p, VampireSword* elem, s32 index) {
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   elem->sprite.flags |= SPRFLAG_HIDDEN;
   hitbox = &elem->hurtbox;
-  hitbox->flags |= HBFLAG_HIDDEN;
+  hitbox->flags |= HBF_HIDDEN;
   p->activeMask &= ~(1 << index);
 }
 
@@ -196,12 +196,12 @@ void VampireSword_StateAim(VampireSwordManager* p, VampireSword* elem, s32 index
   AuxSprite* sprite = &elem->sprite;
 
   if (elem->stateEntered != 0) {
-    HitboxData* hitbox;
+    Hitbox* hitbox;
 
     elem->stateEntered = FALSE;
     elem->angle = elem->moveAngle;
     hitbox = &elem->hurtbox;
-    CLEAR_FLAGS(hitbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hitbox->flags, HBF_HIDDEN);
   }
   if (elem->timer < 32) {
     if ((elem->timer & 7) < 4) {
@@ -226,13 +226,13 @@ void VampireSword_StateFly(VampireSwordManager* p, VampireSword* elem, s32 index
   Vec3 ofs;
 
   if (elem->stateEntered != 0) {
-    HitboxData* hitbox;
+    Hitbox* hitbox;
 
     elem->stateEntered = FALSE;
     elem->angle = elem->moveAngle;
     elem->speed = 40;
     hitbox = &elem->hurtbox;
-    CLEAR_FLAGS(hitbox->flags, HBFLAG_HIDDEN);
+    CLEAR_FLAGS(hitbox->flags, HBF_HIDDEN);
     PlaySound_082406e0(SONG_362);
   }
   Vec3_SetPolar(&ofs, elem->moveAngle, elem->speed);
@@ -252,11 +252,11 @@ void VampireSword_StateFly(VampireSwordManager* p, VampireSword* elem, s32 index
 // 0x20 フレーム経ったら枠を片付ける
 void VampireSword_StateVanish(VampireSwordManager* p, VampireSword* elem, s32 index) {
   if (elem->stateEntered != 0) {
-    HitboxData* hitbox;
+    Hitbox* hitbox;
 
     elem->stateEntered = FALSE;
     hitbox = &elem->hurtbox;
-    hitbox->flags |= HBFLAG_HIDDEN;
+    hitbox->flags |= HBF_HIDDEN;
     elem->plttWanted = 0;
   }
   if (elem->timer >= 32) {
@@ -272,14 +272,14 @@ void VampireSword_StateBounce(VampireSwordManager* p, VampireSword* elem, s32 in
   Vec3 ofs;
 
   if (elem->stateEntered != 0) {
-    HitboxData* hitbox;
+    Hitbox* hitbox;
 
     elem->stateEntered = FALSE;
     elem->speed = 10;
     elem->moveAngle += 0x80;
     elem->basePos = sprite->pos;
     hitbox = &elem->hurtbox;
-    hitbox->flags |= HBFLAG_HIDDEN;
+    hitbox->flags |= HBF_HIDDEN;
     elem->plttWanted = 0;
   }
   Vec3_SetPolar(&ofs, elem->moveAngle, elem->speed);
@@ -382,7 +382,7 @@ s32 VampireSwordManager_Spawn(VampireSwordManager* p, Vec3* pos, u32 kind, Vec3*
   VampireSword* elem = VampireSwordManager_FindFree(p, &index);
   s32 angle;
   AuxSprite* sprite;
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
 
   if (elem == NULL) {
     return -1;
@@ -415,7 +415,7 @@ s32 VampireSwordManager_Spawn(VampireSwordManager* p, Vec3* pos, u32 kind, Vec3*
   Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
   hurtbox = &elem->hurtbox;
   Hitbox_SetPos(hurtbox, &elem->sprite.pos, 0);
-  hurtbox->flags |= HBFLAG_HIDDEN;
+  hurtbox->flags |= HBF_HIDDEN;
   elem->plttState = 0;
   elem->plttWanted = 0;
   elem->duration = delay;

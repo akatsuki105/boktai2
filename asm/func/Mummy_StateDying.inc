@@ -237,7 +237,7 @@ _08124EB4:
 	str r2, [sp]
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_08240cc4
+	bl NoiseManager_AddNoiseWithFlags
 	b _08125090
 	.align 2, 0
 _08124EE0: .4byte 0xFFFEBE3F

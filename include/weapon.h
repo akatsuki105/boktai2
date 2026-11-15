@@ -4,8 +4,6 @@
 #include "gba/gba.h"
 #include "types.h"
 
-#define WEAPONS(slot) (gStat->weapons + slot)
-
 struct Player;
 
 #define WEAPON_EFFECT_SLOT_COUNT 3  // 武器には3つまで特殊効果を付与できる

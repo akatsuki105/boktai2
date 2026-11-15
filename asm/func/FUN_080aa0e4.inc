@@ -128,7 +128,7 @@ _080AA1AE:
 	lsls r2, r2, #1
 	adds r0, r5, r2
 	adds r0, r0, r6
-	ldr r1, _080AA204 @ =FUN_080aa08c
+	ldr r1, _080AA204 @ =Entity080aace8_UpdateParticle
 	str r1, [r0]
 	movs r2, #0x3c
 	add ip, r2
@@ -144,4 +144,4 @@ _080AA1AE:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080AA204: .4byte FUN_080aa08c
+_080AA204: .4byte Entity080aace8_UpdateParticle

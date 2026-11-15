@@ -174,16 +174,16 @@ static inline bool8 Ghost_TestFlagsAt(GhostFlags* flags, GhostFlags bit) {
 }
 
 // 攻撃がプレイヤーに当たったら取り憑く, 判定を隠してプレイヤーを遅くし, 3 フレームだけ姿を見せる
-// 109/108命令, 残差は 2 つの判定に HBFLAG_HIDDEN を立てる所のレジスタと命令数だけ, 試済: Hitbox_SetFlags と直書き, TEST_FLAGS / Enemy_GetFlag3, 取り憑き中の判定が空の if で残る形
-NON_MATCH void Ghost_OnHit(HitboxData* a, HitboxData* b, Ghost* p) {
+// 109/108命令, 残差は 2 つの判定に HBF_HIDDEN を立てる所のレジスタと命令数だけ, 試済: Hitbox_SetFlags と直書き, TEST_FLAGS / Enemy_GetFlag3, 取り憑き中の判定が空の if で残る形
+NON_MATCH void Ghost_OnHit(Hitbox* a, Hitbox* b, Ghost* p) {
 #ifdef NONMATCHING_C
   if (!Enemy_IsDead(&p->e) && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_14) && b->ignoreMask == HIM_0) {
     Ghost* q = (p->e).owner;
 
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 0, 2, 0);
-    Hitbox_SetFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
-    Hitbox_SetFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hitbox, HBF_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hurtbox, HBF_HIDDEN);
     CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8);
     if (Ghost_TestFlags(q, GHOSTFLAG_POSSESSING)) {
     }
@@ -199,7 +199,7 @@ NON_MATCH void Ghost_OnHit(HitboxData* a, HitboxData* b, Ghost* p) {
 
 // 食らい判定, ENEFLAG3_UNK_14 の間は食らわない, あとは敵共通の処理
 // 774/774命令, 残差は先頭で見た flags3 のアドレスを Enemy_HandleHurt の中でも使い回す点 (EnemyBat_OnHurt / Crow_OnHurt と同じ共通 inline の壁), 試済: TEST_FLAGS / Enemy_GetFlag3 / & の直書き
-NON_MATCH void Ghost_OnHurt(HitboxData* a, HitboxData* b, Ghost* p) {
+NON_MATCH void Ghost_OnHurt(Hitbox* a, Hitbox* b, Ghost* p) {
 #ifdef NONMATCHING_C
   if (Enemy_IsDead(&p->e)) {
     return;
@@ -207,7 +207,7 @@ NON_MATCH void Ghost_OnHurt(HitboxData* a, HitboxData* b, Ghost* p) {
   if ((p->e).flags3 & ENEFLAG3_UNK_14) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+  if (Hitbox_TestFlags(a, HBF_BLOCK)) {
     return;
   }
   Enemy_HandleHurt(a, b, &p->e);
@@ -575,7 +575,7 @@ NON_MATCH void Ghost_StateDying(Ghost* p) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
     Ghost_RestorePlayerSpeed(p);
     if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_14)) {
       Vec3 pos[3];
@@ -783,7 +783,7 @@ NON_MATCH void Ghost_StateRam(Ghost* p) {
   }
   Vec3_Diff(&d, &q->curvePoints[q->curvePointIdx], &(p->e).mover.pos);
   if (!Ghost_TestFlags(q, GHOSTFLAG_FLEE)) {
-    (p->e).hitbox.flags &= ~HBFLAG_HIDDEN;
+    (p->e).hitbox.flags &= ~HBF_HIDDEN;
   }
   Ghost_SpawnAfterimage(p);
   if (d.x * d.x + d.z * d.z > 1024) {
@@ -796,7 +796,7 @@ NON_MATCH void Ghost_StateRam(Ghost* p) {
     (p->e).mover.pos.x = q->curvePointsEnd.x;
     (p->e).mover.pos.z = q->curvePointsEnd.z;
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
-    (p->e).hitbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hitbox.flags |= HBF_HIDDEN;
     if (Ghost_TestFlags(q, GHOSTFLAG_FLEE)) {
       Enemy_ResetState(&p->e, 0, 0, 0);
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -828,7 +828,7 @@ void Ghost_OnDetachMsg(Ghost* p, u16* msg) {
   if (!Enemy_IsDead(&p->e) && Ghost_TestFlags((p->e).owner, GHOSTFLAG_POSSESSING)) {
     Enemy_ResetState(&p->e, 0, 0, 3);
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
   }
 }
 
@@ -909,7 +909,7 @@ void Ghost_InitHitboxes(Ghost* p) {
   Enemy_RegisterHurtbox(&p->e, &size, &offset, Ghost_OnHurt, p);
   VEC3_SET(size, 24, 64, 24);
   VEC3_SET(offset, 0, 0, 0);
-  flags = HBFLAG_HITBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0;
+  flags = HBF_HITBOX | HBF_SENSOR | HBF_DAMAGE;
   Hitbox_Init(&(p->e).hitbox, (p->e).mover.id, flags, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(&(p->e).hitbox, 0, 0, 0, 0, 0);
   Hitbox_SetPos(&(p->e).hitbox, &(p->e).mover.pos, 0);
@@ -1009,7 +1009,7 @@ void Ghost_ResumeHover(Ghost* p) {
 
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   CLEAR_FLAGS(q->flags, GHOSTFLAG_UNK_0 | GHOSTFLAG_CHASING);
-  (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
+  (p->e).hurtbox.flags &= ~HBF_HIDDEN;
   if (Ghost_TestFlagsAt(&q->flags, GHOSTFLAG_POSSESSING)) {
     gPlayerPtr[0]->speedPenalty -= 3;
     CLEAR_FLAGS(q->flags, GHOSTFLAG_POSSESSING);
@@ -1311,10 +1311,10 @@ void Ghost_RestorePlayerSpeed(Ghost* p) {
 }
 
 // 太陽ゲージが 1 以上なら消え始め, 0 なら現れ始める (雷の間と千里眼の実の効果中は見える), 続けて点滅や追跡の判定と高さ合わせを行う
-// 257/258命令, 残差は千里眼の実の判定で TRUE / FALSE を作る形と, 攻撃判定に HBFLAG_HIDDEN を立てる ldrh の位置, 試済: Hitbox_SetFlags, 枝の向き, 明るさの s16 / s32, 空の IsLinkPlay 判定, see を FALSE で始める形
+// 257/258命令, 残差は千里眼の実の判定で TRUE / FALSE を作る形と, 攻撃判定に HBF_HIDDEN を立てる ldrh の位置, 試済: Hitbox_SetFlags, 枝の向き, 明るさの s16 / s32, 空の IsLinkPlay 判定, see を FALSE で始める形
 NON_MATCH s32 Ghost_PreUpdate(Ghost* p) {
 #ifdef NONMATCHING_C
-  Hitbox_SetFlags(&(p->e).hitbox, HBFLAG_HIDDEN);
+  Hitbox_SetFlags(&(p->e).hitbox, HBF_HIDDEN);
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_14)) {
     if (Ghost_TestFlags((p->e).owner, GHOSTFLAG_UNK_9)) {
       (p->e).s->aux.spr.flags |= SPRFLAG_HIDDEN;
@@ -1374,7 +1374,7 @@ s32 Ghost_PostUpdate(Ghost* p) {
   Ghost_TickAfterimages(p);
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_5)) {
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
-      if (!((p->e).hitbox.flags & HBFLAG_HIDDEN)) {
+      if (!((p->e).hitbox.flags & HBF_HIDDEN)) {
         Hitbox_SetPos(&(p->e).hitbox, &(p->e).mover.pos, 0);
         Hitbox_Register(&(p->e).hitbox);
       }
@@ -1410,7 +1410,7 @@ NON_MATCH void Ghost_StatePossess(Ghost* p) {
     PlaySound_082406e0(SONG_972);
     Enemy_ResetState(&p->e, 0, 0, 3);
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
   }
 #else
   INCFUNC("asm/func/Ghost_StatePossess.inc");
@@ -1585,7 +1585,7 @@ void Ghost_StateWaitTalk(Ghost* p) {
     Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
   }
   (p->e).mover.angle = (p->e).playerAngle;
-  if ((gInput[0].pressed & A_BUTTON) && (p->e).playerDistSq < q->talkDistSq && !(gGameFlags & GAMEFLAG_EVENT) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
+  if ((gInput[0].pressed & A_BUTTON) && (p->e).playerDistSq < q->talkDistSq && !(gGameFlags & GAMEFLAG_CUTSCENE) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
     Enemy_ResetState(&p->e, 2, 0, 0);
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     VM_ExecByID(q->talkScriptID, NULL);
@@ -1978,7 +1978,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -2063,6 +2063,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
 #endif
 }
 
+// 0xCCD3, HashName("ゴースト")
 void Ghost_Create(void) {
   Ghost* p = Malloc(sizeof(Ghost));
 

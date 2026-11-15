@@ -558,6 +558,7 @@ s32 SolarBank_Init(SolarBank* p) {
   return 0;
 }
 
+// 0x7F5E, HashName("太陽バンク")
 SolarBank* SolarBank_Create(u32 unused1, u32 unused2) {
   SolarBank* p = CreateEntity(ENTITY_UNK_11, sizeof(SolarBank));
 

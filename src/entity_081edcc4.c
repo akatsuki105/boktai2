@@ -12,18 +12,18 @@
 // 不使用?
 
 typedef struct {
-  Mover mover;        // 0x00, id は 0x0309 + idx
-  AuxSprite sprite;   // 0x44, mover の sprite に結びつけるが AuxSprite_Add されない
-  Vec3 pos;           // 0x70, 毎フレーム vel を足してタイルの高さに合わせる
-  Vec3 vel;           // 0x78
-  HitboxData hitbox;  // 0x80
-  s16 count;          // 0xD0, 動くたびに 1 減り, 0 になると状態 2 で片付く
-  u8 kind;            // 0xD2, 2 なら hitbox の属性が変わり, 移動のたびに周りへ Entity081eee80_Spawn を8個出す
-  u8 unk_d3;          // 0xD3
-  u16 tileIdx;        // 0xD4, pos のタイル番号
-  s8 idx;             // 0xD6, elems の添字, 空きは -1
-  u8 state;           // 0xD7, PTR_ARRAY_085ae4bc の添字
-  u16 timer;          // 0xD8, 0 になるまで動かない
+  Mover mover;       // 0x00, id は 0x0309 + idx
+  AuxSprite sprite;  // 0x44, mover の sprite に結びつけるが AuxSprite_Add されない
+  Vec3 pos;          // 0x70, 毎フレーム vel を足してタイルの高さに合わせる
+  Vec3 vel;          // 0x78
+  Hitbox hitbox;     // 0x80
+  s16 count;         // 0xD0, 動くたびに 1 減り, 0 になると状態 2 で片付く
+  u8 kind;           // 0xD2, 2 なら hitbox の属性が変わり, 移動のたびに周りへ Entity081eee80_Spawn を8個出す
+  u8 unk_d3;         // 0xD3
+  u16 tileIdx;       // 0xD4, pos のタイル番号
+  s8 idx;            // 0xD6, elems の添字, 空きは -1
+  u8 state;          // 0xD7, PTR_ARRAY_085ae4bc の添字
+  u16 timer;         // 0xD8, 0 になるまで動かない
 } Entity081edcc4Elem;
 static_assert(sizeof(Entity081edcc4Elem) == 220);
 
@@ -1909,7 +1909,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
 #endif
 }
 
-static void Entity081edcc4Elem_OnHit(HitboxData* a, HitboxData* b, Entity081edcc4Elem* elem) {}
+static void Entity081edcc4Elem_OnHit(Hitbox* a, Hitbox* b, Entity081edcc4Elem* elem) {}
 
 // from と to が離れていれば中間点に Entity081eb2f0_Spawn で置けるかを確かめる
 static bool8 Entity081edcc4_CanReach(Vec3* from, Vec3* to, u32 param_3) {
@@ -2053,7 +2053,7 @@ NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s3
 #ifdef NONMATCHING_C
   Entity081edcc4* p;
   Entity081edcc4Elem* elem;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
@@ -2081,11 +2081,11 @@ NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s3
   VEC3_SET(halfSize, 64, 64, 64);
   VEC3_SET(offset, 0, 64, 0);
   if (elem->kind == 2) {
-    Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, power, knockback, 0x40, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);
+    Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);
   } else {
-    Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, power, knockback, 0x10, 0, iframes);
+    Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_GUN, 0, iframes);
   }
   hitbox->id = elem->mover.id;
   Hitbox_SetPos(hitbox, &elem->pos, 0);

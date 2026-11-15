@@ -19,8 +19,8 @@ typedef struct {
   Vec3 pos;                // 0x014, 両方の Hitbox_SetPos に渡す
   u8 unk_1c[0x44 - 0x1C];  // 0x01C, まだ未解析
   Vec3* target;            // 0x044, 向きを合わせる相手の座標
-  HitboxData hitbox;       // 0x048
-  HitboxData hurtbox;      // 0x098
+  Hitbox hitbox;           // 0x048
+  Hitbox hurtbox;          // 0x098
   AuxAnimState anim;       // 0x0E8, sprites[0] の再生状態
   AuxSprite sprites[4];    // 0x0F8, [0] は priority 1 でアニメ付き, [1..3] は priority 2, 0 と 1..3 を別のメンバにした方がいいかも？
   AuxSpriteGfx gfx;        // 0x1A8, SPRITE_DAINN_EBALL, パレット 200
@@ -57,10 +57,10 @@ Entity0805b068Elem* FUN_0805a43c(Entity0805b068* p, u32* outIdx) {
   return NULL;
 }
 
-NAKED void FUN_0805a470(HitboxData* a, HitboxData* b, Entity0805b068Elem* owner) { INCFUNC("asm/func/FUN_0805a470.inc"); }
+NAKED void FUN_0805a470(Hitbox* a, Hitbox* b, Entity0805b068Elem* owner) { INCFUNC("asm/func/FUN_0805a470.inc"); }
 
 // 当たったら状態4 (被弾) へ入れ直す
-void FUN_0805a52c(HitboxData* a, HitboxData* b, Entity0805b068Elem* owner) { Entity0805b068Elem_SetState(owner, 4); }
+void FUN_0805a52c(Hitbox* a, Hitbox* b, Entity0805b068Elem* owner) { Entity0805b068Elem_SetState(owner, 4); }
 
 NAKED s32 FUN_0805a53c(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) { INCFUNC("asm/func/FUN_0805a53c.inc"); }
 
@@ -80,21 +80,21 @@ s32 FUN_0805a6c8(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
 // 枠を片付けて使用中ビットを落とす, 原典は return を書き忘れている
 s32 FUN_0805a6ec(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
   AuxSprite* spr = &elem->sprites[0];
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   s32 i;
 
   for (i = 0; i < 4; i++, spr++) {
     spr->flags |= SPRFLAG_HIDDEN;
   }
   hitbox = &elem->hurtbox;
-  hitbox->flags |= HBFLAG_HIDDEN;
+  hitbox->flags |= HBF_HIDDEN;
   p->activeMask &= ~(1 << index);
 }
 
 NAKED void FUN_0805a728(Entity0805b068Elem* elem) { INCFUNC("asm/func/FUN_0805a728.inc"); }
 
 // sprites[1..3] を見せる
-void FUN_0805a8b0(Entity0805b068Elem* elem) {
+void Entity0805b068Elem_ShowSprites(Entity0805b068Elem* elem) {
   AuxSprite* spr = &elem->sprites[1];
   s32 i;
 
@@ -104,16 +104,13 @@ void FUN_0805a8b0(Entity0805b068Elem* elem) {
 }
 
 // sprites[1..3] を隠す
-NON_MATCH void FUN_0805a8d0(Entity0805b068Elem* elem) {
-#ifdef NONMATCHING_C
+void Entity0805b068Elem_HideSprites(Entity0805b068Elem* elem) {
+  AuxSprite* spr = &elem->sprites[1];
   s32 i;
 
-  for (i = 0; i < 3; i++) {
-    elem->sprites[1 + i].flags |= SPRFLAG_HIDDEN;
+  for (i = 0; i < 3; i++, spr++) {
+    spr->flags |= SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/FUN_0805a8d0.inc");
-#endif
 }
 
 // target の方向へ1フレーム2刻みで向きを寄せる

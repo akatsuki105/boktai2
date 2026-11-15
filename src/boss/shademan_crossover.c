@@ -32,11 +32,11 @@ typedef struct {
   u16 unk_170;                            // 0x170
   u16 unk_172;                            // 0x172
   u32 hurtWeakness;                       // 0x174, 当たってきた攻撃の weakness の控え
-  HitboxAttributes hurtAttributes;        // 0x178, 当たってきた攻撃の attributes の控え
+  HitboxAttrs hurtAttributes;             // 0x178, 当たってきた攻撃の attributes の控え
   u8 unk_17c[0x180 - 0x17C];              // 0x17C
-  HitboxData hitbox;                      // 0x180
-  HitboxData hurtbox;                     // 0x1D0, HBFLAG_HURTBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 他のボスと違って HBFLAG_ACTOR が付かない, ハンドラは ShadeManCrossover_OnHurt
-  HitboxData hitbox2;                     // 0x220
+  Hitbox hitbox;                          // 0x180
+  Hitbox hurtbox;                         // 0x1D0, HBF_HURTBOX | HBF_ANGLE | HBF_DAMAGE, 他のボスと違って HBF_ACTOR が付かない, ハンドラは ShadeManCrossover_OnHurt
+  Hitbox hitbox2;                         // 0x220
   s32 unk_270;                            // 0x270, centerPos から見た角度の 8 倍
   s32 unk_274;                            // 0x274
   s32 unk_278;                            // 0x278
@@ -123,13 +123,13 @@ typedef struct {
   u16 stateDuration;                      // 0x81C, 状態を続ける最短フレーム数
   u8 unk_81e;                             // 0x81E
   u8 unk_81f;                             // 0x81F
-  u16 unk_820;                            // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
+  u16 cameraDist;                         // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
   u16 unk_822;                            // 0x822
   u16 unk_824;                            // 0x824
-  u16 spriteIdx;                          // 0x826, 次に使う sprites_834 の番号, 0..2 を回す
-  u16 spriteTimers[3];                    // 0x828, 0 になった瞬間 sprites_834 の同じ番号を隠す
+  u16 afterimageIdx;                      // 0x826, 次に使う afterimages の番号, 0..2 を回す
+  u16 afterimageTimers[3];                // 0x828, 0 になった瞬間 afterimages の同じ番号を隠す
   u16 unk_82e[3];                         // 0x82E
-  MainSprite sprites_834[3];              // 0x834
+  MainSprite afterimages[3];              // 0x834
   struct Entity0805e67c* entity0805e67c;  // 0x954
   struct Entity0805ee80* entity0805ee80;  // 0x958
 } ShadeManCrossover;
@@ -271,19 +271,19 @@ void FUN_0803e68c(ShadeManCrossover*);
 void FUN_08040184(ShadeManCrossover*);
 void FUN_0803d0a4(ShadeManCrossover*);
 
-void ShadeManCrossover_OnHurt(HitboxData* a, HitboxData* b, ShadeManCrossover* p) {
+void ShadeManCrossover_OnHurt(Hitbox* a, Hitbox* b, ShadeManCrossover* p) {
   Boss* boss = &p->base;
   u32 weakness;
-  HitboxAttributes attributes;
+  HitboxAttrs attributes;
 
   Hitbox_ApplyDamage(a, b);
   p->damage = b->damage;
-  if (TEST_FLAGS(a->flags, HBFLAG_ANGLE)) {
+  if (TEST_FLAGS(a->flags, HBF_ANGLE)) {
     p->hurtAngle = a->angle;
   } else {
     p->hurtAngle = ArcTan2_8(b->center.x - a->center.x, b->center.z - a->center.z);
   }
-  weakness = a->weakness;
+  weakness = a->typeMask;
   Boss_SetWeaponExpMask(boss, weakness);
   attributes = a->attributes;
   Boss_SetHurtAttributes(boss, attributes);
@@ -316,19 +316,20 @@ s32 FUN_0803c274(ShadeManCrossover* p, Vec3* out) {
   Vec3_Add(out, &mover->pos);
 }
 
-void FUN_0803c328(ShadeManCrossover* p) {
+// プレイヤーとの距離に応じて, カメラをプレイヤーから自分の方へずらした位置に置く
+void ShadeManCrossover_UpdateCamera(ShadeManCrossover* p) {
   Mover* mover = &p->base.mover;
   Vec3* target = p->base.playerPos[0];
   s32 dist = Sqrt(p->base.playerDistSq[0]) >> 5;
   s32 scale;
   Vec3 pos;
 
-  if (p->unk_820 > dist) {
-    p->unk_820--;
-  } else if (p->unk_820 < dist) {
-    p->unk_820++;
+  if (p->cameraDist > dist) {
+    p->cameraDist--;
+  } else if (p->cameraDist < dist) {
+    p->cameraDist++;
   }
-  scale = 0x80 - p->unk_820;
+  scale = 0x80 - p->cameraDist;
   scale = FixToInt(7, scale * p->unk_822);
   VEC3_SET(pos, target->x - FixToInt(8, (target->x - mover->pos.x) * scale), target->y + 0x78, target->z - FixToInt(8, (target->z - mover->pos.z) * scale));
   Camera_MoveTo(&pos);
@@ -348,16 +349,14 @@ void FUN_0803c40c(Vec3* from, Vec3* to, u8* angle, u16* dist) {
   }
 }
 
-// 残差は ofs のアドレスの持ち方 (60/60), 原典は足し算で sp を 2 回写し直す
-NON_MATCH void FUN_0803c454(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
-#ifdef NONMATCHING_C
+// center から angle の向きに radius だけ離れた位置を dst に入れる
+void ShadeManCrossover_GetPolarPos(Vec3* dst, Vec3* center, u8 angle, u16 radius) {
   Vec3 ofs;
 
   Vec3_SetPolar(&ofs, angle, radius);
-  Vec3_Sum(dst, center, &ofs);
-#else
-  INCFUNC("asm/func/FUN_0803c454.inc");
-#endif
+  dst->x = center->x + ofs.x;
+  dst->y = center->y + ofs.y;
+  dst->z = center->z + ofs.z;
 }
 
 void FUN_0803c4d4(ShadeManCrossover* p, Vec3* target, u32 duration) {
@@ -406,7 +405,7 @@ void FUN_0803c5d0(ShadeManCrossover* p) {
   p->unk_270 &= 0xFFFF;
 }
 
-void FUN_0803c660(ShadeManCrossover* p) { FUN_0803c454(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_270), p->unk_27c >> 8); }
+void FUN_0803c660(ShadeManCrossover* p) { ShadeManCrossover_GetPolarPos(&p->base.mover.pos, &p->centerPos, FixToInt(8, p->unk_270), p->unk_27c >> 8); }
 
 // 残差は playerPos の読み方 (39/40), 原典は読んだ値を別のレジスタに写してから使い 0 を r5 に作り直す
 NON_MATCH s32 FUN_0803c6a0(ShadeManCrossover* p, Vec3* min, Vec3* max) {
@@ -429,17 +428,18 @@ NON_MATCH s32 FUN_0803c6a0(ShadeManCrossover* p, Vec3* min, Vec3* max) {
 #endif
 }
 
-void FUN_0803c6f0(ShadeManCrossover* p, Vec3* pos) {
+// 残像のスプライト 3 枚を隠したまま追加する
+void ShadeManCrossover_AddAfterimages(ShadeManCrossover* p, Vec3* pos) {
   u32 plttIdx = 7;
   s32 i;
 
   for (i = 0; i < 3; i++) {
     rgb555* pltt;
 
-    MainSprite_Add(&p->sprites_834[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
-    p->sprites_834[i].plttID = 0x4300;
+    MainSprite_Add(&p->afterimages[i], &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD, 2, PLAYMODE_PAUSE, 60, pos);
+    p->afterimages[i].plttID = 0x4300;
     pltt = &gObjPlttData[plttIdx * 16];
-    p->sprites_834[i].pltt = pltt;
+    p->afterimages[i].pltt = pltt;
   }
 }
 
@@ -447,24 +447,24 @@ void ShadeManCrossover_RemoveSprites(ShadeManCrossover* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    MainSprite_Remove(&p->sprites_834[i]);
+    MainSprite_Remove(&p->afterimages[i]);
   }
 }
 
-void FUN_0803c78c(ShadeManCrossover* p, s32 kind, u32 param_3) {
+void ShadeManCrossover_SpawnAfterimage(ShadeManCrossover* p, s32 kind, u32 param_3) {
   u32 plttIdx;
   rgb555* pltt;
 
-  p->sprites_834[p->spriteIdx].flags &= ~SPRFLAG_HIDDEN;
-  FUN_0822f588(&p->sprites_834[p->spriteIdx], &p->sprite, 9);
-  if (p->spriteIdx & 1) {
-    p->sprites_834[p->spriteIdx].flags |= SPRFLAG_BLINK_ODD;
+  p->afterimages[p->afterimageIdx].flags &= ~SPRFLAG_HIDDEN;
+  FUN_0822f588(&p->afterimages[p->afterimageIdx], &p->sprite, 9);
+  if (p->afterimageIdx & 1) {
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_ODD;
   } else {
-    p->sprites_834[p->spriteIdx].flags |= SPRFLAG_BLINK_EVEN;
+    p->afterimages[p->afterimageIdx].flags |= SPRFLAG_BLINK_EVEN;
   }
-  p->sprites_834[p->spriteIdx].pos = p->sprite.pos;
-  p->unk_82e[p->spriteIdx] = param_3;
-  p->spriteTimers[p->spriteIdx] = 12;
+  p->afterimages[p->afterimageIdx].pos = p->sprite.pos;
+  p->unk_82e[p->afterimageIdx] = param_3;
+  p->afterimageTimers[p->afterimageIdx] = 12;
   switch (kind) {
     case 1: {
       plttIdx = 11;
@@ -477,9 +477,9 @@ void FUN_0803c78c(ShadeManCrossover* p, s32 kind, u32 param_3) {
     }
   }
   pltt = &gObjPlttData[plttIdx * 16];
-  p->sprites_834[p->spriteIdx].pltt = pltt;
-  if (++p->spriteIdx > 2) {
-    p->spriteIdx = 0;
+  p->afterimages[p->afterimageIdx].pltt = pltt;
+  if (++p->afterimageIdx > 2) {
+    p->afterimageIdx = 0;
   }
   p->unk_824 = 0;
 }
@@ -488,10 +488,10 @@ void FUN_0803c8b4(ShadeManCrossover* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    if (p->spriteTimers[i] != 0) {
-      p->spriteTimers[i]--;
-      if (p->spriteTimers[i] == 0) {
-        p->sprites_834[i].flags |= SPRFLAG_HIDDEN;
+    if (p->afterimageTimers[i] != 0) {
+      p->afterimageTimers[i]--;
+      if (p->afterimageTimers[i] == 0) {
+        p->afterimages[i].flags |= SPRFLAG_HIDDEN;
       }
     }
   }
@@ -629,36 +629,36 @@ void FUN_0803cc70(void) {
 }
 
 void ShadeManCrossover_InitHitbox(ShadeManCrossover* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0803c260, p);
   Hitbox_SetAttack(hitbox, p->hitboxPower, p->hitboxKnockback, 0, 0, p->hitboxUnk44);
 }
 
 void ShadeManCrossover_InitHitbox2(ShadeManCrossover* p) {
-  HitboxData* hitbox = &p->hitbox2;
+  Hitbox* hitbox = &p->hitbox2;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.563), Q8(0.5), Q8(0.563));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0803c260, p);
   Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
 }
 
 void ShadeManCrossover_InitHurtbox(ShadeManCrossover* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, ShadeManCrossover_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);
@@ -729,7 +729,7 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
 #ifdef NONMATCHING_C
   Boss* boss = &p->base;
   Mover* mover = &boss->mover;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
   s32 power;
 
   FUN_08022ec0(boss);
@@ -740,9 +740,9 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
   }
   hitbox = &p->hurtbox;
   if (TEST_FLAGS(boss->flags, BOSSFLAG_NO_HURTBOX)) {
-    Hitbox_SetFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_SetFlags(hitbox, HBF_HIDDEN);
   } else {
-    Hitbox_ClearFlags(hitbox, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox, HBF_HIDDEN);
     Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
     p->hurtbox.angle = mover->angle;
   }
@@ -850,10 +850,10 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
     if (TEST_FLAGS(boss->flags, BOSSFLAG_VISIBLE) && !TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
       if (!p->unk_81f) {
         p->unk_81f = TRUE;
-        p->unk_820 = Sqrt(boss->playerDistSq[0]) >> 5;
+        p->cameraDist = Sqrt(boss->playerDistSq[0]) >> 5;
         p->unk_822 = 0;
       }
-      FUN_0803c328(p);
+      ShadeManCrossover_UpdateCamera(p);
       p->unk_822 += 2;
       if (p->unk_822 > 128) {
         p->unk_822 = 128;
@@ -1368,9 +1368,9 @@ void FUN_0803e860(Boss* boss, s32 timer) {
     ShadeManCrossover_UpdateUnk160(p, timer);
     if (p->unk_824 > 3) {
       if (p->unk_2b4 == 1 && boss->subState2 == 11) {
-        FUN_0803c78c(p, 1, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 1, 0);
       } else {
-        FUN_0803c78c(p, 0, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 0, 0);
       }
     }
     if (p->unk_288 < p->unk_28a) {
@@ -1444,9 +1444,9 @@ void FUN_0803ebc4(Boss* boss, s32 timer) {
     }
     if (p->unk_824 > 3) {
       if (p->unk_2b4 == 1) {
-        FUN_0803c78c(p, 1, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 1, 0);
       } else {
-        FUN_0803c78c(p, 0, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 0, 0);
       }
     }
     if (timer > 159) {
@@ -1493,9 +1493,9 @@ void FUN_0803ee50(Boss* boss, s32 timer) {
     }
     if (timer < 20 && p->unk_824 > 3) {
       if (p->unk_2b4 == 1) {
-        FUN_0803c78c(p, 1, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 1, 0);
       } else {
-        FUN_0803c78c(p, 0, 0);
+        ShadeManCrossover_SpawnAfterimage(p, 0, 0);
       }
     }
     if (timer > 69) {
@@ -1989,10 +1989,10 @@ s32 ShadeManCrossover_HandleDamage(ShadeManCrossover* p) {
   u16 unk_166;
   Boss* boss = &p->base;
   Mover* mover = &boss->mover;
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   s32 damage = (s16)p->damage;
   u32 weakness;
-  HitboxAttributes attributes;
+  HitboxAttrs attributes;
 
   unk_166 = p->unk_166;
   weakness = p->hurtWeakness;
@@ -2287,7 +2287,7 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
   }
   plttIdx = ShadeManCrossover_GetPlttID(p);
   p->sprite.pltt = plttIdx == 0 ? p->pltt[0] : &gObjPlttData[plttIdx * 16];
-  FUN_0803c6f0(p, &p->sprite.pos);
+  ShadeManCrossover_AddAfterimages(p, &p->sprite.pos);
   p->plttFadeMode = -1;
   p->plttFadeTo = 7;
   p->entity0805e67c = Entity0805e67c_Create();

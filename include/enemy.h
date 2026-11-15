@@ -252,8 +252,8 @@ typedef struct Enemy {
   MoverTile tile;                           // 0x08C, ENEFLAG_UNK_13 が立っていて ENEFLAG5_UNK_5 が無いとき Enemy_UpdateMovement が mover.tile に繋ぐ
   PathWalker pathWalker;                    // 0x09C, 経路追従の状態, mover.path がここを指す, 根拠: Enemy_ResetToSpawn が Map_InitPathWalker(&pathWalker, ...) のあと mover.path に代入する
   ZoneEventSource zoneSource;               // 0x0A8, Enemy_UpdateMovement が毎フレーム Map_UpdateZoneEvents に渡す
-  HitboxData hurtbox;                       // 0x0D8, 食らい判定, Enemy_RegisterHurtbox / Enemy_RegisterHurtboxWithFlags が組んで登録する
-  HitboxData hitbox;                        // 0x128, Enemy_InitAtkHitbox が atkPower ほかの攻撃パラメータを載せて組む攻撃判定
+  Hitbox hurtbox;                           // 0x0D8, 食らい判定, Enemy_RegisterHurtbox / Enemy_RegisterHurtboxWithFlags が組んで登録する
+  Hitbox hitbox;                            // 0x128, Enemy_InitAtkHitbox が atkPower ほかの攻撃パラメータを載せて組む攻撃判定
   EnemyFlags flags;                         // 0x178, bit0/1=活動停止判定, bit3=EnemyManager_AdvanceCursor が毎フレーム1体だけに立てる
   EnemyFlags2 flags2;                       // 0x17C, bit21=EnemyManager_UpdateEnemies がパレット転送の向きとして反転させる
   EnemyFlags3 flags3;                       // 0x180, bit14=FUN_080ec9b0 が立て EnemyManager_UpdateEnemies が落とす
@@ -263,7 +263,7 @@ typedef struct Enemy {
   u8 unk_187;                               // 0x187
   u8 unk_188;                               // 0x188
   u8 weaponExp;                             // 0x189, 倒されたとき Player_AddWeaponExp に渡す量
-  u16 attrs;                                // 0x18A, Hitbox_SetPowerAndAttributes の attrs (HitboxAttributes の下位16bit)
+  u16 attrs;                                // 0x18A, Hitbox_SetPowerAndAttributes の attrs (HitboxAttrs の下位16bit)
   u16 weakness;                             // 0x18C, Hitbox_SetPowerAndAttributes の weakness
   u16 unk_18e;                              // 0x18E, Enemy_InitHpAndState が第3引数を入れる, sleepTime と対
   s16 sleepTime;                            // 0x190, Cmd_SleepEnemy が sleepTimer へ写す
@@ -283,7 +283,7 @@ typedef struct Enemy {
   u16 unk_1ca;                              // 0x1CA, Enemy_UpdateJump が 4 の倍数のときだけ速さを半分にする
   void* owner;                              // 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される
   s32 exp;                                  // 0x1D0, 倒されたとき AddPlayerExp に渡す量
-  s32 hitTargetID;                          // 0x1D4, 自分の攻撃判定が当たった相手 (HIM_0〜3) の HitboxData.id, 毎フレーム 0 に戻り, 正なら EnemyTargetManager_FindOwnerByID で playerMover をその相手にする
+  s32 hitTargetID;                          // 0x1D4, 自分の攻撃判定が当たった相手 (HIM_0〜3) の Hitbox.id, 毎フレーム 0 に戻り, 正なら EnemyTargetManager_FindOwnerByID で playerMover をその相手にする
   Mover* playerMover;                       // 0x1D8, Enemy_TargetNearestLinkPlayer が gPlayerPtr[n]->mover を書く
   u8 unk_1dc;                               // 0x1DC
   u8 angle;                                 // 0x1DD, 8bit の向き, gSineTable の索引
@@ -299,7 +299,7 @@ typedef struct Enemy {
   u32 unk_1f8;                              // 0x1F8, 0 でなければ FUN_080f0430 が狙う相手を追いかけ続ける
   u8 playerAngle;                           // 0x1FC, playerMover への xz の向き
   u8 unk_1fd;                               // 0x1FD
-  s16 unk_1fe;                              // 0x1FE, Enemy_SetEmote が FUN_08240cf0 の第3引数に渡す
+  s16 unk_1fe;                              // 0x1FE, Enemy_SetEmote が NoiseManager_AddMoverNoise の第3引数に渡す
   u16 range2;                               // 0x200, 二乗が range2Sq に入る
   u16 unk_202;                              // 0x202, Enemy_ForgetTarget が 0 でクリアする
   Vec3 unk_204;                             // 0x204, FUN_080f84d4 が音のした場所として向かう座標
@@ -313,7 +313,7 @@ typedef struct Enemy {
   u16 atkPower[4];                          // 0x224, Hitbox_SetAttack の power
   u16 atkKnockback[4];                      // 0x22C, Hitbox_SetAttack の knockback
   u16 atkIframes[4];                        // 0x234, Hitbox_SetAttack の iframes
-  HitboxAttributes atkAttrs[4];             // 0x23C, Hitbox_SetAttack の attrs
+  HitboxAttrs atkAttrs[4];                  // 0x23C, Hitbox_SetAttack の attrs
   u16 chaseTimeMax;                         // 0x24C, chaseTimer の上限
   u16 chaseTimer;                           // 0x24E, FUN_080f62b0 が 0 に戻す
   u8 unk_250;                               // 0x250, '.r[0]'
@@ -537,11 +537,11 @@ void Enemy_PlayAnimWithVariant(Enemy* p, s32 animIdx, s32 variant);
 void Enemy_PlayAnimFlipOnly(Enemy* p, s32 animIdx);
 void Enemy_PlayAnimNoFacing(Enemy* p, s32 animIdx);
 void Enemy_SetAnimEntry(Enemy* p, s32 idx, s32 anim, s32 val3);
-void Enemy_RegisterHitbox(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags);
+void Enemy_RegisterHitbox(Enemy* p, Hitbox* hitbox, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags);
 void Enemy_Deactivate(Enemy* p);
 void Enemy_OnCrushed(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage);
 void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner);
-void Enemy_InitHitboxWithAtk(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner);
+void Enemy_InitHitboxWithAtk(Enemy* p, Hitbox* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner);
 void Enemy_RegisterHurtboxWithFlags(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner, HitboxFlags32 flags);
 void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner);
 void Enemy_TargetNearestPlayer(Enemy* p, Vec3* pos);
@@ -574,7 +574,7 @@ void PlayEnemyDeathCry(Enemy* p);
 void Enemy_Unregister(Enemy* p);
 void Enemy_InitShadowAndEmitter(Enemy* p);
 void Enemy_SetAngleToward(Enemy* p, s16 x, s16 z);
-void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b);
+void Hitbox_ApplyDamageAlt(Hitbox* a, Hitbox* b);
 void Enemy_080eff14(Enemy* p, s32 param_2);
 void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6);
 bool8 Enemy_MoveAlongNav(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed);

@@ -33,8 +33,8 @@ typedef struct {
   u8 scatterAngles[9];   // 0x070, 散るときの各スプライトの向き
   u8 scatterSpeeds[9];   // 0x079, 散るときの各スプライトの速さ
   u8 unk_082[2];         // 0x082, padding?
-  HitboxData hitbox;     // 0x084
-  HitboxData hurtbox;    // 0x0D4, ハンドラは HomingLaser_OnHurt
+  Hitbox hitbox;         // 0x084
+  Hitbox hurtbox;        // 0x0D4, ハンドラは HomingLaser_OnHurt
   AuxSprite sprites[9];  // 0x124, sprites[0] が先頭
   AuxSpriteGfx gfx;      // 0x2B0, SPRITE_JORMUNGANDR_8202
 } HomingLaser;
@@ -51,7 +51,7 @@ typedef struct HomingLaserManager {
 static_assert(sizeof(HomingLaserManager) == 5764);
 
 // HomingLaser.kind ごとの {攻撃の属性, 食らい判定の弱点}, 怪光線は弱点属性の攻撃で相殺できる
-static const HitboxAttributes sHomingLaserAttrs[6][2] = {
+static const HitboxAttrs sHomingLaserAttrs[6][2] = {
     [HOMING_SOL] = {HBATTR_SOL,                    HBATTR_DARK },
     [HOMING_DARK] = {HBATTR_DARK,                   HBATTR_SOL  },
     [HOMING_FLAME] = {HBATTR_INKA | HBATTR_FLAME,    HBATTR_FROST},
@@ -73,7 +73,7 @@ HomingLaser* HomingLaserManager_FindFree(HomingLaserManager* p, s32* outIndex) {
   return NULL;
 }
 
-NAKED void HomingLaser_OnHurt(HitboxData* a, HitboxData* b, HomingLaser* e) { INCFUNC("asm/func/HomingLaser_OnHurt.inc"); }
+NAKED void HomingLaser_OnHurt(Hitbox* a, Hitbox* b, HomingLaser* e) { INCFUNC("asm/func/HomingLaser_OnHurt.inc"); }
 
 void nop_08245cf8(void) {}
 
@@ -82,7 +82,7 @@ NAKED void HomingLaser_Init(HomingLaserManager* p, HomingLaser* e, s32 idx) { IN
 // 枠のスプライト9枚を外して判定を無効にし, 使用中ビットを落とす
 s32 HomingLaser_Free(HomingLaserManager* p, HomingLaser* e, s32 idx) {
   AuxSprite* spr = e->sprites;
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
   s32 i;
 
   for (i = 0; i < 9; i++, spr++) {
@@ -90,7 +90,7 @@ s32 HomingLaser_Free(HomingLaserManager* p, HomingLaser* e, s32 idx) {
   }
 
   hurtbox = &e->hurtbox;
-  hurtbox->flags |= HBFLAG_HIDDEN;
+  hurtbox->flags |= HBF_HIDDEN;
   p->flags &= ~(1 << idx);
 }
 
@@ -109,11 +109,11 @@ NAKED void HomingLaser_StateScatter(HomingLaserManager* p, HomingLaser* e, s32 i
 // 食らい判定を外して尾がたどり着くのを待ち, 30 フレームで片付ける
 void FUN_082463cc(HomingLaserManager* p, HomingLaser* e, s32 idx) {
   if (e->stateEntered) {
-    HitboxData* hurtbox;
+    Hitbox* hurtbox;
 
     e->stateEntered = FALSE;
     hurtbox = &e->hurtbox;
-    hurtbox->flags |= HBFLAG_HIDDEN;
+    hurtbox->flags |= HBF_HIDDEN;
   }
 
   HomingLaser_UpdateTrail(e);

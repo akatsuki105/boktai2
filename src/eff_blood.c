@@ -174,26 +174,20 @@ void (*const PTR_ARRAY_085ad32c[3])(BloodEmitter*, BloodPtcl*) = {
 };  // 0x085AD32C
 
 // 使用中の枠について state ごとの更新関数を呼ぶ
-// 残差7命令 (40/47). 5命令は使用中判定の 0/1 の作り置き, 残り2命令は原典が &activeMask と &slots の定数を別々に作るのに対しこちらは片方から差分で導くため
-// Entity080db520_Update と同じ壁. slot の初期化を for の初期化節に移すと i=0 の位置だけは合う
-// 使用中判定を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 原典はループの前で &activeMask をガードとは別に作り直す (BeeNest_Update と同じ)
-NON_MATCH s32 BloodEmitter_Update(BloodEmitter* p) {
-#ifdef NONMATCHING_C
-  if (p->activeMask != 0) {
-    BloodPtcl* slot;
-    s32 i;
+s32 BloodEmitter_Update(BloodEmitter* p) {
+  s32 i;
 
-    for (i = 0, slot = &p->slots[0]; i < 8; i++, slot++) {
-      if (p->activeMask & (1 << i)) {
-        PTR_ARRAY_085ad32c[slot->state](p, slot);
-      }
+  if (p->activeMask == 0) {
+    return 0;
+  }
+  for (i = 0; i < 8; i++) {
+    if (BloodEmitter_IsActive(&p->activeMask, i)) {
+      BloodPtcl* slot = &p->slots[i];
+
+      PTR_ARRAY_085ad32c[slot->state](p, slot);
     }
   }
-
   return 0;
-#else
-  INCFUNC("asm/func/BloodEmitter_Update.inc");
-#endif
 }
 
 // 使用中の枠の粒子をまとめて外す

@@ -120,7 +120,7 @@ void (*const PTR_ARRAY_085ade8c[7])(DarkRoot*, u16*) = {
 
 // 枯れていなければ敵共通の被弾処理を行う
 // 775/787命令, 敵共通の Enemy_HandleHurt だけ, Golem_OnHurt と同じ共通 inline の壁, 1回目の下書きで切り上げ
-NON_MATCH void DarkRoot_OnHurt(HitboxData* a, HitboxData* b, DarkRoot* p) {
+NON_MATCH void DarkRoot_OnHurt(Hitbox* a, Hitbox* b, DarkRoot* p) {
 #ifdef NONMATCHING_C
   if (!Enemy_IsDead(&p->e) && !DarkRoot_TestFlags((p->e).owner, DARKFLAG_WITHERED)) {
     Enemy_HandleHurt(a, b, &p->e);
@@ -130,12 +130,12 @@ NON_MATCH void DarkRoot_OnHurt(HitboxData* a, HitboxData* b, DarkRoot* p) {
 #endif
 }
 
-void DarkRoot_OnHit(HitboxData* a, HitboxData* b, DarkRoot* p) {}
+void DarkRoot_OnHit(Hitbox* a, Hitbox* b, DarkRoot* p) {}
 
 void DarkRoot_StateWait(DarkRoot* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     (p->e).s->aux.spr.priority = 2;
-    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   Enemy_PlayAnimFlipOnly(&p->e, 14);
@@ -159,8 +159,8 @@ void FUN_081a3360(DarkRoot* p) {}
 void FUN_081a3364(DarkRoot* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     (p->e).s->aux.spr.priority = 3;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_PlayAnimFlipOnly(&p->e, 20);
   }
@@ -179,8 +179,8 @@ NON_MATCH void DarkRoot_StateGrab(DarkRoot* p) {
     PlaySound_082406e0(SONG_477);
   }
   if (anim->cmdIdx == 3 && anim->tick > 6) {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     if (DarkRoot_FindAdjacentTarget(p, 0)) {
       u8 variant;
@@ -209,17 +209,17 @@ NON_MATCH void DarkRoot_StateGrab(DarkRoot* p) {
       return;
     }
   } else if (anim->cmdIdx < 2) {
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags |= HBFLAG_UNK_3;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   } else {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   if ((p->e).animForceRestart) {
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags |= HBFLAG_UNK_3;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_EnterState(&p->e, DarkRoot_StateRetract, ES_UNK_38);
     Enemy_ResetState(&p->e, 0, 2, 3);
@@ -231,7 +231,7 @@ NON_MATCH void DarkRoot_StateGrab(DarkRoot* p) {
 
 void DarkRoot_StateRetract(DarkRoot* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_PlayAnim(&p->e, 17);
   }
@@ -255,8 +255,8 @@ NON_MATCH void DarkRoot_StateHold(DarkRoot* p, s32 timer) {
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     q->mashCountBase = gPlayerPtr[0]->mashCount;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   m = (p->e).playerMover;
@@ -371,8 +371,8 @@ void DarkRoot_StateReleaseGrab(DarkRoot* p) {
     WorldPos pos;
     u8 angle;
 
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_PlayAnim(&p->e, 21);
     m = (p->e).playerMover;
@@ -396,8 +396,8 @@ void DarkRoot_StateDamaged(DarkRoot* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimFlipOnly(&p->e, 3);
     (p->e).animForceRestart = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
   }
@@ -441,8 +441,8 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
     Enemy_SetEmote(&p->e, 1, 0x7F, 0);
     Enemy_SetEmote(&p->e, 3, 0x7F, 0);
     Enemy_FadeParticles(&p->e, 4);
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     PlayEnemyDeathCry(&p->e);
     Vec3_Clear(&vel);
@@ -475,7 +475,7 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
       CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_6);
       Enemy_ResetState(&p->e, 0, 0, 1);
       Enemy_EnterState(&p->e, DarkRoot_StateEmerge, ES_UNK_41);
-      (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+      (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
       CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     } else {
       s32 idx;
@@ -565,8 +565,8 @@ void DarkRoot_SubWatch(DarkRoot* p) {
   DarkRoot* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
-    Hitbox_SetFlags(&(p->e).hurtbox, HBFLAG_UNK_3);
+    Hitbox_ClearFlags(&(p->e).hurtbox, HBF_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hurtbox, HBF_3);
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   if (!DarkRoot_FindAdjacentTarget(p, 1)) {
@@ -589,8 +589,8 @@ void DarkRoot_SubEmerge(DarkRoot* p) {
     q->lostTimer = 0;
   }
   if ((p->e).subStateDone) {
-    Hitbox_ClearFlags(&(p->e).hurtbox, HBFLAG_HIDDEN);
-    Hitbox_SetFlags(&(p->e).hurtbox, HBFLAG_UNK_3);
+    Hitbox_ClearFlags(&(p->e).hurtbox, HBF_HIDDEN);
+    Hitbox_SetFlags(&(p->e).hurtbox, HBF_3);
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_EnterState(&p->e, DarkRoot_StateWait, ES_UNK_33);
     Enemy_ResetState(&p->e, 0, 0, 2);
@@ -759,7 +759,7 @@ void DarkRoot_InitHitboxes(DarkRoot* p) {
 
   VEC3_SET(hurtSize, 64, 256, 64);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, DarkRoot_OnHurt, p, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_HIDDEN | HBFLAG_UNK_0);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, DarkRoot_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE);
   VEC3_SET(hitSize, 0, 0, 0);
   VEC3_SET(hitOffset, 0, 0, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, DarkRoot_OnHit, 1, p);
@@ -1234,7 +1234,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1259,7 +1259,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
   if (TEST_FLAGS(gStat->mapFlags, MPF_UNK_9)) {
     Enemy_ResetState(&p->e, 0, 0, 1);
     Enemy_EnterState(&p->e, DarkRoot_StateEmerge, ES_UNK_41);
-    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     FUN_0803712c(&(p->e).mover.pos);
   }
@@ -1286,6 +1286,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
 #endif
 }
 
+// 0x1744, HashName("暗黒の根")
 void DarkRoot_Create(void) {
   DarkRoot* p = Malloc(sizeof(DarkRoot));
 

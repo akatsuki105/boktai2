@@ -22,33 +22,33 @@
 // ENEK_DOG(EV_BANDIT, EV_GRAVEKEEPER, EV_HELLHOUND, EV_BANDIT_P)
 typedef struct {
   Enemy e;
-  u8 unk_654[4];       // 0x654
-  HitboxData unk_658;  // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
-  u32 unk_6a8;         // 0x6A8, bit0 は待ちが明けたときに立てる
-  u32 unk_6ac;         // 0x6AC, playerDistSq がこれ未満なら副状態 (0,2,0) へ
-  u32 unk_6b0;         // 0x6B0, playerDistSq がこれ未満でほぼ正面なら副状態 (0,2,1) へ
-  u32 unk_6b4;         // 0x6B4, プレイヤーとの距離の2乗がこれ未満なら飛びかかりに入る
-  u32 unk_6b8;         // 0x6B8, playerDistSq と比べる距離の閾値, unk_6bc と対
-  u32 unk_6bc;         // 0x6BC, playerDistSq がこれを超えると副状態 19 へ移る
-  u16 unk_6c0;         // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
-  u16 unk_6c2;         // 0x6C2
-  u16 unk_6c4;         // 0x6C4, ENEFLAG3_UNK_7 のときの unk_6c2
-  u16 unk_6c6;         // 0x6C6, 0 になるまで毎フレーム減る
-  u16 unk_6c8;         // 0x6C8, 0 になるまで毎フレーム減る
-  u16 unk_6ca;         // 0x6CA, 0 になるまで毎フレーム減る
-  u16 unk_6cc;         // 0x6CC, unk_6c8 に入れ直す値
-  u16 unk_6ce;         // 0x6CE, unk_6ca に入れ直す値
-  s16 unk_6d0;         // 0x6D0, 負なら unk_6d2/unk_6d4 は無効
-  s16 unk_6d2;         // 0x6D2
-  s16 unk_6d4;         // 0x6D4
-  u8 unk_6d6;          // 0x6D6
-  u8 unk_6d7;          // 0x6D7
-  u8 unk_6d8;          // 0x6D8, 0 になるまで毎フレーム減る
-  u8 unk_6d9;          // 0x6D9, 盗んだ食べ物で回復する割合 (maxHp の %)
-  u8 unk_6da[2];       // 0x6DA
-  NavAgent navAgent;   // 0x6DC, Enemy.navAgent が指す
-  Vec3 pathNodePos;    // 0x700, Enemy.pathNodePos が指す
-  Vec3 unk_708;        // 0x708, 飛びかかる直前のプレイヤーの位置
+  u8 unk_654[4];      // 0x654
+  Hitbox unk_658;     // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
+  u32 unk_6a8;        // 0x6A8, bit0 は待ちが明けたときに立てる
+  u32 unk_6ac;        // 0x6AC, playerDistSq がこれ未満なら副状態 (0,2,0) へ
+  u32 unk_6b0;        // 0x6B0, playerDistSq がこれ未満でほぼ正面なら副状態 (0,2,1) へ
+  u32 unk_6b4;        // 0x6B4, プレイヤーとの距離の2乗がこれ未満なら飛びかかりに入る
+  u32 unk_6b8;        // 0x6B8, playerDistSq と比べる距離の閾値, unk_6bc と対
+  u32 unk_6bc;        // 0x6BC, playerDistSq がこれを超えると副状態 19 へ移る
+  u16 unk_6c0;        // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
+  u16 unk_6c2;        // 0x6C2
+  u16 unk_6c4;        // 0x6C4, ENEFLAG3_UNK_7 のときの unk_6c2
+  u16 unk_6c6;        // 0x6C6, 0 になるまで毎フレーム減る
+  u16 unk_6c8;        // 0x6C8, 0 になるまで毎フレーム減る
+  u16 unk_6ca;        // 0x6CA, 0 になるまで毎フレーム減る
+  u16 unk_6cc;        // 0x6CC, unk_6c8 に入れ直す値
+  u16 unk_6ce;        // 0x6CE, unk_6ca に入れ直す値
+  s16 unk_6d0;        // 0x6D0, 負なら unk_6d2/unk_6d4 は無効
+  s16 unk_6d2;        // 0x6D2
+  s16 unk_6d4;        // 0x6D4
+  u8 unk_6d6;         // 0x6D6
+  u8 unk_6d7;         // 0x6D7
+  u8 unk_6d8;         // 0x6D8, 0 になるまで毎フレーム減る
+  u8 unk_6d9;         // 0x6D9, 盗んだ食べ物で回復する割合 (maxHp の %)
+  u8 unk_6da[2];      // 0x6DA
+  NavAgent navAgent;  // 0x6DC, Enemy.navAgent が指す
+  Vec3 pathNodePos;   // 0x700, Enemy.pathNodePos が指す
+  Vec3 unk_708;       // 0x708, 飛びかかる直前のプレイヤーの位置
 } Dog;
 static_assert(sizeof(Dog) == 1808);
 
@@ -102,7 +102,7 @@ const u16 u16_ARRAY_085ad8c0[2][8] = {
 struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot);
 s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
+void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void FUN_0814ca30(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
@@ -117,9 +117,9 @@ void Dog_StateFireBreathWindup(Dog* p, s32 timer);
 void Dog_StateFireBreath(Dog* p, s32 timer);
 void FUN_0814e424(Dog* p);
 void Dog_StatePounce(Dog* p);
-void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p);
-void Dog_OnStealHit(HitboxData* a, HitboxData* b, Dog* p);
-void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p);
+void Dog_OnHit(Hitbox* a, Hitbox* b, Dog* p);
+void Dog_OnStealHit(Hitbox* a, Hitbox* b, Dog* p);
+void Dog_OnHurt(Hitbox* a, Hitbox* b, Dog* p);
 void FUN_0814fba4(Dog*);
 void FUN_0814fc7c(Dog*);
 void FUN_08150534(Dog*);
@@ -418,7 +418,7 @@ void Dog_InitHitboxes(Dog* p) {
   VEC3_SET(hit2Size, 0, 120, 0);
   VEC3_SET(hit2Offset, 0, 128, 0);
   Enemy_InitHitboxWithAtk(&p->e, &self->unk_658, &hit2Size, &hit2Offset, Dog_OnStealHit, 1, p);
-  Hitbox_SetFlags(&self->unk_658, HBFLAG_ANGLE);
+  Hitbox_SetFlags(&self->unk_658, HBF_ANGLE);
 }
 
 // 向きに合わせて攻撃判定と食らい判定の大きさを置き直し, 2つ目の攻撃判定を前方へ出す
@@ -756,7 +756,7 @@ NON_MATCH void Dog_SpawnSpark(Vec3* pos) {
 #endif
 }
 
-void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) {
+void Dog_OnHit(Hitbox* a, Hitbox* b, Dog* p) {
   if (Enemy_IsDead(&p->e) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
       (p->e).hitTargetID = b->id;
@@ -767,7 +767,7 @@ void Dog_OnHit(HitboxData* a, HitboxData* b, Dog* p) {
 
 // 2つ目の攻撃判定が当たったとき, 押し出す向きを決め, プレイヤーから食べ物を盗めたら回復ぶんをダメージの欄に入れて追いかけに戻る
 // 304/359命令の1回目の下書き, 原典はフレーム 0x28 で p を r9, &mover.pos を r7 に写し, 盗んだあとの処理が長い (inline の展開が多いらしい), 1回目の下書きで切り上げ
-NON_MATCH void Dog_OnStealHit(HitboxData* a, HitboxData* b, Dog* p) {
+NON_MATCH void Dog_OnStealHit(Hitbox* a, Hitbox* b, Dog* p) {
 #ifdef NONMATCHING_C
   Dog* q = (p->e).owner;
 
@@ -848,11 +848,11 @@ NON_MATCH void Dog_OnStealHit(HitboxData* a, HitboxData* b, Dog* p) {
 #endif
 }
 
-// 食らい判定, HBFLAG_UNK_11 の攻撃は受けない
+// 食らい判定, HBF_BLOCK の攻撃は受けない
 // 759/770命令, 本体は Crow_OnHurt と共通の Enemy_HandleHurt, 原典は a を r8 / b を r7 に置く (こちらは逆), ノックバックの種別判定で TRUE 側ブロックが属性検査より前に来る配置と p->angle の格納先を分岐ごとに計算する形が合わない
-NON_MATCH void Dog_OnHurt(HitboxData* a, HitboxData* b, Dog* p) {
+NON_MATCH void Dog_OnHurt(Hitbox* a, Hitbox* b, Dog* p) {
 #ifdef NONMATCHING_C
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+  if (Hitbox_TestFlags(a, HBF_BLOCK)) {
     return;
   }
   Enemy_HandleHurt(a, b, &p->e);
@@ -1626,7 +1626,7 @@ void Dog_StateDying(Dog* p) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   Enemy_ClearDamage(&p->e);
   Enemy_UpdateJump(&p->e);
@@ -3013,7 +3013,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -3070,6 +3070,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
 #endif
 }
 
+// 0xF836, HashName("ドッグ")
 void Dog_Create(void) {
   Dog* p = Malloc(sizeof(Dog));
 

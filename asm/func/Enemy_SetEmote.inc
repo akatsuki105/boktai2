@@ -165,7 +165,7 @@ _080E5842:
 	ldrh r3, [r7]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_08240cf0
+	bl NoiseManager_AddMoverNoise
 	b _080E59B0
 	.align 2, 0
 _080E5868: .4byte 0x00000454

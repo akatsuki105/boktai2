@@ -24,7 +24,7 @@ typedef struct LeverSwitch {
   AuxAnimState anim;       // 0x2C
   AuxSpriteGfx gfx;        // 0x3C, SPRITE_LEVER_SWITCH
   Vec3 basePos;            // 0x58, 揺れの基準位置, sprite.pos へ複写する
-  HitboxData hurtbox;      // 0x60
+  Hitbox hurtbox;          // 0x60
   u16 state;               // 0xB0, 0: なし, 1: 待機, 2: 切り替え中, sLeverSwitchStates の添字
   u16 scriptID;            // 0xB2, '.C', 倒れ終わるたびに id と flags を引数にして実行するスクリプト ID
   u16 slotIndex;           // 0xB4, LeverSwitchManager.items の添字
@@ -202,10 +202,10 @@ void LeverSwitch_Toggle(LeverSwitch* item) {
 NON_MATCH void LeverSwitch_UpdateFlash(LeverSwitch* item) {
 #ifdef NONMATCHING_C
   if (item->hurtbox.iframes != 0) {
-    item->hurtbox.flags |= HBFLAG_HIDDEN;
+    item->hurtbox.flags |= HBF_HIDDEN;
     item->hurtbox.iframes--;
   } else {
-    item->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    item->hurtbox.flags &= ~HBF_HIDDEN;
   }
   if (item->flashTimer != 0) {
     Video_SetAuxSpritePltt(item->sprite.gfx, OBP_WHITE_306);
@@ -258,7 +258,7 @@ void LeverSwitch_StateNone(LeverSwitchManager* p, LeverSwitch* item) {}
 void LeverSwitch_TryAutoToggle(LeverSwitch* item) {
   if (LeverSwitch_TestFlags(item, LEVER_FLAG_AUTO)) {
     if (!(item->initFlags & 1 ? LeverSwitch_TestFlags(item, LEVER_FLAG_POS0) : LeverSwitch_TestFlags(item, LEVER_FLAG_POS1))) {
-      item->hurtbox.flags |= HBFLAG_HIDDEN;
+      item->hurtbox.flags |= HBF_HIDDEN;
       if (!LeverSwitch_TestFlags(item, LEVER_FLAG_ONCE)) {
         if (item->autoToggleDelay <= item->idleFrames) {
           item->hurtbox.iframes = 24;
@@ -363,9 +363,9 @@ void LeverSwitch_UpdateShake(LeverSwitch* item) {
 
 // レバーへの攻撃を受けたとき, 色に合う武器で叩かれていなければ揺らすだけ, 合っていれば向きを切り替える
 // 残差: 155/152 命令, 原典は色ごとの武器マスクを r1 に作って1つの判定に合流させ, その他の色は判定を飛ばすが, こちらは判定が色ごとに残る (マスクの static inline にすると前半は一致するが, flashTimer の 3 が後半の & 3 と共有されて残差が残る)
-NON_MATCH void LeverSwitch_OnHurt(HitboxData* a, HitboxData* b, LeverSwitch* item) {
+NON_MATCH void LeverSwitch_OnHurt(Hitbox* a, Hitbox* b, LeverSwitch* item) {
 #ifdef NONMATCHING_C
-  if (LeverSwitch_TestFlags(item, LEVER_FLAG_LOCKED) || (item->kind == LEVER_RUSTY && !(a->weakness & (1 << WK_HAMMER))) || (item->kind == LEVER_NORMAL && !(a->weakness & ((1 << WK_SWORD) | (1 << WK_SPEAR) | (1 << WK_HAMMER) | (1 << WK_GUN))))) {
+  if (LeverSwitch_TestFlags(item, LEVER_FLAG_LOCKED) || (item->kind == LEVER_RUSTY && !(a->typeMask & HBSRC_HAMMER)) || (item->kind == LEVER_NORMAL && !(a->typeMask & (HBSRC_SWORD | HBSRC_SPEAR | HBSRC_HAMMER | HBSRC_GUN)))) {
     if (item->shakeTimer == 0) {
       PlaySound_082406e0(SE_LEVER_NO_TOGGLE);
     }
@@ -397,13 +397,13 @@ NON_MATCH void LeverSwitch_OnHurt(HitboxData* a, HitboxData* b, LeverSwitch* ite
 }
 
 void LeverSwitch_InitHurtbox(LeverSwitch* item) {
-  HitboxData* hurtbox = &item->hurtbox;
+  Hitbox* hurtbox = &item->hurtbox;
   Vec3 offset, halfSize;
 
   VEC3_SET(offset, 0, Q8(0.5), 0);
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   hurtbox->id = item->id;
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &item->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, LeverSwitch_OnHurt, item);
   Hitbox_Register(hurtbox);

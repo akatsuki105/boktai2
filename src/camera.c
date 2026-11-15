@@ -38,11 +38,11 @@ typedef struct {
   u16 shakeAmplitude;    // 0x7E, 今フレームの画面揺れの振幅, 根拠: Camera_StepShake が shakeCurrent から取って毎回0に戻す
   s16 shakeOffsetX;      // 0x80, 画面揺れの X オフセット, 根拠: Camera_StepShake が gCameraWorldCoords.x に加算する
   s16 shakeOffsetZ;      // 0x82, 画面揺れの Z オフセット, 根拠: Camera_StepShake が gCameraWorldCoords.z に加算する
-  bool8 shakeActive;     // 0x84, 0以外なら画面揺れ中, 根拠: FUN_0823bd14 が開始で1/停止で0を書く
+  bool8 shakeActive;     // 0x84, 0以外なら画面揺れ中, 根拠: Camera_StartShake が開始で1/停止で0を書く
   bool8 shakeStopOnEnd;  // 0x85, 0以外なら shakeTimer が尽きた時に揺れを完全に止める, 0なら shakeTarget のまま揺れ続ける
   u16 shakeCurrent;      // 0x86, 現在の振幅, 根拠: Camera_StepShake が shakeTarget へ向けて Div で補間する
-  u16 shakeTarget;       // 0x88, 目標の振幅, 根拠: FUN_0823bd14 の第1引数
-  u16 shakeTimer;        // 0x8A, 揺れの残りフレーム数, 根拠: FUN_0823bd14 の第2引数を Camera_StepShake が減算する
+  u16 shakeTarget;       // 0x88, 目標の振幅, 根拠: Camera_StartShake の第1引数
+  u16 shakeTimer;        // 0x8A, 揺れの残りフレーム数, 根拠: Camera_StartShake の第2引数を Camera_StepShake が減算する
   u16 unk_8c;            // 0x8C
   s16 unk_8e;            // 0x8E
   s16 unk_90;            // 0x90
@@ -115,7 +115,7 @@ s32 Map_LoadCollisionMapFile(s32 id) {
   return 0;
 }
 
-// 0x30AD, このゲームでは、 '.n' と '.p' 以外の引数は渡していない
+// 0x30AD, HashName("マップ設定"), このゲームでは、 '.n' と '.p' 以外の引数は渡していない
 void Cmd_LoadMap(void) {
   CollisionMapData* cm;
   CollisionMapTileData* td;
@@ -294,7 +294,7 @@ void Camera_Translate(void) {
   }
 }
 
-void FUN_0823baa8(void) {
+void Camera_FollowPlayer(void) {
   if (gCamera != NULL) {
     gCamera->lookEnabled = TRUE;
     gCamera->lookMode = 0;
@@ -314,7 +314,7 @@ void Camera_LookAt(Vec3* pos) {
   }
 }
 
-void FUN_0823bb7c(s32 n, Vec3* pos) {
+void Camera_PanTo(s32 n, Vec3* pos) {
   if (gCamera != NULL) {
     VEC3_SET(gCamera->pos_6c, pos->x, pos->y, pos->z);
     gCamera->lookEnabled = TRUE;
@@ -357,7 +357,7 @@ void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
   }
 }
 
-void FUN_0823bc70(s32 n) {
+void Camera_PanToPlayer(s32 n) {
   if (gCamera != NULL) {
     gCamera->lookEnabled = TRUE;
     if (n < 2) {
@@ -370,7 +370,7 @@ void FUN_0823bc70(s32 n) {
   }
 }
 
-void FUN_0823bca8(s32 n) {
+void Camera_ReleaseLook(s32 n) {
   if (gCamera != NULL) {
     if (n < 2) {
       gCamera->lookEnabled = FALSE;
@@ -397,7 +397,7 @@ void FUN_0823bce4(Vec3* pos, s32* enabled) {
 // 画面ゆれを開始する, frames が 0 で stopOnEnd が 1 のときは即座に止める
 // 残差0命令 (60/60), レジスタ名だけ違う: 原典は frames を r3, gCamera を r2, &gCamera を r4 に割り当てるが, こちらは &gCamera が r2 を取る
 // Tier A-C は試済: 早期 return 形, shakeTimer 経由の 0 判定 (これで命令数は一致した)
-NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
+NON_MATCH void Camera_StartShake(u32 amplitude, u32 frames, s32 stopOnEnd) {
 #ifdef NONMATCHING_C
   if (gCamera != NULL && (gGameFlags & GAMEFLAG_LINK) == 0) {
     if (frames == 0 && stopOnEnd == 1) {
@@ -417,7 +417,7 @@ NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
     gCamera->completeAction = 0;
   }
 #else
-  INCFUNC("asm/func/FUN_0823bd14.inc");
+  INCFUNC("asm/func/Camera_StartShake.inc");
 #endif
 }
 
@@ -439,7 +439,7 @@ void FUN_0823bd98(Camera* cam) {
 }
 
 void Cmd_2141(void) {
-  FUN_0823baa8();
+  Camera_FollowPlayer();
   FUN_0823bd98(gCamera);
 }
 
@@ -458,7 +458,7 @@ void Cmd_CameraPanTo(void) {
     s32 n = VM_GetValue();
     if (VM_SeekToNamedArg('p')) {
       VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
-      FUN_0823bb7c(n, &pos);
+      Camera_PanTo(n, &pos);
       FUN_0823bd98(gCamera);
     }
   }
@@ -497,14 +497,14 @@ void Cmd_C15E(void) {
 
 void Cmd_BBAA(void) {
   if (VM_SeekToNamedArg('f')) {
-    FUN_0823bc70(VM_GetValue());
+    Camera_PanToPlayer(VM_GetValue());
     FUN_0823bd98(gCamera);
   }
 }
 
 void Cmd_ResetCamera(void) {
   if (VM_SeekToNamedArg('f')) {
-    FUN_0823bca8(VM_GetValue());
+    Camera_ReleaseLook(VM_GetValue());
     FUN_0823bd98(gCamera);
   }
 }
@@ -514,7 +514,7 @@ void Cmd_CAEE(void) {
     s32 amplitude = VM_GetValue();
     s32 frames = VM_SeekToNamedArg('f') ? VM_GetValue() : 1;
     s32 stopOnEnd = VM_SeekToNamedArg('N') ? VM_GetValue() : 0;
-    FUN_0823bd14(amplitude, frames, stopOnEnd);
+    Camera_StartShake(amplitude, frames, stopOnEnd);
     FUN_0823bd98(gCamera);
   }
 }
@@ -534,7 +534,7 @@ void Camera_PollMessages(Camera* cam) {
     MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
       case 0: {
-        FUN_0823baa8();
+        Camera_FollowPlayer();
         FUN_0823c0a4(cam);
         FUN_0823c0ac(cam);
         break;
@@ -554,22 +554,22 @@ void Camera_PollMessages(Camera* cam) {
         pos.x = msg->args[0];
         pos.y = msg->args[1];
         pos.z = msg->args[2];
-        FUN_0823bb7c(msg->args[3], &pos);
+        Camera_PanTo(msg->args[3], &pos);
         FUN_0823c0a4(cam);
         break;
       }
       case 3: {
-        FUN_0823bc70(msg->args[0]);
+        Camera_PanToPlayer(msg->args[0]);
         FUN_0823c0a4(cam);
         break;
       }
       case 4: {
-        FUN_0823bd14(msg->args[0], msg->args[1], msg->args[2]);
+        Camera_StartShake(msg->args[0], msg->args[1], msg->args[2]);
         FUN_0823c0a4(cam);
         break;
       }
       case 5: {
-        FUN_0823bca8(msg->args[0]);
+        Camera_ReleaseLook(msg->args[0]);
         FUN_0823c0a4(cam);
         break;
       }

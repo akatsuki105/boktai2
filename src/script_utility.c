@@ -91,33 +91,33 @@ s32 Cmd_ReadTable(void) {
   return *(s16*)((u8*)base + (size != 1 ? idx * 4 : idx * 2));
 }
 
-// GAMEFLAG_EVENT で停止させ, pause=TRUE なら対象のEntityとBGMも止める
+// GAMEFLAG_CUTSCENE で停止させ, pause=TRUE なら対象のEntityとBGMも止める
 void FUN_080a6e88(bool32 pause) {
-  gGameFlags |= GAMEFLAG_EVENT;
-  if (pause && !(gSuspendFlags & SUSPEND_EVENT)) {
+  gGameFlags |= GAMEFLAG_CUTSCENE;
+  if (pause && !(gSuspendFlags & SUSPEND_CUTSCENE)) {
     FUN_08240918();
-    gSuspendFlags |= SUSPEND_EVENT;
+    gSuspendFlags |= SUSPEND_CUTSCENE;
   }
 }
 
-// 0x6206
-void Cmd_6206(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
+// 0x6206, HashName("デモ開始"), イベント中 (GAMEFLAG_CUTSCENE) にしてゲームを止める
+void Cmd_BeginCutscene(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
 
-// GAMEFLAG_EVENT による停止を解除し, 止めていたEntityとBGMを再開する
+// GAMEFLAG_CUTSCENE による停止を解除し, 止めていたEntityとBGMを再開する
 void FUN_080a6edc(void) {
-  gGameFlags &= ~GAMEFLAG_EVENT;
-  if (gSuspendFlags & SUSPEND_EVENT) {
+  gGameFlags &= ~GAMEFLAG_CUTSCENE;
+  if (gSuspendFlags & SUSPEND_CUTSCENE) {
     FUN_08240930();
-    ClearSuspendFlags(SUSPEND_EVENT);
+    ClearSuspendFlags(SUSPEND_CUTSCENE);
   }
 }
 
-// 0x6057
-void Cmd_6057(void) { FUN_080a6edc(); }
+// 0x6057, HashName("デモ終了"), イベント中を解除して止めていたものを再開する
+void Cmd_EndCutscene(void) { FUN_080a6edc(); }
 
-// 0x1320
-bool32 Cmd_1320(void) {
-  if (gGameFlags & GAMEFLAG_EVENT) return TRUE;
+// 0x1320, HashName("デモチェック"), イベント中かを返す
+bool32 Cmd_IsInCutscene(void) {
+  if (gGameFlags & GAMEFLAG_CUTSCENE) return TRUE;
   return FALSE;
 }
 

@@ -186,6 +186,7 @@ s32 MsgBus_Init(MsgBus* p, u32 targetID) {
   return 0;
 }
 
+// 0x4E69, HashName("デモマネージャ")
 MsgBus* MsgBus_Create(u32 targetID) {
   MsgBus* p;
   if (gMsgBus != NULL) {
@@ -270,7 +271,7 @@ s32 MsgPacket_Send(MsgPacket* msg) {
   return MsgBus_Post(gMsgBus, msg);
 }
 
-// '.d'/'.c'/'.e'/'.p' から設定を読み込み、scriptKeys/scriptIDs のテーブルを作る
+// 0x7348, HashName("デモ起動"), '.d'/'.c'/'.e'/'.p' から設定を読み込み、scriptKeys/scriptIDs のテーブルを作る
 s32 Cmd_StartCutscene(void) {
   MsgBus* p = gMsgBus;
   MsgQueue* mq;

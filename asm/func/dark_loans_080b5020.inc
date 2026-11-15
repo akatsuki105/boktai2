@@ -130,7 +130,7 @@ _080B50D0:
 	ldr r0, _080B518C @ =0x0000083E
 	adds r7, r5, r0
 	ldrh r0, [r7]
-	bl FUN_080b4ffc
+	bl DarkLoans_GetStandFrame
 	adds r6, r0, #0
 	movs r1, #0x8e
 	lsls r1, r1, #2
@@ -199,7 +199,7 @@ _080B5198:
 	ldr r3, _080B5234 @ =0x0000083E
 	adds r7, r5, r3
 	ldrh r0, [r7]
-	bl FUN_080b4ffc
+	bl DarkLoans_GetStandFrame
 	adds r6, r0, #0
 	movs r1, #0x8e
 	lsls r1, r1, #2
@@ -249,7 +249,7 @@ _080B5244:
 	ldrh r0, [r4]
 	cmp r0, #0
 	beq _080B52A0
-	bl FUN_080b4ffc
+	bl DarkLoans_GetStandFrame
 	adds r6, r0, #0
 	movs r1, #0x8e
 	lsls r1, r1, #2

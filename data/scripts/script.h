@@ -37,7 +37,7 @@
 #define Scr_SetMapStageBgm 0x0079              // 入口 p4 から来たとき (-1 なら常に) BGM とステージを設定する, p0: ステージID, p1: BGM, p2: フェード時間 (0 なら 1)
 #define Scr_BeginEventLockPlayer 0x007B        // Scr_BeginEvent(1) をしてプレイヤーを止める
 #define Scr_EndEventUnlockPlayer 0x007D        // イベントを終えてプレイヤーを動けるようにする
-#define Scr_BeginEvent 0x007E                  // イベントを始める (GAMEFLAG_EVENT), 出口の矢印を隠す, p0: 1 なら Entity と BGM を止める
+#define Scr_BeginEvent 0x007E                  // イベントを始める (GAMEFLAG_CUTSCENE), 出口の矢印を隠す, p0: 1 なら Entity と BGM を止める
 #define Scr_EndEvent 0x007F                    // イベントを終える, 止めた Entity と BGM を再開して出口の矢印を戻す
 #define Scr_BeginCutscene 0x0080               // 演出を始める, コウモリ/ネズミ/睡眠の姿を戻してから p0 のスクリプトを実行し, HUD をモード7のままにする印を立てる
 #define Scr_EndCutscene 0x0081                 // 演出を終える, イベント終了と印・段階カウンタ (scratch + 0x2F) を戻す
@@ -320,16 +320,16 @@
 #define Scr_0x036D 0x036D
 #define Scr_0x036E 0x036E
 #define Scr_0x036F 0x036F
-#define Scr_st01_00 0x0370 // "st01_00", 大聖堂A [1F]
+#define Scr_st01_00_cathed 0x0370 // "st01_00_cathed", 大聖堂A [1F]
 #define Scr_0x0376 0x0376
 #define Scr_0x037A 0x037A
 #define Scr_0x037B 0x037B
-#define Scr_0x037C 0x037C
+#define Scr_st01_01_cathed 0x037C // "st01_01_cathed", 大聖堂
 #define Scr_0x0384 0x0384
 #define Scr_GuideBreakCrate 0x0385             // ヒント看板「壊せ!!」, 木箱をハンマーで壊す
-#define Scr_0x0386 0x0386
+#define Scr_st01_02_cathed 0x0386 // "st01_02_cathed", 大聖堂
 #define Scr_0x038C 0x038C
-#define Scr_0x038F 0x038F
+#define Scr_st01_03_cathed 0x038F // "st01_03_cathed", 大聖堂
 #define Scr_0x0395 0x0395
 #define Scr_0x0396 0x0396
 #define Scr_0x0399 0x0399
@@ -340,11 +340,11 @@
 #define Scr_0x039F 0x039F
 #define Scr_0x03A0 0x03A0
 #define Scr_0x03A1 0x03A1
-#define Scr_0x03A2 0x03A2
+#define Scr_st01_04_cathed 0x03A2 // "st01_04_cathed", 大聖堂
 #define Scr_0x03AB 0x03AB
 #define Scr_0x03AD 0x03AD
 #define Scr_0x03AF 0x03AF
-#define Scr_0x03B0 0x03B0
+#define Scr_st01_05_cathed 0x03B0 // "st01_05_cathed", 大聖堂
 #define Scr_0x03B6 0x03B6
 #define Scr_0x03B7 0x03B7
 #define Scr_0x03BA 0x03BA
@@ -352,7 +352,7 @@
 #define Scr_0x03BD 0x03BD
 #define Scr_GuideLightCandle 0x03BE            // ヒント看板「灯せ!!」, フレイムで燭台に火をつける
 #define Scr_GuideWeightSwitch 0x03BF           // ヒント看板「載せろ!!」, 重量スイッチ
-#define Scr_0x03C0 0x03C0
+#define Scr_st01_06_cathed 0x03C0 // "st01_06_cathed", 大聖堂
 #define Scr_0x03C8 0x03C8
 #define Scr_0x03C9 0x03C9
 #define Scr_0x03CA 0x03CA
@@ -366,7 +366,7 @@
 #define Scr_GuideRustyLever 0x03D2             // ヒント看板「叩け!!」, 錆びたレバーはハンマーで
 #define Scr_GuideTouchSwitch 0x03D3            // ヒント看板「たどり着け!!」, 接触スイッチ
 #define Scr_0x03D4 0x03D4
-#define Scr_0x03D5 0x03D5
+#define Scr_st01_07_cathed 0x03D5 // "st01_07_cathed", 大聖堂
 #define Scr_0x03D8 0x03D8
 #define Scr_0x03E0 0x03E0
 #define Scr_0x03E2 0x03E2
@@ -374,30 +374,30 @@
 #define Scr_0x03E4 0x03E4
 #define Scr_0x03E5 0x03E5
 #define Scr_0x03E6 0x03E6
-#define Scr_0x03E7 0x03E7
+#define Scr_st01_08_cathed 0x03E7 // "st01_08_cathed", 大聖堂
 #define Scr_0x03EF 0x03EF
 #define Scr_0x03F0 0x03F0
 #define Scr_0x03F1 0x03F1
 #define Scr_0x03F2 0x03F2
 #define Scr_0x03F3 0x03F3
 #define Scr_0x03F4 0x03F4
-#define Scr_0x03F5 0x03F5
+#define Scr_st01_09_cathed 0x03F5 // "st01_09_cathed", 大聖堂
 #define Scr_0x03FF 0x03FF
 #define Scr_0x0400 0x0400
 #define Scr_0x0401 0x0401
 #define Scr_0x0402 0x0402
-#define Scr_0x0403 0x0403
+#define Scr_st01_10_cathed 0x0403 // "st01_10_cathed", 大聖堂
 #define Scr_0x040B 0x040B
 #define Scr_0x040C 0x040C
-#define Scr_0x040F 0x040F
+#define Scr_st01_11_cathed 0x040F // "st01_11_cathed", 大聖堂
 #define Scr_0x0417 0x0417
 #define Scr_0x0418 0x0418
 #define Scr_0x0419 0x0419
 #define Scr_0x041A 0x041A
 #define Scr_0x041B 0x041B
 #define Scr_0x041C 0x041C
-#define Scr_0x041D 0x041D
-#define Scr_0x0425 0x0425
+#define Scr_st01_12_cathed 0x041D // "st01_12_cathed", 大聖堂
+#define Scr_st01_13_cathed 0x0425 // "st01_13_cathed", 大聖堂
 #define Scr_ReadBookshelf 0x042D               // 本棚の書名を表示する, p1: 本棚番号 (1〜10)
 #define Scr_0x042E 0x042E
 #define Scr_BookSwitchFound 0x042F             // 「本の奥にスイッチがある。」
@@ -405,14 +405,14 @@
 #define Scr_0x0431 0x0431
 #define Scr_0x0432 0x0432
 #define Scr_BookSwitchPrompt 0x0434            // 本棚のスイッチを押すかの選択肢
-#define Scr_0x0435 0x0435
+#define Scr_st01_14_cathed 0x0435 // "st01_14_cathed", 大聖堂
 #define Scr_0x043F 0x043F
 #define Scr_0x0440 0x0440
 #define Scr_0x0443 0x0443
 #define Scr_0x0445 0x0445
 #define Scr_0x0446 0x0446
 #define Scr_0x0450 0x0450
-#define Scr_0x0451 0x0451
+#define Scr_st01_15_cathed 0x0451 // "st01_15_cathed", 大聖堂
 #define Scr_0x0454 0x0454
 #define Scr_0x0459 0x0459
 #define Scr_0x045A 0x045A
@@ -421,10 +421,10 @@
 #define Scr_0x045E 0x045E
 #define Scr_0x045F 0x045F
 #define Scr_0x0460 0x0460
-#define Scr_0x0462 0x0462
+#define Scr_st01_16_cathed 0x0462 // "st01_16_cathed", 大聖堂
 #define Scr_0x0469 0x0469
 #define Scr_0x046A 0x046A
-#define Scr_0x046B 0x046B
+#define Scr_st01_17_cathed 0x046B // "st01_17_cathed", 大聖堂
 #define Scr_0x0471 0x0471
 #define Scr_0x0472 0x0472
 #define Scr_0x0473 0x0473
@@ -434,39 +434,39 @@
 #define Scr_0x0478 0x0478
 #define Scr_0x0479 0x0479
 #define Scr_0x047B 0x047B
-#define Scr_0x047C 0x047C
+#define Scr_st01_18_cathed 0x047C // "st01_18_cathed", 大聖堂
 #define Scr_0x0483 0x0483
 #define Scr_0x048A 0x048A
-#define Scr_0x048B 0x048B
+#define Scr_st02_00_desert 0x048B // "st02_00_desert", 遺跡
 #define Scr_0x0492 0x0492
 #define Scr_0x0496 0x0496
 #define Scr_0x0498 0x0498
 #define Scr_0x0499 0x0499
 #define Scr_0x049A 0x049A
-#define Scr_0x049B 0x049B
+#define Scr_st02_01_desert 0x049B // "st02_01_desert", 遺跡
 #define Scr_0x04A1 0x04A1
-#define Scr_0x04A3 0x04A3
+#define Scr_st02_02_desert 0x04A3 // "st02_02_desert", 遺跡
 #define Scr_0x04A9 0x04A9
-#define Scr_0x04AB 0x04AB
+#define Scr_st02_03_desert 0x04AB // "st02_03_desert", 遺跡
 #define Scr_0x04B2 0x04B2
 #define Scr_0x04B3 0x04B3
-#define Scr_0x04B5 0x04B5
+#define Scr_st02_04_desert_a 0x04B5 // "st02_04_desert", 遺跡 (その1), その2は Scr_st02_04_desert_b
 #define Scr_0x04BB 0x04BB
 #define Scr_0x04BD 0x04BD
 #define Scr_GuideBreakRock 0x04BE              // ヒント看板「砕け!!」, クラウドで岩を砕く
-#define Scr_0x04BF 0x04BF
+#define Scr_st02_05_desert 0x04BF // "st02_05_desert", 遺跡
 #define Scr_GuideElementCube 0x04C6            // ヒント看板「属性を使いこなせ。」, 属性キューブ
 #define Scr_GuideMeltIce 0x04C7                // ヒント看板「溶かせ!!」, フレイムで氷を溶かす
 #define Scr_GuideExtinguish 0x04C8             // ヒント看板「消せ!!」, フロストで炎を消す
-#define Scr_0x04C9 0x04C9
+#define Scr_st02_06_desert 0x04C9 // "st02_06_desert", 遺跡
 #define Scr_0x04CF 0x04CF
 #define Scr_0x04D0 0x04D0
-#define Scr_0x04D3 0x04D3
+#define Scr_st02_07_desert 0x04D3 // "st02_07_desert", 遺跡
 #define Scr_0x04DC 0x04DC
 #define Scr_0x04DD 0x04DD
 #define Scr_0x04DE 0x04DE
-#define Scr_0x04DF 0x04DF
-#define Scr_0x04E6 0x04E6
+#define Scr_st02_08_desert 0x04DF // "st02_08_desert", 遺跡
+#define Scr_st02_09_desert 0x04E6 // "st02_09_desert", 遺跡
 #define Scr_0x04ED 0x04ED
 #define Scr_0x04EE 0x04EE
 #define Scr_0x04EF 0x04EF
@@ -474,28 +474,28 @@
 #define Scr_0x04F1 0x04F1
 #define Scr_GuideCrestSwitch 0x04F2            // ヒント看板「合わせろ!!」, 紋章スイッチ
 #define Scr_GuideMoveCube 0x04F3               // ヒント看板「突け!!」, 属性キューブを空中で動かす
-#define Scr_0x04F4 0x04F4
-#define Scr_0x04FB 0x04FB
+#define Scr_st02_10_desert 0x04F4 // "st02_10_desert", 遺跡
+#define Scr_st02_11_desert 0x04FB // "st02_11_desert", 遺跡
 #define Scr_0x0502 0x0502
 #define Scr_0x0503 0x0503
 #define Scr_0x0504 0x0504
 #define Scr_0x0505 0x0505
-#define Scr_0x0506 0x0506
+#define Scr_st02_12_desert 0x0506 // "st02_12_desert", 遺跡
 #define Scr_0x050D 0x050D
-#define Scr_0x050E 0x050E
+#define Scr_st02_13_desert 0x050E // "st02_13_desert", 遺跡
 #define Scr_0x0514 0x0514
 #define Scr_0x0515 0x0515
 #define Scr_0x0517 0x0517
 #define Scr_0x0518 0x0518
-#define Scr_0x0519 0x0519
+#define Scr_st02_14_desert 0x0519 // "st02_14_desert", 遺跡
 #define Scr_0x051F 0x051F
 #define Scr_0x0521 0x0521
 #define Scr_0x0522 0x0522
-#define Scr_0x0523 0x0523
-#define Scr_0x0524 0x0524
+#define Scr_st02_04_desert_b 0x0523 // "st02_04_desert", 遺跡 (その2), その1は Scr_st02_04_desert_a
+#define Scr_st02_15_desert 0x0524 // "st02_15_desert", 遺跡
 #define Scr_0x052E 0x052E
 #define Scr_0x0534 0x0534
-#define Scr_0x0537 0x0537
+#define Scr_st02_16_desert 0x0537 // "st02_16_desert", 砂漠 (石版はめる前と後両方)
 #define Scr_DesertSlotExamine 0x053E           // 砂漠の四角いくぼみを調べたときのメッセージ
 #define Scr_0x053F 0x053F
 #define Scr_DesertSlotPrompt 0x0540            // 石版のかけらをはめ込むかの選択肢
@@ -506,7 +506,7 @@
 #define Scr_0x0546 0x0546
 #define Scr_DesertFragmentHint 0x0548          // 石版のかけらの隠し場所のヒントを表示する, p0: 隠し場所の番号
 #define Scr_0x0549 0x0549
-#define Scr_0x054A 0x054A
+#define Scr_st02_17_desert 0x054A // "st02_17_desert", 遺跡
 #define Scr_0x0551 0x0551
 #define Scr_KingsCandleIntro 0x0552            // 4人の兄弟王の燭台パズルの説明
 #define Scr_KingsCandleFire 0x0553             // 火の王の燭台の言葉
@@ -516,8 +516,8 @@
 #define Scr_KingsCandleMemo 0x0557             // 燭台パズルの「残されたメッセージ」, scratch + 0x14B で文面を選ぶ
 #define Scr_0x0558 0x0558
 #define Scr_0x055A 0x055A
-#define Scr_0x055B 0x055B
-#define Scr_0x0567 0x0567
+#define Scr_st02_18_desert 0x055B // "st02_18_desert", 遺跡
+#define Scr_st02_19_desert 0x0567 // "st02_19_desert", 遺跡
 #define Scr_SignTrialFire 0x056E               // 「火の試練」の看板
 #define Scr_SignTrialWater 0x056F              // 「水の試練」の看板
 #define Scr_SignTrialEarth 0x0570              // 「地の試練」の看板
@@ -530,7 +530,7 @@
 #define Scr_0x0579 0x0579
 #define Scr_0x057A 0x057A
 #define Scr_0x057B 0x057B
-#define Scr_st02_20 0x057C // "st02_20", "遺跡B [B3]", ボス部屋前+ボス部屋
+#define Scr_st02_20_desert 0x057C // "st02_20_desert", "遺跡B [B3]", ボス部屋前+ボス部屋
 #define Scr_0x0585 0x0585
 #define Scr_0x0586 0x0586
 #define Scr_0x0589 0x0589
@@ -538,82 +538,82 @@
 #define Scr_0x058B 0x058B
 #define Scr_st02_21 0x058C // "st02_21", "遺跡B [B3]", 楔
 #define Scr_0x0593 0x0593
-#define Scr_0x0594 0x0594
+#define Scr_st03_00_slum 0x0594 // "st03_00_slum", 暗黒街
 #define Scr_SetDarkCityBgm 0x0596              // 暗黒街 (ステージ3) の BGM をストーリー進行度で選んで設定する, p0: 1/2 なら固定の曲
 #define Scr_0x059C 0x059C
-#define Scr_0x059D 0x059D
+#define Scr_st03_01_slum 0x059D // "st03_01_slum", 暗黒街
 #define Scr_0x05A4 0x05A4
 #define Scr_0x05A5 0x05A5
 #define Scr_0x05A6 0x05A6
-#define Scr_0x05A7 0x05A7
+#define Scr_st03_02_slum 0x05A7 // "st03_02_slum", 暗黒街
 #define Scr_SignBewareDog 0x05AE               // 「猛犬注意!!」の看板
-#define Scr_0x05AF 0x05AF
+#define Scr_st03_03_slum 0x05AF // "st03_03_slum", 暗黒街
 #define Scr_0x05B5 0x05B5
 #define Scr_0x05B6 0x05B6
 #define Scr_SignBewareOverhead 0x05B8          // 「頭上注意!!」の看板
-#define Scr_0x05BA 0x05BA
-#define Scr_0x05C1 0x05C1
-#define Scr_0x05C8 0x05C8
-#define Scr_0x05CF 0x05CF
-#define Scr_0x05D6 0x05D6
-#define Scr_0x05DD 0x05DD
+#define Scr_st03_04_slum 0x05BA // "st03_04_slum", 暗黒街
+#define Scr_st03_05_slum 0x05C1 // "st03_05_slum", 暗黒街
+#define Scr_st03_06_slum 0x05C8 // "st03_06_slum", 暗黒街
+#define Scr_st03_07_slum 0x05CF // "st03_07_slum", 暗黒街
+#define Scr_st03_08_slum 0x05D6 // "st03_08_slum", 暗黒街
+#define Scr_st03_09_slum 0x05DD // "st03_09_slum", 暗黒街
 #define Scr_0x05E4 0x05E4
 #define Scr_SignBewareFeet 0x05E5              // 「足元注意!!」の看板
 #define Scr_0x05E7 0x05E7
 #define Scr_0x05E8 0x05E8
 #define Scr_0x05E9 0x05E9
-#define Scr_0x05EA 0x05EA
+#define Scr_st03_10_slum 0x05EA // "st03_10_slum", 暗黒街
 #define Scr_0x05F1 0x05F1
 #define Scr_0x05F2 0x05F2
-#define Scr_0x05F3 0x05F3
+#define Scr_st03_11_slum 0x05F3 // "st03_11_slum", 暗黒街
 #define Scr_0x05FA 0x05FA
 #define Scr_0x05FB 0x05FB
 #define Scr_0x05FC 0x05FC
 #define Scr_0x05FE 0x05FE
-#define Scr_0x05FF 0x05FF
+#define Scr_st03_12_slum 0x05FF // "st03_12_slum", 暗黒街
 #define Scr_GuideWeightLift 0x0606             // ヒント看板「重量をコントロールせよ。」, 重量昇降床
 #define Scr_0x0607 0x0607
-#define Scr_0x0608 0x0608
+#define Scr_st03_13_slum 0x0608 // "st03_13_slum", 暗黒街
 #define Scr_SignBewareDark 0x060F              // 「暗闇注意!!」の看板
-#define Scr_0x0610 0x0610
-#define Scr_0x0617 0x0617
+#define Scr_st03_14_slum 0x0610 // "st03_14_slum", 暗黒街
+#define Scr_st03_15_slum 0x0617 // "st03_15_slum", 暗黒街
 #define Scr_0x061D 0x061D
 #define Scr_0x061E 0x061E
-#define Scr_0x0621 0x0621
+#define Scr_st03_16_slum 0x0621 // "st03_16_slum", 暗黒街
 #define Scr_0x0628 0x0628
-#define Scr_0x0629 0x0629
-#define Scr_0x0630 0x0630
-#define Scr_0x0637 0x0637
+#define Scr_st03_17_slum 0x0629 // "st03_17_slum", 暗黒街
+#define Scr_st03_18_slum 0x0630 // "st03_18_slum", 暗黒街
+#define Scr_st03_19_slum 0x0637 // "st03_19_slum", 暗黒街
 #define Scr_0x063E 0x063E
 #define Scr_0x0640 0x0640
-#define Scr_0x0641 0x0641
-#define Scr_0x0648 0x0648
+#define Scr_st03_20_slum 0x0641 // "st03_20_slum", 暗黒街
+#define Scr_st03_21_slum 0x0648 // "st03_21_slum", 暗黒街
 #define Scr_0x064F 0x064F
-#define Scr_0x0650 0x0650
-#define Scr_0x0657 0x0657
-#define Scr_0x065E 0x065E
-#define Scr_0x0667 0x0667
-#define Scr_0x066E 0x066E
+#define Scr_st03_22_slum 0x0650 // "st03_22_slum", 暗黒街
+#define Scr_st03_23_slum 0x0657 // "st03_23_slum", 暗黒街
+#define Scr_st03_24_slum 0x065E // "st03_24_slum", "暗黒街B [4F]"
+#define Scr_st03_25_slum 0x0667 // "st03_25_slum", 暗黒街
+#define Scr_st03_26_slum_a 0x066E // "st03_26_slum", 暗黒街 (その1), その2は Scr_st03_26_slum_b
 #define Scr_0x0675 0x0675
 #define Scr_0x0679 0x0679
-#define Scr_0x067A 0x067A
+#define Scr_st03_27_slum 0x067A // "st03_27_slum", 暗黒街
 #define Scr_0x0681 0x0681
 #define Scr_0x0682 0x0682
 #define Scr_0x0685 0x0685
 #define Scr_0x0686 0x0686
 #define Scr_0x0687 0x0687
 #define Scr_0x0688 0x0688
-#define Scr_0x0689 0x0689
+#define Scr_st03_28_slum 0x0689 // "st03_28_slum", 暗黒街
 #define Scr_GuideSunBarrier 0x0690             // ヒント看板「太陽結界について。」
 #define Scr_0x0691 0x0691
 #define Scr_0x0692 0x0692
 #define Scr_0x0693 0x0693
 #define Scr_0x0694 0x0694
-#define Scr_0x0696 0x0696
-#define Scr_0x069D 0x069D
+#define Scr_st03_29_slum 0x0696 // "st03_29_slum", 暗黒街
+#define Scr_st03_30_slum 0x069D // "st03_30_slum", 暗黒街
 #define Scr_0x06A4 0x06A4
 #define Scr_0x06A5 0x06A5
-#define Scr_0x06AC 0x06AC
+#define Scr_st03_24_slum_shaian 0x06AC // "st03_24_slum", "暗黒街B [4F]" (シャイアン戦)
 #define Scr_0x06B2 0x06B2
 #define Scr_0x06B5 0x06B5
 #define Scr_0x06B6 0x06B6
@@ -624,7 +624,7 @@
 #define Scr_0x06BE 0x06BE
 #define Scr_0x06BF 0x06BF
 #define Scr_0x06C0 0x06C0
-#define Scr_0x06C1 0x06C1
+#define Scr_st03_26_slum_b 0x06C1 // "st03_26_slum", 暗黒街 (その2), その1は Scr_st03_26_slum_a
 #define Scr_0x06C7 0x06C7
 #define Scr_0x06C9 0x06C9
 #define Scr_0x06CA 0x06CA
@@ -634,32 +634,32 @@
 #define Scr_0x06D0 0x06D0
 #define Scr_0x06D1 0x06D1
 #define Scr_0x06D2 0x06D2
-#define Scr_0x06D3 0x06D3
+#define Scr_st04_00_lake_a 0x06D3 // "st04_00_lake", 地下水路 (その1), 他は Scr_st04_00_lake_b, Scr_st04_00_lake_c
 #define Scr_TarotSealedDoor 0x06DA             // タロット封印の扉, 3賢者のカードがそろっていれば開封カットシーン, なければメッセージ
 #define Scr_0x06DD 0x06DD
 #define Scr_TalkRingoTarotDoor 0x06E2          // タロット封印の前のリンゴの会話, 残りのカードの枚数で変わる
 #define Scr_0x06E6 0x06E6
 #define Scr_0x06E7 0x06E7
-#define Scr_0x06E8 0x06E8
+#define Scr_st04_00_lake_b 0x06E8 // "st04_00_lake", 地下水路 (その2), 他は Scr_st04_00_lake_a, Scr_st04_00_lake_c
 #define Scr_0x06EF 0x06EF
 #define Scr_0x06F0 0x06F0
-#define Scr_0x06F1 0x06F1
+#define Scr_st04_00_lake_c 0x06F1 // "st04_00_lake", 地下水路 (その3), 他は Scr_st04_00_lake_a, Scr_st04_00_lake_b
 #define Scr_0x06F8 0x06F8
-#define Scr_0x06F9 0x06F9
+#define Scr_st04_01_lake 0x06F9 // "st04_01_lake", 地下水路
 #define Scr_0x0700 0x0700
 #define Scr_0x0701 0x0701
-#define Scr_0x0702 0x0702
-#define Scr_0x070B 0x070B
-#define Scr_0x0716 0x0716
-#define Scr_0x071D 0x071D
-#define Scr_0x0724 0x0724
+#define Scr_st04_02_lake_a 0x0702 // "st04_02_lake", 地下水路 (その1), 他は Scr_st04_02_lake_b
+#define Scr_st04_03_lake 0x070B // "st04_03_lake", 地下水路
+#define Scr_st04_04_lake_a 0x0716 // "st04_04_lake", 地下水路 (その1), 他は Scr_st04_04_lake_b, Scr_st04_04_lake_c
+#define Scr_st04_04_lake_b 0x071D // "st04_04_lake", 地下水路 (その2), 他は Scr_st04_04_lake_a, Scr_st04_04_lake_c
+#define Scr_st04_04_lake_c 0x0724 // "st04_04_lake", 地下水路 (その3), 他は Scr_st04_04_lake_a, Scr_st04_04_lake_b
 #define Scr_0x072B 0x072B
-#define Scr_0x0732 0x0732
+#define Scr_st04_02_lake_b 0x0732 // "st04_02_lake", 地下水路 (その2), 他は Scr_st04_02_lake_a
 #define Scr_0x0737 0x0737
 #define Scr_0x0738 0x0738
 #define Scr_0x0739 0x0739
 #define Scr_0x073B 0x073B
-#define Scr_f06 0x073C // "f06", 約束の丘
+#define Scr_st05_00_tower 0x073C // "st05_00_tower", 約束の丘
 #define Scr_0x073F 0x073F
 #define Scr_0x0741 0x0741
 #define Scr_0x0749 0x0749
@@ -682,89 +682,89 @@
 #define Scr_0x0761 0x0761
 #define Scr_0x0764 0x0764
 #define Scr_0x0765 0x0765
-#define Scr_0x0766 0x0766
+#define Scr_st05_01_tower 0x0766 // "st05_01_tower", 螺旋の塔
 #define Scr_0x076B 0x076B
 #define Scr_0x0770 0x0770
 #define Scr_0x0771 0x0771
 #define Scr_GuideZeroShift 0x0772              // 月光魔法ゼロシフトの説明看板
 #define Scr_GuideBlackSun 0x0773               // 月光魔法ブラックサンの説明看板
 #define Scr_0x0774 0x0774
-#define Scr_0x0776 0x0776
+#define Scr_st05_02_tower 0x0776 // "st05_02_tower", 螺旋の塔
 #define Scr_0x077D 0x077D
 #define Scr_0x077F 0x077F
 #define Scr_0x0781 0x0781
 #define Scr_0x0782 0x0782
 #define Scr_0x0783 0x0783
 #define Scr_0x0784 0x0784
-#define Scr_0x0785 0x0785
-#define Scr_0x078D 0x078D
-#define Scr_0x0794 0x0794
-#define Scr_0x079B 0x079B
+#define Scr_st05_03_tower 0x0785 // "st05_03_tower", 螺旋の塔
+#define Scr_st05_04_tower 0x078D // "st05_04_tower", 螺旋の塔
+#define Scr_st05_05_tower 0x0794 // "st05_05_tower", 螺旋の塔
+#define Scr_st05_06_tower 0x079B // "st05_06_tower", 螺旋の塔
 #define Scr_0x07A2 0x07A2
 #define Scr_0x07A3 0x07A3
 #define Scr_0x07A4 0x07A4
 #define Scr_0x07A5 0x07A5
-#define Scr_0x07A6 0x07A6
-#define Scr_0x07AD 0x07AD
+#define Scr_st05_07_tower 0x07A6 // "st05_07_tower", 螺旋の塔
+#define Scr_st05_08_tower 0x07AD // "st05_08_tower", 螺旋の塔
 #define Scr_0x07B6 0x07B6
 #define Scr_0x07B7 0x07B7
-#define Scr_0x07B9 0x07B9
+#define Scr_st05_09_tower 0x07B9 // "st05_09_tower", 螺旋の塔
 #define Scr_0x07BF 0x07BF
 #define Scr_0x07C1 0x07C1
 #define Scr_0x07C2 0x07C2
-#define Scr_0x07C3 0x07C3
+#define Scr_st05_10_tower 0x07C3 // "st05_10_tower", 螺旋の塔
 #define Scr_0x07CA 0x07CA
 #define Scr_0x07CB 0x07CB
 #define Scr_0x07CC 0x07CC
-#define Scr_0x07CE 0x07CE
-#define Scr_0x07D6 0x07D6
-#define Scr_0x07DD 0x07DD
+#define Scr_st05_11_tower 0x07CE // "st05_11_tower", 螺旋の塔
+#define Scr_st05_12_tower 0x07D6 // "st05_12_tower", 螺旋の塔
+#define Scr_st05_13_tower 0x07DD // "st05_13_tower", 螺旋の塔
 #define Scr_0x07E5 0x07E5
 #define Scr_0x07E6 0x07E6
-#define Scr_0x07E7 0x07E7
+#define Scr_st05_14_tower 0x07E7 // "st05_14_tower", 螺旋の塔
 #define Scr_0x07EE 0x07EE
 #define Scr_0x07EF 0x07EF
 #define Scr_0x07F1 0x07F1
 #define Scr_0x07F2 0x07F2
-#define Scr_0x07F5 0x07F5
+#define Scr_st05_15_tower 0x07F5 // "st05_15_tower", 螺旋の塔
 #define Scr_0x07FC 0x07FC
 #define Scr_0x07FD 0x07FD
 #define Scr_0x07FE 0x07FE
-#define Scr_0x0801 0x0801
+#define Scr_st05_16_tower 0x0801 // "st05_16_tower", 螺旋の塔
 #define Scr_0x0807 0x0807
 #define Scr_0x0809 0x0809
 #define Scr_0x080A 0x080A
 #define Scr_0x080B 0x080B
-#define Scr_0x080C 0x080C
-#define Scr_0x0815 0x0815
+#define Scr_st05_17_tower 0x080C // "st05_17_tower", 螺旋の塔
+#define Scr_st05_18_tower 0x0815 // "st05_18_tower", 螺旋の塔
 #define Scr_0x081D 0x081D
 #define Scr_0x081E 0x081E
 #define Scr_0x081F 0x081F
 #define Scr_0x0820 0x0820
-#define Scr_0x0822 0x0822
+#define Scr_st05_19_tower 0x0822 // "st05_19_tower", 螺旋の塔
 #define Scr_0x082A 0x082A
 #define Scr_0x082E 0x082E
 #define Scr_0x082F 0x082F
-#define Scr_0x0832 0x0832
+#define Scr_st05_20_tower 0x0832 // "st05_20_tower", 螺旋の塔
 #define Scr_0x0835 0x0835
 #define Scr_0x0839 0x0839
-#define Scr_0x083D 0x083D
+#define Scr_st05_21_tower 0x083D // "st05_21_tower", 螺旋の塔
 #define Scr_0x0844 0x0844
 #define Scr_0x0845 0x0845
 #define Scr_0x0846 0x0846
 #define Scr_0x0847 0x0847
 #define Scr_0x0848 0x0848
-#define Scr_0x0849 0x0849
+#define Scr_st05_22_tower 0x0849 // "st05_22_tower", 螺旋の塔
 #define Scr_0x0850 0x0850
 #define Scr_0x0851 0x0851
 #define Scr_0x0852 0x0852
 #define Scr_0x0857 0x0857
 #define Scr_0x0858 0x0858
-#define Scr_0x0859 0x0859
+#define Scr_st05_23_tower 0x0859 // "st05_23_tower", 螺旋の塔
 #define Scr_0x0860 0x0860
 #define Scr_0x0861 0x0861
 #define Scr_0x0862 0x0862
-#define Scr_0x0863 0x0863
+#define Scr_st05_24_tower 0x0863 // "st05_24_tower", 螺旋の塔
 #define Scr_0x0866 0x0866
 #define Scr_0x0867 0x0867
 #define Scr_0x0868 0x0868
@@ -779,9 +779,9 @@
 #define Scr_0x0879 0x0879
 #define Scr_0x087A 0x087A
 #define Scr_0x087B 0x087B
-#define Scr_0x087E 0x087E
+#define Scr_st05_25_tower 0x087E // "st05_25_tower", 螺旋の塔
 #define Scr_0x0886 0x0886
-#define Scr_0x0887 0x0887
+#define Scr_st05_26_tower 0x0887 // "st05_26_tower", 螺旋の塔
 #define Scr_st06_enter 0x088E // "st06_enter", "変異域 [1F]"
 #define Scr_st06_earth_00 0x0895 // "st06_earth_00", "変異域 [B1]"
 #define Scr_st06_earth_01 0x089C // "st06_earth_01", "変異域 [B1]"
@@ -859,7 +859,7 @@
 #define Scr_0x09AF 0x09AF
 #define Scr_0x09B3 0x09B3
 #define Scr_0x09B4 0x09B4
-#define Scr_0x09B6 0x09B6
+#define Scr_b00_00_town 0x09B6 // "b00_00_town", サンミゲル (屋外)
 #define Scr_SignShopClosed 0x09C0              // 「閉店中のようだ・・・」
 #define Scr_SignLibraryClosed 0x09C1           // 「閉館中のようだ・・・」
 #define Scr_0x09C2 0x09C2
@@ -899,7 +899,7 @@
 #define Scr_MarcelloSmallTalkEndgame 0x09F8    // 終盤のマルチェロの雑談
 #define Scr_0x09FA 0x09FA
 #define Scr_0x09FB 0x09FB
-#define Scr_0x09FC 0x09FC
+#define Scr_b00_01_town 0x09FC // "b00_01_town", サンミゲル (ショップ, 倉庫)
 #define Scr_0x09FD 0x09FD
 #define Scr_SpawnSumire 0x0A04                 // 進行度と時間帯に応じて家の中にスミレを置く
 #define Scr_0x0A05 0x0A05
@@ -1011,7 +1011,7 @@
 #define Scr_0x0A8C 0x0A8C
 #define Scr_0x0A8D 0x0A8D
 #define Scr_0x0A8E 0x0A8E
-#define Scr_0x0A90 0x0A90
+#define Scr_b00_02_town 0x0A90 // "b00_02_town", サンミゲル (施設=図書館,鍛冶屋,銀行,時計塔)
 #define Scr_0x0A91 0x0A91
 #define Scr_0x0A92 0x0A92
 #define Scr_0x0A93 0x0A93
@@ -1179,7 +1179,7 @@
 #define Scr_0x0B73 0x0B73
 #define Scr_0x0B74 0x0B74
 #define Scr_0x0B75 0x0B75
-#define Scr_0x0B7B 0x0B7B
+#define Scr_b00_04_town_a 0x0B7B // "b00_04_town", パイルドライバーの広場(その1), その2は Scr_b00_04_town_b
 #define Scr_0x0B85 0x0B85
 #define Scr_SpawnZazie 0x0B86                  // 進行度に応じてザジを置く
 #define Scr_0x0B87 0x0B87
@@ -1196,7 +1196,7 @@
 #define Scr_0x0B9B 0x0B9B
 #define Scr_0x0B9C 0x0B9C
 #define Scr_0x0B9D 0x0B9D
-#define Scr_0x0B9E 0x0B9E
+#define Scr_b00_05_town 0x0B9E // "b00_05_town", サンミゲル (酒場, 住人の家)
 #define Scr_InitResidentHouses 0x0BA6          // 住人の家の中の初期化, 雨や夜ならルイス, マルチェロ, ハテナを各自の家に置く
 #define Scr_TalkZaji2 0x0BA9                   // 別の太陽街のマップ (0x0B9E) のザジの会話の入口 (寝ているザジ, フリーズ伝授など)
 #define Scr_0x0BAB 0x0BAB
@@ -1256,7 +1256,7 @@
 #define Scr_0x0BF5 0x0BF5
 #define Scr_0x0BF6 0x0BF6
 #define Scr_0x0BFC 0x0BFC
-#define Scr_0x0BFD 0x0BFD
+#define Scr_a00_00_ruins 0x0BFD // "a00_00_ruins", 廃墟
 #define Scr_0x0C04 0x0C04
 #define Scr_0x0C05 0x0C05
 #define Scr_0x0C08 0x0C08
@@ -1265,64 +1265,64 @@
 #define Scr_0x0C0C 0x0C0C
 #define Scr_0x0C0D 0x0C0D
 #define Scr_0x0C0E 0x0C0E
-#define Scr_0x0C10 0x0C10
+#define Scr_a00_01_ruins 0x0C10 // "a00_01_ruins", 廃墟
 #define Scr_0x0C17 0x0C17
 #define Scr_0x0C18 0x0C18
-#define Scr_0x0C1B 0x0C1B
+#define Scr_a00_02_ruins 0x0C1B // "a00_02_ruins", 廃墟
 #define Scr_0x0C22 0x0C22
 #define Scr_0x0C23 0x0C23
-#define Scr_0x0C27 0x0C27
+#define Scr_a00_03_ruins 0x0C27 // "a00_03_ruins", 廃墟
 #define Scr_RuinsColorCountSign 0x0C2E         // 遺跡の「赤:n 青:m」の看板, p0: 看板ID
 #define Scr_0x0C2F 0x0C2F
 #define Scr_0x0C30 0x0C30
 #define Scr_0x0C31 0x0C31
-#define Scr_0x0C34 0x0C34
+#define Scr_a00_04_ruins 0x0C34 // "a00_04_ruins", 廃墟
 #define Scr_0x0C3B 0x0C3B
 #define Scr_0x0C3C 0x0C3C
 #define Scr_RuinsSign 0x0C3D                   // 遺跡の看板 (進む/戻る, 落書き), p0: 看板ID
-#define Scr_0x0C3E 0x0C3E
-#define Scr_0x0C47 0x0C47
+#define Scr_a00_05_ruins 0x0C3E // "a00_05_ruins", 廃墟
+#define Scr_a00_06_ruins 0x0C47 // "a00_06_ruins", 廃墟
 #define Scr_0x0C4E 0x0C4E
 #define Scr_RuinsSwitchOrderSign 0x0C51        // 「5、7、3、の順にスイッチを入れよ。」
-#define Scr_0x0C54 0x0C54
+#define Scr_a00_07_ruins 0x0C54 // "a00_07_ruins", 廃墟
 #define Scr_0x0C5A 0x0C5A
 #define Scr_0x0C5B 0x0C5B
 #define Scr_0x0C5C 0x0C5C
 #define Scr_0x0C5E 0x0C5E
 #define Scr_0x0C5F 0x0C5F
 #define Scr_0x0C60 0x0C60
-#define Scr_0x0C61 0x0C61
+#define Scr_a00_08_ruins 0x0C61 // "a00_08_ruins", 廃墟
 #define Scr_0x0C6A 0x0C6A
 #define Scr_0x0C6D 0x0C6D
 #define Scr_0x0C6E 0x0C6E
 #define Scr_0x0C71 0x0C71
-#define Scr_0x0C73 0x0C73
+#define Scr_a10_00_forest 0x0C73 // "a10_00_forest", 森
 #define Scr_0x0C7B 0x0C7B
 #define Scr_0x0C7D 0x0C7D
 #define Scr_0x0C7E 0x0C7E
 #define Scr_0x0C80 0x0C80
 #define Scr_0x0C81 0x0C81
-#define Scr_0x0C82 0x0C82
-#define Scr_0x0C8A 0x0C8A
-#define Scr_0x0C92 0x0C92
+#define Scr_a10_01_forest 0x0C82 // "a10_01_forest", 森
+#define Scr_a10_02_forest 0x0C8A // "a10_02_forest", 森
+#define Scr_a10_03_forest 0x0C92 // "a10_03_forest", 森
 #define Scr_0x0C98 0x0C98
 #define Scr_0x0C99 0x0C99
-#define Scr_0x0C9C 0x0C9C
+#define Scr_a10_04_forest 0x0C9C // "a10_04_forest", 森
 #define Scr_0x0CA2 0x0CA2
-#define Scr_0x0CA5 0x0CA5
+#define Scr_a10_05_forest 0x0CA5 // "a10_05_forest", 森
 #define Scr_0x0CAC 0x0CAC
 #define Scr_0x0CAD 0x0CAD
 #define Scr_0x0CAF 0x0CAF
-#define Scr_0x0CB0 0x0CB0
+#define Scr_a10_06_forest 0x0CB0 // "a10_06_forest", 森
 #define Scr_0x0CB7 0x0CB7
 #define Scr_0x0CB8 0x0CB8
 #define Scr_0x0CB9 0x0CB9
-#define Scr_0x0CBA 0x0CBA
-#define Scr_0x0CC2 0x0CC2
+#define Scr_a10_07_forest 0x0CBA // "a10_07_forest", 森
+#define Scr_a10_08_forest 0x0CC2 // "a10_08_forest", 森
 #define Scr_0x0CC8 0x0CC8
 #define Scr_0x0CCA 0x0CCA
-#define Scr_0x0CCB 0x0CCB
-#define Scr_0x0CD2 0x0CD2
+#define Scr_a10_09_forest 0x0CCB // "a10_09_forest", 森
+#define Scr_a10_10_forest 0x0CD2 // "a10_10_forest", 森
 #define Scr_0x0CD8 0x0CD8
 #define Scr_0x0CDA 0x0CDA
 #define Scr_0x0CDB 0x0CDB
@@ -1331,7 +1331,7 @@
 #define Scr_0x0CDE 0x0CDE
 #define Scr_0x0CDF 0x0CDF
 #define Scr_0x0CE0 0x0CE0
-#define Scr_0x0CE1 0x0CE1
+#define Scr_a10_11_forest 0x0CE1 // "a10_11_forest", 森
 #define Scr_0x0CE7 0x0CE7
 #define Scr_0x0CE9 0x0CE9
 #define Scr_0x0CEA 0x0CEA
@@ -1342,16 +1342,16 @@
 #define Scr_0x0CF3 0x0CF3
 #define Scr_0x0CF4 0x0CF4
 #define Scr_0x0CF5 0x0CF5
-#define Scr_0x0CF6 0x0CF6
+#define Scr_a10_12_forest 0x0CF6 // "a10_12_forest", 森
 #define Scr_0x0CFE 0x0CFE
 #define Scr_0x0D03 0x0D03
 #define Scr_0x0D04 0x0D04
 #define Scr_0x0D05 0x0D05
-#define Scr_0x0D06 0x0D06
+#define Scr_a10_13_forest 0x0D06 // "a10_13_forest", 森
 #define Scr_0x0D10 0x0D10
 #define Scr_0x0D11 0x0D11
 #define Scr_0x0D12 0x0D12
-#define Scr_0x0D13 0x0D13
+#define Scr_a10_14_forest 0x0D13 // "a10_14_forest", 森
 #define Scr_0x0D19 0x0D19
 #define Scr_0x0D1B 0x0D1B
 #define Scr_0x0D1C 0x0D1C
@@ -1375,12 +1375,12 @@
 #define Scr_0x0D60 0x0D60
 #define Scr_0x0D61 0x0D61
 #define Scr_0x0D63 0x0D63
-#define Scr_0x0D65 0x0D65
+#define Scr_a30_00_time 0x0D65 // "a30_00_time", 時の家
 #define Scr_0x0D6C 0x0D6C
 #define Scr_0x0D6D 0x0D6D
 #define Scr_0x0D6F 0x0D6F
 #define Scr_0x0D70 0x0D70
-#define Scr_0x0D72 0x0D72
+#define Scr_a30_01_time 0x0D72 // "a30_01_time", 時の家
 #define Scr_GhostBoyFirstTalk 0x0D75           // 時の家で幽霊少年に初めて会ったときの会話
 #define Scr_TimeHouseDoorLocked 0x0D7B         // 「扉はかたく閉ざされている。」
 #define Scr_0x0D81 0x0D81
@@ -1389,7 +1389,7 @@
 #define Scr_TimeHouseRubble 0x0D87             // がれきで通れないメッセージ
 #define Scr_0x0D89 0x0D89
 #define Scr_GuideDynamite 0x0D8A               // 時の家のヒント看板「壊せ!!」, 傷んだ壁はダイナマイトで
-#define Scr_0x0D8C 0x0D8C
+#define Scr_a30_02_time 0x0D8C // "a30_02_time", 時の家
 #define Scr_0x0D95 0x0D95
 #define Scr_0x0D9C 0x0D9C
 #define Scr_0x0D9D 0x0D9D
@@ -1402,10 +1402,10 @@
 #define Scr_TimeHousePinCheck 0x0DA9           // 入力した暗証番号を照合し, 解錠するか不一致を表示する
 #define Scr_0x0DAC 0x0DAC
 #define Scr_0x0DAD 0x0DAD
-#define Scr_0x0DAE 0x0DAE
+#define Scr_a30_03_time 0x0DAE // "a30_03_time", 時の家
 #define Scr_0x0DB8 0x0DB8
 #define Scr_0x0DC0 0x0DC0
-#define Scr_0x0DC2 0x0DC2
+#define Scr_a30_04_time 0x0DC2 // "a30_04_time", 時の家
 #define Scr_0x0DD1 0x0DD1
 #define Scr_TimeHousePinSetTerminal 0x0DD4     // 暗証番号を設定する装置, 設定するかの選択肢
 #define Scr_TimeHousePinSetAnswer 0x0DD5       // 設定するかの選択の結果, p0: 選択
@@ -1416,16 +1416,16 @@
 #define Scr_0x0DDB 0x0DDB
 #define Scr_0x0DDC 0x0DDC
 #define Scr_0x0DDD 0x0DDD
-#define Scr_0x0DDE 0x0DDE
+#define Scr_a30_05_time 0x0DDE // "a30_05_time", 時の家
 #define Scr_0x0DEA 0x0DEA
 #define Scr_0x0DF2 0x0DF2
 #define Scr_0x0DF6 0x0DF6
-#define Scr_0x0DFA 0x0DFA
+#define Scr_a30_06_time 0x0DFA // "a30_06_time", 時の家
 #define Scr_TalkGhostBoy 0x0E01                // 幽霊少年の会話, 2種類を交互に
 #define Scr_0x0E02 0x0E02
 #define Scr_0x0E04 0x0E04
 #define Scr_0x0E05 0x0E05
-#define Scr_0x0E06 0x0E06
+#define Scr_a30_07_time 0x0E06 // "a30_07_time", 時の家
 #define Scr_0x0E09 0x0E09
 #define Scr_0x0E0D 0x0E0D
 #define Scr_0x0E0F 0x0E0F
@@ -1436,7 +1436,7 @@
 #define Scr_0x0E19 0x0E19
 #define Scr_0x0E1B 0x0E1B
 #define Scr_0x0E1E 0x0E1E
-#define Scr_0x0E1F 0x0E1F
+#define Scr_a30_08_time 0x0E1F // "a30_08_time", 時の家
 #define Scr_0x0E27 0x0E27
 #define Scr_0x0E30 0x0E30
 #define Scr_0x0E33 0x0E33
@@ -1682,7 +1682,7 @@
 #define Scr_0x107D 0x107D
 #define Scr_0x107E 0x107E
 #define Scr_0x107F 0x107F
-#define Scr_0x1080 0x1080
+#define Scr_b00_04_town_b 0x1080 // "b00_04_town", パイルドライバーの広場(その2), その1は Scr_b00_04_town_a
 #define Scr_0x1082 0x1082
 #define Scr_0x1083 0x1083
 #define Scr_0x1084 0x1084

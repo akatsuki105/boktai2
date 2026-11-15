@@ -72,18 +72,18 @@ void Bee_BeginCurveTo(Bee* p, Vec3* pos);
 void Bee_BuildCurvePoints(Bee* p, Vec3* pos);
 s32 FUN_0816869c(Bee* p, Vec3* from, Vec3* to);
 
-void Bee_OnHit(HitboxData* a, HitboxData* b, Bee* p) {}
+void Bee_OnHit(Hitbox* a, Hitbox* b, Bee* p) {}
 
 // 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にして, BEEFLAG_FAST を落とす
 // 803/808命令, EnemyBat_OnHurt / Crow_OnHurt と同じ残差 (ノックバックの種別判定の配置, p->angle の格納先の計算位置, 末尾の乱数の読み順), 試済: EnemyBat_OnHurt と同じ形
-NON_MATCH void Bee_OnHurt(HitboxData* a, HitboxData* b, Bee* p) {
+NON_MATCH void Bee_OnHurt(Hitbox* a, Hitbox* b, Bee* p) {
 #ifdef NONMATCHING_C
   s32 knockback;
 
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBFLAG_UNK_11)) {
+  if (Hitbox_TestFlags(a, HBF_BLOCK)) {
     return;
   }
   Enemy_HandleHurt(a, b, &p->e);
@@ -326,7 +326,7 @@ void Bee_StateDying(Bee* p, s32 timer) {
     (p->e).unk_21e = 0;
     (p->e).unk_220 = 0;
     (p->e).unk_202 = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
   }
   if (Sprite_UpdateVanishBlink(&(p->e).s->aux.spr.flags, timer, 10, 30)) {
     s32 idx;
@@ -600,7 +600,7 @@ void Bee_ResumeHover(Bee* p) {
 
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   CLEAR_FLAGS(q->flags, BEEFLAG_UNK_0 | BEEFLAG_UNK_1);
-  (p->e).hitbox.flags &= ~HBFLAG_HIDDEN;
+  (p->e).hitbox.flags &= ~HBF_HIDDEN;
 }
 
 void Bee_BeginCurveTo(Bee* p, Vec3* pos) {
@@ -1324,7 +1324,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1373,6 +1373,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
 #endif
 }
 
+// 0xE131, HashName("ビー")
 void Bee_Create(void) {
   Bee* p = Malloc(sizeof(Bee));
 

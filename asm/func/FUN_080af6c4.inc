@@ -203,7 +203,7 @@ _080AF81A:
 	bl StartBgObjPlttFade
 	ldr r0, [r5]
 	movs r1, #4
-	bl FUN_080ad204
+	bl PileDriver_RunEventScript
 _080AF878:
 	add sp, #0x10
 	pop {r3}

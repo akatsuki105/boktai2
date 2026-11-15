@@ -16,7 +16,7 @@
 #define CLS_BOSS 4
 #define CLS_ACTOR 5
 #define CLS_CAMERA 6
-#define CLS_FADE 7
+#define CLS_EFFECT 7
 #define CLS_SOUND 8
 #define CLS_CBB0 9
 #define CLS_ETC 10

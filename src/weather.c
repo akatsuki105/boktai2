@@ -637,5 +637,5 @@ s32 Cmd_164D(void) {
 // 雨が降っているかどうかを返す
 bool32 FUN_08018a08(void) { return sRainFalling; }
 
-// 0x7A82
-bool32 Cmd_7A82(void) { return FUN_08018a08(); }
+// 0x7A82, HashName("雨判定"), 雨が降っているかを返す
+bool32 Cmd_IsRaining(void) { return FUN_08018a08(); }

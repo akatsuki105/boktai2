@@ -16,8 +16,8 @@ typedef struct {
   u8 aimTime;             // 0x00A, state 2 に留まるフレーム数, 添字 * 8 + 15
   u8 unk_0b;              // 0x00B
   Vec3 vel;               // 0x00C, 1フレームに sprite.pos へ足す量, y は常に 0
-  HitboxData hitbox;      // 0x014, state 3 の間, 添字の偶奇が frameParity と合うフレームだけ登録する
-  HitboxData hurtbox;     // 0x064, state 2, 3 の間だけ HBFLAG_HIDDEN を落とす, 当たると state 4 へ移る
+  Hitbox hitbox;          // 0x014, state 3 の間, 添字の偶奇が frameParity と合うフレームだけ登録する
+  Hitbox hurtbox;         // 0x064, state 2, 3 の間だけ HBF_HIDDEN を落とす, 当たると state 4 へ移る
   AuxAnimState anim;      // 0x0B4, コマ送りは自前で行う
   AuxSprite sprite;       // 0x0C4
   AuxSpriteGfx gfx;       // 0x0F0, SPRITE_BAT, パレット 611 (被弾直後の 6 フレームは 306), 群れで出すと pltt は Entity0805e67c.pltt を指す
@@ -41,9 +41,9 @@ typedef struct Entity0805e67c {
 } Entity0805e67c;
 static_assert(sizeof(Entity0805e67c) == 5392);
 
-NAKED void Entity0805e67c_OnHurt(HitboxData* a, HitboxData* b, Entity0805e67cElem* elem) { INCFUNC("asm/func/Entity0805e67c_OnHurt.inc"); }
+NAKED void Entity0805e67c_OnHurt(Hitbox* a, Hitbox* b, Entity0805e67cElem* elem) { INCFUNC("asm/func/Entity0805e67c_OnHurt.inc"); }
 
-NAKED void Entity0805e67c_OnHit(HitboxData* a, HitboxData* b, Entity0805e67cElem* elem) { INCFUNC("asm/func/Entity0805e67c_OnHit.inc"); }
+NAKED void Entity0805e67c_OnHit(Hitbox* a, Hitbox* b, Entity0805e67cElem* elem) { INCFUNC("asm/func/Entity0805e67c_OnHit.inc"); }
 
 NAKED s32 Entity0805e67c_InitElem(Entity0805e67c* p, Entity0805e67cElem* elem, s32 idx) { INCFUNC("asm/func/Entity0805e67c_InitElem.inc"); }
 

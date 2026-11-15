@@ -36,7 +36,7 @@ typedef struct Entity080aace8 {
   Vec3 spritePos;                                  // 0x07C, screen から少しずらした icon の表示位置
   Vec3 screen;                                     // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   u8 unk_8c[8];                                    // 0x08C
-  HitboxData hitbox;                               // 0x094
+  Hitbox hitbox;                                   // 0x094
   AuxSprite auxSprites[2];                         // 0x0E4
   AuxSpriteGfx gfx;                                // 0x13C, SPRITE_SPIKEBALL
   u16 unk_158;                                     // 0x158, 次に使う auxSprites の添字 (0 と 1 を交互)
@@ -52,12 +52,8 @@ typedef struct Entity080aace8 {
 static_assert(sizeof(Entity080aace8) == 848);
 
 // 1枠を1フレーム進める, 16フレームで消える
-// 残差1命令 (41/42) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
-// src/solar_barrier.c の SolarBarrierPtcl_Update が同じ現象
-NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
-#ifdef NONMATCHING_C
-  q->timer++;
-  if (q->timer > 15) {
+void Entity080aace8_UpdateParticle(Entity080aace8Particle* q) {
+  if (++q->timer > 15) {
     q->ptcl.flags |= SPRFLAG_HIDDEN;
     q->active = 0;
   } else {
@@ -68,9 +64,6 @@ NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
       q->velY++;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_080aa08c.inc");
-#endif
 }
 
 // 8枠を spritePos から放射状に飛ばす
@@ -96,7 +89,7 @@ NON_MATCH void FUN_080aa0e4(Entity080aace8* p) {
     p->ptcls[i].ptcl.flags &= ~SPRFLAG_HIDDEN;
     p->ptcls[i].active = 1;
     p->ptcls[i].timer = 0;
-    p->ptcls[i].fn = FUN_080aa08c;
+    p->ptcls[i].fn = Entity080aace8_UpdateParticle;
   }
 #else
   INCFUNC("asm/func/FUN_080aa0e4.inc");
@@ -382,34 +375,27 @@ void FUN_080aa9d0(Entity080aace8* p) {
 }
 
 // 8枠ぶんのパーティクルを用意して全部止めておく
-// 残差12命令 (43/55) でこちらが短い: 原典は定数 0 と枠のオフセットを高位レジスタに巻き上げて group2 だけ p + オフセットで触るが, こちらは1本のポインタで済ませる
-NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
-#ifdef NONMATCHING_C
-  ParticleGroup* g = GetParticleGroup(PTCL_GROUP_2);
-  Entity080aace8Particle* q = p->ptcls;
+void Entity080aace8_InitParticles(Entity080aace8* p) {
+  ParticleGroup* group = GetParticleGroup(PTCL_GROUP_2);
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    q->group2 = g;
-    Particle_Add(&q->ptcl, g, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
-    Particle_SetOffset(&q->ptcl, -4, -4);
-    Particle_SetPose(&q->ptcl, q->group2, PTCL2_SOL_L);
-    Particle_SetPltt(&q->ptcl, 1);
-    q->ptcl.priority = 0;
-    q->timer = 0;
-    q->active = 0;
-    q++;
+    p->ptcls[i].group2 = group;
+    Particle_Add(&p->ptcls[i].ptcl, group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+    Particle_SetOffset(&p->ptcls[i].ptcl, -4, -4);
+    Particle_SetPose(&p->ptcls[i].ptcl, p->ptcls[i].group2, PTCL2_SOL_L);
+    Particle_SetPltt(&p->ptcls[i].ptcl, 1);
+    p->ptcls[i].ptcl.priority = 0;
+    p->ptcls[i].timer = 0;
+    p->ptcls[i].active = FALSE;
   }
-#else
-  INCFUNC("asm/func/FUN_080aaa2c.inc");
-#endif
 }
 
 // 画面全体を覆う当たり判定を作る, 威力は失った HP か (変身中なら) レベル から決める
 // 残差1命令 (105/106) でこちらが短い: 原典は HBATTR_NAMAKURA の 0x1000 を Hitbox_Init の前に作って高位レジスタに持ち越すが, こちらは使う直前に作る
 NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
 #ifdef NONMATCHING_C
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize;
   Vec3 offset;
   s32 power;
@@ -435,7 +421,7 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
     power = lv * 8;
   }
 
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ACTOR | HBF_DAMAGE, 0, ignoreMask, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, 10, 0, HBATTR_NAMAKURA, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->player->mover.pos, 0);
@@ -455,7 +441,7 @@ s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 kind) {
   WorldToScreen(&p->screen, &pos);
 
   FUN_080aa940(p);
-  FUN_080aaa2c(p);
+  Entity080aace8_InitParticles(p);
   FUN_080aaaa8(p);
   if (p->player->useAuxSprite == 0) {
     p->player->human.flags &= ~SPRFLAG_HIDDEN;

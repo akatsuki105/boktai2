@@ -9,12 +9,12 @@
 typedef struct InkBallShot {
   AuxSprite sprite;     // 0x00, SPRFLAG_HIDDEN が立っていて life が 0 なら空き
   AuxAnimState anim;    // 0x2C, ANIM_38E2 の 2 番
-  HitboxData hurtbox;   // 0x3C, 攻撃を受けると InkBallShot_OnHurt で消える
-  HitboxData hitbox;    // 0x8C, 当たると InkBallShot_OnHit で砕け始める
+  Hitbox hurtbox;       // 0x3C, 攻撃を受けると InkBallShot_OnHurt で消える
+  Hitbox hitbox;        // 0x8C, 当たると InkBallShot_OnHit で砕け始める
   Vec3 vel;             // 0xDC, homing のときは毎フレーム target へ向けて speed の長さに作り直す
   Vec3 target;          // 0xE4
   u16 life;             // 0xEC, 0 でなければ使用中, 飛んでいる間毎フレーム減らし 5 以下で砕ける
-  u16 hurtboxDelay;     // 0xEE, 0 になるまで hurtbox に HBFLAG_HIDDEN を立てておく
+  u16 hurtboxDelay;     // 0xEE, 0 になるまで hurtbox に HBF_HIDDEN を立てておく
   u16 puddlePower;      // 0xF0, 砕けたときに残す InkBallPuddle の power
   u16 puddleKnockback;  // 0xF2, 同 knockback
   u16 puddleAttrs;      // 0xF4, 同 attrs
@@ -53,17 +53,17 @@ void (*const sInkBallShotStates[3])(InkBallShotManager*, InkBallShot*) = {
 
 NAKED void InkBallShot_SetState(InkBallShot* shot, u32 state) { INCFUNC("asm/func/InkBallShot_SetState.inc"); }
 
-NAKED void InkBallShot_OnHit(HitboxData* a, HitboxData* b, InkBallShot* shot) { INCFUNC("asm/func/InkBallShot_OnHit.inc"); }
+NAKED void InkBallShot_OnHit(Hitbox* a, Hitbox* b, InkBallShot* shot) { INCFUNC("asm/func/InkBallShot_OnHit.inc"); }
 
-NAKED void InkBallShot_OnHurt(HitboxData* a, HitboxData* b, InkBallShot* shot) { INCFUNC("asm/func/InkBallShot_OnHurt.inc"); }
+NAKED void InkBallShot_OnHurt(Hitbox* a, Hitbox* b, InkBallShot* shot) { INCFUNC("asm/func/InkBallShot_OnHurt.inc"); }
 
 NAKED void InkBallShot_InitHurtbox(InkBallShot* shot) { INCFUNC("asm/func/InkBallShot_InitHurtbox.inc"); }
 
-NAKED void InkBallShot_InitHitbox(InkBallShot* shot, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { INCFUNC("asm/func/InkBallShot_InitHitbox.inc"); }
+NAKED void InkBallShot_InitHitbox(InkBallShot* shot, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) { INCFUNC("asm/func/InkBallShot_InitHitbox.inc"); }
 
 NAKED InkBallShot* InkBallShotManager_FindFree(void) { INCFUNC("asm/func/InkBallShotManager_FindFree.inc"); }
 
-NAKED void InkBallShotManager_Add(Vec3* pos, Vec3* vel, Vec3* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) {
+NAKED void InkBallShotManager_Add(Vec3* pos, Vec3* vel, Vec3* target, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) {
   INCFUNC("asm/func/InkBallShotManager_Add.inc");
 }
 
@@ -85,12 +85,12 @@ NAKED s32 InkBallShotManager_Init(InkBallShotManager* p) { INCFUNC("asm/func/Ink
 
 NAKED InkBallShotManager* InkBallShotManager_Create(void) { INCFUNC("asm/func/InkBallShotManager_Create.inc"); }
 
-NAKED s32 InkBallShot_SpawnAngled(Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) {
+NAKED s32 InkBallShot_SpawnAngled(Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) {
   INCFUNC("asm/func/InkBallShot_SpawnAngled.inc");
 }
 
-NAKED s32 InkBallShot_Spawn(Vec3* pos, Vec3* vel, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) { INCFUNC("asm/func/InkBallShot_Spawn.inc"); }
+NAKED s32 InkBallShot_Spawn(Vec3* pos, Vec3* vel, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) { INCFUNC("asm/func/InkBallShot_Spawn.inc"); }
 
-NAKED s32 InkBallShot_SpawnHoming(Vec3* pos, Vec3* target, u32 speed, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) {
+NAKED s32 InkBallShot_SpawnHoming(Vec3* pos, Vec3* target, u32 speed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 life, s32 hurtboxDelay, s32 puddlePower, s32 puddleKnockback, s32 puddleAttrs, s32 puddleIframes, s32 puddleTtl) {
   INCFUNC("asm/func/InkBallShot_SpawnHoming.inc");
 }

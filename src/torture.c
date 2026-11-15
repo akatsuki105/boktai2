@@ -1,0 +1,717 @@
+#include "camera.h"
+#include "entity.h"
+#include "file.h"
+#include "global.h"
+#include "player.h"
+#include "sound.h"
+#include "sprite.h"
+#include "vm.h"
+
+// 暗黒ローンのおしおき, 返済できなかったときにボタン連打で返済分を発電させるイベント
+typedef struct Torture {
+  Entity e;                                 // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x020 - 0x018];                 // 0x018, まだ未解析
+  AuxSprite sprite0;                        // 0x020, _Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx0;                        // 0x04C, SPRITE_DARKGENERATOR
+  u16 sprite0Phase;                         // 0x068, 0..11 を回り, 4 で割った値が sprite0 のコマ
+  u8 unk_6a[2];                             // 0x06A, まだ未解析
+  AuxSprite sprite1;                        // 0x06C, _Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx1;                        // 0x098, SPRITE_DARKGENERATOR
+  u16 sprite1Phase;                         // 0x0B4, sprite1Speed ずつ進めて 0..23 を回り, 8 で割った値が sprite1 のコマ
+  u16 sprite1Speed;                         // 0x0B6, '.N' が 4 なら 1, 3 なら 4, 10 なら 3, それ以外は 2
+  AuxSprite sprite2;                        // 0x0B8
+  AuxSpriteGfx gfx2;                        // 0x0E4, SPRITE_DARKGENERATOR
+  AuxSprite mashMeter[7];                   // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
+  AuxSpriteGfx meterGfx;                    // 0x234, SPRITE_PANTHER_BONUS
+  AuxSprite bonusSprites[6];                // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
+  AuxSpriteGfx bonusGfx;                    // 0x358, SPRITE_PANTHER_BONUS
+  u16 bonusTimer;                           // 0x374, 倍率表示を動かす残りフレーム数, 出すとき 10 (4 までは上へ, 残りは下へ), 下げるとき 4 で 0 になったら隠す
+  u8 unk_376[2];                            // 0x376, まだ未解析
+  MainSpriteGfx uiGfx;                      // 0x378, SPRITE_UI_START_MENU
+  MainSprite mainSprites[5];                // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
+  u16 mashPattern;                          // 0x578, '.p', A と一緒に連打させる十字キー (0: 左, 1: 上, 2: 右, 3: 下)
+  u16 startDelay;                           // 0x57A, Torture_Start が 32 を入れて毎フレーム減らす, 0 になるまでは借金を返し終えても終えない
+  u16 soundTimer;                           // 0x57C, 0..9 を回り, 0 のときに連打数に応じた効果音を鳴らす
+  u16 fallCount;                            // 0x57E, ベルトコンベアの端から落ちた回数, endScript の引数
+  u8 unk_580[0x588 - 0x580];                // 0x580, まだ未解析
+  u16 mashFrames;                           // 0x588, 連打数が 3 を超えているフレームが続いた数, 3 以下で 0 に戻る
+  u16 rate2Frames;                          // 0x58A, '.t[0]=180', mashFrames がこれを超えると Torture_GetMashRate が 2
+  u16 rate5Frames;                          // 0x58C, '.t[1]=300', mashFrames がこれを超えると 5
+  u16 rate10Frames;                         // 0x58E, mashFrames がこれを超えると 10
+  u16 mashRate;                             // 0x590, 今の倍率 (1 / 2 / 5 / 10), Torture_GetMashRate の値, Torture_Finish が 1 に戻す
+  u8 unk_592[2];                            // 0x592, まだ未解析
+  s32 elapsedFrames;                        // 0x594, 走っているフレーム数
+  s32 timeLimit;                            // 0x598, '.a[0]', elapsedFrames がこれに届くと時間切れ
+  s32 totalUnits;                           // 0x59C, 発電した単位数の合計
+  s32 requiredUnits;                        // 0x5A0, '.a[1]', 時間切れで終えるのに要る totalUnits
+  u32 rateChangeScript;                     // 0x5A4, mashRate が変わったときに新しい倍率を引数に起動するスクリプト, 0 なら起動しない
+  u32 timeUpScript;                         // 0x5A8, '.a[2]', 時間切れで起動するスクリプト (Scr_DarkLoanPunishTimeUp)
+  u32 endScript;                            // 0x5AC, '.e', おしおきを終えたときに fallCount を引数に起動するスクリプト (Scr_DarkLoanPunishEnd)
+  u16 powerCharge;                          // 0x5B0, 連打で貯めた発電量, powerPerUnit ごとに1単位として取り出す
+  u16 powerPerUnit;                         // 0x5B2, '.r=300', 発電1単位に要る powerCharge
+  u8 unk_5b4[0x5B6 - 0x5B4];                // 0x5B4, まだ未解析
+  u16 stateTimer;                           // 0x5B6
+  void (*updateCallback)(struct Torture*);  // 0x5B8
+} Torture;
+static_assert(sizeof(Torture) == 1468);
+
+IWRAM_DATA Torture* gTorture = NULL;  // 0x03000158
+
+void Torture_ClearInstance(void) { gTorture = NULL; }
+
+void Torture_SetState(Torture* p, void* fn) {
+  p->updateCallback = fn;
+  p->stateTimer = 0;
+}
+
+// プレイヤー1の連打の履歴を空にする
+void Torture_ResetMash(void) {
+  s32 i;
+
+  for (i = 0; i < 32; i++) {
+    gPlayerPtr[0]->mashHistory[i] = FALSE;
+  }
+
+  gPlayerPtr[0]->mashHits = 0;
+}
+
+// プレイヤーを発電の位置に置いて連打の行動 (PACT_UNK_32) にし, mashPattern で連打させるキーを決める
+void Torture_SetupPlayer(Torture* p) {
+  gPlayerPtr[0]->mode = PMODE_ACTIVE;
+  gPlayerPtr[0]->action = PACT_UNK_32;
+  gPlayerPtr[0]->state = 0;
+  VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
+  gPlayerPtr[0]->facing = DIR8_UP_LEFT;
+  gPlayerPtr[0]->animDir = 1;
+  gPlayerPtr[0]->xflip = TRUE;
+  Torture_ResetMash();
+  gPlayerPtr[0]->mashKeys = A_BUTTON;
+  switch (p->mashPattern) {
+    case 0: {
+      gPlayerPtr[0]->mashKeys |= DPAD_LEFT;
+      break;
+    }
+    case 1: {
+      gPlayerPtr[0]->mashKeys |= DPAD_UP;
+      break;
+    }
+    case 2: {
+      gPlayerPtr[0]->mashKeys |= DPAD_RIGHT;
+      break;
+    }
+    case 3: {
+      gPlayerPtr[0]->mashKeys |= DPAD_DOWN;
+      break;
+    }
+  }
+}
+
+// sprite1Phase を sprite1Speed ずつ進めて, 8 で割った値を sprite1 のコマ番号にする
+void Torture_AnimateSprite1(Torture* p) {
+  AuxSprite_SetPoseIdx(&p->sprite1, p->sprite1Phase >> 3);
+  p->sprite1Phase += p->sprite1Speed;
+
+  if (p->sprite1Phase > 23) {
+    p->sprite1Phase = 0;
+  }
+}
+
+// 連打のアニメ速度に合わせて sprite0 のコマを進め, 10 フレームおきに連打数に応じた効果音を鳴らす
+// step の決め方は条件式の中で代入する形でだけ一致する, if のネストや代入を別の文にすると mashAnimSpeed を読み直す
+void Torture_AnimateSprite0(Torture* p) {
+  s32 step;
+
+  if (gPlayerPtr[0]->mashAnimSpeed == 0 || (step = Div(128, gPlayerPtr[0]->mashAnimSpeed)) <= 0) {
+    step = 1;
+  }
+  p->sprite0Phase += step;
+  if (p->sprite0Phase > 11) {
+    p->sprite0Phase -= 12;
+  }
+  AuxSprite_SetPoseIdx(&p->sprite0, p->sprite0Phase >> 2);
+  if (p->soundTimer == 0) {
+    if (gPlayerPtr[0]->mashHits < 2) {
+      PlaySound_082406e0(SONG_570);
+    } else if (gPlayerPtr[0]->mashHits < 4) {
+      PlaySound_082406e0(SONG_571);
+    } else if (gPlayerPtr[0]->mashHits < 6) {
+      PlaySound_082406e0(SONG_572);
+    } else {
+      PlaySound_082406e0(SONG_573);
+    }
+  }
+  p->soundTimer++;
+  if (p->soundTimer > 9) {
+    p->soundTimer = 0;
+  }
+}
+
+// 暗黒ローンの借金 (darkDebts) を4桁の数字で mainSprites[1..4] に出す
+void Torture_DrawDebts(Torture* p) {
+  s32 digits[4];
+  s32 debts;
+  s32 i;
+
+  debts = gStat->darkDebts;
+  digits[0] = Div(debts, 1000);
+  debts -= digits[0] * 1000;
+  digits[1] = Div(debts, 100);
+  debts -= digits[1] * 100;
+  digits[2] = Div(debts, 10);
+  debts -= digits[2] * 10;
+  digits[3] = debts;
+  for (i = 0; i < 4; i++) {
+    MainSprite_SetPose(&p->mainSprites[1 + i], &p->uiGfx, digits[i] + 30, PLAYMODE_LOOP);
+  }
+}
+
+void Torture_ShowMainSprites(Torture* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    p->mainSprites[i].flags &= ~SPRFLAG_HIDDEN;
+  }
+}
+
+void Torture_HideMainSprites(Torture* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    p->mainSprites[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
+
+void Torture_CountMashFrames(Torture* p) {
+  if (gPlayerPtr[0]->mashHits > 3) {
+    p->mashFrames++;
+  } else {
+    p->mashFrames = 0;
+  }
+}
+
+// mashFrames がどの区間にあるかを 10 / 5 / 1 / 2 で返す
+s32 Torture_GetMashRate(Torture* p) {
+  if (p->mashFrames > p->rate10Frames) {
+    return 10;
+  }
+  if (p->mashFrames > p->rate5Frames) {
+    return 5;
+  }
+  if (p->mashFrames > p->rate2Frames) {
+    return 2;
+  }
+  return 1;
+}
+
+// 倍率が 1 なら bonusSprites を下げておき, 2 / 5 / 10 なら数字のコマを合わせて出して効果音を鳴らす
+void Torture_ShowMashRate(Torture* p) {
+  s32 i;
+
+  if (p->mashRate == 1) {
+    for (i = 0; i < 6; i++) {
+      p->bonusSprites[i].pos.y = 48;
+    }
+    p->bonusTimer = 4;
+    return;
+  }
+  if (p->mashRate == 2) {
+    AuxSprite_SetPoseIdx(&p->bonusSprites[1], 4);
+  } else if (p->mashRate == 5) {
+    AuxSprite_SetPoseIdx(&p->bonusSprites[1], 5);
+  } else if (p->mashRate == 10) {
+    AuxSprite_SetPoseIdx(&p->bonusSprites[1], 6);
+  }
+  for (i = 0; i < 6; i++) {
+    p->bonusSprites[i].flags &= ~SPRFLAG_HIDDEN;
+    p->bonusSprites[i].pos.y = 56;
+  }
+  p->bonusTimer = 10;
+  PlaySound_082406e0(SONG_651);
+}
+
+// bonusTimer の間だけ倍率表示を跳ねさせ, 倍率が 1 に戻ったときは下げてから隠す
+void Torture_UpdateBonusSprites(Torture* p) {
+  s32 i;
+
+  if (p->bonusTimer != 0) {
+    if (p->mashRate == 1) {
+      p->bonusTimer--;
+      if (p->bonusTimer == 0) {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].flags |= SPRFLAG_HIDDEN;
+        }
+      } else {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].pos.y += 2;
+        }
+      }
+    } else {
+      if (p->bonusTimer > 3) {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].pos.y -= 2;
+        }
+      } else {
+        for (i = 0; i < 6; i++) {
+          p->bonusSprites[i].pos.y += 2;
+        }
+      }
+      p->bonusTimer--;
+    }
+  }
+}
+
+void Torture_HideBonusSprites(Torture* p) {
+  s32 i;
+
+  for (i = 0; i < 6; i++) {
+    p->bonusSprites[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
+
+// 連打数 (最大 7) だけ mashMeter を点け, 先頭 4 枚とそれ以降でコマを変え, 残りは消す
+void Torture_UpdateMashMeter(Torture* p) {
+  s32 n = gPlayerPtr[0]->mashHits;
+  s32 i;
+
+  if (n > 7) {
+    n = 7;
+  }
+  for (i = 0; i < n; i++) {
+    if (i < 4) {
+      AuxSprite_SetPoseIdx(&p->mashMeter[i], 1);
+    } else {
+      AuxSprite_SetPoseIdx(&p->mashMeter[i], 2);
+    }
+  }
+  for (; i < 7; i++) {
+    AuxSprite_SetPoseIdx(&p->mashMeter[i], 0);
+  }
+}
+
+void Torture_ShowMashMeter(Torture* p) {
+  s32 i;
+
+  for (i = 0; i < 7; i++) {
+    p->mashMeter[i].flags &= ~SPRFLAG_HIDDEN;
+  }
+}
+
+void Torture_HideMashMeter(Torture* p) {
+  s32 i;
+
+  for (i = 0; i < 7; i++) {
+    p->mashMeter[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
+
+void Torture_ShowHud(Torture* p) {
+  Torture_ShowMainSprites(p);
+  Torture_ShowMashMeter(p);
+}
+
+void Torture_HideHud(Torture* p) {
+  Torture_HideMainSprites(p);
+  Torture_HideBonusSprites(p);
+  Torture_HideMashMeter(p);
+}
+
+void Torture_UpdateRun(Torture* p);
+
+void Torture_Start(Torture* p) {
+  Torture_SetupPlayer(p);
+  Torture_ShowHud(p);
+  p->startDelay = 0x20;
+  Torture_SetState(p, Torture_UpdateRun);
+}
+
+// fallCount を引数にして endScript のスクリプトを起動する
+void Torture_RunEndScript(Torture* p) {
+  ScriptArgs args;
+  u32 argv[1];
+
+  if (p->endScript != 0) {
+    args.argc = 1;
+    args.argv = argv;
+    argv[0] = p->fallCount;
+    VM_ExecByID(p->endScript, &args);
+  }
+}
+
+// timeUpScript を起動する
+void Torture_RunTimeUpScript(Torture* p) {
+  u32 arg;
+  ScriptArgs args;
+
+  if (p->timeUpScript != 0) {
+    args.argc = 1, args.argv = &arg;
+    VM_ExecByID(p->timeUpScript, &args);
+  }
+}
+
+void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
+void Sound_SetBGMTempo(u32 tempo);
+
+// 0xA864, HashName("おしおき開始"), プレイヤーを決まった座標へ戻してから Torture_Start を予約する
+void Cmd_StartTorture(void) {
+  Torture* p = gTorture;
+
+  if (p != NULL) {
+    EntityCF58_CreateWithCallback(0, 0, Torture_Start, p);
+    Player_Lock(gPlayerPtr[0], DIR8_UP_LEFT);
+    VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
+  }
+}
+
+// 連打数から発電量を出して倍率を掛けて貯め, powerPerUnit を超えた分の単位数を返す, 倍率が変わったら rateChangeScript を起動して表示を出す
+// power を2文に分ける形と, 足した結果を if で比べる形でだけ一致する
+s32 Torture_GeneratePower(Torture* p) {
+  s32 power;
+  s32 rate;
+  s32 n;
+
+  if (gPlayerPtr[0]->mashHits == 0) {
+    power = 0;
+  } else if (gPlayerPtr[0]->mashHits <= 3) {
+    power = 1;
+  } else {
+    power = gPlayerPtr[0]->mashHits - 2;
+    power = (power * (gPlayerPtr[0]->mashHits - 3)) >> 1;
+  }
+  rate = Torture_GetMashRate(p);
+  if (p->mashRate != rate) {
+    if (p->rateChangeScript != 0) {
+      ScriptArgs args;
+      u32 argv[1];
+
+      args.argc = 1;
+      args.argv = argv;
+      argv[0] = rate;
+      VM_ExecByID(p->rateChangeScript, &args);
+    }
+    p->mashRate = rate;
+    Torture_ShowMashRate(p);
+  }
+  power *= p->mashRate;
+  if ((p->powerCharge += power) >= p->powerPerUnit) {
+    n = 0;
+    while (p->powerCharge >= p->powerPerUnit) {
+      n++;
+      p->powerCharge -= p->powerPerUnit;
+    }
+    return n;
+  }
+  return 0;
+}
+
+void Torture_UpdateDone(Torture* _) {}
+
+// おしおきを終える, 借金を 0 にして表示を消し, プレイヤーを操作不能に戻してから 時間切れなら timeUpScript, そうでなければ endScript を予約する
+void Torture_Finish(Torture* p, bool32 timeUp) {
+  gStat->darkDebts = 0;
+  Torture_ResetMash();
+  p->mashRate = 1;
+  p->mashFrames = 0;
+  Sound_SetBGMTempo(256);
+  Camera_ReleaseLook(8);
+  Torture_HideHud(p);
+  gPlayerPtr[0]->mode = PMODE_LOCKED;
+  gPlayerPtr[0]->action = 0;
+  gPlayerPtr[0]->state = 0;
+  if (!timeUp) {
+    EntityCF58_CreateWithCallback(1, 0, Torture_RunEndScript, p);
+  } else {
+    EntityCF58_CreateWithCallback(1, 0, Torture_RunTimeUpScript, p);
+  }
+  Torture_SetState(p, Torture_UpdateDone);
+}
+
+// 連打でベルトコンベアを走らせて発電し借金を減らす, 遅いと端まで流されて落ち, 暗転して元の位置から走り直す, 返し終えるか時間切れで終える
+void Torture_UpdateRun(Torture* p) {
+  if (gPlayerPtr[0]->state == 0) {
+    bool32 fellOff;
+
+    p->elapsedFrames++;
+    Torture_AnimateSprite0(p);
+    fellOff = FALSE;
+    gPlayerPtr[0]->mover.pos.x -= gPlayerPtr[0]->mashHits - 3;
+    if (gPlayerPtr[0]->mover.pos.x < 896) {
+      gPlayerPtr[0]->mover.pos.x = 896;
+    } else if (gPlayerPtr[0]->mover.pos.x > 1023) {
+      gPlayerPtr[0]->mover.pos.x = 1023;
+      fellOff = TRUE;
+    }
+    if (fellOff) {
+      gPlayerPtr[0]->state = 1;
+      p->fallCount++;
+      sound_08240740(SONG_570);
+      sound_08240740(SONG_571);
+      sound_08240740(SONG_572);
+      sound_08240740(SONG_573);
+      p->soundTimer = 0;
+      p->mashRate = 1;
+      p->mashFrames = 0;
+      Sound_SetBGMTempo(256);
+      Torture_ResetMash();
+    } else {
+      s32 units;
+
+      Torture_CountMashFrames(p);
+      units = Torture_GeneratePower(p);
+      p->totalUnits += units;
+      if (gStat->darkDebts < units) {
+        gStat->darkDebts = 0;
+        if (p->startDelay == 0) {
+          Torture_Finish(p, FALSE);
+        }
+      } else if (p->elapsedFrames >= p->timeLimit && p->totalUnits >= p->requiredUnits) {
+        Torture_Finish(p, TRUE);
+      } else {
+        Sound_SetBGMTempo(gPlayerPtr[0]->mashHits * 96);
+        gStat->darkDebts -= units;
+      }
+    }
+    Torture_DrawDebts(p);
+    if (p->mashRate > 1) {
+      Camera_Shake(p->mashRate * 4);
+    }
+  } else if (gPlayerPtr[0]->state == 2 && gPlayerPtr[0]->stateTimer == 1) {
+    StartBgObjPlttFade(1, 5, 4, 4, 4, 0x1FFF, 0);
+  } else if (gPlayerPtr[0]->state == 3) {
+    if (gPlayerPtr[0]->stateTimer > 31) {
+      gPlayerPtr[0]->state = 4;
+      gPlayerPtr[0]->stateTimer = 0;
+      VEC3_SET(gPlayerPtr[0]->mover.pos, Q8(3.5), Q8(1), Q8(5.5));
+      gPlayerPtr[0]->animDir = 1;
+      gPlayerPtr[0]->xflip = TRUE;
+      StartBgObjPlttFade(0, 5, 4, 4, 4, 0x1FFF, 0);
+    }
+  } else if (gPlayerPtr[0]->state == 4) {
+    if (gPlayerPtr[0]->stateTimer > 31) {
+      gPlayerPtr[0]->state = 0;
+      gPlayerPtr[0]->stateTimer = 0;
+      p->mashFrames = 0;
+    }
+  }
+  Torture_UpdateMashMeter(p);
+  Torture_UpdateBonusSprites(p);
+  if (p->startDelay != 0) {
+    p->startDelay--;
+  }
+}
+
+void Torture_UpdateScreenBlend(Torture* p) {
+  Player* q = gPlayerPtr[0];
+
+  if (q->mashHits <= 3) {
+    REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN;
+    REG_BLDY = (4 - q->mashHits) * 2;
+  } else {
+    REG_BLDCNT = BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_BD | BLDCNT_EFFECT_LIGHTEN;
+    REG_BLDY = q->mashHits - 4;
+  }
+  REG_BLDALPHA = 0;
+}
+
+s32 Torture_Update(Torture* p) {
+  p->updateCallback(p);
+  Torture_AnimateSprite1(p);
+  Torture_UpdateScreenBlend(p);
+  return 0;
+}
+
+s32 Torture_Destroy(Torture* p) {
+  s32 i;
+
+  AuxSprite_Remove(&p->sprite0);
+  AuxSprite_Remove(&p->sprite1);
+  AuxSprite_Remove(&p->sprite2);
+  for (i = 0; i < 5; i++) {
+    MainSprite_Remove(&p->mainSprites[i]);
+  }
+  for (i = 0; i < 7; i++) {
+    AuxSprite_Remove(&p->mashMeter[i]);
+  }
+  for (i = 0; i < 6; i++) {
+    AuxSprite_Remove(&p->bonusSprites[i]);
+  }
+  gTorture = NULL;
+  sound_08240740(SONG_574);
+  return 0;
+}
+
+// uiGfx を読み込み, mainSprites[0] (コマ 40) と借金の4桁の数字 mainSprites[1..4] を並べる
+// 残差: 122/122 命令, 原典は最初の MainSprite_Add の playMode の 0 を pos を作った直後に r2 へ置いて使うが, こちらは引数を積む所で作る, 試済: pos の代入順 (z を先に), i = 0 を前に出すと 0 は早く作られるが callee-saved に置かれる, Vec3_Set は悪化, dark_loans.c / warehouse.c / shop_weapon.c / shop_coffin.c の「pos 初期化の 0 と引数の 0」の壁の逆向き
+NON_MATCH void Torture_InitDebtSprites(Torture* p) {
+#ifdef NONMATCHING_C
+  MainSpriteGfxFile* f;
+  Vec3 pos;
+  s32 i;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  p->uiGfx = *f;
+  OpenMainSpriteFile(&p->uiGfx, f);
+  pos.x = 144, pos.y = 64, pos.z = 0;
+  MainSprite_Add(&p->mainSprites[0], &p->uiGfx, 40, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 1, PLAYMODE_PAUSE, 60, &pos);
+  p->mainSprites[0].plttID = 679;
+  p->mainSprites[0].pltt = &gObjPlttData[p->mainSprites[0].plttID * 16];
+  pos.x += 8;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->mainSprites[1 + i], &p->uiGfx, 30, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 1, PLAYMODE_PAUSE, 60, &pos);
+    p->mainSprites[1 + i].plttID = 679;
+    p->mainSprites[1 + i].pltt = &gObjPlttData[p->mainSprites[1 + i].plttID * 16];
+    pos.x += 8;
+  }
+#else
+  INCFUNC("asm/func/Torture_InitDebtSprites.inc");
+#endif
+}
+
+// bonusGfx を読み込み, bonusSprites を隠した状態で並べる
+void Torture_InitBonusSprites(Torture* p) {
+  Vec3 pos;
+  s32 i;
+
+  pos.x = 132, pos.y = 48, pos.z = 0;
+  Video_GetAuxSprite(&p->bonusGfx, SPRITE_PANTHER_BONUS);
+  for (i = 0; i < 6; i++) {
+    AuxSprite_Add(&p->bonusSprites[i], &p->bonusGfx, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
+    if (i < 2) {
+      p->bonusSprites[i].poseIdx = i + 3;
+    } else {
+      p->bonusSprites[i].poseIdx = i + 5;
+    }
+    p->bonusSprites[i].pos = pos;
+    p->bonusSprites[i].priority = 1;
+    pos.x += 8;
+  }
+}
+
+// meterGfx を読み込み, mashMeter をコマ 0 で (128, 56) から 8 ずつ右へ並べる
+void Torture_InitMashMeter(Torture* p) {
+  Vec3 pos;
+  s32 i;
+
+  pos.x = 128, pos.y = 56, pos.z = 0;
+  Video_GetAuxSprite(&p->meterGfx, SPRITE_PANTHER_BONUS);
+  for (i = 0; i < 7; i++) {
+    AuxSprite_Add(&p->mashMeter[i], &p->meterGfx, SPRFLAG_SCREEN_COORD);
+    AuxSprite_SetPoseIdx(&p->mashMeter[i], 0);
+    p->mashMeter[i].pos = pos;
+    p->mashMeter[i].priority = 1;
+    pos.x += 8;
+  }
+}
+
+s32 Torture_Init(Torture* p) {
+  s32 n;
+
+  if (VM_SeekToNamedArg('p')) {
+    p->mashPattern = VM_GetValue();
+  } else {
+    p->mashPattern = 0;
+  }
+
+  Video_GetAuxSprite(&p->gfx0, SPRITE_DARKGENERATOR);
+  AuxSprite_Add(&p->sprite0, &p->gfx0, 0);
+  AuxSprite_SetPoseIdx(&p->sprite0, 0);
+  p->sprite0.pos.x = 896;
+  p->sprite0.pos.y = 0;
+  p->sprite0.pos.z = 1324;
+
+  Video_GetAuxSprite(&p->gfx1, SPRITE_DARKGENERATOR);
+  AuxSprite_Add(&p->sprite1, &p->gfx1, 0);
+  AuxSprite_SetPoseIdx(&p->sprite1, 0);
+  p->sprite1.pos = p->sprite0.pos;
+  p->sprite1.pos.z += 768;
+  if (VM_SeekToNamedArg('N')) {
+    n = VM_GetValue();
+    switch (n) {
+      case 4: {
+        p->sprite1Speed = 1;
+        break;
+      }
+      case 3: {
+        p->sprite1Speed = 4;
+        break;
+      }
+      case 10: {
+        p->sprite1Speed = 3;
+        break;
+      }
+      case 2:
+      default: {
+        p->sprite1Speed = 2;
+        break;
+      }
+    }
+  } else {
+    p->sprite1Speed = 2;
+  }
+
+  Video_GetAuxSprite(&p->gfx2, SPRITE_DARKGENERATOR);
+  AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
+  AuxSprite_SetPoseIdx(&p->sprite2, 0);
+  p->sprite2.pos = p->sprite0.pos;
+  p->sprite2.pos.z -= 768;
+
+  Torture_InitDebtSprites(p);
+  Torture_DrawDebts(p);
+  Torture_SetState(p, Torture_UpdateDone);
+  Torture_InitMashMeter(p);
+  Torture_InitBonusSprites(p);
+  Torture_HideHud(p);
+
+  if (VM_SeekToNamedArg('r')) {
+    p->powerPerUnit = VM_GetValue();
+  } else {
+    p->powerPerUnit = 300;
+  }
+  if (VM_SeekToNamedArg('t')) {
+    p->rate2Frames = VM_GetValue();
+    p->rate5Frames = VM_GetValue();
+    p->rate10Frames = VM_GetValue();
+  } else {
+    p->rate2Frames = 180;
+    p->rate5Frames = 300;
+    p->rate10Frames = 600;
+  }
+  if (VM_SeekToNamedArg('b')) {
+    p->rateChangeScript = VM_GetValue();
+  } else {
+    p->rateChangeScript = 0;
+  }
+  p->mashRate = 1;
+  p->mashFrames = 0;
+  if (VM_SeekToNamedArg('e')) {
+    p->endScript = VM_GetValue();
+  }
+  if (VM_SeekToNamedArg('a')) {
+    p->timeLimit = VM_GetValue();
+    p->requiredUnits = VM_GetValue();
+    p->timeUpScript = VM_GetValue();
+  }
+  p->elapsedFrames = 0;
+  p->totalUnits = 0;
+  PlaySound_082406e0(SONG_574);
+  p->fallCount = 0;
+  p->elapsedFrames = 0;
+  gTorture = p;
+  return 0;
+}
+
+// 0xB3D1
+Torture* Torture_Create(void) {
+  if (gTorture == NULL) {
+    Torture* p = CreateEntity(ENTITY_UNK_8, sizeof(Torture));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Torture_Update, Torture_Destroy);
+      if (Torture_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gTorture;
+}

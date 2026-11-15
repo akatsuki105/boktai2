@@ -229,7 +229,7 @@ _080307C4:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08028838
+	bl Ringo_SpawnAfterimage
 	b _08030926
 	.align 2, 0
 _08030858: .4byte 0x00000899

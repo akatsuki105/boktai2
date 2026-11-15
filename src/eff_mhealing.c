@@ -23,7 +23,7 @@ typedef struct HealingEffect {
   Entity e;                                       // 0x000, ENTITY_UNK_8
   Player* player;                                 // 0x018, _Init の第2引数
   Vec3 pos;                                       // 0x01C, _Init の第3引数を8バイトまるごと写す
-  HitboxData hitbox;                              // 0x024, 攻撃も食らいもしない判定, timer が 12 未満の間だけ登録する
+  Hitbox hitbox;                                  // 0x024, 攻撃も食らいもしない判定, timer が 12 未満の間だけ登録する
   HealingEffectParticle ptcls[8];                 // 0x074, _Destroy が Particle_Remove に渡す
   ParticleGroup* group;                           // 0x1F4, PTCL_GROUP_2
   u16 unk_1f8;                                    // 0x1F8, unk_1fa を3で割った値
@@ -137,14 +137,14 @@ NON_MATCH void HealingEffect_InitParticles(HealingEffect* p) {
 }
 
 void HealingEffect_InitHitbox(HealingEffect* p) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 size;
   Vec3 offset;
 
   VEC3_SET(size, 100, 50, 100);
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX, 0, HIM_0, &size, &offset);
-  Hitbox_SetAttack(hitbox, 0, 0, 0x8000, 0, 0);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX, 0, HIM_0, &size, &offset);
+  Hitbox_SetAttack(hitbox, 0, 0, HBSRC_MHEALING, 0, 0);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->pos, 0);
 }

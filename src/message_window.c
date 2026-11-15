@@ -710,7 +710,7 @@ NON_MATCH s32 MessageWindow_Init(MessageWindow* p, u32 _) {
 #endif
 }
 
-// 0x0E37
+// 0x0E37, HashName("メッセージマネージャ")?
 MessageWindow* MessageWindow_Create(u32 id) {
   MessageWindow* p = gMessageWindow;
 

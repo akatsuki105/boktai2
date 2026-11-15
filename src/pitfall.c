@@ -32,11 +32,11 @@ static_assert(sizeof(Pitfall) == 192);
 
 // 落とし穴を12個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
 typedef struct {
-  Entity e;                       // 0x00, ENTITY_UNK_8
-  AuxAnimFile* anim;              // 0x18, ANIM_0AE9
-  AuxSpriteGfx gfx;               // 0x1C, SPRITE_PITFALL_A945
+  Entity e;           // 0x00, ENTITY_UNK_8
+  AuxAnimFile* anim;  // 0x18, ANIM_0AE9
+  AuxSpriteGfx gfx;   // 0x1C, SPRITE_PITFALL_A945
   Pitfall* pits[12];  // 0x38
-  u32 activeMask;                 // 0x68, 1 << i で pits[i] が使用中
+  u32 activeMask;     // 0x68, 1 << i で pits[i] が使用中
 } PitfallManager;
 static_assert(sizeof(PitfallManager) == 108);
 
@@ -402,7 +402,7 @@ s32 PitfallManager_Init(PitfallManager* p) {
   return 0;
 }
 
-// 0xC419
+// 0xC419, HashName("落とし穴マネージャ")
 PitfallManager* PitfallManager_Create(void) {
   if (sPitfallManager == NULL) {
     PitfallManager* p = CreateEntity(ENTITY_UNK_8, sizeof(PitfallManager));

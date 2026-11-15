@@ -40,17 +40,17 @@ void Entity080acd4c_Spawn(Vec3* pos);
 void CrossoverBattle_NotifyPlayerDead(void);
 s32 FUN_08020358(u32 id);
 bool32 IsInPuddle(WorldPos* pos);
-void* Entity080c1abc_Create(u32 param_1, u32 param_2, u32 param_3);
-struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttributes attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan);
+void* CutsceneBusterShot_Create(Player* player, u32 speed, u32 flyTime);
+struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 forwardOffset, u32 sideOffset, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttrs attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan);
 void Player_UpdateLockedIdle(Player* p);
 void FUN_080d040c(Player* p);
-void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
+void Django_OnHurt(Hitbox* a, Hitbox* b, Player* p);
 void Player_LockFall(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID);
 bool32 FUN_0809df78(Vec3* pos);
 s32 SpawnBlood(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
 void FUN_080dab9c(s32 idx);
 bool32 FUN_0809e138(Player* p);
-void Django_OnWeaponHit(HitboxData* a, HitboxData* b, Player* _);
+void Django_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _);
 void* BloodEmitter_Create(void);
 struct Judgement* Judgement_Create(Player* p);
 struct DjangoBerserk* DjangoBerserk_Create(Player* player);
@@ -130,7 +130,7 @@ static inline s32 Player_GetIframes(Player* p) { return p->hurtbox.iframes; }
 static inline s32 Player_GetAction(Player* p) { return p->action; }
 
 // 当たり判定の向きを入れる
-static inline void Hitbox_SetAngle(HitboxData* p, s32 angle) { p->angle = angle; }
+static inline void Hitbox_SetAngle(Hitbox* p, s32 angle) { p->angle = angle; }
 
 // gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
 static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
@@ -207,7 +207,7 @@ void Player_BeginAction(Player* p) {
 
   VEC3_SET(p->shadowOffset, 0, 0, 0);
   p->flag35a = 0;
-  p->hurtbox.hitState &= ~HBHITSTATE_UNK_1;
+  p->hurtbox.hitState &= ~HBHITSTATE_ONCE_HIT;
 }
 
 void Player_SetFlag35a(Player* p, u32 val) { p->flag35a |= val; }
@@ -226,12 +226,12 @@ void Player_StopEneChargeSound(Player* p) {
 }
 
 // 被弾側 b から攻撃側 a を向く向きを 1/3/5/7 の斜め4方向に丸めて返す, 同じ位置なら b->angle から作る
-u32 Player_GetDirToAttacker(HitboxData* a, HitboxData* b) {
+u32 Player_GetDirToAttacker(Hitbox* a, Hitbox* b) {
   s32 angle;
   s32 dx;
   s32 dz;
 
-  if (a->flags & HBFLAG_ANGLE) {
+  if (a->flags & HBF_ANGLE) {
     angle = a->angle + 0xE0;
     return ((angle & 0xFF) >> 6) * 2 + 1;
   }
@@ -248,7 +248,7 @@ u32 Player_GetDirToAttacker(HitboxData* a, HitboxData* b) {
 }
 
 // 被弾したときの向きと退避処理, 攻撃側 a のダメージを被弾側 b に移してから向きを決める
-void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
+void Player_SetupKnockback(Player* p, Hitbox* a, Hitbox* b) {
   b->knockback = a->knockback;
   if (a->knockback > 200) {
     b->knockback = 200;
@@ -261,13 +261,13 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
   }
 
   if (p->action == PACT_PUSH) {
-    b->flags |= HBFLAG_HIDDEN;
+    b->flags |= HBF_HIDDEN;
     b->knockback = 0;
     return;
   }
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
-    if (a->flags & HBFLAG_ANGLE) {
+    if (a->flags & HBF_ANGLE) {
       p->knockbackDir = ANGLE_TO_DIR8(a->angle + 0x10);
     } else {
       s32 dx = a->center.x - b->center.x;
@@ -282,7 +282,7 @@ void Player_SetupKnockback(Player* p, HitboxData* a, HitboxData* b) {
 
     p->knockbackSpeed = b->knockback;
     b->knockback = 0;
-    b->flags |= HBFLAG_HIDDEN;
+    b->flags |= HBF_HIDDEN;
     return;
   }
 
@@ -459,7 +459,7 @@ void Player_RefreshHurtbox(Player* p) {
   PlayerArmor* armor = &p->armor;
   s32 lv;
   s32 defence;
-  HitboxAttributes attrs;
+  HitboxAttrs attrs;
   u32 weakness;
 
   if (p->kind == PLAYER_SABATA) {  // サバタの場合、常にジャンゴのレベル+10　
@@ -2121,7 +2121,7 @@ u32 Player_WeaponEffectKajiba(Player* p) { return Div((p->maxHP - p->hp) * 20, p
 u32 Player_WeaponEffectGyakuKajiba(Player* p) { return -Div((p->maxHP - p->hp) * 40, p->maxHP); }
 
 // 同じ種族の敵をたくさん倒しているほど威力が上がる, 相手の系統に応じた撃破数ボーナス (撃破数/64, 最大10) を返す, 系統が付いていなければ 0
-u32 Player_WeaponEffectKillCount(Player* p, HitboxData* _, HitboxData* b) {
+u32 Player_WeaponEffectKillCount(Player* p, Hitbox* _, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_BEAST)) {
     s32 n = gStat->killCounts[0] >> 6;
     return (n < 10) ? n : 10;
@@ -2146,70 +2146,70 @@ u32 Player_WeaponEffectKillCount(Player* p, HitboxData* _, HitboxData* b) {
 }
 
 // 一定確率で追加ダメージ 10
-u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectRandom(Player* p, Hitbox* a, Hitbox* b) {
   if (Mod(Random(), 100) <= 10) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectAntiBeast(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_BEAST)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectAntiThing(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_THING)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectAntiPhantom(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_PHANTOM)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectAntiUndead(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectAntiUndead(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_UNDEAD)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectAntiImmortal(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectAntiImmortal(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(b, HBATTR_IMMORTAL)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectFlame(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectFlame(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectFrost(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(a, HBATTR_FROST)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectCloud(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(a, HBATTR_CLOUD)) {
     return 10;
   }
   return 0;
 }
 
-u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) {
+u32 Player_WeaponEffectEarth(Player* p, Hitbox* a, Hitbox* b) {
   if (Hitbox_TestAttr(a, HBATTR_EARTH)) {
     return 10;
   }
@@ -2398,16 +2398,16 @@ NON_MATCH void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) {
 
 // 武器種ごとに当たり判定の大きさ・位置・攻撃元の種別を設定する, サバタは固定値
 void Player_SetWeaponHitbox(Player* p) {
-  HitboxData* hitbox = &p->wpn.hitbox;
+  Hitbox* hitbox = &p->wpn.hitbox;
   Vec3 halfSize, offset;
-  u32 weakness;
+  u32 source;
 
   if (p->kind != PLAYER_SABATA) {
     switch (p->wpn.weaponKind) {
       case WK_SWORD: {
         VEC3_SET(halfSize, Q8(0.352), Q8(0.196), Q8(0.352));
         VEC3_SET(offset, 0, Q8(-0.1), 0);
-        weakness = 1 << WK_SWORD;
+        source = HBSRC_SWORD;
         p->wpn.knockback = 32;
         p->wpn.iframes = 10;
         break;
@@ -2415,7 +2415,7 @@ void Player_SetWeaponHitbox(Player* p) {
       case WK_SPEAR: {
         VEC3_SET(halfSize, Q8(0.235), Q8(0.391), Q8(0.235));
         VEC3_SET(offset, 0, 0, 0);
-        weakness = 1 << WK_SPEAR;
+        source = HBSRC_SPEAR;
         p->wpn.knockback = 64;
         p->wpn.iframes = 20;
         break;
@@ -2423,15 +2423,15 @@ void Player_SetWeaponHitbox(Player* p) {
       case WK_HAMMER: {
         VEC3_SET(halfSize, Q8(0.313), Q8(0.274), Q8(0.313));
         VEC3_SET(offset, 0, Q8(0.12), 0);
-        weakness = 1 << WK_HAMMER;
+        source = HBSRC_HAMMER;
         p->wpn.knockback = 48;
         p->wpn.iframes = 20;
         break;
       }
-      case WK_OTHERS: {
+      case WK_OTHERS: {  // 拳のみ
         VEC3_SET(halfSize, Q8(0.235), Q8(0.391), Q8(0.235));
         VEC3_SET(offset, 0, Q8(-0.313), 0);
-        weakness = 1 << WK_OTHERS;
+        source = HBSRC_FIST;
         p->wpn.knockback = 1;
         p->wpn.iframes = 5;
         break;
@@ -2439,7 +2439,7 @@ void Player_SetWeaponHitbox(Player* p) {
       case WK_GUN: {
         VEC3_SET(halfSize, Q8(0.235), Q8(0.196), Q8(0.235));
         VEC3_SET(offset, 0, Q8(-0.1), 0);
-        weakness = 1 << WK_GUN;
+        source = HBSRC_GUN;
         p->wpn.knockback = 32;
         p->wpn.iframes = 20;
         break;
@@ -2449,14 +2449,14 @@ void Player_SetWeaponHitbox(Player* p) {
       }
     }
 
-    Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, 1 << p->mover.unk_4, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockback, weakness, 0, p->wpn.iframes);
+    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.unk_4, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockback, source, 0, p->wpn.iframes);
     Hitbox_SetHandler(hitbox, Django_OnWeaponHit, p);
   } else {
     VEC3_SET(halfSize, Q8(0.665), Q8(0.196), Q8(0.665));
     VEC3_SET(offset, 0, Q8(-0.08), 0);
-    Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, 1 << p->mover.unk_4, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, 20, 0x32, 1 << WK_GUN, HBATTR_DARK, 0x14);
+    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.unk_4, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, 20, 0x32, HBSRC_GUN, HBATTR_DARK, 0x14);
     Hitbox_SetHandler(hitbox, NULL, p);
   }
 }
@@ -3431,12 +3431,12 @@ void Player_InitArmor(Player* p) {
 
 // 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる
 void Player_SetupHurtbox(Player* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.196), Q8(0.497), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.497), 0);
-  Hitbox_Init(hurtbox, p->mover.id, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 1 << p->inputIdx, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 1 << p->inputIdx, &halfSize, &offset);
   if (p->kind == PLAYER_SOLAR_DJANGO) {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_SOL, HBATTR_DARK);
   } else {
@@ -3975,7 +3975,7 @@ void Player_StartLookAround(Player* p) {
 
 // 見回しモードを終了する
 void Player_EndLookAround(Player* p) {
-  FUN_0823bca8(8);
+  Camera_ReleaseLook(8);
   p->lookAroundOffset.val = FALSE;
 }
 
@@ -4037,7 +4037,7 @@ void Player_ReleaseCuroro(Player* _) {
 
 // pos に物音を登録し, pos2 があれば音のパーティクルを出して soundID を鳴らす
 void Player_MakeNoise(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, bool32 fragileWall, SoundID32 soundID) {
-  FUN_08240cf0(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
+  NoiseManager_AddMoverNoise(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
   if (pos2 != NULL) {
     Player_ShowNoisePtcl(p, pos2, fragileWall);
   }
@@ -7663,7 +7663,7 @@ s32 Player_GetWeaponEffectAttrs(Player* p) {
 }
 
 // ジャンゴの武器の攻撃判定が当たったときのハンドラ, 特効系の追加ダメージを足し, 黒ジャンゴは夜の闇エンチャントで 1.5 倍, 種族持ちの敵に当てるたびにバーサークの攻撃回数を数える
-void Django_OnWeaponHit(HitboxData* a, HitboxData* b, Player* _) {
+void Django_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _) {
   Player* p;
   s32 i;
 
@@ -7685,7 +7685,7 @@ void Django_OnWeaponHit(HitboxData* a, HitboxData* b, Player* _) {
 
   if (p->wpn.enchantIdx == 1 && Player_IsNight(p) && !(b->hitResult & HBRESULT_BONUS)) {
     b->damage = (u32)(b->damage * 3) >> 1;
-    if (b->flags & HBFLAG_ANGLE) {
+    if (b->flags & HBF_ANGLE) {
       b->hitResult |= HBRESULT_BONUS;
     }
   }
@@ -7716,7 +7716,7 @@ void Django_OnWeaponHit(HitboxData* a, HitboxData* b, Player* _) {
 void Player_SetupSwordAttack(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
-  HitboxAttributes attrs;
+  HitboxAttrs attrs;
   u16 iframes;
 
   p->wpn.basePos = p->mover.pos;
@@ -7743,7 +7743,7 @@ void Player_SetupSwordAttack(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, 1 << WK_SWORD, attrs, iframes);
+  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, HBSRC_SWORD, attrs, iframes);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->berserkHitCounted = 0;
@@ -7927,7 +7927,7 @@ s32 CheckTileHigherAhead(Vec3* pos, s32 angle, s32 dist) {
 void Player_SetupSpearAttack(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
-  HitboxAttributes attrs;
+  HitboxAttrs attrs;
   u16 knockback;
   s32 r;
 
@@ -8003,7 +8003,7 @@ void Player_SetupSpearAttack(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, knockback, 1 << WK_SPEAR, attrs, wpn->iframes);
+  Hitbox_SetAttack(&wpn->hitbox, power, knockback, HBSRC_SPEAR, attrs, wpn->iframes);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->berserkHitCounted = 0;
@@ -8157,7 +8157,7 @@ void Player_UpdateSpearAttack(Player* p) {
 void Player_SetupHammerAttack(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
-  HitboxAttributes attrs;
+  HitboxAttrs attrs;
 
   p->wpn.basePos = p->mover.pos;
   p->wpn.basePos.y += 230;
@@ -8185,7 +8185,7 @@ void Player_SetupHammerAttack(Player* p) {
     attrs |= 1 << wpn->enchantIdx;
     Player_PayMagicCost(p);
   }
-  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, 1 << WK_HAMMER, attrs, wpn->iframes);
+  Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, HBSRC_HAMMER, attrs, wpn->iframes);
   wpn->hitbox.angle = wpn->angle;
   wpn->gunSpreadAngle = 0;
   p->berserkHitCounted = 0;
@@ -8328,7 +8328,7 @@ void Player_SetupFistAttack(Player* p) {
   p->wpn.angle = ((p->facing + 5) & 7) << 5;
   power = Player_GetAttackPower(p);
   Video_SetAuxSpritePltt(&p->wpn.gfx, 45);
-  Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockback, 1 << WK_OTHERS, 0, p->wpn.iframes);
+  Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockback, HBSRC_FIST, 0, p->wpn.iframes);
   p->wpn.hitbox.angle = p->wpn.angle;
   p->wpn.gunSpreadAngle = 0;
   p->berserkHitCounted = 0;
@@ -8778,7 +8778,7 @@ void Player_UpdateSabataAttack(Player* p) {
       } else {
         PlaySound_082406e0(VO_SABATA_TAKETHIS);
         p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
-        Hitbox_SetAttack(&p->wpn.hitbox, Player_GetAttackPower(p), 32, 1 << WK_GUN, HBATTR_DARK, 20);
+        Hitbox_SetAttack(&p->wpn.hitbox, Player_GetAttackPower(p), 32, HBSRC_GUN, HBATTR_DARK, 20);
         PlaySound_082406e0(SE_GUN_SPREAD);
         Player_SetAction(p, PACT_ATTACK, 8);
       }
@@ -8790,7 +8790,7 @@ void Player_UpdateSabataAttack(Player* p) {
       if (!(p->input->down & B_BUTTON)) {
         PlaySound_082406e0(VO_SABATA_TAKETHIS);
         p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
-        Hitbox_SetAttack(&p->wpn.hitbox, Player_GetAttackPower(p), 32, 1 << WK_GUN, HBATTR_DARK, 20);
+        Hitbox_SetAttack(&p->wpn.hitbox, Player_GetAttackPower(p), 32, HBSRC_GUN, HBATTR_DARK, 20);
         PlaySound_082406e0(SE_GUN_SPREAD);
         Player_SetAction(p, PACT_ATTACK, 8);
       }
@@ -9857,7 +9857,7 @@ void Player_UpdateLockedRockBuster(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 39), Q6(1));
       if (++p->stateTimer >= 6) {
         Player_SetAction(p, PACT_ATTACK, 2);
-        Entity080c1abc_Create((u32)p, 32, p->unk_4a7);
+        CutsceneBusterShot_Create(p, 32, p->unk_4a7);
       }
       break;
     }
@@ -10865,7 +10865,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
 }
 
 // サバタ版の制限時間つき暗黒チャージ (lockedUpdate), 日光を浴びずにいると timedCharge が 4 ずつ貯まり timedChargeGoal に届けば doneScriptID を引数 1 で, 時間切れなら引数 0 で実行する
-// 残差 418 対 426 命令, 原典は 0 / 1 / 0xFFFF を r5 / r6 / r7 / r2 に持って複数の case で使い回し, timedCharge の比較を ands 0xFFFF で切るが, こちらはレジスタの持ち方が違い case 1 と case 3 の末尾が深く合流し plttFlashTimer の格納先も共有される, 兄弟の Player_UpdateTimedSolarCharge は一致済み
+// 残差 418 対 426 命令, 原典は 0 / 1 / 0xFFFF を r5 / r6 / r7 / r2 に持って複数の case で使い回し, timedCharge の比較を ands 0xFFFF で切るが, こちらはレジスタの持ち方が違い case 1 と case 3 の末尾が深く合流し plttFlashTimer の格納先も共有される, 兄弟の Player_UpdateTimedSolarCharge は一致済み, 試済: 状態5への移行を Player_SetAction にする (原典は呼ばない)
 NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
 #ifdef NONMATCHING_C
   Player_SetFlag35a(p, PFLAG35A_NO_HURTBOX);
@@ -11271,9 +11271,9 @@ void Player_PostUpdateHuman(Player* p) {
   FUN_080417dc(&p->mover);
 
   if (Player_TestFlag35a(p, PFLAG35A_NO_HURTBOX)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 
@@ -11648,9 +11648,9 @@ NON_MATCH void Player_PostUpdateBat(Player* p) {
   p->beast.pos.y = p->mover.pos.y + p->batHeight + p->floatHeight;
 
   if (Player_TestFlag35a(p, PFLAG35A_NO_HURTBOX)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 
@@ -11770,9 +11770,9 @@ void Player_PostUpdateMouse(Player* p) {
   FUN_080417dc(&p->mover);
 
   if (Player_TestFlag35a(p, PFLAG35A_NO_HURTBOX)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 
@@ -11917,9 +11917,9 @@ void Player_PostUpdateSleeping(Player* p) {
   }
 
   if (Player_TestFlag35a(p, PFLAG35A_NO_HURTBOX)) {
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 }
@@ -12478,14 +12478,14 @@ void Player_EnterGrabbed(Player* p) {
   p->formRequest = FALSE;
   p->animDir = 0;
   Player_ClearElementalCond(p);
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->hurtbox.knockback = 0;
   p->hurtbox.iframes = 0;
   Player_SetAction(p, PACT_GRABBED, 0);
 }
 
 // pos に拘束 (PACT_GRABBED) して固定する, hidden なら姿を隠し, そうでなければ拘束アニメを流す, power > 0 ならダメージを与える, 拘束できなければ -1
-s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttributes attrs) {
+s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttrs attrs) {
   if (p->mode != PMODE_ACTIVE || TEST_FLAGS(p->flag20, PFLAG20_UNK_18)) {
     return -1;
   }
@@ -12521,7 +12521,7 @@ s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 x
 // 残差はレジスタ割り当てのみ (103/103), 原典は mode を r2, pos を r5, iframes を r6 に置き, 0x2E8 のオフセットを r7 に残して xflip の格納で subs r7, #1 と使い回す
 // Tier A-C 試済 (条件の入れ子と結果変数, 末尾の if/else, angle の再代入, facing のスコープ), 未: 割り当て順を動かす手
 // 原典は mode を読んだ r2 (== 1) を xflip = TRUE の格納に使い回す, 追試: Player_SetIframes 経由, 早期 return の形 (102 命令), mode を getter inline で読む形は不一致
-NON_MATCH s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttributes attrs) {
+NON_MATCH s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttrs attrs) {
 #ifdef NONMATCHING_C
   u32 facing;
   s32 ret;
@@ -12664,7 +12664,7 @@ static bool32 VM_GetPosArg(Vec3* pos) {
   return FALSE;
 }
 
-// 0xE14B
+// 0xE14B, HashName("プレイヤー位置変更")
 void Cmd_SetPlayerPos(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
@@ -12717,7 +12717,7 @@ s32 Cmd_E756(void) {
   return FUN_0807a9d0(gPlayerPtr[i]);
 }
 
-// 0x1BEE
+// 0x1BEE, HashName("プレイヤー経験値追加")
 void Cmd_AddPlayerExp(void) {
   if (VM_SeekToNamedArg('e')) {
     AddPlayerExp(VM_GetValue());
@@ -13049,7 +13049,7 @@ void Player_EnterLockedState(Player* p) {
   }
   Player_StopEneChargeSound(p);
   p->hurtbox.knockback = 0;
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   p->hurtbox.iframes = 0;
   if (p->lookAroundOffset.val != 0) {
     Player_EndLookAround(p);
@@ -13550,17 +13550,19 @@ void Player_LockFireGun(Player* p, s32 param_2, u32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedGunAttack;
 }
 
-void FUN_0807c748(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
+// 操作不能にしてロックバスターを構えさせる, flyTime は撃った弾が飛ぶフレーム数
+void Player_LockChargeBuster(Player* p, Dir8S32 dir, s32 flyTime, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
-  p->unk_4a7 = param_3;
+  p->unk_4a7 = flyTime;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_ATTACK, 0);
   p->lockedUpdate = Player_UpdateLockedRockBuster;
 }
 
-void FUN_0807c798(Player* p, s32 scriptID) {
+// 構えているロックバスターを撃たせる
+void Player_LockFireBuster(Player* p, s32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_ATTACK, 5);
@@ -14139,7 +14141,7 @@ void Cmd_PlayerLand(void) {
   }
 }
 
-// 0x7A25
+// 0x7A25, HashName("シングルプレイ")
 void Cmd_KnockbackPlayer(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
@@ -14618,12 +14620,12 @@ void Player_HandleMessages(Player* p) {
         break;
       }
       case 24: {
-        FUN_0807c748(p, msg->args[0], msg->args[1], 0);
+        Player_LockChargeBuster(p, msg->args[0], msg->args[1], 0);
         Player_SetDoneEndWait(p);
         break;
       }
       case 25: {
-        FUN_0807c798(p, 0);
+        Player_LockFireBuster(p, 0);
         Player_SetDoneEndWait(p);
         break;
       }
@@ -14783,13 +14785,13 @@ void Player_SendMsgToSelf(Player* p, s32 cmd, s32 argc, s16* args) {
 
 // スパイクメイル(攻撃を受けると、周囲の敵にダメージを与える) の攻撃判定 を作る
 void Django_Spike(Player* p) {
-  HitboxData* hitbox = &p->spikeHitbox;
+  Hitbox* hitbox = &p->spikeHitbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, Q8(0.47), Q8(0.47), Q8(0.47));
   VEC3_SET(offset, 0, Q8(0.47), 0);
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 1 << p->mover.unk_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 1 << p->mover.unk_4, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, 10, 40, 0, HBATTR_18, 10);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->mover.pos, 0);
@@ -14805,8 +14807,14 @@ void Player_UpdateSpikeHitbox(Player* p) {
   }
 }
 
-// 被弾1回分を処理する, ダメージ・状態異常・ノックバックを反映し、p->damage に足した量を返す
-u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
+/**
+ * @brief 被弾1回分を処理する, ダメージ・状態異常・ノックバックを反映し、p->damage に足した量を返す
+ * @param p プレイヤー
+ * @param a 攻撃の Hitbox
+ * @param b 被攻撃側(プレイヤー)の Hurtbox
+ * @return ダメージ量
+ */
+u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
   s32 shift;
   u32 dmg;
   s32 power;
@@ -14861,6 +14869,7 @@ u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
       Player_ClearElementalCond(p);
     }
   } else {
+    // これらの場合は2倍のダメージを受ける
     if (HasGoodCond(p, GOOD_MINI) || p->action == PACT_DASH || p->kind == PLAYER_BAT || p->kind == PLAYER_MOUSE) {
       shift++;
     }
@@ -14911,21 +14920,21 @@ u32 Player_TakeHit(Player* p, HitboxData* a, HitboxData* b) {
   return dmg;
 }
 
-void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
+void Django_OnHurt(Hitbox* a, Hitbox* b, Player* p) {
   if (p->mode == PMODE_ACTIVE) {
-    if (Hitbox_TestFlags(a, HBFLAG_UNK_9)) {
+    if (Hitbox_TestFlags(a, HBF_9)) {
       if ((b->hitState & HBHITSTATE_UNK_0) == 0) {
         return;
       }
       b->hitState &= ~HBHITSTATE_UNK_0;
     }
-    if (Hitbox_TestFlags(a, HBFLAG_UNK_10)) {
-      if (b->hitState & HBHITSTATE_UNK_1) {
+    if (Hitbox_TestFlags(a, HBF_ONCE)) {
+      if (b->hitState & HBHITSTATE_ONCE_HIT) {
         return;
       }
-      b->hitState |= HBHITSTATE_UNK_1;
+      b->hitState |= HBHITSTATE_ONCE_HIT;
     }
-    Player_TakeHit(p, a, b);
+    Player_HandleHurt(p, a, b);
     if (TEST_FLAGS(p->equipBuffs, EBUFF_SPIKE)) {
       Django_Spike(p);
     }
@@ -14933,20 +14942,20 @@ void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
 }
 
 // プレイヤーにダメージを与える関数 (内部的には即席の Hitbox を用意して自分の食らい判定にぶつける)
-s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockback, s32 angle, s32 iframes, HitboxAttributes attrs) {
+s32 Player_TakeInstantHit(Player* p, s32 power, s32 knockback, s32 angle, s32 iframes, HitboxAttrs attrs) {
   if (p->mode == PMODE_ACTIVE) {
-    HitboxData* hurtbox = &p->hurtbox;
+    Hitbox* hurtbox = &p->hurtbox;
     s32 remaining = hurtbox->iframes;
 
     if (remaining <= 0) {
-      HitboxData hb;
-      hb.flags = HBFLAG_HITBOX;
+      Hitbox hb;
+      hb.flags = HBF_HITBOX;
       hb.power = power;
       hb.knockback = knockback;
       hb.angle = angle;
       hb.attributes = attrs;
       hb.iframes = iframes;
-      return Player_TakeHit(p, &hb, hurtbox);
+      return Player_HandleHurt(p, &hb, hurtbox);
     }
   }
   return 0;

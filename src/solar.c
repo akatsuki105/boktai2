@@ -269,7 +269,7 @@ void UpdateOverheat(Taiyo* _ UNUSED) {
 NON_MATCH void ApplySunlightGain(Taiyo* p) {
 #ifdef NONMATCHING_C
   if (gPlayerPtr[0] != NULL && (gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_CROSSOVER)) == 0) {
-    if ((gGameFlags & GAMEFLAG_EVENT) == 0 && gPlayerPtr[0]->mode != PMODE_LOCKED) {
+    if ((gGameFlags & GAMEFLAG_CUTSCENE) == 0 && gPlayerPtr[0]->mode != PMODE_LOCKED) {
       if (gInput[0].down == 0) {
         if (p->idleTimer < 900) {
           p->idleTimer++;

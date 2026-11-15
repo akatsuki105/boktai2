@@ -19,6 +19,7 @@
 #define UNK_944 (*(&gStat->unk_944))
 #define UNK_946 (*(&gStat->unk_946))
 #define UNK_950(n) (*(gStat->unk_950 + (n)))  // Enemy_Alert がプレイヤーごとに数える, 添字は playerMover->unk_4
+#define WEAPONS(slot) (gStat->weapons + slot)
 
 // gStat のフィールドを型名の違うポインタ越しに触る, 原典はこれらへ書いたあと gStat を読み直すので普通のメンバ代入では一致しない
 #define PLAYER_X (*(s16*)&gStat->playerX)
@@ -65,7 +66,7 @@
 #define MPF_HOT (1 << 4)          // 0x10, 　変異域の炎エリアでセットされていた
 #define MPF_BRIGHT (1 << 5)       // 0x20, 部屋が明るいかどうか (大抵のマップではセットされている, 暗黒街の暗い部屋では最初セットされておらず、明かりをつけるとセットされる)
 #define MPF_UNK_6 (1 << 6)        // 0x40
-#define MPF_UNK_7 (1 << 7)        // 0x80
+#define MPF_LOUD (1 << 7)         // 0x80, 物音の聞こえる範囲を2倍にする (NoiseManager_AddNoise), 立てるスクリプト・コードは見つかっていないので未使用
 #define MPF_UNK_8 (1 << 8)        // 0x100
 #define MPF_UNK_9 (1 << 9)        // 0x200
 #define MPF_UNK_10 (1 << 10)      // 0x400
@@ -81,7 +82,7 @@ typedef struct {
   u8 unk_004[4];              // 0x004
   u16 unk_008;                // 0x008
   u16 unk_00a;                // 0x00A
-  u8 unk_00c[2];              // 0x00C
+  u16 unk_00c;                // 0x00C, パスワードの値を PasswordDecoder_SaveChanges が入れる
   s16 unk_00e;                // 0x00E, EntityA288 が '.T' の参照先に足す文字列IDのオフセット
   u16 controlUp;              // 0x010, 十字キー上を押した時の移動方向の設定, 0: 左上, 1: 上, 2: 右上
   s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
@@ -198,7 +199,9 @@ typedef struct {
   s16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
   s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数
-  u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
+  s16 unk_918;                   // 0x918, bokpass に記述があるが用途は不明, PasswordScreen_EncodeBits が unk_91a との和をパスワードに入れる
+  s16 unk_91a;                   // 0x91A
+  u8 unk_91c[4];                 // 0x91C
   u32 weaponDex[2];              // 0x920
 
   // これ以降はセーブデータには含まれない(太陽ゲージなどのtmpデータ?)

@@ -334,7 +334,7 @@ Still source-level, still defensible.
   setups, right before the `str` that places it, is the **callee's** narrow
   parameter instead: this function's parameter is `s32` and the conversion
   happens at the call. `Player_MakeNoise` closed only after its own `s16`/`u8`
-  parameters were widened to `s32` and `FUN_08240cf0` was declared with `s16`
+  parameters were widened to `s32` and `NoiseManager_AddMoverNoise` was declared with `s16`
   and `u8` ones — and for the same reason its sound id has to stay `SoundID32`,
   since `PlaySound_082406e0` takes the wide type and the target never truncates
   it.

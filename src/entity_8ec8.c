@@ -101,7 +101,7 @@ NON_MATCH s32 Entity8EC8_Update(Entity8EC8* p) {
   Entity8EC8_HandleMessages(p);
   p->stateTimer++;
   if (!p->disabled) {
-    if (gGameFlags & (GAMEFLAG_EVENT | GAMEFLAG_GAMEOVER)) {
+    if (gGameFlags & (GAMEFLAG_CUTSCENE | GAMEFLAG_GAMEOVER)) {
       if (p->state != 0) {
         p->state = 0;
       } else {
@@ -110,7 +110,7 @@ NON_MATCH s32 Entity8EC8_Update(Entity8EC8* p) {
       p->stateTimer = 0;
       p->stateBegun = TRUE;
       if (p->soundPlaying) {
-        FUN_082405c0(1);
+        Sound_FadeOutSub(1);
         p->soundPlaying = FALSE;
       }
     } else if (Entity8EC8_IsStartHeld()) {
@@ -129,7 +129,7 @@ NON_MATCH s32 Entity8EC8_Update(Entity8EC8* p) {
       p->shakeAmplitude = 0;
       Camera_Translate();
       if (p->soundPlaying) {
-        FUN_082405c0(1);
+        Sound_FadeOutSub(1);
         p->soundPlaying = FALSE;
       }
     }
@@ -158,8 +158,8 @@ NON_MATCH s32 Entity8EC8_Update(Entity8EC8* p) {
       begun = p->stateBegun;
       p->stateBegun = FALSE;
       if (begun) {
-        FUN_082404b0(NOISE_QUAKE_121);
-        FUN_082404fc(FixToInt(4, p->riseDur));
+        Sound_PlaySub(NOISE_QUAKE_121);
+        Sound_FadeInSub(FixToInt(4, p->riseDur));
         p->soundPlaying = TRUE;
       }
       angle = Div(p->stateTimer << 6, p->riseDur);
@@ -186,7 +186,7 @@ NON_MATCH s32 Entity8EC8_Update(Entity8EC8* p) {
       begun = p->stateBegun;
       p->stateBegun = FALSE;
       if (begun) {
-        FUN_082405c0(FixToInt(4, p->fallDur));
+        Sound_FadeOutSub(FixToInt(4, p->fallDur));
       }
       angle = Div(p->stateTimer << 6, p->fallDur);
       amp = FixToInt(12, COS(angle) * p->amplitude);

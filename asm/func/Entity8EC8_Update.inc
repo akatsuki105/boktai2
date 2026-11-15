@@ -33,7 +33,7 @@ _0821B9BC:
 	cmp r0, #0
 	beq _0821BA32
 	movs r0, #1
-	bl FUN_082405c0
+	bl Sound_FadeOutSub
 	movs r0, #0
 	str r0, [r4, #0x7c]
 	b _0821BA20
@@ -68,7 +68,7 @@ _0821B9FA:
 	cmp r0, #0
 	beq _0821BA32
 	movs r0, #1
-	bl FUN_082405c0
+	bl Sound_FadeOutSub
 _0821BA1E:
 	str r5, [r4, #0x7c]
 _0821BA20:
@@ -158,7 +158,7 @@ _0821BAC6:
 	cmp r1, #0
 	beq _0821BAEE
 	movs r0, #0x79
-	bl FUN_082404b0
+	bl Sound_PlaySub
 	ldr r0, [r4, #0x58]
 	cmp r0, #0
 	blt _0821BAE0
@@ -169,7 +169,7 @@ _0821BAE0:
 	asrs r0, r0, #4
 	rsbs r0, r0, #0
 _0821BAE6:
-	bl FUN_082404fc
+	bl Sound_FadeInSub
 	movs r0, #1
 	str r0, [r4, #0x7c]
 _0821BAEE:
@@ -239,7 +239,7 @@ _0821BB5E:
 	asrs r0, r0, #4
 	rsbs r0, r0, #0
 _0821BB64:
-	bl FUN_082405c0
+	bl Sound_FadeOutSub
 _0821BB68:
 	ldr r0, [r4, #0x70]
 	lsls r0, r0, #6

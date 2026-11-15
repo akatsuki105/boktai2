@@ -11,8 +11,8 @@ typedef struct {
   AuxSprite sprite;        // 0x000, priority 1, flags に bit0 を立てて作る
   AuxSpriteGfx gfx;        // 0x02C, SPRITE_SKELETON_MISC
   AuxAnimState animState;  // 0x048, 親の anim のアニメ 0x14
-  HitboxData hitbox0;      // 0x058
-  HitboxData hitbox1;      // 0x0A8
+  Hitbox hitbox0;          // 0x058
+  Hitbox hitbox1;          // 0x0A8
   Vec3* chaseTarget;       // 0x0F8, state 2 で向きを寄せていく相手の座標
   u8 unk_fc[104];          // 0x0FC, まだ未解析
   Vec3 vel;                // 0x164, state 2 の毎フレームの移動量, state 1 は angle の向きへランダムな距離だけ離れた 2 段上の点を書くが読まれない
@@ -54,19 +54,19 @@ s32 Entity081f53a8_Update(Entity081f53a8* p);
 s32 Entity081f53a8_Destroy(Entity081f53a8* p);
 s32 Entity081f53a8_Init(Entity081f53a8* p);
 Entity081f53a8* Entity081f53a8_Create(void);
-void Entity081f53a8_OnHit(HitboxData* a, HitboxData* b, Entity081f53a8Elem* elem);
-void Entity081f53a8_OnHurt(HitboxData* a, HitboxData* b, Entity081f53a8Elem* elem);
+void Entity081f53a8_OnHit(Hitbox* a, Hitbox* b, Entity081f53a8Elem* elem);
+void Entity081f53a8_OnHurt(Hitbox* a, Hitbox* b, Entity081f53a8Elem* elem);
 void Entity081f53a8_SpawnDebris(Vec3* pos, u8 angle);
 Entity081f53a8Elem* Entity081f53a8_TryAllocElem(Entity081f53a8* p);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 lifetime, s32 kind);
 
 // 攻撃が当たったら相手から見た向きに破片を撒いて消える
 // 残差: 乱数ブロックで gRandTableIdx のアドレスと値のレジスタが入れ替わる (r0/r1), 他は一致
-NON_MATCH void Entity081f53a8_OnHit(HitboxData* a, HitboxData* b, Entity081f53a8Elem* elem) {
+NON_MATCH void Entity081f53a8_OnHit(Hitbox* a, Hitbox* b, Entity081f53a8Elem* elem) {
 #ifdef NONMATCHING_C
   Vec3 d;
   u32 angle;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   Vec3_Delta(&d, &b->pos, &a->pos);
   if (d.x == 0 && d.z == 0) {
@@ -77,9 +77,9 @@ NON_MATCH void Entity081f53a8_OnHit(HitboxData* a, HitboxData* b, Entity081f53a8
   Entity081f53a8_SpawnDebris(&elem->sprite.pos, angle);
   Entity081f53a8_SpawnDebris(&elem->sprite.pos, angle);
   hitbox = &elem->hitbox0;
-  hitbox->flags |= HBFLAG_HIDDEN;
+  hitbox->flags |= HBF_HIDDEN;
   hitbox = &elem->hitbox1;
-  hitbox->flags |= HBFLAG_HIDDEN;
+  hitbox->flags |= HBF_HIDDEN;
   elem->state = 3;
   elem->stateBegun = TRUE;
 #else
@@ -88,33 +88,33 @@ NON_MATCH void Entity081f53a8_OnHit(HitboxData* a, HitboxData* b, Entity081f53a8
 }
 
 // 地属性の攻撃を受けたら当てられた向きに破片を撒いて消える
-void Entity081f53a8_OnHurt(HitboxData* a, HitboxData* b, Entity081f53a8Elem* elem) {
+void Entity081f53a8_OnHurt(Hitbox* a, Hitbox* b, Entity081f53a8Elem* elem) {
   if (TEST_FLAGS(a->attributes, HBATTR_EARTH)) {
-    HitboxData* hitbox;
+    Hitbox* hitbox;
 
     Entity081f53a8_SpawnDebris(&elem->sprite.pos, a->angle);
     Entity081f53a8_SpawnDebris(&elem->sprite.pos, a->angle);
     hitbox = &elem->hitbox0;
-    hitbox->flags |= HBFLAG_HIDDEN;
+    hitbox->flags |= HBF_HIDDEN;
     hitbox = &elem->hitbox1;
-    hitbox->flags |= HBFLAG_HIDDEN;
+    hitbox->flags |= HBF_HIDDEN;
     elem->state = 3;
     elem->stateBegun = TRUE;
   }
 }
 
-void Entity081f53a8_InitHitbox(Entity081f53a8Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081f53a8_InitHitbox(Entity081f53a8Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Vec3 size;
   Vec3 offset;
 
   VEC3_SET(size, 64, 128, 64);
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(&elem->hitbox0, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(&elem->hitbox0, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(&elem->hitbox0, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(&elem->hitbox0, Entity081f53a8_OnHit, elem);
   Hitbox_SetPos(&elem->hitbox0, &elem->sprite.pos, 0);
   VEC3_SET(size, 92, 128, 92);
-  Hitbox_Init(&elem->hitbox1, 0, HBFLAG_HURTBOX | HBFLAG_HIDDEN | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(&elem->hitbox1, 0, HBF_HURTBOX | HBF_HIDDEN | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetPowerAndAttributes(&elem->hitbox1, 0, 0, 0);
   Hitbox_SetHandler(&elem->hitbox1, Entity081f53a8_OnHurt, elem);
   Hitbox_SetPos(&elem->hitbox1, &elem->sprite.pos, 0);
@@ -123,9 +123,9 @@ void Entity081f53a8_InitHitbox(Entity081f53a8Elem* elem, s32 power, s32 knockbac
 
 // 判定2つを今の位置で登録し直し, hitbox1 は unk_44 が残っている間だけ有効にする
 void Entity081f53a8_UpdateHitbox(Entity081f53a8Elem* elem) {
-  HitboxData* hitbox0 = &elem->hitbox0;
+  Hitbox* hitbox0 = &elem->hitbox0;
   Vec3* pos = &elem->sprite.pos;
-  HitboxData* hitbox1;
+  Hitbox* hitbox1;
 
   Hitbox_SetPos(hitbox0, pos, 0);
 
@@ -136,9 +136,9 @@ void Entity081f53a8_UpdateHitbox(Entity081f53a8Elem* elem) {
 
   if (hitbox1->iframes != 0) {
     hitbox1->iframes--;
-    hitbox1->flags |= HBFLAG_HIDDEN;
+    hitbox1->flags |= HBF_HIDDEN;
   } else {
-    Hitbox_ClearFlags(hitbox1, HBFLAG_HIDDEN);
+    Hitbox_ClearFlags(hitbox1, HBF_HIDDEN);
   }
 }
 
@@ -315,7 +315,7 @@ Entity081f53a8Elem* Entity081f53a8_TryAllocElem(Entity081f53a8* p) {
   return elem;
 }
 
-void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle) {
+void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle) {
   Entity081f53a8* p = gEntity081f53a8;
   Entity081f53a8Elem* elem;
 

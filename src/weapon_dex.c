@@ -735,6 +735,7 @@ s32 WeaponDexMenu_Init(WeaponDexMenu* p, u32 _) {
   return 0;
 }
 
+// 0x8D2D, HashName("武器図鑑")
 WeaponDexMenu* WeaponDexMenu_Create(u32 id) {
   WeaponDexMenu* p = CreateEntity(ENTITY_UNK_8, sizeof(WeaponDexMenu));
   if (p != NULL) {

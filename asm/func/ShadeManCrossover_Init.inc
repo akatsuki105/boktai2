@@ -889,7 +889,7 @@ _08040CDC:
 	lsls r0, r0, #2
 	adds r1, r7, r0
 	adds r0, r7, #0
-	bl FUN_0803c6f0
+	bl ShadeManCrossover_AddAfterimages
 	ldr r2, _08040D20 @ =0x00000818
 	adds r1, r7, r2
 	movs r0, #1

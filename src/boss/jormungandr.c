@@ -92,7 +92,7 @@ typedef struct JormungandrBlade {
   u16 unk44;                             // 0x0E
   AuxSprite sprite;                      // 0x10
   AuxSpriteGfx gfx;                      // 0x3C, SPRITE_SWORD_AX
-  HitboxData hitbox;                     // 0x58
+  Hitbox hitbox;                         // 0x58
   Vec3 vel;                              // 0xA8
   Vec3 target;                           // 0xB0
   void (*fn)(struct JormungandrBlade*);  // 0xB8
@@ -122,7 +122,7 @@ typedef struct JormungandrLeg {
   u8 unk_06;                           // 0x006
   u8 unk_07;                           // 0x007
   JormungandrLegJoint joints[14];      // 0x008
-  HitboxData hitbox;                   // 0x468
+  Hitbox hitbox;                       // 0x468
   Vec3* origin;                        // 0x4B8, 根元, Jormungandr.pos_2f8
   void (*fn)(struct JormungandrLeg*);  // 0x4BC
 } JormungandrLeg;
@@ -143,11 +143,11 @@ static_assert(sizeof(JormungandrDebris) == 84);
 // ヨルムンガンド, "Typo Beast"
 typedef struct {
   Boss base;                          // 0x000
-  HitboxData hitbox;                  // 0x158
-  HitboxData hurtbox;                 // 0x1A8, ハンドラは Jormungandr_OnHurt
-  HitboxData hurtbox2;                // 0x1F8, ハンドラは Jormungandr_OnHurt2
-  HitboxData hurtbox3;                // 0x248, HBFLAG_HIDDEN 付き, ハンドラは Jormungandr_OnHurt3
-  HitboxData hitbox2;                 // 0x298
+  Hitbox hitbox;                      // 0x158
+  Hitbox hurtbox;                     // 0x1A8, ハンドラは Jormungandr_OnHurt
+  Hitbox hurtbox2;                    // 0x1F8, ハンドラは Jormungandr_OnHurt2
+  Hitbox hurtbox3;                    // 0x248, HBF_HIDDEN 付き, ハンドラは Jormungandr_OnHurt3
+  Hitbox hitbox2;                     // 0x298
   Vec3 pos;                           // 0x2E8, Boss_Init に渡す初期位置, hitbox / hurtbox / hurtbox3 / hitbox2 の位置
   Vec3 pos_2f0;                       // 0x2F0
   Vec3 pos_2f8;                       // 0x2F8, hurtbox2 の位置
@@ -745,12 +745,12 @@ void FUN_080c3278(JormungandrBlade* part) {
 }
 
 void FUN_080c33d8(JormungandrBlade* part, u32 id) {
-  HitboxData* hitbox = &part->hitbox;
+  Hitbox* hitbox = &part->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.19), Q8(0.25), Q8(0.19));
   VEC3_SET(offset, part->vel.x * 4, 0, part->vel.z * 4);
-  Hitbox_Init(hitbox, id, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, id, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_18, part->unk44);
   hitbox->angle = part->angle;
   Hitbox_SetHandler(hitbox, NULL, part);
@@ -759,12 +759,12 @@ void FUN_080c33d8(JormungandrBlade* part, u32 id) {
 }
 
 void FUN_080c3494(JormungandrBlade* part, u32 id) {
-  HitboxData* hitbox = &part->hitbox;
+  Hitbox* hitbox = &part->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.25), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, id, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_18, part->unk44);
   Hitbox_SetHandler(hitbox, NULL, part);
   Hitbox_SetPos(hitbox, &part->sprite.pos, 0);
@@ -774,13 +774,13 @@ void FUN_080c3494(JormungandrBlade* part, u32 id) {
 // hitbox->angle = 0x40 の定数ロードとアドレス計算の順が逆 (2 hunk)
 NON_MATCH void FUN_080c3528(JormungandrBlade* part, u32 id) {
 #ifdef NONMATCHING_C
-  HitboxData* hitbox = &part->hitbox;
+  Hitbox* hitbox = &part->hitbox;
   Vec3 pos, halfSize, offset;
 
   VEC3_SET(pos, Q8(5.665), Q8(1), Q8(3.645));
   VEC3_SET(halfSize, Q8(0.5), Q8(0.25), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, id, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, id, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_18, part->unk44);
   part->hitbox.angle = 0x40;
   Hitbox_SetHandler(hitbox, NULL, part);
@@ -1199,7 +1199,7 @@ void FUN_080c4254(Jormungandr* p) {
 
 // 本体の左右どちら側を叩かれたかで別々にダメージを数える
 // 原典は左右の分岐の後半が共通化されずに2本とも残る, こちらは末尾がまとめられて 44 命令少ない
-NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) {
+NON_MATCH void Jormungandr_OnHurt(Hitbox* a, Hitbox* b, Jormungandr* p) {
 #ifdef NONMATCHING_C
   s32 side;
 
@@ -1209,9 +1209,9 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
   if (TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_18)) {
     return;
   }
-  if (Hitbox_HasWeakness(a, HBATTR_SOL | HBATTR_DARK | HBATTR_FLAME | HBATTR_FROST)) {
+  if (Hitbox_HasSource(a, HBATTR_SOL | HBATTR_DARK | HBATTR_FLAME | HBATTR_FROST)) {
     side = b->center.x > gPlayerPtr[0]->mover.pos.x ? 1 : 2;
-  } else if (Hitbox_HasWeakness(a, HBATTR_CLOUD)) {
+  } else if (Hitbox_HasSource(a, HBATTR_CLOUD)) {
     side = b->center.x > a->center.x ? 1 : 2;
   } else {
     side = b->center.x > a->center.x ? 1 : 2;
@@ -1238,7 +1238,7 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
       }
       p->hurtTimer = 16;
       a->damage = p->damageBonus + a->damage;
-      p->lastWeakness = a->weakness;
+      p->lastWeakness = a->typeMask;
     }
     b->iframes = 20;
   } else if (side == 2) {
@@ -1263,7 +1263,7 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
       }
       p->hurtTimer = 16;
       a->damage = p->damageBonus + a->damage;
-      p->lastWeakness = a->weakness;
+      p->lastWeakness = a->typeMask;
     }
     b->iframes = 20;
   } else {
@@ -1281,12 +1281,12 @@ NON_MATCH void Jormungandr_OnHurt(HitboxData* a, HitboxData* b, Jormungandr* p) 
 }
 
 void Jormungandr_InitHurtbox(Jormungandr* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.586));
   VEC3_SET(offset, 0, 0, Q8(1));
-  Hitbox_Init(hurtbox, p->base.mover.id, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL, 0);
   Hitbox_SetHandler(hurtbox, Jormungandr_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
@@ -1295,7 +1295,7 @@ void Jormungandr_InitHurtbox(Jormungandr* p, u32 power) {
 
 // タコ足の根元を叩かれた
 // lastWeakness のアドレスを damageBonus の定数 +4 で作る形が出ない (1 hunk)
-NON_MATCH void Jormungandr_OnHurt2(HitboxData* a, HitboxData* b, Jormungandr* p) {
+NON_MATCH void Jormungandr_OnHurt2(Hitbox* a, Hitbox* b, Jormungandr* p) {
 #ifdef NONMATCHING_C
   if (b->iframes == 0 && !TEST_FLAGS(p->base.flags, BOSSFLAG_UNK_19)) {
     if (!p->invincible) {
@@ -1310,7 +1310,7 @@ NON_MATCH void Jormungandr_OnHurt2(HitboxData* a, HitboxData* b, Jormungandr* p)
       p->hurtTimer = 16;
       p->hurtAngle = a->angle;
       a->damage = p->damageBonus + a->damage;
-      p->lastWeakness = a->weakness;
+      p->lastWeakness = a->typeMask;
     }
     b->iframes = 15;
   }
@@ -1320,12 +1320,12 @@ NON_MATCH void Jormungandr_OnHurt2(HitboxData* a, HitboxData* b, Jormungandr* p)
 }
 
 void Jormungandr_InitHurtbox2(Jormungandr* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox2;
+  Hitbox* hurtbox = &p->hurtbox2;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hurtbox, p->base.mover.id, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL, 0);
   Hitbox_SetHandler(hurtbox, Jormungandr_OnHurt2, p);
   Hitbox_SetPos(hurtbox, &p->pos_2f8, 0);
@@ -1334,7 +1334,7 @@ void Jormungandr_InitHurtbox2(Jormungandr* p, u32 power) {
 
 // 弱点を叩かれた
 // lastWeakness のアドレスを damageBonus の定数 +4 で作る形が出ない (1 hunk)
-NON_MATCH void Jormungandr_OnHurt3(HitboxData* a, HitboxData* b, Jormungandr* p) {
+NON_MATCH void Jormungandr_OnHurt3(Hitbox* a, Hitbox* b, Jormungandr* p) {
 #ifdef NONMATCHING_C
   if (b->iframes == 0) {
     Hitbox_ApplyDamage(a, b);
@@ -1345,7 +1345,7 @@ NON_MATCH void Jormungandr_OnHurt3(HitboxData* a, HitboxData* b, Jormungandr* p)
     p->coreHits++;
     FUN_080c3d14(p);
     a->damage = p->damageBonus + a->damage;
-    p->lastWeakness = a->weakness;
+    p->lastWeakness = a->typeMask;
   }
 #else
   INCFUNC("asm/func/Jormungandr_OnHurt3.inc");
@@ -1353,12 +1353,12 @@ NON_MATCH void Jormungandr_OnHurt3(HitboxData* a, HitboxData* b, Jormungandr* p)
 }
 
 void Jormungandr_InitHurtbox3(Jormungandr* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox3;
+  Hitbox* hurtbox = &p->hurtbox3;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, Q8(2.25));
-  Hitbox_Init(hurtbox, p->base.mover.id, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_HIDDEN | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL, 0);
   Hitbox_SetHandler(hurtbox, Jormungandr_OnHurt3, p);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
@@ -1366,12 +1366,12 @@ void Jormungandr_InitHurtbox3(Jormungandr* p, u32 power) {
 }
 
 void Jormungandr_InitHitbox(Jormungandr* p, s32 power, s32 knockback, s32 unk44) {
-  HitboxData* hitbox = &p->hitbox;
+  Hitbox* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, Q8(-0.125), Q8(1));
-  Hitbox_Init(hitbox, p->base.mover.id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, p->base.mover.id, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, 0, unk44);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->pos, 0);
@@ -1379,12 +1379,12 @@ void Jormungandr_InitHitbox(Jormungandr* p, s32 power, s32 knockback, s32 unk44)
 }
 
 void Jormungandr_InitHitbox2(Jormungandr* p, s32 power, s32 knockback, s32 unk44) {
-  HitboxData* hitbox = &p->hitbox2;
+  Hitbox* hitbox = &p->hitbox2;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, p->base.mover.id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, p->base.mover.id, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, 0, unk44);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->pos, 0);
@@ -1912,12 +1912,12 @@ void FUN_080c592c(Jormungandr* p) {
   }
 }
 
-void FUN_080c595c(Jormungandr* p, HitboxData* hitbox, s32 power, s32 knockback, s32 unk44) {
+void FUN_080c595c(Jormungandr* p, Hitbox* hitbox, s32 power, s32 knockback, s32 unk44) {
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.25), Q8(0.25));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, p->base.mover.id, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, p->base.mover.id, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, HBATTR_18, unk44);
   hitbox->angle = 0x40;
   Hitbox_SetHandler(hitbox, NULL, p);
@@ -2286,21 +2286,17 @@ void FUN_080c6414(Boss* boss, s32 timer) {
   }
 }
 
-// args.argv の書き込みを argc の後に回す形が出ない
-NON_MATCH void FUN_080c6500(Jormungandr* p, s32 arg) {
-#ifdef NONMATCHING_C
+// arg を引数にして scriptID のスクリプトを起動する
+void Jormungandr_RunScript(Jormungandr* p, s32 arg) {
   ScriptArgs args;
   u32 argv[1];
 
-  args.argv = argv;
   if (p->scriptID != 0) {
     args.argc = 1;
     argv[0] = arg;
+    args.argv = argv;
     VM_ExecByID(p->scriptID, &args);
   }
-#else
-  INCFUNC("asm/func/FUN_080c6500.inc");
-#endif
 }
 
 // A ボタンを押している間、太陽ゲージぶん力を溜める, 6 段階溜めきると FUN_080c6a5c へ, 時間切れなら FUN_080c6850 へ
@@ -2372,14 +2368,14 @@ NON_MATCH void FUN_080c6538(Jormungandr* p) {
     Boss_SetState(&p->base, FUN_080c6a5c, 58);
     FUN_080c4254(p);
     sound_08240740(SONG_217);
-    FUN_080c6500(p, p->chargeLevel);
+    Jormungandr_RunScript(p, p->chargeLevel);
   } else if (p->chargeTimeLeft == 0) {
     HUD_RemoveCountdown();
     FUN_080c4254(p);
     sound_08240740(SONG_217);
     Boss_SetState(&p->base, FUN_080c6850, 57);
   } else if (levelUp) {
-    FUN_080c6500(p, p->chargeLevel);
+    Jormungandr_RunScript(p, p->chargeLevel);
   }
 #else
   INCFUNC("asm/func/FUN_080c6538.inc");
@@ -2428,7 +2424,7 @@ void FUN_080c6850(Boss* boss, s32 timer) {
     FUN_080c4a54(p, 16);
   }
   if (timer == 170) {
-    FUN_080c6500(p, -1);
+    Jormungandr_RunScript(p, -1);
   }
 }
 
@@ -3162,7 +3158,7 @@ NON_MATCH void FUN_080c86ac(Jormungandr* p, s32 timer) {
 #endif
 }
 
-// 原典は p を boss の写しとして r1 に置く (2 hunk)
+// 原典は p を boss の写しとして r1 に置く (2 hunk), 試済: Boss* で受けて (Jormungandr*)boss, Jormungandr* で受けて Boss* boss = &p->base, stateEntered を消費する inline, 入場アニメを inline にして p を渡す (いずれも写しが出ない)
 NON_MATCH void FUN_080c87c8(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
@@ -3242,7 +3238,7 @@ NON_MATCH void FUN_080c898c(Jormungandr* p, s32 timer) {
 
 void FUN_080c8b28(Jormungandr*, s32);
 
-// 原典は p を boss の写しとして r1 に置く (2 hunk)
+// 原典は p を boss の写しとして r1 に置く (2 hunk), 試済: Boss* で受けて (Jormungandr*)boss, Jormungandr* で受けて Boss* boss = &p->base, stateEntered を消費する inline, 入場アニメを inline にして p を渡す (いずれも写しが出ない)
 NON_MATCH void FUN_080c8aa8(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
@@ -3290,7 +3286,7 @@ NON_MATCH void FUN_080c8b28(Jormungandr* p, s32 timer) {
 #endif
 }
 
-// 原典は p を boss の写しとして r1 に置く (2 hunk)
+// 原典は p を boss の写しとして r1 に置く (2 hunk), 試済: Boss* で受けて (Jormungandr*)boss, Jormungandr* で受けて Boss* boss = &p->base, stateEntered を消費する inline, 入場アニメを inline にして p を渡す (いずれも写しが出ない)
 NON_MATCH void FUN_080c8c4c(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
@@ -3335,7 +3331,7 @@ NON_MATCH void FUN_080c8cc8(Jormungandr* p, s32 timer) {
 #endif
 }
 
-// 同上 (5 hunk)
+// 同上 (5 hunk), 試済: Boss* で受けて (Jormungandr*)boss, Jormungandr* で受けて Boss* boss = &p->base, stateEntered を消費する inline, 入場アニメを inline にして p を渡す (いずれも写しが出ない)
 NON_MATCH void FUN_080c8dac(Jormungandr* p, s32 timer) {
 #ifdef NONMATCHING_C
   if (p->base.stateEntered) {
@@ -3514,6 +3510,7 @@ NAKED s32 Jormungandr_Destroy(Jormungandr* p) { INCFUNC("asm/func/Jormungandr_De
 
 NAKED s32 Jormungandr_Init(Jormungandr* p, unknown* param) { INCFUNC("asm/func/Jormungandr_Init.inc"); }
 
+// 0xD37F, HashName("ヨルムンガンド")
 Jormungandr* Jormungandr_Create(unknown* param) {
   Jormungandr* p = Boss_Get(BOSS_JORMUNGANDR);
   if (p != NULL) {

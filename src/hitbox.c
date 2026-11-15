@@ -6,25 +6,25 @@
 // 当たり判定を2本のリストで持つ, attacks 側が攻撃する方 (a, attack の頭文字)、 targets 側が攻撃される方 (b, 防御をローマ字で書くと "bougyo" なので b　にした) で、
 // Hitbox_CheckAllPairs が attacks × targets の総当たりで重なりを見る
 typedef struct {
-  Entity e;                   // 0x0, ENTITY_UNK_11
-  HitboxData* targets;        // 0x18, &targetSentinel, Hitbox_Register が HBFLAG_HITBOX なしの Hitbox をここへ繋ぐ, Hitbox_Unregister で外すまで残り続ける
-  HitboxData* attacks;        // 0x1C, &attackSentinel, Hitbox_Register が HBFLAG_HITBOX 付きの Hitbox をここへ繋ぐ, HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
-  HitboxData* targetsTail;    // 0x20, targets リストの末尾, Hitbox_LinkTarget がここに繋いで更新し、Hitbox_Unregister が末尾を外すときに戻す
-  HitboxData* attacksTail;    // 0x24, targetsTail と対になる attacks 側の末尾, Hitbox_LinkAttack が先頭挿入なので誰も読まない
-  HitboxData targetSentinel;  // 0x28, targets リストのダミー先頭ノード, next しか使われない
-  HitboxData attackSentinel;  // 0x78, attacks リストのダミー先頭ノード, next しか使われない
-  u16 targetCount;            // 0xC8
-  u16 attackCount;            // 0xCA, 0 なら HitboxManager_Update は判定を丸ごと飛ばす
+  Entity e;               // 0x0, ENTITY_UNK_11
+  Hitbox* targets;        // 0x18, &targetSentinel, Hitbox_Register が HBF_HITBOX なしの Hitbox をここへ繋ぐ, Hitbox_Unregister で外すまで残り続ける
+  Hitbox* attacks;        // 0x1C, &attackSentinel, Hitbox_Register が HBF_HITBOX 付きの Hitbox をここへ繋ぐ, HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
+  Hitbox* targetsTail;    // 0x20, targets リストの末尾, Hitbox_LinkTarget がここに繋いで更新し、Hitbox_Unregister が末尾を外すときに戻す
+  Hitbox* attacksTail;    // 0x24, targetsTail と対になる attacks 側の末尾, Hitbox_LinkAttack が先頭挿入なので誰も読まない
+  Hitbox targetSentinel;  // 0x28, targets リストのダミー先頭ノード, next しか使われない
+  Hitbox attackSentinel;  // 0x78, attacks リストのダミー先頭ノード, next しか使われない
+  u16 targetCount;        // 0xC8
+  u16 attackCount;        // 0xCA, 0 なら HitboxManager_Update は判定を丸ごと飛ばす
 } HitboxManager;
 static_assert(sizeof(HitboxManager) == 204);
 
-bool32 Hitbox_CheckOverlap(HitboxData* a, HitboxData* b);
+bool32 Hitbox_CheckOverlap(Hitbox* a, Hitbox* b);
 
 IWRAM_DATA HitboxManager* gHitboxManager = NULL;  // 0x03000780
 
 // targets リストの末尾に p を繋ぐ, 既に繋がっていれば何もしない
-void Hitbox_LinkTarget(HitboxData* p) {
-  HitboxData* q;
+void Hitbox_LinkTarget(Hitbox* p) {
+  Hitbox* q;
 
   if (gHitboxManager == NULL) {
     return;
@@ -42,10 +42,10 @@ void Hitbox_LinkTarget(HitboxData* p) {
 }
 
 // attacks リストの先頭に p を繋ぐ, 既に繋がっていれば何もしない
-// ループに入る前のガード (cmp/beq) が出ない, agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう
-NON_MATCH void Hitbox_LinkAttack(HitboxData* p) {
+// ループに入る前のガード (cmp/beq) が出ない, agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう, 原典は q を r2 に置き attacks (r0) と分けるので guard と末尾判定が別の命令列のまま残る, 試済: Hitbox_LinkTarget と同じ条件内代入の while, for, ガード付き do/while (いずれも q が r0 に重なり 25/27)
+NON_MATCH void Hitbox_LinkAttack(Hitbox* p) {
 #ifdef NONMATCHING_C
-  HitboxData* q;
+  Hitbox* q;
 
   if (gHitboxManager == NULL) {
     return;
@@ -65,8 +65,8 @@ NON_MATCH void Hitbox_LinkAttack(HitboxData* p) {
 #endif
 }
 
-void Hitbox_Register(HitboxData* p) {
-  if (p->flags & HBFLAG_HITBOX) {
+void Hitbox_Register(Hitbox* p) {
+  if (p->flags & HBF_HITBOX) {
     Hitbox_LinkAttack(p);
   } else {
     Hitbox_LinkTarget(p);
@@ -74,9 +74,9 @@ void Hitbox_Register(HitboxData* p) {
 }
 
 // targets リストから p を外す
-void Hitbox_Unregister(HitboxData* p) {
-  HitboxData* prev;
-  HitboxData* q;
+void Hitbox_Unregister(Hitbox* p) {
+  Hitbox* prev;
+  Hitbox* q;
 
   if (gHitboxManager == NULL) {
     return;
@@ -101,7 +101,7 @@ void Hitbox_Unregister(HitboxData* p) {
 }
 
 // 当たり判定1つを作る, 属性やダメージ関係は全部 0 に戻す
-void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
+void Hitbox_Init(Hitbox* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
   p->flags = flags;
   p->id = id;
   p->unk_8 = unk_8;
@@ -110,84 +110,87 @@ void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 igno
   p->offset = *offset;
   p->hitResult = 0;
   p->damage = 0;
-  p->weakness = 0;
+  p->typeMask = 0;
   p->attributes = 0;
   p->knockback = 0;
   p->fn = NULL;
   p->unk_47 = 1;
 }
 
-void Hitbox_SetPos(HitboxData* p, WorldPos* pos, u32 unk_8) {
+void Hitbox_SetPos(Hitbox* p, WorldPos* pos, u32 unk_8) {
   VEC3_SET(p->pos, pos->x, pos->y, pos->z);
   p->unk_8 = unk_8;
 }
 
-void UNUSED Hitbox_SetPosAndOffset(HitboxData* p, Vec3* pos, Vec3* offset, u32 unk_8) {
+void UNUSED Hitbox_SetPosAndOffset(Hitbox* p, Vec3* pos, Vec3* offset, u32 unk_8) {
   p->pos = *pos;
   p->offset = *offset;
   p->unk_8 = unk_8;
 }
 
-void Hitbox_SetPower(HitboxData* p, s32 power, s32 knockback) {
+void Hitbox_SetPower(Hitbox* p, s32 power, s32 knockback) {
   p->power = power;
   p->knockback = knockback;
 }
 
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockback, s32 weakness, HitboxAttributes attrs, s32 iframes) {
+void Hitbox_SetAttack(Hitbox* p, s32 power, s32 knockback, s32 source, HitboxAttrs attrs, s32 iframes) {
   p->power = power;
   p->knockback = knockback;
-  p->weakness = weakness;
+  p->typeMask = source;
   p->attributes = attrs;
   p->iframes = iframes;
 }
 
-void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness) {
+void Hitbox_SetPowerAndAttributes(Hitbox* p, u32 power, HitboxAttrs attrs, u32 weakness) {
   p->power = power;
   p->attributes = attrs;
-  p->weakness = weakness;
+  p->typeMask = weakness;
 }
 
-void Hitbox_SetHandler(HitboxData* p, void* handler, void* owner) {
+void Hitbox_SetHandler(Hitbox* p, void* handler, void* owner) {
   p->fn = handler;
   p->owner = owner;
 }
 
 // a が b に当たったときのダメージを b->damage に書き、効き具合を b->hitResult に残す
-// 命令列はあと1命令 (143 対 142) まで近いが、a->attributes のロード位置とレジスタ割り当てが違う
-NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
+// 残差は143/142命令, 原典は atk を a->attributes と同じレジスタで & を取り b を写すレジスタも違う, Tier A-C は試済 (inline 経由, 局所変数の型と順, 1.5倍の書き方), 未: Tier D
+NON_MATCH void Hitbox_ApplyDamage(Hitbox* a, Hitbox* b) {
 #ifdef NONMATCHING_C
   s32 damage;
   s32 atk;
   s32 def;
   s32 weak;
-  s32 diff;
 
   if (b->damage != 0) {
     return;
   }
-  damage = (a->attributes & HBATTR_NAMAKURA) ? a->power : a->power - b->power;
+  if (a->attributes & HBATTR_NAMAKURA) {
+    damage = a->power;
+  } else {
+    damage = a->power - b->power;
+  }
   if (damage <= 0) {
     damage = 1;
   }
 
-  if (a->attributes & HBATTR_13) {
+  if (a->attributes & HBATTR_IGNORE_ELEMENT) {
     def = 0;
   } else {
-    def = b->attributes & 0x7F;
+    def = b->attributes & HBATTR_ELEMENT_MASK;
   }
 
-  weak = b->weakness & 0x7F;
-  atk = a->attributes & 0x7F;
+  weak = b->typeMask & HBATTR_ELEMENT_MASK;
+  atk = a->attributes & HBATTR_ELEMENT_MASK;
   if (atk == 0) {
     b->damage = damage;  // 等倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def == 0) {
     b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
-  } else if (def == 0x40) {
+  } else if (def == HBATTR_ALL) {
     b->damage = damage >> 2;  // 0.25倍
     b->hitResult = HBRESULT_RESIST;
-  } else if (atk == 0x40) {
+  } else if (atk == HBATTR_ALL) {
     b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def & atk) {
@@ -202,9 +205,9 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
   }
 
   // バックアタック
-  if ((b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+  if ((b->flags & HBF_ANGLE) && (a->flags & HBF_ANGLE)) {
     s32 diff = abs(b->angle - a->angle);
-    if (diff <= 0x20) {
+    if (diff <= 32) {
       b->damage = (u32)b->damage * 3 >> 1;  // 1.5倍
       b->hitResult |= HBRESULT_BONUS;
     }
@@ -220,7 +223,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
 
 // Hitbox_ApplyDamage とほぼ同じダメージ計算, gGameFlags の bit11/bit14 が立っているときだけ使われる (EnemyBat_OnHurt)
 // 131/148 命令, Hitbox_ApplyDamage と同じ形では分岐の並びが合わない
-NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
+NON_MATCH void Hitbox_ApplyDamageAlt(Hitbox* a, Hitbox* b) {
 #ifdef NONMATCHING_C
   s32 damage;
   s32 atk;
@@ -236,24 +239,24 @@ NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
     damage = 1;
   }
 
-  if (a->attributes & HBATTR_13) {
+  if (a->attributes & HBATTR_IGNORE_ELEMENT) {
     def = 0;
   } else {
-    def = b->attributes & 0x7F;
+    def = b->attributes & HBATTR_ELEMENT_MASK;
   }
 
-  weak = b->weakness & 0x7F;
-  atk = a->attributes & 0x7F;
+  weak = b->typeMask & HBATTR_ELEMENT_MASK;
+  atk = a->attributes & HBATTR_ELEMENT_MASK;
   if (atk == 0) {
     b->damage = damage;  // 等倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def == 0) {
     b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
-  } else if (def == 0x40) {
+  } else if (def == HBATTR_ALL) {
     b->damage = damage * 3 >> 2;  // 0.75倍
     b->hitResult = HBRESULT_RESIST;
-  } else if (atk == 0x40) {
+  } else if (atk == HBATTR_ALL) {
     b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def & atk) {
@@ -268,9 +271,9 @@ NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
   }
 
   // バックアタック
-  if ((b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+  if ((b->flags & HBF_ANGLE) && (a->flags & HBF_ANGLE)) {
     s32 diff = abs(b->angle - a->angle);
-    if (diff <= 0x20) {
+    if (diff <= 32) {
       b->damage = (u32)b->damage * 3 >> 1;  // 1.5倍
       b->hitResult |= HBRESULT_BONUS;
     }
@@ -285,7 +288,7 @@ NON_MATCH void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) {
 }
 
 // a->angle の象限から、a を b の外へ押し出す方向を out に入れる
-void Hitbox_GetPushDir(HitboxData* a, HitboxData* b, Vec3* out) {
+void Hitbox_GetPushDir(Hitbox* a, Hitbox* b, Vec3* out) {
   s32 quadrant = ((a->angle + 0x20) & 0xFF) >> 6;
 
   if (quadrant == 0) {
@@ -316,7 +319,7 @@ NAKED bool32 FUN_082369cc(Vec3* a, Vec3* b, Vec3* center, Vec3* halfSize, Vec3* 
 NAKED bool32 FUN_08236ac4(Vec3* a, Vec3* b, Vec3* center, Vec3* halfSize, Vec3* out) { INCFUNC("asm/func/FUN_08236ac4.inc"); }
 
 // 線分 a-b が p の判定の直方体と交わるかを3通りの向きで試す
-bool32 FUN_08236bbc(Vec3* a, Vec3* b, HitboxData* p, Vec3* out) {
+bool32 FUN_08236bbc(Vec3* a, Vec3* b, Hitbox* p, Vec3* out) {
   Vec3* center = &p->center;
   Vec3* halfSize = &p->halfSize;
   if (FUN_082368d4(a, b, center, halfSize, out)) return TRUE;
@@ -327,13 +330,13 @@ bool32 FUN_08236bbc(Vec3* a, Vec3* b, HitboxData* p, Vec3* out) {
 
 NAKED bool32 UNUSED FUN_08236c18(void* a, void* b) { INCFUNC("asm/func/FUN_08236c18.inc"); }
 
-// 各 Hitbox の判定範囲を pos + offset で更新する, targets 側は HBFLAG_HIDDEN が立っていれば飛ばす
-void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) {
-  HitboxData *a, *b;
+// 各 Hitbox の判定範囲を pos + offset で更新する, targets 側は HBF_HIDDEN が立っていれば飛ばす
+void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, Hitbox* attacks, Hitbox* targets) {
+  Hitbox *a, *b;
 
   a = attacks->next;
   while (a != NULL) {
-    HitboxData* p = a;
+    Hitbox* p = a;
     a = a->next;
     p->center.x = p->pos.x + p->offset.x;
     p->center.y = p->pos.y + p->offset.y;
@@ -342,9 +345,9 @@ void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, H
 
   b = targets->next;
   while (b != NULL) {
-    HitboxData* p = b;
+    Hitbox* p = b;
     b = b->next;
-    if (!(p->flags & HBFLAG_HIDDEN)) {
+    if (!(p->flags & HBF_HIDDEN)) {
       p->center.x = p->pos.x + p->offset.x;
       p->center.y = p->pos.y + p->offset.y;
       p->center.z = p->pos.z + p->offset.z;
@@ -354,43 +357,43 @@ void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, H
 
 // 残差は原典が Hitbox_CheckOverlap のアドレスを外側ループの手前で r10 に置き _call_via_sl で呼ぶ点, 直接呼び出し・引数なし宣言・static const の関数ポインタでは bl になる
 // 外側ループの中で関数ポインタ変数に入れると残差は tgt->flags の読み込み順1か所まで縮む (不自然なので不採用), Tier A-B は試済, 未: Tier C
-NON_MATCH void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) {
+NON_MATCH void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, Hitbox* attacks, Hitbox* targets) {
 #ifdef NONMATCHING_C
-  HitboxData *a, *b;
+  Hitbox *a, *b;
 
   Hitbox_UpdateBoxes(attackCount, targetCount, attacks, targets);
 
   a = attacks->next;
   while (a != NULL) {
-    HitboxData* atk = a;
+    Hitbox* atk = a;
     a = a->next;
 
     b = targets->next;
     while (b != NULL) {
-      HitboxData* tgt = b;
+      Hitbox* tgt = b;
       b = b->next;
 
       if (atk->ignoreMask & tgt->ignoreMask) {
         continue;
       }
-      if (Hitbox_TestFlags(tgt, HBFLAG_HIDDEN)) {
+      if (Hitbox_TestFlags(tgt, HBF_HIDDEN)) {
         continue;
       }
       if (tgt->id != 0 && tgt->id == atk->id) {
         continue;
       }
-      if (!(atk->flags & HBFLAG_UNK_0) && (tgt->flags & HBFLAG_UNK_0)) {
+      if (!(atk->flags & HBF_DAMAGE) && (tgt->flags & HBF_DAMAGE)) {
         continue;
       }
-      if ((atk->flags & HBFLAG_ACTOR) && !(tgt->flags & HBFLAG_ACTOR)) {
+      if ((atk->flags & HBF_ACTOR) && !(tgt->flags & HBF_ACTOR)) {
         continue;
       }
       if (Hitbox_CheckOverlap(atk, tgt)) {
         tgt->damage = 0;
-        if (!(tgt->flags & HBFLAG_UNK_1) && atk->fn != NULL) {
+        if (!(tgt->flags & HBF_SENSOR) && atk->fn != NULL) {
           atk->fn(atk, tgt, atk->owner);
         }
-        if (!(atk->flags & HBFLAG_UNK_1) && tgt->fn != NULL) {
+        if (!(atk->flags & HBF_SENSOR) && tgt->fn != NULL) {
           tgt->fn(atk, tgt, tgt->owner);
         }
       }
@@ -460,7 +463,7 @@ HitboxManager* GetHitboxManager(void) { return gHitboxManager; }
 
 // 2つの判定の直方体が重なっているかを軸ごとに見る
 // 命令列は一致するがレジスタ割り当てだけが違う, b が r5 でなく r6 に、hit が r6 でなく r3 に入る
-NON_MATCH bool32 Hitbox_CheckOverlap(HitboxData* a, HitboxData* b) {
+NON_MATCH bool32 Hitbox_CheckOverlap(Hitbox* a, Hitbox* b) {
 #ifdef NONMATCHING_C
   bool32 ret;
   bool32 hit;

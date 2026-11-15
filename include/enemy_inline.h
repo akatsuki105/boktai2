@@ -74,7 +74,7 @@ static inline void Enemy_SetHitInfo(Enemy* p, u32 weakness, u32 attributes) {
 }
 
 // 攻撃判定 a の ignoreMask から攻撃してきたプレイヤーを覚え, そのプレイヤーへの向きと距離の2乗を求める
-static inline void Enemy_RememberAttacker(Enemy* p, HitboxData* a) {
+static inline void Enemy_RememberAttacker(Enemy* p, Hitbox* a) {
   bool8 found = FALSE;
   u32 mask = a->ignoreMask;
 
@@ -97,7 +97,7 @@ static inline void Enemy_RememberAttacker(Enemy* p, HitboxData* a) {
     found = TRUE;
   }
   p->unk_4a0 = mask;
-  Enemy_SetHitInfo(p, a->weakness, a->attributes);
+  Enemy_SetHitInfo(p, a->typeMask, a->attributes);
   if (found) {
     s32 dx;
     s32 dz;
@@ -213,7 +213,7 @@ static inline void Enemy_BeginChase(Enemy* p) {
 }
 
 // 当たった相手を攻撃対象として覚える
-static inline void Enemy_SetHitTarget(Enemy* p, HitboxData* b) {
+static inline void Enemy_SetHitTarget(Enemy* p, Hitbox* b) {
   if (Enemy_IsDead(p) == 0) {
     if ((b->ignoreMask & (HIM_0 | HIM_1 | HIM_2 | HIM_3)) != 0) {
       p->hitTargetID = b->id;
@@ -223,7 +223,7 @@ static inline void Enemy_SetHitTarget(Enemy* p, HitboxData* b) {
 }
 
 // 食らい判定の共通処理, 凍結攻撃ならひるみだけ, ダメージ攻撃ならダメージとノックバックを計算して攻撃者を覚える
-static inline void Enemy_HandleHurt(HitboxData* a, HitboxData* b, Enemy* p) {
+static inline void Enemy_HandleHurt(Hitbox* a, Hitbox* b, Enemy* p) {
   u32 knockback;
 
   if (Enemy_IsDead(p)) {
@@ -236,11 +236,11 @@ static inline void Enemy_HandleHurt(HitboxData* a, HitboxData* b, Enemy* p) {
     }
     return;
   }
-  if (Hitbox_TestFlags(&p->hurtbox, HBFLAG_HIDDEN)) {
+  if (Hitbox_TestFlags(&p->hurtbox, HBF_HIDDEN)) {
     return;
   }
-  if (!Hitbox_TestFlags(a, HBFLAG_UNK_0)) {
-    if (!Hitbox_HasWeakness(a, 0x4000)) {
+  if (!Hitbox_TestFlags(a, HBF_DAMAGE)) {
+    if (!Hitbox_HasSource(a, HBSRC_MFREEZE)) {
       return;
     }
     if (Enemy_GetFlag3(p, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
@@ -251,7 +251,7 @@ static inline void Enemy_HandleHurt(HitboxData* a, HitboxData* b, Enemy* p) {
     }
     p->unk_488 = 60;
     if (TEST_FLAGS(p->flags2, ENEFLAG2_UNK_27)) {
-      if (Hitbox_TestFlags(b, HBFLAG_ANGLE) && Hitbox_TestFlags(a, HBFLAG_ANGLE)) {
+      if (Hitbox_TestFlags(b, HBF_ANGLE) && Hitbox_TestFlags(a, HBF_ANGLE)) {
         s32 d = b->angle - a->angle;
 
         if (d < 0) {
@@ -305,7 +305,7 @@ static inline void Enemy_HandleHurt(HitboxData* a, HitboxData* b, Enemy* p) {
     b->damage <<= 1;
     b->knockback = FixToInt(1, b->knockback);
   }
-  if (a->flags & HBFLAG_ANGLE) {
+  if (a->flags & HBF_ANGLE) {
     p->angle = a->angle;
   } else {
     Vec3 diff;

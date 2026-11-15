@@ -60,7 +60,7 @@ void Generator_PushPlayer(Generator* p) {
 }
 
 // 攻撃属性を持つ判定を受けたらダメージを溜め、上限に届いたら state 3 へ進む
-NON_MATCH void Generator_OnHurt(HitboxData* a, HitboxData* b, Generator* p) {
+NON_MATCH void Generator_OnHurt(Hitbox* a, Hitbox* b, Generator* p) {
 #ifdef NONMATCHING_C
   if (Hitbox_TestAttr(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
     s32 power = a->power - b->power;
@@ -95,7 +95,7 @@ void FUN_080b2a18(Generator* p) {
     return;
   }
   p->sprite.flags &= ~SPRFLAG_HIDDEN;
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   p->sprite.priority = 2;
   anim = &p->anim;
   AuxAnim_SetAnim(anim, p->animFile, 0, p->animVariant, p->animFlags);
@@ -288,12 +288,12 @@ s32 Generator_Destroy(Generator* p) {
 }
 
 void Generator_InitHurtbox(Generator* p, u32 power) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.391), Q8(0.782), Q8(0.391));
   VEC3_SET(offset, 0, Q8(0.782), 0);
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, 0, 0);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
   Hitbox_SetHandler(hurtbox, Generator_OnHurt, p);

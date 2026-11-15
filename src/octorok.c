@@ -16,7 +16,7 @@ typedef struct {
   AuxSprite sprite;       // 0x00, metaspriteIdx は 3
   Vec3 pos;               // 0x2C, 毎フレーム vel を足して sprite.pos に写す
   Vec3 vel;               // 0x34, vel.y は毎フレーム 1 ずつ減る
-  HitboxData hitbox;      // 0x3C
+  Hitbox hitbox;          // 0x3C
   ParticleShadow shadow;  // 0x8C
   s32 timer;              // 0xCC, 状態 2 で 91 まで数えると消える
   s16 unk_d0;             // 0xD0
@@ -36,7 +36,7 @@ static_assert(sizeof(OctorokManager) == 1752);
 
 static OctorokManager* gOctorokManager;  // 0x030001BC
 
-s32 Octorok_Spawn(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
+s32 Octorok_Spawn(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 OctorokManager* OctorokManager_Create(void);
 
 static inline bool8 OctorokManager_IsUsed(OctorokManager* p, s32 i) {
@@ -46,17 +46,17 @@ static inline bool8 OctorokManager_IsUsed(OctorokManager* p, s32 i) {
 
 void Octorok_UpdateState0(OctorokManager* p, Octorok* octorok) {}
 
-void Octorok_OnHit(HitboxData* a, HitboxData* b, Octorok* octorok) {}
+void Octorok_OnHit(Hitbox* a, Hitbox* b, Octorok* octorok) {}
 
-void Octorok_InitHitbox(Octorok* octorok, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
-  HitboxData* hitbox;
+void Octorok_InitHitbox(Octorok* octorok, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
+  Hitbox* hitbox;
   Vec3 halfSize;
   Vec3 offset;
 
   VEC3_SET(halfSize, 16, 16, 16);
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &octorok->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 16, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetPos(hitbox, &octorok->pos, 0);
   Hitbox_SetHandler(hitbox, Octorok_OnHit, octorok);
@@ -158,9 +158,9 @@ void Octorok_GetAnimVariant(Mover* src, u8* variant, u8* xflip) {
 }
 
 // vel を指定して岩を投げる
-s32 Octorok_Throw(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) { return Octorok_Spawn(src, target, vel, power, knockback, attrs, iframes); }
+s32 Octorok_Throw(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) { return Octorok_Spawn(src, target, vel, power, knockback, attrs, iframes); }
 
-s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Vec3 vel;
   s32 n;
 
@@ -186,7 +186,7 @@ s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxA
 }
 
 // src の位置から vel で岩を1つ投げ, octoroks の添字を返す
-s32 Octorok_Spawn(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+s32 Octorok_Spawn(Mover* src, Mover* target, Vec3* vel, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   OctorokManager* p = gOctorokManager;
   Octorok* octorok;
   u8 variant;

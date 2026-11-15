@@ -59,7 +59,7 @@
 	str r0, [sp, #4]
 	movs r0, #0x10
 	mov r1, sp
-	bl FUN_0823bb7c
+	bl Camera_PanTo
 	movs r1, #0xc1
 	lsls r1, r1, #4
 	adds r0, r4, r1

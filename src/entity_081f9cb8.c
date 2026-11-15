@@ -13,7 +13,7 @@
 typedef struct {
   AuxSprite sprite;       // 0x00
   AuxAnimState anim;      // 0x2C
-  HitboxData hitbox;      // 0x3C
+  Hitbox hitbox;          // 0x3C
   AuxAnimFile* animFile;  // 0x8C, ANIM_121B
   u16 unk_90;             // 0x90, 0 を書くだけで読み手は未発見
   u8 state;               // 0x92, sEntity081f9cb8Updates の添字
@@ -41,7 +41,7 @@ static Entity081f9cb8* gEntity081f9cb8;  // 0x03000210
 Entity081f9cb8* Entity081f9cb8_Create(void);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 param_3, s32 param_4);
 struct Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 ofsX, s32 ofsY);
+    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 static inline bool8 Entity081f9cb8_IsUsed(Entity081f9cb8* p, s32 i) {
   if (TEST_FLAGS(p->usedMask, 1 << i)) {
@@ -53,22 +53,22 @@ static inline bool8 Entity081f9cb8_IsUsed(Entity081f9cb8* p, s32 i) {
 
 void Entity081f9cb8_OnHit(void) {}
 
-void Entity081f9cb8_InitHitbox(Entity081f9cb8Elem* elem, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
+void Entity081f9cb8_InitHitbox(Entity081f9cb8Elem* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
   Vec3 size;
   Vec3 offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   VEC3_SET(size, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ONCE | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081f9cb8_OnHit, elem);
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
 }
 
 void Entity081f9cb8_RegisterHitbox(Entity081f9cb8Elem* elem) {
-  HitboxData* hitbox = &elem->hitbox;
+  Hitbox* hitbox = &elem->hitbox;
 
   Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
   Hitbox_Register(hitbox);
@@ -178,7 +178,7 @@ void Entity081f9cb8_UpdateRemove(Entity081f9cb8* p, Entity081f9cb8Elem* elem) {
 }
 
 // delay フレーム後に pos で爆発させる
-void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Entity081f9cb8* p = gEntity081f9cb8;
   Entity081f9cb8Elem* elem;
 

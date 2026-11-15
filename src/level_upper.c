@@ -305,7 +305,7 @@ s32 LevelUpper_Init(LevelUpper* p) {
   return 0;
 }
 
-// 0xB164
+// 0xB164, HashName("レベルアップマネージャ")
 LevelUpper* LevelUpper_Create(u32 _) {
   LevelUpper* p;
   if (gLevelUpper == NULL) {

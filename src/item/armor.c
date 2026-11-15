@@ -120,7 +120,7 @@ bool32 Cmd_7B7D(void) {
   return FALSE;
 }
 
-// 0xFEF2, 防具図鑑と所持枠と装備を空にし, .n 個の防具を .a から所持枠に入れ, .e を装備枠にする
+// 0xFEF2, HashName("防具初期化"), 防具図鑑と所持枠と装備を空にし, .n 個の防具を .a から所持枠に入れ, .e を装備枠にする
 void Cmd_ResetArmors(void) {
   s32 i;
   s32 count;

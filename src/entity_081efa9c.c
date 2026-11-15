@@ -18,7 +18,7 @@ typedef struct {
   AuxSprite sprite;       // 0x00
   AuxAnimState anim;      // 0x2C
   AuxSpriteGfx gfx;       // 0x3C, Entity081efa9c_Spawn の spriteID
-  HitboxData hitbox;      // 0x58, flags の bit0 が立っているときだけ登録する
+  Hitbox hitbox;          // 0x58, flags の bit0 が立っているときだけ登録する
   AuxAnimFile* animFile;  // 0xA8, Entity081efa9c_Spawn の animID
   Vec3 vel;               // 0xAC, 着地するたびに減衰する
   u8 unk_b4;              // 0xB4
@@ -248,22 +248,22 @@ void Entity081efa9c_StateVanish(Entity081efa9c* p, Entity081efa9cElem* e) {
 void Entity081efa9c_OnHit(void) {}
 
 // 破片の攻撃判定を作る
-void Entity081efa9c_InitHitbox(Entity081efa9cElem* e, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+void Entity081efa9c_InitHitbox(Entity081efa9cElem* e, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
   Vec3 size;
   Vec3 offset;
-  HitboxData* hitbox;
+  Hitbox* hitbox;
 
   VEC3_SET(size, Q8(0.0625), Q8(0.125), Q8(0.0625));
   VEC3_SET(offset, 0, 0, 0);
   hitbox = &e->hitbox;
-  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
   Hitbox_SetHandler(hitbox, Entity081efa9c_OnHit, e);
   Hitbox_SetPos(hitbox, &e->sprite.pos, 0);
 }
 
 // 残差はレジスタ割当のみ, 原典は power をスタックから読み直し, 3回目の乱数で表の番地を読み直す
-NON_MATCH Entity081efa9cElem* Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, u32 animIdx, u32 life, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 animVariant, u32 animFlags, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes) {
+NON_MATCH Entity081efa9cElem* Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, u32 animIdx, u32 life, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 animVariant, u32 animFlags, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) {
 #ifdef NONMATCHING_C
   Entity081efa9c* p = gEntity081efa9c;
   Entity081efa9cElem* e;

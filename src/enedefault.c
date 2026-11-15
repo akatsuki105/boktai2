@@ -172,7 +172,7 @@ static inline void Enemy_SetSpritePriority(Enemy* p, u8 priority) {
   }
 }
 
-void FUN_080f8ae0(Enemy* p);
+void Golem_ScatterDebris(Enemy* p);
 
 // ENEFLAG_UNK_21 が立っていればそれに付随する印と値を片付け, ENEFLAG_UNK_4 / UNK_7 も落とす
 static inline void Enemy_ClearUnk21Flags(Enemy* p) {
@@ -204,7 +204,7 @@ bool8 Enemy_RouteToNearestLinkPlayer(Enemy* p);
 void Enemy_PickPathNodeAwayFromPlayer(Enemy* p);
 void FUN_080ce544(u32 param_1, u32 param_2);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
-s8 FUN_08240dc8(s32 x, s32 y, s32 size, u8 mask, u16 param_5);
+s8 NoiseManager_FindFirstHeardNoise(s32 x, s32 y, s32 size, u8 mask, u16 param_5);
 void FUN_080e8f20(Enemy* p, s32 param_2);
 bool8 FUN_080eb2a0(Enemy* p);
 void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
@@ -452,7 +452,7 @@ void Enemy_Suspend(Enemy* p, u16* msg) {
   Enemy_SetFlag(p, ENEFLAG_UNK_1);
   Enemy_ClearSpriteFlags(p, SPRFLAG_AFFINE);
   Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
-  p->hurtbox.flags |= HBFLAG_HIDDEN;
+  p->hurtbox.flags |= HBF_HIDDEN;
   if (p->shadowRemoved == 0) {
     ParticleShadow_Hide(&p->shadow);
   }
@@ -465,7 +465,7 @@ void FUN_080f0868(Enemy* p, u16* _) {
     if (p->shadowRemoved == 0) {
       ParticleShadow_Show(&p->shadow);
     }
-    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+    p->hurtbox.flags &= ~HBF_HIDDEN;
     Enemy_ResetToSpawn(p);
     Enemy_ResetState(p, 3, 0, 0);
     Enemy_EnterState(p, p->unk_584, ES_UNK_12);
@@ -488,7 +488,7 @@ void Enemy_Resume(Enemy* p, u16* msg) {
   if (p->shadowRemoved == 0) {
     ParticleShadow_Show(&p->shadow);
   }
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   p->hurtbox.iframes = 0;
   if (p->spriteKind == 0) {
     AuxSprite_ClearFlags(&p->s->aux.spr, SPRFLAG_HIDDEN);
@@ -1038,45 +1038,17 @@ void FUN_080f1ef8(Enemy* p) {
   }
 }
 
-// 残差6命令 (89/95): begun の 0/1 が分岐に畳まれる
-NON_MATCH void FUN_080f2074(Enemy* p) {
-#ifdef NONMATCHING_C
-  bool8 restart = p->subStateBegun;
-  bool32 begun = FALSE;
-
-  if (restart) {
-    p->subStateBegun = 0;
-    begun = TRUE;
-  }
-  if (begun) {
-    void* handler = p->handlerTurn;
-
-    p->stateBegun = TRUE;
-    p->subStateDone = 0;
-    p->state = 1;
-    p->handlerState = p->unk_59c;
-    p->stateTimer = 0;
+// 下位状態に入ったら handlerTurn を状態1で動かし, 済んだらカットシーンの待ちを解いて handlerWait へ戻す
+void FUN_080f2074(Enemy* p) {
+  if (Enemy_ConsumeSubStateBegun(p)) {
+    Enemy_EnterState(p, p->handlerTurn, ES_UNK_1);
   } else if (p->subStateDone) {
-    void* handler;
-
     MsgQueue_EndWait(&p->mq, 1);
-    handler = p->handlerWait;
-    p->stateBegun = TRUE;
-    p->subStateDone = 0;
-    p->state = 0;
-    p->handlerState = p->unk_59c;
-    p->stateTimer = 0;
-    p->subState0 = 2;
-    p->subState1 = 0;
-    p->subState2 = 2;
-    p->subStateTimer = 0;
-    p->subStateBegun = 1;
+    Enemy_EnterState(p, p->handlerWait, ES_UNK_0);
+    Enemy_ResetState(p, 2, 0, 2);
   } else {
     p->subStateTimer++;
   }
-#else
-  INCFUNC("asm/func/FUN_080f2074.inc");
-#endif
 }
 
 // 巻き戻しの直後は状態17へ移り, 下位状態が済んだらカットシーンの待ちを解いて状態16へ移り破棄側へ回す
@@ -1748,7 +1720,7 @@ NON_MATCH void UNUSED FUN_080f3d28(Enemy* p) {
     p->unk_220 = 0;
     p->unk_202 = 0;
     Enemy_PlayAnimWithVariant(p, 3, 1);
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     p->hurtbox.iframes = 0;
     Enemy_ClearSpriteFlags(p, SPRFLAG_HIDDEN);
     p->sleepTimer = 0;
@@ -1772,7 +1744,7 @@ NON_MATCH void UNUSED FUN_080f3d28(Enemy* p) {
 
   SET_FLAGS(p->flags, ENEFLAG_UNK_22);
   CLEAR_FLAGS(p->flags2, ENEFLAG2_UNK_2);
-  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
+  p->hurtbox.flags &= ~HBF_HIDDEN;
   {
     Vec3* dst = p->pathNodePos;
     PathWalker* walker = &p->pathWalker;
@@ -1835,7 +1807,7 @@ NON_MATCH void FUN_080f410c(Enemy* p) {
     p->unk_21e = 0;
     p->unk_220 = 0;
     p->unk_202 = 0;
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     p->hurtbox.iframes = 0;
     p->sleepTimer = 0;
     Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
@@ -1854,7 +1826,7 @@ NON_MATCH void FUN_080f410c(Enemy* p) {
     }
     PlayEnemyDeathCry(p);
     if (p->kind == ENEK_GOLEM) {
-      FUN_080f8ae0(p);
+      Golem_ScatterDebris(p);
     }
     if (p->defeatScriptID != 0) {
       u32 argv[8];
@@ -1914,7 +1886,7 @@ void FUN_080f44f4(Enemy* p) {
         break;
       }
     }
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     p->hurtbox.iframes = 0;
     Enemy_ClearSpriteFlags(p, SPRFLAG_HIDDEN);
     Enemy_ResetState(p, 3, 0, 0);
@@ -2014,8 +1986,8 @@ NON_MATCH bool32 Enemy_OnCWolfMessage(Mover* mover, s32 msg, s32 value) {
       if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_15)) {
         goto done;
       }
-      Hitbox_SetFlags(&p->hitbox, HBFLAG_HIDDEN);
-      Hitbox_SetFlags(&p->hurtbox, HBFLAG_HIDDEN);
+      Hitbox_SetFlags(&p->hitbox, HBF_HIDDEN);
+      Hitbox_SetFlags(&p->hurtbox, HBF_HIDDEN);
       Enemy_EnterState(p, FUN_080f46a4, ES_UNK_31);
       Enemy_ResetState(p, 3, 0, 0);
       SET_FLAGS(p->flags3, ENEFLAG3_UNK_15);
@@ -2229,8 +2201,8 @@ NON_MATCH bool32 Enemy_OnCWolfMessage(Mover* mover, s32 msg, s32 value) {
       break;
     }
     case 1: {
-      Hitbox_ClearFlags(&p->hitbox, HBFLAG_HIDDEN);
-      Hitbox_ClearFlags(&p->hurtbox, HBFLAG_HIDDEN);
+      Hitbox_ClearFlags(&p->hitbox, HBF_HIDDEN);
+      Hitbox_ClearFlags(&p->hurtbox, HBF_HIDDEN);
       CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_15);
       {
         Vec3* vel = &p->jumpVel;
@@ -2333,7 +2305,7 @@ void Enemy_StateFallDeath(Enemy* p, s32 param_2) {
     if (p->kind != ENEK_SPIDER && p->kind != ENEK_SLIME) {
       Enemy_SetEmote(p, 0, 1, p->kind);
     }
-    p->hurtbox.flags |= HBFLAG_HIDDEN;
+    p->hurtbox.flags |= HBF_HIDDEN;
     Enemy_ClearSpriteFlags(p, SPRFLAG_HIDDEN);
     Enemy_ResetState(p, 3, 0, 0);
     p->sleepTimer = 0;
@@ -2572,7 +2544,7 @@ NON_MATCH void FUN_080f5c0c(Enemy* p) {
   }
   p->unk_494 = 65;
   if (p->unk_4be == 0) {
-    p->hurtbox.flags |= HBFLAG_ANGLE;
+    p->hurtbox.flags |= HBF_ANGLE;
     Enemy_BurstEmitterParticles(p);
     CLEAR_FLAGS(p->flags3, ENEFLAG3_UNK_13);
     Enemy_ResetState(p, 3, 1, 0);
@@ -2783,7 +2755,7 @@ NON_MATCH bool8 FUN_080f6604(Enemy* p) {
       if (!TEST_FLAGS(p->flags5, ENEFLAG5_UNK_7) && !IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
         DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
       }
-      p->hurtbox.flags |= HBFLAG_HIDDEN;
+      p->hurtbox.flags |= HBF_HIDDEN;
     }
     return TRUE;
   }
@@ -2939,11 +2911,11 @@ NON_MATCH bool8 FUN_080f6c74(Enemy* p) {
     p->unk_462 = 0;
 
     if (TEST_FLAGS(p->flags5, ENEFLAG5_UNK_6)) {
-      p->hurtbox.flags &= ~HBFLAG_ANGLE;
+      p->hurtbox.flags &= ~HBF_ANGLE;
     } else if (TEST_FLAGS(p->flags6, ENEFLAG6_UNK_14 | ENEFLAG6_UNK_19) || TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_13)) {
-      p->hurtbox.flags &= ~HBFLAG_ANGLE;
+      p->hurtbox.flags &= ~HBF_ANGLE;
     } else {
-      p->hurtbox.flags |= HBFLAG_ANGLE;
+      p->hurtbox.flags |= HBF_ANGLE;
     }
     return TRUE;
   }
@@ -2984,7 +2956,7 @@ bool8 FUN_080f8400(Enemy* p) {
 
 // 近くで音がしたら音のした場所へ向かわせる, 初めて気付いたときは感情アイコンを出して状態9へ移し TRUE
 // 残差は368/380命令, 入口の条件の塊を bool8 を返す inline, 一歩動く部分を Enemy_StepToward 形の inline にするとここまで寄る
-// 原典は FUN_08240dc8 の結果を u8 (lsrs) で持って FUN_080e8f20 に渡すときに s8 へ戻し, レジスタの割当も全体に1つずつずれる
+// 原典は NoiseManager_FindFirstHeardNoise の結果を u8 (lsrs) で持って FUN_080e8f20 に渡すときに s8 へ戻し, レジスタの割当も全体に1つずつずれる
 NON_MATCH bool8 FUN_080f84d4(Enemy* p) {
 #ifdef NONMATCHING_C
   s8 idx;
@@ -3000,7 +2972,7 @@ NON_MATCH bool8 FUN_080f84d4(Enemy* p) {
 
   p->unk_21c = 0;
   noticed = FALSE;
-  idx = FUN_08240dc8(p->mover.pos.x, p->mover.pos.z, p->range2, p->unk_21d, p->mover.id);
+  idx = NoiseManager_FindFirstHeardNoise(p->mover.pos.x, p->mover.pos.z, p->range2, p->unk_21d, p->mover.id);
   if (idx < 0) {
     return FALSE;
   }
@@ -3132,7 +3104,7 @@ s32 FUN_080f8abc(Enemy* p) {
 }
 
 // ゴーレムが倒れたときに破片のパーティクルを 4〜7 個ばらまく
-void FUN_080f8ae0(Enemy* p) {
+void Golem_ScatterDebris(Enemy* p) {
   Vec3 vel;
   Vec3 velRange;
   vel.x = -12;

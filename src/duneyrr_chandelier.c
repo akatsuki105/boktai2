@@ -17,7 +17,7 @@ typedef struct {
   bool8 stateEntered;  // 0x02, state を変えた直後だけ立つ
   u8 hideTimer;        // 0x03, 0 でない間 hurtbox を隠し, 0 になったら戻す
   s32 timer;           // 0x04, state を変えるたびに 0 に戻る
-  HitboxData hurtbox;  // 0x08, flags 0x4001, ignoreMask 0x10, 半径は index 1,2 が {0x18, 0x100, 0x60} で他が {0x60, 0x100, 0x18}
+  Hitbox hurtbox;      // 0x08, flags 0x4001, ignoreMask 0x10, 半径は index 1,2 が {0x18, 0x100, 0x60} で他が {0x60, 0x100, 0x18}
   MainSprite sprite;   // 0x58
 } Entity5DA5Elem;
 static_assert(sizeof(Entity5DA5Elem) == 184);
@@ -68,7 +68,7 @@ bool32 Entity5DA5Elem_ConsumeStateEntered(Entity5DA5Elem* p) {
 }
 
 // 炎で点け, 氷で消す
-void Entity5DA5Elem_OnHurt(HitboxData* a, HitboxData* b, Entity5DA5Elem* owner) {
+void Entity5DA5Elem_OnHurt(Hitbox* a, Hitbox* b, Entity5DA5Elem* owner) {
   Entity5DA5* p = gEntity5DA5;
 
   if (p == NULL) {
@@ -93,7 +93,7 @@ void Entity5DA5Elem_OnHurt(HitboxData* a, HitboxData* b, Entity5DA5Elem* owner) 
 NON_MATCH s32 Entity5DA5Elem_Init(Entity5DA5* p, Entity5DA5Elem* elem, s32 index) {
 #ifdef NONMATCHING_C
   MainSprite* sprite;
-  HitboxData* hurtbox;
+  Hitbox* hurtbox;
   Vec3 halfSize, offset;
 
   elem->index = index;
@@ -110,7 +110,7 @@ NON_MATCH s32 Entity5DA5Elem_Init(Entity5DA5* p, Entity5DA5Elem* elem, s32 index
   }
   VEC3_SET(offset, (s16_ARRAY_085aa690[index] >> 1) - 16, Q8(1), s16_ARRAY_085aa698[index] >> 1);
   hurtbox = &elem->hurtbox;
-  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hurtbox, Entity5DA5Elem_OnHurt, elem);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
   Hitbox_Register(hurtbox);
@@ -203,9 +203,9 @@ s32 Entity5DA5_Update(Entity5DA5* p) {
     Hitbox_SetPos(&elem->hurtbox, &p->pos, 0);
     if (elem->hideTimer) {
       if (--elem->hideTimer == 0) {
-        elem->hurtbox.flags &= ~HBFLAG_HIDDEN;
+        elem->hurtbox.flags &= ~HBF_HIDDEN;
       } else {
-        elem->hurtbox.flags |= HBFLAG_HIDDEN;
+        elem->hurtbox.flags |= HBF_HIDDEN;
       }
     }
     elem->timer++;

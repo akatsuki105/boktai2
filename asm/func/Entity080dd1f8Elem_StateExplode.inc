@@ -35,7 +35,7 @@
 	ldrh r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_08240cf0
+	bl NoiseManager_AddMoverNoise
 	strb r4, [r6]
 _080DCE2A:
 	ldr r0, _080DCE80 @ =0x0300016C

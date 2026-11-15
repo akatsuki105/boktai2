@@ -64,7 +64,7 @@ s32 Octopus_GetGrabbedAnimOffset(Octopus* p);
 void Enemy_PlayVoice(Enemy* p);
 void Octopus_StateHold(Octopus* p, s32 timer);
 s32 Entity081ea120_Spawn(Vec3* pos, s32 count, u32 priority, u32 animIdx, s32 plttID);
-s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxAttributes attrs, s32 iframes);
+s32 Octorok_ThrowAt(Mover* src, Mover* target, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 
 // clang-format off
 // 掴んだ相手を持つ位置, Enemy_SetAnimFacing の flags ごとに 5 コマ分
@@ -164,7 +164,7 @@ void (*const PTR_ARRAY_085adcd0[9])(OctopusGroup*, u16*) = {
 
 // 食らい判定, 敵共通の処理だけ
 // 752/763命令, 敵共通の Enemy_HandleHurt だけ, Golem_OnHurt / Mummy_OnHurt と同じ共通 inline の壁
-NON_MATCH void Octopus_OnHurt(HitboxData* a, HitboxData* b, Octopus* p) {
+NON_MATCH void Octopus_OnHurt(Hitbox* a, Hitbox* b, Octopus* p) {
 #ifdef NONMATCHING_C
   Enemy_HandleHurt(a, b, &p->e);
 #else
@@ -172,11 +172,11 @@ NON_MATCH void Octopus_OnHurt(HitboxData* a, HitboxData* b, Octopus* p) {
 #endif
 }
 
-void Octopus_OnHit(HitboxData* a, HitboxData* b, Octopus* p) {}
+void Octopus_OnHit(Hitbox* a, Hitbox* b, Octopus* p) {}
 
 void Octopus_StateWait(Octopus* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   Enemy_PlayAnimFlipOnly(&p->e, 14);
@@ -187,7 +187,7 @@ void Octopus_StateEmerge(Octopus* p) {
     (p->e).s->aux.spr.priority = 2;
     (p->e).hurtbox.iframes = 0;
     Enemy_ClearSpriteFlags(&p->e, SPRFLAG_HIDDEN);
-    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_PlayAnimFlipOnly(&p->e, 15);
     PlaySound_082406e0(SONG_672);
@@ -216,8 +216,8 @@ void Octopus_StateThrow(Octopus* p, s32 timer) {
       Octorok_ThrowAt(&(p->e).mover, &pl->mover, (p->e).atkPower[0], (p->e).atkKnockback[0], (p->e).atkAttrs[0], (p->e).atkIframes[0]);
       PlaySound_082406e0(SONG_480);
     }
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   if (timer > 60) {
@@ -228,8 +228,8 @@ void Octopus_StateThrow(Octopus* p, s32 timer) {
 
 void Octopus_StateSubmerge(Octopus* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_PlayAnimFlipOnly(&p->e, 16);
   }
@@ -262,8 +262,8 @@ NON_MATCH void Octopus_StateGrab(Octopus* p) {
     wait = 3;
   }
   if (anim->cmdIdx == 3 && anim->tick > wait) {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     if (Octopus_FindAdjacentTarget(p, 0)) {
       u8 variant;
@@ -291,17 +291,17 @@ NON_MATCH void Octopus_StateGrab(Octopus* p) {
       }
     }
   } else if (anim->cmdIdx < 2) {
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags |= HBFLAG_UNK_3;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   } else {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   if ((p->e).animForceRestart) {
-    (p->e).hurtbox.flags &= ~HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags |= HBFLAG_UNK_3;
+    (p->e).hurtbox.flags &= ~HBF_HIDDEN;
+    (p->e).hurtbox.flags |= HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_EnterState(&p->e, Octopus_StateRetract, ES_UNK_38);
     Enemy_ResetState(&p->e, 0, 2, 3);
@@ -313,7 +313,7 @@ NON_MATCH void Octopus_StateGrab(Octopus* p) {
 
 void Octopus_StateRetract(Octopus* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBFLAG_HIDDEN) | HBFLAG_UNK_3;
+    (p->e).hurtbox.flags = ((p->e).hurtbox.flags & ~HBF_HIDDEN) | HBF_3;
     CLEAR_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_PlayAnim(&p->e, 17);
   }
@@ -337,8 +337,8 @@ NON_MATCH void Octopus_StateHold(Octopus* p, s32 timer) {
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     q->mashCountBase = gPlayerPtr[0]->mashCount;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   m = (p->e).playerMover;
@@ -412,8 +412,8 @@ NON_MATCH void Octopus_StatePullUnder(Octopus* p) {
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimFlipOnly(&p->e, 19);
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   m = (p->e).playerMover;
@@ -461,8 +461,8 @@ NON_MATCH void Octopus_StateSlam(Octopus* p, s32 timer) {
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimNoFacing(&p->e, 20);
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     {
       PathWalker* walker = &(p->e).pathWalker;
@@ -539,8 +539,8 @@ NON_MATCH void Octopus_StateVanish(Octopus* p) {
   if (!Enemy_ConsumeStateBegun(&p->e)) {
     return;
   }
-  (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-  (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+  (p->e).hurtbox.flags |= HBF_HIDDEN;
+  (p->e).hurtbox.flags &= ~HBF_3;
   SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   Enemy_PlayAnimNoFacing(&p->e, 20);
   if ((p->e).spriteKind == 0) {
@@ -580,8 +580,8 @@ void Octopus_StateDamaged(Octopus* p, s32 timer) {
     Enemy_PlayAnimFlipOnly(&p->e, 3);
     PlaySound_082406e0(SE_ENEMY_DAMAGED);
     (p->e).animForceRestart = 0;
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
   }
@@ -612,8 +612,8 @@ NON_MATCH void Octopus_StateDying(Octopus* p, s32 timer) {
     Enemy_SetEmote(&p->e, 1, 0x7F, 0);
     Enemy_SetEmote(&p->e, 3, 0x7F, 0);
     Enemy_FadeParticles(&p->e, 4);
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_6);
     (p->e).hp = 1;
@@ -694,8 +694,8 @@ s32 Octopus_PostUpdate(Octopus* p) {
 
 void Octopus_SubLurk(Octopus* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    (p->e).hurtbox.flags |= HBFLAG_HIDDEN;
-    (p->e).hurtbox.flags &= ~HBFLAG_UNK_3;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+    (p->e).hurtbox.flags &= ~HBF_3;
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
   }
@@ -925,7 +925,7 @@ void Octopus_InitHitboxes(Octopus* p) {
 
   VEC3_SET(hurtSize, 64, 256, 64);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Octopus_OnHurt, p, HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_HIDDEN | HBFLAG_UNK_0);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Octopus_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE);
   VEC3_SET(hitSize, 0, 0, 0);
   VEC3_SET(hitOffset, 0, 0, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Octopus_OnHit, 1, p);
@@ -1431,7 +1431,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
     (p->e).zoneID = gStat->zoneID;
   }
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
-    (p->e).hurtbox.flags &= ~HBFLAG_ANGLE;
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
   }
   if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
     Enemy_Suspend(&p->e, NULL);
@@ -1476,6 +1476,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
 #endif
 }
 
+// 0x3F99, HashName("オクトパス")
 void Octopus_Create(void) {
   Octopus* p = Malloc(sizeof(Octopus));
 

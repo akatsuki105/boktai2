@@ -16,7 +16,7 @@ typedef struct {
   AuxSpriteGfx gfx;        // 0x044, SPRITE_STAND
   MainSpriteGfx digitGfx;  // 0x060, SPRITE_UI_START_MENU (SMENU_NUM_BOLD を残高表示に使う)
   MainSprite digits[4];    // 0x080, 太陽スタンドの上に表示される残高
-  HitboxData hurtbox;      // 0x200, _Destroy が Hitbox_Unregister に渡す
+  Hitbox hurtbox;          // 0x200, _Destroy が Hitbox_Unregister に渡す
   Vec3 unk_250;            // 0x250, FUN_0809f4b0 が sprite.pos を写して補正する
   Player* player;          // 0x258, _Init が gPlayerPtr[0] を入れる, NULL なら _Init が失敗する
   u16 id;                  // 0x25C, _Create / _Init の第2引数, Hitbox_Init の第2引数にもなる
@@ -263,12 +263,12 @@ void FUN_0809f4b0(SolarStation* p) {
 
 // 太陽スタンドの食らい判定を sprite.pos に置いて登録する, 戻り値は書かれていない (pop {r1} で返す形だけ残っている)
 s32 SolarStation_InitHitbox(SolarStation* p) {
-  HitboxData* hurtbox = &p->hurtbox;
+  Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   VEC3_SET(halfSize, Q8(0.391), Q8(0.586), Q8(0.391));
   VEC3_SET(offset, 0, Q8(0.586), 0);
-  Hitbox_Init(hurtbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->id, HBF_HURTBOX | HBF_DAMAGE, 0, 0, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
   Hitbox_SetHandler(hurtbox, NULL, p);
   Hitbox_SetPos(hurtbox, &p->sprite.pos, 0);

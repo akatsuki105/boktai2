@@ -35,18 +35,18 @@ typedef struct {
 static_assert(sizeof(CutsceneBat) == 200);
 
 typedef struct {
-  Entity e;                  // 0x000, ENTITY_UNK_11
-  u32 unk_18;                // 0x018, _Init が 0 を入れる, 0 の間は Update が要素を動かさない
-  u32 frameCount;            // 0x01C, 要素を動かしたフレーム数
-  AuxAnimFile* anim;         // 0x020, ANIM_BAT
+  Entity e;               // 0x000, ENTITY_UNK_11
+  u32 unk_18;             // 0x018, _Init が 0 を入れる, 0 の間は Update が要素を動かさない
+  u32 frameCount;         // 0x01C, 要素を動かしたフレーム数
+  AuxAnimFile* anim;      // 0x020, ANIM_BAT
   CutsceneBat elems[16];  // 0x024
-  s8 fadeDir;                // 0xCA4, pltt のブレンドの向き (0: 63 まで上げる, 1: 0 まで下げる, 2: 32 まで上げる, 負: 止める)
-  s8 fadeLevel;              // 0xCA5, BlendPltt の t
-  u16 targetMoverID;         // 0xCA6, cmd 2 の args[0], 0 でなければ Update が毎フレーム Mover_FindByID_Proxy で引いて targetMover に入れる
-  rgb555 pltt[16];           // 0xCA8, BlendPltt(&pltt, gObjPlttData+0x2630, gObjPlttData+0x2650, 0x40, 6), elems[i].gfx.pltt がここを指す
-  Mover* targetMover;        // 0xCC8, 要素が state 3 / 4 で追いかける Mover
-  Vec3 center;               // 0xCCC, 要素が向きを向ける中心の座標
-  MsgQueue mq;               // 0xCD4
+  s8 fadeDir;             // 0xCA4, pltt のブレンドの向き (0: 63 まで上げる, 1: 0 まで下げる, 2: 32 まで上げる, 負: 止める)
+  s8 fadeLevel;           // 0xCA5, BlendPltt の t
+  u16 targetMoverID;      // 0xCA6, cmd 2 の args[0], 0 でなければ Update が毎フレーム Mover_FindByID_Proxy で引いて targetMover に入れる
+  rgb555 pltt[16];        // 0xCA8, BlendPltt(&pltt, gObjPlttData+0x2630, gObjPlttData+0x2650, 0x40, 6), elems[i].gfx.pltt がここを指す
+  Mover* targetMover;     // 0xCC8, 要素が state 3 / 4 で追いかける Mover
+  Vec3 center;            // 0xCCC, 要素が向きを向ける中心の座標
+  MsgQueue mq;            // 0xCD4
 } CutsceneBatSwarm;
 static_assert(sizeof(CutsceneBatSwarm) == 3336);
 
@@ -619,6 +619,7 @@ s32 CutsceneBatSwarm_Init(CutsceneBatSwarm* p, u32 id) {
   return 0;
 }
 
+// 0xE534, HashName("デモバット")
 CutsceneBatSwarm* CutsceneBatSwarm_Create(u32 id) {
   CutsceneBatSwarm* p = CreateEntity(ENTITY_UNK_11, sizeof(CutsceneBatSwarm));
 

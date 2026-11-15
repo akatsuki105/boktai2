@@ -78,9 +78,9 @@ void (*const PTR_ARRAY_085adb50[7])(Sandworm*, u16*) = {
     FUN_0817568c,
 };  // 0x085ADB50
 
-NAKED void Sandworm_OnHit(HitboxData* a, HitboxData* b, Sandworm* p) { INCFUNC("asm/func/Sandworm_OnHit.inc"); }
+NAKED void Sandworm_OnHit(Hitbox* a, Hitbox* b, Sandworm* p) { INCFUNC("asm/func/Sandworm_OnHit.inc"); }
 
-NAKED void Sandworm_OnHurt(HitboxData* a, HitboxData* b, Sandworm* p) { INCFUNC("asm/func/Sandworm_OnHurt.inc"); }
+NAKED void Sandworm_OnHurt(Hitbox* a, Hitbox* b, Sandworm* p) { INCFUNC("asm/func/Sandworm_OnHurt.inc"); }
 
 NAKED void FUN_08170d4c(Sandworm* p) { INCFUNC("asm/func/FUN_08170d4c.inc"); }
 
@@ -248,11 +248,11 @@ NAKED void FUN_08178914(Sandworm* p) { INCFUNC("asm/func/FUN_08178914.inc"); }
 
 NAKED void FUN_08178a34(Sandworm* p) { INCFUNC("asm/func/FUN_08178a34.inc"); }
 
-NAKED void FUN_08178ac8(Sandworm* p, HitboxData* hb, unknown* seg) { INCFUNC("asm/func/FUN_08178ac8.inc"); }
+NAKED void FUN_08178ac8(Sandworm* p, Hitbox* hb, unknown* seg) { INCFUNC("asm/func/FUN_08178ac8.inc"); }
 
-NAKED void FUN_08178b4c(HitboxData* a, HitboxData* b, unknown* seg) { INCFUNC("asm/func/FUN_08178b4c.inc"); }
+NAKED void FUN_08178b4c(Hitbox* a, Hitbox* b, unknown* seg) { INCFUNC("asm/func/FUN_08178b4c.inc"); }
 
-NAKED void FUN_08178b50(HitboxData* a, HitboxData* b, unknown* seg) { INCFUNC("asm/func/FUN_08178b50.inc"); }
+NAKED void FUN_08178b50(Hitbox* a, Hitbox* b, unknown* seg) { INCFUNC("asm/func/FUN_08178b50.inc"); }
 
 NAKED void FUN_08178d40(Sandworm* p) { INCFUNC("asm/func/FUN_08178d40.inc"); }
 
@@ -317,6 +317,7 @@ NAKED s32 Sandworm_Destroy(Sandworm* p) { INCFUNC("asm/func/Sandworm_Destroy.inc
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
 NAKED s32 Sandworm_Init(Sandworm* p) { INCFUNC("asm/func/Sandworm_Init.inc"); }
 
+// 0x706D, HashName("サンドウォーム")
 NAKED void Sandworm_Create(void) { INCFUNC("asm/func/Sandworm_Create.inc"); }
 
 NAKED void FUN_0817b848(Sandworm* p) { INCFUNC("asm/func/FUN_0817b848.inc"); }

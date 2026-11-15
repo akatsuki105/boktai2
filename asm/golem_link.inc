@@ -11839,7 +11839,7 @@ _081BDF1C:
 	str r0, [r1, #8]
 _081BDF26:
 	adds r0, r7, #0
-	bl FUN_080f8ae0
+	bl Golem_ScatterDebris
 	adds r0, r7, #0
 	bl PlayEnemyDeathCry
 _081BDF32:

@@ -31,6 +31,6 @@ void Camera_0823b744(void);
 void Camera_MoveTo(Vec3* pos);
 void Camera_Shake(s32 n);
 void Camera_Translate(void);
-void FUN_0823bca8(s32 n);
+void Camera_ReleaseLook(s32 n);
 
 #endif  // __INCLUDE_CAMERA_H__

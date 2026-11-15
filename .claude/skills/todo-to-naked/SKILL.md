@@ -170,7 +170,7 @@ connection is down (see `.claude/skills/ghidra-struct/references/http-api.md`).
   `Init` / `Update` / `Destroy` returns `s32` in this project even when the
   body only returns 0.
 - **The pointer's type** comes from what the body touches. If it indexes fields
-  of a struct the caller already owns (`p + 0x24` passed to a `HitboxData*`
+  of a struct the caller already owns (`p + 0x24` passed to a `Hitbox*`
   callee), use that struct.
 - Ghidra's own prototype (`get_function_by_address`) is a starting point, not
   evidence; it is often `undefined FUN_xxx(void)`.
