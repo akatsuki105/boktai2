@@ -29,8 +29,8 @@ typedef struct {
   rgb555 cursorPltt[16];          // 0x848, カーソルのパレットの写し, [12] を unk_868 の位相で明滅させる
   s16 unk_868;                    // 0x868, 0..49 を回るカウンタ
   bool16 closed;                  // 0x86A, B で閉じたら TRUE, 以降は入力を見ない
-  s32 panelID;                    // 0x86C, TextPanel_Create の戻り値, _Destroy が TextPanel_Hide に渡す
-  u8* scriptPc;                   // 0x870, TextPanel_SetScript に渡す本文の位置
+  s32 panelID;                    // 0x86C, MenuMessage_Create の戻り値, _Destroy が MenuMessage_Hide に渡す
+  u8* scriptPc;                   // 0x870, MenuMessage_SetScript に渡す本文の位置
   u8* foundText;                  // 0x874, '.m', 取得済みの写真の説明文
   u8* unknownText;                // 0x878, '.h', 未取得の写真の説明文
   s32 closeScriptID;              // 0x87C, '.e'
@@ -108,15 +108,15 @@ bool32 FUN_082111b8(void) { return CountUnlockedPhotos() > 26; }
 NON_MATCH void AlbumMenu_ShowDescription(AlbumMenu* p) {
 #ifdef NONMATCHING_C
   if (CheckPhotoUnlocked(p->cursor)) {
-    TextPanel_SetScript(p->panelID, p->scriptPc);
-    TextPanel_SetMessage(p->panelID, p->cursor);
-    TextPanel_Start(p->panelID);
+    MenuMessage_SetScript(p->panelID, p->scriptPc);
+    MenuMessage_SetMessage(p->panelID, p->cursor);
+    MenuMessage_Start(p->panelID);
     Marquee_Clear();
     Marquee_SetText(GetStringByID(p->cursor + VM_ParseStringRef(p->foundText)));
   } else {
-    TextPanel_SetScript(p->panelID, p->scriptPc);
-    TextPanel_SetMessage(p->panelID, 27);
-    TextPanel_Start(p->panelID);
+    MenuMessage_SetScript(p->panelID, p->scriptPc);
+    MenuMessage_SetMessage(p->panelID, 27);
+    MenuMessage_Start(p->panelID);
     Marquee_Clear();
     Marquee_SetText(GetStringByID(p->cursor + VM_ParseStringRef(p->unknownText)));
   }
@@ -412,7 +412,7 @@ s32 AlbumMenu_Destroy(AlbumMenu* p) {
   }
   MainSprite_Remove(&p->sprites_3a8[0]);
   MainSprite_Remove(&p->sprites_3a8[1]);
-  TextPanel_Hide(p->panelID);
+  MenuMessage_Hide(p->panelID);
   Marquee_CloseGlobal();
   SetBGPrioDirect(0, 0);
   return 0;
@@ -437,7 +437,7 @@ s32 AlbumMenu_Init(AlbumMenu* p, u32 n) {
   }
   p->closeScriptID = VM_GetNamedArgValue('e', 0);
 
-  p->panelID = TextPanel_Create(1, 16, 29, 4);
+  p->panelID = MenuMessage_Create(1, 16, 29, 4);
   FUN_08049f5c();
   Marquee_Clear();
   AlbumMenu_ShowDescription(p);

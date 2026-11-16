@@ -39,7 +39,7 @@ MSG(c41_s6_3, NOWAIT, TO_ENEMY(TGT_BOKU_E, 4));
 STEP(c41_s6) = {M(c41_s6_0), M(c41_s6_1), M(c41_s6_2), M(c41_s6_3), NULL};
 
 // step 7
-MSG(c41_s7_0, WAIT, TO_ACTOR(TGT_RITA, 18));
+MSG(c41_s7_0, WAIT, TO_NPC(TGT_RITA, 18));
 STEP(c41_s7) = {M(c41_s7_0), NULL};
 
 // step 8: リタ「さすがですわ!マスター!!」
@@ -63,7 +63,7 @@ MSG(c41_s11_4, NOWAIT, TO_ENEMY(TGT_BOKU_E, 5));
 STEP(c41_s11) = {M(c41_s11_0), M(c41_s11_1), M(c41_s11_2), M(c41_s11_3), M(c41_s11_4), NULL};
 
 // step 12
-MSG(c41_s12_0, WAIT, TO_ACTOR(TGT_RITA, 19));
+MSG(c41_s12_0, WAIT, TO_NPC(TGT_RITA, 19));
 STEP(c41_s12) = {M(c41_s12_0), NULL};
 
 // step 13: リタ「今度はわたしが・・・!!」

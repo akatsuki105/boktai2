@@ -148,7 +148,7 @@ s32 CrossoverLobby_SetPlayerName(CrossoverLobby* p, CrossoverLobbyPlayer* player
   CopyMemory(p->nameBuf, &data[n * 10 + 4], sizeof(p->nameBuf));
   Crossover_DecodeText(p->nameBuf, player->name, 8);
   CopyMemory(dst, player->name, sizeof(player->name));
-  TextPanel_SetMessage(p->textPanels[idx], idx + 3);
+  MenuMessage_SetMessage(p->textPanels[idx], idx + 3);
 }
 
 s32 CrossoverLobby_ClearPlayerName(CrossoverLobby* p, CrossoverLobbyPlayer* player, s32 idx) {
@@ -160,7 +160,7 @@ s32 CrossoverLobby_ClearPlayerName(CrossoverLobby* p, CrossoverLobbyPlayer* play
     player->name[i] = 0;
   }
   CopyMemory(dst, player->name, sizeof(player->name));
-  TextPanel_SetMessage(p->textPanels[idx], idx + 3);
+  MenuMessage_SetMessage(p->textPanels[idx], idx + 3);
 }
 
 // 接続中の子機のうち最初のものを 1 始まりで返す, 誰もいなければ 0
@@ -204,7 +204,7 @@ void CrossoverLobby_UpdatePlayer(CrossoverLobby* p, CrossoverLobbyPlayer* player
     CpuFill32(0, p->nameBuf, 4);
     CopyMemory(dst, gStat->name, sizeof(gStat->name));
     CopyMemory(player->name, gStat->name, sizeof(gStat->name));
-    TextPanel_SetMessage(p->textPanels[0], 3);
+    MenuMessage_SetMessage(p->textPanels[0], 3);
     player->nameShown = TRUE;
   } else if (slot != 0) {
     if (player->nameShown) {
@@ -244,7 +244,7 @@ void FUN_0804f16c(CrossoverLobby* p) {
 void FUN_0804f1d8(CrossoverLobby* p) {
   if (p->stateEntered) {
     p->stateEntered = FALSE;
-    TextPanel_SetMessage(p->textPanels[2], 2);
+    MenuMessage_SetMessage(p->textPanels[2], 2);
     PlaySound_082406e0(SE_NG);
   }
   if (p->stateTimer > 35 && (gInput[0].pressed & (A_BUTTON | B_BUTTON))) {
@@ -262,7 +262,7 @@ NON_MATCH void FUN_0804f230(CrossoverLobby* p) {
 
   if (p->stateEntered) {
     p->stateEntered = FALSE;
-    TextPanel_SetMessage(p->textPanels[2], 7);
+    MenuMessage_SetMessage(p->textPanels[2], 7);
     p->connectSlot = 0xFF;
   }
   if (slots != p->connectSlot) {
@@ -290,9 +290,9 @@ NON_MATCH void FUN_0804f230(CrossoverLobby* p) {
         FUN_0804a40c(p->textPanels[2], 2, partner->gname);
         PlaySound_082406e0(SONG_495);
       }
-      TextPanel_SetMessage(p->textPanels[2], 8);
+      MenuMessage_SetMessage(p->textPanels[2], 8);
     } else {
-      TextPanel_SetMessage(p->textPanels[2], 7);
+      MenuMessage_SetMessage(p->textPanels[2], 7);
       for (i = 0; i < 5; i++) {
         partner->digits[i].flags |= SPRFLAG_HIDDEN;
       }
@@ -319,7 +319,7 @@ NON_MATCH void FUN_0804f230(CrossoverLobby* p) {
 void FUN_0804f3d8(CrossoverLobby* p) {
   if (p->stateEntered) {
     p->stateEntered = FALSE;
-    TextPanel_SetMessage(p->textPanels[2], 9);
+    MenuMessage_SetMessage(p->textPanels[2], 9);
   }
   p->stateTimer++;
 }
@@ -329,7 +329,7 @@ void FUN_0804f404(CrossoverLobby* p) {
     s32 i;
 
     p->stateEntered = FALSE;
-    TextPanel_SetMessage(p->textPanels[2], 6);
+    MenuMessage_SetMessage(p->textPanels[2], 6);
     for (i = 0; i < 5; i++) {
       p->players[1].digits[i].flags |= SPRFLAG_HIDDEN;
     }
@@ -340,7 +340,7 @@ void FUN_0804f404(CrossoverLobby* p) {
 void FUN_0804f448(CrossoverLobby* p) {
   if (p->stateEntered) {
     p->stateEntered = FALSE;
-    TextPanel_SetMessage(p->textPanels[2], 0);
+    MenuMessage_SetMessage(p->textPanels[2], 0);
     PlaySound_082406e0(SE_NG);
   }
   p->stateTimer++;
@@ -349,7 +349,7 @@ void FUN_0804f448(CrossoverLobby* p) {
 void FUN_0804f47c(CrossoverLobby* p) {
   if (p->stateEntered) {
     p->stateEntered = FALSE;
-    TextPanel_SetMessage(p->textPanels[2], 1);
+    MenuMessage_SetMessage(p->textPanels[2], 1);
     PlaySound_082406e0(SE_NG);
   }
   p->stateTimer++;
@@ -446,7 +446,7 @@ s32 CrossoverLobby_Destroy(CrossoverLobby* p) {
     CrossoverLobby_DestroyPlayer(p, player, i);
   }
   for (i = 0; i < 3; i++) {
-    TextPanel_Destroy(p->textPanels[i]);
+    MenuMessage_Destroy(p->textPanels[i]);
   }
   return 0;
 }
@@ -481,33 +481,33 @@ s32 CrossoverLobby_Init(CrossoverLobby* p) {
   }
 
   panel = &p->textPanels[0];
-  *panel = TextPanel_Create(3, 10, 10, 2);
+  *panel = MenuMessage_Create(3, 10, 10, 2);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
+  MenuMessage_SetScript(*panel, p->script);
   FUN_0804a40c(*panel, 0, p->players[0].name);
-  TextPanel_SetMessage(*panel, 3);
-  TextPanel_Start(*panel);
+  MenuMessage_SetMessage(*panel, 3);
+  MenuMessage_Start(*panel);
 
   panel = &p->textPanels[1];
-  *panel = TextPanel_Create(17, 10, 10, 2);
+  *panel = MenuMessage_Create(17, 10, 10, 2);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
+  MenuMessage_SetScript(*panel, p->script);
   FUN_0804a40c(*panel, 1, p->players[1].name);
-  TextPanel_SetMessage(*panel, 4);
-  TextPanel_Start(*panel);
+  MenuMessage_SetMessage(*panel, 4);
+  MenuMessage_Start(*panel);
 
   panel = &p->textPanels[2];
-  *panel = TextPanel_Create(0, 14, 30, 6);
+  *panel = MenuMessage_Create(0, 14, 30, 6);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
-  TextPanel_SetMessage(*panel, 7);
-  TextPanel_Start(*panel);
+  MenuMessage_SetScript(*panel, p->script);
+  MenuMessage_SetMessage(*panel, 7);
+  MenuMessage_Start(*panel);
 
   SignalStrengthIcon_CreateAt(0, 24);
   StartBgObjPlttFade(2, 4, 4, 4, 4, 0xFFFF, 0);

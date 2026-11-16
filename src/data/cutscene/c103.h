@@ -4,13 +4,13 @@
 
 // step 0
 MSG(c103_s0_0, WAIT, PLAYER_MOVE_TO(TGT_PLAYER, 2688, 256, 3968));
-MSG(c103_s0_1, NOWAIT, ACTOR_MOVE_TO(TGT_OTNK, 2432, 256, 3712));
+MSG(c103_s0_1, NOWAIT, NPC_MOVE_TO(TGT_OTNK, 2432, 256, 3712));
 STEP(c103_s0) = {M(c103_s0_0), M(c103_s0_1), NULL};
 
 // step 1
 MSG(c103_s1_0, WAIT, BUS_WAIT(80));
 MSG(c103_s1_1, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
-MSG(c103_s1_2, NOWAIT, ACTOR_TURN(TGT_OTNK, 3));
+MSG(c103_s1_2, NOWAIT, NPC_TURN(TGT_OTNK, 3));
 STEP(c103_s1) = {M(c103_s1_0), M(c103_s1_1), M(c103_s1_2), NULL};
 
 // step 2
@@ -40,7 +40,7 @@ MSG(c103_s6_0, WAIT, BUS_WAIT(100));
 MSG(c103_s6_1, NOWAIT, EFFECT_FADE(TGT_EFFECT, 0, 6, 31, 31, 31, 1, 1, 1, 0));
 STEP(c103_s6) = {M(c103_s6_0), M(c103_s6_1), NULL};
 
-// step 7: Scr_EndEvent, Scr_BeginEvent, Cmd_StartEntity3117Move, Cmd_FreeTileOverrides, Cmd_PlayTrackedSound, Cmd_Delay / サバタ「さあ、行け!太陽少年<NAME>!!」
+// step 7: Scr_EndEvent, Scr_BeginEvent, Cmd_MoveGenericObj, Cmd_FreeTileOverrides, Cmd_PlayTrackedSound, Cmd_Delay / サバタ「さあ、行け!太陽少年<NAME>!!」
 MSG(c103_s7_0, WAIT, BUS_EXEC_SCRIPT(41879));
 STEP(c103_s7) = {M(c103_s7_0), NULL};
 
@@ -85,15 +85,15 @@ MSG(c103_s16_1, NOWAIT, PLAYER_HIDE(TGT_PLAYER));
 STEP(c103_s16) = {M(c103_s16_0), M(c103_s16_1), NULL};
 
 // step 17
-MSG(c103_s17_0, WAIT, ACTOR_MOVE_TO(TGT_OTNK, 2688, 256, 3378));
+MSG(c103_s17_0, WAIT, NPC_MOVE_TO(TGT_OTNK, 2688, 256, 3378));
 STEP(c103_s17) = {M(c103_s17_0), NULL};
 
 // step 18
-MSG(c103_s18_0, WAIT, ACTOR_MOVE_TO(TGT_OTNK, 2688, 256, 3328));
+MSG(c103_s18_0, WAIT, NPC_MOVE_TO(TGT_OTNK, 2688, 256, 3328));
 STEP(c103_s18) = {M(c103_s18_0), NULL};
 
 // step 19
-MSG(c103_s19_0, WAIT, TO_ACTOR(TGT_OTNK, 0));
+MSG(c103_s19_0, WAIT, TO_NPC(TGT_OTNK, 0));
 MSG(c103_s19_1, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 4));
 STEP(c103_s19) = {M(c103_s19_0), M(c103_s19_1), NULL};
 

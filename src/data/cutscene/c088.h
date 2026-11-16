@@ -4,7 +4,7 @@
 
 // step 0
 MSG_F(c88_s0_0, 3, WAIT, PLAYER_MOVE_TO(TGT_PLAYER, 4864, 768, 1792));
-MSG_F(c88_s0_1, 3, NOWAIT, ACTOR_TURN(TGT_KURO_B, 7));
+MSG_F(c88_s0_1, 3, NOWAIT, NPC_TURN(TGT_KURO_B, 7));
 STEP(c88_s0) = {M(c88_s0_0), M(c88_s0_1), NULL};
 
 // step 1
@@ -14,7 +14,7 @@ STEP(c88_s1) = {M(c88_s1_0), M(c88_s1_1), NULL};
 
 // step 2
 MSG_F(c88_s2_0, 3, WAIT, BUS_WAIT(20));
-MSG_F(c88_s2_1, 3, NOWAIT, ACTOR_TURN(TGT_KURO_B, 3));
+MSG_F(c88_s2_1, 3, NOWAIT, NPC_TURN(TGT_KURO_B, 3));
 STEP(c88_s2) = {M(c88_s2_0), M(c88_s2_1), NULL};
 
 // step 3
@@ -23,15 +23,15 @@ MSG_F(c88_s3_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_MEOW_799));
 STEP(c88_s3) = {M(c88_s3_0), M(c88_s3_1), NULL};
 
 // step 4
-MSG_F(c88_s4_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_B, 3500, 768, 1792));
+MSG_F(c88_s4_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_B, 3500, 768, 1792));
 STEP(c88_s4) = {M(c88_s4_0), NULL};
 
 // step 5
-MSG_F(c88_s5_0, 3, WAIT, ACTOR_SET_POS(TGT_KURO_B, 1536, 768, 1792));
+MSG_F(c88_s5_0, 3, WAIT, NPC_SET_POS(TGT_KURO_B, 1536, 768, 1792));
 STEP(c88_s5) = {M(c88_s5_0), NULL};
 
 // step 6
-MSG_F(c88_s6_0, 3, WAIT, ACTOR_TURN(TGT_KURO_B, 7));
+MSG_F(c88_s6_0, 3, WAIT, NPC_TURN(TGT_KURO_B, 7));
 STEP(c88_s6) = {M(c88_s6_0), NULL};
 
 CUTSCENE(88) = {sStep_c88_s0, sStep_c88_s1, sStep_c88_s2, sStep_c88_s3, sStep_c88_s4, sStep_c88_s5, sStep_c88_s6, NULL};

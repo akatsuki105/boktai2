@@ -17,7 +17,7 @@ STEP(c72_s2) = {M(c72_s2_0), NULL};
 // step 3
 MSG(c72_s3_0, WAIT, BUS_WAIT(15));
 MSG(c72_s3_1, NOWAIT, PLAYER_TURN(TGT_PLAYER, 7));
-MSG(c72_s3_2, NOWAIT, ACTOR_TURN(TGT_RITA, 1));
+MSG(c72_s3_2, NOWAIT, NPC_TURN(TGT_RITA, 1));
 STEP(c72_s3) = {M(c72_s3_0), M(c72_s3_1), M(c72_s3_2), NULL};
 
 // step 4: 見てください。太陽樹さまの芽がもうこんなに・・・
@@ -59,7 +59,7 @@ STEP(c72_s11) = {M(c72_s11_0), NULL};
 // step 12
 MSG(c72_s12_0, WAIT, BUS_WAIT(30));
 MSG(c72_s12_1, NOWAIT, PLAYER_CHARGE_POSE(TGT_PLAYER, 0));
-MSG(c72_s12_2, NOWAIT, ACTOR_TURN(TGT_RITA, 2));
+MSG(c72_s12_2, NOWAIT, NPC_TURN(TGT_RITA, 2));
 MSG(c72_s12_3, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 4));
 STEP(c72_s12) = {M(c72_s12_0), M(c72_s12_1), M(c72_s12_2), M(c72_s12_3), NULL};
 
@@ -99,7 +99,7 @@ STEP(c72_s19) = {M(c72_s19_0), M(c72_s19_1), M(c72_s19_2), M(c72_s19_3), NULL};
 // step 20
 MSG(c72_s20_0, WAIT, BUS_WAIT(30));
 MSG(c72_s20_1, NOWAIT, PLAYER_TURN(TGT_PLAYER, 7));
-MSG(c72_s20_2, NOWAIT, ACTOR_TURN(TGT_RITA, 1));
+MSG(c72_s20_2, NOWAIT, NPC_TURN(TGT_RITA, 1));
 STEP(c72_s20) = {M(c72_s20_0), M(c72_s20_1), M(c72_s20_2), NULL};
 
 // step 21: リタ「今はまだ小さいけれど・・・この新しい太陽樹さまと、

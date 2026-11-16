@@ -17,7 +17,7 @@ STEP(c11_s1) = {M(c11_s1_0), M(c11_s1_1), NULL};
 
 // step 2
 MSG(c11_s2_0, WAIT, BUS_WAIT(20));
-MSG_F(c11_s2_1, 1, NOWAIT, TO_ACTOR(TGT_OTNK, 6, 1));
+MSG_F(c11_s2_1, 1, NOWAIT, TO_NPC(TGT_OTNK, 6, 1));
 MSG(c11_s2_2, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
 STEP(c11_s2) = {M(c11_s2_0), M(c11_s2_1), M(c11_s2_2), NULL};
 
@@ -80,7 +80,7 @@ STEP(c11_s15) = {M(c11_s15_0), NULL};
 MSG(c11_s16_0, WAIT, BUS_WAIT(20));
 STEP(c11_s16) = {M(c11_s16_0), NULL};
 
-// step 17: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, ActorManager_Create, Cmd_BB34, Entity99CA_Create
+// step 17: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, NPCManager_Create, Cmd_BB34, SparkleEffect_Create
 MSG(c11_s17_0, WAIT, BUS_EXEC_SCRIPT(42389));
 STEP(c11_s17) = {M(c11_s17_0), NULL};
 
@@ -90,7 +90,7 @@ STEP(c11_s18) = {M(c11_s18_0), NULL};
 
 // step 19
 MSG(c11_s19_0, WAIT, BUS_WAIT(180));
-MSG(c11_s19_1, NOWAIT, ACTOR_EMOTE_TIMED(TGT_OTNK, 4, 110, 120));
+MSG(c11_s19_1, NOWAIT, NPC_EMOTE_TIMED(TGT_OTNK, 4, 110, 120));
 STEP(c11_s19) = {M(c11_s19_0), M(c11_s19_1), NULL};
 
 // step 20
@@ -164,7 +164,7 @@ MSG(c11_s35_2, WAIT, PLAYER_TURN(TGT_PLAYER, 1));
 MSG(c11_s35_3, NOWAIT, PLAYER_STOP_PLTT_FX(TGT_PLAYER));
 STEP(c11_s35) = {M(c11_s35_0), M(c11_s35_1), M(c11_s35_2), M(c11_s35_3), NULL};
 
-// step 36: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, ActorManager_Create, Cmd_BB34, Entity99CA_Create
+// step 36: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, NPCManager_Create, Cmd_BB34, SparkleEffect_Create
 MSG(c11_s36_0, WAIT, BUS_EXEC_SCRIPT(42389));
 STEP(c11_s36) = {M(c11_s36_0), NULL};
 
@@ -174,7 +174,7 @@ STEP(c11_s37) = {M(c11_s37_0), NULL};
 
 // step 38
 MSG(c11_s38_0, WAIT, BUS_WAIT(10));
-MSG_F(c11_s38_1, 3, NOWAIT, TO_ACTOR(TGT_OTNK, 7, 3));
+MSG_F(c11_s38_1, 3, NOWAIT, TO_NPC(TGT_OTNK, 7, 3));
 MSG(c11_s38_2, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 5));
 STEP(c11_s38) = {M(c11_s38_0), M(c11_s38_1), M(c11_s38_2), NULL};
 

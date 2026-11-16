@@ -103,11 +103,11 @@ _081E7B88:
 	lsls r1, r1, #5
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E7BBC @ =0x00001604
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	movs r1, #0x80
 	lsls r1, r1, #9
 	ldr r0, [r4]

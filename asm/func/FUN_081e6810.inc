@@ -8,7 +8,7 @@
 	ldr r1, _081E6894 @ =0x00001608
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r3, _081E6898 @ =0x00001514
 	adds r2, r4, r3
 	ldr r0, [r2]
@@ -202,7 +202,7 @@ _081E69A8:
 	ldr r1, _081E6A14 @ =0x00001608
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldrb r1, [r5]
 	lsls r0, r1, #3
 	adds r0, r0, r1

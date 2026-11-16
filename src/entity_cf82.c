@@ -10,7 +10,7 @@ typedef struct {
 } EntityCF82;
 static_assert(sizeof(EntityCF82) == 28);
 
-u32 FUN_0800271c(void);
+u32 BgPlttController_IsPlttUpdated(void);
 
 // アニメーションさせる BG パレット 2 と、点灯色をしまってある BG パレット 7
 #define BG_PLTT2 (gBgPlttBuffer + 0x20)
@@ -22,7 +22,7 @@ static const u8 sEntityCF82StepDurations[8] = {10, 10, 10, 16, 10, 10, 10, 16}; 
 // 点灯色と消灯色を 1 色ずつ塗り替えて、尺が来たら次の step へ進める
 NON_MATCH s32 EntityCF82_Update(EntityCF82* p) {
 #ifdef NONMATCHING_C
-  if (FUN_0800271c()) {
+  if (BgPlttController_IsPlttUpdated()) {
     s32 i;
 
     if (p->step < 4) {

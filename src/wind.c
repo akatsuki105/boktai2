@@ -26,6 +26,7 @@ extern u16 gWindPushThreshold;
 extern u16 gWindAngle;
 extern u16 gWindStrength;
 
+// 0x4A16, HashName("風停止")
 void Cmd_StopWind(void) {
   if (gWindManager != NULL) {
     gWindManager->mode = 0;
@@ -35,7 +36,8 @@ void Cmd_StopWind(void) {
   }
 }
 
-void Cmd_8459(void) {
+// 0x8459, HashName("ランダム風設定")
+void Cmd_SetRandomWind(void) {
   if (gWindManager != NULL) {
     gWindManager->mode = 1;
     if (VM_SeekToNamedArg('p')) {
@@ -56,7 +58,8 @@ void Cmd_8459(void) {
   }
 }
 
-void Cmd_274E(void) {
+// 0x274E, HashName("方向指定風設定")
+void Cmd_SetDirectionalWind(void) {
   if (gWindManager != NULL) {
     gWindManager->mode = 2;
     if (VM_SeekToNamedArg('d')) {

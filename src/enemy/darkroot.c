@@ -759,7 +759,7 @@ void DarkRoot_InitHitboxes(DarkRoot* p) {
 
   VEC3_SET(hurtSize, 64, 256, 64);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, DarkRoot_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, DarkRoot_OnHurt, p, HBF_HURTBOX | HBF_NPC | HBF_HIDDEN | HBF_DAMAGE);
   VEC3_SET(hitSize, 0, 0, 0);
   VEC3_SET(hitOffset, 0, 0, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, DarkRoot_OnHit, 1, p);

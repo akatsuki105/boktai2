@@ -7,7 +7,7 @@
 struct LinkBattleCoinManager;
 
 // 通信対戦のコイン(対戦相手を倒したりすると落とすもので、これがプレイヤーの得点になる)
-typedef struct Entity150FSlot {
+typedef struct LinkBattleCoin {
   s8 unk_00;                                                                                      // 0x00, FUN_081e1220 の第3引数, gLinkSession->coinOwners[i]
   u8 unk_01;                                                                                      // 0x01, FUN_081e1220 が 0 を入れる
   u8 unk_02;                                                                                      // 0x02, FUN_081e1220 が 0 を入れる
@@ -15,11 +15,11 @@ typedef struct Entity150FSlot {
   u8 unk_04[2];                                                                                   // 0x04, まだ未解析
   u16 unk_06;                                                                                     // 0x06, FUN_081e1220 が 0 を入れる
   u8 unk_08[0x20 - 0x08];                                                                         // 0x08, まだ未解析
-  void (*updateCallback)(struct LinkBattleCoinManager* p, struct Entity150FSlot* slot, s32 idx);  // 0x20
+  void (*updateCallback)(struct LinkBattleCoinManager* p, struct LinkBattleCoin* coin, s32 idx);  // 0x20
   AuxSprite sprite;                                                                               // 0x24
   ParticleShadow shadow;                                                                          // 0x50
-} Entity150FSlot;
-static_assert(sizeof(Entity150FSlot) == 144);
+} LinkBattleCoin;
+static_assert(sizeof(LinkBattleCoin) == 144);
 
 typedef struct LinkBattleCoinManager {
   Entity e;                 // 0x000, ENTITY_UNK_10
@@ -28,7 +28,7 @@ typedef struct LinkBattleCoinManager {
   AuxSpriteGfx coinGfx;     // 0x020, SPRITE_COIN
   Vec3 playerPoss[4];       // 0x03C, players[i] の位置
   Player* players[4];       // 0x05C, gPlayerPtr[0..3] の写し
-  Entity150FSlot coins[5];  // 0x06C
+  LinkBattleCoin coins[5];  // 0x06C
 } LinkBattleCoinManager;
 static_assert(sizeof(LinkBattleCoinManager) == 828);
 
@@ -36,89 +36,89 @@ IWRAM_DATA LinkBattleCoinManager* gLinkBattleCoinManager = NULL;  // 0x030001B0
 
 void FUN_081e0c14(void) { gLinkBattleCoinManager = NULL; }
 
-NAKED void FUN_081e0c20(Entity150FSlot* slot) { INCFUNC("asm/func/FUN_081e0c20.inc"); }
+NAKED void FUN_081e0c20(LinkBattleCoin* coin) { INCFUNC("asm/func/FUN_081e0c20.inc"); }
 
-NAKED void FUN_081e0ec0(Entity150FSlot* slot) { INCFUNC("asm/func/FUN_081e0ec0.inc"); }
+NAKED void FUN_081e0ec0(LinkBattleCoin* coin) { INCFUNC("asm/func/FUN_081e0ec0.inc"); }
 
-NAKED void FUN_081e10b8(Entity150FSlot* slot, u32 param_2) { INCFUNC("asm/func/FUN_081e10b8.inc"); }
+NAKED void FUN_081e10b8(LinkBattleCoin* coin, u32 param_2) { INCFUNC("asm/func/FUN_081e10b8.inc"); }
 
-s32 FUN_081e1220(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 param_3) {
-  slot->unk_00 = param_3;
-  slot->unk_01 = 0;
-  slot->unk_02 = 0;
-  slot->unk_03 = 0;
-  slot->unk_06 = 0;
-  slot->updateCallback = NULL;
-  AuxSprite_Add(&slot->sprite, &p->coinGfx, SPRFLAG_HIDDEN);
-  ParticleShadow_Init(&slot->shadow, &slot->sprite.pos, 0);
-  ParticleShadow_Hide(&slot->shadow);
+s32 FUN_081e1220(LinkBattleCoinManager* p, LinkBattleCoin* coin, s32 param_3) {
+  coin->unk_00 = param_3;
+  coin->unk_01 = 0;
+  coin->unk_02 = 0;
+  coin->unk_03 = 0;
+  coin->unk_06 = 0;
+  coin->updateCallback = NULL;
+  AuxSprite_Add(&coin->sprite, &p->coinGfx, SPRFLAG_HIDDEN);
+  ParticleShadow_Init(&coin->shadow, &coin->sprite.pos, 0);
+  ParticleShadow_Hide(&coin->shadow);
   return 0;
 }
 
-s32 FUN_081e1260(LinkBattleCoinManager* p, Entity150FSlot* slot) {
-  AuxSprite_Remove(&slot->sprite);
-  ParticleShadow_Remove(&slot->shadow);
+s32 FUN_081e1260(LinkBattleCoinManager* p, LinkBattleCoin* coin) {
+  AuxSprite_Remove(&coin->sprite);
+  ParticleShadow_Remove(&coin->shadow);
   return 0;
 }
 
-void FUN_081e127c(Entity150FSlot* slot) {
-  slot->unk_01 = 0;
-  slot->unk_02 = 0;
-  slot->unk_03 = 0;
-  slot->sprite.flags |= SPRFLAG_HIDDEN;
-  ParticleShadow_Hide(&slot->shadow);
-  slot->updateCallback = NULL;
-  slot->unk_06 = 0;
-  slot->unk_04[0] = 1;
+void FUN_081e127c(LinkBattleCoin* coin) {
+  coin->unk_01 = 0;
+  coin->unk_02 = 0;
+  coin->unk_03 = 0;
+  coin->sprite.flags |= SPRFLAG_HIDDEN;
+  ParticleShadow_Hide(&coin->shadow);
+  coin->updateCallback = NULL;
+  coin->unk_06 = 0;
+  coin->unk_04[0] = 1;
 }
 
 // unk_00 が key と一致するスロットを探す
-Entity150FSlot* Entity150F_FindSlot(LinkBattleCoinManager* p, s32 key) {
-  Entity150FSlot* slot = p->coins;
+LinkBattleCoin* LinkBattleCoinManager_FindSlot(LinkBattleCoinManager* p, s32 key) {
+  LinkBattleCoin* coin = p->coins;
   s32 i;
 
-  for (i = 0; i < 5; i++, slot++) {
-    if (slot->unk_00 == key) {
-      return slot;
+  for (i = 0; i < 5; i++, coin++) {
+    if (coin->unk_00 == key) {
+      return coin;
     }
   }
 
   return NULL;
 }
 
-NAKED s32 FUN_081e12c8(LinkBattleCoinManager* p, Entity150FSlot* slot) { INCFUNC("asm/func/FUN_081e12c8.inc"); }
+NAKED s32 FUN_081e12c8(LinkBattleCoinManager* p, LinkBattleCoin* coin) { INCFUNC("asm/func/FUN_081e12c8.inc"); }
 
-NAKED s32 FUN_081e1344(LinkBattleCoinManager* p, Entity150FSlot* slot) { INCFUNC("asm/func/FUN_081e1344.inc"); }
+NAKED s32 FUN_081e1344(LinkBattleCoinManager* p, LinkBattleCoin* coin) { INCFUNC("asm/func/FUN_081e1344.inc"); }
 
-NAKED void FUN_081e1438(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 idx) { INCFUNC("asm/func/FUN_081e1438.inc"); }
+NAKED void FUN_081e1438(LinkBattleCoinManager* p, LinkBattleCoin* coin, s32 idx) { INCFUNC("asm/func/FUN_081e1438.inc"); }
 
-NAKED void FUN_081e1524(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 idx) { INCFUNC("asm/func/FUN_081e1524.inc"); }
+NAKED void FUN_081e1524(LinkBattleCoinManager* p, LinkBattleCoin* coin, s32 idx) { INCFUNC("asm/func/FUN_081e1524.inc"); }
 
-NAKED void FUN_081e15b4(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 idx) { INCFUNC("asm/func/FUN_081e15b4.inc"); }
+NAKED void FUN_081e15b4(LinkBattleCoinManager* p, LinkBattleCoin* coin, s32 idx) { INCFUNC("asm/func/FUN_081e15b4.inc"); }
 
-NAKED void FUN_081e169c(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 idx) { INCFUNC("asm/func/FUN_081e169c.inc"); }
+NAKED void FUN_081e169c(LinkBattleCoinManager* p, LinkBattleCoin* coin, s32 idx) { INCFUNC("asm/func/FUN_081e169c.inc"); }
 
 NAKED void FUN_081e1734(LinkBattleCoinManager* p) { INCFUNC("asm/func/FUN_081e1734.inc"); }
 
-s32 Entity150F_Update(LinkBattleCoinManager* p) {
+s32 LinkBattleCoinManager_Update(LinkBattleCoinManager* p) {
   bool32 inited = FALSE;
-  Entity150FSlot* slot = p->coins;
+  LinkBattleCoin* coin = p->coins;
   s32 i;
 
-  for (i = 0; i < 5; i++, slot++) {
-    if (slot->updateCallback != NULL) {
+  for (i = 0; i < 5; i++, coin++) {
+    if (coin->updateCallback != NULL) {
       if (!inited) {
         FUN_081e1734(p);
         inited = TRUE;
       }
-      slot->updateCallback(p, slot, i);
+      coin->updateCallback(p, coin, i);
     }
   }
   p->frameCount++;
   return 0;
 }
 
-s32 Entity150F_Destroy(LinkBattleCoinManager* p) {
+s32 LinkBattleCoinManager_Destroy(LinkBattleCoinManager* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
@@ -131,15 +131,15 @@ s32 Entity150F_Destroy(LinkBattleCoinManager* p) {
   return 0;
 }
 
-NAKED s32 Entity150F_Init(LinkBattleCoinManager* p, u32 unused) { INCFUNC("asm/func/Entity150F_Init.inc"); }
+NAKED s32 LinkBattleCoinManager_Init(LinkBattleCoinManager* p, u32 unused) { INCFUNC("asm/func/LinkBattleCoinManager_Init.inc"); }
 
-// 0x150F
-LinkBattleCoinManager* Entity150F_Create(u32 id) {
+// 0x150F, HashName("対戦用コイン")
+LinkBattleCoinManager* LinkBattleCoinManager_Create(u32 id) {
   LinkBattleCoinManager* p = CreateEntity(ENTITY_UNK_10, sizeof(LinkBattleCoinManager));
 
   if (p != NULL) {
-    SetEntityRoutine(p, Entity150F_Update, Entity150F_Destroy);
-    if (Entity150F_Init(p, id) < 0) {
+    SetEntityRoutine(p, LinkBattleCoinManager_Update, LinkBattleCoinManager_Destroy);
+    if (LinkBattleCoinManager_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

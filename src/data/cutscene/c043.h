@@ -9,7 +9,7 @@ STEP(c43_s0) = {M(c43_s0_0), M(c43_s0_1), NULL};
 
 // step 1
 MSG(c43_s1_0, WAIT, BUS_WAIT(60));
-MSG(c43_s1_1, NOWAIT, TO_ACTOR(TGT_OTNK, 6, 1));
+MSG(c43_s1_1, NOWAIT, TO_NPC(TGT_OTNK, 6, 1));
 STEP(c43_s1) = {M(c43_s1_0), M(c43_s1_1), NULL};
 
 // step 2: おてんこさま「ここだ・・・ここが塔の先端(せんたん)…
@@ -22,7 +22,7 @@ STEP(c43_s3) = {M(c43_s3_0), NULL};
 
 // step 4
 MSG(c43_s4_0, WAIT, BUS_WAIT(20));
-MSG(c43_s4_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 3));
+MSG(c43_s4_1, NOWAIT, NPC_TURN(TGT_OTNK, 3));
 MSG(c43_s4_2, NOWAIT, PLAYER_TURN(TGT_PLAYER, 7));
 STEP(c43_s4) = {M(c43_s4_0), M(c43_s4_1), M(c43_s4_2), NULL};
 
@@ -41,7 +41,7 @@ STEP(c43_s7) = {M(c43_s7_0), M(c43_s7_1), NULL};
 
 // step 8
 MSG(c43_s8_0, WAIT, BUS_WAIT(20));
-MSG(c43_s8_1, NOWAIT, ACTOR_MOVE_TO(TGT_OTNK, 1664, 1024, 384));
+MSG(c43_s8_1, NOWAIT, NPC_MOVE_TO(TGT_OTNK, 1664, 1024, 384));
 MSG(c43_s8_2, NOWAIT, EFFECT_FADE(TGT_EFFECT, 1, 5, 0, 0, 0, 1, 1, 1, 0));
 STEP(c43_s8) = {M(c43_s8_0), M(c43_s8_1), M(c43_s8_2), NULL};
 

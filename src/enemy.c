@@ -310,7 +310,7 @@ void EnemyAuxSprite_LoadAnim(EnemyAuxSprite* p, FileID animID) {
 
 // 自前の食らい判定を固定フラグで組んで登録する
 void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
-  Hitbox_Init(&p->hurtbox, p->mover.id, (HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_3 | HBF_DAMAGE), 0, HIM_4, halfSize, offset);
+  Hitbox_Init(&p->hurtbox, p->mover.id, (HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_3 | HBF_DAMAGE), 0, HIM_4, halfSize, offset);
   Hitbox_SetPowerAndAttributes(&p->hurtbox, p->power, p->attrs, p->weakness);
   Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   Hitbox_SetHandler(&p->hurtbox, handler, owner);

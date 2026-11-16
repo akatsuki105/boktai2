@@ -37,10 +37,10 @@ _081E63CC:
 	ldr r2, _081E6400 @ =0x000015F4
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #7
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, _081E6404 @ =0x000002AE
 	bl PlaySound_082406e0
 	ldr r0, _081E6408 @ =0x0000162A

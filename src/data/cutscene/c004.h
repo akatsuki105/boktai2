@@ -9,11 +9,11 @@ STEP(c4_s0) = {M(c4_s0_0), M(c4_s0_1), NULL};
 
 // step 1
 MSG(c4_s1_0, NOWAIT, BUS_WAIT(40));
-MSG_F(c4_s1_1, 1, WAIT, TO_ACTOR(TGT_OTNK, 6, 1));
+MSG_F(c4_s1_1, 1, WAIT, TO_NPC(TGT_OTNK, 6, 1));
 STEP(c4_s1) = {M(c4_s1_0), M(c4_s1_1), NULL};
 
 // step 2
-MSG(c4_s2_0, WAIT, ACTOR_EMOTE(TGT_OTNK, 0));
+MSG(c4_s2_0, WAIT, NPC_EMOTE(TGT_OTNK, 0));
 MSG(c4_s2_1, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 5));
 STEP(c4_s2) = {M(c4_s2_0), M(c4_s2_1), NULL};
 
@@ -36,11 +36,11 @@ MSG_F(c4_s6_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_MEOW_799));
 STEP(c4_s6) = {M(c4_s6_0), M(c4_s6_1), NULL};
 
 // step 7
-MSG_F(c4_s7_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_A, 2944, 768, 1152));
+MSG_F(c4_s7_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_A, 2944, 768, 1152));
 STEP(c4_s7) = {M(c4_s7_0), NULL};
 
 // step 8
-MSG_F(c4_s8_0, 3, WAIT, TO_ACTOR(TGT_KURO_A, 0));
+MSG_F(c4_s8_0, 3, WAIT, TO_NPC(TGT_KURO_A, 0));
 STEP(c4_s8) = {M(c4_s8_0), NULL};
 
 // step 9
@@ -64,7 +64,7 @@ MSG(c4_s13_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c4_s13) = {M(c4_s13_0), NULL};
 
 // step 14
-MSG(c4_s14_0, WAIT, TO_ACTOR(TGT_OTNK, 7));
+MSG(c4_s14_0, WAIT, TO_NPC(TGT_OTNK, 7));
 MSG(c4_s14_1, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 5));
 STEP(c4_s14) = {M(c4_s14_0), M(c4_s14_1), NULL};
 

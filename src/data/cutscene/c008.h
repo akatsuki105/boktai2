@@ -8,7 +8,7 @@ STEP(c8_s0) = {M(c8_s0_0), NULL};
 
 // step 1
 MSG(c8_s1_0, WAIT, BUS_WAIT(60));
-MSG(c8_s1_1, NOWAIT, TO_ACTOR(TGT_OTNK, 6, 5));
+MSG(c8_s1_1, NOWAIT, TO_NPC(TGT_OTNK, 6, 5));
 STEP(c8_s1) = {M(c8_s1_0), M(c8_s1_1), NULL};
 
 // step 2
@@ -17,7 +17,7 @@ STEP(c8_s2) = {M(c8_s2_0), NULL};
 
 // step 3
 MSG(c8_s3_0, WAIT, BUS_WAIT(140));
-MSG(c8_s3_1, NOWAIT, ACTOR_EMOTE_TIMED(TGT_OTNK, 4, 130, 130));
+MSG(c8_s3_1, NOWAIT, NPC_EMOTE_TIMED(TGT_OTNK, 4, 130, 130));
 STEP(c8_s3) = {M(c8_s3_0), M(c8_s3_1), NULL};
 
 // step 4: おてんこさま「あの黒猫(くろねこ)・・・気になるな。 / Scr_CloseMsgWindowHUDHidden
@@ -29,7 +29,7 @@ MSG(c8_s5_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c8_s5) = {M(c8_s5_0), NULL};
 
 // step 6
-MSG(c8_s6_0, NOWAIT, TO_ACTOR(TGT_OTNK, 7));
+MSG(c8_s6_0, NOWAIT, TO_NPC(TGT_OTNK, 7));
 MSG(c8_s6_1, WAIT, CAMERA_RELEASE(TGT_CAM, 60));
 STEP(c8_s6) = {M(c8_s6_0), M(c8_s6_1), NULL};
 

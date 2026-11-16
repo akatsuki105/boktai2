@@ -65,7 +65,7 @@ _081E612A:
 	ldr r1, _081E616C @ =0x0000160C
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, _081E6170 @ =FUN_081e617c
 	movs r2, #0x17
 	str r0, [r4, #0x18]

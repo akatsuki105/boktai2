@@ -4,16 +4,16 @@
 // 起動元: Scr_0x10BA, .p = [60788 -> Scr_0x10BA], .e = Scr_0x10BA
 
 // step 0
-MSG_F(c61_s0_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_B, 6016, 256, 2432));
+MSG_F(c61_s0_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_B, 6016, 256, 2432));
 STEP(c61_s0) = {M(c61_s0_0), NULL};
 
 // step 1
-MSG_F(c61_s1_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_B, 6016, 256, 2048));
+MSG_F(c61_s1_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_B, 6016, 256, 2048));
 STEP(c61_s1) = {M(c61_s1_0), NULL};
 
 // step 2
 MSG(c61_s2_0, WAIT, BUS_WAIT(60));
-MSG_F(c61_s2_1, 3, NOWAIT, TO_ACTOR(TGT_KURO_B, 0));
+MSG_F(c61_s2_1, 3, NOWAIT, TO_NPC(TGT_KURO_B, 0));
 STEP(c61_s2) = {M(c61_s2_0), M(c61_s2_1), NULL};
 
 CUTSCENE(61) = {sStep_c61_s0, sStep_c61_s1, sStep_c61_s2, NULL};

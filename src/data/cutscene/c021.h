@@ -3,13 +3,13 @@
 // 起動元: Scr_CutsceneShaianGiveCircleKey, .p = [33796 -> Scr_CutsceneShaianGiveCircleKey], .e = Scr_CutsceneShaianGiveCircleKey
 
 // step 0
-MSG(c21_s0_0, WAIT, TO_ACTOR(TGT_SHAIAN, 1, 5));
+MSG(c21_s0_0, WAIT, TO_NPC(TGT_SHAIAN, 1, 5));
 MSG(c21_s0_1, NOWAIT, CAMERA_LOOK_AT(TGT_CAM, 1472, 1536, 4800));
 STEP(c21_s0) = {M(c21_s0_0), M(c21_s0_1), NULL};
 
 // step 1
 MSG(c21_s1_0, WAIT, BUS_WAIT(20));
-MSG(c21_s1_1, NOWAIT, TO_ACTOR(TGT_SHAIAN, 34));
+MSG(c21_s1_1, NOWAIT, TO_NPC(TGT_SHAIAN, 34));
 MSG(c21_s1_2, NOWAIT, SOUND_PLAY_BGM(TGT_SOUND, BGM_KAZE_NO_SENSHI));
 STEP(c21_s1) = {M(c21_s1_0), M(c21_s1_1), M(c21_s1_2), NULL};
 
@@ -23,7 +23,7 @@ STEP(c21_s3) = {M(c21_s3_0), NULL};
 
 // step 4
 MSG(c21_s4_0, WAIT, BUS_WAIT(60));
-MSG(c21_s4_1, NOWAIT, TO_ACTOR(TGT_SHAIAN, 35));
+MSG(c21_s4_1, NOWAIT, TO_NPC(TGT_SHAIAN, 35));
 MSG_F(c21_s4_2, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SONG_602));
 STEP(c21_s4) = {M(c21_s4_0), M(c21_s4_1), M(c21_s4_2), NULL};
 
@@ -37,7 +37,7 @@ STEP(c21_s6) = {M(c21_s6_0), NULL};
 
 // step 7
 MSG(c21_s7_0, WAIT, BUS_WAIT(30));
-MSG(c21_s7_1, NOWAIT, ACTOR_TURN(TGT_SHAIAN, 1));
+MSG(c21_s7_1, NOWAIT, NPC_TURN(TGT_SHAIAN, 1));
 MSG(c21_s7_2, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 8));
 STEP(c21_s7) = {M(c21_s7_0), M(c21_s7_1), M(c21_s7_2), NULL};
 
@@ -73,7 +73,7 @@ STEP(c21_s14) = {M(c21_s14_0), NULL};
 
 // step 15
 MSG(c21_s15_0, WAIT, BUS_WAIT(20));
-MSG(c21_s15_1, NOWAIT, ACTOR_TURN(TGT_SHAIAN, 5));
+MSG(c21_s15_1, NOWAIT, NPC_TURN(TGT_SHAIAN, 5));
 STEP(c21_s15) = {M(c21_s15_0), M(c21_s15_1), NULL};
 
 // step 16: シャイアン「私の力では、あの暗黒樹にとどめを刺(さ)…
@@ -140,12 +140,12 @@ STEP(c21_s29) = {M(c21_s29_0), NULL};
 
 // step 30
 MSG(c21_s30_0, NOWAIT, BUS_WAIT(10));
-MSG(c21_s30_1, WAIT, ACTOR_MOVE_TO(TGT_SHAIAN, 1408, 1536, 5760));
+MSG(c21_s30_1, WAIT, NPC_MOVE_TO(TGT_SHAIAN, 1408, 1536, 5760));
 STEP(c21_s30) = {M(c21_s30_0), M(c21_s30_1), NULL};
 
 // step 31
 MSG(c21_s31_0, NOWAIT, BUS_WAIT(10));
-MSG(c21_s31_1, WAIT, TO_ACTOR(TGT_SHAIAN, 0));
+MSG(c21_s31_1, WAIT, TO_NPC(TGT_SHAIAN, 0));
 STEP(c21_s31) = {M(c21_s31_0), M(c21_s31_1), NULL};
 
 CUTSCENE(21) = {sStep_c21_s0,  sStep_c21_s1,  sStep_c21_s2,  sStep_c21_s3,  sStep_c21_s4,  sStep_c21_s5,  sStep_c21_s6,  sStep_c21_s7,  sStep_c21_s8,  sStep_c21_s9,  sStep_c21_s10, sStep_c21_s11, sStep_c21_s12, sStep_c21_s13, sStep_c21_s14, sStep_c21_s15, sStep_c21_s16,

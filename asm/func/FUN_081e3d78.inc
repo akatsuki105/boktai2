@@ -4,7 +4,7 @@
 	movs r1, #4
 	movs r2, #0xa
 	movs r3, #2
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	movs r2, #0xb0
 	lsls r2, r2, #5
 	adds r1, r4, r2
@@ -13,7 +13,7 @@
 	movs r1, #4
 	movs r2, #0xa
 	movs r3, #2
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	ldr r2, _081E3DDC @ =0x00001604
 	adds r1, r4, r2
 	str r0, [r1]
@@ -21,7 +21,7 @@
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	ldr r2, _081E3DE0 @ =0x00001608
 	adds r1, r4, r2
 	str r0, [r1]
@@ -29,7 +29,7 @@
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	ldr r2, _081E3DE4 @ =0x0000160C
 	adds r1, r4, r2
 	str r0, [r1]

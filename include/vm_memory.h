@@ -21,7 +21,7 @@ typedef struct {
   u8 normalDropRate;               // 0x012, 敵の通常ドロップ率 (%), 盗人の服で +20
   u8 rareDropRate;                 // 0x013, 敵のレアドロップ率 (%), 狩人の服で +20
   s32 sensorGuideAutoCount;        // 0x014, タイトルで放置して太陽センサーのガイドを流した回数, 4 で割った余りで次に流す項目を選ぶ
-  u8 dungeonChestOpened[5];        // 0x018, ダンジョン内の宝箱を開けたか, 添字は宝箱番号
+  u8 currentStageChestOpened[5];   // 0x018, 今のステージの宝箱を開けたか, 添字は宝箱番号
   u8 lockedDoorOpened[4];          // 0x01D, 鍵付き扉を開けたか, 添字は鍵フラグ番号
   u8 coffinDir;                    // 0x021, 置いてある棺桶の向き
   u8 coffinHoldsDarkDjango;        // 0x022, 1 なら棺桶の中身が黒ジャンゴ (サバタで運ぶ, 時間制限あり)
@@ -35,8 +35,8 @@ typedef struct {
   s16 coffinDestZ;                 // 0x02C, 棺桶が自力で逃げる目的地の z
   s16 unk_02e;                     // 0x02E
   s16 unk_030;                     // 0x030
-  u8 dungeonFlags[4];              // 0x032, ダンジョン内の仕掛けの進行フラグ, 添字はダンジョンごとに決まる
-  u8 dungeonSwitchOn[4];           // 0x036, ダンジョン内のスイッチの状態, 添字はスイッチ番号
+  u8 currentStageFlags[4];         // 0x032, 今のステージの仕掛けの進行フラグ, 添字はステージごとに決まる
+  u8 currentStageSwitchOn[4];      // 0x036, 今のステージのスイッチの状態, 添字はスイッチ番号
   u8 stageVisited[2];              // 0x03A, ステージを調査したか, 添字は StageID (ST_XXX)
   u8 stageCleared[2];              // 0x03C, ステージの調査を完了したか, 添字は StageID (ST_XXX)
   u8 flags_03e[3];                 // 0x03E, bit0 から 5 ビットは不明, bit5 から 12 ビットは称号のフラグ
@@ -146,15 +146,15 @@ typedef struct {
   u8 rasenFlags3;                  // 0x179, 螺旋の塔のイベントフラグ
   u8 rasenFlags4;                  // 0x17A, 螺旋の塔のイベントフラグ
   u8 unk_17b;                      // 0x17B
-  u8 rasenWarpPosA;                // 0x17C, 螺旋の塔のワープ床の行き来先 A (ワープ先番号, 奇数)
-  u8 rasenWarpPosB;                // 0x17D, 螺旋の塔のワープ床の行き来先 B (ワープ先番号, 偶数)
+  u8 changePlayerDestA;            // 0x17C, 操作キャラ交代 (チェンジ魔方陣など) の行き先 A (ワープ先番号, 奇数)
+  u8 changePlayerDestB;            // 0x17D, 操作キャラ交代 (チェンジ魔方陣など) の行き先 B (ワープ先番号, 偶数)
   u8 henFlags0;                    // 0x17E, 変異域のイベントフラグ, bit0 だけ約束の丘
   u8 henFlags1;                    // 0x17F, 変異域のイベントフラグ
   u8 henFlags2;                    // 0x180, 変異域のイベントフラグ
   u8 henFlags3[2];                 // 0x181, 変異域と12番街などのフラグ
   u8 coffinState;                  // 0x183, 棺桶の運搬状態, 0: 運んでいない, 1/2: 運搬中
   s16 unk_184;                     // 0x184
-  s16 unk_186;                     // 0x186
+  s16 entrance;                    // 0x186, マップに入ったときの入口番号
   u8 unk_188[2];                   // 0x188
   s16 coffinX;                     // 0x18A, 棺桶が置かれている x
   s16 coffinZ;                     // 0x18C, 棺桶が置かれている z
@@ -163,7 +163,7 @@ typedef struct {
   u8 pileDriverGenStates[4];       // 0x191, パイルドライバーのジェネレーター4基の状態
   u8 unk_195;                      // 0x195
   u8 unk_196;                      // 0x196
-  u8 dungeonEventFlags[4];         // 0x197, ダンジョン内の仕掛けとイベントのフラグ
+  u8 currentStageEventFlags[4];    // 0x197, 今のステージの仕掛けとイベントのフラグ
   u8 candleLit[4];                 // 0x19B, 燭台の点灯フラグ, 添字は燭台フラグ番号
   u8 tortureCount;                 // 0x19F, 暗黒ローンのおしおきを受けた回数, 100 で頭打ち
   s32 unk_1a0;                     // 0x1A0
@@ -273,7 +273,7 @@ typedef struct {
   u8 fadeR;                      // 0x053, フェード色の R (0〜31)
   u8 fadeG;                      // 0x054, フェード色の G (0〜31)
   u8 fadeB;                      // 0x055, フェード色の B (0〜31)
-  u8 fadeKind;                   // 0x056, Entity6978 に渡すフェードの種類 (1〜4)
+  u8 fadeKind;                   // 0x056, ObjPlttController に渡すフェードの種類 (1〜4)
   u8 emblemShutterCount;         // 0x057, 紋章ブロックの仕掛けで開く扉の数 (0〜2)
   u8 emblemLitCount;             // 0x058, 光っている紋章ブロックの数
   u8 emblemRequired;             // 0x059, 扉が開くのに必要な紋章ブロックの数
@@ -440,11 +440,11 @@ typedef struct {
   u8 unk_159;                    // 0x159
   u8 unk_15a;                    // 0x15A
   u8 unk_15b;                    // 0x15B
-  s16 actorPosX;                 // 0x15C, NPC (Actor) を置く位置 x
-  s16 actorPosY;                 // 0x15E, NPC を置く位置 y
-  s16 actorPosZ;                 // 0x160, NPC を置く位置 z
-  s16 actorAngle;                // 0x162, NPC の向き (角度 0〜255)
-  s16 actorInitMode;             // 0x164, NPC の初期状態, 0: 立ち, 1: 非表示, 2: 経路を歩く
+  s16 npcPosX;                   // 0x15C, NPC (NPC) を置く位置 x
+  s16 npcPosY;                   // 0x15E, NPC を置く位置 y
+  s16 npcPosZ;                   // 0x160, NPC を置く位置 z
+  s16 npcAngle;                  // 0x162, NPC の向き (角度 0〜255)
+  s16 npcInitMode;               // 0x164, NPC の初期状態, 0: 立ち, 1: 非表示, 2: 経路を歩く
   u8 unk_166;                    // 0x166
   u8 unk_167;                    // 0x167
   u8 flags_168;                  // 0x168

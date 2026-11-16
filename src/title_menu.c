@@ -251,12 +251,12 @@ void FUN_082138d4(EntityA288* p) {
   pos.x = -8, pos.y = -64;
   MainSprite_Add(&s->sprite, &s->gfx, SMENU_YESNO(0), SPRFLAG_SCREEN_COORD, 0, 0, SECOND(1), &pos);
   s->sprite.flags |= SPRFLAG_HIDDEN;
-  s->windowID = TextPanel_Create(3, 10, 24, 2);
+  s->windowID = MenuMessage_Create(3, 10, 24, 2);
 }
 
 void FUN_08213960(EntityA288* p) {
   MainSprite_Remove(&p->sub78.sprite);
-  TextPanel_Destroy(p->sub78.windowID);
+  MenuMessage_Destroy(p->sub78.windowID);
 }
 
 // sprite を unk_8e + 4 番のアニメで表示する
@@ -1166,7 +1166,7 @@ void FUN_082150e8(EntityA288* p) {
   s->prefIdx = 0;
   y = 7;
   for (i = 0; i < 5; i++) {
-    s->windowIDs[i] = TextPanel_Create(4, y, 16, 2);
+    s->windowIDs[i] = MenuMessage_Create(4, y, 16, 2);
     y += 2;
   }
 }
@@ -1179,7 +1179,7 @@ void EntityA288_DestroyPanels(EntityA288* p) {
   MainSprite_Remove(&p->area.cursor);
 
   for (i = 0; i < 5; i++) {
-    TextPanel_Destroy(p->area.windowIDs[i]);
+    MenuMessage_Destroy(p->area.windowIDs[i]);
   }
 }
 
@@ -1196,7 +1196,7 @@ void FUN_082151d8(EntityA288* p) {
   ClearBGTilemapBuffer(0);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   for (i = 0; i < 5; i++) {
-    TextPanel_Hide(s->windowIDs[i]);
+    MenuMessage_Hide(s->windowIDs[i]);
   }
 
   Video_ClearTextRect(4, 7, 16, 10);
@@ -3524,8 +3524,8 @@ void FUN_08218c30(EntityA288* p) {
     s->sprites_2c0[i].flags |= SPRFLAG_HIDDEN;
   }
 
-  s->windowIDs[0] = TextPanel_Create(8, 7, 12, 2);
-  s->windowIDs[1] = TextPanel_Create(3, 10, 24, 2);
+  s->windowIDs[0] = MenuMessage_Create(8, 7, 12, 2);
+  s->windowIDs[1] = MenuMessage_Create(3, 10, 24, 2);
 }
 
 // スプライトとテキストパネルを片付ける
@@ -3548,8 +3548,8 @@ void FUN_08218ddc(EntityA288* p) {
     sprite++;
   }
 
-  TextPanel_Destroy(p->sub12c8.windowIDs[0]);
-  TextPanel_Destroy(p->sub12c8.windowIDs[1]);
+  MenuMessage_Destroy(p->sub12c8.windowIDs[0]);
+  MenuMessage_Destroy(p->sub12c8.windowIDs[1]);
 }
 
 void FUN_08218e4c(EntityA288* p) {
@@ -3692,8 +3692,8 @@ void FUN_08219238(EntityA288* p) {
     p->sub12c8.sprites_2c0[i].flags |= SPRFLAG_HIDDEN;
   }
 
-  TextPanel_Hide(p->sub12c8.windowIDs[0]);
-  TextPanel_Hide(p->sub12c8.windowIDs[1]);
+  MenuMessage_Hide(p->sub12c8.windowIDs[0]);
+  MenuMessage_Hide(p->sub12c8.windowIDs[1]);
 }
 
 // 下書き1回で止めた (994/983), 14 個のサブ state の流れは asm から起こした, 残差は他の state と同じく flags の bit の読み方と遷移の合流

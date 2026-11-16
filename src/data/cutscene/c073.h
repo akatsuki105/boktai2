@@ -16,7 +16,7 @@ STEP(c73_s2) = {M(c73_s2_0), NULL};
 
 // step 3
 MSG(c73_s3_0, WAIT, BUS_WAIT(30));
-MSG(c73_s3_1, NOWAIT, TO_ACTOR(TGT_ZAJI, 11));
+MSG(c73_s3_1, NOWAIT, TO_NPC(TGT_ZAJI, 11));
 STEP(c73_s3) = {M(c73_s3_0), M(c73_s3_1), NULL};
 
 // step 4: ザジ「あかんねん・・・
@@ -29,7 +29,7 @@ STEP(c73_s5) = {M(c73_s5_0), NULL};
 
 // step 6
 MSG(c73_s6_0, WAIT, BUS_WAIT(30));
-MSG(c73_s6_1, NOWAIT, TO_ACTOR(TGT_ZAJI, 12));
+MSG(c73_s6_1, NOWAIT, TO_NPC(TGT_ZAJI, 12));
 STEP(c73_s6) = {M(c73_s6_0), M(c73_s6_1), NULL};
 
 // step 7: そや、うちにもできることが、やるべきことがあるんや・・・

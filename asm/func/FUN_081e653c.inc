@@ -59,51 +59,51 @@ _081E65A8:
 	lsls r1, r1, #5
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r2, _081E6664 @ =0x00001604
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, _081E6668 @ =0x00001608
 	adds r5, r7, r0
 	ldr r0, [r5]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E666C @ =0x0000160C
 	adds r4, r7, r1
 	ldr r0, [r4]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, [r4]
 	movs r1, #6
 	str r1, [sp]
 	movs r1, #1
 	movs r2, #6
 	movs r3, #0x1c
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r2, _081E6670 @ =0x000015F0
 	adds r6, r7, r2
 	ldr r1, [r6]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0xe
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r0, [r5]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #0
 	movs r2, #0xf
 	movs r3, #0x1e
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r5]
 	ldr r1, [r6]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r5]
 	movs r1, #0x12
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r5]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	movs r0, #0xde
 	bl PlaySound_082406e0
 	adds r0, r7, #0

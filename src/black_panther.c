@@ -1,4 +1,3 @@
-#include "actor.h"
 #include "camera.h"
 #include "emote.h"
 #include "entity.h"
@@ -6,6 +5,7 @@
 #include "game.h"
 #include "global.h"
 #include "mover.h"
+#include "npc.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
@@ -61,7 +61,7 @@ typedef struct {
   s32 hitRange;                           // 0x014, Z 方向にこの範囲のおじゃまキャラに当たる
   u32 unk_18;                             // 0x018, 0 を書くだけで読むコードは見つかっていない
   u32 stateTimer;                         // 0x01C
-  s32 animKind;                           // 0x020, 4 未満は anims の添字, 4 以上は ActorAnim_ARRAY_085ab924 の添字 + 4
+  s32 animKind;                           // 0x020, 4 未満は anims の添字, 4 以上は NPCAnim_ARRAY_085ab924 の添字 + 4
   Emote* emote;                           // 0x024
   s32 emoteKind;                          // 0x028
   s16 emoteTimer;                         // 0x02C, 毎フレーム減り 3 で止まる
@@ -72,7 +72,7 @@ typedef struct {
   AuxSprite shadowSprite;                 // 0x110, SPRITE_EFF_1C1B の pose 7, 足元のタイルの高さに置く
   ParticleShadow shadow;                  // 0x13C
   const struct BlackPantherEntry* entry;  // 0x17C
-  const ActorAnim* anims;                 // 0x180
+  const NPCAnim* anims;                   // 0x180
 } BlackPantherElem;
 static_assert(sizeof(BlackPantherElem) == 388);
 
@@ -148,8 +148,8 @@ static inline void BlackPantherElem_SetCtrlState(BlackPantherElem* elem, u8 stat
 
 // 0x085AB748 の8件のテーブル, BlackPantherElem_Init が 0x38 刻みで引く
 typedef struct BlackPantherEntry {
-  SpriteID32 id;                                      // 0x00, ActorManager_FindSpriteData の第1引数
-  s32 idx;                                            // 0x04, ActorManager_FindSpriteData の第2引数
+  SpriteID32 id;                                      // 0x00, NPCManager_FindSpriteData の第1引数
+  s32 idx;                                            // 0x04, NPCManager_FindSpriteData の第2引数
   u32 unk_08;                                         // 0x08, BlackPantherElem_InitSprite に渡す, 2 の要素だけ BlackPanther.gfx[] に入る
   u32 unk_0c;                                         // 0x0C, BlackPantherElem_InitSprite に渡す, SPRITE_MOUSE の要素だけ ANIM_MOUSE
   void (*fns[10])(BlackPanther*, BlackPantherElem*);  // 0x10, BlackPantherElem_Update が BlackPantherElem + 0x0D で引く
@@ -256,7 +256,7 @@ const u16 u16_ARRAY_085ab908[5] = {0x6BDC, 0xF450, 0x094D, 0x6530, 0x2803};  // 
 const u16 u16_ARRAY_085ab912[9] = {250, 350, 350, 350, 350, 300, 350, 250, 0};  // 0x085AB912
 
 // BlackPantherElem.animKind が 4 以上のときのアニメ, 添字は animKind - 4
-const ActorAnim ActorAnim_ARRAY_085ab924[12] = {
+const NPCAnim NPCAnim_ARRAY_085ab924[12] = {
     {.dirMode = 1, .unk_1 = 0, .pose = 32 },
     {.dirMode = 1, .unk_1 = 0, .pose = 27 },
     {.dirMode = 3, .unk_1 = 0, .pose = 0  },
@@ -295,7 +295,7 @@ void BlackPanther_ClearGlobal(void) { sBlackPanther = NULL; }
 
 NAKED void BlackPantherElem_ShowEmote(BlackPantherElem* elem, u32 kind, s32 param_3, s32 param_4) { INCFUNC("asm/func/BlackPantherElem_ShowEmote.inc"); }
 
-// dir4 から左右反転と向きの番号を作ってアニメを設定する (actor.c の FUN_0804135c と同じ)
+// dir4 から左右反転と向きの番号を作ってアニメを設定する (npc.c の FUN_0804135c と同じ)
 s32 BlackPantherElem_SetAnimMode2(BlackPantherElem* elem, s32 pose, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
   SpriteHolder* sprite = &elem->sprite;
   u32 variant;

@@ -35,7 +35,7 @@ typedef struct {
   HitboxAttrs hurtAttributes;             // 0x178, 当たってきた攻撃の attributes の控え
   u8 unk_17c[0x180 - 0x17C];              // 0x17C
   Hitbox hitbox;                          // 0x180
-  Hitbox hurtbox;                         // 0x1D0, HBF_HURTBOX | HBF_ANGLE | HBF_DAMAGE, 他のボスと違って HBF_ACTOR が付かない, ハンドラは ShadeManCrossover_OnHurt
+  Hitbox hurtbox;                         // 0x1D0, HBF_HURTBOX | HBF_ANGLE | HBF_DAMAGE, 他のボスと違って HBF_NPC が付かない, ハンドラは ShadeManCrossover_OnHurt
   Hitbox hitbox2;                         // 0x220
   s32 unk_270;                            // 0x270, centerPos から見た角度の 8 倍
   s32 unk_274;                            // 0x274

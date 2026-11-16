@@ -35,10 +35,10 @@ typedef struct Entity501B {
   Tilemaps* tilemap1;                          // 0x3C8, TILEMAP_A413 を BG0 に敷く
   rgb555* bgPltt;                              // 0x3CC, bg_link_col_arr
   void (*updateCallback)(struct Entity501B*);  // 0x3D0
-  u8* unk_3d4;                                 // 0x3D4, '.s', TextPanel_SetScript に渡す
+  u8* unk_3d4;                                 // 0x3D4, '.s', MenuMessage_SetScript に渡す
   u8* unk_3d8;                                 // 0x3D8, '.e'
   u32 flags;                                   // 0x3DC, bit0 を立てて step の <<3 を一度だけにする
-  s32 textPanels[2];                           // 0x3E0, TextPanel_Create の戻り値
+  s32 textPanels[2];                           // 0x3E0, MenuMessage_Create の戻り値
   u8 phase;                                    // 0x3E8, 状態を切り替えるたびに 0/1/2/3 が入る
   bool8 entered;                               // 0x3E9, 状態に入った最初のフレームだけ立つ, 各状態が初期化を済ませて 0 に戻す
   u16 stateTimer;                              // 0x3EA, 状態に入ってからのフレーム数
@@ -127,12 +127,12 @@ void Entity501B_InitBg(Entity501B* p) {
 void Entity501B_InitTextPanels(Entity501B* p) {
   s32 i;
 
-  p->textPanels[0] = TextPanel_Create(2, 5, 26, 2);
-  p->textPanels[1] = TextPanel_Create(2, 12, 26, 2);
+  p->textPanels[0] = MenuMessage_Create(2, 5, 26, 2);
+  p->textPanels[1] = MenuMessage_Create(2, 12, 26, 2);
   for (i = 0; i < 2; i++) {
-    TextPanel_SetScript(p->textPanels[i], p->unk_3d4);
-    TextPanel_SetMessage(p->textPanels[i], i);
-    TextPanel_Start(p->textPanels[i]);
+    MenuMessage_SetScript(p->textPanels[i], p->unk_3d4);
+    MenuMessage_SetMessage(p->textPanels[i], i);
+    MenuMessage_Start(p->textPanels[i]);
   }
 }
 
@@ -140,7 +140,7 @@ void Entity501B_HideTextPanels(Entity501B* p) {
   s32 i;
 
   for (i = 0; i < 2; i++) {
-    TextPanel_Hide(p->textPanels[i]);
+    MenuMessage_Hide(p->textPanels[i]);
   }
 }
 
@@ -329,11 +329,11 @@ void FUN_081e03d8(Entity501B* p) {
     ClearBGTilemapBuffer(3);
     Video_SetBGLayer(0, (TilemapFile*)p->tilemap1, 3);
     Video_GenerateBGMap(0, 0, 0, 0, 0);
-    TextPanel_Hide(p->textPanels[0]);
-    TextPanel_SetRect(p->textPanels[0], 1, 7, 28, 6);
-    TextPanel_SetScript(p->textPanels[0], p->unk_3d4);
-    TextPanel_SetMessage(p->textPanels[0], 6);
-    TextPanel_Start(p->textPanels[0]);
+    MenuMessage_Hide(p->textPanels[0]);
+    MenuMessage_SetRect(p->textPanels[0], 1, 7, 28, 6);
+    MenuMessage_SetScript(p->textPanels[0], p->unk_3d4);
+    MenuMessage_SetMessage(p->textPanels[0], 6);
+    MenuMessage_Start(p->textPanels[0]);
     FUN_081df908();
     p->entered = FALSE;
   }
@@ -345,9 +345,9 @@ void FUN_081e03d8(Entity501B* p) {
 // 案内を出して 60 フレーム後にセーブを書き, 成否に応じた状態へ移る
 void Entity501B_StateSave(Entity501B* p) {
   if (p->entered) {
-    TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
-    TextPanel_SetMessage(p->textPanels[0], 6);
-    TextPanel_Start(p->textPanels[0]);
+    MenuMessage_SetScript(p->textPanels[0], p->unk_3d8);
+    MenuMessage_SetMessage(p->textPanels[0], 6);
+    MenuMessage_Start(p->textPanels[0]);
     p->stateTimer = 0;
     p->entered = FALSE;
   }
@@ -382,8 +382,8 @@ void FUN_081e0588(Entity501B* p) {
 // セーブできたと伝え, 120 フレームで画面を閉じ始め, 140 フレームを過ぎたらセッションを終える
 void Entity501B_StateSaveDone(Entity501B* p) {
   if (p->entered) {
-    TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
-    TextPanel_SetMessage(p->textPanels[0], 7);
+    MenuMessage_SetScript(p->textPanels[0], p->unk_3d8);
+    MenuMessage_SetMessage(p->textPanels[0], 7);
     PlaySound_082406e0(686);
     p->stateTimer = 0;
     p->entered = FALSE;
@@ -401,8 +401,8 @@ void Entity501B_StateSaveDone(Entity501B* p) {
 void Entity501B_StateSaveFailed(Entity501B* p) {
   if (p->entered) {
     Sio_Disconnect();
-    TextPanel_SetScript(p->textPanels[0], p->unk_3d8);
-    TextPanel_SetMessage(p->textPanels[0], 5);
+    MenuMessage_SetScript(p->textPanels[0], p->unk_3d8);
+    MenuMessage_SetMessage(p->textPanels[0], 5);
     PlaySound_082406e0(402);
     p->stateTimer = 0;
     p->entered = FALSE;
@@ -436,17 +436,17 @@ void Entity501B_StateSolarStand(Entity501B* p) {
     }
     p->solarStandSpr.flags &= ~SPRFLAG_HIDDEN;
     Entity501B_DrawBgNumber(gStat->solarStand, 1000, 13, 2);
-    TextPanel_SetRect(p->textPanels[0], 1, 11, 28, 8);
-    TextPanel_SetScript(p->textPanels[0], p->unk_3d4);
+    MenuMessage_SetRect(p->textPanels[0], 1, 11, 28, 8);
+    MenuMessage_SetScript(p->textPanels[0], p->unk_3d4);
     if (p->unk_3c0 == 0) {
-      TextPanel_SetMessage(p->textPanels[0], 4);
+      MenuMessage_SetMessage(p->textPanels[0], 4);
     } else if (p->unk_3c0 > 0) {
-      TextPanel_SetMessage(p->textPanels[0], 2);
+      MenuMessage_SetMessage(p->textPanels[0], 2);
     } else {
-      TextPanel_SetMessage(p->textPanels[0], 3);
+      MenuMessage_SetMessage(p->textPanels[0], 3);
     }
     FUN_0804a3e4(p->textPanels[0], 0, abs(p->unk_3c0));
-    TextPanel_Start(p->textPanels[0]);
+    MenuMessage_Start(p->textPanels[0]);
     p->stateTimer = 0;
     p->entered = FALSE;
   }

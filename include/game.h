@@ -217,7 +217,7 @@ typedef struct {
   s16 lx;                     // 0x940, 太陽光の強さ(ルクス), ライジングサンの効果も反映される,
   s16 sunGauge;               // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
   s16 unk_944;                // 0x944, EntityA288 の subdbc.unk_c8 の控え
-  s16 unk_946;                // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
+  s16 unk_946;                // 0x946, RainManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
   s16 unk_948[4];             // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
   s16 unk_950[4];             // 0x950, FUN_0823d310 が 9998 を上限に +1 する
 } GameInfo;

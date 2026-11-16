@@ -34,7 +34,7 @@ _081DB4D2:
 	subs r3, #0x16
 	adds r1, r2, r3
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	ldrb r1, [r5]
 	b _081DB564
@@ -81,14 +81,14 @@ _081DB538:
 	subs r3, #0x18
 	adds r1, r2, r3
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	ldrb r1, [r5]
 	adds r1, #5
 _081DB564:
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldrb r0, [r5]
 	strb r0, [r6]
 _081DB572:

@@ -24,7 +24,7 @@ typedef struct {
 } SpriteHolderMain;
 
 // SpriteHolder_InitAux / SpriteHolder_InitMain が作るスプライトの器, kind で AuxSprite と MainSprite を使い分ける
-// 図鑑専用ではなく、Actor も1つ、PreviewStage は5つ持つ
+// 図鑑専用ではなく、NPC も1つ、Specimen は5つ持つ
 typedef struct {
   u32 kind;         // 0x00, 0: 未使用, 1: AuxSprite, 2: MainSprite
   u32 animID;       // 0x04, SpriteHolder_SetAnim の pose, MainSprite のときは variant を足した値

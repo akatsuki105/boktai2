@@ -172,7 +172,7 @@ bool32 CheckItemOwn(item32_t id) {
   return checkValuableOwn(id);
 }
 
-// 0x814C
+// 0x814C, HashName("アイテム所持判定")
 bool32 Cmd_HasItem(void) {
   if (VM_SeekToNamedArg('i') != 0) {
     return CheckItemOwn(VM_GetValue());

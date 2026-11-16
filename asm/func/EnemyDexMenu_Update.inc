@@ -140,14 +140,14 @@ _0820E1B6:
 	ldr r2, _0820E204 @ =0x00001110
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #6
 	adds r2, r5, #0
 	movs r3, #0x14
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	mov r6, sl
 	add r6, r8
 	adds r0, r6, #0
@@ -156,7 +156,7 @@ _0820E1B6:
 	beq _0820E208
 	ldr r0, [r4]
 	adds r1, r6, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	b _0820E210
 	.align 2, 0
 _0820E1EC: .4byte 0x00000854
@@ -169,10 +169,10 @@ _0820E204: .4byte 0x00001110
 _0820E208:
 	ldr r0, [r4]
 	movs r1, #0x39
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 _0820E210:
 	ldm r4!, {r0}
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r5, #2
 	movs r3, #1
 	add r8, r3
@@ -761,11 +761,11 @@ _0820E64A:
 	ldr r3, _0820E6BC @ =0x0000125C
 	adds r4, r7, r3
 	ldr r0, [r4]
-	bl FUN_0820feb0
+	bl Specimen_Show
 	ldr r0, [r4]
 	ldr r2, [sp, #0x30]
 	ldrb r1, [r2]
-	bl FUN_0820fe98
+	bl Specimen_ChangeModel
 	b _0820E6CA
 	.align 2, 0
 _0820E6B0: .4byte 0x000005B4
@@ -776,7 +776,7 @@ _0820E6C0:
 	ldr r3, _0820E70C @ =0x0000125C
 	adds r0, r7, r3
 	ldr r0, [r0]
-	bl FUN_0820fea8
+	bl Specimen_Hide
 _0820E6CA:
 	adds r0, r7, #0
 	bl FUN_0820d188

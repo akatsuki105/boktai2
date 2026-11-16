@@ -14,7 +14,7 @@
 #define CLS_PLAYER 2
 #define CLS_ENEMY 3
 #define CLS_BOSS 4
-#define CLS_ACTOR 5
+#define CLS_NPC 5
 #define CLS_CAMERA 6
 #define CLS_EFFECT 7
 #define CLS_SOUND 8
@@ -22,7 +22,7 @@
 #define CLS_ETC 10
 
 // MsgBus 経由で受け手に届くメッセージ, 可変長で、実体サイズは 8 + ceil(argc/2)*4 バイト
-// 組み立ての手本は Cmd_DDD0 ('.n'/'.k'/'.f'/'.a'/'.p' から1件作って送る)
+// 組み立ての手本は Cmd_SendNPCMsg ('.n'/'.k'/'.f'/'.a'/'.p' から1件作って送る)
 typedef struct {
   u16 targetID;    // 0x00, 宛先, MsgQueue.targetID と照合される (生成元のサブルーチンID)
   u8 targetClass;  // 0x02, 宛先の種別 1..10, MsgQueue.targetClass と照合される, 根拠: MsgBus_FindQueue

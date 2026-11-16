@@ -99,12 +99,12 @@ _081E7456:
 	adds r3, r3, r7
 	mov sl, r3
 	ldr r1, [r3]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r1, _081E7620 @ =0x000015E2
 	adds r0, r7, r1
 	ldrh r1, [r0]
@@ -140,7 +140,7 @@ _081E7456:
 	subs r2, #0x90
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	bl Marquee_Clear
 	mov r3, sl
 	ldr r0, [r3]
@@ -339,7 +339,7 @@ _081E76DC:
 	ldr r3, _081E773C @ =0x00001608
 	adds r0, r7, r3
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, _081E7740 @ =0x00001514
 	adds r1, r7, r0
 	ldr r0, [r1]
@@ -369,7 +369,7 @@ _081E7744:
 	ldr r1, _081E77A8 @ =0x00001608
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldrb r1, [r4]
 	lsls r0, r1, #3
 	adds r0, r0, r1

@@ -14,7 +14,7 @@ typedef struct {
 } Entity5E27;
 static_assert(sizeof(Entity5E27) == 60);
 
-bool32 FUN_0800271c(void);
+bool32 BgPlttController_IsPlttUpdated(void);
 
 const u8 sBgPlttSlots[9] = {87, 88, 89, 90, 91, 92, 93, 94, 103};  // 0x085AA964, 退避/塗りつぶしの対象になる gBgPlttBuffer の色番号
 
@@ -46,7 +46,7 @@ void Entity5E27_ApplyPltt(Entity5E27* p) {
 
 // 時間帯の区切り (夜明け前後と夜) に差しかかったときだけ退避し直して塗り直す
 s32 Entity5E27_Update(Entity5E27* p) {
-  if (FUN_0800271c()) {
+  if (BgPlttController_IsPlttUpdated()) {
     u32 span = Time_GetSpanOfTime();
     if (span == TIME_NIGHT_DUSK || span == TIME_NIGHT_MID || span == TIME_NIGHT_DAWN) {
       Entity5E27_SavePltt(p);

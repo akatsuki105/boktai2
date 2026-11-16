@@ -6,7 +6,7 @@
 MSG(c51_s0_0, WAIT, BUS_WAIT(80));
 STEP(c51_s0) = {M(c51_s0_0), NULL};
 
-// step 1: キッド「オレたちはまだ・・・ / Cmd_StartEntity3117PlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
+// step 1: キッド「オレたちはまだ・・・ / Cmd_StartGenericObjPlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
 MSG(c51_s1_0, WAIT, BUS_EXEC_SCRIPT(25120));
 STEP(c51_s1) = {M(c51_s1_0), NULL};
 

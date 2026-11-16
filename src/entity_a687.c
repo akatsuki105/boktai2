@@ -3,7 +3,7 @@
 #include "video.h"
 #include "vm.h"
 
-// 画面を暗くして一定時間保ち、元の明るさへ戻して自滅する演出, brightness は ApplyBgPlttBlend が読む明るさ係数
+// ソル・デ・バイス を受け取るときにジャンゴの1枚絵 (SPRITE_DJANGO_LARGE) を表示するが、その間に背景をある程度暗くする演出用のエンティティ (それ以外では使用されない)
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_9
   u32 timer;          // 0x18, state 1 で数え上げ holdFrames と比べる, 状態が変わるたびに 0 に戻る

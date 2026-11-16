@@ -36,8 +36,8 @@ COMMON_DATA u32 u32_030047c0 = 0;              // 0x030047C0, GameSystem_Boot �
 COMMON_DATA u32 u32_030047c4 = 0;              // 0x030047C4, GameSystem_Update が 0 を書くほかは一括クリアのみ, 読み手は未発見
 
 bool8 Save_ReadSystemData(void);
-void MapPltt_PushCommand(s32 val, s32 count, u32* args);
-void Entity6978_SetRequest(u32 request, s32 count, u32* args);
+void BgPlttController_PushCommand(s32 val, s32 count, u32* args);
+void ObjPlttController_SetRequest(u32 request, s32 count, u32* args);
 void* VM_GetValueAtSafe_Proxy(u8* addr);
 
 static inline void SystemSave_SetUnk09(u32 val) { gSystemSaveData->unk_09 = val; }
@@ -53,7 +53,7 @@ void FUN_0823cd04(void) {
 
 char* GetPlayerName(void) { return gStat->name; }
 
-// 0x0272
+// 0x0272, HashName("プレイヤー名初期化")
 void Cmd_SetPlayerName(void) {
   char* name = GetPlayerName();
 
@@ -285,8 +285,8 @@ static void UNUSED GetTimeOfDayPlttPair2(u16* from, u16* to) {
 }
 
 /**
- * @brief BG (MapPltt) と OBJ (Entity6978) に同じフェードを同時にかける
- * @param kind 0: フェード色から元の明るさへ戻す (フェードイン), 1: 元の明るさからフェード色へ寄せる (フェードアウト), 2 / 3: 0 / 1 と同じだがフェード中でも上書きできる版
+ * @brief BG (BgPlttController) と OBJ (ObjPlttController) に同じフェードを同時にかける
+ * @param kind 0: フェード色から元の明るさへ戻す (フェードイン), 1: 元の明るさからフェード色へ寄せる (フェードアウト), 2 / 3: 0 / 1 と同じだが, 終わるまで 0 / 1 のフェードで上書きされない版, 3 は終わったあとも暗いまま
  * @param durationShift フェードの長さの log2, 1 << durationShift フレームで終わる
  * @param r5 フェード色の R (0..31)
  * @param g5 フェード色の G (0..31)
@@ -325,9 +325,9 @@ void StartBgObjPlttFade(s32 kind, s32 durationShift, s32 r5, s32 g5, s32 b5, u32
   args[0] = durationShift;
   args[1] = r5, args[2] = g5, args[3] = b5;
   args[4] = bgRowMask;
-  MapPltt_PushCommand(cmd, 5, args);
+  BgPlttController_PushCommand(cmd, 5, args);
   args[4] = objSkipMask;
-  Entity6978_SetRequest(request, 5, args);
+  ObjPlttController_SetRequest(request, 5, args);
 }
 
 // 0x0CD4, (x, z) のタイルの足元の高さをスクリプトの変数へ書き出して返す
@@ -699,10 +699,10 @@ s32 Cmd_SetCrossoverPoint(void) {
   return point;
 }
 
-// 0x2354
+// 0x2354, HashName("クロスオーバー戦闘回数取得")
 u16 Cmd_GetCrossoverBattleCount(void) { return gSystemSaveData->crossoverCount; }
 
-// 0x3F3B
+// 0x3F3B, HashName("クロスオーバー戦闘勝利数取得")
 u16 Cmd_GetCrossoverBattleWins(void) { return gSystemSaveData->crossoverWins; }
 
 // 0x058D, '.s' の文字列のIDを覚えておく

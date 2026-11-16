@@ -61,18 +61,18 @@ _081E58F8:
 	movs r1, #0xd
 	movs r2, #4
 	movs r3, #0xa
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r1, _081E5A74 @ =0x000015F0
 	adds r1, r1, r7
 	mov r8, r1
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r2, _081E5A78 @ =0x00001604
 	adds r4, r7, r2
 	ldr r0, [r4]
@@ -80,16 +80,16 @@ _081E58F8:
 	movs r1, #0xd
 	movs r2, #0xa
 	movs r3, #0xa
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	mov r3, r8
 	ldr r1, [r3]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #1
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r0, _081E5A7C @ =0x00001608
 	adds r4, r7, r0
 	ldr r0, [r4]
@@ -97,12 +97,12 @@ _081E58F8:
 	movs r1, #8
 	movs r2, #7
 	movs r3, #0x1c
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r2, _081E5A80 @ =0x00001590
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	ldr r3, _081E5A84 @ =0x00000E28
 	adds r5, r7, r3
@@ -111,7 +111,7 @@ _081E58F8:
 	adds r1, r5, #0
 	bl WeaponData_ShowNameInPanel
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r2, _081E5A8C @ =0x000014AC
 	adds r0, r7, r2
 	ldr r3, _081E5A90 @ =0x0000156C
@@ -138,12 +138,12 @@ _081E58F8:
 	ldr r0, [r4]
 	mov r2, r8
 	ldr r1, [r2]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0xb
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r0, r7, #0
 	bl FUN_081e4948
 	movs r3, #0xb1

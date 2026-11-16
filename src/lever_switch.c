@@ -112,9 +112,9 @@ NON_MATCH LeverSwitch* LeverSwitch_FindByID(s32 id) {
 #endif
 }
 
-// 0xF04B, レバースイッチを1つ置く, '.p' 位置, '.R' 優先度, '.r' 向き, '.n' ID, '.s' 初期フラグ, '.k' 種類, '.t' 反応までの回数
+// 0xF04B, HashName("スイッチ追加"), レバースイッチを1つ置く, '.p' 位置, '.R' 優先度, '.r' 向き, '.n' ID, '.s' 初期フラグ, '.k' 種類, '.t' 反応までの回数
 // 残差: 261/266 命令, 原典は sprite を r8 に, &kind を r7 に置くが, こちらは逆になって高位レジスタ経由の mov が減る (宣言順, sprite の代入位置は試済)
-NON_MATCH void Cmd_F04B(void) {
+NON_MATCH void Cmd_AddLever(void) {
 #ifdef NONMATCHING_C
   LeverSwitchManager* e = gLeverSwitchManager;
   LeverSwitch* item;
@@ -170,7 +170,7 @@ NON_MATCH void Cmd_F04B(void) {
   AuxSprite_AdvanceAnim(sprite, &item->anim);
   LeverSwitch_InitHurtbox(item);
 #else
-  INCFUNC("asm/func/Cmd_F04B.inc");
+  INCFUNC("asm/func/Cmd_AddLever.inc");
 #endif
 }
 
@@ -409,8 +409,8 @@ void LeverSwitch_InitHurtbox(LeverSwitch* item) {
   Hitbox_Register(hurtbox);
 }
 
-// 0xDFAB, '.n' のレバーの flags を返す, 無ければ -1
-s32 Cmd_DFAB(void) {
+// 0xDFAB, HashName("スイッチ状態取得"), '.n' のレバーの flags を返す, 無ければ -1
+s32 Cmd_GetLeverState(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -423,7 +423,7 @@ s32 Cmd_DFAB(void) {
 }
 
 // 0x2207, '.n' のレバーを固定し, 自動の切り替えも止める
-void Cmd_2207(void) {
+void Cmd_LockLever(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -436,8 +436,8 @@ void Cmd_2207(void) {
   }
 }
 
-// 0x820B, '.n' のレバーを '.c' の bit0 なら LEVER_FLAG_POS0 側, bit1 なら LEVER_FLAG_POS1 側へ倒して固定する
-void Cmd_820B(void) {
+// 0x820B, HashName("スイッチ状態変更"), '.n' のレバーを '.c' の bit0 なら LEVER_FLAG_POS0 側, bit1 なら LEVER_FLAG_POS1 側へ倒して固定する
+void Cmd_SetLeverState(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
@@ -463,8 +463,8 @@ void Cmd_820B(void) {
   }
 }
 
-// 0x0101, '.n' のレバーの固定を解く
-void Cmd_0101(void) {
+// 0x0101, '.n' のレバーの固定を解く, 叩けば動くようになるが Cmd_LockLever で止めた自動の切り替えは戻さない
+void Cmd_UnlockLever(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {

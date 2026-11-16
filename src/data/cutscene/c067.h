@@ -19,7 +19,7 @@ STEP(c67_s2) = {M(c67_s2_0), M(c67_s2_1), NULL};
 // step 3
 MSG(c67_s3_0, WAIT, BUS_WAIT(120));
 MSG(c67_s3_1, NOWAIT, EFFECT_FADE(TGT_EFFECT, 0, 6, 0, 0, 0, 1, 1, 1, 0));
-MSG(c67_s3_2, NOWAIT, ACTOR_SET_POS(TGT_RITA, 8320, 256, 5406));
+MSG(c67_s3_2, NOWAIT, NPC_SET_POS(TGT_RITA, 8320, 256, 5406));
 STEP(c67_s3) = {M(c67_s3_0), M(c67_s3_1), M(c67_s3_2), NULL};
 
 // step 4: ザジ「<NAME>、
@@ -31,13 +31,13 @@ MSG(c67_s5_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c67_s5) = {M(c67_s5_0), NULL};
 
 // step 6
-MSG(c67_s6_0, WAIT, ACTOR_MOVE_TO(TGT_RITA, 8320, 256, 6528));
+MSG(c67_s6_0, WAIT, NPC_MOVE_TO(TGT_RITA, 8320, 256, 6528));
 STEP(c67_s6) = {M(c67_s6_0), NULL};
 
 // step 7
 MSG(c67_s7_0, WAIT, BUS_WAIT(15));
-MSG_F(c67_s7_1, 3, NOWAIT, ACTOR_TURN(TGT_ZAJI, 3));
-MSG(c67_s7_2, NOWAIT, ACTOR_TURN(TGT_RITA, 7));
+MSG_F(c67_s7_1, 3, NOWAIT, NPC_TURN(TGT_ZAJI, 3));
+MSG(c67_s7_2, NOWAIT, NPC_TURN(TGT_RITA, 7));
 MSG(c67_s7_3, NOWAIT, PLAYER_TURN(TGT_PLAYER, 2));
 STEP(c67_s7) = {M(c67_s7_0), M(c67_s7_1), M(c67_s7_2), M(c67_s7_3), NULL};
 
@@ -51,7 +51,7 @@ STEP(c67_s9) = {M(c67_s9_0), NULL};
 
 // step 10
 MSG(c67_s10_0, WAIT, BUS_WAIT(15));
-MSG_F(c67_s10_1, 3, NOWAIT, TO_ACTOR(TGT_ZAJI, 11));
+MSG_F(c67_s10_1, 3, NOWAIT, TO_NPC(TGT_ZAJI, 11));
 STEP(c67_s10) = {M(c67_s10_0), M(c67_s10_1), NULL};
 
 // step 11: 魔女の弟子やっちゅうても、無力なもんや。こんなとき、何も…

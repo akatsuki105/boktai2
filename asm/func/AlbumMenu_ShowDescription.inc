@@ -13,12 +13,12 @@
 	lsls r2, r2, #4
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	ldrb r1, [r6]
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	bl Marquee_Clear
 	ldr r1, _08211220 @ =0x00000874
 	adds r0, r5, r1
@@ -40,12 +40,12 @@ _08211224:
 	adds r2, #4
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0x1b
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	bl Marquee_Clear
 	ldr r1, _08211268 @ =0x00000878
 	adds r0, r5, r1

@@ -8,7 +8,7 @@
 	ldr r1, _081E6AA4 @ =0x00001608
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r3, _081E6AA8 @ =0x00001514
 	adds r2, r4, r3
 	ldr r0, [r2]
@@ -114,7 +114,7 @@ _081E6AFA:
 	subs r3, #0x12
 	adds r0, r4, r3
 	ldr r0, [r0]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r0, _081E6B50 @ =FUN_081e6f28
 	movs r2, #3
 	str r0, [r4, #0x18]

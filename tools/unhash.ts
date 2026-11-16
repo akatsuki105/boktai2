@@ -203,6 +203,7 @@ const solveContains = (table: Map<number, string[]>, words: string[], id: number
 // 語彙は外部の辞書を使わず, リポジトリにあるものから集める:
 //   data/scripts/strings.h の台詞 (カタカナ・漢字の連なり), src/vm_commands.s の HashName("..."),
 //   src/cutscene.c の BOKHASH("...") (確定した名前), JA_FIXED (名前の部品になりやすい語と番号), DEV_WORDS (開発用の語)
+//   data/scripts/scripts.bokc の DebugPrint("...") と Cmd_Assert の文字列 (開発者が付けたログの言葉, "全文再生" など台詞に出ない言い回しが混じる)
 // ゲーム内に無い語も使われるので, --word / --vocab で語を足せる (足した語は部品と同じ重み)
 // 16bit なので 2 語をつなげると偶然の一致が多く出る。台詞での出現回数と確定した名前を重みにして, もっともらしい順に並べる。
 
@@ -271,6 +272,10 @@ export const readJaVocab = (root: string, extra: string[]): Map<string, number> 
   }
   for (const m of read("src/vm_commands.s").matchAll(/HashName\("([^"]+)"\)/g)) add(m[1], KNOWN_WEIGHT);
   for (const m of read("src/cutscene.c").matchAll(/BOKHASH\("([^"]+)"\)/g)) add(m[1], KNOWN_WEIGHT);
+  // デバッグ出力はカタカナ・漢字・ひらがな (2文字以上)・英字の連なりを語とする, 開発用の語と同じ重み
+  for (const m of read("data/scripts/scripts.bokc").matchAll(/(?:DebugPrint\(|Cmd_Assert, [^"]*)"([^"]*)"/g)) {
+    for (const w of m[1].match(/[ァ-ヶー・]{2,}|[一-龠々]{1,}|[ぁ-ん]{2,}|[A-Za-z]{2,}/g) ?? []) add(w, KNOWN_WEIGHT);
+  }
   for (const w of JA_FIXED) add(w, PART_WEIGHT);
   for (const w of DEV_WORDS) add(w, KNOWN_WEIGHT);
   for (const w of extra) add(w, PART_WEIGHT);

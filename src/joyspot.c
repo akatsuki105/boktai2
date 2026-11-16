@@ -21,12 +21,12 @@ typedef struct {
   u16 watchLinkResult;  // 0x1C, rfu_REQBN_watchLink の戻り値
   u8 retryCount;        // 0x1E, 3 未満なら state 5 へ戻し、以上なら state 8 へ進める
   u8 saveResult;        // 0x1F, Save_WriteSystemData の戻り値
-  u8 contentIdx;        // 0x20, gJoyspotContentIDs の何番目を受け取ったか, TextPanel_SetMessage の添字として +3 される
+  u8 contentIdx;        // 0x20, gJoyspotContentIDs の何番目を受け取ったか, MenuMessage_SetMessage の添字として +3 される
   u8 unk_21[3];         // 0x21, まだ未解析
   u32 timer;            // 0x24, 毎フレーム +1, state を変えるとき 0 に戻る
   u8* scriptM;          // 0x28, '.m'
   u8* scriptS;          // 0x2C, '.s'
-  s32 panelID;          // 0x30, TextPanel_Create(1, 7, 28, 6) の戻り値, 負なら未作成
+  s32 panelID;          // 0x30, MenuMessage_Create(1, 7, 28, 6) の戻り値, 負なら未作成
   s32 scriptID;         // 0x34, '.e', state 8 が 20フレーム後に VM_ExecByID へ渡す
   u8 unk_38;            // 0x38, まだ未解析
   u8 linkLossSlot;      // 0x39, rfu_REQBN_watchLink の bmLinkLossSlot
@@ -144,23 +144,23 @@ void JoyspotManager_SetupBG(JoyspotManager* p, s32 param_2) {
 
 void JoyspotManager_Start(JoyspotManager* p) {
   JoyspotManager_SetupBG(p, 3);
-  p->panelID = TextPanel_Create(1, 7, 28, 6);
+  p->panelID = MenuMessage_Create(1, 7, 28, 6);
 
   if (JoyspotManager_InitAdapter(p) >= 0) {
     JoyspotManager_SetState(p, 1);
     if (p->panelID >= 0) {
-      TextPanel_SetScript(p->panelID, p->scriptM);
-      TextPanel_SetMessage(p->panelID, 2);
-      TextPanel_Start(p->panelID);
+      MenuMessage_SetScript(p->panelID, p->scriptM);
+      MenuMessage_SetMessage(p->panelID, 2);
+      MenuMessage_Start(p->panelID);
     }
     rfu_REQ_startSearchParent();
     rfu_waitREQComplete();
   } else {
     JoyspotManager_SetState(p, 0);
     if (p->panelID >= 0) {
-      TextPanel_SetScript(p->panelID, p->scriptM);
-      TextPanel_SetMessage(p->panelID, 1);
-      TextPanel_Start(p->panelID);
+      MenuMessage_SetScript(p->panelID, p->scriptM);
+      MenuMessage_SetMessage(p->panelID, 1);
+      MenuMessage_Start(p->panelID);
     }
   }
 }
@@ -277,7 +277,7 @@ void JoyspotManager_StateRecvOk(JoyspotManager* p) {
       // 中身のないループ, 原典ではデバッグ用の処理が消えた跡と思われる
     }
     if (p->panelID >= 0) {
-      TextPanel_SetMessage(p->panelID, p->contentIdx + 3);
+      MenuMessage_SetMessage(p->panelID, p->contentIdx + 3);
     }
     PlaySound_082406e0(SE_GAIN_VALUABLE);
     JoyspotManager_Disconnect(p);
@@ -296,7 +296,7 @@ void JoyspotManager_StateRecvFailed(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     if (p->panelID >= 0) {
-      TextPanel_SetMessage(p->panelID, 7);
+      MenuMessage_SetMessage(p->panelID, 7);
     }
     JoyspotManager_Disconnect(p);
     PlaySound_082406e0(SE_NG);
@@ -315,7 +315,7 @@ void JoyspotManager_StateNotFound(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     if (p->panelID >= 0) {
-      TextPanel_SetMessage(p->panelID, 7);
+      MenuMessage_SetMessage(p->panelID, 7);
     }
     JoyspotManager_Disconnect(p);
     PlaySound_082406e0(SE_NG);
@@ -334,8 +334,8 @@ void JoyspotManager_StateSave(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     if (p->panelID >= 0) {
-      TextPanel_SetScript(p->panelID, p->scriptS);
-      TextPanel_SetMessage(p->panelID, 11);
+      MenuMessage_SetScript(p->panelID, p->scriptS);
+      MenuMessage_SetMessage(p->panelID, 11);
     }
   }
 
@@ -356,8 +356,8 @@ void JoyspotManager_StateSaveOk(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     if (p->panelID >= 0) {
-      TextPanel_SetScript(p->panelID, p->scriptS);
-      TextPanel_SetMessage(p->panelID, 14);
+      MenuMessage_SetScript(p->panelID, p->scriptS);
+      MenuMessage_SetMessage(p->panelID, 14);
       PlaySound_082406e0(SE_SAVE_SUCCESS);
     }
   }
@@ -374,8 +374,8 @@ void JoyspotManager_StateSaveFailed(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     if (p->panelID >= 0) {
-      TextPanel_SetScript(p->panelID, p->scriptS);
-      TextPanel_SetMessage(p->panelID, 15);
+      MenuMessage_SetScript(p->panelID, p->scriptS);
+      MenuMessage_SetMessage(p->panelID, 15);
       PlaySound_082406e0(SE_NG);
     }
   }
@@ -411,8 +411,8 @@ void JoyspotManager_StateLinkError(JoyspotManager* p) {
   if (p->stateChanged) {
     p->stateChanged = FALSE;
     if (p->panelID >= 0) {
-      TextPanel_SetScript(p->panelID, p->scriptM);
-      TextPanel_SetMessage(p->panelID, 0);
+      MenuMessage_SetScript(p->panelID, p->scriptM);
+      MenuMessage_SetMessage(p->panelID, 0);
     }
     PlaySound_082406e0(SE_NG);
   }
@@ -458,8 +458,8 @@ s32 JoyspotManager_Update(JoyspotManager* p) {
 s32 JoyspotManager_Destroy(JoyspotManager* p) {
   Taiyo_Enable();
   if (p->panelID >= 0) {
-    TextPanel_Hide(p->panelID);
-    TextPanel_Destroy(p->panelID);
+    MenuMessage_Hide(p->panelID);
+    MenuMessage_Destroy(p->panelID);
   }
   gJoyspotManager = NULL;
   return 0;

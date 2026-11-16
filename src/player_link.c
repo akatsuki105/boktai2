@@ -305,7 +305,7 @@ s32 FUN_080cc618(void) {
 
 NAKED void FUN_080cc648(Player* p) { INCFUNC("asm/func/FUN_080cc648.inc"); }
 
-void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
+void LinkPlayerMarker_ShowTracking(s32 playerIdx, Vec3* pos);
 
 NAKED void FUN_080cc6b0(Player* p, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_080cc6b0.inc"); }
 
@@ -884,7 +884,7 @@ void FUN_080d03bc(Player* p, Vec3* pos, s16 param_3, s32 param_4, Vec3* marker, 
   NoiseManager_AddMoverNoise(pos->x, pos->z, param_3, 0, param_4, p->mover.id);
 
   if (marker != NULL) {
-    Entity4B15_ShowTrackingMarker(p->inputIdx, marker);
+    LinkPlayerMarker_ShowTracking(p->inputIdx, marker);
     FUN_080cc6b0(p, marker, param_6);
   }
 

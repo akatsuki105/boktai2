@@ -17,7 +17,7 @@
 	adds r0, r6, r1
 	ldr r0, [r0]
 	movs r1, #7
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	movs r0, #0xff
 	strb r0, [r6, #0x1c]
 _0804F260:
@@ -133,7 +133,7 @@ _0804F33A:
 	adds r0, r6, r1
 	ldr r0, [r0]
 	movs r1, #8
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	b _0804F37E
 	.align 2, 0
 _0804F348: .4byte 0x0000055C
@@ -146,7 +146,7 @@ _0804F35C:
 	adds r0, r6, r1
 	ldr r0, [r0]
 	movs r1, #7
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	movs r1, #1
 	mov r2, r8
 	adds r2, #0x90

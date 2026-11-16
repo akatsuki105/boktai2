@@ -1714,7 +1714,7 @@ s32 ItemShop_Init(ItemShop* p, s8 param_2) {
   return 0;
 }
 
-// 0x3019, 果実屋(リタ), Hash元まだ未特定
+// 0x3019, HashName("果物屋"), リタの果物屋
 ItemShop* RitaShop_Create(void) {
   ItemShop* p = CreateEntity(ENTITY_UNK_11, sizeof(ItemShop));
 

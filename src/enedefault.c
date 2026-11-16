@@ -196,7 +196,7 @@ void Enemy_Deactivate(Enemy* p);
 void Enemy_Reactivate(Enemy* p);
 void Enemy_ResetToSpawn(Enemy* p);
 bool8 Enemy_PollMessages(Enemy* p);
-void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
+void LinkPlayerMarker_ShowTracking(s32 playerIdx, Vec3* pos);
 void FUN_080e5098(Enemy* p, s32 param_2, s32 param_3);
 void FUN_080f5c0c(Enemy* p);
 void Enemy_StateDefeated(Enemy* p);
@@ -3142,6 +3142,6 @@ void Mover_ShowTrackingMarker(Mover* owner) {
         return;
       }
     }
-    Entity4B15_ShowTrackingMarker(idx, &owner->pos);
+    LinkPlayerMarker_ShowTracking(idx, &owner->pos);
   }
 }

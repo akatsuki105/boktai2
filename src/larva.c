@@ -324,7 +324,7 @@ void FUN_080572b8(LarvaManager* p, Larva* larva) {
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &larva->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_08056f94, larva);
   Hitbox_SetPowerAndAttributes(hurtbox, larva->power, HBATTR_BEAST, 0);

@@ -33,7 +33,7 @@ typedef struct {
   MainSprite portrait;        // 0x850
   Procedure exitCallback;     // 0x8B0, ボタンで画面を閉じるときに呼ぶ, NULL 可
   u8* script;                 // 0x8B4, '.s'
-  s32 textPanels[4];          // 0x8B8, TextPanel_Destroy に渡すID
+  s32 textPanels[4];          // 0x8B8, MenuMessage_Destroy に渡すID
   u8 unk_8c8[16];             // 0x8C8, GetCrossoverPlayerName(0) の 16 バイトの写し
   u8 unk_8d8[16];             // 0x8D8, GetCrossoverPlayerName(1) の 16 バイトの写し
 } CrossoverResult;
@@ -315,7 +315,7 @@ s32 CrossoverResult_Update(CrossoverResult* p) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-      TextPanel_Destroy(p->textPanels[i]);
+      MenuMessage_Destroy(p->textPanels[i]);
     }
     KillEntity((Entity*)p);
   } else {
@@ -336,7 +336,7 @@ s32 CrossoverResult_Destroy(CrossoverResult* p) {
   MainSprite_Remove(spr);
 
   for (i = 0; i < 4; i++) {
-    TextPanel_Destroy(p->textPanels[i]);
+    MenuMessage_Destroy(p->textPanels[i]);
   }
   sCrossoverResult = NULL;
   return 0;
@@ -470,39 +470,39 @@ s32 CrossoverResult_Setup(u32 param_1, u32 result, s32 framesA, s32 framesB, s32
   MainSprite_SetNumber(spr, &p->gfx, value, 4, 0, 104, 136, 8, 0);
 
   panel = &p->textPanels[0];
-  *panel = TextPanel_Create(10, 4, 10, 2);
+  *panel = MenuMessage_Create(10, 4, 10, 2);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
+  MenuMessage_SetScript(*panel, p->script);
   FUN_0804a40c(*panel, 0, p->unk_8c8);
-  TextPanel_SetMessage(*panel, 3);
-  TextPanel_Start(*panel);
+  MenuMessage_SetMessage(*panel, 3);
+  MenuMessage_Start(*panel);
   panel = &p->textPanels[1];
-  *panel = TextPanel_Create(10, 7, 10, 2);
+  *panel = MenuMessage_Create(10, 7, 10, 2);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
+  MenuMessage_SetScript(*panel, p->script);
   FUN_0804a40c(*panel, 1, p->unk_8d8);
-  TextPanel_SetMessage(*panel, 4);
-  TextPanel_Start(*panel);
+  MenuMessage_SetMessage(*panel, 4);
+  MenuMessage_Start(*panel);
   panel = &p->textPanels[2];
-  *panel = TextPanel_Create(1, 10, 28, 2);
+  *panel = MenuMessage_Create(1, 10, 28, 2);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
-  TextPanel_SetMessage(*panel, 11);
-  TextPanel_Start(*panel);
+  MenuMessage_SetScript(*panel, p->script);
+  MenuMessage_SetMessage(*panel, 11);
+  MenuMessage_Start(*panel);
   panel = &p->textPanels[3];
-  *panel = TextPanel_Create(1, 15, 28, 2);
+  *panel = MenuMessage_Create(1, 15, 28, 2);
   if (*panel < 0) {
     return -1;
   }
-  TextPanel_SetScript(*panel, p->script);
-  TextPanel_SetMessage(*panel, 12);
-  TextPanel_Start(*panel);
+  MenuMessage_SetScript(*panel, p->script);
+  MenuMessage_SetMessage(*panel, 12);
+  MenuMessage_Start(*panel);
 
   spr = &p->portrait;
   spr->flags &= ~SPRFLAG_HIDDEN;

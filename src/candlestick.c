@@ -457,7 +457,7 @@ void Cmd_SetCandlestickLitDuration(void) {
   }
 }
 
-// 0x19CC
+// 0x19CC, HashName("燭台モード設定")
 void Cmd_SetCandlestickState(void) {
   CandlestickManager* p = gCandlestickManager;
 

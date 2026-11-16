@@ -124,7 +124,8 @@ const u8 Str_0070[] = _("<PROC=1><LABEL=OTENKO>太陽ぉーーーーーー!!</LA
 const u8 Str_0071[] = _("<PROC=0>\n<END>");
 const u8 Str_0072[] = _("デモ入る予定です");
 const u8 Str_0073[] = _("<PROC=0>\n<END>");
-const u8 Str_0074[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「大丈夫(だいじょうぶ)か、\n<NAME>!!");
+
+const u8 Str_GuideKaamos1[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「大丈夫(だいじょうぶ)か、\n<NAME>!!");
 const u8 Str_0075[] = _("呪(のろ)われているぞ!");
 const u8 Str_0076[] = _("これも吸血変異の影響(えいき\nょう)か?\n雨が汚染(おせん)されていた?");
 const u8 Str_0077[] = _("カーモス状態では身体が太陽の\n光を受けつけず、太陽チャージ\nもできない。");
@@ -132,7 +133,8 @@ const u8 Str_0078[] = _("呪いを解くには太陽樹の朝露(\nあさつゆ)
 const u8 Str_0079[] = _("ううむ・・・");
 const u8 Str_007A[] = _("とにかく太陽街に戻(もど)って\n何らかの対策を見つけるんだ」");
 const u8 Str_007B[] = _("<PROC=0>\n<END>");
-const u8 Str_007C[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「大丈夫(だいじょうぶ)か、\n<NAME>!!");
+
+const u8 Str_GuideKaamos2[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「大丈夫(だいじょうぶ)か、\n<NAME>!!");
 const u8 Str_007D[] = _("呪(のろ)われているぞ!");
 const u8 Str_007E[] = _("これも吸血変異の影響(えいき\nょう)か?\n雨が汚染(おせん)されていた?");
 const u8 Str_007F[] = _("カーモス状態では身体が太陽の\n光を受けつけず、太陽チャージ\nもできない。");
@@ -140,23 +142,27 @@ const u8 Str_0080[] = _("呪いを解くには太陽樹の朝露(\nあさつゆ)
 const u8 Str_0081[] = _("ううむ・・・");
 const u8 Str_0082[] = _("とにかくこの太陽街で、何らか\nの対策を見つけるんだ!」");
 const u8 Str_0083[] = _("<PROC=0>\n<END>");
-const u8 Str_0084[] = _("<LABEL=SABATA>サバタ</LABEL>\n「カーモスの呪(のろ)いか。");
+
+const u8 Str_GuideKaamos3[] = _("<LABEL=SABATA>サバタ</LABEL>\n「カーモスの呪(のろ)いか。");
 const u8 Str_0085[] = _("雨までもが吸血変異に汚染(お\nせん)されていたとは・・・");
 const u8 Str_0086[] = _("だがむしろ好都合だな。");
 const u8 Str_0087[] = _("これで太陽の光を浴びてもダメ\nージを受けないで済む・・・」");
 const u8 Str_0088[] = _("<PROC=0>\n<END>");
-const u8 Str_0089[] = _("<LABEL=NONE>???</LABEL>\n「呪(のろ)われたようだね、\n<NAME>・・・");
+
+const u8 Str_GuideKaamos4[] = _("<LABEL=NONE>???</LABEL>\n「呪(のろ)われたようだね、\n<NAME>・・・");
 const u8 Str_008A[] = _("吸血変異に汚染(おせん)された\n雨の味はどうだい?");
 const u8 Str_008B[] = _("これでもう、キミの身体は太陽\nの光を受け付けない・・・」");
 const u8 Str_008C[] = _("<PROC=0>\n<END>");
-const u8 Str_008D[] = _("<LABEL=NONE>???</LABEL>\n「<NAME>・・・");
+
+const u8 Str_GuideKaamos5[] = _("<LABEL=NONE>???</LABEL>\n「<NAME>・・・");
 const u8 Str_008E[] = _("この街は今だ吸血変異に汚染(\nおせん)されている。");
 const u8 Str_008F[] = _("その雨を浴び続ければ、\n呪(のろ)いを受けるのは必然。");
 const u8 Str_0090[] = _("そのままでは身体が太陽の光を\n受けつけない。");
 const u8 Str_0091[] = _("太陽チャージもできなければ、\n太陽魔法も使えん。");
 const u8 Str_0092[] = _("早く呪いを解くんだ・・・」");
 const u8 Str_0093[] = _("<PROC=0>\n<END>");
-const u8 Str_PhotoDjangoSolar[] = _("<LABEL>「赤<NAME>のブロマイド」\nを手に入れた!!</LABEL>");
+
+const u8 Str_PhotoGain[] = _("<LABEL>「赤<NAME>のブロマイド」\nを手に入れた!!</LABEL>");
 const u8 Str_0095[] = _("<PROC=0>\n<END>");
 const u8 Str_0096[] = _("<LABEL>「黒<NAME>のブロマイド」\nを手に入れた!!</LABEL>");
 const u8 Str_0097[] = _("<PROC=0>\n<END>");
@@ -214,6 +220,7 @@ const u8 Str_00CA[] = _("<LABEL>「クロのブロマイドB」\nを手に入れ
 const u8 Str_00CB[] = _("<PROC=0>\n<END>");
 const u8 Str_00CC[] = _("<LABEL>「?のブロマイド」\nを手に入れた!!</LABEL>");
 const u8 Str_00CD[] = _("<PROC=0>\n<END>");
+
 const u8 Str_00CE[] = _("暗黒ローンの暗子ちゃん\n「いつもご利用ありがとうござ\nいます。暗黒ローンです。");
 const u8 Str_00CF[] = _("明日はローンの返済日です。");
 const u8 Str_00D0[] = _("返済は太陽バンクからの自動引\nき落しとなります。");
@@ -529,10 +536,12 @@ const u8 Str_Guide_0205[] = _("倒(たお)せ!!");
 const u8 Str_0206[] = _("攻撃(こうげき)はＢボタン(武\n器ボタン)にて行う。");
 const u8 Str_0207[] = _("ボタンを押(お)せば武器を構え\n放せば攻撃をすることができる");
 const u8 Str_0208[] = _("<PROC=0>\n<END>");
-const u8 Str_0209[] = _("あきらめは死の友と知れ。");
+
+const u8 Str_GuideMash[] = _("あきらめは死の友と知れ。");
 const u8 Str_020A[] = _("クモの巣など、敵モンスターや\nその罠(わな)に捕(つか)まって\nしまったときは、");
 const u8 Str_020B[] = _("✚ボタンをすばやく動かして、\nただちに脱出(だっしゅつ)せよ");
 const u8 Str_020C[] = _("<PROC=0>\n<END>");
+
 const u8 Str_020D[] = _("太陽の光、その力を知れ。");
 const u8 Str_020E[] = _("画面下中央にある太陽(SUN)ゲ\nージは、太陽センサーがキャッ\nチした太陽の光の強さを示す。");
 const u8 Str_020F[] = _("<PROC=0>\n<END>");
@@ -563,12 +572,14 @@ const u8 Str_0227[] = _("入手したアイテムの使用はメニ\nュー画�
 const u8 Str_0228[] = _("アイテムは一定の数までしか持\nつことができない。");
 const u8 Str_0229[] = _("ムダ使いはもちろん、使い惜(\nお)しんで宝の持ちぐされとな\nらぬよう、注意せよ。");
 const u8 Str_022A[] = _("<PROC=0>\n<END>");
+
 const u8 Str_Guide_022B[] = _("張りつけ!!");
 const u8 Str_022C[] = _("崩(くず)れた通路などのせまい\n足場は、");
 const u8 Str_022D[] = _("壁(かべ)に張りつくことによっ\nて通過することができる。");
 const u8 Str_022E[] = _("壁に向かって✚ボタンを押(お)\nしっぱなしにすれば、張りつき\nが可能。");
 const u8 Str_022F[] = _("そのまま✚ボタンを壁にそって\n動かせば、張りつき移動ができ\nる。");
 const u8 Str_0230[] = _("<PROC=0>\n<END>");
+
 const u8 Str_GuidePush[] = _("押(お)せ!!");
 const u8 Str_0232[] = _("岩ブロックなどの移動ブロック\nは、");
 const u8 Str_0233[] = _("ブロックに向かって✚ボタンを\n押しっぱなしにすれば、動かす\nことができる。");
@@ -629,10 +640,10 @@ const u8 Str_ZajiBok1TitleKnight[] = _("<LABEL=ZAJI></LABEL>称号(しょうご�
 const u8 Str_026A[] = _("<PROC=0>\n<END>");
 const u8 Str_ZajiBok1TitlePawn[] = _("<LABEL=ZAJI></LABEL>称号(しょうごう)ポーンはダテ\nやないな?");
 const u8 Str_026C[] = _("<PROC=0>\n<END>");
-const u8 Str_026D[] = _("赤の水晶");
-const u8 Str_026E[] = _("青の水晶");
-const u8 Str_026F[] = _("緑の水晶");
-const u8 Str_0270[] = _("黄の水晶");
+const u8 Str_RedCrystal[] = _("赤の水晶");
+const u8 Str_BlueCrystal[] = _("青の水晶");
+const u8 Str_GreenCrystal[] = _("緑の水晶");
+const u8 Str_YellowCrystal[] = _("黄の水晶");
 const u8 Str_0271[] = _("丸いくぼみがある。\n何かをはめ込(こ)む穴のようだ");
 const u8 Str_0272[] = _("<PROC=0>\n<END>");
 const u8 Str_0273[] = _("何をはめ込みますか?\n <ALTER><EXTEND=0></ALTER>");
@@ -720,10 +731,10 @@ const u8 Str_02C4[] = _("SELECTボタンを押(お)しながら\nＲボタンを
 const u8 Str_02C5[] = _("セットする武器を素早く切り換\n(か)えることができる。");
 const u8 Str_02C6[] = _("ただし切り換えることができる\nのは、メニュー画面にて装備し\nた武器に限られる。");
 const u8 Str_02C7[] = _("<PROC=0>\n<END>");
-const u8 Str_02C8[] = _("上空にいるドゥネイルに攻撃(\nこうげき)を当てることはでき\nない。");
+const u8 Str_DuneyrrAdvice1[] = _("上空にいるドゥネイルに攻撃(\nこうげき)を当てることはでき\nない。");
 const u8 Str_02C9[] = _("燭台(しょくだい)に火を灯(と\nも)し、ドゥネイルを低空に誘\n(さそ)い出せ。");
 const u8 Str_02CA[] = _("<PROC=0>\n<END>");
-const u8 Str_02CB[] = _("燭台(しょくだい)に火を灯(と\nも)すには2つの方法がある。");
+const u8 Str_DuneyrrAdvice2[] = _("燭台(しょくだい)に火を灯(と\nも)すには2つの方法がある。");
 const u8 Str_02CC[] = _("1つはフレイムをエンチャント\nした武器で燭台を攻撃し、\n直接火を点けるという方法。");
 const u8 Str_02CD[] = _("もう1つは4つのレバースイッチ\nを起動して、燭台を点火すると\nいう方法だ。");
 const u8 Str_02CE[] = _("<PROC=0>\n<END>");
@@ -787,10 +798,10 @@ const u8 Str_0307[] = _("<PROC=0>\n<END>");
 const u8 Str_0308[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「待つんだ、<NAME>!!");
 const u8 Str_0309[] = _("水も持たずにこの先の砂漠に入\nるのは危険だ。そこに見えるわ\nき水をくんでいこう」");
 const u8 Str_030A[] = _("<PROC=0>\n<END>");
-const u8 Str_030B[] = _("ヴァンパイアに正面からの攻撃\nは通じない。");
+const u8 Str_RingoAdvice1[] = _("ヴァンパイアに正面からの攻撃\nは通じない。");
 const u8 Str_030C[] = _("サバタが作り出すブラックホー\nルで、ヴァンパイアの動きを封\n(ふう)じろ。");
 const u8 Str_030D[] = _("<PROC=0>\n<END>");
-const u8 Str_030E[] = _("サバタを守り、ブラックホール\nを完成させろ。");
+const u8 Str_RingoAdvice2[] = _("サバタを守り、ブラックホール\nを完成させろ。");
 const u8 Str_030F[] = _("サバタがダメージを受けないよ\nうに、ヴァンパイアの攻撃を自\n分に引きつけ、");
 const u8 Str_0310[] = _("サバタを狙(ねら)うヴァンパイ\nアソードは、確実に叩(たた)き\n落とせ。");
 const u8 Str_0311[] = _("<PROC=0>\n<END>");
@@ -979,31 +990,31 @@ const u8 Str_GuideWeightLift[] = _("重量をコントロールせよ。");
 const u8 Str_03C8[] = _("重量昇降床(じゅうりょうしょ\nうこうゆか)は乗ったモノの重\nさにより行き先が変化し、");
 const u8 Str_03C9[] = _("軽いものは上のフロアへ、\n重いものは下のフロアへと運ぶ");
 const u8 Str_03CA[] = _("<PROC=0>\n<END>");
-const u8 Str_TaiyoKekkai[] = _("太陽結界について。");
+const u8 Str_GuideBarrier[] = _("太陽結界について。");
 const u8 Str_03CC[] = _("太陽結界には闇(やみ)を縛(し\nば)りつける力がある。");
 const u8 Str_03CD[] = _("結界の上に置いておけば、棺桶\n(かんおけ)に逃(に)げられるこ\nとはない。");
 const u8 Str_03CE[] = _("<PROC=0>\n<END>");
-const u8 Str_03CF[] = _("???\n「<NAME>・・・");
+const u8 Str_GuideSleeping[] = _("???\n「<NAME>・・・");
 const u8 Str_03D0[] = _("使うんだ・・・\nヴァンパイアの力、\n暗黒魔法を・・・");
 const u8 Str_03D1[] = _("スリーピングは棺桶(かんおけ)\nを使った回復魔法だ。");
 const u8 Str_03D2[] = _("棺桶で眠(ねむ)れば、太陽の光\nに頼(たよ)らずともエナジーを\n回復することができる。");
 const u8 Str_03D3[] = _("受け入れるんだ、\n暗黒の力を・・・」");
 const u8 Str_03D4[] = _("<PROC=0>\n<END>");
-const u8 Str_03D5[] = _("???\n「<NAME>・・・");
+const u8 Str_GuideCMouse[] = _("???\n「<NAME>・・・");
 const u8 Str_03D6[] = _("使うんだ・・・\nヴァンパイアの力、\n暗黒魔法を・・・");
 const u8 Str_03D7[] = _("チェンジ・マウスはマウス(ね\nずみ)へのチェンジ(変身)魔法\nだ。");
 const u8 Str_03D8[] = _("マウスになれば、");
 const u8 Str_03D9[] = _("通常は通ることのできない小さ\nな穴を、潜(くぐ)り抜(ぬ)ける\nことができる。");
 const u8 Str_03DA[] = _("受け入れるんだ、\n暗黒の力を・・・」");
 const u8 Str_03DB[] = _("<PROC=0>\n<END>");
-const u8 Str_03DC[] = _("???\n「<NAME>・・・");
+const u8 Str_GuideCBat1[] = _("???\n「<NAME>・・・");
 const u8 Str_03DD[] = _("使うんだ・・・\nヴァンパイアの力、\n暗黒魔法を・・・");
 const u8 Str_03DE[] = _("チェンジ・バットはバット(こ\nうもり)へのチェンジ(変身)魔\n法だ。");
 const u8 Str_03DF[] = _("バットになれば、");
 const u8 Str_03E0[] = _("超音波(ちょうおんぱ)によって\n通常は見ることのできないモノ\nを見ることができる。");
 const u8 Str_03E1[] = _("受け入れるんだ、\n暗黒の力を・・・」");
 const u8 Str_03E2[] = _("<PROC=0>\n<END>");
-const u8 Str_03E3[] = _("???\n「<NAME>・・・");
+const u8 Str_GuideCWolf[] = _("???\n「<NAME>・・・");
 const u8 Str_03E4[] = _("使うんだ・・・\nヴァンパイアの力、\n暗黒魔法を・・・");
 const u8 Str_03E5[] = _("チェンジ・ウルフはウルフ(お\nおかみ)へのチェンジ(変身)魔\n法だ。");
 const u8 Str_03E6[] = _("チェンジ・ウルフを使えば、噛\n(か)みついた相手からライフを\n奪(うば)い取ることができる。");
@@ -1011,14 +1022,14 @@ const u8 Str_03E7[] = _("ただし噛みつきは、相手の後ろ\nから行�
 const u8 Str_03E8[] = _("噛みつき中にＬボタンを連打す\nれば、より多くのライフを奪う\nことができる。");
 const u8 Str_03E9[] = _("受け入れるんだ、\n暗黒の力を・・・」");
 const u8 Str_03EA[] = _("<PROC=0>\n<END>");
-const u8 Str_03EB[] = _("???\n「<NAME>・・・");
+const u8 Str_GuideCBat2[] = _("???\n「<NAME>・・・");
 const u8 Str_03EC[] = _("使うんだ・・・\nヴァンパイアの力、\n暗黒魔法を・・・");
 const u8 Str_03ED[] = _("チェンジ・バットはバット(こ\nうもり)へのチェンジ(変身)魔\n法だ。");
 const u8 Str_03EE[] = _("バットになれば、");
 const u8 Str_03EF[] = _("通常は通ることのできない小さ\nな窓を、潜(くぐ)り抜(ぬ)ける\nことができる。");
 const u8 Str_03F0[] = _("受け入れるんだ、\n暗黒の力を・・・」");
 const u8 Str_03F1[] = _("<PROC=0>\n<END>");
-const u8 Str_03F2[] = _("???\n「気をつけるんだ、\n<NAME>・・・");
+const u8 Str_GuideCBat3[] = _("???\n「気をつけるんだ、\n<NAME>・・・");
 const u8 Str_03F3[] = _("ヴァンパイアは太陽の光と水に\n弱い。水たまりといえども油断\nは禁物・・・");
 const u8 Str_03F4[] = _("使うんだ・・・\nヴァンパイアの力、\n暗黒魔法を・・・");
 const u8 Str_03F5[] = _("チェンジ・バットはバット(こ\nうもり)へのチェンジ(変身)魔\n法だ。");
@@ -1155,10 +1166,10 @@ const u8 Str_0477[] = _("<PROC=0>\n<END>");
 const u8 Str_0478[] = _("サバタの声\n「<NAME>!!\n何をやっている!");
 const u8 Str_0479[] = _("今は後戻(あともど)りをしてい\nる場合ではないぞ!!」");
 const u8 Str_047A[] = _("<PROC=0>\n<END>");
-const u8 Str_047B[] = _("ダーインの攻撃(こうげき)、ダ\nークブラストは、エリア全体を\n暗闇(くらやみ)にしてしまう。");
+const u8 Str_DainnAdvice1[] = _("ダーインの攻撃(こうげき)、ダ\nークブラストは、エリア全体を\n暗闇(くらやみ)にしてしまう。");
 const u8 Str_047C[] = _("しかし太陽の光さえあれば、\nその力を弱めることも可能だ。");
 const u8 Str_047D[] = _("<PROC=0>\n<END>");
-const u8 Str_047E[] = _("足元からのつかみ攻撃(こうげ\nき)、影(かげ)の腕(うで)に捕\n(つか)まれば、");
+const u8 Str_DainnAdvice2[] = _("足元からのつかみ攻撃(こうげ\nき)、影(かげ)の腕(うで)に捕\n(つか)まれば、");
 const u8 Str_047F[] = _("ライフを奪(うば)われ、ダメー\nジを受けると共にダーインの暗\n黒ゲージを回復させてしまう。");
 const u8 Str_0480[] = _("攻撃をやり過ごし、闇の晴れる\nとき、反撃のチャンスを見逃す\nな。");
 const u8 Str_0481[] = _("<PROC=0>\n<END>");
@@ -1210,28 +1221,34 @@ const u8 Str_04AE[] = _("<PROC=0>\n<END>");
 const u8 Str_04AF[] = _("<LABEL=ROCKMAN>ロックマン</LABEL>\n「<NAME>くん、");
 const u8 Str_04B0[] = _("シェードマンの反応はこの塔の\n上みたいだ」");
 const u8 Str_04B1[] = _("<PROC=0>\n<END>");
+
 const u8 Str_MMBNKey1[] = _("「キーデータ1」\nを手に入れた!!");
 const u8 Str_04B3[] = _("<LABEL=ROCKMAN>ロックマン</LABEL>\n「キーデータ・・・");
 const u8 Str_04B4[] = _("4体のバットが持つ4つのデータ\nが、あの扉(とびら)を開けるた\nめのカギというわけか・・・");
 const u8 Str_04B5[] = _("データはあと3つ。\n残りのシェードバットはどこに\n・・・?」");
 const u8 Str_04B6[] = _("<PROC=0>\n<END>");
+
 const u8 Str_MMBNKey2[] = _("「キーデータ2」\nを手に入れた!!");
 const u8 Str_04B8[] = _("<LABEL=ROCKMAN>ロックマン</LABEL>\n「2つ目のキーデータが手に入\nったね!");
 const u8 Str_04B9[] = _("残るデータはあと2つ。\nがんばって、\n<NAME>くん!!」");
 const u8 Str_04BA[] = _("<PROC=0>\n<END>");
+
 const u8 Str_MMBNKey3[] = _("「キーデータ3」\nを手に入れた!!");
 const u8 Str_04BC[] = _("<LABEL=ROCKMAN>ロックマン</LABEL>\n「これで3つ目!");
 const u8 Str_04BD[] = _("残るデータはあと1つ。\nもう一息だよ、\n<NAME>くん!!」");
 const u8 Str_04BE[] = _("<PROC=0>\n<END>");
+
 const u8 Str_MMBNKey4[] = _("「キーデータ4」\nを手に入れた!!");
 const u8 Str_04C0[] = _("<LABEL=ROCKMAN>ロックマン</LABEL>\n「やったね、<NAME>くん!!");
 const u8 Str_04C1[] = _("これですべてのデータがそろっ\nたよ。");
 const u8 Str_04C2[] = _("さあ、シェードマンのいる北の\n塔に向かおう!」");
 const u8 Str_04C3[] = _("<PROC=0>\n<END>");
-const u8 Str_04C4[] = _("2つの塔に挑(いど)め。");
+
+const u8 Str_GuideChangeMSQ[] = _("2つの塔に挑(いど)め。");
 const u8 Str_04C5[] = _("チェンジ魔方陣を利用して、2\nつの塔を同時に攻略(こうりゃ\nく)せよ。");
 const u8 Str_04C6[] = _("魔方陣の上でＡボタンを押(お)\nせば、操作するキャラクターを\n交代することができる。");
 const u8 Str_04C7[] = _("<PROC=0>\n<END>");
+
 const u8 Str_04C8[] = _("た・・・");
 const u8 Str_04C9[] = _("<PROC=0>\n<END>");
 const u8 Str_04CA[] = _("たいよ・・・");
@@ -1791,7 +1808,7 @@ const u8 Str_Treasury_06F0[] = _("<EXTEND=2>紋章の間");
 const u8 Str_06F1[] = _("<PROC=0>\n<END>");
 const u8 Str_Treasury_06F2[] = _("<EXTEND=3>パネルの間");
 const u8 Str_06F3[] = _("<PROC=0>\n<END>");
-const u8 Str_06F4[] = _("パネルの上でＡボタンを押(お)\nせば、そのパネルと、となり合\nうパネルが共に色を変える。");
+const u8 Str_GuidePanelMekuri[] = _("パネルの上でＡボタンを押(お)\nせば、そのパネルと、となり合\nうパネルが共に色を変える。");
 const u8 Str_06F5[] = _("すべてのパネルを赤く染めよ。");
 const u8 Str_06F6[] = _("ただし、パネルの色を変えるこ\nとができるのは<VAR=0>回までとする");
 const u8 Str_06F7[] = _("<PROC=0>\n<END>");
@@ -1850,30 +1867,30 @@ const u8 Str_072A[] = _("<PROC=0>\n<END>");
 const u8 Str_TimeHouse_072B[] = _("<LABEL=NONE>幽霊少年</LABEL>\n「ゴーストたちがキミの邪魔(\nじゃま)をするかもしれない。");
 const u8 Str_072C[] = _("くれぐれも注意してね」");
 const u8 Str_072D[] = _("<PROC=0>\n<END>");
-const u8 Str_DreamComplete[] = _("夢幻のすべてを乗り越えた!!");
+const u8 Str_MugenComplete[] = _("夢幻のすべてを乗り越えた!!");
 const u8 Str_072F[] = _("夢幻街(むげんがい)の成長はこ\nこまでだが・・・");
 const u8 Str_0730[] = _("財宝を求める者は、さらなる挑\n戦(ちょうせん)を続けよ。");
 const u8 Str_0731[] = _("<PROC=0>\n<END>");
-const u8 Str_DreamLevel[] = _("\n　　　夢幻街：レベル<VAR=0>　　　");
+const u8 Str_MugenLevel[] = _("\n　　　夢幻街：レベル<VAR=0>　　　");
 const u8 Str_0733[] = _("<PROC=0>\n<END>");
-const u8 Str_DreamGuide1[] = _("夢幻の心得・その1");
+const u8 Str_MugenGuide1[] = _("夢幻の心得・その1");
 const u8 Str_0735[] = _("夢幻街(むげんがい)とは、\n世紀末現象が生み出した、夢と\n幻(まぼろし)の街である。");
 const u8 Str_0736[] = _("そこに住むのは、現実世界での\n限界を突破(とっぱ)した、ナイ\nトメア・モンスター・・・");
 const u8 Str_0737[] = _("その力は、現実をはるかに超(\nこ)える。");
 const u8 Str_0738[] = _("<PROC=0>\n<END>");
-const u8 Str_DreamGuide2[] = _("夢幻の心得・その2");
+const u8 Str_MugenGuide2[] = _("夢幻の心得・その2");
 const u8 Str_073A[] = _("上の階層への青い扉のカギは、\n重量スイッチにより隠(かく)さ\nれている。");
 const u8 Str_073B[] = _("ただしここでの重量スイッチは\n起動するまで何が起こるかわか\nらない、トラップパネルだ。");
 const u8 Str_073C[] = _("冒険者(ぼうけんしゃ)を助ける\nパネルもあれば、苦しめるパネ\nルもある。");
 const u8 Str_073D[] = _("危険を回避(かいひ)したければ\n敵モンスターにパネルを踏(ふ)\nませ、その効果を確認せよ。");
 const u8 Str_073E[] = _("カギを見つけ出し、最終階層を\n目指せ。");
 const u8 Str_073F[] = _("<PROC=0>\n<END>");
-const u8 Str_DreamGuide3[] = _("夢幻の心得・その3");
+const u8 Str_MugenGuide3[] = _("夢幻の心得・その3");
 const u8 Str_0741[] = _("夢幻街(むげんがい)では、その\n中でセーブすることはできない");
 const u8 Str_0742[] = _("最終階層から生還(せいかん)し\nて初めて、そこでの経験を現実\nのものとすることができる。");
 const u8 Str_0743[] = _("コンティニューしても、入口に\n戻されてしまうので注意せよ。");
 const u8 Str_0744[] = _("<PROC=0>\n<END>");
-const u8 Str_DreamGuide4[] = _("夢幻の心得・その4");
+const u8 Str_MugenGuide4[] = _("夢幻の心得・その4");
 const u8 Str_0746[] = _("最終階層にたどり着き、試練を\n乗り越(こ)えるたびに、");
 const u8 Str_0747[] = _("夢幻街(むげんがい)は成長し、\nレベルをアップする。");
 const u8 Str_0748[] = _("夢幻を育て上げ、\n財宝を手に入れよ。");
@@ -2031,7 +2048,7 @@ const u8 Str_07DD[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「<NAME>やったっけ?")
 const u8 Str_07DE[] = _("スミちゃんからの依頼料(いら\nいりょう)や。受け取っとき。");
 const u8 Str_07DF[] = _("ソル・デ・バイスを使(つこ)て\nそのレンズからエンチャントの\n力を引き出すんや」");
 const u8 Str_07E0[] = _("<PROC=0>\n<END>");
-const u8 Str_07E1[] = _("<PROC=2>太陽銃レンズ「フレイム」\nを取り戻した!");
+const u8 Str_LensFlame[] = _("<PROC=2>太陽銃レンズ「フレイム」\nを取り戻した!");
 const u8 Str_07E2[] = _("<PROC=0>\n<END>");
 const u8 Str_LearnFlame[] = _("<PROC=1>月光魔法\n「エンチャント・フレイム」\nを覚えた!!");
 const u8 Str_07E4[] = _("<PROC=0>\n<END>");
@@ -2248,7 +2265,7 @@ const u8 Str_08B3[] = _("オマエそっくりなヤツに追われ\nて、ど�
 const u8 Str_08B4[] = _("こんなものを落としていったぜ\n?");
 const u8 Str_08B5[] = _("あれがヴァンパイアだったとす\nると、コイツは何かの役に立つ\nんじゃないか?」");
 const u8 Str_08B6[] = _("<PROC=0>\n<END>");
-const u8 Str_08B7[] = _("<PROC=2>太陽銃レンズ「フロスト」\nを取り戻した!");
+const u8 Str_LensFrost[] = _("<PROC=2>太陽銃レンズ「フロスト」\nを取り戻した!");
 const u8 Str_08B8[] = _("<PROC=0>\n<END>");
 const u8 Str_LearnFrost[] = _("<PROC=1><LOCK=96>月光魔法\n「エンチャント・フロスト」\nを覚えた!!");
 const u8 Str_08BA[] = _("<PROC=0>\n<END>");
@@ -2295,7 +2312,7 @@ const u8 Str_08E2[] = _("<PROC=3>この星のすべての生命種を切り\n捨
 const u8 Str_08E3[] = _("それに逆らおうというおまえた\nちだ・・・勝ち目のない戦いに\nは慣れている、か?");
 const u8 Str_08E4[] = _("<PROC=2><LOCK=63>フッハッハッハッハッ!!\nいいだろう、\nこれを持って行け」");
 const u8 Str_08E5[] = _("<PROC=0>\n<END>");
-const u8 Str_08E6[] = _("<PROC=2>太陽銃レンズ「クラウド」\nを取り戻した!");
+const u8 Str_LensCloud[] = _("<PROC=2>太陽銃レンズ「クラウド」\nを取り戻した!");
 const u8 Str_08E7[] = _("<PROC=0>\n<END>");
 const u8 Str_LearnCloud[] = _("<PROC=1><LOCK=96>月光魔法\n「エンチャント・クラウド」\nを覚えた!!");
 const u8 Str_08E9[] = _("<PROC=0>\n<END>");
@@ -2661,7 +2678,7 @@ const u8 Str_0A50[] = _("俺(おれ)はこの場を離(はな)れ\nるわけに�
 const u8 Str_0A51[] = _("<NAME>、\n3賢者のカードを探して来てく\nれ!!");
 const u8 Str_0A52[] = _("カードを探すのに役立つかもし\nれん・・・\nこれを渡(わた)しておこう」");
 const u8 Str_0A53[] = _("<PROC=0>\n<END>");
-const u8 Str_0A54[] = _("<PROC=1>太陽銃レンズ「アース」\nを取り戻した!");
+const u8 Str_LensEarth[] = _("<PROC=1>太陽銃レンズ「アース」\nを取り戻した!");
 const u8 Str_0A55[] = _("<PROC=0>\n<END>");
 const u8 Str_LearnEarth[] = _("<PROC=2><LOCK=96>月光魔法\n「エンチャント・アース」\nを覚えた!!");
 const u8 Str_0A57[] = _("<PROC=0>\n<END>");
@@ -2744,25 +2761,30 @@ const u8 Str_Dvalinn_0AA3[] = _("<LABEL=NONE>サバタの声</LABEL>\n「しっ�
 const u8 Str_0AA4[] = _("<PROC=0>\n<END>");
 const u8 Str_Dvalinn_0AA5[] = _("<LABEL=NONE></LABEL>そいつの始末は任せたぞ!\n俺はヤツを追う!!」");
 const u8 Str_0AA6[] = _("<PROC=0>\n<END>");
-const u8 Str_0AA7[] = _("<LABEL=LADY>???</LABEL>\n「誰(だれ)かと思えば・・・");
+
+const u8 Str_LadyFirst1[] = _("<LABEL=LADY>???</LABEL>\n「誰(だれ)かと思えば・・・");
 const u8 Str_0AA8[] = _("あなただったの、\n<NAME>くん。");
 const u8 Str_0AA9[] = _("私の仕掛(しか)けを突破(とっ\nぱ)するなんて、");
 const u8 Str_0AAA[] = _("さすがに死の都から生還(せい\nかん)しただけはあるわね。");
 const u8 Str_0AAB[] = _("私のこと、覚えてる?\n図書館の司書、レディよ」");
 const u8 Str_0AAC[] = _("<PROC=0>\n<END>");
-const u8 Str_0AAD[] = _(" <ALTER>覚えてる</ALTER>　<ALTER>知らない</ALTER>");
+
+const u8 Str_LadyFirst2[] = _(" <ALTER>覚えてる</ALTER>　<ALTER>知らない</ALTER>");
 const u8 Str_0AAE[] = _("<PROC=0>\n<END>");
-const u8 Str_0AAF[] = _("<LABEL=LADY>レディ</LABEL>\n「いい子ね♪");
+
+const u8 Str_LadyFirst3[] = _("<LABEL=LADY>レディ</LABEL>\n「いい子ね♪");
 const u8 Str_0AB0[] = _("ところでそのカード、\nどうするつもり?");
 const u8 Str_0AB1[] = _("それはこの街の水源を守るため\nの大事なもの・・・");
 const u8 Str_0AB2[] = _("たとえあなたが太陽少年だとし\nても、勝手に持って行かれると\n困るのよね?」");
 const u8 Str_0AB3[] = _("<PROC=0>\n<END>");
-const u8 Str_0AB4[] = _("<LABEL=LADY>レディ</LABEL>\n「あら、残念ね・・・");
+
+const u8 Str_LadyFirst4[] = _("<LABEL=LADY>レディ</LABEL>\n「あら、残念ね・・・");
 const u8 Str_0AB5[] = _("ところでそのカード、\nどうするつもり?");
 const u8 Str_0AB6[] = _("それはこの街の水源を守るため\nの大事なもの・・・");
 const u8 Str_0AB7[] = _("たとえあなたが太陽少年だとし\nても、勝手に持って行かれると\n困るのよね?」");
 const u8 Str_0AB8[] = _("<PROC=0>\n<END>");
-const u8 Str_0AB9[] = _("<LABEL=LADY>レディ</LABEL>\n「タロット封印(ふういん)をす\nり抜(ぬ)けるなんて・・・");
+
+const u8 Str_LadyFirst5[] = _("<LABEL=LADY>レディ</LABEL>\n「タロット封印(ふういん)をす\nり抜(ぬ)けるなんて・・・");
 const u8 Str_0ABA[] = _("たとえどんなイモータルであっ\nても、そんなことはできないは\nずなのに・・・");
 const u8 Str_0ABB[] = _("いいわ、あなたを信じましょう");
 const u8 Str_0ABC[] = _("ただし、必ずそのイモータルを\n倒(たお)すのよ?");
@@ -2773,6 +2795,7 @@ const u8 Str_0AC0[] = _("・・・太陽街にも人が集まって\nきたよ�
 const u8 Str_0AC1[] = _("仕事の依頼(いらい)があるかも\nしれないし・・・");
 const u8 Str_0AC2[] = _("じゃあまたね。\nイモータルの件は任せたわよ」");
 const u8 Str_0AC3[] = _("<PROC=0>\n<END>");
+
 const u8 Str_0AC4[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「<NAME>!!");
 const u8 Str_0AC5[] = _("すぐに螺旋(らせん)の塔に来い\n・・・て、サバタからの伝言や");
 const u8 Str_0AC6[] = _("塔は太陽街の北、拾弍番街(じ\nゅうにばんがい)の先にある約\n束の丘に立っとる。");
@@ -3191,51 +3214,59 @@ const u8 Str_0C60[] = _("シェードマンを利用して、新た\nな肉体�
 const u8 Str_0C61[] = _("やはり私自身の復活を待たねば\nなるまい。");
 const u8 Str_0C62[] = _("クックックッ・・・\nクッカッカッカッカッ!!」");
 const u8 Str_0C63[] = _("<PROC=0>\n<END>");
-const u8 Str_0C64[] = _("<LABEL=RITA>リタ</LABEL>\n「<NAME>さま!!");
+
+const u8 Str_TreeSeiboku1[] = _("<LABEL=RITA>リタ</LABEL>\n「<NAME>さま!!");
 const u8 Str_0C65[] = _("<PROC=0>\n<END>");
-const u8 Str_0C66[] = _("<LABEL=RITA></LABEL>太陽樹さまがついに成木になら\nれました!");
+const u8 Str_TreeSeiboku2[] = _("<LABEL=RITA></LABEL>太陽樹さまがついに成木になら\nれました!");
 const u8 Str_0C67[] = _("<PROC=0>\n<END>");
-const u8 Str_0C68[] = _("<LABEL=RITA></LABEL>これも<NAME>さまのご活躍\n(かつやく)のおかげですわ!!」");
+const u8 Str_TreeSeiboku3[] = _("<LABEL=RITA></LABEL>これも<NAME>さまのご活躍\n(かつやく)のおかげですわ!!」");
 const u8 Str_0C69[] = _("<PROC=0>\n<END>");
-const u8 Str_0C6A[] = _("<LABEL=RITA>リタ</LABEL>\n「こちらは太陽樹さまからの\n贈(おく)り物です。");
+const u8 Str_TreeSeiboku4[] = _("<LABEL=RITA>リタ</LABEL>\n「こちらは太陽樹さまからの\n贈(おく)り物です。");
 const u8 Str_0C6B[] = _("<PROC=0>\n<END>");
-const u8 Str_0C6C[] = _("<LABEL=RITA></LABEL>どうぞ、お納めください♪」");
+const u8 Str_TreeSeiboku5[] = _("<LABEL=RITA></LABEL>どうぞ、お納めください♪」");
 const u8 Str_0C6D[] = _("<PROC=0>\n<END>");
-const u8 Str_0C6E[] = _("<LABEL=RITA>リタ</LABEL>\n「<NAME>さま!!\n太陽樹さまが・・・!」");
+
+const u8 Str_TreeMankai1[] = _("<LABEL=RITA>リタ</LABEL>\n「<NAME>さま!!\n太陽樹さまが・・・!」");
 const u8 Str_0C6F[] = _("<PROC=0>\n<END>");
-const u8 Str_0C70[] = _("<LABEL=RITA>リタ</LABEL>\n「す、す・・・");
+const u8 Str_TreeMankai2[] = _("<LABEL=RITA>リタ</LABEL>\n「す、す・・・");
 const u8 Str_0C71[] = _("素敵ですっ!!");
 const u8 Str_0C72[] = _("<PROC=0>\n<END>");
-const u8 Str_0C73[] = _("<LABEL=RITA></LABEL>これも<NAME>さまのご活躍\n(かつやく)のおかげですわ!」");
+const u8 Str_TreeMankai3[] = _("<LABEL=RITA></LABEL>これも<NAME>さまのご活躍\n(かつやく)のおかげですわ!」");
 const u8 Str_0C74[] = _("<PROC=0>\n<END>");
-const u8 Str_0C75[] = _("<LABEL=RITA>リタ</LABEL>\n「こちらは太陽樹さまからの\n贈(おく)り物です。");
+const u8 Str_TreeMankai4[] = _("<LABEL=RITA>リタ</LABEL>\n「こちらは太陽樹さまからの\n贈(おく)り物です。");
 const u8 Str_0C76[] = _("<PROC=0>\n<END>");
-const u8 Str_0C77[] = _("<LABEL=RITA></LABEL>どうぞ、お納めください♪」");
+const u8 Str_TreeMankai5[] = _("<LABEL=RITA></LABEL>どうぞ、お納めください♪」");
 const u8 Str_0C78[] = _("<PROC=0>\n<END>");
-const u8 Str_0C79[] = _("<LABEL=PEOPLE1>青年</LABEL>\n「きみは確か・・・");
+
+const u8 Str_RescueMarcello1[] = _("<LABEL=PEOPLE1>青年</LABEL>\n「きみは確か・・・");
 const u8 Str_0C7A[] = _("<NAME>くん・・・\n・・・だったよね?\nぼくはマルチェロ。");
 const u8 Str_0C7B[] = _("街がアンデッドに襲(おそ)われ\nたあの日、1人逃(に)げ遅(おく\n)れてしまってね・・・」");
 const u8 Str_0C7C[] = _("<PROC=0>\n<END>");
-const u8 Str_0C7D[] = _("<LABEL=PEOPLE1>マルチェロ</LABEL>\n「なるほど・・・");
+
+const u8 Str_RescueMarcello2[] = _("<LABEL=PEOPLE1>マルチェロ</LABEL>\n「なるほど・・・");
 const u8 Str_0C7E[] = _("それじゃあ、ぼくも太陽街に行\nってみるよ。");
 const u8 Str_0C7F[] = _("今現れた、このワープ魔方陣(\nまほうじん)を使えば、ダンジ\nョンの入口まで行けそうだしね");
 const u8 Str_0C80[] = _("それじゃあ、<NAME>くんも\n気をつけなよ!」");
 const u8 Str_0C81[] = _("<PROC=0>\n<END>");
-const u8 Str_0C82[] = _("<LABEL=PEOPLE3>老人</LABEL>\n「おぬしは・・・?");
+
+const u8 Str_RescueLuis1[] = _("<LABEL=PEOPLE3>老人</LABEL>\n「おぬしは・・・?");
 const u8 Str_0C83[] = _("・・・わしはルイス。");
 const u8 Str_0C84[] = _("アンデッドに追われて、こんな\nところに入り込んでしまっての");
 const u8 Str_0C85[] = _("わしの命もこれまでかとあきら\nめておったんじゃが・・・」");
 const u8 Str_0C86[] = _("<PROC=0>\n<END>");
-const u8 Str_0C87[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「ふむ・・・");
+
+const u8 Str_RescueLuis2[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「ふむ・・・");
 const u8 Str_0C88[] = _("ではわしも、みなのところに行\nこうかの。");
 const u8 Str_0C89[] = _("今現れた、このワープ魔方陣(\nまほうじん)を使えば、ダンジ\nョンの入口まで行けそうじゃ。");
 const u8 Str_0C8A[] = _("おぬしも無理をするでないぞ?\n命あってのものだねじゃからの\n・・・」");
 const u8 Str_0C8B[] = _("<PROC=0>\n<END>");
-const u8 Str_0C8C[] = _("<LABEL=PEOPLE2>???</LABEL>\n「誰(だれ)だ!!");
+
+const u8 Str_RescueHatena1[] = _("<LABEL=PEOPLE2>???</LABEL>\n「誰(だれ)だ!!");
 const u8 Str_0C8D[] = _("ん?\n少年?");
 const u8 Str_0C8E[] = _("君はいったい・・・」");
 const u8 Str_0C8F[] = _("<PROC=0>\n<END>");
-const u8 Str_0C90[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ふうむ・・・");
+
+const u8 Str_RescueHatena2[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ふうむ・・・");
 const u8 Str_0C91[] = _("闇の一族と戦う太陽少年か\n・・・");
 const u8 Str_0C92[] = _("俺(おれ)の名前は・・・");
 const u8 Str_0C93[] = _("・・・ダメだ。\nやはり、何も思い出せん。");
@@ -3243,12 +3274,14 @@ const u8 Str_0C94[] = _("どうやら俺は、記憶(きおく)を\n失ってい
 const u8 Str_0C95[] = _("そもそもなぜこんな壁(かべ)に\n囲まれた、出入り口のない部屋\nにいたのか?");
 const u8 Str_0C96[] = _("いったいどうやって入ったんだ\n・・・?」");
 const u8 Str_0C97[] = _("<PROC=0>\n<END>");
-const u8 Str_0C98[] = _("<LABEL=PEOPLE2>???</LABEL>\n「そうだな・・・");
+
+const u8 Str_RescueHatena3[] = _("<LABEL=PEOPLE2>???</LABEL>\n「そうだな・・・");
 const u8 Str_0C99[] = _("こんなところで悩(なや)んでい\nても仕方がない。おまえの言う\n太陽街にでも行ってみよう。");
 const u8 Str_0C9A[] = _("なあに、心配はいらんさ。\n腕(うで)には自信がある。");
 const u8 Str_0C9B[] = _("何の腕なのかは・・・\n俺にも分からんがな。");
 const u8 Str_0C9C[] = _("おまえも気をつけろよ、\n太陽少年!!」");
 const u8 Str_0C9D[] = _("<PROC=0>\n<END>");
+
 const u8 Str_0C9E[] = _("<LABEL=NONE>???</LABEL>\n「キミは・・・!?」");
 const u8 Str_0C9F[] = _("<PROC=0>\n<END>");
 const u8 Str_0CA0[] = _("<LABEL=NONE>幽霊少年</LABEL>\n「こんな時空のひずみの中で、\nよく迷子にならなかったね。");

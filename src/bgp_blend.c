@@ -34,7 +34,7 @@ static_assert(sizeof(BgPlttBlender) == 860);
 
 IWRAM_DATA BgPlttBlender* gBgPlttBlender = NULL;  // 0x0300008C
 
-bool32 FUN_0800271c(void);  // asm/entity_517b.inc
+bool32 BgPlttController_IsPlttUpdated(void);
 
 void BgPlttBlender_SavePltt(BgPlttBlender* p) { CpuCopy32(gBgPlttBuffer, p->savedPltt, sizeof(p->savedPltt)); }
 
@@ -107,7 +107,7 @@ s32 BgPlttBlender_UpdateSlot(BgPlttBlender* p, BgPlttBlend* slot) {
 s32 BgPlttBlender_Update(BgPlttBlender* p) {
   u32 i;
 
-  if (FUN_0800271c()) {
+  if (BgPlttController_IsPlttUpdated()) {
     BgPlttBlender_SavePltt(p);
   }
 

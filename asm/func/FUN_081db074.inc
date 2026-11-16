@@ -6,7 +6,7 @@
 	movs r1, #4
 	movs r2, #6
 	movs r3, #2
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r5, r7, r1
@@ -15,7 +15,7 @@
 	movs r1, #0xc
 	movs r2, #8
 	movs r3, #2
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	movs r2, #0xc7
 	lsls r2, r2, #2
 	adds r6, r7, r2
@@ -38,14 +38,14 @@
 	adds r1, r1, r7
 	mov r8, r1
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r5]
 	ldr r2, _081DB120 @ =0x00000322
 	adds r4, r7, r2
 	ldrb r1, [r4]
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r5]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldrb r1, [r4]
 	movs r2, #0xca
 	lsls r2, r2, #2
@@ -54,16 +54,16 @@
 	ldr r0, [r6]
 	mov r2, r8
 	ldr r1, [r2]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r6]
 	movs r1, #0xc9
 	lsls r1, r1, #2
 	adds r4, r7, r1
 	ldrb r1, [r4]
 	adds r1, #5
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r6]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldrb r1, [r4]
 	ldr r2, _081DB124 @ =0x0000032A
 	adds r0, r7, r2

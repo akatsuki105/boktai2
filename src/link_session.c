@@ -51,7 +51,7 @@ extern u32 gMapChanging;
 extern const s8 sLinkRankBonus[5][4];
 void HUD_StartCountdown(u16* remainingTime);
 void HUD_RemoveCountdown(void);
-void Entity4B15_ShowFixedMarker(s32 playerIdx, Vec3* pos);
+void LinkPlayerMarker_ShowFixed(s32 playerIdx, Vec3* pos);
 extern const u16 sLinkTimeLimits[3];
 s32 FUN_081deef8(LinkSession* p);
 extern bool32 gRtcReadInhibit;
@@ -583,7 +583,7 @@ s32 FUN_081de130(LinkSession* p) {
     SET_FLAGS(gSuspendFlags, SUSPEND_MENU);
     p->unk_54[1] = 0;
     p->sendKey = 0x4000;
-    p->windowID = TextPanel_Create(1, 7, 28, 6);
+    p->windowID = MenuMessage_Create(1, 7, 28, 6);
     Sound_FadeOutBGM(1);
     Marquee_CloseGlobal();
     ClearBGTilemapBuffer(0);
@@ -592,9 +592,9 @@ s32 FUN_081de130(LinkSession* p) {
   if (p->unk_54[1] == 0 && MessageWindow_IsOpen()) {
     p->unk_54[1] = 1;
     HUD_SetMode(HUD_WINDOW_3);
-    TextPanel_SetScript(p->windowID, p->messageScript);
-    TextPanel_SetMessage(p->windowID, 2);
-    TextPanel_Start(p->windowID);
+    MenuMessage_SetScript(p->windowID, p->messageScript);
+    MenuMessage_SetMessage(p->windowID, 2);
+    MenuMessage_Start(p->windowID);
     CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
     Video_ResetFrameState(1);
   }
@@ -1118,7 +1118,7 @@ NON_MATCH s32 FUN_081dec1c(LinkSession* p) {
   if (p->timeLeft == 1800 || p->timeLeft == 900) {
     for (i = 0; i < p->recordCount; i++) {
       if (LinkSession_CountCoins(i) > 2) {
-        Entity4B15_ShowFixedMarker(i, &gPlayerPtr[i]->mover.pos);
+        LinkPlayerMarker_ShowFixed(i, &gPlayerPtr[i]->mover.pos);
       }
     }
   }
@@ -1278,10 +1278,10 @@ NON_MATCH s32 FUN_081df0f8(LinkSession* p) {
     if (p->unk_26 == 0) {
       StartBgObjPlttFade(0, 1, 4, 4, 4, 0xFFFF, 0);
       HUD_SetMode(HUD_WINDOW_3);
-      p->windowID = TextPanel_Create(1, 7, 28, 6);
-      TextPanel_SetScript(p->windowID, p->unk_2f0);
-      TextPanel_SetMessage(p->windowID, 9);
-      TextPanel_Start(p->windowID);
+      p->windowID = MenuMessage_Create(1, 7, 28, 6);
+      MenuMessage_SetScript(p->windowID, p->unk_2f0);
+      MenuMessage_SetMessage(p->windowID, 9);
+      MenuMessage_Start(p->windowID);
       p->unk_26 = 1;
     }
     p->sendKey = 0x10A5;
@@ -1356,10 +1356,10 @@ s32 FUN_081df398(LinkSession* p) {
 
 s32 FUN_081df3f0(LinkSession* p) {
   if ((u8)FUN_081dd9d4(p)) {
-    p->windowID = TextPanel_Create(1, 7, 28, 6);
-    TextPanel_SetScript(p->windowID, p->unk_2f0);
-    TextPanel_SetMessage(p->windowID, 10);
-    TextPanel_Start(p->windowID);
+    p->windowID = MenuMessage_Create(1, 7, 28, 6);
+    MenuMessage_SetScript(p->windowID, p->unk_2f0);
+    MenuMessage_SetMessage(p->windowID, 10);
+    MenuMessage_Start(p->windowID);
   }
 
   if (LinkSession_CheckRecv(p) < 0) {

@@ -37,20 +37,20 @@ MSG_F(c5_s6_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_MEOW_799));
 STEP(c5_s6) = {M(c5_s6_0), M(c5_s6_1), NULL};
 
 // step 7
-MSG(c5_s7_0, WAIT, ACTOR_TURN(TGT_KURO_A, 5));
+MSG(c5_s7_0, WAIT, NPC_TURN(TGT_KURO_A, 5));
 STEP(c5_s7) = {M(c5_s7_0), NULL};
 
 // step 8
-MSG_F(c5_s8_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_A, 1920, 512, 5120));
+MSG_F(c5_s8_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_A, 1920, 512, 5120));
 STEP(c5_s8) = {M(c5_s8_0), NULL};
 
 // step 9
-MSG_F(c5_s9_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_A, 1920, 256, 5376));
+MSG_F(c5_s9_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_A, 1920, 256, 5376));
 STEP(c5_s9) = {M(c5_s9_0), NULL};
 
 // step 10
 MSG(c5_s10_0, WAIT, BUS_WAIT(70));
-MSG_F(c5_s10_1, 3, NOWAIT, TO_ACTOR(TGT_KURO_A, 0));
+MSG_F(c5_s10_1, 3, NOWAIT, TO_NPC(TGT_KURO_A, 0));
 STEP(c5_s10) = {M(c5_s10_0), M(c5_s10_1), NULL};
 
 // step 11: Scr_0x03D6, Cmd_Delay

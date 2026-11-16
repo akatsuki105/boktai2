@@ -28,15 +28,15 @@ MSG_F(c18_s4_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_MEOW_799));
 STEP(c18_s4) = {M(c18_s4_0), M(c18_s4_1), NULL};
 
 // step 5
-MSG_F(c18_s5_0, 3, WAIT, ACTOR_TURN(TGT_KURO_A, 7));
+MSG_F(c18_s5_0, 3, WAIT, NPC_TURN(TGT_KURO_A, 7));
 STEP(c18_s5) = {M(c18_s5_0), NULL};
 
 // step 6
-MSG_F(c18_s6_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_A, 1408, 768, 1152));
+MSG_F(c18_s6_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_A, 1408, 768, 1152));
 STEP(c18_s6) = {M(c18_s6_0), NULL};
 
 // step 7
-MSG_F(c18_s7_0, 3, WAIT, TO_ACTOR(TGT_KURO_A, 0));
+MSG_F(c18_s7_0, 3, WAIT, TO_NPC(TGT_KURO_A, 0));
 STEP(c18_s7) = {M(c18_s7_0), NULL};
 
 // step 8

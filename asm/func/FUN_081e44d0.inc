@@ -4,19 +4,19 @@
 	lsls r1, r1, #5
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r2, _081E4510 @ =0x00001604
 	adds r0, r4, r2
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E4514 @ =0x00001608
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r2, _081E4518 @ =0x0000160C
 	adds r0, r4, r2
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	movs r1, #1
 	ldr r2, _081E451C @ =0x00001610
 	adds r0, r4, r2

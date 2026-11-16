@@ -1,46 +1,49 @@
 #ifndef __INCLUDE_CONSTANTS_SPRITE_H__
 #define __INCLUDE_CONSTANTS_SPRITE_H__
 
-#define SPRITE_UI_MAP 0x0312                      // スタートメニューのマップ画面で使うスプライト
-#define SPRITE_EVENT_SUN 0x0C23                   // ラスボス戦のイベントで使う太陽光のエフェクト
-#define SPRITE_DJANGO_LARGE 0x1774                // ソルデバイスやラスボス戦のイベントで使う、ジャンゴの大きな1枚絵
-#define SPRITE_FLAMETHROWER 0x1BC7                // 火炎放射
-#define SPRITE_UI_MISC 0x414C                     // 太陽鍛治, ショップ名, "時の家"の暗証番号入力端末 など、メニューUIのうち、用途が限定的でサイズの小さいものをここにまとめている
-#define SPRITE_UI_TITLE 0x42E2                    // 太陽センサーのヘルプの手や住んでる地域のフォント
-#define SPRITE_INVENTORY_ICONS 0x5D04             // アイテムアイコン, poseIdx は "include/constants/item_icon.h"
-#define SPRITE_SHADEMAN 0x5D36                    // シェードマン(EXE)
-#define SPRITE_UI_GALLERY 0x5EBF                  // 図書館で見れる魔物図鑑,武器図鑑,アルバムのUI
-#define SPRITE_UI_BANK 0x6893                     // 太陽バンクのUI
-#define SPRITE_MARKERS 0x82F1                     // "Undead", "Immortal", "TRAP" といった画面上に表示されるマーカー
-#define SPRITE_UI_LOAN 0x92F0                     // 暗黒ローンのUI
-#define SPRITE_JORMUNGANDR 0x9524                 // ヨルムンガンド
-#define SPRITE_SKELETONS 0xAE52                   // スケルトン
-#define SPRITE_MEGAMAN 0xAF82                     // ロックマン(EXE)
-#define SPRITE_UI_START_MENU 0xB343               // スタート画面で表示されるUI(の大半)
-#define SPRITE_CANDLE_BOX 0xB991                  // ろうそくが乗ってる箱
-#define SPRITE_PORTRAITS 0xD27A                   // 会話などで使う顔アイコン
-#define SPRITE_TITLE 0xD353                       // タイトル画面のUI
-#define SPRITE_DUNEYRR 0xD3CA                     // ドゥネイル
-#define SPRITE_RINGO 0xD3DA                       // 紅のリンゴ
-#define SPRITE_SHAIAN 0xD3EA                      // シャイアン
-#define SPRITE_DURATHROR 0xD3FA                   // ドゥラスロール
-#define SPRITE_DVALINN 0xD40A                     // ドヴァリン
-#define SPRITE_UI_LINK 0xDCC1                     // 通信画面で使うUI
-#define SPRITE_DJANGO_SABATA 0xDE23               // 主人公
-#define SPRITE_UI_SENSOR_HELP 0xDF11              // 太陽センサーのヘルプ画面で使うUI
-#define SPRITE_SMITH_MARCELLO 0xDFCE              // スミス, マルチェロ
-#define SPRITE_RITA 0xDFDE                        // リタ
-#define SPRITE_ZAJI 0xDFEE                        // ザジ
-#define SPRITE_SUMIRE 0xDFFE                      // スミレ
-#define SPRITE_KURO 0xE00E                        // クロ
-#define SPRITE_KID 0xE01E                         // キッド
-#define SPRITE_LADY 0xE02E                        // レディ
-#define SPRITE_COFSELLER_HATENA 0xE03E            // 棺桶屋, はてな(ゲーム内表記は"???")
-#define SPRITE_ENNIO_LUIS 0xE04E                  // エンニオ, ルイス
-#define SPRITE_CARMILLA 0xE2DE                    // カーミラ(恋人のカード のエフェクト)
-#define SPRITE_DAINN 0xE349                       // ダーイン (人型)
-#define SPRITE_DUNGEON_TITLE 0xE89F               // 無幻街の最終階層とかで使う特殊フォント
-#define SPRITE_CHANDELIER 0xF099                  // 0x2AF0 にもシャンデリアがある
+#define SPRITE_UI_MAP 0x0312                          // スタートメニューのマップ画面で使うスプライト
+#define SPRITE_EVENT_SUN 0x0C23                       // ラスボス戦のイベントで使う太陽光のエフェクト
+#define SPRITE_DJANGO_LARGE 0x1774                    // ソルデバイスやラスボス戦のイベントで使う、ジャンゴの大きな1枚絵
+#define SPRITE_FLAMETHROWER 0x1BC7                    // 火炎放射
+#define SPRITE_UI_MISC 0x414C                         // 太陽鍛治, ショップ名, "時の家"の暗証番号入力端末 など、メニューUIのうち、用途が限定的でサイズの小さいものをここにまとめている
+#define SPRITE_UI_TITLE 0x42E2                        // 太陽センサーのヘルプの手や住んでる地域のフォント
+#define SPRITE_INVENTORY_ICONS 0x5D04                 // アイテムアイコン, poseIdx は "include/constants/item_icon.h"
+#define SPRITE_SHADEMAN 0x5D36                        // シェードマン(EXE)
+#define SPRITE_UI_GALLERY 0x5EBF                      // 図書館で見れる魔物図鑑,武器図鑑,アルバムのUI
+#define SPRITE_UI_BANK 0x6893                         // 太陽バンクのUI
+#define SPRITE_MARKERS 0x82F1                         // "Undead", "Immortal", "TRAP" といった画面上に表示されるマーカー
+#define SPRITE_UI_LOAN 0x92F0                         // 暗黒ローンのUI
+#define SPRITE_JORMUNGANDR 0x9524                     // ヨルムンガンド
+#define SPRITE_SKELETONS 0xAE52                       // スケルトン
+#define SPRITE_MEGAMAN 0xAF82                         // ロックマン(EXE)
+#define SPRITE_UI_START_MENU 0xB343                   // スタート画面で表示されるUI(の大半)
+#define SPRITE_CANDLE_BOX 0xB991                      // ろうそくが乗ってる箱
+#define SPRITE_PORTRAITS 0xD27A                       // 会話などで使う顔アイコン
+#define SPRITE_TITLE 0xD353                           // タイトル画面のUI
+#define SPRITE_DUNEYRR BOKHASH("bos00_oud")           // 0xD3CA, ドゥネイル
+#define SPRITE_RINGO BOKHASH("bos01_oud")             // 0xD3DA, 紅のリンゴ
+#define SPRITE_SHAIAN BOKHASH("bos02_oud")            // 0xD3EA, シャイアン
+#define SPRITE_DURATHROR BOKHASH("bos03_oud")         // 0xD3FA, ドゥラスロール
+#define SPRITE_DVALINN BOKHASH("bos04_oud")           // 0xD40A, ドヴァリン
+#define SPRITE_UI_LINK 0xDCC1                         // 通信画面で使うUI
+#define SPRITE_DJANGO_SABATA 0xDE23                   // 主人公
+#define SPRITE_UI_SENSOR_HELP 0xDF11                  // 太陽センサーのヘルプ画面で使うUI
+#define SPRITE_SMITH_MARCELLO BOKHASH("npc00_oud")    // 0xDFCE, スミス, マルチェロ
+#define SPRITE_RITA BOKHASH("npc01_oud")              // 0xDFDE, リタ
+#define SPRITE_ZAJI BOKHASH("npc02_oud")              // 0xDFEE, ザジ
+#define SPRITE_SUMIRE BOKHASH("npc03_oud")            // 0xDFFE, スミレ
+#define SPRITE_KURO BOKHASH("npc04_oud")              // 0xE00E, クロ
+#define SPRITE_KID BOKHASH("npc05_oud")               // 0xE01E, キッド
+#define SPRITE_LADY BOKHASH("npc06_oud")              // 0xE02E, レディ
+#define SPRITE_COFSELLER_HATENA BOKHASH("npc07_oud")  // 0xE03E, 棺桶屋, はてな(ゲーム内表記は"???")
+#define SPRITE_ENNIO_LUIS BOKHASH("npc08_oud")        // 0xE04E, エンニオ, ルイス
+#define SPRITE_CARMILLA 0xE2DE                        // カーミラ(恋人のカード のエフェクト)
+#define SPRITE_DAINN 0xE349                           // ダーイン (人型)
+#define SPRITE_DUNGEON_TITLE 0xE89F                   // 無幻街の最終階層とかで使う特殊フォント
+#define SPRITE_CHANDELIER 0xF099                      // 0x2AF0 にもシャンデリアがある
+
+// --------------------------------------------
+
 #define SPRITE_WORM 0xD636                        // ワーム系
 #define SPRITE_DARKROOT 0xD638                    // 暗黒の根
 #define SPRITE_SPIDER 0x528F                      // スパイダー

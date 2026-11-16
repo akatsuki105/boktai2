@@ -7,18 +7,18 @@
 // step 0
 MSG(c55_s0_0, NOWAIT, BUS_WAIT(10));
 MSG(c55_s0_1, WAIT, PLAYER_MOVE_TO(TGT_PLAYER, 926, 768, 1408));
-MSG_F(c55_s0_2, 3, NOWAIT, ACTOR_MOVE_TO(TGT_OTNK, 1182, 768, 1408));
+MSG_F(c55_s0_2, 3, NOWAIT, NPC_MOVE_TO(TGT_OTNK, 1182, 768, 1408));
 MSG(c55_s0_3, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 4));
 STEP(c55_s0) = {M(c55_s0_0), M(c55_s0_1), M(c55_s0_2), M(c55_s0_3), NULL};
 
 // step 1
 MSG(c55_s1_0, WAIT, BUS_WAIT(10));
 MSG(c55_s1_1, NOWAIT, PLAYER_TURN(TGT_PLAYER, 5));
-MSG_F(c55_s1_2, 3, NOWAIT, ACTOR_EMOTE(TGT_RITA, 0));
+MSG_F(c55_s1_2, 3, NOWAIT, NPC_EMOTE(TGT_RITA, 0));
 STEP(c55_s1) = {M(c55_s1_0), M(c55_s1_1), M(c55_s1_2), NULL};
 
 // step 2
-MSG_F(c55_s2_0, 3, NOWAIT, ACTOR_TURN(TGT_RITA, 1));
+MSG_F(c55_s2_0, 3, NOWAIT, NPC_TURN(TGT_RITA, 1));
 MSG(c55_s2_1, WAIT, CAMERA_PAN_TO(TGT_CAM, 1152, 768, 1664, 60));
 STEP(c55_s2) = {M(c55_s2_0), M(c55_s2_1), NULL};
 
@@ -36,7 +36,7 @@ MSG(c55_s5_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c55_s5) = {M(c55_s5_0), NULL};
 
 // step 6
-MSG_F(c55_s6_0, 3, WAIT, TO_ACTOR(TGT_RITA, 18, 1));
+MSG_F(c55_s6_0, 3, WAIT, TO_NPC(TGT_RITA, 18, 1));
 STEP(c55_s6) = {M(c55_s6_0), NULL};
 
 // step 7
@@ -56,7 +56,7 @@ MSG(c55_s10_0, WAIT, BUS_WAIT(60));
 STEP(c55_s10) = {M(c55_s10_0), NULL};
 
 // step 11
-MSG_F(c55_s11_0, 3, WAIT, TO_ACTOR(TGT_RITA, 11, 1));
+MSG_F(c55_s11_0, 3, WAIT, TO_NPC(TGT_RITA, 11, 1));
 STEP(c55_s11) = {M(c55_s11_0), NULL};
 
 // step 12: リタ「ありがとうございます、おてんこさま・・・」
@@ -72,7 +72,7 @@ MSG(c55_s14_0, WAIT, BUS_WAIT(30));
 STEP(c55_s14) = {M(c55_s14_0), NULL};
 
 // step 15
-MSG_F(c55_s15_0, 3, WAIT, TO_ACTOR(TGT_RITA, 1, 1));
+MSG_F(c55_s15_0, 3, WAIT, TO_NPC(TGT_RITA, 1, 1));
 STEP(c55_s15) = {M(c55_s15_0), NULL};
 
 // step 16: リタ「はい・・・
@@ -85,7 +85,7 @@ STEP(c55_s17) = {M(c55_s17_0), NULL};
 
 // step 18
 MSG(c55_s18_0, NOWAIT, BUS_WAIT(10));
-MSG_F(c55_s18_1, 3, NOWAIT, ACTOR_TURN(TGT_OTNK, 7));
+MSG_F(c55_s18_1, 3, NOWAIT, NPC_TURN(TGT_OTNK, 7));
 MSG(c55_s18_2, WAIT, PLAYER_TURN(TGT_PLAYER, 3));
 STEP(c55_s18) = {M(c55_s18_0), M(c55_s18_1), M(c55_s18_2), NULL};
 
@@ -99,7 +99,7 @@ STEP(c55_s20) = {M(c55_s20_0), NULL};
 
 // step 21
 MSG(c55_s21_0, NOWAIT, BUS_WAIT(10));
-MSG_F(c55_s21_1, 3, NOWAIT, ACTOR_TURN(TGT_OTNK, 5));
+MSG_F(c55_s21_1, 3, NOWAIT, NPC_TURN(TGT_OTNK, 5));
 MSG(c55_s21_2, WAIT, PLAYER_TURN(TGT_PLAYER, 5));
 STEP(c55_s21) = {M(c55_s21_0), M(c55_s21_1), M(c55_s21_2), NULL};
 
@@ -113,7 +113,7 @@ STEP(c55_s23) = {M(c55_s23_0), NULL};
 
 // step 24
 MSG(c55_s24_0, WAIT, BUS_WAIT(10));
-MSG_F(c55_s24_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 18, 1));
+MSG_F(c55_s24_1, 3, NOWAIT, TO_NPC(TGT_RITA, 18, 1));
 STEP(c55_s24) = {M(c55_s24_0), M(c55_s24_1), NULL};
 
 // step 25: わたし、果物屋さんをさせていただくことになったんです!
@@ -126,7 +126,7 @@ STEP(c55_s26) = {M(c55_s26_0), NULL};
 
 // step 27
 MSG(c55_s27_0, WAIT, BUS_WAIT(10));
-MSG_F(c55_s27_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 19, 1));
+MSG_F(c55_s27_1, 3, NOWAIT, TO_NPC(TGT_RITA, 19, 1));
 STEP(c55_s27) = {M(c55_s27_0), M(c55_s27_1), NULL};
 
 // step 28: お店であつかっている太陽の果実は、お2人の冒険(ぼうけん…
@@ -139,7 +139,7 @@ STEP(c55_s29) = {M(c55_s29_0), NULL};
 
 // step 30
 MSG(c55_s30_0, WAIT, BUS_WAIT(10));
-MSG_F(c55_s30_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 13));
+MSG_F(c55_s30_1, 3, NOWAIT, TO_NPC(TGT_RITA, 13));
 STEP(c55_s30) = {M(c55_s30_0), M(c55_s30_1), NULL};
 
 // step 31: ぜひお立ち寄りくださいね、<NAME>さま♪
@@ -152,7 +152,7 @@ STEP(c55_s32) = {M(c55_s32_0), NULL};
 
 // step 33
 MSG(c55_s33_0, WAIT, BUS_WAIT(10));
-MSG_F(c55_s33_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 1, 1));
+MSG_F(c55_s33_1, 3, NOWAIT, TO_NPC(TGT_RITA, 1, 1));
 STEP(c55_s33) = {M(c55_s33_0), M(c55_s33_1), NULL};
 
 // step 34: いつも心に太陽を!」
@@ -164,12 +164,12 @@ MSG(c55_s35_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c55_s35) = {M(c55_s35_0), NULL};
 
 // step 36
-MSG_F(c55_s36_0, 3, WAIT, ACTOR_MOVE_TO(TGT_RITA, 1024, 768, 3128));
+MSG_F(c55_s36_0, 3, WAIT, NPC_MOVE_TO(TGT_RITA, 1024, 768, 3128));
 MSG(c55_s36_1, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 8));
 STEP(c55_s36) = {M(c55_s36_0), M(c55_s36_1), NULL};
 
 // step 37
-MSG_F(c55_s37_0, 3, NOWAIT, TO_ACTOR(TGT_RITA, 0));
+MSG_F(c55_s37_0, 3, NOWAIT, TO_NPC(TGT_RITA, 0));
 MSG(c55_s37_1, NOWAIT, SOUND_PLAY_BGM(TGT_SOUND, BGM_SUNAVENUE1));
 MSG(c55_s37_2, WAIT, CAMERA_PAN_TO(TGT_CAM, 1024, 768, 1536, 60));
 STEP(c55_s37) = {M(c55_s37_0), M(c55_s37_1), M(c55_s37_2), NULL};
@@ -208,7 +208,7 @@ STEP(c55_s45) = {M(c55_s45_0), NULL};
 
 // step 46
 MSG(c55_s46_0, WAIT, BUS_WAIT(30));
-MSG(c55_s46_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 7));
+MSG(c55_s46_1, NOWAIT, NPC_TURN(TGT_OTNK, 7));
 STEP(c55_s46) = {M(c55_s46_0), M(c55_s46_1), NULL};
 
 // step 47: Scr_AdvanceStory, Cmd_ResetCamera, Cmd_4EBF, Scr_EndCutscene, Scr_EndEventCloseMsg / (ここでカットシーンが終わる)
@@ -234,12 +234,12 @@ STEP(c55_s51) = {M(c55_s51_0), NULL};
 // step 52
 MSG(c55_s52_0, WAIT, BUS_WAIT(120));
 MSG(c55_s52_1, NOWAIT, PLAYER_EMOTE_TIMED(TGT_PLAYER, 4, 130, 130));
-MSG_F(c55_s52_2, 3, NOWAIT, ACTOR_EMOTE_TIMED(TGT_OTNK, 4, 130, 130));
+MSG_F(c55_s52_2, 3, NOWAIT, NPC_EMOTE_TIMED(TGT_OTNK, 4, 130, 130));
 STEP(c55_s52) = {M(c55_s52_0), M(c55_s52_1), M(c55_s52_2), NULL};
 
 // step 53
 MSG(c55_s53_0, WAIT, BUS_WAIT(30));
-MSG(c55_s53_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 7));
+MSG(c55_s53_1, NOWAIT, NPC_TURN(TGT_OTNK, 7));
 STEP(c55_s53) = {M(c55_s53_0), M(c55_s53_1), NULL};
 
 // step 54

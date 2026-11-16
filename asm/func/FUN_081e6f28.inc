@@ -73,9 +73,9 @@ _081E6F5E:
 	ldr r3, _081E70D4 @ =0x00001590
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r0, r5, #0
 	bl FUN_081e4544
 	ldr r0, _081E70D8 @ =0x030046A0
@@ -121,12 +121,12 @@ _081E7010:
 	ldr r2, _081E70E0 @ =0x000015F0
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r3, _081E70E4 @ =0x00001599
 	adds r1, r5, r3
 	movs r0, #0xff

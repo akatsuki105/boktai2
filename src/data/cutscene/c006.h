@@ -30,11 +30,11 @@ MSG(c6_s5_1, NOWAIT, SOUND_PLAY_UNTRACKED(TGT_SOUND, BGM_WHAT));
 STEP(c6_s5) = {M(c6_s5_0), M(c6_s5_1), NULL};
 
 // step 6
-MSG_F(c6_s6_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KURO_A, 1664, 256, 384));
+MSG_F(c6_s6_0, 3, WAIT, NPC_MOVE_TO(TGT_KURO_A, 1664, 256, 384));
 STEP(c6_s6) = {M(c6_s6_0), NULL};
 
 // step 7
-MSG(c6_s7_0, WAIT, TO_ACTOR(TGT_KURO_A, 0));
+MSG(c6_s7_0, WAIT, TO_NPC(TGT_KURO_A, 0));
 STEP(c6_s7) = {M(c6_s7_0), NULL};
 
 // step 8

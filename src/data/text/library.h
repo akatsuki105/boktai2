@@ -2,10 +2,10 @@
 
 // ゲーム内施設"図書館"で使うテキスト
 
-const u8 Str_0D79[] = _("封印されている。\nまだ、この本を読むことはでき\nないようだ・・・");
+const u8 Str_LibMemoryLocked[] = _("封印されている。\nまだ、この本を読むことはでき\nないようだ・・・");
 const u8 Str_0D7A[] = _("<PROC=0>\n<END>");
 
-const u8 Str_0D7B[] = _("\n　　　　　追憶の書　　　　　\n");
+const u8 Str_LibMemory[] = _("\n　　　　　追憶の書　　　　　\n");
 const u8 Str_0D7C[] = _("<PROC=0>\n<END>");
 const u8 Str_0D7D[] = _(" <ALTER>総合記録</ALTER>　<ALTER>浄化記録</ALTER>\n <ALTER>通信販売</ALTER>　<ALTER>通信対戦</ALTER>");
 const u8 Str_0D7E[] = _(" <ALTER>総合記録</ALTER>　<ALTER>浄化記録</ALTER>\n <ALTER>通信販売</ALTER>　<ALTER>通信対戦</ALTER>\n <ALTER>クロスオーバーバトル</ALTER>");
@@ -309,7 +309,7 @@ const u8 Str_Library_0EA3[] = _("未調査");
 const u8 Str_Library_0EA4[] = _("調査中");
 const u8 Str_Library_0EA5[] = _("調査完了");
 
-const u8 Str_LibraryWelcome[] = _("\n　　 図書館へようこそ!!　　 ");
+const u8 Str_LibWelcome[] = _("\n　　 図書館へようこそ!!　　 ");
 const u8 Str_0EA7[] = _("当館は終日、開放されています\nどなたさまもご自由にご利用く\nださい。");
 const u8 Str_0EA8[] = _("敵モンスターについての情報は\n魔物図鑑(まものずかん)、");
 const u8 Str_0EA9[] = _("武器については武器図鑑をご覧\nください。");
@@ -320,17 +320,17 @@ const u8 Str_0EAD[] = _("\n\n　　　　　　　　　司書レディ");
 const u8 Str_0EAE[] = _("<PROC=0>\n<END>");
 const u8 Str_0EAF[] = _("<END>");
 
-const u8 Str_LibraryBookUnlocked[] = _("封印されている。\nまだ、この本を読むことはでき\nないようだ・・・");
+const u8 Str_LibTitleLocked[] = _("封印されている。\nまだ、この本を読むことはでき\nないようだ・・・");
 const u8 Str_0EB1[] = _("<PROC=0>\n<END>");
 
-const u8 Str_LibraryTitle[] = _("<MOJISE=MOJISE_SYSTEM>\n          称号記録          ");
+const u8 Str_LibTitle[] = _("<MOJISE=MOJISE_SYSTEM>\n          称号記録          ");
 const u8 Str_0EB3[] = _("<EXTEND=0>\n<EXTEND=1>\n<EXTEND=2>");
 const u8 Str_0EB4[] = _("<EXTEND=3>\n<EXTEND=4>");
 const u8 Str_0EB5[] = _("<EXTEND=5>\n<EXTEND=6>\n<EXTEND=7>");
 const u8 Str_0EB6[] = _("<EXTEND=8>\n<EXTEND=9>\n<EXTEND=10>");
 const u8 Str_0EB7[] = _("<EXTEND=11>");
 const u8 Str_0EB8[] = _("<PROC=0>\n<END>");
-const u8 Str_LibraryTitleCompleted[] = _("<MOJISE=MOJISE_SYSTEM>\n        ★称号記録★        ");
+const u8 Str_LibTitleCompleted[] = _("<MOJISE=MOJISE_SYSTEM>\n        ★称号記録★        ");
 const u8 Str_0EBA[] = _("<EXTEND=0>\n<EXTEND=1>\n<EXTEND=2>");
 const u8 Str_0EBB[] = _("<EXTEND=3>\n<EXTEND=4>");
 const u8 Str_0EBC[] = _("<EXTEND=5>\n<EXTEND=6>\n<EXTEND=7>");
@@ -339,16 +339,16 @@ const u8 Str_0EBE[] = _("<EXTEND=11>");
 const u8 Str_0EBF[] = _("<PROC=0>\n<END>");
 const u8 Str_0EC0[] = _("<END>");
 
-const u8 Str_LibraryTitleUnlocked[] = _("???");
-const u8 Str_LibraryTitleSwordMaster[] = _("ソードマスター");
-const u8 Str_LibraryTitleSpearMaster[] = _("スピアマスター");
-const u8 Str_LibraryTitleHammerMaster[] = _("ハンマーマスター");
-const u8 Str_LibraryTitleFistMaster[] = _("フィストマスター");
-const u8 Str_LibraryTitleGunMaster[] = _("ガンマスター");
-const u8 Str_LibraryTitleAdept[] = _("アデプト");
-const u8 Str_LibraryTitleDayWalker[] = _("デイウォーカー");
-const u8 Str_LibraryTitleAdventurer[] = _("アドベンチャラー");
-const u8 Str_LibraryTitleAgent[] = _("エージェント");
-const u8 Str_LibraryTitleCollector[] = _("コレクター");
-const u8 Str_LibraryTitleDarkHunter[] = _("ダークハンター");
-const u8 Str_LibraryTitleGrandMaster[] = _("グランドマスター");
+const u8 Str_LibTitleUnknown[] = _("???");
+const u8 Str_LibTitleSwordMaster[] = _("ソードマスター");
+const u8 Str_LibTitleSpearMaster[] = _("スピアマスター");
+const u8 Str_LibTitleHammerMaster[] = _("ハンマーマスター");
+const u8 Str_LibTitleFistMaster[] = _("フィストマスター");
+const u8 Str_LibTitleGunMaster[] = _("ガンマスター");
+const u8 Str_LibTitleAdept[] = _("アデプト");
+const u8 Str_LibTitleDayWalker[] = _("デイウォーカー");
+const u8 Str_LibTitleAdventurer[] = _("アドベンチャラー");
+const u8 Str_LibTitleAgent[] = _("エージェント");
+const u8 Str_LibTitleCollector[] = _("コレクター");
+const u8 Str_LibTitleDarkHunter[] = _("ダークハンター");
+const u8 Str_LibTitleGrandMaster[] = _("グランドマスター");

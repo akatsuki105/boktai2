@@ -6,6 +6,7 @@
 
 // (太陽銃を奪われた後の)サンミゲルに向かって、ジャンゴとおてんこが走っていく演出 (手前から奥へ走っていくので、スプライトが徐々に小さくなる)
 // このエンティティ1つは ジャンゴ または おてんこ のどちらかのみを表す (なので、 2つ必要)
+// スクリプト (Scr_0x0332) が渡すインスタンスIDは HashName("ジャンゴ") = 0xBF31 ('.k=0') と HashName("おてんこ") = 0xBB34 ('.k=1')
 typedef struct OpRunner {
   Entity e;                                  // 0x0, ENTITY_UNK_8
   MainSpriteGfx djangoGfx;                   // 0x18, SPRITE_DJANGO_SABATA

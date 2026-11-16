@@ -1,6 +1,6 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_0800271c
+	bl BgPlttController_IsPlttUpdated
 	cmp r0, #0
 	beq _08018E68
 	ldrb r0, [r4, #0x18]

@@ -49,11 +49,11 @@ _081E4F26:
 	lsls r0, r0, #5
 	adds r5, r7, r0
 	ldr r0, [r5]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E50D8 @ =0x00001604
 	adds r4, r7, r1
 	ldr r0, [r4]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, [r5]
 	ldr r1, _081E50DC @ =0x00000BB8
 	adds r2, r7, r1
@@ -153,12 +153,12 @@ _081E4F26:
 	ldr r1, _081E50FC @ =0x000015F0
 	adds r4, r7, r1
 	ldr r1, [r4]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r5]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r5]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r0, r7, #0
 	bl FUN_081e3680
 	ldr r2, _081E5100 @ =0x000015E2
@@ -176,7 +176,7 @@ _081E4F26:
 	ldr r2, _081E5108 @ =0x00001590
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	bl FUN_08049f5c
 	ldr r0, _081E510C @ =0x00001610
 	adds r1, r7, r0
@@ -264,11 +264,11 @@ _081E511C:
 	adds r0, r0, r7
 	mov r8, r0
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E5264 @ =0x00001604
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, [r7, #0x1c]
 	movs r0, #3
 	movs r2, #3
@@ -323,9 +323,9 @@ _081E511C:
 	subs r2, #0x78
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r0, r7, #0
 	bl FUN_081e4544
 	ldrb r1, [r5]
@@ -359,14 +359,14 @@ _081E511C:
 	ldr r2, _081E5288 @ =0x000015F0
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	mov r1, r8
 	ldr r0, [r1]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	mov r2, r8
 	ldr r0, [r2]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r0, _081E5260 @ =0x00001610
 	adds r1, r7, r0
 	ldr r0, _081E528C @ =0x0001010E

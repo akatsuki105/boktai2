@@ -855,7 +855,7 @@ void Cmd_RequestCoffinKill(void) {
   }
 }
 
-// 0x7A0A, 持っている棺桶のIDを取得
+// 0x7A0A, HashName("棺桶種類取得"), 持っている棺桶のIDを取得
 u32 Cmd_GetCoffinID(void) {
   s32 i;
 

@@ -596,7 +596,7 @@ void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttrs a
   VEC3_SET(offset, 0, Q8(0.313), 0);
   VEC3_SET(halfSize, Q8(0.25), Q8(0.313), Q8(0.25));
   hurtbox->id = frag->unk_150;
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, attributes, weakness);
   Hitbox_SetPos(hurtbox, &frag->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_081d64d4, frag);

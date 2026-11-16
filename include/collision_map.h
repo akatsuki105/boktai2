@@ -203,7 +203,7 @@ typedef struct {
   u8 unk_2;              // 0x02, 読むコードは見つかっていない
   u8 activeCount;        // 0x03, activeEvents の件数
   Vec3* pos;             // 0x04, Mover.pos を指す
-  u32 activeEvents[10];  // 0x08, いま範囲内にいる CollisionMapEvent.id, 要素数は ActorManager の空き領域ちょうど (暫定)
+  u32 activeEvents[10];  // 0x08, いま範囲内にいる CollisionMapEvent.id, 要素数は NPCManager の空き領域ちょうど (暫定)
 } ZoneEventSource;
 static_assert(sizeof(ZoneEventSource) == 48);
 

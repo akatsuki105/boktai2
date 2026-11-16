@@ -139,7 +139,7 @@ void FUN_0801d71c(Forge* p);
 void Forge_UpdateSmithing(Forge* p);
 void FUN_0801d788(Forge* p);
 void FUN_0807c7c8(Player* p, s32 mode);
-void Entity99CA_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
+void SparkleEffect_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 s32 ItemIconPopupManager_AddIcon(s32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
 void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID);
 void RemoveWeapon(slot32_t n);
@@ -1914,7 +1914,7 @@ NON_MATCH void Forge_UpdateAward(Forge* p) {
 
   if (p->fnTimer == 30) {
     pos = player->mover.pos;
-    Entity99CA_CreateAt(&pos, 64, 60, 8, 0);
+    SparkleEffect_CreateAt(&pos, 64, 60, 8, 0);
     PlaySound_082406e0(SONG_668);
   }
 

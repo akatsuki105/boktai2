@@ -21,8 +21,8 @@ STEP(c65_s3) = {M(c65_s3_0), NULL};
 
 // step 4
 MSG(c65_s4_0, WAIT, BUS_WAIT(20));
-MSG_F(c65_s4_1, 3, NOWAIT, ACTOR_EMOTE(TGT_RITA, 0));
-MSG_F(c65_s4_2, 3, NOWAIT, ACTOR_TURN(TGT_RITA, 5));
+MSG_F(c65_s4_1, 3, NOWAIT, NPC_EMOTE(TGT_RITA, 0));
+MSG_F(c65_s4_2, 3, NOWAIT, NPC_TURN(TGT_RITA, 5));
 STEP(c65_s4) = {M(c65_s4_0), M(c65_s4_1), M(c65_s4_2), NULL};
 
 // step 5: リタ「そんな!!そんなのって・・・」
@@ -35,7 +35,7 @@ STEP(c65_s6) = {M(c65_s6_0), NULL};
 
 // step 7
 MSG(c65_s7_0, WAIT, BUS_WAIT(20));
-MSG_F(c65_s7_1, 3, NOWAIT, ACTOR_TURN(TGT_ZAJI, 1));
+MSG_F(c65_s7_1, 3, NOWAIT, NPC_TURN(TGT_ZAJI, 1));
 STEP(c65_s7) = {M(c65_s7_0), M(c65_s7_1), NULL};
 
 // step 8: ザジ「あんた、あいつのこと好きなんやろ?」
@@ -48,7 +48,7 @@ STEP(c65_s9) = {M(c65_s9_0), NULL};
 
 // step 10
 MSG(c65_s10_0, WAIT, BUS_WAIT(20));
-MSG_F(c65_s10_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 15, 5));
+MSG_F(c65_s10_1, 3, NOWAIT, TO_NPC(TGT_RITA, 15, 5));
 STEP(c65_s10) = {M(c65_s10_0), M(c65_s10_1), NULL};
 
 // step 11: リタ「えっ!!あの、その、わたし・・・」
@@ -61,23 +61,23 @@ STEP(c65_s12) = {M(c65_s12_0), NULL};
 
 // step 13
 MSG(c65_s13_0, WAIT, BUS_WAIT(30));
-MSG_F(c65_s13_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 1, 5));
+MSG_F(c65_s13_1, 3, NOWAIT, TO_NPC(TGT_RITA, 1, 5));
 STEP(c65_s13) = {M(c65_s13_0), M(c65_s13_1), NULL};
 
 // step 14
 MSG(c65_s14_0, WAIT, BUS_WAIT(40));
-MSG_F(c65_s14_1, 3, NOWAIT, ACTOR_TURN(TGT_RITA, 7));
+MSG_F(c65_s14_1, 3, NOWAIT, NPC_TURN(TGT_RITA, 7));
 STEP(c65_s14) = {M(c65_s14_0), M(c65_s14_1), NULL};
 
 // step 15
 MSG(c65_s15_0, WAIT, BUS_WAIT(50));
-MSG_F(c65_s15_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 13, 7));
+MSG_F(c65_s15_1, 3, NOWAIT, TO_NPC(TGT_RITA, 13, 7));
 MSG(c65_s15_2, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 8));
 STEP(c65_s15) = {M(c65_s15_0), M(c65_s15_1), M(c65_s15_2), NULL};
 
 // step 16
 MSG(c65_s16_0, WAIT, CAMERA_RELEASE(TGT_CAM, 60));
-MSG_F(c65_s16_1, 3, NOWAIT, ACTOR_TURN(TGT_ZAJI, 7));
+MSG_F(c65_s16_1, 3, NOWAIT, NPC_TURN(TGT_ZAJI, 7));
 STEP(c65_s16) = {M(c65_s16_0), M(c65_s16_1), NULL};
 
 CUTSCENE(65) = {sStep_c65_s0, sStep_c65_s1, sStep_c65_s2, sStep_c65_s3, sStep_c65_s4, sStep_c65_s5, sStep_c65_s6, sStep_c65_s7, sStep_c65_s8, sStep_c65_s9, sStep_c65_s10, sStep_c65_s11, sStep_c65_s12, sStep_c65_s13, sStep_c65_s14, sStep_c65_s15, sStep_c65_s16, NULL};

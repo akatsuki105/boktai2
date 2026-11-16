@@ -29,9 +29,9 @@ typedef struct Entity7999 {
   void (*updateCallback)(struct Entity7999*);  // 0x26C, _Init で FUN_081da930
   u8* script;                                  // 0x270, '.s' の後の VM_GetPC_Proxy() の戻り値, NULL なら _Init が失敗する
   u32 flags;                                   // 0x274, _InitPanels が bit0 を立てる
-  s32 windowID0;                               // 0x278, TextPanel_Create(18, 4, 10, 2)
-  s32 windowID1;                               // 0x27C, TextPanel_Create(18, 8, 10, 2)
-  s32 windowID2;                               // 0x280, TextPanel_Create(16, 12, 12, 2)
+  s32 windowID0;                               // 0x278, MenuMessage_Create(18, 4, 10, 2)
+  s32 windowID1;                               // 0x27C, MenuMessage_Create(18, 8, 10, 2)
+  s32 windowID2;                               // 0x280, MenuMessage_Create(16, 12, 12, 2)
   u8 unk_284;                                  // 0x284, _Init が 0 を入れる
   u8 unk_285;                                  // 0x285, 読み手も書き手も見つかっていない
   u8 unk_286;                                  // 0x286, gLinkSession->self.unk_40[0] の写し, 0/1/2 で分岐する種別
@@ -321,13 +321,13 @@ void FUN_081da218(Entity7999* p) {
   u32 id;
   const u32* table;
 
-  TextPanel_SetScript(p->windowID0, p->script);
-  TextPanel_SetMessage(p->windowID0, p->unk_286);
-  TextPanel_Start(p->windowID0);
+  MenuMessage_SetScript(p->windowID0, p->script);
+  MenuMessage_SetMessage(p->windowID0, p->unk_286);
+  MenuMessage_Start(p->windowID0);
   p->unk_298 = p->unk_286;
-  TextPanel_SetScript(p->windowID1, p->script);
-  TextPanel_SetMessage(p->windowID1, p->unk_287 + 3);
-  TextPanel_Start(p->windowID1);
+  MenuMessage_SetScript(p->windowID1, p->script);
+  MenuMessage_SetMessage(p->windowID1, p->unk_287 + 3);
+  MenuMessage_Start(p->windowID1);
   p->unk_299 = p->unk_287;
   switch (p->unk_286) {
     case 0: {
@@ -349,16 +349,16 @@ void FUN_081da218(Entity7999* p) {
       break;
     }
   }
-  TextPanel_SetScript(p->windowID2, p->script);
-  TextPanel_SetMessage(p->windowID2, id + 7);
-  TextPanel_Start(p->windowID2);
+  MenuMessage_SetScript(p->windowID2, p->script);
+  MenuMessage_SetMessage(p->windowID2, id + 7);
+  MenuMessage_Start(p->windowID2);
   p->unk_29a = p->unk_288;
 }
 
 void Entity7999_InitPanels(Entity7999* p) {
-  p->windowID0 = TextPanel_Create(18, 4, 10, 2);
-  p->windowID1 = TextPanel_Create(18, 8, 10, 2);
-  p->windowID2 = TextPanel_Create(16, 12, 12, 2);
+  p->windowID0 = MenuMessage_Create(18, 4, 10, 2);
+  p->windowID1 = MenuMessage_Create(18, 8, 10, 2);
+  p->windowID2 = MenuMessage_Create(16, 12, 12, 2);
   FUN_08049f5c();
   Marquee_Clear();
   SET_FLAGS(p->flags, 1);
@@ -366,9 +366,9 @@ void Entity7999_InitPanels(Entity7999* p) {
 }
 
 static void Entity7999_HidePanels(Entity7999* p) {
-  TextPanel_Hide(p->windowID0);
-  TextPanel_Hide(p->windowID1);
-  TextPanel_Hide(p->windowID2);
+  MenuMessage_Hide(p->windowID0);
+  MenuMessage_Hide(p->windowID1);
+  MenuMessage_Hide(p->windowID2);
 }
 
 void Entity7999_InitSprites(Entity7999* p) {
@@ -537,9 +537,9 @@ void FUN_081da69c(Entity7999* p) {
       break;
     }
   }
-  TextPanel_SetScript(p->windowID2, p->script);
-  TextPanel_SetMessage(p->windowID2, id + 7);
-  TextPanel_Start(p->windowID2);
+  MenuMessage_SetScript(p->windowID2, p->script);
+  MenuMessage_SetMessage(p->windowID2, id + 7);
+  MenuMessage_Start(p->windowID2);
   p->unk_29a = p->unk_288;
 }
 
@@ -547,9 +547,9 @@ void FUN_081da730(Entity7999* p) {
   switch (p->unk_29d) {
     case 0: {
       if (p->unk_286 != (s8)p->unk_298) {
-        TextPanel_SetScript(p->windowID0, p->script);
-        TextPanel_SetMessage(p->windowID0, p->unk_286);
-        TextPanel_Start(p->windowID0);
+        MenuMessage_SetScript(p->windowID0, p->script);
+        MenuMessage_SetMessage(p->windowID0, p->unk_286);
+        MenuMessage_Start(p->windowID0);
         p->unk_298 = p->unk_286;
         p->unk_29a = -1;
         p->unk_288 = 0;
@@ -561,9 +561,9 @@ void FUN_081da730(Entity7999* p) {
     }
     case 1: {
       if (p->unk_287 != (s8)p->unk_299) {
-        TextPanel_SetScript(p->windowID1, p->script);
-        TextPanel_SetMessage(p->windowID1, p->unk_287 + 3);
-        TextPanel_Start(p->windowID1);
+        MenuMessage_SetScript(p->windowID1, p->script);
+        MenuMessage_SetMessage(p->windowID1, p->unk_287 + 3);
+        MenuMessage_Start(p->windowID1);
         p->unk_299 = p->unk_287;
       }
       break;

@@ -15,13 +15,13 @@ MSG(c124_s2_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c124_s2) = {M(c124_s2_0), NULL};
 
 // step 3
-MSG(c124_s3_0, WAIT, ACTOR_TURN(0x41AA, 5));
-MSG(c124_s3_1, NOWAIT, ACTOR_TURN(TGT_KURO_A, 5));
+MSG(c124_s3_0, WAIT, NPC_TURN(0x41AA, 5));
+MSG(c124_s3_1, NOWAIT, NPC_TURN(TGT_KURO_A, 5));
 STEP(c124_s3) = {M(c124_s3_0), M(c124_s3_1), NULL};
 
 // step 4
 MSG(c124_s4_0, WAIT, BUS_WAIT(60));
-MSG(c124_s4_1, NOWAIT, ACTOR_EMOTE(0x41AA, 3));
+MSG(c124_s4_1, NOWAIT, NPC_EMOTE(0x41AA, 3));
 STEP(c124_s4) = {M(c124_s4_0), M(c124_s4_1), NULL};
 
 // step 5: ザジ「黒きダーイン、やったて?」
@@ -34,8 +34,8 @@ STEP(c124_s6) = {M(c124_s6_0), NULL};
 
 // step 7
 MSG(c124_s7_0, WAIT, BUS_WAIT(80));
-MSG(c124_s7_1, NOWAIT, ACTOR_TURN(0x41AA, 1));
-MSG(c124_s7_2, NOWAIT, ACTOR_TURN(TGT_KURO_A, 1));
+MSG(c124_s7_1, NOWAIT, NPC_TURN(0x41AA, 1));
+MSG(c124_s7_2, NOWAIT, NPC_TURN(TGT_KURO_A, 1));
 STEP(c124_s7) = {M(c124_s7_0), M(c124_s7_1), M(c124_s7_2), NULL};
 
 // step 8: ザジ「そないなことも・・・

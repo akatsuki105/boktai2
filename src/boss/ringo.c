@@ -1629,7 +1629,7 @@ void Ringo_InitHurtbox(Ringo* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Ringo_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);

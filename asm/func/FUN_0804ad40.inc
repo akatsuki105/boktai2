@@ -17,7 +17,7 @@
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	adds r2, r0, #0
 	str r2, [r5]
 	cmp r2, #0
@@ -27,12 +27,12 @@
 	adds r0, r4, r1
 	ldr r1, [r0]
 	adds r0, r2, #0
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r5]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r5]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 _0804AD90:
 	movs r0, #0xc9
 	lsls r0, r0, #1

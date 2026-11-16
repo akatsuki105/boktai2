@@ -344,7 +344,7 @@ void UnregisterWeapon(s32 n) {
   return;
 }
 
-// 0xF11C, '.w' の武器を持っているかを返す, '.d' が非0なら倉庫も含めて探す
+// 0xF11C, HashName("武器所持判定"), '.w' の武器を持っているかを返す, '.d' が非0なら倉庫も含めて探す
 bool32 Cmd_HasWeapon(void) {
   if (VM_SeekToNamedArg('w')) {
     s32 len, i;

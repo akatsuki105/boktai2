@@ -25,19 +25,19 @@
 	lsls r2, r2, #5
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E79B8 @ =0x00001604
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r2, _081E79BC @ =0x00001608
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, _081E79C0 @ =0x0000160C
 	adds r4, r6, r0
 	ldr r0, [r4]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r0, #3
@@ -59,17 +59,17 @@
 	movs r1, #1
 	movs r2, #7
 	movs r3, #0x1c
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r2, _081E79C4 @ =0x000015F0
 	adds r1, r6, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #0x16
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r0, r6, #0
 	movs r1, #0xb
 	bl FUN_081e4c64

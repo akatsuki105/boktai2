@@ -109,7 +109,7 @@ typedef struct LinkSession {
   LinkBattleRules rulesOut;                     // 0x2C4, 親機が送るルール, Entity08F4 (ルール設定) の選択値の写し
   LinkBattleRules rules;                        // 0x2CC, 受け取ったルール
   void (*updateCallback)(struct LinkSession*);  // 0x2D4
-  s32 windowID;                                 // 0x2D8, TextPanel_Create の戻り値
+  s32 windowID;                                 // 0x2D8, MenuMessage_Create の戻り値
   u16 startScriptID;                            // 0x2DC, '.l=0', ルールが決まって回を始めるときに recordCount, unk_38, unk_3a を引数にして実行するスクリプト ID
   u16 unk_2de;                                  // 0x2DE, '.R=0', 0 以外なら FUN_081df0f8 が実行するスクリプト ID
   u16 unk_2e0;                                  // 0x2E0, '.v=0', 0 以外なら FUN_081df460 が実行するスクリプト ID
@@ -118,7 +118,7 @@ typedef struct LinkSession {
   u16 exitScriptID;                             // 0x2E6, '.E=0', 終了時に実行するスクリプト ID, 0 ならソフトリセット
   u16 unk_2e8;                                  // 0x2E8, '.Y=0', FUN_081de844 が実行するスクリプト ID
   u16 unk_2ea;                                  // 0x2EA, '.U=0', FUN_081de844 が実行するスクリプト ID
-  u8* messageScript;                            // 0x2EC, '.s' の後の VM_GetPC_Proxy(), メッセージを開いたときに TextPanel_SetScript へ渡す
+  u8* messageScript;                            // 0x2EC, '.s' の後の VM_GetPC_Proxy(), メッセージを開いたときに MenuMessage_SetScript へ渡す
   u8* unk_2f0;                                  // 0x2F0, '.S' の後の VM_GetPC_Proxy()
 } LinkSession;
 static_assert(sizeof(LinkSession) == 756);

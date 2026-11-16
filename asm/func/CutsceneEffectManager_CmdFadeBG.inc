@@ -60,7 +60,7 @@ _080227DC:
 	adds r0, r1, #0
 	movs r1, #5
 	mov r2, sp
-	bl MapPltt_PushCommand
+	bl BgPlttController_PushCommand
 	add sp, #0x14
 	pop {r4, r5}
 	pop {r0}

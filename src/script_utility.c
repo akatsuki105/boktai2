@@ -7,7 +7,7 @@
 
 static inline void ClearSuspendFlags(u32 flags) { gSuspendFlags &= ~flags; }
 
-// 0x7935, スクリプトの配列変数に, 続く引数を先頭から順に書き込む
+// 0x7935, HashName("配列セット"), スクリプトの配列変数に, 続く引数を先頭から順に書き込む
 s32 Cmd_InitArray(void) {
   u8 desc[8];
   s32 i;
@@ -64,7 +64,7 @@ s32 Cmd_Random(void) {
   return Random();
 }
 
-// 0x5F5F, スクリプトへ1Pのキー入力を返す, 既定は押された瞬間のボタン
+// 0x5F5F, HashName("パッドデータ取得")?, スクリプトへ1Pのキー入力を返す, 既定は押された瞬間のボタン
 s32 Cmd_GetInputKeys(void) {
   if (VM_SeekToNamedArg('p')) return gInput[0].pressed;
   if (VM_SeekToNamedArg('s')) return gInput[0].down;

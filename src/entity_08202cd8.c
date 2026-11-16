@@ -886,7 +886,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
     hb = &p->hitboxes[i];
     halfSize.x = 50, halfSize.y = 50, halfSize.z = 50;
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(hb, 0, HBF_HITBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hb, 0, HBF_HITBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetPos(hb, &spr->pos, 0);
     Hitbox_SetHandler(hb, FUN_082029b8, p);
     Hitbox_SetAttack(hb, p->unk_6e0, 100, 0, 0, 30);
@@ -894,7 +894,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
     hb = &p->hurtboxes[i];
     halfSize.x = 100, halfSize.y = 100, halfSize.z = 100;
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(hb, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hb, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetPos(hb, &spr->pos, 0);
     Hitbox_SetHandler(hb, FUN_082029bc, p);
     Hitbox_SetPowerAndAttributes(hb, p->unk_6e2, 8, 4);

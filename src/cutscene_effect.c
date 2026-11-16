@@ -14,9 +14,9 @@ typedef struct {
 } CutsceneEffectManager;
 static_assert(sizeof(CutsceneEffectManager) == 88);
 
-void Entity99CA_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
-void MapPltt_PushCommand(s32 val, s32 count, u32* args);
-void Entity6978_SetRequest(s32 val, s32 count, s32* args);
+void SparkleEffect_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
+void BgPlttController_PushCommand(s32 val, s32 count, u32* args);
+void ObjPlttController_SetRequest(s32 val, s32 count, s32* args);
 void RingoCutsceneAnim_Create(Vec3* pos, MsgQueue* mq);
 
 // gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
@@ -25,7 +25,7 @@ static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 void CutsceneEffectManager_CmdRisingPtclAt(CutsceneEffectManager* p, MsgQueue* mq, MsgPacket* msg) {
   Vec3 pos;
   VEC3_SET(pos, msg->args[0], msg->args[1], msg->args[2]);
-  Entity99CA_CreateAt(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
+  SparkleEffect_CreateAt(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
 }
 
 void CutsceneEffectManager_CmdRisingPtclOn(CutsceneEffectManager* p, MsgQueue* mq, MsgPacket* msg) {
@@ -34,7 +34,7 @@ void CutsceneEffectManager_CmdRisingPtclOn(CutsceneEffectManager* p, MsgQueue* m
   if (mover != NULL) {
     Vec3 pos;
     VEC3_SET(pos, mover->pos.x, mover->pos.y, mover->pos.z);
-    Entity99CA_CreateAt(&pos, msg->args[1], msg->args[2], msg->args[3], msg->args[4]);
+    SparkleEffect_CreateAt(&pos, msg->args[1], msg->args[2], msg->args[3], msg->args[4]);
   }
 }
 
@@ -93,7 +93,7 @@ NON_MATCH void CutsceneEffectManager_CmdFadeBG(CutsceneEffectManager* p, MsgQueu
   if (args[0] == 0) {
     kind = 2;
   }
-  MapPltt_PushCommand(kind, 5, cmd);
+  BgPlttController_PushCommand(kind, 5, cmd);
 #else
   INCFUNC("asm/func/CutsceneEffectManager_CmdFadeBG.inc");
 #endif
@@ -119,7 +119,7 @@ NON_MATCH void CutsceneEffectManager_CmdFadeObj(CutsceneEffectManager* p, MsgQue
   if (args[0] == 0) {
     kind = 1;
   }
-  Entity6978_SetRequest(kind, 5, cmd);
+  ObjPlttController_SetRequest(kind, 5, cmd);
 #else
   INCFUNC("asm/func/CutsceneEffectManager_CmdFadeObj.inc");
 #endif

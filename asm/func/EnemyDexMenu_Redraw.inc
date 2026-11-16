@@ -102,14 +102,14 @@ _0820DC64:
 	ldr r2, _0820DCBC @ =0x00001110
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r6]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #6
 	adds r2, r4, #0
 	movs r3, #0x14
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r5, [sp, #0x14]
 	add r5, r8
 	adds r0, r5, #0
@@ -118,7 +118,7 @@ _0820DC64:
 	beq _0820DCC0
 	ldr r0, [r6]
 	adds r1, r5, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	b _0820DCC8
 	.align 2, 0
 _0820DC98: .4byte 0x00000494
@@ -134,10 +134,10 @@ _0820DCBC: .4byte 0x00001110
 _0820DCC0:
 	ldr r0, [r6]
 	movs r1, #0x39
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 _0820DCC8:
 	ldm r6!, {r0}
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r4, #2
 	movs r3, #1
 	add r8, r3
@@ -405,7 +405,7 @@ _0820DE72:
 	ldr r2, _0820DEF0 @ =0x0000125C
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl FUN_0820fea8
+	bl Specimen_Hide
 	adds r0, r7, #0
 	bl FUN_0820d138
 	b _0820E06E
@@ -566,14 +566,14 @@ _0820DFFE:
 	ldr r0, [r4]
 	ldr r3, [sp, #0x38]
 	ldrb r1, [r3]
-	bl FUN_0820fe98
+	bl Specimen_ChangeModel
 	ldr r1, [sp, #0x38]
 	ldrb r0, [r1]
 	bl EnemyDex_IsSeen
 	cmp r0, #0
 	beq _0820E05C
 	ldr r0, [r4]
-	bl FUN_0820feb0
+	bl Specimen_Show
 	b _0820E062
 	.align 2, 0
 _0820E038: .4byte 0x00000494
@@ -587,7 +587,7 @@ _0820E054: .4byte 0x0000084C
 _0820E058: .4byte 0x0000125C
 _0820E05C:
 	ldr r0, [r4]
-	bl FUN_0820fea8
+	bl Specimen_Hide
 _0820E062:
 	adds r0, r7, #0
 	bl FUN_0820d188

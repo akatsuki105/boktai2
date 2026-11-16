@@ -33,7 +33,7 @@ const CLASS_MACROS: Record<number, string> = {
   2: "TO_PLAYER",
   3: "TO_ENEMY",
   4: "TO_BOSS",
-  5: "TO_ACTOR",
+  5: "TO_NPC",
   6: "TO_CAMERA",
   7: "TO_EFFECT",
   8: "TO_SOUND",
@@ -100,7 +100,7 @@ const read = (rom: DataView) => {
 
 
 // src/cutscene.c の名前のついた命令の #define を読む
-// #define NAME(target, a, b) TO_ACTOR(target, 3, a, b) は宛先を引数に取る形, #define NAME(a) TO_BOSS(TGT_X, 3, a) は宛先を固定した形
+// #define NAME(target, a, b) TO_NPC(target, 3, a, b) は宛先を引数に取る形, #define NAME(a) TO_BOSS(TGT_X, 3, a) は宛先を固定した形
 type NamedCmd = { name: string; cls: number; cmd: number; argc: number; target?: string };
 const readNamedCmds = (path: string): NamedCmd[] => {
   const classOf = new Map(Object.entries(CLASS_MACROS).map(([k, v]) => [v, Number(k)]));

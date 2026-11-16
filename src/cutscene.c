@@ -85,7 +85,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 // ---- データの書き方 ----
 //
 //   MSG(c1_s0_0, WAIT,   BUS_WAIT(60));                         宛先と cmd と引数は本体マクロに書く
-//   MSG_F(c1_s2_2, 1, NOWAIT, TO_ACTOR(TGT_OTNK, 6, 1));       '.f' (unk_4) が 0 でないものは MSG_F
+//   MSG_F(c1_s2_2, 1, NOWAIT, TO_NPC(TGT_OTNK, 6, 1));       '.f' (unk_4) が 0 でないものは MSG_F
 //   STEP(c1_s0) = { M(c1_s0_0), M(c1_s0_1), NULL };
 //   CUTSCENE(1) = { sStep_c1_s0, sStep_c1_s1, ..., NULL };
 //
@@ -150,7 +150,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define TO_PLAYER(target, cmd, ...) CS_BODY(target, CLS_PLAYER, cmd, ##__VA_ARGS__)
 #define TO_ENEMY(target, cmd, ...) CS_BODY(target, CLS_ENEMY, cmd, ##__VA_ARGS__)
 #define TO_BOSS(target, cmd, ...) CS_BODY(target, CLS_BOSS, cmd, ##__VA_ARGS__)
-#define TO_ACTOR(target, cmd, ...) CS_BODY(target, CLS_ACTOR, cmd, ##__VA_ARGS__)
+#define TO_NPC(target, cmd, ...) CS_BODY(target, CLS_NPC, cmd, ##__VA_ARGS__)
 #define TO_CAMERA(target, cmd, ...) CS_BODY(target, CLS_CAMERA, cmd, ##__VA_ARGS__)
 #define TO_EFFECT(target, cmd, ...) CS_BODY(target, CLS_EFFECT, cmd, ##__VA_ARGS__)
 #define TO_SOUND(target, cmd, ...) CS_BODY(target, CLS_SOUND, cmd, ##__VA_ARGS__)
@@ -161,14 +161,14 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 // tools/dumper/cutscene.ts はこの #define を読み, 種別, cmd, 引数の個数が合うメッセージをこの名前で書く
 // 宛先を固定した形 (#define X(a) TO_BOSS(TGT_RINGO, 3, a)) は, その宛先にだけ使う
 
-// ACTOR, 人物ごとの処理関数 (src/actor/*.c) に共通の番号
-#define ACTOR_TURN(target, dir) TO_ACTOR(target, 2, dir)                 // dir (8方向) へ少しずつ向き直る
-#define ACTOR_MOVE_TO(target, x, y, z) TO_ACTOR(target, 3, x, y, z)      // (x, y, z) へ向かう, 多くの人物は歩き, キッド・クロ・スミス・ルイス・マルチェロ・ハテナは state 16 の動き (歩きは cmd 20)
-#define ACTOR_WARP_IN(target) TO_ACTOR(target, 4)                        // 細長い姿で上から落ちてきて現れる (アニメ表の 5 番, FUN_08042414)
-#define ACTOR_WARP_OUT(target) TO_ACTOR(target, 5)                       // 縦に伸びながら上へ消える (アニメ表の 6 番, FUN_08042638)
-#define ACTOR_EMOTE(target, kind) TO_ACTOR(target, 10, kind)             // 頭上に吹き出しを出す, kind は FUN_080415cc
-#define ACTOR_EMOTE_TIMED(target, kind, timer, duration) TO_ACTOR(target, 10, kind, timer, duration)
-#define ACTOR_SET_POS(target, x, y, z) TO_ACTOR(target, 41, x, y, z)     // その場で (x, y, z) へ移す
+// NPC, 人物ごとの処理関数 (src/npc/*.c) に共通の番号
+#define NPC_TURN(target, dir) TO_NPC(target, 2, dir)                 // dir (8方向) へ少しずつ向き直る
+#define NPC_MOVE_TO(target, x, y, z) TO_NPC(target, 3, x, y, z)      // (x, y, z) へ向かう, 多くの人物は歩き, キッド・クロ・スミス・ルイス・マルチェロ・ハテナは state 16 の動き (歩きは cmd 20)
+#define NPC_WARP_IN(target) TO_NPC(target, 4)                        // 細長い姿で上から落ちてきて現れる (アニメ表の 5 番, FUN_08042414)
+#define NPC_WARP_OUT(target) TO_NPC(target, 5)                       // 縦に伸びながら上へ消える (アニメ表の 6 番, FUN_08042638)
+#define NPC_EMOTE(target, kind) TO_NPC(target, 10, kind)             // 頭上に吹き出しを出す, kind は FUN_080415cc
+#define NPC_EMOTE_TIMED(target, kind, timer, duration) TO_NPC(target, 10, kind, timer, duration)
+#define NPC_SET_POS(target, x, y, z) TO_NPC(target, 41, x, y, z)     // その場で (x, y, z) へ移す
 
 // PLAYER, Player_HandleMessages (src/player.c), 名前は呼んでいる関数から, 未確定のもの (4, 5, 10-13, 20, 36, 37 など) は番号のまま
 #define PLAYER_HIDE(target) TO_PLAYER(target, 0)                                         // Player_LockHidden, 操作不能の素立ちで姿と影を隠す
@@ -223,10 +223,10 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 // EFFECT, CutsceneEffectManager_HandleMessages (src/cutscene_effect.c), フェードのほかに粒の演出と画面揺れも受け持つ
 // out が 0 ならフェードイン (フェード色から元へ戻す), 0 以外ならフェードアウト, 長さは 1 << durationShift フレーム, 色は 0..31
 // bgLow / bgRow12 / bgHigh が 0 以外なら BG パレットの 0-11 行 / 12 行 / 13-15 行もフェードする
-#define EFFECT_RISING_PTCL_AT(target, x, y, z, radius, lifetime, count, kind) TO_EFFECT(target, 0, x, y, z, radius, lifetime, count, kind)  // Entity99CA_CreateAt, (x, y, z) から粒を湧かせ続ける
+#define EFFECT_RISING_PTCL_AT(target, x, y, z, radius, lifetime, count, kind) TO_EFFECT(target, 0, x, y, z, radius, lifetime, count, kind)  // SparkleEffect_CreateAt, (x, y, z) から粒を湧かせ続ける
 #define EFFECT_RISING_PTCL_ON(target, moverID, radius, lifetime, count, kind) TO_EFFECT(target, 1, moverID, radius, lifetime, count, kind)  // 同じ粒を moverID の足元から
 #define EFFECT_FADE(target, out, durationShift, r, g, b, bgLow, bgRow12, bgHigh, objSkipMask) TO_EFFECT(target, 2, out, durationShift, r, g, b, bgLow, bgRow12, bgHigh, objSkipMask)  // StartBgObjPlttFade, BG と OBJ を同時にフェード
-#define EFFECT_FADE_BG(target, out, durationShift, r, g, b, bgLow, bgRow12, bgHigh) TO_EFFECT(target, 3, out, durationShift, r, g, b, bgLow, bgRow12, bgHigh)  // MapPltt_PushCommand, BG だけフェード
+#define EFFECT_FADE_BG(target, out, durationShift, r, g, b, bgLow, bgRow12, bgHigh) TO_EFFECT(target, 3, out, durationShift, r, g, b, bgLow, bgRow12, bgHigh)  // BgPlttController_PushCommand, BG だけフェード
 #define EFFECT_SHAKE(target, frames, amplitude) TO_EFFECT(target, 5, frames, amplitude)  // frames の間 Camera_Shake(amplitude) を続ける, frames が負なら止めるまで
 #define EFFECT_STOP_SHAKE(target) TO_EFFECT(target, 6)
 #define EFFECT_RINGO_ANIM(target, x, y, z) TO_EFFECT(target, 7, x, y, z)  // RingoCutsceneAnim_Create

@@ -200,7 +200,7 @@ typedef struct {
   bool8 availableForm;  // 0x282, 今のプレイヤーのフォームでこの魔法が使えるか (フォームと魔法の組み合わせのみで決まる, MPコストや太陽ゲージは見ない)
   bool8 enchanted;      // 0x283, エンチャント○○ がアクティブかどうか (プレイヤーが対応する色に光っているかどうか)
   u8 basicCost;         // 0x284, この魔法の消費MP (マジックローブなどの影響を抜いた元々の値)
-  u8 unk_285;           // 0x285, Cmd_41D3 が 1 を、Cmd_8CFE が 0 を書く
+  bool8 locked;         // 0x285, 魔法ロック, 立っている間は魔法を使えず, クイックチェンジやメニューでの入れ替えも NG になってアイコンが使用不可の点滅になる, 変身したまま通る小さい通路で Cmd_LockPlayerMagic / Cmd_UnlockPlayerMagic が切り替える
   u8 unk_286[2];        // 0x286, padding
 } PlayerMagic;
 static_assert(sizeof(PlayerMagic) == 8);

@@ -56,7 +56,7 @@ _081E5454:
 	ldr r1, _081E54DC @ =0x00001608
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r2, _081E54E0 @ =0x00001514
 	adds r1, r5, r2
 	ldr r0, [r1]

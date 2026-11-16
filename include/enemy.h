@@ -258,7 +258,7 @@ typedef struct Enemy {
   EnemyFlags2 flags2;                       // 0x17C, bit21=EnemyManager_UpdateEnemies がパレット転送の向きとして反転させる
   EnemyFlags3 flags3;                       // 0x180, bit14=FUN_080ec9b0 が立て EnemyManager_UpdateEnemies が落とす
   EnemyFlags4 flags4;                       // 0x182, bit12 が立っていると EnemyManager_UpdateEnemies が破棄側へ回す
-  s16 hp;                                   // 0x184, 0 以下で死亡扱い, 根拠: Enemy_IsDead / Cmd_E019 が生存判定に使い Enemy_KillAll が全滅処理で 0 を書く
+  s16 hp;                                   // 0x184, 0 以下で死亡扱い, 根拠: Enemy_IsDead / Cmd_IsEnemyAlive が生存判定に使い Enemy_KillAll が全滅処理で 0 を書く
   u8 power;                                 // 0x186, Hitbox_SetPowerAndAttributes の power
   u8 unk_187;                               // 0x187
   u8 unk_188;                               // 0x188
@@ -392,7 +392,7 @@ typedef struct Enemy {
   u8 unk_542;                               // 0x542, Enemy_Alert が 0xFF を書く
   u8 unk_543;                               // 0x543
   u16 unk_544;                              // 0x544, 0 でなければ FUN_080f0430 が ES_INACTIVE へ移らない
-  u16 unk_546;                              // 0x546, maxHp の 1/4, Cmd_F200 が書く
+  u16 unk_546;                              // 0x546, maxHp の 1/4, Cmd_SetEnemyParams が書く
   void* savedHandlerState;                  // 0x548, FUN_080f0e78 が退避する handlerState
   u8 savedSubState0;                        // 0x54C, 同じく subState0
   u8 savedSubState1;                        // 0x54D, 同じく subState1

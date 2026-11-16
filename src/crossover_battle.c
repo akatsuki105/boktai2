@@ -841,11 +841,11 @@ void CrossoverBattle_StateResult(CrossoverBattle* p) {
     CrossoverBattle_SetState(p, 10);
     p->retryCount = 0;
     CrossoverBattle_SetupBG(p, 3);
-    *windowID = TextPanel_Create(1, 7, 28, 6);
+    *windowID = MenuMessage_Create(1, 7, 28, 6);
     if (*windowID >= 0) {
-      TextPanel_SetScript(*windowID, p->script);
-      TextPanel_SetMessage(*windowID, 11);
-      TextPanel_Start(*windowID);
+      MenuMessage_SetScript(*windowID, p->script);
+      MenuMessage_SetMessage(*windowID, 11);
+      MenuMessage_Start(*windowID);
     }
   }
 }
@@ -869,10 +869,10 @@ void CrossoverBattle_StateSave(CrossoverBattle* p) {
   if (p->stateTimer == 60) {
     p->saveResult = Save_WriteSystemData();
     if (p->saveResult == TRUE) {
-      TextPanel_SetMessage(*windowID, 14);
+      MenuMessage_SetMessage(*windowID, 14);
       PlaySound_082406e0(SE_SAVE_SUCCESS);
     } else {
-      TextPanel_SetMessage(*windowID, 15);
+      MenuMessage_SetMessage(*windowID, 15);
       PlaySound_082406e0(SE_NG);
     }
   }
@@ -880,7 +880,7 @@ void CrossoverBattle_StateSave(CrossoverBattle* p) {
     if (p->saveResult == TRUE || ++p->retryCount > 2) {
       CrossoverBattle_SetState(p, 11);
     } else {
-      TextPanel_SetMessage(*windowID, 11);
+      MenuMessage_SetMessage(*windowID, 11);
       CrossoverBattle_SetState(p, 10);
     }
   } else {
@@ -951,7 +951,7 @@ s32 CrossoverBattle_Destroy(CrossoverBattle* p) {
     MainSprite_Remove(&p->sprites[i]);
   }
 
-  TextPanel_Destroy(p->windowID);
+  MenuMessage_Destroy(p->windowID);
   gCrossoverBattle = NULL;
   return 0;
 }

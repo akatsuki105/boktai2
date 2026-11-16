@@ -58,7 +58,7 @@ bool32 IsMagicUnlocked(magic32_t id) {
   return unlocked;
 }
 
-// 0x83E7
+// 0x83E7, HashName("魔法所持判定")
 bool32 Cmd_IsMagicUnlocked(void) {
   if (VM_SeekToNamedArg('m')) {
     return IsMagicUnlocked(VM_GetValue());

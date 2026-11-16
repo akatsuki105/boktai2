@@ -1040,7 +1040,7 @@ s32 MovableBlockManager_Init(MovableBlockManager* p, u32 id) {
   return 0;
 }
 
-// 0xD9AE, HashName("パス")?
+// 0xD9AE
 MovableBlockManager* MovableBlockManager_Create(u32 id, u32 _) {
   MovableBlockManager* p;
 

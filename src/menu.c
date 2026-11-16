@@ -361,7 +361,7 @@ typedef struct MainMenu {
   u8 config[3];                   // 0x400E, コンフィグの設定値, 添字は CONFIG_*, 文字速度は 0: 遅い, 1: 普通, 2: 速い (なぜか gStat->textSpeed をそのまま使わない)
   u8 unk_4011[3];                 // 0x4011, まだ未解析
   s32 namePanelID;                // 0x4014, 6,4 の位置の 10x2 のテキストパネル
-  s32 textPanelID;                // 0x4018, TextPanel_Hide に渡す
+  s32 textPanelID;                // 0x4018, MenuMessage_Hide に渡す
   u8 loanMenuRow;                 // 0x401C, 暗黒ローンの2択メニューのカーソル, 0 か 1
   u8 pendingLoan;                 // 0x401D, 根拠: ItemEffect_Loan が 1 を入れる
   u8 loanRate;                    // 0x401E, 暗黒ローンの倍率, loanEne * loanRate が返済額に足される, 画面を開くときに GetLoanRate で決まる
@@ -2026,7 +2026,7 @@ void HUD_BlinkStatusPointNotice(MainMenu* p) {
 // 選択中の魔法と武器のアイコンの絵を, 魔法の点滅・エンチャント・武器の破損に合わせて切り替える
 void QC_AnimSelectedIcons(MainMenu* p) {
   if (p->player->magic.id >= 0) {
-    if (!p->player->magic.availableForm || p->player->magic.unk_285) {
+    if (!p->player->magic.availableForm || p->player->magic.locked) {
       if (p->qc.magicBlinkTimer == 0) {
         MainSprite_SetPose(&p->qc.magics[p->qc.magicIdx].sprite, &p->gfx.icons, ICON_MAGIC_UA, PLAYMODE_LOOP);
       } else if (p->qc.magicBlinkTimer == 30) {
@@ -2530,7 +2530,7 @@ void QC_Update(MainMenu* p) {
     QC_Close(p);
   } else {
     if ((gInput[0].pressed & L_BUTTON) && p->qc.magicScrollTimer == 0 && p->qc.magicCount > 1) {
-      if (p->player->magic.unk_285) {
+      if (p->player->magic.locked) {
         PlaySound_082406e0(SE_NG);
       } else {
         PlaySound_082406e0(SE_QUICK_CHANGE);
@@ -5860,10 +5860,10 @@ void MainMenu_StateRepairResult(MainMenu* p) {
     MessageWindow_Close();
     MessageWindow_SetRect(0, 18, 30, 2);
     GetWeaponData(REGISTERED_WEAPON(gStat->equippedWeaponIdx), &w);
-    TextPanel_SetRect(p->textPanelID, 0, 16, 30, 2);
-    TextPanel_SetScript(p->textPanelID, p->weaponNames);
+    MenuMessage_SetRect(p->textPanelID, 0, 16, 30, 2);
+    MenuMessage_SetScript(p->textPanelID, p->weaponNames);
     WeaponData_ShowNameInPanel(p->textPanelID, (u8*)&w, (s8*)p->statText);
-    TextPanel_Start(p->textPanelID);
+    MenuMessage_Start(p->textPanelID);
   }
   if (*timer == 8) {
     MessageWindow_Start(p->itemNames);
@@ -5871,7 +5871,7 @@ void MainMenu_StateRepairResult(MainMenu* p) {
     MessageWindow_ShowLine(260);
   }
   if (++*timer > 89 || (*timer > 15 && (gInput[0].pressed & A_BUTTON))) {
-    TextPanel_Hide(p->textPanelID);
+    MenuMessage_Hide(p->textPanelID);
     MessageWindow_SetRect(0, 16, 30, 2);
     MainMenu_ReturnToItemPage(p);
   }
@@ -6212,8 +6212,8 @@ void MainMenu_InitItemCursor(MainMenu* p, s32 _) {
 
 void MainMenu_InitPage_Item(MainMenu* p) {
   p->inValuableInventory = FALSE;
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MessageWindow_SetRect(2, 16, 28, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 6, p->menuPltt);
   MainMenu_DrawEquipStats(p, 5, 3);
@@ -6241,8 +6241,8 @@ void MainMenu_ClearDiscardLabel(void) {
 }
 
 void MainMenu_InitPage_Valuable(MainMenu* p) {
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   p->inValuableInventory = TRUE;
   MessageWindow_SetRect(2, 16, 28, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 6, p->menuPltt);
@@ -6360,7 +6360,7 @@ void WeaponData_ShowName(s32 usePanel, s32 panelID, u8* weapon, s8* suffix) {
   WeaponData_FormatSuffix((WeaponData*)weapon, suffix);
 
   if (usePanel) {
-    TextPanel_SetMessage(panelID, weapon[0]);
+    MenuMessage_SetMessage(panelID, weapon[0]);
     FUN_0804a40c(panelID, 0, (char*)suffix);
   } else {
     MessageWindow_ShowLine(weapon[0]);
@@ -7247,8 +7247,8 @@ void MainMenu_InitWeaponCursor(MainMenu* p, s32 _) {
 }
 
 void MainMenu_InitPage_Weapon(MainMenu* p) {
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MessageWindow_SetRect(2, 16, 28, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 7, p->menuPltt);
   if (p->player->kind == PLAYER_SABATA) {
@@ -7919,8 +7919,8 @@ void MainMenu_InitArmorCursor(MainMenu* p, s32 _) {
 }
 
 void MainMenu_InitPage_Armor(MainMenu* p) {
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MainMenu_BuildArmorList(p);
   MessageWindow_SetRect(2, 16, 28, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 8, p->menuPltt);
@@ -8126,7 +8126,7 @@ void MainMenu_UpdateMagicButtonGuides(MainMenu* p, s32 swapping) {
 
     if (p->player->kind != PLAYER_SABATA) {
       if (p->cursor.savedSlot == p->cursor.slot) {
-        if (!p->player->magic.unk_285) {
+        if (!p->player->magic.locked) {
           s32 reg = -1;
           s32 empty = -1;
           s32 i;
@@ -8146,7 +8146,7 @@ void MainMenu_UpdateMagicButtonGuides(MainMenu* p, s32 swapping) {
             mode = 1;
           }
         }
-      } else if (p->player->magic.unk_285) {
+      } else if (p->player->magic.locked) {
         if (p->cursor.slot != gStat->equippedMagicIdx + 16 && p->cursor.slot > 15) {
           mode = 1;
         }
@@ -8195,7 +8195,7 @@ NON_MATCH s32 MainMenu_GetMagicAction(MainMenu* p) {
         empty = i;
       }
     }
-    if (p->player->magic.unk_285) {
+    if (p->player->magic.locked) {
       if (reg == gStat->equippedMagicIdx) {
         return 0;
       }
@@ -8220,7 +8220,7 @@ NON_MATCH s32 MainMenu_GetMagicAction(MainMenu* p) {
     p->cursor.slot = gStat->equippedMagicIdx + 16;
     return 1;
   }
-  if (p->player->magic.unk_285) {
+  if (p->player->magic.locked) {
     if (gStat->registeredMagic[gStat->equippedMagicIdx] == (s8)p->magicIDs[p->cursor.savedSlot]) {
       if (p->cursor.slot == gStat->equippedMagicIdx + 16) {
         return 1;
@@ -8292,7 +8292,7 @@ void MainMenu_StateMagicQuickChange(MainMenu* p) {
     MainSprite_SetPose(&p->sprites[13], &p->gfx.smenu, 56, PLAYMODE_LOOP);
     MainSprite_AdvanceAnim(&p->sprites[40], &p->gfx.smenu);
     if ((gInput[0].pressed & L_BUTTON) && p->qc.magicCount > 1) {
-      if (p->player->magic.unk_285) {
+      if (p->player->magic.locked) {
         PlaySound_082406e0(SE_NG);
       } else {
         PlaySound_082406e0(SE_QUICK_CHANGE);
@@ -8516,8 +8516,8 @@ void MainMenu_HideEmptyMagicSections(MainMenu* p) {
 }
 
 void MainMenu_InitPage_Magic(MainMenu* p) {
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MainMenu_BuildMagicList(p);
   MessageWindow_SetRect(0, 16, 30, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 9, p->menuPltt);
@@ -8933,13 +8933,13 @@ void MainMenu_ShowPlayerTitle(MainMenu* p) {
     *dst++ = sPlayerTitles[idx][i] | BGMAP_BGP15;
   }
 
-  TextPanel_SetScript(p->namePanelID, p->etcTexts);
+  MenuMessage_SetScript(p->namePanelID, p->etcTexts);
   if (idx == 2) {
-    TextPanel_SetMessage(p->namePanelID, 1);
+    MenuMessage_SetMessage(p->namePanelID, 1);
   } else {
-    TextPanel_SetMessage(p->namePanelID, 0);
+    MenuMessage_SetMessage(p->namePanelID, 0);
   }
-  TextPanel_Start(p->namePanelID);
+  MenuMessage_Start(p->namePanelID);
 }
 
 // ステータスページで, かかっている状態異常 (カーモス・エフェクト・毒・混乱・腹痛) のアイコンを横に並べ, なければ欄を消す
@@ -8999,8 +8999,8 @@ void MainMenu_InitPage_Stats(MainMenu* p) {
   MessageWindow_Close();
   Marquee_Clear();
   Marquee_RequestClose();
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 10, p->menuPltt);
   MainMenu_DrawStatusNumbers(p);
   MainMenu_DrawEquipStats(p, 5, 7);
@@ -9248,8 +9248,8 @@ void MainMenu_InitPage_Config(MainMenu* p) {
   MessageWindow_Close();
   Marquee_Clear();
   Marquee_RequestClose();
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MessageWindow_SetRect(0, 16, 30, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 11, p->menuPltt);
   MainMenu_HideAllSprites(p);
@@ -9270,10 +9270,10 @@ void MainMenu_StateSleepPage(MainMenu* p) {
     MainMenu_ShowLine(18);
     MainMenu_HideButtonGuides(p);
     MainMenu_SetState(p, MainMenu_StateConfirmSleep, TRUE);
-    TextPanel_SetRect(p->textPanelID, 4, 6, 22, 6);
-    TextPanel_SetScript(p->textPanelID, p->etcTexts);
-    TextPanel_SetMessage(p->textPanelID, 16);
-    TextPanel_Start(p->textPanelID);
+    MenuMessage_SetRect(p->textPanelID, 4, 6, 22, 6);
+    MenuMessage_SetScript(p->textPanelID, p->etcTexts);
+    MenuMessage_SetMessage(p->textPanelID, 16);
+    MenuMessage_Start(p->textPanelID);
   }
 }
 
@@ -9285,7 +9285,7 @@ void MainMenu_StateConfirmSleep(MainMenu* p) {
   if (result == 0) {
     PlaySound_082406e0(SE_CANCEL);
     MainMenu_ShowLine(17);
-    TextPanel_Hide(p->textPanelID);
+    MenuMessage_Hide(p->textPanelID);
     MainMenu_SetButtonGuides(p, 0, -1);
     MainMenu_SetState(p, MainMenu_StateSleepPage, 0);
   } else if (result == 1) {
@@ -9301,7 +9301,7 @@ void MainMenu_StateEnterSleep(MainMenu* p) {
   p->stateTimer++;
   if (p->stateTimer > 119) {
     MainMenu_ShowLine(17);
-    TextPanel_Hide(p->textPanelID);
+    MenuMessage_Hide(p->textPanelID);
     MainMenu_SetButtonGuides(p, 0, -1);
     MainMenu_SetState(p, MainMenu_StateSleepPage, 0);
     p->pageLockTimer = 30;
@@ -9313,8 +9313,8 @@ void MainMenu_InitPage_Sleep(MainMenu* p) {
   MessageWindow_Close();
   Marquee_Clear();
   Marquee_RequestClose();
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MessageWindow_SetRect(0, 16, 30, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 11, p->menuPltt);
   MainMenu_HideAllSprites(p);
@@ -9382,10 +9382,10 @@ void MainMenu_StateSaving(MainMenu* p) {
   if (*timer == 0) {
     s32* panel = &p->textPanelID;
 
-    TextPanel_SetRect(*panel, 2, 6, 26, 6);
-    TextPanel_SetScript(*panel, p->etcTexts);
-    TextPanel_SetMessage(*panel, 13);
-    TextPanel_Start(*panel);
+    MenuMessage_SetRect(*panel, 2, 6, 26, 6);
+    MenuMessage_SetScript(*panel, p->etcTexts);
+    MenuMessage_SetMessage(*panel, 13);
+    MenuMessage_Start(*panel);
     MainMenu_ShowLine(12);
   }
 
@@ -9412,7 +9412,7 @@ void MainMenu_StateWriteSave(MainMenu* p) {
 void MainMenu_StateSaveSucceeded(MainMenu* p) {
   if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_SAVE_SUCCESS);
-    TextPanel_Hide(p->textPanelID);
+    MenuMessage_Hide(p->textPanelID);
     MainMenu_ShowLine(14);
   }
 
@@ -9427,7 +9427,7 @@ void MainMenu_StateSaveSucceeded(MainMenu* p) {
 void MainMenu_StateSaveFailed(MainMenu* p) {
   if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_NG);
-    TextPanel_Hide(p->textPanelID);
+    MenuMessage_Hide(p->textPanelID);
     MainMenu_ShowLine(15);
   }
 
@@ -9443,8 +9443,8 @@ void MainMenu_InitPage_Save(MainMenu* p) {
   MessageWindow_Close();
   Marquee_Clear();
   Marquee_RequestClose();
-  TextPanel_Hide(p->namePanelID);
-  TextPanel_Hide(p->textPanelID);
+  MenuMessage_Hide(p->namePanelID);
+  MenuMessage_Hide(p->textPanelID);
   MessageWindow_SetRect(0, 16, 30, 2);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 11, p->menuPltt);
   MainMenu_HideAllSprites(p);
@@ -9535,7 +9535,7 @@ void MainMenu_RestoreBg(MainMenu* p) {
   Marquee_RequestClose();
   id = &p->namePanelID;
   for (i = 0; i < 2; i++) {
-    TextPanel_Hide(*id++);
+    MenuMessage_Hide(*id++);
   }
   SET_FLAGS(gStagedDISPCNT, DISPCNT_BG0_ON);
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 0, p->menuPltt);
@@ -10359,8 +10359,8 @@ void HUD_RefreshMode(void) {
   }
 }
 
-// 0x2FA0
-void Cmd_2FA0(void) {
+// 0x2FA0, HashName("スタートメニュー使用可能切り替え"), スタートメニューが閉じているときに '.o' の10個でページごとに選べるかを設定し直す
+void Cmd_SetMenuPagesAvailable(void) {
   if (gMainMenu != NULL && gMainMenu->menuOpen == 0) {
     MainMenu_InitAvailPages(gMainMenu);
   }
@@ -10521,7 +10521,8 @@ void Cmd_94EB(void) {
   }
 }
 
-void Cmd_EFD1(void) {
+// 0xEFD1, HashName("PETメッセージ設定"), アイテム欄で PET を選んだときの説明文の番号 (petHint) を '.i' にする, クロスオーバーイベントの進み具合に合わせて呼ばれる
+void Cmd_SetPetHint(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL && VM_SeekToNamedArg('i')) {
@@ -10770,8 +10771,8 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   } else {
     p->cardScriptID = 0;
   }
-  p->namePanelID = TextPanel_Create(6, 4, 10, 2);
-  p->textPanelID = TextPanel_Create(4, 6, 22, 6);
+  p->namePanelID = MenuMessage_Create(6, 4, 10, 2);
+  p->textPanelID = MenuMessage_Create(4, 6, 22, 6);
   MainMenu1P_SetupBg(p);
   if (gGameFlags & GAMEFLAG_CROSSOVER) {
     HUD_UpdateCrossover(p);

@@ -8,19 +8,19 @@
 //
 //   TextRenderer   文字列を1歩ずつ進めるエンジン, エンティティではなく、下の3つが1つずつ内部に持つ
 //     |            枠も id もフレームも知らず、渡された char* を進めてタグを展開するだけ
-//     +- MessageWindow  画面に1つしかない共有の本文表示領域 (src/message_window.c)
+//     +- MessageWindow  画面に1つしかない共有の本文表示領域 (src/message/window.c)
 //     |    |            使う側が MessageWindow_SetRect で設定し直して借りる, 顔グラ・送り矢印・オート送り・行ラベルつき
 //     |    |            会話だけでなく gameover / dungeon_title / credits / 各種図鑑も使う
 //     |    +- MessageChoice  MessageWindow を操作して <ALTER> を選択肢として選ばせる UI (src/message_choice.c)
 //     |                       自分では描かず、カーソルのスプライトを左右に置く
-//     +- TextPanel      各画面が必要なだけ自分で開き、id で持って自分で閉じる追加パネル (src/text_panel.c)
-//     |                 TextPanelManager が双方向リストで抱え、複数同時に存在できる
-//     +- Marquee        おそらく横スクロールするテキスト (src/text_marquee.c), offset を毎フレーム進めて gMarqueeOffset に流す
+//     +- MenuMessage    各画面が必要なだけ自分で開き、id で持って自分で閉じる追加パネル (src/message/menu.c)
+//     |                 MenuMessageManager が双方向リストで抱え、複数同時に存在できる
+//     +- Marquee        横スクロールするテキスト (src/message/marquee.c), offset を毎フレーム進めて gMarqueeOffset に流す
 //
-// MessageWindow と TextPanel の違いは用途ではなく所有関係, どちらも同じ BG0 のタイルマップに描く
+// MessageWindow と MenuMessage の違いは用途ではなく所有関係, どちらも同じ BG0 のタイルマップに描く
 // (閉じるときの FUN_0822EA60 が GetTilemapBuffer(0) を使う)
 
-// 枠内に文字を流し込む描画器, MessageWindow のほか Marquee / TextPanel も同じものを1つずつ持つ
+// 枠内に文字を流し込む描画器, MessageWindow のほか Marquee / MenuMessage も同じものを1つずつ持つ
 // 根拠: TextRenderer_Init (初期化) / TextRenderer_SetRect (矩形) / TextRenderer_ResetSpeed (速度) / TextRenderer_Advance (1歩進める) / TextRenderer_ClearPending / TextRenderer_RunPending
 typedef struct {
   u8 cursorX;            // 0x000, TextRenderer_SetRect が rectX を書き込む描画位置
@@ -34,7 +34,7 @@ typedef struct {
   u8 frameCounter;       // 0x008, MessageWindow_StateType が毎フレーム数え, speed に届いたら 0 に戻して TextRenderer_Advance を呼ぶ
   u8 speed;              // 0x009, TextRenderer_ResetSpeed が gStat->unk_12 (メッセージ速度設定) を入れる, 0x0C にも同じ値を複製する
   bool8 muteCharSound;   // 0x00A, 立っている間 TextRenderer_PlayCharSound は鳴らさない, MessageWindow_StateType が '.m' を入れ, 一気に描く状態と Marquee は 1
-  bool8 silent;          // 0x00B, LABEL タグと TextPanel_Create が立てる, 立っている間 TextRenderer_PlayCharSound は鳴らさない
+  bool8 silent;          // 0x00B, LABEL タグと MenuMessage_Create が立てる, 立っている間 TextRenderer_PlayCharSound は鳴らさない
   u8 savedSpeed;         // 0x00C, LABEL タグが speed を退避して speed を 0 にし、/LABEL が戻す
   u8 scriptIdCount;      // 0x00D, scriptIds の使用数, MessageWindow_Init が '.p' の並びを積むときに +1 する
   bool8 stopAtTag;       // 0x00E, この1歩がタグで止まったら TRUE, TextRenderer_DrawNextChar はそこで戻り, '>' を読み飛ばす, TextRenderer_Advance が毎回 0 に戻す
@@ -100,14 +100,14 @@ s32 TextRenderer_GetVarWidth(TextRenderer* p, s32 idx);
 s32 TextRenderer_GetExtendWidth(TextRenderer* p, s32 idx);
 s32 TextRenderer_GetTextWidth(TextRenderer* p);
 
-s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height);
-s32 TextPanel_Destroy(s32 id);
-void TextPanelManager_DestroyAll(void);
-s32 TextPanel_Start(s32 id);
-s32 TextPanel_Hide(s32 id);
-s32 TextPanel_SetScript(s32 id, u8* scriptPc);
-s32 TextPanel_SetRect(s32 id, s32 x, s32 y, s32 width, s32 height);
-s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
+s32 MenuMessage_Create(s32 x, s32 y, s32 width, s32 height);
+s32 MenuMessage_Destroy(s32 id);
+void MenuMessageManager_DestroyAll(void);
+s32 MenuMessage_Start(s32 id);
+s32 MenuMessage_Hide(s32 id);
+s32 MenuMessage_SetScript(s32 id, u8* scriptPc);
+s32 MenuMessage_SetRect(s32 id, s32 x, s32 y, s32 width, s32 height);
+s32 MenuMessage_SetMessage(s32 id, s32 msgIdx);
 s32 FUN_0804a3e4(s32 id, s32 idx, u32 value);
 s32 FUN_0804a40c(s32 id, s32 idx, char* str);
 

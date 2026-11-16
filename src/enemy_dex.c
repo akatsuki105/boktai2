@@ -3,8 +3,8 @@
 #include "file.h"
 #include "global.h"
 #include "input.h"
-#include "preview_stage.h"
 #include "sound.h"
+#include "specimen.h"
 #include "sprite.h"
 #include "text.h"
 #include "vec3.h"
@@ -37,7 +37,7 @@ typedef struct {
   u8 page;                       // 0x0025, 選択中のページ (0..8), EnemyDexMenu_SetPageFromEntry が entryIdx から決める
   u8 entryIdx;                   // 0x0026, 選択中のエントリ番号 (0..56)
   u8 unk_27;                     // 0x0027
-  s32 panels[8];                 // 0x0028, TextPanel_Create の戻り値 (ID), TextPanel_Hide などに渡す
+  s32 panels[8];                 // 0x0028, MenuMessage_Create の戻り値 (ID), MenuMessage_Hide などに渡す
   u8 row;                        // 0x0048, ページ内の行 (entryIdx - ページ先頭), カーソルの Y 位置になる
   u8 unk_49;                     // 0x0049, _Init が 0x20
   u8 unk_4a;                     // 0x004A, _Init が 0
@@ -55,7 +55,7 @@ typedef struct {
   u8 unk_1106[0x110C - 0x1106];  // 0x1106
   s16 timer_110c;                // 0x110C, FUN_0820d690 が 0..49 で回す
   EnemyDexFlags16 flags;         // 0x110E, see EnemyDexFlags16, _Init が 5
-  void* scriptN;                 // 0x1110, '.n', TextPanel_SetScript に渡す
+  void* scriptN;                 // 0x1110, '.n', MenuMessage_SetScript に渡す
   u8 unk_1114[57];               // 0x1114, '.d' の VM_GetValue を57バイト
   u8 unk_114d[3];                // 0x114D
   EnemyDexEntry entries[57];     // 0x1150, '.t'
@@ -69,7 +69,7 @@ typedef struct {
   void* scriptU;                 // 0x1250, '.u'
   void* scriptT_upper;           // 0x1254, '.T'
   u32 unk_1258;                  // 0x1258, '.e=0'
-  PreviewStage* sub;             // 0x125C, PreviewStage_Create(0, 0) の戻り値
+  Specimen* sub;                 // 0x125C, Specimen_Create(0, 0) の戻り値
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
@@ -512,7 +512,7 @@ void FUN_0820d21c(EnemyDexMenu* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    TextPanel_Hide(p->panels[i]);
+    MenuMessage_Hide(p->panels[i]);
   }
   p->flags |= EDEXFLAG_UNK_0;
   ClearBGTilemapBuffer(0);
@@ -523,32 +523,32 @@ void EnemyDexMenu_DrawEntryInfo(EnemyDexMenu* p) {
   bool32 seen = EnemyDex_IsSeen(p->entryIdx);
 
   FUN_0820d21c(p);
-  TextPanel_SetScript(p->panels[0], p->scriptN);
-  TextPanel_SetRect(p->panels[0], 8, 3, 20, 2);
+  MenuMessage_SetScript(p->panels[0], p->scriptN);
+  MenuMessage_SetRect(p->panels[0], 8, 3, 20, 2);
   if (EnemyDex_IsSeen(p->entryIdx)) {
-    TextPanel_SetMessage(p->panels[0], p->entryIdx);
+    MenuMessage_SetMessage(p->panels[0], p->entryIdx);
   } else {
-    TextPanel_SetMessage(p->panels[0], 57);
+    MenuMessage_SetMessage(p->panels[0], 57);
   }
-  TextPanel_Start(p->panels[0]);
+  MenuMessage_Start(p->panels[0]);
   switch (p->unk_27) {
     case 0: {
       if (seen) {
         s32 category = EnemyDex_GetCategoryOfEntry(p->entryIdx);
 
-        TextPanel_SetScript(p->panels[1], p->scriptT_upper);
-        TextPanel_SetRect(p->panels[1], 1, 16, 30, 4);
-        TextPanel_SetMessage(p->panels[1], category);
-        TextPanel_Start(p->panels[1]);
+        MenuMessage_SetScript(p->panels[1], p->scriptT_upper);
+        MenuMessage_SetRect(p->panels[1], 1, 16, 30, 4);
+        MenuMessage_SetMessage(p->panels[1], category);
+        MenuMessage_Start(p->panels[1]);
       }
       break;
     }
     case 1: {
       if (seen) {
-        TextPanel_SetScript(p->panels[2], p->scriptA);
-        TextPanel_SetRect(p->panels[2], 1, 16, 30, 4);
-        TextPanel_SetMessage(p->panels[2], p->unk_1114[p->entryIdx]);
-        TextPanel_Start(p->panels[2]);
+        MenuMessage_SetScript(p->panels[2], p->scriptA);
+        MenuMessage_SetRect(p->panels[2], 1, 16, 30, 4);
+        MenuMessage_SetMessage(p->panels[2], p->unk_1114[p->entryIdx]);
+        MenuMessage_Start(p->panels[2]);
       }
       break;
     }
@@ -570,90 +570,90 @@ void EnemyDexMenu_DrawEntryInfo(EnemyDexMenu* p) {
       }
       entry = &p->entries[p->entryIdx];
       y = 16;
-      TextPanel_SetScript(p->panels[6], p->scriptP);
-      TextPanel_SetRect(p->panels[6], 1, y, 6, 2);
-      TextPanel_SetMessage(p->panels[6], 0);
-      TextPanel_Start(p->panels[6]);
+      MenuMessage_SetScript(p->panels[6], p->scriptP);
+      MenuMessage_SetRect(p->panels[6], 1, y, 6, 2);
+      MenuMessage_SetMessage(p->panels[6], 0);
+      MenuMessage_Start(p->panels[6]);
       if (entry->unk_1 == 0xFF) {
-        TextPanel_SetScript(p->panels[4], p->scriptS);
-        TextPanel_SetRect(p->panels[4], 6, y, 20, 2);
-        TextPanel_SetMessage(p->panels[4], 0);
-        TextPanel_Start(p->panels[4]);
+        MenuMessage_SetScript(p->panels[4], p->scriptS);
+        MenuMessage_SetRect(p->panels[4], 6, y, 20, 2);
+        MenuMessage_SetMessage(p->panels[4], 0);
+        MenuMessage_Start(p->panels[4]);
       } else if (EnemyDex_TestDropItemFlag(p->entryIdx, 0)) {
         if (entry->unk_1 < 0xFF) {
           switch (entry->unk_0) {
             case 0: {
-              TextPanel_SetScript(p->panels[4], p->scriptI);
-              TextPanel_SetRect(p->panels[4], 6, y, 20, 2);
-              TextPanel_SetMessage(p->panels[4], entry->unk_1);
-              TextPanel_Start(p->panels[4]);
+              MenuMessage_SetScript(p->panels[4], p->scriptI);
+              MenuMessage_SetRect(p->panels[4], 6, y, 20, 2);
+              MenuMessage_SetMessage(p->panels[4], entry->unk_1);
+              MenuMessage_Start(p->panels[4]);
               break;
             }
             case 1: {
-              TextPanel_SetScript(p->panels[4], p->scriptW);
-              TextPanel_SetRect(p->panels[4], 6, y, 20, 2);
-              TextPanel_SetMessage(p->panels[4], entry->unk_1);
+              MenuMessage_SetScript(p->panels[4], p->scriptW);
+              MenuMessage_SetRect(p->panels[4], 6, y, 20, 2);
+              MenuMessage_SetMessage(p->panels[4], entry->unk_1);
               FUN_0804a40c(p->panels[4], 0, (char*)&p->unk_49);
-              TextPanel_Start(p->panels[4]);
+              MenuMessage_Start(p->panels[4]);
               break;
             }
             case 2: {
-              TextPanel_SetScript(p->panels[4], p->scriptA_upper);
-              TextPanel_SetRect(p->panels[4], 6, y, 20, 2);
-              TextPanel_SetMessage(p->panels[4], entry->unk_1);
-              TextPanel_Start(p->panels[4]);
+              MenuMessage_SetScript(p->panels[4], p->scriptA_upper);
+              MenuMessage_SetRect(p->panels[4], 6, y, 20, 2);
+              MenuMessage_SetMessage(p->panels[4], entry->unk_1);
+              MenuMessage_Start(p->panels[4]);
               break;
             }
           }
         }
       } else {
-        TextPanel_SetScript(p->panels[4], p->scriptN);
-        TextPanel_SetRect(p->panels[4], 6, y, 20, 2);
-        TextPanel_SetMessage(p->panels[4], 57);
-        TextPanel_Start(p->panels[4]);
+        MenuMessage_SetScript(p->panels[4], p->scriptN);
+        MenuMessage_SetRect(p->panels[4], 6, y, 20, 2);
+        MenuMessage_SetMessage(p->panels[4], 57);
+        MenuMessage_Start(p->panels[4]);
       }
       y += 2;
-      TextPanel_SetScript(p->panels[7], p->scriptP);
-      TextPanel_SetRect(p->panels[7], 1, y, 6, 2);
-      TextPanel_SetMessage(p->panels[7], 1);
-      TextPanel_Start(p->panels[7]);
+      MenuMessage_SetScript(p->panels[7], p->scriptP);
+      MenuMessage_SetRect(p->panels[7], 1, y, 6, 2);
+      MenuMessage_SetMessage(p->panels[7], 1);
+      MenuMessage_Start(p->panels[7]);
       if (entry->unk_3 == 0xFF) {
-        TextPanel_SetScript(p->panels[5], p->scriptS);
-        TextPanel_SetRect(p->panels[5], 6, y, 30, 2);
-        TextPanel_SetMessage(p->panels[5], 0);
-        TextPanel_Start(p->panels[5]);
+        MenuMessage_SetScript(p->panels[5], p->scriptS);
+        MenuMessage_SetRect(p->panels[5], 6, y, 30, 2);
+        MenuMessage_SetMessage(p->panels[5], 0);
+        MenuMessage_Start(p->panels[5]);
       } else if (EnemyDex_TestDropItemFlag(p->entryIdx, 1)) {
         if (entry->unk_3 < 0xFF) {
           switch (entry->unk_2) {
             case 0: {
-              TextPanel_SetScript(p->panels[5], p->scriptI);
-              TextPanel_SetRect(p->panels[5], 6, y, 30, 2);
-              TextPanel_SetMessage(p->panels[5], entry->unk_3);
-              TextPanel_Start(p->panels[5]);
+              MenuMessage_SetScript(p->panels[5], p->scriptI);
+              MenuMessage_SetRect(p->panels[5], 6, y, 30, 2);
+              MenuMessage_SetMessage(p->panels[5], entry->unk_3);
+              MenuMessage_Start(p->panels[5]);
               break;
             }
             case 1: {
-              TextPanel_SetScript(p->panels[5], p->scriptW);
-              TextPanel_SetRect(p->panels[5], 6, y, 30, 2);
-              TextPanel_SetMessage(p->panels[5], entry->unk_3);
+              MenuMessage_SetScript(p->panels[5], p->scriptW);
+              MenuMessage_SetRect(p->panels[5], 6, y, 30, 2);
+              MenuMessage_SetMessage(p->panels[5], entry->unk_3);
               FUN_0804a40c(p->panels[5], 0, (char*)&p->unk_49);
-              TextPanel_Start(p->panels[5]);
+              MenuMessage_Start(p->panels[5]);
               break;
             }
             case 2: {
-              TextPanel_SetScript(p->panels[5], p->scriptA_upper);
-              TextPanel_SetRect(p->panels[5], 6, y, 30, 2);
-              TextPanel_SetMessage(p->panels[5], entry->unk_3);
-              TextPanel_Start(p->panels[5]);
+              MenuMessage_SetScript(p->panels[5], p->scriptA_upper);
+              MenuMessage_SetRect(p->panels[5], 6, y, 30, 2);
+              MenuMessage_SetMessage(p->panels[5], entry->unk_3);
+              MenuMessage_Start(p->panels[5]);
               break;
             }
           }
         }
       } else {
-        TextPanel_SetScript(p->panels[5], p->scriptN);
-        TextPanel_SetRect(p->panels[5], 6, y, 30, 2);
-        TextPanel_SetMessage(p->panels[5], 57);
-        TextPanel_Start(p->panels[5]);
+        MenuMessage_SetScript(p->panels[5], p->scriptN);
+        MenuMessage_SetRect(p->panels[5], 6, y, 30, 2);
+        MenuMessage_SetMessage(p->panels[5], 57);
+        MenuMessage_Start(p->panels[5]);
       }
       break;
     }
@@ -707,7 +707,7 @@ void FUN_0820d690(EnemyDexMenu* p) {
   p->unk_1104 = v;
 }
 
-void FUN_0820fe98(PreviewStage* p, u32 modelID);
+void Specimen_ChangeModel(Specimen* p, u32 modelID);
 
 // 魔物図鑑メニューの UI スプライトのポーズ番号, EnemyDexMenu_AddUISprites が EnemyDexMenu+0x18C から5枚を登録するループで引く
 static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
@@ -873,14 +873,14 @@ NON_MATCH void EnemyDexMenu_Redraw(EnemyDexMenu* p) {
       start = EnemyDex_GetPageStart(p->page);
       count = EnemyDex_GetPageEntryCount(p->page);
       for (i = 0; i < count; i++) {
-        TextPanel_SetScript(p->panels[i], p->scriptN);
-        TextPanel_SetRect(p->panels[i], 6, 5 + i * 2, 20, 2);
+        MenuMessage_SetScript(p->panels[i], p->scriptN);
+        MenuMessage_SetRect(p->panels[i], 6, 5 + i * 2, 20, 2);
         if (EnemyDex_IsSeen(start + i)) {
-          TextPanel_SetMessage(p->panels[i], start + i);
+          MenuMessage_SetMessage(p->panels[i], start + i);
         } else {
-          TextPanel_SetMessage(p->panels[i], 57);
+          MenuMessage_SetMessage(p->panels[i], 57);
         }
-        TextPanel_Start(p->panels[i]);
+        MenuMessage_Start(p->panels[i]);
       }
       EnemyDexMenu_HideCursorSprites(p);
       switch (p->page) {
@@ -947,7 +947,7 @@ NON_MATCH void EnemyDexMenu_Redraw(EnemyDexMenu* p) {
       category = EnemyDex_GetCategoryOfEntry(p->entryIdx);
       MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(category), 2, 0, 152, 19, 8, 0);
       MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, EnemyDex_GetCategoryEntryCount(category), 2, 0, 176, 19, 8, 0);
-      FUN_0820fea8(p->sub);
+      Specimen_Hide(p->sub);
       FUN_0820d138(p);
       break;
     }
@@ -967,11 +967,11 @@ NON_MATCH void EnemyDexMenu_Redraw(EnemyDexMenu* p) {
         p->sprites_d8c[i].flags |= SPRFLAG_HIDDEN;
         p->sprites_d8c[2 + i].flags |= SPRFLAG_HIDDEN;
       }
-      FUN_0820fe98(p->sub, p->entryIdx);
+      Specimen_ChangeModel(p->sub, p->entryIdx);
       if (EnemyDex_IsSeen(p->entryIdx)) {
-        FUN_0820feb0(p->sub);
+        Specimen_Show(p->sub);
       } else {
-        FUN_0820fea8(p->sub);
+        Specimen_Hide(p->sub);
       }
       FUN_0820d188(p);
       FUN_0820d138(p);
@@ -1028,14 +1028,14 @@ NON_MATCH s32 EnemyDexMenu_Update(EnemyDexMenu* p) {
         start = EnemyDex_GetPageStart(p->page);
         count = EnemyDex_GetPageEntryCount(p->page);
         for (i = 0; i < count; i++) {
-          TextPanel_SetScript(p->panels[i], p->scriptN);
-          TextPanel_SetRect(p->panels[i], 6, 5 + i * 2, 20, 2);
+          MenuMessage_SetScript(p->panels[i], p->scriptN);
+          MenuMessage_SetRect(p->panels[i], 6, 5 + i * 2, 20, 2);
           if (EnemyDex_IsSeen(start + i)) {
-            TextPanel_SetMessage(p->panels[i], start + i);
+            MenuMessage_SetMessage(p->panels[i], start + i);
           } else {
-            TextPanel_SetMessage(p->panels[i], 57);
+            MenuMessage_SetMessage(p->panels[i], 57);
           }
-          TextPanel_Start(p->panels[i]);
+          MenuMessage_Start(p->panels[i]);
         }
         EnemyDexMenu_HideCursorSprites(p);
         arrowX = 0;
@@ -1207,10 +1207,10 @@ NON_MATCH s32 EnemyDexMenu_Update(EnemyDexMenu* p) {
         EnemyDexMenu_HidePageSprites(p);
         MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->entryIdx + 1, 2, 0, 40, 24, 8, 0);
         if (EnemyDex_IsSeen(p->entryIdx)) {
-          FUN_0820feb0(p->sub);
-          FUN_0820fe98(p->sub, p->entryIdx);
+          Specimen_Show(p->sub);
+          Specimen_ChangeModel(p->sub, p->entryIdx);
         } else {
-          FUN_0820fea8(p->sub);
+          Specimen_Hide(p->sub);
         }
         FUN_0820d188(p);
       }
@@ -1308,10 +1308,10 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
   }
 
   for (j = 0; j < 8; j++) {
-    p->panels[j] = TextPanel_Create(3, j * 2 + 5, 23, 2);
-    TextPanel_SetScript(p->panels[j], p->scriptN);
-    TextPanel_SetMessage(p->panels[j], j);
-    TextPanel_Hide(p->panels[j]);
+    p->panels[j] = MenuMessage_Create(3, j * 2 + 5, 23, 2);
+    MenuMessage_SetScript(p->panels[j], p->scriptN);
+    MenuMessage_SetMessage(p->panels[j], j);
+    MenuMessage_Hide(p->panels[j]);
   }
 
   if (VM_SeekToNamedArg('d')) {
@@ -1363,8 +1363,8 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
 
   p->flags = 5;
   Marquee_Clear();
-  p->sub = PreviewStage_Create(0, 0);
-  FUN_0820fea8(p->sub);
+  p->sub = Specimen_Create(0, 0);
+  Specimen_Hide(p->sub);
   EnemyDexMenu_AddUISprites(p);
   FUN_0820e080(p, 0);
   StartBgObjPlttFade(0, 4, 4, 4, 4, 0xFFFF, 0);
@@ -1460,14 +1460,14 @@ void FUN_0820ede8(EnemyDexMenu* p) {
   base = EnemyDex_GetPageStart(p->page);
   count = EnemyDex_GetPageEntryCount(p->page);
   for (i = 0; i < count; i++) {
-    TextPanel_SetScript(p->panels[i], p->scriptN);
-    TextPanel_SetRect(p->panels[i], 6, i * 2 + 5, 20, 2);
+    MenuMessage_SetScript(p->panels[i], p->scriptN);
+    MenuMessage_SetRect(p->panels[i], 6, i * 2 + 5, 20, 2);
     if (EnemyDex_IsSeen(base + i)) {
-      TextPanel_SetMessage(p->panels[i], base + i);
+      MenuMessage_SetMessage(p->panels[i], base + i);
     } else {
-      TextPanel_SetMessage(p->panels[i], 57);
+      MenuMessage_SetMessage(p->panels[i], 57);
     }
-    TextPanel_Start(p->panels[i]);
+    MenuMessage_Start(p->panels[i]);
   }
 }
 

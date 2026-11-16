@@ -369,8 +369,10 @@ export class Instruction {
       case InsnType.Constant: {
         // 定数の型(=ニブル)はテキストから復元できないとコンパイルできないので、最頻の s32(コンパクト形式)以外はキャストで型を明示する。
         // u24 の定数はスクリプトIDにしか使われていないので, script.h に名前があればその名前で書く
+        // u16 の定数はエンティティIDやファイルIDなどのハッシュ値が多いので4桁の16進で書く
         const name = this.dataType === DataType.UInt24 ? ctx?.scriptNames?.get(this.value) : undefined;
-        s = this.typeCast() + (name ?? this.value.toString()) + this.aliasSuffix();
+        const num = this.dataType === DataType.UInt16 ? "0x" + toHex(this.value, 4) : this.value.toString();
+        s = this.typeCast() + (name ?? num) + this.aliasSuffix();
         break;
       }
       case InsnType.Memory: {

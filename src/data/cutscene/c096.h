@@ -9,7 +9,7 @@ STEP(c96_s0) = {M(c96_s0_0), NULL};
 
 // step 1
 MSG_F(c96_s1_0, 3, WAIT, BUS_WAIT(40));
-MSG_F(c96_s1_1, 3, NOWAIT, ACTOR_TURN(TGT_SHAIAN, 5));
+MSG_F(c96_s1_1, 3, NOWAIT, NPC_TURN(TGT_SHAIAN, 5));
 MSG_F(c96_s1_2, 3, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
 STEP(c96_s1) = {M(c96_s1_0), M(c96_s1_1), M(c96_s1_2), NULL};
 
@@ -50,17 +50,17 @@ MSG(c96_s10_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c96_s10) = {M(c96_s10_0), NULL};
 
 // step 11
-MSG_F(c96_s11_0, 3, WAIT, ACTOR_TURN(TGT_SHAIAN, 1));
+MSG_F(c96_s11_0, 3, WAIT, NPC_TURN(TGT_SHAIAN, 1));
 STEP(c96_s11) = {M(c96_s11_0), NULL};
 
 // step 12
-MSG_F(c96_s12_0, 3, WAIT, ACTOR_MOVE_TO(TGT_SHAIAN, 6784, 256, 2432));
+MSG_F(c96_s12_0, 3, WAIT, NPC_MOVE_TO(TGT_SHAIAN, 6784, 256, 2432));
 MSG_F(c96_s12_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_FSTEP_M_0));
 STEP(c96_s12) = {M(c96_s12_0), M(c96_s12_1), NULL};
 
 // step 13
 MSG(c96_s13_0, WAIT, BUS_WAIT(60));
-MSG_F(c96_s13_1, 3, NOWAIT, TO_ACTOR(TGT_SHAIAN, 0));
+MSG_F(c96_s13_1, 3, NOWAIT, TO_NPC(TGT_SHAIAN, 0));
 STEP(c96_s13) = {M(c96_s13_0), M(c96_s13_1), NULL};
 
 CUTSCENE(96) = {sStep_c96_s0, sStep_c96_s1, sStep_c96_s2, sStep_c96_s3, sStep_c96_s4, sStep_c96_s5, sStep_c96_s6, sStep_c96_s7, sStep_c96_s8, sStep_c96_s9, sStep_c96_s10, sStep_c96_s11, sStep_c96_s12, sStep_c96_s13, NULL};

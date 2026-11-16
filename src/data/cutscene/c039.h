@@ -9,27 +9,27 @@ STEP(c39_s0) = {M(c39_s0_0), M(c39_s0_1), NULL};
 
 // step 1
 MSG(c39_s1_0, WAIT, BUS_WAIT(60));
-MSG(c39_s1_1, NOWAIT, TO_ACTOR(TGT_OTNK, 6, 5));
+MSG(c39_s1_1, NOWAIT, TO_NPC(TGT_OTNK, 6, 5));
 STEP(c39_s1) = {M(c39_s1_0), M(c39_s1_1), NULL};
 
 // step 2
 MSG(c39_s2_0, WAIT, BUS_WAIT(30));
-MSG(c39_s2_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 7));
+MSG(c39_s2_1, NOWAIT, NPC_TURN(TGT_OTNK, 7));
 STEP(c39_s2) = {M(c39_s2_0), M(c39_s2_1), NULL};
 
 // step 3
 MSG(c39_s3_0, WAIT, BUS_WAIT(20));
-MSG(c39_s3_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 5));
+MSG(c39_s3_1, NOWAIT, NPC_TURN(TGT_OTNK, 5));
 STEP(c39_s3) = {M(c39_s3_0), M(c39_s3_1), NULL};
 
 // step 4
 MSG(c39_s4_0, WAIT, BUS_WAIT(30));
-MSG(c39_s4_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 3));
+MSG(c39_s4_1, NOWAIT, NPC_TURN(TGT_OTNK, 3));
 STEP(c39_s4) = {M(c39_s4_0), M(c39_s4_1), NULL};
 
 // step 5
 MSG(c39_s5_0, WAIT, BUS_WAIT(20));
-MSG(c39_s5_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 5));
+MSG(c39_s5_1, NOWAIT, NPC_TURN(TGT_OTNK, 5));
 STEP(c39_s5) = {M(c39_s5_0), M(c39_s5_1), NULL};
 
 // step 6: おてんこさま「ここが地下最下層・・・何という瘴気(し…
@@ -42,7 +42,7 @@ STEP(c39_s7) = {M(c39_s7_0), NULL};
 
 // step 8
 MSG(c39_s8_0, WAIT, BUS_WAIT(20));
-MSG(c39_s8_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 3));
+MSG(c39_s8_1, NOWAIT, NPC_TURN(TGT_OTNK, 3));
 MSG(c39_s8_2, NOWAIT, PLAYER_TURN(TGT_PLAYER, 7));
 STEP(c39_s8) = {M(c39_s8_0), M(c39_s8_1), M(c39_s8_2), NULL};
 
@@ -56,7 +56,7 @@ STEP(c39_s10) = {M(c39_s10_0), NULL};
 
 // step 11
 MSG(c39_s11_0, WAIT, BUS_WAIT(60));
-MSG(c39_s11_1, NOWAIT, TO_ACTOR(TGT_OTNK, 7));
+MSG(c39_s11_1, NOWAIT, TO_NPC(TGT_OTNK, 7));
 STEP(c39_s11) = {M(c39_s11_0), M(c39_s11_1), NULL};
 
 CUTSCENE(39) = {sStep_c39_s0, sStep_c39_s1, sStep_c39_s2, sStep_c39_s3, sStep_c39_s4, sStep_c39_s5, sStep_c39_s6, sStep_c39_s7, sStep_c39_s8, sStep_c39_s9, sStep_c39_s10, sStep_c39_s11, NULL};

@@ -9,7 +9,7 @@ STEP(c99_s0) = {M(c99_s0_0), M(c99_s0_1), NULL};
 
 // step 1
 MSG_F(c99_s1_0, 3, WAIT, BUS_WAIT(20));
-MSG_F(c99_s1_1, 3, NOWAIT, ACTOR_TURN(TGT_KURO_B1, 5));
+MSG_F(c99_s1_1, 3, NOWAIT, NPC_TURN(TGT_KURO_B1, 5));
 STEP(c99_s1) = {M(c99_s1_0), M(c99_s1_1), NULL};
 
 // step 2
@@ -18,11 +18,11 @@ MSG_F(c99_s2_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_MEOW_799));
 STEP(c99_s2) = {M(c99_s2_0), M(c99_s2_1), NULL};
 
 // step 3
-MSG(c99_s3_0, WAIT, ACTOR_MOVE_TO(TGT_KURO_B1, 3456, 1024, 2304));
+MSG(c99_s3_0, WAIT, NPC_MOVE_TO(TGT_KURO_B1, 3456, 1024, 2304));
 STEP(c99_s3) = {M(c99_s3_0), NULL};
 
 // step 4
-MSG(c99_s4_0, WAIT, TO_ACTOR(TGT_KURO_B1, 0));
+MSG(c99_s4_0, WAIT, TO_NPC(TGT_KURO_B1, 0));
 STEP(c99_s4) = {M(c99_s4_0), NULL};
 
 CUTSCENE(99) = {sStep_c99_s0, sStep_c99_s1, sStep_c99_s2, sStep_c99_s3, sStep_c99_s4, NULL};

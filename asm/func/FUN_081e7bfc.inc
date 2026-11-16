@@ -117,11 +117,11 @@ _081E7CAE:
 	lsls r2, r2, #5
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r3, _081E7D44 @ =0x00001604
 	adds r5, r6, r3
 	ldr r0, [r5]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, [r4]
 	ldr r1, _081E7D48 @ =0x00000BB8
 	adds r2, r6, r1
@@ -174,11 +174,11 @@ _081E7D50:
 	lsls r3, r3, #5
 	adds r0, r6, r3
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E7DB0 @ =0x00001604
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	movs r1, #0x80
 	lsls r1, r1, #9
 	ldr r0, [r7]

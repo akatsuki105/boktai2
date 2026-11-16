@@ -11,11 +11,11 @@
 // 結果のメッセージに差し替えたあと、結果を引数にしてスクリプトを起動して自滅する
 typedef struct {
   Entity e;      // 0x00, ENTITY_UNK_11
-  s32 windowID;  // 0x18, TextPanel_Create(1, 13, 28, 6) の戻り値, 失敗時は -1, _Destroy が TextPanel_Destroy に渡す
+  s32 windowID;  // 0x18, MenuMessage_Create(1, 13, 28, 6) の戻り値, 失敗時は -1, _Destroy が MenuMessage_Destroy に渡す
   s32 scriptID;  // 0x1C, '.e=0', result を唯一の引数にして VM_ExecByID へ渡したあと 0 に戻す
   s32 timer;     // 0x20, 毎フレーム +1, 60 でセーブ実行、120 以降は A で進める、300 で打ち切る
   s32 result;    // 0x24, セーブ実行までは -1, Save_WriteToNextSlot の戻り値で、1 ならメッセージ 0xE、それ以外は 0xF
-  u8* msgPc;     // 0x28, _Init 時点の VM_GetPC(), TextPanel_SetScript(windowID, msgPc) に渡す
+  u8* msgPc;     // 0x28, _Init 時点の VM_GetPC(), MenuMessage_SetScript(windowID, msgPc) に渡す
 } SaveSequence;
 static_assert(sizeof(SaveSequence) == 44);
 
@@ -31,10 +31,10 @@ s32 SaveSequence_Update(SaveSequence* p) {
   if (p->result < 0 && p->timer == SECOND(1)) {
     p->result = Save_WriteToNextSlot();
     if (p->result == 1) {
-      TextPanel_SetMessage(p->windowID, 14);
+      MenuMessage_SetMessage(p->windowID, 14);
       PlaySound_082406e0(SE_SAVE_SUCCESS);
     } else {
-      TextPanel_SetMessage(p->windowID, 15);
+      MenuMessage_SetMessage(p->windowID, 15);
       PlaySound_082406e0(SE_NG);
     }
   }
@@ -53,7 +53,7 @@ s32 SaveSequence_Update(SaveSequence* p) {
 }
 
 s32 SaveSequence_Destroy(SaveSequence* p) {
-  TextPanel_Destroy(p->windowID);
+  MenuMessage_Destroy(p->windowID);
   return 0;
 }
 
@@ -67,11 +67,11 @@ s32 SaveSequence_Init(SaveSequence* p) {
   if (VM_SeekToNamedArg('s')) {
     p->msgPc = VM_GetPC_Proxy();
     if (p->msgPc != NULL) {
-      p->windowID = TextPanel_Create(1, 13, 28, 6);
+      p->windowID = MenuMessage_Create(1, 13, 28, 6);
       if (p->windowID >= 0) {
-        TextPanel_SetScript(p->windowID, p->msgPc);
-        TextPanel_SetMessage(p->windowID, 11);
-        TextPanel_Start(p->windowID);
+        MenuMessage_SetScript(p->windowID, p->msgPc);
+        MenuMessage_SetMessage(p->windowID, 11);
+        MenuMessage_Start(p->windowID);
         return 0;
       }
     }

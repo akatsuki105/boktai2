@@ -11,7 +11,7 @@ typedef struct {
 } BgPlttAnimator;
 static_assert(sizeof(BgPlttAnimator) == 544);
 
-bool32 FUN_0800271c(void);
+bool32 BgPlttController_IsPlttUpdated(void);
 
 void BgPlttAnimator_SavePltt(BgPlttAnimator* p) { CpuCopy32(gBgPlttBuffer, p->savedPltt, sizeof(p->savedPltt)); }
 
@@ -19,7 +19,7 @@ void BgPlttAnimator_SavePltt(BgPlttAnimator* p) { CpuCopy32(gBgPlttBuffer, p->sa
 s32 BgPlttAnimator_Update(BgPlttAnimator* p) {
   s32 i;
 
-  if (FUN_0800271c()) {
+  if (BgPlttController_IsPlttUpdated()) {
     BgPlttAnimator_SavePltt(p);
   }
 

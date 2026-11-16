@@ -4,18 +4,18 @@
 
 // step 0
 MSG_F(c58_s0_0, 3, WAIT, PLAYER_MOVE_TO(TGT_PLAYER, 6016, 256, 2688));
-MSG_F(c58_s0_1, 3, NOWAIT, ACTOR_MOVE_TO(TGT_OTNK, 6144, 256, 2688));
+MSG_F(c58_s0_1, 3, NOWAIT, NPC_MOVE_TO(TGT_OTNK, 6144, 256, 2688));
 STEP(c58_s0) = {M(c58_s0_0), M(c58_s0_1), NULL};
 
 // step 1
 MSG_F(c58_s1_0, 3, WAIT, BUS_WAIT(40));
-MSG_F(c58_s1_1, 3, NOWAIT, ACTOR_TURN(TGT_SUMIRE, 5));
+MSG_F(c58_s1_1, 3, NOWAIT, NPC_TURN(TGT_SUMIRE, 5));
 MSG_F(c58_s1_2, 3, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
 STEP(c58_s1) = {M(c58_s1_0), M(c58_s1_1), M(c58_s1_2), NULL};
 
 // step 2
 MSG(c58_s2_0, WAIT, BUS_WAIT(10));
-MSG_F(c58_s2_1, 3, NOWAIT, ACTOR_TURN(TGT_OTNK, 1));
+MSG_F(c58_s2_1, 3, NOWAIT, NPC_TURN(TGT_OTNK, 1));
 STEP(c58_s2) = {M(c58_s2_0), M(c58_s2_1), NULL};
 
 // step 3: スミレ「あっ・・・カギ!そのカギでそうこがあくのよ」
@@ -28,7 +28,7 @@ STEP(c58_s4) = {M(c58_s4_0), NULL};
 
 // step 5
 MSG(c58_s5_0, WAIT, BUS_WAIT(60));
-MSG_F(c58_s5_1, 3, NOWAIT, ACTOR_TURN(TGT_SUMIRE, 1));
+MSG_F(c58_s5_1, 3, NOWAIT, NPC_TURN(TGT_SUMIRE, 1));
 STEP(c58_s5) = {M(c58_s5_0), M(c58_s5_1), NULL};
 
 // step 6
@@ -37,7 +37,7 @@ MSG_F(c58_s6_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SONG_655));
 STEP(c58_s6) = {M(c58_s6_0), M(c58_s6_1), NULL};
 
 // step 7
-MSG_F(c58_s7_0, 3, WAIT, ACTOR_TURN(TGT_SUMIRE, 5));
+MSG_F(c58_s7_0, 3, WAIT, NPC_TURN(TGT_SUMIRE, 5));
 STEP(c58_s7) = {M(c58_s7_0), NULL};
 
 // step 8: 倉庫の扉が開いた!!
@@ -49,12 +49,12 @@ MSG(c58_s9_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c58_s9) = {M(c58_s9_0), NULL};
 
 // step 10
-MSG_F(c58_s10_0, 3, WAIT, ACTOR_MOVE_TO(TGT_SUMIRE, 6016, 256, 2048));
+MSG_F(c58_s10_0, 3, WAIT, NPC_MOVE_TO(TGT_SUMIRE, 6016, 256, 2048));
 STEP(c58_s10) = {M(c58_s10_0), NULL};
 
 // step 11
 MSG(c58_s11_0, WAIT, BUS_WAIT(5));
-MSG_F(c58_s11_1, 3, NOWAIT, TO_ACTOR(TGT_SUMIRE, 0));
+MSG_F(c58_s11_1, 3, NOWAIT, TO_NPC(TGT_SUMIRE, 0));
 STEP(c58_s11) = {M(c58_s11_0), M(c58_s11_1), NULL};
 
 CUTSCENE(58) = {sStep_c58_s0, sStep_c58_s1, sStep_c58_s2, sStep_c58_s3, sStep_c58_s4, sStep_c58_s5, sStep_c58_s6, sStep_c58_s7, sStep_c58_s8, sStep_c58_s9, sStep_c58_s10, sStep_c58_s11, NULL};

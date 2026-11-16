@@ -45,9 +45,9 @@ typedef struct LinkBattleResult {
   Tilemaps* tilemap1;                                // 0x830, TILEMAP_A413, BG0 に敷く
   rgb555* bgPltt;                                    // 0x834, bg_link_col_arr
   void (*updateCallback)(struct LinkBattleResult*);  // 0x838
-  u8* scriptPc;                                      // 0x83C, '.s' の後の VM_GetPC_Proxy(), TextPanel_SetScript に渡す
+  u8* scriptPc;                                      // 0x83C, '.s' の後の VM_GetPC_Proxy(), MenuMessage_SetScript に渡す
   u8 unk_840[4];                                     // 0x840
-  s32 panelID[4];                                    // 0x844, TextPanel_Create(12, 4 + i*4, 10, 2) の戻り値を4つ
+  s32 panelID[4];                                    // 0x844, MenuMessage_Create(12, 4 + i*4, 10, 2) の戻り値を4つ
   u8 unk_854;                                        // 0x854, _Init が 0 を入れる
   u8 unk_855;                                        // 0x855, _Init が 1 を入れる
   u16 unk_856;                                       // 0x856, 偶数フレームごとに効果音を鳴らすためのカウンタ
@@ -103,14 +103,14 @@ void FUN_081dc6d0(LinkBattleResult* p) {
 void FUN_081dc788(LinkBattleResult* p) {
   s32 i;
 
-  p->panelID[0] = TextPanel_Create(12, 4, 10, 2);
-  p->panelID[1] = TextPanel_Create(12, 8, 10, 2);
-  p->panelID[2] = TextPanel_Create(12, 12, 10, 2);
-  p->panelID[3] = TextPanel_Create(12, 16, 10, 2);
+  p->panelID[0] = MenuMessage_Create(12, 4, 10, 2);
+  p->panelID[1] = MenuMessage_Create(12, 8, 10, 2);
+  p->panelID[2] = MenuMessage_Create(12, 12, 10, 2);
+  p->panelID[3] = MenuMessage_Create(12, 16, 10, 2);
   for (i = 0; i < 4; i++) {
-    TextPanel_SetScript(p->panelID[i], p->scriptPc);
-    TextPanel_SetMessage(p->panelID[i], i);
-    TextPanel_Hide(p->panelID[i]);
+    MenuMessage_SetScript(p->panelID[i], p->scriptPc);
+    MenuMessage_SetMessage(p->panelID[i], i);
+    MenuMessage_Hide(p->panelID[i]);
   }
 }
 
@@ -119,10 +119,10 @@ void FUN_081dc818(LinkBattleResult* p, s32 idx) {
   LinkPlayerRecord* rec = LinkSession_GetRecord(p->unk_6fc[idx]);
 
   if (rec != NULL) {
-    TextPanel_SetScript(p->panelID[idx], p->scriptPc);
-    TextPanel_SetMessage(p->panelID[idx], idx);
+    MenuMessage_SetScript(p->panelID[idx], p->scriptPc);
+    MenuMessage_SetMessage(p->panelID[idx], idx);
     FUN_0804a40c(p->panelID[idx], idx, (char*)rec);
-    TextPanel_Start(p->panelID[idx]);
+    MenuMessage_Start(p->panelID[idx]);
   }
 }
 
@@ -131,7 +131,7 @@ void FUN_081dc880(LinkBattleResult* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    TextPanel_Hide(p->panelID[i]);
+    MenuMessage_Hide(p->panelID[i]);
   }
 }
 
@@ -445,7 +445,7 @@ void FUN_081dd3c8(LinkBattleResult* p) {
   if (p->unk_856 <= 9) {
     p->unk_856++;
   } else if (p->unk_856 == 10) {
-    TextPanel_SetMessage(p->panelID[0], 5);
+    MenuMessage_SetMessage(p->panelID[0], 5);
     p->unk_856++;
   }
   state = FUN_081dfa04();

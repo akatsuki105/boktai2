@@ -19,7 +19,7 @@ STEP(c37_s2) = {M(c37_s2_0), NULL};
 MSG(c37_s3_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c37_s3) = {M(c37_s3_0), NULL};
 
-// step 4: Cmd_Retry, CoffinSealEffect_Create / Scr_EndCutscene, Scr_0x0039, Scr_0x0038, Scr_AdvanceStory, Cmd_GetCoffinID, Scr_FadeScreen, Cmd_FadeOutBGM, Cmd_Delay / (ここでカットシーンが終わる)
+// step 4: Cmd_Retry, CutsceneCoffin_Create / Scr_EndCutscene, Scr_0x0039, Scr_0x0038, Scr_AdvanceStory, Cmd_GetCoffinID, Scr_FadeScreen, Cmd_FadeOutBGM, Cmd_Delay / (ここでカットシーンが終わる)
 MSG(c37_s4_0, WAIT, BUS_EXEC_SCRIPT(56550));
 STEP(c37_s4) = {M(c37_s4_0), NULL};
 

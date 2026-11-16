@@ -44,7 +44,7 @@ static_assert(sizeof(ShadeManAfterimage) == 100);
 typedef struct ShadeMan {
   Boss base;                                 // 0x000
   s32 weaponExp;                             // 0x158, '.K'
-  Hitbox hurtbox;                            // 0x15C, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, ハンドラは ShadeMan_OnHurt
+  Hitbox hurtbox;                            // 0x15C, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_DAMAGE, ハンドラは ShadeMan_OnHurt
   Hitbox hurtbox2;                           // 0x1AC, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, ハンドラは空
   Hitbox hitbox;                             // 0x1FC
   Hitbox hitbox2;                            // 0x24C
@@ -722,7 +722,7 @@ void ShadeMan_InitHurtboxes(ShadeMan* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hurtbox, ShadeMan_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);

@@ -14,8 +14,24 @@
 #define S_MONTH *((s16 *)(scratch + 0xE))  // 今日の月
 #define S_DAY *((s16 *)(scratch + 0x10))  // 今日の日
 #define S_ELAPSED_DAYS *((s16 *)(scratch + 0x12))  // 前回日付を確認した日からの経過日数
+#define S_UNK_014_0 BIT(scratch + 0x14, 0)
+#define S_UNK_014_1 BIT(scratch + 0x14, 1)
+#define S_UNK_014_2 BIT(scratch + 0x14, 2)
+#define S_UNK_014_3 BIT(scratch + 0x14, 3)
+#define S_UNK_014_4 BIT(scratch + 0x14, 4)
+#define S_UNK_014_5 BIT(scratch + 0x14, 5)
+#define S_UNK_014_6 BIT(scratch + 0x14, 6)
+#define S_UNK_014_7 BIT(scratch + 0x14, 7)
 #define S_EXIT_ARROW_COLOR *((u8 *)(scratch + 0x15))  // 出口の矢印の色, 4 以上なら矢印を出さない
 #define S_MAP_FADE_COLOR *((u8 *)(scratch + 0x16))  // マップの出入りでフェードする色, 0: 黒, 1: 白
+#define S_UNK_017_0 BIT(scratch + 0x17, 0)
+#define S_UNK_017_1 BIT(scratch + 0x17, 1)
+#define S_UNK_017_2 BIT(scratch + 0x17, 2)
+#define S_UNK_017_3 BIT(scratch + 0x17, 3)
+#define S_UNK_017_4 BIT(scratch + 0x17, 4)
+#define S_UNK_017_5 BIT(scratch + 0x17, 5)
+#define S_UNK_017_6 BIT(scratch + 0x17, 6)
+#define S_UNK_017_7 BIT(scratch + 0x17, 7)
 #define S_MAP_FADE_FRAMES *((s16 *)(scratch + 0x18))  // マップの出入りのフェードのフレーム数, 既定 16
 #define S_TILE_ATTR *((s16 *)(scratch + 0x1A))  // (x, z) のタイル属性, 一時値
 #define S_TMP_POS_Y *((s16 *)(scratch + 0x1C))  // 汎用の一時座標の y (高さ), 並びは y, x, z
@@ -45,13 +61,21 @@
 #define S_ZONE_MAX_Y *((s16 *)(scratch + 0x48))  // ゾーンの高さの最大 (ゾーンの z2 * 16)
 #define S_ZONE_CENTER_Y *((s16 *)(scratch + 0x4A))  // ゾーンの高さの中心
 #define S_MAP_BG_FLAGS *((s16 *)(scratch + 0x4C))  // マップの BG の BgMapScrollerFlags
+#define S_UNK_04E_0 BIT(scratch + 0x4E, 0)
+#define S_UNK_04E_1 BIT(scratch + 0x4E, 1)
+#define S_UNK_04E_2 BIT(scratch + 0x4E, 2)
+#define S_UNK_04E_3 BIT(scratch + 0x4E, 3)
+#define S_UNK_04E_4 BIT(scratch + 0x4E, 4)
+#define S_UNK_04E_5 BIT(scratch + 0x4E, 5)
+#define S_UNK_04E_6 BIT(scratch + 0x4E, 6)
+#define S_UNK_04E_7 BIT(scratch + 0x4E, 7)
 #define S_UNK_04F *((u8 *)(scratch + 0x4F))
 #define S_UNK_050 *((u16 *)(scratch + 0x50))
 #define S_FADE_SPEED *((u8 *)(scratch + 0x52))  // フェード速度, フレーム数の log2
 #define S_FADE_R *((u8 *)(scratch + 0x53))  // フェード色の R (0〜31)
 #define S_FADE_G *((u8 *)(scratch + 0x54))  // フェード色の G (0〜31)
 #define S_FADE_B *((u8 *)(scratch + 0x55))  // フェード色の B (0〜31)
-#define S_FADE_KIND *((u8 *)(scratch + 0x56))  // Entity6978 に渡すフェードの種類 (1〜4)
+#define S_FADE_KIND *((u8 *)(scratch + 0x56))  // ObjPlttController に渡すフェードの種類 (1〜4)
 #define S_EMBLEM_SHUTTER_COUNT *((u8 *)(scratch + 0x57))  // 紋章ブロックの仕掛けで開く扉の数 (0〜2)
 #define S_EMBLEM_LIT_COUNT *((u8 *)(scratch + 0x58))  // 光っている紋章ブロックの数
 #define S_EMBLEM_REQUIRED *((u8 *)(scratch + 0x59))  // 扉が開くのに必要な紋章ブロックの数
@@ -72,6 +96,14 @@
 #define S_UNK_06E *((u8 *)(scratch + 0x6E))
 #define S_UNK_06F *((u8 *)(scratch + 0x6F))
 #define S_UNK_070 *((u8 *)(scratch + 0x70))
+#define S_UNK_071_0 BIT(scratch + 0x71, 0)
+#define S_UNK_071_1 BIT(scratch + 0x71, 1)
+#define S_UNK_071_2 BIT(scratch + 0x71, 2)
+#define S_UNK_071_3 BIT(scratch + 0x71, 3)
+#define S_UNK_071_4 BIT(scratch + 0x71, 4)
+#define S_UNK_071_5 BIT(scratch + 0x71, 5)
+#define S_UNK_071_6 BIT(scratch + 0x71, 6)
+#define S_UNK_071_7 BIT(scratch + 0x71, 7)
 #define S_UNK_072 *((u8 *)(scratch + 0x72))
 #define S_UNK_073 *((u8 *)(scratch + 0x73))
 #define S_UNK_074 *((u8 *)(scratch + 0x74))
@@ -121,6 +153,14 @@
 #define S_IMMORTAL_RESEARCHED *((u8 *)(scratch + 0xB6))  // 調査済みのイモータルダンジョンの数 (/6)
 #define S_UNDEAD_RESEARCHED *((u8 *)(scratch + 0xB7))  // 調査済みのアンデッドダンジョンの数 (/7)
 #define S_TITLE_COUNT *((u8 *)(scratch + 0xB8))  // 獲得した称号の数 (/12)
+#define S_UNK_0B9_0 BIT(scratch + 0xB9, 0)
+#define S_UNK_0B9_1 BIT(scratch + 0xB9, 1)
+#define S_UNK_0B9_2 BIT(scratch + 0xB9, 2)
+#define S_UNK_0B9_3 BIT(scratch + 0xB9, 3)
+#define S_UNK_0B9_4 BIT(scratch + 0xB9, 4)
+#define S_UNK_0B9_5 BIT(scratch + 0xB9, 5)
+#define S_UNK_0B9_6 BIT(scratch + 0xB9, 6)
+#define S_UNK_0B9_7 BIT(scratch + 0xB9, 7)
 #define S_ENEMY_ATK0_POWER *((s16 *)(scratch + 0xBA))  // 敵の攻撃0の威力
 #define S_ENEMY_ATK1_POWER *((s16 *)(scratch + 0xBC))  // 敵の攻撃1の威力
 #define S_ENEMY_ATK2_POWER *((s16 *)(scratch + 0xBE))  // 敵の攻撃2の威力
@@ -178,6 +218,14 @@
 #define S_PUSH_BACK_DIR *((u8 *)(scratch + 0x127))  // プレイヤーを押し戻す方向 (8方向 0〜7, 255 で無し)
 #define S_SABATA_TALK_TOGGLE *((u8 *)(scratch + 0x128))  // サバタの2種類の台詞を交互に出すトグル
 #define S_TORTURE_STEP *((u8 *)(scratch + 0x12C))  // 暗黒ローンのおしおき (発電) の進行段階
+#define S_UNK_12D_0 BIT(scratch + 0x12D, 0)
+#define S_UNK_12D_1 BIT(scratch + 0x12D, 1)
+#define S_UNK_12D_2 BIT(scratch + 0x12D, 2)
+#define S_UNK_12D_3 BIT(scratch + 0x12D, 3)
+#define S_UNK_12D_4 BIT(scratch + 0x12D, 4)
+#define S_UNK_12D_5 BIT(scratch + 0x12D, 5)
+#define S_UNK_12D_6 BIT(scratch + 0x12D, 6)
+#define S_UNK_12D_7 BIT(scratch + 0x12D, 7)
 #define S_TORTURE_PATTERN *((u8 *)(scratch + 0x12E))  // おしおきの発電パターン 0〜3
 #define S_UNK_12F *((u8 *)(scratch + 0x12F))
 #define S_UNK_130 *((s16 *)(scratch + 0x130))
@@ -186,10 +234,34 @@
 #define S_SPAWN_AREA_MAX_X *((s16 *)(scratch + 0x136))  // 敵を湧かせる範囲の x の最大
 #define S_SPAWN_AREA_MAX_Z *((s16 *)(scratch + 0x138))  // 敵を湧かせる範囲の z の最大
 #define S_UNK_13A *((u8 *)(scratch + 0x13A))
+#define S_UNK_13B_0 BIT(scratch + 0x13B, 0)
+#define S_UNK_13B_1 BIT(scratch + 0x13B, 1)
+#define S_UNK_13B_2 BIT(scratch + 0x13B, 2)
+#define S_UNK_13B_3 BIT(scratch + 0x13B, 3)
+#define S_UNK_13B_4 BIT(scratch + 0x13B, 4)
+#define S_UNK_13B_5 BIT(scratch + 0x13B, 5)
+#define S_UNK_13B_6 BIT(scratch + 0x13B, 6)
+#define S_UNK_13B_7 BIT(scratch + 0x13B, 7)
 #define S_MAP_TILE_MAP_ID *((u16 *)(scratch + 0x13C))  // 今のマップで読み込んだタイルマップのファイル ID
 #define S_BOOKSHELF_NO *((u8 *)(scratch + 0x13E))  // 最後に調べた本棚の番号 1〜10
+#define S_UNK_13F_0 BIT(scratch + 0x13F, 0)
+#define S_UNK_13F_1 BIT(scratch + 0x13F, 1)
+#define S_UNK_13F_2 BIT(scratch + 0x13F, 2)
+#define S_UNK_13F_3 BIT(scratch + 0x13F, 3)
+#define S_UNK_13F_4 BIT(scratch + 0x13F, 4)
+#define S_UNK_13F_5 BIT(scratch + 0x13F, 5)
+#define S_UNK_13F_6 BIT(scratch + 0x13F, 6)
+#define S_UNK_13F_7 BIT(scratch + 0x13F, 7)
 #define S_UNK_140 *((u8 *)(scratch + 0x140))
 #define S_UNK_141 *((u8 *)(scratch + 0x141))
+#define S_UNK_142_0 BIT(scratch + 0x142, 0)
+#define S_UNK_142_1 BIT(scratch + 0x142, 1)
+#define S_UNK_142_2 BIT(scratch + 0x142, 2)
+#define S_UNK_142_3 BIT(scratch + 0x142, 3)
+#define S_UNK_142_4 BIT(scratch + 0x142, 4)
+#define S_UNK_142_5 BIT(scratch + 0x142, 5)
+#define S_UNK_142_6 BIT(scratch + 0x142, 6)
+#define S_UNK_142_7 BIT(scratch + 0x142, 7)
 #define S_UNK_143 *((u8 *)(scratch + 0x143))
 #define S_UNK_144 *((s16 *)(scratch + 0x144))
 #define S_UNK_146 *((u8 *)(scratch + 0x146))
@@ -206,18 +278,42 @@
 #define S_UNK_155 *((u8 *)(scratch + 0x155))
 #define S_UNK_156 *((u8 *)(scratch + 0x156))
 #define S_UNK_157 *((u8 *)(scratch + 0x157))
+#define S_UNK_158_0 BIT(scratch + 0x158, 0)
+#define S_UNK_158_1 BIT(scratch + 0x158, 1)
+#define S_UNK_158_2 BIT(scratch + 0x158, 2)
+#define S_UNK_158_3 BIT(scratch + 0x158, 3)
+#define S_UNK_158_4 BIT(scratch + 0x158, 4)
+#define S_UNK_158_5 BIT(scratch + 0x158, 5)
+#define S_UNK_158_6 BIT(scratch + 0x158, 6)
+#define S_UNK_158_7 BIT(scratch + 0x158, 7)
 #define S_UNK_159 *((u8 *)(scratch + 0x159))
 #define S_UNK_15A *((u8 *)(scratch + 0x15A))
 #define S_UNK_15B *((u8 *)(scratch + 0x15B))
-#define S_ACTOR_POS_X *((s16 *)(scratch + 0x15C))  // NPC (Actor) を置く位置 x
-#define S_ACTOR_POS_Y *((s16 *)(scratch + 0x15E))  // NPC を置く位置 y
-#define S_ACTOR_POS_Z *((s16 *)(scratch + 0x160))  // NPC を置く位置 z
-#define S_ACTOR_ANGLE *((s16 *)(scratch + 0x162))  // NPC の向き (角度 0〜255)
-#define S_ACTOR_INIT_MODE *((s16 *)(scratch + 0x164))  // NPC の初期状態, 0: 立ち, 1: 非表示, 2: 経路を歩く
+#define S_NPC_POS_X *((s16 *)(scratch + 0x15C))  // NPC (NPC) を置く位置 x
+#define S_NPC_POS_Y *((s16 *)(scratch + 0x15E))  // NPC を置く位置 y
+#define S_NPC_POS_Z *((s16 *)(scratch + 0x160))  // NPC を置く位置 z
+#define S_NPC_ANGLE *((s16 *)(scratch + 0x162))  // NPC の向き (角度 0〜255)
+#define S_NPC_INIT_MODE *((s16 *)(scratch + 0x164))  // NPC の初期状態, 0: 立ち, 1: 非表示, 2: 経路を歩く
 #define S_UNK_166 *((u8 *)(scratch + 0x166))
 #define S_UNK_167 *((u8 *)(scratch + 0x167))
+#define S_UNK_168_0 BIT(scratch + 0x168, 0)
+#define S_UNK_168_1 BIT(scratch + 0x168, 1)
+#define S_UNK_168_2 BIT(scratch + 0x168, 2)
+#define S_UNK_168_3 BIT(scratch + 0x168, 3)
+#define S_UNK_168_4 BIT(scratch + 0x168, 4)
+#define S_UNK_168_5 BIT(scratch + 0x168, 5)
+#define S_UNK_168_6 BIT(scratch + 0x168, 6)
+#define S_UNK_168_7 BIT(scratch + 0x168, 7)
 #define S_UNK_169 *((u8 *)(scratch + 0x169))
 #define S_UNK_16A *((u8 *)(scratch + 0x16A))
+#define S_UNK_16B_0 BIT(scratch + 0x16B, 0)
+#define S_UNK_16B_1 BIT(scratch + 0x16B, 1)
+#define S_UNK_16B_2 BIT(scratch + 0x16B, 2)
+#define S_UNK_16B_3 BIT(scratch + 0x16B, 3)
+#define S_UNK_16B_4 BIT(scratch + 0x16B, 4)
+#define S_UNK_16B_5 BIT(scratch + 0x16B, 5)
+#define S_UNK_16B_6 BIT(scratch + 0x16B, 6)
+#define S_UNK_16B_7 BIT(scratch + 0x16B, 7)
 #define S_UNK_16C *((s16 *)(scratch + 0x16C))
 #define S_UNK_16E *((s16 *)(scratch + 0x16E))
 #define S_UNK_170 *((s16 *)(scratch + 0x170))
@@ -245,6 +341,14 @@
 #define S_PICKED_OWNED_ARMOR *((u8 *)(scratch + 0x18C))  // ownedArmorPick 番目の取得済み防具の ID
 #define S_EXCHANGE_ARMOR *((u8 *)(scratch + 0x18D))  // クロスオーバーポイントと交換で渡す防具の ID
 #define S_KURO_HOUSE_TALK_TOGGLE *((u8 *)(scratch + 0x18E))  // 家の中のクロの台詞を交互に出すトグル
+#define S_UNK_18F_0 BIT(scratch + 0x18F, 0)
+#define S_UNK_18F_1 BIT(scratch + 0x18F, 1)
+#define S_UNK_18F_2 BIT(scratch + 0x18F, 2)
+#define S_UNK_18F_3 BIT(scratch + 0x18F, 3)
+#define S_UNK_18F_4 BIT(scratch + 0x18F, 4)
+#define S_UNK_18F_5 BIT(scratch + 0x18F, 5)
+#define S_UNK_18F_6 BIT(scratch + 0x18F, 6)
+#define S_UNK_18F_7 BIT(scratch + 0x18F, 7)
 #define S_SAVED_PLAYER_DIR *((s16 *)(scratch + 0x190))  // 会話の前に保存したプレイヤーの向き, 会話のあとで向きを戻す
 #define S_UNK_192 *((u8 *)(scratch + 0x192))
 #define S_RITA_TALK_LOOP_LEN *((u8 *)(scratch + 0x193))  // リタの台詞ループの長さ (進行度で決まる)
@@ -288,6 +392,12 @@
 #define S_ZAJI_TALK_COUNT2 *((u8 *)(scratch + 0x1D4))  // 別の太陽街マップのザジの台詞を巡回させるカウンタ
 #define S_TAROT_CARD_COUNT *((u8 *)(scratch + 0x1D5))  // 持っているタロットカード (魔術師/教皇/隠者) の枚数
 #define S_UNK_1D6 *((s16 *)(scratch + 0x1D6))
+#define S_UNK_1D8_0 BIT(scratch + 0x1D8, 0)
+#define S_UNK_1D8_1 BIT(scratch + 0x1D8, 1)
+#define S_UNK_1D8_2 BIT(scratch + 0x1D8, 2)
+#define S_UNK_1D8_3 BIT(scratch + 0x1D8, 3)
+#define S_UNK_1D8_4 BIT(scratch + 0x1D8, 4)
+#define S_UNK_1D8_5 BIT(scratch + 0x1D8, 5)
 #define S_RESIDENT_TALK_COUNT2 *((u8 *)(scratch + 0x1D9))  // ルイスとマルチェロの雑談2を交互に出す共有カウンタ
 #define S_UNK_1DA *((s16 *)(scratch + 0x1DA))
 #define S_UNK_1DC *((s16 *)(scratch + 0x1DC))
@@ -303,9 +413,23 @@
 #define S_UNK_1EB *((u8 *)(scratch + 0x1EB))
 #define S_UNK_1EC *((u8 *)(scratch + 0x1EC))
 #define S_UNK_1ED *((u8 *)(scratch + 0x1ED))
+#define S_UNK_1EE_2 BIT(scratch + 0x1EE, 2)
+#define S_UNK_1EE_3 BIT(scratch + 0x1EE, 3)
+#define S_UNK_1EE_4 BIT(scratch + 0x1EE, 4)
+#define S_UNK_1EE_5 BIT(scratch + 0x1EE, 5)
+#define S_UNK_1EE_6 BIT(scratch + 0x1EE, 6)
+#define S_UNK_1EE_7 BIT(scratch + 0x1EE, 7)
 #define S_PIN_MATCHED *((u8 *)(scratch + 0x1EF))  // 時の家の暗証番号が一致したか (1: 一致)
 #define S_UNK_1F0 *((s16 *)(scratch + 0x1F0))
 #define S_PIN_DIGIT_IDX *((u8 *)(scratch + 0x1F2))  // 入力中の暗証番号の桁 0〜3
+#define S_UNK_1F7_0 BIT(scratch + 0x1F7, 0)
+#define S_UNK_1F7_1 BIT(scratch + 0x1F7, 1)
+#define S_UNK_1F7_2 BIT(scratch + 0x1F7, 2)
+#define S_UNK_1F7_3 BIT(scratch + 0x1F7, 3)
+#define S_UNK_1F7_4 BIT(scratch + 0x1F7, 4)
+#define S_UNK_1F7_5 BIT(scratch + 0x1F7, 5)
+#define S_UNK_1F7_6 BIT(scratch + 0x1F7, 6)
+#define S_UNK_1F7_7 BIT(scratch + 0x1F7, 7)
 #define S_PANEL_MOVE_LIMIT *((u8 *)(scratch + 0x1F8))  // パネル反転パズルの手数の上限
 #define S_PANEL_GRID_WIDTH *((u8 *)(scratch + 0x1F9))  // パネル反転パズルの盤面の幅 (3)
 #define S_PANEL_MOVE_COUNT *((u8 *)(scratch + 0x1FA))  // パネル反転パズルで押した回数
@@ -316,6 +440,8 @@
 #define S_UNK_200 *((s16 *)(scratch + 0x200))
 #define S_UNK_202 *((u8 *)(scratch + 0x202))
 #define S_CROSSOVER_HELP_ITEM *((u8 *)(scratch + 0x203))  // クロスオーバーバトルの説明メニューで選んだ項目
+#define S_UNK_204_0 BIT(scratch + 0x204, 0)
+#define S_UNK_204_1 BIT(scratch + 0x204, 1)
 #define S_MAX_FRIENDSHIP *((s16 *)(scratch + 0x206))  // 最も高い FRIENDSHIP の値 (候補を探す途中の最大値)
 
 #endif // __DATA_SCRIPTS_SCRATCH_H__

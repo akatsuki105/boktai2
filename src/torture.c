@@ -699,7 +699,7 @@ s32 Torture_Init(Torture* p) {
   return 0;
 }
 
-// 0xB3D1
+// 0xB3D1, HashName("おしおき部屋マネージャ")
 Torture* Torture_Create(void) {
   if (gTorture == NULL) {
     Torture* p = CreateEntity(ENTITY_UNK_8, sizeof(Torture));

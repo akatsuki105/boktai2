@@ -53,7 +53,7 @@ extern s32 gMapBlockH;
 // --------------------------------------------
 
 #define GAMEFLAG_NO_PAUSE (1 << 0)    // 0x1, 暴走やジャッジメント等の演出中にセット, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
-#define GAMEFLAG_UNK_8 (1 << 8)       // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
+#define GAMEFLAG_UNK_8 (1 << 8)       // 0x100, FUN_0809eacc と SkylightManager_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
 #define GAMEFLAG_CUTSCENE (1 << 9)    // 0x200, 原典の "デモ" 中 (Cmd_BeginCutscene / Cmd_EndCutscene が立てて落とす), カットシーンだけでなく会話中・マップ切り替え時も立つ
 #define GAMEFLAG_GAMEOVER (1 << 10)   // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
 #define GAMEFLAG_LINK (1 << 11)       // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)

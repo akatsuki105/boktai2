@@ -9,7 +9,7 @@ STEP(c92_s0) = {M(c92_s0_0), M(c92_s0_1), NULL};
 
 // step 1
 MSG(c92_s1_0, WAIT, BUS_WAIT(10));
-MSG(c92_s1_1, NOWAIT, ACTOR_TURN(TGT_ZAJI, 5));
+MSG(c92_s1_1, NOWAIT, NPC_TURN(TGT_ZAJI, 5));
 MSG(c92_s1_2, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
 STEP(c92_s1) = {M(c92_s1_0), M(c92_s1_1), M(c92_s1_2), NULL};
 
@@ -27,7 +27,7 @@ STEP(c92_s4) = {M(c92_s4_0), NULL};
 
 // step 5
 MSG(c92_s5_0, WAIT, BUS_WAIT(70));
-MSG(c92_s5_1, NOWAIT, TO_ACTOR(TGT_ZAJI, 16));
+MSG(c92_s5_1, NOWAIT, TO_NPC(TGT_ZAJI, 16));
 MSG_F(c92_s5_2, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, VO_ZAJI_IKUDE));
 STEP(c92_s5) = {M(c92_s5_0), M(c92_s5_1), M(c92_s5_2), NULL};
 
@@ -44,7 +44,7 @@ STEP(c92_s7) = {M(c92_s7_0), NULL};
 // step 8
 MSG(c92_s8_0, WAIT, BUS_WAIT(15));
 MSG_F(c92_s8_1, 7, NOWAIT, PLAYER_CHARGE_POSE(TGT_PLAYER, 0));
-MSG(c92_s8_2, NOWAIT, TO_ACTOR(TGT_ZAJI, 17));
+MSG(c92_s8_2, NOWAIT, TO_NPC(TGT_ZAJI, 17));
 STEP(c92_s8) = {M(c92_s8_0), M(c92_s8_1), M(c92_s8_2), NULL};
 
 // step 9
@@ -83,7 +83,7 @@ STEP(c92_s15) = {M(c92_s15_0), M(c92_s15_1), M(c92_s15_2), NULL};
 // step 16
 MSG(c92_s16_0, WAIT, BUS_WAIT(15));
 MSG_F(c92_s16_1, 7, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
-MSG(c92_s16_2, NOWAIT, ACTOR_TURN(TGT_ZAJI, 5));
+MSG(c92_s16_2, NOWAIT, NPC_TURN(TGT_ZAJI, 5));
 STEP(c92_s16) = {M(c92_s16_0), M(c92_s16_1), M(c92_s16_2), NULL};
 
 // step 17: ザジ「太陽魔法は月光魔法と違(ちご)てエナジーを使わへん…

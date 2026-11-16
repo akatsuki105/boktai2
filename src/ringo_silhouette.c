@@ -73,7 +73,7 @@ NON_MATCH s32 RingoSilhouette_Update(RingoSilhouette* p) {
 #endif
 }
 
-void Entity6978_SetRequest(u32 request, s32 count, u32* args);
+void ObjPlttController_SetRequest(u32 request, s32 count, u32* args);
 
 s32 RingoSilhouette_Destroy(RingoSilhouette* p) {
   Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
@@ -116,7 +116,7 @@ NON_MATCH s32 RingoSilhouette_Init(RingoSilhouette* p, u32 param_2) {
   args[2] = 31;
   args[3] = 31;
   args[4] = 31;
-  Entity6978_SetRequest(3, 5, args);
+  ObjPlttController_SetRequest(3, 5, args);
   for (i = 0; i < 16; i++) {
     for (j = 0; j < 16; j++) {
       p->pltt[i * 16 + j] = 0x1084;

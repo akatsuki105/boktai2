@@ -17,9 +17,9 @@ typedef struct {
   bool8 stateBegun;   // 0x19, state が変わるたび 1, 各ハンドラが最初のフレームで 0 に戻す
   u8 unk_1a[2];       // 0x1A, padding?
   u32 timer;          // 0x1C, 毎フレーム +1、state が変わると 0
-  s32 windowID;       // 0x20, TextPanel_Create の戻り値, なければ -1, _Destroy が TextPanel_Destroy に渡して解放する
+  s32 windowID;       // 0x20, MenuMessage_Create の戻り値, なければ -1, _Destroy が MenuMessage_Destroy に渡して解放する
   Tilemaps* tilemap;  // 0x24, TILEMAP_A413 or TILEMAP_CD91
-  u8* msgPc;          // 0x28, _Init 時点の VM_GetPC(), TextPanel_SetScript(windowID, msgPc) に渡す
+  u8* msgPc;          // 0x28, _Init 時点の VM_GetPC(), MenuMessage_SetScript(windowID, msgPc) に渡す
   s32 scriptID;       // 0x2C, '.r=0', state 3 が VM_ExecByID に渡す
 } CrossoverError;
 static_assert(sizeof(CrossoverError) == 48);
@@ -43,7 +43,7 @@ CrossoverError* CrossoverError_Get(void) { return sCrossoverError; }
 
 // テキストパネルとモザイクを片付けて, 描画パスを通常に戻す
 void CrossoverError_ResetVideo(CrossoverError* p) {
-  TextPanelManager_DestroyAll();
+  MenuMessageManager_DestroyAll();
   MosaicFader_Stop();
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON);
   Video_ResetFrameState(1);
@@ -92,12 +92,12 @@ void CrossoverError_UpdateFatal(CrossoverError* p) {
     CrossoverError_ResetVideo(p);
     CrossoverError_LoadFatalBG(p, 3);
     PlaySound_082406e0(SE_NG);
-    id = TextPanel_Create(1, 7, 28, 6);
+    id = MenuMessage_Create(1, 7, 28, 6);
     p->windowID = id;
     if (id >= 0) {
-      TextPanel_SetScript(id, p->msgPc);
-      TextPanel_SetMessage(p->windowID, 0);
-      TextPanel_Start(p->windowID);
+      MenuMessage_SetScript(id, p->msgPc);
+      MenuMessage_SetMessage(p->windowID, 0);
+      MenuMessage_Start(p->windowID);
     }
   }
   p->timer++;
@@ -113,12 +113,12 @@ void CrossoverError_UpdateRecoverable(CrossoverError* p) {
     CrossoverError_ResetVideo(p);
     FUN_0804e5bc();
     CrossoverError_LoadErrorBG(p, 13);
-    id = TextPanel_Create(1, 14, 28, 6);
+    id = MenuMessage_Create(1, 14, 28, 6);
     p->windowID = id;
     if (id >= 0) {
-      TextPanel_SetScript(id, p->msgPc);
-      TextPanel_SetMessage(p->windowID, 1);
-      TextPanel_Start(p->windowID);
+      MenuMessage_SetScript(id, p->msgPc);
+      MenuMessage_SetMessage(p->windowID, 1);
+      MenuMessage_Start(p->windowID);
     }
     PlaySound_082406e0(SE_NG);
   }
@@ -168,7 +168,7 @@ s32 CrossoverError_Update(CrossoverError* p) {
 }
 
 s32 CrossoverError_Destroy(CrossoverError* p) {
-  TextPanel_Destroy(p->windowID);
+  MenuMessage_Destroy(p->windowID);
   sCrossoverError = NULL;
   return 0;
 }

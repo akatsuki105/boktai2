@@ -128,7 +128,7 @@ _081DF1BC:
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl TextPanel_Create
+	bl MenuMessage_Create
 	movs r1, #0xb6
 	lsls r1, r1, #2
 	adds r4, r5, r1
@@ -137,12 +137,12 @@ _081DF1BC:
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #9
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	movs r1, #1
 	strb r1, [r6]
 _081DF222:

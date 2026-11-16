@@ -27,7 +27,7 @@ typedef struct {
   u16 animTimer;          // 0x178, 毎フレーム +1, u16_ARRAY_085ab598[animIdx] に達したら 0 に戻る
   u16 animIdx;            // 0x17A, 0..5 を巡回し、u16_ARRAY_085ab5a4[animIdx] を pltt[12] に書く
   rgb555 pltt[128];       // 0x17C, gObjPlttData + 0x2930 から 0x100 バイトコピー, sprites[].pltt が指す
-  s32 panelID;            // 0x27C, TextPanel_Destroy に渡る
+  s32 panelID;            // 0x27C, MenuMessage_Destroy に渡る
   u8* script;             // 0x280, '.r', NULL なら LinkMenu_Init が失敗する
 } LinkMenu;
 static_assert(sizeof(LinkMenu) == 644);
@@ -155,7 +155,7 @@ s32 LinkMenu_Destroy(LinkMenu* p) {
   }
 
   Marquee_RequestClose();
-  TextPanel_Destroy(p->panelID);
+  MenuMessage_Destroy(p->panelID);
   return 0;
 }
 

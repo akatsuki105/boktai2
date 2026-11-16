@@ -65,29 +65,31 @@ const u8 Str_0D25[] = _("<PROC=0>\n<END>");
 const u8 Str_0D26[] = _("<LABEL=SUMIRE>スミレ</LABEL>\n「あっ・・・カギ!\nそのカギでそうこがあくのよ」");
 const u8 Str_0D27[] = _("<LABEL=NONE></LABEL><PROC=1>「倉庫のカギ」を渡した!");
 const u8 Str_0D28[] = _("<PROC=0>\n<END>");
-const u8 Str_0D29[] = _("倉庫の扉が開いた!!");
+const u8 Str_WHUnlocked[] = _("倉庫の扉が開いた!!");
 const u8 Str_0D2A[] = _("<PROC=0>\n<END>");
 
-const u8 Str_0D2B[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボーイ!!");
+const u8 Str_KidShopOpen1[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボーイ!!");
 const u8 Str_0D2C[] = _("ウチの店で取りあつかってるの\nは、アイテムと防具だ。\nよろしく頼(たの)むぜ?」");
 const u8 Str_0D2D[] = _("<PROC=0>\n<END>");
 
-const u8 Str_0D2E[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボーイ!!");
+const u8 Str_KidShopOpen2[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボーイ!!");
 const u8 Str_0D2F[] = _("ん!?\n何か違(ちが)うな?\n・・・ま、いいか。");
 const u8 Str_0D30[] = _("ウチの店で取りあつかってるの\nは、アイテムと防具だ。\nよろしく頼(たの)むぜ?」");
 const u8 Str_0D31[] = _("<PROC=0>\n<END>");
 
-const u8 Str_0D32[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「無事帰ったか、<NAME>。");
+const u8 Str_ShaianShopOpen1[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「無事帰ったか、<NAME>。");
 const u8 Str_0D33[] = _("店の準備はできている。");
 const u8 Str_0D34[] = _("まだ品ぞろえは少ないが、スミ\nスと協力して新しい武器も増や\nしていくつもりだ。");
 const u8 Str_0D35[] = _("おまえの戦いに役立ててくれ」");
 const u8 Str_0D36[] = _("<PROC=0>\n<END>");
-const u8 Str_0D37[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「もう大丈夫(だいじょうぶ)な\nようだな、<NAME>。");
+
+const u8 Str_ShaianShopOpen2[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「もう大丈夫(だいじょうぶ)な\nようだな、<NAME>。");
 const u8 Str_0D38[] = _("店の準備はできている。");
 const u8 Str_0D39[] = _("まだ品ぞろえは少ないが、スミ\nスと協力して新しい武器も増や\nしていくつもりだ。");
 const u8 Str_0D3A[] = _("おまえの戦いに役立ててくれ」");
 const u8 Str_0D3B[] = _("<PROC=0>\n<END>");
-const u8 Str_0D3C[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「待っていたぞ。");
+
+const u8 Str_ShaianShopOpen3[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「待っていたぞ。");
 const u8 Str_0D3D[] = _("店の準備はできている。\nおまえの戦いに役立ててくれ」");
 const u8 Str_0D3E[] = _("<PROC=0>\n<END>");
 

@@ -264,7 +264,7 @@ _081DEE16:
 	ldr r1, [r6]
 	adds r1, #0x2c
 	adds r0, r5, #0
-	bl Entity4B15_ShowFixedMarker
+	bl LinkPlayerMarker_ShowFixed
 _081DEE2A:
 	adds r6, #4
 	adds r5, #1

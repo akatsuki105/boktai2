@@ -17,7 +17,7 @@ STEP(c118_s2) = {M(c118_s2_0), NULL};
 
 // step 3
 MSG(c118_s3_0, WAIT, BUS_WAIT(40));
-MSG(c118_s3_1, NOWAIT, ACTOR_TURN(TGT_SHAIAN, 1));
+MSG(c118_s3_1, NOWAIT, NPC_TURN(TGT_SHAIAN, 1));
 STEP(c118_s3) = {M(c118_s3_0), M(c118_s3_1), NULL};
 
 // step 4: シャイアン「よく来たな。 / Cmd_FadeOutBGM

@@ -6,7 +6,7 @@
 MSG(c50_s0_0, WAIT, BUS_WAIT(80));
 STEP(c50_s0) = {M(c50_s0_0), NULL};
 
-// step 1: シャイアン「自分の力を信じるんだ!! / Cmd_StartEntity3117PlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
+// step 1: シャイアン「自分の力を信じるんだ!! / Cmd_StartGenericObjPlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
 MSG(c50_s1_0, WAIT, BUS_EXEC_SCRIPT(25119));
 STEP(c50_s1) = {M(c50_s1_0), NULL};
 

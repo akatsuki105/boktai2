@@ -31,19 +31,19 @@ _081E5DE0:
 	lsls r1, r1, #5
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r2, _081E5EFC @ =0x00001604
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, _081E5F00 @ =0x00001608
 	adds r6, r7, r0
 	ldr r0, [r6]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r1, _081E5F04 @ =0x0000160C
 	adds r4, r7, r1
 	ldr r0, [r4]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r0, #3
@@ -64,13 +64,13 @@ _081E5DE0:
 	movs r1, #1
 	movs r2, #6
 	movs r3, #0x1c
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r2, _081E5F08 @ =0x000015F0
 	adds r2, r2, r7
 	mov sb, r2
 	ldr r1, [r2]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	adds r0, r7, #0
 	bl FUN_081e2e24
 	ldr r1, _081E5F0C @ =0x00000E28
@@ -105,16 +105,16 @@ _081E5DE0:
 	movs r1, #0
 	movs r2, #0xf
 	movs r3, #0x1e
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r6]
 	mov r2, sb
 	ldr r1, [r2]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r6]
 	movs r1, #0x12
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r6]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	movs r1, #0x80
 	lsls r1, r1, #9
 	mov r2, r8
@@ -150,7 +150,7 @@ _081E5F22:
 	adds r0, r7, r2
 	ldr r0, [r0]
 	movs r1, #0xc
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	b _081E5F88
 	.align 2, 0
 _081E5F40: .4byte 0x000015E2
@@ -160,7 +160,7 @@ _081E5F48:
 	adds r0, r7, r1
 	ldr r0, [r0]
 	movs r1, #0x17
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	b _081E5F88
 	.align 2, 0
 _081E5F58: .4byte 0x0000160C
@@ -174,7 +174,7 @@ _081E5F5C:
 	adds r0, r7, r1
 	ldr r0, [r0]
 	movs r1, #0xd
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	b _081E5F88
 	.align 2, 0
 _081E5F74: .4byte 0x000015E2
@@ -184,12 +184,12 @@ _081E5F7C:
 	adds r0, r7, r2
 	ldr r0, [r0]
 	movs r1, #0x18
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 _081E5F88:
 	ldr r1, _081E5FC0 @ =0x0000160C
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	adds r0, r7, #0
 	movs r1, #7
 	bl FUN_081e4c64

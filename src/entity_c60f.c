@@ -19,7 +19,7 @@ typedef u32 EntityC60FItemFlags;
 
 typedef struct {
   AuxSprite sprite;              // 0x000
-  AuxSpriteGfx gfx;              // 0x02C
+  AuxSpriteGfx gfx;              // 0x02C, SPRITE_LAVA_FLOOR or SPRITE_SPRING_863A
   Mover unk_48;                  // 0x048
   AuxAnimState anim;             // 0x08C
   Vec3 pos;                      // 0x09C, Hitbox_SetPos に渡す
@@ -423,12 +423,12 @@ NON_MATCH void Cmd_377D(void) {
 
   p->unk_109 = VM_GetNamedArgValue('m', 0);
   if (p->unk_109 == 0) {
-    Video_GetAuxSprite(&p->gfx, 0x4FDA);
+    Video_GetAuxSprite(&p->gfx, SPRITE_LAVA_FLOOR);
     AuxAnim_SetAnim(&p->anim, m->anim0, 0, 0, 0);
     p->state = 1;
     p->sprite.priority = 3;
   } else if (p->unk_109 == 1) {
-    Video_GetAuxSprite(&p->gfx, 0x863A);
+    Video_GetAuxSprite(&p->gfx, SPRITE_SPRING_863A);
     AuxAnim_SetAnim(&p->anim, m->anim1, 2, 0, 0);
     p->state = 2;
     p->flags |= 4;

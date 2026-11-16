@@ -7,7 +7,7 @@ MSG(c9_s0_0, WAIT, BUS_WAIT(30));
 STEP(c9_s0) = {M(c9_s0_0), NULL};
 
 // step 1
-MSG(c9_s1_0, NOWAIT, TO_ACTOR(TGT_OTNK, 6, 4));
+MSG(c9_s1_0, NOWAIT, TO_NPC(TGT_OTNK, 6, 4));
 MSG(c9_s1_1, WAIT, CAMERA_PAN_TO(TGT_CAM, 1664, 256, 1408, 45));
 STEP(c9_s1) = {M(c9_s1_0), M(c9_s1_1), NULL};
 
@@ -20,7 +20,7 @@ MSG(c9_s3_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c9_s3) = {M(c9_s3_0), NULL};
 
 // step 4
-MSG(c9_s4_0, NOWAIT, ACTOR_TURN(TGT_OTNK, 1));
+MSG(c9_s4_0, NOWAIT, NPC_TURN(TGT_OTNK, 1));
 MSG(c9_s4_1, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
 MSG(c9_s4_2, WAIT, CAMERA_PAN_TO(TGT_CAM, 1536, 256, 640, 45));
 STEP(c9_s4) = {M(c9_s4_0), M(c9_s4_1), M(c9_s4_2), NULL};
@@ -34,7 +34,7 @@ MSG(c9_s6_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c9_s6) = {M(c9_s6_0), NULL};
 
 // step 7
-MSG(c9_s7_0, NOWAIT, TO_ACTOR(TGT_OTNK, 7));
+MSG(c9_s7_0, NOWAIT, TO_NPC(TGT_OTNK, 7));
 MSG(c9_s7_1, WAIT, CAMERA_RELEASE(TGT_CAM, 60));
 STEP(c9_s7) = {M(c9_s7_0), M(c9_s7_1), NULL};
 

@@ -4,7 +4,7 @@
 
 // step 0
 MSG(c40_s0_0, WAIT, BUS_WAIT(50));
-MSG(c40_s0_1, NOWAIT, TO_ACTOR(TGT_SMITH, 33));
+MSG(c40_s0_1, NOWAIT, TO_NPC(TGT_SMITH, 33));
 MSG(c40_s0_2, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 4));
 STEP(c40_s0) = {M(c40_s0_0), M(c40_s0_1), M(c40_s0_2), NULL};
 
@@ -15,7 +15,7 @@ STEP(c40_s1) = {M(c40_s1_0), M(c40_s1_1), NULL};
 
 // step 2
 MSG(c40_s2_0, WAIT, TO_BUS(TGT_BUS, 1, 122, 260));
-MSG(c40_s2_1, NOWAIT, TO_ACTOR(TGT_SMITH, 33));
+MSG(c40_s2_1, NOWAIT, TO_NPC(TGT_SMITH, 33));
 MSG(c40_s2_2, NOWAIT, SOUND_PLAY_BGM(TGT_SOUND, BGM_NAKAMA2));
 STEP(c40_s2) = {M(c40_s2_0), M(c40_s2_1), M(c40_s2_2), NULL};
 
@@ -33,7 +33,7 @@ STEP(c40_s4) = {M(c40_s4_0), M(c40_s4_1), M(c40_s4_2), M(c40_s4_3), NULL};
 
 // step 5
 MSG(c40_s5_0, WAIT, BUS_WAIT(50));
-MSG(c40_s5_1, NOWAIT, TO_ACTOR(TGT_SMITH, 1, 1));
+MSG(c40_s5_1, NOWAIT, TO_NPC(TGT_SMITH, 1, 1));
 STEP(c40_s5) = {M(c40_s5_0), M(c40_s5_1), NULL};
 
 CUTSCENE(40) = {sStep_c40_s0, sStep_c40_s1, sStep_c40_s2, sStep_c40_s3, sStep_c40_s4, sStep_c40_s5, NULL};

@@ -322,7 +322,7 @@ void FUN_0807fed0(DjangoBerserk* p) {
 
   VEC3_SET(size, 30000, 30000, 30000);
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ACTOR | HBF_DAMAGE, 0, (u16)(1 << p->player->mover.unk_4), &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_NPC | HBF_DAMAGE, 0, (u16)(1 << p->player->mover.unk_4), &size, &offset);
   Hitbox_SetAttack(hitbox, p->player->maxHP >> 1, 50, 0, HBATTR_18, 50);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->player->mover.pos, 0);

@@ -20,11 +20,11 @@ typedef struct Entity08F4 {
   u16 unk_304;                                 // 0x304, Entity08F4_SavePltt が 0 を入れるだけ
   u16 unk_306;                                 // 0x306, 読み手も書き手も見つかっていない, padding?
   void (*updateCallback)(struct Entity08F4*);  // 0x308
-  u8* scriptPc;                                // 0x30C, Init が VM_GetPC_Proxy() を入れる, VM_ParseStringRef / TextPanel_SetScript に渡す
+  u8* scriptPc;                                // 0x30C, Init が VM_GetPC_Proxy() を入れる, VM_ParseStringRef / MenuMessage_SetScript に渡す
   u32 unk_310;                                 // 0x310, FUN_081db074 が bit0 を落とし、FUN_081db57c が立てる
-  s32 panelID0;                                // 0x314, TextPanel_Create(22, 4, 6, 2)
+  s32 panelID0;                                // 0x314, MenuMessage_Create(22, 4, 6, 2)
   u32 unk_318;                                 // 0x318, FUN_081db57c が初回だけの初期化を行うための番兵
-  s32 panelID1;                                // 0x31C, TextPanel_Create(20, 12, 8, 2)
+  s32 panelID1;                                // 0x31C, MenuMessage_Create(20, 12, 8, 2)
   u8 unk_320;                                  // 0x320, Init で 0
   u8 repeatTimer;                              // 0x321, 十字キーを押しっぱなしの間 0xC まで数え、離すと 0 に戻る
   u8 values[3];                                // 0x322, 各行の選択値, 左右で counts[i] を上限に巻き戻る
@@ -69,8 +69,8 @@ NAKED void FUN_081daff0(unknown* param_1) { INCFUNC("asm/func/FUN_081daff0.inc")
 NAKED void FUN_081db074(unknown* param_1) { INCFUNC("asm/func/FUN_081db074.inc"); }
 
 void Entity08F4_HidePanels(Entity08F4* p) {
-  TextPanel_Hide(p->panelID0);
-  TextPanel_Hide(p->panelID1);
+  MenuMessage_Hide(p->panelID0);
+  MenuMessage_Hide(p->panelID1);
 }
 
 NAKED void FUN_081db14c(unknown* param_1) { INCFUNC("asm/func/FUN_081db14c.inc"); }

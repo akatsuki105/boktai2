@@ -6,7 +6,7 @@
 MSG(c52_s0_0, WAIT, BUS_WAIT(80));
 STEP(c52_s0) = {M(c52_s0_0), NULL};
 
-// step 1: スミス「おまえまでわしを置いていくつもりなのか!? / Cmd_StartEntity3117PlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
+// step 1: スミス「おまえまでわしを置いていくつもりなのか!? / Cmd_StartGenericObjPlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
 MSG(c52_s1_0, WAIT, BUS_EXEC_SCRIPT(25121));
 STEP(c52_s1) = {M(c52_s1_0), NULL};
 

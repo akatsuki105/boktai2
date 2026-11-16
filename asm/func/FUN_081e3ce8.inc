@@ -23,18 +23,18 @@ _081E3D06:
 	ldr r1, _081E3D68 @ =0x000015F0
 	adds r6, r7, r1
 	ldr r1, [r6]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r5]
 	movs r1, #0
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r2, _081E3D6C @ =0x00001604
 	adds r4, r7, r2
 	ldr r0, [r4]
 	ldr r1, [r6]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #1
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r5]
 	ldr r1, _081E3D70 @ =0x030046A0
 	ldr r2, [r1]
@@ -49,9 +49,9 @@ _081E3D06:
 	movs r1, #2
 	bl FUN_0804a40c
 	ldr r0, [r5]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 _081E3D62:
 	pop {r4, r5, r6, r7}
 	pop {r0}

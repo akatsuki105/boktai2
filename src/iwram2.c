@@ -146,7 +146,7 @@ COMMON_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, Q6(1) が�
 
 COMMON_DATA s32 gBgBrightness2 = 0;  // 0x03004460, BG の明るさのもう一方の係数, gBgBrightness と独立に暗くしたい演出 (BgPlttDimmer 等) が使う
 
-COMMON_DATA rgb555 gObjPlttBlendColor = 0;  // 0x03004464, ApplyObjPlttBlend が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: Entity6978 / Entity4DDF などのフェード
+COMMON_DATA rgb555 gObjPlttBlendColor = 0;  // 0x03004464, ApplyObjPlttBlend が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: ObjPlttController / EndRollChara などのフェード
 
 COMMON_DATA u8 u8_03004466[2] = {};  // todo
 
@@ -156,10 +156,10 @@ COMMON_DATA s32 gGrayscaleTimer = 0;  // 0x0300446C
 
 COMMON_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: AllocParticlePlttSlot (2 個まで), AllocBlendPlttSlot (16 個まで)
 
-COMMON_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, ApplyObjPlttBlend のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
+COMMON_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, ApplyObjPlttBlend のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: ObjPlttController ('.params[4]')
 
 COMMON_DATA u8 u8_03004492[2] = {};     // todo
-COMMON_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, ApplyBgPlttBlend が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeIn (明転の完了時に RGB(4, 4, 4)), ResetPltt
+COMMON_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, ApplyBgPlttBlend が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: BgPlttController_FadeIn (明転の完了時に RGB(4, 4, 4)), ResetPltt
 COMMON_DATA u8 u8_03004496[2] = {};     // todo
 
 COMMON_DATA u8 gMosaicTargets = 0;            // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic

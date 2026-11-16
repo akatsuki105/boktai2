@@ -13,6 +13,7 @@
 
 // 水平方向 (H) か垂直方向 (V) のどちらか一方に動く床
 // 水平方向 は 移動床, 垂直方向 は 昇降床　と呼ぶようにすること
+// 太陽移動床が '.n' で渡す ID は HashName("移動床") = 0x4699
 
 typedef u16 ElevatorFlags;                  // Elevator.flags
 #define ELEVATOR_TILEOVERRIDE (1 << 0)      // tileOverride を登録済み

@@ -91,7 +91,7 @@ static_assert(sizeof(PropertyCubeManager) == 120);
 COMMON_DATA PropertyCubeManager* gPropertyCubeManager = NULL;  // 0x03002B38
 
 void MovableBlock_SpawnDust(Vec3* pos, s32 edgeOffset);
-void Entity99CA_CreateAt(Vec3* pos, s32 radius, s32 lifetime, s32 count, s32 kind);
+void SparkleEffect_CreateAt(Vec3* pos, s32 radius, s32 lifetime, s32 count, s32 kind);
 
 static s32 PropertyCube_OnFlame(PropertyCubeManager*, PropertyCube*);
 static s32 PropertyCube_OnFrost(PropertyCubeManager*, PropertyCube*);
@@ -496,7 +496,7 @@ void PropertyCube_UpdateState6(PropertyCubeManager* p, PropertyCube* cube, u32 i
     *v = cube->obj.pos;
     v->x += 0x40;
     v->z += 0x40;
-    Entity99CA_CreateAt(v, 144, 40, 8, 7);
+    SparkleEffect_CreateAt(v, 144, 40, 8, 7);
   }
 
   cube->unk_2a |= 0x10;

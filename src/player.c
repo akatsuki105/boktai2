@@ -95,7 +95,7 @@ COMMON_DATA PlayerMode gPlayerModes[4] = {};            // 0x03002BC0, Playerご
 COMMON_DATA u16 gSunMagicUsed = 0;                      // 0x03002BD0, Cmd_898D が 0 に戻す
 COMMON_DATA u8 u8_03002bd2[14] = {};                    // todo
 COMMON_DATA Player* gPlayerPtr[4] = {};                 // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-COMMON_DATA u16 gRisingSunCount = 0;                    // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
+COMMON_DATA u16 gRisingSunCount = 0;                    // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき SkylightManager_UpdateSingle が unk_29 を立てる
 COMMON_DATA u8 u8_03002bf2[2] = {};                     // todo
 COMMON_DATA u16 gChangeWolfBiting = 0;                  // 0x03002BF4, Player_Destroy が 0 に戻す
 COMMON_DATA u8 u8_03002bf6[2] = {};                     // todo
@@ -2966,7 +2966,7 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
       return p->action;
     }
 
-    if (m->unk_285 == 0) {
+    if (m->locked == 0) {
       if (id <= MAGIC_EARTH) {
         if (m->enchanted) {
           m->enchanted = FALSE;
@@ -3436,7 +3436,7 @@ void Player_SetupHurtbox(Player* p) {
 
   VEC3_SET(halfSize, Q8(0.196), Q8(0.497), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.497), 0);
-  Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 1 << p->inputIdx, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 1 << p->inputIdx, &halfSize, &offset);
   if (p->kind == PLAYER_SOLAR_DJANGO) {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_SOL, HBATTR_DARK);
   } else {
@@ -12946,21 +12946,21 @@ void Cmd_E9E2(void) {
   }
 }
 
-// 0x41D3
-void Cmd_41D3(void) {
+// 0x41D3, HashName("プレイヤー魔法ロック設定")
+void Cmd_LockPlayerMagic(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    gPlayerPtr[i]->magic.unk_285 = 1;
+    gPlayerPtr[i]->magic.locked = 1;
   }
 }
 
-// 0x8CFE
-void Cmd_8CFE(void) {
+// 0x8CFE, HashName("プレイヤー魔法ロック解除")
+void Cmd_UnlockPlayerMagic(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    gPlayerPtr[i]->magic.unk_285 = 0;
+    gPlayerPtr[i]->magic.locked = 0;
   }
 }
 
@@ -14141,7 +14141,7 @@ void Cmd_PlayerLand(void) {
   }
 }
 
-// 0x7A25, HashName("シングルプレイ")
+// 0x7A25
 void Cmd_KnockbackPlayer(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];

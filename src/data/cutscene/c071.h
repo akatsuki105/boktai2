@@ -17,7 +17,7 @@ STEP(c71_s2) = {M(c71_s2_0), NULL};
 
 // step 3
 MSG(c71_s3_0, WAIT, BUS_WAIT(10));
-MSG_F(c71_s3_1, 3, NOWAIT, TO_ACTOR(TGT_SUMIRE, 37));
+MSG_F(c71_s3_1, 3, NOWAIT, TO_NPC(TGT_SUMIRE, 37));
 STEP(c71_s3) = {M(c71_s3_0), M(c71_s3_1), NULL};
 
 // step 4: スミレ「良かったね、おにいちゃん♪」
@@ -30,7 +30,7 @@ STEP(c71_s5) = {M(c71_s5_0), NULL};
 
 // step 6
 MSG(c71_s6_0, WAIT, BUS_WAIT(3));
-MSG_F(c71_s6_1, 3, NOWAIT, TO_ACTOR(TGT_SUMIRE, 1, 3));
+MSG_F(c71_s6_1, 3, NOWAIT, TO_NPC(TGT_SUMIRE, 1, 3));
 STEP(c71_s6) = {M(c71_s6_0), M(c71_s6_1), NULL};
 
 // step 7: キッド「オマエがいないと、この街もつまんねーからな」
@@ -43,7 +43,7 @@ STEP(c71_s8) = {M(c71_s8_0), NULL};
 
 // step 9
 MSG(c71_s9_0, WAIT, BUS_WAIT(10));
-MSG_F(c71_s9_1, 3, NOWAIT, TO_ACTOR(TGT_RITA, 13));
+MSG_F(c71_s9_1, 3, NOWAIT, TO_NPC(TGT_RITA, 13));
 STEP(c71_s9) = {M(c71_s9_0), M(c71_s9_1), NULL};
 
 // step 10: リタ「<NAME>さま!!わたし・・・

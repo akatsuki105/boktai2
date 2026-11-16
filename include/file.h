@@ -13,7 +13,7 @@
 #define DIR_AUX_SPRITE 0x98F5             // 0x98F5, BOKHASH("cdt")?, Chara DaTa で意味的には矛盾しない
 #define DIR_COLLISION_MAP BOKHASH("hpk")  // 0xAE6C
 #define DIR_TILE_MAP BOKHASH("map")       // 0xC091
-#define DIR_MAIN_SPRITE 0xCB05            // 0xCB05, BOKHASH("boss")?, BOKHASH("oud")?
+#define DIR_MAIN_SPRITE BOKHASH("oud")    // 0xCB05, Obj Unit Data (generic_obj_unit.c が 汎用オブジェユニットマネージャ なので確定だろう)
 #define DIR_TILESET BOKHASH("ptn")        // 0xCEEF, tile PaTterN
 #define DIR_PARTICLE 0xCEAA               // 0xCEAA
 

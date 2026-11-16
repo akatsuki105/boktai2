@@ -92,7 +92,7 @@ Mover* Mover_FindByID_Proxy(u16 id) {
 
 Mover* Mover_FindInList_Proxy(Mover* p) { return Mover_FindInList(p); }
 
-// 0xBEC2, スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
+// 0xBEC2, HashName("コントロール位置取得"), スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
 s32 Cmd_GetMoverPos(void) {
   u8 buf[8];
   Mover* p = Mover_FindByID(VM_GetValue());
@@ -128,7 +128,7 @@ s32 MoverList_Init(MoverList* p, u32 id, u32 _) {
   return 0;
 }
 
-// 0xB8B9
+// 0xB8B9, HashName("コントロールマネージャ")
 MoverList* MoverList_Create(u32 id, u32 _) {
   if (sMoverList == NULL) {
     MoverList* p = CreateEntity(ENTITY_UNK_2, sizeof(MoverList));

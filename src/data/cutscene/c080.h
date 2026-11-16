@@ -8,7 +8,7 @@ STEP(c80_s0) = {M(c80_s0_0), NULL};
 
 // step 1
 MSG_F(c80_s1_0, 3, WAIT, BUS_WAIT(40));
-MSG_F(c80_s1_1, 3, NOWAIT, ACTOR_TURN(TGT_SUMIRE, 5));
+MSG_F(c80_s1_1, 3, NOWAIT, NPC_TURN(TGT_SUMIRE, 5));
 MSG_F(c80_s1_2, 3, NOWAIT, PLAYER_TURN(TGT_PLAYER, 1));
 STEP(c80_s1) = {M(c80_s1_0), M(c80_s1_1), M(c80_s1_2), NULL};
 
@@ -26,12 +26,12 @@ STEP(c80_s4) = {M(c80_s4_0), NULL};
 
 // step 5
 MSG_F(c80_s5_0, 3, WAIT, BUS_WAIT(100));
-MSG_F(c80_s5_1, 3, NOWAIT, ACTOR_TURN(TGT_SUMIRE, 1));
+MSG_F(c80_s5_1, 3, NOWAIT, NPC_TURN(TGT_SUMIRE, 1));
 STEP(c80_s5) = {M(c80_s5_0), M(c80_s5_1), NULL};
 
 // step 6
 MSG(c80_s6_0, WAIT, BUS_WAIT(15));
-MSG_F(c80_s6_1, 3, NOWAIT, ACTOR_TURN(TGT_SUMIRE, 5));
+MSG_F(c80_s6_1, 3, NOWAIT, NPC_TURN(TGT_SUMIRE, 5));
 STEP(c80_s6) = {M(c80_s6_0), M(c80_s6_1), NULL};
 
 // step 7: これあげる!」

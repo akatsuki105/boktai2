@@ -338,7 +338,7 @@ s32 Cmd_BackupState(void) {
 // 退避領域に残っている変数の値を返す
 u32 Cmd_GetBackupValue(void) { return FUN_082321e0(VM_GetPC()); }
 
-// 0xA222
+// 0xA222, HashName("システムデータロード")
 // システムデータを読み込み、読めなかったら初期値で作り直す
 // 残差2件: 原典は ok が入ったレジスタを 0 の供給元として使い回すが、こちらは movs r2, #0 を別に作る。そのぶん ok と gSystemSaveData のポインタの割り当てが r4/r5 で逆になる
 // 値をアドレスより先に作る順序は、 textSpeed と calibration を static inline の setter 経由にすると消えた (それだけでは一致しないので直接アクセスに戻した)。Tier A-C 試済

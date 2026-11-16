@@ -4,7 +4,7 @@
 	adds r6, r1, #0
 	adds r7, r2, #0
 	mov r8, r3
-	bl TextPanel_FindByID
+	bl MenuMessage_FindByID
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _0804A298
@@ -17,7 +17,7 @@ _0804A298:
 	str r6, [r5, #0x10]
 	adds r0, r5, #0
 	movs r1, #0
-	bl TextPanel_LookupText
+	bl MenuMessage_LookupText
 	str r0, [r4, #0x1c]
 	mov r0, r8
 	strh r0, [r5, #0x14]

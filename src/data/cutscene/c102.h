@@ -6,7 +6,7 @@
 MSG(c102_s0_0, NOWAIT, BUS_WAIT(2));
 MSG_F(c102_s0_1, 1, NOWAIT, TO_PLAYER(TGT_SABATA, 4, 5));
 MSG(c102_s0_2, WAIT, PLAYER_MOVE_TO(TGT_PLAYER, 2688, 256, 3968));
-MSG(c102_s0_3, NOWAIT, ACTOR_TURN(TGT_OTNK, 4));
+MSG(c102_s0_3, NOWAIT, NPC_TURN(TGT_OTNK, 4));
 MSG(c102_s0_4, NOWAIT, CAMERA_PAN_TO(TGT_CAM2, 2818, 408, 3898, 80));
 STEP(c102_s0) = {M(c102_s0_0), M(c102_s0_1), M(c102_s0_2), M(c102_s0_3), M(c102_s0_4), NULL};
 
@@ -25,7 +25,7 @@ STEP(c102_s3) = {M(c102_s3_0), M(c102_s3_1), NULL};
 
 // step 4
 MSG(c102_s4_0, WAIT, BUS_WAIT(30));
-MSG(c102_s4_1, NOWAIT, ACTOR_TURN(TGT_OTNK, 3));
+MSG(c102_s4_1, NOWAIT, NPC_TURN(TGT_OTNK, 3));
 STEP(c102_s4) = {M(c102_s4_0), M(c102_s4_1), NULL};
 
 // step 5
@@ -91,7 +91,7 @@ MSG(c102_s17_0, WAIT, BUS_WAIT(100));
 MSG(c102_s17_1, NOWAIT, EFFECT_FADE(TGT_EFFECT, 0, 6, 31, 31, 31, 1, 1, 1, 0));
 STEP(c102_s17) = {M(c102_s17_0), M(c102_s17_1), NULL};
 
-// step 18: Cmd_StartEntity3117Move, Cmd_FreeTileOverrides, Cmd_PlayTrackedSound, Cmd_Delay / おてんこさま「大丈夫(だいじょうぶ)か、サバタ!!」
+// step 18: Cmd_MoveGenericObj, Cmd_FreeTileOverrides, Cmd_PlayTrackedSound, Cmd_Delay / おてんこさま「大丈夫(だいじょうぶ)か、サバタ!!」
 MSG(c102_s18_0, WAIT, BUS_EXEC_SCRIPT(58202));
 STEP(c102_s18) = {M(c102_s18_0), NULL};
 
@@ -157,15 +157,15 @@ MSG(c102_s32_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c102_s32) = {M(c102_s32_0), NULL};
 
 // step 33
-MSG(c102_s33_0, WAIT, ACTOR_MOVE_TO(TGT_OTNK, 2688, 256, 3378));
+MSG(c102_s33_0, WAIT, NPC_MOVE_TO(TGT_OTNK, 2688, 256, 3378));
 STEP(c102_s33) = {M(c102_s33_0), NULL};
 
 // step 34
-MSG(c102_s34_0, WAIT, ACTOR_MOVE_TO(TGT_OTNK, 2688, 256, 3328));
+MSG(c102_s34_0, WAIT, NPC_MOVE_TO(TGT_OTNK, 2688, 256, 3328));
 STEP(c102_s34) = {M(c102_s34_0), NULL};
 
 // step 35
-MSG(c102_s35_0, WAIT, TO_ACTOR(TGT_OTNK, 0));
+MSG(c102_s35_0, WAIT, TO_NPC(TGT_OTNK, 0));
 MSG(c102_s35_1, NOWAIT, SOUND_PAUSE_BGM(TGT_SOUND, 4));
 STEP(c102_s35) = {M(c102_s35_0), M(c102_s35_1), NULL};
 

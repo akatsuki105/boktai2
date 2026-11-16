@@ -3,7 +3,7 @@
 #include "video.h"
 #include "vm.h"
 
-bool32 FUN_0800271c(void);
+bool32 BgPlttController_IsPlttUpdated(void);
 
 // BGパレットバンク2の色1〜12を3色ずつ4グループに分け、グループ単位でバンク3の色へクロスフェードさせる
 // 下地は savedPltt (バンク2の退避), 行き先は gBgPlttBuffer[0x30 + i] で、level がその配合比になる
@@ -78,7 +78,7 @@ s32 BgPlttGroupFader_Update(BgPlttGroupFader* p) {
   s32 i;
   s32 mask;
 
-  if (FUN_0800271c()) {
+  if (BgPlttController_IsPlttUpdated()) {
     BgPlttGroupFader_SavePltt(p);
   }
   if (p->mode == 2) {

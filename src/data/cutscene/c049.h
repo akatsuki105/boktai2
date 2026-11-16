@@ -7,7 +7,7 @@ MSG(c49_s0_0, WAIT, BUS_WAIT(30));
 MSG(c49_s0_1, NOWAIT, SOUND_PLAY_BGM(TGT_SOUND, BGM_NAKAMA2));
 STEP(c49_s0) = {M(c49_s0_0), M(c49_s0_1), NULL};
 
-// step 1: レディ「あきらめてはダメ!! / Cmd_StartEntity3117PlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
+// step 1: レディ「あきらめてはダメ!! / Cmd_StartGenericObjPlttFade, Cmd_PlayTrackedSound, Cmd_Delay / Scr_EndCutscene / (ここでカットシーンが終わる)
 MSG(c49_s1_0, WAIT, BUS_EXEC_SCRIPT(25118));
 STEP(c49_s1) = {M(c49_s1_0), NULL};
 

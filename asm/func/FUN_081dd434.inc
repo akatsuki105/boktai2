@@ -33,17 +33,17 @@
 	movs r1, #1
 	movs r2, #7
 	movs r3, #0x1c
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r2, _081DD520 @ =0x0000083C
 	adds r1, r6, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #4
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	movs r3, #0xc4
 	lsls r3, r3, #3
 	adds r2, r6, r3

@@ -24,8 +24,8 @@ typedef struct {
   char lines[4][256];    // 0x042, chars を 6 文字ずつ並べた4行の文字列, 文字表の 45 番以降の文字は <WEIGHT> で囲む
   u8 unk_442[2];         // 0x442
   char* charTable;       // 0x444, '.c' の文字列, 1 文字 2 バイトで chars の値を引く
-  u8* msgPc;             // 0x448, '.d' の位置, テキストパネルの TextPanel_SetScript に渡す
-  s32 windowIDs[3];      // 0x44C, TextPanel_Create の戻り値, _Destroy が TextPanel_Destroy に渡す
+  u8* msgPc;             // 0x448, '.d' の位置, テキストパネルの MenuMessage_SetScript に渡す
+  s32 windowIDs[3];      // 0x44C, MenuMessage_Create の戻り値, _Destroy が MenuMessage_Destroy に渡す
   TilemapFile* tilemap;  // 0x458, TILEMAP_33B2
   rgb555* pltt;          // 0x45C, BGP_E9C3 の本体, gBgPlttBuffer へ写す
 } PasswordScreen;
@@ -174,7 +174,7 @@ s32 PasswordScreen_Destroy(PasswordScreen* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    TextPanel_Destroy(p->windowIDs[i]);
+    MenuMessage_Destroy(p->windowIDs[i]);
   }
 
   return 0;
@@ -231,34 +231,34 @@ s32 PasswordScreen_Init(PasswordScreen* p) {
   PasswordScreen_SetupBG(p, 12);
 
   windowID = &p->windowIDs[0];
-  *windowID = TextPanel_Create(2, 5, 28, 2);
+  *windowID = MenuMessage_Create(2, 5, 28, 2);
   if (*windowID < 0) {
     return -1;
   }
   for (j = 0; j < 4; j++) {
     FUN_0804a40c(*windowID, j, p->lines[j]);
   }
-  TextPanel_SetScript(*windowID, p->msgPc);
-  TextPanel_SetMessage(*windowID, 0);
-  TextPanel_Start(*windowID);
+  MenuMessage_SetScript(*windowID, p->msgPc);
+  MenuMessage_SetMessage(*windowID, 0);
+  MenuMessage_Start(*windowID);
 
   windowID = &p->windowIDs[1];
-  *windowID = TextPanel_Create(6, 17, 28, 1);
+  *windowID = MenuMessage_Create(6, 17, 28, 1);
   if (*windowID < 0) {
     return -1;
   }
-  TextPanel_SetScript(*windowID, p->msgPc);
-  TextPanel_SetMessage(*windowID, 1);
-  TextPanel_Start(*windowID);
+  MenuMessage_SetScript(*windowID, p->msgPc);
+  MenuMessage_SetMessage(*windowID, 1);
+  MenuMessage_Start(*windowID);
 
   windowID = &p->windowIDs[2];
-  *windowID = TextPanel_Create(2, 11, 28, 2);
+  *windowID = MenuMessage_Create(2, 11, 28, 2);
   if (*windowID < 0) {
     return -1;
   }
-  TextPanel_SetScript(*windowID, p->msgPc);
-  TextPanel_SetMessage(*windowID, 2);
-  TextPanel_Start(*windowID);
+  MenuMessage_SetScript(*windowID, p->msgPc);
+  MenuMessage_SetMessage(*windowID, 2);
+  MenuMessage_Start(*windowID);
 
   f = GetBgPlttFile(BGP_519C);
   if (f == NULL) {

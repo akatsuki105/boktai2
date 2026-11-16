@@ -11,12 +11,12 @@
 	subs r2, #0x18
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #2
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	ldr r0, _081E6520 @ =0x0000162A
 	adds r1, r5, r0
 	movs r2, #0

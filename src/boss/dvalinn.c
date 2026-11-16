@@ -2577,7 +2577,7 @@ void Dvalinn_InitHurtbox(Dvalinn* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Dvalinn_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_FROST, HBATTR_FLAME);
@@ -3056,8 +3056,8 @@ Dvalinn* Dvalinn_Create(u32 id) {
   return p;
 }
 
-// state 3 の処理へ切り替える
-void Cmd_15A9(void) {
+// 0x15A9, HashName("ドヴァリン戦闘開始"), Dvalinn_Create の直後に呼ばれ, 潜って姿を消した state 3 から戦闘を始める
+void Cmd_StartDvalinnBattle(void) {
   Dvalinn* p = gDvalinn;
   Boss_RequestState(&p->base, 3);
   Boss_SetSubStates(&p->base, 0, 0, 0);

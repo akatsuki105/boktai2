@@ -33,24 +33,24 @@
 	ldr r2, _081E6250 @ =0x0000160C
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl TextPanel_Hide
+	bl MenuMessage_Hide
 	ldr r0, [r4]
 	movs r1, #6
 	str r1, [sp]
 	movs r1, #1
 	movs r2, #7
 	movs r3, #0x1c
-	bl TextPanel_SetRect
+	bl MenuMessage_SetRect
 	ldr r0, [r4]
 	ldr r3, _081E6254 @ =0x000015F4
 	adds r1, r6, r3
 	ldr r1, [r1]
-	bl TextPanel_SetScript
+	bl MenuMessage_SetScript
 	ldr r0, [r4]
 	movs r1, #6
-	bl TextPanel_SetMessage
+	bl MenuMessage_SetMessage
 	ldr r0, [r4]
-	bl TextPanel_Start
+	bl MenuMessage_Start
 	bl LinkShopManager_StopLinkWatch
 	movs r0, #1
 	bl Sound_FadeOutBGM

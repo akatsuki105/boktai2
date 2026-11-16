@@ -110,14 +110,14 @@ void Spider_OnHit(Hitbox* a, Hitbox* b, Spider* p) {
   }
 }
 
-// 食らい判定, ACTOR 以外の攻撃は高さの差の半分だけずらした攻撃位置が自分の xz の箱に入るときだけ攻撃側の fn を呼んでから受ける
+// 食らい判定, NPC 以外の攻撃は高さの差の半分だけずらした攻撃位置が自分の xz の箱に入るときだけ攻撃側の fn を呼んでから受ける
 // 1503/1505命令, 原典は a を sb / b を r8 に置く (こちらは逆), 残りは Crow_OnHurt と同じ共通処理の残差
 NON_MATCH void Spider_OnHurt(Hitbox* a, Hitbox* b, Spider* p) {
 #ifdef NONMATCHING_C
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBF_ACTOR)) {
+  if (Hitbox_TestFlags(a, HBF_NPC)) {
     Enemy_HandleHurt(a, b, &p->e);
   } else {
     Vec3 v;
@@ -646,7 +646,7 @@ void Spider_InitHitboxes(Spider* p) {
 
   VEC3_SET(hurtSize, 128, 128, 128);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE);
   VEC3_SET(hitSize, 64, 100, 64);
   VEC3_SET(hitOffset, 0, 128, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Spider_OnHit, 0, p);

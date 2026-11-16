@@ -4,18 +4,18 @@
 
 // step 0
 MSG_F(c94_s0_0, 3, WAIT, PLAYER_MOVE_TO(TGT_PLAYER, 4992, 768, 2944));
-MSG_F(c94_s0_1, 3, NOWAIT, ACTOR_MOVE_TO(TGT_OTNK, 4992, 768, 2816));
+MSG_F(c94_s0_1, 3, NOWAIT, NPC_MOVE_TO(TGT_OTNK, 4992, 768, 2816));
 STEP(c94_s0) = {M(c94_s0_0), M(c94_s0_1), NULL};
 
 // step 1
 MSG_F(c94_s1_0, 3, WAIT, BUS_WAIT(40));
-MSG_F(c94_s1_1, 3, NOWAIT, ACTOR_TURN(TGT_KID, 3));
+MSG_F(c94_s1_1, 3, NOWAIT, NPC_TURN(TGT_KID, 3));
 MSG_F(c94_s1_2, 3, NOWAIT, PLAYER_TURN(TGT_PLAYER, 7));
 STEP(c94_s1) = {M(c94_s1_0), M(c94_s1_1), M(c94_s1_2), NULL};
 
 // step 2
 MSG(c94_s2_0, WAIT, BUS_WAIT(10));
-MSG_F(c94_s2_1, 3, NOWAIT, ACTOR_TURN(TGT_OTNK, 7));
+MSG_F(c94_s2_1, 3, NOWAIT, NPC_TURN(TGT_OTNK, 7));
 STEP(c94_s2) = {M(c94_s2_0), M(c94_s2_1), NULL};
 
 // step 3: キッド「来たな、ボーイ!!
@@ -27,17 +27,17 @@ MSG(c94_s4_0, NOWAIT, BUS_WAIT_EXT());
 STEP(c94_s4) = {M(c94_s4_0), NULL};
 
 // step 5
-MSG_F(c94_s5_0, 3, WAIT, ACTOR_TURN(TGT_KID, 7));
+MSG_F(c94_s5_0, 3, WAIT, NPC_TURN(TGT_KID, 7));
 STEP(c94_s5) = {M(c94_s5_0), NULL};
 
 // step 6
-MSG_F(c94_s6_0, 3, WAIT, ACTOR_MOVE_TO(TGT_KID, 4480, 768, 2944));
+MSG_F(c94_s6_0, 3, WAIT, NPC_MOVE_TO(TGT_KID, 4480, 768, 2944));
 MSG_F(c94_s6_1, 3, NOWAIT, SOUND_PLAY(TGT_SOUND, SE_FSTEP_M_0));
 STEP(c94_s6) = {M(c94_s6_0), M(c94_s6_1), NULL};
 
 // step 7
 MSG(c94_s7_0, WAIT, BUS_WAIT(60));
-MSG_F(c94_s7_1, 3, NOWAIT, TO_ACTOR(TGT_KID, 0));
+MSG_F(c94_s7_1, 3, NOWAIT, TO_NPC(TGT_KID, 0));
 STEP(c94_s7) = {M(c94_s7_0), M(c94_s7_1), NULL};
 
 CUTSCENE(94) = {sStep_c94_s0, sStep_c94_s1, sStep_c94_s2, sStep_c94_s3, sStep_c94_s4, sStep_c94_s5, sStep_c94_s6, sStep_c94_s7, NULL};

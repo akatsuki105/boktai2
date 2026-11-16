@@ -399,7 +399,7 @@ Four positions, cheapest first:
   `include/global.h` includes `macro.h`, so every file that includes
   `global.h` already has them — no extra `#include` is needed.
   Reach for them before inventing a flag accessor or a mask local. Examples:
-  `Entity5CCC_AddEneCharge` (`TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)`),
+  `SkylightManager_AddEneCharge` (`TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)`),
   `Player_ApplyDarkbug` (`TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)`), the
   `SET_FLAGS(p->flags, …)` calls in `src/title.c`. `TEST_FLAGS` yields the masked
   value, not a 0/1; where a 0/1 argument is needed the replacement used
@@ -463,7 +463,7 @@ so a third file could call it changed the register allocation of
 `GameOverManager_StateShowLogo` in `src/gameover.c`, which neither calls it nor
 mentions `gStagedDISPCNT`. Merely being declared in an included header is enough.
 Define the helper per translation unit instead (`src/forge_ef6f.c` keeps its
-own copy of `HideBG` for this reason, and `src/entity_5ccc.c` keeps its own
+own copy of `HideBG` for this reason, and `src/skylight.c` keeps its own
 `TileHeightAt` after moving `src/collision_map.c`'s into `include/collision_map.h`
 perturbed `Player_ResetGlobals` in `src/player.c`). For flag operations this does not
 come up: use the macros in `include/macro.h`, which reach every file through

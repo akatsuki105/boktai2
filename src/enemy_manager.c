@@ -798,6 +798,7 @@ void Cmd_62AA(void) {
   }
 }
 
+// 0x4FD1, HashName("敵休止オン")?, 生きている敵 (ENEFLAG5_UNK_8 が立っているもの) をサブ状態 2 に入れて止める, カットシーンの開始で呼ばれる
 // 95/99 命令, gEnemyListHead を読む位置と定数の持ち方が違う (Cmd_62AA と同じ inline で近づく)
 NON_MATCH void Cmd_4FD1(void) {
 #ifdef NONMATCHING_C
@@ -1009,8 +1010,8 @@ Enemy* FindEnemyById(u32 id) {
   return NULL;
 }
 
-// スクリプトが指定した敵が生存している (hp > 0) かを返す
-bool32 Cmd_E019(void) {
+// 0xE019, HashName("敵生死判定"), スクリプトが指定した敵が生存している (hp > 0) かを返す
+bool32 Cmd_IsEnemyAlive(void) {
   u32 id = VM_GetValue();
   Enemy* p;
   bool32 alive;
@@ -1720,8 +1721,8 @@ void Cmd_B3D7(void) {
   }
 }
 
-// 敵を指定座標へ置いて足元の床へ合わせる
-void Cmd_C7DC(void) {
+// 0xC7DC, HashName("敵座標変更"), 敵を指定座標へ置いて足元の床へ合わせる
+void Cmd_SetEnemyPos(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   Enemy* p;
   s32 height;
@@ -1747,9 +1748,9 @@ void Cmd_C7DC(void) {
   p->mover.pos.y = p->floorY;
 }
 
-// '.N' の敵の索敵範囲/攻撃/HP などの能力値をスクリプトの値で上書きする, 負の値の項目は変えない
+// 0xF200, HashName("敵パラメータ変更"), '.N' の敵の索敵範囲/攻撃/HP などの能力値をスクリプトの値で上書きする, 負の値の項目は変えない
 // 392/393 命令, p とループ変数のレジスタ割当が違う
-NON_MATCH void Cmd_F200(void) {
+NON_MATCH void Cmd_SetEnemyParams(void) {
 #ifdef NONMATCHING_C
   s32 id = VM_GetNamedArgValue('N', 0);
   Enemy* p;
@@ -1877,7 +1878,7 @@ NON_MATCH void Cmd_F200(void) {
     p->unk_25a = VM_GetNamedArgValue('K', 2);
   }
 #else
-  INCFUNC("asm/func/Cmd_F200.inc");
+  INCFUNC("asm/func/Cmd_SetEnemyParams.inc");
 #endif
 }
 
