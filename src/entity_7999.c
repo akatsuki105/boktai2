@@ -16,13 +16,13 @@
 // 通信対戦関連?
 typedef struct Entity7999 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
-  Tilemaps* tilemap;                           // 0x018, TILEMAP_CD91
+  Tilemaps* tilemap;                           // 0x018, MP_CD91
   rgb555* bgp;                                 // 0x01C, bg_link_col_arr
   MainSprite sprites[5];                       // 0x020, FUN_081da468 が stride 0x60 で pos を書き換える5枚
-  MainSpriteGfx gfxLink;                       // 0x200, SPRITE_UI_LINK
-  MainSpriteGfx gfxIcon;                       // 0x220, SPRITE_INVENTORY_ICONS
-  MainSpriteGfxFile* fileLink;                 // 0x240, SPRITE_UI_LINK
-  MainSpriteGfxFile* fileIcon;                 // 0x244, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx gfxLink;                       // 0x200, SPR_UI_LINK
+  MainSpriteGfx gfxIcon;                       // 0x220, SPR_INVENTORY_ICONS
+  MainSpriteGfxFile* fileLink;                 // 0x240, SPR_UI_LINK
+  MainSpriteGfxFile* fileIcon;                 // 0x244, SPR_INVENTORY_ICONS
   rgb555 savedPltt[16];                        // 0x248, _SavePltt が gObjPlttData + 0x2930 から16色コピーする
   u16 unk_268;                                 // 0x268, _SavePltt が 0 を入れる
   u8 unk_26a[2];                               // 0x26A, 読み手も書き手も見つかっていない, padding?
@@ -196,7 +196,7 @@ void FUN_081d9f3c(Entity7999* p) {
 }
 
 void Entity7999_InitBG(Entity7999* p) {
-  TilemapFile* f = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  TilemapFile* f = GetFile(DIR_TILE_MAP, MP_CD91);
   s32 param;
 
   p->tilemap = f;
@@ -374,9 +374,9 @@ static void Entity7999_HidePanels(Entity7999* p) {
 void Entity7999_InitSprites(Entity7999* p) {
   s32 i;
 
-  p->fileLink = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  p->fileLink = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   OpenMainSpriteFile(&p->gfxLink, p->fileLink);
-  p->fileIcon = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  p->fileIcon = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   OpenMainSpriteFile(&p->gfxIcon, p->fileIcon);
   for (i = 0; i < 5; i++) {
     MainSpriteGfx* gfx;

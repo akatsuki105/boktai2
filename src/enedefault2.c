@@ -80,7 +80,7 @@ void FUN_080f9ee0(Enemy* p) {
 
 // 残差はレジスタ割当のみ (377/377), 原典は &playerMover を r5, &flags3 を r8 に置きスタックを使わない, こちらは 4 バイト退避する
 // idx の三項演算子, Mover* のローカル化, TEST_FLAGS は試済
-NON_MATCH s32 FUN_080f9f20(Enemy* p) {
+NON_MATCH bool8 FUN_080f9f20(Enemy* p) {
 #ifdef NONMATCHING_C
   s32 idx;
 
@@ -97,7 +97,7 @@ NON_MATCH s32 FUN_080f9f20(Enemy* p) {
   if (!TEST_FLAGS(gPlayerModes[idx], PMODE_UNK_3)) {
     return FALSE;
   }
-  if (p->flags3 & (ENEFLAG3_UNK_15 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_0)) {
+  if (p->flags3 & (ENEFLAG3_UNK_15 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_5 | ENEFLAG3_PETRIFIED | ENEFLAG3_STUN | ENEFLAG3_ASLEEP)) {
     return FALSE;
   }
   if (*(u32*)&p->jumpVel != 0 || p->jumpVel.z != 0) {
@@ -162,7 +162,7 @@ NON_MATCH s32 FUN_080f9f20(Enemy* p) {
 }
 
 // param_3 が今の対象なら TRUE, unk_220 の待ちが残っていれば FALSE, それ以外は pos が標的のプレイヤーより遠くなければ TRUE
-s32 FUN_080fa2ac(Enemy* p, Vec3* pos, u32 param_3) {
+bool8 FUN_080fa2ac(Enemy* p, Vec3* pos, u32 param_3) {
   Vec3 d;
   s32 distSelf;
 
@@ -207,7 +207,7 @@ NON_MATCH s32 Enemy_TryHeadToSound(Enemy* p) {
 
   Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
   if (!TEST_FLAGS(p->flags, ENEFLAG_UNK_21) || TEST_FLAGS(p->flags2, ENEFLAG2_UNK_2) || TEST_FLAGS(p->flags, ENEFLAG_UNK_8) ||
-      TEST_FLAGS(p->flags3, ENEFLAG3_UNK_15 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_0) || TEST_FLAGS(p->flags, ENEFLAG_UNK_27) || p->unk_4be != 0 || p->hurtbox.iframes != 0) {
+      TEST_FLAGS(p->flags3, ENEFLAG3_UNK_15 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_3 | ENEFLAG3_PETRIFIED | ENEFLAG3_STUN | ENEFLAG3_ASLEEP) || TEST_FLAGS(p->flags, ENEFLAG_UNK_27) || p->unk_4be != 0 || p->hurtbox.iframes != 0) {
     blocked = TRUE;
   } else {
     blocked = FALSE;

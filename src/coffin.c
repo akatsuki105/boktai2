@@ -100,7 +100,7 @@ static void Coffin_RemoveParticles(Coffin* p) {
 // エフェクト用の AuxSprite を1回だけ用意する
 void Coffin_CreateEffSprite(Coffin* p) {
   if (p->effSpriteAdded == FALSE) {
-    Video_GetAuxSprite(&p->effGfx, SPRITE_EFF_1C1B);
+    Video_GetAuxSprite(&p->effGfx, SPR_EFF_1C1B);
     AuxSprite_Add(&p->effSprite, &p->effGfx, SPRFLAG_BLINK_ODD);
     nop_0822a4f8(&p->effSprite, -8, -8);
     AuxSprite_SetPoseIdx(&p->effSprite, 6);
@@ -970,7 +970,7 @@ void Coffin_InitSprite(Coffin* p) {
   s32 i;
 
   p->unk_31c = p->coffinID;
-  Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN_0);
+  Video_GetAuxSprite(&p->gfx, SPR_COFFIN_0);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   p->unk_32e = p->unk_31c;
   Video_SetAuxSpritePltt(&p->gfx, OBP_COFFIN(p->unk_32e));
@@ -1046,7 +1046,7 @@ void Coffin_InitHitbox(Coffin* p) {
   VEC3_SET(size, Q8(0.5), Q8(0.125), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.125), 0);
   Hitbox_Init(hitbox, p->subroutineID, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
-  Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
+  Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_BLOW, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 

@@ -14,7 +14,7 @@
 #include "vec3.h"
 
 void FUN_081fa608(void);
-void Entity08204cb8_Spawn(Vec3* pos, s32 param_2);
+s32 Entity08204cb8_Spawn(Vec3* pos, s32 timer);
 void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void Octorok_ThrowAt(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
@@ -238,7 +238,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     spawnPos.x = p->pos.x + 64;
     spawnPos.y = p->pos.y - 32;
     spawnPos.z = p->pos.z + 64;
-    Entity081f26bc_Spawn(&spawnPos, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Entity081f26bc_Spawn(&spawnPos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     PlaySound_082406e0(SONG_438);
   }
 
@@ -280,7 +280,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     p->unk_6d9 = 1;
   }
   if (Mod(val, 8) == 0) {
-    Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, Q6(0.5), 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+    Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, Q6(0.5), 1, 2, 0x200, 0, SPR_EFF_F422, ANIM_121B, 0, 0, 0xDA);
   }
 #else
   INCFUNC("asm/func/FUN_082010f8.inc");
@@ -349,9 +349,9 @@ NON_MATCH void FUN_082013d4(Entity08202cd8* p, s32 val) {
       pos.z += FixToInt(12, COS(angle) * 120);
       Vec3_Clear(&vel);
       if (!(p->unk_6dd & 1)) {
-        Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, SPRFLAG_BLINK_ODD, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, SPRFLAG_BLINK_ODD, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       } else {
-        Entity081f26bc_Spawn(&pos, &vel, SPRITE_DVALIN_2E78, ANIM_38E2, 3, SPRFLAG_BLINK_EVEN, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, SPRFLAG_BLINK_EVEN, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       p->unk_6dd++;
     }
@@ -552,7 +552,7 @@ NON_MATCH void FUN_08201f74(Entity08202cd8* p, s32 val) {
 
   if (done < 8) {
     if (Mod(val, 8) == 0) {
-      Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, Q6(0.5), 1, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0x237);
+      Entity081ee7a8_SpawnEx(&p->pos, 12, 8, 6, 12, 4, Random() & 0x7F, 8, Q6(0.5), 1, 2, 0x200, 0, SPR_EFF_F422, ANIM_121B, 0, 0, 0x237);
     }
   } else {
     p->unk_6d9 = 1;
@@ -861,8 +861,8 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
   base.x = pos->x;
   base.y = (GetTileAt(pos)->heightStairs & 0xF) << 8;
   base.z = pos->z;
-  Video_GetAuxSprite(&p->gfx0, SPRITE_DVALIN_2E78);
-  Video_GetAuxSprite(&p->gfx1, SPRITE_DVALIN_2E7B);
+  Video_GetAuxSprite(&p->gfx0, SPR_DVALIN_00);
+  Video_GetAuxSprite(&p->gfx1, SPR_DVALIN_03);
   p->plttID = p->gfx0.plttID;
   p->unk_6e2 = param_3;
   p->unk_6e0 = param_4;

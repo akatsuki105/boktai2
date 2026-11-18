@@ -97,7 +97,7 @@ void Cmd_8EA3(void) {
     VEC3_SET(pos, 0, 0, 0);
   }
   angle = VM_GetNamedArgValue('d', 0);
-  spriteID = VM_GetNamedArgValue('c', SPRITE_SMITH_MARCELLO);
+  spriteID = VM_GetNamedArgValue('c', SPR_SMITH_MARCELLO);
   flags = 0;
   idx = 1;
 

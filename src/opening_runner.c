@@ -9,10 +9,10 @@
 // スクリプト (Scr_0x0332) が渡すインスタンスIDは HashName("ジャンゴ") = 0xBF31 ('.k=0') と HashName("おてんこ") = 0xBB34 ('.k=1')
 typedef struct OpRunner {
   Entity e;                                  // 0x0, ENTITY_UNK_8
-  MainSpriteGfx djangoGfx;                   // 0x18, SPRITE_DJANGO_SABATA
+  MainSpriteGfx djangoGfx;                   // 0x18, SPR_DJANGO_SABATA
   MainSprite django;                         // 0x38, kind=0
   AuxSprite otenko;                          // 0x98, kind=1
-  AuxSpriteGfx otenkoGfx;                    // 0xC4, SPRITE_OTENKO_00
+  AuxSpriteGfx otenkoGfx;                    // 0xC4, SPR_OTENKO_00
   AuxAnimState otenkoAnim;                   // 0xE0 ->otenkoAnimFile
   AuxAnimFile* otenkoAnimFile;               // 0xF0, ANIM_OTENKO
   s32 kind;                                  // 0xF4, '.k', 0: ジャンゴ, 1: おてんこ
@@ -36,7 +36,7 @@ typedef struct OpRunner {
   s16 unk_136;                               // 0x136
   u8 unk_138[0x13C - 0x138];                 // 0x138, まだ未解析
   AuxSprite sprite_13c;                      // 0x13C
-  AuxSpriteGfx gfx_168;                      // 0x168, SPRITE_EFF_1C1B, 影用?
+  AuxSpriteGfx gfx_168;                      // 0x168, SPR_EFF_1C1B, 影用?
   void (*updateCallback)(struct OpRunner*);  // 0x184
   u8 unk_188[392 - 0x188];                   // 0x188, まだ未解析
 } OpRunner;
@@ -82,7 +82,7 @@ NON_MATCH void OpRunner_AddSprites(OpRunner* p) {
   s32 subScale;
 
   if (idx == 0) {
-    MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+    MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
     Vec3 pos;
 
     p->djangoGfx = *f;
@@ -97,7 +97,7 @@ NON_MATCH void OpRunner_AddSprites(OpRunner* p) {
   } else {
     AuxAnimFile* files;
 
-    Video_GetAuxSprite(&p->otenkoGfx, SPRITE_OTENKO_00);
+    Video_GetAuxSprite(&p->otenkoGfx, SPR_OTENKO_00);
     AuxSprite_Add(&p->otenko, &p->otenkoGfx, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
     p->otenko.pos.x = x;
     p->otenko.pos.y = y;
@@ -109,7 +109,7 @@ NON_MATCH void OpRunner_AddSprites(OpRunner* p) {
     AuxAnim_SetAnim(&p->otenkoAnim, files, 0, 0, 0);
   }
 
-  Video_GetAuxSprite(&p->gfx_168, SPRITE_EFF_1C1B);
+  Video_GetAuxSprite(&p->gfx_168, SPR_EFF_1C1B);
   AuxSprite_Add(&p->sprite_13c, &p->gfx_168, SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
   AuxSprite_SetPoseIdx(&p->sprite_13c, 5);
   p->sprite_13c.pos.x = x;

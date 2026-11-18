@@ -12,22 +12,22 @@ typedef struct Torture {
   Entity e;                                 // 0x000, ENTITY_UNK_8
   u8 unk_18[0x020 - 0x018];                 // 0x018, まだ未解析
   AuxSprite sprite0;                        // 0x020, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx0;                        // 0x04C, SPRITE_DARKGENERATOR
+  AuxSpriteGfx gfx0;                        // 0x04C, SPR_DARKGENERATOR
   u16 sprite0Phase;                         // 0x068, 0..11 を回り, 4 で割った値が sprite0 のコマ
   u8 unk_6a[2];                             // 0x06A, まだ未解析
   AuxSprite sprite1;                        // 0x06C, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx1;                        // 0x098, SPRITE_DARKGENERATOR
+  AuxSpriteGfx gfx1;                        // 0x098, SPR_DARKGENERATOR
   u16 sprite1Phase;                         // 0x0B4, sprite1Speed ずつ進めて 0..23 を回り, 8 で割った値が sprite1 のコマ
   u16 sprite1Speed;                         // 0x0B6, '.N' が 4 なら 1, 3 なら 4, 10 なら 3, それ以外は 2
   AuxSprite sprite2;                        // 0x0B8
-  AuxSpriteGfx gfx2;                        // 0x0E4, SPRITE_DARKGENERATOR
+  AuxSpriteGfx gfx2;                        // 0x0E4, SPR_DARKGENERATOR
   AuxSprite mashMeter[7];                   // 0x100, 連打数 (最大 7) だけコマ 1 (先頭 4 枚) / 2 を出し, 残りは 0
-  AuxSpriteGfx meterGfx;                    // 0x234, SPRITE_PANTHER_BONUS
+  AuxSpriteGfx meterGfx;                    // 0x234, SPR_PANTHER_BONUS
   AuxSprite bonusSprites[6];                // 0x250, bonusGfx のコマ 3, 4, 7, 8, 9, 10 を (132, 48) から 8 ずつ右へ並べる
-  AuxSpriteGfx bonusGfx;                    // 0x358, SPRITE_PANTHER_BONUS
+  AuxSpriteGfx bonusGfx;                    // 0x358, SPR_PANTHER_BONUS
   u16 bonusTimer;                           // 0x374, 倍率表示を動かす残りフレーム数, 出すとき 10 (4 までは上へ, 残りは下へ), 下げるとき 4 で 0 になったら隠す
   u8 unk_376[2];                            // 0x376, まだ未解析
-  MainSpriteGfx uiGfx;                      // 0x378, SPRITE_UI_START_MENU
+  MainSpriteGfx uiGfx;                      // 0x378, SPR_UI_START_MENU
   MainSprite mainSprites[5];                // 0x398, _Destroy が stride 0x60 で5枚 MainSprite_Remove する
   u16 mashPattern;                          // 0x578, '.p', A と一緒に連打させる十字キー (0: 左, 1: 上, 2: 右, 3: 下)
   u16 startDelay;                           // 0x57A, Torture_Start が 32 を入れて毎フレーム減らす, 0 になるまでは借金を返し終えても終えない
@@ -45,8 +45,8 @@ typedef struct Torture {
   s32 totalUnits;                           // 0x59C, 発電した単位数の合計
   s32 requiredUnits;                        // 0x5A0, '.a[1]', 時間切れで終えるのに要る totalUnits
   u32 rateChangeScript;                     // 0x5A4, mashRate が変わったときに新しい倍率を引数に起動するスクリプト, 0 なら起動しない
-  u32 timeUpScript;                         // 0x5A8, '.a[2]', 時間切れで起動するスクリプト (Scr_DarkLoanPunishTimeUp)
-  u32 endScript;                            // 0x5AC, '.e', おしおきを終えたときに fallCount を引数に起動するスクリプト (Scr_DarkLoanPunishEnd)
+  u32 timeUpScript;                         // 0x5A8, '.a[2]', 時間切れで起動するスクリプト (Scr_TortureTimeUp)
+  u32 endScript;                            // 0x5AC, '.e', おしおきを終えたときに fallCount を引数に起動するスクリプト (Scr_TortureEnd)
   u16 powerCharge;                          // 0x5B0, 連打で貯めた発電量, powerPerUnit ごとに1単位として取り出す
   u16 powerPerUnit;                         // 0x5B2, '.r=300', 発電1単位に要る powerCharge
   u8 unk_5b4[0x5B6 - 0x5B4];                // 0x5B4, まだ未解析
@@ -540,14 +540,14 @@ s32 Torture_Destroy(Torture* p) {
 }
 
 // uiGfx を読み込み, mainSprites[0] (コマ 40) と借金の4桁の数字 mainSprites[1..4] を並べる
-// 残差: 122/122 命令, 原典は最初の MainSprite_Add の playMode の 0 を pos を作った直後に r2 へ置いて使うが, こちらは引数を積む所で作る, 試済: pos の代入順 (z を先に), i = 0 を前に出すと 0 は早く作られるが callee-saved に置かれる, Vec3_Set は悪化, dark_loans.c / warehouse.c / shop_weapon.c / shop_coffin.c の「pos 初期化の 0 と引数の 0」の壁の逆向き
+// 残差: 122/122 命令, 原典は最初の MainSprite_Add の playMode の 0 を pos を作った直後に r2 へ置いて使うが, こちらは引数を積む所で作る, 試済: pos の代入順 (z を先に), i = 0 を前に出すと 0 は早く作られるが callee-saved に置かれる, Vec3_Set は悪化, dark_loans.c / warehouse.c / shop/weapon.c / shop/coffin.c の「pos 初期化の 0 と引数の 0」の壁の逆向き
 NON_MATCH void Torture_InitDebtSprites(Torture* p) {
 #ifdef NONMATCHING_C
   MainSpriteGfxFile* f;
   Vec3 pos;
   s32 i;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   p->uiGfx = *f;
   OpenMainSpriteFile(&p->uiGfx, f);
   pos.x = 144, pos.y = 64, pos.z = 0;
@@ -572,7 +572,7 @@ void Torture_InitBonusSprites(Torture* p) {
   s32 i;
 
   pos.x = 132, pos.y = 48, pos.z = 0;
-  Video_GetAuxSprite(&p->bonusGfx, SPRITE_PANTHER_BONUS);
+  Video_GetAuxSprite(&p->bonusGfx, SPR_PANTHER_BONUS);
   for (i = 0; i < 6; i++) {
     AuxSprite_Add(&p->bonusSprites[i], &p->bonusGfx, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
     if (i < 2) {
@@ -592,7 +592,7 @@ void Torture_InitMashMeter(Torture* p) {
   s32 i;
 
   pos.x = 128, pos.y = 56, pos.z = 0;
-  Video_GetAuxSprite(&p->meterGfx, SPRITE_PANTHER_BONUS);
+  Video_GetAuxSprite(&p->meterGfx, SPR_PANTHER_BONUS);
   for (i = 0; i < 7; i++) {
     AuxSprite_Add(&p->mashMeter[i], &p->meterGfx, SPRFLAG_SCREEN_COORD);
     AuxSprite_SetPoseIdx(&p->mashMeter[i], 0);
@@ -611,14 +611,14 @@ s32 Torture_Init(Torture* p) {
     p->mashPattern = 0;
   }
 
-  Video_GetAuxSprite(&p->gfx0, SPRITE_DARKGENERATOR);
+  Video_GetAuxSprite(&p->gfx0, SPR_DARKGENERATOR);
   AuxSprite_Add(&p->sprite0, &p->gfx0, 0);
   AuxSprite_SetPoseIdx(&p->sprite0, 0);
   p->sprite0.pos.x = 896;
   p->sprite0.pos.y = 0;
   p->sprite0.pos.z = 1324;
 
-  Video_GetAuxSprite(&p->gfx1, SPRITE_DARKGENERATOR);
+  Video_GetAuxSprite(&p->gfx1, SPR_DARKGENERATOR);
   AuxSprite_Add(&p->sprite1, &p->gfx1, 0);
   AuxSprite_SetPoseIdx(&p->sprite1, 0);
   p->sprite1.pos = p->sprite0.pos;
@@ -648,7 +648,7 @@ s32 Torture_Init(Torture* p) {
     p->sprite1Speed = 2;
   }
 
-  Video_GetAuxSprite(&p->gfx2, SPRITE_DARKGENERATOR);
+  Video_GetAuxSprite(&p->gfx2, SPR_DARKGENERATOR);
   AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
   AuxSprite_SetPoseIdx(&p->sprite2, 0);
   p->sprite2.pos = p->sprite0.pos;

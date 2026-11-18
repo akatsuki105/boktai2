@@ -101,7 +101,7 @@ void Cmd_3F96(void) {
   if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 2, SPRITE_ENNIO_LUIS, 0, flags) < 0) {
+  if (FUN_08040f48(npc, 2, SPR_ENNIO_LUIS, 0, flags) < 0) {
     return;
   }
 
@@ -117,7 +117,7 @@ void Cmd_3F96(void) {
   NPC_SetCb(npc, 2, FUN_0820a77c);
   NPC_SetCb(npc, 3, FUN_0820a91c);
   NPC_SetOnDestroy(npc, FUN_0820a928);
-  FUN_08040df4(p, npc, SPRITE_ENNIO_LUIS, 0);
+  FUN_08040df4(p, npc, SPR_ENNIO_LUIS, 0);
   NPCManager_LinkNPC(p, npc);
   FUN_08041e10(p, npc);
 

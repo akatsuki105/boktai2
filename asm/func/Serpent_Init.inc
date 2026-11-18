@@ -1424,7 +1424,7 @@ _08195052:
 	movs r0, #0x1e
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0819208c
+	bl Serpent_ResetRecentTiles
 	ldr r4, _081950D0 @ =0x000001A3
 	movs r5, #0x99
 	lsls r5, r5, #1
@@ -1506,11 +1506,11 @@ _08195126:
 	strh r1, [r0, #0x3a]
 _08195130:
 	adds r0, r7, #0
-	bl FUN_08192bf4
+	bl Serpent_InitTailPltts
 	adds r0, r7, #0
 	bl Serpent_InitHitboxes
 	adds r0, r7, #0
-	bl FUN_0818f994
+	bl Serpent_InitFollowInterval
 	movs r5, #0xf5
 	lsls r5, r5, #4
 	ldr r4, [sp, #0x30]
@@ -1519,11 +1519,11 @@ _08195130:
 	ldr r6, _08195338 @ =0x00000F74
 	adds r4, r4, r6
 	mov r8, r4
-	ldr r0, _0819533C @ =FUN_08194264
+	ldr r0, _0819533C @ =Serpent_UpdateFrame
 	mov sb, r0
 	ldr r1, _08195340 @ =Serpent_GetMoveSpeed
 	mov sl, r1
-	ldr r2, _08195344 @ =FUN_08189608
+	ldr r2, _08195344 @ =Serpent_StateTurn
 	mov ip, r2
 	movs r5, #0
 	ldr r3, _08195348 @ =Serpent_StateDamaged
@@ -1552,10 +1552,10 @@ _08195130:
 	mov r6, ip
 	ldr r0, [sp, #0xe8]
 	str r6, [r0]
-	ldr r1, _08195358 @ =FUN_08189104
+	ldr r1, _08195358 @ =Serpent_StateMove
 	ldr r6, [sp, #0xf8]
 	str r1, [r6]
-	ldr r0, _0819535C @ =FUN_081894fc
+	ldr r0, _0819535C @ =Serpent_StateWait
 	ldr r1, [sp, #0xfc]
 	str r0, [r1]
 	ldr r6, _08195360 @ =FUN_0818960c
@@ -1612,7 +1612,7 @@ _08195130:
 	ldr r0, _08195384 @ =FUN_080e72b0
 	ldr r6, [sp, #0x154]
 	str r0, [r6]
-	ldr r0, _08195388 @ =FUN_0818afc0
+	ldr r0, _08195388 @ =Serpent_ClearStateBegun
 	ldr r1, [sp, #0x14c]
 	str r0, [r1]
 	ldr r0, _0819538C @ =Enemy_StateBlownAway
@@ -1663,7 +1663,7 @@ _08195130:
 	str r5, [r0]
 	ldr r2, _081953C0 @ =0x000005AC
 	adds r1, r7, r2
-	ldr r0, _081953C4 @ =FUN_08192124
+	ldr r0, _081953C4 @ =Serpent_OnAttackRequest
 	str r0, [r1]
 	movs r3, #0xb6
 	lsls r3, r3, #3
@@ -1672,15 +1672,15 @@ _08195130:
 	str r0, [r1]
 	subs r4, #4
 	adds r1, r7, r4
-	ldr r0, _081953CC @ =FUN_08192190
+	ldr r0, _081953CC @ =Serpent_TryDetectPlayer
 	str r0, [r1]
 	subs r6, #0x6c
 	adds r1, r7, r6
-	ldr r0, _081953D0 @ =FUN_08194240
+	ldr r0, _081953D0 @ =Serpent_OnDamaged
 	str r0, [r1]
 	ldr r0, _081953D4 @ =0x000005B4
 	adds r1, r7, r0
-	ldr r0, _081953D8 @ =FUN_08190824
+	ldr r0, _081953D8 @ =Serpent_ScatterSegments
 	str r0, [r1]
 	ldr r1, _081953DC @ =0x00100200
 	ldr r2, [sp, #0x5c]
@@ -1755,15 +1755,15 @@ _08195328:
 	b _081953F2
 	.align 2, 0
 _08195338: .4byte 0x00000F74
-_0819533C: .4byte FUN_08194264
+_0819533C: .4byte Serpent_UpdateFrame
 _08195340: .4byte Serpent_GetMoveSpeed
-_08195344: .4byte FUN_08189608
+_08195344: .4byte Serpent_StateTurn
 _08195348: .4byte Serpent_StateDamaged
 _0819534C: .4byte Serpent_StateDying
 _08195350: .4byte FUN_080f62b0
 _08195354: .4byte FUN_080f62ac
-_08195358: .4byte FUN_08189104
-_0819535C: .4byte FUN_081894fc
+_08195358: .4byte Serpent_StateMove
+_0819535C: .4byte Serpent_StateWait
 _08195360: .4byte FUN_0818960c
 _08195364: .4byte FUN_080f44f4
 _08195368: .4byte FUN_080f410c
@@ -1774,7 +1774,7 @@ _08195378: .4byte FUN_080e73c8
 _0819537C: .4byte FUN_080f0320
 _08195380: .4byte Enemy_080eff14
 _08195384: .4byte FUN_080e72b0
-_08195388: .4byte FUN_0818afc0
+_08195388: .4byte Serpent_ClearStateBegun
 _0819538C: .4byte Enemy_StateBlownAway
 _08195390: .4byte Enemy_StateFallDeath
 _08195394: .4byte FUN_080f6e64
@@ -1789,12 +1789,12 @@ _081953B4: .4byte 0x085ADD74
 _081953B8: .4byte Serpent_OnReset
 _081953BC: .4byte 0x000005FC
 _081953C0: .4byte 0x000005AC
-_081953C4: .4byte FUN_08192124
+_081953C4: .4byte Serpent_OnAttackRequest
 _081953C8: .4byte FUN_0819218c
-_081953CC: .4byte FUN_08192190
-_081953D0: .4byte FUN_08194240
+_081953CC: .4byte Serpent_TryDetectPlayer
+_081953D0: .4byte Serpent_OnDamaged
 _081953D4: .4byte 0x000005B4
-_081953D8: .4byte FUN_08190824
+_081953D8: .4byte Serpent_ScatterSegments
 _081953DC: .4byte 0x00100200
 _081953E0: .4byte 0x02000008
 _081953E4: .4byte 0x0000044C
@@ -2142,7 +2142,7 @@ _08195656:
 	strh r0, [r5]
 _0819566E:
 	adds r0, r7, #0
-	bl FUN_0818e6fc
+	bl Serpent_PickNextTile
 	movs r0, #2
 	movs r2, #0
 	ldr r6, [sp, #0x198]
@@ -2173,23 +2173,23 @@ _0819566E:
 	adds r0, r7, #0
 	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
-	bl FUN_0818e2a4
+	bl Serpent_SetHandlerTable2
 	adds r0, r7, #0
-	bl FUN_081941bc
+	bl Serpent_SetHandlerTable4
 	ldr r1, _0819575C @ =0x0000D636
 	ldr r2, _08195760 @ =0x0000C102
 	ldrb r3, [r7, #5]
 	adds r0, r7, #0
-	bl FUN_0818ee98
+	bl Serpent_InitSegments
 	ldr r0, [sp, #0x30]
 	ldr r1, [sp, #0x188]
-	bl FUN_0819014c
+	bl Serpent_SetAllSegmentsPos
 	adds r0, r7, #0
-	bl FUN_08190fb8
+	bl Serpent_InitSegmentHitboxes
 	adds r0, r7, #0
-	bl FUN_0818e6fc
+	bl Serpent_PickNextTile
 	adds r0, r7, #0
-	bl FUN_081939c0
+	bl Serpent_ResetRecentNodes
 	ldr r1, [sp, #0x1b0]
 	ldrh r0, [r1]
 	ldr r2, [sp, #0xcc]

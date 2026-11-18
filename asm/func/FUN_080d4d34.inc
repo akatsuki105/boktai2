@@ -294,7 +294,7 @@ _080D4F68:
 	blt _080D4F84
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_080cc3c4
+	bl PlayerLink_SetFlag35a
 _080D4F84:
 	ldrh r0, [r4]
 	adds r0, #1

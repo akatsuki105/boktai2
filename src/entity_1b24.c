@@ -19,7 +19,7 @@
 typedef struct Entity1B24 {
   Entity e;                                    // 0x000, ENTITY_UNK_8
   LinkPlayerRecord* record;                    // 0x018, &gLinkSession->self, セッションが無ければ NULL で _Init は失敗する
-  Tilemaps* tilemap;                           // 0x01C, TILEMAP_CD91, BG2 に敷く
+  Tilemaps* tilemap;                           // 0x01C, MP_CD91, BG2 に敷く
   rgb555* pltt;                                // 0x020, GetBgPlttFile("bg_link_col_arr")
   void* unk_24;                                // 0x024, ワードとして読まれるが用途不明
   MainSpriteGfx gfx[4];                        // 0x028
@@ -444,7 +444,7 @@ void FUN_0809d878(Entity1B24* p) {
   s32 bgIndices[1];
   s32 i;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
   bgIndices[0] = 6;
   Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
@@ -471,25 +471,25 @@ NON_MATCH void FUN_0809d934(Entity1B24* p) {
   s32 i;
   s32 j;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   if (f == NULL) {
     return;
   }
   p->gfx[0] = *f;
   OpenMainSpriteFile(&p->gfx[0], f);
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   if (f == NULL) {
     return;
   }
   p->gfx[1] = *f;
   OpenMainSpriteFile(&p->gfx[1], f);
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   if (f == NULL) {
     return;
   }
   p->gfx[2] = *f;
   OpenMainSpriteFile(&p->gfx[2], f);
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
   if (f == NULL) {
     return;
   }

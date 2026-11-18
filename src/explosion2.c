@@ -113,9 +113,9 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 knockback, s32 iframes, s32 
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, ignoreMask, &halfSize, &offset);
   if (box->variant == 0) {
-    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_BLOW | HBATTR_FLAME, iframes);
   } else {
-    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_18, iframes);
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_BLOW, iframes);
   }
 
   hitbox->id = 0x3246;

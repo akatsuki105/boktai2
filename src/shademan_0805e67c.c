@@ -20,7 +20,7 @@ typedef struct {
   Hitbox hurtbox;         // 0x064, state 2, 3 の間だけ HBF_HIDDEN を落とす, 当たると state 4 へ移る
   AuxAnimState anim;      // 0x0B4, コマ送りは自前で行う
   AuxSprite sprite;       // 0x0C4
-  AuxSpriteGfx gfx;       // 0x0F0, SPRITE_BAT, パレット 611 (被弾直後の 6 フレームは 306), 群れで出すと pltt は Entity0805e67c.pltt を指す
+  AuxSpriteGfx gfx;       // 0x0F0, SPR_BAT, パレット 611 (被弾直後の 6 フレームは 306), 群れで出すと pltt は Entity0805e67c.pltt を指す
   ParticleShadow shadow;  // 0x10C
 } Entity0805e67cElem;
 static_assert(sizeof(Entity0805e67cElem) == 332);

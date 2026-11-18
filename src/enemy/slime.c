@@ -335,7 +335,7 @@ void Slime_StateDamaged(Slime* p) {
     (p->e).jumpVel.x = FixToInt(2, (p->e).jumpVel.x);
     (p->e).jumpVel.z = FixToInt(2, (p->e).jumpVel.z);
     Enemy_PlayAnimNoFacing(&p->e, 3);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     (p->e).animForceRestart = FALSE;
   }
   Enemy_SetFlag(&p->e, ENEFLAG_UNK_13);
@@ -796,7 +796,7 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
   }
   vel.y = 48;
   pos = &(p->e).mover.pos;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 0, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 6, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 0, 0, 0, 0, 0, 0);
   {
     u32 angle = RandomNext() & 0xFF;
     s32 speed = (RandomNext() & 15) + 6;
@@ -804,7 +804,7 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
     Vec3_SetPolar(&vel, angle, speed);
   }
   vel.y = 37;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 0, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 0, 0, 0, 0, 0, 0);
   {
     u32 angle = RandomNext() & 0xFF;
     s32 speed = (RandomNext() & 15) + 6;
@@ -812,7 +812,7 @@ NON_MATCH void Slime_SpawnDroplets(Slime* p) {
     Vec3_SetPolar(&vel, angle, speed);
   }
   vel.y = 32;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 1, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 7, 24, 0x200, 0, (p->e).plttBase + (p->e).variant, 1, 0, 0, 0, 0, 0);
 #else
   INCFUNC("asm/func/Slime_SpawnDroplets.inc");
 #endif
@@ -833,7 +833,7 @@ NON_MATCH void Slime_ShootDroplets(Slime* p) {
   Vec3_SetPolar(&vel, angle + r, (RandomNext() & 7) + 6);
   vel.y = 48;
   pos = &(p->e).mover.pos;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
     u32 r = RandomNext() & 15;
     s32 speed = RandomNext() & 7;
@@ -841,7 +841,7 @@ NON_MATCH void Slime_ShootDroplets(Slime* p) {
     Vec3_SetPolar(&vel, angle + r, speed + 6);
   }
   vel.y = 37;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
     u32 r = RandomNext() & 15;
     s32 speed = RandomNext() & 7;
@@ -849,7 +849,7 @@ NON_MATCH void Slime_ShootDroplets(Slime* p) {
     Vec3_SetPolar(&vel, angle + r, speed + 6);
   }
   vel.y = 32;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
 #else
   INCFUNC("asm/func/Slime_ShootDroplets.inc");
 #endif
@@ -872,7 +872,7 @@ NON_MATCH void Slime_ScatterDroplets(Slime* p) {
   Vec3_SetPolar(&vel, a + r, speed + 12);
   vel.y = 48;
   pos = &(p->e).mover.pos;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
     u32 r = RandomNext() & 15;
     u32 a = (u8)RandomNext();
@@ -881,7 +881,7 @@ NON_MATCH void Slime_ScatterDroplets(Slime* p) {
     Vec3_SetPolar(&vel, a + r, speed + 12);
   }
   vel.y = 37;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 7, 24, 0, 0, (p->e).plttBase + (p->e).variant, 0, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
   {
     u32 r = RandomNext() & 15;
     u32 a = (u8)RandomNext();
@@ -890,7 +890,7 @@ NON_MATCH void Slime_ScatterDroplets(Slime* p) {
     Vec3_SetPolar(&vel, a + r, speed + 6);
   }
   vel.y = 32;
-  Entity081efa9c_Spawn(pos, &vel, SPRITE_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
+  Entity081efa9c_Spawn(pos, &vel, SPR_SLIME, ANM_SLIME, 6, 24, 0, 0, (p->e).plttBase + (p->e).variant, 1, 0, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1] | attrs, (p->e).atkIframes[1]);
 #else
   INCFUNC("asm/func/Slime_ScatterDroplets.inc");
 #endif
@@ -940,7 +940,7 @@ NON_MATCH bool8 Slime_OnDamaged(Slime* p) {
       Slime_Split(p);
     }
   }
-  if ((p->e).flags6 & ENEFLAG6_UNK_18) {
+  if ((p->e).flags6 & HBATTR_BLOW) {
     CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
@@ -1022,7 +1022,7 @@ s32 Slime_Destroy(Slime* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -1055,7 +1055,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_SLIME);
+    Video_GetAuxSprite(&aux->gfx, SPR_SLIME);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANM_SLIME);
     k = (p->e).kind;
@@ -1072,7 +1072,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_SLIME);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_SLIME);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1175,7 +1175,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1185,7 +1185,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1260,7 +1260,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
   (p->e).handlerTurn = NULL;
   (p->e).handlerMove = FUN_08162cf4;
   (p->e).handlerWait = FUN_08162df4;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = NULL;
   (p->e).handlerDamaged = Slime_StateDamaged;
   (p->e).handlerDying = Slime_StateDying;
@@ -1289,7 +1289,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

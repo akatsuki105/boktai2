@@ -22,13 +22,13 @@
 
 // MovableBlock.kind
 typedef enum {
-  B_ROCK = 0,       // 岩ブロック, SPRITE_BLOCK_ROCK
-  B_ICE = 1,        // 氷ブロック (一度押すと、壁で止まるまで滑る), SPRITE_BLOCK_ICE
-  B_WOOD = 2,       // 木箱, SPRITE_WOODEN_BOX
-  B_UNK3 = 3,       // 不使用?, SPRITE_BLOCK_9D43
-  B_ARITH = 4,      // 算術ブロック (不使用?), SPRITE_BLOCK_ARITH
-  B_TOMBSTONE = 5,  // 大聖堂の(偽物の)墓, 移動ブロックのように押せる, SPRITE_TOMBSTONE
-  B_EMBLEM = 6,     // 紋章ブロック, SPRITE_BLOCK_EMBLEM
+  B_ROCK = 0,       // 岩ブロック, SPR_BLOCK_ROCK
+  B_ICE = 1,        // 氷ブロック (一度押すと、壁で止まるまで滑る), SPR_BLOCK_ICE
+  B_WOOD = 2,       // 木箱, SPR_WOODEN_BOX
+  B_UNK3 = 3,       // 不使用?, SPR_BLOCK_9D43
+  B_ARITH = 4,      // 算術ブロック (不使用?), SPR_BLOCK_ARITH
+  B_TOMBSTONE = 5,  // 大聖堂の(偽物の)墓, 移動ブロックのように押せる, SPR_TOMBSTONE
+  B_EMBLEM = 6,     // 紋章ブロック, SPR_BLOCK_EMBLEM
 } MovableBlockKind;
 
 // MovableBlockManager が count 個まわす1要素, プレイヤーが押せるブロック
@@ -1213,21 +1213,21 @@ NON_MATCH s32 Cmd_E02A(void) {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }
   if (kind == B_ROCK) {
-    file = SPRITE_BLOCK_ROCK;
+    file = SPR_BLOCK_ROCK;
   } else if (kind == B_ICE) {
-    file = SPRITE_BLOCK_ICE;
+    file = SPR_BLOCK_ICE;
   } else if (kind == B_WOOD) {
-    file = SPRITE_WOODEN_BOX;
+    file = SPR_WOODEN_BOX;
   } else if (kind == B_UNK3) {
-    file = SPRITE_BLOCK_9D43;
+    file = SPR_BLOCK_9D43;
   } else if (kind == B_ARITH) {
-    file = SPRITE_BLOCK_ARITH;
+    file = SPR_BLOCK_ARITH;
   } else if (kind == B_TOMBSTONE) {
-    file = SPRITE_TOMBSTONE;
+    file = SPR_TOMBSTONE;
   } else if (kind == B_EMBLEM) {
-    file = SPRITE_BLOCK_EMBLEM;
+    file = SPR_BLOCK_EMBLEM;
   } else {
-    file = SPRITE_BLOCK_ROCK;
+    file = SPR_BLOCK_ROCK;
   }
   file = VM_GetNamedArgValue('a', file);
   poseIdx = VM_GetNamedArgValue('i', 0);

@@ -27,8 +27,8 @@ static_assert(sizeof(SpiderVenomShot) == 160);
 // ポイズンスパイダーの飛ばす毒液の管理構造体
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;          // 0x018, SPRITE_BOMB
-  AuxAnimFile* animFile;     // 0x034, ANIM_871C
+  AuxSpriteGfx gfx;          // 0x018, SPR_BOMB
+  AuxAnimFile* animFile;     // 0x034, ANIM_BOMB
   u32 activeMask;            // 0x038, bit i が shots[i] の使用中
   SpiderVenomShot shots[4];  // 0x03C
 } SpiderVenom;
@@ -260,8 +260,8 @@ s32 SpiderVenom_Destroy(SpiderVenom* p) {
 }
 
 s32 SpiderVenom_Init(SpiderVenom* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_BOMB);
-  p->animFile = GetFile(DIR_ANIMATION, ANIM_871C);
+  Video_GetAuxSprite(&p->gfx, SPR_BOMB);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_BOMB);
   p->activeMask = 0;
   return 0;
 }

@@ -56,7 +56,7 @@ typedef struct Duneyrr {
   Vec3 jumpTo;                            // 0x190, jumpFrom から unk_167 の向きに進んだ先を壁沿いに寄せた位置
   Hitbox hitbox;                          // 0x198
   Hitbox hurtbox;                         // 0x1E8, ハンドラは Duneyrr_OnHurt
-  MainSpriteGfx gfx;                      // 0x238, SPRITE_DUNEYRR
+  MainSpriteGfx gfx;                      // 0x238, SPR_DUNEYRR
   MainSprite sprite;                      // 0x258
   DuneyrrElem elems[5];                   // 0x2B8
   AuxShadow shadow;                       // 0x4D4
@@ -553,13 +553,13 @@ void Duneyrr_SetHitboxHalfSize(Duneyrr* p, u32 x, u32 y, u32 z) {
 void FUN_08024068(Duneyrr* p) {
   Duneyrr_SetHitboxHalfSize(p, 0xA4, 200, 0xA4);
   Duneyrr_SetHitboxAttack(p, p->hitboxPower2, p->hitboxKnockback2, p->hitboxUnk44_2);
-  Hitbox_AddAttributes(&p->hitbox, HBATTR_18);
+  Hitbox_AddAttributes(&p->hitbox, HBATTR_BLOW);
 }
 
 void FUN_080240b4(Duneyrr* p) {
   Duneyrr_SetHitboxHalfSize(p, 0x40, 0x81, 0x40);
   Duneyrr_SetHitboxAttack(p, p->hitboxPower, p->hitboxKnockback, p->hitboxUnk44);
-  Hitbox_RemoveAttributes(&p->hitbox, HBATTR_18);
+  Hitbox_RemoveAttributes(&p->hitbox, HBATTR_BLOW);
 }
 
 void FUN_08024100(WorldPos* pos) {
@@ -2147,7 +2147,7 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
     boss->players[0] = NULL;
     boss->playerPos[0] = NULL;
   }
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DUNEYRR);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_DUNEYRR);
   if (f == NULL) {
     return -1;
   }
@@ -2263,7 +2263,7 @@ NON_MATCH s32 Duneyrr_Init(Duneyrr* p, u32 id) {
   FUN_08024324(p);
   Duneyrr_InitElems(p);
   AuxShadow_Init(&p->shadow, &p->sprite.pos, 0x60, 0x60, 0x60, 0x60, 0x1964, 100, 6, 1, 0);
-  AuxShadow_SetSprite(&p->shadow, SPRITE_EFF_1C1B, 7);
+  AuxShadow_SetSprite(&p->shadow, SPR_EFF_1C1B, 7);
   if (VM_SeekToNamedArg('j')) {
     p->unk_542 = VM_GetValue();
     p->unk_546 = VM_GetValue();

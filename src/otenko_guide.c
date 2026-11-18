@@ -30,7 +30,7 @@ typedef u8 OtenkoPanelFlags;
 // 前作のおてんこパネル, 調べるとその場におてんこが出てきて話す, Cmd_PlaceOtenkoPanels でしか置かれず今作のスクリプトからは使われない (今作のヒントパネルは InteractPoint)
 typedef struct OtenkoPanel {
   AuxSprite sprite;                                            // 0x00
-  AuxSpriteGfx gfx;                                            // 0x2C, SPRITE_HINT_PANEL
+  AuxSpriteGfx gfx;                                            // 0x2C, SPR_HINT_PANEL
   Vec3 pos;                                                    // 0x48, プレイヤーとの相対角度を求めるときの基点
   u8 unk_50[0xA0 - 0x50];                                      // 0x50, このモジュールのどの関数も読み書きしない
   u32 unk_a0;                                                  // 0xA0, '.C'
@@ -61,7 +61,7 @@ typedef struct OtenkoGuide {
   Player* player;                               // 0x018, _Init が gPlayerPtr[0] を入れる
   OtenkoPanel elems[16];                        // 0x01C, _Init が16個ぶん Video_GetAuxSprite / AuxSprite_Add する
   AuxSprite sprite;                             // 0xD9C, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx;                             // 0xDC8, SPRITE_OTENKO_00
+  AuxSpriteGfx gfx;                             // 0xDC8, SPR_OTENKO_00
   AuxAnimState anim;                            // 0xDE4
   ParticleShadow shadow;                        // 0xDF4, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
   AuxAnimFile* animFile;                        // 0xE34, ANIM_OTENKO
@@ -2493,7 +2493,7 @@ NON_MATCH s32 OtenkoGuide_Init(OtenkoGuide* p) {
   sprite = &p->sprite;
   p->animFile = GetFile(DIR_ANIMATION, ANIM_OTENKO);
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_OTENKO_00);
+  Video_GetAuxSprite(gfx, SPR_OTENKO_00);
   AuxSprite_Add(sprite, gfx, 0);
   nop_0822a4f8(sprite, -8, -19);
   sprite->priority = 0;
@@ -2519,7 +2519,7 @@ NON_MATCH s32 OtenkoGuide_Init(OtenkoGuide* p) {
   for (i = 0; i < 16; i++) {
     OtenkoPanel* elem = &p->elems[i];
 
-    Video_GetAuxSprite(&elem->gfx, SPRITE_HINT_PANEL);
+    Video_GetAuxSprite(&elem->gfx, SPR_HINT_PANEL);
     AuxSprite_Add(&elem->sprite, &elem->gfx, 0);
     nop_0822a4f8(&elem->sprite, -8, -16);
     elem->sprite.flags = SPRFLAG_HIDDEN;

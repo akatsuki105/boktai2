@@ -29,7 +29,7 @@ typedef struct {
   Vec3 orbitOffset;       // 0x28, state 4 の orbitCenter からのずれ
   AuxAnimState anim;      // 0x30
   AuxSprite sprite;       // 0x40
-  AuxSpriteGfx gfx;       // 0x6C, SPRITE_BAT
+  AuxSpriteGfx gfx;       // 0x6C, SPR_BAT
   ParticleShadow shadow;  // 0x88, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
 } CutsceneBat;
 static_assert(sizeof(CutsceneBat) == 200);
@@ -97,7 +97,7 @@ NON_MATCH s32 CutsceneBat_Init(CutsceneBatSwarm* p, CutsceneBat* e, s32 idx) {
   e->timer = 0;
   e->angle = 0;
   gfx = &e->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_BAT);
+  Video_GetAuxSprite(gfx, SPR_BAT);
   CutsceneBatSwarm_SetElemPltt(p, gfx, 611);
   sprite = &e->sprite;
   AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN);

@@ -16,7 +16,7 @@ typedef struct Entity329B {
   u16 unk_18;                                  // 0x018, _Create の引数
   u8 unk_1a;                                   // 0x01A, '.f'
   u8 bgNum;                                    // 0x01B, Video_SetupBG / SetBGPrioDirect に渡す BG 番号
-  u16 tilemapID;                               // 0x01C, TILEMAP_596F
+  u16 tilemapID;                               // 0x01C, MP_596F
   s16 bgPlttID;                                // 0x01E, '.p'
   rgb555* pltt;                                // 0x020, &gBgPlttBuffer[0xD0]
   rgb555* basePltt;                            // 0x024, bgPlttID のファイルの +0x1B4, 色を混ぜるときの元の色
@@ -538,7 +538,7 @@ s32 Entity329B_Init(Entity329B* p, u16 id) {
   CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG0_ON);
   p->unk_18 = id;
   p->unk_1a = VM_GetNamedArgValue('f', 0);
-  p->tilemapID = TILEMAP_596F;
+  p->tilemapID = MP_596F;
   p->bgPlttID = VM_GetNamedArgValue('p', 0);
   p->pltt = &gBgPlttBuffer[208];
   p->scriptID = VM_GetNamedArgValue('e', 0);

@@ -14,7 +14,7 @@ typedef struct {
   s32 unk_28;         // 0x28, 十字キー上下で ±1、±0x100 に丸める, 読み手が見つかっていない
   s32 unk_2c;         // 0x2C, _Init が 0 を書くだけ
   s32 unk_30;         // 0x30, _Init が 0 を書くだけ
-  MainSpriteGfx gfx;  // 0x34, SPRITE_2117
+  MainSpriteGfx gfx;  // 0x34, SPR_2117
   MainSprite sprite;  // 0x54, _Init が (120, 80) にポーズ1で登録する
 } Entity56DC;
 static_assert(sizeof(Entity56DC) == 180);
@@ -68,7 +68,7 @@ s32 Entity56DC_Destroy(Entity56DC* p) { return 0; }
 
 s32 Entity56DC_Init(Entity56DC* p, unknown* param_2, unknown* param_3) {
   Vec3 pos;
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_2117);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_2117);
 
   if (f == NULL) {
     return -1;

@@ -22,7 +22,7 @@ typedef struct {
   u16 args[4];         // 0x14, '.a', beginScript / endScript の第2引数以降になる
   Vec3 pos;            // 0x1C, 調べられるかの判定に使う位置
   AuxSprite sprite;    // 0x24
-  AuxSpriteGfx gfx;    // 0x50, SPRITE_HINT_PANEL
+  AuxSpriteGfx gfx;    // 0x50, SPR_HINT_PANEL
 } InteractPoint;
 static_assert(sizeof(InteractPoint) == 108);
 
@@ -57,7 +57,7 @@ bool32 InteractPoint_ConsumeStateChanged(InteractPoint* p) {
 
 // スプライトを割り当てて隠した状態で描画リストに繋ぐ
 s32 InteractPoint_InitSprite(InteractPointManager* p, InteractPoint* point, s32 idx) {
-  if (!Video_GetAuxSprite(&point->gfx, SPRITE_HINT_PANEL)) {
+  if (!Video_GetAuxSprite(&point->gfx, SPR_HINT_PANEL)) {
     return -1;
   }
   AuxSprite_Add(&point->sprite, &point->gfx, SPRFLAG_HIDDEN);

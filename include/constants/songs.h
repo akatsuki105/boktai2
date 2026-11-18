@@ -346,7 +346,7 @@
 #define SONG_341 341
 #define SONG_342 342
 #define SONG_343 343
-#define SE_ELEV_IRON_V 344  // SE_ELEV_MECHA_V の SPRITE_LIFT_IRON 版
+#define SE_ELEV_IRON_V 344  // SE_ELEV_MECHA_V の SPR_LIFT_IRON 版
 #define SE_ELEV_END_V 345   // 昇降床が端についたときのSE (移動床は SE_THUD)
 #define SONG_346 346
 #define SONG_347 347
@@ -513,7 +513,7 @@
 #define SONG_508 508
 #define SONG_509 509
 #define SONG_510 510
-#define SE_SPIKEBALL 511  // 鉄球(SPRITE_SPIKEBALL)が落ちてきたときのSE
+#define SE_SPIKEBALL 511  // 鉄球(SPR_SPIKEBALL)が落ちてきたときのSE
 #define SONG_512 512
 #define SONG_513 513
 #define SE_GUN_SPREAD 514   // ガンデルヘルスプレッド攻撃時の照射SE
@@ -548,7 +548,7 @@
 #define SONG_543 543
 #define SONG_544 544
 #define SONG_545 545
-#define SE_ELEV_MECHA_V_RIDE 546  // SPRITE_LIFT_MECHA (昇降床) の有効範囲に入ったときのSE
+#define SE_ELEV_MECHA_V_RIDE 546  // SPR_LIFT_MECHA (昇降床) の有効範囲に入ったときのSE
 #define SONG_547 547
 #define SE_JORMY_BITE1 548  // ヨルムンガンドの噛みつきSE(攻撃前にこっちに顔を近づけたときのSE)
 #define SE_JORMY_BITE2 549  // ヨルムンガンドの噛みつきSE(歯がカチンとなるようなSE)
@@ -611,7 +611,7 @@
 #define SONG_606 606
 #define SONG_607 607
 #define SONG_608 608
-#define SE_ELEV_MECHA_V 609  // SPRITE_LIFT_MECHA の動作音 (SE_ELEV_MECHA_H の昇降床版)
+#define SE_ELEV_MECHA_V 609  // SPR_LIFT_MECHA の動作音 (SE_ELEV_MECHA_H の昇降床版)
 #define SONG_610 610
 #define SONG_611 611
 #define SONG_612 612  //
@@ -651,7 +651,7 @@
 #define SONG_646 646
 #define SONG_647 647
 #define SE_ELEV_WATER 648    // 地下水路などでの移動床の動作音
-#define SE_ELEV_MECHA_H 649  // SPRITE_LIFT_MECHA の動作音 (SE_ELEV_MECHA_V の移動床版)
+#define SE_ELEV_MECHA_H 649  // SPR_LIFT_MECHA の動作音 (SE_ELEV_MECHA_V の移動床版)
 #define SE_ELEV_LAVA 650     // マグマの移動床の動作音
 #define SONG_651 651
 #define SONG_652 652

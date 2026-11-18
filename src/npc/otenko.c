@@ -164,7 +164,7 @@ void Cmd_BB34(void) {
   if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 1, SPRITE_OTENKO_00, ANIM_OTENKO, 0) < 0) {
+  if (FUN_08040f48(npc, 1, SPR_OTENKO_00, ANIM_OTENKO, 0) < 0) {
     return;
   }
 
@@ -180,7 +180,7 @@ void Cmd_BB34(void) {
   NPC_SetCb(npc, 2, FUN_082059e4);
   NPC_SetCb(npc, 3, FUN_08205990);
   NPC_SetOnDestroy(npc, FUN_082059bc);
-  FUN_08040df4(p, npc, SPRITE_OTENKO_00, 0);
+  FUN_08040df4(p, npc, SPR_OTENKO_00, 0);
   NPCManager_LinkNPC(p, npc);
   FUN_08041e10(p, npc);
   work = &npc->work.otenko;

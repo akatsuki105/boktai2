@@ -12,7 +12,7 @@
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
   AuxSprite sprite;              // 0x18
-  AuxSpriteGfx gfx;              // 0x44, `.t=SPRITE_BLOCK_ROCK`, SPRITE_WALL_DB6C, SPRITE_WALL_4AEE
+  AuxSpriteGfx gfx;              // 0x44, `.t=SPR_BLOCK_ROCK`, SPR_WALL_DB6C, SPR_WALL_4AEE
   Hitbox hurtbox;                // 0x60
   MapTileOverride tileOverride;  // 0xB0, tileIdx のタイルの高さを height で上書きする
   u8 unk_c0;                     // 0xC0
@@ -94,7 +94,7 @@ NON_MATCH void Barricade_InitSprite(Barricade* p, Vec3* pos) {
   if (VM_SeekToNamedArg('t')) {
     Video_GetAuxSprite(gfx, VM_GetValue());
   } else {
-    Video_GetAuxSprite(gfx, SPRITE_BLOCK_ROCK);
+    Video_GetAuxSprite(gfx, SPR_BLOCK_ROCK);
   }
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;

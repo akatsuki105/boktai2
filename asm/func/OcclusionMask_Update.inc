@@ -60,12 +60,12 @@ _08002AC4:
 _08002AD8:
 	ldrh r1, [r4]
 	ldr r0, [sp, #0x44]
-	bl FUN_0800298c
+	bl OcclusionMask_AddEntry
 	b _08002AEA
 _08002AE2:
 	ldrh r1, [r4]
 	ldr r0, [sp, #0x44]
-	bl FUN_080029cc
+	bl OcclusionMask_RemoveEntry
 _08002AEA:
 	adds r4, #4
 	adds r5, #1

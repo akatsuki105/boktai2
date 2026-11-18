@@ -184,7 +184,7 @@ _0803B728:
 	str r4, [sp, #4]
 	add r4, sp, #0xc
 	str r4, [sp, #8]
-	bl FUN_08060220
+	bl Entity080601a8_Spawn
 _0803B79C:
 	mov r0, sb
 	cmp r0, #9

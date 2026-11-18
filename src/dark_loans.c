@@ -15,12 +15,12 @@
 // 暗黒ローンのメニュー(太陽バンクや暗黒カードは別)
 typedef struct DarkLoans {
   Entity e;                                   // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx0;                         // 0x018, SPRITE_UI_LOAN
-  MainSpriteGfx gfx1;                         // 0x038, SPRITE_UI_START_MENU
+  MainSpriteGfx gfx0;                         // 0x018, SPR_UI_LOAN
+  MainSpriteGfx gfx1;                         // 0x038, SPR_UI_START_MENU
   MainSprite sprites[20];                     // 0x058
   AuxSprite auxSprite;                        // 0x7D8
-  AuxSpriteGfx auxGfx;                        // 0x804, SPRITE_STAND
-  TilemapFile* tilemap;                       // 0x820, TILEMAP_BANK
+  AuxSpriteGfx auxGfx;                        // 0x804, SPR_STAND
+  TilemapFile* tilemap;                       // 0x820, MP_BANK
   rgb555* pltt;                               // 0x824, BGP_BANK の body[208]
   u8* script;                                 // 0x828, MessageWindow_Start に渡す本文
   u16 unk_82c;                                // 0x82C
@@ -496,7 +496,7 @@ s32 DarkLoans_Destroy(DarkLoans* p) {
 void FUN_080b55d4(DarkLoans* p) {
   s32 indices[1];
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_BANK);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_BANK);
   indices[0] = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, indices);
 }
@@ -517,10 +517,10 @@ NON_MATCH void DarkLoans_Init_Helper_080b5650(DarkLoans* p) {
   Vec3 pos;
   s32 i;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LOAN);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LOAN);
   p->gfx0 = *f;
   OpenMainSpriteFile(&p->gfx0, f);
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   p->gfx1 = *f;
   OpenMainSpriteFile(&p->gfx1, f);
 
@@ -566,7 +566,7 @@ NON_MATCH void DarkLoans_Init_Helper_080b5650(DarkLoans* p) {
     pos.x += 8;
   }
 
-  Video_GetAuxSprite(&p->auxGfx, SPRITE_STAND);
+  Video_GetAuxSprite(&p->auxGfx, SPR_STAND);
   AuxSprite_Add(&p->auxSprite, &p->auxGfx, 0);
   p->auxSprite.priority = 0;
   p->auxSprite.flags = SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT;

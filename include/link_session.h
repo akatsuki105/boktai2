@@ -31,7 +31,7 @@ typedef struct LinkPlayerRecord {
   u32 unk_18;            // 0x18, 3 未満のレコードがあると Entity08F4 (ルール設定) の選択肢が1つ増える
   LinkTradeWeapon body;  // 0x1C, 交換に出す武器, LinkSession.bodies[] に写される
   u8 unk_40[4];          // 0x40, [0] が 2 なら武器は GUN_DEL_HELL 固定, [1] は通信対戦のステータスの種類
-  u8 unk_44;             // 0x44, Time_GetSpanOfTime の値, FUN_080cc618 が 0/4/5 (夜) のどれかかを見る
+  u8 unk_44;             // 0x44, Time_GetSpanOfTime の値, PlayerLink_IsNight が 0/4/5 (夜) のどれかかを見る
   u8 unk_45;             // 0x45
   u16 crc;               // 0x46, CalcCRC16 で 0x00..0x45 から作る
 } LinkPlayerRecord;

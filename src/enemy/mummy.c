@@ -68,7 +68,7 @@ static inline void Enemy_UpdatePlayerVector(Enemy* p) {
 // 物音を聞き取れない状態なら TRUE
 static inline bool8 Enemy_IsDeaf(Enemy* p) {
   if (!TEST_FLAGS(p->flags, ENEFLAG_UNK_21) || Enemy_TestFlag2(p, ENEFLAG2_UNK_2) || TEST_FLAGS(p->flags, ENEFLAG_UNK_8) ||
-      TEST_FLAGS(p->flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) || TEST_FLAGS(p->flags, ENEFLAG_UNK_27) || p->unk_4be != 0 || p->hurtbox.iframes != 0) {
+      TEST_FLAGS(p->flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) || TEST_FLAGS(p->flags, ENEFLAG_UNK_27) || p->unk_4be != 0 || p->hurtbox.iframes != 0) {
     return TRUE;
   }
   return FALSE;
@@ -126,7 +126,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->stateBegun = TRUE;
   p->animForceRestart = FALSE;
   p->chaseTimer = 0;
-  p->sleepTimer = 0;
+  p->stunTimer = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
   p->hitTargetID = 0;
@@ -181,7 +181,7 @@ void Mummy_SnapToTile(Vec3* pos, u32 id);
 bool8 Mummy_RouteToFloorEnd(Mummy* p);
 bool8 Mummy_AvoidNearbyBomb(Mummy* p);
 bool8 FUN_080eb2a0(Enemy* p);
-void FUN_080ce544(u32 param_1, u32 param_2);
+void PlayerLink_UpdateBloodSwordOnKill(u32 param_1, u32 param_2);
 void DefeatedEnemyLog_Add(u16 a, u16 b);
 void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void Enemy_AddKillCount(Enemy* p);
@@ -267,7 +267,7 @@ NON_MATCH void Mummy_OnHit(Hitbox* a, Hitbox* b, Mummy* p) {
       b->hitState |= HBHITSTATE_UNK_0;
       if ((p->e).hurtbox.iframes == 0 && Player_TestFlag20(b->owner, PFLAG20_INKA)) {
         (p->e).unk_4a0 = 1;
-        (p->e).flags6 = ENEFLAG6_UNK_2;
+        (p->e).flags6 = HBATTR_FLAME;
         (p->e).weaponExpMask = 0;
         (p->e).hurtbox.damage = 1;
         (p->e).unk_48a = 1;
@@ -503,7 +503,7 @@ NON_MATCH void Mummy_StateBurnRecover(Mummy* p, s32 timer) {
   if (!(p->e).animForceRestart) {
     return;
   }
-  (p->e).sleepTimer = 0;
+  (p->e).stunTimer = 0;
   (p->e).subStateDone = 1;
   Enemy_PlayAnim(&p->e, 0);
   Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
@@ -642,15 +642,15 @@ void Mummy_StateNap(Mummy* p, s32 timer) {
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 8);
-    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
-      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     }
   }
   if (Mod(timer, 60) == 0) {
     Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
   }
   if ((p->e).nodeWait <= 0 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
-    Enemy_EnterState(&p->e, Mummy_StateWakeUp, ES_UNK_6);
+    Enemy_EnterState(&p->e, Mummy_StateWakeUp, ES_WAKE_UP);
   } else if (anim->cmdIdx == 2) {
     anim->tick = 0;
   }
@@ -659,7 +659,7 @@ void Mummy_StateNap(Mummy* p, s32 timer) {
 void Mummy_StateWakeUp(Mummy* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 9);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
   }
   if (timer == 40) {
     Enemy_SetFlag4(&p->e, ENEFLAG4_UNK_4);
@@ -688,10 +688,10 @@ NON_MATCH void Mummy_StateRecover(Mummy* p, s32 timer) {
     return;
   }
   (p->e).subStateDone = 1;
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
     Enemy_ResetState(&p->e, 3, 0, 0);
-    Enemy_EnterState(&p->e, (p->e).handlerSleep, ES_SLEEP);
-    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+    Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_STUN_REQUEST | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
     return;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
@@ -746,7 +746,7 @@ NON_MATCH void Mummy_StateDamaged(Mummy* p, s32 timer) {
       PlaySound_082406e0(SE_UNK_298);
       PlaySound_082406e0(CRY_MUMMY_DAMAGED);
     }
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     (p->e).animForceRestart = 0;
   }
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
@@ -785,8 +785,8 @@ NON_MATCH void Mummy_StateDamaged(Mummy* p, s32 timer) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_3);
     return;
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_19)) {
-    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_1);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_STUN_REQUEST);
     return;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
@@ -1137,7 +1137,7 @@ NON_MATCH void Mummy_StateDying(Mummy* p, s32 timer) {
 
     (p->e).subStateDone = 1;
     if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
-      if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+      if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
         Mummy_Explode(p);
         NoiseManager_AddNoiseWithFlags((p->e).mover.pos.x, (p->e).mover.pos.z, 0x400, 0, 1);
       } else {
@@ -1182,7 +1182,7 @@ NON_MATCH void Mummy_StateDying(Mummy* p, s32 timer) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
@@ -2532,7 +2532,7 @@ void Mummy_TickSpitTimers(Mummy* p) {
 }
 
 // 焼かれている間, 焼ける声を出し粒子を消していき, 40フレームおきに hp を減らして尽きたら倒れる状態へ移す
-// 514/515命令, enedefault.c の FUN_080f6868 と同じ inline (spriteKind でパレットを切り替える, 自分の画面のプレイヤーが当てたかを返す bool8 で各 case が一致しなければ FALSE を返し break する形) で 515/515 まで寄る, 残差は &weaponExpMask を r7 に持ち越す形と CpuFill32 の &v を 0 より先に作る並び, 試済: weaponExpMask の検査を inline (512)
+// 516/515命令, 撃破数は UNK_948 / TOTAL_ENEMY_KILL, enedefault.c の FUN_080f6868 と同じ inline (spriteKind でパレットを切り替える, 自分の画面のプレイヤーが当てたかを返す bool8 で各 case が一致しなければ FALSE を返し break する形) で 515/515 まで寄る, 残差は &weaponExpMask を r7 に持ち越す形 (&v を 0 より先に作る並びは Vec3_Clear で一致), 試済: weaponExpMask の検査を inline (512)
 NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
 #ifdef NONMATCHING_C
   bool8 dead = Enemy_IsDead(&p->e);
@@ -2615,7 +2615,7 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
         Vec3 v;
 
         HUD_ShowEnemyGauge((p->e).mover.id, (p->e).hp, (p->e).maxHp, (p->e).unk_25a, 0);
-        CpuFill32(0, &v, sizeof(v));
+        Vec3_Clear(&v);
         if ((p->e).unk_48a != 0 || !((p->e).weaponExpMask & 0x4000)) {
           CreateDamageNumber(&(p->e).hurtbox, (p->e).unk_48a, 0, &(p->e).mover.pos, &v, 1);
         }
@@ -2626,20 +2626,12 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
     Enemy_ResetState(&p->e, 3, 0, 0);
     Enemy_EnterState(&p->e, (p->e).handlerDying, ES_DYING);
     if (IsLinkPlay()) {
-      FUN_080ce544((p->e).unk_4a0, (p->e).weaponExpMask);
+      PlayerLink_UpdateBloodSwordOnKill((p->e).unk_4a0, (p->e).weaponExpMask);
     } else {
       if (((p->e).unk_4a0 & 1) && !Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_7)) {
         if (((p->e).kind != ENEK_OCTOPUS || (p->e).variant != 1) && (p->e).kind != ENEK_SKELETON && (p->e).kind != ENEK_SKELETON_A && (p->e).kind != ENEK_SKELETON_F) {
-          if (gStat->unk_948[0] < 9999) {
-            gStat->unk_948[0]++;
-          } else {
-            gStat->unk_948[0] = 9999;
-          }
-          if (gStat->totalEnemyKillCount < 9999) {
-            gStat->totalEnemyKillCount++;
-          } else {
-            gStat->totalEnemyKillCount = 9999;
-          }
+          UNK_948(0) = (UNK_948(0) < 9999) ? (UNK_948(0) + 1) : 9999;
+          TOTAL_ENEMY_KILL = (TOTAL_ENEMY_KILL < 9999) ? (TOTAL_ENEMY_KILL + 1) : 9999;
           Enemy_AddKillCount(&p->e);
         }
         AddPlayerExp((p->e).exp);
@@ -3062,11 +3054,11 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
     (p->e).onRouteFailed(&p->e);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_UNK_15)) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
+  if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
@@ -3587,7 +3579,7 @@ s32 Mummy_Destroy(Mummy* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -3619,7 +3611,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_MUMMY);
+    Video_GetAuxSprite(&aux->gfx, SPR_MUMMY);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_MUMMY);
     k = (p->e).kind;
@@ -3636,7 +3628,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_MUMMY);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_MUMMY);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -3738,7 +3730,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -3748,7 +3740,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -3792,7 +3784,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
   (p->e).handlerTurn = Mummy_StateTurn;
   (p->e).handlerMove = Mummy_StateMove;
   (p->e).handlerWait = Mummy_StateWait;
-  (p->e).unk_5c0 = Mummy_StateNap;
+  (p->e).handlerNap = Mummy_StateNap;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Mummy_StateDamaged;
   (p->e).handlerDying = Mummy_StateDying;
@@ -3821,7 +3813,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

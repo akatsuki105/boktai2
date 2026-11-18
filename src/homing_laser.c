@@ -36,7 +36,7 @@ typedef struct {
   Hitbox hitbox;         // 0x084
   Hitbox hurtbox;        // 0x0D4, ハンドラは HomingLaser_OnHurt
   AuxSprite sprites[9];  // 0x124, sprites[0] が先頭
-  AuxSpriteGfx gfx;      // 0x2B0, SPRITE_JORMUNGANDR_8202
+  AuxSpriteGfx gfx;      // 0x2B0, SPR_LASBOS_00
 } HomingLaser;
 static_assert(sizeof(HomingLaser) == 716);
 

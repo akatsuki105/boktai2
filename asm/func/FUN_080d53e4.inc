@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	adds r5, r0, #0
 	movs r1, #4
-	bl FUN_080cc3c4
+	bl PlayerLink_SetFlag35a
 	ldr r1, _080D5404 @ =0x0000037D
 	adds r0, r5, r1
 	ldrb r4, [r0]
@@ -103,7 +103,7 @@ _080D5494:
 	strh r3, [r2]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080cc3c4
+	bl PlayerLink_SetFlag35a
 	adds r0, r5, #0
 	movs r1, #0x1c
 	movs r2, #3
@@ -115,7 +115,7 @@ _080D54E0: .4byte 0x0000037E
 _080D54E4:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080cc3c4
+	bl PlayerLink_SetFlag35a
 	ldr r0, _080D550C @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]

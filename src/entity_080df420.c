@@ -33,7 +33,7 @@ static_assert(sizeof(Entity080df420Elem) == 252);
 
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_10
-  AuxSpriteGfx gfx;              // 0x18, SPRITE_EFF_F422
+  AuxSpriteGfx gfx;              // 0x18, SPR_EFF_F422
   u8 unk_34[4];                  // 0x34, まだ未解析
   u32 usedMask;                  // 0x38, elems のどのスロットが使用中か, Entity080df420_AllocElem が立てる
   s16 frame;                     // 0x3C, _Update が毎フレーム 1 足す
@@ -452,7 +452,7 @@ s32 Entity080df420_Init(Entity080df420* p) {
   p->usedMask = 0;
   p->frame = 0;
   p->count = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_F422);
   Entity080df420_SetGlobal(p);
   return 0;
 }

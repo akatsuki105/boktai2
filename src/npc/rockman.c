@@ -101,7 +101,7 @@ void Cmd_56AD(void) {
     VEC3_SET(pos, 0, 0, 0);
   }
   angle = VM_GetNamedArgValue('d', 0);
-  spriteID = SPRITE_MEGAMAN;
+  spriteID = SPR_MEGAMAN;
   flags = 0;
 
   npc = NPC_Alloc(id, kind);

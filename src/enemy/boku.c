@@ -1,3 +1,5 @@
+#include "enemy/boku.h"
+
 #include "cwolf_target.h"
 #include "eff_elemcond.h"
 #include "enemy.h"
@@ -16,28 +18,6 @@
 #include "vec3.h"
 #include "vm.h"
 
-// ENEK_BOKU (EV_GHOUL, EV_ZOMBIE, EV_GHOUL_P)
-typedef struct {
-  Enemy e;
-  u8 unk_654[0x658 - 0x654];  // 0x654
-  u16 scriptID_658;           // 0x658, 0 でなければ unk_65b が unk_65a に届いたときに実行する
-  u8 unk_65a;                 // 0x65A, scriptID_658 を実行するまでのフレーム数
-  u8 unk_65b;                 // 0x65B, 毎フレーム +1
-  u16 unk_65c;                // 0x65C
-  u16 unk_65e;                // 0x65E
-  WorldPos unk_660;           // 0x660
-  Vec3 unk_668;               // 0x668
-  u16 timer_670;              // 0x670, FUN_080ffd28 が毎フレーム 1 減らす, 0 になるまで FUN_080ff270 が状態ハンドラを呼ばない
-  u16 unk_672;                // 0x672, '.P[2]=120', FUN_080ff470 が timer_670 の初期値として写す
-  u8 unk_674;                 // 0x674, '.P[0]=120'
-  u8 unk_675[0x67C - 0x675];  // 0x675
-  u16 unk_67c;                // 0x67C
-  u16 unk_67e;                // 0x67E, '.P[1]=120'
-  NavAgent navAgent;          // 0x680, Enemy.navAgent が指す
-  Vec3 pathNodePos;           // 0x6A4, Enemy.pathNodePos が指す
-} Boku;
-static_assert(sizeof(Boku) == 1708);
-
 bool8 FUN_080f0a0c(Enemy* p);
 void FUN_080f3cdc(Enemy* p);
 void Enemy_StepToFloorEdge(Enemy* p);
@@ -47,7 +27,7 @@ void FUN_080ff67c(Boku* p);
 void Boku_RouteAwayFromPlayer(Boku* p);
 void FUN_080fc28c(Boku* p);
 void Boku_OnReset(Boku* p);
-void FUN_080fc174(Boku* p, s32 param_2);
+void Boku_StateWakeUp(Boku* p, s32 param_2);
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f90[] = "eneinline.h";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f9c[] = "eneinline.h";
@@ -75,7 +55,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->stateBegun = TRUE;
   p->animForceRestart = FALSE;
   p->chaseTimer = 0;
-  p->sleepTimer = 0;
+  p->stunTimer = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
   p->hitTargetID = 0;
@@ -141,7 +121,7 @@ NON_MATCH void Boku_OnHurt(Hitbox* a, Hitbox* b, Boku* p) {
     if (!(a->typeMask & HBSRC_MFREEZE)) {
       return;
     }
-    if ((p->e).flags3 & (ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+    if ((p->e).flags3 & (ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
       return;
     }
     if ((p->e).unk_488 != 0) {
@@ -216,7 +196,7 @@ NON_MATCH void Boku_OnHurt(Hitbox* a, Hitbox* b, Boku* p) {
   }
   b->iframes = a->iframes;
   (p->e).unk_48c = b->hitResult;
-  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_18)) {
+  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_BLOW)) {
     knockback = a->knockback;
   } else {
     knockback = a->knockback - (p->e).unk_187;
@@ -225,7 +205,7 @@ NON_MATCH void Boku_OnHurt(Hitbox* a, Hitbox* b, Boku* p) {
     }
   }
   b->knockback = knockback;
-  if ((p->e).flags3 & (ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2)) {
+  if ((p->e).flags3 & (ENEFLAG3_STUN | ENEFLAG3_PETRIFIED)) {
     b->damage <<= 1;
     b->knockback >>= 1;
   }
@@ -697,25 +677,25 @@ NON_MATCH void FUN_080fba64(Boku* p) {
 #endif
 }
 
-void FUN_080fc0b8(Boku* p, s32 param_2) {
+void Boku_StateNap(Boku* p, s32 param_2) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 8);
-    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
-      (p->e).flags3 |= ENEFLAG3_UNK_0;
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+      (p->e).flags3 |= ENEFLAG3_ASLEEP;
     }
   }
   if (Mod(param_2, 60) == 0) {
     Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
   }
   if ((p->e).nodeWait <= 0 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
-    Enemy_EnterState(&p->e, FUN_080fc174, ES_UNK_6);
+    Enemy_EnterState(&p->e, Boku_StateWakeUp, ES_WAKE_UP);
   }
 }
 
-void FUN_080fc174(Boku* p, s32 param_2) {
+void Boku_StateWakeUp(Boku* p, s32 param_2) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 7);
-    Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_0);
+    Enemy_ClearFlag3(&p->e, ENEFLAG3_ASLEEP);
   }
 
   if (param_2 == 40) {
@@ -824,10 +804,10 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
     return;
   }
   (p->e).subStateDone = 1;
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
     Enemy_ResetState(&p->e, 3, 0, 0);
-    Enemy_EnterState(&p->e, (p->e).handlerSleep, ES_SLEEP);
-    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+    Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_STUN_REQUEST | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
     return;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
@@ -1029,7 +1009,7 @@ NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
       PlaySound_082406e0(CRY_BOKU_DAMAGED);
       PlaySound_082406e0(SE_UNK_298);
     }
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     (p->e).animForceRestart = 0;
   }
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
@@ -1081,8 +1061,8 @@ NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
   (p->e).subStateDone = 1;
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8);
   CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_19)) {
-    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_1);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_STUN_REQUEST);
     return;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
@@ -1501,7 +1481,7 @@ NON_MATCH void Boku_StateDying(Boku* p, s32 param_2) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     sprite->scaleX = Q6(1);
     sprite->scaleY = Q6(1);
     sprite->flags = (sprite->flags & ~SPRFLAG_AFFINE) | SPRFLAG_HIDDEN;
@@ -2347,11 +2327,11 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
     (p->e).onRouteFailed(&p->e);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_UNK_15)) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
+  if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
@@ -2689,7 +2669,7 @@ NON_MATCH bool32 FUN_081019e0(Boku* p) {
 #ifdef NONMATCHING_C
   Boku* q = (p->e).owner;
 
-  if (!Enemy_IsDead(&p->e) && (q->unk_65c & 1) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (!Enemy_IsDead(&p->e) && (q->unk_65c & 1) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     if (q->unk_67c == 0) {
       CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
       Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
@@ -2775,7 +2755,7 @@ s32 Boku_Destroy(Boku* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -2806,7 +2786,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_BOKU_0);
+    Video_GetAuxSprite(&aux->gfx, SPR_BOKU_0);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_BOKU);
     k = (p->e).kind;
@@ -2823,7 +2803,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_BOKU_0);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_BOKU_0);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -2925,7 +2905,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -2935,7 +2915,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -2988,7 +2968,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
   (p->e).handlerTurn = FUN_080fba64;
   (p->e).handlerMove = FUN_080fba28;
   (p->e).handlerWait = FUN_080fba40;
-  (p->e).unk_5c0 = FUN_080fc0b8;
+  (p->e).handlerNap = Boku_StateNap;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Boku_StateDamaged;
   (p->e).handlerDying = Boku_StateDying;
@@ -3017,7 +2997,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

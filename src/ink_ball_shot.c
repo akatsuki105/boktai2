@@ -30,7 +30,7 @@ static_assert(sizeof(InkBallShot) == 260);
 
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx;       // 0x018, SPRITE_DVALIN_2E78
+  AuxSpriteGfx gfx;       // 0x018, SPR_DVALIN_00
   AuxAnimFile* animFile;  // 0x034, ANIM_38E2
   u32 unk_38;             // 0x038, Init が 0 を書くだけで読み手は未発見
   u8 activeCount;         // 0x03C, 使用中の shots の数

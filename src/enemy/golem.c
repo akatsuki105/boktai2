@@ -1,3 +1,5 @@
+#include "enemy/golem.h"
+
 #include "camera.h"
 #include "cwolf_target.h"
 #include "dust.h"
@@ -20,51 +22,6 @@
 #include "sprite.h"
 #include "vec3.h"
 #include "vm.h"
-
-// Golem.flags (0x65C)
-typedef u32 GolemFlags;
-#define GOLEMFLAG_UNK_11 (1 << 11)        // 0x00000800, 立っていると次の転がり始めの溜めを省く
-#define GOLEMFLAG_TARGET_FIXED (1 << 19)  // 0x00080000, Golem_SetTargetTile で目標を決めた印, 立っている間はプレイヤーの位置で上書きしない
-
-// ENEK_GOLEM (EV_GOLEM_C, EV_GOLEM_S, EV_GOLEM_2, EV_GOLEM_P, EV_GOLEM_4, EV_GOLEM_5)
-// 転がって攻撃するが, 壁やゴーレム同士で激突するとダメージを受け気絶する
-typedef struct {
-  Enemy e;
-  u8 unk_654[4];      // 0x654
-  u8 unk_658;         // 0x658
-  u8 playRollSound;   // 0x659, 1 なら止まっている状態から転がり出すときに音を鳴らす
-  u16 unk_65a;        // 0x65A
-  GolemFlags flags;   // 0x65C, see GolemFlags
-  u32 unk_660;        // 0x660
-  u8 unk_664[4];      // 0x664
-  u16 rollHitID;      // 0x668, 転がりで当てた相手の Hitbox.id, 突進の終わりに hitTargetID へ渡す
-  u8 unk_66a[2];      // 0x66A
-  NavAgent navAgent;  // 0x66C, Enemy.navAgent が指す
-  Vec3 pathNodePos;   // 0x690, Enemy.pathNodePos が指す
-  u8 unk_698[16];     // 0x698
-  Vec3 unk_6a8;       // 0x6A8
-  u32 unk_6b0;        // 0x6B0
-  s16 rollTime;       // 0x6B4, 転がり続けられる残り, 1区間ごとに 30 減り尽きたら丸まりを解く
-  s16 speed;          // 0x6B6, 転がる速さ, variant ごとの上限まで加速する (階段の上では上限も加速も下がる)
-  u16 stopAnimSpeed;  // 0x6B8, 止まる間のアニメの速さ, animSpeedDiv はこの 1/128
-  u16 rollFrames;     // 0x6BA, Golem_SubRoll で転がっているフレーム数
-  u16 chargeGauge;    // 0x6BC, プレイヤーに近いほど貯まる (上限 400), クレイは 400, ほかは 200 で突進に移る
-  u16 windUpTime;     // 0x6BE, 転がり始めの溜めの長さ, variant ごとに乱数で決まる
-  u8 facing;          // 0x6C0, mover.angle の4方向
-  u8 stopPhase;       // 0x6C1, Golem_StateStopAtTile の段階, 0: 減速 1: タイルの中心へ寄せる 2: 止まって待つ
-  u8 moveAngle;       // 0x6C2, x か z の軸に揃えた進む向き
-  u8 stopTimer;       // 0x6C3, 減速して止まってからのフレーム数
-  u8 prevMoveAngle;   // 0x6C4, 前のフレームの moveAngle
-  u8 rollAngle;       // 0x6C5, 転がる向き, 減速中もこの向きに滑る
-  u8 unk_6c6;         // 0x6C6
-  u8 unk_6c7;         // 0x6C7
-  Vec3 targetPos;     // 0x6C8, 向かう先のタイルの中心
-  Vec3 routeDest;     // 0x6D0, Golem_RouteTo で経路を引く先
-  Vec3 unk_6d8;       // 0x6D8
-  u16 shakePower;     // 0x6E0, Camera_Shake の強さ
-  u16 shakeTimer;     // 0x6E2, 0 でない間毎フレーム画面を揺らして減る
-} Golem;
-static_assert(sizeof(Golem) == 1764);
 
 void FUN_080f3cdc(Enemy* p);
 bool8 FUN_080f0a0c(Enemy* p);
@@ -137,7 +94,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->stateBegun = TRUE;
   p->animForceRestart = FALSE;
   p->chaseTimer = 0;
-  p->sleepTimer = 0;
+  p->stunTimer = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
   p->hitTargetID = 0;
@@ -653,7 +610,7 @@ NON_MATCH void Golem_UpdateAtkHitbox(Golem* p) {
 #ifdef NONMATCHING_C
   Golem* q = (p->e).owner;
 
-  if (!Enemy_IsDead(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (!Enemy_IsDead(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_4)) {
       Hitbox* hb = &(p->e).hitbox;
 
@@ -676,7 +633,7 @@ NON_MATCH void Golem_UpdateAtkHitbox(Golem* p) {
       hb = &(p->e).hitbox;
       hb->flags = HBF_HITBOX | HBF_9 | HBF_ANGLE | HBF_DAMAGE;
       hb->ignoreMask = 0;
-      Hitbox_SetAttack(hb, power, knockback, HBSRC_7, (p->e).atkAttrs[1] | HBATTR_18, (p->e).atkIframes[1]);
+      Hitbox_SetAttack(hb, power, knockback, HBSRC_7, (p->e).atkAttrs[1] | HBATTR_BLOW, (p->e).atkIframes[1]);
       SET_FLAGS((p->e).cwolfNode.flags, 1);
       SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_14);
     } else {
@@ -938,22 +895,22 @@ void Golem_StateRespawn(Golem* p) {
 void Golem_StateNap(Golem* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 6);
-    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
-      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     }
   }
   if (Mod(timer, 60) == 0) {
     Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
   }
   if ((p->e).nodeWait <= 0 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
-    Enemy_EnterState(&p->e, Golem_StateWakeUp, ES_UNK_6);
+    Enemy_EnterState(&p->e, Golem_StateWakeUp, ES_WAKE_UP);
   }
 }
 
 void Golem_StateWakeUp(Golem* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 7);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
   }
   if (timer == 40) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
@@ -1369,10 +1326,10 @@ NON_MATCH void Golem_StateDash(Golem* p, s32 timer) {
     ScatterEffect_Spawn(count, FUN_080f8abc(&p->e), &(p->e).mover.pos, &vel, &velRange, 45, 31);
     PlayGolemSound(&p->e, 5);
     if (q->rollHitID == 0) {
-      (p->e).sleepTimer = 180;
+      (p->e).stunTimer = 180;
       SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_0);
       Enemy_ResetState(&p->e, 3, 0, 0);
-      Enemy_EnterState(&p->e, (p->e).handlerSleep, ES_SLEEP);
+      Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
     } else {
       (p->e).subStateDone = 1;
     }
@@ -1814,9 +1771,9 @@ NON_MATCH void Golem_StateDamaged(Golem* p) {
   }
   (p->e).subStateDone = 1;
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_19)) {
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
     Enemy_ResetState(&p->e, 3, 0, 0);
-    Enemy_EnterState(&p->e, (p->e).handlerSleep, ES_SLEEP);
+    Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
     return;
   }
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
@@ -2361,10 +2318,10 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
     return FALSE;
   }
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_15)) {
-    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
       (p->e).unk_214 = (p->e).mover.pos;
       (p->e).unk_20c = (p->e).mover.pos;
-      Enemy_EnterState(&p->e, (p->e).handlerSleep, ES_SLEEP);
+      Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
       Enemy_ResetState(&p->e, 3, 0, 0);
       return TRUE;
     }
@@ -2372,17 +2329,17 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
       if ((p->e).weaponExpMask & 0x80) {
         q->shakePower = 30;
         q->shakeTimer = 20;
-        (p->e).sleepTimer = (p->e).sleepTime;
+        (p->e).stunTimer = (p->e).stunTime;
         Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
         Enemy_ResetState(&p->e, 3, 0, 0);
-        SET_FLAGS((p->e).flags6, ENEFLAG6_UNK_19);
+        SET_FLAGS((p->e).flags6, HBATTR_STUN);
         CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
         CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_0 | ENEFLAG2_UNK_1 | ENEFLAG2_UNK_24);
         (p->e).animSpeedDiv = 1;
         return TRUE;
       }
-      if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
-        (p->e).sleepTimer = (p->e).sleepTime;
+      if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
+        (p->e).stunTimer = (p->e).stunTime;
         Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
         Enemy_ResetState(&p->e, 3, 0, 0);
         CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
@@ -2397,8 +2354,8 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
       return FALSE;
     }
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
-    (p->e).sleepTimer = (p->e).sleepTime;
+  if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
+    (p->e).stunTimer = (p->e).stunTime;
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
@@ -3910,7 +3867,7 @@ s32 Golem_Destroy(Golem* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -3943,7 +3900,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_GOLEM);
+    Video_GetAuxSprite(&aux->gfx, SPR_GOLEM);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_GOLEM);
     k = (p->e).kind;
@@ -3960,7 +3917,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_GOLEM);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_GOLEM);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -4062,7 +4019,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -4072,7 +4029,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -4116,7 +4073,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
   (p->e).handlerTurn = Golem_StateTurn;
   (p->e).handlerMove = Golem_StateMove;
   (p->e).handlerWait = Golem_StateWait;
-  (p->e).unk_5c0 = Golem_StateNap;
+  (p->e).handlerNap = Golem_StateNap;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Golem_StateDamaged;
   (p->e).handlerDying = Golem_StateDying;
@@ -4145,7 +4102,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

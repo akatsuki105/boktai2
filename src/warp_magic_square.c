@@ -28,12 +28,12 @@ typedef struct WarpMagicSquare {
   u16 nearState;                                    // 0x04C, プレイヤーが近いかを 0/1 で覚え, 変わったフレームだけ効果音を鳴らす
   u16 design;                                       // 0x04E, '.d=6', 魔方陣の絵柄 (ポーズ 0..7, +8 で光った絵), パレットと光の柱の色もこれで決まる
   AuxSprite sprite;                                 // 0x050, lift の高さに浮かせて重ねる光った魔方陣
-  AuxSpriteGfx gfx;                                 // 0x07C, SPRITE_MAGIC_SQUARE
+  AuxSpriteGfx gfx;                                 // 0x07C, SPR_MAGIC_SQUARE
   Vec3 pos;                                         // 0x098, '.p', y はタイルの attr から計算し直す
   AuxSprite sprite2;                                // 0x0A0, 床に置く魔方陣, ワープ演出の間は消える
-  AuxSpriteGfx gfx2;                                // 0x0CC, SPRITE_MAGIC_SQUARE
+  AuxSpriteGfx gfx2;                                // 0x0CC, SPR_MAGIC_SQUARE
   AuxSprite pillars[3];                             // 0x0E8, 縦に積む光の柱
-  AuxSpriteGfx pillarGfx[3];                        // 0x16C, SPRITE_MAGIC_SQUARE, パレットは plttID + 2
+  AuxSpriteGfx pillarGfx[3];                        // 0x16C, SPR_MAGIC_SQUARE, パレットは plttID + 2
   u16 pillarLevel;                                  // 0x1C0, 光の柱の伸び具合 0..7, 2 段階ごとに柱が1本増える
   bool8 vanishOnArrive;                             // 0x1C2, '.s', 到着の演出が終わったら回りながら縮んで消える
   bool8 withCoffin;                                 // 0x1C3, COFFIN_SOLAR が近くにあって一緒にワープする
@@ -688,7 +688,7 @@ NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
   }
   p->plttID = OBP_MSQUARE(p->design >> 1);
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(&p->gfx, SPR_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   p->sprite.poseIdx = p->design;
   Video_SetAuxSpritePltt(&p->gfx, p->plttID);
@@ -696,7 +696,7 @@ NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
   p->sprite.priority = 3;
   p->sprite.pos = p->pos;
 
-  Video_GetAuxSprite(&p->gfx2, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(&p->gfx2, SPR_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
   p->sprite2.poseIdx = p->design;
   Video_SetAuxSpritePltt(&p->gfx2, p->plttID);
@@ -705,7 +705,7 @@ NON_MATCH s32 WarpMagicSquare_Init(WarpMagicSquare* p, u32 id, u32 param_3) {
   p->sprite2.pos = p->pos;
 
   for (i = 0; i < 3; i++) {
-    Video_GetAuxSprite(&p->pillarGfx[i], SPRITE_MAGIC_SQUARE);
+    Video_GetAuxSprite(&p->pillarGfx[i], SPR_MAGIC_SQUARE);
     AuxSprite_Add(&p->pillars[i], &p->pillarGfx[i], 0);
     p->pillars[i].poseIdx = (p->design & 1) + 16;
     Video_SetAuxSpritePltt(&p->pillarGfx[i], p->plttID + 2);

@@ -7,12 +7,12 @@
 #define ANIM_1003 0x1003
 #define ANIM_121B 0x121B
 #define ANIM_13F9 0x13F9
-#define ANIM_1752 0x1752
+#define ANIM_LIQUID BOKHASH("liquid_anm")  // 0x1752, 溶解液, SPR_ACID_0, SPR_ACID_1 とセットなので liquid_anm で間違いないと思われる
 #define ANIM_1C9B 0x1C9B
 #define ANIM_1DC3 0x1DC3
-#define ANIM_BOKU 0x1DF8              // 0x1DF8
-#define ANIM_GOLEM 0x1E38             // 0x1E38
-#define ANIM_1FB8 BOKHASH("ect_anm")  // 0x1FB8, エクトプラズムのアニメーション
+#define ANIM_BOKU BOKHASH("ene01_anm")   // 0x1DF8
+#define ANIM_GOLEM BOKHASH("ene05_anm")  // 0x1E38
+#define ANIM_1FB8 BOKHASH("ect_anm")     // 0x1FB8, エクトプラズムのアニメーション
 #define ANIM_27A4 0x27A4
 #define ANIM_GHOST BOKHASH("ghost_anm")  // 0x29FB
 #define ANIM_31F4 0x31F4
@@ -22,14 +22,14 @@
 #define ANIM_3DC2 0x3DC2
 #define ANIM_SWORDAX BOKHASH("weapon_anm")  // 0x3F72
 #define ANIM_4EC0 0x4EC0
-#define ANIM_BAT BOKHASH("bat_anm")  // 0x5BB7
-#define ANIM_5C4D 0x5C4D
-#define ANIM_BEE BOKHASH("bee_anm")  // 0x62C7
+#define ANIM_BAT BOKHASH("bat_anm")        // 0x5BB7
+#define ANIM_LASBOS BOKHASH("lasbos_anm")  // 0x5C4D
+#define ANIM_BEE BOKHASH("bee_anm")        // 0x62C7
 #define ANIM_6830 0x6830
-#define ANIM_74C9 0x74C9
-#define ANIM_78E1 0x78E1
-#define ANIM_CROW BOKHASH("crow_anm")  // 0x7B03
-#define ANIM_871C 0x871C
+#define ANIM_BEENEST BOKHASH("bee_nest_anm")           // 0x74C9
+#define ANIM_CURORO_SHOTS BOKHASH("curoro_shots_anm")  // 0x78E1, ダーインのエネルギー弾 (クロロホルルン+)
+#define ANIM_CROW BOKHASH("crow_anm")                  // 0x7B03
+#define ANIM_BOMB BOKHASH("bomb_00_anm")               // 0x871C
 #define ANIM_87EF 0x87EF
 #define ANIM_8DC7 0x8DC7
 #define ANIM_931E 0x931E
@@ -46,7 +46,7 @@
 #define ANIM_C160 0xC160                           // 0xC160
 #define ANIM_OTENKO BOKHASH("otenko_anm")          // 0xC6A0
 #define ANIM_D1B8 0xD1B8                           // 0xD1B8, PTCL_GROUP_0, BOKHASH("effect00_anm")?
-#define ANIM_D41F 0xD41F                           // 0xD41F, PTCL_GROUP_1
+#define ANIM_D41F BOKHASH("eff_eff_02_anm")        // 0xD41F, PTCL_GROUP_1
 #define ANIM_D6C8 0xD6C8                           // 0xD6C8
 #define ANIM_COCKATRICE BOKHASH("cockatrice_anm")  // 0xDA5E
 #define ANIM_OCTOPUS BOKHASH("octopus_anm")        // 0xDCEB

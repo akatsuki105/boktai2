@@ -100,7 +100,7 @@ void Cmd_A133(void) {
   if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 2, SPRITE_COFSELLER_HATENA, 0, flags) < 0) {
+  if (FUN_08040f48(npc, 2, SPR_COFSELLER_HATENA, 0, flags) < 0) {
     return;
   }
 
@@ -116,7 +116,7 @@ void Cmd_A133(void) {
   NPC_SetCb(npc, 2, FUN_0820a2c4);
   NPC_SetCb(npc, 3, FUN_0820a464);
   NPC_SetOnDestroy(npc, FUN_0820a470);
-  FUN_08040df4(p, npc, SPRITE_COFSELLER_HATENA, 0);
+  FUN_08040df4(p, npc, SPR_COFSELLER_HATENA, 0);
   NPCManager_LinkNPC(p, npc);
   FUN_08041e10(p, npc);
 

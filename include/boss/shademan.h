@@ -15,7 +15,7 @@ static_assert(sizeof(Entity0805ee80Elem) == 76);
 
 typedef struct Entity0805ee80 {
   Entity e;                               // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx[2];                    // 0x018, SPRITE_SPEAKER
+  AuxSpriteGfx gfx[2];                    // 0x018, SPR_SPEAKER
   s32 unk_50;                             // 0x050, _Create の引数
   Entity0805ee80Elem elems[8];            // 0x054
   struct Entity0805f2dc* entity0805f2dc;  // 0x2B4

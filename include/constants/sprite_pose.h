@@ -2,7 +2,7 @@
 #define __INCLUDE_CONSTANTS_SPRITE_POSE_H__
 
 // --------------------------------------------
-// SPRITE_UI_START_MENU
+// SPR_UI_START_MENU
 
 #define SMENU_NUM_BROWN(num) (0 + (num))  // 茶色の数字の poseIdx, 0 から始まる
 #define SMENU_NUM_BLUE(num) (10 + (num))  // SMENU_NUM_BROWN の青色版
@@ -32,7 +32,7 @@
 #define SMENU_BADCOND_ICON(kind) (177 + (kind))           // 悪いステータス効果のアイコンのみ, kind は 0: ヒョウケツ, 1: インカ, 2: セキカ, 3: カーモス, 4: 毒, 5: 混乱, 6: 腹痛
 
 // --------------------------------------------
-// SPRITE_UI_LINK
+// SPR_UI_LINK
 
 #define LINK_NUMBER_S1(num) (0 + (num))        // 0..9 までの小さな数字 (パレットが違う2種類のうちの1つ)
 #define LINK_COLON 10                          // ":" の文字
@@ -72,7 +72,7 @@
 #define LINK_MAX_MODE 75                   // "MAX MODE!" の文字
 
 // --------------------------------------------
-// SPRITE_UI_MISC
+// SPR_UI_MISC
 
 #define UI_MISC_POSE_0 0
 #define UI_MISC_POSE_1 1
@@ -118,7 +118,7 @@
 #define UI_MISC_POSE_41 41
 
 // --------------------------------------------
-// SPRITE_PORTRAITS
+// SPR_PORTRAITS
 
 #define PORTRAIT_RDJANGO 0  // 赤ジャンゴ
 #define PORTRAIT_BDJANGO 1  // 黒ジャンゴ
@@ -152,7 +152,7 @@
 #define PORTRAIT_KURO_KEGA 29
 
 // --------------------------------------------
-// SPRITE_MARKERS
+// SPR_MARKERS
 
 #define MARKER_IMMORTAL(dir4) (0 + (dir4))  // "Immortal" + arrow, dir4: 0: ↖, 1: ↗, 2: ↙, 3: ↘
 #define MARKER_UNDEAD(dir4) (4 + (dir4))    // "Undead" + arrow, dir4: 0: ↖, 1: ↗, 2: ↙, 3: ↘

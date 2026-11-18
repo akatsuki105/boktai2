@@ -327,7 +327,7 @@ void Boss_ShowEmote(Boss* p, u32 kind, s32 param_3, s32 param_4) {
     case 5: {
       p->unk_150 = param_3;
       p->unk_152 = param_4;
-      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_3, 0, &p->unk_150, p->unk_152, 0, 100);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_STUN, 0, &p->unk_150, p->unk_152, 0, 100);
       break;
     }
     case 6: {

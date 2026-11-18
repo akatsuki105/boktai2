@@ -35,17 +35,17 @@ const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ect_anm_08251
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char gString_08251ddc[] = "../../skoba/enemy/system/eneinline.h";
 
 const FileID FileID_ARRAY_085ad048[6] = {
-    TILEMAP_8446,
-    TILEMAP_8546,
-    TILEMAP_8646,
-    TILEMAP_8746,
-    TILEMAP_8846,
-    TILEMAP_8946,
+    MP_8446,
+    MP_8546,
+    MP_8646,
+    MP_8746,
+    MP_8846,
+    MP_8946,
 };  // 0x085AD048
 
 void FUN_080df478(void);  // src/entity_080df420.c
 
-s32 FUN_0805b1a0(struct Entity0805b068* p);
+s32 CuroroShotManager_VanishAll(struct CuroroShotManager* p);
 
 void FUN_08086b18(WorldPos* pos);
 
@@ -439,7 +439,7 @@ void FUN_080af0c8(PileDriver* p) {
       break;
     }
     case 4: {
-      FUN_0805b1a0(p->unk_1360);
+      CuroroShotManager_VanishAll(p->curoroShotManager);
       break;
     }
   }

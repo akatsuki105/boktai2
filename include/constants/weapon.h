@@ -106,7 +106,7 @@
 #define WET_ANTI_UNDEAD 25    // アンデッド〃(シルバーフレイル)
 #define WET_ANTI_IMMORTAL 26  // イモータル〃(モーニングスター)
 #define WET_NAMAKURA 27       // 10%の確率で敵の防御を無視して攻撃(なまくら系)
-#define WET_PARALYZE 28       // 10%の確率でマヒ
+#define WET_STUN 28           // 10%の確率で気絶(ゲーム内では"マヒ"と呼ぶ)
 #define WET_BLOOD_SWORD 29    // 敵を倒すとライフが変化, 赤ジャンゴ: -1, 黒ジャンゴ: +1
 #define WET_ENE_COST 30       // エンチャント攻撃のMP消費を下げる(マジックソード)
 #define WET_DURABILITY 31     // 武器の耐久消費を減らす

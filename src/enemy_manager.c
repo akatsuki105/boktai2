@@ -26,7 +26,7 @@ void Enemy_ClearStateBegun(Enemy* p);
 void FUN_080e5098(Enemy* p, s32 dx, s32 dz);
 void Enemy_AddKillCount(Enemy* p);
 void HUD_ShowEnemyGauge(u32 id, s32 hp, u32 maxHp, u32 param_4, u32 param_5);
-void FUN_080ce544(u32 param_1, u32 param_2);
+void PlayerLink_UpdateBloodSwordOnKill(u32 playerMask, u32 weaponMask);
 bool8 FUN_0817e83c(Enemy* p);
 bool8 EnemyManager_StepPaletteFade(EnemyManager* p, Enemy* enemy);
 void EnemyManager_StartPaletteFade(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate);
@@ -596,7 +596,7 @@ void Enemy_KillAll(void) {
 }
 
 // 生きている敵すべてに damage を与え, 倒した敵の討伐数と経験値を加算する
-// 480/508 命令, ループの出口の形と表示判定の分岐が未解決, 下書き段階
+// 486/508 命令, 撃破数は UNK_948 / TOTAL_ENEMY_KILL, ループの出口の形と表示判定の分岐が未解決, 下書き段階
 NON_MATCH void Enemy_DamageAll(s32 damage) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
@@ -672,8 +672,8 @@ NON_MATCH void Enemy_DamageAll(s32 damage) {
         if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
           if ((p->unk_4a0 & 1) && !TEST_FLAGS(p->flags5, ENEFLAG5_UNK_7)) {
             if ((p->kind != ENEK_OCTOPUS || p->variant != 1) && p->kind != ENEK_SKELETON && p->kind != ENEK_SKELETON_A && p->kind != ENEK_SKELETON_F) {
-              gStat->unk_948[0] = gStat->unk_948[0] < 9999 ? gStat->unk_948[0] + 1 : 9999;
-              gStat->totalEnemyKillCount = gStat->totalEnemyKillCount < 9999 ? gStat->totalEnemyKillCount + 1 : 9999;
+              UNK_948(0) = (UNK_948(0) < 9999) ? (UNK_948(0) + 1) : 9999;
+              TOTAL_ENEMY_KILL = (TOTAL_ENEMY_KILL < 9999) ? (TOTAL_ENEMY_KILL + 1) : 9999;
               Enemy_AddKillCount(p);
             }
             AddPlayerExp(p->exp);
@@ -684,7 +684,7 @@ NON_MATCH void Enemy_DamageAll(s32 damage) {
           }
           SET_FLAGS(p->hurtbox.flags, HBF_HIDDEN);
         } else {
-          FUN_080ce544(p->unk_4a0, p->weaponExpMask);
+          PlayerLink_UpdateBloodSwordOnKill(p->unk_4a0, p->weaponExpMask);
         }
       } else {
         SET_FLAGS(p->flags3, ENEFLAG3_UNK_5);
@@ -719,7 +719,7 @@ NON_MATCH void Cmd_C12A(void) {
     if (Enemy_TestFlag(p, ENEFLAG_UNK_1) && p->hp > 0) {
       if (kind == 0 || kind == p->kind) {
         p->hp = 0;
-        p->sleepTimer = 0;
+        p->stunTimer = 0;
         p->mover.pos.x = 0;
         p->mover.pos.y = 30000;
         p->mover.pos.z = 0;
@@ -733,7 +733,7 @@ NON_MATCH void Cmd_C12A(void) {
       }
     } else if (!Enemy_IsDead(p) && (kind == 0 || kind == p->kind)) {
       p->hp = 0;
-      p->sleepTimer = 0;
+      p->stunTimer = 0;
       Enemy_SetFlag(p, ENEFLAG_UNK_12);
       if (removeFlag != 0) {
         SET_FLAGS(p->flags2, ENEFLAG2_UNK_22);
@@ -759,7 +759,7 @@ void Cmd_7659(void) {
       u8 kind = p->kind;
 
       if (kind == ENEK_BOKU || kind == ENEK_MUMMY || kind == ENEK_GOLEM || kind == ENEK_COCKA) {
-        Enemy_RequestState(p, p->unk_5c0, ES_UNK_5);
+        Enemy_RequestState(p, p->handlerNap, ES_NAP);
         Enemy_RequestSubState(p, 0, 0, 3);
         SET_FLAGS(p->flags2, ENEFLAG2_UNK_12);
       }
@@ -770,13 +770,13 @@ void Cmd_7659(void) {
 }
 
 // 0xC1F2
-void Cmd_SleepEnemy(void) {
+void Cmd_StunEnemy(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
-    if (p != NULL && p->handlerSleep != NULL) {
-      p->sleepTimer = p->sleepTime;
-      Enemy_SetFlag4(p, ENEFLAG4_UNK_1);
+    if (p != NULL && p->handlerStun != NULL) {
+      p->stunTimer = p->stunTime;
+      Enemy_SetFlag4(p, ENEFLAG4_STUN_REQUEST);
     }
   }
 }
@@ -868,7 +868,7 @@ void Cmd_286B(void) {
     if (!Enemy_IsDead(p)) {
       u8 kind = p->kind;
 
-      if ((kind == ENEK_BOKU || kind == ENEK_MUMMY || kind == ENEK_GOLEM || kind == ENEK_COCKA) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+      if ((kind == ENEK_BOKU || kind == ENEK_MUMMY || kind == ENEK_GOLEM || kind == ENEK_COCKA) && !TEST_FLAGS(p->flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
         Enemy_RequestState(p, Enemy_ClearStateBegun, ES_INACTIVE);
         Enemy_RequestSubState(p, 0, 1, 0);
       }
@@ -1336,7 +1336,7 @@ NON_MATCH void Enemy_Reset(Enemy* p) {
   p->stateBegun = TRUE;
   p->animForceRestart = FALSE;
   p->chaseTimer = 0;
-  p->sleepTimer = 0;
+  p->stunTimer = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
   p->hitTargetID = 0;
@@ -1372,7 +1372,7 @@ NON_MATCH void Enemy_Reset(Enemy* p) {
   }
   EnemyManager_TryEndPaletteFade(p);
   p->emote = Emote_Remove(p->emote, 1, p->mover.id);
-  p->emote = Emote_RemovePtcl(p->emote, 3, p->mover.id);
+  p->emote = Emote_RemovePtcl(p->emote, EMOTE_STUN, p->mover.id);
   FUN_080ecbe4();
 #else
   INCFUNC("asm/func/Enemy_Reset.inc");
@@ -1704,7 +1704,7 @@ NON_MATCH void Enemy_ApplyPaletteFade(Enemy* p) {
 #endif
 }
 
-// 0xB3D7, HashName("アルバム"), '.n' の敵の初期位置の経路と経路ノードを '.r' で差し替える
+// 0xB3D7, '.n' の敵の初期位置の経路と経路ノードを '.r' で差し替える
 void Cmd_B3D7(void) {
   u32 id = VM_GetNamedArgValue('n', 0);
 
@@ -1830,11 +1830,11 @@ NON_MATCH void Cmd_SetEnemyParams(void) {
   if (VM_SeekToNamedArg('l')) {
     value = VM_GetPC() != NULL ? (s32)VM_GetValue() : -1;
     if (value >= 0) {
-      p->unk_18e = value;
+      p->hitStunTime = value;
     }
     value = VM_GetPC() != NULL ? (s32)VM_GetValue() : -1;
     if (value >= 0) {
-      p->sleepTime = value;
+      p->stunTime = value;
     }
     value = VM_GetPC() != NULL ? (s32)VM_GetValue() : -1;
     if (value >= 0) {

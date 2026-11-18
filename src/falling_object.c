@@ -17,9 +17,9 @@
 
 // FallingObject.type
 enum {
-  TYPE_LAVA = 0,       // マグマの間欠泉, SPRITE_SPRING_863A
-  TYPE_ROCK = 1,       // 落石, SPRITE_ROCK_9D3F
-  TYPE_SPIKEBALL = 2,  // 夢幻街のトラップやドゥラスロールの落とす鉄球, SPRITE_SPIKEBALL
+  TYPE_LAVA = 0,       // マグマの間欠泉, SPR_SPRING_863A
+  TYPE_ROCK = 1,       // 落石, SPR_ROCK_9D3F
+  TYPE_SPIKEBALL = 2,  // 夢幻街のトラップやドゥラスロールの落とす鉄球, SPR_SPIKEBALL
 };
 
 // FallingObject.state
@@ -158,9 +158,9 @@ s32 FallingObject_FreeNode(FallingObject* p) {
 
 s32 FallingObject_Spawn(u16 id, s32 type, u32 flags, s32 duration, s32 fallSpeed, s32 hp, s32 power, s32 knockback, Vec3* pos) {
   static const SpriteID16 sFallingObjectSpriteIDs[8] = {
-      [TYPE_LAVA] = SPRITE_SPRING_863A,
-      [TYPE_ROCK] = SPRITE_ROCK_9D3F,
-      [TYPE_SPIKEBALL] = SPRITE_SPIKEBALL,
+      [TYPE_LAVA] = SPR_SPRING_863A,
+      [TYPE_ROCK] = SPR_ROCK_9D3F,
+      [TYPE_SPIKEBALL] = SPR_SPIKEBALL,
   };  // 0x085AA790
 
   FallingObject* data;

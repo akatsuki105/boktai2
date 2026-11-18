@@ -48,7 +48,7 @@ static inline bool8 Enemy_ConsumeSubStateBegun(Enemy* p) {
 
 // 歩きアニメの速さを 64 / animSpeedDiv にする, 怯みなどの印が立っていれば等速に戻す
 static inline void Enemy_UpdateWalkAnimSpeed(Enemy* p) {
-  if (Enemy_TestFlag3(p, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (Enemy_TestFlag3(p, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     p->animSpeedDiv = 1;
   } else if (p->animSpeedDiv == 0) {
     p->animSpeedDiv = 1;
@@ -243,7 +243,7 @@ static inline void Enemy_HandleHurt(Hitbox* a, Hitbox* b, Enemy* p) {
     if (!Hitbox_HasSource(a, HBSRC_MFREEZE)) {
       return;
     }
-    if (Enemy_GetFlag3(p, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+    if (Enemy_GetFlag3(p, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
       return;
     }
     if (p->unk_488 != 0) {
@@ -292,7 +292,7 @@ static inline void Enemy_HandleHurt(Hitbox* a, Hitbox* b, Enemy* p) {
   p->unk_48c = b->hitResult;
   if (p->kind == ENEK_BAT || p->kind == ENEK_CROW || p->kind == ENEK_BEE || p->kind == ENEK_GHOST) {
     knockback = a->knockback;
-  } else if (Hitbox_TestAttr(a, HBATTR_18)) {
+  } else if (Hitbox_TestAttr(a, HBATTR_BLOW)) {
     knockback = a->knockback;
   } else {
     knockback = a->knockback - p->unk_187;
@@ -301,7 +301,7 @@ static inline void Enemy_HandleHurt(Hitbox* a, Hitbox* b, Enemy* p) {
     }
   }
   b->knockback = knockback;
-  if (Enemy_GetFlag3(p, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2)) {
+  if (Enemy_GetFlag3(p, ENEFLAG3_STUN | ENEFLAG3_PETRIFIED)) {
     b->damage <<= 1;
     b->knockback = FixToInt(1, b->knockback);
   }

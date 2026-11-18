@@ -46,7 +46,7 @@ static_assert(sizeof(ShopCursor) == 48);
 
 // MainSpriteGfx ひとつと、そこから作った MainSprite 2枚をまとめた表示部品, ショップ系のエンティティが共通で持つ
 typedef struct {
-  MainSpriteGfx gfx;      // 0x00, SPRITE_UI_START_MENU (FUN_080b9814) or SPRITE_INVENTORY_ICONS (FUN_080b99a0)
+  MainSpriteGfx gfx;      // 0x00, SPR_UI_START_MENU (FUN_080b9814) or SPR_INVENTORY_ICONS (FUN_080b99a0)
   MainSprite sprites[2];  // 0x20
 } ShopSpritePair;
 

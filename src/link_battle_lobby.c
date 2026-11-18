@@ -14,15 +14,15 @@ static_assert(sizeof(LinkBattleLobbySlot) == 4);
 // 通信の参加者一覧画面,4人分の枠に UI_LINK のアイコンと DJANGO_SABATA の立ち絵を並べ、gLinkSession の進行状況を表示する
 typedef struct LinkBattleLobby {
   Entity e;                                         // 0x000, ENTITY_UNK_11
-  Tilemaps* tilemap;                                // 0x018, FUN_081db9f4 が TILEMAP_CD91 を入れ、Video_SetupBGLayout / Video_SetBGLayer に渡す
+  Tilemaps* tilemap;                                // 0x018, FUN_081db9f4 が MP_CD91 を入れ、Video_SetupBGLayout / Video_SetBGLayer に渡す
   rgb555* bgPltt;                                   // 0x01C, bg_link_col_arr
   MainSprite sprites[8];                            // 0x020, FUN_081dbd74 が 0..3 に立ち絵を、FUN_081dbc60 が 4..7 にアイコンを登録する
   MainSpriteGfx uiGfx;                              // 0x320, sprites[4..7] 用,FUN_081dbc60 が uiSpriteFile から開く
   MainSpriteGfx charGfx;                            // 0x340, sprites[0..3] 用,FUN_081dbd74 が charSpriteFile から開く
   u16 animID[8];                                    // 0x360, FUN_081dbc14 が 4,4,4,4,0x3A,0x3B,0x3C,0x3D を入れ、FUN_081dbea0 が状態に応じて差し替える
   s16 shownAnimID[8];                               // 0x370, 表示済みの animID,初期値 -1,違うときだけ FUN_081dbea0 が貼り直す
-  MainSpriteGfxFile* uiGfxFile;                     // 0x380, SPRITE_UI_LINK
-  MainSpriteGfxFile* charGfxFile;                   // 0x384, SPRITE_DJANGO_SABATA
+  MainSpriteGfxFile* uiGfxFile;                     // 0x380, SPR_UI_LINK
+  MainSpriteGfxFile* charGfxFile;                   // 0x384, SPR_DJANGO_SABATA
   rgb555 pltt[16];                                  // 0x388, FUN_081dba54 が bgPltt+0x40 から複写,FUN_081dba78 が点滅させて gBgPlttBuffer のバンク2へ送る
   u16 blinkTimer;                                   // 0x3A8, FUN_081dba78 が 0..0x31 で回し、選択中の枠の色を決める
   u8 unk_3aa[2];                                    // 0x3AA, 読み手も書き手も見つかっていない
@@ -85,7 +85,7 @@ const u8 u8_ARRAY_085ae204[456] = {
 void FUN_081db9f4(LinkBattleLobby* p) {
   s32 layer;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
   layer = 7;
   Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, &layer);
 

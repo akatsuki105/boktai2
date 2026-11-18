@@ -74,7 +74,7 @@ _080AF198:
 	adds r0, r4, r1
 	ldrh r0, [r0]
 	movs r1, #0x32
-	bl Entity0805b068_Create
+	bl CuroroShotManager_Create
 	movs r2, #0x9b
 	lsls r2, r2, #5
 	adds r1, r4, r2

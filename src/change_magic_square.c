@@ -24,10 +24,10 @@ typedef struct ChangeMagicSquare {
   u8 unk_1c[4];                           // 0x01C, 触られていない
   Mover mover;                            // 0x020
   AuxSprite sprite;                       // 0x064, flags に 0x200 が立つ, rise が 0 の間は隠す
-  AuxSpriteGfx gfx;                       // 0x090, SPRITE_MAGIC_SQUARE
+  AuxSpriteGfx gfx;                       // 0x090, SPR_MAGIC_SQUARE
   Vec3 pos;                               // 0x0AC, '.p', y はタイルの attr から計算し直す, 起動するとプレイヤーをここへ移す
   AuxSprite sprite2;                      // 0x0B4, flags に BLINK_EVEN が立つ2枚目
-  AuxSpriteGfx gfx2;                      // 0x0E0, SPRITE_MAGIC_SQUARE
+  AuxSpriteGfx gfx2;                      // 0x0E0, SPR_MAGIC_SQUARE
   u16 plttID;                             // 0x0FC, 106
   u16 highlight;                          // 0x0FE, 近いと 8 まで増え離れると減る
   u16 rise;                               // 0x100, 近いと 2 ずつ 0x18 まで増え離れると減る, 0 のときは sprite を隠す
@@ -199,7 +199,7 @@ s32 ChangeMagicSquare_Init(ChangeMagicSquare* p, u32 id, u32 param_3) {
   }
 
   p->plttID = 106;
-  Video_GetAuxSprite(&p->gfx, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(&p->gfx, SPR_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   AuxSprite_SetPoseIdx(&p->sprite, 7);
   Video_SetAuxSpritePltt(&p->gfx, p->plttID);
@@ -207,7 +207,7 @@ s32 ChangeMagicSquare_Init(ChangeMagicSquare* p, u32 id, u32 param_3) {
   p->sprite.priority = 3;
   p->sprite.pos = p->pos;
 
-  Video_GetAuxSprite(&p->gfx2, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(&p->gfx2, SPR_MAGIC_SQUARE);
   AuxSprite_Add(&p->sprite2, &p->gfx2, 0);
   AuxSprite_SetPoseIdx(&p->sprite2, 7);
   Video_SetAuxSpritePltt(&p->gfx2, p->plttID);

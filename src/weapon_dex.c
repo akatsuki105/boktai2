@@ -18,28 +18,28 @@ typedef struct {
 
 typedef struct {
   Entity e;                       // 0x000, ENTITY_UNK_8
-  Tilemaps* tilemap;              // 0x018, TILEMAP_4F8F
+  Tilemaps* tilemap;              // 0x018, MP_4F8F
   rgb555* pltt;                   // 0x01C, BGP_A41A
   u32 frameCounter;               // 0x020
   u8 page;                        // 0x024, 0: 剣, 1: 槍, 2: ハンマー, 3: 銃
   weapon8_t selected;             // 0x025, カーソル位置の武器, 未登録でも ID が入る
   u8 cursorX;                     // 0x026, 0..4
   u8 cursorY;                     // 0x027, 0..3
-  MainSpriteGfx gfx;              // 0x028, SPRITE_UI_GALLERY
+  MainSpriteGfx gfx;              // 0x028, SPR_UI_GALLERY
   MainSprite pageTitle;           // 0x048, ページ見出し, pose は page + 25
   MainSprite cursor;              // 0x0A8
   MainSprite countSprites[5];     // 0x108, "登録数 / 総数"
   MainSprite completeMarks[2];    // 0x2E8, ページが全部埋まったら出す
   MainSprite pageArrowL;          // 0x3A8, L のページ送りの矢印
   MainSprite pageArrowR;          // 0x408, R のページ送りの矢印
-  WeaponIconSprites icons;        // 0x468, SPRITE_INVENTORY_ICONS
+  WeaponIconSprites icons;        // 0x468, SPR_INVENTORY_ICONS
   MainSprite selectedIcon;        // 0xC08, カーソル位置の武器のアイコン
   rgb555 cursorPltt[16];          // 0xC68, cursor のパレットの複製, [12] を明滅させる
   u16 cursorBlinkTimer;           // 0xC88, 0..49 を回る
   u8 unk_c8a;                     // 0xC8A
   AuxSprite previewShadow;        // 0xC8C, preview の足元に置く影
-  AuxSpriteGfx previewShadowGfx;  // 0xCB8, SPRITE_EFF_1C1B
-  SpriteHolder preview;           // 0xCD4, SPRITE_DJANGO_SABATA
+  AuxSpriteGfx previewShadowGfx;  // 0xCB8, SPR_EFF_1C1B
+  SpriteHolder preview;           // 0xCD4, SPR_DJANGO_SABATA
   rgb555 previewPltt[16];         // 0xD68, preview のパレットの複製, 5/6/13 番を差し替える
   u8 previewStep;                 // 0xD88, プレビューの演技の段
   u8 previewTimer;                // 0xD89, 今の段に入ってからのフレーム数
@@ -439,7 +439,7 @@ NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
   s32 i;
   s32 j;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_GALLERY);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_GALLERY);
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
 
@@ -461,7 +461,7 @@ NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
   MainSprite_Add(&p->pageArrowL, &p->gfx, 34, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
   MainSprite_Add(&p->pageArrowR, &p->gfx, 35, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   p->icons.gfx = *f;
   OpenMainSpriteFile(&p->icons.gfx, f);
   for (i = 0; i < 4; i++) {
@@ -484,14 +484,14 @@ NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
   WeaponDexMenu_DrawCount(p);
 
   pos.x = 54, pos.y = 72, pos.z = 0;
-  if (SpriteHolder_InitMain(&p->preview, SPRITE_DJANGO_SABATA, SPRFLAG_SCREEN_COORD, &pos) < 0) {
+  if (SpriteHolder_InitMain(&p->preview, SPR_DJANGO_SABATA, SPRFLAG_SCREEN_COORD, &pos) < 0) {
     return -1;
   }
   SpriteHolder_SetPriority(&p->preview, 3);
   CpuCopy32(p->preview.u.main.spr.pltt, p->previewPltt, sizeof(p->previewPltt));
   p->preview.u.main.spr.pltt = p->previewPltt;
 
-  Video_GetAuxSprite(&p->previewShadowGfx, SPRITE_EFF_1C1B);
+  Video_GetAuxSprite(&p->previewShadowGfx, SPR_EFF_1C1B);
   AuxSprite_Add(&p->previewShadow, &p->previewShadowGfx, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD | SPRFLAG_BLINK_ODD);
   AuxSprite_SetPoseIdx(&p->previewShadow, 5);
   p->previewShadow.priority = 3;
@@ -515,7 +515,7 @@ void WeaponDexMenu_SetupPageBG(WeaponDexMenu* p) {
   s32 col;
 
   ClearBGTilemapBuffer(0);
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_4F8F);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_4F8F);
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(0, 3);
   Video_GenerateBGMap(0, 0, 0, 0, 0);

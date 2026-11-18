@@ -145,6 +145,13 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
      `curl -s "$G/list_functions?offset=0&limit=6000" | awk '{a=$NF} a>="080a7900" && a<="080a8200"'`.
    - For a list head or other global, `get_xrefs_to` gives the insert, remove
      and walk functions.
+   - For the users of a **function**, query `get_xrefs_to` at both the entry
+     and the entry + 1. A function stored as a pointer (state callback,
+     `SetEntityRoutine` argument) is referenced by a pool word holding
+     `ADDR | 1`, and Ghidra files that `DATA` xref under `ADDR + 1`; the entry
+     alone returns only the `bl` callers. Back it up with
+     `grep -rn NAME asm src data`, since tables Ghidra never typed as pointers
+     (e.g. `vm_commands.s`) are invisible to it.
 3. **Decompile the users** into one scratch file
    (`$G/decompile_function?address=...`) and build an offset → evidence
    table. Use the evidence catalog below. Read the disassembly
@@ -211,10 +218,10 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
       rule is the same for every file type:
 
       ```c
-      MainSpriteGfx gfx;      // 0x018, SPRITE_TITLE
+      MainSpriteGfx gfx;      // 0x018, SPR_TITLE
       ParticleGroup* group;   // 0x018, PTCL_GROUP_0, ...
       AuxAnimFile* anim;      // 0x01C, ANIM_D1B8, ...
-      Tilemaps* tilemap;      // 0x018, TILEMAP_CD91, ...
+      Tilemaps* tilemap;      // 0x018, MP_CD91, ...
       ```
 
       When the ID is not fixed, say only that.

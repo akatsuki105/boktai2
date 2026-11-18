@@ -21,7 +21,7 @@ static_assert(sizeof(CutsceneBubbleElem) == 52);
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_8
   u8 unk_18[4];                  // 0x018, 触られていない
-  AuxSpriteGfx gfx;              // 0x01C, SPRITE_DVALIN_2E7B
+  AuxSpriteGfx gfx;              // 0x01C, SPR_DVALIN_03
   CutsceneBubbleElem elems[32];  // 0x038
 } CutsceneBubble;
 static_assert(sizeof(CutsceneBubble) == 1720);
@@ -100,7 +100,7 @@ s32 CutsceneBubble_Init(CutsceneBubble* p) {
   CutsceneBubbleElem* elem = &p->elems[0];
   s32 i;
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_DVALIN_2E7B);
+  Video_GetAuxSprite(&p->gfx, SPR_DVALIN_03);
   for (i = 0; i < 32; i++, elem++) {
     CutsceneBubbleElem_Init(p, elem, i);
   }

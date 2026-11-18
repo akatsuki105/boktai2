@@ -23,18 +23,18 @@ typedef u8 BgMapScrollerFlags;
 // 毎フレーム Video_GenerateBackgroundMaps が位置を決め直して Video_GenerateBGMap で BG マップを作り直し, ブレンドの補間と flags bit6 の点滅も見る
 // 位置の決め方は3通り, flags bit1 ならカメラ追従, bit2 なら speedX/speedY で自動スクロール, どちらでもなければ fromX/fromY から targetX/targetY への補間
 //
-// Entity08001610 とは「BG 1枚を受け持つ」「VM コマンドで作られる」「コマンドキューを持つ」「カメラ追従と Mod での折り返し」
+// AutoScroller とは「BG 1枚を受け持つ」「VM コマンドで作られる」「コマンドキューを持つ」「カメラ追従と Mod での折り返し」
 // 「Video_SetBGBlend でのブレンド」「offsetX と wrapX での自動スクロール」まで同じで, 違いは次の3点
-//   1. こちらは毎フレーム Video_GenerateBGMap を呼んで BG マップを作り直す (Entity08001610_Update は gBgStates の hofs/vofs を書くだけ)
+//   1. こちらは毎フレーム Video_GenerateBGMap を呼んで BG マップを作り直す (AutoScroller_Update は gBgStates の hofs/vofs を書くだけ)
 //      ハードの BG 1枚に収まらない大きさのタイルマップをスクロールできるかどうかの差で, 型名の由来
-//   2. こちらは scale と centerX/centerY を持ち, カメラ位置を中心点まわりに scale/128 倍する (視差), Entity08001610 に相当するメンバはない
-//   3. 座標が s25_7 (Entity08001610 は s12_4)
+//   2. こちらは scale と centerX/centerY を持ち, カメラ位置を中心点まわりに scale/128 倍する (視差), AutoScroller に相当するメンバはない
+//   3. 座標が s25_7 (AutoScroller は s12_4)
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_9 か ENTITY_UNK_11
   u16 unk_18;                // 0x018, Init の第2引数, 読み手は見つかっていない
   BgMapScrollerFlags flags;  // 0x01A
   u8 bgIdx;                  // 0x01B, 0..3, 0: BG0, 1: BG1, 2: BG2, 3: BG3
-  u32 tilemapID;             // 0x01C, TILEMAP_XXXX, 4バイトで書く
+  u32 tilemapID;             // 0x01C, MP_XXXX, 4バイトで書く
   s25_7 x;                   // 0x020
   s25_7 y;                   // 0x024
   s32 baseX;                 // 0x028, offsetX を足す基準点, Init が x と同じ値を入れる
@@ -81,7 +81,7 @@ static_assert(sizeof(BgMapScroller) == 296);
 typedef struct {
   BgMapScrollerFlags flags;  // 0x00, '.f', BgMapScroller.flags になる
   u8 bgIdx;                  // 0x01, '.i', BG番号, gBgMapScrollers の添字
-  u16 tilemapID;             // 0x02, '.d', TILEMAP_XXXX
+  u16 tilemapID;             // 0x02, '.d', MP_XXXX
   s32 x;                     // 0x04, '.s[0]', 初期位置, flags bit1 ならカメラから取るのでこれは使われない
   s32 y;                     // 0x08, '.s[1]'
   s32 speedX;                // 0x0C, '.m[0]', BgMapScroller.speedX になる

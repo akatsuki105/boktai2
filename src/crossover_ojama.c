@@ -41,9 +41,9 @@ typedef struct {
   u8 shakeTimer;               // 0x02D, 0 でない間 banner.pos を乱数で揺らしながら減る
   u8 unk_2e[2];                // 0x02E
   void (*onFinish)(void);      // 0x030, 演出の最後に呼ぶ
-  AuxSpriteGfx batGfx;         // 0x034, SPRITE_OJAMA_BAT
-  AuxSpriteGfx counterGfx;     // 0x050, SPRITE_OJAMA_BAT_CTR
-  MainSpriteGfx mainGfx;       // 0x06C, SPRITE_UI_LINK
+  AuxSpriteGfx batGfx;         // 0x034, SPR_OJAMA_BAT
+  AuxSpriteGfx counterGfx;     // 0x050, SPR_OJAMA_BAT_CTR
+  MainSpriteGfx mainGfx;       // 0x06C, SPR_UI_LINK
   MainSprite banner;           // 0x08C, LINK_BLOCKING か LINK_DOUBLE_BANG
   CrossoverOjamaBat elems[8];  // 0x0EC
 } CrossoverOjama;
@@ -602,13 +602,13 @@ s32 CrossoverOjama_Init(CrossoverOjama* p) {
   s32 i;
 
   sCrossoverOjama = p;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   if (f == NULL) {
     return -1;
   }
   p->mainGfx = *f;
   OpenMainSpriteFile(&p->mainGfx, f);
-  if (!Video_GetAuxSprite(&p->batGfx, SPRITE_OJAMA_BAT) || !Video_GetAuxSprite(&p->counterGfx, SPRITE_OJAMA_BAT_CTR)) {
+  if (!Video_GetAuxSprite(&p->batGfx, SPR_OJAMA_BAT) || !Video_GetAuxSprite(&p->counterGfx, SPR_OJAMA_BAT_CTR)) {
     return -1;
   }
 

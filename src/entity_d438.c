@@ -9,7 +9,7 @@
 typedef struct {
   Entity e;               // 0x00, ENTITY_UNK_8
   u32 timer;              // 0x18
-  AuxSpriteGfx gfx;       // 0x1C, SPRITE_BAT
+  AuxSpriteGfx gfx;       // 0x1C, SPR_BAT
   AuxSprite sprite;       // 0x38
   AuxAnimState anim;      // 0x64
   AuxAnimFile* animFile;  // 0x74, ANIM_BAT
@@ -71,7 +71,7 @@ s32 EntityD438_Init(EntityD438* p, u32 param_2) {
   spr = &p->sprite;
   st = &p->anim;
   p->animFile = GetFile(DIR_ANIMATION, ANIM_BAT);
-  Video_GetAuxSprite(gfx, SPRITE_BAT);
+  Video_GetAuxSprite(gfx, SPR_BAT);
   AuxSprite_Add(spr, gfx, 0);
   AuxAnim_SetAnim(st, p->animFile, 0, 0, 0);
   p->timer = 0;

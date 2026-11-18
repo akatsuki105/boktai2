@@ -46,7 +46,7 @@ typedef struct {
   s32 stringBase;                  // 0x60, '.i', GetStringByID に渡す前に足す
   MessageChoiceEntry entries[16];  // 0x64
   u8 tagValue[64];                 // 0xA4, <TAG=...> の = 以降を詰める作業用バッファ
-  MainSpriteGfx gfx;               // 0xE4, SPRITE_UI_START_MENU
+  MainSpriteGfx gfx;               // 0xE4, SPR_UI_START_MENU
   MainSprite cursorL;              // 0x104, 選択肢の左に付く
   MainSprite cursorR;              // 0x164, 選択肢の右に付く
 } MessageChoice;
@@ -490,7 +490,7 @@ s32 MessageChoice_Init(MessageChoice* p, u8* textPC, s32 stringBase, s32* settin
   s32 idx;
 
   gMessageChoice = p;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   if (f == NULL) {
     return -1;
   }

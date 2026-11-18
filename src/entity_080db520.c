@@ -38,7 +38,7 @@ static_assert(sizeof(Entity080db520Elem) == 164);
 
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_1C1B
+  AuxSpriteGfx gfx;             // 0x018, SPR_EFF_1C1B
   AuxAnimFile* anim;            // 0x034, ANIM_3DC2
   u32 activeMask;               // 0x038, 使用中の elems のビットマスク
   Entity080db520Elem elems[8];  // 0x03C, 根拠: _Destroy の stride 0xA4 × 8
@@ -510,7 +510,7 @@ s32 Entity080db520_Destroy(Entity080db520* p) {
 }
 
 s32 Entity080db520_Init(Entity080db520* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_1C1B);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_1C1B);
   p->activeMask = 0;
   p->anim = GetFile(DIR_ANIMATION, ANIM_3DC2);
   gEntity080db520 = p;

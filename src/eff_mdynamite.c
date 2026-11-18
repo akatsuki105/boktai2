@@ -23,7 +23,7 @@ typedef struct DynamiteEffect {
   Entity e;                                        // 0x000, ENTITY_UNK_8
   Player* owner;                                   // 0x018, Init の第2引数, owner->unk_3fb がこのエンティティの生存数カウンタ
   AuxSprite sprite;                                // 0x01C
-  AuxSpriteGfx gfx;                                // 0x048, SPRITE_BOMB
+  AuxSpriteGfx gfx;                                // 0x048, SPR_BOMB
   Vec3 pos;                                        // 0x064, Init が引数の Vec3 をまるごと写す
   DynamiteEffectParticle ptcls[8];                 // 0x06C, 根拠: DynamiteEffect_InitParticles の i=0..7 / stride 0x2C のループ
   ParticleGroup* group;                            // 0x1CC, PTCL_GROUP_2
@@ -165,7 +165,7 @@ void DynamiteEffect_StateFuse(DynamiteEffect* p) {
           break;
         }
       }
-      Explosion_CreateWithAttrs(&pos, 0, power, 50, HBATTR_INKA | HBATTR_18 | HBATTR_NAMAKURA | HBATTR_FLAME, 30, 0, i * 4);
+      Explosion_CreateWithAttrs(&pos, 0, power, 50, HBATTR_INKA | HBATTR_BLOW | HBATTR_NAMAKURA | HBATTR_FLAME, 30, 0, i * 4);
     }
     NoiseManager_AddMoverNoise(p->pos.x, p->pos.z, 0x400, 0, 1, 0xB546);
     p->owner->dynamiteCount--;
@@ -206,7 +206,7 @@ s32 DynamiteEffect_Destroy(DynamiteEffect* p) {
 void DynamiteEffect_InitSprite(DynamiteEffect* p) {
   AuxSpriteGfx* gfx = &p->gfx;
 
-  Video_GetAuxSprite(gfx, SPRITE_BOMB);
+  Video_GetAuxSprite(gfx, SPR_BOMB);
   AuxSprite_Add(&p->sprite, gfx, SPRFLAG_HIDDEN);
   AuxSprite_SetPoseIdx(&p->sprite, 12);
   p->sprite.pos = p->pos;

@@ -439,17 +439,17 @@ NON_MATCH u8* TextRenderer_ReadTagValue(TextRenderer* p, u8* s) {
 
 s32 Text_GetPlayerFace(void) {
   switch (gStat->playerKind) {
-    case PLAYER_SOLAR_DJANGO: {
-      return 0;
+    case PLAYER_RDJANGO: {
+      return PORTRAIT_RDJANGO;
     }
-    case PLAYER_DARK_DJANGO: {
-      return 1;
+    case PLAYER_BDJANGO: {
+      return PORTRAIT_BDJANGO;
     }
     case PLAYER_SABATA: {
-      return 3;
+      return PORTRAIT_SABATA;
     }
     default: {
-      return 1;
+      return PORTRAIT_BDJANGO;
     }
   }
 }
@@ -459,10 +459,10 @@ s32 Text_GetPlayerFace(void) {
 // 本体だけ cross-jump しているが, 同じ本体を2つ書くと gcc が判定木ごと if に畳んでしまう
 NON_MATCH s32 Text_GetPairFace(void) {
 #ifdef NONMATCHING_C
-  if (gStat->playerKind == PLAYER_SOLAR_DJANGO) {
-    return 27;
+  if (gStat->playerKind == PLAYER_RDJANGO) {
+    return PORTRAIT_RDJANGO_ROCKMAN;
   }
-  return 28;
+  return PORTRAIT_BDJANGO_ROCKMAN;
 #else
   INCFUNC("asm/func/Text_GetPairFace.inc");
 #endif

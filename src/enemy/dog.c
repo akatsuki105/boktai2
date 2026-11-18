@@ -1,3 +1,5 @@
+#include "enemy/dog.h"
+
 #include "cwolf_target.h"
 #include "eff_elemcond.h"
 #include "emote.h"
@@ -18,39 +20,6 @@
 #include "sprite.h"
 #include "vec3.h"
 #include "vm.h"
-
-// ENEK_DOG(EV_BANDIT, EV_GRAVEKEEPER, EV_HELLHOUND, EV_BANDIT_P)
-typedef struct {
-  Enemy e;
-  u8 unk_654[4];      // 0x654
-  Hitbox unk_658;     // 0x658, 2つ目の攻撃判定, atkPower[1] などの攻撃値を載せる
-  u32 unk_6a8;        // 0x6A8, bit0 は待ちが明けたときに立てる
-  u32 unk_6ac;        // 0x6AC, playerDistSq がこれ未満なら副状態 (0,2,0) へ
-  u32 unk_6b0;        // 0x6B0, playerDistSq がこれ未満でほぼ正面なら副状態 (0,2,1) へ
-  u32 unk_6b4;        // 0x6B4, プレイヤーとの距離の2乗がこれ未満なら飛びかかりに入る
-  u32 unk_6b8;        // 0x6B8, playerDistSq と比べる距離の閾値, unk_6bc と対
-  u32 unk_6bc;        // 0x6BC, playerDistSq がこれを超えると副状態 19 へ移る
-  u16 unk_6c0;        // 0x6C0, 0 になるまで数え下ろし, 0 になると unk_6c2 か unk_6c4 から入れ直す
-  u16 unk_6c2;        // 0x6C2
-  u16 unk_6c4;        // 0x6C4, ENEFLAG3_UNK_7 のときの unk_6c2
-  u16 unk_6c6;        // 0x6C6, 0 になるまで毎フレーム減る
-  u16 unk_6c8;        // 0x6C8, 0 になるまで毎フレーム減る
-  u16 unk_6ca;        // 0x6CA, 0 になるまで毎フレーム減る
-  u16 unk_6cc;        // 0x6CC, unk_6c8 に入れ直す値
-  u16 unk_6ce;        // 0x6CE, unk_6ca に入れ直す値
-  s16 unk_6d0;        // 0x6D0, 負なら unk_6d2/unk_6d4 は無効
-  s16 unk_6d2;        // 0x6D2
-  s16 unk_6d4;        // 0x6D4
-  u8 unk_6d6;         // 0x6D6
-  u8 unk_6d7;         // 0x6D7
-  u8 unk_6d8;         // 0x6D8, 0 になるまで毎フレーム減る
-  u8 unk_6d9;         // 0x6D9, 盗んだ食べ物で回復する割合 (maxHp の %)
-  u8 unk_6da[2];      // 0x6DA
-  NavAgent navAgent;  // 0x6DC, Enemy.navAgent が指す
-  Vec3 pathNodePos;   // 0x700, Enemy.pathNodePos が指す
-  Vec3 unk_708;       // 0x708, 飛びかかる直前のプレイヤーの位置
-} Dog;
-static_assert(sizeof(Dog) == 1808);
 
 const STRING_DATA char s_eneinline_08252084[] = "../system/eneinline.h";
 const STRING_DATA char s_eneinline_0825209c[] = "../system/eneinline.h";
@@ -104,7 +73,7 @@ bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot);
 s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
 void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
-void FUN_0814ca30(Dog* p, s32 timer);
+void Dog_StateWakeUp(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
 void FUN_0814e1b0(Dog* p);
 void FUN_0814e1fc(Dog* p);
@@ -500,7 +469,7 @@ void FUN_0814aeb0(Dog* p) {
 void FUN_0814aed0(Dog* p) {
   Dog* q = (p->e).owner;
 
-  if (!Enemy_IsDead(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_14 | ENEFLAG3_UNK_15) &&
+  if (!Enemy_IsDead(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_14 | ENEFLAG3_UNK_15) &&
       !TEST_FLAGS((p->e).flags, ENEFLAG_UNK_4) && (p->e).state < 2) {
     if (q->unk_6c0 != 0) {
       q->unk_6c0--;
@@ -981,25 +950,25 @@ NON_MATCH void Dog_StateTurn(Dog* p) {
 
 void FUN_0814c970(Dog* p) {}
 
-void FUN_0814c974(Dog* p, s32 timer) {
+void Dog_StateNap(Dog* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 6);
-    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
-      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     }
   }
   if (Mod(timer, 60) == 0) {
     Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
   }
   if ((p->e).nodeWait <= 0 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
-    Enemy_EnterState(&p->e, FUN_0814ca30, ES_UNK_6);
+    Enemy_EnterState(&p->e, Dog_StateWakeUp, ES_WAKE_UP);
   }
 }
 
-void FUN_0814ca30(Dog* p, s32 timer) {
+void Dog_StateWakeUp(Dog* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 7);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
   }
   if (timer == 40) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
@@ -1080,8 +1049,8 @@ NON_MATCH void Dog_StateDamaged(Dog* p) {
   }
   (p->e).subStateDone = 1;
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_19)) {
-    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_1);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_STUN_REQUEST);
     return;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
@@ -1727,11 +1696,11 @@ NON_MATCH bool8 Dog_OnDamaged(Dog* p) {
   bool8 haveTile;
 
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_UNK_15)) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
+  if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
@@ -2710,7 +2679,7 @@ s32 Dog_Destroy(Dog* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -2744,7 +2713,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_DOG);
+    Video_GetAuxSprite(&aux->gfx, SPR_DOG);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_DOG);
     k = (p->e).kind;
@@ -2761,7 +2730,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_DOG);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_DOG);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -2863,7 +2832,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -2873,7 +2842,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -2931,7 +2900,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
   (p->e).handlerTurn = Dog_StateTurn;
   (p->e).handlerMove = FUN_0814c28c;
   (p->e).handlerWait = FUN_0814c2b0;
-  (p->e).unk_5c0 = FUN_0814c974;
+  (p->e).handlerNap = Dog_StateNap;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Dog_StateDamaged;
   (p->e).handlerDying = Dog_StateDying;
@@ -2960,7 +2929,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

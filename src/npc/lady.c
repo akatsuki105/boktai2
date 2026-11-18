@@ -97,7 +97,7 @@ void Cmd_5470(void) {
   if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 2, SPRITE_LADY, 0, flags) < 0) {
+  if (FUN_08040f48(npc, 2, SPR_LADY, 0, flags) < 0) {
     return;
   }
 
@@ -113,7 +113,7 @@ void Cmd_5470(void) {
   NPC_SetCb(npc, 2, FUN_08209e0c);
   NPC_SetCb(npc, 3, FUN_08209fac);
   NPC_SetOnDestroy(npc, FUN_08209fb8);
-  FUN_08040df4(p, npc, SPRITE_LADY, 0);
+  FUN_08040df4(p, npc, SPR_LADY, 0);
   NPCManager_LinkNPC(p, npc);
   FUN_08041e10(p, npc);
 

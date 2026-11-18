@@ -516,7 +516,7 @@ _080D53A8:
 	blt _080D53C4
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_080cc3c4
+	bl PlayerLink_SetFlag35a
 _080D53C4:
 	ldrh r0, [r4]
 	adds r0, #1

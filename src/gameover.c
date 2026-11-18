@@ -13,7 +13,7 @@
 // "GAME OVER" の1文字ぶん, 8個並べて1つのロゴになる
 typedef struct {
   AuxSprite sprite;  // 0x00, GameOverManager_SetupLetters が AuxSprite_Setup に渡す, flags は 0x1033 = SPRFLAG_GAMEOVER|SPRFLAG_OAM_DIRECT|SPRFLAG_SCREEN_COORD|SPRFLAG_AFFINE|SPRFLAG_HIDDEN で、 poseIdx に 0..7 が入る
-  AuxSpriteGfx gfx;  // 0x2C, SPRITE_GAMEOVER
+  AuxSpriteGfx gfx;  // 0x2C, SPR_GAMEOVER
   s16 baseX;         // 0x48, GameOverManager_SetupLetters が 56 + i * 16 (i >= 4 ならさらに +16) を入れる, GameOverManager_UpdateLetters がここから sprite.pos.x を作る
   s16 baseY;         // 0x4A, GameOverManager_SetupLetters が 72 を入れる
   u8 unk_4c[4];      // 0x4C
@@ -231,7 +231,7 @@ NON_MATCH void GameOverManager_SetupLetters(GameOverManager* p) {
     if (i > 3) {
       p->letters[i].baseX = x + 16;
     }
-    Video_GetAuxSprite(&p->letters[i].gfx, SPRITE_GAMEOVER);
+    Video_GetAuxSprite(&p->letters[i].gfx, SPR_GAMEOVER);
     AuxSprite_Setup(&p->letters[i].sprite, &p->letters[i].gfx, 0);
     p->letters[i].sprite.priority = 0;
     p->letters[i].sprite.flags = SPRFLAG_GAMEOVER | SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE | SPRFLAG_HIDDEN;
@@ -270,7 +270,7 @@ void GameOverManager_UpdateMenuPltt(GameOverManager* p) {
 
 // コンティニューの選択肢のスプライトと, 点滅させるためのパレットの写しを用意する
 void GameOverManager_SetupMenu(GameOverManager* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
 
   if (f != NULL) {
     Vec3 pos;

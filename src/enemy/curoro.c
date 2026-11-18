@@ -162,7 +162,7 @@ NON_MATCH void Curoro_OnHurt(Hitbox* a, Hitbox* b, Curoro* p) {
     if (!(a->typeMask & HBSRC_MFREEZE)) {
       return;
     }
-    if ((p->e).flags3 & (ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+    if ((p->e).flags3 & (ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
       return;
     }
     if ((p->e).unk_488 != 0) {
@@ -237,7 +237,7 @@ NON_MATCH void Curoro_OnHurt(Hitbox* a, Hitbox* b, Curoro* p) {
   }
   b->iframes = a->iframes;
   (p->e).unk_48c = b->hitResult;
-  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_18)) {
+  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_BLOW)) {
     knockback = a->knockback;
   } else {
     knockback = a->knockback - (p->e).unk_187;
@@ -246,7 +246,7 @@ NON_MATCH void Curoro_OnHurt(Hitbox* a, Hitbox* b, Curoro* p) {
     }
   }
   b->knockback = knockback;
-  if ((p->e).flags3 & (ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2)) {
+  if ((p->e).flags3 & (ENEFLAG3_STUN | ENEFLAG3_PETRIFIED)) {
     b->damage <<= 1;
     b->knockback >>= 1;
   }
@@ -724,7 +724,7 @@ void Curoro_StateDying(Curoro* p) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
   }
@@ -1399,7 +1399,7 @@ s32 Curoro_Destroy(Curoro* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -1442,7 +1442,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_CURORO);
+    Video_GetAuxSprite(&aux->gfx, SPR_CURORO);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_CURORO);
     k = (p->e).kind;
@@ -1459,7 +1459,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_CURORO);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_CURORO);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1561,7 +1561,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1571,7 +1571,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1643,7 +1643,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).handlerTurn = FUN_0813ae6c;
   (p->e).handlerMove = FUN_0813ac34;
   (p->e).handlerWait = FUN_0813ad64;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Curoro_StateDamaged;
   (p->e).handlerDying = Curoro_StateDying;
@@ -1672,7 +1672,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

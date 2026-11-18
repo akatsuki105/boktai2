@@ -39,9 +39,9 @@ typedef struct MessageWindow {
   u16 labelCount;                                 // 0x1A6, MessageWindow_StartWithLabels が 32 に丸める
   u16 labels[32];                                 // 0x1A8, MessageWindow_StartWithLabels が呼び出し側の配列をコピーする行番号表
   BgPlttFile* bgPltt;                             // 0x1E8, BGP_519C
-  MainSpriteGfx arrowGfx;                         // 0x1EC, SPRITE_MARKERS
+  MainSpriteGfx arrowGfx;                         // 0x1EC, SPR_MARKERS
   MainSprite arrow;                               // 0x20C, 次ページ送りの矢印, MessageWindow_Update が pos を枠の右下に置き直す
-  MainSpriteGfx faceGfx;                          // 0x26C, SPRITE_PORTRAITS
+  MainSpriteGfx faceGfx;                          // 0x26C, SPR_PORTRAITS
   MainSprite face;                                // 0x28C, 話者の顔, MessageWindow_RefreshFace が renderer.face のポーズを貼る
   void (*updateCallback)(struct MessageWindow*);  // 0x2EC
 } MessageWindow;
@@ -688,7 +688,7 @@ NON_MATCH s32 MessageWindow_Init(MessageWindow* p, u32 _) {
   p->pendingLine = -1;
   MessageWindow_SetState(p, MessageWindow_StateIdle);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_MARKERS);
   if (f == NULL) {
     return -1;
   }
@@ -698,7 +698,7 @@ NON_MATCH s32 MessageWindow_Init(MessageWindow* p, u32 _) {
   MainSprite_Add(&p->arrow, &p->arrowGfx, MARKER_ARROW(0), SPRFLAG_UNK_13 | SPRFLAG_GAMEOVER | SPRFLAG_NO_CLIP | SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, PLAYMODE_LOOP, 60, &pos);
   MainSprite_SetAnim(&p->arrow, &p->arrowGfx, 0, PLAYMODE_LOOP, 0);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_PORTRAITS);
   if (f == NULL) {
     return -1;
   }

@@ -27,7 +27,7 @@ static_assert(sizeof(Entity082047f0Elem) == 68);
 typedef struct Entity082047f0 {
   Entity e;                     // 0x000, ENTITY_UNK_8
   AuxAnimFile* animFile;        // 0x018, ANIM_38E2
-  AuxSpriteGfx gfx;             // 0x01C, SPRITE_DVALIN_2E78
+  AuxSpriteGfx gfx;             // 0x01C, SPR_DVALIN_00
   Entity082047f0Elem elems[2];  // 0x038
   Mover* mover;                 // 0x0C0, ドヴァリンの mover
   u32 flags;                    // 0x0C4, bit0 が立っている間は elems の位置を更新しない
@@ -112,7 +112,7 @@ NON_MATCH void Entity082047f0_SetElemAnim(Entity082047f0* p, AuxAnimState* anim,
 void Entity082047f0_SpawnEffect(Vec3* pos) {
   Vec3 vel = {0, 0, 0, 0};
 
-  Entity081f26bc_Spawn(pos, &vel, SPRITE_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  Entity081f26bc_Spawn(pos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void Entity082047f0_SetMode(Entity082047f0* p, u32 mode) {
@@ -352,7 +352,7 @@ s32 Entity082047f0_Init(Entity082047f0* p, Mover* mover) {
   s32 i;
 
   p->animFile = GetFile(DIR_ANIMATION, ANIM_38E2);
-  Video_GetAuxSprite(&p->gfx, SPRITE_DVALIN_2E78);
+  Video_GetAuxSprite(&p->gfx, SPR_DVALIN_00);
   p->mover = mover;
   p->mode = 0;
   elem = p->elems;

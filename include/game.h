@@ -5,6 +5,7 @@
 #include "time.h"
 #include "weapon.h"
 
+#define TOTAL_ENEMY_KILL (*(&gStat->totalEnemyKillCount))
 #define KAAMOS(playerCharacterID) (*(gStat->isKaamos + (playerCharacterID)))  // playerCharacterID:  0: ジャンゴ, 1: サバタ
 #define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))                 // 登録 = 剣槍槌銃 のスロットに登録されている
 #define MAP_ICON_FLAGS(stage) (*(gStat->mapIconFlags + (stage)))              // stageID ごとのマップアイコンの表示フラグ
@@ -18,6 +19,7 @@
 #define ALERT_COUNT (*(&gStat->alertCount))      // 敵に見つかった回数
 #define UNK_944 (*(&gStat->unk_944))
 #define UNK_946 (*(&gStat->unk_946))
+#define UNK_948(n) (*(gStat->unk_948 + (n)))
 #define UNK_950(n) (*(gStat->unk_950 + (n)))  // Enemy_Alert がプレイヤーごとに数える, 添字は playerMover->unk_4
 #define WEAPONS(slot) (gStat->weapons + slot)
 
@@ -199,8 +201,8 @@ typedef struct {
   s16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
   s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数
-  s16 unk_918;                   // 0x918, bokpass に記述があるが用途は不明, PasswordScreen_EncodeBits が unk_91a との和をパスワードに入れる
-  s16 unk_91a;                   // 0x91A
+  s16 linkSellCount;             // 0x918, 通信販売で武器を売った回数, 9999 で止まる, PasswordScreen_EncodeBits が linkBuyCount との和をパスワードに入れる
+  s16 linkBuyCount;              // 0x91A, 通信販売で武器を買った回数, 9999 で止まる
   u8 unk_91c[4];                 // 0x91C
   u32 weaponDex[2];              // 0x920
 

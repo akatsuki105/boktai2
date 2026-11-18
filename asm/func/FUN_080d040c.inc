@@ -12,7 +12,7 @@
 	movs r3, #0xac
 	lsls r3, r3, #4
 	adds r1, r4, r3
-	ldr r0, _080D0478 @ =FUN_080d6b24
+	ldr r0, _080D0478 @ =PlayerLink_UpdateDjango
 	str r0, [r1]
 	ldr r1, _080D047C @ =0x00000359
 	adds r0, r4, r1
@@ -53,7 +53,7 @@ _080D044A:
 	movs r0, #1
 	b _080D04A2
 	.align 2, 0
-_080D0478: .4byte FUN_080d6b24
+_080D0478: .4byte PlayerLink_UpdateDjango
 _080D047C: .4byte 0x00000359
 _080D0480: .4byte 0x000004CC
 _080D0484: .4byte 0x0000094C
@@ -88,7 +88,7 @@ _080D04A2:
 	adds r0, r4, r1
 	strb r6, [r0]
 	adds r0, r4, #0
-	bl FUN_080cdda8
+	bl PlayerLink_ClearElementalCond
 	adds r0, r4, #0
 	bl FUN_080cc43c
 	ldr r2, _080D0580 @ =0x000003CE
@@ -98,7 +98,7 @@ _080D04A2:
 	cmp r0, #0
 	beq _080D04E4
 	adds r0, r4, #0
-	bl FUN_080cfa24
+	bl PlayerLink_EndLookAround
 _080D04E4:
 	ldr r1, _080D0584 @ =0x00000442
 	adds r0, r4, r1
@@ -213,7 +213,7 @@ _080D05CA:
 	adds r2, #2
 	adds r1, r4, r2
 	ldr r1, [r1]
-	bl FUN_080ce544
+	bl PlayerLink_UpdateBloodSwordOnKill
 _080D05DC:
 	pop {r4, r5, r6}
 	pop {r0}

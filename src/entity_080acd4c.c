@@ -22,7 +22,7 @@ static_assert(sizeof(Entity080acd4c) == 412);
 
 COMMON_DATA Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 
-void FUN_080acc14(void) { gEntity080acd4c = NULL; }
+void Entity080acd4c_ClearGlobal(void) { gEntity080acd4c = NULL; }
 
 // コマを進めながら上へ昇り, 16 フレームで消える
 void Entity080acd4cElem_Update(Entity080acd4cElem* elem) {
@@ -56,7 +56,24 @@ s32 Entity080acd4c_Destroy(Entity080acd4c* p) {
   return 0;
 }
 
-NAKED void Entity080acd4c_InitElems(Entity080acd4c* p) { INCFUNC("asm/func/Entity080acd4c_InitElems.inc"); }
+// 8 枠の粒を作って隠しておく
+void Entity080acd4c_InitElems(Entity080acd4c* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    Entity080acd4cElem* elem = &p->elems[i];
+
+    elem->active = FALSE;
+    elem->unk_2d = 0;
+    elem->timer = 0;
+    elem->group = GetParticleGroup(PTCL_GROUP_0);
+    Particle_Add(&elem->ptcl, elem->group, 0);
+    Particle_SetOffset(&elem->ptcl, -8, -8);
+    Particle_SetPose(&elem->ptcl, elem->group, PTCL_FIRE(0));
+    Particle_Hide(&elem->ptcl);
+    elem->ptcl.priority = 2;
+  }
+}
 
 s32 Entity080acd4c_Init(Entity080acd4c* p) {
   Entity080acd4c_InitElems(p);
@@ -81,4 +98,20 @@ Entity080acd4c* Entity080acd4c_Create(void) {
   return gEntity080acd4c;
 }
 
-NAKED void Entity080acd4c_Spawn(Vec3* pos) { INCFUNC("asm/func/Entity080acd4c_Spawn.inc"); }
+// pos に粒を1つ出す, 8 枠を順番に使い回す
+void Entity080acd4c_Spawn(Vec3* pos) {
+  Entity080acd4cElem* elem;
+
+  if (gEntity080acd4c == NULL) {
+    Entity080acd4c_Create();
+  }
+  elem = &gEntity080acd4c->elems[gEntity080acd4c->nextSlot];
+  Particle_Show(&elem->ptcl);
+  elem->ptcl.pos = *pos;
+  elem->timer = 0;
+  elem->active = TRUE;
+  gEntity080acd4c->nextSlot++;
+  if (gEntity080acd4c->nextSlot >= 8) {
+    gEntity080acd4c->nextSlot = 0;
+  }
+}

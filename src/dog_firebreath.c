@@ -28,7 +28,7 @@ static_assert(sizeof(Entity081f1770Elem) == 148);
 // 破片を撒くエフェクトを最大20個まで管理するシングルトン
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx;              // 0x018, SPRITE_FIRE_BREATH
+  AuxSpriteGfx gfx;              // 0x018, SPR_FIRE_BREATH
   AuxAnimFile* animFile;         // 0x034, ANIM_4EC0
   u32 usedMask;                  // 0x038, elems のどのスロットが使用中かのビットマスク
   Entity081f1770Elem elems[20];  // 0x03C
@@ -362,7 +362,7 @@ s32 Entity081f1770_Destroy(Entity081f1770* p) {
 }
 
 s32 Entity081f1770_Init(Entity081f1770* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_FIRE_BREATH);
+  Video_GetAuxSprite(&p->gfx, SPR_FIRE_BREATH);
   p->animFile = GetFile(DIR_ANIMATION, ANIM_4EC0);
   p->usedMask = 0;
   gEntity081f1770 = p;

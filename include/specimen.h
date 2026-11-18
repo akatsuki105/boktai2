@@ -16,7 +16,7 @@ typedef struct Specimen {
   u16 posOverridden;                  // 0x026, 非0なら pos を model->x / model->y で上書きしない, Specimen_SetPosOverridden が入れる
   SpriteHolder parts[5];              // 0x028, スプライトの器, 単体の魔物は [0] だけ、多関節の魔物は sSpecimenSegments に沿って5つ使う
   AuxSprite subSprite;                // 0x30C, model->subSprite が非0のときだけ出す重ね絵 (メタスプライト 5/6/7)
-  AuxSpriteGfx subSpriteGfx;          // 0x338, SPRITE_EFF_1C1B
+  AuxSpriteGfx subSpriteGfx;          // 0x338, SPR_EFF_1C1B
   Vec3 pos;                           // 0x354, model->x + 64, model->y + 84, Specimen_SetPos が直接入れることもある
   u8 unk_35c[0x364 - 0x35C];          // 0x35C, 読み手も書き手も見つかっていない
   u16 poseBase;                       // 0x364, model->poseBase の写し, SpriteHolder_SetAnim の第2引数になる

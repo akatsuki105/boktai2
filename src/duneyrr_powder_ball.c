@@ -64,7 +64,7 @@ s32 DuneyrrPowderBallManager_InitBall(DuneyrrPowderBallManager* p, DuneyrrPowder
   Vec3* pos;
   AuxSpriteGfx* gfx = &elem->gfx;
 
-  if (!Video_GetAuxSprite(gfx, SPRITE_DUNEYRR_AUX)) {
+  if (!Video_GetAuxSprite(gfx, SPR_DUNEYRR_AUX)) {
     return -1;
   }
   Video_SetAuxSpritePltt(gfx, 548);

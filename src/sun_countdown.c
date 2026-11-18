@@ -13,7 +13,7 @@ typedef struct {
   u16 unk_18;            // 0x18, SunCountdown_Create の引数, 書き込むだけで読み手が見つかっていない
   u8 unk_1a;             // 0x1A, _Init が '.f' を入れる, 読み手が見つかっていない
   u8 bgNum;              // 0x1B, SetBGPrioDirect / Video_SetupBG / GetTilemapBuffer に渡す BG 番号, _Init が 0 を入れる
-  FileID tilemapFileID;  // 0x1C, TILEMAP_596F
+  FileID tilemapFileID;  // 0x1C, MP_596F
   FileID plttFileID;     // 0x1E, '.p'
   rgb555* pltt;          // 0x20, plttSrc の転送先, &gBgPlttBuffer[208]
   rgb555* plttSrc;       // 0x24
@@ -146,7 +146,7 @@ NON_MATCH s32 SunCountdown_Init(SunCountdown* p, u16 n) {
   gSunCountdown = p;
   p->unk_18 = n;
   p->unk_1a = VM_GetNamedArgValue('f', 0);
-  p->tilemapFileID = TILEMAP_596F;
+  p->tilemapFileID = MP_596F;
   p->plttFileID = VM_GetNamedArgValue('p', 0);
   p->pltt = &gBgPlttBuffer[208];
   p->bgNum = 0;

@@ -15,8 +15,8 @@
 // 蜂の巣が落ちて砕け散った時の破片1つ
 typedef struct BeeNestFragment {
   AuxSprite sprite;          // 0x000
-  AuxAnimState anim;         // 0x02C, ANIM_74C9
-  AuxSpriteGfx gfx;          // 0x03C, SPRITE_BEE_NEST_BROKEN
+  AuxAnimState anim;         // 0x02C, ANIM_BEENEST
+  AuxSpriteGfx gfx;          // 0x03C, SPR_BEE_NEST_BROKEN
   Hitbox hurtbox;            // 0x058
   AuxShadow shadow;          // 0x0A8, shadowId で管理
   Vec3 basePos;              // 0x114, 揺れの基準位置, sprite.pos へ複写する
@@ -59,7 +59,7 @@ static_assert(sizeof(BeeNestFragment) == 344);
 // プレイヤーが近づいたり、攻撃を受けたりすると落ちて砕け散る (その際に ビー系の敵 が一気に出現する)
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_10
-  AuxAnimFile* anim;             // 0x018, ANIM_74C9
+  AuxAnimFile* anim;             // 0x018, ANIM_BEENEST
   BeeNestFragment fragments[4];  // 0x01C, 蜂の巣の破片4つ
   u32 activeMask;                // 0x57C, bit i が立っていれば fragments[i] が使用中, _Init が 0 にする
 } BeeNest;
@@ -172,7 +172,7 @@ NON_MATCH void Cmd_CreateBeeNest(void) {
     return;
   }
 
-  Video_GetAuxSprite(&frag->gfx, SPRITE_BEE_NEST_BROKEN);
+  Video_GetAuxSprite(&frag->gfx, SPR_BEE_NEST_BROKEN);
   AuxSprite_Add(&frag->sprite, &frag->gfx, 0);
   frag->stateEntered = 1;
   frag->unk_13c = 0;
@@ -490,7 +490,7 @@ s32 BeeNest_Destroy(BeeNest* p) {
 }
 
 s32 BeeNest_Init(BeeNest* p) {
-  p->anim = GetFile(DIR_ANIMATION, ANIM_74C9);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_BEENEST);
   gBeeNest = p;
   p->activeMask = 0;
   return 0;
@@ -614,27 +614,27 @@ NON_MATCH void FUN_081d6764(BeeNestFragment* frag) {
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x40;
-  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPR_BEE_NEST_BROKEN, ANIM_BEENEST, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPR_BEE_NEST_BROKEN, ANIM_BEENEST, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 0, 1, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPR_BEE_NEST_BROKEN, ANIM_BEENEST, 1, 30, 2, 0, 380, 0, 1, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 1, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPR_BEE_NEST_BROKEN, ANIM_BEENEST, 1, 30, 2, 0, 380, 1, 0, 0, 0, 0, 0);
 
   angle = Random();
   vel.x = POLAR_X(10, angle), vel.y = 0, vel.z = POLAR_Z(10, angle);
   vel.y = 0x22;
-  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPRITE_BEE_NEST_BROKEN, ANIM_74C9, 1, 30, 2, 0, 380, 2, 0, 0, 0, 0, 0);
+  Entity081efa9c_Spawn(&frag->sprite.pos, &vel, SPR_BEE_NEST_BROKEN, ANIM_BEENEST, 1, 30, 2, 0, 380, 2, 0, 0, 0, 0, 0);
 
   FUN_081d65e8(frag);
 #else

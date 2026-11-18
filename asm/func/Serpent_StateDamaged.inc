@@ -79,7 +79,7 @@ _0818B006:
 	adds r5, r5, r1
 _0818B076:
 	adds r0, r6, #0
-	bl FUN_08190634
+	bl Serpent_DestroyTailSegment
 	adds r4, #1
 	ldrb r2, [r5]
 	cmp r4, r2

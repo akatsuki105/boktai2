@@ -3,7 +3,7 @@
 #include "video.h"
 #include "vm.h"
 
-// ソル・デ・バイス を受け取るときにジャンゴの1枚絵 (SPRITE_DJANGO_LARGE) を表示するが、その間に背景をある程度暗くする演出用のエンティティ (それ以外では使用されない)
+// ソル・デ・バイス を受け取るときにジャンゴの1枚絵 (SPR_DJANGO_LARGE) を表示するが、その間に背景をある程度暗くする演出用のエンティティ (それ以外では使用されない)
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_9
   u32 timer;          // 0x18, state 1 で数え上げ holdFrames と比べる, 状態が変わるたびに 0 に戻る

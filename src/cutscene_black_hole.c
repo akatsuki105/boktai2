@@ -12,7 +12,7 @@ typedef struct CutsceneBlackHole {
   Entity e;                                           // 0x00, ENTITY_UNK_10
   MsgQueue mq;                                        // 0x18, targetID は id, 待ち番号 10
   AuxSprite sprite;                                   // 0x4C
-  AuxSpriteGfx gfx;                                   // 0x78, SPRITE_BLACKHOLE
+  AuxSpriteGfx gfx;                                   // 0x78, SPR_BLACKHOLE
   u16 id;                                             // 0x94, mq.targetID, このゲームでは 0xF378 のみ
   u16 scale;                                          // 0x96, sprite.scaleX / scaleY に毎フレーム入る 6.6 固定小数
   u16 scaleStep;                                      // 0x98, '.s[1]' (既定 2), _UpdateShrink が scale から毎フレーム引く
@@ -112,7 +112,7 @@ s32 CutsceneBlackHole_Init(CutsceneBlackHole* p, u32 id, u32 _) {
   p->scale = p->scaleStart;
   spr = &p->sprite;
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_BLACKHOLE);
+  Video_GetAuxSprite(gfx, SPR_BLACKHOLE);
   AuxSprite_Add(spr, gfx, SPRFLAG_AFFINE);
   Video_SetAuxSpritePltt(gfx, 50);
   spr->poseIdx = 0;

@@ -2,6 +2,7 @@
 #define __INCLUDE_MOVER_H__
 
 #include "collision_map.h"
+#include "entity.h"
 #include "gba/gba.h"
 #include "types.h"
 
@@ -72,7 +73,16 @@ bool32 Mover_Unlink(Mover* p);
 bool32 FUN_0823b47c(Mover* p, Vec3* unk_30);
 Mover* Mover_FindByID(u16 id);
 
+// 生きている Mover を繋いだリストを持つエンティティ
+typedef struct {
+  Entity e;     // ENTITY_UNK_2
+  Mover* head;  // 0x18, Mover の双方向リストの先頭, 根拠: Mover_Link (末尾に追加) / Mover_FindInList (先頭から走査)
+  Mover* tail;  // 0x1C, 同リストの末尾
+} MoverList;
+static_assert(sizeof(MoverList) == 32);
+
 void MoverList_ClearPtr(void);
+MoverList* MoverList_Get(void);
 
 bool32 FUN_0823b464(Mover* p, u32 unk_20);
 

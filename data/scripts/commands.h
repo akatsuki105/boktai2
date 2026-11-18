@@ -102,14 +102,14 @@
 #define Cmd_ClearElementalCond 0x2B68
 #define Cmd_SpawnFallingObject 0x2B8C
 #define CandlestickManager_Create 0x2D2B
-#define EnemyAx_Create 0x2D30
+#define Ax_Create 0x2D30
 #define Taiyo_Create 0x2D36
 #define Cmd_SpawnBreakable 0x2D8F
 #define Cmd_AddCandlestick 0x2E1C
 #define Cmd_GetSpanOfTime 0x2F01
 #define Cmd_Nop_2F51 0x2F51
 #define Cmd_SetMenuPagesAvailable 0x2FA0
-#define Cmd_2FA5 0x2FA5
+#define Cmd_AddPitfall 0x2FA5
 #define Cmd_GetBackupValue 0x2FE4
 #define Cmd_3004 0x3004
 #define Cmd_300F 0x300F
@@ -208,7 +208,7 @@
 #define Entity501B_Create 0x501B
 #define Cmd_SetMapSpot 0x515D
 #define BgPlttGroupFader_Create 0x517B
-#define EnemyFlameSnake_Create 0x522C
+#define Salamander_Create 0x522C
 #define Cmd_5276 0x5276
 #define Entity5292_Create 0x5292
 #define AlbumMenu_Create 0x52BF
@@ -358,7 +358,7 @@
 #define GenericObjUnitManager_Create 0x8AF6
 #define Cmd_8B67 0x8B67
 #define LinkShopScreen_Create 0x8B8E
-#define EnemyBombGolem_Create 0x8C35
+#define GolemLink_Create 0x8C35
 #define Cmd_SpawnDove 0x8CC7
 #define Cmd_UnlockPlayerMagic 0x8CFE
 #define WeaponDexMenu_Create 0x8D2D
@@ -370,7 +370,7 @@
 #define Cmd_SetMessageWindowBgPltt 0x8F41
 #define Cmd_StartPlayerPlttFadeIn 0x8FA3
 #define Cmd_SetCrossoverPoint 0x904B
-#define Cmd_9053 0x9053
+#define Cmd_CreateAutoScroller 0x9053
 #define Cmd_90B4 0x90B4
 #define Cmd_Nop_9146 0x9146
 #define Cmd_CreateNPC 0x920F
@@ -381,7 +381,7 @@
 #define Cmd_9311 0x9311
 #define Cmd_MovePlayerTo 0x933C
 #define Durathror_Create 0x9386
-#define EnemyBokuLink_Create 0x94D9
+#define BokuLink_Create 0x94D9
 #define Cmd_94EB 0x94EB
 #define PasswordScreen_Create 0x9519
 #define Cmd_CreateMessageChoice 0x9531
@@ -412,7 +412,7 @@
 #define EntityA0A6_Create 0xA0A6
 #define Cmd_A133 0xA133
 #define ElevatorManager_Create 0xA16F
-#define Cmd_A1D7 0xA1D7
+#define EneSword_Create 0xA1D7
 #define Cmd_ReadSystemDataOrInit 0xA222
 #define Cmd_GetBestFriend 0xA285
 #define EntityA288_Create 0xA288
@@ -437,7 +437,7 @@
 #define Cmd_SetMessageWindowVar 0xAB3C
 #define Cmd_AB41 0xAB41
 #define EntityAB4E_Create 0xAB4E
-#define Cmd_AB8E 0xAB8E
+#define Cmd_AddFloorSwitch 0xAB8E
 #define Cmd_HideOtenkoGuide 0xAB9C
 #define Cockatrice_Create 0xAC98
 #define ClockAlarm_Create 0xACE3
@@ -493,7 +493,7 @@
 #define Cmd_C12A 0xC12A
 #define Cmd_StartPlayerPlttPulse 0xC12D
 #define Cmd_C15E 0xC15E
-#define Cmd_SleepEnemy 0xC1F2
+#define Cmd_StunEnemy 0xC1F2
 #define Cmd_PlayerSpearSwing 0xC233
 #define Cmd_C347 0xC347
 #define Slime_Create 0xC3BC
@@ -512,7 +512,7 @@
 #define Specimen_Create 0xC946
 #define PropertyCubeManager_Create 0xC9BC
 #define Cmd_CA3D 0xCA3D
-#define EnemyDogLink_Create 0xCA73
+#define DogLink_Create 0xCA73
 #define Cmd_SetBgPlttFile 0xCA7D
 #define Cmd_CAEE 0xCAEE
 #define Cmd_PlayerSwordReady 0xCAFE
@@ -535,7 +535,7 @@
 #define Cmd_D229 0xD229
 #define Cmd_ReturnCoffinToBag 0xD24B
 #define Cmd_AddSkylightArea 0xD25F
-#define Cmd_D285 0xD285
+#define Cmd_SendAutoScrollerCommand 0xD285
 #define Jormungandr_Create 0xD37F
 #define CutsceneSoundManager_Create 0xD3A9
 #define Cmd_SetMessageWindowPendingLine 0xD401
@@ -633,7 +633,7 @@
 #define Player_Create 0xF5EB
 #define Cmd_HideGenericObj 0xF661
 #define Dog_Create 0xF836
-#define EnemyBat_Create 0xF8BE
+#define EneBat_Create 0xF8BE
 #define Cmd_F982 0xF982
 #define Cmd_F993 0xF993
 #define Cmd_CountFoundArmors 0xF9F1

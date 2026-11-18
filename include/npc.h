@@ -86,9 +86,9 @@ typedef struct {
 // NPC の 0x020 からの領域, NPC の種類ごとに使い方が違う (FUN_08208990 は +8 をワードで使う)
 typedef union {
   u16 unk_00;            // FUN_08044a54 系が 0 を入れる
-  NPCOtenkoWork otenko;  // おてんこ (SPRITE_OTENKO_00)
-  NPCRitaWork rita;      // リタ (SPRITE_RITA)
-  NPCKuroWork kuro;      // クロ (SPRITE_KURO)
+  NPCOtenkoWork otenko;  // おてんこ (SPR_OTENKO_00)
+  NPCRitaWork rita;      // リタ (SPR_RITA)
+  NPCKuroWork kuro;      // クロ (SPR_KURO)
   NPCWalkWork walk;      // FUN_080441d8 などがメッセージで歩かせるとき
   NPCSmithWork smith;    // FUN_08044a90 が槌を打たせるとき
   u8 raw[60];

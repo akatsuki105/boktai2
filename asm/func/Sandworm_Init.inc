@@ -1403,7 +1403,7 @@ _0817B0FE:
 	adds r0, r5, r1
 	strh r2, [r0]
 	adds r0, r7, #0
-	bl FUN_081794a8
+	bl Sandworm_ResetRecentTiles
 	movs r4, #0xd1
 	lsls r4, r4, #1
 	movs r5, #0x99
@@ -1485,7 +1485,7 @@ _0817B1C0:
 	adds r0, r7, #0
 	bl Sandworm_InitHitboxes
 	adds r0, r7, #0
-	bl FUN_081778f0
+	bl Sandworm_InitFollowInterval
 	ldr r0, _0817B3C0 @ =0x0000102C
 	ldr r6, [sp, #0x30]
 	adds r0, r6, r0
@@ -1493,11 +1493,11 @@ _0817B1C0:
 	ldr r1, _0817B3C4 @ =0x00001050
 	adds r6, r6, r1
 	mov r8, r6
-	ldr r2, _0817B3C8 @ =FUN_0817a334
+	ldr r2, _0817B3C8 @ =Sandworm_UpdateFrame
 	mov sb, r2
 	ldr r3, _0817B3CC @ =Sandworm_GetMoveSpeed
 	mov sl, r3
-	ldr r4, _0817B3D0 @ =FUN_08171294
+	ldr r4, _0817B3D0 @ =Sandworm_StateTurn
 	mov ip, r4
 	movs r5, #0
 	ldr r3, _0817B3D4 @ =Sandworm_StateDamaged
@@ -1526,13 +1526,13 @@ _0817B1C0:
 	mov r6, ip
 	ldr r0, [sp, #0x114]
 	str r6, [r0]
-	ldr r1, _0817B3E4 @ =FUN_08170d4c
+	ldr r1, _0817B3E4 @ =Sandworm_StateMove
 	ldr r6, [sp, #0x124]
 	str r1, [r6]
-	ldr r0, _0817B3E8 @ =FUN_08171188
+	ldr r0, _0817B3E8 @ =Sandworm_StateWait
 	ldr r1, [sp, #0x128]
 	str r0, [r1]
-	ldr r6, _0817B3EC @ =FUN_08171298
+	ldr r6, _0817B3EC @ =Sandworm_StateNap
 	ldr r0, [sp, #0x158]
 	str r6, [r0]
 	ldr r1, [sp, #0x15c]
@@ -1549,7 +1549,7 @@ _0817B1C0:
 	str r0, [r6]
 	ldr r0, [sp, #0x160]
 	str r5, [r0]
-	ldr r1, _0817B3F8 @ =FUN_081713c4
+	ldr r1, _0817B3F8 @ =Sandworm_StateRespawnWait
 	ldr r2, [sp, #0x108]
 	str r1, [r2]
 	ldr r3, [sp, #0x1b8]
@@ -1586,7 +1586,7 @@ _0817B1C0:
 	ldr r0, _0817B410 @ =FUN_080e72b0
 	ldr r6, [sp, #0x180]
 	str r0, [r6]
-	ldr r0, _0817B414 @ =FUN_08172384
+	ldr r0, _0817B414 @ =Sandworm_ClearStateBegun
 	ldr r1, [sp, #0x178]
 	str r0, [r1]
 	ldr r0, _0817B418 @ =Enemy_StateBlownAway
@@ -1637,7 +1637,7 @@ _0817B1C0:
 	str r5, [r0]
 	ldr r2, _0817B44C @ =0x000005AC
 	adds r1, r7, r2
-	ldr r0, _0817B450 @ =FUN_08179540
+	ldr r0, _0817B450 @ =Sandworm_OnAttackRequest
 	str r0, [r1]
 	movs r3, #0xb6
 	lsls r3, r3, #3
@@ -1646,15 +1646,15 @@ _0817B1C0:
 	str r0, [r1]
 	subs r4, #4
 	adds r1, r7, r4
-	ldr r0, _0817B458 @ =FUN_081795ac
+	ldr r0, _0817B458 @ =Sandworm_TryDetectPlayer
 	str r0, [r1]
 	subs r6, #0x6c
 	adds r1, r7, r6
-	ldr r0, _0817B45C @ =FUN_0817a1f8
+	ldr r0, _0817B45C @ =Sandworm_OnDamaged
 	str r0, [r1]
 	ldr r0, _0817B460 @ =0x000005B4
 	adds r1, r7, r0
-	ldr r0, _0817B464 @ =FUN_08178660
+	ldr r0, _0817B464 @ =Sandworm_ScatterSegments
 	str r0, [r1]
 	ldr r1, _0817B468 @ =0x00100200
 	ldr r2, [sp, #0x88]
@@ -1730,26 +1730,26 @@ _0817B3B0:
 	.align 2, 0
 _0817B3C0: .4byte 0x0000102C
 _0817B3C4: .4byte 0x00001050
-_0817B3C8: .4byte FUN_0817a334
+_0817B3C8: .4byte Sandworm_UpdateFrame
 _0817B3CC: .4byte Sandworm_GetMoveSpeed
-_0817B3D0: .4byte FUN_08171294
+_0817B3D0: .4byte Sandworm_StateTurn
 _0817B3D4: .4byte Sandworm_StateDamaged
 _0817B3D8: .4byte Sandworm_StateDying
 _0817B3DC: .4byte FUN_080f62b0
 _0817B3E0: .4byte FUN_080f62ac
-_0817B3E4: .4byte FUN_08170d4c
-_0817B3E8: .4byte FUN_08171188
-_0817B3EC: .4byte FUN_08171298
+_0817B3E4: .4byte Sandworm_StateMove
+_0817B3E8: .4byte Sandworm_StateWait
+_0817B3EC: .4byte Sandworm_StateNap
 _0817B3F0: .4byte FUN_080f44f4
 _0817B3F4: .4byte FUN_080f410c
-_0817B3F8: .4byte FUN_081713c4
+_0817B3F8: .4byte Sandworm_StateRespawnWait
 _0817B3FC: .4byte FUN_080f0430
 _0817B400: .4byte 0x085AD470
 _0817B404: .4byte FUN_080e73c8
 _0817B408: .4byte FUN_080f0320
 _0817B40C: .4byte Enemy_080eff14
 _0817B410: .4byte FUN_080e72b0
-_0817B414: .4byte FUN_08172384
+_0817B414: .4byte Sandworm_ClearStateBegun
 _0817B418: .4byte Enemy_StateBlownAway
 _0817B41C: .4byte Enemy_StateFallDeath
 _0817B420: .4byte FUN_080f6e64
@@ -1764,12 +1764,12 @@ _0817B440: .4byte 0x085ADB50
 _0817B444: .4byte Sandworm_OnReset
 _0817B448: .4byte 0x000005FC
 _0817B44C: .4byte 0x000005AC
-_0817B450: .4byte FUN_08179540
+_0817B450: .4byte Sandworm_OnAttackRequest
 _0817B454: .4byte FUN_081795a8
-_0817B458: .4byte FUN_081795ac
-_0817B45C: .4byte FUN_0817a1f8
+_0817B458: .4byte Sandworm_TryDetectPlayer
+_0817B45C: .4byte Sandworm_OnDamaged
 _0817B460: .4byte 0x000005B4
-_0817B464: .4byte FUN_08178660
+_0817B464: .4byte Sandworm_ScatterSegments
 _0817B468: .4byte 0x00100200
 _0817B46C: .4byte 0x02000008
 _0817B470: .4byte 0x0000044C
@@ -2117,7 +2117,7 @@ _0817B6E2:
 	strh r0, [r5]
 _0817B6FA:
 	adds r0, r7, #0
-	bl FUN_08175898
+	bl Sandworm_PickNextTile
 	movs r0, #2
 	movs r2, #0
 	ldr r6, [sp, #0x48]
@@ -2148,21 +2148,21 @@ _0817B6FA:
 	adds r0, r7, #0
 	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
-	bl FUN_08175678
+	bl Sandworm_SetHandlerTable2
 	adds r0, r7, #0
-	bl FUN_0817a180
+	bl Sandworm_SetHandlerTable4
 	ldr r1, _0817B7E0 @ =0x0000D636
 	ldr r2, _0817B7E4 @ =0x0000C102
 	ldrb r3, [r7, #5]
 	adds r0, r7, #0
-	bl FUN_081763a8
+	bl Sandworm_InitSegments
 	ldr r0, [sp, #0x30]
 	ldr r1, [sp, #0x1b4]
-	bl FUN_08177f7c
+	bl Sandworm_SetAllSegmentsPos
 	adds r0, r7, #0
-	bl FUN_08178dc4
+	bl Sandworm_InitSegmentHitboxes
 	adds r0, r7, #0
-	bl FUN_08175898
+	bl Sandworm_PickNextTile
 	ldr r1, [sp, #0x60]
 	ldrh r0, [r1]
 	ldr r2, [sp, #0xf8]

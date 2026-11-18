@@ -134,7 +134,7 @@ _081341D2:
 	adds r0, r6, r3
 	ldr r0, [r0]
 	movs r1, #0x12
-	bl FUN_0813652c
+	bl Centipede_AnimateSegments
 	ldr r4, _08134380 @ =0x0000046E
 	adds r0, r6, r4
 	movs r4, #0
@@ -233,7 +233,7 @@ _08134248:
 _081342AA:
 	adds r0, r6, #0
 	mov r1, sb
-	bl FUN_08136720
+	bl Centipede_BlinkSegments
 	ldr r0, [r6, #0x44]
 	mov r1, sb
 	movs r2, #0xa
@@ -249,10 +249,10 @@ _081342C6:
 	movs r4, #1
 	strb r4, [r0]
 	adds r0, r6, #0
-	bl FUN_081378fc
+	bl Centipede_DestroyAllSegmentsWithSmoke
 	adds r0, r6, #0
 	adds r0, #8
-	bl FUN_08138504
+	bl Centipede_EmitSmokeAround
 	movs r1, #0x80
 	lsls r1, r1, #3
 	movs r2, #0xbc

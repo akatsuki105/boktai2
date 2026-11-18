@@ -36,7 +36,7 @@ SECTIONS {
     ALIGN(4)
     {
       src/entity_08000a94.o(iwram_data);
-      src/entity_08001610.o(iwram_data);
+      src/auto_scroller.o(iwram_data);
       src/main.o(iwram_data);
       src/movable_block.o(.bss);
       src/script_tile_override.o(.bss);
@@ -50,8 +50,8 @@ SECTIONS {
       src/spirit_bugs.o(.bss);
       src/entity_329b.o(iwram_data);
       src/sun_countdown.o(iwram_data);
-      src/shadow_normal.o(.bss);
-      src/shadow_large.o(.bss);
+      src/shadow/normal.o(.bss);
+      src/shadow/large.o(.bss);
       src/eff_scatter.o(.bss);
       src/entity_08015220.o(iwram_data);
       src/puff.o(.bss);
@@ -134,9 +134,9 @@ SECTIONS {
       src/dog_firebreath.o(.bss);
       src/entity_081f26bc.o(.bss);
       src/entity_081f3324.o(.bss);
-      src/entity_081f4554.o(.bss);
+      src/thunderbolt.o(.bss);
       src/entity_081f53a8.o(.bss);
-      src/entity_081f73ec.o(.bss);
+      src/worm_tail.o(.bss);
       src/entity_081f7974.o(.bss);
       src/entity_081f7de4.o(.bss);
       src/entity_081f8a28.o(.bss);
@@ -190,7 +190,7 @@ SECTIONS {
       src/cactus.o(COMMON);
       src/property_cube.o(COMMON);
       src/falling_object.o(COMMON);
-      src/shadow_scripted.o(COMMON);
+      src/shadow/scripted.o(COMMON);
       src/entity_08016660.o(COMMON);
       src/rain.o(COMMON);
       src/msgbus.o(COMMON);
@@ -251,7 +251,7 @@ SECTIONS {
       src/crt0.o (.text);
 			src/main.o (.text);
 			src/entity_08000a94.o (.text);
-			src/entity_08001610.o (.text);
+			src/auto_scroller.o (.text);
 			src/bgp_controller.o (.text);
 			src/obp_controller.o (.text);
 			src/occlusion_mask.o (.text);
@@ -279,9 +279,9 @@ SECTIONS {
 			src/cutscene_bat_swarm.o (.text);
 			src/password.o (.text);
 			src/dark_vine.o (.text);
-			src/shadow_normal.o (.text);
-			src/shadow_large.o (.text);
-			src/shadow_scripted.o (.text);
+			src/shadow/normal.o (.text);
+			src/shadow/large.o (.text);
+			src/shadow/scripted.o (.text);
 			src/eff_scatter.o (.text);
 			src/entity_08015220.o (.text);
 			src/puff.o (.text);
@@ -332,7 +332,7 @@ SECTIONS {
 			src/crossover_ojama.o (.text);
 			src/crossover_mc.o (.text);
 			src/crossover_result.o (.text);
-			src/entity_08052ffc.o (.text);
+			src/ojama_bat_popup.o (.text);
 			src/black_panther.o (.text);
 			src/entity_56dc.o (.text);
 			src/entity_8d5c.o (.text);
@@ -342,8 +342,8 @@ SECTIONS {
 			src/larva.o (.text);
 			src/duneyrr_powder_ball.o (.text);
 			src/ringo_vampire_sword.o (.text);
-			src/ringo_0805b068.o (.text);
-			src/ringo_0805b790.o (.text);
+			src/curoro_shot.o (.text);
+			src/ringo_shot.o (.text);
 			src/ringo_bat_swarm.o (.text);
 			src/durathror_spike.o (.text);
 			src/durathror_impale.o (.text);
@@ -406,11 +406,11 @@ SECTIONS {
 			src/pile_driver_generator.o (.text);
 			src/solar_bank.o (.text);
 			src/dark_loans.o (.text);
-			src/warehouse.o (.text);
-			src/shop.o (.text);
-			src/shop_item.o (.text);
-			src/shop_weapon.o (.text);
-			src/shop_coffin.o (.text);
+			src/shop/warehouse.o (.text);
+			src/shop/shop.o (.text);
+			src/shop/item.o (.text);
+			src/shop/weapon.o (.text);
+			src/shop/coffin.o (.text);
 			src/torture.o (.text);
 			src/cutscene_sound.o (.text);
 			src/cutscene_bullet.o (.text);
@@ -460,9 +460,10 @@ SECTIONS {
 			src/enemy/cheye.o (.text);
 			src/enemy/octopus.o (.text);
 			src/enemy/serpent.o (.text);
+			src/enemy/sword.o (.text);
 			src/enemy/ax.o (.text);
 			src/enemy/darkroot.o (.text);
-			src/enemy/lich_flame_snake.o (.text);
+			src/enemy/salamander.o (.text);
 			src/enemy/boku_link.o (.text);
 			src/enemy/golem_link.o (.text);
 			src/enemy/dog_link.o (.text);
@@ -501,9 +502,9 @@ SECTIONS {
 			src/dog_firebreath.o (.text);
 			src/entity_081f26bc.o (.text);
 			src/entity_081f3324.o (.text);
-			src/entity_081f4554.o (.text);
+			src/thunderbolt.o (.text);
 			src/entity_081f53a8.o (.text);
-			src/entity_081f73ec.o (.text);
+			src/worm_tail.o (.text);
 			src/entity_081f7974.o (.text);
 			src/entity_081f7de4.o (.text);
 			src/entity_081f8a28.o (.text);
@@ -677,7 +678,7 @@ SECTIONS {
     src/enemy/sandworm.o (.rodata.string);
     src/enemy/cheye.o (.rodata.string);
     src/enemy/ax.o (.rodata.string);
-    src/enemy/lich_flame_snake.o (.rodata.string);
+    src/enemy/salamander.o (.rodata.string);
     src/enemy/boku_link.o (.rodata.string);
     src/enemy/golem_link.o (.rodata.string);
     src/enemy/dog_link.o (.rodata.string);
@@ -764,14 +765,14 @@ SECTIONS {
     src/crossover_ojama.o (.rodata);
     src/crossover_mc.o (.rodata);
     src/crossover_result.o (.rodata);
-    src/entity_08052ffc.o (.rodata);
+    src/ojama_bat_popup.o (.rodata);
     src/black_panther.o (.rodata);
     src/spore.o (.rodata);
     src/larva.o (.rodata);
     src/duneyrr_powder_ball.o (.rodata);
     src/ringo_vampire_sword.o (.rodata);
-    src/ringo_0805b068.o (.rodata);
-    src/ringo_0805b790.o (.rodata);
+    src/curoro_shot.o (.rodata);
+    src/ringo_shot.o (.rodata);
     src/ringo_bat_swarm.o (.rodata);
     src/shademan_0805e67c.o (.rodata);
     src/entity_0805ee80.o (.rodata);
@@ -820,9 +821,10 @@ SECTIONS {
     src/enemy/cheye.o (.rodata);
     src/enemy/octopus.o (.rodata);
     src/enemy/serpent.o (.rodata);
+    src/enemy/sword.o (.rodata);
     src/enemy/ax.o (.rodata);
     src/enemy/darkroot.o (.rodata);
-    src/enemy/lich_flame_snake.o (.rodata);
+    src/enemy/salamander.o (.rodata);
     src/enemy/boku_link.o (.rodata);
     src/enemy/golem_link.o (.rodata);
     src/enemy/dog_link.o (.rodata);
@@ -855,9 +857,9 @@ SECTIONS {
     src/dog_firebreath.o (.rodata);
     src/entity_081f26bc.o (.rodata);
     src/entity_081f3324.o (.rodata);
-    src/entity_081f4554.o (.rodata);
+    src/thunderbolt.o (.rodata);
     src/entity_081f53a8.o (.rodata);
-    src/entity_081f73ec.o (.rodata);
+    src/worm_tail.o (.rodata);
     src/entity_081f7974.o (.rodata);
     src/entity_081f7de4.o (.rodata);
     src/entity_081f8a28.o (.rodata);

@@ -55,8 +55,8 @@ typedef u32 HitboxAttrs;                 // 低位7bitが自分の属性マス�
 #define HBATTR_POISON (1 << 15)          // 0x8000, 当たると毒になる (EBUFF_IMMUNEPOISON なら防ぐ)
 #define HBATTR_16 (1 << 16)              // 0x10000, ???
 #define HBATTR_17 (1 << 17)              // 0x20000, 当たると Player_HandleHurt が SpawnBlood を呼ぶ
-#define HBATTR_18 (1 << 18)              // 0x40000, ???
-#define HBATTR_19 (1 << 19)              // 0x80000, ???
+#define HBATTR_BLOW (1 << 18)            // 0x40000, 相手を吹っ飛ばす攻撃につける
+#define HBATTR_STUN (1 << 19)            // 0x80000, 気絶させる
 #define HBATTR_CONFUSE (1 << 20)         // 0x100000, 当たると混乱になる
 #define HBATTR_INKA (1 << 21)            // 0x200000, (プレイヤーに)当たると引火の状態異常
 #define HBATTR_HYOKETU (1 << 22)         // 0x400000, (プレイヤーに)当たると氷結の状態異常
@@ -105,7 +105,7 @@ typedef struct Hitbox {
   u16 knockback;                                                // 0x40, ノックバック量
   u8 angle;                                                     // 0x42, 8bit の向き
   HitboxHitResult8 hitResult;                                   // 0x43, see HBRESULT_*
-  u16 iframes;                                                  // 0x44, 攻撃側では当てた相手に与える無敵時間, 食らい側では残りの無敵時間 (毎フレーム減り,0でない間は食らわない), 被弾時に Player_HandleHurt / EnemyBat_OnHurt が a から b へそのままコピーする
+  u16 iframes;                                                  // 0x44, 攻撃側では当てた相手に与える無敵時間, 食らい側では残りの無敵時間 (毎フレーム減り,0でない間は食らわない), 被弾時に Player_HandleHurt / EneBat_OnHurt が a から b へそのままコピーする
   HitboxHitState8 hitState;                                     // 0x46, 多段ヒット管理, see HBHITSTATE_*
   u8 unk_47;                                                    // 0x47, Hitbox_Init が 1 にする, 読み手が見つかっていない
   void (*fn)(struct Hitbox* a, struct Hitbox* b, void* owner);  // 0x48, a: 攻撃側, b: 被攻撃側, owner: このHitboxの持ち主 (大抵 a->owner or b->owner のどちらか)

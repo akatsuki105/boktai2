@@ -9,7 +9,7 @@
 // スクリプトが出す "TRAP", "MISSION COMPLETED", "PURIFICATION COMPLETED" "MISSION FAILED" のどれか
 typedef struct MissionMarker {
   Entity e;                                       // 0x00, ENTITY_UNK_9
-  MainSpriteGfx gfx;                              // 0x18, SPRITE_MARKERS
+  MainSpriteGfx gfx;                              // 0x18, SPR_MARKERS
   MainSprite sprite;                              // 0x38
   u8 unk_98[0x9A - 0x98];                         // 0x98, padding?
   u16 timer;                                      // 0x9A, MissionMarker_Update が毎フレーム +1 して lifetime と比べる
@@ -49,7 +49,7 @@ s32 MissionMarker_Destroy(MissionMarker* p) {
 
 // マーカーのスプライトを読み込み、スクリプトの指定に従って表示する
 s32 MissionMarker_Init(MissionMarker* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_MARKERS);
   s32 idx;
 
   if (f == NULL) {

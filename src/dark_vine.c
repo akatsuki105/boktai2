@@ -23,7 +23,7 @@ typedef struct {
   Vec3 pos;                      // 0x28, '.p'
   Hitbox hurtbox;                // 0x30
   MapTileOverride tileOverride;  // 0x80
-  AuxSpriteGfx gfx;              // 0x90, SPRITE_PLANT_2567
+  AuxSpriteGfx gfx;              // 0x90, SPR_PLANT_2567
   AuxSprite sprite;              // 0xAC
 } DarkVine;
 static_assert(sizeof(DarkVine) == 216);
@@ -118,7 +118,7 @@ s32 DarkVine_Init(DarkVine* p, u32 id) {
   }
   p->scriptID = VM_GetNamedArgValue('e', 0);
   gfx = &p->gfx;
-  if (!Video_GetAuxSprite(gfx, SPRITE_PLANT_2567)) {
+  if (!Video_GetAuxSprite(gfx, SPR_PLANT_2567)) {
     return -1;
   }
   AuxSprite_Add(&p->sprite, gfx, 0);

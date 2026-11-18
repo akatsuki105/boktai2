@@ -7,48 +7,53 @@ IWRAM_DATA CtrlHandlerTable gCtrlHandlers1 = {};  // 0x03000770, 制御命令で
 s32 VM_Ctrl_Switch_Internal(void);
 
 /**
- * @param src EUC-JP文字列
  * @param dst Shift-JIS文字列
+ * @param src EUC-JP文字列
  */
+// 残差は lead/trail の r1/r2 入れ替えのみ (55/55 命令), Tier B-C は試済 (宣言順, u8/u32, s++ の位置, ++ と += 1, for 化, *++s, 引数直使用, 2バイト構造体経由の読み, 配列化), trail を sjisTrail に畳むと lead は r1 に入るが1命令減る
 NON_MATCH void VM_ConvertEucJpToSjis(u8* dst, u8* src) {
 #ifdef NONMATCHING_C
   u8* s = src;
   u8* d = dst;
   s32 lead;
   s32 trail;
-  s32 cell;
-  s32 out;
+  s32 sjisTrail;
+  s32 sjisLead;
 
   while (s[0] != 0) {
     if (s[0] & 0x80) {
-      lead = s[0] - 0x80;
+      // 全角文字(1文字=2バイト)
+      lead = s[0] - 0x80;  // EUC-JP は JIS の区点の各バイトに 0x80 を足したもの, 1バイト目から 0x80 を引いて JIS の1バイト目 (0x21..0x7E) に戻す
       trail = s[1];
-      s += 1;
+      s++;
+      // Shift-JIS の2バイト目は JIS の1バイト目の奇偶で範囲が変わる, 奇数なら 0x40..0x9E (0x7F は使わないので飛ばす), 偶数なら 0x9F..0xFC
       if (lead & 1) {
-        cell = trail - 0x61;
-        if (cell > 0x7E) {
-          cell += 1;
+        sjisTrail = trail - 0x61;
+        if (sjisTrail > 0x7E) {
+          sjisTrail++;
         }
       } else {
-        cell = trail - 2;
+        sjisTrail = trail - 2;
       }
-      out = Div(lead - 0x21, 2) + 0x81;
-      if (out > 0x9F) {
-        out += 0x40;
+      // Shift-JIS の1バイト目は JIS の2区ぶんを1つにまとめて 0x81 から振る, 半角カナの 0xA0..0xDF は避けて 0xE0 から続ける
+      sjisLead = Div(lead - 0x21, 2) + 0x81;
+      if (sjisLead > 0x9F) {
+        sjisLead += 0x40;
       }
-      d[0] = (u8)out;
-      d[1] = (s8)cell;
-      d += 1;
+      d[0] = sjisLead, d[1] = sjisTrail;
+      d++;
     } else {
+      // ASCII
       d[0] = s[0];
     }
-    if (s[0] == 0xD && s[1] == 0xA) {
-      s += 1;
+
+    if (s[0] == '\r' && s[1] == '\n') {  // 改行の CR LF は CR だけを残して LF を読み飛ばす
+      s++;
     }
-    s += 1;
-    d += 1;
+    s++;
+    d++;
   }
-  d[0] = 0;
+  d[0] = '\0';
 #else
   INCFUNC("asm/func/VM_ConvertEucJpToSjis.inc");
 #endif
@@ -90,11 +95,8 @@ bool32 VM_Ctrl_If(u8* pc) {
   return FALSE;
 }
 
-// 0x4A6F
-// 残差1命令: 命令の中身は同じで、CLAUSE_DEFAULT の節がループの手前に配置され、そこを飛び越す b が増える
-// Tier A は試済 (else if を独立した if に分解, continue の明示, 最後の節の極性反転), 未: Tier B-C
-NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
-#ifdef NONMATCHING_C
+// 0x4A6F: switch 文, case/default の節を順に辿り, 値が一致した case か default のブロックを実行する
+bool32 VM_Ctrl_Switch(u8* pc) {
   u8* blockPc = NULL;
   s32 type;
   s32 switchVal;
@@ -102,10 +104,10 @@ NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
 
   VM_SetPC(VM_DecodeValue(pc, &type, &switchVal));
 
-  while (TRUE) {
+  for (;;) {
     kw = VM_Ctrl_Switch_Internal();
     if (kw == 0) {
-      return 0;
+      return FALSE;
     } else if (kw == CLAUSE_CASE) {
       if (VM_GetValue() == switchVal) {
         VM_DecodeValue(VM_GetPC(), &type, &blockPc);
@@ -116,10 +118,7 @@ NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
       break;
     }
   }
-  return VM_ExecBlock(blockPc, 0, 0);
-#else
-  INCFUNC("asm/func/VM_Ctrl_Switch.inc");
-#endif
+  return VM_ExecBlock(blockPc, NULL, 0);
 }
 
 bool32 VM_Ctrl_Unused_64C0(u8* pc) {

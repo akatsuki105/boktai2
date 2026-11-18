@@ -13,7 +13,7 @@ typedef struct CrossoverMC {
   u8 state;               // 0x01C, PTR_ARRAY_085ab70c の添字
   bool8 entered;          // 0x01D, state を変えた直後だけ立つ
   bool8 exitRequest;      // 0x01E, 立つと今の state を抜けて state 0 に戻る, CrossoverMC_RequestExit が立てる
-  MainSpriteGfx gfx;      // 0x020, SPRITE_UI_LINK
+  MainSpriteGfx gfx;      // 0x020, SPR_UI_LINK
   MainSprite sprites[4];  // 0x040, pose初期値は 全部 LINK_PUSHSTART
 } CrossoverMC;
 static_assert(sizeof(CrossoverMC) == 448);
@@ -215,7 +215,7 @@ s32 CrossoverMC_Destroy(CrossoverMC* p) {
 }
 
 s32 CrossoverMC_Init(CrossoverMC* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   MainSprite* spr;
   s32 i;
 

@@ -267,7 +267,7 @@ s32 LevelUpper_Destroy(LevelUpper* p) {
 void LevelUpper_InitSprite(LevelUpper* p) {
   AuxSpriteGfx* gfx = &p->gfx;
 
-  Video_GetAuxSprite(gfx, SPRITE_LVUP_INDICATOR);
+  Video_GetAuxSprite(gfx, SPR_LVUP_INDICATOR);
   AuxSprite_Add(&p->sprite, gfx, 0);
   Video_SetAuxSpritePltt(gfx, 1);
   p->sprite.flags |= SPRFLAG_HIDDEN;

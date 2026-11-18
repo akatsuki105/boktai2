@@ -1138,7 +1138,7 @@ s32 Octopus_Destroy(Octopus* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -1171,7 +1171,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_OCTOPUS_0);
+    Video_GetAuxSprite(&aux->gfx, SPR_OCTOPUS_0);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_OCTOPUS);
     k = (p->e).kind;
@@ -1188,7 +1188,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_OCTOPUS_0);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_OCTOPUS_0);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1290,7 +1290,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1300,7 +1300,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1350,7 +1350,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
   (p->e).handlerTurn = NULL;
   (p->e).handlerMove = NULL;
   (p->e).handlerWait = NULL;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = NULL;
   (p->e).handlerDamaged = NULL;
   (p->e).handlerDying = (void*)Octopus_StateDying;
@@ -1379,7 +1379,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;
@@ -1511,11 +1511,11 @@ void OctopusGroup_OnAllDefeated(OctopusGroup* p) {
       Enemy_SendMsgById(q->members[i].kind, msg, q->members[i].id);
     }
   }
-  if (gStat->unk_948[0] < 9999) {
-    gStat->unk_948[0]++;
+  if (UNK_948(0) < 9999) {
+    UNK_948(0)++;
   }
-  if (gStat->totalEnemyKillCount < 9999) {
-    gStat->totalEnemyKillCount++;
+  if (TOTAL_ENEMY_KILL < 9999) {
+    TOTAL_ENEMY_KILL++;
   }
   Enemy_AddKillCount(&p->e);
 }

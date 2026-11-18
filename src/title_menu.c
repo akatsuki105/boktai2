@@ -85,7 +85,7 @@ static_assert(sizeof(EntityA288TextInput) == 0x1FE8 - 0x166C);
 typedef struct {
   MainSpriteGfx gfx;  // 0x000
   MainSprite sprite;  // 0x020
-  Tilemaps* tilemap;  // 0x080, TILEMAP_A413
+  Tilemaps* tilemap;  // 0x080, MP_A413
   rgb555* bgp;        // 0x084, BGP_EFDA[208]
   s32 windowID;       // 0x088
   s16 unk_8c;         // 0x08C, 1 なら sprite を出す
@@ -128,7 +128,7 @@ static_assert(sizeof(EntityA288SubDBC) == 0xE8C - 0xDBC);
 
 // 0x12C8 から始まる画面, 関数は先頭へのポインタを持ってから各メンバを引く
 typedef struct {
-  MainSpriteGfx gfx;          // 0x000, SPRITE_PORTRAITS
+  MainSpriteGfx gfx;          // 0x000, SPR_PORTRAITS
   MainSprite sprite_20;       // 0x020
   MainSprite sprite_80;       // 0x080
   MainSprite sprites_e0[5];   // 0x0E0
@@ -148,8 +148,8 @@ static_assert(sizeof(EntityA288Sub12C8) == 0x166C - 0x12C8);
 // タイトル画面で、 "GAME START" or "OPTION" or "SOUND" を選んだ後に生成される "LINK" は別
 typedef struct EntityA288 {
   Entity e;                                    // 0x0000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                           // 0x0018, SPRITE_UI_TITLE
-  Tilemaps* tilemap;                           // 0x0038, TILEMAP_33B2
+  MainSpriteGfx gfx;                           // 0x0018, SPR_UI_TITLE
+  Tilemaps* tilemap;                           // 0x0038, MP_33B2
   rgb555* pltt;                                // 0x003C, BGP_E9C3
   s32 kind;                                    // 0x0040, '.t', 初期 state を選ぶ
   u32 flags;                                   // 0x0044, bit0 / bit1 が立っている間は timer1 / timer2 を止める
@@ -231,7 +231,7 @@ void FUN_08219d98(EntityA288* p);
 void EntityA288_SetState(EntityA288* p, s32 state);
 void FUN_082156bc(EntityA288* p);
 
-void FUN_08213880(EntityA288* p) { p->sub78.tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413); }
+void FUN_08213880(EntityA288* p) { p->sub78.tilemap = GetFile(DIR_TILE_MAP, MP_A413); }
 
 void EntityA288_LoadBgPltt(EntityA288* p) {
   p->sub78.bgp = &GetBgPlttFile(BGP_EFDA)->body[208];
@@ -244,7 +244,7 @@ void FUN_082138d4(EntityA288* p) {
   EntityA288Sub78* s = &p->sub78;
   MainSpriteGfxFile* f;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   s->gfx = *f;
   OpenMainSpriteFile(&s->gfx, f);
   Vec3_Clear(&pos);
@@ -3496,7 +3496,7 @@ void FUN_08218c30(EntityA288* p) {
   s32 i;
 
   Vec3_Clear(&pos);
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_PORTRAITS);
   s->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&s->gfx, f);
   pos.x = 24;
@@ -4145,7 +4145,7 @@ void FUN_08219d98(EntityA288* p) {
 void FUN_08219e5c(EntityA288* p) {
   s32 indices[1];
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_33B2);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_33B2);
   indices[0] = 0;
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, indices);
   FUN_08213880(p);
@@ -4159,7 +4159,7 @@ void FUN_08219e9c(EntityA288* p) {
 
 // スプライトを読み込んで各パーツを順に初期化する
 void FUN_08219ed0(EntityA288* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_TITLE);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_TITLE);
 
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);

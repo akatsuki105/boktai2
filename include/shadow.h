@@ -32,7 +32,7 @@ typedef struct AuxShadow {
   u16 unk_06;                                 // 0x06, AuxShadow_Init で 0
   Vec3* pos;                                  // 0x08, 持ち主の座標, AuxShadow_FollowGround が x/y/z を読む
   AuxSprite sprite;                           // 0x0C
-  AuxSpriteGfx gfx;                           // 0x38, SPRITE_EFF_1C1B
+  AuxSpriteGfx gfx;                           // 0x38, SPR_EFF_1C1B
   s8 scale;                                   // 0x54, AuxShadow_FollowGround が高さから計算して sprite.scaleX/Y に入れる, 1 未満なら 1
   u8 farScale;                                // 0x55, 高さが farHeight を超えたときの scale
   u8 baseScale;                               // 0x56, 接地時の scale, 高さに応じてここから引く

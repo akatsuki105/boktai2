@@ -31,8 +31,8 @@ static_assert(sizeof(DjangoBerserkParticle) == 60);
 typedef struct DjangoBerserk {
   Entity e;                                       // 0x000, ENTITY_UNK_11
   Player* player;                                 // 0x018
-  MainSpriteGfx gfx;                              // 0x01C, SPRITE_DJANGO_SABATA
-  MainSprite sprite;                              // 0x03C, SPRITE_DJANGO_SABATA
+  MainSpriteGfx gfx;                              // 0x01C, SPR_DJANGO_SABATA
+  MainSprite sprite;                              // 0x03C, SPR_DJANGO_SABATA
   Hitbox hitbox;                                  // 0x09C
   u8 unk_ec[2];                                   // 0x0EC
   u16 timer;                                      // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
@@ -302,7 +302,7 @@ s32 DjangoBerserk_Destroy(DjangoBerserk* p) {
 }
 
 void LoadPlayerSprite_0807fe48(DjangoBerserk* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
 
   if (f != NULL) {
     p->gfx = *f;
@@ -323,7 +323,7 @@ void FUN_0807fed0(DjangoBerserk* p) {
   VEC3_SET(size, 30000, 30000, 30000);
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_NPC | HBF_DAMAGE, 0, (u16)(1 << p->player->mover.unk_4), &size, &offset);
-  Hitbox_SetAttack(hitbox, p->player->maxHP >> 1, 50, 0, HBATTR_18, 50);
+  Hitbox_SetAttack(hitbox, p->player->maxHP >> 1, 50, 0, HBATTR_BLOW, 50);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->player->mover.pos, 0);
 }

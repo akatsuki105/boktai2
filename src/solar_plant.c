@@ -11,11 +11,11 @@
 // 足場1枚ぶん
 typedef struct SolarPlant {
   AuxSprite spr;                               // 0x000
-  AuxSpriteGfx gfx;                            // 0x02C, SPRITE_SOLAR_PLANT か SPRITE_LILYPAD
+  AuxSpriteGfx gfx;                            // 0x02C, SPR_SOLAR_PLANT か SPR_LILYPAD
   Hitbox hurtbox;                              // 0x048
   Mover mover;                                 // 0x098, moverLinked が 0 以外のときだけ繋がれる
   Vec3 pos;                                    // 0x0DC, '.p', spr.pos へ複写され hurtbox の座標にもなる
-  u8 unk_e4;                                   // 0x0E4, '.t', 0 なら太陽の根 (SPRITE_SOLAR_PLANT), それ以外はハスの葉 (SPRITE_LILYPAD)
+  u8 unk_e4;                                   // 0x0E4, '.t', 0 なら太陽の根 (SPR_SOLAR_PLANT), それ以外はハスの葉 (SPR_LILYPAD)
   bool8 moverLinked;                           // 0x0E5, '.h'
   s16 hurtboxArg;                              // 0x0E6, '.n', Hitbox_Init の第2引数 (hurtbox.id)
   s16 scriptID;                                // 0x0E8, '.g[0]=-1', スクリプトが '.i' でこの足場を指名する
@@ -34,7 +34,7 @@ typedef struct SolarPlant {
 } SolarPlant;
 static_assert(sizeof(SolarPlant) == 272);
 
-// 魔法"ヒーリング" で足場にすることができる ハスの葉(SPRITE_LILYPAD) or 太陽の根(SPRITE_SOLAR_PLANT)
+// 魔法"ヒーリング" で足場にすることができる ハスの葉(SPR_LILYPAD) or 太陽の根(SPR_SOLAR_PLANT)
 // 他の Entity と _Create, _Init, _Update, _Delete の書き方やシグネチャが異なる
 typedef struct {
   Entity e;             // 0x000, ENTITY_UNK_8
@@ -316,7 +316,7 @@ NON_MATCH void SolarPlantManager_AddPlant(SolarPlantManager* p) {
   } else {
     elem->unk_e4 = 0;
   }
-  id = (elem->unk_e4 == 0) ? SPRITE_SOLAR_PLANT : SPRITE_LILYPAD;
+  id = (elem->unk_e4 == 0) ? SPR_SOLAR_PLANT : SPR_LILYPAD;
   Video_GetAuxSprite(&elem->gfx, id);
   AuxSprite_Add(&elem->spr, &elem->gfx, 0);
   elem->spr.priority = 3;

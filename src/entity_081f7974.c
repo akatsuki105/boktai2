@@ -19,7 +19,7 @@ static_assert(sizeof(Entity081f7974Elem) == 72);
 // エフェクトを16個まで同時に出すシングルトン
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;              // 0x018, SPRITE_EFF_F422
+  AuxSpriteGfx gfx;              // 0x018, SPR_EFF_F422
   u8 unk_34[4];                  // 0x034
   u32 usedMask;                  // 0x038, elems のどのスロットが使用中かのビットマスク
   Entity081f7974Elem elems[16];  // 0x03C
@@ -151,7 +151,7 @@ s32 Entity081f7974_Destroy(Entity081f7974* p) {
 
 s32 Entity081f7974_Init(Entity081f7974* p) {
   p->usedMask = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_F422);
   gEntity081f7974 = p;
   return 0;
 }

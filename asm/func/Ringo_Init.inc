@@ -945,7 +945,7 @@ _080366E4:
 	lsls r2, r2, #4
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl Entity0805b068_Create
+	bl CuroroShotManager_Create
 	ldr r3, _08036750 @ =0x00001050
 	adds r1, r7, r3
 	str r0, [r1]
@@ -965,7 +965,7 @@ _08036728:
 	lsls r6, r6, #4
 	adds r0, r7, r6
 	ldr r0, [r0]
-	bl Entity0805b790_Create
+	bl RingoShotManager_Create
 	ldr r2, _0803675C @ =0x00001054
 	adds r1, r7, r2
 	str r0, [r1]

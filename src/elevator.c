@@ -52,7 +52,7 @@ typedef void ElevatorFunc(struct Elevator* e);
 
 typedef struct Elevator {
   AuxSprite sprite;                  // 0x000
-  AuxSpriteGfx gfx;                  // 0x02C, e.g. SPRITE_LIFT_IRON
+  AuxSpriteGfx gfx;                  // 0x02C, e.g. SPR_LIFT_IRON
   AuxAnimState anim;                 // 0x048, ElevatorManager.animFile
   Vec3 moveDelta;                    // 0x058, そのフレームに動いた量, 乗っているプレイヤーや棺桶の座標に足して一緒に運ぶ
   u8 unk_60[0x0B0 - 0x060];          // 0x060
@@ -297,13 +297,13 @@ void Elevator_EmitMoveEffect(Elevator* e) {
         pos.x = e->mover.pos.x + off[0].x;
         pos.y = e->mover.pos.y + off[0].y;
         pos.z = e->mover.pos.z + off[0].z;
-        Entity081ee7a8_SpawnEx(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+        Entity081ee7a8_SpawnEx(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPR_EFF_F422, ANIM_121B, 0, 0, 0xDA);
         e->unk_ca = 1;
       } else {
         pos.x = e->mover.pos.x + off[1].x;
         pos.y = e->mover.pos.y + off[1].y;
         pos.z = e->mover.pos.z + off[1].z;
-        Entity081ee7a8_SpawnEx(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPRITE_EFF_F422, ANIM_121B, 0, 0, 0xDA);
+        Entity081ee7a8_SpawnEx(&pos, 22, 8, a3, 4, 24, dir, a7, a8, 3, 2, 0x200, 0, SPR_EFF_F422, ANIM_121B, 0, 0, 0xDA);
         e->unk_ca = 0;
       }
       break;
@@ -1371,7 +1371,7 @@ NON_MATCH void Elevator_Create(void) {
   e->arriveScriptID = VM_GetNamedArgValue('R', 0);
   e->departScriptID = VM_GetNamedArgValue('S', 0);
   e->variant = VM_GetNamedArgValue('T', 0);
-  Video_GetAuxSprite(&e->gfx, SPRITE_LIFT_IRON);
+  Video_GetAuxSprite(&e->gfx, SPR_LIFT_IRON);
 
   switch (e->kind) {
     case ELEVATOR_H_0: {

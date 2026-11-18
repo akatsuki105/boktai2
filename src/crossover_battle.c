@@ -32,50 +32,50 @@ struct CrossoverMC;
 
 // エグゼ5 とのクロスオーバーバトルの進行役, 通信の同期, ラウンド, オジャマバット, 勝敗判定, クロスオーバーポイントの加算とセーブ
 typedef struct {
-  Entity e;                      // 0x000, ENTITY_UNK_2
-  u32 unk_18;                    // 0x018, _Init が 0 を入れる
-  u16 roundTimer;                // 0x01C, ラウンドの残りフレーム数, 720 から毎フレーム減る
-  u16 round;                     // 0x01E, 今のラウンド, 99 で止まる, 11 以上は MAX MODE
-  u32 linkFlags;                 // 0x020, 種別 n の送信済みが 1 << (2n), 受信済みが 1 << (2n + 1)
-  u32 stateTimer;                // 0x024, state に入ってからのフレーム数
-  u8 state;                      // 0x028, sCrossoverBattleStateFuncs の添字
-  bool8 stateBegun;              // 0x029, 立っていると次の更新で state の初期化をする
-  bool8 sendPending;             // 0x02A, 送れなかった sendMsg が残っている
-  bool8 sent;                    // 0x02B, CrossoverBattle_OnSent が立てる
-  bool8 ojamaAnimActive;         // 0x02C, オジャマバットの演出が終わるのを待って種別 3 を送る
-  bool8 playerDead;              // 0x02D, ジャンゴが倒れた
-  bool8 bossDefeated;            // 0x02E, シェードマンを倒した
-  u8 judgeResult;                // 0x02F, 0: 勝ち, 1: 負け, 2: 引き分け
-  u8 unk_30;                     // 0x030, FUN_08050d40 が立っていれば 0 に落として 1 を返す
-  u8 startDelay;                 // 0x031, START を押してからインターバル画面を抜けるまでのフレーム数
-  u8 blocksLeft;                 // 0x032, ブロッキングの残り回数, 初期値 1
-  bool8 screenDone;              // 0x033, オジャマバットの画面が終わった
-  bool8 resultClosed;            // 0x034, 結果画面が閉じた
-  u8 retryCount;                 // 0x035, セーブに失敗してやり直した回数
-  bool8 saveResult;              // 0x036, Save_WriteSystemData の戻り値
-  bool8 fighting;                // 0x037, StateFight の間 1
-  u8 incomingOjama[4];           // 0x038, 次のラウンドで自分が受けるオジャマバットの数
-  CrossoverBattleSide sides[2];  // 0x03C, [0] が自分, [1] が相手
-  CrossoverBattleMsg sendMsg;    // 0x054, 送信バッファ
-  struct CrossoverMC* mc;        // 0x060
-  void* unk_64;                  // 0x064, Entity08052ffc
-  u32 weaponCount;               // 0x068, weaponIDs に積んだ '.w' の件数
-  u32 magicCount;                // 0x06C, magicIDs に積んだ '.m' の件数
-  u32 weaponMask;                // 0x070, 対戦用の武器を入れた武器スロットのビット
-  u32 magicMask;                 // 0x074, magicIDs の埋まっている添字のビット
-  u16 weaponIDs[16];             // 0x078, '.w'
-  u16 magicIDs[16];              // 0x098, '.m' を乱数で選んだ添字に置いたもの
-  u8* script;                    // 0x0B8, '.s'
-  s32 windowID;                  // 0x0BC
-  u32 exitRequest;               // 0x0C0, StateExit が立て, 次の _Update で終わる
-  u32 exitScript;                // 0x0C4, '.e', 終わるときに実行する
-  s32 earnedPoint;               // 0x0C8, この対戦で得たクロスオーバーポイント
-  MainSpriteGfx iconGfx;         // 0x0CC, SPRITE_INVENTORY_ICONS
-  MainSprite sprites[2];         // 0x0EC, 相手のロックマンとシェードマンの体力アイコン
-  u16 unk_1ac;                   // 0x1AC, '.M=11'
-  u16 pointTable[4];             // 0x1AE, '.p', 得点, [0] シェードマン撃破, [1] 相手の死亡, [2] オジャマバット1匹, [3] ブロッキング成功
-  u8 unk_1b6[2];                 // 0x1B6
-  u32 startPressed;              // 0x1B8, インターバル画面で START を押した
+  Entity e;                                    // 0x000, ENTITY_UNK_2
+  u32 unk_18;                                  // 0x018, _Init が 0 を入れる
+  u16 roundTimer;                              // 0x01C, ラウンドの残りフレーム数, 720 から毎フレーム減る
+  u16 round;                                   // 0x01E, 今のラウンド, 99 で止まる, 11 以上は MAX MODE
+  u32 linkFlags;                               // 0x020, 種別 n の送信済みが 1 << (2n), 受信済みが 1 << (2n + 1)
+  u32 stateTimer;                              // 0x024, state に入ってからのフレーム数
+  u8 state;                                    // 0x028, sCrossoverBattleStateFuncs の添字
+  bool8 stateBegun;                            // 0x029, 立っていると次の更新で state の初期化をする
+  bool8 sendPending;                           // 0x02A, 送れなかった sendMsg が残っている
+  bool8 sent;                                  // 0x02B, CrossoverBattle_OnSent が立てる
+  bool8 ojamaAnimActive;                       // 0x02C, オジャマバットの演出が終わるのを待って種別 3 を送る
+  bool8 playerDead;                            // 0x02D, ジャンゴが倒れた
+  bool8 bossDefeated;                          // 0x02E, シェードマンを倒した
+  u8 judgeResult;                              // 0x02F, 0: 勝ち, 1: 負け, 2: 引き分け
+  u8 unk_30;                                   // 0x030, FUN_08050d40 が立っていれば 0 に落として 1 を返す
+  u8 startDelay;                               // 0x031, START を押してからインターバル画面を抜けるまでのフレーム数
+  u8 blocksLeft;                               // 0x032, ブロッキングの残り回数, 初期値 1
+  bool8 screenDone;                            // 0x033, オジャマバットの画面が終わった
+  bool8 resultClosed;                          // 0x034, 結果画面が閉じた
+  u8 retryCount;                               // 0x035, セーブに失敗してやり直した回数
+  bool8 saveResult;                            // 0x036, Save_WriteSystemData の戻り値
+  bool8 fighting;                              // 0x037, StateFight の間 1
+  u8 incomingOjama[4];                         // 0x038, 次のラウンドで自分が受けるオジャマバットの数
+  CrossoverBattleSide sides[2];                // 0x03C, [0] が自分, [1] が相手
+  CrossoverBattleMsg sendMsg;                  // 0x054, 送信バッファ
+  struct CrossoverMC* mc;                      // 0x060
+  struct OjamaBatPopupManager* ojamaBatPopup;  // 0x064
+  u32 weaponCount;                             // 0x068, weaponIDs に積んだ '.w' の件数
+  u32 magicCount;                              // 0x06C, magicIDs に積んだ '.m' の件数
+  u32 weaponMask;                              // 0x070, 対戦用の武器を入れた武器スロットのビット
+  u32 magicMask;                               // 0x074, magicIDs の埋まっている添字のビット
+  u16 weaponIDs[16];                           // 0x078, '.w'
+  u16 magicIDs[16];                            // 0x098, '.m' を乱数で選んだ添字に置いたもの
+  u8* script;                                  // 0x0B8, '.s'
+  s32 windowID;                                // 0x0BC
+  u32 exitRequest;                             // 0x0C0, StateExit が立て, 次の _Update で終わる
+  u32 exitScript;                              // 0x0C4, '.e', 終わるときに実行する
+  s32 earnedPoint;                             // 0x0C8, この対戦で得たクロスオーバーポイント
+  MainSpriteGfx iconGfx;                       // 0x0CC, SPR_INVENTORY_ICONS
+  MainSprite sprites[2];                       // 0x0EC, 相手のロックマンとシェードマンの体力アイコン
+  u16 unk_1ac;                                 // 0x1AC, '.M=11'
+  u16 pointTable[4];                           // 0x1AE, '.p', 得点, [0] シェードマン撃破, [1] 相手の死亡, [2] オジャマバット1匹, [3] ブロッキング成功
+  u8 unk_1b6[2];                               // 0x1B6
+  u32 startPressed;                            // 0x1B8, インターバル画面で START を押した
 } CrossoverBattle;
 static_assert(sizeof(CrossoverBattle) == 444);
 
@@ -88,7 +88,7 @@ void FUN_0804e5e8(void);          // src/rfu_session.c
 
 s32 CrossoverMC_SetState(struct CrossoverMC* p, u32 state);
 void CrossoverMC_RequestExit(struct CrossoverMC* p);
-void Entity08052ffc_Spawn(void* p, u32 idx, u32 mode, Vec3* pos);
+void OjamaBatPopupManager_Spawn(struct OjamaBatPopupManager* p, u32 idx, u32 mode, Vec3* pos);
 void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
 void FUN_0804e604(void);
 void* FUN_0804ba3c(void);
@@ -101,7 +101,7 @@ bool8 Save_WriteSystemData(void);
 void FUN_0803ca14(void);
 void* CrossoverOjama_Create(u32 id, u32 unused);
 void* CrossoverMC_Create();
-void* Entity08052ffc_Create(void);
+struct OjamaBatPopupManager* OjamaBatPopupManager_Create(void);
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
 const WeaponData* ReadWeaponDB(s32 idx);
 void SetWeaponData(slot32_t n, const WeaponData* data);
@@ -378,9 +378,9 @@ void CrossoverBattle_SetOutcome(CrossoverBattle* p) {
   side->clearTime = 720 - p->roundTimer;
 }
 
-// 背景 TILEMAP_A413 を index の1枚だけで組み, BG パレットを BGP_EFDA にする
+// 背景 MP_A413 を index の1枚だけで組み, BG パレットを BGP_EFDA にする
 void CrossoverBattle_SetupBG(CrossoverBattle* p, s32 index) {
-  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, TILEMAP_A413), 0, 0, 1, &index);
+  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, MP_A413), 0, 0, 1, &index);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   CpuCopy16(GetBgPlttFile(BGP_EFDA)->body, gBgPlttBuffer, 256 * sizeof(rgb555));
 }
@@ -1062,7 +1062,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
   CrossoverBattle_ClearOjama(p, 1);
   CrossoverOjama_Create(0, 0);
   p->mc = CrossoverMC_Create();
-  p->unk_64 = Entity08052ffc_Create();
+  p->ojamaBatPopup = OjamaBatPopupManager_Create();
   SignalStrengthIcon_CreateAt(4, 24);
   if (!VM_SeekToNamedArg('s')) {
     return -1;
@@ -1079,7 +1079,7 @@ NON_MATCH s32 CrossoverBattle_Init(CrossoverBattle* p) {
   for (i = 0; i < 4; i++) {
     p->pointTable[i] = VM_GetValue();
   }
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   if (f == NULL) {
     return -1;
   }
@@ -1236,11 +1236,11 @@ s32 CrossoverBattle_IsMaxMode(void) {
 // 0x877F
 void Cmd_877F(void) { gGameFlags |= GAMEFLAG_CROSSOVER; }
 
-void FUN_08050e2c(u32 idx, u32 mode, Vec3* pos) {
+void CrossoverBattle_ShowOjamaBatPopup(u32 idx, u32 mode, Vec3* pos) {
   CrossoverBattle* p = CrossoverBattle_Get();
 
   if (p != NULL) {
-    Entity08052ffc_Spawn(p->unk_64, idx, mode, pos);
+    OjamaBatPopupManager_Spawn(p->ojamaBatPopup, idx, mode, pos);
   }
 }
 

@@ -127,7 +127,7 @@ _0815F996:
 	movs r0, #0x9f
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
-	ldr r2, _0815FAA0 @ =Cockatrice_StateStunned
+	ldr r2, _0815FAA0 @ =Cockatrice_StatePetrified
 	movs r1, #0x2e
 	ldr r3, _0815FAA4 @ =0x0000046D
 	adds r0, r7, r3
@@ -220,7 +220,7 @@ _0815FA90: .4byte 0xFFFFFDFF
 _0815FA94: .4byte 0x0000021E
 _0815FA98: .4byte 0xFFFFFBFF
 _0815FA9C: .4byte 0x00000542
-_0815FAA0: .4byte Cockatrice_StateStunned
+_0815FAA0: .4byte Cockatrice_StatePetrified
 _0815FAA4: .4byte 0x0000046D
 _0815FAA8: .4byte 0x0000046A
 _0815FAAC: .4byte 0x000006DC

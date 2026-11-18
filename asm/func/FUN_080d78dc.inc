@@ -143,7 +143,7 @@ _080D79EC:
 	cmp r0, #0
 	beq _080D7A08
 	adds r0, r5, #0
-	bl FUN_080cfdec
+	bl PlayerLink_ApplyOriginHit
 	ldr r4, _080D7AE0 @ =0x00000376
 	adds r2, r5, r4
 	ldrh r1, [r2]

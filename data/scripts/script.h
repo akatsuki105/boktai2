@@ -86,7 +86,7 @@
 #define Scr_SetFadeSpeed 0x00D7                // フェードのフレーム数 p0 (1, 16〜256) を長さの log2 に直して S_FADE_SPEED に入れる
 #define Scr_SetFadeColor 0x00D8                // フェード色の番号 p0 (0: 黒, 1: 白, 2: 緑, 3: 赤, 4: 青) を S_FADE_R/G/B に入れる
 #define Scr_IsNight 0x00DB  // 夜 (時間帯が TIME_NIGHT_DAWN / TIME_NIGHT_DUSK / TIME_NIGHT_MID) なら 1 を返す
-#define Scr_CreateOcclusionMask 0x00DC  // 壁の裏に入ったキャラを隠すマスク (OcclusionMask) を作る, p0: 壁の形のスプライト ('.m', SPRITE_MASK_*), p1: '.n', W_UNK_00C_5 が 0 ならプレイヤーも登録する
+#define Scr_CreateOcclusionMask 0x00DC  // 壁の裏に入ったキャラを隠すマスク (OcclusionMask) を作る, p0: 壁の形のスプライト ('.m', SPR_MASK_*), p1: '.n', W_UNK_00C_5 が 0 ならプレイヤーも登録する
 #define Scr_PlaceMovableBlock 0x00DD           // 押せるブロックを置く, p0: ID, p1: 種類, p3/p5: 座標, p4: 高さ
 #define Scr_PlaceMovableBlockEx 0x00DE  // Scr_PlaceMovableBlock の全引数版
 #define Scr_0x00E3 0x00E3
@@ -268,12 +268,12 @@
 #define Scr_SetSkeletonParams 0x0263           // スケルトンの能力値を scratch に用意する, p0: 種類 (レア抽選で 5)
 #define Scr_SpawnSkeleton 0x0264               // スケルトンを出す, p4: 種類
 #define Scr_SpawnSkeletonEx 0x0265  // Scr_SpawnSkeleton の全引数版
-#define Scr_0x0266 0x0266  // スケルトン (別形, 種類 0 のみ, 感知範囲 1280) の能力値を scratch に用意する, Scr_0x0267 と組で使う
-#define Scr_0x0267 0x0267  // スケルトン (別形) を出す, Scr_0x0266 と組で使う
+#define Scr_SetLichParams 0x0266  // リッチの能力値を scratch に用意する, 種類 0 のみ, 感知範囲 1280, Scr_SpawnLich と組で使う
+#define Scr_SpawnLich 0x0267  // リッチを出す, 変異域 B2 のボス部屋などで使う
 #define Scr_0x0268 0x0268  // リッチが呼び出すスケルトンを出す (能力値は固定値), p4: ID, p5: Scr_LichSummonSkeleton1〜3 の番号
 #define Scr_0x0269 0x0269  // リッチが呼び出すスケルトンを出す (能力値は固定値, Scr_0x0268 とは攻撃の値が違う), p4: ID, p5: Scr_LichSummonSkeleton1〜3 の番号
-#define Scr_0x026A 0x026A  // スケルトン (別形, 種類 1 のみ, 感知範囲 4096) の能力値を scratch に用意する, Scr_0x026B と組で使う
-#define Scr_0x026B 0x026B  // スケルトン (別形) を出す, Scr_0x026A と組で使う
+#define Scr_SetLichPlusParams 0x026A  // リッチ+ の能力値を scratch に用意する, 種類 1 のみ, 感知範囲 4096, Scr_SpawnLichPlus と組で使う
+#define Scr_SpawnLichPlus 0x026B  // リッチ+ を出す, 召喚スクリプト ('.s') に Scr_SpawnSalamander を渡す, 変異域 B4 のボス部屋などで使う
 #define Scr_0x026C 0x026C  // スケルトンを出す, Scr_SpawnSkeletonEx に引数がさらに2つ付いた版?
 #define Scr_SetMummyParams 0x026D  // マミーの能力値を scratch に用意する, p0: 種類
 #define Scr_SpawnMummy 0x026E                  // マミーを出す, p5: 種類
@@ -296,10 +296,10 @@
 #define Scr_0x027F 0x027F  // クロロホルルンを出す, 位置指定 ('.p') の無い版
 #define Scr_0x0280 0x0280  // バットを最大5匹, 範囲内のランダムな位置に出す, 高さは (p1, p2) の地面から取る
 #define Scr_0x0281 0x0281  // バットを最大 p8 匹 (5 まで), 範囲内のランダムな位置に出す, p9: 撃破時スクリプト
-#define Scr_0x0282 0x0282  // バットの能力値を scratch に用意する, p0: 種類
-#define Scr_0x0283 0x0283  // バットを出す ('.T' = 1), p6: 種類
+#define Scr_SetBatParams 0x0282  // バットの能力値を scratch に用意する, p0: 種類
+#define Scr_SpawnBat 0x0283  // バットを出す ('.T' = 1), p6: 種類
 #define Scr_0x0284 0x0284  // バットを出す ('.T' = 0), p6: 種類
-#define Scr_0x0285 0x0285  // バットを出す (全引数版), p7: '.T'
+#define Scr_SpawnBatEx 0x0285  // バットを出す (全引数版), p7: '.T'
 #define Scr_0x0286 0x0286  // クロウを最大 p3 匹 (5 まで), 範囲内のランダムな位置に出す
 #define Scr_SetCrowParams 0x0287  // クロウの能力値を scratch に用意する, p0: 種類
 #define Scr_SpawnCrow 0x0288  // クロウを出す, p6: 種類
@@ -323,26 +323,26 @@
 #define Scr_SetGhostParams 0x029A  // ゴーストの能力値を scratch に用意する, p0: 種類
 #define Scr_SpawnGhost 0x029B  // ゴーストを出す, p5: 種類
 #define Scr_SpawnGhostEx 0x029C  // Scr_SpawnGhost の全引数版
-#define Scr_0x029D 0x029D  // サンドウォームの能力値を scratch に用意する, p0: 種類
-#define Scr_0x029E 0x029E  // サンドウォームを出す
-#define Scr_0x029F 0x029F  // BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, 呼び出し元なし
-#define Scr_0x02A0 0x02A0  // Cmd_C15E をプレイヤー (0xF5EB) に戻し, プレイヤーを動かせるようにする, サンドウォーム戦の後に呼ばれる
-#define Scr_0x02A1 0x02A1  // サーペントの能力値を scratch に用意する, p0: 種類
-#define Scr_0x02A2 0x02A2  // サーペントを出す, p1: 登場時スクリプト, p2: 撃破時スクリプト
-#define Scr_0x02A3 0x02A3  // BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, サーペントの登場時スクリプトとして渡される
-#define Scr_0x02A4 0x02A4  // Cmd_C15E をプレイヤー (0xF5EB) に戻し, プレイヤーを動かせるようにする, サーペント戦の後に呼ばれる
+#define Scr_SetSandwormParams 0x029D  // サンドウォームの能力値を scratch に用意する, p0: 種類
+#define Scr_SpawnSandworm 0x029E  // サンドウォームを出す, p1: 撃破時スクリプト, 登場時スクリプトは Scr_OnSandwormAppear に決まっている
+#define Scr_OnSandwormAppear 0x029F  // BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, Scr_SpawnSandworm が登場時スクリプト ('.d') として渡す
+#define Scr_OnSandwormDefeated 0x02A0  // Cmd_C15E をプレイヤー (0xF5EB) に戻し, プレイヤーを動かせるようにする, サンドウォーム戦の後に呼ばれる
+#define Scr_SetSerpentParams 0x02A1  // サーペントの能力値を scratch に用意する, p0: 種類
+#define Scr_SpawnSerpent 0x02A2  // サーペントを出す, p1: 登場時スクリプト, p2: 撃破時スクリプト
+#define Scr_OnSerpentAppear 0x02A3  // BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, サーペントの登場時スクリプトとして渡される
+#define Scr_OnSerpentDefeated 0x02A4  // Cmd_C15E をプレイヤー (0xF5EB) に戻し, プレイヤーを動かせるようにする, サーペント戦の後に呼ばれる
 #define Scr_SetOctopusParams 0x02A5  // オクトパスの能力値を scratch に用意する, p0: 種類
 #define Scr_SpawnOctopus 0x02A6  // オクトパスを出す, p5: 種類
 #define Scr_SpawnOctopusEx 0x02A7  // Scr_SpawnOctopus の全引数版
-#define Scr_0x02A8 0x02A8  // 暗黒の根の能力値を scratch に用意する, p0: 種類
-#define Scr_0x02A9 0x02A9  // 暗黒の根を出す, p5: 種類
-#define Scr_0x02AA 0x02AA  // 暗黒の根を出す, Scr_0x02AB の最後の引数を 0 にした版
-#define Scr_0x02AB 0x02AB  // 暗黒の根を出す (全引数版)
-#define Scr_0x02AC 0x02AC  // アックス系の能力値を scratch に用意する, p0: 種類
-#define Scr_0x02AD 0x02AD  // アックス系を出す
-#define Scr_0x02AE 0x02AE  // ソード系? の能力値を scratch に用意する, p0: 種類
-#define Scr_0x02AF 0x02AF  // ソード系? を出す, p6: 種類
-#define Scr_0x02B0 0x02B0  // ソード系? を出す (全引数版), Cmd_A1D7 で作る
+#define Scr_SetDarkRootParams 0x02A8  // 暗黒の根の能力値を scratch に用意する, p0: 種類
+#define Scr_SpawnDarkRoot 0x02A9  // 暗黒の根を出す, p5: 種類
+#define Scr_0x02AA 0x02AA  // 暗黒の根を出す, Scr_SpawnDarkRootEx の最後の引数を 0 にした版
+#define Scr_SpawnDarkRootEx 0x02AB  // 暗黒の根を出す (全引数版)
+#define Scr_SetAxParams 0x02AC  // アックス系の能力値を scratch に用意する, p0: 種類
+#define Scr_SpawnAx 0x02AD  // アックス系を出す, Ax_Create で作る
+#define Scr_SetEneSwordParams 0x02AE  // ソード系の能力値を scratch に用意する, p0: 種類
+#define Scr_SpawnEneSword 0x02AF  // ソード系を出す, p6: 種類
+#define Scr_SpawnEneSwordEx 0x02B0  // Scr_SpawnEneSword の全引数版, EneSword_Create で作る
 #define Scr_0x02B2 0x02B2
 #define Scr_0x02B3 0x02B3
 #define Scr_0x02B4 0x02B4
@@ -422,10 +422,10 @@
 #define Scr_LichSummonSkeleton1 0x035A         // リッチのスケルトン召喚枠1, 呼ぶたびに種類を循環させて召喚する
 #define Scr_LichSummonSkeleton2 0x035B         // リッチのスケルトン召喚枠2
 #define Scr_LichSummonSkeleton3 0x035C         // リッチのスケルトン召喚枠3
-#define Scr_DarkLoanPunishTimeUp 0x0363        // 暗黒ローンのおしおき(発電)の時間切れ処理
+#define Scr_TortureTimeUp 0x0363        // 暗黒ローンのおしおき(発電)の時間切れ処理
 #define Scr_0x0364 0x0364
-#define Scr_DarkLoanPunishEnd 0x0365           // 暗黒ローンのおしおき(発電)の終了処理, 返済状況に応じたメッセージと報酬アイテムの付与
-#define Scr_DarkLoanPunishment 0x0367          // 暗黒ローンのおしおきの進行, 発電部屋へ連行して操作説明をして発電を始める
+#define Scr_TortureEnd 0x0365           // 暗黒ローンのおしおき(発電)の終了処理, 返済状況に応じたメッセージと報酬アイテムの付与
+#define Scr_Torture 0x0367          // 暗黒ローンのおしおきの進行, 発電部屋へ連行して操作説明をして発電を始める
 #define Scr_DarkLoanElevatorCallback 0x036A    // おしおき部屋のエレベーターの到着時処理, p0: 1 なら到着しておしおき続行, 2 なら帰還
 #define Scr_DarkLoanNotice 0x036B              // 返済期限を過ぎたときの暗黒ローンの暗子ちゃんからの督促シーン
 #define Scr_0x036C 0x036C
@@ -912,7 +912,8 @@
 #define Scr_0x08C3 0x08C3
 #define Scr_0x08C4 0x08C4
 #define Scr_st06_earth_05 0x08C5 // "st06_earth_05", "変異域 [B1]", ボス部屋(サンドウォーム)
-#define Scr_0x08CC 0x08CC
+#define Scr_SpawnEarthSandworm 0x08CA  // 変異域 B1 のサンドウォームをまだ倒していなければ出す
+#define Scr_OnEarthSandwormDefeated 0x08CC  // 変異域 B1 のサンドウォームを倒したとき, 閉じ込め戦闘を数え, 全部倒せばエレベーターを動かし W_EARTH_SANDWORM_DEFEATED を立てて宝箱を置く
 #define Scr_0x08CD 0x08CD
 #define Scr_st06_cloud_00 0x08CF // "st06_cloud_00", "変異域 [B2]"
 #define Scr_st06_cloud_01 0x08D6 // "st06_cloud_01", "変異域 [B2]"
@@ -941,7 +942,8 @@
 #define Scr_0x092E 0x092E
 #define Scr_0x092F 0x092F
 #define Scr_st06_frost_05 0x0930 // "st06_frost_05", "変異域 [B3]", ボス部屋(サーペント)
-#define Scr_0x0936 0x0936
+#define Scr_SpawnFrostSerpent 0x0935  // 変異域 B3 のサーペントをまだ倒していなければ出す
+#define Scr_OnFrostSerpentDefeated 0x0936  // 変異域 B3 のサーペントを倒したとき, 閉じ込め戦闘を数え, 全部倒せば W_FROST_SERPENT_DEFEATED を立てて宝箱を置く
 #define Scr_0x0938 0x0938
 #define Scr_0x0939 0x0939
 #define Scr_st06_flame_00 0x093A // "st06_flame_00", "変異域 [B4]"
@@ -957,8 +959,8 @@
 #define Scr_st06_flame_04 0x0960 // "st06_flame_04", "変異域 [B4]"
 #define Scr_st06_flame_05 0x0967 // "st06_flame_05", "変異域 [B4]", ボス部屋(リッチ+)
 #define Scr_0x096D 0x096D
-#define Scr_0x096E 0x096E
-#define Scr_0x096F 0x096F
+#define Scr_SpawnSalamander 0x096E  // サラマンダーを (p0, p1, p2) に出す, リッチ+ の召喚スクリプト (Skeleton_Create の '.s') として渡される
+#define Scr_OnSalamanderDefeated 0x096F  // Scr_SpawnSalamander で出したサラマンダーの撃破時スクリプト, Scr_0x0971 でオートスクロールに指示を送り直す
 #define Scr_0x0973 0x0973
 #define Scr_st06_last_00 0x0974 // "st06_last_00", "変異域 [?]"
 #define Scr_0x097C 0x097C
@@ -1604,9 +1606,9 @@
 #define Scr_0x0F21 0x0F21
 #define Scr_0x0F27 0x0F27
 #define Scr_0x0F29 0x0F29
-#define Scr_0x0F2A 0x0F2A
+#define Scr_OnMugenSandwormDefeated 0x0F2A  // 夢幻街の閉じ込め戦闘 (W_MUGEN_LEVEL 6) のサンドウォームを倒したとき
 #define Scr_0x0F2B 0x0F2B
-#define Scr_0x0F2C 0x0F2C
+#define Scr_OnMugenSerpentDefeated 0x0F2C  // 夢幻街の閉じ込め戦闘 (W_MUGEN_LEVEL 8) のサーペントを倒したとき
 #define Scr_0x0F2D 0x0F2D
 #define Scr_0x0F2E 0x0F2E
 #define Scr_0x0F30 0x0F30
@@ -1661,11 +1663,13 @@
 #define Scr_0x0F85 0x0F85
 #define Scr_0x0F8B 0x0F8B
 #define Scr_0x0F8D 0x0F8D
-#define Scr_0x0F94 0x0F94
+#define Scr_SpawnArenaSandworm 0x0F92  // 闘技場でサンドウォームを出す, ランク 3 なら能力値を上げる
+#define Scr_OnArenaSandwormDefeated 0x0F94  // 闘技場のサンドウォームを倒したとき
 #define Scr_0x0F95 0x0F95
 #define Scr_0x0F9B 0x0F9B
 #define Scr_0x0F9E 0x0F9E
-#define Scr_0x0FA4 0x0FA4
+#define Scr_SpawnArenaSerpent 0x0FA3  // 闘技場でサーペントを出す, ランク 3 なら能力値を上げる
+#define Scr_OnArenaSerpentDefeated 0x0FA4  // 闘技場のサーペントを倒したとき
 #define Scr_0x0FA6 0x0FA6
 #define Scr_0x0FAC 0x0FAC
 #define Scr_0x0FAF 0x0FAF

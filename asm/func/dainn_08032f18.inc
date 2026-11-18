@@ -88,7 +88,7 @@ _08032F64:
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _08032FD8
-	bl FUN_0805b1a0
+	bl CuroroShotManager_VanishAll
 _08032FD8:
 	movs r2, #0xb1
 	lsls r2, r2, #1

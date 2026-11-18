@@ -24,7 +24,7 @@ typedef struct Bullet {
   Entity e;                                // 0x000, ENTITY_UNK_8
   Player* player;                          // 0x018, Init の第1引数
   AuxSprite sprite;                        // 0x01C
-  AuxSpriteGfx gfx;                        // 0x048, SPRITE_EBALL_210E
+  AuxSpriteGfx gfx;                        // 0x048, SPR_EBALL_210E
   Hitbox hitbox;                           // 0x064, Bullet_SetupHitbox が組み立て、位置は sprite.pos を見る
   Vec3 offset;                             // 0x0B4, Bullet_Reposition が offsetRadius から x と z を作り、Bullet_StateImpact が sprite.pos に足す
   u16 heightOffset;                        // 0x0BC, Init の第3引数, Bullet_Reposition が sprite.pos.y に足す
@@ -174,7 +174,7 @@ s32 Bullet_GetDamage(Bullet* p) {
     return 8;
   }
   if (gGameFlags & GAMEFLAG_LINK) {
-    dmg = FUN_080d1b04(p->player);
+    dmg = PlayerLink_GetAttackPower(p->player);
   } else {
     dmg = Player_GetAttackPower(p->player);
   }
@@ -301,7 +301,7 @@ s32 Bullet_Destroy(Bullet* p) {
 
 // スプライトを用意して隠したまま登録する
 void Bullet_SetupSprite(Bullet* p, s32 plttID) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_EBALL_210E);
+  Video_GetAuxSprite(&p->gfx, SPR_EBALL_210E);
   AuxSprite_Add(&p->sprite, &p->gfx, SPRFLAG_HIDDEN);
   AuxSprite_SetPoseIdx(&p->sprite, 0);
   Video_SetAuxSpritePltt(&p->gfx, plttID);

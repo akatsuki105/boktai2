@@ -7,12 +7,12 @@
 #include "sprite.h"
 #include "vm.h"
 
-// 水しぶき・煙・土煙など, パレット違いで使い回す玉状のパーティクル (SPRITE_PUFF_4384, 地下水路の滝の根元などで確認)
+// 水しぶき・煙・土煙など, パレット違いで使い回す玉状のパーティクル (SPR_PUFF_4384, 地下水路の滝の根元などで確認)
 
 // パーティクル1個分, Puff_Spawn で発生させる
 typedef struct {
   bool8 active;       // 0x00, 0 でなければ Update/Destroy が処理する, アニメが終わると 0
-  u8 kind;            // 0x01, 5/6/7 は別スプライト (SPRITE_DUNEYRR_AUX) と animFiles[1], それ以外はパレット kind + 0x7D
+  u8 kind;            // 0x01, 5/6/7 は別スプライト (SPR_DUNEYRR_AUX) と animFiles[1], それ以外はパレット kind + 0x7D
   u16 timer;          // 0x02, 発生からのフレーム数
   s16 speedY;         // 0x04, decayStartY に達したら *= decayY / 256
   s16 speedXZ;        // 0x06, decayStartXZ に達したら *= decayXZ / 256
@@ -22,7 +22,7 @@ typedef struct {
   u16 decayXZ;        // 0x0E, 同上
   Vec3 dir;           // 0x10, 4.12 固定小数の向き, x = COS(angleXZ), y = SIN(angleY), z = SIN(angleXZ)
   Vec3 vel;           // 0x18, dir * speed >> 12, 毎フレーム sprite.pos に加算, SCREEN_COORD なら z は足さない
-  AuxSpriteGfx gfx;   // 0x20, SPRITE_PUFF_4384
+  AuxSpriteGfx gfx;   // 0x20, SPR_PUFF_4384
   AuxSprite sprite;   // 0x3C, ->gfx
   AuxAnimState anim;  // 0x68
 } Puff;
@@ -119,7 +119,7 @@ s32 PuffManager_Init(PuffManager* p, u32 _) {
     elem->active = FALSE;
     elem->speedY = 0;
     elem->dir.x = 0, elem->dir.y = 0, elem->dir.z = 0;
-    if (!Video_GetAuxSprite(&elem->gfx, SPRITE_PUFF_4384)) {
+    if (!Video_GetAuxSprite(&elem->gfx, SPR_PUFF_4384)) {
       return -1;
     }
     AuxSprite_Setup(&elem->sprite, &elem->gfx, 0);
@@ -210,22 +210,22 @@ NON_MATCH s32 Puff_Spawn(s32 count, WorldPos* pos, PuffParam* params) {
     elem->vel.z = FixToInt(12, elem->dir.z * elem->speedXZ);
 
     if (elem->kind == 5) {
-      Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
+      Video_GetAuxSprite(&elem->gfx, SPR_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 548);
       elem->sprite.poseIdx = 32;
       AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 6, 0, 0);
     } else if (elem->kind == 6) {
-      Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
+      Video_GetAuxSprite(&elem->gfx, SPR_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 556);
       elem->sprite.poseIdx = 32;
       AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 6, 0, 0);
     } else if (elem->kind == 7) {
-      Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
+      Video_GetAuxSprite(&elem->gfx, SPR_DUNEYRR_AUX);
       Video_SetAuxSpritePltt(&elem->gfx, 555);
       elem->sprite.poseIdx = 45;
       AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[1], 8, 0, 0);
     } else {
-      Video_GetAuxSprite(&elem->gfx, SPRITE_PUFF_4384);
+      Video_GetAuxSprite(&elem->gfx, SPR_PUFF_4384);
       Video_SetAuxSpritePltt(&elem->gfx, elem->kind + 125);
       AuxAnim_SetAnim(&elem->anim, sPuffManager->animFiles[0], 0, 0, 0);
     }

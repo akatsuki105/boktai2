@@ -101,7 +101,7 @@ _0803E742:
 	adds r2, r6, r3
 	movs r0, #3
 	movs r1, #0
-	bl FUN_08050e2c
+	bl CrossoverBattle_ShowOjamaBatPopup
 	adds r0, r4, #0
 	adds r0, #0x92
 	movs r2, #0

@@ -39,8 +39,8 @@ static_assert(sizeof(Entity080dd1f8Elem) == 324);
 
 typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx;              // 0x018, SPRITE_BOMB
-  AuxAnimFile* anim;             // 0x034, ANIM_871C
+  AuxSpriteGfx gfx;              // 0x018, SPR_BOMB
+  AuxAnimFile* anim;             // 0x034, ANIM_BOMB
   Entity080dd1f8Elem elems[12];  // 0x038, 根拠: _Destroy の stride 0x144 × 12
   u32 activeMask;                // 0xF68, 使用中の elems のビットマスク, _Init が 0 にする
 } Entity080dd1f8;
@@ -375,8 +375,8 @@ s32 Entity080dd1f8_Destroy(Entity080dd1f8* p) {
 }
 
 s32 Entity080dd1f8_Init(Entity080dd1f8* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_BOMB);
-  p->anim = GetFile(DIR_ANIMATION, ANIM_871C);
+  Video_GetAuxSprite(&p->gfx, SPR_BOMB);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_BOMB);
   p->activeMask = 0;
   gEntity080dd1f8 = p;
   return 0;

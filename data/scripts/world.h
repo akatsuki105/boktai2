@@ -448,7 +448,7 @@
 #define W_UNK_17E_3 BIT(world + 0x17E, 3)
 #define W_UNK_17E_4 BIT(world + 0x17E, 4)
 #define W_UNK_17E_5 BIT(world + 0x17E, 5)
-#define W_UNK_17E_6 BIT(world + 0x17E, 6)
+#define W_EARTH_SANDWORM_DEFEATED BIT(world + 0x17E, 6)  // 変異域 B1 のサンドウォームを倒したか
 #define W_UNK_17E_7 BIT(world + 0x17E, 7)
 #define W_UNK_17F_0 BIT(world + 0x17F, 0)
 #define W_UNK_17F_1 BIT(world + 0x17F, 1)
@@ -464,7 +464,7 @@
 #define W_UNK_180_3 BIT(world + 0x180, 3)
 #define W_UNK_180_4 BIT(world + 0x180, 4)
 #define W_UNK_180_5 BIT(world + 0x180, 5)
-#define W_UNK_180_6 BIT(world + 0x180, 6)
+#define W_FROST_SERPENT_DEFEATED BIT(world + 0x180, 6)  // 変異域 B3 のサーペントを倒したか
 #define W_UNK_180_7 BIT(world + 0x180, 7)
 #define W_UNK_181_0 BIT(world + 0x181, 0)
 #define W_UNK_181_1 BIT(world + 0x181, 1)

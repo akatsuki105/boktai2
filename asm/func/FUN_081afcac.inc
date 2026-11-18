@@ -1,0 +1,48 @@
+	push {r4, lr}
+	adds r4, r0, #0
+	ldr r0, _081AFCC4 @ =0x0000046D
+	adds r1, r4, r0
+	ldrb r0, [r1]
+	cmp r0, #0
+	beq _081AFCC8
+	movs r0, #0
+	strb r0, [r1]
+	movs r0, #1
+	b _081AFCCA
+	.align 2, 0
+_081AFCC4: .4byte 0x0000046D
+_081AFCC8:
+	movs r0, #0
+_081AFCCA:
+	cmp r0, #0
+	beq _081AFCD6
+	adds r0, r4, #0
+	movs r1, #5
+	bl Enemy_PlayAnim
+_081AFCD6:
+	ldr r0, [r4, #0x44]
+	adds r3, r0, #0
+	adds r3, #0x48
+	ldrh r0, [r3, #8]
+	cmp r0, #7
+	bne _081AFD00
+	ldrh r1, [r3, #0xe]
+	ldrb r2, [r3, #7]
+	rsbs r0, r2, #0
+	orrs r0, r2
+	lsrs r0, r0, #0x1f
+	cmp r1, r0
+	bne _081AFD00
+	cmp r2, #1
+	beq _081AFD00
+	movs r1, #0
+	movs r0, #2
+	strh r0, [r3, #8]
+	ldr r0, [r4, #0x44]
+	adds r0, #0x48
+	strh r1, [r0, #0xe]
+_081AFD00:
+	pop {r4}
+	pop {r0}
+	bx r0
+	.align 2, 0

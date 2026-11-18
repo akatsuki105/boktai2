@@ -469,7 +469,7 @@ NON_MATCH void Mimic_OnHurt(Hitbox* a, Hitbox* b, Mimic* p) {
     if (!(a->typeMask & HBSRC_MFREEZE)) {
       return;
     }
-    if ((p->e).flags3 & (ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+    if ((p->e).flags3 & (ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
       return;
     }
     if ((p->e).unk_488 != 0) {
@@ -544,7 +544,7 @@ NON_MATCH void Mimic_OnHurt(Hitbox* a, Hitbox* b, Mimic* p) {
   }
   b->iframes = a->iframes;
   (p->e).unk_48c = b->hitResult;
-  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_18)) {
+  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_BLOW)) {
     knockback = a->knockback;
   } else {
     knockback = a->knockback - (p->e).unk_187;
@@ -553,7 +553,7 @@ NON_MATCH void Mimic_OnHurt(Hitbox* a, Hitbox* b, Mimic* p) {
     }
   }
   b->knockback = knockback;
-  if ((p->e).flags3 & (ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2)) {
+  if ((p->e).flags3 & (ENEFLAG3_STUN | ENEFLAG3_PETRIFIED)) {
     b->damage <<= 1;
     b->knockback >>= 1;
   }
@@ -880,7 +880,7 @@ void FUN_081489f0(Mimic* p) {
 
 bool8 Mimic_OnDamaged(Mimic* p) {
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
-  if ((p->e).flags6 & (ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
+  if ((p->e).flags6 & (HBATTR_BLOW | HBATTR_STUN)) {
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     return TRUE;
@@ -945,7 +945,7 @@ s32 Mimic_Destroy(Mimic* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -977,7 +977,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_MIMIC);
+    Video_GetAuxSprite(&aux->gfx, SPR_MIMIC);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_MIMIC);
     k = (p->e).kind;
@@ -994,7 +994,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_MIMIC);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_MIMIC);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1096,7 +1096,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1106,7 +1106,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1163,7 +1163,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   (p->e).handlerTurn = NULL;
   (p->e).handlerMove = FUN_08146fcc;
   (p->e).handlerWait = FUN_081474e8;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = (EnemyHandler)FUN_081489ec;
   (p->e).handlerDamaged = Mimic_StateDamaged;
   (p->e).handlerDying = Mimic_StateDying;
@@ -1192,7 +1192,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

@@ -21,7 +21,7 @@ typedef struct {
   u16 timer;              // 0x006, state を変えると 0 に戻る
   Vec3 startPos;          // 0x008
   Vec3 targetPos;         // 0x010, プレイヤーの位置
-  AuxSpriteGfx gfx;       // 0x018, SPRITE_DUNEYRR_AUX
+  AuxSpriteGfx gfx;       // 0x018, SPR_DUNEYRR_AUX
   AuxSprite sprite;       // 0x034
   AuxAnimState anim;      // 0x060
   Hitbox hurtbox;         // 0x070, ハンドラは DuneyrrPowderBall_OnHurt

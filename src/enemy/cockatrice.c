@@ -141,7 +141,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->stateBegun = TRUE;
   p->animForceRestart = FALSE;
   p->chaseTimer = 0;
-  p->sleepTimer = 0;
+  p->stunTimer = 0;
   p->unk_544 = 0;
   p->nodeWait = 0;
   p->hitTargetID = 0;
@@ -302,7 +302,7 @@ void Cockatrice_OnSenseAttack(Hitbox* a, Hitbox* b, Cockatrice* p) {
   Cockatrice* q = (p->e).owner;
 
   if (!Enemy_IsDead(&p->e) && !Hitbox_TestFlags(b, HBF_HIDDEN) && (p->e).hurtbox.iframes == 0 && q->dodgeCooldown <= 0 &&
-      !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasSource(a, HBSRC_GUN) && !Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
+      !TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasSource(a, HBSRC_GUN) && !Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
     s32 d = ((a->angle + 0x80) & 0xFF) - (p->e).mover.angle;
 
     if (d > 128) {
@@ -439,22 +439,22 @@ NON_MATCH void Cockatrice_StateTurn(Cockatrice* p) {
 void Cockatrice_StateNap(Cockatrice* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 8);
-    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
-      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     }
   }
   if (Mod(timer, 60) == 0) {
     Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
   }
   if ((p->e).nodeWait <= 0 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
-    Enemy_EnterState(&p->e, Cockatrice_StateWakeUp, ES_UNK_6);
+    Enemy_EnterState(&p->e, Cockatrice_StateWakeUp, ES_WAKE_UP);
   }
 }
 
 void Cockatrice_StateWakeUp(Cockatrice* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 7);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
   }
   if (timer == 40) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
@@ -598,7 +598,7 @@ NON_MATCH void Cockatrice_StateDamaged(Cockatrice* p, s32 timer) {
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 3);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_8);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_UNK_8);
     (p->e).animForceRestart = 0;
   }
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
@@ -615,8 +615,8 @@ NON_MATCH void Cockatrice_StateDamaged(Cockatrice* p, s32 timer) {
   (p->e).subStateDone = 1;
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
   CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_19)) {
-    SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_1);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_STUN_REQUEST);
     return;
   }
   if (Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
@@ -722,13 +722,13 @@ NON_MATCH void Cockatrice_StateDamaged(Cockatrice* p, s32 timer) {
 #endif
 }
 
-// 気絶して sleepTimer が尽きるまで止まり (残り 30〜120 で点滅), 押し出しを寄せきって明けたら石の破片を散らして Cockatrice_StateRecover へ移る
-void Cockatrice_StateStunned(Cockatrice* p) {
+// 石化して stunTimer が尽きるまで止まり (残り 30〜120 で点滅), 押し出しを寄せきって明けたら石の破片を散らして Cockatrice_StateRecover へ移る
+void Cockatrice_StatePetrified(Cockatrice* p) {
   AuxAnimState* anim = &(p->e).s->aux.anim;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     PlaySound_082406e0(SONG_466);
-    (p->e).sleepTimer = (p->e).unk_18e;
+    (p->e).stunTimer = (p->e).hitStunTime;
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_6 | ENEFLAG2_UNK_14);
     CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_25);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_8);
@@ -737,18 +737,18 @@ void Cockatrice_StateStunned(Cockatrice* p) {
   if (anim->cmdIdx == 2 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
     anim->tick = 0;
   }
-  if ((p->e).sleepTimer >= 30 && (p->e).sleepTimer < 120) {
-    if (Mod((s16)(p->e).sleepTimer, 30) < 15 - Div((s16)(p->e).sleepTimer, 10)) {
+  if ((p->e).stunTimer >= 30 && (p->e).stunTimer < 120) {
+    if (Mod((s16)(p->e).stunTimer, 30) < 15 - Div((s16)(p->e).stunTimer, 10)) {
       SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
     }
   }
-  if (Enemy_StepSlide(&p->e) && (s16)(p->e).sleepTimer <= 0) {
-    (p->e).sleepTimer = 0;
+  if (Enemy_StepSlide(&p->e) && (s16)(p->e).stunTimer <= 0) {
+    (p->e).stunTimer = 0;
     (p->e).subStateDone = 1;
     (p->e).angle = (((p->e).mover.angle >> 5) + 7) & 7;
     Enemy_ClearDamage(&p->e);
     PlaySound_082406e0(SONG_467);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15);
     Cockatrice_SpawnStoneShards(p, 6);
     FUN_08161b90((p->e).owner);
     Enemy_PlayAnim(&p->e, 0);
@@ -778,7 +778,7 @@ void Cockatrice_StateDying(Cockatrice* p, s32 timer) {
   if (timer < 35) {
     anim->tick = 0;
   }
-  if (anim->cmdIdx == 7 && anim->tick == 4 && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_2)) {
+  if (anim->cmdIdx == 7 && anim->tick == 4 && !TEST_FLAGS((p->e).flags3, ENEFLAG3_PETRIFIED)) {
     PlaySound_082406e0(SONG_466);
   }
   if ((p->e).animForceRestart) {
@@ -811,7 +811,7 @@ void Cockatrice_StateDying(Cockatrice* p, s32 timer) {
       } else {
         gStat->enemyDexSeen[1] |= 1 << (idx - 32);
       }
-      (p->e).sleepTimer = 0;
+      (p->e).stunTimer = 0;
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
       Enemy_ResetState(&p->e, 1, 0, 2);
     } else {
@@ -863,7 +863,7 @@ void Cockatrice_StateCrumble(Cockatrice* p, s32 timer) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
   }
@@ -2387,7 +2387,7 @@ NON_MATCH void Cockatrice_UpdateSenseHitbox(Cockatrice* p) {
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE | COCKAFLAG_FLEEING) || TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE | COCKAFLAG_FLEEING) || TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     Hitbox_SetFlags(&q->senseHitbox, HBF_HIDDEN);
     return;
   }
@@ -4104,13 +4104,13 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
   bool8 moved;
 
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_2 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_15)) {
     (p->e).unk_264 = Entity081e9cacElem_Remove((p->e).unk_264);
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_14)) {
-    (p->e).flags3 = ((p->e).flags3 | ENEFLAG3_UNK_2) & ~(ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_10 | ENEFLAG3_UNK_12);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_SEKIKA)) {
+    (p->e).flags3 = ((p->e).flags3 | ENEFLAG3_PETRIFIED) & ~(ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_10 | ENEFLAG3_UNK_12);
     (p->e).animSpeedDiv = 1;
     (p->e).unk_222 = 0;
     (p->e).chaseTimer = 0;
@@ -4128,7 +4128,7 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
     CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
     (p->e).unk_264 = Entity081e9cacElem_Remove((p->e).unk_264);
     PlaySound_082406e0(SE_ENEMY_DAMAGED);
-    Enemy_EnterState(&p->e, Cockatrice_StateStunned, ES_UNK_46);
+    Enemy_EnterState(&p->e, Cockatrice_StatePetrified, ES_UNK_46);
     Enemy_ResetState(&p->e, 3, 0, 0);
     q->fleeTimer = 0;
     Cockatrice_ClearFlags(q, 0xFF);
@@ -4139,12 +4139,12 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
     return TRUE;
   }
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
     (p->e).unk_264 = Entity081e9cacElem_Remove((p->e).unk_264);
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
     return FALSE;
   }
-  if (TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_18 | ENEFLAG6_UNK_19)) {
+  if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
     (p->e).unk_264 = Entity081e9cacElem_Remove((p->e).unk_264);
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
@@ -4158,7 +4158,7 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
     return FALSE;
   }
   if (Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE)) {
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_6 | ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_11);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_6 | ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_11);
     Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
     Enemy_ResetState(&p->e, 3, 0, 0);
     q->fleeTimer = 0;
@@ -4287,7 +4287,7 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
 s32 Cockatrice_UpdateFrame(Cockatrice* p) {
   Cockatrice* self = p;
 
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_2) || (p->e).unk_4be == 0) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_PETRIFIED) || (p->e).unk_4be == 0) {
     Cockatrice_PreUpdate(self);
     {
       u32 idx = (self->e).subState0;
@@ -4327,7 +4327,7 @@ s32 Cockatrice_Destroy(Cockatrice* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -4366,7 +4366,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_COCKATRICE_0);
+    Video_GetAuxSprite(&aux->gfx, SPR_COCKATRICE_0);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_COCKATRICE);
     k = (p->e).kind;
@@ -4383,7 +4383,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_COCKATRICE_0);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_COCKATRICE_0);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -4485,7 +4485,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -4495,7 +4495,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -4549,7 +4549,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
   (p->e).handlerTurn = (void*)Cockatrice_StateTurn;
   (p->e).handlerMove = (void*)Cockatrice_StateMove;
   (p->e).handlerWait = (void*)Cockatrice_StateWait;
-  (p->e).unk_5c0 = (void*)Cockatrice_StateNap;
+  (p->e).handlerNap = (void*)Cockatrice_StateNap;
   (p->e).onRouteFailed = (EnemyHandler)Cockatrice_OnRouteFailed;
   (p->e).handlerDamaged = (void*)Cockatrice_StateDamaged;
   (p->e).handlerDying = (void*)Cockatrice_StateDying;
@@ -4578,7 +4578,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;
@@ -4804,7 +4804,7 @@ NON_MATCH void Cockatrice_TryEndFlee(Cockatrice* p) {
   if (!Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
     return;
   }
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_12 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_12 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     return;
   }
   if (q->fleeTimer > 0) {
@@ -4881,7 +4881,7 @@ void Cockatrice_UpdateAirState(Cockatrice* p) {
     Cockatrice_ClearFlags(q, COCKAFLAG_AIRBORNE);
     Cockatrice_ClearFlags(q, COCKAFLAG_UNK_2);
   }
-  if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (Enemy_GetFlag3(&p->e, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     Cockatrice_StepFall(p);
     CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   } else if (Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE)) {
@@ -4957,7 +4957,7 @@ void Cockatrice_TickFleeTimer(Cockatrice* p) {
   if (!Enemy_IsDead(&p->e)) {
     if (!Cockatrice_TestFlags(q, COCKAFLAG_FLEEING)) {
       CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
-    } else if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_12 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && q->fleeTimer > 0) {
+    } else if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_12 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && q->fleeTimer > 0) {
       q->fleeTimer--;
       SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
     }
@@ -4972,7 +4972,7 @@ NON_MATCH void Cockatrice_UpdateLookTimer(Cockatrice* p) {
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_10 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_7 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_9 | ENEFLAG3_UNK_10 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     CLEAR_FLAGS(q->flags2, COCKAFLAG2_UNK_0);
   } else if (Cockatrice_TestFlags(q, COCKAFLAG_AIRBORNE | COCKAFLAG_FLEEING)) {
     CLEAR_FLAGS(q->flags2, COCKAFLAG2_UNK_0);

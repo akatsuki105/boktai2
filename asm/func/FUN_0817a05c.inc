@@ -16,7 +16,7 @@ _0817A078:
 _0817A07A:
 	cmp r0, #0
 	beq _0817A0B2
-	ldr r4, _0817A154 @ =FUN_08171cc8
+	ldr r4, _0817A154 @ =Sandworm_StateHover
 	movs r3, #0x22
 	ldr r2, _0817A158 @ =0x0000046D
 	adds r1, r5, r2
@@ -68,19 +68,19 @@ _0817A0D6:
 	adds r0, r5, #0
 	movs r1, #4
 	movs r2, #0xc
-	bl FUN_08177d34
+	bl Sandworm_PullSegments
 	movs r1, #0xd7
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x28
-	bl FUN_08177890
+	bl Sandworm_UpdateWave
 	ldr r6, _0817A15C @ =0x0000046B
 	adds r0, r5, r6
 	ldrb r0, [r0]
 	cmp r0, #0
 	beq _0817A16C
 	adds r0, r5, #0
-	bl FUN_08175898
+	bl Sandworm_PickNextTile
 	movs r1, #0xb4
 	lsls r1, r1, #3
 	adds r0, r5, r1
@@ -123,7 +123,7 @@ _0817A0D6:
 	strb r3, [r0]
 	b _0817A176
 	.align 2, 0
-_0817A154: .4byte FUN_08171cc8
+_0817A154: .4byte Sandworm_StateHover
 _0817A158: .4byte 0x0000046D
 _0817A15C: .4byte 0x0000046B
 _0817A160: .4byte 0x00000553

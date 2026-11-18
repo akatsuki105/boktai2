@@ -21,9 +21,9 @@ static_assert(sizeof(SolarBarrierPtcl) == 52);
 typedef struct SolarBarrier {
   Entity e;                                      // 0x000, ENTITY_UNK_9
   AuxSprite sprite;                              // 0x018, flags に SPRFLAG_BLINK_ODD が立つ, pos より y が 0x1E 高い (立体的に見せるため)
-  AuxSpriteGfx gfx;                              // 0x044, SPRITE_MAGIC_SQUARE, パレット 99
+  AuxSpriteGfx gfx;                              // 0x044, SPR_MAGIC_SQUARE, パレット 99
   AuxSprite sprite2;                             // 0x060, flags に SPRFLAG_BLINK_EVEN が立つ
-  AuxSpriteGfx gfx2;                             // 0x08C, SPRITE_MAGIC_SQUARE, パレット 97
+  AuxSpriteGfx gfx2;                             // 0x08C, SPR_MAGIC_SQUARE, パレット 97
   bool16 coffinInside;                           // 0x0A8, 棺桶が結界の内側にいるか, 変わったときだけスクリプトと効果音を流す
   u16 stateTimer;                                // 0x0AA, Init が 0 を書く
   Vec3 pos;                                      // 0x0AC, '.p', y はタイルの attr から計算し直す
@@ -253,7 +253,7 @@ NON_MATCH s32 SolarBarrier_Init(SolarBarrier* p, u32 id, u32 _) {
   }
 
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(gfx, SPR_MAGIC_SQUARE);
   spr = &p->sprite;
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = 6;
@@ -264,7 +264,7 @@ NON_MATCH s32 SolarBarrier_Init(SolarBarrier* p, u32 id, u32 _) {
   p->sprite.pos.y += Q8(0.12);
 
   gfx = &p->gfx2;
-  Video_GetAuxSprite(gfx, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(gfx, SPR_MAGIC_SQUARE);
   spr = &p->sprite2;
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = 6;

@@ -69,13 +69,13 @@ typedef struct {
   s32 doorMax;                  // 0x30, '.m=16', doors の要素数
   s32 useLockedVariants;        // 0x34, '.e=1', 0 でなければ鍵付き扉の色違いの絵一式 (lockedSet1〜7) を作る
   ScriptMesg* mesgs;            // 0x38, ScriptMesg_Find で引いた mesgID 宛てのメッセージの先頭, _Update が values[0] を命令として分岐する
-  AuxSpriteGfx sprites_3c[5];   // 0x3C, '.d=SPRITE_DOOR_WOOD'
-  AuxSpriteGfx sprites_c8[5];   // 0xC8, '.S=SPRITE_IRON_BARS_7AD2'
-  AuxSpriteGfx sprites_154[5];  // 0x154, '.k=SPRITE_DOOR_LOCKED'
-  AuxSpriteGfx sprites_1e0[5];  // 0x1E0, '.b=SPRITE_DOOR_LOCKED', sprites_26c と対で埋める, 鍵で開けた後と開ける前で2つあるのかも？
-  AuxSpriteGfx sprites_26c[5];  // 0x26C, '.b=SPRITE_DOOR_LOAN_0'
-  AuxSpriteGfx sprites_2f8[5];  // 0x2F8, '.s=SPRITE_DOOR_7AF3'
-  AuxSpriteGfx sprites_384[5];  // 0x384, '.u=SPRITE_DOOR_7AF3'
+  AuxSpriteGfx sprites_3c[5];   // 0x3C, '.d=SPR_DOOR_WOOD_0'
+  AuxSpriteGfx sprites_c8[5];   // 0xC8, '.S=SPR_IRON_BARS_7AD2'
+  AuxSpriteGfx sprites_154[5];  // 0x154, '.k=SPR_DOOR_LOCKED_0'
+  AuxSpriteGfx sprites_1e0[5];  // 0x1E0, '.b=SPR_DOOR_LOCKED_0', sprites_26c と対で埋める, 鍵で開けた後と開ける前で2つあるのかも？
+  AuxSpriteGfx sprites_26c[5];  // 0x26C, '.b=SPR_DOOR_LOAN_0'
+  AuxSpriteGfx sprites_2f8[5];  // 0x2F8, '.s=SPR_DOOR_16'
+  AuxSpriteGfx sprites_384[5];  // 0x384, '.u=SPR_DOOR_16'
   DoorSpriteSet* lockedSet1;    // 0x410, '.k' の絵の複製, lockedSpriteIdx が 1 の鍵付き扉が使う
   DoorSpriteSet* lockedSet2;    // 0x414
   DoorSpriteSet* lockedSet3;    // 0x418
@@ -1494,13 +1494,13 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
 
   if (VM_SeekToNamedArg('d')) {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_3c[i], VM_GetPC() != NULL ? (u16)VM_GetValue() : SPRITE_DOOR_WOOD)) {
+      if (!Video_GetAuxSprite(&p->sprites_3c[i], VM_GetPC() != NULL ? (u16)VM_GetValue() : SPR_DOOR_WOOD_0)) {
         return -1;
       }
     }
   } else {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_3c[i], SPRITE_DOOR_WOOD)) {
+      if (!Video_GetAuxSprite(&p->sprites_3c[i], SPR_DOOR_WOOD_0)) {
         return -1;
       }
     }
@@ -1508,7 +1508,7 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
 
   if (VM_SeekToNamedArg('k')) {
     for (i = 0; i < 5; i++) {
-      u16 id = VM_GetPC() != NULL ? (u16)VM_GetValue() : SPRITE_DOOR_LOCKED;
+      u16 id = VM_GetPC() != NULL ? (u16)VM_GetValue() : SPR_DOOR_LOCKED_0;
 
       if (!Video_GetAuxSprite(&p->sprites_154[i], id)) {
         return -1;
@@ -1525,7 +1525,7 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
     }
   } else {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_154[i], SPRITE_DOOR_LOCKED)) {
+      if (!Video_GetAuxSprite(&p->sprites_154[i], SPR_DOOR_LOCKED_0)) {
         return -1;
       }
     }
@@ -1537,7 +1537,7 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
     if (VM_GetPC() != NULL) {
       id = VM_GetValue();
     } else {
-      id = SPRITE_IRON_BARS_7AD2;
+      id = SPR_IRON_BARS_7AD2;
     }
     for (i = 0; i < 5; i++) {
       if (!Video_GetAuxSprite(&p->sprites_c8[i], id)) {
@@ -1546,7 +1546,7 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
     }
   } else {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_c8[i], SPRITE_IRON_BARS_7AD2)) {
+      if (!Video_GetAuxSprite(&p->sprites_c8[i], SPR_IRON_BARS_7AD2)) {
         return -1;
       }
     }
@@ -1554,7 +1554,7 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
 
   if (VM_SeekToNamedArg('b')) {
     for (i = 0; i < 5; i++) {
-      u16 id = VM_GetPC() != NULL ? (u16)VM_GetValue() : SPRITE_DOOR_LOAN_0;
+      u16 id = VM_GetPC() != NULL ? (u16)VM_GetValue() : SPR_DOOR_LOAN_0;
 
       if (!Video_GetAuxSprite(&p->sprites_1e0[i], id)) {
         return -1;
@@ -1565,10 +1565,10 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
     }
   } else {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_1e0[i], SPRITE_DOOR_LOCKED)) {
+      if (!Video_GetAuxSprite(&p->sprites_1e0[i], SPR_DOOR_LOCKED_0)) {
         return -1;
       }
-      if (!Video_GetAuxSprite(&p->sprites_26c[i], SPRITE_DOOR_LOCKED)) {
+      if (!Video_GetAuxSprite(&p->sprites_26c[i], SPR_DOOR_LOCKED_0)) {
         return -1;
       }
     }
@@ -1576,13 +1576,13 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
 
   if (VM_SeekToNamedArg('s')) {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_2f8[i], VM_GetPC() != NULL ? (u16)VM_GetValue() : SPRITE_DOOR_7AF3)) {
+      if (!Video_GetAuxSprite(&p->sprites_2f8[i], VM_GetPC() != NULL ? (u16)VM_GetValue() : SPR_DOOR_16)) {
         return -1;
       }
     }
   } else {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_2f8[i], SPRITE_DOOR_7AF3)) {
+      if (!Video_GetAuxSprite(&p->sprites_2f8[i], SPR_DOOR_16)) {
         return -1;
       }
     }
@@ -1590,13 +1590,13 @@ s32 DoorManager_Init(DoorManager* p, u32 mesgID, unknown* param_3) {
 
   if (VM_SeekToNamedArg('u')) {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_384[i], VM_GetPC() != NULL ? (u16)VM_GetValue() : SPRITE_DOOR_7AF3)) {
+      if (!Video_GetAuxSprite(&p->sprites_384[i], VM_GetPC() != NULL ? (u16)VM_GetValue() : SPR_DOOR_16)) {
         return -1;
       }
     }
   } else {
     for (i = 0; i < 5; i++) {
-      if (!Video_GetAuxSprite(&p->sprites_384[i], SPRITE_DOOR_7AF3)) {
+      if (!Video_GetAuxSprite(&p->sprites_384[i], SPR_DOOR_16)) {
         return -1;
       }
     }

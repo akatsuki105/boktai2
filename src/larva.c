@@ -46,7 +46,7 @@ typedef struct {
   s16 targetZ;            // 0x01E
   Vec3 velocity;          // 0x020, unk_05 の向きに 8
   Vec3 origin;            // 0x028, 動き出した位置
-  AuxSpriteGfx gfx;       // 0x030, SPRITE_DUNEYRR_AUX
+  AuxSpriteGfx gfx;       // 0x030, SPR_DUNEYRR_AUX
   AuxSprite sprite;       // 0x04C
   AuxAnimState anim;      // 0x078, ANIM_31F4
   Hitbox hurtbox;         // 0x088
@@ -1151,7 +1151,7 @@ s32 LarvaManager_Init(LarvaManager* p, s32 param_2, s32 param_3, s32 param_4) {
   for (i = 0; i < 12; i++, larva++) {
     larva->unk_06 = 0;
     larva->unk_05 = 0;
-    if (!Video_GetAuxSprite(&larva->gfx, SPRITE_DUNEYRR_AUX)) {
+    if (!Video_GetAuxSprite(&larva->gfx, SPR_DUNEYRR_AUX)) {
       return -1;
     }
     AuxSprite_Setup(&larva->sprite, &larva->gfx, 0);

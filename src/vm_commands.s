@@ -30,7 +30,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x08F4, Entity08F4_Create
 	.4byte 0x0955, Cmd_0955
 	.4byte 0x09EA, Cmd_09EA
-	.4byte 0x0AC7, Centipede_Create @ HashName("センチビート")
+	.4byte 0x0AC7, Centipede_Create @ HashName("センチビート"), "ピ"を"ビ"と誤記している (Cmd_AddOcclusionMaskTarget とハッシュが衝突するので意図的に綴りを変えた可能性もあるかも...？)
 	.4byte 0x0AD8, Cmd_AddOcclusionMaskTarget
 	.4byte 0x0B50, Coffin_Create @ HashName("棺桶")
 	.4byte 0x0BCE, Cmd_0BCE
@@ -105,14 +105,14 @@ gCommandList: @ 0x085A9208
 	.4byte 0x2B68, Cmd_ClearElementalCond
 	.4byte 0x2B8C, Cmd_SpawnFallingObject @ HashName("落下物生成")
 	.4byte 0x2D2B, CandlestickManager_Create @ HashName("燭台マネージャ")
-	.4byte 0x2D30, EnemyAx_Create @ HashName("アックス")
+	.4byte 0x2D30, Ax_Create @ HashName("アックス")
 	.4byte 0x2D36, Taiyo_Create
 	.4byte 0x2D8F, Cmd_SpawnBreakable
 	.4byte 0x2E1C, Cmd_AddCandlestick
 	.4byte 0x2F01, Cmd_GetSpanOfTime @ HashName("時間帯取得")
 	.4byte 0x2F51, Cmd_Nop_2F51
 	.4byte 0x2FA0, Cmd_SetMenuPagesAvailable @ HashName("スタートメニュー使用可能切り替え")
-	.4byte 0x2FA5, Cmd_2FA5
+	.4byte 0x2FA5, Cmd_AddPitfall @ HashName("落とし穴追加")
 	.4byte 0x2FE4, Cmd_GetBackupValue
 	.4byte 0x3004, Cmd_3004
 	.4byte 0x300F, Cmd_300F
@@ -211,7 +211,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x501B, Entity501B_Create
 	.4byte 0x515D, Cmd_SetMapSpot
 	.4byte 0x517B, BgPlttGroupFader_Create
-	.4byte 0x522C, EnemyFlameSnake_Create
+	.4byte 0x522C, Salamander_Create @ HashName("サラマンダー")
 	.4byte 0x5276, Cmd_5276
 	.4byte 0x5292, Entity5292_Create
 	.4byte 0x52BF, AlbumMenu_Create
@@ -361,7 +361,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8AF6, GenericObjUnitManager_Create @ HashName("汎用オブジェユニットマネージャ")
 	.4byte 0x8B67, Cmd_8B67
 	.4byte 0x8B8E, LinkShopScreen_Create @ HashName("武器交換画面")
-	.4byte 0x8C35, EnemyBombGolem_Create @ HashName("通信ゴーレム")
+	.4byte 0x8C35, GolemLink_Create @ HashName("通信ゴーレム")
 	.4byte 0x8CC7, Cmd_SpawnDove
 	.4byte 0x8CFE, Cmd_UnlockPlayerMagic @ HashName("プレイヤー魔法ロック解除")
 	.4byte 0x8D2D, WeaponDexMenu_Create @ HashName("武器図鑑")
@@ -373,7 +373,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8F41, Cmd_SetMessageWindowBgPltt
 	.4byte 0x8FA3, Cmd_StartPlayerPlttFadeIn
 	.4byte 0x904B, Cmd_SetCrossoverPoint @ HashName("クロスオーバーポイント設定")
-	.4byte 0x9053, Cmd_9053
+	.4byte 0x9053, Cmd_CreateAutoScroller @ HashName("オートスクロールキャラ")
 	.4byte 0x90B4, Cmd_90B4
 	.4byte 0x9146, Cmd_Nop_9146
 	.4byte 0x920F, Cmd_CreateNPC @ HashName("ＮＰＣサンプル生成")?
@@ -384,7 +384,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x9311, Cmd_9311
 	.4byte 0x933C, Cmd_MovePlayerTo
 	.4byte 0x9386, Durathror_Create @ HashName("ドゥラスロール")
-	.4byte 0x94D9, EnemyBokuLink_Create @ HashName("通信ボク")
+	.4byte 0x94D9, BokuLink_Create @ HashName("通信ボク")
 	.4byte 0x94EB, Cmd_94EB
 	.4byte 0x9519, PasswordScreen_Create @ HashName("パスワード")
 	.4byte 0x9531, Cmd_CreateMessageChoice
@@ -415,7 +415,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA0A6, EntityA0A6_Create
 	.4byte 0xA133, Cmd_A133
 	.4byte 0xA16F, ElevatorManager_Create
-	.4byte 0xA1D7, Cmd_A1D7
+	.4byte 0xA1D7, EneSword_Create @ HashName("大ソード")?
 	.4byte 0xA222, Cmd_ReadSystemDataOrInit @ HashName("システムデータロード")
 	.4byte 0xA285, Cmd_GetBestFriend
 	.4byte 0xA288, EntityA288_Create
@@ -440,7 +440,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xAB3C, Cmd_SetMessageWindowVar @ HashName("メッセージ表示変数設定")
 	.4byte 0xAB41, Cmd_AB41
 	.4byte 0xAB4E, EntityAB4E_Create
-	.4byte 0xAB8E, Cmd_AB8E
+	.4byte 0xAB8E, Cmd_AddFloorSwitch
 	.4byte 0xAB9C, Cmd_HideOtenkoGuide
 	.4byte 0xAC98, Cockatrice_Create @ HashName("コカトリス")
 	.4byte 0xACE3, ClockAlarm_Create
@@ -462,7 +462,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB1C4, Cmd_ShakeElevator
 	.4byte 0xB294, Cmd_B294
 	.4byte 0xB3D1, Torture_Create @ HashName("おしおき部屋マネージャ")
-	.4byte 0xB3D7, Cmd_B3D7 @ HashName("アルバム")
+	.4byte 0xB3D7, Cmd_B3D7
 	.4byte 0xB426, DungeonTitle_Create @ HashName("ダンジョンタイトル")
 	.4byte 0xB45F, Cmd_GetCrossoverPoint @ HashName("クロスオーバーポイント取得")
 	.4byte 0xB47E, Cmd_SetGenericObjPriority @ HashName("汎用オブジェ優先変更")
@@ -496,7 +496,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC12A, Cmd_C12A
 	.4byte 0xC12D, Cmd_StartPlayerPlttPulse
 	.4byte 0xC15E, Cmd_C15E
-	.4byte 0xC1F2, Cmd_SleepEnemy
+	.4byte 0xC1F2, Cmd_StunEnemy
 	.4byte 0xC233, Cmd_PlayerSpearSwing
 	.4byte 0xC347, Cmd_C347
 	.4byte 0xC3BC, Slime_Create @ HashName("スライム")
@@ -515,7 +515,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC946, Specimen_Create @ HashName("魔物図鑑標本")
 	.4byte 0xC9BC, PropertyCubeManager_Create
 	.4byte 0xCA3D, Cmd_CA3D
-	.4byte 0xCA73, EnemyDogLink_Create @ HashName("通信ドッグ")
+	.4byte 0xCA73, DogLink_Create @ HashName("通信ドッグ")
 	.4byte 0xCA7D, Cmd_SetBgPlttFile @ HashName("BGパレット変更")
 	.4byte 0xCAEE, Cmd_CAEE
 	.4byte 0xCAFE, Cmd_PlayerSwordReady
@@ -538,7 +538,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD229, Cmd_D229
 	.4byte 0xD24B, Cmd_ReturnCoffinToBag
 	.4byte 0xD25F, Cmd_AddSkylightArea @ HashName("天窓エリア登録")
-	.4byte 0xD285, Cmd_D285
+	.4byte 0xD285, Cmd_SendAutoScrollerCommand @ HashName("オートスクロールキャラコマンド")
 	.4byte 0xD37F, Jormungandr_Create @ HashName("ヨルムンガンド")
 	.4byte 0xD3A9, CutsceneSoundManager_Create @ HashName("デモサウンドマネージャ")
 	.4byte 0xD401, Cmd_SetMessageWindowPendingLine
@@ -636,7 +636,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xF5EB, Player_Create @ HashName("プレイヤー")
 	.4byte 0xF661, Cmd_HideGenericObj @ HashName("汎用オブジェ非表示")
 	.4byte 0xF836, Dog_Create @ HashName("ドッグ")
-	.4byte 0xF8BE, EnemyBat_Create @ HashName("バット")
+	.4byte 0xF8BE, EneBat_Create @ HashName("バット")
 	.4byte 0xF982, Cmd_F982
 	.4byte 0xF993, Cmd_F993
 	.4byte 0xF9F1, Cmd_CountFoundArmors

@@ -1,28 +1,28 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_080ce00c
+	bl PlayerLink_UpdateFormScale
 	adds r0, r4, #0
 	bl PlayerLink_CountMash
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080cdeb0
+	bl PlayerLink_TickBadCondTimers
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_080cddf0
+	bl PlayerLink_ApplyPoseHold
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl PlayerLink_ApplyFlashPose
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_080cd958
+	bl PlayerLink_UpdatePltt
 	adds r0, r4, #0
-	bl FUN_080cc648
+	bl PlayerLink_UpdateNoisePtcl
 	adds r0, r4, #0
-	bl FUN_080cc780
+	bl PlayerLink_UpdateConfusePtcl
 	adds r0, r4, #0
-	bl FUN_080ccf2c
+	bl PlayerLink_UpdateEnchantPtcls
 	adds r0, r4, #0
-	bl FUN_080cd0f0
+	bl PlayerLink_UpdateChargePtcls
 	ldr r0, _080CE318 @ =0x00000714
 	adds r1, r4, r0
 	ldr r2, _080CE31C @ =0x000006AC

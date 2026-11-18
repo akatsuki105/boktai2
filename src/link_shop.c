@@ -1,3 +1,5 @@
+#include "link_shop.h"
+
 #include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
@@ -23,14 +25,6 @@ typedef u32 LinkShopFlags;
 #define LSFLAG_NO_LINK_WATCH (1 << 14)     // 0x4000, リンクの生存確認をやめる
 #define LSFLAG_ALLOW_SOFT_RESET (1 << 15)  // 0x8000, 立つまで gSoftResetInhibit を立て続ける
 
-// 回線に流す1通分のメッセージ, .kind 以外の意味は kind ごとに変わる
-typedef struct LinkShopMsg {
-  u16 kind;     // 0x00, 0 = 太陽バンクの残高, 1 = 名前, 2 = 武器の本数, 3-5/6-8/10-12 は呼び出し側が決める
-  u16 unk_02;   // 0x02, LinkShopManager_Send の第3引数をそのまま乗せる, 読むのは受け取った側の onRecv
-  s32 data[3];  // 0x04, kind 1 では GameInfo.name の12バイト, kind 0 は残高, kind 2 は売れる武器の本数2種
-} LinkShopMsg;
-static_assert(sizeof(LinkShopMsg) == 16);
-
 struct LinkShopManager;
 
 typedef void (*LinkShopStateFn)(struct LinkShopManager* p);
@@ -46,7 +40,7 @@ typedef struct LinkShopManager {
   LinkShopStateFn stateFn;    // 0x4C
   s32 sendPacketId;           // 0x50, Sio_SendPacket が払い出した id, -1 なら送信していない
   u8* script;                 // 0x54, MessageWindow_Start に渡す文字列
-  TilemapFile* tilemap;       // 0x58, TILEMAP_A413
+  TilemapFile* tilemap;       // 0x58, MP_A413
   u8 unk_5c[0x60 - 0x5C];     // 0x5C, 読み手も書き手も未発見
   u8 unk_60;                  // 0x60, 外から書いて読むだけの1バイト
   u8 unk_61;                  // 0x61, 0xFF が入るだけで読み手は未発見
@@ -115,7 +109,7 @@ void LinkShopManager_OpenTextBox(LinkShopManager* p) {
 void LinkShopManager_SetupBG(LinkShopManager* p) {
   s32 layer;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_A413);
   layer = 3;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &layer);
   Video_GenerateBGMap(0, 0, 0, 0, 0);

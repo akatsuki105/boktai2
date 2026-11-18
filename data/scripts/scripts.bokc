@@ -649,7 +649,7 @@ Scr_0x0015() {
 		W_UNK_17E_3 = 0;
 		W_UNK_17E_4 = 0;
 		W_UNK_17E_5 = 0;
-		W_UNK_17E_6 = 0;
+		W_EARTH_SANDWORM_DEFEATED = 0;
 		W_UNK_17E_7 = 0;
 		W_UNK_17F_0 = 0;
 		W_UNK_17F_1 = 0;
@@ -665,7 +665,7 @@ Scr_0x0015() {
 		W_UNK_180_3 = 0;
 		W_UNK_180_4 = 0;
 		W_UNK_180_5 = 0;
-		W_UNK_180_6 = 0;
+		W_FROST_SERPENT_DEFEATED = 0;
 		W_UNK_180_7 = 0;
 		W_UNK_181_0 = 0;
 		W_UNK_181_1 = 0;
@@ -4321,7 +4321,7 @@ Scr_0x00BC() {
 	} else {
 		v1 = 24;
 	}
-	Chara(Cmd_9053, (u16)0x1A38, .f = v1, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [p1, p2]);
+	Chara(Cmd_CreateAutoScroller, (u16)0x1A38, .f = v1, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [p1, p2]);
 }
 
 // 0x08D1B23B
@@ -4810,7 +4810,7 @@ Scr_IsNight() {
 	}
 }
 
-// 0x08D1C0EF, 壁の裏に入ったキャラを隠すマスク (OcclusionMask) を作る, p0: 壁の形のスプライト ('.m', SPRITE_MASK_*), p1: '.n', W_UNK_00C_5 が 0 ならプレイヤーも登録する
+// 0x08D1C0EF, 壁の裏に入ったキャラを隠すマスク (OcclusionMask) を作る, p0: 壁の形のスプライト ('.m', SPR_MASK_*), p1: '.n', W_UNK_00C_5 が 0 ならプレイヤーも登録する
 Scr_CreateOcclusionMask() {
 	Chara(OcclusionMask_Create, (u16)0x7DC1, .n = p1, .m = p0);
 	if (W_UNK_00C_5 == 0) {
@@ -4973,9 +4973,9 @@ Scr_0x00E8() {
 	}
 	S_PITFALL_COUNT = S_PITFALL_COUNT + 1;
 	if (p6 != 0) {
-		Command(Cmd_2FA5, .p = [(p2 + (u8)128), (S_TMP_POS_Y), (p3 + (u8)128)], .i = S_PITFALL_COUNT, .R = p5, .C = p6, .G = [p7, p8], .T = p0, .o = p4, .m = 0, .s = v1);
+		Command(Cmd_AddPitfall, .p = [(p2 + (u8)128), (S_TMP_POS_Y), (p3 + (u8)128)], .i = S_PITFALL_COUNT, .R = p5, .C = p6, .G = [p7, p8], .T = p0, .o = p4, .m = 0, .s = v1);
 	} else {
-		Command(Cmd_2FA5, .p = [(p2 + (u8)128), (S_TMP_POS_Y), (p3 + (u8)128)], .i = S_PITFALL_COUNT, .R = p5, .G = [p7, p8], .T = p0, .o = p4, .m = 0, .s = v1);
+		Command(Cmd_AddPitfall, .p = [(p2 + (u8)128), (S_TMP_POS_Y), (p3 + (u8)128)], .i = S_PITFALL_COUNT, .R = p5, .G = [p7, p8], .T = p0, .o = p4, .m = 0, .s = v1);
 	}
 }
 
@@ -5514,7 +5514,7 @@ Scr_0x0119() {
 
 // 0x08D1D4DF
 Scr_0x011A() {
-	Command(Cmd_AB8E, .n = p0, .p = [p2, (p3 << 8), p4], .T = p5, .R = [p6, p7], .S = [p11, p12], .W = [p1, p2, (p3 << 8), p4], .d = p8, .s = p9, .f = p10);
+	Command(Cmd_AddFloorSwitch, .n = p0, .p = [p2, (p3 << 8), p4], .T = p5, .R = [p6, p7], .S = [p11, p12], .W = [p1, p2, (p3 << 8), p4], .d = p8, .s = p9, .f = p10);
 }
 
 // 0x08D1D515
@@ -10107,8 +10107,8 @@ Scr_SpawnSkeletonEx() {
 	Command(Skeleton_Create, .N = p0, .r = [p1, p2], .p = [0, 0, 0, 0, 0], .e = [S_ENEMY_RANGE0, S_ENEMY_RANGE3], .a = [S_ENEMY_ATK0_POWER, S_ENEMY_ATK0_KNOCKBACK, S_ENEMY_ATK0_ATTRS, S_ENEMY_ATK0_IFRAMES, S_ENEMY_ATK1_POWER, S_ENEMY_ATK_KNOCKBACK, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, S_ENEMY_ATK_KNOCKBACK, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, S_ENEMY_ATK_KNOCKBACK, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES], .P = [S_UNK_0F4, S_UNK_106, S_UNK_108, S_UNK_10A], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .k = S_UNK_0F0, .C = S_UNK_0F2, .I = (u24)Scr_0x0125, .D = p3, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p5], .M = S_ENEMY_FLAGS5, .d = [S_UNK_0F6, S_UNK_0F8, -1], .X = [0, S_ENEMY_WEAPON_EXP], .E = [0, S_ENEMY_EXP], .K = S_UNK_0EE, .L = S_UNK_0B9_0, .H = S_UNK_0B9_1);
 }
 
-// 0x08D2613A, スケルトン (別形, 種類 0 のみ, 感知範囲 1280) の能力値を scratch に用意する, Scr_0x0267 と組で使う
-Scr_0x0266() {
+// 0x08D2613A, リッチの能力値を scratch に用意する, 種類 0 のみ, 感知範囲 1280, Scr_SpawnLich と組で使う
+Scr_SetLichParams() {
 	v1 = p0;
 	S_ENEMY_RANGE0 = (s16)1280;
 	S_ENEMY_RANGE3 = 24;
@@ -10157,8 +10157,8 @@ Scr_0x0266() {
 	Scr_ScaleEnemyParamsForLap();
 }
 
-// 0x08D262D0, スケルトン (別形) を出す, Scr_0x0266 と組で使う
-Scr_0x0267() {
+// 0x08D262D0, リッチを出す, 変異域 B2 のボス部屋などで使う
+Scr_SpawnLich() {
 	Command(Skeleton_Create, .N = p0, .r = [p1, p2], .e = [S_ENEMY_RANGE0, S_ENEMY_RANGE3], .a = [S_ENEMY_ATK0_POWER, S_ENEMY_ATK0_KNOCKBACK, S_ENEMY_ATK0_ATTRS, S_ENEMY_ATK0_IFRAMES, S_ENEMY_ATK1_POWER, S_ENEMY_ATK_KNOCKBACK, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, S_ENEMY_ATK_KNOCKBACK, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES], .P = [S_UNK_0F4, S_UNK_106, S_UNK_108, S_UNK_10A], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .k = S_UNK_0F0, .C = S_UNK_0F2, .I = (u24)Scr_Nop, .D = p3, .O = [4, (u24)Scr_LichSummonSkeleton1, 4, (u24)Scr_LichSummonSkeleton2, 4, (u24)Scr_LichSummonSkeleton3], .T = [(u24)Scr_LichCurveShotStart, (u24)Scr_LichCurveShotEnd], .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p5], .M = S_ENEMY_FLAGS5, .d = [S_UNK_0F6, S_UNK_0F8, -1], .X = [0, S_ENEMY_WEAPON_EXP], .E = [0, S_ENEMY_EXP], .K = S_UNK_0EE, .L = S_UNK_0B9_0, .H = S_UNK_0B9_1);
 }
 
@@ -10172,8 +10172,8 @@ Scr_0x0269() {
 	Command(Skeleton_Create, .N = p4, .r = [1, 0], .p = [p0, p1, p2, p3, p5], .e = [(s16)1024, 32], .a = [(u8)100, 10, 0, 30, (u8)130, 30, 0, 60, (u8)120, 30, 131072, 40], .P = [(u8)120, (s16)300, (u8)100, 0], .A = [(u8)90, 50, 0, 0, 0, 0], .l = [(s16)320, 0, (s16)1200], .n = [(s16)1024, (s16)1024], .d = [0, (s16)600, (p5 - 1)], .K = 4, .L = 1, .k = 7, .M = (s16)512, .X = [30, 1], .H = 1);
 }
 
-// 0x08D264CC, スケルトン (別形, 種類 1 のみ, 感知範囲 4096) の能力値を scratch に用意する, Scr_0x026B と組で使う
-Scr_0x026A() {
+// 0x08D264CC, リッチ+ の能力値を scratch に用意する, 種類 1 のみ, 感知範囲 4096, Scr_SpawnLichPlus と組で使う
+Scr_SetLichPlusParams() {
 	v1 = p0;
 	S_ENEMY_RANGE0 = (s16)4096;
 	S_ENEMY_RANGE3 = 24;
@@ -10222,9 +10222,9 @@ Scr_0x026A() {
 	Scr_ScaleEnemyParamsForLap();
 }
 
-// 0x08D26665, スケルトン (別形) を出す, Scr_0x026A と組で使う
-Scr_0x026B() {
-	Command(Skeleton_Create, .N = p0, .r = [p1, p2], .e = [S_ENEMY_RANGE0, S_ENEMY_RANGE3], .a = [S_ENEMY_ATK0_POWER, 10, S_ENEMY_ATK0_ATTRS, S_ENEMY_ATK0_IFRAMES, S_ENEMY_ATK1_POWER, 40, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, 60, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, 60, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES], .P = [S_UNK_0F4, S_UNK_106, S_UNK_108, S_UNK_10A], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .k = S_UNK_0F0, .C = S_UNK_0F2, .I = (u24)Scr_Nop, .D = p3, .s = (u24)Scr_0x096E, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p5], .M = S_ENEMY_FLAGS5, .d = [S_UNK_0F6, S_UNK_0F8, -1], .X = [0, S_ENEMY_WEAPON_EXP], .E = [0, S_ENEMY_EXP], .K = S_UNK_0EE, .L = S_UNK_0B9_0, .H = S_UNK_0B9_1);
+// 0x08D26665, リッチ+ を出す, 召喚スクリプト ('.s') に Scr_SpawnSalamander を渡す, 変異域 B4 のボス部屋などで使う
+Scr_SpawnLichPlus() {
+	Command(Skeleton_Create, .N = p0, .r = [p1, p2], .e = [S_ENEMY_RANGE0, S_ENEMY_RANGE3], .a = [S_ENEMY_ATK0_POWER, 10, S_ENEMY_ATK0_ATTRS, S_ENEMY_ATK0_IFRAMES, S_ENEMY_ATK1_POWER, 40, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, 60, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, 60, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES], .P = [S_UNK_0F4, S_UNK_106, S_UNK_108, S_UNK_10A], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .k = S_UNK_0F0, .C = S_UNK_0F2, .I = (u24)Scr_Nop, .D = p3, .s = (u24)Scr_SpawnSalamander, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p5], .M = S_ENEMY_FLAGS5, .d = [S_UNK_0F6, S_UNK_0F8, -1], .X = [0, S_ENEMY_WEAPON_EXP], .E = [0, S_ENEMY_EXP], .K = S_UNK_0EE, .L = S_UNK_0B9_0, .H = S_UNK_0B9_1);
 }
 
 // 0x08D26752, スケルトンを出す, Scr_SpawnSkeletonEx に引数がさらに2つ付いた版?
@@ -10829,12 +10829,12 @@ Scr_0x0281() {
 			S_TMP_POS_Z = p6 + { Command(Cmd_Random, .p = (p2 * (s16)256)); };
 			S_TMP_POS_Y = p7 + { Command(Cmd_Random, .p = (p3 * (s16)256 - (u8)128)); } + (u8)128;
 		}
-		Scr_0x0283(p0, S_UNK_10C, (S_TMP_POS_X), (S_TMP_POS_Y), (S_TMP_POS_Z), (1 - p4), p1);
+		Scr_SpawnBat(p0, S_UNK_10C, (S_TMP_POS_X), (S_TMP_POS_Y), (S_TMP_POS_Z), (1 - p4), p1);
 	});
 }
 
 // 0x08D27F6B, バットの能力値を scratch に用意する, p0: 種類
-Scr_0x0282() {
+Scr_SetBatParams() {
 	S_ENEMY_RANGE0 = (s16)512;
 	S_ENEMY_RANGE3 = 24;
 	S_UNK_0C6 = (s16)300;
@@ -10904,20 +10904,20 @@ Scr_0x0282() {
 }
 
 // 0x08D281A2, バットを出す ('.T' = 1), p6: 種類
-Scr_0x0283() {
-	Scr_0x0282(p6);
-	Scr_0x0285(p0, p1, p2, p3, p4, p5, p6, 1, 0, 0, 0);
+Scr_SpawnBat() {
+	Scr_SetBatParams(p6);
+	Scr_SpawnBatEx(p0, p1, p2, p3, p4, p5, p6, 1, 0, 0, 0);
 }
 
 // 0x08D281BA, バットを出す ('.T' = 0), p6: 種類
 Scr_0x0284() {
-	Scr_0x0282(p6);
-	Scr_0x0285(p0, p1, p2, p3, p4, p5, p6, 0, 0, 0, 0);
+	Scr_SetBatParams(p6);
+	Scr_SpawnBatEx(p0, p1, p2, p3, p4, p5, p6, 0, 0, 0, 0);
 }
 
 // 0x08D281D2, バットを出す (全引数版), p7: '.T'
-Scr_0x0285() {
-	Command(EnemyBat_Create, .N = p0, .p = [p2, p3, p4], .E = p5, .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, S_ENEMY_ATK0_KNOCKBACK, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES], .T = p7, .g = [S_UNK_0F0, S_UNK_0F2], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .C = S_ENEMY_VARIANT, .I = (u24)Scr_0x0125, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p9], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .H = S_UNK_0B9_1);
+Scr_SpawnBatEx() {
+	Command(EneBat_Create, .N = p0, .p = [p2, p3, p4], .E = p5, .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, S_ENEMY_ATK0_KNOCKBACK, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES], .T = p7, .g = [S_UNK_0F0, S_UNK_0F2], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .C = S_ENEMY_VARIANT, .I = (u24)Scr_0x0125, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p9], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .H = S_UNK_0B9_1);
 }
 
 // 0x08D2826B, クロウを最大 p3 匹 (5 まで), 範囲内のランダムな位置に出す
@@ -11403,7 +11403,7 @@ Scr_SpawnGhostEx() {
 }
 
 // 0x08D294B0, サンドウォームの能力値を scratch に用意する, p0: 種類
-Scr_0x029D() {
+Scr_SetSandwormParams() {
 	S_ENEMY_RANGE0 = (s16)896;
 	S_ENEMY_RANGE3 = 24;
 	S_UNK_0C6 = (s16)300;
@@ -11444,26 +11444,26 @@ Scr_0x029D() {
 	Scr_ScaleEnemyParamsForLap();
 }
 
-// 0x08D295FF, サンドウォームを出す
-Scr_0x029E() {
-	Command(Sandworm_Create, .N = p0, .p = [p2, p3, p4], .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, 10, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, (u8)120, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, 60, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES, S_ENEMY_ATK4_POWER, 30, S_ENEMY_ATK4_ATTRS, S_ENEMY_ATK4_IFRAMES], .P = S_UNK_0F0, .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .C = 0, .I = (u24)Scr_Nop, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p8], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .d = (u24)Scr_0x029F, .H = S_UNK_0B9_1);
+// 0x08D295FF, サンドウォームを出す, p1: 撃破時スクリプト, 登場時スクリプトは Scr_OnSandwormAppear に決まっている
+Scr_SpawnSandworm() {
+	Command(Sandworm_Create, .N = p0, .p = [p2, p3, p4], .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, 10, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, (u8)120, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, 60, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES, S_ENEMY_ATK4_POWER, 30, S_ENEMY_ATK4_ATTRS, S_ENEMY_ATK4_IFRAMES], .P = S_UNK_0F0, .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .C = 0, .I = (u24)Scr_Nop, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p8], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .d = (u24)Scr_OnSandwormAppear, .H = S_UNK_0B9_1);
 }
 
-// 0x08D296BF, BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, 呼び出し元なし
-Scr_0x029F() {
+// 0x08D296BF, BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, Scr_SpawnSandworm が登場時スクリプト ('.d') として渡す
+Scr_OnSandwormAppear() {
 	Command(Cmd_FadeOutBGM, .f = 8);
 	Command(Cmd_C15E, .n = p0, .o = [0, 0, 0], .f = 30);
 	Command(Cmd_LockPlayer);
 }
 
 // 0x08D296E9, Cmd_C15E をプレイヤー (0xF5EB) に戻し, プレイヤーを動かせるようにする, サンドウォーム戦の後に呼ばれる
-Scr_0x02A0() {
+Scr_OnSandwormDefeated() {
 	Command(Cmd_C15E, .n = (u16)0xF5EB, .o = [0, 0, 0], .f = 30);
 	Command(Cmd_UnlockPlayer);
 }
 
 // 0x08D2970A, サーペントの能力値を scratch に用意する, p0: 種類
-Scr_0x02A1() {
+Scr_SetSerpentParams() {
 	S_ENEMY_RANGE0 = (s16)512;
 	S_ENEMY_RANGE3 = 24;
 	S_UNK_0C6 = (s16)300;
@@ -11506,19 +11506,19 @@ Scr_0x02A1() {
 }
 
 // 0x08D2985A, サーペントを出す, p1: 登場時スクリプト, p2: 撃破時スクリプト
-Scr_0x02A2() {
+Scr_SpawnSerpent() {
 	Command(Serpent_Create, .N = p0, .p = [p3, p4, p5], .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, 60, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, 30, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, 10, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES, S_ENEMY_ATK4_POWER, 15, S_ENEMY_ATK4_ATTRS, S_ENEMY_ATK4_IFRAMES], .P = [S_UNK_0F0, S_UNK_0F2], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .C = 0, .I = (u24)Scr_Nop, .D = p2, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p9], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .d = p1, .H = S_UNK_0B9_1);
 }
 
 // 0x08D2991B, BGM を消し, Cmd_C15E を p0 に向けて呼び (カメラ?), プレイヤーを止める, サーペントの登場時スクリプトとして渡される
-Scr_0x02A3() {
+Scr_OnSerpentAppear() {
 	Command(Cmd_FadeOutBGM, .f = 8);
 	Command(Cmd_C15E, .n = p0, .o = [0, 0, 0], .f = 30);
 	Command(Cmd_LockPlayer);
 }
 
 // 0x08D29945, Cmd_C15E をプレイヤー (0xF5EB) に戻し, プレイヤーを動かせるようにする, サーペント戦の後に呼ばれる
-Scr_0x02A4() {
+Scr_OnSerpentDefeated() {
 	Command(Cmd_C15E, .n = (u16)0xF5EB, .o = [0, 0, 0], .f = 30);
 	Command(Cmd_UnlockPlayer);
 }
@@ -11575,7 +11575,7 @@ Scr_SpawnOctopusEx() {
 }
 
 // 0x08D29B5B, 暗黒の根の能力値を scratch に用意する, p0: 種類
-Scr_0x02A8() {
+Scr_SetDarkRootParams() {
 	S_ENEMY_RANGE0 = (s16)768;
 	S_ENEMY_RANGE3 = 24;
 	S_UNK_0C6 = (s16)300;
@@ -11615,23 +11615,23 @@ Scr_0x02A8() {
 }
 
 // 0x08D29C86, 暗黒の根を出す, p5: 種類
-Scr_0x02A9() {
-	Scr_0x02A8(p5);
+Scr_SpawnDarkRoot() {
+	Scr_SetDarkRootParams(p5);
 	Scr_0x02AA(p0, p1, p2, p3, p4, p5, 0, 0, p6);
 }
 
-// 0x08D29C9B, 暗黒の根を出す, Scr_0x02AB の最後の引数を 0 にした版
+// 0x08D29C9B, 暗黒の根を出す, Scr_SpawnDarkRootEx の最後の引数を 0 にした版
 Scr_0x02AA() {
-	Scr_0x02AB(p0, p1, p2, p3, p4, p5, p6, p7, p8, 0);
+	Scr_SpawnDarkRootEx(p0, p1, p2, p3, p4, p5, p6, p7, p8, 0);
 }
 
 // 0x08D29CAD, 暗黒の根を出す (全引数版)
-Scr_0x02AB() {
+Scr_SpawnDarkRootEx() {
 	Command(DarkRoot_Create, .N = p0, .r = [p2, p3], .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, 10, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, (u8)120, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, 60, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES], .P = [S_UNK_0F0, S_UNK_0F2, S_UNK_0F4], .B = p8, .d = p9, .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .C = S_ENEMY_VARIANT, .I = (u24)Scr_0x0125, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p7], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .H = S_UNK_0B9_1);
 }
 
 // 0x08D29D62, アックス系の能力値を scratch に用意する, p0: 種類
-Scr_0x02AC() {
+Scr_SetAxParams() {
 	S_ENEMY_RANGE0 = (s16)768;
 	S_ENEMY_RANGE3 = 24;
 	S_UNK_0C6 = (s16)300;
@@ -11714,13 +11714,13 @@ Scr_0x02AC() {
 	Scr_ScaleEnemyParamsForLap();
 }
 
-// 0x08D2A026, アックス系を出す
-Scr_0x02AD() {
-	Command(EnemyAx_Create, .N = p0, .p = [p2, p3, p4], .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, (u8)64, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, 32, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, (u8)64, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES, S_ENEMY_ATK4_POWER, 8, S_ENEMY_ATK4_ATTRS, S_ENEMY_ATK4_IFRAMES], .P = [S_UNK_0F0, S_UNK_0F2, S_UNK_0F4, S_UNK_106], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .O = [S_UNK_108, S_UNK_0F6, S_UNK_0F8, S_UNK_10A, S_UNK_116, S_UNK_118], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .C = S_ENEMY_VARIANT, .I = (u24)Scr_Nop, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p8], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .H = S_UNK_0B9_1);
+// 0x08D2A026, アックス系を出す, Ax_Create で作る
+Scr_SpawnAx() {
+	Command(Ax_Create, .N = p0, .p = [p2, p3, p4], .e = S_ENEMY_RANGE0, .a = [S_ENEMY_ATK1_POWER, (u8)64, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK2_POWER, 32, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES, S_ENEMY_ATK3_POWER, (u8)64, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES, S_ENEMY_ATK4_POWER, 8, S_ENEMY_ATK4_ATTRS, S_ENEMY_ATK4_IFRAMES], .P = [S_UNK_0F0, S_UNK_0F2, S_UNK_0F4, S_UNK_106], .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 50, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .O = [S_UNK_108, S_UNK_0F6, S_UNK_0F8, S_UNK_10A, S_UNK_116, S_UNK_118], .l = [S_UNK_0C6, S_ENEMY_SLEEP_TIME, S_ENEMY_CHASE_TIME_MAX], .n = [S_ENEMY_RANGE2, S_UNK_0CC], .C = S_ENEMY_VARIANT, .I = (u24)Scr_Nop, .D = p1, .G = [S_ENEMY_DROP_A, S_ENEMY_DROP_B, p8], .M = S_ENEMY_FLAGS5, .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE, .H = S_UNK_0B9_1);
 }
 
-// 0x08D2A10D, ソード系? の能力値を scratch に用意する, p0: 種類
-Scr_0x02AE() {
+// 0x08D2A10D, ソード系の能力値を scratch に用意する, p0: 種類
+Scr_SetEneSwordParams() {
 	S_ENEMY_RANGE0 = (s16)768;
 	S_ENEMY_RANGE3 = 24;
 	S_UNK_0C6 = (s16)300;
@@ -11789,15 +11789,15 @@ Scr_0x02AE() {
 	Scr_ScaleEnemyParamsForLap();
 }
 
-// 0x08D2A351, ソード系? を出す, p6: 種類
-Scr_0x02AF() {
-	Scr_0x02AE(p6);
-	Scr_0x02B0(p0, p1, p2, p3, p4, p5, p6, 0, 0, 4);
+// 0x08D2A351, ソード系を出す, p6: 種類
+Scr_SpawnEneSword() {
+	Scr_SetEneSwordParams(p6);
+	Scr_SpawnEneSwordEx(p0, p1, p2, p3, p4, p5, p6, 0, 0, 4);
 }
 
-// 0x08D2A368, ソード系? を出す (全引数版), Cmd_A1D7 で作る
-Scr_0x02B0() {
-	Chara(Cmd_A1D7, p0, .p = [p2, p3, p4], .t = S_ENEMY_VARIANT, .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 0, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .c = [S_UNK_0F0, S_UNK_0F2, 0, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .T = [S_ENEMY_ATK1_POWER, 48, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK3_POWER, 20, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES], .C = [S_ENEMY_ATK2_POWER, 28, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES], .M = [S_UNK_0F4, S_UNK_106, S_UNK_108, S_UNK_0F6], .n = 4, .e = p1, .a = [p7, p8], .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE);
+// 0x08D2A368, Scr_SpawnEneSword の全引数版, EneSword_Create で作る
+Scr_SpawnEneSwordEx() {
+	Chara(EneSword_Create, p0, .p = [p2, p3, p4], .t = S_ENEMY_VARIANT, .A = [S_ENEMY_MAX_HP, S_ENEMY_POWER, 0, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .c = [S_UNK_0F0, S_UNK_0F2, 0, S_UNK_0E0, S_ENEMY_ATTRS, S_ENEMY_WEAKNESS], .T = [S_ENEMY_ATK1_POWER, 48, S_ENEMY_ATK1_ATTRS, S_ENEMY_ATK1_IFRAMES, S_ENEMY_ATK3_POWER, 20, S_ENEMY_ATK3_ATTRS, S_ENEMY_ATK3_IFRAMES], .C = [S_ENEMY_ATK2_POWER, 28, S_ENEMY_ATK2_ATTRS, S_ENEMY_ATK2_IFRAMES], .M = [S_UNK_0F4, S_UNK_106, S_UNK_108, S_UNK_0F6], .n = 4, .e = p1, .a = [p7, p8], .X = [S_ENEMY_EXP, S_ENEMY_WEAPON_EXP], .K = S_UNK_0EE);
 }
 
 // 0x08D2A40A
@@ -12584,8 +12584,8 @@ Scr_0x02DA() {
 	Command(Cmd_GetPathNodePos, 1, 0, S_ZONE_MIN_X, S_TMP_POS_Y, S_ZONE_MIN_Z);
 	Command(Cmd_0CD4, S_ZONE_MIN_X, S_ZONE_MIN_Z, S_TMP_POS_Y);
 	if (W_STORY_PROGRESS < 28) {
-		Scr_0x02A8(0);
-		Scr_0x02AB((u16)0xA063, (u24)Scr_0x02DF, 1, 0, 1, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
+		Scr_SetDarkRootParams(0);
+		Scr_SpawnDarkRootEx((u16)0xA063, (u24)Scr_0x02DF, 1, 0, 1, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
 		Command(Cmd_AddTileOverride, .n = (u16)0xA063, .t = 0, .e = 11, .p = [(S_ZONE_MIN_X - (u8)128), (S_TMP_POS_Y), (S_ZONE_MIN_Z - (u8)128)]);
 	} else {
 		Scr_0x011F((u16)0x17CA, (u16)0xD638, 0, 0, 3, S_ZONE_MIN_X, S_TMP_POS_Y, S_ZONE_MIN_Z, (u16)0x99DD, 8, 0);
@@ -13010,9 +13010,9 @@ Scr_0x02FB() {
 		Scr_0x02FD(p0, 1);
 		Scr_0x011F(p0, (u16)0xD638, 0, 0, 3, (S_ZONE_MIN_X - (u8)128 + (u8)160), (S_TMP_POS_Y), (S_ZONE_MIN_Z - (u8)128 + (u8)160), (u16)0x99DD, 8, 0);
 	} else {
-		Scr_0x02A8(0);
+		Scr_SetDarkRootParams(0);
 		S_UNK_0B9_1 = 1;
-		Scr_0x02AB(p0, p6, p1, p2, p3, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
+		Scr_SpawnDarkRootEx(p0, p6, p1, p2, p3, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
 		Command(Cmd_AddTileOverride, .n = p0, .t = 0, .e = 11, .p = [(S_ZONE_MIN_X - (u8)128), (S_TMP_POS_Y), (S_ZONE_MIN_Z - (u8)128)]);
 	}
 }
@@ -14889,7 +14889,7 @@ Scr_0x0362() {
 }
 
 // 0x08D30782, 暗黒ローンのおしおき(発電)の時間切れ処理
-Scr_DarkLoanPunishTimeUp() {
+Scr_TortureTimeUp() {
 	DebugPrint("タイムアッププロック");
 	S_TORTURE_STEP = 0;
 	Scr_0x0364();
@@ -14949,7 +14949,7 @@ Scr_0x13EF() {
 }
 
 // 0x08D30992, 暗黒ローンのおしおき(発電)の終了処理, 返済状況に応じたメッセージと報酬アイテムの付与
-Scr_DarkLoanPunishEnd() {
+Scr_TortureEnd() {
 	DebugPrint("おしおき終了");
 	switch (S_TORTURE_STEP) {
 		case 0: {
@@ -14981,8 +14981,8 @@ Scr_DarkLoanPunishEnd() {
 			} else {
 				Command(Cmd_OpenMessageWindow, .r = StringRef(Str_010C));
 			}
-			Scr_OpenMsgWindow(3, (u24)Scr_DarkLoanPunishEnd, 0);
-			Command(Cmd_SetMessageWindowScriptIds, .p = [(u24)Scr_DarkLoanPunishEnd, (u24)Scr_0x036D, (u24)Scr_0x036F]);
+			Scr_OpenMsgWindow(3, (u24)Scr_TortureEnd, 0);
+			Command(Cmd_SetMessageWindowScriptIds, .p = [(u24)Scr_TortureEnd, (u24)Scr_0x036D, (u24)Scr_0x036F]);
 		}
 		case 1: {
 			S_TORTURE_STEP = 2;
@@ -15000,8 +15000,8 @@ Scr_DarkLoanPunishEnd() {
 				Command(Cmd_GetItem, .i = 23);
 				Command(Cmd_OpenMessageWindow, .r = StringRef(Str_012C));
 			}
-			Scr_OpenMsgWindow(3, (u24)Scr_DarkLoanPunishEnd, 0);
-			Command(Cmd_SetMessageWindowScriptIds, .p = [(u24)Scr_DarkLoanPunishEnd, (u24)Scr_0x036D, (u24)Scr_0x036F]);
+			Scr_OpenMsgWindow(3, (u24)Scr_TortureEnd, 0);
+			Command(Cmd_SetMessageWindowScriptIds, .p = [(u24)Scr_TortureEnd, (u24)Scr_0x036D, (u24)Scr_0x036F]);
 		}
 		case 2: {
 			S_TORTURE_STEP = 3;
@@ -15013,8 +15013,8 @@ Scr_DarkLoanPunishEnd() {
 			} else {
 				Command(Cmd_OpenMessageWindow, .r = StringRef(Str_012E));
 			}
-			Scr_OpenMsgWindow(3, (u24)Scr_DarkLoanPunishEnd, 0);
-			Command(Cmd_SetMessageWindowScriptIds, .p = [(u24)Scr_DarkLoanPunishEnd, (u24)Scr_0x036D, (u24)Scr_0x036F]);
+			Scr_OpenMsgWindow(3, (u24)Scr_TortureEnd, 0);
+			Command(Cmd_SetMessageWindowScriptIds, .p = [(u24)Scr_TortureEnd, (u24)Scr_0x036D, (u24)Scr_0x036F]);
 		}
 		case 3: {
 			S_TORTURE_STEP = 0;
@@ -15040,11 +15040,11 @@ Scr_0x0366() {
 	}
 	Command(Cmd_SetMenuPagesAvailable, .o = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]);
 	S_TORTURE_STEP = 0;
-	Scr_DarkLoanPunishment();
+	Scr_Torture();
 }
 
 // 0x08D30D6A, 暗黒ローンのおしおきの進行, 発電部屋へ連行して操作説明をして発電を始める
-Scr_DarkLoanPunishment() {
+Scr_Torture() {
 	switch (S_TORTURE_STEP) {
 		case 0: {
 			S_TORTURE_STEP = 1;
@@ -15091,13 +15091,13 @@ Scr_DarkLoanPunishment() {
 					Command(Cmd_OpenMessageWindow, .r = StringRef(Str_00FC));
 				}
 			}
-			Scr_OpenMsgWindow(3, (u24)Scr_DarkLoanPunishment, 0);
+			Scr_OpenMsgWindow(3, (u24)Scr_Torture, 0);
 		}
 		case 1: {
 			S_TORTURE_STEP = 2;
 			Scr_CreateMapBG((u16)0xC2AD, 0);
 			Scr_FadeScreen(4, 0, (u8)64);
-			Chara(Cmd_Delay, (u16)0xEC51, .t = 1, .p = (u24)Scr_DarkLoanPunishment);
+			Chara(Cmd_Delay, (u16)0xEC51, .t = 1, .p = (u24)Scr_Torture);
 		}
 		case 2: {
 			if (TORTURE_COUNT == 1) {
@@ -15165,23 +15165,23 @@ Scr_DarkLoanPunishment() {
 			} else {
 				W_UNK_1C5 = 0;
 			}
-			Chara(Torture_Create, (u16)0x963D, .r = (u8)100, .a = [(s16)10800, (s16)1000, (u24)Scr_DarkLoanPunishTimeUp], .N = 4, .p = S_TORTURE_PATTERN, .e = (u24)Scr_DarkLoanPunishEnd);
+			Chara(Torture_Create, (u16)0x963D, .r = (u8)100, .a = [(s16)10800, (s16)1000, (u24)Scr_TortureTimeUp], .N = 4, .p = S_TORTURE_PATTERN, .e = (u24)Scr_TortureEnd);
 			Command(Cmd_AddGenericObj, .n = (u16)0x34C6, .t = (u16)0x0DDE, .i = 0, .p = [(s16)1664, (s16)256, (s16)896], .f = 1, .R = 2, .m = [(u16)0x87EF, 1, 0], .P = 32, .o = 1, .s = 1);
 			Scr_BeginCutscene((u24)Scr_Nop);
 			Chara(Cmd_Delay, (u16)0xEC51, .t = (u8)64, .e = {
-				Scr_DarkLoanPunishment();
+				Scr_Torture();
 			});
 		}
 		case 3: {
 			S_TORTURE_STEP = 4;
 			Command(Cmd_OpenMessageWindow, .r = StringRef(Str_00E7));
-			Scr_OpenMsgWindow(3, (u24)Scr_DarkLoanPunishment, 0);
+			Scr_OpenMsgWindow(3, (u24)Scr_Torture, 0);
 		}
 		case 4: {
 			S_TORTURE_STEP = 5;
 			Scr_CloseMsgWindow();
 			Command(Cmd_SetHUDMode, .m = 7);
-			Command(Cmd_MovePlayerTo, .p = [(s16)1408, (s16)256, (s16)1152], .d = 7, .e = (u24)Scr_DarkLoanPunishment);
+			Command(Cmd_MovePlayerTo, .p = [(s16)1408, (s16)256, (s16)1152], .d = 7, .e = (u24)Scr_Torture);
 			Chara(Cmd_Delay, (u16)0xB088, .t = 30, .e = {
 				Command(Cmd_SetGenericObjAnim, .n = (u16)0x34C6, .m = 2, .d = 0, .r = 1, .o = 1, .P = (u8)64);
 			});
@@ -15207,28 +15207,28 @@ Scr_DarkLoanPunishment() {
 				}
 			}
 			Command(Cmd_OpenMessageWindow, .r = StringRef(Str_00FE));
-			Scr_OpenMsgWindow(3, (u24)Scr_DarkLoanPunishment, 0);
+			Scr_OpenMsgWindow(3, (u24)Scr_Torture, 0);
 		}
 		case 6: {
 			S_TORTURE_STEP = 7;
 			Command(Cmd_CloseMessageWindow);
 			Command(Cmd_SetHUDMode, .m = 7);
-			Scr_DarkLoanPunishment();
+			Scr_Torture();
 		}
 		case 7: {
 			S_TORTURE_STEP = 8;
-			Scr_DarkLoanPunishment();
+			Scr_Torture();
 		}
 		case 8: {
 			S_TORTURE_STEP = 9;
-			Scr_DarkLoanPunishment();
+			Scr_Torture();
 		}
 		case 9: {
 			S_TORTURE_STEP = 10;
 			Command(Cmd_CloseMessageWindow);
 			Command(Cmd_SetHUDMode, .m = 7);
 			Command(Cmd_HideGenericObjUnit, .n = (u16)0x40FD);
-			Command(Cmd_MovePlayerTo, .p = [(s16)1408, (s16)256, (s16)1408], .d = 5, .e = (u24)Scr_DarkLoanPunishment);
+			Command(Cmd_MovePlayerTo, .p = [(s16)1408, (s16)256, (s16)1408], .d = 5, .e = (u24)Scr_Torture);
 		}
 		case 10: {
 			S_TORTURE_STEP = 11;
@@ -15236,7 +15236,7 @@ Scr_DarkLoanPunishment() {
 		}
 		case 11: {
 			S_TORTURE_STEP = 13;
-			Command(Cmd_MovePlayerTo, .p = [(s16)896, (s16)256, (s16)1408], .d = 7, .e = (u24)Scr_DarkLoanPunishment);
+			Command(Cmd_MovePlayerTo, .p = [(s16)896, (s16)256, (s16)1408], .d = 7, .e = (u24)Scr_Torture);
 		}
 		case 13: {
 			S_TORTURE_STEP = 0;
@@ -15270,7 +15270,7 @@ Scr_0x0369() {
 Scr_DarkLoanElevatorCallback() {
 	if (p0 == 1) {
 		DebugPrint("到着！！！");
-		Scr_DarkLoanPunishment();
+		Scr_Torture();
 	} else if (p0 == 2) {
 		DebugPrint("帰ってきたで！！！");
 		Command(Cmd_5D74, .n = (u16)0x7A2B, .r = [0, 0]);
@@ -15753,9 +15753,9 @@ Scr_0x038A() {}
 // 0x08D32354
 Scr_0x038B() {
 	Chara(GenericObjManager_Create, (u16)0xB5B6, .m = 2);
-	Scr_0x02A8(0);
-	Scr_0x02AB((u16)0x2676, (u24)Scr_0x038C, 0, 0, 0, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
-	Scr_0x02AB((u16)0x2677, (u24)Scr_0x038C, 0, 1, 0, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
+	Scr_SetDarkRootParams(0);
+	Scr_SpawnDarkRootEx((u16)0x2676, (u24)Scr_0x038C, 0, 0, 0, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
+	Scr_SpawnDarkRootEx((u16)0x2677, (u24)Scr_0x038C, 0, 1, 0, 0, 0, 0, (u16)0x3D8C, (u24)Scr_0x0302);
 	if ({ Command(Cmd_IsEnemyAlive, (u16)0x2676); } == 1) {
 		Command(Cmd_AddTileOverride, .n = (u16)0x168D, .t = 0, .e = 11, .p = [(s16)1280, (s16)256, (s16)1536]);
 	}
@@ -15784,8 +15784,8 @@ Scr_0x038C() {
 // 0x08D324C6
 Scr_0x038D() {
 	Chara(GenericObjManager_Create, (u16)0xB5B6, .m = 2);
-	Scr_0x02A9((u16)0x2676, (u24)Scr_0x038C, 0, 0, 0, 0, (u16)0x3D8C);
-	Scr_0x02A9((u16)0x2677, (u24)Scr_0x038C, 0, 1, 0, 0, (u16)0x3D8C);
+	Scr_SpawnDarkRoot((u16)0x2676, (u24)Scr_0x038C, 0, 0, 0, 0, (u16)0x3D8C);
+	Scr_SpawnDarkRoot((u16)0x2677, (u24)Scr_0x038C, 0, 1, 0, 0, (u16)0x3D8C);
 	if ({ Command(Cmd_IsEnemyAlive, (u16)0x2676); } == 1) {
 		Command(Cmd_AddTileOverride, .n = (u16)0x168D, .t = 0, .e = 11, .p = [(s16)1280, (s16)256, (s16)1536]);
 	}
@@ -18773,11 +18773,11 @@ Scr_0x043A() {}
 // 0x08D38B90
 Scr_0x043B() {
 	if (W_ENTRANCE == 58 || W_ENTRANCE == (u8)108) {
-		Scr_0x0283((u16)0x034D, (u24)Scr_Nop, (s16)8320, (s16)640, (s16)1792, 1, 1);
-		Scr_0x0283((u16)0x034E, (u24)Scr_Nop, (s16)8832, (s16)640, (s16)1792, 1, 1);
+		Scr_SpawnBat((u16)0x034D, (u24)Scr_Nop, (s16)8320, (s16)640, (s16)1792, 1, 1);
+		Scr_SpawnBat((u16)0x034E, (u24)Scr_Nop, (s16)8832, (s16)640, (s16)1792, 1, 1);
 		if (W_CROSSOVER_PROGRESS >= 2 && W_CROSSOVER_PROGRESS < 7 && W_KEY_DATA_RECEIVED(0) == 0) {
-			Scr_0x0282(15);
-			Scr_0x0285((u16)0xE09F, (u24)Scr_GetKeyData, (s16)9792, (s16)640, (s16)1024, 1, 15, 1, 0, 0, 0);
+			Scr_SetBatParams(15);
+			Scr_SpawnBatEx((u16)0xE09F, (u24)Scr_GetKeyData, (s16)9792, (s16)640, (s16)1024, 1, 15, 1, 0, 0, 0);
 		}
 	} else {
 		Scr_SpawnSlime((u16)0x1937, (u24)Scr_Nop, (s16)768, (s16)256, (s16)1792, 0, 3, (u24)Scr_0x028F, (u16)0x85B9);
@@ -20176,17 +20176,17 @@ Scr_0x048F() {
 // 0x08D3BA8F
 Scr_0x0490() {
 	if (W_ENTRANCE == 21) {
-		Scr_0x0283((u16)0xA362, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)1280, 0, 1);
-		Scr_0x0283((u16)0xA363, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)1024, 0, 1);
-		Scr_0x0283((u16)0xA364, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)1280, 0, 1);
-		Scr_0x0283((u16)0xA366, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)1024, 0, 1);
+		Scr_SpawnBat((u16)0xA362, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)1280, 0, 1);
+		Scr_SpawnBat((u16)0xA363, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)1024, 0, 1);
+		Scr_SpawnBat((u16)0xA364, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)1280, 0, 1);
+		Scr_SpawnBat((u16)0xA366, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)1024, 0, 1);
 	} else if (W_ENTRANCE == (u8)138) {
-		Scr_0x0283((u16)0xA362, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)512, 0, 1);
-		Scr_0x0283((u16)0xA363, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)1024, 0, 1);
-		Scr_0x0283((u16)0xA364, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)512, 0, 1);
-		Scr_0x0283((u16)0xA365, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)768, 0, 1);
-		Scr_0x0283((u16)0xA366, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)1024, 0, 1);
-		Scr_0x0283((u16)0xA367, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)768, 0, 1);
+		Scr_SpawnBat((u16)0xA362, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)512, 0, 1);
+		Scr_SpawnBat((u16)0xA363, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)1024, 0, 1);
+		Scr_SpawnBat((u16)0xA364, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)512, 0, 1);
+		Scr_SpawnBat((u16)0xA365, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)768, 0, 1);
+		Scr_SpawnBat((u16)0xA366, (u24)Scr_Nop, (s16)2560, (s16)1536, (s16)1024, 0, 1);
+		Scr_SpawnBat((u16)0xA367, (u24)Scr_Nop, (s16)1536, (s16)1536, (s16)768, 0, 1);
 	}
 }
 
@@ -20615,13 +20615,13 @@ Scr_0x04A7() {
 // 0x08D3C8AC
 Scr_0x04A8() {
 	if (W_UNK_161_2 == 0) {
-		Scr_0x0283((u16)0xA362, (u24)Scr_0x04A9, (s16)3456, (s16)1536, (s16)3328, 1, 1);
-		Scr_0x0283((u16)0xA363, (u24)Scr_0x04A9, (s16)3968, (s16)1536, (s16)3328, 1, 1);
-		Scr_0x0283((u16)0xA364, (u24)Scr_0x04A9, (s16)4352, (s16)1536, (s16)3328, 1, 1);
-		Scr_0x0283((u16)0xA365, (u24)Scr_0x04A9, (s16)3456, (s16)1536, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA366, (u24)Scr_0x04A9, (s16)3968, (s16)1536, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA367, (u24)Scr_0x04A9, (s16)4480, (s16)1536, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA368, (u24)Scr_0x04A9, (s16)3968, (s16)1536, (s16)3840, 1, 1);
+		Scr_SpawnBat((u16)0xA362, (u24)Scr_0x04A9, (s16)3456, (s16)1536, (s16)3328, 1, 1);
+		Scr_SpawnBat((u16)0xA363, (u24)Scr_0x04A9, (s16)3968, (s16)1536, (s16)3328, 1, 1);
+		Scr_SpawnBat((u16)0xA364, (u24)Scr_0x04A9, (s16)4352, (s16)1536, (s16)3328, 1, 1);
+		Scr_SpawnBat((u16)0xA365, (u24)Scr_0x04A9, (s16)3456, (s16)1536, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA366, (u24)Scr_0x04A9, (s16)3968, (s16)1536, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA367, (u24)Scr_0x04A9, (s16)4480, (s16)1536, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA368, (u24)Scr_0x04A9, (s16)3968, (s16)1536, (s16)3840, 1, 1);
 	} else {
 		if (W_CROSSOVER_PROGRESS > 0 && W_CROSSOVER_PROGRESS < 13) {
 			Scr_SpawnDog((u16)0x8996, 0, 0, (u24)Scr_Nop, 2);
@@ -20695,7 +20695,7 @@ Scr_0x04AC() {
 	v1 = (u16)0x7184;
 	Command(Cmd_LoadTileSet, .t = 3, .c = (u16)0x330C, .d = (u16)0x8E32, .m = (u16)0x7184);
 	Command(Cmd_LoadTileMap, .d = v1, .t = 3, .n = 1, .c = (u16)0x330C);
-	Chara(Cmd_9053, (u16)0x1A38, .f = 12, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [16, 8]);
+	Chara(Cmd_CreateAutoScroller, (u16)0x1A38, .f = 12, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [16, 8]);
 	Scr_CreateBgPlttController((u16)0x2737, (u16)0xE2D1, (u16)0x211E);
 	Chara(ZoneList_Create, (u16)0x1CB1, .m = (u16)0xA679);
 	Scr_TrackZoneMapSpot((u16)0xA679, 34);
@@ -21157,7 +21157,7 @@ Scr_0x04CE() {
 	S_UNK_014_2 = 0;
 	if (W_ENTRANCE == 33 || W_ENTRANCE == 39) {
 		if (W_UNK_161_3 == 0) {
-			Scr_0x02AF((u16)0x26CC, (u24)Scr_0x04CF, (s16)4992, (s16)256, (s16)1152, 0, 0, 8);
+			Scr_SpawnEneSword((u16)0x26CC, (u24)Scr_0x04CF, (s16)4992, (s16)256, (s16)1152, 0, 0, 8);
 		}
 	} else if (W_ENTRANCE == 40 || W_ENTRANCE == 41) {
 		if (W_UNK_161_4 == 0) {
@@ -21451,11 +21451,11 @@ Scr_0x04E3() {}
 
 // 0x08D3E449
 Scr_0x04E4() {
-	Scr_0x0282(1);
+	Scr_SetBatParams(1);
 	S_ENEMY_RANGE0 = (s16)768;
-	Scr_0x0285((u16)0x7745, (u24)Scr_Nop, (s16)1920, (s16)2560, (s16)3328, 1, 1, 1, 0, 0, 0);
-	Scr_0x0285((u16)0x7746, (u24)Scr_Nop, (s16)256, (s16)3072, (s16)1408, 0, 1, 1, 0, 0, 0);
-	Scr_0x0285((u16)0x7747, (u24)Scr_Nop, (s16)1536, (s16)2816, (s16)1408, 0, 1, 1, 0, 0, 0);
+	Scr_SpawnBatEx((u16)0x7745, (u24)Scr_Nop, (s16)1920, (s16)2560, (s16)3328, 1, 1, 1, 0, 0, 0);
+	Scr_SpawnBatEx((u16)0x7746, (u24)Scr_Nop, (s16)256, (s16)3072, (s16)1408, 0, 1, 1, 0, 0, 0);
+	Scr_SpawnBatEx((u16)0x7747, (u24)Scr_Nop, (s16)1536, (s16)2816, (s16)1408, 0, 1, 1, 0, 0, 0);
 	if (W_STORY_PROGRESS >= 32 && W_STORY_PROGRESS < 35) {} else if (PLAYER_KIND != 5 && W_COFFIN_HOLDS_DARK_DJANGO != 1) {
 		Scr_SpawnMimic((u16)0x544F, (u24)Scr_Nop, (s16)1536, (s16)2560, (s16)3072, (u8)64, 0, 0);
 	}
@@ -21785,8 +21785,8 @@ Scr_0x04F9() {
 		}
 	}
 	if (W_CROSSOVER_PROGRESS >= 2 && W_CROSSOVER_PROGRESS < 7 && W_KEY_DATA_RECEIVED(1) == 0) {
-		Scr_0x0282(12);
-		Scr_0x0285((u16)0x7745, (u24)Scr_GetKeyData, (s16)1024, (s16)2304, (s16)512, 1, 12, 1, 0, 1, 0);
+		Scr_SetBatParams(12);
+		Scr_SpawnBatEx((u16)0x7745, (u24)Scr_GetKeyData, (s16)1024, (s16)2304, (s16)512, 1, 12, 1, 0, 1, 0);
 	}
 }
 
@@ -22180,7 +22180,7 @@ Scr_0x0513() {
 		Scr_PlaceChestAutoDir(0, 23, (s16)512, (s16)5632, 29, (u24)Scr_Nop, 0);
 		Chara(GenericObjManager_Create, (u16)0xB5B6, .m = 1);
 		if (W_UNK_160_7 == 0) {
-			Scr_0x02A9((u16)0x2CB1, (u24)Scr_0x0514, 13, 0, 0, 0, (u16)0x3D8C);
+			Scr_SpawnDarkRoot((u16)0x2CB1, (u24)Scr_0x0514, 13, 0, 0, 0, (u16)0x3D8C);
 			Scr_AddTileOverride((u16)0xFDF4, 0, 3, 0, (s16)1664, (s16)256, (s16)5248);
 		} else {
 			Scr_0x035D((s16)1664, (s16)256, (s16)5248);
@@ -22290,8 +22290,8 @@ Scr_0x051D() {}
 Scr_0x051E() {
 	S_UNK_014_2 = 0;
 	if (W_UNK_162_3 == 0) {
-		Scr_0x02AC(0);
-		Scr_0x02AD((u16)0xCC96, (u24)Scr_0x051F, (s16)1792, (s16)256, (s16)1024, 0, 0, 0, (u8)73);
+		Scr_SetAxParams(0);
+		Scr_SpawnAx((u16)0xCC96, (u24)Scr_0x051F, (s16)1792, (s16)256, (s16)1024, 0, 0, 0, (u8)73);
 	}
 }
 
@@ -22788,14 +22788,14 @@ Scr_0x052D() {
 		Scr_SpawnCuroro((u16)0x3FD2, 1, 0, (u24)Scr_Nop, (s16)3328, 1, (s16)2304, v1);
 		Scr_SpawnCuroro((u16)0x3FD3, 1, 0, (u24)Scr_Nop, (s16)3072, 1, (s16)3328, v1);
 		Scr_SpawnCuroro((u16)0x3FD4, 1, 0, (u24)Scr_Nop, (s16)2304, 1, (s16)3840, v1);
-		Scr_0x0282(1);
+		Scr_SetBatParams(1);
 		S_ENEMY_RANGE0 = (s16)256;
-		Scr_0x0285((u16)0xA362, (u24)Scr_Nop, (s16)3184, (s16)896, (s16)3724, 0, 1, 1, 0, 0, 0);
-		Scr_0x0285((u16)0xA363, (u24)Scr_Nop, (s16)3212, (s16)896, (s16)3743, 0, 1, 1, 0, 0, 0);
-		Scr_0x0285((u16)0xA364, (u24)Scr_Nop, (s16)3202, (s16)896, (s16)3689, 0, 1, 1, 0, 0, 0);
-		Scr_0x0285((u16)0xA365, (u24)Scr_Nop, (s16)3176, (s16)896, (s16)3697, 0, 1, 1, 0, 0, 0);
-		Scr_0x0285((u16)0xA366, (u24)Scr_Nop, (s16)3185, (s16)896, (s16)3691, 0, 1, 1, 0, 0, 0);
-		Scr_0x0285((u16)0xA367, (u24)Scr_Nop, (s16)3181, (s16)896, (s16)3704, 0, 1, 1, 0, 0, 0);
+		Scr_SpawnBatEx((u16)0xA362, (u24)Scr_Nop, (s16)3184, (s16)896, (s16)3724, 0, 1, 1, 0, 0, 0);
+		Scr_SpawnBatEx((u16)0xA363, (u24)Scr_Nop, (s16)3212, (s16)896, (s16)3743, 0, 1, 1, 0, 0, 0);
+		Scr_SpawnBatEx((u16)0xA364, (u24)Scr_Nop, (s16)3202, (s16)896, (s16)3689, 0, 1, 1, 0, 0, 0);
+		Scr_SpawnBatEx((u16)0xA365, (u24)Scr_Nop, (s16)3176, (s16)896, (s16)3697, 0, 1, 1, 0, 0, 0);
+		Scr_SpawnBatEx((u16)0xA366, (u24)Scr_Nop, (s16)3185, (s16)896, (s16)3691, 0, 1, 1, 0, 0, 0);
+		Scr_SpawnBatEx((u16)0xA367, (u24)Scr_Nop, (s16)3181, (s16)896, (s16)3704, 0, 1, 1, 0, 0, 0);
 		Scr_0x019C(8);
 		Scr_0x019D(1, (s16)3072, (s16)3584, (u24)Scr_0x052E);
 		Scr_0x019D(1, (s16)3840, (s16)2816, (u24)Scr_Nop);
@@ -23998,7 +23998,7 @@ Scr_0x0568() {
 		v1 = (u16)0x7184;
 		Command(Cmd_LoadTileSet, .t = 3, .c = (u16)0x330C, .d = (u16)0x8E32, .m = (u16)0x7184);
 		Command(Cmd_LoadTileMap, .d = v1, .t = 3, .n = 1, .c = (u16)0x330C);
-		Chara(Cmd_9053, (u16)0x1A38, .f = 12, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [16, 8]);
+		Chara(Cmd_CreateAutoScroller, (u16)0x1A38, .f = 12, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [16, 8]);
 	}
 	Scr_CreateBgPlttController((u16)0x2737, 0, 0);
 	if (W_ENTRANCE == (u8)83 || W_ENTRANCE == 5) {} else {
@@ -26594,8 +26594,8 @@ Scr_0x062E() {
 		}
 	} else if (W_ENTRANCE == 28 || W_ENTRANCE == 31) {
 		if (W_CROSSOVER_PROGRESS >= 2 && W_CROSSOVER_PROGRESS < 7 && W_KEY_DATA_RECEIVED(2) == 0) {
-			Scr_0x0282(14);
-			Scr_0x0285((u16)0x69BE, (u24)Scr_GetKeyData, (s16)3328, (s16)512, (s16)3328, 0, 14, 1, 0, 2, 0);
+			Scr_SetBatParams(14);
+			Scr_SpawnBatEx((u16)0x69BE, (u24)Scr_GetKeyData, (s16)3328, (s16)512, (s16)3328, 0, 14, 1, 0, 2, 0);
 		} else {
 			Scr_SpawnSlime((u16)0xF6FC, (u24)Scr_Nop, (s16)3584, (s16)256, (s16)3328, 0, 1, (u24)Scr_0x028F, (u16)0x79DE);
 		}
@@ -28670,7 +28670,7 @@ Scr_0x06C7() {
 	Command(Cmd_Random, .p = 2);
 	v2 = 3 + result;
 	Command(Cmd_ForEach, .a = 2, .r = v2, .d = [(u16)0x8F57, 0, (u16)0x8F58, 1, (u16)0x8F59, 2, (u16)0x8F5A, 3], .e = {
-		Scr_0x02A8(0);
+		Scr_SetDarkRootParams(0);
 		S_UNK_0B9_1 = 1;
 		Scr_0x02AA(p0, 0, W_UNK_1EE, p1, 0, 0, 0, 0, (u16)0x9386);
 	});
@@ -28679,7 +28679,7 @@ Scr_0x06C7() {
 // 0x08D4DDB7
 Scr_0x06C8() {
 	Command(Cmd_ForEach, .a = 3, .r = 3, .d = [(u16)0x8F57, 0, 3, (u16)0x8F58, 1, 3, (u16)0x8F59, 2, 1], .e = {
-		Scr_0x02A9(p0, 0, p1, p2, 0, 0, (u16)0x9386);
+		Scr_SpawnDarkRoot(p0, 0, p1, p2, 0, 0, (u16)0x9386);
 	});
 }
 
@@ -29716,8 +29716,8 @@ Scr_0x070F() {
 // 0x08D4FF01
 Scr_0x0710() {
 	if (W_CROSSOVER_PROGRESS >= 2 && W_CROSSOVER_PROGRESS < 7 && W_KEY_DATA_RECEIVED(3) == 0) {
-		Scr_0x0282(13);
-		Scr_0x0285((u16)0x27A2, (u24)Scr_GetKeyData, (s16)3840, (s16)768, (s16)1408, 0, 13, 1, 0, 3, 0);
+		Scr_SetBatParams(13);
+		Scr_SpawnBatEx((u16)0x27A2, (u24)Scr_GetKeyData, (s16)3840, (s16)768, (s16)1408, 0, 13, 1, 0, 3, 0);
 	}
 }
 
@@ -32190,7 +32190,7 @@ Scr_0x07BD() {}
 // 0x08D54C91
 Scr_0x07BE() {
 	if (W_UNK_173_1 == 0 && W_ENTRANCE == (u8)153) {
-		Scr_0x02AF((u16)0x1D4C, (u24)Scr_0x07BF, (s16)3840, (s16)1280, (s16)1280, 0, 1, 8);
+		Scr_SpawnEneSword((u16)0x1D4C, (u24)Scr_0x07BF, (s16)3840, (s16)1280, (s16)1280, 0, 1, 8);
 	}
 }
 
@@ -34248,13 +34248,13 @@ Scr_0x0837() {}
 Scr_0x0838() {
 	if (W_UNK_179_2 == 0 && W_ENTRANCE == 2) {
 		Scr_PrepareRoomBattle(0, 58);
-		Scr_0x02AC(1);
-		Scr_0x02AD((u16)0xCC76, (u24)Scr_0x0839, (s16)2816, (s16)1024, (s16)1024, 0, 1, 0, -1);
+		Scr_SetAxParams(1);
+		Scr_SpawnAx((u16)0xCC76, (u24)Scr_0x0839, (s16)2816, (s16)1024, (s16)1024, 0, 1, 0, -1);
 	} else if (W_UNK_179_2 == 0 && W_UNK_179_1 == 1 && W_ENTRANCE == (u8)84) {
 		Scr_PrepareRoomBattle(0, 58);
-		Scr_0x02AC(1);
+		Scr_SetAxParams(1);
 		Scr_SetEnemyDrops(0, -1, 0, -1);
-		Scr_0x02AD((u16)0xCC76, (u24)Scr_0x0839, (s16)2816, (s16)1024, (s16)1024, 0, 1, 0, -1);
+		Scr_SpawnAx((u16)0xCC76, (u24)Scr_0x0839, (s16)2816, (s16)1024, (s16)1024, 0, 1, 0, -1);
 	}
 }
 
@@ -35447,7 +35447,7 @@ Scr_0x0888() {
 	v1 = (u16)0x7184;
 	Command(Cmd_LoadTileSet, .t = 3, .c = (u16)0x330C, .d = (u16)0x8E32, .m = (u16)0x7184);
 	Command(Cmd_LoadTileMap, .d = v1, .t = 3, .n = 1, .c = (u16)0x330C);
-	Chara(Cmd_9053, (u16)0x1A38, .f = 12, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [16, 8]);
+	Chara(Cmd_CreateAutoScroller, (u16)0x1A38, .f = 12, .i = 1, .d = (u16)0x7184, .m = [4, (s16)-4], .l = [16, 16], .p = 1, .b = [16, 8]);
 	Scr_CreateBgPlttController((u16)0xED11, (u16)0xE8AD, (u16)0xECF9);
 	Chara(ZoneList_Create, (u16)0x19F8, .m = (u16)0xA679);
 	Scr_TrackZoneMapSpot((u16)0xA679, 60);
@@ -36167,7 +36167,7 @@ Scr_st06_earth_05() {
 		Scr_0x08C7();
 		Scr_0x08C8();
 		Scr_0x08C9();
-		Scr_0x08CA();
+		Scr_SpawnEarthSandworm();
 		Scr_0x08CB();
 	}
 }
@@ -36207,32 +36207,32 @@ Scr_0x08C9() {
 	Scr_SetCameraBoundsDiagOnEnter((u16)0xA679, (s16)1195, (s16)-383, (s16)1185, (s16)2870);
 }
 
-// 0x08D5D234
-Scr_0x08CA() {
-	if (W_UNK_17E_6 == 0) {
-		Scr_0x029D(2);
-		Scr_0x029E((u16)0xB650, (u24)Scr_0x08CC, (s16)1160, (s16)256, (s16)640, 0, 2, 0, -1);
+// 0x08D5D234, 変異域 B1 のサンドウォームをまだ倒していなければ出す
+Scr_SpawnEarthSandworm() {
+	if (W_EARTH_SANDWORM_DEFEATED == 0) {
+		Scr_SetSandwormParams(2);
+		Scr_SpawnSandworm((u16)0xB650, (u24)Scr_OnEarthSandwormDefeated, (s16)1160, (s16)256, (s16)640, 0, 2, 0, -1);
 	}
 }
 
 // 0x08D5D265
 Scr_0x08CB() {
 	Chara(ElevatorManager_Create, (u16)0xE8D8);
-	if (W_UNK_17E_6 == 0) {
+	if (W_EARTH_SANDWORM_DEFEATED == 0) {
 		Scr_0x08CE((u16)0xD492, 0, 0, 1, 5, 5, 1, 1, 1, 10, 0, (u24)Scr_0x08CD, 0, (u8)120, (u8)155, 1);
 	} else {
 		Scr_CreateElevatorByEntrance((u16)0xD492, 0, 0, 1, 5, 5, 1, 1, 1, 10, 0, 0, 0, (u8)120, (u8)155);
 	}
 	Scr_0x0156((u16)0xD492, (u8)155);
-	if (W_UNK_17E_6 == 1) {
+	if (W_EARTH_SANDWORM_DEFEATED == 1) {
 		Scr_PlaceChestEx(0, (u8)65, (s16)1280, (s16)1536, 1, 0, 0, 1, 60, (u24)Scr_Nop, 0);
 		Scr_PlaceRandomCardChest((s16)1280, (s16)1024, (u8)74, 0);
 	}
 }
 
-// 0x08D5D2FB
-Scr_0x08CC() {
-	Scr_0x02A0();
+// 0x08D5D2FB, 変異域 B1 のサンドウォームを倒したとき, 閉じ込め戦闘を数え, 全部倒せばエレベーターを動かし W_EARTH_SANDWORM_DEFEATED を立てて宝箱を置く
+Scr_OnEarthSandwormDefeated() {
+	Scr_OnSandwormDefeated();
 	W_UNK_00C_4 = 0;
 	S_ROOM_BATTLE_KILLS = S_ROOM_BATTLE_KILLS + 1;
 	if (S_ROOM_BATTLE_KILLS >= S_ROOM_BATTLE_TARGET) {
@@ -36241,7 +36241,7 @@ Scr_0x08CC() {
 		Command(Cmd_AE3A, .n = (u16)0xD492, .m = 1);
 		Chara(Cmd_Delay, (u16)0x5F25, .t = 60, .e = {
 			Scr_EndRoomBattle();
-			W_UNK_17E_6 = 1;
+			W_EARTH_SANDWORM_DEFEATED = 1;
 			Scr_PlaceChestEx(0, (u8)65, (s16)1280, (s16)1536, 1, 1, 0, 1, 60, (u24)Scr_Nop, 0);
 			Scr_PlaceRandomCardChest((s16)1280, (s16)1024, (u8)74, 1);
 		});
@@ -36250,7 +36250,7 @@ Scr_0x08CC() {
 
 // 0x08D5D3AE
 Scr_0x08CD() {
-	if (W_UNK_17E_6 == 0) {
+	if (W_EARTH_SANDWORM_DEFEATED == 0) {
 		W_UNK_04C_0 = 1;
 		S_ROOM_BATTLE_BGM = 54;
 		Scr_PrepareRoomBattle(0, 26);
@@ -36418,10 +36418,10 @@ Scr_0x08DB() {
 	Scr_SpawnSkeleton((u16)0x07B8, 0, 0, (u24)Scr_Nop, 1);
 	Scr_SpawnSkeleton((u16)0x07B9, 1, 0, (u24)Scr_Nop, 1);
 	Scr_SpawnDog((u16)0xA279, 2, 0, (u24)Scr_Nop, 2);
-	Scr_0x0283((u16)0xA362, (u24)Scr_Nop, (s16)768, (s16)512, (s16)1536, 0, 1);
-	Scr_0x0283((u16)0xA363, (u24)Scr_Nop, (s16)768, (s16)512, (s16)1280, 0, 1);
-	Scr_0x0283((u16)0xA364, (u24)Scr_Nop, (s16)768, (s16)512, (s16)1024, 0, 1);
-	Scr_0x0283((u16)0xA365, (u24)Scr_Nop, (s16)768, (s16)512, (s16)768, 0, 1);
+	Scr_SpawnBat((u16)0xA362, (u24)Scr_Nop, (s16)768, (s16)512, (s16)1536, 0, 1);
+	Scr_SpawnBat((u16)0xA363, (u24)Scr_Nop, (s16)768, (s16)512, (s16)1280, 0, 1);
+	Scr_SpawnBat((u16)0xA364, (u24)Scr_Nop, (s16)768, (s16)512, (s16)1024, 0, 1);
+	Scr_SpawnBat((u16)0xA365, (u24)Scr_Nop, (s16)768, (s16)512, (s16)768, 0, 1);
 }
 
 // 0x08D5D903
@@ -36910,8 +36910,8 @@ Scr_0x08FC() {
 		*((u8 *)(scratch + 0x129)) = 0;
 		*((u8 *)(scratch + 0x12A)) = 0;
 		*((u8 *)(scratch + 0x12B)) = 0;
-		Scr_0x0266(0);
-		Scr_0x0267((u16)0xFA57, 0, 9, (u24)Scr_0x08FD, 0, -1, 0, 0);
+		Scr_SetLichParams(0);
+		Scr_SpawnLich((u16)0xFA57, 0, 9, (u24)Scr_0x08FD, 0, -1, 0, 0);
 	}
 }
 
@@ -36935,7 +36935,7 @@ Scr_0x08FE() {
 	}
 	Chara(ElevatorManager_Create, (u16)0xA16F);
 	Scr_0x014D((u16)0x6B4B, 4, 0, 2, 1, 10, (u24)Scr_0x014E, (u24)Scr_0x014F, 0, 2);
-	if (W_UNK_180_6 == 0) {
+	if (W_FROST_SERPENT_DEFEATED == 0) {
 		Scr_0x00A9((u16)0xCCBB, 6, 4, 5, 3, (u16)0x6B4B, (u24)Scr_0x00AA, (u24)Scr_0x0900);
 	} else {
 		Scr_0x00A9((u16)0xCCBB, 6, 4, 5, 3, (u16)0x6B4B, (u24)Scr_0x00AA, (u24)Scr_0x00AB);
@@ -37061,7 +37061,7 @@ Scr_0x0907() {
 	Scr_0x0156((u16)0xD492, (u8)153);
 	Scr_CreateElevatorByEntrance((u16)0xD493, 1, 0, 0, 1, 0, 1, 1, 1, 10, 0, 0, 0, (u8)120, (u8)154);
 	Scr_0x0154((u16)0xD493, (u8)154);
-	if (W_UNK_180_6 == 1) {
+	if (W_FROST_SERPENT_DEFEATED == 1) {
 		Scr_CreateElevatorByEntrance((u16)0xD494, 8, 0, 4, 5, 4, 5, 1, 1, 10, 0, 0, 0, (u8)120, 6);
 		Scr_0x0154((u16)0xD494, 6);
 		Scr_CreateElevatorByEntrance((u16)0xD495, 7, 0, 1, 4, 4, 1, 1, 1, 10, 0, 0, 0, (u8)120, 5);
@@ -37681,7 +37681,7 @@ Scr_st06_frost_05() {
 		Scr_0x0932();
 		Scr_0x0933();
 		Scr_0x0934();
-		Scr_0x0935();
+		Scr_SpawnFrostSerpent();
 		Scr_0x0937();
 	}
 }
@@ -37724,17 +37724,17 @@ Scr_0x0933() {
 // 0x08D60351
 Scr_0x0934() {}
 
-// 0x08D60353
-Scr_0x0935() {
-	if (W_UNK_180_6 == 0) {
-		Scr_0x02A1(1);
-		Scr_0x02A2((u16)0xFC18, (u24)Scr_0x02A3, (u24)Scr_0x0936, (s16)1920, (s16)256, (s16)664, 0, 1, 0, -1);
+// 0x08D60353, 変異域 B3 のサーペントをまだ倒していなければ出す
+Scr_SpawnFrostSerpent() {
+	if (W_FROST_SERPENT_DEFEATED == 0) {
+		Scr_SetSerpentParams(1);
+		Scr_SpawnSerpent((u16)0xFC18, (u24)Scr_OnSerpentAppear, (u24)Scr_OnFrostSerpentDefeated, (s16)1920, (s16)256, (s16)664, 0, 1, 0, -1);
 	}
 }
 
-// 0x08D60387
-Scr_0x0936() {
-	Scr_0x02A4();
+// 0x08D60387, 変異域 B3 のサーペントを倒したとき, 閉じ込め戦闘を数え, 全部倒せば W_FROST_SERPENT_DEFEATED を立てて宝箱を置く
+Scr_OnFrostSerpentDefeated() {
+	Scr_OnSerpentDefeated();
 	W_UNK_00C_4 = 0;
 	Scr_0x014C((u16)0x6B4B, 3, 0, 1, 3, 10, (u24)Scr_0x014E, (u24)Scr_0x014F, 0);
 	Scr_0x014C((u16)0x6B4C, 6, 0, 1, 3, 10, (u24)Scr_0x014E, (u24)Scr_0x014F, 0);
@@ -37742,7 +37742,7 @@ Scr_0x0936() {
 	if (S_ROOM_BATTLE_KILLS >= S_ROOM_BATTLE_TARGET) {
 		Chara(Cmd_Delay, (u16)0x5F25, .t = 60, .e = {
 			Scr_EndRoomBattle();
-			W_UNK_180_6 = 1;
+			W_FROST_SERPENT_DEFEATED = 1;
 			Scr_PlaceChestEx(0, (u8)65, (s16)1280, (s16)1024, 1, 1, 0, 1, 62, (u24)Scr_Nop, 0);
 			Scr_PlaceRandomCardChest((s16)1536, (s16)1024, (u8)75, 1);
 		});
@@ -37751,7 +37751,7 @@ Scr_0x0936() {
 
 // 0x08D60428
 Scr_0x0937() {
-	if (W_UNK_180_6 == 1) {
+	if (W_FROST_SERPENT_DEFEATED == 1) {
 		Scr_PlaceChestEx(0, (u8)65, (s16)1280, (s16)1024, 1, 0, 0, 1, 62, (u24)Scr_Nop, 0);
 		Scr_PlaceRandomCardChest((s16)1536, (s16)1024, (u8)75, 0);
 	}
@@ -37764,7 +37764,7 @@ Scr_0x0937() {
 		Scr_0x014C((u16)0x6B4B, 3, 0, 1, 3, 10, (u24)Scr_0x014E, (u24)Scr_0x014F, 0);
 		Scr_0x014D((u16)0x6B4C, 8, 0, 1, 3, 10, (u24)Scr_0x014E, (u24)Scr_0x014F, 0, 3);
 	}
-	if (W_UNK_180_6 == 0) {
+	if (W_FROST_SERPENT_DEFEATED == 0) {
 		Scr_0x00A9((u16)0xCD22, 5, 4, 3, 3, (u16)0x6B4B, (u24)Scr_0x00AA, (u24)Scr_0x0939);
 		Scr_0x00A9((u16)0xCD24, 7, 8, 6, 3, (u16)0x6B4C, (u24)Scr_0x00AA, (u24)Scr_0x00AB);
 	} else {
@@ -37775,7 +37775,7 @@ Scr_0x0937() {
 
 // 0x08D60558
 Scr_0x0938() {
-	if (W_UNK_180_6 == 0) {
+	if (W_FROST_SERPENT_DEFEATED == 0) {
 		if (W_UNK_04C_0 == 0) {
 			Command(Cmd_LockPlayer);
 		}
@@ -37784,7 +37784,7 @@ Scr_0x0938() {
 
 // 0x08D60584
 Scr_0x0939() {
-	if (W_UNK_180_6 == 0) {
+	if (W_FROST_SERPENT_DEFEATED == 0) {
 		W_UNK_04C_0 = 1;
 		Scr_0x0150((u16)0x6B4B, 4, 5);
 		S_ROOM_BATTLE_BGM = 54;
@@ -38464,25 +38464,25 @@ Scr_0x096D() {
 	});
 }
 
-// 0x08D61B7A
-Scr_0x096E() {
+// 0x08D61B7A, サラマンダーを (p0, p1, p2) に出す, リッチ+ の召喚スクリプト (Skeleton_Create の '.s') として渡される
+Scr_SpawnSalamander() {
 	Scr_0x0970();
-	Command(EnemyFlameSnake_Create, .N = (u16)0x6275, .p = [p0, p1, p2], .e = [(s16)1024, 24], .a = [(u8)130, 32, 2097156, 32, (u8)130, 32, 2359300, 32], .P = (u8)255, .A = [(s16)3000, (s16)400, (s16)400, (s16)400, 0, 0], .l = [0, 0, 0], .D = (u24)Scr_0x096F, .K = 5);
+	Command(Salamander_Create, .N = (u16)0x6275, .p = [p0, p1, p2], .e = [(s16)1024, 24], .a = [(u8)130, 32, 2097156, 32, (u8)130, 32, 2359300, 32], .P = (u8)255, .A = [(s16)3000, (s16)400, (s16)400, (s16)400, 0, 0], .l = [0, 0, 0], .D = (u24)Scr_OnSalamanderDefeated, .K = 5);
 }
 
-// 0x08D61BD1
-Scr_0x096F() {
+// 0x08D61BD1, Scr_SpawnSalamander で出したサラマンダーの撃破時スクリプト, Scr_0x0971 でオートスクロールに指示を送り直す
+Scr_OnSalamanderDefeated() {
 	Scr_0x0971();
 }
 
 // 0x08D61BD7
 Scr_0x0970() {
-	Command(Cmd_D285, .t = 1, .r = 3, .p = [32, 16, 8]);
+	Command(Cmd_SendAutoScrollerCommand, .t = 1, .r = 3, .p = [32, 16, 8]);
 }
 
 // 0x08D61BEE
 Scr_0x0971() {
-	Command(Cmd_D285, .t = 1, .r = 3, .p = [32, 16, 0]);
+	Command(Cmd_SendAutoScrollerCommand, .t = 1, .r = 3, .p = [32, 16, 0]);
 }
 
 // 0x08D61C05
@@ -38509,8 +38509,8 @@ Scr_0x0972() {
 Scr_0x0973() {
 	if (W_UNK_181_5 == 0) {
 		W_UNK_04C_0 = 1;
-		Scr_0x026A(1);
-		Scr_0x026B((u16)0x6A19, 0, 0, (u24)Scr_0x096D, 0, -1, 0, 1);
+		Scr_SetLichPlusParams(1);
+		Scr_SpawnLichPlus((u16)0x6A19, 0, 0, (u24)Scr_0x096D, 0, -1, 0, 1);
 		Scr_0x0150((u16)0x6B4B, 4, 3);
 		S_ROOM_BATTLE_BGM = 54;
 		Scr_PrepareRoomBattle(0, 32);
@@ -39134,7 +39134,7 @@ Scr_0x09B4() {
 	W_TITLE_EARNED(6) = 1;
 	W_STAGE_CLEARED(6) = 1;
 	((s16 *)(stat + 0x228))[5, 4] = ((s16 *)(stat + 0x228))[5, 4] + 1;
-	*((s16 *)(stat + 0x1F0)) = *((s16 *)(stat + 0x1F0)) + 1;
+	TOTAL_ENEMY_KILL = TOTAL_ENEMY_KILL + 1;
 	Scr_0x00A1(-1);
 	Scr_FadeWarp((u24)Scr_0x1079, 3, (u8)161);
 }
@@ -44340,7 +44340,7 @@ Scr_0x13F8() {
 
 // 0x08D6DF1F
 Scr_0x0B02() {
-	Scr_0x0B05(0, *((s16 *)(stat + 0x1F0)), 999999);
+	Scr_0x0B05(0, TOTAL_ENEMY_KILL, 999999);
 	Scr_0x0B05(1, ENEMY_KILL_COUNT(2), (s16)9999);
 	Scr_0x0B05(2, ENEMY_KILL_COUNT(18), (s16)9999);
 	Scr_0x0B05(3, ENEMY_KILL_COUNT(14), (s16)9999);
@@ -51341,10 +51341,10 @@ Scr_0x0C87() {
 	if ((W_QUEST_ACCEPTED(4) || W_QUEST_ACCEPTED(5) || W_QUEST_ACCEPTED(3)) == 0) {
 		Scr_SpawnSkeleton((u16)0xA0A6, 0, 0, 0, 0);
 		Scr_SpawnSkeleton((u16)0xA0A7, 0, 14, 0, 0);
-		Scr_0x0283((u16)0x92E3, (u24)Scr_Nop, (s16)896, (s16)768, (s16)960, 0, 0);
-		Scr_0x0283((u16)0x92E4, (u24)Scr_Nop, (s16)960, (s16)736, (s16)832, 1, 0);
-		Scr_0x0283((u16)0x92E5, (u24)Scr_Nop, (s16)2432, (s16)768, (s16)1216, 0, 0);
-		Scr_0x0283((u16)0x92E6, (u24)Scr_Nop, (s16)2432, (s16)704, (s16)1152, 1, 0);
+		Scr_SpawnBat((u16)0x92E3, (u24)Scr_Nop, (s16)896, (s16)768, (s16)960, 0, 0);
+		Scr_SpawnBat((u16)0x92E4, (u24)Scr_Nop, (s16)960, (s16)736, (s16)832, 1, 0);
+		Scr_SpawnBat((u16)0x92E5, (u24)Scr_Nop, (s16)2432, (s16)768, (s16)1216, 0, 0);
+		Scr_SpawnBat((u16)0x92E6, (u24)Scr_Nop, (s16)2432, (s16)704, (s16)1152, 1, 0);
 	} else {
 		if (W_QUEST_ACCEPTED(4) == 1) {
 			Scr_0x0C7C((u16)0xB7AA, (u16)0x4F55, 1, 0, 1, 1);
@@ -51357,10 +51357,10 @@ Scr_0x0C87() {
 		} else if (W_QUEST_ACCEPTED(5) == 1) {
 			Scr_SpawnSkeleton((u16)0xA063, 3, 0, 0, 0);
 			Scr_SpawnSkeleton((u16)0xA064, 5, 0, 0, 0);
-			Scr_0x0283((u16)0x92E3, (u24)Scr_Nop, (s16)896, (s16)768, (s16)960, 0, 0);
-			Scr_0x0283((u16)0x92E4, (u24)Scr_Nop, (s16)960, (s16)736, (s16)832, 1, 0);
-			Scr_0x0283((u16)0x92E5, (u24)Scr_Nop, (s16)2432, (s16)768, (s16)1216, 0, 0);
-			Scr_0x0283((u16)0x92E6, (u24)Scr_Nop, (s16)2432, (s16)704, (s16)1152, 1, 0);
+			Scr_SpawnBat((u16)0x92E3, (u24)Scr_Nop, (s16)896, (s16)768, (s16)960, 0, 0);
+			Scr_SpawnBat((u16)0x92E4, (u24)Scr_Nop, (s16)960, (s16)736, (s16)832, 1, 0);
+			Scr_SpawnBat((u16)0x92E5, (u24)Scr_Nop, (s16)2432, (s16)768, (s16)1216, 0, 0);
+			Scr_SpawnBat((u16)0x92E6, (u24)Scr_Nop, (s16)2432, (s16)704, (s16)1152, 1, 0);
 		}
 	}
 }
@@ -52011,12 +52011,12 @@ Scr_0x0CBE() {
 
 // 0x08D7DE5C
 Scr_0x0CBF() {
-	Scr_0x0283((u16)0x1810, 0, (s16)974, (s16)1280, (s16)1056, 1, 0);
-	Scr_0x0283((u16)0x1811, 0, (s16)874, (s16)1190, (s16)1152, 1, 0);
-	Scr_0x0283((u16)0x1812, 0, (s16)2432, (s16)1280, (s16)1446, 0, 0);
-	Scr_0x0283((u16)0x1813, 0, (s16)2470, (s16)1200, (s16)1344, 1, 0);
-	Scr_0x0283((u16)0x1814, 0, (s16)2048, (s16)1024, (s16)1360, 1, 0);
-	Scr_0x0283((u16)0x1815, 0, (s16)2846, (s16)1024, (s16)1024, 1, 0);
+	Scr_SpawnBat((u16)0x1810, 0, (s16)974, (s16)1280, (s16)1056, 1, 0);
+	Scr_SpawnBat((u16)0x1811, 0, (s16)874, (s16)1190, (s16)1152, 1, 0);
+	Scr_SpawnBat((u16)0x1812, 0, (s16)2432, (s16)1280, (s16)1446, 0, 0);
+	Scr_SpawnBat((u16)0x1813, 0, (s16)2470, (s16)1200, (s16)1344, 1, 0);
+	Scr_SpawnBat((u16)0x1814, 0, (s16)2048, (s16)1024, (s16)1360, 1, 0);
+	Scr_SpawnBat((u16)0x1815, 0, (s16)2846, (s16)1024, (s16)1024, 1, 0);
 }
 
 // 0x08D7DED7
@@ -52535,9 +52535,9 @@ Scr_0x0CD9() {
 			Scr_0x0119((u16)0x69F8, 0, (s16)5376, (s16)1024, (u16)0x17C9, (u24)Scr_0x0CDC, (u24)Scr_0x0CDF, 0, 0, 0, 0, 0);
 			Scr_0x0119((u16)0x69F8, 0, (s16)5120, (s16)1280, (u16)0x17C9, (u24)Scr_0x0CDD, (u24)Scr_0x0CE0, 0, 0, 0, 0, 0);
 			Chara(PitfallManager_Create, (u16)0xCF43);
-			Command(Cmd_2FA5, .p = [(s16)6016, (s16)256, (s16)1152], .i = 1, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 1);
-			Command(Cmd_2FA5, .p = [(s16)5760, (s16)256, (s16)1408], .i = 2, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 0);
-			Command(Cmd_2FA5, .p = [(s16)5504, (s16)256, (s16)1664], .i = 3, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 1);
+			Command(Cmd_AddPitfall, .p = [(s16)6016, (s16)256, (s16)1152], .i = 1, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 1);
+			Command(Cmd_AddPitfall, .p = [(s16)5760, (s16)256, (s16)1408], .i = 2, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 0);
+			Command(Cmd_AddPitfall, .p = [(s16)5504, (s16)256, (s16)1664], .i = 3, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 1);
 		}
 	}
 	Scr_CreateSunlitSkylights();
@@ -52813,8 +52813,8 @@ Scr_0x0CE8() {
 			Scr_0x0119((u16)0x69F8, 0, (s16)5120, (s16)5376, (u16)0xB0BC, (u24)Scr_0x0CF4, (u24)Scr_Nop, 0, 0, 0, 0, 0);
 			Scr_0x0119((u16)0x69FA, 0, (s16)5120, (s16)4352, (u16)0xB0BC, (u24)Scr_0x0CF5, (u24)Scr_Nop, 0, 0, 0, 0, 0);
 			Chara(PitfallManager_Create, (u16)0xCF43);
-			Command(Cmd_2FA5, .p = [(s16)4512, (s16)256, (s16)5504], .i = 1, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 0);
-			Command(Cmd_2FA5, .p = [(s16)4512, (s16)256, (s16)4480], .i = 3, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 0);
+			Command(Cmd_AddPitfall, .p = [(s16)4512, (s16)256, (s16)5504], .i = 1, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 0);
+			Command(Cmd_AddPitfall, .p = [(s16)4512, (s16)256, (s16)4480], .i = 3, .R = (u24)Scr_0x0C81, .T = 0, .o = 0, .m = 1, .S = 0, .s = 0);
 		}
 	}
 	if ((W_QUEST_ACCEPTED(4) || W_QUEST_ACCEPTED(5) || W_QUEST_ACCEPTED(3)) == 0 || W_QUEST_ACCEPTED(5) == 1) {
@@ -53961,8 +53961,8 @@ Scr_0x0D26() {
 			Scr_SetCuroroParams(0);
 			Scr_SpawnCuroroEx(p0, p1, p2, (u24)Scr_0x0D24, p3, p4, p5, 0, 0, p7, 0);
 		} else if (p6 == 4) {
-			Scr_0x0282(0);
-			Scr_0x0285(p0, (u24)Scr_0x0D24, p3, p4, p5, 0, 0, 1, 1, p7, 0);
+			Scr_SetBatParams(0);
+			Scr_SpawnBatEx(p0, (u24)Scr_0x0D24, p3, p4, p5, 0, 0, 1, 1, p7, 0);
 		}
 	}
 }
@@ -54677,12 +54677,12 @@ Scr_0x0D48() {
 		Scr_SpawnBoku((u16)0x2558, 0, 0, (u24)Scr_Nop, 0, 1);
 		Scr_SpawnBoku((u16)0x2559, 1, 0, (u24)Scr_Nop, 1, 1);
 		Scr_SpawnBoku((u16)0x255A, 2, 0, (u24)Scr_Nop, 2, 1);
-		Scr_0x0283((u16)0xA362, (u24)Scr_Nop, (s16)768, (s16)512, (s16)4352, 0, 0);
-		Scr_0x0283((u16)0xA363, (u24)Scr_Nop, (s16)1024, (s16)512, (s16)4352, 1, 0);
-		Scr_0x0283((u16)0xA364, (u24)Scr_Nop, (s16)1280, (s16)512, (s16)4352, 1, 0);
-		Scr_0x0283((u16)0xA365, (u24)Scr_Nop, (s16)1792, (s16)512, (s16)4352, 1, 0);
-		Scr_0x0283((u16)0xA366, (u24)Scr_Nop, (s16)2048, (s16)512, (s16)4352, 1, 0);
-		Scr_0x0283((u16)0xA367, (u24)Scr_Nop, (s16)2304, (s16)512, (s16)4352, 1, 0);
+		Scr_SpawnBat((u16)0xA362, (u24)Scr_Nop, (s16)768, (s16)512, (s16)4352, 0, 0);
+		Scr_SpawnBat((u16)0xA363, (u24)Scr_Nop, (s16)1024, (s16)512, (s16)4352, 1, 0);
+		Scr_SpawnBat((u16)0xA364, (u24)Scr_Nop, (s16)1280, (s16)512, (s16)4352, 1, 0);
+		Scr_SpawnBat((u16)0xA365, (u24)Scr_Nop, (s16)1792, (s16)512, (s16)4352, 1, 0);
+		Scr_SpawnBat((u16)0xA366, (u24)Scr_Nop, (s16)2048, (s16)512, (s16)4352, 1, 0);
+		Scr_SpawnBat((u16)0xA367, (u24)Scr_Nop, (s16)2304, (s16)512, (s16)4352, 1, 0);
 		Scr_SetSpiderParams(0);
 		Scr_SpawnSpiderEx((u16)0xCE7E, 3, 1, (u24)Scr_Nop, 0, 0, 0, 0);
 		Scr_SpawnSpiderEx((u16)0xCE7F, 3, 8, (u24)Scr_Nop, 0, 0, 0, 0);
@@ -54690,12 +54690,12 @@ Scr_0x0D48() {
 		Scr_SpawnGolem((u16)0xDF3E, 0, 0, (u24)Scr_Nop, 0);
 		Scr_SpawnGolem((u16)0xDF3F, 1, 0, (u24)Scr_Nop, 0);
 		Scr_SpawnGolem((u16)0xDF40, 2, 0, (u24)Scr_Nop, 0);
-		Scr_0x0283((u16)0xA362, (u24)Scr_Nop, (s16)768, (s16)512, (s16)4352, 0, 1);
-		Scr_0x0283((u16)0xA363, (u24)Scr_Nop, (s16)1024, (s16)512, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA364, (u24)Scr_Nop, (s16)1280, (s16)512, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA365, (u24)Scr_Nop, (s16)1792, (s16)512, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA366, (u24)Scr_Nop, (s16)2048, (s16)512, (s16)4352, 1, 1);
-		Scr_0x0283((u16)0xA367, (u24)Scr_Nop, (s16)2304, (s16)512, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA362, (u24)Scr_Nop, (s16)768, (s16)512, (s16)4352, 0, 1);
+		Scr_SpawnBat((u16)0xA363, (u24)Scr_Nop, (s16)1024, (s16)512, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA364, (u24)Scr_Nop, (s16)1280, (s16)512, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA365, (u24)Scr_Nop, (s16)1792, (s16)512, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA366, (u24)Scr_Nop, (s16)2048, (s16)512, (s16)4352, 1, 1);
+		Scr_SpawnBat((u16)0xA367, (u24)Scr_Nop, (s16)2304, (s16)512, (s16)4352, 1, 1);
 		Scr_SpawnSlime((u16)0x49A0, (u24)Scr_Nop, (s16)2048, (s16)256, (s16)4864, 0, 0, (u24)Scr_0x028F, (u16)0x6A3B);
 		Scr_SpawnSlime((u16)0x49A1, (u24)Scr_Nop, (s16)1024, (s16)256, (s16)5120, 0, 0, (u24)Scr_0x028F, (u16)0x6A3C);
 	} else if (W_CATACOMBS_ROOM == 3) {
@@ -54714,7 +54714,7 @@ Scr_0x0D48() {
 		Scr_SpawnGolem((u16)0xDF40, 2, 0, (u24)Scr_Nop, 1);
 		Scr_SpawnSlime((u16)0x49A0, (u24)Scr_Nop, (s16)1536, (s16)256, (s16)4864, 0, 3, (u24)Scr_0x028F, (u16)0x6A3B);
 	} else {
-		Scr_0x02AF((u16)0x1D4C, (u24)Scr_Nop, (s16)1536, (s16)256, (s16)4864, 0, 1, 8);
+		Scr_SpawnEneSword((u16)0x1D4C, (u24)Scr_Nop, (s16)1536, (s16)256, (s16)4864, 0, 1, 8);
 	}
 }
 
@@ -55436,11 +55436,11 @@ Scr_0x0D69() {}
 Scr_0x0D6A() {
 	if ((W_QUEST_ACCEPTED(9) || W_QUEST_ACCEPTED(10) || W_QUEST_ACCEPTED(11)) == 0 || W_QUEST_ACCEPTED(10) == 1) {
 		if (W_CURRENT_STAGE_EVENT_FLAGS(0) == 0) {
-			Scr_0x0283((u16)0xF9B2, (u24)Scr_Nop, (s16)1408, (s16)1470, (s16)1280, 1, 1);
-			Scr_0x0283((u16)0xF9B3, (u24)Scr_Nop, (s16)2432, (s16)1254, (s16)1792, 1, 1);
-			Scr_0x0283((u16)0xF9B4, (u24)Scr_Nop, (s16)1152, (s16)446, (s16)2560, 1, 1);
-			Scr_0x0283((u16)0xF9B5, (u24)Scr_Nop, (s16)2404, (s16)742, (s16)2304, 1, 1);
-			Scr_0x0283((u16)0xF9B6, (u24)Scr_Nop, (s16)2688, (s16)1510, (s16)1280, 1, 1);
+			Scr_SpawnBat((u16)0xF9B2, (u24)Scr_Nop, (s16)1408, (s16)1470, (s16)1280, 1, 1);
+			Scr_SpawnBat((u16)0xF9B3, (u24)Scr_Nop, (s16)2432, (s16)1254, (s16)1792, 1, 1);
+			Scr_SpawnBat((u16)0xF9B4, (u24)Scr_Nop, (s16)1152, (s16)446, (s16)2560, 1, 1);
+			Scr_SpawnBat((u16)0xF9B5, (u24)Scr_Nop, (s16)2404, (s16)742, (s16)2304, 1, 1);
+			Scr_SpawnBat((u16)0xF9B6, (u24)Scr_Nop, (s16)2688, (s16)1510, (s16)1280, 1, 1);
 		} else {
 			Command(Cmd_SpawnDove, .p = [(s16)2176, (s16)256, (s16)2688], .r = [(s16)256, (s16)256, (s16)256]);
 			Command(Cmd_SpawnDove, .p = [(s16)2432, (s16)1280, (s16)1664], .r = [(s16)256, (s16)256, (s16)256]);
@@ -61222,7 +61222,7 @@ Scr_OnMugenTrapPanelLeft() {}
 Scr_PlaceMugenTrapPanel() {
 	Scr_GetZoneBounds((u16)0x4D9C);
 	Command(Cmd_0CD4, S_ZONE_MIN_X, S_ZONE_MIN_Z, S_TMP_POS_Y);
-	Command(Cmd_AB8E, .n = (u16)0x5B08, .p = [S_ZONE_MIN_X, (S_TMP_POS_Y), S_ZONE_MIN_Z], .T = p0, .R = [(u24)Scr_OnMugenTrapPanelStepped, (u24)Scr_OnMugenTrapPanelLeft], .d = 10);
+	Command(Cmd_AddFloorSwitch, .n = (u16)0x5B08, .p = [S_ZONE_MIN_X, (S_TMP_POS_Y), S_ZONE_MIN_Z], .T = p0, .R = [(u24)Scr_OnMugenTrapPanelStepped, (u24)Scr_OnMugenTrapPanelLeft], .d = 10);
 }
 
 // 0x08D91E5D
@@ -62293,14 +62293,14 @@ Scr_0x0F28() {
 	S_UNK_014_2 = 0;
 	switch (W_MUGEN_LEVEL) {
 		case 0: {
-			Scr_0x02AE(1);
+			Scr_SetEneSwordParams(1);
 			S_ENEMY_MAX_HP = (s16)2000;
 			S_ENEMY_POWER = (u8)70;
 			S_ENEMY_ATK1_POWER = (u8)100;
 			S_ENEMY_ATK2_POWER = (u8)200;
 			S_ENEMY_ATK3_POWER = (u8)150;
 			S_UNK_0F0 = (u8)200;
-			Scr_0x02B0((u16)0xA21E, (u24)Scr_0x0F2E, (s16)1024, (s16)256, (s16)1024, 0, 1, 0, 0, 4);
+			Scr_SpawnEneSwordEx((u16)0xA21E, (u24)Scr_0x0F2E, (s16)1024, (s16)256, (s16)1024, 0, 1, 0, 0, 4);
 		}
 		case 1: {
 			Scr_SetBokuParams(2);
@@ -62333,7 +62333,7 @@ Scr_0x0F28() {
 		}
 		case 2: {
 			Chara(GenericObjManager_Create, (u16)0xB5B6, .m = 8);
-			Scr_0x02A8(0);
+			Scr_SetDarkRootParams(0);
 			S_ENEMY_MAX_HP = (s16)800;
 			S_ENEMY_ATK2_POWER = 1;
 			S_UNK_0F2 = 1;
@@ -62348,14 +62348,14 @@ Scr_0x0F28() {
 			Scr_0x02AA((u16)0x267D, (u24)Scr_0x0F29, 4, 17, 0, 0, 0, 0, (u16)0x3D8C);
 		}
 		case 3: {
-			Scr_0x02AC(1);
+			Scr_SetAxParams(1);
 			S_ENEMY_MAX_HP = (s16)3000;
 			S_ENEMY_POWER = (u8)70;
 			S_ENEMY_ATK1_POWER = (u8)150;
 			S_ENEMY_ATK2_POWER = (s16)300;
 			S_ENEMY_ATK3_POWER = (s16)500;
 			S_ENEMY_ATK4_POWER = (u8)250;
-			Scr_0x02AD((u16)0xCD40, (u24)Scr_0x0F2E, (s16)1024, (s16)256, (s16)1024, 0, 1, 0, 0);
+			Scr_SpawnAx((u16)0xCD40, (u24)Scr_0x0F2E, (s16)1024, (s16)256, (s16)1024, 0, 1, 0, 0);
 		}
 		case 4: {
 			Scr_SetCockatriceParams(0);
@@ -62384,7 +62384,7 @@ Scr_0x0F28() {
 			Scr_SpawnDogEx((u16)0xAFA8, 1, 0, (u24)Scr_0x0F2E, 0, 0, 0, 2);
 		}
 		case 6: {
-			Scr_0x029D(2);
+			Scr_SetSandwormParams(2);
 			S_ENEMY_ATK1_POWER = (u8)150;
 			S_ENEMY_ATK2_POWER = (s16)400;
 			S_ENEMY_ATK3_POWER = (u8)200;
@@ -62392,22 +62392,22 @@ Scr_0x0F28() {
 			S_ENEMY_MAX_HP = (s16)5000;
 			S_ENEMY_POWER = (u8)80;
 			S_UNK_0F0 = (s16)500;
-			Scr_0x029E((u16)0xB650, (u24)Scr_0x0F2A, (s16)1160, (s16)256, (s16)640, 0, 2, 0, 0);
+			Scr_SpawnSandworm((u16)0xB650, (u24)Scr_OnMugenSandwormDefeated, (s16)1160, (s16)256, (s16)640, 0, 2, 0, 0);
 		}
 		case 7: {
 			*((u8 *)(scratch + 0x129)) = 0;
 			*((u8 *)(scratch + 0x12A)) = 0;
 			*((u8 *)(scratch + 0x12B)) = 0;
-			Scr_0x0266(0);
+			Scr_SetLichParams(0);
 			S_ENEMY_ATK0_POWER = (u8)150;
 			S_ENEMY_ATK1_POWER = (s16)400;
 			S_ENEMY_ATK2_POWER = (s16)500;
 			S_ENEMY_MAX_HP = (s16)10000;
 			S_ENEMY_POWER = (u8)80;
-			Scr_0x0267((u16)0xA1B8, 0, 9, (u24)Scr_0x0F2B, 0, 0, 0, 0);
+			Scr_SpawnLich((u16)0xA1B8, 0, 9, (u24)Scr_0x0F2B, 0, 0, 0, 0);
 		}
 		case 8: {
-			Scr_0x02A1(1);
+			Scr_SetSerpentParams(1);
 			S_ENEMY_MAX_HP = (s16)5000;
 			S_ENEMY_POWER = (u8)100;
 			S_UNK_0F0 = (s16)500;
@@ -62416,27 +62416,27 @@ Scr_0x0F28() {
 			S_ENEMY_ATK2_POWER = (s16)500;
 			S_ENEMY_ATK3_POWER = (u8)150;
 			S_ENEMY_ATK4_POWER = (u8)200;
-			Scr_0x02A2((u16)0xFC18, (u24)Scr_0x02A3, (u24)Scr_0x0F2C, (s16)1920, (s16)256, (s16)664, 0, 1, 0, 0);
+			Scr_SpawnSerpent((u16)0xFC18, (u24)Scr_OnSerpentAppear, (u24)Scr_OnMugenSerpentDefeated, (s16)1920, (s16)256, (s16)664, 0, 1, 0, 0);
 		}
 		case 9: {
-			Scr_0x026A(1);
+			Scr_SetLichPlusParams(1);
 			S_ENEMY_MAX_HP = (s16)15000;
 			S_ENEMY_POWER = (u8)120;
 			S_ENEMY_ATK0_POWER = (u8)150;
 			S_ENEMY_ATK1_POWER = (s16)400;
 			S_ENEMY_ATK2_POWER = (s16)500;
 			S_ENEMY_ATK3_POWER = (s16)600;
-			Scr_0x026B((u16)0x6A19, 0, 0, (u24)Scr_0x0F2D, 0, 0, 0, 1);
+			Scr_SpawnLichPlus((u16)0x6A19, 0, 0, (u24)Scr_0x0F2D, 0, 0, 0, 1);
 		}
 		default: {
-			Scr_0x026A(1);
+			Scr_SetLichPlusParams(1);
 			S_ENEMY_MAX_HP = (s16)15000;
 			S_ENEMY_POWER = (u8)120;
 			S_ENEMY_ATK0_POWER = (u8)150;
 			S_ENEMY_ATK1_POWER = (s16)400;
 			S_ENEMY_ATK2_POWER = (s16)500;
 			S_ENEMY_ATK3_POWER = (s16)600;
-			Scr_0x026B((u16)0x6A19, 0, 0, (u24)Scr_0x0F2D, 0, 0, 0, 1);
+			Scr_SpawnLichPlus((u16)0x6A19, 0, 0, (u24)Scr_0x0F2D, 0, 0, 0, 1);
 			Scr_EndEvent();
 			Scr_BeginEvent(1);
 		}
@@ -62449,9 +62449,9 @@ Scr_0x0F29() {
 	Scr_0x0F2E();
 }
 
-// 0x08D9471D
-Scr_0x0F2A() {
-	Scr_0x02A0();
+// 0x08D9471D, 夢幻街の閉じ込め戦闘 (W_MUGEN_LEVEL 6) のサンドウォームを倒したとき
+Scr_OnMugenSandwormDefeated() {
+	Scr_OnSandwormDefeated();
 	Scr_0x0F2E();
 }
 
@@ -62462,9 +62462,9 @@ Scr_0x0F2B() {
 	Scr_0x0F2E();
 }
 
-// 0x08D94742
-Scr_0x0F2C() {
-	Scr_0x02A4();
+// 0x08D94742, 夢幻街の閉じ込め戦闘 (W_MUGEN_LEVEL 8) のサーペントを倒したとき
+Scr_OnMugenSerpentDefeated() {
+	Scr_OnSerpentDefeated();
 	Scr_0x0F2E();
 }
 
@@ -63744,7 +63744,7 @@ Scr_0x0F79() {}
 // 0x08D96B46
 Scr_0x0F7A() {
 	S_UNK_014_2 = 0;
-	Scr_0x02AE(0);
+	Scr_SetEneSwordParams(0);
 	S_ENEMY_EXP = 0;
 	Scr_SetEnemyDrops(0, -1, 0, -1);
 	if (W_ARENA_RANK == 3) {
@@ -63755,7 +63755,7 @@ Scr_0x0F7A() {
 		S_ENEMY_ATK3_POWER = (u8)110;
 		S_UNK_0F0 = (s16)500;
 	}
-	Scr_0x02B0((u16)0x52CC, (u24)Scr_0x0F7B, (s16)4864, (s16)256, (s16)1024, 0, 0, 0, 0, 4);
+	Scr_SpawnEneSwordEx((u16)0x52CC, (u24)Scr_0x0F7B, (s16)4864, (s16)256, (s16)1024, 0, 0, 0, 0, 4);
 }
 
 // 0x08D96BC7
@@ -63818,7 +63818,7 @@ Scr_0x0F81() {}
 // 0x08D96D05
 Scr_0x0F82() {
 	S_UNK_014_2 = 0;
-	Scr_0x02AC(0);
+	Scr_SetAxParams(0);
 	S_ENEMY_EXP = 0;
 	Scr_SetEnemyDrops(0, -1, 0, -1);
 	if (W_ARENA_RANK == 3) {
@@ -63830,7 +63830,7 @@ Scr_0x0F82() {
 		S_ENEMY_ATK4_POWER = (u8)200;
 		S_UNK_108 = 12;
 	}
-	Scr_0x02AD((u16)0xCC96, (u24)Scr_0x0F83, (s16)1792, (s16)256, (s16)1024, 0, 0, 0, 0);
+	Scr_SpawnAx((u16)0xCC96, (u24)Scr_0x0F83, (s16)1792, (s16)256, (s16)1024, 0, 0, 0, 0);
 }
 
 // 0x08D96D8E
@@ -63920,7 +63920,7 @@ Scr_0x0F8D() {
 		Scr_0x0F8F();
 		Scr_0x0F90();
 		Scr_0x0F91();
-		Scr_0x0F92();
+		Scr_SpawnArenaSandworm();
 		Scr_0x0F93();
 	}
 }
@@ -63954,9 +63954,9 @@ Scr_0x0F90() {}
 // 0x08D97114
 Scr_0x0F91() {}
 
-// 0x08D97116
-Scr_0x0F92() {
-	Scr_0x029D(2);
+// 0x08D97116, 闘技場でサンドウォームを出す, ランク 3 なら能力値を上げる
+Scr_SpawnArenaSandworm() {
+	Scr_SetSandwormParams(2);
 	S_ENEMY_EXP = 0;
 	Scr_SetEnemyDrops(0, -1, 0, -1);
 	if (W_ARENA_RANK == 3) {
@@ -63968,15 +63968,15 @@ Scr_0x0F92() {
 		S_ENEMY_POWER = (u8)100;
 		S_UNK_0F0 = (s16)999;
 	}
-	Scr_0x029E((u16)0xB650, (u24)Scr_0x0F94, (s16)1160, (s16)256, (s16)640, 0, 2, 0, 0);
+	Scr_SpawnSandworm((u16)0xB650, (u24)Scr_OnArenaSandwormDefeated, (s16)1160, (s16)256, (s16)640, 0, 2, 0, 0);
 }
 
 // 0x08D9719A
 Scr_0x0F93() {}
 
-// 0x08D9719C
-Scr_0x0F94() {
-	Scr_0x02A0();
+// 0x08D9719C, 闘技場のサンドウォームを倒したとき
+Scr_OnArenaSandwormDefeated() {
+	Scr_OnSandwormDefeated();
 	W_UNK_00C_4 = 0;
 	S_ROOM_BATTLE_KILLS = S_ROOM_BATTLE_KILLS + 1;
 	if (S_ROOM_BATTLE_KILLS >= S_ROOM_BATTLE_TARGET) {
@@ -64034,7 +64034,7 @@ Scr_0x0F9A() {
 	*((u8 *)(scratch + 0x129)) = 0;
 	*((u8 *)(scratch + 0x12A)) = 0;
 	*((u8 *)(scratch + 0x12B)) = 0;
-	Scr_0x0266(0);
+	Scr_SetLichParams(0);
 	S_ENEMY_EXP = 0;
 	Scr_SetEnemyDrops(0, -1, 0, -1);
 	if (W_ARENA_RANK == 3) {
@@ -64044,7 +64044,7 @@ Scr_0x0F9A() {
 		S_ENEMY_MAX_HP = (s16)10000;
 		S_ENEMY_POWER = (u8)80;
 	}
-	Scr_0x0267((u16)0xFA57, 0, 9, (u24)Scr_0x0F9B, 0, 0, 0, 0);
+	Scr_SpawnLich((u16)0xFA57, 0, 9, (u24)Scr_0x0F9B, 0, 0, 0, 0);
 }
 
 // 0x08D9735F
@@ -64102,7 +64102,7 @@ Scr_0x0F9E() {
 		Scr_0x0FA0();
 		Scr_0x0FA1();
 		Scr_0x0FA2();
-		Scr_0x0FA3();
+		Scr_SpawnArenaSerpent();
 		Scr_0x0FA5();
 	}
 }
@@ -64140,9 +64140,9 @@ Scr_0x0FA1() {}
 // 0x08D975AD
 Scr_0x0FA2() {}
 
-// 0x08D975AF
-Scr_0x0FA3() {
-	Scr_0x02A1(1);
+// 0x08D975AF, 闘技場でサーペントを出す, ランク 3 なら能力値を上げる
+Scr_SpawnArenaSerpent() {
+	Scr_SetSerpentParams(1);
 	S_ENEMY_EXP = 0;
 	Scr_SetEnemyDrops(0, -1, 0, -1);
 	if (W_ARENA_RANK == 3) {
@@ -64155,11 +64155,11 @@ Scr_0x0FA3() {
 		S_ENEMY_ATK3_POWER = (u8)180;
 		S_ENEMY_ATK4_POWER = (u8)200;
 	}
-	Scr_0x02A2((u16)0xFC18, (u24)Scr_0x02A3, (u24)Scr_0x0FA4, (s16)1920, (s16)256, (s16)664, 0, 1, 0, 0);
+	Scr_SpawnSerpent((u16)0xFC18, (u24)Scr_OnSerpentAppear, (u24)Scr_OnArenaSerpentDefeated, (s16)1920, (s16)256, (s16)664, 0, 1, 0, 0);
 }
 
-// 0x08D9763D
-Scr_0x0FA4() {
+// 0x08D9763D, 闘技場のサーペントを倒したとき
+Scr_OnArenaSerpentDefeated() {
 	Scr_0x1738();
 	S_ROOM_BATTLE_KILLS = S_ROOM_BATTLE_KILLS + 1;
 	if (S_ROOM_BATTLE_KILLS >= S_ROOM_BATTLE_TARGET) {
@@ -64231,7 +64231,7 @@ Scr_0x0FAA() {}
 
 // 0x08D97812
 Scr_0x0FAB() {
-	Scr_0x026A(1);
+	Scr_SetLichPlusParams(1);
 	S_ENEMY_EXP = 0;
 	Scr_SetEnemyDrops(0, -1, 0, -1);
 	if (W_ARENA_RANK == 3) {
@@ -64242,7 +64242,7 @@ Scr_0x0FAB() {
 		S_ENEMY_ATK2_POWER = (s16)400;
 		S_ENEMY_ATK3_POWER = (s16)500;
 	}
-	Scr_0x026B((u16)0x6A19, 0, 0, (u24)Scr_0x0FAC, 0, 0, 0, 1);
+	Scr_SpawnLichPlus((u16)0x6A19, 0, 0, (u24)Scr_0x0FAC, 0, 0, 0, 1);
 }
 
 // 0x08D97886
@@ -65054,9 +65054,9 @@ Scr_0x1000() {
 
 // 0x08D99215
 Scr_0x1001() {
-	Command(EnemyBokuLink_Create, .N = (u16)0x9A66, .r = [12, 0, 12], .e = [(s16)512, 24], .a = [60, 30, 0, 60, (u8)150, 30, 0, (u8)80], .P = [60, (u8)120, (u8)120], .A = [(s16)300, 30, 0, 0, 2, 1], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 1, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
+	Command(BokuLink_Create, .N = (u16)0x9A66, .r = [12, 0, 12], .e = [(s16)512, 24], .a = [60, 30, 0, 60, (u8)150, 30, 0, (u8)80], .P = [60, (u8)120, (u8)120], .A = [(s16)300, 30, 0, 0, 2, 1], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 1, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
 	if (W_LINK_PLAYER_COUNT < 4) {
-		Command(EnemyBokuLink_Create, .N = (u16)0x4D04, .r = [13, 0, 12], .e = [(s16)512, 24], .a = [(u8)90, 30, 0, 60, (u8)150, 30, 0, (u8)80], .P = [60, (u8)120, (u8)120], .A = [(s16)300, 30, 0, 0, 2, 1], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 1, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
+		Command(BokuLink_Create, .N = (u16)0x4D04, .r = [13, 0, 12], .e = [(s16)512, 24], .a = [(u8)90, 30, 0, 60, (u8)150, 30, 0, (u8)80], .P = [60, (u8)120, (u8)120], .A = [(s16)300, 30, 0, 0, 2, 1], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 1, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
 	}
 }
 
@@ -65213,12 +65213,12 @@ Scr_0x1008() {
 
 // 0x08D998EB
 Scr_0x1009() {
-	Command(EnemyBombGolem_Create, .N = (u16)0x41D6, .r = [12, 0], .e = [(s16)768, 32], .a = [(u8)90, 30, 0, 60, (u8)100, 30, 0, (u8)80, (u8)150, 30, 0, (u8)80], .A = [(s16)400, 30, 0, 0, 0, 0], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 5, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
+	Command(GolemLink_Create, .N = (u16)0x41D6, .r = [12, 0], .e = [(s16)768, 32], .a = [(u8)90, 30, 0, 60, (u8)100, 30, 0, (u8)80, (u8)150, 30, 0, (u8)80], .A = [(s16)400, 30, 0, 0, 0, 0], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 5, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
 	if (W_LINK_PLAYER_COUNT < 4) {
-		Command(EnemyBombGolem_Create, .N = (u16)0x800A, .r = [13, 0], .e = [(s16)768, 32], .a = [(u8)90, 30, 0, 60, (u8)100, 30, 0, (u8)80, (u8)150, 30, 0, (u8)80], .A = [(s16)400, 30, 0, 0, 0, 0], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 5, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
+		Command(GolemLink_Create, .N = (u16)0x800A, .r = [13, 0], .e = [(s16)768, 32], .a = [(u8)90, 30, 0, 60, (u8)100, 30, 0, (u8)80, (u8)150, 30, 0, (u8)80], .A = [(s16)400, 30, 0, 0, 0, 0], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 5, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
 	}
 	if (W_LINK_PLAYER_COUNT < 3) {
-		Command(EnemyBombGolem_Create, .N = (u16)0x800B, .r = [14, 0], .e = [(s16)768, 32], .a = [(u8)90, 30, 0, 60, (u8)100, 30, 0, (u8)80, (u8)150, 30, 0, (u8)80], .A = [(s16)400, 30, 0, 0, 0, 0], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 5, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
+		Command(GolemLink_Create, .N = (u16)0x800B, .r = [14, 0], .e = [(s16)768, 32], .a = [(u8)90, 30, 0, 60, (u8)100, 30, 0, (u8)80, (u8)150, 30, 0, (u8)80], .A = [(s16)400, 30, 0, 0, 0, 0], .l = [(u8)120, (u8)120, (s16)1200], .n = [(s16)768, (s16)1024], .C = 5, .X = [0, 0], .D = (u24)Scr_0x02B5, .K = 4, .H = 1);
 	}
 }
 
@@ -65335,9 +65335,9 @@ Scr_0x100D() {
 
 // 0x08D99E51
 Scr_0x100E() {
-	Command(EnemyDogLink_Create, .N = (u16)0xB445, .r = [12, 0], .e = [(s16)768, 24], .Y = [(s16)512, (s16)1200, (s16)800], .a = [(u8)100, 20, 0, 60, (u8)180, 20, 0, 60, (u8)80, 20, 0, 60], .P = [(s16)300, (s16)300], .A = [(s16)300, 40, 0, 0, 0, 0], .l = [(u8)100, (u8)100, (s16)1200], .n = [(s16)1024, (s16)1024], .D = (u24)Scr_0x02B5, .X = [0, 0], .K = 4, .H = 1);
+	Command(DogLink_Create, .N = (u16)0xB445, .r = [12, 0], .e = [(s16)768, 24], .Y = [(s16)512, (s16)1200, (s16)800], .a = [(u8)100, 20, 0, 60, (u8)180, 20, 0, 60, (u8)80, 20, 0, 60], .P = [(s16)300, (s16)300], .A = [(s16)300, 40, 0, 0, 0, 0], .l = [(u8)100, (u8)100, (s16)1200], .n = [(s16)1024, (s16)1024], .D = (u24)Scr_0x02B5, .X = [0, 0], .K = 4, .H = 1);
 	if (W_LINK_PLAYER_COUNT < 4) {
-		Command(EnemyDogLink_Create, .N = (u16)0xB446, .r = [13, 0], .e = [(s16)512, 24], .Y = [(s16)1024, (s16)800, (s16)1200], .a = [(u8)100, 20, 0, 60, (u8)120, 20, 0, 60, (u8)80, 20, 0, 60], .P = [(s16)300, (s16)300], .A = [(s16)300, 40, 0, 0, 0, 0], .l = [(u8)100, (u8)100, (s16)1200], .n = [(s16)1024, (s16)1024], .D = (u24)Scr_0x02B5, .X = [0, 0], .K = 4, .H = 1);
+		Command(DogLink_Create, .N = (u16)0xB446, .r = [13, 0], .e = [(s16)512, 24], .Y = [(s16)1024, (s16)800, (s16)1200], .a = [(u8)100, 20, 0, 60, (u8)120, 20, 0, 60, (u8)80, 20, 0, 60], .P = [(s16)300, (s16)300], .A = [(s16)300, 40, 0, 0, 0, 0], .l = [(u8)100, (u8)100, (s16)1200], .n = [(s16)1024, (s16)1024], .D = (u24)Scr_0x02B5, .X = [0, 0], .K = 4, .H = 1);
 	}
 }
 

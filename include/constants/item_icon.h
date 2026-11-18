@@ -1,7 +1,7 @@
 #ifndef __INCLUDE_CONSTANTS_ITEM_ICON_H__
 #define __INCLUDE_CONSTANTS_ITEM_ICON_H__
 
-// SPRITE_INVENTORY_ICONS の poseIdx に対応するアイテムアイコンの内容
+// SPR_INVENTORY_ICONS の poseIdx に対応するアイテムアイコンの内容
 
 #define ICON_WEAPON(weaponID) (0 + (weaponID))  // 0..65: 武器ID と同じ
 #define ICON_QUESTION1 66                       // 66: ハテナマーク1 (ICON_QUESTION2 との使い分けは不明)

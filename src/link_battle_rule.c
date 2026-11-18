@@ -11,11 +11,11 @@
 // 3行の選択肢を持つ通信メニュー, 各行は values[i] を counts[i] で巻き戻しながら左右で切り替える
 typedef struct Entity08F4 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
-  Tilemaps* tilemap;                           // 0x018, TILEMAP_CD91
+  Tilemaps* tilemap;                           // 0x018, MP_CD91
   rgb555* bgPltt;                              // 0x01C, bg_link_col_arr
   MainSprite sprites[7];                       // 0x020
-  MainSpriteGfx gfx;                           // 0x2C0, SPRITE_UI_LINK
-  MainSpriteGfxFile* gfxFile;                  // 0x2E0, SPRITE_UI_LINK
+  MainSpriteGfx gfx;                           // 0x2C0, SPR_UI_LINK
+  MainSpriteGfxFile* gfxFile;                  // 0x2E0, SPR_UI_LINK
   rgb555 objPltt[16];                          // 0x2E4, Entity08F4_SavePltt が gObjPlttData+0x2930 から16色複写し、sprites[0].pltt をここへ向ける
   u16 unk_304;                                 // 0x304, Entity08F4_SavePltt が 0 を入れるだけ
   u16 unk_306;                                 // 0x306, 読み手も書き手も見つかっていない, padding?

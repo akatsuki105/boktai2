@@ -24,7 +24,7 @@ _080D7FCE:
 	movs r0, #0xac
 	lsls r0, r0, #4
 	adds r1, r4, r0
-	ldr r0, _080D803C @ =FUN_080d7374
+	ldr r0, _080D803C @ =PlayerLink_UpdateMouse
 	str r0, [r1]
 	ldr r0, _080D8040 @ =0x00000359
 	adds r1, r4, r0
@@ -61,7 +61,7 @@ _080D7FCE:
 	b _080D80B2
 	.align 2, 0
 _080D8038: .4byte 0x00000381
-_080D803C: .4byte FUN_080d7374
+_080D803C: .4byte PlayerLink_UpdateMouse
 _080D8040: .4byte 0x00000359
 _080D8044: .4byte 0x000004CC
 _080D8048: .4byte 0x0000094C
@@ -77,7 +77,7 @@ _080D8054:
 	movs r0, #0xac
 	lsls r0, r0, #4
 	adds r1, r4, r0
-	ldr r0, _080D80D8 @ =FUN_080d6b24
+	ldr r0, _080D80D8 @ =PlayerLink_UpdateDjango
 	str r0, [r1]
 	ldr r1, _080D80DC @ =0x00000359
 	adds r0, r4, r1
@@ -105,7 +105,7 @@ _080D8054:
 	movs r0, #0x20
 	strh r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080ced00
+	bl PlayerLink_CheckMagicEnchant
 	adds r0, #1
 	ldr r2, _080D80F0 @ =0x00000951
 	adds r1, r4, r2
@@ -121,7 +121,7 @@ _080D80B2:
 	movs r1, #0
 	ldrsb r1, [r0, r1]
 	adds r0, r4, #0
-	bl FUN_080cec70
+	bl PlayerLink_IsMagicAvailableForm
 	ldr r2, _080D80F4 @ =0x00000282
 	adds r1, r4, r2
 	movs r2, #0
@@ -135,7 +135,7 @@ _080D80D2:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080D80D8: .4byte FUN_080d6b24
+_080D80D8: .4byte PlayerLink_UpdateDjango
 _080D80DC: .4byte 0x00000359
 _080D80E0: .4byte 0x000004CC
 _080D80E4: .4byte 0x0000094C

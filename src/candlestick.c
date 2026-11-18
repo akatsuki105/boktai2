@@ -53,7 +53,7 @@ typedef struct {
   Entity e;              // 0x00, ENTITY_UNK_10
   s32 count;             // 0x18, '.n=8', elems の枠数
   Candlestick* elems;    // 0x1C
-  MainSpriteGfx gfx[2];  // 0x20, SPRITE_CHANDELIER と SPRITE_CANDLE_BOX
+  MainSpriteGfx gfx[2];  // 0x20, SPR_CHANDELIER と SPR_CANDLE_BOX
 } CandlestickManager;
 static_assert(sizeof(CandlestickManager) == 96);
 
@@ -72,8 +72,8 @@ static inline bool8 CandlestickManager_IsCurrentZone(ZoneID32 zoneID) {
 }
 
 static const SpriteID16 sLampSpriteIDs[2] = {
-    [LP_CHANDELIER] = SPRITE_CHANDELIER,
-    [LP_CANDLE] = SPRITE_CANDLE_BOX,
+    [LP_CHANDELIER] = SPR_CHANDELIER,
+    [LP_CANDLE] = SPR_CANDLE_BOX,
 };  // 0x085AA66C
 
 // 種類ごとの [消灯時, 点灯時] のアニメ番号

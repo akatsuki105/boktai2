@@ -10,7 +10,7 @@ typedef struct {
   u16 id;             // 0x18, mover.id
   Mover mover;        // 0x1C
   AuxSprite sprite;   // 0x60
-  AuxSpriteGfx gfx;   // 0x8C, SPRITE_NODATA_9DA7
+  AuxSpriteGfx gfx;   // 0x8C, SPR_NODATA_9DA7
   MoverTile tile;     // 0xA8, mover.tile がここを指す
   NavAgent navAgent;  // 0xB8, waypoint へ速さ 10 で向かう
 } EntityC814;

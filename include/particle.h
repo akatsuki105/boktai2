@@ -6,11 +6,6 @@
 #include "sprite_common.h"
 #include "types.h"
 
-// Particle Group ID
-#define PTCL_GROUP_0 BOKHASH("eff_eff_00")  // 0x1C1A, ROMにこの文字列があるのでこれは確定
-#define PTCL_GROUP_1 0x1C1C                 // 0x1C1C, BOKHASH("eff_eff_02") が 一致するが eff_eff_01 がないのは不自然
-#define PTCL_GROUP_2 0x1C1E                 // 0x1C1E, エレメントのパーティクル
-
 typedef u8 ParticleGroupFlags;  // ParticleGroup.flags
 #define PGFLAG_BPP8 (1 << 4)    // 0x10, 8bpp
 

@@ -66,7 +66,7 @@ _0818DE52:
 	adds r5, #8
 	adds r0, r7, #0
 	adds r1, r5, #0
-	bl FUN_0819014c
+	bl Serpent_SetAllSegmentsPos
 	movs r0, #0x20
 	ldr r1, _0818DEEC @ =0x00000474
 	adds r3, r6, r1
@@ -120,7 +120,7 @@ _0818DF08:
 	movs r1, #0
 	movs r2, #6
 	movs r3, #0
-	bl FUN_0819328c
+	bl Serpent_SetSegmentsSunk
 	ldr r0, _0818DF80 @ =0x03002BE0
 	add r2, sp, #4
 	ldr r0, [r0]
@@ -226,12 +226,12 @@ _0818DFB6:
 	ands r0, r1
 	str r0, [r2]
 	adds r0, r6, #0
-	bl FUN_081929cc
+	bl Serpent_RunScript
 	ldr r1, _0818E018 @ =0x00000472
 	adds r0, r6, r1
 	ldrh r1, [r0]
 	adds r0, r7, #0
-	bl FUN_08191a14
+	bl Serpent_SpawnBubble
 	ldr r0, _0818E01C @ =0x000003E7
 	bl PlaySound_082406e0
 	ldr r0, _0818E020 @ =0x000003E5
@@ -266,7 +266,7 @@ _0818E046:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	adds r2, r5, #0
-	bl FUN_0818fa70
+	bl Serpent_SetSegmentVelocity
 	adds r5, #1
 	cmp r5, #2
 	ble _0818E046
@@ -290,7 +290,7 @@ _0818E078:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	adds r2, r5, #0
-	bl FUN_0818fa70
+	bl Serpent_SetSegmentVelocity
 	adds r5, #1
 	cmp r5, #5
 	ble _0818E078
@@ -313,7 +313,7 @@ _0818E0A8:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	adds r2, r5, #0
-	bl FUN_0818fa70
+	bl Serpent_SetSegmentVelocity
 	adds r5, #1
 	cmp r5, #5
 	ble _0818E0A8
@@ -323,7 +323,7 @@ _0818E0B8:
 	adds r0, r6, #0
 	movs r1, #6
 	movs r2, #0xc
-	bl FUN_0818fdd8
+	bl Serpent_PullSegments
 	movs r3, #0xa
 	ldrsh r1, [r6, r3]
 	ldr r4, _0818E130 @ =0x00000472
@@ -339,7 +339,7 @@ _0818E0B8:
 	str r1, [r0]
 _0818E0E0:
 	adds r0, r7, #0
-	bl FUN_0818f008
+	bl Serpent_UpdateSegmentsBuried
 	movs r1, #0xe1
 	lsls r1, r1, #1
 	adds r0, r6, r1

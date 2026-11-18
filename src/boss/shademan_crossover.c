@@ -112,7 +112,7 @@ typedef struct {
   u32 scriptArgCount;                     // 0x31C
   u32 scriptArgUsed;                      // 0x320, scriptArgs のうち使ったもののビット
   u16 scriptArgs[4];                      // 0x324, '.O'
-  MainSpriteGfx gfx;                      // 0x32C, SPRITE_SHADEMAN
+  MainSpriteGfx gfx;                      // 0x32C, SPR_SHADEMAN
   MainSprite sprite;                      // 0x34C
   AuxShadow shadow;                       // 0x3AC
   rgb555 pltt[16][16];                    // 0x418, gObjPlttData の同じ16色を16回写す
@@ -252,7 +252,7 @@ static inline void ShadeManCrossover_SetShake(ShadeManCrossover* p, u32 amp) { p
 s32 ShadeManCrossover_GetPlttID(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
 
 void Player_InflictCrossoverElementalCond(struct Player* p, u32 param_2, s32 param_3);
-void FUN_08050e2c(u32 param_1, u32 param_2, Vec3* pos);
+void CrossoverBattle_ShowOjamaBatPopup(u32 param_1, u32 param_2, Vec3* pos);
 struct Entity0805e67c* Entity0805e67c_Create(void);
 struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
 void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
@@ -587,11 +587,11 @@ void FUN_0803cb6c(s32 count) {
       Map_PickRandomPathNode(&pos, 8);
       FUN_0803c938(p, &pos, count);
     }
-    FUN_08050e2c(1, 0, &p->centerPos);
+    CrossoverBattle_ShowOjamaBatPopup(1, 0, &p->centerPos);
   }
 }
 
-// 残差は分岐の合流 (74/71), 原典は各分岐で players[0] のアドレスを作って FUN_08050e2c の呼び出しを共有する
+// 残差は分岐の合流 (74/71), 原典は各分岐で players[0] のアドレスを作って CrossoverBattle_ShowOjamaBatPopup の呼び出しを共有する
 NON_MATCH void FUN_0803cbb4(s32 kind) {
 #ifdef NONMATCHING_C
   ShadeManCrossover* p = Boss_Get(BOSS_SHADEMAN_CROSSOVER);
@@ -604,7 +604,7 @@ NON_MATCH void FUN_0803cbb4(s32 kind) {
     } else {
       Player_ApplyBadCondition(p->base.players[0], BAD_CONFUSE, (Div(kind, 3) * p->unk_311 + p->unk_310) * 60);
     }
-    FUN_08050e2c(2, 0, &p->base.players[0]->mover.pos);
+    CrossoverBattle_ShowOjamaBatPopup(2, 0, &p->base.players[0]->mover.pos);
   }
 #else
   INCFUNC("asm/func/FUN_0803cbb4.inc");
@@ -649,7 +649,7 @@ void ShadeManCrossover_InitHitbox2(ShadeManCrossover* p) {
   Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0803c260, p);
-  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
+  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_BLOW, p->hitbox2Unk44);
 }
 
 void ShadeManCrossover_InitHurtbox(ShadeManCrossover* p, u32 power) {
@@ -773,7 +773,7 @@ NON_MATCH void FUN_0803d0a4(ShadeManCrossover* p) {
     if (p->unk_2b6) {
       power = (p->unk_2c6 * power) >> 6;
     }
-    Hitbox_SetAttack(hitbox, power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
+    Hitbox_SetAttack(hitbox, power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_BLOW, p->hitbox2Unk44);
     FUN_0803c274(p, &pos);
     Hitbox_SetPos(hitbox, &pos, 0);
     p->hitbox2.angle = ((mover->angle - 0x20) & ~0x3F) + 0x40;
@@ -1331,7 +1331,7 @@ NON_MATCH void FUN_0803e6b0(Boss* boss, s32 timer) {
       s32 heal;
       s32 hp;
 
-      FUN_08050e2c(3, 0, &p->sprite.pos);
+      CrossoverBattle_ShowOjamaBatPopup(3, 0, &p->sprite.pos);
       heal = Div(boss->maxHP * p->unk_2c0, 16);
       hp = boss->hp;
       Boss_SetHP(boss, hp + heal);
@@ -1733,7 +1733,7 @@ NON_MATCH void FUN_0803f8cc(Boss* boss, s32 timer) {
     Boss_PlayAnimFacing(boss, sprite, &p->gfx, 14, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     p->phase = 0;
     p->phaseTimer = 0;
-    FUN_08050e2c(0, 0, &p->sprite.pos);
+    CrossoverBattle_ShowOjamaBatPopup(0, 0, &p->sprite.pos);
     p->plttFadeMode = 2;
     p->plttFadeTo = 11;
     switch (p->plttFadeMode) {
@@ -2108,7 +2108,7 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
     boss->players[0] = NULL;
     boss->playerPos[0] = NULL;
   }
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_SHADEMAN);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_SHADEMAN);
   if (f == NULL) {
     return -1;
   }
@@ -2267,7 +2267,7 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
   }
   FUN_0803ce8c(p);
   AuxShadow_Init(&p->shadow, &p->sprite.pos, 0x40, 0x40, 0x40, 0x40, 0x1900, 1, 6, 1, 0);
-  AuxShadow_SetSprite(&p->shadow, SPRITE_EFF_1C1B, 7);
+  AuxShadow_SetSprite(&p->shadow, SPR_EFF_1C1B, 7);
   {
     rgb555* src = &gObjPlttData[0x132 * 16];
     s32 i;

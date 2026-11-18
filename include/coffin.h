@@ -25,7 +25,7 @@ typedef struct Coffin {
   rgb555 pltt[16];            // 0x020, gfx.pltt の複写先, gfx.pltt はここを指すように差し替えられる
   Mover mover;                // 0x040, angle は (facing + 5) * 32
   AuxSprite sprite;           // 0x084, ->gfx
-  AuxSpriteGfx gfx;           // 0x0B0, SPRITE_COFFIN_0, パレットIDは coffinID + 519
+  AuxSpriteGfx gfx;           // 0x0B0, SPR_COFFIN_0, パレットIDは coffinID + 519
   MoverTile tile;             // 0x0CC
   Hitbox hurtbox;             // 0x0DC, mover.pos に追従する被弾判定, これだけ Init で登録される
   Hitbox hitbox;              // 0x12C, 威力50の攻撃判定 (多分棺桶が暴れ出した時の攻撃判定)
@@ -59,7 +59,7 @@ typedef struct Coffin {
   u8 unk_33a;                 // 0x33A
   bool8 effSpriteAdded;       // 0x33B, effSprite を AuxSprite_Add 済みなら 1
   AuxSprite effSprite;        // 0x33C
-  AuxSpriteGfx effGfx;        // 0x368, SPRITE_EFF_1C1B
+  AuxSpriteGfx effGfx;        // 0x368, SPR_EFF_1C1B
   u8 unk_384;                 // 0x384, Player.elevatorFlags と同じビット構成, bit2 が立つとエレベータに乗っている
   u8 unk_385;                 // 0x385
   u16 elevatorID;             // 0x386, 搭乗中のエレベータのID

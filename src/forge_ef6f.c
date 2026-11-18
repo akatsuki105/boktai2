@@ -37,7 +37,7 @@ typedef struct {
   u8 unk_22;                    // 0x022, FUN_0801eb64 が A を押したときに立てる
   u8 unk_23;                    // 0x023, まだ未解析
   u32 unk_24;                   // 0x024, FUN_0801e284 が 0 を入れる, FUN_0801ec4c / FUN_0801f308 が符号なしで閾値と比べる
-  Tilemaps* tilemap;            // 0x028, TILEMAP_9F57 or TILEMAP_A413
+  Tilemaps* tilemap;            // 0x028, MP_9F57 or MP_A413
   rgb555* plttSrc;              // 0x02C, BGP_A41A
   s16 unk_30;                   // 0x030, FUN_0801eaac が unk_36 の下限として比べる
   s16 unk_32;                   // 0x032, FUN_0801eaac が unk_36 の上限として比べる
@@ -72,8 +72,8 @@ typedef struct {
   s32 unk_90;                   // 0x090, _Init が書き込む
   u8 unk_94[0x09C - 0x094];     // 0x094, まだ未解析
   EntityEF6FEffect effects[5];  // 0x09C, sprites[8..12] と1対1で対応する再生状態
-  MainSpriteGfx gfx0;           // 0x0B0, SPRITE_UI_MISC
-  MainSpriteGfx gfx1;           // 0x0D0, SPRITE_UI_START_MENU
+  MainSpriteGfx gfx0;           // 0x0B0, SPR_UI_MISC
+  MainSpriteGfx gfx1;           // 0x0D0, SPR_UI_START_MENU
   MainSpriteGfx gfx2;           // 0x0F0
   MainSpriteGfx gfx3;           // 0x110
   s32 unk_130;                  // 0x130, _Init が書き込み先として使う
@@ -117,7 +117,7 @@ void FUN_0801e290(EntityEF6F* p, u8 a, u8 b) {
 }
 
 s32 FUN_0801e2a8(EntityEF6F* p, s32 bgIndex) {
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_9F57);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(2, 2);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
@@ -129,7 +129,7 @@ s32 FUN_0801e2a8(EntityEF6F* p, s32 bgIndex) {
 s32 FUN_0801e328(EntityEF6F* p) {
   s32 bgIndex;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_A413);
   bgIndex = 2;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(0, 0, 0, 0, -24);

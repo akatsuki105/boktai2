@@ -17,7 +17,7 @@ typedef enum {
   QUICK_CHARGE = 2,  // 急速チャージ
 } ChargeSpeed;
 
-// 天窓から差し込む(スポット的な)光, スプライトは SPRITE_SPOTLIGHT
+// 天窓から差し込む(スポット的な)光, スプライトは SPR_SPOTLIGHT
 typedef struct {
   Vec3 pos;             // 0x00, '.p', 足元のタイルの高さに合わせてから入る
   AuxSprite sprite[2];  // 0x08
@@ -229,7 +229,7 @@ NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 kind, Vec3* pos, u32 shape, 
   beam->pos = *pos;
   flags = shape != 0 ? SPRFLAG_XFLIP : 0;
   beam->unk_9c = kind * 4;
-  Video_GetAuxSprite(&beam->gfx[0], SPRITE_SPOTLIGHT);
+  Video_GetAuxSprite(&beam->gfx[0], SPR_SPOTLIGHT);
   AuxSprite_Add(&beam->sprite[0], &beam->gfx[0], flags);
   beam->sprite[0].poseIdx = beam->unk_9c;
   Video_SetAuxSpritePltt(&beam->gfx[0], pltt);

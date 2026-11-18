@@ -17,7 +17,7 @@ typedef struct {
   u8 kind;            // 0x08, 0..3, SporeManager.attrKind に写される, 0 のときだけ sprite.pos が範囲内に丸められる
   u8 unk_09[3];       // 0x09
   Vec3 vel;           // 0x0C, 毎フレーム sprite.pos に足される
-  AuxSpriteGfx gfx;   // 0x14, SPRITE_DUNEYRR_AUX, パレット行 0x224
+  AuxSpriteGfx gfx;   // 0x14, SPR_DUNEYRR_AUX, パレット行 0x224
   AuxSprite sprite;   // 0x30, pose 0xC, priority 2
   AuxAnimState anim;  // 0x5C, animFile のアニメ3番から始まる
 } Spore;
@@ -239,7 +239,7 @@ s32 SporeManager_Init(SporeManager* p) {
 
     spore->speed = 0;
     spore->angle = 0;
-    if (!Video_GetAuxSprite(&spore->gfx, SPRITE_DUNEYRR_AUX)) {
+    if (!Video_GetAuxSprite(&spore->gfx, SPR_DUNEYRR_AUX)) {
       return -1;
     }
     Video_SetAuxSpritePltt(&spore->gfx, 548);

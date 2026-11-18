@@ -26,7 +26,7 @@ typedef struct {
   char* charTable;       // 0x444, '.c' の文字列, 1 文字 2 バイトで chars の値を引く
   u8* msgPc;             // 0x448, '.d' の位置, テキストパネルの MenuMessage_SetScript に渡す
   s32 windowIDs[3];      // 0x44C, MenuMessage_Create の戻り値, _Destroy が MenuMessage_Destroy に渡す
-  TilemapFile* tilemap;  // 0x458, TILEMAP_33B2
+  TilemapFile* tilemap;  // 0x458, MP_33B2
   rgb555* pltt;          // 0x45C, BGP_E9C3 の本体, gBgPlttBuffer へ写す
 } PasswordScreen;
 static_assert(sizeof(PasswordScreen) == 1120);
@@ -36,7 +36,7 @@ const ALIGNED(4) char sChar_085aa844[] = "</WEIGHT>";  // 0x085aa844
 
 // パスワード画面の BG1 と BG パレットを読み込む
 void PasswordScreen_SetupBG(PasswordScreen* p, s32 bgIndex) {
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_33B2);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_33B2);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   p->pltt = GetBgPlttFile(BGP_E9C3)->body;
@@ -109,7 +109,7 @@ NON_MATCH s32 PasswordScreen_EncodeBits(PasswordScreen* p) {
   PasswordScreen_PutBits(p, gStat->totalEnemyKillCount >> 3, &bitPos, 8);
   PasswordScreen_PutBits(p, (s16)gStat->forge, &bitPos, 7);
   PasswordScreen_PutBits(p, gStat->linkBattleCount, &bitPos, 6);
-  PasswordScreen_PutBits(p, gStat->unk_918 + gStat->unk_91a, &bitPos, 6);
+  PasswordScreen_PutBits(p, gStat->linkSellCount + gStat->linkBuyCount, &bitPos, 6);
   PasswordScreen_PutBits(p, (s32)gStat->treeExp >> 12, &bitPos, 10);
   PasswordScreen_PutBits(p, (s32)gStat->loan_1d4 >> 8, &bitPos, 8);
   PasswordScreen_PutBits(p, Div(gStat->playTime, 216000), &bitPos, 6);

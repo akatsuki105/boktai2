@@ -44,7 +44,7 @@ _080D1BA2:
 	cmp r0, #1
 	bne _080D1BF8
 	adds r0, r5, #0
-	bl FUN_080cc618
+	bl PlayerLink_IsNight
 	cmp r0, #0
 	beq _080D1BF8
 	adds r2, r6, #0

@@ -351,7 +351,7 @@ _08050B10:
 	bl CrossoverOjama_Create
 	bl CrossoverMC_Create
 	str r0, [r6, #0x60]
-	bl Entity08052ffc_Create
+	bl OjamaBatPopupManager_Create
 	str r0, [r6, #0x64]
 	movs r0, #4
 	movs r1, #0x18

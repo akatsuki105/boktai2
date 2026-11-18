@@ -13,7 +13,7 @@
 	b _080D811E
 _080D8118:
 	adds r0, r4, #0
-	bl FUN_080d7b50
+	bl PlayerLink_UpdateIframes
 _080D811E:
 	adds r0, r4, #0
 	bl FUN_080d7fbc

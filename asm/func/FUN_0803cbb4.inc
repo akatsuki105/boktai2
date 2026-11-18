@@ -71,7 +71,7 @@ _0803CC3E:
 	adds r2, #0x2c
 	movs r0, #2
 	movs r1, #0
-	bl FUN_08050e2c
+	bl CrossoverBattle_ShowOjamaBatPopup
 _0803CC4A:
 	pop {r4, r5, r6, r7}
 	pop {r0}

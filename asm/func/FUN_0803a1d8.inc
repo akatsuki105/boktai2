@@ -223,7 +223,7 @@ _0803A324:
 	str r4, [sp, #4]
 	add r6, sp, #0xc
 	str r6, [sp, #8]
-	bl FUN_08060220
+	bl Entity080601a8_Spawn
 _0803A398:
 	movs r0, #0x80
 	lsls r0, r0, #1

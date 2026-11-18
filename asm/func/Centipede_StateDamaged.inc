@@ -76,7 +76,7 @@ _08133F1A:
 	adds r5, r5, r1
 _08133F82:
 	adds r0, r6, #0
-	bl FUN_08137858
+	bl Centipede_DestroyTailSegment
 	adds r4, #1
 	ldrb r2, [r5]
 	cmp r4, r2

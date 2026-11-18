@@ -662,7 +662,7 @@ _080328A0:
 	str r1, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r3, #0
-	bl Entity0805b790_Spawn
+	bl RingoShotManager_Spawn
 	b _0803292C
 	.align 2, 0
 _080328FC: .4byte 0x00000899

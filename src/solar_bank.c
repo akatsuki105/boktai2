@@ -19,7 +19,7 @@ typedef struct SolarBank {
   MainSprite sprites[13];                     // 0x058
   AuxSprite auxSprites[2];                    // 0x538
   AuxSpriteGfx auxGfx[2];                     // 0x590
-  TilemapFile* tilemap;                       // 0x5C8, TILEMAP_BANK
+  TilemapFile* tilemap;                       // 0x5C8, MP_BANK
   rgb555* bgPltt;                             // 0x5CC, BGP_BANK[208]
   u8* textPc;                                 // 0x5D0, MessageWindow_Start に渡すバイトコード位置
   s32 bank;                                   // 0x5D4
@@ -456,7 +456,7 @@ s32 SolarBank_Destroy(SolarBank* p) {
 void SolarBank_InitBgLayout(SolarBank* p) {
   s32 indices;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_BANK);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_BANK);
   indices = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &indices);
 }
@@ -478,11 +478,11 @@ NON_MATCH void FUN_080b4490(SolarBank* p) {
   s32 tens;
   s32 i;
 
-  file = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LOAN);
+  file = GetFile(DIR_MAIN_SPRITE, SPR_UI_LOAN);
   p->gfx[0] = *file;
   gfx0 = &p->gfx[0];
   OpenMainSpriteFile(gfx0, file);
-  file = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  file = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   p->gfx[1] = *file;
   gfx1 = &p->gfx[1];
   OpenMainSpriteFile(gfx1, file);
@@ -515,7 +515,7 @@ NON_MATCH void FUN_080b4490(SolarBank* p) {
     pos.x += 8;
   }
   for (i = 0; i < 2; i++) {
-    Video_GetAuxSprite(&p->auxGfx[i], SPRITE_STAND);
+    Video_GetAuxSprite(&p->auxGfx[i], SPR_STAND);
     AuxSprite_Add(&p->auxSprites[i], &p->auxGfx[i], 0);
     p->auxSprites[i].priority = 0;
     p->auxSprites[i].flags = 48;

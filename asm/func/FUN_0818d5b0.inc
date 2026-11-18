@@ -101,7 +101,7 @@ _0818D5DE:
 	str r0, [sp]
 	adds r0, r5, #0
 	mov r1, sp
-	bl FUN_0819014c
+	bl Serpent_SetAllSegmentsPos
 	ldr r0, _0818D758 @ =0x000003E5
 	bl sound_08240740
 	ldr r0, _0818D75C @ =0xFFFF7FFF
@@ -112,16 +112,16 @@ _0818D5DE:
 	movs r1, #2
 	movs r2, #6
 	movs r3, #1
-	bl FUN_0819328c
+	bl Serpent_SetSegmentsSunk
 _0818D69A:
 	movs r3, #0x80
 	lsls r3, r3, #5
 	adds r0, r7, #0
 	movs r1, #6
 	movs r2, #6
-	bl FUN_0818fdd8
+	bl Serpent_PullSegments
 	adds r0, r5, #0
-	bl FUN_0818f008
+	bl Serpent_UpdateSegmentsBuried
 	movs r0, #0x10
 	movs r1, #0xbe
 	lsls r1, r1, #1
@@ -148,7 +148,7 @@ _0818D6C0:
 	mov sb, r0
 	strh r1, [r2]
 	adds r0, r7, #0
-	bl FUN_0818e6fc
+	bl Serpent_PickNextTile
 	add r2, sp, #8
 	adds r4, r7, #0
 	adds r4, #8

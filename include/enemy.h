@@ -11,6 +11,7 @@
 #include "msgbus.h"
 #include "shadow.h"
 #include "sprite.h"
+#include "types.h"
 
 // data.c の "../enemy/system/eneinline.h" という文字列から察するに EnemyXXX_Init の関数サイズがすべて異様に大きいのは、共通部分を eneinline.h にまとめていてそれをインライン展開しているからだと思われる(なんで？)
 
@@ -103,39 +104,39 @@ typedef u32 EnemyFlags2;
 
 // Enemy.flags3 (0x180)
 typedef u16 EnemyFlags3;
-#define ENEFLAG3_UNK_0 (1 << 0)    // 0x0001, FUN_080fc174 が落とす
-#define ENEFLAG3_UNK_1 (1 << 1)    // 0x0002, FUN_080f1cb8 が見る
-#define ENEFLAG3_UNK_2 (1 << 2)    // 0x0004, Enemy_PlayVoice が UNK_1 と一緒に見る
-#define ENEFLAG3_UNK_3 (1 << 3)    // 0x0008, FUN_080f1ef8 がまとめて見る
-#define ENEFLAG3_UNK_4 (1 << 4)    // 0x0010, FUN_080f0a0c が UNK_12 と並べて見る
-#define ENEFLAG3_UNK_5 (1 << 5)    // 0x0020, FUN_080f65a8 が立てる
-#define ENEFLAG3_UNK_6 (1 << 6)    // 0x0040, Enemy_IsDead が死亡扱いにする
-#define ENEFLAG3_UNK_7 (1 << 7)    // 0x0080, FUN_080f62b0 が UNK_8/9 とまとめて落とす
-#define ENEFLAG3_UNK_8 (1 << 8)    // 0x0100, FUN_080f8400 が落とす
-#define ENEFLAG3_UNK_9 (1 << 9)    // 0x0200, FUN_080e6148 が経路を外れたときに落とす
-#define ENEFLAG3_UNK_10 (1 << 10)  // 0x0400, Enemy_Alert が落とす
-#define ENEFLAG3_UNK_11 (1 << 11)  // 0x0800, Enemy_HandleResumeMsg が一度だけ処理する印として立てる
-#define ENEFLAG3_UNK_12 (1 << 12)  // 0x1000, Enemy_Reset が見る
-#define ENEFLAG3_UNK_13 (1 << 13)  // 0x2000, FUN_08101bc0 が unk_4be より優先して見る
-#define ENEFLAG3_UNK_14 (1 << 14)  // 0x4000, FUN_080ec9b0 が立て EnemyManager_UpdateEnemies が落とす
-#define ENEFLAG3_UNK_15 (1 << 15)  // 0x8000, FUN_080f1ef8 がまとめて見る
+#define ENEFLAG3_ASLEEP (1 << 0)     // 0x0001, 居眠り中, 各敵の *_StateNap (ES_NAP) が入場で立て *_StateWakeUp で落とす, 立っている間は物音に気づかず回避もしない
+#define ENEFLAG3_STUN (1 << 1)       // 0x0002, 気絶 (マヒ) 中, ES_STUN の FUN_080f56ec が入場で立て明けると落とす, 立っている間は受けるダメージが2倍
+#define ENEFLAG3_PETRIFIED (1 << 2)  // 0x0004, 石化中, コカトリスが HBATTR_SEKIKA の攻撃を受けると立て石の破片を散らして明けると落とす, 立っている間は受けるダメージが2倍
+#define ENEFLAG3_UNK_3 (1 << 3)      // 0x0008, FUN_080f1ef8 がまとめて見る
+#define ENEFLAG3_UNK_4 (1 << 4)      // 0x0010, FUN_080f0a0c が UNK_12 と並べて見る
+#define ENEFLAG3_UNK_5 (1 << 5)      // 0x0020, FUN_080f65a8 が立てる
+#define ENEFLAG3_UNK_6 (1 << 6)      // 0x0040, Enemy_IsDead が死亡扱いにする
+#define ENEFLAG3_UNK_7 (1 << 7)      // 0x0080, FUN_080f62b0 が UNK_8/9 とまとめて落とす
+#define ENEFLAG3_UNK_8 (1 << 8)      // 0x0100, FUN_080f8400 が落とす
+#define ENEFLAG3_UNK_9 (1 << 9)      // 0x0200, FUN_080e6148 が経路を外れたときに落とす
+#define ENEFLAG3_UNK_10 (1 << 10)    // 0x0400, Enemy_Alert が落とす
+#define ENEFLAG3_UNK_11 (1 << 11)    // 0x0800, Enemy_HandleResumeMsg が一度だけ処理する印として立てる
+#define ENEFLAG3_UNK_12 (1 << 12)    // 0x1000, Enemy_Reset が見る
+#define ENEFLAG3_UNK_13 (1 << 13)    // 0x2000, FUN_08101bc0 が unk_4be より優先して見る
+#define ENEFLAG3_UNK_14 (1 << 14)    // 0x4000, FUN_080ec9b0 が立て EnemyManager_UpdateEnemies が落とす
+#define ENEFLAG3_UNK_15 (1 << 15)    // 0x8000, FUN_080f1ef8 がまとめて見る
 
 // Enemy.flags4 (0x182)
 typedef u16 EnemyFlags4;
-#define ENEFLAG4_UNK_0 (1 << 0)    // 0x0001, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Cmd_SleepEnemy が立てる
-#define ENEFLAG4_UNK_2 (1 << 2)    // 0x0004, Enemy_ProcessRequests が真っ先に見て UNK_0/1/7/8/11 とまとめて落とす
-#define ENEFLAG4_UNK_3 (1 << 3)    // 0x0008, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_4 (1 << 4)    // 0x0010, FUN_080fc174 が立てる
-#define ENEFLAG4_UNK_5 (1 << 5)    // 0x0020, FUN_080e72b0 が4フレームおきに立てる
-#define ENEFLAG4_UNK_6 (1 << 6)    // 0x0040, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_7 (1 << 7)    // 0x0080, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_8 (1 << 8)    // 0x0100, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_10 (1 << 10)  // 0x0400, Enemy_OnCWolfMessage が被弾の通知で立てる
-#define ENEFLAG4_UNK_11 (1 << 11)  // 0x0800, FUN_080f6e34 がまとめて落とす
-#define ENEFLAG4_UNK_13 (1 << 13)  // 0x2000, 立っていると Enemy_UpdateMovement が Mover_ApplyMove で動かし, 足元のタイルの効果を調べる
-#define ENEFLAG4_UNK_14 (1 << 14)  // 0x4000, Enemy_UpdateHitboxes が立っているときだけ当たり判定を出す
-#define ENEFLAG4_UNK_12 (1 << 12)  // 0x1000, 立っていると EnemyManager_UpdateEnemies が破棄側へ回す
+#define ENEFLAG4_UNK_0 (1 << 0)         // 0x0001, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_STUN_REQUEST (1 << 1)  // 0x0002, マヒ (ES_STUN) へ移す要求, Cmd_StunEnemy と各敵の StateDamaged (HBATTR_STUN) が立てる
+#define ENEFLAG4_UNK_2 (1 << 2)         // 0x0004, Enemy_ProcessRequests が真っ先に見て UNK_0/1/7/8/11 とまとめて落とす
+#define ENEFLAG4_UNK_3 (1 << 3)         // 0x0008, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_4 (1 << 4)         // 0x0010, Boku_StateWakeUp が立てる
+#define ENEFLAG4_UNK_5 (1 << 5)         // 0x0020, FUN_080e72b0 が4フレームおきに立てる
+#define ENEFLAG4_UNK_6 (1 << 6)         // 0x0040, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_7 (1 << 7)         // 0x0080, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_8 (1 << 8)         // 0x0100, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_10 (1 << 10)       // 0x0400, Enemy_OnCWolfMessage が被弾の通知で立てる
+#define ENEFLAG4_UNK_11 (1 << 11)       // 0x0800, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_13 (1 << 13)       // 0x2000, 立っていると Enemy_UpdateMovement が Mover_ApplyMove で動かし, 足元のタイルの効果を調べる
+#define ENEFLAG4_UNK_14 (1 << 14)       // 0x4000, Enemy_UpdateHitboxes が立っているときだけ当たり判定を出す
+#define ENEFLAG4_UNK_12 (1 << 12)       // 0x1000, 立っていると EnemyManager_UpdateEnemies が破棄側へ回す
 
 // Enemy.flags5 (0x474)
 typedef u16 EnemyFlags5;
@@ -146,16 +147,8 @@ typedef u16 EnemyFlags5;
 #define ENEFLAG5_UNK_6 (1 << 6)    // 0x0040, 立っていると FUN_080f6c74 が当たり判定の向きを外す
 #define ENEFLAG5_UNK_7 (1 << 7)    // 0x0080, 立っていると FUN_080f6604 が経験値も図鑑への登録も行わない
 #define ENEFLAG5_UNK_8 (1 << 8)    // 0x0100, Cmd_62AA / Cmd_4FD1 / Cmd_60FB が見る
-#define ENEFLAG5_UNK_9 (1 << 9)    // 0x0200, FUN_080f6604 が見る
+#define ENEFLAG5_CWOLF (1 << 9)    // 0x0200, Cウルフのターゲットになりうる, 立っていると cwolfNode を CWolfTargetManager に登録する
 #define ENEFLAG5_UNK_11 (1 << 11)  // 0x0800, 立っていると Enemy_UpdateHitboxes が当たり判定を隠す
-
-// Enemy.flags6 (0x49C)
-typedef u32 EnemyFlags6;
-#define ENEFLAG6_UNK_1 (1 << 1)    // 0x00000002, 暗黒の根は立っていれば倒れて消え, なければ hp を戻して生え直す
-#define ENEFLAG6_UNK_2 (1 << 2)    // 0x00000004, FUN_080f6868 が立っているときだけ働く
-#define ENEFLAG6_UNK_14 (1 << 14)  // 0x00004000, FUN_080f6e34 が見る
-#define ENEFLAG6_UNK_18 (1 << 18)  // 0x00040000, FUN_080f6e34 が見る
-#define ENEFLAG6_UNK_19 (1 << 19)  // 0x00080000, FUN_080f6e34 が見る
 
 // Enemy.state (0x553), Enemy_EnterState の第3引数, handlerState と組で切り替わる
 #define ES_UNK_0 0  // handlerWait, 経路ノードで待ってから次のノードへ進める
@@ -163,11 +156,11 @@ typedef u32 EnemyFlags6;
 #define ES_UNK_2 2  // handlerTurn
 #define ES_UNK_3 3
 #define ES_UNK_4 4
-#define ES_UNK_5 5  // unk_5c0
-#define ES_UNK_6 6
-#define ES_SLEEP 7  // handlerSleep, Cmd_SleepEnemy の要求 (ENEFLAG4_UNK_1) で入る
-#define ES_UNK_8 8  // unk_598
-#define ES_UNK_9 9  // unk_5c8
+#define ES_NAP 5      // handlerNap, 居眠り, 経路ノードの待ちと Cmd_7659 で入る
+#define ES_WAKE_UP 6  // 居眠りから起きる, 各敵の *_StateWakeUp
+#define ES_STUN 7     // 気絶 (マヒ), handlerStun, Cmd_StunEnemy の要求か HBATTR_STUN の攻撃 (ENEFLAG4_STUN_REQUEST) で入る
+#define ES_UNK_8 8    // unk_598
+#define ES_UNK_9 9    // unk_5c8
 #define ES_UNK_10 10
 #define ES_UNK_11 11
 #define ES_UNK_12 12  // unk_584, 活動停止から経路を引き直して再開する
@@ -204,7 +197,7 @@ typedef u32 EnemyFlags6;
 #define ES_UNK_43 43  // スライムの FUN_08163848
 #define ES_UNK_44 44
 #define ES_UNK_45 45
-#define ES_UNK_46 46
+#define ES_UNK_46 46  // コカトリスの Cockatrice_StatePetrified (石化), スケルトンの Skeleton_StateVolleyWindUp
 #define ES_UNK_47 47
 #define ES_UNK_48 48
 #define ES_UNK_49 49
@@ -248,7 +241,7 @@ typedef struct Enemy {
   Mover mover;                              // 0x000
   EnemySprite* s;                           // 0x044
   MsgQueue mq;                              // 0x048
-  CWolfTargetNode cwolfNode;                // 0x07C, CWolfTargetManager_Register で敵のリストに繋がるノード, flags の bit0 を FUN_080f6604 が ENEFLAG5_UNK_9 のときに立てる
+  CWolfTargetNode cwolfNode;                // 0x07C, CWolfTargetManager_Register で敵のリストに繋がるノード, flags の bit0 を FUN_080f6604 が ENEFLAG5_CWOLF のときに立てる
   MoverTile tile;                           // 0x08C, ENEFLAG_UNK_13 が立っていて ENEFLAG5_UNK_5 が無いとき Enemy_UpdateMovement が mover.tile に繋ぐ
   PathWalker pathWalker;                    // 0x09C, 経路追従の状態, mover.path がここを指す, 根拠: Enemy_ResetToSpawn が Map_InitPathWalker(&pathWalker, ...) のあと mover.path に代入する
   ZoneEventSource zoneSource;               // 0x0A8, Enemy_UpdateMovement が毎フレーム Map_UpdateZoneEvents に渡す
@@ -265,9 +258,9 @@ typedef struct Enemy {
   u8 weaponExp;                             // 0x189, 倒されたとき Player_AddWeaponExp に渡す量
   u16 attrs;                                // 0x18A, Hitbox_SetPowerAndAttributes の attrs (HitboxAttrs の下位16bit)
   u16 weakness;                             // 0x18C, Hitbox_SetPowerAndAttributes の weakness
-  u16 unk_18e;                              // 0x18E, Enemy_InitHpAndState が第3引数を入れる, sleepTime と対
-  s16 sleepTime;                            // 0x190, Cmd_SleepEnemy が sleepTimer へ写す
-  u16 sleepTimer;                           // 0x192, Cmd_SleepEnemy / Cmd_C12A / Enemy_Reset が書く
+  u16 hitStunTime;                          // 0x18E, HBATTR_STUN の攻撃でマヒに入ったとき stunTimer に写す長さ, コカトリスの石化の長さにも使う, Enemy_InitHpAndState の第3引数
+  s16 stunTime;                             // 0x190, Cmd_StunEnemy でマヒにするとき stunTimer に写す長さ, ⭐のゲージの最大値
+  u16 stunTimer;                            // 0x192, マヒの残りフレーム数, 尽きると ES_STUN が明ける
   u16 unk_194;                              // 0x194, Enemy の _Init が &unk_194 を控える (unk_196 と対)
   u16 scriptID;                             // 0x196, 0 以外なら Enemy_RunScript が VM_ExecByID(scriptID, NULL) で実行する
   u16 unk_198;                              // 0x198, 条件がそろうと FUN_080e6658 が VM_ExecByID するスクリプト ID
@@ -374,7 +367,7 @@ typedef struct Enemy {
   u16 unk_494;                              // 0x494, FUN_080f6868 が 6000 を書く
   u8 unk_496[0x498 - 0x496];                // 0x496
   u32 weaponExpMask;                        // 0x498, 倒されたとき Player_AddWeaponExp に渡すマスク, Cmd_1E97 が 0x40 を書く
-  EnemyFlags6 flags6;                       // 0x49C, FUN_080f6e34 が bit14/18/19 を見る
+  HitboxAttrs flags6;                       // 0x49C, 最後に受けた攻撃判定の attributes の写し (Enemy_SetHitInfo が書く)
   u32 unk_4a0;                              // 0x4A0, Cmd_1E97 が 0x20 を書く
   NavAgent* navAgent;                       // 0x4A4, 経路移動の状態, Map_InitNavAgent / Map_StepNavPath に渡す (実体はここではなく別に確保される)
   Vec3* pathNodePos;                        // 0x4A8, FUN_080f62b0 が経路の今のノードの座標を書き込む先
@@ -423,7 +416,7 @@ typedef struct Enemy {
   s32 (*getMoveSpeed)(struct Enemy*);       // 0x588, 移動の速さを返す
   bool8 (*onDamaged)(struct Enemy*);        // 0x58C, fn(p), FUN_080f6604 が hp が残っているときに呼んで結果を返す
   void* handlerTurn;                        // 0x590, ES_UNK_2 (向きを変える) のハンドラ
-  void* handlerSleep;                       // 0x594, Cmd_SleepEnemy が非NULLのときだけ動く
+  void* handlerStun;                        // 0x594, ES_STUN (マヒ) のハンドラ, NULL なら Cmd_StunEnemy は何もしない
   void* unk_598;                            // 0x598, ES_UNK_8 のハンドラ, FUN_080f56ec が止まったときに handlerState へ写す
   void* unk_59c;                            // 0x59C, 状態ハンドラの控え, FUN_080f5b34 が handlerState へ写す
   void* handlerMove;                        // 0x5A0, ES_UNK_1 のハンドラ, FUN_080f1ef8 が入場時に handlerState へ写す
@@ -434,7 +427,7 @@ typedef struct Enemy {
   EnemyHandler unk_5b4;                     // 0x5B4, fn(p), Enemy_UpdateJump が着地したときに呼ぶ
   void* handlerChase;                       // 0x5B8, ES_UNK_26 のハンドラ, FUN_080f11d0 が handlerState へ写す
   void* handlerLookAround;                  // 0x5BC, ES_UNK_27 のハンドラ, FUN_080f0e78 が handlerState へ写す
-  void* unk_5c0;                            // 0x5C0, 既定の状態ハンドラ, Cmd_7659 が handlerState へコピーする
+  void* handlerNap;                         // 0x5C0, ES_NAP (居眠り) のハンドラ, 経路ノードの待ちと Cmd_7659 が handlerState へ写す
   EnemyHandler onRouteFailed;               // 0x5C4, fn(p), Enemy_TargetNearestLinkPlayer が座標の検索に失敗したときだけ呼ぶ
   void* unk_5c8;                            // 0x5C8, ES_UNK_9 のハンドラ, FUN_080f84d4 が handlerState へ写す
   void* handlerDamaged;                     // 0x5CC, ES_DAMAGED のハンドラ, Enemy_OnDamaged / FUN_080f8400 が handlerState へ写す
@@ -450,7 +443,7 @@ typedef struct Enemy {
   u8 unk_5f4[0x5F8 - 0x5F4];                // 0x5F4
   EnemyHandler onReset;                     // 0x5F8, fn(p), Enemy_Reset が呼ぶ
   void* unk_5fc;                            // 0x5FC
-  void* unk_600;                            // 0x600, EnemyBat_Init がアドレスを取る, 呼び出しは未発見
+  void* unk_600;                            // 0x600, EneBat_Init がアドレスを取る, 呼び出しは未発見
   void* unk_604;                            // 0x604
   bool8 (*tryDetectPlayer)(struct Enemy*);  // 0x608, FUN_080f22c4 ほか19関数が使う
   void* msgHandlers;                        // 0x60C, 関数ポインタ表, Enemy_DispatchMsg が fn = msgHandlers[arg[0]] を fn(p, arg) で呼ぶ
@@ -464,6 +457,20 @@ typedef struct Enemy {
   void* handlerTables[10];                  // 0x62C, 状態ごとの関数ポインタ表を10本, Enemy_InitHandlerTables が 0x62C から順にまとめて書き込む
 } Enemy;
 static_assert(sizeof(Enemy) == 1620);
+
+// 16色パレットを別のパレットへ少しずつ寄せる, EnemyPaletteFade と同じ形だが1歩の差分を s16 で持つ, 節を連ねた敵 (サラマンダー, サーペント) が持つ
+typedef struct {
+  rgb555 pltt[16];  // 0x00, r/g/b から合成した出力, 体の節と頭のスプライトがこれを指す
+  u16 timer;        // 0x20, 残りの歩数, 0 になるとフェードが終わる
+  u16 plttID;       // 0x22, 遷移先のパレット番号
+  s16 r[16];        // 0x24, 5.5固定小数の現在値, 1歩ごとに stepR が加算される
+  s16 g[16];        // 0x44
+  s16 b[16];        // 0x64
+  s16 stepR[16];    // 0x84, (遷移先 - 遷移元) を歩数で割ったもの
+  s16 stepG[16];    // 0xA4
+  s16 stepB[16];    // 0xC4
+} WormPaletteFade;
+static_assert(sizeof(WormPaletteFade) == 228);
 
 // ビットのセット/クリアはこのヘルパー経由で書く, フィールドごとに専用のものが要る
 // (幅で共通化して u32* を渡す形にすると、if/else の両腕が同じ形になって str が1つに畳まれ一致しない)
@@ -513,6 +520,8 @@ static inline bool32 Enemy_TestFlag3(Enemy* p, EnemyFlags3 bit) { return (p->fla
 static inline EnemyFlags3 Enemy_GetFlag3(Enemy* p, EnemyFlags3 bit) { return p->flags3 & bit; }
 static inline void Enemy_SetFlag4(Enemy* p, EnemyFlags4 bit) { p->flags4 |= bit; }
 static inline void Enemy_ClearFlags4(Enemy* p, EnemyFlags4 bits) { p->flags4 &= ~bits; }
+static inline void Enemy_SetFlag5(Enemy* p, EnemyFlags5 bit) { p->flags5 |= bit; }
+static inline void Enemy_ClearFlag5(Enemy* p, EnemyFlags5 bit) { p->flags5 &= ~bit; }
 
 // --------------------------------------------
 

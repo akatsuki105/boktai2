@@ -19,7 +19,7 @@
 typedef struct {
   AuxSprite sprite;       // 0x00
   AuxAnimState anim;      // 0x2C
-  AuxSpriteGfx gfx;       // 0x3C, SPRITE_CROW
+  AuxSpriteGfx gfx;       // 0x3C, SPR_CROW_0
   Vec3 vel;               // 0x58
   Vec3 size;              // 0x60, Coffin との判定の半径
   u16 state;              // 0x68
@@ -106,7 +106,7 @@ NON_MATCH void Cmd_SpawnDove(void) {
   if (e == NULL) {
     return;
   }
-  Video_GetAuxSprite(&e->gfx, SPRITE_CROW);
+  Video_GetAuxSprite(&e->gfx, SPR_CROW_0);
   AuxSprite_Add(&e->sprite, &e->gfx, 0);
   Video_SetAuxSpritePltt(e->sprite.gfx, 335);
   e->state = 1;

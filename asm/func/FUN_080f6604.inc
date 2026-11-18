@@ -137,7 +137,7 @@ _080F6706:
 	lsls r2, r2, #3
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_080ce544
+	bl PlayerLink_UpdateBloodSwordOnKill
 	b _080F6842
 _080F6720:
 	movs r7, #0x94

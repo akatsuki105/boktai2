@@ -32,13 +32,13 @@ static_assert(sizeof(Entity080aace8Particle) == 60);
 typedef struct Entity080aace8 {
   Entity e;                                        // 0x000, ENTITY_UNK_11
   Player* player;                                  // 0x018, _Init の第2引数
-  MainSprite icon;                                 // 0x01C, SPRITE_INVENTORY_ICONS
+  MainSprite icon;                                 // 0x01C, SPR_INVENTORY_ICONS
   Vec3 spritePos;                                  // 0x07C, screen から少しずらした icon の表示位置
   Vec3 screen;                                     // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   u8 unk_8c[8];                                    // 0x08C
   Hitbox hitbox;                                   // 0x094
   AuxSprite auxSprites[2];                         // 0x0E4
-  AuxSpriteGfx gfx;                                // 0x13C, SPRITE_SPIKEBALL
+  AuxSpriteGfx gfx;                                // 0x13C, SPR_SPIKEBALL
   u16 unk_158;                                     // 0x158, 次に使う auxSprites の添字 (0 と 1 を交互)
   u8 unk_15a[2];                                   // 0x15A, auxSprites[i] の演出段階 (0: 停止, 1: 落下, 2: 跳ね)
   u16 unk_15c[2];                                  // 0x15C, auxSprites[i] の着地する y
@@ -347,7 +347,7 @@ s32 Entity080aace8_Destroy(Entity080aace8* p) {
 // アイテムアイコンのスプライトを画面に出す
 void FUN_080aa940(Entity080aace8* p) {
   MainSpriteGfx gfx;
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   s32 poseIdx;
 
   gfx = *(MainSpriteGfx*)f;
@@ -366,7 +366,7 @@ void FUN_080aa940(Entity080aace8* p) {
 void FUN_080aa9d0(Entity080aace8* p) {
   s32 i;
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_SPIKEBALL);
+  Video_GetAuxSprite(&p->gfx, SPR_SPIKEBALL);
   for (i = 0; i < 2; i++) {
     AuxSprite_Add(&p->auxSprites[i], &p->gfx, SPRFLAG_HIDDEN);
     Video_SetAuxSpritePltt(&p->gfx, OBP_SPIKEBALL(2));

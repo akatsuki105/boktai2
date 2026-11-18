@@ -254,7 +254,7 @@ void Player_SetupKnockback(Player* p, Hitbox* a, Hitbox* b) {
     b->knockback = 200;
   }
 
-  if (Hitbox_TestAttr(a, HBATTR_18)) {
+  if (Hitbox_TestAttr(a, HBATTR_BLOW)) {
     p->blownAway = 1;
     p->facing = Player_GetDirToAttacker(a, b);
     return;
@@ -385,7 +385,7 @@ void Player_RefreshStats(Player* p) {
 static s32 CalcMaxHP(Player* p) {
   s32 val;
   PlayerArmor* armor = &p->armor;
-  if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->kind == PLAYER_RDJANGO) {
     val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) + armor->sideBonus[STAT_VITALITY];
   } else {
     val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) - armor->sideBonus[STAT_VITALITY];
@@ -403,7 +403,7 @@ static s32 CalcMaxEne(Player* p) {
     return 10;
   }
 
-  if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->kind == PLAYER_RDJANGO) {
     val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) + armor->sideBonus[STAT_SPIRIT];
   } else {
     val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) - armor->sideBonus[STAT_SPIRIT];
@@ -470,7 +470,7 @@ void Player_RefreshHurtbox(Player* p) {
     weakness = HBATTR_SOL;
   } else {
     lv = gStat->lv;
-    if (p->kind == PLAYER_SOLAR_DJANGO) {
+    if (p->kind == PLAYER_RDJANGO) {
       defence = p->stats[STAT_AGILITY] + armor->bonus[STAT_AGILITY] + armor->sideBonus[STAT_AGILITY];
       attrs = p->hbattrs | HBATTR_SOL;
       weakness = HBATTR_DARK;
@@ -694,15 +694,15 @@ void Player_GetShockwaveDirParams(u32 dir, s32* result1, s32* result2) {
 
 // 衝撃波のスプライトに本体と同じパレットを渡して表示する
 void Player_ShowShockwave(Player* p) {
-  p->meleeShockwave.gfx.plttID = p->human.plttID;
-  p->meleeShockwave.gfx.pltt = p->human.pltt;
-  AuxSprite_Show(&p->meleeShockwave.sprite);
-  p->meleeShockwave.finished = TRUE;
+  p->shockwave.gfx.plttID = p->human.plttID;
+  p->shockwave.gfx.pltt = p->human.pltt;
+  AuxSprite_Show(&p->shockwave.sprite);
+  p->shockwave.finished = TRUE;
 }
 
 // 黒ジャンゴが剣で攻撃する時に1回呼ばれる, 衝撃波を向きに応じてずらして出す
 void Player_SpawnSwordShockwave(Player* p, u32 idx, Vec3* pos) {
-  AuxSprite* sprite = &p->meleeShockwave.sprite;
+  AuxSprite* sprite = &p->shockwave.sprite;
   s32 angle = ((p->facing + 5) & 7) * 32;
   s32 variant;
   s32 flags;
@@ -711,17 +711,17 @@ void Player_SpawnSwordShockwave(Player* p, u32 idx, Vec3* pos) {
   sprite->pos.y += Q8(0.743);
   sprite->pos.x += POLAR_X(Q8(0.94), angle);
   sprite->pos.z += POLAR_Z(Q8(0.94), angle);
-  p->meleeShockwave.vel.x = POLAR_X(Q8(0.04), angle);
-  p->meleeShockwave.vel.z = POLAR_Z(Q8(0.04), angle);
+  p->shockwave.vel.x = POLAR_X(Q8(0.04), angle);
+  p->shockwave.vel.z = POLAR_Z(Q8(0.04), angle);
 
   Player_GetShockwaveDirParams(idx, &variant, &flags);
-  AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 0, variant, flags);
+  AuxAnim_SetAnim(&p->shockwave.anim, p->shockwave.animFile, 0, variant, flags);
   Player_ShowShockwave(p);
 }
 
 // 黒ジャンゴが槍で攻撃する時に1回呼ばれる, n で衝撃波の高さと前に出る距離が変わる
 void Player_SpawnSpearShockwave(Player* p, u32 idx, Vec3* pos, s32 n) {
-  AuxSprite* sprite = &p->meleeShockwave.sprite;
+  AuxSprite* sprite = &p->shockwave.sprite;
   s32 height;
   s32 dist;
   s32 angle;
@@ -745,50 +745,48 @@ void Player_SpawnSpearShockwave(Player* p, u32 idx, Vec3* pos, s32 n) {
   sprite->pos.y += height;
   sprite->pos.x += POLAR_X(dist, angle);
   sprite->pos.z += POLAR_Z(dist, angle);
-  p->meleeShockwave.vel.x = POLAR_X(Q8(0.04), angle);
-  p->meleeShockwave.vel.z = POLAR_Z(Q8(0.04), angle);
+  p->shockwave.vel.x = POLAR_X(Q8(0.04), angle);
+  p->shockwave.vel.z = POLAR_Z(Q8(0.04), angle);
 
   Player_GetShockwaveDirParams(idx, &variant, &flags);
-  AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 1, variant, flags);
+  AuxAnim_SetAnim(&p->shockwave.anim, p->shockwave.animFile, 1, variant, flags);
   Player_ShowShockwave(p);
 }
 
-// Player_SpawnSwordShockwave のような関数だが、いつ呼ばれるか不明 (武器の攻撃ではない)
-// 衝撃波を pos から向きの反対側に少しずらして出す
-void Player_SpawnShockwaveBehind(Player* p, u32 idx, Vec3* pos) {
-  AuxSprite* sprite = &p->meleeShockwave.sprite;
+// 黒ジャンゴがハンマーを振り下ろしたとき, pos から向いている方向へ 180 ずらした位置に衝撃波を出す
+void Player_SpawnHammerShockwave(Player* p, u32 idx, Vec3* pos) {
+  AuxSprite* sprite = &p->shockwave.sprite;
   s32 angle = ((p->facing + 5) & 7) * 32;
   sprite->pos = *pos;
 
   sprite->pos.x += POLAR_X(180, angle);
   sprite->pos.z += POLAR_Z(180, angle);
 
-  p->meleeShockwave.vel.x = 0;
-  p->meleeShockwave.vel.z = 0;
-  AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 2, 0, 0);
+  p->shockwave.vel.x = 0;
+  p->shockwave.vel.z = 0;
+  AuxAnim_SetAnim(&p->shockwave.anim, p->shockwave.animFile, 2, 0, 0);
   Player_ShowShockwave(p);
 }
 
-// 多分、サバタが攻撃する時に呼ばれる
-// サバタの攻撃時に散弾スプライトを pos の少し上に置いて表示する
+// サバタの回転攻撃で散弾スプライトを pos の少し上に置き, wpn.timer の向きに回して表示する
 void Player_ShowGunSpread(Player* p, u32 _, Vec3* pos) {
-  p->meleeShockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
-  p->meleeShockwave.sprite.pos = *pos;
-  p->meleeShockwave.sprite.pos.y += 0xE6;
-  p->meleeShockwave.sprite.rotation = p->wpn.gunSpreadAngle;
-  p->meleeShockwave.finished = TRUE;
+  p->shockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
+  p->shockwave.sprite.pos = *pos;
+  p->shockwave.sprite.pos.y += 0xE6;
+  p->shockwave.sprite.rotation = p->wpn.timer;
+  p->shockwave.finished = TRUE;
 }
 
 // 衝撃波のスプライトを消す
-void Player_RemoveShockwave(Player* p) { AuxSprite_Remove(&(p->meleeShockwave).sprite); }
+void Player_RemoveShockwave(Player* p) { AuxSprite_Remove(&(p->shockwave).sprite); }
 
 // 衝撃波スプライトを用意する, サバタは散弾の1枚絵, それ以外はアニメーション付き
 void Player_InitShockwave(Player* p) {
-  AuxSprite* sprite = &p->meleeShockwave.sprite;
-  AuxSpriteGfx* gfx = &p->meleeShockwave.gfx;
+  AuxSprite* sprite = &p->shockwave.sprite;
+  AuxSpriteGfx* gfx = &p->shockwave.gfx;
 
   if (p->kind == PLAYER_SABATA) {
-    Video_GetAuxSprite(gfx, SPRITE_GUN_SPREAD);
+    Video_GetAuxSprite(gfx, SPR_GUN_SPREAD);
     AuxSprite_Add(sprite, gfx, SPRFLAG_NO_CLIP | SPRFLAG_AFFINE | SPRFLAG_HIDDEN);
     sprite->poseIdx = 4;
     Video_SetAuxSpritePltt(gfx, 50);
@@ -796,16 +794,16 @@ void Player_InitShockwave(Player* p) {
     sprite->scaleY = 0x7F;
     sprite->scaleX = 0x7F;
     sprite->pos = p->mover.pos;
-    p->meleeShockwave.update = PlayerShockwave_UpdateFlash;
+    p->shockwave.update = PlayerShockwave_UpdateFlash;
   } else {
-    Video_GetAuxSprite(gfx, SPRITE_MELEE_SHOCKWAVE);
+    Video_GetAuxSprite(gfx, SPR_MELEE_SHOCKWAVE);
     AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN);
     Video_SetAuxSpritePltt(gfx, OBP_RDJANGO);
-    p->meleeShockwave.animFile = GetFile(DIR_ANIMATION, ANIM_0837);
-    p->meleeShockwave.update = PlayerShockwave_UpdateAnim;
+    p->shockwave.animFile = GetFile(DIR_ANIMATION, ANIM_0837);
+    p->shockwave.update = PlayerShockwave_UpdateAnim;
   }
 
-  p->meleeShockwave.finished = FALSE;
+  p->shockwave.finished = FALSE;
 }
 
 // エンチャントの粒を1フレーム進める, 12フレームで消え 6フレーム目で小さいコマに変える
@@ -1074,67 +1072,70 @@ void Player_InitChargePtcls(Player* p) {
   st->spawnTimer = 0;
 }
 
-// 自前のパレット pltt を作る, plttBrightness のぶん全チャンネルを明るくし, unk_359 が 0 なら色5/6/13 は触らない
-// 残差5命令 (159/154): 原典は高位レジスタを r8 の1本で済ませているが, こちらは r9 も使ってしまう
-// Tier A/B と dst のローカル化有無は試済
+// 自前のパレット pltt を作る, plttBrightness のぶん全チャンネルを明るくし, useAuxSprite が 0 なら色5/6/13 は触らない
+// 命令数は一致 (154), 残差は i と src のレジスタ入れ替えと i = 0 の位置のみ (PlayerLink_BuildPltt と同じ)
+// 試済: 添字版 (r9 を使い 159 命令), c ローカル無し, ポインタを本体末尾で進める形, dst を関数頭で1回だけ作る形
 NON_MATCH void Player_BuildPltt(Player* p) {
 #ifdef NONMATCHING_C
   rgb555* src = &gObjPlttData[p->plttIDs[p->plttIdx] * 16];
+  rgb555* dst;
   s32 i;
 
   if (p->plttBrightness == 0) {
     if (p->useAuxSprite == 0) {
-      for (i = 0; i < 16; i++) {
+      dst = p->pltt;
+      for (i = 0; i < 16; i++, src++, dst++) {
         if (i != 5 && i != 6 && i != 13) {
-          p->pltt[i] = src[i];
+          *dst = *src;
         }
       }
     } else {
+      dst = p->pltt;
       for (i = 0; i < 16; i++) {
-        p->pltt[i] = src[i];
+        *dst++ = *src++;
       }
     }
   } else if (p->useAuxSprite == 0) {
-    for (i = 0; i < 16; i++) {
+    dst = p->pltt;
+    for (i = 0; i < 16; i++, src++, dst++) {
       if (i != 5 && i != 6 && i != 13) {
-        u16 c = src[i];
-        s32 r = (c & 0x1F) + p->plttBrightness;
+        s32 r = (*src & 0x1F) + p->plttBrightness;
         s32 g;
         s32 b;
 
         if (r > 0x1F) {
           r = 0x1F;
         }
-        g = ((c >> 5) & 0x1F) + p->plttBrightness;
+        g = ((*src >> 5) & 0x1F) + p->plttBrightness;
         if (g > 0x1F) {
           g = 0x1F;
         }
-        b = ((c >> 10) & 0x1F) + p->plttBrightness;
+        b = ((*src >> 10) & 0x1F) + p->plttBrightness;
         if (b > 0x1F) {
           b = 0x1F;
         }
-        p->pltt[i] = (b << 10) | (g << 5) | r;
+        *dst = (b << 10) | (g << 5) | r;
       }
     }
   } else {
-    for (i = 0; i < 16; i++) {
-      u16 c = src[i];
-      s32 r = (c & 0x1F) + p->plttBrightness;
+    dst = p->pltt;
+    for (i = 0; i < 16; i++, src++, dst++) {
+      s32 r = (*src & 0x1F) + p->plttBrightness;
       s32 g;
       s32 b;
 
       if (r > 0x1F) {
         r = 0x1F;
       }
-      g = ((c >> 5) & 0x1F) + p->plttBrightness;
+      g = ((*src >> 5) & 0x1F) + p->plttBrightness;
       if (g > 0x1F) {
         g = 0x1F;
       }
-      b = ((c >> 10) & 0x1F) + p->plttBrightness;
+      b = ((*src >> 10) & 0x1F) + p->plttBrightness;
       if (b > 0x1F) {
         b = 0x1F;
       }
-      p->pltt[i] = (b << 10) | (g << 5) | r;
+      *dst = (b << 10) | (g << 5) | r;
     }
   }
 #else
@@ -1171,12 +1172,13 @@ void Player_ApplyEnchantColors(Player* p) {
 }
 
 // src と pltt を wSrc:wBase の比で混ぜて pltt[16..31] に作り, スプライトのパレットをそこへ向ける
-// unk_359 が 0 なら色5/6/13 は混ぜずにそのまま写す
-// 残差2命令 (227/225): レジスタ割当とスタック使用量だけ (原典は p を sl, wSrc を ip に置いて 0x14 で足りている)
-// 添字でなくカーソル (src++/base++) にすると命令数はここまで詰まった, Tier A/B は試済
+// useAuxSprite が 0 なら色5/6/13 は混ぜずにそのまま写す
+// 残差3命令 (228/225): 原典は src を r8 に置き i をスタックに逃がすが, こちらは逆, 2本目のループも原典は数え上げのまま (PlayerLink_BlendPltt と同じ)
+// 効いた手: 素の成分を先に3つ取り出してから混ぜる, 結果を s32 c に入れて格納を共有 (28→14 hunk), 試済: c を u16 にして直接書く形 (227 命令), 宣言順
 NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 shift) {
 #ifdef NONMATCHING_C
   rgb555* base;
+  s32 c;
   s32 i;
 
   if (wSrc == 0) {
@@ -1192,30 +1194,35 @@ NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 sh
     base = p->pltt;
     for (i = 0; i < 16; i++) {
       if (i == 5 || i == 6 || i == 13) {
-        base[16] = base[0];
+        c = *base;
       } else {
-        u16 c = src[0];
-        u16 d;
-        s32 r = (c & 0x1F) + p->plttBrightness;
+        s32 r = (*src & 0x1F) + p->plttBrightness;
         s32 g;
         s32 b;
+        s32 br;
+        s32 bg;
+        s32 bb;
 
         if (r > 0x1F) {
           r = 0x1F;
         }
-        g = ((c >> 5) & 0x1F) + p->plttBrightness;
+        g = ((*src >> 5) & 0x1F) + p->plttBrightness;
         if (g > 0x1F) {
           g = 0x1F;
         }
-        b = ((c >> 10) & 0x1F) + p->plttBrightness;
+        b = ((*src >> 10) & 0x1F) + p->plttBrightness;
         if (b > 0x1F) {
           b = 0x1F;
         }
-
-        d = base[0];
-        base[16] = ((((b * wSrc) + (((d >> 10) & 0x1F) * wBase)) >> shift) << 10) | ((((g * wSrc) + (((d >> 5) & 0x1F) * wBase)) >> shift) << 5) | (((r * wSrc) + ((d & 0x1F) * wBase)) >> shift);
+        br = *base & 0x1F;
+        bg = (*base >> 5) & 0x1F;
+        bb = (*base >> 10) & 0x1F;
+        r = (r * wSrc + br * wBase) >> shift;
+        g = (g * wSrc + bg * wBase) >> shift;
+        b = (b * wSrc + bb * wBase) >> shift;
+        c = (b << 10) | (g << 5) | r;
       }
-
+      base[16] = c;
       src++;
       base++;
     }
@@ -1223,27 +1230,32 @@ NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 sh
   } else {
     base = p->pltt;
     for (i = 0; i < 16; i++) {
-      u16 c = src[0];
-      u16 d;
-      s32 r = (c & 0x1F) + p->plttBrightness;
+      s32 r = (*src & 0x1F) + p->plttBrightness;
       s32 g;
       s32 b;
+      s32 br;
+      s32 bg;
+      s32 bb;
 
       if (r > 0x1F) {
         r = 0x1F;
       }
-      g = ((c >> 5) & 0x1F) + p->plttBrightness;
+      g = ((*src >> 5) & 0x1F) + p->plttBrightness;
       if (g > 0x1F) {
         g = 0x1F;
       }
-      b = ((c >> 10) & 0x1F) + p->plttBrightness;
+      b = ((*src >> 10) & 0x1F) + p->plttBrightness;
       if (b > 0x1F) {
         b = 0x1F;
       }
-
-      d = base[0];
-      base[16] = ((((b * wSrc) + (((d >> 10) & 0x1F) * wBase)) >> shift) << 10) | ((((g * wSrc) + (((d >> 5) & 0x1F) * wBase)) >> shift) << 5) | (((r * wSrc) + ((d & 0x1F) * wBase)) >> shift);
-
+      br = *base & 0x1F;
+      bg = (*base >> 5) & 0x1F;
+      bb = (*base >> 10) & 0x1F;
+      r = (r * wSrc + br * wBase) >> shift;
+      g = (g * wSrc + bg * wBase) >> shift;
+      b = (b * wSrc + bb * wBase) >> shift;
+      c = (b << 10) | (g << 5) | r;
+      base[16] = c;
       src++;
       base++;
     }
@@ -1256,7 +1268,7 @@ NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 sh
 
 // 毎フレームのパレット更新, エンチャントの色と変身の色をクロスフェードさせる
 // 残差1命令 (259/258): p と n のレジスタが入れ替わっているだけ (原典は p が r5)
-// Player_CheckMagicEnchant の宣言を外すと streamdiff は完全一致する (Player_GetMagicAction と同じ現象)
+// 試済: Player_CheckMagicEnchant の前方宣言を外して -Werror 無しでビルドしても 259/258 のまま (「外すと一致」は古い .o を比べた見間違い)
 NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
 #ifdef NONMATCHING_C
   u32 bright;
@@ -1516,7 +1528,7 @@ void Player_SetBasePlttID(Player* p) {
 // 例: ロックパワー(EBUFF_MEGAPOWER) は ロックマンと同じ青色
 void Player_SetPlttIDs(Player* p) {
   switch (p->kind) {
-    case PLAYER_SOLAR_DJANGO: {
+    case PLAYER_RDJANGO: {
       if (Player_TestEquipBuff(p, EBUFF_MEGAPOWER)) {
         p->plttIDs[0] = OBP_MEGAPOWER;
       } else if (Player_TestEquipBuff(p, EBUFF_GUTSPOWER)) {
@@ -1531,7 +1543,7 @@ void Player_SetPlttIDs(Player* p) {
       p->plttIDs[1] = OBP_ELEMENT(0), p->plttIDs[2] = 32, p->plttIDs[3] = 291, p->plttIDs[4] = 292, p->plttIDs[5] = 31, p->plttIDs[6] = 33, p->plttIDs[7] = 30;
       break;
     }
-    case PLAYER_DARK_DJANGO: {
+    case PLAYER_BDJANGO: {
       if (Player_TestEquipBuff(p, EBUFF_MEGAPOWER)) {
         p->plttIDs[0] = OBP_MEGAPOWER;
       } else if (Player_TestEquipBuff(p, EBUFF_GUTSPOWER)) {
@@ -1609,8 +1621,8 @@ void Player_ResetPltt(Player* p) {
 }
 
 // 状態異常の粒をひとつ弾けさせて1段階解く, 引火なら消えかけさせるだけ
-// 残差2命令 (134/132): 原典は高位レジスタを r8-r10 の3本使うが, プロトタイプありで呼ぶと2本で足りてしまう
-// ElementalCondEmitter_BurstParticle の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のレジスタ圧になる)
+// 残差2命令 (134/132): 原典は高位レジスタを r8-r10 の3本使うが, こちらは2本で足りてしまう
+// 試済: ElementalCondEmitter_BurstParticle の宣言を外して -Werror 無しでビルドしても 134/132 のまま, 通信版 PlayerLink_BurstElementalCond も同じ残差
 NON_MATCH void Player_BurstElementalCond(Player* p) {
 #ifdef NONMATCHING_C
   Vec3 pos;
@@ -1901,12 +1913,7 @@ u32 Player_ApplyFlashPose(Player* p, u32 pose) {
 }
 
 // 変身の拡縮演出を1フレーム進める, goodCondID が GOOD_MINI の間は縮み, それ以外では元の大きさへ戻る
-// 残差4命令 (186/190): レジスタ割当 (原典は p を r4) と定数の作り直し
-// 分岐の並び (goodCondTimer != 0 を先) は原典と一致した, Tier A/B は試済
-// 元に戻すときに消すのは SPRFLAG_AFFINE だけ (原典は ~2 で and, HIDDEN も消していたのを直した), 原典は goodCondTimer を r8 に残して isMiniHuman = FALSE の格納に使い回し, &isMiniHuman も r7 に持ち越す
-// isMiniHuman の読みを getter の static inline にすると 22 hunk まで縮む (setter も足すと悪化), 戻すブロックを static inline にまとめる形は 29
-NON_MATCH void Player_UpdateFormScale(Player* p) {
-#ifdef NONMATCHING_C
+void Player_UpdateFormScale(Player* p) {
   s32 scale;
 
   if (p->goodCondTimer != 0) {
@@ -1923,7 +1930,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       scale = 0x40 - (p->shrink >> 1);
       p->human.scaleX = scale;
       p->human.scaleY = scale;
-      p->flag20 |= (PFLAG20_SNEAKING | PFLAG20_UNK_18);
+      Player_SetFlag20(p, PFLAG20_SNEAKING | PFLAG20_UNK_18);
     } else if (p->shrink != 0) {
       if (p->isMiniHuman) {
         PlaySound_082406e0(SE_PLAYER_SHRINK_END);
@@ -1933,18 +1940,19 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       p->shrink--;
       if (p->shrink == 0) {
         p->human.flags &= ~SPRFLAG_AFFINE;
-        scale = Q6(1);
+        p->human.scaleX = Q6(1);
+        p->human.scaleY = Q6(1);
       } else {
         p->human.flags |= SPRFLAG_AFFINE;
         scale = Q6(1) - (p->shrink >> 1);
+        p->human.scaleX = scale;
+        p->human.scaleY = scale;
       }
-      p->human.scaleX = scale;
-      p->human.scaleY = scale;
     }
 
     if (p->goodCondID == GOOD_INVISIBLE) {
       p->human.flags |= SPRFLAG_BLINK_ODD;
-      p->flag20 |= PFLAG20_INVISIBLE;
+      Player_SetFlag20(p, PFLAG20_INVISIBLE);
     } else {
       p->human.flags &= ~SPRFLAG_BLINK_ODD;
     }
@@ -1962,22 +1970,20 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       p->shrink--;
       if (p->shrink == 0) {
         p->human.flags &= ~SPRFLAG_AFFINE;
-        scale = Q6(1);
+        p->human.scaleX = Q6(1);
+        p->human.scaleY = Q6(1);
       } else {
         p->human.flags |= SPRFLAG_AFFINE;
         scale = Q6(1) - (p->shrink >> 1);
+        p->human.scaleX = scale;
+        p->human.scaleY = scale;
       }
-      p->human.scaleX = scale;
-      p->human.scaleY = scale;
     }
 
     if (p->human.flags & SPRFLAG_BLINK_ODD) {
       p->human.flags &= ~SPRFLAG_BLINK_ODD;
     }
   }
-#else
-  INCFUNC("asm/func/Player_UpdateFormScale.inc");
-#endif
 }
 
 void Player_CountMash(Player* p) {
@@ -2010,7 +2016,7 @@ void Player_UpdatePoseAndShadow(Player* p) {
   Player_UpdateConfusePtcl(p);
   Player_UpdateEnchantPtcls(p);
   Player_UpdateChargePtcls(p);
-  p->meleeShockwave.update(&p->meleeShockwave);
+  p->shockwave.update(&p->shockwave);
 
   if (p->emoteTimer != 0) {
     p->emoteTimer--;
@@ -2224,10 +2230,10 @@ u32 CheckNamakuraProc(Player* p) {
   return 0;
 }
 
-// 一定確率で麻痺
-u32 CheckParalyzeProc(Player* p) {
+// 一定確率で麻痺(気絶)
+u32 CheckStunProc(Player* p) {
   if (Mod(Random(), 100) <= 10) {
-    return HBATTR_19;
+    return HBATTR_STUN;
   }
   return 0;
 }
@@ -2238,7 +2244,7 @@ void Player_UpdateBloodSword(Player* p) {
     return;
   }
 
-  if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->kind == PLAYER_RDJANGO) {
     if (p->hp <= 1) {
       return;
     }
@@ -2358,8 +2364,8 @@ NON_MATCH void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) {
         p->weaponEffectCb2[i] = CheckNamakuraProc;
         break;
       }
-      case WET_PARALYZE: {
-        p->weaponEffectCb2[i] = CheckParalyzeProc;
+      case WET_STUN: {
+        p->weaponEffectCb2[i] = CheckStunProc;
         break;
       }
       case WET_DURABILITY: {
@@ -2513,7 +2519,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
 }
 
 // 攻撃で与えたダメージの分だけ武器を損傷させる, 限界を超えたら品質か特殊効果を1つ失う
-// ダメージはジャンゴがバットに攻撃を当てると呼ばれる EnemyBat_OnHurt の 0x0813EFFC で wpn.hitbox.damage に加算される (他の敵も同様と思われる)
+// ダメージはジャンゴがバットに攻撃を当てると呼ばれる EneBat_OnHurt の 0x0813EFFC で wpn.hitbox.damage に加算される (他の敵も同様と思われる)
 void Player_UpdateWeaponWear(Player* p) {
   s32 wear = Hitbox_GetDamage(&p->wpn.hitbox);
 
@@ -2844,12 +2850,8 @@ void Player_PayMagicCost(Player* p) {
   }
 }
 
-// 今のフォームで魔法 id が使えるかを返す (magic.availableForm の中身)
-// 残差4命令 (84/88): 原典は共有された return FALSE のブロックを関数の中央に置いて前後から飛ぶが, agbcc は末尾にまとめる
-// Tier A/B は試済 (Player_TestForbidFlags を両枝で呼ぶ形は原典と一致した)
-// 原典は TestForbidFlags の結果を r1 に写して判定し, 元の r0 (== 0) を赤ジャンゴの最後の return FALSE にそのまま使う, 追試: switch (p->kind) と return 式 (16 hunk), 末尾を return id == X にする形 (88/88, 16 hunk)
-NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
-#ifdef NONMATCHING_C
+// 今のフォームで魔法 id が使えるかを返す (magic.availableForm の中身), ジャンゴで系統が LUNA/SOL/DARK 以外のときは return を通らず GetMagicCategory の値がそのまま返る
+bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
   s32 cat;
 
   if (id < 0) {
@@ -2867,67 +2869,52 @@ NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
     }
   }
 
-  if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->kind == PLAYER_RDJANGO) {
     if (cat == MC_LUNA) {
       if (id == MAGIC_DARK) {
         return FALSE;
       }
       return TRUE;
-    }
-    if (cat == MC_SOL) {
+    } else if (cat == MC_SOL) {
       return TRUE;
-    }
-    if (cat == MC_DARK) {
+    } else if (cat == MC_DARK) {
       return FALSE;
     }
-    return FALSE;
-  }
-
-  if (p->kind == PLAYER_DARK_DJANGO) {
+  } else if (p->kind == PLAYER_BDJANGO) {
     if (cat == MC_LUNA) {
       if (id == MAGIC_SOL || id == MAGIC_FLAME || id == MAGIC_FROST || id == MAGIC_CLOUD || id == MAGIC_EARTH) {
         return FALSE;
       }
       return TRUE;
-    }
-    if (cat == MC_SOL) {
+    } else if (cat == MC_SOL) {
       return FALSE;
-    }
-    if (cat == MC_DARK) {
-      if (id != MAGIC_SLEEPING) {
+    } else if (cat == MC_DARK) {
+      if (id == MAGIC_SLEEPING) {
+        if (gStat->coffin >= 0) {
+          return FALSE;
+        }
         return TRUE;
-      }
-      if (gStat->coffin >= 0) {
-        return FALSE;
       }
       return TRUE;
     }
-    return FALSE;
-  }
-
-  if (p->kind == PLAYER_SABATA) {
+  } else if (p->kind == PLAYER_SABATA) {
     return TRUE;
-  }
-  if (p->kind == PLAYER_BAT) {
+  } else if (p->kind == PLAYER_BAT) {
     if (id == MAGIC_BAT) {
       return TRUE;
     }
     return FALSE;
-  }
-  if (p->kind == PLAYER_MOUSE) {
+  } else if (p->kind == PLAYER_MOUSE) {
     if (id == MAGIC_RAT) {
       return TRUE;
     }
     return FALSE;
+  } else {
+    if (id == MAGIC_SLEEPING) {
+      return TRUE;
+    }
+    return FALSE;
   }
-
-  if (id == MAGIC_SLEEPING) {
-    return TRUE;
-  }
-  return FALSE;
-#else
-  INCFUNC("asm/func/Player_IsMagicAvailableForm.inc");
-#endif
 }
 
 // エンチャント中で、コストも払えて、武器種が銃でも拳でもなければ その魔法の ID を返す
@@ -2954,8 +2941,7 @@ bool32 Player_HasEnoughSunGauge(Player* p, s32 sunGauge) {
 }
 
 // 魔法ボタンを押したときに実行する行動番号を返す, 使えないときは今の行動をそのまま返す
-// 残差9命令 (258/249): AuxAnim_RestartAnim の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のコードになる)
-// Player_BurstElementalCond と同じ現象, 宣言を () にしてもプロトタイプありと同じコードになる
+// 残差9命令 (258/249), 試済: AuxAnim_RestartAnim の宣言を外して -Werror 無しでビルドしても 258/249 のまま, 宣言を () にしても同じ
 NON_MATCH u32 Player_GetMagicAction(Player* p) {
 #ifdef NONMATCHING_C
   PlayerMagic* m = &p->magic;
@@ -3217,8 +3203,8 @@ void Player_UpdateSabata(Player* p);
 // プレイヤー生成の後半, kind を決めて更新コールバックと入力を割り当て, 1Pなら前のプレイヤーが残した状態異常の残り時間を引き継ぐ
 s32 Player_InitState(Player* p) {
   static const PlayerFunc sPlayerUpdates[6] = {
-      [PLAYER_SOLAR_DJANGO] = Player_UpdateDjango,
-      [PLAYER_DARK_DJANGO] = Player_UpdateDjango,
+      [PLAYER_RDJANGO] = Player_UpdateDjango,
+      [PLAYER_BDJANGO] = Player_UpdateDjango,
       [PLAYER_BAT] = Player_UpdateBat,
       [PLAYER_MOUSE] = Player_UpdateMouse,
       [PLAYER_SLEEPING] = Player_UpdateSleeping,
@@ -3284,7 +3270,7 @@ s32 Player_InitState(Player* p) {
 }
 
 void Player_InitSprite(Player* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
 
   if (f != NULL) {
     p->humanGfx = *(MainSpriteGfx*)f;
@@ -3316,9 +3302,9 @@ void Player_InitBeastSprite(Player* p) {
   AuxAnimFile* file;
   u32 animIdx;
 
-  Video_GetAuxSprite(&p->beastGfxs[0], SPRITE_BAT);
-  Video_GetAuxSprite(&p->beastGfxs[1], SPRITE_MOUSE);
-  Video_GetAuxSprite(&p->beastGfxs[2], SPRITE_COFFIN_0);
+  Video_GetAuxSprite(&p->beastGfxs[0], SPR_BAT);
+  Video_GetAuxSprite(&p->beastGfxs[1], SPR_MOUSE);
+  Video_GetAuxSprite(&p->beastGfxs[2], SPR_COFFIN_0);
   p->batAnim = GetFile(DIR_ANIMATION, ANIM_BAT);
   p->mouseAnim = GetFile(DIR_ANIMATION, ANIM_MOUSE);
   p->coffinAnim = GetFile(DIR_ANIMATION, ANIM_COFFIN);
@@ -3373,8 +3359,8 @@ bool32 Player_InitMover(Player* p, u32 moverID) {
   kind = p->kind;
   mover = &p->mover;
   switch (kind) {
-    case PLAYER_SOLAR_DJANGO:
-    case PLAYER_DARK_DJANGO:
+    case PLAYER_RDJANGO:
+    case PLAYER_BDJANGO:
     case PLAYER_SABATA: {
       p->useAuxSprite = FALSE;
       Mover_SetMainSprite(mover, &p->human);
@@ -3437,7 +3423,7 @@ void Player_SetupHurtbox(Player* p) {
   VEC3_SET(halfSize, Q8(0.196), Q8(0.497), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.497), 0);
   Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 1 << p->inputIdx, &halfSize, &offset);
-  if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->kind == PLAYER_RDJANGO) {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_SOL, HBATTR_DARK);
   } else {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_DARK, HBATTR_SOL);
@@ -3512,7 +3498,7 @@ void Player_CheckLavaHurt(Player* p) {
 s32 Player_ApplyOriginHit(Player* p) {
   if (p->kind == PLAYER_SLEEPING) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
   }
   p->originKnockback = TRUE;
   p->hurtbox.knockback = 50;
@@ -3981,7 +3967,7 @@ void Player_EndLookAround(Player* p) {
 
 // 次の行動 val で R の見回しができるかを返す
 bool32 Player_CanLookAround(Player* p, s32 val) {
-  if (p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) {
+  if (p->kind <= PLAYER_BDJANGO || p->kind == PLAYER_SABATA) {
     if (val == 0 || val == 3 || val == 6 || (val == 4 && p->wallSidling != 0)) {
       return TRUE;
     }
@@ -4002,7 +3988,7 @@ bool32 Player_CanLookAround(Player* p, s32 val) {
 // R を押していて見回しできる行動なら見回しを始める・続け, 離したら終える
 void Player_HandleLookAround(Player* p, s32 val) {
   if ((p->input->down & R_BUTTON) && Player_CanLookAround(p, val)) {
-    if ((p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) && p->action == PACT_WALL) {
+    if ((p->kind <= PLAYER_BDJANGO || p->kind == PLAYER_SABATA) && p->action == PACT_WALL) {
       Player_StartLookAround(p);
     } else {
       Player_UpdateLookAround(p);
@@ -4014,18 +4000,11 @@ void Player_HandleLookAround(Player* p, s32 val) {
 }
 
 // 自分の座標とカメラの注視点を 1:4 で混ぜた座標を cameraLookAt に作る
-// 残差は y の +150 を置く位置だけ (60対60), 原典は gCameraCoords.worldPos.y * 4 の側のレジスタに足すが, gcc は和の木から定数を括り出して累算器に足してしまう
-// Tier A-B は試済 (camera 項を括る, 両辺を括る, (cam+37)*4+2 と書き換える (これは命令が1本増えて定数の位置も合わない)). 150 を素の整数定数で書く限り associate_trees が同じ形に畳む
-// << 2, (s16) キャスト, 150 を先頭に置く形, カメラ項をローカルや static inline の引数に出す形も試済 (後の2つはレジスタが崩れる)
-NON_MATCH void Player_UpdateCameraLookAt(Player* p) {
-#ifdef NONMATCHING_C
+void Player_UpdateCameraLookAt(Player* p) {
   p->cameraLookAt.x = Div(p->mover.pos.x + p->lookAroundOffset.x + gCameraCoords.worldPos.x * 4, 5);
-  p->cameraLookAt.y = Div(p->mover.pos.y + p->lookAroundOffset.y + gCameraCoords.worldPos.y * 4 + 150, 5);
+  p->cameraLookAt.y = Div(p->mover.pos.y + p->lookAroundOffset.y + 150 + gCameraCoords.worldPos.y * 4, 5);
   p->cameraLookAt.z = Div(p->mover.pos.z + p->lookAroundOffset.z + gCameraCoords.worldPos.z * 4, 5);
   Camera_LookAt(&p->cameraLookAt);
-#else
-  INCFUNC("asm/func/Player_UpdateCameraLookAt.inc");
-#endif
 }
 
 // まとわりついているクロロホルルンを離す (メッセージ 6 を送る)
@@ -4048,14 +4027,14 @@ void Player_MakeNoise(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos
 
 // プレイヤーの種類ごとのアニメ番号表から idx 番目のアニメ番号を引く
 u32 Player_GetAnimIdx(s32 playerKind, s32 idx) {
-  if (playerKind == PLAYER_SOLAR_DJANGO) {
+  if (playerKind == PLAYER_RDJANGO) {
     static const u16 sSolarDjangoAnimIdxTable[57] = {
         0, 5, 20, 22, 24, 26, 28, 30, 52, 54, 56, 58, 60, 61, 62, 63, 10, 15, 44, 46, 48, 109, 119, 114, 124, 129, 134, 139, 144, 149, 154, 159, 64, 69, 74, 79, 84, 89, 94, 99, 104, 32, 34, 38, 40, 42, 36, 179, 184, 194, 189, 534, 513, 514, 515, 519, 520,
     };  // 0x085ABB2C
     return sSolarDjangoAnimIdxTable[idx];
   }
 
-  if (playerKind == PLAYER_DARK_DJANGO) {
+  if (playerKind == PLAYER_BDJANGO) {
     static const u16 sDarkDjangoAnimIdxTable[57] = {
         199, 204, 219, 221, 223, 225, 227, 229, 251, 253, 255, 257, 259, 260, 261, 262, 209, 214, 243, 245, 247, 308, 318, 313, 323, 328, 333, 338, 343,
         348, 353, 358, 263, 268, 273, 278, 283, 288, 293, 298, 303, 231, 233, 237, 239, 241, 235, 378, 383, 393, 388, 535, 521, 522, 523, 527, 528,
@@ -4572,7 +4551,7 @@ void Player_UpdateSolarCharge(Player* p) {
       Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->chargeVoiceTimer < 5) {
         if (++p->chargeVoiceTimer == 5) {
-          if (p->kind == PLAYER_DARK_DJANGO) {
+          if (p->kind == PLAYER_BDJANGO) {
             PlaySound_082406e0(VO_BDJANGO_TAIYO);
           } else {
             PlaySound_082406e0(VO_RDJANGO_TAIYO);
@@ -6245,7 +6224,7 @@ NON_MATCH void MagicTransform_0806b92c(Player* p) {
         Vec3 pos;
 
         pos.x = 0, pos.y = 0, pos.z = 15;
-        if (p->kind == PLAYER_SOLAR_DJANGO) {
+        if (p->kind == PLAYER_RDJANGO) {
           TransEffect_Create(p, 7, &pos, 50, 69);
         } else {
           TransEffect_Create(p, 7, &pos, 50, 69);
@@ -6277,10 +6256,10 @@ NON_MATCH void MagicTransform_0806b92c(Player* p) {
     case 2: {
       if ((p->stateTimer & 7) < 7 - (p->stateTimer >> 2)) {
         Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
-      } else if (p->kind == PLAYER_SOLAR_DJANGO) {
-        Player_PlayAnim(p, Player_GetAnimIdx(PLAYER_DARK_DJANGO, 10), Q6(1));
+      } else if (p->kind == PLAYER_RDJANGO) {
+        Player_PlayAnim(p, Player_GetAnimIdx(PLAYER_BDJANGO, 10), Q6(1));
       } else {
-        Player_PlayAnim(p, Player_GetAnimIdx(PLAYER_SOLAR_DJANGO, 10), Q6(1));
+        Player_PlayAnim(p, Player_GetAnimIdx(PLAYER_RDJANGO, 10), Q6(1));
       }
 
       p->plttFlashTimer += 3;
@@ -6291,10 +6270,10 @@ NON_MATCH void MagicTransform_0806b92c(Player* p) {
       p->shadowOffset.z = 30;
       p->stateTimer++;
       if (p->stateTimer > 31) {
-        if (p->kind == PLAYER_SOLAR_DJANGO) {
-          p->kind = PLAYER_DARK_DJANGO;
+        if (p->kind == PLAYER_RDJANGO) {
+          p->kind = PLAYER_BDJANGO;
         } else {
-          p->kind = PLAYER_SOLAR_DJANGO;
+          p->kind = PLAYER_RDJANGO;
         }
 
         Player_SetPlttIDs(p);
@@ -6644,7 +6623,7 @@ void Player_UndoChangeBat(Player* p) {
   }
   if (++p->stateTimer > 31) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
     Player_SetAnimFacing(p);
     Player_SetAction(p, PACT_IDLE, 0);
   }
@@ -6889,7 +6868,7 @@ void Player_UndoChangeMouse(Player* p) {
   }
   if (++p->stateTimer > 31) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
     Player_SetAction(p, PACT_IDLE, 0);
   }
 }
@@ -7101,7 +7080,7 @@ void Player_UndoSleeping(Player* p) {
   }
   if (++p->stateTimer > 39) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
     p->facing = DIR8_DOWN;
     Player_SetAnimFacing(p);
     Player_SetAction(p, PACT_IDLE, 0);
@@ -7589,7 +7568,7 @@ s32 Player_GetWeaponPower(Player* p) {
   s32 str;
   s32 atk;
 
-  if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->kind == PLAYER_RDJANGO) {
     str = p->stats[STAT_STRENGTH] + armor->bonus[STAT_STRENGTH] + armor->sideBonus[STAT_STRENGTH];
   } else {
     str = p->stats[STAT_STRENGTH] + armor->bonus[STAT_STRENGTH] - armor->sideBonus[STAT_STRENGTH];
@@ -7679,7 +7658,7 @@ void Django_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _) {
     }
   }
 
-  if (p->kind != PLAYER_DARK_DJANGO) {
+  if (p->kind != PLAYER_BDJANGO) {
     return;
   }
 
@@ -7712,7 +7691,7 @@ void Django_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _) {
   p->berserkHitCounted = 1;
 }
 
-// 向いている方向へ武器の攻撃判定を出す準備をする, 黒ジャンゴとブルースパワー装備中は unk_b8 の値が変わり, エンチャント中は属性を足して魔法のコストを払う
+// 向いている方向へ武器の攻撃判定を出す準備をする, 黒ジャンゴとブルースパワー装備中は振りの速さを 1.5 倍にし, エンチャント中は属性を足して魔法のコストを払う
 void Player_SetupSwordAttack(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
@@ -7725,19 +7704,19 @@ void Player_SetupSwordAttack(Player* p) {
   power = Player_GetAttackPower(p);
   attrs = Player_GetWeaponEffectAttrs(p);
   iframes = p->wpn.iframes;
-  if (p->kind == PLAYER_DARK_DJANGO) {
-    p->wpn.unk_b8[0] = 12;
-    p->wpn.unk_b8[2] = 5;
-    p->wpn.unk_b8[4] = 3;
-    attrs |= HBATTR_18;
+  if (p->kind == PLAYER_BDJANGO) {
+    p->wpn.step = 12;
+    p->wpn.swingTime = 5;
+    p->wpn.waitTime = 3;
+    attrs |= HBATTR_BLOW;
   } else if (TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
-    p->wpn.unk_b8[0] = 12;
-    p->wpn.unk_b8[2] = 5;
-    p->wpn.unk_b8[4] = 3;
+    p->wpn.step = 12;
+    p->wpn.swingTime = 5;
+    p->wpn.waitTime = 3;
   } else {
-    p->wpn.unk_b8[0] = 8;
-    p->wpn.unk_b8[2] = 8;
-    p->wpn.unk_b8[4] = 4;
+    p->wpn.step = 8;
+    p->wpn.swingTime = 8;
+    p->wpn.waitTime = 4;
   }
   if (wpn->enchantIdx >= 0) {
     attrs |= 1 << wpn->enchantIdx;
@@ -7745,7 +7724,7 @@ void Player_SetupSwordAttack(Player* p) {
   }
   Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, HBSRC_SWORD, attrs, iframes);
   wpn->hitbox.angle = wpn->angle;
-  wpn->gunSpreadAngle = 0;
+  wpn->timer = 0;
   p->berserkHitCounted = 0;
 }
 
@@ -7767,7 +7746,7 @@ void Player_SpawnSwordEnchantPtcl(Player* p, Vec3* pos, s32 angle, bool32 flip, 
   Player_SpawnEnchantPtcl(p, &spawn, &vel, element);
 }
 
-// 剣を振る間, 毎フレーム攻撃判定を basePos から半径 160 の弧に沿って unk_b8[0] ずつ回し, unk_b8[2] フレームで終える, エンチャント中は1フレームおきに粒子を出す
+// 剣を振る間, 毎フレーム攻撃判定を basePos から半径 160 の弧に沿って step ずつ回し, swingTime フレームで終える, エンチャント中は1フレームおきに粒子を出す
 // 残差は xflip でない側の角度の足し算 (176/176) と p / angle のレジスタ, 原典は &wpn->angle を先に作ってから n * k + 0x100 + angle - 0x20 の順に足す
 // Tier A-C 試済 (戻り値の変数化, 分岐の向き, 足す順と括弧を6通り, 原典どおりの順に書くと演算は揃うが angle のアドレスが後になる), 未: アドレスを先に作る書き方
 // 追試: wpn->angle を型名の違うポインタ越し / *(&) / (u8) で読む形も不一致 (16-17 hunk)
@@ -7775,19 +7754,19 @@ NON_MATCH bool32 Player_UpdateSwordSwing(Player* p) {
 #ifdef NONMATCHING_C
   PlayerWeapon* wpn = &p->wpn;
 
-  if (p->wpn.gunSpreadAngle == 0) {
-    if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->wpn.timer == 0) {
+    if (p->kind == PLAYER_RDJANGO) {
       PlaySound_082406e0(SE_SWORD_ATK_R);
     } else {
       PlaySound_082406e0(SE_SWORD_ATK_B);
     }
   }
-  if (++wpn->gunSpreadAngle <= wpn->unk_b8[2]) {
+  if (++wpn->timer <= wpn->swingTime) {
     u32 angle;
     if (p->xflip) {
-      angle = wpn->angle + 0x20 - wpn->gunSpreadAngle * wpn->unk_b8[0] + 0x100;
+      angle = wpn->angle + 0x20 - wpn->timer * wpn->step + 0x100;
     } else {
-      angle = wpn->angle - 0x20 + wpn->gunSpreadAngle * wpn->unk_b8[0] + 0x100;
+      angle = wpn->angle - 0x20 + wpn->timer * wpn->step + 0x100;
     }
     angle &= 0xFF;
     wpn->atkPos.x = wpn->basePos.x + POLAR_X(160, angle);
@@ -7797,7 +7776,7 @@ NON_MATCH bool32 Player_UpdateSwordSwing(Player* p) {
     Hitbox_Register(&wpn->hitbox);
     if (wpn->enchantIdx >= 0) {
       p->flag20 |= PFLAG20_UNK_19;
-      if (wpn->gunSpreadAngle & 1) {
+      if (wpn->timer & 1) {
         Player_SpawnSwordEnchantPtcl(p, &wpn->basePos, angle, p->xflip, wpn->enchantIdx);
       }
     }
@@ -7813,7 +7792,7 @@ NON_MATCH bool32 Player_UpdateSwordSwing(Player* p) {
 void Player_UpdateSwordAttack(Player* p) {
   s32 animSpeed;
 
-  if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
+  if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
     animSpeed = Q6(0.75);
   } else {
     animSpeed = Q6(1);
@@ -7845,7 +7824,7 @@ void Player_UpdateSwordAttack(Player* p) {
         p->wpn.unk_ae[0] = 1;
       }
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 23), animSpeed);
-      if (p->kind == PLAYER_DARK_DJANGO && p->human.animCmdIdx == 2 && p->human.animCmdTimer == 0) {
+      if (p->kind == PLAYER_BDJANGO && p->human.animCmdIdx == 2 && p->human.animCmdTimer == 0) {
         Player_SpawnSwordShockwave(p, p->facing, &p->mover.pos);
       }
       if (Player_UpdateSwordSwing(p)) {
@@ -7861,7 +7840,7 @@ void Player_UpdateSwordAttack(Player* p) {
       if (p->wpn.unk_ae[0] != 0) {
         p->wpn.unk_ae[0] = 0;
         p->state = 0;
-      } else if (++p->stateTimer >= p->wpn.unk_b8[4]) {
+      } else if (++p->stateTimer >= p->wpn.waitTime) {
         p->wpn.unk_ae[0] = 0;
         Player_SetAction(p, PACT_IDLE, 0);
       }
@@ -7923,7 +7902,7 @@ s32 CheckTileHigherAhead(Vec3* pos, s32 angle, s32 dist) {
   return 0;
 }
 
-// 槍の攻撃判定を構える, 前方の段差の高さで振り方 (unk_b8[1] のアニメ) と振りの段数を選び, エンチャント中は属性を足して魔法のコストを払う
+// 槍の攻撃判定を構える, 前方の段差の高さで振り方 (anim のアニメ) と振りの段数を選び, エンチャント中は属性を足して魔法のコストを払う
 void Player_SetupSpearAttack(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
   s32 power;
@@ -7939,64 +7918,64 @@ void Player_SetupSpearAttack(Player* p) {
   wpn->atkPos.z = wpn->basePos.z + POLAR_Z(204, wpn->angle);
   power = Player_GetAttackPower(p);
   attrs = Player_GetWeaponEffectAttrs(p);
-  if (p->kind == PLAYER_DARK_DJANGO) {
-    attrs |= HBATTR_18;
+  if (p->kind == PLAYER_BDJANGO) {
+    attrs |= HBATTR_BLOW;
   }
   knockback = wpn->knockback;
   r = CheckTileHigherAhead(&wpn->basePos, wpn->angle, 224);
   if (r != 0) {
     if ((wpn->enchantIdx == 2 || wpn->enchantIdx == 4) && r == 2) {
-      wpn->unk_b8[1] = 27;
-      if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
-        wpn->unk_b8[0] = 56;
-        wpn->unk_b8[2] = 0;
-        wpn->unk_b8[3] = 2;
-        wpn->unk_b8[4] = 3;
+      wpn->anim = 27;
+      if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
+        wpn->step = 56;
+        wpn->swingTime = 0;
+        wpn->holdTime = 2;
+        wpn->waitTime = 3;
       } else {
-        wpn->unk_b8[0] = 56;
-        wpn->unk_b8[2] = 0;
-        wpn->unk_b8[3] = 3;
-        wpn->unk_b8[4] = 6;
+        wpn->step = 56;
+        wpn->swingTime = 0;
+        wpn->holdTime = 3;
+        wpn->waitTime = 6;
       }
     } else {
-      wpn->unk_b8[1] = 26;
-      if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
-        wpn->unk_b8[0] = 56;
-        wpn->unk_b8[2] = 0;
-        wpn->unk_b8[3] = 2;
-        wpn->unk_b8[4] = 0;
+      wpn->anim = 26;
+      if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
+        wpn->step = 56;
+        wpn->swingTime = 0;
+        wpn->holdTime = 2;
+        wpn->waitTime = 0;
       } else {
-        wpn->unk_b8[0] = 56;
-        wpn->unk_b8[2] = 0;
-        wpn->unk_b8[3] = 3;
-        wpn->unk_b8[4] = 0;
+        wpn->step = 56;
+        wpn->swingTime = 0;
+        wpn->holdTime = 3;
+        wpn->waitTime = 0;
       }
     }
   } else if (CheckTileHigherAhead(&wpn->basePos, wpn->angle, 336)) {
-    wpn->unk_b8[1] = 27;
-    if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
-      wpn->unk_b8[0] = 56;
-      wpn->unk_b8[2] = 2;
-      wpn->unk_b8[3] = 3;
-      wpn->unk_b8[4] = 0;
+    wpn->anim = 27;
+    if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
+      wpn->step = 56;
+      wpn->swingTime = 2;
+      wpn->holdTime = 3;
+      wpn->waitTime = 0;
     } else {
-      wpn->unk_b8[0] = 56;
-      wpn->unk_b8[2] = 2;
-      wpn->unk_b8[3] = 7;
-      wpn->unk_b8[4] = 0;
+      wpn->step = 56;
+      wpn->swingTime = 2;
+      wpn->holdTime = 7;
+      wpn->waitTime = 0;
     }
   } else {
-    wpn->unk_b8[1] = 28;
-    if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
-      wpn->unk_b8[0] = 56;
-      wpn->unk_b8[2] = 4;
-      wpn->unk_b8[3] = 4;
-      wpn->unk_b8[4] = 1;
+    wpn->anim = 28;
+    if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
+      wpn->step = 56;
+      wpn->swingTime = 4;
+      wpn->holdTime = 4;
+      wpn->waitTime = 1;
     } else {
-      wpn->unk_b8[0] = 56;
-      wpn->unk_b8[2] = 4;
-      wpn->unk_b8[3] = 7;
-      wpn->unk_b8[4] = 5;
+      wpn->step = 56;
+      wpn->swingTime = 4;
+      wpn->holdTime = 7;
+      wpn->waitTime = 5;
     }
   }
   if (wpn->enchantIdx >= 0) {
@@ -8005,7 +7984,7 @@ void Player_SetupSpearAttack(Player* p) {
   }
   Hitbox_SetAttack(&wpn->hitbox, power, knockback, HBSRC_SPEAR, attrs, wpn->iframes);
   wpn->hitbox.angle = wpn->angle;
-  wpn->gunSpreadAngle = 0;
+  wpn->timer = 0;
   p->berserkHitCounted = 0;
 }
 
@@ -8024,19 +8003,19 @@ void Player_SpawnSpearEnchantPtcl(Player* p, Vec3* pos, s32 angle, s32 element) 
   Player_SpawnEnchantPtcl(p, &spawn, &vel, element);
 }
 
-// 槍の突きを1フレーム進める, unk_b8[2] フレームかけて攻撃判定を前へ伸ばし, unk_b8[3] フレーム留めて, unk_b8[4] フレーム待つと終わり (TRUE)
+// 槍の突きを1フレーム進める, swingTime フレームかけて攻撃判定を前へ伸ばし, holdTime フレーム留めて, waitTime フレーム待つと終わり (TRUE)
 s32 Player_UpdateSpearThrust(Player* p) {
   PlayerWeapon* w = &p->wpn;
 
-  if (w->gunSpreadAngle == 0) {
-    if (p->kind == PLAYER_SOLAR_DJANGO) {
+  if (w->timer == 0) {
+    if (p->kind == PLAYER_RDJANGO) {
       PlaySound_082406e0(SE_SPEAR_ATK_R);
     } else {
       PlaySound_082406e0(SE_SPEAR_ATK_B);
     }
   }
-  if (w->gunSpreadAngle < w->unk_b8[2]) {
-    s32 r = w->unk_b8[0] * w->gunSpreadAngle + 204;
+  if (w->timer < w->swingTime) {
+    s32 r = w->step * w->timer + 204;
 
     w->atkPos.x = w->basePos.x + POLAR_X(r, w->angle);
     w->atkPos.y = w->basePos.y;
@@ -8047,8 +8026,8 @@ s32 Player_UpdateSpearThrust(Player* p) {
       SET_FLAGS(p->flag20, PFLAG20_UNK_19);
       Player_SpawnSpearEnchantPtcl(p, &w->atkPos, w->angle, w->enchantIdx);
     }
-  } else if (w->gunSpreadAngle < w->unk_b8[2] + w->unk_b8[3]) {
-    s32 r = w->unk_b8[0] * w->unk_b8[2] + 204;
+  } else if (w->timer < w->swingTime + w->holdTime) {
+    s32 r = w->step * w->swingTime + 204;
 
     w->atkPos.x = w->basePos.x + POLAR_X(r, w->angle);
     w->atkPos.y = w->basePos.y;
@@ -8057,13 +8036,13 @@ s32 Player_UpdateSpearThrust(Player* p) {
     Hitbox_Register(&w->hitbox);
     if (w->enchantIdx >= 0) {
       SET_FLAGS(p->flag20, PFLAG20_UNK_19);
-      if (!(w->gunSpreadAngle & 1)) {
+      if (!(w->timer & 1)) {
         Player_SpawnSpearEnchantPtcl(p, &w->atkPos, w->angle, w->enchantIdx);
       }
     }
   }
-  if (++w->gunSpreadAngle >= w->unk_b8[2] + w->unk_b8[3] + w->unk_b8[4]) {
-    w->gunSpreadAngle = 0;
+  if (++w->timer >= w->swingTime + w->holdTime + w->waitTime) {
+    w->timer = 0;
     return TRUE;
   }
   return FALSE;
@@ -8076,7 +8055,7 @@ void Player_UpdateSpearAttack(Player* p) {
   u8* playerKind;
   u8 idx;
 
-  if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
+  if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
     animSpeed = Q6(0.75);
   } else {
     animSpeed = Q6(1);
@@ -8106,9 +8085,9 @@ void Player_UpdateSpearAttack(Player* p) {
       p->unk_3d1 = 0;
       playerKind = &p->kind;
       idx = *playerKind;
-      kind = &p->wpn.unk_b8[1];
+      kind = &p->wpn.anim;
       Player_PlayAnim(p, Player_GetAnimIdx(idx, *kind), animSpeed);
-      if (*playerKind == PLAYER_DARK_DJANGO) {
+      if (*playerKind == PLAYER_BDJANGO) {
         if (*kind == 28) {
           if (p->human.animCmdIdx == 1 && p->human.animCmdTimer == 0) {
             Player_SpawnSpearShockwave(p, p->facing, &p->mover.pos, 0);
@@ -8164,22 +8143,22 @@ void Player_SetupHammerAttack(Player* p) {
   p->wpn.angle = ((p->facing + 5) & 7) << 5;
   power = Player_GetAttackPower(p);
   attrs = Player_GetWeaponEffectAttrs(p);
-  if (p->kind == PLAYER_DARK_DJANGO) {
-    p->wpn.unk_b8[0] = 29;
-    p->wpn.unk_b8[4] = 7;
-    p->wpn.unk_b8[2] = 4;
-    p->wpn.unk_b8[3] = 6;
-    attrs |= HBATTR_18;
+  if (p->kind == PLAYER_BDJANGO) {
+    p->wpn.step = 29;
+    p->wpn.waitTime = 7;
+    p->wpn.swingTime = 4;
+    p->wpn.holdTime = 6;
+    attrs |= HBATTR_BLOW;
   } else if (TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
-    p->wpn.unk_b8[0] = 29;
-    p->wpn.unk_b8[4] = 7;
-    p->wpn.unk_b8[2] = 4;
-    p->wpn.unk_b8[3] = 6;
+    p->wpn.step = 29;
+    p->wpn.waitTime = 7;
+    p->wpn.swingTime = 4;
+    p->wpn.holdTime = 6;
   } else {
-    p->wpn.unk_b8[0] = 19;
-    p->wpn.unk_b8[4] = 11;
-    p->wpn.unk_b8[2] = 6;
-    p->wpn.unk_b8[3] = 9;
+    p->wpn.step = 19;
+    p->wpn.waitTime = 11;
+    p->wpn.swingTime = 6;
+    p->wpn.holdTime = 9;
   }
   if (wpn->enchantIdx >= 0) {
     attrs |= 1 << wpn->enchantIdx;
@@ -8187,7 +8166,7 @@ void Player_SetupHammerAttack(Player* p) {
   }
   Hitbox_SetAttack(&wpn->hitbox, power, wpn->knockback, HBSRC_HAMMER, attrs, wpn->iframes);
   wpn->hitbox.angle = wpn->angle;
-  wpn->gunSpreadAngle = 0;
+  wpn->timer = 0;
   p->berserkHitCounted = 0;
 }
 
@@ -8207,38 +8186,38 @@ void Player_SpawnHammerEnchantPtcl(Player* p, Vec3* pos, s32 yaw, s32 pitch, s32
   Player_SpawnEnchantPtcl(p, &spawn, &vel, element);
 }
 
-// 槌の振り下ろしを1フレーム進める, unk_b8[4] フレーム溜めてから unk_b8[2] フレームで頭上から前へ弧を描き, 振り下ろしの終わりに足元へ判定を出して unk_b8[3] フレーム残すと終わり (TRUE)
+// 槌の振り下ろしを1フレーム進める, waitTime フレーム溜めてから swingTime フレームで頭上から前へ弧を描き, 振り下ろしの終わりに足元へ判定を出して holdTime フレーム残すと終わり (TRUE)
 s32 Player_UpdateHammerSwing(Player* p) {
   PlayerWeapon* w = &p->wpn;
 
-  if (++w->gunSpreadAngle <= w->unk_b8[4]) {
+  if (++w->timer <= w->waitTime) {
     return FALSE;
   }
-  if (w->gunSpreadAngle <= w->unk_b8[4] + w->unk_b8[2]) {
+  if (w->timer <= w->waitTime + w->swingTime) {
     s32 pitch;
     s32 v;
 
-    if (w->gunSpreadAngle == w->unk_b8[4] + w->unk_b8[2]) {
-      if (p->kind == PLAYER_SOLAR_DJANGO) {
+    if (w->timer == w->waitTime + w->swingTime) {
+      if (p->kind == PLAYER_RDJANGO) {
         PlaySound_082406e0(SE_HAMMER_ATK_R);
       } else {
         PlaySound_082406e0(SE_HAMMER_ATK_B);
       }
     }
-    pitch = (336 - (w->gunSpreadAngle - w->unk_b8[4]) * w->unk_b8[0]) & 0xFF;
+    pitch = (336 - (w->timer - w->waitTime) * w->step) & 0xFF;
     w->atkPos.y = w->basePos.y + POLAR_Z(250, pitch);
     v = POLAR_X(250, pitch);
     w->atkPos.x = w->basePos.x + POLAR_X(v, w->angle);
     w->atkPos.z = w->basePos.z + POLAR_Z(v, w->angle);
-    if (w->gunSpreadAngle > w->unk_b8[4] + 2 && w->enchantIdx >= 0) {
+    if (w->timer > w->waitTime + 2 && w->enchantIdx >= 0) {
       Player_SpawnHammerEnchantPtcl(p, &w->atkPos, pitch, w->angle, w->enchantIdx);
     }
-    if (w->gunSpreadAngle > w->unk_b8[4] + w->unk_b8[2] - 2) {
+    if (w->timer > w->waitTime + w->swingTime - 2) {
       Vec3 pos;
       s32 radius = 170;
 
       pos.x = w->basePos.x + POLAR_X(radius, w->angle);
-      pos.y = (w->unk_b8[4] + w->unk_b8[2] - w->gunSpreadAngle + 1) * 90 + w->basePos.y - 260;
+      pos.y = (w->waitTime + w->swingTime - w->timer + 1) * 90 + w->basePos.y - 260;
       pos.z = w->basePos.z + POLAR_Z(radius, w->angle);
       if (w->enchantIdx >= 0) {
         SET_FLAGS(p->flag20, PFLAG20_UNK_19);
@@ -8248,14 +8227,14 @@ s32 Player_UpdateHammerSwing(Player* p) {
     }
     return FALSE;
   }
-  if (w->gunSpreadAngle <= w->unk_b8[4] + w->unk_b8[2] + w->unk_b8[3]) {
+  if (w->timer <= w->waitTime + w->swingTime + w->holdTime) {
     if (w->enchantIdx >= 0) {
       SET_FLAGS(p->flag20, PFLAG20_UNK_19);
     }
     Hitbox_Register(&p->wpn.hitbox);
     return FALSE;
   }
-  w->gunSpreadAngle = 0;
+  w->timer = 0;
   return TRUE;
 }
 
@@ -8263,7 +8242,7 @@ s32 Player_UpdateHammerSwing(Player* p) {
 void Player_UpdateHammerAttack(Player* p) {
   s32 animSpeed;
 
-  if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
+  if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, 0x400000)) {
     animSpeed = Q6(0.75);
   } else {
     animSpeed = Q6(1);
@@ -8302,8 +8281,8 @@ void Player_UpdateHammerAttack(Player* p) {
       if (p->input->pressed & B_BUTTON) {
         p->wpn.unk_ae[0] = 1;
       }
-      if (p->kind == PLAYER_DARK_DJANGO && p->human.animCmdIdx == 5 && p->human.animCmdTimer == 0) {
-        Player_SpawnShockwaveBehind(p, p->facing, &p->mover.pos);
+      if (p->kind == PLAYER_BDJANGO && p->human.animCmdIdx == 5 && p->human.animCmdTimer == 0) {
+        Player_SpawnHammerShockwave(p, p->facing, &p->mover.pos);
       }
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 31), animSpeed)) {
         if (p->wpn.unk_ae[0] != 0) {
@@ -8330,17 +8309,17 @@ void Player_SetupFistAttack(Player* p) {
   Video_SetAuxSpritePltt(&p->wpn.gfx, 45);
   Hitbox_SetAttack(&p->wpn.hitbox, power, p->wpn.knockback, HBSRC_FIST, 0, p->wpn.iframes);
   p->wpn.hitbox.angle = p->wpn.angle;
-  p->wpn.gunSpreadAngle = 0;
+  p->wpn.timer = 0;
   p->berserkHitCounted = 0;
 }
 
 // 武器の攻撃判定を wpn.basePos から wpn.angle の向きへ 100 進めた位置に置いて6フレーム出し続ける, 出し終えたら 1 を返す
 s32 Player_UpdateFistPunch(Player* p) {
   PlayerWeapon* wpn = &p->wpn;
-  if (p->wpn.gunSpreadAngle == 0) {
+  if (p->wpn.timer == 0) {
     PlaySound_082406e0(SE_FIST_ATK);
   }
-  if (++p->wpn.gunSpreadAngle <= 5) {
+  if (++p->wpn.timer <= 5) {
     wpn->atkPos.x = wpn->basePos.x + POLAR_X(100, wpn->angle);
     wpn->atkPos.y = wpn->basePos.y;
     wpn->atkPos.z = wpn->basePos.z + POLAR_Z(100, wpn->angle);
@@ -8348,7 +8327,7 @@ s32 Player_UpdateFistPunch(Player* p) {
     Hitbox_Register(&p->wpn.hitbox);
     return 0;
   }
-  p->wpn.gunSpreadAngle = 0;
+  p->wpn.timer = 0;
   return 1;
 }
 
@@ -8560,7 +8539,7 @@ void Player_UpdateSolarGunAttack(Player* p) {
     }
   }
   if (p->solarGunTime > 14) {
-    if (p->kind == PLAYER_DARK_DJANGO) {
+    if (p->kind == PLAYER_BDJANGO) {
       Player_TakeSunburnDamage(p);
     }
     p->solarGunTime = 0;
@@ -8777,7 +8756,7 @@ void Player_UpdateSabataAttack(Player* p) {
         }
       } else {
         PlaySound_082406e0(VO_SABATA_TAKETHIS);
-        p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
+        p->wpn.timer = ((8 - p->facing) & 7) << 5;
         Hitbox_SetAttack(&p->wpn.hitbox, Player_GetAttackPower(p), 32, HBSRC_GUN, HBATTR_DARK, 20);
         PlaySound_082406e0(SE_GUN_SPREAD);
         Player_SetAction(p, PACT_ATTACK, 8);
@@ -8789,7 +8768,7 @@ void Player_UpdateSabataAttack(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 36), Q6(1));
       if (!(p->input->down & B_BUTTON)) {
         PlaySound_082406e0(VO_SABATA_TAKETHIS);
-        p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
+        p->wpn.timer = ((8 - p->facing) & 7) << 5;
         Hitbox_SetAttack(&p->wpn.hitbox, Player_GetAttackPower(p), 32, HBSRC_GUN, HBATTR_DARK, 20);
         PlaySound_082406e0(SE_GUN_SPREAD);
         Player_SetAction(p, PACT_ATTACK, 8);
@@ -8843,17 +8822,17 @@ void Player_UpdateSabataAttack(Player* p) {
         VEC3_SET(size, 32, 0, 32);
         DustManager_Spawn(&p->mover.pos, &ofs, &size, 1, 2, 4);
       }
-      p->wpn.gunSpreadAngle = (p->wpn.gunSpreadAngle + 16) & 0xFF;
-      Player_ShowGunSpread(p, p->wpn.gunSpreadAngle, &p->mover.pos);
+      p->wpn.timer = (p->wpn.timer + 16) & 0xFF;
+      Player_ShowGunSpread(p, p->wpn.timer, &p->mover.pos);
       pos = p->mover.pos;
-      angle = (416 - p->wpn.gunSpreadAngle) & 0xFF;
+      angle = (416 - p->wpn.timer) & 0xFF;
       pos.x += POLAR_X(170, angle);
       pos.y += 230;
       pos.z += POLAR_Z(170, angle);
       Hitbox_SetPos(&p->wpn.hitbox, &pos, 0);
       p->wpn.hitbox.angle = angle;
       Hitbox_Register(&p->wpn.hitbox);
-      p->facing = ((271 - p->wpn.gunSpreadAngle) & 0xFF) >> 5;
+      p->facing = ((271 - p->wpn.timer) & 0xFF) >> 5;
       Player_SetAnimFacing(p);
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 37), Q6(1));
       if (!(p->stateTimer & 15)) {
@@ -9651,7 +9630,7 @@ void Player_UpdateLockedCollapse(Player* p) {
 
 // 操作不能中に lockedUpdate から回す剣の攻撃モーション, 振り始めにジャンゴごとの効果音, 黒ジャンゴは剣の衝撃波も出す (Player_UpdateLockedHammerAttack の剣版)
 void Player_UpdateLockedSwordAttack(Player* p) {
-  s32 speed = p->kind == PLAYER_DARK_DJANGO ? Q6(0.75) : Q6(1);
+  s32 speed = p->kind == PLAYER_BDJANGO ? Q6(0.75) : Q6(1);
 
   switch (p->state) {
     case 0: {
@@ -9668,7 +9647,7 @@ void Player_UpdateLockedSwordAttack(Player* p) {
     case 2: {
       bool32 done;
       if (p->stateTimer == 0) {
-        if (p->kind == PLAYER_SOLAR_DJANGO) {
+        if (p->kind == PLAYER_RDJANGO) {
           PlaySound_082406e0(SE_SWORD_ATK_R);
         } else {
           PlaySound_082406e0(SE_SWORD_ATK_B);
@@ -9676,7 +9655,7 @@ void Player_UpdateLockedSwordAttack(Player* p) {
         p->stateTimer++;
       }
       done = Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 23), speed);
-      if (p->kind == PLAYER_DARK_DJANGO && p->human.animCmdIdx == 2 && p->human.animCmdTimer == 0) {
+      if (p->kind == PLAYER_BDJANGO && p->human.animCmdIdx == 2 && p->human.animCmdTimer == 0) {
         Player_SpawnSwordShockwave(p, p->facing, &p->mover.pos);
       }
       if (done) {
@@ -9698,7 +9677,7 @@ void Player_UpdateLockedSwordAttack(Player* p) {
 void Player_UpdateLockedSpearAttack(Player* p) {
   s32 speed;
 
-  if (p->kind == PLAYER_DARK_DJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
+  if (p->kind == PLAYER_BDJANGO || TEST_FLAGS(p->equipBuffs, EBUFF_PROTOPOWER)) {
     speed = Q6(0.75);
   } else {
     speed = Q6(1);
@@ -9719,7 +9698,7 @@ void Player_UpdateLockedSpearAttack(Player* p) {
     case 2: {
       bool32 done;
       if (p->stateTimer == 0) {
-        if (p->kind == PLAYER_SOLAR_DJANGO) {
+        if (p->kind == PLAYER_RDJANGO) {
           PlaySound_082406e0(SE_SPEAR_ATK_R);
         } else {
           PlaySound_082406e0(SE_SPEAR_ATK_B);
@@ -9727,7 +9706,7 @@ void Player_UpdateLockedSpearAttack(Player* p) {
         p->stateTimer++;
       }
       done = Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 28), speed);
-      if (p->kind == PLAYER_DARK_DJANGO && p->human.animCmdIdx == 1 && p->human.animCmdTimer == 0) {
+      if (p->kind == PLAYER_BDJANGO && p->human.animCmdIdx == 1 && p->human.animCmdTimer == 0) {
         Player_SpawnSpearShockwave(p, p->facing, &p->mover.pos, 0);
       }
       if (done) {
@@ -9753,7 +9732,7 @@ void Player_UpdateLockedSpearAttack(Player* p) {
 
 // 操作不能中に lockedUpdate から回す槌の攻撃モーション (Player_LockHammerReady / Player_LockHammerSwing が据える), 振りの途中でジャンゴごとの効果音, 黒ジャンゴは衝撃波も出す
 void Player_UpdateLockedHammerAttack(Player* p) {
-  s32 speed = p->kind == PLAYER_DARK_DJANGO ? Q6(0.75) : Q6(1);
+  s32 speed = p->kind == PLAYER_BDJANGO ? Q6(0.75) : Q6(1);
 
   switch (p->state) {
     case 0: {
@@ -9769,7 +9748,7 @@ void Player_UpdateLockedHammerAttack(Player* p) {
     }
     case 2: {
       bool32 done;
-      if (p->kind == PLAYER_SOLAR_DJANGO) {
+      if (p->kind == PLAYER_RDJANGO) {
         if (p->stateTimer == 17) {
           PlaySound_082406e0(SE_HAMMER_ATK_R);
         }
@@ -9778,8 +9757,8 @@ void Player_UpdateLockedHammerAttack(Player* p) {
       }
       p->stateTimer++;
       done = Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 31), speed);
-      if (p->kind == PLAYER_DARK_DJANGO && p->human.animCmdIdx == 5 && p->human.animCmdTimer == 0) {
-        Player_SpawnShockwaveBehind(p, p->facing, &p->mover.pos);
+      if (p->kind == PLAYER_BDJANGO && p->human.animCmdIdx == 5 && p->human.animCmdTimer == 0) {
+        Player_SpawnHammerShockwave(p, p->facing, &p->mover.pos);
       }
       if (done) {
         Player_ReturnToLockedIdle(p);
@@ -10319,7 +10298,7 @@ void Player_RevertBatToDarkDjango(Player* p) {
   }
   if (++p->stateTimer > 31) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
     Player_SetAnimFacing(p);
     Player_ReturnToLockedIdle(p);
     p->revertNotifyPending = TRUE;
@@ -10598,7 +10577,7 @@ void Player_RevertMouseToDarkDjango(Player* p) {
   }
   if (++p->stateTimer > 31) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
     Player_ReturnToLockedIdle(p);
     p->revertNotifyPending = TRUE;
   }
@@ -10730,7 +10709,7 @@ void Player_RevertSleepingToDarkDjango(Player* p) {
   }
   if (++p->stateTimer > 39) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
     Player_ReturnToLockedIdle(p);
     p->revertNotifyPending = TRUE;
   }
@@ -10776,7 +10755,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
     case 2: {
       Player_SetFlag20(p, PFLAG20_QC | PFLAG20_PALM_UP);
       if (p->chargeVoiceTimer < 5) {
-        if (++p->chargeVoiceTimer == 5 && p->kind == PLAYER_SOLAR_DJANGO) {
+        if (++p->chargeVoiceTimer == 5 && p->kind == PLAYER_RDJANGO) {
           PlaySound_082406e0(VO_RDJANGO_TAIYO);
         }
       }
@@ -11358,7 +11337,7 @@ void Player_UpdateDjango(Player* p) {
   switch (p->mode) {
     case PMODE_ACTIVE: {
       Player_UpdateHeatstrokeSmoke(p);
-      if (p->kind == PLAYER_SOLAR_DJANGO) {
+      if (p->kind == PLAYER_RDJANGO) {
         if (Player_IsInRain(p)) {
           Player_StepRain(p);
         }
@@ -11388,7 +11367,7 @@ void Player_UpdateDjango(Player* p) {
         Player_UpdateCameraLookAt(p);
       }
       Player_CheckLavaHurt(p);
-      if (p->kind == PLAYER_DARK_DJANGO) {
+      if (p->kind == PLAYER_BDJANGO) {
         Player_CheckPuddleHurt(p);
       }
       Player_UpdateIceSlide(p);
@@ -12133,7 +12112,7 @@ void Player_EnterLanding(Player* p) {
 
   if (p->kind == PLAYER_SLEEPING) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
   }
   Player_SetAction(p, PACT_LANDING, 0);
   p->floatHeight = 0;
@@ -12215,7 +12194,7 @@ s32 CalcAttack(WeaponData* w, const ArmorData* armor) {
   if (armor != NULL) {
     switch (armor->effectType) {
       case AET_SILVER_CHAIN: {
-        if (gStat->playerKind == PLAYER_SOLAR_DJANGO) {
+        if (gStat->playerKind == PLAYER_RDJANGO) {
           val += armor->value;
         } else {
           val -= armor->value;
@@ -12223,7 +12202,7 @@ s32 CalcAttack(WeaponData* w, const ArmorData* armor) {
         break;
       }
       case AET_BLOOD_CAPE: {
-        if (gStat->playerKind == PLAYER_SOLAR_DJANGO) {
+        if (gStat->playerKind == PLAYER_RDJANGO) {
           val -= armor->value;
         } else {
           val += armor->value;
@@ -12279,7 +12258,7 @@ s32 CalcDefence(ArmorData* data) {
 
   switch (data->effectType) {
     case AET_SILVER_CHAIN: {
-      if (gStat->playerKind == PLAYER_SOLAR_DJANGO) {
+      if (gStat->playerKind == PLAYER_RDJANGO) {
         val += data->value;
       } else {
         val -= data->value;
@@ -12287,7 +12266,7 @@ s32 CalcDefence(ArmorData* data) {
       break;
     }
     case AET_BLOOD_CAPE: {
-      if (gStat->playerKind == PLAYER_SOLAR_DJANGO) {
+      if (gStat->playerKind == PLAYER_RDJANGO) {
         val -= data->value;
       } else {
         val += data->value;
@@ -12572,7 +12551,7 @@ bool32 FUN_0807ad60(Player* p, s32 param_2) {
   }
   if (p->kind == PLAYER_MOUSE || p->kind == PLAYER_SLEEPING) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
   }
   p->mashRecoverTimer = param_2;
   p->unk_3ea = 1;
@@ -13154,7 +13133,7 @@ void Player_MoveTo(Player* p, Vec3* pos, u32 scriptID, Dir8S32 dir) {
   } else {
     if (p->kind == PLAYER_SLEEPING) {
       p->formRequest = TRUE;
-      p->formRequestKind = PLAYER_DARK_DJANGO;
+      p->formRequestKind = PLAYER_BDJANGO;
       p->lockedUpdate = Player_UpdateMoveTo;
     } else {
       p->lockedUpdate = Player_UpdateMoveTo;
@@ -13264,7 +13243,7 @@ void Player_LockFall(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID) {
   } else {
     if (p->kind == PLAYER_SLEEPING) {
       p->formRequest = TRUE;
-      p->formRequestKind = PLAYER_DARK_DJANGO;
+      p->formRequestKind = PLAYER_BDJANGO;
     }
     p->lockedUpdate = Player_UpdateLockedFall;
   }
@@ -13283,7 +13262,7 @@ void Player_LockLanding(Player* p, Dir8S32 dir, s32 floatHeight, u32 scriptID) {
   } else {
     if (p->kind == PLAYER_SLEEPING) {
       p->formRequest = TRUE;
-      p->formRequestKind = PLAYER_DARK_DJANGO;
+      p->formRequestKind = PLAYER_BDJANGO;
     }
     p->lockedUpdate = Player_UpdateLockedLand;
   }
@@ -13736,7 +13715,7 @@ void FUN_0807cc14(Player* p, s32 xflip) {
 // バット / マウス / スリーピングなら操作不能にして黒ジャンゴへ戻す演出を据えて TRUE, それ以外は FALSE
 bool32 Player_LockRevertToDarkDjango(Player* p, u32 scriptID) {
   p->doneScriptID = scriptID;
-  if (p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) {
+  if (p->kind <= PLAYER_BDJANGO || p->kind == PLAYER_SABATA) {
     return FALSE;
   }
   if (p->kind == PLAYER_BAT) {
@@ -13845,7 +13824,7 @@ void Player_ShowEmote(Player* p, s32 kind, s32 param_3, s32 param_4) {
       break;
     }
     case 5: {
-      p->emoteKind = EMOTE_3;
+      p->emoteKind = EMOTE_STUN;
       p->emoteTimer = param_3;
       p->emote = Emote_Show(p->emote, &p->mover, p->emoteKind, 0, &p->emoteTimer, param_4, 150, 230);
       break;
@@ -14047,7 +14026,7 @@ void Cmd_Retry(void) {
   if (p != NULL) {
     u32 scriptID = Player_GetCmdArgScript();
 
-    if (p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) {
+    if (p->kind <= PLAYER_BDJANGO || p->kind == PLAYER_SABATA) {
       FUN_0807bbb0(p, VM_SeekToNamedArg('f') ? VM_GetValue() : 0, scriptID);
       Player_SetDoneRunScript(p);
     } else {
@@ -14792,7 +14771,7 @@ void Django_Spike(Player* p) {
   VEC3_SET(halfSize, Q8(0.47), Q8(0.47), Q8(0.47));
   VEC3_SET(offset, 0, Q8(0.47), 0);
   Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 1 << p->mover.unk_4, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, 10, 40, 0, HBATTR_18, 10);
+  Hitbox_SetAttack(hitbox, 10, 40, 0, HBATTR_BLOW, 10);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->mover.pos, 0);
   p->hitboxTimer = 6;
@@ -14821,7 +14800,7 @@ u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
 
   if (p->kind == PLAYER_SLEEPING) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
   }
   power = a->power;
   if (power > 0) {
@@ -14839,7 +14818,7 @@ u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
     p->hurtSound = SE_DAMAGE;
     if ((p->kind == PLAYER_BAT && p->action == PACT_CBAT) || (p->kind == PLAYER_MOUSE && p->action == PACT_CMOUSE)) {
       p->formRequest = TRUE;
-      p->formRequestKind = PLAYER_DARK_DJANGO;
+      p->formRequestKind = PLAYER_BDJANGO;
     }
     if (p->spiderWebIdx >= 0) {
       FUN_080dab9c(p->spiderWebIdx);
@@ -14857,7 +14836,7 @@ u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
       shift++;
     }
     Player_SetupKnockback(p, a, b);
-    if (p->kind == PLAYER_DARK_DJANGO) {
+    if (p->kind == PLAYER_BDJANGO) {
       p->berserkHurt = 1;
     }
   }
@@ -14865,7 +14844,7 @@ u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
   if (HasGoodCond(p, GOOD_GAMAN)) {
     b->damage = 0;
     dmg = 0;
-    if (Hitbox_TestAttr(a, HBATTR_18)) {
+    if (Hitbox_TestAttr(a, HBATTR_BLOW)) {
       Player_ClearElementalCond(p);
     }
   } else {
@@ -14888,7 +14867,7 @@ u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
       p->hurtSound = SE_SOLIDIFY;
       Player_InflictElementalCond(p, ELEMCOND_SEKIKA);
       p->blownAway = FALSE;
-    } else if (Hitbox_TestAttr(a, HBATTR_18)) {
+    } else if (Hitbox_TestAttr(a, HBATTR_BLOW)) {
       Player_ClearElementalCond(p);
     }
     if (Hitbox_TestAttr(a, HBATTR_POISON) && !Player_TestEquipBuff(p, EBUFF_IMMUNEPOISON)) {
@@ -14967,7 +14946,7 @@ void Player_EnterDeadState(Player* p) {
 
   if (p->kind >= PLAYER_BAT && p->kind <= PLAYER_SLEEPING) {
     p->formRequest = TRUE;
-    p->formRequestKind = PLAYER_DARK_DJANGO;
+    p->formRequestKind = PLAYER_BDJANGO;
   }
   p->facing |= 1;
   PLAYER_SET_ANIM_4DIR(p, p->facing);
@@ -15179,7 +15158,7 @@ void Player_ApplyFormRequest(Player* p) {
       p->flashPlttID = 290;
       p->plttFlashTimer = 32;
     }
-    p->kind = PLAYER_DARK_DJANGO;
+    p->kind = PLAYER_BDJANGO;
     p->updateCallback = Player_UpdateDjango;
     p->useAuxSprite = 0;
     p->mover.mainSprite = &p->human, p->mover.auxSprite = NULL;
@@ -15210,7 +15189,7 @@ NON_MATCH void Player_CountStyleFrames(Player* p) {
   }
 
   if (IsMagicUnlocked(MAGIC_TRANSFORM)) {
-    if (p->kind == PLAYER_SOLAR_DJANGO) {
+    if (p->kind == PLAYER_RDJANGO) {
       frames = &gStat->solarFormFrames;
       if (*frames <= 0x7FFFFFFE) {
         (*frames)++;
@@ -15237,7 +15216,7 @@ NON_MATCH void Player_CountStyleFrames(Player* p) {
 // Tier A-C は試済 (Random / _Random / 添字直書き, 加算順, 比較の書き方, Mod の結果の受け方)
 NON_MATCH void DarkDjango_UpdateBerserk(Player* p) {
 #ifdef NONMATCHING_C
-  if (p->kind == PLAYER_DARK_DJANGO) {
+  if (p->kind == PLAYER_BDJANGO) {
     if (gStat->berserkCounter >= gStat->berserkThresh) {
       if (p->berserkReady) {
         if (p->action <= PACT_WALK) {

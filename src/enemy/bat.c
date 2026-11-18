@@ -20,7 +20,7 @@
 #include "vm.h"
 
 // ENEK_BAT(EV_BAT, EV_VBAT)
-// プレイヤーが変身するCバット(PLAYER_BAT)などと混同しない様に構造体名は Bat ではなく EnemyBat にした
+// プレイヤーが変身するCバット(PLAYER_BAT)などと混同しない様に構造体名は Bat ではなく EneBat にした
 typedef struct {
   Enemy e;
   u8 unk_654[4];              // 0x654
@@ -48,33 +48,33 @@ typedef struct {
   Vec3 unk_6b0;               // 0x6B0, 曲線移動を始めるときに 0 に戻す
   WorldPos homePos;           // 0x6B8, 復帰したときに戻る位置
   u8 unk_6c0[1728 - 0x6C0];   // 0x6C0
-} EnemyBat;
-static_assert(sizeof(EnemyBat) == 1728);
+} EneBat;
+static_assert(sizeof(EneBat) == 1728);
 
-static inline bool8 EnemyBat_TestUnk658(EnemyBat* p, u32 bit) {
+static inline bool8 EneBat_TestUnk658(EneBat* p, u32 bit) {
   if (p->unk_658 & bit) return TRUE;
   return FALSE;
 }
 
 struct Entity081fa164Elem* Entity081fa164_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
-void EnemyBat_SpawnTrail(EnemyBat* p);
-void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
-void FUN_08140904(EnemyBat* p);
-void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos);
-void EnemyBat_UpdateCurveBend(EnemyBat* p);
+void EneBat_SpawnTrail(EneBat* p);
+void EneBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
+void FUN_08140904(EneBat* p);
+void EneBat_BeginCurveMove(EneBat* p, Vec3* pos);
+void EneBat_UpdateCurveBend(EneBat* p);
 void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
-u8 EnemyBat_StepCurve(EnemyBat* p);
-void EnemyBat_PickRandomPathNode(EnemyBat* p);
-void FUN_08140c14(EnemyBat* p);
-void FUN_0813f9a8(EnemyBat*);
-void FUN_0813fbf8(EnemyBat*);
-void FUN_0813fc9c(EnemyBat*);
-void FUN_0813fd24(EnemyBat*);
-void FUN_0813fe34(EnemyBat*);
-void FUN_08140eb0(EnemyBat*);
-void FUN_081410cc(EnemyBat*);
+u8 EneBat_StepCurve(EneBat* p);
+void EneBat_PickRandomPathNode(EneBat* p);
+void FUN_08140c14(EneBat* p);
+void FUN_0813f9a8(EneBat*);
+void FUN_0813fbf8(EneBat*);
+void FUN_0813fc9c(EneBat*);
+void FUN_0813fd24(EneBat*);
+void FUN_0813fe34(EneBat*);
+void FUN_08140eb0(EneBat*);
+void FUN_081410cc(EneBat*);
 
-void (*const PTR_ARRAY_085ad7d0[5])(EnemyBat*) = {
+void (*const PTR_ARRAY_085ad7d0[5])(EneBat*) = {
     FUN_0813fc9c,
     FUN_0813fbf8,
     FUN_0813f9a8,
@@ -84,15 +84,15 @@ void (*const PTR_ARRAY_085ad7d0[5])(EnemyBat*) = {
 
 const u32 u32_ARRAY_085ad7e4[8] = {2, 3, 4, 6, 7, 9, 10, 12};  // 0x085AD7E4
 
-void (*const PTR_ARRAY_085ad804[2])(EnemyBat*) = {
+void (*const PTR_ARRAY_085ad804[2])(EneBat*) = {
     FUN_08140eb0,
     FUN_081410cc,
 };  // 0x085AD804
 
-void FUN_08140278(EnemyBat*, u16*);
+void FUN_08140278(EneBat*, u16*);
 
 // メッセージ表
-void (*const PTR_ARRAY_085ad80c[7])(EnemyBat*, u16*) = {
+void (*const PTR_ARRAY_085ad80c[7])(EneBat*, u16*) = {
     (void*)FUN_080f09a4,
     (void*)Enemy_Suspend,
     (void*)Enemy_Resume,
@@ -104,7 +104,7 @@ void (*const PTR_ARRAY_085ad80c[7])(EnemyBat*, u16*) = {
 
 // 当てたときの処理, 回復するバリアントなら与えたダメージぶん体力を戻してゲージと数字を出し, 攻撃判定を外して離れる副状態へ移る
 // 286/290命令, 表示判定は原典では bool を返す inline (通信中なら gLinkSession の playerIdx で unk_4a0 を見て case ごとに 0 を返す形) で, playerIdx は solar.c の LinkSession_GetPlayerIdx の形にすると -1 の作り方まで揃う, 残差は case ごとの 0 を返す塊が原典では畳まれず unk_4a0 を読み直す点と, CpuFill32 の v のアドレスを r6 に置く点
-NON_MATCH void EnemyBat_OnHit(Hitbox* a, Hitbox* b, EnemyBat* p) {
+NON_MATCH void EneBat_OnHit(Hitbox* a, Hitbox* b, EneBat* p) {
 #ifdef NONMATCHING_C
   if (b->ignoreMask != HIM_0) {
     return;
@@ -158,20 +158,20 @@ NON_MATCH void EnemyBat_OnHit(Hitbox* a, Hitbox* b, EnemyBat* p) {
     }
   }
   (p->e).hitbox.flags |= HBF_HIDDEN;
-  ((EnemyBat*)(p->e).owner)->unk_658 &= ~8;
-  if (!EnemyBat_TestUnk658((p->e).owner, 4)) {
+  ((EneBat*)(p->e).owner)->unk_658 &= ~8;
+  if (!EneBat_TestUnk658((p->e).owner, 4)) {
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 0, 2, 1);
-    ((EnemyBat*)(p->e).owner)->unk_658 |= 4;
+    ((EneBat*)(p->e).owner)->unk_658 |= 4;
   }
 #else
-  INCFUNC("asm/func/EnemyBat_OnHit.inc");
+  INCFUNC("asm/func/EneBat_OnHit.inc");
 #endif
 }
 
 // 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にして, 速く動く印を落とす
 // 803/808命令, Crow_OnHurt と同じ残差 (ノックバックの種別判定の配置, p->angle の格納先の計算位置, 末尾の乱数の読み順)
-NON_MATCH void EnemyBat_OnHurt(Hitbox* a, Hitbox* b, EnemyBat* p) {
+NON_MATCH void EneBat_OnHurt(Hitbox* a, Hitbox* b, EneBat* p) {
 #ifdef NONMATCHING_C
   s32 knockback;
 
@@ -184,17 +184,17 @@ NON_MATCH void EnemyBat_OnHurt(Hitbox* a, Hitbox* b, EnemyBat* p) {
   Enemy_HandleHurt(a, b, &p->e);
   knockback = b->knockback - (Random() & 15);
   b->knockback = knockback < 20 ? 20 : knockback;
-  ((EnemyBat*)(p->e).owner)->unk_658 &= ~8;
+  ((EneBat*)(p->e).owner)->unk_658 &= ~8;
 #else
-  INCFUNC("asm/func/EnemyBat_OnHurt.inc");
+  INCFUNC("asm/func/EneBat_OnHurt.inc");
 #endif
 }
 
 // プレイヤーに取り付いて一定間隔で攻撃し, 連打で振りほどかれたら終わる
 // 104/109 命令, 連打数の差分が Curoro_HoldPlayer と同じ残差 (base - 256 を作ってから引く形にならない) を持ち, 定数オフセットのレジスタも違う
-NON_MATCH void EnemyBat_HoldPlayer(EnemyBat* p) {
+NON_MATCH void EneBat_HoldPlayer(EneBat* p) {
 #ifdef NONMATCHING_C
-  EnemyBat* q = (p->e).owner;
+  EneBat* q = (p->e).owner;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     q->mashBase = gPlayerPtr[0]->mashCount;
@@ -205,7 +205,7 @@ NON_MATCH void EnemyBat_HoldPlayer(EnemyBat* p) {
     (p->e).hitbox.flags &= ~HBF_HIDDEN;
   }
   if ((p->e).variant > 11) {
-    EnemyBat_SpawnTrail(p);
+    EneBat_SpawnTrail(p);
   }
   {
     s32 base = q->mashBase;
@@ -226,13 +226,13 @@ NON_MATCH void EnemyBat_HoldPlayer(EnemyBat* p) {
     (p->e).animForceRestart = FALSE;
   }
 #else
-  INCFUNC("asm/func/EnemyBat_HoldPlayer.inc");
+  INCFUNC("asm/func/EneBat_HoldPlayer.inc");
 #endif
 }
 
 // 向きが変わったときだけ歩きアニメを流し直す
-void FUN_0813f180(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_0813f180(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 1);
@@ -245,14 +245,14 @@ void FUN_0813f180(EnemyBat* p) {
   }
 }
 
-void FUN_0813f1f0(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_0813f1f0(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 1);
     q->unk_661 = (p->e).mover.angle;
   } else {
-    EnemyBat_SpawnTrail(p);
+    EneBat_SpawnTrail(p);
     if (q->unk_661 != (p->e).mover.angle) {
       Enemy_PlayAnim(&p->e, 1);
       q->unk_661 = (p->e).mover.angle;
@@ -262,14 +262,14 @@ void FUN_0813f1f0(EnemyBat* p) {
   }
 }
 
-void FUN_0813f268(EnemyBat* p) {
+void FUN_0813f268(EneBat* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimWithVariant(&p->e, 15, 0);
   }
   (p->e).animForceRestart = FALSE;
 }
 
-void FUN_0813f2a8(EnemyBat* p) {
+void FUN_0813f2a8(EneBat* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnimWithVariant(&p->e, 17, 0);
   }
@@ -279,14 +279,14 @@ void FUN_0813f2a8(EnemyBat* p) {
   }
 }
 
-void FUN_0813f2fc(EnemyBat* p) {
+void FUN_0813f2fc(EneBat* p) {
   Enemy_ConsumeStateBegun(&p->e);
   Enemy_PlayAnim(&p->e, 0);
 }
 
 // 向きに合わせて animTable[11] のアニメを流し, 30 フレーム未満は flags4 の印を立て, 60 フレームで副状態を終える
 // Enemy_PlayAnim の展開, 再生部分を (p, u32 anim, variant, f) を取る static inline にして変化なしで return する形にすると残差は MainSprite_SetAnim をまたいで定数 4 を r8 に置く点だけ (Enemy_PlayAnim と同じ壁), 試済: 反転フラグの直接操作
-NON_MATCH void FUN_0813f320(EnemyBat* p, s32 timer) {
+NON_MATCH void FUN_0813f320(EneBat* p, s32 timer) {
 #ifdef NONMATCHING_C
   s32 dir;
   s32 flip;
@@ -295,7 +295,7 @@ NON_MATCH void FUN_0813f320(EnemyBat* p, s32 timer) {
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
-  EnemyBat_GetDirAndFlip((p->e).mover.angle, &dir, &flip);
+  EneBat_GetDirAndFlip((p->e).mover.angle, &dir, &flip);
   anim = (p->e).animTable[11].anim;
   if ((p->e).spriteKind == 0) {
     EnemyAuxSprite* s;
@@ -331,7 +331,7 @@ NON_MATCH void FUN_0813f320(EnemyBat* p, s32 timer) {
 }
 
 // unk_20c へ滑り終えたら, 追いかけ中ならプレイヤーへの曲線移動へ, そうでなければ向き直って状態10へ移る
-void FUN_0813f44c(EnemyBat* p) {
+void FUN_0813f44c(EneBat* p) {
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
@@ -342,7 +342,7 @@ void FUN_0813f44c(EnemyBat* p) {
     if ((p->e).chaseTimer != 0) {
       SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
       (p->e).chaseTimer = (p->e).chaseTimeMax;
-      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      EneBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
       Enemy_ResetState(&p->e, 0, 2, 0);
     } else {
       Enemy_EnterState(&p->e, FUN_0813f320, ES_UNK_10);
@@ -354,8 +354,8 @@ void FUN_0813f44c(EnemyBat* p) {
 }
 
 // 被弾して後ろへ滑る状態, 滑り終えたら, 1度目は副状態3へ, 2度目からはプレイヤーへの曲線移動へ移る
-void EnemyBat_StateDamaged(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void EneBat_StateDamaged(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
@@ -370,7 +370,7 @@ void EnemyBat_StateDamaged(EnemyBat* p) {
     q->unk_666 = 0;
     if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_26)) {
       SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
-      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      EneBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
       Enemy_ResetState(&p->e, 0, 2, 0);
       FUN_08140904(p);
     } else {
@@ -383,7 +383,7 @@ void EnemyBat_StateDamaged(EnemyBat* p) {
 }
 
 // 倒されたときの状態, 点滅しながら消えたら倒されたスクリプトを呼び図鑑に載せて止まる
-void EnemyBat_StateDying(EnemyBat* p, s32 timer) {
+void EneBat_StateDying(EneBat* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 10);
     PlayEnemyDeathCry(&p->e);
@@ -422,7 +422,7 @@ void EnemyBat_StateDying(EnemyBat* p, s32 timer) {
     if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
       FUN_080e6658(&p->e);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
     ParticleShadow_Hide(&(p->e).shadow);
@@ -430,8 +430,8 @@ void EnemyBat_StateDying(EnemyBat* p, s32 timer) {
 }
 
 // 曲線に沿って経路の目的地へ飛び, 曲線の終点に着いたら勢いを残して乱数の経路ノードへ次の曲線を引く
-void FUN_0813f9a8(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_0813f9a8(EneBat* p) {
+  EneBat* q = (p->e).owner;
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
@@ -440,25 +440,25 @@ void FUN_0813f9a8(EnemyBat* p) {
     q->curveBendDir = 1;
   }
   speed = (p->e).getMoveSpeed(&p->e);
-  EnemyBat_UpdateCurveBend(p);
-  if (Enemy_StepToDest(&p->e, speed) && EnemyBat_StepCurve(p)) {
+  EneBat_UpdateCurveBend(p);
+  if (Enemy_StepToDest(&p->e, speed) && EneBat_StepCurve(p)) {
     WorldPos pos;
     WorldPos* dst;
     PathWalker* walker;
 
     Vec3_SetPolar(&q->unk_6b0, (p->e).mover.angle, speed);
-    EnemyBat_PickRandomPathNode(p);
+    EneBat_PickRandomPathNode(p);
     dst = &pos;
     walker = &(p->e).pathWalker;
     dst->x = walker->node->x;
     dst->z = walker->node->y;
     dst->y = TileHeightAt(dst);
-    EnemyBat_BeginCurveMove(p, &pos);
+    EneBat_BeginCurveMove(p, &pos);
   }
   (p->e).subStateTimer++;
 }
 
-void FUN_0813fbf8(EnemyBat* p) {
+void FUN_0813fbf8(EneBat* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     (p->e).mover.angle = (p->e).playerAngle;
   }
@@ -469,7 +469,7 @@ void FUN_0813fbf8(EnemyBat* p) {
   }
 }
 
-void FUN_0813fc9c(EnemyBat* p) {
+void FUN_0813fc9c(EneBat* p) {
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, FUN_0813f268, ES_UNK_33);
     ParticleShadow_Hide(&(p->e).shadow);
@@ -479,8 +479,8 @@ void FUN_0813fc9c(EnemyBat* p) {
   }
 }
 
-void FUN_0813fd24(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_0813fd24(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, FUN_0813f2a8, ES_UNK_34);
@@ -496,8 +496,8 @@ void FUN_0813fd24(EnemyBat* p) {
 }
 
 // 乱数の向きへ弾かれて滑り, 止まったらプレイヤーへの曲線移動を始める
-void FUN_0813fe34(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_0813fe34(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
@@ -516,18 +516,18 @@ void FUN_0813fe34(EnemyBat* p) {
     if (vel->x * vel->x + vel->z * vel->z == 0) {
       FUN_08140904(p);
       Vec3_Clear(vel);
-      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      EneBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
       Enemy_ResetState(&p->e, 0, 2, 0);
     }
   }
   (p->e).subStateTimer++;
 }
 
-void FUN_08140014(EnemyBat* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad7d0; }
+void FUN_08140014(EneBat* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085ad7d0; }
 
 // 復帰時に作業値を消して homePos へ戻し, 床の高さを取り直して待機アニメを流して1コマ送る
-void EnemyBat_OnReset(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void EneBat_OnReset(EneBat* p) {
+  EneBat* q = (p->e).owner;
   EnemyAuxSprite* aux;
 
   q->unk_65f = 0;
@@ -552,11 +552,11 @@ void EnemyBat_OnReset(EnemyBat* p) {
   AuxSprite_AdvanceAnim(&aux->spr, &aux->anim);
 }
 
-void FUN_08140278(EnemyBat* p, u16* msg) {
+void FUN_08140278(EneBat* p, u16* msg) {
   if (!Enemy_IsDead(&p->e) && gPlayerPtr[0] != NULL) {
-    EnemyBat* q = (p->e).owner;
+    EneBat* q = (p->e).owner;
 
-    if (EnemyBat_TestUnk658(q, 2)) {
+    if (EneBat_TestUnk658(q, 2)) {
       CLEAR_FLAGS(q->unk_658, 2);
       SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
       SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
@@ -566,18 +566,18 @@ void FUN_08140278(EnemyBat* p, u16* msg) {
 }
 
 // 床から 260 ほどの高さを保って浮き, sin で上下に揺らす, 床の段差ぶんは高さを補う
-void EnemyBat_UpdateHover(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void EneBat_UpdateHover(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (Enemy_IsDead(&p->e) == 0) {
-    if (EnemyBat_TestUnk658(q, 2)) {
+    if (EneBat_TestUnk658(q, 2)) {
       (p->e).mover.pos.y = q->unk_662 + (p->e).heightAboveFloor;
     } else {
       s32 d;
       s32 y;
 
       if ((p->e).heightAboveFloor <= 259) {
-        if (EnemyBat_TestUnk658(q, 1)) {
+        if (EneBat_TestUnk658(q, 1)) {
           (p->e).mover.pos.y = (p->e).floorY;
           return;
         }
@@ -615,8 +615,8 @@ void EnemyBat_UpdateHover(EnemyBat* p) {
   }
 }
 
-void EnemyBat_UpdateCurveBend(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void EneBat_UpdateCurveBend(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   if (q->curveBend > 320) {
     q->curveBendDir = -1;
@@ -628,7 +628,7 @@ void EnemyBat_UpdateCurveBend(EnemyBat* p) {
   q->curveBend += q->curveBendDir * 12;
 }
 
-void EnemyBat_PickRandomPathNode(EnemyBat* p) {
+void EneBat_PickRandomPathNode(EneBat* p) {
   PathWalker* walker = &(p->e).pathWalker;
   u8 idx = Mod(Random(), walker->path->nodeCount);
 
@@ -640,34 +640,34 @@ void EnemyBat_PickRandomPathNode(EnemyBat* p) {
   walker->node = Map_GetPathNodes(walker->path) + walker->nodeIdx;
 }
 
-void EnemyBat_InitHitboxes(EnemyBat* p) {
+void EneBat_InitHitboxes(EneBat* p) {
   Vec3 hurtSize, hurtOffset, hitSize, hitOffset;
 
   VEC3_SET(hurtSize, 32, 82, 32);
   VEC3_SET(hurtOffset, 0, 0, 0);
-  Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, EnemyBat_OnHurt, p);
+  Enemy_RegisterHurtbox(&p->e, &hurtSize, &hurtOffset, EneBat_OnHurt, p);
   VEC3_SET(hitSize, 32, 42, 32);
   VEC3_SET(hitOffset, 0, 0, 0);
-  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, EnemyBat_OnHit, 0, p);
+  Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, EneBat_OnHit, 0, p);
 }
 
 // curveT が大きいほど速く, unk_658 の bit3 が立っていればさらに速い
-s32 EnemyBat_GetMoveSpeed(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+s32 EneBat_GetMoveSpeed(EneBat* p) {
+  EneBat* q = (p->e).owner;
   s32 v = abs(FixToInt(7, q->curveT));
   s32 i = v;
 
   if (i > 7) {
     i = 7;
   }
-  if (EnemyBat_TestUnk658(q, 8)) {
+  if (EneBat_TestUnk658(q, 8)) {
     return u32_ARRAY_085ad7e4[i] + 6;
   }
   return u32_ARRAY_085ad7e4[i];
 }
 
-void EnemyBat_StartCurve(EnemyBat* p, Vec3* pos) {
-  EnemyBat* q = (p->e).owner;
+void EneBat_StartCurve(EneBat* p, Vec3* pos) {
+  EneBat* q = (p->e).owner;
 
   q->curveStart = (p->e).mover.pos;
   q->curveEnd = *pos;
@@ -676,9 +676,9 @@ void EnemyBat_StartCurve(EnemyBat* p, Vec3* pos) {
 
 // curveStart から curveEnd への曲線上の curveT の位置を経路の目的地に置き, curveT を乱数ぶん進める, 終点に着いたら TRUE
 // 222/223命令, Curoro_StepCurve と同じ壁 (原典はフレーム 0x34 で start/end/d/v を置き k などを退避, こちらは 0x28)
-NON_MATCH u8 EnemyBat_StepCurve(EnemyBat* p) {
+NON_MATCH u8 EneBat_StepCurve(EneBat* p) {
 #ifdef NONMATCHING_C
-  EnemyBat* q = (p->e).owner;
+  EneBat* q = (p->e).owner;
   WorldPos start, end;
   Vec3 d, v;
   Vec3* dest;
@@ -712,11 +712,11 @@ NON_MATCH u8 EnemyBat_StepCurve(EnemyBat* p) {
   q->curveT = 0;
   return TRUE;
 #else
-  INCFUNC("asm/func/EnemyBat_StepCurve.inc");
+  INCFUNC("asm/func/EneBat_StepCurve.inc");
 #endif
 }
 
-void EnemyBat_InitAnims(EnemyBat* p) {
+void EneBat_InitAnims(EneBat* p) {
   Enemy_SetAnimEntry(&p->e, 0, 0, 0);
   Enemy_SetAnimEntry(&p->e, 1, 0, 0);
   Enemy_SetAnimEntry(&p->e, 3, 1, 0);
@@ -727,8 +727,8 @@ void EnemyBat_InitAnims(EnemyBat* p) {
   Enemy_SetAnimEntry(&p->e, 10, 1, 0);
 }
 
-void FUN_08140904(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_08140904(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_20);
   CLEAR_FLAGS(q->unk_658, 7);
@@ -736,7 +736,7 @@ void FUN_08140904(EnemyBat* p) {
 }
 
 // 8方向の向きを, 左右反転で済む5方向とその反転の有無に分ける
-void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
+void EneBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   s32 dir = Angle_ToDir8(angle);
 
   if (dir > 4) {
@@ -748,25 +748,25 @@ void EnemyBat_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip) {
   }
 }
 
-void EnemyBat_BeginCurveMove(EnemyBat* p, Vec3* pos) {
-  EnemyBat* q = (p->e).owner;
+void EneBat_BeginCurveMove(EneBat* p, Vec3* pos) {
+  EneBat* q = (p->e).owner;
   Vec3 diff;
 
-  EnemyBat_StartCurve(p, pos);
-  EnemyBat_StepCurve(p);
+  EneBat_StartCurve(p, pos);
+  EneBat_StepCurve(p);
   Enemy_ResetState(&p->e, 0, 0, 1);
   Vec3_Diff(&diff, pos, &(p->e).mover.pos);
   (p->e).unk_1dc = ArcTan2_8(diff.x, diff.z);
   Vec3_Clear(&q->unk_6b0);
 }
 
-void FUN_08140a10(EnemyBat* p) {
+void FUN_08140a10(EneBat* p) {
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
   CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_26);
   (p->e).chaseTimer = 0;
 }
 
-void FUN_08140a48(EnemyBat* p) {
+void FUN_08140a48(EneBat* p) {
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
     (p->e).chaseTimer = 0;
     return;
@@ -775,7 +775,7 @@ void FUN_08140a48(EnemyBat* p) {
     (p->e).chaseTimer--;
     return;
   }
-  EnemyBat_PickRandomPathNode(p);
+  EneBat_PickRandomPathNode(p);
   {
     WorldPos pos;
     WorldPos* dst = &pos;
@@ -784,13 +784,13 @@ void FUN_08140a48(EnemyBat* p) {
     dst->x = walker->node->x;
     dst->z = walker->node->y;
     dst->y = TileHeightAt(dst);
-    EnemyBat_BeginCurveMove(p, &pos);
+    EneBat_BeginCurveMove(p, &pos);
     FUN_08140a10(p);
   }
 }
 
 // 残差は sp のコピー (mov rN, sp) の位置2か所のみ, Curoro_BounceOffWall と同じ, 試済: Vec3_Sum の引数順, dst/cur のポインタ, 直書き
-NON_MATCH void EnemyBat_BounceOffWall(EnemyBat* p) {
+NON_MATCH void EneBat_BounceOffWall(EneBat* p) {
 #ifdef NONMATCHING_C
   WorldPos pos;
   WorldPos* cur = &(p->e).mover.pos;
@@ -805,12 +805,12 @@ NON_MATCH void EnemyBat_BounceOffWall(EnemyBat* p) {
     (p->e).mover.delta.z = 0;
   }
 #else
-  INCFUNC("asm/func/EnemyBat_BounceOffWall.inc");
+  INCFUNC("asm/func/EneBat_BounceOffWall.inc");
 #endif
 }
 
-void FUN_08140c14(EnemyBat* p) {
-  EnemyBat* q = (p->e).owner;
+void FUN_08140c14(EneBat* p) {
+  EneBat* q = (p->e).owner;
 
   q->unk_666 = 0;
   Vec3_Clear(&(p->e).jumpVel);
@@ -820,11 +820,11 @@ void FUN_08140c14(EnemyBat* p) {
   SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
   Enemy_ResetState(&p->e, 0, 2, 0);
   ParticleShadow_Show(&(p->e).shadow);
-  EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+  EneBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
 }
 
 // 的を探してよい番を使い切り, 高さが近いプレイヤーが索敵範囲に入っていれば攻撃の要求を立てる
-bool8 FUN_08140cd4(EnemyBat* p) {
+bool8 FUN_08140cd4(EneBat* p) {
   if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_3)) {
     s32 dy;
 
@@ -842,9 +842,9 @@ found:
   return TRUE;
 }
 
-void FUN_08140d48(EnemyBat* p) {
+void FUN_08140d48(EneBat* p) {
   SET_FLAGS((p->e).flags, ENEFLAG_UNK_26);
-  if (!Enemy_TestFlag3(&p->e, ENEFLAG3_UNK_8) && EnemyBat_TestUnk658((p->e).owner, 2)) {
+  if (!Enemy_TestFlag3(&p->e, ENEFLAG3_UNK_8) && EneBat_TestUnk658((p->e).owner, 2)) {
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
     Enemy_ResetState(&p->e, 0, 0, 3);
   }
@@ -852,7 +852,7 @@ void FUN_08140d48(EnemyBat* p) {
 
 // 6フレームごとに, 向きの反対側の 64 度の範囲へ粒を1つ飛ばす
 // 残差は95/94命令, 角度の -32 が乱数側に畳まれ, table が r6 でなく ip に載る, 試済: base を s32 で計算, base + r - 32, r + (base - 32)
-NON_MATCH void EnemyBat_SpawnTrail(EnemyBat* p) {
+NON_MATCH void EneBat_SpawnTrail(EneBat* p) {
 #ifdef NONMATCHING_C
   if (Mod((p->e).unk_1ca, 6) == 0) {
     Vec3 vel;
@@ -865,42 +865,42 @@ NON_MATCH void EnemyBat_SpawnTrail(EnemyBat* p) {
     Entity081fa164_SpawnEx(&(p->e).mover.pos, &vel, 40, 2, 1);
   }
 #else
-  INCFUNC("asm/func/EnemyBat_SpawnTrail.inc");
+  INCFUNC("asm/func/EneBat_SpawnTrail.inc");
 #endif
 }
 
-s32 FUN_08140ea0(EnemyBat* p) {
-  EnemyBat_UpdateHover(p);
+s32 FUN_08140ea0(EneBat* p) {
+  EneBat_UpdateHover(p);
   return 1;
 }
 
-s32 FUN_08140eac(EnemyBat* p) { return 1; }
+s32 FUN_08140eac(EneBat* p) { return 1; }
 
 // プレイヤーへの曲線に沿って飛び, 曲線の終点に着いたらプレイヤーの近くの乱数の位置へ次の曲線を引く
 // 229/229命令, 残差は乱数の表と ldrsh のゼロ添字に使う一時レジスタ番号 (r1/r2 と原典 r2/r3) だけ, 試済: 乱数の受けの型, pos の初期化子, table ローカル
-NON_MATCH void FUN_08140eb0(EnemyBat* p) {
+NON_MATCH void FUN_08140eb0(EneBat* p) {
 #ifdef NONMATCHING_C
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    EnemyBat* q = (p->e).owner;
+    EneBat* q = (p->e).owner;
 
     Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
     Vec3_Clear(&q->unk_6b0);
     q->curveBendDir = 1;
   }
-  EnemyBat_UpdateCurveBend(p);
+  EneBat_UpdateCurveBend(p);
   speed = (p->e).getMoveSpeed(&p->e);
   if (Enemy_StepToDest(&p->e, speed)) {
-    if (EnemyBat_StepCurve(p)) {
+    if (EneBat_StepCurve(p)) {
       WorldPos pos;
       u8 r = Random();
 
       pos = gPlayerPtr[0]->mover.pos;
       pos.x += FixToInt(4, SIN(r));
       pos.z += FixToInt(4, COS(r));
-      EnemyBat_BeginCurveMove(p, &pos);
-      CLEAR_FLAGS(((EnemyBat*)(p->e).owner)->unk_658, 8);
+      EneBat_BeginCurveMove(p, &pos);
+      CLEAR_FLAGS(((EneBat*)(p->e).owner)->unk_658, 8);
     }
   } else {
     (p->e).subStateTimer++;
@@ -912,16 +912,16 @@ NON_MATCH void FUN_08140eb0(EnemyBat* p) {
 
 // プレイヤーを掴んで周りを曲線で飛び回る副状態, 離れすぎたら少し待ってから曲線移動をやり直す
 // 366/366命令, 残差は FUN_08140eb0 と同じく乱数の表と ldrsh のゼロ添字の一時レジスタ番号 (r1/r3 と原典 r3/r1) だけ, 待ちの間は曲線移動を飛ばし, 離れすぎたら return する形で構造は揃う, 試済: SIN の添字のマスクを外す
-NON_MATCH void FUN_081410cc(EnemyBat* p) {
+NON_MATCH void FUN_081410cc(EneBat* p) {
 #ifdef NONMATCHING_C
-  EnemyBat* q = (p->e).owner;
+  EneBat* q = (p->e).owner;
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     WorldPos pos;
     u8 r;
 
-    Enemy_EnterState(&p->e, EnemyBat_HoldPlayer, ES_UNK_35);
+    Enemy_EnterState(&p->e, EneBat_HoldPlayer, ES_UNK_35);
     Vec3_Clear(&q->unk_6b0);
     q->curveBendDir = 1;
     q->unk_66c = 0;
@@ -929,19 +929,19 @@ NON_MATCH void FUN_081410cc(EnemyBat* p) {
     pos = gPlayerPtr[0]->mover.pos;
     pos.x += FixToInt(3, SIN(r));
     pos.z += FixToInt(3, COS(r));
-    EnemyBat_StartCurve(p, &pos);
-    EnemyBat_StepCurve(p);
+    EneBat_StartCurve(p, &pos);
+    EneBat_StepCurve(p);
     CLEAR_FLAGS(q->unk_658, 8);
   }
   if (q->unk_66c != 0) {
     if (--q->unk_66c == 0) {
-      EnemyBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
+      EneBat_BeginCurveMove(p, &gPlayerPtr[0]->mover.pos);
       SET_FLAGS(q->unk_658, 8);
     }
   } else {
-    EnemyBat_UpdateCurveBend(p);
+    EneBat_UpdateCurveBend(p);
     speed = (p->e).getMoveSpeed(&p->e);
-    if (Enemy_StepToDest(&p->e, speed) && EnemyBat_StepCurve(p)) {
+    if (Enemy_StepToDest(&p->e, speed) && EneBat_StepCurve(p)) {
       WorldPos pos;
       u8 r;
 
@@ -949,8 +949,8 @@ NON_MATCH void FUN_081410cc(EnemyBat* p) {
       pos = gPlayerPtr[0]->mover.pos;
       pos.x += FixToInt(3, SIN(r));
       pos.z += FixToInt(3, COS(r));
-      EnemyBat_StartCurve(p, &pos);
-      EnemyBat_StepCurve(p);
+      EneBat_StartCurve(p, &pos);
+      EneBat_StepCurve(p);
     }
     if ((p->e).playerDistSq > 65000) {
       FUN_08140904(p);
@@ -969,9 +969,9 @@ NON_MATCH void FUN_081410cc(EnemyBat* p) {
 #endif
 }
 
-void FUN_08141448(EnemyBat* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad804; }
+void FUN_08141448(EneBat* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085ad804; }
 
-s32 FUN_0814145c(EnemyBat* p) {
+s32 FUN_0814145c(EneBat* p) {
   FUN_08140ea0(p);
   {
     u32 idx = (p->e).subState0;
@@ -982,13 +982,13 @@ s32 FUN_0814145c(EnemyBat* p) {
   return 1;
 }
 
-s32 EnemyBat_Update(EnemyBat* p) {
+s32 EneBat_Update(EneBat* p) {
   (p->e).playerMover = &gPlayerPtr[0]->mover;
   Enemy_Update(&p->e);
   return 0;
 }
 
-s32 EnemyBat_Destroy(EnemyBat* p) {
+s32 EneBat_Destroy(EneBat* p) {
   if ((p->e).spriteKind == 0) {
     AuxSprite_Remove(&(p->e).s->aux.spr);
   } else {
@@ -1009,7 +1009,7 @@ s32 EnemyBat_Destroy(EnemyBat* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -1020,7 +1020,7 @@ s32 EnemyBat_Destroy(EnemyBat* p) {
 
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
 // 1813/1982命令, Crow_Init の下書きを Bat 向けに直したもの (呼び出し列は一致), 原典はハンドラ表の代入の塊を variant で2つに展開し, Enemy のフィールドのアドレスをスタックに作り置く (敵共通の初期化 inline)
-NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
+NON_MATCH s32 EneBat_Init(EneBat* p) {
 #ifdef NONMATCHING_C
   Vec3 pos;
   s32 id;
@@ -1034,7 +1034,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
   p->unk_658 = 0;
   Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
   (p->e).kind = ENEK_BAT;
-  EnemyBat_InitAnims(p);
+  EneBat_InitAnims(p);
   if ((p->e).spriteKind == 0) {
     EnemyAuxSprite* aux;
     u8 k;
@@ -1042,7 +1042,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_BAT);
+    Video_GetAuxSprite(&aux->gfx, SPR_BAT);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_BAT);
     k = (p->e).kind;
@@ -1059,7 +1059,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_BAT);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_BAT);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1161,7 +1161,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1171,7 +1171,7 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1230,20 +1230,20 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
     (p->e).s->main.spr.plttID = n + 220;
   }
 
-  EnemyBat_InitHitboxes(p);
+  EneBat_InitHitboxes(p);
   if ((p->e).variant < 12) {
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
     (p->e).navAgent = &p->navAgent;
     (p->e).pathNodePos = &p->pathNodePos;
     (p->e).handlerFrame = (EnemyHandler)FUN_0814145c;
-    (p->e).getMoveSpeed = (void*)EnemyBat_GetMoveSpeed;
+    (p->e).getMoveSpeed = (void*)EneBat_GetMoveSpeed;
     (p->e).handlerTurn = NULL;
     (p->e).handlerMove = FUN_0813f180;
     (p->e).handlerWait = FUN_0813f2fc;
-    (p->e).unk_5c0 = NULL;
+    (p->e).handlerNap = NULL;
     (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
-    (p->e).handlerDamaged = EnemyBat_StateDamaged;
-    (p->e).handlerDying = EnemyBat_StateDying;
+    (p->e).handlerDamaged = EneBat_StateDamaged;
+    (p->e).handlerDying = EneBat_StateDying;
     (p->e).unk_5d4 = FUN_080f44f4;
     (p->e).unk_5dc = FUN_080f410c;
     (p->e).unk_5c8 = NULL;
@@ -1253,14 +1253,14 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
     (p->e).navAgent = &p->navAgent;
     (p->e).pathNodePos = &p->pathNodePos;
     (p->e).handlerFrame = (EnemyHandler)FUN_0814145c;
-    (p->e).getMoveSpeed = (void*)EnemyBat_GetMoveSpeed;
+    (p->e).getMoveSpeed = (void*)EneBat_GetMoveSpeed;
     (p->e).handlerTurn = NULL;
     (p->e).handlerMove = FUN_0813f1f0;
     (p->e).handlerWait = FUN_0813f2fc;
-    (p->e).unk_5c0 = NULL;
+    (p->e).handlerNap = NULL;
     (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
-    (p->e).handlerDamaged = EnemyBat_StateDamaged;
-    (p->e).handlerDying = EnemyBat_StateDying;
+    (p->e).handlerDamaged = EneBat_StateDamaged;
+    (p->e).handlerDying = EneBat_StateDying;
     (p->e).unk_5d4 = FUN_080f44f4;
     (p->e).unk_5dc = FUN_080f410c;
     (p->e).unk_5c8 = NULL;
@@ -1287,13 +1287,13 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;
   (p->e).unk_543 = 40;
   (p->e).msgHandlers = (void*)PTR_ARRAY_085ad80c;
-  (p->e).onReset = (EnemyHandler)EnemyBat_OnReset;
+  (p->e).onReset = (EnemyHandler)EneBat_OnReset;
   (p->e).unk_5fc = NULL;
   (p->e).onAttackRequest = (EnemyHandler)FUN_08140d48;
   (p->e).unk_5b0 = NULL;
@@ -1377,25 +1377,25 @@ NON_MATCH s32 EnemyBat_Init(EnemyBat* p) {
   (p->e).initHandlerState = (p->e).handlerState;
   (p->e).initState = (p->e).state;
   (p->e).handlerMsg = (EnemyMsgHandler)Enemy_DispatchMsg;
-  (p->e).handlerUpdate = (EnemyHandler)EnemyBat_Update;
-  (p->e).handlerDestroy = (EnemyHandler)EnemyBat_Destroy;
+  (p->e).handlerUpdate = (EnemyHandler)EneBat_Update;
+  (p->e).handlerDestroy = (EnemyHandler)EneBat_Destroy;
   if (!Enemy_Register(&p->e)) {
     return -1;
   }
   return 0;
 #else
-  INCFUNC("asm/func/EnemyBat_Init.inc");
+  INCFUNC("asm/func/EneBat_Init.inc");
 #endif
 }
 
 // 0xF8BE, HashName("バット")
-void EnemyBat_Create(void) {
-  EnemyBat* p = Malloc(sizeof(EnemyBat));
+void EneBat_Create(void) {
+  EneBat* p = Malloc(sizeof(EneBat));
 
   if (p != NULL) {
-    ClearMemory(p, sizeof(EnemyBat));
-    if (EnemyBat_Init(p) < 0) {
-      EnemyBat_Destroy(p);
+    ClearMemory(p, sizeof(EneBat));
+    if (EneBat_Init(p) < 0) {
+      EneBat_Destroy(p);
       Free(p);
     }
   }

@@ -27,7 +27,7 @@ typedef struct {
   Hitbox hitbox;       // 0x01C, flags 0x2001, ignoreMask 0x10, 攻撃側
   Hitbox hurtbox;      // 0x06C, flags 0x4005, ignoreMask 0x10, 被弾側
   AuxSprite sprite;    // 0x0BC, AFFINE|UNK_0, +0x1C の Vec3 を両方の Hitbox_SetPos に渡す
-  AuxSpriteGfx gfx;    // 0x0E8, SPRITE_SLAVE_SWORD_AX
+  AuxSpriteGfx gfx;    // 0x0E8, SPR_SLAVE_SWORD_AX
 } VampireSword;
 static_assert(sizeof(VampireSword) == 260);
 
@@ -104,7 +104,7 @@ NON_MATCH s32 VampireSword_Init(VampireSwordManager* p, VampireSword* elem, s32 
   elem->moveAngle = 0;
   sprite = &elem->sprite;
   gfx = &elem->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_SLAVE_SWORD_AX);
+  Video_GetAuxSprite(gfx, SPR_SLAVE_SWORD_AX);
   AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
   sprite->poseIdx = 3;
   sprite->priority = 2;

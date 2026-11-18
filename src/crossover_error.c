@@ -18,7 +18,7 @@ typedef struct {
   u8 unk_1a[2];       // 0x1A, padding?
   u32 timer;          // 0x1C, 毎フレーム +1、state が変わると 0
   s32 windowID;       // 0x20, MenuMessage_Create の戻り値, なければ -1, _Destroy が MenuMessage_Destroy に渡して解放する
-  Tilemaps* tilemap;  // 0x24, TILEMAP_A413 or TILEMAP_CD91
+  Tilemaps* tilemap;  // 0x24, MP_A413 or MP_CD91
   u8* msgPc;          // 0x28, _Init 時点の VM_GetPC(), MenuMessage_SetScript(windowID, msgPc) に渡す
   s32 scriptID;       // 0x2C, '.r=0', state 3 が VM_ExecByID に渡す
 } CrossoverError;
@@ -55,7 +55,7 @@ void CrossoverError_ResetVideo(CrossoverError* p) {
 void CrossoverError_LoadFatalBG(CrossoverError* p, s32 param_2) {
   BgPlttFile* f;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_A413);
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &param_2);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   f = GetBgPlttFile(BGP_EFDA);
@@ -65,7 +65,7 @@ void CrossoverError_LoadFatalBG(CrossoverError* p, s32 param_2) {
 void CrossoverError_LoadErrorBG(CrossoverError* p, s32 param_2) {
   BgPlttFile* f;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &param_2);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   f = GetBgPlttFile(BGP_LINK);

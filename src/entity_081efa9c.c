@@ -124,9 +124,9 @@ NON_MATCH void Entity081efa9c_StateBounce(Entity081efa9c* p, Entity081efa9cElem*
       e->spinDir *= -1;
     }
     if (e->bounceSoundWait == 0) {
-      if (e->spriteID == SPRITE_SLIME && e->anim.animIdx == 6) {
+      if (e->spriteID == SPR_SLIME && e->anim.animIdx == 6) {
         PlaySound_082406e0(SONG_964);
-      } else if (e->spriteID == SPRITE_SKELETON_MISC && e->anim.animIdx == 6) {
+      } else if (e->spriteID == SPR_SKELETON_MISC && e->anim.animIdx == 6) {
         PlaySound_082406e0(SONG_944);
       }
       e->bounceSoundWait = 10;

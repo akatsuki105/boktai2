@@ -365,7 +365,7 @@ _080ED38A:
 	ldr r0, [r0]
 	mov r4, r8
 	ldr r1, [r4]
-	bl FUN_080ce544
+	bl PlayerLink_UpdateBloodSwordOnKill
 	b _080ED524
 _080ED3A0:
 	movs r1, #0x94

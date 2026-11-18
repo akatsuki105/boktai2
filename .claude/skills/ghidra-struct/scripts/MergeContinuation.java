@@ -26,7 +26,9 @@ public class MergeContinuation extends GhidraScript {
       Address a = sp.getAddress(Long.parseLong(args[i], 16));
       Function f = fm.getFunctionAt(a);
       if (f == null) { println("ABORT: 関数が無い " + a); return; }
-      if (a.compareTo(parent.getBody().getMaxAddress()) <= 0) { println("ABORT: " + a + " が親の body 内"); return; }
+      // 偽の関数が親の body の隙間に挟まっていることはある (親の body が飛び飛びの範囲を持つ), 重なっているときだけ止める
+      if (a.compareTo(aParent) <= 0) { println("ABORT: " + a + " が親より前にある"); return; }
+      if (parent.getBody().intersects(f.getBody())) { println("ABORT: " + f.getName() + " の body が親の body と重なっている"); return; }
       fakes.add(a);
       merged.add(f.getBody());
       if (f.getBody().getMaxAddress().compareTo(maxEnd) > 0) maxEnd = f.getBody().getMaxAddress();

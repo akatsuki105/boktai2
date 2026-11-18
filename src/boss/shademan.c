@@ -48,7 +48,7 @@ typedef struct ShadeMan {
   Hitbox hurtbox2;                           // 0x1AC, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, ハンドラは空
   Hitbox hitbox;                             // 0x1FC
   Hitbox hitbox2;                            // 0x24C
-  MainSpriteGfx gfx;                         // 0x29C, SPRITE_SHADEMAN
+  MainSpriteGfx gfx;                         // 0x29C, SPR_SHADEMAN
   MainSprite sprite;                         // 0x2BC
   AuxShadow shadow;                          // 0x31C
   u8 unk_388;                                // 0x388
@@ -107,7 +107,7 @@ typedef struct ShadeMan {
   u32 unk_80c;                               // 0x80C
   u32 unk_810;                               // 0x810
   ShadeManAfterimage afterimages[8];         // 0x814
-  MainSpriteGfx gfx_b34;                     // 0xB34, SPRITE_DJANGO_SABATA
+  MainSpriteGfx gfx_b34;                     // 0xB34, SPR_DJANGO_SABATA
   MainSprite sprite_b54;                     // 0xB54
   Vec3 unk_bb4;                              // 0xBB4
   u8 unk_bbc;                                // 0xBBC
@@ -677,20 +677,20 @@ void FUN_0821c740(void) {}
 
 void FUN_0821c744(Hitbox* a, Hitbox* b, ShadeMan* p) { SET_FLAGS(p->flag38c, SMFLAG_UNK_24); }
 
-// 本体, SPRITE_DJANGO_SABATA の画面座標スプライト, 8枚の残像を用意する
+// 本体, SPR_DJANGO_SABATA の画面座標スプライト, 8枚の残像を用意する
 void ShadeMan_Init_Helper_0821c758(ShadeMan* p, Vec3* pos, u32 angle) {
   MainSpriteGfxFile* f;
   Vec3 screen;
   s32 i;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_SHADEMAN);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_SHADEMAN);
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
   MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, PLAYMODE_PAUSE, 60, pos);
   p->angle = angle;
   ShadeMan_PlayAnim(p, 0, 2, 1, 1, 0);
   p->unk_3bc = 0;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
   p->gfx_b34 = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx_b34, f);
   WorldToScreen(&screen, pos);
@@ -753,7 +753,7 @@ void ShadeMan_InitHitboxes(ShadeMan* p) {
   Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_0821c744, p);
-  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
+  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_BLOW, p->hitbox2Unk44);
 }
 
 // 一通り書けたが分岐の並びと番地の作り方がずれる
@@ -1983,7 +1983,7 @@ NON_MATCH void FUN_0821f0e4(ShadeMan* p) {
         ShadeMan_PlayAnim(p, 9, 1, 1, 1, 0);
         target = boss->playerPos[0];
         Boss_SetTarget(boss, target->x, target->y, target->z);
-        Hitbox_SetAttack(&p->hitbox, p->unk_3ca, p->unk_3cc, 0, HBATTR_17 | HBATTR_18, p->unk_3ce);
+        Hitbox_SetAttack(&p->hitbox, p->unk_3ca, p->unk_3cc, 0, HBATTR_17 | HBATTR_BLOW, p->unk_3ce);
         PlaySound_082406e0(SE_WHOOSH_842);
       }
       Vec3_SetPolar(&boss->mover.delta, p->angle, 50);
@@ -3255,7 +3255,7 @@ NON_MATCH s32 ShadeMan_Init(ShadeMan* p, u32 id) {
   p->motionCallback = NULL;
   ShadeMan_Init_Helper_0821c758(p, &pos, angle);
   AuxShadow_Init(&p->shadow, &p->sprite.pos, 0x40, 0x30, 0x40, 0x38, 0x1900, 1, 6, 1, 0);
-  AuxShadow_SetSprite(&p->shadow, SPRITE_EFF_1C1B, 7);
+  AuxShadow_SetSprite(&p->shadow, SPR_EFF_1C1B, 7);
   if (VM_SeekToNamedArg('a')) {
     p->hitboxPower = VM_GetValue();
     p->hitboxKnockback = VM_GetValue();

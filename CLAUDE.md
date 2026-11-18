@@ -82,13 +82,13 @@ Assembly for a not-yet-matching function lives in `asm/func/FUNCNAME.inc` (e.g. 
 
 ```sh
 deno task asset list map                                                # list (sprite | aux | tilemap | map)
-deno task asset sprite SPRITE_SHADEMAN --pose 3 -o /tmp/bokmagic/a.png  # MainSprite pose -> JSON + PNG
-deno task asset aux SPRITE_EFF_1C1B --sheet -o /tmp/bokmagic/b.png      # all AuxSprite poses in one image
-deno task asset tilemap TILEMAP_7DB3 -o /tmp/bokmagic/c.png             # tilemap (tiles taken from the map script if the file has none)
-deno task asset map Script_0x02BF -o /tmp/bokmagic/d.png                # map composed from what the script loads
+deno task asset sprite 0x5D36 --pose 3 -o /tmp/bokmagic/a.png           # MainSprite pose -> JSON + PNG
+deno task asset aux 0x1C1B --sheet -o /tmp/bokmagic/b.png               # all AuxSprite poses in one image
+deno task asset tilemap 0x7DB3 -o /tmp/bokmagic/c.png                   # tilemap (tiles taken from the map script if the file has none)
+deno task asset map 0x02BF -o /tmp/bokmagic/d.png                       # map composed from what the script loads
 ```
 
-- Targets accept hex IDs or constant names from this repo (`SPRITE_*`, `TILEMAP_*`, `Script_*`)
+- Targets accept hex IDs or constant names from this repo (`SPR_*`, `MP_*`, `Scr_*`). Prefer the hex ID (`0x7184`, read it from the constant's header): constant names are frozen at the tool's build time, so a recently renamed constant is not found
 - JSON goes to stdout; `-o` writes a PNG. Write PNGs under `/tmp/bokmagic/` (the task creates it), not under this repository's `tmp/`. Read the PNG to inspect it visually
 - Options: `--scale`, `--pose`, `--sheet`, `--pltt`, `--xflip`/`--yflip`, `--layers`, `--part`, `--scene`, `--hide-bg`. Run without arguments for help
 - Deno caches the script; add `--reload` once to pick up a newer version

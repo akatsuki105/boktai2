@@ -34,38 +34,38 @@
 
 // EnemyKind (Enemy.kind)
 // 同じ kind に属するものはグラフィックが全く同じで Enemy.variant で色が変わる
-#define ENEK_0 0           // ???, エネミーにデータを送るときのブロードキャスト用IDとして利用している
-#define ENEK_MUMMY 1       // マミー系, 聴覚のみで敵を感知, フレイム属性の攻撃を食らうと引火して暴れ回る
-#define ENEK_SPIDER 2      // スパイダー系
-#define ENEK_GOLEM 3       // ゴーレム系, 転がって攻撃するが、壁やゴーレム同士で激突するとダメージを受け気絶する
-#define ENEK_BOKU 4        // ボク系
-#define ENEK_SKELETON 5    // スケルトン系, エンチャント攻撃でとどめを刺さないと復活してしまう
-#define ENEK_SKELETON_F 6  // スケルトンフェンサー, スケルトンの一種だがグラフィックが違うので別のkind
-#define ENEK_SKELETON_A 7  // スケルトンアーチャー, スケルトンの一種だがグラフィックが違うので別のkind
-#define ENEK_LICH 8        // リッチ系
-#define ENEK_CENTIPEDE 9   // センチピード
-#define ENEK_COCKA 10      // コカトリス系, 石化光線を放つ
-#define ENEK_MIMIC 11      // ミミック
-#define ENEK_SWORD 12      // ソード系
-#define ENEK_AX 13         // アックス系
-#define ENEK_OCTOPUS 14    // オクトパス
-#define ENEK_15 15         // ???
-#define ENEK_16 16         // ???
-#define ENEK_CURORO 17     // クロロホルルン系, ジャンゴにまとわりついて攻撃する, レバガチャで振りほどける
-#define ENEK_BAT 18        // バット系
-#define ENEK_CROW 19       // クロウ系
-#define ENEK_BEE 20        // ビー系
-#define ENEK_DOG 21        // 犬系, においでサーチする
-#define ENEK_SLIME 22      // スライム系, HPが半分以下になると分裂する, 触れるとダメージに加えて種類に応じた状態異常をプレイヤーに与える
-#define ENEK_GHOST 23      // ゴースト系
-#define ENEK_DARKROOT 24   // 暗黒の根
-#define ENEK_SANDWORM 25   // サンドウォーム
-#define ENEK_SERPENT 26    // サーペント
-#define ENEK_SHAIAN 27     // シャイアン
-#define ENEK_28 28         // 未検証: 通信用のボク?
-#define ENEK_29 29         // ???
-#define ENEK_30 30         // 未検証: 通信用のゴーレム?
-#define ENEK_31 31         // ???
+#define ENEK_0 0            // ???, エネミーにデータを送るときのブロードキャスト用IDとして利用している
+#define ENEK_MUMMY 1        // マミー系, 聴覚のみで敵を感知, フレイム属性の攻撃を食らうと引火して暴れ回る
+#define ENEK_SPIDER 2       // スパイダー系
+#define ENEK_GOLEM 3        // ゴーレム系, 転がって攻撃するが、壁やゴーレム同士で激突するとダメージを受け気絶する
+#define ENEK_BOKU 4         // ボク系
+#define ENEK_SKELETON 5     // スケルトン系, エンチャント攻撃でとどめを刺さないと復活してしまう
+#define ENEK_SKELETON_F 6   // スケルトンフェンサー, スケルトンの一種だがグラフィックが違うので別のkind
+#define ENEK_SKELETON_A 7   // スケルトンアーチャー, スケルトンの一種だがグラフィックが違うので別のkind
+#define ENEK_LICH 8         // リッチ系
+#define ENEK_CENTIPEDE 9    // センチピード
+#define ENEK_COCKA 10       // コカトリス系, 石化光線を放つ
+#define ENEK_MIMIC 11       // ミミック
+#define ENEK_SWORD 12       // ソード系
+#define ENEK_AX 13          // アックス系
+#define ENEK_OCTOPUS 14     // オクトパス
+#define ENEK_15 15          // ???
+#define ENEK_16 16          // ???
+#define ENEK_CURORO 17      // クロロホルルン系, ジャンゴにまとわりついて攻撃する, レバガチャで振りほどける
+#define ENEK_BAT 18         // バット系
+#define ENEK_CROW 19        // クロウ系
+#define ENEK_BEE 20         // ビー系
+#define ENEK_DOG 21         // 犬系, においでサーチする
+#define ENEK_SLIME 22       // スライム系, HPが半分以下になると分裂する, 触れるとダメージに加えて種類に応じた状態異常をプレイヤーに与える
+#define ENEK_GHOST 23       // ゴースト系
+#define ENEK_DARKROOT 24    // 暗黒の根
+#define ENEK_SANDWORM 25    // サンドウォーム
+#define ENEK_SERPENT 26     // サーペント
+#define ENEK_SHAIAN 27      // シャイアン
+#define ENEK_28 28          // 未検証: 通信用のボク?
+#define ENEK_29 29          // ???
+#define ENEK_30 30          // 未検証: 通信用のゴーレム?
+#define ENEK_SALAMANDER 31  // サラマンダー(リッチ+ が出す炎の蛇)
 
 // EnemyID, 魔物図鑑のエントリ番号に対応 (ただしゲーム内では 1 から始まる (EnemyID+1))
 #define ENEID_SPIDER 0        // No.01 スパイダー
@@ -162,7 +162,7 @@
 #define EV_COCKA 0    // ENEID_COCKA, コカトリス
 #define EV_COCKA_P 1  // ENEID_COCKA_P, コカトリス+
 
-// ENEK_SWORD, ENEK_AX, EnemyAx.e.variant
+// ENEK_SWORD, ENEK_AX, EneAx.e.variant
 #define EV_WEAPON 0    // ENEID_SWORD: ソード, ENEID_AX: アックス
 #define EV_WEAPON_P 1  // ENEID_SWORD_P: ソード+, ENEID_AX_P: アックス+
 
@@ -171,7 +171,7 @@
 #define EV_CURORO_F 1  // ENEID_CURORO_F, モエルルン, まとわりついたときに引火の状態異常を与える
 #define EV_CURORO_I 2  // ENEID_CURORO_I, ヒエルルン, まとわりついたときに氷結の状態異常を与える
 
-// ENEK_BAT, EnemyBat.e.variant
+// ENEK_BAT, EneBat.e.variant
 #define EV_BAT 0   // ENEID_BAT, バット
 #define EV_VBAT 1  // ENEID_VBAT, ヴァンパイアバット, 吸血攻撃をしてくる
 

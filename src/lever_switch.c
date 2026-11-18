@@ -22,7 +22,7 @@ typedef u16 LeverSwitchFlags;       // LeverSwitch.flags
 typedef struct LeverSwitch {
   AuxSprite sprite;        // 0x00
   AuxAnimState anim;       // 0x2C
-  AuxSpriteGfx gfx;        // 0x3C, SPRITE_LEVER_SWITCH
+  AuxSpriteGfx gfx;        // 0x3C, SPR_LEVER_SWITCH
   Vec3 basePos;            // 0x58, 揺れの基準位置, sprite.pos へ複写する
   Hitbox hurtbox;          // 0x60
   u16 state;               // 0xB0, 0: なし, 1: 待機, 2: 切り替え中, sLeverSwitchStates の添字
@@ -131,7 +131,7 @@ NON_MATCH void Cmd_AddLever(void) {
     return;
   }
   sprite = &item->sprite;
-  Video_GetAuxSprite(&item->gfx, SPRITE_LEVER_SWITCH);
+  Video_GetAuxSprite(&item->gfx, SPR_LEVER_SWITCH);
   AuxSprite_Add(&item->sprite, &item->gfx, 0);
   item->state = 1;
   item->stateBegun = 1;

@@ -28,7 +28,7 @@ typedef struct {
   u32 scriptID;          // 0x68, '.e', VM_ExecByID に渡す
   Vec3 pos;              // 0x6C, '.p=gStat->playerPos', 各ノードの pos にコピーされる
   AuxSprite sprites[5];  // 0x74
-  AuxSpriteGfx gfx;      // 0x150, SPRITE_COFFIN_0
+  AuxSpriteGfx gfx;      // 0x150, SPR_COFFIN_0
   rgb555* pltt;          // 0x16C, plttBuf か gObjPlttData のパレット行を指す (FUN_08089b48)
   rgb555 plttBuf[16];    // 0x170, FUN_08089b48 で2つのパレットをブレンドした結果
 } CutsceneCoffin;
@@ -350,7 +350,7 @@ NON_MATCH s32 CutsceneCoffin_Init(CutsceneCoffin* p, u32 id) {
     p->scriptDelay = 0;
   }
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN_0);
+  Video_GetAuxSprite(&p->gfx, SPR_COFFIN_0);
   for (i = 0; i < 5; i++) {
     AuxSprite* sprite = &p->sprites[i];
 

@@ -37,7 +37,7 @@ static_assert(sizeof(Entity080e01bcElem) == 436);
 
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_SHAIAN_SPIN
+  AuxSpriteGfx gfx;             // 0x018, SPR_EFF_SHAIAN_SPIN
   u8 unk_34[0x38 - 0x34];       // 0x034, まだ未解析
   u32 unk_38;                   // 0x038, elems のどのスロットが使用中かのビットマスク
   Entity080e01bcElem elems[8];  // 0x03C
@@ -155,7 +155,7 @@ NAKED s32 Entity080e01bc_Destroy(Entity080e01bc* p) { INCFUNC("asm/func/Entity08
 
 s32 Entity080e01bc_Init(Entity080e01bc* p) {
   p->unk_38 = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_SHAIAN_SPIN);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_SHAIAN_SPIN);
   gEntity080e01bc = p;
   return 0;
 }

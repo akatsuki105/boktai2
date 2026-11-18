@@ -297,12 +297,12 @@ _08064364:
 	ldr r1, _08064370 @ =0x00000AA8
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064374 @ =CheckParalyzeProc
+	ldr r1, _08064374 @ =CheckStunProc
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064370: .4byte 0x00000AA8
-_08064374: .4byte CheckParalyzeProc
+_08064374: .4byte CheckStunProc
 _08064378:
 	movs r1, #1
 	b _08064382

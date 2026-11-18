@@ -1411,7 +1411,7 @@ _08139A8E:
 	strh r1, [r0]
 _08139A96:
 	adds r0, r7, #0
-	bl FUN_08138710
+	bl Centipede_ResetRecentTiles
 	ldr r4, _08139ADC @ =0x000001A1
 	movs r5, #0x99
 	lsls r5, r5, #1
@@ -1491,7 +1491,7 @@ _08139B3C:
 	adds r0, r7, #0
 	bl Centipede_InitHitboxes
 	adds r0, r7, #0
-	bl FUN_08136d00
+	bl Centipede_InitFollowInterval
 	ldr r0, _08139CE8 @ =0x00000B58
 	ldr r6, [sp, #0x24]
 	adds r0, r6, r0
@@ -1499,11 +1499,11 @@ _08139B3C:
 	ldr r1, _08139CEC @ =0x00000B7C
 	adds r6, r6, r1
 	mov r8, r6
-	ldr r2, _08139CF0 @ =FUN_08138de0
+	ldr r2, _08139CF0 @ =Centipede_UpdateFrame
 	mov sb, r2
 	ldr r3, _08139CF4 @ =Centipede_GetMoveSpeed
 	mov sl, r3
-	ldr r4, _08139CF8 @ =FUN_08132d30
+	ldr r4, _08139CF8 @ =Centipede_StateTurn
 	mov ip, r4
 	movs r2, #0
 	ldr r4, _08139CFC @ =Centipede_StateDamaged
@@ -1532,13 +1532,13 @@ _08139B3C:
 	mov r6, ip
 	ldr r0, [sp, #0x134]
 	str r6, [r0]
-	ldr r1, _08139D0C @ =FUN_08132a24
+	ldr r1, _08139D0C @ =Centipede_StateMove
 	ldr r6, [sp, #0x148]
 	str r1, [r6]
-	ldr r0, _08139D10 @ =FUN_08132c24
+	ldr r0, _08139D10 @ =Centipede_StateWait
 	ldr r1, [sp, #0x154]
 	str r0, [r1]
-	ldr r6, _08139D14 @ =FUN_08132d34
+	ldr r6, _08139D14 @ =Centipede_StateNap
 	ldr r0, [sp, #0x178]
 	str r6, [r0]
 	ldr r1, [sp, #0x17c]
@@ -1555,7 +1555,7 @@ _08139B3C:
 	str r0, [r6]
 	ldr r0, [sp, #0x180]
 	str r2, [r0]
-	ldr r1, _08139D20 @ =FUN_08132e60
+	ldr r1, _08139D20 @ =Centipede_StateRespawnWait
 	ldr r3, [sp, #0x128]
 	str r1, [r3]
 	ldr r4, [sp, #0x1ac]
@@ -1592,7 +1592,7 @@ _08139B3C:
 	ldr r0, _08139D38 @ =FUN_080e72b0
 	ldr r6, [sp, #0x1a0]
 	str r0, [r6]
-	ldr r0, _08139D3C @ =FUN_08133ed4
+	ldr r0, _08139D3C @ =Centipede_ClearStateBegun
 	ldr r1, [sp, #0x198]
 	str r0, [r1]
 	ldr r0, _08139D40 @ =Enemy_StateBlownAway
@@ -1639,7 +1639,7 @@ _08139B3C:
 	str r2, [r0]
 	ldr r0, _08139D6C @ =0x000005AC
 	adds r1, r7, r0
-	ldr r0, _08139D70 @ =FUN_081387a0
+	ldr r0, _08139D70 @ =Centipede_OnAttackRequest
 	str r0, [r1]
 	movs r2, #0xb6
 	lsls r2, r2, #3
@@ -1649,15 +1649,15 @@ _08139B3C:
 	movs r3, #0xc1
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _08139D78 @ =FUN_0813880c
+	ldr r0, _08139D78 @ =Centipede_TryDetectPlayer
 	str r0, [r1]
 	ldr r4, _08139D7C @ =0x0000058C
 	adds r1, r7, r4
-	ldr r0, _08139D80 @ =FUN_08138cb0
+	ldr r0, _08139D80 @ =Centipede_OnDamaged
 	str r0, [r1]
 	subs r5, #0x44
 	adds r1, r7, r5
-	ldr r0, _08139D84 @ =FUN_08137a50
+	ldr r0, _08139D84 @ =Centipede_ScatterSegments
 	str r0, [r1]
 	ldr r1, _08139D88 @ =0x00100200
 	ldr r6, [sp, #0xa8]
@@ -1698,26 +1698,26 @@ _08139CD8:
 	.align 2, 0
 _08139CE8: .4byte 0x00000B58
 _08139CEC: .4byte 0x00000B7C
-_08139CF0: .4byte FUN_08138de0
+_08139CF0: .4byte Centipede_UpdateFrame
 _08139CF4: .4byte Centipede_GetMoveSpeed
-_08139CF8: .4byte FUN_08132d30
+_08139CF8: .4byte Centipede_StateTurn
 _08139CFC: .4byte Centipede_StateDamaged
 _08139D00: .4byte Centipede_StateDying
 _08139D04: .4byte FUN_080f62b0
 _08139D08: .4byte FUN_080f62ac
-_08139D0C: .4byte FUN_08132a24
-_08139D10: .4byte FUN_08132c24
-_08139D14: .4byte FUN_08132d34
+_08139D0C: .4byte Centipede_StateMove
+_08139D10: .4byte Centipede_StateWait
+_08139D14: .4byte Centipede_StateNap
 _08139D18: .4byte FUN_080f44f4
 _08139D1C: .4byte FUN_080f410c
-_08139D20: .4byte FUN_08132e60
+_08139D20: .4byte Centipede_StateRespawnWait
 _08139D24: .4byte FUN_080f0430
 _08139D28: .4byte 0x085AD470
 _08139D2C: .4byte FUN_080e73c8
 _08139D30: .4byte FUN_080f0320
 _08139D34: .4byte Enemy_080eff14
 _08139D38: .4byte FUN_080e72b0
-_08139D3C: .4byte FUN_08133ed4
+_08139D3C: .4byte Centipede_ClearStateBegun
 _08139D40: .4byte Enemy_StateBlownAway
 _08139D44: .4byte Enemy_StateFallDeath
 _08139D48: .4byte FUN_080f6e64
@@ -1730,12 +1730,12 @@ _08139D60: .4byte FUN_080f5fac
 _08139D64: .4byte Centipede_OnReset
 _08139D68: .4byte 0x000005FC
 _08139D6C: .4byte 0x000005AC
-_08139D70: .4byte FUN_081387a0
+_08139D70: .4byte Centipede_OnAttackRequest
 _08139D74: .4byte FUN_08138808
-_08139D78: .4byte FUN_0813880c
+_08139D78: .4byte Centipede_TryDetectPlayer
 _08139D7C: .4byte 0x0000058C
-_08139D80: .4byte FUN_08138cb0
-_08139D84: .4byte FUN_08137a50
+_08139D80: .4byte Centipede_OnDamaged
+_08139D84: .4byte Centipede_ScatterSegments
 _08139D88: .4byte 0x00100200
 _08139D8C:
 	movs r0, #0
@@ -2079,7 +2079,7 @@ _08139FF2:
 	strh r0, [r5]
 _0813A00A:
 	adds r0, r7, #0
-	bl FUN_081355f0
+	bl Centipede_PickNextTile
 	movs r0, #2
 	movs r2, #0
 	ldr r6, [sp, #0x68]
@@ -2110,23 +2110,23 @@ _0813A00A:
 	adds r0, r7, #0
 	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
-	bl FUN_081355ac
+	bl Centipede_SetHandlerTable2
 	adds r0, r7, #0
-	bl FUN_08138c54
+	bl Centipede_SetHandlerTable4
 	ldr r1, _0813A0F8 @ =0x0000D636
 	ldr r2, _0813A0FC @ =0x0000C102
 	ldrb r3, [r7, #5]
 	adds r0, r7, #0
-	bl FUN_08136140
+	bl Centipede_InitSegments
 	ldr r0, [sp, #0x24]
 	ldr r1, [sp, #0x58]
-	bl FUN_08137360
+	bl Centipede_SetAllSegmentsPos
 	adds r0, r7, #0
-	bl FUN_081380d8
+	bl Centipede_InitSegmentHitboxes
 	adds r0, r7, #0
-	bl FUN_081355f0
+	bl Centipede_PickNextTile
 	adds r0, r7, #0
-	bl FUN_08136be4
+	bl Centipede_AddOcclusionMover
 	ldr r1, [sp, #0x80]
 	ldrh r0, [r1]
 	ldr r2, [sp, #0x11c]

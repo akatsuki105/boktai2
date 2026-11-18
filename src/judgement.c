@@ -24,7 +24,7 @@ static_assert(sizeof(JudgementParticle) == 60);
 typedef struct Judgement {
   Entity e;                                   // 0x000, ENTITY_UNK_11
   Player* player;                             // 0x018, _Init の第2引数
-  MainSprite icon;                            // 0x01C, SPRITE_INVENTORY_ICONS
+  MainSprite icon;                            // 0x01C, SPR_INVENTORY_ICONS
   Vec3 iconPos;                               // 0x07C, icon を置くスクリーン座標
   Vec3 screen;                                // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   JudgementParticle ptcls[8];                 // 0x08C, 根拠: _Destroy の stride 0x3C × 8
@@ -249,9 +249,9 @@ s32 Judgement_Destroy(Judgement* p) {
   return 0;
 }
 
-// SPRITE_INVENTORY_ICONS を開き, 審判のカードのアイコンを iconPos に隠して置く
+// SPR_INVENTORY_ICONS を開き, 審判のカードのアイコンを iconPos に隠して置く
 void Judgement_InitSprite(Judgement* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   MainSpriteGfx gfx = *f;
 
   OpenMainSpriteFile(&gfx, f);

@@ -37,8 +37,8 @@
 #define PAGE_SAVE 9
 #define PAGE_NUM 10
 
-#define PT_RDJANGO 0  // PLAYER_SOLAR_DJANGO
-#define PT_BDJANGO 1  // PLAYER_DARK_DJANGO, PLAYER_BAT, PLAYER_MOUSE, PLAYER_SLEEPING
+#define PT_RDJANGO 0  // PLAYER_RDJANGO
+#define PT_BDJANGO 1  // PLAYER_BDJANGO, PLAYER_BAT, PLAYER_MOUSE, PLAYER_SLEEPING
 #define PT_SABATA 2   // PLAYER_SABATA
 
 // コンフィグページの項目, MainMenu.config と configRow の添字
@@ -196,12 +196,12 @@ static_assert(sizeof(WorldMapTile) == 4);
 // 機能としては(今のところ判明してるだけでも) HUD + スタートメニュー + テキストウィンドウ といった感じ
 typedef struct MainMenu {
   Entity e;                      // 0x0000, ENTITY_UNK_12
-  Tilemaps* menuTilemap;         // 0x0018, TILEMAP_A413
-  Tilemaps* worldMapTilemap;     // 0x001C, TILEMAP_A7D7
-  Tilemaps* dungeonMapTilemap0;  // 0x0020, TILEMAP_A7E7
-  Tilemaps* dungeonMapTilemap1;  // 0x0024, TILEMAP_A7F7
+  Tilemaps* menuTilemap;         // 0x0018, MP_A413
+  Tilemaps* worldMapTilemap;     // 0x001C, MP_A7D7
+  Tilemaps* dungeonMapTilemap0;  // 0x0020, MP_A7E7
+  Tilemaps* dungeonMapTilemap1;  // 0x0024, MP_A7F7
   TilemapFile* mapTilemap;       // 0x0028, マップページで使う worldMapTilemap / dungeonMapTilemap0 / dungeonMapTilemap1 のどれか
-  TilemapFile* bankTilemap;      // 0x002C, TILEMAP_BANK
+  TilemapFile* bankTilemap;      // 0x002C, MP_BANK
   rgb555* menuPltt;              // 0x0030, BGP_EFDA
   rgb555* dungeonMapPltt;        // 0x0034, BGP_ECBF
   rgb555* worldMapPltt;          // 0x0038, BGP_5F5E
@@ -215,15 +215,15 @@ typedef struct MainMenu {
   char* etcTexts;                // 0x0058, '.E', Str_StartMenuMisc, その他のテキスト
   u32* expTable;                 // 0x005C, '.e', 経験値テーブル(レベルごとの必要経験値 の 1/10)
   struct {
-    MainSpriteGfx smenu;          // SPRITE_UI_START_MENU
-    MainSpriteGfx map;            // SPRITE_UI_MAP
-    MainSpriteGfx icons;          // SPRITE_INVENTORY_ICONS
-    MainSpriteGfx loans;          // SPRITE_UI_LOAN
-    MainSpriteGfx portraits;      // SPRITE_PORTRAITS
-    MainSpriteGfx player;         // SPRITE_DJANGO_SABATA
-    MainSpriteGfx rita;           // SPRITE_RITA
-    MainSpriteGfx carmilla;       // SPRITE_CARMILLA
-    MainSpriteGfx link;           // SPRITE_UI_LINK
+    MainSpriteGfx smenu;          // SPR_UI_START_MENU
+    MainSpriteGfx map;            // SPR_UI_MAP
+    MainSpriteGfx icons;          // SPR_INVENTORY_ICONS
+    MainSpriteGfx loans;          // SPR_UI_LOAN
+    MainSpriteGfx portraits;      // SPR_PORTRAITS
+    MainSpriteGfx player;         // SPR_DJANGO_SABATA
+    MainSpriteGfx rita;           // SPR_RITA
+    MainSpriteGfx carmilla;       // SPR_CARMILLA
+    MainSpriteGfx link;           // SPR_UI_LINK
   } gfx;                          // 0x0060
   BgState savedBg1;               // 0x0180
   u16 savedTilemap1[1024];        // 0x01B0
@@ -289,10 +289,10 @@ typedef struct MainMenu {
   u16* countdownRemaining;        // 0x0A9C, おそらくカウントダウンの残りフレーム数を指すポインタ
   MainSprite countdownDigits[2];  // 0x0AA0
   AuxSprite figure;               // 0x0B60, ->figureGfx
-  AuxSpriteGfx figureGfx;         // 0x0B8C, SPRITE_BAT
+  AuxSpriteGfx figureGfx;         // 0x0B8C, SPR_BAT
   AuxAnimState figureAnim;        // 0x0BA8, figure のアニメの再生状態
   AuxSprite stand;                // 0x0BB8, ->standGfx
-  AuxSpriteGfx standGfx;          // 0x0BE4, SPRITE_STAND (暗黒カードの太陽スタンド)
+  AuxSpriteGfx standGfx;          // 0x0BE4, SPR_STAND (暗黒カードの太陽スタンド)
   QuickChange qc;                 // 0x0C00
   u8 unk_f44[0xF56 - 0xF44];      // 0x0F44, まだ未解析
   u8 page;                        // 0x0F56, スタートメニューのページ番号
@@ -1555,14 +1555,14 @@ void MainMenu_RefreshPlayerFigure(MainMenu* p) {
   }
   p->fadeActive = FALSE;
   switch (p->player->kind) {
-    case PLAYER_SOLAR_DJANGO: {
+    case PLAYER_RDJANGO: {
       p->sprites[57].flags &= ~SPRFLAG_HIDDEN;
       p->figure.flags |= SPRFLAG_HIDDEN;
       p->sprites[57].pltt = p->fadePltt;
       MainSprite_SetAnim(&p->sprites[57], &p->gfx.player, 4, PLAYMODE_LOOP, 0);
       break;
     }
-    case PLAYER_DARK_DJANGO: {
+    case PLAYER_BDJANGO: {
       p->sprites[57].flags &= ~SPRFLAG_HIDDEN;
       p->figure.flags |= SPRFLAG_HIDDEN;
       p->sprites[57].pltt = p->fadePltt;
@@ -1577,7 +1577,7 @@ void MainMenu_RefreshPlayerFigure(MainMenu* p) {
       break;
     }
     case PLAYER_BAT: {
-      Video_GetAuxSprite(&p->figureGfx, SPRITE_BAT);
+      Video_GetAuxSprite(&p->figureGfx, SPR_BAT);
       AuxSprite_SetGfx(&p->figure, &p->figureGfx);
       p->figure.flags &= ~SPRFLAG_HIDDEN;
       p->figure.pos.y = 96;
@@ -1588,7 +1588,7 @@ void MainMenu_RefreshPlayerFigure(MainMenu* p) {
       break;
     }
     case PLAYER_MOUSE: {
-      Video_GetAuxSprite(&p->figureGfx, SPRITE_MOUSE);
+      Video_GetAuxSprite(&p->figureGfx, SPR_MOUSE);
       AuxSprite_SetGfx(&p->figure, &p->figureGfx);
       p->figure.flags &= ~SPRFLAG_HIDDEN;
       p->figure.pos.y = 112;
@@ -1599,7 +1599,7 @@ void MainMenu_RefreshPlayerFigure(MainMenu* p) {
       break;
     }
     case PLAYER_SLEEPING: {
-      Video_GetAuxSprite(&p->figureGfx, SPRITE_COFFIN_0);
+      Video_GetAuxSprite(&p->figureGfx, SPR_COFFIN_0);
       AuxSprite_SetGfx(&p->figure, &p->figureGfx);
       p->figure.flags &= ~SPRFLAG_HIDDEN;
       p->figure.pos.y = 96;
@@ -1619,8 +1619,8 @@ void MainMenu_RefreshPlayerFigure(MainMenu* p) {
 // プレイヤーの絵のアニメを1コマ進める, 人型は MainSprite, 変身中は figure
 void MainMenu_AnimPlayerFigure(MainMenu* p) {
   switch (p->player->kind) {
-    case PLAYER_SOLAR_DJANGO:
-    case PLAYER_DARK_DJANGO:
+    case PLAYER_RDJANGO:
+    case PLAYER_BDJANGO:
     case PLAYER_SABATA: {
       MainSprite_AdvanceAnim(&p->sprites[57], &p->gfx.player);
       break;
@@ -2121,11 +2121,11 @@ void MainMenu_AddCountdownDigits(MainMenu* p) {
 }
 
 void MainMenu1P_SetupBg(MainMenu* p) {
-  p->menuTilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
-  p->worldMapTilemap = GetFile(DIR_TILE_MAP, TILEMAP_A7D7);
-  p->dungeonMapTilemap0 = GetFile(DIR_TILE_MAP, TILEMAP_A7E7);
-  p->dungeonMapTilemap1 = GetFile(DIR_TILE_MAP, TILEMAP_A7F7);
-  p->bankTilemap = GetFile(DIR_TILE_MAP, TILEMAP_BANK);
+  p->menuTilemap = GetFile(DIR_TILE_MAP, MP_A413);
+  p->worldMapTilemap = GetFile(DIR_TILE_MAP, MP_A7D7);
+  p->dungeonMapTilemap0 = GetFile(DIR_TILE_MAP, MP_A7E7);
+  p->dungeonMapTilemap1 = GetFile(DIR_TILE_MAP, MP_A7F7);
+  p->bankTilemap = GetFile(DIR_TILE_MAP, MP_BANK);
   p->hudMode = HUD_FIELD;
   p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
   p->dungeonMapPltt = BgPlttRow13(GetBgPlttFile(BGP_ECBF));
@@ -4161,7 +4161,7 @@ void MainMenu_LoadMapMarkers(MainMenu* p) {
 }
 
 s32 MainMenu_GetPlayerType(MainMenu* p) {
-  if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->player->kind == PLAYER_RDJANGO) {
     return PT_RDJANGO;
   }
   if (p->player->kind == PLAYER_SABATA) {
@@ -4745,7 +4745,7 @@ NON_MATCH u32 Item_IsUsableNow(item32_t n) {
   if (player == NULL) {
     return FALSE;
   }
-  if (player->kind == PLAYER_SOLAR_DJANGO) {
+  if (player->kind == PLAYER_RDJANGO) {
     if (item_08091774(n) == 1) {
       return FALSE;
     }
@@ -4902,7 +4902,7 @@ NON_MATCH void MainMenu_ApplyItemEffect(MainMenu* p, slot32_t slot) {
     }
   }
 
-  if (p->player->kind == PLAYER_SOLAR_DJANGO && id == ITEM_TOMATO_JUICE) {
+  if (p->player->kind == PLAYER_RDJANGO && id == ITEM_TOMATO_JUICE) {
     id = ITEM_ROTTEN_NUT;
     v1 = gItemDB[id].value1;
     v2 = gItemDB[id].value2;
@@ -5005,7 +5005,7 @@ void MainMenu_ShowCursorItemInfo(MainMenu* p) {
     } else if (gStat->playerKind == PLAYER_SABATA && id == ITEM_TOMATO_JUICE) {
       Marquee_SetText(GetStringByID(base + 169));
     } else {
-      if (p->player->kind == PLAYER_SOLAR_DJANGO || p->player->kind == PLAYER_SABATA) {
+      if (p->player->kind == PLAYER_RDJANGO || p->player->kind == PLAYER_SABATA) {
         base += 78;
       } else {
         base += 156;
@@ -8559,7 +8559,7 @@ void MainMenu_DrawStatusValues(MainMenu* p) {
 
   MainMenu_DrawNumber(p->statusPoint, 100, 14, 12, 0);
   for (i = 0; i < 4; i++) {
-    if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+    if (p->player->kind == PLAYER_RDJANGO) {
       p->shownStats[i] = p->player->stats[i] + p->player->armor.bonus[i] + p->player->armor.sideBonus[i];
     } else {
       p->shownStats[i] = p->player->stats[i] + p->player->armor.bonus[i] - p->player->armor.sideBonus[i];
@@ -8921,7 +8921,7 @@ void MainMenu_ShowPlayerTitle(MainMenu* p) {
   s32 i;
 
   idx = PT_RDJANGO;
-  if (kind != PLAYER_SOLAR_DJANGO) {
+  if (kind != PLAYER_RDJANGO) {
     idx = PT_BDJANGO;
     if (kind == PLAYER_SABATA) {
       idx = PT_SABATA;
@@ -9008,7 +9008,7 @@ void MainMenu_InitPage_Stats(MainMenu* p) {
   MainMenu_HideAllSprites(p);
   MainMenu_ShowPageName(p, p->page);
   p->sprites[61].flags &= ~SPRFLAG_HIDDEN;
-  if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+  if (p->player->kind == PLAYER_RDJANGO) {
     MainSprite_SetPose(&p->sprites[61], &p->gfx.portraits, 0, PLAYMODE_LOOP);
   } else if (p->player->kind == PLAYER_SABATA) {
     MainSprite_SetPose(&p->sprites[61], &p->gfx.portraits, 3, PLAYMODE_LOOP);
@@ -10028,7 +10028,7 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
   pos.x = 36, pos.y = 112;
   MainSprite_Add(&p->sprites[57], &p->gfx.player, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, PLAYMODE_PAUSE, 60, &pos);
   MainSprite_SetAnim(&p->sprites[57], &p->gfx.player, 4, PLAYMODE_LOOP, 0);
-  Video_GetAuxSprite(&p->figureGfx, SPRITE_BAT);
+  Video_GetAuxSprite(&p->figureGfx, SPR_BAT);
   AuxSprite_Add(&p->figure, &p->figureGfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
   p->figure.priority = 0;
   p->figure.pos.x = 36, p->figure.pos.y = 112, p->figure.pos.z = 0;
@@ -10122,7 +10122,7 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
     pos.x += 8;
   }
 
-  Video_GetAuxSprite(&p->standGfx, SPRITE_STAND);
+  Video_GetAuxSprite(&p->standGfx, SPR_STAND);
   AuxSprite_Add(&p->stand, &p->standGfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
   Video_SetAuxSpritePltt(&p->standGfx, 323);  // 暗黒ローンなので赤色
   p->stand.priority = 0;
@@ -10135,63 +10135,63 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
 void MainMenu_OpenSpriteFiles(MainMenu* p) {
   MainSpriteGfxFile* f;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   if (f == NULL) {
     return;
   }
   p->gfx.smenu = *f;
   OpenMainSpriteFile(&p->gfx.smenu, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   if (f == NULL) {
     return;
   }
   p->gfx.icons = *f;
   OpenMainSpriteFile(&p->gfx.icons, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_MAP);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_MAP);
   if (f == NULL) {
     return;
   }
   p->gfx.map = *f;
   OpenMainSpriteFile(&p->gfx.map, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LOAN);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LOAN);
   if (f == NULL) {
     return;
   }
   p->gfx.loans = *f;
   OpenMainSpriteFile(&p->gfx.loans, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
   if (f == NULL) {
     return;
   }
   p->gfx.player = *f;
   OpenMainSpriteFile(&p->gfx.player, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_RITA);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_RITA);
   if (f == NULL) {
     return;
   }
   p->gfx.rita = *f;
   OpenMainSpriteFile(&p->gfx.rita, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_CARMILLA);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_CARMILLA);
   if (f == NULL) {
     return;
   }
   p->gfx.carmilla = *f;
   OpenMainSpriteFile(&p->gfx.carmilla, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_PORTRAITS);
   if (f == NULL) {
     return;
   }
   p->gfx.portraits = *f;
   OpenMainSpriteFile(&p->gfx.portraits, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   if (f == NULL) {
     return;
   }
@@ -10662,19 +10662,19 @@ void MainMenuLink_LoadResources(MainMenu* p) {
   MainSpriteGfxFile* f;
 
   p->hudMode = HUD_FIELD;
-  p->menuTilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->menuTilemap = GetFile(DIR_TILE_MAP, MP_A413);
   p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 0, p->menuPltt);
   p->unk_a2a = 0;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   if (f == NULL) {
     return;
   }
   p->gfx.icons = *f;
   OpenMainSpriteFile(&p->gfx.icons, f);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   if (f == NULL) {
     return;
   }

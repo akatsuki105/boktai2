@@ -22,6 +22,7 @@
 #define DARK_DEBTS *((s32 *)(stat + 0x1C4))
 #define TREE_EXP *((s32 *)(stat + 0x1D8))
 #define TORTURE_COUNT *((s16 *)(stat + 0x1EC))
+#define TOTAL_ENEMY_KILL *((s16 *)(stat + 0x1F0))
 #define LAP *((s16 *)(stat + 0x240))
 #define ROOM *((s16 *)(stat + 0x242))
 #define PLAYER_KIND *((s16 *)(stat + 0x250))  // C の PLAYER_KIND は Player_SaveState の一致のために u16 だが, フィールドもスクリプトも s16

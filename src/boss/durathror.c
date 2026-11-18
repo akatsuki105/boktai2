@@ -103,7 +103,7 @@ typedef struct Durathror {
   s32 weaponExp;                          // 0x1BC, '.K'
   Hitbox hitbox;                          // 0x1C0
   Hitbox hurtbox;                         // 0x210, ハンドラは Durathror_OnHurt
-  MainSpriteGfx gfx;                      // 0x260, SPRITE_DURATHROR
+  MainSpriteGfx gfx;                      // 0x260, SPR_DURATHROR
   MainSprite sprite_280;                  // 0x280
   rgb555 pltt[8][16];                     // 0x2E0
   rgb555 pltt_3e0[8][16];                 // 0x3E0, gObjPlttData の同じ16色を8回写す
@@ -146,7 +146,7 @@ void FUN_0803a8c0(Boss*, s32);
 
 void FUN_080390f8(Durathror*);
 void DarkRoot_WitherAll(void);
-s32 FUN_08060220(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
+s32 Entity080601a8_Spawn(struct Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos);
 s32 SporeManager_Emit(s32 count, u32 angle, s32 angleRange, u32 speed, s32 speedRange, u32 delay, u32 power, s32 kind, Vec3* pos);
 s32 Entity0805d79c_Spawn(struct Entity0805d79c* p, s32 power, u32 angle, s32 speed, Vec3* pos);
 struct Entity0805d79c* Entity0805d79c_Create(void);
@@ -579,7 +579,7 @@ NON_MATCH void FUN_0803767c(Durathror* p, DurathrorElem* elem) {
     Vec3_SetPolar(&pos, angle & 0xFF, radius);
     Vec3_Add(&pos, &elem->sprite.pos);
     pos.y += 0x80;
-    FUN_08060220(p->entity080601a8, RandomNext() & 0xFF, (RandomNext() & 3) + 8, RandomNext() & 3, i * 8 + 30, p->unk_162, &pos);
+    Entity080601a8_Spawn(p->entity080601a8, RandomNext() & 0xFF, (RandomNext() & 3) + 8, RandomNext() & 3, i * 8 + 30, p->unk_162, &pos);
   }
 #else
   INCFUNC("asm/func/FUN_0803767c.inc");
@@ -1147,7 +1147,7 @@ NON_MATCH void FUN_080385f8(Durathror* p, DurathrorElem* elem, s32 idx) {
       Vec3_SetPolar(&pos, Random() & 0xFF, (Random() & 0x1F) + 32);
       Vec3_Add(&pos, &elem->sprite.pos);
       pos.y += 0x80;
-      FUN_08060220(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);
+      Entity080601a8_Spawn(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);
     }
   }
   if (elem->timer <= 29) {
@@ -1967,7 +1967,7 @@ NON_MATCH void FUN_0803a1d8(Boss* boss, s32 timer) {
     Vec3_SetPolar(&pos, Random() & 0xFF, (Random() & 0x1F) + 32);
     Vec3_Add(&pos, &p->sprite_280.pos);
     pos.y += 0x80;
-    FUN_08060220(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);
+    Entity080601a8_Spawn(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);
   }
   if (boss->stateRequestCallback(boss)) {
     p->unk_16c = 0;
@@ -2409,7 +2409,7 @@ NON_MATCH void FUN_0803b628(Boss* boss, s32 timer) {
     Vec3_SetPolar(&pos, RandomNext() & 0xFF, (RandomNext() & 0x1F) + 32);
     Vec3_Add(&pos, &p->sprite_280.pos);
     pos.y += 0x80;
-    FUN_08060220(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);
+    Entity080601a8_Spawn(p->entity080601a8, Random() & 0xFF, (Random() & 15) + 16, (Random() & 15) + 4, 60, p->unk_162, &pos);
   }
   if (timer > 9) {
     boss->subStateDone = TRUE;
@@ -2539,7 +2539,7 @@ NON_MATCH s32 Durathror_Init(Durathror* p, u32 id) {
     boss->players[0] = NULL;
     boss->playerPos[0] = NULL;
   }
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DURATHROR);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_DURATHROR);
   if (f == NULL) {
     return -1;
   }

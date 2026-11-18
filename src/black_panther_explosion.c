@@ -12,7 +12,7 @@ typedef struct {
   u16 dampFrom;      // 0x04, timer がこの値以上になったら vel を減衰させる, Spawn の第5引数
   u16 damping;       // 0x06, vel = vel * damping >> 8 (0 方向に丸める), Spawn の第6引数
   Vec3 vel;          // 0x08, Spawn が第4引数を 2 ワードでコピーする, _Update が sprite.pos に足す
-  AuxSpriteGfx gfx;  // 0x10, SPRITE_EXPLOSION
+  AuxSpriteGfx gfx;  // 0x10, SPR_EXPLOSION
   AuxSprite sprite;  // 0x2C
 } MinigameExplosion;
 static_assert(sizeof(MinigameExplosion) == 88);
@@ -53,7 +53,7 @@ s32 MinigameExplosionManager_Init(MinigameExplosionManager* p, void* _) {
     MinigameExplosion* e = &p->items[i];
 
     e->active = FALSE;
-    if (!Video_GetAuxSprite(&e->gfx, SPRITE_EXPLOSION)) {
+    if (!Video_GetAuxSprite(&e->gfx, SPR_EXPLOSION)) {
       return -1;
     }
     AuxSprite_Setup(&e->sprite, &e->gfx, 0);

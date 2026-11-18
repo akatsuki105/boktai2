@@ -26,7 +26,7 @@ static_assert(sizeof(DurathrorImpaleSpike) == 188);
 typedef struct DurathrorImpale {
   Entity e;                        // 0x000, ENTITY_UNK_8
   u32 activeMask;                  // 0x018, bit i が spikes[i] の使用中
-  MainSpriteGfx gfx;               // 0x01C, SPRITE_DURATHROR
+  MainSpriteGfx gfx;               // 0x01C, SPR_DURATHROR
   PuffParam ptcl;                  // 0x03C, 棘の周りに4フレームごとに散らす粒子
   DurathrorImpaleSpike spikes[8];  // 0x064
 } DurathrorImpale;
@@ -158,7 +158,7 @@ s32 DurathrorImpale_Init(DurathrorImpale* p) {
   s32 i;
 
   p->activeMask = 0;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DURATHROR);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_DURATHROR);
   if (f == NULL) {
     return -1;
   }
@@ -239,7 +239,7 @@ s32 DurathrorImpale_Spawn(DurathrorImpale* p, s32 power, u32 duration, Vec3* pos
   MainSprite_SetAnim(sprite, &p->gfx, 42, 2, MAIN_ANIM_FORCE_POSE);
   elem->sprite.pos = *pos;
   Video_AddMainSpriteIntoDrawList(sprite, 0);
-  Hitbox_SetAttack(hitbox, power, 64, 0, HBATTR_18, 64);
+  Hitbox_SetAttack(hitbox, power, 64, 0, HBATTR_BLOW, 64);
   Hitbox_SetPos(hitbox, pos, 0);
   p->activeMask |= 1 << idx;
   return 0;

@@ -149,7 +149,7 @@ _0802922A:
 	str r1, [sp, #4]
 	add r1, sp, #8
 	adds r2, r6, #0
-	bl FUN_0805b0b0
+	bl CuroroShotManager_Spawn
 	movs r3, #1
 	rsbs r3, r3, #0
 	add sb, r3

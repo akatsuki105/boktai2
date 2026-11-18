@@ -302,11 +302,11 @@ Tiles:
   .incbin "data/sprite_aux/mummy_2.4bpp"              @ 0x08A2AE30, SpriteID: 0x924B, PlttID: 23, マミー
   .incbin "data/sprite_aux/grating.4bpp"              @ 0x08A2C2F0, SpriteID: 0x2C12, PlttID: 28, 鳴り床(上を歩くと音が鳴る床)
   .incbin "data/sprite_aux/melee_shockwave.4bpp"      @ 0x08A2CE70, SpriteID: 0x8F5D, PlttID: 29, 斬撃っぽいエフェクト と 太陽鍛治で使う水桶
-  .incbin "data/sprite_aux/7AEE.4bpp"                 @ 0x08A2DE70, SpriteID: 0x7AEE, PlttID: 42, 扉
-  .incbin "data/sprite_aux/7AEF.4bpp"                 @ 0x08A2EB70, SpriteID: 0x7AEF, PlttID: 42, 扉
-  .incbin "data/sprite_aux/7AF0.4bpp"                 @ 0x08A2F430, SpriteID: 0x7AF0, PlttID: 42, 扉
-  .incbin "data/sprite_aux/7AF1.4bpp"                 @ 0x08A2FCF0, SpriteID: 0x7AF1, PlttID: 42, 扉
-  .incbin "data/sprite_aux/7AF2.4bpp"                 @ 0x08A309F0, SpriteID: 0x7AF2, PlttID: 42, 扉
+  .incbin "data/sprite_aux/door_obj_11.4bpp"                 @ 0x08A2DE70, SpriteID: 0x7AEE, PlttID: 42, 扉
+  .incbin "data/sprite_aux/door_obj_12.4bpp"                 @ 0x08A2EB70, SpriteID: 0x7AEF, PlttID: 42, 扉
+  .incbin "data/sprite_aux/door_obj_13.4bpp"                 @ 0x08A2F430, SpriteID: 0x7AF0, PlttID: 42, 扉
+  .incbin "data/sprite_aux/door_obj_14.4bpp"                 @ 0x08A2FCF0, SpriteID: 0x7AF1, PlttID: 42, 扉
+  .incbin "data/sprite_aux/door_obj_15.4bpp"                 @ 0x08A309F0, SpriteID: 0x7AF2, PlttID: 42, 扉
   .incbin "data/sprite_aux/A20C.4bpp"                 @ 0x08A316F0, SpriteID: 0xA20C, PlttID: 44, キラキラエフェクト?(太陽虫ではない)
   .incbin "data/sprite_aux/9D2D.4bpp"                 @ 0x08A31770, SpriteID: 0x9D2D, PlttID: 51, 壁?
   .incbin "data/sprite_aux/048A.4bpp"                 @ 0x08A31BF0, SpriteID: 0x048A, PlttID: 52, 柱?
@@ -328,7 +328,7 @@ Tiles:
   .incbin "data/sprite_aux/mirror_00.4bpp"            @ 0x08A3E410, SpriteID: 0x5DC0, PlttID: 87, 太陽ミラー
   .incbin "data/sprite_aux/shop_armors.4bpp"          @ 0x08A3FC10, SpriteID: 0x6AF6, PlttID: 89, キッドの店の内装
   .incbin "data/sprite_aux/4AAE.4bpp"                 @ 0x08A403F0, SpriteID: 0x4AAE, PlttID: 91, おっさん
-  .incbin "data/sprite_aux/1C1B.4bpp"                 @ 0x08A405F0, SpriteID: 0x1C1B, PlttID: 0, エフェクト群(煙、蜘蛛の巣,???)
+  .incbin "data/sprite_aux/eff_eff_01.4bpp"           @ 0x08A405F0, SpriteID: 0x1C1B, PlttID: 0, エフェクト群(煙、蜘蛛の巣,???)
   .incbin "data/sprite_aux/9FF5.4bpp"                 @ 0x08A412B0, SpriteID: 0x9FF5, PlttID: 0, エフェクト群
   .incbin "data/sprite_aux/A606.4bpp"                 @ 0x08A41410, SpriteID: 0xA606, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/curoro.4bpp"               @ 0x08A43BD0, SpriteID: 0xD28E, PlttID: 92, クロロホルルン
@@ -347,11 +347,11 @@ Tiles:
   .incbin "data/sprite_aux/tomb.4bpp"                 @ 0x08A4C890, SpriteID: 0x05A2, PlttID: 139, 大聖堂の(偽物の)墓
   .incbin "data/sprite_aux/34C0.4bpp"                 @ 0x08A4CD90, SpriteID: 0x34C0, PlttID: 142, 大聖堂の水晶をはめる穴あたりの壁?
   .incbin "data/sprite_aux/spider.4bpp"               @ 0x08A4D090, SpriteID: 0x528F, PlttID: 143, スパイダー
-  .incbin "data/sprite_aux/door_iron.4bpp"            @ 0x08A4EF50, SpriteID: 0x7AD2, PlttID: 146, 鉄格子の扉
+  .incbin "data/sprite_aux/door_obj_05.4bpp"          @ 0x08A4EF50, SpriteID: 0x7AD2, PlttID: 146, 鉄格子の扉
   .incbin "data/sprite_aux/slime.4bpp"                @ 0x08A4FB50, SpriteID: 0xB96C, PlttID: 147, スライム
   .incbin "data/sprite_aux/slime_debris_l.4bpp"       @ 0x08A51590, SpriteID: 0x7031, PlttID: 147, スライムの破片(大)
   .incbin "data/sprite_aux/slime_debris_s.4bpp"       @ 0x08A51610, SpriteID: 0x7032, PlttID: 147, スライムの破片(小)
-  .incbin "data/sprite_aux/E857.4bpp"                 @ 0x08A51670, SpriteID: 0xE857, PlttID: 83, 黒塗り
+  .incbin "data/sprite_aux/lk00_mask.4bpp"            @ 0x08A51670, SpriteID: 0xE857, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/blackhole.4bpp"            @ 0x08A54670, SpriteID: 0x3641, PlttID: 50, ブラックホール
   .incbin "data/sprite_aux/wedge.4bpp"                @ 0x08A54A70, SpriteID: 0xF070, PlttID: 151, 封印の楔
   .incbin "data/sprite_aux/healing_plant.4bpp"        @ 0x08A557B0, SpriteID: 0xC3C3, PlttID: 95, 太陽の根(ヒーリングで成長させられるもじゃもじゃ)
@@ -360,16 +360,16 @@ Tiles:
   .incbin "data/sprite_aux/FDC5.4bpp"                 @ 0x08A5A9B0, SpriteID: 0xFDC5, PlttID: 165, なんか浮いている岩
   .incbin "data/sprite_aux/signboard.4bpp"            @ 0x08A5C170, SpriteID: 0x96F7, PlttID: 166, サンミゲルのまだ利用できない施設の入り口にある看板
   .incbin "data/sprite_aux/combo_score.4bpp"          @ 0x08A5C270, SpriteID: 0xA5BD, PlttID: 0, ブラックパンサー(ミニゲーム)の "COMBO:", "SCORE:"
-  .incbin "data/sprite_aux/7AD3.4bpp"                 @ 0x08A5C370, SpriteID: 0x7AD3, PlttID: 167, 鍵のかかった青い扉
-  .incbin "data/sprite_aux/7AD4.4bpp"                 @ 0x08A5D070, SpriteID: 0x7AD4, PlttID: 167, 鍵のかかった青い扉
-  .incbin "data/sprite_aux/7AD5.4bpp"                 @ 0x08A5D930, SpriteID: 0x7AD5, PlttID: 167, 鍵のかかった青い扉
-  .incbin "data/sprite_aux/7AD6.4bpp"                 @ 0x08A5E1F0, SpriteID: 0x7AD6, PlttID: 167, 鍵のかかった青い扉
-  .incbin "data/sprite_aux/7AED.4bpp"                 @ 0x08A5EEF0, SpriteID: 0x7AED, PlttID: 167, 鍵のかかった青い扉
-  .incbin "data/sprite_aux/7AF3.4bpp"                 @ 0x08A5FBF0, SpriteID: 0x7AF3, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
-  .incbin "data/sprite_aux/7AF4.4bpp"                 @ 0x08A608F0, SpriteID: 0x7AF4, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
-  .incbin "data/sprite_aux/7AF5.4bpp"                 @ 0x08A611B0, SpriteID: 0x7AF5, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
-  .incbin "data/sprite_aux/7AF6.4bpp"                 @ 0x08A61A70, SpriteID: 0x7AF6, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
-  .incbin "data/sprite_aux/7B0D.4bpp"                 @ 0x08A62770, SpriteID: 0x7B0D, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+  .incbin "data/sprite_aux/door_obj_06.4bpp"                 @ 0x08A5C370, SpriteID: 0x7AD3, PlttID: 167, 鍵のかかった青い扉
+  .incbin "data/sprite_aux/door_obj_07.4bpp"                 @ 0x08A5D070, SpriteID: 0x7AD4, PlttID: 167, 鍵のかかった青い扉
+  .incbin "data/sprite_aux/door_obj_08.4bpp"                 @ 0x08A5D930, SpriteID: 0x7AD5, PlttID: 167, 鍵のかかった青い扉
+  .incbin "data/sprite_aux/door_obj_09.4bpp"                 @ 0x08A5E1F0, SpriteID: 0x7AD6, PlttID: 167, 鍵のかかった青い扉
+  .incbin "data/sprite_aux/door_obj_10.4bpp"                 @ 0x08A5EEF0, SpriteID: 0x7AED, PlttID: 167, 鍵のかかった青い扉
+  .incbin "data/sprite_aux/door_obj_16.4bpp"                 @ 0x08A5FBF0, SpriteID: 0x7AF3, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+  .incbin "data/sprite_aux/door_obj_17.4bpp"                 @ 0x08A608F0, SpriteID: 0x7AF4, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+  .incbin "data/sprite_aux/door_obj_18.4bpp"                 @ 0x08A611B0, SpriteID: 0x7AF5, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+  .incbin "data/sprite_aux/door_obj_19.4bpp"                 @ 0x08A61A70, SpriteID: 0x7AF6, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+  .incbin "data/sprite_aux/door_obj_20.4bpp"                 @ 0x08A62770, SpriteID: 0x7B0D, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
   .incbin "data/sprite_aux/bee.4bpp"                  @ 0x08A63470, SpriteID: 0x9506, PlttID: 176, ビー
   .incbin "data/sprite_aux/22E7.4bpp"                 @ 0x08A64ED0, SpriteID: 0x22E7, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/fruit_shop_interior.4bpp"  @ 0x08A69550, SpriteID: 0x41B1, PlttID: 179, 果物屋の内装
@@ -377,7 +377,7 @@ Tiles:
   .incbin "data/sprite_aux/CDAB.4bpp"                 @ 0x08A6A5B0, SpriteID: 0xCDAB, PlttID: 187, チェンジ・マウスで渡れる木片
   .incbin "data/sprite_aux/dungeon_door.4bpp"         @ 0x08A6A8B0, SpriteID: 0xD962, PlttID: 188, タレット封印の扉(地下水路の入り口), 螺旋の塔の入り口, etc
   .incbin "data/sprite_aux/B044.4bpp"                 @ 0x08A6C8B0, SpriteID: 0xB044, PlttID: 42, 絨毯
-  .incbin "data/sprite_aux/3668.4bpp"                 @ 0x08A6CBB0, SpriteID: 0x3668, PlttID: 195, ダーインのエネルギー弾
+  .incbin "data/sprite_aux/curoro_shots.4bpp"         @ 0x08A6CBB0, SpriteID: 0x3668, PlttID: 195, ダーインのエネルギー弾
   .incbin "data/sprite_aux/ojama_bat.4bpp"            @ 0x08A6D7D0, SpriteID: 0x18A8, PlttID: 207, オジャマバット
   .incbin "data/sprite_aux/ojama_bat_counter.4bpp"    @ 0x08A6D9D0, SpriteID: 0x18A9, PlttID: 207, オジャマバットのカウンター?
   .incbin "data/sprite_aux/touch_switch.4bpp"       @ 0x08A6DC90, SpriteID: 0x2769, PlttID: 208, 接触スイッチ(+電球?)
@@ -390,7 +390,7 @@ Tiles:
   .incbin "data/sprite_aux/EF69.4bpp"                 @ 0x08A7D5F0, SpriteID: 0xEF69, PlttID: 220, 暗黒の根
   .incbin "data/sprite_aux/5BA7.4bpp"                 @ 0x08A7D770, SpriteID: 0x5BA7, PlttID: 236, 天窓の光
   .incbin "data/sprite_aux/5BB7.4bpp"                 @ 0x08A7DBF0, SpriteID: 0x5BB7, PlttID: 239, 天窓の光
-  .incbin "data/sprite_aux/bomb.4bpp"                 @ 0x08A7DF70, SpriteID: 0xE74B, PlttID: 0, (ガストの吐き出す)爆弾, ???, ダイナマイト
+  .incbin "data/sprite_aux/bomb_00.4bpp"              @ 0x08A7DF70, SpriteID: 0xE74B, PlttID: 0, 爆弾, 毒液, ダイナマイト
   .incbin "data/sprite_aux/start.4bpp"                @ 0x08A7EB70, SpriteID: 0x9A1F, PlttID: 242, "PUSH START BUTTON"
   .incbin "data/sprite_aux/C459.4bpp"                 @ 0x08A7F0F0, SpriteID: 0xC459, PlttID: 243, 太陽床
   .incbin "data/sprite_aux/DC07.4bpp"                 @ 0x08A7F4F0, SpriteID: 0xDC07, PlttID: 244, 天窓の光
@@ -431,12 +431,12 @@ Tiles:
   .incbin "data/sprite_aux/5D7C.4bpp"                 @ 0x08AA38D0, SpriteID: 0x5D7C, PlttID: 338, 瓦礫
   .incbin "data/sprite_aux/B837.4bpp"                 @ 0x08AA40D0, SpriteID: 0xB837, PlttID: 339, わからん(ふしぎのぼうしのチュチュみたいな形)
   .incbin "data/sprite_aux/cube_iron.4bpp"            @ 0x08AA4C10, SpriteID: 0xE0C9, PlttID: 340, 鉄ブロック
-  .incbin "data/sprite_aux/jormungandr_8203.4bpp"     @ 0x08AA5210, SpriteID: 0x8203, PlttID: 341, ヨルムンガンド
-  .incbin "data/sprite_aux/jormungandr_8204.4bpp"     @ 0x08AA6B10, SpriteID: 0x8204, PlttID: 341, ヨルムンガンド
-  .incbin "data/sprite_aux/wedge_8205.4bpp"           @ 0x08AA6DD0, SpriteID: 0x8205, PlttID: 350, ヨルムンガンドの楔
-  .incbin "data/sprite_aux/wedge_8202.4bpp"           @ 0x08AA6FD0, SpriteID: 0x8202, PlttID: 350, ヨルムンガンドの楔
-  .incbin "data/sprite_aux/jormungandr_8206.4bpp"     @ 0x08AA7650, SpriteID: 0x8206, PlttID: 341, ヨルムンガンドのタコ足
-  .incbin "data/sprite_aux/jormungandr_8207.4bpp"     @ 0x08AA7950, SpriteID: 0x8207, PlttID: 341, ヨルムンガンドのタコ足
+  .incbin "data/sprite_aux/lasbos01.4bpp"             @ 0x08AA5210, SpriteID: 0x8203, PlttID: 341, ヨルムンガンド
+  .incbin "data/sprite_aux/lasbos02.4bpp"             @ 0x08AA6B10, SpriteID: 0x8204, PlttID: 341, ヨルムンガンド
+  .incbin "data/sprite_aux/lasbos03.4bpp"             @ 0x08AA6DD0, SpriteID: 0x8205, PlttID: 350, ヨルムンガンドの楔
+  .incbin "data/sprite_aux/lasbos00.4bpp"             @ 0x08AA6FD0, SpriteID: 0x8202, PlttID: 350, ヨルムンガンドの楔
+  .incbin "data/sprite_aux/lasbos04.4bpp"             @ 0x08AA7650, SpriteID: 0x8206, PlttID: 341, ヨルムンガンドのタコ足
+  .incbin "data/sprite_aux/lasbos05.4bpp"             @ 0x08AA7950, SpriteID: 0x8207, PlttID: 341, ヨルムンガンドのタコ足
   .incbin "data/sprite_aux/DC38.4bpp"                 @ 0x08AA7A30, SpriteID: 0xDC38, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/8393.4bpp"                 @ 0x08AAB1D0, SpriteID: 0x8393, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/solar_bamboo.4bpp"         @ 0x08AB09D0, SpriteID: 0x066A, PlttID: 361, 太陽ダケ
@@ -470,13 +470,13 @@ Tiles:
   .incbin "data/sprite_aux/lift_iron.4bpp"            @ 0x08ADB9D0, SpriteID: 0xB019, PlttID: 439, 昇降床(金属)
   .incbin "data/sprite_aux/lift_rock_0.4bpp"          @ 0x08ADBE50, SpriteID: 0xDA09, PlttID: 440, 移動床(岩), 変異域の溶岩のところや地下水路で使用
   .incbin "data/sprite_aux/lift_mecha.4bpp"           @ 0x08ADC450, SpriteID: 0xC3BD, PlttID: 441, 移動床(機械), 汎用 (水平,垂直)
-  .incbin "data/sprite_aux/lift_rock_1.4bpp"          @ 0x08ADCA50, SpriteID: 0x9462, PlttID: 442, 移動床(岩), SPRITE_LIFT_ROCK　と似てるけど微妙に違う
+  .incbin "data/sprite_aux/lift_rock_1.4bpp"          @ 0x08ADCA50, SpriteID: 0x9462, PlttID: 442, 移動床(岩), SPR_LIFT_ROCK0 と似てるけど微妙に違う
   .incbin "data/sprite_aux/lift_solar_move.4bpp"      @ 0x08ADD050, SpriteID: 0x75D6, PlttID: 444, 太陽移動床(太陽床とは別物), 森 1F で使用
   .incbin "data/sprite_aux/lift_weight.4bpp"          @ 0x08ADD4D0, SpriteID: 0x7605, PlttID: 445, 重量昇降床(乗ったものの重量に応じて行き先が変わる), 暗黒街で使用
   .incbin "data/sprite_aux/octopus.4bpp"              @ 0x08ADD950, SpriteID: 0xD291, PlttID: 447
   .incbin "data/sprite_aux/water_silhouette.4bpp"     @ 0x08AE3F50, SpriteID: 0xD292, PlttID: 447, 多分オクトパスが水中にいるときのシルエット
-  .incbin "data/sprite_aux/7C07.4bpp"                 @ 0x08AE4110, SpriteID: 0x7C07, PlttID: 83, 黒塗り
-  .incbin "data/sprite_aux/FC07.4bpp"                 @ 0x08AE6510, SpriteID: 0xFC07, PlttID: 83, 黒塗り
+  .incbin "data/sprite_aux/a00_mask.4bpp"                 @ 0x08AE4110, SpriteID: 0x7C07, PlttID: 83, 黒塗り
+  .incbin "data/sprite_aux/a20_mask.4bpp"                 @ 0x08AE6510, SpriteID: 0xFC07, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/BC08.4bpp"                 @ 0x08AEB310, SpriteID: 0xBC08, PlttID: 83, 黒塗り
   .incbin "data/sprite_aux/generator.4bpp"            @ 0x08AEE910, SpriteID: 0xC038, PlttID: 451, パイルドライバーのジェネレータ
   .incbin "data/sprite_aux/1D78.4bpp"                 @ 0x08AF4590, SpriteID: 0x1D78, PlttID: 460, 天窓の光と、あと砂っぽい地面?
@@ -506,16 +506,16 @@ Tiles:
   .incbin "data/sprite_aux/8638.4bpp"                 @ 0x08B3A670, SpriteID: 0x8638, PlttID: 275
   .incbin "data/sprite_aux/duneyrr.4bpp"              @ 0x08B3D110, SpriteID: 0x61F9, PlttID: 547, ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は別)
   .incbin "data/sprite_aux/2058.4bpp"                 @ 0x08B43130, SpriteID: 0x2058, PlttID: 558, 武器屋(シャイアンの店)の内装?
-  .incbin "data/sprite_aux/7ACD.4bpp"                 @ 0x08B44370, SpriteID: 0x7ACD, PlttID: 559, ドア(木)
-  .incbin "data/sprite_aux/7ACE.4bpp"                 @ 0x08B45070, SpriteID: 0x7ACE, PlttID: 559, ドア(木)
-  .incbin "data/sprite_aux/7ACF.4bpp"                 @ 0x08B45930, SpriteID: 0x7ACF, PlttID: 559, ドア(木)
-  .incbin "data/sprite_aux/7AD0.4bpp"                 @ 0x08B461F0, SpriteID: 0x7AD0, PlttID: 559, ドア(木)
-  .incbin "data/sprite_aux/7AD1.4bpp"                 @ 0x08B46EF0, SpriteID: 0x7AD1, PlttID: 559, ドア(木)
-  .incbin "data/sprite_aux/2E78.4bpp"                 @ 0x08B47BF0, SpriteID: 0x2E78, PlttID: 561, ドヴァリン
-  .incbin "data/sprite_aux/2E79.4bpp"                 @ 0x08B4BED0, SpriteID: 0x2E79, PlttID: 561, ドヴァリン
-  .incbin "data/sprite_aux/2E7A.4bpp"                 @ 0x08B4F2F0, SpriteID: 0x2E7A, PlttID: 561, ドヴァリン
-  .incbin "data/sprite_aux/2E7B.4bpp"                 @ 0x08B50AF0, SpriteID: 0x2E7B, PlttID: 561, ドヴァリン
-  .incbin "data/sprite_aux/2E7C.4bpp"                 @ 0x08B51570, SpriteID: 0x2E7C, PlttID: 561, ドヴァリン
+  .incbin "data/sprite_aux/door_obj_00.4bpp"          @ 0x08B44370, SpriteID: 0x7ACD, PlttID: 559, ドア(木)
+  .incbin "data/sprite_aux/door_obj_01.4bpp"          @ 0x08B45070, SpriteID: 0x7ACE, PlttID: 559, ドア(木)
+  .incbin "data/sprite_aux/door_obj_02.4bpp"          @ 0x08B45930, SpriteID: 0x7ACF, PlttID: 559, ドア(木)
+  .incbin "data/sprite_aux/door_obj_03.4bpp"          @ 0x08B461F0, SpriteID: 0x7AD0, PlttID: 559, ドア(木)
+  .incbin "data/sprite_aux/door_obj_04.4bpp"          @ 0x08B46EF0, SpriteID: 0x7AD1, PlttID: 559, ドア(木)
+  .incbin "data/sprite_aux/bos04_00.4bpp"             @ 0x08B47BF0, SpriteID: 0x2E78, PlttID: 561, ドヴァリン
+  .incbin "data/sprite_aux/bos04_01.4bpp"             @ 0x08B4BED0, SpriteID: 0x2E79, PlttID: 561, ドヴァリン
+  .incbin "data/sprite_aux/bos04_02.4bpp"             @ 0x08B4F2F0, SpriteID: 0x2E7A, PlttID: 561, ドヴァリン
+  .incbin "data/sprite_aux/bos04_03.4bpp"             @ 0x08B50AF0, SpriteID: 0x2E7B, PlttID: 561, ドヴァリン
+  .incbin "data/sprite_aux/bos04_04.4bpp"             @ 0x08B51570, SpriteID: 0x2E7C, PlttID: 561, ドヴァリン
   .incbin "data/sprite_aux/cube_rock.4bpp"            @ 0x08B51730, SpriteID: 0x9D41, PlttID: 573, 岩ブロック
   .incbin "data/sprite_aux/cube_rock_debris_l.4bpp"   @ 0x08B51D30, SpriteID: 0xA894, PlttID: 573, 岩ブロックの破片(大)
   .incbin "data/sprite_aux/cube_rock_debris_s.4bpp"   @ 0x08B51EB0, SpriteID: 0xA895, PlttID: 573, 岩ブロックの破片(小)
@@ -542,7 +542,7 @@ Tiles:
   .incbin "data/sprite_aux/84B4.4bpp"                 @ 0x08B64C50, SpriteID: 0x84B4, PlttID: 501, 火炎放射?
   .incbin "data/sprite_aux/96C1.4bpp"                 @ 0x08B678F0, SpriteID: 0x96C1, PlttID: 501
   .incbin "data/sprite_aux/96C2.4bpp"                 @ 0x08B6A050, SpriteID: 0x96C2, PlttID: 501
-  .incbin "data/sprite_aux/0D44.4bpp"                 @ 0x08B6AB90, SpriteID: 0x0D44, PlttID: 83
+  .incbin "data/sprite_aux/field_mask.4bpp"           @ 0x08B6AB90, SpriteID: 0x0D44, PlttID: 83
   .incbin "data/sprite_aux/mimic.4bpp"                @ 0x08B6D8D0, SpriteID: 0x3876, PlttID: 650, 宝箱も兼ねる
   
 

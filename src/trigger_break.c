@@ -28,7 +28,7 @@ typedef struct Breakable {
   Vec3 pos;                                                     // 0x10, '.p', Hitbox_SetPos で hurtbox の座標として登録され、sprite.pos の基準にもなる
   u32 unk_18;                                                   // 0x18, Breakable_SetUpdate が 0 にする, 読み手が見つかっていない
   void (*update)(struct BreakableManager*, struct Breakable*);  // 0x1C
-  AuxSpriteGfx gfx;                                             // 0x20, '.t=SPRITE_KOMAINU'
+  AuxSpriteGfx gfx;                                             // 0x20, '.t=SPR_KOMAINU'
   AuxSprite sprite;                                             // 0x3C
   Hitbox hurtbox;                                               // 0x68
 } Breakable;
@@ -92,7 +92,7 @@ void Breakable_OnHurt(Hitbox* a, Hitbox* b, Breakable* item) {
 
 // スロット1つ分のスプライトを確保し、非表示の空きスロットとして寝かせておく
 s32 Breakable_Setup(BreakableManager* p, Breakable* item) {
-  if (!Video_GetAuxSprite(&item->gfx, SPRITE_KOMAINU)) return -1;
+  if (!Video_GetAuxSprite(&item->gfx, SPR_KOMAINU)) return -1;
   AuxSprite_Add(&item->sprite, &item->gfx, SPRFLAG_HIDDEN);
   Breakable_SetUpdate(item, Breakable_UpdateIdle);
   item->active = FALSE;
@@ -268,7 +268,7 @@ s32 Cmd_SpawnBreakable(void) {
   if (VM_SeekToNamedArg('p')) {
     VEC3_SET(item->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   }
-  spriteID = VM_GetNamedArgValue('t', SPRITE_KOMAINU);
+  spriteID = VM_GetNamedArgValue('t', SPR_KOMAINU);
   pose = VM_GetNamedArgValue('P', 0);
   item->unk_8 = VM_GetNamedArgValue('k', 0);
   item->scriptOnBreak = VM_GetNamedArgValue('d', 0);

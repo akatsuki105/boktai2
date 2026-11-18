@@ -20,7 +20,7 @@ static_assert(sizeof(Entity0805d79cElem) == 136);
 typedef struct Entity0805d79c {
   Entity e;                      // 0x000, ENTITY_UNK_8
   u32 activeMask;                // 0x018, 1 << i で elems[i] が使用中
-  AuxSpriteGfx gfx;              // 0x01C, SPRITE_DURATH_SPIKE
+  AuxSpriteGfx gfx;              // 0x01C, SPR_DURATH_SPIKE
   Entity0805d79cElem elems[32];  // 0x038
 } Entity0805d79c;
 static_assert(sizeof(Entity0805d79c) == 4408);
@@ -93,7 +93,7 @@ s32 Entity0805d79c_Init(Entity0805d79c* p) {
 
   p->activeMask = 0;
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_DURATH_SPIKE);
+  Video_GetAuxSprite(gfx, SPR_DURATH_SPIKE);
   Video_SetAuxSpritePltt(gfx, 219);
   elem = p->elems;
   for (i = 0; i < 32; i++, elem++) {

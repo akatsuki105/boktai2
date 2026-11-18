@@ -316,7 +316,7 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
   p->unk_d4 = param_7;
   p->unk_d8 = Div(p->unk_d4, 6);
   spr = &p->sprite;
-  Video_GetAuxSprite(&p->gfx, SPRITE_GENERATOR);
+  Video_GetAuxSprite(&p->gfx, SPR_GENERATOR);
   AuxSprite_Add(spr, &p->gfx, 0);
   p->sprite.pos = p->pos;
   p->animFile = GetFile(DIR_ANIMATION, ANIM_PILE);

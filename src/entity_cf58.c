@@ -125,7 +125,7 @@ s32 EntityCF58_Destroy(EntityCF58* p) {
 }
 
 void EntityCF58_InitSprite(EntityCF58* p, u32 mode) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
 
   if (f != NULL) {
     Vec3 pos;

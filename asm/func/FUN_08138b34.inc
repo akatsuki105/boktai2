@@ -16,7 +16,7 @@ _08138B50:
 _08138B52:
 	cmp r0, #0
 	beq _08138B8A
-	ldr r4, _08138C28 @ =FUN_08133820
+	ldr r4, _08138C28 @ =Centipede_StateHover
 	movs r3, #0x22
 	ldr r2, _08138C2C @ =0x0000046D
 	adds r1, r5, r2
@@ -67,19 +67,19 @@ _08138BAE:
 	lsls r2, r2, #7
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_081370f4
+	bl Centipede_PullSegments
 	movs r1, #0xd7
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x28
-	bl FUN_08136ca0
+	bl Centipede_UpdateWave
 	ldr r6, _08138C30 @ =0x0000046B
 	adds r0, r5, r6
 	ldrb r0, [r0]
 	cmp r0, #0
 	beq _08138C40
 	adds r0, r5, #0
-	bl FUN_081355f0
+	bl Centipede_PickNextTile
 	movs r1, #0xb4
 	lsls r1, r1, #3
 	adds r0, r5, r1
@@ -122,7 +122,7 @@ _08138BAE:
 	strb r3, [r0]
 	b _08138C4A
 	.align 2, 0
-_08138C28: .4byte FUN_08133820
+_08138C28: .4byte Centipede_StateHover
 _08138C2C: .4byte 0x0000046D
 _08138C30: .4byte 0x0000046B
 _08138C34: .4byte 0x00000553

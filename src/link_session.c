@@ -924,7 +924,7 @@ s32 FUN_081de844(LinkSession* p) {
   return 0;
 }
 
-// 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (Mover_ShowTrackingMarker / FUN_080fc174 と同じ), static inline (if/else で return) は試済
+// 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (Mover_ShowTrackingMarker / Boku_StateWakeUp と同じ), static inline (if/else で return) は試済
 // ステータス比較を bool8 を返す static inline にすると 0/1 の作り置きは出るが, 比べる定数を原典はマスクの後で作るのに対しこちらは先に作る (52/52)
 NON_MATCH s32 FUN_081de960(LinkSession* p) {
 #ifdef NONMATCHING_C
@@ -1466,7 +1466,7 @@ s32 FUN_081df62c(LinkSession* p) {
   }
 }
 
-s32 FUN_081e1984(unknown* param_1, s32 val);  // src/link_battle_coin.c
+s32 LinkBattleCoinManager_DropCoin(Vec3* pos, s32 owner);
 
 // val 番のプレイヤーが持つコインを全部手放させる
 s32 LinkSession_ReleaseAllCoins(unknown* param_1, s32 val) {
@@ -1479,7 +1479,7 @@ s32 LinkSession_ReleaseAllCoins(unknown* param_1, s32 val) {
 
   for (i = 0; i < 5; i++) {
     if (p->coinOwners[i] == val) {
-      FUN_081e1984(param_1, val);
+      LinkBattleCoinManager_DropCoin(param_1, val);
       p->coinOwners[i] = -1;
     }
   }
@@ -1497,7 +1497,7 @@ s32 LinkSession_ReleaseCoin(unknown* param_1, s32 val) {
 
   for (i = 0; i < 5; i++) {
     if (p->coinOwners[i] == val) {
-      FUN_081e1984(param_1, val);
+      LinkBattleCoinManager_DropCoin(param_1, val);
       p->coinOwners[i] = -1;
       break;
     }

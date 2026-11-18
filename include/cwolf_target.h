@@ -20,7 +20,7 @@ typedef struct CWolfTargetNode {
 static_assert(sizeof(CWolfTargetNode) == 16);
 
 // チェンジウルフで噛みつける相手のリストを持つ, 敵は _Init で CWolfTargetManager_Register、_Destroy で CWolfTargetManager_Unregister を呼んで出入りする (28種)
-// nodes が単方向リストの先頭, ノードは敵の構造体に埋め込まれている (EnemyBat なら +0x7C)
+// nodes が単方向リストの先頭, ノードは敵の構造体に埋め込まれている (EneBat なら +0x7C)
 // リストを読むのは player.c の Player_FindCWolfTarget だけで, CWolfTargetManager_FindNearestInCone はどこからも呼ばれない
 typedef struct {
   Entity e;                // 0x0, ENTITY_UNK_2

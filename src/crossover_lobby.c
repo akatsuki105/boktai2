@@ -15,7 +15,7 @@ typedef struct {
   bool8 nameShown;            // 0x000, name をテキストパネルに出していれば 1
   u8 unk_01[3];               // 0x001
   u32 unk_04;                 // 0x004, 名前を書き換えるときに 0 にされるだけで読み手がいない
-  MainSpriteGfx portraitGfx;  // 0x008, SPRITE_PORTRAITS
+  MainSpriteGfx portraitGfx;  // 0x008, SPR_PORTRAITS
   MainSprite portrait;        // 0x028, 顔グラ, 位置と pose は Unk085ab674_ARRAY_085ab674[idx]
   MainSprite digits[5];       // 0x088, 5桁の数字, 自分は FUN_0804e638 の値を x=24 に、相手は gname の後ろの u16 を x=136 に出す
   u8 name[16];                // 0x268, プレイヤー名, 自分は gStat->name, 相手は通信で受け取った名前
@@ -35,14 +35,14 @@ typedef struct {
   u8 connectSlot;                   // 0x01C, 前フレームの FUN_0804e474 の値, 0xFF にすると次のフレームで表示を作り直す
   u8 unk_1d[3];                     // 0x01D, padding?
   u32 stateTimer;                   // 0x020, state を変えると 0 に戻り毎フレーム +1
-  TilemapFile* tilemap;             // 0x024, TILEMAP_CD91
+  TilemapFile* tilemap;             // 0x024, MP_CD91
   u8* script;                       // 0x028, '.s', テキストパネルのメッセージ元
   CrossoverLobbyPlayer players[2];  // 0x02C
   s32 textPanels[3];                // 0x554, [0] と [1] は players[i].name, [2] は案内メッセージ
   s32 scriptID;                     // 0x560, '.r', 終了時に実行する
   u8 nameBuf[16];                   // 0x564, 受け取った相手の名前を変換する前に置く作業用
   u8 unk_574[240];                  // 0x574
-  MainSpriteGfx gfx;                // 0x664, SPRITE_UI_START_MENU, 数字を描くのに使う
+  MainSpriteGfx gfx;                // 0x664, SPR_UI_START_MENU, 数字を描くのに使う
 } CrossoverLobby;
 static_assert(sizeof(CrossoverLobby) == 1668);
 
@@ -80,7 +80,7 @@ typedef struct {
 void CrossoverLobby_LoadBG(CrossoverLobby* p, s32 bgIndex) {
   BgPlttFile* f;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   f = GetBgPlttFile(BGP_LINK);
@@ -89,8 +89,8 @@ void CrossoverLobby_LoadBG(CrossoverLobby* p, s32 bgIndex) {
 
 s32 CrossoverLobby_InitPlayer(CrossoverLobby* p, CrossoverLobbyPlayer* player, s32 idx) {
   static const Unk085ab674 Unk085ab674_ARRAY_085ab674[2] = {
-      {id : SPRITE_PORTRAITS, poseIdx : PORTRAIT_RDJANGO, flags : 0,             x : 48,  y : 32},
-      {id : SPRITE_PORTRAITS, poseIdx : PORTRAIT_ROCKMAN, flags : SPRFLAG_XFLIP, x : 192, y : 32}
+      {id : SPR_PORTRAITS, poseIdx : PORTRAIT_RDJANGO, flags : 0,             x : 48,  y : 32},
+      {id : SPR_PORTRAITS, poseIdx : PORTRAIT_ROCKMAN, flags : SPRFLAG_XFLIP, x : 192, y : 32}
   };  // 0x085AB674
 
   MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, Unk085ab674_ARRAY_085ab674[idx].id);
@@ -452,7 +452,7 @@ s32 CrossoverLobby_Destroy(CrossoverLobby* p) {
 }
 
 s32 CrossoverLobby_Init(CrossoverLobby* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   CrossoverLobbyPlayer* player;
   s32* panel;
   s32 i;

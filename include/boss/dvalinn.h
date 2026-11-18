@@ -26,8 +26,8 @@ typedef struct Entity08202cd8 {
   u8 unk_692;                               // 0x692, unk_690 の段階に入ってからのフレーム数
   u8 unk_693;                               // 0x693
   Vec3 pos;                                 // 0x694, Create の引数が指すマスの衝突タイルから作り、全スプライトの pos へ複写する
-  AuxSpriteGfx gfx0;                        // 0x69C, SPRITE_DVALIN_2E78
-  AuxSpriteGfx gfx1;                        // 0x6B8, SPRITE_DVALIN_2E7B
+  AuxSpriteGfx gfx0;                        // 0x69C, SPR_DVALIN_00
+  AuxSpriteGfx gfx1;                        // 0x6B8, SPR_DVALIN_03
   void (*fn)(struct Entity08202cd8*, s32);  // 0x6D4, FUN_08202910 が p と加算前の unk_18 を渡して呼ぶ
   u8 unk_6d8;                               // 0x6D8, _Init で 1
   u8 unk_6d9;                               // 0x6D9

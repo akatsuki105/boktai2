@@ -21,7 +21,7 @@ typedef enum {
 // 太陽エネルギーで state が入れ替わる設置物, 1体の PuddleManager が最大8個を抱える
 typedef struct Puddle {
   AuxSprite sprite;                        // 0x000, poseIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
-  AuxSpriteGfx gfx;                        // 0x02C, SPRITE_TRAP_FLOOR
+  AuxSpriteGfx gfx;                        // 0x02C, SPR_TRAP_FLOOR
   Mover mover;                             // 0x048, moverLinked が立っているときだけリストに繋がれる
   Hitbox hurtbox;                          // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
   u8 state;                                // 0x0DC, '.s', 0/1/2 で updateCallback を選ぶ
@@ -374,7 +374,7 @@ void Puddle_InitParams(Puddle* elem, u32 id, Vec3* pos, u32 state, u32 lockFlags
 void Puddle_InitSprite(Puddle* elem, Vec3* pos, u32 moverLinked) {
   AuxSpriteGfx* gfx = &elem->gfx;
 
-  Video_GetAuxSprite(gfx, SPRITE_TRAP_FLOOR);
+  Video_GetAuxSprite(gfx, SPR_TRAP_FLOOR);
   AuxSprite_Add(&elem->sprite, gfx, 0);
   Video_SetAuxSpritePltt(gfx, 67);
   elem->sprite.priority = 3;

@@ -10,7 +10,7 @@
 typedef struct {
   Entity e;          // 0x00, ENTITY_UNK_10
   AuxSprite sprite;  // 0x18
-  AuxSpriteGfx gfx;  // 0x44, SPRITE_EXPLOSION
+  AuxSpriteGfx gfx;  // 0x44, SPR_EXPLOSION
   Hitbox hitbox;     // 0x60, timer が 8 未満の間だけ毎フレーム登録し直す
   u16 delay;         // 0xB0, 0 になるまで何もしない
   u16 timer;         // 0xB2, 毎フレーム +1, 23 を越えると自分を消す
@@ -45,7 +45,7 @@ s32 Explosion_Destroy(Explosion* p) {
 
 // 爆発のスプライトを1枚用意する, 隠した状態で始める
 void Explosion_InitSprite(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 plttOffset) {
-  Video_GetAuxSprite(gfx, SPRITE_EXPLOSION);
+  Video_GetAuxSprite(gfx, SPR_EXPLOSION);
   AuxSprite_Add(sprite, gfx, 0);
   sprite->poseIdx = 0;
   Video_SetAuxSpritePltt(gfx, 275 + plttOffset);
@@ -80,7 +80,7 @@ Explosion* Explosion_Create(Vec3* pos, s32 ignoreMask, s32 power, s32 knockback,
 
   if (p != NULL) {
     SetEntityRoutine(p, Explosion_Update, Explosion_Destroy);
-    if (Explosion_Init(p, pos, ignoreMask, power, knockback, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, 0) < 0) {
+    if (Explosion_Init(p, pos, ignoreMask, power, knockback, HBATTR_INKA | HBATTR_BLOW | HBATTR_FLAME, 60, plttOffset, 0) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -93,7 +93,7 @@ Explosion* Explosion_CreateDelayed(Vec3* pos, s32 ignoreMask, s32 power, s32 kno
 
   if (p != NULL) {
     SetEntityRoutine(p, Explosion_Update, Explosion_Destroy);
-    if (Explosion_Init(p, pos, ignoreMask, power, knockback, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, 60, plttOffset, delay) < 0) {
+    if (Explosion_Init(p, pos, ignoreMask, power, knockback, HBATTR_INKA | HBATTR_BLOW | HBATTR_FLAME, 60, plttOffset, delay) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

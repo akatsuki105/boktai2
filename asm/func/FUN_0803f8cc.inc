@@ -75,7 +75,7 @@
 	adds r2, r7, r3
 	movs r0, #0
 	movs r1, #0
-	bl FUN_08050e2c
+	bl CrossoverBattle_ShowOjamaBatPopup
 	movs r2, #0xb
 	ldr r4, _0803F990 @ =0x00000818
 	adds r1, r7, r4

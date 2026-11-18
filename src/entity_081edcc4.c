@@ -2082,7 +2082,7 @@ NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s3
   VEC3_SET(offset, 0, 64, 0);
   if (elem->kind == 2) {
     Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_18 | HBATTR_FLAME, iframes);
+    Hitbox_SetAttack(hitbox, power, knockback, HBSRC_NON_WEAPON, HBATTR_INKA | HBATTR_BLOW | HBATTR_FLAME, iframes);
   } else {
     Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 16, &halfSize, &offset);
     Hitbox_SetAttack(hitbox, power, knockback, HBSRC_GUN, 0, iframes);

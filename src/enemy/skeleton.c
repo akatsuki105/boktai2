@@ -111,11 +111,11 @@ void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homi
 void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle);
 void Enemy_StateDefeated(Enemy* p, s32 timer);
 void Entity081f53a8_VanishAll(void);
-void Entity081f4554_VanishAll(void);
+void ThunderboltManager_VanishAll(void);
 void Entity081f9cb8_CancelAll(void);
 void Entity081f959c_VanishAll(void);
 void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
-void Entity081f4554_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_9, u32 scriptID, u32 explodeScriptID);
+void ThunderboltManager_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_9, u32 scriptID, u32 explodeScriptID);
 bool8 Entity081f9cb8_ExistsAt(Vec3* pos);
 void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 void Skeleton_StateSummonEnemyEnd(Skeleton* p);
@@ -284,7 +284,7 @@ void Skeleton_OnLichDamagedMsg(Skeleton* p, u16* msg) {
   if (Skeleton_TestFlags(q, 1 << 4)) {
     return;
   }
-  if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+  if (Enemy_GetFlag3(&p->e, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
     return;
   }
   if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_8)) {
@@ -1364,7 +1364,7 @@ NON_MATCH void Skeleton_ReadLichArgs(Skeleton* p) {
 }
 
 bool8 Skeleton_CanSummonEnemy(Skeleton* p) {
-  if (((Skeleton*)(p->e).owner)->enemySummonScriptID != 0 && Enemy_CountByKind(ENEK_31) == 0) {
+  if (((Skeleton*)(p->e).owner)->enemySummonScriptID != 0 && Enemy_CountByKind(ENEK_SALAMANDER) == 0) {
     return TRUE;
   }
   return FALSE;
@@ -1864,7 +1864,7 @@ void Skeleton_OnDodgeHurt(Hitbox* a, Hitbox* b, Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
   if (!Enemy_IsDead(&p->e) && !Hitbox_TestFlags(b, HBF_HIDDEN) && (p->e).kind != ENEK_LICH && (p->e).hurtbox.iframes == 0 && !Skeleton_TestFlags(q, 1 << 4) &&
-      !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2 | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasSource(a, HBSRC_GUN) && Skeleton_CanDodge(p)) {
+      !TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_4 | ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15) && !Hitbox_HasSource(a, HBSRC_GUN) && Skeleton_CanDodge(p)) {
     Skeleton_StartDodge(p, q);
     q->dodgeTimer = 20;
     (p->e).angle = (p->e).playerAngle + 0x80;
@@ -2307,7 +2307,7 @@ void Skeleton_StateSummonEnemy(Skeleton* p) {
     Skeleton_SummonEnemy(p);
   }
   Enemy_PlayAnim(&p->e, 20);
-  if (Enemy_CountByKind(ENEK_31) == 0) {
+  if (Enemy_CountByKind(ENEK_SALAMANDER) == 0) {
     Enemy_EnterState(&p->e, Skeleton_StateSummonEnemyEnd, ES_UNK_70);
   }
 }
@@ -2341,7 +2341,7 @@ void Skeleton_StateCurveShotWindUp(Skeleton* p) {
   }
 }
 
-// 15 フレームごとに前方の頭上から矢 (Entity081f4554) を放ち, 40 フレームで状態51へ移る
+// 15 フレームごとに前方の頭上からサンダーボルト (ThunderboltManager_Spawn) を出し, 40 フレームで状態51へ移る
 // 152/161命令の下書き, 原典は放つ位置を WorldPos の DImode のまま組む, 1回目の下書きで切り上げ
 NON_MATCH void Skeleton_StateCurveShot(Skeleton* p, s32 timer) {
 #ifdef NONMATCHING_C
@@ -2357,7 +2357,7 @@ NON_MATCH void Skeleton_StateCurveShot(Skeleton* p, s32 timer) {
     pos.x += POLAR_X(128, angle);
     pos.z += POLAR_Z(128, angle);
     pos.y += 220;
-    Entity081f4554_Spawn(&pos, &(p->e).playerMover->pos, 6, 6, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2], 20, q->curveShotScriptID, q->curveShotExplodeScriptID);
+    ThunderboltManager_Spawn(&pos, &(p->e).playerMover->pos, 6, 6, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2], 20, q->curveShotScriptID, q->curveShotExplodeScriptID);
   }
   if (timer > 40) {
     Enemy_EnterState(&p->e, Skeleton_StateCurveShotEnd, ES_UNK_51);
@@ -2395,22 +2395,22 @@ NAKED void Skeleton_StateTurn(Skeleton* p) { INCFUNC("asm/func/Skeleton_StateTur
 void Skeleton_StateNap(Skeleton* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 8);
-    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1)) {
-      SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+      SET_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
     }
   }
   if (Mod(timer, 60) == 0) {
     Enemy_SetEmote(&p->e, 2, 0, (p->e).kind);
   }
   if ((p->e).nodeWait < 1 && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_12)) {
-    Enemy_EnterState(&p->e, Skeleton_StateWakeUp, ES_UNK_6);
+    Enemy_EnterState(&p->e, Skeleton_StateWakeUp, ES_WAKE_UP);
   }
 }
 
 void Skeleton_StateWakeUp(Skeleton* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Enemy_PlayAnim(&p->e, 7);
-    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
   }
   if (timer == 40) {
     Enemy_SetFlag4(&p->e, ENEFLAG4_UNK_4);
@@ -2627,7 +2627,7 @@ void Skeleton_StateFallDeath(Skeleton* p, s32 timer) {
     (p->e).hurtbox.flags |= HBF_HIDDEN;
     Enemy_ClearSpriteFlags(&p->e, SPRFLAG_HIDDEN);
     Enemy_ResetState(&p->e, 3, 0, 0);
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     (p->e).animForceRestart = 0;
     (p->e).hurtbox.iframes = 0;
     (p->e).unk_4be = 0;
@@ -2668,7 +2668,7 @@ void Skeleton_StateLichDying(Skeleton* p, s32 timer) {
     (p->e).hurtbox.flags |= HBF_HIDDEN;
     if ((p->e).variant == 2) {
       Entity081f53a8_VanishAll();
-      Entity081f4554_VanishAll();
+      ThunderboltManager_VanishAll();
     } else {
       Entity081f9cb8_CancelAll();
       Entity081f959c_VanishAll();
@@ -2703,7 +2703,7 @@ void Skeleton_StateLichDying(Skeleton* p, s32 timer) {
     PlaySound_082406e0(SONG_947);
     Skeleton_SpawnDeathFragments(p);
     (p->e).subStateDone = 1;
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     (p->e).hurtbox.iframes = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
@@ -3002,7 +3002,7 @@ bool8 Skeleton_LichOnDamaged(Skeleton* p) {
   Enemy_SendMsgByKind(ENEK_SKELETON_F, &msg);
   Enemy_SendMsgByKind(ENEK_SKELETON_A, &msg);
   CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
-  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_15)) {
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_UNK_15)) {
     return FALSE;
   }
   if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
@@ -3040,7 +3040,7 @@ NON_MATCH bool8 Skeleton_LichPOnDamaged(Skeleton* p) {
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
   flags3 = (p->e).flags3;
   (p->e).flags3 = flags3 & ~ENEFLAG3_UNK_5;
-  if (!(flags3 & (ENEFLAG3_UNK_1 | ENEFLAG3_UNK_15))) {
+  if (!(flags3 & (ENEFLAG3_STUN | ENEFLAG3_UNK_15))) {
     if (!(q->lichAtkFlags & 1) && !Entity081f9cb8_ExistsAt(&gPlayerPtr[0]->mover.pos)) {
       Entity081f9cb8_Spawn(&gPlayerPtr[0]->mover.pos, (p->e).hp <= (p->e).unk_546 ? 40 : 60, (p->e).atkPower[3], (p->e).atkKnockback[3], (p->e).atkAttrs[3], (p->e).atkIframes[3]);
     }
@@ -3332,7 +3332,7 @@ s32 Skeleton_Destroy(Skeleton* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);

@@ -41,7 +41,7 @@ _08189986:
 	ldr r2, _081899FC @ =0x000001A3
 	adds r0, r5, #0
 	movs r3, #0x40
-	bl FUN_08192fe4
+	bl Serpent_StartPaletteFade
 	movs r0, #0x80
 	lsls r0, r0, #5
 	ldr r1, _08189A00 @ =0x00000F2C
@@ -261,13 +261,13 @@ _08189B46:
 _08189B56:
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_0818f17c
+	bl Serpent_HideLiveSegmentsFrom
 	ldr r1, _08189BA4 @ =0x00000D78
 	adds r0, r6, r1
 	ldrh r4, [r0]
 	cmp r4, #0
 	bne _08189B90
-	ldr r3, _08189BA8 @ =FUN_08189bb4
+	ldr r3, _08189BA8 @ =Serpent_StateSpitBubbles
 	movs r2, #0x29
 	ldr r0, _08189BAC @ =0x0000046D
 	adds r1, r5, r0
@@ -298,6 +298,6 @@ _08189B90:
 _08189B9C: .4byte 0x00000E3D
 _08189BA0: .4byte 0x00000E3C
 _08189BA4: .4byte 0x00000D78
-_08189BA8: .4byte FUN_08189bb4
+_08189BA8: .4byte Serpent_StateSpitBubbles
 _08189BAC: .4byte 0x0000046D
 _08189BB0: .4byte 0x0000046B

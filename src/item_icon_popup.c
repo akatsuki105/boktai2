@@ -30,7 +30,7 @@ static_assert(sizeof(ItemIconPopup) == 132);
 typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_9
   u32 usedMask;            // 0x018, elems のどのスロットが使用中かのビットマスク
-  MainSpriteGfx gfx;       // 0x01C, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx gfx;       // 0x01C, SPR_INVENTORY_ICONS
   ItemIconPopup elems[8];  // 0x03C
 } ItemIconPopupManager;
 static_assert(sizeof(ItemIconPopupManager) == 1116);
@@ -304,7 +304,7 @@ NON_MATCH s32 ItemIconPopupManager_Init(ItemIconPopupManager* p) {
   s32 i;
 
   sItemIconPopupManager = p;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
   if (f == NULL) {
     return -1;
   }

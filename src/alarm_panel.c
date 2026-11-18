@@ -15,9 +15,9 @@ typedef struct {
   u16 stateTimer;      // 0x1E, Init が 0 を書く
   Mover mover;         // 0x20, '.p' は mover.pos に直接入る
   AuxSprite sprite;    // 0x64, '.r' があれば flags に SPRFLAG_XFLIP を立てる
-  AuxSpriteGfx gfx;    // 0x90, SPRITE_TRAP_FLOOR, パレット 70
+  AuxSpriteGfx gfx;    // 0x90, SPR_TRAP_FLOOR, パレット 70
   AuxSprite sprite2;   // 0xAC, flags に SPRFLAG_BLINK_ODD|SPRFLAG_HIDDEN が立つ, 位置は x と z が 0x80 手前
-  AuxSpriteGfx gfx2;   // 0xD8, SPRITE_TRAP_FLOOR, パレット 69
+  AuxSpriteGfx gfx2;   // 0xD8, SPR_TRAP_FLOOR, パレット 69
   u32 scriptID;        // 0xF4, '.R=0'
 } AlarmPanel;
 static_assert(sizeof(AlarmPanel) == 248);
@@ -98,7 +98,7 @@ NON_MATCH s32 AlarmPanel_Init(AlarmPanel* p, u32 id) {
   }
   sprite = &p->sprite;
   gfx = &p->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_TRAP_FLOOR);
+  Video_GetAuxSprite(gfx, SPR_TRAP_FLOOR);
   AuxSprite_Add(sprite, gfx, 0);
   sprite->poseIdx = 10;
   sprite->priority = 3;
@@ -119,7 +119,7 @@ NON_MATCH s32 AlarmPanel_Init(AlarmPanel* p, u32 id) {
   }
   sprite = &p->sprite2;
   gfx = &p->gfx2;
-  Video_GetAuxSprite(gfx, SPRITE_TRAP_FLOOR);
+  Video_GetAuxSprite(gfx, SPR_TRAP_FLOOR);
   AuxSprite_Add(sprite, gfx, 0);
   sprite->poseIdx = 11;
   sprite->priority = 1;

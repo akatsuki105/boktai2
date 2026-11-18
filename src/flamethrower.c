@@ -14,8 +14,8 @@
 // ゲーム中に火炎放射のギミックが登場するところは色々あるが、これが 汎用の火炎放射管理構造体 なのか 特定のギミック専用のもの なのかはまだ不明
 typedef struct {
   Entity e;                       // 0x000, ENTITY_UNK_10
-  MainSpriteGfx gfx;              // 0x018, SPRITE_FLAMETHROWER
-  MainSpriteGfxFile* spriteFile;  // 0x038, SPRITE_FLAMETHROWER
+  MainSpriteGfx gfx;              // 0x018, SPR_FLAMETHROWER
+  MainSpriteGfxFile* spriteFile;  // 0x038, SPR_FLAMETHROWER
   Flamethrower items[4];          // 0x03C, _Init と _Destroy が 0x13C 刻みで4個走査する
   u32 activeMask;                 // 0x52C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081eaf6c;
@@ -315,7 +315,7 @@ NON_MATCH Flamethrower* FUN_081ead54(Vec3* pos, u32 id, s32 unk_12e, s32 a, s32 
 }
 
 void FUN_081eaeec(Entity081eaf6c* p) {
-  p->spriteFile = GetFile(DIR_MAIN_SPRITE, SPRITE_FLAMETHROWER);
+  p->spriteFile = GetFile(DIR_MAIN_SPRITE, SPR_FLAMETHROWER);
   p->gfx = *(MainSpriteGfx*)p->spriteFile;
   OpenMainSpriteFile(&p->gfx, p->spriteFile);
 }

@@ -30,7 +30,7 @@ static_assert(sizeof(Entity7B9FElem) == 220);
 
 typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;         // 0x018, SPRITE_GOLEM
+  AuxSpriteGfx gfx;         // 0x018, SPR_GOLEM
   AuxAnimFile* animFile;    // 0x034, ANIM_1E38
   Entity7B9FElem elems[4];  // 0x038, _AllocElem が usedMask の空きビットを探して確保する
   u32 usedMask;             // 0x3A8, elems[i] が使用中なら bit i が立つ
@@ -175,7 +175,7 @@ void FUN_081d8714(Entity7B9FElem* e, s32 param_2) {
   if (p != NULL) {
     AuxSpriteGfx* gfx = &p->gfx;
 
-    Video_GetAuxSprite(gfx, SPRITE_GOLEM);
+    Video_GetAuxSprite(gfx, SPR_GOLEM);
     AuxSprite_Add(&e->sprite, gfx, 0);
     p->animFile = GetFile(DIR_ANIMATION, 0x1E38);
     AuxAnim_SetAnim(&e->anim, p->animFile, 8, 1, ANIM_PLAY_XFLIP);

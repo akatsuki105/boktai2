@@ -14,7 +14,7 @@
 typedef struct {
   AuxSprite sprite;       // 0x000
   AuxAnimState anim;      // 0x02C
-  AuxShadow shadow;       // 0x03C, SPRITE_EFF_1C1B
+  AuxShadow shadow;       // 0x03C, SPR_EFF_1C1B
   Hitbox hitbox;          // 0x0A8, 攻撃判定, 当たると state 3 へ移る
   Vec3 vel;               // 0x0F8, x と z は speed と angle から毎フレーム作り直す, y は落ち始めると毎フレーム 3 ずつ減る
   Vec3 target;            // 0x100, 向かう先の座標
@@ -41,7 +41,7 @@ static_assert(sizeof(Entity081f8a28Elem) == 292);
 // 追尾して爆発する弾を8発まで同時に飛ばすシングルトン
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_F422
+  AuxSpriteGfx gfx;             // 0x018, SPR_EFF_F422
   u8 unk_34[4];                 // 0x034
   u32 usedMask;                 // 0x038, elems のどのスロットが使用中かのビットマスク
   Entity081f8a28Elem elems[8];  // 0x03C
@@ -292,7 +292,7 @@ void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homi
   Entity081f8a28_InitHitbox(elem, power, knockback, attrs, iframes, 0, 0, 0);
   shadow = &elem->shadow;
   elem->shadowId = AuxShadow_Init(shadow, &elem->sprite.pos, 64, 64, 64, 100, 0, 0, 5, 1, 0);
-  AuxShadow_SetSprite(shadow, SPRITE_EFF_1C1B, 6);
+  AuxShadow_SetSprite(shadow, SPR_EFF_1C1B, 6);
   AuxShadow_SetAffine(shadow, 0);
   AuxShadow_Hide(shadow);
 }
@@ -336,7 +336,7 @@ s32 Entity081f8a28_Destroy(Entity081f8a28* p) {
 
 s32 Entity081f8a28_Init(Entity081f8a28* p) {
   p->usedMask = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_F422);
   gEntity081f8a28 = p;
   return 0;
 }

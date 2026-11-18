@@ -23,7 +23,7 @@ _081410F2:
 	bne _081410F8
 	b _0814120A
 _081410F8:
-	ldr r2, _08141170 @ =EnemyBat_HoldPlayer
+	ldr r2, _08141170 @ =EneBat_HoldPlayer
 	movs r1, #0x23
 	ldr r3, _08141174 @ =0x0000046D
 	adds r0, r6, r3
@@ -83,7 +83,7 @@ _081410F8:
 	asrs r0, r0, #3
 	b _0814119E
 	.align 2, 0
-_08141170: .4byte EnemyBat_HoldPlayer
+_08141170: .4byte EneBat_HoldPlayer
 _08141174: .4byte 0x0000046D
 _08141178: .4byte 0x05000002
 _0814117C: .4byte 0x00000667
@@ -140,9 +140,9 @@ _081411DA:
 	str r0, [r3, #4]
 	adds r0, r6, #0
 	adds r1, r3, #0
-	bl EnemyBat_StartCurve
+	bl EneBat_StartCurve
 	adds r0, r6, #0
-	bl EnemyBat_StepCurve
+	bl EneBat_StepCurve
 	movs r3, #0xcb
 	lsls r3, r3, #3
 	adds r2, r7, r3
@@ -168,7 +168,7 @@ _08141220:
 	ldr r1, [r0]
 	adds r1, #0x2c
 	adds r0, r6, #0
-	bl EnemyBat_BeginCurveMove
+	bl EneBat_BeginCurveMove
 	movs r2, #8
 	movs r3, #0xcb
 	lsls r3, r3, #3
@@ -183,7 +183,7 @@ _08141240: .4byte 0x0000066C
 _08141244: .4byte 0x03002BE0
 _08141248:
 	adds r0, r6, #0
-	bl EnemyBat_UpdateCurveBend
+	bl EneBat_UpdateCurveBend
 	movs r1, #0xb1
 	lsls r1, r1, #3
 	adds r0, r6, r1
@@ -285,7 +285,7 @@ _08141306:
 	cmp r0, #0
 	beq _081413BE
 	adds r0, r6, #0
-	bl EnemyBat_StepCurve
+	bl EneBat_StepCurve
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081413BE
@@ -366,9 +366,9 @@ _0814139E:
 	str r1, [r3, #4]
 	adds r0, r6, #0
 	adds r1, r3, #0
-	bl EnemyBat_StartCurve
+	bl EneBat_StartCurve
 	adds r0, r6, #0
-	bl EnemyBat_StepCurve
+	bl EneBat_StepCurve
 _081413BE:
 	movs r2, #0xf2
 	lsls r2, r2, #1

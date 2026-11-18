@@ -23,7 +23,7 @@ static_assert(sizeof(Entity081eee80Elem) == 64);
 // 爆発の煙の粒を最大 128 個まで管理する
 typedef struct {
   Entity e;                       // 0x0000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;               // 0x0018, SPRITE_EXPLOSION
+  AuxSpriteGfx gfx;               // 0x0018, SPR_EXPLOSION
   u8 unk_34[4];                   // 0x0034
   Entity081eee80Elem elems[128];  // 0x0038
 } Entity081eee80;
@@ -177,7 +177,7 @@ s32 Entity081eee80_Destroy(Entity081eee80* p) {
 }
 
 s32 Entity081eee80_Init(Entity081eee80* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_EXPLOSION);
+  Video_GetAuxSprite(&p->gfx, SPR_EXPLOSION);
   gEntity081eee80 = p;
   return 0;
 }

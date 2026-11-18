@@ -24,7 +24,7 @@ typedef struct {
   Hitbox hurtbox;                // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHurt で owner はこの Cactus
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
   AuxSprite sprite;              // 0x8C
-  AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
+  AuxSpriteGfx gfx;              // 0xB8, SPR_CACTUS
 } Cactus;
 static_assert(sizeof(Cactus) == 212);
 
@@ -299,7 +299,7 @@ NON_MATCH s32 SpawnCactus(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireAre
   }
   Map_AddTileOverride(tileOverride, idx, STAIRS_NONE, height, 0xFF, TATTR_WALL);
 
-  if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
+  if (!Video_GetAuxSprite(gfx, SPR_CACTUS)) {
     return -1;
   }
   AuxSprite_Add(&cactus->sprite, gfx, 0);

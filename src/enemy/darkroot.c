@@ -426,8 +426,8 @@ void DarkRoot_StateVanish(DarkRoot* p) {
   }
 }
 
-// 倒れるアニメを流して破片を飛ばし, 20 フレーム後に ENEFLAG6_UNK_1 がなければ hp を戻して生え直し, あれば煙を出して倒されたスクリプトを呼び図鑑と撃破数に載せて消える
-// 689/685命令の下書き, 倒れたあとの後始末は Golem_StateDying / FUN_080f6604 と同じ形 (原典は defeatScript の引数や &kind をスタックに作り置く壁), 1回目の下書きで切り上げ
+// 倒れるアニメを流して破片を飛ばし, 20 フレーム後に HBATTR_DARK がなければ hp を戻して生え直し, あれば煙を出して倒されたスクリプトを呼び図鑑と撃破数に載せて消える
+// 692/685命令の下書き, 撃破数は UNK_948 / TOTAL_ENEMY_KILL, 倒れたあとの後始末は Golem_StateDying / FUN_080f6604 と同じ形 (原典は defeatScript の引数や &kind をスタックに作り置く壁), 1回目の下書きで切り上げ
 NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
 #ifdef NONMATCHING_C
   DarkRoot* q = (p->e).owner;
@@ -453,8 +453,8 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
       vel.z = POLAR_Z(r, (p->e).angle);
       vel.y = (Random() & 0x1F) + 48;
     }
-    Entity081efa9c_Spawn(&(p->e).mover.pos, &vel, SPRITE_DARKROOT, ANIM_DARKROOT, 10, 30, 2, 0, 220, 0, 0, 0, 0, 0, 0);
-    if (!TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_1)) {
+    Entity081efa9c_Spawn(&(p->e).mover.pos, &vel, SPR_DARKROOT, ANIM_DARKROOT, 10, 30, 2, 0, 220, 0, 0, 0, 0, 0, 0);
+    if (!TEST_FLAGS((p->e).flags6, HBATTR_DARK)) {
       if (q->regrowScriptID != 0) {
         u32 argv[1];
         ScriptArgs sa;
@@ -470,7 +470,7 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
     }
   }
   if (timer > 20) {
-    if (!TEST_FLAGS((p->e).flags6, ENEFLAG6_UNK_1)) {
+    if (!TEST_FLAGS((p->e).flags6, HBATTR_DARK)) {
       (p->e).hp = (p->e).maxHp;
       CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_6);
       Enemy_ResetState(&p->e, 0, 0, 1);
@@ -528,16 +528,8 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
       }
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
       Enemy_ResetState(&p->e, 1, 0, 2);
-      if (gStat->unk_948[0] < 9999) {
-        gStat->unk_948[0]++;
-      } else {
-        gStat->unk_948[0] = 9999;
-      }
-      if (gStat->totalEnemyKillCount < 9999) {
-        gStat->totalEnemyKillCount++;
-      } else {
-        gStat->totalEnemyKillCount = 9999;
-      }
+      UNK_948(0) = (UNK_948(0) < 9999) ? (UNK_948(0) + 1) : 9999;
+      TOTAL_ENEMY_KILL = (TOTAL_ENEMY_KILL < 9999) ? (TOTAL_ENEMY_KILL + 1) : 9999;
       Enemy_AddKillCount(&p->e);
       AddPlayerExp((p->e).exp);
       Player_AddWeaponExp((p->e).weaponExpMask, (p->e).weaponExp);
@@ -939,7 +931,7 @@ s32 DarkRoot_Destroy(DarkRoot* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -972,7 +964,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_DARKROOT);
+    Video_GetAuxSprite(&aux->gfx, SPR_DARKROOT);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_DARKROOT);
     k = (p->e).kind;
@@ -989,7 +981,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_DARKROOT);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_DARKROOT);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1091,7 +1083,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1101,7 +1093,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1154,7 +1146,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
   (p->e).handlerTurn = NULL;
   (p->e).handlerMove = NULL;
   (p->e).handlerWait = NULL;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = NULL;
   (p->e).handlerDamaged = NULL;
   (p->e).handlerDying = (void*)DarkRoot_StateDying;
@@ -1183,7 +1175,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

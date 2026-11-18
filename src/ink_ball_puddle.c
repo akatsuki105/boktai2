@@ -21,7 +21,7 @@ static_assert(sizeof(InkBallPuddle) == 152);
 
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_8
-  AuxSpriteGfx gfx;          // 0x018, SPRITE_ACID_0
+  AuxSpriteGfx gfx;          // 0x018, SPR_ACID_0
   u8 unk_34[4];              // 0x034, 読み手も書き手も未発見
   u32 unk_38;                // 0x038, _Init が 0 を入れるだけで読み手が見つからない
   u8 activeCount;            // 0x03C, 使用中の puddles の数, InkBallPuddleManager_FindFree が 8 未満か見て InkBallPuddleManager_Add が +1 / InkBallPuddleManager_Remove が -1
@@ -133,9 +133,9 @@ s32 InkBallPuddleManager_InitPuddles(InkBallPuddleManager* p) {
   InkBallPuddle* puddle;
   s32 i;
 
-  Video_GetAuxSprite(&p->gfx, SPRITE_ACID_0);
+  Video_GetAuxSprite(&p->gfx, SPR_ACID_0);
   Video_SetAuxSpritePltt(&p->gfx, 566);
-  files = GetFile(DIR_ANIMATION, ANIM_1752);
+  files = GetFile(DIR_ANIMATION, ANIM_LIQUID);
 
   puddle = p->puddles;
   for (i = 0; i < 8; puddle++, i++) {
@@ -151,7 +151,7 @@ s32 InkBallPuddleManager_InitPuddles(InkBallPuddleManager* p) {
 s32 InkBallPuddleManager_Init(InkBallPuddleManager* p) {
   p->activeCount = 0;
   p->unk_38 = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_ACID_0);
+  Video_GetAuxSprite(&p->gfx, SPR_ACID_0);
   if (InkBallPuddleManager_InitPuddles(p) < 0) {
     return -1;
   } else {

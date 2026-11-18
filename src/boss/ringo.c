@@ -39,184 +39,184 @@
 //  - ダークブラスト: (第2形態から) 大量のダーク属性のエネルギー弾を放つ技 (追尾性能とかはない)
 
 typedef struct {
-  Boss base;                                  // 0x000
-  u8 unk_158[0x15C - 0x158];                  // 0x158
-  u16 phaseTimer;                             // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
-  u16 phase;                                  // 0x15E, 状態の中の段階, 状態関数が switch で振り分けて進める
-  s16 spriteOffsetY;                          // 0x160, sprites[0].pos.y = mover.pos.y + spriteOffsetY
-  s16 hoverHeight;                            // 0x162, Ringo_UpdateHover が 62 まで増やして sin の揺れを足し spriteOffsetY にする
-  s16 unk_164;                                // 0x164
-  u8 hitBySol;                                // 0x166, Ringo_OnHurt が HBATTR_SOL の攻撃で立てる
-  u8 unk_167;                                 // 0x167
-  u8 unk_168;                                 // 0x168
-  u8 unk_169;                                 // 0x169
-  u8 unk_16a;                                 // 0x16A
-  u8 numPlayers;                              // 0x16B, '.P=2', base.players / playerPos を埋める数
-  u8 unk_16c;                                 // 0x16C, 3..6 の乱数
-  u8 unk_16d;                                 // 0x16D
-  u8 unk_16e;                                 // 0x16E, 乱数
-  u8 unk_16f;                                 // 0x16F, 0 になったら unk_16e / unk_16c を引き直す
-  u8 unk_170;                                 // 0x170
-  u8 unk_171;                                 // 0x171
-  u8 unk_172;                                 // 0x172
-  s8 grabbedPlayer;                           // 0x173, base.players の添字
-  s8 unk_174;                                 // 0x174
-  u8 unk_175;                                 // 0x175
-  u8 unk_176;                                 // 0x176
-  u8 unk_177;                                 // 0x177
-  u8 unk_178;                                 // 0x178, hurtbox2 に当たったとき BOSSFLAG_UNK_19 が立っていれば 1
-  u8 hurtAngle;                               // 0x179, Ringo_OnHurt が攻撃の向きを入れる
-  u8 unk_17a;                                 // 0x17A
-  u8 unk_17b;                                 // 0x17B
-  u16 unk_17c;                                // 0x17C
-  u16 unk_17e;                                // 0x17E
-  s16 damage;                                 // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
-  s16 pendingDamage;                          // 0x182, Ringo_AddPendingDamage が足し, 次の更新で HP から引く (1 は残す)
-  u16 pendingHeal;                            // 0x184, Ringo_AddPendingHeal が足し, 次の更新で HP に足して回復の数字を出す
-  u16 unk_186;                                // 0x186
-  u16 unk_188;                                // 0x188
-  u8 unk_18a;                                 // 0x18A
-  u8 unk_18b;                                 // 0x18B
-  u16 unk_18c;                                // 0x18C
-  u8 unk_18e[0x194 - 0x18E];                  // 0x18E
-  Hitbox hitbox;                              // 0x194
-  Hitbox hurtbox;                             // 0x1E4, ハンドラは Ringo_OnHurt
-  Hitbox hitbox2;                             // 0x234
-  Hitbox hurtbox2;                            // 0x284, ハンドラ FUN_0802802c はダメージを 0 にする
-  MainSpriteGfx gfx;                          // 0x2D4, SPRITE_RINGO
-  MainSprite sprites[2];                      // 0x2F4
-  AuxShadow shadow;                           // 0x3B4
-  rgb555 pltt[16][16];                        // 0x420, gObjPlttData の同じ16色を16回写す
-  rgb555 pltt_620[2][16];                     // 0x620
-  rgb555 pltt_660[14][16];                    // 0x660, BlendPltt で色を混ぜる先
-  u32 unk_820;                                // 0x820, '.S=0'
-  u32 unk_824;                                // 0x824, '.R=0'
-  s32 unk_828;                                // 0x828, 24.8 固定小数点
-  s32 unk_82c;                                // 0x82C, unk_828 の補間の終点
-  s32 unk_830;                                // 0x830, unk_828 の補間の始点
-  s32 unk_834;                                // 0x834, 24.8 固定小数点
-  s32 unk_838;                                // 0x838, unk_834 の補間の終点
-  s32 unk_83c;                                // 0x83C, unk_834 の補間の始点
-  u16 unk_840;                                // 0x840, 補間の経過フレーム数
-  u16 unk_842;                                // 0x842, 補間のフレーム数
-  Vec3 unk_844;                               // 0x844
-  Vec3 unk_84c;                               // 0x84C
-  Vec3 unk_854;                               // 0x854
-  Vec3 unk_85c;                               // 0x85C
-  u32 unk_864;                                // 0x864
-  Vec3 unk_868;                               // 0x868
-  u16 unk_870;                                // 0x870
-  u8 unk_872;                                 // 0x872
-  u8 unk_873;                                 // 0x873
-  s16 unk_874;                                // 0x874
-  u8 unk_876;                                 // 0x876
-  u8 unk_877;                                 // 0x877
-  s16 plttFade;                               // 0x878, BlendPltt の混ぜ具合
-  u16 plttFadeTo;                             // 0x87A, フェード先のパレット番号
-  s8 plttFadeMode;                            // 0x87C, パレットフェードの種類, -1 で止まる
-  u8 unk_87d;                                 // 0x87D
-  bool8 unk_87e;                              // 0x87E, 0x313 / 0x33D の効果音を鳴らしたら立つ
-  u8 unk_87f;                                 // 0x87F
-  bool8 unk_880;                              // 0x880
-  u8 unk_881[0x884 - 0x881];                  // 0x881
-  u16 cameraDist;                             // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
-  u16 unk_886;                                // 0x886
-  u16 unk_888;                                // 0x888
-  u16 unk_88a;                                // 0x88A
-  u16 unk_88c;                                // 0x88C
-  u8 unk_88e[0x891 - 0x88E];                  // 0x88E
-  u8 unk_891;                                 // 0x891
-  u8 unk_892;                                 // 0x892
-  u8 unk_893;                                 // 0x893
-  u16 unk_894;                                // 0x894
-  u16 unk_896;                                // 0x896
-  u8 unk_898;                                 // 0x898
-  u8 targetPlayer;                            // 0x899, 狙うプレイヤーの添字 (0/1), playerAngle / playerPos を引く
-  u8 unk_89a[0x89C - 0x89A];                  // 0x89A
-  u16 stateDuration;                          // 0x89C, 状態を続ける最短フレーム数
-  u8 unk_89e[0x8A0 - 0x89E];                  // 0x89E
-  u16 hurtboxPower;                           // 0x8A0, '.s[1]=999'
-  u16 hurtboxPower2;                          // 0x8A2, '.s[2]=10'
-  u16 hurtboxPower3;                          // 0x8A4, '.s[3]=100'
-  u8 unk_8a6[0x8A8 - 0x8A6];                  // 0x8A6
-  s16 hitboxPower;                            // 0x8A8, '.a[0]=25'
-  s16 hitboxKnockback;                        // 0x8AA, '.a[1]=50'
-  s16 hitboxUnk44;                            // 0x8AC, '.a[2]=60'
-  s16 hitbox2Power;                           // 0x8AE, '.a[3]=50'
-  s16 hitbox2Knockback;                       // 0x8B0, '.a[4]=50'
-  s16 hitbox2Unk44;                           // 0x8B2, '.a[5]=60'
-  u16 unk_8b4;                                // 0x8B4, '.g[0]=70'
-  u16 unk_8b6;                                // 0x8B6, '.g[1]=80'
-  u16 unk_8b8;                                // 0x8B8, '.g[2]=65'
-  u16 unk_8ba;                                // 0x8BA, '.U[0]=40'
-  u16 unk_8bc;                                // 0x8BC, '.U[1]=80'
-  u16 unk_8be;                                // 0x8BE, '.U[2]=50'
-  u16 unk_8c0;                                // 0x8C0, '.U[3]=30'
-  u16 unk_8c2;                                // 0x8C2
-  u16 unk_8c4;                                // 0x8C4, '.a[6]=8'
-  u16 unk_8c6;                                // 0x8C6, '.a[7]=16'
-  u16 unk_8c8;                                // 0x8C8, '.a[8]=10'
-  u16 unk_8ca;                                // 0x8CA, '.a[9]=50'
-  u8 unk_8cc;                                 // 0x8CC
-  u8 unk_8cd;                                 // 0x8CD
-  u16 unk_8ce;                                // 0x8CE
-  u16 unk_8d0;                                // 0x8D0
-  u16 unk_8d2;                                // 0x8D2, '.s[4]=300'
-  u16 unk_8d4;                                // 0x8D4
-  u16 unk_8d6;                                // 0x8D6, '.s[5]=600'
-  s16 unk_8d8;                                // 0x8D8
-  u8 unk_8da;                                 // 0x8DA
-  u8 unk_8db;                                 // 0x8DB
-  u8 unk_8dc;                                 // 0x8DC
-  u8 unk_8dd;                                 // 0x8DD
-  u8 unk_8de[0x8E0 - 0x8DE];                  // 0x8DE
-  s32 weaponExp;                              // 0x8E0, '.K'
-  u16 unk_8e4;                                // 0x8E4
-  u16 afterimageIdx;                          // 0x8E6
-  u16 afterimageTimers[3];                    // 0x8E8, afterimages ごとの残りフレーム, 0 になったら隠す
-  u16 unk_8ee[3];                             // 0x8EE, afterimages ごと, 1 なら unk_868 へ寄せる
-  MainSprite afterimages[3];                  // 0x8F4
-  s16 unk_a14;                                // 0xA14, 前のフレームの unk_a16
-  s16 unk_a16;                                // 0xA16, sprites[0].animCmdIdx の控え
-  Vec3 unk_a18;                               // 0xA18
-  MainSpriteGfx gfx_a20;                      // 0xA20, SPRITE_DJANGO_SABATA
-  MainSprite sprite_a40;                      // 0xA40
-  MainSprite sprite_aa0;                      // 0xAA0
-  u8 unk_b00;                                 // 0xB00
-  u8 unk_b01;                                 // 0xB01
-  u8 unk_b02;                                 // 0xB02
-  s8 unk_b03;                                 // 0xB03
-  u16 unk_b04;                                // 0xB04
-  u16 unk_b06;                                // 0xB06
-  ParticleShadow ptclShadow;                  // 0xB08
-  AuxSpriteGfx auxGfx[2];                     // 0xB48, SPRITE_DAINN_EBALL
-  bool8 auxActive[16];                        // 0xB80, auxSprites の各枠が使用中か
-  AuxSprite auxSprites[16];                   // 0xB90
-  AuxAnimState auxAnims[16];                  // 0xE50, auxSprites と同じ添字
-  Vec3 auxOffsets[16];                        // 0xF50, auxSprites の画面上の位置のずれ
-  AuxAnimFile* auxAnimFile;                   // 0xFD0, ANIM_78E1
-  u8 unk_fd4;                                 // 0xFD4
-  u8 unk_fd5;                                 // 0xFD5
-  u8 unk_fd6;                                 // 0xFD6
-  u8 unk_fd7;                                 // 0xFD7
-  Vec3 unk_fd8;                               // 0xFD8, sprite_fe0 の位置
-  MainSprite sprite_fe0;                      // 0xFE0
-  u16 scriptID;                               // 0x1040, '.d[0]=0'
-  u16 scriptID2;                              // 0x1042, '.d[1]=0'
-  u32 unk_1044;                               // 0x1044
-  u32 unk_1048;                               // 0x1048
-  struct VampireSwordManager* vampireSwords;  // 0x104C
-  struct Entity0805b068* entity0805b068;      // 0x1050
-  struct Entity0805b790* entity0805b790;      // 0x1054
-  struct RingoBatSwarm* batSwarm;             // 0x1058
+  Boss base;                                    // 0x000
+  u8 unk_158[0x15C - 0x158];                    // 0x158
+  u16 phaseTimer;                               // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
+  u16 phase;                                    // 0x15E, 状態の中の段階, 状態関数が switch で振り分けて進める
+  s16 spriteOffsetY;                            // 0x160, sprites[0].pos.y = mover.pos.y + spriteOffsetY
+  s16 hoverHeight;                              // 0x162, Ringo_UpdateHover が 62 まで増やして sin の揺れを足し spriteOffsetY にする
+  s16 unk_164;                                  // 0x164
+  u8 hitBySol;                                  // 0x166, Ringo_OnHurt が HBATTR_SOL の攻撃で立てる
+  u8 unk_167;                                   // 0x167
+  u8 unk_168;                                   // 0x168
+  u8 unk_169;                                   // 0x169
+  u8 unk_16a;                                   // 0x16A
+  u8 numPlayers;                                // 0x16B, '.P=2', base.players / playerPos を埋める数
+  u8 unk_16c;                                   // 0x16C, 3..6 の乱数
+  u8 unk_16d;                                   // 0x16D
+  u8 unk_16e;                                   // 0x16E, 乱数
+  u8 unk_16f;                                   // 0x16F, 0 になったら unk_16e / unk_16c を引き直す
+  u8 unk_170;                                   // 0x170
+  u8 unk_171;                                   // 0x171
+  u8 unk_172;                                   // 0x172
+  s8 grabbedPlayer;                             // 0x173, base.players の添字
+  s8 unk_174;                                   // 0x174
+  u8 unk_175;                                   // 0x175
+  u8 unk_176;                                   // 0x176
+  u8 unk_177;                                   // 0x177
+  u8 unk_178;                                   // 0x178, hurtbox2 に当たったとき BOSSFLAG_UNK_19 が立っていれば 1
+  u8 hurtAngle;                                 // 0x179, Ringo_OnHurt が攻撃の向きを入れる
+  u8 unk_17a;                                   // 0x17A
+  u8 unk_17b;                                   // 0x17B
+  u16 unk_17c;                                  // 0x17C
+  u16 unk_17e;                                  // 0x17E
+  s16 damage;                                   // 0x180, 受けたダメージ, Ringo_HandleDamage が取り出して 0 に戻す
+  s16 pendingDamage;                            // 0x182, Ringo_AddPendingDamage が足し, 次の更新で HP から引く (1 は残す)
+  u16 pendingHeal;                              // 0x184, Ringo_AddPendingHeal が足し, 次の更新で HP に足して回復の数字を出す
+  u16 unk_186;                                  // 0x186
+  u16 unk_188;                                  // 0x188
+  u8 unk_18a;                                   // 0x18A
+  u8 unk_18b;                                   // 0x18B
+  u16 unk_18c;                                  // 0x18C
+  u8 unk_18e[0x194 - 0x18E];                    // 0x18E
+  Hitbox hitbox;                                // 0x194
+  Hitbox hurtbox;                               // 0x1E4, ハンドラは Ringo_OnHurt
+  Hitbox hitbox2;                               // 0x234
+  Hitbox hurtbox2;                              // 0x284, ハンドラ FUN_0802802c はダメージを 0 にする
+  MainSpriteGfx gfx;                            // 0x2D4, SPR_RINGO
+  MainSprite sprites[2];                        // 0x2F4
+  AuxShadow shadow;                             // 0x3B4
+  rgb555 pltt[16][16];                          // 0x420, gObjPlttData の同じ16色を16回写す
+  rgb555 pltt_620[2][16];                       // 0x620
+  rgb555 pltt_660[14][16];                      // 0x660, BlendPltt で色を混ぜる先
+  u32 unk_820;                                  // 0x820, '.S=0'
+  u32 unk_824;                                  // 0x824, '.R=0'
+  s32 unk_828;                                  // 0x828, 24.8 固定小数点
+  s32 unk_82c;                                  // 0x82C, unk_828 の補間の終点
+  s32 unk_830;                                  // 0x830, unk_828 の補間の始点
+  s32 unk_834;                                  // 0x834, 24.8 固定小数点
+  s32 unk_838;                                  // 0x838, unk_834 の補間の終点
+  s32 unk_83c;                                  // 0x83C, unk_834 の補間の始点
+  u16 unk_840;                                  // 0x840, 補間の経過フレーム数
+  u16 unk_842;                                  // 0x842, 補間のフレーム数
+  Vec3 unk_844;                                 // 0x844
+  Vec3 unk_84c;                                 // 0x84C
+  Vec3 unk_854;                                 // 0x854
+  Vec3 unk_85c;                                 // 0x85C
+  u32 unk_864;                                  // 0x864
+  Vec3 unk_868;                                 // 0x868
+  u16 unk_870;                                  // 0x870
+  u8 unk_872;                                   // 0x872
+  u8 unk_873;                                   // 0x873
+  s16 unk_874;                                  // 0x874
+  u8 unk_876;                                   // 0x876
+  u8 unk_877;                                   // 0x877
+  s16 plttFade;                                 // 0x878, BlendPltt の混ぜ具合
+  u16 plttFadeTo;                               // 0x87A, フェード先のパレット番号
+  s8 plttFadeMode;                              // 0x87C, パレットフェードの種類, -1 で止まる
+  u8 unk_87d;                                   // 0x87D
+  bool8 unk_87e;                                // 0x87E, 0x313 / 0x33D の効果音を鳴らしたら立つ
+  u8 unk_87f;                                   // 0x87F
+  bool8 unk_880;                                // 0x880
+  u8 unk_881[0x884 - 0x881];                    // 0x881
+  u16 cameraDist;                               // 0x884, プレイヤーとの距離 / 32 へ毎フレーム 1 ずつ寄せる
+  u16 unk_886;                                  // 0x886
+  u16 unk_888;                                  // 0x888
+  u16 unk_88a;                                  // 0x88A
+  u16 unk_88c;                                  // 0x88C
+  u8 unk_88e[0x891 - 0x88E];                    // 0x88E
+  u8 unk_891;                                   // 0x891
+  u8 unk_892;                                   // 0x892
+  u8 unk_893;                                   // 0x893
+  u16 unk_894;                                  // 0x894
+  u16 unk_896;                                  // 0x896
+  u8 unk_898;                                   // 0x898
+  u8 targetPlayer;                              // 0x899, 狙うプレイヤーの添字 (0/1), playerAngle / playerPos を引く
+  u8 unk_89a[0x89C - 0x89A];                    // 0x89A
+  u16 stateDuration;                            // 0x89C, 状態を続ける最短フレーム数
+  u8 unk_89e[0x8A0 - 0x89E];                    // 0x89E
+  u16 hurtboxPower;                             // 0x8A0, '.s[1]=999'
+  u16 hurtboxPower2;                            // 0x8A2, '.s[2]=10'
+  u16 hurtboxPower3;                            // 0x8A4, '.s[3]=100'
+  u8 unk_8a6[0x8A8 - 0x8A6];                    // 0x8A6
+  s16 hitboxPower;                              // 0x8A8, '.a[0]=25'
+  s16 hitboxKnockback;                          // 0x8AA, '.a[1]=50'
+  s16 hitboxUnk44;                              // 0x8AC, '.a[2]=60'
+  s16 hitbox2Power;                             // 0x8AE, '.a[3]=50'
+  s16 hitbox2Knockback;                         // 0x8B0, '.a[4]=50'
+  s16 hitbox2Unk44;                             // 0x8B2, '.a[5]=60'
+  u16 unk_8b4;                                  // 0x8B4, '.g[0]=70'
+  u16 unk_8b6;                                  // 0x8B6, '.g[1]=80'
+  u16 unk_8b8;                                  // 0x8B8, '.g[2]=65'
+  u16 unk_8ba;                                  // 0x8BA, '.U[0]=40'
+  u16 unk_8bc;                                  // 0x8BC, '.U[1]=80'
+  u16 unk_8be;                                  // 0x8BE, '.U[2]=50'
+  u16 unk_8c0;                                  // 0x8C0, '.U[3]=30'
+  u16 unk_8c2;                                  // 0x8C2
+  u16 unk_8c4;                                  // 0x8C4, '.a[6]=8'
+  u16 unk_8c6;                                  // 0x8C6, '.a[7]=16'
+  u16 unk_8c8;                                  // 0x8C8, '.a[8]=10'
+  u16 unk_8ca;                                  // 0x8CA, '.a[9]=50'
+  u8 unk_8cc;                                   // 0x8CC
+  u8 unk_8cd;                                   // 0x8CD
+  u16 unk_8ce;                                  // 0x8CE
+  u16 unk_8d0;                                  // 0x8D0
+  u16 unk_8d2;                                  // 0x8D2, '.s[4]=300'
+  u16 unk_8d4;                                  // 0x8D4
+  u16 unk_8d6;                                  // 0x8D6, '.s[5]=600'
+  s16 unk_8d8;                                  // 0x8D8
+  u8 unk_8da;                                   // 0x8DA
+  u8 unk_8db;                                   // 0x8DB
+  u8 unk_8dc;                                   // 0x8DC
+  u8 unk_8dd;                                   // 0x8DD
+  u8 unk_8de[0x8E0 - 0x8DE];                    // 0x8DE
+  s32 weaponExp;                                // 0x8E0, '.K'
+  u16 unk_8e4;                                  // 0x8E4
+  u16 afterimageIdx;                            // 0x8E6
+  u16 afterimageTimers[3];                      // 0x8E8, afterimages ごとの残りフレーム, 0 になったら隠す
+  u16 unk_8ee[3];                               // 0x8EE, afterimages ごと, 1 なら unk_868 へ寄せる
+  MainSprite afterimages[3];                    // 0x8F4
+  s16 unk_a14;                                  // 0xA14, 前のフレームの unk_a16
+  s16 unk_a16;                                  // 0xA16, sprites[0].animCmdIdx の控え
+  Vec3 unk_a18;                                 // 0xA18
+  MainSpriteGfx gfx_a20;                        // 0xA20, SPR_DJANGO_SABATA
+  MainSprite sprite_a40;                        // 0xA40
+  MainSprite sprite_aa0;                        // 0xAA0
+  u8 unk_b00;                                   // 0xB00
+  u8 unk_b01;                                   // 0xB01
+  u8 unk_b02;                                   // 0xB02
+  s8 unk_b03;                                   // 0xB03
+  u16 unk_b04;                                  // 0xB04
+  u16 unk_b06;                                  // 0xB06
+  ParticleShadow ptclShadow;                    // 0xB08
+  AuxSpriteGfx auxGfx[2];                       // 0xB48, SPR_CURORO_SHOTS
+  bool8 auxActive[16];                          // 0xB80, auxSprites の各枠が使用中か
+  AuxSprite auxSprites[16];                     // 0xB90
+  AuxAnimState auxAnims[16];                    // 0xE50, auxSprites と同じ添字
+  Vec3 auxOffsets[16];                          // 0xF50, auxSprites の画面上の位置のずれ
+  AuxAnimFile* auxAnimFile;                     // 0xFD0, ANIM_CURORO_SHOTS
+  u8 unk_fd4;                                   // 0xFD4
+  u8 unk_fd5;                                   // 0xFD5
+  u8 unk_fd6;                                   // 0xFD6
+  u8 unk_fd7;                                   // 0xFD7
+  Vec3 unk_fd8;                                 // 0xFD8, sprite_fe0 の位置
+  MainSprite sprite_fe0;                        // 0xFE0
+  u16 scriptID;                                 // 0x1040, '.d[0]=0'
+  u16 scriptID2;                                // 0x1042, '.d[1]=0'
+  u32 unk_1044;                                 // 0x1044
+  u32 unk_1048;                                 // 0x1048
+  struct VampireSwordManager* vampireSwords;    // 0x104C
+  struct CuroroShotManager* curoroShotManager;  // 0x1050
+  struct RingoShotManager* shotManager;         // 0x1054
+  struct RingoBatSwarm* batSwarm;               // 0x1058
 } Ringo;
 static_assert(sizeof(Ringo) == 4188);
 
-struct Entity0805b068;
-s32 FUN_0805b1a0(struct Entity0805b068* p);
+struct CuroroShotManager;
+s32 CuroroShotManager_VanishAll(struct CuroroShotManager* p);
 
 void RingoBatSwarm_StartReturn(struct RingoBatSwarm* p);
-s32 FUN_0805b0b0(struct Entity0805b068* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
+s32 CuroroShotManager_Spawn(struct CuroroShotManager* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
 s32 RingoBatSwarm_Start(struct RingoBatSwarm* p, Vec3* from, Vec3* to, s32 speed, s32 param_5);
 bool32 FUN_0809df78(Vec3* pos);
 void FUN_080846f8(void);
@@ -224,13 +224,13 @@ void BlackHole_GetCenter(Vec3* out);
 bool32 BlackHole_IsActive(void);
 void FUN_0823b880(s32 n);
 struct VampireSwordManager* VampireSwordManager_Create(u32 attackID);
-struct Entity0805b068* Entity0805b068_Create(u32 param_1, u32 param_2);
+struct CuroroShotManager* CuroroShotManager_Create(u32 param_1, u32 param_2);
 struct RingoBatSwarm* RingoBatSwarm_Create(u32 targetCount);
-struct Entity0805b790* Entity0805b790_Create(bool32 isDark);
+struct RingoShotManager* RingoShotManager_Create(bool32 isDark);
 s32 FUN_08035a64(Ringo* p);
 void FUN_080846c8(void);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
-s32 Entity0805b790_Spawn(struct Entity0805b790* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
+s32 RingoShotManager_Spawn(struct RingoShotManager* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
 s32 VampireSwordManager_Spawn(struct VampireSwordManager* p, Vec3* pos, u32 kind, Vec3* target, u32 speed, u32 delay);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttrs attrs);
@@ -822,10 +822,10 @@ NON_MATCH void FUN_08028cb0(Ringo* p) {
 #endif
 }
 
-// SPRITE_DJANGO_SABATA を開き, sprite_a40 を隠した状態で本体の位置に用意する
+// SPR_DJANGO_SABATA を開き, sprite_a40 を隠した状態で本体の位置に用意する
 void FUN_08028dbc(Ringo* p) {
   MainSprite* sprite = &p->sprite_a40;
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
   Vec3 pos;
   Vec3* vp;
 
@@ -843,7 +843,7 @@ s32 FUN_08028ec8(Ringo* p) {
   s32 id;
 
   if (p->grabbedPlayer == 0) {
-    id = p->base.players[p->grabbedPlayer]->kind == PLAYER_SOLAR_DJANGO ? 0x30 : 0xF7;
+    id = p->base.players[p->grabbedPlayer]->kind == PLAYER_RDJANGO ? 0x30 : 0xF7;
   } else {
     id = 0x1CE;
   }
@@ -910,7 +910,7 @@ NON_MATCH void FUN_08029164(Ringo* p, s32 idx) {
 #ifdef NONMATCHING_C
   Mover* mover = &p->base.mover;
 
-  if (p->entity0805b068 != NULL) {
+  if (p->curoroShotManager != NULL) {
     u32 angle = RandomNext() & 0x1F;
     s32 i;
 
@@ -925,7 +925,7 @@ NON_MATCH void FUN_08029164(Ringo* p, s32 idx) {
       pos.y = mover->pos.y + 0xA4;
       angle += 0x56;
       dir = ArcTan2_8(target->x - pos.x, target->z - pos.z) + (RandomNext() & 0x1F) - 0x10;
-      FUN_0805b0b0(p->entity0805b068, &pos, target, dir, 15, p->unk_8be);
+      CuroroShotManager_Spawn(p->curoroShotManager, &pos, target, dir, 15, p->unk_8be);
     }
   }
 #else
@@ -975,19 +975,19 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
   EmitSmoke(&smokePos, (Random() & 1) + 2, &size, angle + (Random() & 0x1F) - 0x10, (Random() & 3) + 4, (Random() & 1) + 1, 2, 1);
   switch (kind) {
     case 0: {
-      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 0, p->unk_8da, 32, p->unk_8b4, 10);
+      RingoShotManager_Spawn(p->shotManager, &pos, p->base.playerPos[p->targetPlayer], 0, p->unk_8da, 32, p->unk_8b4, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
     case 1: {
-      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 1, mover->angle, 24, p->unk_8b6, 10);
+      RingoShotManager_Spawn(p->shotManager, &pos, p->base.playerPos[p->targetPlayer], 1, mover->angle, 24, p->unk_8b6, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
     case 2: {
-      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da - 0x20, 24, p->unk_8b8, 10);
-      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da, 24, p->unk_8b8, 10);
-      Entity0805b790_Spawn(p->entity0805b790, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da + 0x20, 24, p->unk_8b8, 10);
+      RingoShotManager_Spawn(p->shotManager, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da - 0x20, 24, p->unk_8b8, 10);
+      RingoShotManager_Spawn(p->shotManager, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da, 24, p->unk_8b8, 10);
+      RingoShotManager_Spawn(p->shotManager, &pos, p->base.playerPos[p->targetPlayer], 2, p->unk_8da + 0x20, 24, p->unk_8b8, 10);
       PlaySound_0824078c(SE_GUN_FIRE);
       break;
     }
@@ -1204,11 +1204,11 @@ void Ringo_InitAuxSprites(Ringo* p) {
   s32 i;
 
   for (i = 0; i < 2; i++) {
-    Video_GetAuxSprite(&p->auxGfx[i], SPRITE_DAINN_EBALL);
+    Video_GetAuxSprite(&p->auxGfx[i], SPR_CURORO_SHOTS);
   }
   Video_SetAuxSpritePltt(&p->auxGfx[0], 196);
   Video_SetAuxSpritePltt(&p->auxGfx[1], 200);
-  p->auxAnimFile = GetFile(DIR_ANIMATION, ANIM_78E1);
+  p->auxAnimFile = GetFile(DIR_ANIMATION, ANIM_CURORO_SHOTS);
   for (i = 0, sprite = p->auxSprites; i < 16; i++, sprite++) {
     AuxSprite_Add(sprite, &p->auxGfx[0], SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     AuxAnim_SetAnim(&p->auxAnims[i], p->auxAnimFile, 2, 0, 0);
@@ -1620,7 +1620,7 @@ void Ringo_InitHitbox2(Ringo* p) {
   Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hitbox, FUN_08028050, p);
-  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_18, p->hitbox2Unk44);
+  Hitbox_SetAttack(hitbox, p->hitbox2Power, p->hitbox2Knockback, 0, HBATTR_17 | HBATTR_BLOW, p->hitbox2Unk44);
 }
 
 void Ringo_InitHurtbox(Ringo* p, u32 power) {
@@ -4785,7 +4785,7 @@ NON_MATCH void dainn_080323c8(Boss* boss, s32 timer) {
         Vec3_SetPolar(&pos, angle, 256);
         Vec3_Add(&pos, &boss->mover.pos);
         pos.y += 0xA4;
-        Entity0805b790_Spawn(p->entity0805b790, &pos, boss->playerPos[p->targetPlayer], 0, angle, 20, p->unk_8ca, 50);
+        RingoShotManager_Spawn(p->shotManager, &pos, boss->playerPos[p->targetPlayer], 0, angle, 20, p->unk_8ca, 50);
       }
       break;
     }
@@ -4980,8 +4980,8 @@ NON_MATCH void dainn_08032f18(Boss* boss, s32 timer) {
     p->phaseTimer = 0;
     PlaySound_0824078c(VO_DAINN_DEATH);
     PlaySound_0824078c(SONG_453);
-    if (p->entity0805b068 != NULL) {
-      FUN_0805b1a0(p->entity0805b068);
+    if (p->curoroShotManager != NULL) {
+      CuroroShotManager_VanishAll(p->curoroShotManager);
     }
   }
   if (p->hoverHeight > 3) {
@@ -6266,7 +6266,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
       boss->playerPos[i] = NULL;
     }
   }
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_RINGO);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_RINGO);
   if (f == NULL) {
     return -1;
   }
@@ -6421,7 +6421,7 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   p->grabbedPlayer = -1;
   FUN_0802adb8(p);
   AuxShadow_Init(&p->shadow, &p->sprites[0].pos, 0x40, 0x40, 0x40, 0x40, 0x1900, 1, 6, 1, 0);
-  AuxShadow_SetSprite(&p->shadow, SPRITE_EFF_1C1B, 7);
+  AuxShadow_SetSprite(&p->shadow, SPR_EFF_1C1B, 7);
   src = &gObjPlttData[OBP_WHITE_306 * 16];
   dst = p->pltt[0];
   for (i = 0; i < 16; i++, dst += 16) {
@@ -6446,15 +6446,15 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
   boss->mover.unk_30.z = 0;
   if (boss->isCutscene) {
     p->vampireSwords = NULL;
-    p->entity0805b068 = NULL;
+    p->curoroShotManager = NULL;
     p->batSwarm = NULL;
   } else {
     p->vampireSwords = VampireSwordManager_Create(p->unk_8ba);
     if (p->vampireSwords == NULL) {
       return -1;
     }
-    p->entity0805b068 = Entity0805b068_Create(p->unk_8bc, p->unk_8c0);
-    if (p->entity0805b068 == NULL) {
+    p->curoroShotManager = CuroroShotManager_Create(p->unk_8bc, p->unk_8c0);
+    if (p->curoroShotManager == NULL) {
       return -1;
     }
     p->batSwarm = RingoBatSwarm_Create(p->numPlayers);
@@ -6462,8 +6462,8 @@ NON_MATCH s32 Ringo_Init(Ringo* p, u32 id) {
       return -1;
     }
   }
-  p->entity0805b790 = Entity0805b790_Create(p->unk_820);
-  if (p->entity0805b790 == NULL) {
+  p->shotManager = RingoShotManager_Create(p->unk_820);
+  if (p->shotManager == NULL) {
     return -1;
   }
   return 0;

@@ -63,10 +63,10 @@ _0818CFFE:
 	adds r0, r5, r1
 	strh r2, [r0]
 	adds r0, r5, #0
-	bl FUN_0818f918
+	bl Serpent_ResetWave
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_0818f17c
+	bl Serpent_HideLiveSegmentsFrom
 	ldr r1, [r5, #0x44]
 	ldr r0, [r1]
 	orrs r0, r4
@@ -81,7 +81,7 @@ _0818CFFE:
 	adds r1, r5, #0
 	adds r1, #8
 	adds r0, r7, #0
-	bl FUN_0819014c
+	bl Serpent_SetAllSegmentsPos
 	movs r0, #0x20
 	ldr r3, _0818D0D0 @ =0x00000474
 	adds r2, r5, r3
@@ -108,7 +108,7 @@ _0818CFFE:
 	mov r0, sp
 	movs r1, #2
 	movs r3, #0
-	bl FUN_08192ae0
+	bl Serpent_SprayBubbles
 	ldr r0, _0818D0D8 @ =0x00000D44
 	adds r2, r7, r0
 	ldr r0, [r5, #8]
@@ -314,7 +314,7 @@ _0818D22E:
 	cmp r0, #0
 	beq _0818D2F8
 	adds r0, r5, #0
-	bl FUN_0818e6fc
+	bl Serpent_PickNextTile
 	add r2, sp, #8
 	adds r4, r5, #0
 	adds r4, #8
@@ -410,20 +410,20 @@ _0818D2F4: .4byte 0x0000046A
 _0818D2F8:
 	adds r0, r5, #0
 	adds r1, r6, #0
-	bl FUN_08190804
+	bl Serpent_AdvanceSwayIfMoving
 	movs r3, #0x80
 	lsls r3, r3, #7
 	adds r0, r5, #0
 	movs r1, #0x14
 	movs r2, #0xc
-	bl FUN_0818fdd8
+	bl Serpent_PullSegments
 	adds r0, r5, #0
 	movs r1, #0x78
 	movs r2, #0xa
-	bl FUN_0818f938
+	bl Serpent_UpdateWave
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_0818f17c
+	bl Serpent_HideLiveSegmentsFrom
 	ldr r0, _0818D3A8 @ =0x00000484
 	adds r6, r5, r0
 	ldr r0, [r6]
@@ -432,10 +432,10 @@ _0818D2F8:
 	cmp r0, #0
 	bne _0818D336
 	adds r0, r5, #0
-	bl FUN_08191a9c
+	bl Serpent_SpawnSplashes
 _0818D336:
 	adds r0, r5, #0
-	bl FUN_0819267c
+	bl Serpent_TryHearNoise
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0818D3CE

@@ -8,7 +8,7 @@
 #include "video.h"
 #include "vm.h"
 
-// 上下で項目を選ぶメニュー, SPRITE_UI_LINK を使うので通信関連?
+// 上下で項目を選ぶメニュー, SPR_UI_LINK を使うので通信関連?
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_11
   u32 params[4];          // 0x018, '.p' の4値, 引数が無ければ末尾から 0 クリアされる
@@ -22,7 +22,7 @@ typedef struct {
   u8 result;              // 0x02F, A なら cursor、B なら 3 が入る選択結果
   u16* unk_30;            // 0x030, u16_ARRAY_085ab564 が入る
   u32 timer;              // 0x034, 毎フレーム +1, 30 を超えてから A/B を受け付ける
-  MainSpriteGfx gfx;      // 0x038, SPRITE_UI_LINK
+  MainSpriteGfx gfx;      // 0x038, SPR_UI_LINK
   MainSprite sprites[3];  // 0x058
   u16 animTimer;          // 0x178, 毎フレーム +1, u16_ARRAY_085ab598[animIdx] に達したら 0 に戻る
   u16 animIdx;            // 0x17A, 0..5 を巡回し、u16_ARRAY_085ab5a4[animIdx] を pltt[12] に書く
@@ -57,7 +57,7 @@ const u16 u16_ARRAY_085ab5a4[6] = {31, 27, 18, 10, 18, 27};  // 0x085AB5A4
 s32 FUN_0804aa30(LinkMenu* p, s32 param_2) {
   s32 bgIndex = param_2;
 
-  Video_SetupBGLayout(1, 0, GetFile(DIR_TILE_MAP, TILEMAP_CD91), 0, 0, 1, &bgIndex);
+  Video_SetupBGLayout(1, 0, GetFile(DIR_TILE_MAP, MP_CD91), 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   CpuCopy16(GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body, gBgPlttBuffer, 256 * sizeof(rgb555));
   return 0;
@@ -66,7 +66,7 @@ s32 FUN_0804aa30(LinkMenu* p, s32 param_2) {
 s32 FUN_0804aa98(LinkMenu* p, s32 param_2) {
   s32 bgIndex = param_2;
 
-  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, TILEMAP_A413), 0, 0, 1, &bgIndex);
+  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, MP_A413), 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   CpuCopy16(&GetBgPlttFile(BGP_EFDA)->body[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
   return 0;

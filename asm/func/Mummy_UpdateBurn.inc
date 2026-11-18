@@ -437,7 +437,7 @@ _081297A6:
 	lsls r5, r5, #3
 	adds r1, r6, r5
 	ldr r1, [r1]
-	bl FUN_080ce544
+	bl PlayerLink_UpdateBloodSwordOnKill
 	b _081298EA
 _081297C0:
 	movs r1, #0x94

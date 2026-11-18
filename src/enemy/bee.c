@@ -75,7 +75,7 @@ s32 FUN_0816869c(Bee* p, Vec3* from, Vec3* to);
 void Bee_OnHit(Hitbox* a, Hitbox* b, Bee* p) {}
 
 // 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にして, BEEFLAG_FAST を落とす
-// 803/808命令, EnemyBat_OnHurt / Crow_OnHurt と同じ残差 (ノックバックの種別判定の配置, p->angle の格納先の計算位置, 末尾の乱数の読み順), 試済: EnemyBat_OnHurt と同じ形
+// 803/808命令, EneBat_OnHurt / Crow_OnHurt と同じ残差 (ノックバックの種別判定の配置, p->angle の格納先の計算位置, 末尾の乱数の読み順), 試済: EneBat_OnHurt と同じ形
 NON_MATCH void Bee_OnHurt(Hitbox* a, Hitbox* b, Bee* p) {
 #ifdef NONMATCHING_C
   s32 knockback;
@@ -357,7 +357,7 @@ void Bee_StateDying(Bee* p, s32 timer) {
     if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
       FUN_080e6658(&p->e);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(&p->e, 1, 0, 2);
     ParticleShadow_Hide(&(p->e).shadow);
@@ -365,7 +365,7 @@ void Bee_StateDying(Bee* p, s32 timer) {
 }
 
 // 乱数の向きへ弾かれて滑り, 止まったらプレイヤーへの曲線移動を始める
-// 148/148命令, 残差は ldrsh のゼロ添字と jumpVel のオフセットに使う一時レジスタ番号だけ (EnemyBat の FUN_08140eb0 と同じ壁), 試済: q のスコープ, vel ローカルの有無と位置
+// 148/148命令, 残差は ldrsh のゼロ添字と jumpVel のオフセットに使う一時レジスタ番号だけ (EneBat の FUN_08140eb0 と同じ壁), 試済: q のスコープ, vel ローカルの有無と位置
 NON_MATCH void Bee_StateBounce(Bee* p) {
 #ifdef NONMATCHING_C
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
@@ -544,7 +544,7 @@ void Bee_StartCurve(Bee* p, Vec3* pos) {
 }
 
 // curveStart から curveEnd への曲線上の curveT の位置を経路の目的地に置き, curveT を乱数ぶん進める, 終点に着いたら TRUE
-// 220/221命令, EnemyBat_StepCurve / Curoro_StepCurve と同じ壁 (原典はフレーム 0x34 で start/end/d/v を sp+4 から置き k などを退避, こちらは 0x28), 試済: EnemyBat の C をそのまま
+// 220/221命令, EneBat_StepCurve / Curoro_StepCurve と同じ壁 (原典はフレーム 0x34 で start/end/d/v を sp+4 から置き k などを退避, こちらは 0x28), 試済: EneBat の C をそのまま
 NON_MATCH bool8 Bee_StepCurve(Bee* p) {
 #ifdef NONMATCHING_C
   Bee* q = (p->e).owner;
@@ -1007,7 +1007,7 @@ s32 Bee_Destroy(Bee* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -1028,7 +1028,7 @@ void (*const sBeeMsgHandlers[7])(Bee*, u16*) = {
 };  // 0x085ADA68
 
 // Enemy全体で利用されるinline関数が展開されていてサイズが膨れ上がっている, なので エネミー全体の XXX_Init を一通り NON_MATCH にして共通部分を見てから本格的に一致を目指した方が良さそう
-// 1756/1918命令, EnemyBat_Init の下書きを Bee 向けに直したもの (呼び出し列は一致), 原典は flags5 の UNK_2 を見る所で印のローカルを使い, Enemy のフィールドのアドレスをスタックに作り置く (敵共通の初期化 inline)
+// 1756/1918命令, EneBat_Init の下書きを Bee 向けに直したもの (呼び出し列は一致), 原典は flags5 の UNK_2 を見る所で印のローカルを使い, Enemy のフィールドのアドレスをスタックに作り置く (敵共通の初期化 inline)
 NON_MATCH s32 Bee_Init(Bee* p) {
 #ifdef NONMATCHING_C
   Vec3 pos;
@@ -1051,7 +1051,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_BEE);
+    Video_GetAuxSprite(&aux->gfx, SPR_BEE);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_BEE);
     k = (p->e).kind;
@@ -1068,7 +1068,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_BEE);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_BEE);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1170,7 +1170,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1180,7 +1180,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1246,7 +1246,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
   (p->e).handlerTurn = NULL;
   (p->e).handlerMove = Bee_StateFly;
   (p->e).handlerWait = Bee_AnimIdle;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Bee_StateDamaged;
   (p->e).handlerDying = Bee_StateDying;
@@ -1275,7 +1275,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;

@@ -79,8 +79,7 @@ u8* VM_ReadCtrlLabelOffset(u8* pc, u32* offset) {
  * @param val デコードした値を格納するバッファ
  * @return デコード後の次の命令のアドレス
  */
-NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
-#ifdef NONMATCHING_C
+u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
   u32 length;
   u8* p = pc;
   s32 cmd = *p;
@@ -129,7 +128,7 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
         break;
       }
       case OP_STRING_REF: {
-        s32 stringID = (p[1] << 8) | p[0];
+        u16 stringID = (p[1] << 8) | p[0];
         *(s32*)val = (s32)GetStringByID(stringID);
         *type = OP_STRING;
         p += 2;
@@ -183,9 +182,6 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
     }
   }
   return p;
-#else
-  INCFUNC("asm/func/VM_DecodeValue.inc");
-#endif
 }
 
 void VM_ResetScriptStack(void) { gVM.scriptStackTop = &gVM.scriptStack[0]; }
@@ -347,22 +343,15 @@ s32 VM_ParseStringRef(u8* pc) {
 void VM_GetMemoryRef(u8* dst) { gVM.pc = VM_ReadMemoryRef(VM_GetPC(), dst); }
 
 // type が 0 になるまで値をデコードし飛ばす
-// 残差1命令, gVM のプールロードと &val のフレームアドレス計算の前後が入れ替わるだけ (命令列は 15 対 15)
-NON_MATCH u8* FUN_08231698(u8* pc) {
-#ifdef NONMATCHING_C
-  s32 type;
-  s32 val;
-  VM* vm = &gVM;
-
-  do {
+u8* VM_SkipArgs(u8* pc) {
+  while (TRUE) {
+    s32 type, val;
     pc = VM_DecodeValue(pc, &type, &val);
-  } while (type != 0);
-
-  vm->pc = NULL;
-  return pc;
-#else
-  INCFUNC("asm/func/FUN_08231698.inc");
-#endif
+    if (type == 0) {
+      gVM.pc = NULL;
+      return pc;
+    }
+  }
 }
 
 u8* VM_GetPC(void) {

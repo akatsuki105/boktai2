@@ -33,13 +33,13 @@
 	strh r2, [r0]
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_080ce5a0
+	bl PlayerLink_EnableWeaponSpecialEffects
 	ldrb r0, [r5]
 	cmp r0, #0x3d
 	bne _080CEB70
 	ldr r0, _080CEB68 @ =0x00000A98
 	adds r1, r7, r0
-	ldr r0, _080CEB6C @ =FUN_080d3b14
+	ldr r0, _080CEB6C @ =PlayerLink_UpdateMegaBusterAttack
 	str r0, [r1]
 	b _080CEB80
 	.align 2, 0
@@ -48,7 +48,7 @@ _080CEB5C: .4byte 0x00000A78
 _080CEB60: .4byte 0x00000A7A
 _080CEB64: .4byte 0x00000A7C
 _080CEB68: .4byte 0x00000A98
-_080CEB6C: .4byte FUN_080d3b14
+_080CEB6C: .4byte PlayerLink_UpdateMegaBusterAttack
 _080CEB70:
 	ldr r1, _080CEB90 @ =0x00000A98
 	adds r2, r7, r1

@@ -8,7 +8,7 @@
 typedef struct {
   Entity e;           // 0x000, ENTITY_UNK_8
   u32 timer;          // 0x018, 毎フレーム +1
-  MainSpriteGfx gfx;  // 0x01C, SPRITE_RINGO
+  MainSpriteGfx gfx;  // 0x01C, SPR_RINGO
   MainSprite sprite;  // 0x03C
   s32 scriptID;       // 0x09C, '.e', timer が 180 になったら VM_ExecByID に渡す
   rgb555 pltt[256];   // 0x0A0, sprite.pltt が指す OBJ パレット, RingoSilhouette_Init が全色を RGB(4, 4, 4) で埋める
@@ -84,7 +84,7 @@ s32 RingoSilhouette_Destroy(RingoSilhouette* p) {
 // 141/145 命令, p->gfx の複写で使うレジスタと &p->gfx の持ち方が違う
 NON_MATCH s32 RingoSilhouette_Init(RingoSilhouette* p, u32 param_2) {
 #ifdef NONMATCHING_C
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_RINGO);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_RINGO);
   MainSpriteGfx* gfx;
   Vec3 pos;
   u32 args[5];

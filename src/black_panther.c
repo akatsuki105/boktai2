@@ -69,7 +69,7 @@ typedef struct {
   Mover mover;                            // 0x030
   Vec3 pos;                               // 0x074, 毎フレーム sprite と mover へ写す
   SpriteHolder sprite;                    // 0x07C
-  AuxSprite shadowSprite;                 // 0x110, SPRITE_EFF_1C1B の pose 7, 足元のタイルの高さに置く
+  AuxSprite shadowSprite;                 // 0x110, SPR_EFF_1C1B の pose 7, 足元のタイルの高さに置く
   ParticleShadow shadow;                  // 0x13C
   const struct BlackPantherEntry* entry;  // 0x17C
   const NPCAnim* anims;                   // 0x180
@@ -105,16 +105,16 @@ typedef struct BlackPanther {
   MainSpriteGfx gfx[7];          // 0x0068, BlackPantherEntry.unk_08 が 2 の要素だけ
   BlackPantherElem elems[5];     // 0x0148
   BlackPantherObj objs[32];      // 0x08DC
-  AuxAnimFile* animFiles[4];     // 0x17DC, ANIM_871C / ANIM_BAT / ANIM_BEE / ANIM_6830
-  AuxSpriteGfx auxGfx1;          // 0x17EC, SPRITE_EFF_1C1B, plttID に 0x7584 を入れ、パレットを pltt に向ける
+  AuxAnimFile* animFiles[4];     // 0x17DC, ANIM_BOMB / ANIM_BAT / ANIM_BEE / ANIM_6830
+  AuxSpriteGfx auxGfx1;          // 0x17EC, SPR_EFF_1C1B, plttID に 0x7584 を入れ、パレットを pltt に向ける
   rgb555 pltt[16];               // 0x1808, _Init が全部 RGB(20, 20, 20) で埋める
-  MainSpriteGfx mainGfx;         // 0x1828, SPRITE_UI_START_MENU
+  MainSpriteGfx mainGfx;         // 0x1828, SPR_UI_START_MENU
   MainSprite mainSprites1[4];    // 0x1848, poseIdx 30 で登録
   MainSprite mainSprites2[4];    // 0x19C8, 同上だが最初は非表示
   MainSprite mainSprites3[3];    // 0x1B48, 同上
-  AuxSpriteGfx auxGfx2;          // 0x1C68, SPRITE_PANTHER_BONUS, ブラックパンサー(ミニゲーム)用
+  AuxSpriteGfx auxGfx2;          // 0x1C68, SPR_PANTHER_BONUS, ブラックパンサー(ミニゲーム)用
   AuxSprite auxSprites1[6];      // 0x1C84, poseIdx は 3,4,7,8,9,10, unk_44 に応じて表示が切り替わる
-  AuxSpriteGfx auxGfx3;          // 0x1D8C, SPRITE_COMBO_SCORE, ブラックパンサー(ミニゲーム)用
+  AuxSpriteGfx auxGfx3;          // 0x1D8C, SPR_COMBO_SCORE, ブラックパンサー(ミニゲーム)用
   AuxSprite auxSprites2[2];      // 0x1DA8
   u32 unk_1e00;                  // 0x1E00, 1 を書くだけで読むコードは見つかっていない
   u8 unk_1e04[0x1E0C - 0x1E04];  // 0x1E04
@@ -151,7 +151,7 @@ typedef struct BlackPantherEntry {
   SpriteID32 id;                                      // 0x00, NPCManager_FindSpriteData の第1引数
   s32 idx;                                            // 0x04, NPCManager_FindSpriteData の第2引数
   u32 unk_08;                                         // 0x08, BlackPantherElem_InitSprite に渡す, 2 の要素だけ BlackPanther.gfx[] に入る
-  u32 unk_0c;                                         // 0x0C, BlackPantherElem_InitSprite に渡す, SPRITE_MOUSE の要素だけ ANIM_MOUSE
+  u32 unk_0c;                                         // 0x0C, BlackPantherElem_InitSprite に渡す, SPR_MOUSE の要素だけ ANIM_MOUSE
   void (*fns[10])(BlackPanther*, BlackPantherElem*);  // 0x10, BlackPantherElem_Update が BlackPantherElem + 0x0D で引く
 } BlackPantherEntry;
 static_assert(sizeof(BlackPantherEntry) == 56);
@@ -191,56 +191,56 @@ void FUN_080547f4(BlackPanther*, BlackPantherElem*);
 // clang-format off
 const BlackPantherEntry BlackPantherEntry_ARRAY_085ab748[8] = {
     {
-        .id = SPRITE_KURO,
+        .id = SPR_KURO,
         .idx = 0,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053fd0, FUN_080540d4, FUN_08054130, FUN_08054130},
     },
     {
-        .id = SPRITE_DJANGO_SABATA,
+        .id = SPR_DJANGO_SABATA,
         .idx = 0,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053dcc, BlackPantherElem_StateHidden, BlackPantherElem_StateHidden, FUN_080541cc},
     },
     {
-        .id = SPRITE_DJANGO_SABATA,
+        .id = SPR_DJANGO_SABATA,
         .idx = 1,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053dcc, BlackPantherElem_StateHidden, BlackPantherElem_StateHidden, FUN_080541fc},
     },
     {
-        .id = SPRITE_RITA,
+        .id = SPR_RITA,
         .idx = 0,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053dcc, BlackPantherElem_StateHidden, BlackPantherElem_StateHidden, FUN_080541fc},
     },
     {
-        .id = SPRITE_ZAJI,
+        .id = SPR_ZAJI,
         .idx = 0,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053dcc, BlackPantherElem_StateHidden, BlackPantherElem_StateHidden, FUN_080541fc},
     },
     {
-        .id = SPRITE_SUMIRE,
+        .id = SPR_SUMIRE,
         .idx = 0,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053dcc, BlackPantherElem_StateHidden, FUN_08054170, FUN_080541fc},
     },
     {
-        .id = SPRITE_LADY,
+        .id = SPR_LADY,
         .idx = 0,
         .unk_08 = 2,
         .unk_0c = 0,
         .fns = {BlackPantherElem_StateHidden, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, BlackPantherElem_StateJump, BlackPantherElem_StateChangeLane, FUN_08053dcc, BlackPantherElem_StateHidden, BlackPantherElem_StateHidden, FUN_080541fc},
     },
     {
-        .id = SPRITE_MOUSE,
+        .id = SPR_MOUSE,
         .idx = 0,
         .unk_08 = 1,
         .unk_0c = ANIM_MOUSE,
@@ -272,7 +272,7 @@ const NPCAnim NPCAnim_ARRAY_085ab924[12] = {
 };  // 0x085AB924
 
 // ミニゲーム"ブラックパンサー"で使用されるおじゃまキャラのスプライトID
-const SpriteID16 sMinigameOjamaSpriteIDs[4] = {SPRITE_BOMB, SPRITE_BAT, SPRITE_BEE, 0};  // 0x085AB954
+const SpriteID16 sMinigameOjamaSpriteIDs[4] = {SPR_BOMB, SPR_BAT, SPR_BEE, 0};  // 0x085AB954
 
 // BlackPantherElem_Update が BlackPantherElem + 0x0B で引く
 void (*const PTR_ARRAY_085ab95c[13])(BlackPanther*, BlackPantherElem*) = {
@@ -872,14 +872,14 @@ s32 BlackPanther_Init(BlackPanther* p, u32 id, u32 _) {
   SetBGPrioDirect(2, 3);
   SetBGPrioDirect(3, 3);
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   if (f == NULL) {
     return -1;
   }
   p->mainGfx = *f;
   OpenMainSpriteFile(&p->mainGfx, f);
 
-  p->animFiles[0] = GetFile(DIR_ANIMATION, ANIM_871C);
+  p->animFiles[0] = GetFile(DIR_ANIMATION, ANIM_BOMB);
   p->animFiles[1] = GetFile(DIR_ANIMATION, ANIM_BAT);
   p->animFiles[2] = GetFile(DIR_ANIMATION, ANIM_BEE);
   p->animFiles[3] = GetFile(DIR_ANIMATION, ANIM_6830);
@@ -917,7 +917,7 @@ s32 BlackPanther_Init(BlackPanther* p, u32 id, u32 _) {
     idx[4] = 1;
   }
 
-  Video_GetAuxSprite(&p->auxGfx1, SPRITE_EFF_1C1B);
+  Video_GetAuxSprite(&p->auxGfx1, SPR_EFF_1C1B);
   p->auxGfx1.plttID = 0x7584;
   p->auxGfx1.pltt = p->pltt;
   color = RGB(20, 20, 20);
@@ -954,7 +954,7 @@ s32 BlackPanther_Init(BlackPanther* p, u32 id, u32 _) {
   }
 
   pos.x = 66, pos.y = 152, pos.z = 0;
-  Video_GetAuxSprite(&p->auxGfx2, SPRITE_PANTHER_BONUS);
+  Video_GetAuxSprite(&p->auxGfx2, SPR_PANTHER_BONUS);
   for (i = 0; i < 6; i++) {
     AuxSprite_Add(&p->auxSprites1[i], &p->auxGfx2, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN);
     if (i < 2) {
@@ -968,7 +968,7 @@ s32 BlackPanther_Init(BlackPanther* p, u32 id, u32 _) {
   }
 
   pos.x = 0, pos.y = 144, pos.z = 0;
-  Video_GetAuxSprite(&p->auxGfx3, SPRITE_COMBO_SCORE);
+  Video_GetAuxSprite(&p->auxGfx3, SPR_COMBO_SCORE);
   for (i = 0; i < 2; i++) {
     AuxSprite_Add(&p->auxSprites2[i], &p->auxGfx3, SPRFLAG_SCREEN_COORD);
     AuxSprite_SetPoseIdx(&p->auxSprites2[i], i);

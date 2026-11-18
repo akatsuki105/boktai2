@@ -162,7 +162,7 @@ void FUN_08080f80(Player* p, Hitbox* a, Hitbox* b) {
     b->knockback = 200;
   }
 
-  if (Hitbox_TestAttr(a, HBATTR_18)) {
+  if (Hitbox_TestAttr(a, HBATTR_BLOW)) {
     p->blownAway = 1;
     p->facing = LinkPlayer_GetDirToAttacker(a, b);
     return;
@@ -541,7 +541,7 @@ s32 FUN_080817ec(Player* p) {
 // サバタのスプライトと巡回地点を用意し、VM の名前付き引数で行動パラメータを決める
 void FUN_08081830(Player* p) {
   WorldPos base;
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_DJANGO_SABATA);
   s32 i;
 
   if (f == NULL) {
@@ -679,7 +679,7 @@ NON_MATCH void FUN_08081c04(Player* p) {
 
   p->wpn.knockback = 32;
   p->wpn.iframes = 20;
-  Video_GetAuxSprite(&p->wpn.gfx, SPRITE_GUN_SPREAD);
+  Video_GetAuxSprite(&p->wpn.gfx, SPR_GUN_SPREAD);
   AuxSprite_Add(spr, &p->wpn.gfx, SPRFLAG_NO_CLIP | SPRFLAG_AFFINE | SPRFLAG_HIDDEN);
   spr->poseIdx = 4;
   Video_SetAuxSpritePltt(&p->wpn.gfx, 50);
@@ -1562,7 +1562,7 @@ NON_MATCH void FUN_080835d8(Player* p) {
       AllySabata_PlayAnim(p, 483, Q6(1));
       if (++p->stateTimer > 14) {
         PlaySound_082406e0(SONG_870);
-        p->wpn.gunSpreadAngle = ((8 - p->facing) & 7) << 5;
+        p->wpn.timer = ((8 - p->facing) & 7) << 5;
         p->knockbackSpeed_4a4 = 0;
         p->unk_4a7 = ((p->facing + 5) & 7) << 5;
         BlackHole_GetCenter(&p->refuelPos);
@@ -1634,15 +1634,15 @@ NON_MATCH void FUN_080835d8(Player* p) {
       p->mover.delta.x = POLAR_X(8, p->unk_4a7);
       p->mover.delta.z = POLAR_Z(8, p->unk_4a7);
 
-      p->wpn.gunSpreadAngle = (p->wpn.gunSpreadAngle + 16) & 0xFF;
+      p->wpn.timer = (p->wpn.timer + 16) & 0xFF;
       p->wpn.sprite.pos = p->mover.pos;
       p->wpn.sprite.pos.y += 230;
-      p->wpn.sprite.rotation = p->wpn.gunSpreadAngle;
-      p->facing = ((271 - p->wpn.gunSpreadAngle) & 0xFF) >> 5;
+      p->wpn.sprite.rotation = p->wpn.timer;
+      p->facing = ((271 - p->wpn.timer) & 0xFF) >> 5;
       AllySabata_SetAnimFacing(p);
 
       pos = p->mover.pos;
-      angle = (416 - p->wpn.gunSpreadAngle) & 0xFF;
+      angle = (416 - p->wpn.timer) & 0xFF;
       pos.x += POLAR_X(170, angle);
       pos.y += 230;
       pos.z += POLAR_Z(170, angle);
@@ -1915,7 +1915,7 @@ NON_MATCH void AllySabata_OnHurt(Hitbox* a, Hitbox* b, Player* p) {
   }
 
   p->blockCount = 0;
-  if (Hitbox_TestAttr(a, HBATTR_18) || !Player_TestFlag20(p, PFLAG20_UNK_15)) {
+  if (Hitbox_TestAttr(a, HBATTR_BLOW) || !Player_TestFlag20(p, PFLAG20_UNK_15)) {
     FUN_08080f80(p, a, b);
     return;
   }

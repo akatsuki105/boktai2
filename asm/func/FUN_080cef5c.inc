@@ -38,10 +38,10 @@ _080CEF94:
 	movs r1, #0xac
 	lsls r1, r1, #4
 	adds r2, r3, r1
-	ldr r1, _080CEFA8 @ =FUN_080d6ea0
+	ldr r1, _080CEFA8 @ =PlayerLink_UpdateSabata
 	b _080CEFBE
 	.align 2, 0
-_080CEFA8: .4byte FUN_080d6ea0
+_080CEFA8: .4byte PlayerLink_UpdateSabata
 _080CEFAC:
 	movs r4, #0xd6
 	lsls r4, r4, #2
@@ -52,11 +52,11 @@ _080CEFB6:
 	movs r1, #0xac
 	lsls r1, r1, #4
 	adds r2, r3, r1
-	ldr r1, _080CEFC8 @ =FUN_080d6b24
+	ldr r1, _080CEFC8 @ =PlayerLink_UpdateDjango
 _080CEFBE:
 	str r1, [r2]
 	pop {r4}
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080CEFC8: .4byte FUN_080d6b24
+_080CEFC8: .4byte PlayerLink_UpdateDjango

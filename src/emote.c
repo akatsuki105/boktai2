@@ -13,8 +13,8 @@
 // キャラクターの頭上に出るエモートアイコン(の管理構造体)
 typedef struct {
   Entity e;              // 0x000, ENTITY_UNK_9
-  AuxSpriteGfx gfx_18;   // 0x018, SPRITE_EMOTION_0 (吹き出し無し)
-  AuxSpriteGfx gfx_34;   // 0x034, SPRITE_EMOTION_1 (吹き出し付き)
+  AuxSpriteGfx gfx_18;   // 0x018, SPR_EMOTION_0 (吹き出し無し)
+  AuxSpriteGfx gfx_34;   // 0x034, SPR_EMOTION_1 (吹き出し付き)
   AuxAnimFile* anim_50;  // 0x050, ANIM_6830
   AuxAnimFile* anim_54;  // 0x054, ANIM_D41F
   ParticleGroup* group;  // 0x058, PTCL_GROUP_1
@@ -97,7 +97,7 @@ void Emote_PlayEnemySound(Emote* p) {
         break;
       }
       case ENEK_MUMMY: {
-        if (p->kind == EMOTE_3) {
+        if (p->kind == EMOTE_STUN) {
           return;
         }
         se = CRY_MUMMY_255;
@@ -169,7 +169,7 @@ void FUN_080d8864(EmoteManager* p, Emote* emote) {
 // enemyKind が ENEK_BOKU か ENEK_28 のとき
 void FUN_080d88ec(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       if (quadrant == 0) {
         *outX = -12, *outY = 0;
       } else {
@@ -177,7 +177,7 @@ void FUN_080d88ec(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       }
       break;
     }
-    case 1: {
+    case EMOTE_1: {
       switch (quadrant) {
         case 0:
         case 1:
@@ -189,7 +189,7 @@ void FUN_080d88ec(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       }
       break;
     }
-    case 2: {
+    case EMOTE_2: {
       if (quadrant == 0 || quadrant == 3) {
         *outX = 0;
       } else {
@@ -198,7 +198,7 @@ void FUN_080d88ec(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       *outY = -4;
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       if (quadrant == 0 || quadrant == 3) {
         *outX = 0;
       } else {
@@ -214,19 +214,19 @@ void FUN_080d88ec(s32 kind, s32* outX, s32* outY, s32 quadrant) {
 // enemyKind が ENEK_MUMMY のとき, quadrant は使わない
 void FUN_080d8954(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       *outX = -4, *outY = -15;
       break;
     }
-    case 1: {
+    case EMOTE_1: {
       *outX = -16, *outY = -8;
       break;
     }
-    case 2: {
+    case EMOTE_2: {
       *outX = -4, *outY = -4;
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       *outX = -4, *outY = -4;
       break;
     }
@@ -237,19 +237,19 @@ void FUN_080d8954(s32 kind, s32* outX, s32* outY, s32 quadrant) {
 // enemyKind が ENEK_GOLEM か ENEK_30 のとき, quadrant は使わない
 void FUN_080d8990(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       *outX = -4, *outY = -15;
       break;
     }
-    case 1: {
+    case EMOTE_1: {
       *outX = -16, *outY = -8;
       break;
     }
-    case 2: {
+    case EMOTE_2: {
       *outX = -4, *outY = -4;
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       *outX = -4, *outY = -4;
       break;
     }
@@ -265,7 +265,7 @@ void FUN_080d89cc(s32 kind, s32* outX, s32* outY, s32 quadrant, Enemy* enemy) {
   }
 
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       if (!flying) {
         switch (quadrant) {
           case 0: {
@@ -307,15 +307,15 @@ void FUN_080d89cc(s32 kind, s32* outX, s32* outY, s32 quadrant, Enemy* enemy) {
       }
       break;
     }
-    case 1: {
+    case EMOTE_1: {
       *outX = -16, *outY = -8;
       break;
     }
-    case 2: {
+    case EMOTE_2: {
       *outX = -4, *outY = -4;
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       *outX = -4, *outY = -4;
       break;
     }
@@ -325,7 +325,7 @@ void FUN_080d89cc(s32 kind, s32* outX, s32* outY, s32 quadrant, Enemy* enemy) {
 // enemyKind が ENEK_SKELETON / ENEK_SKELETON_F / ENEK_SKELETON_A のとき
 void FUN_080d8a90(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       switch (quadrant) {
         case 0: {
           *outX = 64, *outY = -42;
@@ -346,7 +346,7 @@ void FUN_080d8a90(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       }
       break;
     }
-    case 1: {
+    case EMOTE_1: {
       if (quadrant == 0 || quadrant == 3) {
         *outX = 12, *outY = -32;
       } else {
@@ -354,7 +354,7 @@ void FUN_080d8a90(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       }
       break;
     }
-    case 2: {
+    case EMOTE_2: {
       if (quadrant == 0 || quadrant == 3) {
         *outX = 0;
       } else {
@@ -363,7 +363,7 @@ void FUN_080d8a90(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       *outY = -4;
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       switch (quadrant) {
         case 0: {
           *outX = 10, *outY = 0;
@@ -390,7 +390,7 @@ void FUN_080d8a90(s32 kind, s32* outX, s32* outY, s32 quadrant) {
 // enemyKind が ENEK_DOG のとき
 void FUN_080d8b58(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       switch (quadrant) {
         case 0: {
           *outX = 220, *outY = 32;
@@ -411,7 +411,7 @@ void FUN_080d8b58(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       }
       break;
     }
-    case 1: {
+    case EMOTE_1: {
       if (quadrant == 0 || quadrant == 3) {
         *outX = 12, *outY = -32;
       } else {
@@ -419,7 +419,7 @@ void FUN_080d8b58(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       }
       break;
     }
-    case 2: {
+    case EMOTE_2: {
       if (quadrant == 0 || quadrant == 3) {
         *outX = 0;
       } else {
@@ -428,7 +428,7 @@ void FUN_080d8b58(s32 kind, s32* outX, s32* outY, s32 quadrant) {
       *outY = -4;
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       switch (quadrant) {
         case 0: {
           *outX = 2, *outY = 10;
@@ -455,12 +455,12 @@ void FUN_080d8b58(s32 kind, s32* outX, s32* outY, s32 quadrant) {
 // enemyKind が ENEK_SHAIAN のとき
 void FUN_080d8c20(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0:
-    case 1:
-    case 2: {
+    case EMOTE_0:
+    case EMOTE_1:
+    case EMOTE_2: {
       break;
     }
-    case 3: {
+    case EMOTE_STUN: {
       switch (quadrant) {
         case 0: {
           *outX = -2, *outY = -8;
@@ -487,18 +487,18 @@ void FUN_080d8c20(s32 kind, s32* outX, s32* outY, s32 quadrant) {
 // Emote_CalcPtclOffset の既定の行き先 (上のどれにも当たらない enemyKind)
 void FUN_080d8c70(s32 kind, s32* outX, s32* outY, s32 quadrant) {
   switch (kind) {
-    case 0: {
+    case EMOTE_0: {
       *outX = -4, *outY = -15;
       break;
     }
-    case 1:
-    case 4:
-    case 5: {
+    case EMOTE_1:
+    case EMOTE_4:
+    case EMOTE_5: {
       *outX = -16, *outY = -8;
       break;
     }
-    case 2:
-    case 3: {
+    case EMOTE_2:
+    case EMOTE_STUN: {
       *outX = -4, *outY = -4;
       break;
     }
@@ -925,7 +925,7 @@ void Emote_Update(Emote* p) {
       [EMOTE_0] = FUN_080d94b4,
       [EMOTE_1] = FUN_080d9758,
       [EMOTE_2] = FUN_080d92ac,
-      [EMOTE_3] = FUN_080d8e98,
+      [EMOTE_STUN] = FUN_080d8e98,
       [EMOTE_4] = FUN_080d9800,
       [EMOTE_5] = FUN_080d9800,
   };  // 0x085AD2EC
@@ -938,7 +938,7 @@ void Emote_Update(Emote* p) {
       s32 x, y;
 
       Emote_CalcPtclOffset(p->kind, p->enemyKind, mover->angle, &x, &y, p->enemy);
-      if (p->kind == EMOTE_2 || p->kind == EMOTE_3) {
+      if (p->kind == EMOTE_2 || p->kind == EMOTE_STUN) {
         s32 i;
 
         for (i = 0; i < 3; i++) {
@@ -1106,7 +1106,7 @@ NON_MATCH Emote* FUN_080d9b3c(u8 animID, WorldPos* pos, u32 moverID, s32 offsetX
   e->offsetY = offsetY;
   e->unk_32[0] = 1;
   e->unk_3c = 10;
-  e->kind = 0;
+  e->kind = EMOTE_0;
   e->hasSprite = 1;
   e->pos = pos;
   e->enemy = enemy;
@@ -1221,7 +1221,7 @@ NON_MATCH Emote* FUN_080d9cec(u8 animID, WorldPos* pos, u32 moverID, s32 offsetX
   }
 
   e->moverID = moverID;
-  e->kind = 1;
+  e->kind = EMOTE_1;
   e->animSet = 1;
   e->pos = pos;
   e->enemy = enemy;
@@ -1331,7 +1331,7 @@ Emote* FUN_080d9f5c(u8 animID, WorldPos* pos, u32 moverID, s32 offsetY, u32 enem
   Emote_ClearPtclState(e);
   e->unk_3c = 0;
   e->unk_4[0].x = e->unk_4[0].y = e->unk_4[0].z = 0;
-  e->kind = 2;
+  e->kind = EMOTE_2;
   e->enemy = NULL;
   e->mover = mover;
   x = y = 0;
@@ -1431,7 +1431,7 @@ NON_MATCH Emote* FUN_080da110(u8 animID, WorldPos* pos, u32 moverID, s32 offsetY
   Emote_ClearPtclState(e);
   e->unk_3c = 0;
   e->unk_4[0].x = e->unk_4[0].y = e->unk_4[0].z = 0;
-  e->kind = 3;
+  e->kind = EMOTE_STUN;
   e->pos = pos;
   e->ptclMask = 0;
   e->hasSprite = 0;
@@ -1542,7 +1542,7 @@ NON_MATCH Emote* FUN_080da358(WorldPos* pos, u32 moverID, s32 offsetX, s32 offse
   e->hasSprite = 1;
   e->unk_30 = 0;
   e->moverID = moverID;
-  e->kind = 4;
+  e->kind = EMOTE_4;
   e->animSet = 4;
   e->pos = pos;
   e->enemy = enemy;
@@ -1755,8 +1755,8 @@ NON_MATCH s32 EmoteManager_Destroy(EmoteManager* p) {
 
 // スプライト2種とアニメ2本、粒子グループを読み込む
 void EmoteManager_LoadResources(EmoteManager* p) {
-  Video_GetAuxSprite(&p->gfx_18, SPRITE_EMOTION_0);
-  Video_GetAuxSprite(&p->gfx_34, SPRITE_EMOTION_1);
+  Video_GetAuxSprite(&p->gfx_18, SPR_EMOTION_0);
+  Video_GetAuxSprite(&p->gfx_34, SPR_EMOTION_1);
   p->group = GetParticleGroup(PTCL_GROUP_1);
   p->anim_50 = GetFile(DIR_ANIMATION, ANIM_6830);
   p->anim_54 = GetFile(DIR_ANIMATION, ANIM_D41F);
@@ -1843,8 +1843,8 @@ Emote* Emote_Show(Emote* emote, Mover* mover, u8 kind, u8 variant, u16* timer, s
       case EMOTE_1: {
         return Emote_Remove(emote, EMOTE_1, mover->id);
       }
-      case EMOTE_3: {
-        return Emote_RemovePtcl(emote, EMOTE_3, mover->id);
+      case EMOTE_STUN: {
+        return Emote_RemovePtcl(emote, EMOTE_STUN, mover->id);
       }
       case EMOTE_2: {
         return Emote_Remove(emote, EMOTE_2, mover->id);
@@ -1863,7 +1863,7 @@ Emote* Emote_Show(Emote* emote, Mover* mover, u8 kind, u8 variant, u16* timer, s
     emote = Emote_Remove(emote, EMOTE_2, mover->id);
     emote = Emote_Remove(emote, EMOTE_4, mover->id);
     emote = Emote_Remove(emote, EMOTE_5, mover->id);
-    Emote_RemovePtcl(emote, EMOTE_3, mover->id);
+    Emote_RemovePtcl(emote, EMOTE_STUN, mover->id);
     if (TEST_FLAGS(mover->flags, MOVER_FLAG_2)) {
       flag = 0xFF;
     } else {
@@ -1879,7 +1879,7 @@ Emote* Emote_Show(Emote* emote, Mover* mover, u8 kind, u8 variant, u16* timer, s
       case EMOTE_2: {
         return FUN_080d9f5c(1, &mover->pos, mover->id, offsetY, flag, mover);
       }
-      case EMOTE_3: {
+      case EMOTE_STUN: {
         return FUN_080da698(7, &mover->pos, mover->id, offsetY, flag, timer, duration, mover, NULL);
       }
       case EMOTE_4: {

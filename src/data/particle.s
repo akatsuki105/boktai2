@@ -23,7 +23,7 @@ gParticleFile0: @ 0x08A20138
   group 0x1C1C, OAM_SIZE_8x8,   224 @ 0x1C1C: ??
   group 0x1C1E, OAM_SIZE_8x8,   298 @ 0x1C1E: ??
 gPartileFile0_Tiles: @ 0x08A2015C
-  .incbin "data/particle_group_0.4bpp" @ 0x08A2015c, Tile 0..223
-  .incbin "data/particle_group_1.4bpp" @ 0x08A21D5C, Tile 224..297
-  .incbin "data/particle_group_2.4bpp" @ 0x08A2269C, Tile 298..316
+  .incbin "data/sprite_aux/eff_eff_00.4bpp" @ 0x08A2015c, Tile 0..223
+  .incbin "data/sprite_aux/eff_eff_02.4bpp" @ 0x08A21D5C, Tile 224..297
+  .incbin "data/sprite_aux/eff_eff_04.4bpp" @ 0x08A2269C, Tile 298..316
   .4byte 0

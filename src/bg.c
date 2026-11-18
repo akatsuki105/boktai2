@@ -399,7 +399,7 @@ void Video_DrawBGNumber(s32 bg, s32 x, s32 y, u32 n, u32 baseTile, s32 digitCoun
 }
 
 // Video_SetupBG と FUN_0822bf80 だけが読む 0x40 バイトのタイルマップファイルのヘッダで、ROM 内にこの形式のファイルは存在しない
-// Video_SetupBG の呼び出し元は sun_countdown.c の1箇所だけだが TILEMAP_596F は "MP" で始まるので、そこを呼ぶ else 側は通らない
+// Video_SetupBG の呼び出し元は sun_countdown.c の1箇所だけだが MP_596F は "MP" で始まるので、そこを呼ぶ else 側は通らない
 // FUN_0822bf80 は呼び出し元なし, GetTilemapFile がもう一方のマジックとして見ている 0x005E8CC5 で始まるファイルも ROM に無い
 // Tilemaps と同じく、ポインタのメンバは ROM では &ファイル先頭からのオフセットが入っている
 typedef struct {

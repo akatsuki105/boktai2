@@ -39,7 +39,7 @@
 #define OBP_LEVER_SWITCH 313
 #define OBP_LEVER_SWITCH_RUSTY 314  // 錆びたレバースイッチ
 
-#define OBP_GENERATOR(idx) (451 + (idx))  // SPRITE_GENERATOR
+#define OBP_GENERATOR(idx) (451 + (idx))  // SPR_GENERATOR
 
 #define OBP_COFFIN(coffinID) (519 + (coffinID))
 
@@ -48,7 +48,7 @@
 #define OBP_CUBE_ICE 577  // 氷ブロック
 #define OBP_OCTOROK 579   // ドヴァリン、オクトパスの投げる岩
 
-#define OBP_SPIKEBALL(idx) (635 + (idx))  // SPRITE_SPIKEBALL, 0: 棘鉄球, 1: ??, 2: 正義のカード
+#define OBP_SPIKEBALL(idx) (635 + (idx))  // SPR_SPIKEBALL, 0: 棘鉄球, 1: ??, 2: 正義のカード
 
 #define OBP_MEGAMAN 695  // ロックマンのベースカラー
 

@@ -44,7 +44,7 @@ typedef struct {
   Hitbox hurtbox;         // 0x07C, 防御力は defense, 当たると state 6 か 8 へ移る
   AuxAnimState anim;      // 0x0CC, コマ送りは自前で行う
   AuxSprite sprite;       // 0x0DC
-  AuxSpriteGfx gfx;       // 0x108, SPRITE_BAT, パレット 611 (被弾直後の 6 フレームは 306), pltt は RingoBatSwarm.pltt を指す
+  AuxSpriteGfx gfx;       // 0x108, SPR_BAT, パレット 611 (被弾直後の 6 フレームは 306), pltt は RingoBatSwarm.pltt を指す
   ParticleShadow shadow;  // 0x124
 } RingoBat;
 static_assert(sizeof(RingoBat) == 356);
@@ -158,7 +158,7 @@ NON_MATCH s32 RingoBat_Init(RingoBatSwarm* p, RingoBat* elem, s32 idx) {
   RingoBat_SetState(elem, 0);
   elem->angle = 0;
   gfx = &elem->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_BAT);
+  Video_GetAuxSprite(gfx, SPR_BAT);
   RingoBat_SetPltt(p, gfx, 611);
   sprite = &elem->sprite;
   AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN);

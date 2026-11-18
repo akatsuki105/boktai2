@@ -20,9 +20,9 @@ static_assert(sizeof(BlackHoleElem) == 60);
 typedef struct BlackHole {
   Entity e;                                   // 0x000, ENTITY_UNK_10
   AuxSprite spr0;                             // 0x018
-  AuxSpriteGfx gfx0;                          // 0x044, SPRITE_BLACKHOLE
+  AuxSpriteGfx gfx0;                          // 0x044, SPR_BLACKHOLE
   AuxSprite spr1;                             // 0x060
-  AuxSpriteGfx gfx1;                          // 0x08C, SPRITE_BLACKHOLE
+  AuxSpriteGfx gfx1;                          // 0x08C, SPR_BLACKHOLE
   u16 scale0;                                 // 0x0A8, 下位バイトが spr0.scaleX / scaleY へ毎フレームコピーされる
   u16 scale1;                                 // 0x0AA, 下位バイトが spr1.scaleX / scaleY へ毎フレームコピーされる
   u16 unk_ac;                                 // 0x0AC, _Init が 0 を書く

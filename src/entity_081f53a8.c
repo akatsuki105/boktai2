@@ -9,7 +9,7 @@
 
 typedef struct {
   AuxSprite sprite;        // 0x000, priority 1, flags に bit0 を立てて作る
-  AuxSpriteGfx gfx;        // 0x02C, SPRITE_SKELETON_MISC
+  AuxSpriteGfx gfx;        // 0x02C, SPR_SKELETON_MISC
   AuxAnimState animState;  // 0x048, 親の anim のアニメ 0x14
   Hitbox hitbox0;          // 0x058
   Hitbox hitbox1;          // 0x0A8
@@ -339,7 +339,7 @@ void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback
   elem->maxSpeed = maxSpeed;
   elem->turnDelay = 60;
   elem->angle = angle;
-  Video_GetAuxSprite(&elem->gfx, SPRITE_SKELETON_MISC);
+  Video_GetAuxSprite(&elem->gfx, SPR_SKELETON_MISC);
   AuxSprite_Add(&elem->sprite, &elem->gfx, 0);
   AuxAnim_SetAnim(&elem->animState, p->anim, 20, 0, 0);
   Video_SetAuxSpritePltt(elem->sprite.gfx, 250);

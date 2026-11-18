@@ -139,7 +139,7 @@ _08037722:
 	str r4, [sp, #4]
 	str r5, [sp, #8]
 	mov r2, ip
-	bl FUN_08060220
+	bl Entity080601a8_Spawn
 	ldr r3, [sp, #0x18]
 	adds r3, #1
 	str r3, [sp, #0x18]

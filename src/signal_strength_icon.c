@@ -9,7 +9,7 @@ typedef struct {
   u32 updateCounter;  // 0x18, SignalStrengthIcon_Update が毎フレーム +1 するだけ, 読み手は見つかっていない
   u32 animCounter;    // 0x1C, SignalStrengthIcon_SetStrength が呼ばれるたびに +1, & 0x1F の値で同じ強度内の点滅段を選ぶ
   s32 pose;           // 0x20, 現在表示しているアイコン番号 (62..66)
-  MainSpriteGfx gfx;  // 0x24, SPRITE_UI_LINK
+  MainSpriteGfx gfx;  // 0x24, SPR_UI_LINK
   MainSprite sprite;  // 0x44
 } SignalStrengthIcon;
 static_assert(sizeof(SignalStrengthIcon) == 164);
@@ -132,7 +132,7 @@ s32 SignalStrengthIcon_Init(SignalStrengthIcon* p) {
   MainSpriteGfxFile* f;
 
   gSignalStrengthIcon = p;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   if (f == NULL) {
     return -1;
   }

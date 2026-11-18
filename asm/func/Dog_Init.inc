@@ -1474,7 +1474,7 @@ _081525A0:
 	ldr r6, _08152780 @ =FUN_0814c2b0
 	ldr r1, [sp, #0x128]
 	str r6, [r1]
-	ldr r2, _08152784 @ =FUN_0814c974
+	ldr r2, _08152784 @ =Dog_StateNap
 	ldr r6, [sp, #0x13c]
 	str r2, [r6]
 	ldr r1, [sp, #0x140]
@@ -1652,7 +1652,7 @@ _08152774: .4byte Dog_StateDying
 _08152778: .4byte FUN_080f62b0
 _0815277C: .4byte FUN_080f62ac
 _08152780: .4byte FUN_0814c2b0
-_08152784: .4byte FUN_0814c974
+_08152784: .4byte Dog_StateNap
 _08152788: .4byte FUN_080f44f4
 _0815278C: .4byte FUN_080f410c
 _08152790: .4byte FUN_0814cb8c

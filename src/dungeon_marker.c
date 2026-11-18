@@ -10,7 +10,7 @@ typedef struct {
   Entity e;           // 0x0, ENTITY_UNK_9
   u16 kind;           // 0x18, '.t', "Undead" と "Immortal" のどっちを表示するか
   u16 radius;         // 0x1A, '.I=384', この距離までプレイヤーが近づくと表示する
-  MainSprite sprite;  // 0x1C, SPRITE_MARKERS
+  MainSprite sprite;  // 0x1C, SPR_MARKERS
   Vec3 pos;           // 0x7C
 } DungeonMarker;
 static_assert(sizeof(DungeonMarker) == 132);
@@ -53,7 +53,7 @@ s32 DungeonMarker_Init(DungeonMarker* p) {
   s32 poseIdx;
   s32 prio;
 
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_MARKERS);
   MainSpriteGfx gfx = *f;
   OpenMainSpriteFile(&gfx, f);
 

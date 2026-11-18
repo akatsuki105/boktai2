@@ -21,7 +21,7 @@
 	lsls r1, r1, #5
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_0805b1a0
+	bl CuroroShotManager_VanishAll
 _080AEE4A:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -170,7 +170,7 @@ _080AEF4A:
 	str r1, [sp, #4]
 	add r1, sp, #8
 	adds r3, r4, #0
-	bl FUN_0805b0b0
+	bl CuroroShotManager_Spawn
 	ldr r0, [r7]
 	adds r0, #1
 	ldr r1, _080AEFD8 @ =0x000003FF

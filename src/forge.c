@@ -52,7 +52,7 @@ typedef struct Forge {
   u8 slots[2];                            // 0x0041, 素材に選んだ weapons の添字
   u8 unk_43;                              // 0x0043
   u32 fnTimer;                            // 0x0044, updateCallback に入ってからのフレーム数, Forge_SetFn が 0 に戻す
-  Tilemaps* tilemap;                      // 0x0048, TILEMAP_9F57
+  Tilemaps* tilemap;                      // 0x0048, MP_9F57
   rgb555* bgPltt;                         // 0x004C, BGP_A41A
   u32 selectable;                         // 0x0050, 選べる武器スロットのビットマスク, Forge_OpenList が作る
   Vec3 slotPos;                           // 0x0054, 素材を飛ばす先
@@ -93,16 +93,16 @@ typedef struct Forge {
   char statText[4];                       // 0x00BC, WeaponData_FormatSuffix が武器の補正値を "+12" / "SP" の形で書く
   u8 unk_c0[4];                           // 0x00C0, まだ未解析
   StrikeRating ratings[5];                // 0x00C4, sprites2[8..12] の表示状態, 鍛治の一叩きの結果を表示するためのポップアップ
-  MainSpriteGfx gfx0;                     // 0x00D8, SPRITE_UI_MISC
-  MainSpriteGfx gfx1;                     // 0x00F8, SPRITE_UI_START_MENU
-  MainSpriteGfx iconGfx;                  // 0x0118, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx gfx0;                     // 0x00D8, SPR_UI_MISC
+  MainSpriteGfx gfx1;                     // 0x00F8, SPR_UI_START_MENU
+  MainSpriteGfx iconGfx;                  // 0x0118, SPR_INVENTORY_ICONS
   ForgeWeapon weapons[16];                // 0x0138, 武器スロットの16個
   ForgeWeapon materials[2];               // 0x0978, 素材に選んだ2個
   ForgeWeapon result;                     // 0x0A80, 鍛治の結果
   MainSprite sprites0[3];                 // 0x0B04, [0] がカーソル
   MainSprite sprites1[4];                 // 0x0C24, Forge_ShowRegisteredMarks が gStat->registeredWeapon の位置に置く
   MainSprite iconSprite;                  // 0x0DA4, 選択中の武器の絵
-  MainSprite sprites2[13];                // 0x0E04, SPRITE_UI_MISC (gfx0), [8..12] は ratings が出すポーズ (UI_FORGE_GREAT, UI_FORGE_GOOD, UI_FORGE_BAD)
+  MainSprite sprites2[13];                // 0x0E04, SPR_UI_MISC (gfx0), [8..12] は ratings が出すポーズ (UI_FORGE_GREAT, UI_FORGE_GOOD, UI_FORGE_BAD)
   rgb555 unk_12e4[16];                    // 0x12E4, sprites2[5] が使うパレット
   void (*updateCallback)(struct Forge*);  // 0x1304
   u8* unk_1308;                           // 0x1308, '.w' の VM_GetPC_Proxy の戻り値, MessageWindow_Start に渡す
@@ -655,7 +655,7 @@ void PlayForgeStrikeSE(u32 _, s32 kind) {
 }
 
 s32 Forge_SetupBg(Forge* p, s32 param_2) {
-  Tilemaps* tilemap = GetFile(DIR_TILE_MAP, TILEMAP_9F57);
+  Tilemaps* tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
   BgPlttFile* pltt;
 
   p->tilemap = tilemap;
@@ -2014,15 +2014,15 @@ s32 Forge_Init(Forge* p, s32 param_2, s32 param_3) {
   Vec3* pos;
 
   gForge = p;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_MISC);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_MISC);
   if (f != NULL) {
     p->gfx0 = *f;
     OpenMainSpriteFile(&p->gfx0, f);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
     if (f != NULL) {
       p->gfx1 = *f;
       OpenMainSpriteFile(&p->gfx1, f);
-      f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+      f = GetFile(DIR_MAIN_SPRITE, SPR_INVENTORY_ICONS);
       if (f != NULL) {
         p->iconGfx = *f;
         OpenMainSpriteFile(&p->iconGfx, f);

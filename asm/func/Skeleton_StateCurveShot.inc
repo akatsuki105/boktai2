@@ -143,7 +143,7 @@ _0810B92E:
 	str r2, [sp, #0x18]
 	movs r2, #6
 	movs r3, #6
-	bl Entity081f4554_Spawn
+	bl ThunderboltManager_Spawn
 _0810B994:
 	cmp r7, #0x28
 	ble _0810B9C2

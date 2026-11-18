@@ -124,7 +124,7 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
   differs per arm can come from **two calls** that agbcc cross-jumped. A ternary
   or a local hoists one of the constants above the compare and saves an
   instruction; writing the call out in both arms keeps each constant inside its
-  own arm (`Entity08001610_Create`).
+  own arm (`AutoScroller_Create`).
   A single `bl` shared by two arms is sometimes **not** reproducible: when both
   arms are `return f(...)` with different arguments, agbcc cross-jumps the one
   `bl` whatever the surrounding shape, while the target keeps two. Every spelling

@@ -10,7 +10,7 @@ typedef struct {
   u32 state;           // 0x018, 0..5 の switch, 5 フレームごとに次へ進む
   u32 timer;           // 0x01C, Update の先頭と末尾で +1 されるので毎フレーム +2, 4 を超えると state を進めて 0 に戻す
   Vec3 pos;            // 0x020, Init の第2引数, 両方の MainSprite が指す
-  MainSpriteGfx gfx;   // 0x028, SPRITE_RINGO
+  MainSpriteGfx gfx;   // 0x028, SPR_RINGO
   MainSprite sprite;   // 0x048, prio2, state 5 で animEvents の bit1 を見て終了を待つ
   MainSprite sprite2;  // 0x0A8, prio3, state 3 で SPRFLAG_HIDDEN を立てて消す
   MsgQueue* mq;        // 0x108, Init の第3引数, 終わったら MsgQueue_EndWait(mq, 1)
@@ -98,7 +98,7 @@ s32 RingoCutsceneAnim_Init(RingoCutsceneAnim* p, Vec3* pos, MsgQueue* mq) {
   p->mq = mq;
   q = &p->pos;
   *q = *pos;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_RINGO);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_RINGO);
   if (f == NULL) {
     return -1;
   }

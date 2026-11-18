@@ -9,7 +9,7 @@
 // スクリプトから足せる飾りのスプライト1枚, 位置の補間とマーカー設定への追従を持つ
 typedef struct {
   u8 unk_0[24];           // 0x00, どの関数も触っていない
-  MainSpriteGfx gfx;      // 0x18, '.d' で指定したスプライトファイル (e.g. SPRITE_DJANGO_LARGE, SPRITE_DUNGEON_TITLE, SPRITE_UI_BANK)
+  MainSpriteGfx gfx;      // 0x18, '.d' で指定したスプライトファイル (e.g. SPR_DJANGO_LARGE, SPR_DUNGEON_TITLE, SPR_UI_BANK)
   MainSprite sprite;      // 0x38
   u16 id;                 // 0x98, '.n', スクリプトから枠を引くときの番号
   bool16 moving;          // 0x9A, 0 以外なら pos を fromPos から toPos へ補間する
@@ -24,7 +24,7 @@ typedef struct {
 static_assert(sizeof(GenericObjUnit) == 188);
 
 // スクリプトが MainSprite の大きな絵を画面に重ねて出し入れする入れ物, AuxSprite を使う GenericObjManager (汎用オブジェ) と対になる兄弟
-// 使い道: ソル・デ・バイスを受け取るときのジャンゴの1枚絵 (SPRITE_DJANGO_LARGE), 暗黒ローンの取り立てなどの太陽バンクの UI (SPRITE_UI_BANK), ダンジョンタイトルの特殊フォント (SPRITE_DUNGEON_TITLE), スミレ (SPRITE_SUMIRE)
+// 使い道: ソル・デ・バイスを受け取るときのジャンゴの1枚絵 (SPR_DJANGO_LARGE), 暗黒ローンの取り立てなどの太陽バンクの UI (SPR_UI_BANK), ダンジョンタイトルの特殊フォント (SPR_DUNGEON_TITLE), スミレ (SPR_SUMIRE)
 // インスタンスIDは 0x2FA0 (ソル・デ・バイス), 0x11C1 / 0x2BCF (太陽バンク UI), 0xBF95 (スミレ), 0xC4F1 (ダンジョンタイトル)
 // ハッシュ元は「汎用オブジェユニット」に マネージャ / 登録 / 表示 / 非表示 / 移動 / パターン切替 / 反転設定 / 優先設定 を付けたもの, 汎用オブジェ (AuxSprite) に対して MainSprite をオブジェユニットと呼んでいたらしい
 typedef struct {

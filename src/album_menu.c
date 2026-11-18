@@ -12,7 +12,7 @@
 
 typedef struct {
   Entity e;                       // 0x0, ENTITY_UNK_8
-  Tilemaps* tilemap;              // 0x18, TILEMAP_4F8F
+  Tilemaps* tilemap;              // 0x18, MP_4F8F
   rgb555* pltt;                   // 0x1C, BGP_A41A のパレット
   u32 frameCounter;               // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                        // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
@@ -209,7 +209,7 @@ NON_MATCH void AlbumMenu_InitSprites(AlbumMenu* p) {
   s32 i;
   s32 j;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_GALLERY);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_GALLERY);
   p->gfx1 = *f;
   OpenMainSpriteFile(&p->gfx1, f);
 
@@ -233,7 +233,7 @@ NON_MATCH void AlbumMenu_InitSprites(AlbumMenu* p) {
   MainSprite_Add(&p->sprites_2e8[1], &p->gfx1, 13, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, PLAYMODE_ONCE_AND_STOP, 60, &pos);
   p->sprites_2e8[1].flags |= SPRFLAG_HIDDEN;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_PORTRAITS);
   p->gfx2 = *f;
   OpenMainSpriteFile(&p->gfx2, f);
   photo = p->sprites_488;
@@ -264,7 +264,7 @@ void AlbumMenu_SetupPageBG(AlbumMenu* p) {
   s32 col;
 
   ClearBGTilemapBuffer(0);
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_4F8F);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_4F8F);
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(0, 3);
   Video_GenerateBGMap(0, 0, 0, 0, 0);

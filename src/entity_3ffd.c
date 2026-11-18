@@ -10,7 +10,7 @@
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_8
   u32 frameCounter;       // 0x018, 51 に達すると _Update が何もしなくなる
-  AuxSpriteGfx gfx;       // 0x01C, SPRITE_WORM
+  AuxSpriteGfx gfx;       // 0x01C, SPR_WORM
   AuxSprite sprites[8];   // 0x038, [0] が先頭, 後続は前の節へ一定距離まで引き寄せられる
   AuxAnimState anim;      // 0x198, 8枚で共有する再生状態
   AuxAnimFile* animFile;  // 0x1A8, ANIM_WORM
@@ -75,7 +75,7 @@ s32 Entity3FFD_Init(Entity3FFD* p, u32 id) {
     VEC3_SET(pos, 0, 0, 0);
   }
   p->animFile = GetFile(DIR_ANIMATION, ANIM_WORM);
-  Video_GetAuxSprite(gfx, SPRITE_WORM);
+  Video_GetAuxSprite(gfx, SPR_WORM);
   AuxAnim_SetAnim(anim, p->animFile, 6, 0, 0);
   for (i = 0; i < 8; i++) {
     AuxSprite_Add(sprite, gfx, 0);

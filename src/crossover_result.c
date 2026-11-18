@@ -27,8 +27,8 @@ typedef struct {
   s16 remain;                 // 0x028, total へ step ずつ移していく残り
   s16 total;                  // 0x02A, 移ってくる累計, 9999 で止まる
   TilemapFile* tilemap;       // 0x02C
-  MainSpriteGfx gfx;          // 0x030, SPRITE_UI_LINK
-  MainSpriteGfx portraitGfx;  // 0x050, SPRITE_PORTRAITS
+  MainSpriteGfx gfx;          // 0x030, SPR_UI_LINK
+  MainSpriteGfx portraitGfx;  // 0x050, SPR_PORTRAITS
   MainSprite sprites[21];     // 0x070
   MainSprite portrait;        // 0x850
   Procedure exitCallback;     // 0x8B0, ボタンで画面を閉じるときに呼ぶ, NULL 可
@@ -48,7 +48,7 @@ CrossoverResult* CrossoverResult_Get(void) { return sCrossoverResult; }
 
 // 結果画面の BG1 と BG パレットを読み込む
 void CrossoverResult_SetupBG(CrossoverResult* p, s32 bgIndex) {
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   CpuCopy16(GetBgPlttFile(BGP_LINK)->body, gBgPlttBuffer, 256 * sizeof(rgb555));
@@ -356,13 +356,13 @@ s32 CrossoverResult_Init(CrossoverResult* p) {
   } else {
     return -1;
   }
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   if (f == NULL) {
     return -1;
   }
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_PORTRAITS);
   if (f == NULL) {
     return -1;
   }

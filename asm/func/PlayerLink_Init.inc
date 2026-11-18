@@ -6,9 +6,9 @@
 	bl FUN_080cf0b4
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_080cf3c0
+	bl PlayerLink_InitMover
 	adds r0, r5, #0
-	bl FUN_080cf560
+	bl PlayerLink_SetupHurtbox
 	adds r0, r5, #0
 	bl PlayerLink_RefreshMagicInfo
 	adds r0, r5, #0
@@ -16,7 +16,7 @@
 	adds r0, r5, #0
 	bl FUN_080cf610
 	adds r0, r5, #0
-	bl FUN_080ce378
+	bl PlayerLink_InitEffects
 	ldr r1, _080D8280 @ =0x03002BC0
 	ldr r0, [r5, #0x18]
 	lsls r0, r0, #2

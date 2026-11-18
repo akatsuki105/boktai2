@@ -16,7 +16,7 @@ _08193CC0:
 _08193CC2:
 	cmp r0, #0
 	beq _08193CFA
-	ldr r4, _08193D9C @ =FUN_0818a904
+	ldr r4, _08193D9C @ =Serpent_StateHover
 	movs r3, #0x22
 	ldr r2, _08193DA0 @ =0x0000046D
 	adds r1, r5, r2
@@ -68,19 +68,19 @@ _08193D1E:
 	adds r0, r5, #0
 	movs r1, #4
 	movs r2, #0xc
-	bl FUN_0818fdd8
+	bl Serpent_PullSegments
 	movs r1, #0xd7
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x28
-	bl FUN_0818f938
+	bl Serpent_UpdateWave
 	ldr r6, _08193DA4 @ =0x0000046B
 	adds r0, r5, r6
 	ldrb r0, [r0]
 	cmp r0, #0
 	beq _08193DB4
 	adds r0, r5, #0
-	bl FUN_0818e6fc
+	bl Serpent_PickNextTile
 	movs r1, #0xb4
 	lsls r1, r1, #3
 	adds r0, r5, r1
@@ -123,7 +123,7 @@ _08193D1E:
 	strb r3, [r0]
 	b _08193DBE
 	.align 2, 0
-_08193D9C: .4byte FUN_0818a904
+_08193D9C: .4byte Serpent_StateHover
 _08193DA0: .4byte 0x0000046D
 _08193DA4: .4byte 0x0000046B
 _08193DA8: .4byte 0x00000553

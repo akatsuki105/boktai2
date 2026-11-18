@@ -175,7 +175,7 @@ void FUN_08209534(s32 param_1) {
   if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 2, SPRITE_KURO, 0, flags) < 0) {
+  if (FUN_08040f48(npc, 2, SPR_KURO, 0, flags) < 0) {
     return;
   }
 
@@ -197,7 +197,7 @@ void FUN_08209534(s32 param_1) {
   NPC_SetCb(npc, 3, FUN_08209518);
   NPC_SetOnDestroy(npc, FUN_08209524);
   npc->unk_1b = angle;
-  FUN_08040df4(p, npc, SPRITE_KURO, 0);
+  FUN_08040df4(p, npc, SPR_KURO, 0);
   NPCManager_LinkNPC(p, npc);
   FUN_08041e10(p, npc);
 

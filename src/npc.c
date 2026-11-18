@@ -41,37 +41,37 @@ void FUN_0807c7c8(Player* p, s32 mode);
 // キャラクターごとのアニメ表, 区切りは sNPCSprites の data が指す位置
 // clang-format off
 const NPCAnim sNPCAnims[135] = {
-    // SPRITE_DJANGO_SABATA idx 0
+    // SPR_DJANGO_SABATA idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   5},
 
-    // SPRITE_DJANGO_SABATA idx 1
+    // SPR_DJANGO_SABATA idx 1
     {dirMode : 3, unk_1 : 1, pose : 414},
     {dirMode : 3, unk_1 : 1, pose : 419},
     {dirMode : 3, unk_1 : 1, pose : 414},
     {dirMode : 3, unk_1 : 1, pose : 419},
 
-    // SPRITE_MOUSE idx 0
+    // SPR_MOUSE idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   1},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   1},
 
-    // SPRITE_SKELETONS idx 0
+    // SPR_SKELETONS idx 0
     {dirMode : 2, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   6},
     {dirMode : 2, unk_1 : 1, pose :  30},
     {dirMode : 2, unk_1 : 1, pose :   6},
 
-    // SPRITE_BOKU_0 idx 0
+    // SPR_BOKU_0 idx 0
     {dirMode : 2, unk_1 : 0, pose :   7},
     {dirMode : 2, unk_1 : 0, pose :   8},
     {dirMode : 2, unk_1 : 0, pose :   9},
     {dirMode : 2, unk_1 : 0, pose :   8},
 
-    // SPRITE_OTENKO_00 idx 0
+    // SPR_OTENKO_00 idx 0
     {dirMode : 3, unk_1 : 0, pose :   0},
     {dirMode : 3, unk_1 : 0, pose :   0},
     {dirMode : 3, unk_1 : 0, pose :   0},
@@ -82,7 +82,7 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 0, unk_1 : 0, pose :  19},
     {dirMode : 0, unk_1 : 0, pose :   0},
 
-    // SPRITE_SMITH_MARCELLO idx 0
+    // SPR_SMITH_MARCELLO idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
@@ -95,7 +95,7 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 1, unk_1 : 0, pose :  14},
     {dirMode : 1, unk_1 : 0, pose :  15},
 
-    // SPRITE_SHAIAN idx 0
+    // SPR_SHAIAN idx 0
     {dirMode : 3, unk_1 : 1, pose :   7},
     {dirMode : 2, unk_1 : 1, pose :  14},
     {dirMode : 3, unk_1 : 1, pose :   7},
@@ -106,7 +106,7 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 1, unk_1 : 1, pose :  41},
     {dirMode : 0, unk_1 : 1, pose :   0},
 
-    // SPRITE_RITA idx 0
+    // SPR_RITA idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
@@ -119,7 +119,7 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 2, unk_1 : 3, pose :  18},
     {dirMode : 2, unk_1 : 3, pose :  19},
 
-    // SPRITE_ZAJI idx 0
+    // SPR_ZAJI idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
@@ -132,7 +132,7 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 0, unk_1 : 1, pose :  17},
     {dirMode : 0, unk_1 : 1, pose :  16},
 
-    // SPRITE_SUMIRE idx 0
+    // SPR_SUMIRE idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
@@ -142,7 +142,7 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 0, unk_1 : 1, pose :  10},
     {dirMode : 0, unk_1 : 1, pose :   9},
 
-    // SPRITE_KURO idx 0
+    // SPR_KURO idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 1, unk_1 : 1, pose :   9},
@@ -165,31 +165,31 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 1, unk_1 : 1, pose :  31},
     {dirMode : 0, unk_1 : 1, pose :  32},
 
-    // SPRITE_KID idx 0
+    // SPR_KID idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   7},
 
-    // SPRITE_LADY idx 0
+    // SPR_LADY idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   5},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   7},
 
-    // SPRITE_COFSELLER_HATENA idx 0
+    // SPR_COFSELLER_HATENA idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
 
-    // SPRITE_ENNIO_LUIS idx 0
+    // SPR_ENNIO_LUIS idx 0
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
     {dirMode : 3, unk_1 : 1, pose :   0},
 
-    // SPRITE_DAINN idx 0
+    // SPR_DAINN idx 0
     {dirMode : 2, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   0},
     {dirMode : 2, unk_1 : 1, pose :   0},
@@ -197,25 +197,25 @@ const NPCAnim sNPCAnims[135] = {
     {dirMode : 1, unk_1 : 1, pose :   3},
     {dirMode : 1, unk_1 : 1, pose :   2},
 
-    // SPRITE_SMITH_MARCELLO idx 1
+    // SPR_SMITH_MARCELLO idx 1
     {dirMode : 3, unk_1 : 1, pose :  16},
     {dirMode : 2, unk_1 : 1, pose :  21},
     {dirMode : 3, unk_1 : 1, pose :  16},
     {dirMode : 2, unk_1 : 1, pose :  23},
 
-    // SPRITE_COFSELLER_HATENA idx 1
+    // SPR_COFSELLER_HATENA idx 1
     {dirMode : 3, unk_1 : 1, pose :   5},
     {dirMode : 2, unk_1 : 1, pose :  10},
     {dirMode : 3, unk_1 : 1, pose :   5},
     {dirMode : 2, unk_1 : 1, pose :  12},
 
-    // SPRITE_ENNIO_LUIS idx 1
+    // SPR_ENNIO_LUIS idx 1
     {dirMode : 3, unk_1 : 1, pose :   7},
     {dirMode : 2, unk_1 : 1, pose :  12},
     {dirMode : 3, unk_1 : 1, pose :   7},
     {dirMode : 2, unk_1 : 1, pose :  14},
 
-    // SPRITE_MEGAMAN idx 0
+    // SPR_MEGAMAN idx 0
     {dirMode : 0, unk_1 : 1, pose :   0},
 };  // 0x085AAFF4
 // clang-format on
@@ -227,51 +227,51 @@ typedef struct {
 } NPCSpriteEntry;
 
 const NPCSpriteEntry sNPCSprites[21] = {
-    {id : SPRITE_DJANGO_SABATA,    idx : 0, data : &sNPCAnims[0]  },
-    {id : SPRITE_MOUSE,            idx : 0, data : &sNPCAnims[8]  },
-    {id : SPRITE_SKELETONS,        idx : 0, data : &sNPCAnims[12] },
-    {id : SPRITE_BOKU_0,           idx : 0, data : &sNPCAnims[16] },
-    {id : SPRITE_OTENKO_00,        idx : 0, data : &sNPCAnims[20] },
-    {id : SPRITE_SMITH_MARCELLO,   idx : 0, data : &sNPCAnims[29] },
-    {id : SPRITE_SHAIAN,           idx : 0, data : &sNPCAnims[40] },
-    {id : SPRITE_RITA,             idx : 0, data : &sNPCAnims[49] },
-    {id : SPRITE_ZAJI,             idx : 0, data : &sNPCAnims[60] },
-    {id : SPRITE_SUMIRE,           idx : 0, data : &sNPCAnims[71] },
-    {id : SPRITE_KURO,             idx : 0, data : &sNPCAnims[79] },
-    {id : SPRITE_KID,              idx : 0, data : &sNPCAnims[100]},
-    {id : SPRITE_LADY,             idx : 0, data : &sNPCAnims[104]},
-    {id : SPRITE_COFSELLER_HATENA, idx : 0, data : &sNPCAnims[108]},
-    {id : SPRITE_ENNIO_LUIS,       idx : 0, data : &sNPCAnims[112]},
-    {id : SPRITE_DAINN,            idx : 0, data : &sNPCAnims[116]},
-    {id : SPRITE_DJANGO_SABATA,    idx : 1, data : &sNPCAnims[4]  },
-    {id : SPRITE_SMITH_MARCELLO,   idx : 1, data : &sNPCAnims[122]},
-    {id : SPRITE_COFSELLER_HATENA, idx : 1, data : &sNPCAnims[126]},
-    {id : SPRITE_ENNIO_LUIS,       idx : 1, data : &sNPCAnims[130]},
-    {id : SPRITE_MEGAMAN,          idx : 0, data : &sNPCAnims[134]}
+    {id : SPR_DJANGO_SABATA,    idx : 0, data : &sNPCAnims[0]  },
+    {id : SPR_MOUSE,            idx : 0, data : &sNPCAnims[8]  },
+    {id : SPR_SKELETONS,        idx : 0, data : &sNPCAnims[12] },
+    {id : SPR_BOKU_0,           idx : 0, data : &sNPCAnims[16] },
+    {id : SPR_OTENKO_00,        idx : 0, data : &sNPCAnims[20] },
+    {id : SPR_SMITH_MARCELLO,   idx : 0, data : &sNPCAnims[29] },
+    {id : SPR_SHAIAN,           idx : 0, data : &sNPCAnims[40] },
+    {id : SPR_RITA,             idx : 0, data : &sNPCAnims[49] },
+    {id : SPR_ZAJI,             idx : 0, data : &sNPCAnims[60] },
+    {id : SPR_SUMIRE,           idx : 0, data : &sNPCAnims[71] },
+    {id : SPR_KURO,             idx : 0, data : &sNPCAnims[79] },
+    {id : SPR_KID,              idx : 0, data : &sNPCAnims[100]},
+    {id : SPR_LADY,             idx : 0, data : &sNPCAnims[104]},
+    {id : SPR_COFSELLER_HATENA, idx : 0, data : &sNPCAnims[108]},
+    {id : SPR_ENNIO_LUIS,       idx : 0, data : &sNPCAnims[112]},
+    {id : SPR_DAINN,            idx : 0, data : &sNPCAnims[116]},
+    {id : SPR_DJANGO_SABATA,    idx : 1, data : &sNPCAnims[4]  },
+    {id : SPR_SMITH_MARCELLO,   idx : 1, data : &sNPCAnims[122]},
+    {id : SPR_COFSELLER_HATENA, idx : 1, data : &sNPCAnims[126]},
+    {id : SPR_ENNIO_LUIS,       idx : 1, data : &sNPCAnims[130]},
+    {id : SPR_MEGAMAN,          idx : 0, data : &sNPCAnims[134]}
 };  // 0x085AB210
 
 const NPCFootStepSound sNPCFootStepSounds[21] = {
-    {id : SPRITE_DJANGO_SABATA,    idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_MOUSE,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_SKELETONS,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_BOKU_0,           idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_OTENKO_00,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_SMITH_MARCELLO,   idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_SHAIAN,           idx : 0, soundSet : 0, stepFrames : {4, 0, 4, 0}    },
-    {id : SPRITE_RITA,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_ZAJI,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_SUMIRE,           idx : 0, soundSet : 2, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_KURO,             idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_KID,              idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_LADY,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_COFSELLER_HATENA, idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_ENNIO_LUIS,       idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_DAINN,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_DJANGO_SABATA,    idx : 1, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
-    {id : SPRITE_SMITH_MARCELLO,   idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_COFSELLER_HATENA, idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_ENNIO_LUIS,       idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
-    {id : SPRITE_MEGAMAN,          idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_DJANGO_SABATA,    idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_MOUSE,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_SKELETONS,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_BOKU_0,           idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_OTENKO_00,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_SMITH_MARCELLO,   idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_SHAIAN,           idx : 0, soundSet : 0, stepFrames : {4, 0, 4, 0}    },
+    {id : SPR_RITA,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_ZAJI,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_SUMIRE,           idx : 0, soundSet : 2, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_KURO,             idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_KID,              idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_LADY,             idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_COFSELLER_HATENA, idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_ENNIO_LUIS,       idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_DAINN,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_DJANGO_SABATA,    idx : 1, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPR_SMITH_MARCELLO,   idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_COFSELLER_HATENA, idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_ENNIO_LUIS,       idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPR_MEGAMAN,          idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
 };  // 0x085AB2B8
 
 const SoundID16 sFootStepSEs[3][2] = {
@@ -425,7 +425,7 @@ s32 FUN_08040fc0(NPC* npc, Vec3* pos, u32 kind, u32 poseIdx, s32 size) {
     ParticleShadow_Show(&npc->shadow.ptcl);
   } else if (npc->shadowKind == 2) {
     AuxShadow_Init(&npc->shadow.aux, pos, size, size, size, size, 2000, 400, 2, 4, 1);
-    AuxShadow_SetSprite(&npc->shadow.aux, SPRITE_EFF_1C1B, poseIdx);
+    AuxShadow_SetSprite(&npc->shadow.aux, SPR_EFF_1C1B, poseIdx);
     AuxShadow_Show(&npc->shadow.aux);
   }
   return 0;
@@ -824,9 +824,9 @@ NON_MATCH void FUN_08041918(NPCManager* p) {
 
   if (p->player != NULL && !(p->player->kind == PLAYER_BAT || p->player->kind == PLAYER_MOUSE || p->player->kind == PLAYER_SLEEPING) && !p->player->formRequest &&
       !(p->player->goodCondTimer != 0 && (p->player->goodCondID == GOOD_MINI || p->player->goodCondID == GOOD_INVISIBLE)) && (p->player->action <= PACT_WALK || p->player->action == PACT_UNK_7)) {
-    if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+    if (p->player->kind == PLAYER_RDJANGO) {
       form = 0;
-    } else if (p->player->kind == PLAYER_DARK_DJANGO) {
+    } else if (p->player->kind == PLAYER_BDJANGO) {
       form = 1;
     } else if (p->player->kind == PLAYER_SABATA) {
       form = 2;
@@ -2431,7 +2431,7 @@ void Cmd_CreateNPC(void) {
   }
   angle = VM_GetNamedArgValue('d', 0);
   spriteType = VM_GetNamedArgValue('o', 2);
-  spriteID = VM_GetNamedArgValue('t', SPRITE_DJANGO_SABATA);
+  spriteID = VM_GetNamedArgValue('t', SPR_DJANGO_SABATA);
   flags = VM_GetNamedArgValue('m', 0);
   plttID = VM_GetNamedArgValue('c', -1);
 
@@ -3019,7 +3019,7 @@ void Cmd_CreateSmithNPC(void) {
     VEC3_SET(pos, 0, 0, 0);
   }
   angle = VM_GetNamedArgValue('d', 0);
-  spriteID = SPRITE_SMITH_MARCELLO;
+  spriteID = SPR_SMITH_MARCELLO;
   flags = 0;
 
   npc = NPC_Alloc(id, kind);

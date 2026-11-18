@@ -58,9 +58,9 @@ typedef struct {
   u8 unk_46;                     // 0x46, property の退避先
   u8 unk_47;                     // 0x47
   Mover obj;                     // 0x48, obj.id は PropertyCubeManager_FindCubeById の検索キー
-  AuxSpriteGfx gfx;              // 0x8C, SPRITE_PROPERTY_CUBE
+  AuxSpriteGfx gfx;              // 0x8C, SPR_PROPERTY_CUBE
   AuxSprite spr_a8;              // 0xA8
-  AuxSpriteGfx gfx2;             // 0xD4, SPRITE_PROPERTY_CUBE
+  AuxSpriteGfx gfx2;             // 0xD4, SPR_PROPERTY_CUBE
   AuxSprite spr_f0;              // 0xF0
   MapTileOverride tileOverride;  // 0x11C
   Hitbox hurtbox;                // 0x12C
@@ -877,13 +877,13 @@ NON_MATCH s32 Cmd_A062(void) {
   cube->unk_40 = 0;
   cube->flashTimer = 0;
 
-  Video_GetAuxSprite(&cube->gfx, SPRITE_PROPERTY_CUBE);
+  Video_GetAuxSprite(&cube->gfx, SPR_PROPERTY_CUBE);
   PropertyCube_ApplyPltt(p, cube);
   AuxSprite_Add(&cube->spr_a8, &cube->gfx, 0);
   cube->spr_a8.poseIdx = 0;
   cube->spr_a8.pos = pos;
   cube->spr_a8.pos.y += cube->unk_34;
-  Video_GetAuxSprite(&cube->gfx2, SPRITE_PROPERTY_CUBE);
+  Video_GetAuxSprite(&cube->gfx2, SPR_PROPERTY_CUBE);
   AuxSprite_Add(&cube->spr_f0, &cube->gfx2, SPRFLAG_BLINK_ODD);
   cube->spr_f0.poseIdx = 1;
   cube->spr_f0.pos = pos;

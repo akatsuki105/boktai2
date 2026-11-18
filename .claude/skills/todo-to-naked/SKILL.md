@@ -164,6 +164,15 @@ connection is down (see `.claude/skills/ghidra-struct/references/http-api.md`).
   `curl -s "$G/get_xrefs_to?address=0xADDR&limit=10"`, then decompile a caller
   and read what it passes. A caller that is already MATCHING C in `src/` is the
   strongest evidence — its own types are settled.
+- **Query the Thumb address too (`ADDR + 1`).** A function used as a pointer
+  (a state callback stored from a literal pool, a `SetEntityRoutine` argument)
+  is referenced through a pool word holding `ADDR | 1`, and Ghidra files that
+  `DATA` xref under `ADDR + 1`, not under the entry. Querying only the entry
+  shows the `bl` callers and nothing else, so a function called only through
+  pointers looks unreferenced. Query both, and cross-check with
+  `grep -rn FUNCTION_NAME asm src data`: references from tables in `.c`/`.s`
+  that Ghidra never typed as pointers (e.g. the `vm_commands.s` table) do not
+  show up in Ghidra at all.
 - **Return type** comes from the epilogue. `pop {r0}` / `bx r0` means `void`;
   `pop {r1}` / `bx r1` means the function is declared to return a value (see
   `AuxShadow_SetSprite` and `Entity080ac374_Update` in `src/` for the shape). An entity's

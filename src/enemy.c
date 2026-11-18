@@ -262,7 +262,7 @@ NON_MATCH s32 Enemy_UpdateHitboxes(Enemy* p) {
   } else {
     p->hurtbox.flags &= ~HBF_HIDDEN;
     p->flags4 &= ~ENEFLAG4_UNK_14;
-    if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(p) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
+    if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(p) && !TEST_FLAGS(p->flags3, ENEFLAG3_STUN | ENEFLAG3_PETRIFIED))) {
       if (!(p->hitbox.flags & HBF_HIDDEN)) {
         Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
         Hitbox_Register(&p->hitbox);
@@ -733,14 +733,14 @@ void Enemy_InitHpAndState(Enemy* p, s32 hp, s32 param_3, s32 param_4) {
   p->stateBegun = TRUE;
   p->subStateDone = 0;
   p->hp = hp;
-  p->sleepTimer = 0;
+  p->stunTimer = 0;
 
   if (param_4 <= 0) {
     param_4 = param_3;
   }
 
-  p->unk_18e = param_3;
-  p->sleepTime = param_4;
+  p->hitStunTime = param_3;
+  p->stunTime = param_4;
   p->unk_21c = 0;
   p->emote = NULL;
   p->zoneID = 0;
@@ -839,7 +839,7 @@ NON_MATCH bool8 Enemy_UpdateJump(Enemy* p) {
         p->jumpVel.y = Div(abs(p->jumpVel.y) * p->unk_1bc, 10);
         p->jumpVel.z = Div(p->jumpVel.z * 5, 10);
       }
-      if (p->kind != ENEK_CURORO && p->kind != ENEK_GHOST && p->kind != ENEK_CROW && p->kind != ENEK_BAT && p->kind != ENEK_SANDWORM && p->kind != ENEK_OCTOPUS && p->kind != ENEK_SERPENT && p->kind != ENEK_AX && p->kind != ENEK_31) {
+      if (p->kind != ENEK_CURORO && p->kind != ENEK_GHOST && p->kind != ENEK_CROW && p->kind != ENEK_BAT && p->kind != ENEK_SANDWORM && p->kind != ENEK_OCTOPUS && p->kind != ENEK_SERPENT && p->kind != ENEK_AX && p->kind != ENEK_SALAMANDER) {
         DustManager_Spawn(&p->mover.pos, &p->jumpVel, &range, 6, 2, 4);
       }
       if (p->unk_5b4 != NULL) {
@@ -1369,19 +1369,19 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
   if (variant == 0x7F) {
     switch (emote) {
       case 0: {
-        p->emote = Emote_Remove(p->emote, 0, p->mover.id);
+        p->emote = Emote_Remove(p->emote, EMOTE_0, p->mover.id);
         break;
       }
       case 1: {
-        p->emote = Emote_Remove(p->emote, 1, p->mover.id);
+        p->emote = Emote_Remove(p->emote, EMOTE_1, p->mover.id);
         break;
       }
       case 3: {
-        p->emote = Emote_RemovePtcl(p->emote, 3, p->mover.id);
+        p->emote = Emote_RemovePtcl(p->emote, EMOTE_STUN, p->mover.id);
         break;
       }
       case 2: {
-        p->emote = Emote_Remove(p->emote, 2, p->mover.id);
+        p->emote = Emote_Remove(p->emote, EMOTE_2, p->mover.id);
         break;
       }
     }
@@ -1405,7 +1405,7 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
       break;
     }
     case 1: {
-      if (TEST_FLAGS(p->flags3, ENEFLAG3_UNK_1)) {
+      if (TEST_FLAGS(p->flags3, ENEFLAG3_STUN)) {
         break;
       }
       p->emote = Emote_Remove(p->emote, 0, p->mover.id);
@@ -1415,7 +1415,7 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
         break;
       }
       GetEnemyEmoteOffset(kind, 1, &x, &y);
-      p->emote = FUN_080d9cec(variant, &p->mover.pos, p->mover.id, x, y, kind, &p->sleepTimer, p->sleepTime, Enemy_GetFlag2(p, ENEFLAG2_UNK_9) != 0, p, &p->mover);
+      p->emote = FUN_080d9cec(variant, &p->mover.pos, p->mover.id, x, y, kind, &p->stunTimer, p->stunTime, Enemy_GetFlag2(p, ENEFLAG2_UNK_9) != 0, p, &p->mover);
       FUN_080e5388(emote, variant, kind, p->variant);
       break;
     }
@@ -1425,12 +1425,12 @@ NON_MATCH void Enemy_SetEmote(Enemy* p, u8 emote, u8 variant, u8 kind) {
       break;
     }
     case 3: {
-      p->emote = Emote_Remove(p->emote, 0, p->mover.id);
-      p->emote = Emote_Remove(p->emote, 1, p->mover.id);
-      p->emote = Emote_Remove(p->emote, 2, p->mover.id);
-      p->emote = Emote_RemovePtcl(p->emote, 3, p->mover.id);
+      p->emote = Emote_Remove(p->emote, EMOTE_0, p->mover.id);
+      p->emote = Emote_Remove(p->emote, EMOTE_1, p->mover.id);
+      p->emote = Emote_Remove(p->emote, EMOTE_2, p->mover.id);
+      p->emote = Emote_RemovePtcl(p->emote, EMOTE_STUN, p->mover.id);
       GetEnemyEmoteOffset(kind, 3, &x, &y);
-      p->emote = FUN_080da6c4(7, &p->mover.pos, p->mover.id, y, kind, &p->sleepTimer, p->sleepTime, variant ? variant : 3, &p->mover, p);
+      p->emote = FUN_080da6c4(7, &p->mover.pos, p->mover.id, y, kind, &p->stunTimer, p->stunTime, variant ? variant : 3, &p->mover, p);
       break;
     }
   }
@@ -1551,7 +1551,7 @@ s16 VectorLength(s16 dx, s16 dz) {
 
 // 種族によって影とパーティクルを持たせるかどうかを決める
 void Enemy_InitShadowAndEmitter(Enemy* p) {
-  if (p->kind == ENEK_CURORO || p->kind == ENEK_GHOST || p->kind == ENEK_CENTIPEDE || p->kind == ENEK_SANDWORM || p->kind == ENEK_SERPENT || p->kind == ENEK_OCTOPUS || p->kind == ENEK_SHAIAN || p->kind == ENEK_DARKROOT || p->kind == ENEK_31) {
+  if (p->kind == ENEK_CURORO || p->kind == ENEK_GHOST || p->kind == ENEK_CENTIPEDE || p->kind == ENEK_SANDWORM || p->kind == ENEK_SERPENT || p->kind == ENEK_OCTOPUS || p->kind == ENEK_SHAIAN || p->kind == ENEK_DARKROOT || p->kind == ENEK_SALAMANDER) {
     p->shadowRemoved = 1;
   } else {
     p->shadowRemoved = ParticleShadow_Init(&p->shadow, &p->mover.pos, 0);
@@ -1782,7 +1782,7 @@ NON_MATCH void Enemy_BurstEmitterParticles(Enemy* p) {
       pos.z = p->emitter.pos->z;
       ElementalCondEmitter_BurstParticle(&p->emitter, 3, &pos, &vel, &velRange, 40, 40);
     }
-    p->sleepTimer = 0;
+    p->stunTimer = 0;
     p->unk_4be = 0;
   }
 #else
@@ -2426,9 +2426,9 @@ NON_MATCH void Enemy_StepToFloorEdge(Enemy* p) {
 #endif
 }
 
-// 種族ごとの鳴き声を鳴らす, ENEFLAG3_UNK_1/2 のどちらかが立っていればダメージ音にする
+// 種族ごとの鳴き声を鳴らす, ENEFLAG3_STUN/2 のどちらかが立っていればダメージ音にする
 void Enemy_PlayVoice(Enemy* p) {
-  if (Enemy_TestFlag3(p, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2)) {
+  if (Enemy_TestFlag3(p, ENEFLAG3_STUN | ENEFLAG3_PETRIFIED)) {
     PlaySound_082406e0(SE_ENEMY_DAMAGED);
     return;
   }
@@ -2446,10 +2446,10 @@ void Enemy_PlayVoice(Enemy* p) {
     case ENEK_GOLEM:
     case ENEK_30: {
       switch (p->variant) {
-        case 0:
-        case 1:
-        case 3:
-        case 5: {
+        case EV_GOLEM_C:
+        case EV_GOLEM_S:
+        case EV_GOLEM_P:
+        case EV_GOLEM_5: {
           PlaySound_082406e0(CRY_GOLEM_397);
           break;
         }
@@ -3023,14 +3023,14 @@ bool32 Enemy_ProcessRequests(Enemy* p) {
 
   if (!IsSmallEnemy(p)) {
     if (Enemy_TestFlag4(p, ENEFLAG4_UNK_2)) {
-      Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_2 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+      Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_STUN_REQUEST | ENEFLAG4_UNK_2 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
       return TRUE;
     }
-    if (Enemy_TestFlag4(p, ENEFLAG4_UNK_1)) {
+    if (Enemy_TestFlag4(p, ENEFLAG4_STUN_REQUEST)) {
       Enemy_ResetState(p, 3, 0, 0);
-      Enemy_EnterState(p, p->handlerSleep, ES_SLEEP);
-      p->sleepTimer = p->unk_18e;
-      Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_1 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+      Enemy_EnterState(p, p->handlerStun, ES_STUN);
+      p->stunTimer = p->hitStunTime;
+      Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_STUN_REQUEST | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
       return TRUE;
     }
     if (Enemy_TestFlag4(p, ENEFLAG4_UNK_11)) {

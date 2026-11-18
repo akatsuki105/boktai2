@@ -13,8 +13,8 @@
 typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_8
   AuxSprite sprite;        // 0x018, ->gfx
-  AuxSpriteGfx gfx;        // 0x044, SPRITE_STAND
-  MainSpriteGfx digitGfx;  // 0x060, SPRITE_UI_START_MENU (SMENU_NUM_BOLD を残高表示に使う)
+  AuxSpriteGfx gfx;        // 0x044, SPR_STAND
+  MainSpriteGfx digitGfx;  // 0x060, SPR_UI_START_MENU (SMENU_NUM_BOLD を残高表示に使う)
   MainSprite digits[4];    // 0x080, 太陽スタンドの上に表示される残高
   Hitbox hurtbox;          // 0x200, _Destroy が Hitbox_Unregister に渡す
   Vec3 unk_250;            // 0x250, FUN_0809f4b0 が sprite.pos を写して補正する
@@ -214,7 +214,7 @@ void SolarStation_InitSprite(SolarStation* p) {
   AuxSpriteGfx* gfx = &p->gfx;
   SpriteFlags flags;
 
-  Video_GetAuxSprite(gfx, SPRITE_STAND);
+  Video_GetAuxSprite(gfx, SPR_STAND);
   AuxSprite_Add(sprite, gfx, 0);
   sprite->poseIdx = 0;
 
@@ -235,9 +235,9 @@ void SolarStation_InitSprite(SolarStation* p) {
   sprite->flags = flags;
 }
 
-// SPRITE_UI_START_MENU を開き, digits の4枚を非表示のスクリーン座標スプライトとして用意する
+// SPR_UI_START_MENU を開き, digits の4枚を非表示のスクリーン座標スプライトとして用意する
 void SolarStation_InitMainSprites(SolarStation* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_START_MENU);
   Vec3 pos;
   s32 i;
 

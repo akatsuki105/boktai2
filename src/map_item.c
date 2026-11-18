@@ -66,7 +66,7 @@ typedef struct MapItemManager {
   Entity e;                         // 0x00, ENTITY_UNK_9
   ParticleGroup* particles;         // 0x18, PTCL_GROUP_0
   AuxAnimFile* anim;                // 0x1C, ANIM_MIMIC
-  SpriteID16 spriteID;              // 0x20, SPRITE_MIMIC (このスプライトはミミックと普通の宝箱を兼ねる)
+  SpriteID16 spriteID;              // 0x20, SPR_MIMIC (このスプライトはミミックと普通の宝箱を兼ねる)
   u16 unk_22;                       // 0x22
   u8 ngDelay;                       // 0x24, MapItemManager_TryOpen が SE_NG を鳴らすと 0xF, Update が減らす
   u8 unk_25[3];                     // 0x25
@@ -624,7 +624,7 @@ NON_MATCH s32 MapItemManager_Init(MapItemManager* p, u32 param_2) {
 
   gMapItemManager = p;
   p->particles = GetParticleGroup(PTCL_GROUP_0);
-  p->spriteID = SPRITE_MIMIC;
+  p->spriteID = SPR_MIMIC;
   p->anim = GetFile(DIR_ANIMATION, ANIM_MIMIC);
   p->items = NULL;
   for (i = 0; i < 4; i++) {

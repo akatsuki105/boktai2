@@ -22,7 +22,7 @@ typedef struct {
 } RainParticle;
 static_assert(sizeof(RainParticle) == 60);
 
-// BG1 に TILEMAP_EA77 を敷いて2段階の速度でスクロールさせ、同時に雨粒のパーティクルを32個ばら撒く
+// BG1 に MP_EA77 を敷いて2段階の速度でスクロールさせ、同時に雨粒のパーティクルを32個ばら撒く
 // gStat->sunGauge と gStat->unk_2d0 を見て継続と終了を決める
 typedef struct {
   Entity e;                 // 0x00, ENTITY_UNK_9
@@ -490,7 +490,7 @@ NON_MATCH s32 RainManager_Init(RainManager* p) {
   s32 state;
 
   sRainManager = p;
-  f = GetTilemapFile(TILEMAP_EA77);
+  f = GetTilemapFile(MP_EA77);
   tilemap = GetTilemapBuffer(1);
   p->scrollX[0] = 0;
   p->scrollY[0] = 0;

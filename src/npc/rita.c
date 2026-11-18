@@ -136,7 +136,7 @@ void Cmd_C347(void) {
     VEC3_SET(pos, 0, 0, 0);
   }
   angle = VM_GetNamedArgValue('d', 0);
-  spriteID = SPRITE_RITA;
+  spriteID = SPR_RITA;
   flags = 0;
 
   npc = NPC_Alloc(id, kind);

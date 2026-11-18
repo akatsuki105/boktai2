@@ -7,13 +7,6 @@
 #include "sprite.h"
 #include "vm.h"
 
-typedef struct {
-  Entity e;     // ENTITY_UNK_2
-  Mover* head;  // 0x18, Mover の双方向リストの先頭, 根拠: Mover_Link (末尾に追加) / Mover_FindInList (先頭から走査)
-  Mover* tail;  // 0x1C, 同リストの末尾
-} MoverList;
-static_assert(sizeof(MoverList) == 32);
-
 static MoverList* sMoverList;  // 0x030016F8
 
 void MoverList_ClearPtr(void) { sMoverList = NULL; }

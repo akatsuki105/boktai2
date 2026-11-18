@@ -635,7 +635,7 @@ NON_MATCH s32 Specimen_Init(Specimen* p, u32 _) {
     p->modelID = 0;
   }
   Specimen_LoadDefault(p, p->modelID);
-  Video_GetAuxSprite(&p->subSpriteGfx, SPRITE_EFF_1C1B);
+  Video_GetAuxSprite(&p->subSpriteGfx, SPR_EFF_1C1B);
   AuxSprite_Add(&p->subSprite, &p->subSpriteGfx, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD | SPRFLAG_BLINK_ODD);
   AuxSprite_SetPoseIdx(&p->subSprite, 5);
   p->subSprite.priority = 3;
@@ -682,74 +682,74 @@ void Specimen_SetPos(Specimen* p, s32 x, s32 y) { VEC3_SET(p->pos, x, y, 0); }
 // エンディングのスタッフロールでは クレジットと一緒にゲーム中に登場したキャラクター(主人公,NPC,ボス,雑魚)が表示されるが、ここに魔物図鑑での魔物表示と同じ処理を使っているのかもしれない
 // それならば、0..56 までは魔物図鑑とスタッフロール共用で、 57以降はスタッフロールのためのものかも
 static const SpecimenModel sSpecimenModels[70] = {
-    {SPRITE_SPIDER,         ANIM_SPIDER,     1, 3,   143, 3,  0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  4,  50, 50, 0}, // 0
-    {SPRITE_SPIDER,         ANIM_SPIDER,     1, 3,   144, 3,  0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  4,  50, 50, 0}, // 1
-    {SPRITE_BEE,            ANIM_BEE,        1, 1,   176, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 2
-    {SPRITE_BEE,            ANIM_BEE,        1, 1,   178, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 3
-    {SPRITE_BEE,            ANIM_BEE,        1, 1,   177, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 4
-    {SPRITE_BAT,            ANIM_BAT,        1, 0,   610, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 5
-    {SPRITE_BAT,            ANIM_BAT,        1, 0,   611, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 6
-    {SPRITE_CROW,           ANIM_CROW,       1, 0,   332, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 7
-    {SPRITE_CROW,           ANIM_CROW,       1, 0,   333, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 8
-    {SPRITE_WORM,           ANIM_WORM,       1, 0,   417, 10, SPECIMENFLAG_NO_REFRESH,                        Specimen_LoadCentipede, Specimen_UpdateCentipede,      0,  0,   0,  0,  0,  16, 64, 64, 0}, // 9
-    {SPRITE_DOG,            ANIM_DOG,        1, 3,   501, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 10
-    {SPRITE_DOG,            ANIM_DOG,        1, 3,   503, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 11
-    {SPRITE_DOG,            ANIM_DOG,        1, 3,   502, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 12
-    {SPRITE_DOG,            ANIM_DOG,        1, 3,   505, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 13
-    {SPRITE_DARKROOT,       ANIM_DARKROOT,   1, 0,   220, 0,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  0,  0,  0}, // 14
-    {SPRITE_SHAIAN,         0x0000,          2, 12,  626, 3,  0,                                              NULL,                   NULL,                          8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 15
-    {SPRITE_OCTOPUS_0,      ANIM_OCTOPUS,    1, 0,   447, 0,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  0,  0,  0}, // 16
-    {SPRITE_COCKATRICE_0,   ANIM_COCKATRICE, 1, 2,   506, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  6,  64, 64, 1}, // 17
-    {SPRITE_COCKATRICE_0,   ANIM_COCKATRICE, 1, 8,   507, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          4,  0,   10, 64, 0,  16, 64, 64, 1}, // 18
-    {SPRITE_WORM,           ANIM_WORM,       1, 5,   418, 10, 0,                                              Specimen_LoadSandworm,  Specimen_UpdateSandworm,       0,  0,   0,  0,  0,  32, 64, 64, 0}, // 19
-    {SPRITE_WORM,           ANIM_WORM,       1, 8,   419, 10, 0,                                              Specimen_LoadSerpent,   Specimen_UpdateSerpent,        0,  0,   0,  0,  0,  0,  0,  0,  0}, // 20
-    {SPRITE_BOKU_0,         ANIM_BOKU,       1, 8,   307, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
-    {SPRITE_BOKU_0,         ANIM_BOKU,       1, 8,   308, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
-    {SPRITE_BOKU_0,         ANIM_BOKU,       1, 8,   309, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
-    {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   23,  3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 24
-    {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   24,  3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 25
-    {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   25,  3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 26
-    {SPRITE_SKELETONS,      0x0000,          2, 6,   247, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 27
-    {SPRITE_SKELETONS,      0x0000,          2, 8,   247, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 28
-    {SPRITE_SKELETONS,      0x0000,          2, 10,  247, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 29
-    {SPRITE_SKELETONS,      0x0000,          2, 6,   252, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 30
-    {SPRITE_SKELETONS,      0x0000,          2, 26,  249, 3,  0,                                              NULL,                   NULL,                          8,  16,  0,  0,  0,  1,  64, 64, 1}, // 31
-    {SPRITE_SKELETONS,      0x0000,          2, 26,  255, 3,  0,                                              NULL,                   NULL,                          8,  16,  0,  0,  0,  1,  64, 64, 1}, // 32
-    {SPRITE_GOLEM,          ANIM_GOLEM,      1, 1,   513, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  4,  64, 64, 1}, // 33
-    {SPRITE_GOLEM,          ANIM_GOLEM,      1, 1,   514, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  4,  64, 64, 1}, // 34
-    {SPRITE_GOLEM,          ANIM_GOLEM,      1, 1,   516, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  4,  64, 64, 1}, // 35
-    {SPRITE_MIMIC,          ANIM_MIMIC,      1, 1,   650, 4,  SPECIMENFLAG_NO_REFRESH,                        Specimen_Reload,        Specimen_UpdateMimicLid,       0,  16,  0,  0,  0,  4,  64, 64, 1}, // 36
-    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 0,   301, 0,  SPECIMENFLAG_SWAY | SPECIMENFLAG_NO_REFRESH,    NULL,                   NULL,                          0,  2,   8,  40, 0,  28, 32, 32, 1}, // 37
-    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 0,   302, 0,  SPECIMENFLAG_SWAY | SPECIMENFLAG_NO_REFRESH,    NULL,                   NULL,                          0,  2,   8,  40, 0,  28, 32, 32, 1}, // 38
-    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 1,   301, 0,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  8,   10, 40, 0,  24, 32, 32, 1}, // 39
-    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 1,   302, 0,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  8,   10, 40, 0,  24, 32, 32, 1}, // 40
-    {SPRITE_CURORO,         ANIM_CURORO,     1, 0,   92,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 41
-    {SPRITE_CURORO,         ANIM_CURORO,     1, 0,   93,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 42
-    {SPRITE_CURORO,         ANIM_CURORO,     1, 0,   94,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 43
-    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   147, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 44
-    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   148, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 45
-    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   149, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 46
-    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   150, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 47
-    {SPRITE_GHOST,          ANIM_GHOST,      1, 0,   381, 10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   20, 32, 0,  24, 64, 64, 1}, // 48
-    {SPRITE_GHOST,          ANIM_GHOST,      1, 0,   382, 10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   20, 32, 0,  24, 64, 64, 1}, // 49
-    {SPRITE_DUNEYRR,        0x0000,          2, 0,   0,   0,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  0,   8,  32, 0,  0,  0,  0,  0}, // 50
-    {SPRITE_RINGO,          0x0000,          2, 3,   0,   4,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          4,  16,  8,  32, 0,  8,  64, 64, 2}, // 51
-    {SPRITE_DURATHROR,      0x0000,          2, 0,   0,   0,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_NO_REFRESH, NULL,                   Specimen_UpdateDurathrorBloom, 0,  16,  0,  0,  0,  0,  0,  0,  0}, // 52
-    {SPRITE_DVALINN,        0x0000,          2, 0,   0,   3,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  15,  8,  32, 0,  0,  0,  0,  0}, // 53
-    {SPRITE_RINGO,          0x0000,          2, 8,   0,   4,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          4,  16,  8,  32, 0,  8,  64, 64, 2}, // 54
-    {SPRITE_JORMUNGANDR,    0x0000,          2, 0,   0,   0,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          24, -24, 8,  32, 0,  0,  0,  0,  0}, // 55
-    {SPRITE_SHADEMAN,       0x0000,          2, 0,   0,   10, SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  16,  8,  32, 0,  8,  64, 64, 2}, // 56
-    {SPRITE_DJANGO_SABATA,  0x0000,          2, 5,   29,  10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 57
-    {SPRITE_OTENKO_00,      ANIM_OTENKO,     1, 0,   0,   10, SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  0,   8,  32, 0,  8,  64, 64, 1}, // 58
-    {SPRITE_DJANGO_SABATA,  0x0000,          2, 419, 39,  10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 59
-    {SPRITE_RITA,           0x0000,          2, 5,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 60
-    {SPRITE_ZAJI,           0x0000,          2, 5,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 61
-    {SPRITE_SHAIAN,         0x0000,          2, 14,  0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 62
-    {SPRITE_LADY,           0x0000,          2, 7,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 63
-    {SPRITE_COFFIN_0,       ANIM_COFFIN,     1, 32,  524, 10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 64
-    {SPRITE_SHADEMAN,       0x0000,          2, 0,   15,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   8,  32, 0,  8,  64, 64, 2}, // 65
-    {SPRITE_KID,            0x0000,          2, 7,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 66
-    {SPRITE_SUMIRE,         0x0000,          2, 5,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 67
-    {SPRITE_SMITH_MARCELLO, 0x0000,          2, 7,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 68
-    {SPRITE_DJANGO_SABATA,  0x0000,          2, 204, 38,  10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 69
+    {SPR_SPIDER,         ANIM_SPIDER,     1, 3,   143, 3,  0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  4,  50, 50, 0}, // 0
+    {SPR_SPIDER,         ANIM_SPIDER,     1, 3,   144, 3,  0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  4,  50, 50, 0}, // 1
+    {SPR_BEE,            ANIM_BEE,        1, 1,   176, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 2
+    {SPR_BEE,            ANIM_BEE,        1, 1,   178, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 3
+    {SPR_BEE,            ANIM_BEE,        1, 1,   177, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 4
+    {SPR_BAT,            ANIM_BAT,        1, 0,   610, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 5
+    {SPR_BAT,            ANIM_BAT,        1, 0,   611, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 6
+    {SPR_CROW_0,         ANIM_CROW,       1, 0,   332, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 7
+    {SPR_CROW_0,         ANIM_CROW,       1, 0,   333, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   10, 32, 0,  16, 32, 32, 1}, // 8
+    {SPR_WORM,           ANIM_WORM,       1, 0,   417, 10, SPECIMENFLAG_NO_REFRESH,                        Specimen_LoadCentipede, Specimen_UpdateCentipede,      0,  0,   0,  0,  0,  16, 64, 64, 0}, // 9
+    {SPR_DOG,            ANIM_DOG,        1, 3,   501, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 10
+    {SPR_DOG,            ANIM_DOG,        1, 3,   503, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 11
+    {SPR_DOG,            ANIM_DOG,        1, 3,   502, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 12
+    {SPR_DOG,            ANIM_DOG,        1, 3,   505, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  0,  64, 64, 1}, // 13
+    {SPR_DARKROOT,       ANIM_DARKROOT,   1, 0,   220, 0,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  0,  0,  0}, // 14
+    {SPR_SHAIAN,         0x0000,          2, 12,  626, 3,  0,                                              NULL,                   NULL,                          8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 15
+    {SPR_OCTOPUS_0,      ANIM_OCTOPUS,    1, 0,   447, 0,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  0,  0,  0}, // 16
+    {SPR_COCKATRICE_0,   ANIM_COCKATRICE, 1, 2,   506, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  6,  64, 64, 1}, // 17
+    {SPR_COCKATRICE_0,   ANIM_COCKATRICE, 1, 8,   507, 3,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          4,  0,   10, 64, 0,  16, 64, 64, 1}, // 18
+    {SPR_WORM,           ANIM_WORM,       1, 5,   418, 10, 0,                                              Specimen_LoadSandworm,  Specimen_UpdateSandworm,       0,  0,   0,  0,  0,  32, 64, 64, 0}, // 19
+    {SPR_WORM,           ANIM_WORM,       1, 8,   419, 10, 0,                                              Specimen_LoadSerpent,   Specimen_UpdateSerpent,        0,  0,   0,  0,  0,  0,  0,  0,  0}, // 20
+    {SPR_BOKU_0,         ANIM_BOKU,       1, 8,   307, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
+    {SPR_BOKU_0,         ANIM_BOKU,       1, 8,   308, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
+    {SPR_BOKU_0,         ANIM_BOKU,       1, 8,   309, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
+    {SPR_MUMMY,          ANIM_MUMMY,      1, 1,   23,  3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 24
+    {SPR_MUMMY,          ANIM_MUMMY,      1, 1,   24,  3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 25
+    {SPR_MUMMY,          ANIM_MUMMY,      1, 1,   25,  3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  0,  64, 64, 1}, // 26
+    {SPR_SKELETONS,      0x0000,          2, 6,   247, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 27
+    {SPR_SKELETONS,      0x0000,          2, 8,   247, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 28
+    {SPR_SKELETONS,      0x0000,          2, 10,  247, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 29
+    {SPR_SKELETONS,      0x0000,          2, 6,   252, 3,  0,                                              NULL,                   NULL,                          0,  16,  0,  0,  0,  1,  64, 64, 1}, // 30
+    {SPR_SKELETONS,      0x0000,          2, 26,  249, 3,  0,                                              NULL,                   NULL,                          8,  16,  0,  0,  0,  1,  64, 64, 1}, // 31
+    {SPR_SKELETONS,      0x0000,          2, 26,  255, 3,  0,                                              NULL,                   NULL,                          8,  16,  0,  0,  0,  1,  64, 64, 1}, // 32
+    {SPR_GOLEM,          ANIM_GOLEM,      1, 1,   513, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  4,  64, 64, 1}, // 33
+    {SPR_GOLEM,          ANIM_GOLEM,      1, 1,   514, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  4,  64, 64, 1}, // 34
+    {SPR_GOLEM,          ANIM_GOLEM,      1, 1,   516, 3,  0,                                              NULL,                   NULL,                          0,  8,   0,  0,  0,  4,  64, 64, 1}, // 35
+    {SPR_MIMIC,          ANIM_MIMIC,      1, 1,   650, 4,  SPECIMENFLAG_NO_REFRESH,                        Specimen_Reload,        Specimen_UpdateMimicLid,       0,  16,  0,  0,  0,  4,  64, 64, 1}, // 36
+    {SPR_SWORD_AX,       ANIM_SWORDAX,    1, 0,   301, 0,  SPECIMENFLAG_SWAY | SPECIMENFLAG_NO_REFRESH,    NULL,                   NULL,                          0,  2,   8,  40, 0,  28, 32, 32, 1}, // 37
+    {SPR_SWORD_AX,       ANIM_SWORDAX,    1, 0,   302, 0,  SPECIMENFLAG_SWAY | SPECIMENFLAG_NO_REFRESH,    NULL,                   NULL,                          0,  2,   8,  40, 0,  28, 32, 32, 1}, // 38
+    {SPR_SWORD_AX,       ANIM_SWORDAX,    1, 1,   301, 0,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  8,   10, 40, 0,  24, 32, 32, 1}, // 39
+    {SPR_SWORD_AX,       ANIM_SWORDAX,    1, 1,   302, 0,  SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  8,   10, 40, 0,  24, 32, 32, 1}, // 40
+    {SPR_CURORO,         ANIM_CURORO,     1, 0,   92,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 41
+    {SPR_CURORO,         ANIM_CURORO,     1, 0,   93,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 42
+    {SPR_CURORO,         ANIM_CURORO,     1, 0,   94,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 43
+    {SPR_SLIME,          ANM_SLIME,       1, 1,   147, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 44
+    {SPR_SLIME,          ANM_SLIME,       1, 1,   148, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 45
+    {SPR_SLIME,          ANM_SLIME,       1, 1,   149, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 46
+    {SPR_SLIME,          ANM_SLIME,       1, 1,   150, 3,  SPECIMENFLAG_NO_REFRESH,                        NULL,                   Specimen_UpdateSlimeIdle,      0,  8,   0,  0,  0,  8,  32, 32, 0}, // 47
+    {SPR_GHOST,          ANIM_GHOST,      1, 0,   381, 10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   20, 32, 0,  24, 64, 64, 1}, // 48
+    {SPR_GHOST,          ANIM_GHOST,      1, 0,   382, 10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   20, 32, 0,  24, 64, 64, 1}, // 49
+    {SPR_DUNEYRR,        0x0000,          2, 0,   0,   0,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  0,   8,  32, 0,  0,  0,  0,  0}, // 50
+    {SPR_RINGO,          0x0000,          2, 3,   0,   4,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          4,  16,  8,  32, 0,  8,  64, 64, 2}, // 51
+    {SPR_DURATHROR,      0x0000,          2, 0,   0,   0,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_NO_REFRESH, NULL,                   Specimen_UpdateDurathrorBloom, 0,  16,  0,  0,  0,  0,  0,  0,  0}, // 52
+    {SPR_DVALINN,        0x0000,          2, 0,   0,   3,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  15,  8,  32, 0,  0,  0,  0,  0}, // 53
+    {SPR_RINGO,          0x0000,          2, 8,   0,   4,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          4,  16,  8,  32, 0,  8,  64, 64, 2}, // 54
+    {SPR_JORMUNGANDR,    0x0000,          2, 0,   0,   0,  SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          24, -24, 8,  32, 0,  0,  0,  0,  0}, // 55
+    {SPR_SHADEMAN,       0x0000,          2, 0,   0,   10, SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  16,  8,  32, 0,  8,  64, 64, 2}, // 56
+    {SPR_DJANGO_SABATA,  0x0000,          2, 5,   29,  10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 57
+    {SPR_OTENKO_00,      ANIM_OTENKO,     1, 0,   0,   10, SPECIMENFLAG_NO_PLTT | SPECIMENFLAG_SWAY,       NULL,                   NULL,                          0,  0,   8,  32, 0,  8,  64, 64, 1}, // 58
+    {SPR_DJANGO_SABATA,  0x0000,          2, 419, 39,  10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 59
+    {SPR_RITA,           0x0000,          2, 5,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 60
+    {SPR_ZAJI,           0x0000,          2, 5,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 61
+    {SPR_SHAIAN,         0x0000,          2, 14,  0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 62
+    {SPR_LADY,           0x0000,          2, 7,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 63
+    {SPR_COFFIN_0,       ANIM_COFFIN,     1, 32,  524, 10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 64
+    {SPR_SHADEMAN,       0x0000,          2, 0,   15,  10, SPECIMENFLAG_SWAY,                              NULL,                   NULL,                          0,  0,   8,  32, 0,  8,  64, 64, 2}, // 65
+    {SPR_KID,            0x0000,          2, 7,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 66
+    {SPR_SUMIRE,         0x0000,          2, 5,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 67
+    {SPR_SMITH_MARCELLO, 0x0000,          2, 7,   0,   3,  SPECIMENFLAG_NO_PLTT,                           NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 68
+    {SPR_DJANGO_SABATA,  0x0000,          2, 204, 38,  10, 0,                                              NULL,                   NULL,                          0,  0,   0,  0,  0,  2,  64, 64, 1}, // 69
 };  // 0x085AF0EC

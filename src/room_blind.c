@@ -14,7 +14,7 @@
 // ライジングサン発動中は問答無用で明るくする, 天窓のある部屋で太陽ゲージ 1以上の時に明るくする処理は、ここではなくスクリプト側で行う
 typedef struct RoomBlind {
   Entity e;               // 0x00, ENTITY_UNK_9
-  Tilemaps* tilemap;      // 0x18, TILEMAP_BLIND, プレイヤーの周辺しか見えないようにするためのブラインド
+  Tilemaps* tilemap;      // 0x18, MP_BLIND, プレイヤーの周辺しか見えないようにするためのブラインド
   u16 unk_1c;             // 0x1C, EntityCreate の第2引数, 読み手が見つかっていない
   u8 playerIdx;           // 0x1E, '.i', 通信中は gLinkSession->playerIdx
   bool8 isDim;            // 0x1F, '.m=1', 部屋が暗いかどうかのフラグ
@@ -255,7 +255,7 @@ s32 RoomBlind_Destroy(RoomBlind* p) {
 void RoomBlind_SetupBG(RoomBlind* p) {
   s32 idx;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_BLIND);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_BLIND);
   idx = 0;
   Video_SetupBGLayout(3, 2, p->tilemap, 0, 0, 1, &idx);
   SetBGPrioDirect(1, 1);

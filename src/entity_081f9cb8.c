@@ -29,7 +29,7 @@ static_assert(sizeof(Entity081f9cb8Elem) == 156);
 // 爆発を最大 8 個まとめて管理するシングルトン
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_F422
+  AuxSpriteGfx gfx;             // 0x018, SPR_EFF_F422
   u8 unk_34[4];                 // 0x034
   u32 usedMask;                 // 0x038, 使用中の elems のビット
   Entity081f9cb8Elem elems[8];  // 0x03C
@@ -246,7 +246,7 @@ s32 Entity081f9cb8_Destroy(Entity081f9cb8* p) {
 
 s32 Entity081f9cb8_Init(Entity081f9cb8* p) {
   p->usedMask = 0;
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_F422);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_F422);
   gEntity081f9cb8 = p;
   return 0;
 }

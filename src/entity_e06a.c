@@ -12,7 +12,7 @@ typedef struct {
   u16 id;            // 0x18, EntityE06A_Init の引数, ヒットボックスの所有者IDとして Hitbox_Init に渡る
   u8 unk_1a[2];      // 0x1A, padding?
   AuxSprite sprite;  // 0x1C
-  AuxSpriteGfx gfx;  // 0x48, SPRITE_NODATA_9DA7
+  AuxSpriteGfx gfx;  // 0x48, SPR_NODATA_9DA7
   Hitbox hitbox;     // 0x64
   Hitbox hurtbox;    // 0xB4
 } EntityE06A;
@@ -37,7 +37,7 @@ s32 EntityE06A_Destroy(EntityE06A* p) {
 void EntityE06A_SetupSprite(EntityE06A* p) {
   AuxSpriteGfx* gfx = &p->gfx;
 
-  Video_GetAuxSprite(gfx, SPRITE_NODATA_9DA7);
+  Video_GetAuxSprite(gfx, SPR_NODATA_9DA7);
   AuxSprite_Add(&p->sprite, gfx, 0);
   if (VM_SeekToNamedArg('p')) {
     VEC3_SET(p->sprite.pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
@@ -55,7 +55,7 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
   VEC3_SET(size, Q8(0.196), Q8(0.391), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.391), 0);
   Hitbox_Init(hitbox, p->id, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &size, &offset);
-  Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_18 | HBATTR_DARK, 0x1E);
+  Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_BLOW | HBATTR_DARK, 0x1E);
   Hitbox_SetHandler(hitbox, nop_080cb254, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_Register(hitbox);

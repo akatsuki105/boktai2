@@ -77,7 +77,7 @@ typedef struct {
 } JormungandrSegmentSet;
 static_assert(sizeof(JormungandrSegmentSet) == 2724);
 
-// 0x1844 に1個ある投げ刃 (SPRITE_SWORD_AX), 自分の状態関数と攻撃判定を持つ
+// 0x1844 に1個ある投げ刃 (SPR_SWORD_AX), 自分の状態関数と攻撃判定を持つ
 typedef struct JormungandrBlade {
   bool8 alive;                           // 0x00
   bool8 active;                          // 0x01, 立っている間 fn を呼ぶ
@@ -91,7 +91,7 @@ typedef struct JormungandrBlade {
   u16 knockback;                         // 0x0C
   u16 unk44;                             // 0x0E
   AuxSprite sprite;                      // 0x10
-  AuxSpriteGfx gfx;                      // 0x3C, SPRITE_SWORD_AX
+  AuxSpriteGfx gfx;                      // 0x3C, SPR_SWORD_AX
   Hitbox hitbox;                         // 0x58
   Vec3 vel;                              // 0xA8
   Vec3 target;                           // 0xB0
@@ -102,7 +102,7 @@ static_assert(sizeof(JormungandrBlade) == 188);
 // タコ足の1節, 根元から dist 離れた位置に置かれる
 typedef struct {
   AuxSprite sprite;  // 0x00
-  AuxSpriteGfx gfx;  // 0x2C, SPRITE_JORMUNGANDR_LEG か 0x8207
+  AuxSpriteGfx gfx;  // 0x2C, SPR_LASBOS_04 か SPR_LASBOS_05
   u16 dist;          // 0x48, 根元からの距離
   u8 bendBase;       // 0x4A, u16_ARRAY_085ad0de の値
   u8 size;           // 0x4B, 2 か 3, poseIdx は size + 2
@@ -515,10 +515,10 @@ NON_MATCH void FUN_080c2ba8(Jormungandr* p) {
       s16 pose;
 
       if (j == 0) {
-        id = SPRITE_WEDGE_8205;
+        id = SPR_LASBOS_03;
         pose = i + 13;
       } else {
-        id = 0x8207;
+        id = SPR_LASBOS_05;
         pose = 6;
       }
       Video_GetAuxSprite(&part->gfx[j], id);
@@ -540,7 +540,7 @@ NON_MATCH void FUN_080c2d38(Jormungandr* p) {
 #ifdef NONMATCHING_C
   if (p->debrisActive) {
     bool8 active = FALSE;
-    bool32 hit = gPlayerPtr[0]->kind != PLAYER_SOLAR_DJANGO;
+    bool32 hit = gPlayerPtr[0]->kind != PLAYER_RDJANGO;
     s32 i;
 
     for (i = 0; i < 32; i++) {
@@ -751,7 +751,7 @@ void FUN_080c33d8(JormungandrBlade* part, u32 id) {
   VEC3_SET(halfSize, Q8(0.19), Q8(0.25), Q8(0.19));
   VEC3_SET(offset, part->vel.x * 4, 0, part->vel.z * 4);
   Hitbox_Init(hitbox, id, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_18, part->unk44);
+  Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_BLOW, part->unk44);
   hitbox->angle = part->angle;
   Hitbox_SetHandler(hitbox, NULL, part);
   Hitbox_SetPos(hitbox, &part->sprite.pos, 0);
@@ -765,7 +765,7 @@ void FUN_080c3494(JormungandrBlade* part, u32 id) {
   VEC3_SET(halfSize, Q8(0.5), Q8(0.25), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, id, HBF_HITBOX | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_18, part->unk44);
+  Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_BLOW, part->unk44);
   Hitbox_SetHandler(hitbox, NULL, part);
   Hitbox_SetPos(hitbox, &part->sprite.pos, 0);
   Hitbox_Register(hitbox);
@@ -781,7 +781,7 @@ NON_MATCH void FUN_080c3528(JormungandrBlade* part, u32 id) {
   VEC3_SET(halfSize, Q8(0.5), Q8(0.25), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, id, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_18, part->unk44);
+  Hitbox_SetAttack(hitbox, part->power, part->knockback, 0, HBATTR_17 | HBATTR_BLOW, part->unk44);
   part->hitbox.angle = 0x40;
   Hitbox_SetHandler(hitbox, NULL, part);
   Hitbox_SetPos(hitbox, &pos, 0);
@@ -847,7 +847,7 @@ void FUN_080c3784(Jormungandr* p, u32 power, u32 knockback, u32 unk44) {
   part->timer = 0;
   sprite = &part->sprite;
   gfx = &part->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_SWORD_AX);
+  Video_GetAuxSprite(gfx, SPR_SWORD_AX);
   AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
   sprite->poseIdx = 1;
   Video_SetAuxSpritePltt(gfx, 342);
@@ -1269,7 +1269,7 @@ NON_MATCH void Jormungandr_OnHurt(Hitbox* a, Hitbox* b, Jormungandr* p) {
   } else {
     return;
   }
-  if (Hitbox_TestAttr(a, HBATTR_18)) {
+  if (Hitbox_TestAttr(a, HBATTR_BLOW)) {
     p->hurtKnockback = a->knockback;
   } else {
     p->hurtKnockback = a->knockback >> 1;
@@ -1573,10 +1573,10 @@ NON_MATCH void FUN_080c5058(JormungandrSprite* part, bool32 isMain, u32 pose, u3
   part->visible = visible;
   CpuFill32(0, &pos, sizeof(pos));
   if (!isMain) {
-    SpriteHolder_InitAux(holder, SPRITE_JORMUNGANDR_8203, ANIM_5C4D, 0, &pos);
+    SpriteHolder_InitAux(holder, SPR_LASBOS_01, ANIM_LASBOS, 0, &pos);
     SpriteHolder_SetAnim(holder, part->pose, part->variant, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   } else {
-    SpriteHolder_InitMain(holder, SPRITE_JORMUNGANDR, 0, &pos);
+    SpriteHolder_InitMain(holder, SPR_JORMUNGANDR, 0, &pos);
     SpriteHolder_SetAnim(holder, part->pose, part->variant, 0, PLAYMODE_LOOP, 0, MAIN_ANIM_FORCE_POSE);
   }
   SpriteHolder_SetPriority(holder, priority);
@@ -1918,7 +1918,7 @@ void FUN_080c595c(Jormungandr* p, Hitbox* hitbox, s32 power, s32 knockback, s32 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.25), Q8(0.25));
   VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, p->base.mover.id, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, knockback, 0, HBATTR_18, unk44);
+  Hitbox_SetAttack(hitbox, power, knockback, 0, HBATTR_BLOW, unk44);
   hitbox->angle = 0x40;
   Hitbox_SetHandler(hitbox, NULL, p);
 }
@@ -1950,7 +1950,7 @@ NON_MATCH void FUN_080c59f4(Jormungandr* p, s32 power, s32 knockback, s32 unk44)
       case 1:
       case 2:
       case 3: {
-        id = SPRITE_JORMUNGANDR_LEG;
+        id = SPR_LASBOS_04;
         size = 2;
         dist += 0x50;
         amp = 0x20;
@@ -1960,7 +1960,7 @@ NON_MATCH void FUN_080c59f4(Jormungandr* p, s32 power, s32 knockback, s32 unk44)
       case 5:
       case 6:
       case 7: {
-        id = SPRITE_JORMUNGANDR_LEG;
+        id = SPR_LASBOS_04;
         size = 3;
         dist += 0x40;
         amp = 0x28;
@@ -1969,14 +1969,14 @@ NON_MATCH void FUN_080c59f4(Jormungandr* p, s32 power, s32 knockback, s32 unk44)
       case 8:
       case 9:
       case 10: {
-        id = 0x8207;
+        id = SPR_LASBOS_05;
         size = 2;
         dist += 0x20;
         amp = 0x30;
         break;
       }
       default: {
-        id = 0x8207;
+        id = SPR_LASBOS_05;
         size = 3;
         dist += 0x14;
         amp = 0x38;

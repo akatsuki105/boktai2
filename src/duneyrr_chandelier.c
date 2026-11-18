@@ -38,7 +38,7 @@ typedef struct {
   u8 unk_3a[2];             // 0x03A, 触られていない
   Vec3 pos;                 // 0x03C, '.P', 判定の基準位置
   Vec3 screenPos;           // 0x044, pos を等角投影してカメラ分を引いた画面座標
-  MainSpriteGfx gfx;        // 0x04C, SPRITE_CHANDELIER
+  MainSpriteGfx gfx;        // 0x04C, SPR_CHANDELIER
   MainSprite sprite;        // 0x06C, ->gfx
   Entity5DA5Elem elems[4];  // 0x0CC
 } Entity5DA5;
@@ -268,7 +268,7 @@ s32 Entity5DA5_Init(Entity5DA5* p, u32 id) {
   s32 i;
 
   gEntity5DA5 = p;
-  f = GetFile(DIR_MAIN_SPRITE, SPRITE_CHANDELIER);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_CHANDELIER);
   if (f == NULL) {
     return -1;
   }

@@ -19,7 +19,7 @@
 // ゴーストの残像, ゴースト自身と同じスプライトを隠した状態で持つ
 typedef struct {
   AuxSprite sprite;       // 0x00
-  AuxSpriteGfx gfx;       // 0x2C, SPRITE_GHOST
+  AuxSpriteGfx gfx;       // 0x2C, SPR_GHOST
   AuxAnimState anim;      // 0x48
   AuxAnimFile* animFile;  // 0x58, ANIM_GHOST
   u16 timer;              // 0x5C, 0 でなければ毎フレーム減り, 0 になったら隠す
@@ -198,7 +198,7 @@ NON_MATCH void Ghost_OnHit(Hitbox* a, Hitbox* b, Ghost* p) {
 }
 
 // 食らい判定, ENEFLAG3_UNK_14 の間は食らわない, あとは敵共通の処理
-// 774/774命令, 残差は先頭で見た flags3 のアドレスを Enemy_HandleHurt の中でも使い回す点 (EnemyBat_OnHurt / Crow_OnHurt と同じ共通 inline の壁), 試済: TEST_FLAGS / Enemy_GetFlag3 / & の直書き
+// 774/774命令, 残差は先頭で見た flags3 のアドレスを Enemy_HandleHurt の中でも使い回す点 (EneBat_OnHurt / Crow_OnHurt と同じ共通 inline の壁), 試済: TEST_FLAGS / Enemy_GetFlag3 / & の直書き
 NON_MATCH void Ghost_OnHurt(Hitbox* a, Hitbox* b, Ghost* p) {
 #ifdef NONMATCHING_C
   if (Enemy_IsDead(&p->e)) {
@@ -217,7 +217,7 @@ NON_MATCH void Ghost_OnHurt(Hitbox* a, Hitbox* b, Ghost* p) {
 }
 
 // 取り憑いている間, プレイヤーの ENE を吸い (EV_WRAITH は混乱も付ける), 連打が escapeMash を超えたら振りほどかれる
-// 225/234命令, 前半は EnemyBat の FUN_0813f320 と同じ壁 (Enemy_PlayAnim の展開), 試済: 連打数の差の書き方 2 通り
+// 225/234命令, 前半は EneBat の FUN_0813f320 と同じ壁 (Enemy_PlayAnim の展開), 試済: 連打数の差の書き方 2 通り
 NON_MATCH void Ghost_StateDrainPlayer(Ghost* p) {
 #ifdef NONMATCHING_C
   Ghost* q = (p->e).owner;
@@ -465,7 +465,7 @@ NON_MATCH void Ghost_StateTurn(Ghost* p) {
 }
 
 // 向きに合わせて animTable[11] のアニメを流し, 30 フレーム未満は ENEFLAG4_UNK_5 を立て, 60 フレームで副状態を終える
-// 124/129命令, EnemyBat の FUN_0813f320 と同じ壁 (Enemy_PlayAnim の展開), 試済: FUN_0813f320 の C をそのまま
+// 124/129命令, EneBat の FUN_0813f320 と同じ壁 (Enemy_PlayAnim の展開), 試済: FUN_0813f320 の C をそのまま
 NON_MATCH void FUN_0816b880(Ghost* p, s32 timer) {
 #ifdef NONMATCHING_C
   u32 dir;
@@ -617,7 +617,7 @@ NON_MATCH void Ghost_StateDying(Ghost* p) {
     } else {
       gStat->enemyDexSeen[1] |= 1 << (idx - 32);
     }
-    (p->e).sleepTimer = 0;
+    (p->e).stunTimer = 0;
     if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_14)) {
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
       Enemy_ResetState(&p->e, 1, 0, 2);
@@ -712,7 +712,7 @@ void Ghost_StateWaitAtNode(Ghost* p) {
 }
 
 // 振りほどかれて乱数の向きへ飛ばされ, 止まったら乱数で選んだ経路ノードへ曲線移動を始める
-// 236/236命令, 残差は乱数の表の先頭を置くレジスタ番号 (r1 と原典 r6) だけ, EnemyBat の FUN_08140eb0 と同じ壁, 試済: r の宣言位置, 副状態の終わりの if の向き
+// 236/236命令, 残差は乱数の表の先頭を置くレジスタ番号 (r1 と原典 r6) だけ, EneBat の FUN_08140eb0 と同じ壁, 試済: r の宣言位置, 副状態の終わりの if の向き
 NON_MATCH void Ghost_StateFlungOff(Ghost* p) {
 #ifdef NONMATCHING_C
   Ghost* q = (p->e).owner;
@@ -927,7 +927,7 @@ void Ghost_StartCurve(Ghost* p, Vec3* pos) {
 }
 
 // curveStart から curveEnd への曲線上の curveT の位置を経路の目的地に置き, curveT を 128 進める, 終点に着いていたら TRUE
-// 199/200命令, Bee_StepCurve / EnemyBat_StepCurve / Curoro_StepCurve と同じ壁 (原典はフレーム 0x34, こちらは 0x28), 試済: 末尾の curveT の判定の向き
+// 199/200命令, Bee_StepCurve / EneBat_StepCurve / Curoro_StepCurve と同じ壁 (原典はフレーム 0x34, こちらは 0x28), 試済: 末尾の curveT の判定の向き
 NON_MATCH bool8 Ghost_StepCurve(Ghost* p) {
 #ifdef NONMATCHING_C
   Ghost* q = (p->e).owner;
@@ -1152,7 +1152,7 @@ void Ghost_InitAfterimages(Ghost* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    Video_GetAuxSprite(&q->afterimages[i].gfx, SPRITE_GHOST);
+    Video_GetAuxSprite(&q->afterimages[i].gfx, SPR_GHOST);
     AuxSprite_Add(&q->afterimages[i].sprite, &q->afterimages[i].gfx, 0);
     Video_SetAuxSpritePltt(&q->afterimages[i].gfx, 384);
     q->afterimages[i].animFile = GetFile(DIR_ANIMATION, ANIM_GHOST);
@@ -1373,7 +1373,7 @@ NON_MATCH s32 Ghost_PreUpdate(Ghost* p) {
 s32 Ghost_PostUpdate(Ghost* p) {
   Ghost_TickAfterimages(p);
   if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_5)) {
-    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_1 | ENEFLAG3_UNK_2))) {
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_4 | ENEFLAG3_UNK_8) || (Enemy_HasTargetNearby(&p->e) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_PETRIFIED))) {
       if (!((p->e).hitbox.flags & HBF_HIDDEN)) {
         Hitbox_SetPos(&(p->e).hitbox, &(p->e).mover.pos, 0);
         Hitbox_Register(&(p->e).hitbox);
@@ -1647,7 +1647,7 @@ s32 Ghost_Destroy(Ghost* p) {
   if (!TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_25)) {
     FUN_08002a58(&(p->e).mover);
   }
-  if (Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_9)) {
+  if (Enemy_TestFlag5(&p->e, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Unregister(&(p->e).cwolfNode);
   }
   Mover_Unlink(&(p->e).mover);
@@ -1680,7 +1680,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
     (p->e).s = Malloc(sizeof(EnemyAuxSprite));
     ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
     aux = &(p->e).s->aux;
-    Video_GetAuxSprite(&aux->gfx, SPRITE_GHOST);
+    Video_GetAuxSprite(&aux->gfx, SPR_GHOST);
     AuxSprite_Add(&aux->spr, &aux->gfx, 0);
     EnemyAuxSprite_LoadAnim(aux, ANIM_GHOST);
     k = (p->e).kind;
@@ -1697,7 +1697,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
     ClearMemory((p->e).s, sizeof(EnemySprite));
     spr = &(p->e).s->main;
     Vec3_Clear(&origin);
-    f = GetFile(DIR_MAIN_SPRITE, SPRITE_GHOST);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_GHOST);
     spr->gfx = *f;
     OpenMainSpriteFile(&spr->gfx, f);
     MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
@@ -1799,7 +1799,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
   }
 
   Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
-  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_9)) {
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
   Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
@@ -1809,7 +1809,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
     Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
   }
   kind = (p->e).kind;
-  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_31) {
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
     Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
   }
   if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
@@ -1900,7 +1900,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
   (p->e).handlerTurn = Ghost_StateTurn;
   (p->e).handlerMove = Ghost_StateFly;
   (p->e).handlerWait = Ghost_StateWait;
-  (p->e).unk_5c0 = NULL;
+  (p->e).handlerNap = NULL;
   (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
   (p->e).handlerDamaged = Ghost_StateDamaged;
   (p->e).handlerDying = Ghost_StateDying;
@@ -1929,7 +1929,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
   (p->e).onDamaged = Enemy_OnDamaged;
   (p->e).unk_628 = (void*)FUN_080f84d4;
   (p->e).handlerChase = FUN_080f624c;
-  (p->e).handlerSleep = FUN_080f56ec;
+  (p->e).handlerStun = FUN_080f56ec;
   (p->e).unk_598 = FUN_080f5b34;
   (p->e).unk_59c = FUN_080f5fac;
   (p->e).unk_5b4 = NULL;
@@ -1941,7 +1941,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
   (p->e).unk_5b0 = NULL;
   (p->e).tryDetectPlayer = (void*)Ghost_TryDetectPlayer;
   SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_5);
-  SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_9);
+  SET_FLAGS((p->e).flags5, ENEFLAG5_CWOLF);
   SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_10 | ENEFLAG2_UNK_20 | ENEFLAG2_UNK_25);
   Enemy_InitShadowAndEmitter(&p->e);
 

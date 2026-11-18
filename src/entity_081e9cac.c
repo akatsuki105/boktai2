@@ -35,7 +35,7 @@ static_assert(sizeof(Entity081e9cacElem) == 244);
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_10
   AuxAnimFile* animFile;         // 0x18, ANIM_D6C8
-  AuxSpriteGfx gfx;              // 0x1C, SPRITE_EFF_2D41
+  AuxSpriteGfx gfx;              // 0x1C, SPR_EFF_2D41
   u32 activeMask;                // 0x38, elems の使用中ビット
   Entity081e9cacElem elems[12];  // 0x3C
 } Entity081e9cac;
@@ -480,7 +480,7 @@ s32 Entity081e9cac_Destroy(Entity081e9cac* p) {
 }
 
 s32 Entity081e9cac_Init(Entity081e9cac* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_2D41);
+  Video_GetAuxSprite(&p->gfx, SPR_EFF_2D41);
   p->animFile = GetFile(DIR_ANIMATION, ANIM_D6C8);
   gEntity081e9cac = p;
   p->activeMask = 0;

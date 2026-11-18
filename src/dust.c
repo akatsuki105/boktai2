@@ -2,8 +2,10 @@
 
 #include "entity.h"
 #include "file.h"
+#include "game.h"
 #include "global.h"
 #include "particle.h"
+#include "random.h"
 #include "sprite_animation.h"
 
 // 土煙1つ分, DustManager.activeMask のビットが立っている枠だけ生きている
@@ -33,6 +35,11 @@ static_assert(sizeof(DustManager) == 2600);
 static DustManager* gDustManager;  // 0x03000164
 
 static inline void DustManager_SetGlobal(DustManager* p) { gDustManager = p; }
+
+static inline bool8 TestMapFlag(u32 mapflag) {
+  if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
+  return FALSE;
+}
 
 static inline bool8 DustManager_IsActive(u32* mask, s32 i) {
   if (TEST_FLAGS(*mask, 1 << i)) return TRUE;
@@ -90,7 +97,76 @@ Dust* DustManager_Alloc(DustManager* p) {
   return NULL;
 }
 
-NAKED s32 DustManager_SpawnEx(Vec3* pos, Vec3* velRange, Vec3* posRange, u32 count, u32 priority, u32 animFlags, u32 pausable) { INCFUNC("asm/func/DustManager_SpawnEx.inc"); }
+// pos の周りに土煙を count 個出す, 位置は posRange, 速度は velRange の範囲の乱数, MPF_COLD のマップでは別のアニメにする
+s32 DustManager_SpawnEx(Vec3* pos, Vec3* velRange, Vec3* posRange, s32 count, u32 priority, u32 animFlags, u32 pausable) {
+  DustManager* p;
+  Particle* ptcl;
+  s32 i;
+
+  if (pos == NULL) {
+    return -1;
+  }
+  p = gDustManager;
+  if (p == NULL) {
+    p = DustManager_Create(0, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  for (i = 0; i < count; i++) {
+    Dust* dust = DustManager_Alloc(p);
+    u32 animIdx;
+
+    if (dust == NULL) {
+      return -1;
+    }
+    ptcl = &p->ptcls[dust->idx];
+    dust->pos = *pos;
+    if (posRange->x != 0) {
+      dust->pos.x += Mod(Random(), posRange->x * 2) - posRange->x;
+    }
+    if (posRange->y != 0) {
+      dust->pos.y += Mod(Random(), posRange->y * 2) - posRange->y;
+    }
+    if (posRange->z != 0) {
+      dust->pos.z += Mod(Random(), posRange->z * 2) - posRange->z;
+    }
+    if (velRange == NULL) {
+      dust->vel.x = 0;
+      dust->vel.y = 0;
+      dust->vel.z = 0;
+    } else {
+      Vec3 vel;
+
+      if (velRange->x == 0) {
+        vel.x = 0;
+      } else {
+        vel.x = Mod(Random(), velRange->x);
+      }
+      if (velRange->y == 0) {
+        vel.y = 0;
+      } else {
+        vel.y = Mod(Random(), velRange->y);
+      }
+      if (velRange->z == 0) {
+        vel.z = 0;
+      } else {
+        vel.z = Mod(Random(), velRange->z);
+      }
+      dust->vel = vel;
+    }
+    dust->delay = Mod(Random(), 16);
+    Particle_Add(ptcl, p->group0, 0);
+    Particle_SetOffset(ptcl, -8, -8);
+    animIdx = TestMapFlag(MPF_COLD) ? 14 : 13;
+    AuxAnim_SetAnim(&p->anims[dust->idx], p->anim, animIdx, 0, Mod(Random(), 2) | animFlags);
+    ptcl->flags |= SPRFLAG_BLINK_ODD | SPRFLAG_HIDDEN;
+    ptcl->priority = priority;
+    dust->state = 1;
+    dust->pausable = pausable;
+  }
+  return 0;
+}
 
 s32 DustManager_Spawn(Vec3* pos, Vec3* velRange, Vec3* posRange, u32 count, u32 priority, u32 animFlags) { return DustManager_SpawnEx(pos, velRange, posRange, count, priority, animFlags, TRUE); }
 
@@ -102,7 +178,32 @@ void (*const sDustStates[3])(DustManager*, Dust*) = {
     Dust_StateRelease,
 };  // 0x085AD320
 
-NAKED s32 DustManager_Update(DustManager* p) { INCFUNC("asm/func/DustManager_Update.inc"); }
+// 使用中の土煙を state ごとに動かす, pausable なものはイベント中や通信の待ち中は止める
+// 残差はループ外に出すものの違い (67/69), 原典は 0x200 をループ外に出し &activeMask を毎周作るが, こちらは &activeMask を出し 0x200 を毎周作る
+// TEST_FLAGS (両方出て r8 を使う), 条件の反転, 歩きポインタは試済
+NON_MATCH s32 DustManager_Update(DustManager* p) {
+#ifdef NONMATCHING_C
+  if (p->activeMask != 0) {
+    s32 i;
+
+    for (i = 0; i < 32; i++) {
+      if (DustManager_IsActive(&p->activeMask, i)) {
+        Dust* dust = &p->dusts[i];
+
+        if ((gGameFlags | gDebugGameFlags) & GAMEFLAG_CUTSCENE || (gGameFlags & GAMEFLAG_LINK && gSuspendFlags & (SUSPEND_LINK_WAIT | SUSPEND_PAUSE | SUSPEND_MENU))) {
+          if (dust->pausable & TRUE) {
+            continue;
+          }
+        }
+        sDustStates[dust->state](p, dust);
+      }
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/DustManager_Update.inc");
+#endif
+}
 
 // 使用中の枠の粒子をまとめて外す
 s32 DustManager_Destroy(DustManager* p) {

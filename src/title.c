@@ -19,7 +19,7 @@ typedef u32 TitleFlags;
 // モード(GAMESTART, OPTION, LINK のどれか) からBボタンに戻ると、またこのEntityが生成される
 typedef struct Title {
   Entity e;                               // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                      // 0x018, SPRITE_TITLE
+  MainSpriteGfx gfx;                      // 0x018, SPR_TITLE
   Tilemaps* tilemap;                      // 0x038, FileID は state ごとに違う
   rgb555* bgp;                            // 0x03C, FileID は state ごとに違う
   s32 unk_40;                             // 0x040, '.Y', 1 か 2 のとき初期状態が 3 になる
@@ -70,7 +70,7 @@ void Title_SetState(Title* p, s32 state);
 
 void FUN_08211f20(Title* p) {
   s32 idx;
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_32A2);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_32A2);
   idx = 0;
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &idx);
   SetBGPrioDirect(2, 2);
@@ -175,7 +175,7 @@ static s32 GetCurrentMonth(void) {
 void FUN_08212510(Title* p) {
   s32 idx;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_C423);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_C423);
   idx = 0;
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &idx);
   SetBGPrioDirect(2, 2);
@@ -299,7 +299,7 @@ NAKED void FUN_082129b8(Title* p) { INCFUNC("asm/func/FUN_082129b8.inc"); }
 NAKED void Title_UpdateState3(Title* p) { INCFUNC("asm/func/Title_UpdateState3.inc"); }
 
 void Title_LoadGfx(Title* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_TITLE);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_TITLE);
 
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);

@@ -45,9 +45,9 @@ static_assert(sizeof(RisingSunEffectEmitter) == 824);
 // 落ちてきて弾ける玉, 弾けると画面を光らせて太陽の状態を書き換える
 typedef struct RisingSunEffectOrb {
   AuxSprite spr;                                       // 0x00
-  AuxSpriteGfx gfx;                                    // 0x2C, SPRITE_EBALL_210E
+  AuxSpriteGfx gfx;                                    // 0x2C, SPR_EBALL_210E
   AuxSprite burstSpr;                                  // 0x48, 弾けたあとの絵
-  AuxSpriteGfx burstGfx;                               // 0x74, SPRITE_EXPLOSION
+  AuxSpriteGfx burstGfx;                               // 0x74, SPR_EXPLOSION
   bool8 active;                                        // 0x90
   bool8 burst;                                         // 0x91, 弾けたら 1
   u8 flashColor[3];                                    // 0x92, 弾けたときの画面フラッシュの色 (r, g, b)
@@ -61,7 +61,7 @@ static_assert(sizeof(RisingSunEffectOrb) == 160);
 // パレットを白から元の色へ戻しながら出し, 消えるときは点滅させるスプライト
 typedef struct {
   AuxSprite spr;                   // 0x00
-  AuxSpriteGfx gfx;                // 0x2C, SPRITE_MAGIC_SQUARE
+  AuxSpriteGfx gfx;                // 0x2C, SPR_MAGIC_SQUARE
   rgb555* srcPltt;                 // 0x48, 元の色
   rgb555 pltt[16];                 // 0x4C, srcPltt を白へ寄せた色, gfx.pltt がここを指す
   bool8 active;                    // 0x6C
@@ -386,7 +386,7 @@ NON_MATCH void RisingSunEffect_InitGlow(RisingSunEffect* p, WorldPos* pos) {
     plttID = 98;
   }
   gfx = &s->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_MAGIC_SQUARE);
+  Video_GetAuxSprite(gfx, SPR_MAGIC_SQUARE);
   AuxSprite_Add(&s->spr, gfx, 0);
   s->spr.poseIdx = poseIdx;
   s->spr.priority = 3;
@@ -484,7 +484,7 @@ NON_MATCH void RisingSunEffect_InitOrb(RisingSunEffect* p, WorldPos* pos) {
     orb->flashColor[2] = 0;
   }
   gfx = &orb->gfx;
-  Video_GetAuxSprite(gfx, SPRITE_EBALL_210E);
+  Video_GetAuxSprite(gfx, SPR_EBALL_210E);
   AuxSprite_Add(&orb->spr, gfx, 0);
   orb->spr.poseIdx = 1;
   Video_SetAuxSpritePltt(gfx, plttOfs + 44);
@@ -493,7 +493,7 @@ NON_MATCH void RisingSunEffect_InitOrb(RisingSunEffect* p, WorldPos* pos) {
   orb->spr.pos = *pos;
   spr = &orb->burstSpr;
   gfx = &orb->burstGfx;
-  Video_GetAuxSprite(gfx, SPRITE_EXPLOSION);
+  Video_GetAuxSprite(gfx, SPR_EXPLOSION);
   AuxSprite_Add(spr, gfx, 0);
   spr->poseIdx = 0;
   Video_SetAuxSpritePltt(gfx, burstPlttOfs + 275);

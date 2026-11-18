@@ -19,20 +19,20 @@
 typedef struct Entity501B {
   Entity e;                                    // 0x000, ENTITY_UNK_11
   MainSprite digits[8];                        // 0x018, [0..3] が上段 (y=0x40), [4..7] が下段 (y=0x78), 各段とも [0] が1の位
-  MainSpriteGfx gfx;                           // 0x318, SPRITE_UI_LINK
+  MainSpriteGfx gfx;                           // 0x318, SPR_UI_LINK
   u8 unk_338[0x358 - 0x338];                   // 0x338, まだ未解析
-  MainSpriteGfxFile* file;                     // 0x358, SPRITE_STAND
+  MainSpriteGfxFile* file;                     // 0x358, SPR_STAND
   u8 unk_35c[4];                               // 0x35C, まだ未解析
   u16 poses[8];                                // 0x360, digits ごとの MainSprite_Add のポーズ番号
   AuxSprite solarStandSpr;                     // 0x370
-  AuxSpriteGfx solarStandGfx;                  // 0x39C, SPRITE_STAND
+  AuxSpriteGfx solarStandGfx;                  // 0x39C, SPR_STAND
   u8 unk_3b8[2];                               // 0x3B8, まだ未解析
   u16 timer;                                   // 0x3BA, 90 から毎フレーム減り, 0 で次の状態へ, ボタンで 1 に飛ばせる
   u16 score;                                   // 0x3BC, gLinkSession->totalScores[playerIdx] (9999 で頭打ち), 精算で減っていく
   u16 step;                                    // 0x3BE, 1フレームに score から gStat->linkBattlePoint へ移す量, 初期 2, ボタンで <<3
   s32 unk_3c0;                                 // 0x3C0, gLinkSession->rankPoints[playerIdx] (±9999 で頭打ち)
-  Tilemaps* tilemap0;                          // 0x3C4, TILEMAP_CD91 を BG2 に敷く
-  Tilemaps* tilemap1;                          // 0x3C8, TILEMAP_A413 を BG0 に敷く
+  Tilemaps* tilemap0;                          // 0x3C4, MP_CD91 を BG2 に敷く
+  Tilemaps* tilemap1;                          // 0x3C8, MP_A413 を BG0 に敷く
   rgb555* bgPltt;                              // 0x3CC, bg_link_col_arr
   void (*updateCallback)(struct Entity501B*);  // 0x3D0
   u8* unk_3d4;                                 // 0x3D4, '.s', MenuMessage_SetScript に渡す
@@ -112,8 +112,8 @@ static inline void Entity501B_SetState(Entity501B* p, void* fn, u8 phase) {
 void Entity501B_InitBg(Entity501B* p) {
   s32 bgIndices[1];
 
-  p->tilemap0 = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
-  p->tilemap1 = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->tilemap0 = GetFile(DIR_TILE_MAP, MP_CD91);
+  p->tilemap1 = GetFile(DIR_TILE_MAP, MP_A413);
   bgIndices[0] = 10;
   Video_SetupBGLayout(2, 0, p->tilemap0, 0, 0, 1, bgIndices);
   bgIndices[0] = 12;
@@ -178,7 +178,7 @@ NON_MATCH void Entity501B_InitAuxSprite(Entity501B* p) {
   AuxSpriteGfx* gfx = &p->solarStandGfx;
   AuxSprite* spr = &p->solarStandSpr;
 
-  Video_GetAuxSprite(gfx, SPRITE_STAND);
+  Video_GetAuxSprite(gfx, SPR_STAND);
   AuxSprite_Add(spr, gfx, 0);
   AuxSprite_SetPoseIdx(spr, 0);
   AuxSprite_SetFlags(spr, SPRFLAG_HIDDEN | 0x10);
@@ -197,7 +197,7 @@ void Entity501B_RemoveAuxSprite(Entity501B* p) { AuxSprite_Remove(&p->solarStand
 void Entity501B_InitSprites(Entity501B* p) {
   s32 i;
 
-  p->file = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  p->file = GetFile(DIR_MAIN_SPRITE, SPR_UI_LINK);
   OpenMainSpriteFile(&p->gfx, p->file);
   for (i = 0; i < 8; i++) {
     p->poses[i] = 0;
