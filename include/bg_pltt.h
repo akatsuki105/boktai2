@@ -57,7 +57,7 @@
 #define BGP_4169 0x4169
 #define BGP_422B 0x422B
 #define BGP_4250 0x4250
-#define BGP_4596 0x4596
+#define BGP_STAGE_TITLE BOKHASH("bg_bti_col_arr")  // 0x4596, ステージタイトル, MP_STAGE_TITLE とセットで利用
 #define BGP_4668 0x4668
 #define BGP_477C 0x477C
 #define BGP_4782 0x4782
@@ -145,14 +145,14 @@
 #define BGP_WEDGE BOKHASH("wedge_col_arr")  // 0xA3D9, ボスを倒した後の封印の楔のある部屋
 #define BGP_A3EC 0xA3EC
 #define BGP_A3EE 0xA3EE
-#define BGP_A41A 0xA41A
+#define BGP_KAJI BOKHASH("bg_kaji_col_arr")  // 0xA41A
 #define BGP_A795 0xA795
 #define BGP_A8A4 0xA8A4
 #define BGP_A8A8 0xA8A8
 #define BGP_A9A4 0xA9A4
 #define BGP_AA80 0xAA80
 #define BGP_AB2C 0xAB2C
-#define BGP_ACBD 0xACBD
+#define BGP_SENSOR_HELP BOKHASH("bg_lop_col_arr")  // 0xACBD, 太陽センサーの説明画面
 #define BGP_ACF4 0xACF4
 #define BGP_AD0C 0xAD0C
 #define BGP_AD32 0xAD32
@@ -217,16 +217,16 @@
 #define BGP_E851 0xE851
 #define BGP_E853 0xE853
 #define BGP_E8AD 0xE8AD
-#define BGP_E9C3 0xE9C3
-#define BGP_BANK 0xEAA8  // 0xEAA8, 太陽バンクと暗黒ローン用?
+#define BGP_NAME BOKHASH("bg_nam_col_arr")  // 0xE9C3
+#define BGP_BANK BOKHASH("bg_gin_col_arr")  // 0xEAA8, 太陽バンクと暗黒ローン用
 #define BGP_EAEF 0xEAEF
 #define BGP_EB7D 0xEB7D
 #define BGP_EC16 0xEC16
-#define BGP_ECBF 0xECBF
+#define BGP_TIZU BOKHASH("bg_map_col_arr")  // 0xECBF
 #define BGP_ECF9 0xECF9
 #define BGP_ED11 0xED11
-#define BGP_EFDA 0xEFDA
-#define BGP_F0DC 0xF0DC
+#define BGP_SYSTEM BOKHASH("bg_sys_col_arr")  // 0xEFDA
+#define BGP_TITLE BOKHASH("bg_tit_col_arr")   // 0xF0DC
 #define BGP_F22F 0xF22F
 #define BGP_F308 0xF308
 #define BGP_F42E 0xF42E

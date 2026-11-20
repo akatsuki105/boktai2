@@ -142,7 +142,7 @@ NON_MATCH void FUN_08056b08(LarvaManager* p, Larva* larva) {
 
   next.x = larva->velocity.x + sprite->pos.x;
   next.z = larva->velocity.z + sprite->pos.z;
-  if (!(GetTileAttrAt(&next) & TATTR_UNK_0) && TileHeightAt(&next) == 0x100) {
+  if (!(GetTileAttrAt(&next) & TATTR_PLAYER_WALL) && TileHeightAt(&next) == 0x100) {
     return;
   }
 
@@ -176,7 +176,7 @@ NON_MATCH void FUN_08056b08(LarvaManager* p, Larva* larva) {
 
   next.x = larva->velocity.x + clamped.x;
   next.z = larva->velocity.z + clamped.z;
-  if ((GetTileAttrAt(&next) & TATTR_UNK_0) || TileHeightAt(&next) != 0x100) {
+  if ((GetTileAttrAt(&next) & TATTR_PLAYER_WALL) || TileHeightAt(&next) != 0x100) {
     min.x = clamped.x & 0xFF00;
     min.z = clamped.z & 0xFF00;
     max.x = min.x + 0xFF;
@@ -324,7 +324,7 @@ void FUN_080572b8(LarvaManager* p, Larva* larva) {
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.25));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &larva->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_08056f94, larva);
   Hitbox_SetPowerAndAttributes(hurtbox, larva->power, HBATTR_BEAST, 0);
@@ -494,7 +494,7 @@ NON_MATCH void FUN_0805758c(LarvaManager* p, Larva* larva, s32 idx) {
       } else {
         pos.z += dir == 0 ? -larva->unk_06 : larva->unk_06;
       }
-      if (!(GetTileAttrAt(&pos) & TATTR_UNK_0) && TileHeightAt(&pos) == 0x100) {
+      if (!(GetTileAttrAt(&pos) & TATTR_PLAYER_WALL) && TileHeightAt(&pos) == 0x100) {
         break;
       }
       if (next < 0) {
@@ -628,7 +628,7 @@ NON_MATCH void FUN_080579a4(LarvaManager* p, Larva* larva, s32 idx) {
       } else {
         pos.z += dir == 0 ? -larva->unk_06 : larva->unk_06;
       }
-      if (!(GetTileAttrAt(&pos) & TATTR_UNK_0) && TileHeightAt(&pos) == 0x100) {
+      if (!(GetTileAttrAt(&pos) & TATTR_PLAYER_WALL) && TileHeightAt(&pos) == 0x100) {
         break;
       }
       if (next < 0) {
@@ -765,7 +765,7 @@ NON_MATCH void FUN_08057db0(LarvaManager* p, Larva* larva, s32 idx) {
       } else {
         pos.z += dir == 0 ? -larva->unk_06 : larva->unk_06;
       }
-      if (!(GetTileAttrAt(&pos) & TATTR_UNK_0) && TileHeightAt(&pos) == 0x100) {
+      if (!(GetTileAttrAt(&pos) & TATTR_PLAYER_WALL) && TileHeightAt(&pos) == 0x100) {
         break;
       }
       if (next < 0) {
@@ -859,7 +859,7 @@ NON_MATCH void FUN_080581dc(LarvaManager* p, Larva* larva, s32 idx) {
   next.x = larva->origin.x + larva->velocity.x;
   next.y = larva->origin.y + larva->velocity.y;
   next.z = larva->origin.z + larva->velocity.z;
-  if (GetTileAttrAt(&next) & TATTR_UNK_0) {
+  if (GetTileAttrAt(&next) & TATTR_PLAYER_WALL) {
     blocked = TRUE;
   } else if (TileHeightAt(&next) != 0x100) {
     blocked = TRUE;
@@ -894,7 +894,7 @@ NON_MATCH void FUN_08058460(LarvaManager* p, Larva* larva, s32 idx) {
   if (larva->stateEntered != 0) {
     larva->stateEntered = 0;
     ParticleShadow_Show(&larva->shadow);
-    if (!(GetTileAttrAt(&sprite->pos) & TATTR_UNK_0)) {
+    if (!(GetTileAttrAt(&sprite->pos) & TATTR_PLAYER_WALL)) {
       TileHeightAt(&sprite->pos);
     }
   }
@@ -917,7 +917,7 @@ NON_MATCH void FUN_08058460(LarvaManager* p, Larva* larva, s32 idx) {
   if (larva->stateTimer >= 32) {
     Larva_SetState(p, larva, 4);
     sprite->pos.y = TileHeightAt(&sprite->pos);
-    if (!(GetTileAttrAt(&sprite->pos) & TATTR_UNK_0)) {
+    if (!(GetTileAttrAt(&sprite->pos) & TATTR_PLAYER_WALL)) {
       TileHeightAt(&sprite->pos);
     }
     ParticleShadow_Hide(&larva->shadow);
@@ -940,7 +940,7 @@ NON_MATCH void FUN_080587cc(LarvaManager* p, Larva* larva, s32 idx) {
   if (larva->stateEntered != 0) {
     larva->stateEntered = 0;
     ParticleShadow_Show(&larva->shadow);
-    if (!(GetTileAttrAt(&sprite->pos) & TATTR_UNK_0)) {
+    if (!(GetTileAttrAt(&sprite->pos) & TATTR_PLAYER_WALL)) {
       TileHeightAt(&sprite->pos);
     }
   }

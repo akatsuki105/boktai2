@@ -79,7 +79,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
           }
           ov = Map_FindTileOverride(tileIdx, 1);
           tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
-          if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+          if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
             break;
           }
           {
@@ -121,7 +121,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
           }
           ov = Map_FindTileOverride(tileIdx, 1);
           tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
-          if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+          if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
             break;
           }
           {
@@ -177,7 +177,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -222,7 +222,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -268,7 +268,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -313,7 +313,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -373,7 +373,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -418,7 +418,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -464,7 +464,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -509,7 +509,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -574,7 +574,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -619,7 +619,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -665,7 +665,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -710,7 +710,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -770,7 +770,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -815,7 +815,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -861,7 +861,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -906,7 +906,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -991,7 +991,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1036,7 +1036,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1082,7 +1082,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1127,7 +1127,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1186,7 +1186,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1231,7 +1231,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1277,7 +1277,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1322,7 +1322,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1385,7 +1385,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1430,7 +1430,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1476,7 +1476,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1521,7 +1521,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1580,7 +1580,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1625,7 +1625,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1671,7 +1671,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                 }
                 ov = Map_FindTileOverride(i, 1);
                 tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                   break;
                 }
                 ov = Map_FindTileOverride(i, 1);
@@ -1716,7 +1716,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
                   }
                   ov = Map_FindTileOverride(i, 1);
                   tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[i];
-                  if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+                  if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
                     break;
                   }
                   ov = Map_FindTileOverride(i, 1);
@@ -1832,7 +1832,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
         }
         ov = Map_FindTileOverride(tileIdx, 1);
         tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
-        if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+        if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
           break;
         }
         {
@@ -1874,7 +1874,7 @@ NON_MATCH static bool8 FUN_081eb348(Entity081edcc4Elem* elem, s32 angle, u32 til
         }
         ov = Map_FindTileOverride(tileIdx, 1);
         tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
-        if (tile->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
+        if (tile->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) {
           break;
         }
         {
@@ -2090,7 +2090,7 @@ NON_MATCH s32 Entity081edcc4_Spawn(Vec3* pos, Vec3* vel, u32 count, u32 kind, s3
   hitbox->id = elem->mover.id;
   Hitbox_SetPos(hitbox, &elem->pos, 0);
   Hitbox_SetHandler(hitbox, Entity081edcc4Elem_OnHit, elem);
-  Mover_Init(&elem->mover, 0x0309 + elem->idx, &elem->pos, 0, 7, elem);
+  Mover_Init(&elem->mover, 0x0309 + elem->idx, &elem->pos, 0, MOVER_OBJECT, elem);
   Mover_SetAuxSprite(&elem->mover, &elem->sprite);
   FUN_08002a48(&elem->mover);
   return 0;

@@ -119,32 +119,21 @@ BeeNestFragment* FUN_081d5864(BeeNest* p) {
 }
 
 // unk_150 が id の使用中アイテムを探す
-// 残差5命令 (36/41), 使用中判定の 0/1 の作り置き1ブロックだけが足りない
-// bool8 を返す static inline (BeeNest_IsActive(&p->activeMask, i)) にすると 0/1 の作り置きは出るが, 原典は activeMask をループ外で1回読んでレジスタに持つ
-NON_MATCH BeeNestFragment* FUN_081d58c4(s32 id) {
-#ifdef NONMATCHING_C
+BeeNestFragment* FUN_081d58c4(s32 id) {
   BeeNest* p = gBeeNest;
-  BeeNestFragment* frag;
-  u32 mask;
+  BeeNestFragment* frags;
   s32 i;
 
   if (p == NULL) {
     return NULL;
   }
-
-  mask = p->activeMask;
-  frag = p->fragments;
-  for (i = 0; i < 4; i++, frag++) {
-    if (mask & (1 << i)) {
-      if (frag->unk_150 == id) {
-        return frag;
-      }
+  frags = p->fragments;
+  for (i = 0; i < 4; i++) {
+    if (BeeNest_IsActive(&p->activeMask, i) && frags[i].unk_150 == id) {
+      return &frags[i];
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/FUN_081d58c4.inc");
-#endif
 }
 
 // 0xF1F9, HashName("蜂の巣")
@@ -596,7 +585,7 @@ void BeeNestFragment_InitHurtbox(BeeNestFragment* frag, u32 power, HitboxAttrs a
   VEC3_SET(offset, 0, Q8(0.313), 0);
   VEC3_SET(halfSize, Q8(0.25), Q8(0.313), Q8(0.25));
   hurtbox->id = frag->unk_150;
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, attributes, weakness);
   Hitbox_SetPos(hurtbox, &frag->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, FUN_081d64d4, frag);

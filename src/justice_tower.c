@@ -405,7 +405,7 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
   offset.x = 0, offset.y = 0, offset.z = 0;
 
   if (p->kind == TYPE_JUSTICE) {
-    ignoreMask = 1 << p->player->mover.unk_4;
+    ignoreMask = 1 << p->player->mover.kind;
     power = p->player->maxHP - p->player->hp;
   } else {
     // TYPE_TOWER
@@ -421,7 +421,7 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
     power = lv * 8;
   }
 
-  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_NPC | HBF_DAMAGE, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ACTOR | HBF_DAMAGE, 0, ignoreMask, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, 10, 0, HBATTR_NAMAKURA, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->player->mover.pos, 0);

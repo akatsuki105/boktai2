@@ -86,21 +86,21 @@
 #define ITEM_NONE (-1)
 
 // ItemEffectType (IET_)
-#define IET_NONE 0        // 効果なし
-#define IET_HP 1          // HP回復
-#define IET_MP 2          // Ene回復
-#define IET_BAD_STATUS 3  // 毒などの状態異常回復
-#define IET_VITAMINS 4    // ステータス永続アップ
-#define IET_GOOD 5        // 良いステータス効果
-#define IET_BUGS 6        // 精霊虫(悪魔のカード, 月のカード, 太陽のカード)
-#define IET_WARP 7        // ワープ(転移の葉, 愚者のカード)
-#define IET_SOLAR 8       // 太陽ゲージ操作(テルテルボーズ、ズーボルテルテ, おてんきゲタ)
-#define IET_LOAN 9        // 暗黒カード
-#define IET_HPMP 10       // HPとEneを変更 (吊るされた男のカード, 死神のカード)
-#define IET_LOVER 11      // 特殊演出付きのHP全回復 (恋人のカード)
-#define IET_AOE 12        // 画面内の全ての敵にダメージ (正義のカード, 塔のカード)
-#define IET_REFRESH 13    // 腐敗を回復 (星のカード)
-#define IET_REPAIR 14     // 武器の耐久回復 (節制のカード)
+#define IET_NONE 0      // 効果なし
+#define IET_HP 1        // HP回復
+#define IET_MP 2        // Ene回復
+#define IET_CURE 3      // 毒などの状態異常回復
+#define IET_VITAMINS 4  // ステータス永続アップ
+#define IET_GOOD 5      // 良いステータス効果
+#define IET_BUGS 6      // 精霊虫(悪魔のカード, 月のカード, 太陽のカード)
+#define IET_WARP 7      // ワープ(転移の葉, 愚者のカード)
+#define IET_SOLAR 8     // 太陽ゲージ操作(テルテルボーズ、ズーボルテルテ, おてんきゲタ)
+#define IET_LOAN 9      // 暗黒カード
+#define IET_HPMP 10     // HPとEneを変更 (吊るされた男のカード, 死神のカード)
+#define IET_LOVER 11    // 特殊演出付きのHP全回復 (恋人のカード)
+#define IET_AOE 12      // 画面内の全ての敵にダメージ (正義のカード, 塔のカード)
+#define IET_REFRESH 13  // 腐敗を回復 (星のカード)
+#define IET_REPAIR 14   // 武器の耐久回復 (節制のカード)
 #define IET_UNK15 15
 
 #endif  // __INCLUDE_CONSTANTS_ITEM_H__

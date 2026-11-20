@@ -3,12 +3,16 @@
 #include "msgbus.h"
 #include "npc.h"
 #include "sprite.h"
+#include "trig.h"
 #include "vm.h"
+
+static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
+static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 // エンニオ(時計塔の管理者NPC)でのみ利用
 
-void FUN_0820a710(NPCManager* p, NPC* npc) {
-  static void (*const PTR_ARRAY_085aed94[16])(NPCManager*, NPC*) = {
+void Ennio_DispatchState(NPCManager* p, NPC* npc) {
+  static void (*const sEnnioStates[16])(NPCManager*, NPC*) = {
       FUN_0804355c,
       FUN_08043588,
       FUN_080435b4,
@@ -23,52 +27,118 @@ void FUN_0820a710(NPCManager* p, NPC* npc) {
       FUN_08043c94,
       FUN_08043cc4,
       FUN_08043cf4,
-      FUN_08043da8,
+      NPC_StateWaitTimeWindow,
       FUN_08043e54,
   };  // 0x085AED94
-  PTR_ARRAY_085aed94[npc->state](p, npc);
+  sEnnioStates[npc->state](p, npc);
 }
 
-void FUN_0820a728(NPCManager* p, NPC* npc) { FUN_0820a710(p, npc); }
+void Ennio_UpdateState(NPCManager* p, NPC* npc) { Ennio_DispatchState(p, npc); }
 
-s32 FUN_0820a734(NPCManager* p, NPC* npc) {
-  FUN_0820a728(p, npc);
+s32 Ennio_RunState(NPCManager* p, NPC* npc) {
+  Ennio_UpdateState(p, npc);
   return 0;
 }
 
-// clang-format off
-void (*const PTR_ARRAY_085aedd4[14])(NPCManager*, NPC*, s32) = {
+static void (*const sEnnioUpdates[14])(NPCManager*, NPC*, s32) = {
     NULL,
-    FUN_08042178,
-    FUN_080421bc,
-    FUN_08042200,
-    FUN_0804234c,
-    FUN_08042414,
-    FUN_08042638,
+    NPC_UpdateHidden,
+    NPC_UpdateIdle,
+    NPC_UpdateWalkToTarget,
+    NPC_UpdateTurn,
+    NPC_UpdateDropIn,
+    NPC_UpdateRiseOut,
     FUN_08042868,
-    FUN_080428b8,
-    FUN_08042a48,
+    NPC_UpdateWalkPath,
+    NPC_UpdateFacePlayer,
     FUN_08042cf0,
     FUN_08042d50,
     FUN_08042f34,
-    FUN_08043108,
+    NPC_UpdateNavToPathStart,
 };  // 0x085AEDD4
-// clang-format on
 
-NAKED s32 FUN_0820a740(NPC* npc) { INCFUNC("asm/func/FUN_0820a740.inc"); }
+u8 Ennio_SelectUpdate(NPC* npc) {
+  NPCUpdate* fn;
 
-NAKED s32 FUN_0820a77c(NPCManager* p, NPC* npc) { INCFUNC("asm/func/FUN_0820a77c.inc"); }
+  if (npc->updateRequest == 0 || npc->updateRequest > 14) {
+    return 0;
+  }
 
-NAKED void FUN_0820a7b0(NPC* npc) { INCFUNC("asm/func/FUN_0820a7b0.inc"); }
+  fn = sEnnioUpdates[npc->updateRequest];
+  npc->updateID = npc->updateRequest;
+  npc->update = fn;
+  npc->updateElapsed = 0;
+  npc->updateEntered = 1;
+  npc->updatePhase = 0;
+  return 1;
+}
 
-NAKED s32 FUN_0820a8fc(NPCManager* p, NPC* npc) { INCFUNC("asm/func/FUN_0820a8fc.inc"); }
+s32 Ennio_RunUpdate(NPCManager* p, NPC* npc) {
+  u32 elapsed;
 
-s32 FUN_0820a91c(NPCManager* p, NPC* npc) {
-  FUN_080412fc(p, npc);
+  npc->flags = 0;
+  npc->updateDone = 0;
+  elapsed = npc->updateElapsed++;
+
+  if (npc->update != NULL) {
+    npc->update(p, npc, elapsed);
+  }
+
   return 0;
 }
 
-s32 FUN_0820a928(NPCManager* p, NPC* npc) { return MsgQueue_Unregister(&npc->mq); }
+void Ennio_HandleMsgs(NPC* npc) {
+  MsgQueue* mq = &npc->mq;
+  s32 i;
+
+  for (i = 0; i < mq->count[GetMsgBus()->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[GetMsgBus()->bufIdx][i];
+
+    MsgQueue_BeginWait(mq, msg);
+    switch (msg->cmd) {
+      case 0: {
+        NPC_StartState(npc, 0);
+        break;
+      }
+      case 1: {
+        npc->targetAngle = Angle_FromDir8((u8)msg->args[0]);
+        NPC_StartState(npc, 1);
+        break;
+      }
+      case 3: {
+        npc->work.walk.target.x = msg->args[0];
+        npc->work.walk.target.y = msg->args[1];
+        npc->work.walk.target.z = msg->args[2];
+        npc->targetAngle = GetAngleTo(&npc->mover.pos, &npc->work.walk.target);
+        NPC_StartState(npc, 2);
+        break;
+      }
+      case 2: {
+        npc->targetAngle = Angle_FromDir8((u8)msg->args[0]);
+        NPC_StartState(npc, 3);
+        break;
+      }
+      case 10: {
+        NPC_ShowEmote(npc, msg->args[0], msg->args[1], msg->args[2]);
+        break;
+      }
+    }
+  }
+}
+
+s32 Ennio_HandleMsgsAndMove(NPCManager* p, NPC* npc) {
+  Ennio_HandleMsgs(npc);
+  NPC_UpdateMotion(p, npc);
+  npc->updateRequest = 0;
+  return 0;
+}
+
+s32 Ennio_UpdateVisibility(NPCManager* p, NPC* npc) {
+  NPC_UpdateVisibility(p, npc);
+  return 0;
+}
+
+s32 Ennio_OnDestroy(NPCManager* p, NPC* npc) { return MsgQueue_Unregister(&npc->mq); }
 
 // 0x3F96, エンニオ の NPC を作って NPCManager に繋ぐ
 void Cmd_3F96(void) {
@@ -98,38 +168,38 @@ void Cmd_3F96(void) {
   if (npc == NULL) {
     return;
   }
-  if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
+  if (NPC_InitMover(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 2, SPR_ENNIO_LUIS, 0, flags) < 0) {
+  if (NPC_InitSprite(npc, 2, SPR_ENNIO_LUIS, 0, flags) < 0) {
     return;
   }
 
   Mover_SetUnk30(&npc->mover, 0, 350, 0);
-  FUN_08040fc0(npc, npc->sprite.pos, 1, 0, 64);
+  NPC_InitShadow(npc, npc->sprite.pos, 1, 0, 64);
   MsgQueue_Register(&npc->mq, id, 5);
   npc->mover.angle = angle;
-  npc->unk_1a = Angle_ToDir8(angle);
-  npc->unk_19 = Angle_ToDir4(angle);
-  NPC_SetFn(npc, FUN_0820a740);
-  NPC_SetCb(npc, 0, FUN_0820a8fc);
-  NPC_SetCb(npc, 1, FUN_0820a734);
-  NPC_SetCb(npc, 2, FUN_0820a77c);
-  NPC_SetCb(npc, 3, FUN_0820a91c);
-  NPC_SetOnDestroy(npc, FUN_0820a928);
-  FUN_08040df4(p, npc, SPR_ENNIO_LUIS, 0);
+  npc->dir8 = Angle_ToDir8(angle);
+  npc->dir4 = Angle_ToDir4(angle);
+  NPC_SetFn(npc, Ennio_SelectUpdate);
+  NPC_SetCb(npc, 0, Ennio_HandleMsgsAndMove);
+  NPC_SetCb(npc, 1, Ennio_RunState);
+  NPC_SetCb(npc, 2, Ennio_RunUpdate);
+  NPC_SetCb(npc, 3, Ennio_UpdateVisibility);
+  NPC_SetOnDestroy(npc, Ennio_OnDestroy);
+  NPC_LookupCharaTables(p, npc, SPR_ENNIO_LUIS, 0);
   NPCManager_LinkNPC(p, npc);
-  FUN_08041e10(p, npc);
+  NPC_ReadConfigArgs(p, npc);
 
   switch (VM_GetNamedArgValue('i', 0)) {
     case 0: {
       NPC_StartState(npc, 1);
-      NPC_SetUpdate(npc, FUN_080421bc, 2);
+      NPC_SetUpdate(npc, NPC_UpdateIdle, 2);
       break;
     }
     case 1: {
       NPC_StartState(npc, 0);
-      NPC_SetUpdate(npc, FUN_08042178, 1);
+      NPC_SetUpdate(npc, NPC_UpdateHidden, 1);
       SpriteHolder_SetFlags(&npc->sprite, SPRFLAG_HIDDEN);
       NPC_HideShadow(npc);
       break;
@@ -138,7 +208,7 @@ void Cmd_3F96(void) {
       npc->unk_217 = 1;
       if (npc->pathIdx >= 0) {
         NPC_StartState(npc, FUN_08043510(npc));
-        NPC_SetUpdate(npc, FUN_080421bc, 2);
+        NPC_SetUpdate(npc, NPC_UpdateIdle, 2);
       } else {
         NPC_StartState(npc, 6);
         NPC_SetUpdate(npc, FUN_08042868, 7);

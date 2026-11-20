@@ -12,8 +12,8 @@
 
 typedef struct {
   Entity e;                       // 0x0, ENTITY_UNK_8
-  Tilemaps* tilemap;              // 0x18, MP_4F8F
-  rgb555* pltt;                   // 0x1C, BGP_A41A のパレット
+  Tilemaps* tilemap;              // 0x18, MP_BOOK
+  rgb555* pltt;                   // 0x1C, BGP_KAJI のパレット
   u32 frameCounter;               // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                        // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
   u8 cursor;                      // 0x025, 現在のカーソルの位置番号, = (cursorY * 5) + cursorX
@@ -209,7 +209,7 @@ NON_MATCH void AlbumMenu_InitSprites(AlbumMenu* p) {
   s32 i;
   s32 j;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_GALLERY);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_BOOK);
   p->gfx1 = *f;
   OpenMainSpriteFile(&p->gfx1, f);
 
@@ -264,12 +264,12 @@ void AlbumMenu_SetupPageBG(AlbumMenu* p) {
   s32 col;
 
   ClearBGTilemapBuffer(0);
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_4F8F);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_BOOK);
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(0, 3);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
 
-  f = GetBgPlttFile(BGP_A41A);
+  f = GetBgPlttFile(BGP_KAJI);
   p->pltt = f->body;
   CpuCopy16(&f->body[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 

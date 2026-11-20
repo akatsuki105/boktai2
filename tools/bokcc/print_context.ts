@@ -63,7 +63,7 @@ const loadMemoryIndexedNames = (paths: readonly string[]): ReadonlyMap<string, s
 };
 
 // デコンパイル結果に名前を出すためのコンテキストを、namespace ごとのヘッダから作る。
-export const buildPrintContext = (headers: { strings?: string; scripts?: string; commands?: string; stat?: string; world?: string; scratch?: string }): PrintContext => {
+export const buildPrintContext = (headers: { strings?: string; scripts?: string; commands?: string; stat?: string; world?: string; scratch?: string; hashes?: string }): PrintContext => {
   const memory = [headers.stat, headers.world, headers.scratch].filter((p): p is string => p !== undefined);
   return {
     stringNames: headers.strings ? loadNames(headers.strings) : undefined,
@@ -72,5 +72,6 @@ export const buildPrintContext = (headers: { strings?: string; scripts?: string;
     scriptComments: headers.scripts ? loadComments(headers.scripts) : undefined,
     memoryNames: memory.length > 0 ? loadMemoryNames(memory) : undefined,
     memoryIndexedNames: memory.length > 0 ? loadMemoryIndexedNames(memory) : undefined,
+    hashNames: headers.hashes ? loadNames(headers.hashes) : undefined,
   };
 };

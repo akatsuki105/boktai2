@@ -65,6 +65,34 @@ void Golem_SubStopAndReroute(Golem*);
 void Golem_SubContinueRoll(Golem*);
 void Golem_SubRestAndResume(Golem*);
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Golem_PlayDirAnim(Golem* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
 static inline bool8 Golem_TestFlags(Golem* p, GolemFlags bit) {
   if (p->flags & bit) return TRUE;
   return FALSE;
@@ -269,7 +297,7 @@ s32 Golem_ClassifyNextTile(u32 tileIdx, s32 height, s32 dir) {
   }
   tileHeight = TileAtIndex(tileIdx)->heightStairs & 0xF;
   tileStairs = TileAtIndex(tileIdx)->heightStairs >> 4;
-  if (TEST_FLAGS(TileAtIndex(tileIdx)->attr, TATTR_UNK_0 | TATTR_WALL)) {
+  if (TEST_FLAGS(TileAtIndex(tileIdx)->attr, TATTR_PLAYER_WALL | TATTR_ENEMY_WALL)) {
     if (tileHeight >= height) {
       return 1;
     }
@@ -433,7 +461,7 @@ NON_MATCH void FUN_08115874(Golem* p) {
 void Golem_TargetPlayerTile(Golem* p) {
   Golem* q = (p->e).owner;
 
-  if (!TEST_FLAGS(GetTileAttrAt(&(p->e).playerMover->pos), TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH) && Map_IsPosInAgentIsland((p->e).navAgent, &(p->e).mover.pos, &(p->e).playerMover->pos)) {
+  if (!TEST_FLAGS(GetTileAttrAt(&(p->e).playerMover->pos), TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH) && Map_IsPosInAgentIsland((p->e).navAgent, &(p->e).mover.pos, &(p->e).playerMover->pos)) {
     q->targetPos = (p->e).playerMover->pos;
     Golem_SnapToTileCenter(&q->targetPos);
   }
@@ -443,7 +471,7 @@ void Golem_TargetPlayerTile(Golem* p) {
 void Golem_SetTargetTile(Golem* p, WorldPos* pos) {
   Golem* q = (p->e).owner;
 
-  if (!TEST_FLAGS(GetTileAttrAt(pos), TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH) && Map_IsPosInAgentIsland((p->e).navAgent, &(p->e).mover.pos, pos)) {
+  if (!TEST_FLAGS(GetTileAttrAt(pos), TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH) && Map_IsPosInAgentIsland((p->e).navAgent, &(p->e).mover.pos, pos)) {
     q->targetPos = *pos;
     Golem_SnapToTileCenter(&q->targetPos);
     SET_FLAGS(q->flags, GOLEMFLAG_TARGET_FIXED);
@@ -761,9 +789,12 @@ void Golem_StateWait(Golem* p) {
 }
 
 // 経路ノードの向きへ振り向く, 回る向きの振り向きアニメを流してコマごとに 22 ずつ回し, アニメが終わったら向きが合っていれば止まり合っていなければ状態2へ戻す
-// 706/725命令, Dog_StateTurn と同じ形と同じ壁 (原典は p を2本のレジスタに持つ), 振り向きアニメは Golem_PlayTurnAnim, 1回目の下書きで切り上げ
+// 残差は 714/725命令, 経路と回すときの向きを Mover* mover から触ると p の写しは揃った (Dog_StateTurn はこれで一致), 振り向き再生の塊の共有の仕方が原典と違う
+// 試済: mover を全体で使う (718), 経路と回す所だけで使う (714), 振り向きアニメは Golem_PlayTurnAnim
 NON_MATCH void Golem_StateTurn(Golem* p) {
 #ifdef NONMATCHING_C
+  Mover* mover = &(p->e).mover;
+
   if (Enemy_ConsumeStateBegun(&p->e)) {
     s32 dir;
     u32 target;
@@ -771,7 +802,7 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
     (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
     dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
-      target = (p->e).mover.path->node->delay >> 12;
+      target = mover->path->node->delay >> 12;
       (p->e).unk_1dc = target;
     } else {
       target = (p->e).unk_1dc;
@@ -833,14 +864,14 @@ NON_MATCH void Golem_StateTurn(Golem* p) {
   }
   if ((p->e).s->aux.anim.tick == 0) {
     u32 target = ((p->e).unk_1dc + 5) & 7;
-    u8 angle = (p->e).mover.angle;
+    u8 angle = mover->angle;
 
     if (abs(angle - target * 32) < 23) {
-      (p->e).mover.angle = target * 32;
+      mover->angle = target * 32;
     } else if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
-      (p->e).mover.angle = angle + 22;
+      mover->angle = angle + 22;
     } else {
-      (p->e).mover.angle = angle - 22;
+      mover->angle = angle - 22;
     }
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
@@ -1024,49 +1055,29 @@ NON_MATCH void Golem_StateWindUp(Golem* p, s32 timer) {
 }
 
 // 転がる状態, 向きに合わせて転がりアニメを流し speed に応じてアニメを速め, 4 フレームごとに後ろへ土煙を出す
-// 236/241命令, Enemy_PlayAnim の展開 (アニメ 8) と同じ壁, 原典は owner と &spriteKind / &flags3 をスタックに置く (フレーム 0x28, こちらは 0x1C)
+// 242/241命令, 再生部は Golem_PlayDirAnim, mover は Enemy* e 経由で揃った, 残差は &flags3 (p + 0x180) を原典はスタックに置いて Enemy_UpdateWalkAnimSpeed の判定で読み直す形
+// 試済: Enemy_SetFlag3(e, ...)
 NON_MATCH void Golem_StateRoll(Golem* p, s32 timer) {
 #ifdef NONMATCHING_C
   Golem* q = (p->e).owner;
+  Enemy* e = &p->e;
   u8 variant;
   AuxAnimPlayFlags flags;
-  s32 f;
 
-  if (Enemy_ConsumeStateBegun(&p->e)) {
+  if (Enemy_ConsumeStateBegun(e)) {
     (p->e).animForceRestart = 0;
   }
   SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
   Enemy_SetAnimFacing(&p->e, &variant, &flags);
-  f = sGolemRollPlayFlags[flags] | flags;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s = &(p->e).s->aux;
-
-    (p->e).playingAnim = 8;
-    AuxAnim_SetAnim(&s->anim, s->animFile, 8, variant, f);
-    (p->e).animForceRestart = 0;
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = variant + 8;
-
-    if ((p->e).playingAnim != a || (p->e).animForceRestart != 0 || !((f == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (f == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-      (p->e).playingAnim = a;
-      MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (f & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
-      if (f & ANIM_PLAY_XFLIP) {
-        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-      } else {
-        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-      }
-      (p->e).animForceRestart = 0;
-    }
-  }
+  Golem_PlayDirAnim(p, 8, variant, sGolemRollPlayFlags[flags] | flags);
   (p->e).animSpeedDiv = q->speed >> 7;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((timer & 3) == 0) {
     Vec3 dir, size;
 
-    dir.x = -(p->e).mover.delta.x, dir.y = 0, dir.z = -(p->e).mover.delta.z;
+    dir.x = -e->mover.delta.x, dir.y = 0, dir.z = -e->mover.delta.z;
     VEC3_SET(size, 32, 0, 32);
-    DustManager_Spawn(&(p->e).mover.pos, &dir, &size, 1, 3, 4);
+    DustManager_Spawn(&e->mover.pos, &dir, &size, 1, 3, 4);
   }
 #else
   INCFUNC("asm/func/Golem_StateRoll.inc");
@@ -1074,45 +1085,19 @@ NON_MATCH void Golem_StateRoll(Golem* p, s32 timer) {
 }
 
 // 丸まるアニメを逆に流して丸まりを解く
-// Enemy_PlayAnim の展開 (アニメ 7 を逆再生) と同じ壁, 原典は再生部分を inline にしてその後で animForceRestart = 0 を2回書く (129/132), inline にしても r8 に定数 4 を置く形と variant の読み順が残る
-NON_MATCH void Golem_StateUncurl(Golem* p) {
-#ifdef NONMATCHING_C
+void Golem_StateUncurl(Golem* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     u8 variant;
     AuxAnimPlayFlags flags;
-    s32 f;
 
     Enemy_SetAnimFacing(&p->e, &variant, &flags);
-    f = flags | ANIM_PLAY_REVERSE;
-    if ((p->e).spriteKind == 0) {
-      EnemyAuxSprite* s = &(p->e).s->aux;
-
-      (p->e).playingAnim = 7;
-      AuxAnim_SetAnim(&s->anim, s->animFile, 7, variant, f);
-    } else {
-      MainSprite* s = &(p->e).s->main.spr;
-      s32 a = variant + 7;
-      bool32 same = (p->e).playingAnim == a && (p->e).animForceRestart == 0 && ((f == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (f == 0 && !(s->flags & SPRFLAG_XFLIP)));
-
-      if (!same) {
-        (p->e).playingAnim = a;
-        MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (f & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
-        if (f & ANIM_PLAY_XFLIP) {
-          MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-        } else {
-          MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-        }
-      }
-    }
+    Golem_PlayDirAnim(p, 7, variant, flags | ANIM_PLAY_REVERSE);
     (p->e).animForceRestart = 0;
   }
   if ((p->e).animForceRestart) {
     CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
     (p->e).subStateDone = 1;
   }
-#else
-  INCFUNC("asm/func/Golem_StateUncurl.inc");
-#endif
 }
 
 // 今のタイルの中で減速して止まり, タイルの中心へ寄せて 16 フレーム待ってから targetPos へ経路を引き直して向き直る
@@ -1593,8 +1578,8 @@ NON_MATCH void FUN_081191b8(Golem* p, s32 timer) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         (p->e).onRouteFailed(&p->e);
@@ -1794,8 +1779,8 @@ NON_MATCH void Golem_StateDamaged(Golem* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -1940,8 +1925,8 @@ NON_MATCH void Golem_StateDamaged(Golem* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2186,8 +2171,8 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2391,8 +2376,8 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2546,8 +2531,8 @@ NON_MATCH bool8 Golem_OnDamaged(Golem* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2793,8 +2778,8 @@ NON_MATCH void FUN_0811d090(Golem* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -3022,7 +3007,7 @@ NON_MATCH void Golem_SubRoll(Golem* p) {
       hidden = TRUE;
     }
   } else if ((p->e).playerMover != NULL) {
-    idx = (p->e).playerMover->unk_4 < 4 ? (p->e).playerMover->unk_4 : -1;
+    idx = (p->e).playerMover->kind < 4 ? (p->e).playerMover->kind : -1;
     if (idx >= 0 && (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE) && !Golem_TestFlags(q, GOLEMFLAG_TARGET_FIXED)) {
       hidden = TRUE;
     }
@@ -3080,7 +3065,7 @@ NON_MATCH void Golem_SubRoll(Golem* p) {
               q->chargeGauge = 400;
             }
           } else if ((p->e).playerMover != NULL) {
-            idx = (p->e).playerMover->unk_4 < 4 ? (p->e).playerMover->unk_4 : -1;
+            idx = (p->e).playerMover->kind < 4 ? (p->e).playerMover->kind : -1;
             if (idx >= 0 && !(gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
               q->chargeGauge = 400;
             }
@@ -3136,8 +3121,8 @@ NON_MATCH void Golem_SubRoll(Golem* p) {
         Mover* m = (p->e).playerMover;
 
         idx = -1;
-        if (m != NULL && m->unk_4 <= 3) {
-          idx = m->unk_4;
+        if (m != NULL && m->kind <= 3) {
+          idx = m->kind;
         }
         if (m == NULL || idx < 0) {
           (p->e).onRouteFailed(&p->e);
@@ -3291,7 +3276,7 @@ NON_MATCH void Golem_SubDecideCharge(Golem* p) {
     } else if ((q->e).playerMover == NULL) {
       idx = -1;
     } else {
-      idx = (q->e).playerMover->unk_4 < 4 ? (q->e).playerMover->unk_4 : -1;
+      idx = (q->e).playerMover->kind < 4 ? (q->e).playerMover->kind : -1;
     }
     if ((idx < 0 || !(gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) && TEST_FLAGS((q->e).flags3, ENEFLAG3_UNK_7)) {
       s32 v = 0x400000 - (q->e).playerDistSq;
@@ -3374,8 +3359,8 @@ NON_MATCH void Golem_SubReturnToRoute(Golem* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         (p->e).onRouteFailed(&p->e);
@@ -3601,7 +3586,7 @@ NON_MATCH void Golem_SubContinueRoll(Golem* p) {
     } else if ((q->e).playerMover == NULL) {
       idx = -1;
     } else {
-      idx = (q->e).playerMover->unk_4 < 4 ? (q->e).playerMover->unk_4 : -1;
+      idx = (q->e).playerMover->kind < 4 ? (q->e).playerMover->kind : -1;
     }
     if ((idx < 0 || !(gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) && TEST_FLAGS((q->e).flags3, ENEFLAG3_UNK_7)) {
       s32 v = 0x400000 - (q->e).playerDistSq;
@@ -3617,7 +3602,7 @@ NON_MATCH void Golem_SubContinueRoll(Golem* p) {
     q->rollTime -= 30;
     if (IsLinkPlay()) {
       if ((p->e).playerMover != NULL) {
-        idx = (p->e).playerMover->unk_4 < 4 ? (p->e).playerMover->unk_4 : -1;
+        idx = (p->e).playerMover->kind < 4 ? (p->e).playerMover->kind : -1;
         if (idx >= 0 && (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
           Enemy_EnterState(&p->e, Golem_StateUncurl, ES_UNK_38);
           Enemy_ResetState(&p->e, 0, 2, 3);
@@ -3719,8 +3704,8 @@ NON_MATCH void Golem_SubRestAndResume(Golem* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -4018,7 +4003,7 @@ NON_MATCH s32 Golem_Init(Golem* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

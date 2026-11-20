@@ -332,17 +332,20 @@ void Cockatrice_StateWait(Cockatrice* p) {
 }
 
 // 経路ノードの向きへ振り向く, 回る向きの振り向きアニメを流してコマごとに 16 ずつ回し, アニメが終わったら向きが合っていれば止まり合っていなければ状態2へ戻す
-// 732/721命令, Golem_StateTurn と同じ形と同じ壁 (原典は p を2本のレジスタに持つ), 振り向きアニメは Cockatrice_PlayTurnAnim, 違いは経路ノードの向きを取らない条件に COCKAFLAG_FLEEING が加わり, 回す幅が 16 でアニメの頭のコマでは回さない点, 1回目の下書きで切り上げ
+// 残差は 727/721命令, Golem_StateTurn と同じ形, Mover* mover で向きと経路を触ると 732 から縮んだ, 振り向き再生の塊の共有の仕方が原典と違う
+// 試済: mover を全体で使う, 振り向きアニメは Cockatrice_PlayTurnAnim
 NON_MATCH void Cockatrice_StateTurn(Cockatrice* p) {
 #ifdef NONMATCHING_C
+  Mover* mover = &(p->e).mover;
+
   if (Enemy_ConsumeStateBegun(&p->e)) {
     s32 dir;
     u32 target;
 
-    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
-    dir = Angle_ToDir4((p->e).mover.angle);
+    mover->angle = Angle_ToDir4(mover->angle) * 64 - 64;
+    dir = Angle_ToDir4(mover->angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10) && !Cockatrice_TestFlags((p->e).owner, COCKAFLAG_FLEEING)) {
-      target = (p->e).mover.path->node->delay >> 12;
+      target = mover->path->node->delay >> 12;
       (p->e).unk_1dc = target;
     } else {
       target = (p->e).unk_1dc;
@@ -404,26 +407,26 @@ NON_MATCH void Cockatrice_StateTurn(Cockatrice* p) {
   }
   if ((p->e).s->aux.anim.tick == 0 && (p->e).s->aux.anim.cmdIdx != 0) {
     u32 target = ((p->e).unk_1dc + 5) & 7;
-    u8 angle = (p->e).mover.angle;
+    u8 angle = mover->angle;
 
     if (abs(angle - target * 32) < 17) {
-      (p->e).mover.angle = target * 32;
+      mover->angle = target * 32;
     } else if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
-      (p->e).mover.angle = angle + 16;
+      mover->angle = angle + 16;
     } else {
-      (p->e).mover.angle = angle - 16;
+      mover->angle = angle - 16;
     }
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).animForceRestart) {
-    s32 dir = Angle_ToDir8((p->e).mover.angle);
+    s32 dir = Angle_ToDir8(mover->angle);
     s32 d = abs((p->e).unk_1dc - dir);
 
     if (d > 0) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     } else {
       (p->e).subStateDone = 1;
-      (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+      mover->angle = Angle_ToDir4(mover->angle) * 64 - 64;
       Enemy_PlayAnim(&p->e, 0);
       if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
@@ -646,8 +649,8 @@ NON_MATCH void Cockatrice_StateDamaged(Cockatrice* p, s32 timer) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -1127,8 +1130,8 @@ NON_MATCH void Cockatrice_StateLand(Cockatrice* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -1323,8 +1326,8 @@ NON_MATCH void Cockatrice_StateFire(Cockatrice* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -1710,8 +1713,8 @@ NON_MATCH void FUN_0815758c(Cockatrice* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -2168,8 +2171,8 @@ NON_MATCH void Cockatrice_SubChaseReroute(Cockatrice* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -3076,8 +3079,8 @@ NON_MATCH void FUN_0815b8d0(Cockatrice* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -3663,8 +3666,8 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         (p->e).onRouteFailed(&p->e);
@@ -3795,7 +3798,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
     case 0: {
       cur = start + 1;
       for (x = Mod(cur, gCollisionMap->tiledata->width); x < gCollisionMap->tiledata->width; x++) {
-        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
           tile = cur - 1;
           break;
         }
@@ -3805,7 +3808,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
     }
     case 1: {
       for (cur = start + gCollisionMap->tiledata->width; cur < size; cur += gCollisionMap->tiledata->width) {
-        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
           tile = cur - gCollisionMap->tiledata->width;
           break;
         }
@@ -3815,7 +3818,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
     case 2: {
       cur = start - 1;
       for (x = Mod(cur, gCollisionMap->tiledata->width); x >= 0; x--) {
-        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
           tile = cur + 1;
           break;
         }
@@ -3825,7 +3828,7 @@ NON_MATCH bool8 FUN_0815d6d0(Cockatrice* p) {
     }
     case 3: {
       for (cur = start - gCollisionMap->tiledata->width; (s32)cur >= 0; cur -= gCollisionMap->tiledata->width) {
-        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+        if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
           tile = cur + gCollisionMap->tiledata->width;
           break;
         }
@@ -4203,8 +4206,8 @@ NON_MATCH bool8 Cockatrice_OnDamaged(Cockatrice* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -4484,7 +4487,7 @@ NON_MATCH s32 Cockatrice_Init(Cockatrice* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

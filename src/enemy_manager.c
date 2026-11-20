@@ -18,7 +18,7 @@
 extern const s16 s16_ARRAY_085ad3cc[4];
 
 u32 RoomBlind_IsDim(void);
-bool8 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2);
+bool8 EnemyRespawnInfo_CanAdd(u16 param_1, u16 param_2);
 void FUN_080ec900(u8 kind);
 void EnemyManager_SetupSharedEntities(EnemyManager* p, Enemy* enemy);
 void Enemy_Reset(Enemy* p);
@@ -27,15 +27,15 @@ void FUN_080e5098(Enemy* p, s32 dx, s32 dz);
 void Enemy_AddKillCount(Enemy* p);
 void HUD_ShowEnemyGauge(u32 id, s32 hp, u32 maxHp, u32 param_4, u32 param_5);
 void PlayerLink_UpdateBloodSwordOnKill(u32 playerMask, u32 weaponMask);
-bool8 FUN_0817e83c(Enemy* p);
+bool8 Shaian_IsCloaked(Enemy* p);
 bool8 EnemyManager_StepPaletteFade(EnemyManager* p, Enemy* enemy);
 void EnemyManager_StartPaletteFade(u32 plttDst, u32 plttSrc, u32 _, s32 kind, u32 immediate);
-Entity* Entity080db520_Create(void);
+Entity* SpiderWebManager_Create(void);
 Entity* SpiderVenom_Create(void);
 Entity* EmoteManager_Create(void);
 Entity* Entity081ea120_Create(u32 param_1, u32 param_2);
 Entity* OctorokManager_Create(void);
-void DefeatedEnemyLog_Add(u16 param_1, u16 param_2);
+void EnemyRespawnInfo_Add(u16 param_1, u16 param_2);
 
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f68[] = "eneinline.h";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_eneinline_h_08251f74[] = "eneinline.h";
@@ -109,7 +109,7 @@ bool8 Enemy_Register(Enemy* p) {
     return FALSE;
   }
   head = gEnemyListHead;
-  if (TestMapFlag(MPF_UNK_2) && !DefeatedEnemyLog_CanAdd(gMapInitScriptID, p->mover.id)) {
+  if (TestMapFlag(MPF_DANGER) && !EnemyRespawnInfo_CanAdd(gMapInitScriptID, p->mover.id)) {
     return FALSE;
   }
   if ((u16)mgr->enemyCount >= 20) {
@@ -269,11 +269,11 @@ void EnemyManager_DispatchScriptMesgs(EnemyManager* p) {
   }
 }
 
-// 視覚を持たず聴覚で索敵する種族 (マミー/サンドウォーム) が登録されたら MPF_UNK_0 を立てる
+// 視覚を持たず聴覚で索敵する種族 (マミー/サンドウォーム) が登録されたら MPF_FOOTNOISE を立てる
 // 他の敵は視覚+聴覚で索敵するが, マミー/サンドウォームは聴覚のみで索敵する(その代わり聴覚の感度が高い)
 void FUN_080ec900(u8 kind) {
   if ((kind == ENEK_MUMMY) || (kind == ENEK_SANDWORM)) {  // どちらも視覚ではなく聴覚で索敵する
-    SET_FLAGS(gStat->mapFlags, MPF_UNK_0);
+    SET_FLAGS(gStat->mapFlags, MPF_FOOTNOISE);
   }
 }
 
@@ -359,7 +359,7 @@ NON_MATCH void FUN_080ec9b0(EnemyManager* p) {
 void EnemyManager_SetupSharedEntities(EnemyManager* p, Enemy* enemy) {
   if (enemy->kind == ENEK_SPIDER) {
     if (!EnemyManager_TestFlag(p, EMFLAG_UNK_3)) {
-      Entity* e = Entity080db520_Create();
+      Entity* e = SpiderWebManager_Create();
 
       p->sharedEntity[0] = e;
       if (e == NULL) {
@@ -680,7 +680,7 @@ NON_MATCH void Enemy_DamageAll(s32 damage) {
             Player_AddWeaponExp(p->weaponExpMask, p->weaponExp);
           }
           if (!TEST_FLAGS(p->flags5, ENEFLAG5_UNK_7) && !(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-            DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
+            EnemyRespawnInfo_Add(gMapInitScriptID, p->mover.id);
           }
           SET_FLAGS(p->hurtbox.flags, HBF_HIDDEN);
         } else {
@@ -728,7 +728,7 @@ NON_MATCH void Cmd_C12A(void) {
         Enemy_RequestSubState(p, 3, 0, 0);
         Enemy_Deactivate(p);
         if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14)) && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-          DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
+          EnemyRespawnInfo_Add(gMapInitScriptID, p->mover.id);
         }
       }
     } else if (!Enemy_IsDead(p) && (kind == 0 || kind == p->kind)) {
@@ -1542,7 +1542,7 @@ NON_MATCH bool8 EnemyManager_StepPaletteFade(EnemyManager* p, Enemy* enemy) {
       if (EnemyManager_TestFlag(p, EMFLAG_UNK_16)) {
         skip = TRUE;
       }
-      if (!FUN_0817e83c(enemy)) {
+      if (!Shaian_IsCloaked(enemy)) {
         return FALSE;
       }
       break;

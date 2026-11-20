@@ -385,7 +385,7 @@ NON_MATCH void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, Hitbox* at
       if (!(atk->flags & HBF_DAMAGE) && (tgt->flags & HBF_DAMAGE)) {
         continue;
       }
-      if ((atk->flags & HBF_NPC) && !(tgt->flags & HBF_NPC)) {
+      if ((atk->flags & HBF_ACTOR) && !(tgt->flags & HBF_ACTOR)) {
         continue;
       }
       if (Hitbox_CheckOverlap(atk, tgt)) {

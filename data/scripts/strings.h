@@ -27,13 +27,13 @@
 #define Str_00CE 0x00CE                     // 暗黒ローンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ローンです。
 #define Str_00D3 0x00D3                     // 暗黒ローンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ローンです。
 #define Str_00D8 0x00D8                     // 暗黒ローンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ローンです。
-#define Str_00DE 0x00DE                     // 暗黒ローンの暗子ちゃん「・・・
-#define Str_00E7 0x00E7                     // 暗黒ローンの暗子ちゃん「さあ、着きました。
-#define Str_00EB 0x00EB                     // 暗黒ローンの暗子ちゃん「・・・またあなたですか?<NAME>さん・・・
-#define Str_00F0 0x00F0                     // 暗黒ローンの暗子ちゃん「・・・<NAME>さん、あなたわざとやっていますね?
-#define Str_00F5 0x00F5                     // 暗黒ローンの暗子ちゃん「・・・<NAME>さん、
-#define Str_00FC 0x00FC                     // 暗黒ローンの暗子ちゃん「さあ、<NAME>さん。おしおきですよ♥」
-#define Str_00FE 0x00FE                     // 暗黒ローンの暗子ちゃん「あなたには今からここで、発電をしてもらいます。
+#define Str_Torture1st 0x00DE               // 暗黒ローンの暗子ちゃん「・・・
+#define Str_GuideTortureRoom 0x00E7                     // 暗黒ローンの暗子ちゃん「さあ、着きました。
+#define Str_Torture2nd 0x00EB                     // 暗黒ローンの暗子ちゃん「・・・またあなたですか?<NAME>さん・・・
+#define Str_Torture3rd 0x00F0                     // 暗黒ローンの暗子ちゃん「・・・<NAME>さん、あなたわざとやっていますね?
+#define Str_Torture4th 0x00F5                     // 暗黒ローンの暗子ちゃん「・・・<NAME>さん、
+#define Str_Torture5th 0x00FC                     // 暗黒ローンの暗子ちゃん「さあ、<NAME>さん。おしおきですよ♥」
+#define Str_GuideTorture 0x00FE             // 暗黒ローンの暗子ちゃん「あなたには今からここで、発電をしてもらいます。
 #define Str_0104 0x0104                     // ✚ボタン左
 #define Str_0106 0x0106                     // ✚ボタン上
 #define Str_0108 0x0108                     // ✚ボタン右
@@ -62,7 +62,7 @@
 #define Str_CrossoverBlocking 0x0159        // ブロッキングを使えば、
 #define Str_015E 0x015E                     // 対戦の成績に応じて得られるクロスオーバーポイントは、
 #define Str_GetMMBNPet 0x0161               // <LABEL>「PET」を手に入れた!!</LABEL>
-#define Str_0163 0x0163                     // セーブしますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
+#define Str_Save_Prompt_0163 0x0163         // セーブしますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
 #define Str_0165 0x0165                     // <LABEL=OTENKO>おてんこさま</LABEL>「もうすぐだな・・・
 #define Str_016E 0x016E                     // <LABEL=OTENKO></LABEL>行くぞ、太陽少年<NAME>!!
 #define Str_0172 0x0172                     // <LABEL=OTENKO>おてんこさま</LABEL>「まて、<NAME>!!
@@ -292,21 +292,21 @@
 #define Str_MMBNKey3 0x04BB                 // 「キーデータ3」を手に入れた!!
 #define Str_MMBNKey4 0x04BF                 // 「キーデータ4」を手に入れた!!
 #define Str_GuideChangeMSQ 0x04C4           // 2つの塔に挑(いど)め。
-#define Str_04D4 0x04D4                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define Str_04D9 0x04D9                     // <LABEL=ZAJI>ザジ</LABEL>「黒きダーイン、やったて?」
-#define Str_04DF 0x04DF                     // <LABEL=ZAJI>ザジ</LABEL>「そないなことも・・・
-#define Str_04E2 0x04E2                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define Str_04E7 0x04E7                     // <LABEL=RITA>リタ</LABEL>「黒きダーイン、ですか?」
-#define Str_04ED 0x04ED                     // <LABEL=RITA>リタ</LABEL>「美しい・・・ですね」
-#define Str_04EF 0x04EF                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define Str_04F4 0x04F4                     // <LABEL=R_DJUNGO><NAME></LABEL>「光が強ければ・・・
-#define Str_04F9 0x04F9                     // <LABEL=SUMIRE>スミレ</LABEL>「きれい・・・だね♪」
-#define Str_04FB 0x04FB                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define Str_0500 0x0500                     // <LABEL=SABATA>サバタ</LABEL>「ヤツが・・・?」
-#define Str_0506 0x0506                     // <LABEL=SABATA>サバタ</LABEL><PROC=1>「フッ・・・
-#define Str_0509 0x0509                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define Str_050E 0x050E                     // <LABEL=LADY>レディ</LABEL>「例の・・・影のイモータル?」
-#define Str_0514 0x0514                     // <LABEL=LADY>レディ</LABEL>「美しい・・・か。
+#define Str_EpilogueZaji1 0x04D4                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
+#define Str_EpilogueZaji2 0x04D9                     // <LABEL=ZAJI>ザジ</LABEL>「黒きダーイン、やったて?」
+#define Str_EpilogueZaji3 0x04DF                     // <LABEL=ZAJI>ザジ</LABEL>「そないなことも・・・
+#define Str_EpilogueRita1 0x04E2                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
+#define Str_EpilogueRita2 0x04E7                     // <LABEL=RITA>リタ</LABEL>「黒きダーイン、ですか?」
+#define Str_EpilogueRita3 0x04ED                     // <LABEL=RITA>リタ</LABEL>「美しい・・・ですね」
+#define Str_EpilogueSumire1 0x04EF                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
+#define Str_EpilogueSumire2 0x04F4                     // <LABEL=R_DJUNGO><NAME></LABEL>「光が強ければ・・・
+#define Str_EpilogueSumire3 0x04F9                     // <LABEL=SUMIRE>スミレ</LABEL>「きれい・・・だね♪」
+#define Str_EpilogueSabata1 0x04FB                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
+#define Str_EpilogueSabata2 0x0500                     // <LABEL=SABATA>サバタ</LABEL>「ヤツが・・・?」
+#define Str_EpilogueSabata3 0x0506                     // <LABEL=SABATA>サバタ</LABEL><PROC=1>「フッ・・・
+#define Str_EpilogueLady1 0x0509                     // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
+#define Str_EpilogueLady2 0x050E                     // <LABEL=LADY>レディ</LABEL>「例の・・・影のイモータル?」
+#define Str_EpilogueLady3 0x0514                     // <LABEL=LADY>レディ</LABEL>「美しい・・・か。
 #define Str_JormyAdvice1 0x0517             // 闇(やみ)の力に守られている状態では、ヨルムンガンドにダメージをあたえることはできない
 #define Str_JormyAdvice2 0x051A             // ヨルムンガンドの弱点はその舌にある。
 #define Str_ShademanAdvice1 0x051D          // 大量のバットを召喚(しょうかん)するシェードマンの特殊攻撃(とくしゅこうげき)、
@@ -324,15 +324,15 @@
 #define Str_056C 0x056C                     // <LABEL=NONE>暗黒ローンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
 #define Str_0578 0x0578                     // <LABEL=NONE>???</LABEL>「あっ、<NAME>さま!!
 #define Str_BuyConfirm 0x0581               // これを買いますか?
-#define Str_059E 0x059E                     // 太陽鍛冶について <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALT…
-#define Str_05A0 0x05A0                     // 太陽鍛冶(たいようかじ)とは、
-#define Str_05A3 0x05A3                     // 太陽鍛冶(たいようかじ)では、
-#define Str_05A7 0x05A7                     // 鍛冶(かじ)を行なうにはまず、
-#define Str_05AD 0x05AD                     // 武器について <ALTER>鍛冶</ALTER>　<ALTER>クオリティ</ALTER> <A…
-#define Str_05AF 0x05AF                     // 太陽鍛冶(たいようかじ)においては、
-#define Str_05B3 0x05B3                     // 鍛冶(かじ)による武器の出来の良さ、すなわちクオリティは、
-#define Str_05B9 0x05B9                     // 特殊効果(とくしゅこうか)は通常、1つの武器に1つしか付かないが、
-#define Str_05C0 0x05C0                     // 武器にはそれぞれにレベルが設定されている。
+#define Str_GuideForge1 0x059E                     // 太陽鍛冶について <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALT…
+#define Str_GuideForge1A 0x05A0                     // 太陽鍛冶(たいようかじ)とは、
+#define Str_GuideForge1B 0x05A3                     // 太陽鍛冶(たいようかじ)では、
+#define Str_GuideForge1C 0x05A7                     // 鍛冶(かじ)を行なうにはまず、
+#define Str_GuideForge2 0x05AD                     // 武器について <ALTER>鍛冶</ALTER>　<ALTER>クオリティ</ALTER> <A…
+#define Str_GuideForge2A 0x05AF                     // 太陽鍛冶(たいようかじ)においては、
+#define Str_GuideForge2B 0x05B3                     // 鍛冶(かじ)による武器の出来の良さ、すなわちクオリティは、
+#define Str_GuideForge2C 0x05B9                     // 特殊効果(とくしゅこうか)は通常、1つの武器に1つしか付かないが、
+#define Str_GuideForge2D 0x05C0                     // 武器にはそれぞれにレベルが設定されている。
 #define Str_05C4 0x05C4                     // <LABEL=OTENKO>おてんこさま</LABEL>「これは・・・
 #define Str_05CE 0x05CE                     // <LABEL=OTENKO>おてんこさま</LABEL>「さあ、
 #define Str_05D1 0x05D1                     // <LABEL=OTENKO>おてんこさま</LABEL>「よし!!
@@ -824,9 +824,9 @@
 #define Str_0D96 0x0D96                     // 「通信販売」売った武器        <VAR=0>個買った武器        <VAR=1>個
 #define Str_0D99 0x0D99                     // 「通信対戦」対戦ポイント      <VAR=0>pt
 #define Str_0D9D 0x0D9D                     // 「クロスオーバーバトル」クロスオーバーポイント　　　　　　　<VAR=0>pt
-#define Str_0DA1 0x0DA1                     // 太陽銃ガン・デル・ソルの継承者、太陽少年。太陽機ソル・デ・バイスをも使いこなす。その身にまとうは…
-#define Str_0DBC 0x0DBC                     // 赤<NAME>
-#define Str_0DD8 0x0DD8                     // クモの巣を張る。
+#define Str_PhotoDescs 0x0DA1               // 太陽銃ガン・デル・ソルの継承者、太陽少年。太陽機ソル・デ・バイスをも使いこなす。その身にまとうは…
+#define Str_PhotoNames 0x0DBC               // 赤<NAME>
+#define Str_EnemyDexTexts 0x0DD8            // クモの巣を張る。
 #define Str_0E11 0x0E11                     // 「廃墟」の依頼書
 #define Str_0E13 0x0E13                     // ★「廃墟」の依頼書★
 #define Str_0E15 0x0E15                     // 「森」の依頼書
@@ -1275,8 +1275,8 @@
 #define Str_TheEnd 0x14F6                   // 続・ボクらの太陽         終
 #define Bin_14F8 0x14F8
 #define Str_AreaCodeName 0x14F9  // no_area
-#define Str_1603 0x1603          // コンティニューしますか?
-#define Str_1605 0x1605          // 暗黒ローンに<WEIGHT><VAR=0>ソル</WEIGHT>払ってコンティニューしますか?
+#define Str_AskArenaContinue 0x1603          // コンティニューしますか?
+#define Str_AskContinue 0x1605          // 暗黒ローンに<WEIGHT><VAR=0>ソル</WEIGHT>払ってコンティニューしますか?
 #define gExpTable 0x1607
 #define Str_StartMenuItems 0x1608  // 大地の実
 #define Str_StartMenuWeapons 0x170D
@@ -1287,8 +1287,8 @@
 #define Bin_1899 0x1899
 #define Bin_189A 0x189A
 #define Bin_189B 0x189B
-#define Str_189C 0x189C  // 廃墟
-#define Str_18AA 0x18AA  // ソード
+#define Str_DungeonTitles 0x189C  // 廃墟
+#define Str_BossRushTitles 0x18AA  // ソード
 #define Str_18B8 0x18B8  // ★
 #define Str_18B9 0x18B9
 #define Str_18BA 0x18BA

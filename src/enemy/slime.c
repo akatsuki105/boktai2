@@ -39,6 +39,34 @@ static_assert(sizeof(Slime) == 1680);
 
 const STRING_DATA char s_slimecom_c_08252120[] = "slimecom.c";
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Slime_PlayDirAnim(Slime* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
 static inline bool8 Slime_TestUnk68e(Slime* p, u16 bit) {
   if (p->unk_68e & bit) return TRUE;
   return FALSE;
@@ -226,29 +254,9 @@ void FUN_08162efc(Slime* p) {
 }
 
 // 状態に入った最初だけ animTable[15] のアニメを流し, アニメの速さを乱数で決める, アニメが終わったら FUN_081630dc へ移る
-// 再生部分を (Enemy* p, u32 anim) を取る static inline にし, 変化がなければ return, 最後に animForceRestart = FALSE とすると残差は MainSprite_SetAnim の第5引数 4 を作る位置だけ (122/122命令), anim を u8 にすると anim と spriteKind のレジスタが入れ替わる
-NON_MATCH void FUN_08162fa8(Slime* p) {
-#ifdef NONMATCHING_C
+void FUN_08162fa8(Slime* p) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
-    u8 anim = (p->e).animTable[15].anim;
-
-    if ((p->e).spriteKind == 0) {
-      EnemyAuxSprite* s;
-
-      (p->e).playingAnim = anim;
-      s = &(p->e).s->aux;
-      AuxAnim_SetAnim(&s->anim, s->animFile, anim, 0, 0);
-      (p->e).animForceRestart = FALSE;
-    } else {
-      MainSprite* s = &(p->e).s->main.spr;
-
-      if ((p->e).playingAnim != anim || (p->e).animForceRestart || (s->flags & SPRFLAG_XFLIP)) {
-        (p->e).playingAnim = anim;
-        MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
-        s->flags &= ~SPRFLAG_XFLIP;
-        (p->e).animForceRestart = FALSE;
-      }
-    }
+    Slime_PlayDirAnim(p, (p->e).animTable[15].anim, 0, 0);
     (p->e).animSpeedDiv = Random() & 63;
     if ((p->e).animSpeedDiv == 0) {
       (p->e).animSpeedDiv = 1;
@@ -258,9 +266,6 @@ NON_MATCH void FUN_08162fa8(Slime* p) {
   if ((p->e).animForceRestart) {
     Enemy_EnterState(&p->e, FUN_081630dc, ES_UNK_34);
   }
-#else
-  INCFUNC("asm/func/FUN_08162fa8.inc");
-#endif
 }
 
 // 101/102 命令, 原典は anim に variant を足したものを同じレジスタで使い回す, 試済: anim/a の型 (u8/u16), 足し込みを anim 自身にする形, aux 側の代入順
@@ -1174,7 +1179,7 @@ NON_MATCH s32 Slime_Init(Slime* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

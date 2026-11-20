@@ -55,7 +55,7 @@ _081D9AD0:
 	ldr r0, [r6, #0x40]
 	cmp r0, #0x1d
 	ble _081D9B08
-	bl FUN_08238cd4
+	bl Sio_ResetPortAndClear
 	bl Sio_Connect
 	str r0, [r6, #0x24]
 	mov r0, sl
@@ -191,7 +191,7 @@ _081D9BD8:
 	cmp r0, #0x1d
 	ble _081D9C10
 	bl Sio_Disconnect
-	bl FUN_08238cd4
+	bl Sio_ResetPortAndClear
 	bl Sio_Connect
 	str r0, [r6, #0x24]
 	str r5, [r6, #0x38]
@@ -217,7 +217,7 @@ _081D9C26:
 	cmp r0, #0x1d
 	ble _081D9C46
 	bl Sio_Disconnect
-	bl FUN_08238cd4
+	bl Sio_ResetPortAndClear
 	bl Sio_Connect
 	str r0, [r6, #0x24]
 	str r5, [r6, #0x38]

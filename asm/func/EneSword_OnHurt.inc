@@ -9,7 +9,7 @@
 	ldr r0, _08196024 @ =0x00000C38
 	adds r6, r4, r0
 	ldr r0, [r6]
-	ldr r1, _08196028 @ =FUN_08197de8
+	ldr r1, _08196028 @ =EneSword_StateDying
 	mov sb, r1
 	cmp r0, sb
 	bne _08195FFC
@@ -37,7 +37,7 @@ _08196012:
 	b _08196342
 	.align 2, 0
 _08196024: .4byte 0x00000C38
-_08196028: .4byte FUN_08197de8
+_08196028: .4byte EneSword_StateDying
 _0819602C: .4byte 0x00000C28
 _08196030: .4byte 0x00000CE6
 _08196034:
@@ -78,7 +78,7 @@ _08196064:
 	adds r1, #0x54
 	movs r0, #8
 	strh r0, [r1]
-	ldr r0, _081960F8 @ =FUN_081973e4
+	ldr r0, _081960F8 @ =EneSword_UpdateFlash
 	str r0, [r2]
 	ldr r1, _081960FC @ =0x00000AEC
 	adds r0, r4, r1
@@ -141,7 +141,7 @@ _081960BA:
 	b _08196110
 	.align 2, 0
 _081960F4: .4byte 0x00000C5C
-_081960F8: .4byte FUN_081973e4
+_081960F8: .4byte EneSword_UpdateFlash
 _081960FC: .4byte 0x00000AEC
 _08196100: .4byte 0x00000CC8
 _08196104: .4byte 0x030046A0

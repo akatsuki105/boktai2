@@ -86,6 +86,34 @@ const STRING_DATA char s_ghostcom_c_0825215c[] = "ghostcom.c";
 extern s32 gLightningTimer;
 
 void Ghost_GetAnimVariant(u16 angle, u32* variant, u32* xflip);
+
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Ghost_PlayDirAnim(Ghost* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
 void Ghost_StartCurve(Ghost* p, Vec3* pos);
 void Ghost_BeginCurveTo(Ghost* p, Vec3* pos);
 void Ghost_UpdateCurveBend(Ghost* p);
@@ -217,44 +245,20 @@ NON_MATCH void Ghost_OnHurt(Hitbox* a, Hitbox* b, Ghost* p) {
 }
 
 // 取り憑いている間, プレイヤーの ENE を吸い (EV_WRAITH は混乱も付ける), 連打が escapeMash を超えたら振りほどかれる
-// 225/234命令, 前半は EneBat の FUN_0813f320 と同じ壁 (Enemy_PlayAnim の展開), 試済: 連打数の差の書き方 2 通り
+// 235/234命令, 再生部は Ghost_PlayDirAnim で揃った, 残差は大きいオフセットを作る一時レジスタ (原典 r3, こちら r1/r2) が関数全体でずれる点と, 連打数の差で原典が base + 0xFFFFFF00 をプールから読む形 (こちらは count + 256 - base に組み替わる)
+// 試済: 連打数の差の書き方 2 通り
 NON_MATCH void Ghost_StateDrainPlayer(Ghost* p) {
 #ifdef NONMATCHING_C
   Ghost* q = (p->e).owner;
-  u32 dir;
-  u32 flip;
-  u32 anim;
+  u32 variant, flags;
 
-  if ((p->e).stateBegun) {
-    (p->e).stateBegun = FALSE;
+  if (Enemy_ConsumeStateBegun(&p->e)) {
     q->mashBase = gPlayerPtr[0]->mashCount;
     q->unk_7e6 = 0;
     (p->e).animSpeedDiv = 4;
   }
-  Ghost_GetAnimVariant((p->e).mover.angle, &dir, &flip);
-  anim = (p->e).animTable[1].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s;
-
-    (p->e).playingAnim = anim;
-    s = &(p->e).s->aux;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, dir, flip);
-    (p->e).animForceRestart = FALSE;
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + dir;
-
-    if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flip == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-      (p->e).playingAnim = a;
-      MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (flip & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
-      if (flip & ANIM_PLAY_XFLIP) {
-        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-      } else {
-        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-      }
-      (p->e).animForceRestart = FALSE;
-    }
-  }
+  Ghost_GetAnimVariant((p->e).mover.angle, &variant, &flags);
+  Ghost_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
   if ((p->e).variant == EV_GHOST) {
     if (Mod((p->e).stateTimer, q->drainInterval) == 0) {
       Player_ReduceENE(gPlayerPtr[0], (p->e).atkPower[0]);
@@ -293,108 +297,32 @@ NON_MATCH void Ghost_StateDrainPlayer(Ghost* p) {
 }
 
 // 向きに合わせて animTable[1] のアニメを流す
-// 106/109命令, Curoro の FUN_0813ac34 と同じ壁 (再生部の展開で定数 4 を r8 に置く), 試済: Curoro の C をそのまま
-NON_MATCH void Ghost_StateFly(Ghost* p) {
-#ifdef NONMATCHING_C
+void Ghost_StateFly(Ghost* p) {
   u32 variant, flags;
-  s32 anim;
 
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
   Ghost_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-  anim = (p->e).animTable[1].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s = &(p->e).s->aux;
-
-    (p->e).playingAnim = anim;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + variant;
-    s32 mode;
-
-    if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-      if (flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-      if (flags == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-    }
-    (p->e).playingAnim = a;
-    mode = MAIN_ANIM_FORCE_POSE;
-    if (flags & ANIM_PLAY_REVERSE) {
-      mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-    }
-    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-    if (flags & ANIM_PLAY_XFLIP) {
-      s->flags |= SPRFLAG_XFLIP;
-    } else {
-      s->flags &= ~SPRFLAG_XFLIP;
-    }
-  }
-  (p->e).animForceRestart = 0;
-#else
-  INCFUNC("asm/func/Ghost_StateFly.inc");
-#endif
+  Ghost_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
 }
 
 // 歩きアニメを等速で流してから, 向きに合わせて animTable[1] のアニメを流す
-// 113/121命令, Curoro の FUN_0813ad64 と同じ壁 (再生部の展開で定数 4 を r8 に置く), 試済: Curoro の C をそのまま
-NON_MATCH void Ghost_StateWait(Ghost* p) {
-#ifdef NONMATCHING_C
+void Ghost_StateWait(Ghost* p) {
   u32 variant, flags;
-  s32 anim;
 
-  if ((p->e).stateBegun) {
-    (p->e).stateBegun = FALSE;
+  if (Enemy_ConsumeStateBegun(&p->e)) {
     (p->e).animSpeedDiv = 1;
   }
   Enemy_PlayAnim(&p->e, 1);
   Ghost_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-  anim = (p->e).animTable[1].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s = &(p->e).s->aux;
-
-    (p->e).playingAnim = anim;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + variant;
-    s32 mode;
-
-    if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-      if (flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-      if (flags == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-    }
-    (p->e).playingAnim = a;
-    mode = MAIN_ANIM_FORCE_POSE;
-    if (flags & ANIM_PLAY_REVERSE) {
-      mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-    }
-    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-    if (flags & ANIM_PLAY_XFLIP) {
-      s->flags |= SPRFLAG_XFLIP;
-    } else {
-      s->flags &= ~SPRFLAG_XFLIP;
-    }
-  }
-  (p->e).animForceRestart = 0;
-#else
-  INCFUNC("asm/func/Ghost_StateWait.inc");
-#endif
+  Ghost_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
 }
 
 // 向きを unk_1dc の8方向へ 32 ずつ回し, 揃ったら待機へ移る
-// 279/284命令, Curoro の FUN_0813ae6c と同じ残差 (後半のアニメ再生と mover / anim のアドレスの持ち越し), 試済: Curoro の C をそのまま
-NON_MATCH void Ghost_StateTurn(Ghost* p) {
-#ifdef NONMATCHING_C
-  AuxSprite* sprite;
+void Ghost_StateTurn(Ghost* p) {
+  Mover* mover = &(p->e).mover;
+  AuxAnimState* animState;
   u32 variant, flags;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -407,107 +335,43 @@ NON_MATCH void Ghost_StateTurn(Ghost* p) {
       (p->e).subStateDone = 1;
       return;
     }
-    if (((cur - (target - 8)) & 7) <= 4) {
+    target -= 8;
+    if (((cur - target) & 7) <= 4) {
       CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
     } else {
       SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
     }
   }
-  sprite = &(p->e).s->aux.spr;
+  animState = &(p->e).s->aux.anim;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).stateTimer & 4) {
-    s32 anim;
-
     Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
-      (p->e).mover.angle += 32;
+      mover->angle += 32;
     } else {
-      (p->e).mover.angle -= 32;
+      mover->angle -= 32;
     }
-    Ghost_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-    sprite->unk_05 = 0;
-    anim = (p->e).animTable[1].anim;
-    if ((p->e).spriteKind == 0) {
-      EnemyAuxSprite* s = &(p->e).s->aux;
-
-      (p->e).playingAnim = anim;
-      AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-    } else {
-      MainSprite* s = &(p->e).s->main.spr;
-      s32 a = anim + variant;
-      s32 mode;
-
-      if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-        if (flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-          return;
-        }
-        if (flags == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-          return;
-        }
-      }
-      (p->e).playingAnim = a;
-      mode = MAIN_ANIM_FORCE_POSE;
-      if (flags & ANIM_PLAY_REVERSE) {
-        mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-      }
-      MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-      if (flags & ANIM_PLAY_XFLIP) {
-        s->flags |= SPRFLAG_XFLIP;
-      } else {
-        s->flags &= ~SPRFLAG_XFLIP;
-      }
-    }
-    (p->e).animForceRestart = 0;
+    Ghost_GetAnimVariant(mover->angle, &variant, &flags);
+    animState->cmdCount = 0;
+    Ghost_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
   }
-#else
-  INCFUNC("asm/func/Ghost_StateTurn.inc");
-#endif
 }
 
 // 向きに合わせて animTable[11] のアニメを流し, 30 フレーム未満は ENEFLAG4_UNK_5 を立て, 60 フレームで副状態を終える
-// 124/129命令, EneBat の FUN_0813f320 と同じ壁 (Enemy_PlayAnim の展開), 試済: FUN_0813f320 の C をそのまま
-NON_MATCH void FUN_0816b880(Ghost* p, s32 timer) {
-#ifdef NONMATCHING_C
-  u32 dir;
-  u32 flip;
-  u32 anim;
+void FUN_0816b880(Ghost* p, s32 timer) {
+  u32 variant, flags;
 
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
-  Ghost_GetAnimVariant((p->e).mover.angle, &dir, &flip);
-  anim = (p->e).animTable[11].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s;
-
-    (p->e).playingAnim = anim;
-    s = &(p->e).s->aux;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, dir, flip);
-    (p->e).animForceRestart = FALSE;
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + dir;
-
-    if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flip == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-      (p->e).playingAnim = a;
-      MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (flip & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
-      if (flip & ANIM_PLAY_XFLIP) {
-        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-      } else {
-        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-      }
-      (p->e).animForceRestart = FALSE;
-    }
-  }
+  Ghost_GetAnimVariant((p->e).mover.angle, &variant, &flags);
+  Ghost_PlayDirAnim(p, (p->e).animTable[11].anim, variant, flags);
   if (timer < 30) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
   }
   if (timer > 59) {
     (p->e).subStateDone = TRUE;
   }
-#else
-  INCFUNC("asm/func/FUN_0816b880.inc");
-#endif
 }
 
 void Ghost_AnimFlungOff(Ghost* p, s32 timer) {
@@ -1798,7 +1662,7 @@ NON_MATCH s32 Ghost_Init(Ghost* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

@@ -534,7 +534,7 @@ s32 FUN_080817ec(Player* p) {
   p->action = PACT_IDLE;
   p->state = 0;
   p->stateTimer = 0;
-  gPlayerMoverIDs[p->mover.unk_4] = p->mover.id;
+  gPlayerMoverIDs[p->mover.kind] = p->mover.id;
   return 0;
 }
 
@@ -839,14 +839,14 @@ s32 FUN_08082124(Player* p) {
 
 // サバタの行動7, A を押している間ためを続け、離したら構えを解く
 void FUN_08082154(Player* p) {
-  if (p->action != PACT_UNK_7) {
-    AllySabata_SetAction(p, PACT_UNK_7, 0);
+  if (p->action != PACT_PALM_UP) {
+    AllySabata_SetAction(p, PACT_PALM_UP, 0);
   }
 
   switch (p->state) {
     case 0: {
       AllySabata_PlayAnim(p, 414, Q6(1));
-      AllySabata_SetAction(p, PACT_UNK_7, 1);
+      AllySabata_SetAction(p, PACT_PALM_UP, 1);
       break;
     }
     case 1: {
@@ -876,15 +876,15 @@ void FUN_08082154(Player* p) {
       if (AllySabata_PlayAnim(p, 466, Q6(1))) {
         PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          AllySabata_SetAction(p, PACT_UNK_7, 4);
+          AllySabata_SetAction(p, PACT_PALM_UP, 4);
         } else if (FUN_08082124(p)) {
           PlaySound_082406e0(NOISE_SOLAR_CHARGE);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          AllySabata_SetAction(p, PACT_UNK_7, 2);
+          AllySabata_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          AllySabata_SetAction(p, PACT_UNK_7, 3);
+          AllySabata_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -915,11 +915,11 @@ void FUN_08082154(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        AllySabata_SetAction(p, PACT_UNK_7, 4);
+        AllySabata_SetAction(p, PACT_PALM_UP, 4);
       } else if (!FUN_08082124(p)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        AllySabata_SetAction(p, PACT_UNK_7, 3);
+        AllySabata_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -928,12 +928,12 @@ void FUN_08082154(Player* p) {
       AllySabata_PlayAnim(p, 470, Q6(1));
       p->shadowOffset.z = 0x1E;
       if (!(p->input->down & A_BUTTON)) {
-        AllySabata_SetAction(p, PACT_UNK_7, 4);
+        AllySabata_SetAction(p, PACT_PALM_UP, 4);
       } else if (FUN_08082124(p)) {
         PlaySound_082406e0(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        AllySabata_SetAction(p, PACT_UNK_7, 2);
+        AllySabata_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -973,9 +973,9 @@ void FUN_08082498(Player* p) {
   }
 
   if (p->hurtbox.knockback != 0) {
-    if (p->originKnockback != 0) {
-      s32 dx = p->mover.pos.x - p->knockbackOrigin->x;
-      s32 dz = p->mover.pos.z - p->knockbackOrigin->z;
+    if (p->lavaKnockback != 0) {
+      s32 dx = p->mover.pos.x - p->hazardCenter->x;
+      s32 dz = p->mover.pos.z - p->hazardCenter->z;
 
       p->mover.delta.x = FixToInt(3, -dx);
       p->mover.delta.z = FixToInt(3, -dz);
@@ -1000,7 +1000,7 @@ void FUN_08082498(Player* p) {
 
   if (AllySabata_PlayAnim(p, 448, Q6(1))) {
     p->hurtbox.knockback = 0;
-    p->originKnockback = FALSE;
+    p->lavaKnockback = FALSE;
     AllySabata_SetAnimFacing(p);
     AllySabata_SetAction(p, PACT_IDLE, 0);
   }
@@ -1768,7 +1768,7 @@ void FUN_08084078(Player* p) {
 
   next.x = p->mover.pos.x + p->mover.delta.x;
   next.z = p->mover.pos.z + p->mover.delta.z;
-  if (GetTileAttrAt(&next) & TATTR_WALL) {
+  if (GetTileAttrAt(&next) & TATTR_ENEMY_WALL) {
     p->mover.delta.x = 0;
     p->mover.delta.z = 0;
   }
@@ -1837,7 +1837,7 @@ void AllySabata_UpdateActions(Player* p) {
       [PACT_WALK] = FUN_08081fb4,
       [PACT_DASH] = FUN_08082bdc,
       [PACT_ATTACK] = FUN_080832b8,
-      [PACT_UNK_7] = FUN_08082154,
+      [PACT_PALM_UP] = FUN_08082154,
       [PACT_REFUELING] = FUN_0808301c,
       [PACT_SUN_MAGIC] = FUN_08082dac,
       [PACT_UNK_18] = FUN_08082970,
@@ -1972,7 +1972,7 @@ s32 AllySabata_Destroy(Player* p) {
   Mover_Unlink(&p->mover);
   FUN_0808168c(p);
   AuxSprite_Remove(&p->wpn.sprite);
-  gPlayerPtr[p->mover.unk_4] = NULL;
+  gPlayerPtr[p->mover.kind] = NULL;
   gPlayerCount--;
   return 0;
 }
@@ -1983,7 +1983,7 @@ s32 AllySabata_Init(Player* p, u32 id, unknown* param_3) {
   FUN_080817ec(p);
   FUN_08081c04(p);
   FUN_080816a0(p);
-  gPlayerPtr[p->mover.unk_4] = p;
+  gPlayerPtr[p->mover.kind] = p;
   gPlayerCount++;
   return 0;
 }

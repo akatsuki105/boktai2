@@ -184,7 +184,7 @@ Entity080601a8Elem* Entity080601a8_FindFreeElem(Entity080601a8* p, u32* outIdx) 
 }
 
 // 空いている枠に花びらを1枚出して pos から angle の向きへ飛ばす, 絵柄と左右反転は乱数で決める, 枠がなければ -1
-// 96/96命令, 残差は引数を写すレジスタの順だけ, 原典は p を r6 に velY を r8 に置くが, こちらは p を r8 に置く (Entity0805f2dc_Spawn と同じ形)
+// 96/96命令, 残差は引数を写すレジスタの順だけ, 原典は p を r6 に velY を r8 に置くが, こちらは p を r8 に置く (CrashNoiseRingManager_Spawn と同じ形)
 // 試済: elem の宣言の初期化, flags を sprite 経由, 表示と描画リスト追加の inline, 効いた手: poseIdx は AuxSprite_SetPoseIdx(&elem->sprite, ...), flags は elem->sprite 直書き
 NON_MATCH s32 Entity080601a8_Spawn(Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos) {
 #ifdef NONMATCHING_C

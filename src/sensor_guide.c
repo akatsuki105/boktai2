@@ -9,7 +9,7 @@
 #include "video.h"
 #include "vm.h"
 
-// SPR_UI_SENSOR_HELP の pose
+// SPR_SENSOR_HELP の pose
 #define SENSOR_OK 0                      // "⚪︎"
 #define SENSOR_NG 1                      // "×"
 #define ICON_SUN(step) (2 + (step))      // 太陽, step:0..2
@@ -25,7 +25,7 @@
 #define POSE_22 22                       // "炎天下"
 #define POSE_23 23                       // "太陽センサーと???"
 
-// SPR_UI_SENSOR_HELP の anim
+// SPR_SENSOR_HELP の anim
 #define ANIM_GAME_CART 0  // カートリッジの通常アニメーション
 #define ANIM_HEAT 1       // カートリッジからの熱を表現するアニメーション
 #define ANIM_SUN 2        // 太陽のアニメーション
@@ -34,7 +34,7 @@
 
 typedef struct SensorGuide {
   Entity e;                                     // 0x000, ENTITY_UNK_8
-  MainSpriteGfx gfx;                            // 0x018, SPR_UI_SENSOR_HELP
+  MainSpriteGfx gfx;                            // 0x018, SPR_SENSOR_HELP
   MainSprite sprites[5];                        // 0x038
   u8* msgPc;                                    // 0x218, '.r'
   u16 page;                                     // 0x21C, '.i=0', 解説のページ (タイトルデモの場面番号), 0 は導入文
@@ -180,12 +180,12 @@ NON_MATCH void SensorGuide_LoadBG(SensorGuide* p) {
   rgb555* dst;
 
   if (p->page == 0) {
-    mapID = MP_CFE1;
-    plttID = BGP_ACBD;
+    mapID = MP_SENSOR_HELP;
+    plttID = BGP_SENSOR_HELP;
     layer = 0;
   } else {
-    mapID = MP_A413;
-    plttID = BGP_EFDA;
+    mapID = MP_SYSTEM;
+    plttID = BGP_SYSTEM;
     layer = 12;
   }
   f = GetFile(DIR_TILE_MAP, mapID);
@@ -207,7 +207,7 @@ NON_MATCH void SensorGuide_LoadBG(SensorGuide* p) {
 }
 
 void SensorGuide_InitSprites(SensorGuide* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_SENSOR_HELP);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_SENSOR_HELP);
   Vec3 pos;
 
   p->gfx = *f;
@@ -363,7 +363,7 @@ void SensorGuide_InitMessage(SensorGuide* p) {
     }
     p->line = VM_GetValue();
     p->lastLine = p->line + VM_GetValue() - 1;
-    MessageWindow_SetBgPltt(BGP_EFDA);
+    MessageWindow_SetBgPltt(BGP_SYSTEM);
     MessageWindow_Start(p->msgPc);
     MessageWindow_SetInstant(1);
     MessageWindow_ShowLine((u16)p->line);

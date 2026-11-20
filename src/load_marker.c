@@ -141,10 +141,10 @@ NON_MATCH s32 LoadMarkerManager_GetLoadDir(Zone* zone) {
   tb = ArrowMarker_TileAt(idxB);
   switch (Tile_Stairs(ta)) {
     case STAIRS_NONE: {
-      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 0;
       }
-      if (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 0;
       }
       break;
@@ -153,7 +153,7 @@ NON_MATCH s32 LoadMarkerManager_GetLoadDir(Zone* zone) {
       break;
     }
     case STAIRS_HORIZONTAL: {
-      if ((Tile_Stairs(tb) == STAIRS_NONE || Tile_Stairs(tb) == STAIRS_HORIZONTAL) && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) + 1 && !(tb->attr & TATTR_UNK_0)) {
+      if ((Tile_Stairs(tb) == STAIRS_NONE || Tile_Stairs(tb) == STAIRS_HORIZONTAL) && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) + 1 && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 0;
       }
       break;
@@ -173,16 +173,16 @@ NON_MATCH s32 LoadMarkerManager_GetLoadDir(Zone* zone) {
   tb = ArrowMarker_TileAt(idxB);
   switch (Tile_Stairs(ta)) {
     case STAIRS_NONE: {
-      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 1;
       }
-      if (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 1;
       }
       break;
     }
     case STAIRS_VERTICAL: {
-      if ((Tile_Stairs(tb) == STAIRS_NONE || Tile_Stairs(tb) == STAIRS_VERTICAL) && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) + 1 && !(tb->attr & TATTR_UNK_0)) {
+      if ((Tile_Stairs(tb) == STAIRS_NONE || Tile_Stairs(tb) == STAIRS_VERTICAL) && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) + 1 && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 1;
       }
       break;
@@ -205,10 +205,10 @@ NON_MATCH s32 LoadMarkerManager_GetLoadDir(Zone* zone) {
   tb = ArrowMarker_TileAt(idxB);
   switch (Tile_Stairs(ta)) {
     case STAIRS_NONE: {
-      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 2;
       }
-      if (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 2;
       }
       break;
@@ -217,7 +217,7 @@ NON_MATCH s32 LoadMarkerManager_GetLoadDir(Zone* zone) {
       break;
     }
     case STAIRS_HORIZONTAL: {
-      if (((Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF)) || (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF))) && !(tb->attr & TATTR_UNK_0)) {
+      if (((Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF)) || (Tile_Stairs(tb) == STAIRS_HORIZONTAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF))) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 2;
       }
       break;
@@ -237,16 +237,16 @@ NON_MATCH s32 LoadMarkerManager_GetLoadDir(Zone* zone) {
   tb = ArrowMarker_TileAt(idxB);
   switch (Tile_Stairs(ta)) {
     case STAIRS_NONE: {
-      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 3;
       }
-      if (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_UNK_0)) {
+      if (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 3;
       }
       break;
     }
     case STAIRS_VERTICAL: {
-      if (((Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF)) || (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF))) && !(tb->attr & TATTR_UNK_0)) {
+      if (((Tile_Stairs(tb) == STAIRS_NONE && (ta->heightStairs & 0xF) == (tb->heightStairs & 0xF)) || (Tile_Stairs(tb) == STAIRS_VERTICAL && (ta->heightStairs & 0xF) + 1 == (tb->heightStairs & 0xF))) && !(tb->attr & TATTR_PLAYER_WALL)) {
         return 3;
       }
       break;

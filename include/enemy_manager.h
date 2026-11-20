@@ -50,10 +50,10 @@ typedef struct EnemyManager {
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
   EnemyManagerFlags flags;      // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
-  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、Cmd_2571 が '.l=3' を代入, DefeatedEnemyLog_Add がレコードの3語目へコピーする
+  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、Cmd_2571 が '.l=3' を代入, EnemyRespawnInfo_Add がレコードの3語目へコピーする
   u8 unk_31;                    // 0x31, 読み手も書き手も未発見, padding?
   s16 enemyCount;               // 0x32, Enemy_Register で +1 / Enemy_Unregister で -1. 0x13 を超えると新規生成を拒否する
-  Entity* sharedEntity[8];      // 0x34, EnemyManager_SetupSharedEntities が種族に応じて生成する共有エンティティのキャッシュ, [0]=Entity080db520, [1]=SpiderVenom_Create, [2]=EmoteManager_Create, [6]=Entity081ea120_Create, [7]=OctorokManager_Create
+  Entity* sharedEntity[8];      // 0x34, EnemyManager_SetupSharedEntities が種族に応じて生成する共有エンティティのキャッシュ, [0]=SpiderWebManager, [1]=SpiderVenom_Create, [2]=EmoteManager_Create, [6]=Entity081ea120_Create, [7]=OctorokManager_Create
   u16 sharedEntityId[8];        // 0x54, EnemyManager_SetupSharedEntities が sharedEntity[i]->e.id を控える
   EnemyPaletteFade palFade[3];  // 0x64, EnemyManager_StartPaletteFade が種族 0x0B/0x17/0x1B の順に添字 0/1/2 を選ぶ
 } EnemyManager;

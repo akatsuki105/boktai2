@@ -30,8 +30,8 @@ typedef struct ItemShop {
   MainSpriteGfx icons;           // 0x0038, SPR_INVENTORY_ICONS
   MainSpriteGfx gfx2;            // 0x0058, SPR_UI_MISC
   MainSprite sprites[49];        // 0x0078, [35] がカーソル
-  Tilemaps* tilemap;             // 0x12D8, MP_9F57
-  rgb555* bgPltt;                // 0x12DC, BGP_A41A[208]
+  Tilemaps* tilemap;             // 0x12D8, MP_KAJI
+  rgb555* bgPltt;                // 0x12DC, BGP_KAJI[208]
   u8* unk_12e0;                  // 0x12E0, '.s' があれば VM_GetPC_Proxy の戻り値
   u8* unk_12e4;                  // 0x12E4, '.i' があれば VM_GetPC_Proxy の戻り値
   u8* unk_12e8;                  // 0x12E8, '.a' があれば VM_GetPC_Proxy の戻り値
@@ -1408,16 +1408,16 @@ void FUN_080bc350(ItemShop* p) {
 void ItemShop_SetupBG(ItemShop* p) {
   s32 bgIndex;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_KAJI);
   bgIndex = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_SetBGLayer(0, p->tilemap, 2);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
 }
 
-// BGP_A41A[208]以降を BG パレットバッファの 208 色目にコピーする
+// BGP_KAJI[208]以降を BG パレットバッファの 208 色目にコピーする
 void ItemShop_LoadBgPltt(ItemShop* p) {
-  p->bgPltt = &GetBgPlttFile(BGP_A41A)->body[208];
+  p->bgPltt = &GetBgPlttFile(BGP_KAJI)->body[208];
   CpuCopy32(p->bgPltt, &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 }
 
@@ -1526,7 +1526,7 @@ void FUN_080bc8c8(ItemShop* p) {
   FUN_08049f5c();
   MessageWindow_SetRect(0, 16, 30, 2);
   MessageWindow_SetInstant(1);
-  MessageWindow_SetBgPltt(BGP_A41A);
+  MessageWindow_SetBgPltt(BGP_KAJI);
 }
 
 // '.I' の個数だけ '.T' から売り物の道具IDを読み, 余りは -1 で埋めて末尾4件を複製する

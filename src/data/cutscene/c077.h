@@ -35,7 +35,7 @@ STEP(c77_s5) = {M(c77_s5_0), M(c77_s5_1), M(c77_s5_2), M(c77_s5_3), M(c77_s5_4),
 
 // step 6
 MSG(c77_s6_0, WAIT, BUS_WAIT(30));
-MSG(c77_s6_1, NOWAIT, TO_CBB0(0xCBB0, 0, 0));
+MSG(c77_s6_1, NOWAIT, TO_CBB0(TGT_PDRIVER, 0, 0));
 STEP(c77_s6) = {M(c77_s6_0), M(c77_s6_1), NULL};
 
 // step 7
@@ -160,7 +160,7 @@ STEP(c77_s30) = {M(c77_s30_0), M(c77_s30_1), NULL};
 
 // step 31
 MSG(c77_s31_0, WAIT, BUS_WAIT(10));
-MSG(c77_s31_1, NOWAIT, TO_CBB0(0xCBB0, 0, 10));
+MSG(c77_s31_1, NOWAIT, TO_CBB0(TGT_PDRIVER, 0, 10));
 MSG_F(c77_s31_2, 3, NOWAIT, SOUND_PLAY_BGM(TGT_SOUND, BGM_QUAKE));
 STEP(c77_s31) = {M(c77_s31_0), M(c77_s31_1), M(c77_s31_2), NULL};
 

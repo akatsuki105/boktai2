@@ -3,6 +3,7 @@
 #include "boss.h"
 #include "camera.h"
 #include "camera_inline.h"
+#include "debris.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -97,8 +98,6 @@ s32 InkBallShot_SpawnHoming(Vec3* pos, Vec3* target, u32 speed, s32 power, s32 k
 void Entity082047f0_RequestEnd(struct Entity082047f0* p);
 void Entity080df420_Spawn(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9);
 s32 Entity08204cb8_Spawn(Vec3* pos, s32 timer);
-struct Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 const __attribute__((section(".rodata.faraddr"))) u32 u32_082526a4[7] = {8, 9, 10, 11, 12, 5, 12};
 
@@ -212,7 +211,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
         spawn.x = base.x + SIN(angle);
         spawn.y = base.y;
         spawn.z = base.z + COS(angle);
-        Entity081f26bc_Spawn(&spawn, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, 9, 0xDA, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Debris_Spawn(&spawn, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0xDA, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       break;
     }
@@ -229,7 +228,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
         spawn.x = base.x + POLAR_Z(256, angle);
         spawn.y = base.y;
         spawn.z = base.z + POLAR_X(256, angle);
-        Entity081f26bc_Spawn(&spawn, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Debris_Spawn(&spawn, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       Vec3_SetPolar(&base, p->base.mover.angle, -300);
       Vec3_Add(&base, pos);
@@ -240,7 +239,7 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
         spawn.x = base.x + POLAR_Z(256, angle);
         spawn.y = base.y;
         spawn.z = base.z + POLAR_X(256, angle);
-        Entity081f26bc_Spawn(&spawn, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Debris_Spawn(&spawn, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       break;
     }
@@ -250,23 +249,24 @@ NON_MATCH void FUN_081fa628(Dvalinn* p, s32 mode) {
 #endif
 }
 
-// 残差は CpuFill32 の 0 を書く位置だけ (191/191), FUN_081fae7c と同じ
+// 191/191命令, CpuFill32 の 0 を書く位置は Vec3_Clear で揃った, 残差は Random() の表の番地を置く一時レジスタだけ (原典 r2, こちら r1), 一致済みの FUN_081fad7c と同じ形
+// 試済: RandomNext, & 0xFF
 NON_MATCH void FUN_081fabc0(Dvalinn* p, s32 radius) {
 #ifdef NONMATCHING_C
   Vec3 vel;
   Vec3 pos;
   u8 angle;
 
-  CpuFill32(0, &vel, sizeof(vel));
+  Vec3_Clear(&vel);
   Vec3_SetPolar(&pos, p->base.mover.angle, -90);
   Vec3_Add(&pos, &p->base.mover.pos);
   angle = Random();
   pos.x += POLAR_Z(radius, angle);
   pos.z += POLAR_X(radius, angle);
   if (!(gFrameCounter & 1)) {
-    Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0x200, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0x200, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   } else {
-    Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0x400, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0x400, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   }
 #else
   INCFUNC("asm/func/FUN_081fabc0.inc");
@@ -305,7 +305,7 @@ NON_MATCH void FUN_081fae7c(Vec3* pos) {
   p.z = pos->z;
   p.x += Trig_Fix12ToInt(SIN(angle) * radius);
   p.z += Trig_Fix12ToInt(COS(angle) * radius);
-  Entity081f26bc_Spawn(&p, &vel, SPR_DVALIN_00, ANIM_38E2, kinds[Random() & 3], blink == 0 ? 0x200 : 0x400, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  Debris_Spawn(&p, &vel, SPR_DVALIN_00, ANIM_38E2, kinds[Random() & 3], blink == 0 ? 0x200 : 0x400, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 #else
   INCFUNC("asm/func/FUN_081fae7c.inc");
 #endif
@@ -337,7 +337,7 @@ NON_MATCH void FUN_081fafd4(void) {
     if ((u8)Random() < 128) {
       Entity08204cb8_Spawn(&pos, 1);
     } else {
-      Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     pos.x = src[0];
@@ -353,7 +353,7 @@ NON_MATCH void FUN_081fafd4(void) {
     if ((u8)Random() < 128) {
       Entity08204cb8_Spawn(&pos, 1);
     } else {
-      Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
     src += 2;
   }
@@ -1288,7 +1288,7 @@ NON_MATCH void FUN_081fcb1c(Dvalinn* p, s32 timer) {
           pos = p->unk_808;
           pos.x += Trig_Fix12ToInt(SIN(angle) * radius);
           pos.z += Trig_Fix12ToInt(SIN(angle) * radius);
-          Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, 9, 0x232, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+          Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
       }
       ns->timer0++;
@@ -1524,10 +1524,10 @@ NON_MATCH void FUN_081fd20c(Dvalinn* p, s32 timer) {
               NestedState_Set1(ns, 1);
             }
           } else if (t == 1) {
-            Vec3_SetPolar(&v, Angle_FromDir4(boss->facing), -60);
+            Vec3_SetPolar(&v, Angle_FromDir4(boss->dir4), -60);
             Vec3_Add(&boss->mover.pos, &v);
           } else if (t < 10) {
-            Vec3_SetPolar(&v, Angle_FromDir4(boss->facing), 6);
+            Vec3_SetPolar(&v, Angle_FromDir4(boss->dir4), 6);
             Vec3_Add(&boss->mover.pos, &v);
           }
           break;
@@ -2450,7 +2450,7 @@ NON_MATCH void FUN_081ff34c(Dvalinn* p, s32 timer) {
     AuxSprite_Hide(&p->auxSprite);
     Boss_SetState(boss, FUN_081febb8, 11);
     CpuFill32(0, &vel, sizeof(vel));
-    Entity081f26bc_Spawn(&p->sprites[1].pos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Debris_Spawn(&p->sprites[1].pos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x237, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   } else if ((timer & 15) == 0) {
     if ((Random() & 0xFF) > 128) {
       FUN_081fad7c(p, 0x40);
@@ -2577,7 +2577,7 @@ void Dvalinn_InitHurtbox(Dvalinn* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(1), Q8(1), Q8(1));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Dvalinn_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_FROST, HBATTR_FLAME);

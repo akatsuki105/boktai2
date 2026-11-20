@@ -185,7 +185,7 @@ NON_MATCH void PropertyCube_OnHurt(Hitbox* a, Hitbox* b, PropertyCube* cube) {
 
 void nop_0800cc04(void) {}
 
-// slideAngle の向きの隣のタイルが, 階段でなく今より低く TATTR_UNK_3 も無ければ 1 を返す
+// slideAngle の向きの隣のタイルが, 階段でなく今より低く TATTR_BLOCK_STOP も無ければ 1 を返す
 // 残差: 命令の並びはほぼ一致しレジスタ割当が違う, 原典は r6 まで使い & 3 の定数を gCollisionMap の読み込みより前に積む
 NON_MATCH s32 PropertyCube_CanSlide(PropertyCube* cube) {
 #ifdef NONMATCHING_C
@@ -195,7 +195,7 @@ NON_MATCH s32 PropertyCube_CanSlide(PropertyCube* cube) {
   s32 idx = GetCollisionTileIdx(&cube->obj.pos) + step;
   CollisionMapTile* tile = TileAtIndex(idx);
 
-  if (tile != NULL && (tile->heightStairs >> 4) == 0 && (tile->heightStairs & 0xF) < (self->heightStairs & 0xF) && !(tile->attr & TATTR_UNK_3)) {
+  if (tile != NULL && (tile->heightStairs >> 4) == 0 && (tile->heightStairs & 0xF) < (self->heightStairs & 0xF) && !(tile->attr & TATTR_BLOCK_STOP)) {
     return 1;
   }
 
@@ -895,11 +895,11 @@ NON_MATCH s32 Cmd_A062(void) {
     if (height < 15) {
       height++;
     }
-    Map_AddTileOverride(&cube->tileOverride, idx, 0, height, 0xFF, TATTR_UNK_0 | TATTR_UNK_3);
+    Map_AddTileOverride(&cube->tileOverride, idx, 0, height, 0xFF, TATTR_PLAYER_WALL | TATTR_BLOCK_STOP);
   }
   cube->tileOverride.flags |= 2;
 
-  Mover_Init(&cube->obj, id, &pos, 0, 7, cube);
+  Mover_Init(&cube->obj, id, &pos, 0, MOVER_OBJECT, cube);
   Mover_SetAuxSprite(&cube->obj, &cube->spr_a8);
   if (cube->state != 1) {
     cube->obj.flags |= 2;

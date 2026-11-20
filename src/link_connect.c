@@ -38,8 +38,8 @@ COMMON_DATA LinkConnect* gLinkConnect = NULL;  // 0x03002C64
 
 extern u32 gRtcReadInhibit;  // src/time.c
 
-s32 FUN_08238b04(void);   // src/link.c
-void FUN_08238cd4(void);  // src/link.c
+s32 Sio_Open(void);                // src/link.c
+void Sio_ResetPortAndClear(void);  // src/link.c
 
 void LinkConnect_ClearGlobal(void) { gLinkConnect = NULL; }
 
@@ -87,7 +87,7 @@ NON_MATCH s32 LinkConnect_Update(LinkConnect* p) {
     p->handle = Sio_Connect();
     if (p->handle < 0) {
       if (p->connectRetry > 29) {
-        FUN_08238cd4();
+        Sio_ResetPortAndClear();
         p->handle = Sio_Connect();
         p->connectRetry = 0;
       } else {
@@ -145,7 +145,7 @@ NON_MATCH s32 LinkConnect_Update(LinkConnect* p) {
         p->noDataCount++;
         if (p->noDataRetry > 29) {
           Sio_Disconnect();
-          FUN_08238cd4();
+          Sio_ResetPortAndClear();
           p->handle = Sio_Connect();
           p->agreeFrames = 0;
           p->recvErrorRetry = 0;
@@ -161,7 +161,7 @@ NON_MATCH s32 LinkConnect_Update(LinkConnect* p) {
         p->agreeFrames = 0;
         if (p->recvErrorRetry > 29) {
           Sio_Disconnect();
-          FUN_08238cd4();
+          Sio_ResetPortAndClear();
           p->handle = Sio_Connect();
           p->agreeFrames = 0;
           p->recvErrorRetry = 0;
@@ -202,7 +202,7 @@ s32 LinkConnect_Init(LinkConnect* p, s32 timeout, s32 cancelable) {
   Taiyo_Disable();
   gRtcReadInhibit = 1;
   Sio_Reset();
-  FUN_08238b04();
+  Sio_Open();
   if (timeout == 0) {
     p->timeout = 300;
   } else {

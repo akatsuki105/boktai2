@@ -1,4 +1,5 @@
 #include "cwolf_target.h"
+#include "debris.h"
 #include "eff_elemcond.h"
 #include "enemy.h"
 #include "enemy_inline.h"
@@ -129,7 +130,7 @@ static inline s32 Salamander_CheckStep(s32 cur, s32 next, s32 dir) {
   curHeight = TileHeightAtIndex(cur, &pos);
   diff = nextHeight - curHeight;
   step = (((curHeight + 0xFF) >> 8) - ((nextHeight + 0xFF) >> 8)) << 8;
-  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) {
+  if (attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) {
     return -1;
   }
   if (diff != 0) {
@@ -329,7 +330,6 @@ void Salamander_PickNextTile(Salamander* p);
 void Salamander_StateWakeUp(Salamander* p, s32 timer);
 void Salamander_ScatterSpark(Vec3* pos);
 void Salamander_SpawnFireDebris(Vec3* pos);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 void Salamander_StateDying(Salamander* p);
 void Salamander_ResetRecentTiles(Salamander* p);
 void Salamander_StateLand(Salamander* p, s32 timer);
@@ -1892,7 +1892,7 @@ NON_MATCH void Salamander_CheckStuck(Salamander* p) {
   Vec3_Sum(&next, &(p->e).mover.pos, &(p->e).jumpVel);
   idx = GetCollisionTileIdx(&next);
   attr = TileAtIndex(idx)->attr;
-  if ((p->e).floorY < TileHeightAtIndex(idx, &next) || (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+  if ((p->e).floorY < TileHeightAtIndex(idx, &next) || (attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
     (p->e).jumpVel.x = 0;
     (p->e).jumpVel.z = 0;
   }
@@ -2217,7 +2217,7 @@ NON_MATCH void Salamander_SpawnFireDebris2(Vec3* pos) {
     vel.y = (RandomNext() & 0x1F) - 16;
     life = (RandomNext() & 0x3F) + 20;
   }
-  Entity081f26bc_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 49, 0, 2, 0, 0, life, 4, 1, HBATTR_INKA | HBATTR_FLAME, 30, 8, 8);
+  Debris_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_PTCL | DEBRIS_BOUNCE, 0, 2, 0, 0, life, 4, 1, HBATTR_INKA | HBATTR_FLAME, 30, 8, 8);
 #else
   INCFUNC("asm/func/Salamander_SpawnFireDebris2.inc");
 #endif
@@ -2240,7 +2240,7 @@ NON_MATCH void Salamander_SpawnFireDebris(Vec3* pos) {
     vel.y = (RandomNext() & 0x1F) - 16;
     life = (RandomNext() & 0x3F) + 20;
   }
-  Entity081f26bc_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 49, 0, 2, 0, 0, life, 4, 1, HBATTR_INKA | HBATTR_FLAME, 30, 8, 8);
+  Debris_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_PTCL | DEBRIS_BOUNCE, 0, 2, 0, 0, life, 4, 1, HBATTR_INKA | HBATTR_FLAME, 30, 8, 8);
 #else
   INCFUNC("asm/func/Salamander_SpawnFireDebris.inc");
 #endif
@@ -2555,7 +2555,7 @@ NON_MATCH s32 Salamander_Init(Salamander* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

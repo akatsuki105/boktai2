@@ -33,7 +33,7 @@ _081DFC8A:
 	bl AddEntity
 	ldr r0, _081DFDC8 @ =0x0300481C
 	str r4, [r0]
-	bl FUN_08238b04
+	bl Sio_Open
 	ldr r0, _081DFDCC @ =0x0000FFFF
 	strh r0, [r6, #0x18]
 	strb r5, [r6, #0x1e]

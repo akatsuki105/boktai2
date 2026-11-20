@@ -51,10 +51,75 @@ typedef struct {
 } EneBat;
 static_assert(sizeof(EneBat) == 1728);
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void EneBat_PlayDirAnim(EneBat* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
+// 自分が何番目の参加者かを返す, セッションが無ければ -1
+static inline s32 LinkSession_GetPlayerIdx(void) {
+  LinkSession* p = gLinkSession;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
+}
+
+// 通信対戦で, この敵を攻撃したのが自分の画面のプレイヤーか (通信対戦でなければ常に TRUE)
+static inline bool8 Enemy_IsHitByLocalPlayer(Enemy* p) {
+  if (IsLinkPlay() && !(p->unk_4a0 & 0x20) && p->unk_4a0 != 0) {
+    switch (LinkSession_GetPlayerIdx()) {
+      case 0: {
+        if (p->unk_4a0 != 1) return FALSE;
+        break;
+      }
+      case 1: {
+        if (p->unk_4a0 != 2) return FALSE;
+        break;
+      }
+      case 2: {
+        if (p->unk_4a0 != 4) return FALSE;
+        break;
+      }
+      case 3: {
+        if (p->unk_4a0 != 8) return FALSE;
+        break;
+      }
+    }
+  }
+  return TRUE;
+}
+
 static inline bool8 EneBat_TestUnk658(EneBat* p, u32 bit) {
   if (p->unk_658 & bit) return TRUE;
   return FALSE;
 }
+
+static inline void EneBat_SetUnk658(EneBat* p, u32 bit) { p->unk_658 |= bit; }
 
 struct Entity081fa164Elem* Entity081fa164_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 void EneBat_SpawnTrail(EneBat* p);
@@ -103,70 +168,46 @@ void (*const PTR_ARRAY_085ad80c[7])(EneBat*, u16*) = {
 };  // 0x085AD80C
 
 // 当てたときの処理, 回復するバリアントなら与えたダメージぶん体力を戻してゲージと数字を出し, 攻撃判定を外して離れる副状態へ移る
-// 286/290命令, 表示判定は原典では bool を返す inline (通信中なら gLinkSession の playerIdx で unk_4a0 を見て case ごとに 0 を返す形) で, playerIdx は solar.c の LinkSession_GetPlayerIdx の形にすると -1 の作り方まで揃う, 残差は case ごとの 0 を返す塊が原典では畳まれず unk_4a0 を読み直す点と, CpuFill32 の v のアドレスを r6 に置く点
-NON_MATCH void EneBat_OnHit(Hitbox* a, Hitbox* b, EneBat* p) {
-#ifdef NONMATCHING_C
+void EneBat_OnHit(Hitbox* a, Hitbox* b, EneBat* p) {
+  Enemy* e;
+
   if (b->ignoreMask != HIM_0) {
     return;
   }
-  if (Enemy_IsDead(&p->e)) {
+  e = &p->e;
+  if (Enemy_IsDead(e)) {
     return;
   }
-  Enemy_SetHitTarget(&p->e, b);
+  Enemy_SetHitTarget(e, b);
   Hitbox_ApplyDamage(a, b);
-  if (((p->e).variant == 1 || (u16)((p->e).variant - 12) <= 3) && b->damage != 0) {
-    if ((p->e).hp + b->damage > (p->e).maxHp) {
-      (p->e).hurtbox.damage = (p->e).maxHp - (p->e).hp;
-      (p->e).hp = (p->e).maxHp;
+  if ((e->variant == 1 || (u16)(e->variant - 12) <= 3) && b->damage != 0) {
+    if (e->hp + b->damage > e->maxHp) {
+      e->hurtbox.damage = e->maxHp - e->hp;
+      e->hp = e->maxHp;
     } else {
-      (p->e).hurtbox.damage = b->damage;
-      (p->e).hp += b->damage;
+      e->hurtbox.damage = b->damage;
+      e->hp += b->damage;
     }
-    (p->e).unk_48a = (p->e).hurtbox.damage;
-    if ((p->e).unk_48a != 0) {
-      bool8 show = TRUE;
-
-      if (IsLinkPlay() && !((p->e).unk_4a0 & 0x20) && (p->e).unk_4a0 != 0) {
-        switch (gLinkSession != NULL ? gLinkSession->playerIdx : -1) {
-          case 0: {
-            show = (p->e).unk_4a0 == 1;
-            break;
-          }
-          case 1: {
-            show = (p->e).unk_4a0 == 2;
-            break;
-          }
-          case 2: {
-            show = (p->e).unk_4a0 == 4;
-            break;
-          }
-          case 3: {
-            show = (p->e).unk_4a0 == 8;
-            break;
-          }
-        }
-      }
-      if (show) {
+    e->unk_48a = e->hurtbox.damage;
+    if (e->unk_48a != 0) {
+      if (Enemy_IsHitByLocalPlayer(e)) {
         Vec3 v;
 
-        HUD_ShowEnemyGauge((p->e).mover.id, (p->e).hp, (p->e).maxHp, (p->e).unk_25a, 0);
-        CpuFill32(0, &v, sizeof(v));
-        if ((p->e).unk_48a != 0 || !((p->e).weaponExpMask & 0x4000)) {
-          CreateDamageNumber(&(p->e).hurtbox, (p->e).unk_48a, 1, &(p->e).mover.pos, &v, 1);
+        HUD_ShowEnemyGauge(e->mover.id, e->hp, e->maxHp, e->unk_25a, 0);
+        Vec3_Clear(&v);
+        if (e->unk_48a != 0 || !(e->weaponExpMask & 0x4000)) {
+          CreateDamageNumber(&e->hurtbox, e->unk_48a, 1, &e->mover.pos, &v, 1);
         }
       }
     }
   }
-  (p->e).hitbox.flags |= HBF_HIDDEN;
-  ((EneBat*)(p->e).owner)->unk_658 &= ~8;
-  if (!EneBat_TestUnk658((p->e).owner, 4)) {
-    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
-    Enemy_ResetState(&p->e, 0, 2, 1);
-    ((EneBat*)(p->e).owner)->unk_658 |= 4;
+  e->hitbox.flags |= HBF_HIDDEN;
+  CLEAR_FLAGS(((EneBat*)e->owner)->unk_658, 8);
+  if (!EneBat_TestUnk658(e->owner, 4)) {
+    Enemy_EnterState(e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(e, 0, 2, 1);
+    EneBat_SetUnk658(e->owner, 4);
   }
-#else
-  INCFUNC("asm/func/EneBat_OnHit.inc");
-#endif
 }
 
 // 食らい判定, 共通処理のあとノックバックを 0〜15 減らし 20 を下限にして, 速く動く印を落とす
@@ -285,49 +326,21 @@ void FUN_0813f2fc(EneBat* p) {
 }
 
 // 向きに合わせて animTable[11] のアニメを流し, 30 フレーム未満は flags4 の印を立て, 60 フレームで副状態を終える
-// Enemy_PlayAnim の展開, 再生部分を (p, u32 anim, variant, f) を取る static inline にして変化なしで return する形にすると残差は MainSprite_SetAnim をまたいで定数 4 を r8 に置く点だけ (Enemy_PlayAnim と同じ壁), 試済: 反転フラグの直接操作
-NON_MATCH void FUN_0813f320(EneBat* p, s32 timer) {
-#ifdef NONMATCHING_C
+void FUN_0813f320(EneBat* p, s32 timer) {
   s32 dir;
   s32 flip;
-  u32 anim;
 
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
   EneBat_GetDirAndFlip((p->e).mover.angle, &dir, &flip);
-  anim = (p->e).animTable[11].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s;
-
-    (p->e).playingAnim = anim;
-    s = &(p->e).s->aux;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, dir, flip);
-    (p->e).animForceRestart = FALSE;
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + dir;
-
-    if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flip == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-      (p->e).playingAnim = a;
-      MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (flip & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
-      if (flip & ANIM_PLAY_XFLIP) {
-        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-      } else {
-        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-      }
-      (p->e).animForceRestart = FALSE;
-    }
-  }
+  EneBat_PlayDirAnim(p, (p->e).animTable[11].anim, dir, flip);
   if (timer < 30) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
   }
   if (timer > 59) {
     (p->e).subStateDone = TRUE;
   }
-#else
-  INCFUNC("asm/func/FUN_0813f320.inc");
-#endif
 }
 
 // unk_20c へ滑り終えたら, 追いかけ中ならプレイヤーへの曲線移動へ, そうでなければ向き直って状態10へ移る
@@ -1160,7 +1173,7 @@ NON_MATCH s32 EneBat_Init(EneBat* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

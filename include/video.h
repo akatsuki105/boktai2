@@ -7,20 +7,20 @@
 
 // BG1枚分の状態 (gBgStates[4] @ 0x03003ED0), 要素の区切りの根拠: pile_driver, enemy_dex が &gBgStates[3] (0x03003F60) を起点に +0x10..+0x28 を触る
 typedef struct {
-  u16 unk_00;            // 0x00, BgMapScroller_Init が flags bit4 を 0/1 にして入れる, Video_SetupBG の第2引数と同じ値
-  u8 unk_02[14];         // 0x02
-  u16 unk_10;            // 0x10, Video_SetBGLayer が 0x1000 を入れる
-  u16 unk_12;            // 0x12, 同上
-  u8 unk_14[4];          // 0x14
-  s16 width16;           // 0x18, TilemapLayer.width (= 16px単位)
-  u16 height16;          // 0x1A, TilemapLayer.height (= 16px単位)
-  u16 unk_1c;            // 0x1C, width16 と同じ値
-  u16 unk_1e;            // 0x1E, height16 と同じ値
-  u16 hofs;              // 0x20, BGnHOFS の基準値 (HBlank エフェクトで各ラインの値に足される)
-  u16 vofs;              // 0x22, BGnVOFS の基準値
-  u8 unk_24[4];          // 0x24
-  MetatileIdx16* mtmap;  // 0x28, TilemapLayer.mtmap
-  BgMapEntry* tilemap;   // 0x2C, GBAタイルマップのバッファ
+  u16 unk_00;             // 0x00, BgMapScroller_Init が flags bit4 を 0/1 にして入れる, Video_SetupBG の第2引数と同じ値
+  u8 unk_02[14];          // 0x02
+  u16 unk_10;             // 0x10, Video_SetBGLayer が 0x1000 を入れる
+  u16 unk_12;             // 0x12, 同上
+  u8 unk_14[4];           // 0x14
+  s16 width16;            // 0x18, TilemapLayer.width (= 16px単位)
+  s16 height16;           // 0x1A, TilemapLayer.height (= 16px単位)
+  u16 unk_1c;             // 0x1C, width16 と同じ値
+  u16 unk_1e;             // 0x1E, height16 と同じ値
+  u16 hofs;               // 0x20, BGnHOFS の基準値 (HBlank エフェクトで各ラインの値に足される)
+  u16 vofs;               // 0x22, BGnVOFS の基準値
+  BgMapEntry* metatiles;  // 0x24, Tilemaps.metatiles
+  MetatileIdx16* mtmap;   // 0x28, TilemapLayer.mtmap
+  BgMapEntry* tilemap;    // 0x2C, GBAタイルマップのバッファ
 } BgState;
 static_assert(sizeof(BgState) == 48);
 

@@ -278,7 +278,7 @@ NON_MATCH bool8 MapItemManager_TryOpen(Mover* mover) {
     return FALSE;
   }
 
-  playerIdx = mover->unk_4;
+  playerIdx = mover->kind;
   for (item = gMapItemManager->items; item != NULL; item = item->next) {
     if (item->flags & 1) {
       continue;

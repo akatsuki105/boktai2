@@ -30,7 +30,7 @@
 #define W_CURRENT_STAGE_CHEST_OPENED(i) BIT(world + 0x18, 0, 40, i)  // 今のステージの宝箱を開けたか, 添字は宝箱番号
 #define W_LOCKED_DOOR_OPENED(i) BIT(world + 0x1D, 0, 32, i)  // 鍵付き扉を開けたか, 添字は鍵フラグ番号
 #define W_COFFIN_DIR *((u8 *)(world + 0x21))  // 置いてある棺桶の向き
-#define W_COFFIN_HOLDS_DARK_DJANGO *((u8 *)(world + 0x22))  // 1 なら棺桶の中身が黒ジャンゴ (サバタで運ぶ, 時間制限あり)
+#define W_COFFIN_HOLDS_BDJANGO *((u8 *)(world + 0x22))  // 1 なら棺桶の中身が黒ジャンゴ (サバタで運ぶ, 時間制限あり)
 #define W_COFFIN_TIME_MONTH *((u8 *)(world + 0x23))  // 棺桶の逃走時間の起点の月
 #define W_COFFIN_TIME_YEAR *((s16 *)(world + 0x24))  // 棺桶の逃走時間の起点の年
 #define W_COFFIN_TIME_DAY *((u8 *)(world + 0x26))  // 棺桶の逃走時間の起点の日
@@ -83,7 +83,7 @@
 #define W_UNK_051_7 BIT(world + 0x51, 7)
 #define W_COUNTDOWN_REMAINING *((s16 *)(world + 0x52))  // マップをまたいで引き継ぐカウントダウンの残りフレーム
 #define W_PREV_ROOM *((s16 *)(world + 0x54))  // 1つ前にいた部屋の番号 (ROOM の控え)
-#define W_PREV_PREV_ROOM *((s16 *)(world + 0x56))  // 2つ前にいた部屋の番号
+#define W_PREV_PREV_ROOM *((s16 *)(world + 0x56))  // 2つ前にいた部屋の番号 (敵のリスポーン判断で使用)
 #define W_UNK_058 *((u8 *)(world + 0x58))
 #define W_WAREHOUSE_LEVEL *((u8 *)(world + 0x59))  // 倉庫の開放段階, 0: 未開放
 #define W_UNK_05A_0 BIT(world + 0x5A, 0)

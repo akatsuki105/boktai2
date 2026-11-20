@@ -606,7 +606,7 @@ _081C2326:
 	ldr r0, _081C2368 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl DefeatedEnemyLog_Add
+	bl EnemyRespawnInfo_Add
 _081C2346:
 	adds r2, r7, #0
 	adds r2, #0xde

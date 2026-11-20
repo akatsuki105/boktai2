@@ -90,7 +90,7 @@ NON_MATCH bool8 FUN_080f9f20(Enemy* p) {
   if (p->playerMover == NULL) {
     return FALSE;
   }
-  idx = p->playerMover->unk_4 <= 3 ? p->playerMover->unk_4 : -1;
+  idx = p->playerMover->kind <= 3 ? p->playerMover->kind : -1;
   if (idx < 0) {
     return FALSE;
   }
@@ -309,7 +309,7 @@ NON_MATCH bool8 Enemy_RouteToNearestLinkPlayer(Enemy* p) {
   s32 i;
 
   for (i = 0; i < count; i++) {
-    if (gPlayerPtr[i] != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3) && !TEST_FLAGS(gPlayerPtr[i]->flag20, PFLAG20_INVISIBLE) && !(GetTileAttrAt(&gPlayerPtr[i]->mover.pos) & (TATTR_FALLDEATH | TATTR_WALL | TATTR_UNK_0))) {
+    if (gPlayerPtr[i] != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3) && !TEST_FLAGS(gPlayerPtr[i]->flag20, PFLAG20_INVISIBLE) && !(GetTileAttrAt(&gPlayerPtr[i]->mover.pos) & (TATTR_FALLDEATH | TATTR_ENEMY_WALL | TATTR_PLAYER_WALL))) {
       Vec3 d;
       s32 distSq;
 
@@ -339,7 +339,7 @@ s32 FindNearestLinkPlayer(Vec3* pos) {
   s32 i;
 
   for (i = 0; i < count; i++) {
-    if (gPlayerPtr[i] != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3) && !TEST_FLAGS(gPlayerPtr[i]->flag20, PFLAG20_INVISIBLE) && !(GetTileAttrAt(&gPlayerPtr[i]->mover.pos) & (TATTR_FALLDEATH | TATTR_WALL | TATTR_UNK_0))) {
+    if (gPlayerPtr[i] != NULL && !TEST_FLAGS(gPlayerModes[i], PMODE_UNK_3) && !TEST_FLAGS(gPlayerPtr[i]->flag20, PFLAG20_INVISIBLE) && !(GetTileAttrAt(&gPlayerPtr[i]->mover.pos) & (TATTR_FALLDEATH | TATTR_ENEMY_WALL | TATTR_PLAYER_WALL))) {
       Vec3 d;
       s32 distSq;
 

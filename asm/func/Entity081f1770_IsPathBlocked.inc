@@ -263,7 +263,7 @@ _081F0F3A:
 	add r1, sp, #0x3c
 	ldr r2, _081F0FC0 @ =0x00001C1A
 	ldr r3, _081F0FC4 @ =0x0000D1B8
-	bl Entity081f26bc_Spawn
+	bl Debris_Spawn
 	movs r0, #1
 	b _081F0FCE
 	.align 2, 0

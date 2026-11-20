@@ -181,7 +181,7 @@ u16 Map_GetTileHeightDiff(Vec3* pos1, Vec3* pos2) {
 // 残差26命令 (300/326): 原典は TileAtIndex の展開を Q8(0.5) の両側それぞれに持つが, こちらは呼び出しごと交差ジャンプで他の節の展開に合流する
 // 端数の比較は (to->z & 0xFF) < Q8(0.5) で原典の ldrb / cmp #0x7F と一致する ((u8) キャストだと ldrsb の符号判定になる)
 // Tier A-C は試済: 索引の u16 切り捨てを別変数経由に, 分岐ごとの複製
-NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
+NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 kind) {
 #ifdef NONMATCHING_C
   CollisionMapTile* tile1;
   CollisionMapTile* tile2;
@@ -202,11 +202,11 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
   tile2 = TileAtIndex(idx2);
 
   attr2 = tile2->attr;
-  if (val == 4) {
-    mask = TATTR_WALL;
+  if (kind == MOVER_ENEMY) {
+    mask = TATTR_ENEMY_WALL;
     limit = Q8(0.5);
   } else {
-    mask = TATTR_UNK_0;
+    mask = TATTR_PLAYER_WALL;
     limit = Q8(0.391);
   }
 
@@ -312,7 +312,7 @@ NON_MATCH bool32 Map_CanStepTo(Vec3* from, Vec3* to, u8 val) {
 }
 
 // dst のタイルへ入れないとき, 境界に沿って片方の軸だけ滑らせた位置を探して dst に書き戻す
-s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
+s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 kind) {
   CollisionMapTileData* td;
   Vec3 v;
   s32 idx;
@@ -329,7 +329,7 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
   if (tile->tileIdx[1] == idx) {
     return 0;
   }
-  if (Map_CanStepTo(pos, dst, param_4)) {
+  if (Map_CanStepTo(pos, dst, kind)) {
     return 0;
   }
 
@@ -352,14 +352,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx + 1) {
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -369,14 +369,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -394,14 +394,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx - 1) {
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -411,14 +411,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = (Div(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -440,14 +440,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx + 1) {
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -457,14 +457,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = (Mod(tile->tileIdx[1], td->width) << 8) + 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -482,14 +482,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       if (tile->tileIdx[0] == idx - 1) {
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -499,14 +499,14 @@ s32 Map_SlideAlongWall(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
       } else {
         v = *dst;
         v.z = ((Div(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
 
         v = *dst;
         v.x = ((Mod(tile->tileIdx[1], td->width) + 1) << 8) - 1;
-        if (Map_CanStepTo(pos, &v, param_4)) {
+        if (Map_CanStepTo(pos, &v, kind)) {
           *dst = v;
           break;
         }
@@ -545,14 +545,14 @@ void Map_UpdateMoverTile(MoverTile* mTile, Vec3* pos, Vec3* dst) {
 
 // pos から offset だけ動いた先のタイルを MoverTile に反映する
 // unused_4 と unused_5 は読まれていない
-void Map_MovePointAlongWalls(MoverTile* tile, Vec3* pos, Vec3* offset, s32 unused_4, s32 unused_5, u8 param_6) {
+void Map_MovePointAlongWalls(MoverTile* tile, Vec3* pos, Vec3* offset, s32 unused_4, s32 unused_5, u8 kind) {
   Vec3 dst;
 
   dst.x = pos->x + offset->x;
   dst.y = pos->y + offset->y;
   dst.z = pos->z + offset->z;
   dst.val = 16;
-  tile->unk_0[0] = Map_SlideAlongWall(tile, pos, &dst, param_6);
+  tile->unk_0[0] = Map_SlideAlongWall(tile, pos, &dst, kind);
   Map_UpdateMoverTile(tile, pos, &dst);
 }
 
@@ -561,7 +561,7 @@ void Map_MovePointAlongWalls(MoverTile* tile, Vec3* pos, Vec3* offset, s32 unuse
 // 残差31命令 (929/960): 原典は p が r7, こちらは r8 に載るため p->unk_0[0] の書き込みが融合せず, 連鎖して Map_UpdateMoverTile の共有ブロックの切り方と freeX のスピル有無が変わる
 // Tier A-C は試済: 共有末尾を switch の break にする形 (1015→929 と改善), 宣言順の入れ替え
 // 原典のフレームは 0x68 でこちらより 12 バイト大きい, Vec3 のローカルがもう1つあるらしい
-NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4) {
+NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 kind) {
 #ifdef NONMATCHING_C
   Vec3 dst;
   Vec3 probe;
@@ -598,7 +598,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x += sizeX;
       probe.z += sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x -= sizeX;
         probe.z -= sizeZ;
         break;
@@ -607,7 +607,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x += sizeX;
       probe.z -= sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x -= sizeX;
         probe.z += sizeZ;
         break;
@@ -621,7 +621,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x -= sizeX;
       probe.z += sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x += sizeX;
         probe.z -= sizeZ;
         break;
@@ -630,7 +630,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x -= sizeX;
       probe.z -= sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x += sizeX;
         probe.z += sizeZ;
         break;
@@ -644,7 +644,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x += sizeX;
       probe.z += sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x -= sizeX;
         probe.z -= sizeZ;
         break;
@@ -653,7 +653,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x -= sizeX;
       probe.z += sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x += sizeX;
         probe.z -= sizeZ;
         break;
@@ -667,7 +667,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x += sizeX;
       probe.z -= sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x -= sizeX;
         probe.z += sizeZ;
         break;
@@ -676,7 +676,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x -= sizeX;
       probe.z -= sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x += sizeX;
         probe.z += sizeZ;
         break;
@@ -695,7 +695,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x += sizeX;
       probe.z += sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x -= sizeX;
         probe.z -= sizeZ;
         break;
@@ -703,11 +703,11 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
 
       tryX = *pos;
       tryX.x += delta->x + sizeX;
-      freeX = Map_CanStepTo(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, kind);
 
       tryZ = *pos;
       tryZ.z += delta->z + sizeZ;
-      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, kind);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -726,7 +726,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        Map_SlideAlongWall(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, kind);
         tryX.x -= sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -735,7 +735,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, kind);
       tryZ.x += delta->x;
       tryZ.z -= sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -751,7 +751,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x -= sizeX;
       probe.z += sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x += sizeX;
         probe.z -= sizeZ;
         break;
@@ -759,11 +759,11 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
 
       tryX = *pos;
       tryX.x += delta->x - sizeX;
-      freeX = Map_CanStepTo(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, kind);
 
       tryZ = *pos;
       tryZ.z += delta->z + sizeZ;
-      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, kind);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -782,7 +782,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        Map_SlideAlongWall(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, kind);
         tryX.x += sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -791,7 +791,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, kind);
       tryZ.x += delta->x;
       tryZ.z -= sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -807,7 +807,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x += sizeX;
       probe.z -= sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x -= sizeX;
         probe.z += sizeZ;
         break;
@@ -815,11 +815,11 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
 
       tryX = *pos;
       tryX.x += delta->x + sizeX;
-      freeX = Map_CanStepTo(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, kind);
 
       tryZ = *pos;
       tryZ.z += delta->z - sizeZ;
-      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, kind);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -838,7 +838,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        Map_SlideAlongWall(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, kind);
         tryX.x -= sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -847,7 +847,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, kind);
       tryZ.x += delta->x;
       tryZ.z += sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -863,7 +863,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       probe = dst;
       probe.x -= sizeX;
       probe.z -= sizeZ;
-      if (Map_SlideAlongWall(p, pos, &probe, unk_4)) {
+      if (Map_SlideAlongWall(p, pos, &probe, kind)) {
         probe.x += sizeX;
         probe.z += sizeZ;
         break;
@@ -871,11 +871,11 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
 
       tryX = *pos;
       tryX.x += delta->x - sizeX;
-      freeX = Map_CanStepTo(pos, &tryX, unk_4);
+      freeX = Map_CanStepTo(pos, &tryX, kind);
 
       tryZ = *pos;
       tryZ.z += delta->z - sizeZ;
-      freeZ = Map_CanStepTo(pos, &tryZ, unk_4);
+      freeZ = Map_CanStepTo(pos, &tryZ, kind);
 
       if (freeX != 0 && freeZ != 0) {
         Map_UpdateMoverTile(p, pos, &dst);
@@ -894,7 +894,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
         }
 
         // X方向だけ塞がっているので Z 方向の移動だけ通す
-        Map_SlideAlongWall(p, pos, &tryX, unk_4);
+        Map_SlideAlongWall(p, pos, &tryX, kind);
         tryX.x += sizeX;
         tryX.z += delta->z;
         Map_UpdateMoverTile(p, pos, &tryX);
@@ -903,7 +903,7 @@ NON_MATCH void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 s
       }
 
       // Z方向だけ塞がっているので X 方向の移動だけ通す
-      Map_SlideAlongWall(p, pos, &tryZ, unk_4);
+      Map_SlideAlongWall(p, pos, &tryZ, kind);
       tryZ.x += delta->x;
       tryZ.z += sizeZ;
       Map_UpdateMoverTile(p, pos, &tryZ);
@@ -2043,7 +2043,7 @@ NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
 bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   NavMesh* navMesh = gCollisionMap->navMesh;
   s32 i;
-  if (GetTileAttrAt(dst) & TATTR_WALL) {
+  if (GetTileAttrAt(dst) & TATTR_ENEMY_WALL) {
     return FALSE;
   }
 
@@ -2262,7 +2262,7 @@ NON_MATCH s32 Map_FindNavRoute(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
 // dst のタイルが壁なら進行をやめさせ, そうでなければ Map_FindNavRoute に任せる
 s32 Map_TryFindNavRoute(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   TileAttr attr = GetTileAttrAt(dst);
-  if (attr & TATTR_WALL) {
+  if (attr & TATTR_ENEMY_WALL) {
     agent->flags = 0;
     return 0;
   }

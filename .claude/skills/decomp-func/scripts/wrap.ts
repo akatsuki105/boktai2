@@ -18,6 +18,10 @@ const main = () => {
     .argument("<name:string>", "関数名")
     .option("-n, --note <text:string>", "シグネチャの直上に入れる残差メモ (// は不要, 複数回指定できる)", { collect: true })
     .action((opts: { note?: string[] }, name: string) => close(name, opts.note ?? []))
+    .command("set", "NAKED の1行スタブか素の C 関数を、ファイルに書いた定義で丸ごと差し替える (中括弧の対応で範囲を決める)")
+    .argument("<name:string>", "関数名")
+    .argument("<file:string>", "新しい定義を書いたファイル (- なら標準入力)")
+    .action((_opts, name: string, file: string) => set(name, file))
     .parse(Deno.args);
 };
 
@@ -59,11 +63,18 @@ const walkC = (dir: string): string[] => {
   return out.sort();
 };
 
+// 中括弧を数えるときに邪魔な // コメントと文字列・文字リテラルを消す
+const stripNoise = (line: string): string =>
+  line
+    .replace(/"(?:\\.|[^"\\])*"/g, '""')
+    .replace(/'(?:\\.|[^'\\])*'/g, "''")
+    .replace(/\/\/.*$/, "");
+
 // シグネチャ行から、本体を閉じる `}` の行番号を返す
 const findBodyEnd = (lines: string[], sig: number): number => {
   let depth = 0;
   for (let i = sig; i < lines.length; i++) {
-    for (const ch of lines[i]) {
+    for (const ch of stripNoise(lines[i])) {
       if (ch === "{") depth++;
       else if (ch === "}") depth--;
     }
@@ -154,6 +165,48 @@ const close = (name: string, notes: string[]) => {
   lines.splice(sig, 0, ...notes.map((n) => `${indent}// ${n}`));
   write(file, lines);
   console.log(`${path.relative(repo, file)}:${sig + 1} ${name} を NON_MATCH に戻しました (メモ ${notes.length} 行)`);
+};
+
+// 関数1つの定義 (シグネチャ行から本体を閉じる } まで) を差し替える
+// 正規表現で本文ごと置き換えると、最短一致が隣の関数の `}` まで伸びて別の関数を壊すことがあったので、範囲は中括弧の対応で決める
+// シグネチャの直上のコメントには触らない
+const set = (name: string, src: string) => {
+  const repo = getRepoRoot();
+  const { file, lines, sig } = findDef(repo, name);
+  if (lines[sig].includes("NON_MATCH")) die(`${name} は NON_MATCH です。先に wrap.ts open で殻を外してください`);
+  const end = findBodyEnd(lines, sig);
+
+  const text = src === "-" ? new TextDecoder().decode(readStdin()) : Deno.readTextFileSync(src);
+  const repl = text.replace(/\n+$/, "").split("\n");
+
+  // 差し替える中身が、同じ名前の関数の定義1つきりであることを確かめる
+  const sigRe = new RegExp(`^\\s*(?:NAKED|NON_MATCH|UNUSED)?[\\w\\s*]*?\\b${name}\\s*\\(`);
+  const newSig = repl.findIndex((l) => sigRe.test(l) && !/;\s*$/.test(l));
+  if (newSig < 0) die(`${src} に ${name} の定義が見つかりません`);
+  if (repl.slice(0, newSig).some((l) => l.trim() !== "" && !/^\s*\/\//.test(l))) die(`${src} の ${name} より前にコメント以外の行があります`);
+  const newEnd = findBodyEnd(repl, newSig);
+  if (repl.slice(newEnd + 1).some((l) => l.trim() !== "")) die(`${src} に ${name} の定義の後ろの行があります。関数は1つずつ差し替えてください`);
+
+  lines.splice(sig, end - sig + 1, ...repl);
+  write(file, lines);
+  console.log(`${path.relative(repo, file)}:${sig + 1} ${name} を差し替えました (${end - sig + 1} 行 -> ${repl.length} 行)`);
+};
+
+const readStdin = (): Uint8Array => {
+  const chunks: Uint8Array[] = [];
+  const buf = new Uint8Array(4096);
+  for (;;) {
+    const n = Deno.stdin.readSync(buf);
+    if (n === null) break;
+    chunks.push(buf.slice(0, n));
+  }
+  const out = new Uint8Array(chunks.reduce((a, c) => a + c.length, 0));
+  let off = 0;
+  for (const c of chunks) {
+    out.set(c, off);
+    off += c.length;
+  }
+  return out;
 };
 
 // MATCHING にして消した .inc を戻す (open -> close で往復したときのため)

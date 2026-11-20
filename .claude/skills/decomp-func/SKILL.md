@@ -204,6 +204,13 @@ grep -c '^NON_MATCH' src/FILE.c
 
    Hand-editing this costs a whole build every time it goes wrong, and it goes wrong silently: a `#else` that ends up anywhere but column 0 is not a directive, so the preprocessor swallows the `INCFUNC` with it and the function compiles to nothing. `make compare` then prints `FAILED` with no hint, and the ROM diff points at whatever shifted rather than at the typo. `wrap.ts` only ever splices whole lines, and it re-reads the file afterwards to check that every `#ifdef` / `#else` / `#endif` starts its own line and that the `#if` and `#endif` counts still balance.
 
+   **Put each draft in with `wrap.ts set`**, not with a regex over the `.c`. Write the whole definition (signature through the closing `}`) to a file, or pipe it, and `set` replaces exactly that function — the range is found by matching braces from the signature, so it cannot run on into the next function or a `= { ... };` table after it. A non-greedy `perl -0pi 's/void Foo\(.*?\n\}/…/s'` did exactly that three times in one session (it stopped at a table's `};` and deleted the functions in between). `set` takes a `NAKED` one-line stub or a plain C function, refuses a NON_MATCH one (run `open` first), refuses input that holds anything but that one function (comment lines above it are allowed), and leaves the comment above the signature alone:
+
+```sh
+.claude/skills/decomp-func/scripts/wrap.ts set <FUNCTION_NAME> draft.c   # draft.c の定義で丸ごと差し替える
+cat draft.c | .claude/skills/decomp-func/scripts/wrap.ts set <FUNCTION_NAME> -
+```
+
 ```c
 NAKED void* DecompTargetFunc(void) { INCFUNC("asm/xxx.inc"); }
 // ↓
@@ -399,7 +406,7 @@ command in the same invocation is silently skipped — including the
   declarations, the `bl` targets' declarations, and the current C.
   `--brief` / `--no-ghidra` trim it.
 - `census.ts <file.c>...` — remaining-function census over the given `.c` files, smallest-first TSV with sizes and inc paths.
-- `wrap.ts open|close <FUNCTION_NAME>` — take the `NAKED` / NON_MATCH `INCFUNC` wrapper off so the C can be written, or put it back on with `--note` lines above the signature (repeatable). `close` restores a deleted `.inc` from `HEAD`, and `open` drops the old residual note (the `残差` / `Tier` / `未:` lines) while keeping the comment that says what the function does, so the pair round-trips cleanly. Line-based, and it verifies the directives afterwards.
+- `wrap.ts open|close <FUNCTION_NAME>` — take the `NAKED` / NON_MATCH `INCFUNC` wrapper off so the C can be written, or put it back on with `--note` lines above the signature (repeatable). `close` restores a deleted `.inc` from `HEAD`, and `open` drops the old residual note (the `残差` / `Tier` / `未:` lines) while keeping the comment that says what the function does, so the pair round-trips cleanly. Line-based, and it verifies the directives afterwards. `wrap.ts set <FUNCTION_NAME> <file|->` replaces one `NAKED` stub or plain C definition with the one in the file, the range found by brace matching (braces in `//` comments and string literals are ignored).
 - `streamdiff.py` — canonicalized instruction diff, object vs inc.
 - `residual.ts [file.c...]` — run `make nonmatch` and report every NON_MATCH function's hunk count, smallest-first. Builds into `build/nonmatch/` and leaves the objects there, so the normal build is untouched and you can follow up with `streamdiff.py` on any single function.
 - `flag_blast.sh <flag>...` — how many objects a compiler flag changes, against the `expected/` baseline. `--baseline` for a sanity check (expect 0), `--with-lib` to count `src/lib` too. Builds into `build/flagblast/`. Read `agbcc-levers.md` Tier D before reading anything into the number.

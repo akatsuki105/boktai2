@@ -10,6 +10,9 @@
 #include "video.h"
 #include "vm.h"
 
+// UNDEADダンジョンに入った時 や 闘技場の各ボス戦開始時に 使うタイトルカード
+// IMMORTALダンジョンではこれは使わず StageTitle を使う
+
 struct DungeonTitle;
 typedef void (*DungeonTitleFunc)(struct DungeonTitle*);
 

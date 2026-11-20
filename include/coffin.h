@@ -17,7 +17,7 @@ struct Emote;
 // 運搬中の棺桶
 typedef struct Coffin {
   Entity e;                   // 0x000, ENTITY_UNK_9
-  u16 subroutineID;           // 0x018, mover.id と両 hurtbox の id になる
+  u16 id;                     // 0x018, mover.id と両 hurtbox の id になる
   coffin8_t coffinID;         // 0x01A, gStat->coffin の写し, 棺桶ごとのパラメータ表の添字
   u8 unk_1b;                  // 0x01B
   u16 unk_1c;                 // 0x01C, '.c', 0 以外だと EnemyTargetManager への登録種別と hurtbox の ignoreMask が変わる
@@ -72,7 +72,7 @@ typedef struct Coffin {
   u16 unk_39a;                // 0x39A, 初期値 300
   u16 unk_39c;                // 0x39C
   u16 unk_39e;                // 0x39E
-  s16 unk_3a0;                // 0x3A0, 初期値 -1, FUN_08086878 が符号付きで読んで -1 を「無し」として扱う
+  s16 spiderWebIdx;           // 0x3A0, 捕まっているクモの巣 (SpiderWeb) の枠番号, 負なら捕まっていない, 初期値 -1
   u16 canSelfMove;            // 0x3A2, 棺桶が自力で動けるか, COFFIN_IRON だけ 0
   u16 selfMoveTimer;          // 0x3A4, (canSelfMove が TRUE のとき) 0 まで毎フレーム減り, 尽きると destPos へ向かって自力で動き出す
   u16 selfMoveTimerInit;      // 0x3A6, selfMoveTimer の初期値, 棺桶ごとの値 × 120
@@ -107,12 +107,13 @@ void Coffin_SetInsideSolarBarrier(bool32 n);
 WorldPos* Coffin_GetPos(void);
 bool32 Coffin_CopyPos(WorldPos* out);
 bool32 Coffin_IsIdle(void);
-s32 FUN_08086878(void);
-void FUN_0808689c(s32 val);
+s32 Coffin_GetSpiderWebIdx(void);
+void Coffin_SetSpiderWebIdx(s32 idx);
 void FUN_08086a4c(Vec3* pos);
 bool32 FUN_0808626c(u32 playerEleveterID, u32 param_2, u32 coffinEleveterID, u32 param_4);
 void FUN_080869f8(u32 flags);
 void FUN_080869c8(u32 flags, u32 value);
 bool32 Coffin_CanGrabFrom(Vec3* pos, u32 elevatorID, u32 elevatorFlags);
+void FUN_08086b18(WorldPos* pos);
 
 #endif  // __INCLUDE_IMMORTAL_COFFIN_H__

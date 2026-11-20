@@ -36,7 +36,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_SNEAKING (1 << 16)   // 0x00010000, スニーク状態(スカルスーツ装備, Cマウス形態 など), 処理的には、 "敵の視界が半分になる"
 #define PFLAG20_INVISIBLE (1 << 17)  // 0x00020000, 敵から見えない状態
 #define PFLAG20_UNK_18 (1 << 18)     // 0x00040000, mode が LOCKED / DEAD のとき, バット・マウス・スリーピング形態, 縮小中に立つ, 立っているとリンゴとシェードマンの掴み系の処理が対象から外す
-#define PFLAG20_UNK_19 (1 << 19)     // 0x00080000, エンチャントした武器の攻撃判定が出ている間と弾が飛んでいる間に立つ, Entity080db520 はこれか日光があると姿を見せる
+#define PFLAG20_UNK_19 (1 << 19)     // 0x00080000, エンチャントした武器の攻撃判定が出ている間と弾が飛んでいる間に立つ, クモの巣 (SpiderWeb) はこれか日光があると姿を見せる
 #define PFLAG20_UNK_28 (1 << 28)     // 0x10000000, 立っていると通信対戦のコインを拾えない (LinkBattleCoin_CheckPickup), 立てる処理は未発見
 
 // Player.action, sDjangoActionFuncs (サバタは sSabataActionFuncs) の添字, 2つの表は同じ番号に同じ種類の行動が並ぶ
@@ -47,7 +47,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PACT_WALL 4           // 壁張り付き, 壁沿いに横歩きする状態
 #define PACT_PUSH 5           // ブロック動かし中 (もう動かせないブロックを押しているときは PACT_WALL のままで、 PACT_PUSH にはならない)
 #define PACT_PULL_COFFIN 6    // 棺桶を引く, 入力が無く止まっているときも含む
-#define PACT_UNK_7 7          // 太陽チャージ, ワープ, 太陽鍛冶
+#define PACT_PALM_UP 7        // 手のひらを太陽にかざしているとき (太陽チャージ, ワープ, パイルドライバーの起動)
 #define PACT_REFUELING 8      // 太陽スタンド使用中 (共闘サバタだと違う用途かも?)
 #define PACT_SUN_MAGIC 9      // ライジングサン (サバタはブラックサン)
 #define PACT_TRANSFORM 10     // トランス, MagicTransform_0806b92c
@@ -313,12 +313,12 @@ typedef struct Player {
   u8 toadTick;                          // 0x38F, トードパワー時に 雨を浴びているフレームをカウントする (15でENEを1回復)
   ElevatorFlagsU16 elevatorFlags;       // 0x390, see ElevatorFlagsU16, 0 ならどのエレベータにも乗っていない
   u16 elevatorID;                       // 0x392, 乗っているエレベータの id, Player_ClearElevatorFlags が 0 にするので止まっているエレベータに乗っている間は 0
-  bool8 originHitPending;               // 0x394, knockbackOrigin から弾かれる被弾が保留中, Player_SetKnockbackOrigin が立て Player_UpdateDamage が Player_ApplyOriginHit で処理して落とす
-  bool8 originKnockback;                // 0x395, 今の吹き飛ばしが knockbackOrigin から離れる向き, Player_ApplyOriginHit が立てダメージの行動 (PACT_DAMAGED) の終わりと Player_Unlock が落とす
-  bool8 tileHitPending;                 // 0x396, 太陽で切り替わる水たまり (Puddle) を踏んだ被弾が保留中, Player_CheckPuddleHurt が立て Player_UpdateDamage が Player_ApplyTileHit で処理して落とす
-  bool8 tileKnockback;                  // 0x397, 今の吹き飛ばしが設置物を踏んだことによるもの, Player_ApplyTileHit が立てダメージの行動 (PACT_DAMAGED) の終わりに落とす, 立っている間 Player_CheckPuddleHurt は何もしない
-  Vec3* knockbackOrigin;                // 0x398, 弾き飛ばす側の位置, この位置から離れる向きに吹き飛ぶ, エレベーター (Elevator_KnockbackPlayer) が Player_SetKnockbackOrigin で渡すか Player_CheckPuddleHurt が knockbackTileCenter を指させる
-  Vec3 knockbackTileCenter;             // 0x39C, Player_CheckPuddleHurt が今踏んでいるタイルの中心を書く
+  bool8 lavaHitPending;                 // 0x394, 溶岩の被弾が保留中, 溶岩タイルを踏んだとき (Player_CheckLavaHurt) かエレベーターから溶岩に踏み出したとき (Player_SetLavaHitCenter) に立ち, Player_UpdateDamage が Player_ApplyLavaHit で処理して落とす
+  bool8 lavaKnockback;                  // 0x395, 溶岩で焼かれて押し戻されている最中, Player_ApplyLavaHit が立てダメージの行動 (PACT_DAMAGED) の終わりと Player_Unlock が落とす, 立っている間は hazardCenter へ寄せながら炎を出す
+  bool8 puddleHitPending;               // 0x396, 水たまり (Puddle) の被弾が保留中, 黒ジャンゴ系にとって水たまりは溶岩と同じく焼ける床で, Player_CheckPuddleHurt が立て Player_UpdateDamage が Player_ApplyPuddleHit で処理して落とす
+  bool8 puddleKnockback;                // 0x397, 水たまりで焼かれて押し戻されている最中, Player_ApplyPuddleHit が立てダメージの行動 (PACT_DAMAGED) の終わりに落とす, 立っている間は hazardCenter へ寄せながら煙を出し, Player_CheckPuddleHurt は何もしない
+  Vec3* hazardCenter;                   // 0x398, 溶岩か水たまりで焼かれたときに寄せ戻す先, 踏んだタイルの中心 (hazardTileCenter) か, エレベーターから溶岩に踏み出したときはエレベーターの位置 (Elevator_KnockbackPlayer) を指す
+  Vec3 hazardTileCenter;                // 0x39C, 踏んだ溶岩か水たまりのタイルの中心, Player_CheckLavaHurt / Player_CheckPuddleHurt が x と z を書いて hazardCenter に指させる
   u8 useForcedDelta;                    // 0x3A4, 0 以外だと Player_UpdateWalk が移動速度を設定しない
   u8 slip_3a5[2];                       // 0x3A5, すべり床でのスリップに関係
   Dir8U8 slideDir;                      // 0x3A7, 氷の床で滑っている向き, 滑り始めに facing を写し, 斜めで壁に当たると Player_GetSlideDeflectDir の向きに変わる
@@ -336,7 +336,7 @@ typedef struct Player {
   bool8 blownAway;                      // 0x3D2, 今の被弾が吹き飛ばされるものか, Player_SetupKnockback が攻撃側の HBATTR_BLOW を見て立て, 被弾の行動を PACT_DAMAGED / PACT_DEATH_PRONE でなく PACT_BLOWN_AWAY / PACT_DEATH_SUPINE にする
   u8 unk_3d3;                           // 0x3D3, padding?
   u16 knockbackTimer;                   // 0x3D4, 吹き飛ばされている間のカウンタ, 0x55 を超えた偶数フレームに効果音を鳴らす
-  SoundID16 hurtSound;                  // 0x3D6, 被弾の行動 (PACT_DAMAGED) に入るときに一度だけ鳴らす音, 吹き飛ばしなしは SONG_NONE, 通常は SE_DAMAGE, 引火と knockbackOrigin からの弾きは SE_IGNITE, 氷結は SE_SOLIDIFY
+  SoundID16 hurtSound;                  // 0x3D6, 被弾の行動 (PACT_DAMAGED) に入るときに一度だけ鳴らす音, 吹き飛ばしなしは SONG_NONE, 通常は SE_DAMAGE, 引火と溶岩・水たまりで焼かれたときは SE_IGNITE, 氷結は SE_SOLIDIFY
   u16 poisonTick;                       // 0x3D8, 毒(badCondTimer[1])が残っている間の経過フレーム, 60 ごとに damage を1増やす, Player_ApplyBadCondition が毒が切れると 0 を書く
   u16 inkaTick;                         // 0x3DA, 引火(ELEMCOND_INKA) の経過フレーム
   u16 sunburn;                          // 0x3DC, Player_StepSunburn が毎回 太陽ゲージ+2 を足し、100 を超えるたびに Player_TakeSunburnDamage を呼んで 100 引く
@@ -361,7 +361,7 @@ typedef struct Player {
   u8 dashSpeed;                         // 0x3FC, 太陽ゲージ*2+14 (上限32), Player_SetMoveDelta に渡す1フレームの移動量
   u8 dashFrames;                        // 0x3FD, 512 / dashSpeed, 移動距離を一定にするためのダッシュ継続フレーム数
   u8 grabbedVisible;                    // 0x3FE, 掴まれている間 (PACT_GRABBED) 本体を見せるか, 0 なら PFLAG35A_HIDE_BODY も立てる
-  s8 spiderWebIdx;                      // 0x3FF, 捕まっているクモの巣 (Entity080db520) の枠番号, 負なら捕まっていない, 0 以上の間は PACT_SPIDER_WEB に入る
+  s8 spiderWebIdx;                      // 0x3FF, 捕まっているクモの巣 (SpiderWeb) の枠番号, 負なら捕まっていない, 0 以上の間は PACT_SPIDER_WEB に入る
   u8 mashCount;                         // 0x400, A / B / 方向キーを押した瞬間に +1 する連打のカウンタ (256 で一周), つかみや状態異常の振りほどきに使う
   u8 mashCountBase;                     // 0x401, 数え始めたときの mashCount, Player_GetMashCount が mashCount との差を返す
   u8 speedPenalty;                      // 0x402, 移動速度から引かれる量, Player_AddSpeedPenalty が +1 する
@@ -389,10 +389,10 @@ typedef struct Player {
   u8 shakeTimer;                        // 0x44B, human の表示位置を乱数で揺らす残りフレーム
   Vec3 initPos;                         // 0x44C, 通信対戦の出現位置, スクリプトの '.p' (無ければ原点) を入れ y は足元のタイルの高さに直す
   Dir8U8 initFacing;                    // 0x454, 通信対戦の出現時の向き, スクリプトの '.d' (無ければ DIR8_UP) を入れて facing へ写す
-  u8 unk_455;                           // 0x455
+  s8 heldWeaponIdx;                     // 0x455, 通信対戦で持っている武器の LinkSession.bodies の添字, 始めは自分の分 (inputIdx), 倒されるか別の武器を拾うとその場に落とし, 倒されたときは -1 になる
   s8 controlUp;                         // 0x456, 通常は gStat->controlUp が入るが、混乱(移動方向がおかしくなる状態異常)のときに書き換えられる
   u8 unk_457[0x45A - 0x457];            // 0x457
-  u16 lastHitPlayerMask;                // 0x45A, 通信対戦で最後に当てられた攻撃判定の ignoreMask (撃ったプレイヤーのビット)
+  s16 lastHitPlayerMask;                // 0x45A, 通信対戦で最後に当てられた攻撃判定の ignoreMask (撃ったプレイヤーのビット)
   u32 lastHitSource;                    // 0x45C, 通信対戦で最後に当てられた攻撃判定の typeMask (HBSRC_*)
   u8 unk_460[0x464 - 0x460];            // 0x460
   u8 navAgentReady;                     // 0x464, navAgent が今の位置で初期化済みか, 0 なら次の更新で Map_InitNavAgent し直す
@@ -482,7 +482,7 @@ typedef struct Player {
   u16 solarGunTime;                     // 0xA92, 太陽銃を撃ってからチャージ中も数え続けるフレーム数, 15 を超えると黒ジャンゴは日焼けダメージを受けて 0 に戻る
   u8 unk_a94;                           // 0xA94
   u8 unk_a95;                           // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
-  u8 unk_a96[2];                        // 0xA96, padding?
+  s16 linkWeaponQuality;                // 0xA96, 通信対戦で持っている武器の LinkTradeWeapon.quality, 通信対戦では wpn.weapon が無いのでこちらを使う
   PlayerFunc attackCB;                  // 0xA98, sPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
@@ -559,7 +559,7 @@ void Player_Lock(Player* p, Dir8S32 dir8);
 bool32 Player_TestElevatorFlags(Player* p, ElevatorFlagsU16 mask);
 void Player_SetElevatorFlags(Player* p, u32 flags, u32 elevatorID);
 void Player_ClearElevatorFlags(Player* p, u32 flags);
-void Player_SetKnockbackOrigin(Player* p, Vec3* origin);
+void Player_SetLavaHitCenter(Player* p, Vec3* origin);
 s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 xflip, s32 flashPose, bool32 hidden, s32 power, HitboxAttrs attrs);
 s32 Player_ReleaseGrabbed(Player* p, Vec3* pos, s32 knockback, s32 angle, s32 iframes, s32 flashPose, s32 power, HitboxAttrs attrs);
 
@@ -569,5 +569,15 @@ static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->
 static inline void Player_SetEquipBuff(Player* p, EquipBuffs bits) { p->equipBuffs |= bits; }
 static inline void Player_ClearEquipBuff(Player* p, EquipBuffs bits) { p->equipBuffs &= ~bits; }
 static inline bool32 Player_TestEquipBuff(Player* p, EquipBuffs bits) { return p->equipBuffs & bits; }
+
+static inline s32 Player_GetIframes(Player* p) { return p->hurtbox.iframes; }             // 食らい判定の残りの無敵時間を返す
+static inline void Player_SetIframes(Player* p, u16 time) { p->hurtbox.iframes = time; }  // 食らい判定の無敵時間を設定する
+
+static inline bool32 HasGoodCond(Player* p, u32 id) {
+  if (p->goodCondTimer != 0 && p->goodCondID == id) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

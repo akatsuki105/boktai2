@@ -734,7 +734,7 @@ void Ringo_SpawnBiteBlood(Ringo* p) {
   Vec3 ofs;
   s32 i;
 
-  if (p->base.facing <= DIR4_EAST) {
+  if (p->base.dir4 <= DIR4_EAST) {
     VEC3_SET(ofs, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
     VEC3_SET(ofs, Q8(-0.5), Q8(0.782), Q8(0.25));
@@ -887,7 +887,7 @@ NON_MATCH void FUN_08028f08(Ringo* p) {
     }
   } else {
     u32 idx = p->targetPlayer;
-    u32 angle = Angle_FromDir8(p->base.dir) - 0x30;
+    u32 angle = Angle_FromDir8(p->base.dir8) - 0x30;
     u32 delay = 0;
 
     for (i = 0; i < 7; i++) {
@@ -942,7 +942,7 @@ NON_MATCH void FUN_080292c8(Ringo* p, s32 kind) {
   Vec3 size;
   u32 angle;
 
-  switch (p->base.facing) {
+  switch (p->base.dir4) {
     case DIR4_NORTH: {
       pos.y += 0x100;
       pos.z -= 0xA0;
@@ -1629,7 +1629,7 @@ void Ringo_InitHurtbox(Ringo* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprites[0].pos, 0);
   Hitbox_SetHandler(hurtbox, Ringo_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);
@@ -3418,7 +3418,7 @@ NON_MATCH void FUN_0802ece0(Boss* boss, s32 timer) {
   }
   if (!boss->stateRequestCallback(boss)) {
     if (timer <= 8) {
-      u32 angle = Angle_FromDir8(boss->dir) + 0x60;
+      u32 angle = Angle_FromDir8(boss->dir8) + 0x60;
       Vec3* pos;
       Vec3 ofs;
 
@@ -3673,7 +3673,7 @@ NON_MATCH void FUN_0802fabc(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    boss->dir = (((u32)((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
+    boss->dir8 = (((u32)((((mover->angle + 0x20) & 0xFF) >> 6 << 6) & 0xFF) >> 5) + 3) & 7;
     Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -3741,9 +3741,9 @@ void dainn_0802fc08(Boss* boss, s32 timer) {
     s32 n = mask & timer;
 
     if (n == 0) {
-      Ringo_AddAuxSprite(p, 0, p->sprites[0].animCmdIdx, boss->facing, 0);
+      Ringo_AddAuxSprite(p, 0, p->sprites[0].animCmdIdx, boss->dir4, 0);
     } else if (n == mask) {
-      Ringo_AddAuxSprite(p, 0, p->sprites[0].animCmdIdx, boss->facing, 1);
+      Ringo_AddAuxSprite(p, 0, p->sprites[0].animCmdIdx, boss->dir4, 1);
     }
   }
   if (p->sprites[0].animCmdIdx == 8 && p->sprites[0].animCmdTimer == 0) {
@@ -3788,9 +3788,9 @@ void dainn_0802fea0(Boss* boss, s32 timer) {
     s32 n = mask & timer;
 
     if (n == 0) {
-      Ringo_AddAuxSprite(p, 1, p->sprites[0].animCmdIdx, boss->facing, 0);
+      Ringo_AddAuxSprite(p, 1, p->sprites[0].animCmdIdx, boss->dir4, 0);
     } else if (n == mask) {
-      Ringo_AddAuxSprite(p, 1, p->sprites[0].animCmdIdx, boss->facing, 1);
+      Ringo_AddAuxSprite(p, 1, p->sprites[0].animCmdIdx, boss->dir4, 1);
     }
   }
   if (p->unk_864) {
@@ -3922,7 +3922,7 @@ void FUN_080304c0(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    Boss_SetAngle(boss, Angle_FromDir4(boss->facing));
+    Boss_SetAngle(boss, Angle_FromDir4(boss->dir4));
     Boss_PlayAnimFacing(boss, &p->sprites[0], &p->gfx, 58, PLAYMODE_ONCE_AND_STOP, 3, MAIN_ANIM_FORCE_POSE);
     p->phase = 0;
     p->phaseTimer = 0;
@@ -4307,7 +4307,7 @@ void dainn_0803141c(Boss* boss, s32 timer) {
         if (++p->phaseTimer > 5) {
           Boss_SetAngle(boss, (mover->angle + 0x20) & ~0x1F);
           Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, 5, PLAYMODE_LOOP, 1, MAIN_ANIM_KEEP_FRAME);
-          if (++p->unk_872 > 7 && boss->dir == 3) {
+          if (++p->unk_872 > 7 && boss->dir8 == 3) {
             Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, 45, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
             p->phase++;
           }
@@ -4883,7 +4883,7 @@ NON_MATCH void FUN_08032bac(Boss* boss, s32 timer) {
     boss->stateEntered = FALSE;
     FUN_080298fc(p);
     Boss_SetAngle(boss, 0x80);
-    boss->dir = Angle_ToDir8(Angle_FromDir4(Angle_ToDir4(mover->angle + 0x80)));
+    boss->dir8 = Angle_ToDir8(Angle_FromDir4(Angle_ToDir4(mover->angle + 0x80)));
     Boss_PlayAnimDir8(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 26, 31), PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
     plttID = Ringo_GetPlttID(p);
     if (plttID == 0) {

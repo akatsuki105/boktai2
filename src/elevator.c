@@ -145,7 +145,7 @@ static inline bool8 IsFloorTileAt(s32 idx, s32 height) {
   ov = Map_FindTileOverride(idx, 1);
   tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
   attr = tile->attr;
-  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) return FALSE;
+  if (attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) return FALSE;
   return TRUE;
 }
 
@@ -810,7 +810,7 @@ NON_MATCH void Elevator_UpdateTileOverrides(Elevator* e) {
         Vec3 center;
         s32 bx, bz;
 
-        Map_AddTileOverride(&e->tileOverrides[i], idx, STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_0 | TATTR_UNK_2);
+        Map_AddTileOverride(&e->tileOverrides[i], idx, STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_PLAYER_WALL | TATTR_LIFT);
         e->tileOverrideActive[i] = TRUE;
         bx = Mod(idx, gCollisionMap->tiledata->width);
         bz = Div(idx, gCollisionMap->tiledata->width);
@@ -852,7 +852,7 @@ void Elevator_UpdateTileOverride(Elevator* e) {
     }
   } else {
     if (!Elevator_TestFlags(e, ELEVATOR_TILEOVERRIDE) && gCollisionMap != NULL && e->mover.pos.y == gPlayerPtr[0]->mover.pos.y) {
-      Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
+      Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_LIFT);
       SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
     }
   }
@@ -872,7 +872,7 @@ bool8 Elevator_IsTileOverridden(s32 tileIdx) {
   return FALSE;
 }
 
-// 乗っているプレイヤーが足場の範囲を外れて特殊床の上に出たら, エレベータの位置から弾き返す
+// 乗っているプレイヤーが足場の範囲を外れて特殊床 (溶岩) の上に出たら, エレベータの位置を寄せ戻す先にして溶岩の被弾を保留させる (Player_SetLavaHitCenter)
 void Elevator_KnockbackPlayer(Elevator* e) {
   s32 i;
 
@@ -890,7 +890,7 @@ void Elevator_KnockbackPlayer(Elevator* e) {
 
           Vec3_Delta(&d, &e->mover.pos, &gPlayerPtr[i]->mover.pos);
           if (d.x > gElevatorRange0.x || d.x < -gElevatorRange0.x || d.y > gElevatorRange0.y || d.y < -gElevatorRange0.y || d.z > gElevatorRange0.z || d.z < -gElevatorRange0.z) {
-            Player_SetKnockbackOrigin(gPlayerPtr[i], &e->mover.pos);
+            Player_SetLavaHitCenter(gPlayerPtr[i], &e->mover.pos);
             SET_FLAGS(e->flags, ELEVATOR_PLAYER_KNOCKBACK);
           }
         }
@@ -1468,7 +1468,7 @@ NON_MATCH void Elevator_Create(void) {
   AuxSprite_AdvanceAnim(sprite, &e->anim);
   sprite->flags &= ~SPRFLAG_HIDDEN;
   sprite->priority = 2;
-  Mover_Init(&e->mover, 0xD0E9 + e->slotIdx, &sprite->pos, 0, 7, e);  // 0xD0E9: HashName("floor")?
+  Mover_Init(&e->mover, 0xD0E9 + e->slotIdx, &sprite->pos, 0, MOVER_OBJECT, e);  // 0xD0E9: HashName("floor")?
   Mover_SetAuxSprite(&e->mover, sprite);
   Mover_SetPath(&e->mover, &e->pathWalker, e->pathIdx, e->unk_e5, e->nodeIdx);
   e->mover.tile = NULL;
@@ -1499,7 +1499,7 @@ NON_MATCH void Elevator_Create(void) {
     Player_SetElevatorFlags(gPlayerPtr[0], ELEV_RIDING, e->id);
     SET_FLAGS(e->flags, PLAYER_RIDING);
     gPlayerPtr[0]->shadow.flags |= 1;
-    Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_UNK_2);
+    Map_AddTileOverride(&e->tileOverride, GetCollisionTileIdx(&e->mover.pos), STAIRS_NONE, (s8)(e->mover.pos.y >> 8), 0xFF, TATTR_LIFT);
     SET_FLAGS(e->flags, ELEVATOR_TILEOVERRIDE);
     Player_SetPosAndSave(gPlayerPtr[0], &e->mover.pos);
     if (riding == 2) {

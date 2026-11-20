@@ -228,7 +228,7 @@ bool8 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
   s32 n = 0;
   Player* player;
 
-  switch (owner->unk_4) {
+  switch (owner->kind) {
     case 0: {
       break;
     }
@@ -347,7 +347,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
 
                   if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
                     if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
-                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+                        !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
                       adjacent = TRUE;
                     }
                   }
@@ -393,7 +393,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
         if (owner == NULL) {
           return FALSE;
         }
-        idx = owner->unk_4 < 4 ? owner->unk_4 : -1;
+        idx = owner->kind < 4 ? owner->kind : -1;
         if (idx < 0) {
           return FALSE;
         }
@@ -465,7 +465,7 @@ NON_MATCH bool8 EnemyTargetManager_Bind(EnemyTarget* node, Enemy* enemy, s32* be
 
                 if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
                   if (((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) == height &&
-                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+                      !((Map_FindTileOverride(tile, 1) != NULL ? &Map_FindTileOverride(tile, 1)->tile : &gCollisionMap->tiledata->tiles[tile])->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
                     adjacent = TRUE;
                   }
                 }

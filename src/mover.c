@@ -146,10 +146,10 @@ MoverList* MoverList_Get(void) {
 }
 
 // リストに繋ぐところまでやる初期化
-s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 unk_4, void* owner) {
+s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 kind, void* owner) {
   p->id = id;
   p->flags = 0;
-  p->unk_4 = unk_4;
+  p->kind = kind;
   p->pos = *pos;
   p->angle = angle;
   p->delta.x = 0, p->delta.y = 0, p->delta.z = 0, p->delta.val = 0x10;
@@ -202,7 +202,7 @@ void Mover_ApplyMove(Mover* p) {
   if (p->tile != NULL) {
     switch (gCameraCoords.drawMode) {
       case DRAW_ISOMETRIC: {
-        Map_MoveBoxAlongWalls(p->tile, &p->pos, &p->delta, p->sizeX, p->sizeZ, p->unk_4);
+        Map_MoveBoxAlongWalls(p->tile, &p->pos, &p->delta, p->sizeX, p->sizeZ, p->kind);
         break;
       }
       case DRAW_SCREEN: {

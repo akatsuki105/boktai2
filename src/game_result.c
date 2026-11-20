@@ -18,11 +18,11 @@ typedef u32 GameResultFlags;
 // なんか GameResultFlags とかが TitleFlags と似てるし、 他にも Title との共通点がある気がする...
 typedef struct GameResult {
   Entity e;                                    // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                           // 0x018, SPR_UI_TITLE
-  Tilemaps* tilemap;                           // 0x038, MP_33B2
-  rgb555* pltt;                                // 0x03C, BGP_E9C3
+  MainSpriteGfx gfx;                           // 0x018, SPR_UI_NAME
+  Tilemaps* tilemap;                           // 0x038, MP_NAME
+  rgb555* pltt;                                // 0x03C, BGP_NAME
   GameResultFlags unk_40;                      // 0x040, なんかのbitfield?
-  u32 scriptID_44;                             // 0x044, 0x08222954
+  u32 scriptID_44;                             // 0x044, '.e'
   s32 unk_48;                                  // 0x048, sUpdates の idx (このゲームでは常に 0)
   s32 unk_4c;                                  // 0x04C
   s32 unk_50;                                  // 0x050
@@ -323,20 +323,20 @@ NON_MATCH static void _GameResult_Update(GameResult* p) {
 // BG11 にリザルト画面のタイルマップを敷く
 void FUN_082229ac(GameResult* p) {
   s32 bgIndices[1];
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_33B2);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_NAME);
   bgIndices[0] = 11;
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, bgIndices);
 }
 
 // 背景パレットを読み込んで作業用バッファへ流す
 void FUN_082229e8(GameResult* p) {
-  p->pltt = GetBgPlttFile(BGP_E9C3)->body;
+  p->pltt = GetBgPlttFile(BGP_NAME)->body;
   CpuCopy32(p->pltt, gBgPlttBuffer, 80 * sizeof(rgb555));
 }
 
 // リザルト画面のスプライトファイルを開く
 void FUN_08222a18(GameResult* p) {
-  MainSpriteGfxFile* file = GetFile(DIR_MAIN_SPRITE, SPR_UI_TITLE);
+  MainSpriteGfxFile* file = GetFile(DIR_MAIN_SPRITE, SPR_UI_NAME);
 
   p->gfx = *(MainSpriteGfx*)file;
   OpenMainSpriteFile(&p->gfx, file);
@@ -442,6 +442,7 @@ NON_MATCH s32 GameResult_Init(GameResult* p) {
 #endif
 }
 
+// 0x83E5
 GameResult* GameResult_Create(void) {
   GameResult* p = CreateEntity(ENTITY_UNK_11, sizeof(GameResult));
 

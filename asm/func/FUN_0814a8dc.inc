@@ -210,7 +210,7 @@ _0814AA08:
 	str r0, [sp, #0x34]
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl Entity081f26bc_Spawn
+	bl Debris_Spawn
 _0814AA86:
 	ldr r2, _0814AABC @ =0x085AD8C0
 	mov r3, sb

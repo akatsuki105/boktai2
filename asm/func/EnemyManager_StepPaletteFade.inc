@@ -89,7 +89,7 @@ _080EED0E:
 	movs r4, #1
 _080EED14:
 	mov r0, sb
-	bl FUN_0817e83c
+	bl Shaian_IsCloaked
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EED24

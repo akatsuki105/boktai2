@@ -25,8 +25,7 @@ s32 FUN_080413b8(NPC* npc, u32 pose, u32 param_3, s32 param_4, u32 param_5, u32 
 s32 FUN_08041460(NPC* npc, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 void FUN_080417dc(Mover* mover);
 void FUN_08041918(NPCManager* p);
-s32 FUN_080411a0(NPCManager* p, NPC* npc);
-void FUN_080415cc(NPC* npc, s32 kind, s32 timer, s32 duration);
+s32 NPC_RunCallbacks(NPCManager* p, NPC* npc);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed);
 bool32 FUN_08018a08(void);
@@ -300,7 +299,7 @@ const NPCAnim* NPCManager_FindSpriteData(SpriteID32 id, s32 idx) {
 }
 
 // スプライトIDとキャラ番号の組に対応する表の行, 無ければ NULL
-const NPCFootStepSound* FUN_08040dc0(SpriteID32 id, s32 idx) {
+const NPCFootStepSound* NPC_FindFootStepSound(SpriteID32 id, s32 idx) {
   s32 i;
 
   for (i = 0; i < 21; i++) {
@@ -311,12 +310,12 @@ const NPCFootStepSound* FUN_08040dc0(SpriteID32 id, s32 idx) {
   return NULL;
 }
 
-s32 FUN_08040df4(NPCManager* p, NPC* npc, SpriteID32 id, s32 idx) {
-  npc->unk_2b8 = NPCManager_FindSpriteData(id, idx);
+s32 NPC_LookupCharaTables(NPCManager* p, NPC* npc, SpriteID32 id, s32 idx) {
+  npc->anims = NPCManager_FindSpriteData(id, idx);
 
-  if (npc->unk_2b8 != NULL) {
-    npc->unk_2bc = FUN_08040dc0(id, idx);
-    if (npc->unk_2bc != NULL) {
+  if (npc->anims != NULL) {
+    npc->footStepSound = NPC_FindFootStepSound(id, idx);
+    if (npc->footStepSound != NULL) {
       return 0;
     }
   }
@@ -336,7 +335,7 @@ void NPCManager_LinkNPC(NPCManager* p, NPC* npc) {
 }
 
 // リンクリストから NPC を外す
-void FUN_08040e68(NPCManager* p, NPC* npc) {
+void NPCManager_UnlinkNPC(NPCManager* p, NPC* npc) {
   if (npc->prev != NULL) {
     npc->prev->next = npc->next;
   } else {
@@ -380,18 +379,18 @@ NPC* NPC_Alloc(u32 id, u32 kind) {
 }
 
 // NPC の Mover を初期化して unk_a0 を結び付ける
-s32 FUN_08040f0c(NPC* npc, u32 id, Vec3* pos, u32 angle) {
+s32 NPC_InitMover(NPC* npc, u32 id, Vec3* pos, u32 angle) {
   Mover* mover;
 
-  npc->unk_1b = angle;
+  npc->targetAngle = angle;
   mover = &npc->mover;
-  Mover_Init(mover, id, pos, angle, 7, npc);
+  Mover_Init(mover, id, pos, angle, MOVER_OBJECT, npc);
   FUN_0823b464(mover, (u32)&npc->zoneEvent);
   SET_FLAGS(mover->flags, MOVER_FLAG_2);
 }
 
 // spriteType 2 なら MainSprite, それ以外は AuxSprite を用意して mover に結び付け, そのパレットを覚える
-s32 FUN_08040f48(NPC* npc, s32 spriteType, SpriteID32 spriteID, u32 animFileID, SpriteFlags flags) {
+s32 NPC_InitSprite(NPC* npc, s32 spriteType, SpriteID32 spriteID, u32 animFileID, SpriteFlags flags) {
   SpriteHolder* sprite = &npc->sprite;
   s32 ret;
 
@@ -418,7 +417,7 @@ s32 FUN_08040f48(NPC* npc, s32 spriteType, SpriteID32 spriteID, u32 animFileID, 
 }
 
 // 影を用意して表示する, kind 1 なら ParticleShadow, 2 なら大きさ size の AuxShadow
-s32 FUN_08040fc0(NPC* npc, Vec3* pos, u32 kind, u32 poseIdx, s32 size) {
+s32 NPC_InitShadow(NPC* npc, Vec3* pos, u32 kind, u32 poseIdx, s32 size) {
   npc->shadowKind = kind;
   if (npc->shadowKind == 1) {
     ParticleShadow_Init(&npc->shadow.ptcl, pos, 1);
@@ -466,22 +465,22 @@ s32 NPC_ShowShadow(NPC* npc) {
 
 s32 FUN_08002a48(Mover*);
 
-s32 FUN_080410cc(NPC* npc) {
+s32 NPC_AddMover(NPC* npc) {
   if (FUN_08002a48(&npc->mover) < 0) {
     return -1;
   }
-  npc->unk_1ee = 1;
+  npc->moverAdded = 1;
   return 0;
 }
 
 // 登録済みなら mover をリストから外す
 s32 NPC_RemoveMover(NPC* npc) {
-  if (npc->unk_1ee == 0) {
+  if (npc->moverAdded == 0) {
     return -1;
   }
 
   FUN_08002a58(&npc->mover);
-  npc->unk_1ee = 0;
+  npc->moverAdded = 0;
   return 0;
 }
 
@@ -500,11 +499,11 @@ s32 NPC_SetPltt(NPC* npc, u32 param_2) {
 s32 NPC_RefreshPltt(NPC* npc) { return NPC_ApplyPltt(npc, npc->plttID); }
 
 // NPC を表から外して Free する
-s32 FUN_0804114c(NPC* npc) {
+s32 NPC_Free(NPC* npc) {
   NPCManager* p = gNPCManager;
 
   if (p != NULL && npc->active) {
-    FUN_08040e68(p, npc);
+    NPCManager_UnlinkNPC(p, npc);
     NPC_RemoveMover(npc);
     Mover_Unlink(&npc->mover);
     SpriteHolder_Remove(&npc->sprite);
@@ -517,7 +516,7 @@ s32 FUN_0804114c(NPC* npc) {
 }
 
 // 登録済みのコールバックを順に呼ぶ
-s32 FUN_080411a0(NPCManager* p, NPC* npc) {
+s32 NPC_RunCallbacks(NPCManager* p, NPC* npc) {
   s32 i;
 
   if (!npc->active) {
@@ -532,13 +531,13 @@ s32 FUN_080411a0(NPCManager* p, NPC* npc) {
   return 0;
 }
 
-// mover を動かして足元の高さに合わせ, スプライトの位置とアニメを進める, unk_2c8 の待ちが切れたら unk_0a に応じて FUN_080415cc を呼ぶ, 原典は最後の return を書き忘れている
-s32 FUN_080411d8(NPCManager* p, NPC* npc) {
+// mover を動かして足元の高さに合わせ, スプライトの位置とアニメを進める, unk_2c8 の待ちが切れたら unk_0a に応じて NPC_ShowEmote を呼ぶ, 原典は最後の return を書き忘れている
+s32 NPC_UpdateMotion(NPCManager* p, NPC* npc) {
   Mover* mover = &npc->mover;
   SpriteHolder* sprite = &npc->sprite;
 
   Mover_ApplyMove(mover);
-  if (!TEST_FLAGS(npc->flags, 0x400)) {
+  if (!TEST_FLAGS(npc->flags, NPCFLAG_NO_GROUND)) {
     mover->pos.y = TileHeightAt(&npc->mover.pos);
   }
   SpriteHolder_SetPos(sprite, &mover->pos);
@@ -548,7 +547,7 @@ s32 FUN_080411d8(NPCManager* p, NPC* npc) {
       npc->unk_2c8 = npc->unk_2ca;
     } else {
       npc->unk_2c8 = 0;
-      FUN_080415cc(npc, 8, 180, 180);
+      NPC_ShowEmote(npc, 8, 180, 180);
       npc->unk_0a = 0;
     }
   }
@@ -560,7 +559,7 @@ void FUN_080412f8(void) {}
 
 // ゾーンイベントを更新し, flags の 0x100 なら姿と影を, 0x200 なら影だけを隠す
 // 残差: 原典は 0x100 が立っている側 (SpriteHolder_SetFlags) を先に置き, 影を隠す呼び出しを共有する並びになる
-NON_MATCH s32 FUN_080412fc(NPCManager* p, NPC* npc) {
+NON_MATCH s32 NPC_UpdateVisibility(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
   npc->zoneEvent.id = npc->mover.id;
   npc->zoneEvent.pos = &npc->mover.pos;
@@ -569,38 +568,38 @@ NON_MATCH s32 FUN_080412fc(NPCManager* p, NPC* npc) {
     SpriteHolder_SetFlags(&npc->sprite, 1);
   } else {
     SpriteHolder_ClearFlags(&npc->sprite, 1);
-    if (!TEST_FLAGS(npc->flags, 0x200)) {
+    if (!TEST_FLAGS(npc->flags, NPCFLAG_HIDE_SHADOW)) {
       return NPC_ShowShadow(npc);
     }
   }
   return NPC_HideShadow(npc);
 #else
-  INCFUNC("asm/func/FUN_080412fc.inc");
+  INCFUNC("asm/func/NPC_UpdateVisibility.inc");
 #endif
 }
 
-// unk_19 から左右反転と向きの番号を作ってアニメを設定する
+// dir4 から左右反転と向きの番号を作ってアニメを設定する
 s32 FUN_0804135c(NPC* npc, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
   SpriteHolder* sprite = &npc->sprite;
   u32 a;
   u32 b;
 
   if (sprite->kind == 1) {
-    if (npc->unk_19 > DIR4_EAST) {
-      a = 3 - npc->unk_19;
+    if (npc->dir4 > DIR4_EAST) {
+      a = 3 - npc->dir4;
       b = 1;
     } else {
-      a = npc->unk_19;
+      a = npc->dir4;
       b = 0;
     }
   } else {
-    a = ((u8)(npc->unk_19 - 1) <= 1) ? param_4 : 0;
-    b = npc->unk_19 > DIR4_EAST;
+    a = ((u8)(npc->dir4 - 1) <= 1) ? param_4 : 0;
+    b = npc->dir4 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(sprite, pose, a, b, param_3, param_5, param_6);
 }
 
-// unk_19 から再生の引数2つを作ってアニメを設定する
+// dir4 から再生の引数2つを作ってアニメを設定する
 // 残差1命令 (34 対 33), 原典は b を r3 (第4引数レジスタ) に直接置くが, こちらは r4 に取るので呼び出し直前に移し替える
 // 宣言順 / s32・bool32 / SpriteHolder* ローカル / 呼び出しを2本に分ける形は試済
 NON_MATCH s32 FUN_080413b8(NPC* npc, u32 pose, u32 param_3, s32 param_4, u32 param_5, u32 param_6) {
@@ -609,11 +608,11 @@ NON_MATCH s32 FUN_080413b8(NPC* npc, u32 pose, u32 param_3, s32 param_4, u32 par
   u32 b;
 
   if (npc->sprite.kind == 1) {
-    a = npc->unk_19;
+    a = npc->dir4;
     b = a > 1;
   } else {
     a = 0;
-    b = npc->unk_19 > DIR4_EAST;
+    b = npc->dir4 > DIR4_EAST;
   }
   return SpriteHolder_SetAnim(&npc->sprite, pose, a, b, param_3, param_5, param_6);
 #else
@@ -621,28 +620,28 @@ NON_MATCH s32 FUN_080413b8(NPC* npc, u32 pose, u32 param_3, s32 param_4, u32 par
 #endif
 }
 
-// unk_1a (8方向) から左右反転と向きの番号を作ってアニメを設定する, 種類が 1 でなければ unk_1a に param_4 を掛ける
+// dir8 から左右反転と向きの番号を作ってアニメを設定する, 種類が 1 でなければ dir8 に param_4 を掛ける
 s32 FUN_080413fc(NPC* npc, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
   u32 a;
   u32 b;
 
   if (npc->sprite.kind == 1) {
-    if (npc->unk_1a > 4) {
-      a = 8 - npc->unk_1a;
+    if (npc->dir8 > 4) {
+      a = 8 - npc->dir8;
       b = 1;
     } else {
-      a = npc->unk_1a;
+      a = npc->dir8;
       b = 0;
     }
   } else {
-    if (npc->unk_1a > 4) {
-      a = 8 - npc->unk_1a;
+    if (npc->dir8 > 4) {
+      a = 8 - npc->dir8;
       b = 1;
     } else {
-      a = npc->unk_1a;
+      a = npc->dir8;
       b = 0;
     }
-    npc->unk_1a *= param_4;
+    npc->dir8 *= param_4;
   }
   return SpriteHolder_SetAnim(&npc->sprite, pose, a, b, param_3, param_5, param_6);
 }
@@ -650,8 +649,8 @@ s32 FUN_080413fc(NPC* npc, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 
 s32 FUN_08041460(NPC* npc, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return SpriteHolder_SetAnim(&npc->sprite, pose, 0, 0, param_3, param_5, param_6); }
 
 // アニメ表の idx 番を引き, 向きの方式 (dirMode) に応じたアニメ設定関数を呼ぶ
-s32 FUN_08041480(NPC* npc, s32 idx, s32 param_3, s32 param_4, s32 param_5) {
-  const NPCAnim* anim = &npc->unk_2b8[idx];
+s32 NPC_PlayAnim(NPC* npc, s32 idx, s32 param_3, s32 param_4, s32 param_5) {
+  const NPCAnim* anim = &npc->anims[idx];
   s32 ret;
 
   if (anim->dirMode == 1) {
@@ -668,7 +667,7 @@ s32 FUN_08041480(NPC* npc, s32 idx, s32 param_3, s32 param_4, s32 param_5) {
 
 // アニメのコマが足音のフレームに来たら足音を鳴らす, animIdx 1 と 3 が歩きのアニメ
 // 残差: 命令の並びは一致, 原典は fs を r2, &stepFrames[i] を r3, frame を r1 に置くがこちらは別のレジスタになる
-NON_MATCH void FUN_080414fc(NPC* npc, s32 animIdx) {
+NON_MATCH void NPC_PlayFootStep(NPC* npc, s32 animIdx) {
 #ifdef NONMATCHING_C
   u32 frame;
   s32 i;
@@ -685,7 +684,7 @@ NON_MATCH void FUN_080414fc(NPC* npc, s32 animIdx) {
   }
 
   if (SpriteHolder_GetAdvancedCmdIdx(&npc->sprite, &frame)) {
-    const NPCFootStepSound* fs = npc->unk_2bc;
+    const NPCFootStepSound* fs = npc->footStepSound;
     const s8* steps = &fs->stepFrames[i];
 
     if (steps[0] == frame) {
@@ -695,7 +694,7 @@ NON_MATCH void FUN_080414fc(NPC* npc, s32 animIdx) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080414fc.inc");
+  INCFUNC("asm/func/NPC_PlayFootStep.inc");
 #endif
 }
 
@@ -719,7 +718,7 @@ bool32 UNUSED FUN_0804157c(Vec3* a, Vec3* b, s32 range) {
 }
 
 // 頭上に吹き出しを出す, kind 0..3 は記号と効果音, 4 / 5 は時間つき, 6 / 7 はそのほか, 8 は今の吹き出しを閉じる
-void FUN_080415cc(NPC* npc, s32 kind, s32 timer, s32 duration) {
+void NPC_ShowEmote(NPC* npc, s32 kind, s32 timer, s32 duration) {
   switch (kind) {
     case 0: {
       npc->emoteKind = 0;
@@ -803,7 +802,7 @@ NON_MATCH void FUN_080417dc(Mover* mover) {
         mover->delta.y = pos.y - mover->pos.y;
         mover->delta.z = pos.z - mover->pos.z;
         if (mover->tile != NULL) {
-          Map_MoveBoxAlongWalls(mover->tile, &mover->pos, &mover->delta, mover->sizeX, mover->sizeZ, mover->unk_4);
+          Map_MoveBoxAlongWalls(mover->tile, &mover->pos, &mover->delta, mover->sizeX, mover->sizeZ, mover->kind);
         }
       }
     }
@@ -823,7 +822,7 @@ NON_MATCH void FUN_08041918(NPCManager* p) {
   NPC* npc;
 
   if (p->player != NULL && !(p->player->kind == PLAYER_BAT || p->player->kind == PLAYER_MOUSE || p->player->kind == PLAYER_SLEEPING) && !p->player->formRequest &&
-      !(p->player->goodCondTimer != 0 && (p->player->goodCondID == GOOD_MINI || p->player->goodCondID == GOOD_INVISIBLE)) && (p->player->action <= PACT_WALK || p->player->action == PACT_UNK_7)) {
+      !(p->player->goodCondTimer != 0 && (p->player->goodCondID == GOOD_MINI || p->player->goodCondID == GOOD_INVISIBLE)) && (p->player->action <= PACT_WALK || p->player->action == PACT_PALM_UP)) {
     if (p->player->kind == PLAYER_RDJANGO) {
       form = 0;
     } else if (p->player->kind == PLAYER_BDJANGO) {
@@ -858,18 +857,18 @@ NON_MATCH void FUN_08041918(NPCManager* p) {
     for (npc = p->head; npc != NULL; npc = npc->next) {
       if (npc == nearest) {
         if (!nearest->unk_0a) {
-          FUN_080415cc(nearest, (&nearest->unk_238)[form], 180, 180);
+          NPC_ShowEmote(nearest, (&nearest->unk_238)[form], 180, 180);
           nearest->unk_0a = 1;
         }
       } else if (npc->unk_0a) {
-        FUN_080415cc(npc, 8, 180, 180);
+        NPC_ShowEmote(npc, 8, 180, 180);
         npc->unk_0a = 0;
       }
     }
   } else {
     for (npc = p->head; npc != NULL; npc = npc->next) {
       if (npc->unk_0a) {
-        FUN_080415cc(npc, 8, 180, 180);
+        NPC_ShowEmote(npc, 8, 180, 180);
         npc->unk_0a = 0;
       }
     }
@@ -903,9 +902,9 @@ s32 Cmd_SendNPCMsg(void) {
   if (p == NULL) {
     return -1;
   }
-  bank = p->unk_28;
-  count = p->unk_2c[bank];
-  if (p->unk_2c[count] > 7) {
+  bank = p->msgBufIdx;
+  count = p->msgCounts[bank];
+  if (p->msgCounts[count] > 7) {
     return -1;
   }
 
@@ -925,7 +924,7 @@ s32 Cmd_SendNPCMsg(void) {
     }
   }
   MsgPacket_Send(msg);
-  p->unk_2c[p->unk_28]++;
+  p->msgCounts[p->msgBufIdx]++;
   return 0;
 }
 
@@ -949,8 +948,8 @@ NON_MATCH s32 Cmd_ConfigureNPC(void) {
     s32 angle = VM_GetValue();
 
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
   }
   if (VM_SeekToNamedArg('r')) {
     npc->pathIdx = VM_GetValue();
@@ -1038,11 +1037,11 @@ bool32 Cmd_IsNPCGoingHome(void) {
 }
 
 // スクリプトの名前付き引数から NPC の共通の設定 (経路, 時間帯, アニメ, 近さの範囲, 歩く速さなど) を読む
-s32 FUN_08041e10(NPCManager* p, NPC* npc) {
+s32 NPC_ReadConfigArgs(NPCManager* p, NPC* npc) {
   s32 speed;
 
   if (VM_GetNamedArgValue('C', 1)) {
-    FUN_080410cc(npc);
+    NPC_AddMover(npc);
   }
   npc->unk_215 = npc->mover.angle;
   npc->unk_216 = VM_GetNamedArgValue('C', 1);
@@ -1145,21 +1144,21 @@ s32 FUN_08041e10(NPCManager* p, NPC* npc) {
   return 0;
 }
 
-void FUN_08042178(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09 != 0) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 0, 2, 0, 4);
+void NPC_UpdateHidden(NPCManager* p, NPC* npc, s32 elapsed) {
+  if (npc->updateEntered != 0) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 0, 2, 0, 4);
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_8);
   npc->fn(npc);
 }
 
-void FUN_080421bc(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09 != 0) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 0, 1, 0, 4);
+void NPC_UpdateIdle(NPCManager* p, NPC* npc, s32 elapsed) {
+  if (npc->updateEntered != 0) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 0, 1, 0, 4);
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
   npc->fn(npc);
@@ -1167,14 +1166,14 @@ void FUN_080421bc(NPCManager* p, NPC* npc, s32 elapsed) {
 
 // work.walk.target へ walkSpeed ずつ歩かせ, 距離の2乗が arriveDistSq 以下になったら着いて終える, 歩くあいだ足音を鳴らす
 // 下書き (161/158命令): 流れは一致 (FUN_0804478c と同じ形), 原典は pos / target のアドレスを比較の前に高位レジスタへ移し, npc を r5 に置く
-NON_MATCH void FUN_08042200(NPCManager* p, NPC* npc, s32 elapsed) {
+NON_MATCH void NPC_UpdateWalkToTarget(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 1, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 1, 1, 0, 4);
   }
-  if ((u8)npc->fn(npc) != 1) {
+  if (npc->fn(npc) != 1) {
     WorldPos* pos = &npc->mover.pos;
     WorldPos* target = &npc->work.walk.target;
     s32 dx = target->x - pos->x;
@@ -1182,35 +1181,35 @@ NON_MATCH void FUN_08042200(NPCManager* p, NPC* npc, s32 elapsed) {
 
     if (dx * dx + dz * dz <= npc->arriveDistSq) {
       npc->mover.pos = npc->work.walk.target;
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     } else {
       Vec3_SetPolar(&npc->mover.delta, npc->mover.angle, npc->walkSpeed);
-      npc->unk_1b = ArcTan2_8(target->x - pos->x, target->z - pos->z);
-      npc->mover.angle = npc->unk_1b;
-      npc->unk_1a = Angle_ToDir8(npc->unk_1b);
-      npc->unk_19 = Angle_ToDir4(npc->unk_1b);
-      FUN_08041480(npc, 1, 1, 0, 1);
+      npc->targetAngle = ArcTan2_8(target->x - pos->x, target->z - pos->z);
+      npc->mover.angle = npc->targetAngle;
+      npc->dir8 = Angle_ToDir8(npc->targetAngle);
+      npc->dir4 = Angle_ToDir4(npc->targetAngle);
+      NPC_PlayAnim(npc, 1, 1, 0, 1);
     }
-    FUN_080414fc(npc, 1);
+    NPC_PlayFootStep(npc, 1);
   }
 #else
-  INCFUNC("asm/func/FUN_08042200.inc");
+  INCFUNC("asm/func/NPC_UpdateWalkToTarget.inc");
 #endif
 }
 
-// mover の向きを unk_1b へ 1フレーム 8 ずつ近づけ, 合ったら終える
+// mover の向きを targetAngle へ 1フレーム 8 ずつ近づけ, 合ったら終える
 // 残差: 原典は新しい向きを s8 に正規化してから格納し, その値を u16 にして Angle_ToDir8/4 に渡すが, こちらは u8 のまま格納して s8→u16 を1回のシフトで作る (Mover.angle が s8 だった形かもしれない)
-NON_MATCH void FUN_0804234c(NPCManager* p, NPC* npc, s32 elapsed) {
+NON_MATCH void NPC_UpdateTurn(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 2, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 2, 1, 0, 4);
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) != 1) {
+  if (npc->fn(npc) != 1) {
     s8 angle = npc->mover.angle;
-    s8 diff = npc->unk_1b - angle;
+    s8 diff = npc->targetAngle - angle;
 
     if (diff > 8) {
       angle += 8;
@@ -1220,28 +1219,28 @@ NON_MATCH void FUN_0804234c(NPCManager* p, NPC* npc, s32 elapsed) {
       angle += diff;
     }
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
-    FUN_08041480(npc, 2, 1, 0, 1);
-    if (npc->mover.angle == npc->unk_1b) {
-      npc->unk_07 = 1;
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
+    NPC_PlayAnim(npc, 2, 1, 0, 1);
+    if (npc->mover.angle == npc->targetAngle) {
+      npc->updateDone = 1;
     }
   }
 #else
-  INCFUNC("asm/func/FUN_0804234c.inc");
+  INCFUNC("asm/func/NPC_UpdateTurn.inc");
 #endif
 }
 
-// 細長い姿で上から落とし, 着地したら横に広げながら縦を縮めて元の大きさに戻す, 終わったら unk_07 を立てる
-void FUN_08042414(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
+// 細長い姿で上から落とし, 着地したら横に広げながら縦を縮めて元の大きさに戻す, 終わったら updateDone を立てる
+void NPC_UpdateDropIn(NPCManager* p, NPC* npc, s32 elapsed) {
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
     SpriteHolder_SetFlags(&npc->sprite, SPRFLAG_AFFINE);
     SpriteHolder_SetAffine(&npc->sprite, 64, 64, 0);
     PlaySound_082406e0(SONG_513);
   }
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
 
@@ -1250,13 +1249,13 @@ void FUN_08042414(NPCManager* p, NPC* npc, s32 elapsed) {
     s32 offsetY = 0;
     s32 height;
 
-    switch (npc->unk_18) {
+    switch (npc->updatePhase) {
       case 0: {
         offsetY = (8 - elapsed) * 200 + 160;
         height = (GetTileAt(npc->sprite.pos)->heightStairs & 0xF) << 8;
         npc->sprite.pos->y = height + offsetY;
         if (elapsed > 7) {
-          npc->unk_18++;
+          npc->updatePhase++;
         }
         SpriteHolder_SetAffine(&npc->sprite, 1, 128, 0);
         break;
@@ -1269,7 +1268,7 @@ void FUN_08042414(NPCManager* p, NPC* npc, s32 elapsed) {
           offsetY = (15 - elapsed) * 20;
         }
         if (elapsed > 14) {
-          npc->unk_18 = 2;
+          npc->updatePhase = 2;
         }
         height = (GetTileAt(npc->sprite.pos)->heightStairs & 0xF) << 8;
         npc->sprite.pos->y = height + offsetY;
@@ -1278,26 +1277,26 @@ void FUN_08042414(NPCManager* p, NPC* npc, s32 elapsed) {
       }
       case 2: {
         SpriteHolder_ClearFlags(&npc->sprite, SPRFLAG_AFFINE);
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         break;
       }
     }
   }
   {
-    u8 angle = npc->unk_1b;
+    u8 angle = npc->targetAngle;
 
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
   }
-  FUN_08041480(npc, 0, 2, 0, 0);
+  NPC_PlayAnim(npc, 0, 2, 0, 0);
 }
 
-// FUN_08042414 の逆, 縦を伸ばしながら横を狭めて上へ消えていく, 終わったら unk_07 を立てる
-void FUN_08042638(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
+// NPC_UpdateDropIn の逆, 縦を伸ばしながら横を狭めて上へ消えていく, 終わったら updateDone を立てる
+void NPC_UpdateRiseOut(NPCManager* p, NPC* npc, s32 elapsed) {
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
     SpriteHolder_SetFlags(&npc->sprite, SPRFLAG_AFFINE);
     SpriteHolder_SetAffine(&npc->sprite, 64, 64, 0);
     if (npc->kind == 14) {
@@ -1312,7 +1311,7 @@ void FUN_08042638(NPCManager* p, NPC* npc, s32 elapsed) {
     s32 offsetY = 0;
     s32 height;
 
-    switch (npc->unk_18) {
+    switch (npc->updatePhase) {
       case 0: {
         s32 scaleX = 64 - elapsed * 4;
 
@@ -1321,7 +1320,7 @@ void FUN_08042638(NPCManager* p, NPC* npc, s32 elapsed) {
           offsetY = (elapsed - 8) * 20;
         }
         if (elapsed > 14) {
-          npc->unk_18 = 1;
+          npc->updatePhase = 1;
         }
         height = (GetTileAt(npc->sprite.pos)->heightStairs & 0xF) << 8;
         npc->sprite.pos->y = height + offsetY;
@@ -1334,12 +1333,12 @@ void FUN_08042638(NPCManager* p, NPC* npc, s32 elapsed) {
         npc->sprite.pos->y = height + offsetY;
         if (elapsed > 7) {
           SET_FLAGS(npc->flags, NPCFLAG_UNK_8);
-          npc->unk_18++;
+          npc->updatePhase++;
         }
         break;
       }
       case 2: {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         SET_FLAGS(npc->flags, NPCFLAG_UNK_8);
         SpriteHolder_ClearFlags(&npc->sprite, SPRFLAG_AFFINE);
         break;
@@ -1347,23 +1346,23 @@ void FUN_08042638(NPCManager* p, NPC* npc, s32 elapsed) {
     }
   }
   {
-    u8 angle = npc->unk_1b;
+    u8 angle = npc->targetAngle;
 
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
   }
   if (npc->kind != 3) {
-    FUN_08041480(npc, 0, 2, 0, 0);
+    NPC_PlayAnim(npc, 0, 2, 0, 0);
   }
   npc->fn(npc);
 }
 
 void FUN_08042868(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09 != 0) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, npc->unk_1e8, npc->unk_1e9, 0, 4);
+  if (npc->updateEntered != 0) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, npc->unk_1e8, npc->unk_1e9, 0, 4);
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
   npc->fn(npc);
@@ -1371,27 +1370,27 @@ void FUN_08042868(NPCManager* p, NPC* npc, s32 elapsed) {
 
 // 経路の今のノードへ pathSpeed で歩かせ, 着いたらアニメの区切りを待って終える, MainSprite のときは足を出すコマでだけ進む
 // 下書き (165/184命令): 呼び出しの並びは一致, 着いたかの判定と MainSprite のコマの判定の組み立てが違う
-NON_MATCH void FUN_080428b8(NPCManager* p, NPC* npc, s32 elapsed) {
+NON_MATCH void NPC_UpdateWalkPath(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
   Mover* mover = &npc->mover;
   PathWalker* walker = &npc->pathWalker;
   WorldPos* pos = &npc->mover.pos;
   SpriteHolder* sprite = &npc->sprite;
 
-  if (npc->unk_09) {
+  if (npc->updateEntered) {
     u16 angle;
 
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
     angle = npc->mover.angle = ArcTan2_8(walker->node->x - pos->x, walker->node->y - pos->z);
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
-    FUN_08041480(npc, 1, 1, 0, 4);
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
+    NPC_PlayAnim(npc, 1, 1, 0, 4);
     npc->unk_1ec = 0;
     npc->pathArrived = FALSE;
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
 
@@ -1411,22 +1410,22 @@ NON_MATCH void FUN_080428b8(NPCManager* p, NPC* npc, s32 elapsed) {
   if (npc->pathArrived) {
     if (sprite->kind == 2) {
       if (sprite->kind & sprite->u.main.spr.animEvents) {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
       }
     } else if (SpriteHolder_IsAnimEnded(sprite)) {
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     }
   }
-  FUN_080414fc(npc, 1);
-  FUN_08041480(npc, 1, 1, 0, 1);
+  NPC_PlayFootStep(npc, 1);
+  NPC_PlayAnim(npc, 1, 1, 0, 1);
 #else
-  INCFUNC("asm/func/FUN_080428b8.inc");
+  INCFUNC("asm/func/NPC_UpdateWalkPath.inc");
 #endif
 }
 
 // プレイヤーの方へ 1フレーム 8 ずつ向き, 話しかけられない状態のプレイヤーには吹き出しを出す, 近くで向かい合ったら NPCFLAG_TALKABLE を立てる
 // 下書き (283/316命令): 原典は向きの更新を分岐ごとに持ち (inline の展開に見える), 距離の判定とプレイヤーの状態の判定を 0/1 に起こしてから比べる
-NON_MATCH void FUN_08042a48(NPCManager* p, NPC* npc, s32 elapsed) {
+NON_MATCH void NPC_UpdateFacePlayer(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
   Vec3* pos = &npc->mover.pos;
   s32 playerAngle;
@@ -1443,39 +1442,39 @@ NON_MATCH void FUN_08042a48(NPCManager* p, NPC* npc, s32 elapsed) {
       angle = npc->mover.angle + diff;
     }
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
     playerAngle = p->player->mover.angle;
   } else {
     playerAngle = 0;
   }
 
-  if (npc->unk_09) {
+  if (npc->updateEntered) {
     Player* player;
 
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 0, 1, 0, 4);
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 0, 1, 0, 4);
     npc->unk_1ec = 1;
     npc->unk_225 = npc->mover.angle;
     player = p->player;
     if (player != NULL) {
       if (!(player->kind == PLAYER_BAT || player->kind == PLAYER_MOUSE || player->kind == PLAYER_SLEEPING) && !player->formRequest && !(player->goodCondTimer != 0 && (player->goodCondID == GOOD_MINI || player->goodCondID == GOOD_INVISIBLE)) &&
-          (player->action <= PACT_WALK || player->action == PACT_UNK_7)) {
+          (player->action <= PACT_WALK || player->action == PACT_PALM_UP)) {
       } else if (!(gGameFlags & GAMEFLAG_CUTSCENE) && npc->unk_0b) {
         if ((p->player->action == PACT_PULL_COFFIN && Coffin_GetPos() != NULL) || TEST_FLAGS(gPlayerModes[0], PMODE_DEAD)) {
-          FUN_080415cc(npc, 0, 0, 0);
+          NPC_ShowEmote(npc, 0, 0, 0);
         } else {
-          FUN_080415cc(npc, 3, 0, 0);
+          NPC_ShowEmote(npc, 3, 0, 0);
         }
       }
     }
   } else {
-    FUN_08041480(npc, 0, 1, 0, 1);
+    NPC_PlayAnim(npc, 0, 1, 0, 1);
   }
 
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
   if (abs(p->playerPos->x - pos->x) < npc->talkRange && abs(p->playerPos->y - pos->y) <= 0xFF && abs(p->playerPos->z - pos->z) < npc->talkRange) {
@@ -1488,20 +1487,20 @@ NON_MATCH void FUN_08042a48(NPCManager* p, NPC* npc, s32 elapsed) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_08042a48.inc");
+  INCFUNC("asm/func/NPC_UpdateFacePlayer.inc");
 #endif
 }
 
 void FUN_08042cf0(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 0, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 0, 1, 0, 4);
     npc->unk_1ec = 1;
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) != 1 && elapsed > 7) {
-    npc->unk_07 = 1;
+  if (npc->fn(npc) != 1 && elapsed > 7) {
+    npc->updateDone = 1;
   }
 }
 
@@ -1513,18 +1512,18 @@ NON_MATCH void FUN_08042d50(NPCManager* p, NPC* npc, s32 elapsed) {
   NavAgent* nav = &npc->navAgent;
   SpriteHolder* sprite = &npc->sprite;
 
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 3, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 3, 1, 0, 4);
     npc->unk_1ec = 1;
     Map_InitNavAgent(nav, &npc->mover.pos);
     Map_TryFindNavRoute(nav, &npc->mover.pos, &npc->navTarget);
     npc->unk_224 = 0;
-    FUN_080415cc(npc, 0, 0, 0);
+    NPC_ShowEmote(npc, 0, 0, 0);
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
 
@@ -1538,7 +1537,7 @@ NON_MATCH void FUN_08042d50(NPCManager* p, NPC* npc, s32 elapsed) {
     if (dx * dx + dz * dz <= 4355) {
       mover->pos.x = nav->waypoint.x;
       mover->pos.z = nav->waypoint.z;
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     } else if (SpriteHolder_GetAdvancedCmdIdx(sprite, &frame)) {
       s32 speed;
       Vec3 step;
@@ -1551,16 +1550,16 @@ NON_MATCH void FUN_08042d50(NPCManager* p, NPC* npc, s32 elapsed) {
       }
       angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, nav->waypoint.z - pos->z);
       npc->mover.angle = angle;
-      npc->unk_1a = Angle_ToDir8(angle);
-      npc->unk_19 = Angle_ToDir4(angle);
+      npc->dir8 = Angle_ToDir8(angle);
+      npc->dir4 = Angle_ToDir4(angle);
       Vec3_SetPolar(&step, mover->angle, speed);
       mover->pos.x += step.x;
       mover->pos.z += step.z;
     }
   }
   Map_StepNavPath(nav, &npc->mover.pos);
-  FUN_080414fc(npc, 3);
-  FUN_08041480(npc, 3, 1, 0, 1);
+  NPC_PlayFootStep(npc, 3);
+  NPC_PlayAnim(npc, 3, 1, 0, 1);
 #else
   INCFUNC("asm/func/FUN_08042d50.inc");
 #endif
@@ -1572,17 +1571,17 @@ void FUN_08042f34(NPCManager* p, NPC* npc, s32 elapsed) {
   NavAgent* nav = &npc->navAgent;
   SpriteHolder* sprite = &npc->sprite;
 
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 1, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 1, 1, 0, 4);
     npc->unk_1ec = 0;
     Map_InitNavAgent(nav, &npc->mover.pos);
     Map_TryFindNavRoute(nav, &npc->mover.pos, &npc->navTarget);
     npc->unk_224 = 1;
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
 
@@ -1595,7 +1594,7 @@ void FUN_08042f34(NPCManager* p, NPC* npc, s32 elapsed) {
     if (dx * dx + dz * dz <= 2499) {
       mover->pos.x = npc->navAgent.waypoint.x;
       mover->pos.z = npc->navAgent.waypoint.z;
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     } else if (sprite->kind == 2) {
       MainSprite* main = &sprite->u.main.spr;
 
@@ -1606,8 +1605,8 @@ void FUN_08042f34(NPCManager* p, NPC* npc, s32 elapsed) {
 
         angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, wp->z - pos->z);
         npc->mover.angle = angle;
-        npc->unk_1a = Angle_ToDir8(angle);
-        npc->unk_19 = Angle_ToDir4(angle);
+        npc->dir8 = Angle_ToDir8(angle);
+        npc->dir4 = Angle_ToDir4(angle);
         Vec3_SetPolar(&step, mover->angle, 48);
         mover->pos.x += step.x;
         mover->pos.z += step.z;
@@ -1615,25 +1614,25 @@ void FUN_08042f34(NPCManager* p, NPC* npc, s32 elapsed) {
     }
   }
   Map_StepNavPath(nav, &npc->mover.pos);
-  FUN_080414fc(npc, 1);
-  FUN_08041480(npc, 1, 1, 0, 1);
+  NPC_PlayFootStep(npc, 1);
+  NPC_PlayAnim(npc, 1, 1, 0, 1);
 }
 
 // 経路の最初のノードへナビメッシュで歩かせ, 近づいたら終える, MainSprite の足を出すコマでだけ 24/48 進む
-void FUN_08043108(NPCManager* p, NPC* npc, s32 elapsed) {
+void NPC_UpdateNavToPathStart(NPCManager* p, NPC* npc, s32 elapsed) {
   Mover* mover = &npc->mover;
   NavAgent* nav = &npc->navAgent;
   PathWalker* walker = &npc->pathWalker;
   SpriteHolder* sprite = &npc->sprite;
 
-  if (npc->unk_09) {
+  if (npc->updateEntered) {
     Vec3 start;
     Vec3* pos;
     Vec3* wp;
     s32 angle;
 
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
     npc->unk_1ec = 0;
     pos = &npc->mover.pos;
     Map_InitNavAgent(nav, pos);
@@ -1643,12 +1642,12 @@ void FUN_08043108(NPCManager* p, NPC* npc, s32 elapsed) {
     wp = &nav->waypoint;
     angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, wp->z - pos->z);
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
-    FUN_08041480(npc, 1, 1, 0, 4);
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
+    NPC_PlayAnim(npc, 1, 1, 0, 4);
   }
   SET_FLAGS(npc->flags, NPCFLAG_UNK_12);
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
 
@@ -1662,7 +1661,7 @@ void FUN_08043108(NPCManager* p, NPC* npc, s32 elapsed) {
     if (dx * dx + dz * dz <= 2499) {
       mover->pos.x = npc->navAgent.waypoint.x;
       mover->pos.z = npc->navAgent.waypoint.z;
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     } else if (sprite->kind == 2) {
       MainSprite* main = &sprite->u.main.spr;
 
@@ -1674,8 +1673,8 @@ void FUN_08043108(NPCManager* p, NPC* npc, s32 elapsed) {
 
         angle = ArcTan2_8(nav->waypoint.x - mover->pos.x, wp->z - pos->z);
         npc->mover.angle = angle;
-        npc->unk_1a = Angle_ToDir8(angle);
-        npc->unk_19 = Angle_ToDir4(angle);
+        npc->dir8 = Angle_ToDir8(angle);
+        npc->dir4 = Angle_ToDir4(angle);
         speed = (main->animCmdIdx & 1) ? 24 : 48;
         Vec3_SetPolar(&step, mover->angle, speed);
         mover->pos.x += step.x;
@@ -1684,20 +1683,20 @@ void FUN_08043108(NPCManager* p, NPC* npc, s32 elapsed) {
     }
   }
   Map_StepNavPath(nav, &npc->mover.pos);
-  FUN_080414fc(npc, 1);
-  FUN_08041480(npc, 1, 1, 0, 1);
+  NPC_PlayFootStep(npc, 1);
+  NPC_PlayAnim(npc, 1, 1, 0, 1);
 }
 
 // work.walk.target へ walkSpeed ずつ歩かせ, 距離の2乗が arriveDistSq 以下になったら着いて終える, 歩くあいだ足音を鳴らす
 // 下書き (161/158命令): 流れは一致 (FUN_0804478c と同じ形), 原典は pos / target のアドレスを比較の前に高位レジスタへ移し, npc を r5 に置く
 NON_MATCH void FUN_08043360(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 3, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 3, 1, 0, 4);
   }
-  if ((u8)npc->fn(npc) != 1) {
+  if (npc->fn(npc) != 1) {
     WorldPos* pos = &npc->mover.pos;
     WorldPos* target = &npc->work.walk.target;
     s32 dx = target->x - pos->x;
@@ -1705,16 +1704,16 @@ NON_MATCH void FUN_08043360(NPCManager* p, NPC* npc, s32 elapsed) {
 
     if (dx * dx + dz * dz <= npc->arriveDistSq) {
       npc->mover.pos = npc->work.walk.target;
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     } else {
       Vec3_SetPolar(&npc->mover.delta, npc->mover.angle, npc->walkSpeed);
-      npc->unk_1b = ArcTan2_8(target->x - pos->x, target->z - pos->z);
-      npc->mover.angle = npc->unk_1b;
-      npc->unk_1a = Angle_ToDir8(npc->unk_1b);
-      npc->unk_19 = Angle_ToDir4(npc->unk_1b);
-      FUN_08041480(npc, 3, 1, 0, 1);
+      npc->targetAngle = ArcTan2_8(target->x - pos->x, target->z - pos->z);
+      npc->mover.angle = npc->targetAngle;
+      npc->dir8 = Angle_ToDir8(npc->targetAngle);
+      npc->dir4 = Angle_ToDir4(npc->targetAngle);
+      NPC_PlayAnim(npc, 3, 1, 0, 1);
     }
-    FUN_080414fc(npc, 3);
+    NPC_PlayFootStep(npc, 3);
   }
 #else
   INCFUNC("asm/func/FUN_08043360.inc");
@@ -1766,62 +1765,62 @@ s32 FUN_08043510(NPC* npc) {
   return FUN_080434ac(npc, node);
 }
 
-// 待ちが解除されたら unk_05 を 1 にしてメッセージの待ちを終える
+// state に入ったら updateRequest を 1 にしてメッセージの待ちを終える
 void FUN_0804355c(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 1;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 2 にしてメッセージの待ちを終える
+// state に入ったら updateRequest を 2 にしてメッセージの待ちを終える
 void FUN_08043588(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 2;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 2;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 3 にして, unk_07 が立っていたら state 1 に移してメッセージの待ちを終える
+// state に入ったら updateRequest を 3 にして, updateDone が立っていたら state 1 に移してメッセージの待ちを終える
 void FUN_080435b4(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 3;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 3;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 1);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 4 にして, unk_07 が立っていたら state を移してメッセージの待ちを終える
+// state に入ったら updateRequest を 4 にして, updateDone が立っていたら state を移してメッセージの待ちを終える
 void FUN_080435f0(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 4;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 4;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     if (npc->unk_217) {
       NPC_SetState(npc, npc->unk_227);
-      npc->unk_08 = 1;
+      npc->stateEntered = 1;
     } else {
       NPC_SetState(npc, 1);
-      npc->unk_08 = 1;
+      npc->stateEntered = 1;
     }
     MsgQueue_EndWait(&npc->mq, 1);
   }
@@ -1829,55 +1828,55 @@ void FUN_080435f0(NPCManager* p, NPC* npc) {
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 5 にして, unk_07 が立っていたら state 1 に移してメッセージの待ちを終える
+// state に入ったら updateRequest を 5 にして, updateDone が立っていたら state 1 に移してメッセージの待ちを終える
 void FUN_0804364c(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 5;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 5;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 1);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 6 にして, unk_07 が立っていたら state 0 に戻してメッセージの待ちを終える
+// state に入ったら updateRequest を 6 にして, updateDone が立っていたら state 0 に戻してメッセージの待ちを終える
 void FUN_08043688(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 6;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 6;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 0);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 2 にしてメッセージの待ちを終える, プレイヤーが近づいたら今の state を覚えて state 10 へ
+// state に入ったら updateRequest を 2 にしてメッセージの待ちを終える, プレイヤーが近づいたら今の state を覚えて state 10 へ
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, プレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる (FUN_08043cf4 と同じ)
 NON_MATCH void FUN_080436c4(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 2;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 2;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   if (p->playerPos != NULL && abs(p->playerPos->x - npc->mover.pos.x) < npc->nearRange && abs(p->playerPos->y - npc->mover.pos.y) <= 0xFF && abs(p->playerPos->z - npc->mover.pos.z) < npc->nearRange) {
     npc->unk_227 = npc->state;
     NPC_SetState(npc, 10);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     return;
   }
   npc->timer++;
@@ -1892,10 +1891,10 @@ NON_MATCH void FUN_08043774(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
   PathWalker* walker = &npc->pathWalker;
 
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 2;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 2;
   }
 
   if ((npc->timer & 0xF) == 0) {
@@ -1914,20 +1913,20 @@ NON_MATCH void FUN_08043774(NPCManager* p, NPC* npc) {
       if (near) {
         npc->waitFrames = 1800;
         NPC_SetState(npc, 12);
-        npc->unk_08 = 1;
+        npc->stateEntered = 1;
         return;
       }
       if (npc->unk_1ed != 0 && p->raining) {
         npc->waitFrames = 300;
         NPC_SetState(npc, 12);
-        npc->unk_08 = 1;
+        npc->stateEntered = 1;
         return;
       }
     }
     if (npc->unk_230 != 0 && p->minuteChanged) {
       if ((p->hour == npc->endHour && p->minute >= npc->endMinute) || (p->hour - 1 == npc->endHour && p->minute <= npc->endMinute)) {
         NPC_SetState(npc, 13);
-        npc->unk_08 = 1;
+        npc->stateEntered = 1;
         return;
       }
     }
@@ -1936,7 +1935,7 @@ NON_MATCH void FUN_08043774(NPCManager* p, NPC* npc) {
   if (p->playerPos != NULL && abs(p->playerPos->x - npc->mover.pos.x) < npc->nearRange && abs(p->playerPos->y - npc->mover.pos.y) <= 0xFF && abs(p->playerPos->z - npc->mover.pos.z) < npc->nearRange) {
     npc->unk_227 = npc->state;
     NPC_SetState(npc, 10);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     return;
   }
 
@@ -1944,7 +1943,7 @@ NON_MATCH void FUN_08043774(NPCManager* p, NPC* npc) {
     if (npc->pathDelay == 0) {
       Map_AdvancePathWalker(walker);
       NPC_SetState(npc, FUN_08043510(npc));
-      npc->unk_08 = 1;
+      npc->stateEntered = 1;
     } else {
       npc->pathDelay--;
     }
@@ -1955,24 +1954,24 @@ NON_MATCH void FUN_08043774(NPCManager* p, NPC* npc) {
 #endif
 }
 
-// 経路の向き pathDir を向き, プレイヤーが近づいたら今の state を覚えて state 10 へ, unk_07 が立ったら state 7 へ
+// 経路の向き pathDir を向き, プレイヤーが近づいたら今の state を覚えて state 10 へ, updateDone が立ったら state 7 へ
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, プレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる (FUN_08043cf4 と同じ)
 NON_MATCH void FUN_08043960(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 4;
-    npc->unk_1b = Angle_FromDir8(npc->pathDir);
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 4;
+    npc->targetAngle = Angle_FromDir8(npc->pathDir);
   }
 
   if (p->playerPos != NULL && abs(p->playerPos->x - npc->mover.pos.x) < npc->nearRange && abs(p->playerPos->y - npc->mover.pos.y) <= 0xFF && abs(p->playerPos->z - npc->mover.pos.z) < npc->nearRange) {
     npc->unk_227 = npc->state;
     NPC_SetState(npc, 10);
-    npc->unk_08 = 1;
-  } else if (npc->unk_07) {
+    npc->stateEntered = 1;
+  } else if (npc->updateDone) {
     NPC_SetState(npc, 7);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
   } else {
     npc->timer++;
   }
@@ -1981,14 +1980,14 @@ NON_MATCH void FUN_08043960(NPCManager* p, NPC* npc) {
 #endif
 }
 
-// 16 フレームごとに, 棺桶が近いか雨なら state 12 へ, 時間帯の終わりに来たら state 13 へ, プレイヤーが近づいたら state 10, unk_07 で state 7 へ
+// 16 フレームごとに, 棺桶が近いか雨なら state 12 へ, 時間帯の終わりに来たら state 13 へ, プレイヤーが近づいたら state 10, updateDone で state 7 へ
 // 下書き (199/196命令): 流れは一致, プレイヤーとの距離の判定は FUN_08043cf4 と同じ残差, state 12 / 13 の設定ブロックの共有のしかたも違う
 NON_MATCH void FUN_08043a24(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 8;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 8;
   }
 
   if ((npc->timer & 0xF) == 0) {
@@ -2007,20 +2006,20 @@ NON_MATCH void FUN_08043a24(NPCManager* p, NPC* npc) {
       if (near) {
         npc->waitFrames = 1800;
         NPC_SetState(npc, 12);
-        npc->unk_08 = 1;
+        npc->stateEntered = 1;
         return;
       }
       if (npc->unk_1ed != 0 && p->raining) {
         npc->waitFrames = 300;
         NPC_SetState(npc, 12);
-        npc->unk_08 = 1;
+        npc->stateEntered = 1;
         return;
       }
     }
     if (npc->unk_230 != 0 && p->minuteChanged) {
       if ((p->hour == npc->endHour && p->minute >= npc->endMinute) || (p->hour - 1 == npc->endHour && p->minute <= npc->endMinute)) {
         NPC_SetState(npc, 13);
-        npc->unk_08 = 1;
+        npc->stateEntered = 1;
         return;
       }
     }
@@ -2029,10 +2028,10 @@ NON_MATCH void FUN_08043a24(NPCManager* p, NPC* npc) {
   if (p->playerPos != NULL && abs(p->playerPos->x - npc->mover.pos.x) < npc->nearRange && abs(p->playerPos->y - npc->mover.pos.y) <= 0xFF && abs(p->playerPos->z - npc->mover.pos.z) < npc->nearRange) {
     npc->unk_227 = npc->state;
     NPC_SetState(npc, 10);
-    npc->unk_08 = 1;
-  } else if (npc->unk_07) {
+    npc->stateEntered = 1;
+  } else if (npc->updateDone) {
     NPC_SetState(npc, 7);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
   } else {
     npc->timer++;
   }
@@ -2045,10 +2044,10 @@ NON_MATCH void FUN_08043a24(NPCManager* p, NPC* npc) {
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こしてから比べる (FUN_08043cf4 と同じ形)
 NON_MATCH void FUN_08043bcc(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 9;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 9;
   }
 
   if (p->player == NULL || p->playerPos == NULL) {
@@ -2059,44 +2058,44 @@ NON_MATCH void FUN_08043bcc(NPCManager* p, NPC* npc) {
     return;
   }
   if (npc->unk_216) {
-    npc->unk_1b = npc->unk_215;
+    npc->targetAngle = npc->unk_215;
     NPC_SetState(npc, 3);
   } else {
     NPC_SetState(npc, npc->unk_227);
   }
-  npc->unk_08 = 1;
+  npc->stateEntered = 1;
 #else
   INCFUNC("asm/func/FUN_08043bcc.inc");
 #endif
 }
 
-// 待ちが解除されたら unk_05 を 10 にして, unk_07 が立っていたら state 12 へ進む
+// state に入ったら updateRequest を 10 にして, updateDone が立っていたら state 12 へ進む
 void FUN_08043c94(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 10;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 10;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 12);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
   }
 
   npc->timer++;
 }
 
-// 待ちが解除されたら unk_05 を 11 にして, unk_07 が立っていたら state 14 へ進む
+// state に入ったら updateRequest を 11 にして, updateDone が立っていたら state 14 へ進む
 void FUN_08043cc4(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 11;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 11;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 14);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
   }
 
   npc->timer++;
@@ -2106,22 +2105,22 @@ void FUN_08043cc4(NPCManager* p, NPC* npc) {
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, さらにプレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる, inline 2段にしても早期の FALSE が外側へ畳まれる
 NON_MATCH void FUN_08043cf4(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 12;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 12;
   }
 
   if (p->playerPos != NULL && abs(p->playerPos->x - npc->mover.pos.x) < npc->nearRange && abs(p->playerPos->y - npc->mover.pos.y) <= 0xFF && abs(p->playerPos->z - npc->mover.pos.z) < npc->nearRange) {
     npc->unk_227 = npc->state;
     NPC_SetState(npc, 10);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     return;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 14);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
   }
   npc->timer++;
 #else
@@ -2130,18 +2129,18 @@ NON_MATCH void FUN_08043cf4(NPCManager* p, NPC* npc) {
 }
 
 // startHour:startMinute から endHour:endMinute の間に入ったら state 15 へ, waitFrames の間は時刻を見ない
-void FUN_08043da8(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 1;
+void NPC_StateWaitTimeWindow(NPCManager* p, NPC* npc) {
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 
   if (npc->waitFrames == 0) {
     if (!p->raining && ((p->hour == npc->startHour && p->minute >= npc->startMinute) || (p->hour > npc->startHour && p->hour < npc->endHour) || (p->hour == npc->endHour && p->minute < npc->endMinute))) {
       NPC_SetState(npc, 15);
-      npc->unk_08 = 1;
+      npc->stateEntered = 1;
       return;
     }
   } else {
@@ -2154,22 +2153,22 @@ void FUN_08043da8(NPCManager* p, NPC* npc) {
 // 残差: 原典は距離の判定を FUN_0804157c と同じ形の inline で 0/1 に起こし, さらにプレイヤーの有無と合わせてもう一度 0/1 に起こしてから比べる, inline 2段にしても早期の FALSE が外側へ畳まれる
 NON_MATCH void FUN_08043e54(NPCManager* p, NPC* npc) {
 #ifdef NONMATCHING_C
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 13;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 13;
   }
 
   if (p->playerPos != NULL && abs(p->playerPos->x - npc->mover.pos.x) < npc->nearRange && abs(p->playerPos->y - npc->mover.pos.y) <= 0xFF && abs(p->playerPos->z - npc->mover.pos.z) < npc->nearRange) {
     npc->unk_227 = npc->state;
     NPC_SetState(npc, 10);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     return;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, FUN_08043510(npc));
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
   }
   npc->timer++;
 #else
@@ -2196,14 +2195,14 @@ s32 NPCManager_Update(NPCManager* p) {
     p->minuteChanged = FALSE;
   }
   p->prevMinute = p->minute;
-  p->unk_28 = 1 - p->unk_28;
-  p->unk_2c[p->unk_28] = 0;
+  p->msgBufIdx = 1 - p->msgBufIdx;
+  p->msgCounts[p->msgBufIdx] = 0;
 
   npc = p->head;
   while (npc != NULL) {
     NPC* next = npc->next;
 
-    FUN_080411a0(p, npc);
+    NPC_RunCallbacks(p, npc);
     npc = next;
   }
   FUN_08041918(p);
@@ -2223,7 +2222,7 @@ s32 NPCManager_Destroy(NPCManager* p) {
     if (npc->onDestroy != NULL) {
       npc->onDestroy(p, npc);
     }
-    FUN_0804114c(npc);
+    NPC_Free(npc);
     npc = next;
   }
 
@@ -2237,9 +2236,9 @@ s32 NPCManager_Init(NPCManager* p) {
   gNPCManager = p;
   p->frameCount = 0;
   p->head = NULL;
-  p->unk_28 = 0;
-  p->unk_2c[0] = 0;
-  p->unk_2c[1] = 0;
+  p->msgBufIdx = 0;
+  p->msgCounts[0] = 0;
+  p->msgCounts[1] = 0;
   pl = gPlayerPtr[0];
   p->player = pl;
   if (pl != NULL) {
@@ -2268,45 +2267,45 @@ NPCManager* NPCManager_Create(void) {
 }
 
 void FUN_080440ac(NPCManager* p, NPC* npc) {
-  if (npc->unk_08 != 0) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 2;
+  if (npc->stateEntered != 0) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 2;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 3 にして, unk_07 が立っていたら state 0 に戻してメッセージの待ちを終える
+// state に入ったら updateRequest を 3 にして, updateDone が立っていたら state 0 に戻してメッセージの待ちを終える
 void FUN_080440d0(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 3;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 3;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 0);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 4 にして, unk_07 が立っていたら state 0 に戻してメッセージの待ちを終える
+// state に入ったら updateRequest を 4 にして, updateDone が立っていたら state 0 に戻してメッセージの待ちを終える
 void FUN_08044104(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 4;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 4;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 0);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-void FUN_08044138(NPCManager* p, NPC* npc) {
+void NPC_DispatchState(NPCManager* p, NPC* npc) {
   static void (*const PTR_ARRAY_085ab36c[3])(NPCManager*, NPC*) = {
       FUN_080440ac,
       FUN_080440d0,
@@ -2315,57 +2314,57 @@ void FUN_08044138(NPCManager* p, NPC* npc) {
   PTR_ARRAY_085ab36c[npc->state](p, npc);
 }
 
-void FUN_08044150(NPCManager* p, NPC* npc) { FUN_08044138(p, npc); }
+void FUN_08044150(NPCManager* p, NPC* npc) { NPC_DispatchState(p, npc); }
 
 s32 FUN_0804415c(NPCManager* p, NPC* npc) {
   FUN_08044150(p, npc);
   return 0;
 }
 
-// unk_05 に対応する更新関数を割り当てて動き出せる状態にする
-s32 FUN_08044168(NPC* npc) {
+// updateRequest に対応する更新関数を割り当てて動き出せる状態にする
+u8 NPC_SelectUpdate(NPC* npc) {
   static void (*const PTR_ARRAY_085ab378[14])(NPCManager*, NPC*, s32) = {
       NULL,
-      FUN_08042178,
-      FUN_080421bc,
-      FUN_08042200,
-      FUN_0804234c,
-      FUN_08042414,
-      FUN_08042638,
+      NPC_UpdateHidden,
+      NPC_UpdateIdle,
+      NPC_UpdateWalkToTarget,
+      NPC_UpdateTurn,
+      NPC_UpdateDropIn,
+      NPC_UpdateRiseOut,
   };  // 0x085AB378
 
   NPCUpdate* fn;
 
-  if (npc->unk_05 == 0 || npc->unk_05 > 14) {  // 本来は >= 14 と書くべきものと思われる...
+  if (npc->updateRequest == 0 || npc->updateRequest > 14) {  // 本来は >= 14 と書くべきものと思われる...
     return 0;
   }
 
-  fn = PTR_ARRAY_085ab378[npc->unk_05];
-  npc->unk_06 = npc->unk_05;
-  npc->unk_2cc = fn;
-  npc->unk_10 = 0;
-  npc->unk_09 = 1;
-  npc->unk_18 = 0;
+  fn = PTR_ARRAY_085ab378[npc->updateRequest];
+  npc->updateID = npc->updateRequest;
+  npc->update = fn;
+  npc->updateElapsed = 0;
+  npc->updateEntered = 1;
+  npc->updatePhase = 0;
   return 1;
 }
 
-// NPC の待ちを解除して unk_2cc を呼ぶ
-s32 FUN_080441a4(NPCManager* p, NPC* npc) {
+// updateDone を下ろして update を呼ぶ
+s32 NPC_RunUpdate(NPCManager* p, NPC* npc) {
   u32 elapsed;
 
   npc->flags = 0;
-  npc->unk_07 = 0;
-  elapsed = npc->unk_10++;
+  npc->updateDone = 0;
+  elapsed = npc->updateElapsed++;
 
-  if (npc->unk_2cc != NULL) {
-    npc->unk_2cc(p, npc, elapsed);
+  if (npc->update != NULL) {
+    npc->update(p, npc, elapsed);
   }
 
   return 0;
 }
 
 // 届いたメッセージで向き (cmd 2) か歩き先 (cmd 3) を決めて state を始め直す
-void FUN_080441d8(NPC* npc) {
+void NPC_HandleMsgs(NPC* npc) {
   MsgQueue* mq = &npc->mq;
   s32 i;
 
@@ -2377,12 +2376,12 @@ void FUN_080441d8(NPC* npc) {
         npc->work.walk.target.x = msg->args[0];
         npc->work.walk.target.y = msg->args[1];
         npc->work.walk.target.z = msg->args[2];
-        npc->unk_1b = GetAngleTo(&npc->mover.pos, &npc->work.walk.target);
+        npc->targetAngle = GetAngleTo(&npc->mover.pos, &npc->work.walk.target);
         NPC_StartState(npc, 1);
         break;
       }
       case 2: {
-        npc->unk_1b = Angle_FromDir8((u8)msg->args[0]);
+        npc->targetAngle = Angle_FromDir8((u8)msg->args[0]);
         NPC_StartState(npc, 2);
         break;
       }
@@ -2391,19 +2390,19 @@ void FUN_080441d8(NPC* npc) {
   }
 }
 
-s32 FUN_080442d4(NPCManager* p, NPC* npc) {
-  FUN_080441d8(npc);
-  FUN_080411d8(p, npc);
-  npc->unk_05 = 0;
+s32 NPC_HandleMsgsAndMove(NPCManager* p, NPC* npc) {
+  NPC_HandleMsgs(npc);
+  NPC_UpdateMotion(p, npc);
+  npc->updateRequest = 0;
   return 0;
 }
 
 s32 FUN_080442f4(NPCManager* p, NPC* npc) {
-  FUN_080412fc(p, npc);
+  NPC_UpdateVisibility(p, npc);
   return 0;
 }
 
-s32 FUN_08044300(NPCManager* p, NPC* npc) { return MsgQueue_Unregister(&npc->mq); }
+s32 NPC_OnDestroy(NPCManager* p, NPC* npc) { return MsgQueue_Unregister(&npc->mq); }
 
 // 0x920F, HashName("ＮＰＣサンプル生成")?, '.n' / '.k' / '.p' / '.d' / '.o' / '.t' / '.m' / '.c' から NPC を1体作り, state 0 から始める (使われていない?)
 void Cmd_CreateNPC(void) {
@@ -2439,31 +2438,31 @@ void Cmd_CreateNPC(void) {
   if (npc == NULL) {
     return;
   }
-  if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
+  if (NPC_InitMover(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, spriteType, spriteID, flags, 0) < 0) {
+  if (NPC_InitSprite(npc, spriteType, spriteID, flags, 0) < 0) {
     return;
   }
   if (plttID >= 0) {
     NPC_SetPltt(npc, plttID);
   }
 
-  FUN_08040fc0(npc, npc->sprite.pos, 1, 0, 64);
+  NPC_InitShadow(npc, npc->sprite.pos, 1, 0, 64);
   MsgQueue_Register(&npc->mq, id, 5);
   npc->mover.angle = angle;
-  npc->unk_1a = Angle_ToDir8(angle);
-  npc->unk_19 = Angle_ToDir4(angle);
-  NPC_SetFn(npc, FUN_08044168);
-  NPC_SetCb(npc, 0, FUN_080442d4);
+  npc->dir8 = Angle_ToDir8(angle);
+  npc->dir4 = Angle_ToDir4(angle);
+  NPC_SetFn(npc, NPC_SelectUpdate);
+  NPC_SetCb(npc, 0, NPC_HandleMsgsAndMove);
   NPC_SetCb(npc, 1, FUN_0804415c);
-  NPC_SetCb(npc, 2, FUN_080441a4);
+  NPC_SetCb(npc, 2, NPC_RunUpdate);
   NPC_SetCb(npc, 3, FUN_080442f4);
-  NPC_SetOnDestroy(npc, FUN_08044300);
+  NPC_SetOnDestroy(npc, NPC_OnDestroy);
   NPC_StartState(npc, 0);
-  NPC_SetUpdate(npc, FUN_080421bc, 2);
-  npc->unk_2b8 = NPCManager_FindSpriteData(spriteID, 0);
-  npc->unk_2bc = FUN_08040dc0(spriteID, 0);
+  NPC_SetUpdate(npc, NPC_UpdateIdle, 2);
+  npc->anims = NPCManager_FindSpriteData(spriteID, 0);
+  npc->footStepSound = NPC_FindFootStepSound(spriteID, 0);
   if (VM_SeekToNamedArg('b')) {
     npc->unk_1e8 = VM_GetValue();
     npc->unk_1e9 = VM_GetValue();
@@ -2477,128 +2476,128 @@ void Cmd_CreateNPC(void) {
 }
 
 void FUN_0804454c(NPCManager* p, NPC* npc) {
-  if (npc->unk_08 != 0) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 1;
+  if (npc->stateEntered != 0) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 2 にして, unk_07 が立っていたら state 0 に戻してメッセージの待ちを終える
+// state に入ったら updateRequest を 2 にして, updateDone が立っていたら state 0 に戻してメッセージの待ちを終える
 void FUN_08044570(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 2;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 2;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 0);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 3 にして, unk_07 が立っていたら state 0 に戻してメッセージの待ちを終える
+// state に入ったら updateRequest を 3 にして, updateDone が立っていたら state 0 に戻してメッセージの待ちを終える
 void FUN_080445a4(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 3;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 3;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 0);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
 void FUN_080445d8(NPCManager* p, NPC* npc) {
-  if (npc->unk_08 != 0) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 4;
+  if (npc->stateEntered != 0) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 4;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 5 にして, unk_07 が立っていたら state 5 に移してメッセージの待ちを終える
+// state に入ったら updateRequest を 5 にして, updateDone が立っていたら state 5 に移してメッセージの待ちを終える
 void FUN_080445fc(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 5;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 5;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 5);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
 void FUN_08044634(NPCManager* p, NPC* npc) {
-  if (npc->unk_08 != 0) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 6;
+  if (npc->stateEntered != 0) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 6;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 7 にして, unk_07 が立っていたら state 7 に移してメッセージの待ちを終える
+// state に入ったら updateRequest を 7 にして, updateDone が立っていたら state 7 に移してメッセージの待ちを終える
 void FUN_08044658(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 7;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 7;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 7);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 8 にしてメッセージの待ちを終える
+// state に入ったら updateRequest を 8 にしてメッセージの待ちを終える
 void FUN_08044690(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 8;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 8;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 9 にしてメッセージの待ちを終える
+// state に入ったら updateRequest を 9 にしてメッセージの待ちを終える
 void FUN_080446b4(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 9;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 9;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-// 待ちが解除されたら unk_05 を 10 にして, unk_07 が立っていたら state 0 に戻してメッセージの待ちを終える
+// state に入ったら updateRequest を 10 にして, updateDone が立っていたら state 0 に戻してメッセージの待ちを終える
 void FUN_080446d8(NPCManager* p, NPC* npc) {
-  if (npc->unk_08) {
-    npc->unk_08 = 0;
-    npc->unk_07 = 0;
-    npc->unk_05 = 10;
+  if (npc->stateEntered) {
+    npc->stateEntered = 0;
+    npc->updateDone = 0;
+    npc->updateRequest = 10;
   }
 
-  if (npc->unk_07) {
+  if (npc->updateDone) {
     NPC_SetState(npc, 0);
-    npc->unk_08 = 1;
+    npc->stateEntered = 1;
     MsgQueue_EndWait(&npc->mq, 1);
   }
 }
 
-void FUN_0804470c(NPCManager* p, NPC* npc) {
+void SmithNPC_DispatchState(NPCManager* p, NPC* npc) {
   static void (*const PTR_ARRAY_085ab3b0[10])(NPCManager*, NPC*) = {
       FUN_0804454c,
       FUN_08044570,
@@ -2614,7 +2613,7 @@ void FUN_0804470c(NPCManager* p, NPC* npc) {
   PTR_ARRAY_085ab3b0[npc->state](p, npc);
 }
 
-void FUN_08044724(NPCManager* p, NPC* npc) { FUN_0804470c(p, npc); }
+void FUN_08044724(NPCManager* p, NPC* npc) { SmithNPC_DispatchState(p, npc); }
 
 s32 FUN_08044730(NPCManager* p, NPC* npc) {
   FUN_08044724(p, npc);
@@ -2622,13 +2621,13 @@ s32 FUN_08044730(NPCManager* p, NPC* npc) {
 }
 
 void FUN_0804473c(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09 != 0) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 0, 1, 0, 4);
+  if (npc->updateEntered != 0) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 0, 1, 0, 4);
   }
-  if ((u8)npc->fn(npc) != 1) {
-    FUN_08041480(npc, 0, 1, 0, 1);
+  if (npc->fn(npc) != 1) {
+    NPC_PlayAnim(npc, 0, 1, 0, 1);
   }
 }
 
@@ -2636,12 +2635,12 @@ void FUN_0804473c(NPCManager* p, NPC* npc, s32 elapsed) {
 // 下書き (149/151命令): 呼び出しの並びは一致, 着いたときの判定と速度の組み立ての順が違う
 NON_MATCH void FUN_0804478c(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 1, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 1, 1, 0, 4);
   }
-  if ((u8)npc->fn(npc) != 1) {
+  if (npc->fn(npc) != 1) {
     WorldPos* pos = &npc->mover.pos;
     WorldPos* target = &npc->work.walk.target;
     s32 dx = target->x - pos->x;
@@ -2649,14 +2648,14 @@ NON_MATCH void FUN_0804478c(NPCManager* p, NPC* npc, s32 elapsed) {
 
     if (dx * dx + dz * dz <= 100) {
       npc->mover.pos = npc->work.walk.target;
-      npc->unk_07 = 1;
+      npc->updateDone = 1;
     } else {
       Vec3_SetPolar(&npc->mover.delta, npc->mover.angle, 5);
-      npc->unk_1b = ArcTan2_8(target->x - pos->x, target->z - pos->z);
-      npc->mover.angle = npc->unk_1b;
-      npc->unk_1a = Angle_ToDir8(npc->unk_1b);
-      npc->unk_19 = Angle_ToDir4(npc->unk_1b);
-      FUN_08041480(npc, 1, 1, 0, 5);
+      npc->targetAngle = ArcTan2_8(target->x - pos->x, target->z - pos->z);
+      npc->mover.angle = npc->targetAngle;
+      npc->dir8 = Angle_ToDir8(npc->targetAngle);
+      npc->dir4 = Angle_ToDir4(npc->targetAngle);
+      NPC_PlayAnim(npc, 1, 1, 0, 5);
     }
   }
 #else
@@ -2664,41 +2663,41 @@ NON_MATCH void FUN_0804478c(NPCManager* p, NPC* npc, s32 elapsed) {
 #endif
 }
 
-// mover の向きを unk_1b に合わせて向きのアニメを出し, 合ったら終える
+// mover の向きを targetAngle に合わせて向きのアニメを出し, 合ったら終える
 void FUN_080448c8(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 2, 1, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 2, 1, 0, 4);
   }
-  if ((u8)npc->fn(npc) != 1) {
-    u8 angle = npc->unk_1b;
+  if (npc->fn(npc) != 1) {
+    u8 angle = npc->targetAngle;
 
     npc->mover.angle = angle;
-    npc->unk_1a = Angle_ToDir8(angle);
-    npc->unk_19 = Angle_ToDir4(angle);
-    FUN_08041480(npc, 2, 2, 0, 0);
-    if (npc->mover.angle == npc->unk_1b) {
-      npc->unk_07 = 1;
+    npc->dir8 = Angle_ToDir8(angle);
+    npc->dir4 = Angle_ToDir4(angle);
+    NPC_PlayAnim(npc, 2, 2, 0, 0);
+    if (npc->mover.angle == npc->targetAngle) {
+      npc->updateDone = 1;
     }
   }
 }
 
 void FUN_0804494c(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 4, 2, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 4, 2, 0, 4);
     npc->work.unk_00 = 0;
   }
-  if ((u8)npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
+  if (npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
     switch (npc->work.unk_00) {
       case 0: {
-        FUN_08041480(npc, 5, 2, 0, 4);
+        NPC_PlayAnim(npc, 5, 2, 0, 4);
         break;
       }
       case 1: {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         break;
       }
       default: {
@@ -2710,26 +2709,26 @@ void FUN_0804494c(NPCManager* p, NPC* npc, s32 elapsed) {
 }
 
 void FUN_080449c0(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 5, 2, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 5, 2, 0, 4);
     npc->work.unk_00 = 0;
   }
-  if ((u8)npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
+  if (npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
     switch (npc->work.unk_00) {
       case 0: {
-        FUN_08041480(npc, 6, 2, 0, 4);
+        NPC_PlayAnim(npc, 6, 2, 0, 4);
         npc->work.unk_00++;
         break;
       }
       case 1: {
-        FUN_08041480(npc, 7, 2, 0, 4);
+        NPC_PlayAnim(npc, 7, 2, 0, 4);
         npc->work.unk_00++;
         break;
       }
       case 2: {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         npc->work.unk_00++;
         break;
       }
@@ -2738,10 +2737,10 @@ void FUN_080449c0(NPCManager* p, NPC* npc, s32 elapsed) {
 }
 
 void FUN_08044a54(NPCManager* p, NPC* npc, s32 _) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 7, 2, 0, 1);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 7, 2, 0, 1);
     npc->work.unk_00 = 0;
   }
   npc->fn(npc);
@@ -2749,14 +2748,14 @@ void FUN_08044a54(NPCManager* p, NPC* npc, s32 _) {
 
 // スミスに槌を打たせる, 打ち始めに掛け声を鳴らし, 3 フレーム目に火花を散らして打撃音を鳴らす
 // 下書き (356/344命令): 原典は npc を r10, work を r7 に置く (こちらは逆), pos.x への加算は *dst = *src; dst->x += 200; と &pos を先に取る形なら strh になり 351 命令
-NON_MATCH void FUN_08044a90(NPCManager* p, NPC* npc, s32 elapsed) {
+NON_MATCH void SmithNPC_UpdateHammer(NPCManager* p, NPC* npc, s32 elapsed) {
 #ifdef NONMATCHING_C
   NPCSmithWork* work = &npc->work.smith;
 
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 8, 2, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 8, 2, 0, 4);
     npc->work.smith.step = 0;
     work->timer = 0;
     if (work->voiceWait == 0) {
@@ -2774,7 +2773,7 @@ NON_MATCH void FUN_08044a90(NPCManager* p, NPC* npc, s32 elapsed) {
       work->voiceWait--;
     }
   }
-  if ((u8)npc->fn(npc) == 1) {
+  if (npc->fn(npc) == 1) {
     return;
   }
 
@@ -2798,11 +2797,11 @@ NON_MATCH void FUN_08044a90(NPCManager* p, NPC* npc, s32 elapsed) {
   if (SpriteHolder_IsAnimEnded(&npc->sprite)) {
     switch (work->step) {
       case 0: {
-        FUN_08041480(npc, 6, 2, 0, 4);
+        NPC_PlayAnim(npc, 6, 2, 0, 4);
         break;
       }
       case 1: {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         break;
       }
       default: {
@@ -2813,15 +2812,15 @@ NON_MATCH void FUN_08044a90(NPCManager* p, NPC* npc, s32 elapsed) {
     work->timer = 0;
   }
 #else
-  INCFUNC("asm/func/FUN_08044a90.inc");
+  INCFUNC("asm/func/SmithNPC_UpdateHammer.inc");
 #endif
 }
 
 void FUN_08044d9c(NPCManager* p, NPC* npc, s32 _) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 7, 2, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 7, 2, 0, 4);
     npc->work.unk_00 = 0;
   }
 
@@ -2829,26 +2828,26 @@ void FUN_08044d9c(NPCManager* p, NPC* npc, s32 _) {
 }
 
 void FUN_08044dd8(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 7, 2, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 7, 2, 0, 4);
     npc->work.unk_00 = 0;
   }
-  if ((u8)npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
+  if (npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
     switch (npc->work.unk_00) {
       case 0: {
-        FUN_08041480(npc, 6, 2, 0, 4);
+        NPC_PlayAnim(npc, 6, 2, 0, 4);
         npc->work.unk_00++;
         break;
       }
       case 1: {
-        FUN_08041480(npc, 5, 2, 0, 4);
+        NPC_PlayAnim(npc, 5, 2, 0, 4);
         npc->work.unk_00++;
         break;
       }
       case 2: {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         npc->work.unk_00++;
         break;
       }
@@ -2857,20 +2856,20 @@ void FUN_08044dd8(NPCManager* p, NPC* npc, s32 elapsed) {
 }
 
 void FUN_08044e6c(NPCManager* p, NPC* npc, s32 elapsed) {
-  if (npc->unk_09) {
-    npc->unk_09 = 0;
-    npc->unk_07 = 0;
-    FUN_08041480(npc, 5, 2, 0, 4);
+  if (npc->updateEntered) {
+    npc->updateEntered = 0;
+    npc->updateDone = 0;
+    NPC_PlayAnim(npc, 5, 2, 0, 4);
     npc->work.unk_00 = 0;
   }
-  if ((u8)npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
+  if (npc->fn(npc) != 1 && SpriteHolder_IsAnimEnded(&npc->sprite)) {
     switch (npc->work.unk_00) {
       case 0: {
-        FUN_08041480(npc, 0, 1, 0, 4);
+        NPC_PlayAnim(npc, 0, 1, 0, 4);
         break;
       }
       case 1: {
-        npc->unk_07 = 1;
+        npc->updateDone = 1;
         break;
       }
       default: {
@@ -2881,8 +2880,8 @@ void FUN_08044e6c(NPCManager* p, NPC* npc, s32 elapsed) {
   }
 }
 
-// unk_05 に対応する更新関数を割り当てて動き出せる状態にする
-s32 FUN_08044ee0(NPC* npc) {
+// updateRequest に対応する更新関数を割り当てて動き出せる状態にする
+u8 SmithNPC_SelectUpdate(NPC* npc) {
   static void (*const PTR_ARRAY_085ab3d8[11])(NPCManager*, NPC*, s32) = {
       NULL,
       FUN_0804473c,
@@ -2891,7 +2890,7 @@ s32 FUN_08044ee0(NPC* npc) {
       FUN_0804494c,
       FUN_080449c0,
       FUN_08044a54,
-      FUN_08044a90,
+      SmithNPC_UpdateHammer,
       FUN_08044d9c,
       FUN_08044dd8,
       FUN_08044e6c,
@@ -2899,36 +2898,36 @@ s32 FUN_08044ee0(NPC* npc) {
 
   NPCUpdate* fn;
 
-  if (npc->unk_05 == 0 || npc->unk_05 > 11) {  // 本来は >= 11 と書くべきものと思われる...
+  if (npc->updateRequest == 0 || npc->updateRequest > 11) {  // 本来は >= 11 と書くべきものと思われる...
     return 0;
   }
 
-  fn = PTR_ARRAY_085ab3d8[npc->unk_05];
-  npc->unk_06 = npc->unk_05;
-  npc->unk_2cc = fn;
-  npc->unk_10 = 0;
-  npc->unk_09 = 1;
-  npc->unk_18 = 0;
+  fn = PTR_ARRAY_085ab3d8[npc->updateRequest];
+  npc->updateID = npc->updateRequest;
+  npc->update = fn;
+  npc->updateElapsed = 0;
+  npc->updateEntered = 1;
+  npc->updatePhase = 0;
   return 1;
 }
 
-// NPC の待ちを解除して unk_2cc を呼ぶ
-s32 FUN_08044f1c(NPCManager* p, NPC* npc) {
+// updateDone を下ろして update を呼ぶ
+s32 SmithNPC_RunUpdate(NPCManager* p, NPC* npc) {
   s32 elapsed;
 
   npc->flags = 0;
-  npc->unk_07 = 0;
-  elapsed = npc->unk_10++;
+  npc->updateDone = 0;
+  elapsed = npc->updateElapsed++;
 
-  if (npc->unk_2cc != NULL) {
-    npc->unk_2cc(p, npc, elapsed);
+  if (npc->update != NULL) {
+    npc->update(p, npc, elapsed);
   }
 
   return 0;
 }
 
 // 届いたメッセージで state を決める: cmd 1 は向き, cmd 2 は歩き先, cmd 3..9 はその番号の state
-void FUN_08044f50(NPC* npc) {
+void SmithNPC_HandleMsgs(NPC* npc) {
   MsgQueue* mq = &npc->mq;
   s32 i;
 
@@ -2941,12 +2940,12 @@ void FUN_08044f50(NPC* npc) {
         npc->work.walk.target.x = msg->args[0];
         npc->work.walk.target.y = msg->args[1];
         npc->work.walk.target.z = msg->args[2];
-        npc->unk_1b = GetAngleTo(&npc->mover.pos, &npc->work.walk.target);
+        npc->targetAngle = GetAngleTo(&npc->mover.pos, &npc->work.walk.target);
         NPC_StartState(npc, 1);
         break;
       }
       case 1: {
-        npc->unk_1b = Angle_FromDir8((u8)msg->args[0]);
+        npc->targetAngle = Angle_FromDir8((u8)msg->args[0]);
         NPC_StartState(npc, 2);
         break;
       }
@@ -2982,19 +2981,19 @@ void FUN_08044f50(NPC* npc) {
   }
 }
 
-s32 FUN_08045088(NPCManager* p, NPC* npc) {
-  FUN_08044f50(npc);
-  FUN_080411d8(p, npc);
-  npc->unk_05 = 0;
+s32 SmithNPC_HandleMsgsAndMove(NPCManager* p, NPC* npc) {
+  SmithNPC_HandleMsgs(npc);
+  NPC_UpdateMotion(p, npc);
+  npc->updateRequest = 0;
   return 0;
 }
 
 s32 FUN_080450a8(NPCManager* p, NPC* npc) {
-  FUN_080412fc(p, npc);
+  NPC_UpdateVisibility(p, npc);
   return 0;
 }
 
-s32 FUN_080450b4(NPCManager* p, NPC* npc) { return MsgQueue_Unregister(&npc->mq); }
+s32 SmithNPC_OnDestroy(NPCManager* p, NPC* npc) { return MsgQueue_Unregister(&npc->mq); }
 
 // 0x0E7C, HashName("ＮＰＣスミス生成"), '.n' / '.k' / '.p' / '.d' からスミス (マルチェロ) の NPC を1体作り, メッセージで動く state 0 から始める
 void Cmd_CreateSmithNPC(void) {
@@ -3026,28 +3025,28 @@ void Cmd_CreateSmithNPC(void) {
   if (npc == NULL) {
     return;
   }
-  if (FUN_08040f0c(npc, id, &pos, angle) < 0) {
+  if (NPC_InitMover(npc, id, &pos, angle) < 0) {
     return;
   }
-  if (FUN_08040f48(npc, 2, spriteID, 0, flags) < 0) {
+  if (NPC_InitSprite(npc, 2, spriteID, 0, flags) < 0) {
     return;
   }
 
-  FUN_08040fc0(npc, npc->sprite.pos, 2, 7, 32);
+  NPC_InitShadow(npc, npc->sprite.pos, 2, 7, 32);
   MsgQueue_Register(&npc->mq, id, 5);
   npc->mover.angle = angle;
-  npc->unk_1a = Angle_ToDir8(angle);
-  npc->unk_19 = Angle_ToDir4(angle);
-  NPC_SetFn(npc, FUN_08044ee0);
-  NPC_SetCb(npc, 0, FUN_08045088);
+  npc->dir8 = Angle_ToDir8(angle);
+  npc->dir4 = Angle_ToDir4(angle);
+  NPC_SetFn(npc, SmithNPC_SelectUpdate);
+  NPC_SetCb(npc, 0, SmithNPC_HandleMsgsAndMove);
   NPC_SetCb(npc, 1, FUN_08044730);
-  NPC_SetCb(npc, 2, FUN_08044f1c);
+  NPC_SetCb(npc, 2, SmithNPC_RunUpdate);
   NPC_SetCb(npc, 3, FUN_080450a8);
-  NPC_SetOnDestroy(npc, FUN_080450b4);
+  NPC_SetOnDestroy(npc, SmithNPC_OnDestroy);
   NPC_StartState(npc, 0);
   NPC_SetUpdate(npc, FUN_0804473c, 1);
-  npc->unk_2b8 = NPCManager_FindSpriteData(spriteID, 0);
-  npc->unk_2bc = FUN_08040dc0(spriteID, 0);
+  npc->anims = NPCManager_FindSpriteData(spriteID, 0);
+  npc->footStepSound = NPC_FindFootStepSound(spriteID, 0);
   if (VM_SeekToNamedArg('b')) {
     npc->unk_1e8 = VM_GetValue();
     npc->unk_1e9 = VM_GetValue();

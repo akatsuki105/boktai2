@@ -29,8 +29,8 @@ typedef struct WeaponShop {
   MainSpriteGfx icons;             // 0x0038, SPR_INVENTORY_ICONS
   MainSpriteGfx gfx2;              // 0x0058, SPR_UI_MISC
   MainSprite sprites[58];          // 0x0078, [38] がカーソル
-  Tilemaps* tilemap;               // 0x1638, MP_9F57
-  rgb555* bgPltt;                  // 0x163C, BGP_A41A[208]
+  Tilemaps* tilemap;               // 0x1638, MP_KAJI
+  rgb555* bgPltt;                  // 0x163C, BGP_KAJI[208]
   u8* unk_1640;                    // 0x1640, '.s' があれば VM_GetPC_Proxy の戻り値
   u8* unk_1644;                    // 0x1644, '.w' があれば VM_GetPC_Proxy の戻り値
   char* unk_1648;                  // 0x1648, '.c' を VM_ParseStringRef して GetStringByID した文字列
@@ -823,7 +823,7 @@ void WeaponShop_SetupBg(WeaponShop* p) {
   WeaponData w;
   s32 indices[1];
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_KAJI);
   indices[0] = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, indices);
   Video_SetBGLayer(0, p->tilemap, 4);
@@ -834,9 +834,9 @@ void WeaponShop_SetupBg(WeaponShop* p) {
   }
 }
 
-// BGP_A41A[208] 以降を BG パレットバッファの 208 色目にコピーする
+// BGP_KAJI[208] 以降を BG パレットバッファの 208 色目にコピーする
 void WeaponShop_LoadBgPltt(WeaponShop* p) {
-  p->bgPltt = &GetBgPlttFile(BGP_A41A)->body[208];
+  p->bgPltt = &GetBgPlttFile(BGP_KAJI)->body[208];
   CpuCopy32(p->bgPltt, &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 }
 
@@ -954,7 +954,7 @@ void FUN_080be650(WeaponShop* p) {
   FUN_08049f5c();
   MessageWindow_SetRect(0, 16, 30, 2);
   MessageWindow_SetInstant(1);
-  MessageWindow_SetBgPltt(BGP_A41A);
+  MessageWindow_SetBgPltt(BGP_KAJI);
 }
 
 void WeaponShop_ReadScriptArgs(WeaponShop* p) {

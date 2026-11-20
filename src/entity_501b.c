@@ -31,9 +31,9 @@ typedef struct Entity501B {
   u16 score;                                   // 0x3BC, gLinkSession->totalScores[playerIdx] (9999 で頭打ち), 精算で減っていく
   u16 step;                                    // 0x3BE, 1フレームに score から gStat->linkBattlePoint へ移す量, 初期 2, ボタンで <<3
   s32 unk_3c0;                                 // 0x3C0, gLinkSession->rankPoints[playerIdx] (±9999 で頭打ち)
-  Tilemaps* tilemap0;                          // 0x3C4, MP_CD91 を BG2 に敷く
-  Tilemaps* tilemap1;                          // 0x3C8, MP_A413 を BG0 に敷く
-  rgb555* bgPltt;                              // 0x3CC, bg_link_col_arr
+  Tilemaps* tilemap0;                          // 0x3C4, MP_LINK を BG2 に敷く
+  Tilemaps* tilemap1;                          // 0x3C8, MP_SYSTEM を BG0 に敷く
+  rgb555* bgPltt;                              // 0x3CC, BGP_LINK
   void (*updateCallback)(struct Entity501B*);  // 0x3D0
   u8* unk_3d4;                                 // 0x3D4, '.s', MenuMessage_SetScript に渡す
   u8* unk_3d8;                                 // 0x3D8, '.e'
@@ -112,14 +112,14 @@ static inline void Entity501B_SetState(Entity501B* p, void* fn, u8 phase) {
 void Entity501B_InitBg(Entity501B* p) {
   s32 bgIndices[1];
 
-  p->tilemap0 = GetFile(DIR_TILE_MAP, MP_CD91);
-  p->tilemap1 = GetFile(DIR_TILE_MAP, MP_A413);
+  p->tilemap0 = GetFile(DIR_TILE_MAP, MP_LINK);
+  p->tilemap1 = GetFile(DIR_TILE_MAP, MP_SYSTEM);
   bgIndices[0] = 10;
   Video_SetupBGLayout(2, 0, p->tilemap0, 0, 0, 1, bgIndices);
   bgIndices[0] = 12;
   Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
-  p->bgPltt = GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body;
+  p->bgPltt = GetBgPlttFile(BGP_LINK)->body;
   CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
 }
 

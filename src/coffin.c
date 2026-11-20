@@ -20,7 +20,7 @@ COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 void Coffin_OnHurt(Hitbox* a, Hitbox* b, Coffin* p);
 struct Elevator* Elevator_FindAtPos(Vec3* pos);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
-void FUN_080dab9c(s32 idx);
+void SpiderWeb_Break(s32 idx);
 
 static inline bool8 TestMapFlag(u32 mapflag) {
   if (TEST_FLAGS(gStat->mapFlags, mapflag)) return TRUE;
@@ -654,16 +654,16 @@ bool32 Coffin_IsIdle(void) {
   return TRUE;
 }
 
-s32 FUN_08086878(void) {
+s32 Coffin_GetSpiderWebIdx(void) {
   if (gCoffin == NULL) {
     return -1;
   }
-  return gCoffin->unk_3a0;
+  return gCoffin->spiderWebIdx;
 }
 
-void FUN_0808689c(s32 val) {
+void Coffin_SetSpiderWebIdx(s32 idx) {
   if (gCoffin != NULL) {
-    gCoffin->unk_3a0 = val;
+    gCoffin->spiderWebIdx = idx;
   }
 }
 
@@ -907,7 +907,7 @@ static const u16 sCoffinWeights[8] = {
 
 // 持ち物から棺桶を出して種類と重さを決め, '.c' と '.a' (初期状態) を読む
 void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
-  p->subroutineID = id;
+  p->id = id;
   FIELD_COFFIN = Coffin_TakeKind();
   p->coffinID = gStat->coffin;
   if (VM_SeekToNamedArg('c')) {
@@ -1005,7 +1005,7 @@ void Coffin_InitMover(Coffin* p) {
   p->unk_3c4 = p->pos_1f8;
   p->unk_388 = p->pos_1f8;
 
-  Mover_Init(&p->mover, p->subroutineID, &p->pos_1f8, 0, 6, p);
+  Mover_Init(&p->mover, p->id, &p->pos_1f8, 0, MOVER_COFFIN, p);
   Mover_SetAuxSprite(&p->mover, &p->sprite);
   p->mover.angle = ((p->facing + 5) & 7) * 32;
   p->zoneEvent.id = p->mover.id;
@@ -1032,7 +1032,7 @@ void Coffin_InitHurtbox(Coffin* p) {
   } else {
     ignoreMask = HIM_4;
   }
-  Hitbox_Init(hurtbox, p->subroutineID, HBF_HURTBOX | HBF_7 | HBF_DAMAGE, 0, ignoreMask, &size, &offset);
+  Hitbox_Init(hurtbox, p->id, HBF_HURTBOX | HBF_7 | HBF_DAMAGE, 0, ignoreMask, &size, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
   Hitbox_SetHandler(hurtbox, Coffin_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->mover.pos, 0);
@@ -1045,7 +1045,7 @@ void Coffin_InitHitbox(Coffin* p) {
 
   VEC3_SET(size, Q8(0.5), Q8(0.125), Q8(0.5));
   VEC3_SET(offset, 0, Q8(0.125), 0);
-  Hitbox_Init(hitbox, p->subroutineID, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, p->id, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_BLOW, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
 }
@@ -1361,7 +1361,7 @@ void Coffin_UpdateState0(Coffin* p) {
 void FUN_08087cbc(Coffin* p) {
   s32 playerIdx, coffinIdx;
 
-  if (!(GetTileAttrAt(&gPlayerPtr[0]->mover.pos) & TATTR_UNK_0)) {
+  if (!(GetTileAttrAt(&gPlayerPtr[0]->mover.pos) & TATTR_PLAYER_WALL)) {
     if (abs(TileHeightAt(&gPlayerPtr[0]->mover.pos) - TileHeightAt(&p->mover.pos)) < Q8(1)) {
       return;
     }
@@ -1431,7 +1431,7 @@ void Coffin_UpdateState1(Coffin* p) {
   }
   p->unk_32a = 0;
 
-  if (p->unk_3a0 >= 0) {
+  if (p->spiderWebIdx >= 0) {
     FUN_08087f7c(p);
   } else {
     if (abs(p->mover.pos.x - p->unk_388.x) > 2 || abs(p->mover.pos.z - p->unk_388.z) > 2) {
@@ -1549,7 +1549,7 @@ void Coffin_UpdateState3(Coffin* p) {
         delta.x = POLAR_X(3, angle);
         delta.y = 0;
         delta.z = POLAR_Z(3, angle);
-        if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_FALLDEATH | TATTR_UNK_11)) {
+        if (FUN_08088430(&p->mover.pos, &delta, TATTR_PLAYER_WALL | TATTR_FALLDEATH | TATTR_COFFIN_WALL)) {
           p->mover.pos.x += delta.x;
           p->mover.pos.z += delta.z;
           p->unk_33a = 1;
@@ -1607,7 +1607,7 @@ NON_MATCH void Coffin_UpdateState4(Coffin* p) {
     delta.x = POLAR_X(3, angle);
     delta.y = 0;
     delta.z = POLAR_Z(3, angle);
-    if (FUN_08088430(&p->mover.pos, &delta, TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_UNK_11)) {
+    if (FUN_08088430(&p->mover.pos, &delta, TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_COFFIN_WALL)) {
       p->mover.pos.x += delta.x;
       p->mover.pos.z += delta.z;
       p->unk_33a = 1;
@@ -1645,8 +1645,8 @@ NON_MATCH void Coffin_UpdateState2(Coffin* p) {
 
   if (p->unk_398 > 64) {
     p->unk_32a = 2;
-    if (p->unk_3a0 >= 0) {
-      FUN_080dab9c(p->unk_3a0);
+    if (p->spiderWebIdx >= 0) {
+      SpiderWeb_Break(p->spiderWebIdx);
     }
     if (p->unk_39e == 2) {
       VEC3_SET(p->hitbox.halfSize, Q8(1), Q8(0.125), Q8(1));
@@ -2165,7 +2165,7 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   p->unk_32a = 0;
   p->unk_32c = 0;
   p->unk_332 = 0;
-  p->unk_3a0 = -1;
+  p->spiderWebIdx = -1;
   p->killRequested = FALSE;
   p->inSolarBarrier = FALSE;
   gCoffin = p;

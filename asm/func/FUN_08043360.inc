@@ -16,7 +16,7 @@
 	movs r1, #3
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08041480
+	bl NPC_PlayAnim
 _08043388:
 	movs r1, #0xb9
 	lsls r1, r1, #2
@@ -154,11 +154,11 @@ _08043440:
 	movs r1, #3
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08041480
+	bl NPC_PlayAnim
 _08043496:
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_080414fc
+	bl NPC_PlayFootStep
 _0804349E:
 	add sp, #4
 	pop {r3, r4}

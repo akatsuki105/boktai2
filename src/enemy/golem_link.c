@@ -273,7 +273,7 @@ s32 GolemLink_ClassifyNextTile(u32 tileIdx, s32 height, s32 dir) {
   }
   tileHeight = TileAtIndex(tileIdx)->heightStairs & 0xF;
   tileStairs = TileAtIndex(tileIdx)->heightStairs >> 4;
-  if (TEST_FLAGS(TileAtIndex(tileIdx)->attr, TATTR_UNK_0 | TATTR_WALL)) {
+  if (TEST_FLAGS(TileAtIndex(tileIdx)->attr, TATTR_PLAYER_WALL | TATTR_ENEMY_WALL)) {
     if (tileHeight >= height) {
       return 1;
     }

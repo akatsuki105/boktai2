@@ -381,7 +381,7 @@ void Puddle_InitSprite(Puddle* elem, Vec3* pos, u32 moverLinked) {
   elem->sprite.pos = *pos;
   elem->moverLinked = moverLinked;
   if (elem->moverLinked) {
-    Mover_Init(&elem->mover, elem->id, &elem->sprite.pos, 0, 7, elem);
+    Mover_Init(&elem->mover, elem->id, &elem->sprite.pos, 0, MOVER_OBJECT, elem);
     FUN_08002a48(&elem->mover);
   }
 }

@@ -1229,7 +1229,7 @@ _081A2398:
 	strb r0, [r2, #5]
 _081A23C2:
 	adds r0, r7, #0
-	bl FUN_0819e56c
+	bl Ax_ReadAttackIntervals
 	movs r0, #0x70
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -1358,7 +1358,7 @@ _081A24B0:
 _081A24BC:
 	strh r1, [r0]
 	adds r0, r7, #0
-	bl FUN_081a0470
+	bl Ax_ReadAttackParams
 	ldr r6, [sp, #0x24]
 	ldr r0, _081A251C @ =0x00000F14
 	adds r2, r6, r0
@@ -1458,7 +1458,7 @@ _081A2584:
 	ldr r1, [sp, #0x18c]
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0819edcc
+	bl Ax_InitPltts
 	ldr r2, _081A273C @ =0x0000047E
 	adds r1, r7, r2
 	movs r0, #0xc0
@@ -2069,7 +2069,7 @@ _081A2A5A:
 	adds r0, r7, #0
 	bl Ax_ClearRecentNodes
 	adds r0, r7, #0
-	bl FUN_0819fd30
+	bl Ax_InitAfterimageHitboxes
 	ldr r1, [sp, #0x184]
 	ldrh r0, [r1]
 	ldr r2, [sp, #0xb0]

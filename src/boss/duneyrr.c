@@ -518,7 +518,7 @@ NON_MATCH void FUN_08023de8(Duneyrr* p) {
     pos.z -= 0x80;
     pos.x = pos.x - 0x40 + (Random() & 0x7F);
     pos.z = pos.z - 0x40 + (Random() & 0x7F);
-    if (TileHeightAt(&pos) == 0x100 && !(GetTileAttrAt(&pos) & TATTR_UNK_0)) {
+    if (TileHeightAt(&pos) == 0x100 && !(GetTileAttrAt(&pos) & TATTR_PLAYER_WALL)) {
       FUN_08059054(1, Random() & 3, p->unk_78e, p->unk_790, p->unk_792, &pos);
       p->unk_550--;
     }
@@ -597,7 +597,7 @@ void Duneyrr_InitHurtbox(Duneyrr* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.641), Q8(0.5), Q8(0.641));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->sprite.pos, 0);
   Hitbox_SetHandler(hurtbox, Duneyrr_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_CLOUD, HBATTR_EARTH);

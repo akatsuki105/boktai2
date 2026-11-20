@@ -61,6 +61,34 @@ typedef struct {
 } Bee;
 static_assert(sizeof(Bee) == 1812);
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Bee_PlayDirAnim(Bee* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
 static inline bool8 Bee_TestFlags(Bee* p, BeeFlags bit) {
   if (p->flags & bit) return TRUE;
   return FALSE;
@@ -96,9 +124,7 @@ NON_MATCH void Bee_OnHurt(Hitbox* a, Hitbox* b, Bee* p) {
 }
 
 // 向きが変わったときだけ animTable[1] のアニメを向きに合わせて流し直し, コマの進み具合は引き継ぐ
-// 260/252命令, 再生部を (Enemy*, anim, variant, flags) を取る inline にすると 249/252 まで寄り, 残差は Curoro の FUN_0813ac34 と同じ (原典は再生モードの定数 4 と反転フラグの 4 を別々に作り片方を r8 に置く), 試済: anim ポインタのローカル, mode の型と変数化
-NON_MATCH void Bee_StateFly(Bee* p) {
-#ifdef NONMATCHING_C
+void Bee_StateFly(Bee* p) {
   Bee* q = (p->e).owner;
   u32 variant, flags;
 
@@ -108,37 +134,7 @@ NON_MATCH void Bee_StateFly(Bee* p) {
     Bee_GetAnimVariant((p->e).mover.angle, &variant, &flags);
     anim = &(p->e).s->aux.anim;
     anim->cmdCount = 0;
-    {
-      u8 idx = (p->e).animTable[1].anim;
-
-      if ((p->e).spriteKind == 0) {
-        EnemyAuxSprite* s = &(p->e).s->aux;
-
-        (p->e).playingAnim = idx;
-        AuxAnim_SetAnim(&s->anim, s->animFile, idx, variant, flags);
-        (p->e).animForceRestart = FALSE;
-      } else {
-        MainSprite* s = &(p->e).s->main.spr;
-        s32 a = idx + variant;
-
-        if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-          s32 mode;
-
-          (p->e).playingAnim = a;
-          mode = MAIN_ANIM_FORCE_POSE;
-          if (flags & ANIM_PLAY_REVERSE) {
-            mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-          }
-          MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-          if (flags & ANIM_PLAY_XFLIP) {
-            s->flags |= SPRFLAG_XFLIP;
-          } else {
-            s->flags &= ~SPRFLAG_XFLIP;
-          }
-          (p->e).animForceRestart = FALSE;
-        }
-      }
-    }
+    Bee_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
     q->animAngle = (p->e).mover.angle;
   } else if (q->animAngle != (p->e).mover.angle) {
     AuxAnimState* anim = &(p->e).s->aux.anim;
@@ -146,46 +142,13 @@ NON_MATCH void Bee_StateFly(Bee* p) {
     u32 tick = anim->tick;
 
     Bee_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-    {
-      u8 idx = (p->e).animTable[1].anim;
-
-      if ((p->e).spriteKind == 0) {
-        EnemyAuxSprite* s = &(p->e).s->aux;
-
-        (p->e).playingAnim = idx;
-        AuxAnim_SetAnim(&s->anim, s->animFile, idx, variant, flags);
-        (p->e).animForceRestart = FALSE;
-      } else {
-        MainSprite* s = &(p->e).s->main.spr;
-        s32 a = idx + variant;
-
-        if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-          s32 mode;
-
-          (p->e).playingAnim = a;
-          mode = MAIN_ANIM_FORCE_POSE;
-          if (flags & ANIM_PLAY_REVERSE) {
-            mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-          }
-          MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-          if (flags & ANIM_PLAY_XFLIP) {
-            s->flags |= SPRFLAG_XFLIP;
-          } else {
-            s->flags &= ~SPRFLAG_XFLIP;
-          }
-          (p->e).animForceRestart = FALSE;
-        }
-      }
-    }
+    Bee_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
     anim->cmdIdx = cmdIdx;
     anim->tick = tick;
     q->animAngle = (p->e).mover.angle;
   } else {
     (p->e).animForceRestart = FALSE;
   }
-#else
-  INCFUNC("asm/func/Bee_StateFly.inc");
-#endif
 }
 
 void Bee_AnimIdle(Bee* p) {
@@ -208,45 +171,13 @@ void Bee_AnimCharge(Bee* p) {
 }
 
 // playerAngle が変わったときだけ animTable[1] のアニメをその向きに合わせて流し直し, コマの進み具合は引き継ぐ
-// 266/258命令, Bee_StateFly と同じ壁 (再生部の展開), 試済: Bee_StateFly と同じ形
-NON_MATCH void Bee_AnimRecoil(Bee* p) {
-#ifdef NONMATCHING_C
+void Bee_AnimRecoil(Bee* p) {
   Bee* q = (p->e).owner;
   u32 variant, flags;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Bee_GetAnimVariant((p->e).playerAngle, &variant, &flags);
-    {
-      u8 idx = (p->e).animTable[1].anim;
-
-      if ((p->e).spriteKind == 0) {
-        EnemyAuxSprite* s = &(p->e).s->aux;
-
-        (p->e).playingAnim = idx;
-        AuxAnim_SetAnim(&s->anim, s->animFile, idx, variant, flags);
-        (p->e).animForceRestart = FALSE;
-      } else {
-        MainSprite* s = &(p->e).s->main.spr;
-        s32 a = idx + variant;
-
-        if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-          s32 mode;
-
-          (p->e).playingAnim = a;
-          mode = MAIN_ANIM_FORCE_POSE;
-          if (flags & ANIM_PLAY_REVERSE) {
-            mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-          }
-          MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-          if (flags & ANIM_PLAY_XFLIP) {
-            s->flags |= SPRFLAG_XFLIP;
-          } else {
-            s->flags &= ~SPRFLAG_XFLIP;
-          }
-          (p->e).animForceRestart = FALSE;
-        }
-      }
-    }
+    Bee_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
     Enemy_PlayAnim(&p->e, 1);
     q->animAngle = (p->e).playerAngle;
   } else if (q->animAngle != (p->e).playerAngle) {
@@ -255,46 +186,13 @@ NON_MATCH void Bee_AnimRecoil(Bee* p) {
     u32 tick = anim->tick;
 
     Bee_GetAnimVariant((p->e).playerAngle, &variant, &flags);
-    {
-      u8 idx = (p->e).animTable[1].anim;
-
-      if ((p->e).spriteKind == 0) {
-        EnemyAuxSprite* s = &(p->e).s->aux;
-
-        (p->e).playingAnim = idx;
-        AuxAnim_SetAnim(&s->anim, s->animFile, idx, variant, flags);
-        (p->e).animForceRestart = FALSE;
-      } else {
-        MainSprite* s = &(p->e).s->main.spr;
-        s32 a = idx + variant;
-
-        if ((p->e).playingAnim != a || (p->e).animForceRestart || !((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-          s32 mode;
-
-          (p->e).playingAnim = a;
-          mode = MAIN_ANIM_FORCE_POSE;
-          if (flags & ANIM_PLAY_REVERSE) {
-            mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-          }
-          MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-          if (flags & ANIM_PLAY_XFLIP) {
-            s->flags |= SPRFLAG_XFLIP;
-          } else {
-            s->flags &= ~SPRFLAG_XFLIP;
-          }
-          (p->e).animForceRestart = FALSE;
-        }
-      }
-    }
+    Bee_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
     anim->cmdIdx = cmdIdx;
     anim->tick = tick;
     q->animAngle = (p->e).playerAngle;
   } else {
     (p->e).animForceRestart = FALSE;
   }
-#else
-  INCFUNC("asm/func/Bee_AnimRecoil.inc");
-#endif
 }
 
 void Bee_StateDamaged(Bee* p) {
@@ -1169,7 +1067,7 @@ NON_MATCH s32 Bee_Init(Bee* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

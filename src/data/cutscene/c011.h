@@ -80,7 +80,7 @@ STEP(c11_s15) = {M(c11_s15_0), NULL};
 MSG(c11_s16_0, WAIT, BUS_WAIT(20));
 STEP(c11_s16) = {M(c11_s16_0), NULL};
 
-// step 17: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, NPCManager_Create, Cmd_BB34, SparkleEffect_Create
+// step 17: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, NPCManager_Create, Cmd_SpawnOtenkoNPC, SparkleEffect_Create
 MSG(c11_s17_0, WAIT, BUS_EXEC_SCRIPT(42389));
 STEP(c11_s17) = {M(c11_s17_0), NULL};
 
@@ -164,7 +164,7 @@ MSG(c11_s35_2, WAIT, PLAYER_TURN(TGT_PLAYER, 1));
 MSG(c11_s35_3, NOWAIT, PLAYER_STOP_PLTT_FX(TGT_PLAYER));
 STEP(c11_s35) = {M(c11_s35_0), M(c11_s35_1), M(c11_s35_2), M(c11_s35_3), NULL};
 
-// step 36: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, NPCManager_Create, Cmd_BB34, SparkleEffect_Create
+// step 36: 引き返す　そうはいかない / (選択肢は最初の項目を選んだ場合) / Scr_0x1055 / Cmd_LockPlayer, NPCManager_Create, Cmd_SpawnOtenkoNPC, SparkleEffect_Create
 MSG(c11_s36_0, WAIT, BUS_EXEC_SCRIPT(42389));
 STEP(c11_s36) = {M(c11_s36_0), NULL};
 

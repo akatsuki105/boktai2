@@ -148,7 +148,7 @@ static inline s32 Centipede_CheckStep(s32 cur, s32 next, s32 dir) {
   curHeight = TileHeightAtIndex(cur, &pos);
   diff = nextHeight - curHeight;
   step = (((curHeight + 0xFF) >> 8) - ((nextHeight + 0xFF) >> 8)) << 8;
-  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) {
+  if (attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) {
     return -1;
   }
   if (diff != 0) {
@@ -1430,7 +1430,7 @@ void Centipede_AddOcclusionMover(Centipede* p) {
     }
   }
   if (idx != 0xFF) {
-    Mover_Init(&q->occlusionMover, (p->e).mover.id + 1, &q->segments[idx].sprite.pos, 0, 7, q);
+    Mover_Init(&q->occlusionMover, (p->e).mover.id + 1, &q->segments[idx].sprite.pos, 0, MOVER_OBJECT, q);
     q->occlusionMover.auxSprite = &q->segments[idx].sprite;
     FUN_08002a48(&q->occlusionMover);
     SET_FLAGS(q->flags, CENTFLAG_OCCLUSION);
@@ -2365,7 +2365,7 @@ NON_MATCH s32 Centipede_Init(Centipede* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

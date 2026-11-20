@@ -2,7 +2,7 @@
 #define __INCLUDE_CONSTANTS_TILEMAP_H__
 
 // tilemap file id
-#define MP_0012 0x0012
+#define MP_0012 0x0012  // a00_00_ruins
 #define MP_0101 0x0101
 #define MP_0346 0x0346
 #define MP_04EF 0x04EF
@@ -53,7 +53,7 @@
 #define MP_32A2 0x32A2
 #define MP_32F7 0x32F7
 #define MP_3339 0x3339
-#define MP_33B2 0x33B2
+#define MP_NAME BOKHASH("bg_nam_map")  // 0x33B2
 #define MP_33BA 0x33BA
 #define MP_3437 0x3437
 #define MP_34CB 0x34CB
@@ -64,7 +64,7 @@
 #define MP_37EE 0x37EE
 #define MP_3883 0x3883
 #define MP_3969 0x3969
-#define MP_3A16 0x3A16
+#define MP_3A16 0x3A16  // a00_01_ruins
 #define MP_3BEE 0x3BEE
 #define MP_400E 0x400E
 #define MP_418D 0x418D
@@ -84,12 +84,12 @@
 #define MP_4D0F 0x4D0F
 #define MP_4E8B 0x4E8B
 #define MP_4EC7 0x4EC7
-#define MP_4F8F 0x4F8F
+#define MP_BOOK BOKHASH("bg_bok_map")  // 0x4F8F
 #define MP_50FE 0x50FE
 #define MP_524C 0x524C
 #define MP_52D1 0x52D1
 #define MP_5558 0x5558
-#define MP_596F 0x596F
+#define MP_STAGE_TITLE BOKHASH("bg_bti_map")  // 0x596F, ステージタイトル, BGP_STAGE_TITLE とセットで利用
 #define MP_59B7 0x59B7
 #define MP_59FA 0x59FA
 #define MP_5A08 0x5A08
@@ -133,7 +133,7 @@
 #define MP_827A 0x827A
 #define MP_828D 0x828D
 #define MP_82AF 0x82AF
-#define MP_BANK 0x83C0  // 0x83C0, 太陽バンク,暗黒ローン用?
+#define MP_BANK BOKHASH("bg_gin_map")  // 0x83C0, 銀行(太陽バンク,暗黒ローン用), 同じ場面で使う SPR_UI_LOAN が "obj_gin_oud" で一致するので確定と思う (あと BGP_BANK も)
 #define MP_8421 0x8421
 #define MP_8446 0x8446
 #define MP_8452 0x8452
@@ -164,16 +164,16 @@
 #define MP_95F7 0x95F7
 #define MP_976E 0x976E
 #define MP_98D6 0x98D6
-#define MP_9D28 0x9D28
+#define MP_TREE 0x9D28  // 0x9D28, 太陽樹
 #define MP_9EA5 0x9EA5
 #define MP_9EEB 0x9EEB
-#define MP_9F57 0x9F57
+#define MP_KAJI BOKHASH("bg_kaji_map")  // 0x9F57
 #define MP_A071 0xA071
 #define MP_A08D 0xA08D
 #define MP_A36D 0xA36D
 #define MP_A3A5 0xA3A5
 #define MP_A3F8 0xA3F8
-#define MP_A413 0xA413
+#define MP_SYSTEM BOKHASH("bg_sys_map")  // 0xA413
 #define MP_A64B 0xA64B
 #define MP_A7D7 0xA7D7
 #define MP_A7E7 0xA7E7
@@ -209,7 +209,7 @@
 #define MP_C2F0 0xC2F0
 #define MP_C300 0xC300
 #define MP_C31B 0xC31B
-#define MP_C423 0xC423
+#define MP_TITLE BOKHASH("bg_tit_map")  // 0xC423
 #define MP_C452 0xC452
 #define MP_C562 0xC562
 #define MP_C5AE 0xC5AE
@@ -218,13 +218,13 @@
 #define MP_C939 0xC939
 #define MP_CC6F 0xCC6F
 #define MP_CCF5 0xCCF5
-#define MP_CD91 0xCD91
+#define MP_LINK BOKHASH("bg_lnk_map")  // 0xCD91
 #define MP_CEB9 0xCEB9
 #define MP_CF24 0xCF24
 #define MP_CF3C 0xCF3C
 #define MP_CF93 0xCF93
 #define MP_CFD1 0xCFD1
-#define MP_CFE1 0xCFE1
+#define MP_SENSOR_HELP BOKHASH("bg_lop_map")  // 0xCFE1, 太陽センサーの説明画面 でセットで使う BGP_SENSOR_HELP が bg_lop_col_arr なのであってると思う, なんの略かはわからん (loop?)
 #define MP_D134 0xD134
 #define MP_D14C 0xD14C
 #define MP_D308 0xD308
@@ -255,7 +255,7 @@
 #define MP_DE2F 0xDE2F
 #define MP_E3A5 0xE3A5
 #define MP_E3EF 0xE3EF
-#define MP_E456 0xE456
+#define MP_E456 0xE456  // a00_02_ruins
 #define MP_E4FC 0xE4FC
 #define MP_E526 0xE526
 #define MP_E57E 0xE57E

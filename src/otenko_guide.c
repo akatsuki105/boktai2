@@ -2540,7 +2540,7 @@ NON_MATCH s32 OtenkoGuide_Init(OtenkoGuide* p) {
   p->targetZ = 0;
   p->unk_f1a = 200;
   if (Mover_FindByID_Proxy(p->unk_f46) == NULL) {
-    Mover_Init(&p->unk_e40, p->unk_f46, &p->pos, 0, 7, p);
+    Mover_Init(&p->unk_e40, p->unk_f46, &p->pos, 0, MOVER_OBJECT, p);
   }
   p->frameCounter = 0;
   return 0;

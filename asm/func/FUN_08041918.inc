@@ -173,7 +173,7 @@ _08041A58:
 	adds r0, r5, #0
 	movs r2, #0xb4
 	movs r3, #0xb4
-	bl FUN_080415cc
+	bl NPC_ShowEmote
 	movs r0, #1
 	strb r0, [r5, #0xa]
 	b _08041A96
@@ -188,7 +188,7 @@ _08041A80:
 	movs r1, #8
 	movs r2, #0xb4
 	movs r3, #0xb4
-	bl FUN_080415cc
+	bl NPC_ShowEmote
 	movs r0, #0
 	strb r0, [r4, #0xa]
 _08041A96:
@@ -211,7 +211,7 @@ _08041AAA:
 	movs r1, #8
 	movs r2, #0xb4
 	movs r3, #0xb4
-	bl FUN_080415cc
+	bl NPC_ShowEmote
 	movs r0, #0
 	strb r0, [r4, #0xa]
 _08041AC0:

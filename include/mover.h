@@ -12,6 +12,15 @@ struct MainSprite;
 // Mover.flags
 #define MOVER_FLAG_2 (1 << 2)
 
+// Mover.kind, Map_CanStepTo は MOVER_ENEMY のときだけ TATTR_ENEMY_WALL で, ほかは TATTR_PLAYER_WALL で止める
+typedef enum {
+  // 0..3: プレイヤーの番号 (inputIdx) そのもの
+  MOVER_ENEMY = 4,   // 敵, 地形は Map_CanStepTo で TATTR_ENEMY_WALL によって止まる
+  MOVER_BOSS = 5,    // ボス, 地形はプレイヤーと同じく TATTR_PLAYER_WALL で止まる
+  MOVER_COFFIN = 6,  // 棺桶
+  MOVER_OBJECT = 7,  // 扉・エレベーター・ブロック・炎・水たまり・NPC などの物
+} MoverKind;
+
 // Mover が踏んでいるタイルの控え, どの配列も [0] が前、[1] が今
 // タイルが変わったときだけ Map_UpdateMoverTile が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
 typedef struct {
@@ -29,7 +38,7 @@ static_assert(sizeof(MoverTile) == 16);
 typedef struct Mover {
   u16 id;                         // 0x00, Mover_FindByID の検索キー
   u16 flags;                      // 0x02
-  u8 unk_4;                       // 0x04, 衝突解決 Map_MoveBoxAlongWalls の第6引数, また gPlayerPtr では idx として使われる
+  u8 kind;                        // 0x04, see MoverKind
   u8 angle;                       // 0x05, 8bit の向き, gSineTable の添字
   u8 unk_6[2];                    // 0x06, 読み手も書き手も未発見, padding?
   WorldPos pos;                   // 0x08, ワールド座標
@@ -52,10 +61,10 @@ static_assert(sizeof(Mover) == 68);
 void Map_InitMoverTile(MoverTile* p, Vec3* pos);
 
 // delta の分だけ衝突を見ながら pos を進める (同上)
-void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4);
+void Map_MoveBoxAlongWalls(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 kind);
 
 // pos と向きを入れてリストに繋ぐ
-s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 unk_4, void* owner);
+s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 kind, void* owner);
 
 s32 FUN_08002a48(Mover* p);
 s32 FUN_08002a58(Mover* p);

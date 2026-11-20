@@ -49,7 +49,7 @@ s32 FUN_081fa26c(Vec3* pos);
 void FUN_080867a0(void);
 void Enemy_StepToFloorEdge(Enemy* p);
 void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
-void DefeatedEnemyLog_Add(u16 a, u16 b);
+void EnemyRespawnInfo_Add(u16 a, u16 b);
 void Map_StepNavPath(NavAgent* agent, Vec3* pos);
 bool32 IsInPuddle(WorldPos* pos);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
@@ -218,7 +218,7 @@ NON_MATCH s32 Enemy_UpdateMovement(Enemy* p) {
   if (TEST_FLAGS(p->flags, ENEFLAG_UNK_22)) {
     TileAttr attr = TileAtIndex(p->tileIdx)->attr;
 
-    if ((attr & (TATTR_UNK_0 | TATTR_WALL)) != (TATTR_UNK_0 | TATTR_WALL) && !(attr & (TATTR_FALLDEATH | TATTR_WALLISH))) {
+    if ((attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL)) != (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL) && !(attr & (TATTR_FALLDEATH | TATTR_ENEMY_AVOID))) {
       Map_StepNavPath(p->navAgent, &p->mover.pos);
     }
   }
@@ -310,7 +310,7 @@ void EnemyAuxSprite_LoadAnim(EnemyAuxSprite* p, FileID animID) {
 
 // 自前の食らい判定を固定フラグで組んで登録する
 void Enemy_RegisterHurtbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
-  Hitbox_Init(&p->hurtbox, p->mover.id, (HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_3 | HBF_DAMAGE), 0, HIM_4, halfSize, offset);
+  Hitbox_Init(&p->hurtbox, p->mover.id, (HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_3 | HBF_DAMAGE), 0, HIM_4, halfSize, offset);
   Hitbox_SetPowerAndAttributes(&p->hurtbox, p->power, p->attrs, p->weakness);
   Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   Hitbox_SetHandler(&p->hurtbox, handler, owner);
@@ -665,7 +665,7 @@ NON_MATCH Mover* Enemy_FindVisiblePlayer(Enemy* p) {
   height = (s8)(p->mover.pos.y >> 8);
   adjacent = FALSE;
   if (tile - 1 == cur || tile == cur + gCollisionMap->tiledata->width || tile + 1 == cur || tile == cur - gCollisionMap->tiledata->width) {
-    if ((TileAtIndex(tile)->heightStairs & 0xF) == height && !(TileAtIndex(tile)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+    if ((TileAtIndex(tile)->heightStairs & 0xF) == height && !(TileAtIndex(tile)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
       adjacent = TRUE;
     }
   }
@@ -1810,7 +1810,7 @@ void FUN_080e6658(Enemy* p) {
     return;
   }
   attr = TileAtIndex(p->tileIdx)->attr;
-  if (attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) {
+  if (attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) {
     return;
   }
   if (p->floorY - p->mover.pos.y > Q8(1)) {
@@ -1981,7 +1981,7 @@ NON_MATCH void Enemy_OnCrushed(Enemy* p, s32 type, Vec3* pos, s32 dy, s32 damage
           }
         }
         if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-          DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
+          EnemyRespawnInfo_Add(gMapInitScriptID, p->mover.id);
         }
         if (p->kind == ENEK_BOKU || p->kind == ENEK_MUMMY) {
           Vec3 size;
@@ -2224,8 +2224,8 @@ NON_MATCH void FUN_080e73c8(Enemy* p) {
       Mover* m = p->playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         p->onRouteFailed(p);
@@ -2368,7 +2368,7 @@ NON_MATCH void Enemy_StepToFloorEdge(Enemy* p) {
       case 0: {
         cur = start + 1;
         for (x = Mod(cur, gCollisionMap->tiledata->width); x < gCollisionMap->tiledata->width; x++) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             idx = cur - 1;
             break;
           }
@@ -2378,7 +2378,7 @@ NON_MATCH void Enemy_StepToFloorEdge(Enemy* p) {
       }
       case 1: {
         for (cur = start + gCollisionMap->tiledata->width; cur < size; cur += gCollisionMap->tiledata->width) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             idx = cur - gCollisionMap->tiledata->width;
             break;
           }
@@ -2388,7 +2388,7 @@ NON_MATCH void Enemy_StepToFloorEdge(Enemy* p) {
       case 2: {
         cur = start - 1;
         for (x = Mod(cur, gCollisionMap->tiledata->width); x >= 0; x--) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             idx = cur + 1;
             break;
           }
@@ -2398,7 +2398,7 @@ NON_MATCH void Enemy_StepToFloorEdge(Enemy* p) {
       }
       case 3: {
         for (cur = start - gCollisionMap->tiledata->width; cur >= 0; cur -= gCollisionMap->tiledata->width) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             idx = cur + gCollisionMap->tiledata->width;
             break;
           }
@@ -2498,7 +2498,7 @@ NON_MATCH bool8 CanWalkToAdjacentTile(s32 fromIdx, s32 idx, s32 fromHeight, s32 
   }
 
   attr = TileAtIndex(idx)->attr;
-  if (!(attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+  if (!(attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
     if (stepped) {
       if (abs((height >> 8) - (fromHeight >> 8)) <= 1) {
         return TRUE;
@@ -2853,7 +2853,7 @@ void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
   s32 idx = GetCollisionTileIdx(target);
   s32 i;
 
-  if (!(TileAttrAtIndex(idx) & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) && Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, target)) {
+  if (!(TileAttrAtIndex(idx) & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL)) && Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, target)) {
     *out = *target;
     return;
   }
@@ -2877,7 +2877,7 @@ void Enemy_FindReachablePosNear(Enemy* p, Vec3* out, Vec3* target) {
   SortPairsByKey(cands[0], 4);
 
   for (i = 0; i < 4; i++) {
-    if (!(TileAttrAtIndex(cands[i][1]) & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH | TATTR_SPECIAL))) {
+    if (!(TileAttrAtIndex(cands[i][1]) & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH | TATTR_SPECIAL))) {
       TilePosAtIndex(&pos, cands[i][1]);
       if (Map_IsPosInAgentIsland(p->navAgent, &p->mover.pos, &pos)) {
         *out = pos;
@@ -3113,15 +3113,15 @@ void nop_080ec4c8(void) {}
 
 void nop_080ec4cc(void) {}
 
-// 撃破記録の表を空にする
-void Cmd_300F(void) { ClearMemory(gStat->defeatedEnemyLog, sizeof(gStat->defeatedEnemyLog)); }
+// 0x300F, HashName("敵マネージャ復活情報初期化"), 復活情報の表を空にする
+void Cmd_ClearEnemyRespawnInfo(void) { ClearMemory(gStat->enemyRespawnInfo, sizeof(gStat->enemyRespawnInfo)); }
 
 // 0x308 の表の空き (3語目の [1] が 0) を先頭から探す, 無ければ NULL
-u16* DefeatedEnemyLog_FindFree(void) {
+u16* EnemyRespawnInfo_FindFree(void) {
   u16* r;
   s32 i;
 
-  for (i = 0, r = gStat->defeatedEnemyLog; i < 20; r += 3, i++) {
+  for (i = 0, r = gStat->enemyRespawnInfo; i < 20; r += 3, i++) {
     if (r[1] == 0) {
       return r;
     }
@@ -3129,28 +3129,28 @@ u16* DefeatedEnemyLog_FindFree(void) {
   return NULL;
 }
 
-// 0x308 の表から先頭2語が (a, b) の行を探す, 無ければ NULL
-u16* DefeatedEnemyLog_Find(u32 a, u32 b) {
+// 0x308 の表から先頭2語が (mapScriptID, moverID) の行を探す, 無ければ NULL
+u16* EnemyRespawnInfo_Find(u32 mapScriptID, u32 moverID) {
   u16* t;
   s32 i;
 
-  for (i = 0, t = gStat->defeatedEnemyLog; i < 20; i++) {
-    if (t[i * 3] == a && t[i * 3 + 1] == b) {
+  for (i = 0, t = gStat->enemyRespawnInfo; i < 20; i++) {
+    if (t[i * 3] == mapScriptID && t[i * 3 + 1] == moverID) {
       return &t[i * 3];
     }
   }
   return NULL;
 }
 
-// MPF_UNK_2 のマップで撃破記録の残り回数を減らし, 尽きた件を消して再出現できるようにする
-void Cmd_A2E4(void) {
+// 0xA2E4, HashName("敵マネージャー復活情報更新"), MPF_DANGER のマップで復活情報の残り回数を減らし, 尽きた件を消して再出現できるようにする
+void Cmd_UpdateEnemyRespawnInfo(void) {
   s32 i;
 
-  if (!TestMapFlag(MPF_UNK_2)) {
+  if (!TestMapFlag(MPF_DANGER)) {
     return;
   }
   for (i = 0; i < 20; i++) {
-    u16* entry = &gStat->defeatedEnemyLog[i * 3];
+    u16* entry = &gStat->enemyRespawnInfo[i * 3];
 
     if (entry[1] != 0 && --entry[2] == 0) {
       entry[1] = 0;
@@ -3158,16 +3158,16 @@ void Cmd_A2E4(void) {
   }
 }
 
-// 倒した敵 (マップのスクリプト ID, Mover ID) を撃破記録に載せ, 再出現までの残り回数を入れる
-void DefeatedEnemyLog_Add(u16 a, u16 b) {
-  u16* r = DefeatedEnemyLog_Find(a, b);
+// 倒した敵 (マップのスクリプト ID, Mover ID) を復活情報に載せ, 再出現までの残り回数を入れる
+void EnemyRespawnInfo_Add(u16 mapScriptID, u16 moverID) {
+  u16* r = EnemyRespawnInfo_Find(mapScriptID, moverID);
   EnemyManager* m;
 
   if (r != NULL) {
     return;
   }
 
-  r = DefeatedEnemyLog_FindFree();
+  r = EnemyRespawnInfo_FindFree();
   if (r == NULL) {
     return;
   }
@@ -3177,14 +3177,14 @@ void DefeatedEnemyLog_Add(u16 a, u16 b) {
     return;
   }
 
-  r[0] = a;
-  r[1] = b;
+  r[0] = mapScriptID;
+  r[1] = moverID;
   r[2] = m->unk_30;
 }
 
-// 撃破記録に無く空きもあれば TRUE, MPF_UNK_2 のマップで敵を出してよいかの判定に使う
-bool8 DefeatedEnemyLog_CanAdd(u16 param_1, u16 param_2) {
-  if (DefeatedEnemyLog_Find(param_1, param_2) == 0 && DefeatedEnemyLog_FindFree() != 0) {
+// 復活情報に無く空きもあれば TRUE, MPF_DANGER のマップで敵を出してよいかの判定に使う
+bool8 EnemyRespawnInfo_CanAdd(u16 mapScriptID, u16 moverID) {
+  if (EnemyRespawnInfo_Find(mapScriptID, moverID) == 0 && EnemyRespawnInfo_FindFree() != 0) {
     return TRUE;
   }
 

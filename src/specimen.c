@@ -5,6 +5,7 @@
 #include "global.h"
 #include "random.h"
 #include "sprite.h"
+#include "vec3.h"
 
 // 魔物図鑑で選んだ魔物の姿をアニメさせて見せる (HashName("魔物図鑑標本")), スタッフロールのスライドショー (EndRollChara) でも使う
 
@@ -624,10 +625,7 @@ s32 Specimen_Destroy(Specimen* p) {
 }
 
 // 第2引数は読まれず, modelID は 0 固定で始まる (直後の > 56 の判定も死んでいる)
-// 残差は CpuFill32 の引数を置く順の1命令だけ (75 対 75), 原典は mov r0,sp が ldr r2,=0x05000002 より前
-// 引数の綴り (マクロ / 手書き CpuSet / 定数リテラル / vu32 と u32) では動かず, 一致済みの FUN_0823a76c も同じ順なので原典だけが逆
-NON_MATCH s32 Specimen_Init(Specimen* p, u32 _) {
-#ifdef NONMATCHING_C
+s32 Specimen_Init(Specimen* p, u32 _) {
   p->modelID = 0;
   p->reloadRequested = 0;
   p->hidden = 0;
@@ -646,11 +644,8 @@ NON_MATCH s32 Specimen_Init(Specimen* p, u32 _) {
   p->subSprite.scaleY = 64;
   p->swayAngle = 0;
   p->posOverridden = 0;
-  CpuFill32(0, &p->pos, sizeof(Vec3));
+  Vec3_Clear(&p->pos);
   return 0;
-#else
-  INCFUNC("asm/func/Specimen_Init.inc");
-#endif
 }
 
 // 0xC946, HashName("魔物図鑑標本")

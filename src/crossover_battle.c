@@ -378,11 +378,11 @@ void CrossoverBattle_SetOutcome(CrossoverBattle* p) {
   side->clearTime = 720 - p->roundTimer;
 }
 
-// 背景 MP_A413 を index の1枚だけで組み, BG パレットを BGP_EFDA にする
+// 背景 MP_SYSTEM を index の1枚だけで組み, BG パレットを BGP_SYSTEM にする
 void CrossoverBattle_SetupBG(CrossoverBattle* p, s32 index) {
-  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, MP_A413), 0, 0, 1, &index);
+  Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, MP_SYSTEM), 0, 0, 1, &index);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  CpuCopy16(GetBgPlttFile(BGP_EFDA)->body, gBgPlttBuffer, 256 * sizeof(rgb555));
+  CpuCopy16(GetBgPlttFile(BGP_SYSTEM)->body, gBgPlttBuffer, 256 * sizeof(rgb555));
 }
 
 void CrossoverBattle_SetMCState(CrossoverBattle* p, u32 state) {

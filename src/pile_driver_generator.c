@@ -134,7 +134,7 @@ void FUN_080b2c70(Generator* p) {
   anim = &p->anim;
   AuxAnim_SetAnim(anim, p->animFile, 2, p->animVariant, p->animFlags);
   if (AuxSprite_AdvanceAnim(&p->sprite, anim)) {
-    p->unk_ec = 1;
+    p->justStarted = TRUE;
     Generator_SetState(p, 4);
   }
 }
@@ -268,7 +268,7 @@ s32 Generator_Update(Generator* p) {
   p->updateCallback(p);
   Generator_UpdateFlash(p);
   if (p->unk_e8 != 0) {
-    if (gPileDriver->unk_c10 == 0) {
+    if (gPileDriver->sunGauge == 0) {
       p->unk_e8 = 0;
     } else if (p->state != 4) {
       p->unk_e8 = 0;
@@ -351,7 +351,7 @@ NON_MATCH s32 Generator_Init(Generator* p, Vec3* pos, s32 animVariant, s32 animF
   }
   Video_SetAuxSpritePltt(&p->gfx, p->plttID);
   p->unk_da = 0;
-  p->unk_ec = 0;
+  p->justStarted = FALSE;
   ElementalCondEmitter_Init(&p->condEmitter, &p->sprite.pos, ELEMCOND_NONE, 0, 0);
   p->unk_ea = 0;
   return 0;

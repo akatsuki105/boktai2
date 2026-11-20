@@ -469,7 +469,7 @@ _081DE6C0:
 	ldrb r0, [r6]
 	cmp r0, #2
 	bne _081DE6D4
-	bl FUN_08238c24
+	bl Sio_ReinitAndClear
 	ldr r2, _081DE6EC @ =FUN_081de214
 	adds r0, r4, #0
 	movs r1, #1

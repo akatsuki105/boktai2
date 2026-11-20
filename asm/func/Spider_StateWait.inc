@@ -46,7 +46,7 @@ _0812EF88:
 	adds r0, r5, r1
 	ldr r0, [r0]
 	mov r1, r8
-	bl FUN_080db290
+	bl SpiderWebManager_Spawn
 	cmp r0, #0
 	blt _0812F058
 	movs r2, #0xb4

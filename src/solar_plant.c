@@ -329,7 +329,7 @@ NON_MATCH void SolarPlantManager_AddPlant(SolarPlantManager* p) {
   if (VM_SeekToNamedArg('h')) {
     elem->moverLinked = VM_GetValue();
     if (elem->moverLinked) {
-      Mover_Init(&elem->mover, elem->hurtboxArg, &elem->spr.pos, 0, 7, elem);
+      Mover_Init(&elem->mover, elem->hurtboxArg, &elem->spr.pos, 0, MOVER_OBJECT, elem);
       FUN_08002a48(&elem->mover);
     }
   } else {

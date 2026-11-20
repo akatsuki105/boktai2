@@ -1,6 +1,7 @@
 #include "enemy/dog.h"
 
 #include "cwolf_target.h"
+#include "debris.h"
 #include "eff_elemcond.h"
 #include "emote.h"
 #include "enemy.h"
@@ -47,14 +48,16 @@ static inline void Dog_PlayTurnAnim(Dog* p, u32 anim, u32 variant, u32 flip) {
     AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flip);
   } else {
     MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
 
     anim += variant;
     if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flip == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
       return;
     }
     (p->e).playingAnim = anim;
-    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
-    if (flip == ANIM_PLAY_XFLIP) {
+    mode = (flip & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flip & ANIM_PLAY_XFLIP) {
       s->flags |= SPRFLAG_XFLIP;
     } else {
       s->flags &= ~SPRFLAG_XFLIP;
@@ -71,7 +74,6 @@ const u16 u16_ARRAY_085ad8c0[2][8] = {
 struct Entity081ee2a0Elem* Entity081ee2a0_SpawnEx(Vec3* pos, Vec3* vel, s32 lifetime, u32 kind, u32 priority);
 bool8 PickItemToSteal(s16* outSlot, s16* outItem, s16* outRot);
 s32 ItemIconPopupManager_AddIcon(ItemCategory32 category, item32_t itemID, u32 kind, u32 playerIdx, Vec3* pos, Vec3* destPos, u32 duration, u32 key);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 struct Entity081f1770Elem* Entity081f1770_Spawn(Vec3* pos, u32 angle, SpriteFlags flags);
 void Dog_StateWakeUp(Dog* p, s32 timer);
 void FUN_0814e8ec(Dog* p, s32 timer);
@@ -353,7 +355,7 @@ NON_MATCH s32 FUN_0814a8dc(Dog* p) {
       pos.y = (p->e).mover.pos.y;
       Vec3_Clear(&vel);
       life = (Random() & 63) + 20;
-      Entity081f26bc_Spawn(&pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 0x31, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
+      Debris_Spawn(&pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_PTCL | DEBRIS_BOUNCE, 0, 1, 0, 0, life, 4, 1, 0x00200004, 30, 8, 8);
     }
     return u16_ARRAY_085ad8c0[run][anim->cmdIdx & 7];
   }
@@ -841,9 +843,9 @@ void FUN_0814c2b0(Dog* p) {
 }
 
 // 経路ノードの向きへ振り向く, 回る向きの振り向きアニメを流して tick ごとに 32 ずつ回し, アニメが終わったら向きが合っていれば止まり合っていなければ状態2へ戻す
-// 713/718命令, 原典は p を r5 と r8 に二重に持ち経路と ±32 の回転を r8 から触る, MainSprite_SetAnim の第5引数 4 を作る位置が早い (Enemy_PlayAnim と同じ壁), 振り向きアニメは Dog_PlayTurnAnim (同じものが流れていれば return する形) で再生の塊の共有まで揃う
-NON_MATCH void Dog_StateTurn(Dog* p) {
-#ifdef NONMATCHING_C
+void Dog_StateTurn(Dog* p) {
+  Mover* mover = &(p->e).mover;
+
   if (Enemy_ConsumeStateBegun(&p->e)) {
     s32 dir;
     u32 target;
@@ -851,7 +853,7 @@ NON_MATCH void Dog_StateTurn(Dog* p) {
     (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
     dir = Angle_ToDir4((p->e).mover.angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
-      target = (p->e).mover.path->node->delay >> 12;
+      target = mover->path->node->delay >> 12;
       (p->e).unk_1dc = target;
     } else {
       target = (p->e).unk_1dc;
@@ -913,9 +915,9 @@ NON_MATCH void Dog_StateTurn(Dog* p) {
   }
   if (Enemy_GetAuxAnim(&p->e)->tick == 1) {
     if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
-      (p->e).mover.angle += 32;
+      mover->angle += 32;
     } else {
-      (p->e).mover.angle -= 32;
+      mover->angle -= 32;
     }
   }
   {
@@ -943,9 +945,6 @@ NON_MATCH void Dog_StateTurn(Dog* p) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     }
   }
-#else
-  INCFUNC("asm/func/Dog_StateTurn.inc");
-#endif
 }
 
 void FUN_0814c970(Dog* p) {}
@@ -1070,8 +1069,8 @@ NON_MATCH void Dog_StateDamaged(Dog* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -1217,8 +1216,8 @@ NON_MATCH void Dog_StateDamaged(Dog* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -1741,8 +1740,8 @@ NON_MATCH bool8 Dog_OnDamaged(Dog* p) {
         Mover* m = (p->e).playerMover;
 
         idx = -1;
-        if (m != NULL && m->unk_4 <= 3) {
-          idx = m->unk_4;
+        if (m != NULL && m->kind <= 3) {
+          idx = m->kind;
         }
         if (m == NULL || idx < 0) {
           haveTile = FALSE;
@@ -1913,8 +1912,8 @@ NON_MATCH bool8 Dog_OnDamaged(Dog* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       haveTile = FALSE;
@@ -2159,8 +2158,8 @@ NON_MATCH void FUN_0814fc7c(Dog* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -2470,8 +2469,8 @@ NON_MATCH void FUN_08150de8(Dog* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -2831,7 +2830,7 @@ NON_MATCH s32 Dog_Init(Dog* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

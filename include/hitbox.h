@@ -18,8 +18,8 @@ typedef u32 HitboxFlags32;
 #define HBF_ANGLE (1 << 8)     // 0x100, 向きの概念があるものにつける, バックアタックの判定, 攻撃のノックバック方向 などで利用
 #define HBF_9 (1 << 9)         // 0x200, 攻撃側の OnHit が相手の HBHITSTATE_UNK_0 を立てたときだけダメージが通り, Django_OnHurt がそれを消費する, マミーの掴み・ゴーレムの転がり・Entity081e9cac が使う
 #define HBF_ONCE (1 << 10)     // 0x400, 1フレームに1回だけ当たる, 相手の HBHITSTATE_ONCE_HIT で弾き (Django_OnHurt), Player_BeginAction が毎フレーム落とす, 敵の攻撃判定 (Enemy_InitAtkHitbox) につく
-#define HBF_BLOCK (1 << 11)    // 0x800, 動かせるブロックとプロパティキューブの攻撃判定につく, コウモリ・ハチ・カラス・犬・ゴースト・棺桶は無視し, スライムは押し出される
-#define HBF_NPC (1 << 12)      // 0x1000, プレイヤーと敵の食らい判定につく, 攻撃判定に立っていると HBF_NPC 付きの食らい判定にしか当たらない (Hitbox_CheckAllPairs)
+#define HBF_BLOCK (1 << 11)    // 0x800, 動かせるブロックと属性キューブの攻撃判定につく, バット・ビー・クロー・犬・ゴースト・棺桶は無視し, スライムは押し出される
+#define HBF_ACTOR (1 << 12)    // 0x1000, プレイヤーと敵の食らい判定につく, 攻撃判定に立っていると HBF_ACTOR 付きの食らい判定にしか当たらない (Hitbox_CheckAllPairs)
 #define HBF_HITBOX (1 << 13)   // 0x2000, 攻撃判定 (このフラグがセットされていたら hitbox, そうでないなら食らい判定(hurtbox)として扱っているっぽい, つまり下の HBF_HURTBOX は意味がなさそう)
 #define HBF_HURTBOX (1 << 14)  // 0x4000, 食らい判定 (開発用の目印かも？ このフラグを参照しているものが見つからない)
 

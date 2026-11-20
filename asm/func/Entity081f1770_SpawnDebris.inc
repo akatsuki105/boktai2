@@ -350,7 +350,7 @@ _081F123C:
 	add r1, sp, #0x44
 	ldr r2, _081F12C4 @ =0x00001C1A
 	ldr r3, _081F12C8 @ =0x0000D1B8
-	bl Entity081f26bc_Spawn
+	bl Debris_Spawn
 _081F1296:
 	movs r0, #1
 	rsbs r0, r0, #0

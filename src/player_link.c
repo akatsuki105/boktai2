@@ -1,3 +1,4 @@
+#include "armor.h"
 #include "camera.h"
 #include "dust.h"
 #include "enemy_target.h"
@@ -23,7 +24,7 @@ void PlayerLink_UpdateHammerAttack(Player* p);
 void PlayerLink_UpdateFistAttack(Player* p);
 void PlayerLink_UpdateSolarGunAttack(Player* p);
 
-const PlayerFunc PTR_ARRAY_085ad14c[5] = {
+const PlayerFunc gPlayerLinkAttackUpdates[5] = {
     [WK_SWORD] = PlayerLink_UpdateSwordAttack,
     [WK_SPEAR] = PlayerLink_UpdateSpearAttack,
     [WK_HAMMER] = PlayerLink_UpdateHammerAttack,
@@ -63,12 +64,15 @@ void PlayerLink_ChangeMouse(Player* p);
 void PlayerLink_UpdateDynamite(Player* p);
 void PlayerLink_UpdateHurt(Player* p);
 void PlayerLink_UpdateBlownAway(Player* p);
-void FUN_080d4d34(Player* p);
-void FUN_080d4fa4(Player* p);
-void FUN_080d53e4(Player* p);
+void PlayerLink_UpdateDeath(Player* p);
+void PlayerLink_UpdateBlownAwayDeath(Player* p);
+void PlayerLink_UpdateFallDeath(Player* p);
 void PlayerLink_UpdateSabataAttack(Player* p);
+void PlayerLink_UpdateMegaBusterAttack(Player* p);
 void PlayerLink_UpdateDarkCharge(Player* p);
-void FUN_080cc43c(Player* p);
+void PlayerLink_UpdateDjango(Player* p);
+void PlayerLink_UpdateSabata(Player* p);
+void PlayerLink_StopEneChargeSound(Player* p);
 void FUN_080ce330(Player* p);
 s32 PlayerLink_CheckMagicEnchant(Player* p);
 void Player_UpdateBloodSword(Player* p);
@@ -79,9 +83,11 @@ NON_MATCH bool32 Player_IsNearTileCenter(Player* p);
 s32 MovableBlock_PushAtDir8(Vec3* pos, u32 dir);
 s32 FUN_08020358(u32 id);
 void Hitbox_ApplyDamageAlt(Hitbox* a, Hitbox* b);
+void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
+void PlayerLink_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _);
 s32 SpawnBlood(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
 NON_MATCH void Player_InflictElementalCond(Player* p, u32 kind);
-void FUN_080dab9c(s32 idx);
+void SpiderWeb_Break(s32 idx);
 struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 forwardOffset, u32 sideOffset, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttrs attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan);
 NON_MATCH void Player_ApplyWindPush(Player* p);
 void Player_StopChargeAndLookAround(Player* p);
@@ -142,9 +148,9 @@ const PlayerFunc gLinkDjangoActionFuncs[32] = {
     NULL,
     PlayerLink_UpdateHurt,
     PlayerLink_UpdateBlownAway,
-    FUN_080d4d34,
-    FUN_080d4fa4,
-    FUN_080d53e4,
+    PlayerLink_UpdateDeath,
+    PlayerLink_UpdateBlownAwayDeath,
+    PlayerLink_UpdateFallDeath,
     NULL,
     NULL,
     NULL,
@@ -179,9 +185,9 @@ const PlayerFunc gLinkSabataActionFuncs[31] = {
     NULL,
     PlayerLink_UpdateHurt,
     PlayerLink_UpdateBlownAway,
-    FUN_080d4d34,
-    FUN_080d4fa4,
-    FUN_080d53e4,
+    PlayerLink_UpdateDeath,
+    PlayerLink_UpdateBlownAwayDeath,
+    PlayerLink_UpdateFallDeath,
     NULL,
     NULL,
 };  // 0x085AD204
@@ -230,10 +236,6 @@ static inline bool8 TestMapFlag(u32 mapflag) {
   return FALSE;
 }
 
-static inline s32 Player_GetIframes(Player* p) { return p->hurtbox.iframes; }
-
-static inline void Player_SetIframes(Player* p, u16 time) { p->hurtbox.iframes = time; }
-
 static inline s32 LinkSession_GetPlayerIdx(void) {
   LinkSession* p = gLinkSession;
 
@@ -243,15 +245,24 @@ static inline s32 LinkSession_GetPlayerIdx(void) {
   return p->playerIdx;
 }
 
+// まだセッションが無ければ 0
+static inline u8 LinkSession_GetLuxGauge(u32 idx) {
+  if (gLinkSession == NULL) {
+    return 0;
+  }
+  return gLinkSession->luxGauge[idx];
+}
+
+// idx 番のプレイヤーが交換に出した武器, セッションが無いか idx が負なら NULL
+static inline LinkTradeWeapon* LinkSession_GetBody(s32 idx) {
+  if (gLinkSession == NULL || idx < 0) {
+    return NULL;
+  }
+  return &gLinkSession->bodies[idx];
+}
+
 // ignoreMask のうち mask のビットを見る, 通信対戦の攻撃判定では撃ったプレイヤーのビットが立つ
 static inline u32 Hitbox_TestIgnoreMask(Hitbox* hb, u32 mask) { return hb->ignoreMask & mask; }
-
-static inline bool32 HasGoodCond(Player* p, u32 id) {
-  if (p->goodCondTimer != 0 && p->goodCondID == id) {
-    return TRUE;
-  }
-  return FALSE;
-}
 
 // facing から animDir と xflip を決める
 void PlayerLink_SetAnimFacing(Player* p) {
@@ -317,7 +328,7 @@ void PlayerLink_SetAction(Player* p, s32 action, s32 state) {
 bool32 FUN_0809ebf4(Player* p);
 
 // 日光に当たっているかを引き直し, 影のずれと多段ヒット制限を戻す
-void FUN_080cc370(Player* p) {
+void PlayerLink_BeginAction(Player* p) {
   p->flag20 = PFLAG20_BUSY;
   if (FUN_0809ebf4(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
@@ -347,7 +358,7 @@ void Sound_StopForPlayer(s32 playerIdx, SoundID32 id) {
 }
 
 // 残差1命令 (30/31): PlayerLink_EndLookAround と同じく, 原典は idx = -1 の materialize を else 側に残すが agbcc は先頭へ巻き上げる
-NON_MATCH void FUN_080cc43c(Player* p) {
+NON_MATCH void PlayerLink_StopEneChargeSound(Player* p) {
 #ifdef NONMATCHING_C
   s32 idx = gLinkSession != NULL ? gLinkSession->playerIdx : -1;
 
@@ -361,7 +372,7 @@ NON_MATCH void FUN_080cc43c(Player* p) {
     }
   }
 #else
-  INCFUNC("asm/func/FUN_080cc43c.inc");
+  INCFUNC("asm/func/PlayerLink_StopEneChargeSound.inc");
 #endif
 }
 
@@ -430,7 +441,7 @@ void PlayerLink_SetupKnockback(Player* p, Hitbox* a, Hitbox* b) {
   p->facing = PlayerLink_GetDirToAttacker(a, b);
 }
 
-s32 PlayerLink_IsNight(void) {
+s32 PlayerLink_IsNight(Player* p) {
   s32 v;
 
   if (gLinkSession == NULL) {
@@ -1550,7 +1561,26 @@ void PlayerLink_CountMash(Player* p) {
   }
 }
 
-NAKED void FUN_080ce28c(Player* p) { INCFUNC("asm/func/FUN_080ce28c.inc"); }
+// 通信対戦の毎フレームの見た目の更新, 状態異常などからパレットを決め, パーティクルと衝撃波を進めて影の位置を出す (Player_UpdatePoseAndShadow の通信版)
+void PlayerLink_UpdatePoseAndShadow(Player* p) {
+  s32 pose;
+
+  PlayerLink_UpdateFormScale(p);
+  PlayerLink_CountMash(p);
+  pose = PlayerLink_TickBadCondTimers(p, 0);
+  pose = PlayerLink_ApplyPoseHold(p, pose);
+  pose = PlayerLink_ApplyFlashPose(p, pose);
+  PlayerLink_UpdatePltt(p, pose);
+  PlayerLink_UpdateNoisePtcl(p);
+  PlayerLink_UpdateConfusePtcl(p);
+  PlayerLink_UpdateEnchantPtcls(p);
+  PlayerLink_UpdateChargePtcls(p);
+  p->shockwave.update(&p->shockwave);
+
+  p->shadowPos.x = p->mover.pos.x + p->shadowOffset.x;
+  p->shadowPos.y = p->mover.pos.y + p->shadowOffset.y;
+  p->shadowPos.z = p->mover.pos.z + p->shadowOffset.z;
+}
 
 void FUN_080ce330(Player* p) {
   ElementalCondEmitter_Destroy(&p->emitter);
@@ -1615,7 +1645,7 @@ u32 PlayerLink_WeaponEffectSol(Player* p) {
 }
 
 u32 PlayerLink_WeaponEffectNight(Player* p) {
-  if (PlayerLink_IsNight() != 0) {
+  if (PlayerLink_IsNight(p) != 0) {
     return 10;
   }
   return 0;
@@ -1783,11 +1813,113 @@ NON_MATCH void PlayerLink_EnableWeaponSpecialEffects(Player* p, LinkTradeWeapon*
 #endif
 }
 
-NAKED void FUN_080ce868(Player* p) { INCFUNC("asm/func/FUN_080ce868.inc"); }
+// 武器種ごとに攻撃判定の大きさ・位置・攻撃元の種別を設定する, サバタは固定値 (Player_SetWeaponHitbox の通信版, 無敵時間が長い)
+void PlayerLink_SetWeaponHitbox(Player* p) {
+  Hitbox* hitbox = &p->wpn.hitbox;
+  Vec3 halfSize, offset;
+  u32 source;
 
-NAKED s32 FUN_080ceaa4(Player* p, LinkTradeWeapon* w) { INCFUNC("asm/func/FUN_080ceaa4.inc"); }
+  if (p->kind == PLAYER_SABATA) {
+    VEC3_SET(halfSize, Q8(0.665), Q8(0.196), Q8(0.665));
+    VEC3_SET(offset, 0, Q8(-0.08), 0);
+    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.kind, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, 20, 0x32, HBSRC_GUN, HBATTR_DARK, 30);
+    Hitbox_SetHandler(hitbox, NULL, p);
+  } else {
+    switch (p->wpn.weaponKind) {
+      case WK_SWORD: {
+        VEC3_SET(halfSize, Q8(0.352), Q8(0.196), Q8(0.352));
+        VEC3_SET(offset, 0, Q8(-0.1), 0);
+        source = HBSRC_SWORD;
+        p->wpn.knockback = 32;
+        p->wpn.iframes = 20;
+        break;
+      }
+      case WK_SPEAR: {
+        VEC3_SET(halfSize, Q8(0.235), Q8(0.391), Q8(0.235));
+        VEC3_SET(offset, 0, 0, 0);
+        source = HBSRC_SPEAR;
+        p->wpn.knockback = 64;
+        p->wpn.iframes = 40;
+        break;
+      }
+      case WK_HAMMER: {
+        VEC3_SET(halfSize, Q8(0.313), Q8(0.274), Q8(0.313));
+        VEC3_SET(offset, 0, Q8(0.12), 0);
+        source = HBSRC_HAMMER;
+        p->wpn.knockback = 48;
+        p->wpn.iframes = 40;
+        break;
+      }
+      case WK_OTHERS: {
+        VEC3_SET(halfSize, Q8(0.235), Q8(0.391), Q8(0.235));
+        VEC3_SET(offset, 0, Q8(-0.313), 0);
+        source = HBSRC_FIST;
+        p->wpn.knockback = 1;
+        p->wpn.iframes = 20;
+        break;
+      }
+      case WK_GUN: {
+        VEC3_SET(halfSize, Q8(0.235), Q8(0.196), Q8(0.235));
+        VEC3_SET(offset, 0, Q8(-0.1), 0);
+        source = HBSRC_GUN;
+        p->wpn.knockback = 32;
+        p->wpn.iframes = 30;
+        break;
+      }
+      default: {
+        return;
+      }
+    }
 
-NAKED void player_weapon_080ceafc(Player* p, LinkTradeWeapon* w) { INCFUNC("asm/func/player_weapon_080ceafc.inc"); }
+    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.kind, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockback, source, 0, p->wpn.iframes);
+    Hitbox_SetHandler(hitbox, PlayerLink_OnWeaponHit, p);
+  }
+}
+
+// 通信対戦の攻撃力, CalcAttack のレベルを 99, 銃の熟練度を 40 に固定した版で鎧の効果は乗らない
+s32 PlayerLink_CalcAttack(Player* p, LinkTradeWeapon* w) {
+  s32 atk;
+  s32 val = (p->stats[STAT_STRENGTH] + 99) >> 1;
+
+  switch (w->kind) {
+    case WK_SWORD:
+    case WK_SPEAR:
+    case WK_HAMMER: {
+      atk = val + w->atk + w->quality;
+      if (atk <= 0) {
+        atk = 1;
+      }
+      return atk;
+    }
+    case WK_OTHERS: {
+      return val;
+    }
+    case WK_GUN: {
+      return ((Div(40, 10) - 8) * 5 + w->atk) * 2;
+    }
+  }
+}
+
+// 通信対戦で持たせる武器 w の情報を Player に展開する (Player_ApplyWeapon の通信版)
+void PlayerLink_ApplyWeapon(Player* p, LinkTradeWeapon* w) {
+  p->wpn.weaponID = w->id;
+  p->wpn.weaponKind = w->kind;
+  p->wpn.weaponAtk = w->atk;
+  p->linkWeaponQuality = w->quality;
+  p->wpn.atkPower = PlayerLink_CalcAttack(p, w);
+  p->wpn.knockback = 0;
+  PlayerLink_EnableWeaponSpecialEffects(p, w);
+
+  if (p->wpn.weaponID == WEAPON_MEGA_BUSTER) {
+    p->attackCB = PlayerLink_UpdateMegaBusterAttack;
+  } else {
+    p->attackCB = gPlayerLinkAttackUpdates[p->wpn.weaponKind];
+  }
+
+  PlayerLink_SetWeaponHitbox(p);
+}
 
 s32 GetMagicCost(s32 magic) { return gMagicCosts_085ad160[magic]; }
 
@@ -1991,7 +2123,7 @@ NON_MATCH s32 PlayerLink_GetMagicAction(Player* p) {
 void PlayerLink_RefreshMagicInfo(Player* p) {
   PlayerMagic* m = &p->magic;
 
-  m->id = p->linkRecord->unk_40[2];
+  m->id = p->linkRecord->loadout[2];
   if (m->id < 0) {
     m->cat = 0xFF;
     m->basicCost = 0;
@@ -2006,7 +2138,7 @@ void PlayerLink_RefreshMagicInfo(Player* p) {
   m->enchanted = FALSE;
 }
 
-void FUN_080cef14(Player* p) {
+void PlayerLink_ReadInputIdxArg(Player* p) {
   s32 val = VM_SeekToNamedArg('i');
 
   if (val != 0) {
@@ -2015,7 +2147,7 @@ void FUN_080cef14(Player* p) {
   p->inputIdx = val;
 }
 
-LinkPlayerRecord* FUN_080cef30(Player* p) {
+LinkPlayerRecord* PlayerLink_GetRecord(Player* p) {
   s32 i = p->inputIdx;
 
   if (gLinkSession == NULL || i < 0) {
@@ -2024,16 +2156,40 @@ LinkPlayerRecord* FUN_080cef30(Player* p) {
   return &gLinkSession->records[i];
 }
 
-NAKED s32 FUN_080cef5c(Player* p) { INCFUNC("asm/func/FUN_080cef5c.inc"); }
+// 通信相手の記録の loadout[0] からプレイヤーの種類と更新関数を決める
+s32 PlayerLink_InitKind(Player* p) {
+  switch (p->linkRecord->loadout[0]) {
+    case 0: {
+      p->kind = PLAYER_RDJANGO;
+      p->updateCallback = PlayerLink_UpdateDjango;
+      break;
+    }
+    case 1: {
+      p->kind = PLAYER_BDJANGO;
+      p->updateCallback = PlayerLink_UpdateDjango;
+      break;
+    }
+    case 2: {
+      p->kind = PLAYER_SABATA;
+      p->updateCallback = PlayerLink_UpdateSabata;
+      break;
+    }
+    default: {
+      p->kind = PLAYER_RDJANGO;
+      p->updateCallback = PlayerLink_UpdateDjango;
+      break;
+    }
+  }
+}
 
 // 通信相手の記録からステータス4種を引き直す
-void FUN_080cefcc(Player* p) {
+void PlayerLink_InitStats(Player* p) {
   s32 strength;
   s32 vitality;
   s32 spirit;
   s32 agility;
 
-  FUN_081dfa20(p->linkRecord->unk_40[1], &strength, &vitality, &spirit, &agility);
+  FUN_081dfa20(p->linkRecord->loadout[1], &strength, &vitality, &spirit, &agility);
   p->stats[STAT_VITALITY] = vitality;
   p->stats[STAT_SPIRIT] = spirit;
   p->stats[STAT_STRENGTH] = strength;
@@ -2041,7 +2197,7 @@ void FUN_080cefcc(Player* p) {
 }
 
 // 体力のステータスから最大HPを決め直して全快にする
-void FUN_080cf01c(Player* p) {
+void PlayerLink_InitHP(Player* p) {
   s32 hp = p->stats[0] * 10;
 
   p->maxHP = hp;
@@ -2049,7 +2205,7 @@ void FUN_080cf01c(Player* p) {
 }
 
 // ENEのステータスから最大ENEを決め直して満タンにする
-void FUN_080cf040(Player* p) {
+void PlayerLink_InitEne(Player* p) {
   s32 ene = p->stats[1] * 5 + 100;
 
   p->maxEne = ene;
@@ -2057,7 +2213,7 @@ void FUN_080cf040(Player* p) {
 }
 
 // 入力元と操作方向を通信相手ぶんに差し替え, 方向の履歴を入力なしで埋める
-void FUN_080cf064(Player* p) {
+void PlayerLink_InitInput(Player* p) {
   s32 i;
 
   p->input = &gInput[p->inputIdx];
@@ -2068,7 +2224,28 @@ void FUN_080cf064(Player* p) {
   }
 }
 
-NAKED s32 FUN_080cf0b4(Player* p) { INCFUNC("asm/func/FUN_080cf0b4.inc"); }
+// 通信対戦の開始時の状態を作る, 通信相手の記録から種類・ステータス・HP・ENE・入力を決め直し, カーモスと状態効果を消して自分の武器を持たせた扱いにする
+s32 PlayerLink_InitState(Player* p) {
+  p->linkRecord = PlayerLink_GetRecord(p);
+  p->mode = PMODE_ACTIVE;
+  KAAMOS(0) = 0;
+  KAAMOS(1) = 0;
+  SOLAR_CHARM(0) = 0;
+  SOLAR_CHARM(1) = 0;
+  PlayerLink_InitKind(p);
+  PlayerLink_InitStats(p);
+  PlayerLink_InitHP(p);
+  PlayerLink_InitEne(p);
+  PlayerLink_SetAction(p, PACT_IDLE, 0);
+  PlayerLink_InitInput(p);
+  p->goodCondID = 0;
+  p->goodFrom = 0;
+  p->goodCondTimer = 0;
+  p->heldWeaponIdx = p->inputIdx;
+  p->lastHitPlayerMask = 0;
+  p->lastHitSource = 0;
+  return 0;
+}
 
 // 人の姿のスプライトを用意し, スクリプトの '.d' の向きで立たせる
 void PlayerLink_InitSprite(Player* p) {
@@ -2156,9 +2333,9 @@ bool32 PlayerLink_InitMover(Player* p, u32 moverID) {
   return result;
 }
 
-void FUN_080cf54c(Player* p) { player_weapon_080ceafc(p, &p->linkRecord->body); }
+void PlayerLink_InitWeapon(Player* p) { PlayerLink_ApplyWeapon(p, &p->linkRecord->body); }
 
-// 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる, 通信対戦では HBF_NPC を付けない
+// 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる, 通信対戦では HBF_ACTOR を付けない
 void PlayerLink_SetupHurtbox(Player* p) {
   Hitbox* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
@@ -2176,7 +2353,19 @@ void PlayerLink_SetupHurtbox(Player* p) {
   Hitbox_Register(hurtbox);
 }
 
-NAKED void FUN_080cf610(Player* p) { INCFUNC("asm/func/FUN_080cf610.inc"); }
+// 通信対戦の鎧, 防御力 0・重さはブリガンダインと同じにして, 食らい判定の威力をハヤサにし, 鎧の効果は全て外す
+void PlayerLink_InitArmor(Player* p) {
+  const ArmorData* a = &gArmorDB[ARMOR_BRIGANDINE];
+
+  p->armor.defence = 0;
+  p->armor.weight = a->weight;
+  if (p->kind == PLAYER_RDJANGO) {
+    Hitbox_SetPowerAndAttributes(&p->hurtbox, p->stats[STAT_AGILITY], HBATTR_SOL, HBATTR_DARK);
+  } else {
+    Hitbox_SetPowerAndAttributes(&p->hurtbox, p->stats[STAT_AGILITY], HBATTR_DARK, HBATTR_SOL);
+  }
+  Player_ClearEquipBuff(p, 0x0FFFFFF0);
+}
 
 // 煙を出してダメージを1増やす (Player_StepRainDamage の15フレームごとの中身と同じ)
 void PlayerLink_EmitDamageSmoke(Player* p) {
@@ -2326,7 +2515,7 @@ void PlayerLink_UpdateCameraLookAt(Player* p) {
   p->cameraLookAt.x = Div(p->mover.pos.x + p->lookAroundOffset.x + p->cameraLookAt.x * 4, 5);
   p->cameraLookAt.y = Div(p->mover.pos.y + p->lookAroundOffset.y + 150 + p->cameraLookAt.y * 4, 5);
   p->cameraLookAt.z = Div(p->mover.pos.z + p->lookAroundOffset.z + p->cameraLookAt.z * 4, 5);
-  if (p->mover.unk_4 == LinkSession_GetPlayerIdx()) {
+  if (p->mover.kind == LinkSession_GetPlayerIdx()) {
     Camera_LookAt(&p->cameraLookAt);
   }
 }
@@ -2360,16 +2549,16 @@ bool32 PlayerLink_IsOnIce(u32 attr) {
   return FALSE;
 }
 
-// 溶岩タイルに乗ったら, そのタイルの中心を knockbackOrigin にして位置をタイルの内側に収め, 被弾を保留する (エレベーター上と吹き飛ばし中は除く)
+// 溶岩タイルに乗ったら, そのタイルの中心を hazardCenter にして位置をタイルの内側に収め, 溶岩の被弾を保留する (エレベーター上と押し戻し中は除く)
 void PlayerLink_CheckLavaHurt(Player* p) {
-  if (PlayerLink_IsInLava(GetTileAttrAt(&p->mover.pos)) && p->elevatorFlags == 0 && !p->originKnockback && !Elevator_FindAtPos(&p->mover.pos)) {
+  if (PlayerLink_IsInLava(GetTileAttrAt(&p->mover.pos)) && p->elevatorFlags == 0 && !p->lavaKnockback && !Elevator_FindAtPos(&p->mover.pos)) {
     s32 bx = Mod(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 bz = Div(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 minX, maxX, minZ, maxZ;
 
-    p->knockbackTileCenter.x = (bx << 8) + 128;
-    p->knockbackTileCenter.z = (bz << 8) + 128;
-    p->knockbackOrigin = &p->knockbackTileCenter;
+    p->hazardTileCenter.x = (bx << 8) + 128;
+    p->hazardTileCenter.z = (bz << 8) + 128;
+    p->hazardCenter = &p->hazardTileCenter;
     minX = (bx << 8) + 1;
     maxX = (bx << 8) + 255;
     minZ = (bz << 8) + 1;
@@ -2386,30 +2575,30 @@ void PlayerLink_CheckLavaHurt(Player* p) {
     }
     p->beast.pos = p->mover.pos;
     p->human.pos = p->mover.pos;
-    p->originHitPending = TRUE;
+    p->lavaHitPending = TRUE;
   }
 }
 
-// knockbackOrigin の位置から弾かれたときの被弾処理, 向きを knockbackOrigin から見た方向に合わせて吹き飛ばしを設定し, 受けるダメージ 50 を返す
-s32 PlayerLink_ApplyOriginHit(Player* p) {
-  p->originKnockback = TRUE;
+// 溶岩で焼かれたときの被弾処理, hazardCenter から見た方向に向きを合わせて押し戻しを設定し, 受けるダメージ 50 を返す
+s32 PlayerLink_ApplyLavaHit(Player* p) {
+  p->lavaKnockback = TRUE;
   p->hurtbox.knockback = 50;
   Player_SetIframes(p, 60);
   p->blownAway = 0;
   p->floatHeight = 0;
-  p->facing = (Angle_ToDir4(ArcTan2_8(p->mover.pos.x - p->knockbackOrigin->x, p->mover.pos.z - p->knockbackOrigin->z)) << 1) + 1;
+  p->facing = (Angle_ToDir4(ArcTan2_8(p->mover.pos.x - p->hazardCenter->x, p->mover.pos.z - p->hazardCenter->z)) << 1) + 1;
   PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
-  p->originHitPending = FALSE;
+  p->lavaHitPending = FALSE;
   return 50;
 }
 
-// pos のタイルの高さが p の足元の高さと違うか, タイルに TATTR_UNK_0 が立っていれば真
+// pos のタイルの高さが p の足元の高さと違うか, タイルに TATTR_PLAYER_WALL が立っていれば真
 bool32 PlayerLink_IsTileBlockedAt(Player* p, Vec3* pos) {
   if (TileHeightAt(pos) != p->mover.pos.y) {
     return TRUE;
   }
-  if (GetTileAttrAt(pos) & TATTR_UNK_0) {
+  if (GetTileAttrAt(pos) & TATTR_PLAYER_WALL) {
     return TRUE;
   }
   return FALSE;
@@ -2583,9 +2772,84 @@ void PlayerLink_MakeNoise(Player* p, Vec3* pos, s16 param_3, s32 param_4, Vec3* 
   }
 }
 
-NAKED void FUN_080d040c(Player* p) { INCFUNC("asm/func/FUN_080d040c.inc"); }
+// 通信対戦で倒されたときに PMODE_UNK_3 へ移す, 変身を解いて状態効果を消し, 持っている武器を落として倒された数と倒した側の撃破数を数える (Player_EnterDeadState の通信版)
+void PlayerLink_EnterDeadState(Player* p) {
+  s32 i;
 
-NAKED void FUN_080d05e8(Player* p) { INCFUNC("asm/func/FUN_080d05e8.inc"); }
+  if (p->kind == PLAYER_MOUSE) {
+    p->kind = PLAYER_BDJANGO;
+    p->updateCallback = PlayerLink_UpdateDjango;
+    p->useAuxSprite = 0;
+    p->mover.mainSprite = &p->human, p->mover.auxSprite = NULL;
+    p->emitter.pos = &p->human.pos;
+    p->plttIdx = 0xFFFF;
+  }
+  p->facing |= 1;
+  PLAYER_SET_ANIM_4DIR(p, p->facing);
+  p->mode = PMODE_UNK_3;
+  p->state = 0;
+  p->stateTimer = 0;
+  p->hurtbox.iframes = 0;
+  p->magic.enchanted = FALSE;
+  PlayerLink_ClearElementalCond(p);
+  PlayerLink_StopEneChargeSound(p);
+  if (p->lookAroundOffset.val != 0) {
+    PlayerLink_EndLookAround(p);
+  }
+  p->goodCondID = 0;
+  p->goodFrom = 0;
+  p->goodCondTimer = 0;
+  p->isMiniHuman = FALSE;
+  p->useForcedDelta = 0;
+  for (i = 0; i < 3; i++) {
+    p->badCondTimer[i] = 0;
+  }
+  p->controlUp = p->linkRecord->controlUp;
+
+  if (p->kind != PLAYER_SABATA) {
+    if (p->heldWeaponIdx >= 0) {
+      LinkSession_DropWeapon(&p->mover.pos, p->heldWeaponIdx);
+    }
+    p->heldWeaponIdx = -1;
+  }
+
+  LinkSession_AddDeath(p->inputIdx);
+  if (p->lastHitPlayerMask & 0xF) {
+    if (p->lastHitPlayerMask & 1) {
+      LinkSession_AddKill(0);
+    } else if (p->lastHitPlayerMask & 2) {
+      LinkSession_AddKill(1);
+    } else if (p->lastHitPlayerMask & 4) {
+      LinkSession_AddKill(2);
+    } else if (p->lastHitPlayerMask & 8) {
+      LinkSession_AddKill(3);
+    }
+    PlayerLink_UpdateBloodSwordOnKill(p->lastHitPlayerMask, p->lastHitSource);
+  }
+}
+
+// 倒れたプレイヤーを出現位置で復活させる, サバタ以外は素手に持ち替え, HP と ENE を満タンにして 90 フレームの無敵を付ける
+void PlayerLink_Respawn(Player* p) {
+  if (p->kind != PLAYER_SABATA) {
+    PlayerLink_ApplyWeapon(p, (LinkTradeWeapon*)&gWeaponDB[WEAPON_NONE]);
+  }
+  p->mode = PMODE_ACTIVE;
+  p->hp = p->maxHP;
+  p->ene = p->maxEne;
+  p->mover.pos = p->initPos;
+  Map_InitMoverTile(&p->tile, &p->mover.pos);
+  p->mover.tile = &p->tile;
+  p->hurtbox.damage = 0;
+  p->hurtbox.knockback = 0;
+  p->lavaKnockback = FALSE;
+  p->hurtbox.iframes = 90;
+  p->floatHeight = 0;
+  p->unk_457[0] = 1;
+  p->facing = p->initFacing;
+  PlayerLink_SetAnimFacing(p);
+  PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
+  PlayerLink_SetAction(p, PACT_IDLE, 0);
+}
 
 // 直前の入力方向の履歴から向き直す先を選ぶ, 履歴が斜めなら即採用、それ以外は隣の方向が来るまで遡る
 u32 PlayerLink_ResolveStopFacing(Player* p) {
@@ -2907,7 +3171,7 @@ void PlayerLink_UpdateWall(Player* p) {
           if (!PlayerLink_IsOnIce(tile->attr)) {
             pos.x -= POLAR_X(50, ((p->actionDir + 1) & 7) << 5);
             pos.z -= POLAR_Z(50, ((p->actionDir + 1) & 7) << 5);
-            if (TileHeightAt(&pos) >= height + Q8(0.782) && !(GetTileAttrAt(&pos) & TATTR_UNK_2)) {
+            if (TileHeightAt(&pos) >= height + Q8(0.782) && !(GetTileAttrAt(&pos) & TATTR_LIFT)) {
               s32 speed;
 
               animIdx = Player_GetAnimIdx(p->kind, 4);
@@ -2977,17 +3241,17 @@ void PlayerLink_SetChargePos(Player* p) {
   }
 }
 
-// 太陽チャージ (PACT_UNK_7), 構えたあと A を押し続けている間, 日光が当たっていて ENE が満タンでなければチャージ音を鳴らして光の粒を出す
+// 太陽チャージ (PACT_PALM_UP), 構えたあと A を押し続けている間, 日光が当たっていて ENE が満タンでなければチャージ音を鳴らして光の粒を出す
 void PlayerLink_UpdateSolarCharge(Player* p) {
-  if (p->action != PACT_UNK_7) {
-    PlayerLink_SetAction(p, PACT_UNK_7, 0);
+  if (p->action != PACT_PALM_UP) {
+    PlayerLink_SetAction(p, PACT_PALM_UP, 0);
     p->nextEnchantColorIdx = 0;
   }
 
   switch (p->state) {
     case 0: {
       PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-      PlayerLink_SetAction(p, PACT_UNK_7, 1);
+      PlayerLink_SetAction(p, PACT_PALM_UP, 1);
       break;
     }
     case 1: {
@@ -3008,15 +3272,15 @@ void PlayerLink_UpdateSolarCharge(Player* p) {
       if (PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
         Sound_PlayForPlayer(p->inputIdx, SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          PlayerLink_SetAction(p, PACT_UNK_7, 4);
+          PlayerLink_SetAction(p, PACT_PALM_UP, 4);
         } else if (PlayerLink_CanSolarCharge(p)) {
           Sound_PlayForPlayer(p->inputIdx, NOISE_SOLAR_CHARGE);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          PlayerLink_SetAction(p, PACT_UNK_7, 2);
+          PlayerLink_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          PlayerLink_SetAction(p, PACT_UNK_7, 3);
+          PlayerLink_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -3039,11 +3303,11 @@ void PlayerLink_UpdateSolarCharge(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         Sound_StopForPlayer(p->inputIdx, NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        PlayerLink_SetAction(p, PACT_UNK_7, 4);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 4);
       } else if (!PlayerLink_CanSolarCharge(p)) {
         Sound_StopForPlayer(p->inputIdx, NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        PlayerLink_SetAction(p, PACT_UNK_7, 3);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -3052,12 +3316,12 @@ void PlayerLink_UpdateSolarCharge(Player* p) {
       PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
-        PlayerLink_SetAction(p, PACT_UNK_7, 4);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 4);
       } else if (PlayerLink_CanSolarCharge(p)) {
         Sound_PlayForPlayer(p->inputIdx, NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        PlayerLink_SetAction(p, PACT_UNK_7, 2);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -3080,16 +3344,16 @@ s32 PlayerLink_CanDarkCharge(Player* p) {
   return 0;
 }
 
-// サバタの暗黒チャージ (PACT_UNK_7), 構えたあと A を押し続けている間, 日光が当たっていなくて ENE が満タンでなければチャージ音を鳴らして闇の粒を出す
+// サバタの暗黒チャージ (PACT_PALM_UP), 構えたあと A を押し続けている間, 日光が当たっていなくて ENE が満タンでなければチャージ音を鳴らして闇の粒を出す
 void PlayerLink_UpdateDarkCharge(Player* p) {
-  if (p->action != PACT_UNK_7) {
-    PlayerLink_SetAction(p, PACT_UNK_7, 0);
+  if (p->action != PACT_PALM_UP) {
+    PlayerLink_SetAction(p, PACT_PALM_UP, 0);
   }
 
   switch (p->state) {
     case 0: {
       PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-      PlayerLink_SetAction(p, PACT_UNK_7, 1);
+      PlayerLink_SetAction(p, PACT_PALM_UP, 1);
       break;
     }
     case 1: {
@@ -3110,15 +3374,15 @@ void PlayerLink_UpdateDarkCharge(Player* p) {
       if (PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
         Sound_PlayForPlayer(p->inputIdx, SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          PlayerLink_SetAction(p, PACT_UNK_7, 4);
+          PlayerLink_SetAction(p, PACT_PALM_UP, 4);
         } else if (PlayerLink_CanDarkCharge(p)) {
           Sound_PlayForPlayer(p->inputIdx, VO_SABATA_ANKOKU);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          PlayerLink_SetAction(p, PACT_UNK_7, 2);
+          PlayerLink_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          PlayerLink_SetAction(p, PACT_UNK_7, 3);
+          PlayerLink_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -3146,11 +3410,11 @@ void PlayerLink_UpdateDarkCharge(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         Sound_StopForPlayer(p->inputIdx, NOISE_DARK_CHARGE);
         p->chargeSoundOn = 0;
-        PlayerLink_SetAction(p, PACT_UNK_7, 4);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 4);
       } else if (!PlayerLink_CanDarkCharge(p)) {
         Sound_StopForPlayer(p->inputIdx, NOISE_DARK_CHARGE);
         p->chargeSoundOn = 0;
-        PlayerLink_SetAction(p, PACT_UNK_7, 3);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -3159,12 +3423,12 @@ void PlayerLink_UpdateDarkCharge(Player* p) {
       PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
-        PlayerLink_SetAction(p, PACT_UNK_7, 4);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 4);
       } else if (PlayerLink_CanDarkCharge(p)) {
         Sound_PlayForPlayer(p->inputIdx, NOISE_DARK_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        PlayerLink_SetAction(p, PACT_UNK_7, 2);
+        PlayerLink_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -3202,10 +3466,33 @@ void PlayerLink_RefreshEnchant(Player* p) {
   }
 }
 
-NAKED s32 FUN_080d1a80(Player* p) { INCFUNC("asm/func/FUN_080d1a80.inc"); }
+// 通信対戦で持っている武器の攻撃力, Player_GetWeaponPower のレベルを 99, 熟練度を 40 に固定し鎧の効果を乗せない版, 素手はチカラが半分になる
+s32 PlayerLink_GetWeaponPower(Player* p) {
+  s32 atk;
+
+  switch (p->wpn.weaponKind) {
+    case WK_SWORD:
+    case WK_SPEAR:
+    case WK_HAMMER: {
+      s32 str = (p->stats[STAT_STRENGTH] + 99) >> 1;
+      atk = p->wpn.weaponAtk + p->linkWeaponQuality;
+      if (atk < 0) {
+        atk = 0;
+      }
+      return str + atk;
+    }
+    case WK_OTHERS: {
+      return ((p->stats[STAT_STRENGTH] >> 1) + 99) >> 1;
+    }
+    case WK_GUN: {
+      atk = p->wpn.weaponAtk + (Div(40, 10) - 8) * 5;
+      return atk * 2;
+    }
+  }
+}
 
 s32 PlayerLink_GetAttackPower(Player* p) {
-  s32 result = FUN_080d1a80(p);
+  s32 result = PlayerLink_GetWeaponPower(p);
   s32 i;
 
   for (i = 0; i < WEAPON_EFFECT_SLOT_COUNT; i++) {
@@ -3228,7 +3515,34 @@ s32 PlayerLink_GetWeaponEffectAttrs(Player* p) {
   return result;
 }
 
-NAKED void FUN_080d1b68(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080d1b68.inc"); }
+// 通信対戦の武器の攻撃判定が当たったときのハンドラ, 特効系の追加ダメージを足し, 黒ジャンゴは夜の闇エンチャントで 1.5 倍 (Django_OnWeaponHit の通信版)
+void PlayerLink_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _) {
+  Player* p;
+  s32 i;
+
+  if (!TEST_FLAGS(b->ignoreMask, 0x1F)) {
+    return;
+  }
+
+  p = a->owner;
+  Hitbox_ApplyDamageAlt(a, b);
+  for (i = 0; i < WEAPON_EFFECT_SLOT_COUNT; i++) {
+    if (p->weaponEffectCb3[i] != NULL) {
+      b->damage += p->weaponEffectCb3[i](p, a, b);
+    }
+  }
+
+  if (p->kind != PLAYER_BDJANGO) {
+    return;
+  }
+
+  if (p->wpn.enchantIdx == 1 && PlayerLink_IsNight(p) && !(b->hitResult & HBRESULT_BONUS)) {
+    b->damage = (u32)(b->damage * 3) >> 1;
+    if (b->flags & HBF_ANGLE) {
+      b->hitResult |= HBRESULT_BONUS;
+    }
+  }
+}
 
 // 向いている方向へ武器の攻撃判定を出す準備をする, 黒ジャンゴとブルースパワー装備中は振りの速さを 1.5 倍にし, エンチャント中は属性を足して魔法のコストを払う
 void PlayerLink_SetupSwordAttack(Player* p) {
@@ -4412,7 +4726,7 @@ void PlayerLink_UpdateFall(Player* p) {
   }
 }
 
-// 被弾 (PACT_DAMAGED), 吹き飛ばされて止まったら PACT_SEKIKA か PACT_IDLE に戻る, knockbackOrigin から弾かれたときはそちらへ寄せながら炎を出す
+// 被弾 (PACT_DAMAGED), 吹き飛ばされて止まったら PACT_SEKIKA か PACT_IDLE に戻る, 溶岩で焼かれたときは hazardCenter へ寄せながら炎を出す
 void PlayerLink_UpdateHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
     PlayerLink_SetAction(p, PACT_DAMAGED, 0);
@@ -4424,9 +4738,9 @@ void PlayerLink_UpdateHurt(Player* p) {
     }
   }
   if (p->hurtbox.knockback != 0) {
-    if (p->originKnockback) {
-      s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
-      s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
+    if (p->lavaKnockback) {
+      s32 dx = p->hazardCenter->x - p->mover.pos.x;
+      s32 dz = p->hazardCenter->z - p->mover.pos.z;
 
       p->mover.delta.x = FixToInt(3, dx);
       p->mover.delta.z = FixToInt(3, dz);
@@ -4447,7 +4761,7 @@ void PlayerLink_UpdateHurt(Player* p) {
     p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
   } else {
     p->hurtbox.knockback = 0;
-    p->originKnockback = FALSE;
+    p->lavaKnockback = FALSE;
     if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
       PlayerLink_SetAction(p, PACT_SEKIKA, 0);
     } else if (PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 42), Q6(1))) {
@@ -4530,11 +4844,197 @@ void PlayerLink_UpdateBlownAway(Player* p) {
   }
 }
 
-NAKED void FUN_080d4d34(Player* p) { INCFUNC("asm/func/FUN_080d4d34.inc"); }
+// 通信対戦で倒れて死ぬ (PACT_DEATH_PRONE), 溶岩へは流されずに後ろへ流れ, 倒れたところでコインを全部落とし, 点滅して消えたあと出現位置で復活する
+void PlayerLink_UpdateDeath(Player* p) {
+  if (p->action != PACT_DEATH_PRONE) {
+    PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
+    p->knockbackTimer = 0;
+    if (p->kind == PLAYER_SABATA) {
+      Sound_PlayForPlayer(p->inputIdx, VO_SABATA_DEATH);
+    } else {
+      Sound_PlayForPlayer(p->inputIdx, VO_DJANGO_DEATH);
+    }
+    Sound_PlayForPlayer(p->inputIdx, SE_DAMAGE);
+    PlayerLink_SetAction(p, PACT_DEATH_PRONE, 0);
+  }
 
-NAKED void FUN_080d4fa4(Player* p) { INCFUNC("asm/func/FUN_080d4fa4.inc"); }
+  switch (p->state) {
+    case 0: {
+      s32 angle = ((p->facing + 1) & 7) << 5;
+      Vec3 pos;
 
-NAKED void FUN_080d53e4(Player* p) { INCFUNC("asm/func/FUN_080d53e4.inc"); }
+      p->mover.delta.x = FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
+      pos = p->mover.pos;
+      pos.x += p->mover.delta.x;
+      pos.z += p->mover.delta.z;
+      if (PlayerLink_IsInLava(GetTileAttrAt(&pos))) {
+        p->mover.delta.x = 0;
+        p->mover.delta.z = 0;
+      }
+      if (p->hurtbox.knockback == 0) {
+        PlayerLink_SetAction(p, PACT_DEATH_PRONE, 1);
+      }
+      break;
+    }
+    case 1: {
+      if (p->human.animCmdIdx == 3 && p->human.animCmdTimer == 0) {
+        Sound_PlayForPlayer(p->inputIdx, SONG_209);
+        LinkSession_ReleaseAllCoins(&p->mover.pos, p->inputIdx);
+      }
+      if (PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 46), Q6(1))) {
+        PlayerLink_SetAction(p, PACT_DEATH_PRONE, 2);
+      }
+      break;
+    }
+    case 2: {
+      if (++p->stateTimer > 15) {
+        PlayerLink_SetAction(p, PACT_DEATH_PRONE, 3);
+      }
+      break;
+    }
+    case 3: {
+      if ((p->stateTimer & 7) >= 7 - (p->stateTimer >> 3)) {
+        PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
+      }
+      if (++p->stateTimer > 55) {
+        PlayerLink_Respawn(p);
+      }
+      break;
+    }
+  }
+}
+
+// 通信対戦で吹き飛ばされて死ぬ (PACT_DEATH_SUPINE), 溶岩へは流されずに宙を後ろへ飛び, 着地でコインを全部落とし, 点滅して消えたあと出現位置で復活する
+void PlayerLink_UpdateBlownAwayDeath(Player* p) {
+  if (p->action != PACT_DEATH_SUPINE) {
+    PLAYER_SET_ANIM_4DIR(p, p->facing);
+    if (p->kind == PLAYER_SABATA) {
+      Sound_PlayForPlayer(p->inputIdx, VO_SABATA_DEATH);
+    } else {
+      Sound_PlayForPlayer(p->inputIdx, VO_DJANGO_DEATH);
+    }
+    Sound_PlayForPlayer(p->inputIdx, SE_DAMAGE);
+    PlayerLink_SetAction(p, PACT_DEATH_SUPINE, 0);
+  }
+
+  switch (p->state) {
+    case 0: {
+      PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
+      if (++p->stateTimer > 3) {
+        PlayerLink_SetAction(p, PACT_DEATH_SUPINE, 1);
+        p->floatHeight = 300;
+      }
+      break;
+    }
+    case 1: {
+      s32 angle;
+      Vec3 pos;
+
+      PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 43), Q6(1));
+      angle = ((p->facing + 5) & 7) << 5;
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
+      pos = p->mover.pos;
+      pos.x += p->mover.delta.x;
+      pos.z += p->mover.delta.z;
+      if (PlayerLink_IsInLava(GetTileAttrAt(&pos))) {
+        p->mover.delta.x = 0;
+        p->mover.delta.z = 0;
+      }
+      if (p->floatHeight > 14) {
+        p->floatHeight -= 15;
+      } else {
+        p->floatHeight = 0;
+      }
+      if (p->hurtbox.knockback < 20) {
+        p->floatHeight = 0;
+        Sound_PlayForPlayer(p->inputIdx, SONG_680);
+        LinkSession_ReleaseAllCoins(&p->mover.pos, p->inputIdx);
+        PlayerLink_SetAction(p, PACT_DEATH_SUPINE, 2);
+      }
+      break;
+    }
+    case 2: {
+      s32 angle = ((p->facing + 5) & 7) << 5;
+      Vec3 pos;
+
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockback);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockback);
+      pos = p->mover.pos;
+      pos.x += p->mover.delta.x;
+      pos.z += p->mover.delta.z;
+      if (PlayerLink_IsInLava(GetTileAttrAt(&pos))) {
+        p->mover.delta.x = 0;
+        p->mover.delta.z = 0;
+      }
+      if (PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 44), Q6(1))) {
+        p->hurtbox.knockback = 0;
+        PlayerLink_SetAction(p, PACT_DEATH_SUPINE, 3);
+      }
+      break;
+    }
+    case 3: {
+      if (++p->stateTimer > 15) {
+        PlayerLink_SetAction(p, PACT_DEATH_SUPINE, 4);
+      }
+      break;
+    }
+    case 4: {
+      if ((p->stateTimer & 7) >= 7 - (p->stateTimer >> 3)) {
+        PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_BODY | PFLAG35A_HIDE_SHADOW);
+      }
+      if (++p->stateTimer > 55) {
+        PlayerLink_Respawn(p);
+      }
+      break;
+    }
+  }
+}
+
+// 通信対戦で落下して死ぬ (PACT_FALLDEATH), 持っているコインを全部落として沈み, 1秒後に出現位置で復活する
+void PlayerLink_UpdateFallDeath(Player* p) {
+  PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
+  switch (p->state) {
+    case 0: {
+      PlayerLink_PlayAnim(p, Player_GetAnimIdx(p->kind, 41), Q6(1));
+      p->floatHeight = 0;
+      p->mover.tile = NULL;
+      LinkSession_ReleaseAllCoins(&p->mover.pos, p->inputIdx);
+      Sound_PlayForPlayer(p->inputIdx, SE_FALL_SURPRISE);
+      PlayerLink_SetAction(p, PACT_FALLDEATH, 1);
+      break;
+    }
+    case 1: {
+      if (++p->stateTimer > 5) {
+        p->floatHeight = 0;
+        Sound_PlayForPlayer(p->inputIdx, SE_FALL_431);
+        PlayerLink_SetAction(p, PACT_FALLDEATH, 2);
+      }
+      break;
+    }
+    case 2: {
+      PlayerLink_PlayAnim(p, 44, Q6(1));
+      p->floatHeight -= 30;
+      if (++p->stateTimer > 8) {
+        p->hp = 0;
+        p->floatHeight = 0;
+        PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_BODY);
+        PlayerLink_SetAction(p, PACT_FALLDEATH, 3);
+      }
+      break;
+    }
+    case 3: {
+      PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_BODY);
+      if (++p->stateTimer > 59) {
+        PlayerLink_Respawn(p);
+      }
+      break;
+    }
+  }
+}
 
 // サバタのゼロシフト, 16フレームの間 食らい判定を消して点滅しながら前へ進む
 void PlayerLink_ZeroShift(Player* p) {
@@ -4718,7 +5218,7 @@ void PlayerLink_UpdateMouseLanding(Player* p) {
   }
 }
 
-// マウスの被弾 (PACT_DAMAGED), アニメ 2 を進めながら吹き飛び, knockbackOrigin から弾かれたときはそちらへ寄せながら炎を出し, 止まったら PACT_SEKIKA か PACT_IDLE に戻る
+// マウスの被弾 (PACT_DAMAGED), アニメ 2 を進めながら吹き飛び, 溶岩で焼かれたときは hazardCenter へ寄せながら炎を出し, 止まったら PACT_SEKIKA か PACT_IDLE に戻る
 void PlayerLink_UpdateMouseHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
     PLAYER_SET_ANIM_4DIR(p, p->facing);
@@ -4731,9 +5231,9 @@ void PlayerLink_UpdateMouseHurt(Player* p) {
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animDir, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
   if (p->hurtbox.knockback != 0) {
-    if (p->originKnockback) {
-      s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
-      s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
+    if (p->lavaKnockback) {
+      s32 dx = p->hazardCenter->x - p->mover.pos.x;
+      s32 dz = p->hazardCenter->z - p->mover.pos.z;
 
       p->mover.delta.x = FixToInt(3, dx);
       p->mover.delta.z = FixToInt(3, dz);
@@ -4754,7 +5254,7 @@ void PlayerLink_UpdateMouseHurt(Player* p) {
     p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
   } else {
     p->hurtbox.knockback = 0;
-    p->originKnockback = FALSE;
+    p->lavaKnockback = FALSE;
     if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
       PlayerLink_SetAction(p, PACT_SEKIKA, 0);
     } else {
@@ -4883,7 +5383,7 @@ s32 PlayerLink_DecideAction(Player* p) {
     }
     case PACT_DASH:
     case PACT_ATTACK:
-    case PACT_UNK_7:
+    case PACT_PALM_UP:
     case PACT_CMOUSE:
     case PACT_FREEZE:
     case PACT_DYNAMITE:
@@ -4906,7 +5406,7 @@ s32 PlayerLink_DecideAction(Player* p) {
         if (MapItemManager_TryOpen(&p->mover)) {
           action = PACT_IDLE;
         } else {
-          action = PACT_UNK_7;
+          action = PACT_PALM_UP;
         }
       } else if ((s16)p->facingHistory[0] == -1 || (p->input->down & R_BUTTON)) {
         action = PACT_IDLE;
@@ -4968,10 +5468,7 @@ void PlayerLink_PostUpdateHuman(Player* p) {
 }
 
 // 通信対戦のジャンゴの毎フレーム更新, 黒ジャンゴは自分の光ゲージで焼け, 行動ごとに gLinkDjangoActionFuncs の関数を呼ぶ (Player_UpdateCrossoverDjango と同形)
-// 残差1命令 (379/380): PlayerLink_UpdateMouse と同じく, 原典は光ゲージの値を r0 で作って r1 へ写す (サバタ版の (lux + 1) >> 1 は一致する)
-// 試済: u8 / s32 のローカル, 光ゲージを読む inline (u32 返し), 引数に三項演算子
-NON_MATCH void PlayerLink_UpdateDjango(Player* p) {
-#ifdef NONMATCHING_C
+void PlayerLink_UpdateDjango(Player* p) {
   s32 action;
 
   Player_SetFlag20(p, PFLAG20_UPDATED);
@@ -4987,15 +5484,7 @@ NON_MATCH void PlayerLink_UpdateDjango(Player* p) {
       bool32 canStep;
 
       if (p->kind == PLAYER_BDJANGO && (p->flag20 & PFLAG20_SUNBATHING)) {
-        u32 i = p->inputIdx;
-        s32 lux;
-
-        if (gLinkSession == NULL) {
-          lux = 0;
-        } else {
-          lux = gLinkSession->luxGauge[i];
-        }
-        PlayerLink_StepSunburn(p, lux);
+        PlayerLink_StepSunburn(p, LinkSession_GetLuxGauge(p->inputIdx));
       }
 
       PlayerLink_PushFacingHistory(p);
@@ -5034,7 +5523,7 @@ NON_MATCH void PlayerLink_UpdateDjango(Player* p) {
           height = TileHeightAt(&pos);
           if ((u32)height >= (u32)(p->mover.pos.y + Q8(0.782))) {
             attr = GetTileAttrAt(&pos);
-            if (!(attr & TATTR_UNK_2)) {
+            if (!(attr & TATTR_LIFT)) {
               p->actionDir = p->facing;
               p->wallSidling = 0;
               p->action = PACT_WALL;
@@ -5065,9 +5554,6 @@ NON_MATCH void PlayerLink_UpdateDjango(Player* p) {
       break;
     }
   }
-#else
-  INCFUNC("asm/func/PlayerLink_UpdateDjango.inc");
-#endif
 }
 
 // 通信対戦のサバタの毎フレーム更新, 行動ごとに gLinkSabataActionFuncs の関数を呼び, 壁にまっすぐ歩き当たり続けたら壁張り付きに入る (Player_UpdateCrossoverDjango と同形)
@@ -5134,7 +5620,7 @@ void PlayerLink_UpdateSabata(Player* p) {
           height = TileHeightAt(&pos);
           if ((u32)height >= (u32)(p->mover.pos.y + Q8(0.782))) {
             attr = GetTileAttrAt(&pos);
-            if (!(attr & TATTR_UNK_2)) {
+            if (!(attr & TATTR_LIFT)) {
               p->actionDir = p->facing;
               p->wallSidling = 0;
               p->action = PACT_WALL;
@@ -5222,10 +5708,7 @@ void PlayerLink_PostUpdateMouse(Player* p) {
 }
 
 // (Cマウスによる)ネズミ形態の毎フレーム更新, 行動ごとに gLinkMouseActionFuncs の関数を呼ぶ
-// 残差1命令 (84/85), 原典は光ゲージの値を r0 で作ってから r1 へ写すがこちらは r1 に直接作る
-// 試済: 光ゲージを読む inline (if/else, 三項演算子, u8 返し), ローカル経由
-NON_MATCH void PlayerLink_UpdateMouse(Player* p) {
-#ifdef NONMATCHING_C
+void PlayerLink_UpdateMouse(Player* p) {
   Player_SetFlag20(p, PFLAG20_UPDATED | PFLAG20_SNEAKING | PFLAG20_UNK_18);
 
   switch (p->mode) {
@@ -5233,15 +5716,7 @@ NON_MATCH void PlayerLink_UpdateMouse(Player* p) {
       s32 action;
 
       if (p->flag20 & PFLAG20_SUNBATHING) {
-        u32 i = p->inputIdx;
-        s32 lux;
-
-        if (gLinkSession == NULL) {
-          lux = 0;
-        } else {
-          lux = gLinkSession->luxGauge[i];
-        }
-        PlayerLink_StepSunburn(p, lux);
+        PlayerLink_StepSunburn(p, LinkSession_GetLuxGauge(p->inputIdx));
       }
 
       PlayerLink_PushFacingHistory(p);
@@ -5268,9 +5743,6 @@ NON_MATCH void PlayerLink_UpdateMouse(Player* p) {
       break;
     }
   }
-#else
-  INCFUNC("asm/func/PlayerLink_UpdateMouse.inc");
-#endif
 }
 
 // ignoreMask の立っているビットのプレイヤーを返す, 無ければ1人目
@@ -5285,9 +5757,49 @@ Player* PlayerLink_GetHitboxOwner(Hitbox* hitbox) {
   return gPlayerPtr[0];
 }
 
-NAKED void FUN_080d7474(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080d7474.inc"); }
+// アース属性の打撃で与えたダメージの 20% (最低 1) を当てた側の HP に吸い取る
+void PlayerLink_DrainHP(Player* p, s32 dmg) {
+  if (p->mode == PMODE_ACTIVE) {
+    s32 amount = Div(dmg * 20, 100);
+    s32 hp;
 
-NAKED void FUN_080d74e8(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080d74e8.inc"); }
+    if (amount <= 0) {
+      amount = 1;
+    }
+    hp = p->hp + amount;
+    if (hp > p->maxHP) {
+      amount = p->maxHP - p->hp;
+      p->hp = p->maxHP;
+    } else {
+      p->hp = hp;
+    }
+    if (amount > 0) {
+      CreateDamageNumber(&p->hurtbox, amount, 1, &p->mover.pos, &p->damageNumOffset, p->unk_978);
+    }
+  }
+}
+
+// ダーク属性の打撃で与えたダメージの 5% (最低 1) を当てた側の ENE に吸い取る
+void PlayerLink_DrainEne(Player* p, s32 dmg) {
+  if (p->mode == PMODE_ACTIVE) {
+    s32 amount = Div(dmg * 5, 100);
+    s32 ene;
+
+    if (amount <= 0) {
+      amount = 1;
+    }
+    ene = p->ene + amount;
+    if (ene > p->maxEne) {
+      amount = p->maxEne - p->ene;
+      p->ene = p->maxEne;
+    } else {
+      p->ene = ene;
+    }
+    if (amount > 0) {
+      CreateDamageNumber(&p->hurtbox, amount, 1, &p->mover.pos, &p->damageNumOffset, p->unk_978);
+    }
+  }
+}
 
 // 通信対戦の被弾処理, 吹き飛ばしと状態異常を入れてダメージを damage に足し, 当てたプレイヤーと攻撃元を覚える (Player_HandleHurt の通信版, フレイム/フロスト属性で引火/氷結, クラウド属性でコインを落とす)
 u32 PlayerLink_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
@@ -5369,10 +5881,10 @@ u32 PlayerLink_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
     b->damage = 0;
     if (!(a->typeMask & HBSRC_GUN) && Hitbox_TestIgnoreMask(a, 0xF)) {
       if (Hitbox_TestAttr(a, HBATTR_EARTH)) {
-        FUN_080d7474(PlayerLink_GetHitboxOwner(a), dmg);
+        PlayerLink_DrainHP(PlayerLink_GetHitboxOwner(a), dmg);
       }
       if (Hitbox_TestAttr(a, HBATTR_DARK)) {
-        FUN_080d74e8(PlayerLink_GetHitboxOwner(a), dmg);
+        PlayerLink_DrainEne(PlayerLink_GetHitboxOwner(a), dmg);
       }
     }
     p->damage += dmg;
@@ -5401,7 +5913,67 @@ void PlayerLink_OnHurt(Hitbox* a, Hitbox* b, Player* p) {
   }
 }
 
-NAKED s32 FUN_080d78dc(Player* p) { INCFUNC("asm/func/FUN_080d78dc.inc"); }
+// 落下死・溶岩・毒・引火のダメージを HP に反映し, 倒れる行動に入るか HP が尽きたら TRUE, 自分の攻撃が当たった相手なら敵ゲージに HP を出す (Player_UpdateDamage の通信版)
+s32 PlayerLink_UpdateDamage(Player* p) {
+  bool32 showGauge;
+
+  if ((GetTileAttrAt(&p->mover.pos) & TATTR_FALLDEATH) && p->elevatorFlags == 0) {
+    if (TestMapFlag(MPF_WATERFRONT)) {
+      PlayerLink_SetAction(p, PACT_DROWNING, 0);
+    } else {
+      PlayerLink_SetAction(p, PACT_FALLDEATH, 0);
+    }
+    p->damage = 0;
+    return TRUE;
+  }
+
+  showGauge = FALSE;
+  if (p->damage != 0 && ((p->lastHitPlayerMask >> LinkSession_GetPlayerIdx()) & 1)) {
+    showGauge = TRUE;
+  }
+
+  if (p->lavaHitPending) {
+    p->damage += PlayerLink_ApplyLavaHit(p);
+  }
+
+  if (p->hurtbox.iframes == 0) {
+    if (p->badCondTimer[BAD_POISON] != 0) {
+      p->poisonTick++;
+      if (p->poisonTick >= SECOND(1)) {
+        p->damage++;
+        p->poisonTick = 0;
+      }
+    }
+    if (p->emitter.kind == ELEMCOND_INKA && p->emitter.aliveCount != 0) {
+      Player_SetFlag20(p, PFLAG20_INKA);
+      if (++p->inkaTick >= Div(60, p->emitter.aliveCount)) {
+        p->damage += 10;
+        p->inkaTick = 0;
+      }
+    }
+  }
+
+  if (p->damage != 0) {
+    if (!HasGoodCond(p, GOOD_GAMAN)) {
+      CreateDamageNumber(&p->hurtbox, p->damage, 0, &p->mover.pos, &p->damageNumOffset, 0);
+      if (p->hp < p->damage) {
+        p->hp = 0;
+      } else {
+        p->hp -= p->damage;
+      }
+    }
+  }
+
+  p->damage = 0;
+  if (showGauge) {
+    HUD_ShowEnemyGauge(p->mover.id, p->hp, p->maxHP, 10, 0);
+  }
+
+  if (p->hp == 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 // 無敵時間中は食らい判定を消し, 吹き飛ばされていなければ1減らして4フレームおきに点滅させる
 void PlayerLink_UpdateIframes(Player* p) {
@@ -5419,25 +5991,256 @@ void PlayerLink_UpdateIframes(Player* p) {
   }
 }
 
-s32 FUN_080d7bac(void) {
+s32 PlayerLink_GetVMPlayerIdx(void) {
   if (VM_SeekToNamedArg('i') != 0) {
     return VM_GetValue();
   }
   return 0;
 }
 
-void FUN_080d7bc4(Player* p, s32 plttID) {
+void PlayerLink_FlashPltt(Player* p, s32 plttID) {
   p->flashPlttID = plttID;
   p->plttFlashTimer = 32;
 }
 
-NAKED void Cmd_E9DA(void) { INCFUNC("asm/func/Cmd_E9DA.inc"); }
+// 0xE9DA, 通信対戦で拾ったアイテム '.T' の効果を '.i' のプレイヤーにかける, 木の実とキノコはよい状態になるが黒ジャンゴとマウスは腹痛になり, 腐ったものも腹痛か混乱が付く
+void Cmd_PlayerLinkApplyItem(void) {
+  s32 i = PlayerLink_GetVMPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void Cmd_42EF(void) { INCFUNC("asm/func/Cmd_42EF.inc"); }
+  if (p == NULL || !VM_SeekToNamedArg('T')) {
+    return;
+  }
 
-NAKED void FUN_080d7fbc(Player* p) { INCFUNC("asm/func/FUN_080d7fbc.inc"); }
+  switch (VM_GetValue()) {
+    case ITEM_JERKY: {
+      p->hp += Div(p->maxHP * 20, 100);
+      if (p->hp > p->maxHP) {
+        p->hp = p->maxHP;
+      }
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_TASTY_MEAT: {
+      p->hp += Div(p->maxHP * 60, 100);
+      if (p->hp > p->maxHP) {
+        p->hp = p->maxHP;
+      }
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_ROTTEN_MEAT: {
+      p->hp += Div(p->maxHP * 5, 100);
+      if (p->hp > p->maxHP) {
+        p->hp = p->maxHP;
+      }
+      Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+      PlayerLink_FlashPltt(p, 33);
+      break;
+    }
+    case ITEM_HEALER: {
+      p->hp += Div(p->maxHP * 40, 100);
+      if (p->hp > p->maxHP) {
+        p->hp = p->maxHP;
+      }
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_MAGICAL_POTION: {
+      p->ene += Div(p->maxEne * 40, 100);
+      if (p->ene > p->maxEne) {
+        p->ene = p->maxEne;
+      }
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_SPEED_NUT: {
+      if (p->kind == PLAYER_BDJANGO || p->kind == PLAYER_MOUSE) {
+        Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+        PlayerLink_FlashPltt(p, 33);
+        break;
+      }
+      p->goodCondID = GOOD_SPEED;
+      p->goodFrom = ITEM_SPEED_NUT;
+      p->goodCondTimer = SECOND(30);
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_TIPTOE_NUT: {
+      if (p->kind == PLAYER_BDJANGO || p->kind == PLAYER_MOUSE) {
+        Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+        PlayerLink_FlashPltt(p, 33);
+        break;
+      }
+      p->goodCondID = GOOD_NINJA;
+      p->goodFrom = ITEM_TIPTOE_NUT;
+      p->goodCondTimer = SECOND(30);
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_BEARNUT: {
+      if (p->kind == PLAYER_BDJANGO || p->kind == PLAYER_MOUSE) {
+        Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+        PlayerLink_FlashPltt(p, 33);
+        break;
+      }
+      p->goodCondID = GOOD_GAMAN;
+      p->goodFrom = ITEM_BEARNUT;
+      p->goodCondTimer = SECOND(15);
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_SEE_ALL_NUT: {
+      if (p->kind == PLAYER_BDJANGO || p->kind == PLAYER_MOUSE) {
+        Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+        PlayerLink_FlashPltt(p, 33);
+        break;
+      }
+      p->goodCondID = GOOD_SEE;
+      p->goodFrom = ITEM_SEE_ALL_NUT;
+      p->goodCondTimer = SECOND(30);
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_RED_MUSHROOM: {
+      if (p->kind == PLAYER_BDJANGO || p->kind == PLAYER_MOUSE) {
+        Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+        PlayerLink_FlashPltt(p, 33);
+        break;
+      }
+      p->goodCondID = GOOD_MINI;
+      p->goodFrom = ITEM_RED_MUSHROOM;
+      p->goodCondTimer = SECOND(30);
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_BLUE_MUSHROOM: {
+      if (p->kind == PLAYER_BDJANGO || p->kind == PLAYER_MOUSE) {
+        Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+        PlayerLink_FlashPltt(p, 33);
+        break;
+      }
+      p->goodCondID = GOOD_INVISIBLE;
+      p->goodFrom = ITEM_BLUE_MUSHROOM;
+      p->goodCondTimer = SECOND(30);
+      PlayerLink_FlashPltt(p, 289);
+      break;
+    }
+    case ITEM_BAD_MUSHROOM: {
+      p->ene += Div(p->maxEne * 10, 100);
+      if (p->ene > p->maxEne) {
+        p->ene = p->maxEne;
+      }
+      Player_ApplyBadCondition(p, BAD_CONFUSE, SECOND(10));
+      PlayerLink_FlashPltt(p, 33);
+      break;
+    }
+    case ITEM_ROTTEN_WATER: {
+      p->ene += Div(p->maxEne * 10, 100);
+      if (p->ene > p->maxEne) {
+        p->ene = p->maxEne;
+      }
+      Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+      PlayerLink_FlashPltt(p, 33);
+      break;
+    }
+    case ITEM_ROTTEN_NUT: {
+      p->hp += Div(p->maxHP * 5, 100);
+      if (p->hp > p->maxHP) {
+        p->hp = p->maxHP;
+      }
+      Player_ApplyBadCondition(p, BAD_HARAITA, SECOND(10));
+      PlayerLink_FlashPltt(p, 33);
+      break;
+    }
+  }
+}
 
-NAKED s32 PlayerLink_Update(Player* p) { INCFUNC("asm/func/PlayerLink_Update.inc"); }
+// 0x42EF, '.i' のプレイヤーに LinkSession.bodies['.w'] の武器を拾って持たせる, 持っていた武器はその場に落とす
+void Cmd_PlayerLinkPickUpWeapon(void) {
+  s32 i = PlayerLink_GetVMPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL && VM_SeekToNamedArg('w')) {
+    s32 n = VM_GetValue();
+    if (p->heldWeaponIdx >= 0) {
+      LinkSession_DropWeapon(&p->mover.pos, p->heldWeaponIdx);
+    }
+    p->heldWeaponIdx = n;
+    PlayerLink_ApplyWeapon(p, LinkSession_GetBody(p->heldWeaponIdx));
+  }
+}
+
+// 変身の要求 (formRequest) をフォーム切り替えに反映する, 通信対戦で変われるのはマウスと黒ジャンゴだけでバットとスリーピングの要求は残したままにする
+void PlayerLink_ApplyFormRequest(Player* p) {
+  if (!p->formRequest) {
+    return;
+  }
+  if (p->formRequestKind == PLAYER_BAT || p->formRequestKind == PLAYER_SLEEPING) {
+    return;
+  }
+
+  if (p->formRequestKind == PLAYER_MOUSE) {
+    p->kind = PLAYER_MOUSE;
+    p->updateCallback = PlayerLink_UpdateMouse;
+    p->useAuxSprite = 1;
+    p->mover.mainSprite = NULL, p->mover.auxSprite = &p->beast;
+    p->emitter.pos = &p->beast.pos;
+    p->plttIdx = 0xFFFF;
+    PlayerLink_SetAction(p, PACT_IDLE, 0);
+    p->flashPlttID = 290;
+    p->plttFlashTimer = 32;
+  } else {
+    s32 enchant;
+    p->kind = PLAYER_BDJANGO;
+    p->updateCallback = PlayerLink_UpdateDjango;
+    p->useAuxSprite = 0;
+    p->mover.mainSprite = &p->human, p->mover.auxSprite = NULL;
+    p->emitter.pos = &p->human.pos;
+    p->plttIdx = 0xFFFF;
+    p->flashPlttID = 290;
+    p->plttFlashTimer = 32;
+
+    enchant = PlayerLink_CheckMagicEnchant(p) + 1;
+    p->nextEnchantColorIdx = enchant;
+    p->enchantColorIdx = enchant + 1;
+  }
+
+  p->magic.availableForm = PlayerLink_IsMagicAvailableForm(p, p->magic.id);
+  p->formRequest = FALSE;
+}
+
+// 通信対戦のプレイヤーの毎フレームの更新, ダメージと無敵時間を進めてから行動を回し, 自分の画面のプレイヤーなら位置と向きを gStat に書く
+s32 PlayerLink_Update(Player* p) {
+  PlayerLink_BeginAction(p);
+
+  if (p->mode == PMODE_ACTIVE) {
+    if (PlayerLink_UpdateDamage(p)) {
+      PlayerLink_EnterDeadState(p);
+    } else {
+      PlayerLink_UpdateIframes(p);
+    }
+  }
+
+  PlayerLink_ApplyFormRequest(p);
+  p->updateCallback(p);
+  PlayerLink_UpdatePoseAndShadow(p);
+  gPlayerModes[p->inputIdx] = p->mode;
+  if (p->inputIdx == LinkSession_GetPlayerIdx()) {
+    PLAYER_X = p->mover.pos.x;
+    PLAYER_Y = p->mover.pos.y;
+    PLAYER_Z = p->mover.pos.z;
+    SUN_ANGLE = ((p->facing + 5) & 7) << 5;
+  }
+  p->lastHitPlayerMask = 0;
+  p->lastHitSource = 0;
+
+  if (p->mode != PMODE_UNK_3) {
+    p->zoneEvents.pos = &p->mover.pos;
+    Map_UpdateZoneEvents(&p->zoneEvents);
+  }
+  return 0;
+}
 
 s32 PlayerLink_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
@@ -5446,13 +6249,32 @@ s32 PlayerLink_Destroy(Player* p) {
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   FUN_080ce330(p);
-  FUN_080cc43c(p);
+  PlayerLink_StopEneChargeSound(p);
   gPlayerPtr[p->inputIdx] = NULL;
   gPlayerCount--;
   return 0;
 }
 
-NAKED s32 PlayerLink_Init(Player* p, u32 val1, u32 val2) { INCFUNC("asm/func/PlayerLink_Init.inc"); }
+s32 PlayerLink_Init(Player* p, u32 id, u32 _) {
+  PlayerLink_ReadInputIdxArg(p);
+  PlayerLink_InitState(p);
+  PlayerLink_InitMover(p, id);
+  PlayerLink_SetupHurtbox(p);
+  PlayerLink_RefreshMagicInfo(p);
+  PlayerLink_InitWeapon(p);
+  PlayerLink_InitArmor(p);
+  PlayerLink_InitEffects(p);
+  gPlayerModes[p->inputIdx] = p->mode;
+  if (p->inputIdx == LinkSession_GetPlayerIdx()) {
+    PLAYER_X = p->mover.pos.x;
+    PLAYER_Y = p->mover.pos.y;
+    PLAYER_Z = p->mover.pos.z;
+    SUN_ANGLE = ((p->facing + 5) & 7) << 5;
+  }
+  gPlayerPtr[p->mover.kind] = p;
+  gPlayerCount++;
+  return 0;
+}
 
 // 0x980B, HashName("通信対戦プレイヤー")
 Player* PlayerLink_Create(u32 val1, u32 val2) {

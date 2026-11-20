@@ -26,7 +26,7 @@
 	movs r1, #3
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08041480
+	bl NPC_PlayAnim
 	movs r2, #0xf6
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -51,7 +51,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080415cc
+	bl NPC_ShowEmote
 _08042DC4:
 	movs r0, #0x80
 	lsls r0, r0, #5
@@ -221,14 +221,14 @@ _08042F02:
 	bl Map_StepNavPath
 	adds r0, r6, #0
 	movs r1, #3
-	bl FUN_080414fc
+	bl NPC_PlayFootStep
 	movs r0, #1
 	str r0, [sp]
 	adds r0, r6, #0
 	movs r1, #3
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08041480
+	bl NPC_PlayAnim
 _08042F22:
 	add sp, #0x10
 	pop {r3, r4, r5}

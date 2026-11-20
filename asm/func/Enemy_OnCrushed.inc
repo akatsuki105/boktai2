@@ -511,7 +511,7 @@ _080E6D76:
 	ldr r0, _080E6F1C @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl DefeatedEnemyLog_Add
+	bl EnemyRespawnInfo_Add
 _080E6D92:
 	ldr r3, _080E6F20 @ =0x000001DF
 	adds r0, r7, r3

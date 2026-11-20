@@ -56,7 +56,7 @@ IWRAM_DATA bool32 gSioRecvDataNew = FALSE;      // 0x0300082C, gSioRecvData に�
 IWRAM_DATA s32 gSioRecvRawFace = 0;             // 0x03000830, gSioRecvRaw を読む面 (0 or 1), 同じく割り込みが反転する
 
 COMMON_DATA s32 gSioTimerIntrCount = 0;              // 0x030046C0, 親のタイマー3割り込み回数
-COMMON_DATA u32 u32_030046c4 = 0;                    // 0x030046C4
+COMMON_DATA u32 gSioOpened = 0;                      // 0x030046C4, Sio_Open で 1, Sio_Disconnect で 0 に戻る
 COMMON_DATA s32 gSioSerialIntrCount = 0;             // 0x030046C8, 子のシリアル割り込み回数
 COMMON_DATA s32 gSioMultiId = 0;                     // 0x030046CC, 0 = 親, 1 = 子, -1 = 未確定
 COMMON_DATA u16 gSioChildRecv = 0;                   // 0x030046D0, 子が受け取った親のデータ (SIOMULTI0)
@@ -67,7 +67,43 @@ COMMON_DATA u16 gSioRecvRing[4][4] = {};             // 0x03004700, ゲームが
 COMMON_DATA u16 gSioRecvData[2][4] = {};             // 0x03004720, ゲームに渡す1回分の受信データ, 読む面は gSioRecvDataFace
 COMMON_DATA u16 gSioRecvRingRead = 0;                // 0x03004730, gSioRecvRing の読み位置 (0..3)
 
+#define INTR_CHECK (*(u16*)0x3007FF8)
+
 static void Sio_ParentTimerIntr(void);
+
+// 送受信のダブルバッファとリングを空 (0xFFFF / 送信は bit14 の空き印) に戻す
+static inline void Sio_ClearBuffers(void) {
+  s32 i, j;
+
+  gSioRecvDataNew = FALSE;
+  gSioSendCur = 0x4000;
+  gSioSendNext = 0x4000;
+  gSioRecvData[0][0] = 0xFFFF;
+  gSioRecvData[0][1] = 0xFFFF;
+  gSioRecvData[0][2] = 0xFFFF;
+  gSioRecvData[0][3] = 0xFFFF;
+  gSioRecvData[1][0] = 0xFFFF;
+  gSioRecvData[1][1] = 0xFFFF;
+  gSioRecvData[1][2] = 0xFFFF;
+  gSioRecvData[1][3] = 0xFFFF;
+  gSioRecvDataFace = 0;
+  gSioRecvRaw[0][0] = 0xFFFF;
+  gSioRecvRaw[0][1] = 0xFFFF;
+  gSioRecvRaw[0][2] = 0xFFFF;
+  gSioRecvRaw[0][3] = 0xFFFF;
+  gSioRecvRaw[1][0] = 0xFFFF;
+  gSioRecvRaw[1][1] = 0xFFFF;
+  gSioRecvRaw[1][2] = 0xFFFF;
+  gSioRecvRaw[1][3] = 0xFFFF;
+  gSioRecvRawFace = 0;
+  gSioRecvRingCount = 0;
+  gSioRecvRingRead = 0;
+  for (i = 0; i < 4; i++) {
+    for (j = 0; j < 4; j++) {
+      gSioRecvRing[i][j] |= 0xFFFF;
+    }
+  }
+}
 
 static void DisableInterrupts(void) { REG_IME = 0; }
 
@@ -305,9 +341,84 @@ s32 Sio_Stop(void) {
   return 0;
 }
 
-NAKED s32 FUN_08237f74(unknown* p) { INCFUNC("asm/func/FUN_08237f74.inc"); }
+// 受信リングバッファから長さ付きの1件を取り出す, 戻り値は取り出したバイト数, まだ揃っていなければ 0, 長さが壊れていれば -6 のエラー
+// 残差は len + 1 の共有だけ (63/64), 原典は比較の len + 1 と末尾の count - 1 - len を別々に計算する, Sio_WriteBytes と同じ壁
+// Tier A は1回だけ試行 (早めに打ち切り)
+NON_MATCH s32 Sio_ReadBytes(u8* dst) {
+#ifdef NONMATCHING_C
+  s32 idx, count, len, i;
 
-NAKED s32 FUN_08238014(unknown* p, s32 param_2) { INCFUNC("asm/func/FUN_08238014.inc"); }
+  if (gSioStatus < 0) {
+    return gSioStatus;
+  }
+
+  DisableInterrupts();
+  idx = gSioRecvReadIdx;
+  count = gSioRecvCount;
+  EnableInterrupts();
+
+  if (count > 0) {
+    len = gSioRecvBuf[idx];
+    idx = (idx + 1) & 0x3F;
+    if (len > 63) {
+      gSioStatus = -6;
+      return gSioStatus;
+    }
+    if (len + 1 <= count) {
+      for (i = 0; i < len; i++) {
+        *dst = gSioRecvBuf[idx];
+        dst++;
+        idx = (idx + 1) & 0x3F;
+      }
+      DisableInterrupts();
+      gSioRecvCount = gSioRecvCount - 1 - len;
+      gSioRecvReadIdx = idx;
+      EnableInterrupts();
+      return len;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Sio_ReadBytes.inc");
+#endif
+}
+
+// 長さ1バイトを頭に付けて送信リングバッファに積む, 戻り値は積んだバイト数, 入りきらなければ 0, 通信エラー中はエラーコード
+// 残差は2箇所の加算順だけ (52/52), 原典は (count + 1) + len, こちらは (count + len) + 1, + 1 + len と書くと len + 1 が2式で共有されて r8 に残る
+// Tier A-B は試済 (+ 1 + len / + len + 1, count++ を先に, return 0 を末尾に), 未: 2式で len + 1 を共有させない書き方
+NON_MATCH s32 Sio_WriteBytes(u8* src, s32 len) {
+#ifdef NONMATCHING_C
+  s32 idx, count, i;
+
+  if (gSioStatus < 0) {
+    return gSioStatus;
+  }
+
+  DisableInterrupts();
+  idx = gSioSendWriteIdx;
+  count = gSioSendCount;
+  EnableInterrupts();
+
+  if (count + len + 1 < 64) {
+    gSioSendBuf[idx] = len;
+    idx = (idx + 1) & 0x3F;
+    for (i = 0; i < len; i++) {
+      gSioSendBuf[idx] = *src;
+      src++;
+      idx = (idx + 1) & 0x3F;
+    }
+
+    DisableInterrupts();
+    gSioSendWriteIdx = idx;
+    gSioSendCount = gSioSendCount + len + 1;
+    EnableInterrupts();
+    return len;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Sio_WriteBytes.inc");
+#endif
+}
 
 // 通信エラーが出ていればそのエラーコード, 出ていなければ 0
 s32 Sio_GetError(void) {
@@ -536,7 +647,51 @@ void Sio_HandleFrame(SioPacketCtx* ctx, SioFrame* frame) {
   }
 }
 
-NAKED void FUN_08238354(SioPacketCtx* p) { INCFUNC("asm/func/FUN_08238354.inc"); }
+// 受信リングから届いたフレームを全部取り出して振り分け, 送信待ちのフレームを送信リングに入るだけ流す
+void SioPacketCtx_Update(SioPacketCtx* ctx) {
+  SioFrame* frame;
+  s32 n;
+
+  while ((frame = SioFrameList_First(&ctx->freeList)) != NULL) {
+    n = Sio_ReadBytes(&frame->checksum);
+    frame->len = n;
+    frame->id = frame->seq;
+    if (n == 0) {
+      break;
+    }
+    if (n < 0) {
+      Sio_SetPacketError(ctx, 4);
+      break;
+    }
+    if (SioFrame_VerifyChecksum(frame) < 0) {
+      SioFrameList_PushBack(&ctx->freeList, frame);
+      Sio_SetPacketError(ctx, 5);
+      break;
+    }
+    Sio_HandleFrame(ctx, frame);
+  }
+
+  while ((frame = SioFrameList_First(&ctx->sendQueue)) != NULL) {
+    n = Sio_WriteBytes(&frame->checksum, frame->len);
+    if (n == 0) {
+      break;
+    }
+    if (n < 0) {
+      Sio_SetPacketError(ctx, 6);
+      break;
+    }
+    switch (frame->kind) {
+      case 1: {
+        SioFrameList_PushBack(&ctx->sentQueue, frame);
+        break;
+      }
+      case 2: {
+        SioFrameList_PushBack(&ctx->freeList, frame);
+        break;
+      }
+    }
+  }
+}
 
 void Sio_FreePacketCtx(void) { gSioPacketCtx = NULL; }
 
@@ -568,7 +723,7 @@ SioPacketCtx* Sio_CreatePacketCtx(void) {
   return ctx;
 }
 
-void FUN_0823849c(void) { FUN_08238354(gSioPacketCtx); }
+void Sio_UpdatePackets(void) { SioPacketCtx_Update(gSioPacketCtx); }
 
 // 送信待ちキューにフレームを積む, 戻り値は払い出した .id, 空きがなければ -1
 s32 Sio_SendPacket(u8* src, s32 len) {
@@ -636,14 +791,14 @@ s32 Sio_RecvPacket(u8* dst) {
 
 // エラーを消すつもりの関数だが条件が逆で, 0 のときに 0 を書くだけになっている
 // 残差は自分自身への代入を gcc が削るため cmp/bne/str の3命令が消えること, 別名を使った書き換えも効かず
-NON_MATCH s32 FUN_08238590(void) {
+NON_MATCH s32 Sio_ClearPacketError(void) {
 #ifdef NONMATCHING_C
   if (gSioPacketCtx->error == 0) {
     gSioPacketCtx->error = 0;
   }
   return 0;
 #else
-  INCFUNC("asm/func/FUN_08238590.inc");
+  INCFUNC("asm/func/Sio_ClearPacketError.inc");
 #endif
 }
 
@@ -694,7 +849,111 @@ void Sio_StopSerialIntr(void) {
   REG_IF = INTR_FLAG_SERIAL;
 }
 
-NAKED void Sio_SerialIntr(void) { INCFUNC("asm/func/Sio_SerialIntr.inc"); }
+// シリアル割り込み, SIOMULTI0-3 を受け取り, ゲームが前回分を読んでいなければリングに溜め, 読んでいれば次のデータを渡して送信値を入れ替える
+// 残差は主にレジスタ割り当て (302/304), 原典は m0 を r8 に置き, リングの1件入れ替えで退避した個数をスタックに逃がす (sub sp, #4)
+// Tier A を2回試行して打ち切り (any の宣言位置で movs r3, #0 は揃った)
+NON_MATCH void Sio_SerialIntr(void) {
+#ifdef NONMATCHING_C
+  u16 cnt;
+
+  REG_SIOMULTI0;
+  gSioStatus = 0;
+  cnt = REG_SIOCNT;
+  if ((cnt & SIO_ERROR) || (cnt & (SIO_START | SIO_ID)) == SIO_START) {
+    gSioStatus = -2;
+  } else {
+    u16 any = 0;
+    u16* data = gSioRecvData[1 - gSioRecvDataFace];
+    u16* raw = gSioRecvRaw[1 - gSioRecvRawFace];
+    u16 m0, m;
+
+    m0 = REG_SIOMULTI0;
+    raw[0] = m0;
+    if (!(m0 & 0x8000)) {
+      any = m0;
+    }
+    m = REG_SIOMULTI1;
+    raw[1] = m;
+    if (!(m & 0x8000)) {
+      any |= m;
+    }
+    m = REG_SIOMULTI2;
+    raw[2] = m;
+    if (!(m & 0x8000)) {
+      any |= m;
+    }
+    m = REG_SIOMULTI3;
+    raw[3] = m;
+    if (!(m & 0x8000)) {
+      any |= m;
+    }
+
+    if (!(any & 0x4000)) {
+      if (gSioRecvDataNew) {
+        s32 idx = (gSioRecvRingRead + gSioRecvRingCount) & 3;
+
+        gSioRecvRing[idx][0] = m0;
+        gSioRecvRing[idx][1] = raw[1];
+        gSioRecvRing[idx][2] = raw[2];
+        gSioRecvRing[idx][3] = raw[3];
+        gSioRecvRingCount++;
+        gSioSendCur = 0x4000;
+      } else {
+        if (gSioRecvRingCount != 0) {
+          s32 idx;
+
+          data[0] = gSioRecvRing[gSioRecvRingRead][0];
+          data[1] = gSioRecvRing[gSioRecvRingRead][1];
+          data[2] = gSioRecvRing[gSioRecvRingRead][2];
+          data[3] = gSioRecvRing[gSioRecvRingRead][3];
+          gSioRecvRingRead = (gSioRecvRingRead + 1) & 3;
+          gSioRecvRingCount--;
+          idx = (gSioRecvRingRead + gSioRecvRingCount) & 3;
+          gSioRecvRing[idx][0] = raw[0];
+          gSioRecvRing[idx][1] = raw[1];
+          gSioRecvRing[idx][2] = raw[2];
+          gSioRecvRing[idx][3] = raw[3];
+          gSioRecvRingCount++;
+        } else {
+          data[0] = m0;
+          data[1] = raw[1];
+          data[2] = raw[2];
+          data[3] = raw[3];
+        }
+        gSioSendCur = gSioSendNext;
+        gSioSendNext = 0x4000;
+        gSioRecvDataFace = 1 - gSioRecvDataFace;
+        gSioRecvDataNew = TRUE;
+      }
+    } else if (!gSioRecvDataNew && gSioRecvRingCount != 0) {
+      data[0] = gSioRecvRing[gSioRecvRingRead][0];
+      data[1] = gSioRecvRing[gSioRecvRingRead][1];
+      data[2] = gSioRecvRing[gSioRecvRingRead][2];
+      data[3] = gSioRecvRing[gSioRecvRingRead][3];
+      gSioRecvRingRead = (gSioRecvRingRead + 1) & 3;
+      gSioRecvRingCount--;
+      if (gSioSendCur & 0x4000) {
+        gSioSendCur = gSioSendNext;
+        gSioSendNext = 0x4000;
+      }
+      gSioRecvDataFace = 1 - gSioRecvDataFace;
+      gSioRecvDataNew = TRUE;
+    } else {
+      if (gSioSendCur & 0x4000) {
+        gSioSendCur = gSioSendNext;
+        gSioSendNext = 0x4000;
+      }
+    }
+
+    REG_SIOMLT_SEND = gSioSendCur;
+    gSioMultiId = (REG_SIOCNT >> 4) & 3;
+    gSioRecvRawFace = 1 - gSioRecvRawFace;
+  }
+  INTR_CHECK = INTR_FLAG_SERIAL;
+#else
+  INCFUNC("asm/func/Sio_SerialIntr.inc");
+#endif
+}
 
 // 保留中のシリアル割り込みを捨ててから VBlank を待ち、SIO を 115200bps のマルチプレイモードに組み直す
 void Sio_Reinit(void) {
@@ -710,7 +969,23 @@ void Sio_Reinit(void) {
   REG_SIOCNT |= SIO_115200_BPS;
 }
 
-NAKED void FUN_08238a30(void) { INCFUNC("asm/func/FUN_08238a30.inc"); }
+// シリアル割り込みを止め, RCNT を汎用モードにして SIO を2フレーム切り離してから 115200bps のマルチプレイモードに組み直す
+void Sio_ResetPort(void) {
+  gSioStatus = 0;
+  gSioMultiId = -1;
+  REG_IME = 0;
+  REG_IE &= ~INTR_FLAG_SERIAL;
+  REG_IME = 1;
+  REG_IF = INTR_FLAG_SERIAL;
+  REG_RCNT = 0x8000;
+  REG_SIOCNT = 0;
+  WaitForVBlank();
+  WaitForVBlank();
+  REG_RCNT = 0;
+  REG_SIOCNT = SIO_MULTI_MODE;
+  REG_SIOCNT |= SIO_115200_BPS;
+  WaitForVBlank();
+}
 
 // 残差は命令列が完全一致でレジスタ番号が全体に1つずれるのみ (r1-r4 対 r2-r5), Tier A-C 試済
 NON_MATCH void Sio_DetectRole(void) {
@@ -736,7 +1011,13 @@ NON_MATCH void Sio_DetectRole(void) {
 #endif
 }
 
-NAKED s32 FUN_08238b04(void) { INCFUNC("asm/func/FUN_08238b04.inc"); }
+// 通信を開く, SIO を組み直して送受信バッファを空にし開いた印を立てる
+s32 Sio_Open(void) {
+  gSioOpened = 1;
+  Sio_Reinit();
+  Sio_ClearBuffers();
+  return 0;
+}
 
 // 役割を判定してシリアル割り込みを動かす, 戻り値は 0 = 親, 1 = 子, 負ならエラー
 s32 Sio_Connect(void) {
@@ -759,15 +1040,23 @@ s32 Sio_Disconnect(void) {
   } else {
     Sio_StopSerialIntr();
   }
-  if (u32_030046c4 == 1) {
-    u32_030046c4 = 0;
+  if (gSioOpened == 1) {
+    gSioOpened = 0;
   }
   return 0;
 }
 
-NAKED void FUN_08238c24(void) { INCFUNC("asm/func/FUN_08238c24.inc"); }
+// SIO を組み直して送受信バッファを空にする
+void Sio_ReinitAndClear(void) {
+  Sio_Reinit();
+  Sio_ClearBuffers();
+}
 
-NAKED void FUN_08238cd4(void) { INCFUNC("asm/func/FUN_08238cd4.inc"); }
+// SIO を一度切り離して組み直し, 送受信バッファを空にする
+void Sio_ResetPortAndClear(void) {
+  Sio_ResetPort();
+  Sio_ClearBuffers();
+}
 
 // 接続待ち (-1, -2) の間は何もせず, 正常に繋がっている間だけ転送を開始する
 void Sio_StartTransferIfIdle(void) {

@@ -17,7 +17,7 @@ const ID = 0xA41E;
 
 // tools/extract_script.sh
 // or
-// bokcc.ts baserom.gba --strings data/scripts/strings.h --scripts data/scripts/script.h --commands data/scripts/commands.h --stat data/scripts/stat.h --world data/scripts/world.h --scratch data/scripts/scratch.h > data/scripts/scripts.bokc
+// bokcc.ts baserom.gba --strings data/scripts/strings.h --scripts data/scripts/script.h --commands data/scripts/commands.h --stat data/scripts/stat.h --world data/scripts/world.h --scratch data/scripts/scratch.h --hashes data/scripts/hashes.h > data/scripts/scripts.bokc
 const main = () => {
   new Command()
     .name("bokcc.ts")
@@ -29,9 +29,10 @@ const main = () => {
     .option("--stat <path:string>", "gStat のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/stat.h")
     .option("--world <path:string>", "gWorld のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/world.h")
     .option("--scratch <path:string>", "gScratch のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/scratch.h")
+    .option("--hashes <path:string>", "HashName の値の名前を定義したヘッダのパス, e.g. data/scripts/hashes.h")
     .action((opts, romPath) => {
-      const includes = [opts.strings, opts.scripts, opts.commands, opts.stat, opts.world, opts.scratch].filter((i): i is string => i !== undefined).sort();
-      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts, commands: opts.commands, stat: opts.stat, world: opts.world, scratch: opts.scratch });
+      const includes = [opts.strings, opts.scripts, opts.commands, opts.stat, opts.world, opts.scratch, opts.hashes].filter((i): i is string => i !== undefined).sort();
+      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts, commands: opts.commands, stat: opts.stat, world: opts.world, scratch: opts.scratch, hashes: opts.hashes });
 
       try {
         const rom = new DataView((Deno.readFileSync(romPath)).buffer);

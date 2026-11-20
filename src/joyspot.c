@@ -133,12 +133,12 @@ void JoyspotManager_Disconnect(JoyspotManager* unused) {
 
 // 背景のタイルマップとパレットを読み込む
 void JoyspotManager_SetupBG(JoyspotManager* p, s32 param_2) {
-  TilemapFile* tilemap = GetFile(DIR_TILE_MAP, MP_A413);
+  TilemapFile* tilemap = GetFile(DIR_TILE_MAP, MP_SYSTEM);
   BgPlttFile* f;
 
   Video_SetupBGLayout(0, 0, tilemap, 0, 0, 1, &param_2);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  f = GetBgPlttFile(BGP_EFDA);
+  f = GetBgPlttFile(BGP_SYSTEM);
   CpuCopy16(f->body, gBgPlttBuffer, 256 * sizeof(rgb555));
 }
 

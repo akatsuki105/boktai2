@@ -50,7 +50,7 @@ static inline void DarkRoot_ClearFlags(DarkRoot* p, DarkRootFlags bits) { p->fla
 
 s32 FUN_0803712c(Vec3* out);
 s32 Entity081efa9c_Spawn(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
-void DefeatedEnemyLog_Add(u16 a, u16 b);
+void EnemyRespawnInfo_Add(u16 a, u16 b);
 void Enemy_AddKillCount(Enemy* p);
 s32 DarkRoot_GetGrabbedAnimOffset(DarkRoot* p);
 void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
@@ -195,9 +195,9 @@ NON_MATCH void DarkRoot_StateGrab(DarkRoot* p) {
       pos.y = vec3_ARRAY_085ade10[flags * 5 + anim->cmdIdx].y + (p->e).mover.pos.y;
       pos.z = vec3_ARRAY_085ade10[flags * 5 + anim->cmdIdx].z + (p->e).mover.pos.z;
       m = (p->e).playerMover;
-      if (m->unk_4 < 4) {
-        Player_HoldGrabbed(gPlayerPtr[m->unk_4], &pos, NULL, 0, flags, 0, 0, 0, 0);
-      } else if (m->unk_4 == 4) {
+      if (m->kind < 4) {
+        Player_HoldGrabbed(gPlayerPtr[m->kind], &pos, NULL, 0, flags, 0, 0, 0, 0);
+      } else if (m->kind == MOVER_ENEMY) {
         Enemy* e = m->owner;
 
         e->hurtbox.iframes = 0;
@@ -262,7 +262,7 @@ NON_MATCH void DarkRoot_StateHold(DarkRoot* p, s32 timer) {
   m = (p->e).playerMover;
   Enemy_SetAnimFacing(&p->e, &variant, &flags);
   // 掴んでいるのがプレイヤーなら次のコマの位置で持つ
-  if (m->unk_4 < 4) {
+  if (m->kind < 4) {
     if (anim->tick + 1 < anim->wait) {
       cmd = anim->cmdIdx;
     } else {
@@ -277,8 +277,8 @@ NON_MATCH void DarkRoot_StateHold(DarkRoot* p, s32 timer) {
   pos.x = vec3_ARRAY_085ade10[flags * 5 + cmd].x + (p->e).mover.pos.x;
   pos.y = vec3_ARRAY_085ade10[flags * 5 + cmd].y + (p->e).mover.pos.y;
   pos.z = vec3_ARRAY_085ade10[flags * 5 + cmd].z + (p->e).mover.pos.z;
-  if (m->unk_4 != 4) {
-    if (m->unk_4 < 4) {
+  if (m->kind != MOVER_ENEMY) {
+    if (m->kind < 4) {
       Player* player = m->owner;
 
       (p->e).s->aux.spr.priority = 1;
@@ -378,7 +378,7 @@ void DarkRoot_StateReleaseGrab(DarkRoot* p) {
     m = (p->e).playerMover;
     TilePosAtIndex(&pos, (p->e).tileIdx);
     angle = FixToInt(6, ((p->e).mover.angle + 0x20) & 0xFF) << 6;
-    if (m->unk_4 < 4) {
+    if (m->kind < 4) {
       Player_ReleaseGrabbed(m->owner, &pos, 64, angle, 60, 0, 0, 0);
     }
     (p->e).s->aux.spr.priority = 2;
@@ -534,7 +534,7 @@ NON_MATCH void DarkRoot_StateDying(DarkRoot* p, s32 timer) {
       AddPlayerExp((p->e).exp);
       Player_AddWeaponExp((p->e).weaponExpMask, (p->e).weaponExp);
       if (!IsLinkPlay() && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_11)) {
-        DefeatedEnemyLog_Add(gMapInitScriptID, (p->e).mover.id);
+        EnemyRespawnInfo_Add(gMapInitScriptID, (p->e).mover.id);
       }
     }
   }
@@ -690,7 +690,7 @@ void DarkRoot_OnWitherMsg(DarkRoot* p, u16* msg) {
     TilePosAtIndex(&pos, (p->e).tileIdx);
     angle = FixToInt(6, ((p->e).mover.angle + 0x20) & 0xFF) << 6;
     m = (p->e).playerMover;
-    if (m->unk_4 < 4) {
+    if (m->kind < 4) {
       Player_ReleaseGrabbed(m->owner, &pos, 64, angle, 60, 0, 0, 0);
       PlaySound_082406e0(SE_DAMAGE);
     }
@@ -751,7 +751,7 @@ void DarkRoot_InitHitboxes(DarkRoot* p) {
 
   VEC3_SET(hurtSize, 64, 256, 64);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, DarkRoot_OnHurt, p, HBF_HURTBOX | HBF_NPC | HBF_HIDDEN | HBF_DAMAGE);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, DarkRoot_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE);
   VEC3_SET(hitSize, 0, 0, 0);
   VEC3_SET(hitOffset, 0, 0, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, DarkRoot_OnHit, 1, p);
@@ -1082,7 +1082,7 @@ NON_MATCH s32 DarkRoot_Init(DarkRoot* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

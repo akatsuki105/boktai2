@@ -98,7 +98,7 @@
 #define S_UNK_070 *((u8 *)(scratch + 0x70))
 #define S_UNK_071_0 BIT(scratch + 0x71, 0)
 #define S_UNK_071_1 BIT(scratch + 0x71, 1)
-#define S_UNK_071_2 BIT(scratch + 0x71, 2)
+#define S_RETRY_LOAN BIT(scratch + 0x71, 2) // 0: 愚者のカード, 1: 暗黒カード
 #define S_UNK_071_3 BIT(scratch + 0x71, 3)
 #define S_UNK_071_4 BIT(scratch + 0x71, 4)
 #define S_UNK_071_5 BIT(scratch + 0x71, 5)
@@ -381,7 +381,7 @@
 #define S_UNK_1C0 *((s32 *)(scratch + 0x1C0))
 #define S_UNK_1C4 *((s32 *)(scratch + 0x1C4))
 #define S_UNK_1C8 *((u8 *)(scratch + 0x1C8))
-#define S_SUN_TREE_STAGE *((u8 *)(scratch + 0x1C9))  // 太陽樹の成長段階 0〜6
+#define S_TREE_STAGE *((u8 *)(scratch + 0x1C9))  // 太陽樹の成長段階 0〜6
 #define S_ENNIO_CLOCK_DAYS *((s16 *)(scratch + 0x1CA))  // エンニオの時計合わせから経った日数
 #define S_UNK_1CC *((s16 *)(scratch + 0x1CC))
 #define S_UNK_1CE *((s16 *)(scratch + 0x1CE))

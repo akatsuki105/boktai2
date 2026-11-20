@@ -698,7 +698,7 @@ bool8 Mimic_TryRouteToPlayer(Mimic* p) {
     if (m == NULL) {
       return FALSE;
     }
-    idx = m->unk_4 < 4 ? m->unk_4 : -1;
+    idx = m->kind < 4 ? m->kind : -1;
     if (idx < 0 || TEST_FLAGS(gPlayerModes[idx], PMODE_UNK_3)) {
       return FALSE;
     }
@@ -847,7 +847,7 @@ NON_MATCH static bool8 Mimic_IsPlayerLost(Mimic* p) {
 #ifdef NONMATCHING_C
   Mover* m = (p->e).playerMover;
 
-  if (m != NULL && (m->unk_4 >= 4 || (!TEST_FLAGS(gPlayerPtr[m->unk_4]->flag20, PFLAG20_INVISIBLE) && !TEST_FLAGS(gPlayerModes[m->unk_4], PMODE_UNK_3)))) {
+  if (m != NULL && (m->kind >= 4 || (!TEST_FLAGS(gPlayerPtr[m->kind]->flag20, PFLAG20_INVISIBLE) && !TEST_FLAGS(gPlayerModes[m->kind], PMODE_UNK_3)))) {
     return FALSE;
   }
   return TRUE;
@@ -1095,7 +1095,7 @@ NON_MATCH s32 Mimic_Init(Mimic* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

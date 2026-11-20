@@ -35,7 +35,7 @@ typedef struct {
   u8 connectSlot;                   // 0x01C, 前フレームの FUN_0804e474 の値, 0xFF にすると次のフレームで表示を作り直す
   u8 unk_1d[3];                     // 0x01D, padding?
   u32 stateTimer;                   // 0x020, state を変えると 0 に戻り毎フレーム +1
-  TilemapFile* tilemap;             // 0x024, MP_CD91
+  TilemapFile* tilemap;             // 0x024, MP_LINK
   u8* script;                       // 0x028, '.s', テキストパネルのメッセージ元
   CrossoverLobbyPlayer players[2];  // 0x02C
   s32 textPanels[3];                // 0x554, [0] と [1] は players[i].name, [2] は案内メッセージ
@@ -80,7 +80,7 @@ typedef struct {
 void CrossoverLobby_LoadBG(CrossoverLobby* p, s32 bgIndex) {
   BgPlttFile* f;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_LINK);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   f = GetBgPlttFile(BGP_LINK);

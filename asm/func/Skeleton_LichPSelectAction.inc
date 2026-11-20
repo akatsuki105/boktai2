@@ -193,7 +193,7 @@ _08103E24: .4byte 0x00000546
 _08103E28: .4byte 0x00000744
 _08103E2C: .4byte Enemy_ClearStateBegun
 _08103E30:
-	bl Entity081f959c_IsAnyActive
+	bl OrbitalFlameManager_IsAnyActive
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08103F08
@@ -466,7 +466,7 @@ _0810406C: .4byte 0x0000046A
 _08104070: .4byte 0x00000484
 _08104074: .4byte 0x0000046C
 _08104078:
-	bl Entity081f959c_IsAnyActive
+	bl OrbitalFlameManager_IsAnyActive
 	lsls r0, r0, #0x18
 	lsrs r7, r0, #0x18
 	cmp r7, #0

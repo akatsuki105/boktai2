@@ -20,7 +20,7 @@
 #define UNK_944 (*(&gStat->unk_944))
 #define UNK_946 (*(&gStat->unk_946))
 #define UNK_948(n) (*(gStat->unk_948 + (n)))
-#define UNK_950(n) (*(gStat->unk_950 + (n)))  // Enemy_Alert がプレイヤーごとに数える, 添字は playerMover->unk_4
+#define LINK_ALERT_COUNT(n) (*(gStat->linkAlertCount + (n)))
 #define WEAPONS(slot) (gStat->weapons + slot)
 
 // gStat のフィールドを型名の違うポインタ越しに触る, 原典はこれらへ書いたあと gStat を読み直すので普通のメンバ代入では一致しない
@@ -58,12 +58,12 @@
 // gStat->mapFlags, GameSystem_Boot がマップ読み込み時に 0 で初期化する
 // 例:
 //  8番街(夜): 0x0027
-//  変異域氷:  0x002C (MPF_UNK_2, MPF_COLD, MPF_BRIGHT)
-//  変異域炎:  0x0034 (MPF_UNK_2, MPF_HOT, MPF_BRIGHT)
-//  地下水路(ワープ先):  0x2024 (MPF_UNK_2, MPF_BRIGHT, MPF_WATERFRONT)
-#define MPF_UNK_0 (1 << 0)        // 0x1, 未検証
+//  変異域氷:  0x002C (MPF_DANGER, MPF_COLD, MPF_BRIGHT)
+//  変異域炎:  0x0034 (MPF_DANGER, MPF_HOT, MPF_BRIGHT)
+//  地下水路(ワープ先):  0x2024 (MPF_DANGER, MPF_BRIGHT, MPF_WATERFRONT)
+#define MPF_FOOTNOISE (1 << 0)    // 0x1, 聴覚で索敵する敵が存在するマップでセットされる, セットされるとプレイヤーが歩くたびに Player_MakeNoise が呼ばれる
 #define MPF_OUTDOOR (1 << 1)      // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
-#define MPF_UNK_2 (1 << 2)        // 0x4, いろんなマップでセット
+#define MPF_DANGER (1 << 2)       // 0x4, 敵が出現するマップでセット
 #define MPF_COLD (1 << 3)         // 0x8,　 変異域の氷エリアでセットされていた
 #define MPF_HOT (1 << 4)          // 0x10, 　変異域の炎エリアでセットされていた
 #define MPF_BRIGHT (1 << 5)       // 0x20, 部屋が明るいかどうか (大抵のマップではセットされている, 暗黒街の暗い部屋では最初セットされておらず、明かりをつけるとセットされる)
@@ -98,98 +98,104 @@ typedef struct {
   u16 savedMaxEne;            // 0x02E
 
   // ここから .unk_3ba まで FUN_08231ca8 で ClearMemory されているので、ここから .unk_3ba(の直前) までが別の構造体として定義されているかもしれない
-  s8_8 playerX;                  // 0x030, セーブされたプレイヤーの座標
-  s8_8 playerY;                  // 0x032
-  s8_8 playerZ;                  // 0x034
-  Dir8S16 playerDir;             // 0x036, Vec3 の val に当たる位置, Cmd_GetPlayerDir が符号付きで読んで向きとして返す
-  u16 sabataHP;                  // 0x038
-  u16 sabataEne;                 // 0x03A
-  u8 unk_03c[4];                 // 0x03C
-  s16 lv;                        // 0x040
-  u16 statusPoint;               // 0x042
-  u16 unk_44;                    // 0x044
-  s16 weaponExp[5];              // 0x046, 剣/槍/ハンマー/拳/銃 の経験値, 100たまると1レベルアップなので、 100 で割るとレベル(ステータスに表示される数値)になる
-  s32 exp;                       // 0x050, 総経験値, 999999 で頭打ち
-  u32 unlockedMagic;             // 0x054
-  s16 equippedWeaponIdx;         // 0x058
-  s16 equippedMagicIdx;          // 0x05A, registeredMagic[equippedMagicIdx] が現在装備中の魔法ID
-  slot16_t armor;                // 0x05C
-  s16 sabataMagicIdx;            // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
-  slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
-  magic16_t registeredMagic[4];  // 0x068, 登録中の魔法4種のID
-  item16_t items[16 + 16 + 16];  // 0x070, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
-  s16 rotTimer[16 + 16 + 16];    // 0x0D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
-  item16_t valuables[16];        // 0x130
-  armor16_t armors[16 + 16];     // 0x150, 0..15: インベントリ, 16..31: 倉庫
-  u8 unk_190[8];                 // 0x190
-  BCDDate date;                  // 0x198
-  s32 hour;                      // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
-  s32 minute;                    // 0x1A0, 同上
-  bool32 isBeforeSunset;         // 0x1A4, ReflectClock が現在時刻 < gClock.sunset のとき立てる, ApplyDayRollover が日付をまたいだ判定に使う
-  Datetime overheatTime;         // 0x1A8
-  s16 unk_1b8;                   // 0x1B8
-  s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 2500を超えると足元から煙エフェクト, 5000を超えると熱中症で気絶(専用イベント)
-  s32 thermal;                   // 0x1BC, 30000に到達したらオーバーヒート
-  s32 unk_1c0;                   // 0x1C0, ApplyDayRollover が日付をまたいだとき 0 に戻す
-  s32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
-  u8 unk_1c8[12];                // 0x1C8
-  u32 loan_1d4;                  // 0x1D4
-  u32 treeExp;                   // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
-  u8 unk_1dc[2];                 // 0x1DC
-  s16 nutsRate;                  // 0x1DE, 果実の価格倍率 (百分率, 前日得た太陽エネルギーに応じて変動)
-  s32 unk_1e0;                   // 0x1E0, 果実の価格倍率に関係, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
-  s32 unk_1e4;                   // 0x1E4, 果実の価格倍率に関係, unk_1e0 を更新した回数
-  s16 alertCount;                // 0x1E8, 敵に見つかった回数
-  u8 unk_1ea[2];                 // 0x1EA
-  s16 tortureCount;              // 0x1EC, おしおき回数
-  u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
-  s16 totalEnemyKillCount;       // 0x1F0
-  s16 enemyKillCount[27];        // 0x1F2, idx: include/constants/enemy.h の ENEF_XXX (e.g. ENEF_BOKU), 要素数はスクリプトの添字付き参照の長さ ([27, i]) から
-  s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数
-  u8 unk_232[0x23A - 0x232];     // 0x232
-  s16 bankInterestRate;          // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
-  u8 unk_23c[4];                 // 0x23C
-  s16 lap;                       // 0x240, 現在のゲーム周回数
-  s16 room;                      // 0x242, 現在いる部屋の番号 (ゲーム全体で通し), スクリプトだけが使う, ワープで書き換わり, 1つ前と2つ前は .bokc の world + 0x54 / 0x56 に送られる
-  s16 unk_244;                   // 0x244
-  u16 unk_246;                   // 0x246, FUN_08231ca8
-  ZoneID32 zoneID;               // 0x248, 現在のゾーンID
-  s32 mapInitScriptID;           // 0x24C, Current map's init script ID
-  s16 playerKind;                // 0x250, see PlayerKind in player.h
-  coffin16_t coffin;             // 0x252, 現在フィールドに出ている棺桶のID (貴重品欄にあるときは -1)
-  s16 stageID;                   // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
-  s16 mapSpot;                   // 0x256, マップページの現在地, MapSpot の添字, Cmd_SetMapSpot が '.f' の値を入れる
-  s16 coffinStageID;             // 0x258, 棺桶のあるステージ, Cmd_SetCoffinStage が '.s' の値を入れる
-  s16 coffinMapSpot;             // 0x25A, 棺桶の場所, MapSpot の添字, Cmd_SetCoffinMapSpot が '.f' の値を入れる
-  u8 unk_25c[0x260 - 0x25C];     // 0x25C
-  u32 unlockedMap;               // 0x260
-  u32 worldMapFlags;             // 0x264, ワールドマップに出す目印のフラグ, ビット 6..13 は sWorldMapStages[7..14] のマーカー, それ以降は WorldMapTile.flagBit
-  s32 mapIconFlags[16];          // 0x268, stageID で引く, ビット i が立っていると MapIcon の i 番目を描く
-  s32 berserkCounter;            // 0x2A8
-  s32 berserkThresh;             // 0x2AC, berserkCounter がここに届くと黒ジャンゴ暴走の準備ができる, 発動のたびに 200 + 0..99 で引き直す
-  s16 unk_2b0[2];                // 0x2B0
-  s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: GameSystem_Update が 0x7FFFFFFF と符号付き比較する
-  s32 bossHP;                    // 0x2B8, 画面右上のゲージの値, ボスのHPゲージ, 黒ジャンゴ運搬の残りHP(実質的な残り時間) として使用, 雑魚敵のHPでは使わない
-  s32 bossHPMax;                 // 0x2BC, bossHP の最大値, ボス戦ではボスの maxHP
-  s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
-  s32 isKaamos[2];               // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
-  s32 rainTimer;                 // 0x2D0, 次に雨が降り始めるまでのフレーム数, 雨が止んだときに sRainIntervalBase + 乱数を入れる
-  u8 unk_2d4[4];                 // 0x2D4
-  s32 solarFormFrames;           // 0x2D8, 赤ジャンゴのままボタンを押していたフレーム数, s32 の根拠: Player_CountStyleFrames が 0x7FFFFFFE と符号付き比較する
-  s32 darkFormFrames;            // 0x2DC, 赤ジャンゴ以外(サバタを除く)でボタンを押していたフレーム数, s32 の根拠は同上
-  s32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
-  u8 unk_2f4[4];                 // 0x2F4
-  u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
-  u16 style;                     // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle
-  u16 forge;                     // 0x2FC, 0..127, 用途まだ不明
-  s16 friendship[5];             // 0x2FE, 好感度, 0: ザジ, 1: リタ, 2: スミレ, 3: サバタ, 4: レディ
-  u16 defeatedEnemyLog[64];      // 0x308, 倒した敵の記録 (マップのスクリプト ID, Mover ID, 再出現までの残り回数), u16 3つで1件の表が20件 ([0] と [1] で引く, [1] が 0 なら空き), 末尾8バイトは未解析
-  u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ(bitがクリアされている場合、魔物図鑑でエントリが ???? になる), 全部そろうと [0] = 0xFFFFFFFF, [1] = 0x01FFFFFF
-  u32 enemyDexDrop[4];           // 0x390, 魔物図鑑のドロップアイテム発見フラグ, 1体につき2bit (bit0: 通常ドロップ, bit1: レアドロップ)
-  u32 armorDex[2];               // 0x3A0
-  u32 photo;                     // 0x3A8, ブロマイドの取得フラグ, アルバム画面のカーソル位置とbitが対応してそう
-  u8 blackPantherResult[8];      // 0x3AC, ミニゲーム"ブラックパンサー"の結果, u16 4つ分, see MINIGAME_* in black_panther.c
-  u8 unk_3b4[4];                 // 0x3B4
+  s8_8 playerX;                        // 0x030, セーブされたプレイヤーの座標
+  s8_8 playerY;                        // 0x032
+  s8_8 playerZ;                        // 0x034
+  Dir8S16 playerDir;                   // 0x036, Vec3 の val に当たる位置, Cmd_GetPlayerDir が符号付きで読んで向きとして返す
+  u16 sabataHP;                        // 0x038
+  u16 sabataEne;                       // 0x03A
+  u8 unk_03c[4];                       // 0x03C
+  s16 lv;                              // 0x040
+  u16 statusPoint;                     // 0x042
+  u16 unk_44;                          // 0x044
+  s16 weaponExp[5];                    // 0x046, 剣/槍/ハンマー/拳/銃 の経験値, 100たまると1レベルアップなので、 100 で割るとレベル(ステータスに表示される数値)になる
+  s32 exp;                             // 0x050, 総経験値, 999999 で頭打ち
+  u32 unlockedMagic;                   // 0x054
+  s16 equippedWeaponIdx;               // 0x058
+  s16 equippedMagicIdx;                // 0x05A, registeredMagic[equippedMagicIdx] が現在装備中の魔法ID
+  slot16_t armor;                      // 0x05C
+  s16 sabataMagicIdx;                  // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
+  slot16_t registeredWeapon[4];        // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
+  magic16_t registeredMagic[4];        // 0x068, 登録中の魔法4種のID
+  item16_t items[16 + 16 + 16];        // 0x070, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
+  s16 rotTimer[16 + 16 + 16];          // 0x0D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
+  item16_t valuables[16];              // 0x130
+  armor16_t armors[16 + 16];           // 0x150, 0..15: インベントリ, 16..31: 倉庫
+  u8 unk_190[8];                       // 0x190
+  BCDDate date;                        // 0x198
+  s32 hour;                            // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
+  s32 minute;                          // 0x1A0, 同上
+  bool32 isBeforeSunset;               // 0x1A4, ReflectClock が現在時刻 < gClock.sunset のとき立てる, ApplyDayRollover が日付をまたいだ判定に使う
+  Datetime overheatTime;               // 0x1A8
+  s16 unk_1b8;                         // 0x1B8
+  s16 heatstroke;                      // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 2500を超えると足元から煙エフェクト, 5000を超えると熱中症で気絶(専用イベント)
+  s32 thermal;                         // 0x1BC, 30000に到達したらオーバーヒート
+  s32 unk_1c0;                         // 0x1C0, ApplyDayRollover が日付をまたいだとき 0 に戻す
+  s32 darkDebts;                       // 0x1C4, 実際に返す必要のある額
+  u8 unk_1c8[12];                      // 0x1C8
+  u32 loan_1d4;                        // 0x1D4
+  u32 treeExp;                         // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
+  u8 unk_1dc[2];                       // 0x1DC
+  s16 nutsRate;                        // 0x1DE, 果実の価格倍率 (百分率, 前日得た太陽エネルギーに応じて変動)
+  s32 unk_1e0;                         // 0x1E0, 果実の価格倍率に関係, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
+  s32 unk_1e4;                         // 0x1E4, 果実の価格倍率に関係, unk_1e0 を更新した回数
+  s16 alertCount;                      // 0x1E8, 敵に見つかった回数
+  u8 unk_1ea[2];                       // 0x1EA
+  s16 tortureCount;                    // 0x1EC, おしおき回数
+  u16 titles;                          // 0x1EE, 獲得した称号のビットマスク
+  s16 totalEnemyKillCount;             // 0x1F0
+  s16 enemyKillCount[27];              // 0x1F2, idx: include/constants/enemy.h の ENEF_XXX (e.g. ENEF_BOKU), 要素数はスクリプトの添字付き参照の長さ ([27, i]) から
+  s16 killCounts[5];                   // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数
+  u8 unk_232[0x23A - 0x232];           // 0x232
+  s16 bankInterestRate;                // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
+  u8 unk_23c[4];                       // 0x23C
+  s16 lap;                             // 0x240, 現在のゲーム周回数
+  s16 room;                            // 0x242, 現在いる部屋の番号 (ゲーム全体で通し), スクリプトだけが使う, ワープで書き換わり, 1つ前と2つ前は .bokc の world + 0x54 / 0x56 に送られる
+  s16 unk_244;                         // 0x244
+  u16 unk_246;                         // 0x246, FUN_08231ca8
+  ZoneID32 zoneID;                     // 0x248, 現在のゾーンID
+  s32 mapInitScriptID;                 // 0x24C, Current map's init script ID
+  s16 playerKind;                      // 0x250, see PlayerKind in player.h
+  coffin16_t coffin;                   // 0x252, 現在フィールドに出ている棺桶のID (貴重品欄にあるときは -1)
+  s16 stageID;                         // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
+  s16 mapSpot;                         // 0x256, マップページの現在地, MapSpot の添字, Cmd_SetMapSpot が '.f' の値を入れる
+  s16 coffinStageID;                   // 0x258, 棺桶のあるステージ, Cmd_SetCoffinStage が '.s' の値を入れる
+  s16 coffinMapSpot;                   // 0x25A, 棺桶の場所, MapSpot の添字, Cmd_SetCoffinMapSpot が '.f' の値を入れる
+  u8 unk_25c[0x260 - 0x25C];           // 0x25C
+  u32 unlockedMap;                     // 0x260
+  u32 worldMapFlags;                   // 0x264, ワールドマップに出す目印のフラグ, ビット 6..13 は sWorldMapStages[7..14] のマーカー, それ以降は WorldMapTile.flagBit
+  s32 mapIconFlags[16];                // 0x268, stageID で引く, ビット i が立っていると MapIcon の i 番目を描く
+  s32 berserkCounter;                  // 0x2A8
+  s32 berserkThresh;                   // 0x2AC, berserkCounter がここに届くと黒ジャンゴ暴走の準備ができる, 発動のたびに 200 + 0..99 で引き直す
+  s16 unk_2b0[2];                      // 0x2B0
+  s32 playTime;                        // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: GameSystem_Update が 0x7FFFFFFF と符号付き比較する
+  s32 bossHP;                          // 0x2B8, 画面右上のゲージの値, ボスのHPゲージ, 黒ジャンゴ運搬の残りHP(実質的な残り時間) として使用, 雑魚敵のHPでは使わない
+  s32 bossHPMax;                       // 0x2BC, bossHP の最大値, ボス戦ではボスの maxHP
+  s32 kaamosProgress[2];               // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
+  s32 isKaamos[2];                     // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
+  s32 rainTimer;                       // 0x2D0, 次に雨が降り始めるまでのフレーム数, 雨が止んだときに sRainIntervalBase + 乱数を入れる
+  u8 unk_2d4[4];                       // 0x2D4
+  s32 solarFormFrames;                 // 0x2D8, 赤ジャンゴのままボタンを押していたフレーム数, s32 の根拠: Player_CountStyleFrames が 0x7FFFFFFE と符号付き比較する
+  s32 darkFormFrames;                  // 0x2DC, 赤ジャンゴ以外(サバタを除く)でボタンを押していたフレーム数, s32 の根拠は同上
+  s32 weaponFrames[5];                 // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
+  u8 unk_2f4[4];                       // 0x2F4
+  u16 side;                            // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
+  u16 style;                           // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle
+  u16 forge;                           // 0x2FC, 0..127, 用途まだ不明
+  s16 friendship[5];                   // 0x2FE, 好感度, 0: ザジ, 1: リタ, 2: スミレ, 3: サバタ, 4: レディ
+  u16 enemyRespawnInfo[(3 * 20) + 4];  // 0x308, 倒した敵の復活情報, [mapScriptID, moverID, リスポーンまでの残り回数], 末尾8バイトは未解析 (CpuFastFill 想定のパディング?)
+  u32 enemyDexSeen[2];                 // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ(bitがクリアされている場合、魔物図鑑でエントリが ???? になる), 全部そろうと [0] = 0xFFFFFFFF, [1] = 0x01FFFFFF
+  u32 enemyDexDrop[4];                 // 0x390, 魔物図鑑のドロップアイテム発見フラグ, 1体につき2bit (bit0: 通常ドロップ, bit1: レアドロップ)
+  u32 armorDex[2];                     // 0x3A0
+  u32 photo;                           // 0x3A8, ブロマイドの取得フラグ, アルバム画面のカーソル位置とbitが対応してそう
+  struct {
+    u16 ended;      // 0x3AC, ミニゲームの開始で 0, Cmd_B294 で 1
+    u16 noDamage;   // 0x3AE, Cmd_B294 が BlackPanther.damaged の逆を書く
+    u16 score;      // 0x3B0, ミニゲーム"ブラックパンサー"のスコア
+    u16 maxCombo;   // 0x3B2, ミニゲーム"ブラックパンサー"の最大コンボ
+    u16 bestScore;  // 0x3B4, これまでのミニゲーム"ブラックパンサー"での最大スコア
+    u16 bestCombo;  // 0x3B6, これまでのミニゲーム"ブラックパンサー"での最大コンボ
+  } blackPanther;   // 0x3AC, ミニゲーム"ブラックパンサー"
 
   // セーブ時には ここからweaponDexまで をセーブデータとして扱っている (根拠: Save_WriteExtra)
   u8 unk_3b8[2];                 // 0x3B8
@@ -220,8 +226,8 @@ typedef struct {
   s16 sunGauge;               // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
   s16 unk_944;                // 0x944, EntityA288 の subdbc.unk_c8 の控え
   s16 unk_946;                // 0x946, RainManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
-  s16 unk_948[4];             // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
-  s16 unk_950[4];             // 0x950, FUN_0823d310 が 9998 を上限に +1 する
+  s16 unk_948[4];             // 0x948, 多分、通信対戦でのプレイヤーごとの何かのカウント(エネミーキル数?)
+  s16 linkAlertCount[4];      // 0x950, 通信対戦でプレイヤーごとのアラート数をカウントする
 } GameInfo;
 static_assert(sizeof(GameInfo) == 2392);
 

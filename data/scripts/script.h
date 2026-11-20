@@ -4,12 +4,22 @@
 // data/scripts/scripts.bokc で include する用
 // 行末コメントはダンパーがそのスクリプトの定義の直前のアドレスコメントにそのまま付け足す, 引数の説明は先頭に "p0=map, p1=entrance, p2=room" のように pN=名前 を並べて書く
 
+#define Scr_InitNewGame 0x0002  // 新規ゲーム用にセーブデータを初期化する, 進行度と周回数を 0 にしてから能力値・棺桶・ステージなどの初期化を順に呼ぶ
+#define Scr_InitPlayerStats 0x0003  // プレイヤーの能力値を初期化する, Lv1・ステータス 10 から最大 HP/ENE を計算し, ボスの HP ゲージも 500 にする
+#define Scr_InitCoffinState 0x0006  // 棺桶の位置・向き・中身・時刻などの W_COFFIN_* を初期状態に戻す
+#define Scr_InitItems 0x000C  // 所持アイテムを初期状態にしてアイテム 49 を持たせる
+#define Scr_InitWeaponsAndMagic 0x000D  // 武器・防具と魔法を初期状態にする
+#define Scr_ClearQuests 0x0012  // クエストの受注・クリアのフラグを全部消す
+#define Scr_InitWeaponsAndArmors 0x0017  // 武器を 4 本, 防具を 1 つの初期状態にする
+#define Scr_InitMagic 0x0018  // 魔法の所持状態を初期化する
+#define Scr_ResetGameKeepingVars 0x001A  // Cmd_ResetGameKeepingVars でリセット後も残す値を引き継いでゲームの状態を消す
 #define Scr_InitMapCommon 0x001D               // マップ初期化の共通処理, 日付を更新してから入場時の特別な場面か通常のシステム生成かを選ぶ, p0: bit2 なら特別な場面を判定しない
 #define Scr_CreateMapSystems 0x001E            // マップ用の管理エンティティ (MsgBus, 敵管理, メニューなど) を作り, 一時フラグを初期化する
 #define Scr_CreateMainMenu 0x0020              // メニュー画面 (MainMenu) を作る, マップ共通初期化の末尾で呼ばれる
 #define Scr_0x0037 0x0037
-#define Scr_0x003B 0x003B
-#define Scr_0x003C 0x003C
+#define Scr_SpawnSolarBarrier 0x003A  // 太陽結界を出す, p0/p1: x/z, p2: '.m', 棺桶が入る/出ると Scr_OnCoffinEnterSolarBarrier / Scr_OnCoffinLeaveSolarBarrier を呼ぶ
+#define Scr_OnCoffinEnterSolarBarrier 0x003B  // 棺桶が太陽結界に入ったとき (SolarBarrier の '.i')
+#define Scr_OnCoffinLeaveSolarBarrier 0x003C  // 棺桶が太陽結界から出たとき (SolarBarrier の '.o')
 #define Scr_0x0045 0x0045
 #define Scr_SpawnPileDriver 0x0047             // 進行度に応じて Bin_14F8 から設定を読んでパイルドライバーを作る, p0: '.m' モード, p1: '.d'
 #define Scr_0x0049 0x0049
@@ -32,8 +42,13 @@
 #define Scr_0x006E 0x006E
 #define Scr_0x006F 0x006F
 #define Scr_0x0070 0x0070
-#define Scr_ResetCurrentStageState 0x0071           // 入口 p0 から来たとき (-1 なら常に) スイッチ・燭台・鍵扉などの仕掛けのフラグを消し, 敵の撃破記録を3回減らす
+#define Scr_ResetCurrentStageState 0x0071           // 入口 p0 から来たとき (-1 なら常に) スイッチ・燭台・鍵扉などの仕掛けのフラグを消し, 敵の復活情報の残り回数を3回減らす
 #define Scr_SetStage 0x0072                    // ステージIDを設定してバックアップする, 街 (p0 >= ST_AVE6) なら □のカギを捨てる
+#define Scr_ClearStageEventFlags 0x0074  // W_CURRENT_STAGE_EVENT_FLAGS を全部消す
+#define Scr_ClearStageFlags 0x0075  // W_CURRENT_STAGE_FLAGS を全部消す
+#define Scr_ClearStageSwitches 0x0076  // W_CURRENT_STAGE_SWITCH_ON を全部消す
+#define Scr_ClearStageChests 0x0077  // W_CURRENT_STAGE_CHEST_OPENED を全部消す
+#define Scr_ClearCandles 0x0078  // W_CANDLE_LIT を全部消す
 #define Scr_SetMapStageBgm 0x0079              // 入口 p4 から来たとき (-1 なら常に) BGM とステージを設定する, p0: ステージID, p1: BGM, p2: フェード時間 (0 なら 1)
 #define Scr_BeginEventLockPlayer 0x007B        // Scr_BeginEvent(1) をしてプレイヤーを止める
 #define Scr_EndEventUnlockPlayer 0x007D        // イベントを終えてプレイヤーを動けるようにする
@@ -142,6 +157,7 @@
 #define Scr_AddLamp 0x0144                     // 照明 (燭台・シャンデリア) を置く, p1: 初期状態 (燭台フラグも更新), p8: 燭台フラグ番号
 #define Scr_AddLampEx 0x0145  // Scr_AddLamp の全引数版
 #define Scr_0x014B 0x014B
+#define Scr_CreateElevator 0x014C  // エレベーターを作る, p0: '.n', p1/p2: '.r', p3: 高さ (タイル), p4: '.k', p5: '.s', p6: '.p', p7: '.S'
 #define Scr_0x014E 0x014E
 #define Scr_0x014F 0x014F
 #define Scr_CreateElevatorByEntrance 0x0152    // 移動床/昇降床を作る, 入口 p14 から来たときは別の初期位置で作る
@@ -153,7 +169,7 @@
 #define Scr_0x016F 0x016F
 #define Scr_0x0170 0x0170
 #define Scr_PlayBgm 0x0172                     // BGM を切り替える, 今と違う曲ならフェードアウトしてから鳴らす, p0: フェード時間 (0 なら即座), p1: 曲
-#define Scr_0x0175 0x0175
+#define Scr_ItemWarp 0x0175 // ワープアイテムによるワープ, p0: 種類 (0: 転移の葉, 1: 愚者のカード, 2: 暗黒ローン)
 #define Scr_Riremito 0x0176                    // 転移の葉によるダンジョンからの脱出
 #define Scr_MapRetry 0x0177                    // 愚者のカード, 暗黒ローンの"やり直し"
 #define Scr_InitRoomBattle 0x0178              // 閉じ込め戦闘を初期化する, p0: 倒すべき数
@@ -165,15 +181,19 @@
 #define Scr_0x017F 0x017F
 #define Scr_0x0180 0x0180
 #define Scr_EndRoomBattle 0x0181               // 閉じ込め戦闘の終わり, 曲を鳴らしてプレイヤーを動けるようにし, 280 フレーム後に元の BGM へ戻す
+#define Scr_CreateMissionMarker 0x0184  // ミッションの目印 (MissionMarker) を作る, p0: ID, p1: '.t', p2: '.I', p3: '.p'
 #define Scr_0x0187 0x0187
 #define Scr_0x0188 0x0188
 #define Scr_CreateDoorManager 0x018B           // 扉の絵一式を持つ DoorManager を作る, p0: '.m'
 #define Scr_SpawnBambooShoots 0x018C           // 太陽タケノコを最大5個ばらまく, p0: 精霊虫の種類 (3 なら時間帯で抽選), p1: 精霊虫の数, p2/p3: 中心, p4: ばらつき, p5: 個数
+#define Scr_SpawnSolarBamboo 0x018E  // 太陽タケノコを 1 つ出す, p0: ID, p1/p2: x/z (高さは地面から取る), p3: '.l', p4: '.n', p5: '.e'
 #define Scr_AddInteractPoint 0x018F            // 調べられる場所を置く, p0: ID, p1: 壁の向き, p2: スプライトなし, p3: 調べたときのスクリプト, p4/p5: 座標
 #define Scr_AddInteractPointEx 0x0191  // Scr_AddInteractPoint の全引数版
 #define Scr_EndInteractMsg 0x0192              // 調べる場所のメッセージを閉じてイベントを終え, 調べ終わりにする
 #define Scr_AdvanceStory 0x0196                // p0=progress ストーリー進行度 (world + 0x0) を progress に上げる, 今より小さければ何もしない
 #define Scr_GetKeyData 0x0198                  // ロックマンエグゼ連動のキーデータ1〜4を進行度に応じて入手する
+#define Scr_CreateAlarmPanel 0x019B  // 警報パネル (AlarmPanel) を作る, p0: ID, p1/p3: x/z, p2: 高さ (タイル), p4: '.r', p5: '.h', p6: '.R'
+#define Scr_CreateBarricade 0x019F  // バリケードを作る, p0: ID, p1〜p3: 位置, p4: '.t', p5: '.i', p6: '.r', p7: '.R'
 #define Scr_SetCameraBoundsOnEnter 0x01AA      // ゾーン p0 に入ったらカメラの移動範囲を (p1, p2)-(p3, p4) にする
 #define Scr_SetCameraBoundsDiagOnEnter 0x01AB  // ゾーン p0 に入ったらカメラの移動範囲を斜めの範囲 (bounds type 2) にする
 #define Scr_0x01B3 0x01B3
@@ -601,8 +621,8 @@
 #define Scr_0x0518 0x0518
 #define Scr_st02_14_desert 0x0519 // "st02_14_desert", 遺跡
 #define Scr_0x051F 0x051F
-#define Scr_0x0521 0x0521
-#define Scr_0x0522 0x0522
+#define Scr_StartCutsceneLearnDynamite 0x0521
+#define Scr_CutsceneLearnDynamite 0x0522
 #define Scr_st02_04_desert_b 0x0523 // "st02_04_desert", 遺跡 (その2), その1は Scr_st02_04_desert_a
 #define Scr_st02_15_desert 0x0524 // "st02_15_desert", 遺跡
 #define Scr_0x052E 0x052E
@@ -820,6 +840,7 @@
 #define Scr_0x07A5 0x07A5
 #define Scr_st05_07_tower 0x07A6 // "st05_07_tower", 螺旋の塔
 #define Scr_st05_08_tower 0x07AD // "st05_08_tower", 螺旋の塔
+#define Scr_CreateLockedPlayer 0x07B5  // 操作できない状態のプレイヤーキャラを作る, p0: ID, p1: '.k', p2〜p4: 位置, p5: 向き
 #define Scr_0x07B6 0x07B6
 #define Scr_0x07B7 0x07B7
 #define Scr_st05_09_tower 0x07B9 // "st05_09_tower", 螺旋の塔
@@ -889,9 +910,10 @@
 #define Scr_0x0872 0x0872
 #define Scr_0x0873 0x0873
 #define Scr_0x0874 0x0874
-#define Scr_0x0878 0x0878
-#define Scr_0x0879 0x0879
-#define Scr_0x087A 0x087A
+#define Scr_SpawnShadeMan 0x0877  // 螺旋の塔 (st05_24_tower) で, クロスオーバー進行度 7〜9 かつ入口 3 のときシェードマンを出す
+#define Scr_OnShadeManLowHP 0x0878  // シェードマンの HP が .b[0] 以下になって移る状態の入りで呼ばれる (.b[1]), プレイヤーを止める
+#define Scr_ShadeManLowHPMessage 0x0879  // HP が減った状態の後半で呼ばれる (.b[2]), 「キ、キキ・・・キサマ!!」とペットのヒントを出す
+#define Scr_OnShadeManDefeated 0x087A  // シェードマンを倒したとき (.c[0]), 経験値 3000 を足してプレイヤーを止める
 #define Scr_0x087B 0x087B
 #define Scr_st05_25_tower 0x087E // "st05_25_tower", 螺旋の塔
 #define Scr_0x0886 0x0886
@@ -1626,7 +1648,7 @@
 #define Scr_0x0F43 0x0F43
 #define Scr_TitleSensorCalib 0x0F44            // タイトルメニューを太陽センサー調整画面で開く
 #define Scr_TitleOptionMenu 0x0F45             // タイトルメニューをオプション (センサー調整/地域選択) で開く
-#define Scr_0x0F46 0x0F46
+#define Scr_TitleLink 0x0F46 // "LINK", タイトルメニューを "LINK" で開く?
 #define Scr_0x0F47 0x0F47
 #define Scr_0x0F48 0x0F48
 #define Scr_0x0F49 0x0F49
@@ -1673,7 +1695,8 @@
 #define Scr_0x0FA6 0x0FA6
 #define Scr_0x0FAC 0x0FAC
 #define Scr_0x0FAF 0x0FAF
-#define Scr_0x0FB6 0x0FB6
+#define Scr_SpawnArenaShadeMan 0x0FB5  // 闘技場でシェードマンを出す, ランク 3 なら HP 10000, クラッシュノイズの攻撃力 200 などに上げる
+#define Scr_OnArenaShadeManDefeated 0x0FB6  // 闘技場のシェードマンを倒したとき (.c[0])
 #define Scr_0x0FB7 0x0FB7
 #define Scr_0x0FB8 0x0FB8
 #define Scr_0x0FBE 0x0FBE
@@ -1716,6 +1739,7 @@
 #define Scr_0x1011 0x1011
 #define Scr_0x1012 0x1012
 #define Scr_0x1013 0x1013
+#define Scr_SpawnShadeManCrossover 0x1018  // クロスオーバーのシェードマン (ShadeManCrossover) を出す
 #define Scr_0x1019 0x1019
 #define Scr_0x101A 0x101A
 #define Scr_0x101B 0x101B
@@ -1724,8 +1748,9 @@
 #define Scr_0x1026 0x1026
 #define Scr_0x1029 0x1029
 #define Scr_0x102A 0x102A
+#define Scr_BestFriendEpilogue 0x102F // p0=会話の段階, ゲームクリア後の、好感度が1番高いキャラとのエピローグ会話
 #define Scr_0x1031 0x1031
-#define Scr_0x1032 0x1032
+#define Scr_CreateGameResult 0x1032 // ゲームクリア時のリザルト画面
 #define Scr_0x1033 0x1033
 #define Scr_0x1034 0x1034
 #define Scr_0x1035 0x1035
@@ -1831,9 +1856,9 @@
 #define Scr_0x109E 0x109E
 #define Scr_0x109F 0x109F
 #define Scr_0x10A0 0x10A0
-#define Scr_0x10A1 0x10A1
-#define Scr_SaveBeforeStage23Prompt 0x10A2     // ステージ23へ移る前のセーブの確認
-#define Scr_SaveBeforeStage23Answer 0x10A3     // セーブしてから (またはそのまま) ステージ23へ移る, p0: 選択
+#define Scr_CutsceneSt03End 0x10A1 // ドゥラスロール浄化後の仲間とのカットシーン
+#define Scr_St03EndSavePrompt 0x10A2     // ST_TREE(ドゥラスロール浄化後の太陽樹でのカットシーン) へ移る前のセーブの確認
+#define Scr_St03EndSaveAnswer 0x10A3     // セーブしてから (またはそのまま) ST_TREE(ドゥラスロール浄化後の太陽樹でのカットシーン) へ移る, p0: 選択
 #define Scr_0x10A4 0x10A4
 #define Scr_CutsceneRitaLearnHealing 0x10A5    // 太陽樹の芽の前のリタのカットシーン, 大地の祝福でヒーリングを覚える
 #define Scr_0x10A6 0x10A6
@@ -1897,7 +1922,8 @@
 #define Scr_QuestFailed 0x13FB                 // 依頼失敗の処理, レディが気づかう
 #define Scr_0x13FC 0x13FC
 #define Scr_0x13FD 0x13FD
-#define Scr_BlackPantherResult 0x1405          // ブラックパンサーの終了後にハイスコアを更新して結果を表示する
+#define Scr_BPantherCheckBestScore 0x1404
+#define Scr_BPantherResult 0x1405          // ブラックパンサーの終了後にハイスコアを更新して結果を表示する
 #define Scr_0x1406 0x1406
 #define Scr_0x1407 0x1407
 #define Scr_GuideElementCube2 0x1409           // Scr_GuideElementCube と同じ文の別の部屋のヒント看板
@@ -1920,12 +1946,13 @@
 #define Scr_0x1736 0x1736
 #define Scr_0x1739 0x1739
 #define Scr_0x173A 0x173A
+#define Scr_CreateElevatorEx 0x173D  // Scr_CreateElevator に '.m' (p8) を足した版
 #define Scr_KuroTalkAnimEnd 0x173F             // クロのアニメを通常に戻す
 #define Scr_0x1740 0x1740
 #define Scr_OnMugenTrapPanelStepped 0x1741  // 夢幻街のトラップパネルを踏んだとき, 区画の仕掛けの種類 (W_MUGEN_BLOCK_EVENT) で効果を出す, 1: 警報 (プレイヤーなら鉄格子を20秒閉じる), 2: 鉄球落下 (当たると最大HP分のダメージ), 3: 大爆発 (威力9999), 4〜6: 状態異常, 7〜9: 良い効果, 10: カギ落下 (□のカギを落とす), p9: 踏んだもの
 #define Scr_OnMugenTrapPanelLeft 0x1742  // 夢幻街のトラップパネルから離れたとき, 何もしない
 #define Scr_PlaceMugenTrapPanel 0x1743  // 夢幻街の区画にトラップパネルを置く, p0: 種類
-#define Scr_0x1A62 0x1A62
+#define Scr_SetupRTC 0x1A62 // 太陽センサーの説明と時間合わせ (セーブデータがない or RTCが設定されていないときにこのスクリプトが呼ばれる)
 #define Scr_0x1D7E 0x1D7E
 #define Scr_0x1D7F 0x1D7F
 #define Scr_0x209B 0x209B

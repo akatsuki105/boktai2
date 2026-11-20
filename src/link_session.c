@@ -31,7 +31,7 @@ s32 FUN_081df568(LinkSession* p);
 s32 FUN_081df62c(LinkSession* p);
 void EntityCF58_RequestKill(void);
 s32 Taiyo_LxToGauge(s32 lx);
-void FUN_08238c24(void);
+void Sio_ReinitAndClear(void);
 s32 FUN_081de2dc(LinkSession* p);
 s32 FUN_081df604(LinkSession* p);
 s32 FUN_081debd4(LinkSession* p);
@@ -55,7 +55,7 @@ void LinkPlayerMarker_ShowFixed(s32 playerIdx, Vec3* pos);
 extern const u16 sLinkTimeLimits[3];
 s32 FUN_081deef8(LinkSession* p);
 extern bool32 gRtcReadInhibit;
-void FUN_08238b04(void);
+void Sio_Open(void);
 s32 FUN_081de214(LinkSession* p);
 s32 FUN_081df398(LinkSession* p);
 extern bool32 gSoftResetInhibit;
@@ -555,7 +555,7 @@ void FUN_081de090(LinkSession* p) {
   p->rulesOut.values[0] = 0;
   p->rulesOut.values[1] = 0;
   p->rulesOut.values[2] = 0;
-  ClearMemory(p->self.unk_40, 4);
+  ClearMemory(p->self.loadout, 4);
   p->self.tradeSlot = 0xFF;
   p->self.unk_44 = Time_GetSpanOfTime();
 }
@@ -628,7 +628,7 @@ s32 FUN_081de250(LinkSession* p) {
   s32 i;
 
   if ((u8)FUN_081dd9d4(p)) {
-    FUN_08238c24();
+    Sio_ReinitAndClear();
     for (i = 0; i < 4; i++) {
       if (p->connStatus[i] != 0) {
         p->connStatus[i] = 1;
@@ -827,7 +827,7 @@ NON_MATCH s32 FUN_081de360(LinkSession* p) {
   }
 check:
   if (p->unk_23 == 2) {
-    FUN_08238c24();
+    Sio_ReinitAndClear();
     LinkSession_SetState(p, 1, FUN_081de214);
   }
   return 0;
@@ -1679,8 +1679,8 @@ bool32 LinkSession_IsKillRequested(void) {
   return FALSE;
 }
 
-// pos と val を引数に unk_2e4 のスクリプトを実行する
-void FUN_081df9ac(Vec3* pos, s32 val) {
+// idx 番の武器を pos に落とすスクリプト (dropWeaponScriptID) を実行する
+void LinkSession_DropWeapon(Vec3* pos, s32 idx) {
   LinkSession* p = gLinkSession;
 
   if (p != NULL) {
@@ -1691,10 +1691,10 @@ void FUN_081df9ac(Vec3* pos, s32 val) {
     argv[1] = pos->y;
     argv[2] = pos->z;
     argv[3] = 0;
-    argv[4] = val;
+    argv[4] = idx;
     argv[5] = 0;
     args.argc = 6, args.argv = argv;
-    VM_ExecByID(p->unk_2e4, &args);
+    VM_ExecByID(p->dropWeaponScriptID, &args);
   }
 }
 
@@ -1829,7 +1829,7 @@ NON_MATCH LinkSession* LinkSession_Create(void) {
   p->e.id = 0;
   AddEntity(&p->e);
   gRtcReadInhibit = TRUE;
-  FUN_08238b04();
+  Sio_Open();
   p->playerIdx = -1;
   p->killRequested = 0;
   p->recvKeys = p->recvKeyBuf;
@@ -1854,7 +1854,7 @@ NON_MATCH LinkSession* LinkSession_Create(void) {
   p->unk_2de = VM_GetNamedArgValue('R', 0);
   p->unk_2e0 = VM_GetNamedArgValue('v', 0);
   p->exitScriptID = VM_GetNamedArgValue('E', 0);
-  p->unk_2e4 = VM_GetNamedArgValue('b', 0);
+  p->dropWeaponScriptID = VM_GetNamedArgValue('b', 0);
   p->timeLimit = 7200;
   p->timeLeft = 7200;
   p->unk_3c = VM_GetNamedArgValue('L', 5000);

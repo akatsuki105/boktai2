@@ -74,11 +74,20 @@ typedef union {
   u32 offset;
 } AssetRef;
 
+// 方向を4段階にしたもの, "include/constants/miscs.h" の DIR4_* に対応 (e.g. DIR4_NORTH)
+typedef u8 Dir4U8;
+typedef s8 Dir4S8;
+typedef u16 Dir4U16;
+typedef s16 Dir4S16;
+typedef u32 Dir4U32;
+typedef s32 Dir4S32;
+
 // 方向を8段階にしたもの, "include/constants/miscs.h" の DIR8_* に対応 (e.g. DIR8_UP)
 typedef u8 Dir8U8;
 typedef s8 Dir8S8;
 typedef u16 Dir8U16;
 typedef s16 Dir8S16;
+typedef u32 Dir8U32;
 typedef s32 Dir8S32;
 
 #endif  // __INCLUDE_BOKTAI2_TYPES_H__

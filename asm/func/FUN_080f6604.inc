@@ -280,7 +280,7 @@ _080F6816:
 	ldr r0, _080F6848 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r5]
-	bl DefeatedEnemyLog_Add
+	bl EnemyRespawnInfo_Add
 _080F6836:
 	adds r2, r5, #0
 	adds r2, #0xde

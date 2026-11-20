@@ -47,38 +47,40 @@ const u8 Bin_189B[] = {
     0x26, 0x25, 0x23, 0x22, 0x2C, 0x2F, 0x3E, 0x41, 0x32, 0x30, 0x22, 0x21, 0x21, 0x23, 0x25, 0x20, 0x26, 0x1E, 0x23, 0x2E, 0x1B, 0x1A, 0x19, 0x19, 0x1D, 0x24, 0x26, 0x20, 0x24, 0x18, 0x12, 0x16,
 };
 
-const u8 Str_189C[] = _("廃墟");              // 0x08D0FD01, ID: 6300
-const u8 Str_189D[] = _("闘技場");            // 0x08D0FD06, ID: 6301
-const u8 Str_189E[] = _("森");                // 0x08D0FD0D, ID: 6302
-const u8 Str_189F[] = _("地下墓地");          // 0x08D0FD10, ID: 6303
-const u8 Str_18A0[] = _("時の家");            // 0x08D0FD19, ID: 6304
-const u8 Str_18A1[] = _("宝物庫");            // 0x08D0FD20, ID: 6305
-const u8 Str_18A2[] = _("夢幻街");            // 0x08D0FD27, ID: 6306
-const u8 Str_18A3[] = _("陸番街");            // 0x08D0FD2E, ID: 6307
-const u8 Str_18A4[] = _("拾番街");            // 0x08D0FD35, ID: 6308
-const u8 Str_18A5[] = _("肆番街");            // 0x08D0FD3C, ID: 6309
-const u8 Str_18A6[] = _("弍番街");            // 0x08D0FD43, ID: 6310
-const u8 Str_18A7[] = _("捌番街");            // 0x08D0FD4A, ID: 6311
-const u8 Str_18A8[] = _("拾弍番街");          // 0x08D0FD51, ID: 6312
-const u8 Str_18A9[] = _("約束の丘");          // 0x08D0FD5A, ID: 6313
-const u8 Str_18AA[] = _("\nソード");          // 0x08D0FD63, ID: 6314
-const u8 Str_18AB[] = _("\nアックス");        // 0x08D0FD6B, ID: 6315
-const u8 Str_18AC[] = _("\nシャイアン");      // 0x08D0FD75, ID: 6316
-const u8 Str_18AD[] = _("\nサンドウォーム");  // 0x08D0FD81, ID: 6317
-const u8 Str_18AE[] = _("\nリッチ");          // 0x08D0FD91, ID: 6318
-const u8 Str_18AF[] = _("\nサーペント");      // 0x08D0FD99, ID: 6319
-const u8 Str_18B0[] = _("\nリッチ+");         // 0x08D0FDA5, ID: 6320
-const u8 Str_18B1[] = _("\nシェードマン");    // 0x08D0FDAE, ID: 6321
-const u8 Str_18B2[] = _("\nドゥネイル");      // 0x08D0FDBC, ID: 6322
-const u8 Str_18B3[] = _("\nヴァンパイア");    // 0x08D0FDC8, ID: 6323
-const u8 Str_18B4[] = _("\nドゥラスロール");  // 0x08D0FDD6, ID: 6324
-const u8 Str_18B5[] = _("\nドヴァリン");      // 0x08D0FDE6, ID: 6325
-const u8 Str_18B6[] = _("\nダーイン");        // 0x08D0FDF2, ID: 6326
-const u8 Str_18B7[] = _("\nヨルムンガンド");  // 0x08D0FDFC, ID: 6327
-const u8 Str_18B8[] = _("★");                 // 0x08D0FE0C, ID: 6328
-const u8 Str_18B9[] = _("");                  // 0x08D0FE0F, ID: 6329
-const u8 Str_18BA[] = _("　");                // 0x08D0FE10, ID: 6330
-const u8 Str_18BB[] = _("ジャンゴ");          // 0x08D0FE13, ID: 6331
+const u8 Str_DungeonTitles[] = _("廃墟");  // 0x08D0FD01, ID: 6300
+const u8 Str_189D[] = _("闘技場");         // 0x08D0FD06, ID: 6301
+const u8 Str_189E[] = _("森");             // 0x08D0FD0D, ID: 6302
+const u8 Str_189F[] = _("地下墓地");       // 0x08D0FD10, ID: 6303
+const u8 Str_18A0[] = _("時の家");         // 0x08D0FD19, ID: 6304
+const u8 Str_18A1[] = _("宝物庫");         // 0x08D0FD20, ID: 6305
+const u8 Str_18A2[] = _("夢幻街");         // 0x08D0FD27, ID: 6306
+const u8 Str_18A3[] = _("陸番街");         // 0x08D0FD2E, ID: 6307
+const u8 Str_18A4[] = _("拾番街");         // 0x08D0FD35, ID: 6308
+const u8 Str_18A5[] = _("肆番街");         // 0x08D0FD3C, ID: 6309
+const u8 Str_18A6[] = _("弍番街");         // 0x08D0FD43, ID: 6310
+const u8 Str_18A7[] = _("捌番街");         // 0x08D0FD4A, ID: 6311
+const u8 Str_18A8[] = _("拾弍番街");       // 0x08D0FD51, ID: 6312
+const u8 Str_18A9[] = _("約束の丘");       // 0x08D0FD5A, ID: 6313
+
+const u8 Str_BossRushTitles[] = _("\nソード");  // 0x08D0FD63, ID: 6314
+const u8 Str_18AB[] = _("\nアックス");          // 0x08D0FD6B, ID: 6315
+const u8 Str_18AC[] = _("\nシャイアン");        // 0x08D0FD75, ID: 6316
+const u8 Str_18AD[] = _("\nサンドウォーム");    // 0x08D0FD81, ID: 6317
+const u8 Str_18AE[] = _("\nリッチ");            // 0x08D0FD91, ID: 6318
+const u8 Str_18AF[] = _("\nサーペント");        // 0x08D0FD99, ID: 6319
+const u8 Str_18B0[] = _("\nリッチ+");           // 0x08D0FDA5, ID: 6320
+const u8 Str_18B1[] = _("\nシェードマン");      // 0x08D0FDAE, ID: 6321
+const u8 Str_18B2[] = _("\nドゥネイル");        // 0x08D0FDBC, ID: 6322
+const u8 Str_18B3[] = _("\nヴァンパイア");      // 0x08D0FDC8, ID: 6323
+const u8 Str_18B4[] = _("\nドゥラスロール");    // 0x08D0FDD6, ID: 6324
+const u8 Str_18B5[] = _("\nドヴァリン");        // 0x08D0FDE6, ID: 6325
+const u8 Str_18B6[] = _("\nダーイン");          // 0x08D0FDF2, ID: 6326
+const u8 Str_18B7[] = _("\nヨルムンガンド");    // 0x08D0FDFC, ID: 6327
+
+const u8 Str_18B8[] = _("★");         // 0x08D0FE0C, ID: 6328
+const u8 Str_18B9[] = _("");          // 0x08D0FE0F, ID: 6329
+const u8 Str_18BA[] = _("　");        // 0x08D0FE10, ID: 6330
+const u8 Str_18BB[] = _("ジャンゴ");  // 0x08D0FE13, ID: 6331
 
 // 0x08D0FE1C, ID: 6332
 // Narration_Create の '.t'

@@ -42,7 +42,7 @@ _0808894C:
 	ldrsh r0, [r1, r2]
 	cmp r0, #0
 	blt _08088964
-	bl FUN_080dab9c
+	bl SpiderWeb_Break
 _08088964:
 	ldr r0, _0808899C @ =0x0000039E
 	adds r3, r7, r0

@@ -46,6 +46,19 @@
 #define CONFIG_TEXT_SPEED 1  // 文字速度
 #define CONFIG_MARKER 2      // マーカー (gStat->markerEnabled)
 
+typedef enum {
+  ALLOW_WARP_LEAF,
+  ALLOW_THE_FOOL,
+  ALLOW_MR_RAINNOT,
+  ALLOW_DARK_CARD,
+} AllowFlags;
+
+typedef enum {
+  WARP_LEAF,  // 転移の葉
+  WARP_FOOL,  // 愚者のカード
+  WARP_LOAN,  // 暗黒ローンの"やり直し"
+} WarpKinds;
+
 struct MainMenu;
 typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) として呼ぶ
 
@@ -196,14 +209,14 @@ static_assert(sizeof(WorldMapTile) == 4);
 // 機能としては(今のところ判明してるだけでも) HUD + スタートメニュー + テキストウィンドウ といった感じ
 typedef struct MainMenu {
   Entity e;                      // 0x0000, ENTITY_UNK_12
-  Tilemaps* menuTilemap;         // 0x0018, MP_A413
+  Tilemaps* menuTilemap;         // 0x0018, MP_SYSTEM
   Tilemaps* worldMapTilemap;     // 0x001C, MP_A7D7
   Tilemaps* dungeonMapTilemap0;  // 0x0020, MP_A7E7
   Tilemaps* dungeonMapTilemap1;  // 0x0024, MP_A7F7
   TilemapFile* mapTilemap;       // 0x0028, マップページで使う worldMapTilemap / dungeonMapTilemap0 / dungeonMapTilemap1 のどれか
   TilemapFile* bankTilemap;      // 0x002C, MP_BANK
-  rgb555* menuPltt;              // 0x0030, BGP_EFDA
-  rgb555* dungeonMapPltt;        // 0x0034, BGP_ECBF
+  rgb555* menuPltt;              // 0x0030, BGP_SYSTEM
+  rgb555* dungeonMapPltt;        // 0x0034, BGP_TIZU
   rgb555* worldMapPltt;          // 0x0038, BGP_5F5E
   rgb555* bankPltt;              // 0x003C, BGP_BANK
   char* itemNames;               // 0x0040, '.i', Str_StartMenuItems
@@ -338,7 +351,7 @@ typedef struct MainMenu {
   u8 bugsKind;                    // 0x3FAD, 出す虫の種類
   u16 bugsAmount;                 // 0x3FAE, 虫の量
   bool8 pendingWarp;              // 0x3FB0, 閉じたあとに warpScriptID を実行する
-  u8 warpKind;                    // 0x3FB1, ワープの種類
+  u8 warpKind;                    // 0x3FB1, ワープの種類, see WarpKinds
   u8 unk_3fb2[2];                 // 0x3FB2
   u32 warpScriptID;               // 0x3FB4, '.R'
   bool8 pendingAOE;               // 0x3FB8, 閉じたあとに全体攻撃のエフェクトを出す
@@ -398,7 +411,7 @@ static_assert(sizeof(MainMenu) == 16476);
 
 IWRAM_DATA MainMenu* gMainMenu = NULL;  // 0x0300013C
 
-COMMON_DATA u16 u16_03002c10 = 0;                              // 0x03002C10, TestItemUseFlag がビット単位で読むフラグ
+COMMON_DATA u16 u16_03002c10 = 0;                              // 0x03002C10, 特定のアイテムの使用可能フラグ, see AllowFlags
 COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};      // todo
 COMMON_DATA u16 gSavedMenuPage = 0;                            // 0x03002C14, 根拠: MainMenu1P_Destroy が MainMenu.page を書き込む
 COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};      // todo
@@ -2121,14 +2134,14 @@ void MainMenu_AddCountdownDigits(MainMenu* p) {
 }
 
 void MainMenu1P_SetupBg(MainMenu* p) {
-  p->menuTilemap = GetFile(DIR_TILE_MAP, MP_A413);
+  p->menuTilemap = GetFile(DIR_TILE_MAP, MP_SYSTEM);
   p->worldMapTilemap = GetFile(DIR_TILE_MAP, MP_A7D7);
   p->dungeonMapTilemap0 = GetFile(DIR_TILE_MAP, MP_A7E7);
   p->dungeonMapTilemap1 = GetFile(DIR_TILE_MAP, MP_A7F7);
   p->bankTilemap = GetFile(DIR_TILE_MAP, MP_BANK);
   p->hudMode = HUD_FIELD;
-  p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
-  p->dungeonMapPltt = BgPlttRow13(GetBgPlttFile(BGP_ECBF));
+  p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_SYSTEM));
+  p->dungeonMapPltt = BgPlttRow13(GetBgPlttFile(BGP_TIZU));
   p->worldMapPltt = BgPlttRow13(GetBgPlttFile(BGP_5F5E));
   p->bankPltt = BgPlttRow13(GetBgPlttFile(BGP_BANK));
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 0, p->menuPltt);
@@ -3435,7 +3448,7 @@ void MainMenu_StateLoanRetryConfirm(MainMenu* p) {
       gStat->darkDebts = 9999;
     }
     p->pendingWarp = TRUE;
-    p->warpKind = 2;
+    p->warpKind = WARP_LOAN;
     MainMenu_ShowLoanRetryThanks(p);
   }
 }
@@ -4249,7 +4262,7 @@ void MainMenu_InitDungeonMap(MainMenu* p) {
     MainMenu_ShowMapMarkersNoMap(p);
   }
   MessageWindow_Start(p->areaNames);
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MessageWindow_SetInstant(TRUE);
   MainMenu_ShowMapScreenName(p);
   MainMenu_SetState(p, MainMenu_UpdateDungeonMap, FALSE);
@@ -4424,7 +4437,7 @@ void MainMenu_InitWorldMap(MainMenu* p) {
     }
   }
   MessageWindow_Start(p->areaNames);
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MessageWindow_SetInstant(TRUE);
   MessageWindow_ShowLine(sWorldMapStages[gStat->stageID].nameLine);
   MainMenu_SetState(p, MainMenu_UpdateWorldMap, FALSE);
@@ -4521,13 +4534,13 @@ NON_MATCH void InventoryCursor_ResetSlotmap(InventoryCursor* p, u32 flags) {
 #endif
 }
 
-u32 item_08091774(item32_t n) { return gItemDB[n].unk_00 & 0xF; }
+u32 Item_GetUsableForm(item32_t n) { return gItemDB[n].usage & IUF_FORM_MASK; }
 
-u32 item_08091788(item32_t n) { return (gItemDB[n].unk_00 & 0xF0) >> 4; }
+u32 Item_GetUseCheck(item32_t n) { return (gItemDB[n].usage & IUF_CHECK_MASK) >> 4; }
 
-s32 item_0809179c(item32_t n) { return (gItemDB[n].unk_00 & 0x100) >> 8; }
+s32 Item_GetDiscardableBit(item32_t n) { return (gItemDB[n].usage & IUF_DISCARDABLE) >> 8; }
 
-u8 item_080917b4(item32_t n) { return (gItemDB[n].unk_00 & 0x200) >> 9; }
+u8 item_080917b4(item32_t n) { return (gItemDB[n].usage & IUF_9) >> 9; }
 
 // 0x080917cc
 item32_t GetItemID(bool32 isValuable, s32 slot) {
@@ -4591,7 +4604,7 @@ void ItemEffect_MP(MainMenu* p, s32 percent, s32 badCondSec) {
 }
 
 // cureBits が立っている状態異常を治す (bit0: 腹痛, bit1: 毒, bit2: 混乱, bit3: カーモス)
-void ItemEffect_BadStatus(MainMenu* p, s32 cureBits, s32 _) {
+void ItemEffect_Cure(MainMenu* p, s32 cureBits, s32 _) {
   Player* player = p->player;
 
   if (player != NULL) {
@@ -4746,35 +4759,35 @@ NON_MATCH u32 Item_IsUsableNow(item32_t n) {
     return FALSE;
   }
   if (player->kind == PLAYER_RDJANGO) {
-    if (item_08091774(n) == 1) {
+    if (Item_GetUsableForm(n) == IUF_FORM_DARK) {
       return FALSE;
     }
-  } else if ((u8)(player->kind - 1) <= 3) {
-    if (item_08091774(n) == 0) {
+  } else if (player->kind == PLAYER_BDJANGO || player->kind == PLAYER_BAT || player->kind == PLAYER_MOUSE || player->kind == PLAYER_SLEEPING) {
+    if (Item_GetUsableForm(n) == IUF_FORM_RED) {
       return FALSE;
     }
   }
 
-  if (n == 30) {
-    if (TestItemUseFlag(0)) {
+  if (n == ITEM_WARP_LEAF) {
+    if (TestItemUseFlag(ALLOW_WARP_LEAF)) {
       return TRUE;
     }
     return FALSE;
   }
-  if (n == 31) {
-    if (TestItemUseFlag(1)) {
+  if (n == ITEM_THE_FOOL) {
+    if (TestItemUseFlag(ALLOW_THE_FOOL)) {
       return TRUE;
     }
     return FALSE;
   }
-  if (n >= 27 && n <= 29) {
-    if (TestItemUseFlag(2)) {
+  if (n >= ITEM_MR_RAINNOT && n <= ITEM_SUNNY_CLOG) {
+    if (TestItemUseFlag(ALLOW_MR_RAINNOT)) {
       return TRUE;
     }
     return FALSE;
   }
-  if (n == 49) {
-    if (TestItemUseFlag(3)) {
+  if (n == ITEM_DARK_CARD) {
+    if (TestItemUseFlag(ALLOW_DARK_CARD)) {
       return TRUE;
     }
     return FALSE;
@@ -4783,7 +4796,7 @@ NON_MATCH u32 Item_IsUsableNow(item32_t n) {
     return TRUE;
   }
 
-  switch (item_08091788(n)) {
+  switch (Item_GetUseCheck(n)) {
     case 1: {
       return TRUE;
     }
@@ -4838,7 +4851,7 @@ NON_MATCH u32 Item_IsUsableNow(item32_t n) {
 }
 
 bool32 Item_IsDiscardable(item32_t n) {
-  if (item_0809179c(n) == 1) {
+  if (Item_GetDiscardableBit(n) == 1) {
     return TRUE;
   }
   return FALSE;
@@ -4855,7 +4868,7 @@ void (*const gItemEffectHandlers[15])(MainMenu*, s32, s32) = {
     [IET_NONE] = NULL,
     [IET_HP] = ItemEffect_HP,
     [IET_MP] = ItemEffect_MP,
-    [IET_BAD_STATUS] = ItemEffect_BadStatus,
+    [IET_CURE] = ItemEffect_Cure,
     [IET_VITAMINS] = ItemEffect_Vitamins,
     [IET_GOOD] = ItemEffect_Good,
     [IET_BUGS] = ItemEffect_Bugs,
@@ -5886,7 +5899,7 @@ NON_MATCH void MainMenu_UseItem(MainMenu* p) {
   switch (gItemDB[id].effectType) {
     case IET_HP:
     case IET_MP:
-    case IET_BAD_STATUS:
+    case IET_CURE:
     case IET_GOOD:
     case IET_LOAN: {
       MainMenu_StartItemMove(p);
@@ -6256,7 +6269,7 @@ void MainMenu_InitPage_Valuable(MainMenu* p) {
   MainMenu_InitItemCursor(p, 0);
   MainMenu_SetupItemSprites(p);
   FUN_08049f5c();
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowCursorItemInfo(p);
   MainMenu_SetButtonGuidePos(p, 0, 0);
   MainMenu_UpdateItemButtonGuides(p, 0);
@@ -7266,7 +7279,7 @@ void MainMenu_InitPage_Weapon(MainMenu* p) {
   MainMenu_SetupWeaponSprites(p);
   MainMenu_DrawWeaponPreview(p);
   FUN_08049f5c();
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowCursorWeaponInfo(p);
   MainMenu_SetButtonGuidePos(p, 0, 0);
   MainMenu_UpdateWeaponButtonGuides(p, 0);
@@ -7937,7 +7950,7 @@ void MainMenu_InitPage_Armor(MainMenu* p) {
   MainMenu_SetupArmorSprites(p);
   MainMenu_DrawArmorPreview(p);
   FUN_08049f5c();
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowCursorArmorInfo(p);
   MainMenu_SetButtonGuidePos(p, 0, 0);
   MainMenu_UpdateArmorButtonGuides(p, 0);
@@ -8531,7 +8544,7 @@ void MainMenu_InitPage_Magic(MainMenu* p) {
   MainMenu_InitMagicCursor(p, 0);
   MainMenu_SetupMagicSprites(p);
   FUN_08049f5c();
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowCursorMagicInfo(p);
   MainMenu_SetButtonGuidePos(p, 0, 0);
   MainMenu_UpdateMagicButtonGuides(p, 0);
@@ -9256,7 +9269,7 @@ void MainMenu_InitPage_Config(MainMenu* p) {
   MainMenu_ShowPageName(p, p->page);
   MainMenu_SetupConfigSprites(p);
   MessageWindow_Start(p->etcTexts);
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowLine(5);
   MainMenu_SetButtonGuidePos(p, 0, -16);
   MainMenu_SetButtonGuides(p, 0, -1);
@@ -9320,7 +9333,7 @@ void MainMenu_InitPage_Sleep(MainMenu* p) {
   MainMenu_HideAllSprites(p);
   MainMenu_ShowPageName(p, p->page);
   MessageWindow_Start(p->etcTexts);
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowLine(17);
   p->pageLockTimer = 0;
   MainMenu_SetButtonGuidePos(p, 0, -16);
@@ -9450,7 +9463,7 @@ void MainMenu_InitPage_Save(MainMenu* p) {
   MainMenu_HideAllSprites(p);
   MainMenu_ShowPageName(p, p->page);
   MessageWindow_Start(p->etcTexts);
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   MainMenu_ShowLine(8);
   MainMenu_SetButtonGuidePos(p, 0, -16);
   MainMenu_SetButtonGuides(p, 0, -1);
@@ -10315,7 +10328,7 @@ void HUD_SetMode(s32 mode) {
       p->countdownDigits[0].flags |= SPRFLAG_HIDDEN;
       p->countdownDigits[1].flags |= SPRFLAG_HIDDEN;
       Video_SetBGLayer(0, p->menuTilemap, p->hudMode - 2);
-      MessageWindow_SetBgPltt(BGP_EFDA);
+      MessageWindow_SetBgPltt(BGP_SYSTEM);
       p->statusPointBlinkTimer = 0;
     }
     Video_GenerateBGMap(0, 0, 0, 0, 0);
@@ -10662,8 +10675,8 @@ void MainMenuLink_LoadResources(MainMenu* p) {
   MainSpriteGfxFile* f;
 
   p->hudMode = HUD_FIELD;
-  p->menuTilemap = GetFile(DIR_TILE_MAP, MP_A413);
-  p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
+  p->menuTilemap = GetFile(DIR_TILE_MAP, MP_SYSTEM);
+  p->menuPltt = BgPlttRow13(GetBgPlttFile(BGP_SYSTEM));
   MainMenu_SetBG0Layer(p, p->menuTilemap, 0, 0, p->menuPltt);
   p->unk_a2a = 0;
 

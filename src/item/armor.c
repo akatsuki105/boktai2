@@ -49,21 +49,19 @@ void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
   }
 }
 
-NON_MATCH void SortArmors(slot32_t from) {
-#ifdef NONMATCHING_C
-  s32 emptyCount;
-  s32 validCount;
+// 防具欄の from から 16 枠の空きを詰め, 防具番号の小さい順に並べる
+void SortArmors(slot32_t from) {
+  s32 validCount = 0;
+  s32 emptyCount = 0;
   s32 i;
-  s32 slot;
 
-  validCount = 0;
-  emptyCount = 0;
   for (i = 0; i < 16; i++) {
-    slot = from + i;
+    s32 slot = from + i;
+
     if (GetInventoryArmor(slot) < 0) {
-      emptyCount += 1;
+      emptyCount++;
     } else {
-      validCount += 1;
+      validCount++;
       if (emptyCount > 0) {
         SwapArmorSlot(slot, slot - emptyCount);
       }
@@ -72,27 +70,15 @@ NON_MATCH void SortArmors(slot32_t from) {
 
   if (validCount > 1) {
     s32 j;
-    s32 k;
-    s32 lastIdx;
-    s32 pi;
-    s32 pj;
-    s32 vi;
 
-    lastIdx = validCount - 1;
-    for (j = 0; j < lastIdx; j++) {
-      for (k = j; k < validCount; k++) {
-        pi = from + j;
-        vi = GetInventoryArmor(pi);
-        pj = from + k;
-        if (vi > GetInventoryArmor(pj)) {
-          SwapArmorSlot(pi, pj);
+    for (i = 0; i < validCount - 1; i++) {
+      for (j = i; j < validCount; j++) {
+        if (GetInventoryArmor(from + i) > GetInventoryArmor(from + j)) {
+          SwapArmorSlot(from + i, from + j);
         }
       }
     }
   }
-#else
-  INCFUNC("asm/func/SortArmors.inc");
-#endif
 }
 
 bool32 IsSlotArmorEpuipped(slot32_t n) {

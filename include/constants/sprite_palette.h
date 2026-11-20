@@ -34,6 +34,8 @@
 // 特に 0 (ソル) は良い効果がかかった時の汎用カラー としてよく使われる
 #define OBP_ELEMENT(elementColor) (289 + (elementColor))
 
+#define OBP_SWORDAX(variant) (301 + (variant))  // 0: ENEID_SWORD/ENEID_AX, 1: ENEID_SWORD_P/ENEID_AX_P
+
 #define OBP_WHITE_306 306  // 色0 が RGB(24, 24, 24), それ以外は真っ白, 被弾時の白塗り
 
 #define OBP_LEVER_SWITCH 313

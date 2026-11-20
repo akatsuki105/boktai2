@@ -1,33 +1,33 @@
 #ifndef __INCLUDE_CONSTANTS_SPRITE_H__
 #define __INCLUDE_CONSTANTS_SPRITE_H__
 
-#define SPR_UI_MAP 0x0312                          // 0x0312, スタートメニューのマップ画面で使うスプライト, BOKHASH("obj_map_oud")?
+#define SPR_UI_MAP BOKHASH("obj_map_oud")          // 0x0312, スタートメニューのマップ画面で使うスプライト
 #define SPR_EVENT_SUN 0x0C23                       // ラスボス戦のイベントで使う太陽光のエフェクト
 #define SPR_DJANGO_LARGE 0x1774                    // ソルデバイスやラスボス戦のイベントで使う、ジャンゴの大きな1枚絵
 #define SPR_FLAMETHROWER 0x1BC7                    // 火炎放射
-#define SPR_UI_MISC 0x414C                         // 0x414C, 太陽鍛治, ショップ名, "時の家"の暗証番号入力端末 など、メニューUIのうち、用途が限定的でサイズの小さいものをここにまとめている, BOKHASH("obj_kaji_oud")?
-#define SPR_UI_TITLE 0x42E2                        // 0x42E2, 太陽センサーのヘルプの手や住んでる地域のフォント, BOKHASH("obj_nam_oud")?
+#define SPR_UI_MISC BOKHASH("obj_kaji_oud")        // 0x414C, 太陽鍛治, ショップ名, "時の家"の暗証番号入力端末 など、メニューUIのうち、用途が限定的でサイズの小さいものをここにまとめている
+#define SPR_UI_NAME BOKHASH("obj_nam_oud")         // 0x42E2, ゲーム開始時の名前入力, リザルト画面など
 #define SPR_INVENTORY_ICONS 0x5D04                 // アイテムアイコン, poseIdx は "include/constants/item_icon.h"
 #define SPR_SHADEMAN 0x5D36                        // シェードマン(EXE)
-#define SPR_UI_GALLERY 0x5EBF                      // 0x5EBF, 図書館で見れる魔物図鑑,武器図鑑,アルバムのUI, BOKHASH("obj_bok_oud")?
+#define SPR_UI_BOOK BOKHASH("obj_bok_oud")         // 0x5EBF, 図書館で見れる魔物図鑑,武器図鑑,アルバムのUI
 #define SPR_UI_BANK 0x6893                         // 太陽バンクのUI
-#define SPR_MARKERS 0x82F1                         // "Undead", "Immortal", "TRAP" といった画面上に表示されるマーカー
-#define SPR_UI_LOAN 0x92F0                         // 0x92F0, 暗黒ローンのUI, BOKHASH("obj_gin_oud")?
+#define SPR_MARKERS 0x82F1                         // "Undead", "Immortal", "TRAP" といった画面上に表示されるマーカー, BOKHASH("obj_kan_oud")?, kan は 看板？
+#define SPR_UI_LOAN BOKHASH("obj_gin_oud")         // 0x92F0, 銀行(太陽バンク, 暗黒ローン)のUI
 #define SPR_JORMUNGANDR BOKHASH("lasbos_oud")      // 0x9524, ヨルムンガンド
 #define SPR_SKELETONS 0xAE52                       // スケルトン
-#define SPR_MEGAMAN 0xAF82                         // ロックマン(EXE)
-#define SPR_UI_START_MENU 0xB343                   // 0xB343, スタート画面で表示されるUI(の大半), BOKHASH("obj_sys_oud")?
+#define SPR_MEGAMAN 0xAF82                         // ロックマン(EXE), BOKHASH("roc_oud")?
+#define SPR_UI_START_MENU BOKHASH("obj_sys_oud")   // 0xB343, スタート画面で表示されるUI(の大半)
 #define SPR_CANDLE_BOX 0xB991                      // ろうそくが乗ってる箱
 #define SPR_PORTRAITS 0xD27A                       // 会話などで使う顔アイコン
-#define SPR_TITLE 0xD353                           // 0xD353, タイトル画面のUI, BOKHASH("obj_tit_oud")?
+#define SPR_TITLE BOKHASH("obj_tit_oud")           // 0xD353, タイトル画面のUI
 #define SPR_DUNEYRR BOKHASH("bos00_oud")           // 0xD3CA, ドゥネイル
 #define SPR_RINGO BOKHASH("bos01_oud")             // 0xD3DA, 紅のリンゴ
 #define SPR_SHAIAN BOKHASH("bos02_oud")            // 0xD3EA, シャイアン
 #define SPR_DURATHROR BOKHASH("bos03_oud")         // 0xD3FA, ドゥラスロール
 #define SPR_DVALINN BOKHASH("bos04_oud")           // 0xD40A, ドヴァリン
-#define SPR_UI_LINK 0xDCC1                         // 0xDCC1, 通信画面で使うUI, BOKHASH("obj_lnk_oud")?
+#define SPR_UI_LINK BOKHASH("obj_lnk_oud")         // 0xDCC1, 通信画面で使うUI
 #define SPR_DJANGO_SABATA 0xDE23                   // 0xDE23, 主人公, BOKHASH("ply_00_oud")?
-#define SPR_UI_SENSOR_HELP 0xDF11                  // 太陽センサーのヘルプ画面で使うUI
+#define SPR_SENSOR_HELP BOKHASH("obj_lop_oud")     // 0xDF11, 太陽センサーの説明で使うUI, loop?
 #define SPR_SMITH_MARCELLO BOKHASH("npc00_oud")    // 0xDFCE, スミス, マルチェロ
 #define SPR_RITA BOKHASH("npc01_oud")              // 0xDFDE, リタ
 #define SPR_ZAJI BOKHASH("npc02_oud")              // 0xDFEE, ザジ
@@ -39,7 +39,7 @@
 #define SPR_ENNIO_LUIS BOKHASH("npc08_oud")        // 0xE04E, エンニオ, ルイス
 #define SPR_CARMILLA 0xE2DE                        // カーミラ(恋人のカード のエフェクト)
 #define SPR_DAINN 0xE349                           // ダーイン (人型)
-#define SPR_DUNGEON_TITLE 0xE89F                   // 無幻街の最終階層とかで使う特殊フォント
+#define SPR_DUNGEON_TITLE 0xE89F                   // dungeon_title.c で使うフォント, BOKHASH("obj_dti_oud")?
 #define SPR_CHANDELIER 0xF099                      // 0x2AF0 にもシャンデリアがある
 
 // --------------------------------------------

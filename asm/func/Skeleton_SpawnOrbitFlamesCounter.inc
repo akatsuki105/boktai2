@@ -66,7 +66,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #2
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -87,7 +87,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #3
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -108,7 +108,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #4
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	mov r0, sb
 	str r0, [sp]
 	movs r1, #0xc8
@@ -129,7 +129,7 @@ _08108496:
 	movs r2, #0xc0
 	lsls r2, r2, #4
 	movs r3, #5
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	movs r3, #2
 	rsbs r3, r3, #0
 	mov r0, sb
@@ -152,7 +152,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	movs r3, #3
 	rsbs r3, r3, #0
 	str r6, [sp]
@@ -173,7 +173,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	movs r3, #4
 	rsbs r3, r3, #0
 	str r6, [sp]
@@ -194,7 +194,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	movs r3, #5
 	rsbs r3, r3, #0
 	str r6, [sp]
@@ -215,7 +215,7 @@ _08108496:
 	adds r1, r7, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl Entity081f959c_Spawn
+	bl OrbitalFlame_Spawn
 	add sp, #0x1c
 	pop {r3, r4, r5}
 	mov r8, r3

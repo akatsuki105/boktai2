@@ -116,7 +116,7 @@ bool32 FUN_0809df78(Vec3* pos) {
 // 指定エリアに有効な光柱があるか
 // 残差3命令, 原典は count != 0 のガードと i < count の判定を両方出し mapArea を r4 に置くが
 // agbcc はガードを1つに畳んで r5 まで使う (count != 0 を明示的に書くと逆に5命令増える)
-NON_MATCH bool32 FUN_0809dfec(s32 mapArea) {
+NON_MATCH bool32 Skylight_IsAreaLit(s32 mapArea) {
 #ifdef NONMATCHING_C
   SkylightManager* p = gSkylightManager;
   SkylightBeam* beam;
@@ -133,7 +133,7 @@ NON_MATCH bool32 FUN_0809dfec(s32 mapArea) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/FUN_0809dfec.inc");
+  INCFUNC("asm/func/Skylight_IsAreaLit.inc");
 #endif
 }
 
@@ -507,7 +507,8 @@ NON_MATCH void SkylightManager_UpdateNight(SkylightManager* p) {
     }
   }
 
-  if (p->player->action == PACT_UNK_7 && p->player->state <= 3) {
+  // 満月の夜は月光虫を出す
+  if (p->player->action == PACT_PALM_UP && p->player->state <= 3) {
     if (p->player->state == 3 && p->unk_22 <= 62) {
       if ((p->unk_22 & 7) == 0) {
         Vec3 pos, spread;

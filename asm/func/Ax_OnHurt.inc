@@ -928,7 +928,7 @@ _0819B17A:
 	ldrb r0, [r0]
 	cmp r0, #2
 	bls _0819B1FC
-	ldr r3, _0819B21C @ =FUN_0819bbd8
+	ldr r3, _0819B21C @ =Ax_StateCloneBlink
 	mov sb, r3
 	ldr r4, _0819B220 @ =0x0000046D
 	adds r4, r6, r4
@@ -995,7 +995,7 @@ _0819B20C: .4byte 0x0000048A
 _0819B210: .4byte 0x0000048C
 _0819B214: .4byte 0x00000CBB
 _0819B218: .4byte 0x00000EAC
-_0819B21C: .4byte FUN_0819bbd8
+_0819B21C: .4byte Ax_StateCloneBlink
 _0819B220: .4byte 0x0000046D
 _0819B224: .4byte 0x0000046B
 _0819B228: .4byte 0x00000553

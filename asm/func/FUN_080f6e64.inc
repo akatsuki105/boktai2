@@ -491,7 +491,7 @@ _080F722A:
 	ldr r0, _080F7248 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r6]
-	bl DefeatedEnemyLog_Add
+	bl EnemyRespawnInfo_Add
 	b _080F72A0
 	.align 2, 0
 _080F7248: .4byte 0x03002B28

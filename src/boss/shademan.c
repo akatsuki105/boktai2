@@ -42,100 +42,100 @@ static_assert(sizeof(ShadeManAfterimage) == 100);
 
 // シェードマン(シングルプレイ用)
 typedef struct ShadeMan {
-  Boss base;                                 // 0x000
-  s32 weaponExp;                             // 0x158, '.K'
-  Hitbox hurtbox;                            // 0x15C, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_DAMAGE, ハンドラは ShadeMan_OnHurt
-  Hitbox hurtbox2;                           // 0x1AC, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, ハンドラは空
-  Hitbox hitbox;                             // 0x1FC
-  Hitbox hitbox2;                            // 0x24C
-  MainSpriteGfx gfx;                         // 0x29C, SPR_SHADEMAN
-  MainSprite sprite;                         // 0x2BC
-  AuxShadow shadow;                          // 0x31C
-  u8 unk_388;                                // 0x388
-  u8 unk_389[0x38C - 0x389];                 // 0x389
-  ShadeManFlags flag38c;                     // 0x38C, see ShadeManFlags
-  u32 unk_390;                               // 0x390, 毎フレーム 1 ずつ増える
-  u32 motion;                                // 0x394, PTR_ARRAY_085b0028 の添字
-  u32 nextMotion;                            // 0x398, -1 でなければ次のフレームで motion に移る
-  u32 motionTimer;                           // 0x39C, motion を切り替えてからのフレーム数
-  u32 phase;                                 // 0x3A0, motion の中の段階, motion 関数が switch で 0→1→2→3/99 と進める
-  s32 phaseTimer;                            // 0x3A4, ShadeMan_UpdateMotion が毎フレーム +1 し, phase を変えるたびに 0 に戻す
-  u32 unk_3a8;                               // 0x3A8
-  void (*motionCallback)(struct ShadeMan*);  // 0x3AC, PTR_ARRAY_085b0028[motion]
-  u32 unk_3b0;                               // 0x3B0
-  u32 angle;                                 // 0x3B4
-  s16 animIdx;                               // 0x3B8, ShadeMan_PlayAnim で最後に再生したアニメ番号
-  u16 unk_3ba;                               // 0x3BA
-  s16 unk_3bc;                               // 0x3BC
-  s16 hitboxPower;                           // 0x3BE, '.a[0]=0'
-  s16 hitboxKnockback;                       // 0x3C0, '.a[1]=0'
-  s16 hitboxUnk44;                           // 0x3C2
-  s16 hitbox2Power;                          // 0x3C4, '.a[3]=0'
-  s16 hitbox2Knockback;                      // 0x3C6, '.a[4]=0'
-  s16 hitbox2Unk44;                          // 0x3C8
-  s16 unk_3ca;                               // 0x3CA
-  s16 unk_3cc;                               // 0x3CC
-  s16 unk_3ce;                               // 0x3CE
-  s16 unk_3d0;                               // 0x3D0
-  s16 unk_3d2;                               // 0x3D2
-  s16 unk_3d4;                               // 0x3D4
-  s16 unk_3d6;                               // 0x3D6
-  s8 unk_3d8;                                // 0x3D8
-  s8 unk_3d9;                                // 0x3D9
-  s8 unk_3da;                                // 0x3DA
-  u8 unk_3db;                                // 0x3DB
-  s32 unk_3dc;                               // 0x3DC, hp がこれ以下になると ShadeMan_HandleDamage が状態を移す
-  s32 scriptID;                              // 0x3E0, '.b[1]=0'
-  s32 scriptID2;                             // 0x3E4, '.b[2]=0'
-  s16 hurtboxPower;                          // 0x3E8, '.s[1]=999'
-  s16 hurtboxPower2;                         // 0x3EA, '.s[2]=400'
-  u16 damage;                                // 0x3EC, ShadeMan_OnHurt が受けたダメージを入れる
-  u16 hurtAngle;                             // 0x3EE
-  s16 unk_3f0;                               // 0x3F0, 正の間 FUN_0821c2a0 が色を混ぜない
-  s16 unk_3f2;                               // 0x3F2
-  s32 unk_3f4;                               // 0x3F4
-  s32 unk_3f8;                               // 0x3F8
-  s32 unk_3fc;                               // 0x3FC, 正の間 BOSSFLAG_NO_HURTBOX を立てる
-  rgb555 pltt[16][16];                       // 0x400, 白 (0x7FFF) で埋める
-  rgb555 pltt_600[16][16];                   // 0x600
-  u32 unk_800;                               // 0x800
-  s16 stateDuration;                         // 0x804
-  s16 unk_806;                               // 0x806
-  u8 unk_808;                                // 0x808
-  u8 unk_809;                                // 0x809
-  u8 unk_80a[0x80C - 0x80A];                 // 0x80A
-  u32 unk_80c;                               // 0x80C
-  u32 unk_810;                               // 0x810
-  ShadeManAfterimage afterimages[8];         // 0x814
-  MainSpriteGfx gfx_b34;                     // 0xB34, SPR_DJANGO_SABATA
-  MainSprite sprite_b54;                     // 0xB54
-  Vec3 unk_bb4;                              // 0xBB4
-  u8 unk_bbc;                                // 0xBBC
-  u8 unk_bbd;                                // 0xBBD
-  u8 unk_bbe;                                // 0xBBE
-  u8 unk_bbf;                                // 0xBBF
-  u8 shakeAmp;                               // 0xBC0
-  u8 unk_bc1;                                // 0xBC1
-  u8 shakeAngle;                             // 0xBC2
-  u8 unk_bc3;                                // 0xBC3
-  Vec3 centerPos;                            // 0xBC4, '.r=0,0,0'
-  Vec3 unk_bcc;                              // 0xBCC
-  s32 unk_bd4;                               // 0xBD4, centerPos から見た角度の 256 倍
-  s32 unk_bd8;                               // 0xBD8
-  s32 unk_bdc;                               // 0xBDC
-  u32 unk_be0;                               // 0xBE0, centerPos からの距離の 256 倍
-  u32 unk_be4;                               // 0xBE4
-  u32 unk_be8;                               // 0xBE8
-  u16 unk_bec;                               // 0xBEC
-  u16 unk_bee;                               // 0xBEE
-  PathNode* pathNodes;                       // 0xBF0
-  u8 pathIdx;                                // 0xBF4
-  u8 pathNodeCount;                          // 0xBF5
-  u8 unk_bf6;                                // 0xBF6
-  u8 unk_bf7;                                // 0xBF7
-  struct Entity0805e67c* entity0805e67c;     // 0xBF8
-  struct Entity0805ee80* entity0805ee80;     // 0xBFC
-  s32 unk_c00;                               // 0xC00
+  Boss base;                                    // 0x000
+  s32 weaponExp;                                // 0x158, '.K'
+  Hitbox hurtbox;                               // 0x15C, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, ハンドラは ShadeMan_OnHurt
+  Hitbox hurtbox2;                              // 0x1AC, HBF_HURTBOX | HBF_SENSOR | HBF_DAMAGE, ハンドラは空
+  Hitbox hitbox;                                // 0x1FC
+  Hitbox hitbox2;                               // 0x24C
+  MainSpriteGfx gfx;                            // 0x29C, SPR_SHADEMAN
+  MainSprite sprite;                            // 0x2BC
+  AuxShadow shadow;                             // 0x31C
+  u8 unk_388;                                   // 0x388
+  u8 unk_389[0x38C - 0x389];                    // 0x389
+  ShadeManFlags flag38c;                        // 0x38C, see ShadeManFlags
+  u32 unk_390;                                  // 0x390, 毎フレーム 1 ずつ増える
+  u32 motion;                                   // 0x394, PTR_ARRAY_085b0028 の添字
+  u32 nextMotion;                               // 0x398, -1 でなければ次のフレームで motion に移る
+  u32 motionTimer;                              // 0x39C, motion を切り替えてからのフレーム数
+  u32 phase;                                    // 0x3A0, motion の中の段階, motion 関数が switch で 0→1→2→3/99 と進める
+  s32 phaseTimer;                               // 0x3A4, ShadeMan_UpdateMotion が毎フレーム +1 し, phase を変えるたびに 0 に戻す
+  u32 unk_3a8;                                  // 0x3A8
+  void (*motionCallback)(struct ShadeMan*);     // 0x3AC, PTR_ARRAY_085b0028[motion]
+  u32 unk_3b0;                                  // 0x3B0
+  u32 angle;                                    // 0x3B4
+  s16 animIdx;                                  // 0x3B8, ShadeMan_PlayAnim で最後に再生したアニメ番号
+  u16 unk_3ba;                                  // 0x3BA
+  s16 unk_3bc;                                  // 0x3BC
+  s16 hitboxPower;                              // 0x3BE, '.a[0]=0'
+  s16 hitboxKnockback;                          // 0x3C0, '.a[1]=0'
+  s16 hitboxUnk44;                              // 0x3C2
+  s16 hitbox2Power;                             // 0x3C4, '.a[3]=0'
+  s16 hitbox2Knockback;                         // 0x3C6, '.a[4]=0'
+  s16 hitbox2Unk44;                             // 0x3C8
+  s16 unk_3ca;                                  // 0x3CA
+  s16 unk_3cc;                                  // 0x3CC
+  s16 unk_3ce;                                  // 0x3CE
+  s16 unk_3d0;                                  // 0x3D0
+  s16 unk_3d2;                                  // 0x3D2
+  s16 unk_3d4;                                  // 0x3D4
+  s16 unk_3d6;                                  // 0x3D6
+  s8 unk_3d8;                                   // 0x3D8
+  s8 unk_3d9;                                   // 0x3D9
+  s8 unk_3da;                                   // 0x3DA
+  u8 unk_3db;                                   // 0x3DB
+  s32 unk_3dc;                                  // 0x3DC, hp がこれ以下になると ShadeMan_HandleDamage が状態を移す
+  s32 scriptID;                                 // 0x3E0, '.b[1]=0'
+  s32 scriptID2;                                // 0x3E4, '.b[2]=0'
+  s16 hurtboxPower;                             // 0x3E8, '.s[1]=999'
+  s16 hurtboxPower2;                            // 0x3EA, '.s[2]=400'
+  u16 damage;                                   // 0x3EC, ShadeMan_OnHurt が受けたダメージを入れる
+  u16 hurtAngle;                                // 0x3EE
+  s16 unk_3f0;                                  // 0x3F0, 正の間 FUN_0821c2a0 が色を混ぜない
+  s16 unk_3f2;                                  // 0x3F2
+  s32 unk_3f4;                                  // 0x3F4
+  s32 unk_3f8;                                  // 0x3F8
+  s32 unk_3fc;                                  // 0x3FC, 正の間 BOSSFLAG_NO_HURTBOX を立てる
+  rgb555 pltt[16][16];                          // 0x400, 白 (0x7FFF) で埋める
+  rgb555 pltt_600[16][16];                      // 0x600
+  u32 unk_800;                                  // 0x800
+  s16 stateDuration;                            // 0x804
+  s16 unk_806;                                  // 0x806
+  u8 unk_808;                                   // 0x808
+  u8 unk_809;                                   // 0x809
+  u8 unk_80a[0x80C - 0x80A];                    // 0x80A
+  u32 unk_80c;                                  // 0x80C
+  u32 unk_810;                                  // 0x810
+  ShadeManAfterimage afterimages[8];            // 0x814
+  MainSpriteGfx gfx_b34;                        // 0xB34, SPR_DJANGO_SABATA
+  MainSprite sprite_b54;                        // 0xB54
+  Vec3 unk_bb4;                                 // 0xBB4
+  u8 unk_bbc;                                   // 0xBBC
+  u8 unk_bbd;                                   // 0xBBD
+  u8 unk_bbe;                                   // 0xBBE
+  u8 unk_bbf;                                   // 0xBBF
+  u8 shakeAmp;                                  // 0xBC0
+  u8 unk_bc1;                                   // 0xBC1
+  u8 shakeAngle;                                // 0xBC2
+  u8 unk_bc3;                                   // 0xBC3
+  Vec3 centerPos;                               // 0xBC4, '.r=0,0,0'
+  Vec3 unk_bcc;                                 // 0xBCC
+  s32 unk_bd4;                                  // 0xBD4, centerPos から見た角度の 256 倍
+  s32 unk_bd8;                                  // 0xBD8
+  s32 unk_bdc;                                  // 0xBDC
+  u32 unk_be0;                                  // 0xBE0, centerPos からの距離の 256 倍
+  u32 unk_be4;                                  // 0xBE4
+  u32 unk_be8;                                  // 0xBE8
+  u16 unk_bec;                                  // 0xBEC
+  u16 unk_bee;                                  // 0xBEE
+  PathNode* pathNodes;                          // 0xBF0
+  u8 pathIdx;                                   // 0xBF4
+  u8 pathNodeCount;                             // 0xBF5
+  u8 unk_bf6;                                   // 0xBF6
+  u8 unk_bf7;                                   // 0xBF7
+  struct Entity0805e67c* entity0805e67c;        // 0xBF8
+  struct CrashNoiseSpeakerManager* crashNoise;  // 0xBFC
+  s32 unk_c00;                                  // 0xC00
 } ShadeMan;
 static_assert(sizeof(ShadeMan) == 3076);
 
@@ -300,9 +300,9 @@ s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 x
 s32 SpawnBloodEx(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 void FUN_0823b880(s32 n);
 struct Entity0805e67c* Entity0805e67c_Create(void);
-struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
+struct CrashNoiseSpeakerManager* CrashNoiseSpeakerManager_Create(u32 ringLifetime);
 s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes);
-void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
+s32 CrashNoiseSpeaker_Spawn(struct CrashNoiseSpeakerManager* p, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes, s32 kind, s32 shotsPerVolley, s32 volleyMax, Vec3* pos);
 s32 Entity0805e67c_SpawnSwarmN(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes, s32 count);
 void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx);
 void FUN_0823b980(s32 n, Vec3* pos);
@@ -575,8 +575,8 @@ void ShadeMan_PlayAnim(ShadeMan* p, s32 animIdx, s32 mode, bool8 restart, bool8 
   playMode = loop ? PLAYMODE_LOOP : PLAYMODE_ONCE_AND_STOP;
   p->animIdx = animIdx;
   p->unk_3ba = 0;
-  boss->facing = Angle_ToDir4(p->angle);
-  boss->dir = Angle_ToDir8(p->angle);
+  boss->dir4 = Angle_ToDir4(p->angle);
+  boss->dir8 = Angle_ToDir8(p->angle);
   switch (mode) {
     case 0: {
       Boss_PlayAnimFlip(boss, &p->sprite, &p->gfx, animIdx, playMode, flags);
@@ -722,7 +722,7 @@ void ShadeMan_InitHurtboxes(ShadeMan* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.375), Q8(0.5), Q8(0.375));
   VEC3_SET(offset, 0, Q8(0.5), 0);
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hurtbox, &p->base.mover.pos, 0);
   Hitbox_SetHandler(hurtbox, ShadeMan_OnHurt, p);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL | HBATTR_DARK, HBATTR_SOL);
@@ -1229,7 +1229,7 @@ void ShadeMan_SpawnBiteBlood(ShadeMan* p) {
   Vec3 ofs;
   s32 i;
 
-  if (p->base.facing <= DIR4_EAST) {
+  if (p->base.dir4 <= DIR4_EAST) {
     VEC3_SET(ofs, Q8(0.25), Q8(0.782), Q8(-0.5));
   } else {
     VEC3_SET(ofs, Q8(-0.5), Q8(0.782), Q8(0.25));
@@ -2222,7 +2222,7 @@ NON_MATCH void FUN_0821f818(ShadeMan* p) {
       p->flag38c &= ~SMFLAG_PHASE_ENTERED;
       if (entered) {
         FUN_0821dca0(p);
-        p->angle = Angle_FromDir4(boss->facing);
+        p->angle = Angle_FromDir4(boss->dir4);
         ShadeMan_PlayAnim(p, 0, 2, 0, 1, 0);
       }
       if (p->phaseTimer > 30) {
@@ -2465,7 +2465,7 @@ NON_MATCH void FUN_08220430(ShadeMan* p) {
 
           Map_GetPathNodePos(&pos, 9, (p->unk_bf6 != 0 ? 3 : 0) + i);
           pos.y = 0x500;
-          FUN_0805eee4(p->entity0805ee80, 10, 16, p->unk_3d6, 60, 60, 30, a, b, &pos);
+          CrashNoiseSpeaker_Spawn(p->crashNoise, 10, 16, p->unk_3d6, 60, 60, 30, a, b, &pos);
         }
         if (!(p->flag38c & SMFLAG_UNK_5)) {
           p->unk_809++;
@@ -3069,9 +3069,9 @@ NON_MATCH void ShadeMan_HandleDamage(ShadeMan* p) {
 #endif
 }
 
-// entity0805ee80 の要素がひとつでも動いていれば TRUE を返す
+// クラッシュノイズのスピーカーがひとつでも動いていれば TRUE を返す
 s32 FUN_0822190c(ShadeMan* p) {
-  Entity0805ee80* e = p->entity0805ee80;
+  CrashNoiseSpeakerManager* e = p->crashNoise;
   s32 busy = FALSE;
   s32 i;
 
@@ -3351,7 +3351,7 @@ NON_MATCH s32 ShadeMan_Init(ShadeMan* p, u32 id) {
   p->unk_80c = 0;
   p->unk_810 = 0;
   p->entity0805e67c = Entity0805e67c_Create();
-  p->entity0805ee80 = Entity0805ee80_Create(120);
+  p->crashNoise = CrashNoiseSpeakerManager_Create(120);
   p->unk_c00 = 0;
   return 0;
 #else

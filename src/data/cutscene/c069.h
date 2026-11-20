@@ -87,7 +87,7 @@ STEP(c69_s17) = {M(c69_s17_0), NULL};
 MSG(c69_s18_0, WAIT, BUS_WAIT(20));
 STEP(c69_s18) = {M(c69_s18_0), NULL};
 
-// step 19: Cmd_30CC / Cmd_SetPlayerDead / 太陽の力を取り戻した!!
+// step 19: Cmd_StartChargeCountdown / Cmd_SetPlayerDead / 太陽の力を取り戻した!!
 MSG(c69_s19_0, WAIT, BUS_EXEC_SCRIPT(47759));
 STEP(c69_s19) = {M(c69_s19_0), NULL};
 

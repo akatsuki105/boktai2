@@ -906,7 +906,7 @@ _08040CDC:
 	cmp r0, #0
 	beq _08040D30
 	movs r0, #0x78
-	bl Entity0805ee80_Create
+	bl CrashNoiseSpeakerManager_Create
 	ldr r5, _08040D2C @ =0x00000958
 	adds r1, r7, r5
 	str r0, [r1]

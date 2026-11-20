@@ -90,26 +90,21 @@ LeverSwitch* LeverSwitchManager_Alloc(LeverSwitchManager* p) {
 }
 
 // id の一致する使用中のスロットを探す, なければ NULL
-// 残差: 40/39 命令, 原典は p のレジスタをそのまま items[0] からの誘導変数にして, 見つかったときの return をループの前に置くが, こちらは別のレジスタで i から組む (item のローカル変数は試済)
-NON_MATCH LeverSwitch* LeverSwitch_FindByID(s32 id) {
-#ifdef NONMATCHING_C
+LeverSwitch* LeverSwitch_FindByID(s32 id) {
   LeverSwitchManager* p = gLeverSwitchManager;
+  LeverSwitch* items;
   s32 i;
 
   if (p == NULL) {
     return NULL;
   }
+  items = p->items;
   for (i = 0; i < 12; i++) {
-    LeverSwitch* item = &p->items[i];
-
-    if (LeverSwitchManager_IsActive(&p->activeMask, i) && item->id == id) {
-      return item;
+    if (LeverSwitchManager_IsActive(&p->activeMask, i) && items[i].id == id) {
+      return &items[i];
     }
   }
   return NULL;
-#else
-  INCFUNC("asm/func/LeverSwitch_FindByID.inc");
-#endif
 }
 
 // 0xF04B, HashName("スイッチ追加"), レバースイッチを1つ置く, '.p' 位置, '.R' 優先度, '.r' 向き, '.n' ID, '.s' 初期フラグ, '.k' 種類, '.t' 反応までの回数

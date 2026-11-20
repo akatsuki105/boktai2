@@ -162,7 +162,7 @@ void EntityF41A_InitMover(EntityF41A* p) {
     VEC3_SET(pos, 0, 0, 0);
   }
   pos.y = TileHeightAt(&pos);
-  Mover_Init(&p->mover, p->id, &pos, 0, 7, p);
+  Mover_Init(&p->mover, p->id, &pos, 0, MOVER_OBJECT, p);
 }
 
 // 足元のタイル情報を取って mover に結びつける

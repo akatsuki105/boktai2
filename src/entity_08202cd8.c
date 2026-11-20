@@ -1,6 +1,7 @@
 #include "boss/dvalinn.h"
 #include "camera.h"
 #include "camera_inline.h"
+#include "debris.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -15,7 +16,6 @@
 
 void FUN_081fa608(void);
 s32 Entity08204cb8_Spawn(Vec3* pos, s32 timer);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15, s32 a16, s32 a17);
 void Octorok_ThrowAt(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
 
@@ -238,7 +238,7 @@ NON_MATCH void FUN_082010f8(Entity08202cd8* p, s32 val) {
     spawnPos.x = p->pos.x + 64;
     spawnPos.y = p->pos.y - 32;
     spawnPos.z = p->pos.z + 64;
-    Entity081f26bc_Spawn(&spawnPos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Debris_Spawn(&spawnPos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     PlaySound_082406e0(SONG_438);
   }
 
@@ -349,9 +349,9 @@ NON_MATCH void FUN_082013d4(Entity08202cd8* p, s32 val) {
       pos.z += FixToInt(12, COS(angle) * 120);
       Vec3_Clear(&vel);
       if (!(p->unk_6dd & 1)) {
-        Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, SPRFLAG_BLINK_ODD, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, SPRFLAG_BLINK_ODD, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       } else {
-        Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, SPRFLAG_BLINK_EVEN, 9, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, SPRFLAG_BLINK_EVEN, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x232, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       }
       p->unk_6dd++;
     }
@@ -886,7 +886,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
     hb = &p->hitboxes[i];
     halfSize.x = 50, halfSize.y = 50, halfSize.z = 50;
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(hb, 0, HBF_HITBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hb, 0, HBF_HITBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetPos(hb, &spr->pos, 0);
     Hitbox_SetHandler(hb, FUN_082029b8, p);
     Hitbox_SetAttack(hb, p->unk_6e0, 100, 0, 0, 30);
@@ -894,7 +894,7 @@ NON_MATCH s32 Entity08202cd8_Init(Entity08202cd8* p, Vec3* pos, s32 param_3, s32
     hb = &p->hurtboxes[i];
     halfSize.x = 100, halfSize.y = 100, halfSize.z = 100;
     offset.x = 0, offset.y = 0, offset.z = 0;
-    Hitbox_Init(hb, 0, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
+    Hitbox_Init(hb, 0, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, HIM_4, &halfSize, &offset);
     Hitbox_SetPos(hb, &spr->pos, 0);
     Hitbox_SetHandler(hb, FUN_082029bc, p);
     Hitbox_SetPowerAndAttributes(hb, p->unk_6e2, 8, 4);

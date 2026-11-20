@@ -226,18 +226,21 @@ const u8 Str_00CF[] = _("明日はローンの返済日です。");
 const u8 Str_00D0[] = _("返済は太陽バンクからの自動引\nき落しとなります。");
 const u8 Str_00D1[] = _("返済のご用意を、\n<PROC=1>よろしくお願いします」");
 const u8 Str_00D2[] = _("<PROC=0>\n<END>");
+
 const u8 Str_00D3[] = _("暗黒ローンの暗子ちゃん\n「いつもご利用ありがとうござ\nいます。暗黒ローンです。");
 const u8 Str_00D4[] = _("本日、太陽エネルギーの自動引\nき落しを確認いたしました。");
 const u8 Str_00D5[] = _("これにて、お客さまのローンの\n返済は無事完了となります。");
 const u8 Str_00D6[] = _("ご返済、\n<PROC=1>ありがとうございました!!」");
 const u8 Str_00D7[] = _("<PROC=0>\n<END>");
+
 const u8 Str_00D8[] = _("暗黒ローンの暗子ちゃん\n「いつもご利用ありがとうござ\nいます。暗黒ローンです。");
 const u8 Str_00D9[] = _("本日はローンの返済日です。");
 const u8 Str_00DA[] = _("太陽バンクおよび太陽スタンド\nから、太陽エネルギーを引き落\nとさせていただきましたが、");
 const u8 Str_00DB[] = _("残高が不足しています。");
 const u8 Str_00DC[] = _("ローンの返済を、\n<PROC=1>よろしくお願いします」");
 const u8 Str_00DD[] = _("<PROC=0>\n<END>");
-const u8 Str_00DE[] = _("暗黒ローンの暗子ちゃん\n「・・・");
+
+const u8 Str_Torture1st[] = _("暗黒ローンの暗子ちゃん\n「・・・");
 const u8 Str_00DF[] = _("覚悟(かくご)はよろしいですね\n?");
 const u8 Str_00E0[] = _("わたしたちは太陽エネルギーを\n貸し、あなたはそれを借りた。");
 const u8 Str_00E1[] = _("あなたにも事情はおありでしょ\nう・・・");
@@ -246,35 +249,42 @@ const u8 Str_00E3[] = _("ここまではお分かりですね?");
 const u8 Str_00E4[] = _("問題はどうやって返すのか、\nですが・・・");
 const u8 Str_00E5[] = _("あなたにはちょっとしたお仕事\nをしていただきます」");
 const u8 Str_00E6[] = _("<PROC=0>\n<END>");
-const u8 Str_00E7[] = _("暗黒ローンの暗子ちゃん\n「さあ、着きました。");
+
+const u8 Str_GuideTortureRoom[] = _("暗黒ローンの暗子ちゃん\n「さあ、着きました。");
 const u8 Str_00E8[] = _("ここは暗黒ローンの地下100階\n通称(つうしょう)おしおき部屋\nです。");
 const u8 Str_00E9[] = _("そしてあれは暗黒発電機・・・\nもうおわかりですね?」");
 const u8 Str_00EA[] = _("<PROC=0>\n<END>");
-const u8 Str_00EB[] = _("暗黒ローンの暗子ちゃん\n「・・・またあなたですか?\n<NAME>さん・・・");
+
+const u8 Str_Torture2nd[] = _("暗黒ローンの暗子ちゃん\n「・・・またあなたですか?\n<NAME>さん・・・");
 const u8 Str_00EC[] = _("こりない人ですね・・・");
 const u8 Str_00ED[] = _("・・・仕方ありません。\nおしおきをさせていただきます");
 const u8 Str_00EE[] = _("さあ、行きますよ?」");
 const u8 Str_00EF[] = _("<PROC=0>\n<END>");
-const u8 Str_00F0[] = _("暗黒ローンの暗子ちゃん\n「・・・<NAME>さん、\nあなたわざとやっていますね?");
+
+const u8 Str_Torture3rd[] = _("暗黒ローンの暗子ちゃん\n「・・・<NAME>さん、\nあなたわざとやっていますね?");
 const u8 Str_00F1[] = _("えっ?\nわたしにおしおきをされたい?");
 const u8 Str_00F2[] = _("<NAME>さんって・・・");
 const u8 Str_00F3[] = _("そういう趣味(しゅみ)の人だっ\nたんですか!?」");
 const u8 Str_00F4[] = _("<PROC=0>\n<END>");
-const u8 Str_00F5[] = _("暗黒ローンの暗子ちゃん\n「・・・<NAME>さん、");
+
+const u8 Str_Torture4th[] = _("暗黒ローンの暗子ちゃん\n「・・・<NAME>さん、");
 const u8 Str_00F6[] = _("わたし・・・\n覚悟(かくご)を決めました。");
 const u8 Str_00F7[] = _("たとえあなたが、いけない趣味\n(しゅみ)の人だったとしても、");
 const u8 Str_00F8[] = _("このわたしが好きなだけ、\nおしおきをしてあげます!");
 const u8 Str_00F9[] = _("これがわたしたちの・・・\n・・・愛の形なんですね♥");
 const u8 Str_00FA[] = _("あれ、<NAME>さん?\n待ってください!\n<NAME>さーーーん!!」");
 const u8 Str_00FB[] = _("<PROC=0>\n<END>");
-const u8 Str_00FC[] = _("暗黒ローンの暗子ちゃん\n「さあ、<NAME>さん。\nおしおきですよ♥」");
+
+const u8 Str_Torture5th[] = _("暗黒ローンの暗子ちゃん\n「さあ、<NAME>さん。\nおしおきですよ♥」");
 const u8 Str_00FD[] = _("<PROC=0>\n<END>");
-const u8 Str_00FE[] = _("暗黒ローンの暗子ちゃん\n「あなたには今からここで、\n発電をしてもらいます。");
+
+const u8 Str_GuideTorture[] = _("暗黒ローンの暗子ちゃん\n「あなたには今からここで、\n発電をしてもらいます。");
 const u8 Str_00FF[] = _("方法は簡単。\n<EXTEND=0>とＡボタンを交互(\nこうご)に押(お)して走るだけ");
 const u8 Str_0100[] = _("エネルギーが発電されれば、\nそれが返済にあてられるという\nわけです。");
 const u8 Str_0101[] = _("簡単ですね♪");
 const u8 Str_0102[] = _("それでは<NAME>さん、\nよろしくお願いします」");
 const u8 Str_0103[] = _("<PROC=0>\n<END>");
+
 const u8 Str_0104[] = _("✚ボタン左");
 const u8 Str_0105[] = _("<PROC=0>\n<END>");
 const u8 Str_0106[] = _("✚ボタン上");
@@ -370,7 +380,7 @@ const u8 Str_015F[] = _("ゲーム本編のどこかで、防具と\n交換(こ�
 const u8 Str_0160[] = _("<PROC=0>\n<END>");
 const u8 Str_GetMMBNPet[] = _("<LABEL>「PET」\nを手に入れた!!</LABEL>");
 const u8 Str_0162[] = _("<PROC=0>\n<END>");
-const u8 Str_0163[] = _("セーブしますか?\n <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>");
+const u8 Str_Save_Prompt_0163[] = _("セーブしますか?\n <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>");
 const u8 Str_0164[] = _("<PROC=0>\n<END>");
 const u8 Str_0165[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「もうすぐだな・・・");
 const u8 Str_0166[] = _("この渓谷(けいこく)を抜(ぬ)け\nれば、いよいよ太陽の街サン・\nミゲルか。");
@@ -1261,73 +1271,79 @@ const u8 Str_04D0[] = _("太陽ぉーーー!");
 const u8 Str_04D1[] = _("<PROC=0>\n<END>");
 const u8 Str_04D2[] = _("太陽ぉーーーーーーー!");
 const u8 Str_04D3[] = _("<PROC=0>\n<END>");
-const u8 Str_04D4[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
+
+const u8 Str_EpilogueZaji1[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
 const u8 Str_04D5[] = _("ヨルムンガンドの動きを止めた\n黒い影(かげ)・・・");
 const u8 Str_04D6[] = _("あれはおとうさんだったのか?");
 const u8 Str_04D7[] = _("それとも・・・」");
 const u8 Str_04D8[] = _("<PROC=0>\n<END>");
-const u8 Str_04D9[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「黒きダーイン、やったて?」");
+const u8 Str_EpilogueZaji2[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「黒きダーイン、やったて?」");
 const u8 Str_04DA[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「分からない・・・けど、");
 const u8 Str_04DB[] = _("光が強ければ、その隣(となり)\nに並び立つ影は、より深い闇(\nやみ)となる。");
 const u8 Str_04DC[] = _("暗闇は怖(こわ)いけど・・・\nそれでも、\n夕暮れ時には思うんだ。");
 const u8 Str_04DD[] = _("そんな暗い影があるからこそ、\n世界はこんなにも・・・」");
 const u8 Str_04DE[] = _("<PROC=0>\n<END>");
-const u8 Str_04DF[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「そないなことも・・・");
+const u8 Str_EpilogueZaji3[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「そないなことも・・・");
 const u8 Str_04E0[] = _("・・・あるかも知れへんな」");
 const u8 Str_04E1[] = _("<PROC=0>\n<END>");
-const u8 Str_04E2[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
+
+const u8 Str_EpilogueRita1[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
 const u8 Str_04E3[] = _("ヨルムンガンドの動きを止めた\n黒い影(かげ)・・・");
 const u8 Str_04E4[] = _("あれはおとうさんだったのか?");
 const u8 Str_04E5[] = _("それとも・・・」");
 const u8 Str_04E6[] = _("<PROC=0>\n<END>");
-const u8 Str_04E7[] = _("<LABEL=RITA>リタ</LABEL>\n「黒きダーイン、ですか?」");
+const u8 Str_EpilogueRita2[] = _("<LABEL=RITA>リタ</LABEL>\n「黒きダーイン、ですか?」");
 const u8 Str_04E8[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「分からない・・・けど、");
 const u8 Str_04E9[] = _("光が強ければ、その隣(となり)\nに並び立つ影は、より深い闇(\nやみ)となる。");
 const u8 Str_04EA[] = _("暗闇は怖(こわ)いけど・・・\nそれでも、\n夕暮れ時には思うんだ。");
 const u8 Str_04EB[] = _("そんな暗い影があるからこそ、\n世界はこんなにも・・・」");
 const u8 Str_04EC[] = _("<PROC=0>\n<END>");
-const u8 Str_04ED[] = _("<LABEL=RITA>リタ</LABEL>\n「美しい・・・ですね」");
+const u8 Str_EpilogueRita3[] = _("<LABEL=RITA>リタ</LABEL>\n「美しい・・・ですね」");
 const u8 Str_04EE[] = _("<PROC=0>\n<END>");
-const u8 Str_04EF[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
+
+const u8 Str_EpilogueSumire1[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
 const u8 Str_04F0[] = _("ヨルムンガンドの動きを止めた\n黒い影(かげ)・・・");
 const u8 Str_04F1[] = _("あれはおとうさんだったのか?");
 const u8 Str_04F2[] = _("それとも・・・」");
 const u8 Str_04F3[] = _("<PROC=0>\n<END>");
-const u8 Str_04F4[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「光が強ければ・・・");
+const u8 Str_EpilogueSumire2[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「光が強ければ・・・");
 const u8 Str_04F5[] = _("その隣(となり)に並び立つ影は\nより深い闇(やみ)となる。");
 const u8 Str_04F6[] = _("暗闇は怖(こわ)いけど・・・\nそれでも、\n夕暮れ時には思うんだ。");
 const u8 Str_04F7[] = _("そんな暗い影があるからこそ、\n世界はこんなにも・・・」");
 const u8 Str_04F8[] = _("<PROC=0>\n<END>");
-const u8 Str_04F9[] = _("<LABEL=SUMIRE>スミレ</LABEL>\n「きれい・・・だね♪」");
+const u8 Str_EpilogueSumire3[] = _("<LABEL=SUMIRE>スミレ</LABEL>\n「きれい・・・だね♪」");
 const u8 Str_04FA[] = _("<PROC=0>\n<END>");
-const u8 Str_04FB[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
+
+const u8 Str_EpilogueSabata1[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
 const u8 Str_04FC[] = _("ヨルムンガンドの動きを止めた\n黒い影(かげ)・・・");
 const u8 Str_04FD[] = _("あれはおとうさんだったのか?");
 const u8 Str_04FE[] = _("それとも・・・」");
 const u8 Str_04FF[] = _("<PROC=0>\n<END>");
-const u8 Str_0500[] = _("<LABEL=SABATA>サバタ</LABEL>\n「ヤツが・・・?」");
+const u8 Str_EpilogueSabata2[] = _("<LABEL=SABATA>サバタ</LABEL>\n「ヤツが・・・?」");
 const u8 Str_0501[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「分からない・・・けど、");
 const u8 Str_0502[] = _("光が強ければ、その隣(となり)\nに並び立つ影は、より深い闇(\nやみ)となる。");
 const u8 Str_0503[] = _("暗闇は怖(こわ)いけど・・・\nそれでも、\n夕暮れ時には思うんだ。");
 const u8 Str_0504[] = _("そんな暗い影があるからこそ、\n世界はこんなにも・・・」");
 const u8 Str_0505[] = _("<PROC=0>\n<END>");
-const u8 Str_0506[] = _("<LABEL=SABATA>サバタ</LABEL>\n<PROC=1>「フッ・・・");
+const u8 Str_EpilogueSabata3[] = _("<LABEL=SABATA>サバタ</LABEL>\n<PROC=1>「フッ・・・");
 const u8 Str_0507[] = _("まったく、\nおまえのお人好しにもほどがあ\nるな・・・」");
 const u8 Str_0508[] = _("<PROC=0>\n<END>");
-const u8 Str_0509[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
+
+const u8 Str_EpilogueLady1[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「あのとき、");
 const u8 Str_050A[] = _("ヨルムンガンドの動きを止めた\n黒い影(かげ)・・・");
 const u8 Str_050B[] = _("あれはおとうさんだったのか?");
 const u8 Str_050C[] = _("それとも・・・」");
 const u8 Str_050D[] = _("<PROC=0>\n<END>");
-const u8 Str_050E[] = _("<LABEL=LADY>レディ</LABEL>\n「例の・・・\n影のイモータル?」");
+const u8 Str_EpilogueLady2[] = _("<LABEL=LADY>レディ</LABEL>\n「例の・・・\n影のイモータル?」");
 const u8 Str_050F[] = _("<LABEL=R_DJUNGO><NAME></LABEL>\n「分からない・・・けど、");
 const u8 Str_0510[] = _("光が強ければ、その隣(となり)\nに並び立つ影は、より深い闇(\nやみ)となる。");
 const u8 Str_0511[] = _("暗闇は怖(こわ)いけど・・・\nそれでも、\n夕暮れ時には思うんだ。");
 const u8 Str_0512[] = _("そんな暗い影があるからこそ、\n世界はこんなにも・・・」");
 const u8 Str_0513[] = _("<PROC=0>\n<END>");
-const u8 Str_0514[] = _("<LABEL=LADY>レディ</LABEL>\n「美しい・・・か。");
+const u8 Str_EpilogueLady3[] = _("<LABEL=LADY>レディ</LABEL>\n「美しい・・・か。");
 const u8 Str_0515[] = _("詩人ね、<NAME>くん?」");
 const u8 Str_0516[] = _("<PROC=0>\n<END>");
+
 const u8 Str_JormyAdvice1[] = _("闇(やみ)の力に守られている状\n態では、ヨルムンガンドにダメ\nージをあたえることはできない");
 const u8 Str_0518[] = _("太陽の光を浴びせ、闇の守りを\n追い払(はら)え。");
 const u8 Str_0519[] = _("<PROC=0>\n<END>");
@@ -1466,44 +1482,53 @@ const u8 Str_059B[] = _("<PROC=0>");
 const u8 Str_059C[] = _("ちゃうねん");
 const u8 Str_059D[] = _("<PROC=0>");
 
-const u8 Str_059E[] = _("太陽鍛冶について\n <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALTER>\n <ALTER>材料の選択</ALTER>　　<ALTER>鍛冶の手順</ALTER>");
+const u8 Str_GuideForge1[] = _("太陽鍛冶について\n <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALTER>\n <ALTER>材料の選択</ALTER>　　<ALTER>鍛冶の手順</ALTER>");
 const u8 Str_059F[] = _("<PROC=0>\n<END>");
-const u8 Str_05A0[] = _("太陽鍛冶(たいようかじ)とは、");
+
+const u8 Str_GuideForge1A[] = _("太陽鍛冶(たいようかじ)とは、");
 const u8 Str_05A1[] = _("太陽の力を利用した鍛冶(熱し\nた金属を打ちきたえて物を作る\nこと)である。");
 const u8 Str_05A2[] = _("<PROC=0>\n<END>");
-const u8 Str_05A3[] = _("太陽鍛冶(たいようかじ)では、");
+
+const u8 Str_GuideForge1B[] = _("太陽鍛冶(たいようかじ)では、");
 const u8 Str_05A4[] = _("材料となる2つの武器から、新\nしい武器を1つ作り出すことが\nできる。");
 const u8 Str_05A5[] = _("無料で何度でも行なうことがで\nきるが、材料となる武器は自分\nで用意しなければならない。");
 const u8 Str_05A6[] = _("<PROC=0>\n<END>");
-const u8 Str_05A7[] = _("鍛冶(かじ)を行なうにはまず、");
+
+const u8 Str_GuideForge1C[] = _("鍛冶(かじ)を行なうにはまず、");
 const u8 Str_05A8[] = _("持っている武器の中から、材料\nにする武器を2つ選ばなければ\nならない。");
 const u8 Str_05A9[] = _("装備中の武器や倉庫に預けてあ\nる武器は、選択(せんたく)する\nことができないので要注意。");
 const u8 Str_05AA[] = _("また、材料にした武器は元には\n戻(もど)らない。よく考えてか\nら決定すること。");
 const u8 Str_05AB[] = _("<PROC=0>\n<END>");
 const u8 Str_05AC[] = _("<END>");
-const u8 Str_05AD[] = _("武器について\n <ALTER>鍛冶</ALTER>　<ALTER>クオリティ</ALTER>\n <ALTER>継承</ALTER>　<ALTER>レベル</ALTER>");
+
+const u8 Str_GuideForge2[] = _("武器について\n <ALTER>鍛冶</ALTER>　<ALTER>クオリティ</ALTER>\n <ALTER>継承</ALTER>　<ALTER>レベル</ALTER>");
 const u8 Str_05AE[] = _("<PROC=0>\n<END>");
-const u8 Str_05AF[] = _("太陽鍛冶(たいようかじ)におい\nては、");
+
+const u8 Str_GuideForge2A[] = _("太陽鍛冶(たいようかじ)におい\nては、");
 const u8 Str_05B0[] = _("通常、同じ組み合わせの材料か\nらは同じ武器が作られる。");
 const u8 Str_05B1[] = _("ただし同じ名前の武器であって\nも、鍛冶の出来しだいでその能\n力は大きく異なる。");
 const u8 Str_05B2[] = _("<PROC=0>\n<END>");
-const u8 Str_05B3[] = _("鍛冶(かじ)による武器の出来の\n良さ、すなわちクオリティは、");
+
+const u8 Str_GuideForge2B[] = _("鍛冶(かじ)による武器の出来の\n良さ、すなわちクオリティは、");
 const u8 Str_05B4[] = _("武器の名前の後に付く記号で表\nされる。");
 const u8 Str_05B5[] = _("たとえば+2は、通常のものより\n威力(いりょく)が2高いことを\n表し、-2は2低いことを表す。");
 const u8 Str_05B6[] = _("また武器の中には、鍛冶によっ\nて特殊効果(とくしゅこうか)の\n付くものもあり、");
 const u8 Str_05B7[] = _("特殊効果の付いた武器には、名\n前の後にSP(スペシャル)が付く");
 const u8 Str_05B8[] = _("<PROC=0>\n<END>");
-const u8 Str_05B9[] = _("特殊効果(とくしゅこうか)は通\n常、1つの武器に1つしか付かな\nいが、");
+
+const u8 Str_GuideForge2C[] = _("特殊効果(とくしゅこうか)は通\n常、1つの武器に1つしか付かな\nいが、");
 const u8 Str_05BA[] = _("特殊効果の付いた武器を材料に\n鍛冶(かじ)を行なうと、");
 const u8 Str_05BB[] = _("特殊効果が出来上がった武器に\n受け継(つ)がれることがある。");
 const u8 Str_05BC[] = _("これをSPの継承(けいしょう)と\nいい、");
 const u8 Str_05BD[] = _("これによって、複数の特殊効果\nを持った武器が作られることが\nある。");
 const u8 Str_05BE[] = _("またSPと同様に、+-といった武\n器の威力(いりょく)が継承され\nることもある。");
 const u8 Str_05BF[] = _("<PROC=0>\n<END>");
-const u8 Str_05C0[] = _("武器にはそれぞれにレベルが設\n定されている。");
+
+const u8 Str_GuideForge2D[] = _("武器にはそれぞれにレベルが設\n定されている。");
 const u8 Str_05C1[] = _("自分のレベルよりレベルの高い\n武器は、手に入れることはでき\nても装備することはできない。");
 const u8 Str_05C2[] = _("<PROC=0>\n<END>");
 const u8 Str_05C3[] = _("<END>");
+
 const u8 Str_05C4[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「これは・・・");
 const u8 Str_05C5[] = _("太陽樹が運び去られた跡(あと)\n・・・まさに大地の傷跡だな。");
 const u8 Str_05C6[] = _("世界を支える生命の社(やしろ)\nたる太陽樹は、");

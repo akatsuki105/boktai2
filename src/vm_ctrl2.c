@@ -8,7 +8,7 @@ bool32 GameSystem_IsMapChangeBlocked(void);
 void ScriptMesg_Post(ScriptMesg*);
 bool32 Map_HasCheckedZoneEvents(void);
 
-void* VM_GetSubroutine(u32 subroutineID);
+void* VM_GetSubroutine(u32 commandID);
 
 static CtrlHandlerTable gCtrlHandlers2;  // 0x030016E8, 制御命令ではこのハンドラ自体を直接みるのではなく、初期化時に gCtrlHandlers に登録してそれを制御命令が参照する
 

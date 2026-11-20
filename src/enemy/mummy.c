@@ -100,6 +100,34 @@ static inline void Mummy_PlayTurnAnim(Mummy* p, u32 variant, u32 flags) {
   (p->e).animForceRestart = FALSE;
 }
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Mummy_PlayDirAnim(Mummy* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
 static inline void Mummy_SetFlags(Mummy* p, MummyFlags bits) { p->flags |= bits; }
 static inline void Mummy_ClearFlags(Mummy* p, MummyFlags bits) { p->flags &= ~bits; }
 
@@ -157,7 +185,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   EnemyManager_TryEndPaletteFade(p);
 }
 
-s32 FUN_080dd250(Vec3* pos);
+s32 BombManager_FindNearbyAngle(Vec3* pos);
 s32 Mummy_StepBackOneTile(Mummy* p);
 void Mummy_SpitBombs(Mummy* p);
 void Mummy_SetJumpVelToPlayer(Mummy* p);
@@ -172,7 +200,7 @@ void Mummy_UpdateAtkHitbox(Mummy* p);
 void Mummy_StateRespawn(Mummy* p);
 void Mummy_OnReset(Mummy* p);
 void Mummy_StateSpit(Mummy* p);
-void* Entity080dd1f8_Spawn(Vec3* pos, Vec3* vel, Vec3* unk_124, s32 power, s32 knockback, s32 timer, s32 id);
+void* Bomb_Spawn(Vec3* pos, Vec3* vel, Vec3* target, s32 power, s32 knockback, s32 timer, s32 id);
 void Mummy_TickSpitTimers(Mummy* p);
 s8 NoiseManager_FindFirstHeardNoise(s32 x, s32 y, s32 size, u8 mask, u16 moverID);
 void FUN_080e8f20(Enemy* p, s32 param_2);
@@ -182,7 +210,7 @@ bool8 Mummy_RouteToFloorEnd(Mummy* p);
 bool8 Mummy_AvoidNearbyBomb(Mummy* p);
 bool8 FUN_080eb2a0(Enemy* p);
 void PlayerLink_UpdateBloodSwordOnKill(u32 param_1, u32 param_2);
-void DefeatedEnemyLog_Add(u16 a, u16 b);
+void EnemyRespawnInfo_Add(u16 a, u16 b);
 void HUD_ShowEnemyGauge(s32 moverID, s32 hp, u16 maxHP, u16 cells, s32 flash);
 void Enemy_AddKillCount(Enemy* p);
 Mover* Enemy_FindVisiblePlayer(Enemy* p);
@@ -354,19 +382,21 @@ void Mummy_StateWait(Mummy* p) {
 }
 
 // 経路ノードの向きへ振り向く, 回る向きの振り向きアニメを流してコマごとに 21 ずつ回し, アニメが終わったら向きが合っていれば止まり合っていなければ状態2へ戻す
-// 710/769命令, Golem_StateTurn / Cockatrice_StateTurn と同じ形と同じ壁 (原典は p を2本のレジスタに持つ), 振り向きアニメは Mummy_PlayTurnAnim, 違いは回す幅が 21, 試済: anim を先頭のローカルに置く (706→710)
+// 残差は 722/769命令, mover ローカルで p の写しは揃った (Dog_StateTurn はこれで一致), 原典は向きが揃わなかったときに unk_1dc を書き直し flags3 の番地を sb に持つ形が違う
+// 試済: anim を先頭のローカルに, Mover* mover で角度と経路を触る, 揃わなかったときの unk_1dc の再代入
 NON_MATCH void Mummy_StateTurn(Mummy* p) {
 #ifdef NONMATCHING_C
+  Mover* mover = &(p->e).mover;
   AuxAnimState* anim = &(p->e).s->aux.anim;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
     s32 dir;
     u32 target;
 
-    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
-    dir = Angle_ToDir4((p->e).mover.angle);
+    mover->angle = Angle_ToDir4(mover->angle) * 64 - 64;
+    dir = Angle_ToDir4(mover->angle);
     if ((p->e).subState2 != 6 && !Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10)) {
-      target = (p->e).mover.path->node->delay >> 12;
+      target = mover->path->node->delay >> 12;
       (p->e).unk_1dc = target;
     } else {
       target = (p->e).unk_1dc;
@@ -428,26 +458,26 @@ NON_MATCH void Mummy_StateTurn(Mummy* p) {
   }
   if (anim->tick == 0) {
     u32 target = ((p->e).unk_1dc + 5) & 7;
-    u8 angle = (p->e).mover.angle;
+    u8 angle = mover->angle;
 
     if (abs(angle - target * 32) < 22) {
-      (p->e).mover.angle = target * 32;
+      mover->angle = target * 32;
     } else if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
-      (p->e).mover.angle = angle + 21;
+      mover->angle = angle + 21;
     } else {
-      (p->e).mover.angle = angle - 21;
+      mover->angle = angle - 21;
     }
   }
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).animForceRestart) {
-    s32 dir = Angle_ToDir8((p->e).mover.angle);
+    s32 dir = Angle_ToDir8(mover->angle);
     s32 d = abs((p->e).unk_1dc - dir);
 
     if (d > 0) {
       Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     } else {
       (p->e).subStateDone = 1;
-      (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+      mover->angle = Angle_ToDir4(mover->angle) * 64 - 64;
       Enemy_PlayAnim(&p->e, 0);
       if (Enemy_GetFlag3(&p->e, ENEFLAG3_UNK_10)) {
         Enemy_ResetState(&p->e, 3, 1, 0);
@@ -581,47 +611,20 @@ void Mummy_StateHeardSound(Mummy* p, s32 timer) {
 }
 
 // 姿と影を隠して 27 フレーム待ち, 出てくるアニメ (8 番) を逆に流しながら Mummy_StateRespawn (状態13) へ移る
-// 169/167命令, Golem_StateRespawnWait と同じ流れでアニメ 8 の逆再生を Enemy_PlayAnim と同じ展開で書いたもの, 展開の壁 (r8 / sb の割当と flags の持ち方), 1回目の下書きで切り上げ
-NON_MATCH void Mummy_StateRespawnWait(Mummy* p, s32 timer) {
-#ifdef NONMATCHING_C
+void Mummy_StateRespawnWait(Mummy* p, s32 timer) {
   Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
   if (Enemy_ConsumeStateBegun(&p->e)) {
     ParticleShadow_Hide(&(p->e).shadow);
   } else if (timer > 26) {
     u8 variant;
     AuxAnimPlayFlags flags;
-    s32 f;
 
     Enemy_SetAnimFacing(&p->e, &variant, &flags);
-    f = flags | ANIM_PLAY_REVERSE;
-    if ((p->e).spriteKind == 0) {
-      EnemyAuxSprite* s = &(p->e).s->aux;
-
-      (p->e).playingAnim = 8;
-      AuxAnim_SetAnim(&s->anim, s->animFile, 8, variant, f);
-      (p->e).animForceRestart = 0;
-    } else {
-      MainSprite* s = &(p->e).s->main.spr;
-      s32 a = variant + 8;
-
-      if ((p->e).playingAnim != a || (p->e).animForceRestart != 0 || !((f == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (f == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-        (p->e).playingAnim = a;
-        MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
-        if (flags & ANIM_PLAY_XFLIP) {
-          MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-        } else {
-          MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-        }
-        (p->e).animForceRestart = 0;
-      }
-    }
+    Mummy_PlayDirAnim(p, 8, variant, flags | ANIM_PLAY_REVERSE);
     Enemy_EnterState(&p->e, Mummy_StateRespawn, ES_UNK_13);
   } else {
     (p->e).animForceRestart = 0;
   }
-#else
-  INCFUNC("asm/func/Mummy_StateRespawnWait.inc");
-#endif
 }
 
 void Mummy_StateRespawn(Mummy* p) {
@@ -814,8 +817,8 @@ NON_MATCH void Mummy_StateDamaged(Mummy* p, s32 timer) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -960,8 +963,8 @@ NON_MATCH void Mummy_StateDamaged(Mummy* p, s32 timer) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -1235,8 +1238,8 @@ NON_MATCH void Mummy_StateWaitBombs(Mummy* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -1501,8 +1504,8 @@ NON_MATCH void FUN_08125e1c(Mummy* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m != NULL && idx >= 0) {
       tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
@@ -1732,8 +1735,8 @@ NON_MATCH void Mummy_SubChaseReroute(Mummy* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -1914,7 +1917,7 @@ NON_MATCH void Mummy_SpitBombs(Mummy* p) {
     d.x = POLAR_X(speed, angle);
     d.y = 0;
     d.z = POLAR_Z(speed, angle);
-    Entity080dd1f8_Spawn(&pos, &d, &(p->e).playerMover->pos, (p->e).atkPower[2], (p->e).atkKnockback[2], timer, (p->e).mover.id);
+    Bomb_Spawn(&pos, &d, &(p->e).playerMover->pos, (p->e).atkPower[2], (p->e).atkKnockback[2], timer, (p->e).mover.id);
     timer = Div(timer * 8, 10);
     speed += Div(speed * 4, 10);
     n--;
@@ -2020,8 +2023,8 @@ NON_MATCH bool8 Mummy_TryReachHeardPlayer(Mummy* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -2194,7 +2197,7 @@ NON_MATCH bool8 Mummy_RouteToFloorEnd(Mummy* p) {
       case 0: {
         cur = best + 1;
         for (x = Mod(cur, width); x < gCollisionMap->tiledata->width; x++) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             best = cur - 1;
             break;
           }
@@ -2204,7 +2207,7 @@ NON_MATCH bool8 Mummy_RouteToFloorEnd(Mummy* p) {
       }
       case 1: {
         for (cur = best + width; cur < size; cur += gCollisionMap->tiledata->width) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             best = cur - gCollisionMap->tiledata->width;
             break;
           }
@@ -2214,7 +2217,7 @@ NON_MATCH bool8 Mummy_RouteToFloorEnd(Mummy* p) {
       case 2: {
         cur = best - 1;
         for (x = Mod(cur, width); x >= 0; x--) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             best = cur + 1;
             break;
           }
@@ -2224,7 +2227,7 @@ NON_MATCH bool8 Mummy_RouteToFloorEnd(Mummy* p) {
       }
       case 3: {
         for (cur = best - width; cur >= 0; cur -= gCollisionMap->tiledata->width) {
-          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+          if ((TileAtIndex(cur)->heightStairs & 0xF) != height || (TileAtIndex(cur)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
             best = cur + gCollisionMap->tiledata->width;
             break;
           }
@@ -2349,8 +2352,8 @@ NON_MATCH bool8 Mummy_TryDetectPlayer(Mummy* p) {
         Mover* m = (p->e).playerMover;
 
         idx = -1;
-        if (m != NULL && m->unk_4 <= 3) {
-          idx = m->unk_4;
+        if (m != NULL && m->kind <= 3) {
+          idx = m->kind;
         }
         if (m == NULL || idx < 0) {
           (p->e).onRouteFailed(&p->e);
@@ -2638,7 +2641,7 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
         Player_AddWeaponExp((p->e).weaponExpMask, (p->e).weaponExp);
       }
       if (!Enemy_TestFlag5(&p->e, ENEFLAG5_UNK_7) && !IsLinkPlay() && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_11)) {
-        DefeatedEnemyLog_Add(gMapInitScriptID, (p->e).mover.id);
+        EnemyRespawnInfo_Add(gMapInitScriptID, (p->e).mover.id);
       }
       (p->e).hurtbox.flags |= HBF_HIDDEN;
     }
@@ -2704,7 +2707,7 @@ NON_MATCH s32 Mummy_GetWalkableNeighbor(Mummy* p, s32 dir) {
       return tile;
     }
   }
-  if ((TileAtIndex(next)->heightStairs & 0xF) == height && !(TileAtIndex(next)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+  if ((TileAtIndex(next)->heightStairs & 0xF) == height && !(TileAtIndex(next)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
     tile = next;
   }
   return tile;
@@ -2740,7 +2743,7 @@ bool8 Mummy_AvoidNearbyBomb(Mummy* p) {
   if (*timer != 0) {
     (*timer)--;
   } else {
-    if (FUN_080dd250(&(p->e).mover.pos) >= 0) {
+    if (BombManager_FindNearbyAngle(&(p->e).mover.pos) >= 0) {
       Mummy_SetFlags((p->e).owner, MUMMYFLAG_AVOIDING_BOMB);
       Mummy_StepBackOneTile(p);
       return TRUE;
@@ -2922,8 +2925,8 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -3097,8 +3100,8 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -3253,8 +3256,8 @@ NON_MATCH bool8 Mummy_OnDamaged(Mummy* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -3420,8 +3423,8 @@ NON_MATCH void Mummy_SubLeapAttack(Mummy* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -3729,7 +3732,7 @@ NON_MATCH s32 Mummy_Init(Mummy* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

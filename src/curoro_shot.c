@@ -123,7 +123,7 @@ NON_MATCH s32 CuroroShot_Init(CuroroShotManager* p, CuroroShot* elem, s32 index)
   hitbox = &elem->hurtbox;
   VEC3_SET(size, 32, 100, 32);
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hitbox, 0, HBF_HURTBOX | HBF_NPC | HBF_HIDDEN | HBF_DAMAGE, 0, HIM_4, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE, 0, HIM_4, &size, &offset);
   Hitbox_SetPos(hitbox, &elem->pos, 0);
   Hitbox_SetHandler(hitbox, CuroroShot_OnHurt, elem);
   Hitbox_SetPowerAndAttributes(hitbox, p->power, HBATTR_PHANTOM | HBATTR_DARK, HBATTR_SOL);

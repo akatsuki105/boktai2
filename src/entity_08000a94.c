@@ -465,23 +465,16 @@ BgMapScroller* Cmd_CreateBG(u32 param_1) {
 }
 
 // id のレイヤが何番目かを返す, 見つからなければ 0
-// 残差は layer と i のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致), 同形の TileSet_FindPart (bg.c) はポインタを返すので揃う
-// 試済: i を先に宣言して layer の宣言と代入を分ける, f->layers[i] の添字形, for の初期化と増分に layer を入れる形
-NON_MATCH s32 Tilemaps_FindLayerIndex(Tilemaps* f, u16 id) {
-#ifdef NONMATCHING_C
-  TilemapLayer* layer = f->layers;
+s32 Tilemaps_FindLayerIndex(Tilemaps* f, u16 id) {
+  TilemapLayer* layers = f->layers;
   s32 i;
 
   for (i = 0; i < f->layerCount; i++) {
-    if (layer->id == id) {
+    if (layers[i].id == id) {
       return i;
     }
-    layer++;
   }
   return 0;
-#else
-  INCFUNC("asm/func/Tilemaps_FindLayerIndex.inc");
-#endif
 }
 
 // 0x7A27, 'd' のタイルマップを 't' の BG 構成に流す, レイヤの並びは 'i' なら直接指定, 'c' ならレイヤIDから引く

@@ -24,11 +24,11 @@ typedef struct Title {
   rgb555* bgp;                            // 0x03C, FileID は state ごとに違う
   s32 unk_40;                             // 0x040, '.Y', 1 か 2 のとき初期状態が 3 になる
   TitleFlags flags;                       // 0x044
-  s32 unk_48;                             // 0x048, '.g'
-  s32 unk_4c;                             // 0x04C, '.o'
-  s32 unk_50;                             // 0x050, '.l'
-  s32 unk_54;                             // 0x054, '.s'
-  s32 unk_58;                             // 0x058, '.d'
+  s32 unk_48;                             // 0x048, '.g', "GAME START" を選択したときに使うスクリプトID
+  s32 unk_4c;                             // 0x04C, '.o', "OPTION" 〃
+  s32 unk_50;                             // 0x050, '.l', "LINK" 〃
+  s32 unk_54;                             // 0x054, '.s', "SOUND" 〃
+  s32 unk_58;                             // 0x058, '.d', ???
   s32 state;                              // 0x05C, sTitleUpdates[state]
   s32 stateTimer;                         // 0x060, 状態遷移で 0 に戻り, flags bit0 が落ちている間 Title_Update が +1 する
   s32 unk_64;                             // 0x064, Title_SetState が 0 にするだけ, 読み手は未発見
@@ -175,7 +175,7 @@ static s32 GetCurrentMonth(void) {
 void FUN_08212510(Title* p) {
   s32 idx;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_C423);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_TITLE);
   idx = 0;
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &idx);
   SetBGPrioDirect(2, 2);
@@ -186,7 +186,7 @@ void FUN_08212510(Title* p) {
 }
 
 void FUN_08212570(Title* p) {
-  p->bgp = GetBgPlttFile(BGP_F0DC)->body;
+  p->bgp = GetBgPlttFile(BGP_TITLE)->body;
   CpuCopy32(p->bgp, gBgPlttBuffer, 144 * sizeof(rgb555));
 }
 

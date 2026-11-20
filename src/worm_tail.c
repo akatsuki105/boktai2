@@ -459,7 +459,7 @@ NON_MATCH void WormTail_InitHitbox(WormTail* elem, s32 power, s32 knockback, Hit
     Hitbox_SetPos(&seg->atkHitbox, &seg->sprite.pos, 0);
   }
   for (tail = elem->segs; tail <= &elem->segs[5]; tail++) {
-    Hitbox_Init(&tail->hurtbox, 0, HBF_HURTBOX | HBF_NPC | HBF_HIDDEN | HBF_DAMAGE, 0, 16, &halfSize, &offset);
+    Hitbox_Init(&tail->hurtbox, 0, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE, 0, 16, &halfSize, &offset);
     if (tail == &elem->segs[5]) {
       Hitbox_SetPowerAndAttributes(&elem->segs[5].hurtbox, defense, hurtAttrs, weakness);
     } else {

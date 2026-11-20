@@ -44,7 +44,7 @@
 #define SCATTER_KIND_35 35
 #define SCATTER_KIND_36 36
 #define SCATTER_KIND_37 37  // SCATTER_DARK_S と同じ絵
-#define SCATTER_KIND_38 38  // FUN_08044a90 (NPC)
+#define SCATTER_KIND_38 38  // SmithNPC_UpdateHammer (NPC)
 #define SCATTER_SHADOW 39   // 床で跳ねる粒子の影, kind としては渡さない
 
 // kind の上位8bit で粒子の描画優先度を指定する, 指定しなければ 2

@@ -194,7 +194,7 @@ s32 ChangeMagicSquare_Init(ChangeMagicSquare* p, u32 id, u32 param_3) {
     p->moverLinked = 0;
   }
   if (p->moverLinked) {
-    Mover_Init(&p->mover, p->id, &p->pos, 0, 7, p);
+    Mover_Init(&p->mover, p->id, &p->pos, 0, MOVER_OBJECT, p);
     FUN_08002a48(&p->mover);
   }
 

@@ -136,7 +136,7 @@ NON_MATCH s32 Barricade_Init(Barricade* p, u32 id, u32 _) {
   pos.y = TileHeightAt(&pos);
   p->tileIdx = GetCollisionTileIdx(&pos);
   p->height = (s8)(pos.y >> 8) + 1;
-  Map_AddTileOverride(&p->tileOverride, p->tileIdx, STAIRS_NONE, p->height, 0xFF, TATTR_UNK_0 | TATTR_WALL | TATTR_FRAGILE);
+  Map_AddTileOverride(&p->tileOverride, p->tileIdx, STAIRS_NONE, p->height, 0xFF, TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FRAGILE);
   Barricade_InitSprite(p, &pos);
   Barricade_InitHurtbox(p, id, &pos);
   if (VM_SeekToNamedArg('R')) {

@@ -948,7 +948,7 @@
 #define CRY_LICH_DEATH 943
 #define SONG_944 944
 #define SONG_945 945
-#define SONG_946 946
+#define SE_LICH_ATK 946  // リッチ,リッチ+の攻撃SE
 #define SONG_947 947
 #define SONG_948 948
 #define SONG_949 949

@@ -21,24 +21,24 @@ void FUN_0823b180(void) {
 
 void FUN_0823b18c(void) {}
 
-static void* VM_GetSubroutine_Internal(u32 subroutineID, Subroutine* arr, s32 start, s32 len) {
+static void* VM_GetSubroutine_Internal(u32 commandID, Subroutine* arr, s32 start, s32 len) {
   // Binary search
   while (start < len) {
     s32 i = Div(start + len, 2);
-    if (arr[i].id < subroutineID) {
+    if (arr[i].id < commandID) {
       start = i + 1;
     } else {
       len = i;
     }
   }
 
-  if (arr[start].id == subroutineID) {
+  if (arr[start].id == commandID) {
     return arr[start].fn.fn;
   }
   return NULL;
 }
 
-void* VM_GetSubroutine(u32 subroutineID) {
-  void* fn = VM_GetSubroutine_Internal(subroutineID, gCommandList, 0, sCommandCount);
+void* VM_GetSubroutine(u32 commandID) {
+  void* fn = VM_GetSubroutine_Internal(commandID, gCommandList, 0, sCommandCount);
   return fn;
 }

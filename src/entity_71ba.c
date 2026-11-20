@@ -111,7 +111,7 @@ void FUN_080a01d8(Entity71BA* p) {
         }
       }
     } else if (!p->tileOverrideActive) {
-      Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, TATTR_UNK_11 | TATTR_UNK_5 | TATTR_UNK_3 | TATTR_WALL);
+      Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, TATTR_COFFIN_WALL | TATTR_UNK_5 | TATTR_BLOCK_STOP | TATTR_ENEMY_WALL);
       p->tileOverrideActive = TRUE;
     }
   } else if (p->tileOverrideActive) {
@@ -190,7 +190,7 @@ void FUN_080a035c(Entity71BA* p) {
     }
     if (!FUN_080a0268(p)) {
       if (!p->tileOverrideActive) {
-        Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, TATTR_UNK_11 | TATTR_UNK_3 | TATTR_WALL | TATTR_UNK_0);
+        Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, TATTR_COFFIN_WALL | TATTR_BLOCK_STOP | TATTR_ENEMY_WALL | TATTR_PLAYER_WALL);
         p->tileOverrideActive = TRUE;
       }
       return;
@@ -236,7 +236,7 @@ void Entity71BA_UpdateTileOverride(Entity71BA* p) {
       }
     } else if (IsPlayerSmall(p) && Entity71BA_IsPlayerWithinTileOffset(p, Q8(0.25))) {
       if (!p->tileOverrideActive) {
-        Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, TATTR_UNK_11 | TATTR_UNK_5 | TATTR_UNK_3 | TATTR_WALL);
+        Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, TATTR_COFFIN_WALL | TATTR_UNK_5 | TATTR_BLOCK_STOP | TATTR_ENEMY_WALL);
         p->tileOverrideActive = TRUE;
       }
     } else if (p->tileOverrideActive) {

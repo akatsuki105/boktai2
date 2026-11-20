@@ -381,7 +381,7 @@ _0803F222:
 	add r1, sp, #0x18
 	str r1, [sp, #0x14]
 	adds r1, r4, #0
-	bl FUN_0805eee4
+	bl CrashNoiseSpeaker_Spawn
 	movs r2, #0xae
 	lsls r2, r2, #2
 	adds r1, r5, r2

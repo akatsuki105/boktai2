@@ -30,8 +30,8 @@ static_assert(sizeof(EnemyDexEntry) == 4);
 // 魔物図鑑
 typedef struct {
   Entity e;                      // 0x0000, ENTITY_UNK_8
-  Tilemaps* tilemap;             // 0x0018, MP_4F8F
-  rgb555* pltt;                  // 0x001C, BGP_A41A
+  Tilemaps* tilemap;             // 0x0018, MP_BOOK
+  rgb555* pltt;                  // 0x001C, BGP_KAJI
   u32 unk_20;                    // 0x0020, _Init が 0
   u8 unk_24;                     // 0x0024, _Init が 0
   u8 page;                       // 0x0025, 選択中のページ (0..8), EnemyDexMenu_SetPageFromEntry が entryIdx から決める
@@ -720,7 +720,7 @@ static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
 // 最初の pos の4成分を Vec3* を受ける static inline で書くと strh の形と命令数 (454/454) は揃う, 残りはループ外へ出された各アドレスのスタック退避位置の並び (原典は sp+0x1c から +0x48, &gfx, sprites_6c, +0x8e, +0xb4, +0xcc の順)
 NON_MATCH s32 EnemyDexMenu_AddUISprites(EnemyDexMenu* p) {
 #ifdef NONMATCHING_C
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_GALLERY);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPR_UI_BOOK);
   Vec3 pos;
   rgb555* src;
   s32 i;
@@ -828,12 +828,12 @@ s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) {
   BgPlttFile* f;
   BgState* bg;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_4F8F);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_BOOK);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(2, 0);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
 
-  f = GetBgPlttFile(BGP_A41A);
+  f = GetBgPlttFile(BGP_KAJI);
   p->pltt = f->body;
   CpuCopy16(&f->body[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 

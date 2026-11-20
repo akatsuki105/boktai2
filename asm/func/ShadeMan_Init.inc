@@ -572,7 +572,7 @@ _08222176:
 	adds r1, r7, r2
 	str r0, [r1]
 	movs r0, #0x78
-	bl Entity0805ee80_Create
+	bl CrashNoiseSpeakerManager_Create
 	ldr r2, _08222228 @ =0x00000BFC
 	adds r1, r7, r2
 	str r0, [r1]

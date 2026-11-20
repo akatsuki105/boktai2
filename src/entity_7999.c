@@ -16,8 +16,8 @@
 // 通信対戦関連?
 typedef struct Entity7999 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
-  Tilemaps* tilemap;                           // 0x018, MP_CD91
-  rgb555* bgp;                                 // 0x01C, bg_link_col_arr
+  Tilemaps* tilemap;                           // 0x018, MP_LINK
+  rgb555* bgp;                                 // 0x01C, BGP_LINK
   MainSprite sprites[5];                       // 0x020, FUN_081da468 が stride 0x60 で pos を書き換える5枚
   MainSpriteGfx gfxLink;                       // 0x200, SPR_UI_LINK
   MainSpriteGfx gfxIcon;                       // 0x220, SPR_INVENTORY_ICONS
@@ -34,7 +34,7 @@ typedef struct Entity7999 {
   s32 windowID2;                               // 0x280, MenuMessage_Create(16, 12, 12, 2)
   u8 unk_284;                                  // 0x284, _Init が 0 を入れる
   u8 unk_285;                                  // 0x285, 読み手も書き手も見つかっていない
-  u8 unk_286;                                  // 0x286, gLinkSession->self.unk_40[0] の写し, 0/1/2 で分岐する種別
+  u8 unk_286;                                  // 0x286, gLinkSession->self.loadout[0] の写し, 0/1/2 で分岐する種別
   u8 unk_287;                                  // 0x287, 同 +0x41 の写し
   u8 unk_288;                                  // 0x288, 同 +0x42 の写し
   u8 unk_289;                                  // 0x289
@@ -94,26 +94,26 @@ NON_MATCH s32 FUN_081d9da4(Entity7999* p) {
   if (e == NULL || &e->self == NULL) {
     return -1;
   }
-  out = e->self.unk_40;
+  out = e->self.loadout;
   out[0] = p->unk_286;
-  e->self.unk_40[1] = p->unk_287;
+  e->self.loadout[1] = p->unk_287;
   switch (out[0]) {
     case 0: {
-      e->self.unk_40[2] = p->magicIDs[p->unk_288];
+      e->self.loadout[2] = p->magicIDs[p->unk_288];
       break;
     }
     case 1: {
       table = u32_ARRAY_085ae160;
-      e->self.unk_40[2] = table[p->unk_288];
+      e->self.loadout[2] = table[p->unk_288];
       break;
     }
     case 2: {
       table = u32_ARRAY_085ae160 + 2;
-      e->self.unk_40[2] = table[p->unk_288];
+      e->self.loadout[2] = table[p->unk_288];
       break;
     }
     default: {
-      e->self.unk_40[2] = p->magicIDs[0];
+      e->self.loadout[2] = p->magicIDs[0];
       break;
     }
   }
@@ -196,7 +196,7 @@ void FUN_081d9f3c(Entity7999* p) {
 }
 
 void Entity7999_InitBG(Entity7999* p) {
-  TilemapFile* f = GetFile(DIR_TILE_MAP, MP_CD91);
+  TilemapFile* f = GetFile(DIR_TILE_MAP, MP_LINK);
   s32 param;
 
   p->tilemap = f;
@@ -880,9 +880,9 @@ s32 Entity7999_Init(Entity7999* p) {
   if (gLinkSession == NULL) {
     data = NULL;
   }
-  p->unk_286 = data->unk_40[0];
-  p->unk_287 = data->unk_40[1];
-  p->unk_288 = data->unk_40[2];
+  p->unk_286 = data->loadout[0];
+  p->unk_287 = data->loadout[1];
+  p->unk_288 = data->loadout[2];
   FUN_081d9e50(p);
   FUN_081da814(p);
   FUN_081da074(p);

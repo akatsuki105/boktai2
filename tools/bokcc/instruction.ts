@@ -54,6 +54,7 @@ export type PrintContext = {
   memoryNames?: ReadonlyMap<string, string>; // メモリ参照の綴り -> 名前 (data/scripts/stat.h の PLAYER_X など, world.h / scratch.h も同じ)
   memoryIndexedNames?: ReadonlyMap<string, string>; // 添字付きメモリ参照の綴り (添字の位置を \0 にしたもの) -> 名前 (data/scripts/stat.h の FRIENDSHIP(i) など)
   scriptComments?: ReadonlyMap<number, string>; // script.h の行末コメント, 定義の直前のアドレスのコメントにだけ出す
+  hashNames?: ReadonlyMap<number, string>; // HashName の値 -> 名前 (data/scripts/hashes.h の HASH_MAP000 など), u16 の定数に使う
 };
 
 // ラベル(0x50)のうち if/switch の節として現れるもの。これ以外のラベルは名前付き引数で、1文字の意味は呼び出し先のエンジン関数ごとに異なる。
@@ -369,8 +370,8 @@ export class Instruction {
       case InsnType.Constant: {
         // 定数の型(=ニブル)はテキストから復元できないとコンパイルできないので、最頻の s32(コンパクト形式)以外はキャストで型を明示する。
         // u24 の定数はスクリプトIDにしか使われていないので, script.h に名前があればその名前で書く
-        // u16 の定数はエンティティIDやファイルIDなどのハッシュ値が多いので4桁の16進で書く
-        const name = this.dataType === DataType.UInt24 ? ctx?.scriptNames?.get(this.value) : undefined;
+        // u16 の定数はエンティティIDやファイルIDなどのハッシュ値が多いので4桁の16進で書く, hashes.h に名前があればその名前で書く
+        const name = this.dataType === DataType.UInt24 ? ctx?.scriptNames?.get(this.value) : this.dataType === DataType.UInt16 ? ctx?.hashNames?.get(this.value) : undefined;
         const num = this.dataType === DataType.UInt16 ? "0x" + toHex(this.value, 4) : this.value.toString();
         s = this.typeCast() + (name ?? num) + this.aliasSuffix();
         break;
@@ -616,10 +617,12 @@ export class Instruction {
   // subroutine ID / script ID のような識別子は16進で描画する(型とエイリアス注釈は残す)。
   // implicitType を渡すとその型のときだけキャストを省く(IMPLICIT_ARG_TYPES の命令は型が1つに決まっているので parser 側が決め打ちできる)
   // names に名前があればマクロ名で出す。Cプリプロセッサが16進に展開してから parser に届くので、parser 側は数値だけを受ける
+  // names に無い u16 は hashes.h の名前で出す (names を優先する)
   private idToString(ctx?: PrintContext, implicitType?: DataType, names?: ReadonlyMap<number, string>): string {
     if (this.insnType !== InsnType.Constant) return this.toString(ctx); // e.g. LoadMap(p0);
     const cast = this.dataType === implicitType ? "" : this.typeCast();
-    return cast + (names?.get(this.value) ?? "0x" + toHex(this.value, 4)) + this.aliasSuffix();
+    const hashName = this.dataType === DataType.UInt16 ? ctx?.hashNames?.get(this.value) : undefined;
+    return cast + (names?.get(this.value) ?? hashName ?? "0x" + toHex(this.value, 4)) + this.aliasSuffix();
   }
 
   private paramsToString(ctx: PrintContext | undefined, skip: number, prefix = ""): string {

@@ -21,13 +21,14 @@ const decompile = new Command()
   .option("--stat <path:string>", "gStat のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/stat.h")
   .option("--world <path:string>", "gWorld のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/world.h")
   .option("--scratch <path:string>", "gScratch のメモリ参照の名前を定義したヘッダのパス, e.g. data/scripts/scratch.h")
+  .option("--hashes <path:string>", "HashName の値の名前を定義したヘッダのパス, e.g. data/scripts/hashes.h")
   .action((opts, romPath, targetAddr) => {
     const offset = (targetAddr >= gba.BASE) ? targetAddr - gba.BASE : targetAddr; // 0x08000000 以降のアドレスが指定された場合はファイルオフセットに変換する
     const data = Deno.readFileSync(romPath);
     const reader = new InstructionReader(new ByteStream(data, offset));
 
     try {
-      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts, commands: opts.commands, stat: opts.stat, world: opts.world, scratch: opts.scratch });
+      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts, commands: opts.commands, stat: opts.stat, world: opts.world, scratch: opts.scratch, hashes: opts.hashes });
       for (const instr of reader.decompile()) {
         console.log(instr.toString(ctx));
       }

@@ -552,7 +552,7 @@ NON_MATCH void Cmd_AddPitfall(void) {
   PitfallWarning_Spawn(&pos);
   if (VM_GetNamedArgValue('s', 0) != 0) {
     pit->flags |= PITFLAG_MOVER;
-    Mover_Init(&pit->mover, pit->id, &pit->pos, 0, 7, pit);
+    Mover_Init(&pit->mover, pit->id, &pit->pos, 0, MOVER_OBJECT, pit);
     Mover_SetAuxSprite(&pit->mover, &pit->sprite);
     FUN_08002a48(&pit->mover);
   }

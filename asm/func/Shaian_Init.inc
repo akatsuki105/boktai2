@@ -1232,9 +1232,9 @@ _08183EC0:
 	strb r0, [r2, #5]
 _08183EEA:
 	adds r0, r7, #0
-	bl FUN_0817c44c
+	bl Shaian_InitPosAndIntervals
 	adds r0, r7, #0
-	bl FUN_0817ded0
+	bl Shaian_InitItems
 	ldr r4, _08183F30 @ =0x00000272
 	ldr r5, _08183F34 @ =0x00000276
 	movs r0, #0x43
@@ -1328,15 +1328,15 @@ _08183F94:
 	adds r0, r3, r5
 	ldr r6, _081841A8 @ =0x000008DC
 	adds r5, r3, r6
-	ldr r1, _081841AC @ =FUN_0818337c
+	ldr r1, _081841AC @ =Shaian_UpdateFrame
 	str r1, [sp, #0x1bc]
 	ldr r2, _081841B0 @ =Shaian_GetMoveSpeed
 	mov r8, r2
-	ldr r3, _081841B4 @ =FUN_081804f8
+	ldr r3, _081841B4 @ =Shaian_StateTurn
 	mov sb, r3
-	ldr r6, _081841B8 @ =FUN_0817fab0
+	ldr r6, _081841B8 @ =Shaian_StateMove
 	mov sl, r6
-	ldr r1, _081841BC @ =FUN_0817fc84
+	ldr r1, _081841BC @ =Shaian_StateWait
 	mov ip, r1
 	ldr r3, _081841C0 @ =FUN_080f62b0
 	ldr r2, _081841C4 @ =FUN_080f62ac
@@ -1470,16 +1470,16 @@ _08183F94:
 	movs r6, #0xc1
 	lsls r6, r6, #3
 	adds r1, r7, r6
-	ldr r0, _08184218 @ =FUN_0817bb7c
+	ldr r0, _08184218 @ =Shaian_TryDetectPlayer
 	str r0, [r1]
 	movs r0, #0xc3
 	lsls r0, r0, #3
 	adds r1, r7, r0
-	ldr r0, _0818421C @ =FUN_0817c328
+	ldr r0, _0818421C @ =Shaian_NoticeAttacker
 	str r0, [r1]
 	ldr r2, _08184220 @ =0x000005AC
 	adds r1, r7, r2
-	ldr r0, _08184224 @ =FUN_0817bbe0
+	ldr r0, _08184224 @ =Shaian_OnAttackRequest
 	str r0, [r1]
 	subs r3, #0x48
 	adds r1, r7, r3
@@ -1487,7 +1487,7 @@ _08183F94:
 	str r0, [r1]
 	subs r5, #0x70
 	adds r1, r7, r5
-	ldr r0, _0818422C @ =FUN_08182254
+	ldr r0, _0818422C @ =Shaian_OnDamaged
 	str r0, [r1]
 	movs r6, #0xde
 	lsls r6, r6, #1
@@ -1565,11 +1565,11 @@ _08184196:
 	.align 2, 0
 _081841A4: .4byte 0x000008B8
 _081841A8: .4byte 0x000008DC
-_081841AC: .4byte FUN_0818337c
+_081841AC: .4byte Shaian_UpdateFrame
 _081841B0: .4byte Shaian_GetMoveSpeed
-_081841B4: .4byte FUN_081804f8
-_081841B8: .4byte FUN_0817fab0
-_081841BC: .4byte FUN_0817fc84
+_081841B4: .4byte Shaian_StateTurn
+_081841B8: .4byte Shaian_StateMove
+_081841BC: .4byte Shaian_StateWait
 _081841C0: .4byte FUN_080f62b0
 _081841C4: .4byte FUN_080f62ac
 _081841C8: .4byte Shaian_StateDamaged
@@ -1592,12 +1592,12 @@ _08184208: .4byte FUN_080f56ec
 _0818420C: .4byte FUN_080f5b34
 _08184210: .4byte FUN_080f5fac
 _08184214: .4byte 0x000005FC
-_08184218: .4byte FUN_0817bb7c
-_0818421C: .4byte FUN_0817c328
+_08184218: .4byte Shaian_TryDetectPlayer
+_0818421C: .4byte Shaian_NoticeAttacker
 _08184220: .4byte 0x000005AC
-_08184224: .4byte FUN_0817bbe0
+_08184224: .4byte Shaian_OnAttackRequest
 _08184228: .4byte FUN_0817bbe4
-_0818422C: .4byte FUN_08182254
+_0818422C: .4byte Shaian_OnDamaged
 _08184230: .4byte 0x00500200
 _08184234: .4byte 0x0000085C
 _08184238: .4byte 0x0000044C
@@ -1953,15 +1953,15 @@ _081844BA:
 	strh r0, [r5]
 _081844D2:
 	adds r0, r7, #0
-	bl FUN_0817c02c
+	bl Shaian_InitDistances
 	adds r0, r7, #0
 	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
-	bl FUN_08183368
+	bl Shaian_SetHandlerTable2
 	adds r0, r7, #0
-	bl FUN_08181a78
+	bl Shaian_SetHandlerTable3
 	adds r0, r7, #0
-	bl FUN_08182240
+	bl Shaian_SetHandlerTable4
 	ldr r6, [sp, #0x54]
 	ldrh r0, [r6]
 	ldr r1, [sp, #0x10c]

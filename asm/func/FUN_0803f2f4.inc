@@ -295,7 +295,7 @@ _0803F4EE:
 	add r1, sp, #0x14
 	str r1, [sp, #0x10]
 	adds r1, r4, #0
-	bl FUN_0805ef68
+	bl CrashNoiseSpeakerManager_SpawnRing
 	movs r0, #4
 	movs r2, #0xb5
 	lsls r2, r2, #1

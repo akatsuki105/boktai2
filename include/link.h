@@ -6,7 +6,14 @@
 extern u16 gSioParentRecv;
 
 void Sio_Reset(void);
+s32 Sio_Start(void);
 s32 Sio_Stop(void);
+s32 Sio_GetError(void);
+bool32 Sio_HasParentData(void);
+bool32 Sio_HasChildData(void);
+s32 Sio_GetTimerIntrCount(void);
+s32 Sio_GetSerialIntrCount(void);
+s32 Sio_GetMultiId(void);
 s32 Sio_Connect(void);
 s32 Sio_Disconnect(void);
 void Sio_StartTransferIfIdle(void);

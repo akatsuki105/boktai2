@@ -29,8 +29,8 @@ typedef struct Warehouse {
   ShopSpritePair pair0;           // 0x1218, SPR_INVENTORY_ICONS
   u8 unk_12f8[0x130C - 0x12F8];   // 0x12F8, まだ未解析
   ShopSpritePair pair1;           // 0x130C, SPR_UI_START_MENU
-  Tilemaps* tilemap;              // 0x13EC, MP_9F57
-  rgb555* bgPltt;                 // 0x13F0, BGP_A41A
+  Tilemaps* tilemap;              // 0x13EC, MP_KAJI
+  rgb555* bgPltt;                 // 0x13F0, BGP_KAJI
   u8* unk_13f4;                   // 0x13F4, '.i' の VM_GetPC_Proxy の戻り値
   u8* unk_13f8;                   // 0x13F8, '.w' の VM_GetPC_Proxy の戻り値
   u8* unk_13fc;                   // 0x13FC, '.a' の VM_GetPC_Proxy の戻り値
@@ -1725,7 +1725,7 @@ void FUN_080b8920(Warehouse* p) {
 void Warehouse_SetupBg(Warehouse* p) {
   s32 indices[1];
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_KAJI);
   indices[0] = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, indices);
   Video_SetBGLayer(0, p->tilemap, 5);
@@ -1733,7 +1733,7 @@ void Warehouse_SetupBg(Warehouse* p) {
 }
 
 void Warehouse_LoadBgPltt(Warehouse* p) {
-  p->bgPltt = &GetBgPlttFile(BGP_A41A)->body[208];
+  p->bgPltt = &GetBgPlttFile(BGP_KAJI)->body[208];
   CpuCopy32(p->bgPltt, &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 }
 
@@ -1825,7 +1825,7 @@ void Warehouse_SetupMessageWindow(Warehouse* p) {
   FUN_08049f5c();
   MessageWindow_SetRect(0, 16, 30, 2);
   MessageWindow_SetInstant(1);
-  MessageWindow_SetBgPltt(BGP_A41A);
+  MessageWindow_SetBgPltt(BGP_KAJI);
 }
 
 void FUN_080b8f08(Warehouse* p) {

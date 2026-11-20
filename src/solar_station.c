@@ -60,7 +60,7 @@ NON_MATCH void SolarStation_UpdateIdle(SolarStation* p) {
       if (p->player->kind == PLAYER_SLEEPING) {
         return;
       }
-      if (p->player->formRequest == 0 && (p->player->input->pressed & A_BUTTON) && p->player->action == PACT_UNK_7) {
+      if (p->player->formRequest == 0 && (p->player->input->pressed & A_BUTTON) && p->player->action == PACT_PALM_UP) {
         Player_EnterRefueling(p->player, &p->unk_250, p->unk_262);
         p->state = 1;
       }

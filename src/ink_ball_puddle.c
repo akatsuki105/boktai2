@@ -37,25 +37,22 @@ NAKED void InkBallPuddle_OnHit(Hitbox* a, Hitbox* b, InkBallPuddle* puddle) { IN
 NAKED void InkBallPuddle_InitHitbox(InkBallPuddle* puddle, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes) { INCFUNC("asm/func/InkBallPuddle_InitHitbox.inc"); }
 
 // 空いている枠を探す, ttl が 0 で非表示のものが空き
-// 残差1命令: 原典は return puddle のブロックをループの手前に置くので、ガードが bls + b の2段になる
-NON_MATCH InkBallPuddle* InkBallPuddleManager_FindFree(void) {
-#ifdef NONMATCHING_C
+InkBallPuddle* InkBallPuddleManager_FindFree(void) {
   InkBallPuddleManager* p = gInkBallPuddleManager;
+  InkBallPuddle* puddle;
+  s32 i;
 
-  if (p->activeCount <= 7) {
-    InkBallPuddle* puddle = p->puddles;
-    s32 i;
-
-    for (i = 0; i < 8; puddle++, i++) {
-      if (puddle->ttl == 0 && (puddle->sprite.flags & SPRFLAG_HIDDEN)) {
-        return puddle;
-      }
+  if (p->activeCount >= 8) {
+    return NULL;
+  }
+  puddle = p->puddles;
+  for (i = 0; i < 8; i++) {
+    if (puddle->ttl == 0 && (puddle->sprite.flags & SPRFLAG_HIDDEN)) {
+      return puddle;
     }
+    puddle++;
   }
   return NULL;
-#else
-  INCFUNC("asm/func/InkBallPuddleManager_FindFree.inc");
-#endif
 }
 
 // 空き枠を1つ取って墨だまりを出す, Y座標は足元のタイルの高さに合わせる

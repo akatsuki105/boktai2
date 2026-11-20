@@ -165,7 +165,7 @@ NON_MATCH bool8 MovableBlock_IsSideBlocked(MovableBlock* blk, s32 tileIdx, s32 d
     return FALSE;
   }
   if ((tile->heightStairs >> 4) == 0) {
-    if ((tile->heightStairs & 0xF) < (self->heightStairs & 0xF) || (tile->attr & TATTR_UNK_3)) {
+    if ((tile->heightStairs & 0xF) < (self->heightStairs & 0xF) || (tile->attr & TATTR_BLOCK_STOP)) {
       return FALSE;
     }
   } else if ((tile->heightStairs & 0xF) < (self->heightStairs & 0xF)) {
@@ -612,7 +612,7 @@ NON_MATCH s32 MovableBlock_TryMove(MovableBlock* blk, s32 tileIdx, s32 dir) {
   }
   height = tile->heightStairs & 0xF;
   selfHeight = self->heightStairs & 0xF;
-  if (height >= selfHeight || (tile->attr & TATTR_UNK_3)) {
+  if (height >= selfHeight || (tile->attr & TATTR_BLOCK_STOP)) {
     return 0;
   }
   if (selfHeight - height > 1) {
@@ -746,7 +746,7 @@ void MovableBlock_UpdateMove(MovableBlock* blk) {
 
   if (blk->stateEntered) {
     blk->stateEntered = FALSE;
-    tile->attr |= TATTR_UNK_0;
+    tile->attr |= TATTR_PLAYER_WALL;
   }
   mover->delta.x = blk->moveX;
   mover->delta.z = blk->moveZ;
@@ -780,7 +780,7 @@ void MovableBlock_UpdateMove(MovableBlock* blk) {
         blk->moveX = 0;
         blk->moveZ = 0;
         blk->dir = 0;
-        tile->attr &= ~TATTR_UNK_0;
+        tile->attr &= ~TATTR_PLAYER_WALL;
       }
     } else {
       if (blk->state == 2) {
@@ -788,7 +788,7 @@ void MovableBlock_UpdateMove(MovableBlock* blk) {
       } else {
         MovableBlock_OnHitWall(blk);
         MovableBlock_SetState(blk, MovableBlock_UpdateIdle, 0);
-        tile->attr &= ~TATTR_UNK_0;
+        tile->attr &= ~TATTR_PLAYER_WALL;
       }
       blk->moveX = 0;
       blk->moveZ = 0;
@@ -815,7 +815,7 @@ NON_MATCH void MovableBlock_UpdateFall(MovableBlock* blk) {
       tile->heightStairs = (tile->heightStairs & 0xF0) | height;
     }
     if (TEST_FLAGS(blk->flags, 8)) {
-      blk->tile.tile.attr |= TATTR_UNK_0 | TATTR_UNK_5;
+      blk->tile.tile.attr |= TATTR_PLAYER_WALL | TATTR_UNK_5;
     }
   }
   dy = blk->targetY - mover->pos.y;
@@ -827,10 +827,10 @@ NON_MATCH void MovableBlock_UpdateFall(MovableBlock* blk) {
   }
   if (mover->delta.y == 0) {
     if (TEST_FLAGS(blk->flags, 8)) {
-      blk->tile.tile.attr |= TATTR_UNK_0 | TATTR_UNK_5;
+      blk->tile.tile.attr |= TATTR_PLAYER_WALL | TATTR_UNK_5;
       blk->hp = 0;
     } else {
-      blk->tile.tile.attr &= ~(TATTR_UNK_0 | TATTR_UNK_5);
+      blk->tile.tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_UNK_5);
       MovableBlock_OnLanded(blk);
     }
     blk->updateCallback = MovableBlock_UpdateIdle;
@@ -852,7 +852,7 @@ void MovableBlock_UpdateBreak(MovableBlock* blk) {
     blk->breakStep = 0;
     AuxSprite_SetPoseIdx(&blk->sprite, 0);
     PlaySound_082406e0(SONG_310);
-    blk->tile.tile.attr |= TATTR_UNK_0 | TATTR_UNK_5;
+    blk->tile.tile.attr |= TATTR_PLAYER_WALL | TATTR_UNK_5;
     if (blk->breakScript != 0) {
       u32 argv[5];
       ScriptArgs sa;
@@ -932,10 +932,10 @@ NON_MATCH s32 MovableBlockManager_Update(MovableBlockManager* p) {
         if (!(blk->flags & 0x20)) {
           Map_UpdateZoneEvents(&blk->zoneEvents);
         } else if (blk->state == 0) {
-          blk->tile.tile.attr &= ~TATTR_WALL;
+          blk->tile.tile.attr &= ~TATTR_ENEMY_WALL;
           Map_UpdateZoneEvents(&blk->zoneEvents);
         } else {
-          blk->tile.tile.attr |= TATTR_WALL;
+          blk->tile.tile.attr |= TATTR_ENEMY_WALL;
         }
         if (blk->seCooldown != 0) {
           blk->seCooldown--;
@@ -1123,7 +1123,7 @@ NON_MATCH s32 MovableBlock_Spawn(u32 id, s32 kind, s32 flags, Vec3* pos, s32 fil
   blk->sprite.poseIdx = poseIdx;
   blk->sprite.pos = *pos;
   mover = &blk->mover;
-  Mover_Init(mover, id, pos, 0, 7, blk);
+  Mover_Init(mover, id, pos, 0, MOVER_OBJECT, blk);
   Mover_SetAuxSprite(mover, &blk->sprite);
   blk->mover.pos = blk->sprite.pos;
   if (blk->flags & 0x10) {

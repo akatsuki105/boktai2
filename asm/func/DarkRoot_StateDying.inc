@@ -757,7 +757,7 @@ _081A45EA:
 	ldr r0, _081A461C @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r7]
-	bl DefeatedEnemyLog_Add
+	bl EnemyRespawnInfo_Add
 _081A460A:
 	add sp, #0x78
 	pop {r3, r4, r5}

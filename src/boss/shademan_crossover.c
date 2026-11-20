@@ -15,123 +15,123 @@
 
 // シェードマン(クロスオーバーバトル用)
 typedef struct {
-  Boss base;                              // 0x000
-  u8 unk_158[0x15C - 0x158];              // 0x158
-  u16 phaseTimer;                         // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
-  u16 phase;                              // 0x15E, 状態の中の段階
-  s16 unk_160;                            // 0x160
-  s16 unk_162;                            // 0x162
-  s16 unk_164;                            // 0x164
-  u16 unk_166;                            // 0x166
-  u8 unk_168;                             // 0x168
-  u8 unk_169;                             // 0x169
-  u8 shakeAmp;                            // 0x16A, 0 でない間スプライトを乱数で揺らして減らす
-  u8 hurtAngle;                           // 0x16B, 最後に当てられた向き
-  u16 unk_16c;                            // 0x16C
-  u16 damage;                             // 0x16E, ShadeManCrossover_OnHurt が受けたダメージを入れる
-  u16 unk_170;                            // 0x170
-  u16 unk_172;                            // 0x172
-  u32 hurtWeakness;                       // 0x174, 当たってきた攻撃の weakness の控え
-  HitboxAttrs hurtAttributes;             // 0x178, 当たってきた攻撃の attributes の控え
-  u8 unk_17c[0x180 - 0x17C];              // 0x17C
-  Hitbox hitbox;                          // 0x180
-  Hitbox hurtbox;                         // 0x1D0, HBF_HURTBOX | HBF_ANGLE | HBF_DAMAGE, 他のボスと違って HBF_NPC が付かない, ハンドラは ShadeManCrossover_OnHurt
-  Hitbox hitbox2;                         // 0x220
-  s32 unk_270;                            // 0x270, centerPos から見た角度の 8 倍
-  s32 unk_274;                            // 0x274
-  s32 unk_278;                            // 0x278
-  u32 unk_27c;                            // 0x27C, centerPos からの距離の 256 倍
-  u32 unk_280;                            // 0x280
-  u32 unk_284;                            // 0x284
-  u16 unk_288;                            // 0x288
-  u16 unk_28a;                            // 0x28A
-  Vec3 centerPos;                         // 0x28C, '.r', 省略するとプレイヤーの位置
-  Vec3 unk_294;                           // 0x294
-  Vec3 unk_29c;                           // 0x29C
-  Vec3 unk_2a4;                           // 0x2A4
-  u16 unk_2ac;                            // 0x2AC
-  u8 unk_2ae[0x2B2 - 0x2AE];              // 0x2AE
-  u8 unk_2b2;                             // 0x2B2
-  u8 unk_2b3;                             // 0x2B3
-  u8 unk_2b4;                             // 0x2B4
-  u8 unk_2b5;                             // 0x2B5
-  u8 unk_2b6;                             // 0x2B6
-  u8 unk_2b7;                             // 0x2B7
-  u8 unk_2b8;                             // 0x2B8
-  u8 unk_2b9;                             // 0x2B9
-  u8 unk_2ba[0x2BC - 0x2BA];              // 0x2BA
-  u8 unk_2bc[2];                          // 0x2BC
-  u8 unk_2be[0x2C0 - 0x2BE];              // 0x2BE
-  u8 unk_2c0;                             // 0x2C0
-  u8 unk_2c1;                             // 0x2C1
-  u8 unk_2c2[0x2C4 - 0x2C2];              // 0x2C2
-  u16 hurtboxPower;                       // 0x2C4, '.s[1]=100'
-  s16 unk_2c6;                            // 0x2C6
-  s16 hitboxPower;                        // 0x2C8, '.a[0]=50'
-  s16 hitboxKnockback;                    // 0x2CA, '.a[1]=50'
-  s16 hitboxUnk44;                        // 0x2CC
-  s16 hitbox2Power;                       // 0x2CE, '.a[3]=90'
-  s16 hitbox2Knockback;                   // 0x2D0, '.a[4]=50'
-  s16 hitbox2Unk44;                       // 0x2D2
-  s16 unk_2d4;                            // 0x2D4
-  s16 unk_2d6;                            // 0x2D6
-  u16 unk_2d8;                            // 0x2D8
-  s16 unk_2da;                            // 0x2DA
-  s16 unk_2dc;                            // 0x2DC
-  s16 unk_2de;                            // 0x2DE
-  s16 unk_2e0;                            // 0x2E0
-  s16 unk_2e2;                            // 0x2E2
-  s16 unk_2e4;                            // 0x2E4
-  s16 unk_2e6;                            // 0x2E6
-  s16 unk_2e8;                            // 0x2E8
-  s16 unk_2ea;                            // 0x2EA
-  s16 unk_2ec;                            // 0x2EC
-  s16 unk_2ee;                            // 0x2EE
-  s16 unk_2f0;                            // 0x2F0
-  s16 unk_2f2;                            // 0x2F2
-  s16 unk_2f4;                            // 0x2F4
-  s16 unk_2f6;                            // 0x2F6
-  s16 unk_2f8;                            // 0x2F8
-  s16 unk_2fa;                            // 0x2FA
-  s16 unk_2fc;                            // 0x2FC
-  s16 unk_2fe;                            // 0x2FE
-  s16 unk_300;                            // 0x300
-  s16 unk_302;                            // 0x302
-  s16 unk_304;                            // 0x304
-  s16 unk_306;                            // 0x306
-  s16 unk_308;                            // 0x308
-  u16 unk_30a;                            // 0x30A
-  u16 unk_30c;                            // 0x30C
-  u8 unk_30e;                             // 0x30E
-  u8 unk_30f;                             // 0x30F
-  u8 unk_310;                             // 0x310
-  u8 unk_311;                             // 0x311
-  u8 unk_312[0x314 - 0x312];              // 0x312
-  s32 scriptID;                           // 0x314, '.o', scriptArgs の空いている値を引数にして呼ぶ
-  s32 scriptID2;                          // 0x318, '.k'
-  u32 scriptArgCount;                     // 0x31C
-  u32 scriptArgUsed;                      // 0x320, scriptArgs のうち使ったもののビット
-  u16 scriptArgs[4];                      // 0x324, '.O'
-  MainSpriteGfx gfx;                      // 0x32C, SPR_SHADEMAN
-  MainSprite sprite;                      // 0x34C
-  AuxShadow shadow;                       // 0x3AC
-  rgb555 pltt[16][16];                    // 0x418, gObjPlttData の同じ16色を16回写す
-  rgb555 pltt_618[16][16];                // 0x618, BlendPltt で色を混ぜる先
-  s8 plttFadeMode;                        // 0x818, パレットフェードの種類, -1 で止まる
-  s8 plttFade;                            // 0x819, BlendPltt の混ぜ具合 (0..31)
-  u16 plttFadeTo;                         // 0x81A, フェード先のパレット番号
-  u16 stateDuration;                      // 0x81C, 状態を続ける最短フレーム数
-  u8 unk_81e;                             // 0x81E
-  u8 unk_81f;                             // 0x81F
-  u16 cameraDist;                         // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
-  u16 unk_822;                            // 0x822
-  u16 unk_824;                            // 0x824
-  u16 afterimageIdx;                      // 0x826, 次に使う afterimages の番号, 0..2 を回す
-  u16 afterimageTimers[3];                // 0x828, 0 になった瞬間 afterimages の同じ番号を隠す
-  u16 unk_82e[3];                         // 0x82E
-  MainSprite afterimages[3];              // 0x834
-  struct Entity0805e67c* entity0805e67c;  // 0x954
-  struct Entity0805ee80* entity0805ee80;  // 0x958
+  Boss base;                                    // 0x000
+  u8 unk_158[0x15C - 0x158];                    // 0x158
+  u16 phaseTimer;                               // 0x15C, 状態の中の段階を進めるたびに 0 に戻すカウンタ
+  u16 phase;                                    // 0x15E, 状態の中の段階
+  s16 unk_160;                                  // 0x160
+  s16 unk_162;                                  // 0x162
+  s16 unk_164;                                  // 0x164
+  u16 unk_166;                                  // 0x166
+  u8 unk_168;                                   // 0x168
+  u8 unk_169;                                   // 0x169
+  u8 shakeAmp;                                  // 0x16A, 0 でない間スプライトを乱数で揺らして減らす
+  u8 hurtAngle;                                 // 0x16B, 最後に当てられた向き
+  u16 unk_16c;                                  // 0x16C
+  u16 damage;                                   // 0x16E, ShadeManCrossover_OnHurt が受けたダメージを入れる
+  u16 unk_170;                                  // 0x170
+  u16 unk_172;                                  // 0x172
+  u32 hurtWeakness;                             // 0x174, 当たってきた攻撃の weakness の控え
+  HitboxAttrs hurtAttributes;                   // 0x178, 当たってきた攻撃の attributes の控え
+  u8 unk_17c[0x180 - 0x17C];                    // 0x17C
+  Hitbox hitbox;                                // 0x180
+  Hitbox hurtbox;                               // 0x1D0, HBF_HURTBOX | HBF_ANGLE | HBF_DAMAGE, 他のボスと違って HBF_ACTOR が付かない, ハンドラは ShadeManCrossover_OnHurt
+  Hitbox hitbox2;                               // 0x220
+  s32 unk_270;                                  // 0x270, centerPos から見た角度の 8 倍
+  s32 unk_274;                                  // 0x274
+  s32 unk_278;                                  // 0x278
+  u32 unk_27c;                                  // 0x27C, centerPos からの距離の 256 倍
+  u32 unk_280;                                  // 0x280
+  u32 unk_284;                                  // 0x284
+  u16 unk_288;                                  // 0x288
+  u16 unk_28a;                                  // 0x28A
+  Vec3 centerPos;                               // 0x28C, '.r', 省略するとプレイヤーの位置
+  Vec3 unk_294;                                 // 0x294
+  Vec3 unk_29c;                                 // 0x29C
+  Vec3 unk_2a4;                                 // 0x2A4
+  u16 unk_2ac;                                  // 0x2AC
+  u8 unk_2ae[0x2B2 - 0x2AE];                    // 0x2AE
+  u8 unk_2b2;                                   // 0x2B2
+  u8 unk_2b3;                                   // 0x2B3
+  u8 unk_2b4;                                   // 0x2B4
+  u8 unk_2b5;                                   // 0x2B5
+  u8 unk_2b6;                                   // 0x2B6
+  u8 unk_2b7;                                   // 0x2B7
+  u8 unk_2b8;                                   // 0x2B8
+  u8 unk_2b9;                                   // 0x2B9
+  u8 unk_2ba[0x2BC - 0x2BA];                    // 0x2BA
+  u8 unk_2bc[2];                                // 0x2BC
+  u8 unk_2be[0x2C0 - 0x2BE];                    // 0x2BE
+  u8 unk_2c0;                                   // 0x2C0
+  u8 unk_2c1;                                   // 0x2C1
+  u8 unk_2c2[0x2C4 - 0x2C2];                    // 0x2C2
+  u16 hurtboxPower;                             // 0x2C4, '.s[1]=100'
+  s16 unk_2c6;                                  // 0x2C6
+  s16 hitboxPower;                              // 0x2C8, '.a[0]=50'
+  s16 hitboxKnockback;                          // 0x2CA, '.a[1]=50'
+  s16 hitboxUnk44;                              // 0x2CC
+  s16 hitbox2Power;                             // 0x2CE, '.a[3]=90'
+  s16 hitbox2Knockback;                         // 0x2D0, '.a[4]=50'
+  s16 hitbox2Unk44;                             // 0x2D2
+  s16 unk_2d4;                                  // 0x2D4
+  s16 unk_2d6;                                  // 0x2D6
+  u16 unk_2d8;                                  // 0x2D8
+  s16 unk_2da;                                  // 0x2DA
+  s16 unk_2dc;                                  // 0x2DC
+  s16 unk_2de;                                  // 0x2DE
+  s16 unk_2e0;                                  // 0x2E0
+  s16 unk_2e2;                                  // 0x2E2
+  s16 unk_2e4;                                  // 0x2E4
+  s16 unk_2e6;                                  // 0x2E6
+  s16 unk_2e8;                                  // 0x2E8
+  s16 unk_2ea;                                  // 0x2EA
+  s16 unk_2ec;                                  // 0x2EC
+  s16 unk_2ee;                                  // 0x2EE
+  s16 unk_2f0;                                  // 0x2F0
+  s16 unk_2f2;                                  // 0x2F2
+  s16 unk_2f4;                                  // 0x2F4
+  s16 unk_2f6;                                  // 0x2F6
+  s16 unk_2f8;                                  // 0x2F8
+  s16 unk_2fa;                                  // 0x2FA
+  s16 unk_2fc;                                  // 0x2FC
+  s16 unk_2fe;                                  // 0x2FE
+  s16 unk_300;                                  // 0x300
+  s16 unk_302;                                  // 0x302
+  s16 unk_304;                                  // 0x304
+  s16 unk_306;                                  // 0x306
+  s16 unk_308;                                  // 0x308
+  u16 unk_30a;                                  // 0x30A
+  u16 unk_30c;                                  // 0x30C
+  u8 unk_30e;                                   // 0x30E
+  u8 unk_30f;                                   // 0x30F
+  u8 unk_310;                                   // 0x310
+  u8 unk_311;                                   // 0x311
+  u8 unk_312[0x314 - 0x312];                    // 0x312
+  s32 scriptID;                                 // 0x314, '.o', scriptArgs の空いている値を引数にして呼ぶ
+  s32 scriptID2;                                // 0x318, '.k'
+  u32 scriptArgCount;                           // 0x31C
+  u32 scriptArgUsed;                            // 0x320, scriptArgs のうち使ったもののビット
+  u16 scriptArgs[4];                            // 0x324, '.O'
+  MainSpriteGfx gfx;                            // 0x32C, SPR_SHADEMAN
+  MainSprite sprite;                            // 0x34C
+  AuxShadow shadow;                             // 0x3AC
+  rgb555 pltt[16][16];                          // 0x418, gObjPlttData の同じ16色を16回写す
+  rgb555 pltt_618[16][16];                      // 0x618, BlendPltt で色を混ぜる先
+  s8 plttFadeMode;                              // 0x818, パレットフェードの種類, -1 で止まる
+  s8 plttFade;                                  // 0x819, BlendPltt の混ぜ具合 (0..31)
+  u16 plttFadeTo;                               // 0x81A, フェード先のパレット番号
+  u16 stateDuration;                            // 0x81C, 状態を続ける最短フレーム数
+  u8 unk_81e;                                   // 0x81E
+  u8 unk_81f;                                   // 0x81F
+  u16 cameraDist;                               // 0x820, プレイヤーまでの距離 / 32 に 1 ずつ寄せる
+  u16 unk_822;                                  // 0x822
+  u16 unk_824;                                  // 0x824
+  u16 afterimageIdx;                            // 0x826, 次に使う afterimages の番号, 0..2 を回す
+  u16 afterimageTimers[3];                      // 0x828, 0 になった瞬間 afterimages の同じ番号を隠す
+  u16 unk_82e[3];                               // 0x82E
+  MainSprite afterimages[3];                    // 0x834
+  struct Entity0805e67c* entity0805e67c;        // 0x954
+  struct CrashNoiseSpeakerManager* crashNoise;  // 0x958
 } ShadeManCrossover;
 static_assert(sizeof(ShadeManCrossover) == 2396);
 
@@ -254,17 +254,17 @@ s32 ShadeManCrossover_GetPlttID(void* _) { return BOSS_SHADEMAN_CROSSOVER; }
 void Player_InflictCrossoverElementalCond(struct Player* p, u32 param_2, s32 param_3);
 void CrossoverBattle_ShowOjamaBatPopup(u32 param_1, u32 param_2, Vec3* pos);
 struct Entity0805e67c* Entity0805e67c_Create(void);
-struct Entity0805ee80* Entity0805ee80_Create(s32 param_1);
+struct CrashNoiseSpeakerManager* CrashNoiseSpeakerManager_Create(u32 ringLifetime);
 void CrossoverBattle_AddPoint(u32 param_1, u32 param_2);
 void CrossoverBattle_NotifyBossDefeated(void);
 s32 FUN_08050d40(void);
 void FUN_0823b880(s32 n);
 s32 Entity0805e67c_SpawnSwarm(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes);
-void FUN_0805eee4(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, Vec3* pos);
+s32 CrashNoiseSpeaker_Spawn(struct CrashNoiseSpeakerManager* p, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes, s32 kind, s32 shotsPerVolley, s32 volleyMax, Vec3* pos);
 s32 Entity0805e67c_Spawn(struct Entity0805e67c* p, Vec3* pos, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes);
 s32 CrossoverBattle_IsFighting(void);
 void CrossoverBattle_AddOjama(Vec3* pos, u32 kind);
-void FUN_0805ef68(struct Entity0805ee80* p, u32 angle, s32 param_3, s32 power, s32 param_5, s32 param_6, s32 param_7, s32 param_8, Vec3* pos);
+s32 CrashNoiseSpeakerManager_SpawnRing(struct CrashNoiseSpeakerManager* p, u32 angle, s32 speed, s32 power, s32 knockback, s32 iframes, s32 kind, s32 mosaicInterval, Vec3* pos);
 
 void FUN_0803cee4(ShadeManCrossover*);
 void FUN_0803e68c(ShadeManCrossover*);
@@ -1065,7 +1065,7 @@ void FUN_0803da90(ShadeManCrossover* p) {
     height = TileHeightAt(&pos);
     attr = GetTileAttrAt(&pos);
     dy = height - p->unk_164;
-    if (dy < -0x1FF || dy > 0xFF || (attr & TATTR_WALL) || boss->subStateDone) {
+    if (dy < -0x1FF || dy > 0xFF || (attr & TATTR_ENEMY_WALL) || boss->subStateDone) {
       Boss_SetSubState2(boss, 6);
     } else {
       boss->subStateTimer++;
@@ -1204,7 +1204,7 @@ NON_MATCH void FUN_0803e058(ShadeManCrossover* p) {
     height = TileHeightAt(&pos);
     attr = GetTileAttrAt(&pos);
     dy = height - p->unk_164;
-    if (dy >= -0x1FF && dy <= 0xFF && !(attr & TATTR_WALL)) {
+    if (dy >= -0x1FF && dy <= 0xFF && !(attr & TATTR_ENEMY_WALL)) {
       boss->subStateTimer++;
       return;
     }
@@ -1484,7 +1484,7 @@ void FUN_0803ee50(Boss* boss, s32 timer) {
 
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
-    boss->dir = Angle_ToDir8(Angle_FromDir4(Angle_ToDir4(mover->angle)));
+    boss->dir8 = Angle_ToDir8(Angle_FromDir4(Angle_ToDir4(mover->angle)));
     Boss_PlayAnimFacing(boss, sprite, &p->gfx, 21, PLAYMODE_ONCE_AND_STOP, 1, MAIN_ANIM_FORCE_POSE);
   }
   if (!boss->damageCallback(boss) && !boss->stateRequestCallback(boss)) {
@@ -1514,14 +1514,14 @@ NON_MATCH void FUN_0803ef80(Boss* boss, s32 timer) {
     s32 i;
 
     boss->stateEntered = FALSE;
-    if (boss->facing > DIR4_EAST) {
+    if (boss->dir4 > DIR4_EAST) {
       boss->mover.angle = 0x40;
-      boss->facing = DIR4_SOUTH;
+      boss->dir4 = DIR4_SOUTH;
     } else {
       boss->mover.angle = 0;
-      boss->facing = DIR4_EAST;
+      boss->dir4 = DIR4_EAST;
     }
-    boss->dir = Angle_ToDir8(boss->mover.angle);
+    boss->dir8 = Angle_ToDir8(boss->mover.angle);
     Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     p->phase = 0;
     p->phaseTimer = 0;
@@ -1563,7 +1563,7 @@ NON_MATCH void FUN_0803ef80(Boss* boss, s32 timer) {
         if (p->unk_2b6) {
           power = (p->unk_2c6 * power) >> 6;
         }
-        FUN_0805eee4(p->entity0805ee80, angle, p->unk_2e4, power, p->unk_2e0, p->unk_2e2, p->unk_2e6, p->unk_2e8, p->unk_2ea, &pos);
+        CrashNoiseSpeaker_Spawn(p->crashNoise, angle, p->unk_2e4, power, p->unk_2e0, p->unk_2e2, p->unk_2e6, p->unk_2e8, p->unk_2ea, &pos);
         p->unk_2b8++;
       }
       if (++p->phaseTimer > 79) {
@@ -1635,7 +1635,7 @@ NON_MATCH void FUN_0803f2f4(Boss* boss, s32 timer) {
         if (p->unk_2b6) {
           power = (p->unk_2c6 * power) >> 6;
         }
-        FUN_0805ef68(p->entity0805ee80, angle, p->unk_2f2, power, p->unk_2ee, p->unk_2f0, p->unk_2f4, p->unk_2f6, &pos);
+        CrashNoiseSpeakerManager_SpawnRing(p->crashNoise, angle, p->unk_2f2, power, p->unk_2ee, p->unk_2f0, p->unk_2f4, p->unk_2f6, &pos);
         ShadeManCrossover_SetShake(p, 4);
       }
       if (++p->phaseTimer > 127) {
@@ -1826,14 +1826,14 @@ NON_MATCH void FUN_0803fc70(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_SetAngle(boss, boss->playerAngle[0]);
-    if (boss->facing > DIR4_EAST) {
+    if (boss->dir4 > DIR4_EAST) {
       mover->angle = 0x40;
-      boss->facing = DIR4_SOUTH;
+      boss->dir4 = DIR4_SOUTH;
     } else {
       mover->angle = 0;
-      boss->facing = DIR4_EAST;
+      boss->dir4 = DIR4_EAST;
     }
-    boss->dir = Angle_ToDir8(mover->angle);
+    boss->dir8 = Angle_ToDir8(mover->angle);
     Boss_PlayAnimFlip(boss, sprite, &p->gfx, 16, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
     MainSprite_SetAnimFrame(sprite, &p->gfx, boss->animID, 6);
     p->phase = 0;
@@ -2294,8 +2294,8 @@ NON_MATCH s32 ShadeManCrossover_Init(ShadeManCrossover* p, u32 id) {
   if (p->entity0805e67c == NULL) {
     return -1;
   }
-  p->entity0805ee80 = Entity0805ee80_Create(120);
-  if (p->entity0805ee80 == NULL) {
+  p->crashNoise = CrashNoiseSpeakerManager_Create(120);
+  if (p->crashNoise == NULL) {
     return -1;
   }
   return 0;

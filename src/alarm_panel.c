@@ -111,7 +111,7 @@ NON_MATCH s32 AlarmPanel_Init(AlarmPanel* p, u32 id) {
   if (VM_SeekToNamedArg('h')) {
     p->moverLinked = VM_GetValue();
     if (p->moverLinked) {
-      Mover_Init(&p->mover, p->id, &sprite->pos, 0, 7, p);
+      Mover_Init(&p->mover, p->id, &sprite->pos, 0, MOVER_OBJECT, p);
       FUN_08002a48(&p->mover);
     }
   } else {

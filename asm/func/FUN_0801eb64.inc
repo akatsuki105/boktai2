@@ -69,7 +69,7 @@ _0801EBDE:
 	strb r0, [r4, #0x1b]
 	ldrb r1, [r4, #0x1b]
 	adds r0, r4, #0
-	bl FUN_0801e284
+	bl ForgeTutorial_SetState
 	b _0801EC46
 	.align 2, 0
 _0801EBF8: .4byte 0x030044E0

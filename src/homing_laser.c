@@ -1,7 +1,11 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "random.h"
+#include "sound.h"
 #include "sprite_aux.h"
+#include "trig.h"
+#include "vec3.h"
 
 // HomingLaser.kind
 #define HOMING_SOL 0
@@ -60,6 +64,17 @@ static const HitboxAttrs sHomingLaserAttrs[6][2] = {
     [HOMING_EARTH] = {HBATTR_POISON | HBATTR_EARTH,  HBATTR_CLOUD},
 };  // 0x08DBD7D0
 
+WorldPos* FUN_080230c4(void);
+
+// from から to への向き (8bit)
+static inline s32 HomingLaser_AngleTo(Vec3* from, Vec3* to) { return ArcTan2_8(to->x - from->x, to->z - from->z); }
+
+static inline void HomingLaser_SetState(HomingLaser* e, u32 state) {
+  e->state = state;
+  e->stateEntered = TRUE;
+  e->timer = 0;
+}
+
 // 空いている枠を返す, 無ければ NULL
 HomingLaser* HomingLaserManager_FindFree(HomingLaserManager* p, s32* outIndex) {
   s32 i;
@@ -73,11 +88,66 @@ HomingLaser* HomingLaserManager_FindFree(HomingLaserManager* p, s32* outIndex) {
   return NULL;
 }
 
-NAKED void HomingLaser_OnHurt(Hitbox* a, Hitbox* b, HomingLaser* e) { INCFUNC("asm/func/HomingLaser_OnHurt.inc"); }
+// 近接武器で斬られたら, 弾かれたときは跳ね返されて戻り, 属性つきの攻撃なら散る
+void HomingLaser_OnHurt(Hitbox* a, Hitbox* b, HomingLaser* e) {
+  HomingLaser* laser = e;
+
+  e->angle = a->angle;
+  if (Hitbox_HasSource(a, HBSRC_SWORD | HBSRC_SPEAR | HBSRC_HAMMER)) {
+    Hitbox_ApplyDamage(a, b);
+    if (b->hitResult & HBRESULT_RESIST) {
+      PlaySound_082406e0(SONG_553);
+      HomingLaser_SetState(e, 1);
+    } else if (Hitbox_TestAttr(a, HBATTR_ELEMENT_MASK)) {
+      PlaySound_082406e0(SE_554);
+      HomingLaser_SetState(laser, 2);
+    }
+  }
+}
 
 void nop_08245cf8(void) {}
 
-NAKED void HomingLaser_Init(HomingLaserManager* p, HomingLaser* e, s32 idx) { INCFUNC("asm/func/HomingLaser_Init.inc"); }
+// スプライト9枚と攻撃判定, 食らい判定を用意する, 食らい判定は隠したまま登録しておく
+// 残差 (152/151): 原典は e を r9, Vec3_Clear の 0 を r7 に置き, 0 を byte 用と halfword 用の2本に分ける, こちらは e が r7
+// Tier A-C は試済 (SetState inline と直書き, 添字ループ, state の型), 未: Tier D
+NON_MATCH void HomingLaser_Init(HomingLaserManager* p, HomingLaser* e, s32 idx) {
+#ifdef NONMATCHING_C
+  AuxSprite* spr;
+  Vec3 size;
+  Vec3 offset;
+  s32 i;
+
+  HomingLaser_SetState(e, 0);
+  e->angle = 0;
+  e->targetAngle = 0;
+  Video_GetAuxSprite(&e->gfx, SPR_LASBOS_00);
+  Video_SetAuxSpritePltt(&e->gfx, 351);
+  spr = e->sprites;
+  for (i = 0; i < 9; i++, spr++) {
+    AuxSprite_Setup(spr, &e->gfx, 1);
+    spr->poseIdx = 8 - i;
+    spr->priority = 1;
+    Vec3_Clear(&spr->pos);
+  }
+
+  VEC3_SET(size, 32, 100, 32);
+  VEC3_SET(offset, 0, 0, 0);
+  Hitbox_Init(&e->hurtbox, 0, HBF_HURTBOX | HBF_HIDDEN | HBF_DAMAGE, 0, HIM_4, &size, &offset);
+  Hitbox_SetPos(&e->hurtbox, &e->pos, 0);
+  Hitbox_SetHandler(&e->hurtbox, HomingLaser_OnHurt, e);
+  Hitbox_SetPowerAndAttributes(&e->hurtbox, 0, 0, 0);
+  Hitbox_Register(&e->hurtbox);
+
+  VEC3_SET(size, 32, 100, 32);
+  VEC3_SET(offset, 0, 0, 0);
+  Hitbox_Init(&e->hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
+  Hitbox_SetPos(&e->hitbox, &e->pos, 0);
+  Hitbox_SetHandler(&e->hitbox, nop_08245cf8, e);
+  Hitbox_SetAttack(&e->hitbox, p->power, 30, HBSRC_GUN, 0, 30);
+#else
+  INCFUNC("asm/func/HomingLaser_Init.inc");
+#endif
+}
 
 // 枠のスプライト9枚を外して判定を無効にし, 使用中ビットを落とす
 s32 HomingLaser_Free(HomingLaserManager* p, HomingLaser* e, s32 idx) {
@@ -94,20 +164,179 @@ s32 HomingLaser_Free(HomingLaserManager* p, HomingLaser* e, s32 idx) {
   p->flags &= ~(1 << idx);
 }
 
-NAKED void HomingLaser_UpdateTrail(HomingLaser* e) { INCFUNC("asm/func/HomingLaser_UpdateTrail.inc"); }
+// 2 フレームごとに先頭の位置を trail に書き残し, 後ろの 8 枚を trail の古い順にたどらせる
+// 残差2箇所 (63/63): trail[idx] の番地の adds の向きだけ, 原典は idx*8 が先で e が後, *(idx + e->trail) と書くと向きは揃う
+// Tier A-B は試済 (Vec3* trail ローカル, 取り出し inline, (u32) 添字), 未: pos と trail を1つの配列にする形
+NON_MATCH void HomingLaser_UpdateTrail(HomingLaser* e) {
+#ifdef NONMATCHING_C
+  AuxSprite* spr;
+  s32 idx;
+  s32 i;
 
-NAKED void HomingLaser_UpdateScatter(HomingLaser* e) { INCFUNC("asm/func/HomingLaser_UpdateScatter.inc"); }
+  if (!(e->timer & 1)) {
+    e->sprites[0].pos = e->pos;
+  }
+  idx = e->trailHead - 1;
+  if (idx < 0) {
+    idx = 8;
+  }
+  spr = &e->sprites[1];
+  for (i = 0; i < 8; i++, spr++) {
+    spr->pos = e->trail[idx];
+    if (--idx < 0) {
+      idx = 8;
+    }
+  }
+  if (!(e->timer & 1)) {
+    e->trail[e->trailHead] = e->sprites[0].pos;
+    if (++e->trailHead > 8) {
+      e->trailHead = 0;
+    }
+  }
+#else
+  INCFUNC("asm/func/HomingLaser_UpdateTrail.inc");
+#endif
+}
 
-NAKED void HomingLaser_TurnToTarget(HomingLaser* e) { INCFUNC("asm/func/HomingLaser_TurnToTarget.inc"); }
+// まだ散っていないスプライトは trail をたどり, 散ったスプライトは各自の向きと速さで飛ぶ, 後ろから 2 フレームに 1 枚ずつ散っていく
+void HomingLaser_UpdateScatter(HomingLaser* e) {
+  AuxSprite* spr;
+  s32 idx;
+  s32 i;
 
-NAKED void HomingLaser_StateHoming(HomingLaserManager* p, HomingLaser* e, s32 idx) { INCFUNC("asm/func/HomingLaser_StateHoming.inc"); }
+  idx = e->trailHead - 1;
+  if (idx < 0) {
+    idx = 8;
+  }
+  spr = e->sprites;
+  for (i = 0; i < 9; i++, spr++) {
+    if (i * 2 > e->timer) {
+      spr->pos = e->trail[idx];
+      if (--idx < 0) {
+        idx = 8;
+      }
+    } else {
+      Vec3 d;
 
-NAKED void FUN_0824617c(HomingLaserManager* p, HomingLaser* e, s32 idx) { INCFUNC("asm/func/FUN_0824617c.inc"); }
+      Vec3_SetPolar(&d, e->scatterAngles[i], e->scatterSpeeds[i]);
+      Vec3_Add(&spr->pos, &d);
+    }
+  }
+  if (!(e->timer & 1)) {
+    e->trail[e->trailHead] = e->sprites[0].pos;
+    if (++e->trailHead > 8) {
+      e->trailHead = 0;
+    }
+  }
+}
 
-NAKED void HomingLaser_StateScatter(HomingLaserManager* p, HomingLaser* e, s32 idx) { INCFUNC("asm/func/HomingLaser_StateScatter.inc"); }
+// target の方へ向きを変える, 1 フレームに曲がれるのは turnRate * 12 まで
+void HomingLaser_TurnToTarget(HomingLaser* e) {
+  s16 diff;
+  s16 limit;
+
+  e->targetAngle = ArcTan2_8(e->target->x - e->pos.x, e->target->z - e->pos.z) << 8;
+  limit = e->turnRate * 12;
+  diff = e->targetAngle - e->heading;
+  if (diff < -limit) {
+    diff = -limit;
+  } else if (diff > limit) {
+    diff = limit;
+  }
+  e->heading += diff;
+  e->angle = e->heading >> 8;
+}
+
+// 食らい判定を出して target を追いかける, 150 フレームで消える
+void HomingLaser_StateHoming(HomingLaserManager* p, HomingLaser* e, s32 idx) {
+  Vec3 d;
+
+  if (e->stateEntered) {
+    e->stateEntered = FALSE;
+    Hitbox_ClearFlags(&e->hurtbox, HBF_HIDDEN);
+    e->heading = e->angle << 8;
+    e->turnRate = 64;
+  }
+  if (e->turnRate != 0) {
+    e->turnRate--;
+  }
+  HomingLaser_TurnToTarget(e);
+  Vec3_SetPolar(&d, e->angle, e->speed);
+  Vec3_Add(&e->pos, &d);
+  Hitbox_SetPos(&e->hitbox, &e->pos, 0);
+  Hitbox_SetPos(&e->hurtbox, &e->pos, 0);
+  Hitbox_Register(&e->hitbox);
+  HomingLaser_UpdateTrail(e);
+  if (e->timer >= 150) {
+    HomingLaser_SetState(e, 3);
+  } else {
+    e->timer++;
+  }
+}
+
+// 跳ね返されてボスへ蛇行しながら戻る, 32 フレームで散る
+// 残差1箇所 (170/170): Random() の表の番地の仮レジスタが原典は r6, こちらは r1, black_panther.c の Spawn 3関数と似た壁
+// Tier A-C は試済 (pos ポインタを Hide の後に取る, AngleTo inline, if/else), 未: 乱数の inline の形
+NON_MATCH void HomingLaser_StateReflected(HomingLaserManager* p, HomingLaser* e, s32 idx) {
+#ifdef NONMATCHING_C
+  Vec3 d;
+  s32 amp;
+
+  if (e->stateEntered) {
+    Vec3* pos;
+    s32 angle;
+
+    e->stateEntered = FALSE;
+    Hitbox_Hide(&e->hurtbox);
+    pos = &e->pos;
+    e->startPos = *pos;
+    e->target = FUN_080230c4();
+    angle = HomingLaser_AngleTo(pos, e->target);
+    e->angle = (Random() & 0xFF) < 128 ? angle - 64 : angle + 64;
+    e->hitbox.ignoreMask = 1;
+    e->hurtbox.ignoreMask = 1;
+  }
+  LerpVec3(&e->pos, &e->startPos, e->target, e->timer, 5);
+  amp = (SIN(e->timer * 4) * 3) >> 5;
+  Vec3_SetPolar(&d, e->angle, amp);
+  Vec3_Add(&e->pos, &d);
+  Hitbox_SetPos(&e->hitbox, &e->pos, 0);
+  Hitbox_SetPos(&e->hurtbox, &e->pos, 0);
+  Hitbox_Register(&e->hitbox);
+  HomingLaser_UpdateTrail(e);
+  if (e->timer >= 32) {
+    HomingLaser_SetState(e, 2);
+  } else {
+    e->timer++;
+  }
+#else
+  INCFUNC("asm/func/HomingLaser_StateReflected.inc");
+#endif
+}
+
+// 先頭の向きを中心にスプライトごとに向きと速さを決めて散らせ, 30 フレームで片付ける
+void HomingLaser_StateScatter(HomingLaserManager* p, HomingLaser* e, s32 idx) {
+  if (e->stateEntered) {
+    s32 i;
+
+    e->stateEntered = FALSE;
+    Hitbox_Hide(&e->hurtbox);
+    e->angle = HomingLaser_AngleTo(&e->sprites[1].pos, &e->sprites[0].pos);
+    for (i = 0; i < 9; i++) {
+      e->scatterAngles[i] = (u8)((RandomNext() & 0x1F) - 16) + e->angle;
+      e->scatterSpeeds[i] = (RandomNext() & 0xF) + 24;
+    }
+  }
+  HomingLaser_UpdateScatter(e);
+  if (e->timer >= 30) {
+    HomingLaser_Free(p, e, idx);
+  } else {
+    e->timer++;
+  }
+}
 
 // 食らい判定を外して尾がたどり着くのを待ち, 30 フレームで片付ける
-void FUN_082463cc(HomingLaserManager* p, HomingLaser* e, s32 idx) {
+void HomingLaser_StateVanish(HomingLaserManager* p, HomingLaser* e, s32 idx) {
   if (e->stateEntered) {
     Hitbox* hurtbox;
 
@@ -128,9 +357,9 @@ void FUN_082463cc(HomingLaserManager* p, HomingLaser* e, s32 idx) {
 s32 HomingLaserManager_Update(HomingLaserManager* p) {
   static void (*const sHomingLaserUpdates[4])(HomingLaserManager*, HomingLaser*, s32) = {
       HomingLaser_StateHoming,
-      FUN_0824617c,
+      HomingLaser_StateReflected,
       HomingLaser_StateScatter,
-      FUN_082463cc,
+      HomingLaser_StateVanish,
   };  // 0x08DBD800
 
   HomingLaser* e = p->lasers;
@@ -189,10 +418,53 @@ HomingLaserManager* HomingLaserManager_Create(s32 val, s32 _) {
   return p;
 }
 
-NAKED s32 CreateHomingLaser(HomingLaserManager* p, Vec3* pos, Vec3* target, u32 angle, u32 speed, u32 kind) { INCFUNC("asm/func/CreateHomingLaser.inc"); }
+// 空いている枠に怪光線を1本出す, 空きが無ければ -1
+// 残差 (140/137): trail[i] = pos のループを原典は i*8 + e で毎回作り誘導変数にしない, こちらはポインタに強度削減する (UpdateTrail と同じ壁)
+// Tier A-B は試済 (sprites[i] の添字), 未: trail の添字の形
+NON_MATCH s32 CreateHomingLaser(HomingLaserManager* p, Vec3* pos, Vec3* target, u32 angle, u32 speed, u32 kind) {
+#ifdef NONMATCHING_C
+  s32 idx;
+  HomingLaser* e = HomingLaserManager_FindFree(p, &idx);
+  AuxSprite* spr;
+  s32 i;
+
+  if (e == NULL) {
+    return -1;
+  }
+  HomingLaser_SetState(e, 0);
+  e->angle = angle;
+  e->targetAngle = angle << 8;
+  e->heading = angle << 8;
+  e->speed = speed;
+  e->kind = kind;
+  e->turnRate = 64;
+  e->trailHead = 0;
+  e->target = target;
+  e->pos = *pos;
+  spr = e->sprites;
+  for (i = 0; i < 9; i++, spr++) {
+    e->trail[i] = e->pos;
+    spr->pos = e->pos;
+    AuxSprite_Show(spr);
+    Video_AddAuxSpriteIntoDrawList(spr, 0);
+  }
+  Video_SetAuxSpritePltt(&e->gfx, e->kind + 351);
+  Hitbox_SetPos(&e->hitbox, &e->pos, 0);
+  Hitbox_SetPos(&e->hurtbox, &e->pos, 0);
+  Hitbox_Hide(&e->hurtbox);
+  e->hitbox.ignoreMask = HIM_4;
+  e->hurtbox.ignoreMask = HIM_4;
+  Hitbox_SetAttack(&e->hitbox, p->power, 30, HBSRC_GUN, sHomingLaserAttrs[e->kind][0], 30);
+  Hitbox_SetPowerAndAttributes(&e->hurtbox, 0, sHomingLaserAttrs[e->kind][0], sHomingLaserAttrs[e->kind][1]);
+  p->flags |= 1 << idx;
+  return 0;
+#else
+  INCFUNC("asm/func/CreateHomingLaser.inc");
+#endif
+}
 
 // 追尾中の怪光線をすべて消える状態にする
-void* FUN_08246624(HomingLaserManager* p) {
+void* HomingLaserManager_VanishAll(HomingLaserManager* p) {
   HomingLaser* e = p->lasers;
   s32 i;
 

@@ -75,7 +75,7 @@ _0819D2B6:
 	adds r0, r7, r2
 	strb r3, [r0]
 	adds r0, r6, #0
-	bl FUN_0819fca4
+	bl Ax_RemoveClone
 _0819D320:
 	mov r0, sb
 	movs r1, #2

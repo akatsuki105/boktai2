@@ -1,3 +1,4 @@
+#include "debris.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -40,8 +41,6 @@ static Entity081f9cb8* gEntity081f9cb8;  // 0x03000210
 
 Entity081f9cb8* Entity081f9cb8_Create(void);
 void Entity081ee2a0_SpawnDefault(Vec3* pos, Vec3* vel, s32 param_3, s32 param_4);
-struct Entity081f26bcElem* Entity081f26bc_Spawn(
-    Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 static inline bool8 Entity081f9cb8_IsUsed(Entity081f9cb8* p, s32 i) {
   if (TEST_FLAGS(p->usedMask, 1 << i)) {
@@ -122,7 +121,7 @@ NON_MATCH void Entity081f9cb8_SpawnDebris(Vec3* pos) {
     vel.y = (Random() & 31) + 12;
     life = (Random() & 63) + 20;
   }
-  Entity081f26bc_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, 49, 0, 2, 0, 0, life, 4, 1, 0x200004, 30, 8, 8);
+  Debris_Spawn(pos, &vel, PTCL_GROUP_0, ANIM_D1B8, 3, 0, DEBRIS_FREE_ON_END | DEBRIS_PTCL | DEBRIS_BOUNCE, 0, 2, 0, 0, life, 4, 1, 0x200004, 30, 8, 8);
 #else
   INCFUNC("asm/func/Entity081f9cb8_SpawnDebris.inc");
 #endif

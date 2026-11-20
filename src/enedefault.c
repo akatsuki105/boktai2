@@ -191,6 +191,50 @@ static inline bool8 IsCurrentZone(u32 zoneID) {
   return FALSE;
 }
 
+// 自分が何番目の参加者かを返す, セッションが無ければ -1
+static inline s32 LinkSession_GetPlayerIdx(void) {
+  LinkSession* p = gLinkSession;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
+}
+
+// 通信対戦で, この敵を攻撃したのが自分の画面のプレイヤーか (通信対戦でなければ常に TRUE)
+static inline bool8 Enemy_IsHitByLocalPlayer(Enemy* p) {
+  if (IsLinkPlay() && !(p->unk_4a0 & 0x20) && p->unk_4a0 != 0) {
+    switch (LinkSession_GetPlayerIdx()) {
+      case 0: {
+        if (p->unk_4a0 != 1) return FALSE;
+        break;
+      }
+      case 1: {
+        if (p->unk_4a0 != 2) return FALSE;
+        break;
+      }
+      case 2: {
+        if (p->unk_4a0 != 4) return FALSE;
+        break;
+      }
+      case 3: {
+        if (p->unk_4a0 != 8) return FALSE;
+        break;
+      }
+    }
+  }
+  return TRUE;
+}
+
+// spriteKind に合わせてパレットを plttID 番に差し替える
+static inline void Enemy_SetPltt(Enemy* p, s32 plttID) {
+  if (p->spriteKind == 0) {
+    Video_SetAuxSpritePltt(&p->s->aux.gfx, plttID);
+  } else {
+    p->s->main.spr.pltt = &gObjPlttData[plttID * 16];
+  }
+}
+
 void Enemy_Reset(Enemy* p);
 void Enemy_Deactivate(Enemy* p);
 void Enemy_Reactivate(Enemy* p);
@@ -203,7 +247,7 @@ void Enemy_StateDefeated(Enemy* p);
 bool8 Enemy_RouteToNearestLinkPlayer(Enemy* p);
 void Enemy_PickPathNodeAwayFromPlayer(Enemy* p);
 void PlayerLink_UpdateBloodSwordOnKill(u32 playerMask, u32 weaponMask);
-void DefeatedEnemyLog_Add(u16 a, u16 b);
+void EnemyRespawnInfo_Add(u16 a, u16 b);
 s8 NoiseManager_FindFirstHeardNoise(s32 x, s32 y, s32 size, u8 mask, u16 param_5);
 void FUN_080e8f20(Enemy* p, s32 param_2);
 bool8 FUN_080eb2a0(Enemy* p);
@@ -257,34 +301,34 @@ void Enemy_Alert(Enemy* p) {
   if (TEST_FLAGS(p->flags2, ENEFLAG2_UNK_15)) {
     return;
   }
-  if (p->playerMover->unk_4 == 0) {
-    if (UNK_950(0) < 9999) {
-      UNK_950(0)++;
+  if (p->playerMover->kind == 0) {
+    if (LINK_ALERT_COUNT(0) < 9999) {
+      LINK_ALERT_COUNT(0)++;
     } else {
-      UNK_950(0) = 9999;
+      LINK_ALERT_COUNT(0) = 9999;
     }
     if (ALERT_COUNT < 9999) {
       ALERT_COUNT++;
     } else {
       ALERT_COUNT = 9999;
     }
-  } else if (p->playerMover->unk_4 == 1) {
-    if (UNK_950(1) < 9999) {
-      UNK_950(1)++;
+  } else if (p->playerMover->kind == 1) {
+    if (LINK_ALERT_COUNT(1) < 9999) {
+      LINK_ALERT_COUNT(1)++;
     } else {
-      UNK_950(1) = 9999;
+      LINK_ALERT_COUNT(1) = 9999;
     }
-  } else if (p->playerMover->unk_4 == 2) {
-    if (UNK_950(2) < 9999) {
-      UNK_950(2)++;
+  } else if (p->playerMover->kind == 2) {
+    if (LINK_ALERT_COUNT(2) < 9999) {
+      LINK_ALERT_COUNT(2)++;
     } else {
-      UNK_950(2) = 9999;
+      LINK_ALERT_COUNT(2) = 9999;
     }
-  } else if (p->playerMover->unk_4 == 3) {
-    if (UNK_950(3) < 9999) {
-      UNK_950(3)++;
+  } else if (p->playerMover->kind == 3) {
+    if (LINK_ALERT_COUNT(3) < 9999) {
+      LINK_ALERT_COUNT(3)++;
     } else {
-      UNK_950(3) = 9999;
+      LINK_ALERT_COUNT(3) = 9999;
     }
   }
 }
@@ -772,8 +816,8 @@ NON_MATCH void FUN_080f12c4(Enemy* p) {
     Mover* m = p->playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       p->onRouteFailed(p);
@@ -1853,7 +1897,7 @@ NON_MATCH void FUN_080f410c(Enemy* p) {
     Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(p, 1, 0, 2);
     if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-      DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
+      EnemyRespawnInfo_Add(gMapInitScriptID, p->mover.id);
     }
     ParticleShadow_Hide(&p->shadow);
   }
@@ -2263,7 +2307,7 @@ void Enemy_StateDefeated(Enemy* p) {
     Enemy_EnterState(p, Enemy_ClearStateBegun, ES_INACTIVE);
     Enemy_ResetState(p, 1, 0, 2);
     if (!IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-      DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
+      EnemyRespawnInfo_Add(gMapInitScriptID, p->mover.id);
     }
     ParticleShadow_Hide(&p->shadow);
     switch (p->kind) {
@@ -2745,7 +2789,7 @@ NON_MATCH bool8 FUN_080f6604(Enemy* p) {
         Player_AddWeaponExp(p->weaponExpMask, p->weaponExp);
       }
       if (!TEST_FLAGS(p->flags5, ENEFLAG5_UNK_7) && !IsLinkPlay() && !TEST_FLAGS(p->flags2, ENEFLAG2_UNK_11)) {
-        DefeatedEnemyLog_Add(gMapInitScriptID, p->mover.id);
+        EnemyRespawnInfo_Add(gMapInitScriptID, p->mover.id);
       }
       p->hurtbox.flags |= HBF_HIDDEN;
     }
@@ -2758,13 +2802,8 @@ NON_MATCH bool8 FUN_080f6604(Enemy* p) {
 }
 
 // マミーが HBATTR_FLAME の攻撃を受けたとき, 焼ける声と粒子を出して hp を減らし, 別の経路へ逃がす, 処理したら TRUE
-// 残差は270/270命令で CpuFill32 の前後3命令の並びだけ, 原典は &v を 0 の一時変数より先に r5 へ作る
-// 他は次の inline で揃う: 自分の画面のプレイヤーが倒したかを返す bool8 (中で if (gLinkSession == NULL) return -1; の番号取得 inline を呼ぶ), spriteKind でパレットを切り替える (plttID を引数に取る)
-// 試済: v を関数の先頭で宣言 (変化なし)
-NON_MATCH bool8 FUN_080f6868(Enemy* p) {
-#ifdef NONMATCHING_C
+bool8 FUN_080f6868(Enemy* p) {
   u8 kind = p->kind;
-  bool8 show;
   s32 damage;
 
   if (kind == ENEK_MUMMY && (p->flags6 & HBATTR_FLAME) && !TEST_FLAGS(p->flags3, ENEFLAG3_UNK_13)) {
@@ -2783,52 +2822,24 @@ NON_MATCH bool8 FUN_080f6868(Enemy* p) {
     p->unk_48a = damage;
     p->hp -= damage;
 
-    show = TRUE;
-    if (IsLinkPlay() && !(p->unk_4a0 & 0x20) && p->unk_4a0 != 0) {
-      switch (gLinkSession != NULL ? gLinkSession->playerIdx : -1) {
-        case 0: {
-          show = p->unk_4a0 == 1;
-          break;
-        }
-        case 1: {
-          show = p->unk_4a0 == 2;
-          break;
-        }
-        case 2: {
-          show = p->unk_4a0 == 4;
-          break;
-        }
-        case 3: {
-          show = p->unk_4a0 == 8;
-          break;
-        }
-      }
-    }
-    if (show) {
+    if (Enemy_IsHitByLocalPlayer(p)) {
       Vec3 v;
 
       HUD_ShowEnemyGauge(p->mover.id, p->hp, p->maxHp, p->unk_25a, 1);
-      CpuFill32(0, &v, sizeof(v));
+      Vec3_Clear(&v);
       if (p->unk_48a != 0 || !(p->weaponExpMask & 0x4000)) {
         CreateDamageNumber(&p->hurtbox, p->unk_48a, 0, &p->mover.pos, &v, 1);
       }
     }
     Mover_SetPath(&p->mover, &p->pathWalker, p->unk_4b4[p->unk_4b6 ^ 1], 0, 0);
     p->unk_464 = 600;
-    if (p->spriteKind == 0) {
-      Video_SetAuxSpritePltt(&p->s->aux.gfx, p->unk_47e);
-    } else {
-      p->s->main.spr.pltt = &gObjPlttData[p->unk_47e * 16];
-    }
+    Enemy_SetPltt(p, p->unk_47e);
     SET_FLAGS(p->flags, ENEFLAG_UNK_25);
     p->unk_494 = 6000;
     PlaySound_082406e0(CRY_MUMMY_BURN);
     return TRUE;
   }
   return FALSE;
-#else
-  INCFUNC("asm/func/FUN_080f6868.inc");
-#endif
 }
 
 // ゴーレムが ENEFLAG3_UNK_8 中に weaponExpMask 0x80 の攻撃を受けたら, unk_20c へ向けて跳ねて破片を散らす, 処理したら 1
@@ -3113,7 +3124,7 @@ void Mover_ShowTrackingMarker(Mover* owner) {
   if (IsLinkPlay()) {
     s32 idx;
 
-    switch (owner->unk_4) {
+    switch (owner->kind) {
       case 0: {
         idx = 0;
         break;

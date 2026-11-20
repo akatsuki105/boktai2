@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_ENTITY_CBB0_H__
-#define __INCLUDE_ENTITY_CBB0_H__
+#ifndef __INCLUDE_PILE_DRIVER_H__
+#define __INCLUDE_PILE_DRIVER_H__
 
 #include "eff_elemcond.h"
 #include "entity.h"
@@ -7,102 +7,206 @@
 #include "hitbox.h"
 #include "msgbus.h"
 #include "particle.h"
+#include "sprite_animation.h"
 #include "sprite_aux.h"
+#include "tilemap.h"
 #include "types.h"
 
 struct Generator;
-struct CuroroShotManager;  // ダーインが出す追尾弾 (技名はクロロホルルン+, エネミーのクロロホルルンとは別物) をまとめて動かす
+struct Player;
+struct Coffin;
 
 struct PileDriver;
 typedef void(PileDriverFunc)(struct PileDriver* p);
 
-// AuxSprite と専用の AuxSpriteGfx に 0x81 周期のアニメーションカウンタを足した一式
+// Ectoplasm.state, sEctoplasmStates の添字
+#define ECTOPLASM_STATE_HIDDEN 0           // 出ていない, 15 枚とも隠す
+#define ECTOPLASM_STATE_APPEAR 1           // home (棺桶) から浮かび上がる
+#define ECTOPLASM_STATE_IN_COFFIN 2        // 棺桶の中で太陽を浴び, ライフの減りが 4 倍になる
+#define ECTOPLASM_STATE_ORBIT 3            // home の周りを漂う
+#define ECTOPLASM_STATE_GO_TO_GENERATOR 4  // targetGenerator へ向かう
+#define ECTOPLASM_STATE_DRAIN_GENERATOR 5  // 取りついたジェネレーターを 90 フレームで止める
+#define ECTOPLASM_STATE_RETURN_HOME 6      // home へ吸い込まれて消える
+#define ECTOPLASM_STATE_KNOCKBACK 7        // 攻撃を受けて吹き飛ぶ
+#define ECTOPLASM_STATE_RECOVER 8          // 吹き飛んだあと duration フレーム止まる
+#define ECTOPLASM_STATE_VANISH 9           // 煙を出して消える
+
+// PileDriver.subState, sSubStates の添字
+#define PILEDRIVER_SUB_WAIT_COFFIN 0         // 棺桶が魔方陣の中心へ引かれてくるのを待つ
+#define PILEDRIVER_SUB_PLACE_COFFIN 1        // 棺桶を置く
+#define PILEDRIVER_SUB_WAIT_GENERATORS 2     // ジェネレーターが全部 state 2 になるのを待つ
+#define PILEDRIVER_SUB_WAIT_GENERATOR_LIT 3  // ジェネレーターのどれかが稼働するのを待つ
+#define PILEDRIVER_SUB_WAIT_ACTIVATION 4     // 1P がパイルドライバーを起動するのを待つ
+#define PILEDRIVER_SUB_ACTIVATE 5            // 起動の演出, 7 か 6 へ進む
+#define PILEDRIVER_SUB_SHUTDOWN 6            // ジェネレーターを止めて 3 に戻る
+#define PILEDRIVER_SUB_POWER_UP 7            // スクリプト 3 を起動して画面を揺らす
+#define PILEDRIVER_SUB_OPEN_COFFIN 8         // 棺桶を開ける
+#define PILEDRIVER_SUB_WAIT_COFFIN_OPEN 9    // 棺桶が開ききるのを待ってエクトプラズムを出す
+#define PILEDRIVER_SUB_BATTLE_DRIVE 10       // バトルドライブ中
+#define PILEDRIVER_SUB_CLOSE_COFFIN 11       // エクトプラズムが消えたら棺桶を閉じる
+#define PILEDRIVER_SUB_WAIT_RETRY 12         // 棺桶を魔方陣の中心へ引き直せば 1 からやり直し, 遠くへ運び出すと 13
+#define PILEDRIVER_SUB_LEAVE 13              // 棺桶を運び出したあとの演出
+#define PILEDRIVER_SUB_END 14                // 何もしない
+
+// AuxSprite と専用の AuxSpriteGfx に, 色を混ぜるためのパレットと 130 フレーム周期のポーズ用カウンタを足した一式
 typedef struct {
-  AuxSprite spr;           // 0x00, ->gfx
-  AuxSpriteGfx gfx;        // 0x2C
-  u8 unk_48[0x68 - 0x48];  // 0x48, まだ未解析
-  u16 unk_68;              // 0x68, 0 の間は止まっている
-  u16 pose;                // 0x6A, animTimer から決まる 0〜3
-  u8 unk_6c[2];            // 0x6C, まだ未解析
-  u16 animTimer;           // 0x6E, 0x81 を越えると 0 に戻る
+  AuxSprite sprite;  // 0x00
+  AuxSpriteGfx gfx;  // 0x2C
+  rgb555 pltt[16];   // 0x48, 時間帯の切り替え中に gfx.pltt をここへ向けて, 2つの時間帯の色を混ぜたものを入れる
+  bool16 active;     // 0x68, 0 なら sprite を使っていない
+  u16 pose;          // 0x6A, animTimer から決まる 0〜3
+  u16 unk_6c;        // 0x6C
+  u16 animTimer;     // 0x6E, 129 を越えると 0 に戻る
 } PileDriverAnimSprite;
 static_assert(sizeof(PileDriverAnimSprite) == 112);
 
-// PileDriver が 0x0564 から32個持つ粒子の枠
+// PileDriverParticleSet が 32 個持つ粒子の枠, PileDriver_SpawnParticle が空きを順に使い, PileDriver_UpdateParticles が vel で動かす
 typedef struct {
-  Particle ptcl;           // 0x00, PTCL_GROUP_2
-  u8 unk_28[0x30 - 0x28];  // 0x28, まだ未解析
-  u8 unk_30;               // 0x30, FUN_080ad388 が枠を作るたびに 0 を入れる
-  u8 unk_31[3];            // 0x31, padding?
+  Particle ptcl;  // 0x00, PTCL_GROUP_2
+  Vec3 vel;       // 0x28, 毎フレーム ptcl.pos に足す
+  bool8 active;   // 0x30
+  u8 timer;       // 0x31, 出してからのフレーム数, 6 でポーズを変える
+  u8 lifetime;    // 0x32, timer がこれに達すると隠して空ける
+  u8 unk_33;      // 0x33, padding?
 } PileDriverParticle;
 static_assert(sizeof(PileDriverParticle) == 52);
 
+// PileDriver の 0x0560 にある粒子 32 個, 3つの関数がここを起点に触る
+typedef struct {
+  ParticleGroup* group;          // 0x000, PTCL_GROUP_2
+  PileDriverParticle ptcls[32];  // 0x004
+  bool8 active;                  // 0x684, ptcls のどれかが動いていれば 1
+  u8 next;                       // 0x685, 次に使う ptcls の添字, 0..31 を巡回する
+  u8 unk_686[2];                 // 0x686
+} PileDriverParticleSet;
+static_assert(sizeof(PileDriverParticleSet) == 1672);
+
+// Ectoplasm (エクトプラズム) の体を作る 15 枚のスプライト, [0] / [1..8] / [9..14] をそれぞれ別の関数が動かす
+typedef struct {
+  AuxSprite sprite;       // 0x00
+  AuxSpriteGfx gfx;       // 0x2C, "ect"
+  AuxAnimState anim;      // 0x48
+  AuxAnimFile* animFile;  // 0x58, "ect_anm"
+  u8 unk_5c[8];           // 0x5C
+  u16 pulsePhase;         // 0x64, 作るときに乱数で 0..255, 中心からの距離を脈打たせる位相
+  u16 angle;              // 0x66, 中心から見た向き (0..255), 作るときに添字 × 32
+} EctoplasmPart;
+static_assert(sizeof(EctoplasmPart) == 104);
+
+// バトルドライブで棺桶から出てくるイモータルのエクトプラズム (攻略本の呼び名), PileDriver の 0x0C6C に載り mode が 1 のときに使う
+// 棺桶 (home) の周りを漂ってジェネレーターに取りつき, 攻撃を受けると吹き飛び, 棺桶に押し戻されると太陽パイルでイモータルのライフ (gStat->bossHP) が大きく減る
+// state は Ectoplasm_SetState が切り替え, PileDriver_UpdateEctoplasm が sEctoplasmStates[state] を呼ぶ
+typedef struct {
+  EctoplasmPart parts[15];   // 0x000
+  Vec3 pos;                  // 0x618
+  Hitbox hurtbox;            // 0x620, 攻撃を受けると Ectoplasm_OnHurt が knockbackAngle / knockbackSpeed を入れる
+  Vec3 home;                 // 0x670, 棺桶の位置で漂う中心, PileDriver.coffinPos から x と z を -0x20 ずらした位置
+  u16 state;                 // 0x678, sEctoplasmStates の添字, 2 は棺桶の中にいる状態でライフの減りが 4 倍になる
+  u16 timer;                 // 0x67A, state 8 で毎フレーム +1 して duration と比べる
+  u16 orbitAngle;            // 0x67C, home から見た向き, 下位4ビットが小数で 0xFFF で折り返す
+  s16 orbitSpeed;            // 0x67E, orbitAngle に毎フレーム足す, orbitSpeedTarget へ 1 ずつ近づく
+  s16 orbitSpeedTarget;      // 0x680, ±(12..19) を乱数で選ぶ
+  u16 orbitSpeedTimer;       // 0x682, 0 になると orbitSpeedTarget を選び直す
+  u16 orbitRadius;           // 0x684, home からの距離, 毎フレーム orbitRadiusTarget へ 1/16 ずつ近づく
+  u16 orbitRadiusTarget;     // 0x686, 0xC0..0x1BF を乱数で選ぶ
+  u16 orbitRadiusTimer;      // 0x688, 0 になると orbitRadiusTarget を選び直す
+  u16 hurtboxDelay;          // 0x68A, 0 でない間 hurtbox に HBF_HIDDEN を立てて毎フレーム減らす
+  u8 wobblePhase;            // 0x68C, 周回の位置に足す揺れ (振れ幅 32) の位相
+  u8 knockbackAngle;         // 0x68D, 攻撃を受けた向き
+  u16 knockbackSpeed;        // 0x68E, 吹き飛ぶ速さ, 攻撃の種類と攻撃力の差で決まり 200 で頭打ち
+  u16 duration;              // 0x690, timer の上限, 攻撃の種類で決まる
+  s8 targetGenerator;        // 0x692, 取りつきに行くジェネレーターの添字, Ectoplasm_PickTargetGenerator が稼働中 (state 4) のものから選ぶ, いなければ -1
+  u8 unk_693[3];             // 0x693
+  u16 drainFrac;             // 0x696, ライフを削る量の端数, 40 たまるごとに gStat->bossHP (イモータルのライフ) を 1 減らす
+  u16 targetTimer;           // 0x698, 600 から 2 ずつ減らし, 3 を切ると targetGenerator を選び直す
+  u8 unk_69a[2];             // 0x69A
+  Vec3 smokeSize;            // 0x69C, state 2 と 5 で pos に出す煙の大きさ, 3成分とも 0xA0
+  Vec3 homeSmokeSize;        // 0x6A4, state 3〜5 と 7 で home に出す煙の大きさ {0x40, 0x20, 0x40}
+  struct PileDriver* owner;  // 0x6AC
+} Ectoplasm;
+static_assert(sizeof(Ectoplasm) == 1712);
+
 // パイルドライバー という 複数の 太陽ジェネレータ (struct Generator) の照射でイモータルを浄化するゲームのギミック のシーンEntity
 typedef struct PileDriver {
-  Entity e;                                     // 0x0000, ENTITY_UNK_9
-  u16 subroutineID;                             // 0x0018, 0xCBB0 (PileDriver_Create)
-  u16 unk_1a;                                   // 0x001A
-  u8 unk_1c[0x1E - 0x1C];                       // 0x001C, まだ未解析
-  u8 unk_1e;                                    // 0x001E, 0 以外のときだけ generators を走査する
-  u8 unk_1f;                                    // 0x001F, 意味は未解析
-  u8 unk_20[0x22E - 0x20];                      // 0x0020, まだ未解析
-  u16 stateTimer;                               // 0x022E, PileDriver_SetState が updateCallback の差し替えのたびに 0 に戻す
-  u16 unk_230[16];                              // 0x0230, FUN_080ad9d4 が添字つきで書く以外の用途は未解析
-  PileDriverFunc* updateCallback;               // 0x0250
-  PileDriverAnimSprite sprite_254;              // 0x0254
-  u8 unk_2c4[0x4E0 - 0x2C4];                    // 0x02C4, まだ未解析
-  rgb555* plttSrc;                              // 0x04E0, 点滅用のパレット4組の先頭
-  u8 unk_4e4[0x4EC - 0x4E4];                    // 0x04E4, まだ未解析
-  u16 plttTimer;                                // 0x04EC, 奇数フレームごとに plttSrc の組を差し替える
-  u8 unk_4ee[0x4FC - 0x4EE];                    // 0x04EE, まだ未解析
-  u16 unk_4fc;                                  // 0x04FC, _Update が PTR_ARRAY_085AD07C[unk_4fc](p) として引く状態番号
-  u16 unk_4fe;                                  // 0x04FE, PileDriver_SetSubState が unk_4fc の差し替えのたびに 0 に戻すカウンタ
-  u8 unk_500[0x508 - 0x500];                    // 0x0500, まだ未解析
-  Vec3 unk_508;                                 // 0x0508, FUN_080b10f8 が FUN_080b1038 に渡す座標
-  WorldPos pos_510;                             // 0x0510, FUN_080b1038 が距離判定に使うワールド座標
-  AuxSprite sprite_518;                         // 0x0518
-  u8 unk_544[0x560 - 0x544];                    // 0x0544, まだ未解析
-  ParticleGroup* ptclGroup;                     // 0x0560, PTCL_GROUP_2
-  PileDriverParticle ptcls[32];                 // 0x0564
-  u8 unk_be4;                                   // 0x0BE4, FUN_080ad388 が 0 を入れる
-  u8 unk_be5[3];                                // 0x0BE5, padding?
-  struct Generator* generators[6];              // 0x0BE8, i*4 刻みで引き、要素の +0xCF / +0xEC / +0xE2 を触る
-  u8 unk_c00[0xC0B - 0xC00];                    // 0x0C00, まだ未解析
-  u8 state_c0b;                                 // 0x0C0B
-  u8 unk_c0c[0xC0F - 0xC0C];                    // 0x0C0C, まだ未解析
-  u8 unk_c0f;                                   // 0x0C0F
-  u8 unk_c10;                                   // 0x0C10, 現在の太陽ゲージ?
-  u8 unk_c11;                                   // 0x0C11
-  bool8 unk_c12;                                // 0x0C12, Cmd_F993 / Cmd_44BF が 1 / 0 を入れ, FUN_080b176c が見る
-  u8 unk_c13[0xC16 - 0xC13];                    // 0x0C13, まだ未解析
-  u16 unk_c16;                                  // 0x0C16
-  u8 unk_c18[0xC6C - 0xC18];                    // 0x0C18, まだ未解析
-  u8 unk_c6c[0x12E4 - 0xC6C];                   // 0x0C6C, 根拠: FUN_080af374 の第1引数, +0x678 までを触る
-  u16 unk_12e4;                                 // 0x12E4, 0 の間だけ FUN_080b1888 が先に進む
-  u8 unk_12e6[0x1324 - 0x12E6];                 // 0x12E6, まだ未解析
-  u16 unk_1324;                                 // 0x1324, 0 から 0x3F で折り返すカウンタ, FUN_080adf50 が 0x30, Cmd_054A が 0x40 を入れる
-  u16 unk_1326;                                 // 0x1326, FUN_080adfa0 が 0..7 の値を入れる
-  u8 unk_1328[0x1332 - 0x1328];                 // 0x1328, まだ未解析
-  u8 unk_1332;                                  // 0x1332, FUN_080b165c が 0 に戻す
-  bool8 unk_1333;                               // 0x1333, Cmd_29F1 が立て, FUN_080b1718 が見る
-  u16 unk_1334;                                 // 0x1334, Cmd_29F1 が 0 に戻す
-  u8 tilemapIdx;                                // 0x1336, FileID_ARRAY_085ad048 の添字
-  u8 unk_1337[0x133E - 0x1337];                 // 0x1337, まだ未解析
-  u8 unk_133e;                                  // 0x133E
-  u8 unk_133f;                                  // 0x133F, unk_1340 の添字
-  SoundID16 unk_1340[4];                        // 0x1340, PlaySound_082406e0(unk_1340[unk_133f]) で鳴らす
-  u8 unk_1348[0x135C - 0x1348];                 // 0x1348, まだ未解析
-  PileDriverFunc* unk_135c;                     // 0x135C, FUN_080af0ac が非NULLのとき unk_135c(p) を呼ぶ
-  struct CuroroShotManager* curoroShotManager;  // 0x1360, 根拠: FUN_080af0c8 が CuroroShotManager_VanishAll に渡す
-  u8 unk_1364[0x1374 - 0x1364];                 // 0x1364, まだ未解析
-  bool16 unk_1374;                              // 0x1374, Cmd_054A が立て, FUN_080adfa0 が見る
-  u8 unk_1376[0x1420 - 0x1376];                 // 0x1376, まだ未解析
-  u32 unk_1420;                                 // 0x1420, FUN_080adb5c が 0 に戻す
-  u32 unk_1424;                                 // 0x1424, まだ未解析
-  bool16 unk_1428;                              // 0x1428, FUN_080ad9d4 / FUN_080ad6a8 が立て, FUN_080ad96c が見て下ろす
-  u8 unk_142a[0x17A4 - 0x142A];                 // 0x142A, まだ未解析
-  u32 eventScriptID;                            // 0x17A4, '.p', 段階 (kind) を引数に起動するスクリプト
-  MsgQueue mq;                                  // 0x17A8
+  Entity e;                           // 0x0000, ENTITY_UNK_9
+  u16 id;                             // 0x0018, 0xCBB0 (PileDriver_Create)
+  u16 mode;                           // 0x001A, '.m=0', 1 なら棺桶を浄化する場面で ectoplasm とタイルマップを使う
+  u8 unk_1c[2];                       // 0x001C
+  u8 generatorCount;                  // 0x001E, '.n=4', generators の使う数
+  u8 activeGeneratorCount;            // 0x001F, state 4 (稼働中) のジェネレーターの数, PileDriver_Update が毎フレーム数え直す
+  rgb555 bgPltts[16][16];             // 0x0020, 時間帯の色を混ぜた BG パレット, bgPlttIdx で選んで gBgPlttBuffer へ送る
+  rgb555* timePltts[3];               // 0x0220, 昼 / 夕 / 夜の BG パレット ('.A' か "pile_driver_*_col_arr")
+  u8 plttFadeFrom;                    // 0x022C, 時間帯が変わったときに混ぜる元の timePltts の添字
+  u8 plttFadeTo;                      // 0x022D, 同じく先の添字
+  u16 stateTimer;                     // 0x022E, PileDriver_SetState が updateCallback の差し替えのたびに 0 に戻す
+  u16 bgPlttIdx[16];                  // 0x0230, BG パレットの行ごとに送る bgPltts の添字
+  PileDriverFunc* updateCallback;     // 0x0250
+  PileDriverAnimSprite centerSprite;  // 0x0254, SPR_C039, 魔方陣の中心, sunOverride が立っていると出さない
+  u8 unk_2c4[0x4D4 - 0x2C4];          // 0x02C4
+  TilemapFile* immortalTilemap;       // 0x04D4, sImmortalTilemaps[immortalIdx], BG1 に半透明で重ねるイモータルの姿
+  rgb555* immortalPltt;               // 0x04D8, BGP_F308 の body[192] から 16 色, immortalTilemap のパレット
+  TilemapFile* unk_4dc;               // 0x04DC, MP_AD57
+  rgb555* plttSrc;                    // 0x04E0, 点滅用のパレット4組の先頭
+  u8 beamKinds[4];                    // 0x04E4, ジェネレーターごとの光の柱の描き方, 0 は光っている (MP_AD57 のレイヤ 1), 5 は消す, PileDriver_InitTilemap が 5 を入れる
+  u8 drawnBeamKinds[4];               // 0x04E8, 最後に BG3 へ描いた beamKinds, 変わったときだけ描き直す
+  u16 plttTimer;                      // 0x04EC, 奇数フレームごとに plttSrc の組を差し替える
+  u8 unk_4ee[6];                      // 0x04EE
+  struct Player* player;              // 0x04F4, gPlayerPtr[0]
+  struct Coffin* coffin;              // 0x04F8, gCoffin
+  u16 subState;                       // 0x04FC, PileDriver_Update が sSubStates[subState](p) として引く
+  u16 subStateTimer;                  // 0x04FE, PileDriver_SetSubState が subState の差し替えのたびに 0 に戻す
+  Vec3 center;                        // 0x0500, '.c', 魔方陣の中心
+  Vec3 unk_508;                       // 0x0508, center から x と z を 0x144 ずらした位置, FUN_080b10f8 がプレイヤーとの距離を見る
+  WorldPos coffinPos;                 // 0x0510, center から x と z を -0x14 ずらした位置, 棺桶を置く場所 (魔方陣の中心)
+  AuxSprite blackhole;                // 0x0518, 棺桶の上 (coffinPos から y を 72 上げた位置) で点滅するブラックホール
+  AuxSpriteGfx blackholeGfx;          // 0x0544, SPR_BLACKHOLE
+  PileDriverParticleSet ptclSet;      // 0x0560
+  struct Generator* generators[4];    // 0x0BE8
+  u16 damageRate;                     // 0x0BF8, 太陽パイルの攻撃力 (イモータルのライフを削る量) の倍率 (%), 棺桶の種類で決まりヴァンパイアの棺 80 / アイアンメイデン 120 / それ以外 100
+  u8 unk_bfa[0xC0B - 0xBFA];          // 0x0BFA
+  u8 timeSpan;                        // 0x0C0B, Time_GetSpanOfTime の値, 変わると plttFadeFrom / plttFadeTo を決め直す
+  u8 unk_c0c[3];                      // 0x0C0C
+  bool8 sunOverride;                  // 0x0C0F, '.d=0', 立っていると sunGauge に gStat->sunGauge でなく sunOverrideValue を使う
+  u8 sunGauge;                        // 0x0C10, 今の太陽ゲージ
+  u8 sunOverrideValue;                // 0x0C11
+  bool8 unk_c12;                      // 0x0C12, Cmd_F993 / Cmd_44BF が 1 / 0 を入れ, FUN_080b176c が見る
+  u8 unk_c13[3];                      // 0x0C13
+  u16 placeKind;                      // 0x0C16, 棺桶をどこから置いたか, 0 最初 (subState 0) / 1 置き直し (subState 3) / 2 やり直し (subState 12), PileDriver_PlaceCoffin が置き終えたあとの進み先を決める
+  u8 unk_c18[0xC6C - 0xC18];          // 0x0C18
+  Ectoplasm ectoplasm;                // 0x0C6C
+  u8 unk_131c[8];                     // 0x131C
+  u16 immortalBgTimer;                // 0x1324, BG1 のイモータルの姿の演出のフレーム数, ライフがある間は光らせる残り (PileDriver_FlashImmortal が 48), 0 のあとは 0..63 で巡回, immortalVanishing の間は消えるまでの残り (Cmd_054A が 64)
+  s16 immortalBgShakeY;               // 0x1326, BG1 のイモータルの姿の縦の揺れ (vofs に足す), 0..7
+  u8 unk_1328[2];                     // 0x1328
+  u8 unk_132a;                        // 0x132A, PileDriver_DrawBeams が 0 に戻す
+  u8 unk_132b[7];                     // 0x132B
+  u8 unk_1332;                        // 0x1332, FUN_080b165c が 0 に戻す
+  bool8 unk_1333;                     // 0x1333, Cmd_29F1 が立て, FUN_080b1718 が見る
+  u16 unk_1334;                       // 0x1334, Cmd_29F1 が 0 に戻す
+  u8 immortalIdx;  // 0x1336, '.b[0]=0', どのイモータルか, タイルマップ (sImmortalTilemaps) と声 (voices) とバトルドライブの攻撃を選ぶ, 0 ドゥネイル (燐粉) / 1 黒ジャンゴ (攻撃なし) / 2 ドゥラスロール (棘) / 3 ドヴァリン (バブルブレス) / 4 ダーイン (クロロホルルン+) / 5 シェードマン (クラッシュノイズ)
+  u8 unk_1337[7];  // 0x1337
+  bool8 voicePending;              // 0x133E, エクトプラズムが棺桶に入ったときと消え始めたときに立ち, 次の PileDriver_Update でイモータルの声と SE_667 を鳴らして下ろす
+  u8 voiceIdx;                     // 0x133F, voicePending で鳴らす voices の添字 (ライフが 0 なら [2])
+  SoundID16 voices[4];             // 0x1340, イモータルの声, [0] 棺桶に入ったとき (熱い!) / [1] ライフが 1/4 を切ったあとの [0] の代わり / [2] ライフが 0 のとき / [3] 棺桶を運び出したあと (笑い声)
+  u16 attackTimer;                 // 0x1348, バトルドライブの攻撃の合間の経過フレーム, attackDuration に達するまで毎フレーム +1 し, 達すると fireTimer で撃ち始める
+  u16 attackDuration;              // 0x134A, 攻撃の合間のフレーム数
+  u16 fireTimer;                   // 0x134C, 撃ち始めてからのフレーム数, 終わると attackTimer を 0 に戻す
+  u16 attackPower;                 // 0x134E, '.T=10', バトルドライブでイモータルが撃つ弾の攻撃力
+  u8 unk_1350[2];                  // 0x1350
+  u16 attackAngle;                 // 0x1352, 弾を撃つ向き, center から 1P への向きで決める
+  u8 unk_1354[8];                  // 0x1354
+  PileDriverFunc* attackCallback;  // 0x135C, バトルドライブでのイモータルの攻撃, immortalIdx で決まり PileDriver_RunAttack が毎フレーム呼ぶ
+  void* attackManager;             // 0x1360, 攻撃の弾をまとめるエンティティ, immortalIdx が 2 ならドゥラスロールの棘 (Entity0805d79c), 4 なら CuroroShotManager, 5 なら CrashNoiseRingManager
+  u8 unk_1364[0x10];               // 0x1364
+  bool16 immortalVanishing;        // 0x1374, Cmd_054A が立て, BG1 のイモータルの姿が粒子を撒いて消えていく
+  u8 unk_1376[0x1420 - 0x1376];    // 0x1376
+  u32 unk_1420;                    // 0x1420, FUN_080adb5c が 0 に戻す
+  u16 plttFadeTimer;               // 0x1424, 時間帯の色を混ぜ始めてからのフレーム数, 0x40 で混ぜ終わる
+  bool16 plttFading;               // 0x1426, 時間帯が変わると立てて混ぜ始める
+  bool16 bgPlttDirty;              // 0x1428, 立っていると PileDriver_UpdateBgPltt が bgPltts を gBgPlttBuffer へ送って下ろす
+  u8 unk_142a[0x17A4 - 0x142A];    // 0x142A
+  u32 eventScriptID;               // 0x17A4, '.p', 段階 (kind) を引数に起動するスクリプト
+  MsgQueue mq;                     // 0x17A8
 } PileDriver;
 static_assert(sizeof(PileDriver) == 6108);
 
@@ -137,10 +241,10 @@ typedef struct Generator {
   u16 unk_e2;                                 // 0x0E2, 0 でない間 Generator_UpdateFlash が flashTimer を増やし、その後 0 に戻す
   u16 flashTimer;                             // 0x0E4, 12 でパレット 455, 1〜11 で 454, 0 で plttID に戻る
   u8 unk_e6[2];                               // 0x0E6
-  u16 unk_e8;                                 // 0x0E8, gPileDriver の field_0xc10 が立ち、かつ state が 4 のときだけ減る
+  u16 unk_e8;                                 // 0x0E8, gPileDriver->sunGauge が 0 でなく、かつ state が 4 のときだけ減る
   u8 unk_ea;                                  // 0x0EA, Init が 0,読み手が見つかっていない
   u8 unk_eb;                                  // 0x0EB, 0 でない間 Generator_UpdateFlash がパレット 0x132 を強制して減らす
-  u8 unk_ec;                                  // 0x0EC, Init が 0,読み手が見つかっていない
+  bool8 justStarted;                          // 0x0EC, 起動が終わって state 4 に入ると 1, PileDriver_WaitActivation が音と BG パレットの演出を出して 0 に戻す
   u8 unk_ed;                                  // 0x0ED
   u16 plttID;                                 // 0x0EE, 451 or 452
   u16 unk_f0;                                 // 0x0F0, 点灯時のパレットID
@@ -157,4 +261,4 @@ static_assert(sizeof(Generator) == 572);
 void Generator_SetState(Generator* p, s32 state);
 Generator* Generator_Create(Vec3* pos, s32 param_2, s32 param_3, s32 state, s32 param_5, s32 param_6, u32 power, s32 param_8);
 
-#endif  // __INCLUDE_ENTITY_CBB0_H__
+#endif  // __INCLUDE_PILE_DRIVER_H__

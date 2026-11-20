@@ -265,7 +265,7 @@ _08191EA2:
 	adds r1, r2, #0
 	adds r2, r3, #0
 	adds r3, r4, #0
-	bl Entity081f26bc_Spawn
+	bl Debris_Spawn
 _08191EC4:
 	movs r1, #1
 	add r8, r1

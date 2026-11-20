@@ -47,8 +47,8 @@ static_assert(sizeof(LinkShopInventory) == 0x9CC);
 typedef struct LinkShopScreen {
   Entity e;                            // 0x0000, ENTITY_UNK_11
   LinkShopScreenFunc* updateCallback;  // 0x0018
-  TilemapFile* tilemap0;               // 0x001C, MP_CD91, BG2 に敷く
-  TilemapFile* tilemap1;               // 0x0020, MP_A413, BG0 に敷く
+  TilemapFile* tilemap0;               // 0x001C, MP_LINK, BG2 に敷く
+  TilemapFile* tilemap1;               // 0x0020, MP_SYSTEM, BG0 に敷く
   rgb555* bgPltt;                      // 0x0024, bg_link_col_arr
   MainSprite sprites[28];              // 0x0028
   MainSpriteGfx gfx0;                  // 0x0AA8, SPR_UI_LINK
@@ -288,14 +288,14 @@ void LinkShopScreen_InitPoseIdx(LinkShopScreen* p) {
 void LinkShopScreen_SetupBG(LinkShopScreen* p) {
   s32 bgIndices[1];
 
-  p->tilemap0 = GetFile(DIR_TILE_MAP, MP_CD91);
-  p->tilemap1 = GetFile(DIR_TILE_MAP, MP_A413);
+  p->tilemap0 = GetFile(DIR_TILE_MAP, MP_LINK);
+  p->tilemap1 = GetFile(DIR_TILE_MAP, MP_SYSTEM);
   bgIndices[0] = 1;
   Video_SetupBGLayout(2, 0, p->tilemap0, 0, 0, 1, bgIndices);
   bgIndices[0] = 3;
   Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
-  p->bgPltt = GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body;
+  p->bgPltt = GetBgPlttFile(BGP_LINK)->body;
   CpuCopy16(p->bgPltt, gBgPlttBuffer, 256 * sizeof(rgb555));
 }
 

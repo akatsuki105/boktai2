@@ -43,12 +43,12 @@ bool32 IsInPuddle(WorldPos* pos);
 void* CutsceneBusterShot_Create(Player* player, u32 speed, u32 flyTime);
 struct Bullet* Bullet_Create(Player* player, u32 heightOffset, u32 forwardOffset, u32 sideOffset, u32 offsetRadius, u32 plttID, u32 knockback, HitboxAttrs attrs, u32 iframes, u32 pose, u32 cost, bool32 elefan);
 void Player_UpdateLockedIdle(Player* p);
-void FUN_080d040c(Player* p);
+void PlayerLink_EnterDeadState(Player* p);
 void Django_OnHurt(Hitbox* a, Hitbox* b, Player* p);
 void Player_LockFall(Player* p, Dir8S32 dir, s32 param_3, u32 scriptID);
 bool32 FUN_0809df78(Vec3* pos);
 s32 SpawnBlood(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
-void FUN_080dab9c(s32 idx);
+void SpiderWeb_Break(s32 idx);
 bool32 FUN_0809e138(Player* p);
 void Django_OnWeaponHit(Hitbox* a, Hitbox* b, Player* _);
 void* BloodEmitter_Create(void);
@@ -112,19 +112,6 @@ static inline bool8 TestMapFlag(u32 mapflag) {
 }
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
-
-static inline bool32 HasGoodCond(Player* p, u32 id) {
-  if (p->goodCondTimer != 0 && p->goodCondID == id) {
-    return TRUE;
-  }
-  return FALSE;
-}
-
-// 食らい判定の無敵時間を設定する
-static inline void Player_SetIframes(Player* p, u16 time) { p->hurtbox.iframes = time; }
-
-// 食らい判定の残りの無敵時間を返す
-static inline s32 Player_GetIframes(Player* p) { return p->hurtbox.iframes; }
 
 // 今の行動 (PACT_*) を返す
 static inline s32 Player_GetAction(Player* p) { return p->action; }
@@ -1996,7 +1983,7 @@ void Player_CountMash(Player* p) {
 void Player_UpdatePoseAndShadow(Player* p) {
   s32 pose = 0;
 
-  if (p->mover.unk_4 == 0) {
+  if (p->mover.kind == 0) {
     Player_UpdateFormScale(p);
     Player_CountMash(p);
     pose = Player_TickBadCondTimers(p, 0);
@@ -2455,13 +2442,13 @@ void Player_SetWeaponHitbox(Player* p) {
       }
     }
 
-    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.unk_4, &halfSize, &offset);
+    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.kind, &halfSize, &offset);
     Hitbox_SetAttack(hitbox, p->wpn.atkPower, p->wpn.knockback, source, 0, p->wpn.iframes);
     Hitbox_SetHandler(hitbox, Django_OnWeaponHit, p);
   } else {
     VEC3_SET(halfSize, Q8(0.665), Q8(0.196), Q8(0.665));
     VEC3_SET(offset, 0, Q8(-0.08), 0);
-    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.unk_4, &halfSize, &offset);
+    Hitbox_Init(hitbox, 0, (HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE), 0, 1 << p->mover.kind, &halfSize, &offset);
     Hitbox_SetAttack(hitbox, 20, 0x32, HBSRC_GUN, HBATTR_DARK, 0x14);
     Hitbox_SetHandler(hitbox, NULL, p);
   }
@@ -3378,7 +3365,7 @@ bool32 Player_InitMover(Player* p, u32 moverID) {
   FUN_0823b47c(mover, &offset);
   p->zoneEvents.id = p->mover.id;
   result = EnemyTargetManager_Add(&p->target, mover, 2);
-  gPlayerMoverIDs[p->mover.unk_4] = p->mover.id;
+  gPlayerMoverIDs[p->mover.kind] = p->mover.id;
   return result;
 }
 
@@ -3422,7 +3409,7 @@ void Player_SetupHurtbox(Player* p) {
 
   VEC3_SET(halfSize, Q8(0.196), Q8(0.497), Q8(0.196));
   VEC3_SET(offset, 0, Q8(0.497), 0);
-  Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 1 << p->inputIdx, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 1 << p->inputIdx, &halfSize, &offset);
   if (p->kind == PLAYER_RDJANGO) {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_SOL, HBATTR_DARK);
   } else {
@@ -3464,16 +3451,16 @@ bool32 Player_IsOnIce(u32 attr) {
   return FALSE;
 }
 
-// 溶岩タイルに乗ったら, そのタイルの中心を knockbackOrigin にして位置をタイルの内側に収め, 被弾を保留する (エレベーター上と吹き飛ばし中は除く)
+// 溶岩タイルに乗ったら, そのタイルの中心を hazardCenter にして位置をタイルの内側に収め, 溶岩の被弾を保留する (エレベーター上と押し戻し中は除く)
 void Player_CheckLavaHurt(Player* p) {
-  if (Player_IsInLava(GetTileAttrAt(&p->mover.pos)) && p->elevatorFlags == 0 && !p->originKnockback && !Elevator_FindAtPos(&p->mover.pos)) {
+  if (Player_IsInLava(GetTileAttrAt(&p->mover.pos)) && p->elevatorFlags == 0 && !p->lavaKnockback && !Elevator_FindAtPos(&p->mover.pos)) {
     s32 bx = Mod(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 bz = Div(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 minX, maxX, minZ, maxZ;
 
-    p->knockbackTileCenter.x = (bx << 8) + 128;
-    p->knockbackTileCenter.z = (bz << 8) + 128;
-    p->knockbackOrigin = &p->knockbackTileCenter;
+    p->hazardTileCenter.x = (bx << 8) + 128;
+    p->hazardTileCenter.z = (bz << 8) + 128;
+    p->hazardCenter = &p->hazardTileCenter;
     minX = (bx << 8) + 1;
     maxX = (bx << 8) + 255;
     minZ = (bz << 8) + 1;
@@ -3490,70 +3477,70 @@ void Player_CheckLavaHurt(Player* p) {
     }
     p->beast.pos = p->mover.pos;
     p->human.pos = p->mover.pos;
-    p->originHitPending = TRUE;
+    p->lavaHitPending = TRUE;
   }
 }
 
-// knockbackOrigin の位置から弾かれたときの被弾処理, 向きを knockbackOrigin から見た方向に合わせて吹き飛ばしを設定し, 受けるダメージ 10 を返す
-s32 Player_ApplyOriginHit(Player* p) {
+// 溶岩で焼かれたときの被弾処理, hazardCenter から見た方向に向きを合わせて押し戻しを設定し, 受けるダメージ 10 を返す
+s32 Player_ApplyLavaHit(Player* p) {
   if (p->kind == PLAYER_SLEEPING) {
     p->formRequest = TRUE;
     p->formRequestKind = PLAYER_BDJANGO;
   }
-  p->originKnockback = TRUE;
+  p->lavaKnockback = TRUE;
   p->hurtbox.knockback = 50;
   Player_SetIframes(p, 60);
   p->blownAway = 0;
   p->floatHeight = 0;
-  p->facing = (Angle_ToDir4(ArcTan2_8(p->mover.pos.x - p->knockbackOrigin->x, p->mover.pos.z - p->knockbackOrigin->z)) << 1) + 1;
+  p->facing = (Angle_ToDir4(ArcTan2_8(p->mover.pos.x - p->hazardCenter->x, p->mover.pos.z - p->hazardCenter->z)) << 1) + 1;
   PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
-  p->originHitPending = FALSE;
+  p->lavaHitPending = FALSE;
   return 10;
 }
 
-// 黒ジャンゴ or Cマウス は水溜まりに触るとダメージを受けてノックバックする
+// 黒ジャンゴ系 (黒ジャンゴ, Cマウス) にとって水たまりは溶岩と同じく焼ける床で, 踏んだらそのタイルの中心を hazardCenter にして水たまりの被弾を保留する
 void Player_CheckPuddleHurt(Player* p) {
-  if (IsInPuddle(&p->mover.pos) && p->tileKnockback == 0) {
+  if (IsInPuddle(&p->mover.pos) && p->puddleKnockback == 0) {
     s32 bx = Mod(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 bz = Div(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
 
-    p->knockbackTileCenter.x = (bx << 8) + 128;
-    p->knockbackTileCenter.z = (bz << 8) + 128;
-    p->knockbackOrigin = &p->knockbackTileCenter;
-    p->tileHitPending = TRUE;
+    p->hazardTileCenter.x = (bx << 8) + 128;
+    p->hazardTileCenter.z = (bz << 8) + 128;
+    p->hazardCenter = &p->hazardTileCenter;
+    p->puddleHitPending = TRUE;
   }
 }
 
-// 今いるタイルから見た knockbackOrigin の方向に向きを合わせ, ノックバック 50 を設定して受けるダメージ 10 を返す (Player_ApplyOriginHit の別版)
-// 残差は knockbackOrigin->x - 0x80 の畳み方のみ, 原典はブロック座標 << 8 を先に作ってから knockbackOrigin->x - 0x80 を引くが, agbcc は + 0x80 を結果側へ畳む (Angle_Diff と同じ壁)
-// Tier A-C 試済: static inline s32 Diff(s32 a, s32 b) { return a - b; } に (bx << 8, p->knockbackOrigin->x - 0x80) を渡すと ROM まで一致するが, 意味のない inline なので採っていない, ローカルに切り出すと順序が崩れる
-NON_MATCH s32 Player_ApplyTileHit(Player* p) {
+// 黒ジャンゴ系が水たまりで焼かれたときの被弾処理 (Player_ApplyLavaHit の水たまり版), hazardCenter から tile.tileIdx[1] のタイルへ向かう方向に向きを合わせ, ノックバック 50 を設定して受けるダメージ 10 を返す
+// 残差は hazardCenter->x - 0x80 の畳み方のみ, 原典はブロック座標 << 8 を先に作ってから hazardCenter->x - 0x80 を引くが, agbcc は + 0x80 を結果側へ畳む (Angle_Diff と同じ壁)
+// Tier A-C 試済: static inline s32 Diff(s32 a, s32 b) { return a - b; } に (bx << 8, p->hazardCenter->x - 0x80) を渡すと ROM まで一致するが, 意味のない inline なので採っていない, ローカルに切り出すと順序が崩れる
+NON_MATCH s32 Player_ApplyPuddleHit(Player* p) {
 #ifdef NONMATCHING_C
   s32 bx, bz;
 
-  p->tileKnockback = TRUE;
+  p->puddleKnockback = TRUE;
   p->hurtbox.knockback = 50;
   p->blownAway = 0;
   p->floatHeight = 0;
   bx = Mod(p->tile.tileIdx[1], gCollisionMap->tiledata->width);
   bz = Div(p->tile.tileIdx[1], gCollisionMap->tiledata->width);
-  p->facing = (Angle_ToDir4(ArcTan2_8((bx << 8) - (p->knockbackOrigin->x - 0x80), (bz << 8) - (p->knockbackOrigin->z - 0x80))) << 1) + 1;
+  p->facing = (Angle_ToDir4(ArcTan2_8((bx << 8) - (p->hazardCenter->x - 0x80), (bz << 8) - (p->hazardCenter->z - 0x80))) << 1) + 1;
   PLAYER_SET_ANIM_4DIR(p, p->facing);
   p->hurtSound = SE_IGNITE;
-  p->tileHitPending = FALSE;
+  p->puddleHitPending = FALSE;
   return 10;
 #else
-  INCFUNC("asm/func/Player_ApplyTileHit.inc");
+  INCFUNC("asm/func/Player_ApplyPuddleHit.inc");
 #endif
 }
 
-// pos のタイルの高さが p の足元の高さと違うか, タイルに TATTR_UNK_0 が立っていれば真
+// pos のタイルの高さが p の足元の高さと違うか, タイルに TATTR_PLAYER_WALL が立っていれば真
 bool32 Player_IsTileBlockedAt(Player* p, Vec3* pos) {
   if (TileHeightAt(pos) != p->mover.pos.y) {
     return TRUE;
   }
-  if (GetTileAttrAt(pos) & TATTR_UNK_0) {
+  if (GetTileAttrAt(pos) & TATTR_PLAYER_WALL) {
     return TRUE;
   }
   return FALSE;
@@ -4221,7 +4208,7 @@ void Player_PlayFootstep(Player* p, u32 val) {
     }
   }
 
-  if (TestMapFlag(MPF_UNK_0)) {
+  if (TestMapFlag(MPF_FOOTNOISE)) {
     Player_MakeNoise(p, &p->mover.pos, 1, 2, NULL, 0, SONG_NONE);
   }
 }
@@ -4385,7 +4372,7 @@ void Player_UpdateWall(Player* p) {
           if (!Player_IsOnIce(tile->attr)) {
             pos.x -= POLAR_X(50, ((p->actionDir + 1) & 7) << 5);
             pos.z -= POLAR_Z(50, ((p->actionDir + 1) & 7) << 5);
-            if (TileHeightAt(&pos) >= height + Q8(0.782) && !(GetTileAttrAt(&pos) & TATTR_UNK_2)) {
+            if (TileHeightAt(&pos) >= height + Q8(0.782) && !(GetTileAttrAt(&pos) & TATTR_LIFT)) {
               s32 speed;
 
               animIdx = Player_GetAnimIdx(p->kind, 4);
@@ -4503,17 +4490,17 @@ void Player_SetChargePos(Player* p) {
   }
 }
 
-// 太陽チャージ (PACT_UNK_7), 構えたあと A を押し続けている間, 日光が当たっていて ENE が満タンでなければチャージ音を鳴らして光の粒を出す
+// 太陽チャージ (PACT_PALM_UP), 構えたあと A を押し続けている間, 日光が当たっていて ENE が満タンでなければチャージ音を鳴らして光の粒を出す
 void Player_UpdateSolarCharge(Player* p) {
-  if (p->action != PACT_UNK_7) {
-    Player_SetAction(p, PACT_UNK_7, 0);
+  if (p->action != PACT_PALM_UP) {
+    Player_SetAction(p, PACT_PALM_UP, 0);
     p->nextEnchantColorIdx = 0;
   }
 
   switch (p->state) {
     case 0: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-      Player_SetAction(p, PACT_UNK_7, 1);
+      Player_SetAction(p, PACT_PALM_UP, 1);
       break;
     }
     case 1: {
@@ -4534,15 +4521,15 @@ void Player_UpdateSolarCharge(Player* p) {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
         PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          Player_SetAction(p, PACT_UNK_7, 4);
+          Player_SetAction(p, PACT_PALM_UP, 4);
         } else if (Player_CanSolarCharge(p)) {
           PlaySound_082406e0(NOISE_SOLAR_CHARGE);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 2);
+          Player_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 3);
+          Player_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -4565,11 +4552,11 @@ void Player_UpdateSolarCharge(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (!Player_CanSolarCharge(p)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 3);
+        Player_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -4578,12 +4565,12 @@ void Player_UpdateSolarCharge(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (Player_CanSolarCharge(p)) {
         PlaySound_082406e0(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -4607,16 +4594,16 @@ bool32 Player_CanDarkCharge(Player* p) {
   return FALSE;
 }
 
-// サバタの暗黒チャージ (PACT_UNK_7), 構えたあと A を押し続けている間, 日光が当たっていなくて ENE が満タンでなければチャージ音を鳴らして闇の粒を出す
+// サバタの暗黒チャージ (PACT_PALM_UP), 構えたあと A を押し続けている間, 日光が当たっていなくて ENE が満タンでなければチャージ音を鳴らして闇の粒を出す
 void Player_UpdateDarkCharge(Player* p) {
-  if (p->action != PACT_UNK_7) {
-    Player_SetAction(p, PACT_UNK_7, 0);
+  if (p->action != PACT_PALM_UP) {
+    Player_SetAction(p, PACT_PALM_UP, 0);
   }
 
   switch (p->state) {
     case 0: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
-      Player_SetAction(p, PACT_UNK_7, 1);
+      Player_SetAction(p, PACT_PALM_UP, 1);
       break;
     }
     case 1: {
@@ -4637,15 +4624,15 @@ void Player_UpdateDarkCharge(Player* p) {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
         PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          Player_SetAction(p, PACT_UNK_7, 4);
+          Player_SetAction(p, PACT_PALM_UP, 4);
         } else if (Player_CanDarkCharge(p)) {
           PlaySound_082406e0(VO_SABATA_ANKOKU);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 2);
+          Player_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 3);
+          Player_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -4673,11 +4660,11 @@ void Player_UpdateDarkCharge(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_DARK_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (!Player_CanDarkCharge(p)) {
         sound_08240740(NOISE_DARK_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 3);
+        Player_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -4686,12 +4673,12 @@ void Player_UpdateDarkCharge(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (Player_CanDarkCharge(p)) {
         PlaySound_082406e0(NOISE_DARK_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -4922,12 +4909,12 @@ s32 Player_CalcCoffinMoveSpeed(Player* p) {
   return speed;
 }
 
-// pos のタイルへ移れるか (壁でない, 溶岩や水でない, 段差が1ブロック未満), TATTR_UNK_11 のタイルなら pos を棺桶の位置に差し替え, 棺桶から離れていれば立ち止まる
+// pos のタイルへ移れるか (壁でない, 溶岩や水でない, 段差が1ブロック未満), TATTR_COFFIN_WALL のタイルなら pos を棺桶の位置に差し替え, 棺桶から離れていれば立ち止まる
 bool32 Player_CanPullCoffinTo(Player* p, Vec3* pos) {
   TileAttr attr = GetTileAttrAt(pos);
   WorldPos* coffin;
 
-  if (attr & TATTR_UNK_0) {
+  if (attr & TATTR_PLAYER_WALL) {
     return FALSE;
   }
   if (!FUN_08086958() && (Player_IsInLava(attr) || (attr & TATTR_FALLDEATH))) {
@@ -4936,7 +4923,7 @@ bool32 Player_CanPullCoffinTo(Player* p, Vec3* pos) {
   if (abs(TileHeightAt(pos) - p->mover.pos.y) >= Q8(1)) {
     return FALSE;
   }
-  if (!(attr & TATTR_UNK_11)) {
+  if (!(attr & TATTR_COFFIN_WALL)) {
     return TRUE;
   }
   coffin = Coffin_GetPos();
@@ -5090,7 +5077,7 @@ void Player_UpdatePullCoffin(Player* p) {
           PlaySound_082406e0(SE_FSTEP_STAIRS_0);
         }
       }
-      if (TestMapFlag(MPF_UNK_0)) {
+      if (TestMapFlag(MPF_FOOTNOISE)) {
         Player_MakeNoise(p, &p->mover.pos, 1, 2, NULL, 0, SONG_NONE);
       }
     }
@@ -5147,7 +5134,7 @@ void MagicFreeze_08069710(Player* p) {
       pos.x += POLAR_X(150, angle);
       pos.z += POLAR_Z(150, angle);
       radius = gStat->sunGauge * 60 + 120;
-      FreezeEffect_Create(&pos, 1 << p->mover.unk_4, radius, angle, 90);
+      FreezeEffect_Create(&pos, 1 << p->mover.kind, radius, angle, 90);
       p->magicFired = TRUE;
     } else {
       p->magicFired = FALSE;
@@ -5454,7 +5441,7 @@ void Player_UpdateGrabbed(Player* p) {
   Player_SetFlag20(p, PFLAG20_UNK_12 | PFLAG20_UNK_8);
 }
 
-// PACT_DAMAGED, 吹き飛びながら knockbackOrigin やタイルから弾かれたときはそちらへ寄せて炎か煙を出し, 止まったら起き上がって PACT_SEKIKA か PACT_IDLE に戻る
+// PACT_DAMAGED, 吹き飛びながら, 溶岩か水たまりで焼かれたときは hazardCenter へ寄せながら炎 (溶岩) か煙 (水たまり) を出し, 止まったら起き上がって PACT_SEKIKA か PACT_IDLE に戻る
 void Player_UpdateHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
     Player_SetAction(p, PACT_DAMAGED, 0);
@@ -5467,9 +5454,9 @@ void Player_UpdateHurt(Player* p) {
     }
   }
   if (p->hurtbox.knockback != 0) {
-    if (p->originKnockback) {
-      s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
-      s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
+    if (p->lavaKnockback) {
+      s32 dx = p->hazardCenter->x - p->mover.pos.x;
+      s32 dz = p->hazardCenter->z - p->mover.pos.z;
 
       p->mover.delta.x = FixToInt(3, dx);
       p->mover.delta.z = FixToInt(3, dz);
@@ -5480,9 +5467,9 @@ void Player_UpdateHurt(Player* p) {
         }
         p->stateTimer++;
       }
-    } else if (p->tileKnockback) {
-      s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
-      s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
+    } else if (p->puddleKnockback) {
+      s32 dx = p->hazardCenter->x - p->mover.pos.x;
+      s32 dz = p->hazardCenter->z - p->mover.pos.z;
 
       p->mover.delta.x = FixToInt(3, dx);
       p->mover.delta.z = FixToInt(3, dz);
@@ -5503,8 +5490,8 @@ void Player_UpdateHurt(Player* p) {
     p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
   } else {
     p->hurtbox.knockback = 0;
-    p->originKnockback = FALSE;
-    p->tileKnockback = FALSE;
+    p->lavaKnockback = FALSE;
+    p->puddleKnockback = FALSE;
     if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
       Player_SetAction(p, PACT_SEKIKA, 0);
     } else if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 42), Q6(1))) {
@@ -6686,7 +6673,7 @@ void Player_UpdateMouseWalk(Player* p) {
         p->mouseStepAlt = 1;
         PlaySound_082406e0(SE_FSTEP_MINI_1);
       }
-      if (TestMapFlag(MPF_UNK_0)) {
+      if (TestMapFlag(MPF_FOOTNOISE)) {
         Player_MakeNoise(p, &p->mover.pos, 1, 2, NULL, 0, SONG_NONE);
       }
     }
@@ -6781,7 +6768,7 @@ void Player_UpdateMouseLanding(Player* p) {
   }
 }
 
-// マウスの被弾 (PACT_DAMAGED), アニメ 2 を進めながら吹き飛び, knockbackOrigin やタイルから弾かれたときはそちらへ寄せながら炎か煙を出し, 止まったら PACT_SEKIKA か PACT_IDLE に戻る
+// マウスの被弾 (PACT_DAMAGED), アニメ 2 を進めながら吹き飛び, 溶岩か水たまりで焼かれたときは hazardCenter へ寄せながら炎 (溶岩) か煙 (水たまり) を出し, 止まったら PACT_SEKIKA か PACT_IDLE に戻る
 void Player_UpdateMouseHurt(Player* p) {
   if (p->action != PACT_DAMAGED) {
     PLAYER_SET_ANIM_4DIR(p, p->facing);
@@ -6794,9 +6781,9 @@ void Player_UpdateMouseHurt(Player* p) {
   AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 2, p->animDir, p->xflip);
   AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
   if (p->hurtbox.knockback != 0) {
-    if (p->originKnockback) {
-      s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
-      s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
+    if (p->lavaKnockback) {
+      s32 dx = p->hazardCenter->x - p->mover.pos.x;
+      s32 dz = p->hazardCenter->z - p->mover.pos.z;
 
       p->mover.delta.x = FixToInt(3, dx);
       p->mover.delta.z = FixToInt(3, dz);
@@ -6807,9 +6794,9 @@ void Player_UpdateMouseHurt(Player* p) {
         }
         p->stateTimer++;
       }
-    } else if (p->tileKnockback) {
-      s32 dx = p->knockbackOrigin->x - p->mover.pos.x;
-      s32 dz = p->knockbackOrigin->z - p->mover.pos.z;
+    } else if (p->puddleKnockback) {
+      s32 dx = p->hazardCenter->x - p->mover.pos.x;
+      s32 dz = p->hazardCenter->z - p->mover.pos.z;
 
       p->mover.delta.x = FixToInt(3, dx);
       p->mover.delta.z = FixToInt(3, dz);
@@ -6830,8 +6817,8 @@ void Player_UpdateMouseHurt(Player* p) {
     p->hurtbox.knockback = (p->hurtbox.knockback * 3) >> 2;
   } else {
     p->hurtbox.knockback = 0;
-    p->originKnockback = FALSE;
-    p->tileKnockback = FALSE;
+    p->lavaKnockback = FALSE;
+    p->puddleKnockback = FALSE;
     if (p->emitter.kind == ELEMCOND_SEKIKA && p->emitter.aliveCount != 0) {
       Player_SetAction(p, PACT_SEKIKA, 0);
     } else {
@@ -6962,7 +6949,7 @@ NON_MATCH void Player_UpdateSleepingWalk(Player* p) {
       } else if (p->beastAnim.cmdIdx == 2) {
         PlaySound_082406e0(SONG_616);
       }
-      if (TestMapFlag(MPF_UNK_0)) {
+      if (TestMapFlag(MPF_FOOTNOISE)) {
         Player_MakeNoise(p, &p->mover.pos, 1, 2, NULL, 0, SONG_NONE);
       }
     }
@@ -7120,7 +7107,7 @@ CWolfTargetNode* Player_FindCWolfTarget(Player* p) {
 }
 
 // チェンジウルフ(Cウルフ, 敵の背後をとっているときに使用すると相手に噛みついてライフを吸収する)
-// 残差1命令, p->hurtbox.iframes = 0 で原典は値の 0 を先に作ってからアドレスを組むが, こちらはアドレスが先なので値とアドレスのレジスタが入れ替わる (Player_ApplyOriginHit で効いた Player_SetIframes 経由は 0 だと変わらない)
+// 残差1命令, p->hurtbox.iframes = 0 で原典は値の 0 を先に作ってからアドレスを組むが, こちらはアドレスが先なので値とアドレスのレジスタが入れ替わる (Player_ApplyLavaHit で効いた Player_SetIframes 経由は 0 だと変わらない)
 NON_MATCH void MagicChangeWolf_0806eb40(Player* p) {
 #ifdef NONMATCHING_C
   if (p->action != PACT_CWOLF) {
@@ -8951,8 +8938,8 @@ void Player_UpdateLockedTurn(Player* p) {
   }
 }
 
-// 操作不能中に lockedUpdate から回すアニメ 0x211 / 0x212 の演出, state 3 は点滅しながら現れ, 4 は点滅しながら消えて隠れたまま (Player_UpdateLockedHidden) になる
-void FUN_080728a8(Player* p) {
+// 操作不能中の更新, サバタのマフラーがなびく決めポーズ (アニメ 529 → 530 のループ), state 0 は構えてループで止まり, 2 は構えて待機に戻り, 3 は点滅しながら現れ, 4 は点滅しながら消えて隠れたまま (Player_UpdateLockedHidden) になる
+void Player_UpdateSabataScarfPose(Player* p) {
   switch (p->state) {
     case 0: {
       if (Player_PlayAnim(p, 529, Q6(1))) {
@@ -8999,7 +8986,8 @@ void FUN_080728a8(Player* p) {
   }
 }
 
-void FUN_080729e0(Player* p) {
+// 操作不能中の更新, サバタが後ろ姿で手を振るアニメ (531 番) を1回流して待機に戻る
+void Player_UpdateSabataWaveHand(Player* p) {
   if (Player_PlayAnim(p, 531, Q6(1))) {
     Player_SetAnimFacing(p);
     Player_ReturnToLockedIdle(p);
@@ -9007,7 +8995,8 @@ void FUN_080729e0(Player* p) {
   }
 }
 
-void FUN_08072a0c(Player* p) {
+// 操作不能中の更新, ベッドで横たわるアニメ (51 番) を流し続けて影を消す
+void Player_UpdateLyingInBed(Player* p) {
   Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 51), Q6(1));
   Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
 }
@@ -9176,7 +9165,7 @@ NON_MATCH void Player_UpdatePullCoffinTo(Player* p) {
 #endif
 }
 
-// 操作不能中に lockedUpdate から回す PACT_UNK_7 (太陽チャージなど) の構え, 構えたら unk_4a6 で 2 種の待ちアニメに分かれ, state 3 で構えを解いて元の処理に戻す
+// 操作不能中に lockedUpdate から回す PACT_PALM_UP (太陽チャージなど) の構え, 構えたら unk_4a6 で 2 種の待ちアニメに分かれ, state 3 で構えを解いて元の処理に戻す
 void FUN_0807304c(Player* p) {
   switch (p->state) {
     case 0: {
@@ -9223,7 +9212,7 @@ void Player_UpdateWarp(Player* p) {
     case 0: {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
-        Player_SetAction(p, PACT_UNK_7, 1);
+        Player_SetAction(p, PACT_PALM_UP, 1);
       }
       break;
     }
@@ -9231,7 +9220,7 @@ void Player_UpdateWarp(Player* p) {
       p->shadowOffset.z = 30;
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -9248,7 +9237,7 @@ void Player_UpdateWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 3);
+        Player_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -9274,7 +9263,7 @@ void Player_UpdateWarp(Player* p) {
       p->human.scaleY = 120;
       p->floatHeight = (8 - p->stateTimer) * 200 + 160;
       if (++p->stateTimer > 7) {
-        Player_SetAction(p, PACT_UNK_7, 5);
+        Player_SetAction(p, PACT_PALM_UP, 5);
       }
       break;
     }
@@ -9291,7 +9280,7 @@ void Player_UpdateWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 6);
+        Player_SetAction(p, PACT_PALM_UP, 6);
       }
       break;
     }
@@ -9318,7 +9307,7 @@ void Player_UpdateWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 3);
+        Player_SetAction(p, PACT_PALM_UP, 3);
       }
       break;
     }
@@ -10161,7 +10150,7 @@ void Player_UpdateBatWarp(Player* p) {
       AuxAnim_SetAnim(&p->beastAnim, p->batAnim, 0, p->animDir, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       if (++p->stateTimer > 27) {
-        Player_SetAction(p, PACT_UNK_7, 1);
+        Player_SetAction(p, PACT_PALM_UP, 1);
       }
       break;
     }
@@ -10176,7 +10165,7 @@ void Player_UpdateBatWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -10202,7 +10191,7 @@ void Player_UpdateBatWarp(Player* p) {
       p->beast.scaleY = 120;
       p->floatHeight = (8 - p->stateTimer) * 200 + 160;
       if (++p->stateTimer > 7) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       }
       break;
     }
@@ -10220,7 +10209,7 @@ void Player_UpdateBatWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 5);
+        Player_SetAction(p, PACT_PALM_UP, 5);
       }
       break;
     }
@@ -10452,7 +10441,7 @@ void Player_UpdateMouseWarp(Player* p) {
       AuxAnim_SetAnim(&p->beastAnim, p->mouseAnim, 0, p->animDir, p->xflip);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       if (++p->stateTimer > 27) {
-        Player_SetAction(p, PACT_UNK_7, 1);
+        Player_SetAction(p, PACT_PALM_UP, 1);
       }
       break;
     }
@@ -10465,7 +10454,7 @@ void Player_UpdateMouseWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -10493,7 +10482,7 @@ void Player_UpdateMouseWarp(Player* p) {
       p->beast.scaleY = 120;
       p->floatHeight = (8 - p->stateTimer) * 200 + 160;
       if (++p->stateTimer > 7) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       }
       break;
     }
@@ -10511,7 +10500,7 @@ void Player_UpdateMouseWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 5);
+        Player_SetAction(p, PACT_PALM_UP, 5);
       }
       break;
     }
@@ -10598,7 +10587,7 @@ void Player_UpdateSleepingWarp(Player* p) {
       AuxAnim_SetAnim(&p->beastAnim, p->coffinAnim, p->coffin, 0, 0);
       AuxSprite_AdvanceAnim(&p->beast, &p->beastAnim);
       if (++p->stateTimer > 27) {
-        Player_SetAction(p, PACT_UNK_7, 1);
+        Player_SetAction(p, PACT_PALM_UP, 1);
       }
       break;
     }
@@ -10611,7 +10600,7 @@ void Player_UpdateSleepingWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -10639,7 +10628,7 @@ void Player_UpdateSleepingWarp(Player* p) {
       p->beast.scaleY = 120;
       p->floatHeight = (8 - p->stateTimer) * 200 + 160;
       if (++p->stateTimer > 7) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       }
       break;
     }
@@ -10657,7 +10646,7 @@ void Player_UpdateSleepingWarp(Player* p) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
       }
       if (++p->stateTimer > 15) {
-        Player_SetAction(p, PACT_UNK_7, 5);
+        Player_SetAction(p, PACT_PALM_UP, 5);
       }
       break;
     }
@@ -10723,7 +10712,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
     case 0: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
       if (p->input->pressed & A_BUTTON) {
-        Player_SetAction(p, PACT_UNK_7, 1);
+        Player_SetAction(p, PACT_PALM_UP, 1);
       }
       break;
     }
@@ -10739,15 +10728,15 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
         PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          Player_SetAction(p, PACT_UNK_7, 4);
+          Player_SetAction(p, PACT_PALM_UP, 4);
         } else if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
           PlaySound_082406e0(NOISE_SOLAR_CHARGE);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 2);
+          Player_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 3);
+          Player_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -10765,18 +10754,18 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (!Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
         sound_08240740(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 3);
+        Player_SetAction(p, PACT_PALM_UP, 3);
       } else {
         s32 sun = gStat->sunGauge;
 
         p->timedCharge += sun;
         if (p->timedCharge >= p->timedChargeGoal) {
           HUD_RemoveCountdown();
-          Player_SetAction(p, PACT_UNK_7, 5);
+          Player_SetAction(p, PACT_PALM_UP, 5);
           if (p->doneScriptID != 0) {
             s32 id = p->doneScriptID;
             ScriptArgs args;
@@ -10797,12 +10786,12 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
         PlaySound_082406e0(NOISE_SOLAR_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -10810,7 +10799,7 @@ void Player_UpdateTimedSolarCharge(Player* p) {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 11), Q6(1))) {
         Player_SetAnimFacing(p);
-        Player_SetAction(p, PACT_UNK_7, 0);
+        Player_SetAction(p, PACT_PALM_UP, 0);
       }
       break;
     }
@@ -10853,7 +10842,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
     case 0: {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 0), Q6(1));
       if (p->input->pressed & A_BUTTON) {
-        Player_SetAction(p, PACT_UNK_7, 1);
+        Player_SetAction(p, PACT_PALM_UP, 1);
       }
       break;
     }
@@ -10869,15 +10858,15 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 8), Q6(1))) {
         PlaySound_082406e0(SE_PALM);
         if (!(p->input->down & A_BUTTON)) {
-          Player_SetAction(p, PACT_UNK_7, 4);
+          Player_SetAction(p, PACT_PALM_UP, 4);
         } else if (!Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
           PlaySound_082406e0(VO_SABATA_ANKOKU);
           p->chargeSoundOn = 1;
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 2);
+          Player_SetAction(p, PACT_PALM_UP, 2);
         } else {
           p->chargeVoiceTimer = 0;
-          Player_SetAction(p, PACT_UNK_7, 3);
+          Player_SetAction(p, PACT_PALM_UP, 3);
         }
       }
       break;
@@ -10904,11 +10893,11 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       if (!(p->input->down & A_BUTTON)) {
         sound_08240740(NOISE_DARK_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
         sound_08240740(NOISE_DARK_CHARGE);
         p->chargeSoundOn = 0;
-        Player_SetAction(p, PACT_UNK_7, 3);
+        Player_SetAction(p, PACT_PALM_UP, 3);
       } else {
         p->timedCharge += 4;
         if (p->timedCharge >= p->timedChargeGoal) {
@@ -10934,12 +10923,12 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 10), Q6(1));
       p->shadowOffset.z = 30;
       if (!(p->input->down & A_BUTTON)) {
-        Player_SetAction(p, PACT_UNK_7, 4);
+        Player_SetAction(p, PACT_PALM_UP, 4);
       } else if (!Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
         PlaySound_082406e0(NOISE_DARK_CHARGE);
         p->chargeSoundOn = 1;
         p->chargeVoiceTimer = 0;
-        Player_SetAction(p, PACT_UNK_7, 2);
+        Player_SetAction(p, PACT_PALM_UP, 2);
       }
       break;
     }
@@ -10947,7 +10936,7 @@ NON_MATCH void Player_UpdateTimedDarkCharge(Player* p) {
       p->shadowOffset.z = 15;
       if (Player_PlayAnim(p, Player_GetAnimIdx(p->kind, 11), Q6(1))) {
         Player_SetAnimFacing(p);
-        Player_SetAction(p, PACT_UNK_7, 0);
+        Player_SetAction(p, PACT_PALM_UP, 0);
       }
       break;
     }
@@ -11178,7 +11167,7 @@ s32 Player_DecideAction(Player* p) {
     case PACT_DASH:
     case PACT_ATTACK:
     case PACT_PUSH:
-    case PACT_UNK_7:
+    case PACT_PALM_UP:
     case PACT_REFUELING:
     case PACT_SUN_MAGIC:
     case PACT_TRANSFORM:
@@ -11223,7 +11212,7 @@ s32 Player_DecideAction(Player* p) {
         } else if (MapItemManager_TryOpen(&p->mover)) {
           action = PACT_IDLE;
         } else {
-          action = PACT_UNK_7;
+          action = PACT_PALM_UP;
         }
       } else if ((s16)p->facingHistory[0] == -1 || (p->input->down & R_BUTTON)) {
         action = PACT_IDLE;
@@ -11302,7 +11291,7 @@ void Player_UpdateDjango(Player* p) {
       [PACT_WALL] = Player_UpdateWall,
       [PACT_PUSH] = Player_UpdatePush,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-      [PACT_UNK_7] = Player_UpdateSolarCharge,
+      [PACT_PALM_UP] = Player_UpdateSolarCharge,
       [PACT_REFUELING] = Player_UpdateSolarStand,
       [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
       [PACT_TRANSFORM] = MagicTransform_0806b92c,
@@ -11383,7 +11372,7 @@ void Player_UpdateDjango(Player* p) {
 
             if ((u32)TileHeightAt(&pos) >= (u32)(p->mover.pos.y + Q8(0.782))) {
               s32 attr = GetTileAttrAt(&pos);
-              if (!(attr & TATTR_UNK_2)) {
+              if (!(attr & TATTR_LIFT)) {
                 p->actionDir = p->facing;
                 p->wallSidling = 0;
                 Player_SetAction(p, PACT_WALL, 0);
@@ -11430,7 +11419,7 @@ void Player_UpdateSabata(Player* p) {
       [PACT_WALL] = Player_UpdateWall,
       [PACT_PUSH] = Player_UpdatePush,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-      [PACT_UNK_7] = Player_UpdateDarkCharge,
+      [PACT_PALM_UP] = Player_UpdateDarkCharge,
       [PACT_REFUELING] = Player_UpdateSolarStand,
       [PACT_SUN_MAGIC] = Sabata_BlackSun,
       [PACT_SEKIKA] = Player_UpdatePetrified,
@@ -11499,7 +11488,7 @@ void Player_UpdateSabata(Player* p) {
 
             if ((u32)TileHeightAt(&pos) >= (u32)(p->mover.pos.y + Q8(0.782))) {
               attr = GetTileAttrAt(&pos);
-              if (!(attr & TATTR_UNK_2)) {
+              if (!(attr & TATTR_LIFT)) {
                 p->actionDir = p->facing;
                 p->wallSidling = 0;
                 Player_SetAction(p, PACT_WALL, 0);
@@ -11964,7 +11953,7 @@ void Player_UpdateCrossoverDjango(Player* p) {
       [PACT_WALL] = Player_UpdateWall,
       [PACT_PUSH] = Player_UpdatePush,
       [PACT_PULL_COFFIN] = Player_UpdatePullCoffin,
-      [PACT_UNK_7] = Player_UpdateSolarCharge,
+      [PACT_PALM_UP] = Player_UpdateSolarCharge,
       [PACT_REFUELING] = Player_UpdateSolarStand,
       [PACT_SUN_MAGIC] = MagicRisingSun_08068944,
       [PACT_TRANSFORM] = MagicTransform_0806b92c,
@@ -12040,7 +12029,7 @@ void Player_UpdateCrossoverDjango(Player* p) {
           height = TileHeightAt(&pos);
           if ((u32)height >= (u32)(p->mover.pos.y + Q8(0.782))) {
             attr = GetTileAttrAt(&pos);
-            if (!(attr & TATTR_UNK_2)) {
+            if (!(attr & TATTR_LIFT)) {
               p->actionDir = p->facing;
               p->wallSidling = 0;
               Player_SetAction(p, PACT_WALL, 0);
@@ -12160,7 +12149,7 @@ bool32 FUN_0807a570(Player* p, s32 param_2) {
   bool32 ret;
 
   if (gGameFlags & GAMEFLAG_LINK) {
-    FUN_080d040c(p);
+    PlayerLink_EnterDeadState(p);
     Player_SetAction(p, PACT_FALLDEATH, 0);
     return FALSE;
   }
@@ -12379,16 +12368,16 @@ void Player_ClearElevatorFlags(Player* p, u32 flags) {
   p->elevatorID = 0;
 }
 
-void Player_SetKnockbackOrigin(Player* p, Vec3* origin) {
-  p->knockbackOrigin = origin;
-  p->originHitPending = TRUE;
+void Player_SetLavaHitCenter(Player* p, Vec3* origin) {
+  p->hazardCenter = origin;
+  p->lavaHitPending = TRUE;
 }
 
 bool32 FUN_0807a9d0(Player* p) {
   if (!(p->mode & PMODE_ACTIVE)) {
     return FALSE;
   }
-  if (p->action > PACT_WALK && p->action != PACT_ATTACK && (p->action != PACT_UNK_7 || p->state != 0)) {
+  if (p->action > PACT_WALK && p->action != PACT_ATTACK && (p->action != PACT_PALM_UP || p->state != 0)) {
     return FALSE;
   }
   return TRUE;
@@ -12488,7 +12477,7 @@ s32 Player_HoldGrabbed(Player* p, Vec3* pos, Vec3* hitPos, s32 animOffset, s32 x
   }
   if (power > 0) {
     s32 ret = Player_TakeInstantHit(p, power, 0, 0, 0, attrs);
-    if (p->mover.unk_4 == 0 && hitPos != NULL) {
+    if (p->mover.kind == 0 && hitPos != NULL) {
       p->damageNumOffset = *hitPos;
     }
     return ret;
@@ -13167,7 +13156,7 @@ void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID) {
   p->animDir = 1;
   p->xflip = 0;
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_7, 0);
+  Player_SetAction(p, PACT_PALM_UP, 0);
   p->lockedUpdate = FUN_0807304c;
 }
 
@@ -13178,15 +13167,15 @@ void FUN_0807bc14(Player* p, s32 param_2, u32 scriptID) {
   p->animDir = 0;
   p->xflip = 0;
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_7, 0);
+  Player_SetAction(p, PACT_PALM_UP, 0);
   p->lockedUpdate = FUN_0807304c;
 }
 
 void FUN_0807bc64(Player* p, u32 scriptID) {
-  if (p->mode == PMODE_LOCKED && p->action == PACT_UNK_7 && p->state != 0) {
+  if (p->mode == PMODE_LOCKED && p->action == PACT_PALM_UP && p->state != 0) {
     p->doneScriptID = scriptID;
     Player_EnterLockedState(p);
-    Player_SetAction(p, PACT_UNK_7, 3);
+    Player_SetAction(p, PACT_PALM_UP, 3);
     p->lockedUpdate = FUN_0807304c;
   }
 }
@@ -13364,12 +13353,12 @@ void Player_LockProne(Player* p, Dir8S32 dir) {
   p->lockedUpdate = Player_UpdateLockedCollapse;
 }
 
-// 操作不能にしてワープで消える演出 (PACT_UNK_7 の state 0) をフォームごとに始める
+// 操作不能にしてワープで消える演出 (PACT_PALM_UP の state 0) をフォームごとに始める
 void Player_LockWarpOut(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_7, 0);
+  Player_SetAction(p, PACT_PALM_UP, 0);
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
     if (p->facing > DIR8_DOWN) {
@@ -13407,11 +13396,11 @@ void FUN_0807c30c(Player* p, Dir8S32 dir, u32 scriptID) {
   Player_SetAnimFacing(p);
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_7, 7);
+  Player_SetAction(p, PACT_PALM_UP, 7);
   p->lockedUpdate = Player_UpdateWarp;
 }
 
-// 向きとスクリプトを指定して操作不能状態に移し, フォームごとの PACT_UNK_7 の処理を lockedUpdate に据える (Cmd_WarpInPlayer から)
+// 向きとスクリプトを指定して操作不能状態に移し, フォームごとの PACT_PALM_UP の処理を lockedUpdate に据える (Cmd_WarpInPlayer から)
 void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) p->facing = dir;
   p->doneScriptID = scriptID;
@@ -13419,18 +13408,18 @@ void Player_LockWarpIn(Player* p, Dir8S32 dir, u32 scriptID) {
   if (p->kind == PLAYER_BAT) {
     p->facing |= 1;
     PLAYER_SET_ANIM_4DIR(p, p->facing);
-    Player_SetAction(p, PACT_UNK_7, 3);
+    Player_SetAction(p, PACT_PALM_UP, 3);
     p->lockedUpdate = Player_UpdateBatWarp;
   } else {
     Player_SetAnimFacing(p);
     if (p->kind == PLAYER_MOUSE) {
-      Player_SetAction(p, PACT_UNK_7, 3);
+      Player_SetAction(p, PACT_PALM_UP, 3);
       p->lockedUpdate = Player_UpdateMouseWarp;
     } else if (p->kind == PLAYER_SLEEPING) {
-      Player_SetAction(p, PACT_UNK_7, 3);
+      Player_SetAction(p, PACT_PALM_UP, 3);
       p->lockedUpdate = Player_UpdateSleepingWarp;
     } else {
-      Player_SetAction(p, PACT_UNK_7, 4);
+      Player_SetAction(p, PACT_PALM_UP, 4);
       p->lockedUpdate = Player_UpdateWarp;
     }
   }
@@ -13548,7 +13537,7 @@ void Player_LockFireBuster(Player* p, s32 scriptID) {
   p->lockedUpdate = Player_UpdateLockedRockBuster;
 }
 
-// mode ごとに向きを決めて PACT_UNK_7 の行動に入れ, 操作不能状態にする, mode が 0..3 以外なら何もしない
+// mode ごとに向きを決めて PACT_PALM_UP の行動に入れ, 操作不能状態にする, mode が 0..3 以外なら何もしない
 void FUN_0807c7c8(Player* p, s32 mode) {
   if (mode == 0) {
     p->targetDir = 1;
@@ -13572,7 +13561,7 @@ void FUN_0807c7c8(Player* p, s32 mode) {
     return;
   }
   Player_EnterLockedState(p);
-  Player_SetAction(p, PACT_UNK_7, p->state);
+  Player_SetAction(p, PACT_PALM_UP, p->state);
   p->lockedUpdate = FUN_08074a40;
 }
 
@@ -13615,7 +13604,8 @@ void FUN_0807c968(Player* p, s32 val) {
   p->lockedUpdate = FUN_080749b0;
 }
 
-void FUN_0807c9ac(Player* p, s32 xflip, u32 scriptID) {
+// xflip なら左下, そうでなければ右下を向かせ, 操作不能にしてマフラーがなびく決めポーズで据え置く
+void Player_LockSabataScarfPose(Player* p, s32 xflip, u32 scriptID) {
   if (xflip != 0) {
     p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
@@ -13628,10 +13618,11 @@ void FUN_0807c9ac(Player* p, s32 xflip, u32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_IDLE, 0);
-  p->lockedUpdate = FUN_080728a8;
+  p->lockedUpdate = Player_UpdateSabataScarfPose;
 }
 
-void FUN_0807ca24(Player* p, s32 xflip, u32 scriptID) {
+// xflip なら左下, そうでなければ右下を向かせ, 操作不能にしてマフラーがなびく決めポーズのまま点滅しながら現れさせる
+void Player_LockSabataScarfPoseAppear(Player* p, s32 xflip, u32 scriptID) {
   if (xflip != 0) {
     p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
@@ -13644,10 +13635,11 @@ void FUN_0807ca24(Player* p, s32 xflip, u32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_IDLE, 3);
-  p->lockedUpdate = FUN_080728a8;
+  p->lockedUpdate = Player_UpdateSabataScarfPose;
 }
 
-void FUN_0807ca9c(Player* p, s32 xflip, u32 scriptID) {
+// xflip なら左下, そうでなければ右下を向かせ, 操作不能にしてマフラーがなびく決めポーズのまま点滅しながら消して隠す
+void Player_LockSabataScarfPoseVanish(Player* p, s32 xflip, u32 scriptID) {
   if (xflip != 0) {
     p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
@@ -13660,10 +13652,11 @@ void FUN_0807ca9c(Player* p, s32 xflip, u32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_IDLE, 4);
-  p->lockedUpdate = FUN_080728a8;
+  p->lockedUpdate = Player_UpdateSabataScarfPose;
 }
 
-void FUN_0807cb14(Player* p, bool32 xflip, u32 scriptID) {
+// xflip なら左下, そうでなければ右下を向かせ, 操作不能にしてマフラーがなびく決めポーズを1回とってから待機に戻す
+void Player_LockSabataScarfPoseOnce(Player* p, bool32 xflip, u32 scriptID) {
   if (xflip) {
     p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
@@ -13676,10 +13669,11 @@ void FUN_0807cb14(Player* p, bool32 xflip, u32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_IDLE, 2);
-  p->lockedUpdate = FUN_080728a8;
+  p->lockedUpdate = Player_UpdateSabataScarfPose;
 }
 
-void FUN_0807cb8c(Player* p, Dir8S32 dir, u32 scriptID) {
+// dir (負なら今の向き) を斜めに丸めて向かせ, 操作不能にして後ろ姿で手を振らせてから待機に戻す
+void Player_LockSabataWaveHand(Player* p, Dir8S32 dir, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -13694,10 +13688,11 @@ void FUN_0807cb8c(Player* p, Dir8S32 dir, u32 scriptID) {
   p->doneScriptID = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_IDLE, 0);
-  p->lockedUpdate = FUN_080729e0;
+  p->lockedUpdate = Player_UpdateSabataWaveHand;
 }
 
-void FUN_0807cc14(Player* p, s32 xflip) {
+// xflip なら左下, そうでなければ右下を向かせ, 操作不能にしてベッドで横たわる姿勢で据え置く
+void Player_LockLyingInBed(Player* p, s32 xflip) {
   if (xflip != 0) {
     p->facing = DIR8_DOWN_LEFT;
     p->animDir = 0;
@@ -13709,7 +13704,7 @@ void FUN_0807cc14(Player* p, s32 xflip) {
   }
   Player_EnterLockedState(p);
   Player_SetAction(p, PACT_IDLE, 0);
-  p->lockedUpdate = FUN_08072a0c;
+  p->lockedUpdate = Player_UpdateLyingInBed;
 }
 
 // バット / マウス / スリーピングなら操作不能にして黒ジャンゴへ戻す演出を据えて TRUE, それ以外は FALSE
@@ -13859,7 +13854,7 @@ void Player_Unlock(Player* p) {
     p->unk_4a8 = 0;
   }
   p->mode = PMODE_ACTIVE;
-  p->originKnockback = FALSE;
+  p->lavaKnockback = FALSE;
 }
 
 // コマンドのヘルパーで、 '.d' で渡されたプレイヤーの向きを取得する
@@ -13939,7 +13934,7 @@ void Cmd_TurnPlayerTo(void) {
   }
 }
 
-// 0x061E
+// 0x061E, 不使用
 void Cmd_061E(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
@@ -13950,7 +13945,7 @@ void Cmd_061E(void) {
   }
 }
 
-// 0x6E7D
+// 0x6E7D, 不使用
 void Cmd_6E7D(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
@@ -14311,78 +14306,78 @@ void Cmd_RevertToDarkDjango(void) {
   }
 }
 
-// 0xF982
-void Cmd_F982(void) {
+// 0xF982, .i のプレイヤー (サバタ) をマフラーがなびく決めポーズで据え置く, .r が 0 以外なら左右反転, スクリプトからは使われていない
+void Cmd_SabataScarfPose(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
-    FUN_0807c9ac(p, n, Player_GetCmdArgScript());
+    Player_LockSabataScarfPose(p, n, Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
-// 0x05E2
-void Cmd_05E2(void) {
+// 0x05E2, .i のプレイヤー (サバタ) をマフラーがなびく決めポーズのまま点滅しながら現れさせる, .r が 0 以外なら左右反転, スクリプトからは使われていない
+void Cmd_SabataScarfPoseAppear(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
-    FUN_0807ca24(p, n, Player_GetCmdArgScript());
+    Player_LockSabataScarfPoseAppear(p, n, Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
-// 0x546C
-void Cmd_546C(void) {
+// 0x546C, .i のプレイヤー (サバタ) をマフラーがなびく決めポーズのまま点滅しながら消して隠す, .r が 0 以外なら左右反転, スクリプトからは使われていない
+void Cmd_SabataScarfPoseVanish(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
-    FUN_0807ca9c(p, n, Player_GetCmdArgScript());
+    Player_LockSabataScarfPoseVanish(p, n, Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
-// 0x75B9
-void Cmd_75B9(void) {
+// 0x75B9, .i のプレイヤー (サバタ) にマフラーがなびく決めポーズを1回とらせて待機に戻す, .r が 0 以外なら左右反転, スクリプトからは使われていない
+void Cmd_SabataScarfPoseOnce(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
-    FUN_0807cb14(p, n, Player_GetCmdArgScript());
+    Player_LockSabataScarfPoseOnce(p, n, Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
-// 0x3C3E
-void Cmd_3C3E(void) {
+// 0x3C3E, .i のプレイヤー (サバタ) を .d の斜め向きにして後ろ姿で手を振らせる, スクリプトからは使われていない
+void Cmd_SabataWaveHand(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('d') ? VM_GetValue() : 0;
 
-    FUN_0807cb8c(p, n, Player_GetCmdArgScript());
+    Player_LockSabataWaveHand(p, n, Player_GetCmdArgScript());
     Player_SetDoneRunScript(p);
   }
 }
 
-// 0x827A
-void Cmd_827A(void) {
+// 0x827A, .i のプレイヤーをベッドで横たわる姿勢で据え置く, .r が 0 以外なら左右反転, 倒れたジャンゴが目を覚ます場面や寝込んだサバタに使う
+void Cmd_PlayerLieInBed(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807cc14(p, VM_SeekToNamedArg('r') ? VM_GetValue() : 0);
+    Player_LockLyingInBed(p, VM_SeekToNamedArg('r') ? VM_GetValue() : 0);
     Player_SetDoneRunScript(p);
   }
 }
@@ -14416,8 +14411,8 @@ void Cmd_UnlockPlayer(void) {
   }
 }
 
-// 0x30CC
-void Cmd_30CC(void) {
+// 0x30CC, HashName("プレイヤーチャージイベント設定"), 一定時間内に太陽チャージを行う必要のあるカットシーンで使う
+void Cmd_StartChargeCountdown(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -14425,7 +14420,7 @@ void Cmd_30CC(void) {
     if (VM_SeekToNamedArg('t')) {
       p->countdown = VM_GetValue();
     } else {
-      p->countdown = 600;
+      p->countdown = SECOND(10);
     }
     HUD_StartCountdown(&p->countdown);
     if (VM_SeekToNamedArg('c')) {
@@ -14438,7 +14433,7 @@ void Cmd_30CC(void) {
     p->facing = DIR8_DOWN;
     Player_SetAnimFacing(p);
     Player_EnterLockedState(p);
-    Player_SetAction(p, PACT_UNK_7, 0);
+    Player_SetAction(p, PACT_PALM_UP, 0);
     if (p->kind == PLAYER_SABATA) {
       p->lockedUpdate = Player_UpdateTimedDarkCharge;
     } else {
@@ -14634,32 +14629,32 @@ void Player_HandleMessages(Player* p) {
         break;
       }
       case 31: {
-        FUN_0807c9ac(p, msg->args[0], 0);
+        Player_LockSabataScarfPose(p, msg->args[0], 0);
         Player_SetDoneEndWait(p);
         break;
       }
       case 33: {
-        FUN_0807ca24(p, msg->args[0], 0);
+        Player_LockSabataScarfPoseAppear(p, msg->args[0], 0);
         Player_SetDoneEndWait(p);
         break;
       }
       case 34: {
-        FUN_0807ca9c(p, msg->args[0], 0);
+        Player_LockSabataScarfPoseVanish(p, msg->args[0], 0);
         Player_SetDoneEndWait(p);
         break;
       }
       case 32: {
-        FUN_0807cb14(p, msg->args[0], 0);
+        Player_LockSabataScarfPoseOnce(p, msg->args[0], 0);
         Player_SetDoneEndWait(p);
         break;
       }
       case 35: {
-        FUN_0807cb8c(p, msg->args[0], 0);
+        Player_LockSabataWaveHand(p, msg->args[0], 0);
         Player_SetDoneEndWait(p);
         break;
       }
       case 26: {
-        FUN_0807cc14(p, msg->args[0]);
+        Player_LockLyingInBed(p, msg->args[0]);
         Player_SetDoneEndWait(p);
         Player_EndDoneWait(p);
         break;
@@ -14770,7 +14765,7 @@ void Django_Spike(Player* p) {
 
   VEC3_SET(halfSize, Q8(0.47), Q8(0.47), Q8(0.47));
   VEC3_SET(offset, 0, Q8(0.47), 0);
-  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 1 << p->mover.unk_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_DAMAGE, 0, 1 << p->mover.kind, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, 10, 40, 0, HBATTR_BLOW, 10);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->mover.pos, 0);
@@ -14821,7 +14816,7 @@ u32 Player_HandleHurt(Player* p, Hitbox* a, Hitbox* b) {
       p->formRequestKind = PLAYER_BDJANGO;
     }
     if (p->spiderWebIdx >= 0) {
-      FUN_080dab9c(p->spiderWebIdx);
+      SpiderWeb_Break(p->spiderWebIdx);
     }
     if (HasGoodCond(p, GOOD_INVISIBLE)) {
       p->goodCondID = 0;
@@ -14987,10 +14982,10 @@ bool32 Player_UpdateDamage(Player* p) {
     return TRUE;
   }
 
-  if (p->originHitPending) {
-    p->damage += Player_ApplyOriginHit(p);
-  } else if (p->tileHitPending) {
-    p->damage += Player_ApplyTileHit(p);
+  if (p->lavaHitPending) {
+    p->damage += Player_ApplyLavaHit(p);
+  } else if (p->puddleHitPending) {
+    p->damage += Player_ApplyPuddleHit(p);
   }
 
   if (p->hurtbox.iframes == 0) {
@@ -15104,7 +15099,7 @@ void Player_SaveState(Player* p) {
   for (i = 0; i < 3; i++) {
     gBadCondTimer[i] = p->badCondTimer[i];
   }
-  gPlayerModes[p->mover.unk_4] = p->mode;
+  gPlayerModes[p->mover.kind] = p->mode;
   gSavedMagicEnchanted = p->magic.enchanted;
 }
 
@@ -15291,7 +15286,7 @@ static s32 Player_Update(Player* p) {
   Player_UpdatePoseAndShadow(p);
   Player_RefreshDerivedStats(p);
   p->unk_3ea = 0;
-  if (p->mover.unk_4 == 0) {
+  if (p->mover.kind == 0) {
     Player_SaveState(p);
   }
 
@@ -15313,7 +15308,7 @@ static s32 Player_Destroy(Player* p) {
   Player_StopEneChargeSound(p);
   gCWolfTarget = NULL;
   gChangeWolfBiting = 0;
-  gPlayerPtr[p->mover.unk_4] = NULL;
+  gPlayerPtr[p->mover.kind] = NULL;
   gPlayerCount--;
   return 0;
 }
@@ -15331,9 +15326,9 @@ static s32 Player_Init(Player* p, u32 id, void* _) {
   Player_InitEffects(p);
   Player_RegisterMsgQueue(p);
   Player_ReadEventScriptArg(p);
-  gPlayerPtr[(p->mover).unk_4] = p;
+  gPlayerPtr[(p->mover).kind] = p;
   gPlayerCount++;
-  if ((p->mover).unk_4 == 0) {
+  if ((p->mover).kind == 0) {
     Player_SaveState(p);
     QC_Rebuild();
   }

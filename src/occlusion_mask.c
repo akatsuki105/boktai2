@@ -229,8 +229,8 @@ NON_MATCH s32 OcclusionMask_Update(OcclusionMask* p) {
 
       idxs[j] = gCollisionMap->rowOffsets[zs[j]] + xs[j];
       tile = TileAtIndex(idxs[j]);
-      // TATTR_UNK_4 のタイルは隠さない
-      if (tile == NULL || (tile->attr & TATTR_UNK_4)) {
+      // TATTR_NO_OCCLUDE のタイルは隠さない
+      if (tile == NULL || (tile->attr & TATTR_NO_OCCLUDE)) {
         heights[j + 1] = 0;
         occluders[j + 1] = 0xFF;
       } else {
@@ -239,7 +239,7 @@ NON_MATCH s32 OcclusionMask_Update(OcclusionMask* p) {
         if (abs(heights[j + 1] - heights[0]) > 1) {
           CollisionMapTile* raw = gCollisionMap->tiledata != NULL ? &gCollisionMap->tiledata->tiles[idxs[j]] : NULL;
 
-          if (raw == NULL || (raw->attr & TATTR_UNK_4)) {
+          if (raw == NULL || (raw->attr & TATTR_NO_OCCLUDE)) {
             occluders[j + 1] = 0xFF;
           } else if ((raw->heightStairs & 0xF) <= heights[0]) {
             occluders[j + 1] = tile->occluder;

@@ -51,7 +51,7 @@ s32 Boss_Init(Boss* p, u32 id, BossID bossID, Vec3* pos, u32 angle) {
   Vec3 v;
 
   p->bossID = bossID;
-  Mover_Init(&p->mover, id, pos, angle, 5, p);
+  Mover_Init(&p->mover, id, pos, angle, MOVER_BOSS, p);
   VEC3_SET(v, 0, Q8(1), 0);
   FUN_0823b47c(&p->mover, &v);
   Boss_SetAngle(p, angle);
@@ -102,12 +102,12 @@ s32 FUN_08022c24(Boss* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
-// facing が 2 以上なら左右反転してアニメを切り替える, 向きによる variant は使わない
+// dir4 が 2 以上なら左右反転してアニメを切り替える, 向きによる variant は使わない
 void Boss_PlayAnimFlip(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 animIdx, u32 playMode, u32 flags) {
   p->animVariant = 0;
   p->animID = animIdx;
   MainSprite_SetAnim(sprite, gfx, p->animID, playMode, flags);
-  if (p->facing > DIR4_EAST) {
+  if (p->dir4 > DIR4_EAST) {
     p->xflip = TRUE;
     sprite->flags |= SPRFLAG_XFLIP;
   } else {
@@ -117,12 +117,12 @@ void Boss_PlayAnimFlip(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 anim
 }
 
 void Boss_PlayAnimFacing(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 animIdx, u32 playMode, u32 variant, u32 flags) {
-  if (p->facing == DIR4_EAST || p->facing == DIR4_SOUTH) {
+  if (p->dir4 == DIR4_EAST || p->dir4 == DIR4_SOUTH) {
     p->animVariant = variant;
   } else {
     p->animVariant = 0;
   }
-  if (p->facing > DIR4_EAST) {
+  if (p->dir4 > DIR4_EAST) {
     p->xflip = TRUE;
   } else {
     p->xflip = FALSE;
@@ -136,9 +136,9 @@ void Boss_PlayAnimFacing(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 an
   }
 }
 
-// 8方向の dir でアニメの向きを選び、5..7 は 3..1 を左右反転して使う, variant は読まない
+// 8方向の dir8 でアニメの向きを選び、5..7 は 3..1 を左右反転して使う, variant は読まない
 void Boss_PlayAnimDir8(Boss* p, MainSprite* sprite, MainSpriteGfx* gfx, u32 animIdx, u32 playMode, u32 variant, u32 flags) {
-  u8 dir = p->dir;
+  u8 dir = p->dir8;
 
   if (dir >= 5 && dir <= 7) {
     p->animVariant = 8 - dir;

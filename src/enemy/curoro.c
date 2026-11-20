@@ -50,7 +50,7 @@ void Curoro_HoldPlayer(Curoro* p);
 void FUN_0813ac34(Curoro* p);
 void FUN_0813ad34(Curoro* p);
 void FUN_0813ad64(Curoro* p);
-void FUN_0813ae6c(Curoro* p);
+void Curoro_StateTurn(Curoro* p);
 void FUN_0813b100(Curoro* p, s32 param_2);
 void FUN_0813b22c(Curoro* p, s32 param_2);
 void Curoro_StateDamaged(Curoro* p);
@@ -91,6 +91,34 @@ static inline bool32 IsPlayerMini(void) {
   u16 timer = gGoodCondTimer;
 
   return timer != 0 && gGoodCondID == GOOD_MINI;
+}
+
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Curoro_PlayDirAnim(Curoro* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
 }
 
 static inline bool8 Curoro_TestUnk658(Curoro* p, u32 bit) {
@@ -372,51 +400,15 @@ NON_MATCH void Curoro_HoldPlayer(Curoro* p) {
 #endif
 }
 
-// Enemy_PlayAnim と同じ残差 (定数 4 を r8 に置く形), 再生部を anim/variant/flags を値で受ける inline にすると 108/109 まで寄るが r8 と r6 の割り当てが残る, mode の型と三項演算子は試済
-NON_MATCH void FUN_0813ac34(Curoro* p) {
-#ifdef NONMATCHING_C
+// 向きに合わせて animTable[1] のアニメを流す
+void FUN_0813ac34(Curoro* p) {
   u32 variant, flags;
-  s32 anim;
 
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
   Curoro_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-  anim = (p->e).animTable[1].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s = &(p->e).s->aux;
-
-    (p->e).playingAnim = anim;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + variant;
-    s32 mode;
-
-    if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-      if (flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-      if (flags == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-    }
-    (p->e).playingAnim = a;
-    mode = MAIN_ANIM_FORCE_POSE;
-    if (flags & ANIM_PLAY_REVERSE) {
-      mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-    }
-    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-    if (flags & ANIM_PLAY_XFLIP) {
-      s->flags |= SPRFLAG_XFLIP;
-    } else {
-      s->flags &= ~SPRFLAG_XFLIP;
-    }
-  }
-  (p->e).animForceRestart = 0;
-#else
-  INCFUNC("asm/func/FUN_0813ac34.inc");
-#endif
+  Curoro_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
 }
 
 void FUN_0813ad34(Curoro* p) {
@@ -425,58 +417,22 @@ void FUN_0813ad34(Curoro* p) {
   }
 }
 
-// FUN_0813ac34 と同じ残差 (先頭に Enemy_PlayAnim があるだけ), 再生部の inline 化で r8 が出るところまでは FUN_0813ac34 で確認済
-NON_MATCH void FUN_0813ad64(Curoro* p) {
-#ifdef NONMATCHING_C
+// 0 番のアニメを流してから向きに合わせて animTable[1] のアニメを流す
+void FUN_0813ad64(Curoro* p) {
   u32 variant, flags;
-  s32 anim;
 
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
   Enemy_PlayAnim(&p->e, 0);
   Curoro_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-  anim = (p->e).animTable[1].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s = &(p->e).s->aux;
-
-    (p->e).playingAnim = anim;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + variant;
-    s32 mode;
-
-    if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-      if (flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-      if (flags == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-        return;
-      }
-    }
-    (p->e).playingAnim = a;
-    mode = MAIN_ANIM_FORCE_POSE;
-    if (flags & ANIM_PLAY_REVERSE) {
-      mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-    }
-    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-    if (flags & ANIM_PLAY_XFLIP) {
-      s->flags |= SPRFLAG_XFLIP;
-    } else {
-      s->flags &= ~SPRFLAG_XFLIP;
-    }
-  }
-  (p->e).animForceRestart = 0;
-#else
-  INCFUNC("asm/func/FUN_0813ad64.inc");
-#endif
+  Curoro_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
 }
 
-// 279/284命令, 後半のアニメ再生は FUN_0813ac34 と同じ残差, ほかに mover を指すポインタと sprite の anim のアドレスを r6/r8 に持ち越す形, 1回目の下書きで切り上げ
-NON_MATCH void FUN_0813ae6c(Curoro* p) {
-#ifdef NONMATCHING_C
-  AuxSprite* sprite;
+// 向きを unk_1dc の8方向へ 32 ずつ回し, 揃ったら待機へ移る
+void Curoro_StateTurn(Curoro* p) {
+  Mover* mover = &(p->e).mover;
+  AuxAnimState* animState;
   u32 variant, flags;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -489,110 +445,45 @@ NON_MATCH void FUN_0813ae6c(Curoro* p) {
       (p->e).subStateDone = 1;
       return;
     }
-    if (((cur - (target - 8)) & 7) <= 4) {
+    target -= 8;
+    if (((cur - target) & 7) <= 4) {
       CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
     } else {
       SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
     }
   }
-  sprite = &(p->e).s->aux.spr;
+  animState = &(p->e).s->aux.anim;
   Enemy_UpdateWalkAnimSpeed(&p->e);
   if ((p->e).stateTimer & 4) {
     s32 anim;
 
     Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
     if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
-      (p->e).mover.angle += 32;
+      mover->angle += 32;
     } else {
-      (p->e).mover.angle -= 32;
+      mover->angle -= 32;
     }
-    Curoro_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-    sprite->unk_05 = 0;
-    anim = (p->e).animTable[1].anim;
-    if ((p->e).spriteKind == 0) {
-      EnemyAuxSprite* s = &(p->e).s->aux;
-
-      (p->e).playingAnim = anim;
-      AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-    } else {
-      MainSprite* s = &(p->e).s->main.spr;
-      s32 a = anim + variant;
-      s32 mode;
-
-      if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-        if (flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-          return;
-        }
-        if (flags == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-          return;
-        }
-      }
-      (p->e).playingAnim = a;
-      mode = MAIN_ANIM_FORCE_POSE;
-      if (flags & ANIM_PLAY_REVERSE) {
-        mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-      }
-      MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-      if (flags & ANIM_PLAY_XFLIP) {
-        s->flags |= SPRFLAG_XFLIP;
-      } else {
-        s->flags &= ~SPRFLAG_XFLIP;
-      }
-    }
-    (p->e).animForceRestart = 0;
+    Curoro_GetAnimVariant(mover->angle, &variant, &flags);
+    animState->cmdCount = 0;
+    Curoro_PlayDirAnim(p, (p->e).animTable[1].anim, variant, flags);
   }
-#else
-  INCFUNC("asm/func/FUN_0813ae6c.inc");
-#endif
 }
 
-// FUN_0813ac34 と同じ再生部の残差, 再生部を値渡しの inline にすると早期 return が後半の判定へ落ちる形になり原典の分岐と合うが r8 と r6 の割り当てが残る
-NON_MATCH void FUN_0813b100(Curoro* p, s32 param_2) {
-#ifdef NONMATCHING_C
+// 向きに合わせて animTable[11] のアニメを流し, 30 フレーム未満は flags4 の印を立て, 60 フレームで副状態を終える
+void FUN_0813b100(Curoro* p, s32 param_2) {
   u32 variant, flags;
-  s32 anim;
 
   if ((p->e).stateBegun) {
     (p->e).stateBegun = FALSE;
   }
   Curoro_GetAnimVariant((p->e).mover.angle, &variant, &flags);
-  anim = (p->e).animTable[11].anim;
-  if ((p->e).spriteKind == 0) {
-    EnemyAuxSprite* s = &(p->e).s->aux;
-
-    (p->e).playingAnim = anim;
-    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
-    (p->e).animForceRestart = 0;
-  } else {
-    MainSprite* s = &(p->e).s->main.spr;
-    s32 a = anim + variant;
-
-    if ((p->e).playingAnim != a || (p->e).animForceRestart != 0 || !((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
-      s32 mode;
-
-      (p->e).playingAnim = a;
-      mode = MAIN_ANIM_FORCE_POSE;
-      if (flags & ANIM_PLAY_REVERSE) {
-        mode = MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE;
-      }
-      MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, mode);
-      if (flags & ANIM_PLAY_XFLIP) {
-        s->flags |= SPRFLAG_XFLIP;
-      } else {
-        s->flags &= ~SPRFLAG_XFLIP;
-      }
-      (p->e).animForceRestart = 0;
-    }
-  }
+  Curoro_PlayDirAnim(p, (p->e).animTable[11].anim, variant, flags);
   if (param_2 < 30) {
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
   }
   if (param_2 > 59) {
     (p->e).subStateDone = 1;
   }
-#else
-  INCFUNC("asm/func/FUN_0813b100.inc");
-#endif
 }
 
 void FUN_0813b22c(Curoro* p, s32 param_2) {
@@ -1560,7 +1451,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }
@@ -1640,7 +1531,7 @@ NON_MATCH s32 Curoro_Init(Curoro* p) {
   (p->e).pathNodePos = &p->pathNodePos;
   (p->e).handlerFrame = (EnemyHandler)FUN_0813d404;
   (p->e).getMoveSpeed = (void*)Curoro_GetMoveSpeed;
-  (p->e).handlerTurn = FUN_0813ae6c;
+  (p->e).handlerTurn = Curoro_StateTurn;
   (p->e).handlerMove = FUN_0813ac34;
   (p->e).handlerWait = FUN_0813ad64;
   (p->e).handlerNap = NULL;

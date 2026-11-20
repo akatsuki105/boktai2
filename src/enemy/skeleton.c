@@ -104,29 +104,29 @@ bool32 Enemy_ProcessRequests(Enemy* p);
 bool32 Enemy_ShakeSprite(Enemy* p);
 void FUN_080f06ac(Enemy* p);
 void Enemy_HandleResumeMsg(Enemy* p, u16* msg);
-bool8 Entity081f959c_IsAnyActive(void);
+bool8 OrbitalFlameManager_IsAnyActive(void);
 bool8 FUN_080f0a0c(Enemy* p);
 void Entity081f0298_Spawn(Vec3* pos, u32 angle, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 speed);
-void Entity081f8a28_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
+void Fireball_Spawn(Vec3* pos, Vec3* target, s32 velY, s32 angle, s32 homingTime, s32 turnSpeed, s32 homingDelay, s32 speed, s32 maxSpeed, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 void Entity081f53a8_Spawn(Vec3* pos, Vec3* chaseTarget, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 maxSpeed, s32 turnTime, s32 lifetime, u32 angle);
 void Enemy_StateDefeated(Enemy* p, s32 timer);
 void Entity081f53a8_VanishAll(void);
 void ThunderboltManager_VanishAll(void);
 void Entity081f9cb8_CancelAll(void);
-void Entity081f959c_VanishAll(void);
-void Entity081f959c_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
+void OrbitalFlameManager_VanishAll(void);
+void OrbitalFlame_Spawn(Vec3* pos, u32 angle, s32 angleSpeed, s32 radius, s32 dir, s32 lifetime, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 void ThunderboltManager_Spawn(Vec3* pos, Vec3* target, s32 flyTime, s32 attackCount, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_9, u32 scriptID, u32 explodeScriptID);
 bool8 Entity081f9cb8_ExistsAt(Vec3* pos);
 void Entity081f9cb8_Spawn(Vec3* pos, s32 delay, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes);
 void Skeleton_StateSummonEnemyEnd(Skeleton* p);
 void Skeleton_StateVolleyEnd(Skeleton* p);
-void Skeleton_StateHomingMissileEnd(Skeleton* p);
+void Skeleton_StateFireballEnd(Skeleton* p);
 void Skeleton_StateShootEnd(Skeleton* p);
 void Skeleton_StateDashEnd(Skeleton* p);
 void Skeleton_PickFarPathNode(Skeleton* p, Vec3* to, Vec3* from, s32 minDist);
 void Skeleton_StateCurveShotEnd(Skeleton* p);
 void Skeleton_StateDashSlide(Skeleton* p, s32 timer);
-void Skeleton_StateHomingMissile(Skeleton* p, s32 timer);
+void Skeleton_StateFireball(Skeleton* p, s32 timer);
 void Skeleton_StateLichHoldPosition(Skeleton* p);
 void Skeleton_OnAtkHitbox2Hit(Hitbox* a, Hitbox* b, Skeleton* p);
 void Skeleton_OnDodgeHurt(Hitbox* a, Hitbox* b, Skeleton* p);
@@ -175,7 +175,7 @@ void Skeleton_SubShoot(Skeleton*);
 void Skeleton_SubVolley(Skeleton*);
 void Skeleton_SubCurveShot(Skeleton*);
 void Skeleton_SubSummonSkeletons(Skeleton*);
-void Skeleton_SubHomingMissile(Skeleton*);
+void Skeleton_SubFireball(Skeleton*);
 void Skeleton_SubOrbitFlame(Skeleton*);
 void Skeleton_SubSummonEnemy(Skeleton*);
 void Skeleton_SubKeepDistance(Skeleton*);
@@ -188,7 +188,7 @@ void (*const PTR_ARRAY_085ad52c[11])(Skeleton*) = {
     Skeleton_SubVolley,
     Skeleton_SubCurveShot,
     Skeleton_SubSummonSkeletons,
-    Skeleton_SubHomingMissile,
+    Skeleton_SubFireball,
     Skeleton_SubOrbitFlame,
     Skeleton_SubSummonEnemy,
     Skeleton_SubKeepDistance,
@@ -1643,8 +1643,7 @@ void Skeleton_PickRandomPathNode(Skeleton* p) {
 
 NAKED void Skeleton_SpawnDeathFragments(Skeleton* p) { INCFUNC("asm/func/Skeleton_SpawnDeathFragments.inc"); }
 
-// 向いている方の横向きに, 両側へ 4 本ずつ同じ速さで回る骨 (Entity081f959c) を放つ
-// 向いている方の横向きに, 両側へ 4 本ずつ違う速さで回る骨 (Entity081f959c) を放つ
+// 向いている方の横向きに, 両側へ 4 個ずつ同じ速さで回るオービタルフレイム (OrbitalFlame) を放つ
 // 219/218命令, 残差は向きを r0 で作ってから r7 へ移す1命令だけ, 1回目の下書きで切り上げ
 NON_MATCH void Skeleton_SpawnOrbitFlames(Skeleton* p) {
 #ifdef NONMATCHING_C
@@ -1652,19 +1651,20 @@ NON_MATCH void Skeleton_SpawnOrbitFlames(Skeleton* p) {
   s32 dir = (Random() & 0xFF) < 128 ? 1 : -1;
   WorldPos* pos = &(p->e).mover.pos;
 
-  Entity081f959c_Spawn(pos, angle, 0x1000, 2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, 3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, 4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, 5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, -2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, -3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, -4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x1000, -5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, 2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, 3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, 4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, 5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, -2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, -3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, -4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x1000, -5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
 #else
   INCFUNC("asm/func/Skeleton_SpawnOrbitFlames.inc");
 #endif
 }
 
+// 向いている方の横向きに, 両側へ 4 個ずつ違う速さで回るオービタルフレイム (OrbitalFlame) を放つ
 // 219/218命令, Skeleton_SpawnOrbitFlames と同じ残差 (向きを r0 で作ってから r7 へ移す1命令), 1回目の下書きで切り上げ
 NON_MATCH void Skeleton_SpawnOrbitFlamesVaried(Skeleton* p) {
 #ifdef NONMATCHING_C
@@ -1672,20 +1672,20 @@ NON_MATCH void Skeleton_SpawnOrbitFlamesVaried(Skeleton* p) {
   s32 dir = (Random() & 0xFF) < 128 ? 1 : -1;
   WorldPos* pos = &(p->e).mover.pos;
 
-  Entity081f959c_Spawn(pos, angle, 0xA00, 2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x200, 3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x600, 4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0xE00, 5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0xA00, -2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x200, -3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x600, -4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0xE00, -5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xA00, 2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x200, 3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x600, 4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xE00, 5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xA00, -2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x200, -3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x600, -4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xE00, -5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
 #else
   INCFUNC("asm/func/Skeleton_SpawnOrbitFlamesVaried.inc");
 #endif
 }
 
-// 向いている方の横向きに, 片側は速く反対側は遅く逆回りで 4 本ずつ回る骨 (Entity081f959c) を放つ
+// 向いている方の横向きに, 片側は速く反対側は遅く逆回りで 4 個ずつ回るオービタルフレイム (OrbitalFlame) を放つ
 // 221/225命令, Skeleton_SpawnOrbitFlames と同じ残差に加え, 原典は回る向きの反転を別のスタック位置に置く, 1回目の下書きで切り上げ
 NON_MATCH void Skeleton_SpawnOrbitFlamesCounter(Skeleton* p) {
 #ifdef NONMATCHING_C
@@ -1693,15 +1693,15 @@ NON_MATCH void Skeleton_SpawnOrbitFlamesCounter(Skeleton* p) {
   s32 dir = (Random() & 0xFF) < 128 ? 1 : -1;
   WorldPos* pos = &(p->e).mover.pos;
 
-  Entity081f959c_Spawn(pos, angle, 0xC00, 2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0xC00, 3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0xC00, 4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0xC00, 5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xC00, 2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xC00, 3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xC00, 4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0xC00, 5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
   dir = -dir;
-  Entity081f959c_Spawn(pos, angle, 0x400, -2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x400, -3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x400, -4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
-  Entity081f959c_Spawn(pos, angle, 0x400, -5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x400, -2, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x400, -3, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x400, -4, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
+  OrbitalFlame_Spawn(pos, angle, 0x400, -5, dir, 400, (p->e).atkPower[2], (p->e).atkKnockback[2], (p->e).atkAttrs[2], (p->e).atkIframes[2]);
 #else
   INCFUNC("asm/func/Skeleton_SpawnOrbitFlamesCounter.inc");
 #endif
@@ -2119,7 +2119,7 @@ void Skeleton_StateVolleyWindUp(Skeleton* p, s32 timer) {
     q->unk_704 = gPlayerPtr[0]->mover.pos;
   }
   if (s->animCmdTimer == 0 && s->animCmdIdx == 12) {
-    PlaySound_082406e0(SONG_946);
+    PlaySound_082406e0(SE_LICH_ATK);
   }
   if ((p->e).animForceRestart) {
     Enemy_EnterState(&p->e, Skeleton_StateVolley, ES_UNK_47);
@@ -2173,7 +2173,7 @@ void Skeleton_StateVolleyEnd(Skeleton* p) {
   }
 }
 
-void Skeleton_StateHomingMissileWindUp(Skeleton* p) {
+void Skeleton_StateFireballWindUp(Skeleton* p) {
   MainSprite* s = &(p->e).s->main.spr;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -2183,17 +2183,17 @@ void Skeleton_StateHomingMissileWindUp(Skeleton* p) {
     Enemy_UpdateWalkAnimSpeed(&p->e);
   }
   if (s->animCmdTimer == 0 && s->animCmdIdx == 12) {
-    PlaySound_082406e0(SONG_946);
+    PlaySound_082406e0(SE_LICH_ATK);
   }
   if ((p->e).animForceRestart) {
-    Enemy_EnterState(&p->e, Skeleton_StateHomingMissile, ES_UNK_63);
+    Enemy_EnterState(&p->e, Skeleton_StateFireball, ES_UNK_63);
     (p->e).animSpeedDiv = 1;
   }
 }
 
-// 向いている4方向の先の頭上からプレイヤーを追う弾 (Entity081f8a28) を HP に応じて2発か3発撃ち, 80 フレームで状態64へ移る
+// 向いている4方向の先の頭上からプレイヤーを追うファイアボール (Fireball) を HP に応じて2発か3発撃ち, 80 フレームで状態64へ移る
 // 209/239命令, 原典は放つ位置を Vec3 の DImode の読み書きで組み, 分岐ごとに Div の結果を格納する, 試済: if/else の順
-NON_MATCH void Skeleton_StateHomingMissile(Skeleton* p, s32 timer) {
+NON_MATCH void Skeleton_StateFireball(Skeleton* p, s32 timer) {
 #ifdef NONMATCHING_C
   Skeleton* q = (p->e).owner;
 
@@ -2217,18 +2217,18 @@ NON_MATCH void Skeleton_StateHomingMissile(Skeleton* p, s32 timer) {
     pos.y += 300;
     pos.z += POLAR_Z(256, base);
     target = gPlayerPtr[0]->mover.pos;
-    Entity081f8a28_Spawn(&pos, &target, 2, (p->e).playerAngle, 90, 4, 20, 3, 25, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1], (p->e).atkIframes[1]);
+    Fireball_Spawn(&pos, &target, 2, (p->e).playerAngle, 90, 4, 20, 3, 25, (p->e).atkPower[1], (p->e).atkKnockback[1], (p->e).atkAttrs[1], (p->e).atkIframes[1]);
     q->shotsFired++;
   }
   if (timer > 80) {
-    Enemy_EnterState(&p->e, Skeleton_StateHomingMissileEnd, ES_UNK_64);
+    Enemy_EnterState(&p->e, Skeleton_StateFireballEnd, ES_UNK_64);
   }
 #else
-  INCFUNC("asm/func/Skeleton_StateHomingMissile.inc");
+  INCFUNC("asm/func/Skeleton_StateFireball.inc");
 #endif
 }
 
-void Skeleton_StateHomingMissileEnd(Skeleton* p) {
+void Skeleton_StateFireballEnd(Skeleton* p) {
   Skeleton* q = (p->e).owner;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -2250,7 +2250,7 @@ void Skeleton_StateOrbitFlameWindUp(Skeleton* p) {
     Enemy_PlayAnim(&p->e, 19);
   }
   if (s->animCmdTimer == 0 && s->animCmdIdx == 12) {
-    PlaySound_082406e0(SONG_946);
+    PlaySound_082406e0(SE_LICH_ATK);
   }
   if ((p->e).animForceRestart) {
     Enemy_EnterState(&p->e, Skeleton_StateOrbitFlame, ES_UNK_66);
@@ -2268,7 +2268,7 @@ void Skeleton_StateOrbitFlame(Skeleton* p) {
     }
   }
   Enemy_PlayAnim(&p->e, 20);
-  if (!Entity081f959c_IsAnyActive()) {
+  if (!OrbitalFlameManager_IsAnyActive()) {
     Enemy_EnterState(&p->e, Skeleton_StateOrbitFlameEnd, ES_UNK_67);
   }
 }
@@ -2295,7 +2295,7 @@ void Skeleton_StateSummonEnemyWindUp(Skeleton* p) {
     Enemy_PlayAnim(&p->e, 19);
   }
   if (s->animCmdTimer == 0 && s->animCmdIdx == 12) {
-    PlaySound_082406e0(SONG_946);
+    PlaySound_082406e0(SE_LICH_ATK);
   }
   if ((p->e).animForceRestart) {
     Enemy_EnterState(&p->e, Skeleton_StateSummonEnemy, ES_UNK_69);
@@ -2334,7 +2334,7 @@ void Skeleton_StateCurveShotWindUp(Skeleton* p) {
     Enemy_PlayAnim(&p->e, 19);
   }
   if (s->animCmdTimer == 0 && s->animCmdIdx == 12) {
-    PlaySound_082406e0(SONG_946);
+    PlaySound_082406e0(SE_LICH_ATK);
   }
   if ((p->e).animForceRestart) {
     Enemy_EnterState(&p->e, Skeleton_StateCurveShot, ES_UNK_50);
@@ -2671,7 +2671,7 @@ void Skeleton_StateLichDying(Skeleton* p, s32 timer) {
       ThunderboltManager_VanishAll();
     } else {
       Entity081f9cb8_CancelAll();
-      Entity081f959c_VanishAll();
+      OrbitalFlameManager_VanishAll();
     }
     if ((p->e).defeatScriptID != 0) {
       u32 argv[8];
@@ -2886,13 +2886,13 @@ void Skeleton_SubSummonSkeletons(Skeleton* p) {
 
 // 1番の攻撃 (状態62) が終わったら Skeleton_PickFarPathNode で選んだ経路ノードへ経路を引き, 引けたら relocateCooldown を 320 にして状態16の副状態18へ
 // 169/171命令の下書き, 経路を引く部分は Enemy_TryRouteTo の展開, 1回目の下書きで切り上げ
-NON_MATCH void Skeleton_SubHomingMissile(Skeleton* p) {
+NON_MATCH void Skeleton_SubFireball(Skeleton* p) {
 #ifdef NONMATCHING_C
   Skeleton* q = (p->e).owner;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
     SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
-    Enemy_EnterState(&p->e, Skeleton_StateHomingMissileWindUp, ES_UNK_62);
+    Enemy_EnterState(&p->e, Skeleton_StateFireballWindUp, ES_UNK_62);
   }
   if ((p->e).subStateDone) {
     WorldPos to;
@@ -2913,7 +2913,7 @@ NON_MATCH void Skeleton_SubHomingMissile(Skeleton* p) {
     (p->e).subStateTimer++;
   }
 #else
-  INCFUNC("asm/func/Skeleton_SubHomingMissile.inc");
+  INCFUNC("asm/func/Skeleton_SubFireball.inc");
 #endif
 }
 

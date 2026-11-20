@@ -13,7 +13,7 @@ _08091CC6:
 	cmp r0, #0
 	bne _08091CE4
 	adds r0, r4, #0
-	bl item_08091774
+	bl Item_GetUsableForm
 	cmp r0, #1
 	bne _08091CFA
 	b _08091E26
@@ -26,7 +26,7 @@ _08091CE4:
 	cmp r0, #3
 	bhi _08091CFA
 	adds r0, r4, #0
-	bl item_08091774
+	bl Item_GetUsableForm
 	cmp r0, #0
 	bne _08091CFA
 	b _08091E26
@@ -65,7 +65,7 @@ _08091D22:
 	beq _08091D82
 _08091D32:
 	adds r0, r4, #0
-	bl item_08091788
+	bl Item_GetUseCheck
 	subs r0, #1
 	cmp r0, #4
 	bhi _08091E26

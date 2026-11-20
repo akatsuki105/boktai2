@@ -52,6 +52,34 @@ void Crow_PlayWingSound(Crow*);
 void Crow_GetDirAndFlip(u16 angle, s32* outDir, s32* outFlip);
 void FUN_081447cc(Crow*);
 
+// anim 番の variant を流す, MainSprite では anim + variant 番を flags の向きと逆再生で流し, 同じものが流れていれば何もしない
+static inline void Crow_PlayDirAnim(Crow* p, u32 anim, u32 variant, u32 flags) {
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* s;
+
+    (p->e).playingAnim = anim;
+    s = &(p->e).s->aux;
+    AuxAnim_SetAnim(&s->anim, s->animFile, anim, variant, flags);
+  } else {
+    MainSprite* s = &(p->e).s->main.spr;
+    s32 mode;
+
+    anim += variant;
+    if ((p->e).playingAnim == anim && !(p->e).animForceRestart && ((flags == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) || (flags == 0 && !(s->flags & SPRFLAG_XFLIP)))) {
+      return;
+    }
+    (p->e).playingAnim = anim;
+    mode = (flags & ANIM_PLAY_REVERSE) ? MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE : MAIN_ANIM_FORCE_POSE;
+    MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, anim, PLAYMODE_ONCE_AND_STOP, mode);
+    if (flags & ANIM_PLAY_XFLIP) {
+      s->flags |= SPRFLAG_XFLIP;
+    } else {
+      s->flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+  (p->e).animForceRestart = FALSE;
+}
+
 static inline bool8 Crow_TestUnk658(Crow* p, u32 bit) {
   if (p->unk_658 & bit) return TRUE;
   return FALSE;
@@ -183,46 +211,16 @@ NON_MATCH void FUN_0814312c(Crow* p) {
 }
 
 // 状態に入った最初だけ, 向きから8方向の番号と左右反転を決めて animTable[2] のアニメを流す
-// Enemy_PlayAnim の展開, 再生部分を (p, anim, variant, f) を取る inline にして Enemy* e = &p->e で angle を読むと残差は MainSprite_SetAnim をまたいで定数 4 を r8 に置く点だけになる (Enemy_PlayAnim と同じ壁)
-NON_MATCH void FUN_081431e0(Crow* p) {
-#ifdef NONMATCHING_C
+void FUN_081431e0(Crow* p) {
+  Enemy* e = &p->e;
+
   if (Enemy_ConsumeStateBegun(&p->e)) {
     s32 dir;
     s32 flip;
-    u8 anim;
 
-    Crow_GetDirAndFlip((p->e).mover.angle, &dir, &flip);
-    anim = (p->e).animTable[2].anim;
-    if ((p->e).spriteKind == 0) {
-      EnemyAuxSprite* s = &(p->e).s->aux;
-
-      (p->e).playingAnim = anim;
-      AuxAnim_SetAnim(&s->anim, s->animFile, anim, dir, flip);
-    } else {
-      MainSprite* s = &(p->e).s->main.spr;
-      s32 a = anim + dir;
-
-      if ((p->e).playingAnim == a && (p->e).animForceRestart == 0) {
-        if (flip == ANIM_PLAY_XFLIP && (s->flags & SPRFLAG_XFLIP)) {
-          return;
-        }
-        if (flip == 0 && !(s->flags & SPRFLAG_XFLIP)) {
-          return;
-        }
-      }
-      (p->e).playingAnim = a;
-      MainSprite_SetAnim(s, &(p->e).s->main.gfx, a, PLAYMODE_ONCE_AND_STOP, (flip & ANIM_PLAY_REVERSE) ? (MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE) : MAIN_ANIM_FORCE_POSE);
-      if (flip & ANIM_PLAY_XFLIP) {
-        MainSprite_SetFlags(s, SPRFLAG_XFLIP);
-      } else {
-        MainSprite_ClearFlags(s, SPRFLAG_XFLIP);
-      }
-    }
-    (p->e).animForceRestart = FALSE;
+    Crow_GetDirAndFlip(e->mover.angle, &dir, &flip);
+    Crow_PlayDirAnim(p, (p->e).animTable[2].anim, dir, flip);
   }
-#else
-  INCFUNC("asm/func/FUN_081431e0.inc");
-#endif
 }
 
 void FUN_081432ec(Crow* p) {
@@ -855,7 +853,7 @@ void FUN_08144cd0(Crow* p) {
     Enemy_EnterState(&p->e, FUN_081432ec, ES_UNK_37);
     q->unk_6b0.y = 30;
   }
-  if (TEST_FLAGS(TileAtIndex((p->e).tileIdx)->attr, TATTR_WALL | TATTR_FALLDEATH)) {
+  if (TEST_FLAGS(TileAtIndex((p->e).tileIdx)->attr, TATTR_ENEMY_WALL | TATTR_FALLDEATH)) {
     if ((p->e).subStateTimer > 20) {
       Enemy_ResetState(&p->e, 0, 0, 4);
       return;
@@ -1152,7 +1150,7 @@ NON_MATCH s32 Crow_Init(Crow* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

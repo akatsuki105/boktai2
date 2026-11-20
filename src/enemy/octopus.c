@@ -202,7 +202,7 @@ void FUN_08184dd8(Octopus* p) {}
 void Octopus_StateThrow(Octopus* p, s32 timer) {
   if (Enemy_ConsumeStateBegun(&p->e)) {
     Mover* m = (p->e).playerMover;
-    u8 idx = m->unk_4;
+    u8 idx = m->kind;
 
     if (idx == 4) {
       Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -279,9 +279,9 @@ NON_MATCH void Octopus_StateGrab(Octopus* p) {
       pos.y = vec3_ARRAY_085adbfc[flags * 5 + anim->cmdIdx].y + (p->e).mover.pos.y;
       pos.z = vec3_ARRAY_085adbfc[flags * 5 + anim->cmdIdx].z + (p->e).mover.pos.z;
       m = (p->e).playerMover;
-      if (m->unk_4 < 4) {
-        Player_HoldGrabbed(gPlayerPtr[m->unk_4], &pos, NULL, 0, flags, 0, 0, 0, 0);
-      } else if (m->unk_4 == 4) {
+      if (m->kind < 4) {
+        Player_HoldGrabbed(gPlayerPtr[m->kind], &pos, NULL, 0, flags, 0, 0, 0, 0);
+      } else if (m->kind == MOVER_ENEMY) {
         Enemy* e = m->owner;
 
         e->hurtbox.iframes = 0;
@@ -344,7 +344,7 @@ NON_MATCH void Octopus_StateHold(Octopus* p, s32 timer) {
   m = (p->e).playerMover;
   Enemy_SetAnimFacing(&p->e, &variant, &flags);
   // 掴んでいるのがプレイヤーなら次のコマの位置で持つ
-  if (m->unk_4 < 4) {
+  if (m->kind < 4) {
     if (anim->tick + 1 < anim->wait) {
       cmd = anim->cmdIdx;
     } else {
@@ -359,10 +359,10 @@ NON_MATCH void Octopus_StateHold(Octopus* p, s32 timer) {
   pos.x = vec3_ARRAY_085adbfc[flags * 5 + cmd].x + (p->e).mover.pos.x;
   pos.y = vec3_ARRAY_085adbfc[flags * 5 + cmd].y + (p->e).mover.pos.y;
   pos.z = vec3_ARRAY_085adbfc[flags * 5 + cmd].z + (p->e).mover.pos.z;
-  if (m->unk_4 == 4) {
+  if (m->kind == MOVER_ENEMY) {
     (p->e).s->aux.spr.priority = 2;
     Enemy_OnCrushed(m->owner, 0, &pos, 0, flags);
-  } else if (m->unk_4 < 4) {
+  } else if (m->kind < 4) {
     Player* player = m->owner;
 
     (p->e).s->aux.spr.priority = 1;
@@ -417,7 +417,7 @@ NON_MATCH void Octopus_StatePullUnder(Octopus* p) {
     SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_11);
   }
   m = (p->e).playerMover;
-  if (m->unk_4 < 4 && anim->tick + 1 >= anim->wait) {
+  if (m->kind < 4 && anim->tick + 1 >= anim->wait) {
     cmd = anim->cmdIdx + 1;
     if (cmd >= anim->cmdCount) {
       cmd = 0;
@@ -429,9 +429,9 @@ NON_MATCH void Octopus_StatePullUnder(Octopus* p) {
   pos.x = vec3_ARRAY_085adc4c[flags * 2 + cmd].x + (p->e).mover.pos.x;
   pos.y = vec3_ARRAY_085adc4c[flags * 2 + cmd].y + (p->e).mover.pos.y;
   pos.z = vec3_ARRAY_085adc4c[flags * 2 + cmd].z + (p->e).mover.pos.z;
-  if (m->unk_4 & 4) {
+  if (m->kind & 4) {
     Enemy_OnCrushed(m->owner, 1, &pos, 0, flags);
-  } else if (m->unk_4 < 4) {
+  } else if (m->kind < 4) {
     Player_HoldGrabbed(m->owner, &pos, NULL, 3, flags, 0, 0, 0, 0);
   }
   if ((p->e).animForceRestart) {
@@ -439,10 +439,10 @@ NON_MATCH void Octopus_StatePullUnder(Octopus* p) {
     (p->e).s->aux.spr.priority = 2;
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
     PlaySound_082406e0(SONG_480);
-    if (m->unk_4 & 4) {
+    if (m->kind & 4) {
       Enemy_OnCrushed(FindEnemyById(m->id), 2, &pos, 0, 0);
       Entity081ea120_Spawn(&(p->e).mover.pos, 1, 2, 0, 276);
-    } else if (m->unk_4 < 4) {
+    } else if (m->kind < 4) {
       Player_HoldGrabbed(m->owner, &pos, NULL, 3, flags, 0, 1, 0, 0);
       Entity081ea120_Spawn(&(p->e).mover.pos, 1, 1, 0, 276);
     }
@@ -483,10 +483,10 @@ NON_MATCH void Octopus_StateSlam(Octopus* p, s32 timer) {
     }
     (p->e).unk_492 = 8;
     SET_FLAGS((p->e).flags, ENEFLAG_UNK_15);
-    if (m->unk_4 < 4) {
+    if (m->kind < 4) {
       Player_HoldGrabbed(m->owner, &(p->e).mover.pos, NULL, 0, 0, 0, 1, (p->e).atkPower[2], (p->e).atkAttrs[2]);
       PlaySound_082406e0(SE_DAMAGE);
-    } else if (m->unk_4 & 4) {
+    } else if (m->kind & 4) {
       Enemy* e = m->owner;
 
       Enemy_OnCrushed(e, 2, &pos, 0, 0);
@@ -503,8 +503,8 @@ NON_MATCH void Octopus_StateSlam(Octopus* p, s32 timer) {
   }
   if (timer > 120) {
     Enemy_SetSpriteFlags(&p->e, SPRFLAG_HIDDEN);
-    if (!(m->unk_4 & 4)) {
-      if (m->unk_4 < 4) {
+    if (!(m->kind & 4)) {
+      if (m->kind < 4) {
         u8 angle = FixToInt(6, ((p->e).mover.angle + 0x20) & 0xFF) << 6;
 
         TilePosAtIndex(&pos, (p->e).tileIdx);
@@ -925,7 +925,7 @@ void Octopus_InitHitboxes(Octopus* p) {
 
   VEC3_SET(hurtSize, 64, 256, 64);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Octopus_OnHurt, p, HBF_HURTBOX | HBF_NPC | HBF_HIDDEN | HBF_DAMAGE);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Octopus_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE);
   VEC3_SET(hitSize, 0, 0, 0);
   VEC3_SET(hitOffset, 0, 0, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Octopus_OnHit, 1, p);
@@ -1289,7 +1289,7 @@ NON_MATCH s32 Octopus_Init(Octopus* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

@@ -1286,7 +1286,7 @@ void Jormungandr_InitHurtbox(Jormungandr* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.586));
   VEC3_SET(offset, 0, 0, Q8(1));
-  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL, 0);
   Hitbox_SetHandler(hurtbox, Jormungandr_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->pos, 0);
@@ -1325,7 +1325,7 @@ void Jormungandr_InitHurtbox2(Jormungandr* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.5), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, 0);
-  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_NPC | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL, 0);
   Hitbox_SetHandler(hurtbox, Jormungandr_OnHurt2, p);
   Hitbox_SetPos(hurtbox, &p->pos_2f8, 0);
@@ -1358,7 +1358,7 @@ void Jormungandr_InitHurtbox3(Jormungandr* p, u32 power) {
 
   VEC3_SET(halfSize, Q8(0.25), Q8(0.5), Q8(0.5));
   VEC3_SET(offset, 0, 0, Q8(2.25));
-  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_NPC | HBF_HIDDEN | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->base.mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_HIDDEN | HBF_DAMAGE, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, HBATTR_IMMORTAL, 0);
   Hitbox_SetHandler(hurtbox, Jormungandr_OnHurt3, p);
   Hitbox_SetPos(hurtbox, &p->pos, 0);

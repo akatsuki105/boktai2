@@ -26,8 +26,8 @@ typedef struct {
   char* charTable;       // 0x444, '.c' の文字列, 1 文字 2 バイトで chars の値を引く
   u8* msgPc;             // 0x448, '.d' の位置, テキストパネルの MenuMessage_SetScript に渡す
   s32 windowIDs[3];      // 0x44C, MenuMessage_Create の戻り値, _Destroy が MenuMessage_Destroy に渡す
-  TilemapFile* tilemap;  // 0x458, MP_33B2
-  rgb555* pltt;          // 0x45C, BGP_E9C3 の本体, gBgPlttBuffer へ写す
+  TilemapFile* tilemap;  // 0x458, MP_NAME
+  rgb555* pltt;          // 0x45C, BGP_NAME の本体, gBgPlttBuffer へ写す
 } PasswordScreen;
 static_assert(sizeof(PasswordScreen) == 1120);
 
@@ -36,10 +36,10 @@ const ALIGNED(4) char sChar_085aa844[] = "</WEIGHT>";  // 0x085aa844
 
 // パスワード画面の BG1 と BG パレットを読み込む
 void PasswordScreen_SetupBG(PasswordScreen* p, s32 bgIndex) {
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_33B2);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_NAME);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
-  p->pltt = GetBgPlttFile(BGP_E9C3)->body;
+  p->pltt = GetBgPlttFile(BGP_NAME)->body;
   CpuCopy16(p->pltt, gBgPlttBuffer, 256 * sizeof(rgb555));
 }
 

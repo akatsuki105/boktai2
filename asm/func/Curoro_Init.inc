@@ -1459,7 +1459,7 @@ _0813E0FC:
 	str r1, [sp, #0x1a0]
 	ldr r2, _0813E2B0 @ =Curoro_GetMoveSpeed
 	mov r8, r2
-	ldr r3, _0813E2B4 @ =FUN_0813ae6c
+	ldr r3, _0813E2B4 @ =Curoro_StateTurn
 	mov sb, r3
 	ldr r6, _0813E2B8 @ =FUN_0813ac34
 	mov sl, r6
@@ -1660,7 +1660,7 @@ _0813E298:
 _0813E2A8: .4byte 0x0000066C
 _0813E2AC: .4byte FUN_0813d404
 _0813E2B0: .4byte Curoro_GetMoveSpeed
-_0813E2B4: .4byte FUN_0813ae6c
+_0813E2B4: .4byte Curoro_StateTurn
 _0813E2B8: .4byte FUN_0813ac34
 _0813E2BC: .4byte FUN_0813ad64
 _0813E2C0: .4byte FUN_080f62b0

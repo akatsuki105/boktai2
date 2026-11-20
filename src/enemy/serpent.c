@@ -1,4 +1,5 @@
 #include "cwolf_target.h"
+#include "debris.h"
 #include "eff_elemcond.h"
 #include "enemy.h"
 #include "enemy_inline.h"
@@ -191,6 +192,7 @@ static inline bool8 Serpent_TestSegmentFlags(SerpentSegment* seg, SerpentSegment
   return FALSE;
 }
 
+static inline void Serpent_ClearSegmentFlags(SerpentSegment* seg, SerpentSegmentFlags bit) { seg->flags &= ~bit; }
 static inline void Serpent_SetFlags(Serpent* p, SerpentFlags bit) { p->flags |= bit; }
 static inline void Serpent_ClearFlags(Serpent* p, SerpentFlags bit) { p->flags &= ~bit; }
 
@@ -231,7 +233,7 @@ void Serpent_PickPathNode(Serpent* p, Vec3* out, Vec3* pos, s32 limitSq, bool32 
 void Serpent_FindWaterEdge(Serpent* p, Vec3* out, Vec3* pos);
 void Serpent_SpawnSegmentSplashes(Serpent* p, s32 idx);
 void Serpent_SpawnBubble(Vec3* pos, s32 y);
-void DefeatedEnemyLog_Add(u16 a, u16 b);
+void EnemyRespawnInfo_Add(u16 a, u16 b);
 void Enemy_AddKillCount(Enemy* p);
 void Serpent_DestroyAllSegments(Serpent* p);
 void Serpent_StatePounce(Serpent* p);
@@ -259,7 +261,6 @@ void Entity081ee7a8_SpawnEx(Vec3* pos, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s
 s8 NoiseManager_FindFirstHeardNoise(s32 x, s32 y, s32 size, u8 mask, u16 moverID);
 void FUN_080e8f20(Enemy* p, s32 param_2);
 void FUN_080df478(void);
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 void Serpent_SubCircle(Serpent*);
 void Serpent_SubTurn(Serpent*);
@@ -904,7 +905,7 @@ void Serpent_StateDying(Serpent* p, s32 timer) {
     AddPlayerExp((p->e).exp);
     Player_AddWeaponExp((p->e).weaponExpMask, (p->e).weaponExp);
     if (!IsLinkPlay() && !TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_11)) {
-      DefeatedEnemyLog_Add(gMapInitScriptID, (p->e).mover.id);
+      EnemyRespawnInfo_Add(gMapInitScriptID, (p->e).mover.id);
     }
     (p->e).stunTimer = 0;
     Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
@@ -1999,7 +2000,7 @@ NON_MATCH void Serpent_PickNextTile(Serpent* p) {
     diff = nextHeight - curHeight;
     step = (((curHeight + 0xFF) >> 8) - ((nextHeight + 0xFF) >> 8)) << 8;
     tile = -1;
-    if (!(attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH))) {
+    if (!(attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH))) {
       tile = next;
       if (diff != 0) {
         if (nextStairs == STAIRS_VERTICAL) {
@@ -2527,27 +2528,22 @@ NON_MATCH void Serpent_SwayBody(Serpent* p) {
 }
 
 // SERPSEGFLAG_DESTROYED が落ちている節の1つおきに SERPSEGFLAG_FOLLOW を落とす
-// 56/49命令, 原典は &segments[0].flags を1本だけ持って進め q->segments の基点を作らない, 試済: seg++ / segments[i] / 反復内の seg ローカル / &= 直書き
-NON_MATCH void Serpent_UnfollowAlternateSegments(Serpent* p) {
-#ifdef NONMATCHING_C
+void Serpent_UnfollowAlternateSegments(Serpent* p) {
   Serpent* q = (p->e).owner;
-  SerpentSegment* seg = q->segments;
+  SerpentSegment* segs = q->segments;
   s32 n = 0;
   s32 i;
 
-  for (i = 0; i < q->segmentCount; seg++, i++) {
-    if (!Serpent_TestSegmentFlags(seg, SERPSEGFLAG_DESTROYED)) {
+  for (i = 0; i < q->segmentCount; i++) {
+    if (!Serpent_TestSegmentFlags(&segs[i], SERPSEGFLAG_DESTROYED)) {
       if (n == 1) {
         n = 0;
       } else {
-        CLEAR_FLAGS(seg->flags, SERPSEGFLAG_FOLLOW);
+        Serpent_ClearSegmentFlags(&segs[i], SERPSEGFLAG_FOLLOW);
         n++;
       }
     }
   }
-#else
-  INCFUNC("asm/func/Serpent_UnfollowAlternateSegments.inc");
-#endif
 }
 
 // 尾から見て最初の壊れていない節を壊す, 壊せたら TRUE
@@ -2771,7 +2767,7 @@ void Serpent_InitSegmentHitboxes(Serpent* p) {
   for (i = 0; i < q->segmentCount; i++) {
     SerpentSegment* seg = &q->segments[i];
 
-    Hitbox_Init(&seg->hurtbox, (p->e).mover.id, HBF_HURTBOX | HBF_NPC | HBF_3 | HBF_DAMAGE, 0, 16, &halfSize, &offset);
+    Hitbox_Init(&seg->hurtbox, (p->e).mover.id, HBF_HURTBOX | HBF_ACTOR | HBF_3 | HBF_DAMAGE, 0, 16, &halfSize, &offset);
     if (i == q->segmentCount - 1) {
       Hitbox_SetPowerAndAttributes(&seg->hurtbox, q->tailDefense, (p->e).attrs, (p->e).weakness);
     } else {
@@ -2927,7 +2923,7 @@ void Serpent_SpawnBubble(Vec3* pos, s32 y) {
   at.y = y;
   at.z += 12;
   Vec3_Clear(&vel);
-  Entity081f26bc_Spawn(&at, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0xDA, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  Debris_Spawn(&at, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0xDA, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 // 頭が水の上にいれば, 周りの水面に水しぶきを2つ出す
@@ -2948,7 +2944,7 @@ NON_MATCH void Serpent_SpawnSplashes(Serpent* p) {
     vel.x = (Random() & 7) - 4;
     vel.z = (Random() & 7) - 4;
     if (TileAtIndex(tile)->attr & TATTR_FALLDEATH) {
-      Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, i == 0 ? SPRFLAG_BLINK_ODD : SPRFLAG_BLINK_EVEN, 9, 0x23B, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, i == 0 ? SPRFLAG_BLINK_ODD : SPRFLAG_BLINK_EVEN, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x23B, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   }
 #else
@@ -2975,7 +2971,7 @@ NON_MATCH void Serpent_SpawnSegmentSplashes(Serpent* p, s32 idx) {
     vel.x = (Random() & 7) - 4;
     vel.z = (Random() & 7) - 4;
     if (TileAtIndex(tile)->attr & TATTR_FALLDEATH) {
-      Entity081f26bc_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, i == 0 ? SPRFLAG_BLINK_ODD : SPRFLAG_BLINK_EVEN, 9, 0x23B, i == 0 ? 2 : 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      Debris_Spawn(&pos, &vel, SPR_DVALIN_00, ANIM_38E2, 3, i == 0 ? SPRFLAG_BLINK_ODD : SPRFLAG_BLINK_EVEN, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x23B, i == 0 ? 2 : 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   }
 #else
@@ -3509,7 +3505,7 @@ NON_MATCH void Serpent_FindWaterAcross(Serpent* p, Vec3* out, Vec3* pos) {
     cur.x += step.x;
     cur.z += step.z;
     tile = GetCollisionTileIdx(&cur);
-    if (TileAtIndex(tile)->attr & TATTR_WALL) {
+    if (TileAtIndex(tile)->attr & TATTR_ENEMY_WALL) {
       cur.x -= step.x;
       cur.z -= step.z;
       if (!((angle >> 7) & 1)) {
@@ -3564,7 +3560,7 @@ NON_MATCH void Serpent_FindWaterEdge(Serpent* p, Vec3* out, Vec3* pos) {
     cur.x += step.x;
     cur.z += step.z;
     tile = GetCollisionTileIdx(&cur);
-    if (TileAtIndex(tile)->attr & TATTR_WALL) {
+    if (TileAtIndex(tile)->attr & TATTR_ENEMY_WALL) {
       cur.x -= step.x;
       cur.z -= step.z;
       if (!((angle >> 7) & 1)) {
@@ -4080,7 +4076,7 @@ NON_MATCH s32 Serpent_Init(Serpent* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

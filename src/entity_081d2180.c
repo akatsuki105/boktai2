@@ -181,7 +181,7 @@ void Entity081d2180Item_StateActive(Entity081d2180Item* item) {
     if (m->flags & 2) {
       continue;
     }
-    if (!(gGameFlags & GAMEFLAG_LINK) && m->unk_4 == 0) {
+    if (!(gGameFlags & GAMEFLAG_LINK) && m->kind == 0) {
       if (gPlayerPtr[0] == NULL || gPlayerPtr[0]->kind == PLAYER_BAT) {
         continue;
       }

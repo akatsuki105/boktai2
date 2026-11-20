@@ -247,7 +247,7 @@ plain `strh [rD]`, `strh [rD, #2]`, `strh [rD, #4]` through a pointer register
 wrote that `Vec3` **through a pointer**, not through the struct name, and no
 spelling of the direct form reaches it. The same three stores inside a
 `static inline f(Vec3* out, ...)` do emit plain `strh`, because the parameter is
-a pointer; that is 14 instructions closer on `FUN_080db0f8` (177 -> 163 of 166).
+a pointer; that is 14 instructions closer on `SpiderWeb_TryCatch` (177 -> 163 of 166).
 Note this cuts against the VM-argument idiom, where the word merge *is* what the
 target has (`Cmd_SpawnEntity080ac574`) — there the local's address is only
 taken after it is filled.
@@ -261,7 +261,7 @@ pair when the two comparisons are **siblings** in the tree. In a flat chain
 they are not siblings and you get two signed compares. Parenthesizing the pair —
 `A && (x >= lo && x <= hi) && B` — merges it and nothing else moves. The
 converse is a lever too: a target that keeps two separate compares for one
-operand's range did **not** have them parenthesized together. `FUN_080db0f8`
+operand's range did **not** have them parenthesized together. `SpiderWeb_TryCatch`
 needs the `x` pair grouped and the `z` pair left flat, in the same condition.
 
 ## 3. Tier B — types and signedness
@@ -408,7 +408,7 @@ Four positions, cheapest first:
   This is the same mechanism as the flag macros, and it still applies to
   non-flag helpers. Two paired field writes that always travel together go in
   one: `SetSubState(p, n)` (`p->unk_1a = n; p->unk_6c = 0;`) in
-  `src/forge_ef6f.c` closed `FUN_0801f130`. (`src/forge_ef6f.c` also keeps its
+  `src/forge_tutorial.c` closed `FUN_0801f130`. (`src/forge_tutorial.c` also keeps its
   own `HideBG(u32 bits)`, which is the pre-macro spelling of `CLEAR_FLAGS`.)
 - **So the converse is a lever too.** If the target loads the memory operand
   *first* and only then materializes the constant, the original did **not**
@@ -462,7 +462,7 @@ Moving `HideBG` (`gStagedDISPCNT &= ~bits;`) from `src/bg.c` into `include/video
 so a third file could call it changed the register allocation of
 `GameOverManager_StateShowLogo` in `src/gameover.c`, which neither calls it nor
 mentions `gStagedDISPCNT`. Merely being declared in an included header is enough.
-Define the helper per translation unit instead (`src/forge_ef6f.c` keeps its
+Define the helper per translation unit instead (`src/forge_tutorial.c` keeps its
 own copy of `HideBG` for this reason, and `src/skylight.c` keeps its own
 `TileHeightAt` after moving `src/collision_map.c`'s into `include/collision_map.h`
 perturbed `Player_ResetGlobals` in `src/player.c`). For flag operations this does not

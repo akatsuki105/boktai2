@@ -297,7 +297,7 @@ NON_MATCH s32 SpawnCactus(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireAre
   if (height < 15) {
     height++;
   }
-  Map_AddTileOverride(tileOverride, idx, STAIRS_NONE, height, 0xFF, TATTR_WALL);
+  Map_AddTileOverride(tileOverride, idx, STAIRS_NONE, height, 0xFF, TATTR_ENEMY_WALL);
 
   if (!Video_GetAuxSprite(gfx, SPR_CACTUS)) {
     return -1;

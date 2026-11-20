@@ -546,8 +546,8 @@ s32 Cmd_SetDoorOpen(void) {
       door->fn = Door_BarsOpenedWait;
       door->step = 0;
       door->stepTimer = 0;
-      door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-      door->ov->tile.attr |= TATTR_WALL;
+      door->ov->tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_ENEMY_WALL);
+      door->ov->tile.attr |= TATTR_ENEMY_WALL;
       door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
       door->openOffset = door->openMax;
       door->sprite.pos.y = door->pos_70.y + door->openMax;
@@ -581,8 +581,8 @@ s32 Cmd_SetDoorClosed(void) {
       Door_SetPhase(door, 1);
       Door_SetFn(door, Door_BarsClosedWait);
       Door_SetStep(door, door->closedStep);
-      door->ov->tile.attr &= ~TATTR_WALL;
-      door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+      door->ov->tile.attr &= ~TATTR_ENEMY_WALL;
+      door->ov->tile.attr |= TATTR_PLAYER_WALL | TATTR_ENEMY_WALL;
       door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
       door->openOffset = 0;
       door->sprite.pos.y = door->pos_70.y;
@@ -771,12 +771,12 @@ void Door_SetupStepAnim(DoorManager* p, Door* door) {
   }
 
   if (door->phase == 0) {
-    door->ov->tile.attr &= ~TATTR_WALL;
-    door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+    door->ov->tile.attr &= ~TATTR_ENEMY_WALL;
+    door->ov->tile.attr |= TATTR_PLAYER_WALL | TATTR_ENEMY_WALL;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
   } else if (door->phase == 1) {
-    door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-    door->ov->tile.attr |= TATTR_WALL;
+    door->ov->tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_ENEMY_WALL);
+    door->ov->tile.attr |= TATTR_ENEMY_WALL;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
   }
 }
@@ -805,8 +805,8 @@ void Door_AnimateWoodClose(Door* door) {
     door->stepTimer = 0;
     if (door->step == 0) {
       door->phase = 0;
-      door->ov->tile.attr |= TATTR_WALL;
-      door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+      door->ov->tile.attr |= TATTR_ENEMY_WALL;
+      door->ov->tile.attr |= TATTR_PLAYER_WALL | TATTR_ENEMY_WALL;
       door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
       door->fn = Door_IdleClosed;
     }
@@ -817,8 +817,8 @@ void Door_AnimateWoodClose(Door* door) {
 void Door_AnimateWoodOpen(Door* door) {
   if (door->step == 0 && door->stepTimer == 0) {
     PlaySound_0824078c(SE_WOOD_DOOR_OPEN);
-    door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-    door->ov->tile.attr |= TATTR_WALL;
+    door->ov->tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_ENEMY_WALL);
+    door->ov->tile.attr |= TATTR_ENEMY_WALL;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
   }
 
@@ -944,8 +944,8 @@ void Door_SetupBars(DoorManager* p, Door* door) {
     door->phase = 1;
     door->fn = Door_BarsClosedWait;
     Door_SetStep(door, door->closedStep);
-    door->ov->tile.attr &= ~TATTR_WALL;
-    door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+    door->ov->tile.attr &= ~TATTR_ENEMY_WALL;
+    door->ov->tile.attr |= TATTR_PLAYER_WALL | TATTR_ENEMY_WALL;
     door->ov->flags &= ~1;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
     door->openOffset = 0;
@@ -955,8 +955,8 @@ void Door_SetupBars(DoorManager* p, Door* door) {
     door->phase = 0;
     door->fn = Door_BarsOpenedWait;
     Door_SetStep(door, 0);
-    door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-    door->ov->tile.attr |= TATTR_WALL;
+    door->ov->tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_ENEMY_WALL);
+    door->ov->tile.attr |= TATTR_ENEMY_WALL;
     door->ov->flags |= 1;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
     door->openOffset = door->openMax;
@@ -984,8 +984,8 @@ void Door_BarsStartClose(Door* door) {
   PlaySound_082406e0(SONG_338);
   door->step = 0;
   door->stepTimer = 0;
-  door->ov->tile.attr |= TATTR_WALL;
-  door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+  door->ov->tile.attr |= TATTR_ENEMY_WALL;
+  door->ov->tile.attr |= TATTR_PLAYER_WALL | TATTR_ENEMY_WALL;
   door->phase = 3;
   door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
   door->ov->flags &= ~1;
@@ -1001,8 +1001,8 @@ void Door_AnimateBarsOpen(Door* door) {
     PlaySound_082406e0(SONG_340);
     door->timer = 30;
     door->phase = 0;
-    door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-    door->ov->tile.attr |= TATTR_WALL;
+    door->ov->tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_ENEMY_WALL);
+    door->ov->tile.attr |= TATTR_ENEMY_WALL;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
     door->ov->flags |= 1;
     door->fn = Door_BarsOpenedWait;
@@ -1182,12 +1182,12 @@ void Door_SetupLocked(DoorManager* p, Door* door) {
   }
 
   if (door->phase == 0) {
-    door->ov->tile.attr &= ~TATTR_WALL;
-    door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+    door->ov->tile.attr &= ~TATTR_ENEMY_WALL;
+    door->ov->tile.attr |= TATTR_PLAYER_WALL | TATTR_ENEMY_WALL;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
   } else if (door->phase == 1) {
-    door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-    door->ov->tile.attr |= TATTR_WALL;
+    door->ov->tile.attr &= ~(TATTR_PLAYER_WALL | TATTR_ENEMY_WALL);
+    door->ov->tile.attr |= TATTR_ENEMY_WALL;
     door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
   }
 }

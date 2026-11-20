@@ -203,6 +203,7 @@ void SetBGPrioDirect(s32 bg, u32 prio) {
 }
 
 // 残差は ands/orrs に使う r0 と r1 が入れ替わっているだけ (命令列は一致), Tier A-C は試済
+// 試済 (ハーネス): 2文に分ける, 定数を左に, mask ローカル, u32/s32 の v, c を先にシフト, (u16) キャスト, v を介さず直に格納
 NON_MATCH void SetBGCharBaseDirect(s32 bg, u32 charbase) {
 #ifdef NONMATCHING_C
   vu16* p;

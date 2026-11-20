@@ -58,8 +58,8 @@ typedef struct Boss {
   bool8 lowHP;                         // 0x09C, hpRatio < 0x40
   u8 unk_9d;                           // 0x09D
   u8 unk_9e[2];                        // 0x09E
-  u8 facing;                           // 0x0A0, 0..3 の向き, 1 か 2 のときだけ呼び出し側の variant を使い、2 以上で左右反転する
-  Dir8U8 dir;                          // 0x0A1, 8方向の向き, Boss_PlayAnimDir8 は 5..7 を左右反転して使う
+  Dir4U8 dir4;                         // 0x0A0, 0..3 の向き, 1 か 2 のときだけ呼び出し側の variant を使い、2 以上で左右反転する
+  Dir8U8 dir8;                         // 0x0A1, 8方向の向き, Boss_PlayAnimDir8 は 5..7 を左右反転して使う
   u8 state;                            // 0x0A2, 切り替えたい状態番号, stateRequestCallback が表を引いて updateCallback を差し替える
   u8 curState;                         // 0x0A3, 今の updateCallback の状態番号
   u8 subState0;                        // 0x0A4, 3段の下位状態の1段目, stateRequestCallback とは別に各ボスが表を引いて処理を呼び分ける
@@ -72,7 +72,7 @@ typedef struct Boss {
   u8 isCutscene;                       // 0x0AB, '.i', 立っていると初期状態を '.D' で選ぶ, 0 のボスだけを FUN_08022a3c が拾う
   u8 unk_ac;                           // 0x0AC, 0 でない間 FUN_08022ec0 が減らしながら Camera_Shake(unk_ad) を呼ぶ
   u8 unk_ad;                           // 0x0AD
-  u8 animVariant;                      // 0x0AE, facing から決まるアニメ番号のオフセット
+  u8 animVariant;                      // 0x0AE, dir4 から決まるアニメ番号のオフセット
   bool8 xflip;                         // 0x0AF, 0 以外なら MainSprite に SPRFLAG_XFLIP を立てる
   u16 animID;                          // 0x0B0, animVariant + 呼び出し側のアニメ番号, MainSprite_SetAnim に渡した値
   u16 prevAnimID;                      // 0x0B2, Boss_AdvanceAnim が animID を写す
@@ -114,11 +114,11 @@ static_assert(sizeof(Boss) == 344);
 // HP の割合 (0..128) を返す
 static inline s32 Boss_GetHPRatio(Boss* p) { return p->hpRatio; }
 
-// mover.angle を差し替えて facing と dir をそれに合わせる
+// mover.angle を差し替えて dir4 と dir8 をそれに合わせる
 static inline void Boss_SetAngle(Boss* p, u32 angle) {
   p->mover.angle = angle;
-  p->facing = Angle_ToDir4(p->mover.angle);
-  p->dir = Angle_ToDir8(p->mover.angle);
+  p->dir4 = Angle_ToDir4(p->mover.angle);
+  p->dir8 = Angle_ToDir8(p->mover.angle);
 }
 
 // 当たってきた攻撃の weakness / attributes を控える, 経験値の配分に使う

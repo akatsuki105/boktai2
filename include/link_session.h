@@ -28,9 +28,9 @@ typedef struct LinkPlayerRecord {
   u16 controlUp;         // 0x14, gStat->controlUp の写し
   u8 unk_16;             // 0x16, records[0] のものが LinkSession.unk_38 に写される
   u8 tradeSlot;          // 0x17, 交換に出す武器のスロット, 0xFF ならなし
-  u32 unk_18;            // 0x18, 3 未満のレコードがあると Entity08F4 (ルール設定) の選択肢が1つ増える
+  u32 unk_18;            // 0x18, 3 未満のレコードがあると LinkBattleRuleScreen の選択肢が1つ増える
   LinkTradeWeapon body;  // 0x1C, 交換に出す武器, LinkSession.bodies[] に写される
-  u8 unk_40[4];          // 0x40, [0] が 2 なら武器は GUN_DEL_HELL 固定, [1] は通信対戦のステータスの種類
+  u8 loadout[4];         // 0x40, [0] はプレイヤーの種類 (0: 赤ジャンゴ, 1: 黒ジャンゴ, 2: サバタで武器は GUN_DEL_HELL 固定), [1] は通信対戦のステータスの種類, [2] は装備魔法
   u8 unk_44;             // 0x44, Time_GetSpanOfTime の値, PlayerLink_IsNight が 0/4/5 (夜) のどれかかを見る
   u8 unk_45;             // 0x45
   u16 crc;               // 0x46, CalcCRC16 で 0x00..0x45 から作る
@@ -39,7 +39,7 @@ static_assert(sizeof(LinkPlayerRecord) == 72);
 
 // 通信対戦のルール (3項目の選択値) と CRC, 親機が送って全員が受け取る
 typedef struct {
-  u8 values[3];  // 0x00, Entity08F4 (ルール設定) の3行の選択値, sLinkBattleRuleLimits[i] 以上なら 0 に戻す
+  u8 values[3];  // 0x00, LinkBattleRuleScreen の3行の選択値, sLinkBattleRuleLimits[i] 以上なら 0 に戻す
   u8 unk_3[3];   // 0x03
   u16 crc;       // 0x06, CalcCRC16(values, 6)
 } LinkBattleRules;
@@ -106,7 +106,7 @@ typedef struct LinkSession {
   s16 rankPointTable[4];                        // 0x154, 順位ごとの点, '.e' があればそこから、無ければ {2, 1, -1, -2}
   LinkPlayerRecord self;                        // 0x15C, 自分の記録, 相手に送る
   LinkPlayerRecord records[4];                  // 0x1A4, 受け取った全員の記録
-  LinkBattleRules rulesOut;                     // 0x2C4, 親機が送るルール, Entity08F4 (ルール設定) の選択値の写し
+  LinkBattleRules rulesOut;                     // 0x2C4, 親機が送るルール, LinkBattleRuleScreen の選択値の写し
   LinkBattleRules rules;                        // 0x2CC, 受け取ったルール
   void (*updateCallback)(struct LinkSession*);  // 0x2D4
   s32 windowID;                                 // 0x2D8, MenuMessage_Create の戻り値
@@ -114,7 +114,7 @@ typedef struct LinkSession {
   u16 unk_2de;                                  // 0x2DE, '.R=0', 0 以外なら FUN_081df0f8 が実行するスクリプト ID
   u16 unk_2e0;                                  // 0x2E0, '.v=0', 0 以外なら FUN_081df460 が実行するスクリプト ID
   u16 unk_2e2;                                  // 0x2E2, '.r=0', FUN_081df014 が実行するスクリプト ID
-  u16 unk_2e4;                                  // 0x2E4, '.b=0', FUN_081df9ac が実行するスクリプト ID
+  u16 dropWeaponScriptID;                       // 0x2E4, '.b=0', 持っている武器をその場に落とすスクリプト
   u16 exitScriptID;                             // 0x2E6, '.E=0', 終了時に実行するスクリプト ID, 0 ならソフトリセット
   u16 unk_2e8;                                  // 0x2E8, '.Y=0', FUN_081de844 が実行するスクリプト ID
   u16 unk_2ea;                                  // 0x2EA, '.U=0', FUN_081de844 が実行するスクリプト ID
@@ -139,7 +139,7 @@ void FUN_081df924(void);
 void FUN_081df940(void);
 void FUN_081df95c(s32 val);
 void LinkSession_RequestKill(void);
-void FUN_081df9ac(Vec3* pos, s32 val);
+void LinkSession_DropWeapon(Vec3* pos, s32 idx);
 s32 FUN_081dfa04(void);
 void FUN_081dfa20(s32 kind, s32* strength, s32* vitality, s32* spirit, s32* agility);
 void FUN_081dfe5c(void);

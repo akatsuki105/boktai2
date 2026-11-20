@@ -318,7 +318,7 @@ void Bullet_SetupHitbox(Bullet* p, u32 knockback, HitboxAttrs attrs, u32 iframes
   } else {
     VEC3_SET(offset, 0, 0, 0);
   }
-  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 1 << p->player->mover.unk_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ANGLE | HBF_DAMAGE, 0, 1 << p->player->mover.kind, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, 0, knockback, HBSRC_GUN, attrs, iframes);
   Hitbox_SetHandler(hitbox, Bullet_OnHit, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);

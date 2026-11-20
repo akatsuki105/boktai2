@@ -57,7 +57,7 @@ _08198322:
 	adds r1, r5, r3
 	movs r0, #8
 	strh r0, [r1]
-	ldr r0, _081983A8 @ =FUN_081999f4
+	ldr r0, _081983A8 @ =EneSword_UpdateSlaveFlash
 	str r0, [r2]
 	ldr r0, [r5, #0xc]
 	ldr r1, _081983AC @ =0x00000CC8
@@ -95,15 +95,15 @@ _08198322:
 	movs r2, #0xae
 	lsls r2, r2, #1
 	adds r1, r5, r2
-	ldr r0, _081983B8 @ =FUN_08199da0
+	ldr r0, _081983B8 @ =EneSword_SlaveStateDying
 	str r0, [r1]
 	b _0819856A
 	.align 2, 0
-_081983A8: .4byte FUN_081999f4
+_081983A8: .4byte EneSword_UpdateSlaveFlash
 _081983AC: .4byte 0x00000CC8
 _081983B0: .4byte 0x00000C8A
 _081983B4: .4byte 0x00000111
-_081983B8: .4byte FUN_08199da0
+_081983B8: .4byte EneSword_SlaveStateDying
 _081983BC:
 	ldr r3, _08198430 @ =0x00000117
 	adds r0, r5, r3
@@ -115,7 +115,7 @@ _081983BC:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldr r1, [r0]
-	ldr r0, _08198434 @ =FUN_08198d0c
+	ldr r0, _08198434 @ =EneSword_SlaveSpinBounced
 	cmp r1, r0
 	bne _08198410
 _081983D6:
@@ -125,10 +125,10 @@ _081983D6:
 	lsls r3, r3, #1
 	adds r0, r5, r3
 	ldr r1, [r0]
-	ldr r0, _08198438 @ =FUN_08199064
+	ldr r0, _08198438 @ =EneSword_SlaveThrustWait
 	cmp r1, r0
 	beq _08198410
-	ldr r0, _0819843C @ =FUN_08199094
+	ldr r0, _0819843C @ =EneSword_SlaveThrustMove
 	cmp r1, r0
 	beq _08198410
 _081983EE:
@@ -140,19 +140,19 @@ _081983F4:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldr r1, [r0]
-	ldr r0, _08198440 @ =FUN_081994e8
+	ldr r0, _08198440 @ =EneSword_SlaveBoomerangSpinUp
 	cmp r1, r0
 	beq _08198410
-	ldr r0, _08198444 @ =FUN_08199568
+	ldr r0, _08198444 @ =EneSword_SlaveBoomerangOut
 	cmp r1, r0
 	beq _08198410
-	ldr r0, _08198448 @ =FUN_081996f0
+	ldr r0, _08198448 @ =EneSword_SlaveBoomerangReturn
 	cmp r1, r0
 	beq _08198410
 	b _08198564
 _08198410:
 	adds r0, r5, #0
-	bl FUN_08199a3c
+	bl EneSword_SlaveSetMoveToHere
 	ldrb r0, [r4]
 	cmp r0, #2
 	bne _0819844C
@@ -164,16 +164,16 @@ _08198410:
 	movs r3, #0xb6
 	lsls r3, r3, #1
 	adds r1, r5, r3
-	ldr r0, _08198434 @ =FUN_08198d0c
+	ldr r0, _08198434 @ =EneSword_SlaveSpinBounced
 	b _0819847E
 	.align 2, 0
 _08198430: .4byte 0x00000117
-_08198434: .4byte FUN_08198d0c
-_08198438: .4byte FUN_08199064
-_0819843C: .4byte FUN_08199094
-_08198440: .4byte FUN_081994e8
-_08198444: .4byte FUN_08199568
-_08198448: .4byte FUN_081996f0
+_08198434: .4byte EneSword_SlaveSpinBounced
+_08198438: .4byte EneSword_SlaveThrustWait
+_0819843C: .4byte EneSword_SlaveThrustMove
+_08198440: .4byte EneSword_SlaveBoomerangSpinUp
+_08198444: .4byte EneSword_SlaveBoomerangOut
+_08198448: .4byte EneSword_SlaveBoomerangReturn
 _0819844C:
 	cmp r0, #3
 	bne _08198468
@@ -185,10 +185,10 @@ _0819844C:
 	movs r2, #0xb8
 	lsls r2, r2, #1
 	adds r1, r5, r2
-	ldr r0, _08198464 @ =FUN_0819926c
+	ldr r0, _08198464 @ =EneSword_SlaveThrustBounced
 	b _0819847E
 	.align 2, 0
-_08198464: .4byte FUN_0819926c
+_08198464: .4byte EneSword_SlaveThrustBounced
 _08198468:
 	cmp r0, #4
 	bne _08198480
@@ -200,7 +200,7 @@ _08198468:
 	movs r0, #0xba
 	lsls r0, r0, #1
 	adds r1, r5, r0
-	ldr r0, _0819849C @ =FUN_08199824
+	ldr r0, _0819849C @ =EneSword_SlaveBoomerangBounced
 _0819847E:
 	str r0, [r1]
 _08198480:
@@ -218,7 +218,7 @@ _08198480:
 	adds r1, r5, r2
 	b _08198512
 	.align 2, 0
-_0819849C: .4byte FUN_08199824
+_0819849C: .4byte EneSword_SlaveBoomerangBounced
 _081984A0:
 	mov r4, sp
 	adds r3, r7, #0

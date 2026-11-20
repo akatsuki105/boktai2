@@ -81,6 +81,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define TGT_JORMUNGANDR 0xD37F     // BOKHASH("ヨルムンガンド")
 #define TGT_BAT_SWARM 0xE534       // BOKHASH("デモバット"), CutsceneBatSwarm
 #define TGT_MAGIC_SQUARE 0xB142    // BOKHASH("魔方陣"), ワープ魔方陣
+#define TGT_PDRIVER 0xCBB0         // BOKHASH("パイルドライバー")
 
 // ---- データの書き方 ----
 //
@@ -164,9 +165,9 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 // NPC, 人物ごとの処理関数 (src/npc/*.c) に共通の番号
 #define NPC_TURN(target, dir) TO_NPC(target, 2, dir)                 // dir (8方向) へ少しずつ向き直る
 #define NPC_MOVE_TO(target, x, y, z) TO_NPC(target, 3, x, y, z)      // (x, y, z) へ向かう, 多くの人物は歩き, キッド・クロ・スミス・ルイス・マルチェロ・ハテナは state 16 の動き (歩きは cmd 20)
-#define NPC_WARP_IN(target) TO_NPC(target, 4)                        // 細長い姿で上から落ちてきて現れる (アニメ表の 5 番, FUN_08042414)
-#define NPC_WARP_OUT(target) TO_NPC(target, 5)                       // 縦に伸びながら上へ消える (アニメ表の 6 番, FUN_08042638)
-#define NPC_EMOTE(target, kind) TO_NPC(target, 10, kind)             // 頭上に吹き出しを出す, kind は FUN_080415cc
+#define NPC_WARP_IN(target) TO_NPC(target, 4)                        // 細長い姿で上から落ちてきて現れる (アニメ表の 5 番, NPC_UpdateDropIn)
+#define NPC_WARP_OUT(target) TO_NPC(target, 5)                       // 縦に伸びながら上へ消える (アニメ表の 6 番, NPC_UpdateRiseOut)
+#define NPC_EMOTE(target, kind) TO_NPC(target, 10, kind)             // 頭上に吹き出しを出す, kind は NPC_ShowEmote
 #define NPC_EMOTE_TIMED(target, kind, timer, duration) TO_NPC(target, 10, kind, timer, duration)
 #define NPC_SET_POS(target, x, y, z) TO_NPC(target, 41, x, y, z)     // その場で (x, y, z) へ移す
 
@@ -176,7 +177,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define PLAYER_STAND(target, dir) TO_PLAYER(target, 2, dir)                              // Player_Lock, 今のフォームのまま dir を向いて待機
 #define PLAYER_TURN(target, dir) TO_PLAYER(target, 3, dir)                               // Player_LockTurnTo, dir へ振り向く
 #define PLAYER_MOVE_TO(target, x, y, z) TO_PLAYER(target, 6, x, y, z)                    // Player_MoveTo, フォームごとの移動で (x, y, z) へ
-#define PLAYER_CHARGE_POSE(target, variant) TO_PLAYER(target, 7, variant)                // FUN_0807bbb0, 手前を向いて太陽チャージなどの構え (PACT_UNK_7)
+#define PLAYER_CHARGE_POSE(target, variant) TO_PLAYER(target, 7, variant)                // FUN_0807bbb0, 手前を向いて太陽チャージなどの構え (PACT_PALM_UP)
 #define PLAYER_END_CHARGE_POSE(target) TO_PLAYER(target, 9)                              // FUN_0807bc64, 構えを解く
 #define PLAYER_PULL_COFFIN(target, dir) TO_PLAYER(target, 14, dir)                       // Player_LockPullCoffinTo, その場で棺桶を引く
 #define PLAYER_BLOW_AWAY(target, dir, speed, stayDown) TO_PLAYER(target, 16, dir, speed, stayDown)  // Player_LockBlownAway, stayDown が 0 以外なら倒れたまま待つ

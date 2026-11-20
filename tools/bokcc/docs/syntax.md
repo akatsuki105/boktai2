@@ -201,6 +201,14 @@ world と scratch も同じ形で `data/scripts/world.h` / `data/scripts/scratch
 名前は `include/vm_memory.h` の World / Scratch のメンバ名を大文字にしたもので、world.h はすべて `W_`、scratch.h はすべて `S_` を付ける。
 ビット配列も `#define W_CHEST_OPENED(i) BIT(world + 0x1A8, 0, (u8)100, i)` のように引数付きのマクロにできる。
 
+### ハッシュ値の名前 (hashes.h)
+
+原典は ID の多くを文字列で書いていて、ID はその文字列の `HashName` (C 側の `BOKHASH`) だった。
+元の文字列が分かった値は `data/scripts/hashes.h` に `#define HASH_MAP000 0xA679  // map000` の形で書き、`--hashes` で渡すと
+値が一致する u16 の定数がその名前で出る (`(u16)HASH_MAP000`)。行末コメントは元の文字列で、値は `tools/hash.ts map000` で確かめる。
+`commands.h` で名前が付く `Chara` / `Command` の第1引数などはそちらの名前を優先する。
+cpp が数値に展開するので parser は何もしない。ハッシュではない u16 がたまたま同じ値でもその名前で出るが、バイト列は変わらない。
+
 ### 引数と処理の説明
 
 `script.h` の行末コメントは、ダンプ時に定義の直前のアドレスのコメントへそのまま付け足される。

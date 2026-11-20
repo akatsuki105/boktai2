@@ -48,7 +48,7 @@ CrossoverResult* CrossoverResult_Get(void) { return sCrossoverResult; }
 
 // 結果画面の BG1 と BG パレットを読み込む
 void CrossoverResult_SetupBG(CrossoverResult* p, s32 bgIndex) {
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_CD91);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_LINK);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
   CpuCopy16(GetBgPlttFile(BGP_LINK)->body, gBgPlttBuffer, 256 * sizeof(rgb555));

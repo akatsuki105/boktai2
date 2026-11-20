@@ -23,8 +23,8 @@ typedef struct CoffinShop {
   MainSpriteGfx icons;             // 0x0038, SPR_INVENTORY_ICONS
   MainSpriteGfx gfx2;              // 0x0058, SPR_UI_MISC
   MainSprite sprites[38];          // 0x0078, [1..16] と [17..28] がアイテム枠2面, [30] がカーソル
-  Tilemaps* tilemap;               // 0x0EB8, MP_9F57
-  rgb555* bgPltt;                  // 0x0EBC, BGP_A41A[208]
+  Tilemaps* tilemap;               // 0x0EB8, MP_KAJI
+  rgb555* bgPltt;                  // 0x0EBC, BGP_KAJI[208]
   u8* unk_ec0;                     // 0x0EC0, '.s' があれば VM_GetPC_Proxy の戻り値
   u8* unk_ec4;                     // 0x0EC4, '.i' があれば VM_GetPC_Proxy の戻り値
   u8 unk_ec8;                      // 0x0EC8, CoffinShop_SetSubState の第3引数
@@ -389,7 +389,7 @@ void FUN_080bf3a0(CoffinShop* p) {
 void CoffinShop_SetupBg(CoffinShop* p) {
   s32 indices[1];
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_KAJI);
   indices[0] = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, indices);
   Video_SetBGLayer(0, p->tilemap, 3);
@@ -397,7 +397,7 @@ void CoffinShop_SetupBg(CoffinShop* p) {
 }
 
 void CoffinShop_LoadBgPltt(CoffinShop* p) {
-  p->bgPltt = &GetBgPlttFile(BGP_A41A)->body[208];
+  p->bgPltt = &GetBgPlttFile(BGP_KAJI)->body[208];
   CpuCopy32(p->bgPltt, &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 }
 
@@ -471,7 +471,7 @@ void CoffinShop_SetupMessageWindow(CoffinShop* p) {
   FUN_08049f5c();
   MessageWindow_SetRect(0, 16, 30, 2);
   MessageWindow_SetInstant(1);
-  MessageWindow_SetBgPltt(BGP_A41A);
+  MessageWindow_SetBgPltt(BGP_KAJI);
 }
 
 // 残差は1つ目のループの v とアドレス一時変数の r1/r2 入れ替えのみ (68/68命令), Tier A-C は試済

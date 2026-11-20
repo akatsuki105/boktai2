@@ -97,13 +97,13 @@ NON_MATCH void LinkBattleCoin_AvoidWall(LinkBattleCoin* coin) {
   s32 tile = GetCollisionTileIdx(&coin->destPos);
   s32 i;
 
-  if (!(TileAtIndex(tile)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile)->heightStairs & 0xF) != 0) {
+  if (!(TileAtIndex(tile)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile)->heightStairs & 0xF) != 0) {
     return;
   }
   for (i = 0; i < 4; i++) {
     switch (i) {
       case 0: {
-        if (!(TileAtIndex(tile + 1)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile + 1)->heightStairs & 0xF) != 0) {
+        if (!(TileAtIndex(tile + 1)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile + 1)->heightStairs & 0xF) != 0) {
           s32 next = tile + 1;
 
           coin->destPos.x = Mod(next, gCollisionMap->tiledata->width) << 8;
@@ -113,7 +113,7 @@ NON_MATCH void LinkBattleCoin_AvoidWall(LinkBattleCoin* coin) {
         break;
       }
       case 1: {
-        if (!(TileAtIndex(tile + gCollisionMap->tiledata->width)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile + gCollisionMap->tiledata->width)->heightStairs & 0xF) != 0) {
+        if (!(TileAtIndex(tile + gCollisionMap->tiledata->width)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile + gCollisionMap->tiledata->width)->heightStairs & 0xF) != 0) {
           s32 next = tile + gCollisionMap->tiledata->width;
 
           coin->destPos.x = Mod(next, gCollisionMap->tiledata->width) << 8;
@@ -123,7 +123,7 @@ NON_MATCH void LinkBattleCoin_AvoidWall(LinkBattleCoin* coin) {
         break;
       }
       case 2: {
-        if (!(TileAtIndex(tile - 1)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile - 1)->heightStairs & 0xF) != 0) {
+        if (!(TileAtIndex(tile - 1)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile - 1)->heightStairs & 0xF) != 0) {
           s32 next = tile - 1;
 
           coin->destPos.x = Mod(next, gCollisionMap->tiledata->width) << 8;
@@ -133,7 +133,7 @@ NON_MATCH void LinkBattleCoin_AvoidWall(LinkBattleCoin* coin) {
         break;
       }
       case 3: {
-        if (!(TileAtIndex(tile - gCollisionMap->tiledata->width)->attr & (TATTR_UNK_0 | TATTR_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile - gCollisionMap->tiledata->width)->heightStairs & 0xF) != 0) {
+        if (!(TileAtIndex(tile - gCollisionMap->tiledata->width)->attr & (TATTR_PLAYER_WALL | TATTR_ENEMY_WALL | TATTR_FALLDEATH)) && (TileAtIndex(tile - gCollisionMap->tiledata->width)->heightStairs & 0xF) != 0) {
           s32 next = tile - gCollisionMap->tiledata->width;
 
           coin->destPos.x = Mod(next, gCollisionMap->tiledata->width) << 8;

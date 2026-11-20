@@ -5,10 +5,13 @@
 #include "file.h"
 #include "global.h"
 #include "link.h"
+#include "save.h"
+#include "solar.h"
 #include "sound.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
+#include "vm.h"
 
 typedef u32 LinkShopFlags;
 #define LSFLAG_SENDING (1 << 0)            // 0x1, msg を送信待ちまたは送信中
@@ -40,7 +43,7 @@ typedef struct LinkShopManager {
   LinkShopStateFn stateFn;    // 0x4C
   s32 sendPacketId;           // 0x50, Sio_SendPacket が払い出した id, -1 なら送信していない
   u8* script;                 // 0x54, MessageWindow_Start に渡す文字列
-  TilemapFile* tilemap;       // 0x58, MP_A413
+  TilemapFile* tilemap;       // 0x58, MP_SYSTEM
   u8 unk_5c[0x60 - 0x5C];     // 0x5C, 読み手も書き手も未発見
   u8 unk_60;                  // 0x60, 外から書いて読むだけの1バイト
   u8 unk_61;                  // 0x61, 0xFF が入るだけで読み手は未発見
@@ -64,6 +67,19 @@ static_assert(sizeof(LinkShopManager) == 132);
 COMMON_DATA LinkShopManager* gLinkShopManager = NULL;  // 0x03002C6C
 COMMON_DATA u8 u8_03002c70[16] = {};                   // unused?
 
+void sound_082402f8(SoundID32 id);
+void* LinkConnect_Create(s32 timeout, s32 cancelable);
+void LinkConnect_SetCallbacks(void* owner, void* onSuccess, void* onFailure);
+void* Sio_CreatePacketCtx(void);
+void Sio_UpdatePackets(void);
+s32 CountSellableWeapons(void);
+s32 CountSellableOrEmptySlots(void);
+extern bool32 gRtcReadInhibit;
+void LinkShopManager_StateIdle(LinkShopManager* p);
+void LinkShopManager_StateError(LinkShopManager* p);
+void LinkShopManager_StateHandleMsg(LinkShopManager* p);
+void LinkShopManager_StateSendWait(LinkShopManager* p);
+
 static inline bool8 TestLinkShopFlag(LinkShopFlags flag) {
   if (TEST_FLAGS(gLinkShopManager->flags, flag)) return TRUE;
   return FALSE;
@@ -74,8 +90,11 @@ static inline bool8 LinkShopManager_TestFlag(LinkShopManager* p, LinkShopFlags f
   return FALSE;
 }
 
+// flags のビットを落とす
+static inline void LinkShopManager_ClearFlag(LinkShopManager* p, LinkShopFlags flag) { p->flags &= ~flag; }
+
 // 次の状態に切り替える, 終了済みの判定は結果を使わない (中身が消えたデバッグ出力の跡か)
-static inline void LinkShopManager_SetState(LinkShopManager* p, LinkShopStateFn fn, u8 state) {
+static inline void LinkShopManager_SetState(LinkShopManager* p, LinkShopStateFn fn, s32 state) {
   if (LinkShopManager_TestFlag(p, LSFLAG_FINISHED)) {
   }
   p->stateFn = fn;
@@ -83,12 +102,19 @@ static inline void LinkShopManager_SetState(LinkShopManager* p, LinkShopStateFn 
   p->state = state;
 }
 
+// msg を埋めたあと送信待ちの状態へ移す
+static inline void LinkShopManager_StartSend(LinkShopManager* p) {
+  LinkShopManager_SetState(p, LinkShopManager_StateSendWait, 1);
+  SET_FLAGS(p->flags, LSFLAG_SENDING);
+}
+
 void nop_081e19e0(void) {}
 
-// 呼び出し元がなく, 戻り値を捨てるエピローグなのに p->flags & LSFLAG_PARENT を計算している
-// void 宣言のまま return p->flags & LSFLAG_PARENT; と書けば一致するが, agbcc の
-// 「`return' with a value, in function returning void」は -Wno-return-type でも消せず -Werror で止まる
-NAKED void FUN_081e19e4(LinkShopManager* p) { INCFUNC("asm/func/FUN_081e19e4.inc"); }
+// 呼び出し元がない, 親かどうかを調べるだけで結果を使わない (LinkShopManager_SetState と同じく中身が消えた if の跡か)
+void FUN_081e19e4(LinkShopManager* p) {
+  if (LinkShopManager_TestFlag(p, LSFLAG_PARENT)) {
+  }
+}
 
 void nop_081e19f0(void) {}
 
@@ -100,7 +126,7 @@ void LinkShopManager_OpenTextBox(LinkShopManager* p) {
   MessageWindow_Start(p->script);
   MessageWindow_SetRect(1, 7, 28, 6);
   MessageWindow_ShowLine(0);
-  MessageWindow_SetBgPltt(BOKHASH("bg_link_col_arr"));
+  MessageWindow_SetBgPltt(BGP_LINK);
   MessageWindow_SetInstant(1);
   p->unk_61 = 0xFF;
   CLEAR_FLAGS(p->flags, LSFLAG_UNK_10);
@@ -109,13 +135,41 @@ void LinkShopManager_OpenTextBox(LinkShopManager* p) {
 void LinkShopManager_SetupBG(LinkShopManager* p) {
   s32 layer;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_A413);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_SYSTEM);
   layer = 3;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &layer);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
 }
 
-NAKED void LinkShopManager_OnConnected(LinkShopManager* p, s32 handle, s32 canceled) { INCFUNC("asm/func/LinkShopManager_OnConnected.inc"); }
+// 接続できたら通信を始めて受信待ちへ, 親なら timer 割り込み, 子なら serial 割り込みの回数を生存確認の起点にする, 始められなければエラーへ
+void LinkShopManager_OnConnected(LinkShopManager* p, s32 handle, s32 canceled) {
+  s32 role;
+
+  MessageWindow_Close();
+  ClearBGTilemapBuffer(0);
+  Sio_Reset();
+  role = Sio_Start();
+  LinkShopManager_SetState(p, LinkShopManager_StateIdle, 0);
+  if (role < 0) {
+    p->resultLine = 2;
+    LinkShopManager_SetState(p, LinkShopManager_StateError, 5);
+    SET_FLAGS(p->flags, LSFLAG_FINISHED);
+    return;
+  }
+
+  if (role == 0) {
+    SET_FLAGS(p->flags, LSFLAG_PARENT);
+    p->intrCount = Sio_GetTimerIntrCount();
+  } else {
+    SET_FLAGS(p->flags, LSFLAG_CHILD);
+    p->intrCount = Sio_GetSerialIntrCount();
+  }
+  Sio_CreatePacketCtx();
+  SET_FLAGS(p->flags, LSFLAG_READY);
+  p->multiId = -1;
+  p->noDataFrames = 0;
+  p->idleFrames = 0;
+}
 
 void LinkShopManager_StateClose(LinkShopManager* p);
 
@@ -132,7 +186,57 @@ void LinkShopManager_OnConnectFailed(LinkShopManager* p, s32 handle, s32 cancele
   SET_FLAGS(p->flags, LSFLAG_FINISHED);
 }
 
-NAKED bool32 LinkShopManager_CheckLinkLost(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_CheckLinkLost.inc"); }
+// 割り込み回数が 10 フレームを超えて進まないか相手のデータが 10 フレームを超えて来ないか, Sio のエラーかマルチ ID が途中で変わったら切断とみなして TRUE
+bool8 LinkShopManager_CheckLinkLost(LinkShopManager* p) {
+  bool8 noWatch = LinkShopManager_TestFlag(p, LSFLAG_NO_LINK_WATCH);
+
+  if (!noWatch) {
+    bool32 hasData = FALSE;
+
+    switch (Sio_GetMultiId()) {
+      case 0: {
+        hasData = Sio_HasChildData();
+        if (p->intrCount == Sio_GetTimerIntrCount()) {
+          p->idleFrames++;
+        } else {
+          p->idleFrames = 0;
+          p->intrCount = Sio_GetTimerIntrCount();
+        }
+        break;
+      }
+      case 1: {
+        hasData = Sio_HasParentData();
+        if (p->intrCount == Sio_GetSerialIntrCount()) {
+          p->idleFrames++;
+        } else {
+          p->idleFrames = 0;
+          p->intrCount = Sio_GetSerialIntrCount();
+        }
+        break;
+      }
+    }
+
+    if (p->idleFrames > 10) {
+      return TRUE;
+    }
+    if (hasData) {
+      p->noDataFrames = 0;
+    } else if (++p->noDataFrames > 10) {
+      return TRUE;
+    }
+    if (Sio_GetError() < 0) {
+      return TRUE;
+    }
+    if (Sio_GetMultiId() >= 0 && Sio_GetMultiId() != p->multiId) {
+      if (LinkShopManager_TestFlag(p, LSFLAG_ID_FIXED)) {
+        return TRUE;
+      }
+      p->multiId = Sio_GetMultiId();
+      SET_FLAGS(p->flags, LSFLAG_ID_FIXED);
+    }
+  }
+  return FALSE;
+}
 
 // 1 = 受け取った, 0 = 届いていない, -1 = 送受信中で受け取れない
 s32 LinkShopMsg_TryRecv(LinkShopMsg* msg, LinkShopFlags flags) {
@@ -176,15 +280,155 @@ void LinkShopManager_StateIdle(LinkShopManager* p) {
   LinkShopManager_PollRecv(p);
 }
 
-NAKED void LinkShopManager_StateSendWait(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_StateSendWait.inc"); }
+// msg の送信を待つ状態, 相手に届いたら onSendDone を呼んで msg を空け受信待ちへ戻る
+void LinkShopManager_StateSendWait(LinkShopManager* p) {
+  if (p->stateEnter) {
+    p->stateEnter = FALSE;
+  }
 
-NAKED s32 LinkShopManager_PollRecv(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_PollRecv.inc"); }
+  if (LinkShopManager_TestFlag(p, LSFLAG_SENDING) && LinkShopMsg_TrySend(&p->msg, &p->sendPacketId) == 1) {
+    if (p->onSendDone != NULL) {
+      p->onSendDone(p->owner);
+    }
+    p->msg.kind = 0;
+    LinkShopManager_ClearFlag(p, LSFLAG_SENDING);
+    p->sendPacketId = -1;
+    LinkShopManager_SetState(p, LinkShopManager_StateIdle, 0);
+  }
+}
 
-NAKED void LinkShopManager_StateHandleMsg(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_StateHandleMsg.inc"); }
+// 相手からのメッセージを1通受け取ったら種類に応じた要求フラグを立ててメッセージ処理の状態へ移る, 届いていなければ送信 id を空ける
+// 残差: 原典は kind の比較が bool8 inline の 0/1 作り置きで, 2 回目以降の比較で kind を lsls/lsrs し直し, kind 10 の判定も結果を捨てて残る
+// Tier A-C は試済 (u16 引数の IsKind inline に s32 / u32 / u16 の kind を渡す, 空の if, switch に case -1 で枝の形は一致), 未: inline の引数型の組み合わせ
+NON_MATCH s32 LinkShopManager_PollRecv(LinkShopManager* p) {
+#ifdef NONMATCHING_C
+  switch (LinkShopMsg_TryRecv(&p->msg, p->flags)) {
+    case -1: {
+      break;
+    }
+    case 0: {
+      p->sendPacketId = -1;
+      break;
+    }
+    case 1: {
+      u32 flag;
 
-NAKED void LinkShopManager_StateError(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_StateError.inc"); }
+      if (p->msg.kind == 6) {
+        flag = LSFLAG_REQ_NAME | LSFLAG_RECEIVED;
+      } else if (p->msg.kind == 7) {
+        flag = LSFLAG_REQ_SOLARBANK | LSFLAG_RECEIVED;
+      } else if (p->msg.kind == 8) {
+        flag = LSFLAG_REQ_WEAPONCOUNT | LSFLAG_RECEIVED;
+      } else if (p->msg.kind == 10) {
+        flag = LSFLAG_RECEIVED;
+      } else {
+        flag = LSFLAG_RECEIVED;
+      }
+      SET_FLAGS(p->flags, flag);
+      LinkShopManager_SetState(p, LinkShopManager_StateHandleMsg, 4);
+      p->sendPacketId = -1;
+      return 1;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/LinkShopManager_PollRecv.inc");
+#endif
+}
 
-NAKED void LinkShopManager_StateClose(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_StateClose.inc"); }
+// 受け取ったメッセージを処理する状態, 名前・太陽バンクの残高・売れる武器の本数の要求ならその場で返事を送り, それ以外は onRecv に渡して受信待ちへ戻る
+void LinkShopManager_StateHandleMsg(LinkShopManager* p) {
+  if (p->stateEnter) {
+    p->stateEnter = FALSE;
+  }
+
+  if (LinkShopManager_TestFlag(p, LSFLAG_RECEIVED)) {
+  }
+  LinkShopManager_ClearFlag(p, LSFLAG_RECEIVED);
+
+  if (LinkShopManager_TestFlag(p, LSFLAG_REQ_NAME)) {
+    LinkShopManager_ClearFlag(p, LSFLAG_REQ_NAME);
+    p->msg.kind = 1;
+    p->msg.data[0] = ((s32*)gStat->name)[0];
+    p->msg.data[1] = ((s32*)gStat->name)[1];
+    p->msg.data[2] = ((s32*)gStat->name)[2];
+    LinkShopManager_StartSend(p);
+  } else if (LinkShopManager_TestFlag(p, LSFLAG_REQ_SOLARBANK)) {
+    LinkShopManager_ClearFlag(p, LSFLAG_REQ_SOLARBANK);
+    p->msg.kind = 0;
+    p->msg.data[0] = gStat->solarBank;
+    LinkShopManager_StartSend(p);
+  } else if (LinkShopManager_TestFlag(p, LSFLAG_REQ_WEAPONCOUNT)) {
+    LinkShopManager_ClearFlag(p, LSFLAG_REQ_WEAPONCOUNT);
+    p->msg.kind = 2;
+    p->msg.data[0] = CountSellableWeapons();
+    p->msg.data[1] = CountSellableOrEmptySlots();
+    LinkShopManager_StartSend(p);
+  } else {
+    if (p->onRecv != NULL) {
+      p->onRecv(p->owner, &p->msg);
+    }
+    if (!LinkShopManager_TestFlag(p, LSFLAG_FINISHED)) {
+      LinkShopManager_SetState(p, LinkShopManager_StateIdle, 0);
+    }
+  }
+}
+
+// 通信エラーの状態, 背景を消して resultLine の行を出し BGM をフェードアウトし, 1 秒後にソフトリセットを許す
+void LinkShopManager_StateError(LinkShopManager* p) {
+  if (p->stateEnter) {
+    ClearBGTilemapBuffer(0);
+    ClearBGTilemapBuffer(3);
+    Video_SetBGLayer(0, p->tilemap, 3);
+    Video_GenerateBGMap(0, 0, 0, 0, 0);
+    MessageWindow_ShowLine(p->resultLine);
+    MessageWindow_SetInstant(1);
+    Sound_FadeOutBGM(1);
+    p->stateTimer = 0;
+    p->stateEnter = FALSE;
+  }
+
+  if (p->stateTimer < 60) {
+    p->stateTimer++;
+  } else {
+    SET_FLAGS(p->flags, LSFLAG_ALLOW_SOFT_RESET);
+  }
+}
+
+// 終了の状態, resultLine の行を出してフェードアウトし, 3 秒で onFinish と '.e' のスクリプトを呼んで自分を消す
+void LinkShopManager_StateClose(LinkShopManager* p) {
+  if (p->stateEnter) {
+    ClearBGTilemapBuffer(0);
+    ClearBGTilemapBuffer(3);
+    Video_SetBGLayer(0, p->tilemap, 3);
+    Video_GenerateBGMap(0, 0, 0, 0, 0);
+    MessageWindow_ShowLine(p->resultLine);
+    MessageWindow_SetInstant(1);
+    Sound_FadeOutBGM(1);
+    p->stateTimer = 0;
+    p->stateEnter = FALSE;
+  }
+
+  if (p->stateTimer == 156) {
+    StartBgObjPlttFade(3, 4, 4, 4, 4, 0xFFFF, 0);
+  }
+  if (p->stateTimer > 180) {
+    ClearBGTilemapBuffer(0);
+    ClearBGTilemapBuffer(1);
+    ClearBGTilemapBuffer(2);
+    ClearBGTilemapBuffer(3);
+    if (p->onFinish != NULL) {
+      p->onFinish(p);
+    }
+    Taiyo_Enable();
+    gRtcReadInhibit = FALSE;
+    if (p->scriptID != 0) {
+      VM_ExecByID(p->scriptID, NULL);
+    }
+    KillEntity((Entity*)p);
+  }
+  p->stateTimer++;
+}
 
 // LinkConnect が握手している間の状態, 何もしない
 void LinkShopManager_StateConnecting(LinkShopManager* p) {
@@ -193,7 +437,38 @@ void LinkShopManager_StateConnecting(LinkShopManager* p) {
   }
 }
 
-NAKED s32 LinkShopManager_Update(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_Update.inc"); }
+// 通信中は太陽センサーと RTC を止め, 繋がっていればパケットを回して切断を見張り, 切れたらエラーの状態へ移る
+s32 LinkShopManager_Update(LinkShopManager* p) {
+  Taiyo_Disable();
+  gRtcReadInhibit = TRUE;
+  if (!LinkShopManager_TestFlag(p, LSFLAG_ALLOW_SOFT_RESET)) {
+    gSoftResetInhibit = TRUE;
+  }
+
+  if (LinkShopManager_TestFlag(p, LSFLAG_FINISHED)) {
+    if (p->stateFn != NULL) {
+      p->stateFn(p);
+    }
+    return -1;
+  }
+
+  gSoftResetInhibit = TRUE;
+  if (LinkShopManager_TestFlag(p, LSFLAG_READY)) {
+    Sio_UpdatePackets();
+    if (LinkShopManager_CheckLinkLost(p)) {
+      p->resultLine = 2;
+      LinkShopManager_SetState(p, LinkShopManager_StateError, 5);
+      SET_FLAGS(p->flags, LSFLAG_FINISHED);
+      Sio_Stop();
+      return -1;
+    }
+  }
+
+  if (p->stateFn != NULL) {
+    p->stateFn(p);
+  }
+  return 1;
+}
 
 s32 LinkShopManager_Destroy(LinkShopManager* p) {
   Sio_Stop();
@@ -201,7 +476,31 @@ s32 LinkShopManager_Destroy(LinkShopManager* p) {
   return 1;
 }
 
-NAKED s32 EntityA0A6_Init(LinkShopManager* p) { INCFUNC("asm/func/EntityA0A6_Init.inc"); }
+// 自分で LinkConnect を作って相手を待つ版, 100 秒で打ち切り, キャンセル可
+s32 EntityA0A6_Init(LinkShopManager* p) {
+  sound_082402f8(0);
+  p->sendPacketId = -1;
+  if (VM_SeekToNamedArg('s')) {
+    p->script = VM_GetPC_Proxy();
+    if (p->script == NULL) {
+      return -1;
+    }
+  }
+  p->scriptID = VM_GetNamedArgValue('e', 0);
+  if (LinkConnect_Create(6000, TRUE) == NULL) {
+    return -1;
+  }
+  LinkConnect_SetCallbacks(p, LinkShopManager_OnConnected, LinkShopManager_OnConnectFailed);
+  LinkShopManager_SetupBG(p);
+  LinkShopManager_OpenTextBox(p);
+  gLinkShopManager = p;
+  p->onRecv = NULL;
+  p->onFinish = NULL;
+  p->onSendDone = NULL;
+  p->owner = NULL;
+  LinkShopManager_SetState(p, LinkShopManager_StateConnecting, 7);
+  return 1;
+}
 
 LinkShopManager* EntityA0A6_Create(void) {
   LinkShopManager* p;
@@ -220,7 +519,26 @@ LinkShopManager* EntityA0A6_Create(void) {
   return p;
 }
 
-NAKED s32 Entity92ED_Init(LinkShopManager* p) { INCFUNC("asm/func/Entity92ED_Init.inc"); }
+// 繋がった後で作る版, 接続待ちを飛ばしてすぐ LinkShopManager_OnConnected を呼ぶ
+s32 Entity92ED_Init(LinkShopManager* p) {
+  p->sendPacketId = -1;
+  if (VM_SeekToNamedArg('s')) {
+    p->script = VM_GetPC_Proxy();
+    if (p->script == NULL) {
+      return -1;
+    }
+  }
+  p->scriptID = VM_GetNamedArgValue('e', 0);
+  LinkShopManager_SetupBG(p);
+  LinkShopManager_OpenTextBox(p);
+  gLinkShopManager = p;
+  p->onRecv = NULL;
+  p->onFinish = NULL;
+  p->onSendDone = NULL;
+  p->owner = NULL;
+  LinkShopManager_OnConnected(p, 0, 0);
+  return 1;
+}
 
 LinkShopManager* Entity92ED_Create(void) {
   LinkShopManager* p;
@@ -314,9 +632,95 @@ bool8 LinkShopManager_IsFinished(void) {
   return FALSE;
 }
 
-NAKED void LinkShopManager_Abort(void) { INCFUNC("asm/func/LinkShopManager_Abort.inc"); }
+// まだ終わっていなければエラーの行 (2) を出す状態へ移して終了扱いにする
+void LinkShopManager_Abort(void) {
+  if (gLinkShopManager != NULL) {
+    LinkShopManager* p = gLinkShopManager;
 
-NAKED bool8 LinkShopManager_Send(s32* args, s32 kind, u32 tag) { INCFUNC("asm/func/LinkShopManager_Send.inc"); }
+    if (!LinkShopManager_TestFlag(p, LSFLAG_FINISHED)) {
+      p->resultLine = 2;
+      LinkShopManager_SetState(p, LinkShopManager_StateError, 5);
+      SET_FLAGS(p->flags, LSFLAG_FINISHED);
+    }
+  }
+}
+
+// kind に応じて args と tag を msg に詰めて送信待ちにする, 送受信中か終了済みなら FALSE, 知らない kind は何もせず TRUE
+bool8 LinkShopManager_Send(s32* args, s32 kind, u32 tag) {
+  LinkShopManager* p;
+
+  if (gLinkShopManager == NULL) {
+    return FALSE;
+  }
+  p = gLinkShopManager;
+  if (LinkShopManager_TestFlag(p, LSFLAG_SENDING | LSFLAG_RECEIVED | LSFLAG_FINISHED)) {
+    return FALSE;
+  }
+
+  if (kind == 3) {
+    p->msg.kind = kind;
+    p->msg.data[0] = args[0];
+    p->msg.data[1] = args[1];
+    p->msg.data[2] = args[2];
+    p->msg.unk_02 = tag;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 4) {
+    p->msg.kind = kind;
+    p->msg.data[0] = args[3];
+    p->msg.data[1] = args[4];
+    p->msg.data[2] = args[5];
+    p->msg.unk_02 = tag;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 5) {
+    p->msg.kind = kind;
+    p->msg.data[0] = args[6];
+    p->msg.data[1] = args[7];
+    p->msg.data[2] = args[8];
+    p->msg.unk_02 = tag;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 10) {
+    p->msg.kind = kind;
+    p->msg.data[0] = args[0];
+    p->msg.unk_02 = tag;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 11) {
+    p->msg.kind = kind;
+    p->msg.unk_02 = tag;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 12) {
+    p->msg.kind = kind;
+    p->msg.data[0] = args[0];
+    p->msg.unk_02 = tag;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 6) {
+    p->msg.kind = kind;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 7) {
+    p->msg.kind = kind;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  if (kind == 8) {
+    p->msg.kind = kind;
+    LinkShopManager_StartSend(p);
+    return TRUE;
+  }
+  return TRUE;
+}
 
 void LinkShopManager_Kill(void) {
   if (gLinkShopManager != NULL) {

@@ -299,7 +299,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
     if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
       self->unk_660 = p->e.playerMover->pos;
     } else if (p->e.playerMover != NULL) {
-      s32 idx = p->e.playerMover->unk_4 < 4 ? p->e.playerMover->unk_4 : -1;
+      s32 idx = p->e.playerMover->kind < 4 ? p->e.playerMover->kind : -1;
 
       if (idx >= 0) {
         self->unk_660 = gPlayerPtr[idx]->mover.pos;
@@ -319,7 +319,7 @@ NON_MATCH void FUN_080fb4d0(Boku* p) {
       if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
         self->unk_668 = p->e.playerMover->pos;
       } else if (p->e.playerMover != NULL) {
-        s32 idx = p->e.playerMover->unk_4 < 4 ? p->e.playerMover->unk_4 : -1;
+        s32 idx = p->e.playerMover->kind < 4 ? p->e.playerMover->kind : -1;
 
         if (idx >= 0) {
           self->unk_668 = gPlayerPtr[idx]->mover.pos;
@@ -835,8 +835,8 @@ NON_MATCH void FUN_080fc6f4(Boku* p, s32 param_2) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         (p->e).onRouteFailed(&p->e);
@@ -1090,8 +1090,8 @@ NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -1237,8 +1237,8 @@ NON_MATCH void Boku_StateDamaged(Boku* p, s32 param_2) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -1607,8 +1607,8 @@ NON_MATCH void FUN_080fe7f4(Boku* p) {
     Mover* m = (p->e).playerMover;
 
     idx = -1;
-    if (m != NULL && m->unk_4 <= 3) {
-      idx = m->unk_4;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
     }
     if (m == NULL || idx < 0) {
       (p->e).onRouteFailed(&p->e);
@@ -2195,8 +2195,8 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2371,8 +2371,8 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2527,8 +2527,8 @@ NON_MATCH bool8 Boku_OnDamaged(Boku* p) {
       Mover* m = (p->e).playerMover;
 
       idx = -1;
-      if (m != NULL && m->unk_4 <= 3) {
-        idx = m->unk_4;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
       }
       if (m == NULL || idx < 0) {
         haveTile = FALSE;
@@ -2904,7 +2904,7 @@ NON_MATCH s32 Boku_Init(Boku* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

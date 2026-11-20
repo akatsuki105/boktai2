@@ -1095,7 +1095,7 @@ _0817F828:
 	cmp r1, r0
 	bhi _0817F878
 	adds r0, r7, #0
-	bl FUN_0817ea84
+	bl Shaian_IsPlayerInFront
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0817F878
@@ -1359,7 +1359,7 @@ _0817FA22:
 	str r1, [r0, #8]
 _0817FA34:
 	adds r0, r7, #0
-	bl FUN_0817dd08
+	bl Shaian_SpawnGuardSpark
 	movs r1, #0x12
 	movs r2, #0x8d
 	lsls r2, r2, #3

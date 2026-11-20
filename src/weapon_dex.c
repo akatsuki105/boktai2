@@ -18,14 +18,14 @@ typedef struct {
 
 typedef struct {
   Entity e;                       // 0x000, ENTITY_UNK_8
-  Tilemaps* tilemap;              // 0x018, MP_4F8F
-  rgb555* pltt;                   // 0x01C, BGP_A41A
+  Tilemaps* tilemap;              // 0x018, MP_BOOK
+  rgb555* pltt;                   // 0x01C, BGP_KAJI
   u32 frameCounter;               // 0x020
   u8 page;                        // 0x024, 0: 剣, 1: 槍, 2: ハンマー, 3: 銃
   weapon8_t selected;             // 0x025, カーソル位置の武器, 未登録でも ID が入る
   u8 cursorX;                     // 0x026, 0..4
   u8 cursorY;                     // 0x027, 0..3
-  MainSpriteGfx gfx;              // 0x028, SPR_UI_GALLERY
+  MainSpriteGfx gfx;              // 0x028, SPR_UI_BOOK
   MainSprite pageTitle;           // 0x048, ページ見出し, pose は page + 25
   MainSprite cursor;              // 0x0A8
   MainSprite countSprites[5];     // 0x108, "登録数 / 総数"
@@ -439,7 +439,7 @@ NON_MATCH s32 WeaponDexMenu_InitSprites(WeaponDexMenu* p) {
   s32 i;
   s32 j;
 
-  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_GALLERY);
+  f = GetFile(DIR_MAIN_SPRITE, SPR_UI_BOOK);
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
 
@@ -515,12 +515,12 @@ void WeaponDexMenu_SetupPageBG(WeaponDexMenu* p) {
   s32 col;
 
   ClearBGTilemapBuffer(0);
-  p->tilemap = GetFile(DIR_TILE_MAP, MP_4F8F);
+  p->tilemap = GetFile(DIR_TILE_MAP, MP_BOOK);
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(0, 3);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
 
-  f = GetBgPlttFile(BGP_A41A);
+  f = GetBgPlttFile(BGP_KAJI);
   p->pltt = f->body;
   CpuCopy16(&f->body[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
 

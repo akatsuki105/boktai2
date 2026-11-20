@@ -1,3 +1,4 @@
+#include "debris.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -37,8 +38,6 @@ typedef struct Entity082047f0 {
   bool8 endRequested;           // 0x0CB, Entity082047f0_RequestEnd が立てると終わりのアニメへ進む
 } Entity082047f0;
 static_assert(sizeof(Entity082047f0) == 204);
-
-void* Entity081f26bc_Spawn(Vec3* pos, Vec3* vel, u32 sprID, u32 animFID, u32 animIdx, SpriteFlags sprFlags, u32 flags, s32 plttID, u32 prio, u32 animVariant, u32 animFlags, u32 life, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 ofsX, s32 ofsY);
 
 // mover の向きを 4 方向に丸めて, その左右に elems を置く
 void Entity082047f0_UpdateElemPos(Entity082047f0* p) {
@@ -112,7 +111,7 @@ NON_MATCH void Entity082047f0_SetElemAnim(Entity082047f0* p, AuxAnimState* anim,
 void Entity082047f0_SpawnEffect(Vec3* pos) {
   Vec3 vel = {0, 0, 0, 0};
 
-  Entity081f26bc_Spawn(pos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, 9, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  Debris_Spawn(pos, &vel, SPR_EFF_F422, ANIM_121B, 6, 0, DEBRIS_FREE_ON_END | DEBRIS_SPRITE, 0x237, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void Entity082047f0_SetMode(Entity082047f0* p, u32 mode) {

@@ -27,7 +27,7 @@ typedef struct {
   Mover* venomTarget;        // 0x658, 毒液を吐く状態に入ったときの playerMover, SpiderVenom_Spawn の狙い先
   s16 unk_65c;               // 0x65C
   s16 unk_65e;               // 0x65E
-  u16 unk_660;               // 0x660, bit1 はプレイヤーが Entity080db520 の枠を持っていないとき落とす
+  u16 unk_660;               // 0x660, bit1 はプレイヤーが SpiderWebManager の枠を持っていないとき落とす
   u16 unk_662;               // 0x662, 300 から数え下ろし, 0 になると棺桶を狙いに行く
   NavAgent navAgent;         // 0x664, Enemy.navAgent が指す
   Vec3 pathNodePos;          // 0x688, Enemy.pathNodePos が指す
@@ -48,7 +48,7 @@ bool8 Spider_IsCoffinInRange(Spider* p, s32 rangeX, s32 rangeZ);
 bool8 Spider_TryRouteToCoffin(Spider* p);
 void SpiderVenom_Spawn(void* p, Mover* mover, Mover* target, s32 power, s32 knockback, s32 iframes);
 s32 Map_HasLineOfSight(Vec3* pos, Vec3* target, s32 count, s32 limit);
-s32 FUN_080db290(void* p, Mover* mover);
+s32 SpiderWebManager_Spawn(void* p, Mover* mover);
 void Spider_PickRandomPathNode(Spider* p);
 void FUN_0812f83c(Spider*);
 void FUN_0812f840(Spider*);
@@ -117,7 +117,7 @@ NON_MATCH void Spider_OnHurt(Hitbox* a, Hitbox* b, Spider* p) {
   if (Enemy_IsDead(&p->e)) {
     return;
   }
-  if (Hitbox_TestFlags(a, HBF_NPC)) {
+  if (Hitbox_TestFlags(a, HBF_ACTOR)) {
     Enemy_HandleHurt(a, b, &p->e);
   } else {
     Vec3 v;
@@ -308,8 +308,8 @@ NON_MATCH void FUN_0812edf8(Spider* p) {
 #endif
 }
 
-// 待つ状態, unk_65e フレーム過ぎたら, バリアント0で FUN_080db290 が枠を返すか 1/4 の確率で状態 (handlerMove, 副状態7) へ, そうでなければ (handlerWait, 副状態5) へ 60 フレーム後に移る
-// 242/251命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み副状態の定数を r8 に置く), 加えて原典は &mover を r8 に写して FUN_080db290 に渡し, variant や乱数の 0 をそのまま格納の 0 に使う, 試済: 保留状態の inline, Mover* / Enemy* のローカル
+// 待つ状態, unk_65e フレーム過ぎたら, バリアント0で SpiderWebManager_Spawn が巣を張れたか 1/4 の確率で状態 (handlerMove, 副状態7) へ, そうでなければ (handlerWait, 副状態5) へ 60 フレーム後に移る
+// 242/251命令, FUN_0812edf8 と同じ保留状態の格納の壁 (原典はハンドラを先に読み副状態の定数を r8 に置く), 加えて原典は &mover を r8 に写して SpiderWebManager_Spawn に渡し, variant や乱数の 0 をそのまま格納の 0 に使う, 試済: 保留状態の inline, Mover* / Enemy* のローカル
 NON_MATCH void Spider_StateWait(Spider* p, s32 timer) {
 #ifdef NONMATCHING_C
   Spider* q = (p->e).owner;
@@ -321,7 +321,7 @@ NON_MATCH void Spider_StateWait(Spider* p, s32 timer) {
   Enemy_PlayAnim(&p->e, 14);
   if (timer > q->unk_65e) {
     CLEAR_FLAGS(q->unk_660, 4);
-    if ((p->e).variant == 0 && FUN_080db290((p->e).unk_260, mover) >= 0) {
+    if ((p->e).variant == 0 && SpiderWebManager_Spawn((p->e).unk_260, mover) >= 0) {
       (p->e).pendingDelay = 60;
       (p->e).pendingHandler = (p->e).handlerMove;
       (p->e).pendingSubState0 = 0;
@@ -646,7 +646,7 @@ void Spider_InitHitboxes(Spider* p) {
 
   VEC3_SET(hurtSize, 128, 128, 128);
   VEC3_SET(hurtOffset, 0, 128, 0);
-  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBF_HURTBOX | HBF_NPC | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE);
+  Enemy_RegisterHurtboxWithFlags(&p->e, &hurtSize, &hurtOffset, Spider_OnHurt, p, HBF_HURTBOX | HBF_ACTOR | HBF_ANGLE | HBF_3 | HBF_SENSOR | HBF_DAMAGE);
   VEC3_SET(hitSize, 64, 100, 64);
   VEC3_SET(hitOffset, 0, 128, 0);
   Enemy_InitAtkHitbox(&p->e, &hitSize, &hitOffset, Spider_OnHit, 0, p);
@@ -749,7 +749,7 @@ void FUN_08130610(Spider* p) {
   if ((p->e).variant != 1) {
     Spider* q = (p->e).owner;
 
-    if (FUN_08086878() != -1 || !Coffin_IsIdle()) {
+    if (Coffin_GetSpiderWebIdx() != -1 || !Coffin_IsIdle()) {
       q->unk_662 = 300;
       CLEAR_FLAGS(q->unk_660, 4);
     } else if (q->unk_662 != 0) {
@@ -1206,7 +1206,7 @@ NON_MATCH s32 Spider_Init(Spider* p) {
     SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
   }
 
-  Mover_Init(&(p->e).mover, id, &pos, 0, 4, p);
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
   if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
     CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
   }

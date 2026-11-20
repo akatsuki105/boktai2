@@ -483,15 +483,11 @@ void Cmd_6487(void) { gGrayscaleTimer = VM_GetNamedArgValue('t', 0); }
 void Cmd_686E(void) { gGrayscaleTimer = 0; }
 
 void FUN_0823d2e0(s32 idx) {
-  if (*(idx + gStat->unk_948) < 9999) {
-    (*(idx + gStat->unk_948))++;
-  }
+  if (UNK_948(idx) < 9999) UNK_948(idx)++;
 }
 
 void FUN_0823d310(s32 idx) {
-  if (*(idx + gStat->unk_950) < 9999) {
-    (*(idx + gStat->unk_950))++;
-  }
+  if (LINK_ALERT_COUNT(idx) < 9999) LINK_ALERT_COUNT(idx)++;
 }
 
 static void UNUSED nop_0823d33c(void) {}
@@ -661,7 +657,7 @@ NON_MATCH bool32 Player_CanTalk(void) {
   if (player->goodCondTimer != 0 && (player->goodCondID == GOOD_MINI || player->goodCondID == GOOD_INVISIBLE)) {
     return FALSE;
   }
-  if (player->action <= PACT_WALK || player->action == PACT_UNK_7) {
+  if (player->action <= PACT_WALK || player->action == PACT_PALM_UP) {
     return TRUE;
   }
   return FALSE;

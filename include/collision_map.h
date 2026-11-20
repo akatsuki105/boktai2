@@ -24,25 +24,25 @@ static_assert(sizeof(CollisionMapFile) == 20);
 #define STAIRS_HORIZONTAL 2
 
 // 例:
-//   変異域炎の溶岩: 0x0482 (TATTR_WALL, TATTR_SPECIAL, TATTR_WALLISH)
+//   変異域炎の溶岩: 0x0482 (TATTR_ENEMY_WALL, TATTR_SPECIAL, TATTR_ENEMY_AVOID)
 //   変異域氷のすべる床: 0x0080 (TATTR_SPECIAL)
-//   地下水路で水に落ちた: 0x0041 (TATTR_UNK_0, TATTR_FALLDEATH)
-//   暗黒街のワープ前の壁渡り: 0x082A (TATTR_WALL, TATTR_UNK_3, TATTR_UNK_5, TATTR_UNK_11)
-//   宿屋, 暗黒街のワープ先, 暗黒街のダクト: 0x040A (TATTR_WALL, TATTR_UNK_3, TATTR_WALLISH)
-typedef u16 TileAttr;             // CollisionMapTile.attr
-#define TATTR_UNK_0 (1 << 0)      // 0x0001, 未検証
-#define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可)
-#define TATTR_UNK_2 (1 << 2)      // 0x0004, 未検証, 移動床に乗っている時 (変異域の上下昇降床, 地下水路の移動床)
-#define TATTR_UNK_3 (1 << 3)      // 0x0008, 未検証
-#define TATTR_UNK_4 (1 << 4)      // 0x0010, 未検証
-#define TATTR_UNK_5 (1 << 5)      // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
-#define TATTR_FALLDEATH (1 << 6)  // 0x0040, 地下水路で水に落ちたり、落下死する場所にいくとセットされた
-#define TATTR_SPECIAL (1 << 7)    // 0x0080, MPF_COLD: すべり床, MPF_HOT: 溶岩, それ以外: 鳴り床
-#define TATTR_FRAGILE (1 << 8)    // 0x0100, ダイナマイトで壊せる傷んだ壁?
-#define TATTR_UNK_9 (1 << 9)      // 0x0200, 未検証, 属性ブロックが止まっている間に立てる
-#define TATTR_WALLISH (1 << 10)   // 0x0400, TATTR_WALL との違いは不明 (敵キャラ専用?)
-#define TATTR_UNK_11 (1 << 11)    // 0x0800
-#define TATTR_UNK_12 (1 << 12)    // 0x1000
+//   地下水路で水に落ちた: 0x0041 (TATTR_PLAYER_WALL, TATTR_FALLDEATH)
+//   暗黒街のワープ前の壁渡り: 0x082A (TATTR_ENEMY_WALL, TATTR_BLOCK_STOP, TATTR_UNK_5, TATTR_COFFIN_WALL)
+//   宿屋, 暗黒街のワープ先, 暗黒街のダクト: 0x040A (TATTR_ENEMY_WALL, TATTR_BLOCK_STOP, TATTR_ENEMY_AVOID)
+typedef u16 TileAttr;                // CollisionMapTile.attr
+#define TATTR_PLAYER_WALL (1 << 0)   // 0x0001, 敵以外 (プレイヤー, 棺桶, その他の Mover) を通さない, Map_CanStepTo が敵以外の移動で見る, 閉じた扉や条件を満たしていない間のマウスの穴・バットの窓に立つ
+#define TATTR_ENEMY_WALL (1 << 1)    // 0x0002, 敵を通さない, Map_CanStepTo が敵 (Mover.kind == MOVER_ENEMY) の移動で見て, 敵のナビ (Map_TryFindNavRoute など) も壁として扱う, 溶岩・宿屋・ダクトのようにプレイヤーだけ入れる所はこれだけが立つ
+#define TATTR_LIFT (1 << 2)          // 0x0004, 移動床 (エレベーター) の上, エレベーターが自分の下のタイルの上書きに立てる (変異域の上下昇降床, 地下水路の移動床), プレイヤーの段差の判定はこのタイルを除外する
+#define TATTR_BLOCK_STOP (1 << 3)    // 0x0008, 動かせるブロックと属性キューブがこのタイルの方へ滑らない, 穴・窓・ダクト・属性キューブ自身に付いている
+#define TATTR_NO_OCCLUDE (1 << 4)    // 0x0010, 手前の物に隠されるべきタイルでも隠さない (occlusion_mask.c)
+#define TATTR_UNK_5 (1 << 5)         // 0x0020, 未検証, 太陽床に乗っている間セット (消すと0になった?)
+#define TATTR_FALLDEATH (1 << 6)     // 0x0040, 地下水路で水に落ちたり、落下死する場所にいくとセットされた
+#define TATTR_SPECIAL (1 << 7)       // 0x0080, MPF_COLD: すべり床, MPF_HOT: 溶岩, それ以外: 鳴り床
+#define TATTR_FRAGILE (1 << 8)       // 0x0100, ダイナマイトで壊せる傷んだ壁?
+#define TATTR_UNK_9 (1 << 9)         // 0x0200, 未検証, 属性キューブが止まっている間に立てる
+#define TATTR_ENEMY_AVOID (1 << 10)  // 0x0400, 敵はこのタイルの上ではナビ経路を進めない (使うのは enemy.c の1か所だけ), 溶岩・宿屋・ダクトに付いている
+#define TATTR_COFFIN_WALL (1 << 11)  // 0x0800, 棺桶を通さない, 棺桶の移動 (coffin.c) が止まり, 棺桶を引いているプレイヤーも立ち止まる, マウスの穴・バットの窓・壁渡りに付いている
+#define TATTR_UNK_12 (1 << 12)       // 0x1000
 
 // コリジョンマップの1タイル
 typedef struct {

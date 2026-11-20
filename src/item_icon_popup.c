@@ -7,6 +7,7 @@
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
+#include "vec3.h"
 
 // アイテムアイコン1枚, ワールド座標を持ちアイソメトリック投影でスプライトに落とす
 typedef struct {
@@ -294,8 +295,8 @@ s32 ItemIconPopupManager_Destroy(ItemIconPopupManager* p) {
   sItemIconPopupManager = NULL;
 }
 
-// 残差 (80/80 命令): CpuFill32 の前に原典は &pos を先に作る, ループのポインタは sprite 側を elem 側より先に作る (どちらも並びだけ)
-// Tier A-C は試済 (添字で回す, elem で回す, sprite だけ添字にする, elem の初期化を for の外へ出す)
+// 残差 (80/80 命令) はループの2本の誘導変数 (sprite と elem) の r4/r5 の入れ替わりだけ, &pos の順は Vec3_Clear で揃った
+// 試済: sprite ローカルを先に作る, elem を後から代入, 添字で回す, elem で回す, elem の初期化を for の外へ出す
 NON_MATCH s32 ItemIconPopupManager_Init(ItemIconPopupManager* p) {
 #ifdef NONMATCHING_C
   MainSpriteGfxFile* f;
@@ -311,14 +312,18 @@ NON_MATCH s32 ItemIconPopupManager_Init(ItemIconPopupManager* p) {
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
   p->usedMask = 0;
-  CpuFill32(0, &pos, sizeof(pos));
-  for (i = 0, elem = p->elems; i < 8; i++, elem++) {
+  Vec3_Clear(&pos);
+  for (i = 0; i < 8; i++) {
+    MainSprite* sprite = &p->elems[i].sprite;
+
+    elem = &p->elems[i];
     elem->unk_00 = 0;
     elem->state = 1;
     elem->category = 0;
     elem->stateTimer = 0;
-    MainSprite_Add(&p->elems[i].sprite, &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 1, PLAYMODE_PAUSE, 60, &pos);
+    MainSprite_Add(sprite, &p->gfx, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 1, PLAYMODE_PAUSE, 60, &pos);
   }
+
 #else
   INCFUNC("asm/func/ItemIconPopupManager_Init.inc");
 #endif

@@ -200,7 +200,7 @@ void SpiderVenom_Spawn(SpiderVenom* p, Mover* mover, Mover* target, s32 power, s
   AuxSprite_Add(sprite, &p->gfx, 0);
   AuxAnim_SetAnim(&elem->anim, p->animFile, 0, 0, SpiderVenom_AngleToXFlip(mover->angle));
   sprite->pos = mover->pos;
-  if (target->unk_4 > 3) {
+  if (target->kind > 3) {
     elem->vel.x = 0, elem->vel.y = 0, elem->vel.z = 0;
   } else {
     Player* player = target->owner;

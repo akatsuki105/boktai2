@@ -584,7 +584,7 @@ _081298BE:
 	ldr r0, _08129900 @ =0x03002B28
 	ldrh r0, [r0]
 	ldrh r1, [r6]
-	bl DefeatedEnemyLog_Add
+	bl EnemyRespawnInfo_Add
 _081298DE:
 	adds r2, r6, #0
 	adds r2, #0xde

@@ -52,8 +52,8 @@ typedef struct Forge {
   u8 slots[2];                            // 0x0041, 素材に選んだ weapons の添字
   u8 unk_43;                              // 0x0043
   u32 fnTimer;                            // 0x0044, updateCallback に入ってからのフレーム数, Forge_SetFn が 0 に戻す
-  Tilemaps* tilemap;                      // 0x0048, MP_9F57
-  rgb555* bgPltt;                         // 0x004C, BGP_A41A
+  Tilemaps* tilemap;                      // 0x0048, MP_KAJI
+  rgb555* bgPltt;                         // 0x004C, BGP_KAJI
   u32 selectable;                         // 0x0050, 選べる武器スロットのビットマスク, Forge_OpenList が作る
   Vec3 slotPos;                           // 0x0054, 素材を飛ばす先
   s16 unk_5c;                             // 0x005C
@@ -655,13 +655,13 @@ void PlayForgeStrikeSE(u32 _, s32 kind) {
 }
 
 s32 Forge_SetupBg(Forge* p, s32 param_2) {
-  Tilemaps* tilemap = GetFile(DIR_TILE_MAP, MP_9F57);
+  Tilemaps* tilemap = GetFile(DIR_TILE_MAP, MP_KAJI);
   BgPlttFile* pltt;
 
   p->tilemap = tilemap;
   Video_SetupBGLayout(0, 0, tilemap, 0, 0, 1, &param_2);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  pltt = GetBgPlttFile(BGP_A41A);
+  pltt = GetBgPlttFile(BGP_KAJI);
   p->bgPltt = pltt->body;
   CpuCopy16(&pltt->body[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
   return 0;
@@ -979,7 +979,7 @@ NON_MATCH s32 Forge_OpenList(Forge* p) {
   MessageWindow_Start(p->unk_1308);
   MessageWindow_SetRect(2, 16, 30, 2);
   MessageWindow_SetInstant(TRUE);
-  MessageWindow_SetBgPltt(BGP_EFDA);
+  MessageWindow_SetBgPltt(BGP_SYSTEM);
   Forge_ShowWeaponInfo(p, GetStringByID(VM_ParseStringRef(p->unk_130c)));
 #else
   INCFUNC("asm/func/Forge_OpenList.inc");

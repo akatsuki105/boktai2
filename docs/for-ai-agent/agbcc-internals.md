@@ -357,6 +357,33 @@ the target almost always means the `if`/`else` arms are assigned the other way
 round. Inverting the condition and swapping the two bodies is semantically
 identical and changes the emitted branch.
 
+### Loop rotation moves everything up to the *last* exit jump
+
+`[source]` `stmt.c:2020-2225` (`expand_end_loop`), `expr.h:31`. When a loop
+starts with its exit test, the insns from the top of the loop up to
+`last_test_insn` are moved to the end, behind a `goto start_label`. Any jump
+to `end_label` counts, conditional or not:
+
+```c
+		  /* An unconditional jump.  */
+		  dest1 = SET_SRC (PATTERN (insn));
+		  /* Include the BARRIER after the JUMP.  */
+		  potential_last_test = NEXT_INSN (insn);
+...
+		    last_test_insn = potential_last_test;
+```
+
+and the scan keeps going until 30 insns past the first one found
+(`#define LOOP_TEST_THRESHOLD 30`). So a `break` inside the body becomes the
+last exit, and the test *and the body up to the `break`* move to the bottom;
+only the increment stays at the top. `[derived]` The result is
+`b cond; incr: i++; cond: cmp/bge exit; body; b<cc> incr`, with the
+loop-invariant bound hoisted but no strength reduction of the index.
+
+**From C.** `for (...) { if (x) { f(); break; } }` gives that shape;
+`return` instead of `break` jumps to the return label, not `end_label`, and the
+loop is rotated the usual way (`PileDriver_WaitGeneratorLit` in `pile_driver.c`).
+
 ### `tst` is never emitted
 
 `[source]` `thumb.md:818` defines a pattern named `tstsi` — but it prints
