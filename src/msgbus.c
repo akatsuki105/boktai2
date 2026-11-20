@@ -2,14 +2,12 @@
 
 #include "entity.h"
 #include "global.h"
+#include "msgbus_inline.h"
 #include "vm.h"
 
 COMMON_DATA MsgBus* gMsgBus = NULL;  // 0x03002B4C
 
 static u16 Cutscene_FindScriptID(u32 id);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 // p->queues のリストから targetID と targetClass が一致する受け口を探す
 MsgQueue* MsgBus_FindQueue(MsgBus* p, u32 targetID, u32 targetClass) {

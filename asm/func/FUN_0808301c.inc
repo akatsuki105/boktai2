@@ -43,7 +43,7 @@ _0808306A:
 	bl AllySabata_SetAction
 	b _080831CC
 _08083076:
-	bl FUN_08084754
+	bl BlackHole_AddCharge
 	ldr r1, _08083098 @ =0x0000095E
 	adds r0, r5, r1
 	movs r1, #0x91
@@ -206,7 +206,7 @@ _08083168:
 	ands r0, r1
 	strb r0, [r7]
 	movs r0, #0x1e
-	bl FUN_08084798
+	bl BlackHole_SetDecayDelay
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #0

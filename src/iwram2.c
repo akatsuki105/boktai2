@@ -202,6 +202,6 @@ COMMON_DATA s32 gMapBlockW = 0;                             // 0x030046A8
 COMMON_DATA s32 gMapBlockH = 0;                             // 0x030046AC
 COMMON_DATA u32 gNextMapEventID = 0;                        // 0x030046B0, Map_InsertEvent が CollisionMapEvent.id に払い出す連番, 0 は使わない
 
-COMMON_DATA s32 gRandTableIdx2 = 0;  // 0x030046B4, 通信対戦のスコア精算で使用する乱数テーブルのインデックス
-COMMON_DATA s32 gRandTableIdx = 0;   // 0x030046B8
+COMMON_DATA u32 gRandTableIdx2 = 0;  // 0x030046B4, 通信対戦のスコア精算で使用する乱数テーブルのインデックス
+COMMON_DATA u32 gRandTableIdx = 0;   // 0x030046B8
 COMMON_DATA u16 gSioParentRecv = 0;  // 0x030046BC, 親が受け取った子のデータ (SIOMULTI1)

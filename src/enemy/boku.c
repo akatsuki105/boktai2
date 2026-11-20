@@ -71,7 +71,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->unk_48d = 0;
   p->unk_48e = 0;
   ClearMemory(p->unk_458, 8);
-  p->unk_464 = 0;
+  p->burnTimer = 0;
   p->unk_460 = 0;
   p->unk_462 = 0;
   Enemy_ClearPendingState(p, gString_08251fa8, 2434);
@@ -87,6 +87,8 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
 }
 
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
+
+static inline void AuxAnim_ResetTick(AuxAnimState* anim) { anim->tick = 0; }
 
 void Boku_OnHit(Hitbox* a, Hitbox* b, Boku* p) {
   if (Enemy_IsDead(&p->e) == 0) {
@@ -738,9 +740,8 @@ void FUN_080fc28c(Boku* p) {
   }
 }
 
-// 残差1命令, 最後の tick = 0 を原典は sprite + 0x48 を作ってから [+0xE] で書く (mimic.c の Mimic_StateDying と同じ), anim の取り直しは試済
-NON_MATCH void FUN_080fc4ec(Boku* p) {
-#ifdef NONMATCHING_C
+// アニメ 5 を 2〜7 コマ目でループさせる
+void FUN_080fc4ec(Boku* p) {
   AuxAnimState* anim;
 
   if (Enemy_ConsumeStateBegun(&p->e)) {
@@ -749,11 +750,8 @@ NON_MATCH void FUN_080fc4ec(Boku* p) {
   anim = &(p->e).s->aux.anim;
   if (anim->cmdIdx == 7 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
     anim->cmdIdx = 2;
-    (p->e).s->aux.anim.tick = 0;
+    AuxAnim_ResetTick(&(p->e).s->aux.anim);
   }
-#else
-  INCFUNC("asm/func/FUN_080fc4ec.inc");
-#endif
 }
 
 void FUN_080fc548(Boku* p, s32 param_2) {
@@ -2118,41 +2116,37 @@ void FUN_081000a4(Boku* p) {
   CLEAR_FLAGS(q->unk_65c, 2);
 }
 
-// 44/48命令, 原典は unk_65b = 0 を両方の分岐に複写する, 分岐の向きの入れ替えは試済
-NON_MATCH void Boku_InitDelayedScript(Boku* p) {
-#ifdef NONMATCHING_C
+void Boku_InitDelayedScript(Boku* p) {
   Boku* q = (p->e).owner;
 
   if (VM_SeekToNamedArg('x')) {
-    q->scriptID_658 = VM_GetPC() != NULL ? VM_GetValue() : 0;
-    q->unk_65a = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    q->delayedScriptID = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    q->delayedScriptWait = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    q->delayedScriptTimer = 0;
   } else {
-    q->scriptID_658 = 0;
-    q->unk_65a = 0;
+    q->delayedScriptID = 0;
+    q->delayedScriptWait = 0;
+    q->delayedScriptTimer = 0;
   }
-  q->unk_65b = 0;
-#else
-  INCFUNC("asm/func/Boku_InitDelayedScript.inc");
-#endif
 }
 
-// 予約してあるスクリプトを unk_65a フレーム後に実行する
+// 予約してあるスクリプトを delayedScriptWait フレーム後に実行する
 void Boku_UpdateDelayedScript(Boku* p) {
   Boku* q = (p->e).owner;
 
-  if (q->scriptID_658 == 0) {
+  if (q->delayedScriptID == 0) {
     return;
   }
 
-  q->unk_65b++;
-  if (q->unk_65b < q->unk_65a) {
+  q->delayedScriptTimer++;
+  if (q->delayedScriptTimer < q->delayedScriptWait) {
     return;
   }
 
-  VM_ExecByID(q->scriptID_658, NULL);
-  q->scriptID_658 = 0;
-  q->unk_65a = 0;
-  q->unk_65b = 0;
+  VM_ExecByID(q->delayedScriptID, NULL);
+  q->delayedScriptID = 0;
+  q->delayedScriptWait = 0;
+  q->delayedScriptTimer = 0;
 }
 
 // デカすぎて複数の関数を1つの関数として間違って扱っている可能性がある

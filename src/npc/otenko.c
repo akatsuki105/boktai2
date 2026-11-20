@@ -1,15 +1,12 @@
 #include "global.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "npc.h"
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
-#include "trig.h"
 #include "vec3.h"
 #include "vm.h"
-
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
-static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 // 2点の xz 平面上の距離の2乗
 static inline s32 DistSqTo(WorldPos* pos, WorldPos* target) {

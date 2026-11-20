@@ -9,13 +9,13 @@
 #include "map_inline.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "random.h"
 #include "shadow.h"
 #include "sound.h"
 #include "sprite.h"
 #include "time.h"
-#include "trig.h"
 #include "vec3.h"
 #include "vm.h"
 
@@ -278,12 +278,6 @@ const SoundID16 sFootStepSEs[3][2] = {
     {SE_FSTEP_F_0, SE_FSTEP_F_1},
     {SE_FSTEP_F_0, SE_FSTEP_F_1},
 };  // 0x085AB360
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
-
-// pos から target を向く 8bit の向き
-static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 // id と idx の組に対応するデータを表から探す
 const NPCAnim* NPCManager_FindSpriteData(SpriteID32 id, s32 idx) {

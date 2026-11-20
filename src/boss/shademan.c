@@ -10,6 +10,7 @@
 #include "hitbox.h"
 #include "map_inline.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "random.h"
 #include "shadow.h"
@@ -142,9 +143,6 @@ static_assert(sizeof(ShadeMan) == 3076);
 const __attribute__((section(".rodata.faraddr"))) u16 u16_ARRAY_08252864[16] = {136, 495, 137, 496, 138, 497, 138, 497, 138, 497, 138, 497, 138, 497, 138, 497};  // 0x08252864
 
 const __attribute__((section(".rodata.faraddr"))) u8 u8_ARRAY_08252884[16] = {0x04, 0xF6, 0x08, 0xF9, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB, 0x05, 0xFC, 0x05, 0xFB};  // 0x08252884
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 // 点滅をやめて flag38c の bit8 を立てる
 void FUN_0821bd14(ShadeMan* p) {

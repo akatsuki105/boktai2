@@ -6,6 +6,7 @@
 #include "link_session.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "random.h"
 #include "registry.h"
@@ -73,9 +74,6 @@ void Map_SetTileData(CollisionMapTileData* tiledata);
 void Map_SetZones(ZoneData* zones);
 void Map_SetPaths(PathData* paths);
 void Map_SetNavMesh(NavMesh* navMesh);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {

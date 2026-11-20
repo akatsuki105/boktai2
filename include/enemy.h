@@ -335,7 +335,7 @@ typedef struct Enemy {
   u16 unk_458[4];                           // 0x458, unk_460 番目に FUN_080f6868 が 580 を書く
   u16 unk_460;                              // 0x460, FUN_080f6c74 が 0 に戻す
   u16 unk_462;                              // 0x462, FUN_080f6c74 が 0 に戻す
-  u16 unk_464;                              // 0x464, FUN_080f6c74 が 0 に戻す
+  u16 burnTimer;                            // 0x464, 燃えている残りフレーム, 0 でなければ毎フレーム減らし 40 フレームおきに hp を削る (Mummy_UpdateBurn), FUN_080f6c74 が 0 に戻す
   s16 nodeWait;                             // 0x466, 経路ノードの待ちフレームの残り, FUN_080f2364 が node->delay から入れて毎フレーム 1 減らす
   u8 subState0;                             // 0x468, FUN_080f34ec 系が 2 か 3 を書く
   u8 subState1;                             // 0x469, handlerTables[1] [5] [7] [9] の添字 (ldrb)

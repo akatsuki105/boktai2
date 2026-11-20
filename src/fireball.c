@@ -379,8 +379,7 @@ void FireballManager_ExplodeAll(void) {
 void Fireball_SpawnTest(void) {
   Vec3 pos;
   Vec3 diff;
-
-  VEC3_SET(pos, 0x980, 0x2DC, 0x880);
+  pos.x = Q8(9.5), pos.y = Q8(2.86), pos.z = Q8(8.5);
   Vec3_Delta(&diff, &pos, &gPlayerPtr[0]->mover.pos);
   Fireball_Spawn(&pos, &gPlayerPtr[0]->mover.pos, 20, ArcTan2_8(diff.x, diff.z), 60, 4, 12, 4, 24, 0, 0, 0, 0);
 }

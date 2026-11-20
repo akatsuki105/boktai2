@@ -29,8 +29,8 @@ bool32 FUN_080298dc(void);
 void* RisingSunEffect_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 WorldPos* FUN_080230c4(void);
 void BlackHole_GetCenter(WorldPos* out);
-void FUN_08084754(void);
-void FUN_08084798(s32 val);
+void BlackHole_AddCharge(void);
+void BlackHole_SetDecayDelay(s32 val);
 struct Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 angle, s32 radius, s32 size, s32 plttOfs, s32 power, s32 knockback, HitboxAttrs attrs, u32 iframes);
 
 // 5bit ずつの r / g / b から色を作る, 値は RGB と同じだが b << 10 から順に組み立てる
@@ -1329,7 +1329,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
       s32 dx;
       s32 dz;
 
-      FUN_08084754();
+      BlackHole_AddCharge();
       p->flashPlttID = 290;
       if (p->stateTimer <= 0x1F) {
         p->plttFlashTimer = p->stateTimer;
@@ -1379,7 +1379,7 @@ NON_MATCH void FUN_0808301c(Player* p) {
           p->pathEndAction = PACT_REFUELING;
           p->pathEndFacing = p->waypoints[idx].val;
           p->unk_4a6 = (idx + 1) & 3;
-          FUN_08084798(0x1E);
+          BlackHole_SetDecayDelay(0x1E);
           AllySabata_SetAction(p, PACT_DASH, 0);
         }
 

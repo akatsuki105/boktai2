@@ -161,7 +161,7 @@ _080852A8:
 	subs r0, #0x2d
 	strh r0, [r1]
 	mov r0, r8
-	bl FUN_08084bb0
+	bl BlackHole_InitElems
 	mov r0, r8
 	movs r1, #0
 	bl BlackHole_SetState

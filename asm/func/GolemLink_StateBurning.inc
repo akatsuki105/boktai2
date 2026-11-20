@@ -83,7 +83,7 @@ _081C17E8:
 	adds r1, #3
 	adds r0, r5, r1
 	strb r4, [r0]
-	ldr r2, _081C18A4 @ =FUN_081c18a8
+	ldr r2, _081C18A4 @ =GolemLink_StateBurnRecover
 	movs r1, #0x13
 	subs r3, #0x17
 	adds r0, r5, r3
@@ -130,4 +130,4 @@ _081C1894: .4byte 0x00000464
 _081C1898: .4byte 0x0000046B
 _081C189C: .4byte 0x00000494
 _081C18A0: .4byte 0x00000469
-_081C18A4: .4byte FUN_081c18a8
+_081C18A4: .4byte GolemLink_StateBurnRecover

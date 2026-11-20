@@ -1,13 +1,10 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "npc.h"
 #include "sprite.h"
-#include "trig.h"
 #include "vm.h"
-
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
-static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 void CofSeller_DispatchState(NPCManager* p, NPC* npc) {
   static void (*const sCofSellerStates[16])(NPCManager*, NPC*) = {

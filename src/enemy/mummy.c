@@ -170,7 +170,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->unk_48d = 0;
   p->unk_48e = 0;
   ClearMemory(p->unk_458, 8);
-  p->unk_464 = 0;
+  p->burnTimer = 0;
   p->unk_460 = 0;
   p->unk_462 = 0;
   Enemy_ClearPendingState(p, s_eneinline_08252018, 2434);
@@ -499,7 +499,7 @@ void Mummy_StateBurning(Mummy* p) {
   }
   Enemy_PlayAnim(&p->e, 1);
   (p->e).animSpeedDiv = 6;
-  if ((p->e).unk_464 == 0) {
+  if ((p->e).burnTimer == 0) {
     (p->e).subStateDone = 1;
     Enemy_PlayAnim(&p->e, 6);
     Mummy_ClearBurnParticles(p);
@@ -2546,7 +2546,7 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
   if (dead) {
     return;
   }
-  if ((p->e).unk_464 == 0) {
+  if ((p->e).burnTimer == 0) {
     return;
   }
   if ((p->e).state == ES_UNK_21) {
@@ -2557,15 +2557,15 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
     Enemy_SetEmote(&p->e, 1, 0x7F, 0);
     Enemy_SetEmote(&p->e, 3, 0x7F, 0);
     Enemy_FadeParticles(&p->e, 4);
-    (p->e).unk_464 = dead;
+    (p->e).burnTimer = dead;
     return;
   }
   if ((p->e).emitter.activeCount > 2) {
-    if (Mod((p->e).unk_464, 16) == 0) {
+    if (Mod((p->e).burnTimer, 16) == 0) {
       PlaySound_082406e0(CRY_MUMMY_BURN);
       SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
     }
-  } else if (Mod((p->e).unk_464, 48) == 0) {
+  } else if (Mod((p->e).burnTimer, 48) == 0) {
     PlaySound_082406e0(CRY_MUMMY_BURN);
     SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_5);
   }
@@ -2580,8 +2580,8 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
       (p->e).unk_458[i]--;
     }
   }
-  (p->e).unk_464--;
-  if (Mod((p->e).unk_464, 40) == 0) {
+  (p->e).burnTimer--;
+  if (Mod((p->e).burnTimer, 40) == 0) {
     (p->e).hurtbox.damage = 1 << (p->e).emitter.activeCount;
     (p->e).unk_48a = (p->e).hurtbox.damage;
     (p->e).hp -= (p->e).hurtbox.damage;
@@ -2645,7 +2645,7 @@ NON_MATCH void Mummy_UpdateBurn(Mummy* p) {
       }
       (p->e).hurtbox.flags |= HBF_HIDDEN;
     }
-    (p->e).unk_464 = 0;
+    (p->e).burnTimer = 0;
     (p->e).unk_4be = 0;
   }
 #else
@@ -2812,7 +2812,7 @@ NON_MATCH void Mummy_OnReset(Mummy* p) {
   q->bombAvoidCooldown = 0;
   q->spitWaitTimer = 0;
   q->flags = 0;
-  (p->e).unk_464 = 0;
+  (p->e).burnTimer = 0;
   q->unk_71a = 0;
   Mummy_ClearBurnParticles(p);
   Enemy_PlayAnim(&p->e, 0);

@@ -385,7 +385,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->unk_48d = 0;
   p->unk_48e = 0;
   ClearMemory(p->unk_458, 8);
-  p->unk_464 = 0;
+  p->burnTimer = 0;
   p->unk_460 = 0;
   p->unk_462 = 0;
   Enemy_ClearPendingState(p, s_eneinline_08252168, 2434);

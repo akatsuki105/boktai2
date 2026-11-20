@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
@@ -15,7 +16,6 @@
 
 COMMON_DATA PileDriver* gPileDriver = NULL;  // 0x03002C58
 
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 static inline s32 GetSunGauge(void) { return gStat->sunGauge; }
 

@@ -348,7 +348,7 @@ _080313A4:
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	bl Boss_PlayAnim
-	bl FUN_080846f8
+	bl BlackHole_Close
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r2, r4, r1

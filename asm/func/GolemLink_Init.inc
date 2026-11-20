@@ -1494,7 +1494,7 @@ _081C562C:
 	movs r0, #0xb5
 	lsls r0, r0, #3
 	adds r1, r7, r0
-	ldr r0, _081C58A4 @ =FUN_081c1790
+	ldr r0, _081C58A4 @ =GolemLink_StateBurning
 	str r0, [r1]
 	movs r1, #0xde
 	lsls r1, r1, #1
@@ -1575,7 +1575,7 @@ _081C5894: .4byte FUN_081b8988
 _081C5898: .4byte 0x0000058C
 _081C589C: .4byte GolemLink_OnDamaged
 _081C58A0: .4byte Enemy_TryHeadToSound
-_081C58A4: .4byte FUN_081c1790
+_081C58A4: .4byte GolemLink_StateBurning
 _081C58A8:
 	movs r0, #0
 _081C58AA:

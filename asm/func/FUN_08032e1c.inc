@@ -68,7 +68,7 @@ _08032E92:
 	adds r1, r5, r3
 	adds r0, r4, #0
 	bl FUN_08022fb8
-	bl FUN_080846f8
+	bl BlackHole_Close
 	ldr r1, _08032ECC @ =0x00001044
 	adds r0, r5, r1
 	str r7, [r0]

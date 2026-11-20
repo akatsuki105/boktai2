@@ -1,17 +1,14 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "npc.h"
 #include "sound.h"
 #include "sprite.h"
-#include "trig.h"
 #include "vm.h"
 
 void Entity081f7de4_Spawn(Vec3* pos, u32 rotation);
 void Entity081f7de4_RemoveAll(void);
-
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
-static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 void FUN_08205efc(NPCManager* p, NPC* npc) {
   if (npc->stateEntered) {

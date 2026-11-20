@@ -8,6 +8,7 @@
 #include "hitbox.h"
 #include "map_inline.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "puff.h"
 #include "random.h"
@@ -144,9 +145,6 @@ static inline void Hitbox_RemoveAttributes(Hitbox* hitbox, HitboxAttrs attrs) { 
 
 static const s16 s16_ARRAY_085aaabc[4] = {0x40, 0x80, 0xC0, 0x20};  // 0x085AAABC
 static const s16 s16_ARRAY_085aaac4[4] = {0x40, 0x40, 0x60, 0x20};  // 0x085AAAC4
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 // 残差はオフセットの定数を作るレジスタの割り当てだけ (原典は r6 を足して4本使う), 2つの表に分けて命令数までは揃った
 NON_MATCH void FUN_08023388(Duneyrr* p) {

@@ -2,15 +2,12 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "npc.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
-#include "trig.h"
 #include "vm.h"
-
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
-static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 void Smith_StateHammer(NPCManager* p, NPC* npc) {
   if (npc->stateEntered) {

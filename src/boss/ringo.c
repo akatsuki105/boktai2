@@ -219,7 +219,7 @@ void RingoBatSwarm_StartReturn(struct RingoBatSwarm* p);
 s32 CuroroShotManager_Spawn(struct CuroroShotManager* p, Vec3* pos, Vec3* target, s32 angle, s32 param_5, u32 param_6);
 s32 RingoBatSwarm_Start(struct RingoBatSwarm* p, Vec3* from, Vec3* to, s32 speed, s32 param_5);
 bool32 FUN_0809df78(Vec3* pos);
-void FUN_080846f8(void);
+void BlackHole_Close(void);
 void BlackHole_GetCenter(Vec3* out);
 bool32 BlackHole_IsActive(void);
 void FUN_0823b880(s32 n);
@@ -228,7 +228,7 @@ struct CuroroShotManager* CuroroShotManager_Create(u32 param_1, u32 param_2);
 struct RingoBatSwarm* RingoBatSwarm_Create(u32 targetCount);
 struct RingoShotManager* RingoShotManager_Create(bool32 isDark);
 s32 FUN_08035a64(Ringo* p);
-void FUN_080846c8(void);
+void BlackHole_StartSwallow(void);
 struct Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7);
 s32 RingoShotManager_Spawn(struct RingoShotManager* p, Vec3* pos, Vec3* target, u32 kind, u32 angle, s32 speed, s32 power, s32 knockback);
 s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos);
@@ -4142,7 +4142,7 @@ NON_MATCH void dainn_08030d6c(Boss* boss, s32 timer) {
     } else {
       PlaySound_082406e0(VO_RINGO_829);
     }
-    FUN_080846c8();
+    BlackHole_StartSwallow();
     p->unk_16f = (RandomNext() & 15) + 60;
     p->unk_170 = 0;
     Ringo_SetHurtboxPower(p, p->hurtboxPower2);
@@ -4263,7 +4263,7 @@ NON_MATCH void dainn_0803110c(Boss* boss, s32 timer) {
     case 1: {
       if (++p->phaseTimer > 29) {
         Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 21, 25), PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
-        FUN_080846f8();
+        BlackHole_Close();
         p->phase++;
         p->phaseTimer = 0;
       }
@@ -4854,7 +4854,7 @@ void FUN_08032acc(Boss* boss, s32 timer) {
   if (boss->stateEntered) {
     boss->stateEntered = FALSE;
     Boss_PlayAnim(boss, &p->sprites[0], &p->gfx, Ringo_SelectAnim(p, 18, 22), PLAYMODE_LOOP, MAIN_ANIM_FORCE_POSE);
-    FUN_080846f8();
+    BlackHole_Close();
     FUN_08029c2c(p);
     PlaySound_0824078c(SONG_453);
   }
@@ -4941,7 +4941,7 @@ NON_MATCH void FUN_08032e1c(Boss* boss, s32 timer) {
     }
     Boss_GiveWeaponExp(boss, p->weaponExp);
     FUN_08022fb8(boss, &p->sprites[0].pos);
-    FUN_080846f8();
+    BlackHole_Close();
     p->unk_1044 = 0;
   }
   if (p->hoverHeight > 3) {

@@ -9,6 +9,7 @@
 #include "player.h"
 #include "shadow.h"
 #include "sprite.h"
+#include "trig.h"
 #include "types.h"
 
 struct NPCManager;
@@ -320,5 +321,9 @@ void FUN_08042d50(NPCManager*, NPC*, s32);
 void FUN_08042f34(NPCManager*, NPC*, s32);
 void NPC_UpdateNavToPathStart(NPCManager*, NPC*, s32);
 void FUN_08043360(NPCManager*, NPC*, s32);
+
+// --------------------------------------------
+
+static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }  // pos から target を向く 8bit の向き
 
 #endif  // __INCLUDE_NPC_H__

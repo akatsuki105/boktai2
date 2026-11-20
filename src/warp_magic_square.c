@@ -4,6 +4,7 @@
 #include "input.h"
 #include "map_inline.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"
@@ -75,9 +76,6 @@ void WarpMagicSquare_UpdateArriveParticles(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateArrivePillarsDown(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateCutsceneWait(WarpMagicSquare* p);
 void WarpMagicSquare_UpdateDepartWait(WarpMagicSquare* p);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void WarpMagicSquarePtcl_Update(WarpMagicSquarePtcl* ptcl) {
   if (--ptcl->life == 0) {

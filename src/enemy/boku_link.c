@@ -22,10 +22,17 @@ typedef Boku BokuLink;  // ボク(boku.c) の通信対戦用版
 void BokuLink_StateWakeUp(BokuLink* p, s32 param_2);
 
 void FUN_081afa4c(BokuLink* p);
+void FUN_081afeb4(BokuLink* p, s32 param_2);
+void FUN_081b570c(BokuLink* p, s32 param_2);
 void BokuLink_OnReset(BokuLink* p);
+void BokuLink_RouteAwayFromPlayer(BokuLink* p);
 void FUN_081b2e3c(BokuLink* p);
 void FUN_080f3cdc(Enemy* p);
 bool8 FUN_080f0a0c(Enemy* p);
+bool8 FUN_080f9f20(Enemy* p);
+void FUN_080fa77c(Enemy* p);
+void Enemy_StepToFloorEdge(Enemy* p);
+void Entity081f3324_Spawn(Vec3* pos, Vec3* target, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 groundTime, s32 speed, s32 unk_9);
 const STRING_DATA char s_eneinline_08252254[] = "../boku/../system/eneinline.h";
 const STRING_DATA char s_bokucom_c_08252274[] = "../boku/bokucom.c";
 
@@ -66,7 +73,7 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
   p->unk_48d = 0;
   p->unk_48e = 0;
   ClearMemory(p->unk_458, 8);
-  p->unk_464 = 0;
+  p->burnTimer = 0;
   p->unk_460 = 0;
   p->unk_462 = 0;
   Enemy_ClearPendingState(p, s_eneinline_08252254, 2434);
@@ -83,10 +90,12 @@ static inline void Enemy_RestoreInitialState(Enemy* p) {
 
 static inline void Boku_ClearUnk65c(Boku* p, u16 bit) { p->unk_65c &= ~bit; }
 
+static inline void AuxAnim_ResetTick(AuxAnimState* anim) { anim->tick = 0; }
+
 void FUN_081b1ec4(BokuLink*);
 void FUN_081b1fb4(BokuLink*);
 
-void (*const PTR_ARRAY_085adef4[2])(BokuLink*) = {
+void (*const sBokuLinkHandlerTable3[2])(BokuLink*) = {
     FUN_081b1ec4,
     FUN_081b1fb4,
 };  // 0x085ADEF4
@@ -118,17 +127,17 @@ void (*const PTR_ARRAY_085adefc[18])(BokuLink*) = {
 
 void FUN_081b2c30(BokuLink*);
 
-void (*const PTR_ARRAY_085adf44[1])(BokuLink*) = {
+void (*const sBokuLinkHandlerTable4[1])(BokuLink*) = {
     FUN_081b2c30,
 };  // 0x085ADF44
 
 const u16 sBokuLinkMoveSpeeds[4] = {336, 336, 0, 180};  // 0x085ADF48
 
-void FUN_081b3bec(BokuLink*);
-void FUN_081b3dd4(BokuLink*);
-void FUN_081b3ebc(BokuLink*);
+void BokuLink_SubFlee(BokuLink*);
+void BokuLink_SubFleeTurn(BokuLink*);
+void BokuLink_SubTurnThenWait(BokuLink*);
 
-void (*const PTR_ARRAY_085adf50[18])(BokuLink*) = {
+void (*const sBokuLinkHandlerTable2[18])(BokuLink*) = {
     (void*)FUN_080f2644,
     (void*)FUN_080f2864,
     (void*)FUN_080f248c,
@@ -144,9 +153,9 @@ void (*const PTR_ARRAY_085adf50[18])(BokuLink*) = {
     (void*)FUN_080f0e78,
     (void*)FUN_080f11d0,
     (void*)FUN_080f12c4,
-    FUN_081b3bec,
-    FUN_081b3dd4,
-    FUN_081b3ebc,
+    BokuLink_SubFlee,
+    BokuLink_SubFleeTurn,
+    BokuLink_SubTurnThenWait,
 };  // 0x085ADF50
 
 // boku.c の Boku_OnHit と同じ
@@ -160,10 +169,355 @@ void BokuLink_OnHit(Hitbox* a, Hitbox* b, BokuLink* p) {
 }
 
 // boku.c の Boku_OnHurt と同じ
-NAKED void BokuLink_OnHurt(Hitbox* a, Hitbox* b, BokuLink* p) { INCFUNC("asm/func/BokuLink_OnHurt.inc"); }
+// 614/763 命令, boku.c の Boku_OnHurt の C をそのまま当てただけ, 残差は Boku_OnHurt と同じ形 (1回で打ち切り)
+NON_MATCH void BokuLink_OnHurt(Hitbox* a, Hitbox* b, BokuLink* p) {
+#ifdef NONMATCHING_C
+  u32 knockback;
+  u8 angle;
+
+  if (Enemy_IsDead(&p->e)) {
+    return;
+  }
+  if ((p->e).hurtbox.iframes != 0) {
+    if ((p->e).unk_48c != 0) {
+      b->damage = 0;
+      b->hitResult = 0;
+    }
+    return;
+  }
+  if ((p->e).hurtbox.flags & HBF_HIDDEN) {
+    return;
+  }
+
+  if (!(a->flags & HBF_DAMAGE)) {
+    if (!(a->typeMask & HBSRC_MFREEZE)) {
+      return;
+    }
+    if ((p->e).flags3 & (ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+      return;
+    }
+    if ((p->e).unk_488 != 0) {
+      return;
+    }
+    (p->e).unk_488 = 60;
+    if (TEST_FLAGS((p->e).flags2, ENEFLAG2_UNK_27) && (b->flags & HBF_ANGLE) && (a->flags & HBF_ANGLE)) {
+      s32 d = abs(b->angle - a->angle);
+
+      if (d <= 32) {
+        (p->e).unk_4be = a->power;
+        (p->e).unk_48c = 1;
+        (p->e).unk_44e = Div((p->e).unk_4be, 3);
+        SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_13);
+        return;
+      }
+    }
+    b->damage = 0;
+    (p->e).unk_48a = 0;
+    {
+      bool8 found = FALSE;
+      u16 mask = a->ignoreMask;
+
+      if (mask & HIM_0) {
+        (p->e).playerMover = &gPlayerPtr[0]->mover;
+        found = TRUE;
+      } else if (mask & HIM_1) {
+        (p->e).playerMover = &gPlayerPtr[1]->mover;
+        found = TRUE;
+      } else if (mask & HIM_2) {
+        (p->e).playerMover = &gPlayerPtr[2]->mover;
+        found = TRUE;
+      } else if (mask & HIM_3) {
+        (p->e).playerMover = &gPlayerPtr[3]->mover;
+        found = TRUE;
+      } else if (mask & HIM_4) {
+        (p->e).playerMover = NULL;
+        found = TRUE;
+      } else if (mask & HIM_5) {
+        found = TRUE;
+      }
+      (p->e).unk_4a0 = mask;
+      (p->e).weaponExpMask = a->typeMask;
+      (p->e).flags6 = a->attributes;
+      if (found) {
+        if ((p->e).flags5 & ENEFLAG5_UNK_1) {
+          (p->e).playerMover = &gPlayerPtr[0]->mover;
+        }
+        if ((p->e).playerMover != NULL) {
+          s32 dx = (p->e).playerMover->pos.x - (p->e).mover.pos.x;
+          s32 dz = (p->e).playerMover->pos.z - (p->e).mover.pos.z;
+
+          (p->e).playerAngle = ArcTan2_8(dx, dz);
+          (p->e).playerDistSq = dx * dx + dz * dz;
+        }
+      }
+    }
+    if ((p->e).flags3 & ENEFLAG3_UNK_7) {
+      (p->e).chaseTimer += 300;
+      if ((p->e).chaseTimer > (p->e).chaseTimeMax) {
+        (p->e).chaseTimer = (p->e).chaseTimeMax;
+      }
+    }
+    (p->e).unk_48c = 1;
+    return;
+  }
+
+  if (!IsLinkPlay()) {
+    Hitbox_ApplyDamage(a, b);
+  } else {
+    Hitbox_ApplyDamageAlt(a, b);
+  }
+  b->iframes = a->iframes;
+  (p->e).unk_48c = b->hitResult;
+  if ((p->e).kind == ENEK_BAT || (p->e).kind == ENEK_CROW || (p->e).kind == ENEK_BEE || (p->e).kind == ENEK_GHOST || (a->attributes & HBATTR_BLOW)) {
+    knockback = a->knockback;
+  } else {
+    knockback = a->knockback - (p->e).unk_187;
+    if ((s32)knockback < 0) {
+      knockback = 0;
+    }
+  }
+  b->knockback = knockback;
+  if ((p->e).flags3 & (ENEFLAG3_STUN | ENEFLAG3_PETRIFIED)) {
+    b->damage <<= 1;
+    b->knockback >>= 1;
+  }
+  if (!(a->flags & HBF_ANGLE)) {
+    s16 dx = b->pos.x - a->pos.x;
+    s16 dz = b->pos.z - a->pos.z;
+
+    if (dx == 0 && dz == 0) {
+      angle = Random();
+    } else {
+      angle = ArcTan2_8(dx, dz);
+    }
+  } else {
+    angle = a->angle;
+  }
+  (p->e).angle = angle;
+  {
+    bool8 found = FALSE;
+    u16 mask = a->ignoreMask;
+
+    if (mask & HIM_0) {
+      (p->e).playerMover = &gPlayerPtr[0]->mover;
+      found = TRUE;
+    } else if (mask & HIM_1) {
+      (p->e).playerMover = &gPlayerPtr[1]->mover;
+      found = TRUE;
+    } else if (mask & HIM_2) {
+      (p->e).playerMover = &gPlayerPtr[2]->mover;
+      found = TRUE;
+    } else if (mask & HIM_3) {
+      (p->e).playerMover = &gPlayerPtr[3]->mover;
+      found = TRUE;
+    } else if (mask & HIM_4) {
+      (p->e).playerMover = NULL;
+      found = TRUE;
+    } else if (mask & HIM_5) {
+      found = TRUE;
+    }
+    (p->e).unk_4a0 = mask;
+    (p->e).weaponExpMask = a->typeMask;
+    (p->e).flags6 = a->attributes;
+    if (found) {
+      if ((p->e).flags5 & ENEFLAG5_UNK_1) {
+        (p->e).playerMover = &gPlayerPtr[0]->mover;
+      }
+      if ((p->e).playerMover != NULL) {
+        s32 dx = (p->e).playerMover->pos.x - (p->e).mover.pos.x;
+        s32 dz = (p->e).playerMover->pos.z - (p->e).mover.pos.z;
+
+        (p->e).playerAngle = ArcTan2_8(dx, dz);
+        (p->e).playerDistSq = dx * dx + dz * dz;
+      }
+    }
+  }
+  if ((p->e).unk_48c != 0 && ((p->e).flags3 & ENEFLAG3_UNK_7)) {
+    (p->e).chaseTimer += 300;
+    if ((p->e).chaseTimer > (p->e).chaseTimeMax) {
+      (p->e).chaseTimer = (p->e).chaseTimeMax;
+    }
+  }
+  if (gStat->mapFlags & MPF_UNK_10) {
+    b->damage = 0;
+    b->knockback = 0;
+    (p->e).unk_48a = 0;
+    (p->e).unk_48c = 1;
+  }
+  Enemy_BurstEmitterParticles(&p->e);
+  (p->e).unk_48a = b->damage;
+  a->damage += (p->e).unk_188;
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+#else
+  INCFUNC("asm/func/BokuLink_OnHurt.inc");
+#endif
+}
 
 // boku.c の FUN_080fb4d0 と同じ
-NAKED void FUN_081aec90(BokuLink* p) { INCFUNC("asm/func/FUN_081aec90.inc"); }
+// 568/597 命令, boku.c の FUN_080fb4d0 の C をそのまま当てただけ, 残差は FUN_080fb4d0 と同じ形 (1回で打ち切り)
+NON_MATCH void FUN_081aec90(BokuLink* p) {
+#ifdef NONMATCHING_C
+  BokuLink* self = p->e.owner;
+  EnemyMainSprite* spr = &p->e.s->main;
+
+  if (p->e.stateBegun) {
+    p->e.stateBegun = FALSE;
+    p->e.mover.angle = (((p->e.playerAngle + 0x20) & 0xFF) >> 6) << 6;
+    Enemy_PlayAnim(&p->e, 5);
+    if (self->unk_65c & 4) {
+      spr->spr.boxLeft = 2;
+      spr->spr.rotation = 0;
+      self->unk_65c &= ~4;
+    }
+    if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
+      self->unk_660 = p->e.playerMover->pos;
+    } else if (p->e.playerMover != NULL) {
+      s32 idx = p->e.playerMover->kind < 4 ? p->e.playerMover->kind : -1;
+
+      if (idx >= 0) {
+        self->unk_660 = gPlayerPtr[idx]->mover.pos;
+      }
+    }
+  }
+  if (spr->spr.boxLeft == 5 && spr->spr.rotation == 0) {
+    s32 d = p->e.playerAngle - (((p->e.mover.angle + 0x20) & 0xFF) >> 6) * 64;
+    Vec3 from;
+
+    if (d > 128) {
+      d -= 256;
+    } else if (d < -128) {
+      d += 256;
+    }
+    if (abs(d) < 32) {
+      if (!(gGameFlags & (GAMEFLAG_LINK | GAMEFLAG_UNK_14))) {
+        self->unk_668 = p->e.playerMover->pos;
+      } else if (p->e.playerMover != NULL) {
+        s32 idx = p->e.playerMover->kind < 4 ? p->e.playerMover->kind : -1;
+
+        if (idx >= 0) {
+          self->unk_668 = gPlayerPtr[idx]->mover.pos;
+        }
+      }
+    } else {
+      u32 tileIdx = p->e.tileIdx;
+      u32 target;
+      s32 height;
+      s32 fromStairs;
+      s32 idx;
+      s32 n;
+
+      {
+        MapTileOverride* ov = Map_FindTileOverride(tileIdx, 1);
+        CollisionMapTile* tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
+        s32 stairs = tile->heightStairs >> 4;
+
+        height = (tile->heightStairs & 0xF) << 8;
+        if (stairs == STAIRS_VERTICAL) {
+          height -= p->e.mover.pos.z & 0xFF;
+        } else if (stairs == STAIRS_HORIZONTAL) {
+          height -= p->e.mover.pos.x & 0xFF;
+        }
+      }
+      {
+        MapTileOverride* ov = Map_FindTileOverride(tileIdx, 1);
+        CollisionMapTile* tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tileIdx];
+
+        fromStairs = tile->heightStairs >> 4;
+      }
+      switch (((p->e.mover.angle + 0x20) >> 6) & 3) {
+        case 0: {
+          idx = tileIdx + 1;
+          for (n = 0; n < 1; n++) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+              break;
+            }
+            idx++;
+          }
+          target = idx - 1;
+          break;
+        }
+        case 1: {
+          idx = tileIdx + gCollisionMap->tiledata->width;
+          for (n = 0; n < 1; n++) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+              break;
+            }
+            idx += gCollisionMap->tiledata->width;
+          }
+          target = idx - gCollisionMap->tiledata->width;
+          break;
+        }
+        case 2: {
+          idx = tileIdx - 1;
+          for (n = 0; n < 1; n++) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+              break;
+            }
+            idx--;
+          }
+          target = idx + 1;
+          break;
+        }
+        case 3: {
+          idx = tileIdx - gCollisionMap->tiledata->width;
+          for (n = 0; n < 1; n++) {
+            if (!CanWalkToAdjacentTile(tileIdx, idx, height, fromStairs)) {
+              break;
+            }
+            idx -= gCollisionMap->tiledata->width;
+          }
+          target = idx + gCollisionMap->tiledata->width;
+          break;
+        }
+        default: {
+          target = p->e.tileIdx;
+          break;
+        }
+      }
+      self->unk_668.x = Mod(target, gCollisionMap->tiledata->width) * 256 + 128;
+      {
+        MapTileOverride* ov = Map_FindTileOverride(target, 1);
+        CollisionMapTile* tile = ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[target];
+
+        self->unk_668.y = (tile->heightStairs & 0xF) << 8;
+      }
+      self->unk_668.z = Div(target, gCollisionMap->tiledata->width) * 256 + 128;
+      switch (((p->e.mover.angle + 0x20) >> 6) & 3) {
+        case 0: {
+          self->unk_668.x += 0x7F;
+          self->unk_668.z = p->e.mover.pos.z;
+          break;
+        }
+        case 1: {
+          self->unk_668.x = p->e.mover.pos.x;
+          self->unk_668.z += 0x7F;
+          break;
+        }
+        case 2: {
+          self->unk_668.x -= 0x7F;
+          self->unk_668.z = p->e.mover.pos.z;
+          break;
+        }
+        case 3: {
+          self->unk_668.x = p->e.mover.pos.x;
+          self->unk_668.z -= 0x7F;
+          break;
+        }
+      }
+      self->unk_668.y = TileHeightAt(&self->unk_668);
+    }
+    from = p->e.mover.pos;
+    from.y += 220;
+    Entity081f3324_Spawn(&from, &self->unk_668, p->e.atkPower[1], p->e.atkKnockback[1], p->e.atkAttrs[1], p->e.atkIframes[1], self->unk_674, 30, -20);
+    PlaySound_082406e0(SONG_214);
+  }
+  if (p->e.animForceRestart) {
+    p->e.subStateDone = TRUE;
+  }
+#else
+  INCFUNC("asm/func/FUN_081aec90.inc");
+#endif
+}
 
 // boku.c の FUN_080fba28 と同じ
 void FUN_081af1e8(BokuLink* p) {
@@ -181,7 +535,223 @@ void FUN_081af200(BokuLink* p) {
 }
 
 // boku.c の FUN_080fba64 と同じ
-NAKED void FUN_081af224(BokuLink* p) { INCFUNC("asm/func/FUN_081af224.inc"); }
+// 750/688 命令, boku.c の FUN_080fba64 の C をそのまま当てただけ, 残差は FUN_080fba64 と同じ形 (1回で打ち切り)
+NON_MATCH void FUN_081af224(BokuLink* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    u32 dir;
+    u32 target;
+
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    dir = Angle_ToDir4((p->e).mover.angle);
+    if ((p->e).subState2 == 6 || (p->e).subState2 == 17 || TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7 | ENEFLAG3_UNK_10 | ENEFLAG3_UNK_14)) {
+      target = (p->e).unk_1dc;
+    } else {
+      target = (p->e).pathWalker.node->delay >> 12;
+      (p->e).unk_1dc = target;
+    }
+    if (dir == target >> 1) {
+      (p->e).subStateDone = 1;
+      Enemy_PlayAnim(&p->e, 0);
+      if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+        Enemy_ResetState(&p->e, 3, 1, 0);
+        Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+      }
+      return;
+    }
+    // 今の向きと目標の向きから回る向きを決めて振り向きアニメを流す
+    switch (dir) {
+      case DIR4_NORTH: {
+        if (target - 2 < 4) {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, 0);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            if ((p->e).playingAnim != 10 || (p->e).animForceRestart != 0 || (s->flags & SPRFLAG_XFLIP)) {
+              (p->e).playingAnim = 10;
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              s->flags &= ~SPRFLAG_XFLIP;
+              (p->e).animForceRestart = 0;
+            }
+          }
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 0, ANIM_PLAY_REVERSE);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            (p->e).playingAnim = 9;
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 9, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+            (p->e).animForceRestart = 0;
+          }
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+      case DIR4_EAST: {
+        if (target - 4 < 4) {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 2, 0);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            if ((p->e).playingAnim != 11 || (p->e).animForceRestart != 0 || (s->flags & SPRFLAG_XFLIP)) {
+              (p->e).playingAnim = 11;
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 11, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              s->flags &= ~SPRFLAG_XFLIP;
+              (p->e).animForceRestart = 0;
+            }
+          }
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, ANIM_PLAY_REVERSE);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            (p->e).playingAnim = 10;
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+            (p->e).animForceRestart = 0;
+          }
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+      case DIR4_SOUTH: {
+        if (target - 1 < 5) {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 2, ANIM_PLAY_REVERSE);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            (p->e).playingAnim = 11;
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 11, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            s->flags &= ~SPRFLAG_XFLIP;
+            (p->e).animForceRestart = 0;
+          }
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, ANIM_PLAY_REVERSE | ANIM_PLAY_XFLIP);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            (p->e).playingAnim = 10;
+            MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE | MAIN_ANIM_REVERSE);
+            s->flags |= SPRFLAG_XFLIP;
+            (p->e).animForceRestart = 0;
+          }
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+      case DIR4_WEST: {
+        if (target < 4) {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 0, 0);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            if ((p->e).playingAnim != 9 || (p->e).animForceRestart != 0 || (s->flags & SPRFLAG_XFLIP)) {
+              (p->e).playingAnim = 9;
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 9, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              s->flags &= ~SPRFLAG_XFLIP;
+              (p->e).animForceRestart = 0;
+            }
+          }
+          SET_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        } else {
+          if ((p->e).spriteKind == 0) {
+            EnemyAuxSprite* s = &(p->e).s->aux;
+
+            (p->e).playingAnim = 9;
+            AuxAnim_SetAnim(&s->anim, s->animFile, 9, 1, ANIM_PLAY_XFLIP);
+            (p->e).animForceRestart = 0;
+          } else {
+            MainSprite* s = &(p->e).s->main.spr;
+
+            if ((p->e).playingAnim != 10 || (p->e).animForceRestart != 0 || !(s->flags & SPRFLAG_XFLIP)) {
+              (p->e).playingAnim = 10;
+              MainSprite_SetAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx, 10, PLAYMODE_ONCE_AND_STOP, MAIN_ANIM_FORCE_POSE);
+              s->flags |= SPRFLAG_XFLIP;
+              (p->e).animForceRestart = 0;
+            }
+          }
+          CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_16);
+        }
+        break;
+      }
+    }
+    (p->e).animForceRestart = 0;
+  }
+  anim = &(p->e).s->aux.anim;
+  if (anim->tick == 0 && (anim->cmdIdx == 1 || anim->cmdIdx == 3)) {
+    u32 targetAngle = (((p->e).unk_1dc + 5) & 7) << 5;
+    u8 angle = (p->e).mover.angle;
+    s32 d = abs(angle - targetAngle);
+
+    if (d <= 32) {
+      (p->e).mover.angle = targetAngle;
+    } else if (TEST_FLAGS((p->e).flags, ENEFLAG_UNK_16)) {
+      (p->e).mover.angle = angle + 32;
+    } else {
+      (p->e).mover.angle = angle - 32;
+    }
+  }
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if ((p->e).animForceRestart) {
+    s32 d = abs((p->e).unk_1dc - Angle_ToDir8((p->e).mover.angle));
+
+    if (d > 0) {
+      Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
+      return;
+    }
+    (p->e).subStateDone = 1;
+    (p->e).mover.angle = Angle_ToDir4((p->e).mover.angle) * 64 - 64;
+    Enemy_PlayAnim(&p->e, 0);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081af224.inc");
+#endif
+}
 
 // boku.c の Boku_StateNap と同じ
 void BokuLink_StateNap(BokuLink* p, s32 param_2) {
@@ -248,8 +818,19 @@ void FUN_081afa4c(BokuLink* p) {
   }
 }
 
-// boku.c の FUN_080fc4ec と同じ
-NAKED void FUN_081afcac(BokuLink* p) { INCFUNC("asm/func/FUN_081afcac.inc"); }
+// boku.c の FUN_080fc4ec と同じ, アニメ 5 を 2〜7 コマ目でループさせる
+void FUN_081afcac(BokuLink* p) {
+  AuxAnimState* anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 5);
+  }
+  anim = &(p->e).s->aux.anim;
+  if (anim->cmdIdx == 7 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
+    anim->cmdIdx = 2;
+    AuxAnim_ResetTick(&(p->e).s->aux.anim);
+  }
+}
 
 // boku.c の FUN_080fc548 と同じ
 void FUN_081afd08(BokuLink* p, s32 param_2) {
@@ -284,16 +865,715 @@ void FUN_081afd08(BokuLink* p, s32 param_2) {
 }
 
 // boku.c の FUN_080fc6f4 と同じ
-NAKED void FUN_081afeb4(BokuLink* p, s32 param_2) { INCFUNC("asm/func/FUN_081afeb4.inc"); }
+// 1078/1056 命令, boku.c の FUN_080fc6f4 の C をそのまま当てただけ, 残差は FUN_080fc6f4 と同じ形 (1回で打ち切り)
+NON_MATCH void FUN_081afeb4(BokuLink* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 3);
+  }
+  SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
+  if (param_2 < 18) {
+    AuxAnimState* anim = &(p->e).s->aux.anim;
+    if (anim->cmdIdx == 0 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
+      anim->tick = 0;
+    }
+  }
+  if (!(p->e).animForceRestart) {
+    return;
+  }
+  (p->e).subStateDone = 1;
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_STUN_REQUEST | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+    return;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    s32 tile;
+    s32 idx;
+
+    Enemy_PlayAnim(&p->e, 0);
+    Enemy_ResetState(&p->e, 3, 1, 0);
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        (p->e).onRouteFailed(&p->e);
+        return;
+      }
+      tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+
+    // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+    if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      u8 angle;
+
+      if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+        return;
+      }
+      (p->e).unk_222 &= ~ENEMY222_UNK_2;
+      if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+        Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+        Enemy_ResetState(&p->e, 0, 0, 12);
+      } else {
+        Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+        Enemy_ResetState(&p->e, 0, 0, 5);
+        {
+          Vec3* dst = (p->e).pathNodePos;
+          PathWalker* walker = &(p->e).pathWalker;
+
+          dst->x = walker->node->x;
+          dst->z = walker->node->y;
+          dst->y = TileHeightAt(dst);
+        }
+        (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+        (p->e).pathNodePos->val = 0;
+      }
+      angle = (p->e).mover.angle;
+      if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+        s32 i;
+        u32 a;
+
+        for (i = 0; i < 4; i++) {
+          a = (Random() & 3) << 6;
+          if (a != angle) {
+            break;
+          }
+        }
+        if (i >= 4) {
+          a = angle;
+        }
+        (p->e).lookAngle = a;
+        (p->e).savedHandlerState = (p->e).handlerState;
+        (p->e).savedState = (p->e).state;
+        (p->e).savedSubState0 = (p->e).subState0;
+        (p->e).savedSubState1 = (p->e).subState1;
+        (p->e).savedSubState2 = (p->e).subState2;
+        (p->e).lookBaseAngle = angle;
+        Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+        Enemy_ResetState(&p->e, 3, 1, 0);
+        (p->e).unk_542 = 6;
+      }
+      Enemy_StepToFloorEdge(&p->e);
+      (p->e).animSpeedDiv = 2;
+      return;
+    }
+
+    {
+      WorldPos tilePos;
+      bool8 moved = FALSE;
+
+      {
+        s32 x = Mod(tile, gCollisionMap->tiledata->width);
+        s32 z = Div(tile, gCollisionMap->tiledata->width);
+        MapTileOverride* ov;
+
+        tilePos.x = (x << 8) + 0x80;
+        ov = Map_FindTileOverride(tile, 1);
+        tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+        tilePos.z = (z << 8) + 0x80;
+      }
+      {
+        NavAgent* agent = (p->e).navAgent;
+        WorldPos* pos = &(p->e).mover.pos;
+
+        if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+          s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+          if (result != 0) {
+            if (result != 2) {
+              ClearMemory(&(p->e).mover.delta, 8);
+            }
+            moved = TRUE;
+          }
+        }
+        if (!moved) {
+          CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+        }
+      }
+      if (!moved) {
+        (p->e).onRouteFailed(&p->e);
+      }
+    }
+    return;
+  }
+
+  Enemy_PlayAnim(&p->e, 0);
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  (p->e).pendingDelay = 60;
+  (p->e).pendingHandler = (p->e).handlerMove;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 7;
+  (p->e).animSpeedDiv = 1;
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+  {
+    Vec3* dst = (p->e).pathNodePos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+  {
+    NavAgent* agent = (p->e).navAgent;
+    WorldPos* pos = &(p->e).mover.pos;
+    Vec3* dst = (p->e).pathNodePos;
+    bool8 moved = FALSE;
+
+    if (Map_IsPosInAgentIsland(agent, pos, dst)) {
+      s32 result = Map_TryFindNavRoute(agent, pos, dst);
+
+      if (result != 0) {
+        if (result != 2) {
+          ClearMemory(&(p->e).mover.delta, 8);
+        }
+        moved = TRUE;
+      }
+    }
+    if (!moved) {
+      CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+    }
+    if (moved) {
+      (p->e).pathNodePos->val = 1;
+    } else {
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
+      Enemy_ResetState(&p->e, 3, 0, 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081afeb4.inc");
+#endif
+}
 
 // boku.c の Boku_StateDamaged と同じ
-NAKED void FUN_081b084c(BokuLink* p, s32 param_2) { INCFUNC("asm/func/FUN_081b084c.inc"); }
+// 1891/1886 命令, boku.c の Boku_StateDamaged の C をそのまま当てただけ, 残差は Boku_StateDamaged と同じ形 (1回で打ち切り)
+NON_MATCH void FUN_081b084c(BokuLink* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim = &(p->e).s->aux.anim;
+  s32 dx;
+  s32 dz;
+  s32 tile;
+  s32 idx;
+  bool8 found;
+  bool8 haveTile;
 
-// boku.c の FUN_080fe1bc の通信対戦版
-NAKED void FUN_081b197c(BokuLink* p) { INCFUNC("asm/func/FUN_081b197c.inc"); }
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 3);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+      PlaySound_082406e0(CRY_BOKU_DAMAGED);
+      PlaySound_082406e0(SE_UNK_298);
+    }
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
+    (p->e).animForceRestart = 0;
+  }
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
+  if (param_2 < 18 && anim->cmdIdx == 0 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
+    anim->tick = 0;
+  }
+  if (Mod(param_2, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+    Vec3 size;
+
+    VEC3_SET(size, 60, 60, 40);
+    EmitSmoke(&(p->e).mover.pos, (Random() & 3) + 1, &size, (p->e).mover.angle + 128, 10, 6, 2, 2);
+  }
+
+  // 吹き飛ばされた先の点へ残りの 1/4 ずつ寄せる, 1フレームに 200 まで
+  dx = (p->e).unk_20c.x - (p->e).unk_214.x;
+  if (dx < 0) {
+    dx = -(-dx >> 2);
+  } else {
+    dx = dx >> 2;
+  }
+  dz = (p->e).unk_20c.z - (p->e).unk_214.z;
+  if (dz < 0) {
+    dz = -(-dz >> 2);
+  } else {
+    dz = dz >> 2;
+  }
+  if (dx > 200) {
+    dx = 200;
+  } else if (dx < -200) {
+    dx = -200;
+  }
+  if (dz > 200) {
+    dz = 200;
+  } else if (dz < -200) {
+    dz = -200;
+  }
+  (p->e).mover.delta.x += dx;
+  (p->e).mover.delta.z += dz;
+  (p->e).unk_214.x += dx;
+  (p->e).unk_214.z += dz;
+  if (dx != 0 || dz != 0) {
+    return;
+  }
+  if (!(p->e).animForceRestart) {
+    return;
+  }
+
+  (p->e).subStateDone = 1;
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8);
+  CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_STUN_REQUEST);
+    return;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    Enemy_EnterState(&p->e, FUN_081afeb4, ES_UNK_20);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_3);
+    (p->e).animSpeedDiv = 1;
+    return;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+    SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+    } else {
+      (p->e).onRouteFailed(&p->e);
+    }
+  } else {
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    (p->e).pathNodePos->val = 0;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      (p->e).animSpeedDiv = 2;
+    } else {
+      (p->e).onRouteFailed(&p->e);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081b084c.inc");
+#endif
+}
+
+// boku.c の FUN_080fe1bc の通信対戦版, 逃げ先に着くたびにプレイヤーから離れる経路を引き直す
+// 残差は FUN_080fe1bc と同じ, 原典は unk_65c の bit1 を 0/1 に落としてから見て &unk_65c を r5 に持ち越す, 判定と消去の inline の組, 早期 return は試済 (69〜71/75 命令)
+NON_MATCH void BokuLink_StateFlee(BokuLink* p) {
+#ifdef NONMATCHING_C
+  BokuLink* q = (p->e).owner;
+
+  if (!Enemy_ConsumeStateBegun(&p->e)) {
+    if (q->unk_65c & 2) {
+      if ((p->e).playerDistSq > 0xFFFF) {
+        Enemy_PlayAnim(&p->e, 0);
+      }
+      BokuLink_RouteAwayFromPlayer(p);
+      CLEAR_FLAGS(q->unk_65c, 2);
+      Enemy_ResetState(&p->e, 0, 0, 15);
+    } else {
+      Enemy_PlayAnim(&p->e, 1);
+    }
+  }
+#else
+  INCFUNC("asm/func/BokuLink_StateFlee.inc");
+#endif
+}
 
 // boku.c の Boku_StateDying と同じ
-NAKED void BokuLink_StateDying(BokuLink* p, s32 param_2) { INCFUNC("asm/func/BokuLink_StateDying.inc"); }
+// 514/514 命令, boku.c の Boku_StateDying の C をそのまま当てただけ, 残差は Boku_StateDying と同じ形 (1回で打ち切り)
+NON_MATCH void BokuLink_StateDying(BokuLink* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  AuxSprite* sprite = &(p->e).s->aux.spr;
+  AuxAnimState* anim = &(p->e).s->aux.anim;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 10);
+    (p->e).animForceRestart = 0;
+    Enemy_SetEmote(&p->e, 0, 0x7F, 0);
+    Enemy_SetEmote(&p->e, 1, 0x7F, 0);
+    Enemy_SetEmote(&p->e, 3, 0x7F, 0);
+    Enemy_FadeParticles(&p->e, 4);
+    sprite->flags |= SPRFLAG_AFFINE;
+    PlayEnemyDeathCry(&p->e);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+      PlaySound_082406e0(SE_UNK_298);
+    }
+    CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_6 | ENEFLAG_UNK_7 | ENEFLAG_UNK_8 | ENEFLAG_UNK_14 | ENEFLAG_UNK_16);
+    (p->e).unk_21e = 0;
+    (p->e).unk_220 = 0;
+    (p->e).unk_202 = 0;
+    (p->e).hurtbox.flags |= HBF_HIDDEN;
+  }
+  Enemy_ClearDamage(&p->e);
+  if (Mod(param_2, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+    Vec3 size;
+
+    VEC3_SET(size, 60, 60, 40);
+    EmitSmoke(&(p->e).mover.pos, (Random() & 3) + 1, &size, (p->e).mover.angle + 128, 10, 8, 2, 2);
+  }
+  if (param_2 < 35) {
+    anim->tick = 0;
+  }
+  if (anim->cmdIdx < 3) {
+    sprite->scaleX = 70;
+    sprite->scaleY = 70;
+  } else {
+    sprite->scaleX = Q6(1);
+    sprite->scaleY = Q6(1);
+  }
+  if ((p->e).animForceRestart) {
+    s32 idx;
+
+    (p->e).subStateDone = 1;
+    if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_10)) {
+      Vec3 size;
+      WorldPos* pos;
+      u8 kind;
+
+      FUN_080e6658(&p->e);
+      VEC3_SET(size, 80, 60, 60);
+      pos = &(p->e).mover.pos;
+      EmitSmoke(pos, (Random() & 3) + 1, &size, 0x20, 4, 20, 2, 1);
+      EmitSmoke(pos, (Random() & 3) + 1, &size, 0x40, 4, 20, 2, 1);
+      EmitSmoke(pos, (Random() & 3) + 1, &size, 0x5E, 4, 20, 2, 1);
+      EmitSmoke(pos, (Random() & 3) + 1, &size, 0x80, 4, 20, 2, 1);
+      EmitSmoke(pos, (Random() & 3) + 1, &size, 0xC4, 4, 20, 2, 1);
+      EmitSmoke(pos, (Random() & 3) + 1, &size, 0xF0, 4, 20, 2, 1);
+      kind = (p->e).kind;
+      if (kind == ENEK_BOKU || kind == ENEK_MUMMY || kind == ENEK_SKELETON || kind == ENEK_SKELETON_A || kind == ENEK_SKELETON_F || kind == ENEK_DARKROOT) {
+        PlaySound_082406e0(SE_UNDEAD_EXORCISM);
+      }
+    }
+    if ((p->e).defeatScriptID != 0) {
+      u32 argv[8];
+      ScriptArgs sa;
+
+      argv[0] = (p->e).mover.pos.x;
+      argv[1] = (p->e).mover.pos.y;
+      argv[2] = (p->e).mover.pos.z;
+      argv[3] = (p->e).unk_19c;
+      argv[4] = (p->e).unk_1a0;
+      argv[5] = (p->e).unk_1a4;
+      argv[6] = (p->e).unk_4a0;
+      argv[7] = (p->e).mover.id;
+      sa.argc = 8;
+      sa.argv = argv;
+      VM_ExecByID((p->e).defeatScriptID, &sa);
+    }
+    idx = EnemyDex_GetEntryIdx((p->e).kind, (p->e).variant);
+    if (idx < 32) {
+      gStat->enemyDexSeen[0] |= 1 << idx;
+    } else {
+      gStat->enemyDexSeen[1] |= 1 << (idx - 32);
+    }
+    (p->e).stunTimer = 0;
+    sprite->scaleX = Q6(1);
+    sprite->scaleY = Q6(1);
+    sprite->flags = (sprite->flags & ~SPRFLAG_AFFINE) | SPRFLAG_HIDDEN;
+    Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_INACTIVE);
+    Enemy_ResetState(&p->e, 1, 0, 2);
+    ParticleShadow_Hide(&(p->e).shadow);
+  }
+#else
+  INCFUNC("asm/func/BokuLink_StateDying.inc");
+#endif
+}
 
 // boku.c の FUN_080fe704 と同じ
 void FUN_081b1ec4(BokuLink* p) {
@@ -315,10 +1595,212 @@ void FUN_081b1ec4(BokuLink* p) {
 }
 
 // boku.c の FUN_080fe7f4 と同じ
-NAKED void FUN_081b1fb4(BokuLink* p) { INCFUNC("asm/func/FUN_081b1fb4.inc"); }
+// 938/932 命令, boku.c の FUN_080fe7f4 の C をそのまま当てただけ, 残差は FUN_080fe7f4 と同じ形 (1回で打ち切り)
+NON_MATCH void FUN_081b1fb4(BokuLink* p) {
+#ifdef NONMATCHING_C
+  s32 tile;
+  s32 idx;
+
+  if ((p->e).subStateBegun) {
+    (p->e).subStateBegun = 0;
+  }
+  if ((p->e).tryDetectPlayer(&p->e)) {
+    return;
+  }
+  if (FUN_080f0a0c(&p->e)) {
+    return;
+  }
+  if ((p->e).subStateTimer <= 60) {
+    (p->e).subStateTimer++;
+    return;
+  }
+
+  Enemy_SetEmote(&p->e, 0, 2, (p->e).kind);
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    bool8 moved;
+
+    if (!TEST_FLAGS((p->e).flags, ENEFLAG_UNK_4)) {
+      (p->e).pendingDelay = 30;
+      (p->e).pendingHandler = (p->e).handlerMove;
+      (p->e).pendingSubState0 = 0;
+      (p->e).pendingSubState1 = 0;
+      (p->e).pendingSubState2 = 2;
+      (p->e).animSpeedDiv = 1;
+      return;
+    }
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerMove;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      Vec3* dst = (p->e).pathNodePos;
+
+      moved = FALSE;
+      if (Map_IsPosInAgentIsland(agent, pos, dst)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, dst);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          moved = TRUE;
+        }
+      }
+      if (!moved) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (!moved) {
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
+      Enemy_ResetState(&p->e, 3, 0, 0);
+    } else {
+      (p->e).pathNodePos->val = 1;
+    }
+    return;
+  }
+
+  (p->e).pendingDelay = 30;
+  (p->e).pendingHandler = (p->e).handlerChase;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 12;
+  {
+    Vec3* dst = (p->e).pathNodePos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+
+  if (IsLinkPlay()) {
+    Mover* m = (p->e).playerMover;
+
+    idx = -1;
+    if (m != NULL && m->kind <= 3) {
+      idx = m->kind;
+    }
+    if (m == NULL || idx < 0) {
+      (p->e).onRouteFailed(&p->e);
+      return;
+    }
+    tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+  } else {
+    tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+    idx = 0;
+  }
+
+  // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+  if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+    u8 angle;
+
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+      return;
+    }
+    (p->e).unk_222 &= ~ENEMY222_UNK_2;
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+    } else {
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 5);
+      {
+        Vec3* dst = (p->e).pathNodePos;
+        PathWalker* walker = &(p->e).pathWalker;
+
+        dst->x = walker->node->x;
+        dst->z = walker->node->y;
+        dst->y = TileHeightAt(dst);
+      }
+      (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+      (p->e).pathNodePos->val = 0;
+    }
+    angle = (p->e).mover.angle;
+    if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+      s32 i;
+      u32 a;
+
+      for (i = 0; i < 4; i++) {
+        a = (Random() & 3) << 6;
+        if (a != angle) {
+          break;
+        }
+      }
+      if (i >= 4) {
+        a = angle;
+      }
+      (p->e).lookAngle = a;
+      (p->e).savedHandlerState = (p->e).handlerState;
+      (p->e).savedState = (p->e).state;
+      (p->e).savedSubState0 = (p->e).subState0;
+      (p->e).savedSubState1 = (p->e).subState1;
+      (p->e).savedSubState2 = (p->e).subState2;
+      (p->e).lookBaseAngle = angle;
+      Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+      Enemy_ResetState(&p->e, 3, 1, 0);
+      (p->e).unk_542 = 6;
+    }
+    Enemy_StepToFloorEdge(&p->e);
+    (p->e).animSpeedDiv = 2;
+    return;
+  }
+
+  {
+    WorldPos tilePos;
+    bool8 moved = FALSE;
+
+    {
+      s32 x = Mod(tile, gCollisionMap->tiledata->width);
+      s32 z = Div(tile, gCollisionMap->tiledata->width);
+      MapTileOverride* ov;
+
+      tilePos.x = (x << 8) + 0x80;
+      ov = Map_FindTileOverride(tile, 1);
+      tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+      tilePos.z = (z << 8) + 0x80;
+    }
+    {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          moved = TRUE;
+        }
+      }
+      if (!moved) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (!moved) {
+      (p->e).onRouteFailed(&p->e);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081b1fb4.inc");
+#endif
+}
 
 // boku.c の FUN_080ff05c と同じ
-void FUN_081b281c(BokuLink* p) { (p->e).handlerTables[3] = (void*)PTR_ARRAY_085adef4; }
+void BokuLink_SetHandlerTable3(BokuLink* p) { (p->e).handlerTables[3] = (void*)sBokuLinkHandlerTable3; }
 
 // boku.c の FUN_080ff06c と同じ
 void FUN_081b282c(BokuLink* p) {
@@ -326,7 +1808,7 @@ void FUN_081b282c(BokuLink* p) {
   s32 speed;
 
   if (Enemy_ConsumeSubStateBegun(&p->e)) {
-    Enemy_EnterState(&p->e, FUN_081b197c, ES_UNK_35);
+    Enemy_EnterState(&p->e, BokuLink_StateFlee, ES_UNK_35);
   }
   if (q->timer_670 == 0) {
     if ((p->e).tryDetectPlayer(&p->e)) {
@@ -398,10 +1880,52 @@ void FUN_081b2b2c(BokuLink* p) {
 void FUN_081b2c1c(BokuLink* p) { (p->e).handlerTables[2] = (void*)PTR_ARRAY_085adefc; }
 
 // boku.c の FUN_080ff470 と同じ
-NAKED void FUN_081b2c30(BokuLink* p) { INCFUNC("asm/func/FUN_081b2c30.inc"); }
+// 残差は FUN_080ff470 と同じ (198/208 命令), boku.c の C をそのまま当てただけ
+NON_MATCH void FUN_081b2c30(BokuLink* p) {
+#ifdef NONMATCHING_C
+  BokuLink* q = (p->e).owner;
+
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    SET_FLAGS((p->e).flags3, ENEFLAG3_UNK_8);
+    Enemy_EnterState(&p->e, FUN_081aec90, ES_UNK_34);
+    q->timer_670 = q->unk_672;
+  }
+  if ((p->e).subStateDone) {
+    EnemyFlags3* flags3 = &(p->e).flags3;
+    NavAgent* agent;
+    WorldPos* pos;
+    s32 result;
+
+    CLEAR_FLAGS(*flags3, ENEFLAG3_UNK_8);
+    CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
+    Enemy_PlayAnim(&p->e, 0);
+    (p->e).pendingDelay = q->unk_67e;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    agent = (p->e).navAgent;
+    pos = &(p->e).mover.pos;
+    if (Map_IsPosInAgentIsland(agent, pos, &q->unk_660) && (result = Map_TryFindNavRoute(agent, pos, &q->unk_660)) != 0) {
+      if (result != 2) {
+        ClearMemory(&(p->e).mover.delta, 8);
+      }
+    } else {
+      CLEAR_FLAGS(*flags3, ENEFLAG3_UNK_9);
+      (p->e).onRouteFailed(&p->e);
+    }
+  } else {
+    (p->e).subStateTimer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_081b2c30.inc");
+#endif
+}
 
 // boku.c の FUN_080ff668 と同じ
-void FUN_081b2e28(BokuLink* p) { (p->e).handlerTables[4] = (void*)PTR_ARRAY_085adf44; }
+void BokuLink_SetHandlerTable4(BokuLink* p) { (p->e).handlerTables[4] = (void*)sBokuLinkHandlerTable4; }
 
 // boku.c の FUN_080ff67c と同じ
 void FUN_081b2e3c(BokuLink* p) {
@@ -429,7 +1953,65 @@ void FUN_081b2ea8(BokuLink* p) {
 }
 
 // boku.c の FUN_080ff7c0 と同じ
-NAKED void FUN_081b2f80(BokuLink* p) { INCFUNC("asm/func/FUN_081b2f80.inc"); }
+// 259/276 命令, boku.c の FUN_080ff7c0 の C をそのまま当てただけ, 残差は FUN_080ff7c0 と同じ形 (1回で打ち切り)
+NON_MATCH void FUN_081b2f80(BokuLink* p) {
+#ifdef NONMATCHING_C
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    return;
+  }
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    (p->e).animSpeedDiv = 2;
+    (p->e).pendingDelay = 60;
+    (p->e).pendingHandler = (p->e).handlerMove;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 7;
+  } else {
+    (p->e).animSpeedDiv = 2;
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+      (p->e).chaseTimer += 300;
+      if ((p->e).chaseTimer > (p->e).chaseTimeMax) {
+        (p->e).chaseTimer = (p->e).chaseTimeMax;
+      }
+    }
+  }
+  {
+    Vec3* dst = (p->e).pathNodePos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+  (p->e).pathNodePos->val = 0;
+  {
+    NavAgent* agent = (p->e).navAgent;
+    WorldPos* pos = &(p->e).mover.pos;
+    WorldPos* dst = &(p->e).playerMover->pos;
+    s32 result;
+
+    if (Map_IsPosInAgentIsland(agent, pos, dst) && (result = Map_TryFindNavRoute(agent, pos, dst)) != 0) {
+      if (result != 2) {
+        ClearMemory(&(p->e).mover.delta, 8);
+      }
+    } else {
+      Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_9);
+      (p->e).onRouteFailed(&p->e);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081b2f80.inc");
+#endif
+}
 
 // boku.c の Boku_InitHitboxes と同じ
 void BokuLink_InitHitboxes(BokuLink* p) {
@@ -444,7 +2026,28 @@ void BokuLink_InitHitboxes(BokuLink* p) {
 }
 
 // boku.c の Boku_OnReset と同じ
-NAKED void BokuLink_OnReset(BokuLink* p) { INCFUNC("asm/func/BokuLink_OnReset.inc"); }
+// 残差は Boku_OnReset と同じ1命令 (152/153), 原典は p->sprite を r0 に読んでから r5 へ移す, boku.c の C をそのまま当てただけ
+NON_MATCH void BokuLink_OnReset(BokuLink* p) {
+#ifdef NONMATCHING_C
+  BokuLink* q = (p->e).owner;
+  EnemyAuxSprite* aux;
+
+  q->unk_65e = 0;
+  q->unk_65c = 0;
+  q->timer_670 = 0;
+  q->unk_67c = 0;
+  ClearMemory((p->e).pathNodePos, sizeof(Vec3));
+  ClearMemory(&q->unk_668, sizeof(Vec3));
+  ClearMemory(&q->unk_660, sizeof(Vec3));
+  Enemy_ClearPendingState(&p->e, s_bokucom_c_08252274, 147);
+  Enemy_StepTowardPathNode(&p->e);
+  Enemy_PlayAnim(&p->e, 0);
+  aux = &(p->e).s->aux;
+  AuxSprite_AdvanceAnim(&aux->spr, &aux->anim);
+#else
+  INCFUNC("asm/func/BokuLink_OnReset.inc");
+#endif
+}
 
 // boku.c の FUN_080ffc28 と同じ
 void FUN_081b33e8(void) {}
@@ -505,35 +2108,161 @@ void BokuLink_PickRandomPathNode(BokuLink* p) {
 }
 
 // boku.c の Boku_RouteAwayFromPlayer と同じ
-NAKED void BokuLink_RouteAwayFromPlayer(BokuLink* p) { INCFUNC("asm/func/BokuLink_RouteAwayFromPlayer.inc"); }
+// 260/332 命令, boku.c の Boku_RouteAwayFromPlayer の C をそのまま当てただけ, 残差は Boku_RouteAwayFromPlayer と同じ形 (1回で打ち切り)
+NON_MATCH void BokuLink_RouteAwayFromPlayer(BokuLink* p) {
+#ifdef NONMATCHING_C
+  Mover* target = (p->e).playerMover;
+  u8 angle = ArcTan2_8(target->pos.x - (p->e).mover.pos.x, target->pos.z - (p->e).mover.pos.z);
+  s16 fx = (COS(angle) * 160) >> 16;
+  s16 fz = (SIN(angle) * 160) >> 16;
+  PathNode* node = Map_GetPathNodes((p->e).pathWalker.path);
+  bool8 found = FALSE;
+  s32 i;
 
-// boku.c の FUN_081000a4 の通信対戦版
-NAKED void FUN_081b3864(BokuLink* p) { INCFUNC("asm/func/FUN_081b3864.inc"); }
+  for (i = 0; i < (p->e).pathWalker.path->nodeCount && !found; i++) {
+    s16 dx = node->x - (p->e).mover.pos.x;
+    s16 dz = node->y - (p->e).mover.pos.z;
+
+    if (dx * fx + fz * dz < 0) {
+      if (node->x != (p->e).pathWalker.node->x || node->y != (p->e).pathWalker.node->y) {
+        (p->e).pathWalker.nodeIdx = i;
+        (p->e).pathWalker.waitTimer = 0;
+        (p->e).pathWalker.node = node;
+        found = TRUE;
+      }
+    } else {
+      node++;
+    }
+  }
+  if (!found) {
+    BokuLink_PickRandomPathNode(p);
+  }
+  {
+    Vec3* dst = (p->e).pathNodePos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+  {
+    NavAgent* agent = (p->e).navAgent;
+    WorldPos* pos = &(p->e).mover.pos;
+    WorldPos* dst = (p->e).pathNodePos;
+    s32 result;
+
+    if (Map_IsPosInAgentIsland(agent, pos, dst) && (result = Map_TryFindNavRoute(agent, pos, dst)) != 0) {
+      if (result != 2) {
+        ClearMemory(&(p->e).mover.delta, 8);
+      }
+      (p->e).pathNodePos->val = 1;
+    } else {
+      Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_9);
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
+      Enemy_ResetState(&p->e, 3, 0, 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/BokuLink_RouteAwayFromPlayer.inc");
+#endif
+}
+
+// boku.c の FUN_081000a4 と同じ, もう一方の経路に乗り換えてプレイヤーから離れる経路を引く (参照元なし)
+void FUN_081b3864(BokuLink* p) {
+  BokuLink* q = (p->e).owner;
+
+  q->unk_67c = q->unk_67e;
+  SET_FLAGS(q->unk_65c, 1);
+  CLEAR_FLAGS(q->unk_65c, 2);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
+  Enemy_ResetState(&p->e, 0, 0, 15);
+  Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_4b4[(p->e).unk_4b6 ^ 1], 0, 0);
+  BokuLink_RouteAwayFromPlayer(p);
+  CLEAR_FLAGS(q->unk_65c, 2);
+}
 
 // boku.c の Boku_InitDelayedScript と同じ
-NAKED void BokuLink_InitDelayedScript(BokuLink* p) { INCFUNC("asm/func/BokuLink_InitDelayedScript.inc"); }
+void BokuLink_InitDelayedScript(BokuLink* p) {
+  BokuLink* q = (p->e).owner;
+
+  if (VM_SeekToNamedArg('x')) {
+    q->delayedScriptID = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    q->delayedScriptWait = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    q->delayedScriptTimer = 0;
+  } else {
+    q->delayedScriptID = 0;
+    q->delayedScriptWait = 0;
+    q->delayedScriptTimer = 0;
+  }
+}
 
 // boku.c の Boku_UpdateDelayedScript と同じ
 void BokuLink_UpdateDelayedScript(BokuLink* p) {
   BokuLink* q = (p->e).owner;
 
-  if (q->scriptID_658 == 0) {
+  if (q->delayedScriptID == 0) {
     return;
   }
 
-  q->unk_65b++;
-  if (q->unk_65b < q->unk_65a) {
+  q->delayedScriptTimer++;
+  if (q->delayedScriptTimer < q->delayedScriptWait) {
     return;
   }
 
-  VM_ExecByID(q->scriptID_658, NULL);
-  q->scriptID_658 = 0;
-  q->unk_65a = 0;
-  q->unk_65b = 0;
+  VM_ExecByID(q->delayedScriptID, NULL);
+  q->delayedScriptID = 0;
+  q->delayedScriptWait = 0;
+  q->delayedScriptTimer = 0;
 }
 
 // boku.c の FUN_081019e0 の通信対戦版
-NAKED bool32 FUN_081b39e8(BokuLink* p) { INCFUNC("asm/func/FUN_081b39e8.inc"); }
+// 199/213 命令, FUN_081019e0 の C の前に FUN_080fa77c と FUN_080f9f20 の判定を足しただけ, 残差は FUN_081019e0 と同じ形 (1回で打ち切り)
+NON_MATCH bool32 FUN_081b39e8(BokuLink* p) {
+#ifdef NONMATCHING_C
+  FUN_080fa77c(&p->e);
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_UNK_3 | ENEFLAG3_UNK_6 | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13) || !FUN_080f9f20(&p->e)) {
+    BokuLink* q = (p->e).owner;
+
+    if (!Enemy_IsDead(&p->e) && (q->unk_65c & 1) && !TEST_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP | ENEFLAG3_STUN | ENEFLAG3_PETRIFIED | ENEFLAG3_UNK_8 | ENEFLAG3_UNK_13 | ENEFLAG3_UNK_15)) {
+      if (q->unk_67c == 0) {
+        CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_2);
+        Enemy_SetAngleToward(&p->e, (p->e).navAgent->waypoint.x, (p->e).navAgent->waypoint.z);
+        Enemy_PlayAnim(&p->e, 0);
+        (p->e).pendingDelay = 30;
+        (p->e).pendingHandler = (p->e).handlerChase;
+        (p->e).pendingSubState0 = 0;
+        (p->e).pendingSubState1 = 0;
+        (p->e).pendingSubState2 = 12;
+        Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+        Enemy_ResetState(&p->e, 3, 1, 0);
+        Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+          s32 result;
+
+          if (!Map_IsPosInAgentIsland(agent, pos, &q->unk_660)) {
+            Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_9);
+          } else {
+            result = Map_TryFindNavRoute(agent, pos, &q->unk_660);
+            if (result == 0) {
+              Enemy_ClearFlag3(&p->e, ENEFLAG3_UNK_9);
+            } else if (result != 2) {
+              ClearMemory(&(p->e).mover.delta, 8);
+            }
+          }
+        }
+        q->unk_65c &= ~1;
+      } else {
+        q->unk_67c--;
+      }
+    }
+  }
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_081b39e8.inc");
+#endif
+}
 
 // boku.c の FUN_08101bb4 と同じ
 bool32 FUN_081b3be0(BokuLink* p) {
@@ -541,26 +2270,1171 @@ bool32 FUN_081b3be0(BokuLink* p) {
   return TRUE;
 }
 
-// boku.c の FUN_080ff06c の通信対戦版
-NAKED void FUN_081b3bec(BokuLink* p) { INCFUNC("asm/func/FUN_081b3bec.inc"); }
+// boku.c の FUN_080ff06c の通信対戦版 (FUN_080f0a0c の判定が無い), 逃げる経路に沿って歩き, 着いたら unk_65c の bit1 を立てる
+void BokuLink_SubFlee(BokuLink* p) {
+  BokuLink* q = (p->e).owner;
+  s32 speed;
 
-// boku.c の FUN_080ff270 の通信対戦版
-NAKED void FUN_081b3dd4(BokuLink* p) { INCFUNC("asm/func/FUN_081b3dd4.inc"); }
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, BokuLink_StateFlee, ES_UNK_35);
+  }
+  if (q->timer_670 == 0) {
+    if ((p->e).tryDetectPlayer(&p->e)) {
+      Boku_ClearUnk65c(q, 1);
+      return;
+    }
+  }
+  speed = (p->e).getMoveSpeed(&p->e);
+  (p->e).animSpeedDiv = 6;
+  Enemy_UpdateWalkAnimSpeed(&p->e);
+  if (!Map_ConsumeNavWaypointChanged((p->e).navAgent)) {
+    if (Enemy_MoveAlongNav(&p->e, (p->e).navAgent, 32, 32, speed)) {
+      Enemy_ResetState(&p->e, 3, 0, 0);
+      SET_FLAGS(q->unk_65c, 2);
+      return;
+    }
+  } else {
+    if (Enemy_TurnTowardWaypoint(&p->e, (p->e).navAgent, 32, 32, speed)) {
+      Enemy_ResetState(&p->e, 0, 0, 16);
+    }
+  }
+  (p->e).subStateTimer++;
+}
 
-// boku.c の FUN_080ff36c の通信対戦版
-NAKED void FUN_081b3ebc(BokuLink* p) { INCFUNC("asm/func/FUN_081b3ebc.inc"); }
+// boku.c の FUN_080ff270 の通信対戦版 (FUN_080f0a0c の判定が無い), 振り向き終わったら BokuLink_SubFlee に戻る
+void BokuLink_SubFleeTurn(BokuLink* p) {
+  BokuLink* q = (p->e).owner;
 
-// boku.c の FUN_080ff45c の通信対戦版, 表を PTR_ARRAY_085adf50 に差し替える
-NAKED void FUN_081b3fa0(BokuLink* p) { INCFUNC("asm/func/FUN_081b3fa0.inc"); }
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
+  }
+  if (q->timer_670 == 0) {
+    if ((p->e).tryDetectPlayer(&p->e)) {
+      Boku_ClearUnk65c(q, 1);
+      return;
+    }
+  }
+  if ((p->e).subStateDone) {
+    Enemy_ResetState(&p->e, 0, 0, 15);
+  } else {
+    (p->e).subStateTimer++;
+  }
+}
+
+// boku.c の FUN_080ff36c の通信対戦版 (FUN_080f0a0c の判定が無い), 振り向き終わったら待機に移る
+void BokuLink_SubTurnThenWait(BokuLink* p) {
+  if (Enemy_ConsumeSubStateBegun(&p->e)) {
+    Enemy_EnterState(&p->e, (p->e).handlerTurn, ES_UNK_2);
+  }
+  if (!(p->e).tryDetectPlayer(&p->e)) {
+    if ((p->e).subStateDone) {
+      Enemy_ResetState(&p->e, 0, 0, 5);
+      Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
+    } else {
+      (p->e).subStateTimer++;
+    }
+  }
+}
+
+// boku.c の FUN_080ff45c の通信対戦版, 表を sBokuLinkHandlerTable2 に差し替える
+void BokuLink_SetHandlerTable2(BokuLink* p) { (p->e).handlerTables[2] = (void*)sBokuLinkHandlerTable2; }
 
 // boku.c の Boku_OnDamaged の通信対戦版
-NAKED bool8 BokuLink_OnDamaged(BokuLink* p) { INCFUNC("asm/func/BokuLink_OnDamaged.inc"); }
+// 2553/2526 命令, boku.c の Boku_OnDamaged の C をそのまま当てただけ, 通信対戦版の差分は未調査 (1回で打ち切り)
+NON_MATCH bool8 BokuLink_OnDamaged(BokuLink* p) {
+#ifdef NONMATCHING_C
+  BokuLink* q = (p->e).owner;
+  s32 tile;
+  s32 idx;
+  bool8 found;
+  bool8 haveTile;
+
+  if (!((p->e).weaponExpMask & 0x4000)) {
+    if ((p->e).unk_48a == 0) {
+      PlaySound_082406e0(SONG_529);
+    } else {
+      PlaySound_082406e0(CRY_BOKU_DAMAGED);
+    }
+  }
+  BokuLink_UpdateDelayedScript(p);
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_13)) {
+    (p->e).mover.angle = (p->e).angle + 128;
+    Enemy_PlayAnim(&p->e, 0);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5 | ENEFLAG3_UNK_13);
+    (p->e).unk_544 = 300;
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    (p->e).pathNodePos->val = 0;
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      (p->e).animSpeedDiv = 2;
+      return TRUE;
+    }
+    (p->e).onRouteFailed(&p->e);
+    return FALSE;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN | ENEFLAG3_UNK_15)) {
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+    return FALSE;
+  }
+  if (TEST_FLAGS((p->e).flags6, HBATTR_BLOW | HBATTR_STUN)) {
+    Enemy_EnterState(&p->e, (p->e).handlerDamaged, ES_DAMAGED);
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    CLEAR_FLAGS((p->e).flags2, ENEFLAG2_UNK_24);
+    return TRUE;
+  }
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_8)) {
+    return FALSE;
+  }
+  if ((p->e).unk_4be != 0) {
+    return FALSE;
+  }
+  q->unk_65c &= ~1;
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    if ((p->e).unk_48d == 0 && ((p->e).unk_48c & 8)) {
+      (p->e).unk_4be = 45;
+      (p->e).unk_48d = 65;
+      Enemy_PlayAnim(&p->e, 3);
+    }
+    if ((p->e).playerMover == NULL) {
+      return FALSE;
+    }
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+    SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+      return TRUE;
+    }
+    (p->e).onRouteFailed(&p->e);
+    return FALSE;
+  } else {
+    if ((p->e).unk_48d == 0 && ((p->e).unk_48c & 8)) {
+      (p->e).unk_4be = 45;
+      (p->e).unk_48d = 65;
+      Enemy_PlayAnim(&p->e, 3);
+    }
+    if ((p->e).playerMover == NULL) {
+      return FALSE;
+    }
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    (p->e).pathNodePos->val = 0;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      (p->e).animSpeedDiv = 3;
+      return TRUE;
+    }
+    (p->e).onRouteFailed(&p->e);
+    return FALSE;
+  }
+#else
+  INCFUNC("asm/func/BokuLink_OnDamaged.inc");
+#endif
+}
 
 // boku.c の FUN_080fc6f4 の通信対戦版
-NAKED void FUN_081b570c(BokuLink* p, s32 param_2) { INCFUNC("asm/func/FUN_081b570c.inc"); }
+// 1078/1063 命令, boku.c の FUN_080fc6f4 の C をそのまま当てただけ, 通信対戦版の差分は未調査 (1回で打ち切り)
+NON_MATCH void FUN_081b570c(BokuLink* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 3);
+  }
+  SET_FLAGS((p->e).flags4, ENEFLAG4_UNK_4);
+  if (param_2 < 18) {
+    AuxAnimState* anim = &(p->e).s->aux.anim;
+    if (anim->cmdIdx == 0 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
+      anim->tick = 0;
+    }
+  }
+  if (!(p->e).animForceRestart) {
+    return;
+  }
+  (p->e).subStateDone = 1;
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_STUN)) {
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    Enemy_EnterState(&p->e, (p->e).handlerStun, ES_STUN);
+    CLEAR_FLAGS((p->e).flags4, ENEFLAG4_UNK_0 | ENEFLAG4_STUN_REQUEST | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
+    return;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    s32 tile;
+    s32 idx;
+
+    Enemy_PlayAnim(&p->e, 0);
+    Enemy_ResetState(&p->e, 3, 1, 0);
+    Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+    (p->e).pendingDelay = 30;
+    (p->e).pendingHandler = (p->e).handlerChase;
+    (p->e).pendingSubState0 = 0;
+    (p->e).pendingSubState1 = 0;
+    (p->e).pendingSubState2 = 12;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        (p->e).onRouteFailed(&p->e);
+        return;
+      }
+      tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+
+    // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+    if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+      u8 angle;
+
+      if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+        return;
+      }
+      (p->e).unk_222 &= ~ENEMY222_UNK_2;
+      if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+        Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+        Enemy_ResetState(&p->e, 0, 0, 12);
+      } else {
+        Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+        Enemy_ResetState(&p->e, 0, 0, 5);
+        {
+          Vec3* dst = (p->e).pathNodePos;
+          PathWalker* walker = &(p->e).pathWalker;
+
+          dst->x = walker->node->x;
+          dst->z = walker->node->y;
+          dst->y = TileHeightAt(dst);
+        }
+        (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+        (p->e).pathNodePos->val = 0;
+      }
+      angle = (p->e).mover.angle;
+      if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+        s32 i;
+        u32 a;
+
+        for (i = 0; i < 4; i++) {
+          a = (Random() & 3) << 6;
+          if (a != angle) {
+            break;
+          }
+        }
+        if (i >= 4) {
+          a = angle;
+        }
+        (p->e).lookAngle = a;
+        (p->e).savedHandlerState = (p->e).handlerState;
+        (p->e).savedState = (p->e).state;
+        (p->e).savedSubState0 = (p->e).subState0;
+        (p->e).savedSubState1 = (p->e).subState1;
+        (p->e).savedSubState2 = (p->e).subState2;
+        (p->e).lookBaseAngle = angle;
+        Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+        Enemy_ResetState(&p->e, 3, 1, 0);
+        (p->e).unk_542 = 6;
+      }
+      Enemy_StepToFloorEdge(&p->e);
+      (p->e).animSpeedDiv = 2;
+      return;
+    }
+
+    {
+      WorldPos tilePos;
+      bool8 moved = FALSE;
+
+      {
+        s32 x = Mod(tile, gCollisionMap->tiledata->width);
+        s32 z = Div(tile, gCollisionMap->tiledata->width);
+        MapTileOverride* ov;
+
+        tilePos.x = (x << 8) + 0x80;
+        ov = Map_FindTileOverride(tile, 1);
+        tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+        tilePos.z = (z << 8) + 0x80;
+      }
+      {
+        NavAgent* agent = (p->e).navAgent;
+        WorldPos* pos = &(p->e).mover.pos;
+
+        if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+          s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+          if (result != 0) {
+            if (result != 2) {
+              ClearMemory(&(p->e).mover.delta, 8);
+            }
+            moved = TRUE;
+          }
+        }
+        if (!moved) {
+          CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+        }
+      }
+      if (!moved) {
+        (p->e).onRouteFailed(&p->e);
+      }
+    }
+    return;
+  }
+
+  Enemy_PlayAnim(&p->e, 0);
+  Enemy_ResetState(&p->e, 3, 1, 0);
+  Enemy_EnterState(&p->e, Enemy_WaitPendingState, ES_UNK_14);
+  (p->e).pendingDelay = 60;
+  (p->e).pendingHandler = (p->e).handlerMove;
+  (p->e).pendingSubState0 = 0;
+  (p->e).pendingSubState1 = 0;
+  (p->e).pendingSubState2 = 7;
+  (p->e).animSpeedDiv = 1;
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5);
+  {
+    Vec3* dst = (p->e).pathNodePos;
+    PathWalker* walker = &(p->e).pathWalker;
+
+    dst->x = walker->node->x;
+    dst->z = walker->node->y;
+    dst->y = TileHeightAt(dst);
+  }
+  {
+    NavAgent* agent = (p->e).navAgent;
+    WorldPos* pos = &(p->e).mover.pos;
+    Vec3* dst = (p->e).pathNodePos;
+    bool8 moved = FALSE;
+
+    if (Map_IsPosInAgentIsland(agent, pos, dst)) {
+      s32 result = Map_TryFindNavRoute(agent, pos, dst);
+
+      if (result != 0) {
+        if (result != 2) {
+          ClearMemory(&(p->e).mover.delta, 8);
+        }
+        moved = TRUE;
+      }
+    }
+    if (!moved) {
+      CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+    }
+    if (moved) {
+      (p->e).pathNodePos->val = 1;
+    } else {
+      Enemy_EnterState(&p->e, Enemy_ClearStateBegun, ES_UNK_0);
+      Enemy_ResetState(&p->e, 3, 0, 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081b570c.inc");
+#endif
+}
 
 // boku.c の Boku_StateDamaged の通信対戦版
-NAKED void BokuLink_StateDamaged(BokuLink* p, s32 param_2) { INCFUNC("asm/func/BokuLink_StateDamaged.inc"); }
+// 1891/1886 命令, boku.c の Boku_StateDamaged の C をそのまま当てただけ, 通信対戦版の差分は未調査 (1回で打ち切り)
+NON_MATCH void BokuLink_StateDamaged(BokuLink* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim = &(p->e).s->aux.anim;
+  s32 dx;
+  s32 dz;
+  s32 tile;
+  s32 idx;
+  bool8 found;
+  bool8 haveTile;
+
+  if (Enemy_ConsumeStateBegun(&p->e)) {
+    Enemy_PlayAnim(&p->e, 3);
+    if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+      PlaySound_082406e0(CRY_BOKU_DAMAGED);
+      PlaySound_082406e0(SE_UNK_298);
+    }
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_ASLEEP);
+    (p->e).animForceRestart = 0;
+  }
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_16);
+  if (param_2 < 18 && anim->cmdIdx == 0 && anim->tick == (anim->wait != 0) && anim->wait != 1) {
+    anim->tick = 0;
+  }
+  if (Mod(param_2, 12) == 0 && TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+    Vec3 size;
+
+    VEC3_SET(size, 60, 60, 40);
+    EmitSmoke(&(p->e).mover.pos, (Random() & 3) + 1, &size, (p->e).mover.angle + 128, 10, 6, 2, 2);
+  }
+
+  // 吹き飛ばされた先の点へ残りの 1/4 ずつ寄せる, 1フレームに 200 まで
+  dx = (p->e).unk_20c.x - (p->e).unk_214.x;
+  if (dx < 0) {
+    dx = -(-dx >> 2);
+  } else {
+    dx = dx >> 2;
+  }
+  dz = (p->e).unk_20c.z - (p->e).unk_214.z;
+  if (dz < 0) {
+    dz = -(-dz >> 2);
+  } else {
+    dz = dz >> 2;
+  }
+  if (dx > 200) {
+    dx = 200;
+  } else if (dx < -200) {
+    dx = -200;
+  }
+  if (dz > 200) {
+    dz = 200;
+  } else if (dz < -200) {
+    dz = -200;
+  }
+  (p->e).mover.delta.x += dx;
+  (p->e).mover.delta.z += dz;
+  (p->e).unk_214.x += dx;
+  (p->e).unk_214.z += dz;
+  if (dx != 0 || dz != 0) {
+    return;
+  }
+  if (!(p->e).animForceRestart) {
+    return;
+  }
+
+  (p->e).subStateDone = 1;
+  CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_5 | ENEFLAG3_UNK_8);
+  CLEAR_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+  if (TEST_FLAGS((p->e).flags6, HBATTR_STUN)) {
+    SET_FLAGS((p->e).flags4, ENEFLAG4_STUN_REQUEST);
+    return;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_3)) {
+    Enemy_ResetState(&p->e, 3, 0, 0);
+    Enemy_EnterState(&p->e, FUN_081b570c, ES_UNK_20);
+    CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_3);
+    (p->e).animSpeedDiv = 1;
+    return;
+  }
+  if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_7);
+    SET_FLAGS((p->e).unk_222, ENEMY222_UNK_2);
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+      Enemy_ResetState(&p->e, 0, 0, 12);
+    } else {
+      (p->e).onRouteFailed(&p->e);
+    }
+  } else {
+    (p->e).playerMover = &gPlayerPtr[0]->mover;
+    SET_FLAGS((p->e).flags, ENEFLAG_UNK_4);
+    (p->e).pathNodePos->val = 0;
+    {
+      Vec3* dst = (p->e).pathNodePos;
+      PathWalker* walker = &(p->e).pathWalker;
+
+      dst->x = walker->node->x;
+      dst->z = walker->node->y;
+      dst->y = TileHeightAt(dst);
+    }
+    found = FALSE;
+    haveTile = TRUE;
+    if (IsLinkPlay()) {
+      Mover* m = (p->e).playerMover;
+
+      idx = -1;
+      if (m != NULL && m->kind <= 3) {
+        idx = m->kind;
+      }
+      if (m == NULL || idx < 0) {
+        haveTile = FALSE;
+      } else {
+        tile = gPlayerPtr[idx]->mover.tile->tileIdx[1];
+      }
+    } else {
+      tile = GetCollisionTileIdx(&(p->e).playerMover->pos);
+      idx = 0;
+    }
+    if (haveTile) {
+      if (tile == (p->e).tileIdx || (gPlayerPtr[idx]->flag20 & PFLAG20_INVISIBLE)) {
+        // プレイヤーと同じタイルにいるか見えないときは歩きに戻して向きを乱数で変える予約を入れる
+        if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10)) {
+          u8 angle;
+
+          (p->e).unk_222 &= ~ENEMY222_UNK_2;
+          if (TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_7)) {
+            Enemy_EnterState(&p->e, (p->e).handlerChase, ES_UNK_26);
+            Enemy_ResetState(&p->e, 0, 0, 12);
+          } else {
+            Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+            Enemy_ResetState(&p->e, 0, 0, 5);
+            {
+              Vec3* dst = (p->e).pathNodePos;
+              PathWalker* walker = &(p->e).pathWalker;
+
+              dst->x = walker->node->x;
+              dst->z = walker->node->y;
+              dst->y = TileHeightAt(dst);
+            }
+            (p->e).pathNodePos->y = TileHeightAt((p->e).pathNodePos);
+            (p->e).pathNodePos->val = 0;
+          }
+          angle = (p->e).mover.angle;
+          if (!TEST_FLAGS((p->e).flags3, ENEFLAG3_UNK_10) && !TEST_FLAGS((p->e).unk_222, ENEMY222_UNK_2)) {
+            s32 i;
+            u32 a;
+
+            for (i = 0; i < 4; i++) {
+              a = (Random() & 3) << 6;
+              if (a != angle) {
+                break;
+              }
+            }
+            if (i >= 4) {
+              a = angle;
+            }
+            (p->e).lookAngle = a;
+            (p->e).savedHandlerState = (p->e).handlerState;
+            (p->e).savedState = (p->e).state;
+            (p->e).savedSubState0 = (p->e).subState0;
+            (p->e).savedSubState1 = (p->e).subState1;
+            (p->e).savedSubState2 = (p->e).subState2;
+            (p->e).lookBaseAngle = angle;
+            Enemy_EnterState(&p->e, (p->e).handlerLookAround, ES_UNK_27);
+            Enemy_ResetState(&p->e, 3, 1, 0);
+            (p->e).unk_542 = 6;
+          }
+          Enemy_StepToFloorEdge(&p->e);
+          (p->e).animSpeedDiv = 2;
+        }
+      } else {
+        WorldPos tilePos;
+
+        {
+          s32 x = Mod(tile, gCollisionMap->tiledata->width);
+          s32 z = Div(tile, gCollisionMap->tiledata->width);
+          MapTileOverride* ov;
+
+          tilePos.x = (x << 8) + 0x80;
+          ov = Map_FindTileOverride(tile, 1);
+          tilePos.y = ((ov != NULL ? &ov->tile : &gCollisionMap->tiledata->tiles[tile])->heightStairs & 0xF) << 8;
+          tilePos.z = (z << 8) + 0x80;
+        }
+        {
+          NavAgent* agent = (p->e).navAgent;
+          WorldPos* pos = &(p->e).mover.pos;
+
+          if (Map_IsPosInAgentIsland(agent, pos, &tilePos)) {
+            s32 result = Map_TryFindNavRoute(agent, pos, &tilePos);
+
+            if (result != 0) {
+              if (result != 2) {
+                ClearMemory(&(p->e).mover.delta, 8);
+              }
+              found = TRUE;
+            }
+          }
+          if (!found) {
+            CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+          }
+        }
+        if (!found) {
+          haveTile = FALSE;
+        }
+      }
+    }
+    if (!haveTile) {
+      (p->e).onRouteFailed(&p->e);
+    }
+    // プレイヤーのタイルへ向かえなければプレイヤーの座標そのものへ向かう
+    if (!found) {
+      NavAgent* agent = (p->e).navAgent;
+      WorldPos* pos = &(p->e).mover.pos;
+      WorldPos* target = &(p->e).playerMover->pos;
+
+      if (Map_IsPosInAgentIsland(agent, pos, target)) {
+        s32 result = Map_TryFindNavRoute(agent, pos, target);
+
+        if (result != 0) {
+          if (result != 2) {
+            ClearMemory(&(p->e).mover.delta, 8);
+          }
+          found = TRUE;
+        }
+      }
+      if (!found) {
+        CLEAR_FLAGS((p->e).flags3, ENEFLAG3_UNK_9);
+      }
+    }
+    if (found) {
+      Enemy_EnterState(&p->e, (p->e).handlerMove, ES_UNK_1);
+      Enemy_ResetState(&p->e, 0, 0, 7);
+      (p->e).animSpeedDiv = 2;
+    } else {
+      (p->e).onRouteFailed(&p->e);
+    }
+  }
+#else
+  INCFUNC("asm/func/BokuLink_StateDamaged.inc");
+#endif
+}
 
 // boku.c の FUN_08101bc0 と同じ
 bool32 FUN_081b71e8(BokuLink* p) {
@@ -615,7 +3489,343 @@ s32 BokuLink_Destroy(BokuLink* p) {
 }
 
 // boku.c の Boku_Init の通信対戦版
-NAKED s32 BokuLink_Init(BokuLink* p) { INCFUNC("asm/func/BokuLink_Init.inc"); }
+// 1604/1764 命令, boku.c の Boku_Init の C をそのまま当てただけ, 通信対戦版の差分は未調査 (1回で打ち切り)
+NON_MATCH s32 BokuLink_Init(BokuLink* p) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  s32 id;
+  s32 range0, range1, range2;
+  u32 range3;
+  s32 hpParam3, hpParam4;
+  bool32 onPath;
+  s32 i;
+  u8 kind;
+
+  Enemy_SetOwnerAndSpriteKind(&p->e, p, 0);
+  BokuLink_InitAnims(p);
+  BokuLink_InitDelayedScript(p);
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* aux;
+    u8 k;
+
+    (p->e).s = Malloc(sizeof(EnemyAuxSprite));
+    ClearMemory((p->e).s, sizeof(EnemyAuxSprite));
+    aux = &(p->e).s->aux;
+    Video_GetAuxSprite(&aux->gfx, SPR_BOKU_0);
+    AuxSprite_Add(&aux->spr, &aux->gfx, 0);
+    EnemyAuxSprite_LoadAnim(aux, ANIM_BOKU);
+    k = (p->e).kind;
+    if (k == ENEK_CURORO || k == ENEK_GHOST) {
+      aux->spr.priority = 1;
+    }
+    (p->e).facing = 0;
+  } else {
+    EnemyMainSprite* spr;
+    MainSpriteGfxFile* f;
+    Vec3 origin;
+
+    (p->e).s = Malloc(sizeof(EnemySprite));
+    ClearMemory((p->e).s, sizeof(EnemySprite));
+    spr = &(p->e).s->main;
+    Vec3_Clear(&origin);
+    f = GetFile(DIR_MAIN_SPRITE, SPR_BOKU_0);
+    spr->gfx = *f;
+    OpenMainSpriteFile(&spr->gfx, f);
+    MainSprite_Add(&spr->spr, &spr->gfx, 0, 0, 2, 2, 60, &origin);
+    (p->e).playingAnim = 0xFF;
+  }
+
+  (p->e).flags = 0;
+  (p->e).flags2 = 0;
+  (p->e).unk_46f = 0;
+  (p->e).unk_1bc = 8;
+  (p->e).flags5 = VM_GetNamedArgValue('M', 0);
+  Vec3_Clear(&pos);
+  (p->e).unk_4b6 = 0;
+  if (!VM_SeekToNamedArg('r')) {
+    (p->e).unk_250 = 0;
+    (p->e).unk_251 = 0;
+    (p->e).unk_252 = 0;
+    (p->e).prevPathNode = 0;
+    (p->e).unk_4b4[(p->e).unk_4b6] = 0;
+    (p->e).unk_4b4[(p->e).unk_4b6 ^ 1] = 0;
+    onPath = FALSE;
+  } else {
+    u8 sel;
+
+    (p->e).unk_250 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_251 = 0;
+    (p->e).unk_252 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).prevPathNode = (p->e).unk_252;
+    (p->e).unk_4b4[(p->e).unk_4b6] = (p->e).unk_250;
+    sel = (p->e).unk_4b6;
+    (p->e).unk_4b4[sel ^ 1] = VM_GetPC() != NULL ? VM_GetValue() : (p->e).unk_250;
+    Map_GetPathNodePos(&pos, (p->e).unk_250, (p->e).unk_252);
+    (p->e).tileIdx = GetCollisionTileIdx(&pos);
+    pos.y = TileHeightAt(&pos);
+    (p->e).floorY = pos.y;
+    onPath = TRUE;
+  }
+
+  id = VM_GetNamedArgValue('N', 0);
+  if (!VM_SeekToNamedArg('e')) {
+    range0 = 48;
+    range3 = 64;
+  } else {
+    range0 = VM_GetPC() != NULL ? VM_GetValue() : 48;
+    range3 = VM_GetPC() != NULL ? (u8)VM_GetValue() : 64;
+  }
+  if (!VM_SeekToNamedArg('n')) {
+    range1 = 0;
+    (p->e).unk_1fe = 0;
+  } else {
+    range1 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_1fe = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  range2 = range0;
+
+  if (VM_SeekToNamedArg('a')) {
+    for (i = 0; i < 4; i++) {
+      (p->e).atkPower[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
+      (p->e).atkKnockback[i] = VM_GetPC() != NULL ? VM_GetValue() : 24;
+      (p->e).atkAttrs[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
+      (p->e).atkIframes[i] = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    }
+  }
+  if (!VM_SeekToNamedArg('l')) {
+    hpParam3 = 0;
+    hpParam4 = 0;
+    (p->e).chaseTimeMax = 0;
+  } else {
+    hpParam3 = VM_GetPC() != NULL ? VM_GetValue() : 300;
+    hpParam4 = VM_GetPC() != NULL ? VM_GetValue() : 300;
+    (p->e).chaseTimeMax = VM_GetPC() != NULL ? VM_GetValue() : 300;
+  }
+  if (VM_GetNamedArgValue('b', 0) != 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_9);
+  }
+  (p->e).scriptID = VM_GetNamedArgValue('F', 0);
+  (p->e).unk_194 = VM_GetNamedArgValue('R', 0);
+  if (VM_SeekToNamedArg('A')) {
+    (p->e).maxHp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_546 = (p->e).maxHp >> 1;
+    (p->e).power = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_187 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).unk_188 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).attrs = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  Enemy_InitHpAndState(&p->e, (p->e).maxHp, hpParam3, hpParam4);
+  Enemy_SetRanges(&p->e, 0, range0, range2, range1, range3);
+  if (VM_SeekToNamedArg('X')) {
+    (p->e).exp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    (p->e).weaponExp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+  (p->e).unk_25a = VM_GetNamedArgValue('K', 2);
+  if (VM_GetNamedArgValue('H', 0) != 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_11);
+  }
+  if (VM_GetNamedArgValue('L', 0) != 0) {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_15);
+  }
+
+  Mover_Init(&(p->e).mover, id, &pos, 0, MOVER_ENEMY, p);
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_CWOLF)) {
+    CWolfTargetManager_Register(&(p->e).cwolfNode, &(p->e).mover, Enemy_OnCWolfMessage);
+  }
+  Mover_SetAuxSprite(&(p->e).mover, (p->e).spriteKind == 0 ? &(p->e).s->aux.spr : NULL);
+  if ((p->e).kind == ENEK_DOG) {
+    Mover_SetCollision(&(p->e).mover, &(p->e).tile, 60, 60);
+  } else {
+    Mover_SetCollision(&(p->e).mover, &(p->e).tile, 64, 64);
+  }
+  kind = (p->e).kind;
+  if (kind != ENEK_BAT && kind != ENEK_CROW && kind != ENEK_MIMIC && kind != ENEK_SLIME && kind != ENEK_BEE && kind != ENEK_CENTIPEDE && kind != ENEK_SANDWORM && kind != ENEK_SERPENT && kind != ENEK_AX && kind != ENEK_SHAIAN && kind != ENEK_SALAMANDER) {
+    Mover_SetPath(&(p->e).mover, &(p->e).pathWalker, (p->e).unk_250, (p->e).unk_251, (p->e).unk_252);
+  }
+  if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_3)) {
+    (p->e).unk_1e8 = Div((p->e).range0Sq * 7, 10);
+  } else {
+    (p->e).unk_1e8 = (p->e).range0Sq;
+  }
+  (p->e).zoneSource.id = (p->e).mover.id;
+  (p->e).zoneSource.pos = &(p->e).mover.pos;
+  if (onPath) {
+    (p->e).mover.angle = ((((p->e).pathWalker.node->delay >> 12 & 7) + 5) & 7) << 5;
+  }
+  if (!VM_SeekToNamedArg('P')) {
+    p->unk_674 = 120;
+    p->unk_67e = 120;
+    p->unk_672 = 120;
+  } else {
+    p->unk_674 = VM_GetPC() != NULL ? VM_GetValue() : 120;
+    p->unk_67e = VM_GetPC() != NULL ? VM_GetValue() : 120;
+    p->unk_672 = VM_GetPC() != NULL ? VM_GetValue() : 120;
+  }
+  (p->e).variant = VM_GetNamedArgValue('C', 0);
+  (p->e).plttBase = OBP_WHITE_306;
+  (p->e).unk_47c = OBP_WHITE_306;
+  (p->e).unk_47e = OBP_WHITE_306 + (p->e).variant;
+  if ((p->e).spriteKind == 0) {
+    Video_SetAuxSpritePltt(&(p->e).s->aux.gfx, (p->e).plttBase + (p->e).variant);
+  } else {
+    (p->e).s->main.spr.pltt = &gObjPlttData[((p->e).plttBase + (p->e).variant) * 16];
+  }
+  if ((p->e).spriteKind == 1) {
+    s16 n;
+
+    if ((p->e).kind >= ENEK_SKELETON && (p->e).kind <= ENEK_LICH) {
+      n = Enemy_CountByKind(ENEK_SKELETON) + 1 + Enemy_CountByKind(ENEK_SKELETON_F) + Enemy_CountByKind(ENEK_SKELETON_A) + Enemy_CountByKind(ENEK_LICH);
+    } else {
+      n = Enemy_CountByKind((p->e).kind) + 1;
+    }
+    (p->e).s->main.spr.plttID = n + 220;
+  }
+
+  (p->e).unk_476 = (p->e).plttBase + 4;
+  (p->e).unk_478 = (p->e).plttBase;
+  BokuLink_InitHitboxes(p);
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_13);
+  (p->e).navAgent = &p->navAgent;
+  (p->e).pathNodePos = &p->pathNodePos;
+  (p->e).handlerFrame = (EnemyHandler)FUN_081b71e8;
+  (p->e).getMoveSpeed = (void*)BokuLink_GetMoveSpeed;
+  (p->e).handlerTurn = FUN_081af224;
+  (p->e).handlerMove = FUN_081af1e8;
+  (p->e).handlerWait = FUN_081af200;
+  (p->e).handlerNap = BokuLink_StateNap;
+  (p->e).onRouteFailed = (EnemyHandler)FUN_080f62b0;
+  (p->e).handlerDamaged = BokuLink_StateDamaged;
+  (p->e).handlerDying = BokuLink_StateDying;
+  (p->e).unk_5d4 = FUN_080f44f4;
+  (p->e).unk_5dc = FUN_080f410c;
+  (p->e).unk_5c8 = FUN_081afd08;
+  (p->e).unk_584 = FUN_081af9a4;
+  (p->e).unk_604 = FUN_080f62ac;
+  (p->e).tryDetectPlayer = FUN_080f0430;
+  (p->e).unk_21d = 1;
+  (p->e).msgHandlers = (void*)gEnemyDefaultMsgHandlers;
+  (p->e).unk_5f0 = FUN_080e73c8;
+  (p->e).unk_5e4 = NULL;
+  (p->e).onReset = NULL;
+  (p->e).unk_5fc = NULL;
+  (p->e).unk_600 = NULL;
+  (p->e).unk_614 = NULL;
+  (p->e).unk_618 = FUN_080f0320;
+  (p->e).handlerLookAround = Enemy_080eff14;
+  (p->e).unk_5e8 = FUN_080e72b0;
+  (p->e).unk_5e0 = FUN_081afcac;
+  (p->e).unk_5ec = Enemy_StateBlownAway;
+  (p->e).unk_5d8 = Enemy_StateFallDeath;
+  (p->e).unk_5a8 = NULL;
+  (p->e).unk_624 = FUN_080f6e64;
+  (p->e).onDamaged = Enemy_OnDamaged;
+  (p->e).unk_628 = (void*)FUN_080f84d4;
+  (p->e).handlerChase = FUN_080f624c;
+  (p->e).handlerStun = FUN_080f56ec;
+  (p->e).unk_598 = FUN_080f5b34;
+  (p->e).unk_59c = FUN_080f5fac;
+  (p->e).unk_5b4 = NULL;
+  (p->e).unk_543 = 40;
+  Map_InitNavAgent(&p->navAgent, &(p->e).mover.pos);
+  Enemy_StepTowardPathNode(&p->e);
+  (p->e).onReset = (EnemyHandler)BokuLink_OnReset;
+  (p->e).unk_5fc = FUN_081b33e8;
+  (p->e).onAttackRequest = (EnemyHandler)FUN_081b2ea8;
+  (p->e).unk_5b0 = (EnemyHandler)FUN_081b2f80;
+  (p->e).onDamaged = (void*)BokuLink_OnDamaged;
+  SET_FLAGS((p->e).flags, ENEFLAG_UNK_20 | ENEFLAG_UNK_21 | ENEFLAG_UNK_22 | ENEFLAG_UNK_24);
+  SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_27);
+  (p->e).hurtbox.flags &= ~HBF_DAMAGE;
+  (p->e).kind = ENEK_BOKU;
+  Enemy_InitShadowAndEmitter(&p->e);
+
+  (p->e).unk_198 = VM_GetNamedArgValue('I', 0);
+  if (VM_SeekToNamedArg('G')) {
+    u32* arg = &(p->e).unk_19c;
+
+    for (i = 0; i < 5; i++) {
+      *arg++ = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    }
+  }
+  (p->e).defeatScriptID = VM_GetNamedArgValue('D', 0);
+  {
+    s32 u = VM_GetNamedArgValue('u', 0);
+
+    (p->e).unk_496[0] = 0x21;
+    (p->e).unk_496[1] = 0;
+    if (u != 0) {
+      SET_FLAGS((p->e).flags, ENEFLAG_UNK_18);
+      if (u == 2) {
+        SET_FLAGS((p->e).flags, ENEFLAG_UNK_18 | ENEFLAG_UNK_19);
+      }
+    }
+  }
+  if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_2)) {
+    Enemy_ResetState(&p->e, 0, 0, 0);
+    Enemy_EnterState(&p->e, (p->e).handlerWait, ES_UNK_0);
+  } else {
+    SET_FLAGS((p->e).flags2, ENEFLAG2_UNK_13);
+  }
+  if (!TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_1)) {
+    (p->e).zoneID = GetZoneAt(&(p->e).mover.pos);
+  } else {
+    (p->e).zoneID = gStat->zoneID;
+  }
+  if (TEST_FLAGS((p->e).flags5, ENEFLAG5_UNK_6)) {
+    (p->e).hurtbox.flags &= ~HBF_ANGLE;
+  }
+  if (VM_GetNamedArgValue('S', 0) != 0 || gStat->zoneID != (p->e).zoneID) {
+    Enemy_Suspend(&p->e, NULL);
+  }
+  Enemy_PlayAnim(&p->e, 0);
+  if ((p->e).spriteKind == 0) {
+    EnemyAuxSprite* aux = &(p->e).s->aux;
+
+    AuxSprite_AdvanceAnim(&aux->spr, &aux->anim);
+  } else {
+    MainSprite_AdvanceAnim(&(p->e).s->main.spr, &(p->e).s->main.gfx);
+  }
+  (p->e).hitTargetID = 0;
+  kind = (p->e).kind;
+  if (!IsLinkPlay() && (kind == ENEK_BOKU || kind == ENEK_SKELETON || kind == ENEK_SKELETON_A || kind == ENEK_SKELETON_F || kind == ENEK_DOG || kind == ENEK_BEE || kind == ENEK_GHOST)) {
+    MsgQueue_Register(&(p->e).mq, (p->e).mover.id, 3);
+    SET_FLAGS((p->e).flags5, ENEFLAG5_UNK_8);
+  }
+  Enemy_InitHandlerTables(&p->e);
+  BokuLink_SetHandlerTable2(p);
+  BokuLink_SetHandlerTable3(p);
+  BokuLink_SetHandlerTable4(p);
+  (p->e).initFlags5 = (p->e).flags5;
+  (p->e).initHeightAboveFloor = (p->e).heightAboveFloor;
+  (p->e).initFlags = (p->e).flags;
+  (p->e).initFlags2 = (p->e).flags2;
+  (p->e).initAngle = (p->e).mover.angle;
+  (p->e).initSubState0 = (p->e).subState0;
+  (p->e).initSubState1 = (p->e).subState1;
+  (p->e).initSubState2 = (p->e).subState2;
+  (p->e).initHandlerState = (p->e).handlerState;
+  (p->e).initState = (p->e).state;
+  (p->e).handlerMsg = (EnemyMsgHandler)Enemy_DispatchMsg;
+  (p->e).handlerUpdate = (EnemyHandler)BokuLink_Update;
+  (p->e).handlerDestroy = (EnemyHandler)BokuLink_Destroy;
+  if (!Enemy_Register(&p->e)) {
+    return -1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/BokuLink_Init.inc");
+#endif
+}
 
 // boku.c の Boku_Create の通信対戦版
-NAKED void BokuLink_Create(void) { INCFUNC("asm/func/BokuLink_Create.inc"); }
+void BokuLink_Create(void) {
+  BokuLink* p = Malloc(sizeof(BokuLink));
+  if (p != NULL) {
+    ClearMemory(p, sizeof(BokuLink));
+    if (BokuLink_Init(p) < 0) {
+      BokuLink_Destroy(p);
+      Free(p);
+    }
+  }
+}

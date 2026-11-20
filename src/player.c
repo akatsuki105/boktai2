@@ -17,6 +17,7 @@
 #include "magic.h"
 #include "map_inline.h"
 #include "menu.h"
+#include "msgbus_inline.h"
 #include "random.h"
 #include "solar.h"
 #include "sound.h"
@@ -118,9 +119,6 @@ static inline s32 Player_GetAction(Player* p) { return p->action; }
 
 // 当たり判定の向きを入れる
 static inline void Hitbox_SetAngle(Hitbox* p, s32 angle) { p->angle = angle; }
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void Player_SetAnimFacing(Player* p) {
   u8 dir8 = p->facing;

@@ -3,6 +3,7 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 
 // 原典の名前は "デモエフェクトマネージャ" (0x730A), カットシーンのフェード・粒の演出・画面揺れを受け持つ, Scr_CreateMapSystems がマップごとに1体作る
 typedef struct {
@@ -18,9 +19,6 @@ void SparkleEffect_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s3
 void BgPlttController_PushCommand(s32 val, s32 count, u32* args);
 void ObjPlttController_SetRequest(s32 val, s32 count, s32* args);
 void RingoCutsceneAnim_Create(Vec3* pos, MsgQueue* mq);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void CutsceneEffectManager_CmdRisingPtclAt(CutsceneEffectManager* p, MsgQueue* mq, MsgPacket* msg) {
   Vec3 pos;

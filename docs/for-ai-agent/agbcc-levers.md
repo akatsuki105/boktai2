@@ -429,7 +429,7 @@ Four positions, cheapest first:
 - **Mixing a walked pointer and an indexed access in one loop creates a second
   induction variable.** `elem->field` alone strength-reduces to one register;
   writing `p->elems[i].other` in the same body makes gcc keep a separate byte
-  offset and compute `p + constant + offset` for it. `FUN_08084b5c` needed
+  offset and compute `p + constant + offset` for it. `BlackHole_UpdateElems` needed
   exactly that mix — the test through the walked `elem`, the call through
   `p->elems[i].fn`.
 - **A local copy of a field suppresses re-reads and their side effects.**

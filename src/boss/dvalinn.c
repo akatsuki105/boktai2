@@ -10,6 +10,7 @@
 #include "hitbox.h"
 #include "map_inline.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "nested_state.h"
 #include "player.h"
 #include "random.h"
@@ -180,9 +181,6 @@ typedef struct {
   s16 x;         // 0x04
   s16 y;         // 0x06
 } DvalinnSpriteOfs;
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void FUN_081fa608(s32 amount) { gDvalinn->unk_7dc += amount; }
 

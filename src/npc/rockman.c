@@ -1,12 +1,11 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "npc.h"
 #include "sprite.h"
 #include "vec3.h"
 #include "vm.h"
-
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void Rockman_StateShrinkAway(NPCManager* p, NPC* npc) {
   if (npc->stateEntered) {

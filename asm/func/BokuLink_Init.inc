@@ -1970,11 +1970,11 @@ _081B8346:
 	adds r0, r7, #0
 	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
-	bl FUN_081b3fa0
+	bl BokuLink_SetHandlerTable2
 	adds r0, r7, #0
-	bl FUN_081b281c
+	bl BokuLink_SetHandlerTable3
 	adds r0, r7, #0
-	bl FUN_081b2e28
+	bl BokuLink_SetHandlerTable4
 	ldr r6, [sp, #0x4c]
 	ldrh r0, [r6]
 	ldr r1, [sp, #0x104]

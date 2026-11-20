@@ -318,7 +318,7 @@ _080467D6:
 	ldrh r0, [r0]
 	strh r0, [r6, #0xc]
 	adds r0, r5, #0
-	bl FUN_080453b0
+	bl EntityAB4EElem_CheckPathNode
 	movs r0, #0
 	b _08046960
 	.align 2, 0

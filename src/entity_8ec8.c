@@ -3,10 +3,10 @@
 #include "global.h"
 #include "input.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "random.h"
 #include "sound.h"
-#include "trig.h"
 #include "vm.h"
 
 // 画面の振動演出?
@@ -29,9 +29,6 @@ typedef struct {
   bool32 soundPlaying;  // 0x7C, NOISE_QUAKE_121 を鳴らしている間 1
 } Entity8EC8;
 static_assert(sizeof(Entity8EC8) == 128);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void Entity8EC8_HandleMessages(Entity8EC8* p) {
   MsgQueue* mq = &p->mq;

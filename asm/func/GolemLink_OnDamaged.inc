@@ -271,7 +271,7 @@ _081C25E4:
 	str r6, [sp, #0x48]
 	movs r0, #1
 	strb r0, [r6]
-	ldr r3, _081C26A0 @ =FUN_081c1b5c
+	ldr r3, _081C26A0 @ =GolemLink_StateIgnite
 	movs r2, #0x2d
 	ldr r4, _081C26A4 @ =0x0000046D
 	adds r4, r7, r4
@@ -334,7 +334,7 @@ _081C2690: .4byte 0x00000469
 _081C2694: .4byte 0x0000046A
 _081C2698: .4byte 0x00000484
 _081C269C: .4byte 0x0000046C
-_081C26A0: .4byte FUN_081c1b5c
+_081C26A0: .4byte GolemLink_StateIgnite
 _081C26A4: .4byte 0x0000046D
 _081C26A8: .4byte 0x0000046B
 _081C26AC: .4byte 0x00000553
@@ -451,7 +451,7 @@ _081C2750:
 	adds r0, r7, r5
 	movs r1, #1
 	strb r1, [r0]
-	ldr r3, _081C27F4 @ =FUN_081c1790
+	ldr r3, _081C27F4 @ =GolemLink_StateBurning
 	movs r2, #0x13
 	adds r6, #4
 	adds r0, r7, r6
@@ -489,7 +489,7 @@ _081C27DC:
 _081C27E8: .4byte 0x00000469
 _081C27EC: .4byte 0x0000046A
 _081C27F0: .4byte 0x00000484
-_081C27F4: .4byte FUN_081c1790
+_081C27F4: .4byte GolemLink_StateBurning
 _081C27F8: .4byte 0x0000046B
 _081C27FC: .4byte 0xFFFFDFDF
 _081C2800:

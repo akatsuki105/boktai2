@@ -9,9 +9,9 @@
 typedef struct {
   Enemy e;
   u8 unk_654[0x658 - 0x654];  // 0x654
-  u16 scriptID_658;           // 0x658, 0 でなければ unk_65b が unk_65a に届いたときに実行する
-  u8 unk_65a;                 // 0x65A, scriptID_658 を実行するまでのフレーム数
-  u8 unk_65b;                 // 0x65B, 毎フレーム +1
+  u16 delayedScriptID;        // 0x658, '.x[0]', 0 でなければ delayedScriptTimer が delayedScriptWait に届いたときに実行する
+  u8 delayedScriptWait;       // 0x65A, '.x[1]', delayedScriptID を実行するまでのフレーム数
+  u8 delayedScriptTimer;      // 0x65B, 毎フレーム +1
   u16 unk_65c;                // 0x65C
   u16 unk_65e;                // 0x65E
   WorldPos unk_660;           // 0x660

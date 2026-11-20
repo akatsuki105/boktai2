@@ -328,7 +328,7 @@ _08045858:
 	ldr r0, [sp, #8]
 	bl Map_AdvancePathWalker
 	adds r0, r4, #0
-	bl FUN_080453b0
+	bl EntityAB4EElem_CheckPathNode
 	b _0804587E
 _0804587A:
 	subs r1, #1

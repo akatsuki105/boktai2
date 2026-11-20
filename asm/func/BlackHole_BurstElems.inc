@@ -132,7 +132,7 @@ _08084B1C:
 _08084B22:
 	movs r0, #0
 	strh r1, [r4, #0x36]
-	ldr r1, _08084B58 @ =FUN_080849a4
+	ldr r1, _08084B58 @ =BlackHoleElem_UpdateBurst
 	str r1, [r4, #0x38]
 	movs r1, #1
 	strh r1, [r4, #0x2c]
@@ -158,4 +158,4 @@ _08084B46:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08084B58: .4byte FUN_080849a4
+_08084B58: .4byte BlackHoleElem_UpdateBurst

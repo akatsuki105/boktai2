@@ -75,7 +75,7 @@ _08030E00:
 	ldr r0, _08030E7C @ =0x0000033D
 	bl PlaySound_082406e0
 _08030E06:
-	bl FUN_080846c8
+	bl BlackHole_StartSwallow
 	ldr r2, _08030E80 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1

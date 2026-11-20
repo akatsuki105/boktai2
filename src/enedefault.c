@@ -2832,7 +2832,7 @@ bool8 FUN_080f6868(Enemy* p) {
       }
     }
     Mover_SetPath(&p->mover, &p->pathWalker, p->unk_4b4[p->unk_4b6 ^ 1], 0, 0);
-    p->unk_464 = 600;
+    p->burnTimer = 600;
     Enemy_SetPltt(p, p->unk_47e);
     SET_FLAGS(p->flags, ENEFLAG_UNK_25);
     p->unk_494 = 6000;
@@ -2909,7 +2909,7 @@ NON_MATCH bool8 FUN_080f6c74(Enemy* p) {
     Enemy_SetEmote(p, 1, 0x7F, 0);
     Enemy_SetEmote(p, 3, 0x7F, 0);
     Enemy_FadeParticles(p, 4);
-    p->unk_464 = 0;
+    p->burnTimer = 0;
     p->unk_460 = 0;
     p->unk_462 = 0;
 

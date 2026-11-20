@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "sound.h"
 
 // 原典の名前は "デモサウンドマネージャ" (0xD3A9), 宛先 ID は "サウンドマネージャ" (0x74E2), カットシーンからの音の命令を受け持つ, Scr_CreateMapSystems がマップごとに1体作る
@@ -10,9 +11,6 @@ typedef struct {
   MsgQueue mq;             // 0x1C, CutsceneSoundManager_Init が MsgQueue_Register に渡す
 } CutsceneSoundManager;
 static_assert(sizeof(CutsceneSoundManager) == 80);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void CutsceneSoundManager_CmdPlaySound(CutsceneSoundManager* p, MsgQueue* mq, MsgPacket* msg) {
   PlaySound_082406e0(msg->args[0]);

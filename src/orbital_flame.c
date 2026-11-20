@@ -54,17 +54,13 @@ static inline bool8 OrbitalFlameManager_IsActive(OrbitalFlameManager* p, s32 i) 
 void OrbitalFlame_OnHit(Hitbox* a, Hitbox* b, OrbitalFlame* elem) {}
 
 void OrbitalFlame_InitHitbox(OrbitalFlame* elem, s32 power, s32 knockback, HitboxAttrs attrs, s32 iframes, s32 unk_6, s32 unk_7, s32 unk_8) {
-  Vec3 size;
-  Vec3 offset;
-  Hitbox* hitbox;
-
-  VEC3_SET(size, 24, 128, 24);
+  Vec3 size, offset;
+  VEC3_SET(size, Q8(0.094), Q8(0.5), Q8(0.094));
   VEC3_SET(offset, 0, 0, 0);
-  hitbox = &elem->hitbox;
-  Hitbox_Init(hitbox, 0, HBF_HITBOX | HBF_ONCE | HBF_DAMAGE, 0, HIM_4, &size, &offset);
-  Hitbox_SetAttack(hitbox, power, knockback, 0, attrs, iframes);
-  Hitbox_SetHandler(hitbox, OrbitalFlame_OnHit, elem);
-  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
+  Hitbox_Init(&elem->hitbox, 0, HBF_HITBOX | HBF_ONCE | HBF_DAMAGE, 0, HIM_4, &size, &offset);
+  Hitbox_SetAttack(&elem->hitbox, power, knockback, 0, attrs, iframes);
+  Hitbox_SetHandler(&elem->hitbox, OrbitalFlame_OnHit, elem);
+  Hitbox_SetPos(&elem->hitbox, &elem->sprite.pos, 0);
 }
 
 // 攻撃判定をスプライトの位置に合わせて登録する

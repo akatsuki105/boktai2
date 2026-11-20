@@ -118,7 +118,6 @@ s32 SolarBamboo_Destroy(SolarBamboo* p) {
 
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
 s32 SolarBamboo_Init(SolarBamboo* p, u32 id, u32 _) {
-  Hitbox* hurtbox;
   AuxSpriteGfx* gfx;
   AuxSprite* spr;
   Vec3 pos, size, offset;
@@ -141,13 +140,14 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 id, u32 _) {
   p->floatDir = 0;
   p->baseY = pos.y;
   p->offsetY = 0;
+
   VEC3_SET(size, Q8(0.12), Q8(1.25), Q8(0.12));
   VEC3_SET(offset, 0, Q8(0.625), 0);
-  hurtbox = &p->hurtbox;
-  Hitbox_Init(hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
-  Hitbox_SetHandler(hurtbox, SolarBamboo_OnHurt, p);
-  Hitbox_SetPos(hurtbox, &pos, 0);
-  Hitbox_Register(hurtbox);
+  Hitbox_Init(&p->hurtbox, 0, HBF_HURTBOX | HBF_DAMAGE, 0, HIM_4, &size, &offset);
+  Hitbox_SetHandler(&p->hurtbox, SolarBamboo_OnHurt, p);
+  Hitbox_SetPos(&p->hurtbox, &pos, 0);
+  Hitbox_Register(&p->hurtbox);
+
   gfx = &p->gfx;
   Video_GetAuxSprite(gfx, SPR_BAMBOO);
   spr = &p->sprite;

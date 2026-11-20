@@ -8,6 +8,7 @@
 #include "hitbox.h"
 #include "map_inline.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "player.h"
 #include "puff.h"
 #include "random.h"
@@ -157,9 +158,6 @@ void FUN_0803767c(Durathror* p, DurathrorElem* elem);
 void FUN_0803a104(Durathror*);
 void FUN_0803b7c4(Durathror*);
 void FUN_08039280(Durathror*);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 void Durathror_OnHurt(Hitbox* a, Hitbox* b, Durathror* p) {
   Boss* boss = &p->base;

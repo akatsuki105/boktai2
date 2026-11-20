@@ -1,13 +1,10 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "npc.h"
 #include "sprite.h"
-#include "trig.h"
 #include "vm.h"
-
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
-static inline s32 GetAngleTo(WorldPos* pos, WorldPos* target) { return ArcTan2_8(target->x - pos->x, target->z - pos->z); }
 
 // cmd 3 の歩き先へ, アニメ表の 3 番で歩かせる (update 14), 着いたら state 1 へ
 void Kid_StateWalkTo(NPCManager* p, NPC* npc) {

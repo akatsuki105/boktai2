@@ -3,6 +3,7 @@
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "random.h"
 #include "shadow.h"
 #include "sprite_aux.h"
@@ -49,9 +50,6 @@ typedef struct {
   MsgQueue mq;            // 0xCD4
 } CutsceneBatSwarm;
 static_assert(sizeof(CutsceneBatSwarm) == 3336);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 // 要素のパレットを plttID に戻し, 色はブレンド済みの p->pltt を使わせる
 static inline void CutsceneBatSwarm_SetElemPltt(CutsceneBatSwarm* p, AuxSpriteGfx* gfx, s32 plttID) {

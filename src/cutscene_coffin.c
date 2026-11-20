@@ -3,6 +3,7 @@
 #include "global.h"
 #include "item.h"
 #include "msgbus.h"
+#include "msgbus_inline.h"
 #include "puff.h"
 #include "random.h"
 #include "sound.h"
@@ -33,9 +34,6 @@ typedef struct {
   rgb555 plttBuf[16];    // 0x170, FUN_08089b48 で2つのパレットをブレンドした結果
 } CutsceneCoffin;
 static_assert(sizeof(CutsceneCoffin) == 400);
-
-// gMsgBus をこの inline 越しに読むと, メッセージ取り出しのループで原典どおり毎回プールから読み直す形になる
-static inline MsgBus* GetMsgBus(void) { return gMsgBus; }
 
 static inline void CutsceneCoffin_SetState(CutsceneCoffin* p, u16 state) {
   p->state = state;
